@@ -6,21 +6,11 @@
 #include <stdbool.h>
 #include <string.h>
 
-enum {
-	LDO_INDEX = 0,
-	PMIC_INDEX,
-};
-
-struct mt6360_i2c_data {
-	u8 bus;
-	u8 addr;
-};
-
 static struct mt6360_i2c_data i2c_data[] = {
-	[LDO_INDEX] = {
+	[MT6360_INDEX_LDO] = {
 		.addr = MT6360_LDO_I2C_ADDR,
 	},
-	[PMIC_INDEX] = {
+	[MT6360_INDEX_PMIC] = {
 		.addr = MT6360_PMIC_I2C_ADDR,
 	},
 };
@@ -51,35 +41,22 @@ static const uint32_t mt6360_ldo5_vsel_table[0x10] = {
 	[0x5] = 3300000,
 };
 
-struct mt6360_ldo_data {
-	uint8_t enable_reg;
-	uint8_t enable_mask;
-	uint8_t vsel_reg;
-	uint8_t vsel_mask;
-	const uint32_t *vsel_table;
-	uint32_t vsel_table_len;
+static const struct mt6360_data ldo_data[MT6360_LDO_COUNT] = {
+	[MT6360_LDO1] = MT6360_DATA(0x17, 0x40, 0x1b, 0xff, mt6360_ldo1_vsel_table),
+	[MT6360_LDO2] = MT6360_DATA(0x11, 0x40, 0x15, 0xff, mt6360_ldo1_vsel_table),
+	[MT6360_LDO3] = MT6360_DATA(0x05, 0x40, 0x09, 0xff, mt6360_ldo3_vsel_table),
+	[MT6360_LDO5] = MT6360_DATA(0x0b, 0x40, 0x0f, 0xff, mt6360_ldo5_vsel_table),
 };
 
-#define MT6360_LDO_DATA(_enreg, _enmask, _vreg, _vmask, _table)	\
-{								\
-	.enable_reg = _enreg,					\
-	.enable_mask = _enmask,					\
-	.vsel_reg = _vreg,					\
-	.vsel_mask = _vmask,					\
-	.vsel_table = _table,					\
-	.vsel_table_len = ARRAY_SIZE(_table),			\
-}
-
-
-static const struct mt6360_ldo_data ldo_data[MT6360_LDO_COUNT] = {
-	[MT6360_LDO1] = MT6360_LDO_DATA(0x17, 0x40, 0x1B, 0xFF, mt6360_ldo1_vsel_table),
-	[MT6360_LDO2] = MT6360_LDO_DATA(0x11, 0x40, 0x15, 0xFF, mt6360_ldo1_vsel_table),
-	[MT6360_LDO3] = MT6360_LDO_DATA(0x05, 0x40, 0x09, 0xFF, mt6360_ldo3_vsel_table),
-	[MT6360_LDO5] = MT6360_LDO_DATA(0x0B, 0x40, 0x0F, 0xFF, mt6360_ldo5_vsel_table),
+static const struct mt6360_data pmic_data[MT6360_PMIC_COUNT] = {
+	[MT6360_PMIC_BUCK1] = MT6360_DATA(0x17, 0x40, 0x10, 0xff, mt6360_ldo1_vsel_table),
+	[MT6360_PMIC_BUCK2] = MT6360_DATA(0x27, 0x40, 0x20, 0xff, mt6360_ldo1_vsel_table),
+	[MT6360_PMIC_LDO6] = MT6360_DATA(0x37, 0x40, 0x3b, 0xff, mt6360_ldo3_vsel_table),
+	[MT6360_PMIC_LDO7] = MT6360_DATA(0x31, 0x40, 0x35, 0xff, mt6360_ldo5_vsel_table),
 };
 
 #define CRC8_TABLE_SIZE 256
-static u8 crc8_table[CRC8_TABLE_SIZE];
+static u8 crc8_table[MT6360_INDEX_COUNT][CRC8_TABLE_SIZE];
 
 static u8 crc8(const u8 table[CRC8_TABLE_SIZE], u8 *pdata, size_t nbytes)
 {
@@ -91,9 +68,25 @@ static u8 crc8(const u8 table[CRC8_TABLE_SIZE], u8 *pdata, size_t nbytes)
 	return crc;
 }
 
-static int mt6360_i2c_write_byte(struct mt6360_i2c_data *i2c, u8 reg, u8 data)
+static void crc8_populate_msb(u8 table[CRC8_TABLE_SIZE], u8 polynomial)
+{
+	int i, j;
+	const u8 msbit = 0x80;
+	u8 t = msbit;
+
+	table[0] = 0;
+
+	for (i = 1; i < CRC8_TABLE_SIZE; i *= 2) {
+		t = (t << 1) ^ (t & msbit ? polynomial : 0);
+		for (j = 0; j < i; j++)
+			table[i + j] = table[j] ^ t;
+	}
+}
+
+static int mt6360_i2c_write_byte(u8 index, u8 reg, u8 data)
 {
 	u8 chunk[5] = { 0 };
+	struct mt6360_i2c_data *i2c = &i2c_data[index];
 
 	if ((reg & 0xc0) != 0) {
 		printk(BIOS_ERR, "%s: not support reg [%#x]\n", __func__, reg);
@@ -110,17 +103,18 @@ static int mt6360_i2c_write_byte(struct mt6360_i2c_data *i2c, u8 reg, u8 data)
 	chunk[0] = (i2c->addr & 0x7f) << 1;
 	chunk[1] = (reg & 0x3f);
 	chunk[2] = data;
-	chunk[3] = crc8(crc8_table, chunk, 3);
+	chunk[3] = crc8(crc8_table[index], chunk, 3);
 
 	return i2c_write_raw(i2c->bus, i2c->addr, &chunk[1], 4);
 }
 
-static int mt6360_i2c_read_byte(struct mt6360_i2c_data *i2c, u8 reg, u8 *data)
+static int mt6360_i2c_read_byte(u8 index, u8 reg, u8 *data)
 {
 	u8 chunk[4] = { 0 };
 	u8 buf[2];
 	int ret;
 	u8 crc;
+	struct mt6360_i2c_data *i2c = &i2c_data[index];
 
 	ret = i2c_read_bytes(i2c->bus, i2c->addr, reg & 0x3f, buf, 2);
 
@@ -136,7 +130,7 @@ static int mt6360_i2c_read_byte(struct mt6360_i2c_data *i2c, u8 reg, u8 *data)
 	chunk[1] = (reg & 0x3f);
 	chunk[2] = buf[0];
 	chunk[3] = buf[1];
-	crc = crc8(crc8_table, chunk, 3);
+	crc = crc8(crc8_table[index], chunk, 3);
 
 	if (chunk[3] != crc) {
 		printk(BIOS_ERR, "%s: incorrect CRC: expected %#x, got %#x",
@@ -154,7 +148,7 @@ static int mt6360_read_interface(u8 index, u8 reg, u8 *data, u8 mask, u8 shift)
 	int ret;
 	u8 val = 0;
 
-	ret = mt6360_i2c_read_byte(&i2c_data[index], reg, &val);
+	ret = mt6360_i2c_read_byte(index, reg, &val);
 	if (ret < 0) {
 		printk(BIOS_ERR, "%s: fail, reg = %#x, ret = %d\n",
 		       __func__, reg, ret);
@@ -170,7 +164,7 @@ static int mt6360_config_interface(u8 index, u8 reg, u8 data, u8 mask, u8 shift)
 	int ret;
 	u8 val = 0;
 
-	ret = mt6360_i2c_read_byte(&i2c_data[index], reg, &val);
+	ret = mt6360_i2c_read_byte(index, reg, &val);
 	if (ret < 0) {
 		printk(BIOS_ERR, "%s: fail, reg = %#x, ret = %d\n",
 		       __func__, reg, ret);
@@ -179,7 +173,7 @@ static int mt6360_config_interface(u8 index, u8 reg, u8 data, u8 mask, u8 shift)
 	val &= ~(mask << shift);
 	val |= (data << shift);
 
-	return mt6360_i2c_write_byte(&i2c_data[index], reg, val);
+	return mt6360_i2c_write_byte(index, reg, val);
 }
 
 static bool is_valid_ldo(enum mt6360_ldo_id id)
@@ -192,17 +186,27 @@ static bool is_valid_ldo(enum mt6360_ldo_id id)
 	return true;
 }
 
+static bool is_valid_pmic(enum mt6360_pmic_id id)
+{
+	if (id >= MT6360_PMIC_COUNT) {
+		printk(BIOS_ERR, "%s: PMIC %d is not supported\n", __func__, id);
+		return false;
+	}
+
+	return true;
+}
+
 void mt6360_ldo_enable(enum mt6360_ldo_id id, uint8_t enable)
 {
 	u8 val;
-	const struct mt6360_ldo_data *data;
+	const struct mt6360_data *data;
 
 	if (!is_valid_ldo(id))
 		return;
 
 	data = &ldo_data[id];
 
-	if (mt6360_read_interface(LDO_INDEX, data->enable_reg, &val, 0xFF, 0) < 0)
+	if (mt6360_read_interface(MT6360_INDEX_LDO, data->enable_reg, &val, 0xff, 0) < 0)
 		return;
 
 	if (enable)
@@ -210,20 +214,20 @@ void mt6360_ldo_enable(enum mt6360_ldo_id id, uint8_t enable)
 	else
 		val &= ~(data->enable_mask);
 
-	mt6360_config_interface(LDO_INDEX, data->enable_reg, val, 0xFF, 0);
+	mt6360_config_interface(MT6360_INDEX_LDO, data->enable_reg, val, 0xff, 0);
 }
 
 uint8_t mt6360_ldo_is_enabled(enum mt6360_ldo_id id)
 {
 	u8 val;
-	const struct mt6360_ldo_data *data;
+	const struct mt6360_data *data;
 
 	if (!is_valid_ldo(id))
 		return 0;
 
 	data = &ldo_data[id];
 
-	if (mt6360_read_interface(LDO_INDEX, data->enable_reg, &val, 0xFF, 0) < 0)
+	if (mt6360_read_interface(MT6360_INDEX_LDO, data->enable_reg, &val, 0xff, 0) < 0)
 		return 0;
 
 	return (val & data->enable_mask) ? 1 : 0;
@@ -235,7 +239,7 @@ void mt6360_ldo_set_voltage(enum mt6360_ldo_id id, u32 voltage_uv)
 	u32 voltage_uv_temp = 0;
 	int i;
 
-	const struct mt6360_ldo_data *data;
+	const struct mt6360_data *data;
 
 	if (!is_valid_ldo(id))
 		return;
@@ -261,10 +265,10 @@ void mt6360_ldo_set_voltage(enum mt6360_ldo_id id, u32 voltage_uv)
 	}
 
 	voltage_uv_temp /= 10000;
-	voltage_uv_temp = MIN(voltage_uv_temp, 0xA);
+	voltage_uv_temp = MIN(voltage_uv_temp, 0xa);
 	val |= (u8)voltage_uv_temp;
 
-	mt6360_config_interface(LDO_INDEX, data->vsel_reg, val, 0xFF, 0);
+	mt6360_config_interface(MT6360_INDEX_LDO, data->vsel_reg, val, 0xff, 0);
 }
 
 u32 mt6360_ldo_get_voltage(enum mt6360_ldo_id id)
@@ -272,62 +276,131 @@ u32 mt6360_ldo_get_voltage(enum mt6360_ldo_id id)
 	u8 val;
 	u32 voltage_uv;
 
-	const struct mt6360_ldo_data *data;
+	const struct mt6360_data *data;
 
 	if (!is_valid_ldo(id))
 		return 0;
 
 	data = &ldo_data[id];
 
-	if (mt6360_read_interface(LDO_INDEX, data->vsel_reg, &val, 0xFF, 0) < 0)
+	if (mt6360_read_interface(MT6360_INDEX_LDO, data->vsel_reg, &val, 0xff, 0) < 0)
 		return 0;
 
-	voltage_uv = data->vsel_table[(val & 0xF0) >> 4];
+	voltage_uv = data->vsel_table[(val & 0xf0) >> 4];
 	if (voltage_uv == 0) {
 		printk(BIOS_ERR, "%s: LDO %d read fail, reg = %#x\n", __func__, id, val);
 		return 0;
 	}
 
-	val = MIN(val & 0x0F, 0x0A);
+	val = MIN(val & 0x0f, 0x0a);
 	voltage_uv += val * 10000;
 
 	return voltage_uv;
-}
-
-static void crc8_populate_msb(u8 table[CRC8_TABLE_SIZE], u8 polynomial)
-{
-	int i, j;
-	const u8 msbit = 0x80;
-	u8 t = msbit;
-
-	table[0] = 0;
-
-	for (i = 1; i < CRC8_TABLE_SIZE; i *= 2) {
-		t = (t << 1) ^ (t & msbit ? polynomial : 0);
-		for (j = 0; j < i; j++)
-			table[i + j] = table[j] ^ t;
-	}
 }
 
 void mt6360_init(uint8_t bus)
 {
 	u8 delay01, delay02, delay03, delay04;
 
-	crc8_populate_msb(crc8_table, 0x7);
+	crc8_populate_msb(crc8_table[MT6360_INDEX_LDO], 0x7);
+	crc8_populate_msb(crc8_table[MT6360_INDEX_PMIC], 0x7);
 
-	i2c_data[LDO_INDEX].bus = bus;
-	i2c_data[PMIC_INDEX].bus = bus;
+	i2c_data[MT6360_INDEX_LDO].bus = bus;
+	i2c_data[MT6360_INDEX_PMIC].bus = bus;
 
-	mt6360_config_interface(PMIC_INDEX, 0x07, 0x04, 0xFF, 0);
-	mt6360_config_interface(PMIC_INDEX, 0x08, 0x00, 0xFF, 0);
-	mt6360_config_interface(PMIC_INDEX, 0x09, 0x02, 0xFF, 0);
-	mt6360_config_interface(PMIC_INDEX, 0x0A, 0x00, 0xFF, 0);
+	mt6360_config_interface(MT6360_INDEX_PMIC, 0x07, 0x04, 0xff, 0);
+	mt6360_config_interface(MT6360_INDEX_PMIC, 0x08, 0x00, 0xff, 0);
+	mt6360_config_interface(MT6360_INDEX_PMIC, 0x09, 0x02, 0xff, 0);
+	mt6360_config_interface(MT6360_INDEX_PMIC, 0x0a, 0x00, 0xff, 0);
 
-	mt6360_read_interface(PMIC_INDEX, 0x07, &delay01, 0xFF, 0);
-	mt6360_read_interface(PMIC_INDEX, 0x08, &delay02, 0xFF, 0);
-	mt6360_read_interface(PMIC_INDEX, 0x09, &delay03, 0xFF, 0);
-	mt6360_read_interface(PMIC_INDEX, 0x0A, &delay04, 0xFF, 0);
+	mt6360_read_interface(MT6360_INDEX_PMIC, 0x07, &delay01, 0xff, 0);
+	mt6360_read_interface(MT6360_INDEX_PMIC, 0x08, &delay02, 0xff, 0);
+	mt6360_read_interface(MT6360_INDEX_PMIC, 0x09, &delay03, 0xff, 0);
+	mt6360_read_interface(MT6360_INDEX_PMIC, 0x0a, &delay04, 0xff, 0);
 	printk(BIOS_DEBUG,
 	       "%s: power off sequence delay: %#x, %#x, %#x, %#x\n",
 	       __func__, delay01, delay02, delay03, delay04);
+}
+
+void mt6360_pmic_enable(enum mt6360_pmic_id id, uint8_t enable)
+{
+	u8 val;
+	const struct mt6360_data *data;
+
+	if (!is_valid_pmic(id))
+		return;
+
+	data = &pmic_data[id];
+
+	if (mt6360_read_interface(MT6360_INDEX_PMIC, data->enable_reg, &val, 0xff, 0) < 0)
+		return;
+
+	if (enable)
+		val |= data->enable_mask;
+	else
+		val &= ~(data->enable_mask);
+
+	mt6360_config_interface(MT6360_INDEX_PMIC, data->enable_reg, val, 0xff, 0);
+}
+
+uint8_t mt6360_pmic_is_enabled(enum mt6360_pmic_id id)
+{
+	u8 val;
+	const struct mt6360_data *data;
+
+	if (!is_valid_pmic(id))
+		return 0;
+
+	data = &pmic_data[id];
+
+	if (mt6360_read_interface(MT6360_INDEX_PMIC, data->enable_reg, &val, 0xff, 0) < 0)
+		return 0;
+
+	return (val & data->enable_mask) ? 1 : 0;
+}
+
+void mt6360_pmic_set_voltage(enum mt6360_pmic_id id, u32 voltage_uv)
+{
+	u8 val = 0;
+
+	const struct mt6360_data *data;
+
+	if (!is_valid_pmic(id))
+		return;
+
+	data = &pmic_data[id];
+
+	if (id == MT6360_PMIC_BUCK1 || id == MT6360_PMIC_BUCK2) {
+		val = (voltage_uv - 300000) / 5000;
+	} else if (id == MT6360_PMIC_LDO6 || id == MT6360_PMIC_LDO7) {
+		val = (((voltage_uv - 500000) / 100000) << 4);
+		val += (((voltage_uv - 500000) % 100000) / 10000);
+	}
+
+	mt6360_config_interface(MT6360_INDEX_PMIC, data->vsel_reg, val, 0xff, 0);
+}
+
+u32 mt6360_pmic_get_voltage(enum mt6360_pmic_id id)
+{
+	u8 val;
+	u32 voltage_uv;
+
+	const struct mt6360_data *data;
+
+	if (!is_valid_pmic(id))
+		return 0;
+
+	data = &pmic_data[id];
+
+	if (mt6360_read_interface(MT6360_INDEX_PMIC, data->vsel_reg, &val, 0xff, 0) < 0)
+		return 0;
+
+	if (id == MT6360_PMIC_BUCK1 || id == MT6360_PMIC_BUCK2) {
+		voltage_uv = 300000 + val * 5000;
+	} else if (id == MT6360_PMIC_LDO6 || id == MT6360_PMIC_LDO7) {
+		voltage_uv = 500000 + 100000 * (val >> 4);
+		voltage_uv += MIN(val & 0xf, 0xa) * 10000;
+	}
+
+	return voltage_uv;
 }

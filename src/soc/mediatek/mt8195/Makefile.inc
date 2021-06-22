@@ -46,6 +46,7 @@ romstage-y += ../common/pmif_spmi.c pmif_spmi.c
 romstage-y += ../common/mt6315.c mt6315.c
 romstage-y += ../common/mt6359p.c mt6359p.c
 romstage-y += mt6691.c
+romstage-y += mt6360.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-y += ../common/auxadc.c
@@ -58,6 +59,7 @@ ramstage-y += ../common/i2c.c i2c.c
 ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mcupm.c
 ramstage-y += ../common/mmu_operations.c mmu_operations.c
+ramstage-y += mt6360.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += ../common/pll.c pll.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
@@ -69,7 +71,6 @@ ramstage-y += ../common/uart.c
 ramstage-y += ../common/ufs.c
 ramstage-y += ../common/usb.c usb.c
 ramstage-y += ../common/wdt.c
-ramstage-y += mt6360.c
 
 BL31_MAKEARGS += PLAT=mt8195
 

@@ -10,6 +10,7 @@
 #include <framebuffer_info.h>
 #include <gpio.h>
 #include <soc/ddp.h>
+#include <soc/dpm.h>
 #include <soc/dptx.h>
 #include <soc/gpio.h>
 #include <soc/i2c.h>
@@ -192,6 +193,9 @@ static void mainboard_init(struct device *dev)
 	configure_emmc();
 	configure_sdcard();
 	setup_usb_host();
+
+	if (dpm_init())
+		printk(BIOS_ERR, "dpm init failed, DVFS may not work\n");
 
 	if (spm_init())
 		printk(BIOS_ERR, "spm init failed, system suspend may not work\n");

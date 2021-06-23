@@ -17,6 +17,8 @@
 #define SPD_PART_OFF		128
 #define SPD_PART_LEN		18
 
+#define SPD_LEN			256
+
 static void print_spd_info(uint8_t spd[])
 {
 	const int spd_banks[8] = {  8, 16, 32, 64, -1, -1, -1, -1 };
@@ -67,12 +69,12 @@ static void print_spd_info(uint8_t spd[])
 	}
 }
 
-void fill_spd_for_index(uint8_t spd[], unsigned int spd_index)
+void copy_spd(struct pei_data *pei_data, struct spd_info *spdi)
 {
 	size_t spd_file_len;
 	uint8_t *spd_file = cbfs_map("spd.bin", &spd_file_len);
 
-	printk(BIOS_DEBUG, "SPD index %d\n", spd_index);
+	printk(BIOS_DEBUG, "SPD index %d\n", spdi->spd_index);
 
 	if (!spd_file)
 		die("SPD data not found.");
@@ -80,16 +82,21 @@ void fill_spd_for_index(uint8_t spd[], unsigned int spd_index)
 	if (spd_file_len < SPD_LEN)
 		die("Missing SPD data.");
 
-	if (spd_file_len < ((spd_index + 1) * SPD_LEN)) {
+	if (spd_file_len < ((spdi->spd_index + 1) * SPD_LEN)) {
 		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
-		spd_index = 0;
+		spdi->spd_index = 0;
 	}
 
-	memcpy(spd, spd_file + (spd_index * SPD_LEN), SPD_LEN);
+	uint8_t *const spd = spd_file + (spdi->spd_index * SPD_LEN);
 
 	/* Make sure a valid SPD was found */
 	if (spd[0] == 0)
 		die("Invalid SPD data.");
 
 	print_spd_info(spd);
+
+	for (size_t i = 0; i < ARRAY_SIZE(spdi->addresses); i++) {
+		if (spdi->addresses[i] == SPD_MEMORY_DOWN)
+			memcpy(pei_data->spd_data[i / 2][i % 2], spd, SPD_LEN);
+	}
 }

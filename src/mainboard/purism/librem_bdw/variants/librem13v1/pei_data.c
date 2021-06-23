@@ -3,10 +3,9 @@
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 
-void mainboard_fill_spd_data(struct pei_data *pei_data)
+void mb_get_spd_map(struct spd_info *spdi)
 {
-	/* One DIMM slot */
-	pei_data->spd_addresses[0] = 0xa0;
+	spdi->addresses[0] = 0x50;
 }
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)

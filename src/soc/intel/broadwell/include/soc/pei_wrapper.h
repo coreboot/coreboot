@@ -28,12 +28,17 @@ static inline void pei_data_usb3_port(struct pei_data *pei_data, int port,
 
 #define SPD_MEMORY_DOWN	0xff
 
-#define SPD_LEN		256
+struct spd_info {
+	uint8_t addresses[4];
+	unsigned int spd_index;
+};
+
+/* Mainboard callback to fill in the SPD addresses */
+void mb_get_spd_map(struct spd_info *spdi);
 
 void broadwell_fill_pei_data(struct pei_data *pei_data);
 void mainboard_fill_pei_data(struct pei_data *pei_data);
-void mainboard_fill_spd_data(struct pei_data *pei_data);
 
-void fill_spd_for_index(uint8_t spd[], unsigned int spd_index);
+void copy_spd(struct pei_data *pei_data, struct spd_info *spdi);
 
 #endif

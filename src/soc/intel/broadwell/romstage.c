@@ -54,6 +54,13 @@ void mainboard_romstage_entry(void)
 	/* Initialize GPIOs */
 	setup_pch_lp_gpios(mainboard_lp_gpio_map);
 
+	/* Print ME state before MRC */
+	intel_me_status();
+
+	/* Save ME HSIO version */
+	intel_me_hsio_version(&power_state->hsio_version,
+			      &power_state->hsio_checksum);
+
 	mainboard_fill_pei_data(&pei_data);
 	mainboard_fill_spd_data(&pei_data);
 
@@ -62,13 +69,6 @@ void mainboard_romstage_entry(void)
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	pei_data.boot_mode = power_state->prev_sleep_state;
-
-	/* Print ME state before MRC */
-	intel_me_status();
-
-	/* Save ME HSIO version */
-	intel_me_hsio_version(&power_state->hsio_version,
-			      &power_state->hsio_checksum);
 
 	/* Initialize RAM */
 	sdram_initialize(&pei_data);

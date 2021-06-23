@@ -28,5 +28,6 @@ static inline void pei_data_usb3_port(struct pei_data *pei_data, int port,
 
 void broadwell_fill_pei_data(struct pei_data *pei_data);
 void mainboard_fill_pei_data(struct pei_data *pei_data);
+void mainboard_fill_spd_data(struct pei_data *pei_data);
 
 #endif

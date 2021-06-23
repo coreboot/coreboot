@@ -3,9 +3,6 @@
 #ifndef _BROADWELL_ROMSTAGE_H_
 #define _BROADWELL_ROMSTAGE_H_
 
-#include <soc/pei_data.h>
-
-void mainboard_fill_spd_data(struct pei_data *pei_data);
 void mainboard_post_raminit(const int s3resume);
 
 struct chipset_power_state;

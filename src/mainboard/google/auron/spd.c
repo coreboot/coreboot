@@ -5,7 +5,7 @@
 #include <mainboard/google/auron/variant.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <soc/pei_data.h>
-#include <soc/romstage.h>
+#include <soc/pei_wrapper.h>
 #include <string.h>
 #include <types.h>
 

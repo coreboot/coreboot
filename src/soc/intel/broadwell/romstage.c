@@ -14,10 +14,6 @@
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <stdint.h>
 
-__weak void mainboard_fill_spd_data(struct pei_data *pei_data)
-{
-}
-
 __weak void mainboard_post_raminit(const int s3resume)
 {
 }

@@ -2,6 +2,7 @@
 
 #include <mainboard/google/auron/variant.h>
 #include <soc/pei_data.h>
+#include <soc/pei_wrapper.h>
 
 /* Copy SPD data for on-board memory */
 void mainboard_fill_spd_data(struct pei_data *pei_data)

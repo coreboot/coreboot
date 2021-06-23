@@ -371,10 +371,7 @@ static void fill_fsps_xhci_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_xdci_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
-	/* Enable xDCI controller if enabled in devicetree and allowed */
-	if (!xdci_can_enable())
-		devfn_disable(pci_root_bus(), PCH_DEVFN_USBOTG);
-	s_cfg->XdciEnable = is_devfn_enabled(PCH_DEVFN_USBOTG);
+	s_cfg->XdciEnable = xdci_can_enable(PCH_DEVFN_USBOTG);
 }
 
 static void fill_fsps_uart_params(FSP_S_CONFIG *s_cfg,

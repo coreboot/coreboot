@@ -8,9 +8,14 @@
 
 __weak void soc_xdci_init(struct device *dev) { /* no-op */ }
 
-int xdci_can_enable(void)
+bool xdci_can_enable(unsigned int xdci_devfn)
 {
-	return vboot_can_enable_udc();
+	/* Enable xDCI controller if enabled in devicetree and allowed */
+	if (!vboot_can_enable_udc()) {
+		devfn_disable(pci_root_bus(), xdci_devfn);
+		return false;
+	}
+	return is_devfn_enabled(xdci_devfn);
 }
 
 static struct device_operations usb_xdci_ops = {

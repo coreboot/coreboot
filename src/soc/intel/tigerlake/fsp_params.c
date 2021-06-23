@@ -462,10 +462,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 					config->tcss_ports[i].ocpin;
 	}
 
-	/* Enable xDCI controller if enabled in devicetree and allowed */
-	if (!xdci_can_enable())
-		devfn_disable(pci_root_bus(), PCH_DEVFN_USBOTG);
-	params->XdciEnable = is_devfn_enabled(PCH_DEVFN_USBOTG);
+	params->XdciEnable = xdci_can_enable(PCH_DEVFN_USBOTG);
 
 	/* PCH UART selection for FSP Debug */
 	params->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;

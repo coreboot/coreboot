@@ -35,5 +35,7 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	if (!((spd_index == 0b0000) || (spd_index == 0b0011) ||
 	    (spd_index == 0b1010))) {
 		memcpy(pei_data->spd_data[1][0], pei_data->spd_data[0][0], SPD_LEN);
+	} else {
+		pei_data->dimm_channel1_disabled = 3;
 	}
 }

@@ -21,6 +21,10 @@ struct soc_intel_broadwell_config {
 	/* IGD panel configuration */
 	struct i915_gpu_panel_config panel_cfg;
 
+	bool ec_present;
+
+	bool dq_pins_interleaved;
+
 	/*
 	 * Graphics CD Clock Frequency
 	 * 0 = 337.5MHz

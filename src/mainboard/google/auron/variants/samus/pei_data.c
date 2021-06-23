@@ -18,8 +18,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		{ 2, 0, 1, 3, 6, 4, 7, 5 },
 		{ 2, 1, 0, 3, 6, 5, 4, 7 } };
 
-	pei_data->ec_present = 1;
-
 	memcpy(pei_data->dq_map, dq_map, sizeof(dq_map));
 	memcpy(pei_data->dqs_map, dqs_map, sizeof(dqs_map));
 

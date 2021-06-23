@@ -12,6 +12,8 @@ chip soc/intel/broadwell
 	# Enable HDMI Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
+	register "ec_present" = "true"
+
 	device cpu_cluster 0 on
 		chip cpu/intel/haswell
 			register "s0ix_enable" = "1"

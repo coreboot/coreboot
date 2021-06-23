@@ -9,6 +9,8 @@ chip soc/intel/broadwell
 	# Enable DDI1 Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
+	register "ec_present" = "true"
+
 	register "panel_cfg" = "{
 		.up_delay_ms		= 200,
 		.down_delay_ms		=  50,

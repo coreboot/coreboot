@@ -5,8 +5,6 @@
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	pei_data->ec_present = 0;
-
 	/* P0: VP8 */
 	pei_data_usb2_port(pei_data, 0, 0x0064, 1, USB_OC_PIN_SKIP, USB_PORT_MINI_PCIE);
 	/* P1: Port 3, USB3 */

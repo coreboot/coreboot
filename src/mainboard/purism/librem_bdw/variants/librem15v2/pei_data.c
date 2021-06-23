@@ -5,8 +5,6 @@
 
 void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
-	pei_data->dq_pins_interleaved = 1;
-
 	/* One DIMM slot */
 	pei_data->spd_addresses[0] = 0xa0;
 	pei_data->spd_addresses[2] = 0xa4;
@@ -14,8 +12,6 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	pei_data->ec_present = 1;
-
 	/* P1: Right Side Port (USB2) */
 	pei_data_usb2_port(pei_data, 0, 0x0080, 1, USB_OC_PIN_SKIP, USB_PORT_BACK_PANEL);
 	/* P2: Right Side Port (USB2) */

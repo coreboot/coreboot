@@ -1,5 +1,7 @@
 chip soc/intel/broadwell
 
+	register "dq_pins_interleaved" = "true"
+
 	device domain 0 on
 		chip soc/intel/broadwell/pch
 			# Port 0 is HDD

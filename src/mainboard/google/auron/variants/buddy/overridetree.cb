@@ -9,6 +9,8 @@ chip soc/intel/broadwell
 		.backlight_pwm_hz	= 200,
 	}"
 
+	register "dq_pins_interleaved" = "true"
+
 	device cpu_cluster 0 on
 		chip cpu/intel/haswell
 			register "s0ix_enable" = "0"

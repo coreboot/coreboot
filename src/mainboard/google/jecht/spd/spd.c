@@ -10,5 +10,4 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	pei_data->spd_addresses[2] = 0xa4;
 	// Enable 2x refresh mode
 	pei_data->ddr_refresh_2x = 1;
-	pei_data->dq_pins_interleaved = 1;
 }

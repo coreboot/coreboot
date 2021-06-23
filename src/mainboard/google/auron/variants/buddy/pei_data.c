@@ -5,8 +5,6 @@
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	pei_data->ec_present = 1;
-
 	/* P0: Side USB3.0 port, USB3S1 */
 	pei_data_usb2_port(pei_data, 0, 0x0150, 1, 0, USB_PORT_INTERNAL);
 	/* P1: Rear USB3.0 port, USB3R1 */

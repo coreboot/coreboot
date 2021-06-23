@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <arch/mmio.h>
 
+#define MAX_DEV_ID 0xFFFF
+
 unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
 {
 	ivrs_ivhd_special_t *ivhd_ioapic = (ivrs_ivhd_special_t *)current;
@@ -230,7 +232,7 @@ static unsigned long acpi_fill_ivrs40(unsigned long current, acpi_ivrs_t *ivrs)
 
 	/* Now repeat all the device entries from type 10h */
 	current_backup = current;
-	current = ivhd_dev_range(current, PCI_DEVFN(1, 0), PCI_DEVFN(0x1f, 6), 0);
+	current = ivhd_dev_range(current, PCI_DEVFN(1, 0), MAX_DEV_ID, 0);
 	ivhd_40->length += (current - current_backup);
 	root_level = -1;
 	add_ivhd_device_entries(NULL, all_devices, 0, -1, &root_level,
@@ -304,7 +306,7 @@ static unsigned long acpi_fill_ivrs11(unsigned long current, acpi_ivrs_t *ivrs)
 
 	/* Now repeat all the device entries from type 10h */
 	current_backup = current;
-	current = ivhd_dev_range(current, PCI_DEVFN(1, 0), PCI_DEVFN(0x1f, 6), 0);
+	current = ivhd_dev_range(current, PCI_DEVFN(1, 0), MAX_DEV_ID, 0);
 	ivhd_11->length += (current - current_backup);
 	root_level = -1;
 	add_ivhd_device_entries(NULL, all_devices, 0, -1, &root_level,
@@ -442,11 +444,11 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 	}
 
 	/*
-	 * Add all possible PCI devices on bus 0 that can generate transactions
+	 * Add all possible PCI devices that can generate transactions
 	 * processed by IOMMU. Start with device 00:01.0
 	*/
 	current_backup = current;
-	current = ivhd_dev_range(current, PCI_DEVFN(1, 0), PCI_DEVFN(0x1f, 6), 0);
+	current = ivhd_dev_range(current, PCI_DEVFN(1, 0), MAX_DEV_ID, 0);
 	ivrs->ivhd.length += (current - current_backup);
 	root_level = -1;
 	add_ivhd_device_entries(NULL, all_devices, 0, -1, &root_level,

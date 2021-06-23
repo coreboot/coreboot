@@ -221,6 +221,23 @@ setup_car_mtrr:
 	is_bootguard_nem
 	jz	no_bootguard_car_continue
 
+	/*
+	 * With Bootguard some RO caching of the flash is already set up by
+	 * the ACM. It looks like in such a setup 'clear_car' will not properly fill
+	 * the cachelines. Fill all the CAR cachelines explicitly using sfence.
+	 * This assumes 64 bytes cachelines.
+	 */
+	movl	$CONFIG_DCACHE_RAM_BASE, %edi
+	movl	$CONFIG_DCACHE_RAM_SIZE, %ecx
+	shr	$0x06, %ecx
+	xor	%eax, %eax
+
+1:
+	movl	%eax, (%edi)
+	sfence
+	add	$64, %edi
+	loop	1b
+
 	clear_car
 
 	jmp	car_init_done

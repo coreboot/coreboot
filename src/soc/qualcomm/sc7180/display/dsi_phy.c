@@ -722,7 +722,7 @@ static enum cb_err enable_dsi_clk(void)
 		{.clk_type = MDSS_CLK_PCLK0, .clk_source = 1},
 		{.clk_type = MDSS_CLK_BYTE0, .clk_source = 1},
 		{.clk_type = MDSS_CLK_BYTE0_INTF, .clk_source = 1,
-				.clk_div = 2, .source_div = 2},
+				.clk_div = 1, .source_div = 2},
 	};
 
 	for (i = 0; i < ARRAY_SIZE(clks); i++) {

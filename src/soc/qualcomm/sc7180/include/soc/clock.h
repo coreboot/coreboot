@@ -28,8 +28,6 @@
 #define AOP_RESET_SHFT			0
 #define RCG_MODE_DUAL_EDGE		2
 
-#define WDOG_RESET_BIT_MASK		1
-
 #define SCALE_FREQ_SHFT			11
 
 struct sc7180_clock {
@@ -298,12 +296,12 @@ static struct sc7180_disp_cc *const mdss = (void *)DISP_CC_BASE;
 void clock_init(void);
 void clock_reset_aop(void);
 void clock_configure_qspi(uint32_t hz);
-int clock_reset_bcr(void *bcr_addr, bool reset);
+void clock_reset_bcr(void *bcr_addr, bool reset);
 void clock_configure_qup(int qup, uint32_t hz);
 void clock_enable_qup(int qup);
 void clock_configure_dfsr(int qup);
 int mdss_clock_configure(enum mdss_clock clk_type, uint32_t source,
-			uint32_t half_divider, uint32_t m, uint32_t n, uint32_t d);
+			uint32_t divider, uint32_t m, uint32_t n, uint32_t d);
 int mdss_clock_enable(enum mdss_clock clk_type);
 
 #endif	// __SOC_QUALCOMM_SC7180_CLOCK_H__

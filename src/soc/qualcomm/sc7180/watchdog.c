@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <soc/watchdog.h>
 #include <soc/clock.h>
+#include <soc/watchdog.h>
 #include <device/mmio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+#define WDOG_RESET_BIT_MASK		1
 
 void check_wdog(void)
 {

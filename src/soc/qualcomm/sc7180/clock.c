@@ -11,14 +11,6 @@
 
 #define DIV(div) (2 * div - 1)
 
-struct clock_config qup_cfg[] = {
-	{
-		.hz = SRC_XO_HZ,	/* 19.2KHz */
-		.src = SRC_XO_19_2MHZ,
-		.div = DIV(1),
-	}
-};
-
 struct clock_config qspi_core_cfg[] = {
 	{
 		.hz = SRC_XO_HZ,	/* 19.2KHz */
@@ -42,7 +34,7 @@ struct clock_config qspi_core_cfg[] = {
 	}
 };
 
-struct clock_config qup_wrap_cfg[] = {
+struct clock_config qupv3_wrap_cfg[] = {
 	{
 		.hz = SRC_XO_HZ,	/* 19.2KHz */
 		.src = SRC_XO_19_2MHZ,
@@ -124,8 +116,8 @@ static int clock_configure_gpll0(void)
 	return 0;
 }
 
-static int clock_configure_mnd(struct sc7180_clock *clk, uint32_t m, uint32_t n,
-				uint32_t d_2)
+static void clock_configure_mnd(struct sc7180_clock *clk, uint32_t m,
+				uint32_t n, uint32_t d_2)
 {
 	struct sc7180_mnd_clock *mnd = (struct sc7180_mnd_clock *)clk;
 	setbits32(&clk->rcg_cfg,
@@ -134,11 +126,9 @@ static int clock_configure_mnd(struct sc7180_clock *clk, uint32_t m, uint32_t n,
 	write32(&mnd->m, m & CLK_CTL_RCG_MND_BMSK);
 	write32(&mnd->n, ~(n-m) & CLK_CTL_RCG_MND_BMSK);
 	write32(&mnd->d_2, ~(d_2) & CLK_CTL_RCG_MND_BMSK);
-
-	return 0;
 }
 
-static int clock_configure(struct sc7180_clock *clk,
+static enum cb_err clock_configure(struct sc7180_clock *clk,
 				struct clock_config *clk_cfg,
 				uint32_t hz, uint32_t num_perfs)
 {
@@ -164,7 +154,7 @@ static int clock_configure(struct sc7180_clock *clk,
 	/* Commit config to RCG*/
 	setbits32(&clk->rcg_cmd, BIT(CLK_CTL_CMD_UPDATE_SHFT));
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 static bool clock_is_off(u32 *cbcr_addr)
@@ -172,35 +162,39 @@ static bool clock_is_off(u32 *cbcr_addr)
 	return (read32(cbcr_addr) & CLK_CTL_CBC_CLK_OFF_BMSK);
 }
 
-static int clock_enable_vote(void *cbcr_addr, void *vote_addr,
+static enum cb_err clock_enable_vote(void *cbcr_addr, void *vote_addr,
 				uint32_t vote_bit)
 {
 	/* Set clock vote bit */
 	setbits32(vote_addr, BIT(vote_bit));
 
 	/* Ensure clock is enabled */
-	while (clock_is_off(cbcr_addr))
-		;
+	if (!wait_us(100, clock_is_off(cbcr_addr)))
+		return CB_ERR;
 
-	return 0;
+	return CB_SUCCESS;
 }
 
-static int clock_enable(void *cbcr_addr)
+static enum cb_err clock_enable(void *cbcr_addr)
 {
 	/* Set clock enable bit */
 	setbits32(cbcr_addr, BIT(CLK_CTL_CBC_CLK_EN_SHFT));
 
-	/* Ensure clock is enabled */
-	while (clock_is_off(cbcr_addr))
-		;
+	if (!wait_us(100, clock_is_off(cbcr_addr)))
+		return CB_ERR;
 
-	return 0;
+	return CB_SUCCESS;
+}
+
+static void clock_reset_subsystem(u32 *misc, u32 shft)
+{
+	clrbits32(misc, BIT(shft));
 }
 
 void clock_reset_aop(void)
 {
 	/* Bring AOP out of RESET */
-	clrbits32(&aoss->aoss_cc_apcs_misc, BIT(AOP_RESET_SHFT));
+	clock_reset_subsystem(&aoss->aoss_cc_apcs_misc, AOP_RESET_SHFT);
 }
 
 void clock_configure_qspi(uint32_t hz)
@@ -212,7 +206,7 @@ void clock_configure_qspi(uint32_t hz)
 	clock_enable(&gcc->qspi_core_cbcr);
 }
 
-int clock_reset_bcr(void *bcr_addr, bool reset)
+void clock_reset_bcr(void *bcr_addr, bool reset)
 {
 	struct sc7180_bcr *bcr = bcr_addr;
 
@@ -220,11 +214,10 @@ int clock_reset_bcr(void *bcr_addr, bool reset)
 		setbits32(bcr, BIT(CLK_CTL_BCR_BLK_ARES_SHFT));
 	else
 		clrbits32(bcr, BIT(CLK_CTL_BCR_BLK_ARES_SHFT));
-
-	return 0;
 }
 
-void clock_configure_dfsr(int qup)
+static void clock_configure_dfsr_table(int qup, struct clock_config *clk_cfg,
+				uint32_t num_perfs)
 {
 	int idx;
 	int s = qup % QUP_WRAP1_S0;
@@ -236,38 +229,34 @@ void clock_configure_dfsr(int qup)
 					BIT(CLK_CTL_CMD_RCG_SW_CTL_SHFT),
 					BIT(CLK_CTL_CMD_DFSR_SHFT));
 
-	for (idx = 0; idx < ARRAY_SIZE(qup_wrap_cfg); idx++) {
-		reg_val = (qup_wrap_cfg[idx].src << CLK_CTL_CFG_SRC_SEL_SHFT) |
-			(qup_wrap_cfg[idx].div << CLK_CTL_CFG_SRC_DIV_SHFT);
+	for (idx = 0; idx < num_perfs; idx++) {
+		reg_val = (clk_cfg[idx].src << CLK_CTL_CFG_SRC_SEL_SHFT) |
+			(clk_cfg[idx].div << CLK_CTL_CFG_SRC_DIV_SHFT);
 
 		write32(&qup_clk->dfsr_clk.perf_dfsr[idx], reg_val);
 
-		if (qup_wrap_cfg[idx].m == 0)
+		if (clk_cfg[idx].m == 0)
 			continue;
 
 		setbits32(&qup_clk->dfsr_clk.perf_dfsr[idx],
 				RCG_MODE_DUAL_EDGE << CLK_CTL_CFG_MODE_SHFT);
 
-		reg_val = qup_wrap_cfg[idx].m & CLK_CTL_RCG_MND_BMSK;
+		reg_val = clk_cfg[idx].m & CLK_CTL_RCG_MND_BMSK;
 		write32(&qup_clk->dfsr_clk.perf_m_dfsr[idx], reg_val);
 
-		reg_val = ~(qup_wrap_cfg[idx].n - qup_wrap_cfg[idx].m)
+		reg_val = ~(clk_cfg[idx].n - clk_cfg[idx].m)
 				& CLK_CTL_RCG_MND_BMSK;
 		write32(&qup_clk->dfsr_clk.perf_n_dfsr[idx], reg_val);
 
-		reg_val = ~(qup_wrap_cfg[idx].d_2) & CLK_CTL_RCG_MND_BMSK;
+		reg_val = ~(clk_cfg[idx].d_2) & CLK_CTL_RCG_MND_BMSK;
 		write32(&qup_clk->dfsr_clk.perf_d_dfsr[idx], reg_val);
 	}
 }
 
-void clock_configure_qup(int qup, uint32_t hz)
+void clock_configure_dfsr(int qup)
 {
-	int s = qup % QUP_WRAP1_S0;
-	struct sc7180_qupv3_clock *qup_clk = qup < QUP_WRAP1_S0 ?
-				&gcc->qup_wrap0_s[s] : &gcc->qup_wrap1_s[s];
-
-	clock_configure(&qup_clk->mnd_clk.clock, qup_cfg, hz,
-							ARRAY_SIZE(qup_cfg));
+	clock_configure_dfsr_table(qup, qupv3_wrap_cfg,
+			ARRAY_SIZE(qupv3_wrap_cfg));
 }
 
 void clock_enable_qup(int qup)
@@ -282,8 +271,27 @@ void clock_enable_qup(int qup)
 							clk_en_off);
 }
 
-static int pll_init_and_set(struct sc7180_apss_clock *apss, u32 l_val)
+static enum cb_err agera_pll_enable(u32 *mode, u32 *opmode)
 {
+	setbits32(mode, BIT(BYPASSNL_SHFT));
+	udelay(5);
+	setbits32(mode, BIT(RESET_SHFT));
+
+	setbits32(opmode, RUN_MODE);
+
+	if (!wait_us(100, read32(mode) & LOCK_DET_BMSK)) {
+		printk(BIOS_ERR, "ERROR: PLL did not lock!\n");
+		return CB_ERR;
+	}
+
+	setbits32(mode, BIT(OUTCTRL_SHFT));
+
+	return CB_SUCCESS;
+}
+
+static enum cb_err pll_init_and_set(struct sc7180_apss_clock *apss, u32 l_val)
+{
+	int ret;
 	u32 gfmux_val;
 
 	/* Configure and Enable PLL */
@@ -299,24 +307,15 @@ static int pll_init_and_set(struct sc7180_apss_clock *apss, u32 l_val)
 	write32(&apss->pll.config_ctl_u1, 0x0);
 	write32(&apss->pll.l_val, l_val);
 
-	setbits32(&apss->pll.mode, BIT(BYPASSNL_SHFT));
-	udelay(5);
-	setbits32(&apss->pll.mode, BIT(RESET_SHFT));
-
-	setbits32(&apss->pll.opmode, RUN_MODE);
-
-	if (!wait_us(100, read32(&apss->pll.mode) & LOCK_DET_BMSK)) {
-		printk(BIOS_ERR, "ERROR: PLL did not lock!\n");
-		return -1;
-	}
-
-	setbits32(&apss->pll.mode, BIT(OUTCTRL_SHFT));
+	ret = agera_pll_enable(&apss->pll.mode, &apss->pll.opmode);
+	if (ret != CB_SUCCESS)
+		return CB_ERR;
 
 	gfmux_val = read32(&apss->cfg_gfmux) & ~GFMUX_SRC_SEL_BMSK;
 	gfmux_val |= APCS_SRC_EARLY;
 	write32(&apss->cfg_gfmux, gfmux_val);
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 static void speed_up_boot_cpu(void)
@@ -330,25 +329,28 @@ static void speed_up_boot_cpu(void)
 		printk(BIOS_DEBUG, "L3 Frequency bumped to 1.2096(GHz)\n");
 }
 
-int mdss_clock_configure(enum mdss_clock clk_type, uint32_t source,
-				uint32_t half_divider, uint32_t m,
+enum cb_err mdss_clock_configure(enum mdss_clock clk_type, uint32_t source,
+				uint32_t divider, uint32_t m,
 				uint32_t n, uint32_t d_2)
 {
 	struct clock_config mdss_clk_cfg;
 	uint32_t reg_val;
 
 	if (clk_type >= MDSS_CLK_COUNT)
-		return -1;
+		return CB_ERR;
 
 	/* Initialize it with received arguments */
 	mdss_clk_cfg.hz = 0;
 	mdss_clk_cfg.src = source;
 
 	/*
+	 * Update half_divider passed from display, this is to accommodate
+	 * the transition to common clock driver.
+	 *
 	 * client is expected to provide 2n divider value,
 	 * as the divider value in register is in form "2n-1"
 	 */
-	mdss_clk_cfg.div = half_divider ? (half_divider - 1) : 0;
+	mdss_clk_cfg.div = divider ? ((divider * 2) - 1) : 0;
 	mdss_clk_cfg.m = m;
 	mdss_clk_cfg.n = n;
 	mdss_clk_cfg.d_2 = d_2;
@@ -368,7 +370,7 @@ int mdss_clock_configure(enum mdss_clock clk_type, uint32_t source,
 	setbits32(&mdss_clock[clk_type]->clock.rcg_cmd,
 						BIT(CLK_CTL_CMD_UPDATE_SHFT));
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 int mdss_clock_enable(enum mdss_clock clk_type)

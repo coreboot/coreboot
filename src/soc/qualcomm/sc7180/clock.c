@@ -164,12 +164,12 @@ static enum cb_err pll_init_and_set(struct sc7180_apss_clock *apss, u32 l_val)
 	pll_cfg.l_val = l_val;
 
 	ret = clock_configure_enable_gpll(&pll_cfg, false, 0);
-	if (ret < 0)
+	if (ret != CB_SUCCESS)
 		return CB_ERR;
 
 	pll_cfg.reg_mode = &apss->pll.mode;
 	ret = agera_pll_enable(&pll_cfg);
-	if (ret < 0)
+	if (ret != CB_SUCCESS)
 		return CB_ERR;
 
 	gfmux_val = read32(&apss->cfg_gfmux) & ~GFMUX_SRC_SEL_BMSK;
@@ -224,7 +224,7 @@ int mdss_clock_enable(enum mdss_clock clk_type)
 	if (clk_type >= MDSS_CLK_COUNT)
 		return CB_ERR;
 
-	/* Enable clock*/
+	/* Enable clock */
 	return clock_enable(mdss_cbcr[clk_type]);
 }
 

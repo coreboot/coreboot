@@ -255,7 +255,6 @@ void clock_configure_qspi(uint32_t hz)
 	clock_enable(&gcc->qspi_core_cbcr);
 }
 
-
 void clock_enable_qup(int qup)
 {
 	struct qupv3_clock *qup_clk;
@@ -412,7 +411,7 @@ enum cb_err mdss_clock_enable(enum clk_mdss clk_type)
 	if (clk_type >= MDSS_CLK_COUNT)
 		return CB_ERR;
 
-	/* Enable clock*/
+	/* Enable clock */
 	return clock_enable(mdss_cbcr[clk_type]);
 }
 

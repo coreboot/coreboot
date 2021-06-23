@@ -58,7 +58,7 @@ static const struct pad_config gpio_table[] = {
 	/* B2  : VRALERT# ==> M2_SSD_PLA_L */
 	PAD_CFG_GPO(GPP_B2, 1, PLTRST),
 	/* B3  : PROC_GP2 ==> SAR2_INT_L */
-	PAD_CFG_GPI_INT(GPP_B3, NONE, PLTRST, LEVEL),
+	PAD_CFG_GPI_APIC(GPP_B3, NONE, PLTRST, LEVEL, NONE),
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 	/* B5  : ISH_I2C0_SDA ==> PCH_I2C_MISC_SDA */

@@ -177,6 +177,17 @@ static void setup_sdram_meminfo(struct pei_data *pei_data)
 	}
 }
 
+/*
+ * 0 = leave channel enabled
+ * 1 = disable dimm 0 on channel
+ * 2 = disable dimm 1 on channel
+ * 3 = disable dimm 0+1 on channel
+ */
+static int make_channel_disabled_mask(const struct pei_data *pd, int ch)
+{
+	return (!pd->spd_addresses[ch + ch] << 0) | (!pd->spd_addresses[ch + ch + 1] << 1);
+}
+
 void perform_raminit(const struct chipset_power_state *const power_state)
 {
 	const int s3resume = power_state->prev_sleep_state == ACPI_S3;
@@ -185,6 +196,15 @@ void perform_raminit(const struct chipset_power_state *const power_state)
 
 	mainboard_fill_pei_data(&pei_data);
 	mainboard_fill_spd_data(&pei_data);
+
+	/* Calculate unimplemented DIMM slots for each channel */
+	pei_data.dimm_channel0_disabled = make_channel_disabled_mask(&pei_data, 0);
+	pei_data.dimm_channel1_disabled = make_channel_disabled_mask(&pei_data, 1);
+
+	for (size_t i = 0; i < ARRAY_SIZE(pei_data.spd_addresses); i++) {
+		const uint8_t addr = pei_data.spd_addresses[i];
+		pei_data.spd_addresses[i] = addr == SPD_MEMORY_DOWN ? 0 : addr;
+	}
 
 	post_code(0x32);
 

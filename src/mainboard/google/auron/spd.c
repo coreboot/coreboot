@@ -104,9 +104,10 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	const unsigned int spd_index = variant_get_spd_index();
 
 	fill_spd_for_index(pei_data->spd_data[0][0], spd_index);
+	pei_data->spd_addresses[0] = SPD_MEMORY_DOWN;
 
-	if (variant_is_dual_channel(spd_index))
+	if (variant_is_dual_channel(spd_index)) {
 		memcpy(pei_data->spd_data[1][0], pei_data->spd_data[0][0], SPD_LEN);
-	else
-		pei_data->dimm_channel1_disabled = 3;
+		pei_data->spd_addresses[2] = SPD_MEMORY_DOWN;
+	}
 }

@@ -8,8 +8,6 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
 	pei_data->spd_addresses[0] = 0xa0;
 	pei_data->spd_addresses[2] = 0xa4;
-	pei_data->dimm_channel0_disabled = 2;
-	pei_data->dimm_channel1_disabled = 2;
 	// Enable 2x refresh mode
 	pei_data->ddr_refresh_2x = 1;
 	pei_data->dq_pins_interleaved = 1;

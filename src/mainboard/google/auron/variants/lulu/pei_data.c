@@ -7,10 +7,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
 	pei_data->ec_present = 1;
 
-	/* One installed DIMM per channel -- can be changed by SPD init */
-	pei_data->dimm_channel0_disabled = 2;
-	pei_data->dimm_channel1_disabled = 2;
-
 	/* P0: Port B, CN01 (IOBoard) */
 	pei_data_usb2_port(pei_data, 0, 0x0150, 1, 0, USB_PORT_BACK_PANEL);
 	/* P1: Port A, CN01 */

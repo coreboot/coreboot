@@ -20,10 +20,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 
 	pei_data->ec_present = 1;
 
-	/* One installed DIMM per channel */
-	pei_data->dimm_channel0_disabled = 2;
-	pei_data->dimm_channel1_disabled = 2;
-
 	memcpy(pei_data->dq_map, dq_map, sizeof(dq_map));
 	memcpy(pei_data->dqs_map, dqs_map, sizeof(dqs_map));
 

@@ -6,9 +6,6 @@
 void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
 	/* One installed DIMM per channel */
-	pei_data->dimm_channel0_disabled = 2;
-	pei_data->dimm_channel1_disabled = 2;
-
 	pei_data->spd_addresses[0] = 0xa2;
 	pei_data->spd_addresses[2] = 0xa2;
 }

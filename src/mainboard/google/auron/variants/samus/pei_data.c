@@ -1,26 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
-#include <string.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	/* DQ byte map for Samus board */
-	const u8 dq_map[2][6][2] = {
-		{ { 0x0F, 0xF0 }, { 0x00, 0xF0 }, { 0x0F, 0xF0 },
-		  { 0x0F, 0x00 }, { 0xFF, 0x00 }, { 0xFF, 0x00 } },
-		{ { 0x0F, 0xF0 }, { 0x00, 0xF0 }, { 0x0F, 0xF0 },
-		  { 0x0F, 0x00 }, { 0xFF, 0x00 }, { 0xFF, 0x00 } } };
-	/* DQS CPU<>DRAM map for Samus board */
-	const u8 dqs_map[2][8] = {
-		{ 2, 0, 1, 3, 6, 4, 7, 5 },
-		{ 2, 1, 0, 3, 6, 5, 4, 7 } };
-
-	memcpy(pei_data->dq_map, dq_map, sizeof(dq_map));
-	memcpy(pei_data->dqs_map, dqs_map, sizeof(dqs_map));
-
 	/* P0: HOST PORT */
 	pei_data_usb2_port(pei_data, 0, 0x0080, 1, 0, USB_PORT_BACK_PANEL);
 	/* P1: HOST PORT */

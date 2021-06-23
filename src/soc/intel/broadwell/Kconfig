@@ -13,6 +13,12 @@ config SOC_SPECIFIC_OPTIONS
 	select MRC_SETTINGS_PROTECT
 	select REG_SCRIPT
 
+config BROADWELL_LPDDR3
+	bool
+	help
+	  Selected by mainboards using LPDDR3 DRAM to supply mainboard-specific
+	  LPDDR3 DQ and DQS CPU-to-DRAM mapping info needed to perform raminit.
+
 config ECAM_MMCONF_BASE_ADDRESS
 	default 0xf0000000
 

@@ -33,8 +33,16 @@ struct spd_info {
 	unsigned int spd_index;
 };
 
+struct lpddr3_dq_dqs_map {
+	uint8_t dq[2][6][2];
+	uint8_t dqs[2][8];
+};
+
 /* Mainboard callback to fill in the SPD addresses */
 void mb_get_spd_map(struct spd_info *spdi);
+
+/* Mainboard callback to retrieve the LPDDR3-specific DQ/DQS mapping */
+const struct lpddr3_dq_dqs_map *mb_get_lpddr3_dq_dqs_map(void);
 
 void broadwell_fill_pei_data(struct pei_data *pei_data);
 void mainboard_fill_pei_data(struct pei_data *pei_data);

@@ -7,9 +7,9 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/mmio.h>
-#include <soc/intel/common/hda_verb.h>
 #include <soc/pch.h>
 #include <soc/rcba.h>
+#include <southbridge/intel/lynxpoint/hda_verb.h>
 
 static void codecs_init(u8 *base, u32 codec_mask)
 {

@@ -107,6 +107,8 @@ enum timestamp_id {
 	/* 940-950 reserved for vendorcode extensions (940-950: Intel ME) */
 	TS_ME_INFORM_DRAM_WAIT = 940,
 	TS_ME_INFORM_DRAM_DONE = 941,
+	TS_ME_BEFORE_END_OF_POST = 942,
+	TS_ME_AFTER_END_OF_POST = 943,
 
 	/* 950+ reserved for vendorcode extensions (950-999: intel/fsp) */
 	TS_FSP_MEMORY_INIT_START = 950,
@@ -255,6 +257,8 @@ static const struct timestamp_id_to_name {
 	/* Intel ME related timestamps */
 	{ TS_ME_INFORM_DRAM_WAIT,	"waiting for ME acknowledgement of raminit"},
 	{ TS_ME_INFORM_DRAM_DONE,	"finished waiting for ME response"},
+	{ TS_ME_BEFORE_END_OF_POST,	"before sending EOP to ME"},
+	{ TS_ME_AFTER_END_OF_POST,	"after sending EOP to ME"},
 
 	/* FSP related timestamps */
 	{ TS_FSP_MEMORY_INIT_START, "calling FspMemoryInit" },

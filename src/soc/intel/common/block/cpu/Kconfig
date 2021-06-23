@@ -107,3 +107,9 @@ config CPU_SUPPORTS_PM_TIMER_EMULATION
 	  Select this if the SoC's ucode supports PM ACPI timer emulation (Common
 	  timer Copy), which is required to be able to disable the TCO PM ACPI
 	  timer for power saving.
+
+config SOC_INTEL_NO_BOOTGUARD_MSR
+	bool
+	help
+	  Select this on platforms that do not support Bootguard related MSRs
+	  0x139, MSR_BC_PBEC and 0x13A, MSR_BOOT_GUARD_SACM_INFO.

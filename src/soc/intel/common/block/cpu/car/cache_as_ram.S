@@ -66,9 +66,13 @@
  * Returns %eax and sets/unsets zero flag
  */
 .macro is_bootguard_nem
+#if CONFIG(SOC_INTEL_NO_BOOTGUARD_MSR)
+	xorl	%eax, %eax
+#else
 	movl	$MSR_BOOT_GUARD_SACM_INFO, %ecx
 	rdmsr
 	andl	$B_BOOT_GUARD_SACM_INFO_NEM_ENABLED, %eax
+#endif
 .endm
 
 .global bootblock_pre_c_entry

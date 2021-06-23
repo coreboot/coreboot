@@ -40,7 +40,7 @@ static void configure_host_mode_port0(struct device *dev)
 	 * enabled. If it's disabled assume the switch was already done
 	 * in FSP.
 	 */
-	if (!dev->enabled || !xdci_can_enable())
+	if (!dev->enabled)
 		return;
 
 	printk(BIOS_INFO, "Putting port 0 into host mode.\n");

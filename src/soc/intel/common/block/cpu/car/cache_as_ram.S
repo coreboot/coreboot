@@ -59,6 +59,18 @@
 	rep	stosl
 .endm
 
+/*
+ * macro: is_bootguard_nem
+ * Checks if the Bootguard ACM has enabled non eviction mode
+ * Clobbers %eax, %ecx, %edx
+ * Returns %eax and sets/unsets zero flag
+ */
+.macro is_bootguard_nem
+	movl	$MSR_BOOT_GUARD_SACM_INFO, %ecx
+	rdmsr
+	andl	$B_BOOT_GUARD_SACM_INFO_NEM_ENABLED, %eax
+.endm
+
 .global bootblock_pre_c_entry
 bootblock_pre_c_entry:
 
@@ -66,9 +78,7 @@ bootblock_pre_c_entry:
 
 /* Bootguard sets up its own CAR and needs separate handling */
 check_boot_guard:
-	movl	$MSR_BOOT_GUARD_SACM_INFO, %ecx
-	rdmsr
-	andl	$B_BOOT_GUARD_SACM_INFO_NEM_ENABLED, %eax
+	is_bootguard_nem
 	jz	no_bootguard
 
 	/* Disable PBE timer */
@@ -204,9 +214,7 @@ setup_car_mtrr:
 #endif
 	post_code(0x25)
 
-	movl	$MSR_BOOT_GUARD_SACM_INFO, %ecx
-	rdmsr
-	andl	$B_BOOT_GUARD_SACM_INFO_NEM_ENABLED, %eax
+	is_bootguard_nem
 	jz	no_bootguard_car_continue
 
 	clear_car

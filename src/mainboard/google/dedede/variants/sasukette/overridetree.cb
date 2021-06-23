@@ -75,7 +75,7 @@ chip soc/intel/jasperlake
 	}" # Camera
 
 	register "power_limits_config" = "{
-			.tdp_pl1_override = 7,
+			.tdp_pl1_override = 6,
 			.tdp_pl2_override = 20,
 	}"
 
@@ -87,8 +87,8 @@ chip soc/intel/jasperlake
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 52, 5000),
-					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 54, 5000),
-					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_2, 54, 5000),}"
+					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 52, 5000),
+					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_2, 50, 5000),}"
 				## Critical Policy
 				register "policies.critical" = "{
 					[0] = DPTF_CRITICAL(CPU,          105, SHUTDOWN),
@@ -96,7 +96,7 @@ chip soc/intel/jasperlake
 					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 90, SHUTDOWN),
 					[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 90, SHUTDOWN),}"
 				register "controls.power_limits.pl1" = "{
-						.min_power = 5000,
+						.min_power = 3500,
 						.max_power = 7000,
 						.time_window_min = 28 * MSECS_PER_SEC,
 						.time_window_max = 28 * MSECS_PER_SEC,

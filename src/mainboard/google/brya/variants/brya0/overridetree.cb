@@ -23,6 +23,10 @@ fw_config
 		option LTE_USB			1
 		option LTE_PCIE			2
 	end
+	field UFC 13 14
+		option UFC_USB			0
+		option UFC_MIPI_5675		1
+	end
 end
 
 chip soc/intel/alderlake

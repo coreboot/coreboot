@@ -18,7 +18,5 @@ void report_platform_info(void);
 
 void systemagent_early_init(void);
 void pch_early_init(void);
-void pch_uart_init(void);
-void intel_early_me_status(void);
 
 #endif

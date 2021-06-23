@@ -6,7 +6,7 @@
 #include <fsp/api.h>
 #include <stddef.h>
 
-void mainboard_memory_init_params(FSPM_UPD *mupd);
+void mainboard_memory_init_params(FSP_M_CONFIG *m_cfg);
 void systemagent_early_init(void);
 
 /* Board type */

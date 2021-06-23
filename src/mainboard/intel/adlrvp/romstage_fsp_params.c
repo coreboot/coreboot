@@ -24,7 +24,7 @@ static size_t get_spd_index(void)
 	return spd_index;
 }
 
-void mainboard_memory_init_params(FSPM_UPD *mupd)
+void mainboard_memory_init_params(FSP_M_CONFIG *m_cfg)
 {
 	const struct mb_cfg *mem_config = variant_memory_params();
 	int board_id = get_board_id();
@@ -54,7 +54,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	case ADL_P_DDR4_2:
 	case ADL_P_DDR5_1:
 	case ADL_P_DDR5_2:
-		memcfg_init(&mupd->FspmConfig, mem_config, &ddr4_ddr5_spd_info, half_populated);
+		memcfg_init(m_cfg, mem_config, &ddr4_ddr5_spd_info, half_populated);
 		break;
 	case ADL_P_LP4_1:
 	case ADL_P_LP4_2:
@@ -62,7 +62,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	case ADL_P_LP5_2:
 	case ADL_M_LP4:
 	case ADL_M_LP5:
-		memcfg_init(&mupd->FspmConfig, mem_config, &lp4_lp5_spd_info, half_populated);
+		memcfg_init(m_cfg, mem_config, &lp4_lp5_spd_info, half_populated);
 		break;
 	default:
 		die("Unknown board id = 0x%x\n", board_id);

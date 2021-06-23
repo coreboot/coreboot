@@ -6,7 +6,7 @@
 #include <gpio.h>
 #include <soc/romstage.h>
 
-void mainboard_memory_init_params(FSPM_UPD *memupd)
+void mainboard_memory_init_params(FSP_M_CONFIG *m_cfg)
 {
 	const struct mb_cfg *mem_config = variant_memory_params();
 	bool half_populated = variant_is_half_populated();
@@ -16,5 +16,5 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 		.cbfs_index = variant_memory_sku(),
 	};
 
-	memcfg_init(&memupd->FspmConfig, mem_config, &spd_info, half_populated);
+	memcfg_init(m_cfg, mem_config, &spd_info, half_populated);
 }

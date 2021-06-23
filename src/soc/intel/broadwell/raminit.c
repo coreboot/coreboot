@@ -15,8 +15,9 @@
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <soc/systemagent.h>
+#include <timestamp.h>
 
-void save_mrc_data(struct pei_data *pei_data)
+static void save_mrc_data(struct pei_data *pei_data)
 {
 	printk(BIOS_DEBUG, "MRC data at %p %d bytes\n", pei_data->data_to_save,
 	       pei_data->data_to_save_size);
@@ -80,7 +81,7 @@ static void report_memory_config(void)
 /*
  * Find PEI executable in coreboot filesystem and execute it.
  */
-void sdram_initialize(struct pei_data *pei_data)
+static void sdram_initialize(struct pei_data *pei_data)
 {
 	size_t mrc_size;
 	pei_wrapper_entry_t entry;
@@ -137,7 +138,7 @@ void sdram_initialize(struct pei_data *pei_data)
 	report_memory_config();
 }
 
-void setup_sdram_meminfo(struct pei_data *pei_data)
+static void setup_sdram_meminfo(struct pei_data *pei_data)
 {
 	struct memory_info *mem_info;
 
@@ -174,4 +175,36 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 		dimm->mod_type = pei_dimm->mod_type;
 		dimm->bus_width = pei_dimm->bus_width;
 	}
+}
+
+void perform_raminit(const struct chipset_power_state *const power_state)
+{
+	const int s3resume = power_state->prev_sleep_state == ACPI_S3;
+
+	struct pei_data pei_data = { 0 };
+
+	mainboard_fill_pei_data(&pei_data);
+	mainboard_fill_spd_data(&pei_data);
+
+	post_code(0x32);
+
+	timestamp_add_now(TS_BEFORE_INITRAM);
+
+	pei_data.boot_mode = power_state->prev_sleep_state;
+
+	/* Initialize RAM */
+	sdram_initialize(&pei_data);
+
+	timestamp_add_now(TS_AFTER_INITRAM);
+
+	int cbmem_was_initted = !cbmem_recovery(s3resume);
+	if (s3resume && !cbmem_was_initted) {
+		/* Failed S3 resume, reset to come up cleanly */
+		printk(BIOS_CRIT, "Failed to recover CBMEM in S3 resume.\n");
+		system_reset();
+	}
+
+	save_mrc_data(&pei_data);
+
+	setup_sdram_meminfo(&pei_data);
 }

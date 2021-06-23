@@ -8,13 +8,11 @@
 void mainboard_fill_spd_data(struct pei_data *pei_data);
 void mainboard_post_raminit(const int s3resume);
 
-void sdram_initialize(struct pei_data *pei_data);
-void save_mrc_data(struct pei_data *pei_data);
-void setup_sdram_meminfo(struct pei_data *pei_data);
-
 struct chipset_power_state;
 struct chipset_power_state *fill_power_state(void);
 void report_platform_info(void);
+
+void perform_raminit(const struct chipset_power_state *const power_state);
 
 void systemagent_early_init(void);
 void pch_early_init(void);

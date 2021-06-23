@@ -405,13 +405,12 @@ void generate_cpu_entries(const struct device *device)
 
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
-	struct device *const igfx_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	const u32 gfx_vtbar = MCHBAR32(GFXVTBAR) & ~0xfff;
 	const bool gfxvten = MCHBAR32(GFXVTBAR) & 1;
 
 	/* iGFX has to be enabled, GFXVTBAR set and in 32-bit space. */
 	const bool emit_igd =
-			igfx_dev && igfx_dev->enabled &&
+			is_devfn_enabled(SA_DEVFN_IGD) &&
 			gfx_vtbar && gfxvten &&
 			!MCHBAR32(GFXVTBAR + 4);
 

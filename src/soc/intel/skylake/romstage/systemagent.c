@@ -12,8 +12,6 @@
 
 static void systemagent_vtd_init(void)
 {
-	const struct device *const igd_dev = pcidev_path_on_root(SA_DEVFN_IGD);
-
 	const bool vtd_capable =
 		!(pci_read_config32(SA_DEV_ROOT, CAPID0_A) & VTD_DISABLE);
 	if (!vtd_capable)
@@ -23,7 +21,7 @@ static void systemagent_vtd_init(void)
 	pci_write_config16(PCH_DEV_P2SB, PCH_P2SB_HBDF, V_DEFAULT_HBDF);
 	pci_write_config16(PCH_DEV_P2SB, PCH_P2SB_IBDF, V_DEFAULT_IBDF);
 
-	if (igd_dev && igd_dev->enabled)
+	if (is_devfn_enabled(SA_DEVFN_IGD))
 		sa_set_mch_bar(&soc_gfxvt_mmio_descriptor, 1);
 
 	sa_set_mch_bar(&soc_vtvc0_mmio_descriptor, 1);

@@ -28,8 +28,6 @@ bool soc_is_vtd_capable(void)
  */
 void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 {
-	struct device *const igd_dev = pcidev_path_on_root(SA_DEVFN_IGD);
-
 	static const struct sa_mmio_descriptor soc_fixed_resources[] = {
 		{ PCIEXBAR, CONFIG_MMCONF_BASE_ADDRESS, CONFIG_MMCONF_LENGTH,
 				"PCIEXBAR" },
@@ -44,7 +42,7 @@ void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 			ARRAY_SIZE(soc_fixed_resources));
 
 	if (soc_is_vtd_capable()) {
-		if (igd_dev && igd_dev->enabled)
+		if (is_devfn_enabled(SA_DEVFN_IGD))
 			sa_add_fixed_mmio_resources(dev, index,
 					&soc_gfxvt_mmio_descriptor, 1);
 

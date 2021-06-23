@@ -11,8 +11,7 @@ int variant_smbios_data(struct device *dev, int *handle,
 			unsigned long *current);
 void lan_init(void);
 
-void fill_spd_for_index(uint8_t spd[], unsigned int index);
-
-#define SPD_LEN			256
+unsigned int variant_get_spd_index(void);
+bool variant_is_dual_channel(const unsigned int spd_index);
 
 #endif

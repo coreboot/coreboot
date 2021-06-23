@@ -19,6 +19,8 @@
 #define SPD_PART_OFF		128
 #define SPD_PART_LEN		18
 
+#define SPD_LEN			256
+
 static void mainboard_print_spd_info(uint8_t spd[])
 {
 	const int spd_banks[8] = {  8, 16, 32, 64, -1, -1, -1, -1 };
@@ -69,7 +71,7 @@ static void mainboard_print_spd_info(uint8_t spd[])
 	}
 }
 
-void fill_spd_for_index(uint8_t spd[], unsigned int spd_index)
+static void fill_spd_for_index(uint8_t spd[], unsigned int spd_index)
 {
 	size_t spd_file_len;
 	uint8_t *spd_file = cbfs_map("spd.bin", &spd_file_len);
@@ -94,4 +96,17 @@ void fill_spd_for_index(uint8_t spd[], unsigned int spd_index)
 		die("Invalid SPD data.");
 
 	mainboard_print_spd_info(spd);
+}
+
+/* Copy SPD data for on-board memory */
+void mainboard_fill_spd_data(struct pei_data *pei_data)
+{
+	const unsigned int spd_index = variant_get_spd_index();
+
+	fill_spd_for_index(pei_data->spd_data[0][0], spd_index);
+
+	if (variant_is_dual_channel(spd_index))
+		memcpy(pei_data->spd_data[1][0], pei_data->spd_data[0][0], SPD_LEN);
+	else
+		pei_data->dimm_channel1_disabled = 3;
 }

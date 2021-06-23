@@ -3,13 +3,16 @@
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 
-void mainboard_fill_pei_data(struct pei_data *pei_data)
+void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
-	pei_data->ec_present = 1;
-
 	/* One DIMM slot */
 	pei_data->dimm_channel1_disabled = 3;
 	pei_data->spd_addresses[0] = 0xa0;
+}
+
+void mainboard_fill_pei_data(struct pei_data *pei_data)
+{
+	pei_data->ec_present = 1;
 
 	/* P1: Left Side Port (USB2 only) */
 	pei_data_usb2_port(pei_data, 0, 0x0080, 1, USB_OC_PIN_SKIP,

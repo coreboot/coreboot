@@ -3,7 +3,7 @@
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
 
-void mainboard_fill_pei_data(struct pei_data *pei_data)
+void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
 	/* One installed DIMM per channel */
 	pei_data->dimm_channel0_disabled = 2;
@@ -11,7 +11,10 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 
 	pei_data->spd_addresses[0] = 0xa2;
 	pei_data->spd_addresses[2] = 0xa2;
+}
 
+void mainboard_fill_pei_data(struct pei_data *pei_data)
+{
 	pei_data_usb2_port(pei_data, 0, 0x40, 1, USB_OC_PIN_SKIP,
 			   USB_PORT_FRONT_PANEL);
 	pei_data_usb2_port(pei_data, 1, 0x40, 1, USB_OC_PIN_SKIP,

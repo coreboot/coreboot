@@ -177,10 +177,6 @@ static void setup_sdram_meminfo(struct pei_data *pei_data)
 	}
 }
 
-__weak void mainboard_fill_spd_data(struct pei_data *pei_data)
-{
-}
-
 void perform_raminit(const struct chipset_power_state *const power_state)
 {
 	const int s3resume = power_state->prev_sleep_state == ACPI_S3;

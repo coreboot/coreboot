@@ -713,6 +713,27 @@ void mt_pll_init(void)
 	setbits32(&mt8195_infracfg_ao->infra_bus_dcm_ctrl, 0x3 << 21);
 	setbits32(&mt8195_infracfg_ao_bcrm->vdnr_dcm_top_infra_ctrl0, 0x2);
 
+	/* dcm_infracfg_ao_aximem_bus_dcm */
+	clrsetbits32(&mt8195_infracfg_ao->infra_aximem_idle_bit_en_0,
+		     INFRACFG_AO_AXIMEM_BUS_DCM_REG0_MASK,
+		     INFRACFG_AO_AXIMEM_BUS_DCM_REG0_ON);
+	/* dcm_infracfg_ao_infra_bus_dcm */
+	clrsetbits32(&mt8195_infracfg_ao->infra_bus_dcm_ctrl,
+		     INFRACFG_AO_INFRA_BUS_DCM_REG0_MASK,
+		     INFRACFG_AO_INFRA_BUS_DCM_REG0_ON);
+	/* dcm_infracfg_ao_infra_rx_p2p_dcm */
+	clrsetbits32(&mt8195_infracfg_ao->p2p_rx_clk_on,
+		     INFRACFG_AO_INFRA_RX_P2P_DCM_REG0_MASK,
+		     INFRACFG_AO_INFRA_RX_P2P_DCM_REG0_ON);
+	/* dcm_infracfg_ao_peri_bus_dcm */
+	clrsetbits32(&mt8195_infracfg_ao->peri_bus_dcm_ctrl,
+		     INFRACFG_AO_PERI_BUS_DCM_REG0_MASK,
+		     INFRACFG_AO_PERI_BUS_DCM_REG0_ON);
+	/* dcm_infracfg_ao_peri_module_dcm */
+	clrsetbits32(&mt8195_infracfg_ao->peri_bus_dcm_ctrl,
+		     INFRACFG_AO_PERI_MODULE_DCM_REG0_MASK,
+		     INFRACFG_AO_PERI_MODULE_DCM_REG0_ON);
+
 	/* initialize SPM request */
 	setbits32(&mtk_topckgen->clk_scp_cfg_0, 0x3ff);
 

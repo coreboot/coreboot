@@ -137,11 +137,15 @@ config RAMTOP
 # Traditionally BIOS region on SPI flash boot media was memory mapped right below
 # 4G and it was the last region in the IFD. This way translation between CPU
 # address space to flash address was trivial. However some IFDs on newer SoCs
-# have BIOS region sandwiched between descriptor and other regions. Turning off
-# this option enables soc code to provide custom mmap_boot.c which can be used to
-# implement complex translation.
+# have BIOS region sandwiched between descriptor and other regions. Turning on
+# X86_CUSTOM_BOOTMEDIA disables X86_TOP4G_BOOTMEDIA_MAP which allows the
+# soc code to provide custom mmap_boot.c.
+config X86_CUSTOM_BOOTMEDIA
+	bool
+
 config X86_TOP4G_BOOTMEDIA_MAP
 	bool
+	depends on !X86_CUSTOM_BOOTMEDIA
 	default y
 
 # This is something you almost certainly don't want to mess with.

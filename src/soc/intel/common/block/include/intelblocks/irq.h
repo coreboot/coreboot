@@ -41,11 +41,24 @@ struct pci_irq_entry {
 	struct pci_irq_entry *next;
 };
 
-const struct pci_irq_entry *assign_pci_irqs(const struct slot_irq_constraints *constraints,
-					    size_t num_slots);
+/*
+ * This functions applies rules from FSP, BWG and SoC to come up with a set of
+ * PCI slot/function --> IRQ pin/IRQ number entries.
+ *
+ * The results of this calculation are cached within this module for usage
+ * by the other API functions.
+ */
+bool assign_pci_irqs(const struct slot_irq_constraints *constraints, size_t num_slots);
 
-void generate_pin_irq_map(const struct pci_irq_entry *entries);
+/* Generate an ACPI PCI IRQ routing table (_PRT) in the \_SB.PCI0 scope, using
+   the cached results. */
+bool generate_pin_irq_map(void);
 
-void irq_program_non_pch(const struct pci_irq_entry *entries);
+/* Typically the FSP can accept a list of the mappings provided above, and
+   program them, but for PCH devices only. This function provides the same
+   function for non-PCH devices. */
+bool irq_program_non_pch(void);
+
+const struct pci_irq_entry *get_cached_pci_irqs(void);
 
 #endif /* SOC_INTEL_COMMON_IRQ_H */

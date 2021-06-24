@@ -325,17 +325,16 @@ static bool assign_slot(struct pci_irq_entry **head,
 	return true;
 }
 
-const struct pci_irq_entry *assign_pci_irqs(const struct slot_irq_constraints *constraints,
-					    size_t num_slots)
-{
-	struct pci_irq_entry *entries = NULL;
+static struct pci_irq_entry *cached_entries;
 
+bool assign_pci_irqs(const struct slot_irq_constraints *constraints, size_t num_slots)
+{
 	for (size_t i = 0; i < num_slots; i++) {
-		if (!assign_slot(&entries, &constraints[i]))
-			return NULL;
+		if (!assign_slot(&cached_entries, &constraints[i]))
+			return false;
 	}
 
-	const struct pci_irq_entry *entry = entries;
+	const struct pci_irq_entry *entry = cached_entries;
 	while (entry) {
 		printk(BIOS_INFO, "PCI %2X.%X, %s, using IRQ #%d\n",
 		       PCI_SLOT(entry->devfn), PCI_FUNC(entry->devfn),
@@ -344,7 +343,12 @@ const struct pci_irq_entry *assign_pci_irqs(const struct slot_irq_constraints *c
 		entry = entry->next;
 	}
 
-	return entries;
+	return true;
+}
+
+const struct pci_irq_entry *get_cached_pci_irqs(void)
+{
+	return cached_entries;
 }
 
 static enum pirq irq_to_pirq(unsigned int irq)
@@ -360,7 +364,7 @@ static enum pirq irq_to_pirq(unsigned int irq)
 		return PIRQ_INVALID;
 }
 
-void generate_pin_irq_map(const struct pci_irq_entry *entries)
+bool generate_pin_irq_map(void)
 {
 	struct slot_pin_irq_map *pin_irq_map;
 	const uint8_t *legacy_pirq_routing;
@@ -369,6 +373,9 @@ void generate_pin_irq_map(const struct pci_irq_entry *entries)
 	size_t pirq_routes;
 	size_t i;
 
+	if (!cached_entries)
+		return false;
+
 	pin_irq_map = calloc(MAX_SLOTS, sizeof(struct slot_pin_irq_map) * PCI_INT_MAX);
 
 	pirq_map.type = PIRQ_GSI;
@@ -376,7 +383,7 @@ void generate_pin_irq_map(const struct pci_irq_entry *entries)
 	for (i = 0; i < PIRQ_COUNT && i < pirq_routes; i++)
 		pirq_map.gsi[i] = legacy_pirq_routing[i];
 
-	const struct pci_irq_entry *entry = entries;
+	const struct pci_irq_entry *entry = cached_entries;
 	while (entry) {
 		const unsigned int slot = PCI_SLOT(entry->devfn);
 
@@ -395,21 +402,30 @@ void generate_pin_irq_map(const struct pci_irq_entry *entries)
 
 	intel_write_pci0_PRT(pin_irq_map, map_count, &pirq_map);
 	free(pin_irq_map);
+
+	return true;
 }
 
-void irq_program_non_pch(const struct pci_irq_entry *entries)
+bool irq_program_non_pch(void)
 {
-	while (entries) {
-		if (PCI_SLOT(entries->devfn) >= MIN_PCH_SLOT) {
-			entries = entries->next;
+	const struct pci_irq_entry *entry = cached_entries;
+
+	if (!entry)
+		return false;
+
+	while (entry) {
+		if (PCI_SLOT(entry->devfn) >= MIN_PCH_SLOT) {
+			entry = entry->next;
 			continue;
 		}
 
-		if (entries->irq)
-			pci_s_write_config8(PCI_DEV(0, PCI_SLOT(entries->devfn),
-						    PCI_FUNC(entries->devfn)),
-					    PCI_INTERRUPT_LINE, entries->irq);
+		if (entry->irq)
+			pci_s_write_config8(PCI_DEV(0, PCI_SLOT(entry->devfn),
+						    PCI_FUNC(entry->devfn)),
+					    PCI_INTERRUPT_LINE, entry->irq);
 
-		entries = entries->next;
+		entry = entry->next;
 	}
+
+	return true;
 }

@@ -99,7 +99,7 @@ static void nc_read_resources(struct device *dev)
 
 	/* PCIe memory-mapped config space access - 256 MiB. */
 	mmconf = iosf_bunit_read(BUNIT_MMCONF_REG) & ~((1 << 28) - 1);
-	mmio_resource_kb(dev, BUNIT_MMCONF_REG, RES_IN_KiB(mmconf), 256 * 1024);
+	mmio_range(dev, BUNIT_MMCONF_REG, mmconf, CONFIG_ECAM_MMCONF_BUS_NUMBER * MiB);
 
 	/* 0 -> 0xa0000 */
 	base_k = RES_IN_KiB(0);

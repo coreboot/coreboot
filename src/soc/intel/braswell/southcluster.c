@@ -45,26 +45,20 @@ static void sc_set_serial_irqs_mode(struct device *dev, enum serirq_mode mode)
 	}
 }
 
-static inline void add_mmio_resource(struct device *dev, int i, unsigned long addr,
-				     unsigned long size)
-{
-	mmio_resource_kb(dev, i, addr >> 10, size >> 10);
-}
-
 static void sc_add_mmio_resources(struct device *dev)
 {
-	add_mmio_resource(dev, 0xfeb, ABORT_BASE_ADDRESS, ABORT_BASE_SIZE);
-	add_mmio_resource(dev, PBASE, PMC_BASE_ADDRESS, PMC_BASE_SIZE);
-	add_mmio_resource(dev, IOBASE, IO_BASE_ADDRESS, IO_BASE_SIZE);
-	add_mmio_resource(dev, IBASE, ILB_BASE_ADDRESS, ILB_BASE_SIZE);
-	add_mmio_resource(dev, SBASE, SPI_BASE_ADDRESS, SPI_BASE_SIZE);
-	add_mmio_resource(dev, MPBASE, MPHY_BASE_ADDRESS, MPHY_BASE_SIZE);
-	add_mmio_resource(dev, PUBASE, PUNIT_BASE_ADDRESS, PUNIT_BASE_SIZE);
-	add_mmio_resource(dev, RCBA, RCBA_BASE_ADDRESS, RCBA_BASE_SIZE);
-	add_mmio_resource(dev, 0xfff, 0xffffffff - (CONFIG_COREBOOT_ROMSIZE_KB * KiB) + 1,
-			(CONFIG_COREBOOT_ROMSIZE_KB * KiB));	/* BIOS ROM */
+	mmio_range(dev, 0xfeb, ABORT_BASE_ADDRESS, ABORT_BASE_SIZE);
+	mmio_range(dev, PBASE, PMC_BASE_ADDRESS, PMC_BASE_SIZE);
+	mmio_range(dev, IOBASE, IO_BASE_ADDRESS, IO_BASE_SIZE);
+	mmio_range(dev, IBASE, ILB_BASE_ADDRESS, ILB_BASE_SIZE);
+	mmio_range(dev, SBASE, SPI_BASE_ADDRESS, SPI_BASE_SIZE);
+	mmio_range(dev, MPBASE, MPHY_BASE_ADDRESS, MPHY_BASE_SIZE);
+	mmio_range(dev, PUBASE, PUNIT_BASE_ADDRESS, PUNIT_BASE_SIZE);
+	mmio_range(dev, RCBA, RCBA_BASE_ADDRESS, RCBA_BASE_SIZE);
+	mmio_range(dev, 0xfff, 0xffffffff - (CONFIG_COREBOOT_ROMSIZE_KB * KiB) + 1,
+		   CONFIG_COREBOOT_ROMSIZE_KB * KiB);	/* BIOS ROM */
 
-	add_mmio_resource(dev, 0xfec, IO_APIC_ADDR, 0x00001000); /* IOAPIC */
+	mmio_range(dev, 0xfec, IO_APIC_ADDR, 0x00001000); /* IOAPIC */
 }
 
 /* Default IO range claimed by the LPC device. The upper bound is exclusive. */

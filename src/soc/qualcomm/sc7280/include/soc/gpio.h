@@ -8,7 +8,7 @@
 #include <soc/gpio_common.h>
 
 #define PIN(index, func1, func2, func3, func4) \
-GPIO##index##_ADDR = TLMM_TILE_BASE + (index * 0x1000), \
+GPIO##index##_ADDR = TLMM_TILE_BASE + (index * TLMM_GPIO_OFF_DELTA), \
 GPIO##index##_FUNC_##func1 = 1, \
 GPIO##index##_FUNC_##func2 = 2, \
 GPIO##index##_FUNC_##func3 = 3, \

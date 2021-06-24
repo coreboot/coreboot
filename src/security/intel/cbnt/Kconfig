@@ -7,7 +7,6 @@ config INTEL_CBNT_SUPPORT
 	#depends on PLATFORM_HAS_DRAM_CLEAR
 	select INTEL_TXT
 	# With CBnT the bootblock is set up as a CBnT IBB and needs a fixed size
-	select FIXED_BOOTBLOCK_SIZE
 	select TPM_MEASURED_BOOT_INIT_BOOTBLOCK if TPM_MEASURED_BOOT
 	help
 	  Enables Intel Converged Bootguard and Trusted Execution Technology

@@ -7,6 +7,7 @@
 #include <soc/addressmap.h>
 
 #define GPIO_FUNC_GPIO	0
+#define TLMM_GPIO_OFF_DELTA	0x1000
 
 /* GPIO TLMM INTR: Mask */
 enum gpio_tlmm_intr_bmsk {

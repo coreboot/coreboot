@@ -8,6 +8,12 @@ config PROVIDES_ROM_SHARING
 	help
 	  Select this option if the LPC bridge supports ROM sharing.
 
+config SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
+	bool
+	select X86_CUSTOM_BOOTMEDIA
+	help
+	  Select this option to enable SPI DMA support.
+
 config SOC_AMD_COMMON_BLOCK_HAS_ESPI
 	bool
 	help

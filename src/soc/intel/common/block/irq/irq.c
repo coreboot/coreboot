@@ -4,9 +4,11 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/irq.h>
 #include <intelblocks/lpc_lib.h>
+#include <soc/pci_devs.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <stdlib.h>
 #include <string.h>
@@ -393,4 +395,21 @@ void generate_pin_irq_map(const struct pci_irq_entry *entries)
 
 	intel_write_pci0_PRT(pin_irq_map, map_count, &pirq_map);
 	free(pin_irq_map);
+}
+
+void irq_program_non_pch(const struct pci_irq_entry *entries)
+{
+	while (entries) {
+		if (PCI_SLOT(entries->devfn) >= MIN_PCH_SLOT) {
+			entries = entries->next;
+			continue;
+		}
+
+		if (entries->irq)
+			pci_s_write_config8(PCI_DEV(0, PCI_SLOT(entries->devfn),
+						    PCI_FUNC(entries->devfn)),
+					    PCI_INTERRUPT_LINE, entries->irq);
+
+		entries = entries->next;
+	}
 }

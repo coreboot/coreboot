@@ -46,4 +46,6 @@ const struct pci_irq_entry *assign_pci_irqs(const struct slot_irq_constraints *c
 
 void generate_pin_irq_map(const struct pci_irq_entry *entries);
 
+void irq_program_non_pch(const struct pci_irq_entry *entries);
+
 #endif /* SOC_INTEL_COMMON_IRQ_H */

@@ -21,7 +21,6 @@
 
 #define IDX2PIN(i)		(enum pci_pin)((i) + PCI_INT_A)
 #define PIN2IDX(p)		(size_t)((p) - PCI_INT_A)
-#define INVALID_IRQ		-1
 
 struct pin_info {
 	enum pin_state {
@@ -428,4 +427,18 @@ bool irq_program_non_pch(void)
 	}
 
 	return true;
+}
+
+int get_pci_devfn_irq(unsigned int devfn)
+{
+	const struct pci_irq_entry *entry = cached_entries;
+
+	while (entry) {
+		if (entry->devfn == devfn)
+			return entry->irq;
+
+		entry = entry->next;
+	}
+
+	return INVALID_IRQ;
 }

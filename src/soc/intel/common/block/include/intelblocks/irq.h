@@ -7,6 +7,7 @@
 #include <types.h>
 
 #define MAX_FNS		8
+#define INVALID_IRQ	-1
 
 #define ANY_PIRQ(x)			[PCI_FUNC(x)] = { .fixed_int_pin = PCI_INT_NONE,\
 							  .fixed_pirq = PIRQ_INVALID,	\
@@ -60,5 +61,9 @@ bool generate_pin_irq_map(void);
 bool irq_program_non_pch(void);
 
 const struct pci_irq_entry *get_cached_pci_irqs(void);
+
+/* Search the cached PCI IRQ assignment results for the matching devfn and
+   return the corresponding IRQ, or INVALID_IRQ if not found. */
+int get_pci_devfn_irq(unsigned int devfn);
 
 #endif /* SOC_INTEL_COMMON_IRQ_H */

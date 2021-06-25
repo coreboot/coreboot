@@ -34,8 +34,6 @@ ifneq ($(CONFIG_INTEL_CBNT_PROV_EXTERNAL_BIN),y)
 $(CBNT_PROV):
 	printf "    CBNT_PROV    building tool\n"
 	cd 3rdparty/intel-sec-tools; \
-	GO111MODULE=on go mod download; \
-	GO111MODULE=on go mod verify; \
 	GO111MODULE=on go build -o $(abspath $@) cmd/cbnt-prov/*.go
 else
 $(CBNT_PROV): $(call strip_quotes, $(CONFIG_INTEL_CBNT_PROV_EXTERNAL_BIN_PATH))

@@ -113,12 +113,24 @@
 
 #define LPC_WIDEIO2_GENERIC_PORT	0x90
 
+#define LPC_ROM_DMA_SRC_ADDR		0xb0
+#define LPC_ROM_DMA_DST_ADDR		0xb4
 /* LPC register 0xb8 is DWORD, here there are definitions for byte
    access. For example, bits 31-24 are accessed through byte access
    at register 0xbb. */
-#define LPC_ROM_DMA_EC_HOST_CONTROL	0xb8
-#define   SPI_FROM_HOST_PREFETCH_EN	BIT(24)
-#define   SPI_FROM_USB_PREFETCH_EN	BIT(23)
+#define LPC_ROM_DMA_EC_HOST_CONTROL		0xb8
+#define   SPI_FROM_HOST_PREFETCH_EN		BIT(24)
+#define   SPI_FROM_USB_PREFETCH_EN		BIT(23)
+#define   LPC_ROM_DMA_CTRL_DW_COUNT_SHIFT	6
+#define   LPC_ROM_DMA_CTRL_DW_COUNT_MASK	(0x3ffUL << LPC_ROM_DMA_CTRL_DW_COUNT_SHIFT)
+#define   LPC_ROM_DMA_CTRL_ERROR		BIT(1)
+#define   LPC_ROM_DMA_CTRL_START		BIT(0)
+#define LPC_ROM_DMA_MIN_ALIGNMENT		(1 << 6)
+#define LPC_ROM_DMA_CTRL_DW_COUNT(bytes)                                                       \
+	(((bytes / LPC_ROM_DMA_MIN_ALIGNMENT) - 1) << LPC_ROM_DMA_CTRL_DW_COUNT_SHIFT)
+#define LPC_ROM_DMA_CTRL_MAX_BYTES                                                             \
+	(((LPC_ROM_DMA_CTRL_DW_COUNT_MASK >> LPC_ROM_DMA_CTRL_DW_COUNT_SHIFT) + 1)             \
+	 * LPC_ROM_DMA_MIN_ALIGNMENT)
 
 #define LPC_HOST_CONTROL		0xbb
 #define   PREFETCH_EN_SPI_FROM_HOST	BIT(0)

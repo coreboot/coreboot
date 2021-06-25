@@ -11,6 +11,7 @@ config PROVIDES_ROM_SHARING
 config SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
 	bool
 	select X86_CUSTOM_BOOTMEDIA
+	depends on !SOC_AMD_PICASSO && !SOC_AMD_STONEYRIDGE
 	help
 	  Select this option to enable SPI DMA support.
 

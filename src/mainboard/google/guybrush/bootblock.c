@@ -1,11 +1,24 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/espi.h>
 #include <bootblock_common.h>
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
+
+void mb_set_up_early_espi(void)
+{
+	/*
+	 * We don't need to initialize all of the GPIOs that are done
+	 * in bootblock_mainboard_early_init(), but we need to release
+	 * the EC eSPI reset and do the rest of the configuration.
+	 *
+	 * This will not be present in the normal boot flow.
+	 */
+	bootblock_mainboard_early_init();
+}
 
 void bootblock_mainboard_early_init(void)
 {

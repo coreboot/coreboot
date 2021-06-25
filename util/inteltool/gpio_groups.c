@@ -102,6 +102,14 @@ const struct gpio_community *const *get_gpio_communities(struct pci_dev *const s
 	case PCI_DEVICE_ID_INTEL_QM170:
 	case PCI_DEVICE_ID_INTEL_HM170:
 	case PCI_DEVICE_ID_INTEL_CM236:
+	case PCI_DEVICE_ID_INTEL_H270:
+	case PCI_DEVICE_ID_INTEL_Z270:
+	case PCI_DEVICE_ID_INTEL_Q270:
+	case PCI_DEVICE_ID_INTEL_Q250:
+	case PCI_DEVICE_ID_INTEL_B250:
+	case PCI_DEVICE_ID_INTEL_Z370:
+	case PCI_DEVICE_ID_INTEL_H310C:
+	case PCI_DEVICE_ID_INTEL_X299:
 		*community_count = ARRAY_SIZE(sunrise_communities);
 		return sunrise_communities;
 	case PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_PRE:

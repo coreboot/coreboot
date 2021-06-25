@@ -65,6 +65,6 @@ uint16_t lpddr4_speed_mhz_to_reported_mts(uint16_t speed_mhz)
 			return speed_attr->reported_mts;
 		}
 	}
-	printk(BIOS_ERR, "ERROR: LPDDR4 speed of %d MHz is out of range", speed_mhz);
+	printk(BIOS_ERR, "ERROR: LPDDR4 speed of %d MHz is out of range\n", speed_mhz);
 	return 0;
 }

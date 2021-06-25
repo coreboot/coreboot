@@ -22,5 +22,8 @@ DefinitionBlock(
 	{
 		#include <northbridge/intel/sandybridge/acpi/sandybridge.asl>
 		#include <southbridge/intel/bd82x6x/acpi/pch.asl>
+		#if CONFIG(BOARD_ASUS_P8C_WS)
+		#include "variants/p8c_ws/pci.asl"
+		#endif
 	}
 }

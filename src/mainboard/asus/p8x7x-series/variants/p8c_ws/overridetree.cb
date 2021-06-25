@@ -1,0 +1,87 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		device pci 01.1 on  end		# PCIEX16_2 (electrical x8)
+		device pci 06.0 on  end		# PCIEX16_3 (electrical x4)
+		subsystemid 0x1043 0x84ca inherit
+		chip southbridge/intel/bd82x6x
+			register "gen1_dec" = "0x000c0291"
+			device pci 1c.0 on  end		# RP #1: PCIEX16_4 (electrical x4)
+			device pci 1c.1 off end		# RP #2:
+			device pci 1c.2 off end		# RP #3:
+			device pci 1c.3 off end		# RP #4:
+			device pci 1c.4 on  end		# RP #5: PCIEX1_1
+			device pci 1c.5 on  end		# RP #6: 82574 GbE #1
+			device pci 1c.6 on  end		# RP #7: 82574 GbE #2
+			device pci 1c.7 off end		# RP #8:
+			device pci 1e.0 on  end		# PCI bridge
+			device pci 1f.0 on		# LPC bridge
+				chip superio/nuvoton/nct6776
+					device pnp 2e.0   off end # Floppy
+					device pnp 2e.1   on      # Parallel
+						io  0x60 = 0x0378
+						irq 0x70 = 5
+						drq 0x74 = 4      # No DMA
+						irq 0xf0 = 0x3c   # Printer mode
+					end
+					device pnp 2e.2   on      # UART A
+						io  0x60 = 0x03f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3   off end # UART B, IR
+					device pnp 2e.5   on      # PS/2 KBC
+						io  0x60 = 0x0060
+						io  0x62 = 0x0064
+						irq 0x70 = 1      # Keyboard
+						irq 0x72 = 12     # Mouse
+					end
+					device pnp 2e.6   off end # CIR
+					device pnp 2e.7   off end # GPIO8
+					device pnp 2e.107 off end # GPIO9
+					device pnp 2e.8   off end # WDT
+					device pnp 2e.108 off end # GPIO0
+					device pnp 2e.208 off end # GPIOA
+					device pnp 2e.308 off end # GPIO base
+					device pnp 2e.109 off 	  # GPIO1
+						irq 0xf0 = 0xfb
+						irq 0xf1 = 0x0
+						irq 0xf5 = 0xff
+						irq 0xf7 = 0xff
+					end
+					device pnp 2e.209 on      # GPIO2
+						irq 0xe0 = 0xef
+					end
+					device pnp 2e.309 on      # GPIO3
+						irq 0xea = 0xff
+					end
+					device pnp 2e.409 on  end # GPIO4
+					device pnp 2e.509 on  end # GPIO5
+					device pnp 2e.609 on  end # GPIO6
+					device pnp 2e.709 off end # GPIO7
+					device pnp 2e.a   on      # ACPI
+						irq 0xe6 = 0x0c
+						irq 0xe7 = 0x11
+						irq 0xf2 = 0x5d
+					end
+					device pnp 2e.b   on      # HWM, LED
+						io  0x60 = 0x0290
+						io  0x62 = 0x0000
+					end
+					device pnp 2e.d   off end # VID
+					device pnp 2e.e   off end # CIR wake-up
+					device pnp 2e.f   off     # GPIO PP/OD
+						# Enable i2c slave to 0x1d
+						irq 0xf0 = 0x9d
+					end
+					device pnp 2e.14  off end # SVID
+					device pnp 2e.16  off end # Deep sleep
+					device pnp 2e.17  off end # GPIOA
+				end
+				chip drivers/pc80/tpm
+					device pnp c31.0 on end	# TPM
+				end
+			end
+		end
+	end
+end

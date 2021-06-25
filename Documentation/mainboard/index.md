@@ -19,6 +19,7 @@ This section contains documentation about coreboot on specific mainboards.
 - [A88XM-E](asus/a88xm-e.md)
 - [F2A85-M](asus/f2a85-m.md)
 - [P5Q](asus/p5q.md)
+- [P8C WS](asus/p8c_ws.md)
 - [P8H61-M LX](asus/p8h61-m_lx.md)
 - [P8H61-M Pro](asus/p8h61-m_pro.md)
 - [P8H77-V](asus/p8h77-v.md)

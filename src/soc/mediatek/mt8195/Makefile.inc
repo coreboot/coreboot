@@ -22,6 +22,7 @@ verstage-y += ../common/timer.c timer.c
 verstage-y += ../common/uart.c
 verstage-y += ../common/wdt.c
 
+ramstage-y += apusys.c
 romstage-y += ../common/auxadc.c
 romstage-y += ../common/cbmem.c
 romstage-y += ../common/clkbuf.c

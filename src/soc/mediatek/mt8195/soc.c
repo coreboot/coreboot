@@ -2,6 +2,7 @@
 
 #include <bootmem.h>
 #include <device/device.h>
+#include <soc/apusys.h>
 #include <soc/devapc.h>
 #include <soc/dfd.h>
 #include <soc/emi.h>
@@ -28,6 +29,7 @@ static void soc_init(struct device *dev)
 {
 	mtk_mmu_disable_l2c_sram();
 	dapc_init();
+	apusys_init();
 	mcupm_init();
 	sspm_init();
 

@@ -51,8 +51,6 @@
  * |     Cacheable/Usable     |
  * +--------------------------+ 0
  */
-#define RES_IN_KiB(r) ((r) >> 10)
-
 uint32_t nc_read_top_of_low_memory(void)
 {
 	static uint32_t tolm;
@@ -67,16 +65,14 @@ uint32_t nc_read_top_of_low_memory(void)
 
 static void nc_read_resources(struct device *dev)
 {
-	unsigned long mmconf;
-	unsigned long bmbound_k;
-	unsigned long bmbound_hi;
+	uint64_t mmconf;
+	uint64_t bmbound;
+	uint64_t bmbound_hi;
 	uintptr_t smm_base;
 	size_t smm_size;
-	unsigned long tseg_base_k;
-	unsigned long tseg_top_k;
-	unsigned long fsp_res_base_k;
-	unsigned long base_k, size_k;
-	const unsigned long four_gig_kib = (4 << (30 - 10));
+	uint64_t tseg_base;
+	uint64_t tseg_top;
+	uint64_t fsp_res_base;
 	void *fsp_reserved_memory_area;
 	int index = 0;
 
@@ -85,16 +81,16 @@ static void nc_read_resources(struct device *dev)
 
 	/* Determine TSEG data */
 	smm_region(&smm_base, &smm_size);
-	tseg_base_k = RES_IN_KiB(smm_base);
-	tseg_top_k = tseg_base_k + RES_IN_KiB(smm_size);
+	tseg_base = smm_base;
+	tseg_top = tseg_base + smm_size;
 
 	/* Determine the base of the FSP reserved memory */
 	fsp_reserved_memory_area = cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY);
 	if (fsp_reserved_memory_area) {
-		fsp_res_base_k = RES_IN_KiB((unsigned int)fsp_reserved_memory_area);
+		fsp_res_base = (uintptr_t)fsp_reserved_memory_area;
 	} else {
 		/* If no FSP reserved area */
-		fsp_res_base_k = tseg_base_k;
+		fsp_res_base = tseg_base;
 	}
 
 	/* PCIe memory-mapped config space access - 256 MiB. */
@@ -102,32 +98,26 @@ static void nc_read_resources(struct device *dev)
 	mmio_range(dev, BUNIT_MMCONF_REG, mmconf, CONFIG_ECAM_MMCONF_BUS_NUMBER * MiB);
 
 	/* 0 -> 0xa0000 */
-	base_k = RES_IN_KiB(0);
-	size_k = RES_IN_KiB(0xa0000) - base_k;
-	ram_resource_kb(dev, index++, base_k, size_k);
+	ram_from_to(dev, index++, 0, 0xa0000);
 
 	/* High memory -> fsp_res_base - cacheable and usable */
-	base_k = RES_IN_KiB(0x100000);
-	size_k = fsp_res_base_k - base_k;
-	ram_resource_kb(dev, index++, base_k, size_k);
+	ram_from_to(dev, index++, 1 * MiB, fsp_res_base);
 
 	/* fsp_res_base -> tseg_top - Reserved */
-	base_k = fsp_res_base_k;
-	size_k = tseg_top_k - base_k;
-	reserved_ram_resource_kb(dev, index++, base_k, size_k);
+	reserved_ram_from_to(dev, index++, fsp_res_base, tseg_top);
 
 	/* TSEG TOP -> bmbound is memory backed mmio. */
-	bmbound_k = RES_IN_KiB(nc_read_top_of_low_memory());
-	mmio_resource_kb(dev, index++, tseg_top_k, bmbound_k - tseg_top_k);
+	bmbound = nc_read_top_of_low_memory();
+	mmio_from_to(dev, index++, tseg_top, bmbound);
 
 	/*
 	 * The BMBOUND_HI register matches register bits of 31:24 with address
 	 * bits of 35:28. Therefore, shift register to align properly.
 	 */
 	bmbound_hi = iosf_bunit_read(BUNIT_BMBOUND_HI) & ~((1 << 24) - 1);
-	bmbound_hi = RES_IN_KiB(bmbound_hi) << 4;
-	if (bmbound_hi > four_gig_kib)
-		ram_resource_kb(dev, index++, four_gig_kib, bmbound_hi - four_gig_kib);
+	bmbound_hi <<= 4;
+	if (bmbound_hi > 4ull * GiB)
+		ram_from_to(dev, index++, 4ull * GiB, bmbound_hi);
 
 	/*
 	 * Reserve everything between A segment and 1MB:
@@ -141,9 +131,7 @@ static void nc_read_resources(struct device *dev)
 	/*
 	 * Reserve local APIC
 	 */
-	base_k = RES_IN_KiB(LAPIC_DEFAULT_BASE);
-	size_k = RES_IN_KiB(0x00100000);
-	mmio_resource_kb(dev, index++, base_k, size_k);
+	mmio_range(dev, index++, LAPIC_DEFAULT_BASE, 1 * MiB);
 }
 
 static void nc_generate_ssdt(const struct device *dev)

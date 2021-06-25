@@ -47,7 +47,6 @@
  * |     Cacheable/Usable     |
  * +--------------------------+ 0
  */
-#define RES_IN_KiB(r) ((r) >> 10)
 
 uint32_t nc_read_top_of_low_memory(void)
 {
@@ -63,13 +62,11 @@ uint32_t nc_read_top_of_low_memory(void)
 
 static void nc_read_resources(struct device *dev)
 {
-	unsigned long mmconf;
-	unsigned long bmbound_k;
-	unsigned long bmbound_hi;
-	unsigned long smmrrh;
-	unsigned long smmrrl;
-	unsigned long base_k, size_k;
-	const unsigned long four_gig_kib = (4 << (30 - 10));
+	uint64_t mmconf;
+	uint64_t bmbound;
+	uint64_t bmbound_hi;
+	uint64_t smmrrh;
+	uint64_t smmrrl;
 	int index = 0;
 
 	/* Read standard PCI resources. */
@@ -80,35 +77,31 @@ static void nc_read_resources(struct device *dev)
 	mmio_range(dev, BUNIT_MMCONF_REG, mmconf, CONFIG_ECAM_MMCONF_BUS_NUMBER * MiB);
 
 	/* 0 -> 0xa0000 */
-	base_k = RES_IN_KiB(0);
-	size_k = RES_IN_KiB(0xa0000) - base_k;
-	ram_resource_kb(dev, index++, base_k, size_k);
+	ram_from_to(dev, index++, 0, 0xa0000);
 
 	/* The SMMRR registers are 1MiB granularity with smmrrh being
 	 * inclusive of the SMM region. */
-	smmrrl = (iosf_bunit_read(BUNIT_SMRRL) & 0xffff) << 10;
-	smmrrh = ((iosf_bunit_read(BUNIT_SMRRH) & 0xffff) + 1) << 10;
+	smmrrl = (iosf_bunit_read(BUNIT_SMRRL) & 0xffff) * MiB;
+	smmrrh = ((iosf_bunit_read(BUNIT_SMRRH) & 0xffff) + 1) * MiB;
 
 	/* 0xc0000 -> smrrl - cacheable and usable */
-	base_k = RES_IN_KiB(0xc0000);
-	size_k = smmrrl - base_k;
-	ram_resource_kb(dev, index++, base_k, size_k);
+	ram_from_to(dev, index++, 0xc0000, smmrrl);
 
 	if (smmrrh > smmrrl)
-		reserved_ram_resource_kb(dev, index++, smmrrl, smmrrh - smmrrl);
+		reserved_ram_from_to(dev, index++, smmrrl, smmrrh);
 
 	/* All address space between bmbound and smmrrh is unusable. */
-	bmbound_k = RES_IN_KiB(nc_read_top_of_low_memory());
-	mmio_resource_kb(dev, index++, smmrrh, bmbound_k - smmrrh);
+	bmbound = nc_read_top_of_low_memory();
+	mmio_from_to(dev, index++, smmrrh, bmbound);
 
 	/*
 	 * The BMBOUND_HI register matches register bits of 31:24 with address
 	 * bits of 35:28. Therefore, shift register to align properly.
 	 */
 	bmbound_hi = iosf_bunit_read(BUNIT_BMBOUND_HI) & ~((1 << 24) - 1);
-	bmbound_hi = RES_IN_KiB(bmbound_hi) << 4;
-	if (bmbound_hi > four_gig_kib)
-		ram_resource_kb(dev, index++, four_gig_kib, bmbound_hi - four_gig_kib);
+	bmbound_hi <<= 4;
+	if (bmbound_hi > 4ull * GiB)
+		ram_from_to(dev, index++, 4ull * GiB, bmbound_hi);
 
 	/*
 	 * Reserve everything between A segment and 1MB:

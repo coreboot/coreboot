@@ -15,6 +15,23 @@
 #include <dimm_info_util.h>
 #include <dmi_info.h>
 #include <device/dram/ddr4.h>
+#include <device/dram/lpddr4.h>
+
+/**
+ * Convert DDR clock speed (based on memory type) in MHz to the standard reported speed in MT/s
+ */
+static uint16_t ddr_speed_mhz_to_reported_mts(uint16_t ddr_type, uint16_t speed)
+{
+	switch (ddr_type) {
+	case MEMORY_TYPE_DDR4:
+		return ddr4_speed_mhz_to_reported_mts(speed);
+	case MEMORY_TYPE_LPDDR4:
+		return lpddr4_speed_mhz_to_reported_mts(speed);
+	default:
+		printk(BIOS_ERR, "ERROR: Unknown memory type %x", ddr_type);
+		return 0;
+	}
+}
 
 /**
  * Populate dimm_info using AGESA TYPE17_DMI_INFO.
@@ -28,9 +45,10 @@ static void transfer_memory_info(const TYPE17_DMI_INFO *dmi17,
 
 	dimm->ddr_type = dmi17->MemoryType;
 
-	dimm->configured_speed_mts = ddr4_speed_mhz_to_reported_mts(dmi17->ConfigSpeed);
+	dimm->configured_speed_mts = ddr_speed_mhz_to_reported_mts(
+		dmi17->MemoryType, dmi17->ConfigSpeed);
 
-	dimm->max_speed_mts = ddr4_speed_mhz_to_reported_mts(dmi17->Speed);
+	dimm->max_speed_mts = ddr_speed_mhz_to_reported_mts(dmi17->MemoryType, dmi17->Speed);
 
 	dimm->rank_per_dimm = dmi17->Attributes;
 

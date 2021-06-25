@@ -59,6 +59,24 @@ static int get_l1_substate_control(enum L1_substates_control ctl)
 	return ctl - 1;
 }
 
+static void fill_fsps_fivr_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_elkhartlake_config *config)
+{
+	s_cfg->PchFivrExtV1p05RailEnabledStates = config->fivr.v1p05_state;
+	s_cfg->PchFivrExtV1p05RailSupportedVoltageStates = config->fivr.v1p05_rail;
+	s_cfg->PchFivrExtVnnRailEnabledStates = config->fivr.vnn_state;
+	s_cfg->PchFivrExtVnnRailSupportedVoltageStates = config->fivr.vnn_rail;
+	s_cfg->PchFivrExtVnnRailSxEnabledStates = config->fivr.vnn_sx_state;
+	s_cfg->PchFivrVccinAuxLowToHighCurModeVolTranTime = config->fivr.vcc_low_high_us;
+	s_cfg->PchFivrVccinAuxRetToHighCurModeVolTranTime = config->fivr.vcc_ret_high_us;
+	s_cfg->PchFivrVccinAuxRetToLowCurModeVolTranTime = config->fivr.vcc_ret_low_us;
+	s_cfg->PchFivrVccinAuxOffToHighCurModeVolTranTime = config->fivr.vcc_off_high_us;
+	/* Convert mV to number of 2.5 mV increments */
+	s_cfg->PchFivrExtVnnRailSxVoltage = (config->fivr.vnn_sx_mv * 10) / 25;
+	s_cfg->PchFivrExtV1p05RailIccMaximum = config->fivr.v1p05_icc_max_ma;
+	s_cfg->FivrSpreadSpectrum = config->fivr.spread_spectrum;
+}
+
 static void parse_devicetree(FSP_S_CONFIG *params)
 {
 	const struct soc_intel_elkhartlake_config *config = config_of_soc();
@@ -289,16 +307,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PmcV1p05PhyExtFetControlEn = 0x1;
 	params->PmcV1p05IsExtFetControlEn = 0x1;
 	/* FIVR config */
-	params->PchFivrExtV1p05RailEnabledStates = 0x1E;
-	params->PchFivrExtV1p05RailSupportedVoltageStates = 0x2;
-	params->PchFivrExtVnnRailEnabledStates = 0x1E;
-	params->PchFivrExtVnnRailSupportedVoltageStates = 0xE;
-	params->PchFivrExtVnnRailSxEnabledStates = 0x1C;
-	params->PchFivrVccinAuxLowToHighCurModeVolTranTime = 0x0C;
-	params->PchFivrVccinAuxRetToHighCurModeVolTranTime = 0x36;
-	params->PchFivrVccinAuxRetToLowCurModeVolTranTime = 0x2B;
-	params->PchFivrVccinAuxOffToHighCurModeVolTranTime = 0x0096;
-	params->FivrSpreadSpectrum = 0xF;
+	if (config->fivr.fivr_config_en) {
+		fill_fsps_fivr_params(params, config);
+	}
 
 	/* FuSa (Functional Safety) config */
 	if (!config->FuSaEnable) {

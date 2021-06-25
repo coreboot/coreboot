@@ -48,6 +48,35 @@ enum tsn_gbe_link_speed {
 	Tsn_1_Gbps,
 };
 
+/*
+ * Enable external V1P05 Rail in: BIT0:S0i1/S0i2,
+ * BIT1:S0i3, BIT2:S3, BIT3:S4, BIT4:S5
+ * However, EHL does not support S0i1 and S0i2,
+ * hence removed the option.
+ */
+enum fivr_states {
+	FIVR_ENABLE_S0i3	= BIT(1),
+	FIVR_ENABLE_S3		= BIT(2),
+	FIVR_ENABLE_S4		= BIT(3),
+	FIVR_ENABLE_S5		= BIT(4),
+	FIVR_ENABLE_S3_S4_S5	= FIVR_ENABLE_S3 | FIVR_ENABLE_S4 | FIVR_ENABLE_S5,
+	FIVR_ENABLE_ALL_SX	= FIVR_ENABLE_S0i3 | FIVR_ENABLE_S3_S4_S5,
+};
+
+/*
+ * Enable the following for external V1p05 rail
+ * BIT1: Normal active voltage supported
+ * BIT2: Minimum active voltage supported
+ * BIT3: Minimum retention voltage supported
+ */
+enum fivr_supported_voltage {
+	FIVR_VOLTAGE_NORMAL		= BIT(1),
+	FIVR_VOLTAGE_MIN_ACTIVE		= BIT(2),
+	FIVR_VOLTAGE_MIN_RETENTION	= BIT(3),
+	FIVR_ENABLE_ALL_VOLTAGE		= FIVR_VOLTAGE_NORMAL | FIVR_VOLTAGE_MIN_ACTIVE |
+					  FIVR_VOLTAGE_MIN_RETENTION,
+};
+
 struct soc_intel_elkhartlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -248,7 +277,7 @@ struct soc_intel_elkhartlake_config {
 	 * 1: High
 	 */
 	uint8_t SerialIoGSpiCsState[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
-/*
+	/*
 	 * SerialIo I2C Pads Termination Config:
 	 * 0x0:Hardware default,
 	 * 0x1:None,
@@ -347,6 +376,30 @@ struct soc_intel_elkhartlake_config {
 	 * for the platforms with soldered down SOC.
 	 */
 	uint8_t SkipCpuReplacementCheck;
+
+	struct {
+		bool fivr_config_en;
+		enum fivr_states v1p05_state;
+		enum fivr_states vnn_state;
+		enum fivr_states vnn_sx_state;
+		enum fivr_supported_voltage v1p05_rail;
+		enum fivr_supported_voltage vnn_rail;
+		/* Icc max for V1p05 rail in mA */
+		unsigned int v1p05_icc_max_ma;
+		/* Vnn voltage in mV */
+		unsigned int vnn_sx_mv;
+		/* Transition time in microseconds: */
+		/* From low current mode voltage to high current mode voltage */
+		unsigned int vcc_low_high_us;
+		/* From retention mode voltage to high current mode voltage */
+		unsigned int vcc_ret_high_us;
+		/* From retention mode voltage to low current mode voltage */
+		unsigned int vcc_ret_low_us;
+		/* From off(0V) to high current mode voltage */
+		unsigned int vcc_off_high_us;
+		/* RFI spread spectrum, in 0.1% increment. Range: 0.0% to 10.0% (0-100). */
+		unsigned int spread_spectrum;
+	} fivr;
 
 	/*
 	 * SLP_S3 Minimum Assertion Width Policy

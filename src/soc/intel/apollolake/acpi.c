@@ -54,14 +54,12 @@ static acpi_cstate_t cstate_map[] = {
 
 uint32_t soc_read_sci_irq_select(void)
 {
-	uintptr_t pmc_bar = soc_read_pmc_base();
-	return read32((void *)pmc_bar + IRQ_REG);
+	return read32p(soc_read_pmc_base() + IRQ_REG);
 }
 
 void soc_write_sci_irq_select(uint32_t scis)
 {
-	uintptr_t pmc_bar = soc_read_pmc_base();
-	write32((void *)pmc_bar + IRQ_REG, scis);
+	write32p(soc_read_pmc_base() + IRQ_REG, scis);
 }
 
 acpi_cstate_t *soc_get_cstate_map(size_t *entries)

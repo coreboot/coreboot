@@ -71,10 +71,10 @@ static void set_slp_s3_assertion_width(int width_usecs)
 	uintptr_t gen_pmcon3 = soc_read_pmc_base() + GEN_PMCON3;
 	int setting = choose_slp_s3_assertion_width(width_usecs);
 
-	reg = read32((void *)gen_pmcon3);
+	reg = read32p(gen_pmcon3);
 	reg &= ~SLP_S3_ASSERT_MASK;
 	reg |= setting << SLP_S3_ASSERT_WIDTH_SHIFT;
-	write32((void *)gen_pmcon3, reg);
+	write32p(gen_pmcon3, reg);
 }
 
 void pmc_soc_init(struct device *dev)

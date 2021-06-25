@@ -368,8 +368,8 @@ void pmc_clear_prsts(void)
 	/* Read PMC base address from soc */
 	pmc_bar = soc_read_pmc_base();
 
-	prsts = read32((void *)(pmc_bar + PRSTS));
-	write32((void *)(pmc_bar + PRSTS), prsts);
+	prsts = read32p(pmc_bar + PRSTS);
+	write32p(pmc_bar + PRSTS, prsts);
 
 	soc_clear_pm_registers(pmc_bar);
 }
@@ -559,7 +559,7 @@ void pmc_gpe_init(void)
 	 */
 	if (dw0 == dw1 || dw1 == dw2) {
 		printk(BIOS_INFO, "PMC: Using default GPE route.\n");
-		gpio_cfg = read32((void *)pmc_bar + GPIO_GPE_CFG);
+		gpio_cfg = read32p(pmc_bar + GPIO_GPE_CFG);
 
 		dw0 = (gpio_cfg >> GPE0_DW_SHIFT(0)) & GPE0_DWX_MASK;
 		dw1 = (gpio_cfg >> GPE0_DW_SHIFT(1)) & GPE0_DWX_MASK;
@@ -570,10 +570,10 @@ void pmc_gpe_init(void)
 		gpio_cfg |= (uint32_t) dw2 << GPE0_DW_SHIFT(2);
 	}
 
-	gpio_cfg_reg = read32((void *)pmc_bar + GPIO_GPE_CFG) & ~gpio_cfg_mask;
+	gpio_cfg_reg = read32p(pmc_bar + GPIO_GPE_CFG) & ~gpio_cfg_mask;
 	gpio_cfg_reg |= gpio_cfg & gpio_cfg_mask;
 
-	write32((void *)pmc_bar + GPIO_GPE_CFG, gpio_cfg_reg);
+	write32p(pmc_bar + GPIO_GPE_CFG, gpio_cfg_reg);
 
 	/* Set the routes in the GPIO communities as well. */
 	gpio_route_gpe(dw0, dw1, dw2);

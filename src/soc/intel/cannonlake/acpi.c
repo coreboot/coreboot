@@ -166,8 +166,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 }
 uint32_t soc_read_sci_irq_select(void)
 {
-	uintptr_t pmc_bar = soc_read_pmc_base();
-	return read32((void *)pmc_bar + IRQ_REG);
+	return read32p(soc_read_pmc_base() + IRQ_REG);
 }
 
 void soc_fill_gnvs(struct global_nvs *gnvs)

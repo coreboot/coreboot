@@ -34,6 +34,14 @@ static void cbfs_decode_payload_segment(struct cbfs_payload_segment *segment,
 static int segment_targets_type(void *dest, unsigned long memsz,
 		enum bootmem_type dest_type)
 {
+	/* No bootmem to check in earlier stages, caller should not use
+	   selfload_check(). */
+	if (!ENV_RAMSTAGE) {
+		printk(BIOS_ERR,
+		       "Callers not supposed to call selfload_check() in romstage");
+		return 0;
+	}
+
 	uintptr_t d = (uintptr_t) dest;
 	if (bootmem_region_targets_type(d, memsz, dest_type))
 		return 1;

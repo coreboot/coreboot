@@ -311,3 +311,19 @@ table for a given temperature threshold.
 1) Hysteresis - The amount of hysteresis implemented in either circuitry or
    the firmware that reads the temperature sensor (in degrees C).
 2) Name - This name is applied to the _STR property of the sensor
+
+## OEM Variables
+Platform vendors can define an array of OEM-specific values as OEM variables
+to be used under DPTF policy. There are total six OEM variables available.
+These can be used in AP policy for more specific actions. These OEM variables
+can be defined as below mentioned example and can be used any variable between
+[0], [1],...,[5]. Platform vendors can enable and use this for specific platform
+by defining OEM variables macro under board variant.
+
+Example:
+```C
+register "oem_data.oem_variables" = "{
+   [1] = 0x6,
+   [3] = 0x1
+}"
+```

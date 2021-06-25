@@ -121,25 +121,25 @@ void intel_cbnt_log_registers(void)
 {
 	const union sacm_info acm_info = { .msr = rdmsr(MSR_BOOT_GUARD_SACM_INFO) };
 	LOG("SACM INFO MSR (0x13A) raw: 0x%016llx\n", acm_info.raw);
-	LOG("  NEM status:              %ul\n", acm_info.nem_enabled);
+	LOG("  NEM status:              %u\n", acm_info.nem_enabled);
 	LOG("  TPM type:                %s\n", tpm_type[acm_info.tpm_type]);
-	LOG("  TPM succes:              %ul\n", acm_info.tpm_success);
-	LOG("  FACB:                    %ul\n", acm_info.facb);
-	LOG("  measured boot:           %ul\n", acm_info.measured_boot);
-	LOG("  verified boot:           %ul\n", acm_info.verified_boot);
-	LOG("  revoked:                 %ul\n", acm_info.revoked);
-	LOG("  BtG capable:             %ul\n", acm_info.btg_cap);
-	LOG("  TXT capable:             %ul\n", acm_info.txt_cap);
+	LOG("  TPM succes:              %u\n", acm_info.tpm_success);
+	LOG("  FACB:                    %u\n", acm_info.facb);
+	LOG("  measured boot:           %u\n", acm_info.measured_boot);
+	LOG("  verified boot:           %u\n", acm_info.verified_boot);
+	LOG("  revoked:                 %u\n", acm_info.revoked);
+	LOG("  BtG capable:             %u\n", acm_info.btg_cap);
+	LOG("  TXT capable:             %u\n", acm_info.txt_cap);
 
 	const union cbnt_bootstatus btsts = {
 		.raw = read64p(CBNT_BOOTSTATUS),
 	};
 	LOG("BOOTSTATUS (0xA0) raw: 0x%016llx\n", btsts.raw);
-	LOG("  Bios trusted:            %ul\n", btsts.bios_trusted);
-	LOG("  TXT disabled by policy:  %ul\n", btsts.txt_dis_pol);
-	LOG("  Bootguard startup error: %ul\n", btsts.btg_startup_err);
-	LOG("  TXT ucode or ACM error:  %ul\n", btsts.txt_err);
-	LOG("  TXT measurement type 7:  %ul\n", btsts.type7);
+	LOG("  Bios trusted:            %u\n", btsts.bios_trusted);
+	LOG("  TXT disabled by policy:  %u\n", btsts.txt_dis_pol);
+	LOG("  Bootguard startup error: %u\n", btsts.btg_startup_err);
+	LOG("  TXT ucode or ACM error:  %u\n", btsts.txt_err);
+	LOG("  TXT measurement type 7:  %u\n", btsts.type7);
 
 	const union cbnt_errorcode err = {
 		.raw = read32p(CBNT_ERRORCODE),

@@ -5,12 +5,16 @@
 #include <assert.h>
 #include <boot_device.h>
 #include <bootstate.h>
+#include <commonlib/helpers.h>
 #include <commonlib/region.h>
 #include <console/console.h>
+#include <delay.h>
 #include <fmap.h>
 #include <spi_flash.h>
 #include <stdint.h>
 #include <string.h>
+#include <thread.h>
+#include <timer.h>
 #include <timestamp.h>
 
 #define DEFAULT_MRC_CACHE "RW_MRC_CACHE"
@@ -72,6 +76,50 @@ static int get_nv_rdev(struct region_device *r)
 	return 0;
 }
 
+static struct apob_thread_context {
+	uint8_t buffer[DEFAULT_MRC_CACHE_SIZE] __attribute__((aligned(64)));
+	struct thread_handle handle;
+	struct region_device apob_rdev;
+} global_apob_thread;
+
+static enum cb_err apob_thread_entry(void *arg)
+{
+	ssize_t size;
+	struct apob_thread_context *thread = arg;
+
+	printk(BIOS_DEBUG, "APOB thread running\n");
+	size = rdev_readat(&thread->apob_rdev, thread->buffer, 0,
+		    region_device_sz(&thread->apob_rdev));
+
+	printk(BIOS_DEBUG, "APOB thread done\n");
+
+	if (size == region_device_sz(&thread->apob_rdev))
+		return CB_SUCCESS;
+
+	return CB_ERR;
+}
+
+void start_apob_cache_read(void)
+{
+	struct apob_thread_context *thread = &global_apob_thread;
+
+	if (!CONFIG(COOP_MULTITASKING))
+		return;
+
+	/* We don't perform any comparison on S3 resume */
+	if (acpi_is_wakeup_s3())
+		return;
+
+	if (get_nv_rdev(&thread->apob_rdev) != 0)
+		return;
+
+	assert(ARRAY_SIZE(thread->buffer) == region_device_sz(&thread->apob_rdev));
+
+	printk(BIOS_DEBUG, "Starting APOB preload\n");
+	if (thread_run(&thread->handle, apob_thread_entry, thread))
+		printk(BIOS_ERR, "Failed to start APOB preload thread\n");
+}
+
 static void *get_apob_from_nv_rdev(struct region_device *read_rdev)
 {
 	struct apob_base_header apob_header;
@@ -111,7 +159,11 @@ static void soc_update_apob_cache(void *unused)
 
 	timestamp_add_now(TS_AMD_APOB_READ_START);
 
-	apob_rom = get_apob_from_nv_rdev(&read_rdev);
+	if (CONFIG(COOP_MULTITASKING) && thread_join(&global_apob_thread.handle) == CB_SUCCESS)
+		apob_rom = (struct apob_base_header *)global_apob_thread.buffer;
+	else
+		apob_rom = get_apob_from_nv_rdev(&read_rdev);
+
 	if (apob_rom == NULL) {
 		update_needed = true;
 	} else if (memcmp(apob_src_ram, apob_rom, apob_src_ram->size)) {
@@ -177,4 +229,9 @@ void *soc_fill_apob_cache(void)
 	 */
 	return get_apob_nv_address();
 }
+
+/*
+ * BS_POST_DEVICE was chosen because this gives start_apob_cache_read plenty of time to read
+ * the APOB from SPI.
+ */
 BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT, soc_update_apob_cache, NULL);

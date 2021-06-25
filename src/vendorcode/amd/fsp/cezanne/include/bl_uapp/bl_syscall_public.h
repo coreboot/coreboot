@@ -35,6 +35,7 @@
 #define SVC_EXIT                            0x00
 #define SVC_ENTER                           0x02
 #define SVC_DEBUG_PRINT                     0x06
+#define SVC_MODEXP                          0x0C
 #define SVC_DEBUG_PRINT_EX                  0x1A
 #define SVC_GET_BOOT_MODE                   0x1C
 #define SVC_DELAY_IN_MICRO_SECONDS          0x2F
@@ -47,6 +48,17 @@
 #define SVC_COPY_DATA_FROM_UAPP             0x66
 #define SVC_RESET_SYSTEM                    0x67
 #define SVC_READ_TIMER_VAL                  0x68
+#define SVC_SHA                             0x69
+
+struct mod_exp_params {
+	char		*pExponent;	// Exponent address
+	unsigned int	ExpSize;	// Exponent size in bytes
+	char		*pModulus;	// Modulus address
+	unsigned int	ModulusSize;	// Modulus size in bytes
+	char		*pMessage;	// Message address, same size as ModulusSize
+	char		*pOutput;	// Output address; Must be big enough to hold the
+					// data of ModulusSize
+};
 
 enum psp_boot_mode {
 	PSP_BOOT_MODE_S0 = 0x0,
@@ -95,6 +107,31 @@ enum psp_timer_type {
 	PSP_TIMER_TYPE_CHRONO     = 0,
 	PSP_TIMER_TYPE_SECURE_RTC = 1,
 	PSP_TIMER_TYPE_MAX        = 2,
+};
+
+/* SHA types same as ccp SHA type in crypto.h */
+enum sha_type {
+	SHA_TYPE_256,
+	SHA_TYPE_384
+};
+
+/* All SHA operation supported */
+enum sha_operation_mode {
+	SHA_GENERIC
+};
+
+/* SHA Supported Data Structures */
+struct sha_generic_data {
+	enum sha_type	SHAType;
+	uint8_t		*Data;
+	uint32_t	DataLen;
+	uint32_t	DataMemType;
+	uint8_t		*Digest;
+	uint32_t	DigestLen;
+	uint8_t		*IntermediateDigest;
+	uint32_t	IntermediateMsgLen;
+	uint32_t	Init;
+	uint32_t	Eom;
 };
 
 /*
@@ -247,6 +284,21 @@ uint32_t svc_reset_system(enum reset_type reset_type);
  *                postcode -   Postcode value to be written on port-80h
  */
 uint32_t svc_write_postcode(uint32_t postcode);
+
+/*
+ * Generic SHA call for SHA, SHA_OTP, SHA_HMAC
+ */
+uint32_t svc_crypto_sha(struct sha_generic_data *sha_op, enum sha_operation_mode sha_mode);
+
+/*
+ * Calculate ModEx
+ *
+ * Parameters:
+ *       mod_exp_param - ModExp parameters
+ *
+ *   Return value: BL_OK or error code
+ */
+uint32_t svc_modexp(struct mod_exp_params *mod_exp_param);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

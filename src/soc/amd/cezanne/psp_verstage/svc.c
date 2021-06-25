@@ -112,3 +112,17 @@ uint32_t svc_reset_system(enum reset_type reset_type)
 	SVC_CALL1(SVC_RESET_SYSTEM, reset_type, retval);
 	return retval;
 }
+
+uint32_t svc_crypto_sha(struct sha_generic_data *sha_op, enum sha_operation_mode sha_mode)
+{
+	uint32_t retval = 0;
+	SVC_CALL2(SVC_SHA, sha_op, sha_mode, retval);
+	return retval;
+}
+
+uint32_t svc_modexp(struct mod_exp_params *mod_exp_param)
+{
+	uint32_t retval = 0;
+	SVC_CALL1(SVC_MODEXP, mod_exp_param, retval);
+	return retval;
+}

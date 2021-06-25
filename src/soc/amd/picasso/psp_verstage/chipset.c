@@ -23,3 +23,18 @@ uint32_t get_bios_dir_addr(struct psp_ef_table *ef_table)
 {
 	return ef_table->bios1_entry;
 }
+
+int platform_set_sha_op(enum vb2_hash_algorithm hash_alg,
+			struct sha_generic_data *sha_op)
+{
+	if (hash_alg == VB2_HASH_SHA256) {
+		sha_op->SHAType = SHA_TYPE_256;
+		sha_op->DigestLen = 32;
+	} else if (hash_alg == VB2_HASH_SHA512) {
+		sha_op->SHAType = SHA_TYPE_512;
+		sha_op->DigestLen = 64;
+	} else {
+		return -1;
+	}
+	return 0;
+}

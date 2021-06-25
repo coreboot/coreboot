@@ -3,6 +3,8 @@
 #ifndef PSP_VERSTAGE_H
 #define PSP_VERSTAGE_H
 
+#include <2crypto.h>
+#include <bl_uapp/bl_syscall_public.h>
 #include <stdint.h>
 #include <soc/psp_transfer.h>
 
@@ -62,5 +64,7 @@ uint32_t get_max_workbuf_size(uint32_t *size);
 uint32_t update_psp_bios_dir(uint32_t *psp_dir_offset, uint32_t *bios_dir_offset);
 uint32_t save_uapp_data(void *address, uint32_t size);
 uint32_t get_bios_dir_addr(struct psp_ef_table *ef_table);
+int platform_set_sha_op(enum vb2_hash_algorithm hash_alg,
+			struct sha_generic_data *sha_op);
 
 #endif /* PSP_VERSTAGE_H */

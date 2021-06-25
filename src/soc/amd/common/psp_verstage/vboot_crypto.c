@@ -21,13 +21,7 @@ vb2_error_t vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg, uint32_
 
 	sha_op_size_remaining = data_size;
 
-	if (hash_alg == VB2_HASH_SHA256) {
-		sha_op.SHAType = SHA_TYPE_256;
-		sha_op.DigestLen = 32;
-	} else if (hash_alg == VB2_HASH_SHA512) {
-		sha_op.SHAType = SHA_TYPE_512;
-		sha_op.DigestLen = 64;
-	} else {
+	if (platform_set_sha_op(hash_alg, &sha_op) != 0) {
 		printk(BIOS_INFO, "Unsupported hash_alg %d!\n", hash_alg);
 		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
 	}

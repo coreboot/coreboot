@@ -128,4 +128,7 @@ void espi_update_static_bar(uintptr_t bar);
  */
 int espi_setup(void);
 
+/* Run mainboard configuration needed to set up eSPI */
+void mb_set_up_early_espi(void);
+
 #endif /* AMD_BLOCK_ESPI_H */

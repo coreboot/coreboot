@@ -17,6 +17,10 @@ void espi_update_static_bar(uintptr_t bar)
 	espi_bar = bar;
 }
 
+__weak void mb_set_up_early_espi(void)
+{
+}
+
 static uintptr_t espi_get_bar(void)
 {
 	if (ENV_X86 && !espi_bar)

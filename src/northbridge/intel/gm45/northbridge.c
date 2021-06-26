@@ -27,6 +27,7 @@ static void mch_domain_read_resources(struct device *dev)
 {
 	u64 tom, touud;
 	u32 tomk, tolud, uma_sizek = 0, delta_cbmem;
+	int idx = 3;
 
 	/* Total Memory 2GB example:
 	 *
@@ -102,7 +103,7 @@ static void mch_domain_read_resources(struct device *dev)
 	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", tomk >> 10);
 
 	/* Report lowest memory region */
-	ram_resource(dev, 3, 0, 0xa0000 / KiB);
+	ram_resource(dev, idx++, 0, 0xa0000 / KiB);
 
 	/*
 	 * Reserve everything between A segment and 1MB:
@@ -110,11 +111,11 @@ static void mch_domain_read_resources(struct device *dev)
 	 * 0xa0000 - 0xbffff: Legacy VGA
 	 * 0xc0000 - 0xfffff: RAM
 	 */
-	mmio_resource(dev, 4, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
-	reserved_ram_resource(dev, 5, 0xc0000 / KiB, (1*MiB - 0xc0000) / KiB);
+	mmio_resource(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
+	reserved_ram_resource(dev, idx++, 0xc0000 / KiB, (1*MiB - 0xc0000) / KiB);
 
 	/* Report < 4GB memory */
-	ram_resource(dev, 6, 1*MiB / KiB, tomk - 1*MiB / KiB);
+	ram_resource(dev, idx++, 1*MiB / KiB, tomk - 1*MiB / KiB);
 
 	/*
 	 * If >= 4GB installed then memory from TOLUD to 4GB
@@ -122,7 +123,7 @@ static void mch_domain_read_resources(struct device *dev)
 	 */
 	touud >>= 10; /* Convert to KB */
 	if (touud > 4096 * 1024) {
-		ram_resource(dev, 7, 4096 * 1024, touud - (4096 * 1024));
+		ram_resource(dev, idx++, 4096 * 1024, touud - (4096 * 1024));
 		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
 		       (touud >> 10) - 4096);
 	}
@@ -130,9 +131,9 @@ static void mch_domain_read_resources(struct device *dev)
 	printk(BIOS_DEBUG, "Adding UMA memory area base=0x%llx "
 	       "size=0x%llx\n", ((u64)tomk) << 10, ((u64)uma_sizek) << 10);
 	/* Don't use uma_resource() as our UMA touches the PCI hole. */
-	fixed_mem_resource(dev, 8, tomk, uma_sizek, IORESOURCE_RESERVE);
+	fixed_mem_resource(dev, idx++, tomk, uma_sizek, IORESOURCE_RESERVE);
 
-	mmconf_resource(dev, 9);
+	mmconf_resource(dev, idx++);
 }
 
 static void mch_domain_set_resources(struct device *dev)

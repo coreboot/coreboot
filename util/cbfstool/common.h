@@ -132,6 +132,11 @@ int buffer_create(struct buffer *buffer, size_t size, const char *name);
 /* Loads a file into memory buffer. Returns 0 on success, otherwise non-zero. */
 int buffer_from_file(struct buffer *buffer, const char *filename);
 
+/* Loads a file into memory buffer (with buffer size rounded up to a multiple of
+   size_granularity). Returns 0 on success, otherwise non-zero. */
+int buffer_from_file_aligned_size(struct buffer *buffer, const char *filename,
+				  size_t size_granularity);
+
 /* Writes memory buffer content into file.
  * Returns 0 on success, otherwise non-zero. */
 int buffer_write_file(struct buffer *buffer, const char *filename);

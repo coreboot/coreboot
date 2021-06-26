@@ -49,7 +49,8 @@ int buffer_create(struct buffer *buffer, size_t size, const char *name)
 	return (buffer->data == NULL);
 }
 
-int buffer_from_file(struct buffer *buffer, const char *filename)
+int buffer_from_file_aligned_size(struct buffer *buffer, const char *filename,
+				  size_t size_granularity)
 {
 	FILE *fp = fopen(filename, "rb");
 	if (!fp) {
@@ -63,18 +64,27 @@ int buffer_from_file(struct buffer *buffer, const char *filename)
 		fclose(fp);
 		return -1;
 	}
-	buffer->size = file_size;
+	buffer->size = ALIGN_UP(file_size, size_granularity);
 	buffer->name = strdup(filename);
 	buffer->data = (char *)malloc(buffer->size);
 	assert(buffer->data);
-	if (fread(buffer->data, 1, buffer->size, fp) != buffer->size) {
+	if (fread(buffer->data, 1, file_size, fp) != (size_t)file_size) {
 		fprintf(stderr, "incomplete read: %s\n", filename);
 		fclose(fp);
 		buffer_delete(buffer);
 		return -1;
 	}
 	fclose(fp);
+
+	if (buffer->size > (size_t)file_size)
+		memset(buffer->data + file_size, 0xff, buffer->size - file_size);
+
 	return 0;
+}
+
+int buffer_from_file(struct buffer *buffer, const char *filename)
+{
+	return buffer_from_file_aligned_size(buffer, filename, 1);
 }
 
 int buffer_write_file(struct buffer *buffer, const char *filename)

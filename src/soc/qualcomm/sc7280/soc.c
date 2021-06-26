@@ -12,20 +12,14 @@ static void soc_read_resources(struct device *dev)
 	void *start = NULL;
 	void *end = NULL;
 
-	ram_resource_kb(dev, 0, (uintptr_t)ddr_region->offset / KiB,
-				ddr_region->size / KiB);
-	reserved_ram_resource_kb(dev, 1, (uintptr_t)_dram_soc / KiB,
-				REGION_SIZE(dram_soc) / KiB);
-	reserved_ram_resource_kb(dev, 2, (uintptr_t)_dram_wlan / KiB,
-				REGION_SIZE(dram_wlan) / KiB);
-	reserved_ram_resource_kb(dev, 3, (uintptr_t)_dram_wpss / KiB,
-				REGION_SIZE(dram_wpss) / KiB);
-	reserved_ram_resource_kb(dev, 4, (uintptr_t)_dram_aop / KiB,
-				REGION_SIZE(dram_aop) / KiB);
-	reserved_ram_resource_kb(dev, 5, (uintptr_t)_dram_cpucp / KiB,
-				REGION_SIZE(dram_cpucp) / KiB);
+	ram_range(dev, 0, (uintptr_t)ddr_region->offset, ddr_region->size);
+	reserved_ram_range(dev, 1, (uintptr_t)_dram_soc, REGION_SIZE(dram_soc));
+	reserved_ram_range(dev, 2, (uintptr_t)_dram_wlan, REGION_SIZE(dram_wlan));
+	reserved_ram_range(dev, 3, (uintptr_t)_dram_wpss, REGION_SIZE(dram_wpss));
+	reserved_ram_range(dev, 4, (uintptr_t)_dram_aop, REGION_SIZE(dram_aop));
+	reserved_ram_range(dev, 5, (uintptr_t)_dram_cpucp, REGION_SIZE(dram_cpucp));
 	if (soc_modem_carve_out(&start, &end))
-		reserved_ram_resource_kb(dev, 6, (uintptr_t)start / KiB, (end - start) / KiB);
+		reserved_ram_range(dev, 6, (uintptr_t)start, end - start);
 }
 
 static void soc_init(struct device *dev)

@@ -5,14 +5,16 @@
 #include <symbols.h>
 #include <soc/ipq_uart.h>
 
-#define RESERVED_SIZE_KB	(0x01500000 / KiB)
+#define RESERVED_SIZE	0x01500000 /* 21 MiB */
 
 static void soc_read_resources(struct device *dev)
 {
-	/* Reserve bottom 0x150_0000 bytes for NSS, SMEM, etc. */
-	reserved_ram_resource_kb(dev, 0, (uintptr_t)_dram / KiB, RESERVED_SIZE_KB);
-	ram_resource_kb(dev, 0, (uintptr_t)_dram / KiB + RESERVED_SIZE_KB,
-		     (CONFIG_DRAM_SIZE_MB * KiB) - RESERVED_SIZE_KB);
+	/* Reserve bottom 21 MiB for NSS, SMEM, etc. */
+	uintptr_t reserve_ram_end = (uintptr_t)_dram + RESERVED_SIZE;
+	uint64_t ram_end = CONFIG_DRAM_SIZE_MB * (uint64_t)MiB;
+
+	reserved_ram_from_to(dev, 0, (uintptr_t)_dram, reserve_ram_end);
+	ram_from_to(dev, 1, reserve_ram_end, ram_end);
 }
 
 static void soc_init(struct device *dev)

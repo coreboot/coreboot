@@ -13,7 +13,7 @@
 
 static void soc_init(struct device *dev)
 {
-	ram_resource_kb(dev, 0, (uintptr_t)_dram/KiB, sdram_size_mb()*(MiB/KiB));
+	ram_range(dev, 0, (uintptr_t)_dram, sdram_size_mb() * MiB);
 	if (display_init_required())
 		rk_display_init(dev, (uintptr_t)_framebuffer,
 				REGION_SIZE(framebuffer));

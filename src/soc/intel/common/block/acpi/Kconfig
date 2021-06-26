@@ -15,6 +15,13 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_LPIT
 	help
 	  Generate LPIT table with LPI state entries
 
+config SOC_INTEL_COMMON_BLOCK_ACPI_PEP
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	  Generate an Intel Power Engine device object in the SSDT. This is
+	  usually used for providing ACPI hooks for S0ix exit/entry.
+
 config SOC_INTEL_COMMON_BLOCK_CRASHLOG
 	bool
 	depends on SOC_INTEL_CRASHLOG
@@ -27,6 +34,5 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_CPPC
 	bool
 	help
 	  Generate CPPC entries for Intel SpeedShift
-
 
 endif

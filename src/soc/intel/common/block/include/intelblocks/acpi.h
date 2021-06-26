@@ -90,4 +90,7 @@ struct madt_ioapic_info {
  */
 const struct madt_ioapic_info *soc_get_ioapic_info(size_t *entries);
 
+/* Generate an Intel Power Engine ACPI device */
+void generate_acpi_power_engine(void);
+
 #endif				/* _SOC_INTEL_COMMON_BLOCK_ACPI_H_ */

@@ -13,8 +13,6 @@
 #include <northbridge/intel/x4x/x4x.h>
 #include <cpu/intel/smm_reloc.h>
 
-static const int legacy_hole_base_k = 0xa0000 / 1024;
-
 static void mch_domain_read_resources(struct device *dev)
 {
 	u8 index;
@@ -81,11 +79,9 @@ static void mch_domain_read_resources(struct device *dev)
 	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", tomk >> 10);
 
 	/* Report the memory regions */
-	ram_resource_kb(dev, index++, 0, legacy_hole_base_k);
-	mmio_resource_kb(dev, index++, legacy_hole_base_k,
-			(0xc0000 >> 10) - legacy_hole_base_k);
-	reserved_ram_resource_kb(dev, index++, 0xc0000 >> 10,
-			(0x100000 - 0xc0000) >> 10);
+	ram_from_to(dev, index++, 0, 0xa0000);
+	mmio_from_to(dev, index++, 0xa0000, 0xc0000);
+	reserved_ram_from_to(dev, index++, 0xc0000, 1 * MiB);
 	ram_resource_kb(dev, index++, 0x100000 >> 10, (tomk - (0x100000 >> 10)));
 
 	/*

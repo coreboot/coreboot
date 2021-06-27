@@ -11,7 +11,7 @@ static void mainboard_enable(struct device *dev)
 	}
 
 	/* Where does RAM live? */
-	ram_resource_kb(dev, 0, 2048, 32768);
+	ram_range(dev, 0, 2 * MiB, 32 * MiB);
 }
 
 struct chip_operations mainboard_ops = {

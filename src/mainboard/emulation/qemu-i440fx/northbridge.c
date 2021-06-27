@@ -47,7 +47,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 	int i440fx = (nbid == 0x1237);
 	int q35    = (nbid == 0x29c0);
 	struct resource *res;
-	unsigned long tomk = 0, high;
+	unsigned long tomk = 0;
 	int idx = 10;
 	FWCfgFile f;
 
@@ -65,12 +65,10 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 				       list[i].address, list[i].length);
 				if (list[i].address == 0) {
 					tomk = list[i].length / 1024;
-					ram_resource_kb(dev, idx++, 0, 640);
-					ram_resource_kb(dev, idx++, 768, tomk - 768);
+					ram_from_to(dev, idx++, 0, 0xa0000);
+					ram_from_to(dev, idx++, 0xc0000, tomk * KiB);
 				} else {
-					ram_resource_kb(dev, idx++,
-						     list[i].address / 1024,
-						     list[i].length / 1024);
+					ram_range(dev, idx++, list[i].address, list[i].length);
 				}
 				break;
 			case 2: /* reserved */
@@ -94,15 +92,16 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 	if (!tomk) {
 		/* qemu older than 1.7, or reading etc/e820 failed. Fallback to cmos. */
 		tomk = qemu_get_memory_size();
-		high = qemu_get_high_memory_size();
+		uint64_t high = qemu_get_high_memory_size();
 		printk(BIOS_DEBUG, "QEMU: cmos: %lu MiB RAM below 4G.\n", tomk / 1024);
-		printk(BIOS_DEBUG, "QEMU: cmos: %lu MiB RAM above 4G.\n", high / 1024);
+		printk(BIOS_DEBUG, "QEMU: cmos: %llu MiB RAM above 4G.\n", high / 1024);
 
 		/* Report the memory regions. */
-		ram_resource_kb(dev, idx++, 0, 640);
-		ram_resource_kb(dev, idx++, 768, tomk - 768);
+		ram_from_to(dev, idx++, 0, 0xa0000);
+		ram_from_to(dev, idx++, 0xc0000, tomk * KiB);
+
 		if (high)
-			ram_resource_kb(dev, idx++, 4 * 1024 * 1024, high);
+			upper_ram_end(dev, idx++, 4ull * GiB + high * KiB);
 	}
 
 	/* Reserve I/O ports used by QEMU */
@@ -119,10 +118,10 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 	}
 
 	/* A segment is legacy VGA region */
-	mmio_resource_kb(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
+	mmio_from_to(dev, idx++, 0xa0000, 0xc0000);
 
 	/* C segment to 1MB is reserved RAM (low tables) */
-	reserved_ram_resource_kb(dev, idx++, 0xc0000 / KiB, (1 * MiB - 0xc0000) / KiB);
+	reserved_ram_from_to(dev, idx++, 0xc0000, 1 * MiB);
 
 	if (q35 && ((tomk * 1024) < 0xb0000000)) {
 		/*

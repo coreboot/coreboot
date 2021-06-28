@@ -393,14 +393,14 @@ static void fw_cfg_smbios_init(void)
 
 static unsigned long smbios_next(unsigned long current)
 {
-	struct smbios_type0 *t0;
+	struct smbios_header *header;
 	int l, count = 0;
 	char *s;
 
-	t0 = (void*)current;
-	current += t0->length;
+	header = (void *)current;
+	current += header->length;
 	for (;;) {
-		s = (void*)current;
+		s = (void *)current;
 		l = strlen(s);
 		if (!l)
 			return current + (count ? 1 : 2);
@@ -424,7 +424,7 @@ static unsigned long smbios_next(unsigned long current)
 unsigned long fw_cfg_smbios_tables(int *handle, unsigned long *current)
 {
 	FWCfgFile f;
-	struct smbios_type0 *t0;
+	struct smbios_header *header;
 	unsigned long start, end;
 	int ret, i, count = 1;
 	char *str;
@@ -446,8 +446,8 @@ unsigned long fw_cfg_smbios_tables(int *handle, unsigned long *current)
 	if (i == 16384)
 		return 0;
 	i += sizeof(struct smbios_type0) - 2;
-	t0 = (struct smbios_type0*)(*current - i);
-	if (t0->type != SMBIOS_BIOS_INFORMATION || t0->handle != 0)
+	header = (struct smbios_header *)(*current - i);
+	if (header->type != SMBIOS_BIOS_INFORMATION || header->handle != 0)
 		return 0;
 	printk(BIOS_DEBUG, "QEMU: coreboot type0 table found at 0x%lx.\n",
 	       *current - i);
@@ -461,8 +461,8 @@ unsigned long fw_cfg_smbios_tables(int *handle, unsigned long *current)
 	fw_cfg_get(f.select, (void *)start, f.size);
 	end = start;
 	do {
-		t0 = (struct smbios_type0*)end;
-		if (t0->type == SMBIOS_END_OF_TABLE)
+		header = (struct smbios_header *)end;
+		if (header->type == SMBIOS_END_OF_TABLE)
 			break;
 		end = smbios_next(end);
 		count++;

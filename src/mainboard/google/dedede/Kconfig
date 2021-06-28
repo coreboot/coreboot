@@ -114,6 +114,7 @@ config MAINBOARD_PART_NUMBER
 	default "Pirika" if BOARD_GOOGLE_PIRIKA
 	default "Haboki" if BOARD_GOOGLE_HABOKI
 	default "Cappy" if BOARD_GOOGLE_CAPPY
+	default "Cappy2" if BOARD_GOOGLE_CAPPY2
 
 config MAX_CPUS
 	int
@@ -152,6 +153,7 @@ config VARIANT_DIR
 	default "pirika" if BOARD_GOOGLE_PIRIKA
 	default "haboki" if BOARD_GOOGLE_HABOKI
 	default "cappy" if BOARD_GOOGLE_CAPPY
+	default "cappy2" if BOARD_GOOGLE_CAPPY2
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 

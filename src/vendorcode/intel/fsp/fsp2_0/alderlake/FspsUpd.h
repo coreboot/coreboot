@@ -1547,9 +1547,15 @@ typedef struct {
 **/
   UINT16                      VrVoltageLimit[5];
 
-/** Offset 0x069E - Reserved
+/** Offset 0x069E - VccIn Aux Imon IccMax
+  PCODE MMIO Mailbox: VccIn Aux Imon IccMax. <b>0 - Auto</b> Values are in 1/4 Amp
+  increments. Range is 0-512.
 **/
-  UINT8                      Reserved27[12];
+  UINT16                      VccInAuxImonIccImax;
+
+/** Offset 0x06A0 - Reserved
+**/
+  UINT8                       Reserved27[10];
 
 /** Offset 0x06AA - FIVR RFI Spread Spectrum Enable or disable
   Enable or Disable FIVR RFI Spread Spectrum. 0: Disable ; <b> 1: Enable </b>
@@ -1960,8 +1966,8 @@ typedef struct {
   UINT8                       PcieComplianceTestMode;
 
 /** Offset 0x09CA - PCIE Rp Function Swap
-  Allows BIOS to use root port function number swapping when root port of function
-  0 is disabled.
+  DEPRECATED. Allows BIOS to use root port function number swapping when root port
+  of function 0 is disabled.
   $EN_DIS
 **/
   UINT8                       PcieRpFunctionSwap;
@@ -3861,7 +3867,7 @@ typedef struct {
 
 /** Offset 0x0FD5 - Reserved
 **/
-  UINT8                       Reserved57[3];
+  UINT8                       Reserved57[11];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -3880,11 +3886,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0FD8
+/** Offset 0x0FE0
 **/
   UINT8                       UnusedUpdSpace40[6];
 
-/** Offset 0x0FDE
+/** Offset 0x0FE6
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

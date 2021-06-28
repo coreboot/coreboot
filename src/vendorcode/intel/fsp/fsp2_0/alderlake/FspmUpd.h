@@ -454,9 +454,10 @@ typedef struct {
   UINT8                       ApertureSize;
 
 /** Offset 0x01D0 - Board Type
-  MrcBoardType, Options are 0=Mobile/Mobile Halo, 1=Desktop/DT Halo, 5=ULT/ULX/Mobile
-  Halo, 7=UP Server
-  0:Mobile/Mobile Halo, 1:Desktop/DT Halo, 5:ULT/ULX/Mobile Halo, 7:UP Server
+  MrcBoardType, Options are 0=Mobile/Mobile Halo, 1=Desktop/DT Halo, 2=Desktop 2DPC
+  DDR5, 5=ULT/ULX/Mobile Halo, 7=UP Server
+  0:Mobile/Mobile Halo, 1:Desktop/DT Halo, 2:Desktop 2DPC DDR5, 5:ULT/ULX/Mobile Halo,
+  7:UP Server
 **/
   UINT8                       UserBd;
 
@@ -2939,12 +2940,12 @@ typedef struct {
   UINT8                       Reserved38[3];
 
 /** Offset 0x08DE - REFRESH_PANIC_WM
-  Refresh Panic Watermark, range 1-8, Default is 8
+  DEPRECATED
 **/
   UINT8                       RefreshPanicWm;
 
 /** Offset 0x08DF - REFRESH_HP_WM
-  Refresh High Priority Watermark, range 1-7, Default is 7
+  DEPRECATED
 **/
   UINT8                       RefreshHpWm;
 
@@ -3161,7 +3162,7 @@ typedef struct {
 
 /** Offset 0x0AA8 - Reserved
 **/
-  UINT8                       Reserved46[56];
+  UINT8                       Reserved46[64];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -3180,11 +3181,11 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x0AE0
+/** Offset 0x0AE8
 **/
   UINT8                       UnusedUpdSpace29[6];
 
-/** Offset 0x0AE6
+/** Offset 0x0AEE
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

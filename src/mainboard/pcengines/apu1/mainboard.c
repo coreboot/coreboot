@@ -168,14 +168,11 @@ static void config_addon_uart(void)
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 static int mainboard_smbios_type16(DMI_INFO *agesa_dmi, int *handle, unsigned long *current)
 {
-	struct smbios_type16 *t;
-	u32 max_capacity;
-	int len;
+	const u32 max_capacity = get_spd_offset() ? 4 : 2; /* 4GB or 2GB variant */
 
-	t = (struct smbios_type16 *)*current;
-	len = sizeof(*t);
+	struct smbios_type16 *t = (struct smbios_type16 *)*current;
+	int len = sizeof(*t);
 	memset(t, 0, len);
-	max_capacity = get_spd_offset() ? 4 : 2; /* 4GB or 2GB variant */
 
 	t->type = SMBIOS_PHYS_MEMORY_ARRAY;
 	t->handle = *handle;

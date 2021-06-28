@@ -41,7 +41,7 @@ static int lumpy_smbios_type41_irq(int *handle, unsigned long *current,
 	t->function_number = 0;
 	t->device_number = 0;
 
-	const int len = t->length + smbios_string_table_len(t->eos);
+	const int len = smbios_full_table_len(&t->header, t->eos);
 	*current += len;
 	*handle += 1;
 	return len;

@@ -10,6 +10,8 @@ unsigned long smbios_write_tables(unsigned long start);
 int smbios_add_string(u8 *start, const char *str);
 int smbios_string_table_len(u8 *start);
 
+struct smbios_header;
+int smbios_full_table_len(struct smbios_header *header, u8 *str_table_start);
 void *smbios_carve_table(unsigned long start, u8 type, u8 length, u16 handle);
 
 /* Used by mainboard to add an on-board device */

@@ -173,7 +173,7 @@ static int qemu_get_smbios_data16(int handle, unsigned long *current)
 	t->memory_error_correction = MEMORY_ARRAY_ECC_NONE;
 	t->maximum_capacity = qemu_get_memory_size();
 
-	const int len = sizeof(*t);
+	const int len = smbios_full_table_len(&t->header, t->eos);
 	*current += len;
 	return len;
 }
@@ -195,7 +195,7 @@ static int qemu_get_smbios_data17(int handle, int parent_handle, unsigned long *
 	t->clock_speed = 200;
 	t->manufacturer = smbios_add_string(t->eos, CONFIG_MAINBOARD_VENDOR);
 
-	const int len = t->length + smbios_string_table_len(t->eos);
+	const int len = smbios_full_table_len(&t->header, t->eos);
 	*current += len;
 	return len;
 }

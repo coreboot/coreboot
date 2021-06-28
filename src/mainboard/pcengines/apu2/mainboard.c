@@ -162,7 +162,7 @@ static int mainboard_smbios_type16(DMI_INFO *agesa_dmi, int *handle,
 	t->memory_error_information_handle = 0xfffe;
 	t->number_of_memory_devices = 1;
 
-	const int len = sizeof(*t);
+	const int len = smbios_full_table_len(&t->header, t->eos);
 	*current += len;
 	return len;
 }
@@ -198,7 +198,7 @@ static int mainboard_smbios_type17(DMI_INFO *agesa_dmi, int *handle,
 	t->minimum_voltage = 1500; /* From SPD: 1.5V */
 	t->maximum_voltage = 1500;
 
-	const int len = t->length + smbios_string_table_len(t->eos);
+	const int len = smbios_full_table_len(&t->header, t->eos);
 	*current += len;
 	return len;
 }

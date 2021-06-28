@@ -28,7 +28,7 @@ static int smbios_write_intel_wifi(struct device *dev, int *handle, unsigned lon
 	/* Intel wifi driver expects this string to be in the table 0x85. */
 	t->str = smbios_add_string(t->eos, "KHOIHGIUCCHHII");
 
-	const int len = t->length + smbios_string_table_len(t->eos);
+	const int len = smbios_full_table_len(&t->header, t->eos);
 	*current += len;
 	*handle += 1;
 	return len;

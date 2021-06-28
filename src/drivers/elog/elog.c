@@ -626,7 +626,7 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 	t->log_type_descriptors = 0;
 	t->log_type_descriptor_length = 2;
 
-	const int len = sizeof(*t);
+	const int len = smbios_full_table_len(&t->header, t->eos);
 	*current += len;
 	return len;
 }

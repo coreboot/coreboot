@@ -53,11 +53,11 @@ config VARIANT_DIR
 
 config DEVICETREE
 	string
-	default "variants/$(CONFIG_VARIANT_DIR)/devicetree.cb"
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config INTEL_GMA_VBT_FILE
 	string
-	default "src/mainboard/$(MAINBOARDDIR)/variants/$(CONFIG_VARIANT_DIR)/data.vbt"
+	default "src/mainboard/\$(MAINBOARDDIR)/variants/\$(CONFIG_VARIANT_DIR)/data.vbt"
 
 config CBFS_SIZE
 	hex

@@ -32,6 +32,6 @@ config UART_FOR_CONSOLE
 
 config FMDFILE
 	string
-	default "src/mainboard/$(CONFIG_MAINBOARD_DIR)/board.fmd"
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
 endif # BOARD_TI_BEAGLEBONE

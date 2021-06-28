@@ -1,11 +1,8 @@
-# This is a CSV file containing a list of memory parts used by this variant.
-# One part per line with an optional fixed ID in column 2.
-# Only include a fixed ID if it is required for legacy reasons!
-# Generated IDs are dependent on the order of parts in this file,
-# so new parts must always be added at the end of the file!
-#
-# Generate an updated Makefile.inc and dram_id.generated.txt by running the
-# gen_part_id tool from util/spd_tools/lp4x.
-# See util/spd_tools/lp4x/README.md for more details and instructions.
-
-# Part Name
+MT53E1G32D2NP-046 WT:A
+H9HCNNNBKMMLXR-NEE
+K4U6E3S4AA-MGCR
+MT53E512M32D2NP-046 WT:E
+H9HCNNNCPMMLXR-NEE
+K4UBE3D4AA-MGCR
+H9HCNNNFAMMLXR-NEE
+MT53E2G32D4NQ-046 WT:A

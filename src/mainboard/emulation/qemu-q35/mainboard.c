@@ -31,11 +31,17 @@ static void qemu_nb_init(struct device *dev)
 	pc_keyboard_init(NO_AUX_DEVICE);
 
 	/* setup IRQ routing for pci slots */
-	for (i = 0; i < 25; i++)
-		pci_assign_irqs(pcidev_on_root(i, 0), qemu_q35_irqs + (i % 4));
+	for (i = 0; i < 25; i++) {
+		struct device *d = pcidev_on_root(i, 0);
+		if (d)
+			pci_assign_irqs(d, qemu_q35_irqs + (i % 4));
+	}
 	/* setup IRQ routing southbridge devices */
-	for (i = 25; i < 32; i++)
-		pci_assign_irqs(pcidev_on_root(i, 0), qemu_q35_irqs);
+	for (i = 25; i < 32; i++) {
+		struct device *d = pcidev_on_root(i, 0);
+		if (d)
+			pci_assign_irqs(d, qemu_q35_irqs);
+	}
 }
 
 static void qemu_nb_read_resources(struct device *dev)

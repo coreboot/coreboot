@@ -24,8 +24,11 @@ static void qemu_nb_init(struct device *dev)
 	pc_keyboard_init(NO_AUX_DEVICE);
 
 	/* setup IRQ routing */
-	for (i = 0; i < 32; i++)
-		pci_assign_irqs(pcidev_on_root(i, 0), qemu_i440fx_irqs + (i % 4));
+	for (i = 0; i < 32; i++) {
+		struct device *d = pcidev_on_root(i, 0);
+		if (d)
+			pci_assign_irqs(d, qemu_i440fx_irqs + (i % 4));
+	}
 }
 
 static void qemu_nb_read_resources(struct device *dev)

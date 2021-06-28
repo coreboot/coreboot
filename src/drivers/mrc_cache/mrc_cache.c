@@ -486,7 +486,7 @@ static void update_mrc_cache_by_type(int type,
 
 	struct update_region_file_entry entries[] = {
 		[0] = {
-			.size = sizeof(struct mrc_metadata),
+			.size = sizeof(*new_md),
 			.data = new_md,
 		},
 		[1] = {
@@ -696,7 +696,7 @@ int mrc_cache_stash_data(int type, uint32_t version, const void *data,
 		.data_checksum = compute_ip_checksum(data, size),
 	};
 	md.header_checksum =
-		compute_ip_checksum(&md, sizeof(struct mrc_metadata));
+		compute_ip_checksum(&md, sizeof(md));
 
 	if (CONFIG(MRC_STASH_TO_CBMEM)) {
 		/* Store data in cbmem for use in ramstage */

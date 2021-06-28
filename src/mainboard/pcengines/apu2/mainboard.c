@@ -152,14 +152,9 @@ static int mainboard_smbios_type16(DMI_INFO *agesa_dmi, int *handle,
 {
 	const u32 max_capacity = get_spd_offset() ? 4 : 2; /* 4GB or 2GB variant */
 
-	struct smbios_type16 *t = (struct smbios_type16 *)*current;
-	int len = sizeof(*t);
-	memset(t, 0, len);
+	struct smbios_type16 *t = smbios_carve_table(*current, SMBIOS_PHYS_MEMORY_ARRAY,
+						     sizeof(*t), *handle);
 
-	t->type = SMBIOS_PHYS_MEMORY_ARRAY;
-	t->handle = *handle;
-	t->length = len - 2;
-	t->type = SMBIOS_PHYS_MEMORY_ARRAY;
 	t->use = MEMORY_ARRAY_USE_SYSTEM;
 	t->location = MEMORY_ARRAY_LOCATION_SYSTEM_BOARD;
 	t->memory_error_correction = agesa_dmi->T16.MemoryErrorCorrection;
@@ -167,23 +162,17 @@ static int mainboard_smbios_type16(DMI_INFO *agesa_dmi, int *handle,
 	t->memory_error_information_handle = 0xfffe;
 	t->number_of_memory_devices = 1;
 
+	const int len = sizeof(*t);
 	*current += len;
-
 	return len;
 }
 
 static int mainboard_smbios_type17(DMI_INFO *agesa_dmi, int *handle,
 				 unsigned long *current)
 {
-	struct smbios_type17 *t;
-	int len;
+	struct smbios_type17 *t = smbios_carve_table(*current, SMBIOS_MEMORY_DEVICE,
+						     sizeof(*t), *handle + 1);
 
-	t = (struct smbios_type17 *)*current;
-	memset(t, 0, sizeof(*t));
-
-	t->type = SMBIOS_MEMORY_DEVICE;
-	t->length = sizeof(*t) - 2;
-	t->handle = *handle + 1;
 	t->phys_memory_array_handle = *handle;
 	t->memory_error_information_handle = 0xfffe;
 	t->total_width = agesa_dmi->T17[0][0][0].TotalWidth;
@@ -209,9 +198,8 @@ static int mainboard_smbios_type17(DMI_INFO *agesa_dmi, int *handle,
 	t->minimum_voltage = 1500; /* From SPD: 1.5V */
 	t->maximum_voltage = 1500;
 
-	len = t->length + smbios_string_table_len(t->eos);
+	const int len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
-
 	return len;
 }
 

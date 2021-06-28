@@ -28,13 +28,10 @@ static void mainboard_init(struct device *dev)
 static int lumpy_smbios_type41_irq(int *handle, unsigned long *current,
 				   const char *name, u8 irq, u8 addr)
 {
-	struct smbios_type41 *t = (struct smbios_type41 *)*current;
-	int len = sizeof(*t);
+	struct smbios_type41 *t = smbios_carve_table(*current,
+						SMBIOS_ONBOARD_DEVICES_EXTENDED_INFORMATION,
+						sizeof(*t), *handle);
 
-	memset(t, 0, sizeof(*t));
-	t->type = SMBIOS_ONBOARD_DEVICES_EXTENDED_INFORMATION;
-	t->handle = *handle;
-	t->length = len - 2;
 	t->reference_designation = smbios_add_string(t->eos, name);
 	t->device_type = SMBIOS_DEVICE_TYPE_OTHER;
 	t->device_status = 1;
@@ -44,7 +41,7 @@ static int lumpy_smbios_type41_irq(int *handle, unsigned long *current,
 	t->function_number = 0;
 	t->device_number = 0;
 
-	len = t->length + smbios_string_table_len(t->eos);
+	const int len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
 	*handle += 1;
 	return len;

@@ -593,8 +593,6 @@ static inline u8 *elog_flash_offset_to_address(void)
  */
 int elog_smbios_write_type15(unsigned long *current, int handle)
 {
-	struct smbios_type15 *t = (struct smbios_type15 *)*current;
-	int len = sizeof(*t);
 	uintptr_t log_address;
 
 	size_t elog_size = region_device_sz(&elog_state.nv_dev);
@@ -614,10 +612,9 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 		return 0;
 	}
 
-	memset(t, 0, len);
-	t->type = SMBIOS_EVENT_LOG;
-	t->length = len - 2;
-	t->handle = handle;
+	struct smbios_type15 *t = smbios_carve_table(*current, SMBIOS_EVENT_LOG,
+						     sizeof(*t), handle);
+
 	t->area_length = elog_size - 1;
 	t->header_offset = 0;
 	t->data_offset = sizeof(struct elog_header);
@@ -629,6 +626,7 @@ int elog_smbios_write_type15(unsigned long *current, int handle)
 	t->log_type_descriptors = 0;
 	t->log_type_descriptor_length = 2;
 
+	const int len = sizeof(*t);
 	*current += len;
 	return len;
 }

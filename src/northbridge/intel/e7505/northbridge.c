@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
@@ -11,9 +12,8 @@
 static void mch_domain_read_resources(struct device *dev)
 {
 	int idx;
-	unsigned long tomk, tolmk;
-	unsigned long remapbasek, remaplimitk;
-	const unsigned long basek_4G = 4 * (GiB / KiB);
+	unsigned long tolmk;
+	uint64_t tom, remapbase, remaplimit;
 	struct device *mc_dev;
 
 	pci_domain_read_resources(dev);
@@ -25,28 +25,26 @@ static void mch_domain_read_resources(struct device *dev)
 	tolmk = pci_read_config16(mc_dev, TOLM) >> 11;
 	tolmk <<= 17;
 
-	tomk = pci_read_config8(mc_dev, DRB_ROW_7);
-	tomk <<= 16;
+	tom = pci_read_config8(mc_dev, DRB_ROW_7);
+	tom <<= 26;
 
 	/* Remapped region with a 64 MiB granularity in register
 	   definition. Limit is inclusive, so add one. */
-	remapbasek = pci_read_config16(mc_dev, REMAPBASE) & 0x3ff;
-	remapbasek <<= 16;
+	remapbase = pci_read_config16(mc_dev, REMAPBASE) & 0x3ff;
+	remapbase <<= 26;
 
-	remaplimitk = pci_read_config16(mc_dev, REMAPLIMIT) & 0x3ff;
-	remaplimitk += 1;
-	remaplimitk <<= 16;
+	remaplimit = pci_read_config16(mc_dev, REMAPLIMIT) & 0x3ff;
+	remaplimit += 1;
+	remaplimit <<= 26;
 
 	/* Report the memory regions */
 	idx = 10;
 	ram_resource_kb(dev, idx++, 0, tolmk);
 	mmio_resource_kb(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
 
-	if (tomk > basek_4G)
-		ram_resource_kb(dev, idx++, basek_4G, tomk - basek_4G);
 
-	if (remaplimitk > remapbasek)
-		ram_resource_kb(dev, idx++, remapbasek, remaplimitk - remapbasek);
+	ASSERT(tom == remapbase);
+	upper_ram_end(dev, idx++, remaplimit);
 }
 
 static void mch_domain_set_resources(struct device *dev)

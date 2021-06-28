@@ -134,8 +134,7 @@ static void mc_read_resources(struct device *dev)
 	mmio_resource_kb(dev, index++, gtt_base / KiB, uma_size_gtt * KiB);
 	mmio_resource_kb(dev, index++, igd_base / KiB, uma_size_igd * KiB);
 
-	if (touud > 4096)
-		ram_resource_kb(dev, index++, (4096 * KiB), ((touud - 4096) * KiB));
+	upper_ram_end(dev, index++, touud * MiB);
 
 	/* This memory is not DMA-capable. */
 	if (touud >= 8192 - 64)

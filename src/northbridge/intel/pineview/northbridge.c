@@ -44,7 +44,6 @@ static void mch_domain_read_resources(struct device *dev)
 	u32 tomk, tolud, tseg_sizek;
 	u32 cbmem_topk, delta_cbmem;
 	u16 index;
-	const u32 top32memk = 4 * (GiB / KiB);
 
 	struct device *mch = pcidev_on_root(0, 0);
 
@@ -108,12 +107,7 @@ static void mch_domain_read_resources(struct device *dev)
 	 * If > 4GB installed then memory from TOLUD to 4GB
 	 * is remapped above TOM, TOUUD will account for both
 	 */
-	touud >>= 10; /* Convert to KB */
-	if (touud > top32memk) {
-		ram_resource_kb(dev, index++, top32memk, touud - top32memk);
-		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
-			(touud - top32memk) / KiB);
-	}
+	upper_ram_end(dev, index++, touud);
 
 	mmconf_resource(dev, index++);
 

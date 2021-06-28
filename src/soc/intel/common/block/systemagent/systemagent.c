@@ -186,7 +186,7 @@ static void sa_get_mem_map(struct device *dev, uint64_t *values)
  */
 static void sa_add_dram_resources(struct device *dev, int *resource_count)
 {
-	uintptr_t base_k, touud_k;
+	uintptr_t base_k;
 	size_t size_k;
 	uint64_t sa_map_values[MAX_MAP_ENTRIES];
 	uintptr_t top_of_ram;
@@ -212,11 +212,7 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 	mmio_resource_kb(dev, index++, base_k / KiB, size_k / KiB);
 
 	/* 4GiB -> TOUUD */
-	base_k = 4 * (GiB / KiB); /* 4GiB */
-	touud_k = sa_map_values[SA_TOUUD_REG] / KiB;
-	size_k = touud_k - base_k;
-	if (touud_k > base_k)
-		ram_resource_kb(dev, index++, base_k, size_k);
+	upper_ram_end(dev, index++, sa_map_values[SA_TOUUD_REG]);
 
 	/*
 	 * Reserve everything between A segment and 1MB:

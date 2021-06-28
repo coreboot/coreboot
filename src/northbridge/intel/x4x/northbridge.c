@@ -88,12 +88,7 @@ static void mch_domain_read_resources(struct device *dev)
 	 * If >= 4GB installed then memory from TOLUD to 4GB
 	 * is remapped above TOM, TOUUD will account for both
 	 */
-	touud >>= 10; /* Convert to KB */
-	if (touud > top32memk) {
-		ram_resource_kb(dev, index++, top32memk, touud - top32memk);
-		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
-		       (touud - top32memk) >> 10);
-	}
+	upper_ram_end(dev, index++, touud);
 
 	printk(BIOS_DEBUG, "Adding UMA memory area base=0x%08x size=0x%08x\n",
 	       tomk << 10, uma_sizek << 10);

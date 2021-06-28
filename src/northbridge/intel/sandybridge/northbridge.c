@@ -211,11 +211,7 @@ static void mc_read_resources(struct device *dev)
 	 * If >= 4GB installed, then memory from TOLUD to 4GB is remapped above TOM.
 	 * TOUUD will account for both memory chunks.
 	 */
-	touud >>= 10; /* Convert to KB */
-	if (touud > 4096 * 1024) {
-		ram_resource_kb(dev, index++, 4096 * 1024, touud - (4096 * 1024));
-		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n", (touud >> 10) - 4096);
-	}
+	upper_ram_end(dev, index++, touud);
 
 	add_fixed_resources(dev, index++);
 }

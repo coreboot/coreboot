@@ -100,8 +100,7 @@ static void nc_read_resources(struct device *dev)
 	 */
 	bmbound_hi = iosf_bunit_read(BUNIT_BMBOUND_HI) & ~((1 << 24) - 1);
 	bmbound_hi <<= 4;
-	if (bmbound_hi > 4ull * GiB)
-		ram_from_to(dev, index++, 4ull * GiB, bmbound_hi);
+	upper_ram_end(dev, index++, bmbound_hi);
 
 	/*
 	 * Reserve everything between A segment and 1MB:

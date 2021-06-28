@@ -902,7 +902,6 @@ int smbios_write_type8(unsigned long *current, int *handle,
 				const struct port_information *port,
 				size_t num_ports)
 {
-	int len = sizeof(struct smbios_type8);
 	unsigned int totallen = 0, i;
 
 	for (i = 0; i < num_ports; i++, port++) {
@@ -910,7 +909,7 @@ int smbios_write_type8(unsigned long *current, int *handle,
 		memset(t, 0, sizeof(struct smbios_type8));
 		t->type = SMBIOS_PORT_CONNECTOR_INFORMATION;
 		t->handle = *handle;
-		t->length = len - 2;
+		t->length = sizeof(struct smbios_type8) - 2;
 		t->internal_reference_designator =
 			smbios_add_string(t->eos, port->internal_reference_designator);
 		t->internal_connector_type = port->internal_connector_type;
@@ -1041,7 +1040,6 @@ static int smbios_write_type16(unsigned long *current, int *handle)
 
 static int smbios_write_type17(unsigned long *current, int *handle, int type16)
 {
-	int len = sizeof(struct smbios_type17);
 	int totallen = 0;
 	int i;
 
@@ -1060,7 +1058,7 @@ static int smbios_write_type17(unsigned long *current, int *handle, int type16)
 		 * Otherwise, the physical installed memory size is guessed from the system
 		 * memory map, which results in a slightly smaller value than the actual size.
 		 */
-		len = create_smbios_type17_for_dimm(dimm, current, handle, type16);
+		const int len = create_smbios_type17_for_dimm(dimm, current, handle, type16);
 		*current += len;
 		totallen += len;
 	}
@@ -1070,7 +1068,6 @@ static int smbios_write_type17(unsigned long *current, int *handle, int type16)
 static int smbios_write_type19(unsigned long *current, int *handle, int type16)
 {
 	struct smbios_type19 *t = (struct smbios_type19 *)*current;
-	int len = sizeof(struct smbios_type19);
 	int i;
 
 	struct memory_info *meminfo;
@@ -1081,7 +1078,7 @@ static int smbios_write_type19(unsigned long *current, int *handle, int type16)
 	memset(t, 0, sizeof(struct smbios_type19));
 
 	t->type = SMBIOS_MEMORY_ARRAY_MAPPED_ADDRESS;
-	t->length = len - 2;
+	t->length = sizeof(struct smbios_type19) - 2;
 	t->handle = *handle;
 	t->memory_array_handle = type16;
 
@@ -1112,7 +1109,7 @@ static int smbios_write_type19(unsigned long *current, int *handle, int type16)
 		t->extended_ending_address--;
 	}
 
-	len = t->length + smbios_string_table_len(t->eos);
+	const int len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
 	*handle += 1;
 	return len;

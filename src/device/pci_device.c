@@ -1635,11 +1635,9 @@ void pci_assign_irqs(struct device *dev, const unsigned char pIntAtoD[4])
 
 		pci_write_config8(dev, PCI_INTERRUPT_LINE, pIntAtoD[line - 1]);
 
-#if CONFIG(PC80_SYSTEM)
 		/* Change to level triggered. */
 		i8259_configure_irq_trigger(pIntAtoD[line - 1],
 					    IRQ_LEVEL_TRIGGERED);
-#endif
 	}
 }
 

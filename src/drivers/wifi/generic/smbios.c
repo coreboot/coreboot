@@ -10,14 +10,7 @@
 static int smbios_write_intel_wifi(struct device *dev, int *handle, unsigned long *current)
 {
 	struct smbios_type_intel_wifi {
-		union {
-			struct {
-				u8 type;
-				u8 length;
-				u16 handle;
-			};
-			struct smbios_header header;
-		};
+		struct smbios_header header;
 		u8 str;
 		u8 eos[2];
 	} __packed;

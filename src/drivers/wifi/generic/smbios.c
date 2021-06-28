@@ -18,9 +18,9 @@ static int smbios_write_intel_wifi(struct device *dev, int *handle, unsigned lon
 	} __packed;
 
 	struct smbios_type_intel_wifi *t = (struct smbios_type_intel_wifi *)*current;
-	int len = sizeof(struct smbios_type_intel_wifi);
+	int len = sizeof(*t);
 
-	memset(t, 0, sizeof(struct smbios_type_intel_wifi));
+	memset(t, 0, sizeof(*t));
 	t->type = 0x85;
 	t->length = len - 2;
 	t->handle = *handle;

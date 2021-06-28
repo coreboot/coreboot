@@ -243,7 +243,7 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 {
 	struct smbios_type17 *t = (struct smbios_type17 *)*current;
 
-	memset(t, 0, sizeof(struct smbios_type17));
+	memset(t, 0, sizeof(*t));
 	t->memory_type = dimm->ddr_type;
 	if (dimm->configured_speed_mts != 0)
 		t->clock_speed = dimm->configured_speed_mts;
@@ -318,7 +318,7 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	t->phys_memory_array_handle = type16_handle;
 
 	*handle += 1;
-	t->length = sizeof(struct smbios_type17) - 2;
+	t->length = sizeof(*t) - 2;
 	return t->length + smbios_string_table_len(t->eos);
 }
 
@@ -380,9 +380,9 @@ static const char *get_bios_version(void)
 static int smbios_write_type0(unsigned long *current, int handle)
 {
 	struct smbios_type0 *t = (struct smbios_type0 *)*current;
-	int len = sizeof(struct smbios_type0);
+	int len = sizeof(*t);
 
-	memset(t, 0, sizeof(struct smbios_type0));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_BIOS_INFORMATION;
 	t->handle = handle;
 	t->length = len - 2;
@@ -512,9 +512,9 @@ static size_t get_number_of_caches(struct cpuid_result res_deterministic_cache)
 static int smbios_write_type1(unsigned long *current, int handle)
 {
 	struct smbios_type1 *t = (struct smbios_type1 *)*current;
-	int len = sizeof(struct smbios_type1);
+	int len = sizeof(*t);
 
-	memset(t, 0, sizeof(struct smbios_type1));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_SYSTEM_INFORMATION;
 	t->handle = handle;
 	t->length = len - 2;
@@ -535,9 +535,9 @@ static int smbios_write_type1(unsigned long *current, int handle)
 static int smbios_write_type2(unsigned long *current, int handle, const int chassis_handle)
 {
 	struct smbios_type2 *t = (struct smbios_type2 *)*current;
-	int len = sizeof(struct smbios_type2);
+	int len = sizeof(*t);
 
-	memset(t, 0, sizeof(struct smbios_type2));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_BOARD_INFORMATION;
 	t->handle = handle;
 	t->length = len - 2;
@@ -559,9 +559,9 @@ static int smbios_write_type2(unsigned long *current, int handle, const int chas
 static int smbios_write_type3(unsigned long *current, int handle)
 {
 	struct smbios_type3 *t = (struct smbios_type3 *)*current;
-	int len = sizeof(struct smbios_type3);
+	int len = sizeof(*t);
 
-	memset(t, 0, sizeof(struct smbios_type3));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_SYSTEM_ENCLOSURE;
 	t->handle = handle;
 	t->length = len - 2;
@@ -585,7 +585,7 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	unsigned int cpu_voltage;
 	struct cpuid_result res;
 	struct smbios_type4 *t = (struct smbios_type4 *)*current;
-	int len = sizeof(struct smbios_type4);
+	int len = sizeof(*t);
 	uint16_t characteristics = 0;
 	static unsigned int cnt = 0;
 	char buf[8];
@@ -597,7 +597,7 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	if (cpu_have_cpuid())
 		res = cpuid(1);
 
-	memset(t, 0, sizeof(struct smbios_type4));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_PROCESSOR_INFORMATION;
 	t->handle = handle;
 	t->length = len - 2;
@@ -698,10 +698,10 @@ static int smbios_write_type7(unsigned long *current,
 			      const size_t cache_size)
 {
 	struct smbios_type7 *t = (struct smbios_type7 *)*current;
-	int len = sizeof(struct smbios_type7);
+	int len = sizeof(*t);
 	char buf[8];
 
-	memset(t, 0, sizeof(struct smbios_type7));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_CACHE_INFORMATION;
 	t->handle = handle;
 	t->length = len - 2;
@@ -906,10 +906,10 @@ int smbios_write_type8(unsigned long *current, int *handle,
 
 	for (i = 0; i < num_ports; i++, port++) {
 		struct smbios_type8 *t = (struct smbios_type8 *)*current;
-		memset(t, 0, sizeof(struct smbios_type8));
+		memset(t, 0, sizeof(*t));
 		t->type = SMBIOS_PORT_CONNECTOR_INFORMATION;
 		t->handle = *handle;
-		t->length = sizeof(struct smbios_type8) - 2;
+		t->length = sizeof(*t) - 2;
 		t->internal_reference_designator =
 			smbios_add_string(t->eos, port->internal_reference_designator);
 		t->internal_connector_type = port->internal_connector_type;
@@ -932,9 +932,9 @@ int smbios_write_type9(unsigned long *current, int *handle,
 			const u16 id, u8 slot_char1, u8 slot_char2, u8 bus, u8 dev_func)
 {
 	struct smbios_type9 *t = (struct smbios_type9 *)*current;
-	int len = sizeof(struct smbios_type9);
+	int len = sizeof(*t);
 
-	memset(t, 0, sizeof(struct smbios_type9));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_SYSTEM_SLOTS;
 	t->handle = *handle;
 	t->length = len - 2;
@@ -1075,10 +1075,10 @@ static int smbios_write_type19(unsigned long *current, int *handle, int type16)
 	if (meminfo == NULL)
 		return 0;	/* can't find mem info in cbmem */
 
-	memset(t, 0, sizeof(struct smbios_type19));
+	memset(t, 0, sizeof(*t));
 
 	t->type = SMBIOS_MEMORY_ARRAY_MAPPED_ADDRESS;
-	t->length = sizeof(struct smbios_type19) - 2;
+	t->length = sizeof(*t) - 2;
 	t->handle = *handle;
 	t->memory_array_handle = type16;
 
@@ -1118,9 +1118,9 @@ static int smbios_write_type19(unsigned long *current, int *handle, int type16)
 static int smbios_write_type32(unsigned long *current, int handle)
 {
 	struct smbios_type32 *t = (struct smbios_type32 *)*current;
-	int len = sizeof(struct smbios_type32);
+	int len = sizeof(*t);
 
-	memset(t, 0, sizeof(struct smbios_type32));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_SYSTEM_BOOT_INFORMATION;
 	t->handle = handle;
 	t->length = len - 2;
@@ -1135,9 +1135,9 @@ int smbios_write_type38(unsigned long *current, int *handle,
 			const u8 irq)
 {
 	struct smbios_type38 *t = (struct smbios_type38 *)*current;
-	int len = sizeof(struct smbios_type38);
+	int len = sizeof(*t);
 
-	memset(t, 0, sizeof(struct smbios_type38));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_IPMI_DEVICE_INFORMATION;
 	t->handle = *handle;
 	t->length = len - 2;
@@ -1160,9 +1160,9 @@ int smbios_write_type41(unsigned long *current, int *handle,
 			u8 bus, u8 device, u8 function, u8 device_type)
 {
 	struct smbios_type41 *t = (struct smbios_type41 *)*current;
-	int len = sizeof(struct smbios_type41);
+	int len = sizeof(*t);
 
-	memset(t, 0, sizeof(struct smbios_type41));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_ONBOARD_DEVICES_EXTENDED_INFORMATION;
 	t->handle = *handle;
 	t->length = len - 2;
@@ -1184,9 +1184,9 @@ int smbios_write_type41(unsigned long *current, int *handle,
 static int smbios_write_type127(unsigned long *current, int handle)
 {
 	struct smbios_type127 *t = (struct smbios_type127 *)*current;
-	int len = sizeof(struct smbios_type127);
+	int len = sizeof(*t);
 
-	memset(t, 0, sizeof(struct smbios_type127));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_END_OF_TABLE;
 	t->handle = handle;
 	t->length = len - 2;
@@ -1306,11 +1306,11 @@ unsigned long smbios_write_tables(unsigned long current)
 	printk(BIOS_DEBUG, "%s: %08lx\n", __func__, current);
 
 	se = (struct smbios_entry *)current;
-	current += sizeof(struct smbios_entry);
+	current += sizeof(*se);
 	current = ALIGN_UP(current, 16);
 
 	se3 = (struct smbios_entry30 *)current;
-	current += sizeof(struct smbios_entry30);
+	current += sizeof(*se3);
 	current = ALIGN_UP(current, 16);
 
 	tables = current;
@@ -1342,9 +1342,9 @@ unsigned long smbios_write_tables(unsigned long current)
 	update_max(len, max_struct_size, smbios_write_type127(&current, handle++));
 
 	/* Install SMBIOS 2.1 entry point */
-	memset(se, 0, sizeof(struct smbios_entry));
+	memset(se, 0, sizeof(*se));
 	memcpy(se->anchor, "_SM_", 4);
-	se->length = sizeof(struct smbios_entry);
+	se->length = sizeof(*se);
 	se->major_version = 3;
 	se->minor_version = 0;
 	se->max_struct_size = max_struct_size;
@@ -1354,21 +1354,20 @@ unsigned long smbios_write_tables(unsigned long current)
 	se->struct_table_address = (u32)tables;
 	se->struct_table_length = len;
 
-	se->intermediate_checksum = smbios_checksum((u8 *)se + 0x10,
-						    sizeof(struct smbios_entry) - 0x10);
-	se->checksum = smbios_checksum((u8 *)se, sizeof(struct smbios_entry));
+	se->intermediate_checksum = smbios_checksum((u8 *)se + 0x10, sizeof(*se) - 0x10);
+	se->checksum = smbios_checksum((u8 *)se, sizeof(*se));
 
 	/* Install SMBIOS 3.0 entry point */
-	memset(se3, 0, sizeof(struct smbios_entry30));
+	memset(se3, 0, sizeof(*se3));
 	memcpy(se3->anchor, "_SM3_", 5);
-	se3->length = sizeof(struct smbios_entry30);
+	se3->length = sizeof(*se3);
 	se3->major_version = 3;
 	se3->minor_version = 0;
 
 	se3->struct_table_address = (u64)tables;
 	se3->struct_table_length = len;
 
-	se3->checksum = smbios_checksum((u8 *)se3, sizeof(struct smbios_entry30));
+	se3->checksum = smbios_checksum((u8 *)se3, sizeof(*se3));
 
 	return current;
 }

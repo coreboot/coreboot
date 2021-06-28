@@ -594,7 +594,7 @@ static inline u8 *elog_flash_offset_to_address(void)
 int elog_smbios_write_type15(unsigned long *current, int handle)
 {
 	struct smbios_type15 *t = (struct smbios_type15 *)*current;
-	int len = sizeof(struct smbios_type15);
+	int len = sizeof(*t);
 	uintptr_t log_address;
 
 	size_t elog_size = region_device_sz(&elog_state.nv_dev);

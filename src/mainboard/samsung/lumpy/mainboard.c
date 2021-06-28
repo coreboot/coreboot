@@ -29,9 +29,9 @@ static int lumpy_smbios_type41_irq(int *handle, unsigned long *current,
 				   const char *name, u8 irq, u8 addr)
 {
 	struct smbios_type41 *t = (struct smbios_type41 *)*current;
-	int len = sizeof(struct smbios_type41);
+	int len = sizeof(*t);
 
-	memset(t, 0, sizeof(struct smbios_type41));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_ONBOARD_DEVICES_EXTENDED_INFORMATION;
 	t->handle = *handle;
 	t->length = len - 2;

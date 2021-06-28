@@ -166,9 +166,9 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 static int qemu_get_smbios_data16(int handle, unsigned long *current)
 {
 	struct smbios_type16 *t = (struct smbios_type16 *)*current;
-	int len = sizeof(struct smbios_type16);
+	int len = sizeof(*t);
 
-	memset(t, 0, sizeof(struct smbios_type16));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_PHYS_MEMORY_ARRAY;
 	t->handle = handle;
 	t->length = len - 2;
@@ -185,11 +185,11 @@ static int qemu_get_smbios_data17(int handle, int parent_handle, unsigned long *
 	struct smbios_type17 *t = (struct smbios_type17 *)*current;
 	int len;
 
-	memset(t, 0, sizeof(struct smbios_type17));
+	memset(t, 0, sizeof(*t));
 	t->type = SMBIOS_MEMORY_DEVICE;
 	t->handle = handle;
 	t->phys_memory_array_handle = parent_handle;
-	t->length = sizeof(struct smbios_type17) - 2;
+	t->length = sizeof(*t) - 2;
 	t->size = qemu_get_memory_size() / 1024;
 	t->data_width = 64;
 	t->total_width = 64;

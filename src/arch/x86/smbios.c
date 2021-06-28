@@ -635,7 +635,6 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	t->serial_number = smbios_add_string(t->eos, smbios_processor_serial_number());
 	t->status = SMBIOS_PROCESSOR_STATUS_CPU_ENABLED | SMBIOS_PROCESSOR_STATUS_POPULATED;
 	t->processor_upgrade = get_socket_type();
-	const int len = t->length + smbios_string_table_len(t->eos);
 	if (cpu_have_cpuid() && cpuid_get_max_func() >= 0x16) {
 		t->current_speed = cpuid_eax(0x16); /* base frequency */
 		t->external_clock = cpuid_ecx(0x16);
@@ -668,6 +667,7 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	if (cpu_voltage > 0)
 		t->voltage = 0x80 | cpu_voltage;
 
+	const int len = t->length + smbios_string_table_len(t->eos);
 	*current += len;
 	return len;
 }

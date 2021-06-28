@@ -10,15 +10,15 @@ static const unsigned char qemu_i440fx_irqs[] = {
 	11, 10, 10, 11,
 };
 
+#define D0F0_PAM(x)		(0x59 + (x)) /* 0-6 */
+
 static void qemu_nb_init(struct device *dev)
 {
 	/* Map memory at 0xc0000 - 0xfffff */
 	int i;
-	uint8_t v = pci_read_config8(dev, 0x59);
-	v |= 0x30;
-	pci_write_config8(dev, 0x59, v);
-	for (i = 0; i < 6; i++)
-	pci_write_config8(dev, 0x5a + i, 0x33);
+	pci_or_config8(dev, D0F0_PAM(0), 0x30);
+	for (i = 1; i <= 6; i++)
+		pci_write_config8(dev, D0F0_PAM(i), 0x33);
 
 	/* This sneaked in here, because Qemu does not emulate a SuperIO chip. */
 	pc_keyboard_init(NO_AUX_DEVICE);

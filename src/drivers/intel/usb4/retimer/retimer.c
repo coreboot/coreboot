@@ -6,6 +6,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
+#include <drivers/usb/acpi/chip.h>
 #include <gpio.h>
 #include <string.h>
 #include "chip.h"
@@ -336,9 +337,10 @@ static void usb4_retimer_write_dsm(uint8_t port, const char *uuid,
 static void usb4_retimer_fill_ssdt(const struct device *dev)
 {
 	struct drivers_intel_usb4_retimer_config *config = dev->chip_info;
+	const struct device *usb_device;
 	static char dfp[DEVICE_PATH_MAX];
 	struct acpi_pld pld;
-	uint8_t port;
+	uint8_t dfp_port, usb_port;
 
 	usb4_retimer_scope = acpi_device_scope(dev);
 	if (!usb4_retimer_scope || !config)
@@ -352,24 +354,31 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 	acpigen_write_ADR(0);
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 
-	for (port = 0; port < DFP_NUM_MAX; port++) {
-		if (!config->dfp[port].power_gpio.pin_count) {
-			printk(BIOS_ERR, "%s: No DFP%1d power GPIO for %s\n", __func__,
-			       port, dev_path(dev));
+	for (dfp_port = 0; dfp_port < DFP_NUM_MAX; dfp_port++) {
+
+		if (!config->dfp[dfp_port].power_gpio.pin_count) {
+			printk(BIOS_ERR, "%s: No DFP%1d power GPIO for %s\n",
+				__func__, dfp_port, dev_path(dev));
 			continue;
 		}
 
+		usb_device = config->dfp[dfp_port].typec_port;
+		usb_port = usb_device->path.usb.port_id;
+
 		/* DFPx */
-		snprintf(dfp, sizeof(dfp), "DFP%1d", port);
+		snprintf(dfp, sizeof(dfp), "DFP%1d", usb_port);
 		acpigen_write_device(dfp);
 		/* _ADR part is for the lane adapter */
-		acpigen_write_ADR(port*2 + 1);
+		acpigen_write_ADR(dfp_port*2 + 1);
 
 		/* Fill _PLD with the same USB 3.x object on the Type-C connector */
-		acpi_pld_fill_usb(&pld, UPC_TYPE_PROPRIETARY, &config->dfp[port].group);
-		pld.shape = PLD_SHAPE_OVAL;
-		pld.visible = 1;
-		acpigen_write_pld(&pld);
+		if (CONFIG(DRIVERS_USB_ACPI)) {
+			if (usb_acpi_get_pld(usb_device, &pld))
+				acpigen_write_pld(&pld);
+			else
+				printk(BIOS_ERR, "Error retrieving PLD for USB Type-C %d\n",
+					usb_port);
+		}
 
 		/* Power online reference counter(_PWR) */
 		acpigen_write_name("PWR");
@@ -387,9 +396,9 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 		/* Return (Buffer (One) { 0x0 }) */
 		acpigen_write_return_singleton_buffer(0x0);
 		acpigen_pop_len();
-		usb4_retimer_write_dsm(port, INTEL_USB4_RETIMER_DSM_UUID,
+		usb4_retimer_write_dsm(usb_port, INTEL_USB4_RETIMER_DSM_UUID,
 			usb4_retimer_callbacks, ARRAY_SIZE(usb4_retimer_callbacks),
-			(void *)&config->dfp[port].power_gpio);
+			(void *)&config->dfp[dfp_port].power_gpio);
 		/* Default case: Return (Buffer (One) { 0x0 }) */
 		acpigen_write_return_singleton_buffer(0x0);
 

@@ -1,6 +1,5 @@
-//
-//  REGISTER.H  Register map include file
-//
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 #ifndef _A60868_REGISTER_H_
 #define _A60868_REGISTER_H_
 

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 #include "dramc_dv_init.h"
 
 void CKE_FIX_ON(DRAMC_CTX_T *p, U8 EN, U8 rank)

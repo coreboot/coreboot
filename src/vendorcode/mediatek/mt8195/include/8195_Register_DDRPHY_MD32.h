@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 #ifndef __DDRPHY_MD32_REGS_H__
 #define __DDRPHY_MD32_REGS_H__
 

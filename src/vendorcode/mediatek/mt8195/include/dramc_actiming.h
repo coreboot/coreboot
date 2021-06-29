@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 #ifndef _ACTIMING_H
 #define _ACTIMING_H
 

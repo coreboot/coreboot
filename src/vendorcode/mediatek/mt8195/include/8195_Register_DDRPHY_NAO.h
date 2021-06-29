@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 #ifndef __DDRPHY_NAO_REGS_H__
 #define __DDRPHY_NAO_REGS_H__
 

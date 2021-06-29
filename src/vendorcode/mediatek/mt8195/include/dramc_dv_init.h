@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 #ifndef _DRAMC_DV_INIT_H_
 #define _DRAMC_DV_INIT_H_
 

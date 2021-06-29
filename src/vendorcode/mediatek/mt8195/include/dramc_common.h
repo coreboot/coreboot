@@ -1,8 +1,4 @@
-/*
- *
- * DRAMC_COMMON.H
- *
- */
+/* SPDX-License-Identifier: BSD-3-Clause */
 
 #ifndef _DRAMC_COMMON_H_
 #define _DRAMC_COMMON_H_

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 #ifndef __DRAMC_NAO_REGS_H__
 #define __DRAMC_NAO_REGS_H__
 

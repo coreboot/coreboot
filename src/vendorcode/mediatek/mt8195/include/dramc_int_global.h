@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 #ifndef _INT_GLOBAL_H
 #define _INT_GLOBAL_H
 

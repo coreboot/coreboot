@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 #include "dramc_dv_init.h"
 
 DRAM_TYPE_T MEM_TYPE = LPDDR4;

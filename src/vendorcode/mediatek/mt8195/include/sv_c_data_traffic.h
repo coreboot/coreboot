@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 #ifndef __SV_C_DATA_TRAFFIC_H
 #define __SV_C_DATA_TRAFFIC_H
 

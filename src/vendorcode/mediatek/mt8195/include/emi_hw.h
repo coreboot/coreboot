@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 #ifndef __EMI_HW_H__
 #define __EMI_HW_H__
 

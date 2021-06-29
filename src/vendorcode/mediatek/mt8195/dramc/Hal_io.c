@@ -1,6 +1,4 @@
-/** @file hal_io.cpp
- *  hal_io.cpp provides functions of register access
- */
+/* SPDX-License-Identifier: BSD-3-Clause */
 
 #include "x_hal_io.h"
 #include "dramc_common.h"

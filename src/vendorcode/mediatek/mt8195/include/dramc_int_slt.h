@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 #ifndef _INT_SLT_H
 #define _INT_SLT_H
 

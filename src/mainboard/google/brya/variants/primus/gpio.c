@@ -22,6 +22,11 @@ static const struct pad_config override_gpio_table[] = {
 	/* B3  : PROC_GP2 ==> eMMC_PERST_L */
 	PAD_CFG_GPO(GPP_B3, 1, DEEP),
 
+	/* C3 : SML0CLK ==> NC */
+	PAD_NC(GPP_C3, NONE),
+	/* C4 : SML0DATA ==> NC */
+	PAD_NC(GPP_C4, NONE),
+
 	/* D3  : ISH_GP3 ==> NC */
 	PAD_NC(GPP_D3, NONE),
 	/* D5  : SRCCLKREQ0# ==> SSD_CLKREQ_ODL */

@@ -15,6 +15,13 @@
 	.globl __wakeup
 __wakeup:
 #if ENV_X86_64
+	/* When called in x86_64 mode, the resume vector is in %rdi
+	 * instead of the stack, save it in 4(%rsp) for the 32-bit code.
+	 * It's OK to overwrite the return address at (%rsp) because this
+	 * function doesn't return.
+	 */
+	mov	%edi, 4(%rsp)
+
 	xor	%rax,%rax
 	mov	%ss, %ax
 	push	%rax

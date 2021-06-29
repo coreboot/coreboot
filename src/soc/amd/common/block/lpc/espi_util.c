@@ -482,7 +482,7 @@ static int espi_send_command(const struct espi_cmd *cmd)
 	uint32_t status;
 
 	if (CONFIG(ESPI_DEBUG))
-		printk(BIOS_ERR, "eSPI cmd0-cmd2: %08x %08x %08x data: %08x.\n",
+		printk(BIOS_DEBUG, "eSPI cmd0-cmd2: %08x %08x %08x data: %08x.\n",
 		       cmd->hdr0.val, cmd->hdr1.val, cmd->hdr2.val, cmd->data.val);
 
 	if (espi_wait_ready() == -1) {

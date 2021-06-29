@@ -126,7 +126,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 	else
 		status = silicon_init(upd);
 
-	printk(BIOS_ERR, "FSPS returned %x\n", status);
+	printk(BIOS_INFO, "FSPS returned %x\n", status);
 
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
 	post_code(POST_FSP_SILICON_EXIT);

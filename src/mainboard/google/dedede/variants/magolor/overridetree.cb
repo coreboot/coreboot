@@ -11,6 +11,7 @@ fw_config
 		option TS_ELAN_0001 3
 		option TS_RAYD_0001 4
 		option TS_WDHT0002 5
+		option TS_GTCH7503 6
 	end
 end
 
@@ -231,6 +232,23 @@ chip soc/intel/jasperlake
 				device i2c 2c on
 					probe TS_SOURCE TS_UNPROVISIONED
 					probe TS_SOURCE TS_WDHT0002
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GTCH7503""
+				register "generic.desc" = ""G2 Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D4_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"
+				register "generic.reset_delay_ms" = "120"
+				register "generic.reset_off_delay_ms" = "3"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
+				register "generic.enable_delay_ms" = "12"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 0x40 on
+					probe TS_SOURCE TS_UNPROVISIONED
+					probe TS_SOURCE TS_GTCH7503
 				end
 			end
 			chip drivers/i2c/generic

@@ -1,12 +1,12 @@
 package snr
 
-import "strings"
-import "fmt"
-
-// Local packages
-import "../common"
-import "../../config"
-import "../../fields"
+import (
+	"strings"
+	"fmt"
+	"../common"
+	"../../config"
+	"../../fields"
+)
 
 const (
 	PAD_CFG_DW0_RO_FIELDS = (0x1 << 27) | (0x1 << 24) | (0x3 << 21) | (0xf << 16) | 0xfc

@@ -1,11 +1,12 @@
 package main
 
-import "flag"
-import "fmt"
-import "os"
-
-import "./parser"
-import "./config"
+import (
+	"flag"
+	"fmt"
+	"os"
+	"./parser"
+	"./config"
+)
 
 // generateOutputFile - generates include file
 // parser            : parser data structure

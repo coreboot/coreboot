@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"strings"
 	"strconv"
+	"../platforms/common"
+	"../platforms/snr"
+	"../platforms/lbg"
+	"../platforms/apl"
+	"../platforms/cnl"
+	"../config"
 )
-
-import "../platforms/common"
-import "../platforms/snr"
-import "../platforms/lbg"
-import "../platforms/apl"
-import "../platforms/cnl"
-import "../config"
 
 // PlatformSpecific - platform-specific interface
 type PlatformSpecific interface {

@@ -1,7 +1,9 @@
 package raw
 
-import "fmt"
-import "../../platforms/common"
+import (
+	"fmt"
+	"../../platforms/common"
+)
 
 type FieldMacros struct {}
 

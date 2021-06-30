@@ -1,11 +1,12 @@
 package fields
 
-import "../config"
-import "../platforms/common"
-
-import "./fsp"
-import "./cb"
-import "./raw"
+import (
+	"../config"
+	"../platforms/common"
+	"./fsp"
+	"./cb"
+	"./raw"
+)
 
 // InterfaceSet - set the interface for decoding configuration
 // registers DW0 and DW1.

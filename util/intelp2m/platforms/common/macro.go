@@ -1,9 +1,10 @@
 package common
 
-import "strconv"
-import "sync"
-
-import "../../config"
+import (
+	"strconv"
+	"sync"
+	"../../config"
+)
 
 type Fields interface {
 	DecodeDW0()

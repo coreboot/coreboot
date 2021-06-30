@@ -140,6 +140,22 @@ chip soc/intel/elkhartlake
 		[PchSerialIoIndexUART2] = 1,
 	}"
 
+	register "fivr" = "{
+		.fivr_config_en = true,
+		.v1p05_state = FIVR_ENABLE_ALL_SX,
+		.vnn_state = FIVR_ENABLE_ALL_SX,
+		.vnn_sx_state = FIVR_ENABLE_S3_S4_S5,
+		.v1p05_rail = FIVR_VOLTAGE_NORMAL,
+		.vnn_rail = FIVR_ENABLE_ALL_VOLTAGE,
+		.v1p05_icc_max_ma = 200,
+		.vnn_sx_mv = 1050,
+		.vcc_low_high_us = 12,
+		.vcc_ret_high_us = 54,
+		.vcc_ret_low_us = 43,
+		.vcc_off_high_us = 150,
+		.spread_spectrum = 15,
+	}"
+
 	# TSN GBE related UPDs
 	register "PchTsnGbeLinkSpeed" = "Tsn_2_5_Gbps"
 	register "PchTsnGbeSgmiiEnable" = "1"

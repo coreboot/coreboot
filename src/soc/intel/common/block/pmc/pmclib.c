@@ -729,7 +729,7 @@ void pmc_set_acpi_mode(void)
 
 enum pch_pmc_xtal pmc_get_xtal_freq(void)
 {
-	if (!CONFIG(PMC_EPOC))
+	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_PMC_EPOC))
 		dead_code();
 
 	uint32_t xtal_freq = 0;

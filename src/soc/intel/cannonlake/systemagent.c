@@ -27,17 +27,6 @@ void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 		{ EPBAR, EP_BASE_ADDRESS, EP_BASE_SIZE, "EPBAR" },
 		{ REGBAR, REG_BASE_ADDRESS, REG_BASE_SIZE, "REGBAR" },
 		{ EDRAMBAR, EDRAM_BASE_ADDRESS, EDRAM_BASE_SIZE, "EDRAMBAR" },
-		/*
-		 * PMC pci device gets hidden from PCI bus due to Silicon
-		 * policy hence binding PMCBAR aka PWRMBASE (offset 0x10) with
-		 * SA resources to ensure that PMCBAR falls under PCI reserved
-		 * memory range.
-		 *
-		 * Note: Don't add any more resource with same offset 0x10
-		 * under this device space.
-		 */
-		{ PCI_BASE_ADDRESS_0, PCH_PWRM_BASE_ADDRESS, PCH_PWRM_BASE_SIZE,
-				"PMCBAR" },
 	};
 
 	sa_add_fixed_mmio_resources(dev, index, soc_fixed_resources,

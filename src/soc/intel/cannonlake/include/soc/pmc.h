@@ -3,6 +3,10 @@
 #ifndef _SOC_CANNONLAKE_PMC_H_
 #define _SOC_CANNONLAKE_PMC_H_
 
+#include <device/device.h>
+
+extern struct device_operations pmc_ops;
+
 /* PCI Configuration Space (D31:F2): PMC */
 #define  PWRMBASE		0x10
 #define  ABASE			0x20

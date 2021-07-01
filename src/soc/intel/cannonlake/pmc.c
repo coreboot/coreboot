@@ -68,7 +68,22 @@ static void config_deep_sx(uint32_t deepsx_config)
 	write32(pmcbase + DSX_CFG, reg);
 }
 
-static void pmc_init(void *unused)
+static void soc_pmc_read_resources(struct device *dev)
+{
+	struct resource *res;
+
+	/* Add the fixed MMIO resource */
+	mmio_resource(dev, 0, PCH_PWRM_BASE_ADDRESS / KiB, PCH_PWRM_BASE_SIZE / KiB);
+
+	/* Add the fixed I/O resource */
+	res = new_resource(dev, 1);
+	res->base = (resource_t)ACPI_BASE_ADDRESS;
+	res->size = (resource_t)ACPI_BASE_SIZE;
+	res->limit = res->base + res->size - 1;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+}
+
+static void pmc_init(struct device *dev)
 {
 	const config_t *config = config_of_soc();
 
@@ -82,16 +97,7 @@ static void pmc_init(void *unused)
 	config_deep_sx(config->deep_sx_config);
 }
 
-/*
-* Initialize PMC controller.
-*
-* PMC controller gets hidden from PCI bus during FSP-Silicon init call.
-* Hence PCI enumeration can't be used to initialize bus device and
-* allocate resources.
-*/
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_EXIT, pmc_init, NULL);
-
-static void soc_acpi_mode_init(void *unused)
+static void soc_acpi_mode_init(struct device *dev)
 {
 	/*
 	 * PMC initialization happens earlier for this SoC because FSP-Silicon
@@ -106,11 +112,17 @@ static void soc_acpi_mode_init(void *unused)
 	 * taking different actions based on disabling of ACPI (e.g. flushing of
 	 * all EC hostevent bits).
 	 *
-	 * P.S.: This cannot be done as part of pmc_soc_init as PMC device is
-	 * hidden and hence the PMC driver never gets enumerated and so init is
-	 * not called for it.
+	 * Because the device is set as `hidden` in the devicetree, enumeration
+	 * is skipped, but the device callbacks are still called as if it were
+	 * found.
 	 */
 	pmc_set_acpi_mode();
 }
 
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, soc_acpi_mode_init, NULL);
+struct device_operations pmc_ops = {
+	.read_resources	  = soc_pmc_read_resources,
+	.set_resources	  = noop_set_resources,
+	.init		  = soc_acpi_mode_init,
+	.enable		  = pmc_init,
+	.scan_bus	  = scan_static_bus,
+};

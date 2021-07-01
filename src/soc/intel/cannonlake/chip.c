@@ -195,6 +195,9 @@ static void soc_enable(struct device *dev)
 		dev->ops = &cpu_bus_ops;
 	else if (dev->path.type == DEVICE_PATH_GPIO)
 		block_gpio_enable(dev);
+	else if (dev->path.type == DEVICE_PATH_PCI &&
+		 dev->path.pci.devfn == PCH_DEVFN_PMC)
+		dev->ops = &pmc_ops;
 }
 
 struct chip_operations soc_intel_cannonlake_ops = {

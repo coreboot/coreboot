@@ -1,0 +1,5 @@
+Vendor name: Siemens
+Board name: MC EHL
+Category: misc
+ROM protocol: SPI
+ROM socketed: n

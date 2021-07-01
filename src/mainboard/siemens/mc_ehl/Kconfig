@@ -1,0 +1,50 @@
+if BOARD_SIEMENS_MC_EHL
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_32768
+	select DRIVERS_I2C_HID
+	select DRIVERS_INTEL_DPTF
+	select DRIVERS_I2C_GENERIC
+	select DRIVERS_SPI_ACPI
+	select DRIVERS_USB_ACPI
+	select EC_ACPI
+	select HAVE_SPD_IN_CBFS
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select SOC_INTEL_ELKHARTLAKE
+
+config MAINBOARD_DIR
+	string
+	default "siemens/mc_ehl"
+
+config VARIANT_DIR
+	string
+	default "mc_ehl1" if BOARD_SIEMENS_MC_EHL
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "MC EHL"
+
+config MAINBOARD_FAMILY
+	string
+	default "Siemens EHL"
+
+config DEVICETREE
+	string
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config DIMM_SPD_SIZE
+	int
+	default 512
+
+config VBOOT
+	select VBOOT_LID_SWITCH
+	select VBOOT_MOCK_SECDATA if !MAINBOARD_HAS_TPM2
+
+config UART_FOR_CONSOLE
+	int
+	default 2 if INTEL_LPSS_UART_FOR_CONSOLE
+	default 0
+
+endif

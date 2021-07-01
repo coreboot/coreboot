@@ -189,7 +189,7 @@ chip soc/intel/cannonlake
 			end
 		end
 		device pci 1f.1 off end # P2SB
-		device pci 1f.2 off end # Power Management Controller
+		device pci 1f.2 hidden end # Power Management Controller
 		device pci 1f.3 on      # Intel HDA
 			subsystemid 0x1558 0x96e1
 			register "PchHdaAudioLinkHda" = "1"

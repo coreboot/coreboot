@@ -66,25 +66,6 @@ across architectures.
 ### Mentors
 * Timothy Pearson <tpearson@raptorengineering.com>
 
-## Add Kernel Address Sanitizer functionality to coreboot
-The Kernel Address Sanitizer (KASAN) is a runtime dynamic memory error detector.
-The idea is to check every memory access (variables) for its validity
-during runtime and find bugs like stack overflow or out-of-bounds accesses.
-Implementing this stub into coreboot like "Undefined behavior sanitizer support"
-would help to ensure code quality and make the runtime code more robust.
-
-### Requirements
-* knowledge in the coreboot build system and the concept of stages
-* the KASAN feature can be improved in a way so that the memory space needed
-  during runtime is not on a fixed address provided during compile time but
-  determined during runtime. For this to achieve a small patch to the GCC will
-  be helpful. Therefore minor GCC knowledge would be beneficial.
-* Implementation can be initially done in QEMU and improved on different
-  mainboards and platforms
-
-### Mentors
-* Werner Zeh <werner.zeh@gmx.net>
-
 ## Port payloads to ARM, AArch64 or RISC-V
 While we have a rather big set of payloads for x86 based platforms, all other
 architectures are rather limited. Improve the situation by porting a payload

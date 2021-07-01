@@ -11,10 +11,12 @@
 #include <device/mmio.h>
 #include <device/device.h>
 #include <drivers/intel/pmc_mux/chip.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/pmc.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/pmc_ipc.h>
 #include <intelblocks/rtc.h>
+#include <soc/lpm.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/soc_chip.h>
@@ -120,6 +122,18 @@ static void soc_pmc_fill_ssdt(const struct device *dev)
 
 	acpigen_pop_len(); /* PMC Device */
 	acpigen_pop_len(); /* Scope */
+
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_ACPI_PEP)) {
+		const struct soc_pmc_lpm tgl_pmc_lpm = {
+			.num_substates = 8,
+			.num_req_regs = 6,
+			.lpm_ipc_offset = 0x1000,
+			.req_reg_stride = 0x30,
+			.lpm_enable_mask = get_supported_lpm_mask(config_of_soc()),
+		};
+
+		generate_acpi_power_engine_with_lpm(&tgl_pmc_lpm);
+	}
 
 	printk(BIOS_INFO, "%s: %s at %s\n", acpi_device_path(dev), dev->chip_ops->name,
 	       dev_path(dev));

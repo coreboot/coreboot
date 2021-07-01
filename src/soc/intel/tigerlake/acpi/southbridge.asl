@@ -42,8 +42,5 @@
 /* PCI _OSC */
 #include <soc/intel/common/acpi/pci_osc.asl>
 
-/* Intel Power Engine Plug-in */
-#include <soc/intel/common/block/acpi/acpi/pep.asl>
-
 /* GbE 0:1f.6 */
 #include <soc/intel/common/block/acpi/acpi/pch_glan.asl>

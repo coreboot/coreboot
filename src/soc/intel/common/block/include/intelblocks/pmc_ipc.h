@@ -30,6 +30,9 @@
 
 #define PMC_IPC_CMD_NO_MSI		0
 
+/* IPC command for reading PMC registers */
+#define PMC_IPC_CMD_RD_PMC_REG		0xA0
+
 /* IPC command to enable/disable PCIe SRCCLK */
 #define PMC_IPC_CMD_ID_SET_PCIE_CLOCK	0xAC
 

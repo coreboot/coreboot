@@ -22,6 +22,15 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_PEP
 	  Generate an Intel Power Engine device object in the SSDT. This is
 	  usually used for providing ACPI hooks for S0ix exit/entry.
 
+config SOC_INTEL_COMMON_BLOCK_ACPI_PEP_LPM_REQ
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_ACPI_PEP
+	help
+	  Generate a 2nd set of _DSM functions for the Power Engine device that
+	  will return a buffer that contains the contents of the PMC's LPM
+	  requirements registers. A kernel can use this to display the
+	  requirements for different LPM substates.
+
 config SOC_INTEL_COMMON_BLOCK_CRASHLOG
 	bool
 	depends on SOC_INTEL_CRASHLOG

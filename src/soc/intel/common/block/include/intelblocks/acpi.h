@@ -90,7 +90,19 @@ struct madt_ioapic_info {
  */
 const struct madt_ioapic_info *soc_get_ioapic_info(size_t *entries);
 
+struct soc_pmc_lpm {
+	unsigned int num_substates;
+	unsigned int num_req_regs;
+	unsigned int lpm_ipc_offset;
+	unsigned int req_reg_stride;
+	uint8_t lpm_enable_mask;
+};
+
 /* Generate an Intel Power Engine ACPI device */
 void generate_acpi_power_engine(void);
+
+/* Generate an Intel Power Engine ACPI device that supports exposing LPM
+   substate requirements */
+void generate_acpi_power_engine_with_lpm(const struct soc_pmc_lpm *lpm);
 
 #endif				/* _SOC_INTEL_COMMON_BLOCK_ACPI_H_ */

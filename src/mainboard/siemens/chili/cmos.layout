@@ -23,6 +23,7 @@ entries
 
 # coreboot config options: mainboard
 440	1	e	2	ethernet1
+441	1	e	1	inhibit_flashlock
 
 # payload config options
 512	256	s	0	boot_devices

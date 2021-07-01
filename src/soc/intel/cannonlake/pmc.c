@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <device/mmio.h>
 #include <device/device.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/pmc.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
@@ -119,10 +120,19 @@ static void soc_acpi_mode_init(struct device *dev)
 	pmc_set_acpi_mode();
 }
 
+static void pmc_fill_ssdt(const struct device *dev)
+{
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_ACPI_PEP))
+		generate_acpi_power_engine();
+}
+
 struct device_operations pmc_ops = {
 	.read_resources	  = soc_pmc_read_resources,
 	.set_resources	  = noop_set_resources,
 	.init		  = soc_acpi_mode_init,
 	.enable		  = pmc_init,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt	  = pmc_fill_ssdt,
+#endif
 	.scan_bus	  = scan_static_bus,
 };

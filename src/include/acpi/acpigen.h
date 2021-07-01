@@ -415,6 +415,8 @@ inline void acpigen_write_if_end(void)
 {
 	acpigen_pop_len();
 }
+/* Emits If (CondRefOf(NAME)) */
+void acpigen_write_if_cond_ref_of(const char *namestring);
 void acpigen_write_else(void);
 void acpigen_write_shiftleft_op_int(uint8_t src_result, uint64_t count);
 void acpigen_write_to_buffer(uint8_t src, uint8_t dst);

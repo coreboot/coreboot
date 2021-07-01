@@ -1501,6 +1501,21 @@ void acpigen_write_if_lequal_namestr_int(const char *namestr, uint64_t val)
 	acpigen_write_integer(val);
 }
 
+/*
+ * Generates ACPI code to check at runtime if an object named `namestring`
+ * exists, and leaves the If scope open to continue execute code when this
+ * is true. NOTE: Requires matching acpigen_write_if_end().
+ *
+ * If (CondRefOf (NAME))
+ */
+void acpigen_write_if_cond_ref_of(const char *namestring)
+{
+	acpigen_write_if();
+	acpigen_emit_ext_op(COND_REFOF_OP);
+	acpigen_emit_namestring(namestring);
+	acpigen_emit_byte(ZERO_OP); /* ignore COND_REFOF_OP destination */
+}
+
 /* Closes previously opened if statement and generates ACPI code for else statement. */
 void acpigen_write_else(void)
 {

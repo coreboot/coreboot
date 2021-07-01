@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/pmc.h>
 #include <soc/pci_devs.h>
 
@@ -73,6 +74,12 @@ static void pch_pmc_read_resources(struct device *dev)
 	pch_pmc_add_io_resources(dev, config);
 }
 
+static void pmc_fill_ssdt(const struct device *dev)
+{
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_ACPI_PEP))
+		generate_acpi_power_engine();
+}
+
 static struct device_operations device_ops = {
 	.read_resources		= pch_pmc_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -80,6 +87,9 @@ static struct device_operations device_ops = {
 	.init			= pmc_soc_init,
 	.ops_pci		= &pci_dev_ops_pci,
 	.scan_bus		= scan_static_bus,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt		= pmc_fill_ssdt,
+#endif
 };
 
 static const unsigned short pci_device_ids[] = {

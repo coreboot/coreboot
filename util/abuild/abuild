@@ -526,6 +526,13 @@ function build_target
 			BUILD_NAME="${config##*/}"
 			BUILD_NAME="${BUILD_NAME##config.}"
 			BUILD_NAME=$(echo "${BUILD_NAME}" | tr '[:lower:]' '[:upper:]')
+			echo $BUILD_NAME $MAINBOARD
+			# If the file in configs/ results in the same build_name as the default config
+			# append a '_' to differentiate. Otherwise the default configuration would
+			# override the results.
+			if [ "${MAINBOARD}" = "${BUILD_NAME}" ]; then
+				BUILD_NAME=${BUILD_NAME}"_"
+			fi
 			echo "Building config $BUILD_NAME"
 			build_dir=$TARGET/${BUILD_NAME}
 			build_config "$MAINBOARD" "$build_dir" "$BUILD_NAME" "$config"

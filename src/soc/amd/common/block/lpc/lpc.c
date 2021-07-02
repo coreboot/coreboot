@@ -61,12 +61,6 @@ static void lpc_init(struct device *dev)
 	/* BIT 1 is not defined in public datasheet. */
 	byte &= ~(1 << 1);
 
-	/*
-	 * Keep the old way. i.e., when bus master/DMA cycle is going
-	 * on on LPC, it holds PCI grant, so no LPC slave cycle can
-	 * interrupt and visit LPC.
-	 */
-	byte &= ~LPC_NOHOG;
 	pci_write_config8(dev, LPC_MISC_CONTROL_BITS, byte);
 
 	/*

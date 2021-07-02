@@ -18,3 +18,6 @@ car_mtrr_mask:
 
 car_mtrr_start:
 .uintptr_t _car_mtrr_start
+
+xip_mtrr_mask:
+.uintptr_t _xip_mtrr_mask

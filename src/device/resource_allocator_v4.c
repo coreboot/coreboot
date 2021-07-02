@@ -670,7 +670,7 @@ void allocate_resources(const struct device *root)
 		post_log_path(child);
 
 		/* Pass 1 - Gather requirements. */
-		printk(BIOS_INFO, "==== Resource allocator: %s - Pass 1 (gathering requirements) ===\n",
+		printk(BIOS_INFO, "=== Resource allocator: %s - Pass 1 (gathering requirements) ===\n",
 		       dev_path(child));
 		compute_domain_resources(child);
 

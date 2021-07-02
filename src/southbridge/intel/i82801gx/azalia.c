@@ -8,6 +8,7 @@
 #include <device/mmio.h>
 #include <delay.h>
 #include <device/azalia_device.h>
+#include <stdint.h>
 #include "chip.h"
 #include "i82801gx.h"
 
@@ -192,7 +193,7 @@ static void azalia_init(struct device *dev)
 	// NOTE this will break as soon as the Azalia get's a bar above 4G.
 	// Is there anything we can do about it?
 	base = res2mmio(res, 0, 0);
-	printk(BIOS_DEBUG, "Azalia: base = %08x\n", (u32)base);
+	printk(BIOS_DEBUG, "Azalia: base = %08x\n", (u32)(uintptr_t)base);
 	codec_mask = codec_detect(base);
 
 	if (codec_mask) {

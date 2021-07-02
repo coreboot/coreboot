@@ -1,16 +1,11 @@
 config BOARD_SIEMENS_BASEBOARD_MC_EHL
 	def_bool n
-	select BOARD_ROMSIZE_KB_32768
-	select DRIVERS_I2C_HID
-	select DRIVERS_INTEL_DPTF
-	select DRIVERS_I2C_GENERIC
-	select DRIVERS_SPI_ACPI
-	select DRIVERS_USB_ACPI
-	select EC_ACPI
-	select HAVE_SPD_IN_CBFS
-	select HAVE_ACPI_RESUME
-	select HAVE_ACPI_TABLES
 	select SOC_INTEL_ELKHARTLAKE
+	select BOARD_ROMSIZE_KB_32768
+	select DRIVERS_I2C_GENERIC
+	select HAVE_SPD_IN_CBFS
+	select HAVE_ACPI_TABLES
+
 
 source "src/mainboard/siemens/mc_ehl/variants/*/Kconfig"
 
@@ -35,10 +30,6 @@ config DEVICETREE
 config DIMM_SPD_SIZE
 	int
 	default 512
-
-config VBOOT
-	select VBOOT_LID_SWITCH
-	select VBOOT_MOCK_SECDATA if !MAINBOARD_HAS_TPM2
 
 config UART_FOR_CONSOLE
 	int

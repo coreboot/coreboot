@@ -1,2 +1,5 @@
-config BOARD_SIEMENS_MC_EHL
-	bool "MC EHL"
+comment "MC EHLx"
+
+config BOARD_SIEMENS_MC_EHL1
+	bool "-> MC EHL1"
+	select BOARD_SIEMENS_BASEBOARD_MC_EHL

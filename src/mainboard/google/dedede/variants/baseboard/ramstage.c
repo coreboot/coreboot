@@ -35,10 +35,10 @@ void update_lte_device(struct acpi_gpio *lte_reset_gpio, struct acpi_gpio *lte_e
 				config->type = UPC_TYPE_INTERNAL;
 				if (port->path.usb.port_type == LTE_USB_PORT_TYPE) {
 					config->has_power_resource = 1;
-					memcpy(&config->reset_gpio, &lte_reset_gpio,
+					memcpy(&config->reset_gpio, lte_reset_gpio,
 								sizeof(config->reset_gpio));
 					config->reset_off_delay_ms = 20;
-					memcpy(&config->enable_gpio, &lte_enable_gpio,
+					memcpy(&config->enable_gpio, lte_enable_gpio,
 								sizeof(config->enable_gpio));
 					config->enable_delay_ms = 20;
 				}

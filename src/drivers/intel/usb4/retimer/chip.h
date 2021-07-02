@@ -14,8 +14,6 @@ struct drivers_intel_usb4_retimer_config {
 	struct {
 		/* GPIO used to control power of retimer device */
 		struct acpi_gpio power_gpio;
-		/* _PLD setting */
-		struct acpi_pld_group group;
 		/* Type-C port associated with retimer */
 		DEVTREE_CONST struct device *typec_port;
 	} dfp[DFP_NUM_MAX];

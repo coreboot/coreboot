@@ -1,0 +1,7 @@
+if BOARD_SIEMENS_MC_EHL1
+
+config FMDFILE
+	string
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/mc_ehl.fmd"
+
+endif # BOARD_SIEMENS_MC_EHL1

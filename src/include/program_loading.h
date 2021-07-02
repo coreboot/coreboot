@@ -154,6 +154,13 @@ void run_ramstage(void);
 
 int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size);
 
+/*
+ * Asynchronously preloads the payload.
+ *
+ * This should be called early on to allow the payload to load before
+ * `payload_load` is called.
+ */
+void payload_preload(void);
 /* Load payload into memory in preparation to run. */
 void payload_load(void);
 

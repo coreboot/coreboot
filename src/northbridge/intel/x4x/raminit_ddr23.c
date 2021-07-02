@@ -1283,7 +1283,7 @@ void send_jedec_cmd(const struct sysinfo *s, u8 r, u8 ch, u8 cmd, u32 val)
 	}
 	data32 <<= 3;
 
-	read32((void *)((data32 | addr)));
+	read32((void *)(uintptr_t)(data32 | addr));
 	udelay(10);
 	mchbar_clrsetbits8(0x271, 0x3e, NORMALOP_CMD);
 	mchbar_clrsetbits8(0x671, 0x3e, NORMALOP_CMD);
@@ -2090,7 +2090,7 @@ void do_raminit(struct sysinfo *s, int fast_boot)
 	if (s->boot_path == BOOT_PATH_NORMAL) {
 		FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
 			for (bank = 0; bank < 4; bank++)
-				read32((u32 *)(test_address(ch, r) | 0x800000 | (bank << 12)));
+				read32((u32 *)(uintptr_t)(test_address(ch, r) | 0x800000 | (bank << 12)));
 		}
 	}
 	printk(BIOS_DEBUG, "Done dummy reads\n");

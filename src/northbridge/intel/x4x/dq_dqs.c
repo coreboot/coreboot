@@ -3,6 +3,7 @@
 #include <device/mmio.h>
 #include <console/console.h>
 #include <delay.h>
+#include <stdint.h>
 #include <string.h>
 #include <types.h>
 #include "raminit.h"
@@ -169,13 +170,13 @@ static u8 test_dq_aligned(const struct sysinfo *s, const u8 channel)
 				if ((count1 % 16) == 0)
 					mchbar_write32(0xf90, 1);
 				const u32 pattern = write_training_schedule[count1];
-				write32((u32 *)address + 8 * count1, pattern);
-				write32((u32 *)address + 8 * count1 + 4, pattern);
+				write32((u32 *)(uintptr_t)address + 8 * count1, pattern);
+				write32((u32 *)(uintptr_t)address + 8 * count1 + 4, pattern);
 			}
 
 			const u32 good = write_training_schedule[count];
-			write32(&data[0], read32((u32 *)address + 8 * count));
-			write32(&data[4], read32((u32 *)address + 8 * count + 4));
+			write32(&data[0], read32((u32 *)(uintptr_t)address + 8 * count));
+			write32(&data[4], read32((u32 *)(uintptr_t)address + 8 * count + 4));
 			FOR_EACH_BYTELANE(lane) {
 				u8 expected = (good >> ((lane % 4) * 8)) & 0xff;
 				if (data[lane] != expected)
@@ -352,8 +353,8 @@ static u8 test_dqs_aligned(const struct sysinfo *s, const u8 channel)
 		address = test_address(channel, rank);
 		for (i = 0; i < RT_PATTERN_SIZE; i++) {
 			const u32 good = read_training_schedule[i];
-			write32(&data[0], read32((u32 *)address + i * 8));
-			write32(&data[4], read32((u32 *)address + i * 8 + 4));
+			write32(&data[0], read32((u32 *)(uintptr_t)address + i * 8));
+			write32(&data[4], read32((u32 *)(uintptr_t)address + i * 8 + 4));
 
 			FOR_EACH_BYTELANE(lane) {
 				if (data[lane] != (good & 0xff))
@@ -441,8 +442,8 @@ int do_read_training(struct sysinfo *s)
 				address = test_address(channel, rank);
 				for (i = 0; i < RT_PATTERN_SIZE; i++) {
 					content = read_training_schedule[i];
-					write32((u32 *)address + 8 * i, content);
-					write32((u32 *)address + 8 * i + 4, content);
+					write32((u32 *)(uintptr_t)address + 8 * i, content);
+					write32((u32 *)(uintptr_t)address + 8 * i + 4, content);
 				}
 			}
 
@@ -616,8 +617,8 @@ static void sample_dq(const struct sysinfo *s, u8 channel, u8 rank,
 
 	memset(high_found, 0, TOTAL_BYTELANES * sizeof(high_found[0]));
 	for (samples = 0; samples < N_SAMPLES; samples++) {
-		write32((u32 *)address, 0x12341234);
-		write32((u32 *)address + 4, 0x12341234);
+		write32((u32 *)(uintptr_t)address, 0x12341234);
+		write32((u32 *)(uintptr_t)address + 4, 0x12341234);
 		udelay(5);
 		FOR_EACH_BYTELANE(lane) {
 			u8 dq_high = (mchbar_read8(0x561 + 0x400 * channel

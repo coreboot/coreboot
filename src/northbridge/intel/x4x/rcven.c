@@ -3,6 +3,7 @@
 #include <device/mmio.h>
 #include <console/console.h>
 #include <delay.h>
+#include <stdint.h>
 #include "raminit.h"
 #include "x4x.h"
 
@@ -37,7 +38,7 @@ static u8 sampledqs(u32 addr, u8 lane, u8 channel)
 	}
 	mfence();
 	/* Read strobe */
-	read32((u32 *)addr);
+	read32((void *)(uintptr_t)addr);
 	mfence();
 	return mchbar_read8(sample_offset) >> 6 & 1;
 }

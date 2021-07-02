@@ -105,6 +105,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_ADL_P_GT2_3, "Alderlake P GT2" },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_GT2_4, "Alderlake P GT2" },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_GT2_5, "Alderlake P GT2" },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_GT2_6, "Alderlake P GT2" },
 	{ PCI_DEVICE_ID_INTEL_ADL_M_GT1, "Alderlake M GT1" },
 };
 

@@ -37,6 +37,7 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 {
 	struct drivers_usb_acpi_config *config = dev->chip_info;
 	const char *path = acpi_device_path(dev);
+	struct acpi_pld pld;
 
 	if (!path || !config)
 		return;
@@ -50,15 +51,10 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 		acpigen_write_name_string("_DDN", config->desc);
 	acpigen_write_upc(config->type);
 
-	if (config->use_custom_pld) {
-		/* Use board defined PLD */
-		acpigen_write_pld(&config->custom_pld);
-	} else {
-		/* Fill PLD strucutre based on port type */
-		struct acpi_pld pld;
-		acpi_pld_fill_usb(&pld, config->type, &config->group);
+	if (usb_acpi_get_pld(dev, &pld))
 		acpigen_write_pld(&pld);
-	}
+	else
+		printk(BIOS_ERR, "Error retrieving PLD for %s\n", path);
 
 	/* Resources */
 	if (usb_acpi_add_gpios_to_crs(config) == true) {
@@ -126,3 +122,19 @@ struct chip_operations drivers_usb_acpi_ops = {
 	CHIP_NAME("USB ACPI Device")
 	.enable_dev = usb_acpi_enable
 };
+
+bool usb_acpi_get_pld(const struct device *usb_device, struct acpi_pld *pld)
+{
+	struct drivers_usb_acpi_config *config = usb_device->chip_info;
+
+	if (!usb_device || !usb_device->chip_info ||
+		usb_device->chip_ops != &drivers_usb_acpi_ops)
+		return false;
+
+	if (config->use_custom_pld)
+		memcpy(pld, &config->custom_pld, sizeof(pld));
+	else
+		acpi_pld_fill_usb(pld, config->type, &config->group);
+
+	return true;
+}

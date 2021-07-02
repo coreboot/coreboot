@@ -68,4 +68,7 @@ struct drivers_usb_acpi_config {
 	struct acpi_gpio privacy_gpio;
 };
 
+/* Method to get PLD structure from USB device */
+bool usb_acpi_get_pld(const struct device *usb_device, struct acpi_pld *pld);
+
 #endif /* __USB_ACPI_CHIP_H__ */

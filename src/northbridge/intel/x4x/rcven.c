@@ -38,7 +38,7 @@ static u8 sampledqs(u32 addr, u8 lane, u8 channel)
 	}
 	mfence();
 	/* Read strobe */
-	read32((void *)(uintptr_t)addr);
+	read32p(addr);
 	mfence();
 	return mchbar_read8(sample_offset) >> 6 & 1;
 }

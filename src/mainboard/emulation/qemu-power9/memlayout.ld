@@ -1,0 +1,23 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#include <memlayout.h>
+
+#include <arch/header.ld>
+
+SECTIONS
+{
+	DRAM_START(0x0)
+
+	BOOTBLOCK(0, 32K)
+
+	STACK(0x8000, 32K)
+
+	PRERAM_CBMEM_CONSOLE(0x10000, 128K)
+	FMAP_CACHE(0x30000, 4K)
+	CBFS_MCACHE(0x31000, 8K)
+	TIMESTAMP(0x33000, 4K)
+	CBFS_CACHE(0x34000, 512K)
+	ROMSTAGE(0x100000, 1M)
+
+	RAMSTAGE(0x300000, 5M)
+}

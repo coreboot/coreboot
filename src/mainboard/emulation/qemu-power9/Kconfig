@@ -1,0 +1,43 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+# To execute, do:
+# qemu-system-ppc64 -M powernv --cpu power9 --bios 'build/coreboot.rom'
+
+if BOARD_EMULATION_QEMU_POWER9
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select CPU_POWER9
+	select BOARD_ROMSIZE_KB_512
+	select ARCH_BOOTBLOCK_PPC64
+	select ARCH_VERSTAGE_PPC64
+	select ARCH_ROMSTAGE_PPC64
+	select ARCH_RAMSTAGE_PPC64
+	select BOOT_DEVICE_NOT_SPI_FLASH
+	select MISSING_BOARD_RESET
+
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/memlayout.ld"
+
+config MAINBOARD_DIR
+	string
+	default "emulation/qemu-power9"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "QEMU POWER9"
+
+config MAX_CPUS
+	int
+	default 1
+
+config MAINBOARD_VENDOR
+	string
+	default "Emulation"
+
+config DRAM_SIZE_MB
+	int
+	default 32768
+
+endif #  BOARD_EMULATION_QEMU_POWER9

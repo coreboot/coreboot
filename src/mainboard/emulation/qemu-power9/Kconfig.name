@@ -1,0 +1,2 @@
+config BOARD_EMULATION_QEMU_POWER9
+	bool "QEMU power9"

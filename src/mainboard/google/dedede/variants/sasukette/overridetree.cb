@@ -23,8 +23,8 @@ chip soc/intel/jasperlake
 			.speed = I2C_SPEED_FAST,
 			.speed_config[0] = {
 				.speed = I2C_SPEED_FAST,
-				.scl_lcnt = 185,
-				.scl_hcnt = 95,
+				.scl_lcnt = 180,
+				.scl_hcnt = 90,
 				.sda_hold = 40,
 			}
 		},

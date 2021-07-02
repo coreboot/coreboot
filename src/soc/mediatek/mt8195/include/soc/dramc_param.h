@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __SOC_MEDIATEK_DRAMC_PARAM_H__
-#define __SOC_MEDIATEK_DRAMC_PARAM_H__
+#ifndef __SOC_MEDIATEK_MT8195_DRAMC_PARAM_H__
+#define __SOC_MEDIATEK_MT8195_DRAMC_PARAM_H__
 
 /*
  * NOTE: This file is shared between coreboot and dram blob. Any change in this
@@ -12,7 +12,7 @@
 #include <sys/types.h>
 #include <soc/dramc_soc.h>
 
-#define DRAMC_PARAM_HEADER_VERSION 6
+#define DRAMC_PARAM_HEADER_VERSION 7
 
 enum DRAMC_PARAM_STATUS_CODES {
 	DRAMC_SUCCESS = 0,
@@ -149,4 +149,4 @@ void dump_param_header(const void *blob);
 int validate_dramc_param(const void *blob);
 int is_valid_dramc_param(const void *blob);
 int initialize_dramc_param(void *blob);
-#endif  /* __SOC_MEDIATEK_DRAMC_PARAM_H__ */
+#endif  /* __SOC_MEDIATEK_MT8195_DRAMC_PARAM_H__ */

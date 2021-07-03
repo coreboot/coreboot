@@ -63,5 +63,6 @@ check_member(mt8195_iocfg_bm_regs, tdsel_cfg1, 0x110);
 
 enum {
 	IO_4_MA = 0x9,
+	IO_6_MA = 0x1b,
 };
 #endif /* __SOC_MEDIATEK_MT8195_IOCFG_H__ */

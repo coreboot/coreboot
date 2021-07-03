@@ -501,7 +501,7 @@ if [ $(grep -- -dirty "${tmpdir}/${results}/coreboot_console.txt") ]; then
 	exit $EXIT_FAILURE
 fi
 
-if [ $(grep -- unknown "${tmpdir}/${results}/coreboot_timestamps.txt") ]; then
+if [ $(grep -- unknown "${tmpdir}/${results}/coreboot_timestamps.txt" >/dev/null 2>&1) ]; then
 	echo "Unknown timestamps found in 'coreboot_timestamps.txt'." \
 	"Please rebuild the 'cbmem' utility and try again."
 	exit $EXIT_FAILURE

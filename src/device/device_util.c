@@ -870,8 +870,8 @@ void mmconf_resource(struct device *dev, unsigned long index)
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
-	printk(BIOS_DEBUG, "Adding PCIe enhanced config space BAR "
-			"0x%08lx-0x%08lx.\n", (unsigned long)(resource->base),
+	printk(BIOS_DEBUG, "Adding PCIe enhanced config space BAR 0x%08lx-0x%08lx.\n",
+			(unsigned long)(resource->base),
 			(unsigned long)(resource->base + resource->size));
 }
 

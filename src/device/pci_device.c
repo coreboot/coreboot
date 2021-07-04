@@ -149,8 +149,7 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 	 */
 	if (moving == 0) {
 		if (value != 0) {
-			printk(BIOS_DEBUG, "%s register %02lx(%08lx), "
-			       "read-only ignoring it\n",
+			printk(BIOS_DEBUG, "%s register %02lx(%08lx), read-only ignoring it\n",
 			       dev_path(dev), index, value);
 		}
 		resource->flags = 0;
@@ -234,8 +233,7 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 		resource->flags |= IORESOURCE_MEM | IORESOURCE_READONLY;
 	} else {
 		if (value != 0) {
-			printk(BIOS_DEBUG, "%s register %02lx(%08lx), "
-			       "read-only ignoring it\n",
+			printk(BIOS_DEBUG, "%s register %02lx(%08lx), read-only ignoring it\n",
 			       dev_path(dev), index, value);
 		}
 		resource->flags = 0;
@@ -512,8 +510,8 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 			   we can treat it like an empty resource. */
 			resource->size = 0;
 		} else {
-			printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx not "
-			       "assigned\n", dev_path(dev), resource->index,
+			printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx not assigned\n",
+			       dev_path(dev), resource->index,
 			       resource_type(resource), resource->size);
 			return;
 		}
@@ -980,9 +978,9 @@ static void set_pci_ops(struct device *dev)
 	default:
 bad:
 		if (dev->enabled) {
-			printk(BIOS_ERR, "%s [%04x/%04x/%06x] has unknown "
-			       "header type %02x, ignoring.\n", dev_path(dev),
-			       dev->vendor, dev->device,
+			printk(BIOS_ERR,
+			       "%s [%04x/%04x/%06x] has unknown header type %02x, ignoring.\n",
+			       dev_path(dev), dev->vendor, dev->device,
 			       dev->class >> 8, dev->hdr_type);
 		}
 	}
@@ -1107,8 +1105,9 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 		if ((id == 0xffffffff) || (id == 0x00000000) ||
 		    (id == 0x0000ffff) || (id == 0xffff0000)) {
 			if (dev->enabled) {
-				printk(BIOS_INFO, "PCI: Static device %s not "
-				       "found, disabling it.\n", dev_path(dev));
+				printk(BIOS_INFO,
+				       "PCI: Static device %s not found, disabling it.\n",
+				       dev_path(dev));
 				dev->enabled = 0;
 			}
 			return dev;

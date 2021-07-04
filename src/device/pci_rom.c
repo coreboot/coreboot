@@ -78,14 +78,14 @@ struct rom_header *pci_rom_probe(const struct device *dev)
 		rom_header = (struct rom_header *)rom_address;
 	}
 
-	printk(BIOS_SPEW, "PCI expansion ROM, signature 0x%04x, "
-	       "INIT size 0x%04x, data ptr 0x%04x\n",
+	printk(BIOS_SPEW,
+	       "PCI expansion ROM, signature 0x%04x, INIT size 0x%04x, data ptr 0x%04x\n",
 	       le32_to_cpu(rom_header->signature),
 	       rom_header->size * 512, le32_to_cpu(rom_header->data));
 
 	if (le32_to_cpu(rom_header->signature) != PCI_ROM_HDR) {
-		printk(BIOS_ERR, "Incorrect expansion ROM header "
-		       "signature %04x\n", le32_to_cpu(rom_header->signature));
+		printk(BIOS_ERR, "Incorrect expansion ROM header signature %04x\n",
+		       le32_to_cpu(rom_header->signature));
 		return NULL;
 	}
 
@@ -97,13 +97,13 @@ struct rom_header *pci_rom_probe(const struct device *dev)
 	if ((dev->vendor != rom_data->vendor
 	    || dev->device != rom_data->device)
 	    && (vendev == mapped_vendev)) {
-		printk(BIOS_ERR, "ID mismatch: vendor ID %04x, "
-		       "device ID %04x\n", dev->vendor, dev->device);
+		printk(BIOS_ERR, "ID mismatch: vendor ID %04x, device ID %04x\n",
+		       dev->vendor, dev->device);
 		return NULL;
 	}
 
-	printk(BIOS_SPEW, "PCI ROM image, Class Code %04x%02x, "
-	       "Code Type %02x\n", rom_data->class_hi, rom_data->class_lo,
+	printk(BIOS_SPEW, "PCI ROM image, Class Code %04x%02x, Code Type %02x\n",
+	       rom_data->class_hi, rom_data->class_lo,
 	       rom_data->type);
 
 	if (dev->class != ((rom_data->class_hi << 8) | rom_data->class_lo)) {
@@ -152,17 +152,17 @@ struct rom_header *pci_rom_load(struct device *dev,
 		if (dev != vga_pri) return NULL; /* Only one VGA supported. */
 #endif
 		if ((void *)PCI_VGA_RAM_IMAGE_START != rom_header) {
-			printk(BIOS_DEBUG, "Copying VGA ROM Image from %p to "
-			       "0x%x, 0x%x bytes\n", rom_header,
-			       PCI_VGA_RAM_IMAGE_START, rom_size);
+			printk(BIOS_DEBUG,
+			       "Copying VGA ROM Image from %p to 0x%x, 0x%x bytes\n",
+			       rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 			memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header,
 			       rom_size);
 		}
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
 	}
 
-	printk(BIOS_DEBUG, "Copying non-VGA ROM image from %p to %p, 0x%x "
-	       "bytes\n", rom_header, pci_ram_image_start, rom_size);
+	printk(BIOS_DEBUG, "Copying non-VGA ROM image from %p to %p, 0x%x bytes\n",
+	       rom_header, pci_ram_image_start, rom_size);
 
 	memcpy(pci_ram_image_start, rom_header, rom_size);
 	pci_ram_image_start += rom_size;

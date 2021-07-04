@@ -206,6 +206,9 @@ chip soc/intel/jasperlake
 	# Enable HECI
 	register "HeciEnabled" = "1"
 
+	# Set xHCI LFPS period sampling off time, the default is 9ms.
+	register "xhci_lfps_sampling_offtime_ms" = "9"
+
 	device domain 0 on
 		device pci 00.0 on end # Host Bridge
 		device pci 02.0 on end # Integrated Graphics Device

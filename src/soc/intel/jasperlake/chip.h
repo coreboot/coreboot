@@ -85,6 +85,11 @@ struct soc_intel_jasperlake_config {
 	/* Wake Enable Bitmap for USB3 ports */
 	uint16_t usb3_wake_enable_bitmap;
 
+	/* Set the LFPS periodic sampling off time for USB3 Ports.
+	   Default value of PMCTRL_REG bits[7:4] is 9 which means periodic
+	   sampling off interval is 9ms, the range is from 0 to 15. */
+	uint8_t xhci_lfps_sampling_offtime_ms;
+
 	/* SATA related */
 	uint8_t SataMode;
 	uint8_t SataSalpSupport;

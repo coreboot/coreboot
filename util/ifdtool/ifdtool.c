@@ -205,9 +205,8 @@ static enum ich_chipset ifd1_guess_chipset(char *image, int size)
 		return CHIPSET_9_SERIES_WILDCAT_POINT;
 	} else if (nm == 6) {
 		return CHIPSET_C620_SERIES_LEWISBURG;
-	} else {
-		return CHIPSET_100_200_SERIES_SUNRISE_POINT;
 	}
+	return CHIPSET_PCH_UNKNOWN;
 }
 
 static enum ich_chipset ifd2_platform_to_chipset(const int pindex)
@@ -219,6 +218,8 @@ static enum ich_chipset ifd2_platform_to_chipset(const int pindex)
 		return CHIPSET_N_SERIES_JASPER_LAKE;
 	case PLATFORM_EHL:
 		return CHIPSET_x6000_SERIES_ELKHART_LAKE;
+	case PLATFORM_SKLKBL:
+		return CHIPSET_100_200_SERIES_SUNRISE_POINT;
 	case PLATFORM_CNL:
 		return CHIPSET_300_SERIES_CANNON_POINT;
 	case PLATFORM_TGL:
@@ -250,6 +251,7 @@ static int is_platform_ifd_2(void)
 		PLATFORM_JSL,
 		PLATFORM_EHL,
 		PLATFORM_ADL,
+		PLATFORM_SKLKBL,
 	};
 	unsigned int i;
 

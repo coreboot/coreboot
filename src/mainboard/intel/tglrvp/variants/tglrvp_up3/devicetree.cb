@@ -191,7 +191,7 @@ chip soc/intel/tigerlake
 					.time_window_max = 32 * MSECS_PER_SEC,
 					.granularity = 200,}"
 				register "controls.power_limits.pl2" = "{
-					.min_power = 15000,
+					.min_power = 60000,
 					.max_power = 60000,
 					.time_window_min = 28 * MSECS_PER_SEC,
 					.time_window_max = 32 * MSECS_PER_SEC,

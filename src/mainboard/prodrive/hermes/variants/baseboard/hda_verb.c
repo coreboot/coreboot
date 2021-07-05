@@ -7,7 +7,7 @@ const u32 cim_verb_data[] = {
 	0x10ec0888,	/* Codec Vendor / Device ID: Realtek ALC888 */
 	0x10ec0888,	/* Subsystem ID */
 	15,		/* Number of 4 dword sets */
-	AZALIA_SUBVENDOR(0, 0x10ec0888),
+	AZALIA_SUBVENDOR(0, 0x1d336700),
 
 	/* Pin widgets */
 	AZALIA_PIN_CFG(0, 0x11, 0x411111f0), /* SPDIF-OUT2 - disabled */

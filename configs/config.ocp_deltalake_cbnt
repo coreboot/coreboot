@@ -1,4 +1,5 @@
 CONFIG_VENDOR_OCP=y
+CONFIG_BOARD_OCP_DELTALAKE=y
 CONFIG_INTEL_TXT_BIOSACM_FILE="3rdparty/intel-sec-tools/testdata/fake_acm/biosacm_cbnt_fake.bin"
 CONFIG_INTEL_TXT_LOGGING=y
 CONFIG_INTEL_CBNT_SUPPORT=y

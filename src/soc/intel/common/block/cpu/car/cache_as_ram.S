@@ -9,6 +9,7 @@
 #include <cpu/x86/post_code.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/post_codes.h>
+#include <cpu/x86/64bit/entry64.inc>
 
 .section .init, "ax", @progbits
 
@@ -279,7 +280,8 @@ car_init_done:
 	andl	$0xfffffff0, %esp
 
 #if ENV_X86_64
-	#include <cpu/x86/64bit/entry64.inc>
+	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
+
 	movd	%mm2, %rdi
 	shlq	$32, %rdi
 	movd	%mm1, %rsi

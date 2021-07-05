@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cpu/x86/post_code.h>
+#include <cpu/x86/64bit/entry64.inc>
 
 #define CBFS_FILE_MAGIC 0
 #define CBFS_FILE_LEN (CBFS_FILE_MAGIC + 8)
@@ -79,7 +80,7 @@ pages_done:
 
 #if ENV_X86_64
 	/* entry64.inc preserves ebx. */
-#include <cpu/x86/64bit/entry64.inc>
+ 	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
 
 	/* Restore the BIST result and timestamps. */
 	movd	%mm2, %rdi

@@ -6,6 +6,7 @@
 #include <arch/ram_segs.h>
 
 #define __RAMSTAGE__
+#include <cpu/x86/64bit/entry64.inc>
 
 /* The SIPI vector is responsible for initializing the APs in the system. It
  * loads microcode, sets up MSRs, and enables caching before calling into
@@ -223,7 +224,8 @@ load_msr:
 
 #if ENV_X86_64
 	/* entry64.inc preserves ebx, esi, edi, ebp */
-#include <cpu/x86/64bit/entry64.inc>
+	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
+
 	movabs	c_handler, %eax
 	call	*%rax
 #else

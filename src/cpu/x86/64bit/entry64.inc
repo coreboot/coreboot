@@ -22,10 +22,9 @@
 #include <arch/rom_segs.h>
 #endif
 
-
-setup_longmode:
+.macro setup_longmode page_table
 	/* Get page table address */
-	movl	$(CONFIG_ARCH_X86_64_PGTBL_LOC), %eax
+	movl	\page_table, %eax
 
 	/* load identity mapped page tables */
 	movl	%eax, %cr3
@@ -48,12 +47,13 @@ setup_longmode:
 
 	/* use long jump to switch to 64-bit code segment */
 #if defined(__RAMSTAGE__)
-	ljmp $RAM_CODE_SEG64, $__longmode_start
+	ljmp $RAM_CODE_SEG64, $jmp_addr\@
 #else
-	ljmp $ROM_CODE_SEG64, $__longmode_start
+	ljmp $ROM_CODE_SEG64, $jmp_addr\@
 
 #endif
 .code64
-__longmode_start:
+jmp_addr\@:
+.endm
 
 #endif

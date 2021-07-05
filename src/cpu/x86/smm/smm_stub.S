@@ -12,6 +12,7 @@
 #include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic_def.h>
+#include <cpu/x86/64bit/entry64.inc>
 
 .code32
 .section ".module_parameters", "aw", @progbits
@@ -195,7 +196,7 @@ align_stack:
 #if ENV_X86_64
 	mov	%ecx, %edi
 	/* entry64.inc preserves ebx, esi, edi, ebp */
-#include <cpu/x86/64bit/entry64.inc>
+	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
 	mov	%edi, %ecx
 
 

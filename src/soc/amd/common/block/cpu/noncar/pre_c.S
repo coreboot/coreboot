@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/post_codes.h>
+#include <cpu/x86/64bit/entry64.inc>
 #include <cpu/x86/post_code.h>
 
 .section .init, "ax", @progbits
@@ -27,7 +28,7 @@ bootblock_pre_c_entry:
 	post_code(POSTCODE_BOOTBLOCK_PRE_C_ENTRY)
 
 #if ENV_X86_64
-	#include <cpu/x86/64bit/entry64.inc>
+	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
 #endif
 
 	/* Clear .bss section */

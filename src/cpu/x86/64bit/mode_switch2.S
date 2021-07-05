@@ -4,6 +4,8 @@
  * Must not be directly invoked from C code!
  */
 
+#include <cpu/x86/64bit/entry64.inc>
+
 .text
 .code32
 	.section ".text.long_mode_call_3arg", "ax", @progbits
@@ -19,7 +21,7 @@ long_mode_call_3arg:
 	mov	%esp, %ebp
 
 	/* Enter long mode, preserves ebx */
-	#include <cpu/x86/64bit/entry64.inc>
+	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
 
 	/* Align stack */
 	movabs	$0xfffffffffffffff0, %rax

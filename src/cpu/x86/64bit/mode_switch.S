@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
+#include <cpu/x86/64bit/entry64.inc>
 
 /* Calls a x86_32 function from x86_64 context */
 .text
@@ -42,8 +43,8 @@ protected_mode_call_wrapper:
 	call	*%ebx
 	movl	%eax, %ebx
 
-	/* Jump to long mode. Preserves ebx */
-	#include <cpu/x86/64bit/entry64.inc>
+	/* Preserves ebx */
+	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
 
 	/* Place return value in rax */
 	movl	%ebx, %eax

@@ -13,6 +13,7 @@
 .global bootblock_pre_c_entry
 
 #include <cpu/intel/car/cache_as_ram_symbols.inc>
+#include <cpu/x86/64bit/entry64.inc>
 
 .code32
 _cache_as_ram_setup:
@@ -362,7 +363,7 @@ fill_cache:
 	subl	$4, %esp
 
 #if ENV_X86_64
-	#include <cpu/x86/64bit/entry64.inc>
+	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
 
 	movd	%mm2, %rdi
 	shlq	$32, %rdi	/* BIST */

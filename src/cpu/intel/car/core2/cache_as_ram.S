@@ -4,6 +4,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
+#include <cpu/x86/64bit/entry64.inc>
 
 .section .init
 .global bootblock_pre_c_entry
@@ -162,8 +163,7 @@ addrsize_set_high:
 	subl	$4, %esp
 
 #if ENV_X86_64
-
-	#include <cpu/x86/64bit/entry64.inc>
+	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
 
 	movd	%mm2, %rdi
 	shlq	$32, %rdi

@@ -1,54 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
-#include <device/mmio.h>
-#include <soc/usb.h>
-#include <soc/clock.h>
-#include <soc/addressmap.h>
-#include <soc/efuse.h>
 #include <timer.h>
-
-struct usb_qusb_phy_dig {
-	u8 rsvd1[16];
-	u32 pwr_ctrl1;
-	u32 pwr_ctrl2;
-	u8 rsvd2[8];
-	u32 imp_ctrl1;
-	u32 imp_ctrl2;
-	u8 rsvd3[20];
-	u32 chg_ctrl2;
-	u32 tune1;
-	u32 tune2;
-	u32 tune3;
-	u32 tune4;
-	u32 tune5;
-	u8 rsvd4[44];
-	u32 debug_ctrl2;
-	u8 rsvd5[28];
-	u32 debug_stat5;
-};
-check_member(usb_qusb_phy_dig, tune5, 0x50);
-check_member(usb_qusb_phy_dig, debug_ctrl2, 0x80);
-check_member(usb_qusb_phy_dig, debug_stat5, 0xA0);
-
-struct usb_qusb_phy_pll {
-	u8 rsvd0[4];
-	u32 analog_controls_two;
-	u8 rsvd1[36];
-	u32 cmode;
-	u8 rsvd2[132];
-	u32 dig_tim;
-	u8 rsvd3[204];
-	u32 lock_delay;
-	u8 rsvd4[4];
-	u32 clock_inverters;
-	u8 rsvd5[4];
-	u32 bias_ctrl_1;
-	u32 bias_ctrl_2;
-};
-check_member(usb_qusb_phy_pll, cmode, 0x2C);
-check_member(usb_qusb_phy_pll, bias_ctrl_2, 0x198);
-check_member(usb_qusb_phy_pll, dig_tim, 0xB4);
+#include <soc/usb/qmp_usb_phy.h>
+#include <soc/addressmap.h>
 
 /* Only for QMP V3 PHY - QSERDES COM registers */
 struct usb3_phy_qserdes_com_reg_layout {
@@ -290,41 +244,6 @@ static struct usb3_phy_qserdes_rx_reg_layout *const qserdes_rx_reg_layout =
 static struct usb3_phy_pcs_reg_layout *const pcs_reg_layout =
 	(void *)QMP_PHY_PCS_REG_BASE;
 
-struct usb_dwc3 {
-	u32 sbuscfg0;
-	u32 sbuscfg1;
-	u32 txthrcfg;
-	u32 rxthrcfg;
-	u32 ctl;
-	u32 pmsts;
-	u32 sts;
-	u32 uctl1;
-	u32 snpsid;
-	u32 gpio;
-	u32 uid;
-	u32 uctl;
-	u64 buserraddr;
-	u64 prtbimap;
-	u8 reserved1[32];
-	u32 dbgfifospace;
-	u32 dbgltssm;
-	u32 dbglnmcc;
-	u32 dbgbmu;
-	u32 dbglspmux;
-	u32 dbglsp;
-	u32 dbgepinfo0;
-	u32 dbgepinfo1;
-	u64 prtbimap_hs;
-	u64 prtbimap_fs;
-	u8 reserved2[112];
-	u32 usb2phycfg;
-	u8 reserved3[124];
-	u32 usb2phyacc;
-	u8 reserved4[60];
-	u32 usb3pipectl;
-	u8 reserved5[60];
-};
-check_member(usb_dwc3, usb3pipectl, 0x1c0);
 
 static const struct qmp_phy_init_tbl qmp_v3_usb3_serdes_tbl[] = {
 	{&qserdes_com_reg_layout->com_pll_ivco, 0x07},
@@ -434,33 +353,7 @@ static const struct qmp_phy_init_tbl qmp_v3_usb3_pcs_tbl[] = {
 	{&pcs_reg_layout->pcs_rxeqtraining_run_time, 0x13},
 };
 
-struct usb_dwc3_cfg {
-	struct usb_dwc3 *usb_host_dwc3;
-	struct usb_qusb_phy_pll *qusb_phy_pll;
-	struct usb_qusb_phy_dig *qusb_phy_dig;
-	/* Init sequence for QMP PHY blocks - serdes, tx, rx, pcs */
-	const struct qmp_phy_init_tbl *serdes_tbl;
-	int serdes_tbl_num;
-	const struct qmp_phy_init_tbl *tx_tbl;
-	int tx_tbl_num;
-	const struct qmp_phy_init_tbl *rx_tbl;
-	int rx_tbl_num;
-	const struct qmp_phy_init_tbl *pcs_tbl;
-	int pcs_tbl_num;
-	struct usb3_phy_pcs_reg_layout *qmp_pcs_reg;
-
-	u32 *usb3_bcr;
-	u32 *qusb2phy_bcr;
-	u32 *gcc_usb3phy_bcr_reg;
-	u32 *gcc_qmpphy_bcr_reg;
-	struct usb_board_data *board_data;
-	u32 efuse_offset;
-};
-
-static struct usb_dwc3_cfg usb_port0 = {
-	.usb_host_dwc3 =	(void *)USB_HOST_DWC3_BASE,
-	.qusb_phy_pll =		(void *)QUSB_PRIM_PHY_BASE,
-	.qusb_phy_dig =		(void *)QUSB_PRIM_PHY_DIG_BASE,
+struct ss_usb_phy_reg qmp_v3_usb_phy = {
 	.serdes_tbl =		qmp_v3_usb3_serdes_tbl,
 	.serdes_tbl_num	=	ARRAY_SIZE(qmp_v3_usb3_serdes_tbl),
 	.tx_tbl =		qmp_v3_usb3_tx_tbl,
@@ -470,154 +363,7 @@ static struct usb_dwc3_cfg usb_port0 = {
 	.pcs_tbl =		qmp_v3_usb3_pcs_tbl,
 	.pcs_tbl_num =		ARRAY_SIZE(qmp_v3_usb3_pcs_tbl),
 	.qmp_pcs_reg =		(void *)QMP_PHY_PCS_REG_BASE,
-	.usb3_bcr =		&gcc->usb30_prim_bcr,
-	.qusb2phy_bcr =		&gcc->qusb2phy_prim_bcr,
-	.gcc_usb3phy_bcr_reg =	&gcc->usb3_dp_phy_prim_bcr,
-	.gcc_qmpphy_bcr_reg =	&gcc->usb3_phy_prim_bcr,
-	.efuse_offset =		25,
 };
-
-static struct qfprom_corr * const qfprom_corr_efuse = (void *)QFPROM_BASE;
-
-static void reset_usb(struct usb_dwc3_cfg *dwc3)
-{
-	/* Assert Core reset */
-	clock_reset_bcr(dwc3->usb3_bcr, 1);
-
-	/* Assert QUSB PHY reset */
-	clock_reset_bcr(dwc3->qusb2phy_bcr, 1);
-
-	/* Assert QMP PHY reset */
-	clock_reset_bcr(dwc3->gcc_usb3phy_bcr_reg, 1);
-	clock_reset_bcr(dwc3->gcc_qmpphy_bcr_reg, 1);
-}
-
-void reset_usb0(void)
-{
-	/* Before Resetting PHY, put Core in Reset */
-	printk(BIOS_INFO, "Starting DWC3 and PHY resets for USB(0)\n");
-
-	reset_usb(&usb_port0);
-}
-
-/*
- * Update board specific PHY tuning override values that specified from
- * board file.
- */
-static void qusb2_phy_override_phy_params(struct usb_dwc3_cfg *dwc3)
-{
-	/* Override preemphasis value */
-	write32(&dwc3->qusb_phy_dig->tune1,
-		dwc3->board_data->port_tune1);
-
-	/* Override BIAS_CTRL_2 to reduce the TX swing overshooting. */
-	write32(&dwc3->qusb_phy_pll->bias_ctrl_2,
-			dwc3->board_data->pll_bias_control_2);
-
-	/* Override IMP_RES_OFFSET value */
-	write32(&dwc3->qusb_phy_dig->imp_ctrl1,
-		dwc3->board_data->imp_ctrl1);
-}
-
-/*
- * Fetches HS Tx tuning value from efuse register and sets the
- * QUSB2PHY_PORT_TUNE1/2 register.
- * For error case, skip setting the value and use the default value.
- */
-static void qusb2_phy_set_tune_param(struct usb_dwc3_cfg *dwc3)
-{
-	/*
-	 * Efuse registers 3 bit value specifies tuning for HSTX
-	 * output current in TUNE1 Register. Hence Extract 3 bits from
-	 * EFUSE at correct position.
-	 */
-
-	const int efuse_bits = 3;
-	int bit_pos = dwc3->efuse_offset;
-
-	u32 bit_mask = (1 << efuse_bits) - 1;
-	u32 tune_val =
-		(read32(&qfprom_corr_efuse->qusb_hstx_trim_lsb) >> bit_pos)
-		& bit_mask;
-	/*
-	 * if efuse reg is updated (i.e non-zero) then use it to program
-	 * tune parameters.
-	 */
-	if (tune_val)
-		clrsetbits32(&dwc3->qusb_phy_dig->tune1,
-				PORT_TUNE1_MASK, tune_val << 4);
-}
-
-static void tune_phy(struct usb_dwc3_cfg *dwc3, struct usb_qusb_phy_dig *phy)
-{
-	write32(&phy->pwr_ctrl2, QUSB2PHY_PWR_CTRL2);
-	/* IMP_CTRL1: Control the impedance reduction */
-	write32(&phy->imp_ctrl1, QUSB2PHY_IMP_CTRL1);
-	/* IMP_CTRL2: Impedance offset/mapping slope */
-	write32(&phy->imp_ctrl2, QUSB2PHY_IMP_CTRL1);
-	write32(&phy->chg_ctrl2, QUSB2PHY_IMP_CTRL2);
-	/*
-	 * TUNE1: Sets HS Impedance to approx 45 ohms
-	 * then override with efuse value.
-	 */
-	write32(&phy->tune1, QUSB2PHY_PORT_TUNE1);
-	/* TUNE2: Tuning for HS Disconnect Level */
-	write32(&phy->tune2, QUSB2PHY_PORT_TUNE2);
-	/* TUNE3: Tune squelch range */
-	write32(&phy->tune3, QUSB2PHY_PORT_TUNE3);
-	/* TUNE4: Sets EOP_DLY(Squelch rising edge to linestate falling edge) */
-	write32(&phy->tune4, QUSB2PHY_PORT_TUNE4);
-	write32(&phy->tune5, QUSB2PHY_PORT_TUNE5);
-
-	if (dwc3->board_data) {
-		/* Override board specific PHY tuning values */
-		qusb2_phy_override_phy_params(dwc3);
-
-		/* Set efuse value for tuning the PHY */
-		qusb2_phy_set_tune_param(dwc3);
-	}
-}
-
-static void hs_qusb_phy_init(struct usb_dwc3_cfg *dwc3)
-{
-	/* PWR_CTRL: set the power down bit to disable the PHY */
-	setbits32(&dwc3->qusb_phy_dig->pwr_ctrl1, POWER_DOWN);
-
-	write32(&dwc3->qusb_phy_pll->analog_controls_two,
-			QUSB2PHY_PLL_ANALOG_CONTROLS_TWO);
-	write32(&dwc3->qusb_phy_pll->clock_inverters,
-			QUSB2PHY_PLL_CLOCK_INVERTERS);
-	write32(&dwc3->qusb_phy_pll->cmode,
-			QUSB2PHY_PLL_CMODE);
-	write32(&dwc3->qusb_phy_pll->lock_delay,
-			QUSB2PHY_PLL_LOCK_DELAY);
-	write32(&dwc3->qusb_phy_pll->dig_tim,
-			QUSB2PHY_PLL_DIGITAL_TIMERS_TWO);
-	write32(&dwc3->qusb_phy_pll->bias_ctrl_1,
-			QUSB2PHY_PLL_BIAS_CONTROL_1);
-	write32(&dwc3->qusb_phy_pll->bias_ctrl_2,
-			QUSB2PHY_PLL_BIAS_CONTROL_2);
-
-	tune_phy(dwc3, dwc3->qusb_phy_dig);
-
-	/* PWR_CTRL1: Clear the power down bit to enable the PHY */
-	clrbits32(&dwc3->qusb_phy_dig->pwr_ctrl1, POWER_DOWN);
-
-	write32(&dwc3->qusb_phy_dig->debug_ctrl2,
-				DEBUG_CTRL2_MUX_PLL_LOCK_STATUS);
-
-	/*
-	 * DEBUG_STAT5: wait for 160uS for PLL lock;
-	 * vstatus[0] changes from 0 to 1.
-	 */
-	long lock_us = wait_us(160, read32(&dwc3->qusb_phy_dig->debug_stat5) &
-						VSTATUS_PLL_LOCK_STATUS_MASK);
-	if (!lock_us)
-		printk(BIOS_ERR, "ERROR: QUSB PHY PLL LOCK fails\n");
-	else
-		printk(BIOS_DEBUG, "QUSB PHY initialized and locked in %ldus\n",
-				lock_us);
-}
 
 static void qcom_qmp_phy_configure(const struct qmp_phy_init_tbl tbl[],
 				int num)
@@ -632,96 +378,38 @@ static void qcom_qmp_phy_configure(const struct qmp_phy_init_tbl tbl[],
 		write32(t->address, t->val);
 }
 
-static void ss_qmp_phy_init(struct usb_dwc3_cfg *dwc3)
+void ss_qmp_phy_init(void)
 {
+	struct ss_usb_phy_reg *ss_phy_reg;
+
+	ss_phy_reg = &qmp_v3_usb_phy;
 	/* power up USB3 PHY */
-	write32(&dwc3->qmp_pcs_reg->pcs_power_down_control, 0x01);
+	write32(&ss_phy_reg->qmp_pcs_reg->pcs_power_down_control, 0x01);
 
 	 /* Serdes configuration */
-	qcom_qmp_phy_configure(dwc3->serdes_tbl, dwc3->serdes_tbl_num);
+	qcom_qmp_phy_configure(ss_phy_reg->serdes_tbl,
+		ss_phy_reg->serdes_tbl_num);
 	/* Tx, Rx, and PCS configurations */
-	qcom_qmp_phy_configure(dwc3->tx_tbl, dwc3->tx_tbl_num);
-	qcom_qmp_phy_configure(dwc3->rx_tbl, dwc3->rx_tbl_num);
-	qcom_qmp_phy_configure(dwc3->pcs_tbl, dwc3->pcs_tbl_num);
+	qcom_qmp_phy_configure(ss_phy_reg->tx_tbl, ss_phy_reg->tx_tbl_num);
+	qcom_qmp_phy_configure(ss_phy_reg->rx_tbl, ss_phy_reg->rx_tbl_num);
+	qcom_qmp_phy_configure(ss_phy_reg->pcs_tbl, ss_phy_reg->pcs_tbl_num);
 
 	/* perform software reset of PCS/Serdes */
-	write32(&dwc3->qmp_pcs_reg->pcs_sw_reset, 0x00);
+	write32(&ss_phy_reg->qmp_pcs_reg->pcs_sw_reset, 0x00);
 	/* start PCS/Serdes to operation mode */
-	write32(&dwc3->qmp_pcs_reg->pcs_start_control, 0x03);
+	write32(&ss_phy_reg->qmp_pcs_reg->pcs_start_control, 0x03);
 
 	/*
 	 * Wait for PHY initialization to be done
 	 * PCS_STATUS: wait for 1ms for PHY STATUS;
 	 * SW can continuously check for PHYSTATUS = 1.b0.
 	 */
-	long lock_us = wait_us(1000,
-			!(read32(&dwc3->qmp_pcs_reg->pcs_ready_status) &
+	long lock_us = wait_us(10000,
+			!(read32(&ss_phy_reg->qmp_pcs_reg->pcs_ready_status) &
 			USB3_PCS_PHYSTATUS));
 	if (!lock_us)
 		printk(BIOS_ERR, "ERROR: QMP PHY PLL LOCK fails:\n");
 	else
 		printk(BIOS_DEBUG, "QMP PHY initialized and locked in %ldus\n",
 				lock_us);
-}
-
-static void setup_dwc3(struct usb_dwc3 *dwc3)
-{
-	/* core exits U1/U2/U3 only in PHY power state P1/P2/P3 respectively */
-	clrsetbits32(&dwc3->usb3pipectl,
-		DWC3_GUSB3PIPECTL_DELAYP1TRANS,
-		DWC3_GUSB3PIPECTL_UX_EXIT_IN_PX);
-
-	/*
-	 * Configure USB phy interface of DWC3 core.
-	 * 1. Select UTMI+ PHY with 16-bit interface.
-	 * 2. Set USBTRDTIM to the corresponding value
-	 * according to the UTMI+ PHY interface.
-	 */
-	clrsetbits32(&dwc3->usb2phycfg,
-			(DWC3_GUSB2PHYCFG_USB2TRDTIM_MASK |
-			DWC3_GUSB2PHYCFG_PHYIF_MASK),
-			(DWC3_GUSB2PHYCFG_PHYIF(UTMI_PHYIF_8_BIT) |
-			DWC3_GUSB2PHYCFG_USBTRDTIM(USBTRDTIM_UTMI_8_BIT)));
-
-	clrsetbits32(&dwc3->ctl, (DWC3_GCTL_SCALEDOWN_MASK |
-			DWC3_GCTL_DISSCRAMBLE),
-			DWC3_GCTL_U2EXIT_LFPS | DWC3_GCTL_DSBLCLKGTNG);
-
-	/* configure controller in Host mode */
-	clrsetbits32(&dwc3->ctl, (DWC3_GCTL_PRTCAPDIR(DWC3_GCTL_PRTCAP_OTG)),
-			DWC3_GCTL_PRTCAPDIR(DWC3_GCTL_PRTCAP_HOST));
-	printk(BIOS_SPEW, "Configure USB in Host mode\n");
-}
-
-/* Initialization of DWC3 Core and PHY */
-static void setup_usb_host(struct usb_dwc3_cfg *dwc3,
-				struct usb_board_data *board_data)
-{
-	dwc3->board_data = board_data;
-
-	 /* Clear core reset. */
-	clock_reset_bcr(dwc3->usb3_bcr, 0);
-
-	/* Clear QUSB PHY reset. */
-	clock_reset_bcr(dwc3->qusb2phy_bcr, 0);
-
-	/* Initialize QUSB PHY */
-	hs_qusb_phy_init(dwc3);
-
-	/* Clear QMP PHY resets. */
-	clock_reset_bcr(dwc3->gcc_usb3phy_bcr_reg, 0);
-	clock_reset_bcr(dwc3->gcc_qmpphy_bcr_reg, 0);
-
-	/* Initialize QMP PHY */
-	ss_qmp_phy_init(dwc3);
-
-	setup_dwc3(dwc3->usb_host_dwc3);
-
-	printk(BIOS_INFO, "DWC3 and PHY setup finished\n");
-}
-
-void setup_usb_host0(struct usb_board_data *board_data)
-{
-	printk(BIOS_INFO, "Setting up USB HOST0 controller.\n");
-	setup_usb_host(&usb_port0, board_data);
 }

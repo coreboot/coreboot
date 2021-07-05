@@ -18,9 +18,8 @@
 #include <soc/qup_se_handlers_common.h>
 #include <soc/qupv3_i2c_common.h>
 #include <soc/qcom_qup_se.h>
-#include <soc/usb.h>
-#include <types.h>
-
+#include <soc/usb/usb_common.h>
+#include <soc/usb/qusb_phy.h>
 #include "board.h"
 #include <soc/addressmap.h>
 

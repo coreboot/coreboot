@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/stages.h>
-#include <soc/usb.h>
+#include <soc/usb/usb_common.h>
 #include <soc/qclib_common.h>
 #include <soc/watchdog.h>
 

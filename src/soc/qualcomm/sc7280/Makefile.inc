@@ -30,12 +30,16 @@ romstage-y += shrm_load_reset.c
 romstage-y += ../common/qclib.c
 romstage-y += ../common/mmu.c
 romstage-y += mmu.c
+romstage-y += ../common/usb/usb.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
 ramstage-y += soc.c
 ramstage-y += cbmem.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
+ramstage-y += ../common/usb/usb.c
+ramstage-y += ../common/usb/snps_usb_phy.c
+ramstage-y += ../common/usb/qmpv4_usb_phy.c
 ramstage-y += ../common/aop_load_reset.c
 ramstage-y += cpucp_load_reset.c
 

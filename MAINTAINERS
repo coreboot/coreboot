@@ -451,6 +451,13 @@ F:	src/mainboard/siemens/mc_apl1/
 
 
 
+STAR LABS MAINBOARDS
+M:	Sean Rhodes <sean@starlabs.systems>
+S:	Maintained
+F:	src/mainboard/starlabs/
+
+
+
 SYSTEM76 MAINBOARDS
 M:	Jeremy Soller <jeremy@system76.com>
 M:	Tim Crawford <tcrawford@system76.com>
@@ -522,6 +529,11 @@ LENOVO EC
 M:	Alexander Couzens <lynxis@fe80.eu>
 S:	Maintained
 F:	src/ec/lenovo/
+
+STARLABS EC
+M:	Sean Rhodes <sean@starlabs.systems>
+S:	Maintained
+F:	src/ec/starlabs/
 
 SYSTEM76 EC
 M:	Jeremy Soller <jeremy@system76.com>

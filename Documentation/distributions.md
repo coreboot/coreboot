@@ -24,6 +24,13 @@ ships with coreboot and support upstream maintenance for the devices through a
 third party, [3mdeb](https://3mdeb.com). They provide current and tested
 firmware binaries on [GitHub](https://pcengines.github.io).
 
+### Star Labs
+
+[Star Labs](https://starlabs.systems/) offers a range of laptops designed and
+built specifically for Linux that are available with coreboot firmware. They
+use Tianocore as the payload and include an NVRAM option to disable the
+Intel Management Engine.
+
 ### System76
 
 [System76](https://system76.com/) manufactures Linux laptops, desktops, and

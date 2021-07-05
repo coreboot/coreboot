@@ -1,0 +1,21 @@
+# hardcoded
+boot_option=Fallback
+# console
+debug_level=Debug
+# cpu
+hyper_threading=Enable
+vtd=Enable
+power_profile=Balanced
+me_state=Disable
+smi_handler=Enable
+# Devices
+wireless=Enable
+webcam=Enable
+microphone=Enable
+legacy_8254_timer=Enable
+usb_always_on=Disable
+# EC
+kbl_timeout=30 seconds
+fn_ctrl_swap=Disable
+# southbridge
+power_on_after_fail=Disable

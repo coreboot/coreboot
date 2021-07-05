@@ -172,6 +172,10 @@ The boards in this section are not real mainboards, but emulators.
 
 - [SiFive HiFive Unleashed](sifive/hifive-unleashed.md)
 
+## Star Labs Systems
+
+- [StarBook Mk V](starlabs/starbook_tgl.md)
+
 ## Supermicro
 
 - [X10SLM+-F](supermicro/x10slm-f.md)

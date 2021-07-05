@@ -118,6 +118,15 @@ static void write_fan(const struct drivers_intel_dptf_config *config,
 }
 
 /* \_SB.DPTF */
+static void write_imok(void)
+{
+	acpigen_write_method("IMOK", 1);
+	/* Return (Arg0) */
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_write_method_end();
+}
+/* \_SB.DPTF */
 static void write_oem_variables(const struct drivers_intel_dptf_config *config)
 {
 	int i;
@@ -217,6 +226,7 @@ static void write_device_definitions(const struct device *dev)
 	write_open_dptf_device(dev, platform_info);
 	write_fan(config, platform_info);
 	write_oem_variables(config);
+	write_imok();
 	write_generic_devices(config, platform_info);
 
 	acpigen_pop_len(); /* DPTF Device (write_open_dptf_device) */

@@ -33,7 +33,7 @@ U8 gHQA_Test_Freq_Vcore_Level = 0;  // 0: only 1 freq  , others are multi freq  
 u8 ett_fix_freq = 0xff; // 0xFF=all freq by gFreqTbl. The 0x"X" != 0xFF for single freq by gFreqTbl index, ex: 0x3 for DDR3733
 
 DRAM_DFS_FREQUENCY_TABLE_T gFreqTbl[DRAM_DFS_SRAM_MAX] = {
-    {LP4_DDR3200 /*0*/, DIV8_MODE, SRAM_SHU1, DUTY_LAST_K,  VREF_CALI_OFF,  CLOSE_LOOP_MODE},  // highest freq of term group (3733) must k first.
+    {LP4_DDR3200 /*0*/, DIV8_MODE, SRAM_SHU1, DUTY_LAST_K,  VREF_CALI_ON,  CLOSE_LOOP_MODE},  // highest freq of term group (3733) must k first.
     {LP4_DDR4266 /*1*/, DIV8_MODE, SRAM_SHU0, DUTY_NEED_K,  VREF_CALI_ON,   CLOSE_LOOP_MODE},  // highest freq of term group (3733) must k first.
 #if ENABLE_DDR400_OPEN_LOOP_MODE_OPTION
     {LP4_DDR400  /*2*/, DIV4_MODE, SRAM_SHU7, DUTY_DEFAULT, VREF_CALI_OFF,  OPEN_LOOP_MODE},

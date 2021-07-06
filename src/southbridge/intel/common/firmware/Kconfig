@@ -57,6 +57,7 @@ config CHECK_ME
 
 config ME_REGION_ALLOW_CPU_READ_ACCESS
 	bool "Allows HOST/CPU read access to ME region"
+	depends on HAVE_IFD_BIN
 	default y if SOC_INTEL_CSE_LITE_SKU
 	default n
 	help
@@ -137,8 +138,8 @@ config EC_BIN_PATH
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/ec.bin"
 
 choice
-	prompt "Protect flash regions"
-	default UNLOCK_FLASH_REGIONS
+	prompt "Protect flash regions" if HAVE_IFD_BIN
+	default UNLOCK_FLASH_REGIONS if HAVE_IFD_BIN
 	help
 	  This option allows you to protect flash regions.
 

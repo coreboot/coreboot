@@ -123,7 +123,7 @@
 #else
 #define ENABLE_EYESCAN_GRAPH 1
 #endif
-#define EYESCAN_GRAPH_CATX_VREF_STEP 1  // 1 (origin), 2 (div 2)(save 9K size), 5 for A60868
+#define EYESCAN_GRAPH_CATX_VREF_STEP 0x1U  // 1 (origin), 2 (div 2)(save 9K size), 5 for A60868
 #define EYESCAN_GRAPH_RX_VREF_STEP 2
 #define EYESCAN_RX_VREF_RANGE_END 128   //field is 6 bit, but can only use 0~63,7bit ->127
 #define EYESCAN_SKIP_UNTERM_CBT_EYESCAN_VREF    10

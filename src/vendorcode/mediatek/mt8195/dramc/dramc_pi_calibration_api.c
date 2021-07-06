@@ -14804,18 +14804,26 @@ void DramcNewDutyCalibration(DRAMC_CTX_T *p)
 #endif
 #endif
     {
+        U8 u1ChannelIdx;
+        U8 u1backup_channel = vGetPHY2ChannelMapping(p);
+
         #if SUPPORT_SAVE_TIME_FOR_CALIBRATION
         if(p->femmc_Ready==1)
         {
-            DramcClockDutySetClkDelayCell(p, p->pSavetimeData->s1ClockDuty_clk_delay_cell[p->channel]);
-            DQSDutyScan_SetDqsDelayCell(p, p->pSavetimeData->s1DQSDuty_clk_delay_cell[p->channel]);
-            #if __LP5_COMBO__
-            WCKDutyScan_SetWCKDelayCell(p, p->pSavetimeData->s1WCKDuty_clk_delay_cell[p->channel]);
-            #endif
-            #if APPLY_DQDQM_DUTY_CALIBRATION
-            DQDQMDutyScan_SetDQDQMDelayCell(p, p->channel, p->pSavetimeData->s1DQMDuty_clk_delay_cell[p->channel], DutyScan_Calibration_K_DQM);
-            DQDQMDutyScan_SetDQDQMDelayCell(p, p->channel, p->pSavetimeData->s1DQDuty_clk_delay_cell[p->channel], DutyScan_Calibration_K_DQ);
-            #endif
+            for(u1ChannelIdx=CHANNEL_A; u1ChannelIdx<p->support_channel_num; u1ChannelIdx++){
+                vSetPHY2ChannelMapping(p, u1ChannelIdx);
+
+                DramcClockDutySetClkDelayCell(p, p->pSavetimeData->s1ClockDuty_clk_delay_cell[p->channel]);
+                DQSDutyScan_SetDqsDelayCell(p, p->pSavetimeData->s1DQSDuty_clk_delay_cell[p->channel]);
+                #if __LP5_COMBO__
+                WCKDutyScan_SetWCKDelayCell(p, p->pSavetimeData->s1WCKDuty_clk_delay_cell[p->channel]);
+                #endif
+                #if APPLY_DQDQM_DUTY_CALIBRATION
+                DQDQMDutyScan_SetDQDQMDelayCell(p, p->channel, p->pSavetimeData->s1DQMDuty_clk_delay_cell[p->channel], DutyScan_Calibration_K_DQM);
+                DQDQMDutyScan_SetDQDQMDelayCell(p, p->channel, p->pSavetimeData->s1DQDuty_clk_delay_cell[p->channel], DutyScan_Calibration_K_DQ);
+                #endif
+            }
+            vSetPHY2ChannelMapping(p, u1backup_channel);
 
             vSetCalibrationResult(p, DRAM_CALIBRATION_DUTY_SCAN, DRAM_FAST_K);
             return;

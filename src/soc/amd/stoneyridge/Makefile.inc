@@ -171,7 +171,7 @@ $(call add_intermediate, add_amdfw, $(obj)/amdfw.rom)
 	printf "    DD         Adding AMD Firmware at ROM offset 0x%x\n" \
 		"$(STONEYRIDGE_FWM_ROM_POSITION)"
 	dd if=$(obj)/amdfw.rom \
-		of=$(obj)/coreboot.pre conv=notrunc bs=1 \
+		of=$< conv=notrunc bs=1 \
 		seek=$(STONEYRIDGE_FWM_ROM_POSITION) >/dev/null 2>&1
 
 else # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)

@@ -1146,7 +1146,7 @@ add_intermediate = \
 	$(1): $(obj)/coreboot.pre $(2) | $(INTERMEDIATE) \
 	$(eval INTERMEDIATE+=$(1)) $(eval PHONY+=$(1))
 
-$(obj)/coreboot.rom: $(obj)/coreboot.pre $(RAMSTAGE) $(CBFSTOOL) $$(INTERMEDIATE)
+$(obj)/coreboot.rom: $(obj)/coreboot.pre $(CBFSTOOL) $$(INTERMEDIATE)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 # The full ROM may be larger than the CBFS part, so create an empty
 # file (filled with \377 = 0xff) and copy the CBFS image over it.

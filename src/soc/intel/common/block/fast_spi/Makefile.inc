@@ -41,8 +41,7 @@ smm-y += mmap_boot.c
 # region within the SPI flash crosses this boundary, then the check complains
 # and exits.
 
-$(call add_intermediate, check-fmap-16mib-crossing)
-check-fmap-16mib-crossing: $(obj)/fmap_config.h
+$(call add_intermediate, check-fmap-16mib-crossing, $(obj)/fmap_config.h)
 	fmap_get() { awk "/$$1/ { print \$$NF }" < $<; };		\
 									\
 	flash_offset=$$(fmap_get FMAP_SECTION_FLASH_START);		\

@@ -47,11 +47,11 @@ $(CBNT_CFG): $(call strip_quotes, $(CONFIG_INTEL_CBNT_CBNT_PROV_CFG_FILE))
 
 ifeq ($(CONFIG_INTEL_CBNT_GENERATE_BPM),y)
 ifeq ($(CONFIG_INTEL_CBNT_CBNT_PROV_BPM_USE_CFG_FILE),y)
-$(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(CBNT_PROV) $(CBNT_CFG)
+$(obj)/bpm_unsigned.bin: $(obj)/coreboot.pre $(CBNT_PROV) $(CBNT_CFG)
 	printf "    CBNT_PROV    creating unsigned BPM using config file\n"
 	$(CBNT_PROV) bpm-gen $@ $< --config=$(CBNT_CFG) --cut
 else
-$(obj)/bpm_unsigned.bin: $(obj)/coreboot.rom $(CBNT_PROV)
+$(obj)/bpm_unsigned.bin: $(obj)/coreboot.pre $(CBNT_PROV) set_fit_ptr
 	printf "    CBNT_PROV    creating unsigned BPM\n"
 	$(CBNT_PROV) bpm-gen $@ $< --revision=$(CONFIG_INTEL_CBNT_BPM_REVISION) \
 				 --svn=$(CONFIG_INTEL_CBNT_BPM_SVN) \
@@ -86,11 +86,14 @@ $(obj)/bpm.bin: $(obj)/bpm_unsigned.bin $(CBNT_PROV) $(call strip_quotes, $(CONF
 	$(CBNT_PROV) bpm-sign $< $@ $(CONFIG_INTEL_CBNT_BPM_PRIV_KEY_FILE) ""
 
 # Add BPM at the end of the build when all files have been added
-files_added:: $(obj)/bpm.bin $(IFITTOOL)
+$(call add_intermediate, add_bpm, $(obj)/bpm.bin)
 	printf "    CBNT       Adding BPM\n"
-	$(CBFSTOOL) $(obj)/coreboot.rom add -f $< -n boot_policy_manifest.bin -a 0x10 -t raw
+	-$(CBFSTOOL) $< remove -n boot_policy_manifest.bin 2>/dev/null
+	$(CBFSTOOL) $< add -f $(obj)/bpm.bin -n boot_policy_manifest.bin -a 0x10 -t raw
+
+$(call add_intermediate, fit_bpm, set_fit_ptr add_bpm $(IFITTOOL))
 	printf "    IFITTOOL   Adding BPM\n"
-	$(IFITTOOL) -r COREBOOT -a -n boot_policy_manifest.bin -t 12 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -f $(obj)/coreboot.rom
+	$(IFITTOOL) -r COREBOOT -a -n boot_policy_manifest.bin -t 12 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -f $<
 
 endif # CONFIG_INTEL_CBNT_BPM_ONLY_UNSIGNED
 

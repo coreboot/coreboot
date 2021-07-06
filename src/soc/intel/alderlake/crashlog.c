@@ -32,8 +32,8 @@ bool pmc_cl_discovery(void)
 {
 	u32 tmp_bar_addr = 0, desc_table_addr = 0;
 
-	const struct pmc_ipc_buffer *req = { 0 };
-	struct pmc_ipc_buffer *res = NULL;
+	const struct pmc_ipc_buffer req = { 0 };
+	struct pmc_ipc_buffer res;
 	uint32_t cmd_reg;
 	int r;
 
@@ -42,13 +42,13 @@ bool pmc_cl_discovery(void)
 				PMC_IPC_CMD_SIZE_SHIFT);
 	printk(BIOS_DEBUG, "cmd_reg from pmc_make_ipc_cmd %d\n", cmd_reg);
 
-	r = pmc_send_ipc_cmd(cmd_reg, req, res);
+	r = pmc_send_ipc_cmd(cmd_reg, &req, &res);
 
 	if (r < 0) {
 		printk(BIOS_ERR, "pmc_send_ipc_cmd failed in %s\n", __func__);
 		return false;
 	}
-	discovery_buf.val_64_bits = ((u64)res->buf[1] << 32) | res->buf[0];
+	discovery_buf.val_64_bits = ((u64)res.buf[1] << 32) | res.buf[0];
 
 
 	if (discovery_buf.bits.supported != 1) {

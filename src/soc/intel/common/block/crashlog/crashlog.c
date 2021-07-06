@@ -194,8 +194,8 @@ bool __weak cpu_cl_discovery(void)
 int cl_pmc_re_arm_after_reset(void)
 {
 
-	const struct pmc_ipc_buffer *req = { 0 };
-	struct pmc_ipc_buffer *res = NULL;
+	const struct pmc_ipc_buffer req = { 0 };
+	struct pmc_ipc_buffer res;
 	uint32_t cmd_reg;
 	int r;
 
@@ -203,7 +203,7 @@ int cl_pmc_re_arm_after_reset(void)
 				PMC_IPC_CMD_ID_CRASHLOG_RE_ARM_ON_RESET,
 				PMC_IPC_CMD_SIZE_SHIFT);
 
-	r = pmc_send_ipc_cmd(cmd_reg, req, res);
+	r = pmc_send_ipc_cmd(cmd_reg, &req, &res);
 
 	if (r < 0) {
 		printk(BIOS_ERR, "pmc_send_ipc_cmd failed in %s\n", __func__);
@@ -217,8 +217,8 @@ int cl_pmc_re_arm_after_reset(void)
 /* Sends PMC IPC to clear CrashLog from PMC SSRAM area */
 int cl_pmc_clear(void)
 {
-	const struct pmc_ipc_buffer *req = { 0 };
-	struct pmc_ipc_buffer *res = NULL;
+	const struct pmc_ipc_buffer req = { 0 };
+	struct pmc_ipc_buffer res;
 	uint32_t cmd_reg;
 	int r;
 
@@ -226,7 +226,7 @@ int cl_pmc_clear(void)
 				PMC_IPC_CMD_ID_CRASHLOG_ERASE,
 				PMC_IPC_CMD_SIZE_SHIFT);
 
-	r = pmc_send_ipc_cmd(cmd_reg, req, res);
+	r = pmc_send_ipc_cmd(cmd_reg, &req, &res);
 
 	if (r < 0) {
 		printk(BIOS_ERR, "pmc_send_ipc_cmd failed in %s\n", __func__);
@@ -244,8 +244,8 @@ int cl_pmc_clear(void)
 
 int cl_pmc_en_gen_on_all_reboot(void)
 {
-	const struct pmc_ipc_buffer *req = { 0 };
-	struct pmc_ipc_buffer *res = NULL;
+	const struct pmc_ipc_buffer req = { 0 };
+	struct pmc_ipc_buffer res;
 	uint32_t cmd_reg;
 	int r;
 
@@ -253,7 +253,7 @@ int cl_pmc_en_gen_on_all_reboot(void)
 				PMC_IPC_CMD_ID_CRASHLOG_ON_RESET,
 				PMC_IPC_CMD_SIZE_SHIFT);
 
-	r = pmc_send_ipc_cmd(cmd_reg, req, res);
+	r = pmc_send_ipc_cmd(cmd_reg, &req, &res);
 
 	if (r < 0) {
 		printk(BIOS_ERR, "pmc_send_ipc_cmd failed in %s\n", __func__);

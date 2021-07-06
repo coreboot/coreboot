@@ -13,10 +13,23 @@
 
 #include <cbmem.h>
 #include <arch/stages.h>
+#include <cpu/power/spr.h>
 
 void stage_entry(uintptr_t stage_arg)
 {
+#if ENV_RAMSTAGE
+	uint64_t hrmor;
+#endif
+
 	if (!ENV_ROMSTAGE_OR_BEFORE)
 		_cbmem_top_ptr = stage_arg;
+
+#if ENV_RAMSTAGE
+	hrmor = read_spr(SPR_HRMOR);
+	asm volatile("sync; isync" ::: "memory");
+	write_spr(SPR_HRMOR, 0);
+	asm volatile("or 1,1,%0; slbia 7; sync; isync" :: "r"(hrmor) : "memory");
+#endif
+
 	main();
 }

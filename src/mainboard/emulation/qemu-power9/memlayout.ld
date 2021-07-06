@@ -10,14 +10,25 @@ SECTIONS
 
 	BOOTBLOCK(0, 32K)
 
-	ROMSTAGE(0xf00000, 1M)
-	STACK(0x1000000, 32K)
-	RAMSTAGE(0x1008000, 1M)
+	ROMSTAGE(0x1f00000, 1M)
 
-	FMAP_CACHE(0x1108000, 4K)
-	CBFS_MCACHE(0x1109000, 8K)
-	TIMESTAMP(0x110b000, 4K)
-	CBFS_CACHE(0x110c000, 512K)
-	PRERAM_CBMEM_CONSOLE(0x118c000, 128K)
+#if !ENV_RAMSTAGE
+	STACK(0x2000000, 32K)
+#endif
 
+	FMAP_CACHE(0x2108000, 4K)
+	CBFS_MCACHE(0x2109000, 8K)
+	TIMESTAMP(0x210b000, 4K)
+	CBFS_CACHE(0x210c000, 512K)
+	PRERAM_CBMEM_CONSOLE(0x218c000, 128K)
+
+	/* By default all memory addresses are affected by the value of HRMOR
+	 * (Hypervisor Real Mode Offset Register) which is ORed to them. HRMOR
+	 * has initial value of 0x8000000 in QEMU and is changed to 0 in
+	 * ramstage. This means that before ramstage 0 actually points to
+	 * 0x8000000. */
+#if ENV_RAMSTAGE
+	STACK(0xa000000, 32K)
+#endif
+	RAMSTAGE(0xa008000, 1M)
 }

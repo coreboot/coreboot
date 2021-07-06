@@ -86,7 +86,7 @@ $(obj)/bpm.bin: $(obj)/bpm_unsigned.bin $(CBNT_PROV) $(call strip_quotes, $(CONF
 	$(CBNT_PROV) bpm-sign $< $@ $(CONFIG_INTEL_CBNT_BPM_PRIV_KEY_FILE) ""
 
 # Add BPM at the end of the build when all files have been added
-files_added:: $(obj)/bpm.bin
+files_added:: $(obj)/bpm.bin $(IFITTOOL)
 	printf "    CBNT       Adding BPM\n"
 	$(CBFSTOOL) $(obj)/coreboot.rom add -f $< -n boot_policy_manifest.bin -a 0x10 -t raw
 	printf "    IFITTOOL   Adding BPM\n"

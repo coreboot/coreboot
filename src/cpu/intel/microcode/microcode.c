@@ -136,9 +136,9 @@ static struct ext_sig_table *ucode_get_ext_sig_table(const struct microcode *uco
 	/* header + ucode data blob size */
 	u32 size = ucode->data_size + sizeof(struct microcode);
 
-	size_t ext_tbl_len = ucode->total_size - size;
+	ssize_t ext_tbl_len = ucode->total_size - size;
 
-	if (ext_tbl_len < sizeof(struct ext_sig_table))
+	if (ext_tbl_len < (ssize_t)sizeof(struct ext_sig_table))
 		return NULL;
 
 	ext_tbl = (struct ext_sig_table *)((uintptr_t)ucode + size);

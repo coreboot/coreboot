@@ -514,15 +514,15 @@ find_llc_subleaf:
 	subl	$0x01, %eax
 
 set_eviction_mask:
-	mov	%ebx, %ecx /* back up number of ways */
-	mov	%eax, %ebx /* back up the non-eviction mask*/
+	mov	%ebx, %edi /* back up number of ways */
+	mov	%eax, %esi /* back up the non-eviction mask*/
 #if CONFIG(CAR_HAS_SF_MASKS)
-	mov	%ecx, %edi /* use number of ways to prepare SF mask */
 	/*
 	 * SF mask is programmed with the double number of bits than
 	 * the number of ways
 	 */
 	mov	$0x01, %eax
+	mov	%edi, %ecx
 	shl	%cl, %eax
 	shl	%cl, %eax
 	subl	$0x01, %eax /* contains SF mask */
@@ -533,7 +533,6 @@ set_eviction_mask:
 	movl	$IA32_CR_SF_QOS_MASK_1, %ecx
 	xorl	%edx, %edx
 	wrmsr
-	mov	%edi, %ecx /* restore number of ways */
 #endif
 	/*
 	 * Program MSR 0xC91 IA32_L3_MASK_1
@@ -542,10 +541,11 @@ set_eviction_mask:
 	 * - If this bit is '1' - the way is not protected from eviction
 	 */
 	mov	$0x1, %eax
+	mov	%edi, %ecx
 	shl	%cl, %eax
 	subl	$0x01, %eax
 	mov	%eax, %ecx
-	mov	%ebx, %eax
+	mov	%esi, %eax
 
 	xor	$~0, %eax	/* invert 32 bits */
 	and	%ecx, %eax
@@ -558,7 +558,7 @@ set_eviction_mask:
 	 * - If this bit is '0' - the way is protected from eviction
 	 * - If this bit is '1' - the way is not protected from eviction
 	 */
-	mov	%ebx, %eax
+	mov	%esi, %eax
 	movl	$IA32_L3_MASK_2, %ecx
 	xorl	%edx, %edx
 	wrmsr

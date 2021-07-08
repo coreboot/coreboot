@@ -16,6 +16,34 @@ config FILO_MASTER
 
 endchoice
 
+config FILO_USE_AUTOBOOT
+	prompt "Use FILO's autoboot"
+	default n
+	bool
+	help
+	  Select this option to make FILO autoboot a command line after
+	  timeout. This disables the GRUB legacy like interface.
+
+config FILO_AUTOBOOT_FILE
+	string "Configure FILO's autoboot kernel filename and parameters"
+	depends on FILO_USE_AUTOBOOT
+	default "hda1:/vmlinuz root=/dev/hda1 console=tty0 console=ttyS0,115200"
+	help
+	  Examples:
+
+	  #AUTOBOOT_FILE = "hda1:/vmlinuz root=/dev/sda1 console=tty0 console=ttyS0,115200"
+	  #AUTOBOOT_FILE = "mem@0xfff80000"
+	  #AUTOBOOT_FILE = "hde1@0"
+	  #AUTOBOOT_FILE = "uda1:/vmlinuz.elf"
+	  #AUTOBOOT_FILE = "flashb@0x00400000,0x154a00 console=tty0 console=ttyS0,115200"
+
+config FILO_AUTOBOOT_DELAY
+	int "Time in seconds before booting"
+	depends on FILO_USE_AUTOBOOT
+	default 2
+	help
+	  Time in seconds before booting AUTOBOOT_FILE.
+
 config PAYLOAD_FILE
 	default "payloads/external/FILO/filo/build/filo.elf"
 

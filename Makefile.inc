@@ -1101,15 +1101,22 @@ ifeq ($(CONFIG_ARCH_X86),y)
 		-b -$(call file-size,$(objcbfs)/bootblock.bin) $(cbfs-autogen-attributes) \
 		$(TS_OPTIONS) \
 		$(CBFSTOOL_ADD_CMD_OPTIONS)
-	# the cbfs master header is a deprecated feature only used on x86
-	$(CBFSTOOL) $@.tmp add-master-header $(TS_OPTIONS) $(CBFSTOOL_ADD_CMD_OPTIONS)
 else # ifeq ($(CONFIG_ARCH_X86),y)
 	$(CBFSTOOL) $@.tmp write -u \
 		-r BOOTBLOCK \
 		-f $(objcbfs)/bootblock.bin
 	# make space for the CBFS master header pointer. "ptr_" is just
 	# arbitrary 4 bytes that will be overwritten by add-master-header.
+	printf "ptr_" > $@.tmp.2
+	$(CBFSTOOL) $@.tmp add \
+		-f $@.tmp.2 \
+		-n "header pointer" \
+		-t "cbfs header" \
+		-b -4 \
+		$(CBFSTOOL_ADD_CMD_OPTIONS)
+	rm -f $@.tmp.2
 endif # ifeq ($(CONFIG_ARCH_X86),y)
+	$(CBFSTOOL) $@.tmp add-master-header $(TS_OPTIONS) $(CBFSTOOL_ADD_CMD_OPTIONS)
 	$(prebuild-files) true
 	mv $@.tmp $@
 else # ifneq ($(CONFIG_UPDATE_IMAGE),y)

@@ -149,7 +149,7 @@ chip soc/intel/alderlake
 				register "cio2_lane_endpoint[1]" = ""^I2C2.CAM1""
 				register "cio2_prt[0]" = "2"
 				register "cio2_prt[1]" = "1"
-				device generic 0 on
+				device generic 1 on
 					probe UFC UFC_MIPI_5675
 				end
 			end

@@ -78,6 +78,7 @@ config MAINBOARD_PART_NUMBER
 	default "Primus" if BOARD_GOOGLE_PRIMUS
 	default "Gimble" if BOARD_GOOGLE_GIMBLE
 	default "Redrix" if BOARD_GOOGLE_REDRIX
+	default "Kano" if BOARD_GOOGLE_KANO
 
 config VARIANT_DIR
 	string
@@ -85,6 +86,7 @@ config VARIANT_DIR
 	default "primus" if BOARD_GOOGLE_PRIMUS
 	default "gimble" if BOARD_GOOGLE_GIMBLE
 	default "redrix" if BOARD_GOOGLE_REDRIX
+	default "kano" if BOARD_GOOGLE_KANO
 
 config DIMM_SPD_SIZE
 	int

@@ -24,3 +24,7 @@ config BOARD_GOOGLE_GIMBLE
 config BOARD_GOOGLE_REDRIX
 	bool "-> Redrix"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
+
+config BOARD_GOOGLE_KANO
+	bool "-> Kano"
+	select BOARD_GOOGLE_BASEBOARD_BRYA

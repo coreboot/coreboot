@@ -352,8 +352,13 @@ unsigned int dramc_set_vcore_voltage(unsigned int vcore)
 {
 #ifdef MTK_PMIC_MT6359
 	return mtk_regulator_set_voltage(&reg_vcore, vcore, MAX_VCORE);
-#endif
+#elif defined(FOR_COREBOOT)
+	dramc_debug("%s set vcore to %u\n", __func__, vcore);
+	mainboard_set_regulator_vol(MTK_REGULATOR_VCORE, vcore);
 	return 0;
+#else
+	return 0;
+#endif
 }
 
 unsigned int dramc_get_vcore_voltage(void)

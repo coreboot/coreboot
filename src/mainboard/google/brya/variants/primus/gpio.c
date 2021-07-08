@@ -35,8 +35,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_D6, NONE),
 	/* D13 : ISH_UART0_RXD ==> NC */
 	PAD_NC(GPP_D13, NONE),
-	/* D14 : ISH_UART0_TXD ==> NC */
-	PAD_NC(GPP_D14, NONE),
+	/* D14 : ISH_UART0_TXD ==> USB_A1_RT_RST_ODL */
+	PAD_CFG_GPO(GPP_D14, 1, DEEP),
 
 	/* E3  : PROC_GP0 ==> NC */
 	PAD_NC(GPP_E3, NONE),

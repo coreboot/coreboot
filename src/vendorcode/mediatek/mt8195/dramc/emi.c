@@ -712,22 +712,13 @@ int get_rank_nr_by_emi(void)
 _Static_assert(DRAMC_MAX_RK > 1, "rank number is violated");
 void get_rank_size_by_emi(unsigned long long dram_rank_size[DRAMC_MAX_RK])
 {
-	//int i;
 	unsigned int quad_ch_ratio;
-	//unsigned int col_bit, row_bit;
 	unsigned long long ch0_rank0_size, ch0_rank1_size;
 	unsigned long long ch1_rank0_size, ch1_rank1_size;
 	unsigned int cen_emi_conh = mt_emi_sync_read(EMI_CONH);
 	unsigned long long dq_width;
 
-	switch (mt_get_dram_type_from_hw_trap()) {
-		case TYPE_LPDDR4X:
-		case TYPE_LPDDR4:
-			dq_width = 2;
-			break;
-		default:
-			ASSERT(0);
-	}
+	dq_width = 2;
 
 	dram_rank_size[0] = 0;
 	dram_rank_size[1] = 0;

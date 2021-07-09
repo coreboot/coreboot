@@ -17,6 +17,7 @@
 #include "gpio_names/icelake.h"
 #include "gpio_names/lewisburg.h"
 #include "gpio_names/sunrise.h"
+#include "gpio_names/tigerlake.h"
 
 #define SBBAR_SIZE	(16 * MiB)
 #define PCR_PORT_SIZE	(64 * KiB)
@@ -174,6 +175,28 @@ const struct gpio_community *const *get_gpio_communities(struct pci_dev *const s
 		*community_count = ARRAY_SIZE(icelake_pch_h_communities);
 		*pad_stepping = 16;
 		return icelake_pch_h_communities;
+	case PCI_DEVICE_ID_INTEL_TIGERPOINT_U_SUPER:
+	case PCI_DEVICE_ID_INTEL_TIGERPOINT_U_PREM:
+	case PCI_DEVICE_ID_INTEL_TIGERPOINT_U_BASE:
+	case PCI_DEVICE_ID_INTEL_TIGERPOINT_Y_SUPER:
+	case PCI_DEVICE_ID_INTEL_TIGERPOINT_Y_PREM:
+		*community_count = ARRAY_SIZE(tigerlake_pch_lp_communities);
+		*pad_stepping = 16;
+		return tigerlake_pch_lp_communities;
+	case PCI_DEVICE_ID_INTEL_Q570:
+	case PCI_DEVICE_ID_INTEL_Z590:
+	case PCI_DEVICE_ID_INTEL_H570:
+	case PCI_DEVICE_ID_INTEL_B560:
+	case PCI_DEVICE_ID_INTEL_H510:
+	case PCI_DEVICE_ID_INTEL_WM590:
+	case PCI_DEVICE_ID_INTEL_QM580:
+	case PCI_DEVICE_ID_INTEL_HM570:
+	case PCI_DEVICE_ID_INTEL_C252:
+	case PCI_DEVICE_ID_INTEL_C256:
+	case PCI_DEVICE_ID_INTEL_W580:
+		*community_count = ARRAY_SIZE(tigerlake_pch_h_communities);
+		*pad_stepping = 16;
+		return tigerlake_pch_h_communities;
 	default:
 		return NULL;
 	}

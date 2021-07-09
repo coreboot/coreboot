@@ -19,6 +19,7 @@
 #include <soc/msr.h>
 #include <types.h>
 #include "chip.h"
+#include <soc/cppc.h>
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
@@ -357,6 +358,8 @@ void generate_cpu_entries(const struct device *device)
 
 		acpigen_write_CSD_package(cpu / threads_per_core, threads_per_core,
 					  CSD_HW_ALL, 0);
+
+		generate_cppc_entries(cpu);
 
 		acpigen_pop_len();
 	}

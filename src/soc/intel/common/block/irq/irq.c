@@ -418,10 +418,12 @@ bool irq_program_non_pch(void)
 			continue;
 		}
 
-		if (entry->irq)
-			pci_s_write_config8(PCI_DEV(0, PCI_SLOT(entry->devfn),
-						    PCI_FUNC(entry->devfn)),
-					    PCI_INTERRUPT_LINE, entry->irq);
+		if (entry->irq) {
+			pci_devfn_t dev = PCI_DEV(0, PCI_SLOT(entry->devfn),
+						  PCI_FUNC(entry->devfn));
+			pci_s_write_config8(dev, PCI_INTERRUPT_LINE, entry->irq);
+			pci_s_write_config8(dev, PCI_INTERRUPT_PIN, (uint8_t)entry->pin);
+		}
 
 		entry = entry->next;
 	}

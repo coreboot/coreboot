@@ -184,8 +184,7 @@ void check_mca(void)
 					i, mci.cmask.hi, mci.cmask.lo);
 
 			mci.bank = i;
-			if (CONFIG(ACPI_BERT)
-					&& mca_valid(mci.sts))
+			if (CONFIG(ACPI_BERT) && mca_valid(mci.sts))
 				build_bert_mca_error(&mci);
 		}
 	}

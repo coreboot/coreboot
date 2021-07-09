@@ -17,7 +17,12 @@
 typedef struct {
 	u8	signature[16];	    /* Offset 0    OpRegion signature */
 	u32	size;		    /* Offset 16   OpRegion size */
-	u32	version;	    /* Offset 20   OpRegion structure version */
+	struct opregion_version {
+		u8 rsvd;
+		u8 revision;
+		u8 minor;
+		u8 major;
+	} opver;		    /* Offset 20   OpRegion version structure */
 	u8	sbios_version[32];  /* Offset 24   System BIOS build version */
 	u8	vbios_version[16];  /* Offset 56   Video BIOS build version */
 	u8	driver_version[16]; /* Offset 72   Graphic drvr build version */
@@ -29,7 +34,6 @@ typedef struct {
 } __packed opregion_header_t;
 
 #define IGD_OPREGION_SIGNATURE "IntelGraphicsMem"
-#define IGD_OPREGION_VERSION  2
 
 #define IGD_MBOX1	(1 << 0)
 #define IGD_MBOX2	(1 << 1)

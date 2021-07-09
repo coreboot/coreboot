@@ -255,6 +255,12 @@ static enum cb_err find_vbt_location(struct region_device *rdev)
 	return CB_ERR;
 }
 
+/* Function to get the IGD Opregion version */
+static struct opregion_version opregion_get_version(void)
+{
+	return (struct opregion_version) { .major = 2, .minor = 0 };
+}
+
 /*
  * Function to determine if we need to use extended VBT region to pass
  * VBT pointer. If VBT size > 6 KiB then we need to use extended VBT
@@ -333,28 +339,11 @@ enum cb_err intel_gma_init_igd_opregion(void)
 
 	rdev_munmap(&rdev, vbt);
 
+	/* Get the opregion version information */
+	opregion->header.opver = opregion_get_version();
+
 	/* 8kb */
 	opregion->header.size = sizeof(igd_opregion_t) / 1024;
-
-	/*
-	 * Left-shift version field to accommodate Intel Windows driver quirk
-	 * when not using a VBIOS.
-	 * Required for Legacy boot + NGI, UEFI + NGI, and UEFI + GOP driver.
-	 *
-	 * Tested on: (platform, GPU, windows driver version)
-	 * samsung/stumpy (SNB, GT2, 9.17.10.4459)
-	 * google/link (IVB, GT2, 15.33.4653)
-	 * google/wolf (HSW, GT1, 15.40.36.4703)
-	 * google/panther (HSW, GT2, 15.40.36.4703)
-	 * google/rikku (BDW, GT1, 15.40.36.4703)
-	 * google/lulu (BDW, GT2, 15.40.36.4703)
-	 * google/chell (SKL-Y, GT2, 15.45.21.4821)
-	 * google/sentry (SKL-U, GT1, 15.45.21.4821)
-	 * purism/librem13v2 (SKL-U, GT2, 15.45.21.4821)
-	 *
-	 * No adverse effects when using VBIOS or booting Linux.
-	 */
-	opregion->header.version = IGD_OPREGION_VERSION << 24;
 
 	// FIXME We just assume we're mobile for now
 	opregion->header.mailboxes = MAILBOXES_MOBILE;

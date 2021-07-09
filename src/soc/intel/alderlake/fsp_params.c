@@ -48,7 +48,8 @@ static const struct slot_irq_constraints irq_constraints[] = {
 	{
 		.slot = SA_DEV_SLOT_IGD,
 		.fns = {
-			ANY_PIRQ(SA_DEVFN_IGD),
+			/* INTERRUPT_PIN is RO/0x01 */
+			FIXED_INT_ANY_PIRQ(SA_DEVFN_IGD, PCI_INT_A),
 		},
 	},
 	{
@@ -60,14 +61,16 @@ static const struct slot_irq_constraints irq_constraints[] = {
 	{
 		.slot = SA_DEV_SLOT_IPU,
 		.fns = {
-			ANY_PIRQ(SA_DEVFN_IPU),
+			/* INTERRUPT_PIN is RO/0x01, and INTERRUPT_LINE is RW,
+			   but S0ix fails when not set to 16 (b/193434192) */
+			FIXED_INT_PIRQ(SA_DEVFN_IPU, PCI_INT_A, PIRQ_A),
 		},
 	},
 	{
 		.slot = SA_DEV_SLOT_CPU_6,
 		.fns = {
-			ANY_PIRQ(SA_DEVFN_CPU_PCIE6_0),
-			ANY_PIRQ(SA_DEVFN_CPU_PCIE6_2),
+			FIXED_INT_PIRQ(SA_DEVFN_CPU_PCIE6_0, PCI_INT_A, PIRQ_A),
+			FIXED_INT_PIRQ(SA_DEVFN_CPU_PCIE6_2, PCI_INT_C, PIRQ_C),
 		},
 	},
 	{
@@ -80,9 +83,35 @@ static const struct slot_irq_constraints irq_constraints[] = {
 		},
 	},
 	{
+		.slot = SA_DEV_SLOT_GNA,
+		.fns = {
+			/* INTERRUPT_PIN is RO/0x01 */
+			FIXED_INT_ANY_PIRQ(SA_DEVFN_GNA, PCI_INT_A),
+		},
+	},
+	{
 		.slot = SA_DEV_SLOT_TCSS,
 		.fns = {
 			ANY_PIRQ(SA_DEVFN_TCSS_XHCI),
+			ANY_PIRQ(SA_DEVFN_TCSS_XDCI),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_SIO0,
+		.fns = {
+			DIRECT_IRQ(PCH_DEVFN_I2C6),
+			DIRECT_IRQ(PCH_DEVFN_I2C7),
+			ANY_PIRQ(PCH_DEVFN_THC0),
+			ANY_PIRQ(PCH_DEVFN_THC1),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_SIO6,
+		.fns = {
+			DIRECT_IRQ(PCH_DEVFN_UART3),
+			DIRECT_IRQ(PCH_DEVFN_UART4),
+			DIRECT_IRQ(PCH_DEVFN_UART5),
+			DIRECT_IRQ(PCH_DEVFN_UART6),
 		},
 	},
 	{
@@ -90,12 +119,23 @@ static const struct slot_irq_constraints irq_constraints[] = {
 		.fns = {
 			DIRECT_IRQ(PCH_DEVFN_ISH),
 			DIRECT_IRQ(PCH_DEVFN_GSPI2),
+			ANY_PIRQ(PCH_DEVFN_UFS),
+		},
+	},
+	{
+		.slot = PCH_DEV_SLOT_SIO2,
+		.fns = {
+			DIRECT_IRQ(PCH_DEVFN_GSPI3),
+			DIRECT_IRQ(PCH_DEVFN_GSPI4),
+			DIRECT_IRQ(PCH_DEVFN_GSPI5),
+			DIRECT_IRQ(PCH_DEVFN_GSPI6),
 		},
 	},
 	{
 		.slot = PCH_DEV_SLOT_XHCI,
 		.fns = {
 			ANY_PIRQ(PCH_DEVFN_XHCI),
+			DIRECT_IRQ(PCH_DEVFN_USBOTG),
 			ANY_PIRQ(PCH_DEVFN_CNVI_WIFI),
 		},
 	},
@@ -158,10 +198,14 @@ static const struct slot_irq_constraints irq_constraints[] = {
 	{
 		.slot = PCH_DEV_SLOT_SIO5,
 		.fns = {
+			/* UART0 shares an interrupt line with TSN0, so must use
+			   a PIRQ */
 			FIXED_INT_ANY_PIRQ(PCH_DEVFN_UART0, PCI_INT_A),
+			/* UART1 shares an interrupt line with TSN1, so must use
+			   a PIRQ */
 			FIXED_INT_ANY_PIRQ(PCH_DEVFN_UART1, PCI_INT_B),
-			ANY_PIRQ(PCH_DEVFN_GSPI0),
-			ANY_PIRQ(PCH_DEVFN_GSPI1),
+			DIRECT_IRQ(PCH_DEVFN_GSPI0),
+			DIRECT_IRQ(PCH_DEVFN_GSPI1),
 		},
 	},
 	{
@@ -170,6 +214,7 @@ static const struct slot_irq_constraints irq_constraints[] = {
 			ANY_PIRQ(PCH_DEVFN_HDA),
 			ANY_PIRQ(PCH_DEVFN_SMBUS),
 			ANY_PIRQ(PCH_DEVFN_GBE),
+			/* INTERRUPT_PIN is RO/0x01 */
 			FIXED_INT_ANY_PIRQ(PCH_DEVFN_TRACEHUB, PCI_INT_A),
 		},
 	},

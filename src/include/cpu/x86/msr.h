@@ -155,6 +155,13 @@ static __always_inline void wrmsr(unsigned int index, msr_t msr)
 
 #endif /* CONFIG_SOC_SETS_MSRS */
 
+/* Get MCA bank count from MSR */
+static inline unsigned int mca_get_bank_count(void)
+{
+	msr_t msr = rdmsr(IA32_MCG_CAP);
+	return msr.lo & MCA_BANKS_MASK;
+}
+
 /* Helpers for interpreting MC[i]_STATUS */
 
 static inline int mca_valid(msr_t msr)

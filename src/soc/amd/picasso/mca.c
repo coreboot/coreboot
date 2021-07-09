@@ -152,12 +152,10 @@ static const char *const mca_bank_name[] = {
 void check_mca(void)
 {
 	int i;
-	msr_t cap;
 	struct mca_bank mci;
-	int num_banks;
+	unsigned int num_banks;
 
-	cap = rdmsr(IA32_MCG_CAP);
-	num_banks = cap.lo & MCA_BANKS_MASK;
+	num_banks = mca_get_bank_count();
 
 	for (i = 0 ; i < num_banks ; i++) {
 		mci.sts = rdmsr(MCAX_STATUS_MSR(i));

@@ -19,7 +19,7 @@ static void model_16_init(struct device *dev)
 
 	u8 i;
 	msr_t msr;
-	int num_banks;
+	unsigned int num_banks;
 	int msrno;
 #if CONFIG(LOGICAL_CPUS)
 	u32 siblings;
@@ -56,8 +56,7 @@ static void model_16_init(struct device *dev)
 	x86_enable_cache();
 
 	/* zero the machine check error status registers */
-	msr = rdmsr(IA32_MCG_CAP);
-	num_banks = msr.lo & MCA_BANKS_MASK;
+	num_banks = mca_get_bank_count();
 	msr.lo = 0;
 	msr.hi = 0;
 	for (i = 0; i < num_banks; i++)

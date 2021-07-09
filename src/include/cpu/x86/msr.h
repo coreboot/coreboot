@@ -36,7 +36,7 @@
 #define SMBASE_RO_MSR			0x98
 #define  IA32_SMM_MONITOR_VALID		(1 << 0)
 #define IA32_MCG_CAP			0x179
-#define  MCG_CTL_P			(1 << 3)
+#define  MCG_CTL_P			(1 << 8)
 #define  MCA_BANKS_MASK			0xff
 #define IA32_PERF_STATUS		0x198
 #define IA32_PERF_CTL			0x199

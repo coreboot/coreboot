@@ -6,11 +6,6 @@
 #include <types.h>
 
 #define FSP_HDR_OFFSET			0x94
-#if CONFIG(PLATFORM_USES_FSP2_2)
-#define FSP_HDR_LEN			0x4c
-#else
-#define FSP_HDR_LEN			0x48
-#endif
 #define FSP_HDR_SIGNATURE		"FSPH"
 #define FSP_HDR_ATTRIB_FSPT		1
 #define FSP_HDR_ATTRIB_FSPM		2

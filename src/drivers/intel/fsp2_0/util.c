@@ -10,16 +10,35 @@
 #include <fsp/util.h>
 #include <string.h>
 #include <types.h>
+#include <assert.h>
+
+static uint32_t fsp_hdr_get_expected_min_length(void)
+{
+	if (CONFIG(PLATFORM_USES_FSP2_2))
+		return 76;
+	else if (CONFIG(PLATFORM_USES_FSP2_1))
+		return 72;
+	else if (CONFIG(PLATFORM_USES_FSP2_0))
+		return 72;
+	else
+		return dead_code_t(uint32_t);
+}
 
 static bool looks_like_fsp_header(const uint8_t *raw_hdr)
 {
+	uint32_t fsp_header_length = read32(raw_hdr + 4);
+
 	if (memcmp(raw_hdr, FSP_HDR_SIGNATURE, 4)) {
 		printk(BIOS_ALERT, "Did not find a valid FSP signature\n");
 		return false;
 	}
 
-	if (read32(raw_hdr + 4) != FSP_HDR_LEN) {
-		printk(BIOS_ALERT, "FSP header has invalid length\n");
+	/* It is possible to build FSP with any version of EDK2 which could have introduced new
+	   fields in FSP_INFO_HEADER. The new fields will be ignored based on the reported FSP
+	   version. This check ensures that the reported header length is at least what the
+	   reported FSP version requires so that we do not access any out-of-bound bytes. */
+	if (fsp_header_length < fsp_hdr_get_expected_min_length()) {
+		printk(BIOS_ALERT, "FSP header has invalid length: %d\n", fsp_header_length);
 		return false;
 	}
 
@@ -59,7 +78,7 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr, void *fsp_file, size_
 {
 	void *raw_hdr = fsp_file + FSP_HDR_OFFSET;
 
-	if (file_size < FSP_HDR_OFFSET + FSP_HDR_LEN) {
+	if (file_size < FSP_HDR_OFFSET + fsp_hdr_get_expected_min_length()) {
 		printk(BIOS_CRIT, "FSP blob too small.\n");
 		return CB_ERR;
 	}

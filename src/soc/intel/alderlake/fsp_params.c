@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <fsp/api.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
@@ -32,6 +33,12 @@
 /* SATA DEVSLP idle timeout default values */
 #define DEF_DMVAL	15
 #define DEF_DITOVAL	625
+
+/* VccIn Aux Imon IccMax values in mA */
+#define MILLIAMPS_TO_AMPS         1000
+#define ICC_MAX_ID_ADL_P_3_MA     34250
+#define ICC_MAX_ID_ADL_P_5_MA     32000
+#define ICC_MAX_ID_ADL_P_7_MA     32000
 
 /*
  * ME End of Post configuration
@@ -278,6 +285,30 @@ static int get_l1_substate_control(enum L1_substates_control ctl)
 	if ((ctl > L1_SS_L1_2) || (ctl == L1_SS_FSP_DEFAULT))
 		ctl = L1_SS_L1_2;
 	return ctl - 1;
+}
+
+/* This function returns the VccIn Aux Imon IccMax values for ADL-P SKU's */
+static uint16_t get_vccin_aux_imon_iccmax(void)
+{
+	uint16_t mch_id = 0;
+
+	if (!mch_id) {
+		struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+		mch_id = dev ? pci_read_config16(dev, PCI_DEVICE_ID) : 0xffff;
+	}
+
+	switch (mch_id) {
+	case PCI_DEVICE_ID_INTEL_ADL_P_ID_3:
+		return ICC_MAX_ID_ADL_P_3_MA;
+	case PCI_DEVICE_ID_INTEL_ADL_P_ID_5:
+		return ICC_MAX_ID_ADL_P_5_MA;
+	case PCI_DEVICE_ID_INTEL_ADL_P_ID_7:
+		return ICC_MAX_ID_ADL_P_7_MA;
+	default:
+		printk(BIOS_ERR, "Unknown MCH ID: 0x%4x, skipping VccInAuxImonIccMax config\n",
+			mch_id);
+		return 0;
+	}
 }
 
 __weak void mainboard_update_soc_chip_config(struct soc_intel_alderlake_config *config)
@@ -581,6 +612,9 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	/* Enable the energy efficient turbo mode */
 	s_cfg->EnergyEfficientTurbo = 1;
 	s_cfg->PkgCStateLimit = LIMIT_AUTO;
+
+	/* VccIn Aux Imon IccMax. Values are in 1/4 Amp increments and range is 0-512. */
+	s_cfg->VccInAuxImonIccImax = get_vccin_aux_imon_iccmax() * 4 / MILLIAMPS_TO_AMPS;
 }
 
 static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,

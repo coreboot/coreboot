@@ -869,14 +869,6 @@ static struct device *new_device_with_path(struct bus *parent,
 		new_d->path = ".type=DEVICE_PATH_MMIO,{.mmio={ .addr = 0x%x }}";
 		break;
 
-	case ESPI:
-		new_d->path = ".type=DEVICE_PATH_ESPI,{.espi={ .addr = 0x%x }}";
-		break;
-
-	case LPC:
-		new_d->path = ".type=DEVICE_PATH_LPC,{.lpc={ .addr = 0x%x }}";
-		break;
-
 	case GPIO:
 		new_d->path = ".type=DEVICE_PATH_GPIO,{.gpio={ .id = 0x%x }}";
 		break;

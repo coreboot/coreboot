@@ -9,7 +9,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOUTHBRIDGE_INTEL_I82801JX
 	select SUPERIO_ITE_IT8720F
 	select HAVE_ACPI_TABLES
-	select BOARD_ROMSIZE_KB_2048
+	select BOARD_ROMSIZE_KB_2048 if BOARD_ACER_G43T_AM3
 	select PCIEXP_ASPM
 	select PCIEXP_CLK_PM
 	select HAVE_OPTION_TABLE
@@ -22,12 +22,19 @@ config BOARD_SPECIFIC_OPTIONS
 
 config VGA_BIOS_ID
 	string
-	default "8086,2e22"
+	default "8086,2e22" if BOARD_ACER_G43T_AM3
 
 config MAINBOARD_DIR
 	default "acer/g43t-am3"
 
+config VARIANT_DIR
+	default "g43t-am3" if BOARD_ACER_G43T_AM3
+
 config MAINBOARD_PART_NUMBER
-	default "G43T-AM3"
+	default "G43T-AM3" if BOARD_ACER_G43T_AM3
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 endif # BOARD_ACER_G43T_AM3

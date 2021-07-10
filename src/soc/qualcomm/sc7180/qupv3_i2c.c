@@ -92,9 +92,9 @@ void i2c_init(unsigned int bus, enum i2c_speed speed)
 
 	/* GPIO Configuration */
 	gpio_configure(qup[bus].pin[0], qup[bus].func[0], GPIO_PULL_UP,
-				GPIO_2MA, GPIO_OUTPUT_ENABLE);
+				GPIO_2MA, GPIO_OUTPUT);
 	gpio_configure(qup[bus].pin[1], qup[bus].func[1], GPIO_PULL_UP,
-				GPIO_2MA, GPIO_OUTPUT_ENABLE);
+				GPIO_2MA, GPIO_OUTPUT);
 
 	/* Select and setup FIFO mode */
 	write32(&regs->geni_m_irq_clear, 0xFFFFFFFF);

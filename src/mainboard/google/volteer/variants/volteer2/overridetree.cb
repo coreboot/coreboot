@@ -6,7 +6,6 @@ chip soc/intel/tigerlake
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
-	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
 	#| GSPI0             | cr50 TPM. Early init is   |
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
@@ -21,7 +20,6 @@ chip soc/intel/tigerlake
 	# Depending on whether we use I2C bus 1 or SPI bus 0 for TPM
 	# communication, that one needs early initialization.
 	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.gspi[0] = {
 			.speed_mhz = 1,
 			.early_init = CONFIG(MAINBOARD_HAS_SPI_TPM_CR50),

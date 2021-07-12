@@ -61,7 +61,6 @@ bootblock-y += memchr.c
 bootblock-y += memcmp.c
 bootblock-y += boot_device.c
 bootblock-y += fmap.c
-bootblcok-y += rtc.c
 
 verstage-y += prog_loaders.c
 verstage-y += prog_ops.c

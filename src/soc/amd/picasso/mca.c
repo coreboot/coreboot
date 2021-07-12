@@ -13,13 +13,9 @@
 /* MISC4 is the last used register in the MCAX banks of Picasso */
 #define MCAX_USED_REGISTERS_PER_BANK	(MCAX_MISC4_OFFSET + 1)
 
-struct mca_bank {
+struct mca_bank_status {
 	int bank;
-	msr_t ctl;
 	msr_t sts;
-	msr_t addr;
-	msr_t misc;
-	msr_t cmask;
 };
 
 static inline size_t mca_report_size_reqd(void)
@@ -50,7 +46,7 @@ static inline size_t mca_report_size_reqd(void)
 	return size;
 }
 
-static enum cper_x86_check_type error_to_chktype(struct mca_bank *mci)
+static enum cper_x86_check_type error_to_chktype(struct mca_bank_status *mci)
 {
 	int error = mca_err_type(mci->sts);
 
@@ -68,7 +64,7 @@ static enum cper_x86_check_type error_to_chktype(struct mca_bank *mci)
 
 /* Fill additional information in the Generic Processor Error Section. */
 static void fill_generic_section(cper_proc_generic_error_section_t *sec,
-		struct mca_bank *mci)
+		struct mca_bank_status *mci)
 {
 	int type = mca_err_type(mci->sts);
 
@@ -91,7 +87,7 @@ static void fill_generic_section(cper_proc_generic_error_section_t *sec,
  * structures:  A "processor generic error" that is parsed, and an IA32/X64 one
  * to capture complete information.
  */
-static void build_bert_mca_error(struct mca_bank *mci)
+static void build_bert_mca_error(struct mca_bank_status *mci)
 {
 	acpi_generic_error_status_t *status;
 	acpi_hest_generic_data_v300_t *gen_entry;
@@ -153,7 +149,8 @@ static const char *const mca_bank_name[] = {
 void check_mca(void)
 {
 	int i;
-	struct mca_bank mci;
+	struct mca_bank_status mci;
+	msr_t msr;
 	const unsigned int num_banks = mca_get_bank_count();
 
 	for (i = 0 ; i < num_banks ; i++) {
@@ -165,18 +162,18 @@ void check_mca(void)
 
 			printk(BIOS_WARNING, "   MC%d_STATUS =   %08x_%08x\n",
 					i, mci.sts.hi, mci.sts.lo);
-			mci.addr = rdmsr(MCAX_ADDR_MSR(i));
+			msr = rdmsr(MCAX_ADDR_MSR(i));
 			printk(BIOS_WARNING, "   MC%d_ADDR =     %08x_%08x\n",
-					i, mci.addr.hi, mci.addr.lo);
-			mci.misc = rdmsr(MCAX_MISC0_MSR(i));
+					i, msr.hi, msr.lo);
+			msr = rdmsr(MCAX_MISC0_MSR(i));
 			printk(BIOS_WARNING, "   MC%d_MISC =     %08x_%08x\n",
-					i, mci.misc.hi, mci.misc.lo);
-			mci.ctl = rdmsr(MCAX_CTL_MSR(i));
+					i, msr.hi, msr.lo);
+			msr = rdmsr(MCAX_CTL_MSR(i));
 			printk(BIOS_WARNING, "   MC%d_CTL =      %08x_%08x\n",
-					i, mci.ctl.hi, mci.ctl.lo);
-			mci.cmask = rdmsr(MCA_CTL_MASK_MSR(i));
+					i, msr.hi, msr.lo);
+			msr = rdmsr(MCA_CTL_MASK_MSR(i));
 			printk(BIOS_WARNING, "   MC%d_CTL_MASK = %08x_%08x\n",
-					i, mci.cmask.hi, mci.cmask.lo);
+					i, msr.hi, msr.lo);
 
 			mci.bank = i;
 			if (CONFIG(ACPI_BERT) && mca_valid(mci.sts))
@@ -185,8 +182,8 @@ void check_mca(void)
 	}
 
 	/* zero the machine check error status registers */
-	mci.sts.lo = 0;
-	mci.sts.hi = 0;
+	msr.lo = 0;
+	msr.hi = 0;
 	for (i = 0 ; i < num_banks ; i++)
-		wrmsr(MCAX_STATUS_MSR(i), mci.sts);
+		wrmsr(MCAX_STATUS_MSR(i), msr);
 }

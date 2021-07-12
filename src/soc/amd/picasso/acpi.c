@@ -94,7 +94,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->duty_width = 3;	/* CLK_VAL bits 3:1 */
 	fadt->day_alrm = 0x0d;
 	fadt->mon_alrm = 0;
-	fadt->century = 0x32;
 	fadt->iapc_boot_arch = cfg->fadt_boot_arch; /* legacy free default */
 	fadt->res2 = 0;		/* reserved, MUST be 0 ACPI 3.0 */
 	fadt->flags |=	ACPI_FADT_WBINVD | /* See table 5-34 ACPI 6.3 spec */

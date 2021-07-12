@@ -26,6 +26,7 @@
 #include <types.h>
 #include <version.h>
 #include <commonlib/sort.h>
+#include <pc80/mc146818rtc.h>
 
 static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp);
 
@@ -1509,6 +1510,9 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->reserved = 0;
 
 	fadt->preferred_pm_profile = acpi_get_preferred_pm_profile();
+
+	if (CONFIG(USE_PC_CMOS_ALTCENTURY))
+		fadt->century = RTC_CLK_ALTCENTURY;
 
 	arch_fill_fadt(fadt);
 

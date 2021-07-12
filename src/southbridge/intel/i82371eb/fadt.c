@@ -42,7 +42,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->duty_width = 3; /* this width is in bits */
 	fadt->day_alrm = 0x0d; /* rtc CMOS RAM offset */
 	fadt->mon_alrm = 0x0; /* not supported */
-	fadt->century = 0x0; /* not supported */
 	/*
 	 * bit  meaning
 	 * 0    1: We have user-visible legacy devices

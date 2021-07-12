@@ -55,7 +55,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 
 	/* RTC Registers */
 	fadt->mon_alrm = 0x00;
-	fadt->century = 0x00;
 	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
 
 	/* PM2 Control Registers */

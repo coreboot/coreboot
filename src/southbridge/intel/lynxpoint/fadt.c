@@ -51,7 +51,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->duty_width = 0;
 	fadt->day_alrm = 0xd;
 	fadt->mon_alrm = 0x00;
-	fadt->century = 0x00;
 	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
 
 	fadt->flags |= ACPI_FADT_WBINVD |

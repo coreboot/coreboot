@@ -40,7 +40,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->duty_width = 0;
 	fadt->day_alrm = 0xd;
 	fadt->mon_alrm = 0x00;
-	fadt->century = 0x00;
 	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_FREE;
 	if (!CONFIG(NO_FADT_8042))
 		fadt->iapc_boot_arch |= ACPI_FADT_8042;

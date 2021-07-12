@@ -163,7 +163,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->duty_width = 0x3;	/* CLK_VAL bits 3:1 */
-	fadt->century = 0x32;
 
 	if (config->s0ix_enable)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;

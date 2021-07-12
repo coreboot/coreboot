@@ -2,7 +2,6 @@
 
 #include <acpi/acpi.h>
 #include <amdblocks/acpimmio.h>
-#include <amdblocks/apob_cache.h>
 #include <amdblocks/memmap.h>
 #include <amdblocks/pmlib.h>
 #include <arch/cpu.h>
@@ -25,7 +24,6 @@ asmlinkage void car_stage_entry(void)
 	fill_chipset_state();
 
 	fsp_memory_init(acpi_is_wakeup_s3());
-	soc_update_apob_cache();
 
 	/* Fixup settings FSP-M should not be changing */
 	fch_disable_legacy_dma_io();

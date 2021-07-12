@@ -1,8 +1,11 @@
 config BOARD_INTEL_KBLRVP3
 	bool "Kabylake LPDDR3 RVP3"
+
 config BOARD_INTEL_KBLRVP7
 	bool "Kabylake DDR3L RVP7"
+
 config BOARD_INTEL_KBLRVP8
 	bool "Kabylake DDR4 RVP8"
+
 config BOARD_INTEL_KBLRVP11
 	bool "Kabylake DDR4 RVP11"

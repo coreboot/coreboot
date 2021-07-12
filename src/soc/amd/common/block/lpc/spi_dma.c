@@ -13,6 +13,7 @@
 #include <soc/pci_devs.h>
 #include <spi_flash.h>
 #include <string.h>
+#include <thread.h>
 #include <types.h>
 
 /* The ROM is memory mapped just below 4GiB. Form a pointer for the base. */
@@ -164,6 +165,8 @@ static bool continue_spi_dma_transaction(const struct region_device *rd,
 	return false;
 }
 
+static struct thread_mutex spi_dma_hw_mutex;
+
 static ssize_t spi_dma_readat_dma(const struct region_device *rd, void *destination,
 				  size_t source, size_t size)
 {
@@ -177,11 +180,15 @@ static ssize_t spi_dma_readat_dma(const struct region_device *rd, void *destinat
 	printk(BIOS_SPEW, "%s: start: dest: %p, source: %#zx, size: %zu\n", __func__,
 	       destination, source, size);
 
+	thread_mutex_lock(&spi_dma_hw_mutex);
+
 	start_spi_dma_transaction(&transaction);
 
 	do {
 		udelay(2);
 	} while (continue_spi_dma_transaction(rd, &transaction));
+
+	thread_mutex_unlock(&spi_dma_hw_mutex);
 
 	printk(BIOS_SPEW, "%s: end: dest: %p, source: %#zx, remaining: %zu\n",
 	       __func__, destination, source, transaction.remaining);

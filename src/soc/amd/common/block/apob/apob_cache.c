@@ -131,7 +131,7 @@ void soc_update_apob_cache(void)
 		return;
 	}
 
-	printk(BIOS_SPEW, "Copy APOB from RAM 0x%p/0x%x to flash 0x%zx/0x%zx\n",
+	printk(BIOS_SPEW, "Copy APOB from RAM %p/%#x to flash %#zx/%#zx\n",
 		apob_src_ram, apob_src_ram->size,
 		region_offset(&region), region_sz(&region));
 

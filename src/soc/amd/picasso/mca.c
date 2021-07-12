@@ -164,12 +164,21 @@ static void mca_print_error(unsigned int bank)
 	printk(BIOS_WARNING, "   MC%u_CTL_MASK = %08x_%08x\n", bank, msr.hi, msr.lo);
 }
 
+static void mca_clear_errors(void)
+{
+	const unsigned int num_banks = mca_get_bank_count();
+	const msr_t msr = {.lo = 0, .hi = 0};
+
+	/* Zero all machine check error status registers */
+	for (unsigned int i = 0 ; i < num_banks ; i++)
+		wrmsr(MCAX_STATUS_MSR(i), msr);
+}
+
 /* Check the Machine Check Architecture Extension registers */
 void check_mca(void)
 {
 	unsigned int i;
 	struct mca_bank_status mci;
-	msr_t msr;
 	const unsigned int num_banks = mca_get_bank_count();
 
 	for (i = 0 ; i < num_banks ; i++) {
@@ -183,9 +192,5 @@ void check_mca(void)
 		}
 	}
 
-	/* zero the machine check error status registers */
-	msr.lo = 0;
-	msr.hi = 0;
-	for (i = 0 ; i < num_banks ; i++)
-		wrmsr(MCAX_STATUS_MSR(i), msr);
+	mca_clear_errors();
 }

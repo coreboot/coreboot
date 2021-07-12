@@ -164,11 +164,20 @@ static void mca_print_error(unsigned int bank)
 	printk(BIOS_WARNING, "   MC%u_CTL_MASK = %08x_%08x\n", bank, msr.hi, msr.lo);
 }
 
+static void mca_clear_errors(void)
+{
+	const unsigned int num_banks = mca_get_bank_count();
+	const msr_t msr = {.lo = 0, .hi = 0};
+
+	/* Zero all machine check error status registers */
+	for (unsigned int i = 0 ; i < num_banks ; i++)
+		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
+}
+
 void check_mca(void)
 {
 	unsigned int i;
 	struct mca_bank_status mci;
-	msr_t msr;
 	const unsigned int num_banks = mca_get_bank_count();
 
 	if (is_warm_reset()) {
@@ -187,9 +196,5 @@ void check_mca(void)
 		}
 	}
 
-	/* zero the machine check error status registers */
-	msr.lo = 0;
-	msr.hi = 0;
-	for (i = 0 ; i < num_banks ; i++)
-		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
+	mca_clear_errors();
 }

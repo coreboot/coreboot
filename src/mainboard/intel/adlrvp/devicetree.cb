@@ -169,7 +169,7 @@ chip soc/intel/alderlake
 
 	# HD Audio
 	register "PchHdaDspEnable" = "1"
-	register "PchHdaIDispLinkTmode" = "HDA_TMODE_4T"
+	register "PchHdaIDispLinkTmode" = "HDA_TMODE_8T"
 	register "PchHdaIDispLinkFrequency" = "HDA_LINKFREQ_96MHZ"
 	register "PchHdaIDispCodecEnable" = "1"
 

@@ -169,10 +169,10 @@ void check_mca(void)
 
 				printk(BIOS_WARNING, "   MC%d_STATUS =   %08x_%08x\n",
 						i, mci.sts.hi, mci.sts.lo);
-				mci.addr = rdmsr(MC0_ADDR + (i * 4));
+				mci.addr = rdmsr(IA32_MC0_ADDR + (i * 4));
 				printk(BIOS_WARNING, "   MC%d_ADDR =     %08x_%08x\n",
 						i, mci.addr.hi, mci.addr.lo);
-				mci.misc = rdmsr(MC0_MISC + (i * 4));
+				mci.misc = rdmsr(IA32_MC0_MISC + (i * 4));
 				printk(BIOS_WARNING, "   MC%d_MISC =     %08x_%08x\n",
 						i, mci.misc.hi, mci.misc.lo);
 				mci.ctl = rdmsr(IA32_MC0_CTL + (i * 4));

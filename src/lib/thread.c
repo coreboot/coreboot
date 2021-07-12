@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -376,4 +377,23 @@ void thread_coop_disable(void)
 		return;
 
 	current->can_yield--;
+}
+
+void thread_mutex_lock(struct thread_mutex *mutex)
+{
+	struct stopwatch sw;
+
+	stopwatch_init(&sw);
+
+	while (mutex->locked)
+		assert(thread_yield() == 0);
+	mutex->locked = true;
+
+	printk(BIOS_SPEW, "took %lu us to acquire mutex\n", stopwatch_duration_usecs(&sw));
+}
+
+void thread_mutex_unlock(struct thread_mutex *mutex)
+{
+	assert(mutex->locked);
+	mutex->locked = 0;
 }

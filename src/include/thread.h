@@ -6,6 +6,10 @@
 #include <bootstate.h>
 #include <arch/cpu.h>
 
+struct thread_mutex {
+	bool locked;
+};
+
 #if ENV_RAMSTAGE && CONFIG(COOP_MULTITASKING)
 
 struct thread {
@@ -53,6 +57,9 @@ int thread_yield_microseconds(unsigned int microsecs);
 void thread_coop_enable(void);
 void thread_coop_disable(void);
 
+void thread_mutex_lock(struct thread_mutex *mutex);
+void thread_mutex_unlock(struct thread_mutex *mutex);
+
 static inline void thread_init_cpu_info_non_bsp(struct cpu_info *ci)
 {
 	ci->thread = NULL;
@@ -85,6 +92,10 @@ static inline void thread_coop_enable(void) {}
 static inline void thread_coop_disable(void) {}
 struct cpu_info;
 static inline void thread_init_cpu_info_non_bsp(struct cpu_info *ci) { }
+
+static inline void thread_mutex_lock(struct thread_mutex *mutex) {}
+
+static inline void thread_mutex_unlock(struct thread_mutex *mutex) {}
 #endif
 
 #endif /* THREAD_H_ */

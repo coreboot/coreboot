@@ -81,7 +81,7 @@ static void configure_mca(void)
 	msr.lo = msr.hi = 0;
 	/* This should only be done on a cold boot */
 	for (i = 0; i < 7; i++)
-		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
+		wrmsr(IA32_MC_STATUS(i), msr);
 }
 
 static void model_2065x_init(struct device *cpu)

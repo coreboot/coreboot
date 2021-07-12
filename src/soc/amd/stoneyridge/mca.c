@@ -119,8 +119,7 @@ static void build_bert_mca_error(struct mca_bank_status *mci)
 	ctx = cper_new_ia32x64_context_msr(status, x86_sec, IA32_MCG_CAP, 3);
 	if (!ctx)
 		goto failed;
-	ctx = cper_new_ia32x64_context_msr(status, x86_sec,
-					IA32_MC0_CTL + (mci->bank * 4), 4);
+	ctx = cper_new_ia32x64_context_msr(status, x86_sec, IA32_MC_CTL(mci->bank), 4);
 	if (!ctx)
 		goto failed;
 	ctx = cper_new_ia32x64_context_msr(status, x86_sec,
@@ -152,13 +151,13 @@ static void mca_print_error(unsigned int bank)
 	printk(BIOS_WARNING, "#MC Error: core %u, bank %u %s\n", initial_lapicid(), bank,
 		mca_bank_name[bank]);
 
-	msr = rdmsr(IA32_MC0_STATUS + (bank * 4));
+	msr = rdmsr(IA32_MC_STATUS(bank));
 	printk(BIOS_WARNING, "   MC%u_STATUS =   %08x_%08x\n", bank, msr.hi, msr.lo);
-	msr = rdmsr(IA32_MC0_ADDR + (bank * 4));
+	msr = rdmsr(IA32_MC_ADDR(bank));
 	printk(BIOS_WARNING, "   MC%u_ADDR =     %08x_%08x\n", bank, msr.hi, msr.lo);
-	msr = rdmsr(IA32_MC0_MISC + (bank * 4));
+	msr = rdmsr(IA32_MC_MISC(bank));
 	printk(BIOS_WARNING, "   MC%u_MISC =     %08x_%08x\n", bank, msr.hi, msr.lo);
-	msr = rdmsr(IA32_MC0_CTL + (bank * 4));
+	msr = rdmsr(IA32_MC_CTL(bank));
 	printk(BIOS_WARNING, "   MC%u_CTL =      %08x_%08x\n", bank, msr.hi, msr.lo);
 	msr = rdmsr(MC0_CTL_MASK + bank);
 	printk(BIOS_WARNING, "   MC%u_CTL_MASK = %08x_%08x\n", bank, msr.hi, msr.lo);
@@ -177,7 +176,7 @@ static void mca_check_all_banks(void)
 			continue;
 
 		mci.bank = i;
-		mci.sts = rdmsr(IA32_MC0_STATUS + (i * 4));
+		mci.sts = rdmsr(IA32_MC_STATUS(i));
 		if (mci.sts.hi || mci.sts.lo) {
 			mca_print_error(i);
 
@@ -194,7 +193,7 @@ static void mca_clear_errors(void)
 
 	/* Zero all machine check error status registers */
 	for (unsigned int i = 0 ; i < num_banks ; i++)
-		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
+		wrmsr(IA32_MC_STATUS(i), msr);
 }
 
 void check_mca(void)

@@ -56,7 +56,9 @@
 #define  DCA_TYPE0_EN			(1 << 0)
 #define IA32_PAT			0x277
 #define IA32_MC0_CTL			0x400
+#define IA32_MC_CTL(bank)		(IA32_MC0_CTL + 4 * (bank))
 #define IA32_MC0_STATUS			0x401
+#define IA32_MC_STATUS(bank)		(IA32_MC0_STATUS + 4 * (bank))
 #define  MCA_STATUS_HI_VAL		(1UL << (63 - 32))
 #define  MCA_STATUS_HI_OVERFLOW		(1UL << (62 - 32))
 #define  MCA_STATUS_HI_UC		(1UL << (61 - 32))
@@ -75,7 +77,9 @@
 #define  MCA_STATUS_LO_ERRCODE_EXT_MASK	(0x3f << MCA_STATUS_LO_ERRCODE_EXT_SH)
 #define  MCA_STATUS_LO_ERRCODE_MASK	(0xffff << 0)
 #define IA32_MC0_ADDR			0x402
+#define IA32_MC_ADDR(bank)		(IA32_MC0_ADDR + 4 * (bank))
 #define IA32_MC0_MISC			0x403
+#define IA32_MC_MISC(bank)		(IA32_MC0_MISC + 4 * (bank))
 #define IA32_VMX_BASIC_MSR              0x480
 #define  VMX_BASIC_HI_DUAL_MONITOR      (1UL << (49 - 32))
 #define IA32_VMX_MISC_MSR               0x485

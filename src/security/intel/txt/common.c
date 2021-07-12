@@ -483,7 +483,7 @@ bool intel_txt_prepare_txt_env(void)
 		*/
 		size_t max_mc_msr = mca_get_bank_count();
 		for (size_t i = 0; i < max_mc_msr; i++) {
-			msr = rdmsr(IA32_MC0_STATUS + 4 * i);
+			msr = rdmsr(IA32_MC_STATUS(i));
 			if (!(msr.hi & MCA_STATUS_HI_UC))
 				continue;
 

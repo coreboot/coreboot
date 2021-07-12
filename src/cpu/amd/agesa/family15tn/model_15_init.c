@@ -62,7 +62,7 @@ static void model_15_init(struct device *dev)
 	msr.lo = 0;
 	msr.hi = 0;
 	for (i = 0; i < num_banks; i++)
-		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
+		wrmsr(IA32_MC_STATUS(i), msr);
 
 	/* Enable the local CPU APICs */
 	setup_lapic();

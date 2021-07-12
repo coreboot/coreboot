@@ -14,7 +14,7 @@
 #define MCAX_USED_REGISTERS_PER_BANK	(MCAX_MISC4_OFFSET + 1)
 
 struct mca_bank_status {
-	int bank;
+	unsigned int bank;
 	msr_t sts;
 };
 
@@ -148,7 +148,7 @@ static const char *const mca_bank_name[] = {
 /* Check the Machine Check Architecture Extension registers */
 void check_mca(void)
 {
-	int i;
+	unsigned int i;
 	struct mca_bank_status mci;
 	msr_t msr;
 	const unsigned int num_banks = mca_get_bank_count();
@@ -156,23 +156,23 @@ void check_mca(void)
 	for (i = 0 ; i < num_banks ; i++) {
 		mci.sts = rdmsr(MCAX_STATUS_MSR(i));
 		if (mci.sts.hi || mci.sts.lo) {
-			printk(BIOS_WARNING, "#MC Error: core %u, bank %d %s\n",
+			printk(BIOS_WARNING, "#MC Error: core %u, bank %u %s\n",
 			       initial_lapicid(), i,
 			       i < ARRAY_SIZE(mca_bank_name) ? mca_bank_name[i] : "");
 
-			printk(BIOS_WARNING, "   MC%d_STATUS =   %08x_%08x\n",
+			printk(BIOS_WARNING, "   MC%u_STATUS =   %08x_%08x\n",
 					i, mci.sts.hi, mci.sts.lo);
 			msr = rdmsr(MCAX_ADDR_MSR(i));
-			printk(BIOS_WARNING, "   MC%d_ADDR =     %08x_%08x\n",
+			printk(BIOS_WARNING, "   MC%u_ADDR =     %08x_%08x\n",
 					i, msr.hi, msr.lo);
 			msr = rdmsr(MCAX_MISC0_MSR(i));
-			printk(BIOS_WARNING, "   MC%d_MISC =     %08x_%08x\n",
+			printk(BIOS_WARNING, "   MC%u_MISC =     %08x_%08x\n",
 					i, msr.hi, msr.lo);
 			msr = rdmsr(MCAX_CTL_MSR(i));
-			printk(BIOS_WARNING, "   MC%d_CTL =      %08x_%08x\n",
+			printk(BIOS_WARNING, "   MC%u_CTL =      %08x_%08x\n",
 					i, msr.hi, msr.lo);
 			msr = rdmsr(MCA_CTL_MASK_MSR(i));
-			printk(BIOS_WARNING, "   MC%d_CTL_MASK = %08x_%08x\n",
+			printk(BIOS_WARNING, "   MC%u_CTL_MASK = %08x_%08x\n",
 					i, msr.hi, msr.lo);
 
 			mci.bank = i;

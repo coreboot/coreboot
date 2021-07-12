@@ -77,10 +77,11 @@ static void configure_mca(void)
 {
 	msr_t msr;
 	int i;
+	const unsigned int num_banks = mca_get_bank_count();
 
 	msr.lo = msr.hi = 0;
 	/* This should only be done on a cold boot */
-	for (i = 0; i < 7; i++)
+	for (i = 0; i < num_banks; i++)
 		wrmsr(IA32_MC_STATUS(i), msr);
 }
 

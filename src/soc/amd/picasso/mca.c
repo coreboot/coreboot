@@ -164,6 +164,23 @@ static void mca_print_error(unsigned int bank)
 	printk(BIOS_WARNING, "   MC%u_CTL_MASK = %08x_%08x\n", bank, msr.hi, msr.lo);
 }
 
+static void mca_check_all_banks(void)
+{
+	struct mca_bank_status mci;
+	const unsigned int num_banks = mca_get_bank_count();
+
+	for (unsigned int i = 0 ; i < num_banks ; i++) {
+		mci.bank = i;
+		mci.sts = rdmsr(MCAX_STATUS_MSR(i));
+		if (mci.sts.hi || mci.sts.lo) {
+			mca_print_error(i);
+
+			if (CONFIG(ACPI_BERT) && mca_valid(mci.sts))
+				build_bert_mca_error(&mci);
+		}
+	}
+}
+
 static void mca_clear_errors(void)
 {
 	const unsigned int num_banks = mca_get_bank_count();
@@ -177,20 +194,6 @@ static void mca_clear_errors(void)
 /* Check the Machine Check Architecture Extension registers */
 void check_mca(void)
 {
-	unsigned int i;
-	struct mca_bank_status mci;
-	const unsigned int num_banks = mca_get_bank_count();
-
-	for (i = 0 ; i < num_banks ; i++) {
-		mci.bank = i;
-		mci.sts = rdmsr(MCAX_STATUS_MSR(i));
-		if (mci.sts.hi || mci.sts.lo) {
-			mca_print_error(i);
-
-			if (CONFIG(ACPI_BERT) && mca_valid(mci.sts))
-				build_bert_mca_error(&mci);
-		}
-	}
-
+	mca_check_all_banks();
 	mca_clear_errors();
 }

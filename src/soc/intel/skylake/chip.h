@@ -94,7 +94,7 @@ struct soc_intel_skylake_config {
 	} SaGv;
 
 	/* Enable/disable Rank Margin Tool */
-	u8 Rmt;
+	u8 RMT;
 
 	/* Disable Command TriState */
 	u8 CmdTriStateDis;

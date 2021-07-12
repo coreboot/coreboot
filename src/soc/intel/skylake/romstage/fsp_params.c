@@ -83,7 +83,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->ProbelessTrace = 0;
 	m_cfg->SaGv = config->SaGv;
 	m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
-	m_cfg->RMT = config->Rmt;
+	m_cfg->RMT = config->RMT;
 	m_cfg->CmdTriStateDis = config->CmdTriStateDis;
 	m_cfg->DdrFreqLimit = 0;
 	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);

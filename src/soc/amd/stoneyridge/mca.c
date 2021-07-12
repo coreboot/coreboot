@@ -169,19 +169,20 @@ static void mca_check_all_banks(void)
 	struct mca_bank_status mci;
 	const unsigned int num_banks = mca_get_bank_count();
 
-	if (is_warm_reset()) {
-		for (unsigned int i = 0 ; i < num_banks ; i++) {
-			if (i == 3) /* Reserved in Family 15h */
-				continue;
+	if (!is_warm_reset())
+		return;
 
-			mci.bank = i;
-			mci.sts = rdmsr(IA32_MC0_STATUS + (i * 4));
-			if (mci.sts.hi || mci.sts.lo) {
-				mca_print_error(i);
+	for (unsigned int i = 0 ; i < num_banks ; i++) {
+		if (i == 3) /* Reserved in Family 15h */
+			continue;
 
-				if (CONFIG(ACPI_BERT) && mca_valid(mci.sts))
-					build_bert_mca_error(&mci);
-			}
+		mci.bank = i;
+		mci.sts = rdmsr(IA32_MC0_STATUS + (i * 4));
+		if (mci.sts.hi || mci.sts.lo) {
+			mca_print_error(i);
+
+			if (CONFIG(ACPI_BERT) && mca_valid(mci.sts))
+				build_bert_mca_error(&mci);
 		}
 	}
 }

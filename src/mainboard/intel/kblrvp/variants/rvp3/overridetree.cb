@@ -110,11 +110,6 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, \
 	}"
 
-	# Lock Down
-	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
-	}"
-
 	device domain 0 on
 		device pci 05.0 on  end # SA IMGU
 		device pci 14.3 on  end # Camera

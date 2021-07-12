@@ -105,11 +105,6 @@ chip soc/intel/skylake
 		.tdp_pl2_override = 60,
 	}"
 
-	# Lock Down
-	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
-	}"
-
 	device domain 0 on
 		device pci 04.0 off end # SA thermal subsystem
 		device pci 17.0 on  end # SATA

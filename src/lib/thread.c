@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <arch/cpu.h>
 #include <bootstate.h>
+#include <commonlib/bsd/compiler.h>
 #include <console/console.h>
 #include <thread.h>
 #include <timer.h>
@@ -112,7 +113,7 @@ static inline void free_thread(struct thread *t)
 /* The idle thread is ran whenever there isn't anything else that is runnable.
  * It's sole responsibility is to ensure progress is made by running the timer
  * callbacks. */
-static void idle_thread(void *unused)
+__noreturn static enum cb_err idle_thread(void *unused)
 {
 	/* This thread never voluntarily yields. */
 	thread_coop_disable();
@@ -133,11 +134,20 @@ static void schedule(struct thread *t)
 		/* current is still runnable. */
 		push_runnable(current);
 	}
+
+	if (t->handle)
+		t->handle->state = THREAD_STARTED;
+
 	switch_to_thread(t->stack_current, &current->stack_current);
 }
 
-static void terminate_thread(struct thread *t)
+static void terminate_thread(struct thread *t, enum cb_err error)
 {
+	if (t->handle) {
+		t->handle->error = error;
+		t->handle->state = THREAD_DONE;
+	}
+
 	free_thread(t);
 	schedule(NULL);
 }
@@ -145,20 +155,23 @@ static void terminate_thread(struct thread *t)
 static void asmlinkage call_wrapper(void *unused)
 {
 	struct thread *current = current_thread();
+	enum cb_err error;
 
-	current->entry(current->entry_arg);
-	terminate_thread(current);
+	error = current->entry(current->entry_arg);
+
+	terminate_thread(current, error);
 }
 
 /* Block the current state transitions until thread is complete. */
 static void asmlinkage call_wrapper_block_current(void *unused)
 {
 	struct thread *current = current_thread();
+	enum cb_err error;
 
 	boot_state_current_block();
-	current->entry(current->entry_arg);
+	error = current->entry(current->entry_arg);
 	boot_state_current_unblock();
-	terminate_thread(current);
+	terminate_thread(current, error);
 }
 
 struct block_boot_state {
@@ -171,18 +184,19 @@ static void asmlinkage call_wrapper_block_state(void *arg)
 {
 	struct block_boot_state *bbs = arg;
 	struct thread *current = current_thread();
+	enum cb_err error;
 
 	boot_state_block(bbs->state, bbs->seq);
-	current->entry(current->entry_arg);
+	error = current->entry(current->entry_arg);
 	boot_state_unblock(bbs->state, bbs->seq);
-	terminate_thread(current);
+	terminate_thread(current, error);
 }
 
 /* Prepare a thread so that it starts by executing thread_entry(thread_arg).
  * Within thread_entry() it will call func(arg). */
-static void prepare_thread(struct thread *t, void *func, void *arg,
-			   asmlinkage void (*thread_entry)(void *),
-			   void *thread_arg)
+static void prepare_thread(struct thread *t, struct thread_handle *handle,
+			   enum cb_err (*func)(void *), void *arg,
+			   asmlinkage void (*thread_entry)(void *), void *thread_arg)
 {
 	/* Stash the function and argument to run. */
 	t->entry = func;
@@ -190,6 +204,9 @@ static void prepare_thread(struct thread *t, void *func, void *arg,
 
 	/* All new threads can yield by default. */
 	t->can_yield = 1;
+
+	/* Pointer used to publish the state of thread */
+	t->handle = handle;
 
 	arch_prepare_thread(t, thread_entry, thread_arg);
 }
@@ -212,7 +229,7 @@ static void idle_thread_init(void)
 		die("No threads available for idle thread!\n");
 
 	/* Queue idle thread to run once all other threads have yielded. */
-	prepare_thread(t, idle_thread, NULL, call_wrapper, NULL);
+	prepare_thread(t, NULL, idle_thread, NULL, call_wrapper, NULL);
 	push_runnable(t);
 }
 
@@ -275,7 +292,7 @@ void threads_initialize(void)
 	initialized = 1;
 }
 
-int thread_run(void (*func)(void *), void *arg)
+int thread_run(struct thread_handle *handle, enum cb_err (*func)(void *), void *arg)
 {
 	struct thread *current;
 	struct thread *t;
@@ -295,13 +312,13 @@ int thread_run(void (*func)(void *), void *arg)
 		return -1;
 	}
 
-	prepare_thread(t, func, arg, call_wrapper_block_current, NULL);
+	prepare_thread(t, handle, func, arg, call_wrapper_block_current, NULL);
 	schedule(t);
 
 	return 0;
 }
 
-int thread_run_until(void (*func)(void *), void *arg,
+int thread_run_until(struct thread_handle *handle, enum cb_err (*func)(void *), void *arg,
 		     boot_state_t state, boot_state_sequence_t seq)
 {
 	struct thread *current;
@@ -326,7 +343,7 @@ int thread_run_until(void (*func)(void *), void *arg,
 	bbs = thread_alloc_space(t, sizeof(*bbs));
 	bbs->state = state;
 	bbs->seq = seq;
-	prepare_thread(t, func, arg, call_wrapper_block_state, bbs);
+	prepare_thread(t, handle, func, arg, call_wrapper_block_state, bbs);
 	schedule(t);
 
 	return 0;
@@ -377,6 +394,30 @@ void thread_coop_disable(void)
 		return;
 
 	current->can_yield--;
+}
+
+enum cb_err thread_join(struct thread_handle *handle)
+{
+	struct stopwatch sw;
+	struct thread *current = current_thread();
+
+	assert(handle);
+	assert(current);
+	assert(current->handle != handle);
+
+	if (handle->state == THREAD_UNINITIALIZED)
+		return CB_ERR_ARG;
+
+	stopwatch_init(&sw);
+
+	printk(BIOS_SPEW, "waiting for thread\n");
+
+	while (handle->state != THREAD_DONE)
+		assert(thread_yield() == 0);
+
+	printk(BIOS_SPEW, "took %lu us\n", stopwatch_duration_usecs(&sw));
+
+	return handle->error;
 }
 
 void thread_mutex_lock(struct thread_mutex *mutex)

@@ -2,13 +2,29 @@
 #ifndef THREAD_H_
 #define THREAD_H_
 
-#include <stdint.h>
-#include <bootstate.h>
 #include <arch/cpu.h>
+#include <bootstate.h>
+#include <commonlib/bsd/cb_err.h>
+#include <stdint.h>
 
 struct thread_mutex {
 	bool locked;
 };
+
+enum thread_state {
+	THREAD_UNINITIALIZED,
+	THREAD_STARTED,
+	THREAD_DONE,
+};
+
+struct thread_handle {
+	enum thread_state state;
+	/* Only valid when state == THREAD_DONE */
+	enum cb_err error;
+};
+
+/* Waits until the thread has terminated and returns the error code */
+enum cb_err thread_join(struct thread_handle *handle);
 
 #if ENV_RAMSTAGE && CONFIG(COOP_MULTITASKING)
 
@@ -17,9 +33,10 @@ struct thread {
 	uintptr_t stack_current;
 	uintptr_t stack_orig;
 	struct thread *next;
-	void (*entry)(void *);
+	enum cb_err (*entry)(void *);
 	void *entry_arg;
 	int can_yield;
+	struct thread_handle *handle;
 };
 
 void threads_initialize(void);
@@ -30,12 +47,14 @@ void threads_initialize(void);
 void *arch_get_thread_stackbase(void);
 /* Run func(arrg) on a new thread. Return 0 on successful start of thread, < 0
  * when thread could not be started. Note that the thread will block the
- * current state in the boot state machine until it is complete. */
-int thread_run(void (*func)(void *), void *arg);
+ * current state in the boot state machine until it is complete. The thread
+ * handle if populated, will reflect the state and return code of the thread.
+ */
+int thread_run(struct thread_handle *handle, enum cb_err (*func)(void *), void *arg);
 /* thread_run_until is the same as thread_run() except that it blocks state
  * transitions from occurring in the (state, seq) pair of the boot state
  * machine. */
-int thread_run_until(void (*func)(void *), void *arg,
+int thread_run_until(struct thread_handle *handle, enum cb_err (*func)(void *), void *arg,
 		     boot_state_t state, boot_state_sequence_t seq);
 
 /* Return 0 on successful yield, < 0 when thread did not yield. */
@@ -74,9 +93,13 @@ void arch_prepare_thread(struct thread *t,
 			 asmlinkage void (*thread_entry)(void *), void *arg);
 #else
 static inline void threads_initialize(void) {}
-static inline int thread_run(void (*func)(void *), void *arg) { return -1; }
-static inline int thread_run_until(void (*func)(void *), void *arg, boot_state_t state,
-				   boot_state_sequence_t seq)
+static inline int thread_run(struct thread_handle *handle, enum cb_err (*func)(void *),
+			     void *arg)
+{
+	return -1;
+}
+static inline int thread_run_until(struct thread_handle *handle, enum cb_err (*func)(void *),
+				   void *arg, boot_state_t state, boot_state_sequence_t seq)
 {
 	return -1;
 }

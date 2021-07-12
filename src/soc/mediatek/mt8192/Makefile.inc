@@ -46,6 +46,7 @@ ramstage-y += apusys.c
 ramstage-y += ../common/auxadc.c
 ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += devapc.c
+ramstage-y += dfd.c
 ramstage-y += ../common/dpm.c
 ramstage-y += ../common/dsi.c ../common/mtk_mipi_dphy.c
 ramstage-y += ../common/flash_controller.c

@@ -2,3 +2,10 @@ config DRIVERS_MC146818
 	bool
 	default y if ARCH_X86
 	depends on PC80_SYSTEM
+
+config USE_PC_CMOS_ALTCENTURY
+	bool "Use legacy-BIOS alt-century byte in CMOS"
+	default y if !USE_OPTION_TABLE
+	depends on DRIVERS_MC146818
+	help
+	  May be useful for legacy OSes that assume its presence.

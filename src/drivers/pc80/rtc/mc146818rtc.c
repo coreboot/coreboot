@@ -191,11 +191,11 @@ static int cmos_date_invalid(void)
  */
 void cmos_check_update_date(void)
 {
-	u8 year, century;
+	u8 year, century = 0;
 
-	/* Assume hardware always supports RTC_CLK_ALTCENTURY. */
 	wait_uip();
-	century = cmos_read(RTC_CLK_ALTCENTURY);
+	if (CONFIG(USE_PC_CMOS_ALTCENTURY))
+		century = cmos_read(RTC_CLK_ALTCENTURY);
 	year = cmos_read(RTC_CLK_YEAR);
 
 	/*
@@ -215,8 +215,8 @@ int rtc_set(const struct rtc_time *time)
 	cmos_write(bin2bcd(time->mday), RTC_CLK_DAYOFMONTH);
 	cmos_write(bin2bcd(time->mon), RTC_CLK_MONTH);
 	cmos_write(bin2bcd(time->year % 100), RTC_CLK_YEAR);
-	/* Same assumption as above: We always have RTC_CLK_ALTCENTURY */
-	cmos_write(bin2bcd(time->year / 100), RTC_CLK_ALTCENTURY);
+	if (CONFIG(USE_PC_CMOS_ALTCENTURY))
+		cmos_write(bin2bcd(time->year / 100), RTC_CLK_ALTCENTURY);
 	cmos_write(bin2bcd(time->wday + 1), RTC_CLK_DAYOFWEEK);
 	return 0;
 }
@@ -230,8 +230,13 @@ int rtc_get(struct rtc_time *time)
 	time->mday = bcd2bin(cmos_read(RTC_CLK_DAYOFMONTH));
 	time->mon = bcd2bin(cmos_read(RTC_CLK_MONTH));
 	time->year = bcd2bin(cmos_read(RTC_CLK_YEAR));
-	/* Same assumption as above: We always have RTC_CLK_ALTCENTURY */
-	time->year += bcd2bin(cmos_read(RTC_CLK_ALTCENTURY)) * 100;
+	if (CONFIG(USE_PC_CMOS_ALTCENTURY)) {
+		time->year += bcd2bin(cmos_read(RTC_CLK_ALTCENTURY)) * 100;
+	} else {
+		time->year += 1900;
+		if (time->year < 1970)
+			time->year += 100;
+	}
 	time->wday = bcd2bin(cmos_read(RTC_CLK_DAYOFWEEK)) - 1;
 	return 0;
 }

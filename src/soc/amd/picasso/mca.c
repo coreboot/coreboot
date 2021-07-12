@@ -145,6 +145,25 @@ static const char *const mca_bank_name[] = {
 	"L3 cache unit"
 };
 
+static void mca_print_error(unsigned int bank)
+{
+	msr_t msr;
+
+	printk(BIOS_WARNING, "#MC Error: core %u, bank %u %s\n", initial_lapicid(), bank,
+		bank < ARRAY_SIZE(mca_bank_name) ? mca_bank_name[bank] : "");
+
+	msr = rdmsr(MCAX_STATUS_MSR(bank));
+	printk(BIOS_WARNING, "   MC%u_STATUS =   %08x_%08x\n", bank, msr.hi, msr.lo);
+	msr = rdmsr(MCAX_ADDR_MSR(bank));
+	printk(BIOS_WARNING, "   MC%u_ADDR =     %08x_%08x\n", bank, msr.hi, msr.lo);
+	msr = rdmsr(MCAX_MISC0_MSR(bank));
+	printk(BIOS_WARNING, "   MC%u_MISC =     %08x_%08x\n", bank, msr.hi, msr.lo);
+	msr = rdmsr(MCAX_CTL_MSR(bank));
+	printk(BIOS_WARNING, "   MC%u_CTL =      %08x_%08x\n", bank, msr.hi, msr.lo);
+	msr = rdmsr(MCA_CTL_MASK_MSR(bank));
+	printk(BIOS_WARNING, "   MC%u_CTL_MASK = %08x_%08x\n", bank, msr.hi, msr.lo);
+}
+
 /* Check the Machine Check Architecture Extension registers */
 void check_mca(void)
 {
@@ -154,28 +173,11 @@ void check_mca(void)
 	const unsigned int num_banks = mca_get_bank_count();
 
 	for (i = 0 ; i < num_banks ; i++) {
+		mci.bank = i;
 		mci.sts = rdmsr(MCAX_STATUS_MSR(i));
 		if (mci.sts.hi || mci.sts.lo) {
-			printk(BIOS_WARNING, "#MC Error: core %u, bank %u %s\n",
-			       initial_lapicid(), i,
-			       i < ARRAY_SIZE(mca_bank_name) ? mca_bank_name[i] : "");
+			mca_print_error(i);
 
-			printk(BIOS_WARNING, "   MC%u_STATUS =   %08x_%08x\n",
-					i, mci.sts.hi, mci.sts.lo);
-			msr = rdmsr(MCAX_ADDR_MSR(i));
-			printk(BIOS_WARNING, "   MC%u_ADDR =     %08x_%08x\n",
-					i, msr.hi, msr.lo);
-			msr = rdmsr(MCAX_MISC0_MSR(i));
-			printk(BIOS_WARNING, "   MC%u_MISC =     %08x_%08x\n",
-					i, msr.hi, msr.lo);
-			msr = rdmsr(MCAX_CTL_MSR(i));
-			printk(BIOS_WARNING, "   MC%u_CTL =      %08x_%08x\n",
-					i, msr.hi, msr.lo);
-			msr = rdmsr(MCA_CTL_MASK_MSR(i));
-			printk(BIOS_WARNING, "   MC%u_CTL_MASK = %08x_%08x\n",
-					i, msr.hi, msr.lo);
-
-			mci.bank = i;
 			if (CONFIG(ACPI_BERT) && mca_valid(mci.sts))
 				build_bert_mca_error(&mci);
 		}

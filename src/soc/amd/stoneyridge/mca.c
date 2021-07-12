@@ -145,6 +145,25 @@ static const char *const mca_bank_name[] = {
 	"Floating point unit"
 };
 
+static void mca_print_error(unsigned int bank)
+{
+	msr_t msr;
+
+	printk(BIOS_WARNING, "#MC Error: core %u, bank %u %s\n", initial_lapicid(), bank,
+		mca_bank_name[bank]);
+
+	msr = rdmsr(IA32_MC0_STATUS + (bank * 4));
+	printk(BIOS_WARNING, "   MC%u_STATUS =   %08x_%08x\n", bank, msr.hi, msr.lo);
+	msr = rdmsr(IA32_MC0_ADDR + (bank * 4));
+	printk(BIOS_WARNING, "   MC%u_ADDR =     %08x_%08x\n", bank, msr.hi, msr.lo);
+	msr = rdmsr(IA32_MC0_MISC + (bank * 4));
+	printk(BIOS_WARNING, "   MC%u_MISC =     %08x_%08x\n", bank, msr.hi, msr.lo);
+	msr = rdmsr(IA32_MC0_CTL + (bank * 4));
+	printk(BIOS_WARNING, "   MC%u_CTL =      %08x_%08x\n", bank, msr.hi, msr.lo);
+	msr = rdmsr(MC0_CTL_MASK + bank);
+	printk(BIOS_WARNING, "   MC%u_CTL_MASK = %08x_%08x\n", bank, msr.hi, msr.lo);
+}
+
 void check_mca(void)
 {
 	unsigned int i;
@@ -157,27 +176,11 @@ void check_mca(void)
 			if (i == 3) /* Reserved in Family 15h */
 				continue;
 
+			mci.bank = i;
 			mci.sts = rdmsr(IA32_MC0_STATUS + (i * 4));
 			if (mci.sts.hi || mci.sts.lo) {
-				printk(BIOS_WARNING, "#MC Error: core %u, bank %u %s\n",
-						initial_lapicid(), i, mca_bank_name[i]);
+				mca_print_error(i);
 
-				printk(BIOS_WARNING, "   MC%u_STATUS =   %08x_%08x\n",
-						i, mci.sts.hi, mci.sts.lo);
-				msr = rdmsr(IA32_MC0_ADDR + (i * 4));
-				printk(BIOS_WARNING, "   MC%u_ADDR =     %08x_%08x\n",
-						i, msr.hi, msr.lo);
-				msr = rdmsr(IA32_MC0_MISC + (i * 4));
-				printk(BIOS_WARNING, "   MC%u_MISC =     %08x_%08x\n",
-						i, msr.hi, msr.lo);
-				msr = rdmsr(IA32_MC0_CTL + (i * 4));
-				printk(BIOS_WARNING, "   MC%u_CTL =      %08x_%08x\n",
-						i, msr.hi, msr.lo);
-				msr = rdmsr(MC0_CTL_MASK + i);
-				printk(BIOS_WARNING, "   MC%u_CTL_MASK = %08x_%08x\n",
-						i, msr.hi, msr.lo);
-
-				mci.bank = i;
 				if (CONFIG(ACPI_BERT) && mca_valid(mci.sts))
 					build_bert_mca_error(&mci);
 			}

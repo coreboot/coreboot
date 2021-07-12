@@ -283,7 +283,6 @@ struct soc_intel_skylake_config {
 		Display_Switchable,
 	} PrimaryDisplay;
 	u8 SkipExtGfxScan;
-	u8 ScanExtGfxForLegacyOpRom;
 
 	/* GPIO IRQ Route  The valid values is 14 or 15*/
 	u8 GpioIrqSelect;

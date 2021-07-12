@@ -82,6 +82,17 @@ config TIANOCORE_BOOTSPLASH_FILE
 	  If an absolute path is not given, the path will assumed to be
 	  relative to the coreboot root directory.
 
+config TIANOCORE_ABOVE_4G_MEMORY
+	bool "Enable above 4G memory"
+	default n
+	help
+	  Select this option to enable Above 4G Decode. This will allow the
+	  payload to use all of the memory, rather than an maximum of 4G.
+
+	  Disabling this option, which will reserve memory above 4G, is
+	  useful for bootloaders that are not fully 64-bit aware such as
+	  Qubes R4.0.4 bootloader.
+
 endif
 
 config TIANOCORE_BOOT_TIMEOUT

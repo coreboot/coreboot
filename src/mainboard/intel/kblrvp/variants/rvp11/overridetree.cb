@@ -107,7 +107,7 @@ chip soc/intel/skylake
 
 	# Lock Down
 	register "common_soc_config" = "{
-	.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 	}"
 
 	device domain 0 on

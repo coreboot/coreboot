@@ -147,8 +147,6 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, \
 	}"
 
-
-
 	# Use default SD card detect GPIO configuration
 	register "sdcard_cd_gpio" = "GPP_G5"
 

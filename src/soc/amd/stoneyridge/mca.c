@@ -153,9 +153,7 @@ void check_mca(void)
 {
 	int i;
 	struct mca_bank mci;
-	unsigned int num_banks;
-
-	num_banks = mca_get_bank_count();
+	const unsigned int num_banks = mca_get_bank_count();
 
 	if (is_warm_reset()) {
 		for (i = 0 ; i < num_banks ; i++) {

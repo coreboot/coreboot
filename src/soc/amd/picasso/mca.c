@@ -154,9 +154,7 @@ void check_mca(void)
 {
 	int i;
 	struct mca_bank mci;
-	unsigned int num_banks;
-
-	num_banks = mca_get_bank_count();
+	const unsigned int num_banks = mca_get_bank_count();
 
 	for (i = 0 ; i < num_banks ; i++) {
 		mci.sts = rdmsr(MCAX_STATUS_MSR(i));

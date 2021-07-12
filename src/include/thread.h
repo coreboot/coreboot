@@ -59,6 +59,11 @@ void arch_prepare_thread(struct thread *t,
 #else
 static inline void threads_initialize(void) {}
 static inline int thread_run(void (*func)(void *), void *arg) { return -1; }
+static inline int thread_run_until(void (*func)(void *), void *arg, boot_state_t state,
+				   boot_state_sequence_t seq)
+{
+	return -1;
+}
 static inline int thread_yield_microseconds(unsigned int microsecs)
 {
 	return -1;

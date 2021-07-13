@@ -160,6 +160,13 @@ static const struct pad_config gpio_table[] = {
 
 	/* S7 : SNDW4_DATA */
 	PAD_CFG_NF(GPP_S7, NONE, DEEP, NF2),
+
+	/* F7  : TCH_PNL_PWR_EN */
+	PAD_CFG_GPO(GPP_F7, 1, PLTRST),
+	/* F17 : RST_N_TCH_PNL2 */
+	PAD_CFG_GPO(GPP_F17, 1, PLTRST),
+	/* F18 : INT_N_TCH_PNL2 */
+	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, NONE)
 };
 
 void variant_configure_gpio_pads(void)

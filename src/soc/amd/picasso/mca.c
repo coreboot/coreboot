@@ -184,6 +184,9 @@ static void mca_check_all_banks(void)
 	struct mca_bank_status mci;
 	const unsigned int num_banks = mca_get_bank_count();
 
+	if (ARRAY_SIZE(mca_bank_name) != num_banks)
+		printk(BIOS_WARNING, "CPU has an unexpected number of MCA banks!\n");
+
 	for (unsigned int i = 0 ; i < num_banks ; i++) {
 		mci.bank = i;
 		mci.sts = rdmsr(MCAX_STATUS_MSR(i));

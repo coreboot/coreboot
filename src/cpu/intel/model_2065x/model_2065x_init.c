@@ -73,24 +73,13 @@ static void set_max_ratio(void)
 	       ((perf_ctl.lo >> 8) & 0xff) * IRONLAKE_BCLK);
 }
 
-static void configure_mca(void)
-{
-	msr_t msr;
-	int i;
-	const unsigned int num_banks = mca_get_bank_count();
-
-	msr.lo = msr.hi = 0;
-	/* This should only be done on a cold boot */
-	for (i = 0; i < num_banks; i++)
-		wrmsr(IA32_MC_STATUS(i), msr);
-}
-
 static void model_2065x_init(struct device *cpu)
 {
 	char processor_name[49];
 
 	/* Clear out pending MCEs */
-	configure_mca();
+	/* This should only be done on a cold boot */
+	mca_clear_status();
 
 	/* Print processor name */
 	fill_processor_name(processor_name);

@@ -15,9 +15,7 @@
 
 static void model_14_init(struct device *dev)
 {
-	u8 i;
 	msr_t msr;
-	unsigned int num_banks;
 	int msrno;
 #if CONFIG(LOGICAL_CPUS)
 	u32 siblings;
@@ -59,11 +57,7 @@ static void model_14_init(struct device *dev)
 	x86_enable_cache();
 
 	/* zero the machine check error status registers */
-	num_banks = mca_get_bank_count();
-	msr.lo = 0;
-	msr.hi = 0;
-	for (i = 0; i < num_banks; i++)
-		wrmsr(IA32_MC_STATUS(i), msr);
+	mca_clear_status();
 
 	/* Enable the local CPU APICs */
 	setup_lapic();

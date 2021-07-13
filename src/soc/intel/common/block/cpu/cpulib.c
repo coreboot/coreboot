@@ -336,17 +336,14 @@ uint32_t cpu_get_max_turbo_ratio(void)
 
 void mca_configure(void)
 {
-	msr_t msr;
 	int i;
 	const unsigned int num_banks = mca_get_bank_count();
 
 	printk(BIOS_DEBUG, "Clearing out pending MCEs\n");
 
-	msr.lo = msr.hi = 0;
+	mca_clear_status();
 
 	for (i = 0; i < num_banks; i++) {
-		/* Clear the machine check status */
-		wrmsr(IA32_MC_STATUS(i), msr);
 		/* Initialize machine checks */
 		wrmsr(IA32_MC_CTL(i),
 			(msr_t) {.lo = 0xffffffff, .hi = 0xffffffff});

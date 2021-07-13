@@ -297,18 +297,6 @@ unsigned int smbios_processor_external_clock(void)
 	return SANDYBRIDGE_BCLK;
 }
 
-static void configure_mca(void)
-{
-	msr_t msr;
-	int i;
-	const unsigned int num_banks = mca_get_bank_count();
-
-	msr.lo = msr.hi = 0;
-	/* This should only be done on a cold boot */
-	for (i = 0; i < num_banks; i++)
-		wrmsr(IA32_MC_STATUS(i), msr);
-}
-
 static void model_206ax_report(void)
 {
 	static const char *const mode[] = {"NOT ", ""};
@@ -340,7 +328,8 @@ static void model_206ax_init(struct device *cpu)
 {
 
 	/* Clear out pending MCEs */
-	configure_mca();
+	/* This should only be done on a cold boot */
+	mca_clear_status();
 
 	/* Print infos */
 	model_206ax_report();

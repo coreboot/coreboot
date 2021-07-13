@@ -31,6 +31,7 @@ tests-y += rtc-test
 tests-y += spd_cache-ddr3-test
 tests-y += spd_cache-ddr4-test
 tests-y += cbmem_stage_cache-test
+tests-y += libgcc-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -177,3 +178,5 @@ cbmem_stage_cache-test-srcs += src/lib/imd.c
 cbmem_stage_cache-test-cflags += -I 3rdparty/vboot/firmware/include
 cbmem_stage_cache-test-cflags += -I $(src)/commonlib/include
 cbmem_stage_cache-test-config += CONFIG_CBMEM_STAGE_CACHE=1
+
+libgcc-test-srcs += tests/lib/libgcc-test.c

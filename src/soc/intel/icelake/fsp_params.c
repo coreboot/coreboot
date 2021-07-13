@@ -5,6 +5,7 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <option.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/xdci.h>
 #include <soc/intel/common/vbt.h>
@@ -12,6 +13,7 @@
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>
 #include <string.h>
+#include <types.h>
 #include <fsp/ppi/mp_service_ppi.h>
 
 static void parse_devicetree(FSP_S_CONFIG *params)
@@ -92,8 +94,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	memset(params->PcieRpPmSci, 0, sizeof(params->PcieRpPmSci));
 
 	/* Legacy 8254 timer support */
-	params->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);
-	params->Enable8254ClockGatingOnS3 = !CONFIG(USE_LEGACY_8254_TIMER);
+	bool use_8254 = get_uint_option("legacy_8254_timer", CONFIG(USE_LEGACY_8254_TIMER));
+	params->Enable8254ClockGating = !use_8254;
+	params->Enable8254ClockGatingOnS3 = !use_8254;
 
 	/* S0ix */
 	params->PchPmSlpS0Enable = config->s0ix_enable;

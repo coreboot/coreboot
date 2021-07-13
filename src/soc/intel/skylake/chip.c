@@ -9,6 +9,7 @@
 #include <device/pci_ids.h>
 #include <fsp/util.h>
 #include <gpio.h>
+#include <option.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
@@ -28,6 +29,7 @@
 #include <soc/systemagent.h>
 #include <soc/usb.h>
 #include <string.h>
+#include <types.h>
 
 #include "chip.h"
 
@@ -340,7 +342,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	memset(params->PcieRpPmSci, 0, sizeof(params->PcieRpPmSci));
 
 	/* Legacy 8254 timer support */
-	params->Early8254ClockGatingEnable = !CONFIG(USE_LEGACY_8254_TIMER);
+	bool use_8254 = get_uint_option("legacy_8254_timer", CONFIG(USE_LEGACY_8254_TIMER));
+	params->Early8254ClockGatingEnable = !use_8254;
 
 	params->EnableTcoTimer = CONFIG(USE_PM_ACPI_TIMER);
 

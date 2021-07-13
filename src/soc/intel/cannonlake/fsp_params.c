@@ -7,6 +7,7 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <option.h>
 #include <intelblocks/irq.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/power_limit.h>
@@ -17,6 +18,7 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <string.h>
+#include <types.h>
 
 #include "chip.h"
 
@@ -425,8 +427,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	memset(params->PcieRpPmSci, 0, sizeof(params->PcieRpPmSci));
 
 	/* Legacy 8254 timer support */
-	params->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);
-	params->Enable8254ClockGatingOnS3 = !CONFIG(USE_LEGACY_8254_TIMER);
+	bool use_8254 = get_uint_option("legacy_8254_timer", CONFIG(USE_LEGACY_8254_TIMER));
+	params->Enable8254ClockGating = !use_8254;
+	params->Enable8254ClockGatingOnS3 = !use_8254;
 
 	params->EnableTcoTimer = CONFIG(USE_PM_ACPI_TIMER);
 

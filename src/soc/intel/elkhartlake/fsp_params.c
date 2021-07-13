@@ -5,6 +5,7 @@
 #include <fsp/api.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
+#include <option.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/xdci.h>
@@ -14,6 +15,7 @@
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>
 #include <string.h>
+#include <types.h>
 
 /* SATA DEVSLP idle timeout default values */
 #define DEF_DMVAL		15
@@ -159,7 +161,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PavpEnable = 0;
 
 	/* Legacy 8254 timer support */
-	params->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);
+	bool use_8254 = get_uint_option("legacy_8254_timer", CONFIG(USE_LEGACY_8254_TIMER));
+	params->Enable8254ClockGating = !use_8254;
 	params->Enable8254ClockGatingOnS3 = 1;
 
 	/* PCH Master Gating Control */

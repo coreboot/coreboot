@@ -165,12 +165,20 @@ static bool mca_is_valid_bank(unsigned int bank)
 	return (bank < ARRAY_SIZE(mca_bank_name) && mca_bank_name[bank] != NULL);
 }
 
+static const char *mca_get_bank_name(unsigned int bank)
+{
+	if (mca_is_valid_bank(bank))
+		return mca_bank_name[bank];
+	else
+		return "";
+}
+
 static void mca_print_error(unsigned int bank)
 {
 	msr_t msr;
 
 	printk(BIOS_WARNING, "#MC Error: core %u, bank %u %s\n", initial_lapicid(), bank,
-		bank < ARRAY_SIZE(mca_bank_name) ? mca_bank_name[bank] : "");
+		mca_get_bank_name(bank));
 
 	msr = rdmsr(MCAX_STATUS_MSR(bank));
 	printk(BIOS_WARNING, "   MC%u_STATUS =   %08x_%08x\n", bank, msr.hi, msr.lo);

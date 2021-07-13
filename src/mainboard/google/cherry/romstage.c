@@ -19,7 +19,8 @@ void platform_romstage_main(void)
 	mt6359p_init();
 	mt6315_init();
 	mtk_i2c_bus_init(I2C_BUS);
-	mt6360_init(I2C_BUS);
+	if (CONFIG(BOARD_GOOGLE_CHERRY))
+		mt6360_init(I2C_BUS);
 	clk_buf_init();
 	rtc_boot();
 	mtk_dram_init();

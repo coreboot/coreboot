@@ -61,7 +61,16 @@ void mainboard_set_regulator_vol(enum mtk_regulator regulator,
 
 	id = get_mt6360_regulator_id(regulator);
 	if (id >= 0) {
-		mt6360_set_voltage(id, voltage_uv);
+		if (CONFIG(BOARD_GOOGLE_CHERRY)) {
+			mt6360_set_voltage(id, voltage_uv);
+		} else {
+			uint32_t voltage_mv = voltage_uv / 1000;
+			if (google_chromeec_regulator_set_voltage(id, voltage_mv,
+								  voltage_mv) < 0) {
+				printk(BIOS_WARNING,
+				       "Failed to set voltage by ec: %d\n", regulator);
+			}
+		}
 		return;
 	}
 
@@ -88,8 +97,19 @@ uint32_t mainboard_get_regulator_vol(enum mtk_regulator regulator)
 	int id;
 
 	id = get_mt6360_regulator_id(regulator);
-	if (id >= 0)
-		return mt6360_get_voltage(id);
+	if (id >= 0) {
+		if (CONFIG(BOARD_GOOGLE_CHERRY)) {
+			return mt6360_get_voltage(id);
+		} else {
+			uint32_t voltage_mv = 0;
+			if (google_chromeec_regulator_get_voltage(id, &voltage_mv) < 0) {
+				printk(BIOS_WARNING,
+				       "Failed to get voltage by ec: %d\n", regulator);
+				return 0;
+			}
+			return voltage_mv * 1000;
+		}
+	}
 
 	id = get_mt6359p_regulator_id(regulator);
 	if (id >= 0)
@@ -117,8 +137,17 @@ int mainboard_enable_regulator(enum mtk_regulator regulator, uint8_t enable)
 
 	id = get_mt6360_regulator_id(regulator);
 	if (id >= 0) {
-		mt6360_enable(id, enable);
-		return 0;
+		if (CONFIG(BOARD_GOOGLE_CHERRY)) {
+			mt6360_enable(id, enable);
+			return 0;
+		} else {
+			if (google_chromeec_regulator_enable(id, enable) < 0) {
+				printk(BIOS_WARNING,
+				       "Failed to enable regulator by ec: %d\n", regulator);
+				return -1;
+			}
+			return 0;
+		}
 	}
 
 	printk(BIOS_ERR, "Invalid regulator ID: %d\n", regulator);
@@ -134,12 +163,22 @@ uint8_t mainboard_regulator_is_enabled(enum mtk_regulator regulator)
 	int id;
 
 	id = get_mt6360_regulator_id(regulator);
-	if (id >= 0)
-		return mt6360_is_enabled(id);
+	if (id >= 0) {
+		if (CONFIG(BOARD_GOOGLE_CHERRY)) {
+			return mt6360_is_enabled(id);
+		} else {
+			uint8_t enabled;
+			if (google_chromeec_regulator_is_enabled(id, &enabled) < 0) {
+				printk(BIOS_WARNING,
+				       "Failed to retrieve is_enabled by ec; assuming disabled\n");
+				return 0;
+			}
+			return enabled;
+		}
 
-	printk(BIOS_ERR,
-	       "Failed to query regulator ID: %d\n; assuming disabled",
-	       regulator);
+	}
+
+	printk(BIOS_ERR, "Invalid regulator ID: %d\n; assuming disabled", regulator);
 
 	return 0;
 }

@@ -509,7 +509,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchIoApicBdfValid = 0;
 
 	/* Enable VT-d and X2APIC */
-	if (soc_is_vtd_capable()) {
+	if (soc_vtd_enabled()) {
 		params->VtdBaseAddress[0] = GFXVT_BASE_ADDRESS;
 		params->VtdBaseAddress[1] = VTVC0_BASE_ADDRESS;
 		params->X2ApicOptOut = 0;

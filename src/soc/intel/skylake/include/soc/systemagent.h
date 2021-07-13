@@ -31,7 +31,7 @@
 #define MCH_DDR_POWER_LIMIT_LO	0x58e0
 #define MCH_DDR_POWER_LIMIT_HI	0x58e4
 
-bool soc_is_vtd_capable(void);
+bool soc_vtd_enabled(void);
 
 static const struct sa_mmio_descriptor soc_gfxvt_mmio_descriptor = {
 	GFXVTBAR,

@@ -6,15 +6,20 @@
 #include <device/pci_ops.h>
 #include <intelblocks/power_limit.h>
 #include <intelblocks/systemagent.h>
+#include <option.h>
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
+#include <types.h>
 #include "chip.h"
 
-bool soc_is_vtd_capable(void)
+bool soc_vtd_enabled(void)
 {
+	const unsigned int vtd = get_uint_option("vtd", 1);
+	if (!vtd)
+		return false;
 	struct device *const root_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 	return root_dev &&
 		!(pci_read_config32(root_dev, CAPID0_A) & VTD_DISABLE);
@@ -41,7 +46,7 @@ void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 	sa_add_fixed_mmio_resources(dev, index, soc_fixed_resources,
 			ARRAY_SIZE(soc_fixed_resources));
 
-	if (soc_is_vtd_capable()) {
+	if (soc_vtd_enabled()) {
 		if (is_devfn_enabled(SA_DEVFN_IGD))
 			sa_add_fixed_mmio_resources(dev, index,
 					&soc_gfxvt_mmio_descriptor, 1);

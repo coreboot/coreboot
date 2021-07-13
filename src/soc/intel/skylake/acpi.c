@@ -245,7 +245,7 @@ unsigned long sa_write_acpi_tables(const struct device *const dev,
 	acpi_dmar_t *const dmar = (acpi_dmar_t *)current;
 
 	/* Create DMAR table only if we have VT-d capability. */
-	if (!soc_is_vtd_capable())
+	if (!soc_vtd_enabled())
 		return current;
 
 	printk(BIOS_DEBUG, "ACPI:    * DMAR\n");

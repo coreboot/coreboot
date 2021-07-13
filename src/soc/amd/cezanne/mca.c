@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/mca.h>
 #include <cpu/x86/msr.h>
-#include <soc/cpu.h>
 
 /* Check the Machine Check Architecture Extension registers */
 void check_mca(void)

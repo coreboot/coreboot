@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/cpu.h>
+#include <amdblocks/mca.h>
 #include <amdblocks/reset.h>
 #include <amdblocks/smm.h>
 #include <assert.h>

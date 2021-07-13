@@ -14,6 +14,4 @@
 #define SOC_EARLY_VMTRR_CAR_HEAP 2
 #define SOC_EARLY_VMTRR_TEMPRAM 3
 
-void check_mca(void);
-
 #endif /* AMD_STONEYRIDGE_CPU_H */

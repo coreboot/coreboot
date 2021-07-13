@@ -5,6 +5,4 @@
 
 #define CEZANNE_A0_CPUID	0x00a50f00
 
-void check_mca(void);
-
 #endif /* AMD_CEZANNE_CPU_H */

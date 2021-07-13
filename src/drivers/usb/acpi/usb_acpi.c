@@ -132,7 +132,7 @@ bool usb_acpi_get_pld(const struct device *usb_device, struct acpi_pld *pld)
 		return false;
 
 	if (config->use_custom_pld)
-		memcpy(pld, &config->custom_pld, sizeof(pld));
+		*pld = config->custom_pld;
 	else
 		acpi_pld_fill_usb(pld, config->type, &config->group);
 

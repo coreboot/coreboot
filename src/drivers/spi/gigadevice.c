@@ -31,72 +31,84 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id[0]				= 0x4014,
 		.nr_sectors_shift		= 8,
 		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
 	},					/* also GD25Q80B */
 	{
 		/* GD25Q16 */
 		.id[0]				= 0x4015,
 		.nr_sectors_shift		= 9,
 		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
 	},					/* also GD25Q16B */
 	{
 		/* GD25Q32B */
 		.id[0]				= 0x4016,
 		.nr_sectors_shift		= 10,
 		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
 	},					/* also GD25Q32B */
 	{
 		/* GD25Q64 */
 		.id[0]				= 0x4017,
 		.nr_sectors_shift		= 11,
 		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
 	},					/* also GD25Q64B, GD25B64C */
 	{
 		/* GD25Q128 */
 		.id[0]				= 0x4018,
 		.nr_sectors_shift		= 12,
 		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
 	},					/* also GD25Q128B */
 	{
 		/* GD25VQ80C */
 		.id[0]				= 0x4214,
 		.nr_sectors_shift		= 8,
 		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
 	},
 	{
 		/* GD25VQ16C */
 		.id[0]				= 0x4215,
 		.nr_sectors_shift		= 9,
 		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
 	},
 	{
 		/* GD25LQ80 */
 		.id[0]				= 0x6014,
 		.nr_sectors_shift		= 8,
 		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
 	},
 	{
 		/* GD25LQ16 */
 		.id[0]				= 0x6015,
 		.nr_sectors_shift		= 9,
 		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
 	},
 	{
 		/* GD25LQ32 */
 		.id[0]				= 0x6016,
 		.nr_sectors_shift		= 10,
 		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
 	},
 	{
 		/* GD25LQ64C */
 		.id[0]				= 0x6017,
 		.nr_sectors_shift		= 11,
 		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
 	},					/* also GD25LB64C */
 	{
 		/* GD25LQ128 */
 		.id[0]				= 0x6018,
 		.nr_sectors_shift		= 12,
 		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
 	},
 };
 

@@ -15,6 +15,7 @@
 #define CMD_READ_ARRAY_LEGACY		0xe8
 
 #define CMD_READ_FAST_DUAL_OUTPUT	0x3b
+#define CMD_READ_FAST_DUAL_IO		0xbb
 
 #define CMD_READ_STATUS			0x05
 #define CMD_WRITE_ENABLE		0x06
@@ -69,8 +70,9 @@ struct spi_flash_part_id {
 	uint16_t id[2];
 	/* Log based 2 total number of sectors. */
 	uint16_t nr_sectors_shift: 4;
-	uint16_t fast_read_dual_output_support : 1;
-	uint16_t _reserved_for_flags: 3;
+	uint16_t fast_read_dual_output_support : 1;	/*  1-1-2 read */
+	uint16_t fast_read_dual_io_support : 1;		/*  1-2-2 read */
+	uint16_t _reserved_for_flags: 2;
 	/* Block protection. Currently used by Winbond. */
 	uint16_t protection_granularity_shift : 5;
 	uint16_t bp_bits : 3;

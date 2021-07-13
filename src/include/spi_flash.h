@@ -86,8 +86,9 @@ struct spi_flash {
 	union {
 		u8 raw;
 		struct {
-			u8 dual_spi	: 1;
-			u8 _reserved	: 7;
+			u8 dual_output	: 1;
+			u8 dual_io	: 1;
+			u8 _reserved	: 6;
 		};
 	} flags;
 	u16 model;

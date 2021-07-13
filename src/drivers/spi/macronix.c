@@ -63,55 +63,75 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id[0] = 0x2415,
 		.nr_sectors_shift = 9,
 	},
+	/*
+	 * NOTE: C225xx JEDEC IDs are basically useless because Macronix keeps
+	 * reusing the same IDs for vastly different chips. 35E versions always
+	 * seem to support Dual I/O but not Dual Output, while 35F versions seem
+	 * to support both, so we only set Dual I/O here to improve our chances
+	 * of compatibility. Since Macronix makes it impossible to search all
+	 * different parts that it recklessly assigned the same IDs to, it's
+	 * hard to know if there may be parts that don't even support Dual I/O
+	 * with these IDs, though (or what we should do if there are).
+	 */
 	{
 		/* MX25L1635E */
 		.id[0] = 0x2515,
 		.nr_sectors_shift = 9,
+		.fast_read_dual_io_support = 1,
 	},
 	{
 		/* MX25U8032E */
 		.id[0] = 0x2534,
 		.nr_sectors_shift = 8,
+		.fast_read_dual_io_support = 1,
 	},
 	{
-		/* MX25U1635E */
+		/* MX25U1635E/MX25U1635F */
 		.id[0] = 0x2535,
 		.nr_sectors_shift = 9,
+		.fast_read_dual_io_support = 1,
 	},
 	{
-		/* MX25U3235E */
+		/* MX25U3235E/MX25U3235F */
 		.id[0] = 0x2536,
 		.nr_sectors_shift = 10,
+		.fast_read_dual_io_support = 1,
 	},
 	{
-		/* MX25U6435F */
+		/* MX25U6435E/MX25U6435F */
 		.id[0] = 0x2537,
 		.nr_sectors_shift = 11,
+		.fast_read_dual_io_support = 1,
 	},
 	{
 		/* MX25U12835F */
 		.id[0] = 0x2538,
 		.nr_sectors_shift = 12,
+		.fast_read_dual_io_support = 1,
 	},
 	{
 		/* MX25U25635F */
 		.id[0] = 0x2539,
 		.nr_sectors_shift = 13,
+		.fast_read_dual_io_support = 1,
 	},
 	{
-		/* MX25U51245G */
+		/* MX25U51235F */
 		.id[0] = 0x253a,
 		.nr_sectors_shift = 14,
+		.fast_read_dual_io_support = 1,
 	},
 	{
 		/* MX25L12855E */
 		.id[0] = 0x2618,
 		.nr_sectors_shift = 12,
+		.fast_read_dual_io_support = 1,
 	},
 	{
 		/* MX25L3235D/MX25L3225D/MX25L3236D/MX25L3237D */
 		.id[0] = 0x5e16,
 		.nr_sectors_shift = 10,
+		.fast_read_dual_io_support = 1,
 	},
 	{
 		/* MX25L6495F */

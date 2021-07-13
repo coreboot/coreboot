@@ -19,8 +19,7 @@
 #define NB_CFG_MSR			0xC001001f
 #define FidVidStatus			0xC0010042
 #define MC0_CTL_MASK			0xC0010044
-#define MC1_CTL_MASK			0xC0010045
-#define MC4_CTL_MASK			0xC0010048
+#define MC_CTL_MASK(bank)		(MC0_CTL_MASK + (bank))
 #define MSR_INTPEND			0xC0010055
 #define MMIO_CONF_BASE			0xC0010058
 #define  MMIO_RANGE_EN			(1 << 0)

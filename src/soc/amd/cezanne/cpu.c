@@ -59,6 +59,7 @@ void mp_init_cpus(struct bus *cpu_bus)
 
 static void zen_2_3_init(struct device *dev)
 {
+	check_mca();
 	setup_lapic();
 	set_cstate_io_addr();
 

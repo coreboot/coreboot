@@ -136,13 +136,13 @@ failed:
 }
 
 static const char *const mca_bank_name[] = {
-	"Load-store unit",
-	"Instruction fetch unit",
-	"Combined unit",
-	"Reserved",
-	"Northbridge",
-	"Execution unit",
-	"Floating point unit"
+	[0] = "Load-store unit",
+	[1] = "Instruction fetch unit",
+	[2] = "Combined unit",
+	[3] = "Reserved",
+	[4] = "Northbridge",
+	[5] = "Execution unit",
+	[6] = "Floating point unit"
 };
 
 static void mca_print_error(unsigned int bank)

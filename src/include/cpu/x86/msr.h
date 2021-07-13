@@ -166,6 +166,16 @@ static inline unsigned int mca_get_bank_count(void)
 	return msr.lo & MCA_BANKS_MASK;
 }
 
+/* Clear all MCA status registers */
+static inline void mca_clear_status(void)
+{
+	const unsigned int num_banks = mca_get_bank_count();
+	const msr_t msr = {.lo = 0, .hi = 0};
+
+	for (unsigned int i = 0 ; i < num_banks ; i++)
+		wrmsr(IA32_MC_STATUS(i), msr);
+}
+
 /* Helpers for interpreting MC[i]_STATUS */
 
 static inline int mca_valid(msr_t msr)

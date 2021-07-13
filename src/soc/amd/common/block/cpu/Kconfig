@@ -26,6 +26,26 @@ config MEMLAYOUT_LD_FILE
 
 endif # SOC_AMD_COMMON_BLOCK_NONCAR
 
+config SOC_AMD_COMMON_BLOCK_MCA_COMMON
+	bool
+	help
+	  Add common machine check architecture support. Do not select this
+	  in the SoC's Kconfig; select either SOC_AMD_COMMON_BLOCK_MCA or
+	  SOC_AMD_COMMON_BLOCK_MCAX which will select this one.
+
+config SOC_AMD_COMMON_BLOCK_MCA
+	bool
+	select SOC_AMD_COMMON_BLOCK_MCA_COMMON
+	help
+	  Add IA32 machine check architecture (MCA) support for pre-Zen CPUs.
+
+config SOC_AMD_COMMON_BLOCK_MCAX
+	bool
+	select SOC_AMD_COMMON_BLOCK_MCA_COMMON
+	help
+	  Add extended machine check architecture (MCAX) support for AMD family
+	  17h, 19h and possibly newer CPUs.
+
 config SOC_AMD_COMMON_BLOCK_SMM
 	bool
 	help

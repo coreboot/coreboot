@@ -179,7 +179,7 @@ static void mca_print_error(unsigned int bank)
 	printk(BIOS_WARNING, "   MC%u_CTL_MASK = %08x_%08x\n", bank, msr.hi, msr.lo);
 }
 
-static void mca_check_all_banks(void)
+void mca_check_all_banks(void)
 {
 	struct mca_bank_status mci;
 	const unsigned int num_banks = mca_get_bank_count();
@@ -200,10 +200,4 @@ static void mca_check_all_banks(void)
 				build_bert_mca_error(&mci);
 		}
 	}
-}
-
-void check_mca(void)
-{
-	mca_check_all_banks();
-	mca_clear_status();
 }

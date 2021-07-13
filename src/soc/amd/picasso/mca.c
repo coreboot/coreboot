@@ -181,19 +181,11 @@ static void mca_check_all_banks(void)
 	}
 }
 
-static void mca_clear_errors(void)
-{
-	const unsigned int num_banks = mca_get_bank_count();
-	const msr_t msr = {.lo = 0, .hi = 0};
-
-	/* Zero all machine check error status registers */
-	for (unsigned int i = 0 ; i < num_banks ; i++)
-		wrmsr(MCAX_STATUS_MSR(i), msr);
-}
-
 /* Check the Machine Check Architecture Extension registers */
 void check_mca(void)
 {
 	mca_check_all_banks();
-	mca_clear_errors();
+	/* mca_clear_status uses the MCA registers and not the MCAX ones. Since they are
+	   aliases, we can use either set of registers. */
+	mca_clear_status();
 }

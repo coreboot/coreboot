@@ -1,8 +1,19 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/mca.h>
+#include <types.h>
 
-void mca_check_all_banks(void)
+bool mca_has_expected_bank_count(void)
 {
-	/* TODO: Implement MCAX register checking and BERT table generation. */
+	return true;
+}
+
+bool mca_is_valid_bank(unsigned int bank)
+{
+	return false;
+}
+
+const char *mca_get_bank_name(unsigned int bank)
+{
+	return "";
 }

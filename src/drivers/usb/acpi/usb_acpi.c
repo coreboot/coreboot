@@ -125,12 +125,13 @@ struct chip_operations drivers_usb_acpi_ops = {
 
 bool usb_acpi_get_pld(const struct device *usb_device, struct acpi_pld *pld)
 {
-	struct drivers_usb_acpi_config *config = usb_device->chip_info;
+	struct drivers_usb_acpi_config *config;
 
 	if (!usb_device || !usb_device->chip_info ||
 		usb_device->chip_ops != &drivers_usb_acpi_ops)
 		return false;
 
+	config = usb_device->chip_info;
 	if (config->use_custom_pld)
 		*pld = config->custom_pld;
 	else

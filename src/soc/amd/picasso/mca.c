@@ -33,6 +33,11 @@ static const char *const mca_bank_name[] = {
 	[22] = "PIE",
 };
 
+static bool mca_has_expected_bank_count(void)
+{
+	return ARRAY_SIZE(mca_bank_name) == mca_get_bank_count();
+}
+
 static bool mca_is_valid_bank(unsigned int bank)
 {
 	return (bank < ARRAY_SIZE(mca_bank_name) && mca_bank_name[bank] != NULL);
@@ -70,7 +75,7 @@ void mca_check_all_banks(void)
 	struct mca_bank_status mci;
 	const unsigned int num_banks = mca_get_bank_count();
 
-	if (ARRAY_SIZE(mca_bank_name) != num_banks)
+	if (!mca_has_expected_bank_count())
 		printk(BIOS_WARNING, "CPU has an unexpected number of MCA banks!\n");
 
 	for (unsigned int i = 0 ; i < num_banks ; i++) {

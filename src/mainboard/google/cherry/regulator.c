@@ -16,6 +16,10 @@ static int get_mt6360_regulator_id(enum mtk_regulator regulator)
 		return MT6360_BUCK1;
 	case MTK_REGULATOR_VDDQ:
 		return MT6360_BUCK2;
+	case MTK_REGULATOR_VCC:
+		return MT6360_LDO5;
+	case MTK_REGULATOR_VCCQ:
+		return MT6360_LDO3;
 	default:
 		break;
 	}

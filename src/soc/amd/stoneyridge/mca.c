@@ -9,6 +9,7 @@
 #include <console/console.h>
 #include <arch/bert_storage.h>
 #include <cper.h>
+#include <types.h>
 
 struct mca_bank_status {
 	unsigned int bank;

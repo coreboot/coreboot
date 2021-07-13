@@ -9,6 +9,7 @@
 #include <console/console.h>
 #include <arch/bert_storage.h>
 #include <cper.h>
+#include <types.h>
 
 /* MISC4 is the last used register in the MCAX banks of Picasso */
 #define MCAX_USED_REGISTERS_PER_BANK	(MCAX_MISC4_OFFSET + 1)

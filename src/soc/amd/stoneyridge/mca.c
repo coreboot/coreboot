@@ -139,18 +139,33 @@ static const char *const mca_bank_name[] = {
 	[0] = "Load-store unit",
 	[1] = "Instruction fetch unit",
 	[2] = "Combined unit",
-	[3] = "Reserved",
+	/* Bank 3 is reserved and not all corresponding MSRs are implemented in Family 15h.
+	   Accessing non-existing MSRs causes a general protection fault. */
+	[3] = NULL,
 	[4] = "Northbridge",
 	[5] = "Execution unit",
 	[6] = "Floating point unit"
 };
+
+static bool mca_is_valid_bank(unsigned int bank)
+{
+	return (bank < ARRAY_SIZE(mca_bank_name) && mca_bank_name[bank] != NULL);
+}
+
+static const char *mca_get_bank_name(unsigned int bank)
+{
+	if (mca_is_valid_bank(bank))
+		return mca_bank_name[bank];
+	else
+		return "";
+}
 
 static void mca_print_error(unsigned int bank)
 {
 	msr_t msr;
 
 	printk(BIOS_WARNING, "#MC Error: core %u, bank %u %s\n", initial_lapicid(), bank,
-		mca_bank_name[bank]);
+		mca_get_bank_name(bank));
 
 	msr = rdmsr(IA32_MC_STATUS(bank));
 	printk(BIOS_WARNING, "   MC%u_STATUS =   %08x_%08x\n", bank, msr.hi, msr.lo);
@@ -173,7 +188,7 @@ static void mca_check_all_banks(void)
 		return;
 
 	for (unsigned int i = 0 ; i < num_banks ; i++) {
-		if (i == 3) /* Reserved in Family 15h */
+		if (!mca_is_valid_bank(i))
 			continue;
 
 		mci.bank = i;

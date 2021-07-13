@@ -135,14 +135,29 @@ failed:
 }
 
 static const char *const mca_bank_name[] = {
-	"Load-store unit",
-	"Instruction fetch unit",
-	"L2 cache unit",
-	"Decode unit",
-	"",
-	"Execution unit",
-	"Floating point unit",
-	"L3 cache unit"
+	[0]  = "Load-store unit",
+	[1]  = "Instruction fetch unit",
+	[2]  = "L2 cache unit",
+	[3]  = "Decode unit",
+	[4]  = "",
+	[5]  = "Execution unit",
+	[6]  = "Floating point unit",
+	[7]  = "L3 cache unit",
+	[8]  = "L3 cache unit",
+	[9]  = "L3 cache unit",
+	[10] = "L3 cache unit",
+	[11] = "L3 cache unit",
+	[12] = "L3 cache unit",
+	[13] = "L3 cache unit",
+	[14] = "L3 cache unit",
+	[15] = "UMC",
+	[16] = "UMC",
+	[17] = "SMU",
+	[18] = "PSP",
+	[19] = "PB",
+	[20] = "CS",
+	[21] = "CS",
+	[22] = "PIE",
 };
 
 static void mca_print_error(unsigned int bank)

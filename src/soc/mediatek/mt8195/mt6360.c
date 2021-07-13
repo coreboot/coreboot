@@ -41,18 +41,15 @@ static const uint32_t mt6360_ldo5_vsel_table[0x10] = {
 	[0x5] = 3300000,
 };
 
-static const struct mt6360_data ldo_data[MT6360_LDO_COUNT] = {
-	[MT6360_LDO1] = MT6360_DATA(0x17, 0x40, 0x1b, 0xff, mt6360_ldo1_vsel_table),
-	[MT6360_LDO2] = MT6360_DATA(0x11, 0x40, 0x15, 0xff, mt6360_ldo1_vsel_table),
-	[MT6360_LDO3] = MT6360_DATA(0x05, 0x40, 0x09, 0xff, mt6360_ldo3_vsel_table),
-	[MT6360_LDO5] = MT6360_DATA(0x0b, 0x40, 0x0f, 0xff, mt6360_ldo5_vsel_table),
-};
-
-static const struct mt6360_data pmic_data[MT6360_PMIC_COUNT] = {
-	[MT6360_PMIC_BUCK1] = MT6360_DATA(0x17, 0x40, 0x10, 0xff, mt6360_ldo1_vsel_table),
-	[MT6360_PMIC_BUCK2] = MT6360_DATA(0x27, 0x40, 0x20, 0xff, mt6360_ldo1_vsel_table),
-	[MT6360_PMIC_LDO6] = MT6360_DATA(0x37, 0x40, 0x3b, 0xff, mt6360_ldo3_vsel_table),
-	[MT6360_PMIC_LDO7] = MT6360_DATA(0x31, 0x40, 0x35, 0xff, mt6360_ldo5_vsel_table),
+static const struct mt6360_data regulator_data[MT6360_REGULATOR_COUNT] = {
+	[MT6360_LDO3]  = MT6360_DATA(0x05, 0x40, 0x09, 0xff, mt6360_ldo3_vsel_table),
+	[MT6360_LDO5]  = MT6360_DATA(0x0b, 0x40, 0x0f, 0xff, mt6360_ldo5_vsel_table),
+	[MT6360_LDO6]  = MT6360_DATA(0x37, 0x40, 0x3b, 0xff, mt6360_ldo3_vsel_table),
+	[MT6360_LDO7]  = MT6360_DATA(0x31, 0x40, 0x35, 0xff, mt6360_ldo5_vsel_table),
+	[MT6360_BUCK1] = MT6360_DATA(0x17, 0x40, 0x10, 0xff, mt6360_ldo1_vsel_table),
+	[MT6360_BUCK2] = MT6360_DATA(0x27, 0x40, 0x20, 0xff, mt6360_ldo1_vsel_table),
+	[MT6360_LDO1]  = MT6360_DATA(0x17, 0x40, 0x1b, 0xff, mt6360_ldo1_vsel_table),
+	[MT6360_LDO2]  = MT6360_DATA(0x11, 0x40, 0x15, 0xff, mt6360_ldo1_vsel_table),
 };
 
 #define CRC8_TABLE_SIZE 256
@@ -176,9 +173,10 @@ static int mt6360_config_interface(u8 index, u8 reg, u8 data, u8 mask, u8 shift)
 	return mt6360_i2c_write_byte(index, reg, val);
 }
 
-static bool is_valid_ldo(enum mt6360_ldo_id id)
+static bool is_valid_ldo(enum mt6360_regulator_id id)
 {
-	if (id >= MT6360_LDO_COUNT) {
+	if (id != MT6360_LDO1 && id != MT6360_LDO2 &&
+	    id != MT6360_LDO3 && id != MT6360_LDO5) {
 		printk(BIOS_ERR, "%s: LDO %d is not supported\n", __func__, id);
 		return false;
 	}
@@ -186,9 +184,10 @@ static bool is_valid_ldo(enum mt6360_ldo_id id)
 	return true;
 }
 
-static bool is_valid_pmic(enum mt6360_pmic_id id)
+static bool is_valid_pmic(enum mt6360_regulator_id id)
 {
-	if (id >= MT6360_PMIC_COUNT) {
+	if (id != MT6360_LDO6 && id != MT6360_LDO7 &&
+	    id != MT6360_BUCK1 && id != MT6360_BUCK2) {
 		printk(BIOS_ERR, "%s: PMIC %d is not supported\n", __func__, id);
 		return false;
 	}
@@ -196,7 +195,7 @@ static bool is_valid_pmic(enum mt6360_pmic_id id)
 	return true;
 }
 
-void mt6360_ldo_enable(enum mt6360_ldo_id id, uint8_t enable)
+void mt6360_ldo_enable(enum mt6360_regulator_id id, uint8_t enable)
 {
 	u8 val;
 	const struct mt6360_data *data;
@@ -204,7 +203,7 @@ void mt6360_ldo_enable(enum mt6360_ldo_id id, uint8_t enable)
 	if (!is_valid_ldo(id))
 		return;
 
-	data = &ldo_data[id];
+	data = &regulator_data[id];
 
 	if (mt6360_read_interface(MT6360_INDEX_LDO, data->enable_reg, &val, 0xff, 0) < 0)
 		return;
@@ -217,7 +216,7 @@ void mt6360_ldo_enable(enum mt6360_ldo_id id, uint8_t enable)
 	mt6360_config_interface(MT6360_INDEX_LDO, data->enable_reg, val, 0xff, 0);
 }
 
-uint8_t mt6360_ldo_is_enabled(enum mt6360_ldo_id id)
+uint8_t mt6360_ldo_is_enabled(enum mt6360_regulator_id id)
 {
 	u8 val;
 	const struct mt6360_data *data;
@@ -225,7 +224,7 @@ uint8_t mt6360_ldo_is_enabled(enum mt6360_ldo_id id)
 	if (!is_valid_ldo(id))
 		return 0;
 
-	data = &ldo_data[id];
+	data = &regulator_data[id];
 
 	if (mt6360_read_interface(MT6360_INDEX_LDO, data->enable_reg, &val, 0xff, 0) < 0)
 		return 0;
@@ -233,7 +232,7 @@ uint8_t mt6360_ldo_is_enabled(enum mt6360_ldo_id id)
 	return (val & data->enable_mask) ? 1 : 0;
 }
 
-void mt6360_ldo_set_voltage(enum mt6360_ldo_id id, u32 voltage_uv)
+void mt6360_ldo_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv)
 {
 	u8 val = 0;
 	u32 voltage_uv_temp = 0;
@@ -244,7 +243,7 @@ void mt6360_ldo_set_voltage(enum mt6360_ldo_id id, u32 voltage_uv)
 	if (!is_valid_ldo(id))
 		return;
 
-	data = &ldo_data[id];
+	data = &regulator_data[id];
 
 	for (i = 0; i < data->vsel_table_len; i++) {
 		u32 uv = data->vsel_table[i];
@@ -271,7 +270,7 @@ void mt6360_ldo_set_voltage(enum mt6360_ldo_id id, u32 voltage_uv)
 	mt6360_config_interface(MT6360_INDEX_LDO, data->vsel_reg, val, 0xff, 0);
 }
 
-u32 mt6360_ldo_get_voltage(enum mt6360_ldo_id id)
+u32 mt6360_ldo_get_voltage(enum mt6360_regulator_id id)
 {
 	u8 val;
 	u32 voltage_uv;
@@ -281,7 +280,7 @@ u32 mt6360_ldo_get_voltage(enum mt6360_ldo_id id)
 	if (!is_valid_ldo(id))
 		return 0;
 
-	data = &ldo_data[id];
+	data = &regulator_data[id];
 
 	if (mt6360_read_interface(MT6360_INDEX_LDO, data->vsel_reg, &val, 0xff, 0) < 0)
 		return 0;
@@ -322,7 +321,7 @@ void mt6360_init(uint8_t bus)
 	       __func__, delay01, delay02, delay03, delay04);
 }
 
-void mt6360_pmic_enable(enum mt6360_pmic_id id, uint8_t enable)
+void mt6360_pmic_enable(enum mt6360_regulator_id id, uint8_t enable)
 {
 	u8 val;
 	const struct mt6360_data *data;
@@ -330,7 +329,7 @@ void mt6360_pmic_enable(enum mt6360_pmic_id id, uint8_t enable)
 	if (!is_valid_pmic(id))
 		return;
 
-	data = &pmic_data[id];
+	data = &regulator_data[id];
 
 	if (mt6360_read_interface(MT6360_INDEX_PMIC, data->enable_reg, &val, 0xff, 0) < 0)
 		return;
@@ -343,7 +342,7 @@ void mt6360_pmic_enable(enum mt6360_pmic_id id, uint8_t enable)
 	mt6360_config_interface(MT6360_INDEX_PMIC, data->enable_reg, val, 0xff, 0);
 }
 
-uint8_t mt6360_pmic_is_enabled(enum mt6360_pmic_id id)
+uint8_t mt6360_pmic_is_enabled(enum mt6360_regulator_id id)
 {
 	u8 val;
 	const struct mt6360_data *data;
@@ -351,7 +350,7 @@ uint8_t mt6360_pmic_is_enabled(enum mt6360_pmic_id id)
 	if (!is_valid_pmic(id))
 		return 0;
 
-	data = &pmic_data[id];
+	data = &regulator_data[id];
 
 	if (mt6360_read_interface(MT6360_INDEX_PMIC, data->enable_reg, &val, 0xff, 0) < 0)
 		return 0;
@@ -359,7 +358,7 @@ uint8_t mt6360_pmic_is_enabled(enum mt6360_pmic_id id)
 	return (val & data->enable_mask) ? 1 : 0;
 }
 
-void mt6360_pmic_set_voltage(enum mt6360_pmic_id id, u32 voltage_uv)
+void mt6360_pmic_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv)
 {
 	u8 val = 0;
 
@@ -368,11 +367,11 @@ void mt6360_pmic_set_voltage(enum mt6360_pmic_id id, u32 voltage_uv)
 	if (!is_valid_pmic(id))
 		return;
 
-	data = &pmic_data[id];
+	data = &regulator_data[id];
 
-	if (id == MT6360_PMIC_BUCK1 || id == MT6360_PMIC_BUCK2) {
+	if (id == MT6360_BUCK1 || id == MT6360_BUCK2) {
 		val = (voltage_uv - 300000) / 5000;
-	} else if (id == MT6360_PMIC_LDO6 || id == MT6360_PMIC_LDO7) {
+	} else if (id == MT6360_LDO6 || id == MT6360_LDO7) {
 		val = (((voltage_uv - 500000) / 100000) << 4);
 		val += (((voltage_uv - 500000) % 100000) / 10000);
 	}
@@ -380,24 +379,24 @@ void mt6360_pmic_set_voltage(enum mt6360_pmic_id id, u32 voltage_uv)
 	mt6360_config_interface(MT6360_INDEX_PMIC, data->vsel_reg, val, 0xff, 0);
 }
 
-u32 mt6360_pmic_get_voltage(enum mt6360_pmic_id id)
+u32 mt6360_pmic_get_voltage(enum mt6360_regulator_id id)
 {
 	u8 val;
-	u32 voltage_uv;
+	u32 voltage_uv = 0;
 
 	const struct mt6360_data *data;
 
 	if (!is_valid_pmic(id))
 		return 0;
 
-	data = &pmic_data[id];
+	data = &regulator_data[id];
 
 	if (mt6360_read_interface(MT6360_INDEX_PMIC, data->vsel_reg, &val, 0xff, 0) < 0)
 		return 0;
 
-	if (id == MT6360_PMIC_BUCK1 || id == MT6360_PMIC_BUCK2) {
+	if (id == MT6360_BUCK1 || id == MT6360_BUCK2) {
 		voltage_uv = 300000 + val * 5000;
-	} else if (id == MT6360_PMIC_LDO6 || id == MT6360_PMIC_LDO7) {
+	} else if (id == MT6360_LDO6 || id == MT6360_LDO7) {
 		voltage_uv = 500000 + 100000 * (val >> 4);
 		voltage_uv += MIN(val & 0xf, 0xa) * 10000;
 	}

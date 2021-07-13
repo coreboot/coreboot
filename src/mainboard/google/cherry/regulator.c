@@ -13,9 +13,9 @@ static int get_mt6360_regulator_id(enum mtk_regulator regulator)
 {
 	switch (regulator) {
 	case MTK_REGULATOR_VDD2:
-		return MT6360_PMIC_BUCK1;
+		return MT6360_BUCK1;
 	case MTK_REGULATOR_VDDQ:
-		return MT6360_PMIC_BUCK2;
+		return MT6360_BUCK2;
 	default:
 		break;
 	}

@@ -24,20 +24,20 @@ enum {
 	MT6360_INDEX_COUNT,
 };
 
-enum mt6360_ldo_id {
-	MT6360_LDO1 = 0,
-	MT6360_LDO2,
-	MT6360_LDO3,
+/*
+ * This must match the regulator IDs defined in EC's BC1.2 MT6360 driver.
+ * Please do NOT change the order.
+ */
+enum mt6360_regulator_id {
+	MT6360_LDO3 = 0,
 	MT6360_LDO5,
-	MT6360_LDO_COUNT,
-};
-
-enum mt6360_pmic_id {
-	MT6360_PMIC_BUCK1 = 0,
-	MT6360_PMIC_BUCK2,
-	MT6360_PMIC_LDO6,
-	MT6360_PMIC_LDO7,
-	MT6360_PMIC_COUNT,
+	MT6360_LDO6,
+	MT6360_LDO7,
+	MT6360_BUCK1,
+	MT6360_BUCK2,
+	MT6360_LDO1,
+	MT6360_LDO2,
+	MT6360_REGULATOR_COUNT,
 };
 
 struct mt6360_i2c_data {
@@ -56,14 +56,14 @@ struct mt6360_data {
 
 void mt6360_init(uint8_t bus);
 
-void mt6360_ldo_enable(enum mt6360_ldo_id ldo_id, uint8_t enable);
-uint8_t mt6360_ldo_is_enabled(enum mt6360_ldo_id ldo_id);
-void mt6360_ldo_set_voltage(enum mt6360_ldo_id ldo_id, u32 voltage_uv);
-u32 mt6360_ldo_get_voltage(enum mt6360_ldo_id ldo_id);
+void mt6360_ldo_enable(enum mt6360_regulator_id id, uint8_t enable);
+uint8_t mt6360_ldo_is_enabled(enum mt6360_regulator_id id);
+void mt6360_ldo_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv);
+u32 mt6360_ldo_get_voltage(enum mt6360_regulator_id id);
 
-void mt6360_pmic_enable(enum mt6360_pmic_id pmic_id, uint8_t enable);
-uint8_t mt6360_pmic_is_enabled(enum mt6360_pmic_id pmic_id);
-void mt6360_pmic_set_voltage(enum mt6360_pmic_id pmic_id, u32 voltage_uv);
-u32 mt6360_pmic_get_voltage(enum mt6360_pmic_id pmic_id);
+void mt6360_pmic_enable(enum mt6360_regulator_id id, uint8_t enable);
+uint8_t mt6360_pmic_is_enabled(enum mt6360_regulator_id id);
+void mt6360_pmic_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv);
+u32 mt6360_pmic_get_voltage(enum mt6360_regulator_id id);
 
 #endif

@@ -157,12 +157,6 @@ static int path_eq(const struct device_path *path1,
 	case DEVICE_PATH_MMIO:
 		equal = (path1->mmio.addr == path2->mmio.addr);
 		break;
-	case DEVICE_PATH_ESPI:
-		equal = (path1->espi.addr == path2->espi.addr);
-		break;
-	case DEVICE_PATH_LPC:
-		equal = (path1->lpc.addr == path2->lpc.addr);
-		break;
 	case DEVICE_PATH_GPIO:
 		equal = (path1->gpio.id == path2->gpio.id);
 		break;

@@ -218,14 +218,6 @@ const char *dev_path(const struct device *dev)
 			snprintf(buffer, sizeof(buffer), "MMIO: %08lx",
 				 dev->path.mmio.addr);
 			break;
-		case DEVICE_PATH_ESPI:
-			snprintf(buffer, sizeof(buffer), "ESPI: %08lx",
-				 dev->path.espi.addr);
-			break;
-		case DEVICE_PATH_LPC:
-			snprintf(buffer, sizeof(buffer), "LPC: %08lx",
-				 dev->path.lpc.addr);
-			break;
 		case DEVICE_PATH_GPIO:
 			snprintf(buffer, sizeof(buffer), "GPIO: %d", dev->path.gpio.id);
 			break;

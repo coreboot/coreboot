@@ -18,6 +18,7 @@
 #define  SMM_LOCK			(1 << 0)
 #define NB_CFG_MSR			0xC001001f
 #define FidVidStatus			0xC0010042
+#define MC0_CTL_MASK			0xC0010044
 #define MC1_CTL_MASK			0xC0010045
 #define MC4_CTL_MASK			0xC0010048
 #define MSR_INTPEND			0xC0010055

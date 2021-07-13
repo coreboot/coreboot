@@ -83,7 +83,6 @@
 #define IA32_VMX_BASIC_MSR              0x480
 #define  VMX_BASIC_HI_DUAL_MONITOR      (1UL << (49 - 32))
 #define IA32_VMX_MISC_MSR               0x485
-#define MC0_CTL_MASK			0xC0010044
 
 #define IA32_PM_ENABLE			0x770
 #define IA32_HWP_CAPABILITIES		0x771

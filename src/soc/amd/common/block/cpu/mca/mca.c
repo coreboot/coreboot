@@ -33,6 +33,9 @@ void mca_check_all_banks(void)
 	struct mca_bank_status mci;
 	const unsigned int num_banks = mca_get_bank_count();
 
+	if (!mca_has_expected_bank_count())
+		printk(BIOS_WARNING, "CPU has an unexpected number of MCA banks!\n");
+
 	if (!is_warm_reset())
 		return;
 

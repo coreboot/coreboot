@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/mca.h>
+#include <cpu/x86/msr.h>
 #include <types.h>
 
 static const char *const mca_bank_name[] = {
@@ -14,6 +15,11 @@ static const char *const mca_bank_name[] = {
 	[5] = "Execution unit",
 	[6] = "Floating point unit"
 };
+
+bool mca_has_expected_bank_count(void)
+{
+	return ARRAY_SIZE(mca_bank_name) == mca_get_bank_count();
+}
 
 bool mca_is_valid_bank(unsigned int bank)
 {

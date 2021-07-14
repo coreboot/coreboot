@@ -80,7 +80,6 @@
 #define S3_RESUME_EIP_MSR		0xC00110E0
 #define PSP_ADDR_MSR			0xc00110a2
 
-#define MSR_PATCH_LEVEL			0x0000008B
 #define CORE_PERF_BOOST_CTRL		0x15c
 
 #endif /* CPU_AMD_MSR_H */

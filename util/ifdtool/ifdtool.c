@@ -190,8 +190,6 @@ static enum ich_chipset ifd1_guess_chipset(char *image, int size)
 			return CHIPSET_ICH10;
 		else if (isl <= 16)
 			return CHIPSET_5_SERIES_IBEX_PEAK;
-		else if (isl == 0x13)
-			return CHIPSET_N_J_SERIES_APOLLO_LAKE;
 		printf("Peculiar firmware descriptor, assuming Ibex Peak compatibility.\n");
 		return CHIPSET_5_SERIES_IBEX_PEAK;
 	} else if (iccriba < 0x31 && (fdb->flmap2 & 0xff) < 0x30) {
@@ -212,6 +210,8 @@ static enum ich_chipset ifd1_guess_chipset(char *image, int size)
 static enum ich_chipset ifd2_platform_to_chipset(const int pindex)
 {
 	switch (pindex) {
+	case PLATFORM_APL:
+		return CHIPSET_N_J_SERIES_APOLLO_LAKE;
 	case PLATFORM_GLK:
 		return CHIPSET_N_J_SERIES_GEMINI_LAKE;
 	case PLATFORM_JSL:
@@ -243,6 +243,7 @@ static enum ich_chipset ifd2_platform_to_chipset(const int pindex)
 static int is_platform_ifd_2(void)
 {
 	static const int ifd_2_platforms[] = {
+		PLATFORM_APL,
 		PLATFORM_GLK,
 		PLATFORM_CNL,
 		PLATFORM_LBG,

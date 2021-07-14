@@ -9,6 +9,11 @@
 #include <types.h>
 #include "mca_common_defs.h"
 
+static bool mca_skip_check(void)
+{
+	return !is_warm_reset();
+}
+
 static void mca_print_error(unsigned int bank)
 {
 	msr_t msr;
@@ -36,7 +41,7 @@ void mca_check_all_banks(void)
 	if (!mca_has_expected_bank_count())
 		printk(BIOS_WARNING, "CPU has an unexpected number of MCA banks!\n");
 
-	if (!is_warm_reset())
+	if (mca_skip_check())
 		return;
 
 	for (unsigned int i = 0 ; i < num_banks ; i++) {

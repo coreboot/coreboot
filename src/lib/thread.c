@@ -9,6 +9,8 @@
 #include <thread.h>
 #include <timer.h>
 
+static bool initialized;
+
 static void idle_thread_init(void);
 
 /* There needs to be at least one thread to run the ramstate state machine. */
@@ -40,6 +42,9 @@ static inline struct thread *cpu_info_to_thread(const struct cpu_info *ci)
 
 static inline struct thread *current_thread(void)
 {
+	if (!initialized)
+		return NULL;
+
 	return cpu_info_to_thread(cpu_info());
 }
 
@@ -264,6 +269,8 @@ void threads_initialize(void)
 		stack_top += CONFIG_STACK_SIZE;
 		free_thread(t);
 	}
+
+	initialized = 1;
 
 	idle_thread_init();
 }

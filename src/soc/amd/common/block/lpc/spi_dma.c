@@ -193,6 +193,9 @@ static ssize_t spi_dma_readat_dma(const struct region_device *rd, void *destinat
 	printk(BIOS_SPEW, "%s: end: dest: %p, source: %#zx, remaining: %zu\n",
 	       __func__, destination, source, transaction.remaining);
 
+	/* Allow queued up transaction to continue */
+	thread_yield();
+
 	if (transaction.remaining)
 		return -1;
 

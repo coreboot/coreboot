@@ -197,10 +197,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->TmeEnable = CONFIG(INTEL_TME);
 
 	/* crashLog config */
-	if (CONFIG(SOC_INTEL_CRASHLOG)) {
-		m_cfg->CpuCrashLogDevice = 1;
-		m_cfg->CpuCrashLogEnable = 1;
-	}
+	m_cfg->CpuCrashLogDevice = CONFIG(SOC_INTEL_CRASHLOG) && is_devfn_enabled(SA_DEVFN_TMT);
+	m_cfg->CpuCrashLogEnable = m_cfg->CpuCrashLogDevice;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

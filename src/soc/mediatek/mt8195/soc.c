@@ -2,6 +2,7 @@
 
 #include <bootmem.h>
 #include <device/device.h>
+#include <device/pci.h>
 #include <soc/apusys.h>
 #include <soc/devapc.h>
 #include <soc/dfd.h>
@@ -9,6 +10,7 @@
 #include <soc/hdmi.h>
 #include <soc/mcupm.h>
 #include <soc/mmu_operations.h>
+#include <soc/pcie.h>
 #include <soc/sspm.h>
 #include <soc/ufs.h>
 #include <symbols.h>
@@ -44,9 +46,19 @@ static struct device_operations soc_ops = {
 	.init = soc_init,
 };
 
+static struct device_operations pci_domain_ops = {
+	.read_resources = &mtk_pcie_domain_read_resources,
+	.set_resources = &mtk_pcie_domain_set_resources,
+	.scan_bus = &pci_domain_scan_bus,
+	.enable = &mtk_pcie_domain_enable,
+};
+
 static void enable_soc_dev(struct device *dev)
 {
-	dev->ops = &soc_ops;
+	if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
+		dev->ops = &soc_ops;
+	else if (dev->path.type == DEVICE_PATH_DOMAIN)
+		dev->ops = &pci_domain_ops;
 }
 
 struct chip_operations soc_mediatek_mt8195_ops = {

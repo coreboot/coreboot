@@ -12,4 +12,8 @@
 #define GPIO_MEM_CONFIG_2	GPP_C14
 #define GPIO_MEM_CONFIG_3	GPP_D15
 
+#undef GPIO_EC_IN_RW
+/* EC in RW */
+#define GPIO_EC_IN_RW          GPP_F17
+
 #endif

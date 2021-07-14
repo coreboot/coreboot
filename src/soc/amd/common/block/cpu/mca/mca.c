@@ -7,6 +7,7 @@
 #include <cpu/x86/msr.h>
 #include <console/console.h>
 #include <types.h>
+#include "mca_common_defs.h"
 
 static void mca_print_error(unsigned int bank)
 {

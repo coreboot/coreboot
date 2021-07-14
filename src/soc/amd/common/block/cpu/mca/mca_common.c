@@ -2,6 +2,7 @@
 
 #include <amdblocks/mca.h>
 #include <cpu/x86/msr.h>
+#include "mca_common_defs.h"
 
 void check_mca(void)
 {

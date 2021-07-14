@@ -70,6 +70,7 @@ ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-y += mt6360.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-$(CONFIG_COMMONLIB_STORAGE_MMC) += ../common/msdc.c msdc.c
+ramstage-$(CONFIG_PCI) += ../common/pcie.c pcie.c
 ramstage-y += ../common/pll.c pll.c
 ramstage-y += ../common/pmif.c
 ramstage-y += ../common/rtc.c ../common/rtc_mt6359p.c

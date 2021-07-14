@@ -1,5 +1,6 @@
 config SOC_MEDIATEK_COMMON
 	bool
+	select NO_ECAM_MMCONF_SUPPORT if PCI
 	help
 	  common code blocks for Mediatek SOCs
 

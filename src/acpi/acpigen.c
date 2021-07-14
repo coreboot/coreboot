@@ -16,6 +16,7 @@
 #include <string.h>
 #include <acpi/acpigen.h>
 #include <assert.h>
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/soundwire.h>
@@ -1643,6 +1644,38 @@ void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *),
 	acpigen_write_dsm_uuid_arr(&id, 1);
 }
 
+/*
+ * Create a supported functions bitmask
+ * bit 0:    other functions than 0 are supported
+ * bits 1-x: function x supported
+ */
+static void acpigen_dsm_uuid_enum_functions(const struct dsm_uuid *id)
+{
+	const size_t bytes = DIV_ROUND_UP(id->count, BITS_PER_BYTE);
+	uint8_t *buffer = alloca(bytes);
+	bool set = false;
+	size_t cb_idx = 0;
+
+	memset(buffer, 0, bytes);
+
+	for (size_t i = 0; i < bytes; i++) {
+		for (size_t j = 0; j < BITS_PER_BYTE; j++) {
+			if (cb_idx >= id->count)
+				break;
+
+			if (id->callbacks[cb_idx++]) {
+				set = true;
+				buffer[i] |= BIT(j);
+			}
+		}
+	}
+
+	if (set)
+		buffer[0] |= BIT(0);
+
+	acpigen_write_return_byte_buffer(buffer, bytes);
+}
+
 static void acpigen_write_dsm_uuid(struct dsm_uuid *id)
 {
 	size_t i;
@@ -1656,7 +1689,17 @@ static void acpigen_write_dsm_uuid(struct dsm_uuid *id)
 	/* ToInteger (Arg2, Local1) */
 	acpigen_write_to_integer(ARG2_OP, LOCAL1_OP);
 
-	for (i = 0; i < id->count; i++) {
+	/* If (LEqual(Local1, 0)) */
+	{
+		acpigen_write_if_lequal_op_int(LOCAL1_OP, 0);
+		if (id->callbacks[0])
+			id->callbacks[0](id->arg);
+		else if (id->count)
+			acpigen_dsm_uuid_enum_functions(id);
+		acpigen_write_if_end();
+	}
+
+	for (i = 1; i < id->count; i++) {
 		/* If (LEqual (Local1, i)) */
 		acpigen_write_if_lequal_op_int(LOCAL1_OP, i);
 
@@ -1664,13 +1707,13 @@ static void acpigen_write_dsm_uuid(struct dsm_uuid *id)
 		if (id->callbacks[i])
 			id->callbacks[i](id->arg);
 
-		acpigen_pop_len();	/* If */
+		acpigen_write_if_end();	/* If */
 	}
 
 	/* Default case: Return (Buffer (One) { 0x0 }) */
 	acpigen_write_return_singleton_buffer(0x0);
 
-	acpigen_pop_len();	/* If (LEqual (Local0, ToUUID(uuid))) */
+	acpigen_write_if_end(); /* If (LEqual (Local0, ToUUID(uuid))) */
 
 }
 

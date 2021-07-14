@@ -223,7 +223,7 @@ config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 
 config SOC_INTEL_I2C_DEV_MAX
 	int
-	default 6
+	default 8
 
 config SOC_INTEL_UART_DEV_MAX
 	int

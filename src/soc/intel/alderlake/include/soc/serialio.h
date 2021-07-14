@@ -18,6 +18,8 @@ enum {
 	PchSerialIoIndexI2C3,
 	PchSerialIoIndexI2C4,
 	PchSerialIoIndexI2C5,
+	PchSerialIoIndexI2C6,
+	PchSerialIoIndexI2C7,
 };
 
 enum {

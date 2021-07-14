@@ -78,6 +78,8 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_I2C3:		return "I2C3";
 	case PCH_DEVFN_I2C4:		return "I2C4";
 	case PCH_DEVFN_I2C5:		return "I2C5";
+	case PCH_DEVFN_I2C6:		return "I2C6";
+	case PCH_DEVFN_I2C7:		return "I2C7";
 	case PCH_DEVFN_SATA:		return "SATA";
 	case PCH_DEVFN_PCIE1:		return "RP01";
 	case PCH_DEVFN_PCIE2:		return "RP02";

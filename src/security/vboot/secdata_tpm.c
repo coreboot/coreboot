@@ -107,6 +107,7 @@ static const TPMA_NV rw_space_attributes = {
 	.TPMA_NV_AUTHREAD = 1,
 	.TPMA_NV_PPREAD = 1,
 	.TPMA_NV_PLATFORMCREATE = 1,
+	.TPMA_NV_WRITE_STCLEAR = 1,
 };
 
 static const TPMA_NV fwmp_attr = {

@@ -88,8 +88,6 @@ void fill_vr_domain_config(FSP_S_CONFIG *s_cfg,
 		s_cfg->IccMax[domain] = cfg->icc_max;
 		s_cfg->TdcTimeWindow[domain] = cfg->tdc_timewindow;
 		s_cfg->TdcCurrentLimit[domain] = cfg->tdc_currentlimit;
-		if (cfg->tdc_timewindow != 0 && cfg->tdc_currentlimit != 0)
-			s_cfg->TdcEnable[domain] = 1;
 	} else {
 		uint16_t mch_id = 0;
 
@@ -110,7 +108,12 @@ void fill_vr_domain_config(FSP_S_CONFIG *s_cfg,
 		s_cfg->TdcCurrentLimit[domain] = load_table(vr_config_tdc_currentlimit,
 							ARRAY_SIZE(vr_config_tdc_currentlimit),
 							domain, mch_id);
-		if (s_cfg->TdcTimeWindow[domain] != 0 && s_cfg->TdcCurrentLimit[domain] != 0)
-			s_cfg->TdcEnable[domain] = 1;
+	}
+
+	/* Check TdcTimeWindow and TdcCurrentLimit,
+	   Set TdcEnable and Set VR TDC Input current to root mean square */
+	if (s_cfg->TdcTimeWindow[domain] != 0 && s_cfg->TdcCurrentLimit[domain] != 0) {
+		s_cfg->TdcEnable[domain] = 1;
+		s_cfg->Irms[domain] = 1;
 	}
 }

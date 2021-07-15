@@ -1,12 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <amdblocks/acpimmio.h>
-#include <amdblocks/acpi.h>
 #include <acpi/acpi.h>
 #include <acpi/acpi_pm.h>
+#include <amdblocks/acpimmio.h>
+#include <amdblocks/acpi.h>
 #include <bootmode.h>
 #include <console/console.h>
-#include <elog.h>
 #include <halt.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/southbridge.h>
@@ -65,36 +64,6 @@ static uint16_t print_pm1_status(uint16_t pm1_sts)
 	return pm1_sts;
 }
 
-static void log_pm1_status(uint16_t pm1_sts)
-{
-	if (!CONFIG(ELOG))
-		return;
-
-	if (pm1_sts & WAK_STS)
-		elog_add_event_byte(ELOG_TYPE_ACPI_WAKE,
-				    acpi_is_wakeup_s3() ? ACPI_S3 : ACPI_S5);
-
-	if (pm1_sts & PWRBTN_STS)
-		elog_add_event_wake(ELOG_WAKE_SOURCE_PWRBTN, 0);
-
-	if (pm1_sts & RTC_STS)
-		elog_add_event_wake(ELOG_WAKE_SOURCE_RTC, 0);
-
-	if (pm1_sts & PCIEXPWAK_STS)
-		elog_add_event_wake(ELOG_WAKE_SOURCE_PCIE, 0);
-}
-
-static void log_gpe_events(const struct acpi_pm_gpe_state *state)
-{
-	int i;
-	uint32_t valid_gpe = state->gpe0_sts & state->gpe0_en;
-
-	for (i = 0; i <= 31; i++) {
-		if (valid_gpe & (1U << i))
-			elog_add_event_wake(ELOG_WAKE_SOURCE_GPE, i);
-	}
-}
-
 void acpi_fill_pm_gpe_state(struct acpi_pm_gpe_state *state)
 {
 	state->pm1_sts = acpi_read16(MMIO_ACPI_PM1_STS);
@@ -114,9 +83,8 @@ void acpi_pm_gpe_add_events_print_events(void)
 		return;
 
 	state = &ps->gpe_state;
-	log_pm1_status(state->pm1_sts);
 	print_pm1_status(state->pm1_sts);
-	log_gpe_events(state);
+	acpi_log_events(ps);
 }
 
 void acpi_clear_pm_gpe_status(void)

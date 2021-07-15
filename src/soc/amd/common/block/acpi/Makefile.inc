@@ -13,4 +13,7 @@ ramstage-$(CONFIG_ACPI_BERT) += bert.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_ALIB) += alib.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_GPIO) += gpio.c
 
+romstage-y += elog.c
+ramstage-y += elog.c
+
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_ACPI

@@ -24,7 +24,7 @@ TEST_DOTCONFIG = $(testobj)/.config
 TEST_KCONFIG_AUTOHEADER := $(testobj)/config.src.h
 TEST_KCONFIG_AUTOCONFIG := $(testobj)/auto.conf
 TEST_KCONFIG_DEPENDENCIES := $(testobj)/auto.conf.cmd
-TEST_KCONFIG_SPLITCONFIG := $(testobj)/config
+TEST_KCONFIG_SPLITCONFIG := $(testobj)/config/
 TEST_KCONFIG_TRISTATE := $(testobj)/tristate.conf
 
 TEST_CFLAGS = -include $(src)/include/kconfig.h \

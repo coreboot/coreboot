@@ -4,12 +4,8 @@
 #define _SOC_CPU_H_
 
 #include <device/device.h>
+#include <cpu/intel/cpu_ids.h>
 #include <cpu/x86/msr.h>
-
-/* SKXSP CPUID */
-#define CPUID_SKYLAKE_SP_A0_A1 0x506f0
-#define CPUID_SKYLAKE_SP_B0 0x506f1
-#define CPUID_SKYLAKE_SP_4 0x50654
 
 /* CPU bus clock is fixed at 100MHz */
 #define CPU_BCLK 100

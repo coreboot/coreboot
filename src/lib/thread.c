@@ -213,8 +213,6 @@ static void idle_thread_init(void)
 	/* Queue idle thread to run once all other threads have yielded. */
 	prepare_thread(t, idle_thread, NULL, call_wrapper, NULL);
 	push_runnable(t);
-	/* Mark the currently executing thread to cooperate. */
-	thread_cooperate();
 }
 
 /* Don't inline this function so the timeout_callback won't have its storage
@@ -260,6 +258,7 @@ void threads_initialize(void)
 	ci->thread = t;
 	t->stack_orig = (uintptr_t)ci;
 	t->id = 0;
+	t->can_yield = 1;
 
 	stack_top = &thread_stacks[CONFIG_STACK_SIZE] - sizeof(struct cpu_info);
 	for (i = 1; i < TOTAL_NUM_THREADS; i++) {
@@ -270,9 +269,9 @@ void threads_initialize(void)
 		free_thread(t);
 	}
 
-	initialized = 1;
-
 	idle_thread_init();
+
+	initialized = 1;
 }
 
 int thread_run(void (*func)(void *), void *arg)

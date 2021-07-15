@@ -43,8 +43,13 @@ int thread_yield_microseconds(unsigned int microsecs);
 
 /* Allow and prevent thread cooperation on current running thread. By default
  * all threads are marked to be cooperative. That means a thread can yield
- * to another thread at a pre-determined switch point. Current there is
- * only a single place where switching may occur: a call to udelay(). */
+ * to another thread at a pre-determined switch point. i.e., udelay,
+ * thread_yield, or thread_yield_microseconds.
+ *
+ * These methods should be used to guard critical sections so a dead lock does
+ * not occur. The critical sections can be nested. Just make sure the methods
+ * are used in pairs.
+ */
 void thread_cooperate(void);
 void thread_prevent_coop(void);
 

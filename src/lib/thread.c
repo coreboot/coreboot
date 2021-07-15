@@ -31,7 +31,7 @@ static inline struct cpu_info *thread_cpu_info(const struct thread *t)
 
 static inline int thread_can_yield(const struct thread *t)
 {
-	return (t != NULL && t->can_yield);
+	return (t != NULL && t->can_yield > 0);
 }
 
 /* Assumes current CPU info can switch. */
@@ -358,8 +358,12 @@ void thread_cooperate(void)
 
 	current = current_thread();
 
-	if (current != NULL)
-		current->can_yield = 1;
+	if (current == NULL)
+		return;
+
+	assert(current->can_yield <= 0);
+
+	current->can_yield++;
 }
 
 void thread_prevent_coop(void)
@@ -368,6 +372,8 @@ void thread_prevent_coop(void)
 
 	current = current_thread();
 
-	if (current != NULL)
-		current->can_yield = 0;
+	if (current == NULL)
+		return;
+
+	current->can_yield--;
 }

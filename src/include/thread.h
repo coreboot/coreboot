@@ -23,6 +23,18 @@ struct thread_handle {
 	enum cb_err error;
 };
 
+/* Run func(arg) on a new thread. Return 0 on successful start of thread, < 0
+ * when thread could not be started. The thread handle if populated, will
+ * reflect the state and return code of the thread.
+ */
+int thread_run(struct thread_handle *handle, enum cb_err (*func)(void *), void *arg);
+
+/* thread_run_until is the same as thread_run() except that it blocks state
+ * transitions from occurring in the (state, seq) pair of the boot state
+ * machine. */
+int thread_run_until(struct thread_handle *handle, enum cb_err (*func)(void *), void *arg,
+		     boot_state_t state, boot_state_sequence_t seq);
+
 /* Waits until the thread has terminated and returns the error code */
 enum cb_err thread_join(struct thread_handle *handle);
 
@@ -45,16 +57,6 @@ void threads_initialize(void);
  * aligned to CONFIG_STACK_SIZE, or NULL.
  */
 void *arch_get_thread_stackbase(void);
-/* Run func(arrg) on a new thread. Return 0 on successful start of thread, < 0
- * when thread could not be started. The thread handle if populated, will
- * reflect the state and return code of the thread.
- */
-int thread_run(struct thread_handle *handle, enum cb_err (*func)(void *), void *arg);
-/* thread_run_until is the same as thread_run() except that it blocks state
- * transitions from occurring in the (state, seq) pair of the boot state
- * machine. */
-int thread_run_until(struct thread_handle *handle, enum cb_err (*func)(void *), void *arg,
-		     boot_state_t state, boot_state_sequence_t seq);
 
 /* Return 0 on successful yield, < 0 when thread did not yield. */
 int thread_yield(void);
@@ -92,16 +94,6 @@ void arch_prepare_thread(struct thread *t,
 			 asmlinkage void (*thread_entry)(void *), void *arg);
 #else
 static inline void threads_initialize(void) {}
-static inline int thread_run(struct thread_handle *handle, enum cb_err (*func)(void *),
-			     void *arg)
-{
-	return -1;
-}
-static inline int thread_run_until(struct thread_handle *handle, enum cb_err (*func)(void *),
-				   void *arg, boot_state_t state, boot_state_sequence_t seq)
-{
-	return -1;
-}
 static inline int thread_yield(void)
 {
 	return -1;

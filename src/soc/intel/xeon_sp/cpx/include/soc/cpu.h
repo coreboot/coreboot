@@ -6,8 +6,8 @@
 #include <device/device.h>
 #include <cpu/x86/msr.h>
 
-#define CPUID_COOPERLAKE_SP_A0			0x05065a
-#define CPUID_COOPERLAKE_SP_A1			0x05065b
+#define CPUID_COOPERLAKE_SP_A0			0x5065a
+#define CPUID_COOPERLAKE_SP_A1			0x5065b
 
 void cpx_init_cpus(struct device *dev);
 

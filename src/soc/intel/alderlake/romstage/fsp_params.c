@@ -6,7 +6,6 @@
 #include <device/device.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
-#include <intelblocks/mp_init.h>
 #include <intelblocks/pcie_rp.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/iomap.h>

@@ -12,7 +12,6 @@
 #include <intelblocks/lpss.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
-#include <intelblocks/mp_init.h>
 #include <intelblocks/tcss.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/intel/common/vbt.h>

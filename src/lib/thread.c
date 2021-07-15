@@ -162,18 +162,6 @@ static void asmlinkage call_wrapper(void *unused)
 	terminate_thread(current, error);
 }
 
-/* Block the current state transitions until thread is complete. */
-static void asmlinkage call_wrapper_block_current(void *unused)
-{
-	struct thread *current = current_thread();
-	enum cb_err error;
-
-	boot_state_current_block();
-	error = current->entry(current->entry_arg);
-	boot_state_current_unblock();
-	terminate_thread(current, error);
-}
-
 struct block_boot_state {
 	boot_state_t state;
 	boot_state_sequence_t seq;
@@ -312,7 +300,7 @@ int thread_run(struct thread_handle *handle, enum cb_err (*func)(void *), void *
 		return -1;
 	}
 
-	prepare_thread(t, handle, func, arg, call_wrapper_block_current, NULL);
+	prepare_thread(t, handle, func, arg, call_wrapper, NULL);
 	schedule(t);
 
 	return 0;

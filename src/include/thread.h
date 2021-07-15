@@ -46,9 +46,8 @@ void threads_initialize(void);
  */
 void *arch_get_thread_stackbase(void);
 /* Run func(arrg) on a new thread. Return 0 on successful start of thread, < 0
- * when thread could not be started. Note that the thread will block the
- * current state in the boot state machine until it is complete. The thread
- * handle if populated, will reflect the state and return code of the thread.
+ * when thread could not be started. The thread handle if populated, will
+ * reflect the state and return code of the thread.
  */
 int thread_run(struct thread_handle *handle, enum cb_err (*func)(void *), void *arg);
 /* thread_run_until is the same as thread_run() except that it blocks state

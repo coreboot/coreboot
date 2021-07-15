@@ -37,7 +37,19 @@ chip soc/intel/jasperlake
 	}"
 
 	# USB Port Configuration
+	register "usb2_ports[2]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}"	# Type-A
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"     # Camera
+	register "usb2_ports[7]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" 	# Integrated Bluetooth
 
 	register "tcc_offset" = "8"     # TCC of 97C
 

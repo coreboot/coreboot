@@ -25,6 +25,7 @@ typedef struct {
 
 #define MACHINE_TYPE_X86 0x014c
 #define MACHINE_TYPE_X64 0x8664
+#define MACHINE_TYPE_ARM64 0xAA64
 typedef struct {
 	uint8_t  signature[4];
 	uint16_t machine;

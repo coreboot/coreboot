@@ -332,6 +332,11 @@ int thread_run_until(void (*func)(void *), void *arg,
 	return 0;
 }
 
+int thread_yield(void)
+{
+	return thread_yield_microseconds(0);
+}
+
 int thread_yield_microseconds(unsigned int microsecs)
 {
 	struct thread *current;

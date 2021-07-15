@@ -33,6 +33,10 @@ int thread_run(void (*func)(void *), void *arg);
  * machine. */
 int thread_run_until(void (*func)(void *), void *arg,
 		     boot_state_t state, boot_state_sequence_t seq);
+
+/* Return 0 on successful yield, < 0 when thread did not yield. */
+int thread_yield(void);
+
 /* Return 0 on successful yield for the given amount of time, < 0 when thread
  * did not yield. */
 int thread_yield_microseconds(unsigned int microsecs);
@@ -61,6 +65,10 @@ static inline void threads_initialize(void) {}
 static inline int thread_run(void (*func)(void *), void *arg) { return -1; }
 static inline int thread_run_until(void (*func)(void *), void *arg, boot_state_t state,
 				   boot_state_sequence_t seq)
+{
+	return -1;
+}
+static inline int thread_yield(void)
 {
 	return -1;
 }

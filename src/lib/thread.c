@@ -114,7 +114,7 @@ static inline void free_thread(struct thread *t)
 static void idle_thread(void *unused)
 {
 	/* This thread never voluntarily yields. */
-	thread_prevent_coop();
+	thread_coop_disable();
 	while (1)
 		timers_run();
 }
@@ -352,7 +352,7 @@ int thread_yield_microseconds(unsigned int microsecs)
 	return 0;
 }
 
-void thread_cooperate(void)
+void thread_coop_enable(void)
 {
 	struct thread *current;
 
@@ -366,7 +366,7 @@ void thread_cooperate(void)
 	current->can_yield++;
 }
 
-void thread_prevent_coop(void)
+void thread_coop_disable(void)
 {
 	struct thread *current;
 

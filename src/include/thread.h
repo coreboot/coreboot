@@ -50,8 +50,8 @@ int thread_yield_microseconds(unsigned int microsecs);
  * not occur. The critical sections can be nested. Just make sure the methods
  * are used in pairs.
  */
-void thread_cooperate(void);
-void thread_prevent_coop(void);
+void thread_coop_enable(void);
+void thread_coop_disable(void);
 
 static inline void thread_init_cpu_info_non_bsp(struct cpu_info *ci)
 {
@@ -81,8 +81,8 @@ static inline int thread_yield_microseconds(unsigned int microsecs)
 {
 	return -1;
 }
-static inline void thread_cooperate(void) {}
-static inline void thread_prevent_coop(void) {}
+static inline void thread_coop_enable(void) {}
+static inline void thread_coop_disable(void) {}
 struct cpu_info;
 static inline void thread_init_cpu_info_non_bsp(struct cpu_info *ci) { }
 #endif

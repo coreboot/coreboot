@@ -615,6 +615,10 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 
 	/* VccIn Aux Imon IccMax. Values are in 1/4 Amp increments and range is 0-512. */
 	s_cfg->VccInAuxImonIccImax = get_vccin_aux_imon_iccmax() * 4 / MILLIAMPS_TO_AMPS;
+
+	/* VrConfig Settings for IA and GT domains */
+	for (size_t i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++)
+		fill_vr_domain_config(s_cfg, i, &config->domain_vr_config[i]);
 }
 
 static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,

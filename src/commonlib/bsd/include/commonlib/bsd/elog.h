@@ -71,12 +71,57 @@ struct event_header {
 
 /* OS/kernel events */
 #define ELOG_TYPE_OS_EVENT                0x81
+#define ELOG_OS_EVENT_CLEAN              0  /* Clean Shutdown */
+#define ELOG_OS_EVENT_NMIWDT             1  /* NMI Watchdog */
+#define ELOG_OS_EVENT_PANIC              2  /* Panic */
+#define ELOG_OS_EVENT_OOPS               3  /* Oops */
+#define ELOG_OS_EVENT_DIE                4  /* Die */
+#define ELOG_OS_EVENT_MCE                5  /* MCE */
+#define ELOG_OS_EVENT_SOFTWDT            6  /* Software Watchdog */
+#define ELOG_OS_EVENT_MBE                7  /* MBE */
+#define ELOG_OS_EVENT_TRIPLE             8  /* Triple Fault */
+#define ELOG_OS_EVENT_THERMAL            9  /* Critical Thermal Threshold */
 
 /* Last event from coreboot */
 #define ELOG_TYPE_OS_BOOT                 0x90
 
 /* Embedded controller event */
 #define ELOG_TYPE_EC_EVENT                0x91
+#define EC_EVENT_LID_CLOSED                  0x01
+#define EC_EVENT_LID_OPEN                    0x02
+#define EC_EVENT_POWER_BUTTON                0x03
+#define EC_EVENT_AC_CONNECTED                0x04
+#define EC_EVENT_AC_DISCONNECTED             0x05
+#define EC_EVENT_BATTERY_LOW                 0x06
+#define EC_EVENT_BATTERY_CRITICAL            0x07
+#define EC_EVENT_BATTERY                     0x08
+#define EC_EVENT_THERMAL_THRESHOLD           0x09
+#define EC_EVENT_DEVICE_EVENT                0x0a
+#define EC_EVENT_THERMAL                     0x0b
+#define EC_EVENT_USB_CHARGER                 0x0c
+#define EC_EVENT_KEY_PRESSED                 0x0d
+#define EC_EVENT_INTERFACE_READY             0x0e
+#define EC_EVENT_KEYBOARD_RECOVERY           0x0f
+#define EC_EVENT_THERMAL_SHUTDOWN            0x10
+#define EC_EVENT_BATTERY_SHUTDOWN            0x11
+#define EC_EVENT_THROTTLE_START              0x12
+#define EC_EVENT_THROTTLE_STOP               0x13
+#define EC_EVENT_HANG_DETECT                 0x14
+#define EC_EVENT_HANG_REBOOT                 0x15
+#define EC_EVENT_PD_MCU                      0x16
+#define EC_EVENT_BATTERY_STATUS              0x17
+#define EC_EVENT_PANIC                       0x18
+#define EC_EVENT_KEYBOARD_FASTBOOT           0x19
+#define EC_EVENT_RTC                         0x1a
+#define EC_EVENT_MKBP                        0x1b
+#define EC_EVENT_USB_MUX                     0x1c
+#define EC_EVENT_MODE_CHANGE                 0x1d
+#define EC_EVENT_KEYBOARD_RECOVERY_HWREINIT  0x1e
+#define EC_EVENT_EXTENDED                    0x1f
+struct elog_ec_event {
+	uint8_t event;
+	uint8_t checksum;
+} __packed;
 
 /* Power */
 #define ELOG_TYPE_POWER_FAIL              0x92
@@ -163,8 +208,22 @@ struct elog_event_data_wake {
 #define  ELOG_CROS_RECOVERY_MODE_BUTTON    0x02
 
 /* Management Engine Events */
-#define ELOG_TYPE_MANAGEMENT_ENGINE       0xa2
-#define ELOG_TYPE_MANAGEMENT_ENGINE_EXT   0xa4
+#define ELOG_TYPE_MANAGEMENT_ENGINE      0xa2
+#define  ELOG_ME_PATH_NORMAL              0x00
+#define  ELOG_ME_PATH_S3WAKE              0x01
+#define  ELOG_ME_PATH_ERROR               0x02
+#define  ELOG_ME_PATH_RECOVERY            0x03
+#define  ELOG_ME_PATH_DISABLED            0x04
+#define  ELOG_ME_PATH_FW_UPDATE           0x05
+
+#define ELOG_TYPE_MANAGEMENT_ENGINE_EXT  0xa4
+#define  ELOG_ME_PHASE_ROM                0
+#define  ELOG_ME_PHASE_BRINGUP            1
+#define  ELOG_ME_PHASE_UKERNEL            2
+#define  ELOG_ME_PHASE_POLICY             3
+#define  ELOG_ME_PHASE_MODULE             4
+#define  ELOG_ME_PHASE_UNKNOWN            5
+#define  ELOG_ME_PHASE_HOST               6
 struct elog_event_data_me_extended {
 	uint8_t current_working_state;
 	uint8_t operation_state;
@@ -178,6 +237,18 @@ struct elog_event_data_me_extended {
 /* Last post code from previous boot */
 #define ELOG_TYPE_LAST_POST_CODE          0xa3
 #define ELOG_TYPE_POST_EXTRA              0xa6
+#define  ELOG_TYPE_POST_EXTRA_PATH       0x01
+#define   ELOG_DEV_PATH_TYPE_NONE          0
+#define   ELOG_DEV_PATH_TYPE_ROOT          1
+#define   ELOG_DEV_PATH_TYPE_PCI           2
+#define   ELOG_DEV_PATH_TYPE_PNP           3
+#define   ELOG_DEV_PATH_TYPE_I2C           4
+#define   ELOG_DEV_PATH_TYPE_APIC          5
+#define   ELOG_DEV_PATH_TYPE_DOMAIN        6
+#define   ELOG_DEV_PATH_TYPE_CPU_CLUSTER   7
+#define   ELOG_DEV_PATH_TYPE_CPU           8
+#define   ELOG_DEV_PATH_TYPE_CPU_BUS       9
+#define   ELOG_DEV_PATH_TYPE_IOAPIC        10
 
 /* EC Shutdown Reason */
 #define ELOG_TYPE_EC_SHUTDOWN             0xa5
@@ -240,5 +311,7 @@ struct elog_event_extended_event {
 
 
 enum cb_err elog_verify_header(const struct elog_header *header);
+const struct event_header *elog_get_next_event(const struct event_header *event);
+const void *event_get_data(const struct event_header *event);
 
 #endif  /* _COMMONLIB_BSD_ELOG_H_ */

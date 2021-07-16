@@ -13,7 +13,7 @@ VBOOT_SOURCE ?= $(top)/3rdparty/vboot
 VBOOT_HOST_BUILD ?= $(abspath $(objutil)/vboot_lib)
 
 .PHONY: all
-all: cbfstool ifittool fmaptool rmodtool ifwitool cbfs-compression-tool
+all: cbfstool ifittool fmaptool rmodtool ifwitool cbfs-compression-tool elogtool
 
 cbfstool: $(objutil)/cbfstool/cbfstool
 
@@ -27,7 +27,9 @@ ifittool: $(objutil)/cbfstool/ifittool
 
 cbfs-compression-tool: $(objutil)/cbfstool/cbfs-compression-tool
 
-.PHONY: clean cbfstool ifittool fmaptool rmodtool ifwitool cbfs-compression-tool
+elogtool: $(objutil)/cbfstool/elogtool
+
+.PHONY: clean cbfstool ifittool fmaptool rmodtool ifwitool cbfs-compression-tool elogtool
 clean:
 	$(RM) fmd_parser.c fmd_parser.h fmd_scanner.c fmd_scanner.h
 	$(RM) $(objutil)/cbfstool/cbfstool $(cbfsobj)
@@ -36,6 +38,7 @@ clean:
 	$(RM) $(objutil)/cbfstool/ifwitool $(ifwiobj)
 	$(RM) $(objutil)/cbfstool/ifittool $(ifitobj)
 	$(RM) $(objutil)/cbfstool/cbfs-compression-tool $(cbfscompobj)
+	$(RM) $(objutil)/cbfstool/elogtool $(elogobj)
 	$(RM) -r $(VBOOT_HOST_BUILD)
 
 linux_trampoline.c: linux_trampoline.S
@@ -57,6 +60,7 @@ install: all
 	$(INSTALL) ifwitool $(DESTDIR)$(BINDIR)
 	$(INSTALL) ifittool $(DESTDIR)$(BINDIR)
 	$(INSTALL) cbfs-compression-tool $(DESTDIR)$(BINDIR)
+	$(INSTALL) elogtool $(DESTDIR)$(BINDIR)
 
 distclean: clean
 
@@ -69,6 +73,7 @@ help:
 	@echo "  ifwitool - Manipulate Intel FW Image (IFWI)"
 	@echo "  ifittool - Manipulate Intel FW Interface Table (FIT)"
 	@echo "  cbfs-compression-tool - benchmark compression algorithms"
+	@echo "  elogtool - Display ELOG events"
 
 ifneq ($(V),1)
 .SILENT:
@@ -77,6 +82,7 @@ endif
 include Makefile.inc
 
 $(objutil)/cbfstool/cbfstool.o: $(VBOOT_SOURCE)/firmware/include/vb2_sha.h
+$(objutil)/cbfstool/elogtool.o: $(VBOOT_SOURCE)/firmware/include/vb2_sha.h
 
 $(VBOOT_SOURCE)/firmware/include/vb2_sha.h:
 	cd $(VBOOT_SOURCE) && git submodule update --init .

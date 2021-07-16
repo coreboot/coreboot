@@ -2,11 +2,11 @@
 
 #include <assert.h>
 #include <console/console.h>
+#include <cpu/intel/cpu_ids.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
-#include <intelblocks/mp_init.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>

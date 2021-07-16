@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/pci_io_cfg.h>
+#include <cpu/intel/cpu_ids.h>
 #include <device/pci_ops.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -13,7 +14,6 @@
 #include <intelblocks/cse.h>
 #include <intelblocks/irq.h>
 #include <intelblocks/lpss.h>
-#include <intelblocks/mp_init.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/tcss.h>
 #include <intelblocks/xdci.h>

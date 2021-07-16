@@ -35,6 +35,10 @@ config BOARD_GOOGLE_BASEBOARD_BRYA
 
 if BOARD_GOOGLE_BASEBOARD_BRYA
 
+config BASEBOARD_DIR
+	string
+	default "brya" if BOARD_GOOGLE_BASEBOARD_BRYA
+
 config CHROMEOS
 	select CHROMEOS_DRAM_PART_NUMBER_IN_CBI
 	select EC_GOOGLE_CHROMEEC_SWITCHES
@@ -42,7 +46,7 @@ config CHROMEOS
 	select VBOOT_LID_SWITCH
 
 config DEVICETREE
-	default "variants/baseboard/devicetree.cb"
+	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree.cb"
 
 config DRIVER_TPM_I2C_BUS
 	hex
@@ -64,7 +68,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_FAMILY
 	string
-	default "Google_Brya"
+	default "Google_Brya" if BOARD_GOOGLE_BASEBOARD_BRYA
 
 config MAINBOARD_PART_NUMBER
 	default "Brya" if BOARD_GOOGLE_BRYA0

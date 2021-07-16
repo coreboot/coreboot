@@ -6,10 +6,10 @@
  * Chapter number: 2, 3, 4, 27, 28
  */
 
+#include <commonlib/console/post_codes.h>
 #include <console/console.h>
-#include <console/post_codes.h>
-#include <device/mmio.h>
 #include <device/device.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <intelblocks/dmi.h>
 #include <intelblocks/fast_spi.h>

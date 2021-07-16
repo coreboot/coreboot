@@ -7,18 +7,17 @@
  */
 
 #include <arch/io.h>
-#include <device/mmio.h>
 #include <bootstate.h>
+#include <commonlib/console/post_codes.h>
 #include <console/console.h>
-#include <console/post_codes.h>
 #include <cpu/x86/smm.h>
+#include <device/mmio.h>
 #include <device/pci.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/thermal.h>
-#include <spi-generic.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
@@ -26,6 +25,7 @@
 #include <soc/smbus.h>
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
+#include <spi-generic.h>
 
 #define CAMERA1_CLK		0x8000 /* Camera 1 Clock */
 #define CAMERA2_CLK		0x8080 /* Camera 2 Clock */

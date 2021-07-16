@@ -3,10 +3,10 @@
 #ifndef CONSOLE_CONSOLE_H_
 #define CONSOLE_CONSOLE_H_
 
-#include <stdint.h>
 #include <arch/cpu.h>
-#include <console/post_codes.h>
+#include <commonlib/console/post_codes.h>
 #include <console/vtxprintf.h>
+#include <stdint.h>
 
 /* console.h is supposed to provide the log levels defined in here: */
 #include <commonlib/loglevel.h>

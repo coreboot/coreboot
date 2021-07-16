@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <include/console/post_codes.h>
+#include <commonlib/include/commonlib/console/post_codes.h>
 
 External(\_SB.MPTS, MethodObj)
 External(\_SB.MWAK, MethodObj)

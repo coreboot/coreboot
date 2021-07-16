@@ -2,7 +2,7 @@
 
 #include <bootstate.h>
 #include <console/console.h>
-#include <console/post_codes.h>
+#include <commonlib/console/post_codes.h>
 #include <cpu/x86/smm.h>
 #include <device/mmio.h>
 #include <device/pci.h>

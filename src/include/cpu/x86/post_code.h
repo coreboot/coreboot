@@ -1,7 +1,7 @@
 #ifndef __X86_POST_CODE_H__
 #define __X86_POST_CODE_H__
 
-#include <console/post_codes.h>
+#include <commonlib/console/post_codes.h>
 
 #if CONFIG(POST_IO) && !(ENV_BOOTBLOCK && CONFIG(NO_EARLY_BOOTBLOCK_POSTCODES))
 #define post_code(value)        \

@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/mmio.h>
-#include <device/pci_ops.h>
 #include <bootstate.h>
+#include <commonlib/console/post_codes.h>
 #include <console/console.h>
-#include <console/post_codes.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/smm.h>
+#include <device/mmio.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/p2sb.h>
@@ -15,7 +15,6 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/thermal.h>
-#include <spi-generic.h>
 #include <soc/me.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>
@@ -23,6 +22,7 @@
 #include <soc/pm.h>
 #include <soc/smbus.h>
 #include <soc/systemagent.h>
+#include <spi-generic.h>
 
 #include "chip.h"
 

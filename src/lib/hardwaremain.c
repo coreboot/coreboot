@@ -5,26 +5,26 @@
  * C Bootstrap code for the coreboot
  */
 
-#include <adainit.h>
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
+#include <adainit.h>
 #include <arch/exception.h>
+#include <boot/tables.h>
 #include <bootstate.h>
-#include <console/console.h>
-#include <console/post_codes.h>
-#include <commonlib/helpers.h>
 #include <cbmem.h>
-#include <version.h>
+#include <commonlib/console/post_codes.h>
+#include <commonlib/helpers.h>
+#include <console/console.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <delay.h>
-#include <stdlib.h>
-#include <boot/tables.h>
 #include <program_loading.h>
+#include <stdlib.h>
+#include <thread.h>
 #include <timer.h>
 #include <timestamp.h>
-#include <thread.h>
 #include <vendorcode/google/chromeos/gnvs.h>
+#include <version.h>
 
 static boot_state_t bs_pre_device(void *arg);
 static boot_state_t bs_dev_init_chips(void *arg);

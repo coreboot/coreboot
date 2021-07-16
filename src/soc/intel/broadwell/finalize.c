@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootstate.h>
+#include <commonlib/console/post_codes.h>
 #include <console/console.h>
-#include <console/post_codes.h>
 #include <device/pci_ops.h>
-#include <soc/pci_devs.h>
 #include <soc/pch.h>
+#include <soc/pci_devs.h>
 #include <soc/systemagent.h>
 
 /*

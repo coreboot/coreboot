@@ -7,6 +7,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
 #include <cbfs.h>
+#include <timestamp.h>
 
 _Static_assert(CONFIG_SOC_AMD_COMMON_BLOCK_UCODE_SIZE > 0,
 	       "SOC_AMD_COMMON_BLOCK_UCODE_SIZE is not set");
@@ -94,6 +95,7 @@ void amd_update_microcode_from_cbfs(void)
 
 	/* Cache the buffer so each CPU doesn't need to read the uCode from flash */
 	if (!cache_valid) {
+		timestamp_add_now(TS_READ_UCODE_START);
 		ucode_list = cbfs_map("cpu_microcode_blob.bin", &ucode_len);
 		if (!ucode_list) {
 			printk(BIOS_WARNING, "cpu_microcode_blob.bin not found. Skipping updates.\n");
@@ -111,6 +113,8 @@ void amd_update_microcode_from_cbfs(void)
 		cache_valid = true;
 
 		cbfs_unmap(ucode_list);
+
+		timestamp_add_now(TS_READ_UCODE_END);
 	}
 
 	apply_microcode_patch(&ucode_cache);

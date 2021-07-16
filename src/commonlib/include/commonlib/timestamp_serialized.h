@@ -54,6 +54,8 @@ enum timestamp_id {
 	TS_END_POSTCAR = 101,
 	TS_DELAY_START = 110,
 	TS_DELAY_END = 111,
+	TS_READ_UCODE_START = 112,
+	TS_READ_UCODE_END = 113,
 
 	/* 500+ reserved for vendorcode extensions (500-600: google/chromeos) */
 	TS_START_COPYVER = 501,
@@ -191,6 +193,8 @@ static const struct timestamp_id_to_name {
 	{ TS_SELFBOOT_JUMP,	"selfboot jump" },
 	{ TS_DELAY_START,	"Forced delay start" },
 	{ TS_DELAY_END,		"Forced delay end" },
+	{ TS_READ_UCODE_START,	"started reading uCode" },
+	{ TS_READ_UCODE_END,	"finished reading uCode" },
 
 	{ TS_START_COPYVER,	"starting to load verstage" },
 	{ TS_END_COPYVER,	"finished loading verstage" },

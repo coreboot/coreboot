@@ -180,7 +180,8 @@ static const struct device_operations graphics_ops = {
 
 static const unsigned short pci_device_ids[] = {
 	PCI_DEVICE_ID_ATI_FAM17H_MODEL18H_GPU,
-	PCI_DEVICE_ID_ATI_FAM19H_MODEL51H_GPU,
+	PCI_DEVICE_ID_ATI_FAM19H_MODEL51H_GPU_CEZANNE,
+	PCI_DEVICE_ID_ATI_FAM19H_MODEL51H_GPU_BARCELO,
 	0,
 };
 

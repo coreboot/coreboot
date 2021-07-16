@@ -2,13 +2,13 @@
 
 #include <arch/cpu.h>
 #include <console/console.h>
+#include <cpu/intel/cpu_ids.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/name.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <intelblocks/mp_init.h>
 #include <soc/bootblock.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>

@@ -9,7 +9,7 @@ all-y += ../common/gpio.c
 all-y += ../common/spi.c
 all-$(CONFIG_SC7180_QSPI) += ../common/qspi.c
 all-y += ../common/qupv3_i2c.c
-all-y += qupv3_spi.c
+all-y += ../common/qupv3_spi.c
 all-y += clock.c
 all-y += ../common/clock.c
 all-y += qcom_qup_se.c
@@ -20,7 +20,6 @@ all-y += ../common/qup_se_handler.c
 bootblock-y += bootblock.c
 bootblock-y += mmu.c
 bootblock-$(CONFIG_DRIVERS_UART) += ../common/uart_bitbang.c
-
 ################################################################################
 verstage-$(CONFIG_DRIVERS_UART) += qupv3_uart.c
 

@@ -2,7 +2,7 @@
 
 #include <bootblock_common.h>
 #include "board.h"
-#include <soc/qupv3_spi.h>
+#include <soc/qupv3_spi_common.h>
 
 void bootblock_mainboard_init(void)
 {

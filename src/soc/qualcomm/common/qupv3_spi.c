@@ -1,14 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
-#include <console/console.h>
 #include <lib.h>
 #include <soc/clock.h>
 #include <soc/gpio.h>
 #include <soc/qcom_qup_se.h>
-#include <soc/qupv3_config_common.h>
 #include <soc/qup_se_handlers_common.h>
-#include <soc/qupv3_spi.h>
+#include <soc/qupv3_config_common.h>
+#include <soc/qupv3_spi_common.h>
 #include <types.h>
 
 /* SE_SPI_LOOPBACK register fields */

@@ -160,12 +160,6 @@ int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type);
 int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
 		const char *name, uint32_t *type);
 
-/* Return mapping of option ROM found in boot device. NULL on error. */
-void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device);
-/* Return mapping of option ROM with revision number. Returns NULL on error. */
-void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device, uint8_t rev);
-
-
 /**********************************************************************************************
  *                         INTERNAL HELPERS FOR INLINES, DO NOT USE.                          *
  **********************************************************************************************/

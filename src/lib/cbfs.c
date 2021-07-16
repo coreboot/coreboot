@@ -264,46 +264,6 @@ static size_t cbfs_load_and_decompress(const struct region_device *rdev, void *b
 	}
 }
 
-static inline int tohex4(unsigned int c)
-{
-	return (c <= 9) ? (c + '0') : (c - 10 + 'a');
-}
-
-static void tohex8(unsigned int val, char *dest)
-{
-	dest[0] = tohex4((val >> 4) & 0xf);
-	dest[1] = tohex4(val & 0xf);
-}
-
-static void tohex16(unsigned int val, char *dest)
-{
-	dest[0] = tohex4(val >> 12);
-	dest[1] = tohex4((val >> 8) & 0xf);
-	dest[2] = tohex4((val >> 4) & 0xf);
-	dest[3] = tohex4(val & 0xf);
-}
-
-void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device)
-{
-	char name[17] = "pciXXXX,XXXX.rom";
-
-	tohex16(vendor, name + 3);
-	tohex16(device, name + 8);
-
-	return cbfs_map(name, NULL);
-}
-
-void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device, uint8_t rev)
-{
-	char name[20] = "pciXXXX,XXXX,XX.rom";
-
-	tohex16(vendor, name + 3);
-	tohex16(device, name + 8);
-	tohex8(rev, name + 13);
-
-	return cbfs_map(name, NULL);
-}
-
 void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 		  size_t *size_out, bool force_ro, enum cbfs_type *type)
 {

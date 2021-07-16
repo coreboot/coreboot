@@ -6,6 +6,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <stdio.h>
 #include <string.h>
 #include <cbfs.h>
 #include <cbmem.h>
@@ -14,6 +15,24 @@
 /* Rmodules don't like weak symbols. */
 void __weak map_oprom_vendev_rev(u32 *vendev, u8 *rev) { return; }
 u32 __weak map_oprom_vendev(u32 vendev) { return vendev; }
+
+static void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device)
+{
+	char name[17] = "pciXXXX,XXXX.rom";
+
+	snprintf(name, sizeof(name), "pci%04hx,%04hx.rom", vendor, device);
+
+	return cbfs_map(name, NULL);
+}
+
+static void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device, uint8_t rev)
+{
+	char name[20] = "pciXXXX,XXXX,XX.rom";
+
+	snprintf(name, sizeof(name), "pci%04hx,%04hx,%02hhx.rom", vendor, device, rev);
+
+	return cbfs_map(name, NULL);
+}
 
 struct rom_header *pci_rom_probe(const struct device *dev)
 {

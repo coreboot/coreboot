@@ -163,9 +163,6 @@ void boot_state_sched_entries(struct boot_state_init_entry *entries,
  * success < 0  when the phase of the (state,seq) has already ran. */
 int boot_state_block(boot_state_t state, boot_state_sequence_t seq);
 int boot_state_unblock(boot_state_t state, boot_state_sequence_t seq);
-/* Block/Unblock current state phase from transitioning. */
-void boot_state_current_block(void);
-void boot_state_current_unblock(void);
 
 /* In order to schedule boot state callbacks at compile-time specify the
  * entries in an array using the BOOT_STATE_INIT_ENTRIES and

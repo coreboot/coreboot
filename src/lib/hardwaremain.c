@@ -519,13 +519,3 @@ int boot_state_unblock(boot_state_t state, boot_state_sequence_t seq)
 
 	return 0;
 }
-
-void boot_state_current_block(void)
-{
-	boot_state_block(current_phase.state_id, current_phase.seq);
-}
-
-void boot_state_current_unblock(void)
-{
-	boot_state_unblock(current_phase.state_id, current_phase.seq);
-}

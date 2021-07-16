@@ -5,7 +5,7 @@
 #include <arch/cache.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>
-#include <soc/qspi.h>
+#include <soc/qspi_common.h>
 #include <soc/gpio.h>
 #include <soc/clock.h>
 #include <symbols.h>
@@ -65,11 +65,11 @@ static void dma_transfer_chain(struct cmd_desc *chain)
 {
 	uint32_t mstr_int_status;
 
-	write32(&sc7180_qspi->mstr_int_sts, 0xFFFFFFFF);
-	write32(&sc7180_qspi->next_dma_desc_addr, (uint32_t)(uintptr_t) chain);
+	write32(&qcom_qspi->mstr_int_sts, 0xFFFFFFFF);
+	write32(&qcom_qspi->next_dma_desc_addr, (uint32_t)(uintptr_t) chain);
 
 	while (1) {
-		mstr_int_status = read32(&sc7180_qspi->mstr_int_sts);
+		mstr_int_status = read32(&qcom_qspi->mstr_int_sts);
 		if (mstr_int_status & DMA_CHAIN_DONE)
 			break;
 	}
@@ -138,20 +138,20 @@ static struct cmd_desc *allocate_descriptor(void)
 
 static void cs_change(enum cs_state state)
 {
-	gpio_set(GPIO(68), state == CS_DEASSERT);
+	gpio_set(QSPI_CS, state == CS_DEASSERT);
 }
 
 static void configure_gpios(void)
 {
-	gpio_output(GPIO(68), 1);
+	gpio_output(QSPI_CS, 1);
 
-	gpio_configure(GPIO(64), GPIO64_FUNC_QSPI_DATA_0,
+	gpio_configure(QSPI_DATA_0, GPIO_FUNC_QSPI_DATA_0,
 		GPIO_NO_PULL, GPIO_2MA, GPIO_OUTPUT);
 
-	gpio_configure(GPIO(65), GPIO65_FUNC_QSPI_DATA_1,
+	gpio_configure(QSPI_DATA_1, GPIO_FUNC_QSPI_DATA_1,
 		GPIO_NO_PULL, GPIO_2MA, GPIO_OUTPUT);
 
-	gpio_configure(GPIO(63), GPIO63_FUNC_QSPI_CLK,
+	gpio_configure(QSPI_CLK, GPIO_FUNC_QSPI_CLK,
 		GPIO_NO_PULL, GPIO_8MA, GPIO_OUTPUT);
 }
 
@@ -240,12 +240,12 @@ static void reg_init(void)
 		(DMA_ENABLE) |
 		(FULL_CYCLE_MODE);
 
-	write32(&sc7180_qspi->mstr_cfg, mstr_config);
-	write32(&sc7180_qspi->ahb_mstr_cfg, 0xA42);
-	write32(&sc7180_qspi->mstr_int_en, 0x0);
-	write32(&sc7180_qspi->mstr_int_sts, 0xFFFFFFFF);
-	write32(&sc7180_qspi->rd_fifo_cfg, 0x0);
-	write32(&sc7180_qspi->rd_fifo_rst, RESET_FIFO);
+	write32(&qcom_qspi->mstr_cfg, mstr_config);
+	write32(&qcom_qspi->ahb_mstr_cfg, 0xA42);
+	write32(&qcom_qspi->mstr_int_en, 0x0);
+	write32(&qcom_qspi->mstr_int_sts, 0xFFFFFFFF);
+	write32(&qcom_qspi->rd_fifo_cfg, 0x0);
+	write32(&qcom_qspi->rd_fifo_rst, RESET_FIFO);
 }
 
 void quadspi_init(uint32_t hz)
@@ -256,13 +256,13 @@ void quadspi_init(uint32_t hz)
 	reg_init();
 }
 
-int sc7180_claim_bus(const struct spi_slave *slave)
+int qspi_claim_bus(const struct spi_slave *slave)
 {
 	cs_change(CS_ASSERT);
 	return 0;
 }
 
-void sc7180_release_bus(const struct spi_slave *slave)
+void qspi_release_bus(const struct spi_slave *slave)
 {
 	cs_change(CS_DEASSERT);
 }
@@ -283,13 +283,13 @@ static int xfer(enum qspi_mode mode, const void *dout, size_t out_bytes,
 	return 0;
 }
 
-int sc7180_xfer(const struct spi_slave *slave, const void *dout,
+int qspi_xfer(const struct spi_slave *slave, const void *dout,
 		size_t out_bytes, void *din, size_t in_bytes)
 {
 	return xfer(SDR_1BIT, dout, out_bytes, din, in_bytes);
 }
 
-int sc7180_xfer_dual(const struct spi_slave *slave, const void *dout,
+int qspi_xfer_dual(const struct spi_slave *slave, const void *dout,
 		     size_t out_bytes, void *din, size_t in_bytes)
 {
 	return xfer(SDR_2BIT, dout, out_bytes, din, in_bytes);

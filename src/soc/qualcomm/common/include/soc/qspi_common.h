@@ -3,10 +3,10 @@
 #include <soc/addressmap.h>
 #include <spi-generic.h>
 
-#ifndef __SOC_QUALCOMM_SC7180_QSPI_H__
-#define __SOC_QUALCOMM_SC7180_QSPI_H__
+#ifndef __SOC_QUALCOMM_QSPI_H__
+#define __SOC_QUALCOMM_QSPI_H__
 
-struct sc7180_qspi_regs {
+struct qcom_qspi_regs {
 	u32 mstr_cfg;
 	u32 ahb_mstr_cfg;
 	u32 reserve_0;
@@ -28,8 +28,8 @@ struct sc7180_qspi_regs {
 	u32 rd_fifo[16];
 };
 
-check_member(sc7180_qspi_regs, rd_fifo, 0x50);
-static struct sc7180_qspi_regs * const sc7180_qspi = (void *) QSPI_BASE;
+check_member(qcom_qspi_regs, rd_fifo, 0x50);
+static struct qcom_qspi_regs * const qcom_qspi = (void *) QSPI_BASE;
 
 // MSTR_CONFIG register
 
@@ -98,11 +98,11 @@ static struct sc7180_qspi_regs * const sc7180_qspi = (void *) QSPI_BASE;
 #define QSPI_MAX_PACKET_COUNT 0xFFC0
 
 void quadspi_init(uint32_t hz);
-int sc7180_claim_bus(const struct spi_slave *slave);
-int sc7180_setup_bus(const struct spi_slave *slave);
-void sc7180_release_bus(const struct spi_slave *slave);
-int sc7180_xfer(const struct spi_slave *slave, const void *dout,
+int qspi_claim_bus(const struct spi_slave *slave);
+int qspi_setup_bus(const struct spi_slave *slave);
+void qspi_release_bus(const struct spi_slave *slave);
+int qspi_xfer(const struct spi_slave *slave, const void *dout,
 		size_t out_bytes, void *din, size_t in_bytes);
-int sc7180_xfer_dual(const struct spi_slave *slave, const void *dout,
+int qspi_xfer_dual(const struct spi_slave *slave, const void *dout,
 		     size_t out_bytes, void *din, size_t in_bytes);
-#endif /* __SOC_QUALCOMM_SC7180_QSPI_H__ */
+#endif /* __SOC_QUALCOMM_QSPI_H__ */

@@ -24,6 +24,7 @@ $(objk)/Makefile.real: $(dir $(lastword $(MAKEFILE_LIST)))Makefile
 kecho := echo
 
 -include $(objk)/Makefile.real
+unexport KCONFIG_DEFCONFIG_LIST
 
 # Fill in Linux kconfig build rules to work
 

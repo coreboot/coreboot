@@ -1,12 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <bootstate.h>
-#include <cbmem.h>
-#include <console/console.h>
 #include <bcd.h>
 #include <boot_device.h>
+#include <bootstate.h>
+#include <cbmem.h>
+#include <commonlib/bsd/elog.h>
 #include <commonlib/region.h>
+#include <console/console.h>
+#include <elog.h>
 #include <fmap.h>
 #include <lib.h>
 #include <post.h>
@@ -14,8 +16,9 @@
 #include <smbios.h>
 #include <stdint.h>
 #include <string.h>
-#include <elog.h>
-#include "elog_internal.h"
+
+#define ELOG_MIN_AVAILABLE_ENTRIES	2  /* Shrink when this many can't fit */
+#define ELOG_SHRINK_PERCENTAGE		25 /* Percent of total area to remove */
 
 #if CONFIG(ELOG_DEBUG)
 #define elog_debug(STR...) printk(BIOS_DEBUG, STR)
@@ -239,24 +242,8 @@ static int elog_is_header_valid(void)
 
 	header = rdev_mmap(mirror_dev_get(), 0, sizeof(*header));
 
-	if (header == NULL) {
-		printk(BIOS_ERR, "ELOG: could not map header.\n");
-		return 0;
-	}
-
-	if (header->magic != ELOG_SIGNATURE) {
-		printk(BIOS_ERR, "ELOG: header magic 0x%X != 0x%X\n",
-		       header->magic, ELOG_SIGNATURE);
-		return 0;
-	}
-	if (header->version != ELOG_VERSION) {
-		printk(BIOS_ERR, "ELOG: header version %u != %u\n",
-		       header->version, ELOG_VERSION);
-		return 0;
-	}
-	if (header->header_size != sizeof(*header)) {
-		printk(BIOS_ERR, "ELOG: header size mismatch %u != %zu\n",
-		       header->header_size, sizeof(*header));
+	if (elog_verify_header(header) != CB_SUCCESS) {
+		printk(BIOS_ERR, "ELOG: failed to verify header.\n");
 		return 0;
 	}
 	return 1;

@@ -6,7 +6,6 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/common/common.h>
 #include <intelblocks/cpulib.h>
-#include <intelblocks/mp_init.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/sgx.h>
 #include <intelblocks/systemagent.h>

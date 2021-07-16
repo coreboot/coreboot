@@ -78,11 +78,9 @@ struct rom_header *pci_rom_probe(const struct device *dev)
 		rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 
 		if (rom_address == 0x00000000 || rom_address == 0xffffffff) {
-#if CONFIG(CPU_QEMU_X86)
-			if ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA)
+			if (CONFIG(CPU_QEMU_X86) && (dev->class >> 8) == PCI_CLASS_DISPLAY_VGA)
 				rom_address = 0xc0000;
 			else
-#endif
 				return NULL;
 		} else {
 			/* Enable expansion ROM address decoding. */

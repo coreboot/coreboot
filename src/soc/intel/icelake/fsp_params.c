@@ -12,7 +12,6 @@
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>
 #include <string.h>
-#include <intelblocks/mp_init.h>
 #include <fsp/ppi/mp_service_ppi.h>
 
 static void parse_devicetree(FSP_S_CONFIG *params)

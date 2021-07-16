@@ -6,7 +6,6 @@
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
 #include <intelblocks/lpss.h>
-#include <intelblocks/mp_init.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>

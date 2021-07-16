@@ -34,6 +34,10 @@ config BOARD_GOOGLE_POMPOM
 	bool "->  Pompom"
 	select BOARD_GOOGLE_TROGDOR_COMMON
 
+config BOARD_GOOGLE_WORMDINGLER
+	bool "->  Wormdingler"
+	select BOARD_GOOGLE_TROGDOR_COMMON
+
 config BOARD_GOOGLE_TROGDOR
 	bool "->  Trogdor"
 	select BOARD_GOOGLE_TROGDOR_COMMON

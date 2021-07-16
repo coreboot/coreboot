@@ -74,5 +74,6 @@ config MAINBOARD_PART_NUMBER
 	default "Pazquel" if BOARD_GOOGLE_PAZQUEL
 	default "Pompom" if BOARD_GOOGLE_POMPOM
 	default "Trogdor" if BOARD_GOOGLE_TROGDOR
+	default "Wormdingler" if BOARD_GOOGLE_WORMDINGLER
 
 endif # BOARD_GOOGLE_TROGDOR_COMMON

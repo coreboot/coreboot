@@ -12,7 +12,6 @@
 #include <intelblocks/cfg.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
-#include <intelblocks/mp_init.h>
 #include <intelblocks/pcie_rp.h>
 #include <intelblocks/power_limit.h>
 #include <intelblocks/xdci.h>

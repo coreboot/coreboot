@@ -57,7 +57,7 @@ void mainboard_set_regulator_vol(enum mtk_regulator regulator,
 
 	id = get_mt6360_regulator_id(regulator);
 	if (id >= 0) {
-		mt6360_pmic_set_voltage(id, voltage_uv);
+		mt6360_set_voltage(id, voltage_uv);
 		return;
 	}
 
@@ -85,7 +85,7 @@ uint32_t mainboard_get_regulator_vol(enum mtk_regulator regulator)
 
 	id = get_mt6360_regulator_id(regulator);
 	if (id >= 0)
-		return mt6360_pmic_get_voltage(id);
+		return mt6360_get_voltage(id);
 
 	id = get_mt6359p_regulator_id(regulator);
 	if (id >= 0)
@@ -113,7 +113,7 @@ int mainboard_enable_regulator(enum mtk_regulator regulator, uint8_t enable)
 
 	id = get_mt6360_regulator_id(regulator);
 	if (id >= 0) {
-		mt6360_pmic_enable(id, enable);
+		mt6360_enable(id, enable);
 		return 0;
 	}
 
@@ -131,7 +131,7 @@ uint8_t mainboard_regulator_is_enabled(enum mtk_regulator regulator)
 
 	id = get_mt6360_regulator_id(regulator);
 	if (id >= 0)
-		return mt6360_pmic_is_enabled(id);
+		return mt6360_is_enabled(id);
 
 	printk(BIOS_ERR,
 	       "Failed to query regulator ID: %d\n; assuming disabled",

@@ -55,15 +55,9 @@ struct mt6360_data {
 };
 
 void mt6360_init(uint8_t bus);
-
-void mt6360_ldo_enable(enum mt6360_regulator_id id, uint8_t enable);
-uint8_t mt6360_ldo_is_enabled(enum mt6360_regulator_id id);
-void mt6360_ldo_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv);
-u32 mt6360_ldo_get_voltage(enum mt6360_regulator_id id);
-
-void mt6360_pmic_enable(enum mt6360_regulator_id id, uint8_t enable);
-uint8_t mt6360_pmic_is_enabled(enum mt6360_regulator_id id);
-void mt6360_pmic_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv);
-u32 mt6360_pmic_get_voltage(enum mt6360_regulator_id id);
+void mt6360_enable(enum mt6360_regulator_id id, uint8_t enable);
+uint8_t mt6360_is_enabled(enum mt6360_regulator_id id);
+void mt6360_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv);
+u32 mt6360_get_voltage(enum mt6360_regulator_id id);
 
 #endif

@@ -195,7 +195,7 @@ static bool is_valid_pmic(enum mt6360_regulator_id id)
 	return true;
 }
 
-void mt6360_ldo_enable(enum mt6360_regulator_id id, uint8_t enable)
+static void mt6360_ldo_enable(enum mt6360_regulator_id id, uint8_t enable)
 {
 	u8 val;
 	const struct mt6360_data *data;
@@ -216,7 +216,7 @@ void mt6360_ldo_enable(enum mt6360_regulator_id id, uint8_t enable)
 	mt6360_config_interface(MT6360_INDEX_LDO, data->enable_reg, val, 0xff, 0);
 }
 
-uint8_t mt6360_ldo_is_enabled(enum mt6360_regulator_id id)
+static uint8_t mt6360_ldo_is_enabled(enum mt6360_regulator_id id)
 {
 	u8 val;
 	const struct mt6360_data *data;
@@ -232,7 +232,7 @@ uint8_t mt6360_ldo_is_enabled(enum mt6360_regulator_id id)
 	return (val & data->enable_mask) ? 1 : 0;
 }
 
-void mt6360_ldo_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv)
+static void mt6360_ldo_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv)
 {
 	u8 val = 0;
 	u32 voltage_uv_temp = 0;
@@ -270,7 +270,7 @@ void mt6360_ldo_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv)
 	mt6360_config_interface(MT6360_INDEX_LDO, data->vsel_reg, val, 0xff, 0);
 }
 
-u32 mt6360_ldo_get_voltage(enum mt6360_regulator_id id)
+static u32 mt6360_ldo_get_voltage(enum mt6360_regulator_id id)
 {
 	u8 val;
 	u32 voltage_uv;
@@ -293,6 +293,89 @@ u32 mt6360_ldo_get_voltage(enum mt6360_regulator_id id)
 
 	val = MIN(val & 0x0f, 0x0a);
 	voltage_uv += val * 10000;
+
+	return voltage_uv;
+}
+
+static void mt6360_pmic_enable(enum mt6360_regulator_id id, uint8_t enable)
+{
+	u8 val;
+	const struct mt6360_data *data;
+
+	if (!is_valid_pmic(id))
+		return;
+
+	data = &regulator_data[id];
+
+	if (mt6360_read_interface(MT6360_INDEX_PMIC, data->enable_reg, &val, 0xff, 0) < 0)
+		return;
+
+	if (enable)
+		val |= data->enable_mask;
+	else
+		val &= ~(data->enable_mask);
+
+	mt6360_config_interface(MT6360_INDEX_PMIC, data->enable_reg, val, 0xff, 0);
+}
+
+static uint8_t mt6360_pmic_is_enabled(enum mt6360_regulator_id id)
+{
+	u8 val;
+	const struct mt6360_data *data;
+
+	if (!is_valid_pmic(id))
+		return 0;
+
+	data = &regulator_data[id];
+
+	if (mt6360_read_interface(MT6360_INDEX_PMIC, data->enable_reg, &val, 0xff, 0) < 0)
+		return 0;
+
+	return (val & data->enable_mask) ? 1 : 0;
+}
+
+static void mt6360_pmic_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv)
+{
+	u8 val = 0;
+
+	const struct mt6360_data *data;
+
+	if (!is_valid_pmic(id))
+		return;
+
+	data = &regulator_data[id];
+
+	if (id == MT6360_BUCK1 || id == MT6360_BUCK2) {
+		val = (voltage_uv - 300000) / 5000;
+	} else if (id == MT6360_LDO6 || id == MT6360_LDO7) {
+		val = (((voltage_uv - 500000) / 100000) << 4);
+		val += (((voltage_uv - 500000) % 100000) / 10000);
+	}
+
+	mt6360_config_interface(MT6360_INDEX_PMIC, data->vsel_reg, val, 0xff, 0);
+}
+
+static u32 mt6360_pmic_get_voltage(enum mt6360_regulator_id id)
+{
+	u8 val;
+	u32 voltage_uv = 0;
+
+	const struct mt6360_data *data;
+
+	if (!is_valid_pmic(id))
+		return 0;
+
+	data = &regulator_data[id];
+
+	if (mt6360_read_interface(MT6360_INDEX_PMIC, data->vsel_reg, &val, 0xff, 0) < 0)
+		return 0;
+
+	if (id == MT6360_BUCK1 || id == MT6360_BUCK2) {
+		voltage_uv = 300000 + val * 5000;
+	} else if (id == MT6360_LDO6 || id == MT6360_LDO7) {
+		voltage_uv = 500000 + 100000 * (val >> 4);
+		voltage_uv += MIN(val & 0xf, 0xa) * 10000;
+	}
 
 	return voltage_uv;
 }
@@ -321,85 +404,38 @@ void mt6360_init(uint8_t bus)
 	       __func__, delay01, delay02, delay03, delay04);
 }
 
-void mt6360_pmic_enable(enum mt6360_regulator_id id, uint8_t enable)
+void mt6360_enable(enum mt6360_regulator_id id, uint8_t enable)
 {
-	u8 val;
-	const struct mt6360_data *data;
+	if (is_valid_ldo(id))
+		mt6360_ldo_enable(id, enable);
+	else if (is_valid_pmic(id))
+		mt6360_pmic_enable(id, enable);
+}
 
-	if (!is_valid_pmic(id))
-		return;
-
-	data = &regulator_data[id];
-
-	if (mt6360_read_interface(MT6360_INDEX_PMIC, data->enable_reg, &val, 0xff, 0) < 0)
-		return;
-
-	if (enable)
-		val |= data->enable_mask;
+uint8_t mt6360_is_enabled(enum mt6360_regulator_id id)
+{
+	if (is_valid_ldo(id))
+		return mt6360_ldo_is_enabled(id);
+	else if (is_valid_pmic(id))
+		return mt6360_pmic_is_enabled(id);
 	else
-		val &= ~(data->enable_mask);
-
-	mt6360_config_interface(MT6360_INDEX_PMIC, data->enable_reg, val, 0xff, 0);
+		return 0;
 }
 
-uint8_t mt6360_pmic_is_enabled(enum mt6360_regulator_id id)
+void mt6360_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv)
 {
-	u8 val;
-	const struct mt6360_data *data;
-
-	if (!is_valid_pmic(id))
-		return 0;
-
-	data = &regulator_data[id];
-
-	if (mt6360_read_interface(MT6360_INDEX_PMIC, data->enable_reg, &val, 0xff, 0) < 0)
-		return 0;
-
-	return (val & data->enable_mask) ? 1 : 0;
+	if (is_valid_ldo(id))
+		mt6360_ldo_set_voltage(id, voltage_uv);
+	else if (is_valid_pmic(id))
+		mt6360_pmic_set_voltage(id, voltage_uv);
 }
 
-void mt6360_pmic_set_voltage(enum mt6360_regulator_id id, u32 voltage_uv)
+u32 mt6360_get_voltage(enum mt6360_regulator_id id)
 {
-	u8 val = 0;
-
-	const struct mt6360_data *data;
-
-	if (!is_valid_pmic(id))
-		return;
-
-	data = &regulator_data[id];
-
-	if (id == MT6360_BUCK1 || id == MT6360_BUCK2) {
-		val = (voltage_uv - 300000) / 5000;
-	} else if (id == MT6360_LDO6 || id == MT6360_LDO7) {
-		val = (((voltage_uv - 500000) / 100000) << 4);
-		val += (((voltage_uv - 500000) % 100000) / 10000);
-	}
-
-	mt6360_config_interface(MT6360_INDEX_PMIC, data->vsel_reg, val, 0xff, 0);
-}
-
-u32 mt6360_pmic_get_voltage(enum mt6360_regulator_id id)
-{
-	u8 val;
-	u32 voltage_uv = 0;
-
-	const struct mt6360_data *data;
-
-	if (!is_valid_pmic(id))
+	if (is_valid_ldo(id))
+		return mt6360_ldo_get_voltage(id);
+	else if (is_valid_pmic(id))
+		return mt6360_pmic_get_voltage(id);
+	else
 		return 0;
-
-	data = &regulator_data[id];
-
-	if (mt6360_read_interface(MT6360_INDEX_PMIC, data->vsel_reg, &val, 0xff, 0) < 0)
-		return 0;
-
-	if (id == MT6360_BUCK1 || id == MT6360_BUCK2) {
-		voltage_uv = 300000 + val * 5000;
-	} else if (id == MT6360_LDO6 || id == MT6360_LDO7) {
-		voltage_uv = 500000 + 100000 * (val >> 4);
-		voltage_uv += MIN(val & 0xf, 0xa) * 10000;
-	}
-
-	return voltage_uv;
 }

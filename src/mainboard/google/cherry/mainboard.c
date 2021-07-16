@@ -127,8 +127,8 @@ static void configure_sdcard(void)
 
 	mtk_i2c_bus_init(7);
 	mt6360_init(7);
-	mt6360_ldo_enable(MT6360_LDO3, 1);
-	mt6360_ldo_enable(MT6360_LDO5, 1);
+	mt6360_enable(MT6360_LDO3, 1);
+	mt6360_enable(MT6360_LDO5, 1);
 }
 
 /* Set up backlight control pins as output pin and power-off by default */

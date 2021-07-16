@@ -62,9 +62,9 @@ static void *get_apob_dram_address(void)
 	return apob_src_ram;
 }
 
-static int get_nv_region(struct region *r)
+static int get_nv_rdev(struct region_device *r)
 {
-	if  (fmap_locate_area(DEFAULT_MRC_CACHE, r) < 0) {
+	if  (fmap_locate_area_as_rdev(DEFAULT_MRC_CACHE, r) < 0) {
 		printk(BIOS_ERR, "Error: No APOB NV region is found in flash\n");
 		return -1;
 	}
@@ -72,17 +72,11 @@ static int get_nv_region(struct region *r)
 	return 0;
 }
 
-static void *get_apob_from_nv_region(struct region *region)
+static void *get_apob_from_nv_rdev(struct region_device *read_rdev)
 {
-	struct region_device read_rdev;
 	struct apob_base_header apob_header;
 
-	if (boot_device_ro_subregion(region, &read_rdev) < 0) {
-		printk(BIOS_ERR, "Failed boot_device_ro_subregion\n");
-		return NULL;
-	}
-
-	if (rdev_readat(&read_rdev, &apob_header, 0, sizeof(apob_header)) < 0) {
+	if (rdev_readat(read_rdev, &apob_header, 0, sizeof(apob_header)) < 0) {
 		printk(BIOS_ERR, "Couldn't read APOB header!\n");
 		return NULL;
 	}
@@ -93,15 +87,14 @@ static void *get_apob_from_nv_region(struct region *region)
 	}
 
 	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
-	return rdev_mmap_full(&read_rdev);
+	return rdev_mmap_full(read_rdev);
 }
 
 /* Save APOB buffer to flash */
 static void soc_update_apob_cache(void *unused)
 {
 	struct apob_base_header *apob_rom;
-	struct region_device write_rdev;
-	struct region region;
+	struct region_device read_rdev, write_rdev;
 	bool update_needed = false;
 	const struct apob_base_header *apob_src_ram;
 
@@ -113,12 +106,12 @@ static void soc_update_apob_cache(void *unused)
 	if (apob_src_ram == NULL)
 		return;
 
-	if (get_nv_region(&region) != 0)
+	if (get_nv_rdev(&read_rdev) != 0)
 		return;
 
 	timestamp_add_now(TS_AMD_APOB_READ_START);
 
-	apob_rom = get_apob_from_nv_region(&region);
+	apob_rom = get_apob_from_nv_rdev(&read_rdev);
 	if (apob_rom == NULL) {
 		update_needed = true;
 	} else if (memcmp(apob_src_ram, apob_rom, apob_src_ram->size)) {
@@ -134,10 +127,10 @@ static void soc_update_apob_cache(void *unused)
 
 	printk(BIOS_SPEW, "Copy APOB from RAM %p/%#x to flash %#zx/%#zx\n",
 		apob_src_ram, apob_src_ram->size,
-		region_offset(&region), region_sz(&region));
+		region_device_offset(&read_rdev), region_device_sz(&read_rdev));
 
-	if (boot_device_rw_subregion(&region, &write_rdev) < 0) {
-		printk(BIOS_ERR, "Failed boot_device_rw_subregion\n");
+	if  (fmap_locate_area_as_rdev_rw(DEFAULT_MRC_CACHE, &write_rdev) < 0) {
+		printk(BIOS_ERR, "Error: No RW APOB NV region is found in flash\n");
 		return;
 	}
 
@@ -163,12 +156,12 @@ static void soc_update_apob_cache(void *unused)
 
 static void *get_apob_nv_address(void)
 {
-	struct region region;
+	struct region_device rdev;
 
-	if (get_nv_region(&region) != 0)
+	if (get_nv_rdev(&rdev) != 0)
 		return NULL;
 
-	return get_apob_from_nv_region(&region);
+	return get_apob_from_nv_rdev(&rdev);
 }
 
 void *soc_fill_apob_cache(void)

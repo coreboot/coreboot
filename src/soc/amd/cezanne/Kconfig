@@ -379,7 +379,7 @@ config PSP_SOFTFUSE_BITS
 config PSP_VERSTAGE_FILE
 	string "Specify the PSP_verstage file path"
 	depends on VBOOT_STARTS_BEFORE_BOOTBLOCK
-	default "$(obj)/psp_verstage.bin"
+	default "\$(obj)/psp_verstage.bin"
 	help
 	  Add psp_verstage file to the build & PSP Directory Table
 

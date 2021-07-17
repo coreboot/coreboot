@@ -92,8 +92,8 @@ chip soc/intel/alderlake
 	#|                   | for TPM communication     |
 	#| I2C5              | Trackpad                  |
 	#+-------------------+---------------------------+
+	register "common_soc_config.chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
 	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
 		},

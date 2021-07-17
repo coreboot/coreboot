@@ -814,16 +814,7 @@ sub add_symbol {
     }
     else {
         $symbols{$symbol}{count}++;
-
-        if ( $inside_choice && !$symbols{$symbol}{choice} ) {
-            show_error( "$symbol entry at $filename:$line_no has already been created inside a choice block "
-                  . "at $symbols{$symbol}{0}{file}:$symbols{$symbol}{0}{line_no}." );
-        }
-        elsif ( !$inside_choice && $symbols{$symbol}{choice} ) {
-            show_error( "$symbol entry at $filename:$line_no has already been created outside a choice block "
-                  . "at $symbols{$symbol}{0}{file}:$symbols{$symbol}{0}{line_no}." );
-        }
-        elsif ( $inside_choice && $symbols{$symbol}{choice} ) {
+        if ( $inside_choice && $symbols{$symbol}{choice} ) {
             show_error( "$symbol entry at $filename:$line_no has already been created inside another choice block "
                   . "at $symbols{$symbol}{0}{file}:$symbols{$symbol}{0}{line_no}." );
         }

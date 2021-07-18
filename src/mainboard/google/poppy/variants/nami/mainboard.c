@@ -6,10 +6,10 @@
 #include <cbfs.h>
 #include <chip.h>
 #include <console/console.h>
+#include <cpu/intel/cpu_ids.h>
 #include <device/device.h>
 #include <drivers/intel/gma/opregion.h>
 #include <ec/google/chromeec/ec.h>
-#include <intelblocks/mp_init.h>
 #include <intelblocks/power_limit.h>
 #include <smbios.h>
 #include <soc/ramstage.h>

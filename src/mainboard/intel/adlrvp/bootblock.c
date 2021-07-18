@@ -6,8 +6,8 @@
 #include <cf9_reset.h>
 #include <commonlib/region.h>
 #include <console/console.h>
+#include <cpu/intel/cpu_ids.h>
 #include <fmap.h>
-#include <intelblocks/mp_init.h>
 #include <intelblocks/pmclib.h>
 
 #define SI_DESC_REGION		"SI_DESC"

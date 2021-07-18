@@ -4,7 +4,18 @@
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <ec/ec.h>
+#include <soc/ramstage.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+
+void mainboard_update_soc_chip_config(struct soc_intel_alderlake_config *config)
+{
+	variant_update_soc_chip_config(config);
+}
+
+__weak void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
+{
+	/* default implementation does nothing */
+}
 
 static void mainboard_init(void *chip_info)
 {

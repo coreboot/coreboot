@@ -15,6 +15,7 @@
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <intelblocks/tcss.h>
+#include <soc/cpu.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
@@ -614,6 +615,8 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	/* VrConfig Settings for IA and GT domains */
 	for (size_t i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++)
 		fill_vr_domain_config(s_cfg, i, &config->domain_vr_config[i]);
+
+	s_cfg->LpmStateEnableMask = get_supported_lpm_mask();
 }
 
 static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,

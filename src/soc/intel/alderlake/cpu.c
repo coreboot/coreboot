@@ -188,3 +188,18 @@ enum adl_cpu_type get_adl_cpu_type(void)
 
 	return ADL_UNKNOWN;
 }
+
+uint8_t get_supported_lpm_mask(void)
+{
+	enum adl_cpu_type type = get_adl_cpu_type();
+	switch (type) {
+	case ADL_M: /* fallthrough */
+	case ADL_P:
+		return LPM_S0i2_0 | LPM_S0i3_0;
+	case ADL_S:
+		return LPM_S0i2_0 | LPM_S0i2_1;
+	default:
+		printk(BIOS_ERR, "Unknown ADL CPU type: %d\n", type);
+		return 0;
+	}
+}

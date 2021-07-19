@@ -28,4 +28,7 @@ enum adl_cpu_type {
 
 enum adl_cpu_type get_adl_cpu_type(void);
 
+/* Get a bitmask of supported LPM states */
+uint8_t get_supported_lpm_mask(void);
+
 #endif

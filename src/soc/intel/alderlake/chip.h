@@ -116,6 +116,20 @@ enum pkgcstate_limit {
 	LIMIT_AUTO       = 255,
 };
 
+/* Bit values for use in LpmStateEnableMask. */
+enum lpm_state_mask {
+	LPM_S0i2_0 = BIT(0),
+	LPM_S0i2_1 = BIT(1),
+	LPM_S0i2_2 = BIT(2),
+	LPM_S0i3_0 = BIT(3),
+	LPM_S0i3_1 = BIT(4),
+	LPM_S0i3_2 = BIT(5),
+	LPM_S0i3_3 = BIT(6),
+	LPM_S0i3_4 = BIT(7),
+	LPM_S0iX_ALL = LPM_S0i2_0 | LPM_S0i2_1 | LPM_S0i2_2
+		     | LPM_S0i3_0 | LPM_S0i3_1 | LPM_S0i3_2 | LPM_S0i3_3 | LPM_S0i3_4,
+};
+
 struct soc_intel_alderlake_config {
 
 	/* Common struct containing soc config data required by common code */

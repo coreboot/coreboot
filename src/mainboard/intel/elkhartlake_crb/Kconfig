@@ -12,6 +12,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_SPD_IN_CBFS
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
+	select INTEL_LPSS_UART_FOR_CONSOLE
 	select SOC_INTEL_ELKHARTLAKE
 
 config MAINBOARD_DIR
@@ -40,7 +41,6 @@ config VBOOT
 
 config UART_FOR_CONSOLE
 	int
-	default 2 if INTEL_LPSS_UART_FOR_CONSOLE
-	default 0
+	default 2
 
 endif

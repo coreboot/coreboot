@@ -171,7 +171,7 @@ $(OPENSBI_TARGET): $(obj)/config.h | $(OPENSBI_SOURCE)
 	mkdir -p $(OPENSBI_BUILD)
 	$(MAKE) \
 		-C "$(OPENSBI_SOURCE)" \
-		CC="$(CC_ramstage)" \
+		CC="$(CC_ramstage) -fno-builtin" \
 		LD="$(LD_ramstage)" \
 		OBJCOPY="$(OBJCOPY_ramstage)" \
 		AR="$(AR_ramstage)" \

@@ -168,15 +168,15 @@ config CONSOLE_UART_BASE_ADDRESS
 	depends on INTEL_LPSS_UART_FOR_CONSOLE
 
 # Clock divider parameters for 115200 baud rate
-# Baudrate = (UART source clcok * M) /(N *16)
-# EHL UART source clock: 100MHz
+# Baudrate = (UART source clock * M) /(N *16)
+# EHL UART source clock: 120MHz
 config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
 	hex
-	default 0x30
+	default 0x25a
 
 config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
 	hex
-	default 0xc35
+	default 0x7fff
 
 config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE

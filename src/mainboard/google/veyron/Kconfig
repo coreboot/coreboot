@@ -79,13 +79,4 @@ config CBFS_SIZE
 	default 0x100000 if CHROMEOS
 	default ROM_SIZE
 
-config EC_GOOGLE_CHROMEEC_BOARDNAME
-	string
-	depends on CHROMEOS
-	#default "jaq" if BOARD_GOOGLE_VEYRON_JAQ
-	default "jerry" if BOARD_GOOGLE_VEYRON_JERRY
-	#default "mighty" if BOARD_GOOGLE_VEYRON_MIGHTY
-	#default "minnie" if BOARD_GOOGLE_VEYRON_MINNIE
-	#default "speedy" if BOARD_GOOGLE_VEYRON_SPEEDY
-
 endif #  BOARD_GOOGLE_VEYRON

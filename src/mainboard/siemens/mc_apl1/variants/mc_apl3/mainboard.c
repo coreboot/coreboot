@@ -36,10 +36,11 @@ void variant_mainboard_final(void)
 	 */
 	pcr_or32(PID_LPC, PCR_LPC_PRC, (PCR_LPC_CCE_EN | PCR_LPC_PCE_EN));
 
-	/* Set Master Enable for on-board PCI device. */
+	/* Set Master Enable for on-board PCI device if allowed. */
 	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403e, 0);
 	if (dev) {
-		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
+		if (CONFIG(PCI_ALLOW_BUS_MASTER))
+			pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 		/* Disable clock outputs 0 and 2-4 (CLKOUT) for upstream
 		 * XIO2001 PCIe to PCI Bridge.

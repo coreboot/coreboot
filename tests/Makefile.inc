@@ -118,8 +118,8 @@ $($(1)-objs): TEST_CFLAGS += -I$$(dir $$($(1)-config-file)) \
 $($(1)-srcobjs): OBJCOPY_FLAGS += $$(foreach mock,$$($(1)-mocks),--globalize-symbol=$$(mock) --weaken-symbol=$$(mock))
 $($(1)-objs): $(testobj)/$(1)/%.o: $$$$*.c $$($(1)-config-file)
 	mkdir -p $$(dir $$@)
-	$(HOSTCC) $(HOSTCFLAGS) $$(TEST_CFLAGS) $($(1)-cflags)  -MMD \
-		-MT $$@ -c $$< -o $$@.orig
+	$(HOSTCC) $(HOSTCFLAGS) $$(TEST_CFLAGS) $($(1)-cflags) -MMD \
+		-MF $$(basename $$@).d -MT $$@ -c $$< -o $$@.orig
 	$(OBJCOPY) $$@.orig $$(OBJCOPY_FLAGS) $$@
 
 $($(1)-bin): $($(1)-objs) $(CMOCKA_LIB)

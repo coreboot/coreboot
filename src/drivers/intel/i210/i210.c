@@ -208,7 +208,8 @@ static void init(struct device *dev)
 
 static void enable_bus_master(struct device *dev)
 {
-	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
+	if (CONFIG(PCI_ALLOW_BUS_MASTER_ANY_DEVICE))
+		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 }
 
 static struct device_operations i210_ops  = {

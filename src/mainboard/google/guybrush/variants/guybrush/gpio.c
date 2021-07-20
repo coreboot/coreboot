@@ -23,21 +23,29 @@ static const struct soc_amd_gpio bid1_gpio_table[] = {
 /* Use AUX Reset lines instead of PCIE_RST for Board Version 1 */
 static const struct soc_amd_gpio bid1_early_gpio_table[] = {
 	/* SD_AUX_RESET_L */
-	PAD_GPO(GPIO_70, HIGH),
+	PAD_GPO(GPIO_70, LOW),
 };
 
 /* This table is used by guybrush variant with board version < 2. */
 static const struct soc_amd_gpio bid1_pcie_gpio_table[] = {
+	/* EN_PWR_WWAN_X */
+	PAD_GPO(GPIO_8, LOW),
+	/* WWAN_RST_L */
+	PAD_GPO(GPIO_24, LOW),
+	/* WWAN_DISABLE */
+	PAD_GPO(GPIO_85, HIGH),
 	/* SD_AUX_RESET_L */
 	PAD_GPO(GPIO_70, HIGH),
 };
 
-/* WWAN on USB or no WWAN - Disable the WWAN power line */
-static const struct soc_amd_gpio bootblock_gpio_table_pcie_wwan[] = {
+/* This table is used by guybrush variant with board version >= 2. */
+static const struct soc_amd_gpio bid2_pcie_gpio_table[] = {
 	/* EN_PWR_WWAN_X */
 	PAD_GPO(GPIO_8, LOW),
-	/* WLAN_DISABLE */
-	PAD_GPO(GPIO_130, LOW),
+	/* WWAN_RST_L */
+	PAD_GPO(GPIO_24, LOW),
+	/* WWAN_DISABLE */
+	PAD_GPO(GPIO_85, HIGH),
 };
 
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
@@ -76,14 +84,6 @@ const struct soc_amd_gpio *variant_pcie_override_gpio_table(size_t *size)
 		return bid1_pcie_gpio_table;
 	}
 
-	return NULL;
-}
-const struct soc_amd_gpio *variant_bootblock_override_gpio_table(size_t *size)
-{
-	if (variant_has_pcie_wwan()) {
-		*size = ARRAY_SIZE(bootblock_gpio_table_pcie_wwan);
-		return bootblock_gpio_table_pcie_wwan;
-	}
-
-	return NULL;
+	*size = ARRAY_SIZE(bid2_pcie_gpio_table);
+	return bid2_pcie_gpio_table;
 }

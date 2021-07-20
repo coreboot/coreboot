@@ -58,7 +58,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* PCIE_RST0_L */
 	PAD_NFO(GPIO_26, PCIE_RST_L, HIGH),
 	/* PCIE_RST1_L */
-	PAD_NF(GPIO_27, PCIE_RST1_L, PULL_NONE),
+	PAD_NFO(GPIO_27, PCIE_RST1_L, HIGH),
 	/* GPIO_28: Not available */
 	/* WLAN_AUX_RESET (Active HIGH)*/
 	PAD_GPO(GPIO_29, LOW),
@@ -78,7 +78,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* SOC_BIOS_WP_L */
 	PAD_GPI(GPIO_67, PULL_NONE),
 	/* EN_PP3300_TCHSCR */
-	PAD_GPO(GPIO_68, LOW),
+	PAD_GPO(GPIO_68, HIGH),
 	/* SD_AUX_RESET_L */
 	PAD_GPO(GPIO_69, HIGH),
 	/* Unused TP27  */
@@ -167,6 +167,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 
 /* Early GPIO configuration */
 static const struct soc_amd_gpio early_gpio_table[] = {
+	/* Assert all AUX reset lines */
 	/* WWAN_AUX_RESET_L */
 	PAD_GPO(GPIO_18, LOW),
 	/* WLAN_AUX_RESET (ACTIVE HIGH) */
@@ -177,8 +178,12 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 	PAD_GPO(GPIO_69, LOW),
 	/* Guybrush BID>1: Unused TP27; BID==1: SD_AUX_RESET_L */
 	PAD_NC(GPIO_70),
+
+	/* Deassert PCIe Reset lines */
 	/* PCIE_RST0_L */
 	PAD_NFO(GPIO_26, PCIE_RST_L, HIGH),
+	/* PCIE_RST1_L */
+	PAD_NFO(GPIO_27, PCIE_RST1_L, HIGH),
 
 /* Power on WLAN & WWAN */
 	/* EN_PP3300_WLAN */
@@ -239,7 +244,7 @@ static const struct soc_amd_gpio early_gpio_table[] = {
  */
 
 static const struct soc_amd_gpio bootblock_gpio_table[] = {
-/* Enable WWAN & WLAN */
+	/* Enable WWAN & WLAN power, Deassert WWAN reset */
 	/* EN_PWR_WWAN_X */
 	PAD_GPO(GPIO_8, HIGH),
 	/* WWAN_RST_L */
@@ -257,7 +262,15 @@ static const struct soc_amd_gpio sleep_gpio_table[] = {
 
 /* PCIE_RST needs to be brought high before FSP-M runs */
 static const struct soc_amd_gpio pcie_gpio_table[] = {
-/* Disable all AUX_RESET lines & PCIE_RST */
+	/* Allow WWAN power to be overridden by platform */
+	/* EN_PWR_WWAN_X */
+	PAD_GPO(GPIO_8, HIGH),
+	/* WWAN_RST_L */
+	PAD_GPO(GPIO_24, HIGH),
+	/* WWAN_DISABLE */
+	PAD_GPO(GPIO_85, LOW),
+
+	/* Deassert all AUX_RESET lines & PCIE_RST */
 	/* WWAN_AUX_RESET_L */
 	PAD_GPO(GPIO_18, HIGH),
 	/* WLAN_AUX_RESET (ACTIVE HIGH) */

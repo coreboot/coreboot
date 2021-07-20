@@ -58,7 +58,7 @@ chip soc/amd/cezanne
 	register "i2c_pad_ctrl_rx_sel[2]" = "I2C_PAD_CTRL_RX_SEL_3_3V" # Audio/SAR
 	register "i2c_pad_ctrl_rx_sel[3]" = "I2C_PAD_CTRL_RX_SEL_1_8V" # GSC
 
-	register "pspp_policy" = "DXIO_PSPP_POWERSAVE"
+	register "pspp_policy" = "DXIO_PSPP_BALANCED"
 
 	register "usb_phy_custom" = "1"
 	register "usb_phy" = "{

@@ -243,7 +243,7 @@ chip soc/amd/picasso
 	register "gpp_clk_config[5]" = "GPP_CLK_OFF"
 	register "gpp_clk_config[6]" = "GPP_CLK_OFF"
 
-	register "pspp_policy" = "DXIO_PSPP_POWERSAVE"
+	register "pspp_policy" = "DXIO_PSPP_BALANCED"
 
 	# See AMD 55570-B1 Table 13: PCI Device ID Assignments.
 	device domain 0 on

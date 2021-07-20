@@ -265,7 +265,8 @@ struct soc_amd_picasso_config {
 
 	/* performance policy for the PCIe links: power consumption vs. link speed */
 	enum {
-		DXIO_PSPP_PERFORMANCE = 0,
+		DXIO_PSPP_DISABLED = 0,
+		DXIO_PSPP_PERFORMANCE,
 		DXIO_PSPP_BALANCED,
 		DXIO_PSPP_POWERSAVE,
 	} pspp_policy;

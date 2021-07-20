@@ -27,6 +27,40 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->SaGv = config->SaGv;
 	m_cfg->RMT = config->RMT;
 
+	/* PCIe ModPhy configuration */
+	for (i = 0; i < CONFIG_MAX_ROOT_PORTS; i++) {
+		if (config->pcie_mp_cfg[i].tx_gen1_downscale_amp_override) {
+			m_cfg->PchPcieHsioTxGen1DownscaleAmpEnable[i] = 1;
+			m_cfg->PchPcieHsioTxGen1DownscaleAmp[i] =
+				config->pcie_mp_cfg[i].tx_gen1_downscale_amp;
+		}
+		if (config->pcie_mp_cfg[i].tx_gen2_downscale_amp_override) {
+			m_cfg->PchPcieHsioTxGen2DownscaleAmpEnable[i] = 1;
+			m_cfg->PchPcieHsioTxGen2DownscaleAmp[i] =
+				config->pcie_mp_cfg[i].tx_gen2_downscale_amp;
+		}
+		if (config->pcie_mp_cfg[i].tx_gen3_downscale_amp_override) {
+			m_cfg->PchPcieHsioTxGen3DownscaleAmpEnable[i] = 1;
+			m_cfg->PchPcieHsioTxGen3DownscaleAmp[i] =
+				config->pcie_mp_cfg[i].tx_gen3_downscale_amp;
+		}
+		if (config->pcie_mp_cfg[i].tx_gen1_de_emph) {
+			m_cfg->PchPcieHsioTxGen1DeEmphEnable[i] = 1;
+			m_cfg->PchPcieHsioTxGen1DeEmph[i] =
+				config->pcie_mp_cfg[i].tx_gen1_de_emph;
+		}
+		if (config->pcie_mp_cfg[i].tx_gen2_de_emph_3p5) {
+			m_cfg->PchPcieHsioTxGen2DeEmph3p5Enable[i] = 1;
+			m_cfg->PchPcieHsioTxGen2DeEmph3p5[i] =
+				config->pcie_mp_cfg[i].tx_gen2_de_emph_3p5;
+		}
+		if (config->pcie_mp_cfg[i].tx_gen2_de_emph_6p0) {
+			m_cfg->PchPcieHsioTxGen2DeEmph6p0Enable[i] = 1;
+			m_cfg->PchPcieHsioTxGen2DeEmph6p0[i] =
+				config->pcie_mp_cfg[i].tx_gen2_de_emph_6p0;
+		}
+	}
+
 	/* PCIe root port configuration */
 	for (i = 0; i < ARRAY_SIZE(config->PcieRpEnable); i++) {
 		if (config->PcieRpEnable[i])

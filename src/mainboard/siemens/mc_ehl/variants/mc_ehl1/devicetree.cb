@@ -20,13 +20,6 @@ chip soc/intel/elkhartlake
 	register "SmbusEnable" = "1"
 	register "Heci2Enable" = "1"
 
-	# Display related UPDs
-	# Enable HPD for DDI ports C
-	register "DdiPortCHpd" = "1"
-
-	# Enable DDC for DDI ports C
-	register "DdiPortCDdc" = "1"
-
 	# USB related UPDs
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC3)"	# USB3/2 Type A port1
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC3)"	# USB2 WWAN

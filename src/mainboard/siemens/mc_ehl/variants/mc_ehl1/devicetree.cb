@@ -50,18 +50,18 @@ chip soc/intel/elkhartlake
 	register "PcieRpEnable[6]" = "1"
 
 	register "PcieClkSrcUsage[0]" = "0x00"
-	register "PcieClkSrcUsage[1]" = "0x06"
-	register "PcieClkSrcUsage[2]" = "0x04"
+	register "PcieClkSrcUsage[1]" = "0x01"
+	register "PcieClkSrcUsage[2]" = "0x02"
 	register "PcieClkSrcUsage[3]" = "0xFF"
 	register "PcieClkSrcUsage[4]" = "0xFF"
 	register "PcieClkSrcUsage[5]" = "0xFF"
 
-	register "PcieClkSrcClkReq[0]" = "0x0"
-	register "PcieClkSrcClkReq[1]" = "0x1"
-	register "PcieClkSrcClkReq[2]" = "0x2"
-	register "PcieClkSrcClkReq[3]" = "0x3"
-	register "PcieClkSrcClkReq[4]" = "0x4"
-	register "PcieClkSrcClkReq[5]" = "0x5"
+	register "PcieClkSrcClkReq[0]" = "0xFF"
+	register "PcieClkSrcClkReq[1]" = "0xFF"
+	register "PcieClkSrcClkReq[2]" = "0xFF"
+	register "PcieClkSrcClkReq[3]" = "0xFF"
+	register "PcieClkSrcClkReq[4]" = "0xFF"
+	register "PcieClkSrcClkReq[5]" = "0xFF"
 
 	# Storage (SATA/SDCARD/EMMC) related UPDs
 	register "SataSalpSupport" = "1"

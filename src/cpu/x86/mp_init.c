@@ -449,8 +449,11 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 
 	/* Send INIT IPI to all but self. */
 	lapic_send_ipi(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_INIT, 0);
-	printk(BIOS_DEBUG, "Waiting for 10ms after sending INIT.\n");
-	mdelay(10);
+
+	if (!CONFIG(X86_AMD_INIT_SIPI)) {
+		printk(BIOS_DEBUG, "Waiting for 10ms after sending INIT.\n");
+		mdelay(10);
+	}
 
 	/* Send 1st SIPI */
 	if (lapic_busy()) {

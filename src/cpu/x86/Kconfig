@@ -173,7 +173,9 @@ config X86_AMD_INIT_SIPI
 	help
 	  This option limits the number of SIPI signals sent during during the
 	  common AP setup.  Intel documentation specifies an INIT SIPI SIPI
-	  sequence, however this doesn't work on some AMD platforms.
+	  sequence, however this doesn't work on some AMD platforms. These
+	  newer AMD platforms don't need the 10ms wait between INIT and SIPI,
+	  so skip that too to save some time.
 
 config SOC_SETS_MSRS
 	bool

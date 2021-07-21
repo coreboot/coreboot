@@ -38,7 +38,7 @@ int thread_run_until(struct thread_handle *handle, enum cb_err (*func)(void *), 
 /* Waits until the thread has terminated and returns the error code */
 enum cb_err thread_join(struct thread_handle *handle);
 
-#if ENV_RAMSTAGE && CONFIG(COOP_MULTITASKING)
+#if (ENV_RAMSTAGE || ENV_ROMSTAGE) && CONFIG(COOP_MULTITASKING)
 
 struct thread {
 	int id;

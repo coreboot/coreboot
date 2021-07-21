@@ -35,6 +35,14 @@ _start:
 	/* reset stack pointer to CAR/EARLYRAM stack */
 	mov	$_STACK_TOP, %esp
 
+#if CONFIG(COOP_MULTITASKING)
+	/* Push the thread pointer. */
+	push	$0
+#endif
+	/* Push the CPU index and struct CPU */
+	push	$0
+	push	$0
+
 	/* clear .bss section as it is not shared */
 	cld
 	xor	%eax, %eax

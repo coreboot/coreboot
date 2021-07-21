@@ -149,8 +149,6 @@ ramstage-$(CONFIG_COVERAGE) += libgcov.c
 ramstage-y += edid.c
 ramstage-y += edid_fill_fb.c
 ramstage-y += memrange.c
-ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
-ramstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
 ramstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 ramstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 ramstage-y += b64_decode.c
@@ -159,6 +157,12 @@ ramstage-y += list.c
 ramstage-$(CONFIG_FLATTENED_DEVICE_TREE) += device_tree.c
 ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit.c
 ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit_payload.c
+
+romstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
+ramstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
+
+romstage-$(CONFIG_COOP_MULTITASKING) += thread.c
+ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 
 romstage-y += cbmem_common.c
 romstage-y += imd_cbmem.c

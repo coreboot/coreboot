@@ -154,6 +154,8 @@ romstage-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 romstage-y += postcar_loader.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 romstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
+romstage-$(CONFIG_COOP_MULTITASKING) += thread.c
+romstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
 
 romstage-srcs += $(wildcard $(src)/mainboard/$(MAINBOARDDIR)/romstage.c)
 romstage-libs ?=

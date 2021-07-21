@@ -478,7 +478,7 @@ ADAFLAGS_common += -gnatwa.eeD.HHTU.U.W.Y
 # Disable style checks for now
 ADAFLAGS_common += -gnatyN
 
-LDFLAGS_common := --gc-sections -nostdlib -nostartfiles -static --emit-relocs
+LDFLAGS_common := --gc-sections -nostdlib --nmagic -static --emit-relocs
 
 ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
 CFLAGS_common += -Werror

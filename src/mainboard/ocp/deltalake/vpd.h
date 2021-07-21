@@ -37,10 +37,6 @@
 #define FSPM_MEMREFRESHWATERMARK "fspm_mem_refresh_watermark"
 #define FSPM_MEMREFRESHWATERMARK_DEFAULT 1
 
-/* coreboot uart io select: 0 = 0x3f8, 1 = 0x2f8, 2 = 0x3e8, 3 = 0x2e8 */
-#define COREBOOT_UART_IO "coreboot_uart_io"
-#define COREBOOT_UART_IO_DEFAULT 1
-
 /* FSP dimm frequency limit, 0:Auto, 1:DDR_1333, 2:DDR_1600, 3:DDR_1866, 4:DDR_2133,
  * 5:DDR_2400, 6:DDR_2666, 7:DDR_2933, 8:DDR_3200 */
 #define FSP_DIMM_FREQ "fsp_dimm_freq"

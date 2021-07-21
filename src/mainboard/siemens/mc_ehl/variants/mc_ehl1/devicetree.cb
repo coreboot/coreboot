@@ -97,30 +97,6 @@ chip soc/intel/elkhartlake
 		[PchSerialIoIndexI2C7] = 1,
 	}"
 
-	register "SerialIoGSpiMode" = "{
-		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
-		[PchSerialIoIndexGSPI1] = PchSerialIoHidden,
-		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
-	}"
-
-	register "SerialIoGSpiCsEnable" = "{
-		[PchSerialIoIndexGSPI0] = 1,
-		[PchSerialIoIndexGSPI1] = 1,
-		[PchSerialIoIndexGSPI2] = 1,
-	}"
-
-	register "SerialIoGSpiCsMode" = "{
-		[PchSerialIoIndexGSPI0] = 0,
-		[PchSerialIoIndexGSPI1] = 0,
-		[PchSerialIoIndexGSPI2] = 0,
-	}"
-
-	register "SerialIoGSpiCsState" = "{
-		[PchSerialIoIndexGSPI0] = 0,
-		[PchSerialIoIndexGSPI1] = 0,
-		[PchSerialIoIndexGSPI2] = 0,
-	}"
-
 	register "SerialIoUartMode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
@@ -164,7 +140,7 @@ chip soc/intel/elkhartlake
 		device pci 11.6 off	end # Intel PSE IS20
 		device pci 11.7 off	end # Intel PSE IS21
 
-		device pci 12.0 on	end # GSPI2
+		device pci 12.0 off	end # GSPI2
 		device pci 12.3 on	end # Management Engine UMA Access
 		device pci 12.4 on	end # Management Engine PTT DMA Controller
 		device pci 12.5 off	end # UFS0
@@ -235,8 +211,8 @@ chip soc/intel/elkhartlake
 
 		device pci 1e.0 on	end # UART0
 		device pci 1e.1 on	end # UART1
-		device pci 1e.2 on	end # GSPI0
-		device pci 1e.3 on	end # GSPI1
+		device pci 1e.2 off	end # GSPI0
+		device pci 1e.3 off	end # GSPI1
 		device pci 1e.4 on	end # PCH Time-Sensitive Networking GbE
 		device pci 1e.6 on	end # HPET
 		device pci 1e.7 on	end # IOAPIC

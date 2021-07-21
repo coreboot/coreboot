@@ -113,9 +113,6 @@ chip soc/intel/elkhartlake
 	register "PchTsnGbeLinkSpeed" = "Tsn_2_5_Gbps"
 	register "PchTsnGbeSgmiiEnable" = "1"
 
-	# GPIO for SD card detect
-	register "sdcard_cd_gpio" = "GPP_G5"
-
 	register "common_soc_config" = "{
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 	}"

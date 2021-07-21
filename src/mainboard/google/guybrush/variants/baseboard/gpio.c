@@ -105,7 +105,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_GPI(GPIO_89, PULL_NONE),
 	/* HP_INT_ODL */
 	PAD_GPI(GPIO_90, PULL_NONE),
-	/* SD_EX_PRSNT_L */
+	/* SD_EX_PRSNT_L(Guybrush BoardID 1 only) / EC_IN_RW_OD */
 	PAD_GPI(GPIO_91, PULL_NONE),
 	/* CLK_REQ0_L */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_NONE),

@@ -1,6 +1,6 @@
 ifeq ($(CONFIG_EC_LIBREM_EC),y)
 
-all-y += librem_ec.c
-smm-$(CONFIG_DEBUG_SMI) += librem_ec.c
+all-y += ../../system76/ec/system76_ec.c
+smm-$(CONFIG_DEBUG_SMI) += ../../system76/ec/system76_ec.c
 
 endif

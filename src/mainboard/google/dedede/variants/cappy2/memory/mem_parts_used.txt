@@ -9,3 +9,4 @@
 # See util/spd_tools/{ddr4,lp4x}/README.md for more details and instructions.
 
 # Part Name
+K4U6E3S4AA-MGCR

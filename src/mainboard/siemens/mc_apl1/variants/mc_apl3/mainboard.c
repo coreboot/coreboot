@@ -39,7 +39,7 @@ void variant_mainboard_final(void)
 	/* Set Master Enable for on-board PCI device if allowed. */
 	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403e, 0);
 	if (dev) {
-		if (CONFIG(PCI_ALLOW_BUS_MASTER))
+		if (CONFIG(PCI_ALLOW_BUS_MASTER_ANY_DEVICE))
 			pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
 		/* Disable clock outputs 0 and 2-4 (CLKOUT) for upstream

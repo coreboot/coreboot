@@ -10,7 +10,7 @@ void variant_mainboard_final(void)
 {
 	struct device *dev;
 
-	if (CONFIG(PCI_ALLOW_BUS_MASTER)) {
+	if (CONFIG(PCI_ALLOW_BUS_MASTER_ANY_DEVICE)) {
 		/* Set Master Enable for on-board PCI device if allowed. */
 		dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403e, 0);
 		if (dev) {

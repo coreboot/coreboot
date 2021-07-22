@@ -31,7 +31,7 @@ static void enable_serial(unsigned int base_port, unsigned int io_enable)
 
 void bootblock_mainboard_early_init(void)
 {
-	sb_clk_output_48Mhz(2);
+	fch_clk_output_48Mhz(2);
 	/*
 	 * UARTs enabled by default at reset, just need RTS, CTS
 	 * and access to the IO address.

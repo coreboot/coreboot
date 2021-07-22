@@ -204,7 +204,7 @@ static void sb_lpc_decode(void)
 	lpc_enable_decode(tmp);
 }
 
-void sb_clk_output_48Mhz(u32 osc)
+void fch_clk_output_48Mhz(u32 osc)
 {
 	u32 ctrl;
 

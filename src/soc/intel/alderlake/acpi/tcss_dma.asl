@@ -11,7 +11,8 @@ Field (DPME, AnyAcc, NoLock, Preserve)
 	, 6,
 	PMES, 1,        /* 15, PME_STATUS */
 	Offset(0xC8),   /* 0xC8, TBT NVM FW Revision */
-	,     31,
+	,     30,
+	IF30,  1,	/* ITBT FW Version Bit30 */
 	INFR,  1,       /* TBT NVM FW Ready */
 	Offset(0xEC),   /* 0xEC, TBT TO PCIE Register */
 	TB2P, 32,       /* TBT to PCIe */

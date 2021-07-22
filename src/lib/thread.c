@@ -11,6 +11,10 @@
 #include <thread.h>
 #include <timer.h>
 
+/* Can't use the IS_POWER_OF_2 in _Static_assert */
+_Static_assert((CONFIG_STACK_SIZE & (CONFIG_STACK_SIZE - 1)) == 0,
+	       "`cpu_info()` requires the stack size to be a power of 2");
+
 static bool initialized;
 
 static void idle_thread_init(void);
@@ -256,6 +260,9 @@ void threads_initialize(void)
 	u8 *thread_stacks;
 
 	thread_stacks = arch_get_thread_stackbase();
+
+	/* `cpu_info()` requires the stacks to be STACK_SIZE aligned */
+	assert(IS_ALIGNED((uintptr_t)thread_stacks, CONFIG_STACK_SIZE));
 
 	/* Initialize the BSP thread first. The cpu_info structure is assumed
 	 * to be just under the top of the stack. */

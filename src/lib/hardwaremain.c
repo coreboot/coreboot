@@ -456,7 +456,6 @@ void main(void)
 
 	/* Handoff sleep type from romstage. */
 	acpi_is_wakeup_s3();
-	threads_initialize();
 
 	/* Initialise GNVS early. */
 	if (CONFIG(ACPI_SOC_NVS))

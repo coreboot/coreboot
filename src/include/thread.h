@@ -51,8 +51,6 @@ struct thread {
 	struct thread_handle *handle;
 };
 
-void threads_initialize(void);
-
 /* Return 0 on successful yield, < 0 when thread did not yield. */
 int thread_yield(void);
 
@@ -88,7 +86,6 @@ asmlinkage void switch_to_thread(uintptr_t new_stack, uintptr_t *saved_stack);
 void arch_prepare_thread(struct thread *t,
 			 asmlinkage void (*thread_entry)(void *), void *arg);
 #else
-static inline void threads_initialize(void) {}
 static inline int thread_yield(void)
 {
 	return -1;

@@ -257,12 +257,15 @@ static void *thread_alloc_space(struct thread *t, size_t bytes)
 	return (void *)t->stack_current;
 }
 
-void threads_initialize(void)
+static void threads_initialize(void)
 {
 	int i;
 	struct thread *t;
 	u8 *stack_top;
 	struct cpu_info *ci;
+
+	if (initialized)
+		return;
 
 	/* `cpu_info()` requires the stacks to be STACK_SIZE aligned */
 	assert(IS_ALIGNED((uintptr_t)thread_stacks, CONFIG_STACK_SIZE));
@@ -295,6 +298,9 @@ int thread_run(struct thread_handle *handle, enum cb_err (*func)(void *), void *
 	struct thread *current;
 	struct thread *t;
 
+	/* Lazy initialization */
+	threads_initialize();
+
 	current = current_thread();
 
 	if (!thread_can_yield(current)) {
@@ -326,6 +332,9 @@ int thread_run_until(struct thread_handle *handle, enum cb_err (*func)(void *), 
 	/* This is a ramstage specific API */
 	if (!ENV_RAMSTAGE)
 		dead_code();
+
+	/* Lazy initialization */
+	threads_initialize();
 
 	current = current_thread();
 

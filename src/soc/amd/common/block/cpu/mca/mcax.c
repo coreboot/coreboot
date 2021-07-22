@@ -7,6 +7,9 @@
 #include <types.h>
 #include "mca_common_defs.h"
 
+/* The McaXEnable bit in the config registers of the available MCAX banks is already set by the
+   FSP, so no need to set it here again. */
+
 bool mca_skip_check(void)
 {
 	/* On Zen-based CPUs/APUs the MCA(X) status register have a defined state even in the

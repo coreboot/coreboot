@@ -313,6 +313,10 @@ int thread_run_until(struct thread_handle *handle, enum cb_err (*func)(void *), 
 	struct thread *t;
 	struct block_boot_state *bbs;
 
+	/* This is a ramstage specific API */
+	if (!ENV_RAMSTAGE)
+		dead_code();
+
 	current = current_thread();
 
 	if (!thread_can_yield(current)) {

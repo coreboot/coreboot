@@ -36,4 +36,9 @@ config SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT
 	bool
 	default n
 
+# Used to program VCCIO Selection as 1.8V or 3.3V
+config SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_VCCIOSEL
+	bool
+	default n
+
 endif

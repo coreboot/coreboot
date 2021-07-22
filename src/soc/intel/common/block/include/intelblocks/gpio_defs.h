@@ -123,6 +123,14 @@
 #define  PAD_CFG1_TOL_1V8		(0x1 << 25)
 #endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL */
 
+/* On SoCs with more than 2 PAD_CFG registers, some of them support programmable VCCIO.
+   0(default)=3.3V, 1=1.8V */
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_VCCIOSEL)
+#define PAD_CFG2_VCCIOSEL_MASK		(0x1 << 8)
+#define PAD_CFG2_VCCIOSEL_3V3		(0x0 << 8)
+#define PAD_CFG2_VCCIOSEL_1V8		(0x1 << 8)
+#endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_VCCIOSEL */
+
 #define PAD_FUNC(value)		PAD_CFG0_MODE_##value
 #define PAD_RESET(value)	PAD_CFG0_LOGICAL_RESET_##value
 #define PAD_RX_POL(value)	PAD_CFG0_RX_POL_##value
@@ -251,6 +259,14 @@
 		PAD_FUNC(GPIO) | PAD_RESET(rst) |				\
 		PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) | !!val,			\
 		PAD_PULL(pull) | PAD_IOSSTATE(iosstate) | PAD_IOSTERM(ioterm))
+
+/* General purpose output with VCCIO Select. */
+#define PAD_CFG_GPO_VCCIOSEL(pad, val, rst, vcciosel)		\
+	_PAD_CFG_STRUCT_3(pad,					\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) |		\
+		PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) | !!val,	\
+		PAD_PULL(NONE) | PAD_IOSSTATE(TxLASTRxE),	\
+		PAD_CFG2_VCCIOSEL_##vcciosel)
 
 /* General purpose input */
 #define PAD_CFG_GPI(pad, pull, rst)					\

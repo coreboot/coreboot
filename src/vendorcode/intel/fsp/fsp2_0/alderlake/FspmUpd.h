@@ -1527,7 +1527,7 @@ typedef struct {
   UINT8                       PvdRatioThreshold;
 
 /** Offset 0x045B - Support Unlimited ICCMAX
-  Support Unlimited ICCMAX more than maximum value 512A; <b>0: Disabled</b>; 1: Enabled.
+  DEPRECATED
   $EN_DIS
 **/
   UINT8                       UnlimitedIccMax;

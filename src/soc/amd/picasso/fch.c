@@ -86,7 +86,7 @@ const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 	return irq_association;
 }
 
-void sb_clk_output_48Mhz(void)
+static void sb_clk_output_48Mhz(void)
 {
 	u32 ctrl;
 	const struct soc_amd_picasso_config *cfg = config_of_soc();

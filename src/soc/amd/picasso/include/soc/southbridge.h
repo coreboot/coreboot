@@ -151,7 +151,6 @@ void fch_final(void *chip_info);
 
 void enable_aoac_devices(void);
 void wait_for_aoac_enabled(unsigned int dev);
-void sb_clk_output_48Mhz(void);
 
 /* Allow the board to change the default I2C pad configuration */
 void mainboard_i2c_override(int bus, uint32_t *pad_settings);

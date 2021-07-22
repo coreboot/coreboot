@@ -52,11 +52,6 @@ struct thread {
 };
 
 void threads_initialize(void);
-/* Get the base of the thread stacks.
- * Returns pointer to CONFIG_NUM_THREADS*CONFIG_STACK_SIZE contiguous bytes
- * aligned to CONFIG_STACK_SIZE, or NULL.
- */
-void *arch_get_thread_stackbase(void);
 
 /* Return 0 on successful yield, < 0 when thread did not yield. */
 int thread_yield(void);

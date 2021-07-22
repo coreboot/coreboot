@@ -15,6 +15,12 @@
 _Static_assert((CONFIG_STACK_SIZE & (CONFIG_STACK_SIZE - 1)) == 0,
 	       "`cpu_info()` requires the stack size to be a power of 2");
 
+/*
+ * struct cpu_info lives at the top of each thread's stack. `cpu_info()` locates this struct by
+ * taking the current stack pointer and masking off CONFIG_STACK_SIZE. This requires the stack
+ * to be STACK_SIZE aligned.
+ */
+static u8 thread_stacks[CONFIG_STACK_SIZE * CONFIG_NUM_THREADS] __aligned(CONFIG_STACK_SIZE);
 static bool initialized;
 
 static void idle_thread_init(void);
@@ -257,9 +263,6 @@ void threads_initialize(void)
 	struct thread *t;
 	u8 *stack_top;
 	struct cpu_info *ci;
-	u8 *thread_stacks;
-
-	thread_stacks = arch_get_thread_stackbase();
 
 	/* `cpu_info()` requires the stacks to be STACK_SIZE aligned */
 	assert(IS_ALIGNED((uintptr_t)thread_stacks, CONFIG_STACK_SIZE));

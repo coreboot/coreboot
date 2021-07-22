@@ -39,10 +39,3 @@ void arch_prepare_thread(struct thread *t,
 
 	t->stack_current = stack;
 }
-
-void *arch_get_thread_stackbase(void)
-{
-	/* defined in c_start.S */
-	extern u8 thread_stacks[];
-	return &thread_stacks[0];
-}

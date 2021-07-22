@@ -17,11 +17,6 @@ _stack:
 .space (CONFIG_MAX_CPUS+1)*CONFIG_STACK_SIZE
 _estack:
 .set _stack_size, _estack - _stack
-#if CONFIG(COOP_MULTITASKING)
-.global thread_stacks
-thread_stacks:
-.space CONFIG_STACK_SIZE*CONFIG_NUM_THREADS
-#endif
 
 	.section ".text._start", "ax", @progbits
 #if ENV_X86_64

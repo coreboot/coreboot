@@ -33,7 +33,6 @@ static void mca_check_all_banks(void)
 	}
 }
 
-
 void check_mca(void)
 {
 	mca_check_all_banks();

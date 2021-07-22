@@ -102,6 +102,14 @@ chip soc/intel/tigerlake
 				register "options.fan.fine_grained_control" = "1"
 				register "options.fan.step_size" = "2"
 
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = {  32, 2048 },
+					[1] = {  29, 1856 },
+					[2] = {  26, 1664 },
+					[3] = {  23, 1472 }
+				}"
+
 				device generic 0 on end
 			end
 		end # DPTF

@@ -11,16 +11,14 @@
 #include <soc/rtc.h>
 #include <soc/scp.h>
 
-#define I2C_BUS 7
-
 void platform_romstage_main(void)
 {
 	mtk_pmif_init();
 	mt6359p_init();
 	mt6315_init();
-	mtk_i2c_bus_init(I2C_BUS);
+	mtk_i2c_bus_init(I2C7);
 	if (CONFIG(BOARD_GOOGLE_CHERRY))
-		mt6360_init(I2C_BUS);
+		mt6360_init(I2C7);
 	clk_buf_init();
 	rtc_boot();
 	mtk_dram_init();

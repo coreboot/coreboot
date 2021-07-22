@@ -56,7 +56,8 @@ chip soc/intel/tigerlake
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_3, 52, 10000),
-					[1] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_0, 53, 30000)}"
+					[1] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_0, 58, 30000),
+					[2] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_2, 53, 10000)}"
 
 				## Power Limits Control
 				# 7-9W PL1 in 200mW increments, avg over 28-32s interval
@@ -75,10 +76,10 @@ chip soc/intel/tigerlake
 
 				## Charger Performance Control (Control, mA)
 				register "controls.charger_perf" = "{
-					[0] = { 255, 2500 },
-					[1] = {  24, 1900 },
-					[2] = {  16, 1500 },
-					[3] = {   8, 1000 }}"
+					[0] = {  40, 2500 },
+					[1] = {  30, 1900 },
+					[2] = {  24, 1500 },
+					[3] = {  16, 1000 }}"
 
 				## Fan Performance Control (Percent, Speed, Noise, Power)
 				register "controls.fan_perf" = "{[0] = {0}}"

@@ -22,6 +22,4 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mupd->FspmConfig.MsgLevelMask  = 0;
 	mupd->FspmConfig.MrcDataSaving = 0;
 	mupd->FspmConfig.MrcFastBoot   = 1;
-
-	mupd->FspmConfig.PrimaryVideoAdaptor = 2;
 }

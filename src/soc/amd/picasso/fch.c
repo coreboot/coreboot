@@ -86,7 +86,7 @@ const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 	return irq_association;
 }
 
-static void sb_clk_output_48Mhz(void)
+static void fch_clk_output_48Mhz(void)
 {
 	u32 ctrl;
 	const struct soc_amd_picasso_config *cfg = config_of_soc();
@@ -231,7 +231,7 @@ void fch_init(void *chip_info)
 
 	gpp_clk_setup();
 
-	sb_clk_output_48Mhz();
+	fch_clk_output_48Mhz();
 
 	sb_rfmux_config_override();
 }

@@ -78,6 +78,8 @@
 #define   GPP_CLK_REQ_EXT(clk_shift)	(0x1 << (clk_shift))
 #define   GPP_CLK_REQ_OFF(clk_shift)	(0x0 << (clk_shift))
 
+#define MISC_CLK_CNTL0			0x40 /* named MISC_CLK_CNTL1 on Picasso */
+#define   BP_X48M0_OUTPUT_EN		BIT(2) /* 1=En, unlike Hudson, Kern */
 #define MISC_I2C0_PAD_CTRL		0xd8
 #define MISC_I2C1_PAD_CTRL		0xdc
 #define MISC_I2C2_PAD_CTRL		0xe0

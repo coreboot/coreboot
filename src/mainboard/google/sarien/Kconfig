@@ -77,7 +77,6 @@ config UART_FOR_CONSOLE
 	default 2
 
 config VARIANT_DIR
-	string
 	default "arcada" if BOARD_GOOGLE_ARCADA
 	default "sarien" if BOARD_GOOGLE_SARIEN
 

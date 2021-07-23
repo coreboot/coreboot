@@ -47,7 +47,6 @@ config VGA_BIOS_FILE
 	default "3rdparty/blobs/mainboard/google/kahlee/VBIOS_015_049_000_017.bin"
 
 config VARIANT_DIR
-	string
 	default "aleena" if BOARD_GOOGLE_ALEENA
 	default "careena" if BOARD_GOOGLE_CAREENA
 	default "grunt" if BOARD_GOOGLE_GRUNT

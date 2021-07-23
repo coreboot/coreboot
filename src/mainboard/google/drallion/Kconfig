@@ -75,7 +75,6 @@ config UART_FOR_CONSOLE
 	default 0 if BOARD_GOOGLE_DRALLION
 
 config VARIANT_DIR
-	string
 	default "drallion" if BOARD_GOOGLE_DRALLION
 
 config DEVICETREE

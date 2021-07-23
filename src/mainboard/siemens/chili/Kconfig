@@ -45,7 +45,6 @@ config MAINBOARD_PART_NUMBER
 	default "Chili" if BOARD_SIEMENS_CHILI_CHILI
 
 config VARIANT_DIR
-	string
 	default "base" if BOARD_SIEMENS_CHILI_BASE
 	default "chili" if BOARD_SIEMENS_CHILI_CHILI
 

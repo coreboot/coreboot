@@ -70,7 +70,6 @@ config POST_DEVICE
 	default n
 
 config VARIANT_DIR
-	string
 	default "l140cu" if BOARD_CLEVO_L140CU_BASE
 
 config SEABIOS_PS2_TIMEOUT

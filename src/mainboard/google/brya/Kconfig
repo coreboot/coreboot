@@ -75,7 +75,6 @@ config MAINBOARD_PART_NUMBER
 	default "Taeko" if BOARD_GOOGLE_TAEKO
 
 config VARIANT_DIR
-	string
 	default "brya0" if BOARD_GOOGLE_BRYA0
 	default "primus" if BOARD_GOOGLE_PRIMUS
 	default "gimble" if BOARD_GOOGLE_GIMBLE

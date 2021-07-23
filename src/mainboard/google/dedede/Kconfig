@@ -124,7 +124,6 @@ config UART_FOR_CONSOLE
 	default 2
 
 config VARIANT_DIR
-	string
 	default "boten" if BOARD_GOOGLE_BOTEN
 	default "boten" if BOARD_GOOGLE_BOTEN_LEGACY
 	default "dedede" if BOARD_GOOGLE_DEDEDE

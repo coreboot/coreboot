@@ -29,7 +29,6 @@ config MAINBOARD_PART_NUMBER
 	default "Librem 14" if BOARD_PURISM_LIBREM_14
 
 config VARIANT_DIR
-	string
 	default "librem_mini" if BOARD_PURISM_LIBREM_MINI || BOARD_PURISM_LIBREM_MINI_V2
 	default "librem_14" if BOARD_PURISM_LIBREM_14
 

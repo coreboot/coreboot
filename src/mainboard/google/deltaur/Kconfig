@@ -73,7 +73,6 @@ config UART_FOR_CONSOLE
 	default 2
 
 config VARIANT_DIR
-	string
 	default "deltan" if BOARD_GOOGLE_DELTAN
 	default "deltaur" if BOARD_GOOGLE_DELTAUR
 

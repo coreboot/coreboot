@@ -40,7 +40,6 @@ config MAINBOARD_PART_NUMBER
 	default "Boxer26" if BOARD_SIEMENS_BOXER26
 
 config VARIANT_DIR
-	string
 	default "bsl6" if BOARD_KONTRON_BSL6
 	default "boxer26" if BOARD_SIEMENS_BOXER26
 

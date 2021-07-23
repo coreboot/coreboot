@@ -84,7 +84,6 @@ config EFS_SPI_SPEED
 	default 1          # 33.33 MHz
 
 config VARIANT_DIR
-	string
 	default "mancomb" if BOARD_GOOGLE_MANCOMB
 
 config DEVICETREE

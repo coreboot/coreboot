@@ -51,7 +51,6 @@ config MAINBOARD_DIR
 	default "lenovo/x230"
 
 config VARIANT_DIR
-	string
 	default "x230" if BOARD_LENOVO_X230 || BOARD_LENOVO_X230T
 	default "x230s" if BOARD_LENOVO_X230S
 

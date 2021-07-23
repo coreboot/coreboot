@@ -69,7 +69,6 @@ config TPM_TIS_ACPI_INTERRUPT
 	default 64  # GPE0_DW2_00 (GPP_E0)
 
 config VARIANT_DIR
-	string
 	default "fizz" if BOARD_GOOGLE_FIZZ
 	default "karma" if BOARD_GOOGLE_KARMA
 	default "endeavour" if BOARD_GOOGLE_ENDEAVOUR

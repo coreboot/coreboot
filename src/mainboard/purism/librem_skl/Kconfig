@@ -23,7 +23,6 @@ config IRQ_SLOT_COUNT
 	default 18
 
 config VARIANT_DIR
-	string
 	default "librem13" if BOARD_PURISM_LIBREM13_V2 || BOARD_PURISM_LIBREM13_V4
 	default "librem15" if BOARD_PURISM_LIBREM15_V3 || BOARD_PURISM_LIBREM15_V4
 

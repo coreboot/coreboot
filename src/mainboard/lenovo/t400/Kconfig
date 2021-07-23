@@ -49,7 +49,6 @@ config MAINBOARD_DIR
 	default "lenovo/t400"
 
 config VARIANT_DIR
-	string
 	default "t400" if BOARD_LENOVO_T400 || BOARD_LENOVO_T500 \
 		|| BOARD_LENOVO_R400 || BOARD_LENOVO_W500
 	default "r500" if BOARD_LENOVO_R500

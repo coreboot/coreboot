@@ -143,7 +143,6 @@ config TPM_TIS_ACPI_INTERRUPT
 	default 53 # GPE0_DW1_21 (GPP_C21)
 
 config VARIANT_DIR
-	string
 	default "akemi" if BOARD_GOOGLE_AKEMI
 	default "dratini" if BOARD_GOOGLE_DRATINI
 	default "duffy" if BOARD_GOOGLE_DUFFY

@@ -50,7 +50,6 @@ config MAINBOARD_FAMILY
 	default "Google_Glados"
 
 config VARIANT_DIR
-	string
 	default "asuka" if BOARD_GOOGLE_ASUKA
 	default "caroline" if BOARD_GOOGLE_CAROLINE
 	default "cave" if BOARD_GOOGLE_CAVE

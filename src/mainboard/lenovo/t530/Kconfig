@@ -47,7 +47,6 @@ config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab.fmd" if VBOOT
 
 config VARIANT_DIR
-	string
 	default "t530" if BOARD_LENOVO_T530
 	default "w530" if BOARD_LENOVO_W530
 

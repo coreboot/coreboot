@@ -43,7 +43,6 @@ config VBOOT_VBNV_OFFSET
 	default 0x2a
 
 config VARIANT_DIR
-	string
 	default "t520" if BOARD_LENOVO_T520
 	default "w520" if BOARD_LENOVO_W520
 

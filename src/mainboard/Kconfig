@@ -19,6 +19,9 @@ config MAINBOARD_PART_NUMBER
 config MAINBOARD_VENDOR
 	string "Mainboard vendor name"
 
+config VARIANT_DIR
+	string
+
 config BOARD_ROMSIZE_KB_256
 	bool
 config BOARD_ROMSIZE_KB_512

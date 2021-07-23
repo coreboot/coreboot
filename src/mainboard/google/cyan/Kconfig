@@ -41,7 +41,6 @@ config MAINBOARD_FAMILY
 	default ""
 
 config VARIANT_DIR
-	string
 	default "banon" if BOARD_GOOGLE_BANON
 	default "celes" if BOARD_GOOGLE_CELES
 	default "cyan" if BOARD_GOOGLE_CYAN

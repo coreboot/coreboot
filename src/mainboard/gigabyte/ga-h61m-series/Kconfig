@@ -22,7 +22,6 @@ config MAINBOARD_DIR
 	default "gigabyte/ga-h61m-series"
 
 config VARIANT_DIR
-	string
 	default "ga-h61m-s2pv" if BOARD_GIGABYTE_GA_H61M_S2PV
 	default "ga-h61m-ds2v" if BOARD_GIGABYTE_GA_H61M_DS2V
 	default "ga-h61ma-d3v" if BOARD_GIGABYTE_GA_H61MA_D3V

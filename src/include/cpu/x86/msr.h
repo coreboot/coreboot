@@ -80,9 +80,9 @@
 #define IA32_MC_ADDR(bank)		(IA32_MC0_ADDR + 4 * (bank))
 #define IA32_MC0_MISC			0x403
 #define IA32_MC_MISC(bank)		(IA32_MC0_MISC + 4 * (bank))
-#define IA32_VMX_BASIC_MSR              0x480
-#define  VMX_BASIC_HI_DUAL_MONITOR      (1UL << (49 - 32))
-#define IA32_VMX_MISC_MSR               0x485
+#define IA32_VMX_BASIC_MSR		0x480
+#define  VMX_BASIC_HI_DUAL_MONITOR	(1UL << (49 - 32))
+#define IA32_VMX_MISC_MSR		0x485
 
 #define IA32_PM_ENABLE			0x770
 #define IA32_HWP_CAPABILITIES		0x771
@@ -94,8 +94,8 @@
 #define IA32_L3_MASK_1			0xc91
 #define IA32_L3_MASK_2			0xc92
 
-#define IA32_CR_SF_QOS_MASK_1           0x1891
-#define IA32_CR_SF_QOS_MASK_2           0x1892
+#define IA32_CR_SF_QOS_MASK_1		0x1891
+#define IA32_CR_SF_QOS_MASK_2		0x1892
 
 #ifndef __ASSEMBLER__
 #include <types.h>

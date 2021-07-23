@@ -90,7 +90,7 @@
 #define IA32_HWP_STATUS			0x777
 #define IA32_PQR_ASSOC			0xc8f
 /* MSR bits 33:32 encode slot number 0-3 */
-#define   IA32_PQR_ASSOC_MASK	(1 << 0 | 1 << 1)
+#define  IA32_PQR_ASSOC_MASK		(1 << 0 | 1 << 1)
 #define IA32_L3_MASK_1			0xc91
 #define IA32_L3_MASK_2			0xc92
 

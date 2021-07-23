@@ -40,7 +40,6 @@ config MAINBOARD_PART_NUMBER
 	default "GA-B75-D3V" if BOARD_GIGABYTE_GA_B75_D3V
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb" if BOARD_GIGABYTE_GA_B75_D3V
 
 # Override the default variant behavior, since the data.vbt is the same

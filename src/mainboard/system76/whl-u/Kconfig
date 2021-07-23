@@ -30,7 +30,6 @@ config VARIANT_DIR
 	default "darp5" if BOARD_SYSTEM76_DARP5
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAINBOARD_PART_NUMBER

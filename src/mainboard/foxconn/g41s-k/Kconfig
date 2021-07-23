@@ -29,7 +29,6 @@ config MAINBOARD_PART_NUMBER
 	default "G41M/G41M-S/G41M-V" if BOARD_FOXCONN_G41M
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 endif # BOARD_FOXCONN_G41S_K

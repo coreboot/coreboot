@@ -22,7 +22,6 @@ config VARIANT_DIR
 	default "fw4b" if BOARD_PROTECTLI_FW4B
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAINBOARD_PART_NUMBER

@@ -49,7 +49,6 @@ config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config OVERRIDE_DEVICETREE
-	string
 	default "carriers/\$(CONFIG_CARRIER_DIR)/overridetree.cb"
 
 endif

@@ -34,7 +34,6 @@ config MAINBOARD_PART_NUMBER
 	default "P8Z77-V"     if BOARD_ASUS_P8Z77_V
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config CMOS_DEFAULT_FILE

@@ -32,7 +32,6 @@ config MAINBOARD_PART_NUMBER
 	default "P5G41T-M LX" if BOARD_ASUS_P5G41T_M_LX
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 # Override the default variant behavior, since the data.vbt is the same

@@ -45,7 +45,6 @@ config VARIANT_DIR
 	default "boxer26" if BOARD_SIEMENS_BOXER26
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config CBFS_SIZE

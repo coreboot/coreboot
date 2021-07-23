@@ -33,7 +33,6 @@ config MAINBOARD_PART_NUMBER
 	default "GA-H61MA-D3V" if BOARD_GIGABYTE_GA_H61MA_D3V
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 # Override the default variant behavior, since the data.vbt is the same

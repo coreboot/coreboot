@@ -137,7 +137,6 @@ config MAINBOARD_PART_NUMBER
 	default "Scout" if BOARD_GOOGLE_SCOUT
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/helios_diskswap/overridetree.cb" if BOARD_GOOGLE_HELIOS_DISKSWAP
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 

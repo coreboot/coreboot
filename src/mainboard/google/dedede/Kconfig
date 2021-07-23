@@ -118,7 +118,6 @@ config MAX_CPUS
 	default 4
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb" if !BOARD_GOOGLE_DEDEDE
 
 config UART_FOR_CONSOLE

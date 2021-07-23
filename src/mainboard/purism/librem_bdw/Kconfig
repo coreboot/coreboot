@@ -18,7 +18,6 @@ config VARIANT_DIR
 	default "librem15v2" if BOARD_PURISM_LIBREM15_V2
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config DRIVERS_UART_8250IO

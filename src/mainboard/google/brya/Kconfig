@@ -57,7 +57,6 @@ config TPM_TIS_ACPI_INTERRUPT
 	default 13 # GPE0_DW0_13 (GPP_A13_IRQ)
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAINBOARD_DIR

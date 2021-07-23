@@ -60,7 +60,6 @@ config VARIANT_DIR
 	default "sentry" if BOARD_GOOGLE_SENTRY
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config TPM_PIRQ

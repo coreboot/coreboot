@@ -45,7 +45,6 @@ config MAINBOARD_PART_NUMBER
 	default "Samus" if BOARD_GOOGLE_SAMUS
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME

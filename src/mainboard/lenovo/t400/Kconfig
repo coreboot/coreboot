@@ -63,7 +63,6 @@ config MAINBOARD_PART_NUMBER
 	default "ThinkPad W500" if BOARD_LENOVO_W500
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config USBDEBUG_HCD_INDEX

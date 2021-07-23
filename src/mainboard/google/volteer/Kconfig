@@ -65,7 +65,6 @@ config DEVICETREE
 	default "variants/baseboard/devicetree.cb"
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config DRIVER_TPM_SPI_BUS

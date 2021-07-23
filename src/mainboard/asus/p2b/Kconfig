@@ -46,7 +46,6 @@ config VARIANT_DIR
 	default "p3b-f" if BOARD_ASUS_P3B_F
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config IRQ_SLOT_COUNT

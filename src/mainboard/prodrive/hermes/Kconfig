@@ -53,7 +53,6 @@ config MAX_CPUS
 	default 16
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config CONSOLE_POST

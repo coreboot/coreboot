@@ -59,7 +59,6 @@ config MAINBOARD_PART_NUMBER
 	default "ThinkPad X1" if BOARD_LENOVO_X1
 
 config OVERRIDE_DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config USBDEBUG_HCD_INDEX

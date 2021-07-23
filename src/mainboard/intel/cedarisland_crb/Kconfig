@@ -15,7 +15,6 @@ config MAINBOARD_PART_NUMBER
 	default "Cedar Island CRB"
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
 endif

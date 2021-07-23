@@ -65,7 +65,6 @@ config VBOOT_VBNV_OFFSET
 	default 0x2A
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
 
 config MAINBOARD_DIR

@@ -48,7 +48,6 @@ config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/fmds/vboot-ro.fmd"	if VBOOT && !VBOOT_SLOTS_RW_A
 	# TODO
 #	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/fmds/vboot-roa.fmd"	if VBOOT_SLOTS_RW_A && !VBOOT_SLOTS_RW_AB

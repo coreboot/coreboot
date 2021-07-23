@@ -58,7 +58,6 @@ config VBOOT_VBNV_OFFSET
 	default 0x2a
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-ro-rwab.fmd" if VBOOT_SLOTS_RW_AB
 
 config DRIVERS_IPMI_SUPERMICRO_OEM

@@ -40,7 +40,6 @@ config VBOOT_VBNV_OFFSET
 	default 0x76
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT
 
 config MAINBOARD_DIR

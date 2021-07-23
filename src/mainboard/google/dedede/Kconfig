@@ -76,7 +76,6 @@ config DIMM_SPD_SIZE
 	default 512
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-dedede-16MiB.fmd" if BOARD_ROMSIZE_KB_16384
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-dedede-32MiB.fmd" if BOARD_ROMSIZE_KB_32768
 

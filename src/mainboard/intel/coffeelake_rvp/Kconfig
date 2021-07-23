@@ -61,7 +61,6 @@ config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config FMDFILE
-	string
 	depends on VBOOT
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if BOARD_ROMSIZE_KB_16384
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos_32MB.fmd" if BOARD_ROMSIZE_KB_32768

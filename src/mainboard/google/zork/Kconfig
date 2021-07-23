@@ -58,7 +58,6 @@ config ELOG_BOOT_COUNT_CMOS_OFFSET
 # FMDFILE is set here so that coreboot build picks up this flash map layout
 # even when CHROMEOS is not selected when building upstream.
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
 
 config MAINBOARD_DIR

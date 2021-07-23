@@ -71,7 +71,6 @@ config MAINBOARD_FAMILY
 	default "Google_Kahlee"
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/baseboard/chromeos.fmd" if CHROMEOS
 	default ""
 	help

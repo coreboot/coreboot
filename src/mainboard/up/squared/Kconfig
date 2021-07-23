@@ -37,7 +37,6 @@ config MAINBOARD_PART_NUMBER
 	default "Squared"
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/upsquared.fmd"	if !VBOOT
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-ro.fmd"	if !VBOOT_SLOTS_RW_A
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-roa.fmd"	if VBOOT_SLOTS_RW_A && !VBOOT_SLOTS_RW_AB

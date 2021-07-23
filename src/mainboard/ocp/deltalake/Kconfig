@@ -44,7 +44,6 @@ config MAX_SOCKET
 	default 1
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
 # Deltalake is single socket server, the platform design has 1 DIMM per channel

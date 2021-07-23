@@ -12,7 +12,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select AMD_SOC_CONSOLE_UART if !AMD_LPC_DEBUG_CARD
 
 config FMDFILE
-	string
 	default "src/mainboard/amd/bilby/board.fmd"
 
 config AMD_LPC_DEBUG_CARD

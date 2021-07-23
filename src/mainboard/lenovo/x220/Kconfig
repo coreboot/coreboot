@@ -50,7 +50,6 @@ config VARIANT_DIR
 	default "x1" if BOARD_LENOVO_X1
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT
 
 config MAINBOARD_PART_NUMBER

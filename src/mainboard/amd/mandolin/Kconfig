@@ -14,7 +14,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select AMD_SOC_CONSOLE_UART if !AMD_LPC_DEBUG_CARD
 
 config FMDFILE
-	string
 	default "src/mainboard/amd/mandolin/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
 
 config AMD_LPC_DEBUG_CARD

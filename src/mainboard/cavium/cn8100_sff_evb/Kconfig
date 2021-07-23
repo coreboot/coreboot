@@ -34,7 +34,6 @@ config UART_FOR_CONSOLE
 	default 0
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
 config MAX_CPUS

@@ -24,7 +24,6 @@ config VBOOT
 	select GBB_FLAG_DISABLE_FWMP
 
 config FMDFILE
-	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/mc_apl_vboot.fmd"
 
 endif # BOARD_SIEMENS_MC_APL2

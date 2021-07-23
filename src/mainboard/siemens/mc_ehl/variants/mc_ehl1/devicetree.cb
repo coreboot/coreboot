@@ -20,6 +20,12 @@ chip soc/intel/elkhartlake
 	register "SmbusEnable" = "1"
 	register "Heci2Enable" = "1"
 
+	# Enable IBECC for the complete memory
+	register "ibecc" = "{
+		.enable = 1,
+		.mode = IBECC_ALL
+	}"
+
 	# USB related UPDs
 	register "usb2_ports[0]" = "USB2_PORT_SHORT(OC_SKIP)"	# USB3/2 Type A port 1
 	register "usb2_ports[1]" = "USB2_PORT_SHORT(OC_SKIP)"	# USB3/2 Type A Port 2

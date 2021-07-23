@@ -3,3 +3,13 @@ config SOC_AMD_COMMON_BLOCK_ACPIMMIO
 	help
 	  Select this option to enable hardware blocks in the AcpiMmio
 	  address space (0xfed8xxxx).
+
+if SOC_AMD_COMMON_BLOCK_ACPIMMIO
+
+config SOC_AMD_COMMON_BLOCK_ACPIMMIO_BIOSRAM
+	bool
+	help
+	  Add functions to access settings stored in the biosram region.
+	  This is only used by the SoCs using binaryPI and the old AGESA.
+
+endif # SOC_AMD_COMMON_BLOCK_ACPIMMIO

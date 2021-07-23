@@ -515,7 +515,7 @@ find_llc_subleaf:
 
 set_eviction_mask:
 	mov	%ebx, %edi /* back up number of ways */
-	mov	%eax, %esi /* back up the non-eviction mask*/
+	mov	%eax, %esi /* back up the non-eviction mask */
 #if CONFIG(CAR_HAS_SF_MASKS)
 	/*
 	 * SF mask is programmed with the double number of bits than

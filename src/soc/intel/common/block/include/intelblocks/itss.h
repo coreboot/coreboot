@@ -3,23 +3,23 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_ITSS_H
 #define SOC_INTEL_COMMON_BLOCK_ITSS_H
 
-/* PIRQA Routing Control Register*/
+/* PIRQA Routing Control Register */
 #define PCR_ITSS_PIRQA_ROUT	0x3100
-/* PIRQB Routing Control Register*/
+/* PIRQB Routing Control Register */
 #define PCR_ITSS_PIRQB_ROUT	0x3101
-/* PIRQC Routing Control Register*/
+/* PIRQC Routing Control Register */
 #define PCR_ITSS_PIRQC_ROUT	0x3102
-/* PIRQD Routing Control Register*/
+/* PIRQD Routing Control Register */
 #define PCR_ITSS_PIRQD_ROUT	0x3103
-/* PIRQE Routing Control Register*/
+/* PIRQE Routing Control Register */
 #define PCR_ITSS_PIRQE_ROUT	0x3104
-/* PIRQF Routing Control Register*/
+/* PIRQF Routing Control Register */
 #define PCR_ITSS_PIRQF_ROUT	0x3105
-/* PIRQG Routing Control Register*/
+/* PIRQG Routing Control Register */
 #define PCR_ITSS_PIRQG_ROUT	0x3106
-/* PIRQH Routing Control Register*/
+/* PIRQH Routing Control Register */
 #define PCR_ITSS_PIRQH_ROUT	0x3107
-/* ITSS Interrupt polarity control*/
+/* ITSS Interrupt polarity control */
 #define PCR_ITSS_IPC0_CONF	0x3200
 /* ITSS Power reduction control */
 #define PCR_ITSS_ITSSPRC	0x3300

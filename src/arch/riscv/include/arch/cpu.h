@@ -13,16 +13,6 @@ struct cpu_driver {
 	const struct cpu_device_id *id_table;
 };
 
-struct thread;
-
-struct cpu_info {
-	struct device *cpu;
-	unsigned long index;
-#if CONFIG(COOP_MULTITASKING)
-	struct thread *thread;
-#endif
-};
-
 struct cpuinfo_riscv {
 	uint8_t    riscv;            /* CPU family */
 	uint8_t    riscv_vendor;     /* CPU vendor */
@@ -40,5 +30,4 @@ static inline int machine_xlen(void)
 	return (1 << mxl) * 16;
 }
 
-struct cpu_info *cpu_info(void);
 #endif /* __ARCH_CPU_H__ */

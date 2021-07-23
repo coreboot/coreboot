@@ -106,7 +106,6 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM),y)
 
 ramstage-y += stages.c
 ramstage-y += div0.c
-ramstage-$(CONFIG_COOP_MULTITASKING) += cpu.c
 ramstage-y += eabi_compat.c
 ramstage-y += boot.c
 ramstage-y += tables.c

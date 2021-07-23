@@ -15,8 +15,6 @@
 #define DP_AUX_NATIVE_WRITE		0x8
 #define DP_AUX_NATIVE_READ		0x9
 
-#define MASKBIT(a, b) ((a > b) ? (BIT(a + 1) - BIT(b)) : (BIT(b + 1) - BIT(a)))
-
 #define DP_WRITE1BYTE(mtk_dp, reg, u8_val) \
 	mtk_dp_write_byte(mtk_dp, reg, u8_val, 0xff)
 #define DP_WRITE2BYTE(mtk_dp, reg, u16_val) \

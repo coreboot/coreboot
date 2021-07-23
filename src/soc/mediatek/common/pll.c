@@ -5,8 +5,6 @@
 #include <soc/pll.h>
 #include <types.h>
 
-#define GENMASK(h, l) (BIT(h + 1) - BIT(l))
-
 void mux_set_sel(const struct mux *mux, u32 sel)
 {
 	u32 mask = GENMASK(mux->mux_width - 1, 0);

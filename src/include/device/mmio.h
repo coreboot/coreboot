@@ -4,6 +4,7 @@
 #define __DEVICE_MMIO_H__
 
 #include <arch/mmio.h>
+#include <commonlib/helpers.h>
 #include <endian.h>
 #include <types.h>
 
@@ -130,7 +131,8 @@ static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
 #define DEFINE_BIT(name, bit) DEFINE_BITFIELD(name, bit, bit)
 
 #define _BF_MASK(name, value) \
-	((u32)((1ULL << name##_BITFIELD_SIZE) - 1) << name##_BITFIELD_SHIFT)
+	((u32)GENMASK(name##_BITFIELD_SHIFT + name##_BITFIELD_SIZE - 1, \
+		      name##_BITFIELD_SHIFT))
 
 #define _BF_VALUE(name, value) \
 	(((u32)(value) << name##_BITFIELD_SHIFT) & _BF_MASK(name, 0))

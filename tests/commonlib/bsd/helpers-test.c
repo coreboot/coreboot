@@ -8,6 +8,19 @@ static void func(void)
 	function_called();
 }
 
+static void test_genmask(void **state)
+{
+	assert_int_equal(GENMASK(4, 4), 0x10);
+	assert_int_equal(GENMASK(4, 3), 0x18);
+	assert_int_equal(GENMASK(4, 0), 0x1f);
+	/* Edge cases */
+	assert_int_equal(GENMASK(0, 0), 1);
+	assert_int_equal(GENMASK(31, 31), 0x80000000);
+	assert_int_equal(GENMASK(31, 0), 0xffffffff);
+	assert_int_equal(GENMASK(63, 63), 0x8000000000000000);
+	assert_int_equal(GENMASK(63, 0), 0xffffffffffffffff);
+}
+
 static void test_retry(void **state)
 {
 	int count;
@@ -34,6 +47,7 @@ static void test_retry(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
+		cmocka_unit_test(test_genmask),
 		cmocka_unit_test(test_retry),
 	};
 

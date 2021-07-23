@@ -9,8 +9,6 @@
 #include <timer.h>
 #include <types.h>
 
-#define GENMASK(h, l)	(BIT(h + 1) - BIT(l))
-
 /* GENI_OUTPUT_CTRL fields */
 #define DEFAULT_IO_OUTPUT_CTRL_MSK	GENMASK(6, 0)
 

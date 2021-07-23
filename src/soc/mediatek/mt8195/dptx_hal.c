@@ -9,6 +9,7 @@
 #include <soc/dptx_reg.h>
 #include <string.h>
 #include <timer.h>
+#include <types.h>
 
 #define REG_OFFSET_LIMIT 0x8000
 
@@ -173,21 +174,21 @@ void dptx_hal_set_color_format(struct mtk_dp *mtk_dp, u8 out_format)
 {
 	/* MISC0 */
 	mtk_dp_write_byte(mtk_dp, REG_3034_DP_ENCODER0_P0,
-			  out_format << 0x1, MASKBIT(2, 1));
+			  out_format << 0x1, GENMASK(2, 1));
 
 	switch (out_format) {
 	case DP_COLOR_FORMAT_RGB_444:
 	case DP_COLOR_FORMAT_YUV_444:
 		mtk_dp_write_byte(mtk_dp, REG_303C_DP_ENCODER0_P0 + 1,
-				  0, MASKBIT(6, 4));
+				  0, GENMASK(6, 4));
 		break;
 	case DP_COLOR_FORMAT_YUV_422:
 		mtk_dp_write_byte(mtk_dp, REG_303C_DP_ENCODER0_P0 + 1,
-				  BIT(4), MASKBIT(6, 4));
+				  BIT(4), GENMASK(6, 4));
 		break;
 	case DP_COLOR_FORMAT_YUV_420:
 		mtk_dp_write_byte(mtk_dp, REG_303C_DP_ENCODER0_P0 + 1, BIT(5),
-				  MASKBIT(6, 4));
+				  GENMASK(6, 4));
 		break;
 	default:
 		break;
@@ -592,15 +593,15 @@ void dptx_hal_hpd_int_en(struct mtk_dp *mtk_dp, bool enable)
 {
 	/* [7]:int, [6]:Con, [5]DisCon, [4]No-Use: UnMASK HPD Port */
 	mtk_dp_write_byte(mtk_dp, REG_3418_DP_TRANS_P0,
-			  enable ? 0 : MASKBIT(7, 5), MASKBIT(7, 5));
+			  enable ? 0 : GENMASK(7, 5), GENMASK(7, 5));
 }
 
 void dptx_hal_hpd_detect_setting(struct mtk_dp *mtk_dp)
 {
 	mtk_dp_write_byte(mtk_dp, REG_3410_DP_TRANS_P0,
-			  0x8, MASKBIT(3, 0));
+			  0x8, GENMASK(3, 0));
 	mtk_dp_write_byte(mtk_dp, REG_3410_DP_TRANS_P0,
-			  0xa << 4, MASKBIT(7, 4));
+			  0xa << 4, GENMASK(7, 4));
 
 	DP_WRITE1BYTE(mtk_dp, REG_3410_DP_TRANS_P0 + 1, 0x55);
 	DP_WRITE1BYTE(mtk_dp, REG_3430_DP_TRANS_P0, 0x2);
@@ -643,14 +644,14 @@ void dptx_hal_phy_setting(struct mtk_dp *mtk_dp)
 
 void dptx_hal_ssc_en(struct mtk_dp *mtk_dp, bool enable)
 {
-	mtk_dp_mask(mtk_dp, 0x2000, BIT(0), MASKBIT(1, 0));
+	mtk_dp_mask(mtk_dp, 0x2000, BIT(0), GENMASK(1, 0));
 
 	if (enable)
 		mtk_dp_mask(mtk_dp, 0x1014, BIT(3), BIT(3));
 	else
 		mtk_dp_mask(mtk_dp, 0x1014, 0x0, BIT(3));
 
-	mtk_dp_mask(mtk_dp, 0x2000, MASKBIT(1, 0), MASKBIT(1, 0));
+	mtk_dp_mask(mtk_dp, 0x2000, GENMASK(1, 0), GENMASK(1, 0));
 
 	mdelay(1);
 }
@@ -666,7 +667,7 @@ void dptx_hal_aux_setting(struct mtk_dp *mtk_dp)
 	DP_WRITE1BYTE(mtk_dp, REG_3634_AUX_TX_P0 + 1, 0x19);
 	/* 0xd for 26M */
 	mtk_dp_write_byte(mtk_dp, REG_3614_AUX_TX_P0,
-			  0xd, MASKBIT(6, 0));
+			  0xd, GENMASK(6, 0));
 	mtk_dp_mask(mtk_dp, REG_37C8_AUX_TX_P0,
 		    0x01 << MTK_ATOP_EN_AUX_TX_P0_FLDMASK_POS,
 		    MTK_ATOP_EN_AUX_TX_P0_FLDMASK);
@@ -681,7 +682,7 @@ void dptx_hal_digital_setting(struct mtk_dp *mtk_dp)
 
 	dptx_hal_set_color_depth(mtk_dp, DP_COLOR_DEPTH_8BIT);
 	mtk_dp_write_byte(mtk_dp, REG_3368_DP_ENCODER1_P0 + 1,
-			  BIT(4), MASKBIT(5, 4));
+			  BIT(4), GENMASK(5, 4));
 	/* DPtx encoder reset all sw. */
 	mtk_dp_write_byte(mtk_dp, REG_3004_DP_ENCODER0_P0 + 1, BIT(1), BIT(1));
 
@@ -758,7 +759,7 @@ void dptx_hal_set_txtrainingpattern(struct mtk_dp *mtk_dp, int value)
 		dptx_hal_phy_setidlepattern(mtk_dp, false);
 
 	mtk_dp_write_byte(mtk_dp, REG_3400_DP_TRANS_P0 + 1,
-			  value, MASKBIT(7, 4));
+			  value, GENMASK(7, 4));
 }
 
 void dptx_hal_phy_setidlepattern(struct mtk_dp *mtk_dp, bool enable)

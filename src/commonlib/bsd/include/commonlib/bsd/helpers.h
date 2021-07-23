@@ -54,6 +54,9 @@
 
 #define POWER_OF_2(x)		(1ULL << (x))
 
+/* Set bits from `high` to `low` (inclusive). */
+#define GENMASK(high, low) (((~0ULL) << (low)) & (~0ULL >> (63 - (high))))
+
 #define DIV_ROUND_UP(x, y) ({ \
 	__typeof__(x) _div_local_x = (x); \
 	__typeof__(y) _div_local_y = (y); \

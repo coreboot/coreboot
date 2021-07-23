@@ -27,7 +27,6 @@ config CHROMEOS_WIFI_SAR
 	select USE_SAR
 
 config DEVICETREE
-	string
 	default "variants/atlas/devicetree.cb" if BOARD_GOOGLE_ATLAS
 	default "variants/nami/devicetree.cb" if BOARD_GOOGLE_NAMI
 	default "variants/nautilus/devicetree.cb" if BOARD_GOOGLE_NAUTILUS

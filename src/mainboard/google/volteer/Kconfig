@@ -62,7 +62,6 @@ config DIMM_SPD_SIZE
 	default 512
 
 config DEVICETREE
-	string
 	default "variants/baseboard/devicetree.cb"
 
 config OVERRIDE_DEVICETREE

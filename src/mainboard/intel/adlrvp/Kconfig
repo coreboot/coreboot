@@ -59,7 +59,6 @@ config MAINBOARD_FAMILY
 	default "Intel_adlrvp"
 
 config DEVICETREE
-	string
 	default "devicetree_m.cb" if BOARD_INTEL_ADLRVP_M || BOARD_INTEL_ADLRVP_M_EXT_EC
 	default "devicetree.cb"
 

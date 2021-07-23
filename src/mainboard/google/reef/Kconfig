@@ -58,7 +58,6 @@ config VARIANT_DIR
 	default "coral" if BOARD_GOOGLE_CORAL
 
 config DEVICETREE
-	string
 	default "variants/coral/devicetree.cb" if BOARD_GOOGLE_CORAL
 	default "variants/pyro/devicetree.cb" if BOARD_GOOGLE_PYRO
 	default "variants/sand/devicetree.cb" if BOARD_GOOGLE_SAND

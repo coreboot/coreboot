@@ -102,7 +102,6 @@ config VGA_BIOS_FILE
 endif
 
 config DEVICETREE
-	string
 	default "devicetree_f2a85-m_pro.cb" if BOARD_ASUS_F2A85_M_PRO
 	default "devicetree_f2a85-m.cb" if BOARD_ASUS_F2A85_M
 	default "devicetree_f2a85-m_le.cb" if BOARD_ASUS_F2A85_M_LE

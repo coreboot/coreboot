@@ -45,7 +45,6 @@ config CBFS_SIZE
 	default 0x600000 if BOARD_CLEVO_N130WU
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config FMDFILE

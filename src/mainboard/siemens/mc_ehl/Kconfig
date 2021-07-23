@@ -22,7 +22,6 @@ config MAINBOARD_PART_NUMBER
 	default "MC EHL1" if BOARD_SIEMENS_MC_EHL1
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config DIMM_SPD_SIZE

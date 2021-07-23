@@ -53,7 +53,6 @@ config VARIANT_DIR
 	default "glkrvp" if BOARD_INTEL_GLKRVP
 
 config DEVICETREE
-	string
 	default "variants/baseboard/devicetree.cb"
 
 config MAINBOARD_PART_NUMBER

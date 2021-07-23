@@ -46,7 +46,6 @@ config TPM_PIRQ
 	default 0x18  # GPP_E0_IRQ
 
 config DEVICETREE
-	string
 	default "variants/baseboard/devicetree.cb"
 
 config OVERRIDE_DEVICETREE

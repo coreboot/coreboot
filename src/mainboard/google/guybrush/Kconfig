@@ -107,7 +107,6 @@ config VARIANT_DIR
 	default "guybrush" if BOARD_GOOGLE_GUYBRUSH
 
 config DEVICETREE
-	string
 	default "variants/baseboard/devicetree.cb"
 
 config OVERRIDE_DEVICETREE

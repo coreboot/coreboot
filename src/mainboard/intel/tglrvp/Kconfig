@@ -70,7 +70,6 @@ config PCIEXP_HOTPLUG_PREFETCH_MEM
 	default 0x1c00000 # 448 MiB
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config DIMM_SPD_SIZE

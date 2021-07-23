@@ -41,7 +41,6 @@ config MAINBOARD_PART_NUMBER
 	default "G41M-VS3 R2.0" if BOARD_ASROCK_G41M_VS3_R2_0
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 # Override the default variant behavior, since the data.vbt is the same

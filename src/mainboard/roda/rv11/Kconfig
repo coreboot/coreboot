@@ -24,7 +24,6 @@ config VARIANT_DIR
 	default "rw11" if BOARD_RODA_RW11
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_PART_NUMBER

@@ -29,7 +29,6 @@ config VARIANT_DIR
 	default "toucan-af"      if BOARD_LIPPERT_TOUCAN_AF
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_PART_NUMBER

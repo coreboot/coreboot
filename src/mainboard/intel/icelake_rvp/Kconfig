@@ -38,7 +38,6 @@ config MAX_CPUS
 	default 8
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config DIMM_SPD_SIZE

@@ -50,7 +50,6 @@ config VARIANT_DIR
 	default "chili" if BOARD_SIEMENS_CHILI_CHILI
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config INTEL_GMA_VBT_FILE

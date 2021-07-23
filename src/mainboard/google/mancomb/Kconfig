@@ -89,7 +89,6 @@ config VARIANT_DIR
 	default "mancomb" if BOARD_GOOGLE_MANCOMB
 
 config DEVICETREE
-	string
 	default "variants/baseboard/devicetree.cb"
 
 config OVERRIDE_DEVICETREE

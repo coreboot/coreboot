@@ -36,7 +36,6 @@ config MAINBOARD_VERSION
 	default "2.1A" if BOARD_CLEVO_L140CU_BASE
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config CBFS_SIZE

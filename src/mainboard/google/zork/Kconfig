@@ -90,7 +90,6 @@ config MAINBOARD_PART_NUMBER
 	default "Gumboz" if BOARD_GOOGLE_GUMBOZ
 
 config DEVICETREE
-	string
 	default "variants/baseboard/devicetree_trembyle.cb" if BOARD_GOOGLE_BASEBOARD_TREMBYLE
 	default "variants/baseboard/devicetree_dalboz.cb" if BOARD_GOOGLE_BASEBOARD_DALBOZ
 

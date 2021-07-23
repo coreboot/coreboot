@@ -30,7 +30,6 @@ config BOARD_GOOGLE_BASEBOARD_FIZZ
 if BOARD_GOOGLE_BASEBOARD_FIZZ
 
 config DEVICETREE
-	string
 	default "variants/baseboard/devicetree.cb"
 
 config OVERRIDE_DEVICETREE

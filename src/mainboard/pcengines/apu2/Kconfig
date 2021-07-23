@@ -32,7 +32,6 @@ config VARIANT_DIR
 	default "apu5" if BOARD_PCENGINES_APU5
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_PART_NUMBER

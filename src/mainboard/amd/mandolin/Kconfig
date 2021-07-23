@@ -63,7 +63,6 @@ config MAINBOARD_PART_NUMBER
 	default "CEREME" if BOARD_AMD_CEREME
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config ONBOARD_VGA_IS_PRIMARY

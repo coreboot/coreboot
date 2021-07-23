@@ -42,7 +42,6 @@ config CHROMEOS
 	select VBOOT_LID_SWITCH
 
 config DEVICETREE
-	string
 	default "variants/baseboard/devicetree.cb"
 
 config DRIVER_TPM_I2C_BUS

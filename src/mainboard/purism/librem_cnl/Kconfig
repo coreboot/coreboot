@@ -34,7 +34,6 @@ config VARIANT_DIR
 	default "librem_14" if BOARD_PURISM_LIBREM_14
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config CBFS_SIZE

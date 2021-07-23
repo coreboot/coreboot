@@ -69,7 +69,6 @@ config CHROMEOS_WIFI_SAR
 	select USE_SAR
 
 config DEVICETREE
-	string
 	default "variants/baseboard/devicetree.cb"
 
 config DIMM_SPD_SIZE

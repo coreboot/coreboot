@@ -64,7 +64,6 @@ config MAINBOARD_PART_NUMBER
 	default "Treeya" if BOARD_GOOGLE_TREEYA
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_FAMILY

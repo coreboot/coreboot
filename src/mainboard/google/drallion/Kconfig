@@ -79,7 +79,6 @@ config VARIANT_DIR
 	default "drallion" if BOARD_GOOGLE_DRALLION
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config VBOOT

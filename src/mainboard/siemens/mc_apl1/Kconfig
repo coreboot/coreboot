@@ -24,7 +24,6 @@ config VARIANT_DIR
 	default "mc_apl6" if BOARD_SIEMENS_MC_APL6
 
 config DEVICETREE
-	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_PART_NUMBER

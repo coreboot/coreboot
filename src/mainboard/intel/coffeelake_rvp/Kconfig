@@ -55,7 +55,6 @@ config UART_FOR_CONSOLE
 	default 2
 
 config DEVICETREE
-	string
 	default "variants/baseboard/devicetree.cb"
 
 config OVERRIDE_DEVICETREE

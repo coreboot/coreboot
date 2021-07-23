@@ -68,7 +68,6 @@ config VARIANT_DIR
 	default "foob" if BOARD_GOOGLE_FOOB
 
 config DEVICETREE
-	string
 	default "variants/baseboard/devicetree.cb"
 
 config OVERRIDE_DEVICETREE

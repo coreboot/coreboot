@@ -105,15 +105,7 @@ config DRIVER_TPM_I2C_ADDR
 	  I2C address of the TPM chip on the Crypto Shield board.
 
 config FMDFILE
-	string "FMAP description file in fmd format"
-	depends on VBOOT
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot.fmd"
-	help
-	  The build system creates a default FMAP from ROM_SIZE and CBFS_SIZE,
-	  but in some cases more complex setups are required.
-
-	  When an FMD descriptionn file is specified, the build system uses it
-	  instead of creating a default FMAP file.
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot.fmd" if VBOOT
 
 config ENABLE_SD_TESTING
 	bool "Enable SD card testing"

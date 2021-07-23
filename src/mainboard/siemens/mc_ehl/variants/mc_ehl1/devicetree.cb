@@ -77,6 +77,14 @@ chip soc/intel/elkhartlake
 	register "PcieRpL1Substates[4]" = "L1_SS_DISABLED"
 	register "PcieRpL1Substates[5]" = "L1_SS_DISABLED"
 
+	# Disable LTR for all PCIe root ports
+	register "PcieRpLtrDisable[0]" = "true"
+	register "PcieRpLtrDisable[1]" = "true"
+	register "PcieRpLtrDisable[2]" = "true"
+	register "PcieRpLtrDisable[3]" = "true"
+	register "PcieRpLtrDisable[4]" = "true"
+	register "PcieRpLtrDisable[5]" = "true"
+
 	# Storage (SATA/SDCARD/EMMC) related UPDs
 	register "SataSalpSupport" = "0"
 	register "SataPortsEnable[0]" = "1"

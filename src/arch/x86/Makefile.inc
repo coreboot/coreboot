@@ -43,6 +43,13 @@ cbfs-files-$(CONFIG_VGA_BIOS_DGPU) += pci$(stripped_vgabios_dgpu_id).rom
 pci$(stripped_vgabios_dgpu_id).rom-file := $(call strip_quotes,$(CONFIG_VGA_BIOS_DGPU_FILE))
 pci$(stripped_vgabios_dgpu_id).rom-type := optionrom
 
+# The AMD LPC SPI DMA controller requires source files to be 64 byte aligned.
+ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA),y)
+pci$(stripped_vgabios_id).rom-align := 64
+pci$(stripped_second_vbios_id).rom-align := 64
+pci$(stripped_vgabios_dgpu_id).rom-align := 64
+endif # CONFIG_SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
+
 ###############################################################################
 # common support for early assembly includes
 ###############################################################################

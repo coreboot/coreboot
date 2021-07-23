@@ -3,6 +3,7 @@
 #ifndef _MEM_POOL_H_
 #define _MEM_POOL_H_
 
+#include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,23 +17,23 @@
  * were chosen to optimize for the CBFS cache case which may need two buffers
  * to map a single compressed file, and will free them in reverse order.)
  *
- * The memory returned by allocations are at least 8 byte aligned. Note
- * that this requires the backing buffer to start on at least an 8 byte
- * alignment.
+ * You must ensure the backing buffer is 'alignment' aligned.
  */
 
 struct mem_pool {
 	uint8_t *buf;
 	size_t size;
+	size_t alignment;
 	uint8_t *last_alloc;
 	uint8_t *second_to_last_alloc;
 	size_t free_offset;
 };
 
-#define MEM_POOL_INIT(buf_, size_)		\
+#define MEM_POOL_INIT(buf_, size_, alignment_)	\
 	{					\
 		.buf = (buf_),			\
 		.size = (size_),		\
+		.alignment = (alignment_),	\
 		.last_alloc = NULL,		\
 		.second_to_last_alloc = NULL,	\
 		.free_offset = 0,		\
@@ -46,10 +47,15 @@ static inline void mem_pool_reset(struct mem_pool *mp)
 }
 
 /* Initialize a memory pool. */
-static inline void mem_pool_init(struct mem_pool *mp, void *buf, size_t sz)
+static inline void mem_pool_init(struct mem_pool *mp, void *buf, size_t sz,
+					 size_t alignment)
 {
+	assert(alignment);
+	assert((uintptr_t)buf % alignment == 0);
+
 	mp->buf = buf;
 	mp->size = sz;
+	mp->alignment = alignment;
 	mem_pool_reset(mp);
 }
 

@@ -19,16 +19,17 @@
 #include <timestamp.h>
 
 #if ENV_STAGE_HAS_DATA_SECTION
-struct mem_pool cbfs_cache = MEM_POOL_INIT(_cbfs_cache, REGION_SIZE(cbfs_cache));
+struct mem_pool cbfs_cache =
+	MEM_POOL_INIT(_cbfs_cache, REGION_SIZE(cbfs_cache), sizeof(uint64_t));
 #else
-struct mem_pool cbfs_cache = MEM_POOL_INIT(NULL, 0);
+struct mem_pool cbfs_cache = MEM_POOL_INIT(NULL, 0, 0);
 #endif
 
 static void switch_to_postram_cache(int unused)
 {
 	if (_preram_cbfs_cache != _postram_cbfs_cache)
-		mem_pool_init(&cbfs_cache, _postram_cbfs_cache,
-			      REGION_SIZE(postram_cbfs_cache));
+		mem_pool_init(&cbfs_cache, _postram_cbfs_cache, REGION_SIZE(postram_cbfs_cache),
+			      sizeof(uint64_t));
 }
 ROMSTAGE_CBMEM_INIT_HOOK(switch_to_postram_cache);
 

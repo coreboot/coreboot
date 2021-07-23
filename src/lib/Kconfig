@@ -99,6 +99,12 @@ config NO_CBFS_MCACHE
 	  lookup must re-read the same CBFS directory entries from flash to find
 	  the respective file.
 
+config CBFS_CACHE_ALIGN
+	int
+	default 8
+	help
+	  Sets the alignment of the buffers returned by the cbfs_cache.
+
 config PAYLOAD_PRELOAD
 	bool
 	depends on COOP_MULTITASKING

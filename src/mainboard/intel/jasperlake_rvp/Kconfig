@@ -22,7 +22,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_CSE_LITE_SKU
 
 config MAINBOARD_DIR
-	string
 	default "intel/jasperlake_rvp"
 
 config VARIANT_DIR

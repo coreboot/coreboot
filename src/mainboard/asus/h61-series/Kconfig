@@ -15,7 +15,6 @@ config BOARD_ASUS_H61_SERIES
 if BOARD_ASUS_H61_SERIES
 
 config MAINBOARD_DIR
-	string
 	default "asus/h61-series"
 
 config VARIANT_DIR

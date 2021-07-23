@@ -21,7 +21,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select BOOT_DEVICE_NOT_SPI_FLASH
 
 config MAINBOARD_DIR
-	string
 	default "roda/rk886ex"
 
 config MAINBOARD_PART_NUMBER

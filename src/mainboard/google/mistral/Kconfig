@@ -21,7 +21,6 @@ config VBOOT
 	select GBB_FLAG_FORCE_DEV_SWITCH_ON
 
 config MAINBOARD_DIR
-	string
 	default "google/mistral"
 
 ##########################################################

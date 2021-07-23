@@ -15,7 +15,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_ELKHARTLAKE
 
 config MAINBOARD_DIR
-	string
 	default "intel/elkhartlake_crb"
 
 config VARIANT_DIR

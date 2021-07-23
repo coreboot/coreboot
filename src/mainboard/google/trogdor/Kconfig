@@ -44,7 +44,6 @@ config VBOOT
 	select VBOOT_MOCK_SECDATA if BOARD_GOOGLE_BUBS
 
 config MAINBOARD_DIR
-	string
 	default "google/trogdor"
 
 config DRIVER_TPM_SPI_BUS

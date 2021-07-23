@@ -53,7 +53,6 @@ config VARIANT_DIR
 	default "w530" if BOARD_LENOVO_W530
 
 config MAINBOARD_DIR
-	string
 	default "lenovo/t530"
 
 config OVERRIDE_DEVICETREE

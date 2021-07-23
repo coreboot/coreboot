@@ -16,7 +16,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select VPD
 
 config MAINBOARD_DIR
-	string
 	default "ocp/tiogapass"
 
 config MAINBOARD_PART_NUMBER

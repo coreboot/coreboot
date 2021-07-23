@@ -52,7 +52,6 @@ config VBOOT_VBNV_OFFSET
 	default 0x2c
 
 config MAINBOARD_DIR
-	string
 	default "emulation/qemu-i440fx"
 
 config MAINBOARD_PART_NUMBER

@@ -30,7 +30,6 @@ config IPMI_KCS_REGISTER_SPACING
 	default 4
 
 config MAINBOARD_DIR
-	string
 	default "ocp/deltalake"
 
 config MAINBOARD_PART_NUMBER

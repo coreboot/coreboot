@@ -20,7 +20,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_LPC_TPM
 
 config MAINBOARD_DIR
-	string
 	default "intel/coffeelake_rvp"
 
 config VARIANT_DIR

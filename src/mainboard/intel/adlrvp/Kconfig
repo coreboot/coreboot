@@ -32,7 +32,6 @@ config CHROMEOS
 	select HAS_RECOVERY_MRC_CACHE
 
 config MAINBOARD_DIR
-	string
 	default "intel/adlrvp"
 
 config VARIANT_DIR

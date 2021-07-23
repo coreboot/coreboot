@@ -16,7 +16,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_APOLLOLAKE
 
 config MAINBOARD_DIR
-	string
 	default "kontron/mal10"
 
 # TODO: Add a new carrier boards here

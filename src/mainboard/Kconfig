@@ -10,6 +10,9 @@ endchoice
 
 source "src/mainboard/*/Kconfig"
 
+config MAINBOARD_DIR
+	string
+
 config MAINBOARD_VENDOR
 	string "Mainboard vendor name"
 

@@ -12,7 +12,6 @@ source "src/mainboard/siemens/mc_apl1/variants/*/Kconfig"
 if BOARD_SIEMENS_BASEBOARD_MC_APL1
 
 config MAINBOARD_DIR
-	string
 	default "siemens/mc_apl1"
 
 config VARIANT_DIR

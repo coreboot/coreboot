@@ -9,7 +9,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ACPI_TABLES
 
 config MAINBOARD_DIR
-	string
 	default "intel/harcuvar"
 
 config MAINBOARD_PART_NUMBER

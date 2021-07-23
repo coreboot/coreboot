@@ -16,7 +16,6 @@ config BOARD_PURISM_BASEBOARD_LIBREM_CNL
 if BOARD_PURISM_BASEBOARD_LIBREM_CNL
 
 config MAINBOARD_DIR
-	string
 	default "purism/librem_cnl"
 
 config MAINBOARD_FAMILY

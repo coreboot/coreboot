@@ -29,7 +29,6 @@ config BOARD_KONTRON_BOXER26_OPTIONS
 if BOARD_KONTRON_BSL6_COMMON
 
 config MAINBOARD_DIR
-	string
 	default "kontron/bsl6"
 
 config MAINBOARD_VENDOR

@@ -21,7 +21,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select PCIEXP_L1_SUB_STATE
 
 config MAINBOARD_DIR
-	string
 	default "dell/optiplex_9010"
 
 config MAINBOARD_PART_NUMBER

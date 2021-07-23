@@ -27,7 +27,6 @@ config GBB_HWID
 	default "ELGON"
 
 config MAINBOARD_DIR
-	string
 	default "opencellular/elgon"
 
 config DRIVER_TPM_I2C_BUS

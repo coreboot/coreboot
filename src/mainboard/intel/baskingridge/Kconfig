@@ -16,7 +16,6 @@ config VBOOT
 	select VBOOT_VBNV_CMOS
 
 config MAINBOARD_DIR
-	string
 	default "intel/baskingridge"
 
 config MAINBOARD_PART_NUMBER

@@ -19,7 +19,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select AZALIA_PLUGIN_SUPPORT
 
 config MAINBOARD_DIR
-	string
 	default "amd/padmelon"
 
 config MAINBOARD_PART_NUMBER

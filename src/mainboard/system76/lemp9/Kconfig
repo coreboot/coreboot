@@ -22,7 +22,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select USE_LEGACY_8254_TIMER # Fix failure to boot GRUB
 
 config MAINBOARD_DIR
-	string
 	default "system76/lemp9"
 
 config MAINBOARD_PART_NUMBER

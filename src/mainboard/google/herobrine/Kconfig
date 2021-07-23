@@ -28,7 +28,6 @@ config VBOOT
 	select VBOOT_MOCK_SECDATA if BOARD_GOOGLE_SENOR
 
 config MAINBOARD_DIR
-	string
 	default "google/herobrine"
 
 config MAINBOARD_VENDOR

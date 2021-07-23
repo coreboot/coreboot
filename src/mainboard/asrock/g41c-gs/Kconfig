@@ -23,7 +23,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_LIBGFXINIT
 
 config MAINBOARD_DIR
-	string
 	default "asrock/g41c-gs"
 
 config VARIANT_DIR

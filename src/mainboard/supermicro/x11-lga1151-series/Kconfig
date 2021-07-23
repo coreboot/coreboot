@@ -29,7 +29,6 @@ config MAINBOARD_PART_NUMBER
 	default "X11SSH-F/LN4F"	if BOARD_SUPERMICRO_X11SSH_F
 
 config MAINBOARD_DIR
-	string
 	default "supermicro/x11-lga1151-series"
 
 config VARIANT_DIR

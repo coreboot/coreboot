@@ -15,7 +15,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select BOARD_ROMSIZE_KB_8192
 
 config MAINBOARD_DIR
-	string
 	default "hp/abm"
 
 config MAINBOARD_PART_NUMBER

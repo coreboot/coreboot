@@ -17,7 +17,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_SPD_IN_CBFS
 
 config MAINBOARD_DIR
-	string
 	default "bap/ode_e20XX"
 
 config MAINBOARD_PART_NUMBER

@@ -34,7 +34,6 @@ config PCIEXP_AER
 	def_bool n
 
 config MAINBOARD_DIR
-	string
 	default "purism/librem_bdw"
 
 config MAINBOARD_PART_NUMBER

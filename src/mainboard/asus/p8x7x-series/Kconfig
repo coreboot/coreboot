@@ -16,7 +16,6 @@ config BOARD_ASUS_P8X7X_SERIES
 if BOARD_ASUS_P8X7X_SERIES
 
 config MAINBOARD_DIR
-	string
 	default "asus/p8x7x-series"
 
 config VARIANT_DIR

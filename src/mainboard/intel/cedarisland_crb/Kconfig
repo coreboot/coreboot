@@ -9,7 +9,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ACPI_TABLES
 
 config MAINBOARD_DIR
-	string
 	default "intel/cedarisland_crb"
 
 config MAINBOARD_PART_NUMBER

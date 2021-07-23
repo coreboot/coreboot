@@ -14,7 +14,6 @@ config HEAP_SIZE
 	default 0x10000
 
 config MAINBOARD_DIR
-	string
 	default "sifive/hifive-unleashed"
 
 config MAINBOARD_PART_NUMBER

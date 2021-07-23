@@ -29,7 +29,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_LINEAR_FRAMEBUFFER
 
 config MAINBOARD_DIR
-	string
 	default "google/cherry"
 
 config MAINBOARD_PART_NUMBER

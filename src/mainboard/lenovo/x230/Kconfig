@@ -49,7 +49,6 @@ config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab.fmd" if VBOOT
 
 config MAINBOARD_DIR
-	string
 	default "lenovo/x230"
 
 config VARIANT_DIR

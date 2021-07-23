@@ -19,7 +19,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select NO_UART_ON_SUPERIO
 
 config MAINBOARD_DIR
-	string
 	default "lenovo/g505s"
 
 config MAINBOARD_PART_NUMBER

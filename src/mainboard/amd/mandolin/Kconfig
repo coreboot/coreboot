@@ -51,7 +51,6 @@ config CBFS_SIZE
 	default 0xfcf000 if BOARD_AMD_CEREME # Maximum size for the Cereme FMAP
 
 config MAINBOARD_DIR
-	string
 	default "amd/mandolin"
 
 config VARIANT_DIR

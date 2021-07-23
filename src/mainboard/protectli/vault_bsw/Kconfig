@@ -14,7 +14,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_ITE_IT8613E
 
 config MAINBOARD_DIR
-	string
 	default "protectli/vault_bsw"
 
 config VARIANT_DIR

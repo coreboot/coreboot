@@ -22,7 +22,6 @@ config MEMLAYOUT_LD_FILE
 	default "src/mainboard/emulation/qemu-power8/memlayout.ld"
 
 config MAINBOARD_DIR
-	string
 	default "emulation/qemu-power8"
 
 config MAINBOARD_PART_NUMBER

@@ -19,7 +19,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_LPC_TPM
 
 config MAINBOARD_DIR
-	string
 	default "pcengines/apu1"
 
 config MAINBOARD_PART_NUMBER

@@ -32,7 +32,6 @@ config VBOOT
 	select GBB_FLAG_DISABLE_FWMP
 
 config MAINBOARD_DIR
-	string
 	default "clevo/kbl-u"
 
 config VARIANT_DIR

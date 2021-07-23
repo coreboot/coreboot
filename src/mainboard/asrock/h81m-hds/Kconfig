@@ -24,7 +24,6 @@ config CBFS_SIZE
 	default 0x200000
 
 config MAINBOARD_DIR
-	string
 	default "asrock/h81m-hds"
 
 config MAINBOARD_PART_NUMBER

@@ -33,7 +33,6 @@ config DISPLAY_SPD_DATA
 	  When enabled displays the memory configuration data.
 
 config MAINBOARD_DIR
-	string
 	default "google/cyan"
 
 config MAINBOARD_FAMILY

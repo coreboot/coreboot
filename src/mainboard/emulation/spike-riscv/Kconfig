@@ -16,7 +16,6 @@ config MEMLAYOUT_LD_FILE
 	default "src/mainboard/emulation/spike-riscv/memlayout.ld"
 
 config MAINBOARD_DIR
-	string
 	default "emulation/spike-riscv"
 
 config MAINBOARD_PART_NUMBER

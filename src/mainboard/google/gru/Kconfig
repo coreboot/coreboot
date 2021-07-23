@@ -53,7 +53,6 @@ config VBOOT
 	select VBOOT_VBNV_FLASH
 
 config MAINBOARD_DIR
-	string
 	default "google/gru"
 
 config EC_GOOGLE_CHROMEEC_SPI_BUS

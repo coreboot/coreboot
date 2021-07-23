@@ -17,7 +17,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_ITE_IT8720F
 
 config MAINBOARD_DIR
-	string
 	default "gigabyte/ga-d510ud"
 
 config MAINBOARD_PART_NUMBER

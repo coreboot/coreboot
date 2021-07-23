@@ -26,7 +26,6 @@ config BOARD_CLEVO_L140CU_BASE
 if BOARD_CLEVO_CMLU_COMMON
 
 config MAINBOARD_DIR
-	string
 	default "clevo/cml-u"
 
 config MAINBOARD_PART_NUMBER

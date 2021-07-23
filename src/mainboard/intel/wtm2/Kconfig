@@ -15,7 +15,6 @@ config VBOOT
 	select VBOOT_VBNV_CMOS
 
 config MAINBOARD_DIR
-	string
 	default "intel/wtm2"
 
 config MAINBOARD_PART_NUMBER

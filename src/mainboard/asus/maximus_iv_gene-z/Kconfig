@@ -21,7 +21,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_USES_IFD_GBE_REGION
 
 config MAINBOARD_DIR
-	string
 	default "asus/maximus_iv_gene-z"
 
 config MAINBOARD_PART_NUMBER

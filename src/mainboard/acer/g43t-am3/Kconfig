@@ -25,7 +25,6 @@ config VGA_BIOS_ID
 	default "8086,2e22"
 
 config MAINBOARD_DIR
-	string
 	default "acer/g43t-am3"
 
 config MAINBOARD_PART_NUMBER

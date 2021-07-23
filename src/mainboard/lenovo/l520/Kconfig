@@ -19,7 +19,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select USE_NATIVE_RAMINIT
 
 config MAINBOARD_DIR
-	string
 	default "lenovo/l520"
 
 config MAINBOARD_PART_NUMBER

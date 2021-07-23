@@ -62,7 +62,6 @@ config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAINBOARD_DIR
-	string
 	default "google/brya"
 
 config MAINBOARD_FAMILY

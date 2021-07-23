@@ -15,7 +15,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select GFXUMA
 
 config MAINBOARD_DIR
-	string
 	default "msi/ms7721"
 
 config MAINBOARD_PART_NUMBER

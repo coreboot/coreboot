@@ -49,7 +49,6 @@ config CHROMEOS
 	select VBOOT_LID_SWITCH
 
 config MAINBOARD_DIR
-	string
 	default "google/octopus"
 
 config VARIANT_DIR

@@ -105,7 +105,6 @@ config POWER_OFF_ON_CR50_UPDATE
 endif
 
 config MAINBOARD_DIR
-	string
 	default "google/hatch"
 
 config MAINBOARD_FAMILY

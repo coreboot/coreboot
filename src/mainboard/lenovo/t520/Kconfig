@@ -48,7 +48,6 @@ config VARIANT_DIR
 	default "w520" if BOARD_LENOVO_W520
 
 config MAINBOARD_DIR
-	string
 	default "lenovo/t520"
 
 config OVERRIDE_DEVICETREE

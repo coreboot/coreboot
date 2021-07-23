@@ -12,7 +12,6 @@ source "src/mainboard/siemens/mc_ehl/variants/*/Kconfig"
 if BOARD_SIEMENS_BASEBOARD_MC_EHL
 
 config MAINBOARD_DIR
-	string
 	default "siemens/mc_ehl"
 
 config VARIANT_DIR

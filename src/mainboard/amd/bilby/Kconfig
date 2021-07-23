@@ -48,7 +48,6 @@ config CBFS_SIZE
 	default 0xfef000 # Maximum size for the Bilby FMAP
 
 config MAINBOARD_DIR
-	string
 	default "amd/bilby"
 
 config MAINBOARD_PART_NUMBER

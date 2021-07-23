@@ -20,7 +20,6 @@ config CBFS_SIZE
 	default 0xb00000
 
 config MAINBOARD_DIR
-	string
 	default "supermicro/x10slm-f"
 
 config MAINBOARD_PART_NUMBER

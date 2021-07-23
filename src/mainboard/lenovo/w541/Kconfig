@@ -26,7 +26,6 @@ config GFX_GMA_PANEL_1_PORT
 	default "DP3"
 
 config MAINBOARD_DIR
-	string
 	default "lenovo/w541"
 
 config MAINBOARD_PART_NUMBER

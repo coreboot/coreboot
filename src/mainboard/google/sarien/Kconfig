@@ -57,7 +57,6 @@ config POWER_OFF_ON_CR50_UPDATE
 	default n
 
 config MAINBOARD_DIR
-	string
 	default "google/sarien"
 
 config MAINBOARD_FAMILY

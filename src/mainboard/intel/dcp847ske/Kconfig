@@ -26,7 +26,6 @@ config DISABLE_UART_ON_TESTPADS
 endmenu
 
 config MAINBOARD_DIR
-	string
 	default "intel/dcp847ske"
 
 config MAINBOARD_PART_NUMBER

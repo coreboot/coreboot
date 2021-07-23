@@ -51,7 +51,6 @@ config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
 
 config MAINBOARD_DIR
-	string
 	default "google/mancomb"
 
 config MAINBOARD_PART_NUMBER

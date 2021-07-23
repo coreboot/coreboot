@@ -19,7 +19,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select INTEL_LPSS_UART_FOR_CONSOLE
 
 config MAINBOARD_DIR
-	string
 	default "intel/icelake_rvp"
 
 config VARIANT_DIR

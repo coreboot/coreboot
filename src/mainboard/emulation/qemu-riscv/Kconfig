@@ -35,7 +35,6 @@ config MEMLAYOUT_LD_FILE
 	default "src/mainboard/emulation/qemu-riscv/memlayout.ld"
 
 config MAINBOARD_DIR
-	string
 	default "emulation/qemu-riscv"
 
 config MAINBOARD_PART_NUMBER

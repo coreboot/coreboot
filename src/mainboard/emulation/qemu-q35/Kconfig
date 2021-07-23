@@ -53,7 +53,6 @@ config VBOOT_VBNV_OFFSET
 	default 0x2c
 
 config MAINBOARD_DIR
-	string
 	default "emulation/qemu-q35"
 
 config MAINBOARD_PART_NUMBER

@@ -18,7 +18,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select INTEL_INT15
 
 config MAINBOARD_DIR
-	string
 	default "roda/rk9"
 
 config MAINBOARD_PART_NUMBER

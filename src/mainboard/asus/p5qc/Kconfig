@@ -16,7 +16,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select ATHEROS_ATL1E_SETMAC
 
 config MAINBOARD_DIR
-	string
 	default "asus/p5qc"
 
 config VARIANT_DIR

@@ -30,7 +30,6 @@ config VBOOT
 	select VBOOT_VBNV_CMOS
 
 config MAINBOARD_DIR
-	string
 	default "samsung/lumpy"
 
 config MAINBOARD_PART_NUMBER

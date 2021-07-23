@@ -16,7 +16,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SUPERIO_NUVOTON_NCT6779D
 
 config MAINBOARD_DIR
-	string
 	default "msi/h81m-p33"
 
 config MAINBOARD_PART_NUMBER

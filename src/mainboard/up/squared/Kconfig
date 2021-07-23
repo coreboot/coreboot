@@ -27,7 +27,6 @@ config GBB_HWID
 	default "UPSQUARED"
 
 config MAINBOARD_DIR
-	string
 	default "up/squared"
 
 config MAINBOARD_VENDOR

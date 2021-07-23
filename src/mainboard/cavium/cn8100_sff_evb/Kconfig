@@ -13,7 +13,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select MISSING_BOARD_RESET
 
 config MAINBOARD_DIR
-	string
 	default "cavium/cn8100_sff_evb"
 
 config DRAM_SIZE_MB

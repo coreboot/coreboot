@@ -26,7 +26,6 @@ config MAX_CPUS
 	default 2 if BASE_ASUS_P2B_D
 
 config MAINBOARD_DIR
-	string
 	default "asus/p2b"
 
 config MAINBOARD_PART_NUMBER

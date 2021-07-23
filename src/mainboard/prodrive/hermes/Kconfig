@@ -35,7 +35,6 @@ config MAINBOARD_PART_NUMBER
 	default "Hermes CFL"
 
 config MAINBOARD_DIR
-	string
 	default "prodrive/hermes"
 
 config PCIEXP_L1_SUB_STATE

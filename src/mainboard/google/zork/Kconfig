@@ -62,7 +62,6 @@ config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
 
 config MAINBOARD_DIR
-	string
 	default "google/zork"
 
 config VARIANT_DIR

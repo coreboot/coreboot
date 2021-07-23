@@ -13,7 +13,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select GFXUMA
 
 config MAINBOARD_DIR
-	string
 	default "amd/gardenia"
 
 config MAINBOARD_PART_NUMBER

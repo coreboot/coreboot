@@ -16,7 +16,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_USES_IFD_GBE_REGION
 
 config MAINBOARD_DIR
-	string
 	default "kontron/ktqm77"
 
 config MAINBOARD_PART_NUMBER

@@ -22,7 +22,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SYSTEM_TYPE_LAPTOP
 
 config MAINBOARD_DIR
-	string
 	default "system76/oryp5"
 
 config MAINBOARD_PART_NUMBER

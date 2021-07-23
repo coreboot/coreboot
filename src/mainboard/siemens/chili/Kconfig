@@ -34,7 +34,6 @@ config BOARD_SIEMENS_CHILI_CHILI_OPTIONS
 if BOARD_SIEMENS_CHILI_COMMON
 
 config MAINBOARD_DIR
-	string
 	default "siemens/chili"
 
 config MAINBOARD_FAMILY

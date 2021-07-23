@@ -19,7 +19,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_CMOS_DEFAULT
 
 config MAINBOARD_DIR
-	string
 	default "gigabyte/ga-h61m-series"
 
 config VARIANT_DIR

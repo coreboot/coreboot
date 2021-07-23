@@ -18,7 +18,6 @@ config VBOOT
 	select VBOOT_VBNV_FLASH
 
 config MAINBOARD_DIR
-	string
 	default "google/veyron_rialto"
 
 config MAINBOARD_PART_NUMBER

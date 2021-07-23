@@ -34,7 +34,6 @@ config ONBOARD_MEM_KINGSTON
 endchoice
 
 config MAINBOARD_DIR
-	string
 	default "portwell/m107"
 
 config MAINBOARD_PART_NUMBER

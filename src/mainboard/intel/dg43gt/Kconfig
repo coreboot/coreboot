@@ -26,7 +26,6 @@ config VGA_BIOS_ID
 	default "8086,2e22"
 
 config MAINBOARD_DIR
-	string
 	default "intel/dg43gt"
 
 config MAINBOARD_PART_NUMBER

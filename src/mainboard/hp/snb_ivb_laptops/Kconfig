@@ -17,7 +17,6 @@ config BOARD_HP_SNB_IVB_LAPTOPS
 if BOARD_HP_SNB_IVB_LAPTOPS
 
 config MAINBOARD_DIR
-	string
 	default "hp/snb_ivb_laptops"
 
 config VARIANT_DIR

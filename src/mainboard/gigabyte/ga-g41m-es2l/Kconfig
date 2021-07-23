@@ -21,7 +21,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_LIBGFXINIT
 
 config MAINBOARD_DIR
-	string
 	default "gigabyte/ga-g41m-es2l"
 
 config MAINBOARD_PART_NUMBER

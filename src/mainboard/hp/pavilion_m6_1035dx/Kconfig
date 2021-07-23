@@ -21,7 +21,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select NO_UART_ON_SUPERIO
 
 config MAINBOARD_DIR
-	string
 	default "hp/pavilion_m6_1035dx"
 
 config MAINBOARD_PART_NUMBER

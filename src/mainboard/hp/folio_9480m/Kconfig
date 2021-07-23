@@ -20,7 +20,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SYSTEM_TYPE_LAPTOP
 
 config MAINBOARD_DIR
-	string
 	default "hp/folio_9480m"
 
 config MAINBOARD_PART_NUMBER

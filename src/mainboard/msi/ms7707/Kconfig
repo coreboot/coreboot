@@ -14,7 +14,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SERIRQ_CONTINUOUS_MODE
 
 config MAINBOARD_DIR
-	string
 	default "msi/ms7707"
 
 config MAINBOARD_PART_NUMBER

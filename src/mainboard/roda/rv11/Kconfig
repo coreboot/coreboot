@@ -16,7 +16,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_USES_IFD_GBE_REGION
 
 config MAINBOARD_DIR
-	string
 	default "roda/rv11"
 
 config VARIANT_DIR

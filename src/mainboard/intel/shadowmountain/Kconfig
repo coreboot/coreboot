@@ -47,7 +47,6 @@ config DEVICETREE
 	default "variants/baseboard/devicetree.cb"
 
 config MAINBOARD_DIR
-	string
 	default "intel/shadowmountain"
 
 config MAINBOARD_FAMILY

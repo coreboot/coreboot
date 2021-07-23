@@ -15,7 +15,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select EC_ACPI
 
 config MAINBOARD_DIR
-	string
 	default "packardbell/ms2290"
 
 config MAINBOARD_PART_NUMBER

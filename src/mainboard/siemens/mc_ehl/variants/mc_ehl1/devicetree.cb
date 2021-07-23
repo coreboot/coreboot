@@ -214,7 +214,11 @@ chip soc/intel/elkhartlake
 		device pci 1e.6 on	end # HPET
 		device pci 1e.7 on	end # IOAPIC
 
-		device pci 1f.0 on	end # eSPI Interface
+		device pci 1f.0 on	    # eSPI Interface
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end
 		device pci 1f.1 on	end # P2SB
 		device pci 1f.2 hidden	end # Power Management Controller
 		device pci 1f.3 off	end # Intel cAVS/HDA

@@ -112,7 +112,6 @@ config MAINBOARD_FAMILY
 	default "Google_Hatch"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Akemi" if BOARD_GOOGLE_AKEMI
 	default "Dratini" if BOARD_GOOGLE_DRATINI
 	default "Duffy" if BOARD_GOOGLE_DUFFY

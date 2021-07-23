@@ -39,7 +39,6 @@ config VARIANT_DIR
 	default "n13xwu" if BOARD_CLEVO_N130WU
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "N130WU" if BOARD_CLEVO_N130WU
 
 config CBFS_SIZE

@@ -54,7 +54,6 @@ config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "ThinkPad X220" if BOARD_LENOVO_X220
 	default "ThinkPad X220i" if BOARD_LENOVO_X220I
 	default "ThinkPad X1" if BOARD_LENOVO_X1

@@ -22,7 +22,6 @@ config VARIANT_DIR
 	default "ehlcrb" if BOARD_INTEL_ELKHARTLAKE_CRB
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "ehlcrb"
 
 config MAINBOARD_FAMILY

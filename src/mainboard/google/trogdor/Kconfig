@@ -61,7 +61,6 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 ##########################################################
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Bubs" if BOARD_GOOGLE_BUBS
 	default "Coachz" if BOARD_GOOGLE_COACHZ
 	default "Homestar" if BOARD_GOOGLE_HOMESTAR

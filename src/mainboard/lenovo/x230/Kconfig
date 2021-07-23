@@ -57,7 +57,6 @@ config VARIANT_DIR
 	default "x230s" if BOARD_LENOVO_X230S
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "ThinkPad X230" if BOARD_LENOVO_X230
 	default "ThinkPad X230t" if BOARD_LENOVO_X230T
 	default "ThinkPad X230s" if BOARD_LENOVO_X230S

@@ -18,7 +18,6 @@ config MAINBOARD_DIR
 	default "msi/ms7721"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "MS-7721"
 
 config HW_MEM_HOLE_SIZEK

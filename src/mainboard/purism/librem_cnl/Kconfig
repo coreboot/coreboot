@@ -24,7 +24,6 @@ config MAINBOARD_FAMILY
 	default "Librem 14" if BOARD_PURISM_LIBREM_14
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Librem Mini" if BOARD_PURISM_LIBREM_MINI
 	default "Librem Mini v2" if BOARD_PURISM_LIBREM_MINI_V2
 	default "Librem 14" if BOARD_PURISM_LIBREM_14

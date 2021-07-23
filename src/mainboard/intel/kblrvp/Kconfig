@@ -35,7 +35,6 @@ config VARIANT_DIR
 	default "rvp11" if BOARD_INTEL_KBLRVP11
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Kblrvp"
 
 config MAINBOARD_FAMILY

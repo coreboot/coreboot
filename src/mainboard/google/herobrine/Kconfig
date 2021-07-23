@@ -40,7 +40,6 @@ config MAINBOARD_VENDOR
 ##########################################################
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Herobrine" if BOARD_GOOGLE_HEROBRINE
 	default "Senor" if BOARD_GOOGLE_SENOR
 	default "Piglin" if BOARD_GOOGLE_PIGLIN

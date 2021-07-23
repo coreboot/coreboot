@@ -31,7 +31,6 @@ config VARIANT_DIR
 	default "zako" if BOARD_GOOGLE_ZAKO
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Mccloud" if BOARD_GOOGLE_MCCLOUD
 	default "Monroe" if BOARD_GOOGLE_MONROE
 	default "Panther" if BOARD_GOOGLE_PANTHER

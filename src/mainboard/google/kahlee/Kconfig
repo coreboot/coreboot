@@ -56,7 +56,6 @@ config VARIANT_DIR
 	default "treeya" if BOARD_GOOGLE_TREEYA
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Aleena" if BOARD_GOOGLE_ALEENA
 	default "Careena" if BOARD_GOOGLE_CAREENA
 	default "Grunt" if BOARD_GOOGLE_GRUNT

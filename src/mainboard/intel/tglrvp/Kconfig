@@ -47,7 +47,6 @@ config GBB_HWID
 	default "TGLRVPUP4" if BOARD_INTEL_TGLRVP_UP4
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "tglrvpu" if BOARD_INTEL_TGLRVP_UP3
 	default "tglrvpy" if BOARD_INTEL_TGLRVP_UP4
 

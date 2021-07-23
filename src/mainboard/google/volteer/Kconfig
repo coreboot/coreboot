@@ -88,7 +88,6 @@ config MAINBOARD_FAMILY
 	default "Google_Volteer"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Delbin" if BOARD_GOOGLE_DELBIN
 	default "Eldrid" if BOARD_GOOGLE_ELDRID
 	default "Halvor" if BOARD_GOOGLE_HALVOR

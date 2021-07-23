@@ -69,7 +69,6 @@ config MAINBOARD_FAMILY
 	default "Google_Brya"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Brya" if BOARD_GOOGLE_BRYA0
 	default "Primus" if BOARD_GOOGLE_PRIMUS
 	default "Gimble" if BOARD_GOOGLE_GIMBLE

@@ -29,7 +29,6 @@ config VARIANT_DIR
 	default "tidus" if BOARD_GOOGLE_TIDUS
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Guado" if BOARD_GOOGLE_GUADO
 	default "Jecht" if BOARD_GOOGLE_JECHT
 	default "Rikku" if BOARD_GOOGLE_RIKKU

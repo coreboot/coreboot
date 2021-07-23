@@ -27,7 +27,6 @@ config VARIANT_DIR
 	default "p5q" if BOARD_ASUS_P5Q
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "P5QC" if BOARD_ASUS_P5QC
 	default "P5Q PRO" if BOARD_ASUS_P5Q_PRO
 	default "P5QL PRO" if BOARD_ASUS_P5QL_PRO

@@ -57,7 +57,6 @@ config VARIANT_DIR
 	default "t431s" if BOARD_LENOVO_T431S
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "ThinkPad T430s" if BOARD_LENOVO_T430S
 	default "ThinkPad T431s" if BOARD_LENOVO_T431S
 

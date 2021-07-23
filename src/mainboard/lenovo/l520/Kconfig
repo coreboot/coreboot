@@ -22,7 +22,6 @@ config MAINBOARD_DIR
 	default "lenovo/l520"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "ThinkPad L520"
 
 config VGA_BIOS_FILE

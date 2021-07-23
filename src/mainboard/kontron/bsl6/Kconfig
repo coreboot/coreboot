@@ -36,7 +36,6 @@ config MAINBOARD_VENDOR
 	default "Siemens" if BOARD_SIEMENS_BOXER26
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "bSL6" if BOARD_KONTRON_BSL6
 	default "Boxer26" if BOARD_SIEMENS_BOXER26
 

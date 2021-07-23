@@ -89,7 +89,6 @@ config DEVICETREE
 	default "devicetree.scarlet.cb" if BOARD_GOOGLE_SCARLET
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Scarlet" if BOARD_GOOGLE_SCARLET
 	default "Bob" if BOARD_GOOGLE_BOB
 	default "Gru" if BOARD_GOOGLE_GRU

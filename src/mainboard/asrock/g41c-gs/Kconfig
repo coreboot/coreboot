@@ -34,7 +34,6 @@ config VARIANT_DIR
 	default "g41m-vs3-r2" if BOARD_ASROCK_G41M_VS3_R2_0
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "G41C-GS R2.0" if BOARD_ASROCK_G41C_GS_R2_0
 	default "G41C-GS" if BOARD_ASROCK_G41C_GS
 	default "G41M-GS" if BOARD_ASROCK_G41M_GS

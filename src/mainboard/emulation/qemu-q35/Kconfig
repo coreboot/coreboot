@@ -56,7 +56,6 @@ config MAINBOARD_DIR
 	default "emulation/qemu-q35"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "QEMU x86 q35/ich9"
 
 config MMCONF_BASE_ADDRESS

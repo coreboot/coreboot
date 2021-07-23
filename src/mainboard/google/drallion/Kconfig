@@ -68,7 +68,6 @@ config MAINBOARD_FAMILY
 	default "Google_Drallion" if BOARD_GOOGLE_DRALLION
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Drallion" if BOARD_GOOGLE_DRALLION
 
 config UART_FOR_CONSOLE

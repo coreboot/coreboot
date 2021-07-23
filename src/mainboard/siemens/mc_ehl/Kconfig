@@ -19,7 +19,6 @@ config VARIANT_DIR
 	default "mc_ehl1" if BOARD_SIEMENS_MC_EHL1
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "MC EHL1" if BOARD_SIEMENS_MC_EHL1
 
 config DEVICETREE

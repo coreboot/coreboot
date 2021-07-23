@@ -55,7 +55,6 @@ config VARIANT_DIR
 	default "wizpig" if BOARD_GOOGLE_WIZPIG
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Banon" if BOARD_GOOGLE_BANON
 	default "Celes" if BOARD_GOOGLE_CELES
 	default "Cyan" if BOARD_GOOGLE_CYAN

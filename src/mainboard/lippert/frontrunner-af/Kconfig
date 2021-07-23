@@ -33,7 +33,6 @@ config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "FrontRunner-AF" if BOARD_LIPPERT_FRONTRUNNER_AF
 	default "Toucan-AF"      if BOARD_LIPPERT_TOUCAN_AF
 

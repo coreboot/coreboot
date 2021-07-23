@@ -51,7 +51,6 @@ config VARIANT_DIR
 	default "x301" if BOARD_LENOVO_X301
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "ThinkPad X200" if BOARD_LENOVO_X200
 	default "ThinkPad X301" if BOARD_LENOVO_X301
 

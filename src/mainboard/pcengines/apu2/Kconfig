@@ -36,7 +36,6 @@ config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "apu2" if BOARD_PCENGINES_APU2
 	default "apu3" if BOARD_PCENGINES_APU3
 	default "apu4" if BOARD_PCENGINES_APU4

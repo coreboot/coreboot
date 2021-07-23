@@ -37,7 +37,6 @@ config VARIANT_DIR
 	default "wolf" if BOARD_GOOGLE_WOLF
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Falco" if BOARD_GOOGLE_FALCO
 	default "Leon" if BOARD_GOOGLE_LEON
 	default "Peppy" if BOARD_GOOGLE_PEPPY

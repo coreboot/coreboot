@@ -65,7 +65,6 @@ config MAINBOARD_FAMILY
 	default "Google_Sarien" if BOARD_GOOGLE_SARIEN
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Arcada" if BOARD_GOOGLE_ARCADA
 	default "Sarien" if BOARD_GOOGLE_SARIEN
 

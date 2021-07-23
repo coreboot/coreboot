@@ -37,7 +37,6 @@ config VARIANT_DIR
 	default "samus" if BOARD_GOOGLE_SAMUS
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Auron_Paine" if BOARD_GOOGLE_AURON_PAINE
 	default "Auron_Yuna" if BOARD_GOOGLE_AURON_YUNA
 	default "Buddy" if BOARD_GOOGLE_BUDDY

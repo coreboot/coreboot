@@ -48,7 +48,6 @@ config GBB_HWID
 	default "ADLRVPP"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Alder Lake Client Platform"
 
 config MAINBOARD_VENDOR

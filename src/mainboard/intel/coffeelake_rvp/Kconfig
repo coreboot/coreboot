@@ -31,7 +31,6 @@ config VARIANT_DIR
 	default "cml_u" if BOARD_INTEL_COMETLAKE_RVPU
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "whlrvp" if BOARD_INTEL_WHISKEYLAKE_RVP
 	default "cmlrvp" if BOARD_INTEL_COMETLAKE_RVPU
 	default "cflrvp"

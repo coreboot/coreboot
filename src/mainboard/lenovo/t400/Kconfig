@@ -56,7 +56,6 @@ config VARIANT_DIR
 	default "r500" if BOARD_LENOVO_R500
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "ThinkPad T400" if BOARD_LENOVO_T400
 	default "ThinkPad T500" if BOARD_LENOVO_T500
 	default "ThinkPad R400" if BOARD_LENOVO_R400

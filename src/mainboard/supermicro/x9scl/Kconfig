@@ -19,7 +19,6 @@ config MAINBOARD_DIR
 	default "supermicro/x9scl"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "X9SCL/X9SCM"
 
 config USBDEBUG_HCD_INDEX

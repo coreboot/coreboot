@@ -31,7 +31,6 @@ config MAINBOARD_FAMILY
 	default "PRODRIVE_HERMES_SERIES"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Hermes CFL"
 
 config MAINBOARD_DIR

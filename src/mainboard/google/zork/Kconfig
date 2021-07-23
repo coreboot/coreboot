@@ -78,7 +78,6 @@ config VARIANT_DIR
 	default "gumboz" if BOARD_GOOGLE_GUMBOZ
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Ezkinil" if BOARD_GOOGLE_EZKINIL
 	default "Morphius" if BOARD_GOOGLE_MORPHIUS
 	default "Trembyle" if BOARD_GOOGLE_TREMBYLE

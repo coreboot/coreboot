@@ -45,7 +45,6 @@ config MAX_CPUS
 ##########################################################
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "CN8100_SFF_EVB"
 
 endif

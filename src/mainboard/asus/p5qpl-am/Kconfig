@@ -28,7 +28,6 @@ config VARIANT_DIR
 	default "p5g41t-m_lx" if BOARD_ASUS_P5G41T_M_LX
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "P5QPL-AM" if BOARD_ASUS_P5QPL_AM
 	default "P5G41T-M LX" if BOARD_ASUS_P5G41T_M_LX
 

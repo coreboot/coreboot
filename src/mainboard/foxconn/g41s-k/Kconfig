@@ -25,7 +25,6 @@ config VARIANT_DIR
 	default "g41m" if BOARD_FOXCONN_G41M
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "G41S-K" if BOARD_FOXCONN_G41S_K
 	default "G41M/G41M-S/G41M-V" if BOARD_FOXCONN_G41M
 

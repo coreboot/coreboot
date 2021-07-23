@@ -28,7 +28,6 @@ config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "MC APL1" if BOARD_SIEMENS_MC_APL1
 	default "MC APL2" if BOARD_SIEMENS_MC_APL2
 	default "MC APL3" if BOARD_SIEMENS_MC_APL3

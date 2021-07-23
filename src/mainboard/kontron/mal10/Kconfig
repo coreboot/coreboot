@@ -43,7 +43,6 @@ config CARRIER_DIR
 	default "t10-tni" if BOARD_KONTRON_T10_TNI
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "COMe-mAL10"
 
 config DEVICETREE

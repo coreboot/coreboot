@@ -46,7 +46,6 @@ config VARIANT_DIR
 	default "winky" if BOARD_GOOGLE_WINKY
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Banjo" if BOARD_GOOGLE_BANJO
 	default "Candy" if BOARD_GOOGLE_CANDY
 	default "Clapper" if BOARD_GOOGLE_CLAPPER

@@ -11,7 +11,6 @@ config MAINBOARD_DIR
 	default "intel/apollolake_rvp"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Apollolake RVP"
 
 config UART_FOR_CONSOLE

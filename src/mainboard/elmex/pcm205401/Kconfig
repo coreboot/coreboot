@@ -5,7 +5,6 @@
 if BOARD_ELMEX_PCM205401
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "pcm205401"
 
 config VGA_BIOS_ID

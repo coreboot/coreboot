@@ -14,7 +14,6 @@ config MAINBOARD_DIR
 	default "scaleway/tagada"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "TAGADA"
 
 config BMC_INFO_LOC

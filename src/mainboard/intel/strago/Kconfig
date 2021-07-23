@@ -26,7 +26,6 @@ config MAINBOARD_DIR
 	default "intel/strago"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Strago"
 
 config VGA_BIOS_FILE

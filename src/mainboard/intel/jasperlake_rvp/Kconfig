@@ -29,7 +29,6 @@ config VARIANT_DIR
 	default "jslrvp" if BOARD_INTEL_JASPERLAKE_RVP || BOARD_INTEL_JASPERLAKE_RVP_EXT_EC
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "jslrvp"
 
 config MAINBOARD_FAMILY

@@ -27,7 +27,6 @@ config VARIANT_DIR
 	default "p8z77-v"     if BOARD_ASUS_P8Z77_V
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "P8C WS"      if BOARD_ASUS_P8C_WS
 	default "P8H77-V"     if BOARD_ASUS_P8H77_V
 	default "P8Z77-M PRO" if BOARD_ASUS_P8Z77_M_PRO

@@ -34,7 +34,6 @@ config MAINBOARD_VENDOR
 	default "Up"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Squared"
 
 config FMDFILE

@@ -27,6 +27,5 @@ config CONSOLE_SERIAL_UART_ADDRESS
 ##########################################################
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "ROCKPro64" if BOARD_PINE64_ROCKPRO64
 endif # BOARD_PINE64_ROCKPRO64

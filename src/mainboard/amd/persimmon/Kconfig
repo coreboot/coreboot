@@ -19,7 +19,6 @@ config MAINBOARD_DIR
 	default "amd/persimmon"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Persimmon"
 
 config HW_MEM_HOLE_SIZEK

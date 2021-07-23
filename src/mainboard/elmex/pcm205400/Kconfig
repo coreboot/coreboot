@@ -3,7 +3,6 @@
 if BOARD_ELMEX_PCM205400
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "pcm205400"
 
 config VGA_BIOS_ID

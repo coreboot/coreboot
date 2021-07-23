@@ -54,7 +54,6 @@ config MAINBOARD_FAMILY
 	default "Intel_shadowmountain"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "shadowmountain"
 
 config PCIEXP_HOTPLUG_BUSES

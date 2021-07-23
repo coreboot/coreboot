@@ -59,7 +59,6 @@ config VARIANT_DIR
 	default "cereme" if BOARD_AMD_CEREME
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "MANDOLIN" if BOARD_AMD_MANDOLIN
 	default "CEREME" if BOARD_AMD_CEREME
 

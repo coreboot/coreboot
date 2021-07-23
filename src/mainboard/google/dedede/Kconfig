@@ -89,7 +89,6 @@ config MAINBOARD_FAMILY
 	default "Google_Dedede" if BOARD_GOOGLE_DEDEDE
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Boten" if BOARD_GOOGLE_BOTEN
 	default "Boten" if BOARD_GOOGLE_BOTEN_LEGACY
 	default "Dedede" if BOARD_GOOGLE_DEDEDE

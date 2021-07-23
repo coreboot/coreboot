@@ -41,7 +41,6 @@ config MAINBOARD_FAMILY
 	default "Chili"
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Chili base board" if BOARD_SIEMENS_CHILI_BASE
 	default "Chili" if BOARD_SIEMENS_CHILI_CHILI
 

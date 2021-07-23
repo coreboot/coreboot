@@ -27,7 +27,6 @@ config VARIANT_DIR
 	default "icl_y" if BOARD_INTEL_ICELAKE_RVPY
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Icelake RVP"
 
 config MAINBOARD_FAMILY

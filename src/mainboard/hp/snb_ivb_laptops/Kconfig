@@ -32,7 +32,6 @@ config VARIANT_DIR
 	default "revolve_810_g1" if BOARD_HP_REVOLVE_810_G1
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "EliteBook 2560p"          if BOARD_HP_2560P
 	default "EliteBook 2570p"          if BOARD_HP_2570P
 	default "EliteBook 2760p"          if BOARD_HP_2760P

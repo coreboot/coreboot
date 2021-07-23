@@ -33,7 +33,6 @@ config MAINBOARD_FAMILY
 	default "Librem 15" if BOARD_PURISM_LIBREM15_V3 || BOARD_PURISM_LIBREM15_V4
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Librem 13 v2" if BOARD_PURISM_LIBREM13_V2
 	default "Librem 15 v3" if BOARD_PURISM_LIBREM15_V3
 	default "Librem 13 v4" if BOARD_PURISM_LIBREM13_V4

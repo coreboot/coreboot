@@ -59,7 +59,6 @@ config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "ThinkPad T520" if BOARD_LENOVO_T520
 	default "ThinkPad W520" if BOARD_LENOVO_W520
 

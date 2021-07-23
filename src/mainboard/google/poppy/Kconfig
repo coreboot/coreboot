@@ -98,7 +98,6 @@ config MAINBOARD_FAMILY
 	default "Google_Soraka" if BOARD_GOOGLE_SORAKA
 
 config MAINBOARD_PART_NUMBER
-	string
 	default "Atlas" if BOARD_GOOGLE_ATLAS
 	default "Poppy" if BOARD_GOOGLE_POPPY
 	default "Nami" if BOARD_GOOGLE_NAMI

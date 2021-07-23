@@ -489,9 +489,8 @@ unsigned int __weak smbios_cpu_get_voltage(void)
 	return 0; /* Unknown */
 }
 
-static size_t get_number_of_caches(struct cpuid_result res_deterministic_cache)
+static size_t get_number_of_caches(size_t max_logical_cpus_sharing_cache)
 {
-	size_t max_logical_cpus_sharing_cache = 0;
 	size_t number_of_cpus_per_package = 0;
 	size_t max_logical_cpus_per_package = 0;
 	struct cpuid_result res;
@@ -502,8 +501,6 @@ static size_t get_number_of_caches(struct cpuid_result res_deterministic_cache)
 	res = cpuid(1);
 
 	max_logical_cpus_per_package = (res.ebx >> 16) & 0xff;
-
-	max_logical_cpus_sharing_cache  = ((res_deterministic_cache.eax >> 14) & 0xfff) + 1;
 
 	/* Check if it's last level cache */
 	if (max_logical_cpus_sharing_cache == max_logical_cpus_per_package)
@@ -797,30 +794,13 @@ static int smbios_write_type7_cache_parameters(unsigned long *current,
 					       int *max_struct_size,
 					       struct smbios_type4 *type4)
 {
-	struct cpuid_result res;
-	unsigned int cnt = 0;
+	unsigned int cnt = CACHE_L1D;
 	int len = 0;
-	u32 leaf;
 
 	if (!cpu_have_cpuid())
 		return len;
 
-	if (cpu_is_intel()) {
-		res = cpuid(0);
-		if (res.eax < 4)
-			return len;
-		leaf = 4;
-	} else if (cpu_is_amd()) {
-		res = cpuid(0x80000000);
-		if (res.eax < 0x80000001)
-			return len;
-
-		res = cpuid(0x80000001);
-		if (!(res.ecx & (1 << 22)))
-			return len;
-
-		leaf = 0x8000001d;
-	} else {
+	if (cpu_check_deterministic_cache_cpuid_supported() == CPUID_TYPE_INVALID) {
 		printk(BIOS_DEBUG, "SMBIOS: Unknown CPU\n");
 		return len;
 	}
@@ -828,17 +808,15 @@ static int smbios_write_type7_cache_parameters(unsigned long *current,
 	while (1) {
 		enum smbios_cache_associativity associativity;
 		enum smbios_cache_type type;
+		struct cpu_cache_info info;
+		if (!fill_cpu_cache_info(cnt++, &info))
+			continue;
 
-		res = cpuid_ext(leaf, cnt++);
-
-		const u8 cache_type = CPUID_CACHE_TYPE(res);
-		const u8 level = CPUID_CACHE_LEVEL(res);
-		const size_t assoc = CPUID_CACHE_WAYS_OF_ASSOC(res) + 1;
-		const size_t partitions = CPUID_CACHE_PHYS_LINE(res) + 1;
-		const size_t cache_line_size = CPUID_CACHE_COHER_LINE(res) + 1;
-		const size_t number_of_sets = CPUID_CACHE_NO_OF_SETS(res) + 1;
-		const size_t cache_size = assoc * partitions * cache_line_size * number_of_sets
-							* get_number_of_caches(res);
+		const u8 cache_type = info.type;
+		const u8 level = info.level;
+		const size_t assoc = info.num_ways;
+		const size_t cache_share = info.num_cores_shared;
+		const size_t cache_size = info.size * get_number_of_caches(cache_share);
 
 		if (!cache_type)
 			/* No more caches in the system */
@@ -859,7 +837,7 @@ static int smbios_write_type7_cache_parameters(unsigned long *current,
 			break;
 		}
 
-		if (CPUID_CACHE_FULL_ASSOC(res))
+		if (info.fully_associative)
 			associativity = SMBIOS_CACHE_ASSOCIATIVITY_FULL;
 		else
 			associativity = smbios_cache_associativity(assoc);

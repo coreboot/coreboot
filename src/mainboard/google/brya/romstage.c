@@ -5,15 +5,17 @@
 #include <fsp/api.h>
 #include <gpio.h>
 #include <soc/romstage.h>
+#include <string.h>
 
 void mainboard_memory_init_params(FSP_M_CONFIG *m_cfg)
 {
 	const struct mb_cfg *mem_config = variant_memory_params();
 	bool half_populated = variant_is_half_populated();
-	const struct mem_spd spd_info = {
-		.topo = MEM_TOPO_MEMORY_DOWN,
-		.cbfs_index = variant_memory_sku(),
-	};
+	struct mem_spd spd_info;
+
+	memset(&spd_info, 0, sizeof(spd_info));
+	variant_get_spd_info(&spd_info);
+
 	const struct pad_config *pads;
 	size_t pads_num;
 

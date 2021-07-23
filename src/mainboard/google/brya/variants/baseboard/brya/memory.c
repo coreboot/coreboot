@@ -95,3 +95,9 @@ bool __weak variant_is_half_populated(void)
 	/* GPIO_MEM_CH_SEL GPP_E13 */
 	return gpio_get(GPP_E13);
 }
+
+void __weak variant_get_spd_info(struct mem_spd *spd_info)
+{
+	spd_info->topo = MEM_TOPO_MEMORY_DOWN;
+	spd_info->cbfs_index = variant_memory_sku();
+}

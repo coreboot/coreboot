@@ -149,5 +149,6 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref hda on end
+		device ref smbus on end
 	end
 end

@@ -21,6 +21,11 @@ FLASH 32M {
 				SHARED_DATA 8K
 				VBLOCK_DEV 8K
 			}
+			# The RW_SPD_CACHE region is only used for brya variants that use DDRx memory.
+			# It is placed in the common `chromeos.fmd` file because it is only 4K and there
+			# is free space in the RW_MISC region that cannot be easily reclaimed because
+			# the RW_SECTION_B must start on the 16M boundary.
+			RW_SPD_CACHE(PRESERVE) 4K
 			RW_VPD(PRESERVE) 8K
 			RW_NVRAM(PRESERVE) 24K
 		}

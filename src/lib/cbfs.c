@@ -309,8 +309,15 @@ void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 		loc = allocator(arg, size, &mdata);
 	} else if (compression == CBFS_COMPRESS_NONE) {
 		void *mapping = rdev_mmap_full(&rdev);
-		if (!mapping || cbfs_file_hash_mismatch(mapping, size, file_hash))
+
+		if (!mapping)
 			return NULL;
+
+		if (cbfs_file_hash_mismatch(mapping, size, file_hash)) {
+			rdev_munmap(&rdev, mapping);
+			return NULL;
+		}
+
 		return mapping;
 	} else if (!CBFS_CACHE_AVAILABLE) {
 		ERROR("Cannot map compressed file %s on x86\n", mdata.h.filename);

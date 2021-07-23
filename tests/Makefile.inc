@@ -232,7 +232,7 @@ endif
 $(alltests): $$($$(@)-bin)
 	rm -f $(testobj)/junit-$(subst /,_,$(patsubst $(testobj)/%/,%,$(dir $^)))\(*\).xml
 	rm -f $(testobj)/$(subst /,_,$^).failed
-	-./$^ || echo failed > $(testobj)/$(subst /,_,$^).failed
+	-$^ || echo failed > $(testobj)/$(subst /,_,$^).failed
 
 # Build a code coverage report by collecting all the gcov files into a single
 # report. If COV is not set, this might be a user error, and they're trying

@@ -103,8 +103,8 @@ SECTIONS
          * the payload on non-S3 boots, so we don't need to reserve it from the
          * OS. The 64 byte alignment is required by the SPI DMA controller.
          */
-        . = ALIGN(64);
-        REGION(payload_preload_cache, ., CONFIG_PAYLOAD_PRELOAD_CACHE_SIZE, 64)
+        . = ALIGN(ARCH_CACHELINE_ALIGN_SIZE);
+        REGION(payload_preload_cache, ., CONFIG_PAYLOAD_PRELOAD_CACHE_SIZE, ARCH_CACHELINE_ALIGN_SIZE)
 #endif
 
 	RAMSTAGE(CONFIG_RAMBASE, 8M)

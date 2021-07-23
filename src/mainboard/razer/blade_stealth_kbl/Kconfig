@@ -16,38 +16,38 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ACPI_TABLES
 	select DRIVERS_GENERIC_CBFS_SERIAL
 
-	# For now no way to choose the correct the available RAM
-	config BOARD_RAZER_BLADE_STEALTH_KBL_16GB
-		bool "16GB RAM (4x MT52L1G32D4PG)"
-		default n
+# For now no way to choose the correct the available RAM
+config BOARD_RAZER_BLADE_STEALTH_KBL_16GB
+	bool "16GB RAM (4x MT52L1G32D4PG)"
+	default n
 
-	config VGA_BIOS_ID
-		string
-		default "8086,5916"
+config VGA_BIOS_ID
+	string
+	default "8086,5916"
 
-	config IRQ_SLOT_COUNT
-		int
-		default 18
+config IRQ_SLOT_COUNT
+	int
+	default 18
 
-	config MAINBOARD_FAMILY
-		string
-		default "BLADE_STEALTH"
+config MAINBOARD_FAMILY
+	string
+	default "BLADE_STEALTH"
 
-	config MAINBOARD_PART_NUMBER
-		string
-		default "H2U"
+config MAINBOARD_PART_NUMBER
+	string
+	default "H2U"
 
-	config MAINBOARD_VERSION
-		string
-		default "1.0"
+config MAINBOARD_VERSION
+	string
+	default "1.0"
 
-	config MAINBOARD_DIR
-		string
-		default "razer/blade_stealth_kbl"
+config MAINBOARD_DIR
+	string
+	default "razer/blade_stealth_kbl"
 
-	config MAX_CPUS
-		int
-		default 4
+config MAX_CPUS
+	int
+	default 4
 
 config NO_POST
 	default y

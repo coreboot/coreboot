@@ -158,6 +158,10 @@ static inline unsigned int cpuid_get_max_func(void)
 #define CPUID_CACHE(x, res) \
 	(((res) >> CPUID_CACHE_##x##_SHIFT) & CPUID_CACHE_##x##_MASK)
 
+#define CPUID_CACHE_SHARING_CACHE_SHIFT 14
+#define CPUID_CACHE_SHARING_CACHE_MASK 0xfff
+#define CPUID_CACHE_SHARING_CACHE(res) CPUID_CACHE(SHARING_CACHE, (res).eax)
+
 #define CPUID_CACHE_FULL_ASSOC_SHIFT 9
 #define CPUID_CACHE_FULL_ASSOC_MASK 0x1
 #define CPUID_CACHE_FULL_ASSOC(res) CPUID_CACHE(FULL_ASSOC, (res).eax)
@@ -313,5 +317,77 @@ uint32_t cpu_get_feature_flags_edx(void);
  * cpus_default_apic_id[] variable to return correct cpu_index().
  */
 int cpu_index(void);
+
+#define DETERMINISTIC_CACHE_PARAMETERS_CPUID_IA	0x04
+#define DETERMINISTIC_CACHE_PARAMETERS_CPUID_AMD	0x8000001d
+
+enum cache_level {
+	CACHE_L1D = 0,
+	CACHE_L1I = 1,
+	CACHE_L2 = 2,
+	CACHE_L3 = 3,
+	CACHE_LINV = 0xFF,
+};
+
+enum cpu_type {
+	CPUID_COMMAND_UNSUPPORTED = 0,
+	CPUID_TYPE_AMD = 1,
+	CPUID_TYPE_INTEL = 2,
+	CPUID_TYPE_INVALID = 0xFF,
+};
+
+struct cpu_cache_info {
+	uint8_t type;
+	uint8_t level;
+	size_t num_ways;
+	size_t num_sets;
+	size_t line_size;
+	size_t size;
+	size_t physical_partitions;
+	size_t num_cores_shared;
+	bool fully_associative;
+};
+
+enum cpu_type cpu_check_deterministic_cache_cpuid_supported(void);
+
+/* cpu_get_cache_assoc_info to get cache ways of associativity information. */
+size_t cpu_get_cache_ways_assoc_info(const struct cpu_cache_info *info);
+
+/*
+ * cpu_get_cache_type to get cache type.
+ * Cache type can be between 0: no cache, 1: data cache, 2: instruction cache
+ * 3: unified cache and rests are reserved.
+ */
+uint8_t cpu_get_cache_type(const struct cpu_cache_info *info);
+
+/*
+ * cpu_get_cache_level to get cache level.
+ * Cache level can be between 0: reserved, 1: L1, 2: L2, 3: L3 and rests are reserved.
+ */
+uint8_t cpu_get_cache_level(const struct cpu_cache_info *info);
+
+/* cpu_get_cache_phy_partition_info to get cache physical partitions information. */
+size_t cpu_get_cache_phy_partition_info(const struct cpu_cache_info *info);
+
+/* cpu_get_cache_line_size to get cache line size in bytes. */
+size_t cpu_get_cache_line_size(const struct cpu_cache_info *info);
+
+/* cpu_get_cache_line_size to get cache number of sets information. */
+size_t cpu_get_cache_sets(const struct cpu_cache_info *info);
+
+/* cpu_is_cache_full_assoc checks if cache is fully associative. */
+bool cpu_is_cache_full_assoc(const struct cpu_cache_info *info);
+
+/* cpu_get_max_cache_share checks the number of cores are sharing this cache. */
+size_t cpu_get_max_cache_share(const struct cpu_cache_info *info);
+
+/* get_cache_size to calculate the cache size. */
+size_t get_cache_size(const struct cpu_cache_info *info);
+
+/*
+ * fill_cpu_cache_info to get all required cache info data and fill into cpu_cache_info
+ * structure by calling CPUID.EAX=leaf and ECX=Cache Level.
+ */
+bool fill_cpu_cache_info(uint8_t level, struct cpu_cache_info *info);
 
 #endif /* ARCH_CPU_H */

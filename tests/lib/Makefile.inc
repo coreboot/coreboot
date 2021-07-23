@@ -38,6 +38,7 @@ tests-y += cbfs-no-verification-no-sha512-test
 tests-y += cbfs-no-verification-has-sha512-test
 tests-y += cbfs-lookup-no-mcache-test
 tests-y += cbfs-lookup-has-mcache-test
+tests-y += lzma-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -231,3 +232,8 @@ cbfs-lookup-no-mcache-test-config += CONFIG_ARCH_X86=0 \
 
 $(call copy-test,cbfs-lookup-no-mcache-test,cbfs-lookup-has-mcache-test)
 cbfs-lookup-has-mcache-test-config += CONFIG_NO_CBFS_MCACHE=0
+
+lzma-test-srcs += tests/lib/lzma-test.c
+lzma-test-srcs += tests/stubs/console.c
+lzma-test-srcs += src/lib/lzma.c
+lzma-test-srcs += src/lib/lzmadecode.c

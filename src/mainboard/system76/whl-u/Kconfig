@@ -50,7 +50,6 @@ config MAINBOARD_VERSION
 	default "darp5" if BOARD_SYSTEM76_DARP5
 
 config CBFS_SIZE
-	hex
 	default 0xA00000
 
 config CONSOLE_POST

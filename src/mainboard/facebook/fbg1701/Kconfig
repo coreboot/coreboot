@@ -62,7 +62,6 @@ config MAINBOARD_PART_NUMBER
 	default "FBG-1701"
 
 config CBFS_SIZE
-	hex
 	default 0x00600000
 
 config MRC_SETTINGS_CACHE_SIZE

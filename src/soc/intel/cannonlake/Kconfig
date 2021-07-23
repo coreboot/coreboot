@@ -266,7 +266,6 @@ config VBOOT
 	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
 
 config CBFS_SIZE
-	hex
 	default 0x200000
 
 config MB_HAS_ACTIVE_HIGH_SD_PWR_ENABLE

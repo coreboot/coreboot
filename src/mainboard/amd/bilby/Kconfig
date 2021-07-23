@@ -45,7 +45,6 @@ config SUPERIO_ADDR_BASE
 	default 0x164e	if BILBY_SMSC_SIO1036_BASE_164E
 
 config CBFS_SIZE
-	hex
 	default 0xfef000 # Maximum size for the Bilby FMAP
 
 config MAINBOARD_DIR

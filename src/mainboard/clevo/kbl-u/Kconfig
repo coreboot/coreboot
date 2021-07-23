@@ -44,7 +44,6 @@ config MAINBOARD_PART_NUMBER
 	default "N130WU" if BOARD_CLEVO_N130WU
 
 config CBFS_SIZE
-	hex
 	default 0x600000 if BOARD_CLEVO_N130WU
 
 config DEVICETREE

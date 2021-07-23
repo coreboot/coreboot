@@ -48,7 +48,6 @@ config VGA_BIOS_ID
 	  in soc/intel/braswell/Makefile.inc as 8086,22b1
 
 config CBFS_SIZE
-	hex
 	default 0x200000
 
 endif # BOARD_INTEL_STRAGO

@@ -38,7 +38,6 @@ config MAINBOARD_VERSION
 	default "lemp9"
 
 config CBFS_SIZE
-	hex
 	default 0xc00000
 
 config CONSOLE_POST

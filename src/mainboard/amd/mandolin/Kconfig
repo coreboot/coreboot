@@ -47,7 +47,6 @@ config SUPERIO_ADDR_BASE
 	default 0x164e	if SMSC_SIO1036_BASE_164E
 
 config CBFS_SIZE
-	hex
 	default 0x7cf000 if BOARD_AMD_MANDOLIN # Maximum size for the Mandolin FMAP
 	default 0xfcf000 if BOARD_AMD_CEREME # Maximum size for the Cereme FMAP
 

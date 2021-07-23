@@ -40,7 +40,6 @@ config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config CBFS_SIZE
-	hex
 	default 0x800000 if BOARD_PURISM_LIBREM_MINI
 	default 0xA00000 if BOARD_PURISM_LIBREM_MINI_V2
 	default 0x900000 if BOARD_PURISM_LIBREM_14

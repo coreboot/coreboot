@@ -151,7 +151,6 @@ config DISPLAY_ESRAM_LAYOUT
 #####
 
 config CBFS_SIZE
-	hex
 	default 0x200000
 	help
 	  Specify the size of the coreboot file system in the read-only (recovery)

@@ -69,7 +69,6 @@ config DRIVERS_IPMI_SUPERMICRO_OEM
 	default y
 
 config CBFS_SIZE
-	hex
 	default 0xb00000
 
 config IRQ_SLOT_COUNT

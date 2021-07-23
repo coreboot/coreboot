@@ -66,7 +66,6 @@ config DIMM_SPD_SIZE
 	default 512
 
 config CBFS_SIZE
-	hex
 	default 0xe00000
 
 # This platform has limited means to display POST codes

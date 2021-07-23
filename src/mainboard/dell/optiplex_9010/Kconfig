@@ -37,7 +37,6 @@ config USBDEBUG_HCD_INDEX
 	default 2
 
 config CBFS_SIZE
-	hex
 	default 0x600000
 
 config INCLUDE_SMSC_SCH5545_EC_FW

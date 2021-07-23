@@ -65,7 +65,6 @@ config USBDEBUG_HCD_INDEX
 	default 2
 
 config CBFS_SIZE
-	hex
 	default 0x200000
 
 config PS2K_EISAID

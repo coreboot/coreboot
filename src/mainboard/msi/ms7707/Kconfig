@@ -30,7 +30,6 @@ config USBDEBUG_HCD_INDEX # FIXME: check this
 	default 2
 
 config CBFS_SIZE
-	hex
 	default 0x200000
 
 endif

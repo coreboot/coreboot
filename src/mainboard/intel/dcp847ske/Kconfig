@@ -50,7 +50,6 @@ config USBDEBUG_HCD_INDEX
 	default 2
 
 config CBFS_SIZE
-	hex
 	default 0x00640000
 
 config MAINBOARD_SMBIOS_MANUFACTURER

@@ -258,7 +258,6 @@ config VBOOT
 	select VBOOT_X86_SHA256_ACCELERATION
 
 config CBFS_SIZE
-	hex
 	default 0x200000
 
 config PRERAM_CBMEM_CONSOLE_SIZE

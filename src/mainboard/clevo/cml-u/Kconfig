@@ -42,7 +42,6 @@ config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config CBFS_SIZE
-	hex
 	default 0xc00000 if BOARD_CLEVO_L140CU_BASE
 
 config CONSOLE_POST

@@ -75,7 +75,6 @@ config PMIC_BUS
 	default 0
 
 config CBFS_SIZE
-	hex
 	default 0x100000 if CHROMEOS
 	default ROM_SIZE
 

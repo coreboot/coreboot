@@ -49,7 +49,6 @@ config MAX_CPUS
 	default 4 if BOARD_PROTECTLI_FW4B
 
 config CBFS_SIZE
-	hex
 	default 0x500000
 
 config PXE_ROM_ID

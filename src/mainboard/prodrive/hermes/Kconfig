@@ -67,7 +67,6 @@ config POST_IO
 	default n
 
 config CBFS_SIZE
-	hex
 	default 0x900000
 
 endif # BOARD_PRODRIVE_HERMES_BASEBOARD

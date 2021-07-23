@@ -60,7 +60,6 @@ config INTEL_GMA_VBT_FILE
 	default "src/mainboard/\$(MAINBOARDDIR)/variants/\$(CONFIG_VARIANT_DIR)/data.vbt"
 
 config CBFS_SIZE
-	hex
 	default 0xb00000
 
 config POST_DEVICE

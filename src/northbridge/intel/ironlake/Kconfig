@@ -18,7 +18,6 @@ config VBOOT
 	select TPM_STARTUP_IGNORE_POSTINIT
 
 config CBFS_SIZE
-	hex
 	default 0x100000
 
 config VGA_BIOS_ID

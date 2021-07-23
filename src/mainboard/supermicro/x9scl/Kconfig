@@ -42,7 +42,6 @@ config PXE_ROM_ID
 	default "8086:10d3"
 
 config CBFS_SIZE
-	hex
 	default 0x400000
 
 #config SUPERMICRO_BOARDID

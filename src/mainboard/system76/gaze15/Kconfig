@@ -37,7 +37,6 @@ config MAINBOARD_VERSION
 	default "gaze15"
 
 config CBFS_SIZE
-	hex
 	default 0xA00000
 
 config CONSOLE_POST

@@ -173,7 +173,6 @@ config UNLOCK_FLASH_REGIONS
 endchoice
 
 config CBFS_SIZE
-	hex
 	default 0x100000
 	help
 	  Reduce CBFS size to give room to the IFD blobs.

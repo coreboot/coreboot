@@ -24,6 +24,11 @@ config MEMLAYOUT_LD_FILE
 	string
 	default "src/soc/amd/common/block/cpu/noncar/memlayout.ld"
 
+config CBFS_CACHE_SIZE
+	hex
+	help
+	  The size of the cbfs_cache region.
+
 config PAYLOAD_PRELOAD_CACHE_SIZE
 	hex
 	default 0x30000

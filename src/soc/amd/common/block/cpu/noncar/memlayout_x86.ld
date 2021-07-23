@@ -25,6 +25,10 @@ BOOTBLOCK_ADDR = BOOTBLOCK_END - CONFIG_C_ENV_BOOTBLOCK_SIZE;
  *                     |                                |
  *   reserved_dram_end +--------------------------------+
  *                     |                                |
+ *                     |      cbfs_cache (if reqd)      |
+ *                     |        (CBFS_CACHE_SIZE)       |
+ *                     +--------------------------------+ VERSTAGE_ADDR + VERSTAGE_SIZE
+ *                     |                                |
  *                     |       verstage (if reqd)       |
  *                     |          (VERSTAGE_SIZE)       |
  *                     +--------------------------------+ VERSTAGE_ADDR
@@ -93,6 +97,11 @@ SECTIONS
 	REGION(fspm, CONFIG_FSP_M_ADDR, CONFIG_FSP_M_SIZE, 1)
 #if CONFIG(VBOOT_SEPARATE_VERSTAGE)
 	VERSTAGE(CONFIG_VERSTAGE_ADDR, CONFIG_VERSTAGE_SIZE)
+#endif
+
+#if CONFIG_CBFS_CACHE_SIZE > 0
+        . = ALIGN(ARCH_CACHELINE_ALIGN_SIZE);
+        CBFS_CACHE(., CONFIG_CBFS_CACHE_SIZE)
 #endif
 
 	EARLY_RESERVED_DRAM_END(.)

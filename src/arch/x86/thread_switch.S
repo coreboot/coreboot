@@ -1,5 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#if ENV_X86_64
+#error COOP_MULTITASKING does not currently support x86_64
+#endif
+
 .code32
 .text
 

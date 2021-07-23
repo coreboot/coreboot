@@ -2,6 +2,10 @@
 
 #include <thread.h>
 
+#if ENV_X86_64
+#error COOP_MULTITASKING does not currently support x86_64
+#endif
+
 /* The stack frame looks like the following after a pushad instruction. */
 struct pushad_regs {
 	uint32_t edi; /* Offset 0x00 */

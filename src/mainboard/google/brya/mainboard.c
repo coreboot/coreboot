@@ -26,6 +26,13 @@ static void mainboard_init(void *chip_info)
 	base_pads = variant_gpio_table(&base_num);
 	override_pads = variant_gpio_override_table(&override_num);
 	gpio_configure_pads_with_override(base_pads, base_num, override_pads, override_num);
+
+	variant_devtree_update();
+}
+
+void __weak variant_devtree_update(void)
+{
+	/* Override dev tree settings per board */
 }
 
 static void mainboard_dev_init(struct device *dev)

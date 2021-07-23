@@ -22,4 +22,19 @@ int variant_memory_sku(void);
 bool variant_is_half_populated(void);
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config);
 
+/* Modify devictree settings during ramstage */
+void variant_devtree_update(void);
+
+struct cpu_power_limits {
+	uint16_t mchid;
+	unsigned int pl1_min_power;
+	unsigned int pl1_max_power;
+	unsigned int pl2_min_power;
+	unsigned int pl2_max_power;
+};
+
+/* Modify Power Limit devictree settings during ramstage */
+void variant_update_power_limits(const struct cpu_power_limits *limits,
+									size_t num_entries);
+
 #endif /*__BASEBOARD_VARIANTS_H__ */

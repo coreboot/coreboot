@@ -225,7 +225,7 @@ struct thread;
 
 struct cpu_info {
 	struct device *cpu;
-	unsigned int index;
+	size_t index;
 #if CONFIG(COOP_MULTITASKING)
 	struct thread *thread;
 #endif

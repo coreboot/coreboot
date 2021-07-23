@@ -569,7 +569,7 @@ static void init_bsp(struct bus *cpu_bus)
 	info->cpu->name = processor_name;
 
 	if (info->index != 0)
-		printk(BIOS_CRIT, "BSP index(%d) != 0!\n", info->index);
+		printk(BIOS_CRIT, "BSP index(%zd) != 0!\n", info->index);
 
 	/* Track BSP in cpu_map structures. */
 	cpu_add_map_entry(info->index);

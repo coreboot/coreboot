@@ -110,4 +110,12 @@ $(SHRM_CBFS)-type := payload
 $(SHRM_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 cbfs-files-y += $(SHRM_CBFS)
 
+################################################################################
+GSI_FW_FILE := $(SC7280_BLOB)/qup_fw/gsi_fw.bin
+GSI_FW_CBFS := $(CONFIG_CBFS_PREFIX)/gsi_fw
+$(GSI_FW_CBFS)-file := $(GSI_FW_FILE)
+$(GSI_FW_CBFS)-type := raw
+$(GSI_FW_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(GSI_FW_CBFS)
+
 endif

@@ -4,6 +4,7 @@
 #include <bootmem.h>
 #include <bootmode.h>
 #include <cbfs.h>
+#include <fmap_config.h>
 #include <vboot_check.h>
 #include <vboot_common.h>
 #include <vb2_internals_please_do_not_use.h>
@@ -177,6 +178,12 @@ static void verified_boot_check_buffer(const char *name, void *start, size_t siz
 	}
 }
 
+#if FMAP_SECTION_COREBOOT_START < (0xffffffff - CONFIG_ROM_SIZE + 1)
+#define COREBOOT_CBFS_START (0xffffffff - CONFIG_ROM_SIZE + 1 + FMAP_SECTION_COREBOOT_START)
+#else
+#define COREBOOT_CBFS_START FMAP_SECTION_COREBOOT_START
+#endif
+
 void verified_boot_check_cbfsfile(const char *name, uint32_t type, uint32_t hash_index,
 				  void **buffer, uint32_t *filesize, int32_t pcr)
 {
@@ -189,7 +196,7 @@ void verified_boot_check_cbfsfile(const char *name, uint32_t type, uint32_t hash
 		if (!ENV_ROMSTAGE_OR_BEFORE && (type & VERIFIED_BOOT_COPY_BLOCK)) {
 
 			if ((buffer) && (*buffer) && (*filesize >= size) &&
-			    ((uint32_t) start > (uint32_t)(~(CONFIG_CBFS_SIZE-1)))) {
+			    ((uint32_t) start > COREBOOT_CBFS_START)) {
 
 				/* Use the buffer passed in if possible */
 				printk(BIOS_DEBUG, "%s: move buffer to memory\n", __func__);

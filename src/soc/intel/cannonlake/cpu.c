@@ -82,20 +82,17 @@ static void configure_c_states(const config_t *const cfg)
 
 	/* C-state Interrupt Response Latency Control 3 - package C8 */
 	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS |
-		C_STATE_LATENCY_CONTROL_3_LIMIT;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_3_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_3, msr);
 
 	/* C-state Interrupt Response Latency Control 4 - package C9 */
 	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS |
-		C_STATE_LATENCY_CONTROL_4_LIMIT;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_4_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_4, msr);
 
 	/* C-state Interrupt Response Latency Control 5 - package C10 */
 	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS |
-		C_STATE_LATENCY_CONTROL_5_LIMIT;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_5_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
 }
 

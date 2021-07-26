@@ -132,8 +132,7 @@ Device (EC0)
 	{
 		Printf ("-----> EC: _Q43")
 
-		Local0 = BRIG
-		Local0 += 1
+		Local0 = BRIG + 1
 		If (Local0 > 0xaa) {
 			Local0 = 0xaa
 		}
@@ -148,8 +147,7 @@ Device (EC0)
 	{
 		Printf ("-----> EC: _Q44")
 
-		Local0 = BRIG
-		Local0 -= 1
+		Local0 = BRIG - 1
 		If (Local0 < 0xa0)
 		{
 			Local0 = 0xa0

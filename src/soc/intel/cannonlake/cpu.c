@@ -65,31 +65,36 @@ static void configure_c_states(const config_t *const cfg)
 		wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
 	}
 
+	/* C-state Interrupt Response Latency Control 0 - package C3 latency */
+	msr.hi = 0;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_0_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_0, msr);
+
 	/* C-state Interrupt Response Latency Control 1 - package C6/C7 short */
 	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_32768_NS | C_STATE_LATENCY_CONTROL_1_LIMIT;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_1_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_1, msr);
 
 	/* C-state Interrupt Response Latency Control 2 - package C6/C7 long */
 	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_32768_NS | C_STATE_LATENCY_CONTROL_2_LIMIT;
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_2_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_2, msr);
 
 	/* C-state Interrupt Response Latency Control 3 - package C8 */
 	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_32768_NS |
+	msr.lo = IRTL_VALID | IRTL_1024_NS |
 		C_STATE_LATENCY_CONTROL_3_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_3, msr);
 
 	/* C-state Interrupt Response Latency Control 4 - package C9 */
 	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_32768_NS |
+	msr.lo = IRTL_VALID | IRTL_1024_NS |
 		C_STATE_LATENCY_CONTROL_4_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_4, msr);
 
 	/* C-state Interrupt Response Latency Control 5 - package C10 */
 	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_32768_NS |
+	msr.lo = IRTL_VALID | IRTL_1024_NS |
 		C_STATE_LATENCY_CONTROL_5_LIMIT;
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
 }

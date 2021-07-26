@@ -53,7 +53,7 @@ Device (EC0)
 	{
 		Printf ("-----> EC: _REG")
 
-		Store (0x01, ECOS)
+		ECOS = 0x01
 
 		Printf ("<----- EC: _REG")
 	}
@@ -62,7 +62,7 @@ Device (EC0)
 	{
 		Printf ("-----> EC: _Q29")
 
-		Store (1, PWRS)
+		PWRS = 1
 		Notify (AC, 0x80)
 		Notify (AC, 0x00)
 		Notify (BAT0, 0x00)
@@ -75,7 +75,7 @@ Device (EC0)
 	{
 		Printf ("-----> EC: _Q31")
 
-		Store (0, PWRS)
+		PWRS = 0
 		Notify (AC, 0x80)
 		Notify (AC, 0x00)
 		Notify (BAT0, 0x00)
@@ -132,12 +132,12 @@ Device (EC0)
 	{
 		Printf ("-----> EC: _Q43")
 
-		Store (BRIG, Local0)
+		Local0 = BRIG
 		Increment (Local0)
 		If (LGreater (Local0, 0xAA)) {
-			Store (0xAA, Local0)
+			Local0 = 0xAA
 		}
-		Store (Local0, BRIG)
+		BRIG = Local0
 
 		\_SB.PCI0.GFX0.INCB ()
 
@@ -148,13 +148,13 @@ Device (EC0)
 	{
 		Printf ("-----> EC: _Q44")
 
-		Store (BRIG, Local0)
+		Local0 = BRIG
 		Decrement (Local0)
 		If (LLess (Local0, 0xA0))
 		{
-			Store (0xA0, Local0)
+			Local0 = 0xA0
 		}
-		Store (Local0, BRIG)
+		BRIG = Local0
 
 		\_SB.PCI0.GFX0.DECB ()
 
@@ -165,7 +165,7 @@ Device (EC0)
 	{
 		Printf ("-----> EC: _Q45")
 
-		Store (0, LIDS)
+		LIDS = 0
 		Notify (LID, 0x80)
 
 		Printf ("<----- EC: _Q45")
@@ -175,7 +175,7 @@ Device (EC0)
 	{
 		Printf ("-----> EC: _Q46")
 
-		Store (1, LIDS)
+		LIDS = 1
 		Notify (LID, 0x80)
 
 		Printf ("<----- EC: _Q46")

@@ -44,13 +44,13 @@ Device (BAT0)
 	{
 		Printf ("-----> BAT0: _STA")
 
-		Store (0x0F, Local0)
+		Local0 = 0x0F
 
-		Store (ECPS, Local1)
+		Local1 = ECPS
 		And (Local1, 0x02, Local1)
 		If (LEqual (Local1, 0x02))
 		{
-			Store (0x1F, Local0)
+			Local0 = 0x1F
 		}
 
 		Printf ("<----- BAT0: _STA")
@@ -62,9 +62,9 @@ Device (BAT0)
 	{
 		Printf ("-----> BAT0: _BIF")
 
-		Store (B0FC, PBIF[2])
-		Store (Divide (Multiply (B0FC, 6), 100), PBIF[5])
-		Store (Divide (Multiply (B0FC, 3), 100), PBIF[6])
+		PBIF[2] = B0FC
+		PBIF[5] = Divide (Multiply (B0FC, 6), 100)
+		PBIF[6] = Divide (Multiply (B0FC, 3), 100)
 
 		Printf ("<----- BAT0: _BIF")
 
@@ -75,33 +75,33 @@ Device (BAT0)
 	{
 		Printf ("-----> BAT0: _BST")
 
-		Store (B0ST, Local0)
+		Local0 = B0ST
 		And (Local0, 0x40, Local0)
 		If (LEqual (Local0, 0x40))
 		{
 			If (LEqual (PWRS, 1))
 			{
-				Store (0x00, PBST[0])
+				PBST[0] = 0x00
 			}
 			Else
 			{
-				Store (0x01, PBST[0])
+				PBST[0] = 0x01
 			}
 		}
 		Else
 		{
-			Store (0x02, PBST[0])
+			PBST[0] = 0x02
 		}
 
-		Store (B0AC, Local1)
+		Local1 = B0AC
 		If (LGreaterEqual (Local1, 0x8000))
 		{
 			Subtract (0x00010000, Local1, Local1)
 		}
 
-		Store (Local1, PBST[1])
-		Store (B0RC, PBST[2])
-		Store (B0VT, PBST[3])
+		PBST[1] = Local1
+		PBST[2] = B0RC
+		PBST[3] = B0VT
 
 		Printf ("<----- BAT0: _BST")
 

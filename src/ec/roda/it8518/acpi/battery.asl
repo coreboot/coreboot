@@ -62,9 +62,9 @@ Device (BAT0)
 	{
 		Printf ("-----> BAT0: _BIF")
 
-		Store (B0FC, Index (PBIF, 0x02))
-		Store (Divide (Multiply (B0FC, 6), 100), Index (PBIF, 0x05))
-		Store (Divide (Multiply (B0FC, 3), 100), Index (PBIF, 0x06))
+		Store (B0FC, Index (PBIF, 2))
+		Store (Divide (Multiply (B0FC, 6), 100), Index (PBIF, 5))
+		Store (Divide (Multiply (B0FC, 3), 100), Index (PBIF, 6))
 
 		Printf ("<----- BAT0: _BIF")
 
@@ -81,16 +81,16 @@ Device (BAT0)
 		{
 			If (LEqual (PWRS, 1))
 			{
-				Store (0x00, Index (PBST, 0x00))
+				Store (0x00, Index (PBST, 0))
 			}
 			Else
 			{
-				Store (0x01, Index (PBST, 0x00))
+				Store (0x01, Index (PBST, 0))
 			}
 		}
 		Else
 		{
-			Store (0x02, Index (PBST, 0x00))
+			Store (0x02, Index (PBST, 0))
 		}
 
 		Store (B0AC, Local1)
@@ -99,9 +99,9 @@ Device (BAT0)
 			Subtract (0x00010000, Local1, Local1)
 		}
 
-		Store (Local1, Index (PBST, 0x01))
-		Store (B0RC, Index (PBST, 0x02))
-		Store (B0VT, Index (PBST, 0x03))
+		Store (Local1, Index (PBST, 1))
+		Store (B0RC, Index (PBST, 2))
+		Store (B0VT, Index (PBST, 3))
 
 		Printf ("<----- BAT0: _BST")
 

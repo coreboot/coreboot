@@ -42,7 +42,7 @@ Device (BAT0)
 	// Battery Slot Status
 	Method (_STA, 0, Serialized)
 	{
-		Store ("-----> BAT0: _STA", Debug)
+		Printf ("-----> BAT0: _STA")
 
 		Store (0x0F, Local0)
 
@@ -53,27 +53,27 @@ Device (BAT0)
 			Store (0x1F, Local0)
 		}
 
-		Store ("<----- BAT0: _STA", Debug)
+		Printf ("<----- BAT0: _STA")
 
 		Return (Local0)
 	}
 
 	Method (_BIF, 0, Serialized)
 	{
-		Store ("-----> BAT0: _BIF", Debug)
+		Printf ("-----> BAT0: _BIF")
 
 		Store (B0FC, Index (PBIF, 0x02))
 		Store (Divide (Multiply (B0FC, 6), 100), Index (PBIF, 0x05))
 		Store (Divide (Multiply (B0FC, 3), 100), Index (PBIF, 0x06))
 
-		Store ("<----- BAT0: _BIF", Debug)
+		Printf ("<----- BAT0: _BIF")
 
 		Return (PBIF)
 	}
 
 	Method (_BST, 0, Serialized)
 	{
-		Store ("-----> BAT0: _BST", Debug)
+		Printf ("-----> BAT0: _BST")
 
 		Store (B0ST, Local0)
 		And (Local0, 0x40, Local0)
@@ -103,7 +103,7 @@ Device (BAT0)
 		Store (B0RC, Index (PBST, 0x02))
 		Store (B0VT, Index (PBST, 0x03))
 
-		Store ("<----- BAT0: _BST", Debug)
+		Printf ("<----- BAT0: _BST")
 
 		Return (PBST)
 	}

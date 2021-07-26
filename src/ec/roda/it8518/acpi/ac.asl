@@ -9,8 +9,8 @@ Device (AC)
 
 	Method (_PSR, 0, NotSerialized)  // _PSR: Power Source
 	{
-		Store ("-----> AC: _PSR", Debug)
-		Store ("<----- AC: _PSR", Debug)
+		Printf ("-----> AC: _PSR")
+		Printf ("<----- AC: _PSR")
 		Return (PWRS)
 	}
 }

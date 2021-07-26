@@ -929,7 +929,15 @@ typedef struct acpi_hest_generic_data_v300 {
 #define ACPI_GENERROR_VALID_FRUID_TEXT		BIT(1)
 #define ACPI_GENERROR_VALID_TIMESTAMP		BIT(2)
 
-/* Generic Error Status Block */
+/*
+ * Generic Error Status Block
+ *
+ * If there is a raw data section at the end of the generic error status block after the
+ * zero or more generic error data entries, raw_data_length indicates the length of the raw
+ * section and raw_data_offset is the offset of the beginning of the raw data section from
+ * the start of the acpi_generic_error_status block it is contained in. So if raw_data_length
+ * is non-zero, raw_data_offset must be at least sizeof(acpi_generic_error_status_t).
+ */
 typedef struct acpi_generic_error_status {
 	u32 block_status;
 	u32 raw_data_offset;	/* must follow any generic entries */

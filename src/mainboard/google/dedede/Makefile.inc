@@ -9,7 +9,6 @@ ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += mainboard.c
 ramstage-y += ec.c
 ramstage-y += board_info.c
-ramstage-$(CONFIG_FW_CONFIG) += fw_config.c
 
 VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))
 

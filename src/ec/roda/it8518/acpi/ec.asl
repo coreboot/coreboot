@@ -11,7 +11,7 @@ Device (EC0)
 	Name (LIDS, 1)
 
 	// EC RAM fields
-	OperationRegion(ERAM, EmbeddedControl, 0, 0xFF)
+	OperationRegion(ERAM, EmbeddedControl, 0, 0xff)
 	Field (ERAM, ByteAcc, NoLock, Preserve)
 	{
 		Offset(0x02),		// [Configuration Space 0x2]
@@ -31,13 +31,13 @@ Device (EC0)
 		Offset (0x50),		// [Configuration Space 0x50]
 		LUXH, 8,		// Ambient Light Illuminance High
 		LUXL, 8,		// Ambient Light Illuminance Low
-		Offset (0x5B),		// [Configuration Space 0x5B]
+		Offset (0x5b),		// [Configuration Space 0x5b]
 		BRIG, 8,		// Brightness
 	} // End of ERAM
 
 	Method (_STA, 0, NotSerialized)  // _STA: Status
 	{
-		Return (0x0F)
+		Return (0x0f)
 	}
 
 	Method (_CRS, 0, NotSerialized)
@@ -134,8 +134,8 @@ Device (EC0)
 
 		Local0 = BRIG
 		Local0 += 1
-		If (Local0 > 0xAA) {
-			Local0 = 0xAA
+		If (Local0 > 0xaa) {
+			Local0 = 0xaa
 		}
 		BRIG = Local0
 
@@ -150,9 +150,9 @@ Device (EC0)
 
 		Local0 = BRIG
 		Local0 -= 1
-		If (Local0 < 0xA0)
+		If (Local0 < 0xa0)
 		{
-			Local0 = 0xA0
+			Local0 = 0xa0
 		}
 		BRIG = Local0
 

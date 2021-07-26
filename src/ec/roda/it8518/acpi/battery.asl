@@ -33,9 +33,9 @@ Device (BAT0)
 	Name (PBST, Package (4)
 	{
 		0x00000000,	// Battery State
-		0xFFFFFFFF,	// Battery Present Rate
-		0xFFFFFFFF,	// Battery Remaining Capacity
-		0xFFFFFFFF,	// Battery Present Voltage
+		0xffffffff,	// Battery Present Rate
+		0xffffffff,	// Battery Remaining Capacity
+		0xffffffff,	// Battery Present Voltage
 	})
 
 
@@ -44,13 +44,13 @@ Device (BAT0)
 	{
 		Printf ("-----> BAT0: _STA")
 
-		Local0 = 0x0F
+		Local0 = 0x0f
 
 		Local1 = ECPS
 		Local1 &= 0x02
 		If (Local1 == 0x02)
 		{
-			Local0 = 0x1F
+			Local0 = 0x1f
 		}
 
 		Printf ("<----- BAT0: _STA")

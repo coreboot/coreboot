@@ -47,8 +47,8 @@ Device (BAT0)
 		Local0 = 0x0F
 
 		Local1 = ECPS
-		And (Local1, 0x02, Local1)
-		If (LEqual (Local1, 0x02))
+		Local1 &= 0x02
+		If (Local1 == 0x02)
 		{
 			Local0 = 0x1F
 		}
@@ -76,10 +76,10 @@ Device (BAT0)
 		Printf ("-----> BAT0: _BST")
 
 		Local0 = B0ST
-		And (Local0, 0x40, Local0)
-		If (LEqual (Local0, 0x40))
+		Local0 &= 0x40
+		If (Local0 == 0x40)
 		{
-			If (LEqual (PWRS, 1))
+			If (PWRS == 1)
 			{
 				PBST[0] = 0x00
 			}
@@ -94,7 +94,7 @@ Device (BAT0)
 		}
 
 		Local1 = B0AC
-		If (LGreaterEqual (Local1, 0x8000))
+		If (Local1 >= 0x8000)
 		{
 			Subtract (0x00010000, Local1, Local1)
 		}

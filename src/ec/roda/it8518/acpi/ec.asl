@@ -134,7 +134,7 @@ Device (EC0)
 
 		Local0 = BRIG
 		Increment (Local0)
-		If (LGreater (Local0, 0xAA)) {
+		If (Local0 > 0xAA) {
 			Local0 = 0xAA
 		}
 		BRIG = Local0
@@ -150,7 +150,7 @@ Device (EC0)
 
 		Local0 = BRIG
 		Decrement (Local0)
-		If (LLess (Local0, 0xA0))
+		If (Local0 < 0xA0)
 		{
 			Local0 = 0xA0
 		}

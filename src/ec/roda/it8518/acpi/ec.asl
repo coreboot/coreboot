@@ -133,7 +133,7 @@ Device (EC0)
 		Printf ("-----> EC: _Q43")
 
 		Local0 = BRIG
-		Increment (Local0)
+		Local0 += 1
 		If (Local0 > 0xAA) {
 			Local0 = 0xAA
 		}
@@ -149,7 +149,7 @@ Device (EC0)
 		Printf ("-----> EC: _Q44")
 
 		Local0 = BRIG
-		Decrement (Local0)
+		Local0 -= 1
 		If (Local0 < 0xA0)
 		{
 			Local0 = 0xA0

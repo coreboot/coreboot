@@ -63,8 +63,8 @@ Device (BAT0)
 		Printf ("-----> BAT0: _BIF")
 
 		PBIF[2] = B0FC
-		PBIF[5] = Divide (Multiply (B0FC, 6), 100)
-		PBIF[6] = Divide (Multiply (B0FC, 3), 100)
+		PBIF[5] = (B0FC * 6) / 100
+		PBIF[6] = (B0FC * 3) / 100
 
 		Printf ("<----- BAT0: _BIF")
 
@@ -96,7 +96,7 @@ Device (BAT0)
 		Local1 = B0AC
 		If (Local1 >= 0x8000)
 		{
-			Subtract (0x00010000, Local1, Local1)
+			Local1 = 0x00010000 - Local1
 		}
 
 		PBST[1] = Local1

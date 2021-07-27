@@ -224,6 +224,7 @@ static u32 working_controllers[] = {
 	0x8086 | 0x1c03 << 16, /* Mobile Cougar Point PCH */
 	0x8086 | 0x1e03 << 16, /* Mobile Panther Point PCH */
 	0x8086 | 0xa102 << 16, /* Desktop / Mobile-Wks  Sunrise Point PCH */
+	0x8086 | 0xa353 << 16, /* Mobile 300 series Cannon Point PCH */
 	0x8086 | 0x5ae3 << 16, /* Apollo Lake */
 };
 #endif

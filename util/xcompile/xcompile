@@ -10,6 +10,8 @@ if [ "$1" = "--debug" ]; then
 	set -x
 fi
 
+# GENERIC_COMPILER_PREFIX defaults to empty but can be used to override
+# compiler search behavior
 TMPFILE=""
 XGCCPATH=$1
 
@@ -421,7 +423,7 @@ test_architecture() {
 
 	# Search toolchain by checking assembler capability.
 	for TBFDARCH in $TBFDARCHS; do
-		for gccprefix in $search ""; do
+		for gccprefix in $search "$GENERIC_COMPILER_PREFIX"; do
 			program_exists "${gccprefix}as" || continue
 			for endian in $TENDIAN ""; do
 				{ testas "$gccprefix" "$TWIDTH" "$TBFDARCH" \
@@ -439,7 +441,7 @@ test_architecture() {
 	fi
 
 	for clang_arch in $TCLIST invalid; do
-		for clang_prefix in $search $XGCCPATH ""; do
+		for clang_prefix in $search $XGCCPATH "$GENERIC_COMPILER_PREFIX"; do
 			testcc "${clang_prefix}clang" "-target ${clang_arch}-$TABI -c" && break 2
 		done
 	done

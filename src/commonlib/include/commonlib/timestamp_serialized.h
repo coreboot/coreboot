@@ -275,6 +275,8 @@ static const struct timestamp_id_to_name {
 	{ TS_FSP_TEMP_RAM_EXIT_END, "returning from FspTempRamExit" },
 	{ TS_FSP_SILICON_INIT_START, "calling FspSiliconInit" },
 	{ TS_FSP_SILICON_INIT_END, "returning from FspSiliconInit" },
+	{ TS_FSP_MULTI_PHASE_SI_INIT_START, "calling FspMultiPhaseSiInit" },
+	{ TS_FSP_MULTI_PHASE_SI_INIT_END, "returning from FspMultiPhaseSiInit" },
 	{ TS_FSP_BEFORE_ENUMERATE, "calling FspNotify(AfterPciEnumeration)" },
 	{ TS_FSP_AFTER_ENUMERATE,
 		 "returning from FspNotify(AfterPciEnumeration)" },

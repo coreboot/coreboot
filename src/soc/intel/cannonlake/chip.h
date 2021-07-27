@@ -64,6 +64,19 @@ struct soc_intel_cannonlake_config {
 	/* Enable DPTF support */
 	int dptf_enable;
 
+	enum {
+		MAX_PC_DEFAULT	= 0,
+		MAX_PC0_1	= 1,
+		MAX_PC2		= 2,
+		MAX_PC3		= 3,
+		MAX_PC6		= 4,
+		MAX_PC7		= 5,
+		MAX_PC7S	= 6,
+		MAX_PC8		= 7,
+		MAX_PC9		= 8,
+		MAX_PC10	= 9,
+	} max_package_c_state;
+
 	/* Deep SX enable for both AC and DC */
 	int deep_s3_enable_ac;
 	int deep_s3_enable_dc;

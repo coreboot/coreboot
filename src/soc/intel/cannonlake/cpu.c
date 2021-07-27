@@ -55,9 +55,15 @@ static void configure_misc(void)
 	wrmsr(MSR_POWER_CTL, msr);
 }
 
-static void configure_c_states(void)
+static void configure_c_states(const config_t *const cfg)
 {
 	msr_t msr;
+
+	msr = rdmsr(MSR_PKG_CST_CONFIG_CONTROL);
+	if (cfg->max_package_c_state && (msr.lo & 0xf) >= cfg->max_package_c_state) {
+		msr.lo = (msr.lo & ~0xf) | ((cfg->max_package_c_state - 1) & 0xf);
+		wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
+	}
 
 	/* C-state Interrupt Response Latency Control 1 - package C6/C7 short */
 	msr.hi = 0;
@@ -104,7 +110,7 @@ void soc_core_init(struct device *cpu)
 	setup_lapic();
 
 	/* Configure c-state interrupt response time */
-	configure_c_states();
+	configure_c_states(cfg);
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();

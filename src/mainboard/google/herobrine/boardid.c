@@ -10,19 +10,25 @@
 uint32_t board_id(void)
 {
 	static uint32_t id = UNDEFINED_STRAPPING_ID;
-	const gpio_t pins[] = {[2] = GPIO(50), [1] = GPIO(49), [0] = GPIO(48)};
+	gpio_t pins[3];
+	if (CONFIG(BOARD_GOOGLE_HEROBRINE)) {
+		pins[2] = GPIO(75);
+		pins[1] = GPIO(74);
+		pins[0] = GPIO(73);
+	} else if (CONFIG(BOARD_GOOGLE_PIGLIN) || CONFIG(BOARD_GOOGLE_HOGLIN)
+			|| CONFIG(BOARD_GOOGLE_SENOR)) {
+		pins[2] = GPIO(50);
+		pins[1] = GPIO(49);
+		pins[0] = GPIO(48);
+	}
 
 	if (id == UNDEFINED_STRAPPING_ID)
 		id = gpio_base3_value(pins, ARRAY_SIZE(pins));
 
-	if ((id == QCOM_SC7280_SKU1) || (id == QCOM_SC7280_SKU2) ||
-						(id == QCOM_SC7280_SKU3))
-		printk(BIOS_INFO, "BoardID :%d - "
+	printk(BIOS_INFO, "BoardID :%d - "
 				"Machine model: "
 				"Qualcomm Technologies, Inc. "
-				"sc7280 IDP SKU%d platform\n", id, (id+1));
-	else
-		printk(BIOS_ERR, "Invalid BoardId : %d\n", id);
+				"sc7280 platform\n", id);
 
 	return id;
 }

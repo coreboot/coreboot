@@ -18,7 +18,6 @@
 
 #define QCOM_SC7280_SKU1 0x0
 #define QCOM_SC7280_SKU2 0x1
-#define QCOM_SC7280_SKU3 0x2
 
 /* Fingerprint-specific GPIOs. Only for fingerprint-enabled devices. */
 #if CONFIG(HEROBRINE_HAS_FINGERPRINT)

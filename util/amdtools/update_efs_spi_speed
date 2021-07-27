@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: BSD-3-Clause
+
+ROM="$1"
+declare -i NEW_SPEED="$2"
+
+readonly EFS_SIG_DWORD="55aa55aa"
+readonly FAST_SPEED_NEW_F15_MOD_60_6F_OFFSET=0x41
+readonly SPI_FASTSPEED_F17_MOD_00_2F_OFFSET=0x44
+readonly SPI_FASTSPEED_F17_MOD_30_3F_OFFSET=0x48
+
+# print out the very simple usage
+usage() {
+  echo "Usage: $0 <ROM> <Speed>"
+  echo "  Speed must be between 0 & 5"
+  echo "    0: 66.66Mhz"
+  echo "    1: 33.33MHz"
+  echo "    2: 22.22MHz"
+  echo "    3: 16.66MHz"
+  echo "    4: 100MHz"
+  echo "    5: 800KHz"
+}
+
+# Validate the input parameters
+if [[ $# -ne 2 || ! -f "${ROM}" || "${NEW_SPEED}" -lt 0 || "${NEW_SPEED}" -gt 5 ]]; then
+  usage
+  exit 1
+fi
+
+# Read a 32, 16, or 8 bit value from a location in a binary file
+getval() {
+  local location=$1
+  local length=$2
+
+  if [[ ${length} -eq 1 ]]; then
+    dd "if=${ROM}" bs=1 "skip=${location}" "count=${length}" 2>/dev/null | hexdump -v -e '1/1 "%02x\n"'
+  elif [[ ${length} -eq 2 ]]; then
+    dd "if=${ROM}" bs=1 "skip=${location}" "count=${length}" 2>/dev/null | hexdump -v -e '1/2 "%04x\n"'
+  elif [[ ${length} -eq 4 ]]; then
+    dd "if=${ROM}" bs=1 "skip=${location}" "count=${length}" 2>/dev/null | hexdump -v -e '1/4 "%08x\n"'
+  else
+    echo "Error: invalid value"
+    exit 1
+  fi
+}
+
+# Update a location in a binary
+# Note that the passed in value must be formatted correctly:
+# Each byte needs to be specified as "\\xXX" where X is a hex digit
+setval() {
+  local location=$1
+  local length=$2
+  local hexval=$3
+
+  # shellcheck disable=SC2059
+  if ! printf "$hexval" | dd "of=${ROM}" bs=1 "seek=${location}" "count=${length}" conv=notrunc status=none; then
+    echo "Error: Could not write to ${ROM}"
+    exit 1
+  fi
+}
+
+# Print the speed associated with the passed-in value
+showspeed() {
+  local speedval=$1
+  case ${speedval} in
+  0 | 00) echo "0: 66.66Mhz" ;;
+  1 | 01) echo "1: 33.33MHz" ;;
+  2 | 02) echo "2: 22.22MHz" ;;
+  3 | 03) echo "3: 16.66MHz" ;;
+  4 | 04) echo "4: 100MHz" ;;
+  5 | 05) echo "5: 800KHz" ;;
+  ff) echo "Error: Speed not set" ;;
+  *) echo "Error: Unknown speed (${speedval})" ;;
+  esac
+}
+
+# Locate the SPI speed data and update it to the new speed
+update_efs() {
+  local location=$1
+  local updated_speed=0
+
+  for speed_offset in FAST_SPEED_NEW_F15_MOD_60_6F_OFFSET SPI_FASTSPEED_F17_MOD_00_2F_OFFSET SPI_FASTSPEED_F17_MOD_30_3F_OFFSET; do
+    local speed_val
+    local speed_loc=$((location + speed_offset))
+    speed_val=$(getval "${speed_loc}" "1")
+
+    if [[ "${speed_val}" != "ff" ]]; then
+      printf "Found speed value of %s at %#06x\n" "$(showspeed "${speed_val}")" "${speed_loc}"
+      updated_speed=1
+      setval "${speed_loc}" "1" "\\x0${NEW_SPEED}"
+      speed_val=$(getval "${speed_loc}" "1")
+      printf "New speed value: %s\n" "$(showspeed "${speed_val}")"
+    fi
+
+  done
+  if [[ ${updated_speed} -eq 0 ]]; then
+    echo "Error: Could not find speed value to update."
+    exit 1
+  fi
+}
+
+# Find the EFS location and update the speed
+main() {
+  local location
+  local val
+
+  for i in {0..5}; do
+    location="$((0xffffff - (0x80000 << i) + 0x20000 + 1))"
+    val="$(getval "${location}" 4 )"
+    if [[ "${val}" == "${EFS_SIG_DWORD}" ]]; then
+      printf "EFS found at %#06x\n" "${location}"
+      update_efs "${location}"
+      exit 0
+    fi
+  done
+
+  echo "Error: EFS not found in ${ROM}."
+  exit 1
+}
+
+main

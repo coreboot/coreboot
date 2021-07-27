@@ -82,11 +82,13 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_PCIE5:	return "RP05";
 	case PCH_DEVFN_PCIE6:	return "RP06";
 	case PCH_DEVFN_PCIE7:	return "RP07";
+	case PCH_DEVFN_PSEGBE0:	return "OTN0";
+	case PCH_DEVFN_PSEGBE1:	return "OTN1";
 	case PCH_DEVFN_UART0:	return "UAR0";
 	case PCH_DEVFN_UART1:	return "UAR1";
 	case PCH_DEVFN_GSPI0:	return "SPI0";
 	case PCH_DEVFN_GSPI1:	return "SPI1";
-	case PCH_DEVFN_GBE:	return "GLAN";
+	case PCH_DEVFN_GBE:	return "GTSN";
 	case PCH_DEVFN_GSPI2:	return "SPI2";
 	case PCH_DEVFN_EMMC:	return "EMMC";
 	case PCH_DEVFN_SDCARD:	return "SDXC";

@@ -79,6 +79,70 @@ static void fill_fsps_fivr_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->FivrSpreadSpectrum = config->fivr.spread_spectrum;
 }
 
+static void fill_fsps_tsn_params(FSP_S_CONFIG *params,
+		const struct soc_intel_elkhartlake_config *config)
+{
+	/*
+	 * Currently EHL TSN GBE only supports link speed with 2 type of
+	 * PCH XTAL frequency: 24 MHz and 38.4 MHz.
+	 * These are the config values for PchTsnGbeLinkSpeed in FSP-S UPD:
+	 * 0: 24MHz 2.5Gbps, 1: 24MHz 1Gbps, 2: 38.4MHz 2.5Gbps,
+	 * 3: 38.4MHz 1Gbps
+	 */
+	int xtal_freq_enum = pmc_get_xtal_freq();
+	if ((xtal_freq_enum != XTAL_24_MHZ) && (xtal_freq_enum != XTAL_38_4_MHZ)) {
+		printk(BIOS_ERR, "XTAL not supported. Disabling All TSN GBE ports.\n");
+		params->PchTsnEnable = 0;
+		params->PchPseGbeEnable[0] = 0;
+		params->PchPseGbeEnable[1] = 0;
+		devfn_disable(pci_root_bus(), PCH_DEVFN_GBE);
+		devfn_disable(pci_root_bus(), PCH_DEVFN_PSEGBE0);
+		devfn_disable(pci_root_bus(), PCH_DEVFN_PSEGBE1);
+	}
+	/*
+	 * PCH TSN settings:
+	 * Due to EHL GBE comes with time sensitive networking (TSN)
+	 * capability integrated, EHL FSP is using PchTsnEnable instead of
+	 * usual PchLanEnable flag for GBE control. Hence, force
+	 * PchLanEnable to disable to avoid it being used in the future.
+	 */
+	params->PchLanEnable = 0x0;
+	params->PchTsnEnable = is_devfn_enabled(PCH_DEVFN_GBE);
+	if (params->PchTsnEnable) {
+		params->PchTsnGbeSgmiiEnable = config->PchTsnGbeSgmiiEnable;
+		params->PchTsnGbeMultiVcEnable = config->PchTsnGbeMultiVcEnable;
+		params->PchTsnGbeLinkSpeed = (config->PchTsnGbeLinkSpeed) + xtal_freq_enum;
+	}
+
+	/* PSE TSN settings */
+	if (!CONFIG(PSE_ENABLE))
+		return;
+	for (unsigned int i = 0; i < MAX_PSE_TSN_PORTS; i++) {
+		switch (i) {
+		case 0:
+			params->PchPseGbeEnable[i] = is_devfn_enabled(PCH_DEVFN_PSEGBE0) ?
+				Host_Owned : config->PseGbeOwn[0];
+			break;
+		case 1:
+			params->PchPseGbeEnable[i] = is_devfn_enabled(PCH_DEVFN_PSEGBE1) ?
+				Host_Owned : config->PseGbeOwn[i];
+			break;
+		default:
+			break;
+		}
+		if (params->PchPseGbeEnable[i]) {
+			params->PseTsnGbeMultiVcEnable[i] = config->PseTsnGbeMultiVcEnable[i];
+			params->PseTsnGbeSgmiiEnable[i] = config->PseTsnGbeSgmiiEnable[i];
+			params->PseTsnGbePhyInterfaceType[i] =
+				!!config->PseTsnGbeSgmiiEnable[i] ?
+				RGMII : config->PseTsnGbePhyType[i];
+			params->PseTsnGbeLinkSpeed[i] =
+				(params->PseTsnGbePhyInterfaceType[i] < SGMII_plus) ?
+				xtal_freq_enum + 1 : xtal_freq_enum;
+		}
+	}
+}
+
 static void fill_fsps_pse_params(FSP_S_CONFIG *params,
 		const struct soc_intel_elkhartlake_config *config)
 {
@@ -397,43 +461,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PsfFusaConfigEnable = 0;
 	}
 
-	/* PCH GBE config */
-	/*
-	 * Due to EHL GBE comes with time sensitive networking (TSN)
-	 * capability integrated, EHL FSP is using PchTsnEnable instead of
-	 * usual PchLanEnable flag for GBE control. Hence, force
-	 * PchLanEnable to disable to avoid it being used in the future.
-	 */
-	params->PchLanEnable = 0x0;
-	params->PchTsnEnable = is_devfn_enabled(PCH_DEVFN_GBE);
-	if (params->PchTsnEnable) {
-		params->PchTsnGbeSgmiiEnable = config->PchTsnGbeSgmiiEnable;
-		params->PchTsnGbeMultiVcEnable = config->PchTsnGbeMultiVcEnable;
-		/*
-		 * Currently EHL TSN GBE only supports link speed with 2 type of
-		 * PCH XTAL frequency: 24 MHz and 38.4 MHz.
-		 * These are the configs setup for PchTsnGbeLinkSpeed FSP-S UPD:
-		 * 0: 24MHz 2.5Gbps, 1: 24MHz 1Gbps, 2: 38.4MHz 2.5Gbps,
-		 * 3: 38.4MHz 1Gbps
-		 */
-		switch (pmc_get_xtal_freq()) {
-		case XTAL_24_MHZ:
-			params->PchTsnGbeLinkSpeed = (!!config->PchTsnGbeLinkSpeed);
-			break;
-		case XTAL_38_4_MHZ:
-			params->PchTsnGbeLinkSpeed = (!!config->PchTsnGbeLinkSpeed) + 0x2;
-			break;
-		case XTAL_19_2_MHZ:
-		default:
-			printk(BIOS_ERR, "XTAL not supported. Disabling PCH TSN GBE.\n");
-			params->PchTsnEnable = 0;
-			devfn_disable(pci_root_bus(), PCH_DEVFN_GBE);
-		}
-	}
-
 	/* PSE (Intel Programmable Services Engine) config */
 	if (CONFIG(PSE_ENABLE) && cbfs_file_exists("pse.bin"))
 		fill_fsps_pse_params(params, config);
+
+	/* TSN GBE config */
+	fill_fsps_tsn_params(params, config);
 
 	/* Override/Fill FSP Silicon Param for mainboard */
 	mainboard_silicon_init_params(params);

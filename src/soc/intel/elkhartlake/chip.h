@@ -23,6 +23,7 @@
 #define MAX_HD_AUDIO_DMIC_LINKS	2
 #define MAX_HD_AUDIO_SNDW_LINKS	4
 #define MAX_HD_AUDIO_SSP_LINKS	6
+#define MAX_PSE_TSN_PORTS	2
 
 /* Define config parameters for In-Band ECC (IBECC). */
 #define MAX_IBECC_REGIONS	8
@@ -46,6 +47,13 @@ struct ehl_ibecc_config {
 enum tsn_gbe_link_speed {
 	Tsn_2_5_Gbps,
 	Tsn_1_Gbps,
+};
+
+/* TSN Phy Interface Type: 1: RGMII, 2: SGMII, 3:SGMII+ */
+enum tsn_phy_type {
+	RGMII		= 1,
+	SGMII		= 2,
+	SGMII_plus	= 3,
 };
 
 /*
@@ -458,13 +466,18 @@ struct soc_intel_elkhartlake_config {
 	 */
 	u8 PchPmPwrBtnOverridePeriod;
 
-	/* GBE related */
-	/* PCH TSN GBE Link Speed: 0: 2.5Gbps, 1: 1Gbps */
+	/* GBE related (PCH & PSE) */
+	/* TSN GBE Link Speed: 0: 2.5Gbps, 1: 1Gbps */
 	enum tsn_gbe_link_speed PchTsnGbeLinkSpeed;
-	/* PCH TSN GBE SGMII Support: Disable (0) / Enable (1) */
+	enum tsn_gbe_link_speed PseTsnGbeLinkSpeed[MAX_PSE_TSN_PORTS];
+	/* TSN GBE SGMII Support: Disable (0) / Enable (1) */
 	bool PchTsnGbeSgmiiEnable;
-	/* PCH TSN GBE Multiple Virtual Channel: Disable (0) / Enable (1) */
+	bool PseTsnGbeSgmiiEnable[MAX_PSE_TSN_PORTS];
+	/* TSN GBE Multiple Virtual Channel: Disable (0) / Enable (1) */
 	bool PchTsnGbeMultiVcEnable;
+	bool PseTsnGbeMultiVcEnable[MAX_PSE_TSN_PORTS];
+	/* PSE TSN Phy Interface Type */
+	enum tsn_phy_type PseTsnGbePhyType[MAX_PSE_TSN_PORTS];
 
 	/* PSE related */
 	/*
@@ -490,6 +503,7 @@ struct soc_intel_elkhartlake_config {
 	enum pse_device_ownership PseCanOwn[2];
 	enum pse_device_ownership PsePwmOwn;
 	enum pse_device_ownership PseAdcOwn;
+	enum pse_device_ownership PseGbeOwn[MAX_PSE_TSN_PORTS];
 	/* PSE devices sideband interrupt: Disable (0) / Enable (1) */
 	bool PseDmaSbIntEn[3];
 	bool PseUartSbIntEn[6];

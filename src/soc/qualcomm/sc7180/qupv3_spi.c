@@ -6,7 +6,8 @@
 #include <soc/clock.h>
 #include <soc/gpio.h>
 #include <soc/qcom_qup_se.h>
-#include <soc/qupv3_config.h>
+#include <soc/qupv3_config_common.h>
+#include <soc/qup_se_handlers_common.h>
 #include <soc/qupv3_spi.h>
 #include <types.h>
 
@@ -14,11 +15,11 @@
 #define LOOPBACK_ENABLE	0x1
 
 /* SE_SPI_WORD_LEN register fields */
-#define WORD_LEN_MSK	GENMASK(9, 0)
+#define WORD_LEN_MSK	QC_GENMASK(9, 0)
 #define MIN_WORD_LEN	4
 
 /* SPI_TX/SPI_RX_TRANS_LEN fields */
-#define TRANS_LEN_MSK	GENMASK(23, 0)
+#define TRANS_LEN_MSK	QC_GENMASK(23, 0)
 
 /* M_CMD OP codes for SPI */
 #define SPI_TX_ONLY	1

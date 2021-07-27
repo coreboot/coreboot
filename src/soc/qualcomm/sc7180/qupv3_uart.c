@@ -5,7 +5,8 @@
 #include <console/uart.h>
 #include <soc/clock.h>
 #include <soc/qcom_qup_se.h>
-#include <soc/qupv3_config.h>
+#include <soc/qupv3_config_common.h>
+#include <soc/qup_se_handlers_common.h>
 #include <types.h>
 
 /* COMMON STATUS/CONFIGURATION REGISTERS AND MASKS */

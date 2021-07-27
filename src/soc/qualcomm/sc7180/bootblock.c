@@ -3,7 +3,7 @@
 #include <bootblock_common.h>
 #include <soc/clock.h>
 #include <soc/qspi_common.h>
-#include <soc/qupv3_config.h>
+#include <soc/qupv3_config_common.h>
 
 void bootblock_soc_init(void)
 {

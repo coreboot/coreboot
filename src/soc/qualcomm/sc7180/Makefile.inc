@@ -13,7 +13,8 @@ all-y += qupv3_spi.c
 all-y += clock.c
 all-y += ../common/clock.c
 all-y += qcom_qup_se.c
-all-y += qupv3_config.c
+all-y += ../common/qupv3_config.c
+all-y += ../common/qup_se_handler.c
 
 ################################################################################
 bootblock-y += bootblock.c

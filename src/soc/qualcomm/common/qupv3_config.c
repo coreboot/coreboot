@@ -1,9 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cbfs.h>
-#include <console/console.h>
 #include <string.h>
-#include <soc/qupv3_config.h>
+#include <soc/qupv3_config_common.h>
+#include <console/console.h>
+#include <soc/qup_se_handlers_common.h>
+#include <soc/qcom_qup_se.h>
+#include <soc/addressmap.h>
 
 static struct elf_se_hdr *fw_list[SE_PROTOCOL_MAX];
 
@@ -29,7 +32,7 @@ void qupv3_se_fw_load_and_init(unsigned int bus, unsigned int protocol,
 	if (!fw_list[protocol]) {
 		fw_list[protocol] = cbfs_map(filename[protocol], NULL);
 		if (!fw_list[protocol])
-			die("*ERROR*  * cbfs_map() failed ***\n");
+			die("*ERROR*  * cbfs_map failed ***\n");
 	}
 
 	hdr = fw_list[protocol];
@@ -51,6 +54,7 @@ void qupv3_se_fw_load_and_init(unsigned int bus, unsigned int protocol,
 	write32(&regs->se_geni_clk_ctrl, 0x0);
 	clrbits_le32(&regs->geni_cgc_ctrl, GENI_CGC_CTRL_PROG_RAM_SCLK_OFF_BMSK
 			| GENI_CGC_CTRL_PROG_RAM_HCLK_OFF_BMSK);
+
 
 	/* HPG section 3.1.7.1 */
 	if (protocol != SE_PROTOCOL_UART) {
@@ -78,10 +82,9 @@ void qupv3_se_fw_load_and_init(unsigned int bus, unsigned int protocol,
 	assert(cfg_idx_arr[hdr->cfg_size_in_items - 1] * sizeof(uint32_t) <=
 		MAX_OFFSET_CFG_REG);
 
-	for (i = 0; i < hdr->cfg_size_in_items; i++) {
+	for (i = 0; i < hdr->cfg_size_in_items; i++)
 		write32(&regs->geni_cfg_reg0 + cfg_idx_arr[i],
-						cfg_val_arr[i]);
-	}
+					cfg_val_arr[i]);
 
 	/* HPG section 3.1.7.9 */
 	/* non-UART configuration, UART driver can configure as desired for UART
@@ -176,6 +179,62 @@ void qupv3_se_fw_load_and_init(unsigned int bus, unsigned int protocol,
 	/* Lock SE from FW loading */
 	write32(&regs->se_geni_fw_multilock_protns, 0x1);
 	write32(&regs->se_geni_fw_multilock_msa, 0x1);
+}
+
+void gpi_firmware_load(int addr)
+{
+	uint32_t i;
+	uint32_t regVal = 0;
+	struct gsi_fw_hdr *gsi_hdr;
+	struct gsi_fw_iep *fwIep;
+	struct gsi_fw_iram *fwIRam;
+	struct gsi_regs *regs = (struct gsi_regs *)(uintptr_t) addr;
+	static const char * const filename = "fallback/gsi_fw";
+
+	/* Assign firmware header base */
+	gsi_hdr = cbfs_map(filename, NULL);
+	if (!gsi_hdr)
+		die("*ERROR*  * cbfs_map() failed ***\n");
+
+	assert(gsi_hdr->magic == GSI_FW_MAGIC_HEADER)
+
+	/* Assign IEP entry base */
+	fwIep = (struct gsi_fw_iep *)(((uint8_t *)gsi_hdr) +
+			gsi_hdr->iep_offset);
+	/* Assign firmware IRAM entry base */
+	fwIRam = (struct gsi_fw_iram *)(((uint8_t *)gsi_hdr) +
+			gsi_hdr->fw_offset);
+
+	clrbits_le32(&regs->gsi_cgc_ctrl, GSI_CGC_CTRL_REGION_2_HW_CGC_EN_BMSK);
+	write32(&regs->gsi_periph_base_lsb, 0);
+	write32(&regs->gsi_periph_base_msb, 0);
+
+	/* Load IEP */
+	for (i = 0; i < gsi_hdr->iep_size_in_items; i++) {
+		/* Check if offset does not exceed GSI address space size */
+		if (fwIep[i].offset < GSI_REG_BASE_SIZE)
+			write32((void *)&regs->gsi_cfg + fwIep[i].offset,
+							fwIep[i].value);
+	}
+
+	/* Load firmware in IRAM */
+	assert((gsi_hdr->fw_size_in_items * 2) < (GSI_INST_RAM_n_MAX_n + 1))
+
+	/* Program Firmware version */
+	write32(&regs->gsi_manager_mcs_code_ver, fwIRam->iram_dword0);
+
+	memcpy((&regs->gsi_inst_ramn), (void *)fwIRam,
+		gsi_hdr->fw_size_in_items * GSI_FW_BYTES_PER_LINE);
+	setbits_le32(&regs->gsi_mcs_cfg, GSI_MCS_CFG_MCS_ENABLE_BMSK);
+	setbits_le32(&regs->gsi_cfg, GSI_CFG_DOUBLE_MCS_CLK_FREQ_BMSK
+					| GSI_CFG_GSI_ENABLE_BMSK);
+
+	write32(&regs->gsi_ee_n_scratch_0_addr, 0x0);
+	write32(&regs->ee_n_gsi_ee_generic_cmd, 0x81);
+
+	do {
+		regVal = read32(&regs->gsi_ee_n_scratch_0_addr);
+	} while (regVal > 1);
 }
 
 static void qup_common_init(int addr)

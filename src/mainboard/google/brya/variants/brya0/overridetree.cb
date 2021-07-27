@@ -25,7 +25,7 @@ fw_config
 	end
 	field UFC 13 14
 		option UFC_USB			0
-		option UFC_MIPI_5675		1
+		option UFC_MIPI_IMX208		1
 	end
 end
 
@@ -150,7 +150,7 @@ chip soc/intel/alderlake
 				register "cio2_prt[0]" = "2"
 				register "cio2_prt[1]" = "1"
 				device generic 1 on
-					probe UFC UFC_MIPI_5675
+					probe UFC UFC_MIPI_IMX208
 				end
 			end
 		end
@@ -425,32 +425,29 @@ chip soc/intel/alderlake
 				device i2c 2C on end
 			end
 			chip drivers/intel/mipi_camera
-				register "acpi_hid" = ""OVTI5675""
+				register "acpi_hid" = ""INT3478""
 				register "acpi_uid" = "0"
 				register "acpi_name" = ""CAM1""
-				register "chip_name" = ""Ov 5675 Camera""
+				register "chip_name" = ""imx 208 Camera""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
-				register "ssdb.vcm_type" = "0x0C"
-				register "vcm_name" = ""VCM0""
-				register "num_freq_entries" = "1"
-				register "link_freq[0]" = "DEFAULT_LINK_FREQ"
+				register "num_freq_entries" = "2"
+				register "link_freq[0]" = "384 * MHz" # 384 MHz
+				register "link_freq[1]" = "96 * MHz" # 96 MHz
 				register "remote_name" = ""IPU0""
 
 				register "has_power_resource" = "1"
 				#Controls
-				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_2"
-				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
-
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_C3"  #PP3300_FCAM_X
 				register "gpio_panel.gpio[1].gpio_num" = "GPP_A17" #EN_UCAM_PWR
 				register "gpio_panel.gpio[2].gpio_num" = "GPP_F20" #reset
+				register "gpio_panel.gpio[3].gpio_num" = "GPP_H21" #CLK_EN
 
 				#_ON
 				register "on_seq.ops_cnt" = "5"
-				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
+				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(3, 0)"
 				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
 				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
 				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 5)"
@@ -458,13 +455,31 @@ chip soc/intel/alderlake
 
 				#_OFF
 				register "off_seq.ops_cnt" = "4"
-				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(3, 0)"
 				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 36 on
-					probe UFC UFC_MIPI_5675
+				device i2c 10 on
+					probe UFC UFC_MIPI_IMX208
+				end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""INT3499""
+				register "acpi_uid" = "1"
+				register "acpi_name" = ""NVM1""
+				register "chip_name" = ""GT24C16S""
+				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
+
+				register "pr0" = ""\\_SB.PCI0.I2C2.CAM1.PRIC""
+
+				register "nvm_size" = "0x2800"
+				register "nvm_pagesize" = "0x01"
+				register "nvm_readonly" = "0x01"
+				register "nvm_width" = "0x0E"
+
+				device i2c 50 on
+					probe UFC UFC_MIPI_IMX208
 				end
 			end
 		end

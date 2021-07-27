@@ -36,6 +36,8 @@ tests-y += cbfs-verification-no-sha512-test
 tests-y += cbfs-verification-has-sha512-test
 tests-y += cbfs-no-verification-no-sha512-test
 tests-y += cbfs-no-verification-has-sha512-test
+tests-y += cbfs-lookup-no-mcache-test
+tests-y += cbfs-lookup-has-mcache-test
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c
@@ -208,3 +210,24 @@ cbfs-no-verification-no-sha512-test-config += CONFIG_CBFS_VERIFICATION=0
 $(call copy-test,cbfs-verification-no-sha512-test,cbfs-no-verification-has-sha512-test)
 cbfs-no-verification-has-sha512-test-config += CONFIG_CBFS_VERIFICATION=0 \
 						VB2_SUPPORT_SHA512=1
+
+cbfs-lookup-no-mcache-test-srcs = tests/lib/cbfs-lookup-test.c \
+				tests/stubs/console.c \
+				tests/stubs/die.c \
+				tests/mock/cbfs_file_mock.c \
+				src/lib/cbfs.c \
+				src/commonlib/bsd/cbfs_private.c \
+				src/commonlib/bsd/cbfs_mcache.c \
+				src/commonlib/mem_pool.c \
+				src/commonlib/region.c
+cbfs-lookup-no-mcache-test-mocks += cbfs_get_boot_device \
+					cbfs_lookup \
+					cbfs_mcache_lookup \
+					mem_pool_alloc \
+					mem_pool_free
+cbfs-lookup-no-mcache-test-config += CONFIG_ARCH_X86=0 \
+				CONFIG_COLLECT_TIMESTAMPS=0 \
+				CONFIG_NO_CBFS_MCACHE=1
+
+$(call copy-test,cbfs-lookup-no-mcache-test,cbfs-lookup-has-mcache-test)
+cbfs-lookup-has-mcache-test-config += CONFIG_NO_CBFS_MCACHE=0

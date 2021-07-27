@@ -14,6 +14,14 @@
 	BE32(((be64) >> 32) & 0xFFFFFFFF), \
 	BE32(((be64) >> 0) & 0xFFFFFFFF))
 
+#define LE32(val32) EMPTY_WRAP(\
+	((val32) >> 0) & 0xff, ((val32) >> 8) & 0xff, \
+	((val32) >> 16) & 0xff, ((val32) >> 24) & 0xff)
+
+#define LE64(val64) EMPTY_WRAP( \
+	BE32(((val64) >> 0) & 0xFFFFFFFF), \
+	BE32(((val64) >> 32) & 0xFFFFFFFF))
+
 #define FILENAME_SIZE 16
 
 struct cbfs_test_file {
@@ -98,5 +106,10 @@ extern const u8 bad_hash[VB2_SHA256_DIGEST_SIZE];
 extern const struct cbfs_test_file file_no_hash;
 extern const struct cbfs_test_file file_valid_hash;
 extern const struct cbfs_test_file file_broken_hash;
+extern const struct cbfs_test_file test_file_1;
+extern const struct cbfs_test_file test_file_2;
+extern const struct cbfs_test_file test_file_int_1;
+extern const struct cbfs_test_file test_file_int_2;
+extern const struct cbfs_test_file test_file_int_3;
 
 #endif /* TESTS_LIB_CBFS_UTIL_H */

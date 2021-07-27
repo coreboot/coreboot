@@ -647,17 +647,27 @@ void fill_vr_domain_config(void *params,
 	vr_params->Psi4Enable[domain] = cfg->psi4enable;
 	vr_params->ImonSlope[domain] = cfg->imon_slope;
 	vr_params->ImonOffset[domain] = cfg->imon_offset;
+	printk(BIOS_INFO, "VR config[%d]:\n", domain);
+	printk(BIOS_INFO, "  Psi1Threshold:  %u\n", cfg->psi1threshold);
+	printk(BIOS_INFO, "  Psi2Threshold:  %u\n", cfg->psi2threshold);
+	printk(BIOS_INFO, "  Psi3Threshold:  %u\n", cfg->psi3threshold);
+	printk(BIOS_INFO, "  Psi3Enable:     %u\n", cfg->psi3enable);
+	printk(BIOS_INFO, "  Psi4Enable:     %u\n", cfg->psi4enable);
+	printk(BIOS_INFO, "  ImonSlope:      %u\n", cfg->imon_slope);
+	printk(BIOS_INFO, "  ImonOffset:     %u\n", cfg->imon_offset);
 
 	/* If board provided non-zero value, use it. */
 	if (cfg->voltage_limit)
 		vr_params->VrVoltageLimit[domain] = cfg->voltage_limit;
 	else
 		vr_params->VrVoltageLimit[domain] = get_sku_voltagelimit(domain);
+	printk(BIOS_INFO, "  VrVoltageLimit: %u\n", vr_params->VrVoltageLimit[domain]);
 
 	if (cfg->icc_max)
 		vr_params->IccMax[domain] = cfg->icc_max;
 	else
 		vr_params->IccMax[domain] = get_sku_icc_max(domain, tdp, mch_id, igd_id);
+	printk(BIOS_INFO, "  IccMax:         %u\n", vr_params->IccMax[domain]);
 
 	if (cfg->ac_loadline)
 		vr_params->AcLoadline[domain] = cfg->ac_loadline;
@@ -665,6 +675,7 @@ void fill_vr_domain_config(void *params,
 		vr_params->AcLoadline[domain] = load_table(vr_config_ll,
 							   ARRAY_SIZE(vr_config_ll),
 							   domain, tdp, mch_id);
+	printk(BIOS_INFO, "  AcLoadline:     %u\n", vr_params->AcLoadline[domain]);
 
 	if (cfg->dc_loadline)
 		vr_params->DcLoadline[domain] = cfg->dc_loadline;
@@ -672,8 +683,10 @@ void fill_vr_domain_config(void *params,
 		vr_params->DcLoadline[domain] = load_table(vr_config_ll,
 							   ARRAY_SIZE(vr_config_ll),
 							   domain, tdp, mch_id);
+	printk(BIOS_INFO, "  DcLoadline:     %u\n", vr_params->DcLoadline[domain]);
 
 	vr_params->TdcEnable[domain] = !cfg->tdc_disable;
+	printk(BIOS_INFO, "  TdcEnable:      %u\n", vr_params->TdcEnable[domain]);
 
 	if (cfg->tdc_powerlimit)
 		vr_params->TdcPowerLimit[domain] = cfg->tdc_powerlimit;
@@ -681,4 +694,5 @@ void fill_vr_domain_config(void *params,
 		vr_params->TdcPowerLimit[domain] = load_table(vr_config_tdc,
 							      ARRAY_SIZE(vr_config_tdc),
 							      domain, tdp, mch_id);
+	printk(BIOS_INFO, "  TdcPowerLimit:  %u\n", vr_params->TdcPowerLimit[domain]);
 }

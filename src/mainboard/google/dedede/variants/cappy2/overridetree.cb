@@ -4,10 +4,6 @@ chip soc/intel/jasperlake
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
-	#| GSPI0             | cr50 TPM. Early init is   |
-	#|                   | required to set up a BAR  |
-	#|                   | for TPM communication     |
-	#|                   | before memory is up       |
 	#| I2C0              | Trackpad                  |
 	#| I2C1              | Digitizer                 |
 	#| I2C2              | Touchscreen               |
@@ -15,10 +11,6 @@ chip soc/intel/jasperlake
 	#| I2C4              | Audio                     |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
-		.gspi[0] = {
-			.speed_mhz = 1,
-			.early_init = 1,
-		},
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
 		},
@@ -87,6 +79,11 @@ chip soc/intel/jasperlake
 				device i2c 1a on end
 			end
 		end #I2C 4
+		device pci 1f.0 on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end # Discrete TPM
+			end # chip drivers/pc80/tpm
+		end # PCH eSPI
 		device pci 1f.3 on
 		       chip drivers/generic/alc1015
 				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"

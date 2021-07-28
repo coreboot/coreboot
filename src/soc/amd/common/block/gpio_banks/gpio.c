@@ -160,6 +160,12 @@ uint16_t gpio_acpi_pin(gpio_t gpio)
 	return gpio;
 }
 
+static void set_gpio_mux(gpio_t gpio, uint8_t function)
+{
+	iomux_write8(gpio, function & AMD_GPIO_MUX_MASK);
+	iomux_read8(gpio); /* Flush posted write */
+}
+
 static void set_single_gpio(const struct soc_amd_gpio *g)
 {
 	static const struct soc_amd_event *gev_tbl;
@@ -168,8 +174,7 @@ static void set_single_gpio(const struct soc_amd_gpio *g)
 	const bool can_set_smi_flags = !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) &&
 			ENV_SEPARATE_VERSTAGE);
 
-	iomux_write8(g->gpio, g->function & AMD_GPIO_MUX_MASK);
-	iomux_read8(g->gpio); /* Flush posted write */
+	set_gpio_mux(g->gpio, g->function);
 
 	gpio_setbits32(g->gpio, PAD_CFG_MASK, g->control);
 	/* Clear interrupt and wake status (write 1-to-clear bits) */

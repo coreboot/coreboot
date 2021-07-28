@@ -70,6 +70,7 @@ extern uint8_t *MAYBE_CONST acpimmio_wdt;
 extern uint8_t *MAYBE_CONST acpimmio_hpet;
 extern uint8_t *MAYBE_CONST acpimmio_iomux;
 extern uint8_t *MAYBE_CONST acpimmio_misc;
+extern uint8_t *MAYBE_CONST acpimmio_remote_gpio;
 extern uint8_t *MAYBE_CONST acpimmio_dpvga;
 extern uint8_t *MAYBE_CONST acpimmio_gpio0;
 extern uint8_t *MAYBE_CONST acpimmio_xhci_pm;

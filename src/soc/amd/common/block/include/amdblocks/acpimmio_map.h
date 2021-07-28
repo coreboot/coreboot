@@ -62,6 +62,9 @@
  * +---------------------------------------------------------------------------+
  * |0x1000   Serial debug bus                                                  |
  * +---------------------------------------------------------------------------+
+ * |0x1200   remote GPIO configuration registers                               |
+ * |           * contains both GPIO and MUX registers                          |
+ * +---------------------------------------------------------------------------+
  * |0x1400   DP-VGA                                                            |
  * +---------------------------------------------------------------------------+
  * |0x1500   GPIO configuration registers bank 0                               |
@@ -117,6 +120,7 @@
 #define ACPIMMIO_HPET_BANK		0x0c00
 #define ACPIMMIO_IOMUX_BANK		0x0d00
 #define ACPIMMIO_MISC_BANK		0x0e00
+#define ACPIMMIO_REMOTE_GPIO_BANK	0x1200
 #define ACPIMMIO_DPVGA_BANK		0x1400
 #define ACPIMMIO_GPIO0_BANK		0x1500
 #define ACPIMMIO_XHCIPM_BANK		0x1c00

@@ -93,6 +93,7 @@ chip soc/amd/cezanne
 
 	register "usb_phy_custom" = "1"
 	register "usb_phy" = "{
+		/* Left USB C0 Port */
 		.Usb2PhyPort[0] = {
 			.compdstune = 3,
 			.sqrxtune = 3,
@@ -104,6 +105,7 @@ chip soc/amd/cezanne
 			.txhsxvtune = 3,
 			.txrestune = 1,
 		},
+		/* Left USB A0 Port or WWAN */
 		.Usb2PhyPort[1] = {
 			.compdstune = 3,
 			.sqrxtune = 3,
@@ -115,6 +117,7 @@ chip soc/amd/cezanne
 			.txhsxvtune = 3,
 			.txrestune = 1,
 		},
+		/* User facing camera */
 		.Usb2PhyPort[2] = {
 			.compdstune = 1,
 			.sqrxtune = 3,
@@ -126,6 +129,7 @@ chip soc/amd/cezanne
 			.txhsxvtune = 3,
 			.txrestune = 2,
 		},
+		/* World facing camera */
 		.Usb2PhyPort[3] = {
 			.compdstune = 1,
 			.sqrxtune = 3,
@@ -137,6 +141,7 @@ chip soc/amd/cezanne
 			.txhsxvtune = 3,
 			.txrestune = 2,
 		},
+		/* Right USB C1 Port */
 		.Usb2PhyPort[4] = {
 			.compdstune = 3,
 			.sqrxtune = 3,
@@ -148,6 +153,7 @@ chip soc/amd/cezanne
 			.txhsxvtune = 3,
 			.txrestune = 1,
 		},
+		/* Right USB A1 Port */
 		.Usb2PhyPort[5] = {
 			.compdstune = 5,
 			.sqrxtune = 3,
@@ -159,6 +165,7 @@ chip soc/amd/cezanne
 			.txhsxvtune = 3,
 			.txrestune = 1,
 		},
+		/* WiFi / Bluetooth */
 		.Usb2PhyPort[6] = {
 			.compdstune = 1,
 			.sqrxtune = 3,
@@ -170,6 +177,7 @@ chip soc/amd/cezanne
 			.txhsxvtune = 3,
 			.txrestune = 2,
 		},
+		/* Smart Card */
 		.Usb2PhyPort[7] = {
 			.compdstune = 1,
 			.sqrxtune = 3,
@@ -181,25 +189,28 @@ chip soc/amd/cezanne
 			.txhsxvtune = 3,
 			.txrestune = 2,
 		},
-
+		/* Left USB C0 Port */
 		.Usb3PhyPort[0] = {
 			.tx_term_ctrl=2,
 			.rx_term_ctrl=2,
 			.tx_vboost_lvl_en=1,
 			.tx_vboost_lvl=5,
 		},
+		/* Left USB A0 Port or WWAN */
 		.Usb3PhyPort[1] = {
 			.tx_term_ctrl=2,
 			.rx_term_ctrl=2,
 			.tx_vboost_lvl_en=1,
 			.tx_vboost_lvl=5,
 		},
+		/* Right USB C1 Port */
 		.Usb3PhyPort[2] = {
 			.tx_term_ctrl=2,
 			.rx_term_ctrl=2,
 			.tx_vboost_lvl_en=1,
 			.tx_vboost_lvl=5,
 		},
+		/* Right USB A1 Port */
 		.Usb3PhyPort[3] = {
 			.tx_term_ctrl=2,
 			.rx_term_ctrl=2,

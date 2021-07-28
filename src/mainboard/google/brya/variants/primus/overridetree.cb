@@ -168,6 +168,7 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
+		device ref pcie_rp6 off end #PCIE6 WWAN
 		device ref pcie_rp8 on
 			chip soc/intel/common/block/pcie/rtd3
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H13)"

@@ -184,6 +184,22 @@ static int rtc_failed(uint32_t gen_pmcon_b)
 	return !!(gen_pmcon_b & RTC_BATTERY_DEAD);
 }
 
+static void clear_rtc_failed(void)
+{
+	clrbits8(pmc_mmio_regs() + GEN_PMCON_B, RTC_BATTERY_DEAD);
+}
+
+static int check_rtc_failed(uint32_t gen_pmcon_b)
+{
+	const int failed = rtc_failed(gen_pmcon_b);
+	if (failed) {
+		clear_rtc_failed();
+		printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", failed);
+	}
+
+	return failed;
+}
+
 int soc_get_rtc_failed(void)
 {
 	const struct chipset_power_state *ps;
@@ -191,12 +207,12 @@ int soc_get_rtc_failed(void)
 	if (acpi_pm_state_for_rtc(&ps) < 0)
 		return 1;
 
-	return rtc_failed(ps->gen_pmcon_b);
+	return check_rtc_failed(ps->gen_pmcon_b);
 }
 
 int vbnv_cmos_failed(void)
 {
-	return rtc_failed(read32(pmc_mmio_regs() + GEN_PMCON_B));
+	return check_rtc_failed(read32(pmc_mmio_regs() + GEN_PMCON_B));
 }
 
 static inline int deep_s3_enabled(void)

@@ -469,7 +469,7 @@ static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_ap
 	/* Send INIT IPI to all but self. */
 	lapic_send_ipi(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_INIT, 0);
 
-	if (!CONFIG(X86_AMD_INIT_SIPI)) {
+	if (!CONFIG(X86_INIT_NEED_1_SIPI)) {
 		printk(BIOS_DEBUG, "Waiting for 10ms after sending INIT.\n");
 		mdelay(10);
 

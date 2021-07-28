@@ -73,7 +73,7 @@ config SOC_SPECIFIC_OPTIONS
 	select SSE2
 	select UDK_2017_BINDING
 	select X86_AMD_FIXED_MTRRS
-	select X86_AMD_INIT_SIPI
+	select X86_INIT_NEED_1_SIPI
 
 config ARCH_ALL_STAGES_X86
 	default n

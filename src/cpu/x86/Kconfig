@@ -164,15 +164,15 @@ config X86_AMD_FIXED_MTRRS
 	  This option informs the MTRR code to use the RdMem and WrMem fields
 	  in the fixed MTRR MSRs.
 
-config X86_AMD_INIT_SIPI
+config X86_INIT_NEED_1_SIPI
 	bool
 	default n
 	help
 	  This option limits the number of SIPI signals sent during during the
 	  common AP setup.  Intel documentation specifies an INIT SIPI SIPI
-	  sequence, however this doesn't work on some AMD platforms. These
-	  newer AMD platforms don't need the 10ms wait between INIT and SIPI,
-	  so skip that too to save some time.
+	  sequence, however this doesn't work on some AMD and Intel platforms.
+	  These newer AMD and Intel platforms don't need the 10ms wait between
+	  INIT and SIPI, so skip that too to save some time.
 
 config SOC_SETS_MSRS
 	bool

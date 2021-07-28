@@ -30,42 +30,6 @@
 #include <libpayload.h>
 #include <pci.h>
 
-u8 pci_read_config8(pcidev_t device, u16 reg)
-{
-	outl(device | (reg & ~3), 0xCF8);
-	return inb(0xCFC + (reg & 3));
-}
-
-u16 pci_read_config16(pcidev_t device, u16 reg)
-{
-	outl(device | (reg & ~3), 0xCF8);
-	return inw(0xCFC + (reg & 3));
-}
-
-u32 pci_read_config32(pcidev_t device, u16 reg)
-{
-	outl(device | (reg & ~3), 0xCF8);
-	return inl(0xCFC + (reg & 3));
-}
-
-void pci_write_config8(pcidev_t device, u16 reg, u8 val)
-{
-	outl(device | (reg & ~3), 0xCF8);
-	outb(val, 0xCFC + (reg & 3));
-}
-
-void pci_write_config16(pcidev_t device, u16 reg, u16 val)
-{
-	outl(device | (reg & ~3), 0xCF8);
-	outw(val, 0xCFC + (reg & 3));
-}
-
-void pci_write_config32(pcidev_t device, u16 reg, u32 val)
-{
-	outl(device | (reg & ~3), 0xCF8);
-	outl(val, 0xCFC + (reg & 3));
-}
-
 static int find_on_bus(int bus, unsigned short vid, unsigned short did,
 		       pcidev_t * dev)
 {

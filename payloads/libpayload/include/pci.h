@@ -31,6 +31,8 @@
 #define _PCI_H
 
 #include <arch/types.h>
+#include <stdint.h>
+
 typedef u32 pcidev_t;
 
 /* Device config space registers. */
@@ -100,13 +102,15 @@ typedef u32 pcidev_t;
 #define PCI_SLOT(_d) ((_d >> 11) & 0x1f)
 #define PCI_FUNC(_d) ((_d >> 8) & 0x7)
 
-u8 pci_read_config8(u32 device, u16 reg);
-u16 pci_read_config16(u32 device, u16 reg);
-u32 pci_read_config32(u32 device, u16 reg);
+uintptr_t pci_map_bus(pcidev_t dev);
 
-void pci_write_config8(u32 device, u16 reg, u8 val);
-void pci_write_config16(u32 device, u16 reg, u16 val);
-void pci_write_config32(u32 device, u16 reg, u32 val);
+u8 pci_read_config8(pcidev_t dev, u16 reg);
+u16 pci_read_config16(pcidev_t dev, u16 reg);
+u32 pci_read_config32(pcidev_t dev, u16 reg);
+
+void pci_write_config8(pcidev_t dev, u16 reg, u8 val);
+void pci_write_config16(pcidev_t dev, u16 reg, u16 val);
+void pci_write_config32(pcidev_t dev, u16 reg, u32 val);
 
 int pci_find_device(u16 vid, u16 did, pcidev_t *dev);
 u32 pci_read_resource(pcidev_t dev, int bar);

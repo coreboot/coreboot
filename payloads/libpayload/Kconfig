@@ -404,8 +404,14 @@ menu "Drivers"
 
 config PCI
 	bool "Support for PCI devices"
-	depends on ARCH_X86 # for now
-	default y
+	default y if ARCH_X86
+	default n
+
+config PCI_IO_OPS
+	bool "Support for PCI devices with port IO"
+	depends on PCI && IO_ADDRESS_SPACE
+	default y if ARCH_X86
+	default n
 
 config NVRAM
 	bool "Support for reading/writing NVRAM bytes"

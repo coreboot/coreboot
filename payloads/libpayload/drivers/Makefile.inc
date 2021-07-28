@@ -28,7 +28,13 @@
 ## SUCH DAMAGE.
 ##
 
-libc-$(CONFIG_LP_PCI) += pci.c
+libc-$(CONFIG_LP_PCI) += pci_ops.c
+
+ifeq ($(CONFIG_LP_PCI_IO_OPS),y)
+libc-$(CONFIG_LP_PCI) += pci_io_ops.c
+else
+libc-$(CONFIG_LP_PCI) += pci_map_bus_ops.c
+endif
 
 libc-$(CONFIG_LP_SPEAKER) += speaker.c
 

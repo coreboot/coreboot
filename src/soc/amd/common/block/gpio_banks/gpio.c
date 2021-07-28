@@ -24,7 +24,14 @@
 /* MMIO access of new-style GPIO bank configuration registers */
 static inline void *gpio_ctrl_ptr(gpio_t gpio_num)
 {
-	return acpimmio_gpio0 + gpio_num * sizeof(uint32_t);
+	if (SOC_GPIO_TOTAL_PINS < AMD_GPIO_FIRST_REMOTE_GPIO_NUMBER ||
+			/* Verstage on PSP would need to map acpimmio_remote_gpio */
+			(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && ENV_SEPARATE_VERSTAGE) ||
+			gpio_num < AMD_GPIO_FIRST_REMOTE_GPIO_NUMBER)
+		return acpimmio_gpio0 + gpio_num * sizeof(uint32_t);
+	else
+		return acpimmio_remote_gpio +
+			(gpio_num - AMD_GPIO_FIRST_REMOTE_GPIO_NUMBER) * sizeof(uint32_t);
 }
 
 static inline uint32_t gpio_read32(gpio_t gpio_num)
@@ -39,7 +46,14 @@ static inline void gpio_write32(gpio_t gpio_num, uint32_t value)
 
 static inline void *gpio_mux_ptr(gpio_t gpio_num)
 {
-	return acpimmio_iomux + gpio_num;
+	if (SOC_GPIO_TOTAL_PINS < AMD_GPIO_FIRST_REMOTE_GPIO_NUMBER ||
+			/* Verstage on PSP would need to map acpimmio_remote_gpio */
+			(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && ENV_SEPARATE_VERSTAGE) ||
+			gpio_num < AMD_GPIO_FIRST_REMOTE_GPIO_NUMBER)
+		return acpimmio_iomux + gpio_num;
+	else
+		return acpimmio_remote_gpio + AMD_GPIO_REMOTE_GPIO_MUX_OFFSET +
+			(gpio_num - AMD_GPIO_FIRST_REMOTE_GPIO_NUMBER);
 }
 
 static uint8_t get_gpio_mux(gpio_t gpio_num)

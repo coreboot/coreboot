@@ -37,7 +37,7 @@ static const struct pad_config gpio_table[] = {
 	/* A16 : USB_OC3# ==> USB_A0_OC_ODL */
 	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
 	/* A17 : DISP_MISCC ==> EN_FCAM_PWR */
-	PAD_CFG_GPO(GPP_A17, 1, DEEP),
+	PAD_CFG_GPO(GPP_A17, 0, DEEP),
 	/* A18 : DDSP_HPDB ==> HDMI_HPD */
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
 	/* A19 : DDSP_HPD1 ==> USB_C2_AUX_DC_P */
@@ -299,7 +299,7 @@ static const struct pad_config gpio_table[] = {
 	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_H20, 1, DEEP),
 	/* H21 : IMGCLKOUT2 ==>  UCAM_MCLK */
-	PAD_CFG_NF(GPP_H21, NONE, DEEP, NF1),
+	PAD_CFG_GPO(GPP_H21, 0, DEEP),
 	/* H22 : IMGCLKOUT3 ==> WCAM_MCLK_R */
 	PAD_CFG_NF(GPP_H22, NONE, DEEP, NF1),
 	/* H23 : SRCCLKREQ5# ==> WWAN_CLKREQ_ODL */

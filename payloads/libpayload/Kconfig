@@ -413,6 +413,11 @@ config PCI_IO_OPS
 	default y if ARCH_X86
 	default n
 
+config PCIE_MEDIATEK
+	bool "Support for PCIe devices on MediaTek platforms"
+	depends on PCI && !PCI_IO_OPS
+	default n
+
 config NVRAM
 	bool "Support for reading/writing NVRAM bytes"
 	depends on ARCH_X86 # for now

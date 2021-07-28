@@ -36,6 +36,8 @@ else
 libc-$(CONFIG_LP_PCI) += pci_map_bus_ops.c
 endif
 
+libc-$(CONFIG_LP_PCIE_MEDIATEK) += pcie_mediatek.c
+
 libc-$(CONFIG_LP_SPEAKER) += speaker.c
 
 libc-$(CONFIG_LP_8250_SERIAL_CONSOLE) += serial/8250.c serial/serial.c

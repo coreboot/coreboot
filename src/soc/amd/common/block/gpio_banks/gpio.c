@@ -15,7 +15,7 @@
 #include <assert.h>
 #include <string.h>
 
-static int get_gpio_gevent(uint8_t gpio, const struct soc_amd_event *table,
+static int get_gpio_gevent(gpio_t gpio, const struct soc_amd_event *table,
 				size_t items)
 {
 	int i;

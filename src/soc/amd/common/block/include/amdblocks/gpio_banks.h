@@ -6,15 +6,17 @@
 #include <types.h>
 #include "gpio_defs.h"
 
+typedef uint32_t gpio_t;
+
 struct soc_amd_gpio {
-	uint8_t gpio;
+	gpio_t gpio;
 	uint8_t function;
 	uint32_t control;
 	uint32_t flags;
 };
 
 struct soc_amd_event {
-	uint8_t gpio;
+	gpio_t gpio;
 	uint8_t event;
 };
 
@@ -24,7 +26,7 @@ struct gpio_wake_state {
 	/* Number of wake_gpio with a valid setting. */
 	uint32_t num_valid_wake_gpios;
 	/* GPIO index number that caused a wake. */
-	uint8_t wake_gpios[16];
+	gpio_t wake_gpios[16];
 };
 
 /* Fill gpio_wake_state object for future event reporting. */
@@ -51,8 +53,6 @@ static inline bool is_gpio_event_active_low(uint32_t flags)
 {
 	return (flags & GPIO_FLAG_EVENT_ACTIVE_MASK) == GPIO_FLAG_EVENT_ACTIVE_LOW;
 }
-
-typedef uint32_t gpio_t;
 
 /*
  * gpio_configure_pads_with_override accepts as input two GPIO tables:

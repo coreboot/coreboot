@@ -28,6 +28,8 @@ chip soc/intel/jasperlake
 		},
 	}"
 
+	register "disable_external_bypass_vr" = "1"    # Does not support external vnn power rail
+
 	device domain 0 on
 		device pci 15.0 on
 			chip drivers/i2c/hid

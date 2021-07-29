@@ -44,7 +44,7 @@ void configure_port80_routing_early(void)
 void fch_pre_init(void)
 {
 	lpc_early_init();
-
+	fch_spi_early_init();
 	enable_acpimmio_decode_pm04();
 	fch_smbus_init();
 	fch_enable_cf9_io();

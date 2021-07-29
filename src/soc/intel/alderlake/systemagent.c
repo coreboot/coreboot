@@ -87,6 +87,9 @@ void soc_systemagent_init(struct device *dev)
 	case PCI_DEVICE_ID_INTEL_ADL_M_ID_1:
 		soc_config = &config->power_limits_config[ADL_M_POWER_LIMITS_282_CORE];
 		break;
+	case PCI_DEVICE_ID_INTEL_ADL_M_ID_2:
+		soc_config = &config->power_limits_config[ADL_M_POWER_LIMITS_242_CORE];
+		break;
 	default:
 		printk(BIOS_ERR, "ADL: unknown SA ID: 0x%4x, skipping power limits configuration\n",
 			sa_pci_id);

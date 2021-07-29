@@ -77,3 +77,7 @@ config BOARD_GOOGLE_MAKOMO
 config BOARD_GOOGLE_MUNNA
 	bool "->  Munna"
 	select BOARD_GOOGLE_JACUZZI_COMMON
+
+config BOARD_GOOGLE_PICO
+	bool "->  Pico"
+	select BOARD_GOOGLE_JACUZZI_COMMON

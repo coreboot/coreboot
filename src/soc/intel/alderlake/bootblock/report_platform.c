@@ -33,7 +33,6 @@ static struct {
 	const char *name;
 } mch_table[] = {
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_1, "Alderlake-P" },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_2, "Alderlake-P" },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, "Alderlake-P" },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_4, "Alderlake-P" },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, "Alderlake-P" },
@@ -42,6 +41,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_8, "Alderlake-P" },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_9, "Alderlake-P" },
 	{ PCI_DEVICE_ID_INTEL_ADL_M_ID_1, "Alderlake-M" },
+	{ PCI_DEVICE_ID_INTEL_ADL_M_ID_2, "Alderlake-M" },
 };
 
 static struct {

@@ -132,27 +132,21 @@ typedef enum {
 //
 // Matches MrcDdrType enum in MRC
 //
-#ifndef MRC_DDR_TYPE_DDR4
-#define MRC_DDR_TYPE_DDR4     0
+#ifndef MRC_DDR_TYPE_DDR5
+#define MRC_DDR_TYPE_DDR5     1
 #endif
-#ifndef MRC_DDR_TYPE_DDR3
-#define MRC_DDR_TYPE_DDR3     1
-#endif
-#ifndef MRC_DDR_TYPE_LPDDR3
-#define MRC_DDR_TYPE_LPDDR3   2
+#ifndef MRC_DDR_TYPE_LPDDR5
+#define MRC_DDR_TYPE_LPDDR5   2
 #endif
 #ifndef MRC_DDR_TYPE_LPDDR4
 #define MRC_DDR_TYPE_LPDDR4   3
 #endif
-#ifndef MRC_DDR_TYPE_WIO2
-#define MRC_DDR_TYPE_WIO2     4
-#endif
 #ifndef MRC_DDR_TYPE_UNKNOWN
-#define MRC_DDR_TYPE_UNKNOWN  5
+#define MRC_DDR_TYPE_UNKNOWN  4
 #endif
 
-#define MAX_PROFILE_NUM     4 // number of memory profiles supported
-#define MAX_XMP_PROFILE_NUM 2 // number of XMP profiles supported
+#define MAX_PROFILE_NUM     7 // number of memory profiles supported
+#define MAX_XMP_PROFILE_NUM 5 // number of XMP profiles supported
 
 #define MAX_TRACE_REGION             5
 #define MAX_TRACE_CACHE_TYPE         2
@@ -262,9 +256,18 @@ typedef struct {
   SiMrcVersion      Version;
   BOOLEAN           EccSupport;
   UINT8             MemoryProfile;
+  UINT8             IsDMBRunning;                      ///< Memory Trained with Dynamic Memory Boost (DMB)
   UINT32            TotalPhysicalMemorySize;
   UINT32            DefaultXmptCK[MAX_XMP_PROFILE_NUM];///< Stores the tCK value read from SPD XMP profiles if they exist.
-  UINT8             XmpProfileEnable;                  ///< If XMP capable DIMMs are detected, this will indicate which XMP Profiles are common among all DIMMs.
+  ///
+  /// Set of bit flags showing XMP and User Profile capability status for the DIMMs detected in system. For each bit, 1 is supported, 0 is unsupported.
+  /// Bit 0: XMP Profile 1 capability status
+  /// Bit 1: XMP Profile 2 capability status
+  /// Bit 2: XMP Profile 3 capability status
+  /// Bit 3: User Profile 4 capability status
+  /// Bit 4: User Profile 5 capability status
+  ///
+  UINT8             XmpProfileEnable;
   UINT8             XmpConfigWarning;                  ///< If XMP capable DIMMs config support only 1DPC, but 2DPC is installed
   UINT8             Ratio;                             ///< DDR Frequency Ratio, Max Value 255
   UINT8             RefClk;

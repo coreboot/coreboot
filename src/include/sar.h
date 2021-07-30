@@ -4,42 +4,54 @@
 
 #include <stdint.h>
 
-#define NUM_SAR_LIMITS 4
-#define BYTES_PER_SAR_LIMIT 10
-enum {
-	SAR_FCC,
-	SAR_EUROPE_JAPAN,
-	SAR_REST_OF_WORLD,
-	SAR_NUM_WGDS_GROUPS
-};
+#define MAX_DSAR_SET_COUNT	3
+#define MAX_GEO_OFFSET_REVISION	3
+#define MAX_PROFILE_COUNT	2
+#define MAX_SAR_REVISION	2
+#define REVISION_SIZE		1
+#define SAR_REV0_CHAINS_COUNT	2
+#define SAR_REV0_SUBBANDS_COUNT	5
+#define SAR_FILE_REVISION	1
+#define SAR_STR_PREFIX		"$SAR"
+#define SAR_STR_PREFIX_SIZE	4
 
-struct wifi_sar_delta_table {
+struct geo_profile {
+	uint8_t revision;
+	uint8_t chains_count;
+	uint8_t bands_count;
+	uint8_t wgds_table[0];
+} __packed;
+
+struct sar_profile {
+	uint8_t revision;
+	uint8_t dsar_set_count;
+	uint8_t chains_count;
+	uint8_t subbands_count;
+	uint8_t sar_table[0];
+} __packed;
+
+struct sar_header {
+	char marker[SAR_STR_PREFIX_SIZE];
 	uint8_t version;
-	struct {
-		uint8_t power_max_2400mhz;
-		uint8_t power_chain_a_2400mhz;
-		uint8_t power_chain_b_2400mhz;
-		uint8_t power_max_5200mhz;
-		uint8_t power_chain_a_5200mhz;
-		uint8_t power_chain_b_5200mhz;
-	} __packed group[SAR_NUM_WGDS_GROUPS];
+	uint16_t offsets[0];
 } __packed;
 
 /* Wifi SAR limit table structure */
-struct wifi_sar_limits {
-	/* Total 4 SAR limit sets, each has 10 bytes */
-	uint8_t sar_limit[NUM_SAR_LIMITS][BYTES_PER_SAR_LIMIT];
-	struct wifi_sar_delta_table wgds;
-} __packed;
+union wifi_sar_limits {
+	struct {
+		struct sar_profile *sar;
+		struct geo_profile *wgds;
+	};
+	void *profile[MAX_PROFILE_COUNT];
+};
 
 /*
- * Retrieve the SAR limits data from VPD and decode it.
+ * Retrieve the wifi ACPI configuration data from CBFS and decode it
  * sar_limits:	Pointer to wifi_sar_limits where the resulted data is stored
  *
- * Returns: 0 on success, -1 on errors (The VPD entry doesn't exist, or the
- * VPD entry contains non-heximal value.)
+ * Returns: 0 on success, -1 on errors (The .hex file doesn't exist, or the decode failed)
  */
-int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits);
+int get_wifi_sar_limits(union wifi_sar_limits *sar_limits);
 
 #define WIFI_SAR_CBFS_DEFAULT_FILENAME	"wifi_sar_defaults.hex"
 

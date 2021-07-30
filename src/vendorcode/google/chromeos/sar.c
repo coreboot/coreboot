@@ -9,79 +9,241 @@
 #include <string.h>
 #include <types.h>
 
+#define LEGACY_BYTES_PER_GEO_OFFSET	6
+#define LEGACY_BYTES_PER_SAR_LIMIT	10
+#define LEGACY_NUM_SAR_LIMITS		4
+#define LEGACY_SAR_BIN_SIZE		81
+#define LEGACY_SAR_WGDS_BIN_SIZE	119
+#define LEGACY_SAR_NUM_WGDS_GROUPS	3
+
+static uint8_t *wifi_hextostr(const char *sar_str, size_t str_len, size_t *sar_bin_len,
+			      bool legacy_hex_format)
+{
+	uint8_t *sar_bin = NULL;
+	size_t bin_len;
+
+	if (!legacy_hex_format) {
+		sar_bin = malloc(str_len);
+		if (!sar_bin) {
+			printk(BIOS_ERR, "ERROR: Failed to allocate space for SAR binary!\n");
+			return NULL;
+		}
+
+		memcpy(sar_bin, sar_str, str_len);
+		*sar_bin_len = str_len;
+	} else {
+		bin_len = ((str_len - 1) / 2);
+		sar_bin = malloc(bin_len);
+		if (!sar_bin) {
+			printk(BIOS_ERR, "ERROR: Failed to allocate space for SAR binary!\n");
+			return NULL;
+		}
+
+		if (hexstrtobin(sar_str, (uint8_t *)sar_bin, bin_len) != bin_len) {
+			printk(BIOS_ERR, "ERROR: sar_limits contains non-hex value!\n");
+			free(sar_bin);
+			return NULL;
+		}
+
+		*sar_bin_len = bin_len;
+	}
+
+	return sar_bin;
+}
+
+static int sar_table_size(const struct sar_profile *sar)
+{
+	if (sar == NULL)
+		return 0;
+
+	return (sizeof(struct sar_profile) + ((1 + sar->dsar_set_count) * sar->chains_count *
+					      sar->subbands_count));
+}
+
+static int wgds_table_size(const struct geo_profile *geo)
+{
+	if (geo == NULL)
+		return 0;
+
+	return sizeof(struct geo_profile) + (geo->chains_count * geo->bands_count);
+}
+
+static bool valid_legacy_length(size_t bin_len)
+{
+	if (bin_len == LEGACY_SAR_WGDS_BIN_SIZE)
+		return true;
+
+	if (bin_len == LEGACY_SAR_BIN_SIZE && !CONFIG(GEO_SAR_ENABLE))
+		return true;
+
+	return false;
+}
+
+static int sar_header_size(void)
+{
+	return (MAX_PROFILE_COUNT * sizeof(uint16_t)) + sizeof(struct sar_header);
+}
+
+static int fill_wifi_sar_limits(union wifi_sar_limits *sar_limits, const uint8_t *sar_bin,
+				size_t sar_bin_size)
+{
+	struct sar_header *header;
+	size_t i = 0, expected_sar_bin_size;
+	size_t header_size = sar_header_size();
+
+	if (sar_bin_size < header_size) {
+		printk(BIOS_ERR, "ERROR: Invalid SAR format!\n");
+		return -1;
+	}
+
+	header = (struct sar_header *)sar_bin;
+
+	if (header->version != SAR_FILE_REVISION) {
+		printk(BIOS_ERR, "ERROR: Invalid SAR file version: %d!\n", header->version);
+		return -1;
+	}
+
+	for (i = 0; i < MAX_PROFILE_COUNT; i++) {
+		if (header->offsets[i] > sar_bin_size) {
+			printk(BIOS_ERR, "ERROR: Offset is outside the file size!\n");
+			return -1;
+		}
+
+		if (header->offsets[i])
+			sar_limits->profile[i] = (void *) (sar_bin + header->offsets[i]);
+	}
+
+	expected_sar_bin_size = header_size;
+	expected_sar_bin_size += sar_table_size(sar_limits->sar);
+	expected_sar_bin_size += wgds_table_size(sar_limits->wgds);
+
+	if (sar_bin_size != expected_sar_bin_size) {
+		printk(BIOS_ERR, "ERROR: Invalid SAR size, expected: %ld, obtained: %ld\n",
+		       expected_sar_bin_size, sar_bin_size);
+		return -1;
+	}
+
+	return 0;
+}
+
+static int fill_wifi_sar_limits_legacy(union wifi_sar_limits *sar_limits,
+				       const uint8_t *sar_bin, size_t sar_bin_size)
+{
+	uint8_t *new_sar_bin;
+	size_t size = sar_bin_size + sizeof(struct sar_profile);
+
+	if (CONFIG(GEO_SAR_ENABLE))
+		size += sizeof(struct geo_profile);
+
+	new_sar_bin = malloc(size);
+	if (!new_sar_bin) {
+		printk(BIOS_ERR, "ERROR: Failed to allocate space for SAR binary!\n");
+		return -1;
+	}
+
+	sar_limits->sar = (struct sar_profile *) new_sar_bin;
+	sar_limits->sar->revision = 0;
+	sar_limits->sar->dsar_set_count = CONFIG_DSAR_SET_NUM;
+	sar_limits->sar->chains_count = SAR_REV0_CHAINS_COUNT;
+	sar_limits->sar->subbands_count = SAR_REV0_SUBBANDS_COUNT;
+	memcpy(&sar_limits->sar->sar_table, sar_bin,
+	       LEGACY_BYTES_PER_SAR_LIMIT * LEGACY_NUM_SAR_LIMITS);
+
+	if (!CONFIG(GEO_SAR_ENABLE))
+		return 0;
+
+	sar_limits->wgds = (struct geo_profile *)(new_sar_bin +
+						  sar_table_size(sar_limits->sar));
+	sar_limits->wgds->revision = 0;
+	sar_limits->wgds->chains_count = LEGACY_SAR_NUM_WGDS_GROUPS;
+	sar_limits->wgds->bands_count = LEGACY_BYTES_PER_GEO_OFFSET;
+	memcpy(&sar_limits->wgds->wgds_table,
+	       sar_bin + LEGACY_BYTES_PER_SAR_LIMIT * LEGACY_NUM_SAR_LIMITS + REVISION_SIZE,
+	       LEGACY_BYTES_PER_GEO_OFFSET * LEGACY_SAR_NUM_WGDS_GROUPS);
+
+	return 0;
+}
+
 /*
  * Retrieve WiFi SAR limits data from CBFS and decode it
- * WiFi SAR data is expected in the format: [<WRDD><EWRD>][WGDS]
+ * Legacy WiFi SAR data is expected in the format: [<WRDD><EWRD>][WGDS]
  *
  * [<WRDD><EWRD>] = NUM_SAR_LIMITS * BYTES_PER_SAR_LIMIT bytes.
- * [WGDS]=[WGDS_VERSION][WGDS_DATA]
+ * [WGDS]=[WGDS_REVISION][WGDS_DATA]
  *
- * For [WGDS_VERSION] 0x00,
+ * Current SAR configuration data is expected in the format:
+ * "$SAR" Marker
+ * Version
+ * Offset count
+ * Offsets
+ * [SAR_REVISION,DSAR_SET_COUNT,CHAINS_COUNT,SUBBANDS_COUNT <WRDD>[EWRD]]
+ * [WGDS_REVISION,CHAINS_COUNT,SUBBANDS_COUNT<WGDS_DATA>]
+ *
+ * The configuration data will always have the revision added in the file for each of the
+ * block, based on the revision number and validity, size of the specific block will be
+ * calculated.
+ *
  * [WGDS_DATA] = [GROUP#0][GROUP#1][GROUP#2]
  *
  * [GROUP#<i>] =
- *      [2.4Ghz – Max Allowed][2.4Ghz – Chain A Offset]
- *      [2.4Ghz – Chain B Offset][5Ghz – Max Allowed]
- *      [5Ghz – Chain A Offset][5Ghz – Chain B Offset]
+ *	Supported by Revision 0, 1 and 2
+ *              [2.4Ghz - Max Allowed][2.4Ghz - Chain A Offset][2.4Ghz - Chain B Offset]
+ *              [5Ghz - Max Allowed][5Ghz - Chain A Offset][5Ghz - Chain B Offset]
+ *	Supported by Revision 1 and 2
+ *              [6Ghz - Max Allowed][6Ghz - Chain A Offset][6Ghz - Chain B Offset]
  *
  * [GROUP#0] is for FCC
  * [GROUP#1] is for Europe/Japan
  * [GROUP#2] is for ROW
-*/
-int get_wifi_sar_limits(struct wifi_sar_limits *sar_limits)
+ */
+int get_wifi_sar_limits(union wifi_sar_limits *sar_limits)
 {
 	const char *filename;
-	size_t sar_str_len, sar_bin_len;
+	size_t sar_bin_len, sar_str_len;
+	uint8_t *sar_bin;
 	char *sar_str;
 	int ret = -1;
+	bool legacy_hex_format = false;
 
 	filename = get_wifi_sar_cbfs_filename();
 	if (filename == NULL) {
-		printk(BIOS_DEBUG, "Filename missing for CBFS SAR file!\n");
+		printk(BIOS_ERR, "ERROR: Filename missing for CBFS SAR file!\n");
 		return ret;
 	}
 
-	/*
-	 * If GEO_SAR_ENABLE is not selected, SAR file does not contain
-	 * delta table settings.
-	 */
-	if (CONFIG(GEO_SAR_ENABLE))
-		sar_bin_len = sizeof(struct wifi_sar_limits);
-	else
-		sar_bin_len = sizeof(struct wifi_sar_limits) -
-				sizeof(struct wifi_sar_delta_table);
-
-	/*
-	 * Each hex digit is represented as a character in CBFS SAR file. Thus,
-	 * the SAR file is double the size of its binary buffer equivalent.
-	 * Hence, the buffer size allocated for SAR file is:
-	 * `2 * sar_bin_len + 1`
-	 * 1 additional byte is allocated to store the terminating '\0'.
-	 */
-	sar_str_len = 2 * sar_bin_len + 1;
-	sar_str = malloc(sar_str_len);
-
+	sar_str = cbfs_map(filename, &sar_str_len);
 	if (!sar_str) {
-		printk(BIOS_ERR, "Failed to allocate space for SAR string!\n");
+		printk(BIOS_ERR, "ERROR: Failed to get the %s file size!\n", filename);
 		return ret;
 	}
 
-	printk(BIOS_DEBUG, "Checking CBFS for default SAR values\n");
+	if (strncmp(sar_str, SAR_STR_PREFIX, SAR_STR_PREFIX_SIZE) == 0) {
+		legacy_hex_format = false;
+	} else if (valid_legacy_length(sar_str_len)) {
+		legacy_hex_format = true;
+	} else {
+		printk(BIOS_ERR, "ERROR: Invalid SAR format!\n");
+		goto error;
+	}
 
-	if (cbfs_load(filename, sar_str, sar_str_len) != sar_str_len) {
-		printk(BIOS_ERR, "%s has bad len in CBFS\n", filename);
-		goto done;
+	sar_bin = wifi_hextostr(sar_str, sar_str_len, &sar_bin_len, legacy_hex_format);
+	if (sar_bin == NULL) {
+		printk(BIOS_ERR, "ERROR: Failed to parse SAR file %s\n", filename);
+		goto error;
 	}
 
 	memset(sar_limits, 0, sizeof(*sar_limits));
-	if (hexstrtobin(sar_str, (uint8_t *)sar_limits, sar_bin_len) != sar_bin_len) {
-		printk(BIOS_ERR, "Error: wifi_sar contains non-hex value!\n");
-		goto done;
+	if (legacy_hex_format) {
+		ret = fill_wifi_sar_limits_legacy(sar_limits, sar_bin, sar_bin_len);
+		free(sar_bin);
+	} else {
+		ret = fill_wifi_sar_limits(sar_limits, sar_bin, sar_bin_len);
+		if (ret < 0)
+			free(sar_bin);
 	}
 
-	ret = 0;
-done:
-	free(sar_str);
+error:
+	cbfs_unmap(sar_str);
 	return ret;
 }
 

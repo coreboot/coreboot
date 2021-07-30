@@ -88,6 +88,8 @@
 #define IA32_HWP_CAPABILITIES		0x771
 #define IA32_HWP_REQUEST		0x774
 #define IA32_HWP_STATUS			0x777
+#define IA32_SF_QOS_INFO		0xc87
+#define  IA32_SF_WAY_COUNT_MASK		0x3f
 #define IA32_PQR_ASSOC			0xc8f
 /* MSR bits 33:32 encode slot number 0-3 */
 #define  IA32_PQR_ASSOC_MASK		(1 << 0 | 1 << 1)

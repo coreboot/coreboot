@@ -499,6 +499,7 @@ find_llc_subleaf:
 	 * of RW data.
 	 */
 	movl	$0x01, %eax
+	mov	%eax, %edx /* back up data_ways in edx */
 	cmp	$CONFIG_DCACHE_RAM_SIZE, %ecx
 	jnc	set_eviction_mask
 
@@ -508,6 +509,7 @@ find_llc_subleaf:
 	 */
 	mov	$CONFIG_DCACHE_RAM_SIZE, %eax
 	div	%ecx
+	mov	%eax, %edx /* back up data_ways in edx */
 	mov	%eax, %ecx
 	movl	$0x01, %eax
 	shl	%cl, %eax
@@ -517,6 +519,29 @@ set_eviction_mask:
 	mov	%ebx, %edi /* back up number of ways */
 	mov	%eax, %esi /* back up the non-eviction mask */
 #if CONFIG(CAR_HAS_SF_MASKS)
+	mov	%edx, %eax /* restore data_ways in eax */
+	/*
+	 * Calculate SF masks 2:
+	 * 1. if CONFIG_SF_MASK_2WAYS_PER_BIT: data_ways = data_ways / 2
+	 * 2. Program MSR 0x1892 Non-Eviction Mask #2
+	 *    IA32_CR_SF_QOS_MASK_2 = ((1 << data_ways) - 1)
+	 */
+#if CONFIG(SF_MASK_2WAYS_PER_BIT)
+	cmp	$0x01, %eax /* Skip Step 1 if data_ways = 1 */
+	jz	program_sf2
+	movl	$0x01, %ecx /* Step 1 */
+	shr	%cl, %eax
+#endif
+	/* Step 2 */
+	mov	%eax, %ecx
+	movl	$0x01, %eax
+	shl	%cl, %eax
+	subl	$0x01, %eax
+program_sf2:
+	xorl	%edx, %edx
+	mov	$IA32_CR_SF_QOS_MASK_2, %ecx
+	wrmsr
+
 	/*
 	 * SF mask is programmed with the double number of bits than
 	 * the number of ways

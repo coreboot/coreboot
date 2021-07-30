@@ -18,7 +18,7 @@
 static int get_gpio_gevent(gpio_t gpio, const struct soc_amd_event *table,
 				size_t items)
 {
-	int i;
+	size_t i;
 
 	for (i = 0; i < items; i++) {
 		if ((table + i)->gpio == gpio)

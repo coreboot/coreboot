@@ -16,17 +16,17 @@
 #include <string.h>
 
 /* MMIO access of new-style GPIO bank configuration registers */
-static inline void *gpio_ctrl_ptr(uint8_t gpio_num)
+static inline void *gpio_ctrl_ptr(gpio_t gpio_num)
 {
 	return acpimmio_gpio0 + gpio_num * sizeof(uint32_t);
 }
 
-static inline uint32_t gpio_read32(uint8_t gpio_num)
+static inline uint32_t gpio_read32(gpio_t gpio_num)
 {
 	return read32(gpio_ctrl_ptr(gpio_num));
 }
 
-static inline void gpio_write32(uint8_t gpio_num, uint32_t value)
+static inline void gpio_write32(gpio_t gpio_num, uint32_t value)
 {
 	write32(gpio_ctrl_ptr(gpio_num), value);
 }
@@ -121,13 +121,13 @@ static void gpio_or32(gpio_t gpio_num, uint32_t or)
 
 static void master_switch_clr(uint32_t mask)
 {
-	const uint8_t master_reg = GPIO_MASTER_SWITCH / sizeof(uint32_t);
+	const gpio_t master_reg = GPIO_MASTER_SWITCH / sizeof(uint32_t);
 	gpio_and32(master_reg, ~mask);
 }
 
 static void master_switch_set(uint32_t or)
 {
-	const uint8_t master_reg = GPIO_MASTER_SWITCH / sizeof(uint32_t);
+	const gpio_t master_reg = GPIO_MASTER_SWITCH / sizeof(uint32_t);
 	gpio_or32(master_reg, or);
 }
 
@@ -318,9 +318,9 @@ void gpio_configure_pads_with_override(const struct soc_amd_gpio *base_cfg,
 	}
 }
 
-static void check_and_add_wake_gpio(int begin, int end, struct gpio_wake_state *state)
+static void check_and_add_wake_gpio(gpio_t begin, gpio_t end, struct gpio_wake_state *state)
 {
-	int i;
+	gpio_t i;
 	uint32_t reg;
 
 	for (i = begin; i < end; i++) {
@@ -334,12 +334,12 @@ static void check_and_add_wake_gpio(int begin, int end, struct gpio_wake_state *
 	}
 }
 
-static void check_gpios(uint32_t wake_stat, int bit_limit, int gpio_base,
+static void check_gpios(uint32_t wake_stat, int bit_limit, gpio_t gpio_base,
 			struct gpio_wake_state *state)
 {
 	int i;
-	int begin;
-	int end;
+	gpio_t begin;
+	gpio_t end;
 
 	for (i = 0; i < bit_limit; i++) {
 		if (!(wake_stat & BIT(i)))
@@ -357,9 +357,9 @@ static void check_gpios(uint32_t wake_stat, int bit_limit, int gpio_base,
 void gpio_fill_wake_state(struct gpio_wake_state *state)
 {
 	/* Turn the wake registers into "gpio" index to conform to existing API. */
-	const uint8_t stat0 = GPIO_WAKE_STAT_0 / sizeof(uint32_t);
-	const uint8_t stat1 = GPIO_WAKE_STAT_1 / sizeof(uint32_t);
-	const uint8_t control_switch = GPIO_MASTER_SWITCH / sizeof(uint32_t);
+	const gpio_t stat0 = GPIO_WAKE_STAT_0 / sizeof(uint32_t);
+	const gpio_t stat1 = GPIO_WAKE_STAT_1 / sizeof(uint32_t);
+	const gpio_t control_switch = GPIO_MASTER_SWITCH / sizeof(uint32_t);
 
 	memset(state, 0, sizeof(*state));
 

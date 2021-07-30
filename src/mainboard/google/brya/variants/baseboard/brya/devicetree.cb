@@ -3,6 +3,8 @@ chip soc/intel/alderlake
 		device lapic 0 on end
 	end
 
+	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
+
 	# GPE configuration
 	register "pmc_gpe0_dw0" = "GPP_A"
 	register "pmc_gpe0_dw1" = "GPP_E"

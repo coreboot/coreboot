@@ -8,6 +8,7 @@
 
 #include <console/console.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
@@ -130,4 +131,60 @@ void soc_init_cpus(struct bus *cpu_bus)
 
 	/* Thermal throttle activation offset */
 	configure_tcc_thermal_target();
+}
+
+enum adl_cpu_type get_adl_cpu_type(void)
+{
+	const uint16_t adl_m_mch_ids[] = {
+		PCI_DEVICE_ID_INTEL_ADL_M_ID_1,
+		PCI_DEVICE_ID_INTEL_ADL_M_ID_2,
+	};
+	const uint16_t adl_p_mch_ids[] = {
+		PCI_DEVICE_ID_INTEL_ADL_P_ID_1,
+		PCI_DEVICE_ID_INTEL_ADL_P_ID_3,
+		PCI_DEVICE_ID_INTEL_ADL_P_ID_4,
+		PCI_DEVICE_ID_INTEL_ADL_P_ID_5,
+		PCI_DEVICE_ID_INTEL_ADL_P_ID_6,
+		PCI_DEVICE_ID_INTEL_ADL_P_ID_7,
+		PCI_DEVICE_ID_INTEL_ADL_P_ID_8,
+		PCI_DEVICE_ID_INTEL_ADL_P_ID_9,
+	};
+	const uint16_t adl_s_mch_ids[] = {
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_1,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_2,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_3,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_4,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_5,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_6,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_7,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_8,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_9,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_10,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_11,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_12,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_13,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_14,
+		PCI_DEVICE_ID_INTEL_ADL_S_ID_15,
+	};
+
+	const uint16_t mchid = pci_s_read_config16(PCI_DEV(0, PCI_SLOT(SA_DEVFN_ROOT),
+							   PCI_FUNC(SA_DEVFN_ROOT)),
+						   PCI_DEVICE_ID);
+
+	for (size_t i = 0; i < ARRAY_SIZE(adl_p_mch_ids); i++) {
+		if (adl_p_mch_ids[i] == mchid)
+			return ADL_P;
+	}
+
+	for (size_t i = 0; i < ARRAY_SIZE(adl_m_mch_ids); i++) {
+		if (adl_m_mch_ids[i] == mchid)
+			return ADL_M;
+	}
+
+	for (size_t i = 0; i < ARRAY_SIZE(adl_s_mch_ids); i++) {
+		if (adl_s_mch_ids[i] == mchid)
+			return ADL_S;
+	}
+
+	return ADL_UNKNOWN;
 }

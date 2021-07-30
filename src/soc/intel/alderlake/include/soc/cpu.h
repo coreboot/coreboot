@@ -19,4 +19,13 @@
 #define C9_POWER	0xc8
 #define C10_POWER	0xc8
 
+enum adl_cpu_type {
+	ADL_UNKNOWN,
+	ADL_M,
+	ADL_P,
+	ADL_S,
+};
+
+enum adl_cpu_type get_adl_cpu_type(void);
+
 #endif

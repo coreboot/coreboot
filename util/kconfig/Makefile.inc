@@ -6,6 +6,8 @@ KBUILD_KCONFIG ?= src/Kconfig
 export LC_ALL=C
 export LANG=C
 
+DEFCONFIG ?= defconfig
+
 # Include original Makefile, with just enough edits to work for us
 $(objk)/Makefile.real: $(dir $(lastword $(MAKEFILE_LIST)))Makefile
 	mkdir -p $(objk)

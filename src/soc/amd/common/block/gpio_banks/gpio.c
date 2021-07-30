@@ -334,10 +334,10 @@ static void check_and_add_wake_gpio(gpio_t begin, gpio_t end, struct gpio_wake_s
 	}
 }
 
-static void check_gpios(uint32_t wake_stat, int bit_limit, gpio_t gpio_base,
+static void check_gpios(uint32_t wake_stat, unsigned int bit_limit, gpio_t gpio_base,
 			struct gpio_wake_state *state)
 {
-	int i;
+	unsigned int i;
 	gpio_t begin;
 	gpio_t end;
 
@@ -378,8 +378,8 @@ void gpio_add_events(void)
 {
 	const struct chipset_power_state *ps;
 	const struct gpio_wake_state *state;
-	int i;
-	int end;
+	unsigned int i;
+	unsigned int end;
 
 	if (acpi_pm_state_for_elog(&ps) < 0)
 		return;

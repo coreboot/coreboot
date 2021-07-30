@@ -267,6 +267,7 @@ static const struct soc_amd_gpio *gpio_get_config(const struct soc_amd_gpio *c,
 	}
 	return c;
 }
+
 void gpio_configure_pads_with_override(const struct soc_amd_gpio *base_cfg,
 					size_t base_num_pads,
 					const struct soc_amd_gpio *override_cfg,

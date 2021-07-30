@@ -140,6 +140,11 @@ chip soc/intel/alderlake
 		device ref sata on end
 		device ref pcie_rp6 on
 			# Enable WWAN PCIE 6 using clk 5
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E0)"
+				register "srcclk_pin" = "5"
+				device generic 0 on end
+			end
 			register "pch_pcie_rp[PCH_RP(6)]" = "{
 				.clk_src = 5,
 				.clk_req = 5,

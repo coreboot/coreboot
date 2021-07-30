@@ -567,6 +567,13 @@ program_sf2:
 	movl	$IA32_CR_SF_QOS_MASK_1, %ecx
 	wrmsr
 #endif
+#if CONFIG(CAR_HAS_L3_PROTECTED_WAYS)
+	/* Set MSR 0xC85 L3_Protected_ways = ((1 << data ways) - 1) */
+	mov	%esi, %eax
+	xorl	%edx, %edx
+	mov	$IA32_L3_PROTECTED_WAYS, %ecx
+	wrmsr
+#endif
 	/*
 	 * Program MSR 0xC91 IA32_L3_MASK_1
 	 * This MSR contain one bit per each way of LLC

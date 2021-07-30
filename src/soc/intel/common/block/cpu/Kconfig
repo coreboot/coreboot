@@ -78,6 +78,14 @@ config COS_MAPPED_TO_MSB
 	  On TGL and JSL platform the class of service configuration
 	  is mapped to MSB of MSR IA32_PQR_ASSOC.
 
+config CAR_HAS_L3_PROTECTED_WAYS
+	bool
+	depends on INTEL_CAR_NEM_ENHANCED
+	help
+	  On ADL and onwards platform has a newer requirement to protect
+	  L3 ways in Non-Inclusive eNEM mode. Hence, MSR 0xc85 is to program
+	  the data ways.
+
 config USE_INTEL_FSP_MP_INIT
 	bool "Perform MP Initialization by FSP"
 	default n

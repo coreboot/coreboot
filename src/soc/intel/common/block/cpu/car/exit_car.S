@@ -96,6 +96,13 @@ car_nem_enhanced_teardown:
 	rdmsr
 	and	$~IA32_PQR_ASSOC_MASK, %edx
 	wrmsr
+#if CONFIG(CAR_HAS_L3_PROTECTED_WAYS)
+	/* Set MSR 0xC85 L3_Protected_ways = 0x00000 */
+	mov	$IA32_L3_PROTECTED_WAYS, %ecx
+	xorl	%eax, %eax
+	xorl	%edx, %edx
+	wrmsr
+#endif
 #endif
 
 	/* Return to caller. */

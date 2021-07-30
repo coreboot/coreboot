@@ -308,6 +308,7 @@ static void check_gpios(uint32_t wake_stat, int bit_limit, int gpio_base,
 	for (i = 0; i < bit_limit; i++) {
 		if (!(wake_stat & BIT(i)))
 			continue;
+		/* Each wake status register bit is for 4 GPIOs that then will be checked */
 		begin = gpio_base + i * 4;
 		end = begin + 4;
 		/* There is no gpio 63. */

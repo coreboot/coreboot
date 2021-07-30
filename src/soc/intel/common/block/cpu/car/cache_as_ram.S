@@ -538,25 +538,33 @@ set_eviction_mask:
 	shl	%cl, %eax
 	subl	$0x01, %eax
 program_sf2:
+	mov	%eax, %ebx /* back up IA32_CR_SF_QOS_MASK_2 in ebx */
 	xorl	%edx, %edx
 	mov	$IA32_CR_SF_QOS_MASK_2, %ecx
 	wrmsr
 
 	/*
-	 * SF mask is programmed with the double number of bits than
-	 * the number of ways
+	 * Calculate the SF Mask 1:
+	 * 1. Calcuate SFWayCnt = IA32_SF_QOS_INFO & Bit [5:0]
+	 * 2. if CONFIG_SF_MASK_2WAYS_PER_BIT: SFWayCnt = SFWayCnt / 2
+	 * 3. Set SF_MASK_1 = ((1 << SFWayCnt) - 1) - IA32_CR_SF_QOS_MASK_2
 	 */
-	mov	$0x01, %eax
-	mov	%edi, %ecx
+	mov	$IA32_SF_QOS_INFO, %ecx
+	rdmsr
+	and	$IA32_SF_WAY_COUNT_MASK, %eax /* Step 1 */
+#if CONFIG(SF_MASK_2WAYS_PER_BIT)
+	/* Assumption: skip checking SFWayCnt = 1 i.e. 1 way LLC (which is not practical) */
+	movl	$0x01, %ecx /* Step 2 */
+	shr	%cl, %eax
+#endif
+	/* Step 3 */
+	mov	%eax, %ecx
+	movl	$0x01, %eax
 	shl	%cl, %eax
-	shl	%cl, %eax
-	subl	$0x01, %eax /* contains SF mask */
-	/*
-	 * Program MSR 0x1891 IA32_CR_SF_QOS_MASK_1 with
-	 * total number of LLC ways
-	 */
-	movl	$IA32_CR_SF_QOS_MASK_1, %ecx
+	subl	$0x01, %eax
+	sub	%ebx, %eax
 	xorl	%edx, %edx
+	movl	$IA32_CR_SF_QOS_MASK_1, %ecx
 	wrmsr
 #endif
 	/*

@@ -790,8 +790,11 @@ BINARY OBJECTS
 F:	3rdparty/blobs/
 
 VERIFIED BOOT
+M:	Julius Werner <jwerner@chromium.org>
+M:	Yu-Ping Wu <yupingso@google.com>
+S:	Supported
 F:	3rdparty/vboot/
-F:	src/vendorcode/google/chromeos/
+F:	src/security/vboot/
 F:	src/include/tpm.h
 F:	src/include/tpm_lite/
 
@@ -822,9 +825,6 @@ CONSOLE
 F:	src/console/
 F:	src/include/console/
 F:	src/drivers/uart/
-
-VERIFIED BOOT 2
-F:	src/security/vboot/
 
 TPM SUPPORT
 M:	Christian Walter <christian.walter@9elements.com>

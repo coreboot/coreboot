@@ -27,7 +27,7 @@ static int get_gpio_gevent(gpio_t gpio, const struct soc_amd_event *table,
 	return -1;
 }
 
-static void program_smi(uint32_t flags, int gevent_num)
+static void program_smi(uint32_t flags, unsigned int gevent_num)
 {
 	uint8_t level;
 
@@ -52,7 +52,7 @@ static void program_smi(uint32_t flags, int gevent_num)
  * In a similar fashion, polarity (rising/falling, hi/lo) of each GPE is
  * represented as a single bit in SMI_SCI_TRIG register.
  */
-static void program_sci(uint32_t flags, int gevent_num)
+static void program_sci(uint32_t flags, unsigned int gevent_num)
 {
 	struct sci_source sci;
 

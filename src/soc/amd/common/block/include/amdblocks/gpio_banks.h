@@ -15,6 +15,11 @@ struct soc_amd_gpio {
 	uint32_t flags;
 };
 
+struct soc_amd_gpio_register_save {
+	uint32_t control_value;
+	uint8_t mux_value;
+};
+
 struct soc_amd_event {
 	gpio_t gpio;
 	uint8_t event;

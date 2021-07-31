@@ -129,22 +129,17 @@ struct device_operations soc_amd_i2c_mmio_ops = {
 	.acpi_fill_ssdt = dw_i2c_acpi_fill_ssdt,
 };
 
-struct common_i2c_save {
-	uint32_t control_value;
-	uint8_t mux_value;
-};
-
 /*
  * To program I2C pins without destroying their programming, the registers
  * that will be changed need to be saved first.
  */
-static void save_i2c_pin_registers(uint8_t gpio, struct common_i2c_save *save_table)
+static void save_i2c_pin_registers(uint8_t gpio, struct soc_amd_gpio_register_save *save_table)
 {
 	save_table->mux_value = iomux_read8(gpio);
 	save_table->control_value = gpio_read32(gpio);
 }
 
-static void restore_i2c_pin_registers(uint8_t gpio, struct common_i2c_save *save_table)
+static void restore_i2c_pin_registers(uint8_t gpio, struct soc_amd_gpio_register_save *save_table)
 {
 	/* Write and flush posted writes. */
 	iomux_write8(gpio, save_table->mux_value);
@@ -172,7 +167,7 @@ static void drive_scl(const struct soc_i2c_peripheral_reset_info *reset_info, ui
 
 void sb_reset_i2c_peripherals(const struct soc_i2c_peripheral_reset_info *reset_info)
 {
-	struct common_i2c_save save_table[MAX_PIN_COUNT];
+	struct soc_amd_gpio_register_save save_table[MAX_PIN_COUNT];
 	size_t i;
 
 	if (!reset_info || !reset_info->i2c_scl || !reset_info->num_pins ||

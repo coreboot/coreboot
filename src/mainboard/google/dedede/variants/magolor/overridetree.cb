@@ -1,10 +1,17 @@
 fw_config
 	field CAMERA_WFC 38 40
-		option CAMERA_NONE 0
+		option CAMERA_UNPROVISIONED 0
 		option CAMERA_OVTI5675 1
 		option CAMERA_OVTI8856 2
 	end
-	field TS_SOURCE 41 44
+	field CAMERA_UFC 41 42
+		option CAMERA_UFC_UNPROVISIONED 0
+	end
+	field CAMERA_VCM 43 44
+		option CAMERA_VCM_UNPROVISIONED 0
+		option CAMERA_VCM0 1
+	end
+	field TS_SOURCE 45 48
 		option TS_UNPROVISIONED 0
 		option TS_ELAN_6915 1
 		option TS_ELAN_6918 2
@@ -324,7 +331,7 @@ chip soc/intel/jasperlake
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 36 on
-					probe CAMERA_WFC CAMERA_NONE
+					probe CAMERA_WFC CAMERA_UNPROVISIONED
 					probe CAMERA_WFC CAMERA_OVTI5675
 				end
 			end
@@ -381,8 +388,10 @@ chip soc/intel/jasperlake
 				register "pr0" = ""\\_SB.PCI0.I2C3.CAM0.PRIC""
 				register "vcm_compat" = ""dongwoon,dw9714""
 
-				device i2c 0C on end
-
+				device i2c 0C on
+					probe CAMERA_VCM CAMERA_VCM_UNPROVISIONED
+					probe CAMERA_VCM CAMERA_VCM0
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"

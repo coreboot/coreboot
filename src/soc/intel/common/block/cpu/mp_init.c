@@ -115,14 +115,25 @@ void get_microcode_info(const void **microcode, int *parallel)
  *    this call if user has selected USE_INTEL_FSP_MP_INIT).
  * 2. coreboot would like to take APs control back after FSP-S has done with MP
  *    initialization based on user select USE_INTEL_FSP_MP_INIT.
+ *
+ * This function would use cpu_cluster as a device and APIC device as a linked list to
+ * the cpu cluster. This function adds a node in case the mainboard doesn't have a lapic id
+ * hardcoded in devicetree, and then fills with the actual BSP APIC ID.
+ * This allows coreboot to dynamically detect the LAPIC ID of BSP.
+ * In case the mainboard has an APIC ID defined in devicetree, a link will be present and
+ * creation of the new node will be skipped. This node will have the APIC ID defined
+ * in devicetree.
  */
 void init_cpus(void)
 {
 	struct device *dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
 	assert(dev != NULL);
 
-	if (dev && dev->link_list)
-		soc_init_cpus(dev->link_list);
+	/* In case link to APIC device is not found, create the one */
+	if (!dev->link_list)
+		add_more_links(dev, 1);
+
+	soc_init_cpus(dev->link_list);
 }
 
 static void coreboot_init_cpus(void *unused)

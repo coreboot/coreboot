@@ -12,6 +12,7 @@
 #include <device/i2c.h>
 #include <device/mmio.h>
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <gpio.h>
 #include <types.h>
 
 #define MAX_PIN_COUNT 4
@@ -148,16 +149,16 @@ static void restore_i2c_pin_registers(uint8_t gpio, struct soc_amd_gpio_register
 	gpio_read32(gpio);
 }
 
-static void drive_scl(const struct soc_i2c_peripheral_reset_info *reset_info, uint32_t val)
+static void drive_scl(const struct soc_i2c_peripheral_reset_info *reset_info, int val)
 {
 	size_t j;
 
 	for (j = 0; j < reset_info->num_pins; j++) {
 		if (reset_info->i2c_scl_reset_mask & reset_info->i2c_scl[j].pin_mask)
-			gpio_write32(reset_info->i2c_scl[j].pin.gpio, val);
+			gpio_set(reset_info->i2c_scl[j].pin.gpio, val);
 	}
 
-	gpio_read32(0); /* Flush posted write */
+	gpio_get(0); /* Flush posted write */
 	/*
 	 * TODO(b/183010197): 4usec gets 85KHz for 1 pin, 70KHz for 4 pins. Ensure this delay
 	 * works fine for all SoCs and make this delay configurable if required.
@@ -179,6 +180,7 @@ void sb_reset_i2c_peripherals(const struct soc_i2c_peripheral_reset_info *reset_
 	/* Save and reprogram I2C SCL pins */
 	for (i = 0; i < reset_info->num_pins; i++) {
 		save_i2c_pin_registers(reset_info->i2c_scl[i].pin.gpio, &save_table[i]);
+		/* Program SCL GPIO as output driven high */
 		program_gpios(&reset_info->i2c_scl[i].pin, 1);
 	}
 
@@ -187,8 +189,8 @@ void sb_reset_i2c_peripherals(const struct soc_i2c_peripheral_reset_info *reset_
 	 * needed after the writes to force the posted write to complete.
 	 */
 	for (i = 0; i < 9; i++) {
-		drive_scl(reset_info, GPIO_OUTPUT_OUT_HIGH);
-		drive_scl(reset_info, GPIO_OUTPUT_OUT_LOW);
+		drive_scl(reset_info, 1);
+		drive_scl(reset_info, 0);
 	}
 
 	/* Restore I2C pins. */

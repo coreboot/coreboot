@@ -111,6 +111,7 @@ config MAINBOARD_PART_NUMBER
 	default "Haboki" if BOARD_GOOGLE_HABOKI
 	default "Cappy" if BOARD_GOOGLE_CAPPY
 	default "Cappy2" if BOARD_GOOGLE_CAPPY2
+	default "Bugzzy" if BOARD_GOOGLE_BUGZZY
 
 config MAX_CPUS
 	int
@@ -148,6 +149,7 @@ config VARIANT_DIR
 	default "haboki" if BOARD_GOOGLE_HABOKI
 	default "cappy" if BOARD_GOOGLE_CAPPY
 	default "cappy2" if BOARD_GOOGLE_CAPPY2
+	default "bugzzy" if BOARD_GOOGLE_BUGZZY
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 

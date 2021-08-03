@@ -1,0 +1,43 @@
+chip soc/intel/jasperlake
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| I2C0              | Trackpad                  |
+	#| I2C1              | Digitizer                 |
+	#| I2C2              | Touchscreen               |
+	#| I2C3              | Camera                    |
+	#| I2C4              | Audio                     |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
+	register "SerialIoGSpiMode[PchSerialIoIndexGSPI0]" = "PchSerialIoDisabled" # Disable GSPI0
+	register "SerialIoGSpiCsMode[PchSerialIoIndexGSPI0]" = "0"
+
+	device domain 0 on
+		device pci 15.0 on end
+		device pci 1e.2 off end # GSPI 0
+		device pci 1f.0 on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end # Discrete TPM
+			end # chip drivers/pc80/tpm
+		end # PCH eSPI
+	end
+end

@@ -24,6 +24,10 @@ fw_config
 		option LTE_ABSENT 0
 		option LTE_PRESENT 1
 	end
+	field EXT_VR 18
+		option EXT_VR_PRESENT 0
+		option EXT_VR_ABSENT 1
+	end
 end
 
 chip soc/intel/jasperlake

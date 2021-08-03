@@ -77,6 +77,7 @@ config MAINBOARD_PART_NUMBER
 	default "Redrix" if BOARD_GOOGLE_REDRIX
 	default "Kano" if BOARD_GOOGLE_KANO
 	default "Taeko" if BOARD_GOOGLE_TAEKO
+	default "Felwinter" if BOARD_GOOGLE_FELWINTER
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -85,6 +86,7 @@ config VARIANT_DIR
 	default "redrix" if BOARD_GOOGLE_REDRIX
 	default "kano" if BOARD_GOOGLE_KANO
 	default "taeko" if BOARD_GOOGLE_TAEKO
+	default "felwinter" if BOARD_GOOGLE_FELWINTER
 
 config DIMM_SPD_SIZE
 	int

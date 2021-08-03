@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/acpimmio_legacy_gpio100.h>
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <superio/smsc/lpc47n217/lpc47n217.h>

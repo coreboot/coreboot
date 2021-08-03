@@ -31,6 +31,16 @@ static inline void gpio_write32(gpio_t gpio_num, uint32_t value)
 	write32(gpio_ctrl_ptr(gpio_num), value);
 }
 
+static inline uint8_t iomux_read8(uint8_t reg)
+{
+	return read8(acpimmio_iomux + reg);
+}
+
+static inline void iomux_write8(uint8_t reg, uint8_t value)
+{
+	write8(acpimmio_iomux + reg, value);
+}
+
 static uint8_t get_gpio_mux(gpio_t gpio)
 {
 	return iomux_read8(gpio);

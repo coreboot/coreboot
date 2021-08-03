@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/acpimmio_legacy_gpio100.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <southbridge/amd/common/amd_pci_util.h>

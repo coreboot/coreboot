@@ -272,18 +272,6 @@ static inline void smbus_write8(uint8_t reg, uint8_t value)
 	write8(acpimmio_smbus + reg, value);
 }
 
-/* These iomux_read/write8 are to be deprecated to enforce proper
-   use of <gpio.h> API for pin configurations. */
-static inline uint8_t iomux_read8(uint8_t reg)
-{
-	return read8(acpimmio_iomux + reg);
-}
-
-static inline void iomux_write8(uint8_t reg, uint8_t value)
-{
-	write8(acpimmio_iomux + reg, value);
-}
-
 static inline uint8_t misc_read8(uint8_t reg)
 {
 	return read8(acpimmio_misc + reg);
@@ -312,17 +300,6 @@ static inline void misc_write16(uint8_t reg, uint16_t value)
 static inline void misc_write32(uint8_t reg, uint32_t value)
 {
 	write32(acpimmio_misc + reg, value);
-}
-
-/* Old GPIO configuration registers */
-static inline uint8_t gpio_100_read8(uint8_t reg)
-{
-	return read8(acpimmio_gpio_100 + reg);
-}
-
-static inline void gpio_100_write8(uint8_t reg, uint8_t value)
-{
-	write8(acpimmio_gpio_100 + reg, value);
 }
 
 static inline uint8_t xhci_pm_read8(uint8_t reg)

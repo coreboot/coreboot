@@ -130,25 +130,6 @@ struct device_operations soc_amd_i2c_mmio_ops = {
 	.acpi_fill_ssdt = dw_i2c_acpi_fill_ssdt,
 };
 
-/*
- * To program I2C pins without destroying their programming, the registers
- * that will be changed need to be saved first.
- */
-static void save_i2c_pin_registers(uint8_t gpio, struct soc_amd_gpio_register_save *save_table)
-{
-	save_table->mux_value = iomux_read8(gpio);
-	save_table->control_value = gpio_read32(gpio);
-}
-
-static void restore_i2c_pin_registers(uint8_t gpio, struct soc_amd_gpio_register_save *save_table)
-{
-	/* Write and flush posted writes. */
-	iomux_write8(gpio, save_table->mux_value);
-	iomux_read8(gpio);
-	gpio_write32(gpio, save_table->control_value);
-	gpio_read32(gpio);
-}
-
 static void drive_scl(const struct soc_i2c_peripheral_reset_info *reset_info, int val)
 {
 	size_t j;
@@ -179,7 +160,9 @@ void sb_reset_i2c_peripherals(const struct soc_i2c_peripheral_reset_info *reset_
 
 	/* Save and reprogram I2C SCL pins */
 	for (i = 0; i < reset_info->num_pins; i++) {
-		save_i2c_pin_registers(reset_info->i2c_scl[i].pin.gpio, &save_table[i]);
+		/* To program I2C pins without destroying their programming, the registers
+		   that will be changed need to be saved first */
+		gpio_save_pin_registers(reset_info->i2c_scl[i].pin.gpio, &save_table[i]);
 		/* Program SCL GPIO as output driven high */
 		program_gpios(&reset_info->i2c_scl[i].pin, 1);
 	}
@@ -195,5 +178,5 @@ void sb_reset_i2c_peripherals(const struct soc_i2c_peripheral_reset_info *reset_
 
 	/* Restore I2C pins. */
 	for (i = 0; i < reset_info->num_pins; i++)
-		restore_i2c_pin_registers(reset_info->i2c_scl[i].pin.gpio, &save_table[i]);
+		gpio_restore_pin_registers(reset_info->i2c_scl[i].pin.gpio, &save_table[i]);
 }

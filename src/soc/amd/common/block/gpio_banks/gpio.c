@@ -166,6 +166,19 @@ static void set_gpio_mux(gpio_t gpio, uint8_t function)
 	iomux_read8(gpio); /* Flush posted write */
 }
 
+void gpio_save_pin_registers(gpio_t gpio, struct soc_amd_gpio_register_save *save)
+{
+	save->mux_value = iomux_read8(gpio);
+	save->control_value = gpio_read32(gpio);
+}
+
+void gpio_restore_pin_registers(gpio_t gpio, struct soc_amd_gpio_register_save *save)
+{
+	set_gpio_mux(gpio, save->mux_value);
+	gpio_write32(gpio, save->control_value);
+	gpio_read32(gpio); /* Flush posted write */
+}
+
 static void set_single_gpio(const struct soc_amd_gpio *g)
 {
 	static const struct soc_amd_event *gev_tbl;

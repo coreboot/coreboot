@@ -171,8 +171,9 @@ static void set_single_gpio(const struct soc_amd_gpio *g)
 	static const struct soc_amd_event *gev_tbl;
 	static size_t gev_items;
 	int gevent_num;
-	const bool can_set_smi_flags = !(CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) &&
-			ENV_SEPARATE_VERSTAGE);
+	const bool can_set_smi_flags = !((CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) &&
+			ENV_SEPARATE_VERSTAGE) ||
+			CONFIG(SOC_AMD_COMMON_BLOCK_BANKED_GPIOS_NON_SOC_CODEBASE));
 
 	set_gpio_mux(g->gpio, g->function);
 

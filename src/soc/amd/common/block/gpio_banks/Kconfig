@@ -5,3 +5,16 @@ config SOC_AMD_COMMON_BLOCK_BANKED_GPIOS
 	  Select this option to use the newer style banks of GPIO signals.
 	  These are at offsets +0x1500, +0x1600, and +0x1700 from the AcpiMmio
 	  base.
+
+if SOC_AMD_COMMON_BLOCK_BANKED_GPIOS
+
+config SOC_AMD_COMMON_BLOCK_BANKED_GPIOS_NON_SOC_CODEBASE
+	bool
+	help
+	  Select this option when selecting the GPIO bank support from AMD
+	  chipsets outside the soc/ subtree that only support a subset of the
+	  features available on the chipsets inside the soc/ subtree. When this
+	  option is selected, no SMI or SCI event can be configured by the GPIO
+	  code.
+
+endif # SOC_AMD_COMMON_BLOCK_BANKED_GPIOS

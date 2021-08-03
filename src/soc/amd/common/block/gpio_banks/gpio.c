@@ -160,15 +160,20 @@ uint16_t gpio_acpi_pin(gpio_t gpio)
 	return gpio;
 }
 
+static uint8_t get_gpio_mux(gpio_t gpio)
+{
+	return iomux_read8(gpio);
+}
+
 static void set_gpio_mux(gpio_t gpio, uint8_t function)
 {
 	iomux_write8(gpio, function & AMD_GPIO_MUX_MASK);
-	iomux_read8(gpio); /* Flush posted write */
+	get_gpio_mux(gpio); /* Flush posted write */
 }
 
 void gpio_save_pin_registers(gpio_t gpio, struct soc_amd_gpio_register_save *save)
 {
-	save->mux_value = iomux_read8(gpio);
+	save->mux_value = get_gpio_mux(gpio);
 	save->control_value = gpio_read32(gpio);
 }
 

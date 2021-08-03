@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <amdblocks/acpimmio.h>
 #include <gpio.h>
 #include "gpio_ftns.h"
 

@@ -15,7 +15,7 @@
 
 /* The following sections describe only the GPIOs defined for this SOC */
 
-#define SOC_GPIO_TOTAL_PINS		149
+#define SOC_GPIO_TOTAL_PINS		272
 
 /* Bank 0: GPIO_0 - GPIO_63 */
 #define GPIO_0				0
@@ -93,6 +93,24 @@
 #define GPIO_146			146
 #define GPIO_147			147
 #define GPIO_148			148
+
+/* remote GPIO bank: GPIO_256 - GPIO_271 */
+#define GPIO_256			256
+#define GPIO_257			257
+#define GPIO_258			258
+#define GPIO_259			259
+#define GPIO_260			260
+#define GPIO_261			261
+#define GPIO_262			262
+#define GPIO_263			263
+#define GPIO_264			264
+#define GPIO_265			265
+#define GPIO_266			266
+#define GPIO_267			267
+#define GPIO_268			268
+#define GPIO_269			269
+#define GPIO_270			270
+#define GPIO_271			271
 
 /* IOMUX function names and values */
 #define GPIO_0_IOMUX_PWR_BTN_L 0
@@ -281,5 +299,23 @@
 #define GPIO_147_IOMUX_GPIOxx 1
 #define GPIO_148_IOMUX_I2C1_SDA 0
 #define GPIO_148_IOMUX_GPIOxx 1
+
+/* Remote GPIOs */
+#define GPIO_256_IOMUX_GPIOxx 1
+#define GPIO_257_IOMUX_GPIOxx 1
+#define GPIO_258_IOMUX_GPIOxx 1
+#define GPIO_259_IOMUX_GPIOxx 1
+#define GPIO_260_IOMUX_GPIOxx 1
+#define GPIO_261_IOMUX_GPIOxx 1
+#define GPIO_262_IOMUX_GPIOxx 1
+#define GPIO_263_IOMUX_GPIOxx 1
+#define GPIO_264_IOMUX_GPIOxx 1
+#define GPIO_265_IOMUX_GPIOxx 1
+#define GPIO_266_IOMUX_GPIOxx 1
+#define GPIO_267_IOMUX_GPIOxx 1
+#define GPIO_268_IOMUX_GPIOxx 1
+#define GPIO_269_IOMUX_GPIOxx 1
+#define GPIO_270_IOMUX_GPIOxx 1
+#define GPIO_271_IOMUX_GPIOxx 1
 
 #endif /* AMD_CEZANNE_GPIO_H */

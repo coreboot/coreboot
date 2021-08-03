@@ -55,7 +55,7 @@ static const uint32_t action_keymaps[] = {
 	[PS2_KEY_PRIVACY_SCRN_TOGGLE] = KEYMAP(0x96,			/* e016 */
 					  KEY_PRIVACY_SCREEN_TOGGLE),
 	[PS2_KEY_MICMUTE] = KEYMAP(0x9b, KEY_MICMUTE),			/* e01b */
-	[PS2_KEY_KBDILLUMTOGGLE] = KEYMAP(0xab, KEY_KBDILLUMTOGGLE),	/* e02b */
+	[PS2_KEY_KBD_BKLIGHT_TOGGLE] = KEYMAP(0x9e, KEY_KBDILLUMTOGGLE),	/* e01e */
 };
 
 /* Keymap for numeric keypad keys */

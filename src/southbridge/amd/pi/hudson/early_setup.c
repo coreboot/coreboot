@@ -13,33 +13,6 @@
 #include "pci_devs.h"
 #include <Fch/Fch.h>
 
-#if CONFIG(HUDSON_UART)
-
-#include <delay.h>
-
-void configure_hudson_uart(void)
-{
-	u8 byte;
-
-	byte = aoac_read8(FCH_AOAC_REG56 +
-			  CONFIG_UART_FOR_CONSOLE * sizeof(u16)));
-	byte |= 1 << 3;
-	aoac_write8(FCH_AOAC_REG56 + CONFIG_UART_FOR_CONSOLE * sizeof(u16)),
-		    byte);
-
-	aoac_write8(FCH_AOAC_REG62, aoac_read8(FCH_AOAC_REG62) | (1 << 3));
-	iomux_write8(0x89, 0); /* UART0_RTS_L_EGPIO137 */
-	iomux_write8(0x8a, 0); /* UART0_TXD_EGPIO138 */
-	iomux_write8(0x8e, 0); /* UART1_RTS_L_EGPIO142 */
-	iomux_write8(0x8f, 0); /* UART1_TXD_EGPIO143 */
-
-	udelay(2000);
-	write8((void *)(0xFEDC6000 + 0x2000 * CONFIG_UART_FOR_CONSOLE + 0x88),
-			0x01); /* reset UART */
-}
-
-#endif
-
 void hudson_pci_port80(void)
 {
 	u8 byte;

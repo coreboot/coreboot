@@ -33,10 +33,8 @@ romstage-y += enable_usbdebug.c
 romstage-$(CONFIG_HUDSON_IMC_FWM) += imc.c
 romstage-y += smbus.c
 romstage-y += smbus_spd.c
-romstage-$(CONFIG_HUDSON_UART) += uart.c
 
 verstage-y += early_setup.c
-verstage-$(CONFIG_HUDSON_UART) += uart.c
 
 ramstage-y += enable_usbdebug.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
@@ -52,7 +50,6 @@ ramstage-y += sd.c
 ramstage-y += sm.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi_util.c
-ramstage-$(CONFIG_HUDSON_UART) += uart.c
 ramstage-y += usb.c
 
 all-y += reset.c

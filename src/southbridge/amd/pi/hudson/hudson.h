@@ -170,7 +170,6 @@ void hudson_set_readspeed(u16 norm, u16 fast);
 void lpc_wideio_512_window(uint16_t base);
 void lpc_wideio_16_window(uint16_t base);
 void hudson_tpm_decode_spi(void);
-void configure_hudson_uart(void);
 
 void hudson_enable(struct device *dev);
 void s3_resume_init_data(void *FchParams);

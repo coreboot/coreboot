@@ -325,23 +325,6 @@ static inline void gpio_100_write8(uint8_t reg, uint8_t value)
 	write8(acpimmio_gpio_100 + reg, value);
 }
 
-/* New GPIO banks configuration registers */
-
-static inline void *gpio_ctrl_ptr(uint8_t gpio_num)
-{
-	return acpimmio_gpio0 + gpio_num * sizeof(uint32_t);
-}
-
-static inline uint32_t gpio_read32(uint8_t gpio_num)
-{
-	return read32(gpio_ctrl_ptr(gpio_num));
-}
-
-static inline void gpio_write32(uint8_t gpio_num, uint32_t value)
-{
-	write32(gpio_ctrl_ptr(gpio_num), value);
-}
-
 static inline uint8_t xhci_pm_read8(uint8_t reg)
 {
 	return read8(acpimmio_xhci_pm + reg);

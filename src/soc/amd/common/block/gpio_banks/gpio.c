@@ -15,6 +15,22 @@
 #include <assert.h>
 #include <string.h>
 
+/* MMIO access of new-style GPIO bank configuration registers */
+static inline void *gpio_ctrl_ptr(uint8_t gpio_num)
+{
+	return acpimmio_gpio0 + gpio_num * sizeof(uint32_t);
+}
+
+static inline uint32_t gpio_read32(uint8_t gpio_num)
+{
+	return read32(gpio_ctrl_ptr(gpio_num));
+}
+
+static inline void gpio_write32(uint8_t gpio_num, uint32_t value)
+{
+	write32(gpio_ctrl_ptr(gpio_num), value);
+}
+
 static int get_gpio_gevent(gpio_t gpio, const struct soc_amd_event *table,
 				size_t items)
 {

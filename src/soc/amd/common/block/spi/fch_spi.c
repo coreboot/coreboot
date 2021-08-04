@@ -15,11 +15,16 @@ static void fch_spi_set_spi100(int norm, int fast, int alt, int tpm)
 	spi_write16(SPI100_ENABLE, SPI_USE_SPI100);
 }
 
-static void fch_spi_disable_4dw_burst(void)
+static void fch_spi_configure_4dw_burst(void)
 {
 	uint16_t val = spi_read16(SPI100_HOST_PREF_CONFIG);
 
-	spi_write16(SPI100_HOST_PREF_CONFIG, val & ~SPI_RD4DW_EN_HOST);
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_SPI_4DW_BURST))
+		val |= SPI_RD4DW_EN_HOST;
+	else
+		val &= ~SPI_RD4DW_EN_HOST;
+
+	spi_write16(SPI100_HOST_PREF_CONFIG, val);
 }
 
 static void fch_spi_set_read_mode(u32 mode)
@@ -61,6 +66,6 @@ void fch_spi_early_init(void)
 {
 	lpc_enable_spi_rom(SPI_ROM_ENABLE);
 	lpc_enable_spi_prefetch();
-	fch_spi_disable_4dw_burst();
+	fch_spi_configure_4dw_burst();
 	fch_spi_config_modes();
 }

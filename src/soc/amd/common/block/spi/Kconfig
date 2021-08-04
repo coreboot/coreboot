@@ -8,6 +8,12 @@ config SOC_AMD_COMMON_BLOCK_SPI
 config SOC_AMD_COMMON_BLOCK_SPI_DEBUG
 	bool
 
+config SOC_AMD_COMMON_BLOCK_SPI_4DW_BURST
+	bool
+	depends on !SOC_AMD_STONEYRIDGE
+	help
+	  Select this option to keep the 4 DWORD burst support enabled.
+
 config EFS_SPI_READ_MODE
 	int
 	range 0 7

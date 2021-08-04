@@ -6,6 +6,10 @@ This section contains documentation about coreboot on specific mainboards.
 
 - [X210](51nb/x210.md)
 
+## Acer
+
+- [G43T-AM3](acer/g43t-am3.md)
+
 ## AMD
 - [padmelon](amd/padmelon/padmelon.md)
 

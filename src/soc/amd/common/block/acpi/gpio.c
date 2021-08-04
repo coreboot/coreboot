@@ -11,6 +11,12 @@ static int acpigen_soc_gpio_op(const char *op, unsigned int gpio_num)
 					" %d\n", gpio_num, SOC_GPIO_TOTAL_PINS);
 		return -1;
 	}
+	if (SOC_GPIO_TOTAL_PINS >= AMD_GPIO_FIRST_REMOTE_GPIO_NUMBER &&
+			gpio_num >= SOC_GPIO_TOTAL_PINS) {
+		printk(BIOS_WARNING, "Warning: Pin %d is a remote GPIO which isn't supported"
+			" yet.\n", gpio_num);
+		return -1;
+	}
 	/* op (gpio_num) */
 	acpigen_emit_namestring(op);
 	acpigen_write_integer(gpio_num);
@@ -22,6 +28,12 @@ static int acpigen_soc_get_gpio_state(const char *op, unsigned int gpio_num)
 	if (gpio_num >= SOC_GPIO_TOTAL_PINS) {
 		printk(BIOS_WARNING, "Warning: Pin %d should be smaller than"
 					" %d\n", gpio_num, SOC_GPIO_TOTAL_PINS);
+		return -1;
+	}
+	if (SOC_GPIO_TOTAL_PINS >= AMD_GPIO_FIRST_REMOTE_GPIO_NUMBER &&
+			gpio_num >= SOC_GPIO_TOTAL_PINS) {
+		printk(BIOS_WARNING, "Warning: Pin %d is a remote GPIO which isn't supported"
+			" yet.\n", gpio_num);
 		return -1;
 	}
 	/* Store (op (gpio_num), Local0) */

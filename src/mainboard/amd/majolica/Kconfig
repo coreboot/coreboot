@@ -53,4 +53,12 @@ config CHROMEOS
 	# Use default libpayload config
 	select LP_DEFCONFIG_OVERRIDE if PAYLOAD_DEPTHCHARGE
 
+config EFS_SPI_READ_MODE
+	default 0 if EM100 # Normal read mode
+	default 3          # Quad IO (1-1-4)
+
+config EFS_SPI_SPEED
+	default 3 if EM100 # 16.66 MHz
+	default 0          # 66.66 MHz
+
 endif # BOARD_AMD_MAJOLICA

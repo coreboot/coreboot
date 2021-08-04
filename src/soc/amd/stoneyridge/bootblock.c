@@ -28,12 +28,12 @@
 #error "Error: CONFIG_PI_AGESA_CAR_HEAP_BASE must be >= 1MB"
 #endif
 
-/* This table is for the initial conversion of all SCL pins to input with no pull. */
+/* Table to switch SCL pins to outputs to initially reset the I2C peripherals */
 static const struct soc_i2c_scl_pin i2c_scl_pins[] = {
-	{ PAD_GPI(I2C0_SCL_PIN, PULL_NONE), GPIO_I2C0_SCL },
-	{ PAD_GPI(I2C1_SCL_PIN, PULL_NONE), GPIO_I2C1_SCL },
-	{ PAD_GPI(I2C2_SCL_PIN, PULL_NONE), GPIO_I2C2_SCL },
-	{ PAD_GPI(I2C3_SCL_PIN, PULL_NONE), GPIO_I2C3_SCL },
+	{ PAD_GPO(I2C0_SCL_PIN, HIGH), GPIO_I2C0_SCL },
+	{ PAD_GPO(I2C1_SCL_PIN, HIGH), GPIO_I2C1_SCL },
+	{ PAD_GPO(I2C2_SCL_PIN, HIGH), GPIO_I2C2_SCL },
+	{ PAD_GPO(I2C3_SCL_PIN, HIGH), GPIO_I2C3_SCL },
 };
 
 /* Set the MMIO Configuration Base Address, Bus Range, and misc MTRRs. */

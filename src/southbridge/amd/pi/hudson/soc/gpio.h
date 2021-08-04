@@ -6,4 +6,6 @@
 /* <soc/gpio.h> must provide gpio_t. */
 #include <amdblocks/gpio_banks.h>
 
+#define SOC_GPIO_TOTAL_PINS		133
+
 #endif /* SOC_GPIO_H */

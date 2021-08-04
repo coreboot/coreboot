@@ -5,11 +5,12 @@
 
 int get_spd_offset(void);
 
-//
-// Based on PC Engines APU2C and APU3A schematics
-// http://www.pcengines.ch/schema/apu2c.pdf
-// http://www.pcengines.ch/schema/apu3a.pdf
-//
+/*
+ * Based on PC Engines APU2C and APU3A schematics
+ * http://www.pcengines.ch/schema/apu2c.pdf
+ * http://www.pcengines.ch/schema/apu3a.pdf
+ * Beware that the GPIO pin numbers on the package don't match the internal GPIO numbers
+ */
 #define GPIO_22   0x09    // MODESW (APU5)
 #define GPIO_32   0x59    // MODESW (SIMSWAP2 on APU5)
 #define GPIO_33   0x5A    // SIMSWAP (SIMSWAP3 on APU5)

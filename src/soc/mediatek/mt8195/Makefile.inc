@@ -64,6 +64,7 @@ ramstage-y += ../common/mcupm.c
 ramstage-y += ../common/mmu_operations.c mmu_operations.c
 ramstage-y += mt6360.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
+ramstage-$(CONFIG_COMMONLIB_STORAGE_MMC) += ../common/msdc.c
 ramstage-y += ../common/pll.c pll.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += soc.c

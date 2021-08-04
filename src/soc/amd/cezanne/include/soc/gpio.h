@@ -282,6 +282,4 @@
 #define GPIO_148_IOMUX_I2C1_SDA 0
 #define GPIO_148_IOMUX_GPIOxx 1
 
-#define GPIO_2_EVENT GEVENT_8
-
 #endif /* AMD_CEZANNE_GPIO_H */

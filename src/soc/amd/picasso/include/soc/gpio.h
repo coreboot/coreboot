@@ -297,6 +297,4 @@
 #define GPIO_144_IOMUX_UART1_INTR 0
 #define GPIO_144_IOMUX_GPIOxx 1
 
-#define GPIO_2_EVENT GEVENT_8
-
 #endif /* AMD_PICASSO_GPIO_H */

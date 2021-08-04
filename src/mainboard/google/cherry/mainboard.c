@@ -14,6 +14,7 @@
 #include <soc/dptx.h>
 #include <soc/gpio.h>
 #include <soc/i2c.h>
+#include <soc/msdc.h>
 #include <soc/mt6360.h>
 #include <soc/mtcmos.h>
 #include <soc/regulator.h>
@@ -38,6 +39,9 @@ DEFINE_BITFIELD(MSDC1_GPIO_MODE1_0, 2, 0)
 DEFINE_BITFIELD(MSDC1_GPIO_MODE1_1, 6, 4)
 DEFINE_BITFIELD(MSDC1_GPIO_MODE1_2, 10, 8)
 DEFINE_BITFIELD(MSDC1_GPIO_MODE1_3, 14, 12)
+
+#define MSDC0_BASE	0x11230000
+#define MSDC0_TOP_BASE	0x11f50000
 
 #define MSDC0_DRV_VALUE	0x1b6db6db
 #define MSDC1_DRV_VALUE	0x1b6db
@@ -85,6 +89,8 @@ static void configure_emmc(void)
 
 	/* set eMMC cmd/dat/clk/ds/rstb pins driving to 8mA */
 	SET32_BITFIELDS(gpio_base, MSDC0_DRV, MSDC0_DRV_VALUE);
+
+	mtk_emmc_early_init((void *)MSDC0_BASE, (void *)MSDC0_TOP_BASE);
 }
 
 static void configure_sdcard(void)

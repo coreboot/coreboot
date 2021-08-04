@@ -70,7 +70,7 @@ printf "#define COREBOOT_VERSION_TIMESTAMP $DATE\n"
 printf "#define COREBOOT_ORIGIN_GIT_REVISION \"$GITREV\"\n"
 
 printf "#define COREBOOT_EXTRA_VERSION \"%s\"\n" "$COREBOOT_EXTRA_VERSION"
-printf "#define COREBOOT_MAJOR_VERSION %d\n#define COREBOOT_MINOR_VERSION %d\n" `git describe --match [0-9].[0-9]* | sed 's/\([0-9]\)\.\([0-9]\+\).*/\1 \2/'`
+printf "#define COREBOOT_MAJOR_VERSION %d\n#define COREBOOT_MINOR_VERSION %d\n" `git describe --match [0-9].[0-9]* | sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\1 \2/'`
 printf "#define COREBOOT_BUILD \"$(our_date "$DATE")\"\n"
 printf "#define COREBOOT_BUILD_YEAR_BCD 0x$(our_date "$DATE" +%y)\n"
 printf "#define COREBOOT_BUILD_MONTH_BCD 0x$(our_date "$DATE" +%m)\n"

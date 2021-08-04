@@ -177,6 +177,10 @@ void mt6359p_buck_set_voltage(u32 buck_id, u32 buck_uv)
 		vol_offset = 500000;
 		vol_reg = PMIC_VSRAM_PROC2_ELR;
 		break;
+	case MT6359P_CORE:
+		vol_offset = 506250;
+		vol_reg = PMIC_VCORE_ELR0;
+		break;
 	default:
 		die("ERROR: Unknown buck_id %u", buck_id);
 		return;
@@ -208,6 +212,11 @@ u32 mt6359p_buck_get_voltage(u32 buck_id)
 		vol_shift = 8;
 		vol_offset = 500000;
 		vol_reg = PMIC_VSRAM_PROC2_VOSEL1;
+		break;
+	case MT6359P_CORE:
+		vol_shift = 0;
+		vol_offset = 506250;
+		vol_reg = PMIC_VCORE_DBG0;
 		break;
 	default:
 		die("ERROR: Unknown buck_id %u", buck_id);

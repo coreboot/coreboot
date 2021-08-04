@@ -113,6 +113,7 @@ config MAINBOARD_PART_NUMBER
 	default "Cappy" if BOARD_GOOGLE_CAPPY
 	default "Cappy2" if BOARD_GOOGLE_CAPPY2
 	default "Bugzzy" if BOARD_GOOGLE_BUGZZY
+	default "Corori" if BOARD_GOOGLE_CORORI
 
 config MAX_CPUS
 	int
@@ -151,6 +152,7 @@ config VARIANT_DIR
 	default "cappy" if BOARD_GOOGLE_CAPPY
 	default "cappy2" if BOARD_GOOGLE_CAPPY2
 	default "bugzzy" if BOARD_GOOGLE_BUGZZY
+	default "corori" if BOARD_GOOGLE_CORORI
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 

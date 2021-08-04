@@ -278,6 +278,12 @@ void meminit_lpddr4_enable_channel(FSP_M_CONFIG *cfg, int logical_chan,
 	int fsp_rank_density;
 
 	switch (rank_density_gb) {
+	case LP4_4Gb_DENSITY:
+		fsp_rank_density = 0;
+		break;
+	case LP4_6Gb_DENSITY:
+		fsp_rank_density = 1;
+		break;
 	case LP4_8Gb_DENSITY:
 		fsp_rank_density = 2;
 		break;

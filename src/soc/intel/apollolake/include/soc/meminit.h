@@ -51,6 +51,8 @@ enum {
 
 /* LPDDR4 module density in bits. */
 enum {
+	LP4_4Gb_DENSITY = 4,
+	LP4_6Gb_DENSITY = 6,
 	LP4_8Gb_DENSITY = 8,
 	LP4_12Gb_DENSITY = 12,
 	LP4_16Gb_DENSITY = 16,

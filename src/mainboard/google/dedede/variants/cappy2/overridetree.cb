@@ -1,3 +1,11 @@
+fw_config
+	field AUDIO_CODEC_SOURCE 41 43
+		option AUDIO_CODEC_UNPROVISIONED 0
+		option AUDIO_CODEC_ALC5682 1
+		option AUDIO_CODEC_CS42l42 2
+	end
+end
+
 chip soc/intel/jasperlake
 
 	# Intel Common SoC Config
@@ -95,8 +103,29 @@ chip soc/intel/jasperlake
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
-				device i2c 1a on end
+				device i2c 1a on
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_UNPROVISIONED
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682
+				end
 			end
+			chip drivers/i2c/cs42l42
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D16_IRQ)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H16)"
+				register "ts_inv" = "true"
+				register "ts_dbnc_rise" = "RISE_DEB_1000_MS"
+				register "ts_dbnc_fall" = "FALL_DEB_0_MS"
+				register "btn_det_init_dbnce" = "100"
+				register "btn_det_event_dbnce" = "10"
+				register "bias_lvls[0]" = "15"
+				register "bias_lvls[1]" = "8"
+				register "bias_lvls[2]" = "4"
+				register "bias_lvls[3]" = "1"
+				register "hs_bias_ramp_rate" = "HSBIAS_RAMP_SLOW"
+				register "hs_bias_sense_disable" = "true"
+				device i2c 48 on
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_CS42l42
+				end
+ 			end
 		end #I2C 4
 		device pci 1f.0 on
 			chip drivers/pc80/tpm
@@ -106,7 +135,16 @@ chip soc/intel/jasperlake
 		device pci 1f.3 on
 		       chip drivers/generic/alc1015
 				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"
-				device generic 0 on end
+				device generic 0 on
+					probe AUDIO_AMP UNPROVISIONED
+				end
+			end
+			chip drivers/generic/max98357a
+				register "hid" = ""MX98360A""
+				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"
+				device generic 0 on
+					probe AUDIO_AMP MAX98360
+				end
 			end
 		end # Intel HDA
 	end

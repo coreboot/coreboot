@@ -7,6 +7,13 @@ config BOARD_INTEL_ADLRVP_P_EXT_EC
 	bool "Alderlake-P RVP with Chrome EC"
 	select INTEL_LPSS_UART_FOR_CONSOLE
 
+config BOARD_INTEL_ADLRVP_P_MCHP
+	bool "Alderlake-P RVP with Microchip EC"
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select DRIVERS_INTEL_MIPI_CAMERA
+	select SOC_INTEL_COMMON_BLOCK_IPU
+	select EC_GOOGLE_CHROMEEC_MEC
+
 config BOARD_INTEL_ADLRVP_M
 	bool "Alderlake-M RVP"
 	select DRIVERS_UART_8250IO

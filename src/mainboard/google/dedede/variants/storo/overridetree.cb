@@ -86,7 +86,7 @@ chip soc/intel/jasperlake
 			chip drivers/intel/dptf
 				## Passive Policy
 				register "policies.passive" = "{
-					[0] = DPTF_PASSIVE(CPU,     TEMP_SENSOR_1, 67,  3000),
+					[0] = DPTF_PASSIVE(CPU,     TEMP_SENSOR_0, 67,  3000),
 					[1] = DPTF_PASSIVE(CPU,     TEMP_SENSOR_2, 67,  3000),
 					[2] = DPTF_PASSIVE(CHARGER, TEMP_SENSOR_1, 67,  3000),}"
 				## Critical Policy

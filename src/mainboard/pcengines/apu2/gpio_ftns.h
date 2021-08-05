@@ -26,4 +26,18 @@ int get_spd_offset(void);
 #define GPIO_68   0x48    // PE4_WDIS (SIMSWAP1 on APU5)
 #define GPIO_71   0x4D    // PROCHOT
 
+#define GPIO_22_IOMUX_GPIOxx	0
+#define GPIO_32_IOMUX_GPIOxx	0
+#define GPIO_33_IOMUX_GPIOxx	0
+#define GPIO_49_IOMUX_GPIOxx	2
+#define GPIO_50_IOMUX_GPIOxx	2
+#define GPIO_51_IOMUX_GPIOxx	2
+#define GPIO_55_IOMUX_GPIOxx	3
+#define GPIO_57_IOMUX_GPIOxx	1
+#define GPIO_58_IOMUX_GPIOxx	1
+#define GPIO_59_IOMUX_GPIOxx	3
+#define GPIO_64_IOMUX_GPIOxx	2
+#define GPIO_68_IOMUX_GPIOxx	0
+#define GPIO_71_IOMUX_GPIOxx	0
+
 #endif /* GPIO_FTNS_H */

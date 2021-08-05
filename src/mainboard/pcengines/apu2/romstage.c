@@ -31,39 +31,31 @@ void board_BeforeAgesa(struct sysinfo *cb)
 }
 
 const struct soc_amd_gpio gpio_common[] = {
-	/* Output disabled, pull up/down disabled */
-	PAD_CFG_STRUCT(GPIO_49, Function2, PAD_PULL(PULL_NONE)),
-	PAD_CFG_STRUCT(GPIO_50, Function2, PAD_PULL(PULL_NONE)),
-	PAD_CFG_STRUCT(GPIO_71, Function0, PAD_PULL(PULL_NONE)),
-	/* Output enabled, value low, pull up/down disabled */
-	PAD_CFG_STRUCT(GPIO_57, Function1, PAD_OUTPUT(LOW)),
-	PAD_CFG_STRUCT(GPIO_58, Function1, PAD_OUTPUT(LOW)),
-	PAD_CFG_STRUCT(GPIO_59, Function3, PAD_OUTPUT(LOW)),
-	/* Output enabled, value high, pull up/down disabled */
-	PAD_CFG_STRUCT(GPIO_51, Function2, PAD_OUTPUT(HIGH)),
-	PAD_CFG_STRUCT(GPIO_55, Function3, PAD_OUTPUT(HIGH)),
-	PAD_CFG_STRUCT(GPIO_64, Function2, PAD_OUTPUT(HIGH)),
-	PAD_CFG_STRUCT(GPIO_68, Function0, PAD_OUTPUT(HIGH)),
+	PAD_GPI(GPIO_49, PULL_NONE),
+	PAD_GPI(GPIO_50, PULL_NONE),
+	PAD_GPI(GPIO_71, PULL_NONE),
+	PAD_GPO(GPIO_57, LOW),
+	PAD_GPO(GPIO_58, LOW),
+	PAD_GPO(GPIO_59, LOW),
+	PAD_GPO(GPIO_51, HIGH),
+	PAD_GPO(GPIO_55, HIGH),
+	PAD_GPO(GPIO_64, HIGH),
+	PAD_GPO(GPIO_68, HIGH),
 };
 
 const struct soc_amd_gpio gpio_apu2[] = {
-	/* Output disabled, pull up/down disabled */
-	PAD_CFG_STRUCT(GPIO_32, Function0, PAD_PULL(PULL_NONE)),
+	PAD_GPI(GPIO_32, PULL_NONE),
 };
 
 const struct soc_amd_gpio gpio_apu34[] = {
-	/* Output disabled, pull up/down disabled */
-	PAD_CFG_STRUCT(GPIO_32, Function0, PAD_PULL(PULL_NONE)),
-	/* Output enabled, value low, pull up/down disabled */
-	PAD_CFG_STRUCT(GPIO_33, Function0, PAD_OUTPUT(LOW)),
+	PAD_GPI(GPIO_32, PULL_NONE),
+	PAD_GPO(GPIO_33, LOW),
 };
 
 const struct soc_amd_gpio gpio_apu5[] = {
-	/* Output disabled, pull up/down disabled */
-	PAD_CFG_STRUCT(GPIO_22, Function0, PAD_PULL(PULL_NONE)),
-	/* Output enabled, value high, pull up/down disabled */
-	PAD_CFG_STRUCT(GPIO_32, Function0, PAD_OUTPUT(HIGH)),
-	PAD_CFG_STRUCT(GPIO_33, Function0, PAD_OUTPUT(HIGH)),
+	PAD_GPI(GPIO_22, PULL_NONE),
+	PAD_GPO(GPIO_32, HIGH),
+	PAD_GPO(GPIO_33, HIGH),
 };
 
 static void early_lpc_init(void)

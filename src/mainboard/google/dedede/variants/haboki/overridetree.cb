@@ -18,10 +18,6 @@ chip soc/intel/jasperlake
 	#| I2C4              | Audio                     |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
-		.gspi[0] = {
-			.speed_mhz = 1,
-			.early_init = 1,
-		},
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
 		},
@@ -45,6 +41,9 @@ chip soc/intel/jasperlake
 	}"
 
 	register "tcc_offset" = "20"	# TCC of 85C
+
+	register "SerialIoGSpiMode[PchSerialIoIndexGSPI0]" = "PchSerialIoDisabled" # Disable GSPI0
+	register "SerialIoGSpiCsMode[PchSerialIoIndexGSPI0]" = "0"
 
 	# Enable Acoustic noise mitigation and set slew rate to 1/4
         # Rest of the parameters are 0 by default.
@@ -296,6 +295,12 @@ chip soc/intel/jasperlake
 				device i2c 1a on end
 			end
 		end #I2C 4
+		device pci 1f.0 on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end # Discrete TPM
+			end # chip drivers/pc80/tpm
+		end # PCH eSPI
+		device pci 1e.2 off end # GSPI 0
 		device pci 1f.3 on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98360A""

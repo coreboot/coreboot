@@ -36,7 +36,7 @@ static void da7219_fill_ssdt(const struct device *dev)
 	acpigen_write_name_string("_HID", DA7219_ACPI_HID);
 	acpigen_write_name_integer("_UID", 1);
 	acpigen_write_name_string("_DDN", dev->chip_ops->name);
-	acpigen_write_name_integer("_S0W", 4);
+	acpigen_write_name_integer("_S0W", ACPI_DEVICE_SLEEP_D3_HOT);
 	acpigen_write_STA(acpi_device_status(dev));
 
 	/* Resources */

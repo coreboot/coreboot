@@ -240,20 +240,22 @@ chip soc/intel/cannonlake
 				register "policies.active[0]" = "{.target=DPTF_CPU,
 					.thresholds={TEMP_PCT(94, 0),}}"
 				register "policies.active[1]" = "{.target=DPTF_TEMP_SENSOR_0,
-					.thresholds={TEMP_PCT(72, 90),
-						     TEMP_PCT(68, 80),
-						     TEMP_PCT(62, 70),
-						     TEMP_PCT(54, 60),
-						     TEMP_PCT(46, 50),
-						     TEMP_PCT(39, 40),}}"
+					.thresholds={TEMP_PCT(84, 90),
+						     TEMP_PCT(82, 80),
+						     TEMP_PCT(80, 70),
+						     TEMP_PCT(66, 60),
+						     TEMP_PCT(52, 50),
+						     TEMP_PCT(35, 40),}}"
 
 				## Passive Policy
 				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           95, 5000)"
-				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 75, 5000)"
+				register "policies.passive[1]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 85, 5000)"
+				register "policies.passive[2]" = "DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 85, 5000)"
 
 				## Critical Policy
 				register "policies.critical[0]" = "DPTF_CRITICAL(CPU,          100, SHUTDOWN)"
-				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 85, SHUTDOWN)"
+				register "policies.critical[1]" = "DPTF_CRITICAL(TEMP_SENSOR_0, 90, SHUTDOWN)"
+				register "policies.critical[2]" = "DPTF_CRITICAL(TEMP_SENSOR_1, 90, SHUTDOWN)"
 
 				## Power Limits Control
 				# PL1 is fixed at 15W, avg over 28-32s interval

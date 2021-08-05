@@ -45,6 +45,9 @@ config TIMER_RK3399
 config TIMER_MTK
 	bool "Timer for MediaTek"
 
+config TIMER_MTK_V2
+	bool "Timer for MediaTek V2"
+
 endchoice
 
 config TIMER_GENERIC_HZ
@@ -53,6 +56,7 @@ config TIMER_GENERIC_HZ
 	default 6250000 if TIMER_IPQ806X
 	default 24000000 if TIMER_MCT
 	default 13000000 if TIMER_MTK
+	default 13000000 if TIMER_MTK_V2
 	default 24000000 if TIMER_RK3288
 	default 24000000 if TIMER_RK3399
 	default 1000000 if TIMER_TEGRA_1US
@@ -67,6 +71,7 @@ config TIMER_GENERIC_REG
 	default 0x0200A028 if TIMER_IPQ806X
 	default 0x101C0100 if TIMER_MCT
 	default 0x10008068 if TIMER_MTK
+	default 0x100080A8 if TIMER_MTK_V2
 	default 0xff810028 if TIMER_RK3288
 	default 0xff850008 if TIMER_RK3399
 	default 0x60005010 if TIMER_TEGRA_1US
@@ -79,6 +84,7 @@ config TIMER_GENERIC_HIGH_REG
 	default 0x004A2004 if TIMER_IPQ40XX
 	default 0x101C0104 if TIMER_MCT
 	default 0x10008078 if TIMER_MTK
+	default 0x100080B0 if TIMER_MTK_V2
 	default 0xff81002C if TIMER_RK3288
 	default 0xff85000C if TIMER_RK3399
 	default 0x0

@@ -125,7 +125,7 @@ static void spi_acpi_fill_ssdt_generator(const struct device *dev)
 
 	/* Wake capabilities */
 	if (config->wake) {
-		acpigen_write_name_integer("_S0W", 4);
+		acpigen_write_name_integer("_S0W", ACPI_DEVICE_SLEEP_D3_HOT);
 		acpigen_write_PRW(config->wake, 3);
 	};
 

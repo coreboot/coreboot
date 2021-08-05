@@ -15,6 +15,12 @@
 #include <assert.h>
 #include <string.h>
 
+/*
+ * acpimmio_gpio0, acpimmio_remote_gpio and acpimmio_iomux are defined in
+ * soc/amd/common/block/acpimmio/mmio_util.c and declared as extern variables/constants in
+ * amdblocks/acpimmio.h which is included in this file.
+ */
+
 /* MMIO access of new-style GPIO bank configuration registers */
 static inline void *gpio_ctrl_ptr(gpio_t gpio_num)
 {

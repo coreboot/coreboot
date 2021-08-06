@@ -273,9 +273,11 @@ void vSetVcoreByFreq(DRAMC_CTX_T *p)
 #ifndef DDR_INIT_TIME_PROFILING
     print("Read voltage for %d, %d\n", p->frequency, vGet_Current_SRAMIdx(p));
     print("Vcore = %d\n", dramc_get_vcore_voltage());
+#ifdef FOR_HQA_REPORT_USED
     print("Vdram = %d\n", dramc_get_vmdd_voltage(p->dram_type));
     print("Vddq = %d\n", dramc_get_vmddq_voltage(p->dram_type));
     print("Vmddr = %d\n", dramc_get_vmddr_voltage());
+#endif
 #endif
 
 #endif

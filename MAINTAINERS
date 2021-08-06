@@ -623,6 +623,12 @@ S:	Maintained
 F:	src/soc/amd/picasso/
 F:	src/vendorcode/amd/fsp/picasso/
 
+AMD Stoneyridge
+M:	Marshall Dawson <marshalldawson3rd@gmail.com>
+M:	Felix Held <felix-coreboot@felixheld.de>
+S:	Odd Fixes
+F:	src/soc/amd/stoneyridge/
+
 INTEL ALDERLAKE SOC
 M:	Tim Wawrzynczak <twawrzynczak@chromium.org>
 S:	Maintained

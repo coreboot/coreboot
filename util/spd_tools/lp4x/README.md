@@ -1,15 +1,16 @@
 # LPDDR4x SPD tools README
 
 Tools for generating SPD files for LPDDR4x memory used in memory down
-configurations on Intel Tiger Lake (TGL) and Jasper Lake (JSL) based
-platforms. These tools generate SPDs following JESD209-4C
-specification and Intel recommendations (doc #616599, #610202) for
-LPDDR4x SPD.
+configurations on Intel Tiger Lake (TGL), Jasper Lake (JSL), and Alder
+Lake (ADL) based platforms. These tools generate SPDs following
+JESD209-4C specification and Intel recommendations (doc #616599,
+#610202, #634730) for LPDDR4x SPD.
 
-There are two tools provided that assist TGL and JSL based mainboards
-to generate SPDs and Makefile to integrate these SPDs in coreboot
-build. These tools can also be used to allocate DRAM IDs (configure
-DRAM hardware straps) for any LPDDR4x memory part used by the board.
+There are two tools provided that assist TGL, JSL and ADL based
+mainboards to generate SPDs and Makefile to integrate these SPDs in
+coreboot build. These tools can also be used to allocate DRAM IDs
+(configure DRAM hardware straps) for any LPDDR4x memory part used by the
+board.
 
 * gen_spd.go: Generates de-duplicated SPD files using a global memory
   part list provided by the mainboard in JSON format. Additionally,
@@ -32,7 +33,7 @@ This program takes as input:
   attributes as per the datasheet. This is the list of all known
   LPDDR4x memory parts irrespective of their usage on the board.
 * SoC platform name for which the SPDs are being generated. Currently
-  supported platform names are `TGL` and `JSL`.
+  supported platform names are `TGL`, `JSL` and `ADL`.
 
 Input JSON file requires the following two fields for every memory part:
 * `name`: Name of the memory part

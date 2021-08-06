@@ -180,6 +180,7 @@ The boards in this section are not real mainboards, but emulators.
 
 ## System76
 
+- [Darter Pro 7](system76/darp7.md)
 - [Galago Pro 5](system76/galp5.md)
 - [Gazelle 15](system76/gaze15.md)
 - [Lemur Pro 9](system76/lemp9.md)

@@ -1,0 +1,5 @@
+chip soc/intel/cannonlake
+	device domain 0 on
+		subsystemid 0x1558 0x65e5 inherit
+	end
+end

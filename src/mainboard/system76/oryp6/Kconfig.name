@@ -1,2 +1,5 @@
 config BOARD_SYSTEM76_ORYP6
 	bool "oryp6"
+
+config BOARD_SYSTEM76_ORYP7
+	bool "oryp7"

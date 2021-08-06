@@ -115,6 +115,7 @@ config MAINBOARD_PART_NUMBER
 	default "Bugzzy" if BOARD_GOOGLE_BUGZZY
 	default "Corori" if BOARD_GOOGLE_CORORI
 	default "Driblee" if BOARD_GOOGLE_DRIBLEE
+	default "Gooey" if BOARD_GOOGLE_GOOEY
 
 config MAX_CPUS
 	int
@@ -155,6 +156,7 @@ config VARIANT_DIR
 	default "bugzzy" if BOARD_GOOGLE_BUGZZY
 	default "corori" if BOARD_GOOGLE_CORORI
 	default "driblee" if BOARD_GOOGLE_DRIBLEE
+	default "gooey" if BOARD_GOOGLE_GOOEY
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 

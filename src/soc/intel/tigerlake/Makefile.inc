@@ -58,4 +58,7 @@ verstage-y += gpio.c
 CPPFLAGS_common += -I$(src)/soc/intel/tigerlake
 CPPFLAGS_common += -I$(src)/soc/intel/tigerlake/include
 
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8c-01
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8c-02
+
 endif

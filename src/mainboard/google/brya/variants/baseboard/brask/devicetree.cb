@@ -1,7 +1,5 @@
 chip soc/intel/alderlake
 
-	device cpu_cluster 0 on end
-
 	# GPE configuration
 	register "pmc_gpe0_dw0" = "GPP_A"
 	register "pmc_gpe0_dw1" = "GPP_E"

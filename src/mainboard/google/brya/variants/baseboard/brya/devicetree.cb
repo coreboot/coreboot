@@ -1,7 +1,5 @@
 chip soc/intel/alderlake
 
-	device cpu_cluster 0 on end
-
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 
 	# GPE configuration

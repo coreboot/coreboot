@@ -1,5 +1,7 @@
 chip soc/intel/alderlake
 
+	device cpu_cluster 0 on end
+
 	register "power_limits_config[ADL_P_POWER_LIMITS_282_CORE]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 55,

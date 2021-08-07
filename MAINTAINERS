@@ -757,6 +757,11 @@ INTELMETOOL
 M:	Christian Walter <christian.walter@9elements.com>
 F:	util/intelmetool/
 
+INTELP2M
+M:	Maxim Polyakov <max.senia.poliak@gmail.com>
+S:	Maintained
+F:	util/intelp2m/
+
 ME_CLEANER
 M:	Nicola Corna <nicola@corna.info>
 W:	https://github.com/corna/me_cleaner

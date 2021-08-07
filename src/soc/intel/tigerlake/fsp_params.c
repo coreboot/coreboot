@@ -625,6 +625,64 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* USB2 Phy Sus power gating setting override */
 	params->PmcUsb2PhySusPgEnable = !config->usb2_phy_sus_pg_disable;
 
+	/*
+	 * Prevent FSP from programming write-once subsystem IDs by providing
+	 * a custom SSID table. Must have at least one entry for the FSP to
+	 * use the table.
+	 */
+	struct svid_ssid_init_entry {
+		union {
+			struct {
+				uint64_t reg:12;	/* Register offset */
+				uint64_t function:3;
+				uint64_t device:5;
+				uint64_t bus:8;
+				uint64_t :4;
+				uint64_t segment:16;
+				uint64_t :16;
+			};
+			uint64_t segbusdevfuncregister;
+		};
+		struct {
+			uint16_t svid;
+			uint16_t ssid;
+		};
+		uint32_t reserved;
+	};
+
+	/*
+	 * The xHCI and HDA devices have RW/L rather than RW/O registers for
+	 * subsystem IDs and so must be written before FspSiliconInit locks
+	 * them with their default values.
+	 */
+	const pci_devfn_t devfn_table[] = { PCH_DEVFN_XHCI, PCH_DEVFN_HDA };
+	static struct svid_ssid_init_entry ssid_table[ARRAY_SIZE(devfn_table)];
+
+	for (i = 0; i < ARRAY_SIZE(devfn_table); i++) {
+		ssid_table[i].reg	= PCI_SUBSYSTEM_VENDOR_ID;
+		ssid_table[i].device	= PCI_SLOT(devfn_table[i]);
+		ssid_table[i].function	= PCI_FUNC(devfn_table[i]);
+		dev = pcidev_path_on_root(devfn_table[i]);
+		if (dev) {
+			ssid_table[i].svid = dev->subsystem_vendor;
+			ssid_table[i].ssid = dev->subsystem_device;
+		}
+	}
+
+	params->SiSsidTablePtr = (uintptr_t)ssid_table;
+	params->SiNumberOfSsidTableEntry = ARRAY_SIZE(ssid_table);
+
+	/*
+	 * Replace the default SVID:SSID value with the values specified in
+	 * the devicetree for the root device.
+	 */
+	dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+	params->SiCustomizedSvid = dev->subsystem_vendor;
+	params->SiCustomizedSsid = dev->subsystem_device;
+
+	/* Ensure FSP will program the registers */
+	params->SiSkipSsidProgramming = 0;
+
 	mainboard_silicon_init_params(params);
 }
 

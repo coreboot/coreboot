@@ -94,6 +94,12 @@ $(if $(findstring $($(1)$(2)-stage), $(stages)),,
 		Check your $(dir $(1)$(2))Makefile.inc))
 endef
 
+# Copy attributes of one test to another.
+# $1 - input test name
+# $2 - output test name
+copy-test = $(foreach attr,$(attributes), \
+		$(eval $(strip $(2))-$(attr) := $($(strip $(1))-$(attr))))
+
 $(call add-special-class, tests)
 $(call evaluate_subdirs)
 

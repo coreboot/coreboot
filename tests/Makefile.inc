@@ -35,8 +35,9 @@ TEST_CFLAGS := -include $(src)/include/kconfig.h \
 # Include generic test mock headers, before original ones
 TEST_CFLAGS += -I$(testsrc)/include/mocks -I$(testsrc)/include
 
-TEST_CFLAGS += -I$(src)/include -I$(src)/commonlib/include \
-	-I$(src)/commonlib/bsd/include -I$(src)/arch/x86/include
+TEST_CFLAGS += -I$(src) -I$(src)/include -I$(src)/commonlib/include \
+	-I$(src)/commonlib/bsd/include -I$(src)/arch/x86/include \
+	-I$(top)/3rdparty/vboot/firmware/include
 
 # Note: This is intentionally just a subset of the warnings in the toplevel
 # Makefile.inc. We don't need to be as strict with test code, and things like

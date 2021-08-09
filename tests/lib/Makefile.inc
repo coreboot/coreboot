@@ -73,7 +73,6 @@ fmap-test-srcs += tests/stubs/console.c
 fmap-test-srcs += src/lib/boot_device.c
 fmap-test-srcs += src/commonlib/region.c
 fmap-test-cflags += -I tests/include/tests/lib/fmap
-fmap-test-cflags += -I 3rdparty/vboot/firmware/include
 
 imd_cbmem-ramstage-test-stage := ramstage
 imd_cbmem-ramstage-test-srcs += tests/lib/imd_cbmem-test.c
@@ -141,7 +140,6 @@ coreboot_table-test-srcs += src/lib/compute_ip_checksum.c
 coreboot_table-test-srcs += src/lib/coreboot_table.c
 coreboot_table-test-srcs += src/lib/imd_cbmem.c
 coreboot_table-test-srcs += src/lib/imd.c
-coreboot_table-test-cflags += -I src -I 3rdparty/vboot/firmware/include
 coreboot_table-test-cflags += -I tests/include/tests/lib/fmap
 coreboot_table-test-mocks += cbmem_top_chipset
 
@@ -175,8 +173,6 @@ cbmem_stage_cache-test-srcs += tests/stubs/console.c
 cbmem_stage_cache-test-srcs += src/lib/cbmem_stage_cache.c
 cbmem_stage_cache-test-srcs += src/lib/imd_cbmem.c
 cbmem_stage_cache-test-srcs += src/lib/imd.c
-cbmem_stage_cache-test-cflags += -I 3rdparty/vboot/firmware/include
-cbmem_stage_cache-test-cflags += -I $(src)/commonlib/include
 cbmem_stage_cache-test-config += CONFIG_CBMEM_STAGE_CACHE=1
 
 libgcc-test-srcs += tests/lib/libgcc-test.c

@@ -2,6 +2,7 @@
 
 #include <amdblocks/chip.h>
 #include <amdblocks/lpc.h>
+#include <amdblocks/psp_efs.h>
 #include <amdblocks/spi.h>
 #include <arch/mmio.h>
 #include <console/console.h>
@@ -9,7 +10,23 @@
 #include <soc/lpc.h>
 #include <stdint.h>
 
-static void fch_spi_set_spi100(int norm, int fast, int alt, int tpm)
+static uint8_t lower_speed(uint8_t speed1, uint8_t speed2)
+{
+	uint8_t speeds[] = {SPI_SPEED_800K, SPI_SPEED_16M, SPI_SPEED_22M,
+			    SPI_SPEED_33M,  SPI_SPEED_66M, SPI_SPEED_100M};
+
+	for (int i = 0; i < ARRAY_SIZE(speeds); i++) {
+		if (speed1 == speeds[i])
+			return speed1;
+		if (speed2 == speeds[i])
+			return speed2;
+	}
+
+	/* Fall back to 16MHz if we got invalid speed values */
+	return SPI_SPEED_16M;
+}
+
+static void fch_spi_set_spi100(uint8_t norm, uint8_t fast, uint8_t alt, uint8_t tpm)
 {
 	spi_write16(SPI100_SPEED_CONFIG, SPI_SPEED_CFG(norm, fast, alt, tpm));
 	spi_write16(SPI100_ENABLE, SPI_USE_SPI100);
@@ -34,32 +51,26 @@ static void fch_spi_set_read_mode(u32 mode)
 	spi_write32(SPI_CNTRL0, val | SPI_READ_MODE(mode));
 }
 
-static void fch_spi_config_mb_modes(void)
-{
-	const struct soc_amd_common_config *cfg = soc_get_common_config();
-
-	if (!cfg)
-		die("Common config structure is NULL!\n");
-
-	const struct spi_config *spi_cfg = &cfg->spi_config;
-
-	fch_spi_set_read_mode(spi_cfg->read_mode);
-	fch_spi_set_spi100(spi_cfg->normal_speed, spi_cfg->fast_speed,
-			   spi_cfg->altio_speed, spi_cfg->tpm_speed);
-}
-
-static void fch_spi_config_em100_modes(void)
-{
-	fch_spi_set_read_mode(SPI_READ_MODE_NORMAL33M);
-	fch_spi_set_spi100(SPI_SPEED_16M, SPI_SPEED_16M, SPI_SPEED_16M, SPI_SPEED_16M);
-}
-
 static void fch_spi_config_modes(void)
 {
-	if (CONFIG(EM100))
-		fch_spi_config_em100_modes();
-	else
-		fch_spi_config_mb_modes();
+	uint8_t read_mode, fast_speed;
+	uint8_t normal_speed = CONFIG_NORMAL_READ_SPI_SPEED;
+	uint8_t alt_speed = CONFIG_ALT_SPI_SPEED;
+	uint8_t tpm_speed = CONFIG_TPM_SPI_SPEED;
+
+	if (!read_efs_spi_settings(&read_mode, &fast_speed)) {
+		read_mode = CONFIG_EFS_SPI_READ_MODE;
+		fast_speed = CONFIG_EFS_SPI_SPEED;
+	}
+
+	if (fast_speed != CONFIG_EFS_SPI_SPEED) {
+		normal_speed = lower_speed(normal_speed, fast_speed);
+		tpm_speed = lower_speed(tpm_speed, fast_speed);
+		alt_speed = lower_speed(alt_speed, fast_speed);
+	}
+
+	fch_spi_set_read_mode((u32)read_mode);
+	fch_spi_set_spi100(normal_speed, fast_speed, alt_speed, tpm_speed);
 }
 
 void fch_spi_early_init(void)

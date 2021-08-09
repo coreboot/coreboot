@@ -1188,7 +1188,7 @@ https://github.com/martinlroth/language-kconfig
 ## Syntax Checking:
 
 The Kconfig utility does some basic syntax checking on the Kconfig tree.
-Running "make silentoldconfig" will show any errors that the Kconfig utility
+Running "make oldconfig" will show any errors that the Kconfig utility
 sees.
 
 ### util/kconfig_lint

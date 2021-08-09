@@ -53,9 +53,9 @@ void mainboard_memory_init_params(FSP_M_CONFIG *m_cfg)
 	case ADL_P_DDR4_1:
 	case ADL_P_DDR4_2:
 	case ADL_P_DDR5_1:
-	case ADL_P_DDR5_2:
 		memcfg_init(m_cfg, mem_config, &dimm_module_spd_info, half_populated);
 		break;
+	case ADL_P_DDR5_2:
 	case ADL_P_LP4_1:
 	case ADL_P_LP4_2:
 	case ADL_P_LP5_1:

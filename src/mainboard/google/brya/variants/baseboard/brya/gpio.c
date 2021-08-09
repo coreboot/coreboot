@@ -37,7 +37,7 @@ static const struct pad_config gpio_table[] = {
 	/* A16 : USB_OC3# ==> USB_A0_OC_ODL */
 	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
 	/* A17 : DISP_MISCC ==> EN_FCAM_PWR */
-	PAD_CFG_GPO(GPP_A17, 0, DEEP),
+	PAD_CFG_GPO(GPP_A17, 1, DEEP),
 	/* A18 : DDSP_HPDB ==> HDMI_HPD */
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
 	/* A19 : DDSP_HPD1 ==> USB_C2_AUX_DC_P */

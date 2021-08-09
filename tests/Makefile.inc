@@ -1,34 +1,34 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-testsrc = $(top)/tests
+testsrc := $(top)/tests
 
 # Place the build output in one of two places depending on COV, so that code
 # built with code coverage never mixes with code built without code coverage.
 ifeq ($(COV),1)
-testobj = $(obj)/coverage
+testobj := $(obj)/coverage
 else
-testobj = $(obj)/tests
+testobj := $(obj)/tests
 endif
 
-cmockasrc = 3rdparty/cmocka
-cmockaobj = $(objutil)/cmocka
-coverage_dir = coverage_reports
+cmockasrc := 3rdparty/cmocka
+cmockaobj := $(objutil)/cmocka
+coverage_dir := coverage_reports
 
 CMOCKA_LIB := $(cmockaobj)/src/libcmocka.so
 
-CMAKE:= cmake
-OBJCOPY?= objcopy
-OBJDUMP?= objdump
+CMAKE := cmake
+OBJCOPY ?= objcopy
+OBJDUMP ?= objdump
 
-TEST_DEFAULT_CONFIG = $(top)/configs/config.emulation_qemu_x86_i440fx
-TEST_DOTCONFIG = $(testobj)/.config
+TEST_DEFAULT_CONFIG := $(top)/configs/config.emulation_qemu_x86_i440fx
+TEST_DOTCONFIG := $(testobj)/.config
 TEST_KCONFIG_AUTOHEADER := $(testobj)/config.src.h
 TEST_KCONFIG_AUTOCONFIG := $(testobj)/auto.conf
 TEST_KCONFIG_DEPENDENCIES := $(testobj)/auto.conf.cmd
 TEST_KCONFIG_SPLITCONFIG := $(testobj)/config/
 TEST_KCONFIG_TRISTATE := $(testobj)/tristate.conf
 
-TEST_CFLAGS = -include $(src)/include/kconfig.h \
+TEST_CFLAGS := -include $(src)/include/kconfig.h \
 	-include $(src)/commonlib/bsd/include/commonlib/bsd/compiler.h \
 	-include $(src)/include/rules.h
 
@@ -55,7 +55,7 @@ TEST_CFLAGS += -D__TEST__
 TEST_CFLAGS += -I$(cmockasrc)/include
 
 # Link against Cmocka
-TEST_LDFLAGS = -L$(cmockaobj)/src -lcmocka -Wl,-rpath=$(cmockaobj)/src
+TEST_LDFLAGS := -L$(cmockaobj)/src -lcmocka -Wl,-rpath=$(cmockaobj)/src
 TEST_LDFLAGS += -Wl,--gc-sections
 
 # Some memlayout symbols don't work with userspace relocation -- disable it.
@@ -69,26 +69,26 @@ TEST_LDFLAGS += --coverage
 endif
 
 # Extra attributes for unit tests, declared per test
-attributes:= srcs cflags config mocks stage
+attributes := srcs cflags config mocks stage
 
-stages:= decompressor bootblock romstage smm verstage
-stages+= ramstage rmodule postcar libagesa
+stages := decompressor bootblock romstage smm verstage
+stages += ramstage rmodule postcar libagesa
 
-alltests:=
-subdirs:= tests/arch tests/acpi tests/commonlib tests/console tests/cpu
-subdirs+= tests/device tests/drivers tests/ec tests/lib tests/mainboard
-subdirs+= tests/northbridge tests/security tests/soc tests/southbridge
-subdirs+= tests/superio tests/vendorcode
+alltests :=
+subdirs := tests/arch tests/acpi tests/commonlib tests/console tests/cpu
+subdirs += tests/device tests/drivers tests/ec tests/lib tests/mainboard
+subdirs += tests/northbridge tests/security tests/soc tests/southbridge
+subdirs += tests/superio tests/vendorcode
 
 define tests-handler
 alltests += $(1)$(2)
 $(foreach attribute,$(attributes),
 	$(eval $(1)$(2)-$(attribute) += $($(2)-$(attribute))))
 $(foreach attribute,$(attributes),
-	$(eval $(2)-$(attribute):=))
+	$(eval $(2)-$(attribute) := ))
 
 # Sanity check for stage attribute value
-$(eval $(1)$(2)-stage:=$(if $($(1)$(2)-stage),$($(1)$(2)-stage),ramstage))
+$(eval $(1)$(2)-stage := $(if $($(1)$(2)-stage),$($(1)$(2)-stage),ramstage))
 $(if $(findstring $($(1)$(2)-stage), $(stages)),,
 	$(error Wrong $(1)$(2)-stage value $($(1)$(2)-stage). \
 		Check your $(dir $(1)$(2))Makefile.inc))
@@ -145,19 +145,19 @@ $($(1)-bin): $($(1)-objs) $(CMOCKA_LIB)
 endef
 
 $(foreach test, $(alltests), \
-	$(eval $(test)-srcobjs:=$(addprefix $(testobj)/$(test)/, \
+	$(eval $(test)-srcobjs := $(addprefix $(testobj)/$(test)/, \
 		$(patsubst %.c,%.o,$(filter src/%,$($(test)-srcs))))) \
-	$(eval $(test)-objs:=$(addprefix $(testobj)/$(test)/, \
+	$(eval $(test)-objs := $(addprefix $(testobj)/$(test)/, \
 		$(patsubst %.c,%.o,$($(test)-srcs)))))
 $(foreach test, $(alltests), \
-	$(eval $(test)-bin:=$(testobj)/$(test)/run))
+	$(eval $(test)-bin := $(testobj)/$(test)/run))
 $(foreach test, $(alltests), \
 	$(eval $(call TEST_CC_template,$(test))))
 
 $(foreach test, $(alltests), \
-	$(eval all-test-objs+=$($(test)-objs)))
+	$(eval all-test-objs += $($(test)-objs)))
 $(foreach test, $(alltests), \
-	$(eval test-bins+=$($(test)-bin)))
+	$(eval test-bins += $($(test)-bin)))
 
 DEPENDENCIES += $(addsuffix .d,$(basename $(all-test-objs)))
 -include $(DEPENDENCIES)
@@ -176,7 +176,7 @@ $(TEST_DOTCONFIG):
 
 # Don't override default Kconfig variables, since this will affect all
 # Kconfig targets. Change them only when calling sub-make instead.
-$(TEST_KCONFIG_AUTOHEADER): TEST_KCONFIG_FLAGS:= DOTCONFIG=$(TEST_DOTCONFIG) \
+$(TEST_KCONFIG_AUTOHEADER): TEST_KCONFIG_FLAGS := DOTCONFIG=$(TEST_DOTCONFIG) \
         KCONFIG_AUTOHEADER=$(TEST_KCONFIG_AUTOHEADER) \
         KCONFIG_AUTOCONFIG=$(TEST_KCONFIG_AUTOCONFIG) \
         KCONFIG_DEPENDENCIES=$(TEST_KCONFIG_DEPENDENCIES) \

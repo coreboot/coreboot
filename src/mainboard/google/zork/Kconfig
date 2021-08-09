@@ -245,19 +245,26 @@ config VARIANT_MAX_BOARD_ID_BROKEN_FMPCU_POWER
 	help
 	  Last board version that needs the extra delay for FPMCU init.
 
+if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE
-	int
-	default 0 if EM100 # Normal read mode
-	default 2          # Dual IO (1-1-2)
+	default 4          # Dual IO (1-2-2)
 
 config EFS_SPI_SPEED
-	int
-	default 3 if EM100 # 16.66 MHz
-	default 0          # 66.66 MHz
+	default 0	# 66MHz
 
 config EFS_SPI_MICRON_FLAG
-	int
 	default 0
+
+config NORMAL_READ_SPI_SPEED
+	default 1	# 33MHz
+
+config ALT_SPI_SPEED
+	default 0	# 66MHz
+
+config TPM_SPI_SPEED
+	default 0	# 66MHz
+
+endif # !EM100
 
 config CHROMEOS_WIFI_SAR
 	bool

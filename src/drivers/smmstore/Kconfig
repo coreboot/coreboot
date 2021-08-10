@@ -19,27 +19,10 @@ config SMMSTORE_V2
 	  By using version 2 you cannot make use of software that expects
 	  a version 1 SMMSTORE.
 
-config SMMSTORE_IN_CBFS
-	bool
-	default n
-	help
-	  Select this if you want to add an SMMSTORE region to a
-	  cbfsfile in a cbfs FMAP region
-
 if SMMSTORE
-config SMMSTORE_REGION
-	string "fmap region in which SMM store file is kept" if SMMSTORE_IN_CBFS
-	default "RW_LEGACY" if CHROMEOS && SMMSTORE_IN_CBFS
-	default "COREBOOT" if SMMSTORE_IN_CBFS
-	default "SMMSTORE"
-
-config SMMSTORE_FILENAME
-	string "SMM store file name" if SMMSTORE_IN_CBFS
-	default "smm_store"
 
 config SMMSTORE_SIZE
 	hex "size of the SMMSTORE FMAP region"
-	depends on !SMMSTORE_IN_CBFS
 	default 0x40000
 	help
 	  Sets the size of the default SMMSTORE FMAP region.

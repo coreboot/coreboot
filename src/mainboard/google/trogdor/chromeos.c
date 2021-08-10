@@ -31,7 +31,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			"EC in RW"},
 		{GPIO_AP_EC_INT.addr, ACTIVE_LOW, gpio_get(GPIO_AP_EC_INT),
 			"EC interrupt"},
-		{GPIO_H1_AP_INT.addr, ACTIVE_LOW, gpio_get(GPIO_H1_AP_INT),
+		{GPIO_H1_AP_INT.addr, ACTIVE_HIGH, gpio_get(GPIO_H1_AP_INT),
 			"TPM interrupt"},
 		{GPIO_SD_CD_L.addr, ACTIVE_LOW, gpio_get(GPIO_SD_CD_L),
 			"SD card detect"},

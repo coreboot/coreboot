@@ -142,6 +142,9 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
+		device ref pcie_rp6 on
+			probe DB_LTE LTE_PCIE
+		end
 		device ref tcss_dma0 on
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E4)"

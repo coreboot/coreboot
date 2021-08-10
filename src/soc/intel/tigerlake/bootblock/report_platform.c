@@ -35,6 +35,8 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_U_4_2, "Tigerlake-U-4-2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_Y_2_2, "Tigerlake-Y-2-2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_ID_Y_4_2, "Tigerlake-Y-4-2" },
+	{ PCI_DEVICE_ID_INTEL_TGL_ID_H_6_1, "Tigerlake-H-6-1" },
+	{ PCI_DEVICE_ID_INTEL_TGL_ID_H_8_1, "Tigerlake-H-8-1" },
 };
 
 static struct {
@@ -73,6 +75,15 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_24, "Tigerlake-Base SKU" },
 	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_25, "Tigerlake-Base SKU" },
 	{ PCI_DEVICE_ID_INTEL_TGP_ESPI_26, "Tigerlake-Base SKU" },
+	{ PCI_DEVICE_ID_INTEL_TGP_H_ESPI_B560, "Tigerlake-H B560" },
+	{ PCI_DEVICE_ID_INTEL_TGP_H_ESPI_H510, "Tigerlake-H H510" },
+	{ PCI_DEVICE_ID_INTEL_TGP_H_ESPI_H570, "Tigerlake-H H570" },
+	{ PCI_DEVICE_ID_INTEL_TGP_H_ESPI_Q570, "Tigerlake-H Q570" },
+	{ PCI_DEVICE_ID_INTEL_TGP_H_ESPI_W580, "Tigerlake-H W580" },
+	{ PCI_DEVICE_ID_INTEL_TGP_H_ESPI_Z590, "Tigerlake-H Z590" },
+	{ PCI_DEVICE_ID_INTEL_TGP_H_ESPI_HM570, "Tigerlake-H HM570" },
+	{ PCI_DEVICE_ID_INTEL_TGP_H_ESPI_QM580, "Tigerlake-H QM580" },
+	{ PCI_DEVICE_ID_INTEL_TGP_H_ESPI_WM590, "Tigerlake-H WM590" },
 };
 
 static struct {
@@ -80,6 +91,8 @@ static struct {
 	const char *name;
 } igd_table[] = {
 	{ PCI_DEVICE_ID_INTEL_TGL_GT0, "Tigerlake U GT0" },
+	{ PCI_DEVICE_ID_INTEL_TGL_GT1_H_32, "Tigerlake H GT1 32EU" },
+	{ PCI_DEVICE_ID_INTEL_TGL_GT1_H_16, "Tigerlake H GT1 16EU" },
 	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULT, "Tigerlake U GT2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_GT2_ULX, "Tigerlake Y GT2" },
 	{ PCI_DEVICE_ID_INTEL_TGL_GT3_ULT, "Tigerlake U GT3" },

@@ -229,8 +229,9 @@ void vSetVcoreByFreq(DRAMC_CTX_T *p)
     }
 #endif
 
-    if (vcore)
-        dramc_set_vcore_voltage(vcore);
+    if (CONFIG(MEDIATEK_DRAM_DVFS))
+        if (vcore)
+            dramc_set_vcore_voltage(vcore);
 
 #if defined(DRAM_HQA)
     if (vio18)
@@ -1884,7 +1885,7 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
     ett_fix_freq = 1; /* only 1600 & 4266 */
 #endif
 
-    if (CONFIG(MEDIATEK_DRAM_DVFS_LIMIT_FREQ_CNT))
+    if (!CONFIG(MEDIATEK_DRAM_DVFS))
         ett_fix_freq = 0x1; // 4266, 1600
 
     if (ett_fix_freq != 0xff)

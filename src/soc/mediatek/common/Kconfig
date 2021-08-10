@@ -17,7 +17,7 @@ config MEDIATEK_DRAM_DVFS
 config MEDIATEK_DRAM_DVFS_LIMIT_FREQ_CNT
 	bool
 	default y
-	select MEDIATEK_DRAM_DVFS
+	depends on MEDIATEK_DRAM_DVFS
 	help
 	  This options limit DRAM frequency calibration count from total 7 to 3,
 	  other frequency will directly use the low frequency shu result.

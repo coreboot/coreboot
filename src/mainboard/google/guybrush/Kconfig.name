@@ -3,3 +3,7 @@ comment "Guybrush"
 config BOARD_GOOGLE_GUYBRUSH
 	bool "->  Guybrush"
 	select BOARD_GOOGLE_BASEBOARD_GUYBRUSH
+
+config BOARD_GOOGLE_NIPPERKIN
+	bool "-> Nipperkin"
+	select BOARD_GOOGLE_BASEBOARD_GUYBRUSH

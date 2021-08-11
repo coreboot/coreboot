@@ -2,15 +2,15 @@
 
 #include <acpi/acpi.h>
 #include <arch/io.h>
-#include <bcd.h>
-#include <fallback.h>
-#include <version.h>
+#include <commonlib/bsd/bcd.h>
 #include <console/console.h>
+#include <fallback.h>
 #include <pc80/mc146818rtc.h>
 #include <rtc.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/vbnv_layout.h>
 #include <types.h>
+#include <version.h>
 
 static void cmos_reset_date(void)
 {

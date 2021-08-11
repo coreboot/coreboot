@@ -3,10 +3,10 @@
 #ifndef _CPER_H_
 #define _CPER_H_
 
+#include <commonlib/bsd/bcd.h>
+#include <rtc.h>
 #include <types.h>
 #include <uuid.h>
-#include <bcd.h>
-#include <rtc.h>
 
 /* This file contains some definitions and helpers for implementing structures
  * in the UEFI specification, Appendix "Common Platform Error Record".  This

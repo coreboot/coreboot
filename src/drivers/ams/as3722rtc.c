@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <bcd.h>
+#include <commonlib/bsd/bcd.h>
 #include <device/i2c_simple.h>
 #include <rtc.h>
 #include <stdint.h>

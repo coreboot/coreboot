@@ -3,7 +3,7 @@
 #ifndef SOC_MEDIATEK_RTC_COMMON_H
 #define SOC_MEDIATEK_RTC_COMMON_H
 
-#include <bcd.h>
+#include <commonlib/bsd/bcd.h>
 #include <console/console.h>
 #include <rtc.h>
 #include <stdbool.h>

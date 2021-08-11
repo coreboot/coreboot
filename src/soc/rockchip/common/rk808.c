@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
-#include <bcd.h>
+#include <commonlib/bsd/bcd.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/i2c_simple.h>

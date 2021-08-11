@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/bsd/bcd.h>
+#include <console/console.h>
 #include <device/smbus.h>
 #include <version.h>
-#include <console/console.h>
-#include <bcd.h>
 #include "chip.h"
 
 /* Set RTC date from coreboot build date. */

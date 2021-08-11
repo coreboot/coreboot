@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <bcd.h>
 #include <boot_device.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <commonlib/bsd/bcd.h>
 #include <commonlib/bsd/elog.h>
 #include <commonlib/region.h>
 #include <console/console.h>

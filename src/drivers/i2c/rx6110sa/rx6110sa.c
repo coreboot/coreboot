@@ -2,13 +2,13 @@
 
 #include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
+#include <commonlib/bsd/bcd.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/i2c.h>
 #include <device/i2c_bus.h>
-#include <version.h>
-#include <console/console.h>
-#include <bcd.h>
 #include <timer.h>
+#include <version.h>
 #include "chip.h"
 #include "rx6110sa.h"
 

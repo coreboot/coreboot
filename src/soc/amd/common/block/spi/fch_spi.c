@@ -10,6 +10,46 @@
 #include <soc/lpc.h>
 #include <stdint.h>
 
+static const char *spi_speed_str[8] = {
+	"66.66 Mhz",
+	"33.33 MHz",
+	"22.22 MHz",
+	"16.66 MHz",
+	"100 MHz",
+	"800 KHz",
+	"Invalid",
+	"Invalid"
+};
+
+static const char *read_mode_str[8] = {
+	"Normal Read (up to 33M)",
+	"Reserved",
+	"Dual IO (1-1-2)",
+	"Quad IO (1-1-4)",
+	"Dual IO (1-2-2)",
+	"Quad IO (1-4-4)",
+	"Normal Read (up to 66M)",
+	"Fast Read"
+};
+
+void show_spi_speeds_and_modes(void)
+{
+	uint16_t val16 = spi_read16(SPI100_SPEED_CONFIG);
+	uint32_t val32 = spi_read32(SPI_CNTRL0);
+
+	printk(BIOS_DEBUG, "SPI normal read speed: %s\n",
+	       spi_speed_str[DECODE_SPI_NORMAL_SPEED(val16)]);
+	printk(BIOS_DEBUG, "SPI fast read speed: %s\n",
+	       spi_speed_str[DECODE_SPI_FAST_SPEED(val16)]);
+	printk(BIOS_DEBUG, "SPI alt read speed: %s\n",
+	       spi_speed_str[DECODE_SPI_ALT_SPEED(val16)]);
+	printk(BIOS_DEBUG, "SPI TPM read speed: %s\n",
+	       spi_speed_str[DECODE_SPI_TPM_SPEED(val16)]);
+	printk(BIOS_DEBUG, "SPI100: %s\n",
+	       spi_read16(SPI100_ENABLE) & SPI_USE_SPI100 ? "Enabled" : "Disabled");
+	printk(BIOS_DEBUG, "SPI Read Mode: %s\n", read_mode_str[DECODE_SPI_READ_MODE(val32)]);
+}
+
 static uint8_t lower_speed(uint8_t speed1, uint8_t speed2)
 {
 	uint8_t speeds[] = {SPI_SPEED_800K, SPI_SPEED_16M, SPI_SPEED_22M,

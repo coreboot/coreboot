@@ -5,21 +5,25 @@ chip soc/intel/alderlake
 	register "power_limits_config[ADL_P_POWER_LIMITS_282_CORE]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 55,
+		.tdp_pl4 = 123,
 	}"
 
 	register "power_limits_config[ADL_P_POWER_LIMITS_482_CORE]" = "{
 		.tdp_pl1_override = 28,
 		.tdp_pl2_override = 64,
+		.tdp_pl4 = 140,
 	}"
 
 	register "power_limits_config[ADL_P_POWER_LIMITS_682_CORE]" = "{
 		.tdp_pl1_override = 45,
 		.tdp_pl2_override = 115,
+		.tdp_pl4 = 215,
 	}"
 
 	register "power_limits_config[ADL_M_POWER_LIMITS_282_CORE]" = "{
 		.tdp_pl1_override = 9,
 		.tdp_pl2_override = 30,
+		.tdp_pl4 = 68,
 	}"
 
 	device domain 0 on

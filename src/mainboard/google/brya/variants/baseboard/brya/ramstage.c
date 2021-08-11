@@ -7,6 +7,7 @@
 #include <soc/pci_devs.h>
 
 #include <drivers/intel/dptf/chip.h>
+#include <intelblocks/power_limit.h>
 
 void variant_update_power_limits(const struct cpu_power_limits *limits, size_t num_entries)
 {
@@ -30,15 +31,19 @@ void variant_update_power_limits(const struct cpu_power_limits *limits, size_t n
 	for (size_t i = 0; i < num_entries; i++) {
 		if (mchid == limits[i].mchid) {
 			struct dptf_power_limits *settings = &config->controls.power_limits;
+			config_t *conf = config_of_soc();
+			struct soc_power_limits_config *soc_config = conf->power_limits_config;
 			settings->pl1.min_power = limits[i].pl1_min_power;
 			settings->pl1.max_power = limits[i].pl1_max_power;
 			settings->pl2.min_power = limits[i].pl2_min_power;
 			settings->pl2.max_power = limits[i].pl2_max_power;
-			printk(BIOS_INFO, "Overriding DPTF power limits PL1 (%u, %u) PL2 (%u, %u)\n",
+			soc_config->tdp_pl4 = limits[i].pl4_power;
+			printk(BIOS_INFO, "Overriding power limits PL1 (%u, %u) PL2 (%u, %u) PL4 (%u)\n",
 					limits[i].pl1_min_power,
 					limits[i].pl1_max_power,
 					limits[i].pl2_min_power,
-					limits[i].pl2_max_power);
+					limits[i].pl2_max_power,
+					limits[i].pl4_power);
 		}
 	}
 }

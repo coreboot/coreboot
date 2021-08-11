@@ -13,15 +13,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_panel_power_down_delay" = "0"
 	register "gpu_panel_power_up_delay" = "0"
 	register "gpu_pch_backlight" = "0x00000000"
-	device cpu_cluster 0 on
-		chip cpu/intel/model_206ax
-			register "acpi_c1" = "1"
-			register "acpi_c2" = "3"
-			register "acpi_c3" = "5"
-			device lapic 0 on end
-			device lapic 0xacac off end
-		end
-	end
+
 	device domain 0 on
 		device pci 00.0 on
 			subsystemid 0x1849 0x0150

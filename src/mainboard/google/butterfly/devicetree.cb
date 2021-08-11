@@ -20,18 +20,6 @@ chip northbridge/intel/sandybridge
 
 	register "max_mem_clock_mhz" = "666"			# DDR3-1333
 
-	device cpu_cluster 0 on
-		chip cpu/intel/model_206ax
-			# Magic APIC ID to locate this chip
-			device lapic 0 on end
-			device lapic 0xacac off end
-
-			register "acpi_c1" = "1"	# ACPI(C1) = MWAIT(C1)
-			register "acpi_c2" = "3"	# ACPI(C2) = MWAIT(C3)
-			register "acpi_c3" = "5"	# ACPI(C3) = MWAIT(C7)
-		end
-	end
-
 	device domain 0 on
 		device pci 00.0 on end # host bridge
 		device pci 01.0 off end # PCIe Bridge for discrete graphics

@@ -1,15 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 chip northbridge/intel/sandybridge
-	device cpu_cluster 0 on
-		chip cpu/intel/model_206ax
-			register "acpi_c1" = "1"
-			register "acpi_c2" = "3"
-			register "acpi_c3" = "5"
-			device lapic 0 on end
-			device lapic 0xacac off end
-		end
-	end
 	device domain 0 on
 		chip southbridge/intel/bd82x6x	# Intel Series 6 Cougar Point PCH
 			register "gen1_dec" = "0x000c0291"

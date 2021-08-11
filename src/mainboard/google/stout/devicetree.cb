@@ -26,10 +26,6 @@ chip northbridge/intel/sandybridge
 			device lapic 0xacac off end
 
 			register "tcc_offset" = "5"	# TCC of 95C
-
-			register "acpi_c1" = "1"	# ACPI(C1) = MWAIT(C1)
-			register "acpi_c2" = "3"	# ACPI(C2) = MWAIT(C3)
-			register "acpi_c3" = "5"	# ACPI(C3) = MWAIT(C7)
 		end
 	end
 

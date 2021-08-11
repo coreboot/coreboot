@@ -19,7 +19,6 @@ chip northbridge/intel/sandybridge
 
 			register "acpi_c1" = "3"	# ACPI(C1) = MWAIT(C3)
 			register "acpi_c2" = "4"	# ACPI(C2) = MWAIT(C6)
-			register "acpi_c3" = "5"	# ACPI(C3) = MWAIT(C7)
 		end
 	end
 

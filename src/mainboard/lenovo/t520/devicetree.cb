@@ -15,18 +15,6 @@ chip northbridge/intel/sandybridge
 	register "gpu_cpu_backlight" = "0x1155"
 	register "gpu_pch_backlight" = "0x06100610"
 
-	device cpu_cluster 0 on
-		chip cpu/intel/model_206ax
-			# Magic APIC ID to locate this chip
-			device lapic 0 on end
-			device lapic 0xacac off end
-
-			register "acpi_c1" = "1"	# ACPI(C1) = MWAIT(C1)
-			register "acpi_c2" = "3"	# ACPI(C2) = MWAIT(C3)
-			register "acpi_c3" = "5"	# ACPI(C3) = MWAIT(C7)
-		end
-	end
-
 	device domain 0 on
 		subsystemid 0x17aa 0x21cf inherit
 

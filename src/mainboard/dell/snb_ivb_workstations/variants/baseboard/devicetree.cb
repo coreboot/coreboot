@@ -1,9 +1,6 @@
 chip northbridge/intel/sandybridge
 	device cpu_cluster 0 on
 		chip cpu/intel/model_206ax
-			register "acpi_c1" = "1"
-			register "acpi_c2" = "3"
-			register "acpi_c3" = "5"
 			register "tcc_offset" = "5" # TCC of 95C
 			device lapic 0 on end
 			device lapic 0xacac off end

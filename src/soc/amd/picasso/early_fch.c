@@ -75,6 +75,7 @@ void fch_early_init(void)
 	pm_set_power_failure_state();
 	fch_print_pmxc0_status();
 	i2c_soc_early_init();
+	show_spi_speeds_and_modes();
 
 	if (CONFIG(DISABLE_SPI_FLASH_ROM_SHARING))
 		lpc_disable_spi_rom_sharing();

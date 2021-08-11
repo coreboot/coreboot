@@ -357,6 +357,7 @@ void bootblock_fch_init(void)
 {
 	pm_set_power_failure_state();
 	fch_print_pmxc0_status();
+	show_spi_speeds_and_modes();
 }
 
 static void fch_init_acpi_ports(void)

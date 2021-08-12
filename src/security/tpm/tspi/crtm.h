@@ -3,7 +3,6 @@
 #ifndef __SECURITY_TSPI_CRTM_H__
 #define __SECURITY_TSPI_CRTM_H__
 
-#include <commonlib/cbfs.h>
 #include <program_loading.h>
 #include <security/tpm/tspi.h>
 #include <types.h>

@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <cbfs.h>
 #include <commonlib/bsd/cbfs_mdata.h>
+#include <commonlib/bsd/cbfs_private.h>
 #include <commonlib/region.h>
 #include <string.h>
 #include <tests/lib/cbfs_util.h>

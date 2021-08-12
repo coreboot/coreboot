@@ -27,13 +27,6 @@ romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += fsp_relocate.c
 endif
 ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += fsp_relocate.c
 
-bootblock-y += cbfs.c
-verstage-y += cbfs.c
-romstage-y += cbfs.c
-ramstage-y += cbfs.c
-smm-y += cbfs.c
-postcar-y += cbfs.c
-
 bootblock-y += bsd/cbfs_private.c
 verstage-y += bsd/cbfs_private.c
 romstage-y += bsd/cbfs_private.c

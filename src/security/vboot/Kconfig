@@ -251,8 +251,8 @@ config VBOOT_ENABLE_CBFS_FALLBACK
 	default n
 	depends on VBOOT_SLOTS_RW_A
 	help
-	  When this option is enabled cbfs_boot_locate will look for a file in the RO
-	  (COREBOOT) region if it isn't available in the active RW region.
+	  When this option is enabled, the CBFS code will look for a file in the
+	  RO (COREBOOT) region if it isn't available in the active RW region.
 
 config VBOOT_EARLY_EC_SYNC
 	bool

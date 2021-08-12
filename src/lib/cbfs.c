@@ -6,7 +6,6 @@
 #include <cbmem.h>
 #include <commonlib/bsd/cbfs_private.h>
 #include <commonlib/bsd/compression.h>
-#include <commonlib/endian.h>
 #include <console/console.h>
 #include <fmap.h>
 #include <lib.h>
@@ -84,25 +83,6 @@ cb_err_t _cbfs_boot_lookup(const char *name, bool force_ro,
 	return CB_SUCCESS;
 }
 
-int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
-{
-	if (_cbfs_boot_lookup(name, false, &fh->mdata, &fh->data))
-		return -1;
-
-	size_t msize = be32toh(fh->mdata.h.offset);
-	if (rdev_chain_mem(&fh->metadata, &fh->mdata, msize))
-		return -1;
-
-	if (type) {
-		if (!*type)
-			*type = be32toh(fh->mdata.h.type);
-		else if (*type != be32toh(fh->mdata.h.type))
-			return -1;
-	}
-
-	return 0;
-}
-
 void cbfs_unmap(void *mapping)
 {
 	/*
@@ -113,26 +93,6 @@ void cbfs_unmap(void *mapping)
 	 * cbfs_cache mem_pool.
 	 */
 	mem_pool_free(&cbfs_cache, mapping);
-}
-
-int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
-			       const char *name, uint32_t *type)
-{
-	struct region_device rdev;
-	int ret = 0;
-	if (fmap_locate_area_as_rdev(region_name, &rdev)) {
-		LOG("%s region not found while looking for %s\n", region_name, name);
-		return -1;
-	}
-
-	uint32_t dummy_type = 0;
-	if (!type)
-		type = &dummy_type;
-
-	ret = cbfs_locate(fh, &rdev, name, type);
-	/* No more measuring here, this function will be removed next patch. */
-
-	return ret;
 }
 
 static inline bool fsps_env(void)

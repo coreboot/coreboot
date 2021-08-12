@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cbfs.h>
+#include <commonlib/bsd/cbfs_private.h>
 #include <commonlib/region.h>
 #include <string.h>
 #include <tests/lib/cbfs_util.h>

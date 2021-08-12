@@ -5,9 +5,9 @@
 
 #include <cbmem.h>
 #include <commonlib/bsd/cbfs_mdata.h>
-#include <commonlib/cbfs.h>
 #include <commonlib/mem_pool.h>
 #include <commonlib/region.h>
+#include <endian.h>
 #include <program_loading.h>
 #include <types.h>
 #include <vb2_sha.h>
@@ -188,16 +188,6 @@ const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro);
 cb_err_t cbfs_init_boot_device(const struct cbfs_boot_device *cbd,
 			       struct vb2_hash *metadata_hash);
 
-
-/**********************************************************************************************
- *                         LEGACY APIs, TO BE DEPRECATED/REPLACED                             *
- **********************************************************************************************/
-
-/* Locate file by name and optional type. Return 0 on success. < 0 on error. */
-int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type);
-/* Locate file in a specific region of fmap. Return 0 on success. < 0 on error*/
-int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
-		const char *name, uint32_t *type);
 
 /**********************************************************************************************
  *                         INTERNAL HELPERS FOR INLINES, DO NOT USE.                          *

@@ -8,6 +8,9 @@
 /* The WP status pin lives on GPIO_SSUS_6 which is pad 36 in the SUS well. */
 #define WP_STATUS_PAD	36
 
+/* The EC_IN_RW lives on SCGPIO59 */
+#define EC_IN_RW_PAD	59
+
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
@@ -42,4 +45,10 @@ static const struct cros_gpio cros_gpios[] = {
 void mainboard_chromeos_acpi_generate(void)
 {
 	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
+}
+
+int get_ec_is_trusted(void)
+{
+	/* EC is trusted if not in RW. */
+	return !score_get_gpio(EC_IN_RW_PAD);
 }

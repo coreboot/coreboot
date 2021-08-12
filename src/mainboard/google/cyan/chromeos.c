@@ -12,6 +12,8 @@
 
 #define WP_GPIO			GP_E_22
 
+#define EC_IN_RW_GPIO		GP_SW_77
+
 #define ACTIVE_LOW	0
 #define ACTIVE_HIGH	1
 
@@ -61,4 +63,10 @@ static const struct cros_gpio cros_gpios[] = {
 void mainboard_chromeos_acpi_generate(void)
 {
 	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
+}
+
+int get_ec_is_trusted(void)
+{
+	/* EC is trusted if not in RW. */
+	return !gpio_get(EC_IN_RW_GPIO);
 }

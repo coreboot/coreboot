@@ -107,3 +107,10 @@ void mainboard_prepare_cr50_reset(void)
 	if (ENV_RAMSTAGE)
 		pmc_soc_set_afterg3_en(true);
 }
+
+int get_ec_is_trusted(void)
+{
+	/* Do not have a Chrome EC involved in entering recovery mode;
+	   Always return trusted. */
+	return 1;
+}

@@ -55,3 +55,9 @@ int tis_plat_irq_status(void)
 {
 	return gpio_irq_status(GPIO_H1_AP_INT);
 }
+
+int get_ec_is_trusted(void)
+{
+	/* EC is trusted if not in RW. This is active low. */
+	return !!gpio_get(GPIO_EC_IN_RW);
+}

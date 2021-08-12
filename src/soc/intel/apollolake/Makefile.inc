@@ -92,11 +92,13 @@ bootblock-y += gpio_glk.c
 romstage-y += gpio_glk.c
 smm-y += gpio_glk.c
 ramstage-y += gpio_glk.c
+verstage-y += gpio_glk.c
 else
 bootblock-y += gpio_apl.c
 romstage-y += gpio_apl.c
 smm-y += gpio_apl.c
 ramstage-y += gpio_apl.c
+verstage-y += gpio_apl.c
 endif
 
 CPPFLAGS_common += -I$(src)/soc/intel/apollolake/include

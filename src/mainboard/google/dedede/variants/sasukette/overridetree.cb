@@ -1,3 +1,12 @@
+fw_config
+	field AUDIO_CODEC_SOURCE 41 43
+		option AUDIO_CODEC_UNPROVISIONED 0
+		option AUDIO_CODEC_ALC5682 1
+		option AUDIO_CODEC_CS42l42 2
+		option AUDIO_CODEC_ALC5682I_VS 3
+	end
+end
+
 chip soc/intel/jasperlake
 
 	# Intel Common SoC Config
@@ -175,7 +184,7 @@ chip soc/intel/jasperlake
 		end #I2C 0
 		device pci 19.0 on
 			chip drivers/i2c/generic
-				register "hid" = ""10EC5682""
+				# register "hid" is set in ramstage.c because of FW_CONFIG
 				register "name" = ""RT58""
 				register "desc" = ""Realtek RT5682""
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"

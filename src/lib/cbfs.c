@@ -81,10 +81,6 @@ cb_err_t _cbfs_boot_lookup(const char *name, bool force_ro,
 	if (rdev_chain(rdev, &cbd->rdev, data_offset, be32toh(mdata->h.len)))
 		return CB_ERR;
 
-	if (tspi_measure_cbfs_hook(rdev, name, be32toh(mdata->h.type))) {
-		printk(BIOS_ERR, "CBFS ERROR: error when measuring '%s'\n", name);
-	}
-
 	return CB_SUCCESS;
 }
 
@@ -134,9 +130,8 @@ int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
 		type = &dummy_type;
 
 	ret = cbfs_locate(fh, &rdev, name, type);
-	if (!ret)
-		if (tspi_measure_cbfs_hook(&rdev, name, *type))
-			LOG("error measuring %s in region %s\n", name, region_name);
+	/* No more measuring here, this function will be removed next patch. */
+
 	return ret;
 }
 
@@ -193,19 +188,36 @@ static inline bool cbfs_lzma_enabled(void)
 static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
 				    const union cbfs_mdata *mdata, bool skip_verification)
 {
-	/* Avoid linking hash functions when verification is disabled. */
-	if (!CONFIG(CBFS_VERIFICATION) || skip_verification)
+	/* Avoid linking hash functions when verification and measurement are disabled. */
+	if (!CONFIG(CBFS_VERIFICATION) && !CONFIG(TPM_MEASURED_BOOT))
 		return false;
 
-	const struct vb2_hash *hash = cbfs_file_hash(mdata);
-	if (!hash) {
-		ERROR("'%s' does not have a file hash!\n", mdata->h.filename);
-		return true;
+	const struct vb2_hash *hash = NULL;
+
+	if (CONFIG(CBFS_VERIFICATION) && !skip_verification) {
+		hash = cbfs_file_hash(mdata);
+		if (!hash) {
+			ERROR("'%s' does not have a file hash!\n", mdata->h.filename);
+			return true;
+		}
+		if (vb2_hash_verify(buffer, size, hash) != VB2_SUCCESS) {
+			ERROR("'%s' file hash mismatch!\n", mdata->h.filename);
+			return true;
+		}
 	}
 
-	if (vb2_hash_verify(buffer, size, hash) != VB2_SUCCESS) {
-		ERROR("'%s' file hash mismatch!\n", mdata->h.filename);
-		return true;
+	if (CONFIG(TPM_MEASURED_BOOT) && !ENV_SMM) {
+		struct vb2_hash calculated_hash;
+
+		/* No need to re-hash file if we already have it from verification. */
+		if (!hash || hash->algo != TPM_MEASURE_ALGO) {
+			vb2_hash_calculate(buffer, size, TPM_MEASURE_ALGO, &calculated_hash);
+			hash = &calculated_hash;
+		}
+
+		if (tspi_cbfs_measurement(mdata->h.filename, be32toh(mdata->h.type), hash))
+			ERROR("failed to measure '%s' into TCPA log\n", mdata->h.filename);
+			/* We intentionally continue to boot on measurement errors. */
 	}
 
 	return false;
@@ -527,9 +539,6 @@ void *_cbfs_unverified_area_alloc(const char *area, const char *name,
 
 	if (rdev_chain(&file_rdev, &area_rdev, data_offset, be32toh(mdata.h.len)))
 		return NULL;
-
-	if (tspi_measure_cbfs_hook(&file_rdev, name, be32toh(mdata.h.type)))
-		ERROR("error measuring '%s' in '%s'\n", name, area);
 
 	return do_alloc(&mdata, &file_rdev, allocator, arg, size_out, true);
 }

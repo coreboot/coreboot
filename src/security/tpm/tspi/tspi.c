@@ -220,7 +220,7 @@ uint32_t tpm_clear_and_reenable(void)
 }
 
 uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
-			uint8_t *digest, size_t digest_len, const char *name)
+			const uint8_t *digest, size_t digest_len, const char *name)
 {
 	uint32_t result;
 
@@ -234,15 +234,21 @@ uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
 			return result;
 		}
 
-		printk(BIOS_DEBUG, "TPM: Extending digest for %s into PCR %d\n", name, pcr);
+		printk(BIOS_DEBUG, "TPM: Extending digest for `%s` into PCR %d\n", name, pcr);
 		result = tlcl_extend(pcr, digest, NULL);
-		if (result != TPM_SUCCESS)
+		if (result != TPM_SUCCESS) {
+			printk(BIOS_ERR, "TPM: Extending hash for `%s` into PCR %d failed.\n",
+			       name, pcr);
 			return result;
+		}
 	}
 
 	if (CONFIG(TPM_MEASURED_BOOT))
 		tcpa_log_add_table_entry(name, pcr, digest_algo,
 			digest, digest_len);
+
+	printk(BIOS_DEBUG, "TPM: Digest of `%s` to PCR %d %s\n",
+	       name, pcr, tspi_tpm_is_setup() ? "measured" : "logged");
 
 	return TPM_SUCCESS;
 }
@@ -253,23 +259,16 @@ uint32_t tpm_measure_region(const struct region_device *rdev, uint8_t pcr,
 {
 	uint8_t digest[TPM_PCR_MAX_LEN], digest_len;
 	uint8_t buf[HASH_DATA_CHUNK_SIZE];
-	uint32_t result, offset;
+	uint32_t offset;
 	size_t len;
 	struct vb2_digest_context ctx;
-	enum vb2_hash_algorithm hash_alg;
 
 	if (!rdev || !rname)
 		return TPM_E_INVALID_ARG;
 
-	if (CONFIG(TPM1)) {
-		hash_alg = VB2_HASH_SHA1;
-	} else { /* CONFIG_TPM2 */
-		hash_alg = VB2_HASH_SHA256;
-	}
-
-	digest_len = vb2_digest_size(hash_alg);
+	digest_len = vb2_digest_size(TPM_MEASURE_ALGO);
 	assert(digest_len <= sizeof(digest));
-	if (vb2_digest_init(&ctx, hash_alg)) {
+	if (vb2_digest_init(&ctx, TPM_MEASURE_ALGO)) {
 		printk(BIOS_ERR, "TPM: Error initializing hash.\n");
 		return TPM_E_HASH_ERROR;
 	}
@@ -294,13 +293,6 @@ uint32_t tpm_measure_region(const struct region_device *rdev, uint8_t pcr,
 		printk(BIOS_ERR, "TPM: Error finalizing hash.\n");
 		return TPM_E_HASH_ERROR;
 	}
-	result = tpm_extend_pcr(pcr, hash_alg, digest, digest_len, rname);
-	if (result != TPM_SUCCESS) {
-		printk(BIOS_ERR, "TPM: Extending hash into PCR failed.\n");
-		return result;
-	}
-	printk(BIOS_DEBUG, "TPM: Digest of %s to PCR %d %s\n",
-	       rname, pcr, tspi_tpm_is_setup() ? "measured" : "logged");
-	return TPM_SUCCESS;
+	return tpm_extend_pcr(pcr, TPM_MEASURE_ALGO, digest, digest_len, rname);
 }
 #endif /* VBOOT_LIB */

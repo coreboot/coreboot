@@ -6,37 +6,6 @@
 #include "crtm.h"
 #include <string.h>
 
-/*
- * This function sets the TCPA log namespace
- * for the cbfs file (region) lookup.
- */
-static int create_tcpa_metadata(const struct region_device *rdev,
-		const char *cbfs_name, char log_string[TCPA_PCR_HASH_NAME])
-{
-	int i;
-	struct region_device fmap;
-	static const char *const fmap_cbfs_names[] = {
-		"COREBOOT",
-		"FW_MAIN_A",
-		"FW_MAIN_B",
-		"RW_LEGACY"
-	};
-
-	for (i = 0; i < ARRAY_SIZE(fmap_cbfs_names); i++) {
-		if (fmap_locate_area_as_rdev(fmap_cbfs_names[i], &fmap) == 0) {
-			if (region_is_subregion(region_device_region(&fmap),
-				region_device_region(rdev))) {
-				snprintf(log_string, TCPA_PCR_HASH_NAME,
-					"FMAP: %s CBFS: %s",
-					fmap_cbfs_names[i], cbfs_name);
-				return 0;
-			}
-		}
-	}
-
-	return -1;
-}
-
 static int tcpa_log_initialized;
 static inline int tcpa_log_available(void)
 {
@@ -64,8 +33,6 @@ static inline int tcpa_log_available(void)
  */
 static uint32_t tspi_init_crtm(void)
 {
-	struct prog bootblock = PROG_INIT(PROG_BOOTBLOCK, "bootblock");
-
 	/* Initialize TCPA PRERAM log. */
 	if (!tcpa_log_available()) {
 		tcpa_preram_log_clear();
@@ -87,7 +54,6 @@ static uint32_t tspi_init_crtm(void)
 	}
 
 	/* measure bootblock from RO */
-	struct cbfsf bootblock_data;
 	struct region_device bootblock_fmap;
 	if (fmap_locate_area_as_rdev("BOOTBLOCK", &bootblock_fmap) == 0) {
 		if (tpm_measure_region(&bootblock_fmap,
@@ -95,16 +61,16 @@ static uint32_t tspi_init_crtm(void)
 				       "FMAP: BOOTBLOCK"))
 			return VB2_ERROR_UNKNOWN;
 	} else {
-		if (cbfs_boot_locate(&bootblock_data,
-			prog_name(&bootblock), NULL)) {
-			/*
-			 * measurement is done in
-			 * tspi_measure_cbfs_hook()
-			 */
+		/* Mapping measures the file. We know we can safely map here because
+		   bootblock-as-a-file is only used on x86, where we don't need cache to map. */
+		enum cbfs_type type = CBFS_TYPE_BOOTBLOCK;
+		void *mapping = cbfs_ro_type_map("bootblock", NULL, &type);
+		if (!mapping) {
 			printk(BIOS_INFO,
 			       "TSPI: Couldn't measure bootblock into CRTM!\n");
 			return VB2_ERROR_UNKNOWN;
 		}
+		cbfs_unmap(mapping);
 	}
 
 	return VB2_SUCCESS;
@@ -129,8 +95,7 @@ static bool is_runtime_data(const char *name)
 	return !strcmp(allowlist, name);
 }
 
-uint32_t tspi_measure_cbfs_hook(const struct region_device *rdev, const char *name,
-				uint32_t cbfs_type)
+uint32_t tspi_cbfs_measurement(const char *name, uint32_t type, const struct vb2_hash *hash)
 {
 	uint32_t pcr_index;
 	char tcpa_metadata[TCPA_PCR_HASH_NAME];
@@ -144,7 +109,7 @@ uint32_t tspi_measure_cbfs_hook(const struct region_device *rdev, const char *na
 		printk(BIOS_DEBUG, "CRTM initialized.\n");
 	}
 
-	switch (cbfs_type) {
+	switch (type) {
 	case CBFS_TYPE_MRC_CACHE:
 		pcr_index = TPM_RUNTIME_DATA_PCR;
 		break;
@@ -166,10 +131,10 @@ uint32_t tspi_measure_cbfs_hook(const struct region_device *rdev, const char *na
 		break;
 	}
 
-	if (create_tcpa_metadata(rdev, name, tcpa_metadata) < 0)
-		return VB2_ERROR_UNKNOWN;
+	snprintf(tcpa_metadata, TCPA_PCR_HASH_NAME, "CBFS: %s", name);
 
-	return tpm_measure_region(rdev, pcr_index, tcpa_metadata);
+	return tpm_extend_pcr(pcr_index, hash->algo, hash->raw, vb2_digest_size(hash->algo),
+			      tcpa_metadata);
 }
 
 int tspi_measure_cache_to_pcr(void)

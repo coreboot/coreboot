@@ -1144,6 +1144,7 @@ enum platform {
 	PLATFORM_PICASSO,
 	PLATFORM_RENOIR,
 	PLATFORM_CEZANNE,
+	PLATFORM_MENDOCINO,
 	PLATFORM_LUCIENNE,
 };
 
@@ -1181,6 +1182,7 @@ static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
 	case PLATFORM_RENOIR:
 	case PLATFORM_LUCIENNE:
 	case PLATFORM_CEZANNE:
+	case PLATFORM_MENDOCINO:
 		amd_romsig->efs_gen.gen = EFS_SECOND_GEN;
 		amd_romsig->spi_readmode_f17_mod_30_3f = efs_spi_readmode;
 		amd_romsig->spi_fastspeed_f17_mod_30_3f = efs_spi_speed;
@@ -1217,6 +1219,8 @@ static int identify_platform(char *soc_name)
 		return PLATFORM_PICASSO;
 	else if (!strcasecmp(soc_name, "Cezanne"))
 		return PLATFORM_CEZANNE;
+	else if (!strcasecmp(soc_name, "Mendocino"))
+		return PLATFORM_MENDOCINO;
 	else if (!strcasecmp(soc_name, "Renoir"))
 		return PLATFORM_RENOIR;
 	else if (!strcasecmp(soc_name, "Lucienne"))
@@ -1617,6 +1621,8 @@ int main(int argc, char **argv)
 		case PLATFORM_LUCIENNE:
 		case PLATFORM_CEZANNE:
 			amd_romsig->bios3_entry = BUFF_TO_RUN(ctx, biosdir);
+			break;
+		case PLATFORM_MENDOCINO:
 			break;
 		case PLATFORM_STONEYRIDGE:
 		case PLATFORM_RAVEN:

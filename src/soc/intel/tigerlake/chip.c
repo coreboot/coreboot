@@ -23,6 +23,13 @@ static const struct pcie_rp_group pch_lp_rp_groups[] = {
 	{ 0 }
 };
 
+static const struct pcie_rp_group pch_h_rp_groups[] = {
+	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8 },
+	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 8 },
+	{ .slot = PCH_DEV_SLOT_PCIE_2,	.count = 8 },
+	{ 0 }
+};
+
 #if CONFIG(HAVE_ACPI_TABLES)
 const char *soc_acpi_name(const struct device *dev)
 {
@@ -93,6 +100,18 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_PCIE10:		return "RP10";
 	case PCH_DEVFN_PCIE11:		return "RP11";
 	case PCH_DEVFN_PCIE12:		return "RP12";
+	case PCH_DEVFN_PCIE13:		return "RP13";
+	case PCH_DEVFN_PCIE14:		return "RP14";
+	case PCH_DEVFN_PCIE15:		return "RP15";
+	case PCH_DEVFN_PCIE16:		return "RP16";
+	case PCH_DEVFN_PCIE17:		return "RP17";
+	case PCH_DEVFN_PCIE18:		return "RP18";
+	case PCH_DEVFN_PCIE19:		return "RP19";
+	case PCH_DEVFN_PCIE20:		return "RP20";
+	case PCH_DEVFN_PCIE21:		return "RP21";
+	case PCH_DEVFN_PCIE22:		return "RP22";
+	case PCH_DEVFN_PCIE23:		return "RP23";
+	case PCH_DEVFN_PCIE24:		return "RP24";
 	case PCH_DEVFN_PMC:		return "PMC";
 	case PCH_DEVFN_UART0:		return "UAR0";
 	case PCH_DEVFN_UART1:		return "UAR1";
@@ -135,7 +154,10 @@ void soc_init_pre_device(void *chip_info)
 	soc_fill_gpio_pm_configuration();
 
 	/* Swap enabled PCI ports in device tree if needed. */
-	pcie_rp_update_devicetree(pch_lp_rp_groups);
+	if (CONFIG(SOC_INTEL_TIGERLAKE_PCH_H))
+		pcie_rp_update_devicetree(pch_h_rp_groups);
+	else
+		pcie_rp_update_devicetree(pch_lp_rp_groups);
 }
 
 static void cpu_fill_ssdt(const struct device *dev)

@@ -340,18 +340,6 @@ struct mtk_phy_timing {
 	u32 d_phy;
 };
 
-/* Definitions for cmd in lcm_init_command */
-#define LCM_END_CMD 0
-#define LCM_DELAY_CMD 1
-#define LCM_GENERIC_CMD 2
-#define LCM_DCS_CMD 3
-
-struct lcm_init_command {
-	u8 cmd;
-	u8 len;
-	u8 data[];
-};
-
 /* Functions that each SOC should provide. */
 void mtk_dsi_reset(void);
 void mtk_dsi_configure_mipi_tx(u32 data_rate, u32 lanes);

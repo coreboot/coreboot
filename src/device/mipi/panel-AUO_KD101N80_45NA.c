@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include "../panel.h"
+#include <device/mipi_panel.h>
 
 struct panel_serializable_data AUO_KD101N80_45NA = {
 	.edid = {
@@ -20,11 +20,11 @@ struct panel_serializable_data AUO_KD101N80_45NA = {
 	},
 	.orientation = LB_FB_ORIENTATION_LEFT_UP,
 	.init = {
-		INIT_DELAY_CMD(10),
-		INIT_DCS_CMD(0x11),
-		INIT_DELAY_CMD(120),
-		INIT_DCS_CMD(0x29),
-		INIT_DELAY_CMD(20),
-		INIT_END_CMD,
+		PANEL_DELAY(10),
+		PANEL_DCS(0x11),
+		PANEL_DELAY(120),
+		PANEL_DCS(0x29),
+		PANEL_DELAY(20),
+		PANEL_END,
 	},
 };

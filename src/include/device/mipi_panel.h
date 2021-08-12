@@ -1,0 +1,56 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#ifndef __DEVICE_MIPI_PANEL_H__
+#define __DEVICE_MIPI_PANEL_H__
+
+#include <edid.h>
+#include <types.h>
+
+/* Definitions for cmd in panel_init_command */
+enum panel_init_cmd {
+	PANEL_CMD_END = 0,
+	PANEL_CMD_DELAY = 1,
+	PANEL_CMD_GENERIC = 2,
+	PANEL_CMD_DCS = 3,
+};
+
+struct panel_init_command {
+	u8 cmd;
+	u8 len;
+	u8 data[];
+};
+
+/*
+ * The data to be serialized and put into CBFS.
+ * Note some fields, for example edid.mode.name, were actually pointers and
+ * cannot be really serialized.
+ */
+struct panel_serializable_data {
+	struct edid edid;  /* edid info of this panel */
+	enum lb_fb_orientation orientation;  /* Panel orientation */
+	u8 init[]; /* A packed array of panel_init_command */
+};
+
+typedef cb_err_t (*mipi_cmd_func_t)(enum panel_init_cmd cmd, const u8 *data, u8 len);
+
+/* Parse a command array and call cmd_func() for each entry. Delays get handled internally. */
+cb_err_t mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func);
+
+#define PANEL_DCS(...) \
+	PANEL_CMD_DCS, \
+	sizeof((u8[]){__VA_ARGS__}), \
+	__VA_ARGS__
+
+#define PANEL_GENERIC(...) \
+	PANEL_CMD_GENERIC, \
+	sizeof((u8[]){__VA_ARGS__}), \
+	__VA_ARGS__
+
+#define PANEL_DELAY(delay) \
+	PANEL_CMD_DELAY, \
+	delay
+
+#define PANEL_END \
+	PANEL_CMD_END
+
+#endif /* __DEVICE_MIPI_PANEL_H__ */

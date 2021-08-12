@@ -1,5 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+source "src/device/mipi/Kconfig"
+
 menu "Devices"
 
 config HAVE_VGA_TEXT_FRAMEBUFFER

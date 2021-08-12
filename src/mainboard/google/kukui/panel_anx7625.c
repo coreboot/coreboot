@@ -14,7 +14,7 @@
 
 static struct panel_serializable_data anx7625_data = {
 	.orientation = LB_FB_ORIENTATION_NORMAL,
-	.init = { INIT_END_CMD },
+	.init = { PANEL_END },
 };
 
 static void dummy_power_on(void)

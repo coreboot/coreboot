@@ -29,7 +29,10 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->IedSize = CONFIG_IED_REGION_SIZE;
 	m_cfg->SaGv = config->SaGv;
-	m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
+	if (CONFIG(SOC_INTEL_TIGERLAKE_PCH_H))
+		m_cfg->UserBd = BOARD_TYPE_DESKTOP;
+	else
+		m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
 	m_cfg->RMT = config->RMT;
 
 	/* CpuRatio Settings */

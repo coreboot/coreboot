@@ -112,6 +112,28 @@ Method (IRQM, 1, Serialized) {
 	}
 }
 
+Device (PEG0)
+{
+	Name (_ADR, 0x00060000)
+}
+
+#if CONFIG(SOC_INTEL_TIGERLAKE_PCH_H)
+Device (PEG1)
+{
+	Name (_ADR, 0x00010000)
+}
+
+Device (PEG2)
+{
+	Name (_ADR, 0x00010001)
+}
+
+Device (PEG3)
+{
+	Name (_ADR, 0x00010002)
+}
+#endif
+
 Device (RP01)
 {
 	Name (_ADR, 0x001C0000)

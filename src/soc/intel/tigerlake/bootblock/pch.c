@@ -28,7 +28,11 @@
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 
+#if CONFIG(SOC_INTEL_TIGERLAKE_PCH_H)
+#define PCR_PSF3_TO_SHDW_PMC_REG_BASE	0x1000
+#else
 #define PCR_PSF3_TO_SHDW_PMC_REG_BASE	0x1100
+#endif
 #define PCR_PSFX_TO_SHDW_BAR0	0
 #define PCR_PSFX_TO_SHDW_BAR1	0x4
 #define PCR_PSFX_TO_SHDW_BAR2	0x8

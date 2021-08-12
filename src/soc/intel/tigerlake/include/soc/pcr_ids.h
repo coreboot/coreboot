@@ -42,6 +42,10 @@
 /*
  * SPI - DMI Destination ID
  */
+#if CONFIG(SOC_INTEL_TIGERLAKE_PCH_H)
+#define SPI_DMI_DESTINATION_ID	0x23b0
+#else
 #define SPI_DMI_DESTINATION_ID	0x23a8
+#endif
 
 #endif

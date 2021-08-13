@@ -165,7 +165,6 @@ chip soc/intel/icelake
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
-	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
 	#| GSPI1             | cr50 TPM. Early init is   |
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
@@ -173,7 +172,6 @@ chip soc/intel/icelake
 	#+-------------------+---------------------------+
 
 	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.gspi[1] = {
 			.speed_mhz = 1,
 			.early_init = 1,

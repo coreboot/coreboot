@@ -1,7 +1,6 @@
 chip soc/intel/cannonlake
 	# Lock Down
 	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
 			.rise_time_ns = 80,

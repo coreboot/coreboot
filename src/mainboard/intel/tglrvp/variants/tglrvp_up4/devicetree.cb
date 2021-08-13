@@ -151,7 +151,6 @@ chip soc/intel/tigerlake
 
 	# Intel Common SoC Config
 	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.gspi[1] = {
 			.speed_mhz = 1,
 			.early_init = 1,

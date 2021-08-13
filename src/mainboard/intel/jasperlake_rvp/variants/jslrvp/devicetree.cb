@@ -136,7 +136,6 @@ chip soc/intel/jasperlake
 	register "sdcard_cd_gpio" = "VGPIO_39"
 
 	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.gspi[1] = {
 			.speed_mhz = 1,
 			.early_init = 1,

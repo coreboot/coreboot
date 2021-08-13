@@ -169,11 +169,9 @@ chip soc/intel/jasperlake
 
 	register "tcc_offset" = "10"     # TCC of 90C
 
-	# chipset_lockdown configuration
 	# Use below format to override value in overridetree.cb if required
 	# format:
 	# register "common_soc_config.<variable_name>" = "value"
-	register "common_soc_config.chipset_lockdown" = CHIPSET_LOCKDOWN_COREBOOT
 
 	# VR config settings
 	# Imon Slope correction specified in 1/100 increment values. Range is 0-200.

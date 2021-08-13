@@ -35,11 +35,6 @@ chip soc/intel/skylake
 
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
-	# Lock Down
-	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
-	}"
-
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-----------+-----------+-------------+----------+
 	#| Domain/Setting |     SA    |    IA     | GT Unsliced |    GT    |

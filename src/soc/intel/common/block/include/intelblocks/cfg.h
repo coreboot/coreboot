@@ -8,8 +8,8 @@
 #include <intelblocks/mmc.h>
 
 enum {
-	CHIPSET_LOCKDOWN_FSP = 0, /* FSP handles locking per UPDs */
-	CHIPSET_LOCKDOWN_COREBOOT, /* coreboot handles locking */
+	CHIPSET_LOCKDOWN_COREBOOT = 0,	/* coreboot handles locking */
+	CHIPSET_LOCKDOWN_FSP,		/* FSP handles locking per UPDs */
 };
 
 /*

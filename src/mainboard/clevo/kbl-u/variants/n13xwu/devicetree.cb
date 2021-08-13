@@ -31,10 +31,6 @@ chip soc/intel/skylake
 		.tdp_pl2_override = 30,
 	}"
 
-	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
-	}"
-
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, // LPSS UART
 	}"

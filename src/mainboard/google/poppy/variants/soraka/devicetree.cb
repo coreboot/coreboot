@@ -150,7 +150,6 @@ chip soc/intel/skylake
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
-	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
 	#| I2C0              | Touchscreen               |
 	#| I2C1              | cr50 TPM. Early init is   |
 	#|                   | required to set up a BAR  |
@@ -162,7 +161,6 @@ chip soc/intel/skylake
 	#| pch_thermal_trip  | PCH Trip Temperature      |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
 			.speed_config[0] = {

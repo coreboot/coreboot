@@ -180,7 +180,6 @@ chip soc/intel/alderlake
 
 	# Intel Common SoC Config
 	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
 		},

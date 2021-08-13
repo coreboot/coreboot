@@ -154,11 +154,6 @@ chip soc/intel/skylake
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"
 
-	# Lock Down
-	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
-	}"
-
 	register "SerialIoDevMode" = "{ \
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci, \
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci, \

@@ -19,4 +19,11 @@ By using newer coreboot features like board variants and override devicetrees,
 lots of code can now be shared. This should ease maintenance and also make it
 easier for newcomers to add support for even more mainboards.
 
+### Changed default setting for Intel chipset lockdown
+
+Previously, the default behaviour for Intel chipset lockdown was to let the FSP
+do it. Since all related mainboards used the coreboot mechanisms for chipset
+lockdown, the default behaviour was changed to that.
+
+
 ### Add significant changes here

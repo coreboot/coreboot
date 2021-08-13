@@ -159,14 +159,12 @@ chip soc/intel/skylake
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
-	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
 	#| I2C0              | Touchscreen               |
 	#| I2C1              | Early TPM access          |
 	#| I2C2              | Touchpad                  |
 	#| I2C4              | Audio                     |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST_PLUS,
 			.rise_time_ns = 98,

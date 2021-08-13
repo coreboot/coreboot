@@ -83,7 +83,6 @@ chip soc/intel/alderlake
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
-	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
 	#| GSPI1             | Fingerprint MCU           |
 	#| I2C0              | Audio and WFC             |
 	#| I2C1              | Touchscreen               |
@@ -93,7 +92,6 @@ chip soc/intel/alderlake
 	#|                   | for TPM communication     |
 	#| I2C5              | Trackpad                  |
 	#+-------------------+---------------------------+
-	register "common_soc_config.chipset_lockdown" = "CHIPSET_LOCKDOWN_COREBOOT"
 	register "common_soc_config" = "{
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,

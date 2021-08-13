@@ -2,10 +2,6 @@
 
 chip soc/intel/skylake
 
-	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
-	}"
-
 	register "PmConfigSlpS3MinAssert"	= "SLP_S3_MIN_ASSERT_50MS"
 	register "PmConfigSlpS4MinAssert"	= "SLP_S4_MIN_ASSERT_4S"
 	register "PmConfigSlpSusMinAssert"	= "SLP_SUS_MIN_ASSERT_4S"

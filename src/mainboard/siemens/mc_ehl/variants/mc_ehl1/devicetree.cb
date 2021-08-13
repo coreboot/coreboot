@@ -135,10 +135,6 @@ chip soc/intel/elkhartlake
 	register "PchTsnGbeLinkSpeed" = "Tsn_2_5_Gbps"
 	register "PchTsnGbeSgmiiEnable" = "1"
 
-	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
-	}"
-
 	device domain 0 on
 		device pci 00.0 on	end # Host Bridge
 		device pci 02.0 on	end # Integrated Graphics Device

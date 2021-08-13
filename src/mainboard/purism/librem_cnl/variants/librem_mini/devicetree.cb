@@ -1,8 +1,4 @@
 chip soc/intel/cannonlake
-	# Lock Down
-	register "common_soc_config" = "{
-		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
-	}"
 
 # CPU (soc/intel/cannonlake/cpu.c)
 	# Power limit

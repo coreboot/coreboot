@@ -638,12 +638,18 @@ void mt_pll_init(void)
 	int i;
 
 	/* enable clock square */
-	setbits32(&mtk_apmixed->ap_pll_con0, 0x4);
+	setbits32(&mtk_apmixed->ap_pll_con0, BIT(2));
 
 	udelay(PLL_CKSQ_ON_DELAY);
 
 	/* enable clock square1 low-pass filter */
-	setbits32(&mtk_apmixed->ap_pll_con0, 0x2);
+	setbits32(&mtk_apmixed->ap_pll_con0, BIT(1));
+
+	/*
+	 * BIT(3): 1 for register control; 0 for sleep control
+	 * BIT(8): 1 to enable clock square2; 0 to disable it
+	 */
+	clrbits32(&mtk_apmixed->ap_pll_con0, BIT(3) | BIT(8));
 
 	/* xPLL PWR ON */
 	for (i = 0; i < APMIXED_PLL_MAX; i++)

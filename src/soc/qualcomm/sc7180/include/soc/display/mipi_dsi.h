@@ -3,7 +3,6 @@
 #ifndef _SOC_DISPLAY_MIPI_DSI_H_
 #define _SOC_DISPLAY_MIPI_DSI_H_
 
-#include <soc/display/panel.h>
 /**********************************************************
   DSI register configuration options
  **********************************************************/
@@ -15,12 +14,6 @@
 #define DSI_VIDEO_DST_FORMAT_RGB666_LOOSE	2
 #define DSI_VIDEO_DST_FORMAT_RGB888		3
 
-struct mipi_dsi_cmd {
-	char payload[4];
-	uint32_t size;
-	int delay_us;
-};
-
 enum {
 	DSI_VIDEO_MODE,
 	DSI_CMD_MODE,
@@ -29,6 +22,6 @@ enum {
 enum cb_err mdss_dsi_config(struct edid *edid, uint32_t num_of_lanes, uint32_t bpp);
 void mdss_dsi_clock_config(void);
 void mdss_dsi_video_mode_config(struct edid *edid, uint32_t bpp);
-int mdss_dsi_panel_initialize(const struct panel_data *pinfo);
+cb_err_t mdss_dsi_panel_initialize(const u8 *init_cmds);
 
 #endif

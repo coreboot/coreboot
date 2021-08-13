@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <device/mipi_panel.h>
 #include <device/mmio.h>
 #include <console/console.h>
 #include <assert.h>
@@ -9,7 +10,6 @@
 #include <types.h>
 #include <string.h>
 #include <soc/display/mipi_dsi.h>
-#include <soc/display/panel.h>
 #include <soc/display/mdssreg.h>
 #include <soc/display/dsi_phy.h>
 
@@ -30,7 +30,7 @@
 
 #define HS_TX_TO 0xEA60
 #define TIMER_RESOLUTION 0x4
-#define DSI_PAYLOAD_BYTE_BOUND 8
+#define DSI_PAYLOAD_BYTE_BOUND 256
 #define DSI_PAYLOAD_SIZE_ALIGN 4
 #define DSI_CMD_DMA_TPG_EN  BIT(1)
 #define DSI_TPG_DMA_FIFO_MODE BIT(2)
@@ -210,56 +210,54 @@ static int mdss_dsi_cmd_dma_trigger_for_panel(void)
 	return status;
 }
 
-static int mdss_dsi_cmds_tx(struct mipi_dsi_cmd *cmds, int count)
+static cb_err_t mdss_dsi_send_init_cmd(enum panel_init_cmd cmd, const u8 *body, u8 len)
 {
-	struct mipi_dsi_cmd *cm;
 	uint8_t *pload = _dma_coherent;
 	uint32_t size;
+	cb_err_t ret = CB_SUCCESS;
 	int data = 0;
-	int ret = 0;
 	uint32_t *bp = NULL;
 
-	cm = cmds;
+	/* This implementation only supports DCS commands (I think?). */
+	assert(cmd == PANEL_CMD_DCS);
 
-	for (int i = 0; i < count; i++) {
-		/* The payload size has to be a multiple of 4 */
-		size = ALIGN_UP(cm->size, DSI_PAYLOAD_SIZE_ALIGN);
-		assert(size < DSI_PAYLOAD_BYTE_BOUND);
-		memcpy(pload, (cm[i].payload), size);
+	/* The payload size has to be a multiple of 4 */
+	memcpy(pload, body, len);
+	size = ALIGN_UP(len, DSI_PAYLOAD_SIZE_ALIGN);
+	memset(pload + len, 0xff, size - len);
+	assert(size < DSI_PAYLOAD_BYTE_BOUND);
 
-		bp = (uint32_t *)pload;
+	bp = (uint32_t *)pload;
 
-		/* Enable custom pattern stored in TPG DMA FIFO */
-		data = DSI_CMD_DMA_PATTERN_SEL;
+	/* Enable custom pattern stored in TPG DMA FIFO */
+	data = DSI_CMD_DMA_PATTERN_SEL;
 
-		/* select CMD_DMA_FIFO_MODE to 1 */
-		data |= DSI_TPG_DMA_FIFO_MODE;
-		data |= DSI_CMD_DMA_TPG_EN;
+	/* select CMD_DMA_FIFO_MODE to 1 */
+	data |= DSI_TPG_DMA_FIFO_MODE;
+	data |= DSI_CMD_DMA_TPG_EN;
 
-		write32(&dsi0->test_pattern_gen_ctrl, data);
-		for (int j = 0; j < size; j += 4) {
-			write32(&dsi0->test_pattern_gen_cmd_dma_init_val, *bp);
-			bp++;
-		}
-
-		if ((size % 8) != 0)
-			write32(&dsi0->test_pattern_gen_cmd_dma_init_val, 0x0);
-
-		write32(&dsi0->dma_cmd_length, size);
-		write32(&dsi0->cmd_mode_dma_sw_trigger, 0x1);
-		ret += mdss_dsi_cmd_dma_trigger_for_panel();
-
-		/* Reset the DMA TPG FIFO */
-		write32(&dsi0->tpg_dma_fifo_reset, 0x1);
-		write32(&dsi0->tpg_dma_fifo_reset, 0x0);
-
-		/* Disable CMD_DMA_TPG */
-		write32(&dsi0->test_pattern_gen_ctrl, 0x0);
-		if (cm[i].delay_us)
-			udelay(cm[i].delay_us);
-		else
-			udelay(80);
+	write32(&dsi0->test_pattern_gen_ctrl, data);
+	for (int j = 0; j < size; j += 4) {
+		write32(&dsi0->test_pattern_gen_cmd_dma_init_val, *bp);
+		bp++;
 	}
+
+	if ((size % 8) != 0)
+		write32(&dsi0->test_pattern_gen_cmd_dma_init_val, 0x0);
+
+	write32(&dsi0->dma_cmd_length, size);
+	write32(&dsi0->cmd_mode_dma_sw_trigger, 0x1);
+	if (mdss_dsi_cmd_dma_trigger_for_panel())
+		ret = CB_ERR;
+
+	/* Reset the DMA TPG FIFO */
+	write32(&dsi0->tpg_dma_fifo_reset, 0x1);
+	write32(&dsi0->tpg_dma_fifo_reset, 0x0);
+
+	/* Disable CMD_DMA_TPG */
+	write32(&dsi0->test_pattern_gen_ctrl, 0x0);
+
+	udelay(80);
 
 	return ret;
 }
@@ -274,22 +272,19 @@ static void mdss_dsi_clear_intr(void)
 	write32(&dsi0->err_int_mask0, 0x13FF3BFF);
 }
 
-int mdss_dsi_panel_initialize(const struct panel_data *pinfo)
+cb_err_t mdss_dsi_panel_initialize(const u8 *init_cmds)
 {
-	int status = 0;
 	uint32_t ctrl_mode = 0;
-	struct mipi_dsi_cmd *cmds;
 
-	assert((pinfo != NULL) && (pinfo->init_cmd != NULL));
-	cmds = pinfo->init_cmd;
+	assert(init_cmds != NULL);
 	ctrl_mode = read32(&dsi0->ctrl);
 
 	/* Enable command mode before sending the commands */
 	write32(&dsi0->ctrl, ctrl_mode | 0x04);
 
-	status = mdss_dsi_cmds_tx(cmds, pinfo->init_cmd_count);
+	cb_err_t ret = mipi_panel_parse_init_commands(init_cmds, mdss_dsi_send_init_cmd);
 	write32(&dsi0->ctrl, ctrl_mode);
 	mdss_dsi_clear_intr();
 
-	return status;
+	return ret;
 }

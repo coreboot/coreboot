@@ -1,11 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootmode.h>
+#include <cbfs.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/i2c_simple.h>
+#include <device/mipi_panel.h>
 #include <drivers/ti/sn65dsi86bridge/sn65dsi86bridge.h>
+#include <edid.h>
 #include <framebuffer_info.h>
 #include <soc/display/mipi_dsi.h>
 #include <soc/display/mdssreg.h>
@@ -64,7 +67,7 @@ static void load_qup_fw(void)
 	qupv3_se_fw_load_and_init(QUPV3_1_SE5, SE_PROTOCOL_I2C, MIXED);  /* Codec I2C */
 }
 
-static void configure_display(void)
+static void power_on_bridge(void)
 {
 	printk(BIOS_INFO, "%s: Bridge gpio init\n", __func__);
 
@@ -75,25 +78,38 @@ static void configure_display(void)
 	gpio_output(GPIO_EN_PP3300_DX_EDP, 1);
 }
 
-static enum cb_err display_init(struct edid *edid, const struct panel_data *pinfo)
+static struct panel_serializable_data *get_mipi_panel(void)
 {
-	uint32_t dsi_bpp = 24;
-	uint32_t lanes = pinfo ? pinfo->lanes : 4;
+	const char *cbfs_filename = "panel-VIS_RM69299";
 
-	if (mdss_dsi_config(edid, lanes, dsi_bpp))
-		return CB_ERR;
-	if (CONFIG(TROGDOR_HAS_MIPI_PANEL)) {
-		if (mdss_dsi_panel_initialize(pinfo))
-			return CB_ERR;
-	} else {
-		sn65dsi86_bridge_configure(BRIDGE_BUS, BRIDGE_CHIP, edid, lanes, dsi_bpp);
+	struct panel_serializable_data *panel = cbfs_map(cbfs_filename, NULL);
+	if (!panel) {
+		printk(BIOS_ERR, "Could not find panel data for %s!\n", cbfs_filename);
+		return NULL;
 	}
 
-	if (CONFIG(TROGDOR_HAS_BRIDGE_BACKLIGHT))
-		sn65dsi86_backlight_enable(BRIDGE_BUS, BRIDGE_CHIP);
+	return panel;
+}
 
-	mdp_dsi_video_config(edid);
-	mdss_dsi_video_mode_config(edid, dsi_bpp);
+static enum cb_err display_init(struct panel_serializable_data *panel)
+{
+	uint32_t dsi_bpp = 24;
+	uint32_t lanes = 4;
+
+	if (mdss_dsi_config(&panel->edid, lanes, dsi_bpp))
+		return CB_ERR;
+	if (CONFIG(TROGDOR_HAS_MIPI_PANEL)) {
+		if (mdss_dsi_panel_initialize(panel->init))
+			return CB_ERR;
+	} else {
+		sn65dsi86_bridge_configure(BRIDGE_BUS, BRIDGE_CHIP, &panel->edid,
+					   lanes, dsi_bpp);
+		if (CONFIG(TROGDOR_HAS_BRIDGE_BACKLIGHT))
+			sn65dsi86_backlight_enable(BRIDGE_BUS, BRIDGE_CHIP);
+	}
+
+	mdp_dsi_video_config(&panel->edid);
+	mdss_dsi_video_mode_config(&panel->edid, dsi_bpp);
 	mdp_dsi_video_on();
 
 	return CB_SUCCESS;
@@ -101,28 +117,37 @@ static enum cb_err display_init(struct edid *edid, const struct panel_data *pinf
 
 static void display_startup(void)
 {
-	static struct edid ed;
-	enum dp_pll_clk_src ref_clk = SN65_SEL_19MHZ;
-	const struct panel_data *pinfo = NULL;
+	struct panel_serializable_data *panel = NULL;
 
-	if (display_init_required()) {
-		if (CONFIG(TROGDOR_HAS_MIPI_PANEL)) {
-			pinfo = get_panel_config(&ed);
-		} else {
-			i2c_init(QUPV3_0_SE2, I2C_SPEED_FAST); /* EDP Bridge I2C */
-			configure_display();
-			mdelay(250); /* Delay for the panel to be up */
-			sn65dsi86_bridge_init(BRIDGE_BUS, BRIDGE_CHIP, ref_clk);
-			if (sn65dsi86_bridge_read_edid(BRIDGE_BUS, BRIDGE_CHIP, &ed) < 0)
-				return;
-		}
-
-		printk(BIOS_INFO, "display init!\n");
-		if (display_init(&ed, pinfo) == CB_SUCCESS)
-			fb_new_framebuffer_info_from_edid(&ed, (uintptr_t)0);
-
-	} else
+	if (!display_init_required()) {
 		printk(BIOS_INFO, "Skipping display init.\n");
+		return;
+	}
+
+	if (CONFIG(TROGDOR_HAS_MIPI_PANEL)) {
+		panel = get_mipi_panel();
+		if (!panel)
+			return;
+	} else {
+		enum dp_pll_clk_src ref_clk = SN65_SEL_19MHZ;
+		static struct panel_serializable_data edp_panel = {
+			.orientation = LB_FB_ORIENTATION_NORMAL,
+		};
+		i2c_init(QUPV3_0_SE2, I2C_SPEED_FAST); /* EDP Bridge I2C */
+		power_on_bridge();
+		mdelay(250); /* Delay for the panel to be up */
+		sn65dsi86_bridge_init(BRIDGE_BUS, BRIDGE_CHIP, ref_clk);
+		if (sn65dsi86_bridge_read_edid(BRIDGE_BUS, BRIDGE_CHIP, &edp_panel.edid) < 0)
+			return;
+		panel = &edp_panel;
+	}
+
+	printk(BIOS_INFO, "display init!\n");
+	edid_set_framebuffer_bits_per_pixel(&panel->edid, 32, 0);
+	if (display_init(panel) == CB_SUCCESS) {
+		struct fb_info *info = fb_new_framebuffer_info_from_edid(&panel->edid, 0);
+		fb_set_orientation(info, panel->orientation);
+	}
 }
 
 static void mainboard_init(struct device *dev)

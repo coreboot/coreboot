@@ -20,6 +20,8 @@ panel-params-$(CONFIG_MIPI_PANEL_INX_OTA7290D10P) += panel-INX_OTA7290D10P
 
 panel-params-$(CONFIG_MIPI_PANEL_STA_2081101QFH032011_53G) += panel-STA_2081101QFH032011_53G
 
+panel-params-$(CONFIG_MIPI_PANEL_VIS_RM69299) += panel-VIS_RM69299
+
 $(foreach params,$(panel-params-y), \
 	$(eval cbfs-files-y += $(params)) \
 	$(eval $(params)-file := $(params).c:struct) \

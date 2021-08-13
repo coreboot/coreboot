@@ -109,7 +109,7 @@ chip soc/intel/jasperlake
 				end
 			end
 			chip drivers/i2c/cs42l42
-				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D16_IRQ)"
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H16)"
 				register "ts_inv" = "true"
 				register "ts_dbnc_rise" = "RISE_DEB_1000_MS"

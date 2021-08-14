@@ -3,9 +3,10 @@
 #ifndef ARCH_HLT_H
 #define ARCH_HLT_H
 
-static __always_inline void hlt(void)
+static __noreturn __always_inline void hlt(void)
 {
-	asm("hlt");
+	while (1)
+		asm("hlt");
 }
 
 #endif /* ARCH_HLT_H */

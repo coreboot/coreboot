@@ -18,6 +18,7 @@ struct elog_header {
 /* ELOG related constants */
 #define ELOG_SIGNATURE			0x474f4c45  /* 'ELOG' */
 #define ELOG_VERSION			1
+#define ELOG_RW_REGION_NAME		"RW_ELOG"
 
 /* SMBIOS event log header */
 struct event_header {

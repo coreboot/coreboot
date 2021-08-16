@@ -619,7 +619,7 @@ static int elog_find_flash(void)
 	elog_debug("%s()\n", __func__);
 
 	/* Find the ELOG base and size in FMAP */
-	if (fmap_locate_area_as_rdev_rw("RW_ELOG", rdev) < 0) {
+	if (fmap_locate_area_as_rdev_rw(ELOG_RW_REGION_NAME, rdev) < 0) {
 		printk(BIOS_WARNING, "ELOG: Unable to find RW_ELOG in FMAP\n");
 		return -1;
 	}

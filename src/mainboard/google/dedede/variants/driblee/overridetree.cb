@@ -86,11 +86,36 @@ chip soc/intel/jasperlake
 		device pci 15.1 off end # I2C 1
 		device pci 15.2 off end # I2C 2
 		device pci 15.3 off end # I2C 3
+		device pci 19.0 on
+			chip drivers/i2c/cs42l42
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H16)"
+				register "ts_inv" = "true"
+				register "ts_dbnc_rise" = "RISE_DEB_1000_MS"
+				register "ts_dbnc_fall" = "FALL_DEB_0_MS"
+				register "btn_det_init_dbnce" = "100"
+				register "btn_det_event_dbnce" = "10"
+				register "bias_lvls[0]" = "15"
+				register "bias_lvls[1]" = "8"
+				register "bias_lvls[2]" = "4"
+				register "bias_lvls[3]" = "1"
+				register "hs_bias_ramp_rate" = "HSBIAS_RAMP_SLOW"
+				register "hs_bias_sense_disable" = "true"
+				device i2c 48 on end
+			end
+		end #I2C 4
 		device pci 1e.2 off end # GSPI 0
 		device pci 1f.0 on
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end # Discrete TPM
 			end # chip drivers/pc80/tpm
 		end # PCH eSPI
+		device pci 1f.3 on
+			chip drivers/generic/max98357a
+				register "hid" = ""MX98360A""
+				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"
+				device generic 0 on end
+			end
+		end # Intel HDA
 	end
 end

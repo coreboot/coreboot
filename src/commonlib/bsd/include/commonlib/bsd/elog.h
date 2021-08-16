@@ -313,5 +313,11 @@ struct elog_event_extended_event {
 enum cb_err elog_verify_header(const struct elog_header *header);
 const struct event_header *elog_get_next_event(const struct event_header *event);
 const void *event_get_data(const struct event_header *event);
+void elog_fill_timestamp(struct event_header *event, uint8_t sec, uint8_t min,
+			 uint8_t hour, uint8_t mday, uint8_t mon, uint8_t year);
+/* Update the checksum at the last byte. */
+void elog_update_checksum(struct event_header *event, uint8_t checksum);
+/* Simple byte checksum for events. */
+uint8_t elog_checksum_event(const struct event_header *event);
 
 #endif  /* _COMMONLIB_BSD_ELOG_H_ */

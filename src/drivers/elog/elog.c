@@ -182,28 +182,6 @@ static void elog_debug_dump_buffer(const char *msg)
 }
 
 /*
- * Update the checksum at the last byte
- */
-static void elog_update_checksum(struct event_header *event, u8 checksum)
-{
-	u8 *event_data = (u8 *)event;
-	event_data[event->length - 1] = checksum;
-}
-
-/*
- * Simple byte checksum for events
- */
-static u8 elog_checksum_event(struct event_header *event)
-{
-	u8 index, checksum = 0;
-	u8 *data = (u8 *)event;
-
-	for (index = 0; index < event->length; index++)
-		checksum += data[index];
-	return checksum;
-}
-
-/*
  * Check if mirrored buffer is filled with ELOG_TYPE_EOL byte from the
  * provided offset to the end of the mirrored buffer.
  */
@@ -807,41 +785,12 @@ int elog_init(void)
 }
 
 /*
- * Populate timestamp in event header with current time
- */
-static void elog_fill_timestamp(struct event_header *event)
-{
-#if CONFIG(RTC)
-	struct rtc_time time;
-
-	rtc_get(&time);
-	event->second = bin2bcd(time.sec);
-	event->minute = bin2bcd(time.min);
-	event->hour = bin2bcd(time.hour);
-	event->day = bin2bcd(time.mday);
-	event->month = bin2bcd(time.mon);
-	event->year = bin2bcd(time.year % 100);
-
-	/* Basic sanity check of expected ranges */
-	if (event->month > 0x12 || event->day > 0x31 || event->hour > 0x23 ||
-	    event->minute > 0x59 || event->second > 0x59)
-#endif
-	{
-		event->year   = 0;
-		event->month  = 0;
-		event->day    = 0;
-		event->hour   = 0;
-		event->minute = 0;
-		event->second = 0;
-	}
-}
-
-/*
  * Add an event to the log
  */
 int elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 {
 	struct event_header *event;
+	struct rtc_time time = { 0 };
 	u8 event_size;
 
 	elog_debug("%s(type=%X)\n", __func__, event_type);
@@ -869,7 +818,11 @@ int elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 	/* Fill out event data */
 	event->type = event_type;
 	event->length = event_size;
-	elog_fill_timestamp(event);
+	if (CONFIG(RTC))
+		rtc_get(&time);
+
+	elog_fill_timestamp(event, time.sec, time.min, time.hour,
+			    time.mday, time.mon, time.year);
 
 	if (data_size)
 		memcpy(&event[1], data, data_size);

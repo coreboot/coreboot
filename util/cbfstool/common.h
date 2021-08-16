@@ -54,6 +54,11 @@ static inline size_t buffer_offset(const struct buffer *b)
 	return b->offset;
 }
 
+static inline void *buffer_end(const struct buffer *b)
+{
+	return b->data + b->size;
+}
+
 /*
  * Shrink a buffer toward the beginning of its previous space.
  * Afterward, buffer_delete() remains the means of cleaning it up. */

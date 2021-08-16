@@ -11,6 +11,7 @@
 #include <commonlib/bsd/elog.h>
 #include <vb2_api.h>
 
+#include "common.h"
 #include "valstr.h"
 
 #define PATH_PCI_BUS_SHIFT		8
@@ -633,4 +634,43 @@ void eventlog_print_event(const struct event_header *event, int count)
 	/* End of line, after printing each event */
 	eventlog_printf_ignore_separator_once = 1;
 	eventlog_printf("\n");
+}
+
+/*
+ * Initializes the eventlog header with the given type and data,
+ * and calculates the checksum.
+ * buffer_get() points to the event to be initialized.
+ * On success it returns 1, otherwise 0.
+ */
+int eventlog_init_event(const struct buffer *buf, uint8_t type,
+			const void *data, int data_size)
+{
+	struct event_header *event;
+	time_t secs = time(NULL);
+	struct tm tm;
+
+	/* Must have at least size for data + checksum byte */
+	if (buffer_size(buf) < (size_t)data_size + 1)
+		return 0;
+
+	event = buffer_get(buf);
+
+	event->type = type;
+	gmtime_r(&secs, &tm);
+	elog_fill_timestamp(event, tm.tm_sec, tm.tm_min, tm.tm_hour,
+			    tm.tm_mday, tm.tm_mon, tm.tm_year);
+
+	if (data && data_size) {
+		uint32_t *ptr = (uint32_t *)&event[1];
+		memcpy(ptr, data, data_size);
+	}
+
+	/* Header + data + checksum */
+	event->length = sizeof(*event) + data_size + 1;
+
+	/* Zero the checksum byte and then compute checksum */
+	elog_update_checksum(event, 0);
+	elog_update_checksum(event, -(elog_checksum_event(event)));
+
+	return 1;
 }

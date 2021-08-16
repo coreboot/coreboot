@@ -37,6 +37,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_D13, NONE),
 	/* D14 : ISH_UART0_TXD ==> USB_A1_RT_RST_ODL */
 	PAD_CFG_GPO(GPP_D14, 1, DEEP),
+	/* D18 : UART1_TXD ==> SD_PE_RST_L */
+	PAD_CFG_GPO(GPP_D18, 1, PLTRST),
 
 	/* E3  : PROC_GP0 ==> NC */
 	PAD_NC(GPP_E3, NONE),
@@ -98,6 +100,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D1, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
+	/* D18 : UART1_TXD ==> SD_PE_RST_L */
+	PAD_CFG_GPO(GPP_D18, 0, PLTRST),
 	/* E0  : SATAXPCIE0 ==> WWAN_PERST_L */
 	PAD_CFG_GPO(GPP_E0, 0, DEEP),
 	/* E13 : THC0_SPI1_IO2 ==> MEM_CH_SEL */
@@ -111,7 +115,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
-	PAD_NC(GPP_H13, UP_20K),
+	PAD_CFG_GPO(GPP_H13, 1, PLTRST),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)

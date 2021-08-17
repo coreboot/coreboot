@@ -1,4 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
+
+fw_config
+	field USB_DAUGHTERBOARD 0 3 end
+end
+
 chip soc/amd/picasso
 
 	# Set FADT Configuration
@@ -408,7 +413,8 @@ chip soc/amd/picasso
 								register "name" = ""MSTH""
 								register "uid" = "1"
 								register "desc" = ""Realtek RTD2141B""
-								device i2c 4a on end
+								# Device presence is variant-specific
+								device i2c 4a alias db_mst off end
 							end
 						end
 					end

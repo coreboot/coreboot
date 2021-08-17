@@ -1,4 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
+
+fw_config
+	field USB_DAUGHTERBOARD
+		option MORPHIUS_DB_PICASSO 0
+		option MORPHIUS_DB_DALI 1
+	end
+end
+
 chip soc/amd/picasso
 
 	# Start : OPN Performance Configuration
@@ -134,6 +142,10 @@ chip soc/amd/picasso
 			register "uart" = "ACPI_UART_RAW_DEVICE(3000000, 64)"
 			device generic 0 on end
 		end
+	end
+
+	device ref db_mst on
+		probe USB_DAUGHTERBOARD MORPHIUS_DB_DALI
 	end
 
 end	# chip soc/amd/picasso

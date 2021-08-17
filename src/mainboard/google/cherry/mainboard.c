@@ -203,6 +203,10 @@ static void mainboard_init(struct device *dev)
 	configure_sdcard();
 	setup_usb_host();
 
+	/* for audio usage */
+	if (CONFIG(CHERRY_USE_RT1011))
+		mtk_i2c_bus_init(I2C2);
+
 	if (dpm_init())
 		printk(BIOS_ERR, "dpm init failed, DVFS may not work\n");
 

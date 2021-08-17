@@ -54,4 +54,13 @@ config BOOT_DEVICE_SPI_FLASH_BUS
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 0x0
+
+config CHERRY_USE_RT1011
+	bool
+	default n
+
+config CHERRY_USE_RT1019
+	bool
+	default y if BOARD_GOOGLE_CHERRY || BOARD_GOOGLE_TOMATO
+	default n
 endif

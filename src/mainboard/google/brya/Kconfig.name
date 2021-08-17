@@ -35,6 +35,8 @@ config BOARD_GOOGLE_REDRIX
 config BOARD_GOOGLE_KANO
 	bool "-> Kano"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
+	select DRIVERS_I2C_MAX98373
+	select DRIVERS_I2C_NAU8825
 
 config BOARD_GOOGLE_TAEKO
 	bool "-> Taeko"

@@ -51,9 +51,9 @@ uint32_t sku_id(void)
 
 	if (id == UNDEFINED_STRAPPING_ID) {
 		if (use_old_pins())
-			id = gpio_base2_value(old_pins, ARRAY_SIZE(old_pins));
+			id = gpio_binary_first_base3_value(old_pins, ARRAY_SIZE(old_pins));
 		else
-			id = gpio_base2_value(pins, ARRAY_SIZE(pins));
+			id = gpio_binary_first_base3_value(pins, ARRAY_SIZE(pins));
 	}
 
 	return id;

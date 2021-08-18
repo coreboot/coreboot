@@ -152,14 +152,14 @@ const char *dev_path(const struct device *dev)
 
 	buffer[0] = '\0';
 	if (!dev) {
-		memcpy(buffer, "<null>", 7);
+		strcpy(buffer, "<null>");
 	} else {
 		switch (dev->path.type) {
 		case DEVICE_PATH_NONE:
-			memcpy(buffer, "NONE", 5);
+			strcpy(buffer, "NONE");
 			break;
 		case DEVICE_PATH_ROOT:
-			memcpy(buffer, "Root Device", 12);
+			strcpy(buffer, "Root Device");
 			break;
 		case DEVICE_PATH_PCI:
 			snprintf(buffer, sizeof(buffer),

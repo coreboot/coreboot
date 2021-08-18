@@ -15,6 +15,7 @@ config BOARD_GOOGLE_BRASK
 config BOARD_GOOGLE_PRIMUS
 	bool "-> Primus"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
+	select ADL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_GIMBLE
 	bool "-> Gimble"

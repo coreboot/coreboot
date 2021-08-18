@@ -77,6 +77,13 @@ static const struct pad_config bt_i2s_disable_pads[] = {
 	PAD_NC(GPP_VGPIO_37, NONE),
 };
 
+static void enable_i2s(void)
+{
+	gpio_configure_pads(dmic_enable_pads, ARRAY_SIZE(dmic_enable_pads));
+	gpio_configure_pads(i2s_enable_pads, ARRAY_SIZE(i2s_enable_pads));
+	gpio_configure_pads(sndw_disable_pads, ARRAY_SIZE(sndw_disable_pads));
+}
+
 static void fw_config_handle(void *unused)
 {
 	if (!fw_config_is_provisioned() || fw_config_probe(FW_CONFIG(AUDIO, AUDIO_UNKNOWN))) {
@@ -102,9 +109,12 @@ static void fw_config_handle(void *unused)
 
 	if (fw_config_probe(FW_CONFIG(AUDIO, MAX98357_ALC5682I_I2S))) {
 		printk(BIOS_INFO, "Configure audio over I2S with MAX98357 ALC5682I.\n");
-		gpio_configure_pads(dmic_enable_pads, ARRAY_SIZE(dmic_enable_pads));
-		gpio_configure_pads(i2s_enable_pads, ARRAY_SIZE(i2s_enable_pads));
-		gpio_configure_pads(sndw_disable_pads, ARRAY_SIZE(sndw_disable_pads));
+		enable_i2s();
+	}
+
+	if (fw_config_probe(FW_CONFIG(AUDIO, ALC1019_NAU88L25B_I2S))) {
+		printk(BIOS_INFO, "Configure audio over I2S with ALC1019 NAU88L25B.\n");
+		enable_i2s();
 	}
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

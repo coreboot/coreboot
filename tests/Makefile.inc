@@ -108,7 +108,13 @@ $(call evaluate_subdirs)
 # $1 - test name
 define TEST_CC_template
 
-# Generate custom config.h redefining given symbols
+# Generate custom config.h redefining given config symbols, and declaring mocked
+# functions weak. It is important that the compiler already sees that they are
+# weak (and they aren't just turned weak at a later stage) to prevent certain
+# optimizations that would break if the function gets replaced. (For clang this
+# file needs to be marked `system_header` to prevent it from warning about
+# #pragma weak entries without a matching function declaration, since there's no
+# -Wno-xxx command line option for that.)
 $(1)-config-file := $(testobj)/$(1)/config.h
 $$($(1)-config-file): $(TEST_KCONFIG_AUTOHEADER)
 	mkdir -p $$(dir $$@)
@@ -120,12 +126,20 @@ $$($(1)-config-file): $(TEST_KCONFIG_AUTOHEADER)
 		printf '#undef %s\n' "$$$$key" >> $$@; \
 		printf '#define %s %s\n\n' "$$$$key" "$$$$value" >> $$@; \
 	done
+	printf '#ifdef __clang__\n' >> $$@;
+	printf '#pragma clang system_header\n' >> $$@;
+	printf '#endif\n' >> $$@;
+	printf '#ifdef __TEST_SRCOBJ__\n' >> $$@;
+	for m in $$($(1)-mocks); do \
+		printf '#pragma weak %s\n' "$$$$m" >> $$@; \
+	done
+	printf '#endif\n' >> $$@;
 
 $($(1)-objs): TEST_CFLAGS += -I$$(dir $$($(1)-config-file)) \
 	-D__$$(shell echo $$($(1)-stage) | tr '[:lower:]' '[:upper:]')__
 
-# Weaken symbols listed as mocks to enable overriding in the code
-$($(1)-srcobjs): OBJCOPY_FLAGS += $$(foreach mock,$$($(1)-mocks),--globalize-symbol=$$(mock) --weaken-symbol=$$(mock))
+# Give us a way to distinguish between coreboot source files and test files in code.
+$($(1)-srcobjs): TEST_CFLAGS += -D__TEST_SRCOBJ__
 
 # Compile sources and apply mocking/wrapping of selected symbols.
 # For each listed mock add new symbol with prefix `__real_`,
@@ -134,17 +148,16 @@ $($(1)-objs): $(testobj)/$(1)/%.o: $$$$*.c $$($(1)-config-file)
 	mkdir -p $$(dir $$@)
 	$(HOSTCC) $(HOSTCFLAGS) $$(TEST_CFLAGS) $($(1)-cflags) -MMD \
 		-MF $$(basename $$@).d -MT $$@ -c $$< -o $$@.orig
-	$(OBJCOPY) $$@.orig $$(OBJCOPY_FLAGS) $$@.orig2
 	objcopy_wrap_flags=''; \
 	for sym in $$($(1)-mocks); do \
-		sym_line="$$$$($(OBJDUMP) -t $$@.orig2 | grep -E "[0-9a-fA-F]+\\s+w\\s+F\\s+.*\\s$$$$sym$$$$")"; \
+		sym_line="$$$$($(OBJDUMP) -t $$@.orig | grep -E "[0-9a-fA-F]+\\s+w\\s+F\\s+.*\\s$$$$sym$$$$")"; \
 		if [ ! -z "$$$$sym_line" ] ; then \
 			addr="$$$$(echo \"$$$$sym_line\" | awk '{ print $$$$1 }')"; \
 			section="$$$$(echo \"$$$$sym_line\" | awk '{ print $$$$(NF - 2) }')"; \
 			objcopy_wrap_flags="$$$$objcopy_wrap_flags --add-symbol __real_$$$${sym}=$$$${section}:0x$$$${addr},function,global"; \
 		fi \
 	done ; \
-	$(OBJCOPY) $$@.orig2 $$$$objcopy_wrap_flags $$@
+	$(OBJCOPY) $$@.orig $$$$objcopy_wrap_flags $$@
 
 $($(1)-bin): $($(1)-objs) $(CMOCKA_LIB)
 	$(HOSTCC) $$^ $($(1)-cflags) $$(TEST_LDFLAGS) -o $$@

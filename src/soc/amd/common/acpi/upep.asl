@@ -34,11 +34,16 @@ Scope (\_SB) {
 		 * (`INTERNAL_POWER_ERROR`). Returning an empty package does not work.
 		 */
 		Name (DEVL, Package() {
+			0,
+			1,	/* Only 1 dummy device for now */
+
 			Package() {
-				0,		/* Disabled */
-				"\\DUMY",	/* \DUMY - not existent */
-				0,		/* Function States */
-				0		/* Minimum D-state */
+				Package() {
+					0,		/* Disabled */
+					"\\DUMY",	/* \DUMY - not existent */
+					0,		/* Function States */
+					0		/* Minimum D-state */
+				}
 			}
 		})
 

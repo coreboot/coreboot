@@ -3,6 +3,7 @@
 #ifndef ARCH_CPU_H
 #define ARCH_CPU_H
 
+#include <stdint.h>
 #include <types.h>
 
 /*
@@ -237,20 +238,9 @@ struct cpu_info {
 
 static inline struct cpu_info *cpu_info(void)
 {
-	struct cpu_info *ci;
-	__asm__(
-#if ENV_X86_64
-		"and %%rsp,%0; "
-		"or  %2, %0 "
-#else
-		"andl %%esp,%0; "
-		"orl  %2, %0 "
-#endif
-		: "=r" (ci)
-		: "0" (~(CONFIG_STACK_SIZE - 1)),
-		"r" (CONFIG_STACK_SIZE - sizeof(struct cpu_info))
-	);
-	return ci;
+	char s;
+	uintptr_t info = ALIGN_UP((uintptr_t)&s, CONFIG_STACK_SIZE) - sizeof(struct cpu_info);
+	return (struct cpu_info *)info;
 }
 
 struct cpuinfo_x86 {

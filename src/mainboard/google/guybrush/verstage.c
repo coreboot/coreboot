@@ -5,6 +5,7 @@
 #include <arch/io.h>
 #include <baseboard/variants.h>
 #include <security/vboot/vboot_common.h>
+#include <soc/southbridge.h>
 
 static void setup_gpio(void)
 {
@@ -29,12 +30,12 @@ void verstage_mainboard_early_init(void)
 	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)) {
 		uint32_t dword;
 		printk(BIOS_DEBUG, "Verstage configure eSPI\n");
-		dword = pm_io_read32(0x90);
-		dword |= 1 << 16;
-		pm_io_write32(0x90, dword);
+		dword = pm_io_read32(PM_SPI_PAD_PU_PD);
+		dword |= PM_ESPI_CS_USE_DATA2;
+		pm_io_write32(PM_SPI_PAD_PU_PD, dword);
 
-		dword = pm_io_read32(0x74);
-		dword |= 3 << 10;
-		pm_io_write32(0x74, dword);
+		dword = pm_io_read32(PM_ACPI_CONF);
+		dword |= PM_ACPI_S5_LPC_PIN_MODE | PM_ACPI_S5_LPC_PIN_MODE_SEL;
+		pm_io_write32(PM_ACPI_CONF, dword);
 	}
 }

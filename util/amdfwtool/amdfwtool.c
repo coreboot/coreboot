@@ -585,7 +585,8 @@ static void integrate_psp_firmwares(context *ctx,
 					psp_directory_table *pspdir,
 					psp_directory_table *pspdir2,
 					amd_fw_entry *fw_table,
-					uint32_t cookie)
+					uint32_t cookie,
+					amd_cb_config *cb_config)
 {
 	ssize_t bytes;
 	unsigned int i, count;
@@ -598,7 +599,9 @@ static void integrate_psp_firmwares(context *ctx,
 	 * 1st-level cookie may indicate level 1 or flattened.  If the caller
 	 * passes a pointer to a 2nd-level table, then assume not flat.
 	 */
-	if (cookie == PSPL2_COOKIE)
+	if (cb_config->multi_level == 0)
+		level = PSP_BOTH;
+	else if (cookie == PSPL2_COOKIE)
 		level = PSP_LVL2;
 	else if (pspdir2)
 		level = PSP_LVL1;
@@ -763,7 +766,8 @@ static void integrate_bios_firmwares(context *ctx,
 					bios_directory_table *biosdir,
 					bios_directory_table *biosdir2,
 					amd_bios_entry *fw_table,
-					uint32_t cookie)
+					uint32_t cookie,
+					amd_cb_config *cb_config)
 {
 	ssize_t bytes;
 	unsigned int i, count;
@@ -779,7 +783,9 @@ static void integrate_bios_firmwares(context *ctx,
 	 * 1st-level cookie may indicate level 1 or flattened.  If the caller
 	 * passes a pointer to a 2nd-level table, then assume not flat.
 	 */
-	if (cookie == BDT2_COOKIE)
+	if (cb_config->multi_level == 0)
+		level = BDT_BOTH;
+	else if (cookie == BDT2_COOKIE)
 		level = BDT_LVL2;
 	else if (biosdir2)
 		level = BDT_LVL1;
@@ -1568,16 +1574,16 @@ int main(int argc, char **argv)
 		/* Do 2nd PSP directory followed by 1st */
 		psp_directory_table *pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
 		integrate_psp_firmwares(&ctx, pspdir2, 0,
-						amd_psp_fw_table, PSPL2_COOKIE);
+						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 
 		pspdir = new_psp_dir(&ctx, cb_config.multi_level);
 		integrate_psp_firmwares(&ctx, pspdir, pspdir2,
-						amd_psp_fw_table, PSP_COOKIE);
+						amd_psp_fw_table, PSP_COOKIE, &cb_config);
 	} else {
 		/* flat: PSP 1 cookie and no pointer to 2nd table */
 		pspdir = new_psp_dir(&ctx, cb_config.multi_level);
 		integrate_psp_firmwares(&ctx, pspdir, 0,
-						amd_psp_fw_table, PSP_COOKIE);
+						amd_psp_fw_table, PSP_COOKIE, &cb_config);
 	}
 
 	if (comboable)
@@ -1605,16 +1611,16 @@ int main(int argc, char **argv)
 			bios_directory_table *biosdir2 =
 						new_bios_dir(&ctx, cb_config.multi_level);
 			integrate_bios_firmwares(&ctx, biosdir2, 0,
-						amd_bios_table, BDT2_COOKIE);
+						amd_bios_table, BDT2_COOKIE, &cb_config);
 
 			biosdir = new_bios_dir(&ctx, cb_config.multi_level);
 			integrate_bios_firmwares(&ctx, biosdir, biosdir2,
-						amd_bios_table, BDT1_COOKIE);
+						amd_bios_table, BDT1_COOKIE, &cb_config);
 		} else {
 			/* flat: BDT1 cookie and no pointer to 2nd table */
 			biosdir = new_bios_dir(&ctx, cb_config.multi_level);
 			integrate_bios_firmwares(&ctx, biosdir, 0,
-						amd_bios_table, BDT1_COOKIE);
+						amd_bios_table, BDT1_COOKIE, &cb_config);
 		}
 		switch (soc_id) {
 		case PLATFORM_RENOIR:

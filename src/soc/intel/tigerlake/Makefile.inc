@@ -66,7 +66,11 @@ endif
 CPPFLAGS_common += -I$(src)/soc/intel/tigerlake
 CPPFLAGS_common += -I$(src)/soc/intel/tigerlake/include
 
+ifeq ($(CONFIG_SOC_INTEL_TIGERLAKE_PCH_H),y)
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8d-01
+else
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8c-01
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8c-02
+endif
 
 endif

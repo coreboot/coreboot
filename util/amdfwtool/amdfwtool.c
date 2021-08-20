@@ -1251,7 +1251,6 @@ int main(int argc, char **argv)
 	uint8_t efs_spi_speed = 0xff;
 	uint8_t efs_spi_micron_flag = 0xff;
 
-	int multi = 0;
 	amd_cb_config cb_config;
 	int debug = 0;
 	int list_deps = 0;
@@ -1261,6 +1260,7 @@ int main(int argc, char **argv)
 	cb_config.use_secureos = 0;
 	cb_config.load_mp2_fw = 0;
 	cb_config.s0i3 = 0;
+	cb_config.multi_level = 0;
 
 	while (1) {
 		int optindex = 0;
@@ -1287,7 +1287,7 @@ int main(int argc, char **argv)
 			comboable = 1;
 			break;
 		case AMDFW_OPT_MULTILEVEL:
-			multi = 1;
+			cb_config.multi_level = 1;
 			break;
 		case AMDFW_OPT_UNLOCK:
 			register_fw_token_unlock();
@@ -1560,18 +1560,18 @@ int main(int argc, char **argv)
 
 	ctx.current = ALIGN(ctx.current, 0x10000U); /* TODO: is it necessary? */
 
-	if (multi) {
+	if (cb_config.multi_level) {
 		/* Do 2nd PSP directory followed by 1st */
-		psp_directory_table *pspdir2 = new_psp_dir(&ctx, multi);
+		psp_directory_table *pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
 		integrate_psp_firmwares(&ctx, pspdir2, 0,
 						amd_psp_fw_table, PSPL2_COOKIE);
 
-		pspdir = new_psp_dir(&ctx, multi);
+		pspdir = new_psp_dir(&ctx, cb_config.multi_level);
 		integrate_psp_firmwares(&ctx, pspdir, pspdir2,
 						amd_psp_fw_table, PSP_COOKIE);
 	} else {
 		/* flat: PSP 1 cookie and no pointer to 2nd table */
-		pspdir = new_psp_dir(&ctx, multi);
+		pspdir = new_psp_dir(&ctx, cb_config.multi_level);
 		integrate_psp_firmwares(&ctx, pspdir, 0,
 						amd_psp_fw_table, PSP_COOKIE);
 	}
@@ -1596,19 +1596,19 @@ int main(int argc, char **argv)
 
 	if (have_bios_tables(amd_bios_table)) {
 		bios_directory_table *biosdir;
-		if (multi) {
+		if (cb_config.multi_level) {
 			/* Do 2nd level BIOS directory followed by 1st */
 			bios_directory_table *biosdir2 =
-						new_bios_dir(&ctx, multi);
+						new_bios_dir(&ctx, cb_config.multi_level);
 			integrate_bios_firmwares(&ctx, biosdir2, 0,
 						amd_bios_table, BDT2_COOKIE);
 
-			biosdir = new_bios_dir(&ctx, multi);
+			biosdir = new_bios_dir(&ctx, cb_config.multi_level);
 			integrate_bios_firmwares(&ctx, biosdir, biosdir2,
 						amd_bios_table, BDT1_COOKIE);
 		} else {
 			/* flat: BDT1 cookie and no pointer to 2nd table */
-			biosdir = new_bios_dir(&ctx, multi);
+			biosdir = new_bios_dir(&ctx, cb_config.multi_level);
 			integrate_bios_firmwares(&ctx, biosdir, 0,
 						amd_bios_table, BDT1_COOKIE);
 		}

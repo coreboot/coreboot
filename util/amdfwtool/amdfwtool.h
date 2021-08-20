@@ -224,6 +224,7 @@ typedef struct _amd_cb_config {
 	uint8_t unlock_secure;
 	uint8_t use_secureos;
 	uint8_t load_mp2_fw;
+	uint8_t multi_level;
 	uint8_t s0i3;
 } amd_cb_config;
 

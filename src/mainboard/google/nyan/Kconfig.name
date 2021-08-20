@@ -1,2 +1,4 @@
+comment "Nyan"
+
 config BOARD_GOOGLE_NYAN
 	bool "Nyan"

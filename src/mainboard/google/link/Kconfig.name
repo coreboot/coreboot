@@ -1,2 +1,4 @@
+comment "Link"
+
 config BOARD_GOOGLE_LINK
 	bool "Link (Google Chromebook Pixel (2013))"

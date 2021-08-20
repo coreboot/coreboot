@@ -1,2 +1,4 @@
+comment "Gale"
+
 config BOARD_GOOGLE_GALE
 	bool "Gale (Google WiFi)"

@@ -1,2 +1,4 @@
+comment "Storm"
+
 config BOARD_GOOGLE_STORM
 	bool "Storm (OnHub Router TGR1900)"

@@ -1,3 +1,5 @@
+comment "Dedede"
+
 config BOARD_GOOGLE_BOTEN
 	bool "Boten"
 	select BOARD_GOOGLE_BASEBOARD_DEDEDE_CR50

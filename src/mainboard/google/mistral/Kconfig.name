@@ -1,3 +1,4 @@
+comment "Mistral"
 
 config BOARD_GOOGLE_MISTRAL
 	bool "Mistral"

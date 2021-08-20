@@ -1,2 +1,4 @@
+comment "Peach Pit"
+
 config BOARD_GOOGLE_PEACH_PIT
 	bool "Peach Pit (Samsung Chromebook 2 11\")"

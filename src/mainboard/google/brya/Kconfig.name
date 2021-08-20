@@ -1,3 +1,5 @@
+comment "Brya"
+
 config BOARD_GOOGLE_BRYA0
 	bool "Brya 0"
 	select BOARD_GOOGLE_BASEBOARD_BRYA

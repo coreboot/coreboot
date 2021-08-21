@@ -204,21 +204,21 @@ chip soc/intel/alderlake
 				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_A23)"
 				register "jkdet_enable" = "1"
 				register "jkdet_pull_enable" = "0"
-				register "jkdet_polarity" = "1"        # ActiveLow
-				register "vref_impedance" = "2"        # 125kOhm
-				register "micbias_voltage" = "6"    # 2.754
+				register "jkdet_polarity" = "1"		# ActiveLow
+				register "vref_impedance" = "2"		# 125kOhm
+				register "micbias_voltage" = "6"	# 2.754
 				register "sar_threshold_num" = "4"
 				register "sar_threshold[0]" = "0x0c"
 				register "sar_threshold[1]" = "0x1c"
 				register "sar_threshold[2]" = "0x38"
 				register "sar_threshold[3]" = "0x60"
 				register "sar_hysteresis" = "1"
-				register "sar_voltage" = "0"        # VDDA
-				register "sar_compare_time" = "0"    # 500ns
-				register "sar_sampling_time" = "0"    # 2us
-				register "short_key_debounce" = "2"    # 100ms
-				register "jack_insert_debounce" = "7"    # 512ms
-				register "jack_eject_debounce" = "7"    # 512ms
+				register "sar_voltage" = "0"		# VDDA
+				register "sar_compare_time" = "0"	# 500ns
+				register "sar_sampling_time" = "0"	# 2us
+				register "short_key_debounce" = "2"	# 100ms
+				register "jack_insert_debounce" = "7"	# 512ms
+				register "jack_eject_debounce" = "7"	# 512ms
 				device i2c 1a on
 					probe AUDIO ALC1019_NAU88L25B_I2S
 				end

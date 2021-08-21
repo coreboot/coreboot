@@ -9,6 +9,9 @@
 #define SPR_PVR_REV_MASK			(PPC_BITMASK(52, 55) | PPC_BITMASK(60, 63))
 #define SPR_PVR_REV(maj, min)			(PPC_SHIFT((maj), 55) | PPC_SHIFT((min), 63))
 
+#define SPR_HSPRG0				0x130
+#define SPR_HSPRG1				0x131
+
 #define SPR_HRMOR				0x139
 
 #define SPR_HMER				0x150

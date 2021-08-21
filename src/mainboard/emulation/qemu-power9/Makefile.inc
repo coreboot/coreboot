@@ -2,3 +2,5 @@
 
 romstage-y += cbmem.c
 romstage-y += romstage.c
+
+ramstage-y += ramstage.c

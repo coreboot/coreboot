@@ -3,6 +3,8 @@
  * Early initialization code for POWER8/POWER9.
  */
 
+#include <cpu/power/spr.h>
+
 #define FIXUP_ENDIAN						   \
 	tdi   0,0,0x48;	  /* Reverse endian of b . + 8		*/ \
 	b     $+44;	  /* Skip trampoline if endian is good	*/ \
@@ -34,6 +36,10 @@ _start:
 	nop
 	nop
 	FIXUP_ENDIAN
+
+	/* Store FDT address provided by QEMU in %r3 to pass it later to
+	 * payload */
+	mtspr	SPR_HSPRG0, %r3
 
 	/* Set program priority to medium */
 	or	%r2, %r2, %r2

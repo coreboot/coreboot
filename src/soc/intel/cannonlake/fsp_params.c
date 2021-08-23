@@ -74,7 +74,9 @@ static const struct slot_irq_constraints irq_constraints[] = {
 		.slot = PCH_DEV_SLOT_THERMAL,
 		.fns = {
 			ANY_PIRQ(PCH_DEVFN_THERMAL),
+#if !CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)
 			ANY_PIRQ(PCH_DEVFN_UFS),
+#endif
 			DIRECT_IRQ(PCH_DEVFN_GSPI2),
 		},
 	},
@@ -122,17 +124,21 @@ static const struct slot_irq_constraints irq_constraints[] = {
 	{
 		.slot = PCH_DEV_SLOT_SIO2,
 		.fns = {
+#if !CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)
 			DIRECT_IRQ(PCH_DEVFN_I2C4),
 			DIRECT_IRQ(PCH_DEVFN_I2C5),
+#endif
 			DIRECT_IRQ(PCH_DEVFN_UART2),
 		},
 	},
+#if !CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)
 	{
 		.slot = PCH_DEV_SLOT_STORAGE,
 		.fns = {
 			ANY_PIRQ(PCH_DEVFN_EMMC),
 		},
 	},
+#endif
 #if CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)
 	{
 		.slot = PCH_DEV_SLOT_PCIE_2,

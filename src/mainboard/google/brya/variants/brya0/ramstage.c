@@ -6,9 +6,9 @@
 const struct cpu_power_limits limits[] = {
 	/* SKU_ID, pl1_min, pl1_max, pl2_min, pl2_max, pl4 */
 	/* All values are for baseline config as per bug:191906315 comment #10 */
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, 3000, 15000, 39000, 39000, 100000},
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, 4000, 28000, 43000, 43000, 105000},
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 5000, 45000, 80000, 80000, 159000},
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, 3000, 15000, 39000, 39000, 100000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, 4000, 28000, 43000, 43000, 105000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 5000, 45000, 80000, 80000, 159000 },
 };
 
 void variant_devtree_update(void)

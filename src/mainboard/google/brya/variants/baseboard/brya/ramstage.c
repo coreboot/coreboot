@@ -9,6 +9,8 @@
 #include <drivers/intel/dptf/chip.h>
 #include <intelblocks/power_limit.h>
 
+#define MILLIWATTS_TO_WATTS	1000
+
 void variant_update_power_limits(const struct cpu_power_limits *limits, size_t num_entries)
 {
 	if (!num_entries)
@@ -37,7 +39,8 @@ void variant_update_power_limits(const struct cpu_power_limits *limits, size_t n
 			settings->pl1.max_power = limits[i].pl1_max_power;
 			settings->pl2.min_power = limits[i].pl2_min_power;
 			settings->pl2.max_power = limits[i].pl2_max_power;
-			soc_config->tdp_pl4 = limits[i].pl4_power;
+			soc_config->tdp_pl4 = DIV_ROUND_UP(limits[i].pl4_power,
+							   MILLIWATTS_TO_WATTS);
 			printk(BIOS_INFO, "Overriding power limits PL1 (%u, %u) PL2 (%u, %u) PL4 (%u)\n",
 					limits[i].pl1_min_power,
 					limits[i].pl1_max_power,

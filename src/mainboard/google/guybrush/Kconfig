@@ -74,6 +74,7 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	default "Guybrush" if BOARD_GOOGLE_GUYBRUSH
 	default "Nipperkin" if BOARD_GOOGLE_NIPPERKIN
+	default "Dewatt" if BOARD_GOOGLE_DEWATT
 
 config AMD_FWM_POSITION_INDEX
 	int
@@ -106,6 +107,7 @@ config EFS_SPI_SPEED
 config VARIANT_DIR
 	default "guybrush" if BOARD_GOOGLE_GUYBRUSH
 	default "nipperkin" if BOARD_GOOGLE_NIPPERKIN
+	default "dewatt" if BOARD_GOOGLE_DEWATT
 
 config DEVICETREE
 	default "variants/baseboard/devicetree.cb"

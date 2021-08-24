@@ -5,7 +5,7 @@ Device (ALSD)
 	Name (_HID, "ACPI0008")  // _HID: Hardware ID
 	Method (_STA, 0, NotSerialized)  // _STA: Status
 	{
-		Return (0x0F)
+		Return (0x0f)
 	}
 
 	Method (_ALI, 0, NotSerialized)  // _ALI: Ambient Light Illuminance
@@ -28,7 +28,7 @@ Device (ALSD)
 		Package (0x02)
 		{
 			0x49,
-			0x0A
+			0x0a
 		},
 
 		Package (0x02)
@@ -40,13 +40,13 @@ Device (ALSD)
 		Package (0x02)
 		{
 			0x64,
-			0x012C
+			0x012c
 		},
 
 		Package (0x02)
 		{
 			0x96,
-			0x03E8
+			0x03e8
 		}
 	})
 }

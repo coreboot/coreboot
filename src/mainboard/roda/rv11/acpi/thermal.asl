@@ -53,17 +53,14 @@ Scope (\_TZ)
 
 			If (Local0 >= 0x80)
 			{
-				Debug = "-----> CPU Temperature (INVALID): "
-				Debug = Local0
+				Printf ("-----> CPU Temperature (INVALID): %o", Local0)
 				Return (CTOK (0))
 			}
 
-			Debug = "-----> CPU Temperature: "
-			Debug = Local0
+			Printf ("-----> CPU Temperature: %o", Local0)
 
 			Return (CTOK (Local0))
 		}
-
 	}
 
 	ThermalZone (TZ00)
@@ -86,13 +83,11 @@ Scope (\_TZ)
 
 			If (Local0 >= 0x80)
 			{
-				Debug = "-----> LOC Temperature (INVALID): "
-				Debug = Local0
+				Printf ("-----> LOC Temperature (INVALID): %o", Local0)
 				Return (CTOK (0))
 			}
 
-			Debug = "-----> LOC Temperature: "
-			Debug = Local0
+			Printf ("-----> LOC Temperature: %o", Local0)
 
 			Return (CTOK (Local0))
 		}
@@ -118,13 +113,11 @@ Scope (\_TZ)
 
 			If (Local0 >= 0x80)
 			{
-				Debug = "-----> OEM Temperature (INVALID): "
-				Debug = Local0
+				Printf ("-----> OEM Temperature (INVALID): %o", Local0)
 				Return (CTOK (0))
 			}
 
-			Debug = "-----> OEM Temperature: "
-			Debug = Local0
+			Printf ("-----> OEM Temperature: %o", Local0)
 
 			Return (CTOK (Local0))
 		}

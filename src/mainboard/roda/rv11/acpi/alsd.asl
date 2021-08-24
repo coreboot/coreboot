@@ -12,10 +12,8 @@ Device (ALSD)
 	{
 		Local0 = \_SB.PCI0.LPCB.EC0.LUXH
 		Local0 = (Local0 << 8) | \_SB.PCI0.LPCB.EC0.LUXL
-		Debug = "-----> _ALI: "
-		Debug = Local0
-		Debug = \_SB.PCI0.LPCB.EC0.LUXH
-		Debug = \_SB.PCI0.LPCB.EC0.LUXL
+		Printf ("-----> _ALI: %o, %o, %o",
+			Local0, \_SB.PCI0.LPCB.EC0.LUXH, \_SB.PCI0.LPCB.EC0.LUXL)
 		Return (Local0)
 	}
 

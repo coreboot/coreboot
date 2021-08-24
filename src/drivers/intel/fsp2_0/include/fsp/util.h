@@ -109,7 +109,7 @@ void fsp_get_version(char *buf);
 void fsp_verify_upd_header_signature(uint64_t upd_signature, uint64_t expected_signature);
 void lb_string_platform_blob_version(struct lb_header *header);
 void report_fspt_output(void);
-void soc_validate_fsp_version(const struct fsp_header *hdr);
+void soc_validate_fspm_header(const struct fsp_header *hdr);
 
 /* Fill in header and validate a loaded FSP component. */
 enum cb_err fsp_validate_component(struct fsp_header *hdr, void *fsp_blob, size_t size);

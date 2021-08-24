@@ -98,7 +98,7 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr, void *fsp_file, size_
 	}
 
 	if (ENV_ROMSTAGE)
-		soc_validate_fsp_version(hdr);
+		soc_validate_fspm_header(hdr);
 
 	return CB_SUCCESS;
 }
@@ -224,6 +224,6 @@ void lb_string_platform_blob_version(struct lb_header *header)
 	memcpy(rec->string, fsp_version, len+1);
 }
 
-__weak void soc_validate_fsp_version(const struct fsp_header *hdr)
+__weak void soc_validate_fspm_header(const struct fsp_header *hdr)
 {
 }

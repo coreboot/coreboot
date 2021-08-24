@@ -87,7 +87,7 @@ chip soc/intel/elkhartlake
 
 	# Storage (SATA/SDCARD/EMMC) related UPDs
 	register "SataSalpSupport" = "0"
-	register "SataPortsEnable[0]" = "1"
+	register "SataPortsEnable[0]" = "0"
 	register "SataPortsEnable[1]" = "1"
 	register "SataPortsDevSlp[0]" = "0"
 	register "SataPortsDevSlp[1]" = "0"

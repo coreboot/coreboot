@@ -375,7 +375,7 @@ chip and can be decoded for this table with the codec datasheet and board schema
  * @version: SoundWire specification version from &enum soundwire_version.
  * @link_id: Zero-based SoundWire Link Number.
  * @unique_id: Unique ID for multiple devices.
- * @manufacturer_id: Manufacturer ID from include/device/mipi_ids.h.
+ * @manufacturer_id: Manufacturer ID from include/mipi/ids.h.
  * @part_id: Vendor defined part ID.
  * @class: MIPI class encoding in &enum mipi_class.
  */

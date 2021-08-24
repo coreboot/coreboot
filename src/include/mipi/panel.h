@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __DEVICE_MIPI_PANEL_H__
-#define __DEVICE_MIPI_PANEL_H__
+#ifndef __MIPI_PANEL_H__
+#define __MIPI_PANEL_H__
 
 #include <edid.h>
 #include <types.h>
@@ -53,4 +53,4 @@ cb_err_t mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_fun
 #define PANEL_END \
 	PANEL_CMD_END
 
-#endif /* __DEVICE_MIPI_PANEL_H__ */
+#endif /* __MIPI_PANEL_H__ */

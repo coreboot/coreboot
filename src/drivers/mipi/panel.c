@@ -2,7 +2,7 @@
 
 #include <console/console.h>
 #include <delay.h>
-#include <device/mipi_panel.h>
+#include <mipi/panel.h>
 
 cb_err_t mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func)
 {

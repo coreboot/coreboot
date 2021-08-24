@@ -40,7 +40,7 @@ ramstage-$(CONFIG_PCIEXP_PLUGIN_SUPPORT) += pciexp_device.c
 ramstage-$(CONFIG_CARDBUS_PLUGIN_SUPPORT) += cardbus_device.c
 endif
 
-subdirs-y += oprom dram mipi
+subdirs-y += oprom dram
 
 bootblock-$(CONFIG_SOFTWARE_I2C) += software_i2c.c
 verstage-$(CONFIG_SOFTWARE_I2C) += software_i2c.c

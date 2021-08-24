@@ -2,7 +2,7 @@
 
 #include <assert.h>
 #include <console/console.h>
-#include <device/mipi_panel.h>
+#include <mipi/panel.h>
 #include <device/mmio.h>
 #include <delay.h>
 #include <edid.h>

@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/mipi_panel.h>
+#include <mipi/panel.h>
 
-struct panel_serializable_data BOE_TV080WUM_NG0 = {
+struct panel_serializable_data BOE_TV101WUM_NG0 = {
 	.edid = {
-		.ascii_string = "TV080WUM-NG0",
+		.ascii_string = "TV101WUM-NG0",
 		.manufacturer_name = "BOE",
 		.panel_bits_per_color = 8,
 		.panel_bits_per_pixel = 24,
@@ -15,7 +15,7 @@ struct panel_serializable_data BOE_TV080WUM_NG0 = {
 			.ha = 1200, .hbl = 164, .hso = 80, .hspw = 24,
 			.va = 1920, .vbl = 28, .vso = 10, .vspw = 4,
 			.phsync = '-', .pvsync = '-',
-			.x_mm = 107, .y_mm = 132,
+			.x_mm = 135, .y_mm = 216,
 		},
 	},
 	.init = {

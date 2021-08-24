@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/mipi_panel.h>
+#include <mipi/panel.h>
 #include <device/mmio.h>
 #include <console/console.h>
 #include <assert.h>

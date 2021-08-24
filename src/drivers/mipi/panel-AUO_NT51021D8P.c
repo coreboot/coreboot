@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/mipi_panel.h>
+#include <mipi/panel.h>
 
 struct panel_serializable_data AUO_NT51021D8P = {
 	.edid = {

@@ -4,8 +4,8 @@
  * MIPI Alliance Manufacturer IDs from https://mid.mipi.org
  */
 
-#ifndef __DEVICE_MIPI_IDS_H__
-#define __DEVICE_MIPI_IDS_H__
+#ifndef __MIPI_IDS_H__
+#define __MIPI_IDS_H__
 
 /* Board Members */
 #define MIPI_MFG_ID_INTEL			0x0105
@@ -26,4 +26,4 @@
 #define MIPI_MFG_ID_MAXIM			0x019f
 #define MIPI_DEV_ID_MAXIM_MAX98373		0x8373
 
-#endif /* __DEVICE_MIPI_IDS_H__ */
+#endif /* __MIPI_IDS_H__ */

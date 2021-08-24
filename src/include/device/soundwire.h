@@ -76,7 +76,7 @@ enum mipi_class {
  * @version: SoundWire specification version from &enum soundwire_version.
  * @link_id: Zero-based SoundWire master link id.
  * @unique_id: Unique ID for multiple slave devices on the same bus.
- * @manufacturer_id: Manufacturer ID from include/device/mipi_ids.h.
+ * @manufacturer_id: Manufacturer ID from include/mipi/ids.h.
  * @part_id: Vendor defined part ID.
  * @class: MIPI class encoding in &enum mipi_class.
  */

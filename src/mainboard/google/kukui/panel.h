@@ -3,7 +3,7 @@
 #ifndef __MAINBOARD_GOOGLE_KUKUI_PANEL_H__
 #define __MAINBOARD_GOOGLE_KUKUI_PANEL_H__
 
-#include <device/mipi_panel.h>
+#include <mipi/panel.h>
 #include <soc/dsi.h>
 
 struct panel_description {

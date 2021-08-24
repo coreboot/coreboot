@@ -6,7 +6,7 @@
 #include <delay.h>
 #include <device/device.h>
 #include <device/i2c_simple.h>
-#include <device/mipi_panel.h>
+#include <mipi/panel.h>
 #include <drivers/ti/sn65dsi86bridge/sn65dsi86bridge.h>
 #include <edid.h>
 #include <framebuffer_info.h>

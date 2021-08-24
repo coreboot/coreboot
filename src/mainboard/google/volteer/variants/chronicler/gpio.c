@@ -10,7 +10,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* A7  : I2S2_SCLK ==> EN_PP3300_TRACKPAD */
 	PAD_CFG_GPO(GPP_A7, 1, DEEP),
 	/* A8  : I2S2_SFRM ==> EN_PP3300_TOUCHSCREEN */
-	PAD_CFG_GPO(GPP_A8, 0, DEEP),
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
 	/* A10 : I2S2_RXD ==> EN_SPKR_PA */
 	PAD_CFG_GPO(GPP_A10, 1, DEEP),
 	/* A13 : PMC_I2C_SCL ==> BT_DISABLE_L */

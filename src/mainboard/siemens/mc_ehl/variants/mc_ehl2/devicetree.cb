@@ -217,7 +217,7 @@ chip soc/intel/elkhartlake
 		device pci 19.2 on	end # UART2
 
 		device pci 1a.0 on	end # eMMC
-		device pci 1a.1 off	end # SD
+		device pci 1a.1 on	end # SD
 		device pci 1a.3 off	end # Intel Safety Island
 
 		device pci 1b.0 off	end # Intel PSE I2C0

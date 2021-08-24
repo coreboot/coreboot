@@ -1,7 +1,34 @@
 chip soc/intel/jasperlake
 
 	# USB Port Configuration
+	register "usb2_ports[0]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-C Port C0
+	register "usb2_ports[1]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_16P9MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_39P35MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-C Port C1
+	register "usb2_ports[2]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_11P25MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port A0
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[4]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# Camera
+
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
@@ -45,7 +72,30 @@ chip soc/intel/jasperlake
 		},
 	}"
 	device domain 0 on
-		device pci 14.0 on end
+		device pci 14.0 on
+			chip drivers/usb/acpi
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""UFCamera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "has_power_resource" = "1"
+						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D13)"
+						register "enable_delay_ms" = "20"
+						device usb 2.5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""LTE""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "has_power_resource" = "1"
+						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H17)"
+						register "reset_off_delay_ms" = "20"
+						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
+						register "enable_delay_ms" = "20"
+						device usb 3.3 on end
+					end
+				end
+			end
+		end # USB xHCI
 		device pci 15.0 on end
 		device pci 15.2 on end
 		device pci 1c.7 on end

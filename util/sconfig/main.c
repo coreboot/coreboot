@@ -552,17 +552,26 @@ static void append_fw_config_probe_to_dev(struct device *dev, struct fw_config_p
 	}
 }
 
+static int check_probe_exists(struct fw_config_probe *probe, const char *field,
+			      const char *option)
+{
+	while (probe) {
+		if (!strcmp(probe->field, field) && !strcmp(probe->option, option)) {
+			return 1;
+		}
+		probe = probe->next;
+	}
+
+	return 0;
+}
+
 void add_fw_config_probe(struct bus *bus, const char *field, const char *option)
 {
 	struct fw_config_probe *probe;
 
-	probe = bus->dev->probe;
-	while (probe) {
-		if (!strcmp(probe->field, field) && !strcmp(probe->option, option)) {
-			printf("ERROR: fw_config probe %s:%s already exists\n", field, option);
-			exit(1);
-		}
-		probe = probe->next;
+	if (check_probe_exists(bus->dev->probe, field, option)) {
+		printf("ERROR: fw_config probe %s:%s already exists\n", field, option);
+		exit(1);
 	}
 
 	probe = S_ALLOC(sizeof(*probe));
@@ -1479,6 +1488,56 @@ static void parse_devicetree(const char *file, struct bus *parent)
 	fclose(filec);
 }
 
+static int device_probe_count(struct fw_config_probe *probe)
+{
+	int count = 0;
+	while (probe) {
+		probe = probe->next;
+		count++;
+	}
+
+	return count;
+}
+
+/*
+ * When overriding devices, use the following rules:
+ * 1. If probe count matches and:
+ *    a. Entire probe list matches for both devices -> Same device, override.
+ *    b. No probe entries match -> Different devices, do not override.
+ *    c. Partial list matches -> Bad device tree entries, fail build.
+ *
+ * 2. If probe counts do not match and:
+ *    a. No probe entries match -> Different devices, do not override.
+ *    b. Partial list matches -> Bad device tree entries, fail build.
+ */
+static int device_probes_match(struct device *a, struct device *b)
+{
+	struct fw_config_probe *a_probe = a->probe;
+	struct fw_config_probe *b_probe = b->probe;
+	int a_probe_count = device_probe_count(a_probe);
+	int b_probe_count = device_probe_count(b_probe);
+	int match_count = 0;
+
+	while (a_probe) {
+		if (check_probe_exists(b_probe, a_probe->field, a_probe->option))
+			match_count++;
+		a_probe = a_probe->next;
+	}
+
+	if ((a_probe_count == b_probe_count) && (a_probe_count == match_count))
+		return 1;
+
+	if (match_count) {
+		printf("ERROR: devices with overlapping probes: ");
+		printf(a->path, a->path_a, a->path_b);
+		printf(b->path, b->path_a, b->path_b);
+		printf("\n");
+		exit(1);
+	}
+
+	return 0;
+}
+
 /*
  * Match device nodes from base and override tree to see if they are the same
  * node.
@@ -1803,7 +1862,16 @@ static void override_devicetree(struct bus *base_parent,
 		/* Look for a matching device in base tree. */
 		for (base_child = base_parent->children;
 		     base_child; base_child = base_child->sibling) {
-			if (device_match(base_child, override_child))
+			if (!device_match(base_child, override_child))
+				continue;
+			/* If base device has no probe statement, nothing else to compare. */
+			if (base_child->probe == NULL)
+				break;
+			/*
+			 * If base device has probe statements, ensure that all probe conditions
+			 * match for base and override device.
+			 */
+			if (device_probes_match(base_child, override_child))
 				break;
 		}
 

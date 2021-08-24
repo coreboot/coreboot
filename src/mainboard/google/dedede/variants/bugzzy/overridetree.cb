@@ -1,4 +1,6 @@
 chip soc/intel/jasperlake
+	# MIPI display panel
+	register "DdiPortAConfig" = "2" # DdiPortMipiDsi
 
 	# USB Port Configuration
 	register "usb2_ports[0]" = "{

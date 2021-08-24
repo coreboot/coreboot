@@ -287,4 +287,22 @@ config SOC_INTEL_CRASHLOG
 	help
 	  Enables CrashLog.
 
+# Intel recommends reserving the following resources per USB4 root port,
+# from TGL BIOS Spec (doc #611569) Revision 0.7.6 Section 7.2.5.1.5
+# - 42 buses
+# - 194 MiB Non-prefetchable memory
+# - 448 MiB Prefetchable memory
+if SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+
+config PCIEXP_HOTPLUG_BUSES
+	default 42
+
+config PCIEXP_HOTPLUG_MEM
+	default 0xc200000  # 194 MiB
+
+config PCIEXP_HOTPLUG_PREFETCH_MEM
+	default 0x1c000000 # 448 MiB
+
+endif # SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+
 endif

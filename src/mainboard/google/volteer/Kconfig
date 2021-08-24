@@ -105,24 +105,6 @@ config MAINBOARD_PART_NUMBER
 	default "Volet" if BOARD_GOOGLE_VOLET
 	default "Chronicler" if BOARD_GOOGLE_CHRONICLER
 
-if PCIEXP_HOTPLUG
-
-# Reserving resources for PCIe Hotplug as per TGL BIOS Spec (doc #611569)
-# Revision 0.7.6 Section 7.2.5.1.5
-config PCIEXP_HOTPLUG_BUSES
-	int
-	default 42
-
-config PCIEXP_HOTPLUG_MEM
-	hex
-	default 0xc200000  # 194 MiB
-
-config PCIEXP_HOTPLUG_PREFETCH_MEM
-	hex
-	default 0x1c000000 # 448 MiB
-
-endif # PCIEXP_HOTPLUG
-
 config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 21  # GPE0_DW0_21 (GPP_C21)

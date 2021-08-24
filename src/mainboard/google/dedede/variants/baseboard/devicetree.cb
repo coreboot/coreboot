@@ -169,10 +169,6 @@ chip soc/intel/jasperlake
 
 	register "tcc_offset" = "10"     # TCC of 90C
 
-	# Use below format to override value in overridetree.cb if required
-	# format:
-	# register "common_soc_config.<variable_name>" = "value"
-
 	# VR config settings
 	# Imon Slope correction specified in 1/100 increment values. Range is 0-200.
 	# Eg: 125 = 1.25

@@ -25,8 +25,9 @@ static void max98390_fill_ssdt(const struct device *dev)
 		.speed = I2C_SPEED_FAST,
 		.resource = scope,
 	};
-	struct acpi_dp *dp;
+	struct acpi_dp *dp = NULL;
 	uint64_t r0_value, temp_value;
+	char dsm_name[80] = {};
 
 	if (!scope)
 		return;
@@ -58,10 +59,28 @@ static void max98390_fill_ssdt(const struct device *dev)
 			dp = acpi_dp_new_table("_DSD");
 			MAX98390_DP_INT("r0_calib", r0_value);
 			MAX98390_DP_INT("temperature_calib", temp_value);
-			acpi_dp_write(dp);
 			printk(BIOS_INFO, "set dsm_calib properties\n");
 		}
 	}
+
+	if (CONFIG(CHROMEOS_DSM_PARAM_FILE_NAME)) {
+		if (config->dsm_param_file_name) {
+			if (!dp)
+				dp = acpi_dp_new_table("_DSD");
+
+			size_t chars = snprintf(dsm_name, sizeof(dsm_name), "%s_%s_%s.bin",
+					config->dsm_param_file_name, CONFIG_MAINBOARD_VENDOR,
+					CONFIG_MAINBOARD_PART_NUMBER);
+
+			if (chars >= sizeof(dsm_name))
+				printk(BIOS_ERR, "ERROR: String too long in %s\n", __func__);
+
+			acpi_dp_add_string(dp, "maxim,dsm_param_name", dsm_name);
+		}
+	}
+
+	if (dp)
+		acpi_dp_write(dp);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

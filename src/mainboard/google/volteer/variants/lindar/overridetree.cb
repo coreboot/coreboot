@@ -175,11 +175,6 @@ chip soc/intel/tigerlake
 				end
 			end
 		end
-		# Baseboard has these on, so they must be disabled here.
-		device ref tbt_pcie_rp0 off end
-		device ref tbt_pcie_rp1 off end
-		device ref tbt_dma0 off end
-
 		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

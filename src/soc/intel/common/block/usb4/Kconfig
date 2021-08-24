@@ -18,3 +18,11 @@ config SOC_INTEL_COMMON_BLOCK_USB4_XHCI
 	help
 	  Minimal PCI driver for adding PCI ops and SSDT generation for common
 	  Intel USB4/Thunderbolt North XHCI ports.
+
+config SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+	bool
+	default n
+	depends on SOC_INTEL_COMMON_BLOCK_USB4
+	select PCIEXP_HOTPLUG
+	help
+	  Enable USB4 PCIe resources for reserving hotplug busses and memory.

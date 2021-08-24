@@ -35,6 +35,9 @@
 #define PAM5	0x85
 #define PAM6	0x86
 
+/* PAM0 contains the lock bit */
+#define PAM_LOCK	(1 << 0)
+
 /* Device 0:0.0 MMIO space */
 #define MCH_PAIR	0x5418
 

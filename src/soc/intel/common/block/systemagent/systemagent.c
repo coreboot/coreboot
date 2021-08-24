@@ -306,6 +306,15 @@ void enable_power_aware_intr(void)
 	MCHBAR8(MCH_PAIR) = pair;
 }
 
+void sa_lock_pam(void)
+{
+	const struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+	if (!dev)
+		return;
+
+	pci_or_config8(dev, PAM0, PAM_LOCK);
+}
+
 static struct device_operations systemagent_ops = {
 	.read_resources   = systemagent_read_resources,
 	.set_resources    = pci_dev_set_resources,

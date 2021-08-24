@@ -79,6 +79,9 @@ uintptr_t sa_get_tseg_base(void);
 size_t sa_get_tseg_size(void);
 /* Fill MMIO resource above 4GB into GNVS */
 void sa_fill_gnvs(struct global_nvs *gnvs);
+/* API to lock PAM registers */
+void sa_lock_pam(void);
+
 /*
  * SoC overrides
  *

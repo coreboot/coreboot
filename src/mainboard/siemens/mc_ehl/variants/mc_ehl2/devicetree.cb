@@ -135,6 +135,12 @@ chip soc/intel/elkhartlake
 	register "PchTsnGbeLinkSpeed" = "Tsn_2_5_Gbps"
 	register "PchTsnGbeSgmiiEnable" = "1"
 
+	register "common_soc_config" = "{
+		.i2c[2] = {
+			.speed = I2C_SPEED_STANDARD,
+		},
+	}"
+
 	device domain 0 on
 		device pci 00.0 on	end # Host Bridge
 		device pci 02.0 on	end # Integrated Graphics Device
@@ -173,7 +179,22 @@ chip soc/intel/elkhartlake
 
 		device pci 15.0 off	end # I2C0
 		device pci 15.1 on	end # I2C1
-		device pci 15.2 off	end # I2C2
+		device pci 15.2 on	    # I2C2
+			# Enable external RTC chip
+			chip drivers/i2c/rx6110sa
+				register "bus_speed" = "I2C_SPEED_STANDARD"
+				register "pmon_sampling" = "PMON_SAMPL_256_MS"
+				register "bks_on" = "0"
+				register "bks_off" = "1"
+				register "iocut_en" = "1"
+				register "set_user_date" = "1"
+				register "user_year" = "04"
+				register "user_month" = "07"
+				register "user_day" = "01"
+				register "user_weekday" = "4"
+				device i2c 0x32 on end  # RTC RX6110 SA
+			end
+		end
 		device pci 15.3 off	end # I2C3
 
 		device pci 16.0 on	end # Management Engine Interface 1
@@ -240,22 +261,7 @@ chip soc/intel/elkhartlake
 		device pci 1f.1 on	end # P2SB
 		device pci 1f.2 hidden	end # Power Management Controller
 		device pci 1f.3 off	end # Intel cAVS/HDA
-		device pci 1f.4	on	    # SMBus
-			# Enable external RTC chip
-			chip drivers/i2c/rx6110sa
-				register "bus_speed" = "I2C_SPEED_STANDARD"
-				register "pmon_sampling" = "PMON_SAMPL_256_MS"
-				register "bks_on" = "0"
-				register "bks_off" = "1"
-				register "iocut_en" = "1"
-				register "set_user_date" = "1"
-				register "user_year" = "04"
-				register "user_month" = "07"
-				register "user_day" = "01"
-				register "user_weekday" = "4"
-				device i2c 0x32 on end  # RTC RX6110 SA
-			end
-		end
+		device pci 1f.4	on	end # SMBus
 		device pci 1f.5 on	end # PCH SPI (flash & TPM)
 		device pci 1f.7 off	end # PCH Intel Trace Hub
 	end

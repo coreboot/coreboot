@@ -19,6 +19,14 @@ int mtk_wdt_init(void)
 	if (wdt_sta & MTK_WDT_STA_HW_RST) {
 		printk(BIOS_INFO, "hardware watchdog\n");
 		mark_watchdog_tombstone();
+
+		/*
+		 * We trigger secondary reset by triggering WDT hardware to send signal to EC.
+		 * We do not use do_board_reset() to send signal to EC
+		 * which is controlled by software driver.
+		 */
+		write32(&mtk_wdt->wdt_mode, MTK_WDT_MODE_EXTEN | MTK_WDT_MODE_KEY);
+		write32(&mtk_wdt->wdt_swrst, MTK_WDT_SWRST_KEY);
 	} else if (wdt_sta & MTK_WDT_STA_SW_RST)
 		printk(BIOS_INFO, "normal software reboot\n");
 	else if (wdt_sta & MTK_WDT_STA_SPM_RST)

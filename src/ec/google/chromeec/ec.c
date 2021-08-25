@@ -1508,6 +1508,33 @@ int google_chromeec_usb_pd_get_info(int port, bool *ufp, bool *dbg_acc,
 	return 0;
 }
 
+int google_chromeec_typec_control_enter_dp_mode(int port)
+{
+	if (!google_chromeec_check_feature(EC_FEATURE_TYPEC_REQUIRE_AP_MODE_ENTRY))
+		return 0;
+
+	struct ec_params_typec_control typec_control = {
+		.port = port,
+		.command = TYPEC_CONTROL_COMMAND_ENTER_MODE,
+		.mode_to_enter = TYPEC_MODE_DP,
+	};
+
+	struct chromeec_command cmd = {
+		.cmd_code = EC_CMD_TYPEC_CONTROL,
+		.cmd_version = 0,
+		.cmd_data_in = &typec_control,
+		.cmd_size_in = sizeof(typec_control),
+		.cmd_data_out = NULL,
+		.cmd_size_out = 0,
+		.cmd_dev_index = 0,
+	};
+
+	if (google_chromeec_command(&cmd) < 0)
+		return -1;
+
+	return 0;
+}
+
 /**
  * Check for the current mux state in EC. Flags representing the mux state found
  * in ec_commands.h
@@ -1630,6 +1657,25 @@ int google_chromeec_wait_for_displayport(long timeout_ms)
 	       stopwatch_duration_msecs(&sw));
 
 	return ret;
+}
+
+int google_chromeec_wait_for_dp_hpd(int port, long timeout_ms)
+{
+	uint8_t mux_flags;
+	struct stopwatch sw;
+
+	stopwatch_init_msecs_expire(&sw, timeout_ms);
+	do {
+		google_chromeec_usb_get_pd_mux_info(port, &mux_flags);
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_WARNING, "HPD not ready after %ldms. Abort.\n", timeout_ms);
+			return -1;
+		}
+		mdelay(100);
+	} while (!(mux_flags & USB_PD_MUX_HPD_LVL) || !(mux_flags & USB_PD_MUX_DP_ENABLED));
+	printk(BIOS_INFO, "HPD ready after %lu ms\n", stopwatch_duration_msecs(&sw));
+
+	return 0;
 }
 
 int google_chromeec_get_keybd_config(struct ec_response_keybd_config *keybd)

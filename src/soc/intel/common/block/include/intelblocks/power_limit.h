@@ -38,4 +38,6 @@ struct soc_power_limits_config {
 void set_power_limits(u8 power_limit_1_time,
 		struct soc_power_limits_config *config);
 
+u8 get_cpu_tdp(void);
+
 #endif /* _SOC_INTEL_COMMON_BLOCK_POWER_LIMIT_H_ */

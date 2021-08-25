@@ -195,3 +195,18 @@ void set_power_limits(u8 power_limit_1_time,
 		wrmsr(MSR_TURBO_ACTIVATION_RATIO, limit);
 	}
 }
+
+u8 get_cpu_tdp(void)
+{
+	unsigned int power_unit, cpu_tdp;
+
+	/* Get units */
+	msr_t msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
+	power_unit = 1 << (msr.lo & 0xf);
+
+	/* Get power defaults for this SKU */
+	msr = rdmsr(MSR_PKG_POWER_SKU);
+	cpu_tdp = msr.lo & 0x7fff;
+
+	return cpu_tdp / power_unit;
+}

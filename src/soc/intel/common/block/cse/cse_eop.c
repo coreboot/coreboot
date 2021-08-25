@@ -18,6 +18,7 @@ enum cse_eop_result {
 	CSE_EOP_RESULT_GLOBAL_RESET_REQUESTED,
 	CSE_EOP_RESULT_SUCCESS,
 	CSE_EOP_RESULT_ERROR,
+	CSE_EOP_RESULT_DISABLED,
 };
 
 static bool cse_disable_mei_bus(void)
@@ -100,6 +101,14 @@ static enum cse_eop_result cse_send_eop(void)
 	 * 2) HFSTS1 COM is Normal
 	 * 3) Only sent after DID (accomplished by compiling this into ramstage)
 	 */
+
+	if (cse_is_hfs1_com_soft_temp_disable()) {
+		printk(BIOS_ERR, "HECI: Prerequisites not met for sending EOP\n");
+		if (CONFIG(SOC_INTEL_CSE_LITE_SKU))
+			return CSE_EOP_RESULT_ERROR;
+		return CSE_EOP_RESULT_DISABLED;
+	}
+
 	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_normal()) {
 		printk(BIOS_ERR, "HECI: Prerequisites not met for sending EOP\n");
 		return CSE_EOP_RESULT_ERROR;
@@ -157,6 +166,9 @@ static void handle_cse_eop_result(enum cse_eop_result result)
 		break;
 	case CSE_EOP_RESULT_SUCCESS:
 		printk(BIOS_INFO, "CSE EOP successful, continuing boot\n");
+		break;
+	case CSE_EOP_RESULT_DISABLED:
+		printk(BIOS_INFO, "CSE is disabled, continuing boot\n");
 		break;
 	case CSE_EOP_RESULT_ERROR: /* fallthrough */
 	default:

@@ -6,6 +6,23 @@
 #include <ec/ec.h>
 #include <soc/ramstage.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <fw_config.h>
+
+static void add_fw_config_oem_string(const struct fw_config *config, void *arg)
+{
+	struct smbios_type11 *t;
+	char buffer[64];
+
+	t = (struct smbios_type11 *)arg;
+
+	snprintf(buffer, sizeof(buffer), "%s-%s", config->field_name, config->option_name);
+	t->count = smbios_add_string(t->eos, buffer);
+}
+
+static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t)
+{
+	fw_config_for_each_found(add_fw_config_oem_string, t);
+}
 
 void mainboard_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
@@ -44,6 +61,7 @@ static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_dev_init;
 	dev->ops->acpi_inject_dsdt = chromeos_dsdt_generator;
+	dev->ops->get_smbios_strings = mainboard_smbios_strings;
 }
 
 struct chip_operations mainboard_ops = {

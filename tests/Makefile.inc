@@ -136,7 +136,8 @@ $$($(1)-config-file): $(TEST_KCONFIG_AUTOHEADER)
 	printf '#endif\n' >> $$@;
 
 $($(1)-objs): TEST_CFLAGS += -I$$(dir $$($(1)-config-file)) \
-	-D__$$(shell echo $$($(1)-stage) | tr '[:lower:]' '[:upper:]')__
+	-D__$$(shell echo $$($(1)-stage) | tr '[:lower:]' '[:upper:]')__ \
+	-D__TEST_NAME__=\"$(1)\"
 
 # Give us a way to distinguish between coreboot source files and test files in code.
 $($(1)-srcobjs): TEST_CFLAGS += -D__TEST_SRCOBJ__

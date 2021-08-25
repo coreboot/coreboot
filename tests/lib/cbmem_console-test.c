@@ -118,12 +118,6 @@ void test_cbmemc_tx_byte_overflow(void **state)
 
 int main(void)
 {
-#if ENV_ROMSTAGE_OR_BEFORE
-	const char *test_name = "cbmem_console-test-romstage";
-#else
-	const char *test_name = "cbmem_console-test-ramstage";
-#endif
-
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test_teardown(test_cbmemc_init, teardown_cbmemc),
 		cmocka_unit_test_setup_teardown(test_cbmemc_tx_byte,
@@ -132,5 +126,5 @@ int main(void)
 						setup_cbmemc, teardown_cbmemc),
 	};
 
-	return cmocka_run_group_tests_name(test_name, tests, NULL, NULL);
+	return cb_run_group_tests(tests, NULL, NULL);
 }

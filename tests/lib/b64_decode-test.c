@@ -57,5 +57,5 @@ int main(void)
 		cmocka_unit_test(test_b64_decode),
 	};
 
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	return cb_run_group_tests(tests, NULL, NULL);
 }

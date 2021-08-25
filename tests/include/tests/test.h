@@ -36,4 +36,11 @@
 	TEST_SYMBOL(_e##region, _##region + size); \
 	TEST_SYMBOL(_##region##_size, size)
 
+/* Wrapper for running cmocka test groups using name provided by build system in __TEST_NAME__
+   This should be used instead of cmocka_run_group_tests(). If there is a need to use custom
+   group name, then please use cmocka_run_group_tests_name(). */
+#define cb_run_group_tests(group_tests, group_setup, group_teardown)                           \
+	cmocka_run_group_tests_name((__TEST_NAME__ "(" #group_tests ")"), group_tests,         \
+				    group_setup, group_teardown)
+
 #endif /* _TESTS_TEST_H */

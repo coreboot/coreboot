@@ -213,5 +213,5 @@ int main(void)
 						setup_acpigen, teardown_acpigen),
 	};
 
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	return cb_run_group_tests(tests, NULL, NULL);
 }

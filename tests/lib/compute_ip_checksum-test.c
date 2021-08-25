@@ -98,5 +98,5 @@ int main(void)
 		cmocka_unit_test(test_add_ip_checksums),
 	};
 
-	return cmocka_run_group_tests(tests, setup_test_group, NULL);
+	return cb_run_group_tests(tests, setup_test_group, NULL);
 }

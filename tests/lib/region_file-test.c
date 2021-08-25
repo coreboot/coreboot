@@ -325,7 +325,6 @@ int main(void)
 				setup_teardown_region_file_test),
 	};
 
-	return cmocka_run_group_tests(tests,
-					setup_region_file_test_group,
-					teardown_region_file_test_group);
+	return cb_run_group_tests(tests, setup_region_file_test_group,
+				  teardown_region_file_test_group);
 }

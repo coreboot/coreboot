@@ -253,5 +253,5 @@ int main(void)
 #endif
 	};
 
-	return cmocka_run_group_tests(tests, setup_spd_cache, teardown_spd_cache);
+	return cb_run_group_tests(tests, setup_spd_cache, teardown_spd_cache);
 }

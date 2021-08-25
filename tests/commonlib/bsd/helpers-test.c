@@ -51,5 +51,5 @@ int main(void)
 		cmocka_unit_test(test_retry),
 	};
 
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	return cb_run_group_tests(tests, NULL, NULL);
 }

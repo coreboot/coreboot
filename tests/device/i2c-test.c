@@ -164,5 +164,5 @@ int main(void)
 		cmocka_unit_test(i2c_write_field_test)
 	};
 
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	return cb_run_group_tests(tests, NULL, NULL);
 }

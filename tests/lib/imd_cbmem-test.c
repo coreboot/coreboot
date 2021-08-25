@@ -626,5 +626,5 @@ int main(void)
 				setup_teardown_test_imd_cbmem),
 	};
 
-	return cmocka_run_group_tests(tests, setup_group_imd_cbmem, teardown_group_imd_cbmem);
+	return cb_run_group_tests(tests, setup_group_imd_cbmem, teardown_group_imd_cbmem);
 }

@@ -629,10 +629,10 @@ int main(void)
 		cmocka_unit_test(test_memrange_add_resources_filter),
 	};
 
-	return cmocka_run_group_tests_name("Boundary on 4GiB",
+	return cmocka_run_group_tests_name(__TEST_NAME__"(Boundary on 4GiB)",
 						tests, setup_test_1, NULL) +
-		cmocka_run_group_tests_name("Boundaries 1 byte from 4GiB",
+		cmocka_run_group_tests_name(__TEST_NAME__"(Boundaries 1 byte from 4GiB)",
 						tests, setup_test_2, NULL) +
-		cmocka_run_group_tests_name("Range over 4GiB boundary",
+		cmocka_run_group_tests_name(__TEST_NAME__"(Range over 4GiB boundary)",
 						tests, setup_test_3, NULL);
 }

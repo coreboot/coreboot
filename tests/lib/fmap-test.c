@@ -302,5 +302,5 @@ int main(void)
 						setup_fmap, teardown_fmap),
 	};
 
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	return cb_run_group_tests(tests, NULL, NULL);
 }

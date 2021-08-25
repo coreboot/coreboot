@@ -129,5 +129,5 @@ int main(void)
 		cmocka_unit_test_setup(test_incorrectly_initialized_stack, setup_stack_test),
 	};
 
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	return cb_run_group_tests(tests, NULL, NULL);
 }

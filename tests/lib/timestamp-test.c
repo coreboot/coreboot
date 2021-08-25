@@ -131,7 +131,7 @@ int main(void)
 	};
 
 #if CONFIG(COLLECT_TIMESTAMPS)
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	return cb_run_group_tests(tests, NULL, NULL);
 #else
 	return 0;
 #endif

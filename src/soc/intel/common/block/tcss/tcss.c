@@ -16,6 +16,8 @@
 
 #define BIAS_CTRL_VW_INDEX_SHIFT		16
 #define BIAS_CTRL_BIT_POS_SHIFT			8
+#define WAIT_FOR_DISPLAYPORT_TIMEOUT_MS		1000
+#define WAIT_FOR_HPD_TIMEOUT_MS			3000
 
 static uint32_t tcss_make_conn_cmd(int u, int u3, int u2, int ufp, int hsl,
 					int sbu, int acc)
@@ -130,7 +132,7 @@ static int send_pmc_disconnect_request(int port, const struct tcss_port_map *por
 	return send_pmc_req(CONNECT_REQ, &req, &rsp, PMC_IPC_DISC_REQ_SIZE);
 }
 
-static int send_pmc_connect_request(int port, const struct tcss_mux_info *mux_data,
+static int send_pmc_connect_request(int port, const struct usbc_mux_info *mux_data,
 					const struct tcss_port_map *port_map)
 {
 	uint32_t cmd;
@@ -144,7 +146,7 @@ static int send_pmc_connect_request(int port, const struct tcss_mux_info *mux_da
 		mux_data->ufp,
 		mux_data->polarity,
 		mux_data->polarity,
-		mux_data->acc);
+		mux_data->dbg_acc);
 
 	req.buf[0] = cmd;
 
@@ -162,7 +164,7 @@ static int send_pmc_connect_request(int port, const struct tcss_mux_info *mux_da
 	return send_pmc_req(CONNECT_REQ, &req, &rsp, PMC_IPC_CONN_REQ_SIZE);
 }
 
-static int send_pmc_safe_mode_request(int port, const struct tcss_mux_info *mux_data,
+static int send_pmc_safe_mode_request(int port, const struct usbc_mux_info *mux_data,
 					const struct tcss_port_map *port_map)
 {
 	uint32_t cmd;
@@ -181,7 +183,7 @@ static int send_pmc_safe_mode_request(int port, const struct tcss_mux_info *mux_
 	return send_pmc_req(SAFE_REQ, &req, &rsp, PMC_IPC_SAFE_REQ_SIZE);
 }
 
-static int send_pmc_dp_hpd_request(int port, const struct tcss_mux_info *mux_data,
+static int send_pmc_dp_hpd_request(int port, const struct usbc_mux_info *mux_data,
 					const struct tcss_port_map *port_map)
 {
 	struct pmc_ipc_buffer req = { 0 };
@@ -200,7 +202,7 @@ static int send_pmc_dp_hpd_request(int port, const struct tcss_mux_info *mux_dat
 
 }
 
-static int send_pmc_dp_mode_request(int port, const struct tcss_mux_info *mux_data,
+static int send_pmc_dp_mode_request(int port, const struct usbc_mux_info *mux_data,
 					const struct tcss_port_map *port_map)
 {
 	uint32_t cmd;
@@ -223,7 +225,7 @@ static int send_pmc_dp_mode_request(int port, const struct tcss_mux_info *mux_da
 		GET_TCSS_ALT_FIELD(USB3, cmd),
 		GET_TCSS_ALT_FIELD(MODE, cmd));
 
-	switch (mux_data->dp_mode) {
+	switch (mux_data->dp_pin_mode) {
 	case MODE_DP_PIN_A:
 		dp_mode = 1;
 		break;
@@ -282,35 +284,59 @@ static void tcss_init_mux(int port, const struct tcss_port_map *port_map)
 
 static void tcss_configure_dp_mode(const struct tcss_port_map *port_map, size_t num_ports)
 {
-	int ret;
+	int ret, port_bitmask;
 	size_t i;
-	const struct tcss_mux_info *mux_info;
+	const struct usbc_ops *ops;
+	struct usbc_mux_info mux_info;
 	const struct tcss_port_map *port_info;
 
 	if (!display_init_required())
 		return;
 
-	for (i = 0; i < num_ports; i++) {
-		mux_info = mainboard_tcss_get_mux_info(i);
-		port_info = &port_map[i];
+	ops = usbc_get_ops();
+	if (ops == NULL)
+		return;
 
-		if (!mux_info->dp)
+	port_bitmask = ops->dp_ops.wait_for_connection(WAIT_FOR_DISPLAYPORT_TIMEOUT_MS);
+	if (!port_bitmask)	/* No DP device is connected */
+		return;
+
+	for (i = 0; i < num_ports; i++) {
+		if (!(port_bitmask & BIT(i)))
 			continue;
 
-		ret = send_pmc_connect_request(i, mux_info, port_info);
+		ret = ops->dp_ops.enter_dp_mode(i);
+		if (ret < 0)
+			continue;
+
+		ret = ops->dp_ops.wait_for_hpd(i, WAIT_FOR_HPD_TIMEOUT_MS);
+		if (ret < 0)
+			continue;
+
+		ret = ops->mux_ops.get_mux_info(i, &mux_info);
+		if (ret < 0)
+			continue;
+
+		port_info = &port_map[i];
+
+		ret = send_pmc_connect_request(i, &mux_info, port_info);
 		if (ret) {
 			printk(BIOS_ERR, "Port %zd connect request failed\n", i);
 			continue;
 		}
-		ret = send_pmc_safe_mode_request(i, mux_info, port_info);
+		ret = send_pmc_safe_mode_request(i, &mux_info, port_info);
 		if (ret) {
 			printk(BIOS_ERR, "Port %zd safe mode request failed\n", i);
 			continue;
 		}
 
-		ret = send_pmc_dp_mode_request(i, mux_info, port_info);
-		if (ret)
+		ret = send_pmc_dp_mode_request(i, &mux_info, port_info);
+		if (ret) {
 			printk(BIOS_ERR, "Port C%zd mux set failed with error %d\n", i, ret);
+		} else {
+			printk(BIOS_INFO, "Port C%zd is configured to DP mode!\n", i);
+			return;
+		}
 	}
 }
 

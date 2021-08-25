@@ -4,6 +4,7 @@
 #define _TCSS_H_
 
 #include <intelblocks/gpio.h>
+#include <device/usbc_mux.h>
 
 /* PMC IPC related offsets and commands */
 #define PMC_IPC_USBC_CMD_ID		0xA7
@@ -126,19 +127,6 @@ enum pmc_ipc_command_type {
 #define MODE_DP_PIN_E BIT(4)
 #define MODE_DP_PIN_F BIT(5)
 
-/* struct to hold all tcss_mux related variables */
-struct tcss_mux_info {
-	bool dp; /* DP connected */
-	bool usb; /* USB connected */
-	bool cable; /* Active/Passive Cable */
-	bool polarity; /* polarity of connected device */
-	bool hpd_lvl; /* HPD Level assert */
-	bool hpd_irq; /* HPD IRQ assert */
-	bool ufp;
-	bool acc;
-	uint8_t dp_mode; /* DP Operation Mode */
-};
-
 struct tcss_port_map {
 	uint8_t usb2_port; /* USB2 Port Number */
 	uint8_t usb3_port; /* USB3 Port Number */
@@ -157,19 +145,9 @@ struct typec_aux_bias_pads {
 void tcss_configure(const struct typec_aux_bias_pads pads[MAX_TYPE_C_PORTS]);
 
 /*
- * Mainboard method to setup any mux config needed for TCSS display operations.
- * This function will need to obtain any mux data needed to forward to IOM/PMC
- * Since the mux data may be stored differently by different mainboards this
- * function must be defined by mainboard with its specific mux data stored in a
- * tcss_mux_info struct as defined above.
- * Returns completed tcss_mux_info structure for the specified port
- */
-const struct tcss_mux_info *mainboard_tcss_get_mux_info(int port);
-
-/*
  * Method to get only the port information to initialize the muxes to
  * disconnect mode during boot.
- * returns tscc_port_map of all ports on system
+ * Returns tcss_port_map of all ports on system
  */
 const struct tcss_port_map *tcss_get_port_info(size_t *num_ports);
 

@@ -15,8 +15,10 @@
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/systemagent.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/thermal.h>
+#include <intelpch/lockdown.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
@@ -66,6 +68,12 @@ static void tbt_finalize(void)
 	}
 }
 
+static void sa_finalize(void)
+{
+	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT)
+		sa_lock_pam();
+}
+
 static void soc_finalize(void *unused)
 {
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
@@ -73,6 +81,7 @@ static void soc_finalize(void *unused)
 	pch_finalize();
 	apm_control(APM_CNT_FINALIZE);
 	tbt_finalize();
+	sa_finalize();
 
 	/* Indicate finalize step with post code */
 	post_code(POST_OS_BOOT);

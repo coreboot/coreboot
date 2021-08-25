@@ -7,6 +7,7 @@
 #include <intelblocks/cfg.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcie_rp.h>
 #include <intelblocks/power_limit.h>
 #include <intelblocks/tcss.h>
@@ -118,6 +119,9 @@ struct soc_intel_tigerlake_config {
 	uint8_t pmc_gpe0_dw0; /* GPE0_31_0 STS/EN */
 	uint8_t pmc_gpe0_dw1; /* GPE0_63_32 STS/EN */
 	uint8_t pmc_gpe0_dw2; /* GPE0_95_64 STS/EN */
+
+	/* LPC fixed enables and ranges */
+	uint32_t lpc_ioe;
 
 	/* Generic IO decode ranges */
 	uint32_t gen1_dec;

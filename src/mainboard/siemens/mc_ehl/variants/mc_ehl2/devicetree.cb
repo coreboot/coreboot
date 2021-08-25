@@ -27,21 +27,21 @@ chip soc/intel/elkhartlake
 	}"
 
 	# USB related UPDs
-	register "usb2_ports[0]" = "USB2_PORT_SHORT(OC_SKIP)"	# USB3/2 Type A port 1
-	register "usb2_ports[1]" = "USB2_PORT_SHORT(OC_SKIP)"	# USB3/2 Type A Port 2
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Onboard USB
-	register "usb2_ports[3]" = "USB2_PORT_EMPTY"		# Port is unused
-	register "usb2_ports[4]" = "USB2_PORT_EMPTY"		# Port is unused
-	register "usb2_ports[5]" = "USB2_PORT_EMPTY"		# Port is unused
-	register "usb2_ports[6]" = "USB2_PORT_EMPTY"		# Port is unused
-	register "usb2_ports[7]" = "USB2_PORT_EMPTY"		# Port is unused
-	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# Port is unused
-	register "usb2_ports[9]" = "USB2_PORT_EMPTY"		# Port is unused
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC2)"	# X125/X135
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC2)"	# X125/X135
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)"	# X145/X155
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC0)"	# X145/X155
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"	# USB Panel
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC3)"	# USB Panel
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[9]" = "USB2_PORT_EMPTY"
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port2
-	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Port is not used
-	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Port is not used
+	register "usb3_ports[2]" = "USB3_PORT_EMPTY"	# UNUSED
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"	# UNUSED
 
 	# Skip the CPU repalcement check
 	register "SkipCpuReplacementCheck" = "1"

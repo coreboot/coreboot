@@ -37,7 +37,7 @@ config EFS_SPI_SPEED
 	int
 	range 0 5
 	default 3 if EM100
-	default 0
+	default 1
 	help
 	  SPI Fast Speed to be programmed by the PSP.
 	    0: 66.66Mhz
@@ -77,7 +77,7 @@ config ALT_SPI_SPEED
 	int
 	range 0 5
 	default 3 if EM100
-	default 0
+	default 1
 	help
 	  SPI ALT Speed to be programmed by coreboot.
 	    0: 66.66Mhz
@@ -91,7 +91,7 @@ config TPM_SPI_SPEED
 	int
 	range 0 5
 	default 3 if EM100
-	default 0
+	default 1
 	help
 	  SPI TPM Speed to be programmed by coreboot.
 	    0: 66.66Mhz

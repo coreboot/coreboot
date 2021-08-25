@@ -8,7 +8,7 @@
 #define MAX_DENYLIST_ENTRY	16
 #define MAX_DSAR_SET_COUNT	3
 #define MAX_GEO_OFFSET_REVISION	3
-#define MAX_PROFILE_COUNT	4
+#define MAX_PROFILE_COUNT	5
 #define MAX_SAR_REVISION	2
 #define REVISION_SIZE		1
 #define SAR_REV0_CHAINS_COUNT	2
@@ -47,6 +47,17 @@ struct avg_profile {
 	uint8_t deny_list_entry[MAX_DENYLIST_ENTRY];
 } __packed;
 
+struct dsm_profile {
+	uint32_t supported_functions;
+	uint32_t disable_active_sdr_channels;
+	uint32_t support_indonesia_5g_band;
+	uint32_t support_ultra_high_band;
+	uint32_t regulatory_configurations;
+	uint32_t uart_configurations;
+	uint32_t enablement_11ax;
+	uint32_t unii_4;
+};
+
 struct sar_header {
 	char marker[SAR_STR_PREFIX_SIZE];
 	uint8_t version;
@@ -60,6 +71,7 @@ union wifi_sar_limits {
 		struct geo_profile *wgds;
 		struct gain_profile *ppag;
 		struct avg_profile *wtas;
+		struct dsm_profile *dsm;
 	};
 	void *profile[MAX_PROFILE_COUNT];
 };

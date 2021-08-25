@@ -23,9 +23,149 @@
  */
 #define WIFI_ACPI_NAME_MAX_LEN 5
 
+/* Unique ID for the WIFI _DSM */
+#define ACPI_DSM_OEM_WIFI_UUID    "F21202BF-8F78-4DC6-A5B3-1F738E285ADE"
+
 __weak int get_wifi_sar_limits(union wifi_sar_limits *sar_limits)
 {
 	return -1;
+}
+
+/*
+ * Generate ACPI AML code for _DSM method.
+ * This function takes as input uuid for the device, set of callbacks and
+ * argument to pass into the callbacks. Callbacks should ensure that Local0 and
+ * Local1 are left untouched. Use of Local2-Local7 is permitted in callbacks.
+ */
+void wifi_emit_dsm(struct dsm_profile *dsm);
+
+/*
+ * Function 1: Allow PC OEMs to set ETSI 5.8GHz SRD in Passive/Disabled ESTI SRD
+ * Channels: 149, 153, 157, 161, 165
+ * 0 - ETSI 5.8GHz SRD active scan
+ * 1 - ETSI 5.8GHz SRD passive scan
+ * 2 - ETSI 5.8GHz SRD disabled
+ */
+static void wifi_dsm_srd_active_channels(void *args)
+{
+	struct dsm_profile *dsm_config = (struct dsm_profile *)args;
+
+	acpigen_write_return_integer(dsm_config->disable_active_sdr_channels);
+}
+
+/*
+ * Function 2 : Supported Indonesia 5.15-5.35 GHz Band
+ * 0 - Set 5.115-5.35GHz to Disable in Indonesia
+ * 1 - Set 5.115-5.35GHz to Enable (Passive) in Indonesia
+ * 2 - Reserved
+ */
+static void wifi_dsm_indonasia_5Ghz_band_enable(void *args)
+{
+	struct dsm_profile *dsm_config = (struct dsm_profile *)args;
+
+	acpigen_write_return_integer(dsm_config->support_indonesia_5g_band);
+}
+
+/*
+ * Function 3: Support Wi-Fi 6 11ax Rev 2 new channels on 6-7 GHz.
+ * Bit 0:
+ * 0 - No override; use device settings 0
+ * 1 - Force disable all countries that are not defined in the following bits
+ *
+ * Bit 1:
+ * 0 No override; USA 6GHz disable 0
+ * 1 6GHz allowed in the USA (enabled only if the device is certified to the USA)
+ */
+static void wifi_dsm_supported_ultra_high_band(void *args)
+{
+	struct dsm_profile *dsm_config = (struct dsm_profile *)args;
+
+	acpigen_write_return_integer(dsm_config->support_ultra_high_band);
+}
+
+/*
+ * Function 4: Regulatory Special Configurations Enablements
+ */
+static void wifi_dsm_regulatory_configurations(void *args)
+{
+	struct dsm_profile *dsm_config = (struct dsm_profile *)args;
+
+	acpigen_write_return_integer(dsm_config->regulatory_configurations);
+}
+
+/*
+ * Function 5: M.2 UART Interface Configuration
+ */
+static void wifi_dsm_uart_configurations(void *args)
+{
+	struct dsm_profile *dsm_config = (struct dsm_profile *)args;
+
+	acpigen_write_return_integer(dsm_config->uart_configurations);
+}
+
+/*
+ * Function 6: Control Enablement 11ax on certificated modules
+ * Bit 0 - Apply changes to country Ukraine. 11Ax Setting within module certification
+ * 0 - None. Work with Wi-Fi FW/OTP definitions [Default]
+ * 1 - Apply changes.
+ *
+ * Bit 1 - 11Ax Mode. Effective only if Bit 0 set to 1
+ * 0 - Disable 11Ax on country Ukraine [Default]
+ * 1 - Enable 11Ax on country Ukraine
+ *
+ * Bit 2 - Apply changes to country Russia. 11Ax Setting within module certification
+ * 0 - None. Work with Wi-Fi FW/OTP definitions [Default]
+ * 1 - Apply changes.
+ *
+ * Bit 3 - 11Ax Mode. Effective only if Bit 2 set to 1
+ * 0 - Disable 11Ax on country Russia [Default]
+ * 1 - Enable 11Ax on country Russia
+ *
+ * Bit 31:04 - Reserved
+ *
+ * Note: Assumed Russia Work with Wi-Fi FW/OTP definitions
+ */
+static void wifi_dsm_ukrane_russia_11ax_enable(void *args)
+{
+	struct dsm_profile *dsm_config = (struct dsm_profile *)args;
+
+	acpigen_write_return_integer(dsm_config->enablement_11ax);
+}
+
+/*
+ * Function 7: Control Enablement UNII-4 over certificate modules
+ */
+static void wifi_dsm_unii4_control_enable(void *args)
+{
+	struct dsm_profile *dsm_config = (struct dsm_profile *)args;
+
+	acpigen_write_return_integer(dsm_config->unii_4);
+}
+
+static void (*wifi_dsm_callbacks[])(void *) = {
+	NULL,					/* Function 0 */
+	wifi_dsm_srd_active_channels,		/* Function 1 */
+	wifi_dsm_indonasia_5Ghz_band_enable,	/* Function 2 */
+	wifi_dsm_supported_ultra_high_band,	/* Function 3 */
+	wifi_dsm_regulatory_configurations,	/* Function 4 */
+	wifi_dsm_uart_configurations,		/* Function 5 */
+	wifi_dsm_ukrane_russia_11ax_enable,	/* Function 6 */
+	wifi_dsm_unii4_control_enable,		/* Function 7 */
+};
+
+void wifi_emit_dsm(struct dsm_profile *dsm)
+{
+	int i;
+	size_t count = ARRAY_SIZE(wifi_dsm_callbacks);
+
+	if (dsm == NULL)
+		return;
+
+	for (i = 1; i < count; i++)
+		if (!(dsm->supported_functions & (1 << i)))
+			wifi_dsm_callbacks[i] = NULL;
+
+	acpigen_write_dsm(ACPI_DSM_OEM_WIFI_UUID, wifi_dsm_callbacks, count, dsm);
 }
 
 static const uint8_t *sar_fetch_set(const struct sar_profile *sar, size_t set_num)
@@ -341,6 +481,7 @@ static void emit_sar_acpi_structures(const struct device *dev)
 	sar_emit_wgds(sar_limits.wgds);
 	sar_emit_ppag(sar_limits.ppag);
 	sar_emit_wtas(sar_limits.wtas);
+	wifi_emit_dsm(sar_limits.dsm);
 
 	free(sar_limits.sar);
 }

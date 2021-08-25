@@ -287,6 +287,14 @@ static const struct mp_ops mp_ops = {
 
 void denverton_init_cpus(struct device *dev)
 {
+	/*
+	 * Ensure there is at least one bus downstream to the CPU device. If not, then create a
+	 * new link. This can occur if the mainboard does not add any APIC device in the device
+	 * tree.
+	 */
+	if (!dev->link_list)
+		add_more_links(dev, 1);
+
 	/* Clear for take-off */
 	if (mp_init_with_smm(dev->link_list, &mp_ops) < 0)
 		printk(BIOS_ERR, "MP initialization failure.\n");

@@ -150,8 +150,9 @@ static void program_keyboard_type(u32 search_address, u32 search_length)
 			if (offset != search_length)
 				kbd_type = EC_KBD_JP;
 		}
-	} else
+	} else {
 		printk(BIOS_DEBUG, "Error: Could not locate VPD area\n");
+	}
 
 	printk(BIOS_DEBUG, "Setting Keyboard type in EC to ");
 	printk(BIOS_DEBUG, (kbd_type == EC_KBD_JP) ? "Japanese" : "English");

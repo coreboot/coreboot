@@ -75,6 +75,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PchLockDownBiosInterface = lockdown_by_fsp;
 	params->PchUnlockGpioPads = !lockdown_by_fsp;
 	params->RtcMemoryLock = lockdown_by_fsp;
+	params->SkipPamLock = !lockdown_by_fsp;
 
 	/* coreboot will send EOP before loading payload */
 	params->EndOfPostMessage = EOP_DISABLE;

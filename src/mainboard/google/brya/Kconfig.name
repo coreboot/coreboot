@@ -46,3 +46,7 @@ config BOARD_GOOGLE_TAEKO
 config BOARD_GOOGLE_FELWINTER
 	bool "-> Felwinter"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
+
+config BOARD_GOOGLE_ANAHERA
+	bool "-> Anahera"
+	select BOARD_GOOGLE_BASEBOARD_BRYA

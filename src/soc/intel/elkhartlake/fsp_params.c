@@ -148,6 +148,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PchWriteProtectionEnable[0] = 0;
 		params->PchUnlockGpioPads = 1;
 		params->RtcMemoryLock = 0;
+		params->SkipPamLock = 1;
 	} else {
 		params->PchLockDownGlobalSmi = 1;
 		params->PchLockDownBiosLock = 1;
@@ -155,6 +156,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PchWriteProtectionEnable[0] = 1;
 		params->PchUnlockGpioPads = 0;
 		params->RtcMemoryLock = 1;
+		params->SkipPamLock = 0;
 	}
 
 	/* Disable PAVP */

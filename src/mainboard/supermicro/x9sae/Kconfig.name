@@ -1,0 +1,2 @@
+config BOARD_SUPERMICRO_X9SAE
+	bool "X9SAE"

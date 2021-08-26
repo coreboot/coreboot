@@ -1,0 +1,125 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/sandybridge
+	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
+	register "gpu_dp_b_hotplug" = "4"
+	register "gpu_dp_c_hotplug" = "4"
+	register "gpu_dp_d_hotplug" = "4"
+	register "gpu_panel_power_cycle_delay" = "4"
+	device cpu_cluster 0 on
+		chip cpu/intel/model_206ax
+			register "acpi_c1" = "1"
+			register "acpi_c2" = "3"
+			register "acpi_c3" = "5"
+			device lapic 0 on end
+			device lapic 0xacac off end
+		end
+	end
+	device domain 0 on
+		subsystemid 0x15d9 0x0644 inherit
+
+		device pci 00.0 on  end		# Host bridge
+		device pci 01.0 on  end		# CPU1 SLOT6 (x8 or x16)
+		device pci 01.1 on  end		# CPU1 SLOT4 (electrical x8 in x16 if present)
+		device pci 02.0 on  end		# iGPU
+		device pci 06.0 on  end		# CPU1 SLOT7 (electrical x4 in x8)
+
+		chip southbridge/intel/bd82x6x
+			register "gen1_dec" = "0x00fc0a01" # NCT6776 SuperIO (0x0a00-0aff)
+			register "sata_interface_speed_support" = "0x3"
+			register "sata_port_map" = "0x3f"
+			register "spi_lvscc" = "0x2005"
+			register "spi_uvscc" = "0x2005"
+			register "superspeed_capable_ports" = "0x0000000f"
+			register "xhci_overcurrent_mapping" = "0x00000c03"
+			register "xhci_switchable_ports"    = "0x0000000f"
+
+			device pci 14.0 on  end		# xHCI
+			device pci 16.0 on  end		# MEI #1
+			device pci 16.1 off end		# MEI #2
+			device pci 16.2 off end		# ME IDE-R
+			device pci 16.3 off end		# ME KT
+			device pci 19.0 on  end		# Intel GbE LAN1
+			device pci 1a.0 on  end		# EHCI #2
+			device pci 1b.0 on  end		# HD Audio
+
+			device pci 1c.0 on  end		# RP #1 PCH SLOT2
+			device pci 1c.1 off end		# RP #2
+			device pci 1c.2 off end		# RP #3
+			device pci 1c.3 off end		# RP #4
+			device pci 1c.4 on  end		# RP #5 PCH SLOT3
+			device pci 1c.5 off end		# RP #6
+			device pci 1c.6 on  end		# RP #7 PCH SLOT5
+			device pci 1c.7 on		# RP #8
+			       device pci 00.0 on end # 574 GbE LAN2
+			end
+
+			device pci 1d.0 on  end		# EHCI #1
+			device pci 1e.0 on  end		# PCI bridge
+			device pci 1f.0 on		# LPC bridge
+				chip superio/nuvoton/nct6776
+					device pnp 2e.0 off end		# Floppy
+					device pnp 2e.1 off end		# Parallel port
+					device pnp 2e.2 on		# COM1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 on		# COM2, IR
+						io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 2e.5 on		# Keyboard
+						io 0x60 = 0x060
+						io 0x62	= 0x064
+						irq 0x70 = 1
+						irq 0x72 = 12
+					end
+					device pnp 2e.6 off end		# CIR
+					device pnp 2e.7 off end		# GPIO6
+					device pnp 2e.107 off end	# GPIO7
+					device pnp 2e.207 off end	# GPIO8
+					device pnp 2e.307 off end	# GPIO9
+					device pnp 2e.8	  off end	# WDT
+					device pnp 2e.108 on  end	# GPIO0
+					device pnp 2e.208 off end	# GPIOA
+					device pnp 2e.308 on		# GPIOBASE
+						io 0x60 = 0xa00
+					end
+					device pnp 2e.109 off end	# GPIO1
+					device pnp 2e.209 on end	# GPIO2
+					device pnp 2e.309 off end	# GPIO3
+					device pnp 2e.409 off end	# GPIO4
+					device pnp 2e.509 off end	# GPIO5
+					device pnp 2e.609 off end	# GPIO6
+					device pnp 2e.709 off end	# GPIO7
+					device pnp 2e.a on		# ACPI
+						irq 0xe0 = 0
+						irq 0xe4 = 0x60
+						irq 0xe6 = 0x4c
+						irq 0xe7 = 0x10
+						irq 0xf2 = 0x5d
+					end
+					device pnp 2e.b on		# HWM, front panel LED
+						io 0x60 = 0xa30
+						io 0x62 = 0xa80
+						irq 0x70 = 0
+						irq 0xf8 = 0x43
+					end
+					device pnp 2e.d off end		# VID
+					device pnp 2e.e off end		# CIR WAKE-UP
+					device pnp 2e.f off end		# GPIO
+					device pnp 2e.14 off end	# SVID
+					device pnp 2e.16 off end	# Deep sleep
+					device pnp 2e.17 off end	# GPIOA
+				end
+				chip drivers/pc80/tpm
+					device pnp c31.0 on end	# TPM
+				end
+			end
+			device pci 1f.2 on  end		# SATA (AHCI)
+			device pci 1f.3 on  end		# SMBus
+			device pci 1f.5 off end		# SATA (Legacy)
+			device pci 1f.6 off end		# Thermal
+		end
+	end
+end

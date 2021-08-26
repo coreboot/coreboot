@@ -265,7 +265,7 @@ ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
 $(obj)/$$(1).$(1).o: $$(1).$(2) $(obj)/libpayload-config.h $(4)
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
-	$(CC) $(3) -MMD $$$$(CFLAGS) -c -o $$$$@ $$$$<
+	$(CC) $(3) -MMD $$$$(CFLAGS) $(EXTRA_CFLAGS) -c -o $$$$@ $$$$<
 en$(EMPTY)def
 end$(EMPTY)if
 endef

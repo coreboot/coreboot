@@ -30,8 +30,10 @@ void variant_update_power_limits(const struct cpu_power_limits *limits, size_t n
 
 	uint16_t mchid = pci_s_read_config16(PCI_DEV(0, 0, 0), PCI_DEVICE_ID);
 
+	u8 tdp = get_cpu_tdp();
+
 	for (size_t i = 0; i < num_entries; i++) {
-		if (mchid == limits[i].mchid) {
+		if (mchid == limits[i].mchid && tdp == limits[i].cpu_tdp) {
 			struct dptf_power_limits *settings = &config->controls.power_limits;
 			config_t *conf = config_of_soc();
 			struct soc_power_limits_config *soc_config = conf->power_limits_config;

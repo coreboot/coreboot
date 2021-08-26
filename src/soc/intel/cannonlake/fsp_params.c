@@ -653,6 +653,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	tconfig->PchLockDownBiosInterface = lockdown_by_fsp;
 	params->PchLockDownBiosLock = lockdown_by_fsp;
 	params->PchLockDownRtcMemoryLock = lockdown_by_fsp;
+	tconfig->SkipPamLock = !lockdown_by_fsp;
 #if CONFIG(SOC_INTEL_COMETLAKE)
 	/*
 	 * Making this config "0" means FSP won't set the FLOCKDN bit

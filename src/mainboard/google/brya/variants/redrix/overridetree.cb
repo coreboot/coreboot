@@ -185,7 +185,7 @@ chip soc/intel/alderlake
 				register "name" = ""MXW0""
 				register "r0_calib_key" = ""dsm_calib_r0_0""
 				register "temperature_calib_key" = ""dsm_calib_temp_0""
-				device i2c 0x38 on end
+				device i2c 0x3a on end
 			end
 			chip drivers/i2c/max98390
 				register "desc" = ""MAX98390 Speaker Amp 1""
@@ -193,7 +193,7 @@ chip soc/intel/alderlake
 				register "name" = ""MXW1""
 				register "r0_calib_key" = ""dsm_calib_r0_1""
 				register "temperature_calib_key" = ""dsm_calib_temp_1""
-				device i2c 0x39 on end
+				device i2c 0x3b on end
 			end
 			chip drivers/i2c/max98390
 				register "desc" = ""MAX98390 Speaker Amp 2""
@@ -201,7 +201,7 @@ chip soc/intel/alderlake
 				register "name" = ""MXW2""
 				register "r0_calib_key" = ""dsm_calib_r0_2""
 				register "temperature_calib_key" = ""dsm_calib_temp_2""
-				device i2c 0x3a on end
+				device i2c 0x38 on end
 			end
 			chip drivers/i2c/max98390
 				register "desc" = ""MAX98390 Speaker Amp 3""
@@ -209,7 +209,7 @@ chip soc/intel/alderlake
 				register "name" = ""MXW3""
 				register "r0_calib_key" = ""dsm_calib_r0_3""
 				register "temperature_calib_key" = ""dsm_calib_temp_3""
-				device i2c 0x3b on end
+				device i2c 0x39 on end
 			end
 		end #I2C0
 		device ref i2c1 on

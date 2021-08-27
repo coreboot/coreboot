@@ -37,41 +37,6 @@ static u8 smbios_checksum(u8 *p, u32 length)
 	return -ret;
 }
 
-/* Get the device type 41 from the dev struct */
-static u8 smbios_get_device_type_from_dev(struct device *dev)
-{
-	u16 pci_basesubclass = (dev->class >> 8) & 0xFFFF;
-
-	switch (pci_basesubclass) {
-	case PCI_CLASS_NOT_DEFINED:
-		return SMBIOS_DEVICE_TYPE_OTHER;
-	case PCI_CLASS_DISPLAY_VGA:
-	case PCI_CLASS_DISPLAY_XGA:
-	case PCI_CLASS_DISPLAY_3D:
-	case PCI_CLASS_DISPLAY_OTHER:
-		return SMBIOS_DEVICE_TYPE_VIDEO;
-	case PCI_CLASS_STORAGE_SCSI:
-		return SMBIOS_DEVICE_TYPE_SCSI;
-	case PCI_CLASS_NETWORK_ETHERNET:
-		return SMBIOS_DEVICE_TYPE_ETHERNET;
-	case PCI_CLASS_NETWORK_TOKEN_RING:
-		return SMBIOS_DEVICE_TYPE_TOKEN_RING;
-	case PCI_CLASS_MULTIMEDIA_VIDEO:
-	case PCI_CLASS_MULTIMEDIA_AUDIO:
-	case PCI_CLASS_MULTIMEDIA_PHONE:
-	case PCI_CLASS_MULTIMEDIA_OTHER:
-		return SMBIOS_DEVICE_TYPE_SOUND;
-	case PCI_CLASS_STORAGE_ATA:
-		return SMBIOS_DEVICE_TYPE_PATA;
-	case PCI_CLASS_STORAGE_SATA:
-		return SMBIOS_DEVICE_TYPE_SATA;
-	case PCI_CLASS_STORAGE_SAS:
-		return SMBIOS_DEVICE_TYPE_SAS;
-	default:
-		return SMBIOS_DEVICE_TYPE_UNKNOWN;
-	}
-}
-
 int smbios_add_string(u8 *start, const char *str)
 {
 	int i = 1;
@@ -1128,6 +1093,41 @@ static int smbios_write_type127(unsigned long *current, int handle)
 	const int len = smbios_full_table_len(&t->header, t->eos);
 	*current += len;
 	return len;
+}
+
+/* Get the device type 41 from the dev struct */
+static u8 smbios_get_device_type_from_dev(struct device *dev)
+{
+	u16 pci_basesubclass = (dev->class >> 8) & 0xFFFF;
+
+	switch (pci_basesubclass) {
+	case PCI_CLASS_NOT_DEFINED:
+		return SMBIOS_DEVICE_TYPE_OTHER;
+	case PCI_CLASS_DISPLAY_VGA:
+	case PCI_CLASS_DISPLAY_XGA:
+	case PCI_CLASS_DISPLAY_3D:
+	case PCI_CLASS_DISPLAY_OTHER:
+		return SMBIOS_DEVICE_TYPE_VIDEO;
+	case PCI_CLASS_STORAGE_SCSI:
+		return SMBIOS_DEVICE_TYPE_SCSI;
+	case PCI_CLASS_NETWORK_ETHERNET:
+		return SMBIOS_DEVICE_TYPE_ETHERNET;
+	case PCI_CLASS_NETWORK_TOKEN_RING:
+		return SMBIOS_DEVICE_TYPE_TOKEN_RING;
+	case PCI_CLASS_MULTIMEDIA_VIDEO:
+	case PCI_CLASS_MULTIMEDIA_AUDIO:
+	case PCI_CLASS_MULTIMEDIA_PHONE:
+	case PCI_CLASS_MULTIMEDIA_OTHER:
+		return SMBIOS_DEVICE_TYPE_SOUND;
+	case PCI_CLASS_STORAGE_ATA:
+		return SMBIOS_DEVICE_TYPE_PATA;
+	case PCI_CLASS_STORAGE_SATA:
+		return SMBIOS_DEVICE_TYPE_SATA;
+	case PCI_CLASS_STORAGE_SAS:
+		return SMBIOS_DEVICE_TYPE_SAS;
+	default:
+		return SMBIOS_DEVICE_TYPE_UNKNOWN;
+	}
 }
 
 /* Generate Type41 entries from devicetree */

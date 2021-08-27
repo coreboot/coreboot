@@ -97,6 +97,21 @@ ifneq ($(call strip_quotes,$(CONFIG_FSP_HEADER_PATH)),)
 CPPFLAGS_common+=-I$(CONFIG_FSP_HEADER_PATH)
 endif
 
+# check if the FSP files that are supposed to be added are specified
+ifeq ($(CONFIG_ADD_FSP_BINARIES),y)
+ifeq ($(CONFIG_FSP_CAR),y)
+ifeq ($(call strip_quotes,$(CONFIG_FSP_T_FILE)),)
+$(error No FSP-T binary file specified.)
+endif # CONFIG_FSP_T_FILE
+endif # CONFIG_FSP_CAR
+ifeq ($(call strip_quotes,$(CONFIG_FSP_M_FILE)),)
+$(error No FSP-M binary file specified.)
+endif # CONFIG_FSP_M_FILE
+ifeq ($(call strip_quotes,$(CONFIG_FSP_S_FILE)),)
+$(error No FSP-S binary file specified.)
+endif # CONFIG_FSP_S_FILE
+endif # CONFIG_ADD_FSP_BINARIES
+
 subdirs-y += ppi
 
 endif

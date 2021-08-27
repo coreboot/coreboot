@@ -7,11 +7,15 @@ ramstage-$(CONFIG_SOC_AMD_COMMON_FSP_DMI_TABLES) += dmi.c
 
 subdirs-y += ./*
 
+ifeq ($(CONFIG_FSP_M_FILE),)
+$(info There's no FSP-M binary file specified. The resulting image won't boot successfully.)
+else
 ifeq ($(call int-gt,\
 	$(call file-size,$(call strip_quotes,$(CONFIG_FSP_M_FILE)))\
 	$(shell printf "%d" $(CONFIG_FSP_M_SIZE))),\
 	1)
 $(error FSP-M binary larger than FSP_M_FILE.)
 endif
+endif # CONFIG_FSP_M_FILE
 
 endif # CONFIG_PLATFORM_USES_FSP2_0

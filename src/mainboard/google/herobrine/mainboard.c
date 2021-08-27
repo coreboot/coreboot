@@ -36,6 +36,18 @@ static void configure_sdhci(void)
 	write32((void *)SDC2_TLMM_CFG_ADDR, 0x1FE4);
 }
 
+static void qi2s_configure_gpios(void)
+{
+	gpio_configure(GPIO_MI2S1_SCK, GPIO106_FUNC_MI2S1_SCK,
+		GPIO_NO_PULL, GPIO_16MA, GPIO_OUTPUT);
+
+	gpio_configure(GPIO_MI2S1_WS, GPIO108_FUNC_MI2S1_WS,
+		GPIO_NO_PULL, GPIO_16MA, GPIO_OUTPUT);
+
+	gpio_configure(GPIO_MI2S1_DATA0, GPIO107_FUNC_MI2S1_DATA0,
+		GPIO_NO_PULL, GPIO_16MA, GPIO_OUTPUT);
+}
+
 static void mainboard_init(struct device *dev)
 {
 	/* Configure clock for eMMC */
@@ -90,6 +102,7 @@ static void mainboard_init(struct device *dev)
 		gpio_output(GPIO_FP_RST_L, 1);
 
 	setup_usb();
+	qi2s_configure_gpios();
 }
 
 static void mainboard_enable(struct device *dev)

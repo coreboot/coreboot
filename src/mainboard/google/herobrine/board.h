@@ -31,6 +31,11 @@
 #define USB_HUB_LDO_EN		GPIO(157)
 #endif
 
+#define GPIO_AMP_ENABLE		GPIO(63)
+#define GPIO_MI2S1_SCK		GPIO(106)
+#define GPIO_MI2S1_DATA0	GPIO(107)
+#define GPIO_MI2S1_WS		GPIO(108)
+
 #define QCOM_SC7280_SKU1 0x0
 #define QCOM_SC7280_SKU2 0x1
 

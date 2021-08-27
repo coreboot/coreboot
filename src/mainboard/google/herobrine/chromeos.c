@@ -21,6 +21,7 @@ void setup_chromeos_gpios(void)
 		gpio_output(GPIO_FP_RST_L, 0);
 		gpio_output(GPIO_EN_FP_RAILS, 0);
 	}
+	gpio_output(GPIO_AMP_ENABLE, 0);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)
@@ -28,6 +29,8 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	const struct lb_gpio chromeos_gpios[] = {
 		{GPIO_SD_CD_L.addr, ACTIVE_LOW, gpio_get(GPIO_SD_CD_L),
 			"SD card detect"},
+		{GPIO_AMP_ENABLE.addr, ACTIVE_HIGH, gpio_get(GPIO_AMP_ENABLE),
+			"speaker enable"},
 #if CONFIG(EC_GOOGLE_CHROMEEC)
 		{GPIO_EC_IN_RW.addr, ACTIVE_LOW, gpio_get(GPIO_EC_IN_RW),
 			"EC in RW"},

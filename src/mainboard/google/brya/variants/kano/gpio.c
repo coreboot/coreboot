@@ -29,14 +29,12 @@ static const struct pad_config override_gpio_table[] = {
 
 	/* D3  : ISH_GP3 ==> NC */
 	PAD_NC(GPP_D3, NONE),
-	/* D5  : SRCCLKREQ0# ==> NC */
-	PAD_NC(GPP_D5, NONE),
+	/* D5  : SRCCLKREQ0# ==> SSD_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),
 	/* D7  : SRCCLKREQ2# ==> NC */
 	PAD_NC(GPP_D7, NONE),
 	/* D8  : SRCCLKREQ3# ==> NC */
 	PAD_NC(GPP_D8, NONE),
-	/* D9  : ISH_SPI_CS# ==> NC */
-	PAD_NC(GPP_D9, NONE),
 	/* D18 : UART1_TXD ==> NC */
 	PAD_NC(GPP_D18, NONE),
 
@@ -57,8 +55,6 @@ static const struct pad_config override_gpio_table[] = {
 
 	/* F6  : CNV_PA_BLANKING ==> NC */
 	PAD_NC(GPP_F6, NONE),
-	/* F20 : EXT_PWR_GATE# ==> NC */
-	PAD_NC(GPP_F20, NONE),
 	/* F21 : EXT_PWR_GATE2# ==> NC */
 	PAD_NC(GPP_F21, NONE),
 
@@ -70,8 +66,6 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_H12, NONE),
 	/* H13 : I2C7_SCL ==> NC */
 	PAD_NC(GPP_H13, NONE),
-	/* H15 : DDPB_CTRLCLK ==> NC */
-	PAD_NC(GPP_H15, NONE),
 	/* H19 : SRCCLKREQ4# ==> NC */
 	PAD_NC(GPP_H19, NONE),
 	/* H20 : IMGCLKOUT1 ==> NC */
@@ -82,6 +76,24 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_H22, NONE),
 	/* H23 : SRCCLKREQ5# ==> NC */
 	PAD_NC(GPP_H23, NONE),
+
+	/* R4 : HDA_RST# ==> DMIC_CLK0_R */
+	PAD_CFG_NF(GPP_R4, NONE, DEEP, NF3),
+	/* R5 : HDA_SDI1 ==> DMIC_DATA0_R */
+	PAD_CFG_NF(GPP_R5, NONE, DEEP, NF3),
+	/* R6 : I2S2_TXD ==> DMIC_CLK1_R */
+	PAD_CFG_NF(GPP_R6, NONE, DEEP, NF3),
+	/* R7 : I2S2_RXD ==> DMIC_DATA1_R */
+	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF3),
+
+	/* S0 : SNDW0_CLK ==> I2S1_SPKR_SCLK_R */
+	PAD_CFG_NF(GPP_S0, NONE, DEEP, NF2),
+	/* S1 : SNDW0_DATA ==> I2S1_SPKR_SFRM_R */
+	PAD_CFG_NF(GPP_S1, NONE, DEEP, NF2),
+	/* S2 : SNDW1_CLK ==> I2S1_PCH_TX_SPKR_RX_R */
+	PAD_CFG_NF(GPP_S2, NONE, DEEP, NF3),
+	/* S3 : SNDW1_DATA ==> I2S1_PCH_RX_SPKR_TX */
+	PAD_CFG_NF(GPP_S3, NONE, DEEP, NF3),
 
 	/* GPD11: LANPHYC ==> NC */
 	PAD_NC(GPD11, NONE),

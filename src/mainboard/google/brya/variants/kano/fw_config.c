@@ -6,17 +6,17 @@
 #include <gpio.h>
 
 static const struct pad_config dmic_enable_pads[] = {
-	PAD_CFG_NF(GPP_S2, NONE, DEEP, NF2),	/* DMIC_CLK0_R */
-	PAD_CFG_NF(GPP_S3, NONE, DEEP, NF2),	/* DMIC_DATA0_R */
-	PAD_CFG_NF(GPP_S6, NONE, DEEP, NF2),	/* DMIC_CLK1_R */
-	PAD_CFG_NF(GPP_S7, NONE, DEEP, NF2),	/* DMIC_DATA1_R */
+	PAD_CFG_NF(GPP_R4, NONE, DEEP, NF3),	/* DMIC_CLK0_R */
+	PAD_CFG_NF(GPP_R5, NONE, DEEP, NF3),	/* DMIC_DATA0_R */
+	PAD_CFG_NF(GPP_R6, NONE, DEEP, NF3),	/* DMIC_CLK1_R */
+	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF3),	/* DMIC_DATA1_R */
 };
 
 static const struct pad_config dmic_disable_pads[] = {
-	PAD_NC(GPP_S2, NONE),
-	PAD_NC(GPP_S3, NONE),
-	PAD_NC(GPP_S6, NONE),
-	PAD_NC(GPP_S7, NONE),
+	PAD_NC(GPP_R4, NONE),
+	PAD_NC(GPP_R5, NONE),
+	PAD_NC(GPP_R6, NONE),
+	PAD_NC(GPP_R7, NONE),
 };
 
 static const struct pad_config i2s_enable_pads[] = {
@@ -24,10 +24,10 @@ static const struct pad_config i2s_enable_pads[] = {
 	PAD_CFG_NF(GPP_R1, NONE, DEEP, NF2),	/* I2S_HP_SFRM_R */
 	PAD_CFG_NF(GPP_R2, DN_20K, DEEP, NF2),	/* I2S_PCH_TX_HP_RX_STRAP */
 	PAD_CFG_NF(GPP_R3, NONE, DEEP, NF2),	/* I2S_PCH_RX_HP_TX */
-	PAD_CFG_NF(GPP_R4, NONE, DEEP, NF2),	/* I2S_SPKR_SCLK_R */
-	PAD_CFG_NF(GPP_R5, NONE, DEEP, NF2),	/* I2S_SPKR_SFRM_R */
-	PAD_CFG_NF(GPP_R6, NONE, DEEP, NF2),	/* I2S_PCH_TX_SPKR_RX_R */
-	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF2),	/* I2S_PCH_RX_SPKR_TX */
+	PAD_CFG_NF(GPP_S0, NONE, DEEP, NF2),	/* I2S_SPKR_SCLK_R */
+	PAD_CFG_NF(GPP_S1, NONE, DEEP, NF2),	/* I2S_SPKR_SFRM_R */
+	PAD_CFG_NF(GPP_S2, NONE, DEEP, NF3),	/* I2S_PCH_TX_SPKR_RX_R */
+	PAD_CFG_NF(GPP_S3, NONE, DEEP, NF3),	/* I2S_PCH_RX_SPKR_TX */
 };
 
 static const struct pad_config i2s_disable_pads[] = {
@@ -35,10 +35,10 @@ static const struct pad_config i2s_disable_pads[] = {
 	PAD_NC(GPP_R1, NONE),
 	PAD_NC(GPP_R2, NONE),
 	PAD_NC(GPP_R3, NONE),
-	PAD_NC(GPP_R4, NONE),
-	PAD_NC(GPP_R5, NONE),
-	PAD_NC(GPP_R6, NONE),
-	PAD_NC(GPP_R7, NONE),
+	PAD_NC(GPP_S0, NONE),
+	PAD_NC(GPP_S1, NONE),
+	PAD_NC(GPP_S2, NONE),
+	PAD_NC(GPP_S3, NONE),
 };
 
 static void fw_config_handle(void *unused)

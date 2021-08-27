@@ -210,7 +210,7 @@ chip soc/amd/cezanne
 		.ComboPhyStaticConfig[0] = 0,
 		.ComboPhyStaticConfig[1] = 0,
 		.Version_Major = 0xd,
-		.Version_Minor = 0x4,
+		.Version_Minor = 0x6,
 		.TableLength = 100,
 		.BatteryChargerEnable = 0,
 		.PhyP3CpmP4Support = 0,

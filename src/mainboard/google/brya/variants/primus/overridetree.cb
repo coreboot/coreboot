@@ -60,6 +60,7 @@ chip soc/intel/alderlake
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A MLB Port
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A MLB port
 	register "usb3_ports[2]" = "USB3_PORT_EMPTY"
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"
 
 	device domain 0 on
 		device ref dtt on

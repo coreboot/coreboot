@@ -87,6 +87,20 @@ config CHIPSET_DEVICETREE
 	string
 	default "soc/amd/cezanne/chipset.cb"
 
+config FSP_M_FILE
+	string "FSP-M (memory init) binary path and filename"
+	depends on ADD_FSP_BINARIES
+	default "3rdparty/amd_blobs/cezanne/CEZANNE_M.fd"
+	help
+	  The path and filename of the FSP-M binary for this platform.
+
+config FSP_S_FILE
+	string "FSP-S (silicon init) binary path and filename"
+	depends on ADD_FSP_BINARIES
+	default "3rdparty/amd_blobs/cezanne/CEZANNE_S.fd"
+	help
+	  The path and filename of the FSP-S binary for this platform.
+
 config EARLY_RESERVED_DRAM_BASE
 	hex
 	default 0x2000000

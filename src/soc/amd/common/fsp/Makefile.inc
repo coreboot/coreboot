@@ -11,7 +11,7 @@ ifeq ($(CONFIG_FSP_M_FILE),)
 $(info There's no FSP-M binary file specified. The resulting image won't boot successfully.)
 else
 ifeq ($(call int-gt,\
-	$(call file-size,$(call strip_quotes,$(CONFIG_FSP_M_FILE)))\
+	$(call file-size,$(CONFIG_FSP_M_FILE))\
 	$(shell printf "%d" $(CONFIG_FSP_M_SIZE))),\
 	1)
 $(error FSP-M binary larger than FSP_M_FILE.)

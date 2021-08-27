@@ -29,6 +29,7 @@ const char *mainboard_vbt_filename(void)
 static void power_off_lte_module(void)
 {
 	gpio_output(GPP_H0, 0);
+	gpio_output(GPP_H17, 0);
 	mdelay(20);
 	gpio_output(GPP_A10, 0);
 }

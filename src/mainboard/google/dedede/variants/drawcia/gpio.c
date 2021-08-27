@@ -31,6 +31,7 @@ static const struct pad_config board6or8_gpio_table[] = {
 
 	/* H0 : WWAN_PERST */
 	PAD_CFG_GPO(GPP_H0, 0, PLTRST),
+	PAD_CFG_GPO(GPP_H17, 0, PLTRST),
 };
 
 static const struct pad_config lte_disable_pads[] = {
@@ -38,6 +39,7 @@ static const struct pad_config lte_disable_pads[] = {
 	PAD_NC(GPP_B7, NONE),
 	PAD_NC(GPP_D0, NONE),
 	PAD_NC(GPP_H0, NONE),
+	PAD_NC(GPP_H17, NONE),
 };
 
 const struct pad_config *variant_override_gpio_table(size_t *num)

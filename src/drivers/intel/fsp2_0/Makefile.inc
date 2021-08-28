@@ -43,13 +43,15 @@ FSP_S_CBFS = $(call strip_quotes,$(CONFIG_FSP_S_CBFS))
 
 # Add FSP blobs into cbfs. SoC code may supply  additional options with
 # -options, e.g --xip or -b
-cbfs-files-$(CONFIG_FSP_CAR) += $(FSP_T_CBFS)
+ifeq ($(CONFIG_ADD_FSP_BINARIES)$(CONFIG_FSP_CAR),yy)
+cbfs-files-y += $(FSP_T_CBFS)
 $(FSP_T_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_T_FILE))
 $(FSP_T_CBFS)-type := fsp
 ifeq ($(CONFIG_FSP_T_XIP),y)
 $(FSP_T_CBFS)-options := --xip $(TXTIBB)
 $(FSP_T_CBFS)-position = $(CONFIG_FSP_T_LOCATION)
-endif
+endif # CONFIG_FSP_T_XIP
+endif # CONFIG_ADD_FSP_BINARIES && CONFIG_FSP_CAR
 
 cbfs-files-$(CONFIG_ADD_FSP_BINARIES) += $(FSP_M_CBFS)
 $(FSP_M_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_M_FILE))

@@ -37,6 +37,7 @@ libc-$(CONFIG_LP_PCI) += pci_map_bus_ops.c
 endif
 
 libc-$(CONFIG_LP_PCIE_MEDIATEK) += pcie_mediatek.c
+libc-$(CONFIG_LP_PCIE_QCOM) += pci_qcom.c
 
 libc-$(CONFIG_LP_SPEAKER) += speaker.c
 

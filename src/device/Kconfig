@@ -421,6 +421,7 @@ config WANT_LINEAR_FRAMEBUFFER
 	bool
 	default y if CHROMEOS
 	default y if PAYLOAD_TIANOCORE
+	default y if COREDOOM_SECONDARY_PAYLOAD
 
 choice
 	prompt "Framebuffer mode"

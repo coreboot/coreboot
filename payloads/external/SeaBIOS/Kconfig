@@ -74,6 +74,7 @@ config SEABIOS_HARDWARE_IRQ
 config SEABIOS_VGA_COREBOOT
 	prompt "Include generated option rom that implements legacy VGA BIOS compatibility"
 	default y if !VENDOR_EMULATION
+	default y if COREDOOM_SECONDARY_PAYLOAD
 	depends on !VGA_ROM_RUN && (VGA_TEXT_FRAMEBUFFER || LINEAR_FRAMEBUFFER)
 	bool
 	help

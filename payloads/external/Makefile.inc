@@ -372,3 +372,19 @@ payloads/external/skiboot/build/skiboot.elf:
 	$(MAKE) -C payloads/external/skiboot all \
 		CONFIG_SKIBOOT_GIT_REPO=$(CONFIG_SKIBOOT_GIT_REPO) \
 		CONFIG_SKIBOOT_REVISION=$(CONFIG_SKIBOOT_REVISION)
+# COREDOOM
+
+payloads/external/coreDOOM/coredoom/doomgeneric/coredoom.elf coredoom:
+	$(MAKE) -C payloads/external/coreDOOM
+
+cbfs-files-$(CONFIG_COREDOOM_SECONDARY_PAYLOAD) += img/coreDOOM
+img/coreDOOM-file := payloads/external/coreDOOM/coredoom/doomgeneric/coredoom.elf
+img/coreDOOM-type := payload
+img/coreDOOM-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
+# WAD file
+ifneq ($(strip $(CONFIG_COREDOOM_WAD_FILE)),)
+cbfs-files-y += doom.wad
+doom.wad-file := $(strip $(CONFIG_COREDOOM_WAD_FILE))
+doom.wad-type := raw
+doom.wad-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
+endif

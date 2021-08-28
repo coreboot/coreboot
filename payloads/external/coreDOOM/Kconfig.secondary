@@ -1,0 +1,25 @@
+if COREDOOM_SECONDARY_PAYLOAD
+
+config COREDOOM_WAD_FILE
+	string "DOOM WAD file"
+	depends on COREDOOM_SECONDARY_PAYLOAD
+	default "doom.wad"
+	help
+	  Add a WAD file to be loaded by coreDOOM.
+
+	  A WAD file contains all the game data for the Doom-engine, and
+	  is required to play the game.
+
+	  A list of the WAD files included in the official games can be
+	  found here: https://doomwiki.org/wiki/IWAD
+	  These WADs can be extracted from copies of the game that you
+	  own, and the shareware WADs may be freely downloaded from the
+	  internet.
+
+	  For a completely free (as in freedom) experience, the Freedoom
+	  project (https://freedoom.github.io) provides original game
+	  content under the BSD license. Other WADs not mentioned here are
+	  also available and may be found from various sources such as
+	  the internet and copies of other games using the Doom engine.
+
+endif

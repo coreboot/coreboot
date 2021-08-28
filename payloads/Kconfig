@@ -165,6 +165,16 @@ config TINT_SECONDARY_PAYLOAD
 	  tint can be loaded as a secondary payload under SeaBIOS, GRUB,
 	  or any other payload that can load additional payloads.
 
+config COREDOOM_SECONDARY_PAYLOAD
+	bool "Load coreDOOM as a secondary payload"
+	default n
+	depends on ARCH_X86
+	help
+	  coreDOOM can be loaded as a secondary payload under SeaBIOS, GRUB,
+	  or any other payload that can load additional payloads. Requires a
+	  linear framebuffer. If built as a secondary payload for SeaBIOS, the
+	  generated VGA BIOS option rom is also required.
+
 source "payloads/external/*/Kconfig.secondary"
 
 endmenu # "Secondary Payloads"

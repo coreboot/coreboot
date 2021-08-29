@@ -156,15 +156,14 @@ chip soc/intel/skylake
 	}"
 
 	device domain 0 on
+		device pci 15.2 off end # I2C #2
+		device pci 15.3 off end # I2C #3
 		device pci 17.0 on  end # SATA
 		device pci 19.2 off end # I2C #4
 		device pci 1c.0 off end # PCI Express Port 1
 		device pci 1c.2 on  end # PCI Express Port 3
 		device pci 1c.3 on  end # PCI Express Port 4
 		device pci 1c.4 on  end # PCI Express Port 5
-		device pci 1e.1 on  end # UART #1
-		device pci 1e.2 on  end # GSPI #0
-		device pci 1e.3 on  end # GSPI #1
 		device pci 1e.4 off end # eMMC
 		device pci 1e.6 off end # SDXC
 		device pci 1f.0 on

@@ -24,12 +24,6 @@
 /* BIOS Flash Write Protect */
 #define GPIO_PCH_WP		GPP_C23
 
-/* Memory configuration board straps */
-#define GPIO_MEM_CONFIG_0	GPP_C12
-#define GPIO_MEM_CONFIG_1	GPP_C13
-#define GPIO_MEM_CONFIG_2	GPP_C14
-#define GPIO_MEM_CONFIG_3	GPP_C15
-
 /* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
 #define GPE_EC_WAKE		GPE0_LAN_WAK
 

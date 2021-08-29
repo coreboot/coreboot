@@ -155,9 +155,6 @@ chip soc/intel/skylake
 		.tdp_pl2_override = 25,
 	}"
 
-	# Use default SD card detect GPIO configuration
-	#register "sdcard_cd_gpio" = "GPP_D10"
-
 	device domain 0 on
 		device pci 17.0 on  end # SATA
 		device pci 19.2 off end # I2C #4

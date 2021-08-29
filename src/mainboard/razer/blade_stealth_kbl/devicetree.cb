@@ -214,7 +214,7 @@ chip soc/intel/skylake
 		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
-		device pci 1e.0 on  end # Serial IO UART0
+		device pci 1e.0 off end # Serial IO UART0
 		device pci 1e.6 off end # SDXC
 		device pci 1f.0 on # LPC
 			chip drivers/pc80/tpm

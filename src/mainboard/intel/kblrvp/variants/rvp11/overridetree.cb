@@ -72,9 +72,6 @@ chip soc/intel/skylake
 	register "usb3_ports[8]" = "USB3_PORT_DEFAULT(OC2)" # Stack Conn
 	register "usb3_ports[9]" = "USB3_PORT_DEFAULT(OC1)" # LAN MAGJACK
 
-
-	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"  # I2C4 is 1.8V
-
 	register "SataSalpSupport" = "1"
 	register "SataPortsEnable" = "{ \
 		[0]	= 1, \
@@ -91,7 +88,7 @@ chip soc/intel/skylake
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci, \
 		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C4]  = PchSerialIoPci, \
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
@@ -108,7 +105,7 @@ chip soc/intel/skylake
 	device domain 0 on
 		device pci 04.0 off end # SA thermal subsystem
 		device pci 17.0 on  end # SATA
-		device pci 19.1 on  end # I2C #5
+		device pci 19.2 off end # I2C #4
 		device pci 1e.1 on  end # UART #1
 		device pci 1e.2 on  end # GSPI #0
 		device pci 1e.3 on  end # GSPI #1

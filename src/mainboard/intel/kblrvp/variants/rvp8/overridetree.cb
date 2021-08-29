@@ -147,7 +147,7 @@ chip soc/intel/skylake
 		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
 		[PchSerialIoIndexUart0] = PchSerialIoPci, \
 		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart2] = PchSerialIoLegacyUart, \
+		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, \
 	}"
 
 	# PL2 override 25W

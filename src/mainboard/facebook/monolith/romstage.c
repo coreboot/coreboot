@@ -19,6 +19,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mainboard_fill_rcomp_strength_data(&mem_cfg->RcompTarget);
 
 	mem_cfg->DqPinsInterleaved = 1;
+	mem_cfg->CaVrefConfig = 2;
 	get_spd_smbus(&blk);
 	mem_cfg->MemorySpdDataLen = blk.len;
 	mem_cfg->MemorySpdPtr00 = (uintptr_t)blk.spd_array[0];

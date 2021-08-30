@@ -9,4 +9,7 @@
 #define TLMM_SOUTH_TILE_BASE		0x1000000
 #define GCC_BASE			0x01800000
 
+/* SDHC TLMM Registers */
+#define SDC1_TLMM_CFG_ADDR		0x010C2000
+
 #endif /*  __SOC_QUALCOMM_QCS405_ADDRESS_MAP_H__ */

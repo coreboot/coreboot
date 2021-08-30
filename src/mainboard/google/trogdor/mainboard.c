@@ -6,6 +6,7 @@
 #include <delay.h>
 #include <device/device.h>
 #include <device/i2c_simple.h>
+#include <device/mmio.h>
 #include <mipi/panel.h>
 #include <drivers/ti/sn65dsi86bridge/sn65dsi86bridge.h>
 #include <edid.h>
@@ -19,6 +20,7 @@
 #include <types.h>
 
 #include "board.h"
+#include <soc/addressmap.h>
 
 #define BRIDGE_BUS 0x2
 #define BRIDGE_CHIP 0x2d
@@ -202,6 +204,14 @@ static void display_startup(void)
 	}
 }
 
+static void configure_sdhci(void)
+{
+	/* Program eMMC drive strength to 16/16/16 mA */
+	write32((void *)SDC1_TLMM_CFG_ADDR, 0x9FFF);
+	/* Program SD card drive strength to 16/10/10 mA */
+	write32((void *)SDC2_TLMM_CFG_ADDR, 0x1FE4);
+}
+
 static void mainboard_init(struct device *dev)
 {
 	/* Take FPMCU out of reset. Power was already applied
@@ -213,6 +223,7 @@ static void mainboard_init(struct device *dev)
 	qi2s_configure_gpios();
 	load_qup_fw();
 	display_startup();
+	configure_sdhci();
 }
 
 static void mainboard_enable(struct device *dev)

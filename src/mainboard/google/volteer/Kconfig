@@ -58,7 +58,6 @@ config CHROMEOS_WIFI_SAR
 	select USE_SAR
 
 config DIMM_SPD_SIZE
-	int
 	default 512
 
 config DEVICETREE

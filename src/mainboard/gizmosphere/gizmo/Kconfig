@@ -46,7 +46,6 @@ config SB800_AHCI_ROM
 	default n
 
 config DIMM_SPD_SIZE
-	int
 	default 128
 
 endif # BOARD_GIZMOSPHERE_GIZMO

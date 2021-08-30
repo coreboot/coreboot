@@ -27,7 +27,6 @@ config DIMM_MAX
 	default 2
 
 config DIMM_SPD_SIZE
-	int
 	default 512
 
 config UART_FOR_CONSOLE

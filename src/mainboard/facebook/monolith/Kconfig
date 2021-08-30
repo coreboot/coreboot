@@ -54,7 +54,6 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	default 0xd00
 
 config DIMM_SPD_SIZE
-	int
 	default 512  #DDR4
 
 config UART_FOR_CONSOLE

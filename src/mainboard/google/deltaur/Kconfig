@@ -28,7 +28,6 @@ config CHROMEOS
 	select GBB_FLAG_FORCE_DEV_BOOT_ALTFW
 
 config DIMM_SPD_SIZE
-	int
 	default 512
 
 config DEVICETREE

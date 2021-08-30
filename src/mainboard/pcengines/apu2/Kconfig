@@ -94,7 +94,6 @@ config APU2_PINMUX_UART_D
 endchoice
 
 config DIMM_SPD_SIZE
-	int
 	default 128
 
 config AGESA_USE_1_0_0_4_HEADER

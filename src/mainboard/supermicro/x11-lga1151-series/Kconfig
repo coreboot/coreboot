@@ -79,7 +79,6 @@ config POST_DEVICE
 	default n
 
 config DIMM_SPD_SIZE
-	int
 	default 512
 
 config SUPERMICRO_BOARDID

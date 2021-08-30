@@ -110,7 +110,6 @@ config DIMM_MAX
 
 # DDR4
 config DIMM_SPD_SIZE
-	int
 	default 512
 
 if INTEL_TXT

@@ -361,7 +361,6 @@ comment "AMD Firmware Directory Table set to location for 16MB ROM"
 	depends on AMD_FWM_POSITION_INDEX = 5
 
 config DIMM_SPD_SIZE
-	int
 	default 512	# DDR4
 
 config RO_REGION_ONLY

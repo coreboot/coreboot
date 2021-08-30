@@ -73,7 +73,6 @@ config DEVICETREE
 	default "variants/baseboard/devicetree.cb"
 
 config DIMM_SPD_SIZE
-	int
 	default 512
 
 config FMDFILE

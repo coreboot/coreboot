@@ -36,7 +36,6 @@ config DIMM_MAX
 	default 1
 
 config DIMM_SPD_SIZE
-	int
 	default 256
 
 config MAX_CPUS

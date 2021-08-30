@@ -42,7 +42,6 @@ config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
 config DIMM_SPD_SIZE
-	int
 	default 512
 
 config CHROMEOS

@@ -105,7 +105,6 @@ config VARIANT_DIR
 	default "anahera" if BOARD_GOOGLE_ANAHERA
 
 config DIMM_SPD_SIZE
-	int
 	default 512
 
 config UART_FOR_CONSOLE

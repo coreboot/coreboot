@@ -78,7 +78,6 @@ config INCLUDE_SND_MAX98373_NHLT
 	select NHLT_MAX98373
 
 config DIMM_SPD_SIZE
-	int
 	default 512
 
 config VBOOT

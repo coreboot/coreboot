@@ -50,7 +50,6 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		case BOARD_ID_KBL_RVP11:
 			mem_cfg->MemorySpdPtr01 = (uintptr_t)blk.spd_array[1];
 			mem_cfg->MemorySpdPtr11 = (uintptr_t)blk.spd_array[3];
-			mem_cfg->UserBd = BOARD_TYPE_DESKTOP;
 			break;
 		default:
 			break;

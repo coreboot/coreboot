@@ -25,7 +25,6 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	mem_cfg->CaVrefConfig = 2;
 	mem_cfg->DqPinsInterleaved = true;
-	mem_cfg->UserBd = BOARD_TYPE_DESKTOP;
 
 	mem_cfg->MemorySpdDataLen = blk.len;
 	mem_cfg->MemorySpdPtr00 = (u32)blk.spd_array[0];

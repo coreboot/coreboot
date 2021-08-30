@@ -63,7 +63,7 @@ VPD variables supported are:
 - systemboot_log_level: u-root package systemboot log levels, would be mapped to
   quiet/verbose in systemboot as that is all we have for now. 5 to 8 would be
   mapped to verbose, 0 to 4 and 9 would be mapped to quiet.
-- VPDs affecting coreboot are listed/documented in src/mainboard/ocp/deltalake/vpd.h.
+- VPDs affecting coreboot are listed/documented in [src/mainboard/ocp/deltalake/vpd.h].
 
 ## Working features
 The solution is developed using LinuxBoot payload with Linux kernel 5.2.9,
@@ -179,3 +179,4 @@ and [u-root] as initramfs.
 [All about u-root]: https://github.com/linuxboot/book/tree/master/u-root
 [u-root]: https://u-root.org/
 [ChromeOS VPD]: https://chromium.googlesource.com/chromiumos/platform/vpd/+/master/README.md
+[src/mainboard/ocp/deltalake/vpd.h]: https://review.coreboot.org/plugins/gitiles/coreboot/+/refs/heads/master/src/mainboard/ocp/deltalake/vpd.h

@@ -7,7 +7,7 @@
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-	memupd->FspmConfig.UserBd = 7;
+	memupd->FspmConfig.UserBd = BOARD_TYPE_SERVER;
 	memupd->FspmTestConfig.SmbusSpdWriteDisable = 0;
 	memupd->FspmConfig.IedSize = 0x400000;
 	cannonlake_memcfg_init(&memupd->FspmConfig, variant_memcfg_config());

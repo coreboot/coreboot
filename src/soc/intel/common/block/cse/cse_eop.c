@@ -33,16 +33,10 @@ static bool cse_disable_mei_bus(void)
 		uint8_t reserved[2];
 	} __packed reply = {};
 
-	/* This is sent to the MEI client endpoint, not the MKHI endpoint */
-	int ret = heci_send(&msg, sizeof(msg), BIOS_HOST_ADDR, HECI_MEI_ADDR);
-	if (!ret) {
-		printk(BIOS_ERR, "HECI: Failed to send MEI bus disable command!\n");
-		return false;
-	}
-
 	size_t reply_sz = sizeof(reply);
-	if (!heci_receive(&reply, &reply_sz)) {
-		printk(BIOS_ERR, "HECI: Failed to receive a reply from CSE\n");
+
+	if (!heci_send_receive(&msg, sizeof(msg), &reply, &reply_sz, HECI_MEI_ADDR)) {
+		printk(BIOS_ERR, "HECI: Failed to Disable MEI bus\n");
 		return false;
 	}
 
@@ -112,7 +106,7 @@ static enum cse_eop_result cse_send_eop(void)
 
 	printk(BIOS_INFO, "HECI: Sending End-of-Post\n");
 
-	if (!heci_send_receive(&msg, sizeof(msg), &resp, &resp_size)) {
+	if (!heci_send_receive(&msg, sizeof(msg), &resp, &resp_size, HECI_MKHI_ADDR)) {
 		printk(BIOS_ERR, "HECI: EOP send/receive fail\n");
 		return CSE_EOP_RESULT_ERROR;
 	}

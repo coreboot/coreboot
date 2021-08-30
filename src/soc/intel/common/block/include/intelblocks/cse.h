@@ -130,29 +130,15 @@ enum csme_failure_reason {
 
 /* set up device for use in early boot enviroument with temp bar */
 void heci_init(uintptr_t bar);
-/*
- * Receive message into buff not exceeding maxlen. Message is considered
- * successfully received if a 'complete' indication is read from ME side
- * and there was enough space in the buffer to fit that message. maxlen
- * is updated with size of message that was received. Returns 0 on failure
- * and 1 on success.
- * In case of error heci_reset() may be requiered.
- */
-int heci_receive(void *buff, size_t *maxlen);
-/*
- * Send message msg of size len to host from host_addr to cse_addr.
- * Returns 1 on success and 0 otherwise.
- * In case of error heci_reset() may be requiered.
- */
-int
-heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t cse_addr);
 
 /*
+ * Send message from BIOS_HOST_ADDR to cse_addr.
  * Sends snd_msg of size snd_sz, and reads message into buffer pointed by
  * rcv_msg of size rcv_sz
  * Returns 0 on failure and 1 on success.
  */
-int heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg, size_t *rcv_sz);
+int heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg, size_t *rcv_sz,
+									uint8_t cse_addr);
 
 /*
  * Attempt device reset. This is useful and perhaps only thing left to do when

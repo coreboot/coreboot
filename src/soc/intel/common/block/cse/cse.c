@@ -384,7 +384,12 @@ send_one_message(uint32_t hdr, const void *buff)
 	return pend_len;
 }
 
-int
+/*
+ * Send message msg of size len to host from host_addr to cse_addr.
+ * Returns 1 on success and 0 otherwise.
+ * In case of error heci_reset() may be required.
+ */
+static int
 heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t client_addr)
 {
 	uint8_t retry;
@@ -487,7 +492,15 @@ recv_one_message(uint32_t *hdr, void *buff, size_t maxlen)
 	return recv_len;
 }
 
-int heci_receive(void *buff, size_t *maxlen)
+/*
+ * Receive message into buff not exceeding maxlen. Message is considered
+ * successfully received if a 'complete' indication is read from ME side
+ * and there was enough space in the buffer to fit that message. maxlen
+ * is updated with size of message that was received. Returns 0 on failure
+ * and 1 on success.
+ * In case of error heci_reset() may be required.
+ */
+static int heci_receive(void *buff, size_t *maxlen)
 {
 	uint8_t retry;
 	size_t left, received;
@@ -533,9 +546,10 @@ int heci_receive(void *buff, size_t *maxlen)
 	return 0;
 }
 
-int heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg, size_t *rcv_sz)
+int heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg, size_t *rcv_sz,
+									uint8_t cse_addr)
 {
-	if (!heci_send(snd_msg, snd_sz, BIOS_HOST_ADDR, HECI_MKHI_ADDR)) {
+	if (!heci_send(snd_msg, snd_sz, BIOS_HOST_ADDR, cse_addr)) {
 		printk(BIOS_ERR, "HECI: send Failed\n");
 		return 0;
 	}
@@ -663,7 +677,8 @@ static int cse_request_reset(enum rst_req_type rst_type)
 	if (rst_type == CSE_RESET_ONLY)
 		status = heci_send(&msg, sizeof(msg), BIOS_HOST_ADDR, HECI_MKHI_ADDR);
 	else
-		status = heci_send_receive(&msg, sizeof(msg), &reply, &reply_size);
+		status = heci_send_receive(&msg, sizeof(msg), &reply, &reply_size,
+									HECI_MKHI_ADDR);
 
 	printk(BIOS_DEBUG, "HECI: Global Reset %s!\n", status ? "success" : "failure");
 	return status;
@@ -733,7 +748,7 @@ int cse_hmrfpo_enable(void)
 	}
 
 	if (!heci_send_receive(&msg, sizeof(struct hmrfpo_enable_msg),
-				&resp, &resp_size))
+				&resp, &resp_size, HECI_MKHI_ADDR))
 		return 0;
 
 	if (resp.hdr.result) {
@@ -782,7 +797,7 @@ int cse_hmrfpo_get_status(void)
 	}
 
 	if (!heci_send_receive(&msg, sizeof(struct hmrfpo_get_status_msg),
-				&resp, &resp_size)) {
+				&resp, &resp_size, HECI_MKHI_ADDR)) {
 		printk(BIOS_ERR, "HECI: HMRFPO send/receive fail\n");
 		return -1;
 	}
@@ -847,7 +862,8 @@ void print_me_fw_version(void *unused)
 
 	heci_reset();
 
-	if (!heci_send_receive(&fw_ver_msg, sizeof(fw_ver_msg), &resp, &resp_size))
+	if (!heci_send_receive(&fw_ver_msg, sizeof(fw_ver_msg), &resp, &resp_size,
+									HECI_MKHI_ADDR))
 		goto fail;
 
 	if (resp.hdr.result)

@@ -44,7 +44,6 @@ static enum fuse_flash_state {
 static int read_cse_file(const char *path, void *buff, size_t *size,
 						size_t offset, uint32_t flags)
 {
-	int res;
 	size_t reply_size;
 
 	struct mca_command {
@@ -77,18 +76,10 @@ static int read_cse_file(const char *path, void *buff, size_t *size,
 	msg.data_size = *size;
 	msg.offset = offset;
 
-	res = heci_send(&msg, sizeof(msg), BIOS_HOST_ADDR, HECI_MKHI_ADDR);
-
-	if (!res) {
-		printk(BIOS_ERR, "failed to send HECI message\n");
-		return 0;
-	}
-
 	reply_size = sizeof(rmsg);
-	res = heci_receive(&rmsg, &reply_size);
 
-	if (!res) {
-		printk(BIOS_ERR, "failed to receive HECI reply\n");
+	if (!heci_send_receive(&msg, sizeof(msg), &rmsg, &reply_size, HECI_MKHI_ADDR)) {
+		printk(BIOS_ERR, "HECI: Failed to read file\n");
 		return 0;
 	}
 

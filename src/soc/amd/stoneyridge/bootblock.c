@@ -96,6 +96,12 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 
 void bootblock_soc_early_init(void)
 {
+	bootblock_fch_early_init();
+	post_code(0x90);
+}
+
+void bootblock_soc_init(void)
+{
 	/*
 	 * This call (sb_reset_i2c_peripherals) was originally early at
 	 * bootblock_c_entry, but had to be moved here. There was an
@@ -105,12 +111,7 @@ void bootblock_soc_early_init(void)
 	 * just pauses but we don't know why.
 	 */
 	reset_i2c_peripherals();
-	bootblock_fch_early_init();
-	post_code(0x90);
-}
 
-void bootblock_soc_init(void)
-{
 	if (CONFIG(AMD_SOC_CONSOLE_UART))
 		assert(CONFIG_UART_FOR_CONSOLE >= 0
 					&& CONFIG_UART_FOR_CONSOLE <= 1);

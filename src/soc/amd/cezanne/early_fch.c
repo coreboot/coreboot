@@ -51,7 +51,6 @@ void fch_pre_init(void)
 	fch_enable_legacy_io();
 	fch_disable_legacy_dma_io();
 	enable_aoac_devices();
-	reset_i2c_peripherals();
 
 	/*
 	 * On reset Range_0 defaults to enabled. We want to start with a clean
@@ -70,6 +69,7 @@ void fch_pre_init(void)
 /* After console init */
 void fch_early_init(void)
 {
+	reset_i2c_peripherals();
 	pm_set_power_failure_state();
 	fch_print_pmxc0_status();
 	i2c_soc_early_init();

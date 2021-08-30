@@ -41,7 +41,6 @@ config CBFS_SIZE
 	default 0x900000 if BOARD_PURISM_LIBREM_14
 
 config DIMM_MAX
-	int
 	default 2
 
 config DIMM_SPD_SIZE

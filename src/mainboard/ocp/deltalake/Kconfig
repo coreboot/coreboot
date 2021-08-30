@@ -48,7 +48,6 @@ config FMDFILE
 
 # Deltalake is single socket server, the platform design has 1 DIMM per channel
 config DIMM_MAX
-	int
 	default 6
 
 config CONSOLE_POST

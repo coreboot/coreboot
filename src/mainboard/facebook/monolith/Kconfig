@@ -61,7 +61,6 @@ config UART_FOR_CONSOLE
 	default 0
 
 config DIMM_MAX
-	int
 	default 2
 
 config MAINBOARD_SUPPORTS_SKYLAKE_CPU

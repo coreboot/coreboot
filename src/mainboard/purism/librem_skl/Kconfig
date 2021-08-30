@@ -54,7 +54,6 @@ config INTEL_GMA_VBT_FILE
 	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
 
 config DIMM_MAX
-	int
 	default 1
 
 config DIMM_SPD_SIZE

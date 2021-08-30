@@ -41,7 +41,6 @@ config CHROMEOS_WIFI_SAR
 	select USE_SAR
 
 config DIMM_MAX
-	int
 	default 2
 
 config DRIVER_TPM_I2C_BUS

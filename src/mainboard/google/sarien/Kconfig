@@ -37,7 +37,6 @@ config CHROMEOS
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
 
 config DIMM_MAX
-	int
 	default 2
 
 config DRIVER_TPM_I2C_BUS

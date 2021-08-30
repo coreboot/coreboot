@@ -54,7 +54,6 @@ config MAX_CPUS
 	default 8 if BOARD_CLEVO_L140CU_BASE
 
 config DIMM_MAX
-	int
 	default 2 if BOARD_CLEVO_L140CU_BASE
 
 config VGA_BIOS_ID

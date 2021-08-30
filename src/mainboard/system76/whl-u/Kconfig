@@ -67,7 +67,6 @@ config MAX_CPUS
 	default 8
 
 config DIMM_MAX
-	int
 	default 2
 
 config POST_DEVICE

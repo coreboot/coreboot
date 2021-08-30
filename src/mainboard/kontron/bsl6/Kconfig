@@ -50,7 +50,6 @@ config CBFS_SIZE
 	default 0x600000 if BOARD_SIEMENS_BOXER26
 
 config DIMM_MAX
-	int
 	default 2
 
 config DIMM_SPD_SIZE

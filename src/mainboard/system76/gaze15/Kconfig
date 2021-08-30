@@ -56,7 +56,6 @@ config MAX_CPUS
 	default 16
 
 config DIMM_MAX
-	int
 	default 2
 
 config VGA_BIOS_ID

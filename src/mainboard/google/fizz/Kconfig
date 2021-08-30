@@ -57,7 +57,6 @@ config MAINBOARD_FAMILY
 	default "Google_Endeavour" if BOARD_GOOGLE_ENDEAVOUR
 
 config DIMM_MAX
-	int
 	default 2
 
 config DIMM_SPD_SIZE

@@ -5,3 +5,10 @@ config DRIVERS_INTEL_DPTF
 	help
 	   When enabled, entries in the devicetree are used to generate
 	   Intel DPTF Tables at runtime in the SSDT.
+
+config DRIVERS_INTEL_DPTF_SUPPORTS_TPCH
+	def_bool n
+	depends on HAVE_ACPI_TABLES && PMC_IPC_ACPI_INTERFACE
+	help
+	  When enabled, chip driver/intel/dptf will publish information to the
+	  SSDT for the TPCH device.

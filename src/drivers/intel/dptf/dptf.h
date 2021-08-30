@@ -14,6 +14,9 @@ struct dptf_platform_info {
 	const char *dptf_device_hid;
 	const char *generic_hid;
 	const char *fan_hid;
+	const char *tpch_device_hid;
+	const char *tpch_rfc0_method;
+	const char *tpch_rfc1_method;
 };
 
 const struct dptf_platform_info *get_dptf_platform_info(void);

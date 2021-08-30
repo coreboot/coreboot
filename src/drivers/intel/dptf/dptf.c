@@ -4,6 +4,7 @@
 #include <acpi/acpigen_pci.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <intelblocks/pmc_ipc.h>
 #include "chip.h"
 #include "dptf.h"
 
@@ -194,7 +195,50 @@ static void write_generic_devices(const struct drivers_intel_dptf_config *config
 	}
 }
 
-/* \_SB.DPTF - note: leaves the Scope open for child devices*/
+/* \_SB.DPTF.TPCH.RFC methods */
+static void write_tpch_rfc_methods(const char *tpch_rfc_method_name,
+				unsigned int ipc_subcmd_ctrl_value)
+{
+	acpigen_write_method_serialized(tpch_rfc_method_name, 1);
+	acpigen_emit_namestring("IPCS");
+	acpigen_write_integer(PMC_IPC_CMD_COMMAND_FIVR);
+	acpigen_write_integer(PMC_IPC_CMD_CMD_ID_FIVR_WRITE);
+	acpigen_write_integer(0x8);
+	acpigen_write_integer(ipc_subcmd_ctrl_value);
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_write_dword(0);
+	acpigen_write_dword(0);
+	/* The reason for returning a value here is a W/A for the ESIF shell */
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_write_package(0);
+	acpigen_write_package_end();
+	acpigen_write_method_end();
+}
+
+static void write_create_tpch(const struct dptf_platform_info *platform_info)
+{
+	acpigen_write_device("TPCH");
+	acpigen_write_name("_HID");
+	dptf_write_hid(platform_info->use_eisa_hids, platform_info->tpch_device_hid);
+	acpigen_write_name_integer("_UID", 0);
+	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
+}
+
+static void write_tpch_methods(const struct dptf_platform_info *platform_info)
+{
+	write_create_tpch(platform_info);
+
+	/* Create RFC0 method */
+	write_tpch_rfc_methods(platform_info->tpch_rfc0_method,
+			PMC_IPC_SUBCMD_RFI_CTRL0_LOGIC);
+	/* Create RFC1 method */
+	write_tpch_rfc_methods(platform_info->tpch_rfc1_method,
+			PMC_IPC_SUBCMD_RFI_CTRL4_LOGIC);
+
+	acpigen_write_device_end(); /* TPCH Device */
+}
+
+/* \_SB.DPTF - note: leaves the Scope open for child devices */
 static void write_open_dptf_device(const struct device *dev,
 				   const struct dptf_platform_info *platform_info)
 {
@@ -228,6 +272,9 @@ static void write_device_definitions(const struct device *dev)
 	write_oem_variables(config);
 	write_imok();
 	write_generic_devices(config, platform_info);
+
+	if (CONFIG(DRIVERS_INTEL_DPTF_SUPPORTS_TPCH))
+		write_tpch_methods(platform_info);
 
 	acpigen_pop_len(); /* DPTF Device (write_open_dptf_device) */
 	acpigen_pop_len(); /* Scope */

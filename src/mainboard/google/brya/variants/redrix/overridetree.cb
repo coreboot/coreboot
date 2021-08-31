@@ -16,6 +16,10 @@ fw_config
 		option LTE_USB			1
 		option LTE_PCIE			2
 	end
+	field EPS 10 10
+		option PRIVACY_SCREEN_ABSENT	0
+		option PRIVACY_SCREEN		1
+	end
 end
 chip soc/intel/alderlake
 	register "SaGv" = "SaGv_Enabled"
@@ -52,6 +56,19 @@ chip soc/intel/alderlake
 		},
 	}"
 	device domain 0 on
+		device ref igpu on
+			chip drivers/gfx/generic
+				register "device_count" = "1"
+				register "device[0].name" = ""LCD""
+				# Internal panel on the first port of the graphics chip
+				register "device[0].addr" = "0x80010400"
+				register "device[0].privacy.enabled" = "1"
+				register "device[0].privacy.gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H21)"
+				device generic 0 on
+					probe EPS PRIVACY_SCREEN
+				end
+			end
+		end # Integrated Graphics Device
 		device ref dtt on
 			chip drivers/intel/dptf
 				## sensor information

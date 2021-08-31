@@ -206,7 +206,7 @@ chip soc/amd/picasso
 					chip ec/google/chromeec/i2c_tunnel
 						register "uid" = "1"
 						register "remote_bus" = "8"
-						device generic 0.1 on
+						device generic 1.0 on
 							chip drivers/i2c/generic
 								register "hid" = ""10EC1015""
 								register "desc" = ""RT1015 Tweeter Left Speaker Amp""

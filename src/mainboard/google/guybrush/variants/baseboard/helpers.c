@@ -34,11 +34,15 @@ __weak bool variant_has_fpmcu(void)
 __weak bool variant_has_pcie_wwan(void)
 {
 	static const struct device_path pcie_wwan_path[] = {
-		{
-			.type = DEVICE_PATH_PCI,
-			.pci.devfn = PCIE_GPP_2_2_DEVFN,
-		},
-	};
+	{
+		.type = DEVICE_PATH_DOMAIN,
+		.domain.domain = 0x0,
+	},
+	{
+		.type = DEVICE_PATH_PCI,
+		.pci.devfn = WWAN_DEVFN
+	},
+};
 
 	return variant_has_device_enabled(pcie_wwan_path, ARRAY_SIZE(pcie_wwan_path));
 }

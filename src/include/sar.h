@@ -5,9 +5,10 @@
 #include <stdint.h>
 
 #define MAX_ANT_GAINS_REVISION	2
+#define MAX_DENYLIST_ENTRY	16
 #define MAX_DSAR_SET_COUNT	3
 #define MAX_GEO_OFFSET_REVISION	3
-#define MAX_PROFILE_COUNT	3
+#define MAX_PROFILE_COUNT	4
 #define MAX_SAR_REVISION	2
 #define REVISION_SIZE		1
 #define SAR_REV0_CHAINS_COUNT	2
@@ -39,6 +40,13 @@ struct gain_profile {
 	uint8_t ppag_table[0];
 } __packed;
 
+struct avg_profile {
+	uint8_t revision;
+	uint8_t tas_selection;
+	uint8_t tas_list_size;
+	uint8_t deny_list_entry[MAX_DENYLIST_ENTRY];
+} __packed;
+
 struct sar_header {
 	char marker[SAR_STR_PREFIX_SIZE];
 	uint8_t version;
@@ -51,6 +59,7 @@ union wifi_sar_limits {
 		struct sar_profile *sar;
 		struct geo_profile *wgds;
 		struct gain_profile *ppag;
+		struct avg_profile *wtas;
 	};
 	void *profile[MAX_PROFILE_COUNT];
 };

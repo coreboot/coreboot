@@ -267,6 +267,58 @@ static void sar_emit_ppag(struct gain_profile *ppag)
 	acpigen_write_package_end();
 }
 
+static void sar_emit_wtas(struct avg_profile *wtas)
+{
+	int i;
+	size_t package_size;
+
+	if (wtas == NULL)
+		return;
+
+	/*
+	 * Name (WTAS, Package() {
+	 * {
+	 *   Revision,
+	 *   Package()
+	 *   {
+	 *     DomainType,            // 0x7:WiFi
+	 *     WifiTASSelection,      // Enable/Disable the TAS feature
+	 *     WifiTASListEntries,    // No. of blocked countries not approved by OEM to
+	 *     BlockedListEntry1,        support this feature
+	 *     BlockedListEntry2,
+	 *     BlockedListEntry3,
+	 *     BlockedListEntry4,
+	 *     BlockedListEntry5,
+	 *     BlockedListEntry6,
+	 *     BlockedListEntry7,
+	 *     BlockedListEntry8,
+	 *     BlockedListEntry9,
+	 *     BlockedListEntry10,
+	 *     BlockedListEntry11,
+	 *     BlockedListEntry12,
+	 *     BlockedListEntry13,
+	 *     BlockedListEntry14,
+	 *     BlockedListEntry15,
+	 *     BlockedListEntry16,
+	 *   }
+	 * })
+	 */
+	package_size = 1 + 1 + 1 + MAX_DENYLIST_ENTRY;
+
+	acpigen_write_name("WTAS");
+	acpigen_write_package(2);
+	acpigen_write_dword(wtas->revision);
+	acpigen_write_package(package_size);
+	acpigen_write_dword(DOMAIN_TYPE_WIFI);
+	acpigen_write_dword(wtas->tas_selection);
+	acpigen_write_dword(wtas->tas_list_size);
+	for (i = 0; i < MAX_DENYLIST_ENTRY; i++)
+		acpigen_write_byte(wtas->deny_list_entry[i]);
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
 static void emit_sar_acpi_structures(const struct device *dev)
 {
 	union wifi_sar_limits sar_limits;
@@ -288,6 +340,7 @@ static void emit_sar_acpi_structures(const struct device *dev)
 	sar_emit_ewrd(sar_limits.sar);
 	sar_emit_wgds(sar_limits.wgds);
 	sar_emit_ppag(sar_limits.ppag);
+	sar_emit_wtas(sar_limits.wtas);
 
 	free(sar_limits.sar);
 }

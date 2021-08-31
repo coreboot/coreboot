@@ -76,6 +76,14 @@ static int gain_table_size(const struct gain_profile *gain)
 	return sizeof(struct gain_profile) + (gain->chains_count * gain->bands_count);
 }
 
+static int sar_avg_table_size(const struct avg_profile *sar_avg)
+{
+	if (sar_avg == NULL)
+		return 0;
+
+	return sizeof(struct avg_profile);
+}
+
 static bool valid_legacy_length(size_t bin_len)
 {
 	if (bin_len == LEGACY_SAR_WGDS_BIN_SIZE)
@@ -125,6 +133,7 @@ static int fill_wifi_sar_limits(union wifi_sar_limits *sar_limits, const uint8_t
 	expected_sar_bin_size += sar_table_size(sar_limits->sar);
 	expected_sar_bin_size += wgds_table_size(sar_limits->wgds);
 	expected_sar_bin_size += gain_table_size(sar_limits->ppag);
+	expected_sar_bin_size += sar_avg_table_size(sar_limits->wtas);
 
 	if (sar_bin_size != expected_sar_bin_size) {
 		printk(BIOS_ERR, "ERROR: Invalid SAR size, expected: %ld, obtained: %ld\n",
@@ -188,6 +197,7 @@ static int fill_wifi_sar_limits_legacy(union wifi_sar_limits *sar_limits,
  * [SAR_REVISION,DSAR_SET_COUNT,CHAINS_COUNT,SUBBANDS_COUNT <WRDD>[EWRD]]
  * [WGDS_REVISION,CHAINS_COUNT,SUBBANDS_COUNT<WGDS_DATA>]
  * [PPAG_REVISION,MODE,CHAINS_COUNT,SUBBANDS_COUNT<PPAG_DATA>]
+ * [WTAS_REVISION, WTAS_DATA]
  *
  * The configuration data will always have the revision added in the file for each of the
  * block, based on the revision number and validity, size of the specific block will be
@@ -222,6 +232,11 @@ static int fill_wifi_sar_limits_legacy(union wifi_sar_limits *sar_limits,
  *              [Antenna gain used for 6525-6705MHz frequency]
  *              [Antenna gain used for 6705-6865MHz frequency]
  *              [Antenna gain used for 6865-7105MHz frequency]
+ *
+ * [WTAS_DATA] =
+ *      [Enable/disable the TAS feature]
+ *      [Number of blocked countries that are not approved by the OEM to support this feature]
+ *      [deny_list_entry_<1-16>: ISO country code to block]
  */
 int get_wifi_sar_limits(union wifi_sar_limits *sar_limits)
 {

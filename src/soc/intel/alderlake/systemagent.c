@@ -9,7 +9,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <delay.h>
 #include <intelblocks/power_limit.h>
 #include <intelblocks/systemagent.h>
@@ -56,6 +55,8 @@ void soc_systemagent_init(struct device *dev)
 	struct soc_power_limits_config *soc_config;
 	struct device *sa;
 	uint16_t sa_pci_id;
+	u8 tdp;
+	size_t i;
 	config_t *config;
 
 	/* Enable Power Aware Interrupt Routing */
@@ -72,31 +73,24 @@ void soc_systemagent_init(struct device *dev)
 	sa = pcidev_path_on_root(SA_DEVFN_ROOT);
 	sa_pci_id = sa ? pci_read_config16(sa, PCI_DEVICE_ID) : 0xFFFF;
 
-	/* Choose a power limits configuration based on the SoC SKU type,
-	 * differentiated here based on SA PCI ID. */
-	switch (sa_pci_id) {
-	case PCI_DEVICE_ID_INTEL_ADL_P_ID_7:
-		soc_config = &config->power_limits_config[ADL_P_POWER_LIMITS_282_CORE];
-		break;
-	case PCI_DEVICE_ID_INTEL_ADL_P_ID_5:
-		soc_config = &config->power_limits_config[ADL_P_POWER_LIMITS_482_CORE];
-		break;
-	case PCI_DEVICE_ID_INTEL_ADL_P_ID_3:
-		soc_config = &config->power_limits_config[ADL_P_POWER_LIMITS_682_CORE];
-		break;
-	case PCI_DEVICE_ID_INTEL_ADL_M_ID_1:
-		soc_config = &config->power_limits_config[ADL_M_POWER_LIMITS_282_CORE];
-		break;
-	case PCI_DEVICE_ID_INTEL_ADL_M_ID_2:
-		soc_config = &config->power_limits_config[ADL_M_POWER_LIMITS_242_CORE];
-		break;
-	default:
-		printk(BIOS_ERR, "ADL: unknown SA ID: 0x%4x, skipping power limits configuration\n",
+	tdp = get_cpu_tdp();
+
+	/* Choose power limits configuration based on the CPU SA PCI ID and
+	 * CPU TDP value. */
+	for (i = 0; i < ARRAY_SIZE(cpuid_to_adl); i++) {
+		if (sa_pci_id == cpuid_to_adl[i].cpu_id &&
+				tdp == cpuid_to_adl[i].cpu_tdp) {
+			soc_config = &config->power_limits_config[cpuid_to_adl[i].limits];
+			set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
+			break;
+		}
+	}
+
+	if (i == ARRAY_SIZE(cpuid_to_adl)) {
+		printk(BIOS_ERR, "ERROR: unknown SA ID: 0x%4x, skipped power limits configuration.\n",
 			sa_pci_id);
 		return;
 	}
-
-	set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
 }
 
 uint32_t soc_systemagent_max_chan_capacity_mib(u8 capid0_a_ddrsz)

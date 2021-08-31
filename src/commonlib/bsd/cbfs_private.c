@@ -3,9 +3,9 @@
 #include <commonlib/bsd/cbfs_private.h>
 #include <assert.h>
 
-static cb_err_t read_next_header(cbfs_dev_t dev, size_t *offset, struct cbfs_file *buffer)
+static cb_err_t read_next_header(cbfs_dev_t dev, size_t *offset, struct cbfs_file *buffer,
+				 const size_t devsize)
 {
-	const size_t devsize = cbfs_dev_size(dev);
 	DEBUG("Looking for next file @%#zx...\n", *offset);
 	*offset = ALIGN_UP(*offset, CBFS_ALIGNMENT);
 	while (*offset + sizeof(*buffer) < devsize) {
@@ -28,6 +28,7 @@ cb_err_t cbfs_walk(cbfs_dev_t dev, cb_err_t (*walker)(cbfs_dev_t dev, size_t off
 		   void *arg, struct vb2_hash *metadata_hash, enum cbfs_walk_flags flags)
 {
 	const bool do_hash = CBFS_ENABLE_HASHING && metadata_hash;
+	const size_t devsize = cbfs_dev_size(dev);
 	struct vb2_digest_context dc;
 	vb2_error_t vbrv;
 
@@ -41,7 +42,7 @@ cb_err_t cbfs_walk(cbfs_dev_t dev, cb_err_t (*walker)(cbfs_dev_t dev, size_t off
 	cb_err_t ret_header;
 	cb_err_t ret_walker = CB_CBFS_NOT_FOUND;
 	union cbfs_mdata mdata;
-	while ((ret_header = read_next_header(dev, &offset, &mdata.h)) == CB_SUCCESS) {
+	while ((ret_header = read_next_header(dev, &offset, &mdata.h, devsize)) == CB_SUCCESS) {
 		const uint32_t attr_offset = be32toh(mdata.h.attributes_offset);
 		const uint32_t data_offset = be32toh(mdata.h.offset);
 		const uint32_t data_length = be32toh(mdata.h.len);
@@ -50,8 +51,9 @@ cb_err_t cbfs_walk(cbfs_dev_t dev, cb_err_t (*walker)(cbfs_dev_t dev, size_t off
 
 		DEBUG("Found CBFS header @%#zx (type %d, attr +%#x, data +%#x, length %#x)\n",
 		      offset, type, attr_offset, data_offset, data_length);
-		if (data_offset > sizeof(mdata)) {
-			ERROR("File metadata @%#zx too large\n", offset);
+		if (data_offset > sizeof(mdata) || data_length > devsize ||
+		    offset + data_offset + data_length > devsize) {
+			ERROR("File @%#zx too large\n", offset);
 			goto next_file;
 		}
 

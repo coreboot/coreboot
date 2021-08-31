@@ -10,10 +10,15 @@
 #include <types.h>
 
 enum lpddr4_speed_grade {
+	LPDDR4_1333,
 	LPDDR4_1600,
+	LPDDR4_1866,
+	LPDDR4_2133,
 	LPDDR4_2400,
+	LPDDR4_2666,
 	LPDDR4_3200,
-	LPDDR4_4266
+	LPDDR4_3733,
+	LPDDR4_4266,
 };
 
 struct lpddr4_speed_attr {
@@ -23,7 +28,7 @@ struct lpddr4_speed_attr {
 };
 
 /**
- * LPDDR4 speed attributes derived from JEDEC 209-4C table 210
+ * LPDDR4 speed attributes derived from JEDEC 209-4C and industry norms
  *
  * min_clock_mhz = Previous max_clock_mhz + 1
  * max_clock_mhz = 1000/min_tCk_avg(ns)
@@ -31,24 +36,49 @@ struct lpddr4_speed_attr {
  *                 May be slightly less than the actual max MT/s
  */
 static const struct lpddr4_speed_attr lpddr4_speeds[] = {
-	[LPDDR4_1600] = {
+	[LPDDR4_1333] = {
 		.min_clock_mhz = 10,
+		.max_clock_mhz = 667,
+		.reported_mts = 1333,
+	},
+	[LPDDR4_1600] = {
+		.min_clock_mhz = 668,
 		.max_clock_mhz = 800,
 		.reported_mts = 1600
 	},
-	[LPDDR4_2400] = {
+	[LPDDR4_1866] = {
 		.min_clock_mhz = 801,
+		.max_clock_mhz = 934,
+		.reported_mts = 1866,
+	},
+	[LPDDR4_2133] = {
+		.min_clock_mhz = 935,
+		.max_clock_mhz = 1067,
+		.reported_mts = 2133
+	},
+	[LPDDR4_2400] = {
+		.min_clock_mhz = 1068,
 		.max_clock_mhz = 1200,
 		.reported_mts = 2400
 	},
-	[LPDDR4_3200] = {
+	[LPDDR4_2666] = {
 		.min_clock_mhz = 1201,
+		.max_clock_mhz = 1333,
+		.reported_mts = 2666
+	},
+	[LPDDR4_3200] = {
+		.min_clock_mhz = 1334,
 		.max_clock_mhz = 1600,
 		.reported_mts = 3200
 	},
-	[LPDDR4_4266] = {
+	[LPDDR4_3733] = {
 		.min_clock_mhz = 1601,
-		.max_clock_mhz = 2137,
+		.max_clock_mhz = 1867,
+		.reported_mts = 3733
+	},
+	[LPDDR4_4266] = {
+		.min_clock_mhz = 1868,
+		.max_clock_mhz = 2134,
 		.reported_mts = 4266
 	},
 };

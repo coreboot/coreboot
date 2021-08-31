@@ -125,6 +125,14 @@ chip soc/intel/alderlake
 		end
 		device ref heci1 on end
 		device ref sata on end
+		device ref pcie_rp7 on
+			# Enable PCIE 7 using clk 6
+			register "pch_pcie_rp[PCH_RP(7)]" = "{
+				.clk_src = 6,
+				.clk_req = 6,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE7 RTL8125 Ethernet NIC
 		device ref pcie_rp8 on
 			# Enable SD Card PCIE 8 using clk 3
 			register "pch_pcie_rp[PCH_RP(8)]" = "{

@@ -10,6 +10,12 @@ static const struct dptf_platform_info adl_dptf_platform_info = {
 	.generic_hid = "INTC1046",
 	/* _HID for Intel DPTF Fan Device */
 	.fan_hid = "INTC1048",
+	/* _HID for the toplevel TPCH device, typically \_SB.TPCH */
+	.tpch_device_hid = "INTC1049",
+	/* RFC0 method name */
+	.tpch_rfc0_method = "RFC0",
+	/* RFC1 method name */
+	.tpch_rfc1_method = "RFC1",
 };
 
 const struct dptf_platform_info *get_dptf_platform_info(void)

@@ -31,27 +31,27 @@ void bootblock_mainboard_early_init(void)
 	size_t base_num_gpios, override_num_gpios;
 	const struct soc_amd_gpio *base_gpios, *override_gpios;
 
-	if (!CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)) {
-		base_gpios = variant_early_gpio_table(&base_num_gpios);
-		override_gpios = variant_early_override_gpio_table(&override_num_gpios);
-
-		gpio_configure_pads_with_override(base_gpios, base_num_gpios,
-				override_gpios, override_num_gpios);
-
-		/* Set a timer to make sure there's enough delay for
-		 * the Fibocom 350 PCIe init
-		 */
-		stopwatch_init_usecs_expire(&pcie_init_timeout_sw, FC350_PCIE_INIT_DELAY_US);
-	}
-
-	printk(BIOS_DEBUG, "Bootblock configure eSPI\n");
-
 	dword = pci_read_config32(SOC_LPC_DEV, 0x78);
 	dword &= 0xFFFFF9F3;
 	dword |= 0x200;
 	pci_write_config32(SOC_LPC_DEV, 0x78, dword);
 	pci_write_config32(SOC_LPC_DEV, 0x44, 0);
 	pci_write_config32(SOC_LPC_DEV, 0x48, 0);
+
+	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
+		return;
+
+	base_gpios = variant_early_gpio_table(&base_num_gpios);
+	override_gpios = variant_early_override_gpio_table(&override_num_gpios);
+
+	gpio_configure_pads_with_override(base_gpios, base_num_gpios,
+			override_gpios, override_num_gpios);
+
+	/* Set a timer to make sure there's enough delay for
+	 * the Fibocom 350 PCIe init
+	 */
+	stopwatch_init_usecs_expire(&pcie_init_timeout_sw, FC350_PCIE_INIT_DELAY_US);
+	printk(BIOS_DEBUG, "Bootblock configure eSPI\n");
 
 	dword = pm_read32(0x90);
 	dword |= 1 << 16;

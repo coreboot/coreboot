@@ -42,6 +42,13 @@ static const uint8_t *wgds_fetch_set(struct geo_profile *wgds, size_t set_num)
 	return wgds_table + (wgds->bands_count * set_num);
 }
 
+static const uint8_t *ppag_fetch_set(struct gain_profile *ppag, size_t set_num)
+{
+	const uint8_t *ppag_table = &ppag->ppag_table[0];
+
+	return ppag_table + (ppag->bands_count * set_num);
+}
+
 static void sar_emit_wrds(const struct sar_profile *sar)
 {
 	int i;
@@ -216,6 +223,50 @@ static void sar_emit_wgds(struct geo_profile *wgds)
 	acpigen_write_package_end();
 }
 
+static void sar_emit_ppag(struct gain_profile *ppag)
+{
+	int i;
+	size_t package_size, set_num;
+	const uint8_t *set;
+
+	if (ppag == NULL)
+		return;
+
+	/*
+	 * Name ("PPAG", Package () {
+	 *   Revision,
+	 *   Package () {
+	 *     Domain Type,		// 0x7:WiFi
+	 *     PPAG Mode,		// Defines the mode of ANT_gain control to be used
+	 *     ANT_gain Table Chain A	// Defines the ANT_gain in dBi for chain A
+	 *     ANT_gain Table Chain B	// Defines the ANT_gain in dBi for chain B
+	 *   }
+	 * })
+	 */
+	if (ppag->revision > MAX_ANT_GAINS_REVISION) {
+		printk(BIOS_ERR, "Invalid PPAG revision: %d\n", ppag->revision);
+		return;
+	}
+
+	package_size = 1 + 1 + ppag->chains_count * ppag->bands_count;
+
+	acpigen_write_name("PPAG");
+	acpigen_write_package(2);
+	acpigen_write_dword(ppag->revision);
+	acpigen_write_package(package_size);
+	acpigen_write_dword(DOMAIN_TYPE_WIFI);
+	acpigen_write_dword(ppag->mode);
+
+	for (set_num = 0; set_num < ppag->chains_count; set_num++) {
+		set = ppag_fetch_set(ppag, set_num);
+		for (i = 0; i < ppag->bands_count; i++)
+			acpigen_write_byte(set[i]);
+	}
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
 static void emit_sar_acpi_structures(const struct device *dev)
 {
 	union wifi_sar_limits sar_limits;
@@ -236,6 +287,7 @@ static void emit_sar_acpi_structures(const struct device *dev)
 	sar_emit_wrds(sar_limits.sar);
 	sar_emit_ewrd(sar_limits.sar);
 	sar_emit_wgds(sar_limits.wgds);
+	sar_emit_ppag(sar_limits.ppag);
 
 	free(sar_limits.sar);
 }

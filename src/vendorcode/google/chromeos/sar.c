@@ -68,6 +68,14 @@ static int wgds_table_size(const struct geo_profile *geo)
 	return sizeof(struct geo_profile) + (geo->chains_count * geo->bands_count);
 }
 
+static int gain_table_size(const struct gain_profile *gain)
+{
+	if (gain == NULL)
+		return 0;
+
+	return sizeof(struct gain_profile) + (gain->chains_count * gain->bands_count);
+}
+
 static bool valid_legacy_length(size_t bin_len)
 {
 	if (bin_len == LEGACY_SAR_WGDS_BIN_SIZE)
@@ -116,6 +124,7 @@ static int fill_wifi_sar_limits(union wifi_sar_limits *sar_limits, const uint8_t
 	expected_sar_bin_size = header_size;
 	expected_sar_bin_size += sar_table_size(sar_limits->sar);
 	expected_sar_bin_size += wgds_table_size(sar_limits->wgds);
+	expected_sar_bin_size += gain_table_size(sar_limits->ppag);
 
 	if (sar_bin_size != expected_sar_bin_size) {
 		printk(BIOS_ERR, "ERROR: Invalid SAR size, expected: %ld, obtained: %ld\n",
@@ -178,6 +187,7 @@ static int fill_wifi_sar_limits_legacy(union wifi_sar_limits *sar_limits,
  * Offsets
  * [SAR_REVISION,DSAR_SET_COUNT,CHAINS_COUNT,SUBBANDS_COUNT <WRDD>[EWRD]]
  * [WGDS_REVISION,CHAINS_COUNT,SUBBANDS_COUNT<WGDS_DATA>]
+ * [PPAG_REVISION,MODE,CHAINS_COUNT,SUBBANDS_COUNT<PPAG_DATA>]
  *
  * The configuration data will always have the revision added in the file for each of the
  * block, based on the revision number and validity, size of the specific block will be
@@ -195,6 +205,23 @@ static int fill_wifi_sar_limits_legacy(union wifi_sar_limits *sar_limits,
  * [GROUP#0] is for FCC
  * [GROUP#1] is for Europe/Japan
  * [GROUP#2] is for ROW
+ *
+ * [PPAG_DATA] = [ANT_gain Table Chain A] [ANT_gain Table Chain A]
+ *
+ * [ANT_gain Table] =
+ *	Supported by Revision 0, 1 and 2
+ *              [Antenna gain used for 2400MHz frequency]
+ *              [Antenna gain used for 5150-5350MHz frequency]
+ *              [Antenna gain used for 5350-5470MHz frequency]
+ *              [Antenna gain used for 5470-5725MHz frequency]
+ *              [Antenna gain used for 5725-5945MHz frequency]
+ *	Supported by Revision 1 and 2
+ *              [Antenna gain used for 5945-6165MHz frequency]
+ *              [Antenna gain used for 6165-6405MHz frequency]
+ *              [Antenna gain used for 6405-6525MHz frequency]
+ *              [Antenna gain used for 6525-6705MHz frequency]
+ *              [Antenna gain used for 6705-6865MHz frequency]
+ *              [Antenna gain used for 6865-7105MHz frequency]
  */
 int get_wifi_sar_limits(union wifi_sar_limits *sar_limits)
 {

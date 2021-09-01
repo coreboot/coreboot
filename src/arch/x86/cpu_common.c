@@ -109,14 +109,11 @@ enum cpu_type cpu_check_deterministic_cache_cpuid_supported(void)
 
 static uint32_t cpu_get_cache_info_leaf(void)
 {
-	switch (cpu_check_deterministic_cache_cpuid_supported()) {
-	case CPUID_TYPE_AMD:
-		return DETERMINISTIC_CACHE_PARAMETERS_CPUID_AMD;
-	case CPUID_TYPE_INTEL:
-		return DETERMINISTIC_CACHE_PARAMETERS_CPUID_IA;
-	default:
-		return 0;
-	}
+	uint32_t leaf = (cpu_check_deterministic_cache_cpuid_supported() == CPUID_TYPE_AMD) ?
+				DETERMINISTIC_CACHE_PARAMETERS_CPUID_AMD :
+				DETERMINISTIC_CACHE_PARAMETERS_CPUID_IA;
+
+	return leaf;
 }
 
 size_t cpu_get_cache_ways_assoc_info(const struct cpu_cache_info *info)

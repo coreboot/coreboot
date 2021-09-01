@@ -92,8 +92,8 @@ chip northbridge/amd/agesa/family14/root_complex
 			device pci 15.1 on  end # PCIe PortB: NIC
 			device pci 15.2 on  end # PCIe PortC: USB3
 			device pci 15.3 off end # PCIe PortD
-			device pci 16.0 off end # OHCI USB3
-			device pci 16.2 off end # EHCI USB3
+			device pci 16.0 on end # OHCI mPCIe
+			device pci 16.2 on end # EHCI mPCIe
 
 			# gpp_configuration options
 			#0000: PortA lanes[3:0]

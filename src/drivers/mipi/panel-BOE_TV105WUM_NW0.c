@@ -18,7 +18,6 @@ struct panel_serializable_data BOE_TV105WUM_NW0 = {
 			.x_mm = 147, .y_mm = 236,
 		},
 	},
-	.orientation = LB_FB_ORIENTATION_LEFT_UP,
 	.init = {
 		PANEL_DCS(0x10),
 		PANEL_DELAY(34),

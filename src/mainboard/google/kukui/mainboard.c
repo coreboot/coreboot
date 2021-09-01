@@ -176,7 +176,7 @@ static bool configure_display(void)
 	mtk_ddp_mode_set(edid);
 	struct fb_info *info = fb_new_framebuffer_info_from_edid(edid, 0);
 	if (info)
-		fb_set_orientation(info, panel->s->orientation);
+		fb_set_orientation(info, panel->orientation);
 
 	return true;
 }

@@ -18,7 +18,6 @@ struct panel_serializable_data AUO_B101UAN08_3 = {
 			.x_mm = 135, .y_mm = 216,
 		},
 	},
-	.orientation = LB_FB_ORIENTATION_LEFT_UP,
 	.init = {
 		PANEL_DELAY(24),
 		PANEL_DCS(0xB0, 0x01),

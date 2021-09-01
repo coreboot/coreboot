@@ -18,7 +18,6 @@ struct panel_serializable_data AUO_KD101N80_45NA = {
 			.x_mm = 135, .y_mm = 216,
 		},
 	},
-	.orientation = LB_FB_ORIENTATION_LEFT_UP,
 	.init = {
 		PANEL_DELAY(10),
 		PANEL_DCS(0x11),

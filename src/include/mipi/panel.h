@@ -27,7 +27,6 @@ struct panel_init_command {
  */
 struct panel_serializable_data {
 	struct edid edid;  /* edid info of this panel */
-	enum lb_fb_orientation orientation;  /* Panel orientation */
 	u8 init[]; /* A packed array of panel_init_command */
 };
 

@@ -18,7 +18,6 @@ struct panel_serializable_data STA_QFH032011_53G = {
 			.x_mm = 135, .y_mm = 217,
 		},
 	},
-	.orientation = LB_FB_ORIENTATION_LEFT_UP,
 	.init = {
 		PANEL_DCS(0xB0, 0x01),
 		PANEL_DCS(0xC3, 0x4F),

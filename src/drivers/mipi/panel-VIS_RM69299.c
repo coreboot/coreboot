@@ -18,7 +18,6 @@ struct panel_serializable_data VIS_RM69299 = {
 			.x_mm = 74, .y_mm = 131,
 		},
 	},
-	.orientation = LB_FB_ORIENTATION_NORMAL,
 	.init = {
 		PANEL_DCS(0xFE, 0x00, 0x15, 0x80),
 		PANEL_DCS(0xc2, 0x08, 0x15, 0x80),

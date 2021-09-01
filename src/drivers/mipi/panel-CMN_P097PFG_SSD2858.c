@@ -18,7 +18,6 @@ struct panel_serializable_data P097PFG_SSD2858 = {
 			.x_mm = 147, .y_mm = 196,
 		},
 	},
-	.orientation = LB_FB_ORIENTATION_NORMAL,
 	.init = {
 		PANEL_GENERIC(0xff, 0x00),
 		/* LOCKCNT=0x1f4, MRX=0, POSTDIV=1 (/2} }, MULT=0x49

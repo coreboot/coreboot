@@ -11,6 +11,7 @@ struct panel_description {
 	struct panel_serializable_data *s;
 	void (*power_on)(void);  /* Callback to turn on panel */
 	void (*post_power_on)(void);  /* Callback to run after panel is turned on */
+	enum lb_fb_orientation orientation;
 };
 
 /* Returns the panel description from given ID. */

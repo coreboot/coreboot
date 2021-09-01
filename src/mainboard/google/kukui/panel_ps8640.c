@@ -34,12 +34,12 @@ static void dummy_power_on(void)
 }
 
 static struct panel_serializable_data ps8640_data = {
-	.orientation = LB_FB_ORIENTATION_NORMAL,
 	.init = { PANEL_END },
 };
 
 static struct panel_description ps8640_panel = {
 	.s = &ps8640_data,
+	.orientation = LB_FB_ORIENTATION_NORMAL,
 	.power_on = dummy_power_on,
 };
 

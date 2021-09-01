@@ -117,7 +117,8 @@ static enum cb_err display_init(struct panel_serializable_data *panel)
 
 static void display_startup(void)
 {
-	struct panel_serializable_data *panel = NULL;
+	struct panel_serializable_data edp_panel = {0};
+	struct panel_serializable_data *panel = &edp_panel;
 
 	if (!display_init_required()) {
 		printk(BIOS_INFO, "Skipping display init.\n");
@@ -130,24 +131,18 @@ static void display_startup(void)
 			return;
 	} else {
 		enum dp_pll_clk_src ref_clk = SN65_SEL_19MHZ;
-		static struct panel_serializable_data edp_panel = {
-			.orientation = LB_FB_ORIENTATION_NORMAL,
-		};
 		i2c_init(QUPV3_0_SE2, I2C_SPEED_FAST); /* EDP Bridge I2C */
 		power_on_bridge();
 		mdelay(250); /* Delay for the panel to be up */
 		sn65dsi86_bridge_init(BRIDGE_BUS, BRIDGE_CHIP, ref_clk);
-		if (sn65dsi86_bridge_read_edid(BRIDGE_BUS, BRIDGE_CHIP, &edp_panel.edid) < 0)
+		if (sn65dsi86_bridge_read_edid(BRIDGE_BUS, BRIDGE_CHIP, &panel->edid) < 0)
 			return;
-		panel = &edp_panel;
 	}
 
 	printk(BIOS_INFO, "display init!\n");
 	edid_set_framebuffer_bits_per_pixel(&panel->edid, 32, 0);
-	if (display_init(panel) == CB_SUCCESS) {
-		struct fb_info *info = fb_new_framebuffer_info_from_edid(&panel->edid, 0);
-		fb_set_orientation(info, panel->orientation);
-	}
+	if (display_init(panel) == CB_SUCCESS)
+		fb_new_framebuffer_info_from_edid(&panel->edid, 0);
 }
 
 static void mainboard_init(struct device *dev)

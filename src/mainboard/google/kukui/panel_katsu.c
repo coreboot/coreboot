@@ -3,8 +3,8 @@
 #include "panel.h"
 
 static struct panel_description katsu_panels[] = {
-	[1] = { .name = "BOE_TV105WUM_NW0", },
-	[2] = { .name = "STA_2081101QFH032011_53G", },
+	[1] = { .name = "BOE_TV105WUM_NW0", .orientation = LB_FB_ORIENTATION_LEFT_UP},
+	[2] = { .name = "STA_2081101QFH032011_53G", .orientation = LB_FB_ORIENTATION_LEFT_UP},
 };
 
 struct panel_description *get_panel_description(int panel_id)

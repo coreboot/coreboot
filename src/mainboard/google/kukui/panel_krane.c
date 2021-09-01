@@ -3,9 +3,10 @@
 #include "panel.h"
 
 static struct panel_description krane_panels[] = {
-	[0] = { .name = "AUO_KD101N80_45NA", },
-	[1] = { .name = "BOE_TV101WUM_NL6", }, /* Only Rev3, can be reused. */
-	[11] = { .name = "BOE_TV101WUM_NL6", },
+	[0] = { .name = "AUO_KD101N80_45NA", .orientation = LB_FB_ORIENTATION_LEFT_UP},
+	/* [1] is only Rev3, can be reused. */
+	[1] = { .name = "BOE_TV101WUM_NL6", .orientation = LB_FB_ORIENTATION_LEFT_UP},
+	[11] = { .name = "BOE_TV101WUM_NL6", .orientation = LB_FB_ORIENTATION_LEFT_UP},
 };
 
 struct panel_description *get_panel_description(int panel_id)

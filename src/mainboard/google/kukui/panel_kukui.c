@@ -25,6 +25,7 @@ static void power_on_ssd2858(void)
 
 static struct panel_description kukui_panel = {
 	.name = "CMN_P097PFG_SSD2858",
+	.orientation = LB_FB_ORIENTATION_NORMAL,
 	.power_on = power_on_ssd2858,
 };
 

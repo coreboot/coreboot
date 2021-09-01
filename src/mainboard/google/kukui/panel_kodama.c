@@ -3,8 +3,8 @@
 #include "panel.h"
 
 static struct panel_description kodama_panels[] = {
-	[1] = { .name = "AUO_B101UAN08_3", },
-	[2] = { .name = "BOE_TV101WUM_N53", },
+	[1] = { .name = "AUO_B101UAN08_3", .orientation = LB_FB_ORIENTATION_LEFT_UP},
+	[2] = { .name = "BOE_TV101WUM_N53", .orientation = LB_FB_ORIENTATION_LEFT_UP},
 };
 
 struct panel_description *get_panel_description(int panel_id)

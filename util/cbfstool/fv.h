@@ -32,3 +32,8 @@ typedef struct {
 	uint8_t size[3];
 	uint8_t section_type;
 } common_section_header_t;
+
+typedef struct {
+	uint8_t  guid[16];
+	uint32_t ext_header_size;
+} firmware_volume_ext_header_t;

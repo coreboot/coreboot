@@ -283,6 +283,7 @@ int parse_fv_to_payload(const struct buffer *input, struct buffer *output,
 	struct cbfs_payload_segment segs[2] = { {0} };
 	int doffset, len = 0;
 	firmware_volume_header_t *fv;
+	firmware_volume_ext_header_t *fvh_ext;
 	ffs_file_header_t *fh;
 	common_section_header_t *cs;
 	dos_header_t *dh;
@@ -305,6 +306,12 @@ int parse_fv_to_payload(const struct buffer *input, struct buffer *output,
 	}
 
 	fh = (ffs_file_header_t *)(input->data + fv->header_length);
+	if (fv->ext_header_offs != 0) {
+		fvh_ext = (firmware_volume_ext_header_t *)((uintptr_t)fv + fv->ext_header_offs);
+		fh = (ffs_file_header_t *)((uintptr_t)fvh_ext + fvh_ext->ext_header_size);
+		fh = (ffs_file_header_t *)(((uintptr_t)fh + 7) & ~7);
+	}
+
 	while (fh->file_type == FILETYPE_PAD) {
 		unsigned long offset = (fh->size[2] << 16) | (fh->size[1] << 8) | fh->size[0];
 		DEBUG("skipping %lu bytes of FV padding\n", offset);

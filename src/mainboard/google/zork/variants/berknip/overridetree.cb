@@ -104,6 +104,22 @@ chip soc/amd/picasso
 	# See AMD 55570-B1 Table 13: PCI Device ID Assignments.
 	device domain 0 on
 		subsystemid 0x1022 0x1510 inherit
+
+		device ref lpc_bridge on
+			chip ec/google/chromeec
+				device ref cros_ec on
+					chip ec/google/chromeec/i2c_tunnel
+						device ref cros_ec_i2c_9 on
+							chip drivers/i2c/generic
+								device ref db_mst on
+									probe USB_DAUGHTERBOARD BERKNIP_DB_DALI
+								end
+							end
+						end
+					end
+				end
+			end
+		end
 	end # domain
 
 	device ref i2c_2 on
@@ -177,10 +193,6 @@ chip soc/amd/picasso
 			register "uart" = "ACPI_UART_RAW_DEVICE(3000000, 64)"
 			device generic 0 on end
 		end
-	end
-
-	device ref db_mst on
-		probe USB_DAUGHTERBOARD BERKNIP_DB_DALI
 	end
 
 end	# chip soc/amd/picasso

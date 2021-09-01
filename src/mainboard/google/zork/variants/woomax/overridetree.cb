@@ -87,6 +87,22 @@ chip soc/amd/picasso
 		chip drivers/usb/acpi
 			device usb 3.2 off end
 		end
+
+		device ref lpc_bridge on
+			chip ec/google/chromeec
+				device ref cros_ec on
+					chip ec/google/chromeec/i2c_tunnel
+						device ref cros_ec_i2c_9 on
+							chip drivers/i2c/generic
+								device ref db_mst on
+									probe USB_DAUGHTERBOARD WOOMAX_DB_DALI
+								end
+							end
+						end
+					end
+				end
+			end
+		end
 	end # domain
 
 	device ref i2c_2 on
@@ -115,10 +131,6 @@ chip soc/amd/picasso
 			register "hid_desc_reg_offset" = "0x01"
 			device i2c 10 on end
 		end
-	end
-
-	device ref db_mst on
-		probe USB_DAUGHTERBOARD WOOMAX_DB_DALI
 	end
 
 end	# chip soc/amd/picasso

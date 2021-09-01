@@ -765,7 +765,8 @@ static int smbios_write_type7_cache_parameters(unsigned long *current,
 	if (!cpu_have_cpuid())
 		return len;
 
-	if (cpu_check_deterministic_cache_cpuid_supported() == CPUID_TYPE_INVALID) {
+	enum cpu_type dcache_cpuid = cpu_check_deterministic_cache_cpuid_supported();
+	if (dcache_cpuid == CPUID_TYPE_INVALID || dcache_cpuid == CPUID_COMMAND_UNSUPPORTED) {
 		printk(BIOS_DEBUG, "SMBIOS: Unknown CPU\n");
 		return len;
 	}

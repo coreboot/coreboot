@@ -44,16 +44,6 @@ config HAVE_IFD_BIN
 	depends on NEED_IFWI
 	default y
 
-config FSP_M_FILE
-	string "path to FSP-M.Fv blob"
-	depends on ADD_FSP_BINARIES
-	default ""
-
-config FSP_S_FILE
-	string "path to FSP-S.Fv blob"
-	depends on ADD_FSP_BINARIES
-	default ""
-
 config FSP_S_CBFS
 	string
 	default "fsps.bin"

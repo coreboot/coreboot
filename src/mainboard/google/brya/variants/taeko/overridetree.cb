@@ -1,3 +1,38 @@
+fw_config
+	field DB_USB 0 1
+		option DB_USB_ABSENT			0
+		option DB_USB3_NO_A			1
+	end
+	field DB_SD 2 3
+		option DB_SD_ABSENT			0
+		option DB_SD_OZ711LV2LN			1
+	end
+	field KB_BL 4
+		option KB_BL_ABSENT			0
+		option KB_BL_PRESENT			1
+	end
+	field AUDIO 5 7
+		option AUDIO_UNKNOWN			0
+		option AUDIO_MAX98357_ALC5682I_I2S	1
+	end
+	field KB_LAYOUT 8 9
+		option KB_LAYOUT_DEFAULT		0
+	end
+	field WIFI_SAR_ID 10 11
+		option WIFI_SAR_ID_0			0
+		option WIFI_SAR_ID_1			1
+		option WIFI_SAR_ID_2			2
+		option WIFI_SAR_ID_3			3
+	end
+	field BOOT_NVME_MASK 12
+		option BOOT_NVME_DISABLED		0
+		option BOOT_NVME_ENABLED		1
+	end
+	field BOOT_EMMC_MASK 13
+		option BOOT_EMMC_DISABLED		0
+		option BOOT_EMMC_ENABLED		1
+	end
+end
 chip soc/intel/alderlake
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	# Disable Port 1
 	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC2)"	# DB USB2_C1
@@ -60,6 +95,7 @@ chip soc/intel/alderlake
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
 				device i2c 1a on
+					probe AUDIO AUDIO_MAX98357_ALC5682I_I2S
 				end
 			end
 		end
@@ -127,26 +163,8 @@ chip soc/intel/alderlake
 				register "sdmode_gpio" =
 						"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
 				register "sdmode_delay" = "5"
-				device generic 0 on end
-			end
-
-			chip drivers/intel/soundwire
 				device generic 0 on
-					chip drivers/soundwire/alc5682
-						# SoundWire Link 0 ID 1
-						register "desc" = ""Headset Codec""
-						device generic 0.1 on end
-					end
-					chip drivers/soundwire/max98373
-						# SoundWire Link 2 ID 3
-						register "desc" = ""Left Speaker Amp""
-						device generic 2.3 on end
-					end
-					chip drivers/soundwire/max98373
-						# SoundWire Link 2 ID 7
-						register "desc" = ""Right Speaker Amp""
-						device generic 2.7 on end
-					end
+					probe AUDIO AUDIO_MAX98357_ALC5682I_I2S
 				end
 			end
 		end
@@ -169,7 +187,9 @@ chip soc/intel/alderlake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H13)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D18)"
 				register "srcclk_pin" = "3"
-				device generic 0 on end
+				device generic 0 on
+					probe DB_SD DB_SD_OZ711LV2LN
+				end
 			end
 		end
 		device ref pcie_rp9 on
@@ -227,7 +247,9 @@ chip soc/intel/alderlake
 						register "desc" = ""USB3 Type-C Port C1 (DB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group" = "ACPI_PLD_GROUP(3, 1)"
-						device ref tcss_usb3_port3 on end
+						device ref tcss_usb3_port3 on
+							probe DB_USB DB_USB3_NO_A
+						end
 					end
 				end
 			end
@@ -245,7 +267,9 @@ chip soc/intel/alderlake
 						register "desc" = ""USB2 Type-C Port C1 (DB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group" = "ACPI_PLD_GROUP(3, 1)"
-						device ref usb2_port3 on end
+						device ref usb2_port3 on
+							probe DB_USB DB_USB3_NO_A
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Camera""

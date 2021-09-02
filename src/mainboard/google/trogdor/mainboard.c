@@ -78,9 +78,46 @@ static void power_on_bridge(void)
 	gpio_output(GPIO_EN_PP3300_DX_EDP, 1);
 }
 
+static void configure_mipi_panel(void)
+{
+	int panel_id = sku_id() >> 8;
+	gpio_output(GPIO_MIPI_1V8_ENABLE, 1);
+	mdelay(5);
+	gpio_output(GPIO_AVDD_LCD_ENABLE, 1);
+	mdelay(5);
+	gpio_output(GPIO_AVEE_LCD_ENABLE, 1);
+	mdelay(15);
+	gpio_output(GPIO_VDD_RESET_1V8, 1);
+	mdelay(15);
+	/*
+	 * In mrbland, BOE panel_id = 3, it needs 15ms delay and
+	 * do reset again according to spec(See in b/197300876).
+	 */
+	if (CONFIG(BOARD_GOOGLE_MRBLAND) && (panel_id == 3)) {
+		gpio_output(GPIO_VDD_RESET_1V8, 0);
+		mdelay(5);
+		gpio_output(GPIO_VDD_RESET_1V8, 1);
+	}
+}
+
 static struct panel_serializable_data *get_mipi_panel(void)
 {
-	const char *cbfs_filename = "panel-VIS_RM69299";
+	const char *cbfs_filename = NULL;
+	int panel_id = sku_id() >> 8;
+
+	if (CONFIG(BOARD_GOOGLE_MRBLAND)) {
+		switch (panel_id) {
+		case 3:
+			cbfs_filename = "panel-BOE_TV101WUM_N53";
+			break;
+		case 6:
+			cbfs_filename = "panel-AUO_B101UAN08_3";
+			break;
+		}
+	}
+
+	if (!cbfs_filename)
+		return NULL;
 
 	struct panel_serializable_data *panel = cbfs_map(cbfs_filename, NULL);
 	if (!panel) {
@@ -126,6 +163,7 @@ static void display_startup(void)
 	}
 
 	if (CONFIG(TROGDOR_HAS_MIPI_PANEL)) {
+		configure_mipi_panel();
 		panel = get_mipi_panel();
 		if (!panel)
 			return;

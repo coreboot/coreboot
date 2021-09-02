@@ -87,9 +87,12 @@ void fill_vr_domain_config(FSP_S_CONFIG *s_cfg,
 	if (chip_cfg->vr_config_enable) {
 		cfg = chip_cfg;
 
-		s_cfg->AcLoadline[domain] = cfg->ac_loadline;
-		s_cfg->DcLoadline[domain] = cfg->dc_loadline;
-		s_cfg->IccMax[domain] = cfg->icc_max;
+		if (cfg->ac_loadline)
+			s_cfg->AcLoadline[domain] = cfg->ac_loadline;
+		if (cfg->dc_loadline)
+			s_cfg->DcLoadline[domain] = cfg->dc_loadline;
+		if (cfg->icc_max)
+			s_cfg->IccMax[domain] = cfg->icc_max;
 		s_cfg->TdcTimeWindow[domain] = cfg->tdc_timewindow;
 		s_cfg->TdcCurrentLimit[domain] = cfg->tdc_currentlimit;
 	} else {

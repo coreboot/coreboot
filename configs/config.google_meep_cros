@@ -22,7 +22,6 @@ CONFIG_ELOG_BOOT_COUNT=y
 CONFIG_ELOG_BOOT_COUNT_CMOS_OFFSET=144
 
 # Firmware Support Package
-CONFIG_ADD_FSP_BINARIES=y
 # CONFIG_RUN_FSP_GOP is not set
 
 # Management Engine

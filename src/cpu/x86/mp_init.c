@@ -997,7 +997,7 @@ int mp_run_on_all_aps(void (*func)(void *), void *arg, long expire_us, bool run_
 	int ap_index, bsp_index;
 
 	if (run_parallel)
-		return mp_run_on_aps(func, arg, 0, expire_us);
+		return mp_run_on_aps(func, arg, MP_RUN_ON_ALL_CPUS, expire_us);
 
 	bsp_index = cpu_index();
 

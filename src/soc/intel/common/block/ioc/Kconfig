@@ -1,0 +1,7 @@
+config SOC_INTEL_COMMON_BLOCK_IOC
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_SA
+	help
+	  Intel Processor common IO Cache (IOC).
+	  IOC will replace DMI interface starting with Meteor Lake SoC
+	  (which does not have the PCH die).

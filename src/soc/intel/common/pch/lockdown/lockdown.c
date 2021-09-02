@@ -30,7 +30,7 @@ int get_lockdown_config(void)
 static void gpmr_lockdown_cfg(void)
 {
 	/*
-	 * GCS reg of DMI
+	 * GCS reg
 	 *
 	 * When set, prevents GCS.BBS from being changed
 	 * GCS.BBS: (Boot BIOS Strap) This field determines the destination
@@ -43,9 +43,10 @@ static void gpmr_lockdown_cfg(void)
 
 	/*
 	 * Set Secure Register Lock (SRL) bit in DMI control register to lock
-	 * DMI configuration.
+	 * DMI configuration and bypass when IOC instead of DMI
 	 */
-	gpmr_or32(GPMR_DMICTL, GPMR_DMICTL_SRLOCK);
+	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_IOC))
+		gpmr_or32(GPMR_DMICTL, GPMR_DMICTL_SRLOCK);
 }
 
 static void fast_spi_lockdown_cfg(int chipset_lockdown)

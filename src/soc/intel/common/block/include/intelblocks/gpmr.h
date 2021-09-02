@@ -4,7 +4,11 @@
 #define SOC_INTEL_COMMON_BLOCK_GPMR_H
 
 #include <types.h>
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_IOC)
+#include <intelblocks/ioc_gpmr.h>
+#else
 #include <intelblocks/pcr_gpmr.h>
+#endif
 
 uint32_t gpmr_read32(uint16_t offset);
 void gpmr_write32(uint16_t offset, uint32_t val);

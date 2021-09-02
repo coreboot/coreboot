@@ -2,24 +2,34 @@
 
 #include <console/console.h>
 #include <intelblocks/gpmr.h>
+#include <intelblocks/ioc.h>
 #include <intelblocks/pcr.h>
 #include <soc/pcr_ids.h>
 
 /* GPMR Register read given offset */
 uint32_t gpmr_read32(uint16_t offset)
 {
-	return pcr_read32(PID_DMI, offset);
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_IOC))
+		return ioc_reg_read32(offset);
+	else
+		return pcr_read32(PID_DMI, offset);
 }
 
 /* GPMR Register write given offset and val */
 void gpmr_write32(uint16_t offset, uint32_t val)
 {
-	return pcr_write32(PID_DMI, offset, val);
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_IOC))
+		return ioc_reg_write32(offset, val);
+	else
+		return pcr_write32(PID_DMI, offset, val);
 }
 
 void gpmr_or32(uint16_t offset, uint32_t ordata)
 {
-	return pcr_or32(PID_DMI, offset, ordata);
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_IOC))
+		return ioc_reg_or32(offset, ordata);
+	else
+		return pcr_or32(PID_DMI, offset, ordata);
 }
 
 /* Check for available free gpmr */

@@ -44,12 +44,4 @@ config HAVE_IFD_BIN
 	depends on NEED_IFWI
 	default y
 
-config FSP_S_CBFS
-	string
-	default "fsps.bin"
-
-config FSP_M_CBFS
-	string
-	default "fspm.bin"
-
 endif # BOARD_INTEL_MINNOW3

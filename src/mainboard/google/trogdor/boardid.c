@@ -42,6 +42,13 @@ uint32_t ram_code(void)
 	return id;
 }
 
+static uint8_t panel_id(void)
+{
+	const gpio_t pins[] = {[1] = GPIO(11), [0] = GPIO(4)};
+
+	return gpio_binary_first_base3_value(pins, ARRAY_SIZE(pins));
+}
+
 uint32_t sku_id(void)
 {
 	static uint32_t id = UNDEFINED_STRAPPING_ID;
@@ -54,6 +61,9 @@ uint32_t sku_id(void)
 			id = gpio_binary_first_base3_value(old_pins, ARRAY_SIZE(old_pins));
 		else
 			id = gpio_binary_first_base3_value(pins, ARRAY_SIZE(pins));
+
+		if (CONFIG(TROGDOR_HAS_MIPI_PANEL))
+			id = panel_id() << 8 | id;
 	}
 
 	return id;

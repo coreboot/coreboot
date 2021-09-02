@@ -731,7 +731,7 @@ while true ; do
 			shift;;
 		-B|--blobs)	shift
 			customizing="${customizing}, blobs"
-			configoptions="${configoptions}CONFIG_USE_AMD_BLOBS=y\nCONFIG_USE_QC_BLOBS=y\nCONFIG_ADD_FSP_BINARIES=y\n"
+			configoptions="${configoptions}CONFIG_USE_AMD_BLOBS=y\nCONFIG_USE_QC_BLOBS=y\nCONFIG_FSP_USE_REPO=y\n"
 			;;
 		-A|--any-toolchain)	shift
 			customizing="${customizing}, any-toolchain"

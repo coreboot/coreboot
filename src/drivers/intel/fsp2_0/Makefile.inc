@@ -110,7 +110,16 @@ endif # CONFIG_FSP_M_FILE
 ifeq ($(call strip_quotes,$(CONFIG_FSP_S_FILE)),)
 $(error No FSP-S binary file specified.)
 endif # CONFIG_FSP_S_FILE
+else # CONFIG_ADD_FSP_BINARIES
+build_complete:: warn_no_fsp_binaries
 endif # CONFIG_ADD_FSP_BINARIES
+
+PHONY+=warn_no_fsp_binaries
+warn_no_fsp_binaries:
+	printf "\n\t** WARNING **\n"
+	printf "ADD_FSP_BINARIES isn't selected even though this SoC relies on the FSP.\n"
+	printf "The resulting image won't contain the FSP binaries and will not boot unless\n"
+	printf "they are added later.\n"
 
 subdirs-y += ppi
 

@@ -16,10 +16,17 @@
 		isoName = "${config.isoImage.isoBaseName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}.iso";
 	};
 
-	# Tell the Nix evaluator to garbage collect more aggressively.
-	# This is desirable in memory-constrained environments that don't
-	# (yet) have swap set up.
-	environment.variables.GC_INITIAL_HEAP_SIZE = "1M";
+	environment = {
+		variables = {
+			EDITOR = "nvim";
+			VISUAL = "nvim";
+			# Tell the Nix evaluator to garbage collect more aggressively.
+			# This is desirable in memory-constrained environments that don't
+			# (yet) have swap set up.
+			GC_INITIAL_HEAP_SIZE = "1M";
+		};
+		shellAliases.vim = "nvim";
+	};
 
 	boot = {
 		kernelParams = [

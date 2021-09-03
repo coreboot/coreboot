@@ -9,3 +9,4 @@ NixOS configuration files for testing purposes and for working on firmware.
   Will be usable from the next NixOS release.
 - Generate customized bootloader configs; FILO is WIP
 - Add coreboot toolchain
+- Switch to `programs.neovim` when the module is fixed.

@@ -12,53 +12,53 @@ config BOARD_GOOGLE_YORP
 	select NHLT_DA7219 if INCLUDE_NHLT_BLOBS
 
 config BOARD_GOOGLE_PHASER
-	bool "->  Phaser"
+	bool "->  Phaser (Lenovo 100e/300e/500e Chromebook 2nd Gen (Intel))"
 	select BASEBOARD_OCTOPUS_LAPTOP
 	select BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select NHLT_DA7219 if INCLUDE_NHLT_BLOBS
 	select NHLT_RT5682 if INCLUDE_NHLT_BLOBS
 
 config BOARD_GOOGLE_LICK
-	bool "->  Lick"
+	bool "->  Lick (Ideapad 3 Chromebook)"
 	select BASEBOARD_OCTOPUS_LAPTOP
 	select BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select NHLT_DA7219 if INCLUDE_NHLT_BLOBS
 
 config BOARD_GOOGLE_FLEEX
-	bool "->  Fleex"
+	bool "->  Fleex (Dell Chromebook 3100)"
 	select BASEBOARD_OCTOPUS_LAPTOP
 	select BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select NHLT_DA7219 if INCLUDE_NHLT_BLOBS
 	select NHLT_RT5682 if INCLUDE_NHLT_BLOBS
 
 config BOARD_GOOGLE_BOBBA
-	bool "->  Bobba"
+	bool "->  Bobba (Acer Chromebook 311 / Spin 511)"
 	select BASEBOARD_OCTOPUS_LAPTOP
 	select BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select NHLT_DA7219 if INCLUDE_NHLT_BLOBS
 	select NHLT_RT5682 if INCLUDE_NHLT_BLOBS
 
 config BOARD_GOOGLE_MEEP
-	bool "->  Meep"
+	bool "->  Meep (HP Chromebook x360 11 G2 EE)"
 	select BASEBOARD_OCTOPUS_LAPTOP
 	select BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select NHLT_DA7219 if INCLUDE_NHLT_BLOBS
 	select NHLT_RT5682 if INCLUDE_NHLT_BLOBS
 
 config BOARD_GOOGLE_AMPTON
-	bool "->  Ampton"
+	bool "->  Ampton (ASUS Chromebook Flip C214)"
 	select BASEBOARD_OCTOPUS_LAPTOP
 	select BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select NHLT_RT5682 if INCLUDE_NHLT_BLOBS
 
 config BOARD_GOOGLE_CASTA
-	bool "->  Casta"
+	bool "->  Bluebird/Casta (Samsung Chromebook 4, 4+)"
 	select BASEBOARD_OCTOPUS_LAPTOP
 	select BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select NHLT_DA7219 if INCLUDE_NHLT_BLOBS
 
 config BOARD_GOOGLE_BLOOG
-	bool "->  Bloog"
+	bool "->  Bloog (HP Chromebook x360 12b, 14a, x360 14b)"
 	select BASEBOARD_OCTOPUS_LAPTOP
 	select BOARD_GOOGLE_BASEBOARD_OCTOPUS
 	select NHLT_DA7219 if INCLUDE_NHLT_BLOBS

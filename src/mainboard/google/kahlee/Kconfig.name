@@ -1,20 +1,25 @@
 comment "Kahlee"
 
 config BOARD_GOOGLE_ALEENA
-	bool "->  Aleena"
+	bool "->  Aleena/Kasumi (Acer Chromebook  315 (CB315-2H), 311 (C721) / Spin 311 (R721T))"
 	select BOARD_GOOGLE_BASEBOARD_KAHLEE
+
 config BOARD_GOOGLE_CAREENA
-	bool "->  Careena"
+	bool "->  Barla/Careena (HP Chromebook 11A G6/G8 EE, 14A G5/G6)"
 	select BOARD_GOOGLE_BASEBOARD_KAHLEE
+
 config BOARD_GOOGLE_GRUNT
 	bool "->  Grunt"
 	select BOARD_GOOGLE_BASEBOARD_KAHLEE
+
 config BOARD_GOOGLE_LIARA
-	bool "->  Liara"
+	bool "->  Liara (Lenovo 14e Chromebook, Chromebook S345-14)"
 	select BOARD_GOOGLE_BASEBOARD_KAHLEE
+
 config BOARD_GOOGLE_NUWANI
 	bool "->  Nuwani"
 	select BOARD_GOOGLE_BASEBOARD_KAHLEE
+
 config BOARD_GOOGLE_TREEYA
-	bool "->  Treeya"
+	bool "->  Treeya (Lenovo 100e/300e Gen2 AMD)"
 	select BOARD_GOOGLE_BASEBOARD_KAHLEE

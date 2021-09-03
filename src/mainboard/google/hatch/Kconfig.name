@@ -1,11 +1,11 @@
 comment "Hatch"
 
 config BOARD_GOOGLE_AKEMI
-	bool "->  Akemi"
+	bool "->  Akemi (IdeaPad Flex 5/5i Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 
 config BOARD_GOOGLE_DRATINI
-	bool "->  Dratini"
+	bool "->  Dratini (HP Pro c640 Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 
 config BOARD_GOOGLE_DUFFY_LEGACY
@@ -14,11 +14,11 @@ config BOARD_GOOGLE_DUFFY_LEGACY
 	select BOARD_ROMSIZE_KB_32768
 
 config BOARD_GOOGLE_DUFFY
-	bool "->  Duffy"
+	bool "->  Duffy (ASUS Chromebox 4)"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_FAFFY
-	bool "->  Faffy"
+	bool "->  Faffy (ASUS Fanless Chromebox)"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_HATCH
@@ -27,7 +27,7 @@ config BOARD_GOOGLE_HATCH
 	select BOARD_ROMSIZE_KB_32768
 
 config BOARD_GOOGLE_JINLON
-	bool "->  Jinlon"
+	bool "->  Jinlon (HP Elite c1030 Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 	select DRIVERS_GFX_GENERIC
 
@@ -37,20 +37,20 @@ config BOARD_GOOGLE_KAISA_LEGACY
 	select BOARD_ROMSIZE_KB_32768
 
 config BOARD_GOOGLE_KAISA
-	bool "->  Kaisa"
+	bool "->  Kaisa (Acer Chromebox CXI4)"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_KOHAKU
-	bool "->  Kohaku"
+	bool "->  Kohaku (Samsung Galaxy Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 
 config BOARD_GOOGLE_KINDRED
-	bool "->  Kindred"
+	bool "->  Kindred (Acer Chromebook 712)"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 	select SOC_INTEL_COMMON_MMC_OVERRIDE
 
 config BOARD_GOOGLE_HELIOS
-	bool "->  Helios"
+	bool "->  Helios (ASUS Chromebook Flip C436FA)"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 	select CHROMEOS_DSM_CALIB if CHROMEOS
 	select DRIVERS_I2C_RT1011
@@ -66,13 +66,13 @@ config BOARD_GOOGLE_PALKIA
 	select DRIVERS_I2C_RT1011
 
 config BOARD_GOOGLE_NIGHTFURY
-	bool "->  Nightfury"
+	bool "->  Nightfury (Samsung Galaxy Chromebook 2)"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 	select CHROMEOS_DSM_CALIB if CHROMEOS
 	select DRIVERS_I2C_MAX98390
 
 config BOARD_GOOGLE_NOIBAT
-	bool "->  Noibat"
+	bool "->  Noibat (HP Chromebox G3)"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_PUFF
@@ -91,7 +91,7 @@ config BOARD_GOOGLE_STRYKE
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 
 config BOARD_GOOGLE_WYVERN
-	bool "->  Wyvern"
+	bool "->  Wyvern (CTL Chromebox CBx2)"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_DOOLY

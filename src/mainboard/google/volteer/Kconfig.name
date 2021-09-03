@@ -1,7 +1,7 @@
 comment "Volteer"
 
 config BOARD_GOOGLE_DELBIN
-	bool "->  Delbin"
+	bool "->  Delbin (ASUS Chromebook Flip CX5)"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select DRIVERS_GENESYSLOGIC_GL9755
 
@@ -66,13 +66,13 @@ config BOARD_GOOGLE_VOLTEER2_TI50
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_VOXEL
-	bool "->  Voxel"
+	bool "->  Voxel (Acer Chromebook Spin 713 (CP713-3W))"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select GEO_SAR_ENABLE if CHROMEOS_WIFI_SAR
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_ELEMI
-	bool "->  Elemi"
+	bool "->  Elemi (HP Pro c640 G2 Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 
 config BOARD_GOOGLE_VOEMA
@@ -81,13 +81,13 @@ config BOARD_GOOGLE_VOEMA
 	select VARIANT_HAS_MIPI_CAMERA
 
 config BOARD_GOOGLE_DROBIT
-	bool "->  Drobit"
+	bool "->  Drobit (ASUS Chromebook CX9400)"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select DRIVERS_GENESYSLOGIC_GL9755
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_COPANO
-	bool "->  Copano"
+	bool "->  Copano (ASUS Chromebook Flip CX5400)"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 

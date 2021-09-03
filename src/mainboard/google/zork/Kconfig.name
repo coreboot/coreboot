@@ -5,15 +5,15 @@ config BOARD_GOOGLE_DALBOZ
 	select BOARD_GOOGLE_BASEBOARD_DALBOZ
 
 config BOARD_GOOGLE_VILBOZ
-	bool "->  Vilboz"
+	bool "->  Vilboz (Lenovo 100e/300e Gen3 AMD)"
 	select BOARD_GOOGLE_BASEBOARD_DALBOZ
 
 config BOARD_GOOGLE_EZKINIL
-	bool "->  Ezkinil"
+	bool "->  Ezkinil (Acer Chromebook Spin 514)"
 	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_MORPHIUS
-	bool "->  Morphius"
+	bool "->  Morphius (Lenovo ThinkPad C13 Yoga Chromebook)"
 	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_TREMBYLE
@@ -21,15 +21,15 @@ config BOARD_GOOGLE_TREMBYLE
 	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_BERKNIP
-	bool "->  Berknip"
+	bool "->  Berknip (HP Pro c645 Chromebook Enterprise)"
 	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_WOOMAX
-	bool "->  Woomax"
+	bool "->  Woomax (ASUS Chromebook Flip CM5)"
 	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_DIRINBOZ
-	bool "->  Dirinboz"
+	bool "->  Dirinboz (HP Chromebook 14a-nd0097nr)"
 	select BOARD_GOOGLE_BASEBOARD_DALBOZ
 
 config BOARD_GOOGLE_SHUBOZ
@@ -37,5 +37,5 @@ config BOARD_GOOGLE_SHUBOZ
 	select BOARD_GOOGLE_BASEBOARD_DALBOZ
 
 config BOARD_GOOGLE_GUMBOZ
-	bool "->  Gumboz"
+	bool "->  Gumboz (HP Chromebook x360 14a)"
 	select BOARD_GOOGLE_BASEBOARD_DALBOZ

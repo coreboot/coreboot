@@ -5,11 +5,11 @@ config BOARD_GOOGLE_KUKUI
 	select BOARD_GOOGLE_KUKUI_COMMON
 
 config BOARD_GOOGLE_KRANE
-	bool "->  Krane"
+	bool "->  Krane (Lenovo Chromebook Duet/Lenovo IdeaPad Duet Chromebook)"
 	select BOARD_GOOGLE_KUKUI_COMMON
 
 config BOARD_GOOGLE_KODAMA
-	bool "->  Kodama"
+	bool "->  Kodama (Lenovo 10e Chromebook Tablet)"
 	select BOARD_GOOGLE_KUKUI_COMMON
 
 config BOARD_GOOGLE_KAKADU
@@ -31,7 +31,7 @@ config BOARD_GOOGLE_JACUZZI
 	select BOARD_GOOGLE_JACUZZI_COMMON
 
 config BOARD_GOOGLE_JUNIPER
-	bool "->  Juniper"
+	bool "->  Juniper (Acer Chromebook Spin 311 (CP311-3H))"
 	select BOARD_GOOGLE_JACUZZI_COMMON
 
 config BOARD_GOOGLE_KAPPA
@@ -39,7 +39,7 @@ config BOARD_GOOGLE_KAPPA
 	select BOARD_GOOGLE_JACUZZI_COMMON
 
 config BOARD_GOOGLE_DAMU
-	bool "->  Damu"
+	bool "->  Damu (ASUS Chromebook Flip CM3 (CM3200))"
 	select BOARD_GOOGLE_JACUZZI_COMMON
 
 config BOARD_GOOGLE_CERISE
@@ -55,11 +55,11 @@ config BOARD_GOOGLE_WILLOW
 	select BOARD_GOOGLE_JACUZZI_COMMON
 
 config BOARD_GOOGLE_ESCHE
-	bool "->  Esche"
+	bool "->  Esche (HP Chromebook 11MK G9 EE)"
 	select BOARD_GOOGLE_JACUZZI_COMMON
 
 config BOARD_GOOGLE_BURNET
-	bool "->  Burnet"
+	bool "->  Burnet (HP Chromebook x360 11MK G3 EE)"
 	select BOARD_GOOGLE_JACUZZI_COMMON
 
 config BOARD_GOOGLE_FENNEL

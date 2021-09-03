@@ -14,9 +14,16 @@ config BOARD_GOOGLE_NAMI
 	bool "->  Nami"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_NAMI
+	help
+	  The Nami board supports the following devices:
+	  - Acer Chromebook 13 / Spin 13 (Akali)
+	  - Lenovo Yoga Chromebook C630 (Pantheon)
+	  - HP Chromebook x360 14 (Sona)
+	  - HP Chromebook 15 G1 (Syndra)
+	  - Dell Inspiron Chromebook 14 (7460) (Vayne)
 
 config BOARD_GOOGLE_NAUTILUS
-	bool "->  Nautilus (Samsung Chromebook Plus (V2 / LTE))"
+	bool "->  Nautilus (Samsung Chromebook Plus V2, V2 LTE)"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_NAUTILUS
 
@@ -26,9 +33,13 @@ config BOARD_GOOGLE_NOCTURNE
 	select VARIANT_SPECIFIC_OPTIONS_NOCTURNE
 
 config BOARD_GOOGLE_RAMMUS
-	bool "->  Rammus (Asus Chromebook C425, Flip C433, Flip C434)"
+	bool "->  Rammus"
 	select BOARD_GOOGLE_BASEBOARD_POPPY
 	select VARIANT_SPECIFIC_OPTIONS_RAMMUS
+	help
+	  The Rammus board supports the following devices:
+	  - Asus Chromebook C425 (Leona)
+	  - Asus Chromebook Flip C433/C434 (Shyvana)
 
 config BOARD_GOOGLE_SORAKA
 	bool "->  Soraka (HP Chromebook x2)"

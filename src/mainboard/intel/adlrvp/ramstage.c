@@ -40,7 +40,7 @@ void variant_update_power_limits(void)
 			settings->pl1.max_power = limits[i].pl1_max_power;
 			settings->pl2.min_power = limits[i].pl2_min_power;
 			settings->pl2.max_power = limits[i].pl2_max_power;
-			printk(BIOS_INFO, "sumeet: Overriding DPTF power limits PL1 (%u, %u) PL2 (%u, %u)\n",
+			printk(BIOS_INFO, "Overriding DPTF power limits PL1 (%u, %u) PL2 (%u, %u)\n",
 					limits[i].pl1_min_power,
 					limits[i].pl1_max_power,
 					limits[i].pl2_min_power,

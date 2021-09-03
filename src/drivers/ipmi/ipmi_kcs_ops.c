@@ -386,6 +386,8 @@ static int ipmi_smbios_data(struct device *dev, int *handle,
 		register_spacing,
 		0); // no IRQ
 
+	len += get_smbios_data(dev, handle, current);
+
 	return len;
 }
 #endif

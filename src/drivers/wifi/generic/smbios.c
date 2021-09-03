@@ -9,6 +9,9 @@
 
 static int smbios_write_intel_wifi(struct device *dev, int *handle, unsigned long *current)
 {
+	if (dev->vendor != PCI_VENDOR_ID_INTEL)
+		return 0;
+
 	struct smbios_type_intel_wifi {
 		struct smbios_header header;
 		u8 str;
@@ -29,10 +32,9 @@ static int smbios_write_intel_wifi(struct device *dev, int *handle, unsigned lon
 
 int smbios_write_wifi_pcie(struct device *dev, int *handle, unsigned long *current)
 {
-	if (dev->vendor == PCI_VENDOR_ID_INTEL)
-		return smbios_write_intel_wifi(dev, handle, current);
-
-	return 0;
+	int len = smbios_write_intel_wifi(dev, handle, current);
+	len += get_smbios_data(dev, handle, current);
+	return len;
 }
 
 int smbios_write_wifi_cnvi(struct device *dev, int *handle, unsigned long *current)

@@ -1213,6 +1213,16 @@ static int smbios_generate_type9_from_devtree(struct device *dev, int *handle,
 				  dev->path.pci.devfn);
 }
 
+int get_smbios_data(struct device *dev, int *handle, unsigned long *current)
+{
+	int len = 0;
+
+	len += smbios_generate_type9_from_devtree(dev, handle, current);
+	len += smbios_generate_type41_from_devtree(dev, handle, current);
+
+	return len;
+}
+
 static int smbios_walk_device_tree(struct device *tree, int *handle, unsigned long *current)
 {
 	struct device *dev;
@@ -1222,9 +1232,9 @@ static int smbios_walk_device_tree(struct device *tree, int *handle, unsigned lo
 		if (dev->enabled && dev->ops && dev->ops->get_smbios_data) {
 			printk(BIOS_INFO, "%s (%s)\n", dev_path(dev), dev_name(dev));
 			len += dev->ops->get_smbios_data(dev, handle, current);
+		} else {
+			len += get_smbios_data(dev, handle, current);
 		}
-		len += smbios_generate_type9_from_devtree(dev, handle, current);
-		len += smbios_generate_type41_from_devtree(dev, handle, current);
 	}
 	return len;
 }

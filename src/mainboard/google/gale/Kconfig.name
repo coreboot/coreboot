@@ -1,4 +1,4 @@
 comment "Gale"
 
 config BOARD_GOOGLE_GALE
-	bool "Gale (Google WiFi)"
+	bool "->  Gale (Google WiFi)"

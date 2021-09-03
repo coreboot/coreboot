@@ -1,21 +1,21 @@
 comment "Volteer"
 
 config BOARD_GOOGLE_DELBIN
-	bool "-> Delbin"
+	bool "->  Delbin"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select DRIVERS_GENESYSLOGIC_GL9755
 
 config BOARD_GOOGLE_ELDRID
-	bool "-> Eldrid"
+	bool "->  Eldrid"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 
 config BOARD_GOOGLE_HALVOR
-	bool "-> Halvor"
+	bool "->  Halvor"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select INTEL_CAR_NEM
 
 config BOARD_GOOGLE_LINDAR
-	bool "-> Lindar"
+	bool "->  Lindar"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select INTEL_CAR_NEM
 	select CHROMEOS_DSM_CALIB if CHROMEOS
@@ -23,33 +23,33 @@ config BOARD_GOOGLE_LINDAR
 	select DRIVERS_GENERIC_BAYHUB_LV2
 
 config BOARD_GOOGLE_MALEFOR
-	bool "-> Malefor"
+	bool "->  Malefor"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select INTEL_CAR_NEM
 
 config BOARD_GOOGLE_TERRADOR
-	bool "-> Terrador"
+	bool "->  Terrador"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 
 config BOARD_GOOGLE_TODOR
-	bool "-> Todor"
+	bool "->  Todor"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select INTEL_CAR_NEM
 
 config BOARD_GOOGLE_TRONDO
-	bool "-> Trondo"
+	bool "->  Trondo"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select INTEL_CAR_NEM
 
 config BOARD_GOOGLE_VOLTEER
-	bool "-> Volteer"
+	bool "->  Volteer"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select VARIANT_HAS_MIPI_CAMERA
 	select INTEL_CAR_NEM
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_VOLTEER2
-	bool "-> Volteer2"
+	bool "->  Volteer2"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select VARIANT_HAS_MIPI_CAMERA
 	select DRIVERS_GENESYSLOGIC_GL9755
@@ -58,7 +58,7 @@ config BOARD_GOOGLE_VOLTEER2
 
 # Reworked Volteer2 prototype, Haven chip replaced with Dauntless demo board
 config BOARD_GOOGLE_VOLTEER2_TI50
-	bool "-> Volteer2_Ti50"
+	bool "->  Volteer2_Ti50"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select VARIANT_HAS_MIPI_CAMERA
 	select DRIVERS_GENESYSLOGIC_GL9755
@@ -66,39 +66,39 @@ config BOARD_GOOGLE_VOLTEER2_TI50
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_VOXEL
-	bool "-> Voxel"
+	bool "->  Voxel"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select GEO_SAR_ENABLE if CHROMEOS_WIFI_SAR
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_ELEMI
-	bool "-> Elemi"
+	bool "->  Elemi"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 
 config BOARD_GOOGLE_VOEMA
-	bool "-> Voema"
+	bool "->  Voema"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select VARIANT_HAS_MIPI_CAMERA
 
 config BOARD_GOOGLE_DROBIT
-	bool "-> Drobit"
+	bool "->  Drobit"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select DRIVERS_GENESYSLOGIC_GL9755
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_COPANO
-	bool "-> Copano"
+	bool "->  Copano"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_COLLIS
-	bool "-> Collis"
+	bool "->  Collis"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 
 config BOARD_GOOGLE_VOLET
-	bool "-> Volet"
+	bool "->  Volet"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER
 
 config BOARD_GOOGLE_CHRONICLER
-	bool "-> Chronicler"
+	bool "->  Chronicler"
 	select BOARD_GOOGLE_BASEBOARD_VOLTEER

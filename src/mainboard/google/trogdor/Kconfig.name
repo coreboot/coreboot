@@ -7,7 +7,7 @@ config BOARD_GOOGLE_BUBS
 	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_COACHZ
-	bool "-> Coachz"
+	bool "->  Coachz"
 	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_HOMESTAR

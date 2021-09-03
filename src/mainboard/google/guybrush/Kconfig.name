@@ -5,9 +5,9 @@ config BOARD_GOOGLE_GUYBRUSH
 	select BOARD_GOOGLE_BASEBOARD_GUYBRUSH
 
 config BOARD_GOOGLE_NIPPERKIN
-	bool "-> Nipperkin"
+	bool "->  Nipperkin"
 	select BOARD_GOOGLE_BASEBOARD_GUYBRUSH
 
 config BOARD_GOOGLE_DEWATT
-	bool "-> Dewatt"
+	bool "->  Dewatt"
 	select BOARD_GOOGLE_BASEBOARD_GUYBRUSH

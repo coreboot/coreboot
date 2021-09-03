@@ -1,4 +1,4 @@
 comment "Daisy"
 
 config BOARD_GOOGLE_DAISY
-	bool "Daisy (Samsung Chromebook (2012))"
+	bool "->  Daisy (Samsung Chromebook (2012))"

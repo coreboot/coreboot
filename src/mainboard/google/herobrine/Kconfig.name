@@ -3,15 +3,15 @@ comment "Herobrine"
 if USE_QC_BLOBS
 
 config BOARD_GOOGLE_HEROBRINE
-	bool "-> Herobrine"
+	bool "->  Herobrine"
 	select BOARD_GOOGLE_HEROBRINE_COMMON
 
 config BOARD_GOOGLE_SENOR
-	bool "-> Senor"
+	bool "->  Senor"
 	select BOARD_GOOGLE_HEROBRINE_COMMON
 
 config BOARD_GOOGLE_PIGLIN
-	bool "-> Piglin"
+	bool "->  Piglin"
 	select BOARD_GOOGLE_HEROBRINE_COMMON
 
 endif

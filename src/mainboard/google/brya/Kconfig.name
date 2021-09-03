@@ -1,7 +1,7 @@
 comment "Brya"
 
 config BOARD_GOOGLE_BRYA0
-	bool "Brya 0"
+	bool "->  Brya 0"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 	select DRIVERS_GENESYSLOGIC_GL9755
 	select DRIVERS_INTEL_MIPI_CAMERA
@@ -9,25 +9,25 @@ config BOARD_GOOGLE_BRYA0
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_BRASK
-	bool "Brask"
+	bool "->  Brask"
 	select BOARD_GOOGLE_BASEBOARD_BRASK
 	select SOC_INTEL_CRASHLOG
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_PRIMUS
-	bool "-> Primus"
+	bool "->  Primus"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 	select DRIVERS_GENESYSLOGIC_GL9755
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_GIMBLE
-	bool "-> Gimble"
+	bool "->  Gimble"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 	select CHROMEOS_DSM_CALIB if CHROMEOS
 	select DRIVERS_I2C_MAX98390
 
 config BOARD_GOOGLE_REDRIX
-	bool "-> Redrix"
+	bool "->  Redrix"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 	select CHROMEOS_DSM_CALIB if CHROMEOS
 	select DRIVERS_I2C_MAX98390
@@ -37,20 +37,20 @@ config BOARD_GOOGLE_REDRIX
 	select DRIVERS_GFX_GENERIC
 
 config BOARD_GOOGLE_KANO
-	bool "-> Kano"
+	bool "->  Kano"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 	select DRIVERS_I2C_MAX98373
 	select DRIVERS_I2C_NAU8825
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_GOOGLE_TAEKO
-	bool "-> Taeko"
+	bool "->  Taeko"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 
 config BOARD_GOOGLE_FELWINTER
-	bool "-> Felwinter"
+	bool "->  Felwinter"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 
 config BOARD_GOOGLE_ANAHERA
-	bool "-> Anahera"
+	bool "->  Anahera"
 	select BOARD_GOOGLE_BASEBOARD_BRYA

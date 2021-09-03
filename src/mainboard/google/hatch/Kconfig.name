@@ -1,24 +1,24 @@
 comment "Hatch"
 
 config BOARD_GOOGLE_AKEMI
-	bool "-> Akemi"
+	bool "->  Akemi"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 
 config BOARD_GOOGLE_DRATINI
-	bool "-> Dratini"
+	bool "->  Dratini"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 
 config BOARD_GOOGLE_DUFFY_LEGACY
-	bool "-> Duffy Legacy (32MB)"
+	bool "->  Duffy Legacy (32MB)"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 	select BOARD_ROMSIZE_KB_32768
 
 config BOARD_GOOGLE_DUFFY
-	bool "-> Duffy"
+	bool "->  Duffy"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_FAFFY
-	bool "-> Faffy"
+	bool "->  Faffy"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_HATCH
@@ -27,17 +27,17 @@ config BOARD_GOOGLE_HATCH
 	select BOARD_ROMSIZE_KB_32768
 
 config BOARD_GOOGLE_JINLON
-	bool "-> Jinlon"
+	bool "->  Jinlon"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 	select DRIVERS_GFX_GENERIC
 
 config BOARD_GOOGLE_KAISA_LEGACY
-	bool "-> Kaisa Legacy (32MB)"
+	bool "->  Kaisa Legacy (32MB)"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 	select BOARD_ROMSIZE_KB_32768
 
 config BOARD_GOOGLE_KAISA
-	bool "-> Kaisa"
+	bool "->  Kaisa"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_KOHAKU
@@ -56,7 +56,7 @@ config BOARD_GOOGLE_HELIOS
 	select DRIVERS_I2C_RT1011
 
 config BOARD_GOOGLE_MUSHU
-	bool "-> Mushu"
+	bool "->  Mushu"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 
 config BOARD_GOOGLE_PALKIA
@@ -66,17 +66,17 @@ config BOARD_GOOGLE_PALKIA
 	select DRIVERS_I2C_RT1011
 
 config BOARD_GOOGLE_NIGHTFURY
-	bool "-> Nightfury"
+	bool "->  Nightfury"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 	select CHROMEOS_DSM_CALIB if CHROMEOS
 	select DRIVERS_I2C_MAX98390
 
 config BOARD_GOOGLE_NOIBAT
-	bool "-> Noibat"
+	bool "->  Noibat"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_PUFF
-	bool "-> Puff"
+	bool "->  Puff"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 	select BOARD_ROMSIZE_KB_32768
 
@@ -87,29 +87,29 @@ config BOARD_GOOGLE_HELIOS_DISKSWAP
 	select DRIVERS_I2C_RT1011
 
 config BOARD_GOOGLE_STRYKE
-	bool "-> Stryke"
+	bool "->  Stryke"
 	select BOARD_GOOGLE_BASEBOARD_HATCH
 
 config BOARD_GOOGLE_WYVERN
-	bool "-> Wyvern"
+	bool "->  Wyvern"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_DOOLY
-	bool "-> Dooly"
+	bool "->  Dooly"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_AMBASSADOR
-	bool "-> Ambassador"
+	bool "->  Ambassador"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_GENESIS
-	bool "-> Genesis"
+	bool "->  Genesis"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_SCOUT
-	bool "-> Scout"
+	bool "->  Scout"
 	select BOARD_GOOGLE_BASEBOARD_PUFF
 
 config BOARD_GOOGLE_MOONBUGGY
-	bool "-> Moonbuggy"
+	bool "->  Moonbuggy"
 	select BOARD_GOOGLE_BASEBOARD_PUFF

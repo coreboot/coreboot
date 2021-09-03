@@ -1,4 +1,4 @@
 comment "Veyron Rialto"
 
 config BOARD_GOOGLE_VEYRON_RIALTO
-	bool "Veyron_Rialto"
+	bool "->  Veyron_Rialto"

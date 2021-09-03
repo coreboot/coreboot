@@ -1,4 +1,4 @@
 comment "Stout"
 
 config BOARD_GOOGLE_STOUT
-	bool "Stout (Lenovo Thinkpad X131e Chromebook)"
+	bool "->  Stout (Lenovo Thinkpad X131e Chromebook)"

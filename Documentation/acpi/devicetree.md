@@ -20,6 +20,62 @@ devicetree.  Note, not all mainboards will have the devicetree/overridetree
 distinction, and may only have a devicetree.cb file.  Or you can always just
 write the ASL (ACPI Source Language) code yourself.
 
+### Naming and referencing devices
+
+When declaring a device, it can optionally be given an alias that can be
+referred to elsewhere. This is particularly useful to declare a device in one
+device tree while allowing its configuration to be more easily changed in an
+overlay. For instance, the AMD Picasso SoC definition
+(`soc/amd/picasso/chipset.cb`) declares an IOMMU on a PCI bus that is disabled
+by default:
+
+```
+chip soc/amd/picasso
+	device domain 0 on
+		...
+		device pci 00.2 alias iommu off end
+		...
+	end
+end
+```
+
+A device based on this SoC can override the configuration for the IOMMU without
+duplicating addresses, as in
+`mainboard/google/zork/variants/baseboard/devicetree_trembyle.cb`:
+
+```
+chip soc/amd/picasso
+	device domain 0
+		...
+		device ref iommu on end
+		...
+	end
+end
+```
+
+In this example the override simply enables the IOMMU, but it could also
+set additional properties (or even add child devices) inside the IOMMU `device`
+block.
+
+---
+
+It is important to note that devices that use `device ref` syntax to override
+previous definitions of a device by alias must be placed at **exactly the same
+location in the device tree** as the original declaration. If not, this will
+actually create another device rather than overriding the properties of the
+existing one. For instance, if the above snippet from `devicetree_trembyle.cb`
+were written as follows:
+
+```
+chip soc/amd/picasso
+	# NOTE: not inside domain 0!
+	device ref iommu on end
+end
+```
+
+Then this would leave the SoC's IOMMU disabled, and instead create a new device
+with no properties as a direct child of the SoC.
+
 ## Device drivers
 
 Let's take a look at an example entry from

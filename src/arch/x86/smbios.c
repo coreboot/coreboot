@@ -1177,30 +1177,55 @@ static u8 smbios_get_device_type_from_dev(struct device *dev)
 	}
 }
 
+static bool smbios_get_type41_instance_id(struct device *dev, u8 device_type, u8 *instance_id)
+{
+#if CONFIG(SMBIOS_TYPE41_PROVIDED_BY_DEVTREE)
+	*instance_id = dev->smbios_instance_id;
+	return dev->smbios_instance_id_valid;
+#else
+	static u8 type41_inst_cnt[SMBIOS_DEVICE_TYPE_COUNT + 1] = {};
+
+	if (device_type == SMBIOS_DEVICE_TYPE_OTHER ||
+	    device_type == SMBIOS_DEVICE_TYPE_UNKNOWN)
+		return false;
+
+	if (device_type > SMBIOS_DEVICE_TYPE_COUNT)
+		return false;
+
+	*instance_id = type41_inst_cnt[device_type]++;
+	return true;
+#endif
+}
+
+static const char *smbios_get_type41_refdes(struct device *dev)
+{
+#if CONFIG(SMBIOS_TYPE41_PROVIDED_BY_DEVTREE)
+	if (dev->smbios_refdes)
+		return dev->smbios_refdes;
+#endif
+	return get_pci_subclass_name(dev);
+}
+
 static int smbios_generate_type41_from_devtree(struct device *dev, int *handle,
 					       unsigned long *current)
 {
-	static u8 type41_inst_cnt[SMBIOS_DEVICE_TYPE_COUNT + 1] = {};
-
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return 0;
 	if (!dev->on_mainboard)
 		return 0;
 
-	u8 device_type = smbios_get_device_type_from_dev(dev);
+	const u8 device_type = smbios_get_device_type_from_dev(dev);
 
-	if (device_type == SMBIOS_DEVICE_TYPE_OTHER ||
-	    device_type == SMBIOS_DEVICE_TYPE_UNKNOWN)
+	u8 instance_id;
+
+	if (!smbios_get_type41_instance_id(dev, device_type, &instance_id))
 		return 0;
 
-	if (device_type > SMBIOS_DEVICE_TYPE_COUNT)
-		return 0;
-
-	const char *name = get_pci_subclass_name(dev);
+	const char *name = smbios_get_type41_refdes(dev);
 
 	return smbios_write_type41(current, handle,
 					name, // name
-					type41_inst_cnt[device_type]++, // inst
+					instance_id, // inst
 					0, // segment
 					dev->bus->secondary, //bus
 					PCI_SLOT(dev->path.pci.devfn), // device

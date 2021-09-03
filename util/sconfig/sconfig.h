@@ -177,6 +177,11 @@ struct device {
 	/* SMBIOS slot length */
 	char *smbios_slot_length;
 
+	/* SMBIOS type41 fields */
+	int smbios_instance_id_valid;
+	unsigned int smbios_instance_id;
+	const char *smbios_refdes;
+
 	/* List of field+option to probe. */
 	struct fw_config_probe *probe;
 };
@@ -202,6 +207,8 @@ void add_ioapic_info(struct bus *bus, int apicid, const char *_srcpin,
 
 void add_slot_desc(struct bus *bus, char *type, char *length, char *designation,
 		   char *data_width);
+
+void add_smbios_dev_info(struct bus *bus, long instance_id, const char *refdes);
 
 void yyrestart(FILE *input_file);
 

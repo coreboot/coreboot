@@ -148,6 +148,17 @@ struct device {
 	u8 smbios_slot_data_width;
 	u8 smbios_slot_length;
 	const char *smbios_slot_designation;
+
+#if CONFIG(SMBIOS_TYPE41_PROVIDED_BY_DEVTREE)
+	/*
+	 * These fields are intentionally guarded so that attempts to use
+	 * the corresponding devicetree syntax without selecting the Kconfig
+	 * option result in build-time errors. Smaller size is a side effect.
+	 */
+	bool smbios_instance_id_valid;
+	u8 smbios_instance_id;
+	const char *smbios_refdes;
+#endif
 #endif
 #endif
 	DEVTREE_CONST void *chip_info;

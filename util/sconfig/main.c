@@ -1023,6 +1023,25 @@ void add_slot_desc(struct bus *bus, char *type, char *length, char *designation,
 	dev->smbios_slot_designation = designation;
 }
 
+void add_smbios_dev_info(struct bus *bus, long instance_id, const char *refdes)
+{
+	struct device *dev = bus->dev;
+
+	if (dev->bustype != PCI && dev->bustype != DOMAIN) {
+		printf("ERROR: 'dev_info' only allowed for PCI devices\n");
+		exit(1);
+	}
+
+	if (instance_id < 0 || instance_id > UINT8_MAX) {
+		printf("ERROR: SMBIOS dev info instance ID '%ld' out of range\n", instance_id);
+		exit(1);
+	}
+
+	dev->smbios_instance_id_valid = 1;
+	dev->smbios_instance_id = (unsigned int)instance_id;
+	dev->smbios_refdes = refdes;
+}
+
 void add_pci_subsystem_ids(struct bus *bus, int vendor, int device,
 			   int inherit)
 {
@@ -1134,6 +1153,14 @@ static void emit_smbios_data(FILE *fil, struct device *ptr)
 	if (ptr->smbios_slot_length)
 		fprintf(fil, "\t.smbios_slot_length = %s,\n",
 			ptr->smbios_slot_length);
+
+	/* Fill in SMBIOS type41 fields */
+	if (ptr->smbios_instance_id_valid) {
+		fprintf(fil, "\t.smbios_instance_id_valid = true,\n");
+		fprintf(fil, "\t.smbios_instance_id = %u,\n", ptr->smbios_instance_id);
+		if (ptr->smbios_refdes)
+			fprintf(fil, "\t.smbios_refdes = \"%s\",\n", ptr->smbios_refdes);
+	}
 
 	fprintf(fil, "#endif\n");
 	fprintf(fil, "#endif\n");

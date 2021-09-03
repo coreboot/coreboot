@@ -785,6 +785,21 @@ config GENERATE_SMBIOS_TABLES
 
 	  If unsure, say Y.
 
+config SMBIOS_TYPE41_PROVIDED_BY_DEVTREE
+	bool
+	depends on ARCH_X86
+	help
+	  If enabled, only generate SMBIOS Type 41 entries for PCI devices in
+	  the devicetree for which Type 41 information is provided, e.g. with
+	  the `smbios_dev_info` devicetree syntax. This is useful to manually
+	  assign specific instance IDs to onboard devices irrespective of the
+	  device traversal order. It is assumed that instance IDs for devices
+	  of the same class are unique.
+	  When disabled, coreboot autogenerates SMBIOS Type 41 entries for all
+	  appropriate PCI devices in the devicetree. Instance IDs are assigned
+	  successive numbers from a monotonically increasing counter, with one
+	  counter for each device class.
+
 config SMBIOS_PROVIDED_BY_MOBO
 	bool
 	default n

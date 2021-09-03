@@ -64,6 +64,12 @@ static void register_reset_to_bl31(void)
 	register_bl31_aux_param(&param_reset.h);
 }
 
+/* Override hs_da_trail for ANX7625 */
+void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing)
+{
+	timing->da_hs_trail += 9;
+}
+
 /* Set up backlight control pins as output pin and power-off by default */
 static void configure_backlight_and_bridge(void)
 {

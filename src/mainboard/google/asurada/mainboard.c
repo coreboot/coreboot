@@ -118,6 +118,7 @@ static bool configure_display(void)
 	u32 mipi_dsi_flags = (MIPI_DSI_MODE_VIDEO |
 			      MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
 			      MIPI_DSI_MODE_LPM |
+			      MIPI_DSI_MODE_LINE_END |
 			      MIPI_DSI_MODE_EOT_PACKET);
 
 	if (mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4, &edid, NULL) < 0) {

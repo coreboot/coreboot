@@ -1108,6 +1108,29 @@ static void pass0(FILE *fil, FILE *head, struct device *ptr, struct device *next
 		ptr->name);
 }
 
+static void emit_smbios_data(FILE *fil, struct device *ptr)
+{
+	fprintf(fil, "#if !DEVTREE_EARLY\n");
+	fprintf(fil, "#if CONFIG(GENERATE_SMBIOS_TABLES)\n");
+
+	/* SMBIOS types start at 1, if zero it hasn't been set */
+	if (ptr->smbios_slot_type)
+		fprintf(fil, "\t.smbios_slot_type = %s,\n",
+			ptr->smbios_slot_type);
+	if (ptr->smbios_slot_data_width)
+		fprintf(fil, "\t.smbios_slot_data_width = %s,\n",
+			ptr->smbios_slot_data_width);
+	if (ptr->smbios_slot_designation)
+		fprintf(fil, "\t.smbios_slot_designation = \"%s\",\n",
+			ptr->smbios_slot_designation);
+	if (ptr->smbios_slot_length)
+		fprintf(fil, "\t.smbios_slot_length = %s,\n",
+			ptr->smbios_slot_length);
+
+	fprintf(fil, "#endif\n");
+	fprintf(fil, "#endif\n");
+}
+
 static void emit_resources(FILE *fil, struct device *ptr)
 {
 	if (ptr->res == NULL)
@@ -1266,23 +1289,9 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 			chip_ins->chip->name_underscore, chip_ins->id);
 	if (next)
 		fprintf(fil, "\t.next=&%s,\n", next->name);
-	fprintf(fil, "#if !DEVTREE_EARLY\n");
-	fprintf(fil, "#if CONFIG(GENERATE_SMBIOS_TABLES)\n");
-	/* SMBIOS types start at 1, if zero it hasn't been set */
-	if (ptr->smbios_slot_type)
-		fprintf(fil, "\t.smbios_slot_type = %s,\n",
-			ptr->smbios_slot_type);
-	if (ptr->smbios_slot_data_width)
-		fprintf(fil, "\t.smbios_slot_data_width = %s,\n",
-			ptr->smbios_slot_data_width);
-	if (ptr->smbios_slot_designation)
-		fprintf(fil, "\t.smbios_slot_designation = \"%s\",\n",
-			ptr->smbios_slot_designation);
-	if (ptr->smbios_slot_length)
-		fprintf(fil, "\t.smbios_slot_length = %s,\n",
-			ptr->smbios_slot_length);
-	fprintf(fil, "#endif\n");
-	fprintf(fil, "#endif\n");
+
+	emit_smbios_data(fil, ptr);
+
 	fprintf(fil, "};\n");
 
 	emit_resources(fil, ptr);

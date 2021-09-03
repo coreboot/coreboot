@@ -102,10 +102,6 @@ static bool configure_display(void)
 		printk(BIOS_ERR, "%s: Can't get panel's edid\n", __func__);
 		return false;
 	}
-	if (anx7625_dp_start(i2c_bus, &edid) < 0) {
-		printk(BIOS_ERR, "%s: Can't start display via ANX7625\n", __func__);
-		return false;
-	}
 
 	const char *name = edid.ascii_string;
 	if (name[0] == '\0')
@@ -128,6 +124,12 @@ static bool configure_display(void)
 		printk(BIOS_ERR, "%s: Failed in DSI init\n", __func__);
 		return false;
 	}
+
+	if (anx7625_dp_start(i2c_bus, &edid) < 0) {
+		printk(BIOS_ERR, "%s: Can't start display via ANX7625\n", __func__);
+		return false;
+	}
+
 	mtk_ddp_mode_set(&edid);
 	fb_new_framebuffer_info_from_edid(&edid, (uintptr_t)0);
 	return true;

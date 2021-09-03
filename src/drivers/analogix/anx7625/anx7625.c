@@ -381,7 +381,7 @@ static int anx7625_dsi_video_config(uint8_t bus, struct display_timing *dt)
 	ret |= anx7625_reg_write(bus, RX_P1_ADDR, MIPI_PLL_N_NUM_7_0,
 				 (n & 0xff));
 	/* diff */
-	ret |= anx7625_reg_write(bus, RX_P1_ADDR, MIPI_DIGITAL_ADJ_1, 0x3d);
+	ret |= anx7625_reg_write(bus, RX_P1_ADDR, MIPI_DIGITAL_ADJ_1, dt->k_val);
 
 	ret |= anx7625_odfc_config(bus, post_divider - 1);
 
@@ -803,6 +803,20 @@ static void anx7625_parse_edid(const struct edid *edid,
 	dt->vfront_porch = edid->mode.vso - edid->mode.vborder;
 	dt->vback_porch = (edid->mode.vbl - edid->mode.vso -
 			   edid->mode.vspw - edid->mode.vborder);
+
+	/*
+	 * The k_val is a ratio to match MIPI input and DP output video clocks.
+	 * Most panels can follow the default value (0x3d).
+	 * IVO panels have smaller variation than DP CTS spec and need smaller
+	 * k_val (0x3b).
+	 */
+	if (!strncmp(edid->manufacturer_name, "IVO", 3)) {
+		dt->k_val = 0x3b;
+		ANXINFO("detected IVO panel, use k value 0x3b\n");
+	} else {
+		dt->k_val = 0x3d;
+		ANXINFO("set default k value to 0x3d for panel\n");
+	}
 
 	ANXINFO("pixelclock(%d).\n"
 		" hactive(%d), hsync(%d), hfp(%d), hbp(%d)\n"

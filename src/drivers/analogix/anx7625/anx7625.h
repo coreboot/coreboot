@@ -350,6 +350,7 @@ struct display_timing {
 	unsigned int vfront_porch;
 	unsigned int vback_porch;
 	unsigned int vsync_len;
+	unsigned int k_val;
 };
 
 int anx7625_dp_start(uint8_t bus, const struct edid *edid);

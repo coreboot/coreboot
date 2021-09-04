@@ -49,8 +49,8 @@ static void usage(char *invoked_as)
 			"USAGE:\n"
 			"\t%s COMMAND [-f <filename>]\n\n"
 			"where, COMMAND is:\n"
-			"  list = lists all the event logs in human readable format\n"
-			"  clear = clears all the event logs\n"
+			"  list                    lists all the event logs in human readable format\n"
+			"  clear                   clears all the event logs\n"
 			"\n"
 			"ARGS\n"
 			"-f, --file <filename>   File that holds event log partition.\n"
@@ -115,6 +115,25 @@ static int elog_write(struct buffer *buf, const char *filename)
 	return ELOGTOOL_EXIT_SUCCESS;
 }
 
+static size_t next_available_event_offset(const struct buffer *buf)
+{
+	const struct event_header *event;
+	struct buffer copy, *iter = &copy;
+
+	buffer_clone(iter, buf);
+
+	while (buffer_size(iter) >= sizeof(struct event_header)) {
+		event = buffer_get(iter);
+		if (event->type == ELOG_TYPE_EOL || event->length == 0)
+			break;
+
+		assert(event->length <= buffer_size(iter));
+		buffer_seek(iter, event->length);
+	}
+
+	return buffer_offset(iter) - buffer_offset(buf);
+}
+
 static int cmd_list(const struct buffer *buf)
 {
 	const struct event_header *event;
@@ -139,35 +158,24 @@ static int cmd_list(const struct buffer *buf)
  * Clears the elog events from the given buffer, which is a valid RW_ELOG region.
  * A LOG_CLEAR event is appended.
  */
-static int cmd_clear(const struct buffer *b)
+static int cmd_clear(const struct buffer *buf)
 {
-	const struct event_header *event;
-	uint32_t used_data_size = 0;
-	struct buffer buf;
-	void *data_offset;
+	uint32_t used_data_size;
+	struct buffer copy;
 
 	/* Clone the buffer to avoid changing the offset of the original buffer */
-	buffer_clone(&buf, b);
-	/* eventlog_init_event() expects buffer to point to the event */
-	buffer_seek(&buf, sizeof(struct elog_header));
+	buffer_clone(&copy, buf);
+	buffer_seek(&copy, sizeof(struct elog_header));
 
 	/*
 	 * Calculate the size of the "used" buffer, needed for ELOG_TYPE_LOG_CLEAR.
 	 * Then overwrite the entire buffer with ELOG_TYPE_EOL.
 	 * Finally insert a LOG_CLEAR event into the buffer.
 	 */
-	event = data_offset = buffer_get(&buf);
-	while ((const void *)(event) < buffer_end(&buf)) {
-		if (event->type == ELOG_TYPE_EOL || event->length == 0)
-			break;
+	used_data_size = next_available_event_offset(&copy);
+	memset(buffer_get(&copy), ELOG_TYPE_EOL, buffer_size(&copy));
 
-		used_data_size += event->length;
-		event = elog_get_next_event(event);
-	}
-
-	memset(data_offset, ELOG_TYPE_EOL, buffer_size(&buf));
-
-	if (!eventlog_init_event(&buf, ELOG_TYPE_LOG_CLEAR,
+	if (!eventlog_init_event(&copy, ELOG_TYPE_LOG_CLEAR,
 				 &used_data_size, sizeof(used_data_size)))
 		return ELOGTOOL_EXIT_NOT_ENOUGH_BUFFER_SPACE;
 
@@ -231,8 +239,10 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (i == ARRAY_SIZE(cmds))
+	if (i == ARRAY_SIZE(cmds)) {
+		usage(argv[0]);
 		ret = ELOGTOOL_EXIT_BAD_ARGS;
+	}
 
 	if (!ret && cmds[i].write_back)
 		ret = elog_write(&buf, filename);

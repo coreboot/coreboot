@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 
+#include <assert.h>
 #include <getopt.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -14,6 +15,9 @@
 
 #include "eventlog.h"
 
+/* Only refers to the data max size. The "-1" is the checksum byte */
+#define ELOG_MAX_EVENT_DATA_SIZE  (ELOG_MAX_EVENT_SIZE - sizeof(struct event_header) - 1)
+
 enum elogtool_return {
 	ELOGTOOL_EXIT_SUCCESS = 0,
 	ELOGTOOL_EXIT_BAD_ARGS,
@@ -26,6 +30,7 @@ enum elogtool_return {
 
 static int cmd_list(const struct buffer *);
 static int cmd_clear(const struct buffer *);
+static int cmd_add(const struct buffer *);
 
 static const struct {
 	const char *name;
@@ -35,7 +40,11 @@ static const struct {
 } cmds[] = {
 	{"list", cmd_list, false},
 	{"clear", cmd_clear, true},
+	{"add", cmd_add, true},
 };
+
+static char **cmd_argv;		/* Command arguments */
+static char *argv0;		/* Used as invoked_as */
 
 static struct option long_options[] = {
 	{"file", required_argument, 0, 'f'},
@@ -45,12 +54,13 @@ static struct option long_options[] = {
 
 static void usage(char *invoked_as)
 {
-	fprintf(stderr, "elogtool: list elog events\n\n"
+	fprintf(stderr, "elogtool: edit elog events\n\n"
 			"USAGE:\n"
 			"\t%s COMMAND [-f <filename>]\n\n"
 			"where, COMMAND is:\n"
-			"  list                    lists all the event logs in human readable format\n"
-			"  clear                   clears all the event logs\n"
+			"  list                          lists all the event logs in human readable format\n"
+			"  clear                         clears all the event logs\n"
+			"  add <event_type> [event_data] add an entry to the event log\n"
 			"\n"
 			"ARGS\n"
 			"-f, --file <filename>   File that holds event log partition.\n"
@@ -115,10 +125,13 @@ static int elog_write(struct buffer *buf, const char *filename)
 	return ELOGTOOL_EXIT_SUCCESS;
 }
 
+/* Buffer offset must point to a valid event_header struct */
 static size_t next_available_event_offset(const struct buffer *buf)
 {
 	const struct event_header *event;
 	struct buffer copy, *iter = &copy;
+
+	assert(buffer_offset(buf) >= sizeof(struct elog_header));
 
 	buffer_clone(iter, buf);
 
@@ -132,6 +145,52 @@ static size_t next_available_event_offset(const struct buffer *buf)
 	}
 
 	return buffer_offset(iter) - buffer_offset(buf);
+}
+
+/*
+ * Shrinks buffer by ~bytes_to_shrink, then appends a LOG_CLEAR event,
+ * and finally fills the remaining area with EOL events.
+ * Buffer offset must point to a valid event_header struct.
+ */
+static int shrink_buffer(const struct buffer *buf, size_t bytes_to_shrink)
+{
+	struct buffer copy, *iter = &copy;
+	const struct event_header *event;
+	uint32_t cleared;
+	int remaining;
+	uint8_t *data;
+
+	assert(buffer_offset(buf) >= sizeof(struct elog_header));
+
+	buffer_clone(&copy, buf);
+
+	/* Save copy of first event for later */
+	data = buffer_get(buf);
+
+	/* Set buffer offset pointing to the event right after bytes_to_shrink */
+	while (buffer_offset(iter) < bytes_to_shrink) {
+		event = buffer_get(iter);
+		assert(!(event->type == ELOG_TYPE_EOL || event->length == 0));
+
+		buffer_seek(iter, event->length);
+	}
+
+	/* Must be relative to the buffer offset */
+	cleared = buffer_offset(iter) - buffer_offset(buf);
+	remaining = buffer_size(iter);
+
+	/* Overlapping copy */
+	memmove(data, data + cleared, remaining);
+	memset(data + remaining, ELOG_TYPE_EOL, cleared);
+
+	/* Re-init copy to have a clean offset. Needed for init_event() */
+	buffer_clone(&copy, buf);
+	buffer_seek(&copy, next_available_event_offset(&copy));
+
+	if (!eventlog_init_event(&copy, ELOG_TYPE_LOG_CLEAR, &cleared, sizeof(cleared)))
+		return ELOGTOOL_EXIT_NOT_ENOUGH_BUFFER_SPACE;
+
+	return ELOGTOOL_EXIT_SUCCESS;
 }
 
 static int cmd_list(const struct buffer *buf)
@@ -177,6 +236,122 @@ static int cmd_clear(const struct buffer *buf)
 
 	if (!eventlog_init_event(&copy, ELOG_TYPE_LOG_CLEAR,
 				 &used_data_size, sizeof(used_data_size)))
+		return ELOGTOOL_EXIT_NOT_ENOUGH_BUFFER_SPACE;
+
+	return ELOGTOOL_EXIT_SUCCESS;
+}
+
+static void cmd_add_usage(void)
+{
+	usage(argv0);
+
+	fprintf(stderr, "\n\nSpecific to ADD command:\n"
+		"\n"
+		"<event_type>:          an hexadecimal number (0-255). Prefix '0x' is optional\n"
+		"[event_data]:          (optional) a series of hexadecimal numbers. Must be:\n"
+		"                       - len(event_data) %% 2 == 0\n"
+		"                       - len(event_data) in bytes <= %ld\n"
+		"\n"
+		"Example:\n"
+		"%s add 0x16 01ABF0  # 01ABF0 is actually three bytes: 0x01, 0xAB and 0xF0\n"
+		"%s add 17           # 17 is in hexa\n",
+		ELOG_MAX_EVENT_DATA_SIZE, argv0, argv0
+	);
+}
+
+static int cmd_add_parse_args(uint8_t *type, uint8_t *data, size_t *data_size)
+{
+	char byte[3] = {0};
+	int argc = 0;
+	char *endptr;
+	long value;
+	int len;
+
+	while (cmd_argv[argc] != NULL)
+		argc++;
+
+	if (argc != 1 && argc != 2)
+		return ELOGTOOL_EXIT_BAD_ARGS;
+
+	/* Force type to be an hexa value to be consistent with the data values */
+	value = strtol(cmd_argv[0], NULL, 16);
+	if (value > 255) {
+		fprintf(stderr, "Error: Event type should be between 0-0xff; "
+			"got: 0x%04lx\n", value);
+		return ELOGTOOL_EXIT_BAD_ARGS;
+	}
+
+	*type = value;
+
+	if (argc == 1)
+		return ELOGTOOL_EXIT_SUCCESS;
+
+	/* Assuming argc == 2 */
+	len = strlen(cmd_argv[1]);
+
+	/* Needs 2 bytes per number */
+	if (len % 2 != 0) {
+		fprintf(stderr,
+			"Error: Event data length should be an even number; got: %d\n", len);
+		return ELOGTOOL_EXIT_BAD_ARGS;
+	}
+
+	*data_size = len / 2;
+
+	if (*data_size > ELOG_MAX_EVENT_DATA_SIZE) {
+		fprintf(stderr,
+			"Error: Event data length (in bytes) should be <= %ld; got: %ld\n",
+			ELOG_MAX_EVENT_DATA_SIZE, *data_size);
+		return ELOGTOOL_EXIT_BAD_ARGS;
+	}
+
+	for (unsigned int i = 0; i < *data_size; i++) {
+		byte[0] = *cmd_argv[1]++;
+		byte[1] = *cmd_argv[1]++;
+		data[i] = strtol(byte, &endptr, 16);
+		if (endptr != &byte[2]) {
+			fprintf(stderr, "Error: Event data length contains invalid data. "
+				"Only hexa digits are valid\n");
+			return ELOGTOOL_EXIT_BAD_ARGS;
+		}
+	}
+
+	return ELOGTOOL_EXIT_SUCCESS;
+}
+
+/* Appends an elog entry to EventLog buffer. */
+static int cmd_add(const struct buffer *buf)
+{
+	uint8_t data[ELOG_MAX_EVENT_DATA_SIZE];
+	size_t data_size = 0;
+	struct buffer copy;
+	uint8_t type = 0;
+	size_t next_event;
+	size_t threshold;
+	int ret;
+
+	if (cmd_add_parse_args(&type, data, &data_size) != ELOGTOOL_EXIT_SUCCESS) {
+		cmd_add_usage();
+		return ELOGTOOL_EXIT_BAD_ARGS;
+	}
+
+	buffer_clone(&copy, buf);
+	buffer_seek(&copy, sizeof(struct elog_header));
+
+	threshold = buffer_size(&copy) * 3 / 4;
+	next_event = next_available_event_offset(&copy);
+
+	if (next_event > threshold) {
+		/* Shrink ~ 1/4 of the size */
+		ret = shrink_buffer(&copy, buffer_size(buf) - threshold);
+		if (ret != ELOGTOOL_EXIT_SUCCESS)
+			return ret;
+		next_event = next_available_event_offset(&copy);
+	}
+
+	buffer_seek(&copy, next_event);
+
+	if (!eventlog_init_event(&copy, type, data, data_size))
 		return ELOGTOOL_EXIT_NOT_ENOUGH_BUFFER_SPACE;
 
 	return ELOGTOOL_EXIT_SUCCESS;
@@ -234,6 +409,9 @@ int main(int argc, char **argv)
 
 	for (i = 0; i < ARRAY_SIZE(cmds); i++) {
 		if (!strcmp(cmds[i].name, argv[optind])) {
+			/* For commands that parse their own arguments. */
+			cmd_argv = &argv[optind+1];
+			argv0 = argv[0];
 			ret = cmds[i].func(&buf);
 			break;
 		}

@@ -6,8 +6,6 @@
 #include <commonlib/bsd/elog.h>
 #include <stdint.h>
 
-#define MAX_EVENT_SIZE                    0x7F
-
 #if CONFIG(ELOG)
 /* Eventlog backing storage must be initialized before calling elog_init(). */
 extern int elog_init(void);

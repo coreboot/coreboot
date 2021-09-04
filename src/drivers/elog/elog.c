@@ -246,7 +246,7 @@ static size_t elog_is_event_valid(size_t offset)
 	if (len < (sizeof(*event) + sizeof(checksum)))
 		return 0;
 
-	if (len > MAX_EVENT_SIZE)
+	if (len > ELOG_MAX_EVENT_SIZE)
 		return 0;
 
 	event = elog_get_event_buffer(offset, len);
@@ -613,7 +613,7 @@ int elog_clear(void)
 static int elog_find_flash(void)
 {
 	size_t total_size;
-	size_t reserved_space = ELOG_MIN_AVAILABLE_ENTRIES * MAX_EVENT_SIZE;
+	size_t reserved_space = ELOG_MIN_AVAILABLE_ENTRIES * ELOG_MAX_EVENT_SIZE;
 	struct region_device *rdev = &elog_state.nv_dev;
 
 	elog_debug("%s()\n", __func__);
@@ -801,7 +801,7 @@ int elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 
 	/* Header + Data + Checksum */
 	event_size = sizeof(*event) + data_size + 1;
-	if (event_size > MAX_EVENT_SIZE) {
+	if (event_size > ELOG_MAX_EVENT_SIZE) {
 		printk(BIOS_ERR, "ELOG: Event(%X) data size too "
 		       "big (%d)\n", event_type, event_size);
 		return -1;

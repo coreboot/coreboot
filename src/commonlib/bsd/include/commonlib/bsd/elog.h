@@ -311,6 +311,9 @@ struct elog_event_extended_event {
 } __packed;
 
 
+/* Only the 7-LSB are used for size */
+#define ELOG_MAX_EVENT_SIZE                    0x7F
+
 enum cb_err elog_verify_header(const struct elog_header *header);
 const struct event_header *elog_get_next_event(const struct event_header *event);
 const void *event_get_data(const struct event_header *event);

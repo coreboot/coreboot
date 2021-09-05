@@ -175,7 +175,6 @@ void dev_enumerate(void);
 void dev_configure(void);
 void dev_enable(void);
 void dev_initialize(void);
-void dev_optimize(void);
 void dev_finalize(void);
 void dev_finalize_chips(void);
 /* Function used to override device state */

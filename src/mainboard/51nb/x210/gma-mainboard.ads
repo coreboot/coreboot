@@ -12,6 +12,6 @@ private package GMA.Mainboard is
      (DP1,
       DP2,
       eDP,
-      Others => Disabled);
+      others => Disabled);
 
 end GMA.Mainboard;

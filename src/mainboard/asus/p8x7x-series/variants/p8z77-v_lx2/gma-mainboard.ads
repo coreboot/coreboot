@@ -11,6 +11,6 @@ private package GMA.Mainboard is
    ports : constant Port_List :=
      (HDMI3,
       Analog,
-      Others => Disabled);
+      others => Disabled);
 
 end GMA.Mainboard;

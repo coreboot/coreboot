@@ -160,8 +160,7 @@ chip soc/amd/picasso
 			device ref xgbe_1 off end # integrated Ethernet MAC
 		end
 		device ref lpc_bridge on
-			chip superio/smsc/sio1036 # optional debug card
-			end
+			# chip superio/smsc/sio1036 # optional debug card
 		end
 	end # domain
 

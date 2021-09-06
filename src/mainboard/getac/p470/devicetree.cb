@@ -123,8 +123,6 @@ chip northbridge/intel/i945
 					end
 					device pnp 4e.b off		# HWM
 					end
-					chip ec/acpi
-					end
 				end
 
 			end

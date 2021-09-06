@@ -99,9 +99,6 @@ chip northbridge/intel/i945
 					device pnp ff.1 on # dummy address
 					end
 				end
-				chip ec/acpi
-				end
-
 			end
 			device pci 1f.1 off end # IDE
 			device pci 1f.2 on  end # SATA

@@ -60,11 +60,24 @@ endef
 
 $(foreach prog,$(hostprogs),$(eval $(call hostprogs_template,$(prog))))
 
+# This might be a bit of a chicken & egg problem, using a kconfig flag when
+# building kconfig, but if you're messing with the parser you probably know
+# what you're doing: make CONFIG_UTIL_GENPARSER=y
+ifeq ($(CONFIG_UTIL_GENPARSER),y)
 $(objk)/%.tab.c $(objk)/%.tab.h: $(srck)/%.y
 	bison -t -l --defines -b $(objk)/$* $<
 
 $(objk)/%.lex.c: $(srck)/%.l
 	flex -L -o$@ $<
+
+else # !CONFIG_UTIL_GENPARSER
+
+$(objk)/parser.tab.c: | $(objk)/parser.tab.h
+
+$(objk)/%: $(srck)/%_shipped
+	cp $< $@
+
+endif
 
 # Support mingw by shipping our own regex implementation
 _OS=$(shell uname -s |cut -c-7)

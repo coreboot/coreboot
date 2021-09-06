@@ -112,7 +112,7 @@ config FMD_GENPARSER
 	  Otherwise, say N to use the provided pregenerated scanner/parser.
 
 config UTIL_GENPARSER
-	bool "Generate SCONFIG & BINCFG parser using flex and bison"
+	bool "Generate parsers for bincfg, sconfig and kconfig locally"
 	default n
 	help
 	  Enable this option if you are working on the sconfig device tree

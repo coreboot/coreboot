@@ -450,10 +450,10 @@ static void sar_emit_wtas(struct avg_profile *wtas)
 	acpigen_write_dword(wtas->revision);
 	acpigen_write_package(package_size);
 	acpigen_write_dword(DOMAIN_TYPE_WIFI);
-	acpigen_write_dword(wtas->tas_selection);
-	acpigen_write_dword(wtas->tas_list_size);
+	acpigen_write_byte(wtas->tas_selection);
+	acpigen_write_byte(wtas->tas_list_size);
 	for (i = 0; i < MAX_DENYLIST_ENTRY; i++)
-		acpigen_write_byte(wtas->deny_list_entry[i]);
+		acpigen_write_word(wtas->deny_list_entry[i]);
 
 	acpigen_write_package_end();
 	acpigen_write_package_end();

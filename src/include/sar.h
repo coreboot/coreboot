@@ -44,7 +44,7 @@ struct avg_profile {
 	uint8_t revision;
 	uint8_t tas_selection;
 	uint8_t tas_list_size;
-	uint8_t deny_list_entry[MAX_DENYLIST_ENTRY];
+	uint16_t deny_list_entry[MAX_DENYLIST_ENTRY];
 } __packed;
 
 struct dsm_profile {

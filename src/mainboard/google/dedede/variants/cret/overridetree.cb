@@ -68,9 +68,9 @@ chip soc/intel/jasperlake
 
 				## Critical Policy
 				register "policies.critical" = "{
-					[0] = DPTF_CRITICAL(CPU,           105, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 90, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 80, SHUTDOWN)
+					[0] = DPTF_CRITICAL(CPU,           120, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 120, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 120, SHUTDOWN)
 				}"
 
 				## Power Limits Control

@@ -48,7 +48,7 @@ romstage-y += ../common/mt6359p.c mt6359p.c
 romstage-y += mt6691.c
 romstage-y += mt6360.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
-
+ramstage-y += ../common/tracker.c
 ramstage-y += ../common/auxadc.c
 ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += devapc.c

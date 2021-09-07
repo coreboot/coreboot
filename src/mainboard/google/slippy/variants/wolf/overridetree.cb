@@ -13,14 +13,18 @@ chip northbridge/intel/haswell
 
 		chip southbridge/intel/lynxpoint
 
-			register "sata_devslp_disable" = "0x1"
+			device pci 1f.2 on # SATA Controller
+				register "sata_devslp_disable" = "0x1"
 
-			# DTLE DATA / EDGE values
-			register "sata_port0_gen3_dtle" = "0x5"
-			register "sata_port1_gen3_dtle" = "0x5"
+				# DTLE DATA / EDGE values
+				register "sata_port0_gen3_dtle" = "0x5"
+				register "sata_port1_gen3_dtle" = "0x5"
+			end
 
-			# Disable PCIe CLKOUT 2-5 and CLKOUT_XDP
-			register "icc_clock_disable" = "0x013c0000"
+			device pci 16.0 on # Management Engine Interface 1
+				# Disable PCIe CLKOUT 2-5 and CLKOUT_XDP
+				register "icc_clock_disable" = "0x013c0000"
+			end
 		end
 	end
 end

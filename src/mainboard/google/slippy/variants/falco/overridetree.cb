@@ -13,8 +13,10 @@ chip northbridge/intel/haswell
 
 		chip southbridge/intel/lynxpoint
 
-			# Disable PCIe CLKOUT 1-5 and CLKOUT_XDP
-			register "icc_clock_disable" = "0x013e0000"
+			device pci 16.0 on # Management Engine Interface 1
+				# Disable PCIe CLKOUT 1-5 and CLKOUT_XDP
+				register "icc_clock_disable" = "0x013e0000"
+			end
 		end
 	end
 end

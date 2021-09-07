@@ -33,6 +33,7 @@ chip northbridge/intel/sandybridge
 			device pci 1c.2 off end # PCIe Port #3
 			device pci 1f.0 on
 				chip ec/lenovo/h8
+					device pnp ff.2 on end # dummy
 					register "config0" = "0xa6"
 					register "config1" = "0x09"
 					register "config3" = "0xc0"

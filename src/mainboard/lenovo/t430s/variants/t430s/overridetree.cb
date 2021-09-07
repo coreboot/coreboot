@@ -6,6 +6,7 @@ chip northbridge/intel/sandybridge
 			device pci 1c.4 on end # PCIe Port #5 Thunderbolt controller
 			device pci 1f.0 on
 				chip ec/lenovo/h8
+					device pnp ff.2 on end # dummy
 					register "has_bdc_detection" = "1"
 					register "bdc_gpio_num" = "54"
 					register "bdc_gpio_lvl" = "0"

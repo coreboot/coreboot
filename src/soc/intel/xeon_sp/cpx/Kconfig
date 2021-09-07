@@ -4,7 +4,6 @@ if SOC_INTEL_COOPERLAKE_SP
 
 config SOC_SPECIFIC_OPTIONS
 	def_bool y
-	select MICROCODE_BLOB_NOT_HOOKED_UP
 
 config FSP_HEADER_PATH
 	  string "Location of FSP headers"

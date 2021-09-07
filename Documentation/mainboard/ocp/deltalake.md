@@ -24,7 +24,8 @@ Delta Lake server OSF solution requires:
 - FSP blob: The blob (Intel Cooper Lake Scalable Processor Firmware Support Package)
   is not yet available to the public. It will be made public soon by Intel 
   with redistributable license.
-- Microcode: Available through github.com:otcshare/Intel-Generic-Microcode.git.
+- Microcode: Available through github.com/intel/Intel-Linux-Processor-Microcode-Data-Files.
+  coreboot.org mirrors this repo and by default the correct binary is included.
 - ME binary: Ignition binary will be made public soon by Intel with
   redistributable license.
 - ACM binaries: only required for CBnT enablement. Available under NDA with Intel.

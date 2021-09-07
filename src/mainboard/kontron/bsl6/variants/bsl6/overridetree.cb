@@ -37,6 +37,8 @@ chip soc/intel/skylake
 								     { 50, 60 },
 								     { 60, 76 } }"
 				register "fan[1].smart.critical_temp" = "80"
+
+				device i2c 0x2e on end
 			end
 		end # SMBus
 	end

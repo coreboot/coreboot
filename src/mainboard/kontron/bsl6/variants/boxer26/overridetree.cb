@@ -45,6 +45,8 @@ chip soc/intel/skylake
 			chip drivers/i2c/nct7802y
 				register "fan[1].mode" = "FAN_MANUAL"
 				register "fan[1].duty_cycle" = "100"
+
+				device i2c 0x2e on end
 			end
 		end # SMBus
 		device pci 1f.5 on  end # PCH SPI

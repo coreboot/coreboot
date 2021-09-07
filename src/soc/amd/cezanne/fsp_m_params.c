@@ -229,8 +229,12 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->hda_enable = devtree_hda_dev_enabled();
 	mcfg->sata_enable = devtree_sata_dev_enabled();
 
-	if (config->usb_phy_custom)
+	if (config->usb_phy_custom) {
 		mcfg->usb_phy = (struct usb_phy_config *)&config->usb_phy;
+		mcfg->usb_phy->Version_Major = 0xd;
+		mcfg->usb_phy->Version_Minor = 0x6;
+		mcfg->usb_phy->TableLength = 100;
+	}
 	else
 		mcfg->usb_phy = NULL;
 

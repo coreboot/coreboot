@@ -206,12 +206,8 @@ chip soc/amd/cezanne
 			.tx_vboost_lvl_en=1,
 			.tx_vboost_lvl=5,
 		},
-
 		.ComboPhyStaticConfig[0] = 0,
 		.ComboPhyStaticConfig[1] = 0,
-		.Version_Major = 0xd,
-		.Version_Minor = 0x6,
-		.TableLength = 100,
 		.BatteryChargerEnable = 0,
 		.PhyP3CpmP4Support = 0,
 	}"

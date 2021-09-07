@@ -17,8 +17,8 @@
 
 /* Table to switch SCL pins to outputs to initially reset the I2C peripherals */
 static const struct soc_i2c_scl_pin i2c_scl_pins[] = {
-	{ PAD_GPO(I2C2_SCL_PIN, HIGH), GPIO_I2C2_SCL },
-	{ PAD_GPO(I2C3_SCL_PIN, HIGH), GPIO_I2C3_SCL },
+	I2C_RESET_SCL_PIN(I2C2_SCL_PIN, GPIO_I2C2_SCL),
+	I2C_RESET_SCL_PIN(I2C3_SCL_PIN, GPIO_I2C3_SCL),
 	/* I2C4 is a peripheral device only */
 };
 

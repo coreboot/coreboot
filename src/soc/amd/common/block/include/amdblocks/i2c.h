@@ -35,6 +35,13 @@ struct soc_i2c_scl_pin {
 	uint8_t pin_mask;
 };
 
+/* Macro to populate the elements of the array of soc_i2c_scl_pin in the SoC code */
+#define I2C_RESET_SCL_PIN(pin_name, pin_mask_value)					\
+{											\
+	.pin = PAD_CFG_STRUCT(pin_name, pin_name ## _IOMUX_GPIOxx, PAD_OUTPUT(HIGH)),	\
+	.pin_mask = pin_mask_value,							\
+}
+
 /**
  * Information about I2C peripherals that need to be reset.
  * @i2c_scl_reset_mask:	Bit mask of I2C buses that need to be reset based on the device tree

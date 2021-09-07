@@ -4,11 +4,13 @@ if SOC_INTEL_COOPERLAKE_SP
 
 config SOC_SPECIFIC_OPTIONS
 	def_bool y
+	select HAVE_INTEL_FSP_REPO
 
 config FSP_HEADER_PATH
-	  string "Location of FSP headers"
-	  depends on MAINBOARD_USES_FSP2_0
-	  default "src/vendorcode/intel/fsp/fsp2_0/cooperlake_sp"
+	default "3rdparty/fsp/CedarIslandFspBinPkg/Include"
+
+config FSP_FD_PATH
+	default "3rdparty/fsp/CedarIslandFspBinPkg/Fsp.fd"
 
 config MAX_SOCKET
 	int

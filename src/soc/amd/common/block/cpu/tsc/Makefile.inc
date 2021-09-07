@@ -1,7 +1,5 @@
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H),y)
 
-subdirs-y += ../../../../../../cpu/x86/tsc
-
 bootblock-y += tsc_freq.c
 bootblock-y += monotonic_timer.c
 

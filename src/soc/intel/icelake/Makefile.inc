@@ -5,7 +5,6 @@ subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
-subdirs-y += ../../../cpu/x86/tsc
 
 # all (bootblock, verstage, romstage, postcar, ramstage)
 all-y += gspi.c

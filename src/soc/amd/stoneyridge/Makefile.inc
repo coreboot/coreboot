@@ -3,7 +3,6 @@
 ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE),y)
 
 subdirs-y += ../../../cpu/amd/mtrr/
-subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/cache
 subdirs-y += ../../../cpu/x86/mtrr

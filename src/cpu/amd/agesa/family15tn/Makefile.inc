@@ -10,7 +10,6 @@ smm-y += udelay.c
 
 subdirs-y += ../../mtrr
 subdirs-y += ../../smm
-subdirs-y += ../../../x86/tsc
 subdirs-y += ../../../x86/lapic
 subdirs-y += ../../../x86/cache
 subdirs-y += ../../../x86/mtrr

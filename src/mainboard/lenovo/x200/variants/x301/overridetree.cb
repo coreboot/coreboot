@@ -8,6 +8,8 @@ chip northbridge/intel/gm45
 			register "pcie_power_limits" = "{ { 10, 0 }, { 10, 0 }, { 10, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } }"
 			# x301 has no Express Card slot.
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
+
+			device pci 1c.0 on end # PCIe Port #1
 		end
 	end
 end

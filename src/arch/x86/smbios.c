@@ -1229,7 +1229,10 @@ static int smbios_walk_device_tree(struct device *tree, int *handle, unsigned lo
 	int len = 0;
 
 	for (dev = tree; dev; dev = dev->next) {
-		if (dev->enabled && dev->ops && dev->ops->get_smbios_data) {
+		if (!dev->enabled)
+			continue;
+
+		if (dev->ops && dev->ops->get_smbios_data) {
 			printk(BIOS_INFO, "%s (%s)\n", dev_path(dev), dev_name(dev));
 			len += dev->ops->get_smbios_data(dev, handle, current);
 		} else {

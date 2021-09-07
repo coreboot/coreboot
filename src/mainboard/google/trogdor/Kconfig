@@ -71,6 +71,7 @@ config MAINBOARD_PART_NUMBER
 	default "Bubs" if BOARD_GOOGLE_BUBS
 	default "Coachz" if BOARD_GOOGLE_COACHZ
 	default "Homestar" if BOARD_GOOGLE_HOMESTAR
+	default "Kingoftown" if BOARD_GOOGLE_KINGOFTOWN
 	default "Lazor" if BOARD_GOOGLE_LAZOR
 	default "Marzipan" if BOARD_GOOGLE_MARZIPAN
 	default "Mrbland" if BOARD_GOOGLE_MRBLAND

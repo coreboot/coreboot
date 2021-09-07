@@ -73,12 +73,6 @@ PECI is not supported by Apollo Lake Pentium/Celeron/Atom processors and the CPU
 temperature value is taken from a thermal resistor (NTC) that is placed very
 close to the CPU.
 
-## Known issues
-
-- Works only with Tianocore "UEFIPayload" payload edk2-stable201903-1569-g3e63a91
-  Booting with the "CorebootPayload" [crashes].
-- Tianocore outputs video through an external GPU only.
-
 ## Untested
 
 - IGD/LVDS
@@ -86,7 +80,7 @@ close to the CPU.
 
 ## Tested and working
 
-- Kontron CPLD/EC (Serial ports, I2C port)
+- Kontron CPLD/EC (Serial ports, I2C port, GPIOs)
 - NCT7802 [HWM](#Hardware Monitor)
 - USB2/3
 - Gigabit Ethernet ports

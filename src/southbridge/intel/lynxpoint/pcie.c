@@ -518,17 +518,17 @@ static void pch_pcie_early(struct device *dev)
 			break;
 		case 5:
 			/*
-			 * Bit 28 of b0d28f4 0x32c register correspond to
-			 * Root Ports 4:1.
+			 * Bit 28 of b0d28f4 0x32c register corresponds to
+			 * Root Port 5.
 			 */
 			do_aspm = !!(rpc.b0d28f4_32c & (1 << 28));
 			break;
 		case 6:
 			/*
-			 * Bit 28 of b0d28f5 0x32c register correspond to
-			 * Root Ports 4:1.
+			 * Bit 29 of b0d28f5 0x32c register corresponds to
+			 * Root Port 6.
 			 */
-			do_aspm = !!(rpc.b0d28f5_32c & (1 << 28));
+			do_aspm = !!(rpc.b0d28f5_32c & (1 << 29));
 			break;
 		}
 	} else {

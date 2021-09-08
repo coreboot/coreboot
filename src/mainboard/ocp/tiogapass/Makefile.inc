@@ -5,4 +5,3 @@ romstage-y += ipmi.c
 ramstage-y += ramstage.c ipmi.c
 
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include
-CPPFLAGS_common += -I$(CONFIG_FSP_HEADER_PATH)

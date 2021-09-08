@@ -516,8 +516,8 @@ static void pch_pcie_early(struct device *dev)
 	}
 
 	/* Enable LTR in Root Port. Disable OBFF. */
-	pci_update_config32(dev, 0x64, ~(1 << 11) & ~(3 << 18), (1 << 11));
-	pci_update_config32(dev, 0x68, ~(1 << 10), (1 << 10));
+	pci_update_config32(dev, 0x64, ~(3 << 18), (1 << 11));
+	pci_or_config32(dev, 0x68, 1 << 10);
 
 	pci_update_config32(dev, 0x318, ~(0xffff << 16), (0x1414 << 16));
 

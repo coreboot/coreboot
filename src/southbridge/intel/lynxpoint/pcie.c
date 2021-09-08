@@ -662,7 +662,7 @@ static void pch_pcie_early(struct device *dev)
 	/* Set Invalid Receive Range Check Enable in MPC register. */
 	pci_or_config32(dev, 0xd8, 1 << 25);
 
-	pci_and_config8(dev, 0xf5, 0x3f);
+	pci_and_config8(dev, 0xf5, 0x0f);
 
 	if (rp == 1 || rp == 5 || (is_lp && rp == 6))
 		pci_and_config8(dev, 0xf7, ~0x0c);

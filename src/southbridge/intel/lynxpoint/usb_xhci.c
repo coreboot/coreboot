@@ -11,8 +11,6 @@
 #include "iobp.h"
 #include "pch.h"
 
-typedef struct southbridge_intel_lynxpoint_config config_t;
-
 #ifdef __SIMPLE_DEVICE__
 static u8 *usb_xhci_mem_base(pci_devfn_t dev)
 #else
@@ -277,7 +275,7 @@ static void usb_xhci_init(struct device *dev)
 {
 	u32 reg32;
 	u8 *mem_base = usb_xhci_mem_base(dev);
-	config_t *config = dev->chip_info;
+	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
 
 	/* D20:F0:74h[1:0] = 00b (set D0 state) */
 	pci_update_config16(dev, XHCI_PWR_CTL_STS, ~PWR_CTL_SET_MASK, PWR_CTL_SET_D0);

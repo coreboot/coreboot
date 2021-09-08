@@ -24,8 +24,6 @@
 
 #define NMI_OFF	0
 
-typedef struct southbridge_intel_lynxpoint_config config_t;
-
 /**
  * Set miscellanous static southbridge features.
  *
@@ -146,7 +144,8 @@ static void pch_pirq_init(struct device *dev)
 	}
 }
 
-static void pch_gpi_routing(struct device *dev, config_t *config)
+static void pch_gpi_routing(struct device *dev,
+			    struct southbridge_intel_lynxpoint_config *config)
 {
 	u32 reg32 = 0;
 
@@ -246,7 +245,7 @@ static void pch_power_options(struct device *dev)
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
 	if (dev->chip_info) {
-		config_t *config = dev->chip_info;
+		struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
 
 		/*
 		 * Set the board's GPI routing on LynxPoint-H.
@@ -723,7 +722,7 @@ static void pch_lpc_add_io_resources(struct device *dev)
 
 	/* LPC Generic IO Decode range. */
 	if (dev->chip_info) {
-		config_t *config = dev->chip_info;
+		struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
 		pch_lpc_add_gen_io_resources(dev, config->gen1_dec, LPC_GEN1_DEC);
 		pch_lpc_add_gen_io_resources(dev, config->gen2_dec, LPC_GEN2_DEC);
 		pch_lpc_add_gen_io_resources(dev, config->gen3_dec, LPC_GEN3_DEC);

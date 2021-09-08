@@ -17,8 +17,6 @@
 #define SATA_PORT_MASK	0x3f
 #endif
 
-typedef struct southbridge_intel_lynxpoint_config config_t;
-
 static inline u32 sir_read(struct device *dev, int idx)
 {
 	pci_write_config32(dev, SATA_SIRI, idx);
@@ -46,7 +44,7 @@ static void sata_init(struct device *dev)
 	u32 *abar;
 
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
+	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
 
 	printk(BIOS_DEBUG, "SATA: Initializing...\n");
 
@@ -199,7 +197,7 @@ static void sata_init(struct device *dev)
 static void sata_enable(struct device *dev)
 {
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
+	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
 
 	if (!config)
 		return;

@@ -715,12 +715,18 @@ struct cbmem_console {
 #define CBMC_CURSOR_MASK ((1 << 28) - 1)
 #define CBMC_OVERFLOW (1 << 31)
 
+enum console_print_type {
+	CONSOLE_PRINT_FULL = 0,
+	CONSOLE_PRINT_LAST,
+	CONSOLE_PRINT_PREVIOUS,
+};
+
 /* dump the cbmem console */
-static void dump_console(int one_boot_only)
+static void dump_console(enum console_print_type type)
 {
 	const struct cbmem_console *console_p;
 	char *console_c;
-	size_t size, cursor;
+	size_t size, cursor, previous;
 	struct mapping console_mapping;
 
 	if (console.tag != LB_TAG_CBMEM_CONSOLE) {
@@ -773,12 +779,12 @@ static void dump_console(int one_boot_only)
 		if (!isprint(console_c[cursor]) && !isspace(console_c[cursor]))
 			console_c[cursor] = '?';
 
-	/* We detect the last boot by looking for a bootblock, romstage or
+	/* We detect the reboot cutoff by looking for a bootblock, romstage or
 	   ramstage banner, in that order (to account for platforms without
 	   CONFIG_BOOTBLOCK_CONSOLE and/or CONFIG_EARLY_CONSOLE). Once we find
-	   a banner, store the last match for that stage in cursor and stop. */
-	cursor = 0;
-	if (one_boot_only) {
+	   a banner, store the last two matches for that stage and stop. */
+	cursor = previous = 0;
+	if (type != CONSOLE_PRINT_FULL) {
 #define BANNER_REGEX(stage) \
 		"\n\ncoreboot-[^\n]* " stage " starting.*\\.\\.\\.\n"
 #define OVERFLOW_REGEX(stage) "\n\\*\\*\\* Pre-CBMEM " stage " console overflow"
@@ -796,10 +802,17 @@ static void dump_console(int one_boot_only)
 			assert(!regcomp(&re, regex[i], 0));
 
 			/* Keep looking for matches so we find the last one. */
-			while (!regexec(&re, console_c + cursor, 1, &match, 0))
+			while (!regexec(&re, console_c + cursor, 1, &match, 0)) {
+				previous = cursor;
 				cursor += match.rm_so + 1;
+			}
 			regfree(&re);
 		}
+	}
+
+	if (type == CONSOLE_PRINT_PREVIOUS) {
+		console_c[cursor] = '\0';
+		cursor = previous;
 	}
 
 	puts(console_c + cursor);
@@ -1087,6 +1100,7 @@ static void print_usage(const char *name, int exit_code)
 	printf("\n"
 	     "   -c | --console:                   print cbmem console\n"
 	     "   -1 | --oneboot:                   print cbmem console for last boot only\n"
+	     "   -2 | --2ndtolast:                 print cbmem console for the boot that came before the last one only\n"
 	     "   -C | --coverage:                  dump coverage information\n"
 	     "   -l | --list:                      print cbmem table of contents\n"
 	     "   -x | --hexdump:                   print hexdump of cbmem area\n"
@@ -1227,13 +1241,14 @@ int main(int argc, char** argv)
 	int print_timestamps = 0;
 	int print_tcpa_log = 0;
 	int machine_readable_timestamps = 0;
-	int one_boot_only = 0;
+	enum console_print_type console_type = CONSOLE_PRINT_FULL;
 	unsigned int rawdump_id = 0;
 
 	int opt, option_index = 0;
 	static struct option long_options[] = {
 		{"console", 0, 0, 'c'},
 		{"oneboot", 0, 0, '1'},
+		{"2ndtolast", 0, 0, '2'},
 		{"coverage", 0, 0, 'C'},
 		{"list", 0, 0, 'l'},
 		{"tcpa-log", 0, 0, 'L'},
@@ -1246,7 +1261,7 @@ int main(int argc, char** argv)
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
-	while ((opt = getopt_long(argc, argv, "c1CltTLxVvh?r:",
+	while ((opt = getopt_long(argc, argv, "c12CltTLxVvh?r:",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'c':
@@ -1255,7 +1270,12 @@ int main(int argc, char** argv)
 			break;
 		case '1':
 			print_console = 1;
-			one_boot_only = 1;
+			console_type = CONSOLE_PRINT_LAST;
+			print_defaults = 0;
+			break;
+		case '2':
+			print_console = 1;
+			console_type = CONSOLE_PRINT_PREVIOUS;
 			print_defaults = 0;
 			break;
 		case 'C':
@@ -1383,7 +1403,7 @@ int main(int argc, char** argv)
 		die("Table not found.\n");
 
 	if (print_console)
-		dump_console(one_boot_only);
+		dump_console(console_type);
 
 	if (print_coverage)
 		dump_coverage();

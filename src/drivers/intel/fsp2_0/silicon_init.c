@@ -166,8 +166,8 @@ static void do_silicon_init(struct fsp_header *hdr)
 	fsps_return_value_handler(FSP_MULTI_PHASE_SI_INIT_GET_NUMBER_OF_PHASES_API, status);
 
 	/* Execute Multi Phase Execution */
-	for (int i = 1; i <= multi_phase_get_number.number_of_phases; i++) {
-		printk(BIOS_SPEW, "Executing Phase %d of FspMultiPhaseSiInit\n", i);
+	for (uint32_t i = 1; i <= multi_phase_get_number.number_of_phases; i++) {
+		printk(BIOS_SPEW, "Executing Phase %u of FspMultiPhaseSiInit\n", i);
 		/*
 		 * Give SoC/mainboard a chance to perform any operation before
 		 * Multi Phase Execution

@@ -60,10 +60,8 @@ endef
 
 $(foreach prog,$(hostprogs),$(eval $(call hostprogs_template,$(prog))))
 
-$(objk)/parser.tab.h: | $(objk)/parser.tab.c
-$(objk)/%.tab.h: | $(objk)/%.tab.c
-$(objk)/%.tab.c: $(srck)/%.y
-	bison -t -l --defines=$(objk)/$*.tab.h -b $(objk)/$* $<
+$(objk)/%.tab.c $(objk)/%.tab.h: $(srck)/%.y
+	bison -t -l --defines -b $(objk)/$* $<
 
 $(objk)/%.lex.c: $(srck)/%.l
 	flex -L -o$@ $<

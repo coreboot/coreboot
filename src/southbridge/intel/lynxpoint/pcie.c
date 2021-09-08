@@ -685,7 +685,12 @@ static void pch_pcie_early(struct device *dev)
 			pci_update_config32(dev, 0x200, ~0xfffff, 0x001e);
 		else
 			pci_update_config32(dev, 0x200, ~0xfffff, 0);
+
+		pci_update_config32(dev, 0x320, ~(3 << 20 | 7 << 6), 1 << 20 | 3 << 6);
 	}
+
+	/* Enable PCIe Relaxed Order. */
+	pci_or_config32(dev, 0x320, 3 << 23);
 
 	/* Read and write back write-once capability registers. */
 	pci_update_config32(dev, 0x34, ~0, 0);

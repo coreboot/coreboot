@@ -272,6 +272,15 @@ static void pch_power_options(struct device *dev)
 	reg16 = RCBA16(0x3f02);
 	reg16 &= ~0xf;
 	RCBA16(0x3f02) = reg16;
+
+	/* Enable PCIe Relaxed Order */
+	reg32 = RCBA32(0x2314);
+	reg32 |= 1 << 31 | 1 << 7;
+	RCBA32(0x2314) = reg32;
+
+	reg16 = RCBA16(0x1114);
+	reg16 |= 1 << 15 | 1 << 14;
+	RCBA16(0x1114) = reg16;
 }
 
 static void configure_dmi_pm(struct device *dev)

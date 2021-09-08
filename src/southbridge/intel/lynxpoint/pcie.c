@@ -570,9 +570,6 @@ static void pch_pcie_early(struct device *dev)
 		/* Set unique clock exit latency in MPC register. */
 		pci_update_config32(dev, 0xd8, ~(0x7 << 18), (0x7 << 18));
 
-		/* Set L1 exit latency in LCAP register. */
-		pci_update_config32(dev, 0x4c, ~(0x7 << 15), (0x4 << 15));
-
 		if (is_lp) {
 			switch (rp) {
 			case 1:
@@ -650,7 +647,7 @@ static void pch_pcie_early(struct device *dev)
 	pci_update_config32(dev, 0x318, ~(0xffff << 16), (0x1414 << 16));
 
 	/* Set L1 exit latency in LCAP register. */
-	if (!do_aspm && (pci_read_config8(dev, 0xf5) & 0x1))
+	if ((pci_read_config8(dev, 0xf5) & 0x1) || do_aspm)
 		pci_update_config32(dev, 0x4c, ~(0x7 << 15), (0x4 << 15));
 	else
 		pci_update_config32(dev, 0x4c, ~(0x7 << 15), (0x2 << 15));

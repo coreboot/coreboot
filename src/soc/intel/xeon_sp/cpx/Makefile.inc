@@ -17,6 +17,8 @@ ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/cpx/include -I$(src)/soc/intel/xeon_sp/cpx
 
+CPPFLAGS_common += -include $(src)/soc/intel/xeon_sp/cpx/include/soc/fsp_upd.h
+
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-55-0b
 
 endif ## CONFIG_SOC_INTEL_COOPERLAKE_SP

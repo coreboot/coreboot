@@ -35,14 +35,6 @@ are permitted provided that the following conditions are met:
 
 #include <FspUpd.h>
 
-/*
- * Intel CPX-SP FSP has been using FSPM_CONFIG intead of FSP_M_CONFIG.
- * Other Intel FSPs have been using FSP_M_CONFIG. The feedback from Intel
- * is that they will converge to use FSPM_CONFIG over time. So both will
- * co-exist for some time. Today coreboot common code expects FSP_M_CONFIG.
- */
-#define FSP_M_CONFIG	FSPM_CONFIG
-
 #define SPEED_REC_96GT      0
 #define SPEED_REC_104GT     1
 #define ADAPTIVE_CTLE 	    0x3f

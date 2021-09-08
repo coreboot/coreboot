@@ -108,7 +108,8 @@ standard-archs = $(sort $(foreach stagearch, \
 # e.g.: smm special class uses i386 as compiler set
 define create_class_compiler
 $(if $(2),,$(warning *** The toolchain architecture for $(1) is unknown.) \
-	$(error Check your .config file for CONFIG_ARCH_$(1)_* settings))
+	$(warning CONFIG_ARCH_$(1)_* settings in $(DOTCONFIG):) \
+	$(error $(shell grep CONFIG_ARCH_$(1)_ $(DOTCONFIG))))
 CC_$(1) := $(CC_$(2))
 GCC_$(1) := $(GCC_CC_$(2))
 LD_$(1) := $(LD_$(2))

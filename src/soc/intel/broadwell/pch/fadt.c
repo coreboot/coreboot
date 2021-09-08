@@ -32,7 +32,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	/* P_LVLx not used */
 	fadt->p_lvl2_lat = 101;
 	fadt->p_lvl3_lat = 1001;
-	fadt->duty_offset = 1;
+	fadt->duty_offset = 0;
 	fadt->duty_width = 0;
 	fadt->day_alrm = 0xd;
 	fadt->mon_alrm = 0x00;

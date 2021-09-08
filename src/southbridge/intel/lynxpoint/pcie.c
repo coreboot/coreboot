@@ -670,20 +670,22 @@ static void pch_pcie_early(struct device *dev)
 	/* Set EOI forwarding disable. */
 	pci_or_config32(dev, 0xd4, 1 << 1);
 
-	/* Set AER Extended Cap ID to 01h and Next Cap Pointer to 200h. */
-	if (CONFIG(PCIEXP_AER))
-		pci_update_config32(dev, 0x100, ~0xfffff, (1 << 29) | 0x10001);
-	else
-		pci_update_config32(dev, 0x100, ~0xfffff, (1 << 29));
+	/* Set AER Extended Cap ID to 01h */
+	u32 aech = CONFIG(PCIEXP_AER) ? 0x10001 : 0;
 
-	/* Set L1 Sub-State Cap ID to 1Eh and Next Cap Pointer to None. */
-	if (CONFIG(PCIEXP_L1_SUB_STATE))
-		pci_update_config32(dev, 0x200, ~0xfffff, 0x001e);
-	else
-		pci_update_config32(dev, 0x200, ~0xfffff, 0);
-
+	/* For PCH-LP, set Next Cap Pointer to 200h. */
 	if (is_lp)
-		pci_or_config32(dev, 0x100, 1 << 29);
+		aech |= 1 << 29;
+
+	pci_update_config32(dev, 0x100, ~0xfffff, aech);
+
+	if (is_lp) {
+		/* Set L1 Sub-State Cap ID to 1Eh and Next Cap Pointer to None. */
+		if (CONFIG(PCIEXP_L1_SUB_STATE))
+			pci_update_config32(dev, 0x200, ~0xfffff, 0x001e);
+		else
+			pci_update_config32(dev, 0x200, ~0xfffff, 0);
+	}
 
 	/* Read and write back write-once capability registers. */
 	pci_update_config32(dev, 0x34, ~0, 0);

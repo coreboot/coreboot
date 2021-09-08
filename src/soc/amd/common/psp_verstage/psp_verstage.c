@@ -200,16 +200,6 @@ void Main(void)
 {
 	uint32_t retval;
 	struct vb2_context *ctx = NULL;
-	uint32_t bootmode = 0;
-
-	/*
-	 * Currently, we want to skip running verstage on all S0i3 resumes.  This relies
-	 * on an assumption that the PSP will be checksumming all of its components.
-	 * TODO(b/196400450): Remove when PSP no longer loads verstage on S0i3 resume.
-	 */
-	svc_get_boot_mode(&bootmode);
-	if (bootmode == PSP_BOOT_MODE_S0i3_RESUME)
-		svc_exit(0);
 
 	/*
 	 * Do not use printk() before console_init()

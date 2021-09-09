@@ -55,6 +55,10 @@ TEST_CFLAGS += -D__TEST__
 
 TEST_CFLAGS += -I$(cmockasrc)/include
 
+ifneq ($(filter-out 0,$(TEST_PRINT)),)
+TEST_CFLAGS += -DTEST_PRINT=1
+endif
+
 # Link against Cmocka
 TEST_LDFLAGS := -L$(cmockaobj)/src -lcmocka -Wl,-rpath=$(cmockaobj)/src
 TEST_LDFLAGS += -Wl,--gc-sections

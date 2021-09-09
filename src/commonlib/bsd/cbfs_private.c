@@ -54,7 +54,8 @@ cb_err_t cbfs_walk(cbfs_dev_t dev, cb_err_t (*walker)(cbfs_dev_t dev, size_t off
 		if (data_offset > sizeof(mdata) || data_length > devsize ||
 		    offset + data_offset + data_length > devsize) {
 			ERROR("File @%#zx too large\n", offset);
-			goto next_file;
+			offset += CBFS_ALIGNMENT;
+			continue;
 		}
 
 		if (empty && !(flags & CBFS_WALK_INCLUDE_EMPTY))

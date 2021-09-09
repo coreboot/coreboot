@@ -1,0 +1,5 @@
+comment "Corsola"
+
+config BOARD_GOOGLE_CORSOLA
+	bool "->  Corsola"
+	select BOARD_GOOGLE_CORSOLA_COMMON

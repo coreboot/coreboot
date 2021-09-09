@@ -77,6 +77,12 @@ static void fw_config_handle(void *unused)
 		printk(BIOS_INFO, "Configure audio over I2S with MAX98390 ALC5682I.\n");
 		gpio_configure_pads(dmic_enable_pads, ARRAY_SIZE(dmic_enable_pads));
 		gpio_configure_pads(i2s_enable_pads, ARRAY_SIZE(i2s_enable_pads));
+	}
+
+	if (fw_config_probe(FW_CONFIG(AUDIO, MAX98390_ALC5682I_I2S_SSP1))) {
+		printk(BIOS_INFO, "Configure audio over I2S with MAX98390 ALC5682I.\n");
+		gpio_configure_pads(dmic_enable_pads, ARRAY_SIZE(dmic_enable_pads));
+		gpio_configure_pads(i2s_enable_pads, ARRAY_SIZE(i2s_enable_pads));
 		gpio_configure_pads(bt_i2s_enable_pads, ARRAY_SIZE(bt_i2s_enable_pads));
 	}
 }

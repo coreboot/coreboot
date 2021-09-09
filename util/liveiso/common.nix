@@ -22,7 +22,11 @@
 	environment.variables.GC_INITIAL_HEAP_SIZE = "1M";
 
 	boot = {
-		kernelParams = [ "console=ttyS0,115200" "console=tty0" ];
+		kernelParams = [
+			"console=ttyS0,115200"
+			"console=tty0"
+			"iomem=relaxed"
+		];
 		# pkgs.linuxPackages == lts
 		# pkgs.linuxPackages_latest == stable
 		kernelPackages = pkgs.linuxPackages;

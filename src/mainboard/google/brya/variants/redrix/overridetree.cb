@@ -14,7 +14,7 @@ fw_config
 	field DB_LTE 6 7
 		option LTE_ABSENT		0
 		option LTE_USB			1
-		option LTE_PCIE                 2
+		option LTE_PCIE			2
 	end
 end
 chip soc/intel/alderlake
@@ -124,7 +124,7 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref ipu on
-                        chip drivers/intel/mipi_camera
+			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "0x50000"
 				register "acpi_name" = ""IPU0""
 				register "device_type" = "INTEL_ACPI_CAMERA_CIO2"
@@ -258,7 +258,7 @@ chip soc/intel/alderlake
 				register "gpio_panel.gpio[1].gpio_num" = "GPP_D16" #EN_UCAM_PWR
 				register "gpio_panel.gpio[2].gpio_num" = "GPP_D3" #reset
 
-                                #_ON
+				#_ON
 				register "on_seq.ops_cnt" = "5"
 				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
 				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
@@ -272,7 +272,7 @@ chip soc/intel/alderlake
 				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
-                                device i2c 36 on end
+				device i2c 36 on end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
@@ -289,8 +289,8 @@ chip soc/intel/alderlake
 				register "nvm_width" = "0x10"
 				register "nvm_compat" = ""atmel,24c64""
 
-                                device i2c 50 on end
-                        end
+				device i2c 50 on end
+			end
 
 		end
 		device ref i2c5 on

@@ -23,7 +23,7 @@ chip soc/intel/alderlake
 	#| I2C5              | Trackpad                  |
 	#+-------------------+---------------------------+
 
-        device domain 0 on
+	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf
 				## sensor information

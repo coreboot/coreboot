@@ -85,6 +85,11 @@ ifneq ($(JENKINS_SKIP_LINT_TESTS),y)
 	util/lint/lint lint-stable --junit
 	util/lint/lint lint-extended --junit
 endif
+	if [ ! -f 3rdparty/intel-sec-tools/go.mod ]; then \
+		echo "Please download 3rdparty/intel-sec-tools/:"; \
+		echo "git submodule update --init 3rdparty/intel-sec-tools"; \
+		exit 1; \
+	fi
 	cd 3rdparty/intel-sec-tools/ ; go mod vendor
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos.xml
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default $(ABUILD_OPTIONS)

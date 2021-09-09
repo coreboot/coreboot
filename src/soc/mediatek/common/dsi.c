@@ -290,7 +290,7 @@ static void mtk_dsi_start(void)
 	write32(&dsi0->dsi_start, 1);
 }
 
-static bool mtk_dsi_is_read_command(u32 type)
+static bool mtk_dsi_is_read_command(enum mipi_dsi_transaction type)
 {
 	switch (type) {
 	case MIPI_DSI_GENERIC_READ_REQUEST_0_PARAM:
@@ -298,11 +298,12 @@ static bool mtk_dsi_is_read_command(u32 type)
 	case MIPI_DSI_GENERIC_READ_REQUEST_2_PARAM:
 	case MIPI_DSI_DCS_READ:
 		return true;
+	default:
+		return false;
 	}
-	return false;
 }
 
-static void mtk_dsi_cmdq(const u8 *data, u8 len, u32 type)
+static cb_err_t mtk_dsi_cmdq(enum mipi_dsi_transaction type, const u8 *data, u8 len)
 {
 	const u8 *tx_buf = data;
 	u32 config;
@@ -312,7 +313,7 @@ static void mtk_dsi_cmdq(const u8 *data, u8 len, u32 type)
 		printk(BIOS_ERR, "%s: cannot get DSI ready for sending commands"
 		       " after 20ms and the panel may not work properly.\n",
 		       __func__);
-		return;
+		return CB_ERR;
 	}
 	write32(&dsi0->dsi_intsta, 0);
 
@@ -344,53 +345,9 @@ static void mtk_dsi_cmdq(const u8 *data, u8 len, u32 type)
 	if (!wait_us(400, read32(&dsi0->dsi_intsta) & CMD_DONE_INT_FLAG)) {
 		printk(BIOS_ERR, "%s: failed sending DSI command, "
 		       "panel may not work.\n", __func__);
-		return;
-	}
-}
-
-static cb_err_t mtk_dsi_send_init_command(enum panel_init_cmd cmd, const u8 *data, u8 len)
-{
-	u32 type;
-
-	switch (cmd) {
-	case PANEL_CMD_DCS:
-		switch (len) {
-		case 0:
-			return CB_ERR;
-		case 1:
-			type = MIPI_DSI_DCS_SHORT_WRITE;
-			break;
-		case 2:
-			type = MIPI_DSI_DCS_SHORT_WRITE_PARAM;
-			break;
-		default:
-			type = MIPI_DSI_DCS_LONG_WRITE;
-			break;
-		}
-		break;
-
-	case PANEL_CMD_GENERIC:
-		switch (len) {
-		case 0:
-			type = MIPI_DSI_GENERIC_SHORT_WRITE_0_PARAM;
-			break;
-		case 1:
-			type = MIPI_DSI_GENERIC_SHORT_WRITE_1_PARAM;
-			break;
-		case 2:
-			type = MIPI_DSI_GENERIC_SHORT_WRITE_2_PARAM;
-			break;
-		default:
-			type = MIPI_DSI_GENERIC_LONG_WRITE;
-			break;
-		}
-		break;
-	default:
-		printk(BIOS_ERR, "Unsupported MIPI panel init command: %d\n", cmd);
 		return CB_ERR;
 	}
 
-	mtk_dsi_cmdq(data, len, type);
 	return CB_SUCCESS;
 }
 
@@ -420,7 +377,7 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 	mtk_dsi_clk_hs_mode_disable();
 	mtk_dsi_config_vdo_timing(mode_flags, format, lanes, edid, &phy_timing);
 	mtk_dsi_clk_hs_mode_enable();
-	mipi_panel_parse_init_commands(init_commands, mtk_dsi_send_init_command);
+	mipi_panel_parse_init_commands(init_commands, mtk_dsi_cmdq);
 	mtk_dsi_set_mode(mode_flags);
 	mtk_dsi_start();
 

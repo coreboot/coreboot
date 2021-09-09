@@ -5,8 +5,8 @@
  * Andrzej Hajda <a.hajda@samsung.com>
  */
 
-#ifndef __MIPI_DSI_H__
-#define __MIPI_DSI_H__
+#ifndef __SOC_MIPI_DSI_H__
+#define __SOC_MIPI_DSI_H__
 
 #include <types.h>
 
@@ -279,4 +279,4 @@ struct tegra_mipi_device {
 struct tegra_mipi_device *tegra_mipi_request(struct tegra_mipi_device *device,
 						int device_index);
 int tegra_mipi_calibrate(struct tegra_mipi_device *device);
-#endif /* __MIPI_DSI_H__ */
+#endif /* __SOC_MIPI_DSI_H__ */

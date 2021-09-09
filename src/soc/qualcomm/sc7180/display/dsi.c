@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <mipi/dsi.h>
 #include <mipi/panel.h>
 #include <device/mmio.h>
 #include <console/console.h>
@@ -210,7 +211,7 @@ static int mdss_dsi_cmd_dma_trigger_for_panel(void)
 	return status;
 }
 
-static cb_err_t mdss_dsi_send_init_cmd(enum panel_init_cmd cmd, const u8 *body, u8 len)
+static cb_err_t mdss_dsi_send_init_cmd(enum mipi_dsi_transaction type, const u8 *body, u8 len)
 {
 	uint8_t *pload = _dma_coherent;
 	uint32_t size;
@@ -218,14 +219,24 @@ static cb_err_t mdss_dsi_send_init_cmd(enum panel_init_cmd cmd, const u8 *body, 
 	int data = 0;
 	uint32_t *bp = NULL;
 
-	/* This implementation only supports DCS commands (I think?). */
-	assert(cmd == PANEL_CMD_DCS);
+	if (len > 2) {
+		pload[0] = len;
+		pload[1] = 0;
+		pload[2] = type;
+		pload[3] = BIT(7) | BIT(6);
 
-	/* The payload size has to be a multiple of 4 */
-	memcpy(pload, body, len);
-	size = ALIGN_UP(len, DSI_PAYLOAD_SIZE_ALIGN);
-	memset(pload + len, 0xff, size - len);
-	assert(size < DSI_PAYLOAD_BYTE_BOUND);
+		/* The payload size has to be a multiple of 4 */
+		memcpy(pload + 4, body, len);
+		size = ALIGN_UP(len + 4, DSI_PAYLOAD_SIZE_ALIGN);
+		memset(pload + 4 + len, 0, size - 4 - len);
+		assert(size < DSI_PAYLOAD_BYTE_BOUND);
+	} else {
+		pload[0] = body[0];
+		pload[1] = len > 1 ? body[1] : 0;
+		pload[2] = type;
+		pload[3] = BIT(7);
+		size = 4;
+	}
 
 	bp = (uint32_t *)pload;
 

@@ -7,6 +7,7 @@
 cb_err_t mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func)
 {
 	const struct panel_init_command *init = buf;
+	enum mipi_dsi_transaction type;
 
 	/*
 	 * The given commands should be in a buffer containing a packed array of
@@ -23,25 +24,54 @@ cb_err_t mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_fun
 
 		u32 cmd = init->cmd, len = init->len;
 
-		switch (cmd) {
-		case PANEL_CMD_DELAY:
+		if (cmd == PANEL_CMD_DELAY) {
 			mdelay(len);
-			break;
+			continue;
+		}
 
+		switch (cmd) {
 		case PANEL_CMD_DCS:
-		case PANEL_CMD_GENERIC:
-			buf += len;
-
-			cb_err_t ret = cmd_func(cmd, init->data, len);
-			if (ret != CB_SUCCESS)
-				return ret;
+			switch (len) {
+			case 0:
+				printk(BIOS_ERR, "%s: DCS command length 0?\n", __func__);
+				return CB_ERR;
+			case 1:
+				type = MIPI_DSI_DCS_SHORT_WRITE;
+				break;
+			case 2:
+				type = MIPI_DSI_DCS_SHORT_WRITE_PARAM;
+				break;
+			default:
+				type = MIPI_DSI_DCS_LONG_WRITE;
+				break;
+			}
 			break;
-
+		case PANEL_CMD_GENERIC:
+			switch (len) {
+			case 0:
+				type = MIPI_DSI_GENERIC_SHORT_WRITE_0_PARAM;
+				break;
+			case 1:
+				type = MIPI_DSI_GENERIC_SHORT_WRITE_1_PARAM;
+				break;
+			case 2:
+				type = MIPI_DSI_GENERIC_SHORT_WRITE_2_PARAM;
+				break;
+			default:
+				type = MIPI_DSI_GENERIC_LONG_WRITE;
+				break;
+			}
+			break;
 		default:
 			printk(BIOS_ERR, "%s: Unknown command code: %d, "
 			       "abort panel initialization.\n", __func__, cmd);
 			return CB_ERR;
 		}
+
+		cb_err_t ret = cmd_func(type, init->data, len);
+		if (ret != CB_SUCCESS)
+			return ret;
+		buf += len;
 	}
 
 	return CB_SUCCESS;

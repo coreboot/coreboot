@@ -50,11 +50,11 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D1, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
-	/* E0  : SATAXPCIE0 ==> WWAN_PERST_L */
+	/* E0  : SATAXPCIE0 ==> WWAN_PERST_L (updated in ramstage) */
 	PAD_CFG_GPO(GPP_E0, 0, DEEP),
 	/* E13 : THC0_SPI1_IO2 ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_E13, NONE, DEEP),
-	/* E16 : RSVD_TP ==> WWAN_RST_L */
+	/* E16 : RSVD_TP ==> WWAN_RST_L (updated in ramstage) */
 	PAD_CFG_GPO(GPP_E16, 0, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
@@ -70,6 +70,8 @@ static const struct pad_config early_gpio_table[] = {
 
 /* Early pad configuration in bootblock for board id 2 */
 static const struct pad_config early_gpio_table_id2[] = {
+	/* A12 : SATAXPCIE1 ==> EN_PP3300_WWAN */
+	PAD_CFG_GPO(GPP_A12, 1, DEEP),
 	/* A13 : PMC_I2C_SCL ==> GSC_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 	/* B7  : ISH_12C1_SDA ==> PCH_I2C_TPM_SDA */
@@ -87,22 +89,27 @@ static const struct pad_config early_gpio_table_id2[] = {
 	PAD_CFG_GPO(GPP_D1, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
-	/* E0  : SATAXPCIE0 ==> WWAN_PERST_L */
+	/* E0  : SATAXPCIE0 ==> WWAN_PERST_L (updated in ramstage) */
 	PAD_CFG_GPO(GPP_E0, 0, DEEP),
 	/* E13 : THC0_SPI1_IO2 ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_E13, NONE, DEEP),
-	/* E16 : RSVD_TP ==> WWAN_RST_L */
+	/* E16 : RSVD_TP ==> WWAN_RST_L (updated in ramstage) */
 	PAD_CFG_GPO(GPP_E16, 0, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
-	/* F21 : EXT_PWR_GATE2# ==> WWAN_FCPO_L (updated below) */
-	PAD_CFG_GPO(GPP_F21, 1, DEEP),
+	/* F21 : EXT_PWR_GATE2# ==> WWAN_FCPO_L (updated in romstage) */
+	PAD_CFG_GPO(GPP_F21, 0, DEEP),
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
 	PAD_NC(GPP_H13, UP_20K),
+};
+
+static const struct pad_config romstage_gpio_table[] = {
+	/* F21 : EXT_PWR_GATE2# ==> WWAN_FCPO_L (set here for correct power sequencing) */
+	PAD_CFG_GPO(GPP_F21, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)
@@ -127,4 +134,10 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 
 	*num = ARRAY_SIZE(early_gpio_table_id2);
 	return early_gpio_table_id2;
+}
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

@@ -158,8 +158,7 @@ static const struct pad_config gpio_table[] = {
 	/* D19 : I2S_MCLK1_OUT ==> I2S_MCLK_R */
 	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
 
-	/* E0  : SATAXPCIE0 ==> WWAN_PERST_L */
-	PAD_CFG_GPO(GPP_E0, 1, PLTRST),
+	/* E0  : see end of E group */
 	/* E1  : THC0_SPI1_IO2 ==> MEM_STRAP_2 */
 	PAD_CFG_GPI(GPP_E1, NONE, DEEP),
 	/* E2  : THC0_SPI1_IO3 ==> MEM_STRAP_1 */
@@ -206,6 +205,11 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E22, NONE, DEEP, NF6),
 	/* E23 : DDPA_CTRLDATA ==> USB_C0_AUX_DC_N */
 	PAD_CFG_NF(GPP_E23, NONE, DEEP, NF6),
+	/* E0 : SATAXPCIE0 ==> WWAN_PERST_L
+	   NB. Driven high here so that it is sequenced after WWAN_RST_L; a
+	   PERST# signal would normally be reset by PLRST#, but here it will be
+	   explicitly programmed during a power-down sequence. */
+	PAD_CFG_GPO(GPP_E0, 1, DEEP),
 
 	/* F0  : CNV_BRI_DT ==> CNV_BRI_DT_STRAP */
 	PAD_CFG_NF(GPP_F0, NONE, DEEP, NF1),

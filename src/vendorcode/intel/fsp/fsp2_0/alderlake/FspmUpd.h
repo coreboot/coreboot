@@ -455,9 +455,9 @@ typedef struct {
 
 /** Offset 0x01D0 - Board Type
   MrcBoardType, Options are 0=Mobile/Mobile Halo, 1=Desktop/DT Halo, 2=Desktop 2DPC
-  DDR5, 5=ULT/ULX/Mobile Halo, 7=UP Server
-  0:Mobile/Mobile Halo, 1:Desktop/DT Halo, 2:Desktop 2DPC DDR5, 5:ULT/ULX/Mobile Halo,
-  7:UP Server
+  DDR5, 5=ULT/ULX/Mobile Halo Type3, 6=ULT/ULX/Mobile Halo Type4, 8=UP Server
+  0:Mobile/Mobile Halo, 1:Desktop/DT Halo, 2:Desktop 2DPC DDR5, 5:ULT/ULX/Mobile Halo
+  Type3, 6:ULT/ULX/Mobile Halo Type4, 8:UP Server
 **/
   UINT8                       UserBd;
 

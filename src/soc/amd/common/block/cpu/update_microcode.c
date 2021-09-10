@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/cpu.h>
 #include <stdint.h>
 #include <cpu/amd/microcode.h>
 #include <commonlib/helpers.h>

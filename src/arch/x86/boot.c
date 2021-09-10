@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/boot/boot.h>
+#include <arch/cpu.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <program_loading.h>

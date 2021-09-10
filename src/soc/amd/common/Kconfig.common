@@ -8,5 +8,6 @@ if SOC_AMD_COMMON
 source "src/soc/amd/common/block/*/Kconfig"
 source "src/soc/amd/common/fsp/Kconfig"
 source "src/soc/amd/common/pi/Kconfig"
+source "src/soc/amd/common/psp_verstage/Kconfig"
 
 endif # SOC_AMD_COMMON

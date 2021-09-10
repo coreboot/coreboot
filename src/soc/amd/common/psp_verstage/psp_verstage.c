@@ -6,6 +6,7 @@
 #include <bl_uapp/bl_syscall_public.h>
 #include <boot_device.h>
 #include <cbfs.h>
+#include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
 #include <pc80/mc146818rtc.h>
@@ -20,8 +21,6 @@
 #include <timestamp.h>
 
 extern char _bss_start, _bss_end;
-static struct mem_region_device boot_dev =
-		MEM_REGION_DEV_RO_INIT(NULL, CONFIG_ROM_SIZE);
 
 void __weak verstage_mainboard_early_init(void) {}
 void __weak verstage_mainboard_init(void) {}
@@ -82,6 +81,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	uint32_t *psp_dir_in_spi, *bios_dir_in_spi;
 	const char *fname;
 	void *amdfw_location;
+	void *boot_dev_base = rdev_mmap_full(boot_device_ro());
 
 	/* Continue booting from RO */
 	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE) {
@@ -109,9 +109,9 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	psp_dir_addr = ef_table->psp_table;
 	bios_dir_addr = get_bios_dir_addr(ef_table);
 	psp_dir_in_spi = (uint32_t *)((psp_dir_addr & SPI_ADDR_MASK) +
-			(uint32_t)boot_dev.base);
+			(uint32_t)boot_dev_base);
 	bios_dir_in_spi = (uint32_t *)((bios_dir_addr & SPI_ADDR_MASK) +
-			(uint32_t)boot_dev.base);
+			(uint32_t)boot_dev_base);
 	if (*psp_dir_in_spi != PSP_COOKIE) {
 		printk(BIOS_ERR, "Error: PSP Directory address is not correct.\n");
 		return POSTCODE_PSP_COOKIE_MISMATCH_ERROR;
@@ -200,6 +200,7 @@ void Main(void)
 {
 	uint32_t retval;
 	struct vb2_context *ctx = NULL;
+	void *boot_dev_base;
 
 	/*
 	 * Do not use printk() before console_init()
@@ -259,8 +260,9 @@ void Main(void)
 
 
 	post_code(POSTCODE_UNMAP_SPI_ROM);
-	if (boot_dev.base) {
-		if (svc_unmap_spi_rom((void *)boot_dev.base))
+	boot_dev_base = rdev_mmap_full(boot_device_ro());
+	if (boot_dev_base) {
+		if (svc_unmap_spi_rom((void *)boot_dev_base))
 			printk(BIOS_ERR, "Error unmapping SPI rom\n");
 	}
 
@@ -271,16 +273,6 @@ void Main(void)
 
 	printk(BIOS_DEBUG, "Leaving verstage on PSP\n");
 	svc_exit(retval);
-}
-
-const struct region_device *boot_device_ro(void)
-{
-	uintptr_t *addr;
-
-	addr = map_spi_rom();
-	mem_region_device_ro_init(&boot_dev, (void *)addr, CONFIG_ROM_SIZE);
-
-	return &boot_dev.rdev;
 }
 
 /*

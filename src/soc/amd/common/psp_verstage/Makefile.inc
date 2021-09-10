@@ -7,6 +7,7 @@ CPPFLAGS_common += -I$(VBOOT_SOURCE)/firmware/2lib/include/
 # This size should match the size in the linker script.
 CFLAGS_arm += -Wstack-usage=40960
 
+verstage-y += boot_dev.c
 verstage-y += delay.c
 verstage-y += fch.c
 verstage-y += pmutil.c

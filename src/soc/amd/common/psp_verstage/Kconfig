@@ -1,0 +1,7 @@
+config PSP_VERSTAGE_CCP_DMA
+	bool
+	default n
+	help
+	  Configure PSP Verstage to use Crypto Co-processor (CCP) DMA while
+	  accessing the boot device. Select it on platforms which supports
+	  using CCP DMA to access the boot device.

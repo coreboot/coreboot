@@ -45,7 +45,7 @@ int console_log_level(int msg_level)
 	return 0;
 }
 
-asmlinkage void console_init(void)
+void console_init(void)
 {
 	init_log_level();
 

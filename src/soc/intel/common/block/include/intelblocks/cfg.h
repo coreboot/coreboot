@@ -3,6 +3,7 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_CFG_H
 #define SOC_INTEL_COMMON_BLOCK_CFG_H
 
+#include <boot/coreboot_tables.h>
 #include <intelblocks/gspi.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/mmc.h>
@@ -24,6 +25,7 @@ struct soc_intel_common_config {
 	/* PCH Thermal Trip Temperature in deg C */
 	uint8_t pch_thermal_trip;
 	struct mmc_dll_params emmc_dll;
+	enum lb_fb_orientation panel_orientation;
 };
 
 /* This function to retrieve soc config structure required by common code */

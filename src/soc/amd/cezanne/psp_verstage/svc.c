@@ -126,3 +126,10 @@ uint32_t svc_modexp(struct mod_exp_params *mod_exp_param)
 	SVC_CALL1(SVC_MODEXP, mod_exp_param, retval);
 	return retval;
 }
+
+uint32_t svc_ccp_dma(uint32_t spi_rom_offset, void *dest, uint32_t size)
+{
+	uint32_t retval = 0;
+	SVC_CALL3(SVC_CCP_DMA, spi_rom_offset, dest, size, retval);
+	return retval;
+}

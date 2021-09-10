@@ -49,6 +49,7 @@
 #define SVC_RESET_SYSTEM                    0x67
 #define SVC_READ_TIMER_VAL                  0x68
 #define SVC_SHA                             0x69
+#define SVC_CCP_DMA                         0x6A
 
 struct mod_exp_params {
 	char		*pExponent;	// Exponent address
@@ -299,6 +300,18 @@ uint32_t svc_crypto_sha(struct sha_generic_data *sha_op, enum sha_operation_mode
  *   Return value: BL_OK or error code
  */
 uint32_t svc_modexp(struct mod_exp_params *mod_exp_param);
+
+/*
+ * Copies the data from source to destination using ccp
+ *
+ * Parameters:
+ *   Source Address - SPI ROM offset
+ *   Destination Address - Address in Verstage memory
+ *   Size    - Total size to copy
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_ccp_dma(uint32_t spi_rom_offset, void *dest, uint32_t size);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

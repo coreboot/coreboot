@@ -30,6 +30,7 @@
 #ifndef _BL_SYSCALL_PUBLIC_H_
 #define _BL_SYSCALL_PUBLIC_H_
 
+#include <bl_uapp/bl_errorcodes_public.h>
 #include <stdint.h>
 
 #define SVC_EXIT			0x00
@@ -393,6 +394,21 @@ uint32_t svc_rsa_pkcs_verify(const struct rsapkcs_verify_params *params);
  *   Return value: BL_OK or error code
  */
 uint32_t svc_modexp(struct mod_exp_params *mod_exp_param);
+
+/*
+ * Copies the data from source to destination using ccp
+ *
+ * Parameters:
+ *   Source Address - SPI ROM offset
+ *   Destination Address - Address in Verstage memory
+ *   Size    - Total size to copy
+ *
+ * Return value: BL_OK or error code
+ */
+static inline uint32_t svc_ccp_dma(uint32_t spi_rom_offset, void *dest, uint32_t size)
+{
+	return BL_ERR_UNSUPPORTED_PLATFORM;
+}
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

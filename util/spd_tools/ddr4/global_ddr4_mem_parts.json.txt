@@ -238,6 +238,17 @@
                 "packageBusWidth": 16,
                 "ranksPerPackage": 1
             }
+        },
+        {
+            "name": "4JQA-0622AD",
+            "attribs": {
+                "speedMTps": 3200,
+                "CL_nRCD_nRP": 22,
+                "capacityPerDieGb": 8,
+                "diesPerPackage": 1,
+                "packageBusWidth": 16,
+                "ranksPerPackage": 1
+            }
         }
     ]
 }

@@ -16,3 +16,4 @@ H5ANAG6NDMR-XNC,ddr4-spd-2.hex
 H5ANAG6NCJR-XNC,ddr4-spd-9.hex
 K4AAG165WB-BCWE,ddr4-spd-9.hex
 MT40A1G16RC-062E:B,ddr4-spd-9.hex
+4JQA-0622AD,ddr4-spd-1.hex

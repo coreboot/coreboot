@@ -25,6 +25,10 @@ fw_config
 		option CAMERA_OV5675		1
 		option CAMERA_HI556		2
 	end
+	field TP_SOURCE 40 41
+		option ELAN0000			0
+		option ELAN2703			1
+	end
 end
 chip soc/intel/alderlake
 	register "SaGv" = "SaGv_Enabled"
@@ -364,7 +368,20 @@ chip soc/intel/alderlake
 				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
 				register "wake" = "GPE0_DW2_14"
 				register "probed" = "1"
-				device i2c 15 on end
+				device i2c 15 on
+					probe TP_SOURCE ELAN0000
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN2703""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
+				register "generic.wake" = "GPE0_DW2_14"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on
+					probe TP_SOURCE ELAN2703
+				end
 			end
 		end
 		device ref gspi1 on

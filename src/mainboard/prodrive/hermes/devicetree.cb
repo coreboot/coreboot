@@ -38,9 +38,11 @@ chip soc/intel/cannonlake
 			end
 			# AST2500, but not enabled to decode LPC cycles
 		end
-		device pci 1f.3 on  end
-		device pci 1f.4 on  end # SMBus
-		device pci 1f.5 on  end # PCH SPI
+		device pci 1f.1 on     end # P2SB
+		device pci 1f.2 hidden end # Power Management Controller
+		device pci 1f.3 on     end # Intel HDA
+		device pci 1f.4 on     end # SMBus
+		device pci 1f.5 on     end # PCH SPI
 	end
 
 end

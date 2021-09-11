@@ -123,8 +123,10 @@ int spi_setup_slave(unsigned int bus, unsigned int cs, struct spi_slave *slave)
 		}
 	}
 
-	if (slave->ctrlr == NULL)
+	if (slave->ctrlr == NULL) {
+		printk(BIOS_ERR, "Can't find SPI bus %u\n", bus);
 		return -1;
+	}
 
 	slave->bus = bus;
 	slave->cs = cs;

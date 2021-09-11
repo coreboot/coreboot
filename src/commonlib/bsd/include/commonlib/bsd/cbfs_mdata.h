@@ -8,7 +8,10 @@
 #include <stdint.h>
 
 /*
- * Helper structure to allocate space for a blob of metadata on the stack.
+ * Helper structure to allocate space for a blob of metadata on the stack. All functions using
+ * a cbfs_mdata should be getting it via cbfs_walk(), and can rely on the fact that cbfs_walk()
+ * has already fully validated the header (range checks for `len`, `attributes_offset` and
+ * `offset`, and null-termination for `filename`).
  * NOTE: The fields in any union cbfs_mdata or any of its substructures from cbfs_serialized.h
  * should always remain in the same byte order as they are stored on flash (= big endian). To
  * avoid byte-order confusion, fields should always and only be converted to host byte order at

@@ -78,6 +78,8 @@ cb_err_t cbfs_walk(cbfs_dev_t dev, cb_err_t (*walker)(cbfs_dev_t dev, size_t off
 		if (cbfs_dev_read(dev, mdata.raw + sizeof(mdata.h),
 				  offset + sizeof(mdata.h), todo) != todo)
 			return CB_CBFS_IO;
+		/* Force filename null-termination, just in case. */
+		mdata.raw[attr_offset ? attr_offset - 1 : data_offset - 1] = '\0';
 		DEBUG("File name: '%s'\n", mdata.h.filename);
 
 		if (do_hash && !empty && vb2_digest_extend(&dc, mdata.raw, data_offset))
@@ -175,9 +177,9 @@ const void *cbfs_find_attr(const union cbfs_mdata *mdata, uint32_t attr_tag, siz
 		const uint32_t tag = be32toh(attr->tag);
 		const uint32_t len = be32toh(attr->len);
 
-		if (offset + len > end) {
-			ERROR("Attribute %s[%x] overflows end of metadata\n",
-			      mdata->h.filename, tag);
+		if (len < sizeof(struct cbfs_file_attribute) || len > end - offset) {
+			ERROR("Attribute %s[%x] invalid length: %u\n",
+			      mdata->h.filename, tag, len);
 			return NULL;
 		}
 		if (tag == attr_tag) {

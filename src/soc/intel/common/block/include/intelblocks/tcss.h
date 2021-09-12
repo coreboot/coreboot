@@ -68,7 +68,13 @@
 #define TCSS_HPD_IRQ_SHIFT		13
 #define TCSS_HPD_IRQ_MASK		0x01
 
-#define MAX_TYPE_C_PORTS		4
+enum typec_port_index {
+	TYPE_C_PORT_0,
+	TYPE_C_PORT_1,
+	TYPE_C_PORT_2,
+	TYPE_C_PORT_3,
+	MAX_TYPE_C_PORTS,
+};
 
 #define TCSS_CD_FIELD(name, val) \
 	(((val) & TCSS_CD_##name##_MASK) << TCSS_CD_##name##_SHIFT)

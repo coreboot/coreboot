@@ -114,7 +114,7 @@ static void initialize_iio_upd(FSPM_UPD *mupd)
 {
 	unsigned int port, socket;
 
-	mupd->FspmConfig.IioPcieConfigTablePtr = (UINT32)spr_iio_bifur_table;
+	mupd->FspmConfig.IioPcieConfigTablePtr = (uintptr_t)spr_iio_bifur_table;
 	/* MAX_SOCKET is the maximal number defined by FSP, currently is 4. */
 	mupd->FspmConfig.IioPcieConfigTableNumber = MAX_SOCKET;
 	UPD_IIO_PCIE_PORT_CONFIG *PciePortConfig =
@@ -130,7 +130,7 @@ static void initialize_iio_upd(FSPM_UPD *mupd)
 		PciePortConfig[socket].PcieMaxReadRequestSize = 0x5;
 	}
 
-	mupd->FspmConfig.DeEmphasisPtr = (UINT32)deemphasis_list;
+	mupd->FspmConfig.DeEmphasisPtr = (uintptr_t)deemphasis_list;
 	mupd->FspmConfig.DeEmphasisNumber = MAX_SOCKET * MAX_IIO_PORTS_PER_SOCKET;
 	UINT8 *DeEmphasisConfig = (UINT8 *)deemphasis_list;
 
@@ -287,7 +287,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		UPD_IIO_PCIE_PORT_CONFIG *iio_pcie_cfg;
 		int socket;
 
-		iio_pcie_cfg = (UPD_IIO_PCIE_PORT_CONFIG *)mupd->FspmConfig.IioPcieConfigTablePtr;
+		iio_pcie_cfg = (UPD_IIO_PCIE_PORT_CONFIG *)(uintptr_t)mupd->FspmConfig.IioPcieConfigTablePtr;
 
 		for (socket = 0; socket < MAX_SOCKET; socket++)
 			iio_pcie_cfg[socket].PcieGlobalAspm = 0;

@@ -12,7 +12,7 @@ static void soc_display_fspm_upd_iio(const FSPM_UPD *mupd)
 	int port, socket;
 
 	UPD_IIO_PCIE_PORT_CONFIG *PciePortConfig =
-		(UPD_IIO_PCIE_PORT_CONFIG *)mupd->FspmConfig.IioPcieConfigTablePtr;
+		(UPD_IIO_PCIE_PORT_CONFIG *)(uintptr_t)mupd->FspmConfig.IioPcieConfigTablePtr;
 
 	printk(BIOS_SPEW, "UPD values for IIO:\n");
 	for (socket = 0; socket < mupd->FspmConfig.IioPcieConfigTableNumber; socket++) {
@@ -94,7 +94,7 @@ static void soc_display_fspm_upd_iio(const FSPM_UPD *mupd)
 		       PciePortConfig[socket].PcieMaxReadRequestSize);
 	}
 
-	UINT8 *DeEmphasisConfig = (UINT8 *)mupd->FspmConfig.DeEmphasisPtr;
+	UINT8 *DeEmphasisConfig = (UINT8 *)(uintptr_t)mupd->FspmConfig.DeEmphasisPtr;
 	for (port = 0; port < mupd->FspmConfig.DeEmphasisNumber; port++) {
 		printk(BIOS_SPEW, "port: %d, DeEmphasisConfig: 0x%x\n", port,
 		       DeEmphasisConfig[port]);

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
@@ -12,6 +13,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/intel/turbo.h>
 #include <soc/acpi.h>
+#include <soc/device_nvs.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
@@ -101,4 +103,9 @@ unsigned long northbridge_write_acpi_tables(const struct device *const dev,
 	acpi_add_table(rsdp, dmar);
 
 	return current;
+}
+
+size_t size_of_dnvs(void)
+{
+	return sizeof(struct device_nvs);
 }

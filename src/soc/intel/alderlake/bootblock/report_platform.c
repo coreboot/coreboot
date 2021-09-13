@@ -26,6 +26,7 @@ static struct {
 	{ CPUID_ALDERLAKE_A0, "Alderlake Platform" },
 	{ CPUID_ALDERLAKE_A1, "Alderlake Platform" },
 	{ CPUID_ALDERLAKE_A2, "Alderlake Platform" },
+	{ CPUID_ALDERLAKE_A3, "Alderlake Platform" },
 };
 
 static struct {

@@ -2,6 +2,7 @@
 
 #include <agesa_headers.h>
 #include <amdblocks/image.h>
+#include <stdbool.h>
 
 /* Check if the image has the desired module. */
 static bool validate_image(void *module_chain, const char module_signature[8])

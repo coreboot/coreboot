@@ -33,6 +33,38 @@ static const char entries_line_regex[] =
 	"[[:space:]]*$";
 static regex_t entries_line_expr;
 
+static const char entries_lvl_line_regex[] =
+	/* optional whitespace */
+	"^[[:space:]]*"
+	/* followed by a chunk of nonwhitespace for macro field */
+	"([^[:space:]]+)"
+	/* followed by one or more whitespace characters */
+	"[[:space:]]+"
+	/* followed by a chunk of nonwhitespace for filename field */
+	"([^[:space:]]+)"
+	/* followed by one or more whitespace characters */
+	"[[:space:]]+"
+	/* followed by a chunk of nonwhitespace for level field
+	   1st char L: Indicator of field "level"
+	   2nd char:
+	      Directory level to be dropped in.
+	      1: Level 1
+	      2: Level 2
+	      b: Level both 1&2
+	      x: use default value hardcoded in table
+	   3rd char:
+	      For A/B recovery. Defined same as 2nd char.
+
+	   Examples:
+	      L2: Level 2 for normal mode
+	      L12: Level 1 for normal mode, level 2 for A/B mode
+	      Lx1: Use default value for normal mode, level 1 for A/B mode
+	 */
+	"([Ll][12bxBX]{1,2})"
+	/* followed by optional whitespace */
+	"[[:space:]]*$";
+static regex_t entries_lvl_line_expr;
+
 void compile_reg_expr(int cflags, const char *expr, regex_t *reg)
 {
 	static const size_t ERROR_BUF_SIZE = 256;
@@ -46,11 +78,30 @@ void compile_reg_expr(int cflags, const char *expr, regex_t *reg)
 	}
 }
 
+#define SET_LEVEL(tableptr, l, TABLE)                    \
+	do {                                             \
+		switch ((l)) {                           \
+		case '1':				 \
+			(tableptr)->level = TABLE##_LVL1;\
+			break;                           \
+		case '2':                                \
+			(tableptr)->level = TABLE##_LVL2;\
+			break;                           \
+		case 'b':                                \
+		case 'B':                                \
+			(tableptr)->level = TABLE##_BOTH;\
+			break;                           \
+		default:                                 \
+			/* use default value */          \
+			break;                           \
+		}                                        \
+	} while (0)
+
 extern amd_fw_entry amd_psp_fw_table[];
 extern amd_bios_entry amd_bios_table[];
 
 static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
-		amd_cb_config *cb_config)
+		char level_to_set, amd_cb_config *cb_config)
 {
 	amd_fw_type fw_type = AMD_FW_INVALID;
 	amd_fw_entry *psp_tableptr;
@@ -262,6 +313,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 			/* instance are not used in PSP table */
 			if (psp_tableptr->type == fw_type && psp_tableptr->subprog == subprog) {
 				psp_tableptr->filename = filename;
+				SET_LEVEL(psp_tableptr, level_to_set, PSP);
 				break;
 			}
 			psp_tableptr++;
@@ -274,7 +326,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 }
 
 static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
-		amd_cb_config *cb_config)
+		char level_to_set, amd_cb_config *cb_config)
 {
 	amd_bios_type fw_type = AMD_BIOS_INVALID;
 	amd_bios_entry *bhd_tableptr;
@@ -338,6 +390,7 @@ static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
 					bhd_tableptr->subpr == subprog &&
 					bhd_tableptr->inst  == instance) {
 				bhd_tableptr->filename = filename;
+				SET_LEVEL(bhd_tableptr, level_to_set, BDT);
 				break;
 			}
 			bhd_tableptr++;
@@ -379,8 +432,18 @@ static int is_valid_entry(char *oneline, regmatch_t *match)
 		oneline[match[1].rm_eo] = '\0';
 		oneline[match[2].rm_eo] = '\0';
 		retval = 1;
-	} else
+	} else if (regexec(&entries_lvl_line_expr, oneline, 4, match, 0) == 0) {
+		/* match[1]: FW type
+		   match[2]: FW filename
+		   match[3]: Directory level to be dropped
+		 */
+		oneline[match[1].rm_eo] = '\0';
+		oneline[match[2].rm_eo] = '\0';
+		oneline[match[3].rm_eo] = '\0';
+		retval = 1;
+	} else {
 		retval = 0;
+	}
 
 	return retval;
 }
@@ -409,7 +472,7 @@ static int skip_comment_blank_line(char *oneline)
 uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_deps)
 {
 	char oneline[MAX_LINE_SIZE], *path_filename;
-	regmatch_t match[N_MATCHES];
+	regmatch_t match[N_MATCHES] = {0};
 	char dir[MAX_LINE_SIZE] = {'\0'};
 	uint32_t dir_len;
 
@@ -417,6 +480,8 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 		blank_or_comment_regex, &blank_or_comment_expr);
 	compile_reg_expr(REG_EXTENDED | REG_NEWLINE,
 		entries_line_regex, &entries_line_expr);
+	compile_reg_expr(REG_EXTENDED | REG_NEWLINE,
+		entries_lvl_line_regex, &entries_lvl_line_expr);
 
 	/* Get a line */
 	/* Get FIRMWARE_LOCATION in the first loop */
@@ -450,17 +515,25 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 			if (strcmp(&(oneline[match[1].rm_so]), "FIRMWARE_LOCATION") == 0) {
 				continue;
 			} else {
+				char ch_lvl = 'x';
 				path_filename = malloc(MAX_LINE_SIZE * 2 + 2);
 				snprintf(path_filename, MAX_LINE_SIZE * 2 + 2, "%.*s/%.*s",
 					MAX_LINE_SIZE, dir, MAX_LINE_SIZE,
 					&(oneline[match[2].rm_so]));
 
+				/* If the optional level field is present,
+				   extract the level char. */
+				if (match[3].rm_so != 0) {
+					ch_lvl = oneline[match[3].rm_so + 1];
+				}
+
 				if (find_register_fw_filename_psp_dir(
 						&(oneline[match[1].rm_so]),
-						path_filename, cb_config) == 0) {
+						path_filename, ch_lvl, cb_config) == 0) {
 					if (find_register_fw_filename_bios_dir(
 							&(oneline[match[1].rm_so]),
-							path_filename, cb_config) == 0) {
+							path_filename, ch_lvl, cb_config)
+							== 0) {
 						fprintf(stderr, "Module's name \"%s\" is not valid\n", oneline);
 						return 0; /* Stop parsing. */
 					} else {

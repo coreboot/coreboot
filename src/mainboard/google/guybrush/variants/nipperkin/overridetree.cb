@@ -32,7 +32,14 @@ end
 
 chip soc/amd/cezanne
 	device domain 0 on
-
+		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
+			device ref acp on
+				chip drivers/amd/i2s_machine_dev
+					register "hid" = ""10029836""
+					device generic 0.0 on end
+				end
+			end # Audio
+		end
 	end # domain
 
 	register "slow_ppt_limit_mW"         = "25000"
@@ -101,7 +108,7 @@ chip soc/amd/cezanne
 
 	device ref i2c_2 on
 		chip drivers/i2c/generic
-			register "hid" = ""10EC5682""
+			register "hid" = ""RTL5682""
 			register "name" = ""RT58""
 			register "desc" = ""Realtek RT5682""
 			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPIO_90)"
@@ -126,6 +133,13 @@ chip soc/amd/cezanne
 				probe FP FP_PRESENT
 			end
 		end
+	end
+
+	chip drivers/generic/max98357a
+			register "hid" = ""MX98357A""
+			register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_31)"
+			register "sdmode_delay" = "5"
+			device generic 0.1 on end
 	end
 
 end	# chip soc/amd/cezanne

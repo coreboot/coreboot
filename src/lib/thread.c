@@ -36,20 +36,9 @@ static struct thread all_threads[TOTAL_NUM_THREADS];
 static struct thread *runnable_threads;
 static struct thread *free_threads;
 
-static inline struct cpu_info *thread_cpu_info(const struct thread *t)
-{
-	return (void *)(t->stack_orig);
-}
-
 static inline int thread_can_yield(const struct thread *t)
 {
 	return (t != NULL && t->can_yield > 0);
-}
-
-/* Assumes current CPU info can switch. */
-static inline struct thread *cpu_info_to_thread(const struct cpu_info *ci)
-{
-	return ci->thread;
 }
 
 static inline struct thread *current_thread(void)
@@ -57,7 +46,7 @@ static inline struct thread *current_thread(void)
 	if (!initialized)
 		return NULL;
 
-	return cpu_info_to_thread(cpu_info());
+	return cpu_info()->thread;
 }
 
 static inline int thread_list_empty(struct thread **list)
@@ -94,20 +83,11 @@ static inline struct thread *pop_runnable(void)
 static inline struct thread *get_free_thread(void)
 {
 	struct thread *t;
-	struct cpu_info *ci;
-	struct cpu_info *new_ci;
 
 	if (thread_list_empty(&free_threads))
 		return NULL;
 
 	t = pop_thread(&free_threads);
-
-	ci = cpu_info();
-
-	/* Initialize the cpu_info structure on the new stack. */
-	new_ci = thread_cpu_info(t);
-	*new_ci = *ci;
-	new_ci->thread = t;
 
 	/* Reset the current stack value to the original. */
 	t->stack_current = t->stack_orig;
@@ -134,6 +114,7 @@ __noreturn static enum cb_err idle_thread(void *unused)
 static void schedule(struct thread *t)
 {
 	struct thread *current = current_thread();
+	struct cpu_info *ci = cpu_info();
 
 	/* If t is NULL need to find new runnable thread. */
 	if (t == NULL) {
@@ -147,6 +128,8 @@ static void schedule(struct thread *t)
 
 	if (t->handle)
 		t->handle->state = THREAD_STARTED;
+
+	ci->thread = t;
 
 	switch_to_thread(t->stack_current, &current->stack_current);
 }
@@ -279,7 +262,7 @@ static void threads_initialize(void)
 	t->id = 0;
 	t->can_yield = 1;
 
-	stack_top = &thread_stacks[CONFIG_STACK_SIZE] - sizeof(struct cpu_info);
+	stack_top = &thread_stacks[CONFIG_STACK_SIZE];
 	for (i = 1; i < TOTAL_NUM_THREADS; i++) {
 		t = &all_threads[i];
 		t->stack_orig = (uintptr_t)stack_top;

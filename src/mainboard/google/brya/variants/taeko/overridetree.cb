@@ -34,6 +34,9 @@ fw_config
 	end
 end
 chip soc/intel/alderlake
+	register "TcssAuxOri" = "1"
+	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
+
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	# Disable Port 1
 	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC2)"	# DB USB2_C1
 	register "usb2_ports[3]" = "USB2_PORT_EMPTY"	# Disable M.2 WWAN

@@ -119,6 +119,19 @@ static struct panel_serializable_data *get_mipi_panel(enum lb_fb_orientation *or
 		}
 	}
 
+	if (CONFIG(BOARD_GOOGLE_WORMDINGLER)) {
+		switch (panel_id) {
+		case 0:
+			cbfs_filename = "panel-INX_P110ZZD_DF0";
+			*orientation = LB_FB_ORIENTATION_LEFT_UP;
+			break;
+		case 4:
+			cbfs_filename = "panel-BOE_TV110C9M_LL0";
+			*orientation = LB_FB_ORIENTATION_LEFT_UP;
+			break;
+		}
+	}
+
 	if (!cbfs_filename)
 		return NULL;
 

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpigen.h>
+#include <assert.h>
 #include <console/console.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/pmc_ipc.h>
@@ -27,6 +28,8 @@ struct reg_info {
 static void read_pmc_lpm_requirements(const struct soc_pmc_lpm *lpm,
 				      struct reg_info *info)
 {
+	assert(info);
+
 	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_ACPI_PEP_LPM_REQ) || !lpm) {
 		memset(info, 0, sizeof(*info));
 		return;
@@ -61,10 +64,8 @@ static void read_pmc_lpm_requirements(const struct soc_pmc_lpm *lpm,
 		}
 	}
 
-	if (info) {
-		info->addr = (uint8_t *)reg;
-		info->buffer_size = register_count * sizeof(uint32_t);
-	}
+	info->addr = (uint8_t *)reg;
+	info->buffer_size = register_count * sizeof(uint32_t);
 }
 
 /*

@@ -86,10 +86,10 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_H22, NONE),
 	/* H23 : SRCCLKREQ5# ==> NC */
 	PAD_NC(GPP_H23, NONE),
-	/* R4 : HDA_RST# ==> NC */
-	PAD_NC(GPP_R4, NONE),
-	/* R5 : HDA_SDI1 ==> NC */
-	PAD_NC(GPP_R5, NONE),
+	/* R4 : HDA_RST# ==> DMIC_CLK0 */
+	PAD_CFG_NF(GPP_R4, NONE, DEEP, NF3),
+	/* R5 : HDA_SDI1 ==> DMIC_DATA0 */
+	PAD_CFG_NF(GPP_R5, NONE, DEEP, NF3),
 	/* R6 : I2S2_TXD ==> NC */
 	PAD_NC(GPP_R6, NONE),
 	/* R7 : I2S2_RXD ==> NC */

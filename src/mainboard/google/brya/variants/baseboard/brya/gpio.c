@@ -167,7 +167,7 @@ static const struct pad_config gpio_table[] = {
 	/* E3  : PROC_GP0 ==> HPS_INT_ODL */
 	PAD_CFG_GPI_IRQ_WAKE(GPP_E3, NONE, PLTRST, LEVEL, NONE),
 	/* E4  : SATA_DEVSLP0 ==> USB4_BB_RT_FORCE_PWR */
-	PAD_CFG_GPO(GPP_E4, 1, DEEP),
+	PAD_CFG_GPO(GPP_E4, 0, DEEP),
 	/* E5  : SATA_DEVSLP1 ==> USB_A0_RT_RST_ODL */
 	PAD_CFG_GPO(GPP_E5, 1, DEEP),
 	/* E6  : THC0_SPI1_RST# ==> GPPE6_STRAP */

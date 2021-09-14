@@ -10,6 +10,7 @@
 #include <drivers/intel/gma/i915.h>
 #include <drivers/intel/gma/libgfxinit.h>
 #include <drivers/intel/gma/opregion.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/graphics.h>
 #include <fsp/graphics.h>
 #include <soc/pci_devs.h>
@@ -57,7 +58,9 @@ static void gma_init(struct device *const dev)
 	 * Kconfig to perform GFX initialization.
 	 */
 	if (CONFIG(RUN_FSP_GOP)) {
-		fsp_report_framebuffer_info(graphics_get_memory_base());
+		const struct soc_intel_common_config *config = chip_get_common_soc_structure();
+		fsp_report_framebuffer_info(graphics_get_memory_base(),
+					    config->panel_orientation);
 		return;
 	}
 

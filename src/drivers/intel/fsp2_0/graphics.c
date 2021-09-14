@@ -49,7 +49,8 @@ static const struct fsp_framebuffer {
 };
 
 
-void fsp_report_framebuffer_info(const uintptr_t framebuffer_bar)
+void fsp_report_framebuffer_info(const uintptr_t framebuffer_bar,
+				 enum lb_fb_orientation orientation)
 {
 	size_t size;
 	const struct hob_graphics_info *ginfo;
@@ -94,7 +95,7 @@ void fsp_report_framebuffer_info(const uintptr_t framebuffer_bar)
 		.blue_mask_size      = fbinfo->blue.size,
 		.reserved_mask_pos   = fbinfo->rsvd.pos,
 		.reserved_mask_size  = fbinfo->rsvd.size,
-		.orientation         = LB_FB_ORIENTATION_NORMAL,
+		.orientation         = orientation,
 	};
 
 	fb_add_framebuffer_info_ex(&fb);

@@ -1,5 +1,6 @@
 config SOC_INTEL_COMMON_BLOCK_TCSS
 	def_bool n
+	select FSPS_USE_MULTI_PHASE_INIT
 	help
 	  Sets up USB2/3 port mapping in TCSS MUX and sets MUX to disconnect state
 

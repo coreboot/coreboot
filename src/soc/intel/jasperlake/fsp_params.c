@@ -204,12 +204,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	mainboard_silicon_init_params(params);
 }
 
-/* Disable Multiphase Si init */
-int soc_fsp_multi_phase_init_is_enable(void)
-{
-	return 0;
-}
-
 /* Mainboard GPIO Configuration */
 __weak void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {

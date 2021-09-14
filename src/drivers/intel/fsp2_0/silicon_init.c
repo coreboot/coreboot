@@ -29,11 +29,6 @@ void __weak platform_fsp_multi_phase_init_cb(uint32_t phase_index)
 	/* Leave for the SoC/Mainboard to implement if necessary. */
 }
 
-int __weak soc_fsp_multi_phase_init_is_enable(void)
-{
-	return 1;
-}
-
 /* FSP Specification < 2.2 has only 1 stage like FspSiliconInit. FSP specification >= 2.2
  * has multiple stages as below.
  */
@@ -77,6 +72,20 @@ static void fsps_return_value_handler(enum fsp_silicon_init_phases phases, uint3
 	}
 }
 
+bool fsp_is_multi_phase_init_enabled(void)
+{
+	return CONFIG(FSPS_USE_MULTI_PHASE_INIT) &&
+			 (fsps_hdr.multi_phase_si_init_entry_offset != 0);
+}
+
+static void fsp_fill_common_arch_params(FSPS_UPD *supd)
+{
+#if CONFIG(FSPS_HAS_ARCH_UPD)
+	FSPS_ARCH_UPD *s_arch_cfg = &supd->FspsArchUpd;
+	s_arch_cfg->EnableMultiPhaseSiliconInit = fsp_is_multi_phase_init_enabled();
+#endif
+}
+
 static void do_silicon_init(struct fsp_header *hdr)
 {
 	FSPS_UPD *upd, *supd;
@@ -106,6 +115,9 @@ static void do_silicon_init(struct fsp_header *hdr)
 
 	memcpy(upd, supd, hdr->cfg_region_size);
 
+	/* Fill common settings on behalf of chipset. */
+	if (CONFIG(FSPS_HAS_ARCH_UPD))
+		fsp_fill_common_arch_params(upd);
 	/* Give SoC/mainboard a chance to populate entries */
 	platform_fsp_silicon_init_params_cb(upd);
 
@@ -145,7 +157,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 		return;
 
 	/* Check if SoC user would like to call Multi Phase Init */
-	if (!soc_fsp_multi_phase_init_is_enable())
+	if (!fsp_is_multi_phase_init_enabled())
 		return;
 
 	/* Call MultiPhaseSiInit */

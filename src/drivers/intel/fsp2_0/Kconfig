@@ -274,4 +274,20 @@ config SOC_INTEL_COMMON_FSP_RESET
 	  Common code block to handle platform reset request raised by FSP. The FSP
 	  will use the FSP EAS v2.0 section 12.2.2 (OEM Status Code) to indicate that
 	  a reset is required.
+
+config FSPS_HAS_ARCH_UPD
+	bool
+	help
+	  SoC users must select this Kconfig if the `FSPS_UPD` header has architecture
+	  UPD structure as `FSPS_ARCH_UPD`. Typically, platform with FSP 2.2 specification
+	  onwards has support for `FSPS_ARCH_UPD` section as part of `FSPS_UPD` structure.
+	  But there are some exceptions as in TGL, JSL, XEON_SP FSP header doesn't have
+	  support for FSPS_ARCH_UPD.
+
+config FSPS_USE_MULTI_PHASE_INIT
+	bool
+	help
+	  SoC users to select this Kconfig to set EnableMultiPhaseSiliconInit to enable and
+	  execute FspMultiPhaseSiInit() API.
+
 endif

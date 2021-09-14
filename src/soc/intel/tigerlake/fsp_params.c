@@ -565,8 +565,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 				config->PchPmSlpS3MinAssert, config->PchPmSlpAMinAssert,
 				config->PchPmPwrCycDur);
 
-	/* EnableMultiPhaseSiliconInit for running MultiPhaseSiInit */
-	params->EnableMultiPhaseSiliconInit = 1;
+	/* Override EnableMultiPhaseSiliconInit prior calling MultiPhaseSiInit */
+	params->EnableMultiPhaseSiliconInit = fsp_is_multi_phase_init_enabled();
 
 	/* Disable C1 C-state Demotion */
 	params->C1StateAutoDemotion = 0;

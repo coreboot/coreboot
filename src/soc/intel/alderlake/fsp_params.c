@@ -672,12 +672,6 @@ static void fill_fsps_fivr_params(FSP_S_CONFIG *s_cfg,
 			config->ext_fivr_settings.vnn_icc_max_ma;
 }
 
-static void arch_silicon_init_params(FSPS_ARCH_UPD *s_arch_cfg)
-{
-	/* EnableMultiPhaseSiliconInit for running MultiPhaseSiInit */
-	s_arch_cfg->EnableMultiPhaseSiliconInit = 1;
-}
-
 static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		struct soc_intel_alderlake_config *config)
 {
@@ -718,10 +712,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	struct soc_intel_alderlake_config *config;
 	FSP_S_CONFIG *s_cfg = &supd->FspsConfig;
-	FSPS_ARCH_UPD *s_arch_cfg = &supd->FspsArchUpd;
 
 	config = config_of_soc();
-	arch_silicon_init_params(s_arch_cfg);
 	soc_silicon_init_params(s_cfg, config);
 	mainboard_silicon_init_params(s_cfg);
 }

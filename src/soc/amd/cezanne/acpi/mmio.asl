@@ -88,8 +88,7 @@ Device (FUR0)
 		}
 	}
 
-	// TODO(b/183983959): Enable the AOAC register access later.
-	// AOAC_DEVICE(FCH_AOAC_DEV_UART0, 0)
+	AOAC_DEVICE(FCH_AOAC_DEV_UART0, 0)
 }
 
 Device (FUR1) {
@@ -120,8 +119,7 @@ Device (FUR1) {
 		}
 	}
 
-	// TODO(b/183983959): Enable the AOAC register access later.
-	// AOAC_DEVICE(FCH_AOAC_DEV_UART1, 0)
+	AOAC_DEVICE(FCH_AOAC_DEV_UART1, 0)
 }
 
 Device (I2C0) {

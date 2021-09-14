@@ -1923,6 +1923,7 @@ static void generate_outputh(FILE *f, const char *fw_conf_header, const char *de
 
 static void generate_outputc(FILE *f, const char *static_header)
 {
+	fprintf(f, "#include <boot/coreboot_tables.h>\n");
 	fprintf(f, "#include <device/device.h>\n");
 	fprintf(f, "#include <device/pci.h>\n");
 	fprintf(f, "#include <fw_config.h>\n");

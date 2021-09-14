@@ -788,6 +788,7 @@ fi
 
 # Generate a single xcompile for all boards
 export xcompile="${TARGET}/xcompile"
+rm -f "${xcompile}"
 $MAKE -C"${ROOT}" obj="$TARGET/temp" objutil="$TARGET/sharedutils" UPDATED_SUBMODULES=1 "${xcompile}" || exit 1
 
 customizing=$(echo "$customizing" | cut -c3-)

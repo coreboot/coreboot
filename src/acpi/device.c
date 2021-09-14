@@ -645,16 +645,20 @@ static void acpigen_write_power_res_STA(const struct acpi_power_res_params *para
 /* PowerResource() with Enable and/or Reset control */
 void acpi_device_add_power_res(const struct acpi_power_res_params *params)
 {
+	static uint8_t id;
 	static const char * const power_res_dev_states[] = { "_PR0", "_PR3" };
 	unsigned int reset_gpio = params->reset_gpio ? params->reset_gpio->pins[0] : 0;
 	unsigned int enable_gpio = params->enable_gpio ? params->enable_gpio->pins[0] : 0;
 	unsigned int stop_gpio = params->stop_gpio ? params->stop_gpio->pins[0] : 0;
+	char pr_name[ACPI_NAME_BUFFER_SIZE];
 
 	if (!reset_gpio && !enable_gpio && !stop_gpio)
 		return;
 
-	/* PowerResource (PRIC, 0, 0) */
-	acpigen_write_power_res("PRIC", 0, 0, power_res_dev_states,
+	snprintf(pr_name, sizeof(pr_name), "PR%02X", id++);
+
+	/* PowerResource (PR##, 0, 0) */
+	acpigen_write_power_res(pr_name, 0, 0, power_res_dev_states,
 				ARRAY_SIZE(power_res_dev_states));
 
 	if (params->use_gpio_for_status) {
@@ -704,7 +708,7 @@ void acpi_device_add_power_res(const struct acpi_power_res_params *params)
 	}
 	acpigen_pop_len();		/* _OFF method */
 
-	acpigen_pop_len();		/* PowerResource PRIC */
+	acpigen_pop_len();		/* PowerResource PR## */
 }
 
 static void acpi_dp_write_array(const struct acpi_dp *array);

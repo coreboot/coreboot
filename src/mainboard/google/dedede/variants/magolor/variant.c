@@ -12,6 +12,8 @@ enum {
 	MAGLIA_SKU_END = 0x8ffff,
 	MAGISTER_SKU_START = 0xc0000,
 	MAGISTER_SKU_END = 0xcffff,
+	MAGMA_SKU_START = 0xd0000,
+	MAGMA_SKU_END = 0xdffff,
 };
 
 const char *get_wifi_sar_cbfs_filename(void)
@@ -22,6 +24,8 @@ const char *get_wifi_sar_cbfs_filename(void)
 		return "wifi_sar-magolor.hex";
 	if (sku_id >= MAGISTER_SKU_START && sku_id <= MAGISTER_SKU_END)
 		return "wifi_sar-magister.hex";
+	if (sku_id >= MAGMA_SKU_START && sku_id <= MAGMA_SKU_END)
+		return "wifi_sar-magma.hex";
 
 	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }

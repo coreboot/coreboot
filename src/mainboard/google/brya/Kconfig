@@ -114,4 +114,12 @@ config ROMSTAGE_SPD_CBFS
 	def_bool n
 	select HAVE_SPD_IN_CBFS
 
+config HAVE_WWAN_POWER_SEQUENCE
+	def_bool n
+	help
+	  Select this if the variant has a WWAN module and requires the poweroff sequence
+	  to be performed on shutdown. Must define WWAN_FCPO, WWAN_RST and WWAN_PERST GPIOs
+	  in variant.h, as well as T1_OFF_MS (time between PERST & RST) and T2_OFF_MS (time
+	  between RST and FCPO).
+
 endif # BOARD_GOOGLE_BASEBOARD_BRYA || BOARD_GOOGLE_BASEBOARD_BRASK

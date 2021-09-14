@@ -100,7 +100,7 @@ static void configure_mipi_panel(void)
 	}
 }
 
-static struct panel_serializable_data *get_mipi_panel(void)
+static struct panel_serializable_data *get_mipi_panel(enum lb_fb_orientation *orientation)
 {
 	const char *cbfs_filename = NULL;
 	int panel_id = sku_id() >> 8;
@@ -109,9 +109,11 @@ static struct panel_serializable_data *get_mipi_panel(void)
 		switch (panel_id) {
 		case 3:
 			cbfs_filename = "panel-BOE_TV101WUM_N53";
+			*orientation = LB_FB_ORIENTATION_LEFT_UP;
 			break;
 		case 6:
 			cbfs_filename = "panel-AUO_B101UAN08_3";
+			*orientation = LB_FB_ORIENTATION_LEFT_UP;
 			break;
 		}
 	}
@@ -156,6 +158,7 @@ static void display_startup(void)
 {
 	struct panel_serializable_data edp_panel = {0};
 	struct panel_serializable_data *panel = &edp_panel;
+	enum lb_fb_orientation orientation = LB_FB_ORIENTATION_NORMAL;
 
 	if (!display_init_required()) {
 		printk(BIOS_INFO, "Skipping display init.\n");
@@ -164,7 +167,7 @@ static void display_startup(void)
 
 	if (CONFIG(TROGDOR_HAS_MIPI_PANEL)) {
 		configure_mipi_panel();
-		panel = get_mipi_panel();
+		panel = get_mipi_panel(&orientation);
 		if (!panel)
 			return;
 	} else {
@@ -179,8 +182,10 @@ static void display_startup(void)
 
 	printk(BIOS_INFO, "display init!\n");
 	edid_set_framebuffer_bits_per_pixel(&panel->edid, 32, 0);
-	if (display_init(panel) == CB_SUCCESS)
-		fb_new_framebuffer_info_from_edid(&panel->edid, 0);
+	if (display_init(panel) == CB_SUCCESS) {
+		struct fb_info *fb = fb_new_framebuffer_info_from_edid(&panel->edid, 0);
+		fb_set_orientation(fb, orientation);
+	}
 }
 
 static void mainboard_init(struct device *dev)

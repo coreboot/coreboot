@@ -3,6 +3,8 @@
 #ifndef MTK_COMMON_I2C_H
 #define MTK_COMMON_I2C_H
 
+#include <device/i2c.h>
+
 /* I2C DMA Registers */
 struct mt_i2c_dma_regs {
 	uint32_t dma_int_flag;
@@ -84,7 +86,6 @@ enum {
 };
 
 /* I2C Status Code */
-
 enum {
 	I2C_OK = 0x0000,
 	I2C_SET_SPEED_FAIL_OVER_SPEED = 0xA001,
@@ -95,11 +96,51 @@ enum {
 	I2C_TRANSFER_INVALID_ARGUMENT = 0xA006
 };
 
+struct mtk_i2c_ac_timing {
+	u16 htiming;
+	u16 ltiming;
+	u16 hs;
+	u16 ext;
+	u16 inter_clk_div;
+	u16 scl_hl_ratio;
+	u16 hs_scl_hl_ratio;
+	u16 sta_stop;
+	u16 hs_sta_stop;
+	u16 sda_timing;
+};
+
 struct mtk_i2c {
 	struct mt_i2c_regs *i2c_regs;
 	struct mt_i2c_dma_regs *i2c_dma_regs;
+	struct mtk_i2c_ac_timing ac_timing;
 	uint32_t mt_i2c_flag;
 };
 
+#define I2C_TIME_CLR_VALUE		0x0000
+#define MAX_SAMPLE_CNT_DIV		8
+#define MAX_STEP_CNT_DIV		64
+#define MAX_HS_STEP_CNT_DIV		8
+#define I2C_TIME_DEFAULT_VALUE		0x0083
+#define I2C_STANDARD_MODE_BUFFER	(1000 / 3)
+#define I2C_FAST_MODE_BUFFER		(300 / 3)
+#define I2C_FAST_MODE_PLUS_BUFFER	(20 / 3)
+
+/*
+ * struct i2c_spec_values:
+ * @min_low_ns: min LOW period of the SCL clock
+ * @min_su_sta_ns: min set-up time for a repeated START condition
+ * @max_hd_dat_ns: max data hold time
+ * @min_su_dat_ns: min data set-up time
+ */
+struct i2c_spec_values {
+	uint32_t min_low_ns;
+	uint32_t min_su_sta_ns;
+	uint32_t max_hd_dat_ns;
+	uint32_t min_su_dat_ns;
+};
+
 extern struct mtk_i2c mtk_i2c_bus_controller[];
+const struct i2c_spec_values *mtk_i2c_get_spec(uint32_t speed);
+void mtk_i2c_dump_more_info(struct mt_i2c_regs *regs);
+
 #endif

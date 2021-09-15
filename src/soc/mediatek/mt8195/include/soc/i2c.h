@@ -22,7 +22,8 @@ struct mt_i2c_regs {
 	uint32_t hs;
 	uint32_t io_config;
 	uint32_t fifo_addr_clr;
-	uint32_t reserved0[2];
+	uint32_t data_timing;
+	uint32_t reserved0;
 	uint32_t transfer_aux_len;
 	uint32_t clock_div;
 	uint32_t time_out;
@@ -51,8 +52,9 @@ enum {
 	I2C7,
 };
 
+#define MAX_CLOCK_DIV	32
 check_member(mt_i2c_regs, multi_dma, 0xf8c);
 
-void mtk_i2c_bus_init(uint8_t bus);
+void mtk_i2c_bus_init(uint8_t bus, uint32_t speed);
 
 #endif /* SOC_MEDIATEK_MT8195_I2C_H */

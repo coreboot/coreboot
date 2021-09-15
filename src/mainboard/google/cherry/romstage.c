@@ -28,7 +28,7 @@ void platform_romstage_main(void)
 	mt6359p_init();
 	mt6315_init();
 	raise_little_cpu_freq();
-	mtk_i2c_bus_init(I2C7);
+	mtk_i2c_bus_init(I2C7, I2C_SPEED_FAST);
 	if (CONFIG(BOARD_GOOGLE_CHERRY))
 		mt6360_init(I2C7);
 	clk_buf_init();

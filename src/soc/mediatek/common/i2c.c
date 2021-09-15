@@ -10,6 +10,39 @@
 #include <soc/i2c.h>
 #include <device/i2c_simple.h>
 
+const struct i2c_spec_values standard_mode_spec = {
+	.min_low_ns = 4700 + I2C_STANDARD_MODE_BUFFER,
+	.min_su_sta_ns = 4700 + I2C_STANDARD_MODE_BUFFER,
+	.max_hd_dat_ns = 3450 - I2C_STANDARD_MODE_BUFFER,
+	.min_su_dat_ns = 250 + I2C_STANDARD_MODE_BUFFER,
+};
+
+const struct i2c_spec_values fast_mode_spec = {
+	.min_low_ns = 1300 + I2C_FAST_MODE_BUFFER,
+	.min_su_sta_ns = 600 + I2C_FAST_MODE_BUFFER,
+	.max_hd_dat_ns = 900 - I2C_FAST_MODE_BUFFER,
+	.min_su_dat_ns = 100 + I2C_FAST_MODE_BUFFER,
+};
+
+const struct i2c_spec_values fast_mode_plus_spec = {
+	.min_low_ns = 500 + I2C_FAST_MODE_PLUS_BUFFER,
+	.min_su_sta_ns = 260 + I2C_FAST_MODE_PLUS_BUFFER,
+	.max_hd_dat_ns = 400 - I2C_FAST_MODE_PLUS_BUFFER,
+	.min_su_dat_ns = 50 + I2C_FAST_MODE_PLUS_BUFFER,
+};
+
+__weak void mtk_i2c_dump_more_info(struct mt_i2c_regs *regs) { /* do nothing */ }
+
+const struct i2c_spec_values *mtk_i2c_get_spec(uint32_t speed)
+{
+	if (speed <= I2C_SPEED_STANDARD)
+		return &standard_mode_spec;
+	else if (speed <= I2C_SPEED_FAST)
+		return &fast_mode_spec;
+	else
+		return &fast_mode_plus_spec;
+}
+
 static inline void i2c_hw_reset(uint8_t bus)
 {
 	struct mt_i2c_regs *regs;
@@ -42,24 +75,26 @@ static inline void i2c_hw_reset(uint8_t bus)
 
 static inline void mtk_i2c_dump_info(struct mt_i2c_regs *regs)
 {
-	printk(BIOS_ERR, "I2C register:\nSLAVE_ADDR %x\nINTR_MASK %x\n"
+	printk(BIOS_DEBUG, "I2C register:\nSLAVE_ADDR %x\nINTR_MASK %x\n"
 	       "INTR_STAT %x\nCONTROL %x\nTRANSFER_LEN %x\nTRANSAC_LEN %x\n"
 	       "DELAY_LEN %x\nTIMING %x\nSTART %x\nFIFO_STAT %x\nIO_CONFIG %x\n"
 	       "HS %x\nDEBUGSTAT %x\nEXT_CONF %x\n",
-		read32(&regs->slave_addr),
-		read32(&regs->intr_mask),
-		read32(&regs->intr_stat),
-		read32(&regs->control),
-		read32(&regs->transfer_len),
-		read32(&regs->transac_len),
-		read32(&regs->delay_len),
-		read32(&regs->timing),
-		read32(&regs->start),
-		read32(&regs->fifo_stat),
-		read32(&regs->io_config),
-		read32(&regs->hs),
-		read32(&regs->debug_stat),
-		read32(&regs->ext_conf));
+	       read32(&regs->slave_addr),
+	       read32(&regs->intr_mask),
+	       read32(&regs->intr_stat),
+	       read32(&regs->control),
+	       read32(&regs->transfer_len),
+	       read32(&regs->transac_len),
+	       read32(&regs->delay_len),
+	       read32(&regs->timing),
+	       read32(&regs->start),
+	       read32(&regs->fifo_stat),
+	       read32(&regs->io_config),
+	       read32(&regs->hs),
+	       read32(&regs->debug_stat),
+	       read32(&regs->ext_conf));
+
+	mtk_i2c_dump_more_info(regs);
 }
 
 static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,

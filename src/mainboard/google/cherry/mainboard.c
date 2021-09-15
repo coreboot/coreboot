@@ -131,7 +131,7 @@ static void configure_sdcard(void)
 			MSDC1_GPIO_MODE1_2, MSDC1_GPIO_MODE1_VALUE,
 			MSDC1_GPIO_MODE1_3, MSDC1_GPIO_MODE1_VALUE);
 
-	mtk_i2c_bus_init(I2C7);
+	mtk_i2c_bus_init(I2C7, I2C_SPEED_FAST);
 
 	if (CONFIG(BOARD_GOOGLE_CHERRY))
 		mt6360_init(I2C7);
@@ -205,7 +205,7 @@ static void mainboard_init(struct device *dev)
 
 	/* for audio usage */
 	if (CONFIG(CHERRY_USE_RT1011))
-		mtk_i2c_bus_init(I2C2);
+		mtk_i2c_bus_init(I2C2, I2C_SPEED_FAST);
 
 	if (dpm_init())
 		printk(BIOS_ERR, "dpm init failed, DVFS may not work\n");

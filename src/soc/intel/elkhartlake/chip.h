@@ -235,17 +235,9 @@ struct soc_intel_elkhartlake_config {
 
 	/* Enable C6 DRAM */
 	uint8_t enable_c6dram;
-	/*
-	 * PRMRR size setting with below options
-	 * Disable: 0x0
-	 * 32MB: 0x2000000
-	 * 64MB: 0x4000000
-	 * 128 MB: 0x8000000
-	 * 256 MB: 0x10000000
-	 * 512 MB: 0x20000000
-	 */
-	uint32_t PrmrrSize;
+
 	uint8_t PmTimerDisabled;
+
 	/*
 	 * SerialIO device mode selection:
 	 * PchSerialIoDisabled,

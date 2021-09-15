@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <fsp/util.h>
+#include <intelblocks/cpulib.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
@@ -72,7 +73,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	FSP_ARRAY_LOAD(m_cfg->PcieClkSrcUsage, config->PcieClkSrcUsage);
 	FSP_ARRAY_LOAD(m_cfg->PcieClkSrcClkReq, config->PcieClkSrcClkReq);
 
-	m_cfg->PrmrrSize = config->PrmrrSize;
+	m_cfg->PrmrrSize = get_valid_prmrr_size();
 
 	/* Disable BIOS Guard */
 	m_cfg->BiosGuard = 0;

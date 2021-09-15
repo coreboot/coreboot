@@ -28,6 +28,7 @@ Field (ERAM, ByteAcc, Lock, Preserve)
 	Offset (0x3A),
 	BCW0, 32,
 	BCL0, 32,
+	CYC0, 16,	// Battery cycle count
 	Offset (0x68),
 	ECOS, 8,	// Detected OS, 0 = no ACPI, 1 = ACPI but no driver, 2 = ACPI with driver
 	Offset (0xC8),

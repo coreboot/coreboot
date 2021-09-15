@@ -91,13 +91,24 @@ if [ "$CONFIG_LP_ARCH_X86" = "y" ]; then
   _ARCHEXTRA="-m32 "
   _ARCH=x86
 fi
+if [ "$CONFIG_LP_ARCH_MOCK" = "y" ]; then
+  _ARCHINCDIR=$_INCDIR/mock
+  _ARCHLIBDIR=$_LIBDIR/mock
+  _ARCHEXTRA=""
+  _ARCH=mock
+fi
 
 if [ -f $_LIBDIR/libpayload.ldscript ]; then
 	_LDDIR=$_LIBDIR
 elif [ -f $BASE/../arch/$_ARCH/libpayload.ldscript ]; then
 	_LDDIR=$BASE/../arch/$_ARCH
 fi
-_LDSCRIPT="-Wl,-T,$_LDDIR/libpayload.ldscript"
+# Host arch should youse default linker script
+if [ "$CONFIG_LP_ARCH_MOCK" = "y" ]; then
+  _LDSCRIPT=""
+else
+  _LDSCRIPT="-Wl,-T,$_LDDIR/libpayload.ldscript"
+fi
 
 trygccoption() {
 	$DEFAULT_CC $1 -S -xc /dev/null -o /dev/null &> /dev/null

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+if ARCH_MOCK
+
+config ARCH_MOCK_BIG_ENDIAN
+	bool "Use big-endian for mock architecture"
+	default n
+	help
+	  This option enables big-endinan support in the code.
+
+config ARCH_SPECIFIC_OPTIONS
+	def_bool y
+	select LITTLE_ENDIAN if !ARCH_MOCK_BIG_ENDIAN
+	select BIG_ENDIAN if ARCH_MOCK_BIG_ENDIAN
+
+endif

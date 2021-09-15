@@ -121,6 +121,14 @@ config ARCH_ARM64
         help
           Support the ARM64 architecture
 
+config ARCH_MOCK
+        bool "Mock architecture (for unit tests)"
+        help
+          This enables the mock architecture (for unit tests) that is intended
+          to be used for testing purposes, to either test payloads or libpayload itself.
+          It provides necessary headers, but requires mocking (providing implementation
+          for) arch-specific functions.
+
 endchoice
 
 config MULTIBOOT
@@ -150,6 +158,7 @@ config BASE_ADDRESS
 	default 0x04000000 if ARCH_ARM
 	default 0x80100000 if ARCH_ARM64
 	default 0x00100000 if ARCH_X86
+	default 0x00000000 if ARCH_MOCK
 	help
 	  This is the base address for the payload.
 
@@ -480,3 +489,4 @@ config IO_ADDRESS_SPACE
 source "arch/arm/Kconfig"
 source "arch/arm64/Kconfig"
 source "arch/x86/Kconfig"
+source "arch/mock/Kconfig"

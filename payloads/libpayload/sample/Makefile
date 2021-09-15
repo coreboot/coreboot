@@ -26,8 +26,13 @@
 ## SUCH DAMAGE.
 ##
 
+
 # Sample libpayload Makefile.
 include ../.config
+ifeq ($(CONFIG_LP_ARCH_MOCK),y)
+$(error This sample program does not support ARCH_MOCK. Use sample/arch_mock instead)
+endif
+
 include ../build/xcompile
 
 ARCH-$(CONFIG_LP_ARCH_ARM)   := arm

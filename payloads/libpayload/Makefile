@@ -74,6 +74,14 @@ HOSTCC = gcc
 HOSTCXX = g++
 HOSTCFLAGS := -I$(srck) -I$(objk) -g
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
+HOSTAS ?= as
+HOSTLD ?= ld
+HOSTNM ?= nm
+HOSTOBJCOPY ?= objcopy
+HOSTOBJDUMP ?= objdump
+HOSTREADELF ?= readelf
+HOSTSTRIP ?= strip
+HOSTAR ?= ar
 
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen
@@ -95,6 +103,7 @@ include $(HAVE_DOTCONFIG)
 ARCHDIR-$(CONFIG_LP_ARCH_ARM)     := arm
 ARCHDIR-$(CONFIG_LP_ARCH_ARM64)   := arm64
 ARCHDIR-$(CONFIG_LP_ARCH_X86)     := x86
+ARCHDIR-$(CONFIG_LP_ARCH_MOCK)    := mock
 
 ARCH-y := $(ARCHDIR-y)
 
@@ -103,6 +112,7 @@ ARCH-y := $(ARCHDIR-y)
 ARCH-$(CONFIG_LP_ARCH_ARM)     := arm
 ARCH-$(CONFIG_LP_ARCH_ARM64)   := arm64
 ARCH-$(CONFIG_LP_ARCH_X86)     := x86_32
+ARCH-$(CONFIG_LP_ARCH_MOCK)    := mock
 
 # Three cases where we don't need fully populated $(obj) lists:
 # 1. when no .config exists
@@ -129,6 +139,31 @@ real-all: config
 
 else
 
+ifeq ($(CONFIG_LP_ARCH_MOCK),y)
+
+# Create empty xcompile to satisfy install script
+$(shell echo '' > $(xcompile))
+
+CC := $(HOSTCC)
+CC-mock := $(HOSTCC)
+AS := $(HOSTAS)
+AS-mock := $(HOSTAS)
+LD := $(HOSTLD)
+LD-mock := $(HOSTLD)
+NM := $(HOSTNM)
+NM-mock := $(HOSTNM)
+OBJCOPY := $(HOSTOBJCOPY)
+OBJCOPY-mock := $(HOSTOBJCOPY)
+OBJDUMP := $(HOSTOBJDUMP)
+OBJDUMP-mock := $(HOSTOBJDUMP)
+READELF := $(HOSTREADELF)
+READELF-mock := $(HOSTEADELF)
+STRIP := $(HOSTSTRIP)
+STRIP-mock := $(HOSTSTRIP)
+AR := $(HOSTAR)
+AR-mock := $(HOSTAR)
+else
+
 # in addition to the dependency below, create the file if it doesn't exist
 # to silence stupid warnings about a file that would be generated anyway.
 $(if $(wildcard $(xcompile)),,$(shell	\
@@ -152,12 +187,16 @@ OBJDUMP := $(OBJDUMP_$(ARCH-y))
 READELF := $(READELF_$(ARCH-y))
 STRIP := $(STRIP_$(ARCH-y))
 AR := $(AR_$(ARCH-y))
+endif
 
 CFLAGS += -std=gnu11 $(CFLAGS_$(ARCH-y))
 
 ifneq ($(INNER_SCANBUILD),y)
 ifeq ($(CONFIG_LP_COMPILER_LLVM_CLANG),y)
-CC:=clang -m32
+CC:=clang
+ifneq ($(CONFIG_LP_ARCH_MOCK),y)
+CC += -m32
+endif
 HOSTCC:=clang
 endif
 endif

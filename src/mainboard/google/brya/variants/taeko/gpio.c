@@ -156,6 +156,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D1, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
+	/* D11 : ISH_SPI_MISO ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_D11, 1, DEEP),
 	/* E13 : THC0_SPI1_IO2 ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_E13, NONE, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
@@ -166,15 +168,20 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
 	PAD_CFG_GPO(GPP_H13, 1, DEEP),
+	/*
+	 * B4  : PROC_GP3 ==> SSD_PERST_L
+	 * B4 is programmed here so that it is sequenced after EN_PP3300_SSD.
+	 */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 };
 
-const struct pad_config *__weak variant_gpio_override_table(size_t *num)
+const struct pad_config *variant_gpio_override_table(size_t *num)
 {
 	*num = ARRAY_SIZE(override_gpio_table);
 	return override_gpio_table;
 }
 
-const struct pad_config *__weak variant_early_gpio_table(size_t *num)
+const struct pad_config *variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;

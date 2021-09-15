@@ -90,12 +90,10 @@ static void denverton_core_init(struct device *cpu)
 	/* Enable Turbo */
 	enable_turbo();
 
-	/* Enable speed step. */
-	if (get_turbo_state() == TURBO_ENABLED) {
-		msr = rdmsr(IA32_MISC_ENABLE);
-		msr.lo |= SPEED_STEP_ENABLE_BIT;
-		wrmsr(IA32_MISC_ENABLE, msr);
-	}
+	/* Enable speed step. Always ON.*/
+	msr = rdmsr(IA32_MISC_ENABLE);
+	msr.lo |= SPEED_STEP_ENABLE_BIT;
+	wrmsr(IA32_MISC_ENABLE, msr);
 }
 
 static struct device_operations cpu_dev_ops = {

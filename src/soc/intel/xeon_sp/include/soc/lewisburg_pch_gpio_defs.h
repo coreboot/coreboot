@@ -656,12 +656,12 @@
 #define  GPIO_DRIVER_IRQ_ROUTE_IRQ14	0
 #define  GPIO_DRIVER_IRQ_ROUTE_IRQ15	8
 
-#define HOSTSW_OWN_REG_0	0xd0
+#define HOSTSW_OWN_REG_0	0x80
 #define PAD_CFG_BASE		0x400
 #define GPI_INT_STS_0		0x100
-#define GPI_INT_EN_0		0x120
-#define GPI_SMI_STS_0		0x180
-#define GPI_SMI_EN_0		0x1a0
+#define GPI_INT_EN_0		0x110
+#define GPI_SMI_STS_0		0x140
+#define GPI_SMI_EN_0		0x150
 #define GPI_NMI_STS_0		0x160
 #define GPI_NMI_EN_0		0x170
 

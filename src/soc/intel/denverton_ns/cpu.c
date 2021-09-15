@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cr.h>
+#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
@@ -90,6 +91,9 @@ static void denverton_core_init(struct device *cpu)
 
 	/* Enable Turbo */
 	enable_turbo();
+
+	/* Enable the local CPU apics */
+	setup_lapic();
 
 	/* Enable speed step. Always ON.*/
 	msr = rdmsr(IA32_MISC_ENABLE);

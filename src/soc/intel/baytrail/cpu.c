@@ -36,6 +36,9 @@ static void soc_core_init(struct device *cpu)
 {
 	printk(BIOS_DEBUG, "Init BayTrail core.\n");
 
+	/* Enable the local CPU apics */
+	setup_lapic();
+
 	/*
 	 * The turbo disable bit is actually scoped at building block level -- not package.
 	 * For non-BSP cores that are within a building block, enable turbo. The cores within

@@ -82,8 +82,8 @@ chip soc/intel/jasperlake
 				## Power Limits Control
 				register "controls.power_limits" = "{
 					.pl1 = {
-						.min_power = 4500,
-						.max_power = 7000,
+						.min_power = 6000,
+						.max_power = 6000,
 						.time_window_min = 1 * MSECS_PER_SEC,
 						.time_window_max = 1 * MSECS_PER_SEC,
 						.granularity = 200,

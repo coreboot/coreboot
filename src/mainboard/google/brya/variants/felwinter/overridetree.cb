@@ -1,3 +1,11 @@
+fw_config
+	field DB_USB 0 2
+		option USB_ABSENT		0
+		option USB3_PS8815		1
+		option USB4_KB8001		2
+	end
+end
+
 chip soc/intel/alderlake
 	register "SaGv" = "SaGv_Disabled"
 
@@ -6,8 +14,6 @@ chip soc/intel/alderlake
 	register "ext_fivr_settings" = "{
 		.configure_ext_fivr = 1,
 	}"
-
-	register "typec_aux_bias_pads[2]" = "{.pad_auxp_dc = GPP_A19, .pad_auxn_dc = GPP_A20}"
 
 	register "usb2_ports[3]" = "USB2_PORT_EMPTY"
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"
@@ -48,7 +54,9 @@ chip soc/intel/alderlake
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E4)"
 				use tcss_usb3_port3 as dfp[0].typec_port
-				device generic 0 on end
+				device generic 0 on
+					probe DB_USB USB4_KB8001
+				end
 			end
 		end
 		device ref pcie_rp8 on

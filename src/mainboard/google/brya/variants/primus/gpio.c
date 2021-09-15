@@ -94,6 +94,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D1, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
+	/* D11 : ISH_SPI_MISO ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_D11, 1, DEEP),
 	/* D18 : UART1_TXD ==> SD_PE_RST_L */
 	PAD_CFG_GPO(GPP_D18, 0, PLTRST),
 	/* E0  : SATAXPCIE0 ==> WWAN_PERST_L */
@@ -110,6 +112,11 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
 	PAD_CFG_GPO(GPP_H13, 1, PLTRST),
+	/* B4  : PROC_GP3 ==> SSD_PERST_L
+	 * SSD_PERST_L is released after EN_PP3300_SSD is asserted; the
+	 * power rails take some time to come up.
+	 */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)

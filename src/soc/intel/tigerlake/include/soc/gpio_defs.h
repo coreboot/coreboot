@@ -289,7 +289,7 @@
 #define  GPE_DW_MASK				0xfff00
 #define HOSTSW_OWN_REG_0			0xb0
 #define GPI_INT_STS_0				0x100
-#define GPI_INT_EN_0				0x110
+#define GPI_INT_EN_0				0x120
 #define GPI_SMI_STS_0				0x180
 #define GPI_SMI_EN_0				0x1A0
 #define GPI_NMI_STS_0				0x1c0

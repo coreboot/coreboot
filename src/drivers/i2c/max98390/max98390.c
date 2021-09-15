@@ -79,6 +79,12 @@ static void max98390_fill_ssdt(const struct device *dev)
 		}
 	}
 
+	if (!dp)
+		dp = acpi_dp_new_table("_DSD");
+
+	acpi_dp_add_integer(dp, "maxim,vmon-slot-no", config->vmon_slot_no);
+	acpi_dp_add_integer(dp, "maxim,imon-slot-no", config->imon_slot_no);
+
 	if (dp)
 		acpi_dp_write(dp);
 

@@ -14,4 +14,8 @@ struct drivers_i2c_max98390_config {
 	/* The VPD key of temperature during speaker calibration. */
 	const char *temperature_calib_key;
 	const char *dsm_param_file_name;
+	/* slot number where voltage feedback will be received */
+	uint32_t vmon_slot_no;
+	/* slot number where current feedback will be received */
+	uint32_t imon_slot_no;
 };

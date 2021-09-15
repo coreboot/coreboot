@@ -87,9 +87,9 @@ void fast_spi_disable_wp(void);
  */
 void fast_spi_get_ext_bios_window(uintptr_t *base, size_t *size);
 /*
- * SOC function to get SPI-DMI Destination Id
+ * SOC function to get SPI PSF Destination Id
  */
-uint32_t soc_get_spi_dmi_destination_id(void);
+uint32_t soc_get_spi_psf_destination_id(void);
 /*
  * Add MTRR for extended BIOS region(when supported) to postcar frame
  */

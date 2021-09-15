@@ -40,9 +40,4 @@
 #define PID_CPU_GPIOCOM4	0xb9
 #define PID_CPU_GPIOCOM5	0xba
 
-/*
- * SPI - DMI Destination ID
- */
-#define SPI_DMI_DESTINATION_ID  0x23a8
-
 #endif

@@ -9,7 +9,9 @@
 #include <intelblocks/spi.h>
 #include <intelblocks/fast_spi.h>
 #include <soc/pci_devs.h>
-#include <soc/pcr_ids.h>
+
+#define PSF_SPI_DESTINATION_ID_H	0x23b0
+#define PSF_SPI_DESTINATION_ID		0x23a8
 
 int spi_soc_devfn_to_bus(unsigned int devfn)
 {
@@ -26,7 +28,9 @@ int spi_soc_devfn_to_bus(unsigned int devfn)
 	return -1;
 }
 
-uint32_t soc_get_spi_dmi_destination_id(void)
+uint32_t soc_get_spi_psf_destination_id(void)
 {
-	return SPI_DMI_DESTINATION_ID;
+	if (CONFIG(SOC_INTEL_TIGERLAKE_PCH_H))
+		return PSF_SPI_DESTINATION_ID_H;
+	return PSF_SPI_DESTINATION_ID;
 }

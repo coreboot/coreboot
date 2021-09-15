@@ -29,6 +29,9 @@ static void mainboard_init(struct device *dev)
 	clock_configure_sdcc(2, 50 * MHz);
 	configure_sdhci();
 
+	gpi_firmware_load(QUP_0_GSI_BASE);
+	gpi_firmware_load(QUP_1_GSI_BASE);
+
 	/*
 	 * When coreboot firmware disables serial output,
 	 * we still need to load console UART QUP FW for OS.

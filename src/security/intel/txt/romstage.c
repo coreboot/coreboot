@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/cpu.h>
 #include <arch/mmio.h>
 #include <cf9_reset.h>
 #include <console/console.h>

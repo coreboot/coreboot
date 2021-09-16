@@ -240,6 +240,9 @@ func genPartIdInfo(parts []usedPart, partToSPDMap map[string]string, SPDToIndexM
 		// Append new entry
 		if index == -1 {
 			index = len(partIdList)
+			if index > MaxMemoryId {
+				return nil, fmt.Errorf("Maximum part ID %d exceeded.", MaxMemoryId)
+			}
 			partIdList = append(partIdList, partIds{})
 		}
 

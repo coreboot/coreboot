@@ -358,12 +358,11 @@ F:	src/mainboard/msi/h81m-p33/
 
 
 OCP DELTALAKE MAINBOARD
-M:	Jonathan Zhang <jonzhang@fb.com>
-M:	Reddy Chagam <anjaneya.chagam@intel.com>
+M:	Arthur Heymans <arthur@aheymans.xyz>
+M:	Christian Walter <christian.walter@9elements.com>
 M:	Johnny Lin <Johnny_Lin@wiwynn.com>
-M:	Morgan Jang <Morgan_Jang@wiwynn.com>
-M:	Ryback Hung <<Ryback.Hung@quantatw.com>
-M:	Bryant Ou <Bryant.Ou@quantatw.com>
+M:	Jonathan Zhang <jonzhang@fb.com>
+M:	Tim Chu <Tim.Chu@quantatw.com>
 S:	Supported
 F:	src/mainboard/ocp/deltalake/
 
@@ -657,9 +656,9 @@ INTEL Xeon Sacalable Processor Family
 M:	Jonathan Zhang <jonzhang@fb.com>
 M:	Reddy Chagam <anjaneya.chagam@intel.com>
 M:	Johnny Lin <Johnny_Lin@wiwynn.com>
-M:	Morgan Jang <Morgan_Jang@wiwynn.com>
-M:	Ryback Hung <<Ryback.Hung@quantatw.com>
-M:	Bryant Ou <Bryant.Ou@quantatw.com>
+M:	Tim Chu <Tim.Chu@quantatw.com>
+M:	Arthur Heymans <arthur@aheymans.xyz>
+M:	Christian Walter <christian.walter@9elements.com>
 S:	Supported
 F:	src/soc/intel/xeon_sp/
 F:	src/vendorcode/intel/fsp/fsp2_0/skylake_sp/

@@ -371,6 +371,12 @@ sub check_defaults {
                 # Make sure there's a type set for the symbol
                 next if (!defined $symbols{$sym}{type});
 
+                # Symbols created/used inside a choice must not have a default set. The default is set by the choice itself.
+                if ($symbols{$sym}{choice}) {
+                    show_error("Defining a default for symbol '$sym' at $filename:$line_no, used inside choice at "
+                               . "$symbols{$sym}{choice_loc}, is not allowed.");
+                }
+
                 # skip good defaults
                 if (! ((($symbols{$sym}{type} eq "hex") && ($symbols{$sym}{$sym_num}{default}{$def_num}{default} =~ /^0x/)) ||
                     (($symbols{$sym}{type} eq "int") && ($symbols{$sym}{$sym_num}{default}{$def_num}{default} =~ /^[-0-9]+$/)) ||
@@ -798,6 +804,9 @@ sub add_symbol {
         $symbols{$symbol}{count} = 0;
         if ($inside_choice) {
             $symbols{$symbol}{choice} = 1;
+
+            # remember the location of the choice
+            $symbols{$symbol}{choice_loc} = join(':', (split / /, $inside_choice));
         }
         else {
             $symbols{$symbol}{choice} = 0;

@@ -3,6 +3,8 @@
 #ifndef __IPMI_OCP_H
 #define __IPMI_OCP_H
 
+#include <commonlib/bsd/cb_err.h>
+
 #define IPMI_NETFN_OEM				0x30
 #define  IPMI_OEM_SET_PPIN			0x77
 #define  IPMI_BMC_SET_POST_START		0x73

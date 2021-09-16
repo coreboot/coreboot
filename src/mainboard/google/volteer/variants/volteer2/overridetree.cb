@@ -207,7 +207,7 @@ chip soc/intel/tigerlake
 			chip drivers/i2c/tpm
 				register "hid" = ""GOOG0005""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_C21_IRQ)"
-				device i2c 50 off end
+				device i2c 50 alias i2c_tpm off end
 			end
 		end
 		device ref i2c2 on

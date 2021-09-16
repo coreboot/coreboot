@@ -14,6 +14,7 @@ const char *spd_manufacturer_name(const uint16_t mod_id)
 	case 0x9801:
 		return "Kingston";
 	case 0x987f:
+	case 0xad00:
 		return "Hynix";
 	case 0x9e02:
 		return "Corsair";
@@ -26,10 +27,12 @@ const char *spd_manufacturer_name(const uint16_t mod_id)
 	case 0xcd04:
 		return "GSkill";
 	case 0xce80:
+	case 0xce00:
 		return "Samsung";
 	case 0xfe02:
 		return "Elpida";
 	case 0x2c80:
+	case 0x2c00:
 		return "Micron";
 	default:
 		return NULL;

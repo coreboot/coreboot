@@ -1088,8 +1088,16 @@ static void pass0(FILE *fil, FILE *head, struct device *ptr, struct device *next
 		return;
 	}
 
-	char *name = S_ALLOC(10);
-	sprintf(name, "_dev%d", dev_id++);
+	char *name;
+
+	if (ptr->alias) {
+		name = S_ALLOC(6 + strlen(ptr->alias));
+		sprintf(name, "_dev_%s", ptr->alias);
+	} else {
+		name = S_ALLOC(11);
+		sprintf(name, "_dev_%d", dev_id++);
+	}
+
 	ptr->name = name;
 
 	fprintf(fil, "STORAGE struct device %s;\n", ptr->name);
@@ -1324,6 +1332,12 @@ static void expose_device_names(FILE *fil, FILE *head, struct device *ptr, struc
 			ptr->path_a, ptr->path_b);
 		fprintf(fil, "DEVTREE_CONST struct device *const __pnp_%04x_%02x = &%s;\n",
 			ptr->path_a, ptr->path_b, ptr->name);
+	}
+
+	if (ptr->alias) {
+		fprintf(head, "extern DEVTREE_CONST struct device *const %s_ptr;\n", ptr->name);
+		fprintf(fil, "DEVTREE_CONST struct device *const %s_ptr = &%s;\n",
+			ptr->name, ptr->name);
 	}
 }
 

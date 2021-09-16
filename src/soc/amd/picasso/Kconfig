@@ -177,14 +177,14 @@ config FSP_M_ADDR
 
 config FSP_M_SIZE
 	hex
-	default 0x80000
+	default 0xC0000
 	help
 	  Sets the size of DRAM allocation for FSP-M in linker script.
 
 config VERSTAGE_ADDR
 	hex
 	depends on VBOOT_SEPARATE_VERSTAGE
-	default 0x2140000
+	default 0x2180000
 	help
 	  Sets the address in DRAM where verstage should be loaded if running
 	  as a separate stage on x86.

@@ -42,7 +42,7 @@ void buffer_from_fifo32(void *buffer, size_t size, void *fifo,
  * bytes of the 'prefix' u32 parameter and any high-order bytes exceeding prefsz
  * must be 0. Note that 'size' counts total bytes written, including 'prefsz'.
  */
-void buffer_to_fifo32_prefix(void *buffer, u32 prefix, int prefsz, size_t size,
+void buffer_to_fifo32_prefix(const void *buffer, u32 prefix, int prefsz, size_t size,
 			     void *fifo, int fifo_stride, int fifo_width);
 
 /*
@@ -51,7 +51,7 @@ void buffer_to_fifo32_prefix(void *buffer, u32 prefix, int prefsz, size_t size,
  * registers or 0 to write everything into the same register). fifo_width is
  * the amount of bytes written per register (can be 1 through 4).
  */
-static inline void buffer_to_fifo32(void *buffer, size_t size, void *fifo,
+static inline void buffer_to_fifo32(const void *buffer, size_t size, void *fifo,
 				    int fifo_stride, int fifo_width)
 {
 	buffer_to_fifo32_prefix(buffer, 0, 0, size, fifo,

@@ -21,10 +21,10 @@ void buffer_from_fifo32(void *buffer, size_t size, void *fifo,
 	}
 }
 
-void buffer_to_fifo32_prefix(void *buffer, u32 prefix, int prefsz, size_t size,
+void buffer_to_fifo32_prefix(const void *buffer, u32 prefix, int prefsz, size_t size,
 			     void *fifo, int fifo_stride, int fifo_width)
 {
-	u8 *p = buffer;
+	const u8 *p = buffer;
 	int i, j = prefsz;
 
 	assert(fifo_width > 0 && fifo_width <= sizeof(u32) &&

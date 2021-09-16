@@ -214,57 +214,65 @@
 #define GPIO_RSVD_7	163
 #define GPIO_RSVD_8	164
 
+/* Group HVCMOS */
+#define EDP_BKLTEN	165
+#define EDP_BKLTCTL	166
+#define EDP_VDDEN	167
+#define SYS_PWROK	168
+#define SYS_RESET_B	169
+#define MLK_RST_B	170
+
 /* Group E */
-#define GPP_E0		165
-#define GPP_E1		166
-#define GPP_E2		167
-#define GPP_E3		168
-#define GPP_E4		169
-#define GPP_E5		170
-#define GPP_E6		171
-#define GPP_E7		172
-#define GPP_E8		173
-#define GPP_E9		174
-#define GPP_E10		175
-#define GPP_E11		176
-#define GPP_E12		177
-#define GPP_E13		178
-#define GPP_E14		179
-#define GPP_E15		180
-#define GPP_E16		181
-#define GPP_E17		182
-#define GPP_E18		183
-#define GPP_E19		184
-#define GPP_E20		185
-#define GPP_E21		186
-#define GPP_E22		187
-#define GPP_E23		188
+#define GPP_E0		171
+#define GPP_E1		172
+#define GPP_E2		173
+#define GPP_E3		174
+#define GPP_E4		175
+#define GPP_E5		176
+#define GPP_E6		177
+#define GPP_E7		178
+#define GPP_E8		179
+#define GPP_E9		180
+#define GPP_E10		181
+#define GPP_E11		182
+#define GPP_E12		183
+#define GPP_E13		184
+#define GPP_E14		185
+#define GPP_E15		186
+#define GPP_E16		187
+#define GPP_E17		188
+#define GPP_E18		189
+#define GPP_E19		190
+#define GPP_E20		191
+#define GPP_E21		192
+#define GPP_E22		193
+#define GPP_E23		194
 
 #define NUM_GPIO_COM4_PADS	(GPP_E23 - GPP_C0 + 1)
 
 /* Group R*/
-#define GPP_R0		189
-#define GPP_R1		190
-#define GPP_R2		191
-#define GPP_R3		192
-#define GPP_R4		193
-#define GPP_R5		194
-#define GPP_R6		195
-#define GPP_R7		196
+#define GPP_R0		195
+#define GPP_R1		196
+#define GPP_R2		197
+#define GPP_R3		198
+#define GPP_R4		199
+#define GPP_R5		200
+#define GPP_R6		201
+#define GPP_R7		202
 
 /* Group S */
-#define GPP_S0		197
-#define GPP_S1		198
-#define GPP_S2		199
-#define GPP_S3		200
-#define GPP_S4		201
-#define GPP_S5		202
-#define GPP_S6		203
-#define GPP_S7		204
+#define GPP_S0		203
+#define GPP_S1		204
+#define GPP_S2		205
+#define GPP_S3		206
+#define GPP_S4		207
+#define GPP_S5		208
+#define GPP_S6		209
+#define GPP_S7		210
 
 #define NUM_GPIO_COM5_PADS	(GPP_S7 - GPP_R0 + 1)
 
-#define TOTAL_PADS	205
+#define TOTAL_PADS	211
 
 #define COMM_0		0
 #define COMM_1		1

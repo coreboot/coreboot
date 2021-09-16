@@ -51,6 +51,7 @@ static const struct pad_group icl_community2_groups[] = {
 
 static const struct pad_group icl_community4_groups[] = {
 	INTEL_GPP_BASE(GPP_C0, GPP_C0, GPP_C23, 224),		/* GPP_C */
+	INTEL_GPP(GPP_C0, EDP_BKLTEN, MLK_RST_B),		/* HVCMOS */
 	INTEL_GPP_BASE(GPP_C0, GPP_E0, GPP_E23, 256),		/* GPP_E */
 	INTEL_GPP(GPP_C0, GPIO_RSVD_3, GPIO_RSVD_8),
 };

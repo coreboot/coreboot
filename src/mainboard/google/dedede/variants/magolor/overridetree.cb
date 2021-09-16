@@ -20,6 +20,11 @@ fw_config
 		option TS_WDHT0002 5
 		option TS_GTCH7503 6
 	end
+	field AUDIO_CODEC_SOURCE 49 51
+		option AUDIO_CODEC_UNPROVISIONED 0
+		option AUDIO_CODEC_DA7219 1
+		option AUDIO_CODEC_RT5682 2
+	end
 end
 
 chip soc/intel/jasperlake
@@ -421,7 +426,29 @@ chip soc/intel/jasperlake
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
-				device i2c 1a on end
+				device i2c 1a on
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_UNPROVISIONED
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_RT5682
+				end
+			end
+			chip drivers/i2c/da7219
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"
+				register "btn_cfg" = "50"
+				register "mic_det_thr" = "500"
+				register "jack_ins_deb" = "20"
+				register "jack_det_rate" = ""32ms_64ms""
+				register "jack_rem_deb" = "1"
+				register "a_d_btn_thr" = "0xa"
+				register "d_b_btn_thr" = "0x16"
+				register "b_c_btn_thr" = "0x21"
+				register "c_mic_btn_thr" = "0x3e"
+				register "btn_avg" = "4"
+				register "adc_1bit_rpt" = "1"
+				register "micbias_lvl" = "2600"
+				register "mic_amp_in_sel" = ""diff""
+				device i2c 1a on
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_DA7219
+				end
 			end
 			chip drivers/i2c/generic
 				register "hid" = ""10EC1015""

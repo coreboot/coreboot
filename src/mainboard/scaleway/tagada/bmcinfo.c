@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <console/console.h>
 #include <console/uart.h>
+#include <types.h>
 
 #include "bmcinfo.h"
 

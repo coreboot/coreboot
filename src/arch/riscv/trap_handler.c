@@ -9,6 +9,7 @@
 #include <vm.h>
 #include <mcall.h>
 #include <sbi.h>
+#include <types.h>
 
 static const char *const exception_names[] = {
 	"Instruction address misaligned",

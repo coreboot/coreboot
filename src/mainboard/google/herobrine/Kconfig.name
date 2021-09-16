@@ -14,6 +14,10 @@ config BOARD_GOOGLE_PIGLIN
 	bool "->  Piglin"
 	select BOARD_GOOGLE_HEROBRINE_COMMON
 
+config BOARD_GOOGLE_HOGLIN
+	bool "-> Hoglin"
+	select BOARD_GOOGLE_HEROBRINE_COMMON
+
 endif
 
 comment "(Herobrine requires 'Allow QC blobs repository')"

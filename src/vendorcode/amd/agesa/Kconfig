@@ -85,6 +85,8 @@ config CPU_AMD_AGESA_OPENSOURCE_MEM_CUSTOM
 	help
 	  Custom memory profile. Use the XMP SPD values as the base, if available.
 
+endchoice
+
 if CPU_AMD_AGESA_OPENSOURCE_MEM_CUSTOM
 
 config CUSTOM_SPD_DIVIDENT
@@ -192,5 +194,3 @@ config CUSTOM_SPD_TFAW
 	range 1 255
 
 endif
-
-endchoice

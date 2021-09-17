@@ -1146,7 +1146,7 @@ enum ec_image {
 };
 
 /**
- * struct ec_response_get_version - Response to the get version command.
+ * struct ec_response_get_version - Response to the v0 get version command.
  * @version_string_ro: Null-terminated RO firmware version string.
  * @version_string_rw: Null-terminated RW firmware version string.
  * @reserved: Unused bytes; was previously RW-B firmware version string.
@@ -1155,8 +1155,29 @@ enum ec_image {
 struct ec_response_get_version {
 	char version_string_ro[32];
 	char version_string_rw[32];
-	char reserved[32];
+	char reserved[32];  /* Changed to cros_fwid_ro in version 1 */
 	uint32_t current_image;
+} __ec_align4;
+
+/**
+ * struct ec_response_get_version_v1 - Response to the v1 get version command.
+ *
+ * ec_response_get_version_v1 is a strict superset of ec_response_get_version.
+ * The v1 response changes the semantics of one field (reserved to cros_fwid_ro)
+ * and adds one additional field (cros_fwid_rw).
+ *
+ * @version_string_ro: Null-terminated RO firmware version string.
+ * @version_string_rw: Null-terminated RW firmware version string.
+ * @cros_fwid_ro: Null-terminated RO CrOS FWID string.
+ * @current_image: One of ec_image.
+ * @cros_fwid_rw: Null-terminated RW CrOS FWID string.
+ */
+struct ec_response_get_version_v1 {
+	char version_string_ro[32];
+	char version_string_rw[32];
+	char cros_fwid_ro[32];  /* Added in version 1 (Used to be reserved) */
+	uint32_t current_image;
+	char cros_fwid_rw[32];  /* Added in version 1 */
 } __ec_align4;
 
 /* Read test */
@@ -5852,7 +5873,9 @@ struct ec_params_usb_pd_mux_info {
 #define USB_PD_MUX_DP_ENABLED         BIT(1) /* DP connected */
 #define USB_PD_MUX_POLARITY_INVERTED  BIT(2) /* CC line Polarity inverted */
 #define USB_PD_MUX_HPD_IRQ            BIT(3) /* HPD IRQ is asserted */
+#define USB_PD_MUX_HPD_IRQ_DEASSERTED 0      /* HPD IRQ is deasserted */
 #define USB_PD_MUX_HPD_LVL            BIT(4) /* HPD level is asserted */
+#define USB_PD_MUX_HPD_LVL_DEASSERTED 0      /* HPD level is deasserted */
 #define USB_PD_MUX_SAFE_MODE          BIT(5) /* DP is in safe mode */
 #define USB_PD_MUX_TBT_COMPAT_ENABLED BIT(6) /* TBT compat enabled */
 #define USB_PD_MUX_USB4_ENABLED       BIT(7) /* USB4 enabled */

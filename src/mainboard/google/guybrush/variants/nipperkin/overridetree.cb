@@ -122,7 +122,7 @@ chip soc/amd/cezanne
 			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_21)"
 			register "wake" = "GEVENT_5"
 			register "uart" = "ACPI_UART_RAW_DEVICE(3000000, 64)"
-			device generic 0 on
+			device generic 0 alias fpmcu on
 				probe FP FP_PRESENT
 			end
 		end

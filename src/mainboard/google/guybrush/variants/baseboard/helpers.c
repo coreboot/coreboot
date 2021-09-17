@@ -6,43 +6,14 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 
-static bool variant_has_device_enabled(const struct device_path *device_path, size_t path_length)
-{
-	const struct device *dev =
-		find_dev_nested_path(all_devices->link_list, device_path, path_length);
+WEAK_DEV_PTR(fpmcu);
 
-	return is_dev_enabled(dev);
+bool variant_has_fpmcu(void)
+{
+	return is_dev_enabled(DEV_PTR(fpmcu));
 }
 
-__weak bool variant_has_fpmcu(void)
+bool variant_has_pcie_wwan(void)
 {
-	static const struct device_path fpmcu_path[] = {
-		{
-			.type = DEVICE_PATH_MMIO,
-			.mmio.addr = APU_UART1_BASE
-		},
-		{
-			.type = DEVICE_PATH_GENERIC,
-			.generic.id = 0,
-			.generic.subid = 0
-		},
-	};
-
-	return variant_has_device_enabled(fpmcu_path, ARRAY_SIZE(fpmcu_path));
-}
-
-__weak bool variant_has_pcie_wwan(void)
-{
-	static const struct device_path pcie_wwan_path[] = {
-	{
-		.type = DEVICE_PATH_DOMAIN,
-		.domain.domain = 0x0,
-	},
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = WWAN_DEVFN
-	},
-};
-
-	return variant_has_device_enabled(pcie_wwan_path, ARRAY_SIZE(pcie_wwan_path));
+	return is_dev_enabled(DEV_PTR(gpp_bridge_2));
 }

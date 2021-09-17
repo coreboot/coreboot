@@ -96,6 +96,12 @@ elogobj += valstr.o
 elogobj += elog.o
 elogobj += common.o
 
+include $(top)/util/cbfstool/fpt_formats/Makefile.inc
+cse_fpt_obj :=
+cse_fpt_obj += cse_fpt.o
+cse_fpt_obj += common.o
+cse_fpt_obj += $(foreach var, $(fpt_formats_obj), $(var))
+
 TOOLCFLAGS ?= -Werror -Wall -Wextra -Wshadow
 TOOLCFLAGS += -Wcast-qual -Wmissing-prototypes -Wredundant-decls -Wshadow
 TOOLCFLAGS += -Wstrict-prototypes -Wwrite-strings
@@ -178,6 +184,10 @@ $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lz4/lib/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
+$(objutil)/cbfstool/%.o: $(top)/util/cbfstool/fpt_formats/%.c
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
+	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+
 $(objutil)/cbfstool/cbfstool: $(addprefix $(objutil)/cbfstool/,$(cbfsobj)) $(VBOOT_HOSTLIB)
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
 	$(HOSTCC) -v $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj)) $(VBOOT_HOSTLIB)
@@ -209,6 +219,10 @@ $(objutil)/cbfstool/amdcompress: $(addprefix $(objutil)/cbfstool/,$(amdcompobj))
 $(objutil)/cbfstool/elogtool: $(addprefix $(objutil)/cbfstool/,$(elogobj)) $(VBOOT_HOSTLIB)
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
 	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(elogobj)) $(VBOOT_HOSTLIB)
+
+$(objutil)/cbfstool/cse_fpt: $(addprefix $(objutil)/cbfstool/,$(cse_fpt_obj))
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
+	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cse_fpt_obj))
 
 # Yacc source is superset of header
 $(objutil)/cbfstool/fmd.o: TOOLCFLAGS += -Wno-redundant-decls

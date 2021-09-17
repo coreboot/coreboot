@@ -54,6 +54,10 @@ static void pcie_rp_init(FSP_M_CONFIG *m_cfg, uint32_t en_mask, enum pcie_rp_typ
 	static unsigned int clk_req_mapping = 0;
 
 	for (i = 0; i < cfg_count; i++) {
+		if (CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE)) {
+			m_cfg->PcieClkSrcUsage[i] = FSP_CLK_FREE_RUNNING;
+			continue;
+		}
 		if (!(en_mask & BIT(i)))
 			continue;
 		if (cfg[i].flags & PCIE_RP_CLK_SRC_UNUSED)

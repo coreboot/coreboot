@@ -864,7 +864,8 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 				get_l1_substate_control(rp_cfg->PcieRpL1Substates);
 		s_cfg->PcieRpLtrEnable[i] = !!(rp_cfg->flags & PCIE_RP_LTR);
 		s_cfg->PcieRpAdvancedErrorReporting[i] = !!(rp_cfg->flags & PCIE_RP_AER);
-		s_cfg->PcieRpHotPlug[i] = !!(rp_cfg->flags & PCIE_RP_HOTPLUG);
+		s_cfg->PcieRpHotPlug[i] = !!(rp_cfg->flags & PCIE_RP_HOTPLUG)
+				|| CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 		s_cfg->PcieRpClkReqDetect[i] = !!(rp_cfg->flags & PCIE_RP_CLK_REQ_DETECT);
 		if (rp_cfg->pcie_rp_aspm)
 			s_cfg->PcieRpAspm[i] = get_aspm_control(rp_cfg->pcie_rp_aspm);
@@ -873,6 +874,7 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 			s_cfg->PcieRpSlotImplemented[i] = 0;
 		s_cfg->PcieRpDetectTimeoutMs[i] = rp_cfg->pcie_rp_detect_timeout_ms;
 	}
+	s_cfg->PcieComplianceTestMode = CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 }
 
 static void fill_fsps_cpu_pcie_params(FSP_S_CONFIG *s_cfg,
@@ -891,9 +893,11 @@ static void fill_fsps_cpu_pcie_params(FSP_S_CONFIG *s_cfg,
 			get_l1_substate_control(rp_cfg->PcieRpL1Substates);
 		s_cfg->CpuPcieRpLtrEnable[i] = !!(rp_cfg->flags & PCIE_RP_LTR);
 		s_cfg->CpuPcieRpAdvancedErrorReporting[i] = !!(rp_cfg->flags & PCIE_RP_AER);
-		s_cfg->CpuPcieRpHotPlug[i] = !!(rp_cfg->flags & PCIE_RP_HOTPLUG);
+		s_cfg->CpuPcieRpHotPlug[i] = !!(rp_cfg->flags & PCIE_RP_HOTPLUG)
+				|| CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 		s_cfg->PtmEnabled[i] = 0;
 	}
+	s_cfg->CpuPcieComplianceTestMode = CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 }
 
 static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,

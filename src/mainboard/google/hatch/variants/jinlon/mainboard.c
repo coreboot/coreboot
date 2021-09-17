@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <device/device.h>
-#include <drivers/gfx/generic/chip.h>
 #include <variant/sku.h>
 
 static bool eps_sku(uint32_t sku_id)
@@ -21,23 +20,19 @@ static bool eps_sku(uint32_t sku_id)
 
 static void check_for_eps(uint32_t sku_id)
 {
-	struct device *gfx_dev;
+	struct device *gfx_dev = DEV_PTR(igpu);
 
 	if (eps_sku(sku_id)) {
 		printk(BIOS_INFO, "SKU ID %u has EPS\n", sku_id);
 		return;
 	}
 
-	gfx_dev = find_gfx_dev();
 	if (!gfx_dev) {
-		printk(BIOS_ERR,
-		       "Error! No EPS dev, view-angle-management won't work\n");
+		printk(BIOS_ERR, "Error! No EPS dev, view-angle-management won't work\n");
 		return;
 	}
 
-	printk(BIOS_INFO,
-	       "SKU ID %u doesn't have EPS, disabling...\n",
-	       sku_id);
+	printk(BIOS_INFO, "SKU ID %u doesn't have EPS, disabling...\n", sku_id);
 	gfx_dev->enabled = 0;
 }
 

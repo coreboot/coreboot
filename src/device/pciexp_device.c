@@ -8,27 +8,37 @@
 #include <device/pci_ops.h>
 #include <device/pciexp.h>
 
-unsigned int pciexp_find_extended_cap(const struct device *dev, unsigned int cap)
+static unsigned int pciexp_get_ext_cap_offset(const struct device *dev, unsigned int cap,
+					      unsigned int offset)
 {
-	unsigned int this_cap_offset, next_cap_offset;
-	unsigned int this_cap, cafe;
-
-	this_cap_offset = PCIE_EXT_CAP_OFFSET;
+	unsigned int this_cap_offset = offset;
+	unsigned int next_cap_offset, this_cap, cafe;
 	do {
 		this_cap = pci_read_config32(dev, this_cap_offset);
-		next_cap_offset = this_cap >> 20;
-		this_cap &= 0xffff;
 		cafe = pci_read_config32(dev, this_cap_offset + 4);
-		cafe &= 0xffff;
-		if (this_cap == cap)
+		if ((this_cap & 0xffff) == cap) {
 			return this_cap_offset;
-		else if (cafe == cap)
+		} else if ((cafe & 0xffff) == cap) {
 			return this_cap_offset + 4;
-		else
+		} else {
+			next_cap_offset = this_cap >> 20;
 			this_cap_offset = next_cap_offset;
+		}
 	} while (next_cap_offset != 0);
 
 	return 0;
+}
+
+unsigned int pciexp_find_next_extended_cap(const struct device *dev, unsigned int cap,
+					   unsigned int pos)
+{
+	const unsigned int next_cap_offset = pci_read_config32(dev, pos) >> 20;
+	return pciexp_get_ext_cap_offset(dev, cap, next_cap_offset);
+}
+
+unsigned int pciexp_find_extended_cap(const struct device *dev, unsigned int cap)
+{
+	return pciexp_get_ext_cap_offset(dev, cap, PCIE_EXT_CAP_OFFSET);
 }
 
 /*

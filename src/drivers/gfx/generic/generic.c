@@ -155,14 +155,3 @@ struct chip_operations drivers_gfx_generic_ops = {
 	CHIP_NAME("Generic Graphics Device")
 	.enable_dev = gfx_enable
 };
-
-struct device *find_gfx_dev(void)
-{
-	struct device *dev;
-
-	for (dev = all_devices; dev; dev = dev->next) {
-		if (dev->chip_ops && dev->chip_ops == &drivers_gfx_generic_ops)
-			return dev;
-	}
-	return NULL;
-}

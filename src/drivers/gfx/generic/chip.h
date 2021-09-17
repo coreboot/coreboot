@@ -48,6 +48,4 @@ struct drivers_gfx_generic_config {
 	struct drivers_gfx_generic_device_config device[5];
 };
 
-extern struct device *find_gfx_dev(void);
-
 #endif /* __DRIVERS_GFX_GENERIC_CHIP_H__ */

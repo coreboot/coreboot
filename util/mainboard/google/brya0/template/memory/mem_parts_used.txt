@@ -5,7 +5,7 @@
 # so new parts must always be added at the end of the file!
 #
 # Generate an updated Makefile.inc and dram_id.generated.txt by running the
-# gen_part_id tool from util/spd_tools/lp4x.
-# See util/spd_tools/lp4x/README.md for more details and instructions.
+# part_id_gen tool from util/spd_tools.
+# See util/spd_tools/README.md for more details and instructions.
 
 # Part Name

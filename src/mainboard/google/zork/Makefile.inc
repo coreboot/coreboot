@@ -13,6 +13,7 @@ ramstage-y += sku_id.c
 verstage-y += verstage.c
 
 subdirs-y += variants/baseboard
+subdirs-y += variants/$(VARIANT_DIR)/spd
 subdirs-y += spd
 
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include

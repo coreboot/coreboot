@@ -1,14 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-# This directory
-SPD_SOURCES_DIR := src/mainboard/$(MAINBOARDDIR)/spd
+SPD_SOURCES_DIR=$(dir $(word 1, $(SPD_SOURCES)))
 
-APCB_SOURCES=$(foreach f, $(basename $(SPD_SOURCES)), $(obj)/APCB_$(f).gen)
+APCB_SOURCES=$(foreach f, $(basename $(notdir $(SPD_SOURCES))), $(obj)/APCB_$(f).gen)
 
 # APCB binary with magic numbers to be replaced by apcb_edit tool
 APCB_MAGIC_BLOB:=$(FIRMWARE_LOCATION)/APCB_magic.bin
 
-$(obj)/APCB_%.gen:	$(SPD_SOURCES_DIR)/%.hex \
+$(obj)/APCB_%.gen:	$(SPD_SOURCES_DIR)%.hex \
 			$(APCB_EDIT_TOOL) \
 			$(APCB_MAGIC_BLOB)
 	$(APCB_EDIT_TOOL) \

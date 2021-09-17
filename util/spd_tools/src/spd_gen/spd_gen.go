@@ -43,7 +43,6 @@ const (
 	PlatformADL
 	PlatformJSL
 	PlatformPCO
-	PlatformPLK
 	PlatformCZN
 	PlatformMax
 )
@@ -62,7 +61,6 @@ var platformNames = map[int]string{
 	PlatformADL: "ADL",
 	PlatformJSL: "JSL",
 	PlatformPCO: "PCO",
-	PlatformPLK: "PLK",
 	PlatformCZN: "CZN",
 }
 

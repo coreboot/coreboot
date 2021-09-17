@@ -39,7 +39,6 @@ var supportedPlatforms = [...]string{
 	"ADL",
 	"JSL",
 	"PCO",
-	"PLK",
 	"CZN",
 }
 

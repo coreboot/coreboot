@@ -241,7 +241,7 @@ const (
 /* ------------------------------------------------------------------------------------------ */
 
 var DDR4PlatformSetMap = map[int][]int{
-	0: {PlatformTGL, PlatformPCO, PlatformPLK},
+	0: {PlatformTGL, PlatformPCO},
 }
 
 var DDR4PartAttributeMap = map[string]DDR4MemAttributes{}

@@ -151,7 +151,7 @@ chip soc/intel/jasperlake
 						register "reset_off_delay_ms" = "10"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
 						register "enable_delay_ms" = "20"
-						device usb 2.3 on end
+						device usb 2.3 alias usb2_lte on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""UFCamera""

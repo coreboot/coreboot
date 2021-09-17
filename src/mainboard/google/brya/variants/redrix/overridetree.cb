@@ -8,8 +8,8 @@ fw_config
 		option KB_BL_PRESENT		1
 	end
 	field AUDIO 3 5
-		option AUDIO_UNKNOWN		0
-		option MAX98390_ALC5682I_I2S	1
+		option AUDIO_UNKNOWN			0
+		option MAX98390_ALC5682I_I2S_4SPK	1
 	end
 	field DB_LTE 6 7
 		option LTE_ABSENT		0
@@ -162,7 +162,7 @@ chip soc/intel/alderlake
 		end	#PCIE8 SD card
 		device ref i2c0 on
 			chip drivers/i2c/generic
-				register "hid" = ""10EC5682""
+				register "hid" = ""RTL5682""
 				register "name" = ""RT58""
 				register "desc" = ""Headset Codec""
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
@@ -172,6 +172,7 @@ chip soc/intel/alderlake
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
 				device i2c 1a on
+					probe AUDIO MAX98390_ALC5682I_I2S_4SPK
 				end
 			end
 			chip drivers/i2c/max98390
@@ -180,7 +181,12 @@ chip soc/intel/alderlake
 				register "name" = ""MXW0""
 				register "r0_calib_key" = ""dsm_calib_r0_0""
 				register "temperature_calib_key" = ""dsm_calib_temp_0""
-				device i2c 0x3a on end
+				register "dsm_param_file_name" = ""dsm_param""
+				register "vmon_slot_no" = "0"
+				register "imon_slot_no" = "1"
+				device i2c 0x3a on
+					probe AUDIO MAX98390_ALC5682I_I2S_4SPK
+				end
 			end
 			chip drivers/i2c/max98390
 				register "desc" = ""MAX98390 Speaker Amp 1""
@@ -188,7 +194,12 @@ chip soc/intel/alderlake
 				register "name" = ""MXW1""
 				register "r0_calib_key" = ""dsm_calib_r0_1""
 				register "temperature_calib_key" = ""dsm_calib_temp_1""
-				device i2c 0x3b on end
+				register "dsm_param_file_name" = ""dsm_param""
+				register "vmon_slot_no" = "1"
+				register "imon_slot_no" = "0"
+				device i2c 0x3b on
+					probe AUDIO MAX98390_ALC5682I_I2S_4SPK
+				end
 			end
 			chip drivers/i2c/max98390
 				register "desc" = ""MAX98390 Speaker Amp 2""
@@ -196,7 +207,12 @@ chip soc/intel/alderlake
 				register "name" = ""MXW2""
 				register "r0_calib_key" = ""dsm_calib_r0_2""
 				register "temperature_calib_key" = ""dsm_calib_temp_2""
-				device i2c 0x38 on end
+				register "dsm_param_file_name" = ""dsm_param_tt""
+				register "vmon_slot_no" = "2"
+				register "imon_slot_no" = "3"
+				device i2c 0x38 on
+					probe AUDIO MAX98390_ALC5682I_I2S_4SPK
+				end
 			end
 			chip drivers/i2c/max98390
 				register "desc" = ""MAX98390 Speaker Amp 3""
@@ -204,7 +220,12 @@ chip soc/intel/alderlake
 				register "name" = ""MXW3""
 				register "r0_calib_key" = ""dsm_calib_r0_3""
 				register "temperature_calib_key" = ""dsm_calib_temp_3""
-				device i2c 0x39 on end
+				register "dsm_param_file_name" = ""dsm_param_tt""
+				register "vmon_slot_no" = "3"
+				register "imon_slot_no" = "2"
+				device i2c 0x39 on
+					probe AUDIO MAX98390_ALC5682I_I2S_4SPK
+				end
 			end
 		end #I2C0
 		device ref i2c1 on

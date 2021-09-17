@@ -421,6 +421,15 @@ static void *new_psp_dir(context *ctx, int multi)
 	return ptr;
 }
 
+static void *new_ish_dir(context *ctx)
+{
+	void *ptr;
+	ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+	ptr = BUFF_CURRENT(*ctx);
+	ctx->current += TABLE_ALIGNMENT;
+	return ptr;
+}
+
 #if PSP_COMBO
 static void *new_combo_dir(context *ctx)
 {
@@ -672,7 +681,8 @@ static void free_bdt_firmware_filenames(amd_bios_entry *fw_table)
 }
 
 static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
-		psp_directory_table *pspdir2, amd_fw_type ab)
+		psp_directory_table *pspdir2, ish_directory_table *ish,
+		amd_fw_type ab, enum platform soc_id)
 {
 	uint32_t count;
 	uint32_t current_table_save;
@@ -684,11 +694,28 @@ static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 	pspdir->entries[count].type = (uint8_t)ab;
 	pspdir->entries[count].subprog = 0;
 	pspdir->entries[count].rsvd = 0;
-	pspdir->entries[count].addr = BUFF_TO_RUN_MODE(*ctx, pspdir2, ADDRESS_MODE_1_REL_BIOS);
-	pspdir->entries[count].address_mode = SET_ADDR_MODE(pspdir, ADDRESS_MODE_1_REL_BIOS);
-	pspdir->entries[count].size = pspdir2->header.num_entries *
+	if (ish != NULL) {
+		ish->pl2_location = BUFF_TO_RUN_MODE(*ctx, pspdir2, ADDRESS_MODE_1_REL_BIOS);
+		ish->boot_priority = ab == AMD_FW_RECOVERYAB_A ? 0xFFFFFFFF : 1;
+		ish->update_retry_count = 2;
+		ish->glitch_retry_count = 0;
+		ish->psp_id = get_psp_id(soc_id);
+		ish->checksum = fletcher32(&ish->boot_priority,
+				sizeof(ish_directory_table) - sizeof(uint32_t));
+		pspdir->entries[count].addr =
+				BUFF_TO_RUN_MODE(*ctx, ish, ADDRESS_MODE_1_REL_BIOS);
+		pspdir->entries[count].address_mode =
+				SET_ADDR_MODE(pspdir, ADDRESS_MODE_1_REL_BIOS);
+		pspdir->entries[count].size = TABLE_ALIGNMENT;
+	} else {
+		pspdir->entries[count].addr =
+				BUFF_TO_RUN_MODE(*ctx, pspdir2, ADDRESS_MODE_1_REL_BIOS);
+		pspdir->entries[count].address_mode =
+				SET_ADDR_MODE(pspdir, ADDRESS_MODE_1_REL_BIOS);
+		pspdir->entries[count].size = pspdir2->header.num_entries *
 				sizeof(psp_directory_entry) +
 				sizeof(psp_directory_header);
+	}
 
 	count++;
 	pspdir->header.num_entries = count;
@@ -701,6 +728,7 @@ static void integrate_psp_firmwares(context *ctx,
 					psp_directory_table *pspdir2_b,
 					amd_fw_entry *fw_table,
 					uint32_t cookie,
+					enum platform soc_id,
 					amd_cb_config *cb_config)
 {
 	ssize_t bytes;
@@ -708,6 +736,7 @@ static void integrate_psp_firmwares(context *ctx,
 	int level;
 	uint32_t current_table_save;
 	bool recovery_ab = cb_config->recovery_ab;
+	ish_directory_table *ish_a_dir = NULL, *ish_b_dir = NULL;
 
 	/* This function can create a primary table, a secondary table, or a
 	 * flattened table which contains all applicable types.  These if-else
@@ -815,10 +844,17 @@ static void integrate_psp_firmwares(context *ctx,
 	}
 
 	if (recovery_ab && (pspdir2 != NULL)) {
+		if (cb_config->need_ish) {	/* Need ISH */
+			ish_a_dir = new_ish_dir(ctx);
+			if (pspdir2_b != NULL)
+				ish_b_dir = new_ish_dir(ctx);
+		}
 		pspdir->header.num_entries = count;
-		integrate_psp_ab(ctx, pspdir, pspdir2, AMD_FW_RECOVERYAB_A);
+		integrate_psp_ab(ctx, pspdir, pspdir2, ish_a_dir,
+			AMD_FW_RECOVERYAB_A, soc_id);
 		if (pspdir2_b != NULL)
-			integrate_psp_ab(ctx, pspdir, pspdir2_b, AMD_FW_RECOVERYAB_B);
+			integrate_psp_ab(ctx, pspdir, pspdir2_b, ish_b_dir,
+				AMD_FW_RECOVERYAB_B, soc_id);
 		count = pspdir->header.num_entries;
 	} else if (pspdir2 != NULL) {
 		assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
@@ -1455,6 +1491,7 @@ int main(int argc, char **argv)
 	cb_config.s0i3 = false;
 	cb_config.multi_level = false;
 	cb_config.recovery_ab = false;
+	cb_config.need_ish = false;
 
 	while (1) {
 		int optindex = 0;
@@ -1777,25 +1814,25 @@ int main(int argc, char **argv)
 		/* Do 2nd PSP directory followed by 1st */
 		pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
 		integrate_psp_firmwares(&ctx, pspdir2, NULL, NULL,
-					amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
+					amd_psp_fw_table, PSPL2_COOKIE, soc_id, &cb_config);
 		if (cb_config.recovery_ab) {
 			/* B is same as above directories for A */
 			/* Skip creating pspdir2_b here to save flash space. Related
 			 * biosdir2_b will be skipped automatically. */
 			pspdir2_b = new_psp_dir(&ctx, cb_config.multi_level);
 			integrate_psp_firmwares(&ctx, pspdir2_b, NULL, NULL,
-					amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
+					amd_psp_fw_table, PSPL2_COOKIE, soc_id, &cb_config);
 		} else {
 			pspdir2_b = NULL; /* More explicitly */
 		}
 		pspdir = new_psp_dir(&ctx, cb_config.multi_level);
 		integrate_psp_firmwares(&ctx, pspdir, pspdir2, pspdir2_b,
-						amd_psp_fw_table, PSP_COOKIE, &cb_config);
+					amd_psp_fw_table, PSP_COOKIE, soc_id, &cb_config);
 	} else {
 		/* flat: PSP 1 cookie and no pointer to 2nd table */
 		pspdir = new_psp_dir(&ctx, cb_config.multi_level);
 		integrate_psp_firmwares(&ctx, pspdir, NULL, NULL,
-						amd_psp_fw_table, PSP_COOKIE, &cb_config);
+					amd_psp_fw_table, PSP_COOKIE, soc_id, &cb_config);
 	}
 
 	if (comboable)

@@ -235,6 +235,18 @@ typedef struct _amd_bios_entry {
 	int level;
 } amd_bios_entry;
 
+typedef struct _ish_directory_table {
+	uint32_t checksum;
+	uint32_t boot_priority;
+	uint32_t update_retry_count;
+	uint8_t  glitch_retry_count;
+	uint8_t  glitch_higherbits_reserved[3];
+	uint32_t pl2_location;
+	uint32_t psp_id;
+	uint32_t slot_max_size;
+	uint32_t reserved;
+} __attribute__((packed)) ish_directory_table;
+
 #define EMBEDDED_FW_SIGNATURE 0x55aa55aa
 #define PSP_COOKIE 0x50535024		/* 'PSP$' */
 #define PSPL2_COOKIE 0x324c5024		/* '2LP$' */
@@ -265,6 +277,7 @@ typedef struct _amd_cb_config {
 	bool s0i3;
 	bool have_mb_spl;
 	bool recovery_ab;
+	bool need_ish;
 } amd_cb_config;
 
 void register_fw_fuse(char *str);

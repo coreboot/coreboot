@@ -101,8 +101,15 @@ config USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI
 	  This option allows FSP to make use of MP services PPI published by
 	  coreboot to perform multiprocessor initialization.
 
+config CPU_SUPPORTS_INTEL_TME
+	bool
+	default n
+	help
+	  Select this if the SoC supports Intel Total Memory Encryption (TME).
+
 config INTEL_TME
 	bool "Total Memory Encryption (TME)/Multi-key TME (MKTME)"
+	depends on CPU_SUPPORTS_INTEL_TME
 	default n
 	help
 	 Enable Total Memory Encryption (TME)/Multi-key TME (MKTME). The spec is

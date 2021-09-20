@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -191,9 +192,15 @@ func writeSetMap(setMap map[int][]int, SPDDirName string) {
 
 	s += getGeneratedString()
 
-	for index, arr := range setMap {
-		for _, item := range arr {
-			s += fmt.Sprintf("%s,set-%d\n", platformNames[item], index)
+	var setNumbers []int
+	for k, _ := range setMap {
+		setNumbers = append(setNumbers, k)
+	}
+	sort.Ints(setNumbers)
+
+	for _, num := range setNumbers {
+		for _, item := range setMap[num] {
+			s += fmt.Sprintf("%s,set-%d\n", platformNames[item], num)
 		}
 	}
 

@@ -12,53 +12,6 @@
 
 void __weak mainboard_updm_update(FSP_M_CONFIG *mupd) {}
 
-static const struct device_path hda_path[] = {
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = PCIE_GPP_A_DEVFN
-	},
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = HD_AUDIO_DEVFN
-	},
-};
-
-static bool devtree_hda_dev_enabled(void)
-{
-	const struct device *hda_dev;
-
-	hda_dev = find_dev_nested_path(pci_root_bus(), hda_path, ARRAY_SIZE(hda_path));
-
-	if (!hda_dev)
-		return false;
-
-	return hda_dev->enabled;
-}
-
-
-static const struct device_path sata_path[] = {
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = PCIE_GPP_B_DEVFN
-	},
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = SATA_DEVFN
-	},
-};
-
-static bool devtree_sata_dev_enabled(void)
-{
-	const struct device *ahci_dev;
-
-	ahci_dev = find_dev_nested_path(pci_root_bus(), sata_path, ARRAY_SIZE(sata_path));
-
-	if (!ahci_dev)
-		return false;
-
-	return ahci_dev->enabled;
-}
-
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSP_M_CONFIG *mcfg = &mupd->FspmConfig;
@@ -108,8 +61,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mcfg->telemetry_vddcr_vdd_offset = config->telemetry_vddcr_vdd_offset;
 	mcfg->telemetry_vddcr_soc_slope_mA = config->telemetry_vddcr_soc_slope_mA;
 	mcfg->telemetry_vddcr_soc_offset = config->telemetry_vddcr_soc_offset;
-	mcfg->hd_audio_enable = devtree_hda_dev_enabled();
-	mcfg->sata_enable = devtree_sata_dev_enabled();
+	mcfg->hd_audio_enable = is_dev_enabled(DEV_PTR(hda));
+	mcfg->sata_enable = is_dev_enabled(DEV_PTR(sata));
 	mcfg->hdmi2_disable = config->hdmi2_disable;
 
 	/* PCIe power vs. speed */

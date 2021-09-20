@@ -13,87 +13,6 @@
 #include <types.h>
 #include "chip.h"
 
-static const struct device_path gfx_hda_path[] = {
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = PCIE_ABC_A_DEVFN
-	},
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = GFX_HDA_DEVFN
-	},
-};
-
-static bool devtree_gfx_hda_dev_enabled(void)
-{
-	const struct device *gfx_hda_dev;
-
-	gfx_hda_dev = find_dev_nested_path(pci_root_bus(), gfx_hda_path,
-						ARRAY_SIZE(gfx_hda_path));
-	if (!gfx_hda_dev)
-		return false;
-
-	return gfx_hda_dev->enabled;
-}
-
-static const struct device_path hda_path[] = {
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = PCIE_ABC_A_DEVFN
-	},
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = HD_AUDIO_DEVFN
-	},
-};
-
-static bool devtree_hda_dev_enabled(void)
-{
-	const struct device *hda_dev;
-
-	hda_dev = find_dev_nested_path(pci_root_bus(), hda_path, ARRAY_SIZE(hda_path));
-
-	if (!hda_dev)
-		return false;
-
-	return hda_dev->enabled;
-}
-
-static const struct device_path sata0_path[] = {
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = PCIE_GPP_B_DEVFN
-	},
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = SATA0_DEVFN
-	},
-};
-
-static const struct device_path sata1_path[] = {
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = PCIE_GPP_B_DEVFN
-	},
-	{
-		.type = DEVICE_PATH_PCI,
-		.pci.devfn = SATA1_DEVFN
-	},
-};
-
-static bool devtree_sata_dev_enabled(void)
-{
-	const struct device *ahci0_dev, *ahci1_dev;
-
-	ahci0_dev = find_dev_nested_path(pci_root_bus(), sata0_path, ARRAY_SIZE(sata0_path));
-	ahci1_dev = find_dev_nested_path(pci_root_bus(), sata1_path, ARRAY_SIZE(sata1_path));
-
-	if (!ahci0_dev || !ahci1_dev)
-		return false;
-
-	return ahci0_dev->enabled || ahci1_dev->enabled;
-}
-
 __weak void mb_pre_fspm(void)
 {
 }
@@ -225,9 +144,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	/* PCIe power vs. speed */
 	mcfg->pspp_policy = config->pspp_policy;
 
-	mcfg->enable_nb_azalia = devtree_gfx_hda_dev_enabled();
-	mcfg->hda_enable = devtree_hda_dev_enabled();
-	mcfg->sata_enable = devtree_sata_dev_enabled();
+	mcfg->enable_nb_azalia = is_dev_enabled(DEV_PTR(gfx_hda));
+	mcfg->hda_enable = is_dev_enabled(DEV_PTR(hda));
+	mcfg->sata_enable = is_dev_enabled(DEV_PTR(sata_0)) || is_dev_enabled(DEV_PTR(sata_1));
 
 	if (config->usb_phy_custom) {
 		mcfg->usb_phy = (struct usb_phy_config *)&config->usb_phy;

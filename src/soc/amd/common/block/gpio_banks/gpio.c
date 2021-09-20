@@ -264,11 +264,15 @@ static void set_single_gpio(const struct soc_amd_gpio *g)
 	}
 }
 
-void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
+void gpio_configure_pads_with_override(const struct soc_amd_gpio *base_cfg,
+					size_t base_num_pads,
+					const struct soc_amd_gpio *override_cfg,
+					size_t override_num_pads)
 {
-	size_t i;
+	const struct soc_amd_gpio *c;
+	size_t i, j;
 
-	if (!gpio_list_ptr || !size)
+	if (!base_cfg || !base_num_pads)
 		return;
 
 	/*
@@ -283,8 +287,17 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	 */
 	master_switch_clr(GPIO_MASK_STS_EN | GPIO_INTERRUPT_EN);
 
-	for (i = 0; i < size; i++)
-		set_single_gpio(&gpio_list_ptr[i]);
+	for (i = 0; i < base_num_pads; i++) {
+		c = &base_cfg[i];
+		/* Check if override exist for GPIO from the base configuration */
+		for (j = 0; override_cfg && j < override_num_pads; j++) {
+			if (c->gpio == override_cfg[j].gpio) {
+				c = &override_cfg[j];
+				break;
+			}
+		}
+		set_single_gpio(c);
+	}
 
 	/*
 	 * Re-enable interrupt status generation.
@@ -294,6 +307,11 @@ void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 	 * to be missed during boot.
 	 */
 	master_switch_set(GPIO_INTERRUPT_EN);
+}
+
+void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
+{
+	gpio_configure_pads_with_override(gpio_list_ptr, size, NULL, 0);
 }
 
 int gpio_interrupt_status(gpio_t gpio)
@@ -308,40 +326,6 @@ int gpio_interrupt_status(gpio_t gpio)
 	}
 
 	return 0;
-}
-
-/*
- * This function checks to see if there is an override config present for the
- * provided pad_config. If no override config is present, then the input config
- * is returned. Else, it returns the override config.
- */
-static const struct soc_amd_gpio *gpio_get_config(const struct soc_amd_gpio *c,
-				const struct soc_amd_gpio *override_cfg_table,
-				size_t num)
-{
-	size_t i;
-	if (override_cfg_table == NULL)
-		return c;
-	for (i = 0; i < num; i++) {
-		if (c->gpio == override_cfg_table[i].gpio)
-			return override_cfg_table + i;
-	}
-	return c;
-}
-
-void gpio_configure_pads_with_override(const struct soc_amd_gpio *base_cfg,
-					size_t base_num_pads,
-					const struct soc_amd_gpio *override_cfg,
-					size_t override_num_pads)
-{
-	size_t i;
-	const struct soc_amd_gpio *c;
-
-	for (i = 0; i < base_num_pads; i++) {
-		c = gpio_get_config(base_cfg + i, override_cfg,
-				override_num_pads);
-		program_gpios(c, 1);
-	}
 }
 
 static void check_and_add_wake_gpio(gpio_t begin, gpio_t end, struct gpio_wake_state *state)

@@ -3,8 +3,8 @@
 # Only include a fixed ID if it is required for legacy reasons!
 # Each part must also be listed in util/spd_tools/ddr4/global_ddr4_mem_parts.json.txt.
 # Generate an updated Makefile.inc and dram_id.generated.txt by running the
-# gen_part_id tool from util/spd_tools/ddr4.
-# See util/spd_tools/ddr4/README.md for more details and instructions.
+# part_id_gen tool from util/spd_tools.
+# See util/spd_tools/README.md for more details and instructions.
 
 # Part Name, Fixed ID (optional)
 # Gumboz shares the same DRAM IDs as Dirinboz since two variants use the same PCB.

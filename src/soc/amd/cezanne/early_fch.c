@@ -35,9 +35,10 @@ static void reset_i2c_peripherals(void)
 /* Initialize port80h routing early if needed */
 void configure_port80_routing_early(void)
 {
-	mb_set_up_early_espi();
-	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI)) {
+		mb_set_up_early_espi();
 		espi_setup();
+	}
 }
 
 /* Before console init */

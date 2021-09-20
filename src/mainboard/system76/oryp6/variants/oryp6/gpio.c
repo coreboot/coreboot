@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <mainboard/gpio.h>
 #include <soc/gpio.h>
+#include <variant/gpio.h>
 
 static const struct pad_config gpio_table[] = {
 	/* ------- GPIO Group GPD ------- */
@@ -88,8 +88,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C11, NONE),
 	PAD_NC(GPP_C12, NONE),
 	PAD_NC(GPP_C13, NONE),
-	PAD_CFG_GPO(GPP_C14, 1, RSMRST), // M.2_PLT_RST_CNTRL1#
-	PAD_CFG_GPO(GPP_C15, 1, RSMRST), // M.2_PLT_RST_CNTRL2#
+	//PAD_CFG_GPO(GPP_C14, 1, RSMRST), // M.2_PLT_RST_CNTRL1#
+	//PAD_CFG_GPO(GPP_C15, 1, RSMRST), // M.2_PLT_RST_CNTRL2#
 	PAD_CFG_NF(GPP_C16, NONE, PLTRST, NF1), // I2C_SDA_TP
 	PAD_CFG_NF(GPP_C17, NONE, PLTRST, NF1), // I2C_SCL_TP
 	PAD_CFG_NF(GPP_C18, NONE, PLTRST, NF1), // I2C_SDA_Pantone
@@ -141,7 +141,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E12, NONE), // USB_OC3# (test point)
 
 	/* ------- GPIO Group GPP_F ------- */
-	PAD_CFG_GPO(GPP_F0, 1, RSMRST), // TBT_PERST_N
+	//PAD_CFG_GPO(GPP_F0, 1, RSMRST), // TBT_PERST_N
 	PAD_CFG_GPI(GPP_F1, NONE, DEEP), // M.2_SSD2_PEDET (board error)
 	PAD_CFG_GPI(GPP_F2, NONE, DEEP), // TBTA_HRESET
 	PAD_NC(GPP_F3, NONE),
@@ -163,8 +163,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF1), // NB_ENAVDD
 	PAD_CFG_NF(GPP_F20, NONE, DEEP, NF1), // BLON
 	PAD_CFG_NF(GPP_F21, NONE, DEEP, NF1), // EDP_BRIGHTNESS
-	PAD_CFG_GPO(GPP_F22, 0, DEEP), // DGPU_RST#_PCH
-	PAD_CFG_GPO(GPP_F23, 0, DEEP), // DGPU_PWR_EN
+	//PAD_CFG_GPO(GPP_F22, 0, DEEP), // DGPU_RST#_PCH
+	//PAD_CFG_GPO(GPP_F23, 0, DEEP), // DGPU_PWR_EN
 
 	/* ------- GPIO Group GPP_G ------- */
 	PAD_CFG_GPI(GPP_G0, NONE, DEEP), // BOARD_ID1
@@ -193,7 +193,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_H13, NONE, DEEP), // 100k pull up
 	PAD_NC(GPP_H14, NONE),
 	PAD_CFG_GPI(GPP_H15, NONE, DEEP), // 20k pull up
-	PAD_CFG_GPO(GPP_H16, 1, RSMRST), // TBT_RTD3_PWR_EN_R
+	//PAD_CFG_GPO(GPP_H16, 1, RSMRST), // TBT_RTD3_PWR_EN_R
 	PAD_CFG_GPO(GPP_H17, 1, PLTRST), // TBT_FORCE_PWR_R
 	PAD_NC(GPP_H18, NONE),
 	PAD_CFG_GPO(GPP_H19, 1, DEEP), // GPIO_CARD_AUX
@@ -242,10 +242,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_K5, NONE),
 	_PAD_CFG_STRUCT(GPP_K6, 0x40880100, 0x0000), // SWI#
 	PAD_NC(GPP_K7, NONE),
-	PAD_CFG_GPO(GPP_K8, 1, RSMRST), // SATA_M2_PWR_EN1
-	PAD_CFG_GPO(GPP_K9, 1, RSMRST), // SATA_M2_PWR_EN2
+	//PAD_CFG_GPO(GPP_K8, 1, RSMRST), // SATA_M2_PWR_EN1
+	//PAD_CFG_GPO(GPP_K9, 1, RSMRST), // SATA_M2_PWR_EN2
 	PAD_CFG_GPO(GPP_K10, 1, DEEP), // LANRTD3_WAKE#
-	PAD_CFG_GPO(GPP_K11, 1, RSMRST), // GPIO_LANRTD3
+	//PAD_CFG_GPO(GPP_K11, 1, RSMRST), // GPIO_LANRTD3
 	PAD_NC(GPP_K12, NONE),
 	PAD_NC(GPP_K13, NONE),
 	PAD_NC(GPP_K14, NONE), // GPP_K_14_GSXDIN (test point)
@@ -260,7 +260,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_K23, NONE, DEEP), // DGPU_PWRGD_R
 };
 
-void mainboard_configure_gpios(void)
+void variant_configure_gpios(void)
 {
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }

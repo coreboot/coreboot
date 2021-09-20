@@ -328,6 +328,9 @@ void bootblock_fch_early_init(void)
 {
 	int reboot = 0;
 
+	/* Enable_acpimmio_decode_pm04 to enable the ACPIMMIO decode which is needed to access
+	   the GPIO registers. */
+	enable_acpimmio_decode_pm04();
 	lpc_enable_rom();
 	sb_enable_lpc();
 	lpc_enable_port80();
@@ -335,7 +338,6 @@ void bootblock_fch_early_init(void)
 	lpc_enable_spi_prefetch();
 	sb_init_spi_base();
 	sb_disable_4dw_burst(); /* Must be disabled on CZ(ST) */
-	enable_acpimmio_decode_pm04();
 	fch_smbus_init();
 	fch_enable_cf9_io();
 	setup_spread_spectrum(&reboot);

@@ -14,6 +14,7 @@
 #include <soc/smi.h>
 #include <assert.h>
 #include <string.h>
+#include <types.h>
 
 /*
  * acpimmio_gpio0, acpimmio_remote_gpio and acpimmio_iomux are defined in

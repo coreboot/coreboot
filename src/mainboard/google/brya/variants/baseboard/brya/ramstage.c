@@ -11,18 +11,14 @@
 
 #define MILLIWATTS_TO_WATTS	1000
 
+WEAK_DEV_PTR(dptf_policy);
+
 void variant_update_power_limits(const struct cpu_power_limits *limits, size_t num_entries)
 {
 	if (!num_entries)
 		return;
 
-	const struct device_path policy_path[] = {
-		{ .type = DEVICE_PATH_PCI, .pci.devfn = SA_DEVFN_DPTF},
-		{ .type = DEVICE_PATH_GENERIC, .generic.id = 0}
-	};
-
-	const struct device *policy_dev = find_dev_nested_path(pci_root_bus(),
-							policy_path, ARRAY_SIZE(policy_path));
+	const struct device *policy_dev = DEV_PTR(dptf_policy);
 	if (!policy_dev)
 		return;
 

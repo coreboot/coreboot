@@ -1,0 +1,2 @@
+config BOARD_INTEL_DQ67SW
+	bool "DQ67SW"

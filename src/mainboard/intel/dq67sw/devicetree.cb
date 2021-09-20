@@ -1,0 +1,67 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		subsystemid 0x8086 0x2008 inherit
+		device ref host_bridge on end	# Host bridge
+		device ref peg10 on end		# PEG
+		device ref igd on end		# iGPU
+
+		chip southbridge/intel/bd82x6x	# Intel Series 6 Cougar Point PCH
+			register "gen1_dec" = "0x000c0291"
+			register "sata_interface_speed_support" = "0x3"
+			register "sata_port_map" = "0x3f"
+			register "spi_lvscc" = "0x2005"
+			register "spi_uvscc" = "0x2005"
+			device ref mei1 on end		# Management Engine Interface 1
+			device ref me_ide_r on end	# Management Engine IDE-R
+			device ref me_kt on end		# Management Engine KT
+			device ref gbe on end		# Intel Gigabit Ethernet
+			device ref ehci2 on end		# USB2 EHCI #2
+			device ref hda on end		# High Definition Audio
+			device ref pcie_rp1 on end	# PCIe Port #1
+			device ref pcie_rp5 on end	# PCIe Port #5
+			device ref pcie_rp7 on end	# PCIe Port #7
+			device ref ehci1 on end		# USB2 EHCI #1
+			device ref pci_bridge on end	# PCI bridge
+			device ref lpc on		# LPC bridge
+				chip superio/winbond/w83667hg-a	# Super I/O
+					device pnp 2e.0 off end		# FDC
+					device pnp 2e.1 off end		# LPT1
+					device pnp 2e.2 on		# COM1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 off end		# COM2
+					device pnp 2e.5 on		# PS/2 keyboard & mouse
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1
+						irq 0x72 = 12
+					end
+					device pnp 2e.106 off end	# SPI1 (CIR?)
+					device pnp 2e.107 off end	# GPIO6
+					device pnp 2e.207 off end	# GPIO7
+					device pnp 2e.307 off end	# GPIO8
+					device pnp 2e.407 off end	# GPIO9
+					device pnp 2e.8 off end		# WDT
+					device pnp 2e.108 off end	# GPIO1
+					device pnp 2e.9 off end		# GPIO2
+					device pnp 2e.109 off end	# GPIO3
+					device pnp 2e.209 off end	# GPIO4
+					device pnp 2e.309 off end	# GPIO5
+					device pnp 2e.a on end		# ACPI
+					device pnp 2e.b on		# HW Monitor
+						io 0x60 = 0x290
+						irq 0x70 = 0
+					end
+					device pnp 2e.c on end		# PECI
+					device pnp 2e.d off end		# VID_BUSSEL
+					device pnp 2e.f on end		# GPIO_PP_OD
+				end
+			end
+			device ref sata1 on end		# SATA (AHCI)
+			device ref smbus on end		# SMBus
+		end
+	end
+end

@@ -1,2 +1,5 @@
 config BOARD_SYSTEM76_ADDW1
 	bool "addw1"
+
+config BOARD_SYSTEM76_ADDW2
+	bool "addw2"

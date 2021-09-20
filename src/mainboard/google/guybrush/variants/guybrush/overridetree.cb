@@ -169,7 +169,4 @@ chip soc/amd/cezanne
 		end
 	end
 
-	# TODO(b/198596430): Disable in-band alerts after majority boards are reworked
-	register "common_config.espi_config.alert_pin" = "ESPI_ALERT_PIN_IN_BAND"
-
 end	# chip soc/amd/cezanne

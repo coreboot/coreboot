@@ -27,6 +27,9 @@ chip soc/intel/alderlake
 	register "pmc_gpe0_dw1" = "GPP_D"
 	register "pmc_gpe0_dw2" = "GPP_E"
 
+	# Enable HECI1 communication
+	register "HeciEnabled" = "1"
+
 	# FSP configuration
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC1)"	# Type-C port 0
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"	# Type-C port 1

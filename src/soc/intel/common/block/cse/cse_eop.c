@@ -185,10 +185,15 @@ static void set_cse_end_of_post(void *unused)
 
 /*
  * Ideally, to give coreboot maximum flexibility, sending EOP would be done as
- * late possible, just before loading the payload, which would be BS_ON_EXIT
- * here, but the platforms this is currently supported for all select
- * HECI_DISABLE_USING_SMM, which runs in BS_ON_EXIT. Because sending EOP
- * requires HECI to be up, and it is not trivial to control the order in which
- * these callbacks are issued, it is called on BS_ON_ENTRY.
+ * late possible. If HECI_DISABLE_USING_SMM is selected, then sending EOP must
+ * be performed before the HECI bus is disabled, so these boards use
+ * BS_PAYLOAD_LOAD, which happens before the HECI_DISABLE_USING_SMM Kconfig takes
+ * effect (EOP is sent using the HECI bus).
+ * Otherwise, EOP can be pushed a little later, and can be performed in
+ * BS_PAYLOAD_BOOT instead.
  */
+#if !CONFIG(HECI_DISABLE_USING_SMM)
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, set_cse_end_of_post, NULL);
+#else
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_ENTRY, set_cse_end_of_post, NULL);
+#endif

@@ -90,12 +90,8 @@ static const struct pad_config gpio_table[] = {
 	/* D9  : WWAN_FCP_POWER_OFF_N */
 	PAD_CFG_GPO(GPP_D9, 1, PLTRST),
 
-	/* D10 : PCH_SSD_PWR_EN */
-	PAD_CFG_GPO(GPP_D10, 1, PLTRST),
 	/* H0  : PCH_SSD_RST# */
 	PAD_CFG_GPO(GPP_H0, 1, PLTRST),
-	/* D16 : CPU_SSD_PWR_EN */
-	PAD_CFG_GPO(GPP_D16, 1, PLTRST),
 	/* H13 : CPU_SSD_RST# */
 	PAD_CFG_GPO(GPP_H13, 1, PLTRST),
 

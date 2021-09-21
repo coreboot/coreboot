@@ -12,6 +12,11 @@ static const struct pad_config early_gpio_table[] = {
 	/* WWAN_PWR_EN */
 	PAD_CFG_GPO(GPP_A8, 1, DEEP),
 
+	/* H0  : PCH_SSD_RST# */
+	PAD_CFG_GPO(GPP_H0, 0, PLTRST),
+	/* H13 : CPU_SSD_RST# */
+	PAD_CFG_GPO(GPP_H13, 0, PLTRST),
+
 	/* CPU PCIe VGPIO for RP0 */
 	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_0, NONE, DEEP, NF1),
 	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_1, NONE, DEEP, NF1),
@@ -111,6 +116,12 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF4),
 	/* F12 : GSPI1_MOSI */
 	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF4),
+
+	 /* D10 : PCH_SSD_PWR_EN */
+	PAD_CFG_GPO(GPP_D10, 1, PLTRST),
+	/* D16 : CPU_SSD_PWR_EN */
+	PAD_CFG_GPO(GPP_D16, 1, PLTRST),
+
 };
 
 static const struct pad_config early_uart_gpio_table[] = {

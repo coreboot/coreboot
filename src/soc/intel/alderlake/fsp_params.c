@@ -13,6 +13,7 @@
 #include <option.h>
 #include <intelblocks/irq.h>
 #include <intelblocks/lpss.h>
+#include <intelblocks/pmclib.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <intelblocks/tcss.h>
@@ -618,6 +619,36 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 		fill_vr_domain_config(s_cfg, i, &config->domain_vr_config[i]);
 
 	s_cfg->LpmStateEnableMask = get_supported_lpm_mask();
+
+	/* Apply minimum assertion width settings */
+	if (config->pch_slp_s3_min_assertion_width == SLP_S3_ASSERTION_DEFAULT)
+		s_cfg->PchPmSlpS3MinAssert = SLP_S3_ASSERTION_50_MS;
+	else
+		s_cfg->PchPmSlpS3MinAssert = config->pch_slp_s3_min_assertion_width;
+
+	if (config->pch_slp_s4_min_assertion_width == SLP_S4_ASSERTION_DEFAULT)
+		s_cfg->PchPmSlpS4MinAssert = SLP_S4_ASSERTION_1S;
+	else
+		s_cfg->PchPmSlpS4MinAssert = config->pch_slp_s4_min_assertion_width;
+
+	if (config->pch_slp_sus_min_assertion_width == SLP_SUS_ASSERTION_DEFAULT)
+		s_cfg->PchPmSlpSusMinAssert = SLP_SUS_ASSERTION_4_S;
+	else
+		s_cfg->PchPmSlpSusMinAssert = config->pch_slp_sus_min_assertion_width;
+
+	if (config->pch_slp_a_min_assertion_width == SLP_A_ASSERTION_DEFAULT)
+		s_cfg->PchPmSlpAMinAssert = SLP_A_ASSERTION_2_S;
+	else
+		s_cfg->PchPmSlpAMinAssert = config->pch_slp_a_min_assertion_width;
+
+	unsigned int power_cycle_duration = config->pch_reset_power_cycle_duration;
+	if (power_cycle_duration == POWER_CYCLE_DURATION_DEFAULT)
+		power_cycle_duration = POWER_CYCLE_DURATION_4S;
+
+	s_cfg->PchPmPwrCycDur = get_pm_pwr_cyc_dur(s_cfg->PchPmSlpS4MinAssert,
+						   s_cfg->PchPmSlpS3MinAssert,
+						   s_cfg->PchPmSlpAMinAssert,
+						   power_cycle_duration);
 }
 
 static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,

@@ -93,8 +93,9 @@ smm_trampoline32:
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %ss
+	xor	%ax, %ax /* zero out the gs and fs segment index */
 	movw	%ax, %fs
-	movw	%ax, %gs
+	movw	%ax, %gs /* Will be used for cpu_info */
 
 	/* The CPU number is calculated by reading the initial APIC id. Since
 	 * the OS can manipulate the APIC id use the non-changing cpuid result

@@ -52,8 +52,9 @@ __ap_protected_start:
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %ss
+	xor	%ax, %ax /* zero out the gs and fs segment index */
 	movw	%ax, %fs
-	movw	%ax, %gs
+	movw	%ax, %gs /* Will be used for cpu_info */
 
 	/* Load the Interrupt descriptor table */
 	lidt	idtarg

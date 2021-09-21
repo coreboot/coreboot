@@ -39,8 +39,9 @@ _start:
 	movl	%eax, %ds
 	movl	%eax, %es
 	movl	%eax, %ss
+	xor	%eax, %eax /* zero out the gs and fs segment index */
 	movl	%eax, %fs
-	movl	%eax, %gs
+	movl	%eax, %gs /* Will be used for cpu_info */
 #if ENV_X86_64
 	mov	$RAM_CODE_SEG64, %ecx
 	call	SetCodeSelector

@@ -37,8 +37,9 @@ bootblock_protected_mode_entry:
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %ss
+	xor	%ax, %ax /* zero out the gs and fs segment index */
 	movw	%ax, %fs
-	movw	%ax, %gs
+	movw	%ax, %gs /* Will be used for cpu_info */
 
 	/* Restore the BIST value to %eax */
 	movl	%ebp, %eax

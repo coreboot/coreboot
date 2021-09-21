@@ -250,7 +250,7 @@ static void cmd_add_usage(void)
 		"<event_type>:          an hexadecimal number (0-255). Prefix '0x' is optional\n"
 		"[event_data]:          (optional) a series of hexadecimal numbers. Must be:\n"
 		"                       - len(event_data) %% 2 == 0\n"
-		"                       - len(event_data) in bytes <= %ld\n"
+		"                       - len(event_data) in bytes <= %zu\n"
 		"\n"
 		"Example:\n"
 		"%s add 0x16 01ABF0  # 01ABF0 is actually three bytes: 0x01, 0xAB and 0xF0\n"
@@ -300,7 +300,7 @@ static int cmd_add_parse_args(uint8_t *type, uint8_t *data, size_t *data_size)
 
 	if (*data_size > ELOG_MAX_EVENT_DATA_SIZE) {
 		fprintf(stderr,
-			"Error: Event data length (in bytes) should be <= %ld; got: %ld\n",
+			"Error: Event data length (in bytes) should be <= %zu; got: %zu\n",
 			ELOG_MAX_EVENT_DATA_SIZE, *data_size);
 		return ELOGTOOL_EXIT_BAD_ARGS;
 	}

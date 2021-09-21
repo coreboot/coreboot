@@ -50,7 +50,7 @@ const void *event_get_data(const struct event_header *event)
 
 /* Populate timestamp in event header with given time. */
 void elog_fill_timestamp(struct event_header *event, uint8_t sec, uint8_t min,
-			 uint8_t hour, uint8_t mday, uint8_t mon, uint8_t year)
+			 uint8_t hour, uint8_t mday, uint8_t mon, uint16_t year)
 {
 	event->second = bin2bcd(sec);
 	event->minute = bin2bcd(min);

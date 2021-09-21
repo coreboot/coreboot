@@ -366,15 +366,19 @@ $(LIB_SPD_BIN): $(LIB_SPD_DEPS)
 	    (echo "HAVE_SPD_IN_CBFS is set but SPD_SOURCES is empty" && exit 1)
 	test -n "$(LIB_SPD_DEPS)" || \
 	    (echo "SPD_SOURCES is set but no SPD file was found" && exit 1)
-	for f in $(LIB_SPD_DEPS); do \
-	    if [ ! -f $$f ]; then \
-	        echo "File not found: $$f" >&2; \
-	        exit 1; \
-	    fi; \
-	    for c in $$(cat $$f | grep --binary-files=text -v ^#); \
-	        do printf $$(printf '\\%o' 0x$$c); \
+	if [ "$(SPD_SOURCES)" = "placeholder" ]; then \
+	    printf '\0'; \
+	else \
+	    for f in $(LIB_SPD_DEPS); do \
+	        if [ ! -f $$f ]; then \
+	            echo "File not found: $$f" >&2; \
+	            exit 1; \
+	        fi; \
+	        for c in $$(cat $$f | grep --binary-files=text -v ^#); \
+	            do printf $$(printf '\\%o' 0x$$c); \
+	        done; \
 	    done; \
-	done > $@
+	fi > $@
 
 cbfs-files-y += spd.bin
 spd.bin-file := $(LIB_SPD_BIN)

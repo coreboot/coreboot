@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <cpu/intel/microcode.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -340,11 +341,12 @@ static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
 	size_t microcode_len;
 
 	/* Locate microcode and pass to FSP-S for 2nd microcode loading */
-	microcode_file = cbfs_map("cpu_microcode_blob.bin", &microcode_len);
+	microcode_file = intel_microcode_find();
+	microcode_len = get_microcode_size(microcode_file);
 
 	if ((microcode_file != NULL) && (microcode_len != 0)) {
 		/* Update CPU Microcode patch base address/size */
-		s_cfg->MicrocodeRegionBase = (uint32_t)microcode_file;
+		s_cfg->MicrocodeRegionBase = (uint32_t)(uintptr_t)microcode_file;
 		s_cfg->MicrocodeRegionSize = (uint32_t)microcode_len;
 	}
 

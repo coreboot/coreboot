@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/x86/cpu_info.S.inc>
 #include <rules.h>
 
 /*
@@ -35,13 +36,7 @@ _start:
 	/* reset stack pointer to CAR/EARLYRAM stack */
 	mov	$_STACK_TOP, %esp
 
-#if CONFIG(COOP_MULTITASKING)
-	/* Push the thread pointer. */
-	push	$0
-#endif
-	/* Push the CPU index and struct CPU */
-	push	$0
-	push	$0
+	push_cpu_info
 
 	/* clear .bss section as it is not shared */
 	cld

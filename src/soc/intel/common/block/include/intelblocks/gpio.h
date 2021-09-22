@@ -186,7 +186,8 @@ void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads);
  * This function configures raw pads in base config and applies override in
  * override config if any. Thus, for every GPIO_x in base config, this function
  * looks up the GPIO in override config and if it is present there, then applies
- * the configuration from override config.
+ * the configuration from override config. GPIOs that are only specified in the
+ * override, but not in the base configuration, will be ignored.
  */
 void gpio_configure_pads_with_override(const struct pad_config *base_cfg,
 					size_t base_num_pads,

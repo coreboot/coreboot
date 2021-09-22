@@ -5,8 +5,6 @@
 
 #define asmlinkage
 
-static inline unsigned int smp_processor_id(void) { return 0; }
-
 struct cpu_driver { };
 
 #endif /* __ARCH_CPU_H__ */

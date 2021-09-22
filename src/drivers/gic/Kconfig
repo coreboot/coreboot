@@ -1,4 +1,0 @@
-config GIC
-	def_bool n
-	help
-	  This option enables GIC support, the ARM generic interrupt controller.

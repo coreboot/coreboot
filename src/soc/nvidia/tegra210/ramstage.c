@@ -5,7 +5,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <device/mmio.h>
-#include <gic.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/mmu_operations.h>
@@ -41,9 +40,6 @@ static void mselect_enable_wrap(void)
 void ramstage_entry(void);
 void ramstage_entry(void)
 {
-	/* TODO: Is this still needed? */
-	gic_init();
-
 	/* TODO: Move arch timer setup to BL31? */
 	arm64_arch_timer_init();
 

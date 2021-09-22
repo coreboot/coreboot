@@ -321,7 +321,7 @@ chip soc/amd/picasso
 							register "desc" = ""Bluetooth""
 							register "type" = "UPC_TYPE_INTERNAL"
 							register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_14)"
-							device usb 2.5 on end
+							device usb 2.5 alias xhci0_bt on end
 						end
 					end
 				end
@@ -341,7 +341,7 @@ chip soc/amd/picasso
 							register "desc" = ""Bluetooth""
 							register "type" = "UPC_TYPE_INTERNAL"
 							register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_14)"
-							device usb 2.1 on end
+							device usb 2.1 alias xhci1_bt on end
 						end
 						chip drivers/usb/acpi
 							register "desc" = ""World-Facing Camera""
@@ -364,7 +364,7 @@ chip soc/amd/picasso
 					# Set low (0) = Select DMIC0
 					# Set high (1) = Select DMIC1
 					register "dmic_select_gpio" = "ACPI_GPIO_OUTPUT(GPIO_67)"
-					device generic 0.0 on end
+					device generic 0.0 alias acp_machine on end
 				end
 			end # Audio
 			device ref hda off end # HDA
@@ -390,7 +390,7 @@ chip soc/amd/picasso
 								register "property_list[1].type" = "ACPI_DP_TYPE_STRING"
 								register "property_list[1].name" = ""realtek,mclk-name""
 								register "property_list[1].string" = ""oscout1""
-								device i2c 1a on end
+								device i2c 1a alias audio_rt5682 on end
 							end
 						end
 					end

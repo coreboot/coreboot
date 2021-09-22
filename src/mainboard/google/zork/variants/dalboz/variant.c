@@ -3,60 +3,11 @@
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <drivers/i2c/generic/chip.h>
-#include <soc/pci_devs.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/i2c_tunnel/chip.h>
 #include <string.h>
 
-#define EC_PNP_ID 0x0c09
-#define DALBOZ_DB_USBC 0x0
 #define DALBOZ_DB_HDMI 0x1
-
-/* Look for an EC device of type PNP with id 0x0c09 */
-static bool match_ec_dev(DEVTREE_CONST struct device *dev)
-{
-	if (dev->path.type != DEVICE_PATH_PNP)
-		return false;
-
-	if (dev->path.pnp.port != EC_PNP_ID)
-		return false;
-
-	return true;
-}
-
-extern struct chip_operations drivers_i2c_generic_ops;
-
-/* Look for an I2C device with HID "10EC5682" */
-static bool match_audio_dev(DEVTREE_CONST struct device *dev)
-{
-	struct drivers_i2c_generic_config *cfg;
-
-	if (dev->chip_ops != &drivers_i2c_generic_ops)
-		return false;
-
-	cfg = dev->chip_info;
-
-	return !strcmp(cfg->hid, "10EC5682");
-}
-
-extern struct chip_operations ec_google_chromeec_i2c_tunnel_ops;
-
-/* Look for Cros EC tunnel device which has audio device under it. */
-static bool match_audio_tunnel(DEVTREE_CONST struct device *dev)
-{
-	const struct device *audio_dev;
-
-	if (dev->chip_ops != &ec_google_chromeec_i2c_tunnel_ops)
-		return false;
-
-	audio_dev = dev_find_matching_device_on_bus(dev->link_list, match_audio_dev);
-
-	if (!audio_dev)
-		return false;
-
-	return true;
-}
 
 /*
  * This is to allow support for audio on older board versions (< 2). [b/153458561]. This
@@ -65,9 +16,7 @@ static bool match_audio_tunnel(DEVTREE_CONST struct device *dev)
 static void update_audio_configuration(void)
 {
 	uint32_t board_version;
-	const struct device *lpc_controller;
-	const struct device *ec_dev;
-	const struct device *i2c_tunnel_dev;
+	const struct device *i2c_tunnel_dev = DEV_PTR(audio_rt5682);
 	struct ec_google_chromeec_i2c_tunnel_config *cfg;
 
 	/* If CBI board version cannot be read, assume this is an older revision of hardware. */
@@ -77,32 +26,7 @@ static void update_audio_configuration(void)
 	if (board_version >= 2)
 		return;
 
-	lpc_controller = SOC_LPC_DEV;
-	if (lpc_controller == NULL) {
-		printk(BIOS_ERR, "%s: LPC controller device not found!\n", __func__);
-		return;
-	}
-
-	ec_dev = dev_find_matching_device_on_bus(lpc_controller->link_list, match_ec_dev);
-
-	if (ec_dev == NULL) {
-		printk(BIOS_ERR, "%s: EC device not found!\n", __func__);
-		return;
-	}
-
-	i2c_tunnel_dev = dev_find_matching_device_on_bus(ec_dev->link_list, match_audio_tunnel);
-
-	if (i2c_tunnel_dev == NULL) {
-		printk(BIOS_ERR, "%s: I2C tunnel device not found!\n", __func__);
-		return;
-	}
-
-	cfg = i2c_tunnel_dev->chip_info;
-	if (cfg == NULL) {
-		printk(BIOS_ERR, "%s: I2C tunnel device config not found!\n", __func__);
-		return;
-	}
-
+	cfg = config_of(i2c_tunnel_dev);
 	cfg->remote_bus = 5;
 }
 

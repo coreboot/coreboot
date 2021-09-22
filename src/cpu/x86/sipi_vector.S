@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/x86/cpu_info.S.inc>
 #include <cpu/x86/cr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/msr.h>
@@ -18,6 +19,10 @@ gdtaddr:
 .long 0 /* table */
 .word 0 /* unused */
 idt_ptr:
+.long 0
+per_cpu_segment_descriptors:
+.long 0
+per_cpu_segment_selector:
 .long 0
 stack_top:
 .long 0
@@ -98,6 +103,23 @@ _start:
 	movl	stack_top, %edx
 	subl	%eax, %edx
 	mov	%edx, %esp
+
+#if CONFIG(CPU_INFO_V2)
+	push_cpu_info index=%ecx
+	push_per_cpu_segment_data
+
+	/*
+	 * Update the AP's per_cpu_segment_descriptor to point to the
+	 * per_cpu_segment_data that was allocated on the stack.
+	 */
+	set_segment_descriptor_base per_cpu_segment_descriptors, %esp, %ecx
+
+	mov	%ecx, %eax
+	shl	$3, %eax /* The index is << 3 in the segment selector */
+	add	per_cpu_segment_selector, %eax
+	mov	%eax, %gs
+#endif
+
 	andl	$0xfffffff0, %esp /* ensure stack alignment */
 
 	/* Save CPU number. */

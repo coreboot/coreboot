@@ -236,11 +236,40 @@ struct cpu_info {
 #endif
 };
 
+/*
+ * This structure describes the data allocated in the %gs segment for each CPU.
+ * In order to read from this structure you will need to use assembly to
+ * reference the segment.
+ *
+ * e.g., Reading the cpu_info pointer:
+ *     %%gs:0
+ */
+struct per_cpu_segment_data {
+	/*
+	 * Instead of keeping a `struct cpu_info`, we actually keep a pointer
+	 * pointing to the cpu_info struct located in %ds. This prevents
+	 * needing specific access functions to read the fields in the cpu_info.
+	 */
+	struct cpu_info *cpu_info;
+};
+
 static inline struct cpu_info *cpu_info(void)
 {
+/* We use a #if because we don't want to mess with the &s below. */
+#if CONFIG(CPU_INFO_V2)
+	struct cpu_info *ci = NULL;
+
+	__asm__("mov %%gs:%c[offset], %[ci]"
+		: [ci] "=r" (ci)
+		: [offset] "i" (offsetof(struct per_cpu_segment_data, cpu_info))
+	);
+
+	return ci;
+#else
 	char s;
 	uintptr_t info = ALIGN_UP((uintptr_t)&s, CONFIG_STACK_SIZE) - sizeof(struct cpu_info);
 	return (struct cpu_info *)info;
+#endif /* CPU_INFO_V2 */
 }
 
 struct cpuinfo_x86 {

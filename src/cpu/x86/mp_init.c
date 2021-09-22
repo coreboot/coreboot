@@ -89,6 +89,8 @@ struct sipi_params {
 	uint32_t gdt;
 	uint16_t unused;
 	uint32_t idt_ptr;
+	uint32_t per_cpu_segment_descriptors;
+	uint32_t per_cpu_segment_selector;
 	uint32_t stack_top;
 	uint32_t stack_size;
 	uint32_t microcode_lock; /* 0xffffffff means parallel loading. */
@@ -215,10 +217,20 @@ static void setup_default_sipi_vector_params(struct sipi_params *sp)
 	sp->gdt = (uintptr_t)&gdt;
 	sp->gdtlimit = (uintptr_t)&gdt_end - (uintptr_t)&gdt - 1;
 	sp->idt_ptr = (uintptr_t)&idtarg;
+	if (CONFIG(CPU_INFO_V2)) {
+		sp->per_cpu_segment_descriptors = (uintptr_t)&per_cpu_segment_descriptors;
+		sp->per_cpu_segment_selector = per_cpu_segment_selector;
+	}
 	sp->stack_size = CONFIG_STACK_SIZE;
 	sp->stack_top = ALIGN_DOWN((uintptr_t)&_estack, CONFIG_STACK_SIZE);
-	/* Adjust the stack top to take into account cpu_info. */
-	sp->stack_top -= sizeof(struct cpu_info);
+	/*
+	 * In the CPU_INFO_V2 case, we don't need to pre-allocate the space on the stack.
+	 * Instead we push them onto the top of the stack in the sipi vector.
+	 */
+	if (!CONFIG(CPU_INFO_V2)) {
+		/* Adjust the stack top to take into account cpu_info. */
+		sp->stack_top -= sizeof(struct cpu_info);
+	}
 }
 
 #define NUM_FIXED_MTRRS 11

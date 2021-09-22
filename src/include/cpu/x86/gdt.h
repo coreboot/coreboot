@@ -5,6 +5,8 @@
 
 /* These symbols are defined in c_start.S. */
 extern char gdt[];
+extern char per_cpu_segment_descriptors[];
+extern uint32_t per_cpu_segment_selector;
 extern char gdt_end[];
 extern char idtarg[];
 

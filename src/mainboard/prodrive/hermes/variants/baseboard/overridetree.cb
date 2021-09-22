@@ -8,6 +8,7 @@ chip soc/intel/cannonlake
 
 	register "SataMode" = "0"		# AHCI
 	register "SataSalpSupport" = "0"
+	register "satapwroptimize" = "1"
 	register "SataPortsDevSlp[1]" = "1"	# PCH_M2_SATA_DEVSLP1
 
 	register "SataPortsEnable[0]" = "1"
@@ -162,7 +163,6 @@ chip soc/intel/cannonlake
 	}"
 
 	register "DisableHeciRetry" = "1"
-
 
 	device domain 0 on
 		device pci 02.0 on end	# Integrated Graphics Device

@@ -172,7 +172,13 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_E3, NONE, PLTRST, LEVEL, INVERT),
 
 	/* E4  : SATA_DEVSLP0 ==> USB4_BB_RT_FORCE_PWR */
-        PAD_CFG_GPO(GPP_E4, 0, DEEP)
+	PAD_CFG_GPO(GPP_E4, 0, DEEP),
+
+	/* H1 : GPPC_H1_TCH_PAD_TCH_PNL2_LS_EN */
+	PAD_CFG_GPO(GPP_H1, 0, PLTRST),
+
+	/* D11 : TCH_PAD_INT_N */
+	PAD_CFG_GPI_APIC(GPP_D11, NONE, PLTRST, LEVEL, INVERT)
 };
 
 void variant_configure_gpio_pads(void)

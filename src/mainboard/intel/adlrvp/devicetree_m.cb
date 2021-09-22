@@ -275,6 +275,16 @@ chip soc/intel/alderlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 0a on end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0000""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_D11_IRQ)"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H1)"
+				register "generic.wake" = "GPE0_DW1_11"
+				register "generic.probed" = "1"
+				register "generic.has_power_resource" = "1"
+				device i2c 15 on end
+			end
 		end
 		device ref i2c1 on
 			chip drivers/intel/mipi_camera

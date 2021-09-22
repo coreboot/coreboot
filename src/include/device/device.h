@@ -214,20 +214,6 @@ DEVTREE_CONST struct device *dev_find_path(
 		enum device_path_type path_type);
 struct device *dev_find_lapic(unsigned int apic_id);
 int dev_count_cpu(void);
-
-/*
- * Signature for matching function that is used by dev_find_matching_device_on_bus() to decide
- * if the device being considered is the one that matches the caller's criteria. This function
- * is supposed to return true if the provided device matches the criteria, else false.
- */
-typedef bool (*match_device_fn)(DEVTREE_CONST struct device *dev);
-/*
- * Returns the first device on the bus that the match_device_fn returns true for. If no such
- * device is found, it returns NULL.
- */
-DEVTREE_CONST struct device *dev_find_matching_device_on_bus(const struct bus *bus,
-							match_device_fn fn);
-
 struct device *add_cpu_device(struct bus *cpu_bus, unsigned int apic_id,
 				int enabled);
 void set_cpu_topology(struct device *cpu, unsigned int node,

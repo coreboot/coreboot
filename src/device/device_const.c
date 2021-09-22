@@ -70,19 +70,6 @@ DEVTREE_CONST struct device *dev_find_path(
 	return result;
 }
 
-DEVTREE_CONST struct device *dev_find_matching_device_on_bus(const struct bus *bus,
-							match_device_fn fn)
-{
-	DEVTREE_CONST struct device *child = NULL;
-
-	while ((child = dev_bus_each_child(bus, child)) != NULL) {
-		if (fn(child))
-			break;
-	}
-
-	return child;
-}
-
 /**
  * Given a device pointer, find the next PCI device.
  *

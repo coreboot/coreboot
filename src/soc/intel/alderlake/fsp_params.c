@@ -367,6 +367,13 @@ static void fill_fsps_igd_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
+	const struct device *tcss_port_arr[] = {
+		DEV_PTR(tcss_usb3_port1),
+		DEV_PTR(tcss_usb3_port2),
+		DEV_PTR(tcss_usb3_port3),
+		DEV_PTR(tcss_usb3_port4),
+	};
+
 	s_cfg->TcssAuxOri = config->TcssAuxOri;
 
 	/* Explicitly clear this field to avoid using defaults */
@@ -385,15 +392,7 @@ static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 
 	s_cfg->UsbTcPortEn = 0;
 	for (int i = 0; i < MAX_TYPE_C_PORTS; i++) {
-		/* TCSS xHCI --> Root Hub --> Type-C Port */
-		const struct device_path port_path[] = {
-			{.type = DEVICE_PATH_PCI, .pci.devfn = SA_DEVFN_TCSS_XHCI},
-			{.type = DEVICE_PATH_USB, .usb.port_type = 0, .usb.port_id = 0},
-			{.type = DEVICE_PATH_USB, .usb.port_type = 3, .usb.port_id = i} };
-		const struct device *port = find_dev_nested_path(pci_root_bus(), port_path,
-					ARRAY_SIZE(port_path));
-
-		if (is_dev_enabled(port))
+		if (is_dev_enabled(tcss_port_arr[i]))
 			s_cfg->UsbTcPortEn |= BIT(i);
 	}
 }

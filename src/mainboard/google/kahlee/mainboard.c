@@ -115,7 +115,7 @@ static void mainboard_init(void *chip_info)
 	mainboard_ec_init();
 
 	gpios = variant_gpio_table(&num_gpios);
-	program_gpios(gpios, num_gpios);
+	gpio_configure_pads(gpios, num_gpios);
 
 	/* Initialize i2c busses that were not initialized in bootblock */
 	i2c_soc_init();

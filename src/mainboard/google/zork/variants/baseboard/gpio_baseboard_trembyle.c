@@ -195,7 +195,7 @@ static void wifi_power_reset_configure_active_low_power(void)
 		/* EN_PWR_WIFI_L */
 		PAD_GPO(GPIO_42, LOW),
 	};
-	program_gpios(v3_wifi_table, ARRAY_SIZE(v3_wifi_table));
+	gpio_configure_pads(v3_wifi_table, ARRAY_SIZE(v3_wifi_table));
 
 }
 
@@ -218,7 +218,7 @@ static void wifi_power_reset_configure_active_high_power(void)
 		/* EN_PWR_WIFI */
 		PAD_GPO(GPIO_42, LOW),
 	};
-	program_gpios(v3_wifi_table, ARRAY_SIZE(v3_wifi_table));
+	gpio_configure_pads(v3_wifi_table, ARRAY_SIZE(v3_wifi_table));
 
 	mdelay(10);
 	gpio_set(GPIO_42, 1);
@@ -252,7 +252,7 @@ static void wifi_power_reset_configure_pre_v3(void)
 		/* EN_PWR_WIFI */
 		PAD_GPO(GPIO_29, LOW),
 	};
-	program_gpios(pre_v3_wifi_table, ARRAY_SIZE(pre_v3_wifi_table));
+	gpio_configure_pads(pre_v3_wifi_table, ARRAY_SIZE(pre_v3_wifi_table));
 
 	mdelay(10);
 	gpio_set(GPIO_29, 1);
@@ -275,7 +275,7 @@ __weak void variant_pcie_gpio_configure(void)
 		PAD_GPO(GPIO_142, HIGH),
 	};
 
-	program_gpios(pcie_gpio_table, ARRAY_SIZE(pcie_gpio_table));
+	gpio_configure_pads(pcie_gpio_table, ARRAY_SIZE(pcie_gpio_table));
 
 	if (variant_uses_v3_schematics())
 		wifi_power_reset_configure_v3();

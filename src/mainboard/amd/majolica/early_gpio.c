@@ -14,5 +14,5 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 
 void mainboard_program_early_gpios(void)
 {
-	program_gpios(gpio_set_stage_reset, ARRAY_SIZE(gpio_set_stage_reset));
+	gpio_configure_pads(gpio_set_stage_reset, ARRAY_SIZE(gpio_set_stage_reset));
 }

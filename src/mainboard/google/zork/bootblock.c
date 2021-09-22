@@ -10,7 +10,7 @@ void bootblock_mainboard_early_init(void)
 	const struct soc_amd_gpio *gpios;
 
 	gpios = variant_bootblock_gpio_table(&num_gpios, acpi_get_sleep_type());
-	program_gpios(gpios, num_gpios);
+	gpio_configure_pads(gpios, num_gpios);
 
 	variant_pcie_gpio_configure();
 }

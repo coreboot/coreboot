@@ -309,7 +309,7 @@ void gpio_configure_pads_with_override(const struct soc_amd_gpio *base_cfg,
 	master_switch_set(GPIO_INTERRUPT_EN);
 }
 
-void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
+void gpio_configure_pads(const struct soc_amd_gpio *gpio_list_ptr, size_t size)
 {
 	gpio_configure_pads_with_override(gpio_list_ptr, size, NULL, 0);
 }

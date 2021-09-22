@@ -34,5 +34,5 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 
 void mainboard_program_gpios(void)
 {
-	program_gpios(gpio_set_stage_ram, ARRAY_SIZE(gpio_set_stage_ram));
+	gpio_configure_pads(gpio_set_stage_ram, ARRAY_SIZE(gpio_set_stage_ram));
 }

@@ -23,5 +23,5 @@ static const struct soc_amd_gpio emmc_gpios[] = {
 /* Don't call this if the board uses the LPC bus. */
 void mainboard_program_emmc_gpios(void)
 {
-	program_gpios(emmc_gpios, ARRAY_SIZE(emmc_gpios));
+	gpio_configure_pads(emmc_gpios, ARRAY_SIZE(emmc_gpios));
 }

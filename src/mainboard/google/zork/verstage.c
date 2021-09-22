@@ -11,7 +11,7 @@ static void setup_gpio(void)
 
 	printk(BIOS_DEBUG, "Setting GPIOs\n");
 	gpios = variant_early_gpio_table(&num_gpios);
-	program_gpios(gpios, num_gpios);
+	gpio_configure_pads(gpios, num_gpios);
 	printk(BIOS_DEBUG, "GPIOs setup\n");
 }
 

@@ -86,7 +86,7 @@ uintptr_t gpio_get_address(gpio_t gpio_num);
  *
  * @return none
  */
-void program_gpios(const struct soc_amd_gpio *gpio_list_ptr, size_t size);
+void gpio_configure_pads(const struct soc_amd_gpio *gpio_list_ptr, size_t size);
 /* Return the interrupt status and clear if set. */
 int gpio_interrupt_status(gpio_t gpio);
 /* Implemented by soc, provides table of available GPIO mapping to Gevents */

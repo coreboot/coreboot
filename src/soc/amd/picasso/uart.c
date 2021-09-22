@@ -53,7 +53,7 @@ void set_uart_config(unsigned int idx)
 	if (idx >= ARRAY_SIZE(uart_info))
 		return;
 
-	program_gpios(uart_info[idx].mux, 2);
+	gpio_configure_pads(uart_info[idx].mux, 2);
 }
 
 static const char *uart_acpi_name(const struct device *dev)

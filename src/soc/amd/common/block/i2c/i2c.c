@@ -164,7 +164,7 @@ void sb_reset_i2c_peripherals(const struct soc_i2c_peripheral_reset_info *reset_
 		   that will be changed need to be saved first */
 		gpio_save_pin_registers(reset_info->i2c_scl[i].pin.gpio, &save_table[i]);
 		/* Program SCL GPIO as output driven high */
-		program_gpios(&reset_info->i2c_scl[i].pin, 1);
+		gpio_configure_pads(&reset_info->i2c_scl[i].pin, 1);
 	}
 
 	/*

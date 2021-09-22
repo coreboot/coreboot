@@ -46,5 +46,5 @@ void bootblock_mainboard_init(void)
 	const struct soc_amd_gpio *gpios;
 
 	gpios = early_gpio_table(&num_gpios);
-	program_gpios(gpios, num_gpios);
+	gpio_configure_pads(gpios, num_gpios);
 }

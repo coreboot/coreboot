@@ -362,7 +362,7 @@ __weak void variant_fpmcu_reset(void)
 		/* EN_PWR_FP */
 		PAD_GPO(GPIO_32, LOW),
 	};
-	program_gpios(fpmcu_bootblock_table, ARRAY_SIZE(fpmcu_bootblock_table));
+	gpio_configure_pads(fpmcu_bootblock_table, ARRAY_SIZE(fpmcu_bootblock_table));
 }
 
 __weak void variant_finalize_gpios(void)
@@ -380,6 +380,6 @@ __weak void variant_finalize_gpios(void)
 		/* Deassert the FPMCU reset to enable the FPMCU */
 		gpio_set(GPIO_11, 1); /* FPMCU_RST_L */
 	} else {
-		program_gpios(disable_fpmcu_table, ARRAY_SIZE(disable_fpmcu_table));
+		gpio_configure_pads(disable_fpmcu_table, ARRAY_SIZE(disable_fpmcu_table));
 	}
 }

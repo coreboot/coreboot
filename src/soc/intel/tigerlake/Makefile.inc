@@ -31,6 +31,7 @@ ramstage-y += elog.c
 ramstage-y += espi.c
 ramstage-y += finalize.c
 ramstage-y += fsp_params.c
+ramstage-y += graphics.c
 ramstage-y += lockdown.c
 ramstage-y += lpm.c
 ramstage-y += me.c

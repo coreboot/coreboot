@@ -12,11 +12,9 @@ DefinitionBlock(
 )
 {
 	#include <acpi/dsdt_top.asl>
-	#include "acpi/platform.asl"
-
-	#include <soc/intel/skylake/acpi/globalnvs.asl>
-
 	#include <cpu/intel/common/acpi/cpu.asl>
+	#include <soc/intel/skylake/acpi/globalnvs.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 	Device (\_SB.PCI0)
 	{
@@ -25,8 +23,6 @@ DefinitionBlock(
 		#include "acpi/graphics.asl"
 	}
 
-	#include <southbridge/intel/common/acpi/sleepstates.asl>
-
-	// Mainboard specific
 	#include "acpi/mainboard.asl"
+	#include "acpi/platform.asl"
 }

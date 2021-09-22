@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/aoac.h>
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #include <amdblocks/uart.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>

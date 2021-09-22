@@ -4,7 +4,7 @@
 #define AMD_BLOCK_ACPI_H
 
 #include <acpi/acpi.h>
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #include <types.h>
 
 /* ACPI MMIO registers 0xfed80800 */

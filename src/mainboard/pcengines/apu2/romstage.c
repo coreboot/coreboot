@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <amdblocks/acpimmio.h>
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #include <amdblocks/gpio_defs.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>

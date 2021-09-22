@@ -3,7 +3,7 @@
 #ifndef AMD_COMMON_BLOCK_I2C_H
 #define AMD_COMMON_BLOCK_I2C_H
 
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #include <device/i2c.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <types.h>

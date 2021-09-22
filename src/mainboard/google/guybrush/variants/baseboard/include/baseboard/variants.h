@@ -3,7 +3,7 @@
 #ifndef __BASEBOARD_VARIANTS_H__
 #define __BASEBOARD_VARIANTS_H__
 
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #include <soc/pci_devs.h>
 
 #define WLAN_DEVFN	PCIE_GPP_2_0_DEVFN

@@ -13,7 +13,7 @@
 #include <amdblocks/reset.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #include <amdblocks/i2c.h>
 #include <amdblocks/smi.h>
 #include <soc/acpi.h>

@@ -3,7 +3,7 @@
 #ifndef __BASEBOARD_VARIANTS_H__
 #define __BASEBOARD_VARIANTS_H__
 
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 
 /*
  * This function provides base GPIO configuration table. It is typically provided by

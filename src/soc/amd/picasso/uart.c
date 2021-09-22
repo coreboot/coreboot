@@ -4,7 +4,7 @@
 #include <commonlib/helpers.h>
 #include <device/device.h>
 #include <device/mmio.h>
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #include <amdblocks/aoac.h>
 #include <amdblocks/uart.h>
 #include <soc/aoac_defs.h>

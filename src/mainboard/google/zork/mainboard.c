@@ -7,7 +7,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <amdblocks/amd_pci_util.h>
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #include <amdblocks/smi.h>
 #include <baseboard/variants.h>
 #include <boardid.h>

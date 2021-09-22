@@ -3,7 +3,7 @@
 #include <acpi/acpi.h>
 #include <assert.h>
 #include <amdblocks/acpimmio.h>
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #include <amdblocks/gpio_defs.h>
 #include <amdblocks/i2c.h>
 #include <console/console.h>

@@ -8,7 +8,7 @@
 #include <gpio.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #include <amdblocks/smi.h>
 #include <soc/gpio.h>
 #include <soc/smi.h>

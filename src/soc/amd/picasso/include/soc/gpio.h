@@ -8,7 +8,7 @@
 
 #ifndef __ACPI__
 #include <soc/iomap.h>
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #endif /* !__ACPI__ */
 
 #include <amdblocks/gpio_defs.h>

@@ -3,7 +3,7 @@
 #include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/amd_pci_util.h>
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #include <amdblocks/smi.h>
 #include <assert.h>
 #include <bootstate.h>

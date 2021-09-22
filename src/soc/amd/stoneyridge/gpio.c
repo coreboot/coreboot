@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <amdblocks/gpio_banks.h>
+#include <amdblocks/gpio.h>
 #include <soc/gpio.h>
 #include <types.h>
 

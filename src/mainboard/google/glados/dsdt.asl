@@ -11,13 +11,10 @@ DefinitionBlock(
 )
 {
 	#include <acpi/dsdt_top.asl>
-	#include <soc/intel/common/block/acpi/acpi/platform.asl>
-
-	// global NVS and variables
-	#include <soc/intel/skylake/acpi/globalnvs.asl>
-
-	// CPU
 	#include <cpu/intel/common/acpi/cpu.asl>
+	#include <soc/intel/common/block/acpi/acpi/platform.asl>
+	#include <soc/intel/skylake/acpi/globalnvs.asl>
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)
@@ -31,8 +28,5 @@ DefinitionBlock(
 		#include "acpi/dptf.asl"
 	}
 
-	#include <southbridge/intel/common/acpi/sleepstates.asl>
-
-	// Mainboard specific
 	#include "acpi/mainboard.asl"
 }

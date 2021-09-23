@@ -136,6 +136,8 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 {
 	m_cfg->SaGv = config->SaGv;
 	m_cfg->RMT = config->RMT;
+	if (config->MaxDramSpeed)
+		m_cfg->DdrFreqLimit = config->MaxDramSpeed;
 }
 
 static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,

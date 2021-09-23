@@ -436,6 +436,8 @@ struct soc_intel_alderlake_config {
 	* 0 = VR_DOMAIN_IA Core 1 = VR_DOMAIN_GT.
 	*/
 	struct vr_config domain_vr_config[NUM_VR_DOMAINS];
+
+	uint16_t MaxDramSpeed;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

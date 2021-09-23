@@ -1,9 +1,12 @@
 config SOC_AMD_COMMON_BLOCK_PI
 	bool
+	depends on SOC_AMD_COMMON_BLOCK_ACPI
+	select CACHE_MRC_SETTINGS
 	select HAVE_DEBUG_RAM_SETUP
+	select MRC_WRITE_NV_LATE
 	help
 	  This option builds functions that interface AMD's AGESA reference
-	  code packaged in the binaryPI form.
+	  code packaged in the binaryPI form and S3-related functionality.
 
 if SOC_AMD_COMMON_BLOCK_PI
 

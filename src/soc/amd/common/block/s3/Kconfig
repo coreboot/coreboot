@@ -1,7 +1,0 @@
-config SOC_AMD_COMMON_BLOCK_S3
-	bool
-	depends on SOC_AMD_COMMON_BLOCK_ACPI
-	select CACHE_MRC_SETTINGS
-	select MRC_WRITE_NV_LATE
-	help
-	  Select this option to add S3 related functions to the build.

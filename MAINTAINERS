@@ -857,6 +857,12 @@ S:	Maintained
 F:	src/superio/
 F:	util/superiotool/
 
+SPD UTILITIES
+M:	Reka Norman <rekanorman@chromium.org>
+S:	Maintained
+F:	util/spd_tools/
+F:	util/spdtool/
+
 MEMLAYOUT
 M:	Julius Werner <jwerner@chromium.org>
 S:	Supported

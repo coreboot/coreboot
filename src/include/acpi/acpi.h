@@ -128,6 +128,18 @@ typedef struct acpi_gen_regaddr {
 #define ACPI_ACCESS_SIZE_DWORD_ACCESS	3
 #define ACPI_ACCESS_SIZE_QWORD_ACCESS	4
 
+/* Macros for common resource types */
+#define ACPI_REG_MSR(address, offset, width) \
+	{ \
+		.space_id    = ACPI_ADDRESS_SPACE_FIXED, \
+		.access_size = ACPI_ACCESS_SIZE_QWORD_ACCESS, \
+		.addrl       = address, \
+		.bit_offset  = offset, \
+		.bit_width   = width, \
+	}
+
+#define ACPI_REG_UNSUPPORTED	{0}
+
 /* Common ACPI HIDs */
 #define ACPI_HID_FDC "PNP0700"
 #define ACPI_HID_KEYBOARD "PNP0303"

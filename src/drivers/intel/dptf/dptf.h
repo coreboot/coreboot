@@ -15,8 +15,15 @@ struct dptf_platform_info {
 	const char *generic_hid;
 	const char *fan_hid;
 	const char *tpch_device_hid;
-	const char *tpch_rfc0_method;
-	const char *tpch_rfc1_method;
+	struct {
+		const char *set_fivr_low_clock_method;
+		const char *set_fivr_high_clock_method;
+		const char *get_fivr_low_clock_method;
+		const char *get_fivr_high_clock_method;
+		const char *get_fivr_ssc_method;
+		const char *get_fivr_switching_fault_status;
+		const char *get_fivr_switching_freq_mhz;
+	} tpch_method_names;
 };
 
 const struct dptf_platform_info *get_dptf_platform_info(void);

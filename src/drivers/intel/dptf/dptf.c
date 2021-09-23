@@ -5,16 +5,21 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <intelblocks/pmc_ipc.h>
+#include <soc/pci_devs.h>
 #include "chip.h"
 #include "dptf.h"
 
 /* Generic DPTF participants have a PTYP field to distinguish them */
 enum dptf_generic_participant_type {
 	DPTF_GENERIC_PARTICIPANT_TYPE_TSR	= 0x3,
+	DPTF_GENERIC_PARTICIPANT_TYPE_TPCH	= 0x5,
 	DPTF_GENERIC_PARTICIPANT_TYPE_CHARGER	= 0xB,
 };
 
 #define DEFAULT_CHARGER_STR		"Battery Charger"
+#define DEFAULT_TPCH_STR		"Intel PCH FIVR Participant"
+
+#define PMC_IPC_COMMAND_FIVR_SIZE	0x8
 
 /*
  * Helper method to determine if a device is "used" (called out anywhere as a source or a target
@@ -195,23 +200,100 @@ static void write_generic_devices(const struct drivers_intel_dptf_config *config
 	}
 }
 
-/* \_SB.DPTF.TPCH.RFC methods */
-static void write_tpch_rfc_methods(const char *tpch_rfc_method_name,
+static const char *get_pmc_ipcs_method(void)
+{
+	const char *method = acpi_device_path_join(
+				pcidev_path_on_root(PCH_DEVFN_PMC), "IPCS");
+	if (!method) {
+		printk(BIOS_ERR, "%s: Unable to find PMC device IPCS method\n", __func__);
+		return NULL;
+	}
+	return method;
+}
+
+static void write_tpch_write_method(const char *tpch_write_method_name,
 				unsigned int ipc_subcmd_ctrl_value)
 {
-	acpigen_write_method_serialized(tpch_rfc_method_name, 1);
-	acpigen_emit_namestring("IPCS");
+	/* Get IPCS method from the PMC device */
+	const char *ipcs = get_pmc_ipcs_method();
+	acpigen_write_method_serialized(tpch_write_method_name, 1);
+	acpigen_emit_namestring(ipcs);
 	acpigen_write_integer(PMC_IPC_CMD_COMMAND_FIVR);
 	acpigen_write_integer(PMC_IPC_CMD_CMD_ID_FIVR_WRITE);
-	acpigen_write_integer(0x8);
+	acpigen_write_integer(PMC_IPC_COMMAND_FIVR_SIZE);
 	acpigen_write_integer(ipc_subcmd_ctrl_value);
 	acpigen_emit_byte(ARG0_OP);
-	acpigen_write_dword(0);
-	acpigen_write_dword(0);
+	acpigen_write_zero();
+	acpigen_write_zero();
 	/* The reason for returning a value here is a W/A for the ESIF shell */
 	acpigen_emit_byte(RETURN_OP);
 	acpigen_write_package(0);
 	acpigen_write_package_end();
+	acpigen_write_method_end();
+}
+
+static void write_ppkg_package(const uint8_t i)
+{
+	acpigen_write_store();
+	acpigen_emit_byte(DEREF_OP);
+	acpigen_emit_byte(INDEX_OP);
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_write_integer(i);
+	acpigen_emit_byte(ZERO_OP);
+	acpigen_emit_byte(INDEX_OP);
+	acpigen_emit_namestring("PPKG");
+	acpigen_write_integer(i);
+	acpigen_emit_byte(ZERO_OP);
+}
+
+/*
+ * Truncate Package received from IPC
+ * Arguments:
+ *  Arg0: Package returned from the IPCS read call from the Pmc
+ * Return Value:
+ *  Return Package with just the Status and ReadBuf0
+ *  Status returns 0 for success and 2 for device error
+ */
+static void write_pkgc_method(void)
+{
+	acpigen_write_method_serialized("PKGC", 1);
+	acpigen_write_name("PPKG");
+	acpigen_write_package(2);
+	acpigen_write_zero();
+	acpigen_write_zero();
+	acpigen_write_package_end();
+
+	write_ppkg_package(0);
+	write_ppkg_package(1);
+
+	acpigen_write_return_namestr("PPKG");
+	acpigen_write_method_end();
+}
+
+static void write_tpch_read_method(const char *tpch_read_method_name,
+				unsigned int ipc_subcmd_ctrl_value)
+{
+	/* Get IPCS method from the PMC device */
+	const char *ipcs = get_pmc_ipcs_method();
+	acpigen_write_method_serialized(tpch_read_method_name, 0);
+	acpigen_write_store();
+	acpigen_emit_namestring(ipcs);
+	acpigen_write_integer(PMC_IPC_CMD_COMMAND_FIVR);
+	acpigen_write_integer(PMC_IPC_CMD_CMD_ID_FIVR_READ);
+	acpigen_write_integer(PMC_IPC_COMMAND_FIVR_SIZE);
+	acpigen_write_integer(ipc_subcmd_ctrl_value);
+	acpigen_write_zero();
+	acpigen_write_zero();
+	acpigen_write_zero();
+	acpigen_emit_byte(LOCAL0_OP);
+
+	acpigen_write_store();
+	acpigen_emit_namestring("PKGC");
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_emit_byte(LOCAL1_OP);
+
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_byte(LOCAL1_OP);
 	acpigen_write_method_end();
 }
 
@@ -220,7 +302,8 @@ static void write_create_tpch(const struct dptf_platform_info *platform_info)
 	acpigen_write_device("TPCH");
 	acpigen_write_name("_HID");
 	dptf_write_hid(platform_info->use_eisa_hids, platform_info->tpch_device_hid);
-	acpigen_write_name_integer("_UID", 0);
+	acpigen_write_name_string("_STR", DEFAULT_TPCH_STR);
+	acpigen_write_name_integer("PTYP", DPTF_GENERIC_PARTICIPANT_TYPE_TPCH);
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 }
 
@@ -228,12 +311,58 @@ static void write_tpch_methods(const struct dptf_platform_info *platform_info)
 {
 	write_create_tpch(platform_info);
 
-	/* Create RFC0 method */
-	write_tpch_rfc_methods(platform_info->tpch_rfc0_method,
-			PMC_IPC_SUBCMD_RFI_CTRL0_LOGIC);
-	/* Create RFC1 method */
-	write_tpch_rfc_methods(platform_info->tpch_rfc1_method,
-			PMC_IPC_SUBCMD_RFI_CTRL4_LOGIC);
+	const struct {
+		enum { READ, WRITE } type;
+		const char *method_name;
+		unsigned int subcommand;
+	} tpch_methods[] = {
+		{	.type = WRITE,
+			.method_name =
+				platform_info->tpch_method_names.set_fivr_low_clock_method,
+			.subcommand = PMC_IPC_SUBCMD_RFI_CTRL0_LOGIC
+		},
+		{	.type = WRITE,
+			.method_name =
+				platform_info->tpch_method_names.set_fivr_high_clock_method,
+			.subcommand = PMC_IPC_SUBCMD_RFI_CTRL4_LOGIC
+		},
+		{	.type = READ,
+			.method_name =
+				platform_info->tpch_method_names.get_fivr_low_clock_method,
+			.subcommand = PMC_IPC_SUBCMD_RFI_CTRL0_LOGIC
+		},
+		{	.type = READ,
+			.method_name =
+				platform_info->tpch_method_names.get_fivr_high_clock_method,
+			.subcommand = PMC_IPC_SUBCMD_RFI_CTRL4_LOGIC
+		},
+		{	.type = READ,
+			.method_name =
+				platform_info->tpch_method_names.get_fivr_ssc_method,
+			.subcommand = PMC_IPC_SUBCMD_EMI_CTRL0_LOGIC
+		},
+		{	.type = READ,
+			.method_name =
+			platform_info->tpch_method_names.get_fivr_switching_fault_status,
+			.subcommand = PMC_IPC_SUBCMD_FFFC_FAULT_STATUS
+		},
+		{	.type = READ,
+			.method_name =
+				platform_info->tpch_method_names.get_fivr_switching_freq_mhz,
+			.subcommand = PMC_IPC_SUBCMD_FFFC_RFI_STATUS
+		},
+	};
+
+	write_pkgc_method();
+	for (size_t i = 0; i < ARRAY_SIZE(tpch_methods); i++) {
+		if (tpch_methods[i].type == READ) {
+			write_tpch_read_method(tpch_methods[i].method_name,
+						tpch_methods[i].subcommand);
+		} else if (tpch_methods[i].type == WRITE) {
+			write_tpch_write_method(tpch_methods[i].method_name,
+						tpch_methods[i].subcommand);
+		}
+	}
 
 	acpigen_write_device_end(); /* TPCH Device */
 }

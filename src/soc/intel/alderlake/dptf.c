@@ -12,10 +12,16 @@ static const struct dptf_platform_info adl_dptf_platform_info = {
 	.fan_hid = "INTC1048",
 	/* _HID for the toplevel TPCH device, typically \_SB.TPCH */
 	.tpch_device_hid = "INTC1049",
-	/* RFC0 method name */
-	.tpch_rfc0_method = "RFC0",
-	/* RFC1 method name */
-	.tpch_rfc1_method = "RFC1",
+
+	.tpch_method_names = {
+		.set_fivr_low_clock_method = "RFC0",
+		.set_fivr_high_clock_method = "RFC1",
+		.get_fivr_low_clock_method = "GFC0",
+		.get_fivr_high_clock_method = "GFC1",
+		.get_fivr_ssc_method = "GEMI",
+		.get_fivr_switching_fault_status = "GFFS",
+		.get_fivr_switching_freq_mhz = "GFCS",
+	},
 };
 
 const struct dptf_platform_info *get_dptf_platform_info(void)

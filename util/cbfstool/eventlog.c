@@ -657,8 +657,9 @@ int eventlog_init_event(const struct buffer *buf, uint8_t type,
 
 	event->type = type;
 	gmtime_r(&secs, &tm);
+	/* Month should be +1, since gmtime uses 0 as first month */
 	elog_fill_timestamp(event, tm.tm_sec, tm.tm_min, tm.tm_hour,
-			    tm.tm_mday, tm.tm_mon, tm.tm_year);
+			    tm.tm_mday, tm.tm_mon + 1, tm.tm_year);
 
 	if (data && data_size) {
 		uint32_t *ptr = (uint32_t *)&event[1];

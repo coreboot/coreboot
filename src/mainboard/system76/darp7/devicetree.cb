@@ -117,7 +117,8 @@ chip soc/intel/tigerlake
 			chip soc/intel/common/block/pcie/rtd3
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B16)" # SSD1_PWR_EN
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D13)" # GPP_D13_SSD1_PLT_RST#
-				register "srcclk_pin" = "0" # SSD1_CLKREQ#
+				# TODO: Support disable/enable CPU RP clock
+				register "srcclk_pin" = "-1" # SSD1_CLKREQ#
 				device generic 0 on end
 			end
 		end

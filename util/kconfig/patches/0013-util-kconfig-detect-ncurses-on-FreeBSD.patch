@@ -9,11 +9,11 @@ Change-Id: I4344ba2116c0b8618357db4248d993509cbb666e
  util/kconfig/mconf-cfg.sh | 6 ++++++
  1 file changed, 6 insertions(+)
 
-diff --git a/util/kconfig/mconf-cfg.sh b/util/kconfig/mconf-cfg.sh
-index b520e407a8..2047e626b4 100755
---- a/util/kconfig/mconf-cfg.sh
-+++ b/util/kconfig/mconf-cfg.sh
-@@ -33,6 +33,12 @@ if [ -f /usr/include/ncurses/ncurses.h ]; then
+Index: kconfig/mconf-cfg.sh
+===================================================================
+--- kconfig.orig/mconf-cfg.sh
++++ kconfig/mconf-cfg.sh
+@@ -33,6 +33,12 @@ if [ -f /usr/include/ncurses/ncurses.h ]
  	exit 0
  fi
  
@@ -26,6 +26,3 @@ index b520e407a8..2047e626b4 100755
  # As a final fallback before giving up, check if $HOSTCC knows of a default
  # ncurses installation (e.g. from a vendor-specific sysroot).
  if echo '#include <ncurses.h>' | ${HOSTCC} -E - >/dev/null 2>&1; then
--- 
-2.31.1
-

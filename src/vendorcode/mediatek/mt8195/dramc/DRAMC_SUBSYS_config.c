@@ -278,37 +278,6 @@ void DRAMC_SUBSYS_PRE_CONFIG(DRAMC_CTX_T *p, DRAMC_SUBSYS_CONFIG_T *tr)
    //[3733:6400]      4
    //[400 :3733)      2
 
-#if __LP5_COMBO__
-    else if (MEM_TYPE == LPDDR5)
-    {
-        #if SA_CONFIG_EN
-            if(p->freq_sel==LP5_DDR4266)
-            {
-                (tr->DFS_GP[0])->data_rate = 4266; (tr->DFS_GP[0])->DQ_P2S_RATIO = 8 ; tr->DFS_GP[0]->CKR = 4;tr->DFS_GP[0]->DQSIEN_MODE = 2;
-            }
-            else if(p->freq_sel==LP5_DDR5500)
-            {
-                (tr->DFS_GP[0])->data_rate = 5500; (tr->DFS_GP[0])->DQ_P2S_RATIO = 16 ; tr->DFS_GP[0]->CKR = 4;tr->DFS_GP[0]->DQSIEN_MODE = 2;
-            }
-            else
-            {
-                (tr->DFS_GP[0])->data_rate = 3200; (tr->DFS_GP[0])->DQ_P2S_RATIO = 8 ; tr->DFS_GP[0]->CKR = 2;tr->DFS_GP[0]->DQSIEN_MODE = 1;
-            }
-        #else
-        (tr->DFS_GP[0])->data_rate = 6400; (tr->DFS_GP[0])->DQ_P2S_RATIO = 16; tr->DFS_GP[0]->CKR = 4;tr->DFS_GP[0]->DQSIEN_MODE = 1;
-        #endif
-        (tr->DFS_GP[1])->data_rate = 3200; (tr->DFS_GP[1])->DQ_P2S_RATIO = 8 ; tr->DFS_GP[1]->CKR = 2;tr->DFS_GP[1]->DQSIEN_MODE = 1;
-        (tr->DFS_GP[2])->data_rate = 1600; (tr->DFS_GP[2])->DQ_P2S_RATIO = 4 ; tr->DFS_GP[2]->CKR = 2;tr->DFS_GP[2]->DQSIEN_MODE = 1;
-        (tr->DFS_GP[3])->data_rate = 4266; (tr->DFS_GP[3])->DQ_P2S_RATIO = 8 ; tr->DFS_GP[3]->CKR = 4;tr->DFS_GP[3]->DQSIEN_MODE = 1;
-        (tr->DFS_GP[4])->data_rate = 3733; (tr->DFS_GP[4])->DQ_P2S_RATIO = 8 ; tr->DFS_GP[4]->CKR = 4;tr->DFS_GP[4]->DQSIEN_MODE = 1;
-        (tr->DFS_GP[5])->data_rate = 1600; (tr->DFS_GP[5])->DQ_P2S_RATIO = 8 ; tr->DFS_GP[5]->CKR = 2;tr->DFS_GP[5]->DQSIEN_MODE = 1;
-        (tr->DFS_GP[6])->data_rate = 1200; (tr->DFS_GP[6])->DQ_P2S_RATIO = 4 ; tr->DFS_GP[6]->CKR = 2;tr->DFS_GP[6]->DQSIEN_MODE = 1;
-        (tr->DFS_GP[7])->data_rate = 800 ; (tr->DFS_GP[7])->DQ_P2S_RATIO = 4 ; tr->DFS_GP[7]->CKR = 2;tr->DFS_GP[7]->DQSIEN_MODE = 1;
-        (tr->DFS_GP[8])->data_rate = 400 ; (tr->DFS_GP[8])->DQ_P2S_RATIO = 4 ; tr->DFS_GP[8]->CKR = 2;tr->DFS_GP[8]->DQSIEN_MODE = 1;
-        (tr->DFS_GP[9])->data_rate = 5500; (tr->DFS_GP[9])->DQ_P2S_RATIO = 16; tr->DFS_GP[9]->CKR = 4;tr->DFS_GP[9]->DQSIEN_MODE = 1;
-        LP5_DRAM_config(tr->DFS_GP[0],tr->lp5_init);
-    }
-#endif
     ANA_TOP_FUNCTION_CFG(tr->a_cfg,tr->DFS_GP[0]->data_rate);
     ANA_CLK_DIV_config(tr->a_opt,tr->DFS_GP[0]);
     mcSHOW_DBG_MSG6(("=================================== \n"));

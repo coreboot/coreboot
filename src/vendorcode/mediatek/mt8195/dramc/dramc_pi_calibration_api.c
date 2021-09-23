@@ -748,22 +748,6 @@ const U8 uiLPDDR4_O1_DRAM_Pinmux[PINMUX_MAX][CHANNEL_NUM][16] =
 
 //CA DRAM->APHY
 #if (CA_PER_BIT_DELAY_CELL || PINMUX_AUTO_TEST_PER_BIT_CA)
-#if __LP5_COMBO__
-const U8 uiLPDDR5_CA_Mapping_POP[CHANNEL_NUM][7] =
-{
-    //CH-A
-    {
-        0, 1, 2, 3, 4, 5, 6
-    },
-
-#if (CHANNEL_NUM>1)
-    //CH-B
-    {
-        0, 4, 2, 3, 1, 5, 6
-    }
-#endif
-};
-#endif
 
 U8 uiLPDDR4_CA_Mapping_POP[CHANNEL_NUM][6] =
 {
@@ -788,23 +772,6 @@ U8 uiLPDDR4_CA_Mapping_POP[CHANNEL_NUM][6] =
 	3, 5, 1, 0, 2, 4
     },
 #endif
-};
-#endif
-
-#if (__LP5_COMBO__)
-const U8 uiLPDDR5_O1_Mapping_POP[CHANNEL_NUM][16] =
-{
-    {
-        8, 9, 10, 11, 12, 15, 14, 13,
-        0, 1, 2, 3, 4, 7, 6, 5,
-    },
-
-    #if (CHANNEL_NUM>1)
-    {
-        8, 9, 10, 11, 12, 15, 14, 13,
-        0, 1, 2, 3, 4, 7, 6, 5,
-    },
-    #endif
 };
 #endif
 
@@ -836,152 +803,6 @@ U8 uiLPDDR4_O1_Mapping_POP[CHANNEL_NUM][16] =
     },
     #endif
 };
-
-#if 0
-static DRAM_STATUS_T DramcMRInit_LP4(DRAMC_CTX_T *p)
-{
-    mcSHOW_DBG_MSG2(("=== LP4 MR Init ===\n"));
-
-    U32 u4RankIdx;
-    U8 u1MRFsp = FSP_0;
-
-    DramcBroadcastOnOff(DRAMC_BROADCAST_OFF);
-
-    // LP4_HIGHEST_FREQ == 1866
-    /* Set MR01 OP[6:4] to 110B = 6 */
-    u1MR01Value[FSP_0] |= (0x6 << 4);
-    u1MR01Value[FSP_1] |= (0x6 << 4);
-    mcSHOW_DBG_MSG2(("(FSP0)MR#1 = 0x%x\n", u1MR01Value[FSP_0]));
-
-//    for (u1ChannelIdx = 0; u1ChannelIdx < (p->support_channel_num); u1ChannelIdx++)
-    {
-        for (u4RankIdx = 0; u4RankIdx < (U32)(p->support_rank_num); u4RankIdx++)
-        {
-            // FSP_0
-            u1MRFsp = FSP_0;
-//            DramcMRWriteFldAlign(p, 13, 0, MR13_FSP_WR, TO_MR);
-
-            //MR2 set Read/Write Latency
-            if ((p->frequency == 800) || (p->frequency == 600) || (p->frequency == 400)) // DDR1600, DDR1200, DDR800
-            {
-                u1MR02Value[u1MRFsp] = 0x12;
-            }
-            else if (p->frequency <= 1200) // DDR2280, DDR2400 (DDR2667 uses FSP_1)
-            {
-                u1MR02Value[u1MRFsp] = 0x24;
-            }
-            else if (p->frequency <= 1333)
-            {
-                u1MR02Value[u1MRFsp] = 0x24;
-            }
-            else if (p->frequency <= 1600)
-            {
-                u1MR02Value[u1MRFsp] = 0x2d;
-            }
-            else if (p->frequency <= 1866)
-            {
-                u1MR02Value[u1MRFsp] = 0x36;
-            }
-            else // if (p->frequency > 1866)
-            {
-                u1MR02Value[u1MRFsp] = 0x3f;
-            }
-            DramcModeRegWriteByRank(p, u4RankIdx, 2, u1MR02Value[u1MRFsp]);
-            mcSHOW_DBG_MSG2(("(FSP0)MR#2 = 0x%x\n", u1MR02Value[u1MRFsp]));
-
-            // FSP_1
-            u1MRFsp = FSP_1;
-
-            //MR2 set Read/Write Latency
-            if ((p->frequency == 800) || (p->frequency == 600) || (p->frequency == 400)) // DDR1600, DDR1200, DDR800
-            {
-                u1MR02Value[u1MRFsp] = 0x12;
-            }
-            else if (p->frequency <= 1200) // DDR2280, DDR2400 (DDR2667 uses FSP_1)
-            {
-                u1MR02Value[u1MRFsp] = 0x24;
-            }
-            else if (p->frequency <= 1333)
-            {
-                u1MR02Value[u1MRFsp] = 0x24;
-            }
-            else if (p->frequency <= 1600)
-            {
-                u1MR02Value[u1MRFsp] = 0x2d;
-            }
-            else if (p->frequency <= 1866)
-            {
-                u1MR02Value[u1MRFsp] = 0x36;
-            }
-            else // if (p->frequency > 1866)
-            {
-                u1MR02Value[u1MRFsp] = 0x3f;
-            }
-            DramcModeRegWriteByRank(p, u4RankIdx, 2, u1MR02Value[u1MRFsp]);
-            mcSHOW_DBG_MSG2(("(FSP1)MR#2 = 0x%x\n", u1MR02Value[u1MRFsp]));
-
-            // To do...
-
-#if FOR_DV_SIMULATION_USED == 1
-           cal_sv_rand_args_t *psra = get_psra(); ;
-
-           if (psra) {
-               u1MR02Value[p->dram_fsp] = psra->mr2_value & 0x7F;
-               DramcModeRegWriteByRank(p, p->rank, 2, u1MR02Value[p->dram_fsp]);
-           }
-#endif /* FOR_DV_SIMULATION_USED */
-        }
-    }
-
-    return DRAM_OK;
-}
-#endif
-#if __LP5_COMBO__
-DRAM_STATUS_T DramcMRInit_LP5(DRAMC_CTX_T *p)
-{
-    mcSHOW_DBG_MSG2(("=== LP5 MR Init ===\n"));
-
-    U32 u4RankIdx;
-    U8 u1MRFsp = FSP_0;
-
-    DramcBroadcastOnOff(DRAMC_BROADCAST_OFF);
-
-//    for (u1ChannelIdx = 0; u1ChannelIdx < (p->support_channel_num); u1ChannelIdx++)
-    {
-        for (u4RankIdx = 0; u4RankIdx < (U32)(p->support_rank_num); u4RankIdx++)
-        {
-            // FSP_0
-            u1MRFsp = FSP_0;
-
-//            if ((p->frequency == 2133) || (p->frequency == 3200))
-            // DV SIM fix DDR6400 <=> Freq 3200
-            {
-               // u1MR18Value[u1MRFsp] = 0x03;
-               // u1MR20Value[u1MRFsp] = 0x02;
-            }
-            mcSHOW_DBG_MSG2(("(FSP0)MR#18 = 0x%x\n", u1MR18Value[u1MRFsp]));
-            mcSHOW_DBG_MSG2(("(FSP0)MR#20 = 0x%x\n", u1MR20Value[u1MRFsp]));
-
-            // FSP_1
-            u1MRFsp = FSP_1;
-            // To do...
-
-
-        }
-    }
-
-#if FOR_DV_SIMULATION_USED == 1
-    cal_sv_rand_args_t *psra = get_psra();
-
-    if (psra) {
-        u1MR18Value[p->dram_fsp] = psra->mr18_value;
-        u1MR20Value[p->dram_fsp] = psra->mr20_value;
-    }
-#endif
-
-    return DRAM_OK;
-}
-#endif
 
 #ifdef IMPEDANCE_TRACKING_ENABLE
 static void ImpedanceTracking_DisImpHw_Setting(DRAMC_CTX_T *p, U8 u1DisImpHw)
@@ -1024,16 +845,6 @@ static void ImpedanceTracking_DisImpHw_Setting(DRAMC_CTX_T *p, U8 u1DisImpHw)
 void vBeforeCalibration(DRAMC_CTX_T *p)
 {
     BOOL isLP4_DSC = (p->DRAMPinmux == PINMUX_DSC)?1:0;
-#if (__LP5_COMBO__ == TRUE)
-    if (TRUE == is_lp5_family(p))
-    {
-        DramcMRInit_LP5(p);
-    }
-    else
-#endif
-    {
-        //DramcMRInit_LP4(p);
-    }
 
 #if SIMULATION_RX_DVS || ENABLE_RX_TRACKING
     DramcRxInputDelayTrackingInit_byFreq(p);
@@ -1056,11 +867,6 @@ void vBeforeCalibration(DRAMC_CTX_T *p)
     U8 u1DisImpHw;
     U32 u4TermFreq, u4WbrBackup;
 
-#if (__LP5_COMBO__ == TRUE)
-    if (TRUE == is_lp5_family(p))
-        u4TermFreq = LP5_MRFSP_TERM_FREQ;
-    else
-#endif
         u4TermFreq = LP4_MRFSP_TERM_FREQ;
 
     u1DisImpHw = (p->frequency >= u4TermFreq)? 0: 1;
@@ -1238,11 +1044,6 @@ static void O1PathOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
         else
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_VREF), 1, SHU_CA_VREF_RG_RX_ARCA_VREF_UNTERM_EN_CA);
 
-        #if (__LP5_COMBO__ == TRUE)
-        if (p->dram_type==TYPE_LPDDR5)
-            u1VrefSel = 0x37;//unterm LP5
-        else
-        #endif
             u1VrefSel = 0x37;//unterm LP4
 
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_PHY_VREF_SEL),
@@ -1304,11 +1105,6 @@ static void O1PathOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
 
 static inline u8 get_ca_pi_per_ui(DRAMC_CTX_T *p)
 {
-#if __LP5_COMBO__
-    if (p->freq_sel == LP5_DDR4266)
-        return 64;
-    else
-#endif
         return 32;
 }
 
@@ -1649,109 +1445,8 @@ static void set_cbt_wlev_intv_lp4(DRAMC_CTX_T *p)
     set_cbt_intv_rg(p, pintv);
 }
 
-#if __LP5_COMBO__
-static void set_cbt_wlev_intv_lp5(DRAMC_CTX_T *p)
-{
-    struct cbt_intv intv[] = {
-        {
-            LP5_DDR6400,
-            UNKNOWN_MODE,
-            15, /*tcmdo1lat*/
-            15, /* catrain_intv */
-            17, /* new_cbt_pat_intv */
-            17, /* wlev_dqspat_lat */
-        }, {
-            LP5_DDR6000,
-            UNKNOWN_MODE,
-            15, /*tcmdo1lat*/
-            15, /* catrain_intv */
-            17, /* new_cbt_pat_intv */
-            17, /* wlev_dqspat_lat */
-        }, {
-            LP5_DDR5500,
-            UNKNOWN_MODE,
-            14, /*tcmdo1lat*/
-            14, /* catrain_intv */
-            16, /* new_cbt_pat_intv */
-            16, /* wlev_dqspat_lat */
-        }, {
-            LP5_DDR4800,
-            UNKNOWN_MODE,
-            13, /*tcmdo1lat*/
-            13, /* catrain_intv */
-            15, /* new_cbt_pat_intv */
-            15, /* wlev_dqspat_lat */
-        }, {
-            LP5_DDR4266,
-            UNKNOWN_MODE,
-            20, /*tcmdo1lat*/
-            20, /* catrain_intv */
-            22, /* new_cbt_pat_intv */
-            20, /* wlev_dqspat_lat */
-        }, {
-            LP5_DDR3733,
-            UNKNOWN_MODE,
-            19, /*tcmdo1lat*/
-            19, /* catrain_intv */
-            21, /* new_cbt_pat_intv */
-            19, /* wlev_dqspat_lat */
-        }, {
-            LP5_DDR3200,
-            UNKNOWN_MODE,
-            15, /*tcmdo1lat*/
-            15, /* catrain_intv */
-            17, /* new_cbt_pat_intv */
-            17, /* wlev_dqspat_lat */
-        }, {
-            LP5_DDR2400,
-            UNKNOWN_MODE,
-            13, /*tcmdo1lat*/
-            13, /* catrain_intv */
-            15, /* new_cbt_pat_intv */
-            15, /* wlev_dqspat_lat */
-        }, {
-            LP5_DDR1600,
-            UNKNOWN_MODE,
-            17, /*tcmdo1lat*/
-            17, /* catrain_intv */
-            19, /* new_cbt_pat_intv */
-            17, /* wlev_dqspat_lat */
-        }, {
-            LP5_DDR1200,
-            UNKNOWN_MODE,
-            15, /*tcmdo1lat*/
-            15, /* catrain_intv */
-            17, /* new_cbt_pat_intv */
-            15, /* wlev_dqspat_lat */
-        }, {
-            LP5_DDR800,
-            UNKNOWN_MODE,
-            13, /*tcmdo1lat*/
-            13, /* catrain_intv */
-            15, /* new_cbt_pat_intv */
-            13, /* wlev_dqspat_lat */
-        },
-    };
-
-    struct cbt_intv *pintv;
-
-    pintv = lookup_cbt_intv(intv, ARRAY_SIZE(intv), p->freq_sel, UNKNOWN_MODE);
-    if (!pintv) {
-        mcSHOW_ERR_MSG(("not found entry!\n"));
-        return;
-    }
-
-    set_cbt_intv_rg(p, pintv);
-}
-#endif /* __LP5_COMBO__ */
-
 static void set_cbt_wlev_intv(DRAMC_CTX_T *p)
 {
-#if __LP5_COMBO__
-    if (is_lp5_family(p))
-        set_cbt_wlev_intv_lp5(p);
-    else
-#endif
         set_cbt_wlev_intv_lp4(p);
 }
 
@@ -2042,11 +1737,6 @@ static u8 get_cbtui_adjustable_maxvalue(DRAMC_CTX_T *p)
     * ther are only 0~7 for ui adjust, if ui value is larger than 7, adjust MCK.
     *
     */
-#if __LP5_COMBO__
-	if (is_lp5_family(p))
-		ratio = (get_mck_ck_ratio(p) == 1) ? 1 : 3;
-	else
-#endif
 		ratio = (vGet_Div_Mode(p) == DIV4_MODE) ? 3 : 7;
 
     return ratio;
@@ -2280,477 +1970,6 @@ static u32 get_capi_step(DRAMC_CTX_T *p, int autok)
 
     return step;
 }
-#if 0
-static int find_next_bit(u32 *bitmap, u8 bitval, u8 start, u8 end,
-        u8 *bit_pos)
-{
-    u8 i, base, ofst;
-    u32 map;
-    int res = 0;
-
-    for (i = start; i < end + 1; i++) {
-        base = (i >> 5); /* i / 32  */
-        ofst = i & 0x1F; /* i % 32 */
-        map = bitmap[base];
-
-        if ((bitval == 0) && ((map & (1UL << ofst)) == 0UL)) {
-            *bit_pos = i;
-            res = 1;
-            break;
-        } else if (bitval && (map & (1UL << ofst))) {
-            *bit_pos = i;
-            res = 1;
-            break;
-        }
-    }
-
-    return res;
-}
-
-static int find_next_zero_bit(u32 *bitmap, u8 start, u8 end, u8 *bit_pos)
-{
-    return find_next_bit(bitmap, 0, start, end, bit_pos);
-}
-
-static int find_next_one_bit(u32 *bitmap, u8 start, u8 end, u8 *bit_pos)
-{
-    return find_next_bit(bitmap, 1, start, end, bit_pos);
-}
-
-static int find_zero_window(u32 *bitmap, u8 start, u8 end,
-        u8 *win_start, u8 *win_end)
-{
-    int res;
-    u8 win_lsb, win_msb;
-
-    if (start > end)
-        return 0;
-
-    res = find_next_zero_bit(bitmap, start, end, &win_lsb);
-    if (!res)
-        return 0;
-
-    res = find_next_one_bit(bitmap, win_lsb + 1, end, &win_msb);
-    if (!res)
-        win_msb = end + 1;
-
-    *win_start = win_lsb;
-    *win_end = win_msb - 1;
-
-    return 1;
-}
-#endif
-#if 0
-static int get_new_cbt_pat_cfg(DRAMC_CTX_T *p,
-        new_cbt_pat_cfg_t *pncm, U8 u1CATrain)
-{
-#if __LP5_COMBO__
-    if (is_lp5_family(p)) {
-        /* lp5 */
-        pncm->pat_v[0] = 0x04;
-        pncm->pat_v[1] = 0x0B;
-        pncm->pat_v[2] = 0x0B;
-        pncm->pat_v[3] = 0x04;
-        pncm->pat_v[4] = 0x04;
-        pncm->pat_v[5] = 0x0B;
-        pncm->pat_v[6] = 0x0A;
-        pncm->pat_v[7] = 0x05;
-
-        pncm->pat_a[0] = 0x00;
-        pncm->pat_a[1] = 0x0F;
-        pncm->pat_a[2] = 0x04;
-        pncm->pat_a[3] = 0x0B;
-        pncm->pat_a[4] = 0x04;
-        pncm->pat_a[5] = 0x0B;
-        pncm->pat_a[6] = 0x0A;
-        pncm->pat_a[7] = 0x05;
-
-        pncm->pat_dmv = 0x55;
-        pncm->pat_dma = 0xAA;
-
-        pncm->pat_cs0 = 0x0C;
-        pncm->pat_cs1 = 0x0C;
-        pncm->ca_golden_sel = 0x2;
-        pncm->pat_num = 7;
-        pncm->ca_num = 6;
-    } else
-#endif
-    {
-        /* lp4 */
-        pncm->pat_v[0] = 0x30;
-        pncm->pat_v[1] = 0xCF;
-        pncm->pat_v[2] = 0xCF;
-        pncm->pat_v[3] = 0x30;
-        pncm->pat_v[4] = 0x30;
-        pncm->pat_v[5] = 0xCF;
-        pncm->pat_v[6] = 0xCC;
-        pncm->pat_v[7] = 0x33;
-
-        pncm->pat_a[0] = 0x00;
-        pncm->pat_a[1] = 0xFF;
-        pncm->pat_a[2] = 0x30;
-        pncm->pat_a[3] = 0xCF;
-        pncm->pat_a[4] = 0x30;
-        pncm->pat_a[5] = 0xCF;
-        pncm->pat_a[6] = 0xCC;
-        pncm->pat_a[7] = 0x33;
-
-        pncm->pat_dmv = 0x55;
-        pncm->pat_dma = 0xAA;
-
-        pncm->pat_cs0 = 0x30;
-        pncm->pat_cs1 = 0x30;
-        pncm->ca_golden_sel = 0x4;
-        pncm->pat_num = 7;
-        pncm->ca_num = 5;
-    }
-
-    pncm->invert_num = 1;
-
-#if FOR_DV_SIMULATION_USED == 1
-    cal_sv_rand_args_t *psra = get_psra();
-
-    if (psra) {
-        /*
-         * DV's regression
-         */
-        int i;
-
-        for (i = 0; i < 8; i++) {
-            pncm->pat_v[i] = psra->pat_v[i] & 0xFF;
-            pncm->pat_a[i] = psra->pat_a[i] & 0xFF;
-        }
-        pncm->pat_dmv = psra->pat_dmv & 0xFF;
-        pncm->pat_dma = psra->pat_dma & 0xFF;
-        pncm->pat_cs0 = psra->pat_cs & 0xFF;
-        pncm->pat_cs1 = pncm->pat_cs0;
-        pncm->ca_golden_sel = psra->cagolden_sel & 0xFF;
-        pncm->invert_num = psra->invert_num & 0xFF;
-    }
-#endif
-
-    if (!u1CATrain) {
-        pncm->pat_a[0] = pncm->pat_v[0] ^ 0xFF;
-        pncm->pat_dmv = 0x00;
-        pncm->pat_dma = 0x00;
-        pncm->pat_num = 1;
-        pncm->ca_num = 0;
-        pncm->invert_num = 0;
-    }
-
-    return 0;
-}
-
-static void cfg_new_cbt_pat(DRAMC_CTX_T *p,
-        new_cbt_pat_cfg_t *pncm)
-{
-    u32 tmp;
-
-    tmp = (pncm->pat_v[3] << 24) | (pncm->pat_v[2] << 16) |
-            (pncm->pat_v[1] << 8) | pncm->pat_v[0];
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_INITK_PAT0),
-            tmp, INITK_PAT0_INITK_PAT0);
-
-    tmp = (pncm->pat_v[7] << 24) | (pncm->pat_v[6] << 16) |
-            (pncm->pat_v[5] << 8) | pncm->pat_v[4];
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_INITK_PAT1),
-            tmp, INITK_PAT1_INITK_PAT1);
-
-    tmp = (pncm->pat_a[3] << 24) | (pncm->pat_a[2] << 16) |
-            (pncm->pat_a[1] << 8) | pncm->pat_a[0];
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_INITK_PAT2),
-            tmp, INITK_PAT2_INITK_PAT2);
-
-    tmp = (pncm->pat_a[7] << 24) | (pncm->pat_a[6] << 16) |
-            (pncm->pat_a[5] << 8) | pncm->pat_a[4];
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_INITK_PAT3),
-            tmp, INITK_PAT3_INITK_PAT3);
-
-    tmp = (pncm->pat_cs1 << 24) | (pncm->pat_cs0 << 16) |
-            (pncm->pat_dma << 8) | pncm->pat_dmv;
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_INITK_PAT4),
-            tmp, INITK_PAT4_INITK_PAT4);
-
-#ifdef CBT_NEW_PAT_DEBUG
-    mcSHOW_DBG_MSG(("CBT NEW PAT:\n"));
-    mcSHOW_DBG_MSG(("PAT0_V=0x%x, PAT0_A=0x%x\n", pncm->pat_v[0], pncm->pat_a[0]));
-    mcSHOW_DBG_MSG(("PAT_DMV=0x%x, PAT_DMA=0x%x\n", pncm->pat_dmv, pncm->pat_dma));
-    mcSHOW_DBG_MSG(("PAT_CS0=0x%x, PAT_CS1=0x%x\n", pncm->pat_cs0, pncm->pat_cs1));
-#endif
-
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL5),
-            P_Fld(1, CBT_WLEV_CTRL5_CBT_NEW_MODE) |
-            P_Fld(p->rank, CBT_WLEV_CTRL5_NEW_CBT_PAT_RKSEL) |
-            P_Fld(pncm->ca_num, CBT_WLEV_CTRL5_NEW_CBT_CA_NUM) |
-            P_Fld(pncm->pat_num, CBT_WLEV_CTRL5_NEW_CBT_PAT_NUM) |
-            P_Fld(pncm->invert_num, CBT_WLEV_CTRL5_NEW_CBT_INVERT_NUM) |
-            P_Fld(pncm->ca_golden_sel, CBT_WLEV_CTRL5_NEW_CBT_CAGOLDEN_SEL));
-}
-#endif
-#if CBT_O1_PINMUX_WORKAROUND
-static u32 CBTCompareWordaroundDecodeO1Pinmux(DRAMC_CTX_T *p, u32 o1_value, U8 *uiLPDDR_O1_Mapping)
-{
-    U8 u1Idx;
-    U32 u4Result;
-
-    u4Result = 0;
-
-    for (u1Idx = 0;u1Idx < p->data_width;u1Idx++)
-        u4Result |= ((o1_value >> uiLPDDR_O1_Mapping[u1Idx]) & 0x1) << u1Idx;
-
-    return u4Result;
-}
-
-#if CBT_OLDMODE_SUPPORT
-static u32 CBTDelayCACLKCompareWorkaround(DRAMC_CTX_T *p)
-{
-    u8 u1pattern_index, u1ca_index, u1dq_index, u1dq_start, u1dq_end, u1ca_number_per_bit, u1bit_num_per_byte, u1pattern_choose;
-    U8 *uiLPDDR_O1_Mapping = NULL;
-    u32 u4TimeCnt, rdy, u4dq_o1, u4data_receive, u4ca_pattern, u4Result, u4Ready;
-    u8 u1pattern_num;
-
-    const U8 u1LP5CBT_Pattern_Mapping[2][7] =
-    {
-        {
-            1, 2, 4, 8, 16, 32, 64
-        },
-
-        {
-            126, 125, 123, 119, 111, 95, 63
-        },
-    };
-    const U8 u1LP4CBT_Pattern_Mapping[2][6] =
-    {
-        {
-            1, 2, 4, 8, 16, 32
-        },
-
-        {
-            62, 61, 59, 55, 47, 31
-        },
-    };
-
-    u4Result = 0;
-    u1bit_num_per_byte = 8;
-
-#if (__LP5_COMBO__)
-    if (is_lp5_family(p))
-    {
-        uiLPDDR_O1_Mapping = (U8 *)uiLPDDR5_O1_Mapping_POP[p->channel];
-        u1pattern_num = 8;
-        u1ca_number_per_bit = CATRAINING_NUM_LP5;
-        if (p->dram_cbt_mode[p->rank] == CBT_NORMAL_MODE)
-        {
-            u1dq_start = 0;
-            u1dq_end = 6;
-        }
-        else
-        {
-            u1dq_start = 0;
-            u1dq_end = 14;
-        }
-    }
-    else
-#endif
-    {
-        uiLPDDR_O1_Mapping = (U8 *)uiLPDDR4_O1_Mapping_POP[p->channel];
-        u1pattern_num = 4;
-        u1ca_number_per_bit = CATRAINING_NUM_LP4;
-        if (p->dram_cbt_mode[p->rank] == CBT_NORMAL_MODE)
-        {
-            u1dq_start = 8;
-            u1dq_end = 13;
-        }
-        else
-        {
-            u1dq_start = 0;
-            u1dq_end = 13;
-        }
-    }
-
-    vIO32WriteFldMulti(DRAMC_REG_CBT_WLEV_CTRL3, P_Fld(0x1, CBT_WLEV_CTRL3_CATRAIN_PAT_STOP0)
-        | P_Fld(0x1, CBT_WLEV_CTRL3_CATRAIN_PAT_STOP1));
-
-    for (u1pattern_index = 0; u1pattern_index < u1pattern_num; u1pattern_index++)
-    {
-        u1pattern_choose = (u1pattern_index > 3) ? (u1pattern_index % 2) : /* LP5 mapping */
-            ((u1pattern_index > 1)? (3 - u1pattern_index) : u1pattern_index); /* LP5 & LP4 mapping */
-        for (u1ca_index = 0; u1ca_index < u1ca_number_per_bit; u1ca_index++)
-        {
-        #if (__LP5_COMBO__)
-            if (is_lp5_family(p))
-            {
-                u4ca_pattern = u1LP5CBT_Pattern_Mapping[u1pattern_choose][u1ca_index];
-            }
-            else
-        #endif
-            {
-                u4ca_pattern = u1LP4CBT_Pattern_Mapping[u1pattern_choose][u1ca_index];
-            }
-
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL3), P_Fld((u1pattern_index+1), CBT_WLEV_CTRL3_CATRAIN_1PAT_SEL0)
-                                                       | P_Fld((u1ca_index+1), CBT_WLEV_CTRL3_CATRAIN_1PAT_SEL1));
-
-            u4TimeCnt = TIME_OUT_CNT;
-
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0), 1, CBT_WLEV_CTRL0_CBT_CAPATEN);
-
-            //Check CA training compare ready (dramc_conf_nao 0x3fc , CATRAIN_CMP_CPT)
-            do
-            {
-                u4Ready = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_STATUS1), CBT_WLEV_STATUS1_CATRAIN_CMP_CPT);
-                u4TimeCnt --;
-                mcDELAY_US(1);
-            }while ((u4Ready == 0) && (u4TimeCnt > 0));
-
-            if (u4TimeCnt == 0)//time out
-            {
-                mcSHOW_ERR_MSG(("[CBTDelayCACLKCompare] Resp fail (time out)\n"));
-                mcFPRINTF((fp_A60868, "[CBTDelayCACLKCompare] Resp fail (time out)\n"));//Eddie Test
-                //return DRAM_FAIL;
-            }
-
-            u4dq_o1 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DQO1), MISC_DQO1_DQO1_RO);
-
-            u4dq_o1 = CBTCompareWordaroundDecodeO1Pinmux(p, u4dq_o1, uiLPDDR_O1_Mapping);
-
-            if (u1dq_end >= u1ca_number_per_bit)
-                u4ca_pattern |= u4ca_pattern << u1bit_num_per_byte;
-
-            u4dq_o1 ^= u4ca_pattern;
-
-            for(u1dq_index=u1dq_start; u1dq_index<=u1dq_end; u1dq_index++)
-            {
-                if ((p->dram_cbt_mode[p->rank] == CBT_BYTE_MODE1) && (u1dq_index == u1ca_number_per_bit))
-                    u1dq_index = u1bit_num_per_byte;
-
-                u4data_receive = (u4dq_o1 >> u1dq_index) & 0x1;
-
-                if (u1dq_index < u1bit_num_per_byte)
-                    u4Result |= u4data_receive << u1dq_index;
-                else
-                    u4Result |= u4data_receive << u1dq_index - u1bit_num_per_byte;
-            }
-
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0), 0, CBT_WLEV_CTRL0_CBT_CAPATEN);
-
-        }
-        if (u4Result == ((0x1 << u1ca_number_per_bit) - 1))
-            break;
-    }
-    return u4Result;
-}
-#endif
-
-static u32 new_cbt_pat_compare_workaround(DRAMC_CTX_T *p, new_cbt_pat_cfg_t *ncm)
-{
-    u8 u1pattern_index, u1ca_index, u1dq_index, u1dq_start, u1dq_end, u1ca_number_per_bit, u1bit_num_per_byte;
-    U8 *uiLPDDR_O1_Mapping = NULL;
-    u32 u4TimeCnt, rdy, u4dq_o1, u4data_receive, u4ca_pattern_a, u4ca_pattern, u4Result, u4Ready;
-    u8 u1pattern_num;
-
-    u4Result = 0;
-    u1bit_num_per_byte = 8;
-
-#if (__LP5_COMBO__)
-    if (is_lp5_family(p))
-    {
-        uiLPDDR_O1_Mapping = (U8 *)uiLPDDR5_O1_Mapping_POP[p->channel];
-        u1pattern_num = 8;
-        u1ca_number_per_bit = 7;
-        if (p->dram_cbt_mode[p->rank] == CBT_NORMAL_MODE)
-        {
-            u1dq_start = 0;
-            u1dq_end = 6;
-        }
-        else
-        {
-            u1dq_start = 0;
-            u1dq_end = 14;
-        }
-    }
-    else
-#endif
-    {
-        uiLPDDR_O1_Mapping = (U8 *)uiLPDDR4_O1_Mapping_POP[p->channel];
-        u1pattern_num = 4;
-        u1ca_number_per_bit = 6;
-        if (p->dram_cbt_mode[p->rank] == CBT_NORMAL_MODE)
-        {
-            u1dq_start = 8;
-            u1dq_end = 13;
-        }
-        else
-        {
-            u1dq_start = 0;
-            u1dq_end = 13;
-        }
-    }
-
-    for (u1pattern_index = 0; u1pattern_index < u1pattern_num; u1pattern_index++)
-    {
-        u4ca_pattern_a = ((ncm->pat_a[u1pattern_index] >> ncm->ca_golden_sel) & 0x1) ? ((0x1 << u1ca_number_per_bit) - 1) : 0x0;
-
-        for (u1ca_index = 0; u1ca_index < u1ca_number_per_bit; u1ca_index++)
-        {
-            u4ca_pattern = u4ca_pattern_a & ~(0x1 << u1ca_index);
-
-            if ((ncm->pat_v[u1pattern_index] >> ncm->ca_golden_sel) & 0x1)
-                u4ca_pattern |= 0x1 << u1ca_index;
-
-            if (ncm->invert_num)
-                u4ca_pattern ^= (0x1 << u1ca_number_per_bit) - 1;
-
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL5), P_Fld(u1pattern_index, CBT_WLEV_CTRL5_NEW_CBT_PAT_NUM)
-                                                       | P_Fld(u1ca_index, CBT_WLEV_CTRL5_NEW_CBT_CA_NUM));
-
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL5), 1, CBT_WLEV_CTRL5_NEW_CBT_CAPATEN);
-
-            //Check CA training compare ready (dramc_conf_nao 0x3fc , CATRAIN_CMP_CPT)
-            do
-            {
-                u4Ready = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_STATUS2), CBT_WLEV_STATUS2_CBT_PAT_CMP_CPT);
-                u4TimeCnt --;
-                mcDELAY_US(1);
-            }while ((u4Ready == 0) && (u4TimeCnt > 0));
-
-            if (u4TimeCnt == 0)//time out
-            {
-                mcSHOW_ERR_MSG(("[CBTDelayCACLKCompare] Resp fail (time out)\n"));
-                mcFPRINTF((fp_A60868, "[CBTDelayCACLKCompare] Resp fail (time out)\n"));//Eddie Test
-                //return DRAM_FAIL;
-            }
-
-            u4dq_o1 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DQO1), MISC_DQO1_DQO1_RO);
-
-            u4dq_o1 = CBTCompareWordaroundDecodeO1Pinmux(p, u4dq_o1, uiLPDDR_O1_Mapping);
-
-            if (u1dq_end >= u1ca_number_per_bit)
-                u4ca_pattern |= u4ca_pattern << u1bit_num_per_byte;
-
-            u4dq_o1 ^= u4ca_pattern;
-
-            for(u1dq_index=u1dq_start; u1dq_index<=u1dq_end; u1dq_index++)
-            {
-                if ((p->dram_cbt_mode[p->rank] == CBT_BYTE_MODE1) && (u1dq_index == u1ca_number_per_bit))
-                    u1dq_index = u1bit_num_per_byte;
-
-                u4data_receive = (u4dq_o1 >> u1dq_index) & 0x1;
-
-                if (u1dq_index < u1bit_num_per_byte)
-                    u4Result |= u4data_receive << u1dq_index;
-                else
-                    u4Result |= u4data_receive << u1dq_index - u1bit_num_per_byte;
-            }
-
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL5), 0, CBT_WLEV_CTRL5_NEW_CBT_CAPATEN);
-        }
-        if (u4Result == ((0x1 << u1ca_number_per_bit) - 1))
-            break;
-    }
-    return u4Result;
-}
-#endif
 
 void CmdOEOnOff(DRAMC_CTX_T *p, U8 u1OnOff, CMDOE_DIS_CHANNEL CmdOeDisChannelNUM)
 {
@@ -3062,13 +2281,6 @@ static void CATrainingSetPerBitDelayCell(DRAMC_CTX_T *p, S16 *iCAFinalCenter, U8
     U8 u1CA;
     S8 iCA_PerBit_DelayLine[8] = {0};
 
-#if __LP5_COMBO__
-    if (is_lp5_family(p))
-    {
-        uiLPDDR_CA_Mapping = (U8 *)uiLPDDR5_CA_Mapping_POP[p->channel];
-    }
-    else
-#endif
     {
         uiLPDDR_CA_Mapping = (U8 *)uiLPDDR4_CA_Mapping_POP[p->channel];
     }
@@ -3133,36 +2345,6 @@ static void CBTSetCACLKResult(DRAMC_CTX_T *p, U32 u4MCK, U32 u4UI, U8 ca_pin_num
     vSetRank(p, backup_rank);
 }
 
-#if (__LP5_COMBO__)
-/* Return (Vref_B0 | (Vref_B1 << 8) to support Byte mode */
-static U8 GetCBTVrefPinMuxValue_lp5(DRAMC_CTX_T *p, U8 u1VrefLevel)
-{
-    U8 u2VrefBit, u2Vref_org;
-    U16 u2Vref_new;
-
-    u2Vref_org = u1VrefLevel & 0x7f;
-
-    u2Vref_new = 0;
-
-    for (u2VrefBit = 0; u2VrefBit < 8; u2VrefBit++)
-    {
-        //mcSHOW_DBG_MSG(("=== u2VrefBit: %d, %d\n",u2VrefBit,uiLPDDR4_O1_Mapping_POP[p->channel][u2VrefBit]));
-        if (u2Vref_org & (1 << u2VrefBit))
-        {
-            u2Vref_new |= (1 << uiLPDDR5_O1_Mapping_POP[p->channel][u2VrefBit]);
-        }
-    }
-
-    mcSHOW_DBG_MSG4(("=== u2Vref_new: 0x%x --> 0x%x\n", u2Vref_org, u2Vref_new));
-
-    if (lp5_cp[p->channel].dram_dq_b0)
-        u2Vref_new >>= 8;
-
-    return u2Vref_new;
-}
-
-#endif
-
 static U8 GetCBTVrefPinMuxValue(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefLevel)
 {
     U8 u2VrefBit, u2Vref_org;
@@ -3191,31 +2373,6 @@ static U8 GetCBTVrefPinMuxValue(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefLevel)
     return u2Vref_new;
 }
 
-#if 0
-static U8 GetCBTVrefPinMuxRevertValue(DRAMC_CTX_T *p, U8 u1VrefLevel)
-{
-    U8 u2VrefBit, u2Vref_new, u2Vref_org;
-
-    if (p->dram_cbt_mode[p->rank] == CBT_BYTE_MODE1)
-        return u1VrefLevel;
-
-    u2Vref_new = 0;
-    u2Vref_org = u1VrefLevel;
-    for (u2VrefBit = 0; u2VrefBit < 8; u2VrefBit++)
-    {
-#if (__LP5_COMBO__)
-        if (is_lp5_family(p)) {
-            u2Vref_new |= ((u2Vref_org >> uiLPDDR5_O1_Mapping_POP[p->channel][u2VrefBit]) & 1) << u2VrefBit;
-        } else
-#endif
-        u2Vref_new |= ((u2Vref_org >> uiLPDDR4_O1_Mapping_POP[p->channel][u2VrefBit]) & 1) << u2VrefBit;
-    }
-
-    mcSHOW_DBG_MSG4(("=== Revert u2Vref_new: 0x%x --> 0x%x\n", u2Vref_org, u2Vref_new));
-
-    return u2Vref_new;
-}
-#endif
 static void CBTSetVrefLP4(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefLevel, U8 operating_fsp, U8 stateFlag)
 {
     U32 fld;
@@ -3266,492 +2423,8 @@ static void CBTSetVrefLP4(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefLevel, U8 ope
 }
 
 
-#if __LP5_COMBO__
-static inline u8 is_training_mode1(DRAMC_CTX_T *p)
-{
-    return is_lp5_family(p) && p->lp5_training_mode == TRAINING_MODE1? 1: 0;
-}
-
-static inline u8 is_training_mode2(DRAMC_CTX_T *p)
-{
-    return is_lp5_family(p) && p->lp5_training_mode == TRAINING_MODE2? 1: 0;
-}
-
-static inline u8 is_phase_falling(DRAMC_CTX_T *p)
-{
-    return is_lp5_family(p) && p->lp5_cbt_phase == CBT_PHASE_FALLING? 1: 0;
-}
-
-static void force_dq7(DRAMC_CTX_T *p, u8 level)
-{
-    u32 fld_b0, fld_b1;
-    u8 dq;
-    u8 dramc_byte;
-    struct cbt_pinmux *cp = &lp5_cp[p->channel];
-    /*
-     * TODO
-     *
-     * pinmux to selec dq7
-     *
-     */
-
-    fld_b0 = (cp->dram_dq_b0) ? CBT_WLEV_CTRL4_CBT_TXDQ_B1 : CBT_WLEV_CTRL4_CBT_TXDQ_B0;
-    fld_b1 = (cp->dram_dq_b1) ? CBT_WLEV_CTRL4_CBT_TXDQ_B1 : CBT_WLEV_CTRL4_CBT_TXDQ_B0;
-
-    dq = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL4),
-        fld_b0);
-    dq &= ~(1 << (cp->dram_dq7_b0 % 8));
-    dq |= ((level & 1) << (cp->dram_dq7_b0 % 8));
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL4),
-        P_Fld(dq, fld_b0));
-
-    if (is_byte_mode(p)) {
-        dq = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL4),
-            fld_b1);
-        dq &= ~(1 << (cp->dram_dq7_b1 % 8));
-        dq |= ((level & 1) << (cp->dram_dq7_b1 % 8));
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL4),
-            P_Fld(dq, fld_b1));
-    }
-}
-
-static inline void force_dmi(DRAMC_CTX_T *p, u8 level)
-{
-    struct cbt_pinmux *cp = &lp5_cp[p->channel];
-
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0),
-        P_Fld(level, (cp->dram_dmi_b0) ? CBT_WLEV_CTRL0_CBT_SW_DQM_B1_LP5 : CBT_WLEV_CTRL0_CBT_SW_DQM_B0_LP5));
-
-    if (is_byte_mode(p)) {
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0),
-        P_Fld(level, (cp->dram_dmi_b1 ? CBT_WLEV_CTRL0_CBT_SW_DQM_B1_LP5 : CBT_WLEV_CTRL0_CBT_SW_DQM_B0_LP5)));
-    }
-}
-
-static void toggle_wck(DRAMC_CTX_T *p, u8 toggle)
-{
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0),
-        P_Fld(toggle, CBT_WLEV_CTRL0_CBT_WLEV_WCKAO));
-}
-
-static void set_vref_by_mrw(DRAMC_CTX_T *p, u8 vref)
-{
-    DramcModeRegWriteByRank(p, p->rank, 12, vref);
-}
-
-static void set_vref_by_dq(DRAMC_CTX_T *p, u16 vref)
-{
-    u8 dq;
-    struct cbt_pinmux *cp = &lp5_cp[p->channel];
-
-    force_dmi(p, 0);
-    /* wait tCBTRTW */
-    mcDELAY_US(1);
-
-    if (is_byte_mode(p)) {
-        /* DRAMC B0/B1 as TX */
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0),
-            3, CBT_WLEV_CTRL0_CBT_DQBYTE_OEAO_EN);
-
-        /* Set DRAM Byte 1 */
-        dq = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL4),
-            (cp->dram_dq_b1 ? CBT_WLEV_CTRL4_CBT_TXDQ_B1 : CBT_WLEV_CTRL4_CBT_TXDQ_B0));
-
-        /* Shall be carefully processed in case DQ[7] is changed */
-        dq &= (1 << (cp->dram_dq7_b1 % 8));
-        dq |= ((vref >> 8) & 0xff);
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL4),
-            P_Fld(dq, (cp->dram_dq_b1 ? CBT_WLEV_CTRL4_CBT_TXDQ_B1 : CBT_WLEV_CTRL4_CBT_TXDQ_B0)));
-    } else {
-        /* DRAMC B0 as TX */
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0),
-            (1 << cp->dram_dq_b0), CBT_WLEV_CTRL0_CBT_DQBYTE_OEAO_EN);
-    }
-
-    /* Set DRAM Byte 0 */
-    dq = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL4),
-        (cp->dram_dq_b0 ? CBT_WLEV_CTRL4_CBT_TXDQ_B1 : CBT_WLEV_CTRL4_CBT_TXDQ_B0));
-    dq &= (1 << (cp->dram_dq7_b0 % 8));
-    dq |= (vref & 0xff);
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL4),
-        P_Fld(dq, (cp->dram_dq_b0 ? CBT_WLEV_CTRL4_CBT_TXDQ_B1 : CBT_WLEV_CTRL4_CBT_TXDQ_B0)));
-
-    /* wait tDQStrain */
-    mcDELAY_US(1);
-    force_dmi(p, 1);
-    mcDELAY_US(1);
-    /* DRAMC B0/B1 as RX */
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0),
-        0, CBT_WLEV_CTRL0_CBT_DQBYTE_OEAO_EN);
-    mcDELAY_US(1);
-}
-
-static void switch_oe_tie(DRAMC_CTX_T *p, u8 sw)
-{
-    u8 dq_oe;
-    struct cbt_pinmux *cp = &lp5_cp[p->channel];
-
-    if (sw) {
-        /* Set DRAM Byte 0 */
-        if (cp->dram_dq_b0) {
-            dq_oe = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2),
-                B1_DQ2_RG_TX_ARDQ_OE_TIE_EN_B1);
-            dq_oe |= (1 << (cp->dram_dq7_b0 % 8));
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2),
-                P_Fld(dq_oe, B1_DQ2_RG_TX_ARDQ_OE_TIE_EN_B1) |
-                P_Fld(1, B1_DQ2_RG_TX_ARDQ_OE_TIE_SEL_B1));
-
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2),
-                P_Fld(1, B1_DQ2_RG_TX_ARDQM_OE_TIE_EN_B1) |
-                P_Fld(1, B1_DQ2_RG_TX_ARDQM_OE_TIE_SEL_B1));
-        } else {
-            dq_oe = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2),
-                B0_DQ2_RG_TX_ARDQ_OE_TIE_EN_B0);
-            dq_oe |= (1 << (cp->dram_dq7_b0 % 8));
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2),
-                P_Fld(dq_oe, B0_DQ2_RG_TX_ARDQ_OE_TIE_EN_B0) |
-                P_Fld(1, B0_DQ2_RG_TX_ARDQ_OE_TIE_SEL_B0));
-
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2),
-                P_Fld(1, B0_DQ2_RG_TX_ARDQM_OE_TIE_EN_B0) |
-                P_Fld(1, B0_DQ2_RG_TX_ARDQM_OE_TIE_SEL_B0));
-        }
-
-        /* Set DRAM Byte 1 */
-        if (is_byte_mode(p)) {
-            /* Set DRAM Byte 0 */
-            if (cp->dram_dq_b1) {
-                dq_oe = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2),
-                    B1_DQ2_RG_TX_ARDQ_OE_TIE_EN_B1);
-                dq_oe |= (1 << (cp->dram_dq7_b1 % 8));
-                vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2),
-                    P_Fld(dq_oe, B1_DQ2_RG_TX_ARDQ_OE_TIE_EN_B1) |
-                    P_Fld(1, B1_DQ2_RG_TX_ARDQ_OE_TIE_SEL_B1));
-
-                vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2),
-                    P_Fld(1, B1_DQ2_RG_TX_ARDQM_OE_TIE_EN_B1) |
-                    P_Fld(1, B1_DQ2_RG_TX_ARDQM_OE_TIE_SEL_B1));
-            } else {
-                dq_oe = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2),
-                    B0_DQ2_RG_TX_ARDQ_OE_TIE_EN_B0);
-                dq_oe |= (1 << (cp->dram_dq7_b1 % 8));
-                vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2),
-                    P_Fld(dq_oe, B0_DQ2_RG_TX_ARDQ_OE_TIE_EN_B0) |
-                    P_Fld(1, B0_DQ2_RG_TX_ARDQ_OE_TIE_SEL_B0));
-
-                vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2),
-                    P_Fld(1, B0_DQ2_RG_TX_ARDQM_OE_TIE_EN_B0) |
-                    P_Fld(1, B0_DQ2_RG_TX_ARDQM_OE_TIE_SEL_B0));
-            }
-        }
-    } else {
-        /* Set DRAM Byte 0 */
-        if (cp->dram_dq_b0) {
-            dq_oe = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2),
-                B1_DQ2_RG_TX_ARDQ_OE_TIE_EN_B1);
-            dq_oe &= ~(1 << (cp->dram_dq7_b0 % 8));
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2),
-                P_Fld(dq_oe, B1_DQ2_RG_TX_ARDQ_OE_TIE_EN_B1) |
-                P_Fld(0, B1_DQ2_RG_TX_ARDQ_OE_TIE_SEL_B1));
-
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2),
-                P_Fld(0, B1_DQ2_RG_TX_ARDQM_OE_TIE_EN_B1) |
-                P_Fld(0, B1_DQ2_RG_TX_ARDQM_OE_TIE_SEL_B1));
-        } else {
-            dq_oe = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2),
-                B0_DQ2_RG_TX_ARDQ_OE_TIE_EN_B0);
-            dq_oe &= ~(1 << (cp->dram_dq7_b0 % 8));
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2),
-                P_Fld(dq_oe, B0_DQ2_RG_TX_ARDQ_OE_TIE_EN_B0) |
-                P_Fld(0, B0_DQ2_RG_TX_ARDQ_OE_TIE_SEL_B0));
-
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2),
-                P_Fld(0, B0_DQ2_RG_TX_ARDQM_OE_TIE_EN_B0) |
-                P_Fld(0, B0_DQ2_RG_TX_ARDQM_OE_TIE_SEL_B0));
-        }
-
-        /* Set DRAM Byte 1 */
-        if (is_byte_mode(p)) {
-            /* Set DRAM Byte 0 */
-            if (cp->dram_dq_b1) {
-                dq_oe = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2),
-                    B1_DQ2_RG_TX_ARDQ_OE_TIE_EN_B1);
-                dq_oe &= ~(1 << (cp->dram_dq7_b1 % 8));
-                vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2),
-                    P_Fld(dq_oe, B1_DQ2_RG_TX_ARDQ_OE_TIE_EN_B1) |
-                    P_Fld(0, B1_DQ2_RG_TX_ARDQ_OE_TIE_SEL_B1));
-
-                vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2),
-                    P_Fld(0, B1_DQ2_RG_TX_ARDQM_OE_TIE_EN_B1) |
-                    P_Fld(0, B1_DQ2_RG_TX_ARDQM_OE_TIE_SEL_B1));
-            } else {
-                dq_oe = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2),
-                    B0_DQ2_RG_TX_ARDQ_OE_TIE_EN_B0);
-                dq_oe &= ~(0 << (cp->dram_dq7_b1 % 8));
-                vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2),
-                    P_Fld(dq_oe, B0_DQ2_RG_TX_ARDQ_OE_TIE_EN_B0) |
-                    P_Fld(0, B0_DQ2_RG_TX_ARDQ_OE_TIE_SEL_B0));
-
-                vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2),
-                    P_Fld(0, B0_DQ2_RG_TX_ARDQM_OE_TIE_EN_B0) |
-                    P_Fld(0, B0_DQ2_RG_TX_ARDQM_OE_TIE_SEL_B0));
-            }
-        }
-    }
-}
-
-static void lp5_cbt_entry(DRAMC_CTX_T *p, u8 operating_fsp,
-        u16 operation_frequency)
-{
-    lp5heff_save_disable(p);
-
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL),
-        0, MISC_STBCAL_DQSIENCG_NORMAL_EN);
-
-    /* TCMDEN and CATRAINEN use MRSRK */
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0),
-        p->rank, SWCMD_CTRL0_MRSRK);
-
-    #if 0
-    if (p->rank == RANK_0) {
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL),
-            P_Fld(0, CKECTRL_CKEFIXOFF) |
-            P_Fld(1, CKECTRL_CKEFIXON));
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL),
-            P_Fld(1, CKECTRL_CKE1FIXOFF) |
-            P_Fld(0, CKECTRL_CKE1FIXON));
-    } else if (p->rank == RANK_1) {
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL),
-            P_Fld(0, CKECTRL_CKE1FIXOFF) |
-            P_Fld(1, CKECTRL_CKE1FIXON));
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL),
-            P_Fld(1, CKECTRL_CKEFIXOFF) |
-            P_Fld(0, CKECTRL_CKEFIXON));
-    }
-    #else
-    if (p->rank == RANK_0) {
-        CKEFixOnOff(p, RANK_0, CKE_FIXON, TO_ONE_CHANNEL);
-        CKEFixOnOff(p, RANK_1, CKE_FIXOFF, TO_ONE_CHANNEL);
-    } else if (p->rank == RANK_1){
-        CKEFixOnOff(p, RANK_1, CKE_FIXON, TO_ONE_CHANNEL);
-        CKEFixOnOff(p, RANK_0, CKE_FIXOFF, TO_ONE_CHANNEL);
-    }
-    #endif
-
-    /*
-    * APHY TX PI Spec mode option
-    * for K RK1, if RK0/1 DQ UI setting is not the same, it will fail
-    */
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_NEW_XRW2W_CTRL),
-        1, SHU_NEW_XRW2W_CTRL_TXPI_UPD_MODE);
-
-    /*
-    * APHY TX PI Spec mode option
-    * for K RK1, if RK0/1 DQ UI setting is not the same, it will fail
-    */
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_NEW_XRW2W_CTRL),
-        1, SHU_NEW_XRW2W_CTRL_TXPI_UPD_MODE);
-
-    /*
-    * APHY TX PI Spec mode option
-    * for K RK1, if RK0/1 DQ UI setting is not the same, it will fail
-    */
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_NEW_XRW2W_CTRL),
-        1, SHU_NEW_XRW2W_CTRL_TXPI_UPD_MODE);
-
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0),
-        P_Fld(0x1, CBT_WLEV_CTRL0_WRITE_LEVEL_EN));
-
-    /*
-     * TODO
-     * BYTEMODE, PINMUX
-     */
-    if (is_training_mode1(p)) {
-        /* DRAMC B0 as RX */
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0),
-            0, CBT_WLEV_CTRL0_CBT_DQBYTE_OEAO_EN);
-    }
-
-    switch_oe_tie(p, 1);
-
-    /*
-     * MR13 OP[6], cbt mode
-     * 0, training mode 1
-     * 1, training mode 2
-     *
-     * TODO
-     * MR13 values??
-     */
-    DramcModeRegWriteByRank(p, p->rank, 13, p->lp5_training_mode << 6);
-
-    if (operating_fsp == FSP_2) {
-        /*
-         * dram will switch to another FSP_OP automatically
-         */
-        DramcModeRegWriteByRank(p, p->rank, 16,
-            (2 << MR16_FSP_WR_SHIFT) |
-            (2 << MR16_FSP_OP_SHIFT) |
-            (p->lp5_cbt_phase << MR16_CBT_PHASE) |
-            /* CBT enabled fsp[2] */
-            (3 << MR16_FSP_CBT) |
-            (1 << MR16_VRCG));
-    } else if (operating_fsp == FSP_1) {
-        /*
-         * dram will switch to another FSP_OP automatically
-         */
-        DramcModeRegWriteByRank(p, p->rank, 16,
-            (1 << MR16_FSP_WR_SHIFT) |
-            (1<< MR16_FSP_OP_SHIFT) |
-            (p->lp5_cbt_phase << MR16_CBT_PHASE) |
-            /* CBT enabled fsp[1] */
-            (2 << MR16_FSP_CBT) |
-            (1 << MR16_VRCG));
-    } else {
-        /* FSP_0 */
-        DramcModeRegWriteByRank(p, p->rank, 16,
-            (0 << MR16_FSP_WR_SHIFT) |
-            (0 << MR16_FSP_OP_SHIFT) |
-            (p->lp5_cbt_phase << MR16_CBT_PHASE) |
-            /* CBT enabled fsp[0] */
-            (1 << MR16_FSP_CBT) |
-            (1 << MR16_VRCG));
-    }
-
-    /* wait tCBTWCKPRE_static */
-    mcDELAY_US(1);
-
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL3),
-        P_Fld(0x5, CBT_WLEV_CTRL3_DQSBX_G) |
-        P_Fld(0x5, CBT_WLEV_CTRL3_DQSBY_G) |
-        P_Fld(0x5, CBT_WLEV_CTRL3_DQSBX1_G) |
-        P_Fld(0x5, CBT_WLEV_CTRL3_DQSBY1_G));
-
-    if (is_byte_mode(p)) {
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0), 3, CBT_WLEV_CTRL0_CBT_WLEV_DQS_SEL);
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0), P_Fld(1, CBT_WLEV_CTRL0_BYTEMODECBTEN) |
-			P_Fld(1, CBT_WLEV_CTRL0_CBT_CMP_BYTEMODE));    //BYTEMODECBTEN=1
-    } else {
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0), (1 << lp5_cp[p->channel].dram_dq_b0),
-            CBT_WLEV_CTRL0_CBT_WLEV_DQS_SEL);
-    }
-
-    /* toggle WCK */
-    toggle_wck(p, 1);
-
-    /* wait tWCK2DQ7H */
-    mcDELAY_US(1);
-
-    /* DQ[7] = High */
-    force_dq7(p, 1);
-
-    /* wait tDQ7HWCK to switch FSP */
-    mcDELAY_US(1);
-
-    /* stop toggle WCK */
-    toggle_wck(p, 0);
-
-    /* wait tDQ72DQ */
-    mcDELAY_US(1);
-
-    O1PathOnOff(p, 1);
-
-    /* start toggle WCK */
-    toggle_wck(p, 1);
-
-    /* Wait tCAENT */
-    mcDELAY_US(1);
-}
-
-static void lp5_cbt_exit(DRAMC_CTX_T *p, u8 operating_fsp,
-        u8 operation_frequency)
-{
-    /* drive dq7 low */
-    force_dq7(p, 0);
-
-    /* wait tDQ7WCK */
-    mcDELAY_US(1);
-
-    /* stop wck toggle */
-    toggle_wck(p, 0);
-
-    /* wait tVREFCA_LOGNG */
-    mcDELAY_US(1);
-
-    if (operating_fsp == FSP_2) {
-        DramcModeRegWriteByRank(p, p->rank, 16,
-            (2 << MR16_FSP_WR_SHIFT) |
-            (2 << MR16_FSP_OP_SHIFT) |
-            (0 << MR16_CBT_PHASE) |
-            /* normal operation */
-            (0 << MR16_FSP_CBT) |
-            (1 << MR16_VRCG));
-    } else if (operating_fsp == FSP_1) {
-        DramcModeRegWriteByRank(p, p->rank, 16,
-            (1 << MR16_FSP_WR_SHIFT) |
-            (1 << MR16_FSP_OP_SHIFT) |
-            (0 << MR16_CBT_PHASE) |
-            /* normal operation */
-            (0 << MR16_FSP_CBT) |
-            (1 << MR16_VRCG));
-    } else {
-        DramcModeRegWriteByRank(p, p->rank, 16,
-            (0 << MR16_FSP_WR_SHIFT) |
-            (0 << MR16_FSP_OP_SHIFT) |
-            (0 << MR16_CBT_PHASE) |
-            /* normal operation */
-            (0 << MR16_FSP_CBT) |
-            (1 << MR16_VRCG));
-    }
-
-    /* wait tMRD */
-    mcDELAY_US(1);
-
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0),
-        P_Fld(0x0, CBT_WLEV_CTRL0_WRITE_LEVEL_EN));
-    switch_oe_tie(p, 0);
-
-    /*
-    * APHY TX PI Spec mode option
-    * for K RK1, if RK0/1 DQ UI setting is not the same, it will fail
-    */
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_NEW_XRW2W_CTRL),
-        0, SHU_NEW_XRW2W_CTRL_TXPI_UPD_MODE);
-
-    /* Disable O1 path output */
-    O1PathOnOff(p, 0);
-
-    if (is_byte_mode(p)) {
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0), P_Fld(0, CBT_WLEV_CTRL0_BYTEMODECBTEN) |
-			P_Fld(0, CBT_WLEV_CTRL0_CBT_CMP_BYTEMODE));    //BYTEMODECBTEN=1
-    }
-
-    #if 0
-    if (p->rank == RANK_0) {
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL),
-            P_Fld(0, CKECTRL_CKEFIXOFF) |
-            P_Fld(0, CKECTRL_CKEFIXON));
-    } else if (p->rank == RANK_1) {
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL),
-            P_Fld(0, CKECTRL_CKE1FIXOFF) |
-            P_Fld(0, CKECTRL_CKE1FIXON));
-    }
-    #else
-    CKEFixOnOff(p, TO_ALL_RANK, CKE_FIXON, TO_ONE_CHANNEL);
-    #endif
-
-    lp5heff_restore(p);
-}
-#endif
-
 static void CBTEntryLP45(DRAMC_CTX_T *p, U8 u1FSP, U16 u2Freq)
 {
-#if __LP5_COMBO__
-    if (is_lp5_family(p))
-    {
-        lp5_cbt_entry(p, u1FSP, u2Freq);
-    }
-    else
-#endif
     {
         if(p->dram_fsp == FSP_1)
         {
@@ -3778,16 +2451,6 @@ static void CBTExitLP45(DRAMC_CTX_T *p, U8 u1FSP, U8 u2Freq, U8 stateFlag)
      * if stateFlag == IN_CBT, it means we are trying to setup vref by MRW
      *   IN_CBT case, only for LP5 mode 1 and LP4 byte mode
      */
-#if __LP5_COMBO__
-    if (is_lp5_family(p))
-    {
-        if (stateFlag == OUT_CBT || is_training_mode1(p))
-        {
-            lp5_cbt_exit(p, u1FSP, u2Freq);
-        }
-    }
-    else
-#endif
     {
         if (stateFlag == OUT_CBT || p->dram_cbt_mode[p->rank] == CBT_BYTE_MODE1)
         {
@@ -3802,40 +2465,6 @@ static void CBTExitLP45(DRAMC_CTX_T *p, U8 u1FSP, U8 u2Freq, U8 stateFlag)
 
 static void CBTSetVrefLP45(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefLevel, U8 u1FSP, U16 u2Freq, U8 stateFlag)
 {
-    /* by yirong.wang
-     * if stateFlag == OUT_CBT, it means we are not in CBT, setup vref by MRW
-     * if stateFlag == IN_CBT, it means we are doing CBT
-     *   LP5 training mode 1 and LP4 byte mode, exit CBT and setup vref by MRW, then re-enter CBT
-     *   LP5 training mode 2 and LP4 normal mode, setup vref by DQ
-     */
-#if __LP5_COMBO__
-    if (is_lp5_family(p))
-    {
-        if (stateFlag == IN_CBT && is_training_mode2(p))
-        {
-            /*
-             * training mode2
-             * TODO, according to pinmux to adjust u1VrefLevel
-             */
-            set_vref_by_dq(p, GetCBTVrefPinMuxValue_lp5(p, u1VrefLevel));
-        }
-        else
-        {
-            if (stateFlag == IN_CBT && is_training_mode1(p))
-            {
-                lp5_cbt_exit(p, u1FSP, u2Freq);
-            }
-
-            set_vref_by_mrw(p, u1VrefLevel);
-
-            if (stateFlag == IN_CBT && is_training_mode1(p))
-            {
-                lp5_cbt_entry(p, u1FSP, u2Freq);
-            }
-        }
-    }
-    else
-#endif
     {
         if (stateFlag == IN_CBT && p->dram_cbt_mode[p->rank] == CBT_BYTE_MODE1)
         {
@@ -3870,9 +2499,6 @@ static void CBTScanPI(DRAMC_CTX_T *p, S16 *s2PIStart, S16 *s2PIEnd, S16 *s2PISte
 	*s2PIStart = 0;
 	*s2PIEnd = p2u * 3 - 1;
 
-#if __LP5_COMBO__
-	if (!is_lp5_family(p))
-#endif
 	{
 		/* LPDDR4 */
 #if !CBT_MOVE_CA_INSTEAD_OF_CLK
@@ -3969,14 +2595,6 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
     mcSHOW_MRW_MSG(("\n==[MR Dump] %s==\n", __func__));
 #endif
 
-#if __LP5_COMBO__
-    if (is_lp5_family(p))
-    {
-        u1FinalVref = u1MR12Value[p->channel][p->rank][p->dram_fsp];
-        ca_pin_num = CATRAINING_NUM_LP5;
-    }
-    else
-#endif
     {
         u1FinalRange = u1MR12Value[p->channel][p->rank][p->dram_fsp] >> 6;
         u1FinalVref = u1MR12Value[p->channel][p->rank][p->dram_fsp] & 0x3f;
@@ -4017,13 +2635,6 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
     vPrintCalibrationBasicInfo(p);
     mcSHOW_DBG_MSG(("[CmdBusTrainingLP45] new_cbt_mode=%d, autok=%d\n", p->new_cbt_mode, autok));
     mcSHOW_DBG_MSG2(("pi_start=%d, pi_end=%d, pi_step=%d\n", pi_start, pi_end, pi_step));
-
-#if __LP5_COMBO__
-    if (is_lp5_family(p))
-    {
-        mcSHOW_DBG_MSG2(("lp5_training_mode=%d, lp5_cbt_phase=%d\n", p->lp5_training_mode, p->lp5_cbt_phase));
-    }
-#endif
 
     //Back up dramC register
     DramcBackupRegisters(p, u4RegBackupAddress, ARRAY_SIZE(u4RegBackupAddress));
@@ -4160,38 +2771,16 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
 
     /* -------------  CS and CLK ---------- */
     /* delay ca 1UI before K CS */
-#if __LP5_COMBO__
-    if (is_phase_falling(p)) {
-        ca_mck = get_ca_mck(p);
-        ca_ui = get_ca_ui(p);
-        xlate_ca_mck_ui(p, 1,
-                ca_mck, ca_ui,
-                &ca_mck_tmp, &ca_ui_tmp);
-        put_ca_mck(p, ca_mck_tmp);
-        put_ca_ui(p, ca_ui_tmp);
-    }
-#endif
 
     if (u1CBTEyeScanEnable == DISABLE)
     {
         CBTAdjustCS(p, autok);
     }
 
-    /* restore ca mck and ui */
-#if __LP5_COMBO__
-    if (is_phase_falling(p)) {
-        put_ca_mck(p, ca_mck);
-        put_ca_ui(p, ca_ui);
-    }
-#endif
-
 //-------  Going to exit Command bus training(CBT) mode.-------------
     CBTExitLP45(p, operating_fsp, operation_frequency, OUT_CBT);
     CBTSetVrefLP45(p, u1FinalRange, u1FinalVref, operating_fsp, operation_frequency, OUT_CBT);
 
-#if __LP5_COMBO__
-    if (!is_lp5_family(p))
-#endif
     {
         if (p->dram_fsp == FSP_1)
         {
@@ -4232,25 +2821,6 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
 
 U8 u1MCK2UI_DivShift(DRAMC_CTX_T *p)
 {
-#if (__LP5_COMBO__ == TRUE)
-    if (TRUE == is_lp5_family(p))
-    {
-        //in LP4 1:8 mode, 8 small UI =  1 large UI
-        if (vGet_Div_Mode(p) == DIV4_MODE)
-        {
-            return MCK_TO_4UI_SHIFT;
-        }
-        else if (vGet_Div_Mode(p) == DIV16_MODE)
-        {
-            return MCK_TO_16UI_SHIFT;
-        }
-        else
-        {
-            return MCK_TO_8UI_SHIFT;
-        }
-    }
-    else
-#endif
     {
         //in LP4 1:8 mode, 8 small UI =  1 large UI
         if (vGet_Div_Mode(p) == DIV4_MODE)
@@ -4421,35 +2991,8 @@ void ShiftDQ_OENUI_AllRK(DRAMC_CTX_T *p, S8 iShiftUI, BYTES_T eByteIdx)
 //    LP4_ShiftDQUI(p, iShiftUI, ALL_BYTES);
 //}
 
-#if __LP5_COMBO__
-static void LP5_ShiftWCKUI(DRAMC_CTX_T *p, S8 iShiftUI, BYTES_T eByteIdx)
-{
-    REG_TRANSFER_T TransferUIRegs[]  = {{DRAMC_REG_SHURK_WCK_WR_UI, SHURK_WCK_WR_UI_WCK_WR_B0_UI},      // Byte0
-                                        {DRAMC_REG_SHURK_WCK_WR_UI, SHURK_WCK_WR_UI_WCK_WR_B1_UI},      // Byte1
-                                        {DRAMC_REG_SHURK_WCK_RD_UI, SHURK_WCK_RD_UI_WCK_RD_B0_UI},      // Byte0
-                                        {DRAMC_REG_SHURK_WCK_RD_UI, SHURK_WCK_RD_UI_WCK_RD_B1_UI},      // Byte1
-                                        {DRAMC_REG_SHURK_WCK_FS_UI, SHURK_WCK_FS_UI_WCK_FS_B0_UI},      // Byte0
-                                        {DRAMC_REG_SHURK_WCK_FS_UI, SHURK_WCK_FS_UI_WCK_FS_B1_UI}};     // Byte1
-    REG_TRANSFER_T TransferMCKRegs[] = {{DRAMC_REG_SHURK_WCK_WR_MCK, SHURK_WCK_WR_MCK_WCK_WR_B0_MCK},
-                                        {DRAMC_REG_SHURK_WCK_WR_MCK, SHURK_WCK_WR_MCK_WCK_WR_B1_MCK},
-                                        {DRAMC_REG_SHURK_WCK_RD_MCK, SHURK_WCK_RD_MCK_WCK_RD_B0_MCK},
-                                        {DRAMC_REG_SHURK_WCK_RD_MCK, SHURK_WCK_RD_MCK_WCK_RD_B1_MCK},
-                                        {DRAMC_REG_SHURK_WCK_FS_MCK, SHURK_WCK_FS_MCK_WCK_FS_B0_MCK},
-                                        {DRAMC_REG_SHURK_WCK_FS_MCK, SHURK_WCK_FS_MCK_WCK_FS_B1_MCK}};
-
-    _LoopAryToDelay(p, TransferUIRegs, TransferMCKRegs,
-                       sizeof(TransferUIRegs) / sizeof(REG_TRANSFER_T),
-                       iShiftUI, eByteIdx);
-}
-#endif
-
 static void ShiftDQSWCK_UI(DRAMC_CTX_T *p, S8 iShiftUI, BYTES_T eByteIdx)
 {
-#if (__LP5_COMBO__ == TRUE)
-        if (TRUE == is_lp5_family(p))
-            LP5_ShiftWCKUI(p, iShiftUI, eByteIdx);
-        else
-#endif
         {
             LP4_ShiftDQSUI(p, iShiftUI, eByteIdx);
             LP4_ShiftDQS_OENUI(p, iShiftUI, eByteIdx);
@@ -4483,18 +3026,7 @@ U8 u1IsPhaseMode(DRAMC_CTX_T *p)
     else // DDR800_CLOSE_LOOP and NORMAL_CLOSE_LOOP
         return FALSE;
 }
-#if __LP5_COMBO__
-static void vSetLP5Dram_WCK2CK_WlevOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
-{
-    // MR18 OP[6] to enable/disable WCK2CK leveling
-    if (u1OnOff)
-        u1MR18Value[p->dram_fsp] |= 0x40;  // OP[6] WCK2CK Leveling = 1
-    else
-        u1MR18Value[p->dram_fsp] &= 0xBF;  // OP[6] WCK2CK Leveling = 0
 
-    DramcModeRegWriteByRank(p, p->rank, 18, u1MR18Value[p->dram_fsp]);
-}
-#endif
 #if 0
 static DRAM_STATUS_T DramcTriggerAndWait(DRAMC_CTX_T *p, REG_TRANSFER_T TriggerReg, REG_TRANSFER_T RepondsReg)
 {
@@ -4736,20 +3268,6 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
         ShiftDQ_OENUI_AllRK(p, -WRITE_LEVELING_MOVD_DQS, ALL_BYTES);
         ShiftDQSWCK_UI(p, -WRITE_LEVELING_MOVD_DQS, ALL_BYTES);
 
-#if (__LP5_COMBO__ == TRUE)
-        if (TRUE == is_lp5_family(p))
-        {
-            // For DLY based WCK leveling
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ13), 0, SHU_B0_DQ13_RG_TX_ARDQ_DLY_LAT_EN_B0);
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ13), 0, SHU_B1_DQ13_RG_TX_ARDQ_DLY_LAT_EN_B1);
-
-            // Set DQS DLY-based delay to 16
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_TXDLY3), STORAGED_DLY_UNIT, SHU_R0_B0_TXDLY3_TX_ARWCK_DLY_B0);
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_TXDLY3), STORAGED_DLY_UNIT, SHU_R0_B1_TXDLY3_TX_ARWCK_DLY_B1);
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_TXDLY3), STORAGED_DLY_UNIT, SHU_R0_B0_TXDLY3_TX_ARWCKB_DLY_B0);
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_TXDLY3), STORAGED_DLY_UNIT, SHU_R0_B1_TXDLY3_TX_ARWCKB_DLY_B1);
-        }
-#endif
         // Set DQS PI-based delay to 0
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_DQ0), 0, SHU_R0_B0_DQ0_ARPI_PBYTE_B0);  //rank0, byte0, DQS delay
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_DQ0), 0, SHU_R0_B1_DQ0_ARPI_PBYTE_B1);  //rank0, byte1, DQS delay
@@ -4817,12 +3335,6 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 #endif
 
 
-#if (__LP5_COMBO__ == TRUE)
-    if (TRUE == is_lp5_family(p))
-
-        vSetLP5Dram_WCK2CK_WlevOnOff(p, DISABLE);
-    else
-#endif
         vSetDramMRWriteLevelingOnOff(p, DISABLE); // Disable DDR write leveling mode:  issue MR2[7] to enable write leveling
 
 
@@ -5950,45 +4462,6 @@ U8 __wa__gating_swk_for_autok = 0;
 U8 __wa__gating_autok_init_ui[RANK_MAX] = { 0 };
 #endif
 
-#if (__LP5_COMBO__)
-static U8 u1GetLp5ReadLatency(DRAMC_CTX_T *p)
-{
-    U8 read_latency;
-    U8 rl, ckr, dvfsc;
-
-    const U8 au1MR2MappingToRL_wo_dvfsc[2][12] = {
-        {3, 4, 5, 6, 8, 9, 10, 12, 13, 14, 15, 17}, /* CKR = 4:1 */
-        {6, 8, 10, 12, 16, 18}, /* CKR = 2:1 */
-    };
-
-    ///TODO: Spec has not specify these values
-    const U8 au1MR2MappingToRL_wi_dvfsc[2][6] = {
-        {0xff, 0xff, 0xff, 0xff, 0xff, 0xff}, /* CKR = 4:1 */
-        {0xff, 0xff, 0xff, 0xff, 0xff, 0xff}, /* CKR = 2:1 */
-    };
-
-    ckr = (u1MR18Value[p->dram_fsp] >> 7) & 0x1;
-    dvfsc = !!(u1MR19Value[p->dram_fsp] & 0x3);
-    rl = (u1MR02Value[p->dram_fsp] & 0xf);
-
-    if (dvfsc)
-        read_latency = au1MR2MappingToRL_wi_dvfsc[ckr][rl];
-    else
-        read_latency = au1MR2MappingToRL_wo_dvfsc[ckr][rl];
-
-    /* note that the uint of RL is nCK, convert to nWCK */
-    if (ckr == 0)
-        read_latency *= 4;
-    else
-        read_latency *= 2;
-
-    mcSHOW_DBG_MSG2(("ckr = %d, dvfsc = %d, rl = %d, read_latency = %d\n",
-        ckr, dvfsc, rl, read_latency));
-
-    return read_latency;
-}
-#endif
-
 static U8 u1GetGatingStartPos(DRAMC_CTX_T *p, U8 u1AutoK)
 {
     const U8 au1MR2MappingToRL[2][8] = {{6, 10, 14, 20, 24, 28, 32, 36},   //normal mode
@@ -6013,12 +4486,6 @@ static U8 u1GetGatingStartPos(DRAMC_CTX_T *p, U8 u1AutoK)
         u1MR0_LatencyMode = (gu2MR0_Value[p->rank]>>1) & 0x1; //MR0 OP[1],  0:normal mode,  1:byte mode
     }
 
-#if (__LP5_COMBO__)
-    if (is_lp5_family(p)) {
-        u4TDQSCK_UI_min = 500 * DDRPhyGetRealFreq(p) *2/ 1000000;
-        u1RealRL = u1GetLp5ReadLatency(p);
-    } else
-#endif
     {
         u4TDQSCK_UI_min = 1500 * DDRPhyGetRealFreq(p) *2/ 1000000;
         u1RealRL = au1MR2MappingToRL[u1MR0_LatencyMode][u1MR2RLValue];
@@ -6035,16 +4502,6 @@ static U8 u1GetGatingStartPos(DRAMC_CTX_T *p, U8 u1AutoK)
     {
         u1MCK2CK_UI = 8;
         u1ExtraMCKfor1_4mode = 0;
-#if (__LP5_COMBO__)
-    if (is_lp5_family(p)) {
-        if (p->frequency <= 1600)
-            u1GatingAheadDQS_UI = 1 * u1MCK2CK_UI;
-        else if (p->frequency == 1866)
-            u1GatingAheadDQS_UI = 4;
-        else
-            u1GatingAheadDQS_UI = 8;
-    } else
-#endif
         u1GatingAheadDQS_UI = 5;
     }
     else
@@ -6332,14 +4789,6 @@ static void rxdqs_gating_auto_cal_cfg(DRAMC_CTX_T *p,
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL),
         0x1, MISC_SHU_STBCAL_DQSIEN_BURST_MODE);
 
-#if (__LP5_COMBO__)
-    if (is_lp5_family(p)) {
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9),
-            0x1, B0_DQ9_RG_RX_ARDQS0_DQSIENMODE_B0);
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ9),
-            0x1, B1_DQ9_RG_RX_ARDQS0_DQSIENMODE_B1);
-    } else
-#endif
     {
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9),
             0x1, B0_DQ9_RG_RX_ARDQS0_DQSIENMODE_B0);
@@ -6859,14 +5308,6 @@ static void rxdqs_gating_sw_cal_init(DRAMC_CTX_T *p, U8 use_enhanced_rdqs)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL),
         0x1, MISC_SHU_STBCAL_DQSIEN_BURST_MODE);
 
-#if (__LP5_COMBO__)
-    if (is_lp5_family(p)) {
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9),
-            0x1, B0_DQ9_RG_RX_ARDQS0_DQSIENMODE_B0);
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ9),
-            0x1, B1_DQ9_RG_RX_ARDQS0_DQSIENMODE_B1);
-    } else
-#endif
     {
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9),
             0x1, B0_DQ9_RG_RX_ARDQS0_DQSIENMODE_B0);
@@ -7178,11 +5619,6 @@ static U8 rxdqs_gating_sw_cal(DRAMC_CTX_T *p,
         rxdqs_trans->dqs_lead[1], rxdqs_trans->dqs_lag[1],
         rxdqs_trans->dqs_lead[0], rxdqs_trans->dqs_lag[0]));
 
-#if (__LP5_COMBO__)
-    if((is_lp5_family(p)) && (vGet_Div_Mode(p) == DIV16_MODE))
-        debug_pass_cnt = (GATING_GOLDEND_DQSCNT_LP5 >> 1);
-    else
-#endif
         debug_pass_cnt = GATING_GOLDEND_DQSCNT_LP5;
 
     /* Decide the window center */
@@ -7320,30 +5756,12 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_sw_cal(DRAMC_CTX_T *p,
         else
             dly_ui_start = u1GetGatingStartPos(p, AUTOK_OFF);//7; //12;ly_ui_start + 32;
         #else
-        #if __LP5_COMBO__
-            if((is_lp5_family(p)) && ((p->frequency == 2133) || (p->frequency == 2750)))
-                dly_ui_start = 5;
-            else
-        #endif
                 dly_ui_start = u1GetGatingStartPos(p, AUTOK_OFF);//7; //12;ly_ui_start + 32;
         #endif
 
         dly_ui_end = dly_ui_start+ 32;
         pass_byte_count = 0;
 #else
-        #if __LP5_COMBO__
-        if (is_lp5_family(p))
-        {
-            if (p->frequency == 1600)
-                dly_ui_start = 7; //12;
-            else
-                dly_ui_start = 8; //12;
-
-            dly_ui_end = dly_ui_start + 32;
-            pass_byte_count = 0;
-        }
-        else
-        #endif
         {
              dly_ui_start = 9; //12; Eddie change to 9 for Hynix Normal Mode
              if(p->freq_sel==LP4_DDR4266)
@@ -7828,68 +6246,10 @@ void RDSELRunTimeTracking_preset(DRAMC_CTX_T *p)
 }
 #endif
 
-#if __LP5_COMBO__
-static void vSetLP5DramRDDQC_DQandDMI(DRAMC_CTX_T *p, U8 eDQMode, U8 eDMIMode)
-{
-    // Set DQ
-    if (eDQMode == 0)   // Invert
-        u1MR20Value[p->dram_fsp] &= ~0x80;
-    else // low-fixed
-        u1MR20Value[p->dram_fsp] |= 0x80;
-
-    // Set DMI
-    if (eDMIMode == 0)  // By pattern
-        u1MR20Value[p->dram_fsp] &= ~0x40;
-    else // low-fixed
-        u1MR20Value[p->dram_fsp] |= 0x40;
-
-    DramcModeRegWriteByRank(p, p->rank, 20, u1MR20Value[p->dram_fsp]);
-}
-
-static void vSetLP5Dram_WCKON_OnOff(DRAMC_CTX_T *p, U8 u1OnOff)
-{
-    U8 rk;
-    U8 backup_mrsrk;
-
-    // Issue MR18 OP[4] to enable/disable WCK always ON mode
-    if (u1OnOff == ON)
-        u1MR18Value[p->dram_fsp] |= 0x10;  // OP[4] WCK ON = 1
-    else
-        u1MR18Value[p->dram_fsp] &= 0xEF;  // OP[4] WCK ON = 0
-
-    backup_mrsrk = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0),
-        SWCMD_CTRL0_MRSRK);
-
-    //zj DramcModeRegWriteByRank(p, p->rank, 18, u1MR18Value[p->dram_fsp]);
-    for (rk = RANK_0; rk < p->support_rank_num; rk++) {
-        DramcModeRegWriteByRank(p, rk, 18, u1MR18Value[p->dram_fsp]);
-    }
-
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), backup_mrsrk,
-        SWCMD_CTRL0_MRSRK);
-}
-#endif
-
 #if RDDQC_PINMUX_WORKAROUND
 static void RDDQCPinmuxWorkaround(DRAMC_CTX_T *p)
 {
     U8 *uiLPDDR_RDDQC_Mapping;
-#if (__LP5_COMBO__)
-    const U8 uiLPDDR5_RDDQC_Mapping_POP[CHANNEL_NUM][16] =
-    {
-        {
-            8, 9, 10, 11, 12, 15, 14, 13,
-            0, 1, 2, 3, 4, 7, 6, 5,
-        },
-        #if (CHANNEL_NUM>1)
-        {
-            8, 9, 10, 11, 12, 15, 14, 13,
-            0, 1, 2, 3, 4, 7, 6, 5,
-        },
-        #endif
-    };
-
-#endif
     const U8 uiLPDDR4_RDDQC_Mapping_POP[PINMUX_MAX][CHANNEL_NUM][16] =
     {
         {
@@ -8002,13 +6362,6 @@ static void RDDQCPinmuxWorkaround(DRAMC_CTX_T *p)
         }
     };
 
-    #if (__LP5_COMBO__)
-    if (is_lp5_family(p))
-    {
-        uiLPDDR_RDDQC_Mapping = (U8 *)uiLPDDR5_RDDQC_Mapping_POP[p->channel];
-    }
-    else
-    #endif
     {
         uiLPDDR_RDDQC_Mapping = (U8 *)uiLPDDR4_RDDQC_Mapping_POP[p->DRAMPinmux][p->channel];
     }
@@ -8071,16 +6424,6 @@ static U32 DramcRxWinRDDQCInit(DRAMC_CTX_T *p)
 #endif
 
     // Set golden values into dram MR
-#if (__LP5_COMBO__ == TRUE)
-    if (TRUE == is_lp5_family(p))
-    {
-        DramcModeRegWriteByRank(p, p->rank, 31, RDDQC_Bit_Ctrl_Lower);
-        DramcModeRegWriteByRank(p, p->rank, 32, RDDQC_Bit_Ctrl_Upper);
-        DramcModeRegWriteByRank(p, p->rank, 33, RDDQC_Pattern_A);
-        DramcModeRegWriteByRank(p, p->rank, 34, RDDQC_Pattern_B);
-    }
-    else
-#endif
     {
         DramcModeRegWriteByRank(p, p->rank, 15, RDDQC_Bit_Ctrl_Lower);
         DramcModeRegWriteByRank(p, p->rank, 20, RDDQC_Bit_Ctrl_Upper);
@@ -8101,52 +6444,14 @@ static U32 DramcRxWinRDDQCInit(DRAMC_CTX_T *p)
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ8),
             P_Fld(1, SHU_B1_DQ8_R_DMRXDLY_CG_IG_B1));
 
-#if (__LP5_COMBO__ == TRUE)
-    if (is_lp5_family(p))
-    {
-        // Set function mode applied to DQ & DMI
-//        U8 RDDQC_RDC_DQ_mode = 0;
-//        U8 RDDQC_RDC_DMI_mode = 0;
-
-//        vSetLP5DramRDDQC_DQandDMI(p, RDDQC_RDC_DQ_mode, RDDQC_RDC_DMI_mode);
-
-//        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_RDDQCGOLDEN1),
-//                P_Fld(RDDQC_RDC_DQ_mode, RDDQCGOLDEN1_LP5_MR20_7_GOLDEN) |
-//                P_Fld(RDDQC_RDC_DMI_mode, RDDQCGOLDEN1_LP5_MR20_6_GOLDEN));
-
-        if (is_heff_mode(p) == FALSE)
-        {
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_COMMON0), 1, SHU_COMMON0_LP5WCKON);
-
-            // Enable MR18 "WCK always ON mode"
-            vSetLP5Dram_WCKON_OnOff(p, ON);
-        }
-
-        RunTime_SW_Cmd(p, RUNTIME_SWCMD_CAS_FS);
-    }
-#endif
     return 0;
 }
-#if 0
+#if PRINT_CALIBRATION_SUMMARY_FASTK_CHECK
 static U32 DramcRxWinRDDQCEnd(DRAMC_CTX_T *p)
 {
     // Recover MPC Rank
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), 0, SWCMD_CTRL0_MRSRK);
 
-#if (__LP5_COMBO__ == TRUE)
-    if (is_lp5_family(p))
-    {
-        RunTime_SW_Cmd(p, RUNTIME_SWCMD_CAS_OFF);
-
-        if (is_heff_mode(p) == FALSE)
-        {
-            // Disable MR18 "WCK always ON mode"
-            vSetLP5Dram_WCKON_OnOff(p, OFF);
-
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_COMMON0), 0, SHU_COMMON0_LP5WCKON);
-        }
-    }
-#endif
     return 0;
 }
 #endif
@@ -8838,21 +7143,6 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
     DramcEngine2Init(p, p->test2_1, p->test2_2, TEST_XTALK_PATTERN, 0, TE_NO_UI_SHIFT);
 #endif
 
-
-#if (__LP5_COMBO__ == TRUE)
-    if (is_lp5_family(p))
-    {
-        // 1 step = 1/4 delay cell
-        // Adjust step = 1/2/4(precision adjustment) by data-rate
-        if (p->frequency <= GetFreqBySel(p,LP5_DDR3200))
-            u16DelayStep = 4;
-        else if (p->frequency <= GetFreqBySel(p,LP5_DDR4800)) // 3733, 4266, 4800
-            u16DelayStep = 2;
-        else // 5500, 6000, 6400
-            u16DelayStep = 1;
-    }
-    else
-#endif
     {
         u16DelayStep = 4;
     }
@@ -9328,13 +7618,6 @@ void TxWinTransferDelayToUIPI(DRAMC_CTX_T *p, U16 uiDelay, U8 u1AdjustPIToCenter
     *pu1UILarge_DQ = (u2TmpValue >> u1Small_ui_to_large);
     #endif
     // calculate DQ OE according to DQ UI
-    #if (__LP5_COMBO__ == TRUE)
-    if (TRUE == is_lp5_family(p))
-    {
-        u2TmpValue -= TX_DQ_OE_SHIFT_LP5;
-    }
-    else
-    #endif
     {
         u2TmpValue -= u1TxDQOEShift;
     }
@@ -9468,14 +7751,6 @@ static void TXScanRange_PI(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T ca
     U16 u2TempVirtualDelay, u2SmallestVirtualDelay = 0xffff;
     U16 u2DQDelayBegin = 0, u2DQDelayEnd = 0;
 
-#if (__LP5_COMBO__ == TRUE)
-    if (TRUE == is_lp5_family(p))
-    {
-        u4RegValue_TXDLY = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_SHURK_WCK_WR_MCK));
-        u4RegValue_dly = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_SHURK_WCK_WR_UI));
-    }
-    else
-#endif
     {
         u4RegValue_TXDLY = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_SHU_SELPH_DQS0));
         u4RegValue_dly = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_SHU_SELPH_DQS1));
@@ -9528,18 +7803,6 @@ static void TXScanRange_PI(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T ca
             u2DQDelayBegin += u2TmpShift;
             mcSHOW_DBG_MSG(("%d (+%d)\n", u2DQDelayBegin, u2TmpShift));
         }
-    }
-    #endif
-
-    #if (__LP5_COMBO__)
-    if (is_lp5_family(p)) {
-        /* For DDR3200, +1.5 MCK */
-        if (p->frequency == 1600)
-            u2DQDelayBegin += (((1 << u1MCK2UI) + ((1 << u1MCK2UI) >> 1)) << u1UI2PI);
-        else if (p->frequency == 2133)
-            u2DQDelayBegin += ((1 << u1MCK2UI) << u1UI2PI);
-        else if (p->frequency == 2750)
-            u2DQDelayBegin += (9 << u1UI2PI);
     }
     #endif
 
@@ -9683,21 +7946,12 @@ static void DramcTXSetVref(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefValue)
 {
     U8 u1TempOPValue;
 
-#ifdef __LP5_COMBO__
-    if (is_lp5_family(p))
-        u1TempOPValue = ((u1VrefValue & 0x7f));
-    else
-#endif
         u1TempOPValue = ((u1VrefValue & 0x3f) | (u1VrefRange << 6));
 
     u1MR14Value[p->channel][p->rank][p->dram_fsp] = u1TempOPValue;
     //For TX VREF of different byte
 
     DramcModeRegWriteByRank(p, p->rank, 14, u1TempOPValue);
-#ifdef __LP5_COMBO__
-    if (is_lp5_family(p))
-        DramcModeRegWriteByRank(p, p->rank, 15, u1TempOPValue);
-#endif
 
     #if CALIBRATION_SPEED_UP_DEBUG
     mcSHOW_DBG_MSG2(("Yulia TX Vref : CH%d Rank%d, TX Range %d Vref %d\n\n", p->channel, p->rank, u1VrefRange, (u1VrefValue & 0x3f)));
@@ -9879,15 +8133,6 @@ static void Tx_Auto_K_Init(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T ca
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1), early_break, TX_ATK_SET1_TX_ATK_EARLY_BREAK); //Enable early break
 #endif
 
-#if (__LP5_COMBO__ == TRUE)
-    if (TRUE == is_lp5_family(p))
-    {
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_TX_SET0),
-                P_Fld(0x5, SHU_TX_SET0_TXOEN_AUTOSET_OFFSET) |
-                P_Fld(0x1, SHU_TX_SET0_TXOEN_AUTOSET_EN));   //Enable OE auto adjust
-    }
-    else
-#endif
     {
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_TX_SET0),
                 P_Fld(0x3, SHU_TX_SET0_TXOEN_AUTOSET_OFFSET) |
@@ -10218,10 +8463,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
         u2DQDelayStep = 2;
     else
         u2DQDelayStep = 1;
-#if __LP5_COMBO__
-    if (is_lp5_family(p))
-        u2DQDelayStep = 4; /* To speed up simulation */
-#endif
+
     #if (FOR_DV_SIMULATION_USED == 1)
         u2DQDelayStep = (vGet_DDR_Loop_Mode(p) == OPEN_LOOP_MODE) ? 16 : 8;
     #endif
@@ -11258,14 +9500,6 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
     DramcRestoreRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress)/sizeof(U32));
 
     //restore Vref
-    #if __LP5_COMBO__
-    if (is_lp5_family(p))
-    {
-       u2VrefRange = 0;
-       u2VrefLevel = backup_u1MR14Value;
-    }
-    else
-    #endif
     {
        u2VrefRange = backup_u1MR14Value>>6;
        u2VrefLevel = backup_u1MR14Value & 0x3f;
@@ -12630,11 +10864,7 @@ DRAM_STATUS_T DramcImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_regi
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMP_CTRL1), 0, MISC_IMP_CTRL1_RG_RIMP_PRE_EN);
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL), P_Fld(0, MISC_IMPCAL_IMPCAL_CALI_ENN) | P_Fld(1, MISC_IMPCAL_IMPCAL_IMPPDP) | \
                                       P_Fld(1, MISC_IMPCAL_IMPCAL_IMPPDN)); //RG_RIMP_BIAS_EN and RG_RIMP_VREF_EN move to IMPPDP and IMPPDN
-#if __LP5_COMBO__
-    if (is_lp5_family(p))
-        u1DDR4 = 0;
-    else //LPDDR4
-#endif
+
         u1DDR4 = 1;
 
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMP_CTRL1), P_Fld(1, MISC_IMP_CTRL1_RG_IMP_EN) | \
@@ -12896,34 +11126,6 @@ static void DQSDutyScan_SetDqsDelayCell(DRAMC_CTX_T *p, S8 *scDutyDelay)
     }
 }
 
-#if __LP5_COMBO__
-static void WCKDutyScan_SetWCKDelayCell(DRAMC_CTX_T *p, S8 *scDutyDelay)
-{
-    U8 u1ShuffleIdx = 0, u1DQSIdx, u1RankIdx = 0;
-    U32 save_offset;
-    U8 tDelay[2];
-
-    for(u1DQSIdx=0; u1DQSIdx<2; u1DQSIdx++)
-    {
-        DramcDutyDelayRGSettingConvert(p, scDutyDelay[u1DQSIdx], &(tDelay[u1DQSIdx]));
-    }
-
-#if DUTY_SCAN_V2_ONLY_K_HIGHEST_FREQ
-    for(u1ShuffleIdx = 0; u1ShuffleIdx<DRAM_DFS_SRAM_MAX; u1ShuffleIdx++)
-#endif
-    {
-        {
-            for(u1DQSIdx = 0; u1DQSIdx<2; u1DQSIdx++)
-            {
-                save_offset = u1ShuffleIdx * SHU_GRP_DDRPHY_OFFSET + u1DQSIdx*DDRPHY_AO_B0_B1_OFFSET;
-                vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_TXDUTY) + save_offset,
-                    P_Fld(tDelay[u1DQSIdx], SHU_B0_TXDUTY_DA_TX_ARWCK_DUTY_DLY_B0));
-            }
-        }
-    }
-}
-#endif
-
 #if APPLY_DQDQM_DUTY_CALIBRATION
 static void DQDQMDutyScan_SetDQDQMDelayCell(DRAMC_CTX_T *p, U8 u1ChannelIdx, S8 *scDutyDelay, U8 k_type)
 {
@@ -13057,9 +11259,6 @@ void DramcNewDutyCalibration(DRAMC_CTX_T *p)
 
                 DramcClockDutySetClkDelayCell(p, p->pSavetimeData->s1ClockDuty_clk_delay_cell[p->channel]);
                 DQSDutyScan_SetDqsDelayCell(p, p->pSavetimeData->s1DQSDuty_clk_delay_cell[p->channel]);
-                #if __LP5_COMBO__
-                WCKDutyScan_SetWCKDelayCell(p, p->pSavetimeData->s1WCKDuty_clk_delay_cell[p->channel]);
-                #endif
                 #if APPLY_DQDQM_DUTY_CALIBRATION
                 DQDQMDutyScan_SetDQDQMDelayCell(p, p->channel, p->pSavetimeData->s1DQMDuty_clk_delay_cell[p->channel], DutyScan_Calibration_K_DQM);
                 DQDQMDutyScan_SetDQDQMDelayCell(p, p->channel, p->pSavetimeData->s1DQDuty_clk_delay_cell[p->channel], DutyScan_Calibration_K_DQ);

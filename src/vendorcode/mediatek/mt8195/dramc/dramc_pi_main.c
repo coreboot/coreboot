@@ -2337,27 +2337,6 @@ void DPI_vDramCalibrationSingleChannel(DRAMC_CTX_T *DramConfig, cal_sv_rand_args
 
 #endif // (SIMULATION_RX_RDDQC == 1)
 
-#if (__LP5_COMBO__ == TRUE)
-#if (SIMULATION_DUTY_CYC_MONITOR == 1)
-        if (is_lp5_family(DramConfig) && DramConfig->frequency >= GetFreqBySel(DramConfig,LP5_DDR4266))
-        {
-            if (!psra) {
-                mcSHOW_DBG_MSG6(("\n----->DramcDutyCycleMonitor begin...\n"));
-                timestamp_show();
-                DramcDutyCycleMonitor(DramConfig);
-                timestamp_show();
-                mcSHOW_DBG_MSG6(("DramcDutyCycleMonitor end<-----\n\n"));
-
-                mcSHOW_DBG_MSG6(("\n----->DramcWriteLeveling(DLY) begin...\n"));
-                timestamp_show();
-                DramcWriteLeveling(DramConfig, psra->wl_autok, DLY_BASED);
-                timestamp_show();
-                mcSHOW_DBG_MSG6(("DramcWriteLeveling(DLY)end<-----\n\n"));
-            }
-        }
-#endif /* (SIMULATION_DUTY_CYC_MONITOR == 1) */
-#endif // (__LP5_COMBO__ == TRUE)
-
 #if (SIMULATION_TX_PERBIT == 1)
         if (!psra || psra->tx_perbit) {
             mcSHOW_DBG_MSG6(("\n----->DramcTxWindowPerbitCal begin...\n"));

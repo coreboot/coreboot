@@ -839,16 +839,6 @@ static void DRAMC_COMMON_Config(DRAMC_CTX_T *p)
     vIO32Write4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DBG_IRQ_CTRL7),   0xFFFFFFFF);
 }
 
-#if 0
-void DVFS_config(DRAMC_CTX_T *p)
-{
-    U8 DVFS_NO_QUEUE_FLASH = 0;
-
-    //1. DVFS flow control
-
-     //2. Relationship among groups -- Save & Restore
-}
-#endif
 static void IO_Release(DRAMC_CTX_T *p)
 {
 

@@ -122,49 +122,7 @@ typedef enum
     AC_TIMING_NUMBER_LP4
 } AC_TIMING_LP4_COUNT_TYPE_T;
 
-#if (__LP5_COMBO__)
-/* Used to keep track the total number of LP5 ACTimings */
-typedef enum
-{
-#if SUPPORT_LP5_DDR6400_ACTIM
-#if ENABLE_READ_DBI
-        AC_TIME_LP5_BYTE_DDR6400_RDBI_ON = 0,
-        AC_TIME_LP5_NORM_DDR6400_RDBI_ON,
-#else //(ENABLE_READ_DBI == 0)
-        AC_TIME_LP5_BYTE_DDR6400_RDBI_OFF,
-        AC_TIME_LP5_NORM_DDR6400_RDBI_OFF,
-#endif //ENABLE_READ_DBI
-#endif
-
-#if SUPPORT_LP5_DDR5500_ACTIM
-#if ((ENABLE_READ_DBI) || (LP5_DDR4266_RDBI_WORKAROUND))
-    AC_TIME_LP5_BYTE_DDR5500_RDBI_ON,
-    AC_TIME_LP5_NORM_DDR5500_RDBI_ON,
-#else
-    AC_TIME_LP5_BYTE_DDR5500_RDBI_OFF,
-    AC_TIME_LP5_NORM_DDR5500_RDBI_OFF,
-#endif
-#endif
-
-#if SUPPORT_LP5_DDR4266_ACTIM
-#if ((ENABLE_READ_DBI) || (LP5_DDR4266_RDBI_WORKAROUND))
-        AC_TIME_LP5_BYTE_DDR4266_RDBI_ON,
-        AC_TIME_LP5_NORM_DDR4266_RDBI_ON,
-#else //(ENABLE_READ_DBI == 0)
-        AC_TIME_LP5_BYTE_DDR4266_RDBI_OFF,
-        AC_TIME_LP5_NORM_DDR4266_RDBI_OFF,
-#endif //ENABLE_READ_DBI
-#endif
-
-#if SUPPORT_LP5_DDR3200_ACTIM
-    AC_TIME_LP5_BYTE_DDR3200_RDBI_OFF,
-    AC_TIME_LP5_NORM_DDR3200_RDBI_OFF,
-#endif
-    AC_TIMING_NUMBER_LP5
-} AC_TIMING_LP5_COUNT_TYPE_T;
-#else
 #define AC_TIMING_NUMBER_LP5    0
-#endif
 
 /* ACTiming struct declaration (declared here due Fld_wid for each register type)
  * Should include all fields from ACTiming excel file (And update the correct values in UpdateACTimingReg()

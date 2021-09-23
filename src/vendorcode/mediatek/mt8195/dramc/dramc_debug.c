@@ -3387,14 +3387,6 @@ void vPrintFinalModeRegisterSetting(DRAMC_CTX_T * p)
                         mcSHOW_MRW_MSG(("[MR Dump] CH%d Rank%d Fsp%d MR%d =0x%x\n", p->channel, p->rank, gFSPWR_Flag[p->rank], u1MRIdx, u2MRValue));
                         #if MRW_BACKUP
                         //MR13(LP4) work around, two RG is not synchronized
-                        #if (__LP5_COMBO__ == TRUE)
-                        if (is_lp5_family(p))
-                        {
-                            if (u1MRIdx==16)
-                                gFSPWR_Flag[p->rank]=u1Backup_Fsp;
-                        }
-                        else
-                        #endif
                         {
                              if (u1MRIdx==13)
                                 gFSPWR_Flag[p->rank]=u1Backup_Fsp;
@@ -3402,14 +3394,6 @@ void vPrintFinalModeRegisterSetting(DRAMC_CTX_T * p)
 
                         DramcMRWriteBackup(p, u1MRIdx, u1RankIdx);
 
-                        #if (__LP5_COMBO__ == TRUE)
-                        if (is_lp5_family(p))
-                        {
-                            if (u1MRIdx==16)
-                                gFSPWR_Flag[p->rank]=u1FSPIdx;
-                        }
-                        else
-                        #endif
                         {
                              if (u1MRIdx==13)
                                 gFSPWR_Flag[p->rank]=u1FSPIdx;

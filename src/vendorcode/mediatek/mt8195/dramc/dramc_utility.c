@@ -47,35 +47,6 @@ u8 is_heff_mode(DRAMC_CTX_T *p)
     return res? TRUE: FALSE;
 }
 
-#if __LP5_COMBO__
-static u8 lp5heff;
-
-u8 lp5heff_save_disable(DRAMC_CTX_T *p)
-{
-    /* save it */
-    lp5heff = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_COMMON0),
-            SHU_COMMON0_LP5HEFF_MODE);
-
-    /* disable it */
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_COMMON0),
-            P_Fld(0, SHU_COMMON0_LP5HEFF_MODE));
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RKCFG),
-        0, RKCFG_CKE2RANK);
-
-
-    return lp5heff;
-}
-
-void lp5heff_restore(DRAMC_CTX_T *p)
-{
-    /* restore it */
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_COMMON0),
-            P_Fld(lp5heff, SHU_COMMON0_LP5HEFF_MODE));
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RKCFG),
-        lp5heff, RKCFG_CKE2RANK);
-}
-#endif
-
 #if FOR_DV_SIMULATION_USED
 U8 u1BroadcastOnOff = 0;
 #endif
@@ -290,11 +261,6 @@ void vSetRankNumber(DRAMC_CTX_T *p)
 
 void vSetFSPNumber(DRAMC_CTX_T *p)
 {
-#if (__LP5_COMBO__ == TRUE)
-    if (TRUE == is_lp5_family(p))
-        p->support_fsp_num = 3;
-    else
-#endif
         p->support_fsp_num = 2;
 }
 
@@ -304,60 +270,7 @@ static void setFreqGroup(DRAMC_CTX_T *p)
     /* Below listed conditions represent freqs that exist in ACTimingTable
      * -> Should cover freqGroup settings for all real freq values
      */
-#if (__LP5_COMBO__ == TRUE)
-    if (TRUE == is_lp5_family(p))
-    {
-        if (p->frequency <= 400) // DDR800
-        {
-            p->freqGroup = 400;
-        }
-        else if (p->frequency <= 600) // DDR1200
-        {
-            p->freqGroup = 600;
-        }
-        else if (p->frequency <= 800) // DDR1600
-        {
-            p->freqGroup = 800;
-        }
-        else if (p->frequency <= 933) //DDR1866
-        {
-            p->freqGroup = 933;
-        }
-        else if (p->frequency <= 1200) //DDR2400, DDR2280
-        {
-            p->freqGroup = 1200;
-        }
-        else if (p->frequency <= 1600) // DDR3200
-        {
-            p->freqGroup = 1600;
-        }
-        else if (p->frequency <= 1866) // DDR3733
-        {
-            p->freqGroup = 1866;
-        }
-        else if (p->frequency <= 2133) // DDR4266
-        {
-            p->freqGroup = 2133;
-        }
-        else if (p->frequency <= 2400) // DDR4800
-        {
-            p->freqGroup = 2400;
-        }
-        else if (p->frequency <= 2750) // DDR5500
-        {
-            p->freqGroup = 2750;
-        }
-        else if (p->frequency <= 3000) // DDR6000
-        {
-            p->freqGroup = 3000;
-        }
-        else // DDR6600
-        {
-            p->freqGroup = 3300;
-        }
-    }
-    else
-#endif
+
     {
         if (p->frequency <= 200) // DDR400
         {
@@ -719,20 +632,7 @@ void DDRPhyFreqSel(DRAMC_CTX_T *p, DRAM_PLL_FREQ_SEL_T sel)
 {
     p->freq_sel = sel;
     p->frequency = GetFreqBySel(p, sel);
-#if __LP5_COMBO__
-    if(is_lp5_family(p))
-    {
-        ///TODO: Dennis
-        //p->dram_fsp = (p->frequency < LP5_MRFSP_TERM_FREQ)? FSP_0: FSP_1;
-        p->dram_fsp = FSP_0;
-        #if LP5_DDR4266_RDBI_WORKAROUND
-        if(p->frequency >= 2133)
-            p->DBI_R_onoff[FSP_0] = DBI_ON;
-        #endif
-        p->odt_onoff = (p->frequency < LP5_MRFSP_TERM_FREQ)? ODT_OFF: ODT_ON;
-    }
-    else
-#endif
+
     {
         p->dram_fsp = (p->frequency < LP4_MRFSP_TERM_FREQ)? FSP_0: FSP_1;
         p->odt_onoff = (p->frequency < LP4_MRFSP_TERM_FREQ)? ODT_OFF: ODT_ON;
@@ -1370,15 +1270,6 @@ DRAM_STATUS_T DramcEngine2Init(DRAMC_CTX_T *p, U32 test2_1, U32 test2_2, U8 u1Te
             P_Fld(test2_1 >> 24, TEST2_A0_TEST2_PAT0) |
             P_Fld(test2_2 >> 24, TEST2_A0_TEST2_PAT1));
 
-#if (__LP5_COMBO__ == TRUE)
-    if (TRUE == is_lp5_family(p))
-    {
-        // LP5 TA2 base: 0x0
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK_TEST2_A1),
-                test2_1 & 0x00ffffff, RK_TEST2_A1_TEST2_BASE);
-    }
-    else
-#endif
     {
         // LP4 TA2 base: 0x10000. It's only TBA constrain, but not HW.
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK_TEST2_A1),
@@ -1984,32 +1875,6 @@ U8 DramcMRWriteBackup(DRAMC_CTX_T *p, U8 u1MRIdx, U8 u1Rank)
 
     u1Fsp = FSP_0;
 
-#if (__LP5_COMBO__ == TRUE)
-    if (is_lp5_family(p))
-    {
-        switch (u1MRIdx)
-        {
-            case 1:
-            case 2:
-            case 3:
-            case 10:
-            case 11:
-            case 12:
-            case 14:
-            case 15:
-            case 17:
-            case 18:
-            case 19:
-            case 20:
-            case 24:
-            case 30:
-            case 41:
-                u1Fsp = gFSPWR_Flag[u1Rank];
-                break;
-        }
-    }
-    else
-#endif
     {
         switch (u1MRIdx)
         {
@@ -2392,17 +2257,6 @@ void DramcModeRegWriteByRank_RTMRW(DRAMC_CTX_T *p, U8 *u1Rank, U8 *u1MRIdx, U8 *
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN),
             1, SWCMD_EN_RTMRWEN);
 
-#if __LP5_COMBO__
-#if WORKAROUND_LP5_HEFF
-    if (is_heff_mode(p))
-    {
-        mcDELAY_US(1);
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL),
-                1, CKECTRL_CKE2RANK_OPT6);
-    }
-#endif
-#endif
-
     u4TimeCnt = TIME_OUT_CNT;
 
     do {
@@ -2417,81 +2271,10 @@ void DramcModeRegWriteByRank_RTMRW(DRAMC_CTX_T *p, U8 *u1Rank, U8 *u1MRIdx, U8 *
         mcSHOW_ERR_MSG(("[LP5 RT MRW ] Resp fail (time out) Rank=%d, MR%d=0x%x\n", u1Rank[0], u1MRIdx[0], u1Value[0]));
     }
 
-#if __LP5_COMBO__
-#if WORKAROUND_LP5_HEFF
-    if (is_heff_mode(p))
-    {
-        mcDELAY_US(1);
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL),
-                0, CKECTRL_CKE2RANK_OPT6);
-    }
-#endif
-#endif
-
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN),
             0, SWCMD_EN_RTMRWEN);
 }
-#if 0
-static void DramcModeRegWriteByRank_RTSWCMD_MRW(DRAMC_CTX_T *p, U8 u1Rank, U8 u1MRIdx, U8 u1Value)
-{
-    U32 u4Response, u4TimeCnt;
 
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL2),
-            P_Fld(0, SWCMD_CTRL2_RTSWCMD_AGE) |
-            P_Fld(u1Rank, SWCMD_CTRL2_RTSWCMD_RK) |
-            P_Fld(u1MRIdx, SWCMD_CTRL2_RTSWCMD_MA) |
-            P_Fld(u1Value, SWCMD_CTRL2_RTSWCMD_OP));
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MPC_CTRL),
-            1, MPC_CTRL_RTSWCMD_HPRI_EN);
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RTSWCMD_CNT),
-            0x2a, RTSWCMD_CNT_RTSWCMD_CNT);
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN),
-            4, SWCMD_EN_RTSWCMD_SEL);
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN),
-            1, SWCMD_EN_RTSWCMDEN);
-
-#if __LP5_COMBO__
-#if WORKAROUND_LP5_HEFF
-    if (is_heff_mode(p))
-    {
-        mcDELAY_US(1);
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL),
-                1, CKECTRL_CKE2RANK_OPT6);
-    }
-#endif
-#endif
-
-    u4TimeCnt = TIME_OUT_CNT;
-
-    do {
-        u4Response = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SPCMDRESP3),
-                SPCMDRESP3_RTSWCMD_RESPONSE);
-        u4TimeCnt--;
-        mcDELAY_US(5);
-    } while ((u4Response == 0) && (u4TimeCnt > 0));
-
-    if (u4TimeCnt == 0)//time out
-    {
-        mcSHOW_ERR_MSG(("[LP5 RT SW Cmd MRW ] Resp fail (time out) Rank=%d, MR%d=0x%x\n", u1Rank, u1MRIdx, u1Value));
-    }
-
-#if __LP5_COMBO__
-#if WORKAROUND_LP5_HEFF
-    if (is_heff_mode(p))
-    {
-        mcDELAY_US(1);
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL),
-                0, CKECTRL_CKE2RANK_OPT6);
-    }
-#endif
-#endif
-
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN),
-            0, SWCMD_EN_RTSWCMDEN);
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MPC_CTRL),
-            0, MPC_CTRL_RTSWCMD_HPRI_EN);
-}
-#endif
 static void DramcModeRegWriteByRank_SCSM(DRAMC_CTX_T *p, U8 u1Rank, U8 u1MRIdx, U8 u1Value)
 {
     U32 counter = 0;
@@ -2548,17 +2331,6 @@ void DramcModeRegWriteByRank(DRAMC_CTX_T *p, U8 u1Rank, U8 u1MRIdx, U8 u1Value)
     else
 #endif
         {
-        #if (__LP5_COMBO__ == TRUE)
-            if (is_lp5_family(p))
-            {
-            #if ENABLE_RUNTIME_MRW_FOR_LP5
-                DramcModeRegWriteByRank_RTMRW(p, &u1Rank, &u1MRIdx, &u1Value, 1);
-            #else
-                DramcModeRegWriteByRank_RTSWCMD_MRW(p, u1Rank, u1MRIdx, u1Value);
-            #endif
-            }
-            else
-        #endif
             {
                 DramcModeRegWriteByRank_SCSM(p, u1Rank, u1MRIdx, u1Value);
             }
@@ -2583,11 +2355,6 @@ void DramcModeRegWriteByRank(DRAMC_CTX_T *p, U8 u1Rank, U8 u1MRIdx, U8 u1Value)
         u1RankStart = u1Rank;
     }
 
-    #if (__LP5_COMBO__ == TRUE)
-    if (is_lp5_family(p))
-        u1FSPMRIdx=16;
-    else
-    #endif
         u1FSPMRIdx=13;
 
     for (u1RankIdx=u1RankStart;u1RankIdx<u1RankStart+u1RankNum;u1RankIdx++)
@@ -2620,14 +2387,6 @@ void DramcModeRegWriteByRank(DRAMC_CTX_T *p, U8 u1Rank, U8 u1MRIdx, U8 u1Value)
             mcSHOW_MRW_MSG(("  [MRW Check] Rank%d FSP%d Backup_MR%d= 0x%x MR%d= 0x%x ==>%s\n", u1RankIdx, gFSPWR_Flag[u1RankIdx], u1MRIdx, MR_backup, u1MRIdx, u1Value, (u1Value==MR_backup?"PASS":"FAIL")));
         #endif
 
-        #if (__LP5_COMBO__ == TRUE)
-            if (is_lp5_family(p))
-            {
-                if (u1MRIdx==u1FSPMRIdx)
-                    gFSPWR_Flag[u1RankIdx] = u1Value & 0x3;
-            }
-            else
-        #endif
             {
                 if (u1MRIdx==u1FSPMRIdx)
                     gFSPWR_Flag[u1RankIdx] = (u1Value>> 6) & 0x1;

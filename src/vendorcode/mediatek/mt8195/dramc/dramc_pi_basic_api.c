@@ -146,22 +146,6 @@ const U8 uiLPDDR4_MRR_DRAM_Pinmux[PINMUX_MAX][CHANNEL_NUM][16] =
     },
 };
 
-#if (__LP5_COMBO__)
-const U8 uiLPDDR5_MRR_Mapping_POP[CHANNEL_NUM][16] =
-{
-    {
-        8, 9, 10, 11, 12, 15, 14, 13,
-        0, 1, 2, 3, 4, 7, 6, 5,
-    },
-
-#if (CHANNEL_NUM>1)
-    {
-        8, 9, 10, 11, 12, 15, 14, 13,
-        0, 1, 2, 3, 4, 7, 6, 5,
-    },
-#endif
-};
-#endif
 
 //MRR DRAM->DRAMC
 U8 uiLPDDR4_MRR_Mapping_POP[CHANNEL_NUM][16] =
@@ -195,10 +179,6 @@ U8 uiLPDDR4_MRR_Mapping_POP[CHANNEL_NUM][16] =
 #if (fcFOR_CHIP_ID == fc8195)
 static void Set_DRAM_Pinmux_Sel(DRAMC_CTX_T *p)
 {
-#if (__LP5_COMBO__)
-    if (is_lp5_family(p))
-        return;
-#endif
 
 #if !FOR_DV_SIMULATION_USED
     if (is_discrete_lpddr4())
@@ -234,11 +214,6 @@ static void Set_MRR_Pinmux_Mapping(DRAMC_CTX_T *p)
     {
         vSetPHY2ChannelMapping(p, chIdx);
 
-    #if (__LP5_COMBO__)
-        if (is_lp5_family(p))
-            uiLPDDR_MRR_Mapping = (U8 *)uiLPDDR5_MRR_Mapping_POP[chIdx];
-        else
-    #endif
         uiLPDDR_MRR_Mapping = (U8 *)uiLPDDR4_MRR_Mapping_POP[chIdx];
 
         //Set MRR pin mux
@@ -276,11 +251,6 @@ static void Set_DQO1_Pinmux_Mapping(DRAMC_CTX_T *p)
     {
         vSetPHY2ChannelMapping(p, chIdx);
 
-    #if (__LP5_COMBO__)
-        if (is_lp5_family(p))
-            uiLPDDR_DQO1_Mapping = (U8 *)uiLPDDR5_O1_Mapping_POP[chIdx];
-        else
-    #endif
         uiLPDDR_DQO1_Mapping = (U8 *)uiLPDDR4_O1_Mapping_POP[chIdx];
 
         //Set MRR pin mux
@@ -7174,11 +7144,6 @@ void vApplyConfigBeforeCalibration(DRAMC_CTX_T *p)
     U8 u1DisImpHw;
     U32 u4TermFreq;
 
-#if (__LP5_COMBO__ == TRUE)
-    if (TRUE == is_lp5_family(p))
-        u4TermFreq = LP5_MRFSP_TERM_FREQ;
-    else
-#endif
         u4TermFreq = LP4_MRFSP_TERM_FREQ;
 
     u1DisImpHw = (p->frequency >= u4TermFreq)? 0: 1;
@@ -7282,40 +7247,12 @@ static void SV_BroadcastOn_DramcInit(DRAMC_CTX_T *p)
             sv_algorithm_assistance_LP4_400(p);
         }
     }
-    #if __LP5_COMBO__
-    else
-    {
-        if(p->freq_sel==LP5_DDR4266)
-        {
-            mcSHOW_DBG_MSG2(("CInit_golden_mini_freq_related_vseq_LP5_4266 \n"));
-            CInit_golden_mini_freq_related_vseq_LP5_4266(p);
-        }
-        else if(p->freq_sel==LP5_DDR5500)
-        {
-            mcSHOW_DBG_MSG2(("CInit_golden_mini_freq_related_vseq_LP5_5500 \n"));
-            CInit_golden_mini_freq_related_vseq_LP5_5500(p);
-        }
-        else
-        {
-            mcSHOW_DBG_MSG2(("CInit_golden_mini_freq_related_vseq_LP5_3200 \n"));
-            CInit_golden_mini_freq_related_vseq_LP5_3200(p);
-            CInit_golden_mini_freq_related_vseq_LP5_3200_SHU1(p);
-        }
-    }
-    #endif
 
     RESETB_PULL_DN(p);
     ANA_init(p);
     DIG_STATIC_SETTING(p);
     DIG_CONFIG_SHUF(p,0,0); //temp ch0 group 0
 
-#if __LP5_COMBO__
-    if(is_lp5_family(p))
-    {
-        LP5_UpdateInitialSettings(p);
-    }
-    else
-#endif
     {
         LP4_UpdateInitialSettings(p);
     }
@@ -7355,9 +7292,7 @@ DRAM_STATUS_T DramcInit(DRAMC_CTX_T *p)
 
     EnableDramcPhyDCM(p, DCM_OFF); //Let CLK always free-run
     vResetDelayChainBeforeCalibration(p);
-#if __LP5_COMBO__
-    if(!is_lp5_family(p))
-#endif
+
         DVFSSettings(p);
 
 #if REPLACE_DFS_RG_MODE
@@ -7389,13 +7324,6 @@ DRAM_STATUS_T DramcInit(DRAMC_CTX_T *p)
     mcSHOW_TIME_MSG(("\tDutyCalibration takes %d us\n", CPU_Cycle));
 #endif
 
-#if __LP5_COMBO__
-    if(is_lp5_family(p))
-    {
-        LP5_DRAM_INIT(p); // Notice: LP5_DRAM_INIT is Broadcast On
-    }
-    else
-#endif
     {
         //LP4_DRAM_INIT(p);
         DramcModeRegInit_LP4(p);
@@ -7872,16 +7800,7 @@ void DramcHMR4_Presetting(DRAMC_CTX_T *p)
 
 static void SwitchHMR4(DRAMC_CTX_T *p, bool en)
 {
-#ifdef __LP5_COMBO__
-    if (is_lp5_family(p))
-    {
-        vIO32WriteFldAlign_All(DRAMC_REG_REF_BOUNCE2, 9, REF_BOUNCE2_PRE_MR4INT_TH);
 
-        vIO32WriteFldAlign_All(DRAMC_REG_REFCTRL2, 9, REFCTRL2_MR4INT_TH);
-
-    }
-    else
-#endif
     {
         vIO32WriteFldAlign_All(DRAMC_REG_REF_BOUNCE2, 5, REF_BOUNCE2_PRE_MR4INT_TH);
 
@@ -8935,20 +8854,10 @@ static void RODTSettings(DRAMC_CTX_T *p)
 
     if(p->odt_onoff==ODT_ON)
     {
-        #if __LP5_COMBO__
-        if (p->dram_type==TYPE_LPDDR5)
-            u1VrefSel = 0x46;//term LP5
-        else
-        #endif
             u1VrefSel = 0x2c;//term LP4
     }
     else
     {
-        #if __LP5_COMBO__
-        if (p->dram_type==TYPE_LPDDR5)
-            u1VrefSel = 0x37;//unterm LP5
-        else
-        #endif
             u1VrefSel = 0x37;//unterm LP4
     }
 
@@ -9033,21 +8942,6 @@ static void DQSSTBSettings(DRAMC_CTX_T *p)
 {
     unsigned int dqsien_mode = 1;
     BOOL isLP4_DSC = (p->DRAMPinmux == PINMUX_DSC)?1:0;
-
-#if (__LP5_COMBO__)
-    U8 rpre_mode = LPDDR5_RPRE_4S_0T;
-
-    if (is_lp5_family(p))
-    {
-        if (p->frequency > 1600)
-            rpre_mode = LPDDR5_RPRE_2S_2T;
-    }
-
-    if (rpre_mode == LPDDR5_RPRE_2S_2T)
-        dqsien_mode = 2;
-    else if (rpre_mode == LPDDR5_RPRE_XS_4T)
-        dqsien_mode = 3;
-#endif
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL),
         dqsien_mode, MISC_SHU_STBCAL_DQSIEN_DQSSTB_MODE);
@@ -9216,58 +9110,6 @@ void LP4_UpdateInitialSettings(DRAMC_CTX_T *p)
 
     SetMck8xLowPwrOption(p);
 }
-
-#if __LP5_COMBO__
-void LP5_UpdateInitialSettings(DRAMC_CTX_T *p)
-{
-    U8 u1RankIdx, u1RankIdxBak;
-
-    vIO32WriteFldAlign_All(DDRPHY_REG_SHU_CA_CMD14, 0x0, SHU_CA_CMD14_RG_TX_ARCA_MCKIO_SEL_CA); //Let CA and CS be independent
-    //Set_MRR_Pinmux_Mapping(p); //Update MRR pinmux
-
-    //Disable perbyte option
-    vIO32WriteFldMulti(DDRPHY_REG_SHU_B0_DQ7, P_Fld(0x0, SHU_B0_DQ7_R_DMRXDVS_PBYTE_DQM_EN_B0)
-                                            | P_Fld(0x0, SHU_B0_DQ7_R_DMRXDVS_PBYTE_FLAG_OPT_B0)
-                                            | P_Fld(0x0, SHU_B0_DQ7_R_DMRXDVS_DQM_FLAGSEL_B0));
-    vIO32WriteFldMulti(DDRPHY_REG_SHU_B1_DQ7, P_Fld(0x0, SHU_B1_DQ7_R_DMRXDVS_PBYTE_DQM_EN_B1)
-                                            | P_Fld(0x0, SHU_B1_DQ7_R_DMRXDVS_PBYTE_FLAG_OPT_B1)
-                                            | P_Fld(0x0, SHU_B1_DQ7_R_DMRXDVS_DQM_FLAGSEL_B1));
-
-    ///TODO: Temp solution. May need to resolve in init flow
-    vIO32WriteFldMulti_All(DDRPHY_REG_MISC_CG_CTRL5, /* Will cause PI un-adjustable */
-        P_Fld(0x0, MISC_CG_CTRL5_R_CA_DLY_DCM_EN) |
-        P_Fld(0x0, MISC_CG_CTRL5_R_CA_PI_DCM_EN) |
-        P_Fld(0x0, MISC_CG_CTRL5_R_DQ0_DLY_DCM_EN) |
-        P_Fld(0x0, MISC_CG_CTRL5_R_DQ0_PI_DCM_EN) |
-        P_Fld(0x0, MISC_CG_CTRL5_R_DQ1_DLY_DCM_EN) |
-        P_Fld(0x0, MISC_CG_CTRL5_R_DQ1_PI_DCM_EN));
-
-    DQSSTBSettings(p);
-
-    RODTSettings(p);
-
-#if SIMULATION_SW_IMPED
-    #if FSP1_CLKCA_TERM
-        U8 u1CASwImpFreqRegion = (p->dram_fsp == FSP_0)? IMP_LOW_FREQ: IMP_HIGH_FREQ;
-    #else
-        U8 u1CASwImpFreqRegion = (p->frequency <= 1866)? IMP_LOW_FREQ: IMP_HIGH_FREQ;
-    #endif
-        U8 u1DQSwImpFreqRegion = (p->frequency <= 1866)? IMP_LOW_FREQ: IMP_HIGH_FREQ;
-
-    if (p->dram_type == TYPE_LPDDR5)
-        DramcSwImpedanceSaveRegister(p, u1CASwImpFreqRegion, u1DQSwImpFreqRegion, DRAM_DFS_REG_SHU0);
-#endif
-
-#if RDSEL_TRACKING_EN
-    vIO32WriteFldAlign(DDRPHY_REG_SHU_MISC_RDSEL_TRACK, 0, SHU_MISC_RDSEL_TRACK_DMDATLAT_I); //DMDATLAT_I should be set as 0 before set datlat k value, otherwise the status flag wil be set as 1
-#endif
-
-#if (!XRTRTR_NEW_CROSS_RK_MODE)
-    vIO32WriteFldAlign(DDRPHY_REG_SHU_MISC_RANK_SEL_STB, 0x0, SHU_MISC_RANK_SEL_STB_RANK_SEL_STB_EN);
-#endif
-    SetMck8xLowPwrOption(p);
-}
-#endif
 
 #define CKGEN_FMETER 0x0
 #define ABIST_FMETER 0x1

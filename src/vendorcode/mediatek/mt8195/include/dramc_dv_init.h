@@ -323,9 +323,6 @@ extern void get_top_configuration_from_DV_random(DV_new_config_T * tr);
 extern void LP4_DRAM_config(U32 data_rate, LP4_DRAM_CONFIG_T *tr);
 extern void DPI_SW_main_LP4(DRAMC_CTX_T *p, cal_sv_rand_args_t *psra);
 extern void DRAMC_SUBSYS_PRE_CONFIG(DRAMC_CTX_T *p, DRAMC_SUBSYS_CONFIG_T *tr);
-#if __LP5_COMBO__
-extern void LP5_DRAM_config(DRAMC_DVFS_GROUP_CONFIG_T *dfs_tr, LP5_DRAM_CONFIG_T *tr);
-#endif
 extern void ANA_TOP_FUNCTION_CFG(ANA_top_config_T *tr,U16 data_rate);
 extern void ANA_CLK_DIV_config( ANA_DVFS_CORE_T *tr,DRAMC_DVFS_GROUP_CONFIG_T *dfs);
 extern void ANA_sequence_shuffle_colletion(DRAMC_CTX_T *p,ANA_DVFS_CORE_T *tr);

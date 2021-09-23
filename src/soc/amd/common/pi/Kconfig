@@ -1,4 +1,4 @@
-config SOC_AMD_COMMON_BLOCK_PI
+config SOC_AMD_PI
 	bool
 	depends on SOC_AMD_COMMON_BLOCK_ACPI
 	select CACHE_MRC_SETTINGS
@@ -8,7 +8,7 @@ config SOC_AMD_COMMON_BLOCK_PI
 	  This option builds functions that interface AMD's AGESA reference
 	  code packaged in the binaryPI form and S3-related functionality.
 
-if SOC_AMD_COMMON_BLOCK_PI
+if SOC_AMD_PI
 
 config PI_AGESA_CAR_HEAP_BASE
 	hex
@@ -34,4 +34,4 @@ config PI_AGESA_HEAP_SIZE
 	  This option determines the amount of space allowed for AGESA heap
 	  prior to DRAM availability.
 
-endif
+endif # SOC_AMD_PI

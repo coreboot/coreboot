@@ -1,4 +1,4 @@
-ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PI),y)
+ifeq ($(CONFIG_SOC_AMD_PI),y)
 
 romstage-y += agesawrapper.c
 romstage-y += def_callouts.c
@@ -16,4 +16,4 @@ ramstage-y += image.c
 ramstage-y += refcode_loader.c
 ramstage-y += s3_resume.c
 
-endif # CONFIG_SOC_AMD_COMMON_BLOCK_PI
+endif # CONFIG_SOC_AMD_PI

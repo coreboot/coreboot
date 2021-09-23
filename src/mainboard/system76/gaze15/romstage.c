@@ -20,8 +20,5 @@ static const struct cnl_mb_cfg memcfg = {
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-	// Allow memory speeds higher than 2933 MT/s
-	memupd->FspmConfig.SaOcSupport = 1;
-
 	cannonlake_memcfg_init(&memupd->FspmConfig, &memcfg);
 }

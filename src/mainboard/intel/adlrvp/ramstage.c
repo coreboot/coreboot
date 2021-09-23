@@ -19,19 +19,14 @@ const struct cpu_power_limits limits[] = {
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 5000, 45000, 115000, 115000 },
 };
 
+WEAK_DEV_PTR(dptf_policy);
 void variant_update_power_limits(void)
 {
-	const struct device_path policy_path[] = {
-		{ .type = DEVICE_PATH_PCI, .pci.devfn = SA_DEVFN_DPTF},
-		{ .type = DEVICE_PATH_GENERIC, .generic.id = 0}
-	};
-
-	const struct device *policy_dev = find_dev_nested_path(pci_root_bus(),
-							policy_path, ARRAY_SIZE(policy_path));
+	const struct device *policy_dev = DEV_PTR(dptf_policy);
 	if (!policy_dev)
 		return;
 
-	struct drivers_intel_dptf_config *config = policy_dev->chip_info;
+	struct drivers_intel_dptf_config *config = config_of(policy_dev);
 
 	uint16_t mchid = pci_s_read_config16(PCI_DEV(0, 0, 0), PCI_DEVICE_ID);
 

@@ -24,6 +24,8 @@ end
 chip soc/intel/alderlake
 
 	register "SaGv" = "SaGv_Enabled"
+	register "MaxDramSpeed" = "3733"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

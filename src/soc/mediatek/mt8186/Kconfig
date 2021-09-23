@@ -16,4 +16,11 @@ config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_RETURN_FROM_VERSTAGE
 
+config FLASH_DUAL_READ
+	bool
+	default y
+	help
+	  When this option is enabled, the flash controller provides the ability
+	  to dual read mode.
+
 endif

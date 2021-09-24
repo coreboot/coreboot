@@ -798,6 +798,7 @@ PASSED_BOARDS="$(realpath ${TARGET}/passing_boards)"
 export xcompile="${TARGET}/xcompile"
 
 if [ "$recursive" = "false" ]; then
+	rm -f "${xcompile}"
 	$MAKE -C"${ROOT}" obj="$TARGET/temp" objutil="$TARGET/sharedutils" UPDATED_SUBMODULES=1 "${xcompile}" || exit 1
 	rm -f "$FAILED_BOARDS" "$PASSED_BOARDS"
 fi

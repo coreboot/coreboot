@@ -3880,6 +3880,7 @@
 #define PCI_DEVICE_ID_INTEL_ADL_S_GT1			0x4680
 #define PCI_DEVICE_ID_INTEL_ADL_M_GT1			0x46c0
 #define PCI_DEVICE_ID_INTEL_ADL_M_GT2			0x46aa
+#define PCI_DEVICE_ID_INTEL_ADL_M_GT3                   0x46c3
 
 /* Intel Northbridge Ids */
 #define PCI_DEVICE_ID_INTEL_APL_NB		0x5af0

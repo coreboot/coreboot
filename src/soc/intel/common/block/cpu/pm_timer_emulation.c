@@ -11,7 +11,7 @@ void enable_pm_timer_emulation(void)
 {
 	msr_t msr;
 
-	if (!CONFIG_CPU_XTAL_HZ)
+	if (CONFIG(USE_PM_ACPI_TIMER) || !CONFIG_CPU_XTAL_HZ)
 		return;
 
 	/*

@@ -170,6 +170,26 @@ chip soc/intel/alderlake
 					probe AUDIO MAX98373_NAU88L25B_I2S
 				end
 			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "0"
+				register "imon_slot_no" = "1"
+				register "uid" = "0"
+				register "desc" = ""Right Speaker Amp""
+				register "name" = ""MAXR""
+				device i2c 31 on
+					probe AUDIO MAX98373_NAU88L25B_I2S
+				end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "2"
+				register "imon_slot_no" = "3"
+				register "uid" = "1"
+				register "desc" = ""Left Speaker Amp""
+				register "name" = ""MAXL""
+				device i2c 32 on
+					probe AUDIO MAX98373_NAU88L25B_I2S
+				end
+			end
 		end #I2C0
 		device ref i2c1 on
 			chip drivers/i2c/hid
@@ -352,28 +372,6 @@ chip soc/intel/alderlake
 				register "wake" = "GPE0_DW2_14"
 				register "probed" = "1"
 				device i2c 15 on end
-			end
-		end
-		device ref hda on
-			chip drivers/i2c/max98373
-				register "vmon_slot_no" = "0"
-				register "imon_slot_no" = "1"
-				register "uid" = "0"
-				register "desc" = ""Right Speaker Amp""
-				register "name" = ""MAXR""
-				device i2c 31 on
-					probe AUDIO MAX98373_NAU88L25B_I2S
-				end
-			end
-			chip drivers/i2c/max98373
-				register "vmon_slot_no" = "2"
-				register "imon_slot_no" = "3"
-				register "uid" = "1"
-				register "desc" = ""Left Speaker Amp""
-				register "name" = ""MAXL""
-				device i2c 32 on
-					probe AUDIO MAX98373_NAU88L25B_I2S
-				end
 			end
 		end
 		device ref gspi1 on

@@ -76,4 +76,11 @@ config USE_PM_ACPI_TIMER
 	  Disabling this option also stops the hardware TCO timer and makes
 	  the TCO watchdog unavailable.
 
+	  Note: On platforms without uCode PM Timer emulation, legacy OSes
+	        or payloads with ACPI version < 5.0A might not work without
+	        PM ACPI timer.
+
+	        (Legacy) software requiring `TMR_STS` (for timer overflow
+	        interrupts) will not work with this option disabled.
+
 endif # PM_ACPI_TIMER_OPTIONAL

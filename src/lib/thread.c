@@ -11,16 +11,7 @@
 #include <thread.h>
 #include <timer.h>
 
-/* Can't use the IS_POWER_OF_2 in _Static_assert */
-_Static_assert((CONFIG_STACK_SIZE & (CONFIG_STACK_SIZE - 1)) == 0,
-	       "`cpu_info()` requires the stack size to be a power of 2");
-
-/*
- * struct cpu_info lives at the top of each thread's stack. `cpu_info()` locates this struct by
- * taking the current stack pointer and masking off CONFIG_STACK_SIZE. This requires the stack
- * to be STACK_SIZE aligned.
- */
-static u8 thread_stacks[CONFIG_STACK_SIZE * CONFIG_NUM_THREADS] __aligned(CONFIG_STACK_SIZE);
+static u8 thread_stacks[CONFIG_STACK_SIZE * CONFIG_NUM_THREADS] __aligned(sizeof(uint64_t));
 static bool initialized;
 
 static void idle_thread_init(void);
@@ -90,6 +81,9 @@ static inline struct thread *get_free_thread(void)
 	t = pop_thread(&free_threads);
 
 	/* Reset the current stack value to the original. */
+	if (!t->stack_orig)
+		die("%s: Invalid stack value\n", __func__);
+
 	t->stack_current = t->stack_orig;
 
 	return t;
@@ -250,15 +244,10 @@ static void threads_initialize(void)
 	if (initialized)
 		return;
 
-	/* `cpu_info()` requires the stacks to be STACK_SIZE aligned */
-	assert(IS_ALIGNED((uintptr_t)thread_stacks, CONFIG_STACK_SIZE));
-
-	/* Initialize the BSP thread first. The cpu_info structure is assumed
-	 * to be just under the top of the stack. */
 	t = &all_threads[0];
 	ci = cpu_info();
 	ci->thread = t;
-	t->stack_orig = (uintptr_t)ci;
+	t->stack_orig = (uintptr_t)NULL; /* We never free the main thread */
 	t->id = 0;
 	t->can_yield = 1;
 

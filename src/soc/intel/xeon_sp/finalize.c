@@ -7,6 +7,7 @@
 #include <device/pci.h>
 #include <intelpch/lockdown.h>
 #include <soc/pci_devs.h>
+#include <soc/pm.h>
 #include <soc/util.h>
 
 #include "chip.h"
@@ -25,6 +26,19 @@ static void lock_pam0123(void)
 static void soc_finalize(void *unused)
 {
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
+
+	/*
+	 * Disable ACPI PM timer based on Kconfig
+	 *
+	 * Disabling ACPI PM timer is necessary for XTAL OSC shutdown.
+	 * Disabling ACPI PM timer also switches off TCO.
+	 *
+	 * Note: In contrast to other platforms supporting PM timer emulation,
+	 * disabling the PM timer must be done *after* FSP has run on Xeon-SP,
+	 * because FSP makes use of the PM timer.
+	 */
+	if (!CONFIG(USE_PM_ACPI_TIMER))
+		setbits8(pmc_mmio_regs() + PCH_PWRM_ACPI_TMR_CTL, ACPI_TIM_DIS);
 
 	apm_control(APM_CNT_FINALIZE);
 	lock_pam0123();

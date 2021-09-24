@@ -240,6 +240,8 @@
 #define GPIO_GPE_CFG		0x120
 #define  GPE0_DWX_MASK		0x7
 #define GPE0_DW_SHIFT(x)	(4 + 4*(x))
+#define PCH_PWRM_ACPI_TMR_CTL	0xfc
+#define  ACPI_TIM_DIS		(1 << 1)
 
 /* I/O ports */
 #define RST_CNT 0xcf9

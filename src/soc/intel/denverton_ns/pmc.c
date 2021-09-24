@@ -4,6 +4,7 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 
@@ -46,6 +47,16 @@ static void pmc_init(struct device *dev)
 
 	/* Configure ACPI mode. */
 	pch_set_acpi_mode();
+
+	/*
+	 * Disable ACPI PM timer based on Kconfig
+	 *
+	 * Disabling ACPI PM timer is necessary for XTAL OSC shutdown.
+	 * Disabling ACPI PM timer also switches off TCO.
+	 */
+	if (!CONFIG(USE_PM_ACPI_TIMER))
+		setbits8((volatile void *)(uintptr_t)(pwrm_base + PCH_PWRM_ACPI_TMR_CTL),
+			 ACPI_TIM_DIS);
 }
 
 static void pci_pmc_read_resources(struct device *dev)

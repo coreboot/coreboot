@@ -50,6 +50,11 @@ config PMC_GLOBAL_RESET_ENABLE_LOCK
 	  Note that the reset register is still at 0xCF9 this only
 	  controls the enable and lock feature.
 
+config NO_PM_ACPI_TIMER
+	bool
+	help
+	  Selected by SoCs that do not have a PM ACPI timer.
+
 config PM_ACPI_TIMER_OPTIONAL
 	bool
 	default n
@@ -62,6 +67,7 @@ if PM_ACPI_TIMER_OPTIONAL
 config USE_PM_ACPI_TIMER
 	bool "Enable ACPI PM timer"
 	default y
+	depends on !NO_PM_ACPI_TIMER
 	help
 	  This should be disabled for devices running on battery since
 	  it can draw much power. Further, it must be disabled, if S0ix

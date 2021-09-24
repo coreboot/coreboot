@@ -455,7 +455,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 		mdelay(10);
 	}
 
-	/* Send 1st SIPI */
+	/* Send 1st Startup IPI (SIPI) */
 	if (lapic_busy()) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {

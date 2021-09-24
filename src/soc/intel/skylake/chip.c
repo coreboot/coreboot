@@ -345,7 +345,14 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	bool use_8254 = get_uint_option("legacy_8254_timer", CONFIG(USE_LEGACY_8254_TIMER));
 	params->Early8254ClockGatingEnable = !use_8254;
 
-	params->EnableTcoTimer = CONFIG(USE_PM_ACPI_TIMER);
+	/*
+	 * Legacy PM ACPI Timer (and TCO Timer)
+	 * This *must* be 1 in any case to keep FSP from
+	 *  1) enabling PM ACPI Timer emulation in uCode.
+	 *  2) disabling the PM ACPI Timer.
+	 * We handle both by ourself!
+	 */
+	params->EnableTcoTimer = 1;
 
 	memcpy(params->SerialIoDevMode, config->SerialIoDevMode,
 	       sizeof(params->SerialIoDevMode));

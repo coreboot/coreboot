@@ -85,6 +85,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->Enable8254ClockGating = !use_8254;
 	params->Enable8254ClockGatingOnS3 = 1;
 
+	/*
+	 * Legacy PM ACPI Timer (and TCO Timer)
+	 * This *must* be 1 in any case to keep FSP from
+	 *  1) enabling PM ACPI Timer emulation in uCode.
+	 *  2) disabling the PM ACPI Timer.
+	 * We handle both by ourself!
+	 */
+	params->EnableTcoTimer = 1;
+
 	/* disable Legacy PME */
 	memset(params->PcieRpPmSci, 0, sizeof(params->PcieRpPmSci));
 

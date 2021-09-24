@@ -574,6 +574,19 @@ static void fill_fsps_8254_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->Enable8254ClockGatingOnS3 = !use_8254;
 }
 
+static void fill_fsps_pm_timer_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
+	/*
+	 * Legacy PM ACPI Timer (and TCO Timer)
+	 * This *must* be 1 in any case to keep FSP from
+	 *  1) enabling PM ACPI Timer emulation in uCode.
+	 *  2) disabling the PM ACPI Timer.
+	 * We handle both by ourself!
+	 */
+	s_cfg->EnableTcoTimer = 1;
+}
+
 static void fill_fsps_storage_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
@@ -742,6 +755,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_thc_params,
 		fill_fsps_tbt_params,
 		fill_fsps_8254_params,
+		fill_fsps_pm_timer_params,
 		fill_fsps_storage_params,
 		fill_fsps_pcie_params,
 		fill_fsps_misc_power_params,

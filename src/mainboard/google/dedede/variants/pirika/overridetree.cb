@@ -117,6 +117,15 @@ chip soc/intel/jasperlake
 				register "probed" = "1"
 				device i2c 15 on end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""PNP0C50""
+				register "generic.desc" = ""Synaptics Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
+				register "generic.wake" = "GPE0_DW0_03"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 0x2c on end
+			end
 		end
 		device pci 19.0 on
 			chip drivers/i2c/generic

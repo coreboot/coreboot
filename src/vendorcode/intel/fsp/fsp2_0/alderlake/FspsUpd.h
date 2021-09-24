@@ -3869,7 +3869,7 @@ typedef struct {
 
 /** Offset 0x0FD5 - Reserved
 **/
-  UINT8                       Reserved56[11];
+  UINT8                       Reserved56[19];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -3888,11 +3888,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x0FE0
+/** Offset 0x0FE8
 **/
-  UINT8                       UnusedUpdSpace40[6];
+  UINT8                       UnusedUpdSpace42[6];
 
-/** Offset 0x0FE6
+/** Offset 0x0FEE
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

@@ -42,8 +42,10 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->flags |= ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
 			ACPI_FADT_SLEEP_BUTTON |
-			ACPI_FADT_SEALED_CASE | ACPI_FADT_S4_RTC_WAKE |
-			ACPI_FADT_PLATFORM_CLOCK;
+			ACPI_FADT_SEALED_CASE | ACPI_FADT_S4_RTC_WAKE;
+
+	if (CONFIG(USE_PM_ACPI_TIMER))
+		fadt->flags |= ACPI_FADT_PLATFORM_CLOCK;
 
 	if (config->s0ix_enable)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;

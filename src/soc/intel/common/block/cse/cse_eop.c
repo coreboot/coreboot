@@ -174,9 +174,13 @@ static void handle_cse_eop_result(enum cse_eop_result result)
 
 static void set_cse_end_of_post(void *unused)
 {
+	set_cse_device_state(DEV_ACTIVE);
+
 	timestamp_add_now(TS_ME_BEFORE_END_OF_POST);
 	handle_cse_eop_result(cse_send_eop());
 	timestamp_add_now(TS_ME_AFTER_END_OF_POST);
+
+	set_cse_device_state(DEV_IDLE);
 }
 
 /*

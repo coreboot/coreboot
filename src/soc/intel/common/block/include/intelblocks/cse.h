@@ -281,4 +281,15 @@ void cse_board_reset(void);
 /* Trigger vboot recovery mode on a CSE error */
 void cse_trigger_vboot_recovery(enum csme_failure_reason reason);
 
+enum cse_device_state {
+	DEV_IDLE,
+	DEV_ACTIVE,
+};
+
+/* Function to get the current CSE device state as per `cse_device_state` */
+enum cse_device_state get_cse_device_state(void);
+
+/* Function that put the CSE into desired state based on `requested_state` */
+bool set_cse_device_state(enum cse_device_state requested_state);
+
 #endif // SOC_INTEL_COMMON_CSE_H

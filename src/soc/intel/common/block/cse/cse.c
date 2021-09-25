@@ -27,6 +27,8 @@
 #define HECI_SEND_TIMEOUT	(5 * 1000)
 /* Wait up to 5 sec for CSE to blurp a reply */
 #define HECI_READ_TIMEOUT	(5 * 1000)
+/* Wait up to 1 ms for CSE CIP */
+#define HECI_CIP_TIMEOUT	1000
 
 #define SLOT_SIZE		sizeof(uint32_t)
 
@@ -34,6 +36,9 @@
 #define MMIO_HOST_CSR		0x04
 #define MMIO_CSE_CB_RW		0x08
 #define MMIO_CSE_CSR		0x0c
+#define MMIO_CSE_DEVIDLE	0x800
+#define  CSE_DEV_IDLE		(1 << 2)
+#define  CSE_DEV_CIP		(1 << 0)
 
 #define CSR_IE			(1 << 0)
 #define CSR_IS			(1 << 1)
@@ -893,6 +898,73 @@ void cse_trigger_vboot_recovery(enum csme_failure_reason reason)
 	}
 failure:
 	die("cse: Failed to trigger recovery mode(recovery subcode:%d)\n", reason);
+}
+
+static bool disable_cse_idle(void)
+{
+	struct stopwatch sw;
+	uint32_t dev_idle_ctrl = read_bar(MMIO_CSE_DEVIDLE);
+	dev_idle_ctrl &= ~CSE_DEV_IDLE;
+	write_bar(MMIO_CSE_DEVIDLE, dev_idle_ctrl);
+
+	stopwatch_init_usecs_expire(&sw, HECI_CIP_TIMEOUT);
+	do {
+		dev_idle_ctrl = read_bar(MMIO_CSE_DEVIDLE);
+		if ((dev_idle_ctrl & CSE_DEV_CIP) == CSE_DEV_CIP)
+			return true;
+		udelay(HECI_DELAY);
+	} while (!stopwatch_expired(&sw));
+
+	return false;
+}
+
+static void enable_cse_idle(void)
+{
+	uint32_t dev_idle_ctrl = read_bar(MMIO_CSE_DEVIDLE);
+	dev_idle_ctrl |= CSE_DEV_IDLE;
+	write_bar(MMIO_CSE_DEVIDLE, dev_idle_ctrl);
+}
+
+enum cse_device_state get_cse_device_state(void)
+{
+	uint32_t dev_idle_ctrl = read_bar(MMIO_CSE_DEVIDLE);
+	if ((dev_idle_ctrl & CSE_DEV_IDLE) == CSE_DEV_IDLE)
+		return DEV_IDLE;
+
+	return DEV_ACTIVE;
+}
+
+static enum cse_device_state ensure_cse_active(void)
+{
+	if (!disable_cse_idle())
+		return DEV_IDLE;
+	pci_or_config32(PCH_DEV_CSE, PCI_COMMAND, PCI_COMMAND_MEMORY |
+				 PCI_COMMAND_MASTER);
+
+	return DEV_ACTIVE;
+}
+
+static void ensure_cse_idle(void)
+{
+	enable_cse_idle();
+
+	pci_and_config32(PCH_DEV_CSE, PCI_COMMAND, ~(PCI_COMMAND_MEMORY |
+				 PCI_COMMAND_MASTER));
+}
+
+bool set_cse_device_state(enum cse_device_state requested_state)
+{
+	enum cse_device_state current_state = get_cse_device_state();
+
+	if (current_state == requested_state)
+		return true;
+
+	if (requested_state == DEV_ACTIVE)
+		return ensure_cse_active() == requested_state;
+	else
+		ensure_cse_idle();
+
+	return true;
 }
 
 #if ENV_RAMSTAGE

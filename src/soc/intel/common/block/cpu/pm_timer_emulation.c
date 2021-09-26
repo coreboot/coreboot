@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/helpers.h>
 #include <cpu/x86/msr.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/msr.h>
@@ -18,7 +19,7 @@ void enable_pm_timer_emulation(void)
 	 * (clock * msr[63:32]) >> 32 = target frequency.
 	 * Back solve the multiplier so the 3.579545MHz ACPI timer frequency is used.
 	 */
-	msr.hi = (3579545ULL << 32) / CONFIG_CPU_XTAL_HZ;
+	msr.hi = DIV_ROUND_CLOSEST((3579545ULL << 32), CONFIG_CPU_XTAL_HZ);
 	/* Set PM1 timer IO port and enable */
 	msr.lo = (EMULATE_DELAY_VALUE << EMULATE_DELAY_OFFSET_VALUE) |
 		  EMULATE_PM_TMR_EN | (ACPI_BASE_ADDRESS + PM1_TMR);

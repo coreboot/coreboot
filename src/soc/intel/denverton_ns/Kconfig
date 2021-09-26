@@ -93,6 +93,9 @@ config CPU_BCLK_MHZ
 	int
 	default 100
 
+config CPU_XTAL_HZ
+	default 24000000
+
 config SMM_TSEG_SIZE
 	hex
 	default 0x200000

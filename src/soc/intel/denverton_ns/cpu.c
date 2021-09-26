@@ -94,6 +94,8 @@ static void denverton_core_init(struct device *cpu)
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= SPEED_STEP_ENABLE_BIT;
 	wrmsr(IA32_MISC_ENABLE, msr);
+
+	enable_pm_timer_emulation();
 }
 
 static struct device_operations cpu_dev_ops = {

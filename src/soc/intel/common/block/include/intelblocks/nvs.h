@@ -27,6 +27,10 @@ struct __packed global_nvs {
 	u64	a4gb; /* 0x30 - 0x37 Base of above 4GB MMIO Resource */
 	u64	a4gs; /* 0x38 - 0x3f Length of above 4GB MMIO Resource */
 	u64	hest_log_addr; /* 0x40 - 47 err log addr (used in SMM, not ASL code) */
+	/* SGX */
+	u8	epcs; /* 0x48 - SGX enabled status */
+	u64	emna; /* 0x49 - 0x50 EPC base address */
+	u64	elng; /* 0x51 - 0x58 EPC length */
 };
 
 #endif

@@ -25,4 +25,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	A4GB,	64,	// 0x30 - 0x37 Base of above 4GB MMIO Resource
 	A4GS,	64,	// 0x38 - 0x3f Length of above 4GB MMIO Resource
 	,	64, 	// 0x40 - 0x47 Hest log buffer (used in SMM, not ASL code)
+	EPCS,	8,	// 0x48 - SGX enabled status
+	EMNA,	64,	// 0x49 - 0x50 EPC base address
+	ELNG,	64,	// 0x51 - 0x58 EPC length
 }

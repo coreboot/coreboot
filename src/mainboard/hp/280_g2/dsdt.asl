@@ -15,7 +15,7 @@ DefinitionBlock(
 
 	#include <cpu/intel/common/acpi/cpu.asl>
 	#include <soc/intel/common/block/acpi/acpi/platform.asl>
-	#include <soc/intel/skylake/acpi/globalnvs.asl>
+	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
 
 	Device (\_SB.PCI0) {
 		#include <soc/intel/skylake/acpi/systemagent.asl>

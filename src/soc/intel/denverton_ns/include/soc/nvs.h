@@ -7,14 +7,14 @@ struct __packed global_nvs {
 	/* Miscellaneous */
 	u16 unused_was_osys; /* 0x00 - Operating System */
 	u8 smif;  /* 0x02 - SMI function call ("TRAP") */
-	u8 prm0;  /* 0x03 - SMI function call parameter */
-	u8 prm1;  /* 0x04 - SMI function call parameter */
+	u8 unused_was_prm0;  /* 0x03 - SMI function call parameter */
+	u8 unused_was_prm1;  /* 0x04 - SMI function call parameter */
 	u8 scif;  /* 0x05 - SCI function call (via _L00) */
-	u8 prm2;  /* 0x06 - SCI function call parameter */
-	u8 prm3;  /* 0x07 - SCI function call parameter */
+	u8 unused_was_prm2;  /* 0x06 - SCI function call parameter */
+	u8 unused_was_prm3;  /* 0x07 - SCI function call parameter */
 	u8 unused_was_lckf;  /* 0x08 - Global Lock function for EC */
-	u8 prm4;  /* 0x09 - Lock function parameter */
-	u8 prm5;  /* 0x0a - Lock function parameter */
+	u8 unused_was_prm4;  /* 0x09 - Lock function parameter */
+	u8 unused_was_prm5;  /* 0x0a - Lock function parameter */
 	u32 p80d; /* 0x0b - Debug port (IO 0x80) value */
 	u8 lids;  /* 0x0f - LID state (open = 1) */
 	u8 unused_was_pwrs;  /* 0x10 - Power state (AC = 1) */

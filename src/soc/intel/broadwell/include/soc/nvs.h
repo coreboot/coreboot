@@ -9,14 +9,14 @@ struct __packed global_nvs {
 	/* Miscellaneous */
 	u16	unused_was_osys; /* 0x00 - Operating System */
 	u8	smif; /* 0x02 - SMI function call ("TRAP") */
-	u8	prm0; /* 0x03 - SMI function call parameter */
-	u8	prm1; /* 0x04 - SMI function call parameter */
+	u8	unused_was_prm0; /* 0x03 - SMI function call parameter */
+	u8	unused_was_prm1; /* 0x04 - SMI function call parameter */
 	u8	scif; /* 0x05 - SCI function call (via _L00) */
-	u8	prm2; /* 0x06 - SCI function call parameter */
-	u8	prm3; /* 0x07 - SCI function call parameter */
+	u8	unused_was_prm2; /* 0x06 - SCI function call parameter */
+	u8	unused_was_prm3; /* 0x07 - SCI function call parameter */
 	u8	unused_was_lckf; /* 0x08 - Global Lock function for EC */
-	u8	prm4; /* 0x09 - Lock function parameter */
-	u8	prm5; /* 0x0a - Lock function parameter */
+	u8	unused_was_prm4; /* 0x09 - Lock function parameter */
+	u8	unused_was_prm5; /* 0x0a - Lock function parameter */
 	u8      unused_was_pcnt; /* 0x0b - Processor Count */
 	u8	ppcm; /* 0x0c - Max PPC State */
 	u8	tmps; /* 0x0d - Temperature Sensor ID */

@@ -21,7 +21,6 @@ struct mtk_wdt_regs {
 /* WDT_MODE */
 enum {
 	MTK_WDT_MODE_KEY	= 0x22000000,
-	MTK_WDT_CLR_STATUS	= 0x230001FF,
 	MTK_WDT_MODE_DUAL_MODE	= 1 << 6,
 	MTK_WDT_MODE_IRQ	= 1 << 3,
 	MTK_WDT_MODE_EXTEN	= 1 << 2,
@@ -40,5 +39,6 @@ enum {
 static struct mtk_wdt_regs *const mtk_wdt = (void *)RGU_BASE;
 
 int mtk_wdt_init(void);
+void mtk_wdt_clr_status(uint32_t wdt_sta);
 
 #endif /* SOC_MEDIATEK_COMMON_WDT_H */

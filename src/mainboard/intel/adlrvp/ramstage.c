@@ -15,6 +15,7 @@ const struct cpu_power_limits limits[] = {
 	/* SKU_ID, pl1_min, pl1_max, pl2_min, pl2_max */
 	/* PL2 values are for performance configuration */
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, 3000, 15000,  55000,  55000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, 3000, 15000,  55000,  55000 },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, 4000, 28000,  64000,  64000 },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 5000, 45000, 115000, 115000 },
 };

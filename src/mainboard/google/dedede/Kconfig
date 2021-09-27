@@ -109,7 +109,6 @@ config MAINBOARD_PART_NUMBER
 	default "Cret" if BOARD_GOOGLE_CRET
 	default "Pirika" if BOARD_GOOGLE_PIRIKA
 	default "Haboki" if BOARD_GOOGLE_HABOKI
-	default "Cappy" if BOARD_GOOGLE_CAPPY
 	default "Cappy2" if BOARD_GOOGLE_CAPPY2
 	default "Bugzzy" if BOARD_GOOGLE_BUGZZY
 	default "Corori" if BOARD_GOOGLE_CORORI
@@ -150,7 +149,6 @@ config VARIANT_DIR
 	default "cret" if BOARD_GOOGLE_CRET
 	default "pirika" if BOARD_GOOGLE_PIRIKA
 	default "haboki" if BOARD_GOOGLE_HABOKI
-	default "cappy" if BOARD_GOOGLE_CAPPY
 	default "cappy2" if BOARD_GOOGLE_CAPPY2
 	default "bugzzy" if BOARD_GOOGLE_BUGZZY
 	default "corori" if BOARD_GOOGLE_CORORI

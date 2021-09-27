@@ -92,6 +92,15 @@ static void soc_pmc_init(struct device *dev)
 	 * done from the "ops->init" callback.
 	 */
 	pmc_set_acpi_mode();
+
+	/*
+	 * Disable ACPI PM timer based on Kconfig
+	 *
+	 * Disabling ACPI PM timer is necessary for XTAL OSC shutdown.
+	 * Disabling ACPI PM timer also switches off TCO
+	 */
+	if (!CONFIG(USE_PM_ACPI_TIMER))
+		pmc_disable_acpi_timer();
 }
 
 static void pmc_fill_ssdt(const struct device *dev)

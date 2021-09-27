@@ -66,6 +66,15 @@ static void pmc_init(void *unused)
 	config_deep_s3(config->deep_s3_enable_ac, config->deep_s3_enable_dc);
 	config_deep_s5(config->deep_s5_enable_ac, config->deep_s5_enable_dc);
 	config_deep_sx(config->deep_sx_config);
+
+	/*
+	 * Disable ACPI PM timer based on Kconfig
+	 *
+	 * Disabling ACPI PM timer is necessary for XTAL OSC shutdown.
+	 * Disabling ACPI PM timer also switches off TCO
+	 */
+	if (!CONFIG(USE_PM_ACPI_TIMER))
+		pmc_disable_acpi_timer();
 }
 
 /*

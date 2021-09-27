@@ -1,5 +1,0 @@
-comment "Mancomb"
-
-config BOARD_GOOGLE_MANCOMB
-	bool "->  Mancomb"
-	select BOARD_GOOGLE_BASEBOARD_MANCOMB

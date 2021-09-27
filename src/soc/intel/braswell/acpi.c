@@ -26,6 +26,8 @@
 #include <types.h>
 #include <wrdd.h>
 
+#include "chip.h"
+
 #define MWAIT_RES(state, sub_state)                         \
 	{                                                   \
 		.addrl = (((state) << 4) | (sub_state)),    \
@@ -68,6 +70,10 @@ size_t size_of_dnvs(void)
 
 void soc_fill_gnvs(struct global_nvs *gnvs)
 {
+	const struct soc_intel_braswell_config *config = config_of_soc();
+
+	gnvs->dpte = config->dptf_enable;
+
 	/* Fill in the Wi-Fi Region ID */
 	if (CONFIG(HAVE_REGULATORY_DOMAIN))
 		gnvs->cid1 = wifi_regulatory_domain();

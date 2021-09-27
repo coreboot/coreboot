@@ -15,9 +15,6 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
 
-	/* Enable DPTF */
-	gnvs->dpte = 1;
-
 	/* Disable PMIC I2C port for ACPI for all boards except cyan */
 	struct device_nvs *dev_nvs = acpi_get_device_nvs();
 	if (!CONFIG(BOARD_GOOGLE_CYAN))

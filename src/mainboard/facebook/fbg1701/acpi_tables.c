@@ -15,9 +15,6 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
 
-	/* Disable DPTF */
-	gnvs->dpte = 0;
-
 	/* PMIC is configured in I2C1, hide it for the OS */
 	struct device_nvs *dev_nvs = acpi_get_device_nvs();
 	dev_nvs->lpss_en[LPSS_NVS_I2C2] = 0;

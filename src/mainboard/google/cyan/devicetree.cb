@@ -77,6 +77,8 @@ chip soc/intel/braswell
 	# LPE audio codec settings
 	register "lpe_codec_clk_src" = "LPE_CLK_SRC_XTAL" # 19.2MHz clock
 
+	register "dptf_enable" = "true"
+
 	# Enable LPSS and LPE devices in ACPI mode
 	register "lpss_acpi_mode" = "1"
 	register "emmc_acpi_mode" = "0"

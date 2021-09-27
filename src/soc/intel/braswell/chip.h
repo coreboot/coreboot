@@ -42,6 +42,8 @@ enum usb_comp_bg_value {
 struct soc_intel_braswell_config {
 	bool enable_xdp_tap;
 
+	bool dptf_enable;
+
 	enum serirq_mode serirq_mode;
 
 	/* Disable SLP_X stretching after SUS power well loss */

@@ -41,6 +41,7 @@
 #define MILLIAMPS_TO_AMPS         1000
 #define ICC_MAX_ID_ADL_P_3_MA     34250
 #define ICC_MAX_ID_ADL_P_5_MA     32000
+#define ICC_MAX_ID_ADL_P_6_MA     32000
 #define ICC_MAX_ID_ADL_P_7_MA     32000
 
 /*
@@ -305,6 +306,8 @@ static uint16_t get_vccin_aux_imon_iccmax(void)
 		return ICC_MAX_ID_ADL_P_3_MA;
 	case PCI_DEVICE_ID_INTEL_ADL_P_ID_5:
 		return ICC_MAX_ID_ADL_P_5_MA;
+	case PCI_DEVICE_ID_INTEL_ADL_P_ID_6:
+		return ICC_MAX_ID_ADL_P_6_MA;
 	case PCI_DEVICE_ID_INTEL_ADL_P_ID_7:
 		return ICC_MAX_ID_ADL_P_7_MA;
 	default:

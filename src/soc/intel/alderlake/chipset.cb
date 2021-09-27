@@ -37,6 +37,11 @@ chip soc/intel/alderlake
 		.tdp_pl4 = 68,
 	}"
 
+	register "power_limits_config[ADL_P_242_CORE]" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 55,
+		.tdp_pl4 = 123,
+	}"
 
 	device domain 0 on
 		device gpio 0 alias pch_gpio on end

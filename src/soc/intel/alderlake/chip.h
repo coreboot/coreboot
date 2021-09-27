@@ -27,6 +27,7 @@ enum soc_intel_alderlake_power_limits {
 	ADL_P_682_45W_CORE,
 	ADL_M_282_CORE,
 	ADL_M_242_CORE,
+	ADL_P_242_CORE,
 	ADL_POWER_LIMITS_COUNT
 };
 
@@ -45,6 +46,7 @@ static const struct {
 	enum soc_intel_alderlake_cpu_tdps cpu_tdp;
 } cpuid_to_adl[] = {
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, ADL_P_282_CORE, TDP_15W },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, ADL_P_242_CORE, TDP_15W },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, ADL_P_482_CORE, TDP_28W },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, ADL_P_682_28W_CORE, TDP_28W },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, ADL_P_682_45W_CORE, TDP_45W },

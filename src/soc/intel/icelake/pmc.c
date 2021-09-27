@@ -74,7 +74,7 @@ static void pmc_init(void *unused)
 	 * Disabling ACPI PM timer also switches off TCO
 	 */
 	if (!CONFIG(USE_PM_ACPI_TIMER))
-		pmc_disable_acpi_timer();
+		setbits8(pmc_mmio_regs() + PCH_PWRM_ACPI_TMR_CTL, ACPI_TIM_DIS);
 }
 
 /*

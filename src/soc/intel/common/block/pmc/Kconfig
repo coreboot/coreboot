@@ -50,12 +50,6 @@ config PMC_GLOBAL_RESET_ENABLE_LOCK
 	  Note that the reset register is still at 0xCF9 this only
 	  controls the enable and lock feature.
 
-config PMC_LOW_POWER_MODE_PROGRAM
-	bool
-	help
-	  Enable this for PMC devices to perform registers programming
-	  to ensure low power in active idle scenario.
-
 config PM_ACPI_TIMER_OPTIONAL
 	bool
 	default n

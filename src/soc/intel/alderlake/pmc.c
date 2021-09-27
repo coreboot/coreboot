@@ -66,7 +66,7 @@ static void config_deep_sx(uint32_t deepsx_config)
 	write32(pmcbase + DSX_CFG, reg);
 }
 
-static void pmc_init(struct device *dev)
+static void soc_pmc_enable(struct device *dev)
 {
 	const config_t *config = config_of_soc();
 
@@ -140,7 +140,7 @@ static void soc_pmc_fill_ssdt(const struct device *dev)
 	       dev_path(dev));
 }
 
-static void soc_acpi_mode_init(struct device *dev)
+static void soc_pmc_init(struct device *dev)
 {
 	/*
 	 * pmc_set_acpi_mode() should be delayed until BS_DEV_INIT in order
@@ -165,8 +165,8 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_EXIT, pm1_enable_pwrbtn_smi, NULL
 struct device_operations pmc_ops = {
 	.read_resources	  = soc_pmc_read_resources,
 	.set_resources	  = noop_set_resources,
-	.init		  = soc_acpi_mode_init,
-	.enable		  = pmc_init,
+	.init		  = soc_pmc_init,
+	.enable		  = soc_pmc_enable,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt	  = soc_pmc_fill_ssdt,
 #endif

@@ -12,7 +12,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	SCIF,	 8,	// 0x05 - SCI function
 	PRM2,	 8,	// 0x06 - SCI function parameter
 	PRM3,	 8,	// 0x07 - SCI function parameter
-	LCKF,	 8,	// 0x08 - Global Lock function for EC
+	,	 8,	// 0x08 - Global Lock function for EC
 	PRM4,	 8,	// 0x09 - Lock function parameter
 	PRM5,	 8,	// 0x0a - Lock function parameter
 	P80D,	32,	// 0x0b - Debug port (IO 0x80) value

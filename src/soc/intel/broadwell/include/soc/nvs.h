@@ -14,7 +14,7 @@ struct __packed global_nvs {
 	u8	scif; /* 0x05 - SCI function call (via _L00) */
 	u8	prm2; /* 0x06 - SCI function call parameter */
 	u8	prm3; /* 0x07 - SCI function call parameter */
-	u8	lckf; /* 0x08 - Global Lock function for EC */
+	u8	unused_was_lckf; /* 0x08 - Global Lock function for EC */
 	u8	prm4; /* 0x09 - Lock function parameter */
 	u8	prm5; /* 0x0a - Lock function parameter */
 	u8      unused_was_pcnt; /* 0x0b - Processor Count */

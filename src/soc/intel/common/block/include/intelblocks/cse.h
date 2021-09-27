@@ -509,4 +509,10 @@ void cse_send_end_of_post(void);
  */
 void soc_disable_heci1_using_pcr(void);
 
+/*
+ * Get all the timestamps CSE collected using cse_get_boot_performance_data() and
+ * insert them into the CBMEM timestamp table.
+ */
+void cse_get_telemetry_data(void);
+
 #endif // SOC_INTEL_COMMON_CSE_H

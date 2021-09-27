@@ -166,6 +166,13 @@ config SOC_INTEL_CSE_LITE_COMPRESS_ME_RW
 	help
 	 Enable compression on Intel CSE CBFS RW blob
 
+config SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY
+	def_bool n
+	depends on SOC_INTEL_CSE_LITE_SKU
+	help
+	  Mainboard user to select this Kconfig in order to capture pre-cpu
+	  reset boot performance telemetry data.
+
 if STITCH_ME_BIN
 
 config CSE_COMPONENTS_PATH

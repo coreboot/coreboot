@@ -142,6 +142,10 @@ void mainboard_romstage_entry(void)
 		timestamp_add_now(TS_CSE_FW_SYNC_END);
 	}
 
+	/* Update coreboot timestamp table with CSE timestamps */
+	if (CONFIG(SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY))
+		cse_get_telemetry_data();
+
 	/*
 	 * Set low maximum temp threshold value used for dynamic thermal sensor
 	 * shutdown consideration.

@@ -6,6 +6,7 @@ ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CSE) += disable_heci.c
 smm-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CSE) += disable_heci.c
 
 ramstage-$(CONFIG_SOC_INTEL_CSE_SET_EOP) += cse_eop.c
+romstage-$(CONFIG_SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY) += telemetry.c
 
 ifeq ($(CONFIG_STITCH_ME_BIN),y)
 

@@ -41,7 +41,7 @@ struct __packed global_nvs {
 	u16	u2we; /* 0x3f - USB2 Wake Enable Bitmap */
 	u8	u3we; /* 0x41 - USB3 Wake Enable Bitmap */
 	u8	uior; /* 0x42 - UART debug controller init on S3 resume */
-	u8	ecps; /* 0x43 - SGX Enabled status */
+	u8	epcs; /* 0x43 - SGX Enabled status */
 	u64	emna; /* 0x44 - 0x4B EPC base address */
 	u64	elng; /* 0x4C - 0x53 EPC Length */
 	u64	a4gb; /* 0x54 - 0x5B Base of above 4GB MMIO Resource */

@@ -254,12 +254,12 @@ void sgx_fill_gnvs(struct global_nvs *gnvs)
 
 	if (cpuid_regs.eax & SGX_RESOURCE_ENUM_BIT) {
 		/* EPC section enumerated */
-		gnvs->ecps = 1;
+		gnvs->epcs = 1;
 		gnvs->emna = sgx_resource(cpuid_regs.eax, cpuid_regs.ebx);
 		gnvs->elng = sgx_resource(cpuid_regs.ecx, cpuid_regs.edx);
 	}
 
 	printk(BIOS_DEBUG,
 		"SGX: gnvs ECP status = %d base = 0x%llx len = 0x%llx\n",
-			gnvs->ecps, gnvs->emna, gnvs->elng);
+			gnvs->epcs, gnvs->emna, gnvs->elng);
 }

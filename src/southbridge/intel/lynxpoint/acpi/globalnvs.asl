@@ -96,46 +96,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	GPEI,	32,	// GPE Wake Source
 }
 
-/* Set flag to enable USB charging in S3 */
-Method (S3UE)
-{
-	\S3U0 = 1
-	\S3U1 = 1
-}
-
-/* Set flag to disable USB charging in S3 */
-Method (S3UD)
-{
-	\S3U0 = 0
-	\S3U1 = 0
-}
-
-/* Set flag to enable USB charging in S5 */
-Method (S5UE)
-{
-	\S5U0 = 1
-	\S5U1 = 1
-}
-
-/* Set flag to disable USB charging in S5 */
-Method (S5UD)
-{
-	\S5U0 = 0
-	\S5U1 = 0
-}
-
-/* Set flag to enable 3G module in S3 */
-Method (S3GE)
-{
-	\S33G = 1
-}
-
-/* Set flag to disable 3G module in S3 */
-Method (S3GD)
-{
-	\S33G = 0
-}
-
 External (\_TZ.SKIN)
 
 Method (TZUP)

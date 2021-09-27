@@ -45,27 +45,3 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	A4GB,	64,	// 0x54 - 0x5B Base of above 4GB MMIO Resource
 	A4GS,	64,	// 0x5C - 0x63 Length of above 4GB MMIO Resource
 }
-
-/* Set flag to enable USB charging in S3 */
-Method (S3UE)
-{
-	\S3U0 = 1
-}
-
-/* Set flag to disable USB charging in S3 */
-Method (S3UD)
-{
-	\S3U0 = 0
-}
-
-/* Set flag to enable USB charging in S5 */
-Method (S5UE)
-{
-	\S5U0 = 1
-}
-
-/* Set flag to disable USB charging in S5 */
-Method (S5UD)
-{
-	\S5U0 = 0
-}

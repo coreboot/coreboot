@@ -43,31 +43,3 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	,	 32,	/* 0x34 - Top of Low Memory */
 	CBMC,	 32,	/* 0x38 - coreboot mem console pointer */
 }
-
-/* Set flag to enable USB charging in S3 */
-Method (S3UE)
-{
-	Store (One, \S3U0)
-	Store (One, \S3U1)
-}
-
-/* Set flag to disable USB charging in S3 */
-Method (S3UD)
-{
-	Store (Zero, \S3U0)
-	Store (Zero, \S3U1)
-}
-
-/* Set flag to enable USB charging in S5 */
-Method (S5UE)
-{
-	Store (One, \S5U0)
-	Store (One, \S5U1)
-}
-
-/* Set flag to disable USB charging in S5 */
-Method (S5UD)
-{
-	Store (Zero, \S5U0)
-	Store (Zero, \S5U1)
-}

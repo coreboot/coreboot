@@ -33,39 +33,3 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	PM1I,	64,	// 0x20 - 0x27 - PM1 wake status bit
 	GPEI,	64,	// 0x28 - 0x2f - GPE wake status bit
 }
-
-/* Set flag to enable USB charging in S3 */
-Method (S3UE)
-{
-	\S3U0 = 1
-}
-
-/* Set flag to disable USB charging in S3 */
-Method (S3UD)
-{
-	\S3U0 = 0
-}
-
-/* Set flag to enable USB charging in S5 */
-Method (S5UE)
-{
-	\S5U0 = 1
-}
-
-/* Set flag to disable USB charging in S5 */
-Method (S5UD)
-{
-	\S5U0 = 0
-}
-
-/* Set flag to enable 3G module in S3 */
-Method (S3GE)
-{
-	\S33G = 1
-}
-
-/* Set flag to disable 3G module in S3 */
-Method (S3GD)
-{
-	\S33G = 0
-}

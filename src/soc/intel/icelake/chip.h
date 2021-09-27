@@ -144,8 +144,6 @@ struct soc_intel_icelake_config {
 	/* Enable C6 DRAM */
 	uint8_t enable_c6dram;
 
-	uint8_t PmTimerDisabled;
-
 	/*
 	 * SerialIO device mode selection:
 	 * PchSerialIoDisabled,

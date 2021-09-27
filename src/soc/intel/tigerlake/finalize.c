@@ -30,8 +30,6 @@
 
 static void pch_finalize(void)
 {
-	config_t *config;
-
 	/* TCO Lock down */
 	tco_lockdown();
 
@@ -42,14 +40,8 @@ static void pch_finalize(void)
 	 *
 	 * Disabling ACPI PM timer is necessary for XTAL OSC shutdown.
 	 * Disabling ACPI PM timer also switches off TCO
-	 *
-	 * SA_DEV_ROOT device is used here instead of PCH_DEV_PMC since it is
-	 * just required to get to chip config. PCH_DEV_PMC is hidden by this
-	 * point and hence removed from the root bus. pcidev_path_on_root thus
-	 * returns NULL for PCH_DEV_PMC device.
 	 */
-	config = config_of_soc();
-	if (config->PmTimerDisabled)
+	if (!CONFIG(USE_PM_ACPI_TIMER))
 		pmc_disable_acpi_timer();
 
 	pmc_clear_pmcon_sts();

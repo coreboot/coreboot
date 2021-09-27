@@ -26,10 +26,6 @@ chip soc/intel/tigerlake
 		.tdp_pl2_override = 40,
 	}"
 
-# Finalize (soc/intel/tigerlake/finalize.c)
-	# PM Timer Disabled, saves power
-	register "PmTimerDisabled" = "1"
-
 # FSP Memory (soc/intel/tigerlake/romstage/fsp_params.c)
 	# Enable C6 DRAM
 	register "enable_c6dram" = "1"

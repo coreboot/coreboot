@@ -44,7 +44,7 @@ static void pch_finalize(void)
 {
 	uint32_t reg32;
 	uint8_t *pmcbase;
-	config_t *config;
+	config_t *config = config_of_soc();
 
 	/* TCO Lock down */
 	tco_lockdown();
@@ -52,18 +52,12 @@ static void pch_finalize(void)
 	/* TODO: Add Thermal Configuration */
 
 	/*
-	 * Disable ACPI PM timer based on dt policy
+	 * Disable ACPI PM timer based on Kconfig
 	 *
 	 * Disabling ACPI PM timer is necessary for XTAL OSC shutdown.
 	 * Disabling ACPI PM timer also switches off TCO
-	 *
-	 * SA_DEV_ROOT device is used here instead of PCH_DEV_PMC since it is
-	 * just required to get to chip config. PCH_DEV_PMC is hidden by this
-	 * point and hence removed from the root bus. pcidev_path_on_root thus
-	 * returns NULL for PCH_DEV_PMC device.
 	 */
-	config = config_of_soc();
-	if (config->PmTimerDisabled)
+	if (!CONFIG(USE_PM_ACPI_TIMER))
 		pmc_disable_acpi_timer();
 
 	pmcbase = pmc_mmio_regs();

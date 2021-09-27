@@ -52,4 +52,8 @@ config POST_DEVICE
 config UART_FOR_CONSOLE
 	default 2
 
+# PM Timer Disabled, saves power
+config USE_PM_ACPI_TIMER
+	default n
+
 endif

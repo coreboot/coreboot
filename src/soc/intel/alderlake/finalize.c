@@ -50,7 +50,7 @@ static void pch_handle_sideband(config_t *config)
 
 static void pch_finalize(void)
 {
-	config_t *config;
+	config_t *config = config_of_soc();
 
 	/* TCO Lock down */
 	tco_lockdown();
@@ -58,13 +58,12 @@ static void pch_finalize(void)
 	/* TODO: Add Thermal Configuration */
 
 	/*
-	 * Disable ACPI PM timer based on dt policy
+	 * Disable ACPI PM timer based on Kconfig
 	 *
 	 * Disabling ACPI PM timer is necessary for XTAL OSC shutdown.
 	 * Disabling ACPI PM timer also switches off TCO
 	 */
-	config = config_of_soc();
-	if (config->PmTimerDisabled)
+	if (!CONFIG(USE_PM_ACPI_TIMER))
 		pmc_disable_acpi_timer();
 
 	pch_handle_sideband(config);

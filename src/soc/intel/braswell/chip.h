@@ -8,11 +8,11 @@
 #ifndef _SOC_CHIP_H_
 #define _SOC_CHIP_H_
 
-#include <stdint.h>
 #include <drivers/intel/gma/i915.h>
 #include <fsp/util.h>
 #include <intelblocks/lpc_lib.h>
 #include <soc/pci_devs.h>
+#include <types.h>
 
 #define SVID_CONFIG1		1
 #define SVID_CONFIG3		3
@@ -40,12 +40,12 @@ enum usb_comp_bg_value {
 };
 
 struct soc_intel_braswell_config {
-	uint8_t enable_xdp_tap;
+	bool enable_xdp_tap;
 
 	enum serirq_mode serirq_mode;
 
 	/* Disable SLP_X stretching after SUS power well loss */
-	int disable_slp_x_stretch_sus_fail;
+	bool disable_slp_x_stretch_sus_fail;
 
 	/* LPE Audio Clock configuration */
 	enum lpe_clk_src lpe_codec_clk_src; /* Both are 19.2MHz */
@@ -55,13 +55,13 @@ struct soc_intel_braswell_config {
 	uint32_t sdcard_cap_high;
 
 	/* Enable devices in ACPI mode */
-	int lpss_acpi_mode;
-	int emmc_acpi_mode;
-	int sd_acpi_mode;
-	int lpe_acpi_mode;
+	bool lpss_acpi_mode;
+	bool emmc_acpi_mode;
+	bool sd_acpi_mode;
+	bool lpe_acpi_mode;
 
 	/* Allow PCIe devices to wake system from suspend */
-	int pcie_wake_enable;
+	bool pcie_wake_enable;
 
 	/* Program USB2_COMPBG register.
 	 * [10:7] - select vref to AFE port

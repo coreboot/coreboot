@@ -55,15 +55,6 @@ config NO_PM_ACPI_TIMER
 	help
 	  Selected by SoCs that do not have a PM ACPI timer.
 
-config PM_ACPI_TIMER_OPTIONAL
-	bool
-	default n
-	help
-	  This needs to be selected by SoCs, where the hardware PM Timer
-	  can be disabled, to show the ACPI PM Timer Kconfig in menuconfig.
-
-if PM_ACPI_TIMER_OPTIONAL
-
 config USE_PM_ACPI_TIMER
 	bool "Enable ACPI PM timer"
 	default y
@@ -82,5 +73,3 @@ config USE_PM_ACPI_TIMER
 
 	        (Legacy) software requiring `TMR_STS` (for timer overflow
 	        interrupts) will not work with this option disabled.
-
-endif # PM_ACPI_TIMER_OPTIONAL

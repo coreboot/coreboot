@@ -142,7 +142,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 			ACPI_FADT_SLEEP_BUTTON |
 			ACPI_FADT_SEALED_CASE | ACPI_FADT_S4_RTC_WAKE;
 
-	if (CONFIG(USE_PM_ACPI_TIMER) || !CONFIG(PM_ACPI_TIMER_OPTIONAL))
+	if (CONFIG(USE_PM_ACPI_TIMER))
 		fadt->flags |= ACPI_FADT_PLATFORM_CLOCK;
 
 	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;

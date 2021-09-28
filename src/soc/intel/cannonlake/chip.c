@@ -174,16 +174,18 @@ static struct device_operations pci_domain_ops = {
 	.read_resources   = &pci_domain_read_resources,
 	.set_resources    = &pci_domain_set_resources,
 	.scan_bus         = &pci_domain_scan_bus,
-	#if CONFIG(HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name        = &soc_acpi_name,
-	#endif
+#endif
 };
 
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
 	.enable_resources = cpu_set_north_irqs,
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt   = cpu_fill_ssdt,
+#endif
 };
 
 static void soc_enable(struct device *dev)

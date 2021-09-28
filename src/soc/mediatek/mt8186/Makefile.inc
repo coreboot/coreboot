@@ -58,6 +58,8 @@ ramstage-y += ../common/wdt.c wdt.c
 ramstage-y += ../common/pmic_wrap.c pmic_wrap.c mt6366.c
 ramstage-y += ../common/rtc.c ../common/rtc_osc_init.c rtc.c
 
+BL31_MAKEARGS += PLAT=mt8186
+
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8186/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 

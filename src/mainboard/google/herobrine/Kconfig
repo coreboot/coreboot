@@ -3,6 +3,11 @@ config BOARD_GOOGLE_HEROBRINE_COMMON  # Umbrella option to be selected by varian
 
 if BOARD_GOOGLE_HEROBRINE_COMMON
 
+config HEROBRINE_HAS_FINGERPRINT
+	bool
+	default y if BOARD_GOOGLE_HEROBRINE
+	default n
+
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOARD_ROMSIZE_KB_65536 if BOARD_GOOGLE_PIGLIN || BOARD_GOOGLE_HOGLIN

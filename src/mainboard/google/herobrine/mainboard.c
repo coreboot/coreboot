@@ -51,6 +51,12 @@ static void mainboard_init(struct device *dev)
 	qupv3_se_fw_load_and_init(QUPV3_1_SE4, SE_PROTOCOL_SPI, MIXED);  /* ESIM SPI */
 	qupv3_se_fw_load_and_init(QUPV3_1_SE6, SE_PROTOCOL_SPI, MIXED);  /* Fingerprint SPI */
 #endif
+
+	/* Take FPMCU out of reset. Power was already applied
+	   in romstage and should have stabilized by now. */
+	if (CONFIG(HEROBRINE_HAS_FINGERPRINT))
+		gpio_output(GPIO_FP_RST_L, 1);
+
 }
 
 static void mainboard_enable(struct device *dev)

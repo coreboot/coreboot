@@ -42,15 +42,21 @@ static void mainboard_init(struct device *dev)
 	qupv3_se_fw_load_and_init(QUPV3_1_SE5, SE_PROTOCOL_I2C, MIXED);	 /* Touch I2C */
 	qupv3_se_fw_load_and_init(QUPV3_0_SE7, SE_PROTOCOL_UART, FIFO);  /* BT UART */
 
-#if CONFIG(BOARD_GOOGLE_HEROBRINE)
-	qupv3_se_fw_load_and_init(QUPV3_0_SE0, SE_PROTOCOL_I2C, MIXED);  /* Audio I2C */
-	qupv3_se_fw_load_and_init(QUPV3_0_SE1, SE_PROTOCOL_I2C, MIXED);  /* Trackpad I2C */
-	qupv3_se_fw_load_and_init(QUPV3_1_SE3, SE_PROTOCOL_SPI, MIXED);  /* Fingerprint SPI */
-#elif CONFIG(BOARD_GOOGLE_PIGLIN)
-	qupv3_se_fw_load_and_init(QUPV3_0_SE1, SE_PROTOCOL_I2C, GSI);    /* APPS I2C */
-	qupv3_se_fw_load_and_init(QUPV3_1_SE4, SE_PROTOCOL_SPI, MIXED);  /* ESIM SPI */
-	qupv3_se_fw_load_and_init(QUPV3_1_SE6, SE_PROTOCOL_SPI, MIXED);  /* Fingerprint SPI */
-#endif
+	if (CONFIG(BOARD_GOOGLE_HEROBRINE)) {
+		/* Audio I2C */
+		qupv3_se_fw_load_and_init(QUPV3_0_SE0, SE_PROTOCOL_I2C, MIXED);
+		/* Trackpad I2C */
+		qupv3_se_fw_load_and_init(QUPV3_0_SE1, SE_PROTOCOL_I2C, MIXED);
+		/* Fingerprint SPI */
+		qupv3_se_fw_load_and_init(QUPV3_1_SE3, SE_PROTOCOL_SPI, MIXED);
+	} else if (CONFIG(BOARD_GOOGLE_PIGLIN)) {
+		/* APPS I2C */
+		qupv3_se_fw_load_and_init(QUPV3_0_SE1, SE_PROTOCOL_I2C, GSI);
+		/* ESIM SPI */
+		qupv3_se_fw_load_and_init(QUPV3_1_SE4, SE_PROTOCOL_SPI, MIXED);
+		/* Fingerprint SPI */
+		qupv3_se_fw_load_and_init(QUPV3_1_SE6, SE_PROTOCOL_SPI, MIXED);
+	}
 
 	/* Take FPMCU out of reset. Power was already applied
 	   in romstage and should have stabilized by now. */

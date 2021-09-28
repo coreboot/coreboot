@@ -7,7 +7,6 @@
 #include <arch/ioapic.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
-#include <reg_script.h>
 #include <soc/iomap.h>
 #include <soc/pcr_ids.h>
 #include <soc/intel/common/block/lpc/lpc_def.h>
@@ -24,12 +23,6 @@ void soc_get_gen_io_dec_range(uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES])
 	gen_io_dec[3] = config->gen4_dec;
 }
 
-static const struct reg_script pch_misc_init_script[] = {
-	/* Enable BIOS updates outside of SMM */
-	REG_PCI_RMW8(0xdc, ~(1 << 5), 0),
-	REG_SCRIPT_END
-};
-
 void lpc_soc_init(struct device *dev)
 {
 	const config_t *const config = config_of(dev);
@@ -37,7 +30,9 @@ void lpc_soc_init(struct device *dev)
 	/* Legacy initialization */
 	isa_dma_init();
 	pch_misc_init();
-	reg_script_run_on_dev(PCH_DEV_LPC, pch_misc_init_script);
+
+	/* Enable BIOS updates outside of SMM */
+	pci_and_config8(PCH_DEV_LPC, 0xdc, ~(1 << 5));
 
 	/* Enable CLKRUN_EN for power gating LPC */
 	lpc_enable_pci_clk_cntl();

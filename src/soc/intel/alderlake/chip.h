@@ -492,6 +492,9 @@ struct soc_intel_alderlake_config {
 		POWER_CYCLE_DURATION_3S,
 		POWER_CYCLE_DURATION_4S,
 	} pch_reset_power_cycle_duration;
+
+	/* Platform Power Pmax */
+	uint16_t PsysPmax;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

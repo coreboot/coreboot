@@ -652,6 +652,13 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 						   s_cfg->PchPmSlpS3MinAssert,
 						   s_cfg->PchPmSlpAMinAssert,
 						   power_cycle_duration);
+
+	/* Set PsysPmax if it is available from DT */
+	if (config->PsysPmax) {
+		printk(BIOS_DEBUG, "PsysPmax = %dW\n", config->PsysPmax);
+		/* PsysPmax is in unit of 1/8 Watt */
+		s_cfg->PsysPmax = config->PsysPmax * 8;
+	}
 }
 
 static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,

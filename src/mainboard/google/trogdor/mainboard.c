@@ -23,7 +23,7 @@
 #include "board.h"
 #include <soc/addressmap.h>
 
-#define BRIDGE_BUS 0x2
+#define BRIDGE_BUS QUPV3_0_SE2
 #define BRIDGE_CHIP 0x2d
 
 static struct usb_board_data usb0_board_data = {
@@ -177,6 +177,9 @@ static void display_startup(void)
 	struct panel_serializable_data *panel = &edp_panel;
 	enum lb_fb_orientation orientation = LB_FB_ORIENTATION_NORMAL;
 
+	/* Always initialize this so QUP firmware is loaded for the kernel. */
+	i2c_init(BRIDGE_BUS, I2C_SPEED_FAST);
+
 	if (!display_init_required()) {
 		printk(BIOS_INFO, "Skipping display init.\n");
 		return;
@@ -189,7 +192,6 @@ static void display_startup(void)
 			return;
 	} else {
 		enum dp_pll_clk_src ref_clk = SN65_SEL_19MHZ;
-		i2c_init(QUPV3_0_SE2, I2C_SPEED_FAST); /* EDP Bridge I2C */
 		power_on_bridge();
 		mdelay(250); /* Delay for the panel to be up */
 		sn65dsi86_bridge_init(BRIDGE_BUS, BRIDGE_CHIP, ref_clk);

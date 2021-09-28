@@ -20,15 +20,15 @@
 #define MAX_HECI_MESSAGE_RETRY_COUNT 5
 
 /* Wait up to 15 sec for HECI to get ready */
-#define HECI_DELAY_READY	(15 * 1000)
+#define HECI_DELAY_READY_MS	(15 * 1000)
 /* Wait up to 100 usec between circular buffer polls */
-#define HECI_DELAY		100
+#define HECI_DELAY_US		100
 /* Wait up to 5 sec for CSE to chew something we sent */
-#define HECI_SEND_TIMEOUT	(5 * 1000)
+#define HECI_SEND_TIMEOUT_MS	(5 * 1000)
 /* Wait up to 5 sec for CSE to blurp a reply */
-#define HECI_READ_TIMEOUT	(5 * 1000)
+#define HECI_READ_TIMEOUT_MS	(5 * 1000)
 /* Wait up to 1 ms for CSE CIP */
-#define HECI_CIP_TIMEOUT	1000
+#define HECI_CIP_TIMEOUT_US	1000
 
 #define SLOT_SIZE		sizeof(uint32_t)
 
@@ -195,9 +195,9 @@ static int wait_write_slots(size_t cnt)
 {
 	struct stopwatch sw;
 
-	stopwatch_init_msecs_expire(&sw, HECI_SEND_TIMEOUT);
+	stopwatch_init_msecs_expire(&sw, HECI_SEND_TIMEOUT_MS);
 	while (host_empty_slots() < cnt) {
-		udelay(HECI_DELAY);
+		udelay(HECI_DELAY_US);
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "HECI: timeout, buffer not drained\n");
 			return 0;
@@ -210,9 +210,9 @@ static int wait_read_slots(size_t cnt)
 {
 	struct stopwatch sw;
 
-	stopwatch_init_msecs_expire(&sw, HECI_READ_TIMEOUT);
+	stopwatch_init_msecs_expire(&sw, HECI_READ_TIMEOUT_MS);
 	while (cse_filled_slots() < cnt) {
-		udelay(HECI_DELAY);
+		udelay(HECI_DELAY_US);
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "HECI: timed out reading answer!\n");
 			return 0;
@@ -286,9 +286,9 @@ void cse_set_host_ready(void)
 uint8_t cse_wait_sec_override_mode(void)
 {
 	struct stopwatch sw;
-	stopwatch_init_msecs_expire(&sw, HECI_DELAY_READY);
+	stopwatch_init_msecs_expire(&sw, HECI_DELAY_READY_MS);
 	while (!cse_is_hfs1_com_secover_mei_msg()) {
-		udelay(HECI_DELAY);
+		udelay(HECI_DELAY_US);
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "HECI: Timed out waiting for SEC_OVERRIDE mode!\n");
 			return 0;
@@ -308,7 +308,7 @@ uint8_t cse_wait_com_soft_temp_disable(void)
 	struct stopwatch sw;
 	stopwatch_init_msecs_expire(&sw, CSE_DELAY_BOOT_TO_RO);
 	while (!cse_is_hfs1_com_soft_temp_disable()) {
-		udelay(HECI_DELAY);
+		udelay(HECI_DELAY_US);
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "HECI: Timed out waiting for CSE to boot from RO!\n");
 			return 0;
@@ -323,9 +323,9 @@ static int wait_heci_ready(void)
 {
 	struct stopwatch sw;
 
-	stopwatch_init_msecs_expire(&sw, HECI_DELAY_READY);
+	stopwatch_init_msecs_expire(&sw, HECI_DELAY_READY_MS);
 	while (!cse_ready()) {
-		udelay(HECI_DELAY);
+		udelay(HECI_DELAY_US);
 		if (stopwatch_expired(&sw))
 			return 0;
 	}
@@ -907,12 +907,12 @@ static bool disable_cse_idle(void)
 	dev_idle_ctrl &= ~CSE_DEV_IDLE;
 	write_bar(MMIO_CSE_DEVIDLE, dev_idle_ctrl);
 
-	stopwatch_init_usecs_expire(&sw, HECI_CIP_TIMEOUT);
+	stopwatch_init_usecs_expire(&sw, HECI_CIP_TIMEOUT_US);
 	do {
 		dev_idle_ctrl = read_bar(MMIO_CSE_DEVIDLE);
 		if ((dev_idle_ctrl & CSE_DEV_CIP) == CSE_DEV_CIP)
 			return true;
-		udelay(HECI_DELAY);
+		udelay(HECI_DELAY_US);
 	} while (!stopwatch_expired(&sw));
 
 	return false;

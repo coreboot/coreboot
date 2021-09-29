@@ -100,7 +100,6 @@ void mdss_dsi_video_mode_config(struct edid *edid, uint32_t bpp)
 {
 	uint16_t dst_format;
 	uint8_t lane_en = 15; /* Enable 4 lanes by default */
-	uint16_t hfp, hbp, vfp, vbp;
 
 	switch (bpp) {
 	case 16:
@@ -115,23 +114,17 @@ void mdss_dsi_video_mode_config(struct edid *edid, uint32_t bpp)
 		break;
 	}
 
-	hfp = edid->mode.hso;
-	hbp = edid->mode.hbl - edid->mode.hso;
-	vfp = edid->mode.vso;
-	vbp = edid->mode.vbl - edid->mode.vso;
-
 	write32(&dsi0->video_mode_active_h,
-		((edid->mode.ha + hbp) << 16) |
-		hbp);
+		((edid->mode.ha + edid->mode.hbl - edid->mode.hso) << 16) |
+		 (edid->mode.hbl - edid->mode.hso));
 
 	write32(&dsi0->video_mode_active_v,
-		((edid->mode.va + vbp) << 16) | (vbp));
+		((edid->mode.va + edid->mode.vbl - edid->mode.vso) << 16) |
+		 (edid->mode.vbl - edid->mode.vso));
 
 	write32(&dsi0->video_mode_active_total,
-		((edid->mode.va + vfp +
-		 vbp - 1) << 16) |
-		(edid->mode.ha + hfp +
-		 hbp - 1));
+		((edid->mode.va + edid->mode.vbl - 1) << 16) |
+		 (edid->mode.ha + edid->mode.hbl - 1));
 
 	write32(&dsi0->video_mode_active_hsync, (edid->mode.hspw << 16));
 	write32(&dsi0->video_mode_active_vsync, 0x0);

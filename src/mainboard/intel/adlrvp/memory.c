@@ -13,7 +13,7 @@ static const struct mb_cfg ddr4_mem_config = {
 		.resistor = 100,
 
 		/* Baseboard Rcomp target values */
-		.targets = {40, 30, 33, 33, 30},
+		.targets = { 50, 20, 25, 25, 25 },
 	},
 
 	.ect = true, /* Early Command Training */
@@ -155,7 +155,7 @@ static const struct mb_cfg ddr5_mem_config = {
 		.resistor = 100,
 
 		/* Baseboard Rcomp target values */
-		.targets = {50, 30, 30, 30, 27},
+		.targets = { 50, 30, 30, 30, 27 },
 	},
 
 	.ect = true, /* Early Command Training */

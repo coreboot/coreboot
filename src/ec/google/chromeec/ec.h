@@ -33,9 +33,6 @@ void google_chromeec_init(void);
  *	usb capability, dp capability, cable type, etc
  */
 int google_chromeec_usb_get_pd_mux_info(int port, uint8_t *flags);
-/* Returns data role and type of device connected */
-int google_chromeec_usb_pd_get_info(int port, bool *ufp, bool *dbg_acc,
-				    bool *active_cable, uint8_t *dp_mode);
 /* Poll (up to `timeout_ms` ms) for DisplayPort to be ready
  * Return:	-1: Error. 0: Timeout.
  *              >=1: Bitmask of the ports that DP device is connected

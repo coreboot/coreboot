@@ -1477,7 +1477,8 @@ int google_ec_running_ro(void)
 	return (google_chromeec_get_current_image() == EC_IMAGE_RO);
 }
 
-int google_chromeec_usb_pd_get_info(int port, bool *ufp, bool *dbg_acc,
+/* Returns data role and type of device connected */
+static int google_chromeec_usb_pd_get_info(int port, bool *ufp, bool *dbg_acc,
 				    bool *active_cable, uint8_t *dp_mode)
 {
 	struct ec_params_usb_pd_control pd_control = {

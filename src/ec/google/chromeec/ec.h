@@ -34,8 +34,8 @@ int google_chromeec_pd_get_amode(uint16_t svid);
  */
 int google_chromeec_usb_get_pd_mux_info(int port, uint8_t *flags);
 /* Returns data role and type of device connected */
-int google_chromeec_usb_pd_control(int port, bool *ufp, bool *dbg_acc,
-					uint8_t *dp_mode);
+int google_chromeec_usb_pd_get_info(int port, bool *ufp, bool *dbg_acc,
+				    bool *active_cable, uint8_t *dp_mode);
 int google_chromeec_wait_for_displayport(long timeout);
 
 /* Device events */

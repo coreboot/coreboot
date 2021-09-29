@@ -1477,7 +1477,8 @@ int google_ec_running_ro(void)
 	return (google_chromeec_get_current_image() == EC_IMAGE_RO);
 }
 
-int google_chromeec_usb_pd_control(int port, bool *ufp, bool *dbg_acc, uint8_t *dp_mode)
+int google_chromeec_usb_pd_get_info(int port, bool *ufp, bool *dbg_acc,
+				    bool *active_cable, uint8_t *dp_mode)
 {
 	struct ec_params_usb_pd_control pd_control = {
 		.port = port,
@@ -1501,6 +1502,7 @@ int google_chromeec_usb_pd_control(int port, bool *ufp, bool *dbg_acc, uint8_t *
 
 	*ufp = (resp.cc_state == PD_CC_DFP_ATTACHED);
 	*dbg_acc = (resp.cc_state == PD_CC_DFP_DEBUG_ACC);
+	*active_cable = !!(resp.control_flags & USB_PD_CTRL_ACTIVE_CABLE);
 	*dp_mode = resp.dp_mode;
 
 	return 0;

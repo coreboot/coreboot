@@ -116,7 +116,7 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
-	PAD_CFG_GPO(GPP_B4, 1, DEEP),
+	PAD_CFG_GPO(GPP_B4, 0, DEEP),
 	/* B7  : ISH_12C1_SDA ==> PCH_I2C_TPM_SDA */
 	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF2),
 	/* B8  : ISH_12C1_SCL ==> PCH_I2C_TPM_SCL */
@@ -151,6 +151,11 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_NC(GPP_H13, UP_20K),
 };
 
+static const struct pad_config romstage_gpio_table[] = {
+	/* B4  : PROC_GP3 ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
+};
+
 const struct pad_config *variant_gpio_override_table(size_t *num)
 {
 	*num = ARRAY_SIZE(override_gpio_table);
@@ -161,4 +166,10 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
+}
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

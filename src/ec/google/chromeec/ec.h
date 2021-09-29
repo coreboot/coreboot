@@ -26,7 +26,6 @@ bool google_chromeec_is_uhepi_supported(void);
 int google_ec_running_ro(void);
 enum ec_image google_chromeec_get_current_image(void);
 void google_chromeec_init(void);
-int google_chromeec_pd_get_amode(uint16_t svid);
 /* Check for the current mux state in EC
  * in: int port physical port number of the type-c port
  * out: uint8_t flags representing the status of the mux such as
@@ -36,7 +35,11 @@ int google_chromeec_usb_get_pd_mux_info(int port, uint8_t *flags);
 /* Returns data role and type of device connected */
 int google_chromeec_usb_pd_get_info(int port, bool *ufp, bool *dbg_acc,
 				    bool *active_cable, uint8_t *dp_mode);
-int google_chromeec_wait_for_displayport(long timeout);
+/* Poll (up to `timeout_ms` ms) for DisplayPort to be ready
+ * Return:	-1: Error. 0: Timeout.
+ *              >=1: Bitmask of the ports that DP device is connected
+ */
+int google_chromeec_wait_for_displayport(long timeout_ms);
 
 /* Device events */
 uint64_t google_chromeec_get_device_enabled_events(void);

@@ -1542,9 +1542,10 @@ int google_chromeec_usb_get_pd_mux_info(int port, uint8_t *flags)
  * Check if EC/TCPM is in an alternate mode or not.
  *
  * @param svid SVID of the alternate mode to check
- * @return     0: Not in the mode. -1: Error. 1: Yes.
+ * @return	0: Not in the mode. -1: Error.
+ *		>=1: bitmask of the ports that are in the mode.
  */
-int google_chromeec_pd_get_amode(uint16_t svid)
+static int google_chromeec_pd_get_amode(uint16_t svid)
 {
 	struct ec_response_usb_pd_ports resp;
 	struct chromeec_command cmd = {
@@ -1557,6 +1558,7 @@ int google_chromeec_pd_get_amode(uint16_t svid)
 		.cmd_dev_index = 0,
 	};
 	int i;
+	int ret = 0;
 
 	if (google_chromeec_command(&cmd) < 0)
 		return -1;
@@ -1582,12 +1584,12 @@ int google_chromeec_pd_get_amode(uint16_t svid)
 			if (google_chromeec_command(&cmd) < 0)
 				return -1;
 			if (resp2.svid == svid)
-				return 1;
+				ret |= BIT(i);
 			svid_idx++;
 		} while (resp2.svid);
 	}
 
-	return 0;
+	return ret;
 }
 
 #define USB_SID_DISPLAYPORT 0xff01
@@ -1595,20 +1597,31 @@ int google_chromeec_pd_get_amode(uint16_t svid)
 /**
  * Wait for DisplayPort to be ready
  *
- * @param timeout Wait aborts after <timeout> ms.
- * @return 1: Success or 0: Timeout.
+ * @param timeout_ms Wait aborts after <timeout_ms> ms.
+ * @return	-1: Error. 0: Timeout.
+ *		>=1: Bitmask of the ports that DP device is connected
  */
-int google_chromeec_wait_for_displayport(long timeout)
+int google_chromeec_wait_for_displayport(long timeout_ms)
 {
 	struct stopwatch sw;
+	int ret = 0;
 
 	printk(BIOS_INFO, "Waiting for DisplayPort\n");
-	stopwatch_init_msecs_expire(&sw, timeout);
-	while (google_chromeec_pd_get_amode(USB_SID_DISPLAYPORT) != 1) {
+	stopwatch_init_msecs_expire(&sw, timeout_ms);
+	while (1) {
+		ret = google_chromeec_pd_get_amode(USB_SID_DISPLAYPORT);
+		if (ret > 0)
+			break;
+
+		if (ret < 0) {
+			printk(BIOS_ERR, "Can't get alternate mode!\n");
+			return ret;
+		}
+
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_WARNING,
 			       "DisplayPort not ready after %ldms. Abort.\n",
-			       timeout);
+			       timeout_ms);
 			return 0;
 		}
 		mdelay(200);
@@ -1616,7 +1629,7 @@ int google_chromeec_wait_for_displayport(long timeout)
 	printk(BIOS_INFO, "DisplayPort ready after %lu ms\n",
 	       stopwatch_duration_msecs(&sw));
 
-	return 1;
+	return ret;
 }
 
 int google_chromeec_get_keybd_config(struct ec_response_keybd_config *keybd)

@@ -260,6 +260,6 @@ void sgx_fill_gnvs(struct global_nvs *gnvs)
 	}
 
 	printk(BIOS_DEBUG,
-		"SGX: gnvs ECP status = %d base = 0x%llx len = 0x%llx\n",
+		"SGX: gnvs EPC status = %d base = 0x%llx len = 0x%llx\n",
 			gnvs->epcs, gnvs->emna, gnvs->elng);
 }

@@ -9,6 +9,7 @@
 #include <types.h>
 #include <device/device.h>
 #include "ec_commands.h"
+#include <device/usbc_mux.h>
 
 /* Fill in base and size of the IO port resources used. */
 void google_chromeec_ioport_range(uint16_t *base, size_t *size);
@@ -48,6 +49,13 @@ int google_chromeec_wait_for_dp_hpd(int port, long timeout_ms);
  * specified port.
  * Return: 0 on success, -1 on error */
 int google_chromeec_typec_control_enter_dp_mode(int port);
+/*
+ * Obtain any USB-C mux data needed for the specified port
+ * in: int port physical port number of the type-c port
+ * out: struct usbc_mux_info mux_info stores USB-C mux data
+ * Return: 0 on success, -1 on error
+ */
+int google_chromeec_get_usbc_mux_info(int port, struct usbc_mux_info *mux_info);
 
 /* Device events */
 uint64_t google_chromeec_get_device_enabled_events(void);

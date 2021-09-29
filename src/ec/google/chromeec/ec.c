@@ -1565,6 +1565,42 @@ int google_chromeec_usb_get_pd_mux_info(int port, uint8_t *flags)
 	return 0;
 }
 
+/*
+ * Obtain any USB-C mux data needed for the specified port
+ * in: physical port number of the type-c port
+ * out: struct usbc_mux_info mux_info stores USB-C mux data
+ * Return: 0 on success, -1 on error
+*/
+int google_chromeec_get_usbc_mux_info(int port, struct usbc_mux_info *mux_info)
+{
+	uint8_t mux_flags;
+	uint8_t dp_pin_mode;
+	bool ufp, dbg_acc, active_cable;
+
+	if (google_chromeec_usb_get_pd_mux_info(port, &mux_flags) < 0) {
+		printk(BIOS_ERR, "Port C%d: get_pd_mux_info failed\n", port);
+		return -1;
+	}
+
+	if (google_chromeec_usb_pd_get_info(port, &ufp, &dbg_acc,
+					    &active_cable, &dp_pin_mode) < 0) {
+		printk(BIOS_ERR, "Port C%d: pd_control failed\n", port);
+		return -1;
+	}
+
+	mux_info->usb = !!(mux_flags & USB_PD_MUX_USB_ENABLED);
+	mux_info->dp = !!(mux_flags & USB_PD_MUX_DP_ENABLED);
+	mux_info->polarity = !!(mux_flags & USB_PD_MUX_POLARITY_INVERTED);
+	mux_info->hpd_irq = !!(mux_flags & USB_PD_MUX_HPD_IRQ);
+	mux_info->hpd_lvl = !!(mux_flags & USB_PD_MUX_HPD_LVL);
+	mux_info->ufp = !!ufp;
+	mux_info->dbg_acc = !!dbg_acc;
+	mux_info->cable = !!active_cable;
+	mux_info->dp_pin_mode = dp_pin_mode;
+
+	return 0;
+}
+
 /**
  * Check if EC/TCPM is in an alternate mode or not.
  *

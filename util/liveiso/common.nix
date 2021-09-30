@@ -141,6 +141,7 @@
 		neovim
 		nixos-install-tools
 		ntfsprogs
+		nvme-cli
 		openssl
 		p7zip
 		pacman

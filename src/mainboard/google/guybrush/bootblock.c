@@ -61,6 +61,7 @@ void bootblock_mainboard_early_init(void)
 	dword |= PM_ESPI_CS_USE_DATA2;
 	pm_write32(PM_SPI_PAD_PU_PD, dword);
 
+	/* Switch the pads that can be used as either LPC or secondary eSPI to 1.8V mode */
 	dword = pm_read32(PM_ACPI_CONF);
 	dword |= PM_ACPI_S5_LPC_PIN_MODE | PM_ACPI_S5_LPC_PIN_MODE_SEL;
 	pm_write32(PM_ACPI_CONF, dword);

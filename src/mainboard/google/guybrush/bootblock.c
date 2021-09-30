@@ -35,7 +35,7 @@ void bootblock_mainboard_early_init(void)
 	const struct soc_amd_gpio *base_gpios, *override_gpios;
 
 	dword = pci_read_config32(SOC_LPC_DEV, LPC_MISC_CONTROL_BITS);
-	dword &= ~(LPC_LDRQ0_PU_EN | LPC_LDRQ0_PD_EN | LPC_LDRQ1_EN | LPC_LDRQ0_EN);
+	dword &= ~(LPC_LDRQ0_PU_EN | LPC_LDRQ1_EN | LPC_LDRQ0_EN);
 	dword |= LPC_LDRQ0_PD_EN;
 	pci_write_config32(SOC_LPC_DEV, LPC_MISC_CONTROL_BITS, dword);
 

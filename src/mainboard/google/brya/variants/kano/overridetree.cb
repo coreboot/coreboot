@@ -114,7 +114,7 @@ chip soc/intel/alderlake
 				register "cio2_num_ports" = "1"
 				register "cio2_lanes_used" = "{2}" # 2 CSI Camera lanes are used
 				register "cio2_lane_endpoint[0]" = ""^I2C2.CAM0""
-				register "cio2_prt[0]" = "2"
+				register "cio2_prt[0]" = "1"
 				device generic 0 on end
 			end
 		end
@@ -310,7 +310,7 @@ chip soc/intel/alderlake
 				device i2c 2C on end
 			end
 			chip drivers/intel/mipi_camera
-				register "acpi_hid" = ""OVTI2740""
+				register "acpi_hid" = ""INT3474""
 				register "acpi_uid" = "0"
 				register "acpi_name" = ""CAM0""
 				register "chip_name" = ""Ov 2740 Camera""
@@ -320,7 +320,7 @@ chip soc/intel/alderlake
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
 				register "num_freq_entries" = "1"
-				register "link_freq[0]" = "DEFAULT_LINK_FREQ"
+				register "link_freq[0]" = "360 * MHz"
 				register "remote_name" = ""IPU0""
 
 				#Controls

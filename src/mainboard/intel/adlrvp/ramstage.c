@@ -10,14 +10,16 @@
 #include <soc/soc_chip.h>
 #include <drivers/intel/dptf/chip.h>
 #include "board_id.h"
+#include <intelblocks/power_limit.h>
 
 const struct cpu_power_limits limits[] = {
-	/* SKU_ID, pl1_min, pl1_max, pl2_min, pl2_max */
+	/* SKU_ID, TDP (Watts), pl1_min, pl1_max, pl2_min, pl2_max */
 	/* PL2 values are for performance configuration */
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, 3000, 15000,  55000,  55000 },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, 3000, 15000,  55000,  55000 },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, 4000, 28000,  64000,  64000 },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 5000, 45000, 115000, 115000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, 15, 3000, 15000,  55000,  55000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, 15, 3000, 15000,  55000,  55000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, 28, 4000, 28000,  64000,  64000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 28, 4000, 28000,  64000,  64000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 45, 5000, 45000, 115000, 115000 },
 };
 
 WEAK_DEV_PTR(dptf_policy);
@@ -31,8 +33,10 @@ void variant_update_power_limits(void)
 
 	uint16_t mchid = pci_s_read_config16(PCI_DEV(0, 0, 0), PCI_DEVICE_ID);
 
+	u8 tdp = get_cpu_tdp();
+
 	for (size_t i = 0; i < ARRAY_SIZE(limits); i++) {
-		if (mchid == limits[i].mchid) {
+		if (mchid == limits[i].mchid && tdp == limits[i].cpu_tdp) {
 			struct dptf_power_limits *settings = &config->controls.power_limits;
 			settings->pl1.min_power = limits[i].pl1_min_power;
 			settings->pl1.max_power = limits[i].pl1_max_power;

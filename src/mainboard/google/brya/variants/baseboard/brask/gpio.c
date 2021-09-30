@@ -369,6 +369,8 @@ static const struct pad_config gpio_table[] = {
 static const struct pad_config early_gpio_table[] = {
 	/* A13 : PMC_I2C_SCL ==> GSC_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
+	/* B4  : PROC_GP3 ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 0, DEEP),
 	/* B7  : ISH_12C1_SDA ==> PCH_I2C_TPM_SDA */
 	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF2),
 	/* B8  : ISH_12C1_SCL ==> PCH_I2C_TPM_SCL */
@@ -384,6 +386,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D1, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
+	/* D11 : ISH_SPI_MISO ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_D11, 1, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
@@ -392,6 +396,11 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
 	PAD_CFG_GPO(GPP_H13, 1, DEEP),
+};
+
+static const struct pad_config romstage_gpio_table[] = {
+	/* B4  : PROC_GP3 ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)
@@ -425,6 +434,6 @@ const struct cros_gpio *__weak variant_cros_gpios(size_t *num)
 
 const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
 {
-	*num = 0;
-	return NULL;
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

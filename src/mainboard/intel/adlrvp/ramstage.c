@@ -13,13 +13,13 @@
 #include <intelblocks/power_limit.h>
 
 const struct cpu_power_limits limits[] = {
-	/* SKU_ID, TDP (Watts), pl1_min, pl1_max, pl2_min, pl2_max */
+	/* SKU_ID, TDP (Watts), pl1_min, pl1_max, pl2_min, pl2_max, PL4 */
 	/* PL2 values are for performance configuration */
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, 15, 3000, 15000,  55000,  55000 },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, 15, 3000, 15000,  55000,  55000 },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, 28, 4000, 28000,  64000,  64000 },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 28, 4000, 28000,  64000,  64000 },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 45, 5000, 45000, 115000, 115000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, 15, 3000, 15000,  55000,  55000, 123000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, 15, 3000, 15000,  55000,  55000, 123000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, 28, 4000, 28000,  64000,  64000, 140000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 28, 4000, 28000,  64000,  64000, 140000 },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 45, 5000, 45000, 115000, 115000, 215000 },
 };
 
 WEAK_DEV_PTR(dptf_policy);
@@ -38,15 +38,20 @@ void variant_update_power_limits(void)
 	for (size_t i = 0; i < ARRAY_SIZE(limits); i++) {
 		if (mchid == limits[i].mchid && tdp == limits[i].cpu_tdp) {
 			struct dptf_power_limits *settings = &config->controls.power_limits;
+			config_t *conf = config_of_soc();
+			struct soc_power_limits_config *soc_config = conf->power_limits_config;
 			settings->pl1.min_power = limits[i].pl1_min_power;
 			settings->pl1.max_power = limits[i].pl1_max_power;
 			settings->pl2.min_power = limits[i].pl2_min_power;
 			settings->pl2.max_power = limits[i].pl2_max_power;
-			printk(BIOS_INFO, "Overriding DPTF power limits PL1 (%u, %u) PL2 (%u, %u)\n",
+			soc_config->tdp_pl4 = DIV_ROUND_UP(limits[i].pl4_power,
+									MILLIWATTS_TO_WATTS);
+			printk(BIOS_INFO, "Overriding power limits PL1 (%u, %u) PL2 (%u, %u) PL4 (%u)\n",
 					limits[i].pl1_min_power,
 					limits[i].pl1_max_power,
 					limits[i].pl2_min_power,
-					limits[i].pl2_max_power);
+					limits[i].pl2_max_power,
+					limits[i].pl4_power);
 		}
 	}
 }

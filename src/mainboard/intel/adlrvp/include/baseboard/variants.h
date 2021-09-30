@@ -45,6 +45,7 @@ struct cpu_power_limits {
 	unsigned int pl1_max_power;
 	unsigned int pl2_min_power;
 	unsigned int pl2_max_power;
+	unsigned int pl4_power;
 };
 /* Modify Power Limit devictree settings during ramstage */
 void variant_update_power_limits(void);

@@ -61,10 +61,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B3, NONE),
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
-	/* B5  : ISH_I2C0_SDA ==> NC */
-	PAD_NC(GPP_B5, NONE),
-	/* B6  : ISH_I2C0_SCL ==> NC */
-	PAD_NC(GPP_B6, NONE),
+	/* B5  : ISH_I2C0_SDA ==> PCH_I2C_MISC_SDA */
+	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF2),
+	/* B6  : ISH_I2C0_SCL ==> PCH_I2C_MISC_SCL */
+	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF2),
 	/* B7  : ISH_12C1_SDA ==> PCH_I2C_TPM_SDA */
 	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF2),
 	/* B8  : ISH_I2C1_SCL ==> PCH_I2C_TPM_SCL */

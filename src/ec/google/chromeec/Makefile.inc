@@ -20,7 +20,7 @@ endif
 
 bootblock-y += ec.c
 bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_LPC) += ec_lpc.c
-ramstage-y += ec.c crosec_proto.c vstore.c
+ramstage-y += ec.c crosec_proto.c vstore.c usbc_mux.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_I2C) += ec_i2c.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_LPC) += ec_lpc.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SPI) += ec_spi.c

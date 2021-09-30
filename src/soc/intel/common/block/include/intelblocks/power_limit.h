@@ -15,6 +15,8 @@
 /* Default power limit value in secs */
 #define MOBILE_SKU_PL1_TIME_SEC		28
 
+#define MILLIWATTS_TO_WATTS		1000
+
 struct soc_power_limits_config {
 	/* PL1 Override value in Watts */
 	uint16_t tdp_pl1_override;

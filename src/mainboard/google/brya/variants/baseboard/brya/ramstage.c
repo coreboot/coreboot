@@ -9,8 +9,6 @@
 #include <drivers/intel/dptf/chip.h>
 #include <intelblocks/power_limit.h>
 
-#define MILLIWATTS_TO_WATTS	1000
-
 WEAK_DEV_PTR(dptf_policy);
 
 void variant_update_power_limits(const struct cpu_power_limits *limits, size_t num_entries)

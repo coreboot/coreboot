@@ -581,21 +581,27 @@ int heci_reset(void)
 	return 0;
 }
 
-bool is_cse_enabled(void)
+bool is_cse_devfn_visible(unsigned int devfn)
 {
-	const struct device *cse_dev = pcidev_path_on_root(PCH_DEVFN_CSE);
+	int slot = PCI_SLOT(devfn);
+	int func = PCI_FUNC(devfn);
 
-	if (!cse_dev || !cse_dev->enabled) {
-		printk(BIOS_WARNING, "HECI: No CSE device\n");
+	if (!is_devfn_enabled(devfn)) {
+		printk(BIOS_WARNING, "HECI: CSE device %02x.%01x is disabled\n", slot, func);
 		return false;
 	}
 
-	if (pci_read_config16(PCH_DEV_CSE, PCI_VENDOR_ID) == 0xFFFF) {
-		printk(BIOS_WARNING, "HECI: CSE device is hidden\n");
+	if (pci_read_config16(PCI_DEV(0, slot, func), PCI_VENDOR_ID) == 0xFFFF) {
+		printk(BIOS_WARNING, "HECI: CSE device %02x.%01x is hidden\n", slot, func);
 		return false;
 	}
 
 	return true;
+}
+
+bool is_cse_enabled(void)
+{
+	return is_cse_devfn_visible(PCH_DEVFN_CSE);
 }
 
 uint32_t me_read_config32(int offset)

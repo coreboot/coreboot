@@ -153,6 +153,12 @@ void heci_disable(void);
 uint32_t me_read_config32(int offset);
 
 /*
+ * Check if the CSE device as per function argument `devfn` is enabled in device tree
+ * and also visible on the PCI bus.
+ */
+bool is_cse_devfn_visible(unsigned int devfn);
+
+/*
  * Check if the CSE device is enabled in device tree. Also check if the device
  * is visible on the PCI bus by reading config space.
  * Return true if device present and config space enabled, else return false.

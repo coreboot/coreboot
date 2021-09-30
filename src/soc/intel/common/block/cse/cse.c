@@ -64,9 +64,19 @@
 #define MEI_HDR_CSE_ADDR_START	0
 #define MEI_HDR_CSE_ADDR	(((1 << 8) - 1) << MEI_HDR_CSE_ADDR_START)
 
-static struct cse_device {
-	uintptr_t sec_bar;
-} cse;
+/* Get HECI BAR 0 from PCI configuration space */
+static uintptr_t get_cse_bar(void)
+{
+	uintptr_t bar;
+
+	bar = pci_read_config32(PCH_DEV_CSE, PCI_BASE_ADDRESS_0);
+	assert(bar != 0);
+	/*
+	 * Bits 31-12 are the base address as per EDS for SPI,
+	 * Don't care about 0-11 bit
+	 */
+	return bar & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+}
 
 /*
  * Initialize the device with provided temporary BAR. If BAR is 0 use a
@@ -83,7 +93,7 @@ void heci_init(uintptr_t tempbar)
 	u16 pcireg;
 
 	/* Assume it is already initialized, nothing else to do */
-	if (cse.sec_bar)
+	if (get_cse_bar())
 		return;
 
 	/* Use default pre-ram bar */
@@ -102,38 +112,16 @@ void heci_init(uintptr_t tempbar)
 
 	/* Enable Bus Master and MMIO Space */
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-
-	cse.sec_bar = tempbar;
-}
-
-/* Get HECI BAR 0 from PCI configuration space */
-static uint32_t get_cse_bar(void)
-{
-	uintptr_t bar;
-
-	bar = pci_read_config32(PCH_DEV_CSE, PCI_BASE_ADDRESS_0);
-	assert(bar != 0);
-	/*
-	 * Bits 31-12 are the base address as per EDS for SPI,
-	 * Don't care about 0-11 bit
-	 */
-	return bar & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 }
 
 static uint32_t read_bar(uint32_t offset)
 {
-	/* Load and cache BAR */
-	if (!cse.sec_bar)
-		cse.sec_bar = get_cse_bar();
-	return read32((void *)(cse.sec_bar + offset));
+	return read32p(get_cse_bar() + offset);
 }
 
 static void write_bar(uint32_t offset, uint32_t val)
 {
-	/* Load and cache BAR */
-	if (!cse.sec_bar)
-		cse.sec_bar = get_cse_bar();
-	return write32((void *)(cse.sec_bar + offset), val);
+	return write32p(get_cse_bar() + offset, val);
 }
 
 static uint32_t read_cse_csr(void)
@@ -968,21 +956,8 @@ bool set_cse_device_state(enum cse_device_state requested_state)
 
 #if ENV_RAMSTAGE
 
-static void update_sec_bar(struct device *dev)
-{
-	cse.sec_bar = find_resource(dev, PCI_BASE_ADDRESS_0)->base;
-}
-
-static void cse_set_resources(struct device *dev)
-{
-	if (dev->path.pci.devfn == PCH_DEVFN_CSE)
-		update_sec_bar(dev);
-
-	pci_dev_set_resources(dev);
-}
-
 static struct device_operations cse_ops = {
-	.set_resources		= cse_set_resources,
+	.set_resources		= pci_dev_set_resources,
 	.read_resources		= pci_dev_read_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= pci_dev_init,

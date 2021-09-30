@@ -8,4 +8,8 @@ config BOARD_SPECIFIC_OPTIONS
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/mc_ehl.fmd"
 
+config UART_FOR_CONSOLE
+	int
+	default 2
+
 endif # BOARD_SIEMENS_MC_EHL1

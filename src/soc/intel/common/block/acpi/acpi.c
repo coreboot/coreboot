@@ -192,10 +192,9 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 }
 
 __weak
-uint32_t acpi_fill_soc_wake(uint32_t generic_pm1_en,
-			    const struct chipset_power_state *ps)
+void acpi_fill_soc_wake(uint32_t *pm1_en, uint32_t *gpe0_en,
+			const struct chipset_power_state *ps)
 {
-	return generic_pm1_en;
 }
 
 /*
@@ -210,6 +209,7 @@ uint32_t acpi_fill_soc_wake(uint32_t generic_pm1_en,
 int soc_fill_acpi_wake(const struct chipset_power_state *ps, uint32_t *pm1, uint32_t **gpe0)
 {
 	static uint32_t gpe0_sts[GPE0_REG_MAX];
+	uint32_t gpe0_en[GPE0_REG_MAX];
 	uint32_t pm1_en;
 	int i;
 
@@ -220,14 +220,16 @@ int soc_fill_acpi_wake(const struct chipset_power_state *ps, uint32_t *pm1, uint
 	pm1_en = ps->pm1_en;
 	pm1_en |= WAK_STS | PWRBTN_EN;
 
-	pm1_en = acpi_fill_soc_wake(pm1_en, ps);
+	memcpy(gpe0_en, ps->gpe0_en, sizeof(gpe0_en));
+
+	acpi_fill_soc_wake(&pm1_en, gpe0_en, ps);
 
 	*pm1 = ps->pm1_sts & pm1_en;
 
 	/* Mask off GPE0 status bits that are not enabled */
 	*gpe0 = &gpe0_sts[0];
 	for (i = 0; i < GPE0_REG_MAX; i++)
-		gpe0_sts[i] = ps->gpe0_sts[i] & ps->gpe0_en[i];
+		gpe0_sts[i] = ps->gpe0_sts[i] & gpe0_en[i];
 
 	return GPE0_REG_MAX;
 }

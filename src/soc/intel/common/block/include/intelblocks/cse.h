@@ -287,9 +287,9 @@ enum cse_device_state {
 };
 
 /* Function to get the current CSE device state as per `cse_device_state` */
-enum cse_device_state get_cse_device_state(void);
+enum cse_device_state get_cse_device_state(unsigned int devfn);
 
 /* Function that put the CSE into desired state based on `requested_state` */
-bool set_cse_device_state(enum cse_device_state requested_state);
+bool set_cse_device_state(unsigned int devfn, enum cse_device_state requested_state);
 
 #endif // SOC_INTEL_COMMON_CSE_H

@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#define __SIMPLE_DEVICE__
+
 #include <assert.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
@@ -65,11 +67,11 @@
 #define MEI_HDR_CSE_ADDR	(((1 << 8) - 1) << MEI_HDR_CSE_ADDR_START)
 
 /* Get HECI BAR 0 from PCI configuration space */
-static uintptr_t get_cse_bar(void)
+static uintptr_t get_cse_bar(pci_devfn_t dev)
 {
 	uintptr_t bar;
 
-	bar = pci_read_config32(PCH_DEV_CSE, PCI_BASE_ADDRESS_0);
+	bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 	assert(bar != 0);
 	/*
 	 * Bits 31-12 are the base address as per EDS for SPI,
@@ -85,15 +87,12 @@ static uintptr_t get_cse_bar(void)
  */
 void heci_init(uintptr_t tempbar)
 {
-#if defined(__SIMPLE_DEVICE__)
 	pci_devfn_t dev = PCH_DEV_CSE;
-#else
-	struct device *dev = PCH_DEV_CSE;
-#endif
+
 	u16 pcireg;
 
 	/* Assume it is already initialized, nothing else to do */
-	if (get_cse_bar())
+	if (get_cse_bar(dev))
 		return;
 
 	/* Use default pre-ram bar */
@@ -114,29 +113,29 @@ void heci_init(uintptr_t tempbar)
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 }
 
-static uint32_t read_bar(uint32_t offset)
+static uint32_t read_bar(pci_devfn_t dev, uint32_t offset)
 {
-	return read32p(get_cse_bar() + offset);
+	return read32p(get_cse_bar(dev) + offset);
 }
 
-static void write_bar(uint32_t offset, uint32_t val)
+static void write_bar(pci_devfn_t dev, uint32_t offset, uint32_t val)
 {
-	return write32p(get_cse_bar() + offset, val);
+	return write32p(get_cse_bar(dev) + offset, val);
 }
 
 static uint32_t read_cse_csr(void)
 {
-	return read_bar(MMIO_CSE_CSR);
+	return read_bar(PCH_DEV_CSE, MMIO_CSE_CSR);
 }
 
 static uint32_t read_host_csr(void)
 {
-	return read_bar(MMIO_HOST_CSR);
+	return read_bar(PCH_DEV_CSE, MMIO_HOST_CSR);
 }
 
 static void write_host_csr(uint32_t data)
 {
-	write_bar(MMIO_HOST_CSR, data);
+	write_bar(PCH_DEV_CSE, MMIO_HOST_CSR, data);
 }
 
 static size_t filled_slots(uint32_t data)
@@ -170,12 +169,12 @@ static void clear_int(void)
 
 static uint32_t read_slot(void)
 {
-	return read_bar(MMIO_CSE_CB_RW);
+	return read_bar(PCH_DEV_CSE, MMIO_CSE_CB_RW);
 }
 
 static void write_slot(uint32_t val)
 {
-	write_bar(MMIO_CSE_CB_WW, val);
+	write_bar(PCH_DEV_CSE, MMIO_CSE_CB_WW, val);
 }
 
 static int wait_write_slots(size_t cnt)
@@ -887,16 +886,16 @@ failure:
 	die("cse: Failed to trigger recovery mode(recovery subcode:%d)\n", reason);
 }
 
-static bool disable_cse_idle(void)
+static bool disable_cse_idle(pci_devfn_t dev)
 {
 	struct stopwatch sw;
-	uint32_t dev_idle_ctrl = read_bar(MMIO_CSE_DEVIDLE);
+	uint32_t dev_idle_ctrl = read_bar(dev, MMIO_CSE_DEVIDLE);
 	dev_idle_ctrl &= ~CSE_DEV_IDLE;
-	write_bar(MMIO_CSE_DEVIDLE, dev_idle_ctrl);
+	write_bar(dev, MMIO_CSE_DEVIDLE, dev_idle_ctrl);
 
 	stopwatch_init_usecs_expire(&sw, HECI_CIP_TIMEOUT_US);
 	do {
-		dev_idle_ctrl = read_bar(MMIO_CSE_DEVIDLE);
+		dev_idle_ctrl = read_bar(dev, MMIO_CSE_DEVIDLE);
 		if ((dev_idle_ctrl & CSE_DEV_CIP) == CSE_DEV_CIP)
 			return true;
 		udelay(HECI_DELAY_US);
@@ -905,51 +904,51 @@ static bool disable_cse_idle(void)
 	return false;
 }
 
-static void enable_cse_idle(void)
+static void enable_cse_idle(pci_devfn_t dev)
 {
-	uint32_t dev_idle_ctrl = read_bar(MMIO_CSE_DEVIDLE);
+	uint32_t dev_idle_ctrl = read_bar(dev, MMIO_CSE_DEVIDLE);
 	dev_idle_ctrl |= CSE_DEV_IDLE;
-	write_bar(MMIO_CSE_DEVIDLE, dev_idle_ctrl);
+	write_bar(dev, MMIO_CSE_DEVIDLE, dev_idle_ctrl);
 }
 
-enum cse_device_state get_cse_device_state(void)
+enum cse_device_state get_cse_device_state(unsigned int devfn)
 {
-	uint32_t dev_idle_ctrl = read_bar(MMIO_CSE_DEVIDLE);
+	pci_devfn_t dev = PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
+	uint32_t dev_idle_ctrl = read_bar(dev, MMIO_CSE_DEVIDLE);
 	if ((dev_idle_ctrl & CSE_DEV_IDLE) == CSE_DEV_IDLE)
 		return DEV_IDLE;
 
 	return DEV_ACTIVE;
 }
 
-static enum cse_device_state ensure_cse_active(void)
+static enum cse_device_state ensure_cse_active(pci_devfn_t dev)
 {
-	if (!disable_cse_idle())
+	if (!disable_cse_idle(dev))
 		return DEV_IDLE;
-	pci_or_config32(PCH_DEV_CSE, PCI_COMMAND, PCI_COMMAND_MEMORY |
-				 PCI_COMMAND_MASTER);
+	pci_or_config32(dev, PCI_COMMAND, PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 
 	return DEV_ACTIVE;
 }
 
-static void ensure_cse_idle(void)
+static void ensure_cse_idle(pci_devfn_t dev)
 {
-	enable_cse_idle();
+	enable_cse_idle(dev);
 
-	pci_and_config32(PCH_DEV_CSE, PCI_COMMAND, ~(PCI_COMMAND_MEMORY |
-				 PCI_COMMAND_MASTER));
+	pci_and_config32(dev, PCI_COMMAND, ~(PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER));
 }
 
-bool set_cse_device_state(enum cse_device_state requested_state)
+bool set_cse_device_state(unsigned int devfn, enum cse_device_state requested_state)
 {
-	enum cse_device_state current_state = get_cse_device_state();
+	enum cse_device_state current_state = get_cse_device_state(devfn);
+	pci_devfn_t dev = PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
 
 	if (current_state == requested_state)
 		return true;
 
 	if (requested_state == DEV_ACTIVE)
-		return ensure_cse_active() == requested_state;
+		return ensure_cse_active(dev) == requested_state;
 	else
-		ensure_cse_idle();
+		ensure_cse_idle(dev);
 
 	return true;
 }

@@ -26,7 +26,12 @@ chip soc/intel/alderlake
 		.tdp_pl4 = 215,
 	}"
 
-	register "power_limits_config[ADL_M_282_CORE]" = "{
+	register "power_limits_config[ADL_M_282_12W_CORE]" = "{
+		.tdp_pl1_override = 12,
+		.tdp_pl2_override = 35,
+	}"
+
+	register "power_limits_config[ADL_M_282_15W_CORE]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 45,
 	}"

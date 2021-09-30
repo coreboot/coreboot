@@ -25,7 +25,8 @@ enum soc_intel_alderlake_power_limits {
 	ADL_P_482_CORE,
 	ADL_P_682_28W_CORE,
 	ADL_P_682_45W_CORE,
-	ADL_M_282_CORE,
+	ADL_M_282_12W_CORE,
+	ADL_M_282_15W_CORE,
 	ADL_M_242_CORE,
 	ADL_P_242_CORE,
 	ADL_POWER_LIMITS_COUNT
@@ -34,6 +35,7 @@ enum soc_intel_alderlake_power_limits {
 /* TDP values for different SKUs */
 enum soc_intel_alderlake_cpu_tdps {
 	TDP_9W  = 9,
+	TDP_12W = 12,
 	TDP_15W = 15,
 	TDP_28W = 28,
 	TDP_45W = 45
@@ -50,7 +52,8 @@ static const struct {
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, ADL_P_482_CORE, TDP_28W },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, ADL_P_682_28W_CORE, TDP_28W },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, ADL_P_682_45W_CORE, TDP_45W },
-	{ PCI_DEVICE_ID_INTEL_ADL_M_ID_1, ADL_M_282_CORE, TDP_15W },
+	{ PCI_DEVICE_ID_INTEL_ADL_M_ID_1, ADL_M_282_12W_CORE, TDP_12W },
+	{ PCI_DEVICE_ID_INTEL_ADL_M_ID_1, ADL_M_282_15W_CORE, TDP_15W },
 	{ PCI_DEVICE_ID_INTEL_ADL_M_ID_2, ADL_M_242_CORE, TDP_9W },
 };
 

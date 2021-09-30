@@ -29,6 +29,8 @@
 #define HECI_READ_TIMEOUT_MS	(5 * 1000)
 /* Wait up to 1 ms for CSE CIP */
 #define HECI_CIP_TIMEOUT_US	1000
+/* Wait up to 5 seconds for CSE to boot from RO(BP1) */
+#define CSE_DELAY_BOOT_TO_RO_MS	(5 * 1000)
 
 #define SLOT_SIZE		sizeof(uint32_t)
 
@@ -61,9 +63,6 @@
 #define MEI_HDR_HOST_ADDR	(((1 << 8) - 1) << MEI_HDR_HOST_ADDR_START)
 #define MEI_HDR_CSE_ADDR_START	0
 #define MEI_HDR_CSE_ADDR	(((1 << 8) - 1) << MEI_HDR_CSE_ADDR_START)
-
-/* Wait up to 5 seconds for CSE to boot from RO(BP1) */
-#define CSE_DELAY_BOOT_TO_RO (5 * 1000)
 
 static struct cse_device {
 	uintptr_t sec_bar;
@@ -306,7 +305,7 @@ uint8_t cse_wait_sec_override_mode(void)
 uint8_t cse_wait_com_soft_temp_disable(void)
 {
 	struct stopwatch sw;
-	stopwatch_init_msecs_expire(&sw, CSE_DELAY_BOOT_TO_RO);
+	stopwatch_init_msecs_expire(&sw, CSE_DELAY_BOOT_TO_RO_MS);
 	while (!cse_is_hfs1_com_soft_temp_disable()) {
 		udelay(HECI_DELAY_US);
 		if (stopwatch_expired(&sw)) {

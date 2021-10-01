@@ -135,3 +135,10 @@ void mtk_i2c_bus_init(uint8_t bus)
 	mtk_i2c_speed_init(bus);
 	mtk_i2c_set_gpio_pinmux(bus);
 }
+
+void mtk_i2c_dump_more_info(struct mt_i2c_regs *regs)
+{
+	printk(BIOS_DEBUG, "LTIMING %x\nCLK_DIV %x\n",
+	       read32(&regs->ltiming),
+	       read32(&regs->clock_div));
+}

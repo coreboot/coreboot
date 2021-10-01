@@ -55,7 +55,8 @@ void bootblock_mainboard_early_init(void)
 	 * the Fibocom 350 PCIe init
 	 */
 	stopwatch_init_usecs_expire(&pcie_init_timeout_sw, FC350_PCIE_INIT_DELAY_US);
-	printk(BIOS_DEBUG, "Bootblock configure eSPI\n");
+
+	/* Early eSPI interface configuration */
 
 	dword = pm_read32(PM_SPI_PAD_PU_PD);
 	dword |= PM_ESPI_CS_USE_DATA2;

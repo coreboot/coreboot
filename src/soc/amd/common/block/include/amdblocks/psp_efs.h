@@ -26,8 +26,8 @@
 
 
 struct second_gen_efs { /* todo: expand for Server products */
-	int gen:1; /* Client products only use bit 0 */
-	int reserved:31;
+	uint32_t gen:1; /* Client products only use bit 0 */
+	uint32_t reserved:31;
 } __attribute__((packed));
 
 /* Copied from coreboot/util/amdfwtool.h */

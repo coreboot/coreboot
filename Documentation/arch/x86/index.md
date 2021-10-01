@@ -92,6 +92,6 @@ Here's a list of known issues:
   page tables in ROM will be loaded and used, which breaks code and data as
   the page table doesn't contain the expected data. This in turn leads to
   undefined behaviour whenever the 'wrong' address is being read.
-* Disabling paging in compability mode crashes the CPU.
-* Returning from long mode to compability mode crashes the CPU.
+* Disabling paging in compatibility mode crashes the CPU.
+* Returning from long mode to compatibility mode crashes the CPU.
 * Entering long mode crashes on AMD host platforms.

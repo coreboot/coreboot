@@ -5,7 +5,7 @@
 ACPI exposes a platform-independent interface for operating systems to perform
 power management and other platform-level functions.  Some operating systems
 also use ACPI to enumerate devices that are not immediately discoverable, such
-as those behind I2C or SPI busses (in contrast to PCI).  This document discusses
+as those behind I2C or SPI buses (in contrast to PCI).  This document discusses
 the way that coreboot uses the concept of a "device tree" to generate ACPI
 tables for usage by the operating system.
 

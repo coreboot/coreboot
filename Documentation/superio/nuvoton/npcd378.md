@@ -4,7 +4,7 @@ This page describes the [Nuvoton] SuperIO chip that can be found on various [HP]
 mainboards.
 
 As no datasheet is available most of the functions have been reverse engineered and
-might be inacurate or wrong.
+might be inaccurate or wrong.
 
 ## LDNs
 

@@ -1,5 +1,5 @@
 # QEMU AArch64 emulator
-This page discribes how to build and run coreboot for QEMU/AArch64.
+This page describes how to build and run coreboot for QEMU/AArch64.
 You can use LinuxBoot via `make menuconfig` or an arbitrary FIT image
 as a payload for QEMU/AArch64.
 

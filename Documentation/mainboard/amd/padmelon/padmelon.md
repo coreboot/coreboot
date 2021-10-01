@@ -43,7 +43,7 @@ Three items are marked in this picture
 +---------------------+--------------------+
 | Size                | 8 MiB              |
 +---------------------+--------------------+
-| Flash programing    | dediprog header    |
+| Flash programming   | dediprog header    |
 +---------------------+--------------------+
 | Package             | SOIC-8             |
 +---------------------+--------------------+

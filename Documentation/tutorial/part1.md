@@ -123,7 +123,7 @@ are needed to build the coreboot toolchain. `gcc` and `gnat` have to be
 of the same version.
 
 If you started with a different distribution or package management system you
-might need to install other packages. Most likely they are named sightly
+might need to install other packages. Most likely they are named slightly
 different. If that is the case for you, we'd like to encourage you to contribute
 to the project and submit a pull request with an update for this documentation
 for your system.

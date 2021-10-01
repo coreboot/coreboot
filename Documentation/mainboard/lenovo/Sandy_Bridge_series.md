@@ -48,7 +48,7 @@ region. The update is then written into the EC once.
 
 [fl]: flashlayout_Sandy_Bridge.svg
 
-## Reducing Intel Managment Engine firmware size
+## Reducing Intel Management Engine firmware size
 
 It is possible to reduce the Intel ME firmware size to free additional
 space for the `bios` region. This is usually referred to as *cleaning the ME* or

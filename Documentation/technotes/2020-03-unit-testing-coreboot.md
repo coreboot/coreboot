@@ -83,7 +83,7 @@ Requirements for unit testing frameworks:
 
    Compiler for the host _must_ support the same language standards as the target
    compiler. Ideally the same toolchain should be used for building firmware
-   executables and test binaries, however the host complier will be used to build
+   executables and test binaries, however the host compiler will be used to build
    unit tests, whereas the coreboot toolchain will be used for building the
    firmware executables. For some targets, the host compiler and the target
    compiler could be the same, but this is not a requirement.

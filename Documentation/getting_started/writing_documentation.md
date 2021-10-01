@@ -6,7 +6,7 @@
 That said please always try to write documentation! One problem in the
 firmware development is the missing documentation. In this document
 you will get a brief introduction how to write, submit and publish
-documenation to coreboot.
+documentation to coreboot.
 
 ## Preparations
 

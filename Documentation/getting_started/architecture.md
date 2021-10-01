@@ -41,7 +41,7 @@ The bootblock loads the romstage or the verstage if verified boot is enabled.
 
 ### Cache-As-Ram
 The *Cache-As-Ram*, also called Non-Eviction mode, or *CAR* allows to use the
-CPU cache like regular SRAM. This is particullary usefull for high level
+CPU cache like regular SRAM. This is particullary useful for high level
 languages like `C`, which need RAM for heap and stack.
 
 The CAR needs to be activated using vendor specific CPU instructions.
@@ -85,7 +85,7 @@ The ramstage does the main device init:
 * CPU init (like set up SMM)
 
 After initialization tables are written to inform the payload or operating system
-about the current hardware existance and state. That includes:
+about the current hardware existence and state. That includes:
 
 * ACPI tables (x86 specific)
 * SMBIOS tables (x86 specific)

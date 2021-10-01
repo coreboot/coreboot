@@ -185,7 +185,7 @@ texinfo_documents = [
 enable_auto_toc_tree = True
 
 class MyCommonMarkParser(CommonMarkParser):
-    # remove this hack once upsteam RecommonMark supports inline code
+    # remove this hack once upstream RecommonMark supports inline code
     def visit_code(self, mdnode):
         from docutils import nodes
         n = nodes.literal(mdnode.literal, mdnode.literal)

@@ -202,9 +202,9 @@ Build an open source replacement written in Golang using existing tools
 and libraries, consisting of a backend, a frontend and client side
 scripts. The backend should connect to an SQL database with can be
 controlled using a RESTful API. The RESTful API should have basic authentication
-for managment tasks and new board status uploads.
+for management tasks and new board status uploads.
 
-At least one older test result should be keept in the database.
+At least one older test result should be kept in the database.
 
 The frontend should use established UI libraries or frameworks (for example
 Angular) to display the current board status, that is if it's working or not

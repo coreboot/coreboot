@@ -42,7 +42,7 @@ Only **XMP profile 1** is being used in case it advertises:
 * 1.5V operating voltage
 * The channel's installed DIMM count doesn't exceed the XMP coded limit
 
-In case the XMP profile doesn't fullfill those limits, the regular SPD will be
+In case the XMP profile doesn't fulfill those limits, the regular SPD will be
 used.
 > **Note:** XMP Profiles are supported since coreboot 4.4.
 

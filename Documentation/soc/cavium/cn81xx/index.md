@@ -21,7 +21,7 @@ The SOC folder contains functions for:
 * Secondary CPUs
 * PCI
 
-All other hardware is initilized by the BDK code, which is invoked from
+All other hardware is initialized by the BDK code, which is invoked from
 ramstage.
 
 ## Notes about the hardware

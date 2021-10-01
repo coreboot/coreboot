@@ -1,4 +1,4 @@
-# x86 System Managment Mode
+# x86 System Management Mode
 
 ## Introduction
 
@@ -6,7 +6,7 @@ The code running in System Management Mode (SMM) provides runtime services
 to applications running in [ring0]. It has a higher privilege level than
 [ring0] and resides in the SMRAM region which cannot be accessed from [ring0].
 
-SMM can be entered by issuing System Managment Interrupts (SMIs).
+SMM can be entered by issuing System Management Interrupts (SMIs).
 
 ## Secure data exchange
 

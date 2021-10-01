@@ -48,7 +48,7 @@
 +---------------------+------------+
 | Internal flashing   | No         |
 +---------------------+------------+
-| In curcuit flashing | Yes        |
+| In circuit flashing | Yes        |
 +---------------------+------------+
 ```
 
@@ -67,8 +67,8 @@ The GPIO header is located on the **bottom** side (see [here][overview_bottom_li
 The SPI header is located on the **bottom** side (see [here][overview_bottom_link]).
 ![][header_cn22]
 
-### Preperations
-In order to build coreboot, it's neccessary to extract some files from the vendor firmware. Make sure that you have a fully working dump.
+### Preparations
+In order to build coreboot, it's necessary to extract some files from the vendor firmware. Make sure that you have a fully working dump.
 ```bash
 [upsquared]$ ls
 firmware_vendor.rom

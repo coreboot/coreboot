@@ -801,7 +801,7 @@ There are a LOT of cpu cycles that can go into these 5 milliseconds.
 
 A reasonable rule of thumb is to not put inline at functions that have
 more than 3 lines of code in them. An exception to this rule are the
-cases where a parameter is known to be a compiletime constant, and as a
+cases where a parameter is known to be a compile time constant, and as a
 result of this constantness you *know* the compiler will be able to
 optimize most of your function away at compile time. For a good example
 of this later case, see the kmalloc() inline function.

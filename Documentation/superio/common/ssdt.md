@@ -50,7 +50,7 @@ end
 The following methods are generated for each SuperIO:
 ## AMTX()
 Acquire the global mutex and enter config mode.
-It's called this at the begining of an atomic operation to make sure
+It's called this at the beginning of an atomic operation to make sure
 no other ACPI code messes with the config space while working on it.
 
 ## RMTX()
@@ -63,7 +63,7 @@ This method isn't guarded with the global mutex.
 
 ## DLDN(Arg0)
 Disables the (virtual) LDN given as Arg0.
-This method aquires the global mutex.
+This method acquires the global mutex.
 
 ## QLDN(Arg0)
 Queries the state of the (virtual) LDN given as Arg0.

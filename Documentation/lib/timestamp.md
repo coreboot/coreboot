@@ -99,7 +99,7 @@ exist and an entry structure to hold variable number of entries.
 
 ### entries
 
-This field holds the details of each timestamp entry, upto a maximum
+This field holds the details of each timestamp entry, up to a maximum
 of `MAX_TIMESTAMP_CACHE` which is defined as 16 entries. Each entry is
 defined by:
 

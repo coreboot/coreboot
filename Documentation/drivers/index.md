@@ -2,7 +2,7 @@
 
 The drivers can be found in `src/drivers`. They are intended for onboard
 and plugin devices, significantly reducing integration complexity and
-they allow to easily reuse existing code accross platforms.
+they allow to easily reuse existing code across platforms.
 
 * [Intel DPTF](dptf.md)
 * [IPMI KCS](ipmi_kcs.md)

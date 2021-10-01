@@ -25,7 +25,7 @@ The section must be named in order to be found by the FIT parser:
 
 ## Architecture specifics
 
-The FIT parser needs architecure support.
+The FIT parser needs architecture support.
 
 ### aarch32
 The source code can be found in `src/arch/arm/fit_payload.c`.

@@ -200,7 +200,7 @@ a bug in the more involved code to query options.
 ### Resource allocator v4
 
 A new revision of resource allocator v4 is now added to coreboot that supports
-mutiple ranges for allocating resources. Unlike the previous allocator (v3), it does
+multiple ranges for allocating resources. Unlike the previous allocator (v3), it does
 not use the topmost available window for allocation. Instead, it uses the first
 window within the address space that is available and satisfies the resource request.
 This allows utilization of the entire available address space and also allows

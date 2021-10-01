@@ -19,7 +19,7 @@ time). The file gcov-io.c is unchanged.
 +#define BITS_PER_UNIT 8
 +#define LONG_LONG_TYPE_SIZE 64
 +
-+/* There are many gcc_assertions. Set the vaule to 1 if we want a warning
++/* There are many gcc_assertions. Set the value to 1 if we want a warning
 +   message if the assertion fails.  */
 +#ifndef ENABLE_ASSERT_CHECKING
 +#define ENABLE_ASSERT_CHECKING 1

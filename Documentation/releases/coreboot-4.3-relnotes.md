@@ -124,7 +124,7 @@ X86
 Areas with significant work on updates and fixes
 ------------------------------------------------
 * cpu/amd/model_fxx
-* intel/fsp1_x: Fix timestanps & postcodes, add native CAR & microcode
+* intel/fsp1_x: Fix timestamps & postcodes, add native CAR & microcode
 * nb/amd/amdfam10: Add S3, voltage & ACPI, speed fixes & MANY other
   changes
 * nb/amd/amdmct: Add S3, mem voltage, Fix performance & MANY other

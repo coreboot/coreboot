@@ -37,7 +37,7 @@ More details can be found in the [Intel TXT IBB] chapter.
 
 ### Measurements
 The IBBs (Initial Boot Blocks) are measured into TPM's PCR0 by the BIOS [ACM]
-before the CPU reset vector is executed. To indentify the regions that need
+before the CPU reset vector is executed. To identify the regions that need
 to be measured, the [FIT] contains one ore multiple *Type 7* entries, that
 point to the IBBs.
 

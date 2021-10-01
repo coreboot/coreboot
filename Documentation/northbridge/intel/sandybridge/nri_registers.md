@@ -1947,7 +1947,7 @@ Please handle with care!
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
-|        0:7|  OREF_RI, Rank idle period that defines an oppertunity for       |
+|        0:7|  OREF_RI, Rank idle period that defines an opportunity for       |
 |           |  refresh                                                         |
 +-----------+------------------------------------------------------------------+
 |       8:11|  Refresh_HP_WM, tREFI count level that turns the refresh         |

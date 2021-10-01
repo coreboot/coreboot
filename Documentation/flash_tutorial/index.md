@@ -7,7 +7,7 @@ flash IC.
 
 ## Contents
 
-* [Flashing internaly](int_flashrom.md)
+* [Flashing internally](int_flashrom.md)
 * [Flashing firmware standalone](ext_standalone.md)
 * [Flashing firmware externally supplying direct power](ext_power.md)
 * [Flashing firmware externally without supplying direct power](no_ext_power.md)

@@ -51,7 +51,7 @@ To connect to console through SOL (Serial Over Lan):
 
 ## Known issues / feature gaps
 - C6 state is not supported. Workaround is to disable C6 support through
-  target OS and Linuxboot kernel paramter, such as "cpuidle.off=1".
+  target OS and Linuxboot kernel parameter, such as "cpuidle.off=1".
 - SMI handlers are not implemented.
 - xSDT tables are not fully populated, such as processor/socket devices,
   PCIe bridge devices.

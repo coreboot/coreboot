@@ -40,7 +40,7 @@ The memory initialization code has to take care of lots of duties:
 +---------+-------------------------------------------------------------------+------------+--------------+
 ```
 
-## (Unoffical) register documentation
+## (Unofficial) register documentation
 - [Sandy Bridge - Register documentation](nri_registers.md)
 
 ## Frequency selection
@@ -101,7 +101,7 @@ is stored to MRC cache.
 As of writing the only supported error handling is to disable the failing
 channel and restart the memory training sequence. It's very likely to succeed,
 as memory channels operate independent of each other.
-In case no DIMM could be initilized coreboot will halt. The screen will stay
+In case no DIMM could be initialized coreboot will halt. The screen will stay
 black until you power of your device. On some platforms there's additional
 feedback to indicate such an event.
 

@@ -28,7 +28,7 @@ to boot and flash a working image to the A/B partition.
 
 ## 8 MiB ROM limitation
 *Lenovo* devices with 8 MiB ROM only have a `RO`+`A` partition enabled in the
-default FMAP. They are missing the `B` partition, due to size constaints.
+default FMAP. They are missing the `B` partition, due to size constraints.
 You can still provide your own FMAP if you need `RO`+`A`+`B` partitions.
 
 ## CMOS

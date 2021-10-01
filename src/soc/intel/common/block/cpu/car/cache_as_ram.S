@@ -545,7 +545,7 @@ program_sf2:
 
 	/*
 	 * Calculate the SF Mask 1:
-	 * 1. Calcuate SFWayCnt = IA32_SF_QOS_INFO & Bit [5:0]
+	 * 1. Calculate SFWayCnt = IA32_SF_QOS_INFO & Bit [5:0]
 	 * 2. if CONFIG_SF_MASK_2WAYS_PER_BIT: SFWayCnt = SFWayCnt / 2
 	 * 3. Set SF_MASK_1 = ((1 << SFWayCnt) - 1) - IA32_CR_SF_QOS_MASK_2
 	 */

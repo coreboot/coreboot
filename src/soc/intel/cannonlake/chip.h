@@ -436,7 +436,7 @@ struct soc_intel_cannonlake_config {
 	 *
 	 * In general descriptor provides option to set default cpu flex ratio.
 	 * Default cpu flex ratio is 0 ensures booting with non-turbo max frequency.
-	 * Thats the reason FSP skips cpu_ratio override if cpu_ratio is 0.
+	 * That's the reason FSP skips cpu_ratio override if cpu_ratio is 0.
 	 *
 	 * Only override CPU flex ratio if don't want to boot with non-turbo max.
 	 */

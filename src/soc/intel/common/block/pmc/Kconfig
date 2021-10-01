@@ -17,7 +17,7 @@ config SOC_INTEL_COMMON_BLOCK_PMC_DISCOVERABLE
 	bool
 	help
 	  Select this on platforms where the PMC device is discoverable
-	  when scanning busses.
+	  when scanning buses.
 
 config SOC_INTEL_COMMON_BLOCK_PMC_EPOC
 	bool

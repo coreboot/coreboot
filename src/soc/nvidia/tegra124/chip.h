@@ -54,7 +54,7 @@ struct soc_nvidia_tegra124_config {
 	/* Delay before from power on asserting vdd */
 	int vdd_delay_ms;
 
-	/* Delay beween pwm and backlight_en_gpio is asserted */
+	/* Delay between pwm and backlight_en_gpio is asserted */
 	int pwm_to_bl_delay_ms;
 
 	/* Delay before HPD high */

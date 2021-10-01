@@ -69,7 +69,7 @@ static uint32_t mtrr_index_to_host_bridge_register_offset(unsigned long index)
 {
 	uint32_t offset;
 
-	/* Convert from MTRR index to host brigde offset (Datasheet 12.7.2) */
+	/* Convert from MTRR index to host bridge offset (Datasheet 12.7.2) */
 	if (index == MTRR_CAP_MSR)
 		offset = QUARK_NC_HOST_BRIDGE_IA32_MTRR_CAP;
 	else if (index == MTRR_DEF_TYPE_MSR)

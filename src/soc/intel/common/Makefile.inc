@@ -41,7 +41,7 @@ MMA_TEST_CONFIG_NAMES = $(notdir $(wildcard $(MMA_BLOBS_PATH)/configs/*))
 #	$(3) is file type, efi for test names (all .EFI files under $(MMA_BLOBS_PATH)/tests )
 #			 , mma for test param (all .BIN files under $(MMA_BLOBS_PATH)/configs/<test name>)
 #
-# $(MMA_BLOBS_PATH)/tests/<testX>.efi has coresponding test params
+# $(MMA_BLOBS_PATH)/tests/<testX>.efi has corresponding test params
 #  at $(MMA_BLOBS_PATH)/configs/<testX>/<XYZ>.bin
 #
 

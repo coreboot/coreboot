@@ -136,7 +136,7 @@ config HAVE_REFCODE_BLOB
 	bool "Use a binary refcode blob instead of native ModPHY init"
 	default n
 	help
-	 Use the ChromeBook refcode to intitialize high-speed PHYs instead of
+	 Use the ChromeBook refcode to initialize high-speed PHYs instead of
 	 native code.
 
 if HAVE_REFCODE_BLOB

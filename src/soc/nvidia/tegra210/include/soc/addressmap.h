@@ -94,7 +94,7 @@ enum {
 /* Return total size of DRAM memory configured on the platform. */
 int sdram_size_mb(void);
 
-/* Find memory below and above 4GiB boundary repsectively. All units 1MiB. */
+/* Find memory below and above 4GiB boundary respectively. All units 1MiB. */
 void memory_in_range_below_4gb(uintptr_t *base_mib, uintptr_t *end_mib);
 void memory_in_range_above_4gb(uintptr_t *base_mib, uintptr_t *end_mib);
 

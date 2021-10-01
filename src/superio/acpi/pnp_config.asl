@@ -26,7 +26,7 @@
 Mutex(CONF_MODE_MUTEX, 1)
 
 /*
- * Enter configuration mode (and aquire mutex)
+ * Enter configuration mode (and acquire mutex)
  * Method must be run before accessing the configuration region.
  * Parameter is the LDN which should be accessed. Values >= 0xFF mean
  * no LDN switch should be done.

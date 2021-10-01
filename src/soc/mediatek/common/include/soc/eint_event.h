@@ -6,7 +6,7 @@
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 
-/* eint event mask cler register */
+/* eint event mask clear register */
 struct eint_event_reg {
 	uint32_t eint_event_mask_clr[7];
 };

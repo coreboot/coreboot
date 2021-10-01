@@ -130,7 +130,7 @@ ENTRY(_setup_car)
 thunder1_cache_setup:
    /**
     * Setup L2 cache to allow secure access to all of the address space
-    * thunder1 compability list:
+    * thunder1 compatibility list:
     * - CN81XX
     * - CN83XX
     * - CN88XX

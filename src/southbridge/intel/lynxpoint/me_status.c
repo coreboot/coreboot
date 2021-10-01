@@ -187,7 +187,7 @@ void intel_me_status(struct me_hfs *hfs, struct me_hfs2 *hfs2)
 		break;
 
 	default:
-		printk(BIOS_DEBUG, "Unknown phase: 0x%02x sate: 0x%02x",
+		printk(BIOS_DEBUG, "Unknown phase: 0x%02x state: 0x%02x",
 		       hfs2->progress_code, hfs2->current_state);
 	}
 	printk(BIOS_DEBUG, "\n");

@@ -647,7 +647,7 @@ void mainboard_config_rcba(void);
 #define SPIBAR16(x) RCBA16((x) + SPIBAR_OFFSET)
 #define SPIBAR32(x) RCBA32((x) + SPIBAR_OFFSET)
 
-/* Reigsters within the SPIBAR */
+/* Registers within the SPIBAR */
 #define SSFC 0x91
 #define FDOC 0xb0
 #define FDOD 0xb4

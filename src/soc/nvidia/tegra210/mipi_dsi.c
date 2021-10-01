@@ -193,7 +193,7 @@ ssize_t mipi_dsi_dcs_write(struct mipi_dsi_device *dsi, u8 cmd,
 		/*
 		 * DCS long write packets contain the word count in the header
 		 * bytes 1 and 2 and have a payload containing the DCS command
-		 * byte folowed by word count minus one bytes.
+		 * byte followed by word count minus one bytes.
 		 *
 		 * DCS short write packets encode the DCS command and up to
 		 * one parameter in header bytes 1 and 2.

@@ -7,7 +7,7 @@
 #include <platform_descriptors.h>
 #include <FspsUpd.h>
 
-/* These tempory macros apply to emmc0_mode field in FSP_S_CONFIG.
+/* These temporary macros apply to emmc0_mode field in FSP_S_CONFIG.
  * TODO: Remove when official definitions arrive. */
 #define SD_DISABLE		0
 #define SD_LOW_SPEED		1

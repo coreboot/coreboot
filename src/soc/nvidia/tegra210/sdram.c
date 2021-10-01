@@ -155,7 +155,7 @@ static void sdram_set_pad_macros(const struct sdram_params *param,
 
 	/*
 	 * Program CMD mapping. Required before brick mapping, else
-	 * we can't gaurantee CK will be differential at all times.
+	 * we can't guarantee CK will be differential at all times.
 	 */
 	write32(&regs->fbio_cfg7, param->EmcFbioCfg7);
 
@@ -979,7 +979,7 @@ static void sdram_set_refresh(const struct sdram_params *param,
 
 	/* Enable EMC pipe clock gating */
 	write32(&regs->cfg_pipe_clk, param->EmcCfgPipeClk);
-	/* Depending on freqency, enable CMD/CLK fdpd */
+	/* Depending on frequency, enable CMD/CLK fdpd */
 	write32(&regs->fdpd_ctrl_cmd_no_ramp, param->EmcFdpdCtrlCmdNoRamp);
 }
 

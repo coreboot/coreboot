@@ -32,7 +32,7 @@ static void i82801dx_enable_acpi(struct device *dev)
 }
 
 /**
- * Set miscellanous static southbridge features.
+ * Set miscellaneous static southbridge features.
  *
  * @param dev PCI device with I/O APIC control registers
  */

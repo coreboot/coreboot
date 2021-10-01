@@ -22,7 +22,7 @@ struct __packed usb2_phy_tune {
 	uint8_t	sq_rx_tune;
 	/* FS/LS Source Impedance Adjustment. Range 0 - 0xF */
 	uint8_t	tx_fsls_tune;
-	/* HS Transmitter Pre-Emphasis Curent Control. Range 0 - 0x3 */
+	/* HS Transmitter Pre-Emphasis Current Control. Range 0 - 0x3 */
 	uint8_t	tx_pre_emp_amp_tune;
 	/* HS Transmitter Pre-Emphasis Duration Control. Range: 0 - 0x1 */
 	uint8_t	tx_pre_emp_pulse_tune;
@@ -99,7 +99,7 @@ struct soc_amd_picasso_config {
 	 * If sb_reset_i2c_peripherals() is called, this devicetree register
 	 * defines which I2C SCL will be toggled 9 times at 100 KHz.
 	 * For example, should we need I2C0 and  I2C3 have their peripheral
-	 * devices reseted by toggling SCL, use:
+	 * devices reset by toggling SCL, use:
 	 *
 	 * register i2c_scl_reset = (GPIO_I2C0_SCL | GPIO_I2C3_SCL)
 	 */

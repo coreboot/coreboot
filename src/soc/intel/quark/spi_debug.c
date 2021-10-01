@@ -79,7 +79,7 @@ void spi_display(volatile struct flash_ctrlr *ctrlr)
 	printk(BIOS_DEBUG, "0x%08x: BIOS Base Address\n", ctrlr->bbar);
 
 	/* Display the protection ranges */
-	printk(BIOS_DEBUG, "BIOS Protected Range Regsiters\n");
+	printk(BIOS_DEBUG, "BIOS Protected Range Registers\n");
 	for (index = 0; index < ARRAY_SIZE(ctrlr->pbr); index++) {
 		status = ctrlr->pbr[index];
 		printk(BIOS_DEBUG, "  %d: 0x%08x: 0x%08x - 0x%08x %s\n",

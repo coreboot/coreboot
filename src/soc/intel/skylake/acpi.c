@@ -36,7 +36,7 @@
 #define  CPUID_6_EAX_ISST	(1 << 7)
 
 /*
- * List of suported C-states in this processor.
+ * List of supported C-states in this processor.
  */
 enum {
 	C_STATE_C0,		/* 0 */

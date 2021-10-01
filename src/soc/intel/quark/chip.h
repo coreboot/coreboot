@@ -87,7 +87,7 @@ struct soc_intel_quark_config {
 	uint8_t  DramDensity;
 	uint8_t  tCL;           /* DRAM CAS Latency in clocks */
 
-	/* ECC scrub interval in miliseconds 1..255 (0 works as feature
+	/* ECC scrub interval in milliseconds 1..255 (0 works as feature
 	 * disable)
 	 */
 	uint8_t EccScrubInterval;

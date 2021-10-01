@@ -222,7 +222,7 @@ config STORAGE_TEST
 	select COMMONLIB_STORAGE
 	select SDHCI_CONTROLLER
 	help
-	  Read block 0 from each parition of the storage device.  User
+	  Read block 0 from each partition of the storage device.  User
 	  must also enable one or both of COMMONLIB_STORAGE_SD or
 	  COMMONLIB_STORAGE_MMC.
 

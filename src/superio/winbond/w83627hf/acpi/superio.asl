@@ -33,10 +33,10 @@
  * NO_W83627HF_GAME:     don't expose the game port
  * NO_W83627HF_MIDI:     don't expose the MIDI port
  * NO_W83627HF_HWMON:    don't expose the hardware monitor as
- *                       PnP "Motherboard Ressource"
+ *                       PnP "Motherboard Resource"
  * W83627HF_KBC_COMPAT:  show the keyboard controller and the PS/2 mouse as
  *                       enabled if it is disabled but an address is assigned
- *                       to it. This may be neccessary in some cases.
+ *                       to it. This may be necessary in some cases.
  *
  * Datasheet: "W83627HF/F WINBOND I/O" rev. 6.0
  * http://www.itox.com/pages/support/wdt/W83627HF.pdf
@@ -115,14 +115,14 @@ Device(SIO) {
 		Offset (0x74),
 		DMA0,	8,	/* DMA */
 		Offset (0xE0),
-		/* CRE0-CRE4: function logical device dependant, seems to be reserved for ACPI settings */
+		/* CRE0-CRE4: function logical device dependent, seems to be reserved for ACPI settings */
 		CRE0,	8,
 		CRE1,	8,
 		CRE2,	8,
 		CRE3,	8,
 		CRE4,	8,
 		Offset (0xF0),
-		/* OPT1-OPTA aka CRF0-CRF9: function logical device dependant */
+		/* OPT1-OPTA aka CRF0-CRF9: function logical device dependent */
 		OPT1,	8,
 		OPT2,	8,
 		OPT3,	8,
@@ -143,7 +143,7 @@ Device(SIO) {
 		})
 	}
 
-	/* Enter configuration mode (and aquire mutex)
+	/* Enter configuration mode (and acquire mutex)
 	   Method must be run before accessing the configuration region.
 	   Parameter is the LDN which should be accessed. Values >= 0xFF mean
 	   no LDN switch should be done.

@@ -175,7 +175,7 @@ static void al2ahb_clock_gate(void)
 	write8((void *)(al2ahb_base + AL2AHB_CONTROL_HCLK_OFFSET), al2ahb_val);
 }
 
-/* configure the genral purpose PCIe clock outputs according to the devicetree settings */
+/* configure the general purpose PCIe clock outputs according to the devicetree settings */
 static void gpp_clk_setup(void)
 {
 	const struct soc_amd_picasso_config *cfg = config_of_soc();

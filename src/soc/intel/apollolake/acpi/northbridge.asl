@@ -18,7 +18,7 @@ Device (MCHC)
 		Offset(0xB4),
 		BGSM,   32,	/* Base of Graphics Stolen Memory */
 		Offset(0xBC),
-		TLUD,   32,	/* Top of Low Useable DRAM */
+		TLUD,   32,	/* Top of Low Usable DRAM */
 	}
 }
 
@@ -58,7 +58,7 @@ Method (_CRS, 0, Serialized)
 		 * PCI MMIO Region (TOLUD - PCI extended base MMCONF)
 		 * This assumes that MMCONF is placed after PCI config space,
 		 * and that no resources are allocated after the MMCONF region.
-		 * This works, sicne MMCONF is hardcoded to 0xe00000000.
+		 * This works, since MMCONF is hardcoded to 0xe00000000.
 		 */
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				NonCacheable, ReadWrite,

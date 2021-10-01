@@ -30,7 +30,7 @@ enum {
 int nhlt_soc_add_dmic_array(struct nhlt *nhlt, int num_channels);
 
 /*
- * Add nau88l25 headset codec on provided SSP link. Return 0 on succes, < 0
+ * Add nau88l25 headset codec on provided SSP link. Return 0 on success, < 0
  * on error.
  */
 int nhlt_soc_add_nau88l25(struct nhlt *nhlt, int hwlink);

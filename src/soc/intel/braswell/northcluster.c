@@ -93,7 +93,7 @@ static void nc_read_resources(struct device *dev)
 	if (fsp_reserved_memory_area) {
 		fsp_res_base_k = RES_IN_KiB((unsigned int)fsp_reserved_memory_area);
 	} else {
-		/* If no FSP reserverd area */
+		/* If no FSP reserved area */
 		fsp_res_base_k = tseg_base_k;
 	}
 

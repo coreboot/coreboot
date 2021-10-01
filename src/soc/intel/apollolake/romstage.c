@@ -119,7 +119,7 @@ static bool punit_init(void)
 
 	/*
 	 * Poll for bit 8 to check if PCODE has completed its action
-	 * in reponse to BIOS Reset complete.
+	 * in response to BIOS Reset complete.
 	 * We wait here till 1 ms for the bit to get set.
 	 */
 	stopwatch_init_msecs_expire(&sw, 1);

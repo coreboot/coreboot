@@ -367,7 +367,7 @@ uint8_t uart_rx_byte(unsigned int idx)
 	return byte;
 }
 
-/* TODO: Implement fuction */
+/* TODO: Implement function */
 void uart_fill_lb(void *data)
 {
 }

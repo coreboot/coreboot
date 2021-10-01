@@ -67,7 +67,7 @@ Name(CRES, ResourceTemplate() {
 	 * The Secondary bus range for PCI0 lets the system
 	 * know what bus values are allowed on the downstream
 	 * side of this PCI bus if there is a PCI-PCI bridge.
-	 * PCI busses can have 256 secondary busses which
+	 * PCI buses can have 256 secondary buses which
 	 * range from [0-0xFF] but they do not need to be
 	 * sequential.
 	 */

@@ -127,7 +127,7 @@ static void fch_init_resets(void)
 	pm_write16(PWR_RESET_CFG, pm_read16(PWR_RESET_CFG) | TOGGLE_ALL_PWR_GOOD);
 }
 
-/* configure the genral purpose PCIe clock outputs according to the devicetree settings */
+/* configure the general purpose PCIe clock outputs according to the devicetree settings */
 static void gpp_clk_setup(void)
 {
 	const struct soc_amd_cezanne_config *cfg = config_of_soc();

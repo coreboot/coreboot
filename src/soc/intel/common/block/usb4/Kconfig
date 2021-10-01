@@ -25,4 +25,4 @@ config SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 	depends on SOC_INTEL_COMMON_BLOCK_USB4
 	select PCIEXP_HOTPLUG
 	help
-	  Enable USB4 PCIe resources for reserving hotplug busses and memory.
+	  Enable USB4 PCIe resources for reserving hotplug buses and memory.

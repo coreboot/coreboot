@@ -465,7 +465,7 @@ static int _tegra_dp_lower_link_config(struct tegra_dc_dp_data *dp,
 	return (cfg->lane_count > 0) ? DP_LT_SUCCESS : DP_LT_FAILED;
 }
 
-/* Calcuate if given cfg can meet the mode request. */
+/* Calculate if given cfg can meet the mode request. */
 /* Return true if mode is possible, false otherwise. */
 static int tegra_dc_dp_calc_config(struct tegra_dc_dp_data *dp,
 	const struct soc_nvidia_tegra124_config *config,

@@ -31,7 +31,7 @@
 typedef struct southbridge_intel_bd82x6x_config config_t;
 
 /**
- * Set miscellanous static southbridge features.
+ * Set miscellaneous static southbridge features.
  *
  * @param dev PCI device with I/O APIC control registers
  */

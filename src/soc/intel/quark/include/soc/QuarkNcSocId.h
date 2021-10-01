@@ -55,7 +55,7 @@
 //
 
 //
-// DEVICE 0 (Memroy Controller Hub)
+// DEVICE 0 (Memory Controller Hub)
 //
 #define MC_BUS                  PCI_BUS_NUMBER_QNC
 #define MC_DEV                  0x00
@@ -729,7 +729,7 @@
 #define   V_QNC_PCIE_SLCAP_PSN_OFFSET         19    //Slot number offset
 #define R_QNC_PCIE_SLCTL                    0x58    //~ 59h
 #define   B_QNC_PCIE_SLCTL_HPE                (BIT5)  // Hot plug intr enable
-#define   B_QNC_PCIE_SLCTL_PDE                (BIT3)  // Presense detect enable
+#define   B_QNC_PCIE_SLCTL_PDE                (BIT3)  // Presence detect enable
 #define   B_QNC_PCIE_SLCTL_ABE                (BIT0)  // Attn Btn Pressed Enable
 #define R_QNC_PCIE_SLSTS                    0x5A    //~ 5Bh
 #define   B_QNC_PCIE_SLSTS_PDS                (BIT6)  // Present Detect State

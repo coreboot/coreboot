@@ -777,7 +777,7 @@ u32 dramc_engine2(u32 channel, enum dram_tw_op wr, u32 test2_1, u32 test2_2,
 	 * ISI              0 | 0
 	 * AUD              0 | 1
 	 * XTALK            1 | 0
-	 * UNKNOW           1 | 1
+	 * UNKNOWN          1 | 1
 	 */
 	switch (testaudpat) {
 	case XTALK:

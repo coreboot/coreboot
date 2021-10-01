@@ -325,7 +325,7 @@ static void fast_spi_enable_ext_bios(void)
 		       "Only 32MiB windows are supported for extended BIOS!");
 #endif
 
-	/* Confgiure DMI Source decode for Extended BIOS Region */
+	/* Configure DMI Source decode for Extended BIOS Region */
 	if (dmi_enable_gpmr(CONFIG_EXT_BIOS_WIN_BASE, CONFIG_EXT_BIOS_WIN_SIZE,
 				soc_get_spi_dmi_destination_id()) == CB_ERR)
 		return;

@@ -758,7 +758,7 @@ static int spi_ctrlr_setup(const struct spi_slave *slave)
 		|| ((bus == GSBI6_SPI) && (cs > 0))
 		|| ((bus == GSBI7_SPI) && (cs > 0))) {
 		printk(BIOS_ERR, "SPI error: unsupported bus %d "
-			"(Supported busses 0,1 and 2) or chipselect\n", bus);
+			"(Supported buses 0,1 and 2) or chipselect\n", bus);
 	}
 
 	for (i = 0; i < ARRAY_SIZE(spi_slave_pool); i++) {

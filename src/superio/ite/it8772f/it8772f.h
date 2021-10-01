@@ -103,7 +103,7 @@ enum thermal_mode {
 /* GPIO Polarity Select: 1: Inverting, 0: Non-inverting */
 #define GPIO_REG_POLARITY(x) (0xb0 + (x))
 
-/* GPIO Inernal Pull-up: 1: Enable, 0: Disable */
+/* GPIO Internal Pull-up: 1: Enable, 0: Disable */
 #define GPIO_REG_PULLUP(x)   (0xb8 + (x))
 
 /* GPIO Function Select: 1: Simple I/O, 0: Alternate function */

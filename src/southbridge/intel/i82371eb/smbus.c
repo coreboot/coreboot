@@ -27,7 +27,7 @@ static void pwrmgt_enable(struct device *dev)
 	 * bit25 (lid_pol): 1=invert lid polarity
 	 * bit24 (sm_freeze): 1=freeze idle and standby timers
 	 * bit16 (end of smi): 0=disable smi assertion (cleared by hw)
-	 * bits8-15,26: global standby timer inital count 127 * 4minutes
+	 * bits8-15,26: global standby timer initial count 127 * 4minutes
 	 * bit2  (thrm_pol): 1=active low THRM#
 	 * bit0  (smi_en): 1=disable smi generation upon smi event
 	 */

@@ -183,7 +183,7 @@ static void azalia_init(struct device *dev)
 	if (!res)
 		return;
 
-	// NOTE this will break as soon as the Azalia get's a bar above 4G.
+	// NOTE this will break as soon as the Azalia gets a bar above 4G.
 	// Is there anything we can do about it?
 	base = res2mmio(res, 0, 0);
 	printk(BIOS_DEBUG, "Azalia: base = %p\n", base);

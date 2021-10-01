@@ -18,7 +18,7 @@ static inline int gpio_not_valid(gpio_t gpio)
 }
 
 /*******************************************************
-Function description: configure GPIO functinality
+Function description: configure GPIO functionality
 Arguments :
 gpio_t gpio - Gpio number
 unsigned func - Functionality number
@@ -77,7 +77,7 @@ void gpio_tlmm_config_get(gpio_t gpio, unsigned int *func,
 }
 
 /*******************************************************
-Function description: get GPIO IO functinality details
+Function description: get GPIO IO functionality details
 Arguments :
 gpio_t gpio - Gpio number
 unsigned *in - Value of GPIO input

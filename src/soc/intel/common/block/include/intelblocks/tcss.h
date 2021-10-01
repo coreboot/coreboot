@@ -130,7 +130,7 @@ enum pmc_ipc_command_type {
 struct tcss_mux_info {
 	bool dp; /* DP connected */
 	bool usb; /* USB connected */
-	bool cable; /* Activ/Passive Cable */
+	bool cable; /* Active/Passive Cable */
 	bool polarity; /* polarity of connected device */
 	bool hpd_lvl; /* HPD Level assert */
 	bool hpd_irq; /* HPD IRQ assert */

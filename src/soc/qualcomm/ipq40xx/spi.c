@@ -328,7 +328,7 @@ static unsigned char spi_read_byte(struct ipq_spi_slave *ds)
 }
 
 /*
- * Function to check wheather Input or Output FIFO
+ * Function to check whether Input or Output FIFO
  * has data to be serviced
  */
 static int check_fifo_status(void *reg_addr)
@@ -627,7 +627,7 @@ static int spi_ctrlr_setup(const struct spi_slave *slave)
 		|| ((bus == BLSP0_SPI) && (cs > 2))
 		|| ((bus == BLSP1_SPI) && (cs > 0))) {
 		printk(BIOS_ERR,
-			"SPI error: unsupported bus %d (Supported busses 0, 1 and 2) "
+			"SPI error: unsupported bus %d (Supported buses 0, 1 and 2) "
 			"or chipselect\n", bus);
 		return -1;
 	}

@@ -376,7 +376,7 @@ static unsigned char spi_read_byte(struct qcs_spi_slave *ds)
 }
 
 /*
- * Function to check wheather Input or Output FIFO
+ * Function to check whether Input or Output FIFO
  * has data to be serviced
  */
 static int check_fifo_status(void *reg_addr)

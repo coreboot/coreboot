@@ -168,7 +168,7 @@ void xeonsp_init_cpu_config(void)
 	unsigned int num_sockets;
 
 	/*
-	 * sort APIC ids in asending order to identify apicid ranges for
+	 * sort APIC ids in ascending order to identify apicid ranges for
 	 * each numa domain
 	 */
 	for (dev = all_devices; dev; dev = dev->next) {

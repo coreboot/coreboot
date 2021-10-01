@@ -84,7 +84,7 @@ static int i2c_init(unsigned int bus)
 		qup_config = &gsbi7_qup_config;
 		break;
 	default:
-		printk(BIOS_ERR, "QUP configuration not defind for GSBI%d.\n",
+		printk(BIOS_ERR, "QUP configuration not defined for GSBI%d.\n",
 		       gsbi_id);
 		return 1;
 	}

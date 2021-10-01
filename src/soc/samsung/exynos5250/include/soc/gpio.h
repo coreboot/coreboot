@@ -546,7 +546,7 @@ int gpio_set_value(unsigned int gpio, int value);
 enum mvl3 {
 	LOGIC_0,
 	LOGIC_1,
-	LOGIC_Z,		/* high impedence / tri-stated / floating */
+	LOGIC_Z,		/* high impedance / tri-stated / floating */
 };
 
 #endif	/* CPU_SAMSUNG_EXYNOS5250_GPIO_H */

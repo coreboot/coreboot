@@ -50,6 +50,6 @@ void mtk_mmu_disable_l2c_sram(void)
 
 	mtk_soc_disable_l2c_sram();
 
-	/* Reenable MMU with now enlarged L2 cache. Page tables still valid. */
+	/* Re-enable MMU with now enlarged L2 cache. Page tables still valid. */
 	mmu_enable();
 }

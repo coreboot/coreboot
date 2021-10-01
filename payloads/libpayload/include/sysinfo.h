@@ -148,6 +148,8 @@ struct sysinfo_t {
 #if CONFIG(LP_PCI)
 	struct pci_access pacc;
 #endif
+	/* USB Type-C Port Configuration Info */
+	uintptr_t type_c_info;
 };
 
 extern struct sysinfo_t lib_sysinfo;

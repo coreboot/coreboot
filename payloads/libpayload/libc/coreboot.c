@@ -246,6 +246,11 @@ static void cb_parse_fmap_cache(void *ptr, struct sysinfo_t *info)
 	info->fmap_cache = get_cbmem_addr(ptr);
 }
 
+static void cb_parse_type_c_info(void *ptr, struct sysinfo_t *info)
+{
+	info->type_c_info = get_cbmem_addr(ptr);
+}
+
 #if CONFIG(LP_TIMER_RDTSC)
 static void cb_parse_tsc_info(void *ptr, struct sysinfo_t *info)
 {
@@ -419,6 +424,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_FMAP:
 			cb_parse_fmap_cache(ptr, info);
+			break;
+		case CB_TAG_TYPE_C_INFO:
+			cb_parse_type_c_info(ptr, info);
 			break;
 		default:
 			cb_parse_arch_specific(rec, info);

@@ -84,6 +84,7 @@ enum {
 	LB_TAG_TPM_PPI_HANDOFF		= 0x003a,
 	LB_TAG_BOARD_CONFIG		= 0x0040,
 	LB_TAG_ACPI_CNVS		= 0x0041,
+	LB_TAG_TYPE_C_INFO		= 0x0042,
 	/* The following options are CMOS-related */
 	LB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	LB_TAG_OPTION			= 0x00c9,
@@ -419,6 +420,23 @@ struct lb_mmc_info {
 	 * passes 1 on success
 	 */
 	int32_t early_cmd1_status;
+};
+
+/*
+ * USB Type-C Port Information
+ * This record contains board-specific type-c port information.
+ * There will be one record per type-C port.
+ */
+struct type_c_port_info {
+	uint8_t usb2_port_number;
+	uint8_t usb3_port_number;
+	uint8_t sbu_orientation;
+	uint8_t data_orientation;
+};
+
+struct type_c_info {
+	uint32_t port_count;
+	struct type_c_port_info port_info[0];
 };
 
 struct lb_macs {

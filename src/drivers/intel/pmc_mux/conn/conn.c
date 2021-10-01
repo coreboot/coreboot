@@ -2,10 +2,72 @@
 
 #include <acpi/acpigen.h>
 #include <boot/coreboot_tables.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <intelblocks/acpi.h>
 
 #include "chip.h"
+
+/* Number of registered connectors */
+static size_t total_conn_count;
+
+static void conn_init(struct device *dev)
+{
+	total_conn_count++;
+}
+
+static struct type_c_info *conn_get_cbmem_buffer(void)
+{
+	struct type_c_info *info;
+	size_t size;
+
+	info = cbmem_find(CBMEM_ID_TYPE_C_INFO);
+	if (info)
+		return info;
+
+	size = sizeof(struct type_c_info) + total_conn_count * sizeof(struct type_c_port_info);
+	info = cbmem_add(CBMEM_ID_TYPE_C_INFO, size);
+
+	if (!info)
+		return NULL;
+
+	memset(info, 0, size);
+	return info;
+}
+
+static void conn_write_cbmem_entry(struct device *dev)
+{
+	const struct drivers_intel_pmc_mux_conn_config *config = dev->chip_info;
+	struct type_c_port_info *port_info;
+	struct type_c_info *info;
+	size_t count;
+
+	/*
+	 * Do not re-run this code on resume as the cbmem data is populated on boot-up
+	 * (non-S3 path) and stays intact across S3 suspend/resume.
+	 */
+	if (acpi_is_wakeup_s3())
+		return;
+
+	info = conn_get_cbmem_buffer();
+	if (!info || (info->port_count >= total_conn_count)) {
+		printk(BIOS_ERR, "ERROR: No space for Type-C port info!\n");
+		return;
+	}
+
+	count = info->port_count;
+	port_info = &info->port_info[count];
+	port_info->usb2_port_number = config->usb2_port_number;
+	port_info->usb3_port_number = config->usb3_port_number;
+	port_info->sbu_orientation = config->sbu_orientation;
+	port_info->data_orientation = config->hsl_orientation;
+
+	printk(BIOS_INFO, "added type-c port%ld info to cbmem: usb2:%d usb3:%d sbu:%d data:%d\n",
+			count, port_info->usb2_port_number, port_info->usb3_port_number,
+			port_info->sbu_orientation, port_info->data_orientation);
+
+	info->port_count++;
+}
 
 static const char *conn_acpi_name(const struct device *dev)
 {
@@ -76,6 +138,8 @@ static struct device_operations conn_dev_ops = {
 	.set_resources	= noop_set_resources,
 	.acpi_name	= conn_acpi_name,
 	.acpi_fill_ssdt	= conn_fill_ssdt,
+	.init		= conn_init,
+	.final		= conn_write_cbmem_entry,
 };
 
 static void conn_enable(struct device *dev)

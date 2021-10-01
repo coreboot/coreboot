@@ -56,7 +56,7 @@ struct boot_state {
 	boot_state_t (*run_state)(void *arg);
 	void *arg;
 	int num_samples;
-	int complete : 1;
+	bool complete;
 };
 
 #define BS_INIT(state_, run_func_)				\
@@ -67,7 +67,7 @@ struct boot_state {
 		.phases = { { NULL, 0 }, { NULL, 0 } },		\
 		.run_state = run_func_,				\
 		.arg = NULL,					\
-		.complete = 0,					\
+		.complete = false,					\
 	}
 #define BS_INIT_ENTRY(state_, run_func_)	\
 	[state_] = BS_INIT(state_, run_func_)
@@ -367,7 +367,7 @@ static void bs_walk_state_machine(void)
 
 		bs_sample_time(state);
 
-		state->complete = 1;
+		state->complete = true;
 	}
 }
 

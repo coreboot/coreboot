@@ -117,7 +117,7 @@ static void mainboard_init(void *chip_info)
 	gpios = variant_gpio_table(&num_gpios);
 	gpio_configure_pads(gpios, num_gpios);
 
-	/* Initialize i2c busses that were not initialized in bootblock */
+	/* Initialize i2c buses that were not initialized in bootblock */
 	i2c_soc_init();
 
 	/* Set GenIntDisable so that GPIO 90 is configured as a GPIO. */

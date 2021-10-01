@@ -668,7 +668,7 @@ bool stm_check_stm_image(void *stm_image, uint32_t stm_imagesize)
 /*
  *  This function return BIOS STM resource.
  *  Produced by SmmStm.
- *  Comsumed by SmmMpService when Init.
+ *  Consumed by SmmMpService when Init.
  *
  *  @return BIOS STM resource
  */

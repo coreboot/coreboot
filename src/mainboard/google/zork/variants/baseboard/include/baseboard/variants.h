@@ -49,7 +49,7 @@ void variant_touchscreen_update(void);
 void variant_pcie_gpio_configure(void);
 
 /* Per variant FSP-S initialization, default implementation in baseboard and
- * overrideable by the variant. */
+ * overridable by the variant. */
 void variant_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,
 				      size_t *dxio_num,
 				      const fsp_ddi_descriptor **ddi_descs,

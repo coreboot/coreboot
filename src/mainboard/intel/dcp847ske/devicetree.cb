@@ -81,7 +81,7 @@ chip northbridge/intel/sandybridge
 					device pnp 4e.609 off end	# GPIO6
 					device pnp 4e.709 off end	# GPIO7
 					device pnp 4e.a on end		# ACPI
-					device pnp 4e.b on		# HWM, front pannel LED
+					device pnp 4e.b on		# HWM, front panel LED
 						io 0x60 = 0xa30
 						io 0x62 = 0 # unused
 					end

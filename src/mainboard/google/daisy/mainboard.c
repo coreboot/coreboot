@@ -202,7 +202,7 @@ static void setup_storage(void)
 
 static void gpio_init(void)
 {
-	/* Set up the I2C busses. */
+	/* Set up the I2C buses. */
 	exynos_pinmux_i2c0();
 	exynos_pinmux_i2c1();
 	exynos_pinmux_i2c2();
@@ -222,7 +222,7 @@ static void gpio_init(void)
 	gpio_direction_output(GPIO_X17, 1);
 	gpio_direction_output(GPIO_X15, 1);
 
-	/* Set up the I2S busses. */
+	/* Set up the I2S buses. */
 	exynos_pinmux_i2s0();
 	exynos_pinmux_i2s1();
 }

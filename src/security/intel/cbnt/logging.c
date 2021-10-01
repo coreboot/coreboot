@@ -123,7 +123,7 @@ void intel_cbnt_log_registers(void)
 	LOG("SACM INFO MSR (0x13A) raw: 0x%016llx\n", acm_info.raw);
 	LOG("  NEM status:              %u\n", acm_info.nem_enabled);
 	LOG("  TPM type:                %s\n", tpm_type[acm_info.tpm_type]);
-	LOG("  TPM succes:              %u\n", acm_info.tpm_success);
+	LOG("  TPM success:             %u\n", acm_info.tpm_success);
 	LOG("  FACB:                    %u\n", acm_info.facb);
 	LOG("  measured boot:           %u\n", acm_info.measured_boot);
 	LOG("  verified boot:           %u\n", acm_info.verified_boot);

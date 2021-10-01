@@ -144,7 +144,7 @@ Device (EC0)
 		^HKEY.MHKQ (0x6040)
 	}
 
-	/* Lid openend */
+	/* Lid opened */
 	Method (_Q2A, 0, NotSerialized)
 	{
 		LIDS = 1

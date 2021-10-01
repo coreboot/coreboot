@@ -98,7 +98,7 @@ static void clear_memory(void *unused)
 		__func__, (void *)pgtbl, (void *)vmem_addr);
 	}
 
-	/* Now clear all useable DRAM */
+	/* Now clear all usable DRAM */
 	memranges_each_entry(r, &mem) {
 		if (range_entry_tag(r) != BM_MEM_RAM)
 			continue;

@@ -2,7 +2,7 @@
 
 /*
  * These are the qemu firmware config interface defines and structs.
- * Copied over from qemu soure tree,
+ * Copied over from qemu source tree,
  * include/standard-headers/linux/qemu_fw_cfg.h and modified accordingly.
  */
 #ifndef FW_CFG_IF_H

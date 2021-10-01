@@ -60,7 +60,7 @@ int pwm_enum_to_pwm_number[] = {
 void pwm_regulator_configure(enum pwm_regulator pwm, int millivolt)
 {
 	int duty_ns, voltage_max, voltage_min;
-	int voltage = millivolt * 10; /* for higer calculation accuracy */
+	int voltage = millivolt * 10; /* for higher calculation accuracy */
 	int pwm_number = pwm_enum_to_pwm_number[pwm];
 
 	voltage_min = pwm_design_voltage[pwm][0];

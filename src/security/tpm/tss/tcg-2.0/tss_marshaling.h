@@ -28,7 +28,7 @@ int tpm_marshal_command(TPM_CC command, const void *tpm_command_body,
  * tpm_unmarshal_response
  *
  * Given a buffer received from the TPM in response to a certain command,
- * deserialize the buffer into the expeced response structure.
+ * deserialize the buffer into the expected response structure.
  *
  * struct tpm2_response is a union of all possible responses.
  *

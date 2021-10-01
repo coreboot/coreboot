@@ -99,7 +99,7 @@ chip northbridge/intel/x4x		# Northbridge
 					device pnp 2e.a on		# ACPI
 						irq 0xe4 = 0x10 # Power dram during s3
 					end
-					device pnp 2e.b on		# HWM, front pannel LED
+					device pnp 2e.b on		# HWM, front panel LED
 						io 0x60 = 0x290
 						irq 0x70 = 0
 					end

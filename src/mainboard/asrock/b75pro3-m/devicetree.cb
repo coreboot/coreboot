@@ -129,7 +129,7 @@ chip northbridge/intel/sandybridge
 						irq 0xe9 = 0x02
 						irq 0xf0 = 0x20
 					end
-					device pnp 2e.b off	end		# HWM, front pannel LED
+					device pnp 2e.b off	end		# HWM, front panel LED
 					device pnp 2e.d on end		# VID
 					device pnp 2e.e off end		# CIR WAKE-UP
 					device pnp 2e.f on end		# GPIO Push-Pull or Open-drain

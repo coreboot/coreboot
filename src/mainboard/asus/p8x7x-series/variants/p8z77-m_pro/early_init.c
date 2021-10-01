@@ -106,9 +106,9 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 			{ 1, 0, 0x0080 }, /* USB3 front internal header */
 			{ 1, 0, 0x0080 }, /* USB3 front internal header */
 			{ 1, 1, 0x0080 }, /* USB3 ETH top connector */
-			{ 1, 1, 0x0080 }, /* USB3 ETH botton connector */
+			{ 1, 1, 0x0080 }, /* USB3 ETH bottom connector */
 			{ 1, 2, 0x0080 }, /* USB2 PS2 top connector */
-			{ 1, 2, 0x0080 }, /* USB2 PS2 botton connector */
+			{ 1, 2, 0x0080 }, /* USB2 PS2 bottom connector */
 			{ 1, 3, 0x0080 }, /* USB2 internal header (USB78) */
 			{ 1, 3, 0x0080 }, /* USB2 internal header (USB78) */
 			{ 1, 4, 0x0080 }, /* USB2 internal header (USB910) */

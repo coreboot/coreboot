@@ -262,7 +262,7 @@ Scope (\_SB.PCI0.I2C2)
 		 * AX1V: Auxiliary LDO1 VR voltage value
 		 * AX2V: Auxiliary LDO2 VR voltage value
 		 * ACVA: Analog LDO VR voltage
-		 * DCVA: Core buck VR volatage
+		 * DCVA: Core buck VR voltage
 		 */
 		OperationRegion (PWR2, 0xB1, Zero, 0x0100)
 		Field (PWR2, DWordAcc, NoLock, Preserve)

@@ -17,7 +17,7 @@ DefinitionBlock(
 	#include "acpi/platform.asl"
 	#include "acpi/mainboard.asl"
 
-	// Thermal handeler
+	// Thermal handler
 	#include "acpi/thermal.asl"
 
 	// global NVS and variables

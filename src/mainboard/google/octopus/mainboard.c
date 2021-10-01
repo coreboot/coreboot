@@ -69,7 +69,7 @@ static void gpio_modification_by_ssfc(struct pad_config *table, size_t num)
 	/*
 	 * Currently we only have the case of RT5682 as the second source. And
 	 * in case of Ampton which used RT5682 as the default source, it didn't
-	 * provide override_table right now so it will be returned ealier since
+	 * provide override_table right now so it will be returned earlier since
 	 * table above is NULL.
 	 */
 	if (ssfc_get_audio_codec() != SSFC_AUDIO_CODEC_RT5682)

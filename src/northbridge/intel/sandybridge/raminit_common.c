@@ -2437,7 +2437,7 @@ int aggressive_write_training(ramctr_timing *ctrl)
 	if (enable_iosav_opt)
 		mchbar_write32(MCMNTS_SPARE, 1);
 
-	printram("Aggresive write training:\n");
+	printram("Aggressive write training:\n");
 
 	for (i = 0; i < ARRAY_SIZE(wr_vref_offsets); i++) {
 		FOR_ALL_POPULATED_CHANNELS {

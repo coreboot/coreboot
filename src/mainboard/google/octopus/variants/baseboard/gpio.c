@@ -324,7 +324,7 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPIO_164, 0, DEEP), /* WLAN_PE_RST */
 
 	/*
-	 * ESPI_IO1 acts as ALERT# (which is open-drain) and requies a weak
+	 * ESPI_IO1 acts as ALERT# (which is open-drain) and requires a weak
 	 * pull-up for proper operation. Since there is no external pull present
 	 * on this platform, configure an internal weak pull-up.
 	 */

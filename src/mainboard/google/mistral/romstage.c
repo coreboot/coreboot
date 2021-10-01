@@ -7,7 +7,7 @@ static void prepare_usb(void)
 {
 	/*
 	 * Do DWC3 core and phy reset. Kick these resets off early
-	 * so they get atleast 1msec to settle.
+	 * so they get at least 1msec to settle.
 	 */
 	reset_usb(HSUSB_HS_PORT_1);
 }

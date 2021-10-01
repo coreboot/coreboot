@@ -273,7 +273,7 @@ uint32_t tlcl_self_test_full(void)
 uint32_t tlcl_lock_nv_write(uint32_t index)
 {
 	struct tpm2_response *response;
-	/* TPM Wll reject attempts to write at non-defined index. */
+	/* TPM Will reject attempts to write at non-defined index. */
 	struct tpm2_nv_write_lock_cmd nv_wl = {
 		.nvIndex = HR_NV_INDEX + index,
 	};
@@ -372,7 +372,7 @@ uint32_t tlcl_define_space(uint32_t space_index, size_t space_size,
 	if (!response)
 		return TPM_E_NO_DEVICE;
 
-	/* Map TPM2 retrun codes into common vboot represenation. */
+	/* Map TPM2 return codes into common vboot representation. */
 	switch (response->hdr.tpm_code) {
 	case TPM2_RC_SUCCESS:
 		return TPM_SUCCESS;

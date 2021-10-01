@@ -42,7 +42,7 @@ Device(EC0)
 		FDDI,   1, // floppy on lpt indicator?
 		LIDC,   1, // LID switch
 			Offset(0xd0),
-		TCPU,   8, // T_CPU in deg Celcius
+		TCPU,   8, // T_CPU in deg Celsius
 			Offset(0xd6),
 		/* exact purpose of these three is guessed,
 		   but it's something about cooling */

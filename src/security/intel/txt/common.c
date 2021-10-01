@@ -150,7 +150,7 @@ static struct acm_info_table *find_info_table(const void *ptr)
 }
 
 /**
- * Validate that the provided ACM is useable on this platform.
+ * Validate that the provided ACM is usable on this platform.
  */
 static int validate_acm(const void *ptr)
 {

@@ -55,7 +55,7 @@ uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
 			const char *name);
 
 /**
- * Issue a TPM_Clear and reenable/reactivate the TPM.
+ * Issue a TPM_Clear and re-enable/reactivate the TPM.
  * @return TPM_SUCCESS on success. If not a tpm error is returned
  */
 uint32_t tpm_clear_and_reenable(void);

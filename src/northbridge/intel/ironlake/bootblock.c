@@ -22,7 +22,7 @@ void bootblock_early_northbridge_init(void)
 {
 	/*
 	 * The QuickPath bus number is the topmost bus number, as per the value
-	 * of the SAD_PCIEXBAR register. The register defaults to 256 busses on
+	 * of the SAD_PCIEXBAR register. The register defaults to 256 buses on
 	 * reset. Thus, hardcode the bus number when first setting up PCIEXBAR.
 	 */
 	const pci_devfn_t qpi_sad = PCI_DEV(255, 0, 1);

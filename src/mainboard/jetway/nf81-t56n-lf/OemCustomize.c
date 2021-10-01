@@ -104,7 +104,7 @@ void board_BeforeInitEarly(struct sysinfo *cb, AMD_EARLY_PARAMS *InitEarly)
 }
 
 /**
- * @brief Customer Overides Memory Table
+ * @brief Customer Overrides Memory Table
  *
  * Platform Specific Overriding Table allows IBV/OEM to pass in platform
  * information to AGESA

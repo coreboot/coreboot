@@ -63,7 +63,7 @@ config MAXIMUM_SUPPORTED_FREQUENCY
 config CHECK_SLFRCS_ON_RESUME
 	def_bool n
 	help
-	  On some boards it may be neccessary to hard reset early
+	  On some boards it may be necessary to hard reset early
 	  during resume from S3 if the SLFRCS register indicates that
 	  a memory channel is not guaranteed to be in self-refresh.
 	  On other boards the check always creates a false positive,

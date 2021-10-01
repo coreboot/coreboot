@@ -21,7 +21,7 @@ chip soc/amd/picasso
 	}"
 
 	# Start : OPN Performance Configuration
-	# (Configuratin that is common for all variants)
+	# (Configuration that is common for all variants)
 	# For the below fields, 0 indicates use SOC default
 
 	# PROCHOT_L de-assertion Ramp Time
@@ -232,7 +232,7 @@ chip soc/amd/picasso
 
 	register "i2c_scl_reset" = "GPIO_I2C2_SCL | GPIO_I2C3_SCL"
 
-	# genral purpose PCIe clock output configuration
+	# general purpose PCIe clock output configuration
 	register "gpp_clk_config[0]" = "GPP_CLK_REQ" # WLAN
 	register "gpp_clk_config[1]" = "GPP_CLK_REQ" # SD Reader
 	register "gpp_clk_config[2]" = "GPP_CLK_REQ" # NVME SSD

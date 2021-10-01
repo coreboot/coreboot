@@ -32,7 +32,7 @@ Device (EC)
 		BIF0,   16,
 		BDCP,   16, // BAT Design Capacity
 		BFCP,   16, // BAT Full Capacity
-		BRCH,   16, // BAT Rechargable
+		BRCH,   16, // BAT Rechargeable
 		BDVT,   16, // BAT Design Voltage
 		BIF5,   16,
 		BIF6,   16,

@@ -18,7 +18,7 @@
  * with -bios option which neatly puts coreboot into flash and so payloads
  * can find CBFS and we don't risk overwriting CBFS.
  *
- * Prior to Jul 2014 qemu aliased 0 to begining of RAM instead of flash
+ * Prior to Jul 2014 qemu aliased 0 to beginning of RAM instead of flash
  * and -bios was unusable as $pc pointed to 0 which was zero-filled as a
  * workaround we suggested using -kernel but this still had all the issues
  * of having fake-ROM in RAM. In fact it was even worse as fake ROM ends

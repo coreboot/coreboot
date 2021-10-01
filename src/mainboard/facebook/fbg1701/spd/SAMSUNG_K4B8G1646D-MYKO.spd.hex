@@ -38,7 +38,7 @@
 #	4 SDRAM CHIP Density and Banks
 #		bits[3:0]: 4 = 4 Gigabits Total SDRAM capacity per chip
 #		bits[6:4]: 0 = 3 (8 banks)
-#		bits[7]: reserverd
+#		bits[7]: reserved
 04
 
 #	5 SDRAM Addressing

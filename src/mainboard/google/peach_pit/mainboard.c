@@ -330,7 +330,7 @@ static void setup_storage(void)
 
 static void gpio_init(void)
 {
-	/* Set up the I2C busses. */
+	/* Set up the I2C buses. */
 	exynos_pinmux_i2c2();
 	exynos_pinmux_i2c4();
 	exynos_pinmux_i2c7();

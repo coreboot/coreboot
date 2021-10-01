@@ -6,6 +6,68 @@ smm-$(CONFIG_SOC_INTEL_COMMON_BLOCK_HECI_DISABLE_IN_SMM) += disable_heci.c
 
 ramstage-$(CONFIG_SOC_INTEL_CSE_SET_EOP) += cse_eop.c
 
+ifeq ($(CONFIG_STITCH_ME_BIN),y)
+
+CSE_BP1_BIN := $(objcse)/cse_bp1.bin
+CSE_BP2_BIN := $(objcse)/cse_bp2.bin
+CSE_LAYOUT_BIN := $(objcse)/cse_layout.bin
+
+CSE_BPDT_VERSION := $(call strip_quotes,$(CONFIG_CSE_BPDT_VERSION))
+ifeq ($(CONFIG_CSE_BPDT_VERSION),)
+$(error "CONFIG_CSE_BPDT_VERSION is not set!")
+endif
+
+CSE_FPT_INPUT=$(call cse_input_path,$(CONFIG_CSE_FPT_FILE))
+CSE_DATA_INPUT=$(call cse_input_path,$(CONFIG_CSE_DATA_FILE))
+
+get_fmap_value=$(shell awk '$$2 == "$1" {print $$3}' $(obj)/fmap_config.h)
+get_cse_region_offset=$(call int-subtract,$(call get_fmap_value,$(1)) $(CSE_LAYOUT_OFFSET))
+
+CSE_LAYOUT_OFFSET=$(call get_fmap_value,FMAP_SECTION_CSE_LAYOUT_START)
+CSE_BP1_OFFSET=$(call get_cse_region_offset,FMAP_SECTION_CSE_RO_START)
+CSE_BP1_SIZE=$(call get_fmap_value,FMAP_SECTION_CSE_RO_SIZE)
+CSE_BP2_OFFSET=$(call get_cse_region_offset,FMAP_SECTION_CSE_RW_START)
+CSE_BP2_SIZE=$(call get_fmap_value,FMAP_SECTION_CSE_RW_SIZE)
+CSE_DP_OFFSET=$(call get_cse_region_offset,FMAP_SECTION_CSE_DATA_START)
+CSE_DP_SIZE=$(call get_fmap_value,FMAP_SECTION_CSE_DATA_SIZE)
+
+.PHONY: cse_inputs
+cse_inputs: $(cse_input_files)
+
+$(cse_decomp_files): $(CSE_FPT_INPUT) $(CSE_FPT)
+	printf "    DUMP       $(@F)\n"
+	$(CSE_FPT) $< dump -o $(objcse) -n $(@F) > /dev/null
+
+define cse_add_ingredient
+	$(if $($(2)-file), \
+		printf "    CSEADD     $(2) ($($(2)-file)) -> $(1)\n";
+		$(CSE_SERGER) $@ add -n $(2) -f $($(2)-file) > /dev/null,
+		printf "    CSEADD     $(2) (dummy) -> $(1)\n";
+		$(CSE_SERGER) $@ add -n $(2) > /dev/null)
+endef
+
+$(objcse)/cse_%.bin: $(CSE_SERGER) cse_inputs $(cse_decomp_files)
+	printf "    CREATE     $(@F) (version $(CSE_BPDT_VERSION))\n"
+	$(CSE_SERGER) $@ create-bpdt -v $(CSE_BPDT_VERSION) > /dev/null
+	$(foreach ingredient,$(cse_$*_ingredients),\
+		$(call cse_add_ingredient,$(@F),$(ingredient));)
+
+$(CSE_LAYOUT_BIN): $(obj)/fmap_config.h $(CSE_SERGER)
+	printf "    CREATE     $(@F) (version $(CSE_BPDT_VERSION))\n"
+	$(CSE_SERGER) $@ create-layout -v $(CSE_BPDT_VERSION) \
+		--bp1 $(CSE_BP1_OFFSET):$(CSE_BP1_SIZE) \
+		--bp2 $(CSE_BP2_OFFSET):$(CSE_BP2_SIZE) \
+		--dp $(CSE_DP_OFFSET):$(CSE_DP_SIZE) > /dev/null
+
+$(OBJ_ME_BIN): $(CSE_BP1_BIN) $(CSE_BP2_BIN) $(CSE_DATA_INPUT) $(CSE_LAYOUT_BIN)
+	printf "    CREATE     $(@F)\n"
+	dd if=$(CSE_LAYOUT_BIN) of=$@ bs=1 conv=notrunc 2> /dev/null
+	dd if=$(CSE_BP1_BIN) of=$@ bs=1 conv=notrunc seek=$(CSE_BP1_OFFSET) 2> /dev/null
+	dd if=$(CSE_BP2_BIN) of=$@ bs=1 conv=notrunc seek=$(CSE_BP2_OFFSET) 2> /dev/null
+	dd if=$(CSE_DATA_INPUT) of=$@ bs=1 conv=notrunc seek=$(CSE_DP_OFFSET) 2> /dev/null
+
+endif
+
 ifeq ($(CONFIG_SOC_INTEL_CSE_RW_UPDATE),y)
 
 ifeq ($(CONFIG_SOC_INTEL_CSE_RW_FILE),"")

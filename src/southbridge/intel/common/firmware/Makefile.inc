@@ -25,7 +25,18 @@ endif
 
 add_intel_firmware: $(call strip_quotes,$(CONFIG_IFD_BIN_PATH))
 ifeq ($(CONFIG_HAVE_ME_BIN),y)
-add_intel_firmware: $(call strip_quotes,$(CONFIG_ME_BIN_PATH))
+
+OBJ_ME_BIN := $(obj)/me.bin
+
+ifneq ($(CONFIG_STITCH_ME_BIN),y)
+
+$(OBJ_ME_BIN): $(call strip_quotes,$(CONFIG_ME_BIN_PATH))
+	cp $< $@
+
+endif
+
+add_intel_firmware: $(OBJ_ME_BIN)
+
 endif
 ifeq ($(CONFIG_HAVE_GBE_BIN),y)
 add_intel_firmware: $(call strip_quotes,$(CONFIG_GBE_BIN_PATH))
@@ -46,7 +57,7 @@ ifeq ($(CONFIG_HAVE_ME_BIN),y)
 	printf "    IFDTOOL    me.bin -> coreboot.pre\n"
 	$(objutil)/ifdtool/ifdtool \
 		$(IFDTOOL_USE_CHIPSET) \
-		-i ME:$(CONFIG_ME_BIN_PATH) \
+		-i ME:$(OBJ_ME_BIN) \
 		-O $(obj)/coreboot.pre \
 		$(obj)/coreboot.pre
 endif

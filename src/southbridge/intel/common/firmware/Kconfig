@@ -37,10 +37,19 @@ config HAVE_ME_BIN
 	  coreboot without it. In this case however, you'll have to make sure
 	  that you don't overwrite your ME/TXE firmware on your flash ROM.
 
-config ME_BIN_PATH
-	string "Path to management engine firmware"
-	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/me.bin"
+config STITCH_ME_BIN
+	bool "Stitch individual ME/CSE components"
+	default n
 	depends on HAVE_ME_BIN
+	help
+	  This config can be selected by mainboard if it wants to stitch ME/CSE
+	  components during build time instead of supplying a pre-stitched
+	  binary.
+
+config ME_BIN_PATH
+	string "Path to management engine firmware" if !STITCH_ME_BIN
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/me.bin"
+	depends on HAVE_ME_BIN && !STITCH_ME_BIN
 
 config CHECK_ME
 	bool "Verify the integrity of the supplied ME/TXE firmware"

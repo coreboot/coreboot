@@ -426,7 +426,17 @@ struct lb_mmc_info {
  * USB Type-C Port Information
  * This record contains board-specific type-c port information.
  * There will be one record per type-C port.
+ * Orientation fields should be of type enum type_c_orientation.
  */
+enum type_c_orientation {
+	/* The orientation of the signal follows the orientation of the CC lines. */
+	TYPEC_ORIENTATION_NONE,
+	/* The orientation of the signal is fixed to follow CC1 */
+	TYPEC_ORIENTATION_NORMAL,
+	/* The orientation of the signal is fixed to follow CC2 */
+	TYPEC_ORIENTATION_REVERSE,
+};
+
 struct type_c_port_info {
 	uint8_t usb2_port_number;
 	uint8_t usb3_port_number;

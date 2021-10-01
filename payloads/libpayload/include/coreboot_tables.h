@@ -143,6 +143,12 @@ struct cb_mainboard {
 	u8 strings[0];
 };
 
+enum type_c_orientation {
+	TYPEC_ORIENTATION_NONE,
+	TYPEC_ORIENTATION_NORMAL,
+	TYPEC_ORIENTATION_REVERSE,
+};
+
 struct type_c_port_info {
 	/*
 	 * usb2_port_number and usb3_port_number are expected to be

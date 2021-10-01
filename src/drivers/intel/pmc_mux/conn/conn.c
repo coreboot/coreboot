@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpigen.h>
+#include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <intelblocks/acpi.h>
+
 #include "chip.h"
 
 static const char *conn_acpi_name(const struct device *dev)
@@ -12,14 +14,14 @@ static const char *conn_acpi_name(const struct device *dev)
 	return name;
 }
 
-static const char *orientation_to_str(enum typec_orientation ori)
+static const char *orientation_to_str(enum type_c_orientation ori)
 {
 	switch (ori) {
 	case TYPEC_ORIENTATION_NORMAL:
 		return "normal";
 	case TYPEC_ORIENTATION_REVERSE:
 		return "reverse";
-	case TYPEC_ORIENTATION_FOLLOW_CC: /* Intentional fallthrough */
+	case TYPEC_ORIENTATION_NONE: /* Intentional fallthrough */
 	default:
 		return "";
 	}
@@ -52,11 +54,11 @@ static void conn_fill_ssdt(const struct device *dev)
 	 * The kernel assumes that these Type-C signals (SBUs and HSLs) follow the CC lines,
 	 * unless they are explicitly called out otherwise.
 	 */
-	if (config->sbu_orientation != TYPEC_ORIENTATION_FOLLOW_CC)
+	if (config->sbu_orientation != TYPEC_ORIENTATION_NONE)
 		acpi_dp_add_string(dsd, "sbu-orientation",
 				   orientation_to_str(config->sbu_orientation));
 
-	if (config->hsl_orientation != TYPEC_ORIENTATION_FOLLOW_CC)
+	if (config->hsl_orientation != TYPEC_ORIENTATION_NONE)
 		acpi_dp_add_string(dsd, "hsl-orientation",
 				   orientation_to_str(config->hsl_orientation));
 

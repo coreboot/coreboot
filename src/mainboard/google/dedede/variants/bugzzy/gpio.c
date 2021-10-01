@@ -21,6 +21,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D1, NONE),
 	/* D3  : WLAN_PCIE_WAKE_ODL ==> NC */
 	PAD_NC(GPP_D3, NONE),
+	/* D5  : TOUCHSCREEN_RESET */
+	PAD_CFG_GPO(GPP_D5, 1, DEEP),
 	/* D7  : EMR_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_D7, NONE, PLTRST, LEVEL, INVERT),
 	/* D13 : EN_PP3300_CAMERA */

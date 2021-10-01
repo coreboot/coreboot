@@ -23,6 +23,7 @@
 #include <thread.h>
 #include <timer.h>
 #include <timestamp.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <version.h>
 

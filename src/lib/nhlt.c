@@ -126,7 +126,7 @@ struct nhlt_format *nhlt_add_format(struct nhlt_endpoint *endp,
 	wave->channel_mask = speaker_mask;
 	memcpy(&wave->sub_format, &pcm_subformat, sizeof(wave->sub_format));
 
-	/* Calculate the dervied fields. */
+	/* Calculate the derived fields. */
 	wave->block_align = wave->num_channels * wave->bits_per_sample / 8;
 	wave->bytes_per_second = wave->block_align * wave->samples_per_second;
 

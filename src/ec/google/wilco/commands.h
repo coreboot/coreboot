@@ -10,7 +10,7 @@ enum {
 	KB_POWER_SMI = 0x04,
 	/* Read but do not clear power state information */
 	KB_POWER_STATUS = 0x05,
-	/* Inform the EC aboout the reason host is turning off */
+	/* Inform the EC about the reason host is turning off */
 	KB_POWER_OFF = 0x08,
 	/* Control wireless radios */
 	KB_RADIO_CONTROL = 0x2b,

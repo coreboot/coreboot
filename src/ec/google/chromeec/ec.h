@@ -161,7 +161,7 @@ int crosec_command_proto(struct chromeec_command *cec_command,
 			 crosec_io_t crosec_io, void *context);
 
 /**
- * Performs light verification of the EC<->AP communcation channel.
+ * Performs light verification of the EC<->AP communication channel.
  *
  * @return		0 on success, -1 on error
  */
@@ -330,7 +330,7 @@ struct usb_pd_port_caps {
  * Get role-based capabilities for a USB-PD port
  *
  * @param port			Which port to get information about
- * @param *power_role_cap	The power-role capabillity of the port
+ * @param *power_role_cap	The power-role capability of the port
  * @param *try_power_role_cap	The Try-power-role capability of the port
  * @param *data_role_cap	The data role capability of the port
  * @param *port_location	Location of the port on the device

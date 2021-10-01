@@ -91,7 +91,7 @@ static const TiLp55231Program solid_000000_program = {
  *
  * When solid patterns are deployed with instanteneous color intensity
  * changes, all three LEDs can be controlled by one engine in sequential
- * accesses. But the controllers still neeed to be synchronized.
+ * accesses. But the controllers still need to be synchronized.
  *
  * The maximum timer duration of lp55231 is .48 seconds. To achieve longer
  * blinking intervals the loops delays are deployed. Only the first controller

@@ -5,7 +5,7 @@
  *
  * $Workfile:: cache_as_ram.S
  *
- * Description: cache_as_ram.S - AGESA Module Entry Point for GCC complier
+ * Description: cache_as_ram.S - AGESA Module Entry Point for GCC compiler
  *
  ******************************************************************************
  */

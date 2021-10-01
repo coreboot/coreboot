@@ -238,7 +238,7 @@ static void pnp_get_ioresource(struct device *dev, u8 index, u16 mask)
 	resource->limit = (1 << (bit + 1)) - 1;
 
 	/* The block of ones in the mask is expected to be continuous.
-	   If there is any zero inbetween the block of ones, it is ignored
+	   If there is any zero in between the block of ones, it is ignored
 	   in the calculation of the resource size and limit. */
 	if (mask != (resource->limit ^ (resource->size - 1)))
 		printk(BIOS_WARNING,

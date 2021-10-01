@@ -21,7 +21,7 @@
 #include <stdint.h>
 #include "drivers/i2c/ww_ring/ww_ring.h"
 
-/* There are threee independent engines/cores in the controller. */
+/* There are three independent engines/cores in the controller. */
 #define LP55231_NUM_OF_ENGINES 3
 
 /* Number of lp55321 controllers on the ring */
@@ -29,7 +29,7 @@
 
 /*
  * Structure to describe an lp55231 program: pointer to the text of the
- * program, its size and load address (load addr + size sould not exceed
+ * program, its size and load address (load addr + size should not exceed
  * LP55231_MAX_PROG_SIZE), and start addresses for all of the three
  * engines.
  */

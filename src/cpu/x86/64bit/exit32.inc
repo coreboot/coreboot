@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /*
- * For droping from long mode to protected mode.
+ * For dropping from long mode to protected mode.
  *
  * For reference see "AMD64 ArchitectureProgrammer's Manual Volume 2",
  * Document 24593-Rev. 3.31-July 2019 Chapter 5.3
@@ -47,7 +47,7 @@ SetCodeSelector32:
 
 	# use iret to jump to a 32-bit offset in a new code segment
 	# iret will pop cs:rip, flags, then ss:rsp
-	mov	%ss, %ax	# need to push ss, but push ss instuction
+	mov	%ss, %ax	# need to push ss, but push ss instruction
 	push	%rax		# not valid in x64 mode, so use ax
 	push	%rdx		# the rsp to load
 	pushfq			# push rflags

@@ -280,7 +280,7 @@ static void r8168_init(struct device *dev)
 
 	/* Check if the base is invalid */
 	if (!io_base) {
-		printk(BIOS_ERR, "r8168: Error cant find IO resource\n");
+		printk(BIOS_ERR, "r8168: Error can't find IO resource\n");
 		return;
 	}
 	/* Enable but do not set bus master */

@@ -36,7 +36,7 @@
 #endif
 
 /* This evaluates to the type of the first expression, unless that is constant
-   in which case it evalutates to the type of the second. This is useful when
+   in which case it evaluates to the type of the second. This is useful when
    assigning macro parameters to temporary variables, because that would
    normally circumvent the special loosened type promotion rules for integer
    literals. By using this macro, the promotion can happen at the time the

@@ -1267,7 +1267,7 @@ void acpi_create_slit(acpi_slit_t *slit,
  * proximimity domain for the memory.
  */
 int acpi_create_hmat_mpda(acpi_hmat_mpda_t *mpda, u32 initiator, u32 memory);
-/* Create Heterogenous Memory Attribute Table */
+/* Create Heterogeneous Memory Attribute Table */
 void acpi_create_hmat(acpi_hmat_t *hmat,
 		      unsigned long (*acpi_fill_hmat)(unsigned long current));
 

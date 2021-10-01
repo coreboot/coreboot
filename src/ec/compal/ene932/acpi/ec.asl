@@ -118,7 +118,7 @@ Device (EC0)
 		SWTO, 1,        // SW Throttling (1=Active)             ; AEh.6
 		TTHR, 1,        // HW (THRM#) Throttling (1=Active)     ; AEh.7
 		TTHM, 1,        // TS_THERMAL(1:Throttling for thermal) ; AFh.0
-		THTL, 1,        // THROTTLING(1:Ctrl H/W throtting act) ; AFh.1
+		THTL, 1,        // THROTTLING(1:Ctrl H/W throttling act); AFh.1
 		, 2,            // Reserved                             ; AFh.2-3
 		NPST, 4,        // Number of P-State level              ; AFh.4-7
 		CTMP, 8,        // Current CPU Temperature              ; B0h

@@ -127,7 +127,7 @@ static void atl1e_init(struct device *dev)
 
 	/* Check if the base is invalid */
 	if (!mem_base) {
-		printk(BIOS_ERR, "atl1e: Error cant find MEM resource\n");
+		printk(BIOS_ERR, "atl1e: Error can't find MEM resource\n");
 		return;
 	}
 	/* Enable but do not set bus master */

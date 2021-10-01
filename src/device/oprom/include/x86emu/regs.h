@@ -54,7 +54,7 @@
  * EAX & 0xff  === AL
  * EAX & 0xffff == AX
  *
- * etc.  The result is that alot of the calculations can then be
+ * etc.  The result is that a lot of the calculations can then be
  * done using the native instruction set fully.
  */
 

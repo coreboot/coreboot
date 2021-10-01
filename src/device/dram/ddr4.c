@@ -205,7 +205,7 @@ int spd_decode_ddr4(struct dimm_attr_ddr4_st *dimm, spd_raw_data spd)
 
 	/* Verify CRC of blocks that have them, do not step over 'used' length */
 	for (int i = 0; i < ARRAY_SIZE(spd_blocks); i++) {
-		/* this block is not checksumed */
+		/* this block is not checksummed */
 		if (spd_blocks[i].crc_start == 0)
 			continue;
 		/* we shouldn't have this block */

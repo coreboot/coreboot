@@ -1937,15 +1937,15 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 2;
 	case TPM2:
 		return 4;
-	case SSDT: /* ACPI 3.0 upto 6.3: 2 */
+	case SSDT: /* ACPI 3.0 up to 6.3: 2 */
 		return 2;
-	case SRAT: /* ACPI 2.0: 1, ACPI 3.0: 2, ACPI 4.0 upto 6.3: 3 */
+	case SRAT: /* ACPI 2.0: 1, ACPI 3.0: 2, ACPI 4.0 up to 6.3: 3 */
 		return 1; /* TODO Should probably be upgraded to 2 */
 	case HMAT: /* ACPI 6.4: 2 */
 		return 2;
 	case DMAR:
 		return 1;
-	case SLIT: /* ACPI 2.0 upto 6.3: 1 */
+	case SLIT: /* ACPI 2.0 up to 6.3: 1 */
 		return 1;
 	case SPMI: /* IMPI 2.0 */
 		return 5;
@@ -1957,13 +1957,13 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return IVRS_FORMAT_MIXED;
 	case DBG2:
 		return 0;
-	case FACS: /* ACPI 2.0/3.0: 1, ACPI 4.0 upto 6.3: 2 */
+	case FACS: /* ACPI 2.0/3.0: 1, ACPI 4.0 up to 6.3: 2 */
 		return 1;
-	case RSDT: /* ACPI 1.0 upto 6.3: 1 */
+	case RSDT: /* ACPI 1.0 up to 6.3: 1 */
 		return 1;
-	case XSDT: /* ACPI 2.0 upto 6.3: 1 */
+	case XSDT: /* ACPI 2.0 up to 6.3: 1 */
 		return 1;
-	case RSDP: /* ACPI 2.0 upto 6.3: 2 */
+	case RSDP: /* ACPI 2.0 up to 6.3: 2 */
 		return 2;
 	case EINJ:
 		return 1;

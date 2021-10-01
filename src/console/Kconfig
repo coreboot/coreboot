@@ -193,7 +193,7 @@ config CONSOLE_NE2K
 	help
 	  Send coreboot debug output to a Ethernet console, it works
 	  same way as Linux netconsole, packets are received to UDP
-	  port 6666 on IP/MAC specified with options bellow.
+	  port 6666 on IP/MAC specified with options below.
 	  Use following netcat command: nc -u -l -p 6666
 
 config CONSOLE_NE2K_DST_MAC

@@ -104,7 +104,7 @@ void pci_early_bridge_init(void)
 }
 
 /* FIXME: A lot of issues using the following, please avoid.
- * Assumes 256 PCI busses, scans them all even when PCI bridges are still
+ * Assumes 256 PCI buses, scans them all even when PCI bridges are still
  * disabled. Probes all functions even if 0 is not present.
  */
 pci_devfn_t pci_locate_device(unsigned int pci_id, pci_devfn_t dev)

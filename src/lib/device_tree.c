@@ -758,7 +758,7 @@ struct device_tree_node *dt_find_compat(struct device_tree_node *parent,
 }
 
 /*
- * Find the next compatible child of a given parent. All children upto the
+ * Find the next compatible child of a given parent. All children up to the
  * child passed in by caller are ignored. If child is NULL, it considers all the
  * children to find the first child which is compatible.
  *

@@ -166,7 +166,7 @@ config ALWAYS_RUN_OPROM
 	def_bool n
 	depends on VGA_ROM_RUN && ALWAYS_LOAD_OPROM
 	help
-	  Always uncondtionally run the option regardless of other
+	  Always unconditionally run the option regardless of other
 	  policies.
 
 config ON_DEVICE_ROM_LOAD

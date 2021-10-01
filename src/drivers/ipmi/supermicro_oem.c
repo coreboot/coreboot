@@ -26,7 +26,7 @@ static void set_coreboot_ver(const uint16_t kcs_port)
 	int ret;
 	size_t i;
 
-	/* Only 8 charactars are visible in UI. Cut of on first dash */
+	/* Only 8 characters are visible in UI. Cut of on first dash */
 	for (i = 0; i < 15; i++) {
 		if (coreboot_ver[i] == '-')
 			break;

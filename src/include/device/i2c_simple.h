@@ -35,7 +35,7 @@ int i2c_write_field(unsigned int bus, uint8_t slave, uint8_t reg, uint8_t data,
 
 /*
  * software_i2c is supposed to be a debug feature. It's usually not compiled in,
- * but when it is it can be dynamically enabled at runtime for certain busses.
+ * but when it is it can be dynamically enabled at runtime for certain buses.
  * Need this ugly stub to arbitrate since I2C device drivers hardcode
  * 'i2c_transfer()' as their entry point.
  */

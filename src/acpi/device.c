@@ -139,7 +139,7 @@ static ssize_t acpi_device_path_fill(const struct device *dev, char *buf,
 
 /*
  * Warning: just as with dev_path() this uses a static buffer
- * so should not be called mulitple times in one statement
+ * so should not be called multiple times in one statement
  */
 const char *acpi_device_path(const struct device *dev)
 {

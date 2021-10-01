@@ -217,7 +217,7 @@ SetCodeSelector:
 	# use iret to jump to a 64-bit offset in a new code segment
 	# iret will pop cs:rip, flags, then ss:rsp
 	mov	%ss, %ax	# need to push ss..
-	push	%rax		# push ss instuction not valid in x64 mode,
+	push	%rax		# push ss instruction not valid in x64 mode,
 				# so use ax
 	push	%rsp
 	pushfq

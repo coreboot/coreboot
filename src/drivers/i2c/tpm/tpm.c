@@ -35,7 +35,7 @@
 
 /* max. number of iterations after I2C NAK for 'long' commands
  * we need this especially for sending TPM_READY, since the cleanup after the
- * transtion to the ready state may take some time, but it is unpredictable
+ * transition to the ready state may take some time, but it is unpredictable
  * how long it will take.
  */
 #define MAX_COUNT_LONG 50

@@ -683,7 +683,7 @@ int spi_sdcard_single_write(const struct spi_sdcard *card,
 	spi_sdcard_sendbyte(card, 0xff & (c >> 8));
 	spi_sdcard_sendbyte(card, 0xff & (c >> 0));
 
-	/* recevie and verify data response token */
+	/* receive and verify data response token */
 	c = spi_sdcard_recvbyte(card);
 	if ((c & CT_RESPONSE_MASK) != CT_RESPONSE_ACCEPTED) {
 		spi_sdcard_disable_cs(card);
@@ -742,7 +742,7 @@ int spi_sdcard_multiple_write(const struct spi_sdcard *card,
 		spi_sdcard_sendbyte(card, 0xff & (c >> 8));
 		spi_sdcard_sendbyte(card, 0xff & (c >> 0));
 
-		/* recevie and verify data response token */
+		/* receive and verify data response token */
 		c = spi_sdcard_recvbyte(card);
 		if ((c & CT_RESPONSE_MASK) != CT_RESPONSE_ACCEPTED)
 			break;

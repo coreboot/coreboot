@@ -433,7 +433,7 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 
 			/*
 			 * Slightly weird to return a global, but I've never
-			 * seen any EDID block wth two range descriptors, so
+			 * seen any EDID block with two range descriptors, so
 			 * it's harmless.
 			 */
 			return 1;
@@ -481,7 +481,7 @@ detailed_block(struct edid *result_edid, unsigned char *x, int in_extension,
 	  We have no samples between those values, so put a
 	  threshold at 95000 kHz. If we get anything over
 	  95000 kHz with single channel, we can make this
-	  more sofisticated but it's currently not needed.
+	  more sophisticated but it's currently not needed.
 	 */
 	out->mode.lvds_dual_channel = (out->mode.pixel_clock >= 95000);
 	extra_info.x_mm = (x[12] + ((x[14] & 0xF0) << 4));
@@ -1094,7 +1094,7 @@ int set_display_mode(struct edid *edid, enum edid_modes mode)
 }
 
 /*
- * Given a raw edid bloc, decode it into a form
+ * Given a raw edid block, decode it into a form
  * that other parts of coreboot can use -- mainly
  * graphics bringup functions. The raw block is
  * required to be 128 bytes long, per the standard,

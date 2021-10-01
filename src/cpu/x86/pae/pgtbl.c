@@ -104,7 +104,7 @@ void paging_disable_pae(void)
  * Use PAE to map a page and then memset it with the pattern specified.
  * In order to use PAE pagetables for virtual addressing are set up and reloaded
  * on a 2MiB boundary. After the function is done, virtual addressing mode is
- * disabled again. The PAT are set to all cachable, but MTRRs still apply.
+ * disabled again. The PAT are set to all cacheable, but MTRRs still apply.
  *
  * Requires a scratch memory for pagetables and a virtual address for
  * non identity mapped memory.
@@ -124,7 +124,7 @@ void paging_disable_pae(void)
  *                  Content at physical address isn't preserved.
  * @param length    The length of the memory segment to memset
  * @param dest      Physical memory address to memset
- * @param pat       The pattern to write to the pyhsical memory
+ * @param pat       The pattern to write to the physical memory
  * @return 0 on success, 1 on error
  */
 int memset_pae(uint64_t dest, unsigned char pat, uint64_t length, void *pgtbl,

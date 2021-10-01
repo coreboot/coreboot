@@ -6,7 +6,7 @@
  *
  * TPM starts in IDLE Mode
  *
- *   IDLE  --> READY --> Command Receiption
+ *   IDLE  --> READY --> Command Reception
  *    ^	                        |
  *    |	                        v
       -- Cmd Complete <-- Command Execution

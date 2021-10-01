@@ -23,7 +23,7 @@ Device (BATX)
 		0,            //  0: Power Unit
 		0xFFFFFFFF,   //  1: Design Capacity
 		0xFFFFFFFF,   //  2: Last Full Charge Capacity
-		1,            //  3: Battery Technology(Rechargable)
+		1,            //  3: Battery Technology(Rechargeable)
 		10800,        //  4: Design Voltage 10.8V
 		0,            //  5: Design capacity of warning
 		0,            //  6: Design capacity of low

@@ -2458,7 +2458,7 @@ void x86emu_cpuid(void)
     switch (feature) {
     case 0:
         /* Regardless if we have real data from the hardware, the emulator
-         * will only support upto feature 1, which we set in register EAX.
+         * will only support up to feature 1, which we set in register EAX.
          * Registers EBX:EDX:ECX contain a string identifying the CPU.
          */
         M.x86.R_EAX = 1;

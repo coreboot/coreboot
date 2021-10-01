@@ -289,7 +289,7 @@ void azalia_audio_init(struct device *dev)
 	if (!res)
 		return;
 
-	// NOTE this will break as soon as the azalia_audio get's a bar above 4G.
+	// NOTE this will break as soon as the azalia_audio gets a bar above 4G.
 	// Is there anything we can do about it?
 	base = res2mmio(res, 0, 0);
 	printk(BIOS_DEBUG, "azalia_audio: base = %p\n", base);

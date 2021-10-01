@@ -16,7 +16,7 @@
  * the LSB of the set field, but the latter contains the LSB of the way field
  * minus the highest valid set field... such that when you subtract it from a
  * [way:0:level] field you end up with a [way - 1:highest_set:level] field
- * through the magic of double subtraction. It's quite ingenius, really.
+ * through the magic of double subtraction. It's quite ingenious, really.
  * Takes care to only use r0-r3 and ip so it's pefectly ABI-compatible without
  * needing to write to memory.
  *

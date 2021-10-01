@@ -7,7 +7,7 @@
 #include <fit.h>
 #include <endian.h>
 
-/* Implements a Berkley Boot Loader (BBL) compatible payload loading */
+/* Implements a Berkeley Boot Loader (BBL) compatible payload loading */
 
 #define MAX_KERNEL_SIZE (64*MiB)
 

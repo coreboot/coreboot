@@ -81,7 +81,7 @@ struct drivers_generic_gpio_keys_config {
 	struct acpi_gpio gpio;
 	/* Is this a polled GPIO button? - Optional */
 	bool is_polled;
-	/* Poll inverval - Mandatory only if GPIO is polled. */
+	/* Poll interval - Mandatory only if GPIO is polled. */
 	uint32_t poll_interval;
 	/* Details about the key - Mandatory */
 	struct key_info key;

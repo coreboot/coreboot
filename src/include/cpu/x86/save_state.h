@@ -26,7 +26,7 @@ struct smm_save_state_ops {
 
 /* Return -1 on failure, otherwise returns which CPU node issued an APMC IO write */
 int get_apmc_node(u8 cmd);
-/* Return -1 on failure, 0 on succes.
+/* Return -1 on failure, 0 on success.
    Accessors for the SMM save state CPU registers RAX, RBX, RCX and RDX */
 int get_save_state_reg(const enum cpu_reg reg, const int node, void *out, const uint8_t length);
 int set_save_state_reg(const enum cpu_reg reg, const int node, void *in, const uint8_t length);

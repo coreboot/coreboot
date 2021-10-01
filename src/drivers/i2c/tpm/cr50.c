@@ -3,7 +3,7 @@
 /* Based on Linux Kernel TPM driver */
 
 /*
- * cr50 is a TPM 2.0 capable device that requries special
+ * cr50 is a TPM 2.0 capable device that requires special
  * handling for the I2C interface.
  *
  * - Use an interrupt for transaction status instead of hardcoded delays

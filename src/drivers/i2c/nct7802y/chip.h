@@ -37,7 +37,7 @@ enum nct7802y_fan_mode {
 
 enum nct7802y_fan_smartmode {
 	SMART_FAN_DUTY = 0,	/* Target values given in duty cycle %. */
-	SMART_FAN_RPM,		/* Target valuse given in RPM. */
+	SMART_FAN_RPM,		/* Target values given in RPM. */
 };
 
 enum nct7802y_fan_speed {

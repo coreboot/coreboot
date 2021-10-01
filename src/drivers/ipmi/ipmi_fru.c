@@ -525,7 +525,7 @@ void print_fru_areas(struct fru_info_str *fru_info_str)
 	if (prod_info.product_name != NULL)
 		printk(BIOS_DEBUG, "product name: %s\n", prod_info.product_name);
 	if (prod_info.product_partnumber != NULL)
-		printk(BIOS_DEBUG, "product part numer: %s\n", prod_info.product_partnumber);
+		printk(BIOS_DEBUG, "product part number: %s\n", prod_info.product_partnumber);
 	if (prod_info.product_version != NULL)
 		printk(BIOS_DEBUG, "product version: %s\n", prod_info.product_version);
 	if (prod_info.serial_number != NULL)

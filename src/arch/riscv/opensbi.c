@@ -2,7 +2,7 @@
 
 #include <sbi/fw_dynamic.h>
 #include <arch/boot.h>
-/* DO NOT INLCUDE COREBOOT HEADERS HERE */
+/* DO NOT INCLUDE COREBOOT HEADERS HERE */
 
 void run_opensbi(const int hart_id,
 		 const void *fdt,

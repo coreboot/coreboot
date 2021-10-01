@@ -9,7 +9,7 @@
  * A region file provides generic support for appending new data
  * within a storage region. The book keeping is tracked in metadata
  * blocks where an offset pointer points to the last byte of a newly
- * allocated byte sequence. Thus, by taking 2 block offets one can
+ * allocated byte sequence. Thus, by taking 2 block offsets one can
  * determine start and size of the latest update. The data does not
  * have to be the same consistent size, but the data size has be small
  * enough to fit a metadata block and one data write within the region.

@@ -57,7 +57,7 @@ _start:
 	movw	%cs, %ax
 	movw	%ax, %ds
 
-	/* The gdtaddr needs to be releative to the data segment in order
+	/* The gdtaddr needs to be relative to the data segment in order
 	 * to properly dereference it. The .text section comes first in an
 	 * rmodule so _start can be used as a proxy for the load address. */
 	movl	$(gdtaddr), %ebx

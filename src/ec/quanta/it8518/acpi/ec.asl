@@ -444,7 +444,7 @@ Device (EC0)
 		MBTH, 4,        //   bit 3-0: battery 0 highest level
 		SBTH, 4,        //   bit 7-4: battery 1 highest level
 		                //   note: if highest level is 0 or 0xF, it means not defined
-		                //         (in this case, use default hightest level, it is 6)
+		                //         (in this case, use default highest level, it is 6)
 
 		Offset(0xEF),   // [EC Function Specification Major Version]
 		Offset(0xF0),   // [Build ID]~ offset:0F7h

@@ -19,7 +19,7 @@
 	.size name, .-name
 
 /*
- * Certain SoCs have an alignment requiremnt for the CPU reset vector.
+ * Certain SoCs have an alignment requirement for the CPU reset vector.
  * Align to a 64 byte typical cacheline for now.
  */
 #define CPU_RESET_ENTRY(name) ENTRY_WITH_ALIGN(name, 6)

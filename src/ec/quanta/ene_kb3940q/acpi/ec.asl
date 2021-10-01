@@ -75,7 +75,7 @@ Device (EC0)
 		KBID, 1,        // 0=EN KBD, 1=JP KBD                   ; 80h.1
 		    , 6,        // Reserved                             ; 80h.2-7
 		NPST, 8,        // Number of P-State level              ; 81h
-		MPST, 8,        // Maxumum P-State                      ; 82h
+		MPST, 8,        // Maximum P-State                      ; 82h
 		KWAK, 1,        // Keyboard WAKE(0=Disable,1=Enable)    ; 83h.0
 		TWAK, 1,        // TouchPad WAKE(0=Disable,1=Enable)    ; 83h.1
 		    , 1,        // Reserved                             ; 83h.2

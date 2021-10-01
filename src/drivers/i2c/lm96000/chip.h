@@ -90,7 +90,7 @@ struct lm96000_temp_zone {
 	enum {
 		/* turn fan off below `low_temp - hysteresis` */
 		LM96000_LOW_TEMP_OFF = 0,
-		/* keep PWM at mininum duty cycle */
+		/* keep PWM at minimum duty cycle */
 		LM96000_LOW_TEMP_MIN = 1,
 	} min_off;
 	u8 hysteresis;

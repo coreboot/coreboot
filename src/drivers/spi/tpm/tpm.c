@@ -3,7 +3,7 @@
  *
  * It assumes that the required SPI interface has been initialized before the
  * driver is started. A 'sruct spi_slave' pointer passed at initialization is
- * used to direct traffic to the correct SPI interface. This dirver does not
+ * used to direct traffic to the correct SPI interface. This driver does not
  * provide a way to instantiate multiple TPM devices. Also, to keep things
  * simple, the driver unconditionally uses of TPM locality zero.
  *
@@ -159,7 +159,7 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 
 	/*
 	 * The first byte of the frame header encodes the transaction type
-	 * (read or write) and transfer size (set to lentgh - 1), limited to
+	 * (read or write) and transfer size (set to length - 1), limited to
 	 * 64 bytes.
 	 */
 	header.body[0] = (read_write ? 0x80 : 0) | 0x40 | (bytes - 1);
@@ -188,7 +188,7 @@ static int start_transaction(int read_write, size_t bytes, unsigned int addr)
 	 * the last clock of the byte) is set to 1.
 	 *
 	 * Due to some SPI controllers' shortcomings (Rockchip comes to
-	 * mind...) we trasmit the 4 byte header without checking the byte
+	 * mind...) we transmit the 4 byte header without checking the byte
 	 * transmitted by the TPM during the transaction's last byte.
 	 *
 	 * We know that cr50 is guaranteed to set the flow control bit to 0

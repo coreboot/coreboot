@@ -104,34 +104,8 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
-	fadt->duty_offset = 1;
-	fadt->duty_width = 0;
 
-	/* RTC Registers */
-	fadt->day_alrm = 0x0D;
-	fadt->mon_alrm = 0x00;
 	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
-
-	fadt->flags |= ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
-		       ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |
-		       ACPI_FADT_SLEEP_TYPE | ACPI_FADT_S4_RTC_WAKE |
-		       ACPI_FADT_PLATFORM_CLOCK;
-
-	/* PM1 Status & PM1 Enable */
-	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm1a_evt_blk.bit_width = 32;
-	fadt->x_pm1a_evt_blk.bit_offset = 0;
-	fadt->x_pm1a_evt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
-	fadt->x_pm1a_evt_blk.addrl = fadt->pm1a_evt_blk;
-	fadt->x_pm1a_evt_blk.addrh = 0x00;
-
-	/* PM1 Control Registers */
-	fadt->x_pm1a_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm1a_cnt_blk.bit_width = 16;
-	fadt->x_pm1a_cnt_blk.bit_offset = 0;
-	fadt->x_pm1a_cnt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
-	fadt->x_pm1a_cnt_blk.addrl = fadt->pm1a_cnt_blk;
-	fadt->x_pm1a_cnt_blk.addrh = 0x00;
 
 	/* PM2 Control Registers */
 	fadt->x_pm2_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;

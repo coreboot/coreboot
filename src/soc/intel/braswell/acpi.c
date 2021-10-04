@@ -280,17 +280,11 @@ static void generate_p_state_entries(int core, int cores_per_package)
 void generate_cpu_entries(const struct device *device)
 {
 	int core;
-	int pcontrol_blk = get_pmbase(), plen = 6;
 	const struct pattrs *pattrs = pattrs_get();
 
 	for (core = 0; core < pattrs->num_cpus; core++) {
-		if (core > 0) {
-			pcontrol_blk = 0;
-			plen = 0;
-		}
-
 		/* Generate processor \_SB.CPUx */
-		acpigen_write_processor(core, pcontrol_blk, plen);
+		acpigen_write_processor(core, 0, 0);
 
 		/* Generate  P-state tables */
 		generate_p_state_entries(core, pattrs->num_cpus);

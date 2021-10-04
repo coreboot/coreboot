@@ -54,13 +54,8 @@ static void xeon_sp_core_init(struct device *cpu)
 
 	/* set MSR_PKG_CST_CONFIG_CONTROL - scope per core*/
 	msr.hi = 0;
-	msr.lo = (PKG_CSTATE_NO_LIMIT | IO_MWAIT_REDIRECTION_ENABLE | CFG_LOCK_ENABLE);
+	msr.lo = (PKG_CSTATE_NO_LIMIT | CFG_LOCK_ENABLE);
 	wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
-
-	/* set MSR_PMG_IO_CAPTURE_BASE - scope per core */
-	msr.hi = 0;
-	msr.lo = (LVL_2_BASE_ADDRESS | CST_RANGE_MAX_C6);
-	wrmsr(MSR_PMG_IO_CAPTURE_BASE, msr);
 
 	/* Enable Energy Perf Bias Access, Dynamic switching and lock MSR */
 	msr = rdmsr(MSR_POWER_CTL);

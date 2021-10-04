@@ -28,17 +28,8 @@
 /* No package C-state limit. All C-States supported by the processor are available. */
 #define PKG_CSTATE_LIMIT_MASK            (0xf << PKG_CSTATE_LIMIT_SHIFT)
 #define PKG_CSTATE_NO_LIMIT              (0x7 << PKG_CSTATE_LIMIT_SHIFT)
-#define IO_MWAIT_REDIRECTION_SHIFT       10
-#define IO_MWAIT_REDIRECTION_ENABLE      (1 << IO_MWAIT_REDIRECTION_SHIFT)
 #define CFG_LOCK_SHIFT                   15
 #define CFG_LOCK_ENABLE                  (1 << CFG_LOCK_SHIFT)
-
-/* MSR_PMG_IO_CAPTURE_BASE bits */
-#define MSR_PMG_IO_CAPTURE_BASE          0xe4
-#define LVL_2_BASE_ADDRESS_SHIFT         0 /* 15:0 bits */
-#define LVL_2_BASE_ADDRESS               (0x0514 << LVL_2_BASE_ADDRESS_SHIFT)
-#define CST_RANGE_SHIFT                  16 /* 18:16 bits */
-#define CST_RANGE_MAX_C6                 (0x1 << CST_RANGE_SHIFT)
 
 /* MSR_POWER_CTL bits */
 #define MSR_POWER_CTL                            0x1fc

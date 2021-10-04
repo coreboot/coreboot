@@ -145,11 +145,10 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	/* GPE0 STS/EN pairs each 32 bits wide. */
 	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
 
-	fadt->duty_offset = 1;
 	fadt->day_alrm = 0xd;
 
 	fadt->flags |= ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
-			ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |
+			ACPI_FADT_SLEEP_BUTTON |
 			ACPI_FADT_SEALED_CASE | ACPI_FADT_S4_RTC_WAKE |
 			ACPI_FADT_PLATFORM_CLOCK;
 
@@ -398,8 +397,7 @@ __weak void soc_power_states_generation(int core_id,
 
 void generate_cpu_entries(const struct device *device)
 {
-	int core_id, cpu_id, pcontrol_blk = ACPI_BASE_ADDRESS;
-	int plen = 6;
+	int core_id, cpu_id;
 	int totalcores = dev_count_cpu();
 	unsigned int num_virt;
 	unsigned int num_phys;
@@ -413,14 +411,8 @@ void generate_cpu_entries(const struct device *device)
 
 	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
 		for (core_id = 0; core_id < num_virt; core_id++) {
-			if (core_id > 0) {
-				pcontrol_blk = 0;
-				plen = 0;
-			}
-
 			/* Generate processor \_SB.CPUx */
-			acpigen_write_processor((cpu_id) * num_virt +
-						core_id, pcontrol_blk, plen);
+			acpigen_write_processor((cpu_id) * num_virt + core_id, 0, 0);
 
 			/* Generate C-state tables */
 			generate_c_state_entries();

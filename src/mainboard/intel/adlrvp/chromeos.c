@@ -12,9 +12,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
 		{-1, ACTIVE_HIGH, 0, "power"},
 		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
-		{-1, ACTIVE_HIGH, 0, "EC in RW"},
+		{GPIO_EC_IN_RW, ACTIVE_HIGH, gpio_get(GPIO_EC_IN_RW), "EC in RW"},
 	};
-	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
+	if (CONFIG(BOARD_INTEL_ADLRVP_P_EXT_EC) || CONFIG(BOARD_INTEL_ADLRVP_M_EXT_EC))
+		lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
+	else
+		lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios) - 1);
 }
 
 #if !CONFIG(EC_GOOGLE_CHROMEEC_SWITCHES)

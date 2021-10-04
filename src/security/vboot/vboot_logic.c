@@ -54,27 +54,6 @@ vb2_error_t vb2ex_read_resource(struct vb2_context *ctx,
 	return VB2_SUCCESS;
 }
 
-/* No-op stubs that can be overridden by SoCs with hardware crypto support. */
-__weak vb2_error_t vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg,
-					      uint32_t data_size)
-{
-	return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
-}
-
-__weak vb2_error_t vb2ex_hwcrypto_digest_extend(const uint8_t *buf,
-						uint32_t size)
-{
-	BUG(); /* Should never get called if init() returned an error. */
-	return VB2_ERROR_UNKNOWN;
-}
-
-__weak vb2_error_t vb2ex_hwcrypto_digest_finalize(uint8_t *digest,
-						  uint32_t digest_size)
-{
-	BUG(); /* Should never get called if init() returned an error. */
-	return VB2_ERROR_UNKNOWN;
-}
-
 static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 {
 	int is_resume;

@@ -274,19 +274,12 @@ static inline uint32_t calculate_color(const struct rgb_color *rgb,
  * Plot a pixel in a framebuffer. This is called from tight loops. Keep it slim
  * and do the validation at callers' site.
  */
-static inline void set_pixel_raw(struct vector *rcoord, uint32_t color)
+static inline void set_pixel(struct vector *coord, uint32_t color)
 {
 	const int bpp = fbinfo->bits_per_pixel;
 	const int bpl = fbinfo->bytes_per_line;
-	int i;
-	uint8_t * const pixel = FB + rcoord->y * bpl + rcoord->x * bpp / 8;
-	for (i = 0; i < bpp / 8; i++)
-		pixel[i] = (color >> (i * 8));
-}
-
-static inline void set_pixel(struct vector *coord, uint32_t color)
-{
 	struct vector rcoord;
+	int i;
 
 	switch (fbinfo->orientation) {
 	case CB_FB_ORIENTATION_NORMAL:
@@ -308,7 +301,9 @@ static inline void set_pixel(struct vector *coord, uint32_t color)
 		break;
 	}
 
-	set_pixel_raw(&rcoord, color);
+	uint8_t * const pixel = FB + rcoord.y * bpl + rcoord.x * bpp / 8;
+	for (i = 0; i < bpp / 8; i++)
+		pixel[i] = (color >> (i * 8));
 }
 
 /*
@@ -625,22 +620,25 @@ int clear_screen(const struct rgb_color *rgb)
 	if (cbgfx_init())
 		return CBGFX_ERROR_INIT;
 
-	struct vector p;
+	int x, y, i;
 	uint32_t color = calculate_color(rgb, 0);
 	const int bpp = fbinfo->bits_per_pixel;
 	const int bpl = fbinfo->bytes_per_line;
+	uint8_t *line = malloc(bpl);
 
-	/* If all significant bytes in color are equal, fastpath through memset.
-	 * We assume that for 32bpp the high byte gets ignored anyway. */
-	if ((((color >> 8) & 0xff) == (color & 0xff)) && (bpp == 16 ||
-	    (((color >> 16) & 0xff) == (color & 0xff)))) {
-		memset(FB, color & 0xff, fbinfo->y_resolution * bpl);
-	} else {
-		for (p.y = 0; p.y < fbinfo->y_resolution; p.y++)
-			for (p.x = 0; p.x < fbinfo->x_resolution; p.x++)
-				set_pixel_raw(&p, color);
+	if (!line) {
+		LOG("Failed to allocate line buffer (%u bytes)\n", bpl);
+		return CBGFX_ERROR_UNKNOWN;
 	}
 
+	/* Set line buffer pixels, then memcpy to framebuffer */
+	for (x = 0; x < fbinfo->x_resolution; x++)
+		for (i = 0; i < bpp / 8; i++)
+			line[x * bpp / 8 + i] = (color >> (i * 8));
+	for (y = 0; y < fbinfo->y_resolution; y++)
+		memcpy(FB + y * bpl, line, bpl);
+
+	free(line);
 	return CBGFX_SUCCESS;
 }
 

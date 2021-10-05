@@ -117,4 +117,5 @@ void spi_write16(uint8_t reg, uint16_t val);
 void spi_write32(uint8_t reg, uint32_t val);
 
 void fch_spi_config_modes(void);
+void mainboard_spi_fast_speed_override(uint8_t *fast_speed);
 #endif /* AMD_BLOCK_SPI_H */

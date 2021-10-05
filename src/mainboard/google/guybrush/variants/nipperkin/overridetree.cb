@@ -143,7 +143,7 @@ chip soc/amd/cezanne
 	end
 
 	chip drivers/generic/max98357a
-			register "hid" = ""MX98357A""
+			register "hid" = ""MX98360A""
 			register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_31)"
 			register "sdmode_delay" = "5"
 			device generic 0.1 on end

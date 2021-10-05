@@ -265,24 +265,37 @@ enum cppc_fields {
 	CPPC_MAX_FIELDS_VER_3,
 };
 
+typedef struct cppc_entry {
+	enum { CPPC_TYPE_REG, CPPC_TYPE_DWORD } type;
+	union {
+		acpi_addr_t reg;
+		uint32_t dword;
+	};
+} cppc_entry_t;
+
+#define CPPC_DWORD(_dword) \
+	(cppc_entry_t){ \
+		.type  = CPPC_TYPE_DWORD, \
+		.dword = _dword, \
+	}
+
+#define CPPC_REG(_reg) \
+	(cppc_entry_t){ \
+		.type = CPPC_TYPE_REG, \
+		.reg  = _reg, \
+	}
+
+#define CPPC_REG_MSR(address, offset, width) CPPC_REG(ACPI_REG_MSR(address, offset, width))
+#define CPPC_UNSUPPORTED CPPC_REG(ACPI_REG_UNSUPPORTED)
+
 struct cppc_config {
 	u32 version; /* must be 1, 2, or 3 */
 	/*
 	 * The generic acpi_addr_t structure is being used, though
 	 * anything besides PPC or FFIXED generally requires checking
 	 * if the OS has advertised support for it (via _OSC).
-	 *
-	 * NOTE: some fields permit DWORDs to be used.  If you
-	 * provide a System Memory register with all zeros (which
-	 * represents unsupported) then this will be used as-is.
-	 * Otherwise, a System Memory register with a 32-bit
-	 * width will be converted into a DWORD field (the value
-	 * of which will be the value of 'addrl'.  Any other use
-	 * of System Memory register is currently undefined.
-	 * (i.e., if you have an actual need for System Memory
-	 * then you'll need to adjust this kludge).
 	 */
-	acpi_addr_t regs[CPPC_MAX_FIELDS_VER_3];
+	cppc_entry_t entries[CPPC_MAX_FIELDS_VER_3];
 };
 
 void acpigen_write_return_integer(uint64_t arg);

@@ -105,42 +105,35 @@ void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 {
 	config->version = version;
 
-	config->regs[CPPC_HIGHEST_PERF]			= ACPI_REG_MSR(IA32_HWP_CAPABILITIES, 0, 8);
-	config->regs[CPPC_NOMINAL_PERF]			= ACPI_REG_MSR(MSR_PLATFORM_INFO, 8, 8);
-	config->regs[CPPC_LOWEST_NONL_PERF]		= ACPI_REG_MSR(IA32_HWP_CAPABILITIES, 16, 8);
-	config->regs[CPPC_LOWEST_PERF]			= ACPI_REG_MSR(IA32_HWP_CAPABILITIES, 24, 8);
-	config->regs[CPPC_GUARANTEED_PERF]		= ACPI_REG_MSR(IA32_HWP_CAPABILITIES, 8, 8);
-	config->regs[CPPC_DESIRED_PERF]			= ACPI_REG_MSR(IA32_HWP_REQUEST, 16, 8);
-	config->regs[CPPC_MIN_PERF]			= ACPI_REG_MSR(IA32_HWP_REQUEST, 0, 8);
-	config->regs[CPPC_MAX_PERF]			= ACPI_REG_MSR(IA32_HWP_REQUEST, 8, 8);
-	config->regs[CPPC_PERF_REDUCE_TOLERANCE]	= ACPI_REG_UNSUPPORTED;
-	config->regs[CPPC_TIME_WINDOW]			= ACPI_REG_UNSUPPORTED;
-	config->regs[CPPC_COUNTER_WRAP]			= ACPI_REG_UNSUPPORTED;
-	config->regs[CPPC_REF_PERF_COUNTER]		= ACPI_REG_MSR(IA32_MPERF, 0, 64);
-	config->regs[CPPC_DELIVERED_PERF_COUNTER]	= ACPI_REG_MSR(IA32_APERF, 0, 64);
-	config->regs[CPPC_PERF_LIMITED]			= ACPI_REG_MSR(IA32_HWP_STATUS, 2, 1);
-	config->regs[CPPC_ENABLE]			= ACPI_REG_MSR(IA32_PM_ENABLE, 0, 1);
+	config->entries[CPPC_HIGHEST_PERF]		= CPPC_REG_MSR(IA32_HWP_CAPABILITIES, 0, 8);
+	config->entries[CPPC_NOMINAL_PERF]		= CPPC_REG_MSR(MSR_PLATFORM_INFO, 8, 8);
+	config->entries[CPPC_LOWEST_NONL_PERF]		= CPPC_REG_MSR(IA32_HWP_CAPABILITIES, 16, 8);
+	config->entries[CPPC_LOWEST_PERF]		= CPPC_REG_MSR(IA32_HWP_CAPABILITIES, 24, 8);
+	config->entries[CPPC_GUARANTEED_PERF]		= CPPC_REG_MSR(IA32_HWP_CAPABILITIES, 8, 8);
+	config->entries[CPPC_DESIRED_PERF]		= CPPC_REG_MSR(IA32_HWP_REQUEST, 16, 8);
+	config->entries[CPPC_MIN_PERF]			= CPPC_REG_MSR(IA32_HWP_REQUEST, 0, 8);
+	config->entries[CPPC_MAX_PERF]			= CPPC_REG_MSR(IA32_HWP_REQUEST, 8, 8);
+	config->entries[CPPC_PERF_REDUCE_TOLERANCE]	= CPPC_UNSUPPORTED;
+	config->entries[CPPC_TIME_WINDOW]		= CPPC_UNSUPPORTED;
+	config->entries[CPPC_COUNTER_WRAP]		= CPPC_UNSUPPORTED;
+	config->entries[CPPC_REF_PERF_COUNTER]		= CPPC_REG_MSR(IA32_MPERF, 0, 64);
+	config->entries[CPPC_DELIVERED_PERF_COUNTER]	= CPPC_REG_MSR(IA32_APERF, 0, 64);
+	config->entries[CPPC_PERF_LIMITED]		= CPPC_REG_MSR(IA32_HWP_STATUS, 2, 1);
+	config->entries[CPPC_ENABLE]			= CPPC_REG_MSR(IA32_PM_ENABLE, 0, 1);
 
 	if (version < 2)
 		return;
 
-	config->regs[CPPC_AUTO_SELECT] = (acpi_addr_t){
-		.space_id    = ACPI_ADDRESS_SPACE_MEMORY,
-		.bit_width   = 32,
-		.bit_offset  = 0,
-		.access_size = ACPI_ACCESS_SIZE_UNDEFINED,
-		.addrl       = 1,
-	};
-
-	config->regs[CPPC_AUTO_ACTIVITY_WINDOW]		= ACPI_REG_MSR(IA32_HWP_REQUEST, 32, 10);
-	config->regs[CPPC_PERF_PREF]			= ACPI_REG_MSR(IA32_HWP_REQUEST, 24, 8);
-	config->regs[CPPC_REF_PERF]			= ACPI_REG_UNSUPPORTED;
+	config->entries[CPPC_AUTO_SELECT]		= CPPC_DWORD(1);
+	config->entries[CPPC_AUTO_ACTIVITY_WINDOW]	= CPPC_REG_MSR(IA32_HWP_REQUEST, 32, 10);
+	config->entries[CPPC_PERF_PREF]			= CPPC_REG_MSR(IA32_HWP_REQUEST, 24, 8);
+	config->entries[CPPC_REF_PERF]			= CPPC_UNSUPPORTED;
 
 	if (version < 3)
 		return;
 
-	config->regs[CPPC_LOWEST_FREQ]			= ACPI_REG_UNSUPPORTED;
-	config->regs[CPPC_NOMINAL_FREQ]			= ACPI_REG_UNSUPPORTED;
+	config->entries[CPPC_LOWEST_FREQ]		= CPPC_UNSUPPORTED;
+	config->entries[CPPC_NOMINAL_FREQ]		= CPPC_UNSUPPORTED;
 }
 
 void set_aesni_lock(void)

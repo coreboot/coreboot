@@ -130,7 +130,7 @@ typedef struct acpi_gen_regaddr {
 
 /* Macros for common resource types */
 #define ACPI_REG_MSR(address, offset, width) \
-	{ \
+	(acpi_addr_t){ \
 		.space_id    = ACPI_ADDRESS_SPACE_FIXED, \
 		.access_size = ACPI_ACCESS_SIZE_QWORD_ACCESS, \
 		.addrl       = address, \
@@ -138,7 +138,7 @@ typedef struct acpi_gen_regaddr {
 		.bit_width   = width, \
 	}
 
-#define ACPI_REG_UNSUPPORTED	{0}
+#define ACPI_REG_UNSUPPORTED	(acpi_addr_t){0}
 
 /* Common ACPI HIDs */
 #define ACPI_HID_FDC "PNP0700"

@@ -26,6 +26,7 @@ romstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 romstage-y += ../common/timer.c timer.c
 romstage-y += ../common/uart.c
 romstage-y += ../common/wdt.c wdt.c
+romstage-y += ../common/pmic_wrap.c pmic_wrap.c mt6366.c
 
 ramstage-y += emi.c
 ramstage-y += ../common/flash_controller.c
@@ -35,6 +36,7 @@ ramstage-y += soc.c
 ramstage-y += ../common/timer.c timer.c
 ramstage-y += ../common/uart.c
 ramstage-y += ../common/wdt.c wdt.c
+ramstage-y += ../common/pmic_wrap.c pmic_wrap.c mt6366.c
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8186/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include

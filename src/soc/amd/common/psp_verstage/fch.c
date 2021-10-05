@@ -161,4 +161,6 @@ void verstage_soc_init(void)
 	printk(BIOS_DEBUG, "Setting up i2c\n");
 	i2c_soc_early_init();
 	printk(BIOS_DEBUG, "i2c setup\n");
+	fch_spi_config_modes();
+	show_spi_speeds_and_modes();
 }

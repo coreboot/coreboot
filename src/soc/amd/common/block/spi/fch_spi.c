@@ -91,7 +91,7 @@ static void fch_spi_set_read_mode(u32 mode)
 	spi_write32(SPI_CNTRL0, val | SPI_READ_MODE(mode));
 }
 
-static void fch_spi_config_modes(void)
+void fch_spi_config_modes(void)
 {
 	uint8_t read_mode, fast_speed;
 	uint8_t normal_speed = CONFIG_NORMAL_READ_SPI_SPEED;

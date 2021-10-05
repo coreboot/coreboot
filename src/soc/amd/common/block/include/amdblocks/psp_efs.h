@@ -7,7 +7,6 @@
 #include <types.h>
 
 #define EFS_OFFSET (0xffffff - (0x80000 << CONFIG_AMD_FWM_POSITION_INDEX) + 0x20000 + 1)
-#define EFS_ADDRESS (0xff000000 + EFS_OFFSET)
 
 #define EMBEDDED_FW_SIGNATURE			0x55aa55aa
 

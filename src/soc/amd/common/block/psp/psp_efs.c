@@ -2,13 +2,18 @@
 
 #include <amdblocks/psp_efs.h>
 #include <arch/mmio.h>
+#include <boot_device.h>
+#include <commonlib/region.h>
 #include <types.h>
 
-struct _embedded_firmware *efs = (struct _embedded_firmware *)EFS_ADDRESS;
+static struct _embedded_firmware *efs;
 
 bool efs_is_valid(void)
 {
-	if (efs->signature != EMBEDDED_FW_SIGNATURE)
+	if (!efs)
+		efs = rdev_mmap(boot_device_ro(), EFS_OFFSET, sizeof(*efs));
+
+	if (!efs || efs->signature != EMBEDDED_FW_SIGNATURE)
 		return false;
 
 	return true;

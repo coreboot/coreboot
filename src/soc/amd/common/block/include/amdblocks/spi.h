@@ -116,4 +116,5 @@ void spi_write8(uint8_t reg, uint8_t val);
 void spi_write16(uint8_t reg, uint16_t val);
 void spi_write32(uint8_t reg, uint32_t val);
 
+void fch_spi_config_modes(void);
 #endif /* AMD_BLOCK_SPI_H */

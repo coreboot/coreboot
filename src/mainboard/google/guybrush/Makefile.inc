@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 bootblock-y += bootblock.c
+bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 
 ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4.bin),)
 $(info APCB sources present.)

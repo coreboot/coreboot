@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <amdblocks/spi.h>
 #include <baseboard/gpio.h>
 #include <boardid.h>
 #include <boot/coreboot_tables.h>
@@ -35,4 +36,12 @@ int get_ec_is_trusted(void)
 		return 1;
 	/* EC is trusted if not in RW. */
 	return !gpio_get(GPIO_EC_IN_RW);
+}
+
+void mainboard_spi_fast_speed_override(uint8_t *fast_speed)
+{
+	uint32_t board_ver = board_id();
+
+	if (board_ver >= CONFIG_OVERRIDE_EFS_SPI_SPEED_MIN_BOARD)
+		*fast_speed = CONFIG_OVERRIDE_EFS_SPI_SPEED;
 }

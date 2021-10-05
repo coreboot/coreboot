@@ -194,11 +194,9 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 	uint8_t sec_bus;
 	uint8_t slot_usage;
 	uint8_t pcie_config = 0;
-	uint8_t characteristics_1 = 0;
-	uint8_t characteristics_2 = 0;
 	uint32_t vendor_device_id;
 	uint8_t stack_busnos[MAX_IIO_STACK];
-	pci_devfn_t pci_dev;
+	pci_devfn_t pci_dev_slot, pci_dev = 0;
 	unsigned int cap;
 	uint16_t sltcap;
 
@@ -209,6 +207,9 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 		stack_busnos[index] = get_stack_busno(index);
 
 	for (index = 0; index < ARRAY_SIZE(slotinfo); index++) {
+		uint8_t characteristics_1 = 0;
+		uint8_t characteristics_2 = 0;
+
 		if (pcie_config == PCIE_CONFIG_A) {
 			if (index == 0 || index == 1 || index == 2)
 				printk(BIOS_INFO, "Find Config-A slot: %s\n",
@@ -251,14 +252,14 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 		else
 			slot_length = SlotLengthShort;
 
-		pci_dev = PCI_DEV(stack_busnos[slotinfo[index].stack],
+		pci_dev_slot = PCI_DEV(stack_busnos[slotinfo[index].stack],
 			slotinfo[index].dev_func >> 3, slotinfo[index].dev_func & 0x7);
-		sec_bus = pci_s_read_config8(pci_dev, PCI_SECONDARY_BUS);
+		sec_bus = pci_s_read_config8(pci_dev_slot, PCI_SECONDARY_BUS);
 
 		if (sec_bus == 0xFF) {
 			slot_usage = SlotUsageUnknown;
 		} else {
-			/* Checking for Slot device availability */
+			/* Checking for downstream device availability */
 			pci_dev = PCI_DEV(sec_bus, 0, 0);
 			vendor_device_id = pci_s_read_config32(pci_dev, 0);
 			if (vendor_device_id == 0xFFFFFFFF)
@@ -269,13 +270,16 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 
 		characteristics_1 |= SMBIOS_SLOT_3P3V; // Provides33Volts
 		characteristics_2 |= SMBIOS_SLOT_PME; // PmeSiganalSupported
-
-		cap = pci_s_find_capability(pci_dev, PCI_CAP_ID_PCIE);
-		sltcap = pci_s_read_config16(pci_dev, cap + PCI_EXP_SLTCAP);
+		/* Read IIO root port device CSR for slot capabilities */
+		cap = pci_s_find_capability(pci_dev_slot, PCI_CAP_ID_PCIE);
+		sltcap = pci_s_read_config16(pci_dev_slot, cap + PCI_EXP_SLTCAP);
 		if (sltcap & PCI_EXP_SLTCAP_HPC)
 			characteristics_2 |= SMBIOS_SLOT_HOTPLUG;
 
 		const uint16_t slot_id = index + 1;
+		/* According to SMBIOS spec, the BDF number should be the end
+		   point on the slot, for now we keep using the root port's BDF to
+		   be aligned with our UEFI reference BIOS. */
 		length += smbios_write_type9(current, handle,
 					  slotinfo[index].slot_designator,
 					  slotinfo[index].slot_type,

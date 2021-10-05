@@ -45,7 +45,10 @@ void fch_pre_init(void)
 	/* Enable_acpimmio_decode_pm04 to enable the ACPIMMIO decode which is needed to access
 	   the GPIO registers. */
 	enable_acpimmio_decode_pm04();
+	/* Setup SPI base by calling lpc_early_init before setting up eSPI. */
 	lpc_early_init();
+	/* Setup eSPI to enable port80 routing. */
+	configure_espi();
 
 	if (!CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
 		lpc_configure_decodes();
@@ -81,7 +84,4 @@ void fch_early_init(void)
 
 	if (CONFIG(DISABLE_SPI_FLASH_ROM_SHARING))
 		lpc_disable_spi_rom_sharing();
-
-	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
-		espi_setup();
 }

@@ -131,4 +131,15 @@ int espi_setup(void);
 /* Run mainboard configuration needed to set up eSPI */
 void mb_set_up_early_espi(void);
 
+/* Setup eSPI with any mainboard specific initialization. */
+static inline void configure_espi(void)
+{
+	/* If eSPI is setup in PSP Verstage, continue with that. Else setup eSPI to perform
+	   port80h routing as early as possible. */
+	if (!CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI)) {
+		mb_set_up_early_espi();
+		espi_setup();
+	}
+}
+
 #endif /* AMD_BLOCK_ESPI_H */

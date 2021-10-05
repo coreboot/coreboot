@@ -111,7 +111,6 @@
 #define   I2C_PAD_CTRL_SPARE0		BIT(17)
 #define   I2C_PAD_CTRL_SPARE1		BIT(18)
 
-void configure_port80_routing_early(void);
 void fch_pre_init(void);
 void fch_early_init(void);
 void fch_init(void *chip_info);

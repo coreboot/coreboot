@@ -92,12 +92,6 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	set_caching();
 	write_resume_eip();
 	enable_pci_mmconf();
-	/*
-	 * If NO_EARLY_BOOTBLOCK_POSTCODES is selected, we need to initialize port80h
-	 * routing as early as possible
-	 */
-	if (CONFIG(NO_EARLY_BOOTBLOCK_POSTCODES))
-		configure_port80_routing_early();
 
 	/*
 	 * base_timestamp is raw tsc value. We need to divide by tsc_freq_mhz

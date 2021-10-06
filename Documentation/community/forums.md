@@ -17,7 +17,9 @@ We also have a real time chat room on [IRC](ircs://irc.libera.chat/#coreboot),
 also bridged to [Matrix](https://matrix.to/#/#coreboot:libera.chat) and a
 [Discord](https://discord.gg/JqT8NM5Zbg) presence. You can also find us on
 [OSF Slack](https://osfw.slack.com/), which has channels on many open source
-firmware related topics.
+firmware related topics. Slack requires that people come from specific domains
+or are explicitly invited. To work around that, there's an
+[invite bot](https://slack.osfw.dev/) to let people in.
 
 ## Fortnightly coreboot leadership meeting
 

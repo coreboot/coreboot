@@ -1040,11 +1040,11 @@ static void O1PathOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
         // VREF_UNTERM_EN
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_VREF), 1, SHU_B0_VREF_RG_RX_ARDQ_VREF_UNTERM_EN_B0);
         if (!isLP4_DSC)
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_VREF), 1, SHU_B1_VREF_RG_RX_ARDQ_VREF_UNTERM_EN_B1);
+            vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_VREF), 1, SHU_B1_VREF_RG_RX_ARDQ_VREF_UNTERM_EN_B1);
         else
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_VREF), 1, SHU_CA_VREF_RG_RX_ARCA_VREF_UNTERM_EN_CA);
 
-            u1VrefSel = 0x37;//unterm LP4
+        u1VrefSel = 0x37;//unterm LP4
 
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_PHY_VREF_SEL),
                     P_Fld(u1VrefSel, SHU_B0_PHY_VREF_SEL_RG_RX_ARDQ_VREF_SEL_LB_B0) |

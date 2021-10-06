@@ -599,6 +599,8 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
+	/* Skip setting D0I3 bit for all HECI devices */
+	s_cfg->DisableD0I3SettingForHeci = 1;
 	/*
 	 * Power Optimizer for DMI
 	 * DmiPwrOptimizeDisable is default to 0.

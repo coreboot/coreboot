@@ -56,4 +56,27 @@ smm-y += xhci.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/alderlake
 CPPFLAGS_common += -I$(src)/soc/intel/alderlake/include
+
+ifeq ($(CONFIG_STITCH_ME_BIN),y)
+
+$(call cse_add_dummy_to_bp1_bp2,DLMP)
+$(call cse_add_dummy_to_bp1_bp2,IFPP)
+$(call cse_add_dummy_to_bp1_bp2,SBDT)
+$(call cse_add_decomp_to_bp1_bp2,RBEP)
+$(call cse_add_dummy_to_bp1_bp2,UFSP)
+$(call cse_add_dummy_to_bp1_bp2,UFSG)
+$(call cse_add_dummy_to_bp1_bp2,OEMP)
+$(call cse_add_input_to_bp1_bp2,PMCP)
+$(call cse_add_decomp,bp1,MFTP)
+$(call cse_add_decomp,bp2,FTPR)
+$(call cse_add_input_to_bp1_bp2,IOMP)
+$(call cse_add_input_to_bp1_bp2,NPHY)
+$(call cse_add_input_to_bp1_bp2,TBTP)
+$(call cse_add_input_to_bp1_bp2,PCHC)
+$(call cse_add_decomp,bp2,NFTP)
+$(call cse_add_dummy,bp2,ISHP)
+$(call cse_add_input,bp2,IUNP)
+
+endif
+
 endif

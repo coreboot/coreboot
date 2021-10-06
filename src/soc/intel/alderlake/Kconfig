@@ -321,4 +321,11 @@ config SOC_INTEL_CRASHLOG
 	help
 	  Enables CrashLog.
 
+if STITCH_ME_BIN
+
+config CSE_BPDT_VERSION
+	default "1.7"
+
+endif
+
 endif

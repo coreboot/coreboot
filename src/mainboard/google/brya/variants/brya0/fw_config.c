@@ -33,22 +33,28 @@ static const struct pad_config sndw_disable_pads[] = {
 	PAD_NC(GPP_S5, NONE),
 };
 
-static const struct pad_config i2s_enable_pads[] = {
+static const struct pad_config i2s0_enable_pads[] = {
 	PAD_CFG_NF(GPP_R0, NONE, DEEP, NF2),	/* I2S_HP_SCLK_R */
 	PAD_CFG_NF(GPP_R1, NONE, DEEP, NF2),	/* I2S_HP_SFRM_R */
 	PAD_CFG_NF(GPP_R2, DN_20K, DEEP, NF2),	/* I2S_PCH_TX_HP_RX_STRAP */
 	PAD_CFG_NF(GPP_R3, NONE, DEEP, NF2),	/* I2S_PCH_RX_HP_TX */
+};
+
+static const struct pad_config i2s2_enable_pads[] = {
 	PAD_CFG_NF(GPP_R4, NONE, DEEP, NF2),	/* I2S_SPKR_SCLK_R */
 	PAD_CFG_NF(GPP_R5, NONE, DEEP, NF2),	/* I2S_SPKR_SFRM_R */
 	PAD_CFG_NF(GPP_R6, NONE, DEEP, NF2),	/* I2S_PCH_TX_SPKR_RX_R */
 	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF2),	/* I2S_PCH_RX_SPKR_TX */
 };
 
-static const struct pad_config i2s_disable_pads[] = {
+static const struct pad_config i2s0_disable_pads[] = {
 	PAD_NC(GPP_R0, NONE),
 	PAD_NC(GPP_R1, NONE),
 	PAD_NC(GPP_R2, NONE),
 	PAD_NC(GPP_R3, NONE),
+};
+
+static const struct pad_config i2s2_disable_pads[] = {
 	PAD_NC(GPP_R4, NONE),
 	PAD_NC(GPP_R5, NONE),
 	PAD_NC(GPP_R6, NONE),
@@ -80,7 +86,8 @@ static const struct pad_config bt_i2s_disable_pads[] = {
 static void enable_i2s(void)
 {
 	gpio_configure_pads(dmic_enable_pads, ARRAY_SIZE(dmic_enable_pads));
-	gpio_configure_pads(i2s_enable_pads, ARRAY_SIZE(i2s_enable_pads));
+	gpio_configure_pads(i2s0_enable_pads, ARRAY_SIZE(i2s0_enable_pads));
+	gpio_configure_pads(i2s2_enable_pads, ARRAY_SIZE(i2s2_enable_pads));
 	gpio_configure_pads(sndw_disable_pads, ARRAY_SIZE(sndw_disable_pads));
 }
 
@@ -88,7 +95,8 @@ static void fw_config_handle(void *unused)
 {
 	if (!fw_config_is_provisioned() || fw_config_probe(FW_CONFIG(AUDIO, AUDIO_UNKNOWN))) {
 		printk(BIOS_INFO, "Disable audio related GPIO pins.\n");
-		gpio_configure_pads(i2s_disable_pads, ARRAY_SIZE(i2s_disable_pads));
+		gpio_configure_pads(i2s0_disable_pads, ARRAY_SIZE(i2s0_disable_pads));
+		gpio_configure_pads(i2s2_disable_pads, ARRAY_SIZE(i2s2_disable_pads));
 		gpio_configure_pads(dmic_disable_pads, ARRAY_SIZE(dmic_disable_pads));
 		gpio_configure_pads(sndw_disable_pads, ARRAY_SIZE(sndw_disable_pads));
 		return;
@@ -99,11 +107,13 @@ static void fw_config_handle(void *unused)
 		gpio_configure_pads(dmic_enable_pads, ARRAY_SIZE(dmic_enable_pads));
 		gpio_configure_pads(sndw_enable_pads, ARRAY_SIZE(sndw_enable_pads));
 		printk(BIOS_INFO, "BT offload enabled\n");
-		gpio_configure_pads(i2s_enable_pads, ARRAY_SIZE(i2s_enable_pads));
+		gpio_configure_pads(i2s0_enable_pads, ARRAY_SIZE(i2s0_enable_pads));
+		gpio_configure_pads(i2s2_disable_pads, ARRAY_SIZE(i2s2_disable_pads));
 		gpio_configure_pads(bt_i2s_enable_pads, ARRAY_SIZE(bt_i2s_enable_pads));
 	} else {
 		printk(BIOS_INFO, "BT offload disabled\n");
-		gpio_configure_pads(i2s_disable_pads, ARRAY_SIZE(i2s_disable_pads));
+		gpio_configure_pads(i2s0_disable_pads, ARRAY_SIZE(i2s0_disable_pads));
+		gpio_configure_pads(i2s2_disable_pads, ARRAY_SIZE(i2s2_disable_pads));
 		gpio_configure_pads(bt_i2s_disable_pads, ARRAY_SIZE(bt_i2s_disable_pads));
 	}
 

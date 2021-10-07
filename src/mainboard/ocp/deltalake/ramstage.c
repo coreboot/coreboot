@@ -327,17 +327,6 @@ void smbios_fill_dimm_locator(const struct dimm_info *dimm, struct smbios_type17
 	t->bank_locator = smbios_add_string(t->eos, buf);
 }
 
-unsigned int smbios_processor_family(struct cpuid_result res)
-{
-	return 0xb3; /* Xeon */
-}
-
-unsigned int smbios_processor_characteristics(void)
-{
-	/* 64-bit Capable, Multi-Core, Power/Performance Control */
-	return 0x8c; /* BIT2 | BIT3 | BIT7 */
-}
-
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->get_smbios_strings = dl_oem_smbios_strings;

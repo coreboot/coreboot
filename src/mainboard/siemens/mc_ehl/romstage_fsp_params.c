@@ -17,9 +17,6 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	static uint8_t spd_data[0x100];
 	const char *cbfs_hwi_name = "hwinfo.hex";
 
-	/* TODO: Read the resistor strap to get number of memory segments */
-	bool half_populated = false;
-
 	/* Initialize SPD information for LPDDR4x from HW-Info primarily with a fallback to
 	   spd.bin in the case where the SPD data in HW-Info is not available or invalid. */
 	memset(spd_data, 0, sizeof(spd_data));
@@ -35,5 +32,5 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 		spd_info.spd_spec.spd_index = 0x00;
 	}
 	/* Initialize variant specific configurations */
-	memcfg_init(&memupd->FspmConfig, board_cfg, &spd_info, half_populated);
+	memcfg_init(&memupd->FspmConfig, board_cfg, &spd_info, false);
 }

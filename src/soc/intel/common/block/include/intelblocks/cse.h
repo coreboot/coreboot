@@ -76,16 +76,6 @@ struct fw_version {
 	uint16_t build;
 } __packed;
 
-/*
- * CSE RW metadata structure
- * fw_version - CSE RW firmware version
- * sha256 - Hash of the CSE RW binary.
- */
-struct cse_rw_metadata {
-	struct fw_version version;
-	uint8_t sha256[VB2_SHA256_DIGEST_SIZE];
-};
-
 /* CSE recovery sub-error codes */
 enum csme_failure_reason {
 	/* No error */

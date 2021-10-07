@@ -51,11 +51,17 @@ config SOC_INTEL_CSE_RW_CBFS_NAME
 	help
 	 CBFS entry name for Intel CSE CBFS RW blob
 
-config SOC_INTEL_CSE_RW_METADATA_CBFS_NAME
-	string "CBFS name for CSE RW metadata file" if SOC_INTEL_CSE_RW_UPDATE
-	default "me_rw.metadata"
+config SOC_INTEL_CSE_RW_HASH_CBFS_NAME
+	string "CBFS name for CSE RW hash file" if SOC_INTEL_CSE_RW_UPDATE
+	default "me_rw.hash"
 	help
-	 CBFS name for Intel CSE CBFS RW metadata file
+	 CBFS name for Intel CSE CBFS RW hash file
+
+config SOC_INTEL_CSE_RW_VERSION_CBFS_NAME
+	string "CBFS name for CSE RW version file" if SOC_INTEL_CSE_RW_UPDATE
+	default "me_rw.version"
+	help
+	 CBFS name for Intel CSE CBFS RW version file
 
 config SOC_INTEL_CSE_RW_FILE
 	string "Intel CSE CBFS RW path and filename" if SOC_INTEL_CSE_RW_UPDATE

@@ -565,29 +565,53 @@ enum cse_update_status {
 	CSE_UPDATE_METADATA_ERROR,
 };
 
-static struct cse_rw_metadata source_metadata;
+static bool read_ver_field(const char *start, char **curr, size_t size, uint16_t *ver_field)
+{
+	if ((*curr - start) >= size) {
+		printk(BIOS_ERR, "cse_lite: Version string read overflow!\n");
+		return false;
+	}
+
+	*ver_field = skip_atoi(curr);
+	(*curr)++;
+	return true;
+}
 
 static enum cse_update_status cse_check_update_status(const struct cse_bp_info *cse_bp_info,
 						      struct region_device *target_rdev)
 {
 	int ret;
+	struct fw_version cbfs_rw_version;
+	char *version_str, *ptr;
+	size_t size;
 
 	if (!cse_is_rw_bp_sign_valid(target_rdev))
 		return CSE_UPDATE_CORRUPTED;
 
-	if (cbfs_load(CONFIG_SOC_INTEL_CSE_RW_METADATA_CBFS_NAME, &source_metadata,
-			sizeof(source_metadata)) != sizeof(source_metadata)) {
-		printk(BIOS_ERR, "cse_lite: Failed to get CSE CBFS RW metadata\n");
+	ptr = version_str = cbfs_map(CONFIG_SOC_INTEL_CSE_RW_VERSION_CBFS_NAME, &size);
+	if (!version_str) {
+		printk(BIOS_ERR, "cse_lite: Failed to get %s\n",
+		       CONFIG_SOC_INTEL_CSE_RW_VERSION_CBFS_NAME);
+		return CSE_UPDATE_METADATA_ERROR;
+	}
+
+	if (!read_ver_field(version_str, &ptr, size, &cbfs_rw_version.major) ||
+	    !read_ver_field(version_str, &ptr, size, &cbfs_rw_version.minor) ||
+	    !read_ver_field(version_str, &ptr, size, &cbfs_rw_version.hotfix) ||
+	    !read_ver_field(version_str, &ptr, size, &cbfs_rw_version.build)) {
+		cbfs_unmap(version_str);
 		return CSE_UPDATE_METADATA_ERROR;
 	}
 
 	printk(BIOS_DEBUG, "cse_lite: CSE CBFS RW version : %d.%d.%d.%d\n",
-			source_metadata.version.major,
-			source_metadata.version.minor,
-			source_metadata.version.hotfix,
-			source_metadata.version.build);
+			cbfs_rw_version.major,
+			cbfs_rw_version.minor,
+			cbfs_rw_version.hotfix,
+			cbfs_rw_version.build);
 
-	ret = compare_cse_version(&source_metadata.version, cse_get_rw_version(cse_bp_info));
+	cbfs_unmap(version_str);
+
+	ret = compare_cse_version(&cbfs_rw_version, cse_get_rw_version(cse_bp_info));
 	if (ret == 0)
 		return CSE_UPDATE_NOT_REQUIRED;
 	else if (ret < 0)
@@ -664,6 +688,7 @@ static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *
 {
 	struct region_device source_rdev;
 	enum csme_failure_reason rv;
+	uint8_t *cbfs_rw_hash;
 
 	if (!cse_get_source_rdev(&source_rdev))
 		return CSE_LITE_SKU_RW_BLOB_NOT_FOUND;
@@ -675,8 +700,16 @@ static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *
 		return CSE_LITE_SKU_RW_BLOB_NOT_FOUND;
 	}
 
-	if (!cse_verify_cbfs_rw_sha256(source_metadata.sha256, cse_cbfs_rw,
-				region_device_sz(&source_rdev))) {
+	cbfs_rw_hash = cbfs_map(CONFIG_SOC_INTEL_CSE_RW_HASH_CBFS_NAME, NULL);
+	if (!cbfs_rw_hash) {
+		printk(BIOS_ERR, "cse_lite: Failed to get %s\n",
+		       CONFIG_SOC_INTEL_CSE_RW_HASH_CBFS_NAME);
+		rv = CSE_LITE_SKU_RW_METADATA_NOT_FOUND;
+		goto error_exit;
+	}
+
+	if (!cse_verify_cbfs_rw_sha256(cbfs_rw_hash, cse_cbfs_rw,
+				       region_device_sz(&source_rdev))) {
 		rv = CSE_LITE_SKU_RW_BLOB_SHA256_MISMATCH;
 		goto error_exit;
 	}
@@ -690,6 +723,7 @@ static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *
 			target_rdev);
 
 error_exit:
+	cbfs_unmap(cbfs_rw_hash);
 	rdev_munmap(&source_rdev, cse_cbfs_rw);
 	return rv;
 }

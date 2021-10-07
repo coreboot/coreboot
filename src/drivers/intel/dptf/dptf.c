@@ -227,7 +227,8 @@ static void write_tpch_write_method(const char *tpch_write_method_name,
 	acpigen_write_zero();
 	/* The reason for returning a value here is a W/A for the ESIF shell */
 	acpigen_emit_byte(RETURN_OP);
-	acpigen_write_package(0);
+	acpigen_write_package(1);
+	acpigen_write_zero();
 	acpigen_write_package_end();
 	acpigen_write_method_end();
 }

@@ -157,10 +157,3 @@ int get_write_protect_state(void)
 {
 	return !read_gpio(get_wp_status_gpio_pin());
 }
-
-int get_ec_is_trusted(void)
-{
-	/* Do not have a Chrome EC involved in entering recovery mode;
-	   Always return trusted. */
-	return 1;
-}

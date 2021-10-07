@@ -37,9 +37,3 @@ int tis_plat_irq_status(void)
 {
 	return gpio_eint_poll(CR50_IRQ);
 }
-
-int get_ec_is_trusted(void)
-{
-	/* EC is trusted if not in RW. */
-	return !gpio_get(EC_IN_RW);
-}

@@ -24,9 +24,3 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
-
-int get_ec_is_trusted(void)
-{
-	/* Stub GPIO. */
-	return 0;
-}

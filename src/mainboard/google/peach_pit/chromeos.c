@@ -37,9 +37,3 @@ int get_write_protect_state(void)
 {
 	return !gpio_get_value(GPIO_X30);
 }
-
-int get_ec_is_trusted(void)
-{
-	/* EC is trusted if not in RW. */
-	return !gpio_get_value(GPIO_X23);
-}

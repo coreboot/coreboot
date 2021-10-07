@@ -34,10 +34,3 @@ int get_write_protect_state(void)
 {
 	return !gpio_get(GPIO_WP);
 }
-
-int get_ec_is_trusted(void)
-{
-	/* Do not have a Chrome EC involved in entering recovery mode;
-	   Always return trusted. */
-	return 1;
-}

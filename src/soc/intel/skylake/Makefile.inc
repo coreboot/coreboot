@@ -20,7 +20,6 @@ bootblock-y += spi.c
 bootblock-y += lpc.c
 bootblock-y += uart.c
 
-verstage-y += gpio.c
 verstage-y += gspi.c
 verstage-y += pmutil.c
 verstage-y += i2c.c

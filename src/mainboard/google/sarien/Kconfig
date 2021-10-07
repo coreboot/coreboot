@@ -106,4 +106,7 @@ config VBOOT
 config INTEL_GMA_VBT_FILE
 	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
 
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/default.fmd" if !CHROMEOS
+
 endif # BOARD_GOOGLE_BASEBOARD_SARIEN

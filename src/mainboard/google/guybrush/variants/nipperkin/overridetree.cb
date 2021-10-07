@@ -1,32 +1,28 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 fw_config
-	field USB_DB 0 1
-		option USB_DB_A1_PS8811_C1_PS8818 0
-		option USB_DB_A1_ANX7491_C1_ANX7451 1
-	end
-	field FORM_FACTOR 2
-		option FORM_FACTOR_CLAMSHELL 0
-		option FORM_FACTOR_CONVERTIBLE 1
-	end
-	field KB_BL 3
+	field KB_BL 0
 		option KB_BL_ABSENT 0
 		option KB_BL_PRESENT 1
 	end
-	field FP 4
+	field FP 1
 		option FP_ABSENT 0
 		option FP_PRESENT 1
 	end
-	field WLAN 5 6
+	field WLAN 2 3
 		option WLAN_WCN6856 0
 		option WLAN_RTL8852 1
 	end
-	field WWAN 7 8
+	field WWAN 4 5
 		option WWAN_DIASABLED 0
 		option WWAN_L850GL 1
 	end
-	field BEEP_MODE 9
-		option BEEP_MODE_AMP 0
-		option BEEP_MODE_BIT_BANG 1
+	field STORAGE 6
+		option STORAGE_EMMC 0
+		option STORAGE_SSD 1
+	end
+	field KB_MAP 7
+		option KB_MAP_PRIVACY 0
+		option KB_MAP_NO_PRIVACY 1
 	end
 end
 

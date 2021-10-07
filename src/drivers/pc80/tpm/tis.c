@@ -172,7 +172,7 @@ static inline u8 tpm_read_data(int locality)
 
 static inline void tpm_write_data(u8 data, int locality)
 {
-	TPM_DEBUG_IO_WRITE(TIS_REG_STS, data);
+	TPM_DEBUG_IO_WRITE(TIS_REG_DATA_FIFO, data);
 	write8(TIS_REG(locality, TIS_REG_DATA_FIFO), data);
 }
 

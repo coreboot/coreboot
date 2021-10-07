@@ -141,7 +141,7 @@ $$($(1)-config-file): $(TEST_KCONFIG_AUTOHEADER)
 
 $($(1)-objs): TEST_CFLAGS += -I$$(dir $$($(1)-config-file)) \
 	-D__$$(shell echo $$($(1)-stage) | tr '[:lower:]' '[:upper:]')__ \
-	-D__TEST_NAME__=\"$(1)\"
+	-D__TEST_NAME__=\"$(subst /,_,$(1))\"
 
 # Give us a way to distinguish between coreboot source files and test files in code.
 $($(1)-srcobjs): TEST_CFLAGS += -D__TEST_SRCOBJ__
@@ -220,13 +220,17 @@ $(TEST_KCONFIG_AUTOCONFIG): $(TEST_KCONFIG_AUTOHEADER)
 .PHONY: $(alltests) $(addprefix clean-,$(alltests))
 .PHONY: unit-tests build-unit-tests run-unit-tests clean-unit-tests
 
+# %g in CMOCKA_XML_FILE will be replaced with "__TEST_NAME__(<test-group-name>)"
+# by macro cb_run_group_tests(), which should be used for running tests.
+# __TEST_NAME__ contains test name including path e.g. tests_lib_rtc-test
 ifeq ($(JUNIT_OUTPUT),y)
 $(alltests): export CMOCKA_MESSAGE_OUTPUT=xml
-$(alltests): export CMOCKA_XML_FILE=$(testobj)/junit-$(subst /,_,$^)-%g.xml
+$(alltests): export CMOCKA_XML_FILE=$(testobj)/junit-%g.xml
 endif
 
 $(alltests): $$($$(@)-bin)
-	rm -f $(testobj)/junit-$(subst /,_,$^).xml $(testobj)/$(subst /,_,$^).failed
+	rm -f $(testobj)/junit-$(subst /,_,$(patsubst $(testobj)/%/,%,$(dir $^)))\(*\).xml
+	rm -f $(testobj)/$(subst /,_,$^).failed
 	-./$^ || echo failed > $(testobj)/$(subst /,_,$^).failed
 
 # Build a code coverage report by collecting all the gcov files into a single

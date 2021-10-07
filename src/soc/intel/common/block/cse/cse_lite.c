@@ -502,27 +502,16 @@ static bool cse_get_source_rdev(struct region_device *rdev)
  * If ver_cmp_status < 0, coreboot downgrades CSE RW region
  * If ver_cmp_status > 0, coreboot upgrades CSE RW region
  */
-static int cse_check_version_mismatch(const struct cse_bp_info *cse_bp_info,
-	const struct cse_rw_metadata *source_metadata)
+static int compare_cse_version(const struct fw_version *a, const struct fw_version *b)
 {
-	const struct fw_version *cse_rw_ver;
-
-	printk(BIOS_DEBUG, "cse_lite: CSE CBFS RW version : %d.%d.%d.%d\n",
-			source_metadata->version.major,
-			source_metadata->version.minor,
-			source_metadata->version.hotfix,
-			source_metadata->version.build);
-
-	cse_rw_ver = cse_get_rw_version(cse_bp_info);
-
-	if (source_metadata->version.major != cse_rw_ver->major)
-		return source_metadata->version.major - cse_rw_ver->major;
-	else if (source_metadata->version.minor != cse_rw_ver->minor)
-		return source_metadata->version.minor - cse_rw_ver->minor;
-	else if (source_metadata->version.hotfix != cse_rw_ver->hotfix)
-		return source_metadata->version.hotfix - cse_rw_ver->hotfix;
+	if (a->major != b->major)
+		return a->major - b->major;
+	else if (a->minor != b->minor)
+		return a->minor - b->minor;
+	else if (a->hotfix != b->hotfix)
+		return a->hotfix - b->hotfix;
 	else
-		return source_metadata->version.build - cse_rw_ver->build;
+		return a->build - b->build;
 }
 
 /* The function calculates SHA-256 of CSE RW blob and compares it with the provided SHA value */
@@ -568,24 +557,43 @@ static bool cse_copy_rw(const struct region_device *target_rdev, const void *buf
 	return true;
 }
 
-static bool cse_is_rw_version_latest(const struct cse_bp_info *cse_bp_info,
-		const struct cse_rw_metadata *source_metadata)
-{
-	return !cse_check_version_mismatch(cse_bp_info, source_metadata);
-}
+enum cse_update_status {
+	CSE_UPDATE_NOT_REQUIRED,
+	CSE_UPDATE_UPGRADE,
+	CSE_UPDATE_DOWNGRADE,
+	CSE_UPDATE_CORRUPTED,
+	CSE_UPDATE_METADATA_ERROR,
+};
 
-static bool cse_is_downgrade_instance(const struct cse_bp_info *cse_bp_info,
-		const struct cse_rw_metadata *source_metadata)
-{
-	return cse_check_version_mismatch(cse_bp_info, source_metadata) < 0;
-}
+static struct cse_rw_metadata source_metadata;
 
-static bool cse_is_update_required(const struct cse_bp_info *cse_bp_info,
-		const struct cse_rw_metadata *source_metadata,
-		struct region_device *target_rdev)
+static enum cse_update_status cse_check_update_status(const struct cse_bp_info *cse_bp_info,
+						      struct region_device *target_rdev)
 {
-	return (!cse_is_rw_bp_sign_valid(target_rdev) ||
-			!cse_is_rw_version_latest(cse_bp_info, source_metadata));
+	int ret;
+
+	if (!cse_is_rw_bp_sign_valid(target_rdev))
+		return CSE_UPDATE_CORRUPTED;
+
+	if (cbfs_load(CONFIG_SOC_INTEL_CSE_RW_METADATA_CBFS_NAME, &source_metadata,
+			sizeof(source_metadata)) != sizeof(source_metadata)) {
+		printk(BIOS_ERR, "cse_lite: Failed to get CSE CBFS RW metadata\n");
+		return CSE_UPDATE_METADATA_ERROR;
+	}
+
+	printk(BIOS_DEBUG, "cse_lite: CSE CBFS RW version : %d.%d.%d.%d\n",
+			source_metadata.version.major,
+			source_metadata.version.minor,
+			source_metadata.version.hotfix,
+			source_metadata.version.build);
+
+	ret = compare_cse_version(&source_metadata.version, cse_get_rw_version(cse_bp_info));
+	if (ret == 0)
+		return CSE_UPDATE_NOT_REQUIRED;
+	else if (ret < 0)
+		return CSE_UPDATE_DOWNGRADE;
+	else
+		return CSE_UPDATE_UPGRADE;
 }
 
 static bool cse_write_rw_region(const struct region_device *target_rdev,
@@ -630,7 +638,7 @@ static enum csme_failure_reason cse_update_rw(const struct cse_bp_info *cse_bp_i
 }
 
 static bool cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
-		const struct cse_rw_metadata *source_metadata)
+				   enum cse_update_status status)
 {
 	/*
 	 * To set CSE's operation mode to HMRFPO mode:
@@ -640,18 +648,19 @@ static bool cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
 	if (!cse_boot_to_ro(cse_bp_info))
 		return false;
 
-	if (cse_is_downgrade_instance(cse_bp_info, source_metadata) &&
-			!cse_data_clear_request(cse_bp_info)) {
-		printk(BIOS_ERR, "cse_lite: CSE FW downgrade is aborted\n");
-		return false;
+	if ((status == CSE_UPDATE_DOWNGRADE) || (status == CSE_UPDATE_CORRUPTED)) {
+		if (!cse_data_clear_request(cse_bp_info)) {
+			printk(BIOS_ERR, "cse_lite: CSE data clear failed!\n");
+			return false;
+		}
 	}
 
 	return cse_hmrfpo_enable();
 }
 
 static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *cse_bp_info,
-		const struct cse_rw_metadata *source_metadata,
-		struct region_device *target_rdev)
+						      enum cse_update_status status,
+						      struct region_device *target_rdev)
 {
 	struct region_device source_rdev;
 	enum csme_failure_reason rv;
@@ -666,13 +675,13 @@ static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *
 		return CSE_LITE_SKU_RW_BLOB_NOT_FOUND;
 	}
 
-	if (!cse_verify_cbfs_rw_sha256(source_metadata->sha256, cse_cbfs_rw,
+	if (!cse_verify_cbfs_rw_sha256(source_metadata.sha256, cse_cbfs_rw,
 				region_device_sz(&source_rdev))) {
 		rv = CSE_LITE_SKU_RW_BLOB_SHA256_MISMATCH;
 		goto error_exit;
 	}
 
-	if (!cse_prep_for_rw_update(cse_bp_info, source_metadata)) {
+	if (!cse_prep_for_rw_update(cse_bp_info, status)) {
 		rv = CSE_COMMUNICATION_ERROR;
 		goto error_exit;
 	}
@@ -688,26 +697,21 @@ error_exit:
 static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info)
 {
 	struct region_device target_rdev;
-	struct cse_rw_metadata source_metadata;
-
-	/* Read CSE CBFS RW metadata */
-	if (cbfs_load(CONFIG_SOC_INTEL_CSE_RW_METADATA_CBFS_NAME, &source_metadata,
-			sizeof(source_metadata)) != sizeof(source_metadata)) {
-		printk(BIOS_ERR, "cse_lite: Failed to get CSE CBFS RW metadata\n");
-		return CSE_LITE_SKU_RW_METADATA_NOT_FOUND;
-	}
+	enum cse_update_status status;
 
 	if (!cse_get_target_rdev(cse_bp_info, &target_rdev)) {
 		printk(BIOS_ERR, "cse_lite: Failed to get CSE RW Partition\n");
 		return CSE_LITE_SKU_RW_ACCESS_ERROR;
 	}
 
-	if (cse_is_update_required(cse_bp_info, &source_metadata, &target_rdev)) {
-		printk(BIOS_DEBUG, "cse_lite: CSE RW update is initiated\n");
-		return cse_trigger_fw_update(cse_bp_info, &source_metadata, &target_rdev);
-	}
+	status = cse_check_update_status(cse_bp_info, &target_rdev);
+	if (status == CSE_UPDATE_NOT_REQUIRED)
+		return CSE_NO_ERROR;
+	if (status == CSE_UPDATE_METADATA_ERROR)
+		return CSE_LITE_SKU_RW_METADATA_NOT_FOUND;
 
-	return 0;
+	printk(BIOS_DEBUG, "cse_lite: CSE RW update is initiated\n");
+	return cse_trigger_fw_update(cse_bp_info, status, &target_rdev);
 }
 
 void cse_fw_sync(void)

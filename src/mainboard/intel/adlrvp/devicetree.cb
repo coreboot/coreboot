@@ -83,12 +83,6 @@ chip soc/intel/alderlake
 		.clk_src = 0,
 	}"
 
-	# Enable CPU PCIE RP 2 using CLK 3
-	register "cpu_pcie_rp[CPU_RP(2)]" = "{
-		.clk_req = 3,
-		.clk_src = 3,
-        }"
-
 	# Enable CPU PCIE RP 3 using CLK 4
 	register "cpu_pcie_rp[CPU_RP(3)]" = "{
 		.clk_req = 4,
@@ -185,21 +179,6 @@ chip soc/intel/alderlake
 		.i2c[5] = {
 			.speed = I2C_SPEED_FAST,
 		},
-	}"
-
-	# FIVR configurations
-	register "ext_fivr_settings" = "{
-		.configure_ext_fivr = 1,
-		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX,
-		.vnn_enable_bitmap = FIVR_ENABLE_ALL_SX,
-		.vnn_sx_enable_bitmap = FIVR_ENABLE_ALL_SX,
-		.v1p05_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL,
-		.vnn_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL,
-		.v1p05_voltage_mv = 1050,
-		.vnn_voltage_mv = 1050,
-		.vnn_sx_voltage_mv = 1050,
-		.v1p05_icc_max_ma = 500,
-		.vnn_icc_max_ma = 500,
 	}"
 
 	device domain 0 on

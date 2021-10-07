@@ -58,6 +58,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_E16, 0, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
+	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
 	/* F21 : EXT_PWR_GATE2# ==> NC */
 	PAD_NC(GPP_F21, NONE),
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
@@ -101,6 +103,8 @@ static const struct pad_config early_gpio_table_id2[] = {
 	PAD_CFG_GPO(GPP_E16, 0, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
+	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
 	/* F21 : EXT_PWR_GATE2# ==> WWAN_FCPO_L (updated in romstage) */
 	PAD_CFG_GPO(GPP_F21, 0, DEEP),
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */

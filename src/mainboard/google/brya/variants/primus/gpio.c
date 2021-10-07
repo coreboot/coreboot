@@ -106,6 +106,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_E16, 0, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
+	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */

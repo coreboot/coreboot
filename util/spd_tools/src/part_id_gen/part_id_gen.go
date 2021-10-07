@@ -45,6 +45,7 @@ var supportedPlatforms = [...]string{
 var supportedMemTechs = [...]string{
 	"lp4x",
 	"ddr4",
+	"lp5",
 }
 
 func usage() {

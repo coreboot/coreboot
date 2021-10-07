@@ -47,7 +47,4 @@ DefinitionBlock(
 		/* Dynamic Platform Thermal Framework */
 		#include <variant/acpi/dptf.asl>
 	}
-
-	/* USB port entries */
-	#include "acpi/usb.asl"
 }

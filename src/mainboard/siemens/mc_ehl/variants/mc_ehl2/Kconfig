@@ -3,7 +3,6 @@ if BOARD_SIEMENS_MC_EHL2
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select DRIVER_INTEL_I210
-	select INTEL_LPSS_UART_FOR_CONSOLE
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/mc_ehl.fmd"

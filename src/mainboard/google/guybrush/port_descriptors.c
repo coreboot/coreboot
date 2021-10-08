@@ -34,6 +34,7 @@ static const fsp_dxio_descriptor guybrush_czn_pci_wwan_descriptors[] = {
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ1,
+		.gpio_group_id = GPIO_69,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
 	{ /* WWAN */
@@ -116,6 +117,7 @@ static const fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 		.link_aspm_L1_2 = true,
 		.turn_off_unused_lanes = true,
 		.clk_req = CLK_REQ1,
+		.gpio_group_id = GPIO_69,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
 	{ /* WWAN */

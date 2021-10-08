@@ -28,12 +28,11 @@
  * @desc_index: Index of the descriptor in the table. Defaults to 0. Must be a
  *              register if specified.
  *
- * Clobbers %eax.
+ * Clobbers %eax, %ebx.
  */
 .macro set_segment_descriptor_base desc_array:req, base:req, desc_index
 	mov	\base, %eax
 
-	push	%ebx /* preserve ebx */
 	mov	\desc_array, %ebx
 
 .ifb \desc_index
@@ -50,5 +49,4 @@
 	movb	%al, 7(%ebx, \desc_index, 8)
 .endif
 
-	pop	%ebx
 .endm

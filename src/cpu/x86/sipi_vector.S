@@ -104,7 +104,6 @@ _start:
 	subl	%eax, %edx
 	mov	%edx, %esp
 
-#if CONFIG(CPU_INFO_V2)
 	push_cpu_info index=%ecx
 	push_per_cpu_segment_data
 
@@ -118,7 +117,6 @@ _start:
 	shl	$3, %eax /* The index is << 3 in the segment selector */
 	add	per_cpu_segment_selector, %eax
 	mov	%eax, %gs
-#endif
 
 	andl	$0xfffffff0, %esp /* ensure stack alignment */
 

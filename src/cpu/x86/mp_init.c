@@ -182,14 +182,12 @@ static void park_this_cpu(void *unused)
  * been loaded. */
 static void asmlinkage ap_init(unsigned int cpu)
 {
-	struct cpu_info *info;
+	struct cpu_info *info = cpu_info();
 
 	/* Ensure the local APIC is enabled */
 	enable_lapic();
 
-	info = cpu_info();
-	info->index = cpu;
-	info->cpu = cpus_dev[cpu];
+	info->cpu = cpus_dev[info->index];
 
 	cpu_add_map_entry(info->index);
 
@@ -197,10 +195,10 @@ static void asmlinkage ap_init(unsigned int cpu)
 	info->cpu->path.apic.apic_id = lapicid();
 
 	if (cpu_is_intel())
-		printk(BIOS_INFO, "AP: slot %d apic_id %x, MCU rev: 0x%08x\n", cpu,
+		printk(BIOS_INFO, "AP: slot %zu apic_id %x, MCU rev: 0x%08x\n", info->index,
 		       info->cpu->path.apic.apic_id, get_current_microcode_rev());
 	else
-		printk(BIOS_INFO, "AP: slot %d apic_id %x\n", cpu,
+		printk(BIOS_INFO, "AP: slot %zu apic_id %x\n", info->index,
 		       info->cpu->path.apic.apic_id);
 
 	/* Walk the flight plan */
@@ -215,20 +213,10 @@ static void setup_default_sipi_vector_params(struct sipi_params *sp)
 	sp->gdt = (uintptr_t)&gdt;
 	sp->gdtlimit = (uintptr_t)&gdt_end - (uintptr_t)&gdt - 1;
 	sp->idt_ptr = (uintptr_t)&idtarg;
-	if (CONFIG(CPU_INFO_V2)) {
-		sp->per_cpu_segment_descriptors = (uintptr_t)&per_cpu_segment_descriptors;
-		sp->per_cpu_segment_selector = per_cpu_segment_selector;
-	}
+	sp->per_cpu_segment_descriptors = (uintptr_t)&per_cpu_segment_descriptors;
+	sp->per_cpu_segment_selector = per_cpu_segment_selector;
 	sp->stack_size = CONFIG_STACK_SIZE;
 	sp->stack_top = ALIGN_DOWN((uintptr_t)&_estack, CONFIG_STACK_SIZE);
-	/*
-	 * In the CPU_INFO_V2 case, we don't need to pre-allocate the space on the stack.
-	 * Instead we push them onto the top of the stack in the sipi vector.
-	 */
-	if (!CONFIG(CPU_INFO_V2)) {
-		/* Adjust the stack top to take into account cpu_info. */
-		sp->stack_top -= sizeof(struct cpu_info);
-	}
 }
 
 #define NUM_FIXED_MTRRS 11

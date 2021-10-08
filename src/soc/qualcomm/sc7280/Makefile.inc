@@ -107,7 +107,7 @@ SHRM_FILE := $(SC7280_BLOB)/shrm/shrm.elf
 SHRM_CBFS := $(CONFIG_CBFS_PREFIX)/shrm
 $(SHRM_CBFS)-file := $(SHRM_FILE)
 $(SHRM_CBFS)-type := payload
-$(SHRM_CBFS)-compression := none
+$(SHRM_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 cbfs-files-y += $(SHRM_CBFS)
 
 endif

@@ -100,12 +100,14 @@ include $(top)/util/cbfstool/fpt_formats/Makefile.inc
 cse_fpt_obj :=
 cse_fpt_obj += cse_fpt.o
 cse_fpt_obj += common.o
+cse_fpt_obj += cse_helpers.o
 cse_fpt_obj += $(foreach var, $(fpt_formats_obj), $(var))
 
 include $(top)/util/cbfstool/bpdt_formats/Makefile.inc
 cse_serger_obj :=
 cse_serger_obj += cse_serger.o
 cse_serger_obj += common.o
+cse_serger_obj += cse_helpers.o
 cse_serger_obj += $(foreach var, $(bpdt_formats_obj), $(var))
 
 TOOLCFLAGS ?= -Werror -Wall -Wextra -Wshadow

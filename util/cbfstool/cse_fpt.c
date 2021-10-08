@@ -64,30 +64,6 @@ static void usage(const char *name)
 		name, name);
 }
 
-void read_member(struct buffer *buff, void *dst, size_t size)
-{
-	uint8_t *src = buffer_get(buff);
-
-	switch (size) {
-	case 1:
-		*(uint8_t *)dst = read_le8(src);
-		break;
-	case 2:
-		*(uint16_t *)dst = read_le16(src);
-		break;
-	case 4:
-		*(uint32_t *)dst = read_le32(src);
-		break;
-	case 8:
-		*(uint64_t *)dst = read_le64(src);
-		break;
-	default:
-		memcpy(dst, src, size);
-	}
-
-	buffer_seek(buff, size);
-}
-
 static int get_fpt_buff(struct buffer *input_buff, struct buffer *fpt_buff)
 {
 	/*

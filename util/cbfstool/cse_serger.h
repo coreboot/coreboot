@@ -7,13 +7,11 @@
 #include <commonlib/region.h>
 
 #include "common.h"
+#include "cse_helpers.h"
 
 #define BPDT_SIGNATURE			(0x000055AA)
 
 #define BUFF_SIZE_ALIGN			(4 * KiB)
-
-#define READ_MEMBER(_buff, _x)		read_member(_buff, &(_x), sizeof(_x))
-#define WRITE_MEMBER(_buff, _x)		write_member(_buff, &(_x), sizeof(_x))
 
 enum bpdt_version {
 	BPDT_VERSION_1_6 = 1,
@@ -88,8 +86,5 @@ extern const struct subpart_hdr_ops subpart_hdr_1_ops;
 extern const struct subpart_hdr_ops subpart_hdr_2_ops;
 
 extern const struct subpart_entry_ops subpart_entry_1_ops;
-
-void read_member(struct buffer *buff, void *dst, size_t size);
-void write_member(struct buffer *buff, void *src, size_t size);
 
 #endif /* __CBFSTOOL_CSE_SERGER_H__ */

@@ -7,11 +7,10 @@
 #include <commonlib/region.h>
 
 #include "common.h"
+#include "cse_helpers.h"
 
 #define FPT_MARKER			"$FPT"
 #define FPT_ENTRY_VERSION		0x10
-
-#define READ_MEMBER(_buff, _x)		read_member(_buff, &(_x), sizeof(_x))
 
 enum fpt_hdr_version {
 	FPT_HDR_VERSION_20 = 0x20,
@@ -31,7 +30,5 @@ struct fpt_hdr_ops {
 
 extern const struct fpt_hdr_ops fpt_hdr_20_ops;
 extern const struct fpt_hdr_ops fpt_hdr_21_ops;
-
-void read_member(struct buffer *buff, void *dst, size_t size);
 
 #endif /* __CBFSTOOL_CSE_FPT_H__ */

@@ -9,7 +9,6 @@
  * found in smm.h.
  */
 
-#include <cpu/x86/cpu_info.S.inc>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic_def.h>
@@ -83,20 +82,7 @@ smm_relocate_gdt:
 	/* gdt selector 0x20 tss segment */
 	.word   0xffff, 0x0000
 	.byte   0x00, 0x8b, 0x80, 0x00
-
-#if CONFIG(CPU_INFO_V2)
-per_cpu_segment_descriptors:
-	.rept CONFIG_MAX_CPUS
-	/* selgdt 0x28, flat data segment */
-	.word	0xffff, 0x0000
-	.byte	0x00, 0x93, 0xcf, 0x00
-	.endr
-#endif /* CPU_INFO_V2 */
 smm_relocate_gdt_end:
-
-#if CONFIG(CPU_INFO_V2)
-.set per_cpu_segment_selector, per_cpu_segment_descriptors - smm_relocate_gdt
-#endif /* CPU_INFO_V2 */
 
 .align 4
 .code32
@@ -109,7 +95,7 @@ smm_trampoline32:
 	movw	%ax, %ss
 	xor	%ax, %ax /* zero out the gs and fs segment index */
 	movw	%ax, %fs
-	movw	%ax, %gs /* Will be used for cpu_info */
+	movw	%ax, %gs /* Used by cpu_info in ramstage */
 
 	/* The CPU number is calculated by reading the initial APIC id. Since
 	 * the OS can manipulate the APIC id use the non-changing cpuid result
@@ -165,22 +151,6 @@ apicid_end:
 	movl	%ebx, (%ebx)
 #if ENV_X86_64
 	movl	$0, 4(%ebx)
-#endif
-
-#if CONFIG(CPU_INFO_V2)
-	push_cpu_info index=%ecx
-	push_per_cpu_segment_data
-
-	/*
-	 * Update the AP's per_cpu_segment_descriptor to point to the
-	 * per_cpu_segment_data that was allocated on the stack.
-	 */
-	set_segment_descriptor_base $per_cpu_segment_descriptors, %esp, %ecx
-
-	mov	%ecx, %eax
-	shl	$3, %eax /* The index is << 3 in the segment selector */
-	add	$per_cpu_segment_selector, %eax
-	mov	%eax, %gs
 #endif
 
 	/* Create stack frame by pushing a NULL stack base pointer */

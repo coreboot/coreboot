@@ -63,6 +63,7 @@ ramstage-y += ../common/rtc.c ../common/rtc_mt6359p.c
 ramstage-y += soc.c
 ramstage-y += ../common/spm.c spm.c
 ramstage-y += ../common/sspm.c
+ramstage-y += ../common/tracker.c
 ramstage-y += ../common/timer.c
 ramstage-y += ../common/uart.c
 ramstage-y += ../common/ufs.c

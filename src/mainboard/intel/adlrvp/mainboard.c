@@ -75,13 +75,14 @@ const char *mainboard_vbt_filename(void)
 	switch (sku_id) {
 	case ADL_P_LP5_1:
 	case ADL_P_LP5_2:
-	case ADL_M_LP5:
 		return "vbt_adlrvp_lp5.bin";
+	case ADL_M_LP5:
+		return "vbt_adlrvp_m_lp5.bin";
 	case ADL_P_DDR5_1:
 	case ADL_P_DDR5_2:
 		return "vbt_adlrvp_ddr5.bin";
 	case ADL_M_LP4:
-		return "vbt_adlrvp_lp4.bin";
+		return "vbt_adlrvp_m_lp4.bin";
 	default:
 		return "vbt.bin";
 	}

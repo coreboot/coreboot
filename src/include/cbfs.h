@@ -111,12 +111,7 @@ int cbfs_prog_stage_load(struct prog *prog);
 
 /*
  * The shared memory pool for backing mapped CBFS files, and other CBFS allocation needs.
- * On x86 platforms, this would only be needed to transparently map compressed files, but it
- * would require a permanent CBMEM carveout to be safe to use during S3 resume. Since it's not
- * clear whether this feature is necessary or worth the wasted memory, it is currently disabled
- * but could be added behind a Kconfig later if desired.
  */
-#define CBFS_CACHE_AVAILABLE (!CONFIG(ARCH_X86))
 extern struct mem_pool cbfs_cache;
 
 /*

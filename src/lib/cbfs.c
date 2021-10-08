@@ -18,8 +18,11 @@
 #include <symbols.h>
 #include <timestamp.h>
 
-#if CBFS_CACHE_AVAILABLE
+#if ENV_STAGE_HAS_DATA_SECTION
 struct mem_pool cbfs_cache = MEM_POOL_INIT(_cbfs_cache, REGION_SIZE(cbfs_cache));
+#else
+struct mem_pool cbfs_cache = MEM_POOL_INIT(NULL, 0);
+#endif
 
 static void switch_to_postram_cache(int unused)
 {
@@ -28,7 +31,6 @@ static void switch_to_postram_cache(int unused)
 			      REGION_SIZE(postram_cbfs_cache));
 }
 ROMSTAGE_CBMEM_INIT_HOOK(switch_to_postram_cache);
-#endif
 
 cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 			  union cbfs_mdata *mdata, struct region_device *rdev)
@@ -111,8 +113,7 @@ void cbfs_unmap(void *mapping)
 	 * that requires a free() for the boot_device, they need to implement it via the
 	 * cbfs_cache mem_pool.
 	 */
-	if (CBFS_CACHE_AVAILABLE)
-		mem_pool_free(&cbfs_cache, mapping);
+	mem_pool_free(&cbfs_cache, mapping);
 }
 
 int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
@@ -319,8 +320,13 @@ void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 		}
 
 		return mapping;
-	} else if (!CBFS_CACHE_AVAILABLE) {
-		ERROR("Cannot map compressed file %s on x86\n", mdata.h.filename);
+	} else if (!cbfs_cache.size) {
+		/*
+		 * In order to use the cbfs_cache you need to add a CBFS_CACHE to your
+		 * memlayout. For stages that don't have .data sections (x86 pre-RAM),
+		 * it is not possible to add a CBFS_CACHE.
+		 */
+		ERROR("Cannot map compressed file %s without cbfs_cache\n", mdata.h.filename);
 		return NULL;
 	} else {
 		loc = mem_pool_alloc(&cbfs_cache, size);

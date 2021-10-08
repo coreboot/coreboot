@@ -193,7 +193,6 @@ static void asmlinkage ap_init(unsigned int cpu)
 	info->cpu = cpus_dev[cpu];
 
 	cpu_add_map_entry(info->index);
-	thread_init_cpu_info_non_bsp(info);
 
 	/* Fix up APIC id with reality. */
 	info->cpu->path.apic.apic_id = lapicid();

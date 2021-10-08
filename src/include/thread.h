@@ -73,11 +73,6 @@ void thread_coop_disable(void);
 void thread_mutex_lock(struct thread_mutex *mutex);
 void thread_mutex_unlock(struct thread_mutex *mutex);
 
-static inline void thread_init_cpu_info_non_bsp(struct cpu_info *ci)
-{
-	ci->thread = NULL;
-}
-
 /* Architecture specific thread functions. */
 asmlinkage void switch_to_thread(uintptr_t new_stack, uintptr_t *saved_stack);
 /* Set up the stack frame for a new thread so that a switch_to_thread() call
@@ -96,8 +91,6 @@ static inline int thread_yield_microseconds(unsigned int microsecs)
 }
 static inline void thread_coop_enable(void) {}
 static inline void thread_coop_disable(void) {}
-struct cpu_info;
-static inline void thread_init_cpu_info_non_bsp(struct cpu_info *ci) { }
 
 static inline void thread_mutex_lock(struct thread_mutex *mutex) {}
 

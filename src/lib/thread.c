@@ -4,10 +4,10 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <arch/cpu.h>
 #include <bootstate.h>
 #include <commonlib/bsd/compiler.h>
 #include <console/console.h>
+#include <smp/node.h>
 #include <thread.h>
 #include <timer.h>
 
@@ -27,17 +27,25 @@ static struct thread all_threads[TOTAL_NUM_THREADS];
 static struct thread *runnable_threads;
 static struct thread *free_threads;
 
+static struct thread *active_thread;
+
 static inline int thread_can_yield(const struct thread *t)
 {
 	return (t != NULL && t->can_yield > 0);
 }
 
+static inline void set_current_thread(struct thread *t)
+{
+	assert(boot_cpu());
+	active_thread = t;
+}
+
 static inline struct thread *current_thread(void)
 {
-	if (!initialized)
+	if (!initialized || !boot_cpu())
 		return NULL;
 
-	return cpu_info()->thread;
+	return active_thread;
 }
 
 static inline int thread_list_empty(struct thread **list)
@@ -108,7 +116,6 @@ __noreturn static enum cb_err idle_thread(void *unused)
 static void schedule(struct thread *t)
 {
 	struct thread *current = current_thread();
-	struct cpu_info *ci = cpu_info();
 
 	/* If t is NULL need to find new runnable thread. */
 	if (t == NULL) {
@@ -123,7 +130,7 @@ static void schedule(struct thread *t)
 	if (t->handle)
 		t->handle->state = THREAD_STARTED;
 
-	ci->thread = t;
+	set_current_thread(t);
 
 	switch_to_thread(t->stack_current, &current->stack_current);
 }
@@ -239,14 +246,14 @@ static void threads_initialize(void)
 	int i;
 	struct thread *t;
 	u8 *stack_top;
-	struct cpu_info *ci;
 
 	if (initialized)
 		return;
 
 	t = &all_threads[0];
-	ci = cpu_info();
-	ci->thread = t;
+
+	set_current_thread(t);
+
 	t->stack_orig = (uintptr_t)NULL; /* We never free the main thread */
 	t->id = 0;
 	t->can_yield = 1;

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <cpu/x86/cpu_info.S.inc>
 #include <rules.h>
 
 /*
@@ -35,8 +34,6 @@ _start:
 
 	/* reset stack pointer to CAR/EARLYRAM stack */
 	mov	$_STACK_TOP, %esp
-
-	push_cpu_info
 
 	/* clear .bss section as it is not shared */
 	cld

@@ -1,14 +1,34 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+/*
+ * Pushes a 32-bit register onto the stack.
+ *
+ * There are two possible code sections where this code can be included:
+ *   .code32 and .code64
+ *
+ * Doing a `push %eax` while in a .code64 section will result in a compiler
+ * error. This macro manually pushes the 32-bit register onto the stack so we
+ * can share the code between 32 and 64 bit builds.
+ */
+.macro pushr reg:req
+#if ENV_X86_64
+	movl	$0, -4(%esp)
+	movl	\reg, -8(%esp)
+	sub	$8, %esp
+#else
+	push	\reg
+#endif
+.endm
+
 /* Push struct cpu_info */
 .macro push_cpu_info index=$0
-	push	\index	/* index */
-	push	$0	/* *cpu */
+	pushr	\index	/* index (size_t) */
+	pushr	$0	/* *cpu */
 .endm
 
 /* Push struct per_cpu_segment_data */
 .macro push_per_cpu_segment_data cpu_info_pointer=%esp
-	push	\cpu_info_pointer	/* *cpu_info */
+	pushr	\cpu_info_pointer	/* *cpu_info */
 .endm
 
 /*

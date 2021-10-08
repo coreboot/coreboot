@@ -90,7 +90,8 @@ _start:
 	 */
 	set_segment_descriptor_base $per_cpu_segment_descriptors, %esp
 
-	mov	per_cpu_segment_selector, %eax
+	mov	$per_cpu_segment_selector, %eax
+	movl	(%eax), %eax
 	mov	%eax, %gs
 #endif
 

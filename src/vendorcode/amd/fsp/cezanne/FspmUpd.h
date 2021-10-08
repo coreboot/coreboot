@@ -26,7 +26,8 @@ typedef struct __packed {
 	/** Offset 0x0078**/	uint32_t                    serial_port_refclk;
 	/** Offset 0x007C**/	uint32_t                    serial_reserved;
 	/** Offset 0x0080**/	uint8_t                     dxio_descriptor[FSPM_UPD_DXIO_DESCRIPTOR_COUNT][52];
-	/** Offset 0x0358**/	uint8_t                     pcie_reserved[52];
+	/** Offset 0x0358**/	uint8_t                     fsp_owns_pcie_resets;
+	/** Offset 0x0359**/	uint8_t                     pcie_reserved[51];
 	/** Offset 0x038C**/	uint32_t                    ddi_descriptor[FSPM_UPD_DDI_DESCRIPTOR_COUNT];
 	/** Offset 0x03A0**/	uint8_t                     ddi_reserved[6];
 	/** Offset 0x03A6**/	uint8_t                     ccx_down_core_mode;

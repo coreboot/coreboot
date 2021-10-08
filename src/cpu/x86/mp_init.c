@@ -180,7 +180,7 @@ static void park_this_cpu(void *unused)
 
 /* By the time APs call ap_init() caching has been setup, and microcode has
  * been loaded. */
-static void asmlinkage ap_init(unsigned int cpu)
+static void asmlinkage ap_init(void)
 {
 	struct cpu_info *info = cpu_info();
 

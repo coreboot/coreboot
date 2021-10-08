@@ -118,11 +118,6 @@ _start:
 	add	per_cpu_segment_selector, %eax
 	mov	%eax, %gs
 
-	andl	$0xfffffff0, %esp /* ensure stack alignment */
-
-	/* Save CPU number. */
-	mov	%ecx, %esi
-
 	/*
 	 * The following code only needs to run on Intel platforms and thus the caller
 	 * doesn't provide a microcode_ptr if not on Intel.
@@ -235,19 +230,15 @@ load_msr:
 	mov	%eax, %cr4
 #endif
 
+	andl	$0xfffffff0, %esp /* ensure stack alignment */
+
 #if ENV_X86_64
 	/* entry64.inc preserves ebx. */
 #include <cpu/x86/64bit/entry64.inc>
 
-	mov	%rsi, %rdi	/* cpu_num */
-
 	movabs	c_handler, %eax
 	call	*%rax
 #else
-	/* c_handler(cpu_num), preserve proper stack alignment */
-	sub	$12, %esp
-	push	%esi	/* cpu_num */
-
 	mov	c_handler, %eax
 	call	*%eax
 #endif

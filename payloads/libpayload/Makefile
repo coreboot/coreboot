@@ -114,17 +114,35 @@ ARCH-$(CONFIG_LP_ARCH_ARM64)   := arm64
 ARCH-$(CONFIG_LP_ARCH_X86)     := x86_32
 ARCH-$(CONFIG_LP_ARCH_MOCK)    := mock
 
-# Three cases where we don't need fully populated $(obj) lists:
+# Five cases where we don't need fully populated $(obj) lists:
 # 1. when no .config exists
 # 2. when make config (in any flavour) is run
 # 3. when make distclean is run
+# 4. when make help% or make clean% is run
+# 5. when make %-test or make %-tests or make %coverage-report is run
 # Don't waste time on reading all Makefile.incs in these cases
 ifeq ($(strip $(HAVE_DOTCONFIG)),)
-NOCOMPILE:=1
+NOCOMPILE := 1
 endif
 ifneq ($(MAKECMDGOALS),)
-ifneq ($(filter %config %clean,$(MAKECMDGOALS)),)
-NOCOMPILE:=1
+ifneq ($(filter %config %clean clean-% help%,$(MAKECMDGOALS)),)
+NOCOMPILE := 1
+endif
+ifneq ($(filter %clean help% clean%, $(MAKECMDGOALS)),)
+UNIT_TEST := 1
+endif
+endif
+
+ifneq ($(filter help%, $(MAKECMDGOALS)),)
+NOCOMPILE := 1
+UNIT_TEST := 1
+else
+ifneq ($(filter %-test %-tests %coverage-report, $(MAKECMDGOALS)),)
+ifneq ($(filter-out %-test %-tests %coverage-report, $(MAKECMDGOALS)),)
+$(error Cannot mix unit-tests targets with other targets)
+endif
+NOCOMPILE :=
+UNIT_TEST := 1
 endif
 endif
 
@@ -135,6 +153,7 @@ $(xcompile): $(top)/../../util/xcompile/xcompile
 
 ifeq ($(NOCOMPILE),1)
 include $(TOPLEVEL)/Makefile.inc
+include $(TOPLEVEL)/tests/Makefile.inc
 real-all: config
 
 else
@@ -283,9 +302,13 @@ evaluate_subdirs= \
 		$(eval $(call includemakefiles,$(dir)/Makefile.inc))) \
 	$(if $(subdirs),$(eval $(call evaluate_subdirs)))
 
-# collect all object files eligible for building
+# collect all object files eligible for building or run unit-tests
+ifneq ($(UNIT_TEST),1)
 subdirs:=$(TOPLEVEL)
 $(eval $(call evaluate_subdirs))
+else
+include $(TOPLEVEL)/tests/Makefile.inc
+endif
 
 src-to-obj=$(addsuffix .$(1).o, $(basename $(addprefix $(obj)/, $($(1)-srcs))))
 $(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class))))

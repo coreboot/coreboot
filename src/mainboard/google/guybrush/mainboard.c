@@ -13,11 +13,13 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #define BACKLIGHT_GPIO			GPIO_129
+#define WWAN_AUX_RST_GPIO		GPIO_18
 #define METHOD_BACKLIGHT_ENABLE		"\\_SB.BKEN"
 #define METHOD_BACKLIGHT_DISABLE	"\\_SB.BKDS"
 #define METHOD_MAINBOARD_INI		"\\_SB.MINI"
 #define METHOD_MAINBOARD_WAK		"\\_SB.MWAK"
 #define METHOD_MAINBOARD_PTS		"\\_SB.MPTS"
+#define METHOD_MAINBOARD_S0X		"\\_SB.MS0X"
 
 /*
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -151,6 +153,31 @@ static void mainboard_write_mpts(void)
 	acpigen_pop_len();
 }
 
+static void mainboard_assert_wwan_aux_reset(void)
+{
+	if (variant_has_pcie_wwan())
+		acpigen_soc_clear_tx_gpio(WWAN_AUX_RST_GPIO);
+}
+
+static void mainboard_deassert_wwan_aux_reset(void)
+{
+	if (variant_has_pcie_wwan())
+		acpigen_soc_set_tx_gpio(WWAN_AUX_RST_GPIO);
+}
+
+static void mainboard_write_ms0x(void)
+{
+	acpigen_write_method_serialized(METHOD_MAINBOARD_S0X, 1);
+	/* S0ix Entry */
+	acpigen_write_if_lequal_op_int(ARG0_OP, 1);
+	mainboard_assert_wwan_aux_reset();
+	/* S0ix Exit */
+	acpigen_write_else();
+	mainboard_deassert_wwan_aux_reset();
+	acpigen_pop_len();
+	acpigen_pop_len();
+}
+
 static void mainboard_fill_ssdt(const struct device *dev)
 {
 	mainboard_write_blken();
@@ -158,6 +185,7 @@ static void mainboard_fill_ssdt(const struct device *dev)
 	mainboard_write_mini();
 	mainboard_write_mpts();
 	mainboard_write_mwak();
+	mainboard_write_ms0x();
 }
 
 static void mainboard_enable(struct device *dev)

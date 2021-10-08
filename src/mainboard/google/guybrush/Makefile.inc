@@ -18,6 +18,7 @@ ramstage-y += ec.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 verstage-y += verstage.c
+verstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 subdirs-y += variants/baseboard
 subdirs-y += variants/$(VARIANT_DIR)

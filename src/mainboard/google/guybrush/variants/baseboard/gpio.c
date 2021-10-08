@@ -226,6 +226,10 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 	PAD_NF(GPIO_141, UART0_RXD, PULL_NONE),
 	/* UART0_TXD */
 	PAD_NF(GPIO_143, UART0_TXD, PULL_NONE),
+
+/* Support EC trusted */
+	/* SD_EX_PRSNT_L(Guybrush BoardID 1 only) / EC_IN_RW_OD */
+	PAD_GPI(GPIO_91, PULL_NONE),
 };
 
 /* Power-on timing requirements:

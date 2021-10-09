@@ -64,7 +64,7 @@ config SOC_INTEL_CSE_RW_VERSION_CBFS_NAME
 	 CBFS name for Intel CSE CBFS RW version file
 
 config SOC_INTEL_CSE_RW_FILE
-	string "Intel CSE CBFS RW path and filename" if SOC_INTEL_CSE_RW_UPDATE
+	string "Intel CSE CBFS RW path and filename" if SOC_INTEL_CSE_RW_UPDATE && !STITCH_ME_BIN
 	default ""
 	help
 	 Intel CSE CBFS RW blob path and file name

@@ -11,6 +11,7 @@ ifeq ($(CONFIG_STITCH_ME_BIN),y)
 CSE_BP1_BIN := $(objcse)/cse_bp1.bin
 CSE_BP2_BIN := $(objcse)/cse_bp2.bin
 CSE_LAYOUT_BIN := $(objcse)/cse_layout.bin
+CSE_RW_FILE := $(CSE_BP2_BIN)
 
 CSE_BPDT_VERSION := $(call strip_quotes,$(CONFIG_CSE_BPDT_VERSION))
 ifeq ($(CONFIG_CSE_BPDT_VERSION),)
@@ -70,15 +71,18 @@ endif
 
 ifeq ($(CONFIG_SOC_INTEL_CSE_RW_UPDATE),y)
 
-ifeq ($(CONFIG_SOC_INTEL_CSE_RW_FILE),"")
-$(error "CSE RW file path is missing and need to be set by mainboard config")
-endif
-
 ifeq ($(CONFIG_SOC_INTEL_CSE_RW_VERSION),"")
 $(error "CSE RW version is missing and need to be set by mainboard config")
 endif
 
-CSE_RW_FILE=$(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_RW_FILE))
+ifneq ($(CONFIG_STITCH_ME_BIN),y)
+
+ifeq ($(CONFIG_SOC_INTEL_CSE_RW_FILE),"")
+$(error "CSE RW file path is missing and need to be set by mainboard config")
+endif
+CSE_RW_FILE := $(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_RW_FILE))
+
+endif
 
 CSE_LITE_ME_RW = $(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_RW_CBFS_NAME))
 regions-for-file-$(CSE_LITE_ME_RW) = $(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_RW_A_FMAP_NAME)), \

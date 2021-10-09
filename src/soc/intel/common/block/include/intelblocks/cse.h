@@ -76,6 +76,22 @@ struct fw_version {
 	uint16_t build;
 } __packed;
 
+/* ME FW Version */
+struct me_version {
+	uint16_t minor;
+	uint16_t major;
+	uint16_t build;
+	uint16_t hotfix;
+} __packed;
+
+/* ME FW Version response */
+struct me_fw_ver_resp {
+	struct mkhi_hdr hdr;
+	struct me_version code;
+	struct me_version rec;
+	struct me_version fitc;
+} __packed;
+
 /* CSE recovery sub-error codes */
 enum csme_failure_reason {
 	/* No error */
@@ -225,6 +241,11 @@ int cse_hmrfpo_get_status(void);
  * Queries and logs ME firmware version
  */
 void print_me_fw_version(void *unused);
+
+/*
+ * Queries and gets ME firmware version
+ */
+enum cb_err get_me_fw_version(struct me_fw_ver_resp *resp);
 
 /*
  * Checks current working operation state is normal or not.

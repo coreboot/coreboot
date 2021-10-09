@@ -813,42 +813,43 @@ int cse_hmrfpo_get_status(void)
 
 void print_me_fw_version(void *unused)
 {
-	struct version {
-		uint16_t minor;
-		uint16_t major;
-		uint16_t build;
-		uint16_t hotfix;
-	} __packed;
-
-	struct fw_ver_resp {
-		struct mkhi_hdr hdr;
-		struct version code;
-		struct version rec;
-		struct version fitc;
-	} __packed;
-
-	const struct mkhi_hdr fw_ver_msg = {
-		.group_id = MKHI_GROUP_ID_GEN,
-		.command = MKHI_GEN_GET_FW_VERSION,
-	};
-
-	struct fw_ver_resp resp;
-	size_t resp_size = sizeof(resp);
+	struct me_fw_ver_resp resp = {0};
 
 	/* Ignore if UART debugging is disabled */
 	if (!CONFIG(CONSOLE_SERIAL))
 		return;
 
+	if (get_me_fw_version(&resp) == CB_SUCCESS) {
+		printk(BIOS_DEBUG, "ME: Version: %d.%d.%d.%d\n", resp.code.major,
+			resp.code.minor, resp.code.hotfix, resp.code.build);
+		return;
+	}
+	printk(BIOS_DEBUG, "ME: Version: Unavailable\n");
+}
+
+enum cb_err get_me_fw_version(struct me_fw_ver_resp *resp)
+{
+	const struct mkhi_hdr fw_ver_msg = {
+		.group_id = MKHI_GROUP_ID_GEN,
+		.command = MKHI_GEN_GET_FW_VERSION,
+	};
+
+	if (resp == NULL) {
+		printk(BIOS_ERR, "%s failed, null pointer parameter\n", __func__);
+		return CB_ERR;
+	}
+	size_t resp_size = sizeof(*resp);
+
 	/* Ignore if CSE is disabled */
 	if (!is_cse_enabled())
-		return;
+		return CB_ERR;
 
 	/*
 	 * Ignore if ME Firmware SKU type is Lite since
 	 * print_boot_partition_info() logs RO(BP1) and RW(BP2) versions.
 	 */
 	if (cse_is_hfs3_fw_sku_lite())
-		return;
+		return CB_ERR;
 
 	/*
 	 * Prerequisites:
@@ -858,23 +859,19 @@ void print_me_fw_version(void *unused)
 	 *    during ramstage
 	 */
 	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_normal())
-		goto fail;
+		return CB_ERR;
 
 	heci_reset();
 
-	if (!heci_send_receive(&fw_ver_msg, sizeof(fw_ver_msg), &resp, &resp_size,
+	if (!heci_send_receive(&fw_ver_msg, sizeof(fw_ver_msg), resp, &resp_size,
 									HECI_MKHI_ADDR))
-		goto fail;
+		return CB_ERR;
 
-	if (resp.hdr.result)
-		goto fail;
+	if (resp->hdr.result)
+		return CB_ERR;
 
-	printk(BIOS_DEBUG, "ME: Version: %d.%d.%d.%d\n", resp.code.major,
-			resp.code.minor, resp.code.hotfix, resp.code.build);
-	return;
 
-fail:
-	printk(BIOS_DEBUG, "ME: Version: Unavailable\n");
+	return CB_SUCCESS;
 }
 
 void cse_trigger_vboot_recovery(enum csme_failure_reason reason)

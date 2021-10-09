@@ -296,6 +296,7 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 
 	sb.WriteString(`
 #include <bootblock_common.h>
+#include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
@@ -359,7 +360,7 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 
 	Add_gpl(gnvs)
 	gnvs.WriteString(`#include <acpi/acpi_gnvs.h>
-#include <southbridge/intel/bd82x6x/nvs.h>
+#include <soc/nvs.h>
 
 /* FIXME: check this function.  */
 void mainboard_fill_gnvs(struct global_nvs *gnvs)

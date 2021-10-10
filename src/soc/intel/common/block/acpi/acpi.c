@@ -218,7 +218,7 @@ int soc_fill_acpi_wake(const struct chipset_power_state *ps, uint32_t *pm1, uint
 	 * powerbtn or any other wake source like lidopen, key board press etc.
 	 */
 	pm1_en = ps->pm1_en;
-	pm1_en |= WAK_STS | RTC_EN | PWRBTN_EN;
+	pm1_en |= WAK_STS | PWRBTN_EN;
 
 	pm1_en = acpi_fill_soc_wake(pm1_en, ps);
 

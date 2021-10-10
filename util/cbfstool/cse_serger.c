@@ -21,7 +21,7 @@ static struct params {
 	const char *image_name;
 	const char *version_str;
 	const char *input_file;
-	struct cse_layout_regions layout_regions;
+	struct region layout_regions[BP_TOTAL];
 } params;
 
 static const struct {
@@ -640,14 +640,14 @@ static int allocate_buffer(struct buffer *buff, struct buffer *wbuff, const char
 	return 0;
 }
 
-static int cmd_create_layout(void)
+static int fill_layout_buffer(struct buffer *buff)
 {
-	struct buffer buff, wbuff;
+	struct buffer wbuff;
 
-	if (allocate_buffer(&buff, &wbuff, "CSE layout"))
+	if (allocate_buffer(buff, &wbuff, "CSE layout"))
 		return -1;
 
-	ifwi.cse_layout = ifwi.bpdt_ops->create_layout(&params.layout_regions);
+	ifwi.cse_layout = ifwi.bpdt_ops->create_layout(&params.layout_regions[0]);
 	if (!ifwi.cse_layout) {
 		ERROR("Failed to create layout!\n");
 		return -1;
@@ -657,6 +657,16 @@ static int cmd_create_layout(void)
 		ERROR("Failed to write CSE layout!\n");
 		return -1;
 	}
+
+	return 0;
+}
+
+static int cmd_create_layout(void)
+{
+	struct buffer buff;
+
+	if (fill_layout_buffer(&buff))
+		return -1;
 
 	buffer_write_file(&buff, params.image_name);
 	return 0;
@@ -815,7 +825,7 @@ static void usage(const char *name)
 	       "COMMANDs:\n"
 	       " print [-s][-n NAME][-t TYPE]\n"
 	       " dump [-o DIR][-n NAME]\n"
-	       " create-layout --dp <offset:size> --bp1 <offset:size> --bp2 <offset:size> -v VERSION\n"
+	       " create-layout --dp <offset:size> --bp* <offset:size> -v VERSION\n"
 	       " print-layout -v VERSION\n"
 	       " create-bpdt -v VERSION\n"
 	       " add [-n NAME][-t TYPE][-f INPUT_FILE]\n"
@@ -896,19 +906,19 @@ int main(int argc, char **argv)
 				params.partition_type = atoi(optarg);
 				break;
 			case LONGOPT_BP1:
-				parse_region(&params.layout_regions.bp1, optarg);
+				parse_region(&params.layout_regions[BP1], optarg);
 				break;
 			case LONGOPT_BP2:
-				parse_region(&params.layout_regions.bp2, optarg);
+				parse_region(&params.layout_regions[BP2], optarg);
 				break;
 			case LONGOPT_BP3:
-				parse_region(&params.layout_regions.bp3, optarg);
+				parse_region(&params.layout_regions[BP3], optarg);
 				break;
 			case LONGOPT_BP4:
-				parse_region(&params.layout_regions.bp4, optarg);
+				parse_region(&params.layout_regions[BP4], optarg);
 				break;
 			case LONGOPT_DATA:
-				parse_region(&params.layout_regions.data_partition, optarg);
+				parse_region(&params.layout_regions[DP], optarg);
 				break;
 			case 'h':
 			case '?':

@@ -185,7 +185,7 @@ static uint32_t calculate_layout_checksum(struct cse_layout *l)
 	return calc_checksum;
 }
 
-static cse_layout_ptr create_cse_layout(const struct cse_layout_regions *r)
+static cse_layout_ptr create_cse_layout(const struct region *r)
 {
 	struct cse_layout *l = calloc(1, sizeof(*l));
 
@@ -196,16 +196,16 @@ static cse_layout_ptr create_cse_layout(const struct cse_layout_regions *r)
 	l->size = sizeof(struct cse_layout) - sizeof(l->rom_bypass);
 	l->redundancy = 0;
 	l->checksum = 0;
-	l->data_offset = r->data_partition.offset;
-	l->data_size = r->data_partition.size;
-	l->bp1_offset = r->bp1.offset;
-	l->bp1_size = r->bp1.size;
-	l->bp2_offset = r->bp2.offset;
-	l->bp2_size = r->bp2.size;
-	l->bp3_offset = r->bp3.offset;
-	l->bp3_size = r->bp3.size;
-	l->bp4_offset = r->bp4.offset;
-	l->bp4_size = r->bp4.size;
+	l->data_offset = r[DP].offset;
+	l->data_size = r[DP].size;
+	l->bp1_offset = r[BP1].offset;
+	l->bp1_size = r[BP1].size;
+	l->bp2_offset = r[BP2].offset;
+	l->bp2_size = r[BP2].size;
+	l->bp3_offset = r[BP3].offset;
+	l->bp3_size = r[BP3].size;
+	l->bp4_offset = r[BP4].offset;
+	l->bp4_size = r[BP4].size;
 	l->bp5_offset = 0;
 	l->bp5_size = 0;
 	l->temp_base_addr = 0;

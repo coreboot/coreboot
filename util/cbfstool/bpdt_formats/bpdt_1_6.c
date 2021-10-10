@@ -142,21 +142,21 @@ static void inc_bpdt_entry_count(bpdt_hdr_ptr ptr)
 	h->descriptor_count++;
 }
 
-static cse_layout_ptr create_cse_layout(const struct cse_layout_regions *r)
+static cse_layout_ptr create_cse_layout(const struct region *r)
 {
 	struct cse_layout *l = malloc(sizeof(*l));
 
 	if (!l)
 		return NULL;
 
-	l->data_offset = r->data_partition.offset;
-	l->data_size = r->data_partition.size;
-	l->bp1_offset = r->bp1.offset;
-	l->bp1_size = r->bp1.size;
-	l->bp2_offset = r->bp2.offset;
-	l->bp2_size = r->bp2.size;
-	l->bp3_offset = r->bp3.offset;
-	l->bp3_size = r->bp3.size;
+	l->data_offset = r[DP].offset;
+	l->data_size = r[DP].size;
+	l->bp1_offset = r[BP1].offset;
+	l->bp1_size = r[BP1].size;
+	l->bp2_offset = r[BP2].offset;
+	l->bp2_size = r[BP2].size;
+	l->bp3_offset = r[BP3].offset;
+	l->bp3_size = r[BP3].size;
 	l->checksum = 0;		/* unused */
 
 	return 0;

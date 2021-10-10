@@ -27,12 +27,13 @@ enum subpart_entry_version {
 	SUBPART_ENTRY_VERSION_1 = 1,
 };
 
-struct cse_layout_regions {
-	struct region data_partition;
-	struct region bp1;
-	struct region bp2;
-	struct region bp3;
-	struct region bp4;
+enum {
+	DP,
+	BP1,
+	BP2,
+	BP3,
+	BP4,
+	BP_TOTAL,
 };
 
 typedef void *cse_layout_ptr;
@@ -56,7 +57,7 @@ struct bpdt_ops {
 	size_t (*get_entry_count)(const bpdt_hdr_ptr ptr);
 	void (*inc_entry_count)(bpdt_hdr_ptr ptr);
 
-	cse_layout_ptr (*create_layout)(const struct cse_layout_regions *regions);
+	cse_layout_ptr (*create_layout)(const struct region *regions);
 	void (*print_layout)(const cse_layout_ptr ptr);
 	cse_layout_ptr (*read_layout)(struct buffer *buff);
 	int (*write_layout)(struct buffer *buff, const cse_layout_ptr ptr);

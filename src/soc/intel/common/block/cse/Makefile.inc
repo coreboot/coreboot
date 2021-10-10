@@ -53,19 +53,12 @@ $(objcse)/cse_%.bin: $(CSE_SERGER) cse_inputs $(cse_decomp_files)
 	$(foreach ingredient,$(cse_$*_ingredients),\
 		$(call cse_add_ingredient,$(@F),$(ingredient));)
 
-$(CSE_LAYOUT_BIN): $(obj)/fmap_config.h $(CSE_SERGER)
-	printf "    CREATE     $(@F) (version $(CSE_BPDT_VERSION))\n"
-	$(CSE_SERGER) $@ create-layout -v $(CSE_BPDT_VERSION) \
-		--bp1 $(CSE_BP1_OFFSET):$(CSE_BP1_SIZE) \
-		--bp2 $(CSE_BP2_OFFSET):$(CSE_BP2_SIZE) \
-		--dp $(CSE_DP_OFFSET):$(CSE_DP_SIZE) > /dev/null
-
-$(OBJ_ME_BIN): $(CSE_BP1_BIN) $(CSE_BP2_BIN) $(CSE_DATA_INPUT) $(CSE_LAYOUT_BIN)
+$(OBJ_ME_BIN): $(CSE_BP1_BIN) $(CSE_BP2_BIN) $(CSE_DATA_INPUT) $(obj)/fmap_config.h
 	printf "    CREATE     $(@F)\n"
-	dd if=$(CSE_LAYOUT_BIN) of=$@ bs=1 conv=notrunc 2> /dev/null
-	dd if=$(CSE_BP1_BIN) of=$@ bs=1 conv=notrunc seek=$(CSE_BP1_OFFSET) 2> /dev/null
-	dd if=$(CSE_BP2_BIN) of=$@ bs=1 conv=notrunc seek=$(CSE_BP2_OFFSET) 2> /dev/null
-	dd if=$(CSE_DATA_INPUT) of=$@ bs=1 conv=notrunc seek=$(CSE_DP_OFFSET) 2> /dev/null
+	$(CSE_SERGER) $@ create-cse-region -v $(CSE_BPDT_VERSION) \
+		--bp1 $(CSE_BP1_OFFSET):$(CSE_BP1_SIZE) --bp1_file $(CSE_BP1_BIN) \
+		--bp2 $(CSE_BP2_OFFSET):$(CSE_BP2_SIZE) --bp2_file $(CSE_BP2_BIN) \
+		--dp $(CSE_DP_OFFSET):$(CSE_DP_SIZE) --dp_file $(CSE_DATA_INPUT) > /dev/null
 
 endif
 

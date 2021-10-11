@@ -49,7 +49,7 @@ static void configure_misc(void)
 	wrmsr(IA32_PACKAGE_THERM_INTERRUPT, msr);
 
 	msr = rdmsr(MSR_POWER_CTL);
-	msr.lo |= (1 << 0);	/* Enable Bi-directional PROCHOT as an input*/
+	msr.lo |= (1 << 0);	/* Enable Bi-directional PROCHOT as an input */
 	msr.lo |= (1 << 18);	/* Enable Energy/Performance Bias control */
 	msr.lo &= ~POWER_CTL_C1E_MASK;	/* Disable C1E */
 	msr.lo |= (1 << 23);	/* Lock it */

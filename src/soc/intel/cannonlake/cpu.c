@@ -51,6 +51,7 @@ static void configure_misc(void)
 	/* Enable PROCHOT */
 	msr = rdmsr(MSR_POWER_CTL);
 	msr.lo |= (1 << 0);	/* Enable Bi-directional PROCHOT as an input */
+	msr.lo |= (1 << 18);	/* Enable Energy/Performance Bias control */
 	msr.lo |= (1 << 23);	/* Lock it */
 	wrmsr(MSR_POWER_CTL, msr);
 }

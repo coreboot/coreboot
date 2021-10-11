@@ -22,6 +22,7 @@ static struct params {
 	const char *version_str;
 	const char *input_file;
 	struct region layout_regions[BP_TOTAL];
+	const char *layout_files[BP_TOTAL];
 } params;
 
 static const struct {
@@ -640,6 +641,20 @@ static int allocate_buffer(struct buffer *buff, struct buffer *wbuff, const char
 	return 0;
 }
 
+static size_t get_cse_region_end_offset(void)
+{
+	size_t offset = 0;
+	size_t end_offset;
+
+	for (size_t i = 0; i < BP_TOTAL; i++) {
+		end_offset = region_end(&params.layout_regions[i]);
+		if (end_offset > offset)
+			offset = end_offset;
+	}
+
+	return offset;
+}
+
 static int fill_layout_buffer(struct buffer *buff)
 {
 	struct buffer wbuff;
@@ -669,6 +684,58 @@ static int cmd_create_layout(void)
 		return -1;
 
 	buffer_write_file(&buff, params.image_name);
+	return 0;
+}
+
+static int cmd_create_cse_region(void)
+{
+	size_t file_size = get_cse_region_end_offset();
+	struct buffer cse_buff, layout_buff;
+
+	if (fill_layout_buffer(&layout_buff))
+		return -1;
+
+	if (file_size == 0)
+		file_size = buffer_size(&layout_buff);
+
+	file_size = ALIGN_UP(file_size, BUFF_SIZE_ALIGN);
+	if (buffer_create(&cse_buff, file_size, "CSE buff")) {
+		ERROR("CSE buffer creation error!\n");
+		return -1;
+	}
+
+	memset(buffer_get(&cse_buff), 0xff, buffer_size(&cse_buff));
+	memcpy(buffer_get(&cse_buff), buffer_get(&layout_buff), buffer_size(&layout_buff));
+
+	for (size_t i = 0; i < BP_TOTAL; i++) {
+		struct buffer wbuff, rbuff;
+
+		if (region_sz(&params.layout_regions[i]) == 0)
+			continue;
+
+		buffer_clone(&wbuff, &cse_buff);
+		buffer_seek(&wbuff, region_offset(&params.layout_regions[i]));
+
+		if (params.layout_files[i] == NULL) {
+			if (i == 0) {
+				ERROR("File name not provided for DP!\n");
+			} else {
+				ERROR("File name not provided for BP%zd!\n", i);
+			}
+			return -1;
+		}
+
+		if (buffer_from_file(&rbuff, params.layout_files[i])) {
+			ERROR("Failed to read %s\n", params.layout_files[i]);
+			return -1;
+		}
+
+		assert(buffer_size(&wbuff) >= buffer_size(&rbuff));
+		memcpy(buffer_get(&wbuff), buffer_get(&rbuff), buffer_size(&rbuff));
+	}
+
+	buffer_write_file(&cse_buff, params.image_name);
+
 	return 0;
 }
 
@@ -776,6 +843,7 @@ static struct command {
 	{ "print-layout", "v:?", cmd_print_layout, false },
 	{ "create-bpdt", "v:?", cmd_create_bpdt, false },
 	{ "add", "f:n:t:v:?", cmd_add, true },
+	{ "create-cse-region", "v:?", cmd_create_cse_region, false },
 };
 
 enum {
@@ -785,6 +853,11 @@ enum {
 	LONGOPT_BP3,
 	LONGOPT_BP4,
 	LONGOPT_DATA,
+	LONGOPT_BP1_FILE,
+	LONGOPT_BP2_FILE,
+	LONGOPT_BP3_FILE,
+	LONGOPT_BP4_FILE,
+	LONGOPT_DATA_FILE,
 
 	LONGOPT_END,
 };
@@ -796,10 +869,15 @@ static struct option long_options[] = {
 	{"sub_partition",   no_argument,       0, 's'},
 	{"version",         required_argument, 0, 'v'},
 	{"bp1",             required_argument, 0, LONGOPT_BP1},
+	{"bp1_file",        required_argument, 0, LONGOPT_BP1_FILE},
 	{"bp2",             required_argument, 0, LONGOPT_BP2},
+	{"bp2_file",        required_argument, 0, LONGOPT_BP2_FILE},
 	{"bp3",             required_argument, 0, LONGOPT_BP3},
+	{"bp3_file",        required_argument, 0, LONGOPT_BP3_FILE},
 	{"bp4",             required_argument, 0, LONGOPT_BP4},
+	{"bp4_file",        required_argument, 0, LONGOPT_BP4_FILE},
 	{"dp",              required_argument, 0, LONGOPT_DATA},
+	{"dp_file",         required_argument, 0, LONGOPT_DATA_FILE},
 	{NULL,		    0,                 0,  0 }
 };
 
@@ -826,6 +904,8 @@ static void usage(const char *name)
 	       " print [-s][-n NAME][-t TYPE]\n"
 	       " dump [-o DIR][-n NAME]\n"
 	       " create-layout --dp <offset:size> --bp* <offset:size> -v VERSION\n"
+	       " create-cse-region --dp <offset:size> --dp_file <FILE> --bp* <offset:size>"
+	       " --bp*_file <FILE> -v VERSION\n"
 	       " print-layout -v VERSION\n"
 	       " create-bpdt -v VERSION\n"
 	       " add [-n NAME][-t TYPE][-f INPUT_FILE]\n"
@@ -837,10 +917,15 @@ static void usage(const char *name)
 	       " -t TYPE             : Sub-partition type\n"
 	       " -v VERSION          : BPDT version\n"
 	       " --dp <offset:size>  : Offset and size of data partition\n"
+	       " --dp_file <FILE>    : File for data partition\n"
 	       " --bp1 <offset:size> : Offset and size of BP1\n"
+	       " --bp1_file <FILE>   : File for BP1 partition\n"
 	       " --bp2 <offset:size> : Offset and size of BP2\n"
+	       " --bp2_file <FILE>   : File for BP2 partition\n"
 	       " --bp3 <offset:size> : Offset and size of BP3\n"
+	       " --bp3_file <FILE>   : File for BP3 partition\n"
 	       " --bp4 <offset:size> : Offset and size of BP4\n"
+	       " --bp4_file <FILE>   : File for BP4 partition\n"
 	       "\n",
 	       name, name);
 }
@@ -919,6 +1004,21 @@ int main(int argc, char **argv)
 				break;
 			case LONGOPT_DATA:
 				parse_region(&params.layout_regions[DP], optarg);
+				break;
+			case LONGOPT_BP1_FILE:
+				params.layout_files[BP1] = optarg;
+				break;
+			case LONGOPT_BP2_FILE:
+				params.layout_files[BP2] = optarg;
+				break;
+			case LONGOPT_BP3_FILE:
+				params.layout_files[BP3] = optarg;
+				break;
+			case LONGOPT_BP4_FILE:
+				params.layout_files[BP4] = optarg;
+				break;
+			case LONGOPT_DATA_FILE:
+				params.layout_files[DP] = optarg;
 				break;
 			case 'h':
 			case '?':

@@ -395,6 +395,7 @@ static void configure_c_states(void)
 	msr.lo |= (1 << 27);	// C3 Auto Undemotion Enable
 	msr.lo |= (1 << 26);	// C1 Auto Demotion Enable
 	msr.lo |= (1 << 25);	// C3 Auto Demotion Enable
+	msr.lo |= (1 << 15);	// Lock bits 15:0
 	msr.lo &= ~(1 << 10);	// Disable IO MWAIT redirection
 
 	if (timed_mwait_capable)

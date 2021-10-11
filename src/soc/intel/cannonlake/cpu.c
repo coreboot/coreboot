@@ -62,8 +62,9 @@ static void configure_c_states(const config_t *const cfg)
 	msr = rdmsr(MSR_PKG_CST_CONFIG_CONTROL);
 	if (cfg->max_package_c_state && (msr.lo & 0xf) >= cfg->max_package_c_state) {
 		msr.lo = (msr.lo & ~0xf) | ((cfg->max_package_c_state - 1) & 0xf);
-		wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
 	}
+	msr.lo |= CST_CFG_LOCK_MASK;
+	wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
 
 	/* C-state Interrupt Response Latency Control 0 - package C3 latency */
 	msr.hi = 0;

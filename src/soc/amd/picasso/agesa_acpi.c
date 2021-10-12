@@ -82,7 +82,7 @@ static unsigned long gen_crat_memory_entries(struct acpi_crat_header *crat,
 			if (memory_base == 0) {
 				current =
 					create_crat_memory_entry(0, 0ull, 0xa0000ull, current);
-				memory_base = (1 * 1024 * 1024);
+				memory_base = 1 * MiB;
 				memory_length = memory_base;
 				new_entries++;
 			}

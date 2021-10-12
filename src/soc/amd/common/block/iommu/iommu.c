@@ -14,7 +14,7 @@ static void iommu_read_resources(struct device *dev)
 
 	/* Add an extra subtractive resource for both memory and I/O. */
 	res = new_resource(dev, 0x44);
-	res->size = 512 * 1024;
+	res->size = 512 * KiB;
 	res->align = log2(res->size);
 	res->gran = log2(res->size);
 	res->limit = 0xffffffff;	/* 4G */

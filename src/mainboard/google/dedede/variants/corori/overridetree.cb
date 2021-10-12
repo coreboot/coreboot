@@ -39,6 +39,8 @@ chip soc/intel/jasperlake
 	register "common_soc_config" = "{
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 255,
+			.fall_time_ns = 14,
 		},
 		.i2c[4] = {
 			.speed = I2C_SPEED_FAST,

@@ -39,8 +39,11 @@ void bootblock_mainboard_early_init(void)
 	dword |= LPC_LDRQ0_PD_EN;
 	pci_write_config32(SOC_LPC_DEV, LPC_MISC_CONTROL_BITS, dword);
 
-	pci_write_config32(SOC_LPC_DEV, LPC_IO_PORT_DECODE_ENABLE, 0);
-	pci_write_config32(SOC_LPC_DEV, LPC_IO_OR_MEM_DECODE_ENABLE, 0);
+	/*
+	 * All LPC decodes need to be cleared before we can configure the LPC pads as secondary
+	 * eSPI interface that gets used for the EC communication. This is already done by
+	 * lpc_disable_decodes that gets called before this function.
+	 */
 
 	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
 		return;

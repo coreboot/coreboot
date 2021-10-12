@@ -5,8 +5,13 @@
 #define   PEPD_DSM_LPI_ADDITIONAL_FUNCTIONS	1
 #define  PEPD_DSM_LPI_GET_DEVICE_CONSTRAINTS 	1
 
-#define PEPD_DSM_NOTIFICATIONS_UUID		"11e00d56-ce64-47ce-837b-1f898f9aa461"
-#define  PEPD_DSM_NOTIFICATION_ENUM_FUNCTIONS	0
+#define PEPD_DSM_NOTIFICATIONS_UUID			"11e00d56-ce64-47ce-837b-1f898f9aa461"
+#define  PEPD_DSM_NOTIFICATION_ENUM_FUNCTIONS		0
+#define   PEPD_DSM_NOTIFICATION_ADDITIONAL_FUNCTIONS	1
+#define  PEPD_DSM_NOTIFICATION_LOW_POWER_ENTRY		5
+#define  PEPD_DSM_NOTIFICATION_LOW_POWER_EXIT		6
+
+External(\_SB.MS0X, MethodObj)
 
 /*
  * Power Engine Plug-in Device
@@ -89,10 +94,27 @@ Scope (\_SB) {
 				 * this UUID.
 				 */
 				Case (PEPD_DSM_NOTIFICATION_ENUM_FUNCTIONS) {
-					/*
-					 * TODO(b/185586290): Add additional functions when
-					 * linux kernel driver is fixed.
-					 */
+					Local0 = Buffer { 0x00 }
+					CreateByteField(Local0, 0x00, SUPP)
+
+					SUPP = PEPD_DSM_NOTIFICATION_ADDITIONAL_FUNCTIONS
+					SUPP |= 1 << PEPD_DSM_NOTIFICATION_LOW_POWER_ENTRY
+					SUPP |= 1 << PEPD_DSM_NOTIFICATION_LOW_POWER_EXIT
+
+					Return (Local0)
+				}
+				Case (PEPD_DSM_NOTIFICATION_LOW_POWER_ENTRY) {
+					/* provide board level S0ix hook */
+					If (CondRefOf (\_SB.MS0X)) {
+						\_SB.MS0X(1)
+					}
+					Return (Buffer() { 0x00 })
+				}
+				Case (PEPD_DSM_NOTIFICATION_LOW_POWER_EXIT) {
+					/* provide board level S0ix hook */
+					If (CondRefOf (\_SB.MS0X)) {
+						\_SB.MS0X(0)
+					}
 					Return (Buffer() { 0x00 })
 				}
 				Default {

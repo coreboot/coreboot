@@ -6,6 +6,8 @@
 #include <soc/iomap.h>
 
 /* Power management registers:  0xfed80300 or index/data at IO 0xcd6/cd7 */
+#define PM_ISACONTROL			0x04
+#define   ABCLKGATEEN			BIT(16)
 #define PM_PCI_CTRL			0x08
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 #define PWR_RESET_CFG			0x10
@@ -82,6 +84,15 @@
 #define   GPP_CLK_REQ_EXT(clk_shift)	(0x1 << (clk_shift))
 #define   GPP_CLK_REQ_OFF(clk_shift)	(0x0 << (clk_shift))
 
+#define MISC_CLKGATEDCNTL		0x2c
+#define   ALINKCLK_GATEOFFEN		BIT(16)
+#define   BLINKCLK_GATEOFFEN		BIT(17)
+#define   XTAL_PAD_S3_TURNOFF_EN	BIT(20)
+#define   XTAL_PAD_S5_TURNOFF_EN	BIT(21)
+#define MISC_CGPLL_CONFIGURATION0	0x30
+#define   USB_PHY_CMCLK_S3_DIS		BIT(8)
+#define   USB_PHY_CMCLK_S0I3_DIS	BIT(9)
+#define   USB_PHY_CMCLK_S5_DIS		BIT(10)
 #define MISC_CLK_CNTL0			0x40 /* named MISC_CLK_CNTL1 on Picasso */
 #define   BP_X48M0_OUTPUT_EN		BIT(2) /* 1=En, unlike Hudson, Kern */
 #define MISC_I2C0_PAD_CTRL		0xd8

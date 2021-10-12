@@ -169,6 +169,28 @@ static void gpp_clk_setup(void)
 	misc_write32(GPP_CLK_CNTRL, gpp_clk_ctl);
 }
 
+static void cgpll_clock_gate_init(void)
+{
+	uint32_t t;
+
+	t = misc_read32(MISC_CLKGATEDCNTL);
+	t |= ALINKCLK_GATEOFFEN;
+	t |= BLINKCLK_GATEOFFEN;
+	t |= XTAL_PAD_S3_TURNOFF_EN;
+	t |= XTAL_PAD_S5_TURNOFF_EN;
+	misc_write32(MISC_CLKGATEDCNTL, t);
+
+	t = misc_read32(MISC_CGPLL_CONFIGURATION0);
+	t |= USB_PHY_CMCLK_S3_DIS;
+	t |= USB_PHY_CMCLK_S0I3_DIS;
+	t |= USB_PHY_CMCLK_S5_DIS;
+	misc_write32(MISC_CGPLL_CONFIGURATION0, t);
+
+	t = pm_read32(PM_ISACONTROL);
+	t |= ABCLKGATEEN;
+	pm_write32(PM_ISACONTROL, t);
+}
+
 void fch_init(void *chip_info)
 {
 	fch_init_resets();
@@ -181,6 +203,7 @@ void fch_init(void *chip_info)
 
 	gpp_clk_setup();
 	fch_clk_output_48Mhz();
+	cgpll_clock_gate_init();
 }
 
 void fch_final(void *chip_info)

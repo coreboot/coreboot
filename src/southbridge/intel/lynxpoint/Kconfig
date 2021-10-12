@@ -68,6 +68,12 @@ config PCIEXP_AER
 	bool
 	default y
 
+config PCIEXP_CLK_PM
+	default y
+
+config PCIEXP_L1_SUB_STATE
+	default y
+
 config SERIALIO_UART_CONSOLE
 	bool "Use SerialIO UART for console"
 	depends on INTEL_LYNXPOINT_LP

@@ -48,11 +48,6 @@
 #define APU_I2C3_BASE			0xfedc5000
 #define APU_I2C4_BASE			0xfedc6000
 
-/* I2C parameters for lpc_read_resources */
-#define I2C_BASE_ADDRESS		APU_I2C2_BASE
-#define I2C_DEVICE_SIZE			0x00001000
-#define I2C_DEVICE_COUNT		(I2C_MASTER_DEV_COUNT - I2C_MASTER_START_INDEX)
-
 #define APU_DMAC0_BASE			0xfedc7000
 #define APU_DMAC1_BASE			0xfedc8000
 #define APU_UART0_BASE			0xfedc9000

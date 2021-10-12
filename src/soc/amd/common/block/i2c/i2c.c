@@ -121,9 +121,13 @@ void i2c_soc_init(void)
 	dw_i2c_soc_init(false);
 }
 
+static void i2c_read_resources(struct device *dev)
+{
+	mmio_resource(dev, 0, dev->path.mmio.addr / KiB, 4);
+}
+
 struct device_operations soc_amd_i2c_mmio_ops = {
-	/* TODO(kramasub): Move I2C resource info here. */
-	.read_resources = noop_read_resources,
+	.read_resources = i2c_read_resources,
 	.set_resources = noop_set_resources,
 	.scan_bus = scan_smbus,
 	.acpi_name = i2c_acpi_name,

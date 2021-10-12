@@ -51,16 +51,14 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C13, NONE, DEEP, NF1),
 	/* C15  : WLAN_OFF_L */
 	PAD_CFG_GPO(GPP_C15, 1, DEEP),
-
-	/*
-	 * TODO(b/187094460): Re-enable touch screen I2C after resolving USB
-	 * conflict
-	 */
-
+	/* C16 : PCH_I2C_RFU_SDA (NC) */
+	PAD_NC(GPP_C16, NONE),
+	/* C17 : PCH_I2C_RFU_SCL (NC) */
+	PAD_NC(GPP_C17, NONE),
 	/* C18 : PCH_I2C_USI_SDA */
-	PAD_NC(GPP_C18, NONE),
+	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
 	/* C19 : PCH_I2C_USI_SDL */
-	PAD_NC(GPP_C19, NONE),
+	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1),
 
 	/* D13  : SMBUS_ISP_SCALAR */
 	PAD_CFG_GPO(GPP_D13, 0, DEEP),
@@ -112,14 +110,22 @@ static const struct pad_config gpio_table[] = {
 	/* F22 : EMMC_RST_L */
 	PAD_CFG_NF(GPP_F22, NONE, DEEP, NF1),
 
-	/* H4: PCH_I2C_PCON_SDA */
+	/* H4: PCH_I2C_SCALER_SDA */
 	PAD_CFG_NF(GPP_H4, NONE, DEEP, NF1),
-	/* H5: PCH_I2C_PCON_SCL */
+	/* H5: PCH_I2C_SCALER_SCL */
 	PAD_CFG_NF(GPP_H5, NONE, DEEP, NF1),
 	/* H6  : PCH_I2C_TPU_SDA */
 	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
 	/* H7  : PCH_I2C_TPU_SCL */
 	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
+	/* H8  : NC */
+	PAD_NC(GPP_H8, NONE),
+	/* H9  : NC */
+	PAD_NC(GPP_H9, NONE),
+	/* H10 : NC */
+	PAD_NC(GPP_H10, NONE),
+	/* H11 : NC */
+	PAD_NC(GPP_H11, NONE),
 	/* H22 : PWM_PP3300_BIOZZER */
 	PAD_CFG_GPO(GPP_H22, 0, DEEP),
 };

@@ -460,7 +460,7 @@ static u32 tis_senddata(const u8 *const data, u32 len)
 		stopwatch_init_usecs_expire(&sw, MAX_DELAY_US);
 		while (!burst) {
 			if (stopwatch_expired(&sw)) {
-				printf("%s:%d failed to feed %d bytes of %d\n",
+				printf("%s:%d failed to feed %u bytes of %u\n",
 				       __FILE__, __LINE__, len - offset, len);
 				return TPM_DRIVER_ERR;
 			}
@@ -572,7 +572,7 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 
 				if ((expected_count < offset) ||
 				    (expected_count > *len)) {
-					printf("%s:%d bad response size %d\n",
+					printf("%s:%d bad response size %u\n",
 					       __FILE__, __LINE__,
 					       expected_count);
 					return TPM_DRIVER_ERR;
@@ -602,7 +602,7 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 
 	/* * Make sure we indeed read all there was. */
 	if (tis_has_valid_data(locality)) {
-		printf("%s:%d wrong receive status: %x %d bytes left\n",
+		printf("%s:%d wrong receive status: %x %u bytes left\n",
 		       __FILE__, __LINE__, tpm_read_status(locality),
 	               tpm_read_burst_count(locality));
 		return TPM_DRIVER_ERR;
@@ -649,7 +649,7 @@ int tis_open(void)
 
 	/* did we get a lock? */
 	if (tis_wait_received_access(locality)) {
-		printf("%s:%d - failed to lock locality %d\n",
+		printf("%s:%d - failed to lock locality %u\n",
 		       __FILE__, __LINE__, locality);
 		return TPM_DRIVER_ERR;
 	}
@@ -676,7 +676,7 @@ int tis_close(void)
 	if (tis_has_access(locality)) {
 		tis_drop_access(locality);
 		if (tis_wait_dropped_access(locality)) {
-			printf("%s:%d - failed to release locality %d\n",
+			printf("%s:%d - failed to release locality %u\n",
 			       __FILE__, __LINE__, locality);
 			return TPM_DRIVER_ERR;
 		}

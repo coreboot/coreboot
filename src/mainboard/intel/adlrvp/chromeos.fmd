@@ -1,7 +1,6 @@
 FLASH 32M {
 	SI_ALL 6M {
 		SI_DESC 4K
-		SI_EC 512K
 		SI_ME
 	}
 	SI_BIOS 26M {

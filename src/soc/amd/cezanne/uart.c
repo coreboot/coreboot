@@ -85,8 +85,13 @@ static void uart_enable(struct device *dev)
 	}
 }
 
+static void uart_read_resources(struct device *dev)
+{
+	mmio_resource(dev, 0, dev->path.mmio.addr / KiB, 4);
+}
+
 struct device_operations cezanne_uart_mmio_ops = {
-	.read_resources = noop_read_resources,
+	.read_resources = uart_read_resources,
 	.set_resources = noop_set_resources,
 	.scan_bus = scan_static_bus,
 	.enable = uart_enable,

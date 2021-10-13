@@ -37,6 +37,7 @@ ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += soc.c
 ramstage-y += ../common/timer.c timer.c
 ramstage-y += ../common/uart.c
+ramstage-y += ../common/usb.c usb.c
 ramstage-y += ../common/wdt.c wdt.c
 ramstage-y += ../common/pmic_wrap.c pmic_wrap.c mt6366.c
 

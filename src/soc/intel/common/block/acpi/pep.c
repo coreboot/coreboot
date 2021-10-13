@@ -47,7 +47,8 @@ static void read_pmc_lpm_requirements(const struct soc_pmc_lpm *lpm,
 			const uint32_t offset = lpm->lpm_ipc_offset +
 				i * lpm->req_reg_stride +
 				j * sizeof(uint32_t);
-			const uint32_t cmd_reg = pmc_make_ipc_cmd(PMC_IPC_CMD_RD_PMC_REG, 0, 0);
+			const uint32_t cmd_reg = pmc_make_ipc_cmd(PMC_IPC_CMD_RD_PMC_REG,
+							PMC_IPC_CMD_SUBCMD_RD_PMC_REG, 0);
 			struct pmc_ipc_buffer req = {.buf[0] = offset};
 			struct pmc_ipc_buffer res = {};
 

@@ -311,6 +311,40 @@ static void southbridge_smi_store(
 	}
 }
 
+__weak const struct gpio_lock_config *soc_gpio_lock_config(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}
+
+__weak const struct gpio_lock_config *mb_gpio_lock_config(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}
+
+static void soc_lock_gpios(void)
+{
+	const struct gpio_lock_config *soc_gpios;
+	const struct gpio_lock_config *mb_gpios;
+	size_t soc_gpio_num;
+	size_t mb_gpio_num;
+
+	/* get list of gpios from SoC */
+	soc_gpios = soc_gpio_lock_config(&soc_gpio_num);
+
+	/* get list of gpios from mainboard */
+	mb_gpios = mb_gpio_lock_config(&mb_gpio_num);
+
+	/* Lock any soc requested gpios */
+	if (soc_gpio_num)
+		gpio_lock_pads(soc_gpios, soc_gpio_num);
+
+	/* Lock any mainboard requested gpios */
+	if (mb_gpio_num)
+		gpio_lock_pads(mb_gpios, mb_gpio_num);
+}
+
 static void finalize(void)
 {
 	static int finalize_done;
@@ -336,6 +370,10 @@ static void finalize(void)
 	 * therefore, this call must precede smihandler_soc_at_finalize().
 	 */
 	mainboard_smi_finalize();
+
+	/* Lock down all GPIOs that may have been requested by the SoC and/or the mainboard. */
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_LOCK_GPIO_PADS))
+		soc_lock_gpios();
 
 	/* Specific SOC SMI handler during ramstage finalize phase */
 	smihandler_soc_at_finalize();

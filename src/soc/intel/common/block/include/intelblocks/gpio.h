@@ -205,6 +205,11 @@ enum gpio_lock_action {
 	GPIO_LOCK_FULL	 = GPIO_LOCK_CONFIG | GPIO_LOCK_TX,
 };
 
+struct gpio_lock_config {
+	gpio_t			gpio;
+	enum gpio_lock_action	action;
+};
+
 /*
  * Lock a GPIO's configuration.
  *
@@ -230,6 +235,33 @@ enum gpio_lock_action {
  * -1 - sideband message failed or other error
  */
 int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action action);
+
+/*
+ * gpio_lock_pads() can be used to lock an array of gpio pads, avoiding
+ * the p2sb_unhide() and p2sb_hide() calls between each gpio lock that would
+ * occur if gpio_lock_pad() were used to lock each pad in the list.
+ *
+ * @param pad_list: array of gpio_lock_config structures, one for each gpio to lock
+ * @param count: number of gpio_lock_config structs in the pad_list array
+ * @return 0 if successful,
+ * 1 - unsuccessful
+ * 2 - powered down
+ * 3 - multi-cast mixed
+ * -1 - sideband message failed or other error
+ */
+int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count);
+
+/*
+ * Returns an array of gpio_lock_config entries that the SoC
+ * deems security risks that should be locked down.
+ */
+const struct gpio_lock_config *soc_gpio_lock_config(size_t *num);
+
+/*
+ * Returns an array of gpio_lock_config entries that the mainboard
+ * deems security risks that should be locked down.
+ */
+const struct gpio_lock_config *mb_gpio_lock_config(size_t *num);
 
 /*
  * Returns the pmc_gpe to gpio_gpe mapping table

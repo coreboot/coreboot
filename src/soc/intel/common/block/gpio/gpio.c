@@ -447,14 +447,27 @@ int gpio_get(gpio_t gpio_num)
 	return !!(reg & PAD_CFG0_RX_STATE);
 }
 
-int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action action)
+static int sideband_msg_err(int status, int response)
 {
-	const struct pad_community *comm = gpio_get_community(pad);
-	size_t rel_pad;
-	uint16_t offset;
-	uint32_t data;
+	if (status || response) {
+		printk(BIOS_ERR, "%s: error status=%x response=%x\n",
+				__func__, status, response);
+		return (status == -1) ? -1 : response;
+	}
+
+	return 0;
+}
+
+int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
+{
+	const struct pad_community *comm;
+	enum gpio_lock_action action;
+	int status, err_response = 0;
 	uint8_t response;
-	int status;
+	uint16_t offset;
+	size_t rel_pad;
+	uint32_t data;
+	gpio_t pad;
 
 	/*
 	 * FSP-S will unlock all the GPIO pads and hide the P2SB device.  With
@@ -468,23 +481,13 @@ int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action action)
 		return -1;
 	}
 
-	if (!(action & GPIO_LOCK_FULL)) {
-		printk(BIOS_ERR, "%s: Error: no action specified!\n", __func__);
+	if ((pad_list == NULL) || (count == 0)) {
+		printk(BIOS_ERR, "%s: Error: pad_list null or count = 0!\n", __func__);
 		return -1;
 	}
-
-	rel_pad = relative_pad_in_comm(comm, pad);
-	offset = comm->pad_cfg_lock_offset;
-	if (!offset) {
-		printk(BIOS_ERR, "%s: Error: offset is not defined!\n", __func__);
-		return -1;
-	}
-	offset += gpio_group_index_scaled(comm, rel_pad, 2 * sizeof(uint32_t));
 
 	/* We must use the sideband interface in order to lock the pad. */
 	struct pcr_sbi_msg msg = {
-		.pid = comm->port,
-		.offset = offset,
 		.opcode = GPIO_LOCK_UNLOCK,
 		.is_posted = false,
 		.fast_byte_enable = 0xF,
@@ -494,35 +497,69 @@ int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action action)
 
 	p2sb_unhide();
 
-	data = gpio_bitmask_within_group(comm, rel_pad);
+	for (int x = 0; x < count; x++) {
+		int err;
 
-	if (action & GPIO_LOCK_CONFIG) {
-		printk(BIOS_INFO, "%s: Locking pad %d configuration\n",
-		       __func__, pad);
-		status = pcr_execute_sideband_msg(&msg, &data, &response);
-		if (status || response) {
-			printk(BIOS_ERR, "%s: error status=%x response=%x\n", __func__, status,
-			       response);
-			p2sb_hide();
-			return status == -1 ? -1 : response;
+		pad = pad_list[x].gpio;
+		action = pad_list[x].action;
+
+		if (!(action & GPIO_LOCK_FULL)) {
+			printk(BIOS_ERR, "%s: Error: no action specified for pad %d!\n",
+					__func__, pad);
+			continue;
 		}
-	}
 
-	if (action & GPIO_LOCK_TX) {
-		printk(BIOS_INFO, "%s: Locking pad %d TX state\n", __func__,
-		       pad);
-		msg.offset = msg.offset + 4;
-		status = pcr_execute_sideband_msg(&msg, &data, &response);
-		if (status || response) {
-			printk(BIOS_ERR, "%s: error status=%x response=%x\n", __func__, status,
-			       response);
-			p2sb_hide();
-			return status == -1 ? -1 : response;
+		comm = gpio_get_community(pad);
+		rel_pad = relative_pad_in_comm(comm, pad);
+		offset = comm->pad_cfg_lock_offset;
+		if (!offset) {
+			printk(BIOS_ERR, "%s: Error: offset not defined for pad %d!\n",
+					__func__, pad);
+			continue;
+		}
+		offset += gpio_group_index_scaled(comm, rel_pad, 2 * sizeof(uint32_t));
+
+		data = gpio_bitmask_within_group(comm, rel_pad);
+		msg.pid = comm->port;
+		msg.offset = offset;
+
+		if (action & GPIO_LOCK_CONFIG) {
+			if (CONFIG(DEBUG_GPIO))
+				printk(BIOS_INFO, "%s: Locking pad %d configuration\n",
+						__func__, pad);
+			status = pcr_execute_sideband_msg(&msg, &data, &response);
+			if ((err = sideband_msg_err(status, response)) != 0) {
+				err_response = err;
+				continue;
+			}
+		}
+
+		if (action & GPIO_LOCK_TX) {
+			if (CONFIG(DEBUG_GPIO))
+				printk(BIOS_INFO, "%s: Locking pad %d TX state\n",
+						__func__, pad);
+			msg.offset += 4;
+			status = pcr_execute_sideband_msg(&msg, &data, &response);
+			if ((err = sideband_msg_err(status, response)) != 0) {
+				err_response = err;
+				continue;
+			}
 		}
 	}
 
 	p2sb_hide();
-	return 0;
+
+	return err_response;
+}
+
+int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action action)
+{
+	const struct gpio_lock_config pads = {
+		.gpio = pad,
+		.action = action
+	};
+
+	return gpio_lock_pads(&pads, 1);
 }
 
 void gpio_set(gpio_t gpio_num, int value)

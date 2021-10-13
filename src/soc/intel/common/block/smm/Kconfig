@@ -8,6 +8,13 @@ config SOC_INTEL_COMMON_BLOCK_SMM_IO_TRAP
 	help
 	  Intel Processor trap flag if it is supported
 
+config SOC_INTEL_COMMON_BLOCK_SMM_LOCK_GPIO_PADS
+	bool
+	help
+	  Enable locking of security-sensitive SoC and mainboard GPIOs.
+	  An SoC may provide a list of gpios to lock, and the mainboard
+	  may also provide a list of gpios to lock.
+
 config SOC_INTEL_COMMON_BLOCK_SMM_ESPI_DISABLE
 	bool
 	default n

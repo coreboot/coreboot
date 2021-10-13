@@ -52,5 +52,11 @@ static void fw_config_handle(void *unused)
 		gpio_configure_pads(dmic_enable_pads, ARRAY_SIZE(dmic_enable_pads));
 		gpio_configure_pads(i2s_enable_pads, ARRAY_SIZE(i2s_enable_pads));
 	}
+
+	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_MAX98357_ALC5682I_VS_I2S))) {
+		printk(BIOS_INFO, "Configure audio over I2S with MAX98357 ALC5682I-VS.\n");
+		gpio_configure_pads(dmic_enable_pads, ARRAY_SIZE(dmic_enable_pads));
+		gpio_configure_pads(i2s_enable_pads, ARRAY_SIZE(i2s_enable_pads));
+	}
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

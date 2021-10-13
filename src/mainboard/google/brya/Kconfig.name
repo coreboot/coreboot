@@ -52,6 +52,7 @@ config BOARD_GOOGLE_KANO
 config BOARD_GOOGLE_TAEKO
 	bool "->  Taeko"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
+	select DRIVERS_GENESYSLOGIC_GL9763E
 
 config BOARD_GOOGLE_FELWINTER
 	bool "->  Felwinter"

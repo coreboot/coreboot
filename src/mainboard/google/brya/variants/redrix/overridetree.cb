@@ -33,6 +33,8 @@ end
 chip soc/intel/alderlake
 	register "SaGv" = "SaGv_Enabled"
 
+	register "CnviBtAudioOffload" = "true"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

@@ -111,6 +111,8 @@ config NORMAL_READ_SPI_SPEED
 config ALT_SPI_SPEED
 	default 0	# 66MHz
 
+endif # !EM100
+
 config OVERRIDE_EFS_SPI_SPEED
 	int
 	default 3 if EM100
@@ -126,8 +128,6 @@ config OVERRIDE_EFS_SPI_SPEED_MIN_BOARD
 	help
 	  Minimum board version starting which the Override EFS SPI Speed
 	  configuration has to be applied.
-
-endif # !EM100
 
 config VARIANT_DIR
 	default "guybrush" if BOARD_GOOGLE_GUYBRUSH

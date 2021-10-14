@@ -126,10 +126,10 @@ static uint32_t fletcher32(const void *data, int length)
 	while (length) {
 		index = length >= 359 ? 359 : length;
 		length -= index;
-	do {
-		c0 += *(pptr++);
-		c1 += c0;
-	} while (--index);
+		do {
+			c0 += *(pptr++);
+			c1 += c0;
+		} while (--index);
 		c0 = (c0 & 0xFFFF) + (c0 >> 16);
 		c1 = (c1 & 0xFFFF) + (c1 >> 16);
 	}

@@ -1,13 +1,17 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /*
- *  ROMSIG At ROMBASE + 0x20000:
+ *  ROMSIG At ROMBASE + 0x[0,2,4,8]20000:
  *  0            4               8                C
  *  +------------+---------------+----------------+------------+
  *  | 0x55AA55AA |EC ROM Address |GEC ROM Address |USB3 ROM    |
  *  +------------+---------------+----------------+------------+
- *  | PSPDIR ADDR|PSPDIR ADDR    |<-- Field 0x14 could be either
- *  +------------+---------------+   2nd PSP directory or PSP COMBO directory
+ *  | PSPDIR ADDR|PSPDIR ADDR(C) |   BDT ADDR 0   | BDT ADDR 1 |
+ *  +------------+---------------+----------------+------------+
+ *  | BDT ADDR 2 |               |  BDT ADDR 3(C) |            |
+ *  +------------+---------------+----------------+------------+
+ *  (C): Could be a combo header
+ *
  *  EC ROM should be 64K aligned.
  *
  *  PSP directory (Where "PSPDIR ADDR" points)
@@ -24,10 +28,29 @@
  *  +------------+---------------+----------------+------------+
  *  |                                                          |
  *  |                                                          |
- *  |             Other PSP Firmware                           |
- *  |                                                          |
+ *  |             Other PSP Firmware                          |
  *  |                                                          |
  *  +------------+---------------+----------------+------------+
+ *  |  40        | size          | Base address   | Reserved   |---+
+ *  +------------+---------------+----------------+------------+   |
+ *  :or 48(A/B A): size          : Base address   : Reserved   :   |
+ *  +   -    -   +    -     -    +    -      -    +  -    -    +   |
+ *  :   4A(A/B B): size          : Base address   : Reserved   :   |
+ *  +------------+---------------+----------------+------------+   |
+ *  (A/B A) & (A/B B): Similar as 40, pointing to PSP level 2      |
+ *  for A/B recovery                                               |
+ *                                                                 |
+ *                                                                 |
+ *  +------------+---------------+----------------+------------+   |
+ *  | '2LP$'     | Fletcher      |    Count       | Reserved   |<--+
+ *  +------------+---------------+----------------+------------+
+ *  |                                                          |
+ *  |                                                          |
+ *  |             PSP Firmware                                |
+ *  |      (2nd-level is not required on all families)         |
+ *  |                                                          |
+ *  +------------+---------------+----------------+------------+
+ *  BIOS Directory Table (BDT) is similar
  *
  *  PSP Combo directory
  *  +------------+---------------+----------------+------------+
@@ -35,15 +58,15 @@
  *  +------------+---------------+----------------+------------+
  *  |            R e s e r v e d                               |
  *  +------------+---------------+----------------+------------+
- *  | ID-Sel     | PSP ID        |   PSPDIR ADDR  |            | 2nd PSP directory
+ *  | ID-Sel     | PSP ID        |   PSPDIR ADDR  |            | 1st PSP directory
  *  +------------+---------------+----------------+------------+
- *  | ID-Sel     | PSP ID        |   PSPDIR ADDR  |            | 3rd PSP directory
+ *  | ID-Sel     | PSP ID        |   PSPDIR ADDR  |            | 2nd PSP directory
  *  +------------+---------------+----------------+------------+
  *  |                                                          |
  *  |        Other PSP                                         |
  *  |                                                          |
  *  +------------+---------------+----------------+------------+
- *
+ *  BDT Combo is similar
  */
 
 #include <commonlib/bsd/helpers.h>

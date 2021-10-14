@@ -7,10 +7,6 @@
 #include <device/mmio.h>
 #include <device/pci_type.h>
 
-/* By not assigning this to CONFIG_MMCONF_BASE_ADDRESS here we
- * prevent some sub-optimal constant folding. */
-extern u8 *const pci_mmconf;
-
 /* Using a unique datatype for MMIO writes makes the pointers to _not_
  * qualify for pointer aliasing with any other objects in memory.
  *
@@ -29,11 +25,27 @@ union pci_bank {
 	uint32_t reg32[4096 / sizeof(uint32_t)];
 };
 
+#if CONFIG(MMCONF_SUPPORT)
+
+#if CONFIG_MMCONF_BASE_ADDRESS == 0
+#error "CONFIG_MMCONF_BASE_ADDRESS undefined!"
+#endif
+
+#if CONFIG_MMCONF_BUS_NUMBER * MiB != CONFIG_MMCONF_LENGTH
+#error "CONFIG_MMCONF_LENGTH does not correspond with CONFIG_MMCONF_BUS_NUMBER!"
+#endif
+
+/* By not assigning this to CONFIG_MMCONF_BASE_ADDRESS here we
+   prevent some sub-optimal constant folding. */
+extern u8 *const pci_mmconf;
+
 static __always_inline
 volatile union pci_bank *pcicfg(pci_devfn_t dev)
 {
 	return (void *)&pci_mmconf[PCI_DEVFN_OFFSET(dev)];
 }
+
+#endif
 
 static __always_inline
 uint8_t pci_mmio_read_config8(pci_devfn_t dev, uint16_t reg)
@@ -94,18 +106,6 @@ uint32_t *pci_mmio_config32_addr(pci_devfn_t dev, uint16_t reg)
 {
 	return (uint32_t *)&pcicfg(dev)->reg32[reg / sizeof(uint32_t)];
 }
-
-#if CONFIG(MMCONF_SUPPORT)
-
-#if CONFIG_MMCONF_BASE_ADDRESS == 0
-#error "CONFIG_MMCONF_BASE_ADDRESS undefined!"
-#endif
-
-#if CONFIG_MMCONF_BUS_NUMBER * MiB != CONFIG_MMCONF_LENGTH
-#error "CONFIG_MMCONF_LENGTH does not correspond with CONFIG_MMCONF_BUS_NUMBER!"
-#endif
-
-#endif
 
 /* Avoid name collisions as different stages have different signature
  * for these functions. The _s_ stands for simple, fundamental IO or

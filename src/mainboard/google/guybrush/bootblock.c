@@ -34,6 +34,8 @@ void bootblock_mainboard_early_init(void)
 	size_t base_num_gpios, override_num_gpios;
 	const struct soc_amd_gpio *base_gpios, *override_gpios;
 
+	/* Beware that the bit definitions for LPC_LDRQ0_PU_EN and LPC_LDRQ0_PD_EN are swapped
+	   on Picasso and older compared to Renoir/Cezanne and newer */
 	dword = pci_read_config32(SOC_LPC_DEV, LPC_MISC_CONTROL_BITS);
 	dword &= ~(LPC_LDRQ0_PU_EN | LPC_LDRQ1_EN | LPC_LDRQ0_EN);
 	dword |= LPC_LDRQ0_PD_EN;

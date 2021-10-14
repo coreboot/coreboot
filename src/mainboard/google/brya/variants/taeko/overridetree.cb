@@ -6,6 +6,8 @@ fw_config
 	field DB_SD 2 3
 		option DB_SD_ABSENT			0
 		option DB_SD_OZ711LV2LN			1
+		option DB_SD_GL9750			2
+		option DB_SD_RTS5232S			3
 	end
 	field KB_BL 4
 		option KB_BL_ABSENT			0
@@ -193,6 +195,8 @@ chip soc/intel/alderlake
 				register "srcclk_pin" = "3"
 				device generic 0 on
 					probe DB_SD DB_SD_OZ711LV2LN
+					probe DB_SD DB_SD_GL9750
+					probe DB_SD DB_SD_RTS5232S
 				end
 			end
 		end

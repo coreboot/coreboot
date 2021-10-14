@@ -132,10 +132,6 @@ int espi_setup(void);
 void mb_set_up_early_espi(void);
 
 /* Setup eSPI with any mainboard specific initialization. */
-static inline void configure_espi_with_mb_hook(void)
-{
-	mb_set_up_early_espi();
-	espi_setup();
-}
+void configure_espi_with_mb_hook(void);
 
 #endif /* AMD_BLOCK_ESPI_H */

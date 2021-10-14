@@ -1053,3 +1053,10 @@ int espi_setup(void)
 
 	return 0;
 }
+
+/* Setup eSPI with any mainboard specific initialization. */
+void configure_espi_with_mb_hook(void)
+{
+	mb_set_up_early_espi();
+	espi_setup();
+}

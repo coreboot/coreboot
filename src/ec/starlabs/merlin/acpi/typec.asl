@@ -1,0 +1,82 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+Method (UCSW, 0, Serialized)
+{
+	Sleep (50)
+	MGO0 = ^^^^UBTC.MGO0
+	MGO1 = ^^^^UBTC.MGO1
+	MGO2 = ^^^^UBTC.MGO2
+	MGO3 = ^^^^UBTC.MGO3
+	MGO4 = ^^^^UBTC.MGO4
+	MGO5 = ^^^^UBTC.MGO5
+	MGO6 = ^^^^UBTC.MGO6
+	MGO7 = ^^^^UBTC.MGO7
+	MGO8 = ^^^^UBTC.MGO7
+	MGO9 = ^^^^UBTC.MGO9
+	MGOA = ^^^^UBTC.MGOA
+	MGOB = ^^^^UBTC.MGOB
+	MGOC = ^^^^UBTC.MGOC
+	MGOD = ^^^^UBTC.MGOD
+	MGOE = ^^^^UBTC.MGOE
+	MGOF = ^^^^UBTC.MGOF
+	CTL0 = ^^^^UBTC.CTL0
+	CTL1 = ^^^^UBTC.CTL1
+	CTL2 = ^^^^UBTC.CTL2
+	CTL3 = ^^^^UBTC.CTL3
+	CTL4 = ^^^^UBTC.CTL4
+	CTL5 = ^^^^UBTC.CTL5
+	CTL6 = ^^^^UBTC.CTL6
+	CTL7 = ^^^^UBTC.CTL7
+	OPWE = 0xE0
+}
+
+Method (UCSR, 0, Serialized)
+{
+	Sleep (50)
+	^^^^UBTC.MGI0 = MGI0
+	^^^^UBTC.MGI1 = MGI1
+	^^^^UBTC.MGI2 = MGI2
+	^^^^UBTC.MGI3 = MGI3
+	^^^^UBTC.MGI4 = MGI4
+	^^^^UBTC.MGI5 = MGI5
+	^^^^UBTC.MGI6 = MGI6
+	^^^^UBTC.MGI7 = MGI7
+	^^^^UBTC.MGI8 = MGI8
+	^^^^UBTC.MGI9 = MGI9
+	^^^^UBTC.MGIA = MGIA
+	^^^^UBTC.MGIB = MGIB
+	^^^^UBTC.MGIC = MGIC
+	^^^^UBTC.MGID = MGID
+	^^^^UBTC.MGIE = MGIE
+	^^^^UBTC.MGIF = MGIF
+	^^^^UBTC.CCI0 = CCI0
+	^^^^UBTC.CCI1 = CCI1
+	^^^^UBTC.CCI2 = CCI2
+	^^^^UBTC.CCI3 = CCI3
+}
+
+Method (UCEV, 0, Serialized)
+{
+	Sleep (50)
+	^^^^UBTC.MGI0 = MGI0
+	^^^^UBTC.MGI1 = MGI1
+	^^^^UBTC.MGI2 = MGI2
+	^^^^UBTC.MGI3 = MGI3
+	^^^^UBTC.MGI4 = MGI4
+	^^^^UBTC.MGI5 = MGI5
+	^^^^UBTC.MGI6 = MGI6
+	^^^^UBTC.MGI7 = MGI7
+	^^^^UBTC.MGI8 = MGI8
+	^^^^UBTC.MGI9 = MGI9
+	^^^^UBTC.MGIA = MGIA
+	^^^^UBTC.MGIB = MGIB
+	^^^^UBTC.MGIC = MGIC
+	^^^^UBTC.MGID = MGID
+	^^^^UBTC.MGIE = MGIE
+	^^^^UBTC.MGIF = MGIF
+	^^^^UBTC.CCI0 = CCI0
+	^^^^UBTC.CCI1 = CCI1
+	^^^^UBTC.CCI2 = CCI2
+	^^^^UBTC.CCI3 = CCI3
+	Notify (^^^^UBTC, 0x80)
+}

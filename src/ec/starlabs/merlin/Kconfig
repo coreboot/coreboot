@@ -1,0 +1,57 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config EC_STARLABS_ITE
+	bool
+	select EC_ACPI
+	help
+	  Interface to ITE embedded controller principally in Star Labs notebooks.
+	  Works with closed-source ITE firmware versions:
+	  TGL - 1.00 or later
+	  CML - 1.04 or later
+	  KBL - 3.12 or later
+	  And open-source Merlin firmware version 1.00 or later
+
+config EC_STARLABS_NEED_ITE_BIN
+	bool
+	depends on EC_STARLABS_ITE
+	help
+	  Select if the mainboard requires EC firmware in the main flash chip.
+
+config EC_STARLABS_ADD_ITE_BIN
+	bool "Add Star Labs EC binary file"
+	default n
+	depends on EC_STARLABS_NEED_ITE_BIN
+	help
+	  Select to add an EC firmware binary into the coreboot image. EC firmware
+	  is necessary, flashing a coreboot image without EC firmware will render
+	  your laptop unusable.
+
+config EC_STARLABS_ITE_BIN_PATH
+	string "Star Labs EC binary file path"
+	depends on EC_STARLABS_ADD_ITE_BIN
+
+config EC_STARLABS_KBL_LEVELS
+	bool
+	default n
+	depends on EC_STARLABS_ITE
+	help
+	  Select if the mainboard supports multiple levels of brightness for the keyboard.
+
+config EC_STARLABS_FAN
+	bool
+	default n
+	depends on EC_STARLABS_ITE
+	help
+	  Select if the mainboard has a fan.
+
+config EC_STARLABS_MERLIN
+	bool "Use open-source Merlin EC Firmware"
+	default n
+	depends on EC_STARLABS_ITE
+	help
+	  Use open source embedded controller firmware. Both firmwares have the
+	  same features but differ in licensing and compilers.
+
+config EC_VARIANT_DIR
+	string
+	default "merlin" if EC_STARLABS_MERLIN

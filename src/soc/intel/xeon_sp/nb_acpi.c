@@ -160,7 +160,7 @@ static unsigned long acpi_create_dmar_ds_pci_br_for_port(unsigned long current,
 	const uint32_t dev = iio_resource->PcieInfo.PortInfo[port].Device;
 	const uint32_t func = iio_resource->PcieInfo.PortInfo[port].Function;
 
-	const uint32_t id = pci_mmio_read_config32(PCI_DEV(bus, dev, func),
+	const uint32_t id = pci_s_read_config32(PCI_DEV(bus, dev, func),
 		PCI_VENDOR_ID);
 	if (id == 0xffffffff)
 		return 0;

@@ -79,11 +79,11 @@ void config_reset_cpl3_csrs(void)
 
 		/* configure PCU_CR0_FUN csrs */
 		pci_devfn_t cr0_dev = PCI_DEV(bus, PCU_DEV, PCU_CR0_FUN);
-		data = pci_mmio_read_config32(cr0_dev, PCU_CR0_P_STATE_LIMITS);
+		data = pci_s_read_config32(cr0_dev, PCU_CR0_P_STATE_LIMITS);
 		data |= P_STATE_LIMITS_LOCK;
-		pci_mmio_write_config32(cr0_dev, PCU_CR0_P_STATE_LIMITS, data);
+		pci_s_write_config32(cr0_dev, PCU_CR0_P_STATE_LIMITS, data);
 
-		plat_info = pci_mmio_read_config32(cr0_dev, PCU_CR0_PLATFORM_INFO);
+		plat_info = pci_s_read_config32(cr0_dev, PCU_CR0_PLATFORM_INFO);
 		dump_csr64("", cr0_dev, PCU_CR0_PLATFORM_INFO);
 		max_min_turbo_limit_ratio =
 			(plat_info & MAX_NON_TURBO_LIM_RATIO_MASK) >>
@@ -94,29 +94,29 @@ void config_reset_cpl3_csrs(void)
 		/* configure PCU_CR1_FUN csrs */
 		pci_devfn_t cr1_dev = PCI_DEV(bus, PCU_DEV, PCU_CR1_FUN);
 
-		data = pci_mmio_read_config32(cr1_dev, PCU_CR1_SAPMCTL);
+		data = pci_s_read_config32(cr1_dev, PCU_CR1_SAPMCTL);
 		/* clear bits 27:31 - FSP sets this with 0x7 which needs to be cleared */
 		data &= 0x0fffffff;
 		data |= SAPMCTL_LOCK_MASK;
-		pci_mmio_write_config32(cr1_dev, PCU_CR1_SAPMCTL, data);
+		pci_s_write_config32(cr1_dev, PCU_CR1_SAPMCTL, data);
 
 		/* configure PCU_CR1_FUN csrs */
 		pci_devfn_t cr2_dev = PCI_DEV(bus, PCU_DEV, PCU_CR2_FUN);
 
 		data = PCIE_IN_PKGCSTATE_L1_MASK;
-		pci_mmio_write_config32(cr2_dev, PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK, data);
+		pci_s_write_config32(cr2_dev, PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK, data);
 
 		data = KTI_IN_PKGCSTATE_L1_MASK;
-		pci_mmio_write_config32(cr2_dev, PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK2, data);
+		pci_s_write_config32(cr2_dev, PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK2, data);
 
 		data = PROCHOT_RATIO;
 		printk(BIOS_SPEW, "PCU_CR2_PROCHOT_RESPONSE_RATIO_REG data: 0x%x\n", data);
-		pci_mmio_write_config32(cr2_dev, PCU_CR2_PROCHOT_RESPONSE_RATIO_REG, data);
+		pci_s_write_config32(cr2_dev, PCU_CR2_PROCHOT_RESPONSE_RATIO_REG, data);
 		dump_csr("", cr2_dev, PCU_CR2_PROCHOT_RESPONSE_RATIO_REG);
 
-		data = pci_mmio_read_config32(cr2_dev, PCU_CR2_DYNAMIC_PERF_POWER_CTL);
+		data = pci_s_read_config32(cr2_dev, PCU_CR2_DYNAMIC_PERF_POWER_CTL);
 		data |= UNOCRE_PLIMIT_OVERRIDE_SHIFT;
-		pci_mmio_write_config32(cr2_dev, PCU_CR2_DYNAMIC_PERF_POWER_CTL, data);
+		pci_s_write_config32(cr2_dev, PCU_CR2_DYNAMIC_PERF_POWER_CTL, data);
 	}
 }
 

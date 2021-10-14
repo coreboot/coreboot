@@ -56,9 +56,9 @@ void bootblock_soc_early_init(void)
 	pch_enable_lpc();
 
 	/* Set up P2SB BAR. This is needed for PCR to work */
-	uint8_t p2sb_cmd = pci_mmio_read_config8(PCH_DEV_P2SB, PCI_COMMAND);
-	pci_mmio_write_config8(PCH_DEV_P2SB, PCI_COMMAND, p2sb_cmd | PCI_COMMAND_MEMORY);
-	pci_mmio_write_config32(PCH_DEV_P2SB, PCI_BASE_ADDRESS_0, CONFIG_PCR_BASE_ADDRESS);
+	uint8_t p2sb_cmd = pci_s_read_config8(PCH_DEV_P2SB, PCI_COMMAND);
+	pci_s_write_config8(PCH_DEV_P2SB, PCI_COMMAND, p2sb_cmd | PCI_COMMAND_MEMORY);
+	pci_s_write_config32(PCH_DEV_P2SB, PCI_BASE_ADDRESS_0, CONFIG_PCR_BASE_ADDRESS);
 }
 
 void bootblock_soc_init(void)

@@ -13,13 +13,13 @@
 	printk(BIOS_SPEW, "%s%x:%x:%x reg: %s (0x%x), data: 0x%x\n", \
 		fmt, ((uint32_t)dev >> 20) & 0xfff, ((uint32_t)dev >> 15) & 0x1f, \
 		((uint32_t)dev >> 12) & 0x07, \
-		#reg, reg, pci_mmio_read_config32(dev, reg))
+		#reg, reg, pci_s_read_config32(dev, reg))
 
 #define dump_csr64(fmt, dev, reg) \
 	printk(BIOS_SPEW, "%s%x:%x:%x reg: %s (0x%x), data: 0x%x%x\n", \
 		fmt, ((uint32_t)dev >> 20) & 0xfff, ((uint32_t)dev >> 15) & 0x1f, \
 		((uint32_t)dev >> 12) & 0x07, #reg, reg, \
-		pci_mmio_read_config32(dev, reg+4), pci_mmio_read_config32(dev, reg))
+		pci_s_read_config32(dev, reg+4), pci_s_read_config32(dev, reg))
 
 #define SAD_ALL_DEV			29
 #define SAD_ALL_FUNC			0

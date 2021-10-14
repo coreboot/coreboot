@@ -21,7 +21,7 @@ void bootblock_mainboard_early_init(void)
 	pcr_write32(PID_DMI, 0x2774, 1);
 
 	/* Decode for SuperIO (0x2e) and COM1 (0x3f8) */
-	pci_mmio_write_config32(PCH_DEV_LPC, 0x80, (1 << 28) | (1 << 16));
+	pci_s_write_config32(PCH_DEV_LPC, 0x80, (1 << 28) | (1 << 16));
 
 	const pnp_devfn_t serial_dev = PNP_DEV(0x2e, AST2400_SUART1);
 	aspeed_enable_serial(serial_dev, CONFIG_TTYS0_BASE);

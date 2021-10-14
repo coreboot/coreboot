@@ -32,37 +32,6 @@ chip soc/intel/cannonlake
 	register "PchHdaDspEnable" = "0"
 	register "PchHdaAudioLinkHda" = "1"
 
-	# Enumeration starts at 0 for PCIE1
-	# Ports are not hotplugable
-	register "PcieRpEnable[0]" = "1"	# Slot3 x4
-	# Set MaxPayload to 256 bytes
-	register "PcieRpMaxPayload[0]" = "RpMaxPayload_256"
-	# Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[0]" = "1"
-	# Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[0]" = "1"
-	# Disable Aspm
-	register "PcieRpAspm[0]" = "AspmDisabled"
-
-
-	register "PcieRpEnable[4]" = "1"	# PHY ETH3
-	register "PcieRpEnable[5]" = "1"	# PHY ETH4
-	register "PcieRpEnable[6]" = "1"	# PHY ETH2
-	register "PcieRpEnable[7]" = "1"	# PHY ETH1
-	register "PcieRpEnable[8]" = "1"	# M2 Slot M x4, depends on SATAXPCIE1
-	register "PcieRpEnable[13]" = "1"	# PHY ETH0
-	register "PcieRpEnable[14]" = "1"	# BMC
-	register "PcieRpEnable[15]" = "1"	# M2 Slot E x1
-	register "PcieRpEnable[20]" = "1"	# Slot 1 x4
-	# Set MaxPayload to 256 bytes
-	register "PcieRpMaxPayload[20]" = "RpMaxPayload_256"
-	# Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[20]" = "1"
-	# Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[20]" = "1"
-	# Disable Aspm
-	register "PcieRpAspm[20]" = "AspmDisabled"
-
 	# Controls the CLKREQ, not the output directly.
 	# Depends on the CLKREQ to CLK gen mapping below
 	register "PcieClkSrcUsage[0]" = "PCIE_CLK_FREE"		# BMC, PCIe Slot1, Slot2, Slot4, Slot6
@@ -183,31 +152,53 @@ chip soc/intel/cannonlake
 		end
 		device pci 1b.4 on	# PCIe root port 21 (Slot 1)
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT1" "SlotDataBusWidth4X"
+			register "PcieRpEnable[20]" = "1"
+			register "PcieRpLtrEnable[20]" = "1"
 			register "PcieRpSlotImplemented[20]" = "1"
+			register "PcieRpMaxPayload[20]" = "RpMaxPayload_256"
+			register "PcieRpAdvancedErrorReporting[20]" = "1"
+			register "PcieRpAspm[20]" = "AspmDisabled"
 		end
 		device pci 1c.0 on	# PCIe root port 1 (Slot 3)
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT3" "SlotDataBusWidth4X"
+			register "PcieRpEnable[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "1"
 			register "PcieRpSlotImplemented[0]" = "1"
+			register "PcieRpMaxPayload[0]" = "RpMaxPayload_256"
+			register "PcieRpAdvancedErrorReporting[0]" = "1"
+			register "PcieRpAspm[0]" = "AspmDisabled"
 		end
-		device pci 1c.4 on end	# PCIe root port 5 (PHY 3)
-		device pci 1c.5 on end	# PCIe root port 6 (PHY 4)
-		device pci 1c.6 on end	# PCIe root port 7 (PHY 2)
-		device pci 1c.7 on end	# PCIe root port 8 (PHY 1)
-
+		device pci 1c.4 on	# PCIe root port 5 (PHY 3)
+			register "PcieRpEnable[4]" = "1"
+		end
+		device pci 1c.5 on	# PCIe root port 6 (PHY 4)
+			register "PcieRpEnable[5]" = "1"
+		end
+		device pci 1c.6 on	# PCIe root port 7 (PHY 2)
+			register "PcieRpEnable[6]" = "1"
+		end
+		device pci 1c.7 on	# PCIe root port 8 (PHY 1)
+			register "PcieRpEnable[7]" = "1"
+		end
 		device pci 1d.0 on	# PCIe root port 9 (M2 M)
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "M2 M" "SlotDataBusWidth4X"
+			register "PcieRpEnable[8]" = "1"
 			register "PcieRpSlotImplemented[8]" = "1"
 		end
-		device pci 1d.5 on end	# PCIe root port 14 (PHY 0)
-		device pci 1d.6 on end	# PCIe root port 15 (BMC)
+		device pci 1d.5 on	# PCIe root port 14 (PHY 0)
+			register "PcieRpEnable[13]" = "1"
+		end
+		device pci 1d.6 on	# PCIe root port 15 (BMC)
+			register "PcieRpEnable[14]" = "1"
+		end
 		device pci 1d.7 on	# PCIe root port 16 (M.2 E/CNVi)
 			# Disabled when CNVi is present
+			register "PcieRpEnable[15]" = "1"
 			register "PcieRpSlotImplemented[15]" = "1"
 		end
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 on  end # UART #1
 		device pci 1e.2 off end # GSPI #0
 		device pci 1e.3 off end # GSPI #1
-
 	end
 end

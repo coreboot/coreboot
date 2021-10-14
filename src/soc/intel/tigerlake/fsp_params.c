@@ -164,6 +164,7 @@ static const struct slot_irq_constraints irq_constraints[] = {
 		.slot = PCH_DEV_SLOT_XHCI,
 		.fns = {
 			ANY_PIRQ(PCH_DEVFN_XHCI),
+			FIXED_INT_ANY_PIRQ(PCH_DEVFN_CNVI_WIFI, PCI_INT_A),
 		},
 	},
 	{

@@ -105,6 +105,8 @@ uint32_t *pci_mmio_config32_addr(pci_devfn_t dev, uint16_t reg)
 #error "CONFIG_MMCONF_LENGTH does not correspond with CONFIG_MMCONF_BUS_NUMBER!"
 #endif
 
+#endif
+
 /* Avoid name collisions as different stages have different signature
  * for these functions. The _s_ stands for simple, fundamental IO or
  * MMIO variant.
@@ -145,7 +147,5 @@ void pci_s_write_config32(pci_devfn_t dev, uint16_t reg, uint32_t value)
 {
 	pci_mmio_write_config32(dev, reg, value);
 }
-
-#endif
 
 #endif /* _PCI_MMIO_CFG_H */

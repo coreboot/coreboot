@@ -26,6 +26,9 @@
 		(NUM_GPIO_COM2_GPI_REGS) +\
 		(NUM_GPIO_COM4_GPI_REGS) +\
 		(NUM_GPIO_COM5_GPI_REGS))
+
+#define PAD_CFG_LOCK_OFFSET			0x80
+
 /*
  * IOxAPIC IRQs for the GPIOs
  */

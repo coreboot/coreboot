@@ -136,7 +136,7 @@ removed soon after release.
 
 ### `TSEG` and  `cbmem_top()` mapping
 
-Significant refactoring has bee done to achieve some consistency across platforms
+Significant refactoring has been done to achieve some consistency across platforms
 and to reduce code duplication.
 
 ### Build system amenities ###

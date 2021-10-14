@@ -48,7 +48,7 @@ void fch_pre_init(void)
 	/* Setup SPI base by calling lpc_early_init before setting up eSPI. */
 	lpc_early_init();
 	/* Setup eSPI to enable port80 routing. */
-	configure_espi();
+	configure_espi_with_mb_hook();
 
 	if (!CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
 		lpc_configure_decodes();

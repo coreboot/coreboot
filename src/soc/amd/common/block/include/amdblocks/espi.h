@@ -132,7 +132,7 @@ int espi_setup(void);
 void mb_set_up_early_espi(void);
 
 /* Setup eSPI with any mainboard specific initialization. */
-static inline void configure_espi(void)
+static inline void configure_espi_with_mb_hook(void)
 {
 	/* If eSPI is setup in PSP Verstage, continue with that. Else setup eSPI to perform
 	   port80h routing as early as possible. */

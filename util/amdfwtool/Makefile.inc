@@ -2,7 +2,7 @@
 
 amdfwtoolobj = amdfwtool.o data_parse.o
 
-AMDFWTOOLCFLAGS=-O2 -Wall -Wextra -Wshadow -Werror
+AMDFWTOOLCFLAGS=-O2 -Wall -Wextra -Wshadow -Werror -Wno-unused-function
 
 $(objutil)/amdfwtool/%.o: $(top)/util/amdfwtool/%.c # $(HEADER)
 	$(HOSTCC) $(AMDFWTOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<

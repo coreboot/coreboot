@@ -490,6 +490,45 @@ static ssize_t copy_blob(void *dest, const char *src_file, size_t room)
 	return bytes;
 }
 
+enum platform {
+	PLATFORM_UNKNOWN,
+	PLATFORM_STONEYRIDGE,
+	PLATFORM_RAVEN,
+	PLATFORM_PICASSO,
+	PLATFORM_RENOIR,
+	PLATFORM_CEZANNE,
+	PLATFORM_MENDOCINO,
+	PLATFORM_LUCIENNE,
+};
+
+static uint32_t get_psp_id(enum platform soc_id)
+{
+	uint32_t psp_id;
+	switch (soc_id) {
+	case PLATFORM_RAVEN:
+	case PLATFORM_PICASSO:
+		psp_id = 0xBC0A0000;
+		break;
+	case PLATFORM_RENOIR:
+	case PLATFORM_LUCIENNE:
+		psp_id = 0xBC0C0000;
+		break;
+	case PLATFORM_CEZANNE:
+		psp_id = 0xBC0C0140;
+		break;
+	case PLATFORM_MENDOCINO:
+		psp_id = 0xBC0D0900;
+		break;
+	case PLATFORM_STONEYRIDGE:
+		psp_id = 0x10220B00;
+		break;
+	default:
+		psp_id = 0;
+		break;
+	}
+	return psp_id;
+}
+
 static void integrate_firmwares(context *ctx,
 				embedded_firmware *romsig,
 				amd_fw_entry *fw_table)
@@ -1143,17 +1182,6 @@ static void register_fw_addr(amd_bios_type type, char *src_str,
 	}
 }
 
-enum platform {
-	PLATFORM_UNKNOWN,
-	PLATFORM_STONEYRIDGE,
-	PLATFORM_RAVEN,
-	PLATFORM_PICASSO,
-	PLATFORM_RENOIR,
-	PLATFORM_CEZANNE,
-	PLATFORM_MENDOCINO,
-	PLATFORM_LUCIENNE,
-};
-
 static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
 			 uint8_t efs_spi_readmode, uint8_t efs_spi_speed,
 			 uint8_t efs_spi_micron_flag)
@@ -1596,8 +1624,7 @@ int main(int argc, char **argv)
 	amd_romsig->combo_psp_directory = BUFF_TO_RUN(ctx, combo_dir);
 	/* 0 -Compare PSP ID, 1 -Compare chip family ID */
 	combo_dir->entries[0].id_sel = 0;
-	/* TODO: PSP ID. Documentation is needed. */
-	combo_dir->entries[0].id = 0x10220B00;
+	combo_dir->entries[0].id = get_psp_id(soc_id);
 	combo_dir->entries[0].lvl2_addr = BUFF_TO_RUN(ctx, pspdir);
 
 	combo_dir->header.lookup = 1;

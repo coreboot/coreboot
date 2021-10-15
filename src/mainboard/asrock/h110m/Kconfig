@@ -17,10 +17,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select RT8168_SET_LED_MODE
 	select MAINBOARD_HAS_LPC_TPM
 
-config IRQ_SLOT_COUNT
-	int
-	default 18
-
 config MAINBOARD_DIR
 	default "asrock/h110m"
 

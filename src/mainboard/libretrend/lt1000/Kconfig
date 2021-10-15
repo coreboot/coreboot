@@ -12,10 +12,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select SPD_READ_BY_WORD
 	select SUPERIO_ITE_IT8786E
 
-config IRQ_SLOT_COUNT
-	int
-	default 18
-
 config MAINBOARD_PART_NUMBER
 	default "LT1000"
 

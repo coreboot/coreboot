@@ -66,10 +66,6 @@ config DRIVERS_IPMI_SUPERMICRO_OEM
 config CBFS_SIZE
 	default 0xb00000
 
-config IRQ_SLOT_COUNT
-	int
-	default 18
-
 config CONSOLE_POST
 	bool
 	default y

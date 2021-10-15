@@ -46,10 +46,6 @@ config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 64  # GPE0_DW2_00 (GPP_E0)
 
-config IRQ_SLOT_COUNT
-	int
-	default 18
-
 config MAINBOARD_DIR
 	default "google/eve"
 

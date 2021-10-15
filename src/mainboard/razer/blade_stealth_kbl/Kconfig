@@ -25,10 +25,6 @@ config VGA_BIOS_ID
 	string
 	default "8086,5916"
 
-config IRQ_SLOT_COUNT
-	int
-	default 18
-
 config MAINBOARD_FAMILY
 	string
 	default "BLADE_STEALTH"

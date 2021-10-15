@@ -25,10 +25,6 @@ config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select VBOOT_LID_SWITCH
 
-config IRQ_SLOT_COUNT
-	int
-	default 18
-
 config MAINBOARD_DIR
 	default "intel/kunimitsu"
 

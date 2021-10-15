@@ -27,26 +27,38 @@ chip soc/intel/cannonlake
 	register "PchHdaDspEnable" = "0"
 	register "PchHdaAudioLinkHda" = "1"
 
-	register "PcieClkSrcUsage[0]" = "PCIE_CLK_FREE"		# PCIe Slot1
-	register "PcieClkSrcUsage[1]" = "PCIE_CLK_FREE"		# PCIe Slot2
-	register "PcieClkSrcUsage[2]" = "PCIE_CLK_FREE"		# PCIe Slot4
-	register "PcieClkSrcUsage[3]" = "PCIE_CLK_FREE"		# PCIe Slot6
-	register "PcieClkSrcUsage[4]" = "PCIE_CLK_FREE"		# RP9 M2 Slot M x4
-	register "PcieClkSrcUsage[5]" = "PCIE_CLK_FREE"		# RP16 M2 Slot E x1
-	register "PcieClkSrcUsage[6]" = "PCIE_CLK_FREE"		# BMC
-	register "PcieClkSrcUsage[7]" = "PCIE_CLK_FREE"		# PHY 3
-	register "PcieClkSrcUsage[8]" = "PCIE_CLK_FREE"		# PCIe Slot3
-	register "PcieClkSrcUsage[9]" = "PCIE_CLK_FREE"		# PHY 4
-	register "PcieClkSrcUsage[10]" = "PCIE_CLK_FREE"	# PHY 2
-	register "PcieClkSrcUsage[11]" = "PCIE_CLK_FREE"	# PHY 1
-	register "PcieClkSrcUsage[12]" = "PCIE_CLK_FREE"	# PHY 0
-	register "PcieClkSrcUsage[13]" = "PCIE_CLK_FREE"	# PB
+	register "PcieClkSrcUsage[0]" = "20"		# PCIe Slot1
+	register "PcieClkSrcUsage[1]" = "0x40"		# PCIe Slot2
+	register "PcieClkSrcUsage[2]" = "0x42"		# PCIe Slot4
+	register "PcieClkSrcUsage[3]" = "0x41"		# PCIe Slot6
+	register "PcieClkSrcUsage[4]" = "8"		# RP9 M2 Slot M x4
+	register "PcieClkSrcUsage[5]" = "15"		# RP16 M2 Slot E x1
+	register "PcieClkSrcUsage[6]" = "14"		# BMC
+	register "PcieClkSrcUsage[7]" = "4"		# PHY 3
+	register "PcieClkSrcUsage[8]" = "PCIE_CLK_RP0"	# PCIe Slot3
+	register "PcieClkSrcUsage[9]" = "5"		# PHY 4
+	register "PcieClkSrcUsage[10]" = "6"		# PHY 2
+	register "PcieClkSrcUsage[11]" = "7"		# PHY 1
+	register "PcieClkSrcUsage[12]" = "13"		# PHY 0
+	register "PcieClkSrcUsage[13]" = "0x42"		# PB
 	register "PcieClkSrcUsage[14]" = "PCIE_CLK_NOTUSED"
 	register "PcieClkSrcUsage[15]" = "PCIE_CLK_NOTUSED"
 
-	# Only map M2 CLKREQ to CLK gen
-	register "PcieClkSrcClkReq[4]" = "4"	# M2_M_CLK_REQ_n
-	register "PcieClkSrcClkReq[5]" = "5"	# M2_E_CLK_REQ_n
+	# Only enable CLKREQ# for M.2 slots
+	register "PcieClkSrcClkReq[0]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[1]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[2]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[3]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[4]" = "4"			# M2_M_CLK_REQ_n
+	register "PcieClkSrcClkReq[5]" = "5"			# M2_E_CLK_REQ_n
+	register "PcieClkSrcClkReq[6]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[7]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[8]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[9]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[10]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[11]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[12]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[13]" = "PCIE_CLK_NOTUSED"
 
 	# USB OC5-7: not connected
 	register "usb2_ports" = "{

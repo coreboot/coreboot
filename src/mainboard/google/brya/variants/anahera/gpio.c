@@ -39,6 +39,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_D3, NONE),
 	/* D5  : SRCCLKREQ0# ==> NC */
 	PAD_NC(GPP_D5, NONE),
+	/* D7  : SRCCLKREQ2# ==> NC */
+	PAD_NC(GPP_D7, NONE),
 	/* D13 : ISH_UART0_RXD ==> NC */
 	PAD_NC(GPP_D13, NONE),
 	/* D14 : ISH_UART0_TXD ==> NC */
@@ -56,6 +58,9 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_E3, NONE),
 	/* E7  : PROC_GP1 ==> NC */
 	PAD_NC(GPP_E7, NONE),
+	/* F19 : SRCCLKREQ6# ==> EMMC_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF1),
+
 	/* E20 : USB_C1_LSX_SOC_TX ==> EN_PP3300_eMMC */
 	PAD_CFG_GPO(GPP_E20, 1, DEEP),
 	/* E23 : DDPA_CTRLDATA ==> NC */

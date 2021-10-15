@@ -125,7 +125,7 @@ chip soc/intel/alderlake
 			# Enable PCIE eMMC bridge 7 using clk 6
 			register "pch_pcie_rp[PCH_RP(7)]" = "{
 				.clk_src = 6,
-				.clk_req = 2,
+				.clk_req = 6,
 				.flags = PCIE_RP_HOTPLUG | PCIE_RP_AER,
 			}"
 		end     #PCIE7 EMMC

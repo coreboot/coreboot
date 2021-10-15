@@ -145,8 +145,16 @@ static __always_inline unsigned int lapicid(void)
 
 static __always_inline void lapic_send_ipi_self(uint32_t icrlow)
 {
+	int i = 1000;
+
 	/* LAPIC_DEST_SELF does not support all delivery mode -fields. */
 	lapic_send_ipi(icrlow, lapicid());
+
+	/* In case of X2APIC force a short delay, to prevent deadlock in a case
+	 * the immediately following code acquires some lock, like with printk().
+	 */
+	while (CONFIG(X2APIC_ONLY) && i--)
+		cpu_relax();
 }
 
 static __always_inline void lapic_send_ipi_others(uint32_t icrlow)

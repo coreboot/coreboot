@@ -143,6 +143,17 @@ static __always_inline unsigned int lapicid(void)
 	return lapicid;
 }
 
+static __always_inline void lapic_send_ipi_self(uint32_t icrlow)
+{
+	/* LAPIC_DEST_SELF does not support all delivery mode -fields. */
+	lapic_send_ipi(icrlow, lapicid());
+}
+
+static __always_inline void lapic_send_ipi_others(uint32_t icrlow)
+{
+	lapic_send_ipi(LAPIC_DEST_ALLBUT | icrlow, 0);
+}
+
 #if !CONFIG(AP_IN_SIPI_WAIT)
 /* If we need to go back to sipi wait, we use the long non-inlined version of
  * this function in lapic_cpu_stop.c

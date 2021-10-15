@@ -423,8 +423,7 @@ static enum cb_err send_sipi_to_aps(int ap_count, atomic_t *num_aps, int sipi_ve
 		printk(BIOS_DEBUG, "done.\n");
 	}
 
-	lapic_send_ipi(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_STARTUP | sipi_vector,
-		       0);
+	lapic_send_ipi_others(LAPIC_INT_ASSERT | LAPIC_DM_STARTUP | sipi_vector);
 	printk(BIOS_DEBUG, "Waiting for SIPI to complete...\n");
 	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */) != CB_SUCCESS) {
 		printk(BIOS_ERR, "timed out.\n");
@@ -464,7 +463,7 @@ static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_ap
 	}
 
 	/* Send INIT IPI to all but self. */
-	lapic_send_ipi(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_INIT, 0);
+	lapic_send_ipi_others(LAPIC_INT_ASSERT | LAPIC_DM_INIT);
 
 	if (!CONFIG(X86_INIT_NEED_1_SIPI)) {
 		printk(BIOS_DEBUG, "Waiting for 10ms after sending INIT.\n");
@@ -649,7 +648,7 @@ void smm_initiate_relocation_parallel(void)
 		printk(BIOS_DEBUG, "done.\n");
 	}
 
-	lapic_send_ipi(LAPIC_INT_ASSERT | LAPIC_DM_SMI, lapicid());
+	lapic_send_ipi_self(LAPIC_INT_ASSERT | LAPIC_DM_SMI);
 
 	if (lapic_busy()) {
 		if (apic_wait_timeout(1000 /* 1 ms */, 100 /* us */) != CB_SUCCESS) {

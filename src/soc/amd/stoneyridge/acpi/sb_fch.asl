@@ -74,7 +74,7 @@ Device (I2CA) {
 	Name (_CRS, ResourceTemplate()
 	{
 		IRQ (Edge, ActiveHigh, Exclusive) { 3 }
-		Memory32Fixed (ReadWrite, I2CA_BASE_ADDRESS, 0x1000)
+		Memory32Fixed (ReadWrite, APU_I2C0_BASE, 0x1000)
 	})
 
 	Method (_STA, 0x0, NotSerialized)
@@ -90,7 +90,7 @@ Device (I2CB)
 	Name (_CRS, ResourceTemplate()
 	{
 		IRQ (Edge, ActiveHigh, Exclusive) { 15 }
-		Memory32Fixed (ReadWrite, I2CB_BASE_ADDRESS, 0x1000)
+		Memory32Fixed (ReadWrite, APU_I2C1_BASE, 0x1000)
 	})
 	Method (_STA, 0x0, NotSerialized)
 	{
@@ -104,7 +104,7 @@ Device (I2CC) {
 	Name (_CRS, ResourceTemplate()
 	{
 		IRQ (Edge, ActiveHigh, Exclusive) { 6 }
-		Memory32Fixed (ReadWrite, I2CC_BASE_ADDRESS, 0x1000)
+		Memory32Fixed (ReadWrite, APU_I2C2_BASE, 0x1000)
 	})
 
 	Method (_STA, 0x0, NotSerialized)
@@ -119,7 +119,7 @@ Device (I2CD)
 	Name (_UID, 0x3)
 	Name (_CRS, ResourceTemplate() {
 		IRQ (Edge, ActiveHigh, Exclusive) { 14 }
-		Memory32Fixed(ReadWrite, I2CD_BASE_ADDRESS, 0x1000)
+		Memory32Fixed(ReadWrite, APU_I2C3_BASE, 0x1000)
 	})
 	Method (_STA, 0x0, NotSerialized)
 	{

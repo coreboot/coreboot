@@ -101,10 +101,10 @@ static struct device_operations pci_domain_ops = {
 static void set_mmio_dev_ops(struct device *dev)
 {
 	switch (dev->path.mmio.addr) {
-	case I2CA_BASE_ADDRESS:
-	case I2CB_BASE_ADDRESS:
-	case I2CC_BASE_ADDRESS:
-	case I2CD_BASE_ADDRESS:
+	case APU_I2C0_BASE:
+	case APU_I2C1_BASE:
+	case APU_I2C2_BASE:
+	case APU_I2C3_BASE:
 		dev->ops = &soc_amd_i2c_mmio_ops;
 		break;
 	}

@@ -7,10 +7,10 @@
 #include "chip.h"
 
 static const struct soc_i2c_ctrlr_info i2c_ctrlr[] = {
-	{ I2C_MASTER_MODE, I2CA_BASE_ADDRESS, "I2CA" },
-	{ I2C_MASTER_MODE, I2CB_BASE_ADDRESS, "I2CB" },
-	{ I2C_MASTER_MODE, I2CC_BASE_ADDRESS, "I2CC" },
-	{ I2C_MASTER_MODE, I2CD_BASE_ADDRESS, "I2CD" },
+	{ I2C_MASTER_MODE, APU_I2C0_BASE, "I2CA" },
+	{ I2C_MASTER_MODE, APU_I2C1_BASE, "I2CB" },
+	{ I2C_MASTER_MODE, APU_I2C2_BASE, "I2CC" },
+	{ I2C_MASTER_MODE, APU_I2C3_BASE, "I2CD" },
 };
 
 const struct soc_i2c_ctrlr_info *soc_get_i2c_ctrlr_info(size_t *num_ctrlrs)

@@ -23,7 +23,7 @@ void variant_devtree_update(void)
 			printk(BIOS_INFO, "Checking audio codec\n");
 			return;
 		}
-	} while (mmio_dev->path.mmio.addr != I2CA_BASE_ADDRESS);
+	} while (mmio_dev->path.mmio.addr != APU_I2C0_BASE);
 
 	while ((child = dev_bus_each_child(mmio_dev->link_list, child)) != NULL) {
 		if (child->path.type != DEVICE_PATH_I2C)

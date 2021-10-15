@@ -27,24 +27,22 @@ chip soc/intel/cannonlake
 	register "PchHdaDspEnable" = "0"
 	register "PchHdaAudioLinkHda" = "1"
 
-	# Controls the CLKREQ, not the output directly.
-	# Depends on the CLKREQ to CLK gen mapping below
-	register "PcieClkSrcUsage[0]" = "PCIE_CLK_FREE"		# BMC, PCIe Slot1, Slot2, Slot4, Slot6
-	register "PcieClkSrcUsage[1]" = "PCIE_CLK_FREE"		# PHY3
-	register "PcieClkSrcUsage[2]" = "PCIE_CLK_NOTUSED"
-	register "PcieClkSrcUsage[3]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[0]" = "PCIE_CLK_FREE"		# PCIe Slot1
+	register "PcieClkSrcUsage[1]" = "PCIE_CLK_FREE"		# PCIe Slot2
+	register "PcieClkSrcUsage[2]" = "PCIE_CLK_FREE"		# PCIe Slot4
+	register "PcieClkSrcUsage[3]" = "PCIE_CLK_FREE"		# PCIe Slot6
 	register "PcieClkSrcUsage[4]" = "PCIE_CLK_FREE"		# RP9 M2 Slot M x4
 	register "PcieClkSrcUsage[5]" = "PCIE_CLK_FREE"		# RP16 M2 Slot E x1
-	register "PcieClkSrcUsage[6]" = "PCIE_CLK_NOTUSED"
-	register "PcieClkSrcUsage[7]" = "PCIE_CLK_NOTUSED"
-	register "PcieClkSrcUsage[8]" = "PCIE_CLK_NOTUSED"
-	register "PcieClkSrcUsage[9]" = "PCIE_CLK_NOTUSED"
-	register "PcieClkSrcUsage[10]" = "PCIE_CLK_NOTUSED"
-	register "PcieClkSrcUsage[11]" = "PCIE_CLK_NOTUSED"
-	register "PcieClkSrcUsage[12]" = "PCIE_CLK_NOTUSED"
-	register "PcieClkSrcUsage[13]" = "PCIE_CLK_FREE"	# PHY 0, PHY 1, PHY 2, PHY 4
-	register "PcieClkSrcUsage[14]" = "PCIE_CLK_FREE"	# PB
-	register "PcieClkSrcUsage[15]" = "PCIE_CLK_FREE"	# PCIe Slot3
+	register "PcieClkSrcUsage[6]" = "PCIE_CLK_FREE"		# BMC
+	register "PcieClkSrcUsage[7]" = "PCIE_CLK_FREE"		# PHY 3
+	register "PcieClkSrcUsage[8]" = "PCIE_CLK_FREE"		# PCIe Slot3
+	register "PcieClkSrcUsage[9]" = "PCIE_CLK_FREE"		# PHY 4
+	register "PcieClkSrcUsage[10]" = "PCIE_CLK_FREE"	# PHY 2
+	register "PcieClkSrcUsage[11]" = "PCIE_CLK_FREE"	# PHY 1
+	register "PcieClkSrcUsage[12]" = "PCIE_CLK_FREE"	# PHY 0
+	register "PcieClkSrcUsage[13]" = "PCIE_CLK_FREE"	# PB
+	register "PcieClkSrcUsage[14]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[15]" = "PCIE_CLK_NOTUSED"
 
 	# Only map M2 CLKREQ to CLK gen
 	register "PcieClkSrcClkReq[4]" = "4"	# M2_M_CLK_REQ_n

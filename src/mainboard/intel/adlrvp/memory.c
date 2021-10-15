@@ -227,7 +227,7 @@ static const struct mb_cfg adlm_lp4_mem_config = {
 
 	.LpDdrDqDqsReTraining = 1,
 
-	.UserBd = BOARD_TYPE_ULT_ULX,
+	.UserBd = BOARD_TYPE_ULT_ULX_T4,
 };
 
 static const struct mb_cfg adlm_lp5_mem_config = {
@@ -283,7 +283,7 @@ static const struct mb_cfg adlm_lp5_mem_config = {
 
 	.ect = false, /* Early Command Training */
 
-	.UserBd = BOARD_TYPE_ULT_ULX,
+	.UserBd = BOARD_TYPE_ULT_ULX_T4,
 
 	.lp5x_config = {
 		.ccc_config = 0xff,

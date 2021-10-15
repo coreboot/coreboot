@@ -157,6 +157,15 @@ static struct panel_serializable_data *get_mipi_panel(enum lb_fb_orientation *or
 		}
 	}
 
+	if (CONFIG(BOARD_GOOGLE_QUACKINGSTICK)) {
+		switch (panel_id) {
+		case 6:
+			cbfs_filename = "panel-AUO_B101UAN08_3";
+			*orientation = LB_FB_ORIENTATION_LEFT_UP;
+			break;
+		}
+	}
+
 	if (CONFIG(BOARD_GOOGLE_WORMDINGLER)) {
 		switch (panel_id) {
 		case 0:

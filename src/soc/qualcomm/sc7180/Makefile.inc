@@ -36,7 +36,7 @@ romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ################################################################################
 ramstage-y += soc.c
 ramstage-y += carve_out.c
-ramstage-y += aop_load_reset.c
+ramstage-y += ../common/aop_load_reset.c
 ramstage-y += usb.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/dsi_phy_pll.c

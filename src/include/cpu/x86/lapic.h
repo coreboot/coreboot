@@ -126,7 +126,7 @@ static __always_inline int lapic_busy(void)
 static __always_inline unsigned int initial_lapicid(void)
 {
 	uint32_t lapicid;
-	if (is_x2apic_mode() && cpuid_get_max_func() >= 0xb)
+	if (cpuid_get_max_func() >= 0xb)
 		lapicid = cpuid_ext(0xb, 0).edx;
 	else
 		lapicid = cpuid_ebx(1) >> 24;

@@ -23,12 +23,10 @@ bool intel_ht_sibling(void)
 	if (!intel_ht_supported())
 		return false;
 
-	if (is_x2apic_mode()) {
-		if (cpuid_eax(0) >= 0xb) {
-			result = cpuid_ext(0xb, 0);
-			const uint32_t div = 1 << (result.eax & 0x1f);
-			return result.edx % div > 0;
-		}
+	if (cpuid_eax(0) >= 0xb) {
+		result = cpuid_ext(0xb, 0);
+		const uint32_t div = 1 << (result.eax & 0x1f);
+		return result.edx % div > 0;
 	}
 
 	apic_ids = 1;

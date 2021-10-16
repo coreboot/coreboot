@@ -28,7 +28,6 @@ DEFAULT_LANGUAGES=c
 LANGUAGES=
 DESTDIR=
 SAVETEMPS=0
-SKIPPYTHON=1
 BOOTSTRAP=0
 THREADS=1
 
@@ -39,10 +38,7 @@ MPC_VERSION=1.2.1
 GCC_VERSION=11.2.0
 GCC_AUTOCONF_VERSION=2.69
 BINUTILS_VERSION=2.37
-GDB_VERSION=9.2
 IASL_VERSION=20210331
-PYTHON_VERSION=3.8.5
-EXPAT_VERSION=2.4.1
 # CLANG version number
 CLANG_VERSION=12.0.0
 CMAKE_VERSION=3.20.3
@@ -57,10 +53,7 @@ MPFR_ARCHIVE="https://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.xz"
 MPC_ARCHIVE="https://ftpmirror.gnu.org/mpc/mpc-${MPC_VERSION}.tar.gz"
 GCC_ARCHIVE="https://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz"
 BINUTILS_ARCHIVE="https://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.xz"
-GDB_ARCHIVE="https://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.xz"
 IASL_ARCHIVE="https://acpica.org/sites/acpica/files/acpica-unix2-${IASL_VERSION}.tar.gz"
-PYTHON_ARCHIVE="https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz"
-EXPAT_ARCHIVE="https://downloads.sourceforge.net/sourceforge/expat/expat-${EXPAT_VERSION}.tar.bz2"
 # CLANG toolchain archive locations
 LLVM_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/llvm-${CLANG_VERSION}.src.tar.xz"
 CLANG_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/clang-${CLANG_VERSION}.src.tar.xz"
@@ -70,8 +63,8 @@ CMAKE_ARCHIVE="https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSIO
 NASM_ARCHIVE="https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.bz2"
 
 ALL_ARCHIVES="$GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE \
-	$GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $IASL_ARCHIVE \
-	$PYTHON_ARCHIVE $EXPAT_ARCHIVE $LLVM_ARCHIVE $CLANG_ARCHIVE \
+	$GCC_ARCHIVE $BINUTILS_ARCHIVE $IASL_ARCHIVE \
+	$LLVM_ARCHIVE $CLANG_ARCHIVE \
 	$CRT_ARCHIVE $CTE_ARCHIVE $CMAKE_ARCHIVE $NASM_ARCHIVE"
 
 # GCC toolchain directories
@@ -82,10 +75,7 @@ MPC_DIR="mpc-${MPC_VERSION}"
 GCC_DIR="gcc-${GCC_VERSION}"
 # shellcheck disable=SC2034
 BINUTILS_DIR="binutils-${BINUTILS_VERSION}"
-GDB_DIR="gdb-${GDB_VERSION}"
 IASL_DIR="acpica-unix2-${IASL_VERSION}"
-PYTHON_DIR="Python-${PYTHON_VERSION}"
-EXPAT_DIR="expat-${EXPAT_VERSION}"
 # CLANG toolchain directories
 LLVM_DIR="llvm-${CLANG_VERSION}.src"
 CLANG_DIR="clang-${CLANG_VERSION}.src"
@@ -464,7 +454,7 @@ is_package_enabled()
 
 package_uses_targetarch()
 {
-	if [ "$1" = "GCC" ] || [ "$1" = "GDB" ] || [ "$1" = "BINUTILS" ]; then
+	if [ "$1" = "GCC" ] || [ "$1" = "BINUTILS" ]; then
 		true
 	else
 		false
@@ -573,7 +563,7 @@ myhelp()
 	printf "        (defaults to $TARGETDIR)\n\n"
 	printf "    [-D|--destdir <dest dir>]     destination directory to install cross compiler to\n"
 	printf "                                  (for RPM builds, default unset)\n"
-	printf "    [-P|--package <package>]      Build a specific package: GCC, CLANG, IASL, GDB\n"
+	printf "    [-P|--package <package>]      Build a specific package: GCC, CLANG, IASL\n"
 	printf "                                  (defaults to $PACKAGE)\n"
 	printf "GCC specific options:\n"
 	printf "    [-b|--bootstrap]              bootstrap the host compiler before building\n"
@@ -582,11 +572,7 @@ myhelp()
 	printf "                                  (defaults to $TARGETARCH)\n"
 	printf "    [-l|--languages <languages>]  comma separated list of target languages\n"
 	printf "                                  (defaults to $DEFAULT_LANGUAGES)\n"
-	printf "GDB specific options:\n"
-	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
-	printf "                                  (defaults to $TARGETARCH)\n"
-	printf "    [-S|--scripting]              build scripting support for GDB\n\n"
-	printf "Platforms for GCC & GDB:\n"
+	printf "Platforms for GCC:\n"
 	printf "    x86_64 i386-elf i386-mingw32 riscv-elf arm aarch64\n"
 	printf "    powerpc64le-linux-gnu nds32le-elf\n\n"
 }
@@ -798,43 +784,6 @@ build_GCC() {
 	fi
 }
 
-build_EXPAT() {
-	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS"
-	../${EXPAT_DIR}/configure --disable-shared --prefix="$TARGETDIR" \
-		|| touch .failed
-	$MAKE || touch .failed
-	$MAKE install DESTDIR=$DESTDIR || touch .failed
-
-	normalize_dirs
-}
-
-build_PYTHON() {
-	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS"
-	../${PYTHON_DIR}/configure --prefix="$TARGETDIR" \
-		|| touch .failed
-	# shellcheck disable=SC2086
-	$MAKE $JOBS || touch .failed
-	$MAKE install DESTDIR=$DESTDIR || touch .failed
-
-	normalize_dirs
-}
-
-build_GDB() {
-	export PYTHONHOME=$DESTDIR$TARGETDIR
-	if [ "$UNAME" != "FreeBSD" ] && [ "$UNAME" != "NetBSD" ]; then
-		LIBDL="-ldl"
-	fi
-	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib \
-		 -lpthread $LIBDL -lutil" \
-	CC="$(hostcc target)" CXX="$(hostcxx target)" \
-	CFLAGS="$HOSTCFLAGS -I$DESTDIR$TARGETDIR/include" \
-	../${GDB_DIR}/configure --prefix="$TARGETDIR" \
-		--target=${TARGETARCH} --disable-werror --disable-nls
-	# shellcheck disable=SC2086
-	$MAKE $JOBS || touch .failed
-	$MAKE install DESTDIR=$DESTDIR || touch .failed
-}
-
 build_IASL() {
 	RDIR=$PWD
 	cd ../$IASL_DIR/generate/unix || exit 1
@@ -906,14 +855,11 @@ print_supported() {
 		AUTOCONF|autoconf)  printf "%s\n" "$GCC_AUTOCONF_VERSION";;
 		BINUTILS|binutils)  printf "%s\n" "$BINUTILS_VERSION";;
 		CLANG|clang)  printf "%s\n" "$CLANG_VERSION";;
-		EXPAT|expat)  printf "%s\n" "$EXPAT_VERSION";;
 		GCC|gcc)  printf "%s\n" "$GCC_VERSION";;
-		GDB|gdb)  printf "%s\n" "$GDB_VERSION";;
 		GMP|gmp)   printf "%s\n" "$GMP_VERSION";;
 		IASL|iasl) printf "%s\n" "$IASL_VERSION";;
 		MPC|mpc)  printf "%s\n" "$MPC_VERSION";;
 		MPFR|mpfr)  printf "%s\n" "$MPFR_VERSION";;
-		PYTHON|python)  printf "%s\n" "$PYTHON_VERSION";;
 		NASM|nasm) printf "%s\n" "${NASM_VERSION}";;
 		*) printf "Unknown tool %s\n" "$PRINTSUPPORTED";;
 	esac
@@ -960,7 +906,6 @@ while true ; do
 		-D|--destdir)		shift; DESTDIR="$1"; shift;;
 		-j|--jobs)		shift; THREADS="$1"; JOBS="-j $1"; shift;;
 		-P|--package)		shift; PACKAGE="$1"; shift;;
-		-S|--scripting)		shift; SKIPPYTHON=0;;
 		-y|--ccache)		shift; USECCACHE=1;;
 		-s|--supported)		shift; PRINTSUPPORTED="$1"; shift;;
 		-u|--urls)		shift; printf "%s\n" "$ALL_ARCHIVES"; exit 0;;
@@ -1009,14 +954,6 @@ case "$PACKAGE" in
 		NAME="${TARGETARCH} cross GCC"
 		PACKAGES="GMP MPFR MPC BINUTILS GCC"
 		;;
-	GDB|gdb)
-		NAME="${TARGETARCH} cross GDB"
-		if [ $SKIPPYTHON -eq 0 ]; then
-			PACKAGES="EXPAT PYTHON GDB"
-		else
-			PACKAGES="EXPAT GDB"
-		fi
-		;;
 	CLANG|clang)
 		NAME="LLVM clang"
 		LLVM_VERSION=${CLANG_VERSION}
@@ -1036,7 +973,7 @@ case "$PACKAGE" in
 		PACKAGES=NASM
 		;;
 	*)
-		printf "${red}ERROR: Unsupported package $PACKAGE. (Supported packages are GCC, GDB, CLANG, IASL, and NASM)${NC}\n\n";
+		printf "${red}ERROR: Unsupported package $PACKAGE. (Supported packages are GCC, CLANG, IASL, and NASM)${NC}\n\n";
 		exit 1
 		;;
 esac

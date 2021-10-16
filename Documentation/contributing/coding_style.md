@@ -1,6 +1,6 @@
 # Coding Style
 
-This is a short document describing the preferred coding style for the
+This document describes the preferred C coding style for the
 coreboot project. It is in many ways exactly the same as the Linux
 kernel coding style. In fact, most of this document has been copied from
 the [Linux kernel coding style](http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/plain/Documentation/CodingStyle?id=HEAD)

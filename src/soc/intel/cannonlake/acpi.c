@@ -131,7 +131,7 @@ acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 	}
 
 	for (i = 0; i < *entries; i++) {
-		memcpy(&map[i], &cstate_map[set[i]], sizeof(acpi_cstate_t));
+		map[i] = cstate_map[set[i]];
 		map[i].ctype = i + 1;
 	}
 	return map;

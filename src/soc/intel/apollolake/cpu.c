@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include "chip.h"
 #include <cpu/cpu.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/turbo.h>
@@ -154,8 +153,6 @@ static void pre_mp_init(void)
 	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
 
-	/* Enable the local CPU apics */
-	setup_lapic();
 }
 
 #if !CONFIG(SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)

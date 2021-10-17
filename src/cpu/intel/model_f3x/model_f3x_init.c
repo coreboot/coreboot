@@ -3,7 +3,6 @@
 #include <device/device.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/intel/common/common.h>
@@ -22,9 +21,6 @@ static void model_f3x_init(struct device *cpu)
 		/* Update the microcode */
 		intel_update_microcode_from_cbfs();
 	}
-
-	/* Enable the local CPU APICs */
-	setup_lapic();
 
 	/* Start up my CPU siblings */
 	if (!CONFIG(PARALLEL_MP))

@@ -3,7 +3,6 @@
 #include <arch/ioapic.h>
 #include <console/console.h>
 #include <console/debug.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -181,7 +180,6 @@ static void chip_init(void *data)
 	override_hpet_ioapic_bdf();
 	pch_enable_ioapic();
 	pch_lock_dmictl();
-	setup_lapic();
 	p2sb_unhide();
 }
 

@@ -298,6 +298,11 @@ asmlinkage void secondary_cpu_init(unsigned int index)
 	cr4_val |= (CR4_OSFXSR | CR4_OSXMMEXCPT);
 	write_cr4(cr4_val);
 #endif
+
+	/* Ensure the local APIC is enabled */
+	enable_lapic();
+	setup_lapic_interrupts();
+
 	cpu_initialize(index);
 
 	spin_unlock(&start_cpu_lock);
@@ -376,8 +381,10 @@ void initialize_cpus(struct bus *cpu_bus)
 	info = cpu_info();
 
 	/* Ensure the local APIC is enabled */
-	if (is_smp_boot())
+	if (is_smp_boot()) {
 		enable_lapic();
+		setup_lapic_interrupts();
+	}
 
 	/* Get the device path of the boot CPU */
 	cpu_path.type = DEVICE_PATH_APIC;

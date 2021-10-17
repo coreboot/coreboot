@@ -5,7 +5,6 @@
 #include <device/pci.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/intel/common/common.h>
 #include <cpu/intel/microcode.h>
@@ -118,9 +117,7 @@ void soc_core_init(struct device *cpu)
 	 * every bank. */
 	mca_configure();
 
-	/* Enable the local CPU apics */
 	enable_lapic_tpr();
-	setup_lapic();
 
 	/* Configure c-state interrupt response time */
 	configure_c_states();

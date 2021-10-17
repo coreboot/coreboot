@@ -10,7 +10,6 @@
 #include <console/console.h>
 #include <cpu/amd/microcode.h>
 #include <cpu/cpu.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
@@ -64,7 +63,6 @@ void mp_init_cpus(struct bus *cpu_bus)
 static void zen_2_3_init(struct device *dev)
 {
 	check_mca();
-	setup_lapic();
 	set_cstate_io_addr();
 
 	amd_update_microcode_from_cbfs();

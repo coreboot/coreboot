@@ -7,7 +7,6 @@
 #include <cpu/amd/mtrr.h>
 #include <device/device.h>
 #include <cpu/x86/pae.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <acpi/acpi.h>
@@ -56,9 +55,6 @@ static void model_14_init(struct device *dev)
 
 	/* zero the machine check error status registers */
 	mca_clear_status();
-
-	/* Enable the local CPU APICs */
-	setup_lapic();
 
 #if CONFIG(LOGICAL_CPUS)
 	siblings = cpuid_ecx(0x80000008) & 0xff;

@@ -100,9 +100,6 @@ static void denverton_core_init(struct device *cpu)
 	/* Enable Turbo */
 	enable_turbo();
 
-	/* Enable the local CPU apics */
-	setup_lapic();
-
 	/* Enable speed step. Always ON.*/
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= SPEED_STEP_ENABLE_BIT;

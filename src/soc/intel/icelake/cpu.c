@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/pci.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/smm_reloc.h>
@@ -103,9 +102,7 @@ void soc_core_init(struct device *cpu)
 	 * every bank. */
 	mca_configure();
 
-	/* Enable the local CPU apics */
 	enable_lapic_tpr();
-	setup_lapic();
 
 	/* Configure c-state interrupt response time */
 	configure_c_states();

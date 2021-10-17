@@ -10,7 +10,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/smm.h>
-#include <cpu/x86/lapic.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
@@ -66,7 +65,6 @@ void mp_init_cpus(struct bus *cpu_bus)
 static void model_17_init(struct device *dev)
 {
 	check_mca();
-	setup_lapic();
 	set_cstate_io_addr();
 
 	amd_update_microcode_from_cbfs();

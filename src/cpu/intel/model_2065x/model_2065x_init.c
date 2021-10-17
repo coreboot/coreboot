@@ -91,9 +91,7 @@ static void model_2065x_init(struct device *cpu)
 	/* Setup Page Attribute Tables (PAT) */
 	// TODO set up PAT
 
-	/* Enable the local CPU APICs */
 	enable_lapic_tpr();
-	setup_lapic();
 
 	/* Set virtualization based on Kconfig option */
 	set_vmx_and_lock();

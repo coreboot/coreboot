@@ -65,13 +65,7 @@ uintptr_t cpu_get_lapic_addr(void)
 	return LAPIC_DEFAULT_BASE;
 }
 
-/* See if I need to initialize the local APIC */
-static int need_lapic_init(void)
-{
-	return CONFIG(SMP) || CONFIG(IOAPIC);
-}
-
-static void lapic_virtual_wire_mode_init(void)
+void setup_lapic_interrupts(void)
 {
 	/*
 	 * Set Task Priority to 'accept all'.
@@ -93,18 +87,4 @@ static void lapic_virtual_wire_mode_init(void)
 						  LAPIC_DELIVERY_MODE_EXTINT);
 
 	lapic_update32(LAPIC_LVT1, ~mask, LAPIC_DELIVERY_MODE_NMI);
-}
-
-void setup_lapic(void)
-{
-	/* Enable the local APIC */
-	if (need_lapic_init())
-		enable_lapic();
-	else if (!CONFIG(UDELAY_LAPIC))
-		disable_lapic();
-
-	/* This programming is for PIC mode i8259 interrupts to be delivered to CPU
-	   while LAPIC is enabled. */
-	if (need_lapic_init())
-		lapic_virtual_wire_mode_init();
 }

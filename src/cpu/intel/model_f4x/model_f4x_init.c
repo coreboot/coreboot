@@ -2,16 +2,12 @@
 
 #include <device/device.h>
 #include <cpu/cpu.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
 
 static void model_f4x_init(struct device *cpu)
 {
 	/* Turn on caching if we haven't already */
 	enable_cache();
-
-	/* Enable the local CPU APICs */
-	setup_lapic();
 };
 
 static struct device_operations cpu_dev_ops = {

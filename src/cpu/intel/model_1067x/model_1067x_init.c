@@ -4,7 +4,6 @@
 #include <device/device.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
@@ -255,9 +254,6 @@ static void model_1067x_init(struct device *cpu)
 	/* Print processor name */
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
-
-	/* Enable the local CPU APICs */
-	setup_lapic();
 
 	/* Configure C States */
 	configure_c_states(quad);

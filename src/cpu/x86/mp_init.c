@@ -185,6 +185,7 @@ static void asmlinkage ap_init(void)
 
 	/* Ensure the local APIC is enabled */
 	enable_lapic();
+	setup_lapic_interrupts();
 
 	info->cpu = cpus_dev[info->index];
 
@@ -543,6 +544,7 @@ static void init_bsp(struct bus *cpu_bus)
 
 	/* Ensure the local APIC is enabled */
 	enable_lapic();
+	setup_lapic_interrupts();
 
 	/* Set the device path of the boot CPU. */
 	cpu_path.type = DEVICE_PATH_APIC;

@@ -9,7 +9,6 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/smm_reloc.h>
@@ -110,9 +109,7 @@ void soc_core_init(struct device *cpu)
 	 * every bank. */
 	mca_configure();
 
-	/* Enable the local CPU apics */
 	enable_lapic_tpr();
-	setup_lapic();
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();

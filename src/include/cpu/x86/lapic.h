@@ -177,6 +177,6 @@ void stop_this_cpu(void);
 
 void enable_lapic(void);
 void disable_lapic(void);
-void setup_lapic(void);
+void setup_lapic_interrupts(void);
 
 #endif /* CPU_X86_LAPIC_H */

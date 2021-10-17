@@ -11,7 +11,6 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/turbo.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
 #include <intelblocks/cpulib.h>
@@ -78,7 +77,6 @@ static void each_cpu_init(struct device *cpu)
 
 	printk(BIOS_SPEW, "%s dev: %s, cpu: %d, apic_id: 0x%x\n",
 		__func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id);
-	setup_lapic();
 
 	/*
 	 * Set HWP base feature, EPP reg enumeration, lock thermal and msr

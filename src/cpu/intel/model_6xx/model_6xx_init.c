@@ -3,7 +3,6 @@
 #include <device/device.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
 
@@ -16,9 +15,6 @@ static void model_6xx_init(struct device *dev)
 
 	/* Update the microcode */
 	intel_update_microcode_from_cbfs();
-
-	/* Enable the local CPU APICs */
-	setup_lapic();
 };
 
 static struct device_operations cpu_dev_ops = {

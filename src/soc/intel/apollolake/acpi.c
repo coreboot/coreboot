@@ -12,7 +12,6 @@
 #include <gpio.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/pmclib.h>
-#include <intelblocks/sgx.h>
 #include <intelblocks/p2sb.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
@@ -87,9 +86,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 		gnvs->scdp = gpio_get_pad_portid(cfg->sdcard_cd_gpio);
 		gnvs->scdo = gpio_acpi_pin(cfg->sdcard_cd_gpio);
 	}
-
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
-		sgx_fill_gnvs(gnvs);
 
 	/* Fill in Above 4GB MMIO resource */
 	sa_fill_gnvs(gnvs);

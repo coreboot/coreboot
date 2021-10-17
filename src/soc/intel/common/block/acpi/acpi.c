@@ -15,6 +15,7 @@
 #include <intelblocks/acpi_wake_source.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/sgx.h>
 #include <intelblocks/uart.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
@@ -427,4 +428,7 @@ void generate_cpu_entries(const struct device *device)
 
 	/* Add a method to notify processor nodes */
 	acpigen_write_processor_cnot(num_virt);
+
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
+		sgx_fill_ssdt();
 }

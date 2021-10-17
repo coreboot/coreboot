@@ -13,7 +13,6 @@
 #include <intelblocks/acpi_wake_source.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pmclib.h>
-#include <intelblocks/sgx.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pm.h>
@@ -178,9 +177,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 	/* Set USB2/USB3 wake enable bitmaps. */
 	gnvs->u2we = config->usb2_wake_enable_bitmap;
 	gnvs->u3we = config->usb3_wake_enable_bitmap;
-
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
-		sgx_fill_gnvs(gnvs);
 
 	/* Fill in Above 4GB MMIO resource */
 	sa_fill_gnvs(gnvs);

@@ -17,7 +17,7 @@ void prmrr_core_configure(void);
  */
 void sgx_configure(void *unused);
 
-/* Fill GNVS data with SGX status, EPC base and length */
-void sgx_fill_gnvs(struct global_nvs *gnvs);
+/* Fill SSDT for SGX status, EPC base and length */
+void sgx_fill_ssdt(void);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_SGX_H */

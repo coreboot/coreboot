@@ -23,9 +23,6 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	SCDP,	8,      // 0x29 - SD_CD GPIO portid
 	SCDO,	8,      // 0x2A - GPIO pad offset relative to the community
 	UIOR,	8,      // 0x2B - UART debug controller init on S3 resume
-	EPCS,   8,      // 0x2C - SGX Enabled status
-	EMNA,   64,     // 0x2D - 0x34 EPC base address
-	ELNG,   64,     // 0x35 - 0x3C EPC Length
-	A4GB,	64,	// 0x3D - 0x44 Base of above 4GB MMIO Resource
-	A4GS,	64,	// 0x45 - 0x4C Length of above 4GB MMIO Resource
+	A4GB,	64,	// 0x2C - 0x33 Base of above 4GB MMIO Resource
+	A4GS,	64,	// 0x34 - 0x3B Length of above 4GB MMIO Resource
 }

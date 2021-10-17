@@ -6,6 +6,9 @@ Scope(\_SB)
 	// Secure Enclave memory
 	Device (EPC)
 	{
+		External (EPCS, IntObj)
+		External (EMNA, IntObj)
+		External (ELNG, IntObj)
 		Name (_HID, EISAID ("INT0E0C"))
 		Name (_STR, Unicode ("Enclave Page Cache 1.0"))
 		Name (_MLS, Package () {

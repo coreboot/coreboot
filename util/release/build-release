@@ -57,6 +57,8 @@ if [ -n "$COMMIT_ID" ]; then
 	git reset --hard "$COMMIT_ID"
 fi
 
+util/crossgcc/buildgcc -W > .crossgcc-version
+
 git submodule update --init --checkout
 if [ -n "$GPG_KEY_ID" ]; then
 	git tag -a -s -u "$GPG_KEY_ID" --force "$VERSION_NAME" -m "coreboot version $VERSION_NAME"

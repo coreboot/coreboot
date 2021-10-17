@@ -28,7 +28,7 @@
 	}
 
 /* C-state map without S0ix */
-static acpi_cstate_t cstate_map[] = {
+static const acpi_cstate_t cstate_map[] = {
 	{
 		/* C1 */
 		.ctype = 1, /* ACPI C1 */

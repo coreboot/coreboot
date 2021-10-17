@@ -289,7 +289,7 @@ void generate_cpu_entries(const struct device *device)
 		.addrl = PS_STS_REG,
 	};
 
-	acpi_cstate_t cstate_info[] = {
+	const acpi_cstate_t cstate_info[] = {
 		[0] = {
 			.ctype = 1,
 			.latency = 1,

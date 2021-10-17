@@ -357,8 +357,8 @@ void acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat,
 void acpigen_write_pss_object(const struct acpi_sw_pstate *pstate_values, size_t nentries);
 typedef enum { SW_ALL = 0xfc, SW_ANY = 0xfd, HW_ALL = 0xfe } PSD_coord;
 void acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype);
-void acpigen_write_CST_package_entry(acpi_cstate_t *cstate);
-void acpigen_write_CST_package(acpi_cstate_t *entry, int nentries);
+void acpigen_write_CST_package_entry(const acpi_cstate_t *cstate);
+void acpigen_write_CST_package(const acpi_cstate_t *entry, int nentries);
 typedef enum { CSD_HW_ALL = 0xfe } CSD_coord;
 void acpigen_write_CSD_package(u32 domain, u32 numprocs, CSD_coord coordtype,
 				u32 index);

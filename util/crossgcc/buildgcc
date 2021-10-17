@@ -16,7 +16,9 @@
 
 cd "$(dirname "$0")" || exit 1
 
-CROSSGCC_VERSION="$(git log -n 1 --pretty=%cd --date=short .)_$(git log -n 1 --pretty=%h .)"
+if [ -z "$CROSSGCC_VERSION" ]; then
+	CROSSGCC_VERSION="$(git log -n 1 --pretty=%cd --date=short .)_$(git log -n 1 --pretty=%h .)"
+fi
 
 # default settings
 PACKAGE=GCC

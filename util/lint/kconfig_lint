@@ -614,7 +614,7 @@ sub build_and_parse_kconfig_tree {
 		$choice_symbol = $symbol;
             }
             $inside_config         = "";
-            $inside_choice         = "$filename $line_no";
+            $inside_choice         = "$filename:$line_no";
             $configs_inside_choice = 0;
 
             # Kconfig verifies that choice blocks have a prompt
@@ -806,7 +806,7 @@ sub add_symbol {
             $symbols{$symbol}{choice} = 1;
 
             # remember the location of the choice
-            $symbols{$symbol}{choice_loc} = join(':', (split / /, $inside_choice));
+            $symbols{$symbol}{choice_loc} = $inside_choice;
         }
         else {
             $symbols{$symbol}{choice} = 0;

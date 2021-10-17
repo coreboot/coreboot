@@ -58,7 +58,7 @@ static int cstate_set_c1_c6[] = {
 	C_STATE_C6,
 };
 
-acpi_cstate_t *soc_get_cstate_map(size_t *entries)
+const acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 {
 	static acpi_cstate_t map[ARRAY_SIZE(cstate_set_all)];
 	int *cstate_set;

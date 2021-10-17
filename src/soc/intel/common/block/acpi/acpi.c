@@ -248,7 +248,7 @@ int common_calculate_power_ratio(int tdp, int p1_ratio, int ratio)
 
 static void generate_c_state_entries(void)
 {
-	acpi_cstate_t *c_state_map;
+	const acpi_cstate_t *c_state_map;
 	size_t entries;
 
 	c_state_map = soc_get_cstate_map(&entries);

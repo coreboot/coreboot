@@ -38,7 +38,7 @@ void soc_write_sci_irq_select(uint32_t scis);
  * get_cstate_map returns a table of processor specific acpi_cstate_t entries
  * and number of entries in the table
  */
-acpi_cstate_t *soc_get_cstate_map(size_t *num_entries);
+const acpi_cstate_t *soc_get_cstate_map(size_t *num_entries);
 
 /*
  * get_tstate_map returns a table of processor specific acpi_tstate_t entries

@@ -111,7 +111,7 @@ static int cstate_set_s0ix[] = {
 	C_STATE_C10
 };
 
-acpi_cstate_t *soc_get_cstate_map(size_t *entries)
+const acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 {
 	static acpi_cstate_t map[MAX(ARRAY_SIZE(cstate_set_s0ix),
 				ARRAY_SIZE(cstate_set_non_s0ix))];

@@ -30,7 +30,7 @@
 	.addrl = address,						\
 	}
 
-static acpi_cstate_t cstate_map[] = {
+static const acpi_cstate_t cstate_map[] = {
 	{
 		/* C1 */
 		.ctype = 1,		/* ACPI C1 */
@@ -62,7 +62,7 @@ void soc_write_sci_irq_select(uint32_t scis)
 	write32p(soc_read_pmc_base() + IRQ_REG, scis);
 }
 
-acpi_cstate_t *soc_get_cstate_map(size_t *entries)
+const acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 {
 	*entries = ARRAY_SIZE(cstate_map);
 	return cstate_map;

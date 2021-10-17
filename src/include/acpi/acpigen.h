@@ -499,7 +499,7 @@ void acpigen_write_field(const char *name, const struct fieldlist *l, size_t cou
 void acpigen_write_indexfield(const char *idx, const char *data,
 			      struct fieldlist *l, size_t count, uint8_t flags);
 
-int get_cst_entries(acpi_cstate_t **);
+int get_cst_entries(const acpi_cstate_t **);
 
 /*
  * Get element from package into specified destination op:

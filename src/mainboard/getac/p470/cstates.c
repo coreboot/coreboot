@@ -3,7 +3,7 @@
 #include <acpi/acpigen.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 
-static acpi_cstate_t cst_entries[] = {
+static const acpi_cstate_t cst_entries[] = {
 	{
 		/* ACPI C1 / CPU C1 */
 		1, 0x01, 1000,
@@ -21,7 +21,7 @@ static acpi_cstate_t cst_entries[] = {
 	},
 };
 
-int get_cst_entries(acpi_cstate_t **entries)
+int get_cst_entries(const acpi_cstate_t **entries)
 {
 	*entries = cst_entries;
 	return ARRAY_SIZE(cst_entries);

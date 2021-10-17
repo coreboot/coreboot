@@ -88,7 +88,7 @@ void generate_cpu_entries(const struct device *device)
 						       CPUs share the same
 						       layout. */
 	int num_cstates;
-	acpi_cstate_t *cstates;
+	const acpi_cstate_t *cstates;
 	sst_table_t pstates;
 	uint8_t coordination;
 

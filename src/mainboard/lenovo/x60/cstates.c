@@ -13,7 +13,7 @@
 		.addrh = 0,					\
 	}
 
-static acpi_cstate_t cst_entries[] = {
+static const acpi_cstate_t cst_entries[] = {
 	{
 		.ctype = 1,
 		.latency = 1,
@@ -34,7 +34,7 @@ static acpi_cstate_t cst_entries[] = {
 	},
 };
 
-int get_cst_entries(acpi_cstate_t **entries)
+int get_cst_entries(const acpi_cstate_t **entries)
 {
 	*entries = cst_entries;
 	return ARRAY_SIZE(cst_entries);

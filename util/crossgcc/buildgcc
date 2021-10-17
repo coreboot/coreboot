@@ -557,6 +557,7 @@ myhelp()
 	printf "       $0 [-h|--help]\n\n"
 
 	printf "Options:\n"
+	printf "    [-W|--print-version           Print machine readable version\n"
 	printf "    [-V|--version]                print version number and exit\n"
 	printf "    [-h|--help]                   print this help and exit\n"
 	printf "    [-c|--clean]                  remove temporary files before build\n"
@@ -926,12 +927,12 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="$(getopt -V 2>/dev/null | sed -e '1!d' -e 's,^\(......\).*,\1,')"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,help,clean,directory:,bootstrap,bootstrap-only,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported:,urls,nocolor -o Vhcd:bBp:l:P:j:D:tSys:un -- "$@")
+	args=$(getopt -l print-version,version,help,clean,directory:,bootstrap,bootstrap-only,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported:,urls,nocolor -o WVhcd:bBp:l:P:j:D:tSys:un -- "$@")
 	getopt_ret=$?
 	eval set -- "$args"
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vhcd:bBp:l:P:j:D:tSys:un $*)
+	args=$(getopt WVhcd:bBp:l:P:j:D:tSys:un $*)
 	getopt_ret=$?
 	# shellcheck disable=SC2086
 	set -- $args
@@ -944,6 +945,7 @@ fi
 
 while true ; do
         case "$1" in
+		-W|--print-version)	shift; echo $CROSSGCC_VERSION; exit 0;;
 		-V|--version)		shift; myversion; exit 0;;
 		-h|--help)		shift; myhelp; exit 0;;
 		-c|--clean)		shift; clean=1;;

@@ -374,7 +374,7 @@ sub check_defaults {
                 # Symbols created/used inside a choice must not have a default set. The default is set by the choice itself.
                 if ($symbols{$sym}{choice}) {
                     show_error("Defining a default for symbol '$sym' at $filename:$line_no, used inside choice at "
-                               . "$symbols{$sym}{choice_loc}, is not allowed.");
+                               . "$symbols{$sym}{choice}, is not allowed.");
                 }
 
                 # skip good defaults
@@ -802,15 +802,8 @@ sub add_symbol {
     #initialize the symbol or increment the use count.
     if ( ( !exists $symbols{$symbol} ) || ( !exists $symbols{$symbol}{count} ) ) {
         $symbols{$symbol}{count} = 0;
-        if ($inside_choice) {
-            $symbols{$symbol}{choice} = 1;
-
-            # remember the location of the choice
-            $symbols{$symbol}{choice_loc} = $inside_choice;
-        }
-        else {
-            $symbols{$symbol}{choice} = 0;
-        }
+        # remember the location of the choice (or "")
+        $symbols{$symbol}{choice} = $inside_choice;
     }
     else {
         $symbols{$symbol}{count}++;

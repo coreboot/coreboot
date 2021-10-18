@@ -36,9 +36,9 @@
 #define APU_EMMC_BASE			0xfedd5000
 #define APU_EMMC_CONFIG_BASE		0xfedd5800
 
-#define FLASH_BASE_ADDR			((0xffffffff - CONFIG_ROM_SIZE) + 1)
-
 #endif /* ENV_X86 */
+
+#define FLASH_BASE_ADDR			((0xffffffff - CONFIG_ROM_SIZE) + 1)
 
 /* I/O Ranges */
 #define ACPI_IO_BASE			0x0400

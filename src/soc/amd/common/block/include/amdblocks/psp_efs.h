@@ -29,6 +29,8 @@ struct second_gen_efs { /* todo: expand for Server products */
 	uint32_t reserved:31;
 } __attribute__((packed));
 
+#define EFS_SECOND_GEN 0
+
 /* Copied from coreboot/util/amdfwtool.h */
 struct embedded_firmware {
 	uint32_t signature; /* 0x55aa55aa */

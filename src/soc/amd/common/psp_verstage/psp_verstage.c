@@ -10,6 +10,7 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <pc80/mc146818rtc.h>
+#include <soc/iomap.h>
 #include <soc/psp_transfer.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/misc.h>
@@ -119,6 +120,12 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	if (*bios_dir_in_spi != BDT1_COOKIE) {
 		printk(BIOS_ERR, "Error: BIOS Directory address is not correct.\n");
 		return POSTCODE_BDT1_COOKIE_MISMATCH_ERROR;
+	}
+
+	/* EFS2 uses relative address and PSP isn't happy with that */
+	if (ef_table->efs_gen.gen == EFS_SECOND_GEN) {
+		psp_dir_addr = FLASH_BASE_ADDR + (psp_dir_addr & SPI_ADDR_MASK);
+		bios_dir_addr = FLASH_BASE_ADDR + (bios_dir_addr & SPI_ADDR_MASK);
 	}
 
 	if (update_psp_bios_dir(&psp_dir_addr, &bios_dir_addr)) {

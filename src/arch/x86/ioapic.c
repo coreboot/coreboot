@@ -35,9 +35,9 @@ unsigned int ioapic_get_max_vectors(void *ioapic_base)
 	u8 count;
 
 	reg = io_apic_read(ioapic_base, 0x01);
-	count = reg >> 16;
+	count = (reg >> 16) & 0xff;
 
-	if (!count || count == 0xff)
+	if (count == 0xff)
 		count = 23;
 	count++;
 
@@ -54,7 +54,7 @@ void ioapic_set_max_vectors(void *ioapic_base, int mre_count)
 	u8 count;
 
 	reg = io_apic_read(ioapic_base, 0x01);
-	count = reg >> 16;
+	count = (reg >> 16) & 0xff;
 	if (mre_count > 0)
 		count = mre_count - 1;
 	reg &= ~(0xff << 16);

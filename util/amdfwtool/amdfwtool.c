@@ -1587,13 +1587,13 @@ int main(int argc, char **argv)
 	}
 
 	if (comboable)
-		amd_romsig->comboable = BUFF_TO_RUN(ctx, pspdir);
+		amd_romsig->combo_psp_directory = BUFF_TO_RUN(ctx, pspdir);
 	else
-		amd_romsig->psp_entry = BUFF_TO_RUN(ctx, pspdir);
+		amd_romsig->psp_directory = BUFF_TO_RUN(ctx, pspdir);
 
 #if PSP_COMBO
 	psp_combo_directory *combo_dir = new_combo_dir(&ctx);
-	amd_romsig->comboable = BUFF_TO_RUN(ctx, combo_dir);
+	amd_romsig->combo_psp_directory = BUFF_TO_RUN(ctx, combo_dir);
 	/* 0 -Compare PSP ID, 1 -Compare chip family ID */
 	combo_dir->entries[0].id_sel = 0;
 	/* TODO: PSP ID. Documentation is needed. */

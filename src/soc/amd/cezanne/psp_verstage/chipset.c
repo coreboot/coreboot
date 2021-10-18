@@ -13,7 +13,7 @@ uint32_t save_uapp_data(void *address, uint32_t size)
 	return svc_save_uapp_data(address, size);
 }
 
-uint32_t get_bios_dir_addr(struct psp_ef_table *ef_table)
+uint32_t get_bios_dir_addr(struct embedded_firmware *ef_table)
 {
 	return ef_table->bios3_entry;
 }

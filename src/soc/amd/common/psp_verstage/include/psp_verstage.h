@@ -4,6 +4,7 @@
 #define PSP_VERSTAGE_H
 
 #include <2crypto.h>
+#include <amdblocks/psp_efs.h>
 #include <bl_uapp/bl_syscall_public.h>
 #include <stdint.h>
 #include <soc/psp_transfer.h>
@@ -43,17 +44,6 @@
 #define MIN_TRANSFER_BUFFER_SIZE		(8 * KiB)
 #define MIN_WORKBUF_TRANSFER_SIZE		(MIN_TRANSFER_BUFFER_SIZE - TRANSFER_INFO_SIZE)
 
-struct psp_ef_table {
-	uint32_t signature; /* 0x55aa55aa */
-	uint32_t reserved0[4];
-	uint32_t psp_table;
-	uint32_t bios0_entry;
-	uint32_t bios1_entry;
-	uint32_t bios2_entry;
-	uint32_t reserved1;
-	uint32_t bios3_entry;
-} __attribute__((packed, aligned(16)));
-
 void test_svc_calls(void);
 uint32_t unmap_fch_devices(void);
 uint32_t verstage_soc_early_init(void);
@@ -63,7 +53,7 @@ uintptr_t *map_spi_rom(void);
 uint32_t get_max_workbuf_size(uint32_t *size);
 uint32_t update_psp_bios_dir(uint32_t *psp_dir_offset, uint32_t *bios_dir_offset);
 uint32_t save_uapp_data(void *address, uint32_t size);
-uint32_t get_bios_dir_addr(struct psp_ef_table *ef_table);
+uint32_t get_bios_dir_addr(struct embedded_firmware *ef_table);
 int platform_set_sha_op(enum vb2_hash_algorithm hash_alg,
 			struct sha_generic_data *sha_op);
 

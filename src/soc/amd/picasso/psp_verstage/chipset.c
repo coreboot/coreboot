@@ -19,7 +19,7 @@ uint32_t get_max_workbuf_size(uint32_t *size)
 	return svc_get_max_workbuf_size(size);
 }
 
-uint32_t get_bios_dir_addr(struct psp_ef_table *ef_table)
+uint32_t get_bios_dir_addr(struct embedded_firmware *ef_table)
 {
 	return ef_table->bios1_entry;
 }

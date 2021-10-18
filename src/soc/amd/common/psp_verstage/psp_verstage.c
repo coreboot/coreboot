@@ -76,7 +76,7 @@ static uint32_t check_cmos_recovery(void)
  */
 static uint32_t update_boot_region(struct vb2_context *ctx)
 {
-	struct psp_ef_table *ef_table;
+	struct embedded_firmware *ef_table;
 	uint32_t psp_dir_addr, bios_dir_addr;
 	uint32_t *psp_dir_in_spi, *bios_dir_in_spi;
 	const char *fname;
@@ -100,13 +100,13 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 		printk(BIOS_ERR, "Error: AMD Firmware table not found.\n");
 		return POSTCODE_AMD_FW_MISSING;
 	}
-	ef_table = (struct psp_ef_table *)amdfw_location;
+	ef_table = (struct embedded_firmware *)amdfw_location;
 	if (ef_table->signature != EMBEDDED_FW_SIGNATURE) {
 		printk(BIOS_ERR, "Error: ROMSIG address is not correct.\n");
 		return POSTCODE_ROMSIG_MISMATCH_ERROR;
 	}
 
-	psp_dir_addr = ef_table->psp_table;
+	psp_dir_addr = ef_table->combo_psp_directory;
 	bios_dir_addr = get_bios_dir_addr(ef_table);
 	psp_dir_in_spi = (uint32_t *)((psp_dir_addr & SPI_ADDR_MASK) +
 			(uint32_t)boot_dev_base);
@@ -121,7 +121,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 		return POSTCODE_BDT1_COOKIE_MISMATCH_ERROR;
 	}
 
-	if (update_psp_bios_dir((void *)&psp_dir_addr, (void *)&bios_dir_addr)) {
+	if (update_psp_bios_dir(&psp_dir_addr, &bios_dir_addr)) {
 		printk(BIOS_ERR, "Error: Updated BIOS Directory could not be set.\n");
 		return POSTCODE_UPDATE_PSP_BIOS_DIR_ERROR;
 	}

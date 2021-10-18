@@ -30,7 +30,7 @@ struct second_gen_efs { /* todo: expand for Server products */
 } __attribute__((packed));
 
 /* Copied from coreboot/util/amdfwtool.h */
-typedef struct _embedded_firmware {
+struct embedded_firmware {
 	uint32_t signature; /* 0x55aa55aa */
 	uint32_t imc_entry;
 	uint32_t gec_entry;
@@ -60,7 +60,7 @@ typedef struct _embedded_firmware {
 	uint8_t reserved_4Ah;
 	uint8_t reserved_4Bh;
 	uint32_t reserved_4Ch;
-} __attribute__((packed, aligned(16))) embedded_firmware;
+} __attribute__((packed, aligned(16)));
 
 bool efs_is_valid(void);
 bool read_efs_spi_settings(uint8_t *mode, uint8_t *speed);

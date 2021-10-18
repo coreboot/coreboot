@@ -6,7 +6,7 @@
 #include <commonlib/region.h>
 #include <types.h>
 
-static struct _embedded_firmware *efs;
+static struct embedded_firmware *efs;
 
 bool efs_is_valid(void)
 {

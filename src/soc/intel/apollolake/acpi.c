@@ -88,7 +88,7 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 		gnvs->scdo = gpio_acpi_pin(cfg->sdcard_cd_gpio);
 	}
 
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
 		sgx_fill_gnvs(gnvs);
 
 	/* Fill in Above 4GB MMIO resource */

@@ -1,1 +1,1 @@
-ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX) += sgx.c
+ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_SGX_ENABLE) += sgx.c

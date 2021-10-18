@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE)
 Scope(\_SB)
 {
 	// Secure Enclave memory
@@ -54,3 +55,4 @@ Scope(\_SB)
 
 	} // end EPC Device
 } // End of Scope(\_SB)
+#endif

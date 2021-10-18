@@ -30,6 +30,4 @@
 #include <soc/intel/common/acpi/pci_osc.asl>
 
 /* SGX */
-#if CONFIG(SOC_INTEL_COMMON_BLOCK_SGX)
 #include <soc/intel/common/acpi/sgx.asl>
-#endif

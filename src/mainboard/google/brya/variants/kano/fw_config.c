@@ -8,8 +8,8 @@
 static const struct pad_config dmic_enable_pads[] = {
 	PAD_CFG_NF(GPP_R4, NONE, DEEP, NF3),	/* DMIC_CLK0_R */
 	PAD_CFG_NF(GPP_R5, NONE, DEEP, NF3),	/* DMIC_DATA0_R */
-	PAD_CFG_NF(GPP_R6, NONE, DEEP, NF3),	/* DMIC_CLK1_R */
-	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF3),	/* DMIC_DATA1_R */
+	PAD_CFG_NF(GPP_R6, NONE, DEEP, NF2),	/* DMIC_CLK1_R */
+	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF2),	/* DMIC_DATA1_R */
 };
 
 static const struct pad_config dmic_disable_pads[] = {

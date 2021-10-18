@@ -425,6 +425,29 @@ static int apic_wait_timeout(int total_delay, int delay_step)
 	return timeout;
 }
 
+/* Send Startup IPI to APs */
+static enum cb_err send_sipi_to_aps(int ap_count, atomic_t *num_aps, int sipi_vector)
+{
+	if (lapic_busy()) {
+		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
+		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
+			printk(BIOS_ERR, "timed out. Aborting.\n");
+			return CB_ERR;
+		}
+		printk(BIOS_DEBUG, "done.\n");
+	}
+
+	lapic_send_ipi(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_STARTUP | sipi_vector,
+		       0);
+	printk(BIOS_DEBUG, "Waiting for SIPI to complete...");
+	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
+		printk(BIOS_ERR, "timed out.\n");
+		return CB_ERR;
+	}
+	printk(BIOS_DEBUG, "done.\n");
+	return CB_SUCCESS;
+}
+
 static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 {
 	int sipi_vector;
@@ -466,23 +489,8 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 	}
 
 	/* Send 1st Startup IPI (SIPI) */
-	if (lapic_busy()) {
-		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
-		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
-			printk(BIOS_ERR, "timed out. Aborting.\n");
-			return -1;
-		}
-		printk(BIOS_DEBUG, "done.\n");
-	}
-
-	lapic_send_ipi(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_STARTUP | sipi_vector,
-		       0);
-	printk(BIOS_DEBUG, "Waiting for 1st SIPI to complete...");
-	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
-		printk(BIOS_ERR, "timed out.\n");
+	if (send_sipi_to_aps(ap_count, num_aps, sipi_vector) != CB_SUCCESS)
 		return -1;
-	}
-	printk(BIOS_DEBUG, "done.\n");
 
 	/* Wait for CPUs to check in up to 200 us. */
 	wait_for_aps(num_aps, ap_count, 200 /* us */, 15 /* us */);
@@ -491,23 +499,8 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 		return 0;
 
 	/* Send 2nd SIPI */
-	if (lapic_busy()) {
-		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
-		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
-			printk(BIOS_ERR, "timed out. Aborting.\n");
-			return -1;
-		}
-		printk(BIOS_DEBUG, "done.\n");
-	}
-
-	lapic_send_ipi(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_STARTUP | sipi_vector,
-		       0);
-	printk(BIOS_DEBUG, "Waiting for 2nd SIPI to complete...");
-	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
-		printk(BIOS_ERR, "timed out.\n");
+	if (send_sipi_to_aps(ap_count, num_aps, sipi_vector) != CB_SUCCESS)
 		return -1;
-	}
-	printk(BIOS_DEBUG, "done.\n");
 
 	/* Wait for CPUs to check in. */
 	if (wait_for_aps(num_aps, ap_count, 100000 /* 100 ms */, 50 /* us */)) {

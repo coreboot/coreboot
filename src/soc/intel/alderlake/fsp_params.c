@@ -712,7 +712,7 @@ static void fill_fsps_fivr_params(FSP_S_CONFIG *s_cfg,
 			config->ext_fivr_settings.vnn_supported_voltage_bitmap;
 
 	s_cfg->PchFivrExtVnnRailSxEnabledStates =
-			config->ext_fivr_settings.vnn_enable_bitmap;
+			config->ext_fivr_settings.vnn_sx_enable_bitmap;
 
 	/* Convert the voltages to increments of 2.5mv */
 	s_cfg->PchFivrExtV1p05RailVoltage =

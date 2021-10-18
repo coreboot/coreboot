@@ -3,5 +3,8 @@
 bootblock-y += gpio.c
 romstage-y += gpio.c
 ramstage-y += gpio.c
+bootblock-y += variant.c
+romstage-y += variant.c
+ramstage-y += variant.c
 
 subdirs-y += ./memory

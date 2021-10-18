@@ -5,6 +5,7 @@
 
 #include <amdblocks/gpio.h>
 #include <soc/pci_devs.h>
+#include <platform_descriptors.h>
 
 #define WLAN_DEVFN	PCIE_GPP_2_0_DEVFN
 #define SD_DEVFN	PCIE_GPP_2_1_DEVFN
@@ -47,5 +48,14 @@ void variant_fpmcu_reset(void);
 bool variant_has_fpmcu(void);
 
 bool variant_has_pcie_wwan(void);
+
+void variant_update_dxio_descriptors(fsp_dxio_descriptor *dxio_descriptors);
+
+enum dxio_port_id {
+	WLAN,
+	SD,
+	WWAN_NVME,
+	NVME
+};
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

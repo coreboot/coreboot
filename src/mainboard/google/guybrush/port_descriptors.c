@@ -7,13 +7,6 @@
 #include <soc/gpio.h>
 #include <types.h>
 
-enum dxio_port_id {
-	WLAN,
-	SD,
-	WWAN_NVME,
-	NVME
-};
-
 /* All PCIe Resets are handled in coreboot */
 static fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 	{ /* WLAN */
@@ -126,6 +119,10 @@ static const fsp_ddi_descriptor guybrush_czn_ddi_descriptors[] = {
 	}
 };
 
+void __weak variant_update_dxio_descriptors(fsp_dxio_descriptor *dxio_descriptors)
+{
+}
+
 void mainboard_get_dxio_ddi_descriptors(
 		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
 		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
@@ -137,6 +134,8 @@ void mainboard_get_dxio_ddi_descriptors(
 
 	if (variant_has_pcie_wwan())
 		guybrush_czn_dxio_descriptors[WWAN_NVME].gpio_group_id = GPIO_18;
+
+	variant_update_dxio_descriptors(guybrush_czn_dxio_descriptors);
 
 	*dxio_descs = guybrush_czn_dxio_descriptors;
 	*dxio_num = ARRAY_SIZE(guybrush_czn_dxio_descriptors);

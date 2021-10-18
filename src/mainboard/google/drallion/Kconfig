@@ -89,4 +89,7 @@ config VBOOT
 	select HAS_RECOVERY_MRC_CACHE
 	select VBOOT_LID_SWITCH
 
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/default.fmd" if !CHROMEOS
+
 endif # BOARD_GOOGLE_BASEBOARD_DRALLION

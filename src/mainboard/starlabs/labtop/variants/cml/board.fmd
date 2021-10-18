@@ -1,0 +1,14 @@
+#
+# Manually defined FMD in order to ensure that space is reserved for the EC
+# at the top of the BIOS region.
+#
+FLASH 16M {
+	BIOS@0x400000 0xC00000 {
+		EC@0x0 0x20000
+		RW_MRC_CACHE@0x20000 0x10000
+		SMMSTORE@0x30000 0x40000
+		CONSOLE@0x70000 0x20000
+		FMAP@0x90000 0x200
+		COREBOOT(CBFS)
+	}
+}

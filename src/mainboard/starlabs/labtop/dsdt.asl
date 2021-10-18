@@ -17,10 +17,16 @@ DefinitionBlock(
 
 	Device (\_SB.PCI0)
 	{
+#if CONFIG(SOC_INTEL_CANNONLAKE_BASE)
+		/* Comet Lake */
+		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
+		#include <soc/intel/cannonlake/acpi/southbridge.asl>
+#elif CONFIG(SOC_INTEL_TIGERLAKE)
 		/* Tiger Lake */
 		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 		#include <soc/intel/tigerlake/acpi/southbridge.asl>
 		#include <soc/intel/tigerlake/acpi/tcss.asl>
+#endif
 
 		/* PS/2 Keyboard */
 		#include <drivers/pc80/pc/ps2_controller.asl>

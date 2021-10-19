@@ -135,6 +135,9 @@ void mainboard_get_dxio_ddi_descriptors(
 	if (is_dev_enabled(DEV_PTR(gpp_bridge_2)))
 		guybrush_czn_dxio_descriptors[WWAN_NVME].engine_type = PCIE_ENGINE;
 
+	if (variant_has_pcie_wwan())
+		guybrush_czn_dxio_descriptors[WWAN_NVME].gpio_group_id = GPIO_18;
+
 	*dxio_descs = guybrush_czn_dxio_descriptors;
 	*dxio_num = ARRAY_SIZE(guybrush_czn_dxio_descriptors);
 

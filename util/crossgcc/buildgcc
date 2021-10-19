@@ -17,7 +17,6 @@
 cd "$(dirname "$0")" || exit 1
 
 CROSSGCC_VERSION="$(git log -n 1 --pretty=%cd --date=short .)_$(git log -n 1 --pretty=%h .)"
-CROSSGCC_COMMIT=$( git describe )
 
 # default settings
 PACKAGE=GCC
@@ -1252,7 +1251,7 @@ printf "Packages built ... ${green}ok${NC}\n"
 # for reproducibility
 PROGNAME=$(basename "$0")
 rm -f "$DESTDIR$TARGETDIR/share/$PROGNAME-*"
-cp "$PROGNAME" "$DESTDIR$TARGETDIR/share/$PROGNAME-$CROSSGCC_VERSION-$CROSSGCC_COMMIT"
+cp "$PROGNAME" "$DESTDIR$TARGETDIR/share/$PROGNAME-$CROSSGCC_VERSION"
 
 # Adding edk2 tools template
 mkdir -p "$DESTDIR$TARGETDIR/share/edk2config"

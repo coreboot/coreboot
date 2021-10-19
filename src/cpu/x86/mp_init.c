@@ -448,14 +448,14 @@ static enum cb_err send_sipi_to_aps(int ap_count, atomic_t *num_aps, int sipi_ve
 	return CB_SUCCESS;
 }
 
-static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
+static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 {
 	int sipi_vector;
 	/* Max location is 4KiB below 1MiB */
 	const int max_vector_loc = ((1 << 20) - (1 << 12)) >> 12;
 
 	if (ap_count == 0)
-		return 0;
+		return CB_SUCCESS;
 
 	/* The vector is sent as a 4k aligned address in one byte. */
 	sipi_vector = sipi_vector_location >> 12;
@@ -463,7 +463,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 	if (sipi_vector > max_vector_loc) {
 		printk(BIOS_CRIT, "SIPI vector too large! 0x%08x\n",
 		       sipi_vector);
-		return -1;
+		return CB_ERR;
 	}
 
 	printk(BIOS_DEBUG, "Attempting to start %d APs\n", ap_count);
@@ -475,7 +475,7 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...\n");
 		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
 			printk(BIOS_ERR, "timed out. Aborting.\n");
-			return -1;
+			return CB_ERR;
 		}
 		printk(BIOS_DEBUG, "done.\n");
 	}
@@ -490,26 +490,26 @@ static int start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 
 	/* Send 1st Startup IPI (SIPI) */
 	if (send_sipi_to_aps(ap_count, num_aps, sipi_vector) != CB_SUCCESS)
-		return -1;
+		return CB_ERR;
 
 	/* Wait for CPUs to check in up to 200 us. */
 	wait_for_aps(num_aps, ap_count, 200 /* us */, 15 /* us */);
 
 	if (CONFIG(X86_AMD_INIT_SIPI))
-		return 0;
+		return CB_SUCCESS;
 
 	/* Send 2nd SIPI */
 	if (send_sipi_to_aps(ap_count, num_aps, sipi_vector) != CB_SUCCESS)
-		return -1;
+		return CB_ERR;
 
 	/* Wait for CPUs to check in. */
 	if (wait_for_aps(num_aps, ap_count, 100000 /* 100 ms */, 50 /* us */)) {
 		printk(BIOS_ERR, "Not all APs checked in: %d/%d.\n",
 		       atomic_read(num_aps), ap_count);
-		return -1;
+		return CB_ERR;
 	}
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 static int bsp_do_flight_plan(struct mp_params *mp_params)
@@ -637,7 +637,7 @@ static int mp_init(struct bus *cpu_bus, struct mp_params *p)
 
 	/* Start the APs providing number of APs and the cpus_entered field. */
 	global_num_aps = p->num_cpus - 1;
-	if (start_aps(cpu_bus, global_num_aps, ap_count) < 0) {
+	if (start_aps(cpu_bus, global_num_aps, ap_count) != CB_SUCCESS) {
 		mdelay(1000);
 		printk(BIOS_DEBUG, "%d/%d eventually checked in?\n",
 		       atomic_read(ap_count), global_num_aps);

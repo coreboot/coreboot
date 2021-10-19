@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <string.h>
 #include <rmodule.h>
 #include <arch/cpu.h>
@@ -25,6 +23,7 @@
 #include <symbols.h>
 #include <timer.h>
 #include <thread.h>
+#include <types.h>
 
 #include <security/intel/stm/SmmStm.h>
 

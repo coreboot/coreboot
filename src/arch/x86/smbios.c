@@ -489,6 +489,7 @@ static int smbios_write_type1(unsigned long *current, int handle)
 	t->manufacturer = smbios_add_string(t->eos, smbios_system_manufacturer());
 	t->product_name = smbios_add_string(t->eos, smbios_system_product_name());
 	t->serial_number = smbios_add_string(t->eos, smbios_system_serial_number());
+	t->wakeup_type = smbios_system_wakeup_type();
 	t->sku = smbios_add_string(t->eos, smbios_system_sku());
 	t->version = smbios_add_string(t->eos, smbios_system_version());
 #ifdef CONFIG_MAINBOARD_FAMILY

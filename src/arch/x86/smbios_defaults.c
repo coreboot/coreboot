@@ -27,6 +27,11 @@ __weak void smbios_fill_dimm_asset_tag(const struct dimm_info *dimm, struct smbi
 	t->asset_tag = smbios_add_string(t->eos, buf);
 }
 
+__weak smbios_wakeup_type smbios_system_wakeup_type(void)
+{
+	return SMBIOS_WAKEUP_TYPE_RESERVED;
+}
+
 __weak const char *smbios_mainboard_bios_version(void)
 {
 	return NULL;

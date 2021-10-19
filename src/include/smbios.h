@@ -308,6 +308,18 @@ struct smbios_type0 {
 	u8 eos[2];
 } __packed;
 
+typedef enum {
+	SMBIOS_WAKEUP_TYPE_RESERVED = 0x00,
+	SMBIOS_WAKEUP_TYPE_OTHER = 0x01,
+	SMBIOS_WAKEUP_TYPE_UNKNOWN = 0x02,
+	SMBIOS_WAKEUP_TYPE_APM_TIMER = 0x03,
+	SMBIOS_WAKEUP_TYPE_MODEM_RING = 0x04,
+	SMBIOS_WAKEUP_TYPE_LAN_REMOTE = 0x05,
+	SMBIOS_WAKEUP_TYPE_POWER_SWITCH = 0x06,
+	SMBIOS_WAKEUP_TYPE_PCI_PME = 0x07,
+	SMBIOS_WAKEUP_TYPE_AC_POWER_RESTORED = 0x08,
+} smbios_wakeup_type;
+
 struct smbios_type1 {
 	struct smbios_header header;
 	u8 manufacturer;
@@ -962,6 +974,7 @@ void smbios_fill_dimm_asset_tag(const struct dimm_info *dimm,
 void smbios_fill_dimm_locator(const struct dimm_info *dimm,
 	struct smbios_type17 *t);
 
+smbios_wakeup_type smbios_system_wakeup_type(void);
 smbios_board_type smbios_mainboard_board_type(void);
 smbios_enclosure_type smbios_mainboard_enclosure_type(void);
 

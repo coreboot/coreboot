@@ -9,7 +9,7 @@
 
 #define DIMM_INFO_SERIAL_SIZE		4
 #define DIMM_INFO_PART_NUMBER_SIZE	33
-#define DIMM_INFO_TOTAL			8	/* Maximum num of dimm is 8 */
+#define DIMM_INFO_TOTAL			16
 
 /**
  * If this table is filled and put in CBMEM,

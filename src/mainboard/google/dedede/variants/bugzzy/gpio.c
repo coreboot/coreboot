@@ -2,6 +2,8 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
+#include <bootstate.h>
+#include <fw_config.h>
 
 /* Pad configuration in ramstage*/
 static const struct pad_config gpio_table[] = {
@@ -53,8 +55,22 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_H17, 0, PLTRST),
 };
 
+static const struct pad_config lte_disable_pads[] = {
+	PAD_NC(GPP_A10, NONE),
+	PAD_NC(GPP_D0, NONE),
+	PAD_NC(GPP_H17, NONE),
+};
+
 const struct pad_config *variant_override_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
 }
+
+static void fw_config_handle(void *unused)
+{
+	if (!fw_config_probe(FW_CONFIG(DB_PORTS, DB_PORTS_1C_1A_LTE)))
+		gpio_configure_pads(lte_disable_pads, ARRAY_SIZE(lte_disable_pads));
+}
+
+BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

@@ -9,6 +9,7 @@
 #include <device/mmio.h>
 #include <mipi/panel.h>
 #include <drivers/ti/sn65dsi86bridge/sn65dsi86bridge.h>
+#include <drivers/parade/ps8640/ps8640.h>
 #include <edid.h>
 #include <framebuffer_info.h>
 #include <soc/display/mipi_dsi.h>
@@ -24,7 +25,8 @@
 #include <soc/addressmap.h>
 
 #define BRIDGE_BUS QUPV3_0_SE2
-#define BRIDGE_CHIP 0x2d
+#define BRIDGE_SN65DSI86_CHIP	0x2d
+#define BRIDGE_PS8640_CHIP	0x08
 
 static struct usb_board_data usb0_board_data = {
 	.pll_bias_control_2 = 0x22,
@@ -71,7 +73,20 @@ static void load_qup_fw(void)
 	qupv3_se_fw_load_and_init(QUPV3_1_SE5, SE_PROTOCOL_I2C, MIXED);  /* Codec I2C */
 }
 
-static void power_on_bridge(void)
+static bool is_ps8640_bridge(void)
+{
+	/*
+	 * Because the board_id pins for the early Homestar builds were
+	 * misstuffed, after we enable tri-state board_id pins, a -rev1
+	 * board reports itself as -rev19, and a -rev2 board reports itself
+	 * as -rev23. We need to account for those quirks here.
+	 */
+	return (CONFIG(BOARD_GOOGLE_HOMESTAR) && board_id() >= 4 &&
+		board_id() != 19 && board_id() != 23) ||
+	       (CONFIG(BOARD_GOOGLE_LAZOR) && board_id() >= 9);
+}
+
+static void power_on_sn65dsi86_bridge(void)
 {
 	printk(BIOS_INFO, "%s: Bridge gpio init\n", __func__);
 
@@ -80,6 +95,26 @@ static void power_on_bridge(void)
 
 	/* PP3300 EDP power supply */
 	gpio_output(GPIO_EN_PP3300_DX_EDP, 1);
+}
+
+static void power_on_ps8640_bridge(void)
+{
+	printk(BIOS_INFO, "%s: Bridge gpio init\n", __func__);
+
+	/* PP3300 EDP panel power supply */
+	gpio_output(GPIO_EN_PP3300_DX_EDP, 1);
+
+	gpio_output(GPIO_PS8640_EDP_BRIDGE_3V3_ENABLE, 1);
+	gpio_output(GPIO_PS8640_EDP_BRIDGE_PD_L, 1);
+	gpio_output(GPIO_PS8640_EDP_BRIDGE_RST_L, 0);
+
+	/*
+	 * According to ps8640 app note v0.6, wait for 2ms ("t1") after
+	 * VDD33 goes high and then deassert RST.
+	 */
+	mdelay(2);
+
+	gpio_output(GPIO_PS8640_EDP_BRIDGE_RST_L, 1);
 }
 
 static void configure_mipi_panel(void)
@@ -154,14 +189,19 @@ static enum cb_err display_init(struct panel_serializable_data *panel)
 
 	if (mdss_dsi_config(&panel->edid, lanes, dsi_bpp))
 		return CB_ERR;
+
 	if (CONFIG(TROGDOR_HAS_MIPI_PANEL)) {
 		if (mdss_dsi_panel_initialize(panel->init))
 			return CB_ERR;
-	} else {
-		sn65dsi86_bridge_configure(BRIDGE_BUS, BRIDGE_CHIP, &panel->edid,
-					   lanes, dsi_bpp);
+	} else if (!is_ps8640_bridge()) {
+		/*
+		 * Parade ps8640 is auto-configured based on a pre-programmed
+		 * SPI-ROM. Only TI sn65dsi86 needs to be configured here.
+		 */
+		sn65dsi86_bridge_configure(BRIDGE_BUS, BRIDGE_SN65DSI86_CHIP,
+					   &panel->edid, lanes, dsi_bpp);
 		if (CONFIG(TROGDOR_HAS_BRIDGE_BACKLIGHT))
-			sn65dsi86_backlight_enable(BRIDGE_BUS, BRIDGE_CHIP);
+			sn65dsi86_backlight_enable(BRIDGE_BUS, BRIDGE_SN65DSI86_CHIP);
 	}
 
 	mdp_dsi_video_config(&panel->edid);
@@ -190,12 +230,18 @@ static void display_startup(void)
 		panel = get_mipi_panel(&orientation);
 		if (!panel)
 			return;
+	} else if (is_ps8640_bridge()) {
+		power_on_ps8640_bridge();
+		ps8640_init(BRIDGE_BUS, BRIDGE_PS8640_CHIP);
+		if (ps8640_get_edid(BRIDGE_BUS, BRIDGE_PS8640_CHIP, &panel->edid) < 0)
+			return;
 	} else {
 		enum dp_pll_clk_src ref_clk = SN65_SEL_19MHZ;
-		power_on_bridge();
+		power_on_sn65dsi86_bridge();
 		mdelay(250); /* Delay for the panel to be up */
-		sn65dsi86_bridge_init(BRIDGE_BUS, BRIDGE_CHIP, ref_clk);
-		if (sn65dsi86_bridge_read_edid(BRIDGE_BUS, BRIDGE_CHIP, &panel->edid) < 0)
+		sn65dsi86_bridge_init(BRIDGE_BUS, BRIDGE_SN65DSI86_CHIP, ref_clk);
+		if (sn65dsi86_bridge_read_edid(BRIDGE_BUS, BRIDGE_SN65DSI86_CHIP,
+					       &panel->edid) < 0)
 			return;
 	}
 

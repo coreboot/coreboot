@@ -486,19 +486,16 @@ static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_ap
 	if (!CONFIG(X86_AMD_INIT_SIPI)) {
 		printk(BIOS_DEBUG, "Waiting for 10ms after sending INIT.\n");
 		mdelay(10);
+
+		/* Send 1st Startup IPI (SIPI) */
+		if (send_sipi_to_aps(ap_count, num_aps, sipi_vector) != CB_SUCCESS)
+			return CB_ERR;
+
+		/* Wait for CPUs to check in up to 200 us. */
+		wait_for_aps(num_aps, ap_count, 200 /* us */, 15 /* us */);
 	}
 
-	/* Send 1st Startup IPI (SIPI) */
-	if (send_sipi_to_aps(ap_count, num_aps, sipi_vector) != CB_SUCCESS)
-		return CB_ERR;
-
-	/* Wait for CPUs to check in up to 200 us. */
-	wait_for_aps(num_aps, ap_count, 200 /* us */, 15 /* us */);
-
-	if (CONFIG(X86_AMD_INIT_SIPI))
-		return CB_SUCCESS;
-
-	/* Send 2nd SIPI */
+	/* Send final SIPI */
 	if (send_sipi_to_aps(ap_count, num_aps, sipi_vector) != CB_SUCCESS)
 		return CB_ERR;
 

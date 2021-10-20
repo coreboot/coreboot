@@ -395,22 +395,21 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 	return max_cpus;
 }
 
-/* Returns 1 for timeout. 0 on success. */
-static int apic_wait_timeout(int total_delay, int delay_step)
+static enum cb_err apic_wait_timeout(int total_delay, int delay_step)
 {
 	int total = 0;
-	int timeout = 0;
 
 	while (lapic_busy()) {
 		udelay(delay_step);
 		total += delay_step;
 		if (total >= total_delay) {
-			timeout = 1;
-			break;
+			/* LAPIC not ready before the timeout */
+			return CB_ERR;
 		}
 	}
 
-	return timeout;
+	/* LAPIC ready before the timeout */
+	return CB_SUCCESS;
 }
 
 /* Send Startup IPI to APs */
@@ -418,7 +417,7 @@ static enum cb_err send_sipi_to_aps(int ap_count, atomic_t *num_aps, int sipi_ve
 {
 	if (lapic_busy()) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...\n");
-		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
+		if (apic_wait_timeout(1000 /* 1 ms */, 50) != CB_SUCCESS) {
 			printk(BIOS_ERR, "timed out. Aborting.\n");
 			return CB_ERR;
 		}
@@ -428,7 +427,7 @@ static enum cb_err send_sipi_to_aps(int ap_count, atomic_t *num_aps, int sipi_ve
 	lapic_send_ipi(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_STARTUP | sipi_vector,
 		       0);
 	printk(BIOS_DEBUG, "Waiting for SIPI to complete...\n");
-	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
+	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */) != CB_SUCCESS) {
 		printk(BIOS_ERR, "timed out.\n");
 		return CB_ERR;
 	}
@@ -461,7 +460,7 @@ static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_ap
 
 	if (lapic_busy()) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...\n");
-		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
+		if (apic_wait_timeout(1000 /* 1 ms */, 50) != CB_SUCCESS) {
 			printk(BIOS_ERR, "timed out. Aborting.\n");
 			return CB_ERR;
 		}
@@ -645,7 +644,7 @@ void smm_initiate_relocation_parallel(void)
 {
 	if (lapic_busy()) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
-		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
+		if (apic_wait_timeout(1000 /* 1 ms */, 50) != CB_SUCCESS) {
 			printk(BIOS_DEBUG, "timed out. Aborting.\n");
 			return;
 		}
@@ -655,7 +654,7 @@ void smm_initiate_relocation_parallel(void)
 	lapic_send_ipi(LAPIC_INT_ASSERT | LAPIC_DM_SMI, lapicid());
 
 	if (lapic_busy()) {
-		if (apic_wait_timeout(1000 /* 1 ms */, 100 /* us */)) {
+		if (apic_wait_timeout(1000 /* 1 ms */, 100 /* us */) != CB_SUCCESS) {
 			printk(BIOS_DEBUG, "SMI Relocation timed out.\n");
 			return;
 		}

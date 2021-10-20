@@ -886,7 +886,7 @@ static void store_callback(struct mp_callback **slot, struct mp_callback *val)
 	);
 }
 
-static int run_ap_work(struct mp_callback *val, long expire_us)
+static enum cb_err run_ap_work(struct mp_callback *val, long expire_us)
 {
 	int i;
 	int cpus_accepted;
@@ -895,14 +895,14 @@ static int run_ap_work(struct mp_callback *val, long expire_us)
 
 	if (!CONFIG(PARALLEL_MP_AP_WORK)) {
 		printk(BIOS_ERR, "APs already parked. PARALLEL_MP_AP_WORK not selected.\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	cur_cpu = cpu_index();
 
 	if (cur_cpu < 0) {
 		printk(BIOS_ERR, "Invalid CPU index.\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	/* Signal to all the APs to run the func. */
@@ -928,12 +928,12 @@ static int run_ap_work(struct mp_callback *val, long expire_us)
 		}
 
 		if (cpus_accepted == global_num_aps)
-			return 0;
+			return CB_SUCCESS;
 	} while (expire_us <= 0 || !stopwatch_expired(&sw));
 
 	printk(BIOS_CRIT, "CRITICAL ERROR: AP call expired. %d/%d CPUs accepted.\n",
 		cpus_accepted, global_num_aps);
-	return -1;
+	return CB_ERR;
 }
 
 static void ap_wait_for_instruction(void)
@@ -979,7 +979,9 @@ int mp_run_on_aps(void (*func)(void *), void *arg, int logical_cpu_num,
 {
 	struct mp_callback lcb = { .func = func, .arg = arg,
 				.logical_cpu_number = logical_cpu_num};
-	return run_ap_work(&lcb, expire_us);
+	/* TODO: Remove this return value translation after changing the return type of
+	   mp_run_on_aps to enum cb_err */
+	return run_ap_work(&lcb, expire_us) == CB_SUCCESS ? 0 : -1;
 }
 
 int mp_run_on_all_aps(void (*func)(void *), void *arg, long expire_us, bool run_parallel)

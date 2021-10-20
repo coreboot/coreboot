@@ -320,7 +320,7 @@ Name (MCRS, ResourceTemplate()
 			0x00000000, 0x000f0000, 0x000fffff, 0x00000000,
 			0x00010000,,, FSEG)
 
-	// PCI Memory Region (Top of memory-CONFIG_MMCONF_BASE_ADDRESS)
+	// PCI Memory Region (Top of memory-CONFIG_ECAM_MMCONF_BASE_ADDRESS)
 	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 			Cacheable, ReadWrite,
 			0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -356,7 +356,7 @@ Method (_CRS, 0, Serialized)
 	}
 
 	PMIN = Local0
-	PMAX = CONFIG_MMCONF_BASE_ADDRESS - 1
+	PMAX = CONFIG_ECAM_MMCONF_BASE_ADDRESS - 1
 	PLEN = PMAX - PMIN + 1
 
 	Return (MCRS)

@@ -14,7 +14,7 @@
 
 static uint32_t encode_pciexbar_length(void)
 {
-	switch (CONFIG_MMCONF_BUS_NUMBER) {
+	switch (CONFIG_ECAM_MMCONF_BUS_NUMBER) {
 		case 256: return 0 << 1;
 		case 128: return 1 << 1;
 		case  64: return 2 << 1;
@@ -24,7 +24,7 @@ static uint32_t encode_pciexbar_length(void)
 
 uint32_t make_pciexbar(void)
 {
-	return CONFIG_MMCONF_BASE_ADDRESS | encode_pciexbar_length() | 1;
+	return CONFIG_ECAM_MMCONF_BASE_ADDRESS | encode_pciexbar_length() | 1;
 }
 
 /* Check that MCFG is active. If it's not, QEMU was started for machine PC */

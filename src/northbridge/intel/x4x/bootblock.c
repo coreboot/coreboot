@@ -10,7 +10,7 @@
 
 static uint32_t encode_pciexbar_length(void)
 {
-	switch (CONFIG_MMCONF_BUS_NUMBER) {
+	switch (CONFIG_ECAM_MMCONF_BUS_NUMBER) {
 		case 256: return 0 << 1;
 		case 128: return 1 << 1;
 		case  64: return 2 << 1;
@@ -23,6 +23,6 @@ void bootblock_early_northbridge_init(void)
 	/* Disable LaGrande Technology (LT) */
 	read32((void *)TPM_BASE_ADDRESS);
 
-	const uint32_t reg32 = CONFIG_MMCONF_BASE_ADDRESS | encode_pciexbar_length() | 1;
+	const uint32_t reg32 = CONFIG_ECAM_MMCONF_BASE_ADDRESS | encode_pciexbar_length() | 1;
 	pci_io_write_config32(HOST_BRIDGE, D0F0_PCIEXBAR_LO, reg32);
 }

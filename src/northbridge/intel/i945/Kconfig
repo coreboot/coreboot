@@ -35,10 +35,10 @@ config I945_LVDS
 	  for the LVDS port. A linear framebuffer is only supported for
 	  LVDS.
 
-config MMCONF_BASE_ADDRESS
+config ECAM_MMCONF_BASE_ADDRESS
 	default 0xf0000000
 
-config MMCONF_BUS_NUMBER
+config ECAM_MMCONF_BUS_NUMBER
 	int
 	default 64
 

@@ -137,7 +137,7 @@ static void configure_dpr(struct device *dev)
  * |     P2SB PCR cfg BAR     | (0xfd000000 - 0xfdffffff
  * |     BAR space            | [mem 0x90000000-0xfcffffff] available for PCI devices
  * +--------------------------+ 0x9000_0000
- * |PCIe MMCFG (relocatable)  | CONFIG_MMCONF_BASE_ADDRESS 64 or 256MB
+ * |PCIe MMCFG (relocatable)  | CONFIG_ECAM_MMCONF_BASE_ADDRESS 64 or 256MB
  * |                          | (0x80000000 - 0x8fffffff, 0x40000)
  * +--------------------------+ TOLM
  * |     MEseg (relocatable)  | 32, 64, 128 or 256 MB (0x78000000 - 0x7fffffff, 0x20000)

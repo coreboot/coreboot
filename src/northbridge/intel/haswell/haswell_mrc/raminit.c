@@ -349,7 +349,7 @@ void perform_raminit(const int s3resume)
 		.mchbar			= CONFIG_FIXED_MCHBAR_MMIO_BASE,
 		.dmibar			= CONFIG_FIXED_DMIBAR_MMIO_BASE,
 		.epbar			= CONFIG_FIXED_EPBAR_MMIO_BASE,
-		.pciexbar		= CONFIG_MMCONF_BASE_ADDRESS,
+		.pciexbar		= CONFIG_ECAM_MMCONF_BASE_ADDRESS,
 		.smbusbar		= CONFIG_FIXED_SMBUS_IO_BASE,
 		.hpet_address		= CONFIG_HPET_ADDRESS,
 		.rcba			= CONFIG_FIXED_RCBA_MMIO_BASE,

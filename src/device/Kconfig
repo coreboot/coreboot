@@ -499,13 +499,21 @@ config PCI
 
 if PCI
 
-config NO_MMCONF_SUPPORT
+config NO_ECAM_MMCONF_SUPPORT
 	bool
 	default n
+	help
+	  Disable the use of the Enhanced Configuration
+	  Access mechanism (ECAM) method for accessing PCI config
+	  address space.
 
-config MMCONF_SUPPORT
+config ECAM_MMCONF_SUPPORT
 	bool
-	default !NO_MMCONF_SUPPORT
+	default !NO_ECAM_MMCONF_SUPPORT
+	help
+	  Enable the use of the Enhanced Configuration
+	  Access mechanism (ECAM) method for accessing PCI config
+	  address space.
 
 config PCIX_PLUGIN_SUPPORT
 	bool
@@ -540,20 +548,20 @@ config PCIEXP_PLUGIN_SUPPORT
 	bool
 	default y
 
-config MMCONF_BASE_ADDRESS
+config ECAM_MMCONF_BASE_ADDRESS
 	hex
-	depends on MMCONF_SUPPORT
+	depends on ECAM_MMCONF_SUPPORT
 
-config MMCONF_BUS_NUMBER
+config ECAM_MMCONF_BUS_NUMBER
 	int
-	depends on MMCONF_SUPPORT
+	depends on ECAM_MMCONF_SUPPORT
 
-config MMCONF_LENGTH
+config ECAM_MMCONF_LENGTH
 	hex
-	depends on MMCONF_SUPPORT
-	default 0x04000000 if MMCONF_BUS_NUMBER = 64
-	default 0x08000000 if MMCONF_BUS_NUMBER = 128
-	default 0x10000000 if MMCONF_BUS_NUMBER = 256
+	depends on ECAM_MMCONF_SUPPORT
+	default 0x04000000 if ECAM_MMCONF_BUS_NUMBER = 64
+	default 0x08000000 if ECAM_MMCONF_BUS_NUMBER = 128
+	default 0x10000000 if ECAM_MMCONF_BUS_NUMBER = 256
 	default 0x0
 
 config PCI_ALLOW_BUS_MASTER
@@ -619,7 +627,7 @@ config PCIEXP_CLK_PM
 config PCIEXP_L1_SUB_STATE
 	prompt "Enable PCIe ASPM L1 SubState"
 	bool
-	depends on (MMCONF_SUPPORT || PCI_IO_CFG_EXT)
+	depends on (ECAM_MMCONF_SUPPORT || PCI_IO_CFG_EXT)
 	default n
 	help
 	  Detect and enable ASPM on PCIe links.
@@ -635,8 +643,8 @@ if PCIEXP_HOTPLUG
 
 config PCIEXP_HOTPLUG_BUSES
 	int "PCI Express Hotplug Buses"
-	default  8 if MMCONF_SUPPORT && MMCONF_BUS_NUMBER <=  64
-	default 16 if MMCONF_SUPPORT && MMCONF_BUS_NUMBER <= 128
+	default  8 if ECAM_MMCONF_SUPPORT && ECAM_MMCONF_BUS_NUMBER <=  64
+	default 16 if ECAM_MMCONF_SUPPORT && ECAM_MMCONF_BUS_NUMBER <= 128
 	default 32
 	help
 	  This is the number of buses allocated for hotplug PCI express

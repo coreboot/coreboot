@@ -74,8 +74,8 @@ static void sanity_check_pci_mmconf(void)
 		break;
 	}
 
-	assert(base == CONFIG_MMCONF_BASE_ADDRESS);
-	assert(length == CONFIG_MMCONF_BUS_NUMBER);
+	assert(base == CONFIG_ECAM_MMCONF_BASE_ADDRESS);
+	assert(length == CONFIG_ECAM_MMCONF_BUS_NUMBER);
 }
 
 void bootblock_soc_early_init(void)

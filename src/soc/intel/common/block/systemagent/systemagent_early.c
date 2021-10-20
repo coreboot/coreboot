@@ -29,7 +29,7 @@ void bootblock_systemagent_early_init(void)
 	pci_io_write_config32(SA_DEV_ROOT, PCIEXBAR + 4, reg);
 
 	/* Get PCI Express Region Length */
-	switch (CONFIG_MMCONF_BUS_NUMBER) {
+	switch (CONFIG_ECAM_MMCONF_BUS_NUMBER) {
 	case 256:
 		pciexbar_length = PCIEXBAR_LENGTH_256MB;
 		break;
@@ -42,7 +42,7 @@ void bootblock_systemagent_early_init(void)
 	default:
 		dead_code();
 	}
-	reg = CONFIG_MMCONF_BASE_ADDRESS | (pciexbar_length << 1)
+	reg = CONFIG_ECAM_MMCONF_BASE_ADDRESS | (pciexbar_length << 1)
 				| PCIEXBAR_PCIEXBAREN;
 	pci_io_write_config32(SA_DEV_ROOT, PCIEXBAR, reg);
 

@@ -231,7 +231,7 @@ static void northbridge_fill_pei_data(struct pei_data *pei_data)
 	pei_data->mchbar       = CONFIG_FIXED_MCHBAR_MMIO_BASE;
 	pei_data->dmibar       = CONFIG_FIXED_DMIBAR_MMIO_BASE;
 	pei_data->epbar        = CONFIG_FIXED_EPBAR_MMIO_BASE;
-	pei_data->pciexbar     = CONFIG_MMCONF_BASE_ADDRESS;
+	pei_data->pciexbar     = CONFIG_ECAM_MMCONF_BASE_ADDRESS;
 	pei_data->hpet_address = CONFIG_HPET_ADDRESS;
 	pei_data->thermalbase  = 0xfed08000;
 	pei_data->system_type  = !(get_platform_type() == PLATFORM_MOBILE);

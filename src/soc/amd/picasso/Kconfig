@@ -200,10 +200,10 @@ config RAMBASE
 	hex
 	default 0x10000000
 
-config MMCONF_BASE_ADDRESS
+config ECAM_MMCONF_BASE_ADDRESS
 	default 0xF8000000
 
-config MMCONF_BUS_NUMBER
+config ECAM_MMCONF_BUS_NUMBER
 	default 64
 
 config VERSTAGE_ADDR

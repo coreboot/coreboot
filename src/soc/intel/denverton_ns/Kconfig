@@ -44,10 +44,10 @@ config CPU_SPECIFIC_OPTIONS
 	select FSP_T_XIP if FSP_CAR
 	select FSP_M_XIP
 
-config MMCONF_BASE_ADDRESS
+config ECAM_MMCONF_BASE_ADDRESS
 	default 0xe0000000
 
-config MMCONF_BUS_NUMBER
+config ECAM_MMCONF_BUS_NUMBER
 	int
 	default 256
 

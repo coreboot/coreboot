@@ -25,17 +25,17 @@ union pci_bank {
 	uint32_t reg32[4096 / sizeof(uint32_t)];
 };
 
-#if CONFIG(MMCONF_SUPPORT)
+#if CONFIG(ECAM_MMCONF_SUPPORT)
 
-#if CONFIG_MMCONF_BASE_ADDRESS == 0
-#error "CONFIG_MMCONF_BASE_ADDRESS undefined!"
+#if CONFIG_ECAM_MMCONF_BASE_ADDRESS == 0
+#error "CONFIG_ECAM_MMCONF_BASE_ADDRESS undefined!"
 #endif
 
-#if CONFIG_MMCONF_BUS_NUMBER * MiB != CONFIG_MMCONF_LENGTH
-#error "CONFIG_MMCONF_LENGTH does not correspond with CONFIG_MMCONF_BUS_NUMBER!"
+#if CONFIG_ECAM_MMCONF_BUS_NUMBER * MiB != CONFIG_ECAM_MMCONF_LENGTH
+#error "CONFIG_ECAM_MMCONF_LENGTH does not correspond with CONFIG_ECAM_MMCONF_BUS_NUMBER!"
 #endif
 
-/* By not assigning this to CONFIG_MMCONF_BASE_ADDRESS here we
+/* By not assigning this to CONFIG_ECAM_MMCONF_BASE_ADDRESS here we
    prevent some sub-optimal constant folding. */
 extern u8 *const pci_mmconf;
 

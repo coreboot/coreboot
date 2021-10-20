@@ -89,7 +89,7 @@ static void setup_mmconfig(void)
 	reg = 0;
 	/* Clear the extended register. */
 	pci_io_write_config32(IOSF_PCI_DEV, MCRX_REG, reg);
-	reg = CONFIG_MMCONF_BASE_ADDRESS | 1;
+	reg = CONFIG_ECAM_MMCONF_BASE_ADDRESS | 1;
 	pci_io_write_config32(IOSF_PCI_DEV, MDR_REG, reg);
 	reg = IOSF_OPCODE(IOSF_OP_WRITE_BUNIT) | IOSF_PORT(IOSF_PORT_BUNIT) |
 	      IOSF_REG(BUNIT_MMCONF_REG) | IOSF_BYTE_EN;

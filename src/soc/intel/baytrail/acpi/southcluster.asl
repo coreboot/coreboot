@@ -144,7 +144,7 @@ Name (MCRS, ResourceTemplate()
 			0x00000000, 0x00000000, 0x00000000, 0x00000000,
 			0x00000000,,, LMEM)
 
-	/* PCI Memory Region (Top of memory-CONFIG_MMCONF_BASE_ADDRESS) */
+	/* PCI Memory Region (Top of memory-CONFIG_ECAM_MMCONF_BASE_ADDRESS) */
 	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 			Cacheable, ReadWrite,
 			0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -184,7 +184,7 @@ Method (_CRS, 0, Serialized)
 
 	/* TOLM is BMBOUND accessible from IOSF so is saved in NVS */
 	Store (\TOLM, PMIN)
-	Store (Subtract(CONFIG_MMCONF_BASE_ADDRESS, 1), PMAX)
+	Store (Subtract(CONFIG_ECAM_MMCONF_BASE_ADDRESS, 1), PMAX)
 	Add (Subtract (PMAX, PMIN), 1, PLEN)
 
 	Return (MCRS)
@@ -198,7 +198,7 @@ Device (PDRC)
 
 	Name (PDRS, ResourceTemplate() {
 		Memory32Fixed(ReadWrite, ABORT_BASE_ADDRESS, ABORT_BASE_SIZE)
-		Memory32Fixed(ReadWrite, CONFIG_MMCONF_BASE_ADDRESS, CONFIG_MMCONF_LENGTH)
+		Memory32Fixed(ReadWrite, CONFIG_ECAM_MMCONF_BASE_ADDRESS, CONFIG_ECAM_MMCONF_LENGTH)
 		Memory32Fixed(ReadWrite, PMC_BASE_ADDRESS, PMC_BASE_SIZE)
 		Memory32Fixed(ReadWrite, ILB_BASE_ADDRESS, ILB_BASE_SIZE)
 		Memory32Fixed(ReadWrite, SPI_BASE_ADDRESS, SPI_BASE_SIZE)
@@ -247,7 +247,7 @@ Device (IOSF)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^RBAR._BAS, RBAS)
-		Store (Add (CONFIG_MMCONF_BASE_ADDRESS, 0xD0), RBAS)
+		Store (Add (CONFIG_ECAM_MMCONF_BASE_ADDRESS, 0xD0), RBAS)
 		Return (^RBUF)
 	}
 }

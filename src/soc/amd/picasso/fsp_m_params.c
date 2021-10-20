@@ -19,7 +19,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	mupd->FspmArchUpd.NvsBufferPtr = (uintptr_t)soc_fill_apob_cache();
 
-	mcfg->pci_express_base_addr = CONFIG_MMCONF_BASE_ADDRESS;
+	mcfg->pci_express_base_addr = CONFIG_ECAM_MMCONF_BASE_ADDRESS;
 	mcfg->tseg_size = CONFIG_SMM_TSEG_SIZE;
 	mcfg->serial_port_base = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 	mcfg->serial_port_use_mmio = CONFIG(DRIVERS_UART_8250MEM);

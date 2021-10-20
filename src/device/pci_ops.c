@@ -7,7 +7,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_type.h>
 
-u8 *const pci_mmconf = (void *)(uintptr_t)CONFIG_MMCONF_BASE_ADDRESS;
+u8 *const pci_mmconf = (void *)(uintptr_t)CONFIG_ECAM_MMCONF_BASE_ADDRESS;
 
 /**
  * Given a device, a capability type, and a last position, return the next

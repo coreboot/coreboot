@@ -857,8 +857,8 @@ void fixed_io_resource(struct device *dev, unsigned long index,
 void mmconf_resource(struct device *dev, unsigned long index)
 {
 	struct resource *resource = new_resource(dev, index);
-	resource->base = CONFIG_MMCONF_BASE_ADDRESS;
-	resource->size = CONFIG_MMCONF_LENGTH;
+	resource->base = CONFIG_ECAM_MMCONF_BASE_ADDRESS;
+	resource->size = CONFIG_ECAM_MMCONF_LENGTH;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 

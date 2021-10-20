@@ -83,12 +83,12 @@ config VGA_BIOS_ID
 	string
 	default "8086,0106"
 
-config MMCONF_BASE_ADDRESS
+config ECAM_MMCONF_BASE_ADDRESS
 	default 0xf0000000
 	help
 	  The MRC blob requires it to be at 0xf0000000.
 
-config MMCONF_BUS_NUMBER
+config ECAM_MMCONF_BUS_NUMBER
 	int
 	default 64
 

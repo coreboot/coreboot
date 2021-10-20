@@ -103,9 +103,9 @@ void cache_as_ram_stage_main(FSP_INFO_HEADER *fih)
 	timestamp_add_now(TS_START_ROMSTAGE);
 
 	/* Display parameters */
-	if (!CONFIG(NO_MMCONF_SUPPORT))
-		printk(BIOS_SPEW, "CONFIG_MMCONF_BASE_ADDRESS: 0x%08x\n",
-			CONFIG_MMCONF_BASE_ADDRESS);
+	if (!CONFIG(NO_ECAM_MMCONF_SUPPORT))
+		printk(BIOS_SPEW, "CONFIG_ECAM_MMCONF_BASE_ADDRESS: 0x%08x\n",
+			CONFIG_ECAM_MMCONF_BASE_ADDRESS);
 	printk(BIOS_INFO, "Using FSP 1.1\n");
 
 	/* Display FSP banner */

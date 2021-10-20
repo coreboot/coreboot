@@ -125,7 +125,7 @@ Name (MCRS, ResourceTemplate()
 			0x00000000, 0x000f0000, 0x000fffff, 0x00000000,
 			0x00010000,,, FSEG)
 
-	// PCI Memory Region (Top of memory-CONFIG_MMCONF_BASE_ADDRESS)
+	// PCI Memory Region (Top of memory-CONFIG_ECAM_MMCONF_BASE_ADDRESS)
 	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 			Cacheable, ReadWrite,
 			0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -161,7 +161,7 @@ Method (_CRS, 0, Serialized)
 	}
 
 	PMIN = Local0
-	PMAX = CONFIG_MMCONF_BASE_ADDRESS - 1
+	PMAX = CONFIG_ECAM_MMCONF_BASE_ADDRESS - 1
 	PLEN = (PMAX - PMIN) + 1
 
 	Return (MCRS)
@@ -178,7 +178,7 @@ Device (PDRC)
 		Memory32Fixed (ReadWrite, CONFIG_FIXED_MCHBAR_MMIO_BASE, MCH_BASE_SIZE)
 		Memory32Fixed (ReadWrite, CONFIG_FIXED_DMIBAR_MMIO_BASE, DMI_BASE_SIZE)
 		Memory32Fixed (ReadWrite, CONFIG_FIXED_EPBAR_MMIO_BASE, EP_BASE_SIZE)
-		Memory32Fixed (ReadWrite, CONFIG_MMCONF_BASE_ADDRESS, CONFIG_MMCONF_LENGTH)
+		Memory32Fixed (ReadWrite, CONFIG_ECAM_MMCONF_BASE_ADDRESS, CONFIG_ECAM_MMCONF_LENGTH)
 		Memory32Fixed (ReadWrite, 0xfed20000, 0x00020000) // TXT
 		Memory32Fixed (ReadWrite, 0xfed40000, 0x00005000) // TPM
 		Memory32Fixed (ReadWrite, 0xfed45000, 0x0004b000) // Misc ICH

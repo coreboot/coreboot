@@ -120,10 +120,10 @@ config BOTTOMIO_POSITION
 	  option is useful when PCI peripherals requesting large address
 	  ranges are present.
 
-config MMCONF_BASE_ADDRESS
+config ECAM_MMCONF_BASE_ADDRESS
 	default 0xF8000000
 
-config MMCONF_BUS_NUMBER
+config ECAM_MMCONF_BUS_NUMBER
 	default 64
 
 config VGA_BIOS_ID

@@ -98,8 +98,8 @@ MSR_TABLE_ENTRY msr_table[] = {
 static void fixup_pciex_resource(void)
 {
 	// Find max bus number and PCIEX length
-	rsc_pcie_mmio.length = CONFIG_MMCONF_LENGTH; // 0x10000000;// 256 MB
-	rsc_pcie_mmio.base = CONFIG_MMCONF_BASE_ADDRESS;
+	rsc_pcie_mmio.length = CONFIG_ECAM_MMCONF_LENGTH; // 0x10000000;// 256 MB
+	rsc_pcie_mmio.base = CONFIG_ECAM_MMCONF_BASE_ADDRESS;
 }
 
 /*

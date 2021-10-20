@@ -16,7 +16,7 @@ config SOC_SPECIFIC_OPTIONS
 	def_bool y
 	select ARCH_X86
 	select NO_MONOTONIC_TIMER
-	select NO_MMCONF_SUPPORT
+	select NO_ECAM_MMCONF_SUPPORT
 	select UNKNOWN_TSC_RATE
 
 config DCACHE_BSP_STACK_SIZE		# required by arch/x86/car.ld

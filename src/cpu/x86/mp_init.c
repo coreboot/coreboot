@@ -495,10 +495,10 @@ static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_ap
 	return CB_SUCCESS;
 }
 
-static int bsp_do_flight_plan(struct mp_params *mp_params)
+static enum cb_err bsp_do_flight_plan(struct mp_params *mp_params)
 {
 	int i;
-	int ret = 0;
+	enum cb_err ret = CB_SUCCESS;
 	/*
 	 * Set time out for flight plan to a huge minimum value (>=1 second).
 	 * CPUs with many APs may take longer if there is contention for
@@ -521,7 +521,7 @@ static int bsp_do_flight_plan(struct mp_params *mp_params)
 			if (wait_for_aps(&rec->cpus_entered, num_aps,
 					 timeout_us, step_us) != CB_SUCCESS) {
 				printk(BIOS_ERR, "MP record %d timeout.\n", i);
-				ret = -1;
+				ret = CB_ERR;
 			}
 		}
 
@@ -580,10 +580,8 @@ static void init_bsp(struct bus *cpu_bus)
  *    Therefore, one cannot rely on this property or the order of devices in
  *    the device tree unless the chipset or mainboard know the APIC ids
  *    a priori.
- *
- * mp_init() returns < 0 on error, 0 on success.
  */
-static int mp_init(struct bus *cpu_bus, struct mp_params *p)
+static enum cb_err mp_init(struct bus *cpu_bus, struct mp_params *p)
 {
 	int num_cpus;
 	atomic_t *ap_count;
@@ -592,7 +590,7 @@ static int mp_init(struct bus *cpu_bus, struct mp_params *p)
 
 	if (p == NULL || p->flight_plan == NULL || p->num_records < 1) {
 		printk(BIOS_CRIT, "Invalid MP parameters\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	/* Default to currently running CPU. */
@@ -602,7 +600,7 @@ static int mp_init(struct bus *cpu_bus, struct mp_params *p)
 		printk(BIOS_CRIT,
 		       "ERROR: More cpus requested (%d) than supported (%d).\n",
 		       p->num_cpus, num_cpus);
-		return -1;
+		return CB_ERR;
 	}
 
 	/* Copy needed parameters so that APs have a reference to the plan. */
@@ -612,7 +610,7 @@ static int mp_init(struct bus *cpu_bus, struct mp_params *p)
 	/* Load the SIPI vector. */
 	ap_count = load_sipi_vector(p);
 	if (ap_count == NULL)
-		return -1;
+		return CB_ERR;
 
 	/* Make sure SIPI data hits RAM so the APs that come up will see
 	 * the startup code even if the caches are disabled.  */
@@ -624,7 +622,7 @@ static int mp_init(struct bus *cpu_bus, struct mp_params *p)
 		mdelay(1000);
 		printk(BIOS_DEBUG, "%d/%d eventually checked in?\n",
 		       atomic_read(ap_count), global_num_aps);
-		return -1;
+		return CB_ERR;
 	}
 
 	/* Walk the flight plan for the BSP. */
@@ -1133,7 +1131,9 @@ int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
 	/* Perform backup of default SMM area. */
 	default_smm_area = backup_default_smm_area();
 
-	ret = mp_init(cpu_bus, &mp_params);
+	/* TODO: Remove this return value translation after changing the return type of
+	   mp_init_with_smm to enum cb_err */
+	ret = mp_init(cpu_bus, &mp_params) == CB_SUCCESS ? 0 : -1;
 
 	restore_default_smm_area(default_smm_area);
 

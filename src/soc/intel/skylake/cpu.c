@@ -163,7 +163,7 @@ static void fc_lock_configure(void *unused)
 
 static void post_mp_init(void)
 {
-	int ret = 0;
+	bool failure = false;
 
 	/* Set Max Ratio */
 	cpu_set_max_ratio();
@@ -178,14 +178,17 @@ static void post_mp_init(void)
 	if (CONFIG(HAVE_SMI_HANDLER))
 		smm_lock();
 
-	ret |= mp_run_on_all_cpus(vmx_configure, NULL);
+	if (mp_run_on_all_cpus(vmx_configure, NULL))
+		failure = true;
 
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
-		ret |= mp_run_on_all_cpus(sgx_configure, NULL);
+		if (mp_run_on_all_cpus(sgx_configure, NULL))
+			failure = true;
 
-	ret |= mp_run_on_all_cpus(fc_lock_configure, NULL);
+	if (mp_run_on_all_cpus(fc_lock_configure, NULL))
+		failure = true;
 
-	if (ret)
+	if (failure)
 		printk(BIOS_CRIT, "CRITICAL ERROR: MP post init failed\n");
 }
 

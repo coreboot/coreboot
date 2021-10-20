@@ -1096,9 +1096,9 @@ static void fill_mp_state(struct mp_state *state, const struct mp_ops *ops)
 		mp_state.ops.per_cpu_smm_trigger = smm_initiate_relocation;
 }
 
-int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
+enum cb_err mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
 {
-	int ret;
+	enum cb_err ret;
 	void *default_smm_area;
 	struct mp_params mp_params;
 
@@ -1111,7 +1111,7 @@ int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
 
 	if (mp_state.cpu_count <= 0) {
 		printk(BIOS_ERR, "Invalid cpu_count: %d\n", mp_state.cpu_count);
-		return -1;
+		return CB_ERR;
 	}
 
 	/* Sanity check SMM state. */
@@ -1133,14 +1133,12 @@ int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
 	/* Perform backup of default SMM area. */
 	default_smm_area = backup_default_smm_area();
 
-	/* TODO: Remove this return value translation after changing the return type of
-	   mp_init_with_smm to enum cb_err */
-	ret = mp_init(cpu_bus, &mp_params) == CB_SUCCESS ? 0 : -1;
+	ret = mp_init(cpu_bus, &mp_params);
 
 	restore_default_smm_area(default_smm_area);
 
 	/* Signal callback on success if it's provided. */
-	if (ret == 0 && mp_state.ops.post_mp_init != NULL)
+	if (ret == CB_SUCCESS && mp_state.ops.post_mp_init != NULL)
 		mp_state.ops.post_mp_init();
 
 	return ret;

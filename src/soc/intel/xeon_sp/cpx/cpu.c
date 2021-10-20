@@ -24,6 +24,7 @@
 #include <soc/smmrelocate.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
+#include <types.h>
 
 #include "chip.h"
 
@@ -211,7 +212,7 @@ void cpx_init_cpus(struct device *dev)
 
 	intel_microcode_load_unlocked(microcode_patch);
 
-	if (mp_init_with_smm(dev->link_list, &mp_ops) < 0)
+	if (mp_init_with_smm(dev->link_list, &mp_ops) != CB_SUCCESS)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 
 	/*

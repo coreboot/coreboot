@@ -22,6 +22,7 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
+#include <types.h>
 
 #include "chip.h"
 
@@ -211,7 +212,7 @@ static const struct mp_ops mp_ops = {
 
 void soc_init_cpus(struct bus *cpu_bus)
 {
-	if (mp_init_with_smm(cpu_bus, &mp_ops))
+	if (mp_init_with_smm(cpu_bus, &mp_ops) != CB_SUCCESS)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 
 	/* Thermal throttle activation offset */

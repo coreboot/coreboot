@@ -19,6 +19,7 @@
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/common/common.h>
 #include <smp/node.h>
+#include <types.h>
 
 static void configure_thermal_target(void)
 {
@@ -174,7 +175,7 @@ static const struct mp_ops mp_ops = {
 
 void mp_init_cpus(struct bus *cpu_bus)
 {
-	if (mp_init_with_smm(cpu_bus, &mp_ops))
+	if (mp_init_with_smm(cpu_bus, &mp_ops) != CB_SUCCESS)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 }
 

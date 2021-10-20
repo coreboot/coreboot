@@ -17,6 +17,7 @@
 #include <soc/msr.h>
 #include <soc/pattrs.h>
 #include <soc/ramstage.h>
+#include <types.h>
 
 /* Core level MSRs */
 static const struct reg_script core_msr_script[] = {
@@ -196,6 +197,6 @@ void baytrail_init_cpus(struct device *dev)
 {
 	struct bus *cpu_bus = dev->link_list;
 
-	if (mp_init_with_smm(cpu_bus, &mp_ops))
+	if (mp_init_with_smm(cpu_bus, &mp_ops) != CB_SUCCESS)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 }

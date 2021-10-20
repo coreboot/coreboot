@@ -28,6 +28,7 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
+#include <types.h>
 
 static const struct reg_script core_msr_script[] = {
 #if !CONFIG(SOC_INTEL_GEMINILAKE)
@@ -250,7 +251,7 @@ static const struct mp_ops mp_ops = {
 void soc_init_cpus(struct bus *cpu_bus)
 {
 	/* Clear for take-off */
-	if (mp_init_with_smm(cpu_bus, &mp_ops))
+	if (mp_init_with_smm(cpu_bus, &mp_ops) != CB_SUCCESS)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 }
 

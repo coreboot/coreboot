@@ -19,6 +19,7 @@
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/common/common.h>
 #include <smbios.h>
+#include <types.h>
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
@@ -430,7 +431,7 @@ static const struct mp_ops mp_ops = {
 
 void mp_init_cpus(struct bus *cpu_bus)
 {
-	if (mp_init_with_smm(cpu_bus, &mp_ops))
+	if (mp_init_with_smm(cpu_bus, &mp_ops) != CB_SUCCESS)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 }
 

@@ -20,6 +20,7 @@
 #include <soc/iomap.h>
 #include <soc/smm.h>
 #include <soc/soc_util.h>
+#include <types.h>
 
 static struct smm_relocation_attrs relo_attrs;
 
@@ -296,6 +297,6 @@ void denverton_init_cpus(struct device *dev)
 		add_more_links(dev, 1);
 
 	/* Clear for take-off */
-	if (mp_init_with_smm(dev->link_list, &mp_ops) < 0)
+	if (mp_init_with_smm(dev->link_list, &mp_ops) != CB_SUCCESS)
 		printk(BIOS_ERR, "MP initialization failure.\n");
 }

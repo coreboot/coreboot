@@ -5,8 +5,7 @@
 
 #include <arch/smp/atomic.h>
 #include <cpu/x86/smm.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <types.h>
 
 #define CACHELINE_SIZE 64
 
@@ -86,10 +85,9 @@ struct mp_ops {
 };
 
 /*
- * mp_init_with_smm() returns < 0 on failure and 0 on success. The mp_ops
- * argument is used to drive the multiprocess initialization. Unless otherwise
- * stated each callback is called on the BSP only. The sequence of operations
- * is the following:
+ * The mp_ops argument is used to drive the multiprocess initialization. Unless
+ * otherwise stated each callback is called on the BSP only. The sequence of
+ * operations is the following:
  * 1. pre_mp_init()
  * 2. get_cpu_count()
  * 3. get_smm_info()
@@ -103,7 +101,7 @@ struct mp_ops {
  * 10. mp_initialize_cpu() for each cpu
  * 11. post_mp_init()
  */
-int mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops);
+enum cb_err mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops);
 
 enum {
 	/* Function runs on all cores (both BSP and APs) */

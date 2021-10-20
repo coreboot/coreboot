@@ -761,7 +761,7 @@ static void adjust_smm_apic_id_map(struct smm_loader_params *smm_params)
 		stub_params->apic_id_to_cpu[i] = cpu_get_apic_id(i);
 }
 
-static int install_relocation_handler(int num_cpus, size_t real_save_state_size,
+static enum cb_err install_relocation_handler(int num_cpus, size_t real_save_state_size,
 				      size_t save_state_size, uintptr_t perm_smbase)
 {
 	struct smm_loader_params smm_params = {
@@ -779,13 +779,13 @@ static int install_relocation_handler(int num_cpus, size_t real_save_state_size,
 
 	if (smm_setup_relocation_handler((void *)perm_smbase, &smm_params)) {
 		printk(BIOS_ERR, "%s: smm setup failed\n", __func__);
-		return -1;
+		return CB_ERR;
 	}
 	adjust_smm_apic_id_map(&smm_params);
 
 	mp_state.reloc_start32_offset = smm_params.stub_params->start32_offset;
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 static int install_permanent_handler(int num_cpus, uintptr_t smbase,
@@ -833,7 +833,8 @@ static void load_smm_handlers(void)
 
 	/* Install handlers. */
 	if (install_relocation_handler(mp_state.cpu_count, real_save_state_size,
-				       smm_save_state_size, mp_state.perm_smbase) < 0) {
+				       smm_save_state_size, mp_state.perm_smbase) !=
+										CB_SUCCESS) {
 		printk(BIOS_ERR, "Unable to install SMM relocation handler.\n");
 		smm_disable();
 	}

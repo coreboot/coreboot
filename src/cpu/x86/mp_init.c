@@ -788,7 +788,7 @@ static enum cb_err install_relocation_handler(int num_cpus, size_t real_save_sta
 	return CB_SUCCESS;
 }
 
-static int install_permanent_handler(int num_cpus, uintptr_t smbase,
+static enum cb_err install_permanent_handler(int num_cpus, uintptr_t smbase,
 				     size_t smsize, size_t real_save_state_size,
 				     size_t save_state_size)
 {
@@ -814,11 +814,11 @@ static int install_permanent_handler(int num_cpus, uintptr_t smbase,
 	printk(BIOS_DEBUG, "Installing permanent SMM handler to 0x%08lx\n", smbase);
 
 	if (smm_load_module((void *)smbase, smsize, &smm_params))
-		return -1;
+		return CB_ERR;
 
 	adjust_smm_apic_id_map(&smm_params);
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 /* Load SMM handlers as part of MP flight record. */
@@ -841,7 +841,7 @@ static void load_smm_handlers(void)
 
 	if (install_permanent_handler(mp_state.cpu_count, mp_state.perm_smbase,
 				      mp_state.perm_smsize, real_save_state_size,
-				      smm_save_state_size) < 0) {
+				      smm_save_state_size) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Unable to install SMM permanent handler.\n");
 		smm_disable();
 	}

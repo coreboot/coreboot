@@ -140,22 +140,21 @@ static inline void release_barrier(atomic_t *b)
 	atomic_set(b, 1);
 }
 
-/* Returns 1 if timeout waiting for APs. 0 if target aps found. */
-static int wait_for_aps(atomic_t *val, int target, int total_delay,
+static enum cb_err wait_for_aps(atomic_t *val, int target, int total_delay,
 			int delay_step)
 {
-	int timeout = 0;
 	int delayed = 0;
 	while (atomic_read(val) != target) {
 		udelay(delay_step);
 		delayed += delay_step;
 		if (delayed >= total_delay) {
-			timeout = 1;
-			break;
+			/* Not all APs ready before timeout */
+			return CB_ERR;
 		}
 	}
 
-	return timeout;
+	/* APs ready before timeout */
+	return CB_SUCCESS;
 }
 
 static void ap_do_flight_plan(void)
@@ -487,7 +486,7 @@ static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_ap
 		return CB_ERR;
 
 	/* Wait for CPUs to check in. */
-	if (wait_for_aps(num_aps, ap_count, 100000 /* 100 ms */, 50 /* us */)) {
+	if (wait_for_aps(num_aps, ap_count, 100000 /* 100 ms */, 50 /* us */) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Not all APs checked in: %d/%d.\n",
 		       atomic_read(num_aps), ap_count);
 		return CB_ERR;
@@ -520,7 +519,7 @@ static int bsp_do_flight_plan(struct mp_params *mp_params)
 		if (atomic_read(&rec->barrier) == 0) {
 			/* Wait for the APs to check in. */
 			if (wait_for_aps(&rec->cpus_entered, num_aps,
-					 timeout_us, step_us)) {
+					 timeout_us, step_us) != CB_SUCCESS) {
 				printk(BIOS_ERR, "MP record %d timeout.\n", i);
 				ret = -1;
 			}

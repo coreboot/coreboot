@@ -231,8 +231,8 @@ void xeon_sp_init_cpus(struct device *dev)
 	config_reset_cpl3_csrs();
 
 	/* calls src/cpu/x86/mp_init.c */
-	if (mp_init_with_smm(dev->link_list, &mp_ops) != CB_SUCCESS)
-		printk(BIOS_ERR, "MP initialization failure.\n");
+	/* TODO: Handle mp_init_with_smm failure? */
+	mp_init_with_smm(dev->link_list, &mp_ops);
 
 	/* update numa domain for all cpu devices */
 	xeonsp_init_cpu_config();

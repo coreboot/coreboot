@@ -297,6 +297,6 @@ void denverton_init_cpus(struct device *dev)
 		add_more_links(dev, 1);
 
 	/* Clear for take-off */
-	if (mp_init_with_smm(dev->link_list, &mp_ops) != CB_SUCCESS)
-		printk(BIOS_ERR, "MP initialization failure.\n");
+	/* TODO: Handle mp_init_with_smm failure? */
+	mp_init_with_smm(dev->link_list, &mp_ops);
 }

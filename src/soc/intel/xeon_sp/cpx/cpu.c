@@ -212,8 +212,8 @@ void cpx_init_cpus(struct device *dev)
 
 	intel_microcode_load_unlocked(microcode_patch);
 
-	if (mp_init_with_smm(dev->link_list, &mp_ops) != CB_SUCCESS)
-		printk(BIOS_ERR, "MP initialization failure.\n");
+	/* TODO: Handle mp_init_with_smm failure? */
+	mp_init_with_smm(dev->link_list, &mp_ops);
 
 	/*
 	 * chip_config is used in cpu device callback. Other than cpu 0,

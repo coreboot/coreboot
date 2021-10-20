@@ -1095,7 +1095,7 @@ static void fill_mp_state(struct mp_state *state, const struct mp_ops *ops)
 		mp_state.ops.per_cpu_smm_trigger = smm_initiate_relocation;
 }
 
-enum cb_err mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
+static enum cb_err do_mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
 {
 	enum cb_err ret;
 	void *default_smm_area;
@@ -1139,6 +1139,16 @@ enum cb_err mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
 	/* Signal callback on success if it's provided. */
 	if (ret == CB_SUCCESS && mp_state.ops.post_mp_init != NULL)
 		mp_state.ops.post_mp_init();
+
+	return ret;
+}
+
+enum cb_err mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops)
+{
+	enum cb_err ret = do_mp_init_with_smm(cpu_bus, mp_ops);
+
+	if (ret != CB_SUCCESS)
+		printk(BIOS_ERR, "MP initialization failure.\n");
 
 	return ret;
 }

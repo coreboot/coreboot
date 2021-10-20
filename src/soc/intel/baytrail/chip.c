@@ -17,7 +17,7 @@ static struct device_operations pci_domain_ops = {
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
-	.init             = baytrail_init_cpus,
+	.init             = mp_cpu_bus_init,
 };
 
 static void enable_dev(struct device *dev)

@@ -9,7 +9,6 @@
 /* The baytrail_init_pre_device() function is called prior to device
  * initialization, but it's after console and cbmem has been reinitialized. */
 void baytrail_init_pre_device(struct soc_intel_baytrail_config *config);
-void baytrail_init_cpus(struct device *dev);
 void southcluster_enable_dev(struct device *dev);
 /* The baytrail_run_reference_code() function is provided by either
  * native refcode or the ChromeBook refcode wrapper */

@@ -178,14 +178,14 @@ static void post_mp_init(void)
 	if (CONFIG(HAVE_SMI_HANDLER))
 		smm_lock();
 
-	if (mp_run_on_all_cpus(vmx_configure, NULL))
+	if (mp_run_on_all_cpus(vmx_configure, NULL) != CB_SUCCESS)
 		failure = true;
 
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
-		if (mp_run_on_all_cpus(sgx_configure, NULL))
+		if (mp_run_on_all_cpus(sgx_configure, NULL) != CB_SUCCESS)
 			failure = true;
 
-	if (mp_run_on_all_cpus(fc_lock_configure, NULL))
+	if (mp_run_on_all_cpus(fc_lock_configure, NULL) != CB_SUCCESS)
 		failure = true;
 
 	if (failure)

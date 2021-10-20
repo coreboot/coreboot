@@ -974,17 +974,16 @@ static void ap_wait_for_instruction(void)
 	}
 }
 
-int mp_run_on_aps(void (*func)(void *), void *arg, int logical_cpu_num,
+enum cb_err mp_run_on_aps(void (*func)(void *), void *arg, int logical_cpu_num,
 		long expire_us)
 {
 	struct mp_callback lcb = { .func = func, .arg = arg,
 				.logical_cpu_number = logical_cpu_num};
-	/* TODO: Remove this return value translation after changing the return type of
-	   mp_run_on_aps to enum cb_err */
-	return run_ap_work(&lcb, expire_us) == CB_SUCCESS ? 0 : -1;
+	return run_ap_work(&lcb, expire_us);
 }
 
-int mp_run_on_all_aps(void (*func)(void *), void *arg, long expire_us, bool run_parallel)
+enum cb_err mp_run_on_all_aps(void (*func)(void *), void *arg, long expire_us,
+			      bool run_parallel)
 {
 	int ap_index, bsp_index;
 
@@ -999,14 +998,14 @@ int mp_run_on_all_aps(void (*func)(void *), void *arg, long expire_us, bool run_
 		/* skip if BSP */
 		if (ap_index == bsp_index)
 			continue;
-		if (mp_run_on_aps(func, arg, ap_index, expire_us))
+		if (mp_run_on_aps(func, arg, ap_index, expire_us) != CB_SUCCESS)
 			return CB_ERR;
 	}
 
 	return CB_SUCCESS;
 }
 
-int mp_run_on_all_cpus(void (*func)(void *), void *arg)
+enum cb_err mp_run_on_all_cpus(void (*func)(void *), void *arg)
 {
 	/* Run on BSP first. */
 	func(arg);
@@ -1015,10 +1014,10 @@ int mp_run_on_all_cpus(void (*func)(void *), void *arg)
 	return mp_run_on_aps(func, arg, MP_RUN_ON_ALL_CPUS, 1000 * USECS_PER_MSEC);
 }
 
-int mp_park_aps(void)
+enum cb_err mp_park_aps(void)
 {
 	struct stopwatch sw;
-	int ret;
+	enum cb_err ret;
 	long duration_msecs;
 
 	stopwatch_init(&sw);
@@ -1028,7 +1027,7 @@ int mp_park_aps(void)
 
 	duration_msecs = stopwatch_duration_msecs(&sw);
 
-	if (!ret)
+	if (ret == CB_SUCCESS)
 		printk(BIOS_DEBUG, "%s done after %ld msecs.\n", __func__,
 		       duration_msecs);
 	else

@@ -9,6 +9,7 @@
 #include <fsp/ppi/mp_service_ppi.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
+#include <types.h>
 
 #define BSP_CPU_SLOT 0
 
@@ -72,7 +73,8 @@ efi_return_status_t mp_startup_all_aps(efi_ap_procedure procedure,
 	if (procedure == NULL)
 		return FSP_INVALID_PARAMETER;
 
-	if (mp_run_on_all_aps((void *)procedure, argument, timeout_usec, !run_serial)) {
+	if (mp_run_on_all_aps((void *)procedure, argument, timeout_usec, !run_serial) !=
+				CB_SUCCESS) {
 		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
 		return FSP_NOT_STARTED;
 	}
@@ -94,7 +96,7 @@ efi_return_status_t mp_startup_all_cpus(efi_ap_procedure procedure,
 
 	/* Run on APs */
 	if (mp_run_on_aps((void *)procedure, argument,
-			MP_RUN_ON_ALL_CPUS, timeout_usec)) {
+			MP_RUN_ON_ALL_CPUS, timeout_usec) != CB_SUCCESS) {
 		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
 		return FSP_NOT_STARTED;
 	}
@@ -118,7 +120,7 @@ efi_return_status_t mp_startup_this_ap(efi_ap_procedure procedure,
 		return FSP_INVALID_PARAMETER;
 
 	if (mp_run_on_aps((void *)procedure, argument,
-			processor_number, timeout_usec)) {
+			processor_number, timeout_usec) != CB_SUCCESS) {
 		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
 		return FSP_NOT_STARTED;
 	}

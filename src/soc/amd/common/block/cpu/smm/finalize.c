@@ -7,6 +7,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <amdblocks/acpi.h>
+#include <types.h>
 
 static void per_core_finalize(void *unused)
 {
@@ -31,7 +32,7 @@ static void finalize_cores(void)
 {
 	printk(BIOS_SPEW, "Lock SMM configuration\n");
 
-	if (mp_run_on_all_cpus(per_core_finalize, NULL))
+	if (mp_run_on_all_cpus(per_core_finalize, NULL) != CB_SUCCESS)
 		printk(BIOS_WARNING, "Failed to finalize all cores\n");
 }
 

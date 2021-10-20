@@ -10,6 +10,7 @@
 #include <amdblocks/agesawrapper_call.h>
 #include <amdblocks/reset.h>
 #include <soc/southbridge.h>
+#include <types.h>
 
 #if ENV_BOOTBLOCK
 const BIOS_CALLOUT_STRUCT BiosCallouts[] = {
@@ -205,7 +206,8 @@ AGESA_STATUS agesa_RunFuncOnAp(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 	agesadata.Func = Func;
 	agesadata.Data = Data;
 	agesadata.ConfigPtr = ConfigPtr;
-	if (mp_run_on_aps(callout_ap_entry, NULL, MP_RUN_ON_ALL_CPUS, 100 * USECS_PER_MSEC))
+	if (mp_run_on_aps(callout_ap_entry, NULL, MP_RUN_ON_ALL_CPUS, 100 * USECS_PER_MSEC) !=
+			CB_SUCCESS)
 		return AGESA_ERROR;
 
 	return AGESA_SUCCESS;
@@ -219,7 +221,8 @@ AGESA_STATUS agesa_RunFcnOnAllAps(uint32_t Func, uintptr_t Data,
 	agesadata.Func = Func;
 	agesadata.Data = Data;
 	agesadata.ConfigPtr = ConfigPtr;
-	if (mp_run_on_aps(callout_ap_entry, NULL, MP_RUN_ON_ALL_CPUS, 100 * USECS_PER_MSEC))
+	if (mp_run_on_aps(callout_ap_entry, NULL, MP_RUN_ON_ALL_CPUS, 100 * USECS_PER_MSEC) !=
+			CB_SUCCESS)
 		return AGESA_ERROR;
 
 	return AGESA_SUCCESS;

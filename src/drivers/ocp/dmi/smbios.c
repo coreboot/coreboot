@@ -11,6 +11,7 @@
 #include <soc/soc_util.h>
 #include <soc/util.h>
 #include <smbios.h>
+#include <types.h>
 
 #include "ocp_dmi.h"
 
@@ -244,7 +245,8 @@ void ocp_oem_smbios_strings(struct device *dev, struct smbios_type11 *t)
 	if (CONFIG_MAX_SOCKET == 2 && CONFIG(PARALLEL_MP_AP_WORK)) {
 		/* Read the last CPU MSR */
 		if (mp_run_on_aps(read_remote_ppin, (void *)&xeon_sp_ppin[1],
-				get_platform_thread_count() - 1, 100 * USECS_PER_MSEC)) {
+				get_platform_thread_count() - 1, 100 * USECS_PER_MSEC) !=
+						CB_SUCCESS) {
 			printk(BIOS_ERR, "Failed to read remote PPIN.\n");
 			t->count = smbios_add_oem_string(t->eos, TBF);
 		} else {

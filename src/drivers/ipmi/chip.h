@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 struct drivers_ipmi_config {
+#if CONFIG(IPMI_KCS)
 	u8 bmc_i2c_address;
 	u8 have_nv_storage;
 	u8 nv_storage_device_address;
@@ -25,6 +26,9 @@ struct drivers_ipmi_config {
 	/* "POST complete" GPIO and polarity */
 	u32 post_complete_gpio;
 	bool post_complete_invert;
+	unsigned int uid; /* Auto-filled by ipmi_ssdt() */
+#endif
+
 	/*
 	 * Wait for BMC to boot.
 	 * This can be used if the BMC takes a long time to boot after PoR:
@@ -36,7 +40,6 @@ struct drivers_ipmi_config {
 	 * Will be used if wait_for_bmc is true.
 	 */
 	u16 bmc_boot_timeout;
-	unsigned int uid; /* Auto-filled by ipmi_ssdt() */
 };
 
 #endif /* _IMPI_CHIP_H_ */

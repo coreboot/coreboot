@@ -1,7 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __IPMI_KCS_H
-#define __IPMI_KCS_H
+#ifndef __IPMI_IF_H
+#define __IPMI_IF_H
+
+/* Common API and code for different IPMI interfaces in different stages */
+
+#include <stdint.h>
 
 #define IPMI_NETFN_CHASSIS 0x00
 #define IPMI_NETFN_BRIDGE 0x02
@@ -24,16 +28,6 @@
 #define IPMI_NETFN_TRANSPORT 0x0c
 
 #define IPMI_CMD_ACPI_POWERON 0x06
-
-extern int ipmi_kcs_message(int port, int netfn, int lun, int cmd,
-			    const unsigned char *inmsg, int inlen,
-			    unsigned char *outmsg, int outlen);
-
-/* Run basic IPMI init functions in romstage from the provided PnP device,
- * returns CB_SUCCESS on success and CB_ERR if an error occurred. */
-enum cb_err ipmi_kcs_premem_init(const u16 port, const u16 device);
-
-void ipmi_bmc_version(uint8_t *ipmi_bmc_major_revision, uint8_t *ipmi_bmc_minor_revision);
 
 struct ipmi_rsp {
 	uint8_t lun;
@@ -61,4 +55,25 @@ struct ipmi_selftest_rsp {
 	uint8_t param;
 } __packed;
 
-#endif
+struct device;
+
+/*
+ * Sends a command and reads its response. Input buffer is for payload, but
+ * output includes `struct ipmi_rsp` as a header. Returns number of bytes copied
+ * into the buffer or -1.
+ */
+int ipmi_message(int port, int netfn, int lun, int cmd,
+		 const unsigned char *inmsg, int inlen,
+		 unsigned char *outmsg, int outlen);
+
+/* Run basic IPMI init functions in romstage from the provided PnP device,
+ * returns CB_SUCCESS on success and CB_ERR if an error occurred. */
+enum cb_err ipmi_premem_init(const uint16_t port, const uint16_t device);
+
+int ipmi_get_device_id(const struct device *dev, struct ipmi_devid_rsp *rsp);
+
+int ipmi_process_self_test_result(const struct device *dev);
+
+void ipmi_bmc_version(uint8_t *ipmi_bmc_major_revision, uint8_t *ipmi_bmc_minor_revision);
+
+#endif /* __IPMI_IF_H */

@@ -2,7 +2,7 @@
 
 #include <console/console.h>
 #include <console/uart.h>
-#include <drivers/ipmi/ipmi_kcs.h>
+#include <drivers/ipmi/ipmi_if.h>
 #include <drivers/ipmi/ocp/ipmi_ocp.h>
 #include <drivers/vpd/vpd.h>
 #include <fsp/api.h>
@@ -188,7 +188,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	/* Since it's the first IPMI command, it's better to run get BMC
 	   selftest result first */
-	if (ipmi_kcs_premem_init(CONFIG_BMC_KCS_BASE, 0) == CB_SUCCESS) {
+	if (ipmi_premem_init(CONFIG_BMC_KCS_BASE, 0) == CB_SUCCESS) {
 		ipmi_set_post_start(CONFIG_BMC_KCS_BASE);
 		init_frb2_wdt();
 	}

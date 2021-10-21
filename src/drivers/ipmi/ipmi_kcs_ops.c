@@ -24,7 +24,7 @@
 #include <version.h>
 #include <delay.h>
 #include <timer.h>
-#include "ipmi_kcs.h"
+#include "ipmi_if.h"
 #include "ipmi_supermicro_oem.h"
 #include "chip.h"
 
@@ -36,46 +36,6 @@ static u8 bmc_revision_major = 0x0;
 static u8 bmc_revision_minor = 0x0;
 
 static struct boot_state_callback bscb_post_complete;
-
-static int ipmi_get_device_id(struct device *dev, struct ipmi_devid_rsp *rsp)
-{
-	int ret;
-
-	ret = ipmi_kcs_message(dev->path.pnp.port, IPMI_NETFN_APPLICATION, 0,
-			     IPMI_BMC_GET_DEVICE_ID, NULL, 0, (u8 *)rsp,
-			     sizeof(*rsp));
-	if (ret < sizeof(struct ipmi_rsp) || rsp->resp.completion_code) {
-		printk(BIOS_ERR, "IPMI: %s command failed (ret=%d resp=0x%x)\n",
-		       __func__, ret, rsp->resp.completion_code);
-		return 1;
-	}
-	if (ret != sizeof(*rsp)) {
-		printk(BIOS_ERR, "IPMI: %s response truncated\n", __func__);
-		return 1;
-	}
-	return 0;
-}
-
-static int ipmi_get_bmc_self_test_result(struct device *dev, struct ipmi_selftest_rsp *rsp)
-{
-	int ret;
-
-	ret = ipmi_kcs_message(dev->path.pnp.port, IPMI_NETFN_APPLICATION, 0,
-				 IPMI_BMC_GET_SELFTEST_RESULTS, NULL, 0, (u8 *)rsp,
-				 sizeof(*rsp));
-
-	if (ret < sizeof(struct ipmi_rsp) || rsp->resp.completion_code) {
-		printk(BIOS_ERR, "IPMI: %s command failed (ret=%d resp=0x%x)\n",
-		       __func__, ret, rsp->resp.completion_code);
-		return 1;
-	}
-	if (ret != sizeof(*rsp)) {
-		printk(BIOS_ERR, "IPMI: %s response truncated\n", __func__);
-		return 1;
-	}
-
-	return 0;
-}
 
 static void bmc_set_post_complete_gpio_callback(void *arg)
 {
@@ -103,8 +63,6 @@ static void ipmi_kcs_init(struct device *dev)
 	uint32_t man_id = 0, prod_id = 0;
 	struct drivers_ipmi_config *conf = dev->chip_info;
 	const struct gpio_operations *gpio_ops;
-	struct ipmi_selftest_rsp selftestrsp = {0};
-	uint8_t retry_count;
 
 	if (!conf) {
 		printk(BIOS_WARNING, "IPMI: chip_info is missing! Skip init.\n");
@@ -154,41 +112,9 @@ static void ipmi_kcs_init(struct device *dev)
 		}
 	}
 
-	printk(BIOS_INFO, "Get BMC self test result...");
-	for (retry_count = 0; retry_count < conf->bmc_boot_timeout; retry_count++) {
-		if (!ipmi_get_bmc_self_test_result(dev, &selftestrsp))
-			break;
-
-		mdelay(1000);
-	}
-
-	switch (selftestrsp.result) {
-	case IPMI_APP_SELFTEST_NO_ERROR: /* 0x55 */
-		printk(BIOS_DEBUG, "No Error\n");
-		break;
-	case IPMI_APP_SELFTEST_NOT_IMPLEMENTED: /* 0x56 */
-		printk(BIOS_DEBUG, "Function Not Implemented\n");
-		break;
-	case IPMI_APP_SELFTEST_ERROR: /* 0x57 */
-		printk(BIOS_ERR, "BMC: Corrupted or inaccessible data or device\n");
+	if (ipmi_process_self_test_result(dev))
 		/* Don't write tables if communication failed */
 		dev->enabled = 0;
-		break;
-	case IPMI_APP_SELFTEST_FATAL_HW_ERROR: /* 0x58 */
-		printk(BIOS_ERR, "BMC: Fatal Hardware Error\n");
-		/* Don't write tables if communication failed */
-		dev->enabled = 0;
-		break;
-	case IPMI_APP_SELFTEST_RESERVED: /* 0xFF */
-		printk(BIOS_DEBUG, "Reserved\n");
-		break;
-
-	default: /* Other Device Specific Hardware Error */
-		printk(BIOS_ERR, "BMC: Device Specific Error\n");
-		/* Don't write tables if communication failed */
-		dev->enabled = 0;
-		break;
-	}
 
 	if (!ipmi_get_device_id(dev, &rsp)) {
 		/* Queried the IPMI revision from BMC */

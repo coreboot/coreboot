@@ -42,6 +42,15 @@ The following registers can be set:
 * `gpe_interrupt`
   * Integer
   * The bit in GPE (SCI) used to notify about a change on the KCS.
+* `wait_for_bmc`
+  * Boolean
+  * Wait for BMC to boot. This can be used if the BMC takes a long time to boot
+    after PoR:
+     - AST2400 on Supermicro X11SSH: 34 s
+* `bmc_boot_timeout`
+  * Integer
+  * The timeout in seconds to wait for the IPMI service to be loaded.
+    Will be used if wait_for_bmc is true.
 
 
 [IPMI]: https://www.intel.com/content/dam/www/public/us/en/documents/product-briefs/ipmi-second-gen-interface-spec-v2-rev1-1.pdf

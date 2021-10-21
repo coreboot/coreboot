@@ -4,7 +4,7 @@
 #include <device/device.h>
 #include <arch/io.h>
 #include <timer.h>
-#include "ipmi_kcs.h"
+#include "ipmi_if.h"
 
 #define IPMI_KCS_STATE(_x)	((_x) >> 6)
 
@@ -219,9 +219,9 @@ static int ipmi_kcs_read_message(int port, unsigned char *msg, int len)
 	return ret;
 }
 
-int ipmi_kcs_message(int port, int netfn, int lun, int cmd,
-			const unsigned char *inmsg, int inlen,
-			unsigned char *outmsg, int outlen)
+int ipmi_message(int port, int netfn, int lun, int cmd,
+		 const unsigned char *inmsg, int inlen,
+		 unsigned char *outmsg, int outlen)
 {
 	if (ipmi_kcs_send_message(port, netfn, lun, cmd, inmsg, inlen)) {
 		printk(BIOS_ERR, "ipmi_kcs_send_message failed\n");

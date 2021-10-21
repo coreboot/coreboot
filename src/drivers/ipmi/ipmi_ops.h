@@ -4,7 +4,7 @@
 #define __IPMI_OPS_H
 
 #include <types.h>
-#include "ipmi_kcs.h"
+#include "ipmi_if.h"
 #define IPMI_BMC_RESET_WDG_TIMER 0x22
 #define IPMI_BMC_SET_WDG_TIMER 0x24
 #define IPMI_BMC_GET_WDG_TIMER 0x25

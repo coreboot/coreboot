@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
-#include <drivers/ipmi/ipmi_kcs.h>
+#include <drivers/ipmi/ipmi_if.h>
 #include <drivers/ipmi/ipmi_ops.h>
 #include <drivers/ipmi/ocp/ipmi_ocp.h>
 #include <drivers/vpd/vpd.h>

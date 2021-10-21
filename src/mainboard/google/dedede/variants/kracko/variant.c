@@ -4,6 +4,13 @@
 #include <baseboard/variants.h>
 #include <delay.h>
 #include <gpio.h>
+#include <sar.h>
+
+const char *get_wifi_sar_cbfs_filename(void)
+{
+	return "wifi_sar-kracko.hex";
+}
+
 
 static void power_off_lte_module(void)
 {

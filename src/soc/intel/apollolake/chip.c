@@ -744,9 +744,7 @@ static void configure_xhci_host_mode_port0(void)
 
 static int check_xdci_enable(void)
 {
-	struct device *dev = PCH_DEV_XDCI;
-
-	return !!dev->enabled;
+	return is_dev_enabled(pcidev_path_on_root(PCH_DEVFN_XDCI));
 }
 
 static void disable_xhci_lfps_pm(void)

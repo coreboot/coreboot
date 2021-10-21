@@ -36,6 +36,7 @@ romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ramstage-y += soc.c
 ramstage-y += cbmem.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
+ramstage-y += ../common/aop_load_reset.c
 
 ################################################################################
 
@@ -101,6 +102,14 @@ $(I2C_FW_CBFS)-file := $(I2C_FW_FILE)
 $(I2C_FW_CBFS)-type := raw
 $(I2C_FW_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 cbfs-files-y += $(I2C_FW_CBFS)
+
+################################################################################
+AOP_FILE := $(SC7280_BLOB)/aop/aop.mbn
+AOP_CBFS := $(CONFIG_CBFS_PREFIX)/aop
+$(AOP_CBFS)-file := $(AOP_FILE)
+$(AOP_CBFS)-type := payload
+$(AOP_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(AOP_CBFS)
 
 ################################################################################
 SHRM_FILE := $(SC7280_BLOB)/shrm/shrm.elf

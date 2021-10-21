@@ -228,6 +228,17 @@ void set_cpu_topology(struct device *cpu, unsigned int node,
 void mp_init_cpus(DEVTREE_CONST struct bus *cpu_bus);
 static inline void mp_cpu_bus_init(struct device *dev)
 {
+	/*
+	 * When no LAPIC device is specified in the devietree inside the CPU cluster device,
+	 * neither a LAPIC device nor the link/bus between the CPU cluster and the LAPIC device
+	 * will be present in the static device tree and the link_list struct element of the
+	 * CPU cluster device will be NULL. In this case add one link, so that the
+	 * alloc_find_dev calls in init_bsp and allocate_cpu_devices will be able to add a
+	 * LAPIC device for the BSP and the APs on this link/bus.
+	 */
+	if (!dev->link_list)
+		add_more_links(dev, 1);
+
 	mp_init_cpus(dev->link_list);
 }
 

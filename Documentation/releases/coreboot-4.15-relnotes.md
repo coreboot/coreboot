@@ -25,5 +25,16 @@ Previously, the default behaviour for Intel chipset lockdown was to let the FSP
 do it. Since all related mainboards used the coreboot mechanisms for chipset
 lockdown, the default behaviour was changed to that.
 
+### Payloads unit testing
+
+Libpayload now supports the mock architecture, which can be used for unit testing
+payloads. (For examples see
+[depthcharge](https://chromium.googlesource.com/chromiumos/platform/depthcharge/)
+payload)
+
+### Unit testing infrastructure
+
+Unit testing of libpayload is now possible in the same fashion as in the main
+coreboot tree.
 
 ### Add significant changes here

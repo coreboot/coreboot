@@ -21,6 +21,7 @@ Some of the drivers currently available include:
 CFR <cfr.md>
 CFR use within coreboot <cfr_internal.md>
 Intel DPTF <dptf.md>
+IPMI BT (Block Transfer) <ipmi_bt.md>
 IPMI KCS <ipmi_kcs.md>
 SMMSTORE <smmstore.md>
 SMMSTOREv2 <smmstorev2.md>

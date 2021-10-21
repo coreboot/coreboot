@@ -55,3 +55,31 @@ config DRIVERS_IPMI_SUPERMICRO_OEM
 	  The following features are implemented:
 	  * Communicates the BIOS version to the BMC
 	  * Communicates the BIOS date to the BMC
+
+config IPMI_BT
+	bool
+	default n
+	depends on !IPMI_KCS
+
+config IPMI_BT_ROMSTAGE
+	bool
+	default n
+	depends on IPMI_BT
+	help
+	  IPMI BT support in romstage.
+
+config BMC_BT_BASE
+	hex
+	default 0xe4
+	depends on IPMI_BT
+	help
+	  The PNP base address of BMC BT. It must be equal to the
+	  pnp port value defined in devicetree for chip drivers/ipmi.
+
+config IPMI_TIMEOUT_MS
+	int
+	default 5000
+	depends on IPMI_BT || IPMI_KCS
+	help
+	  The time unit is millisecond for each IPMI transfer.
+	  The default is suitable for implementations using polling.

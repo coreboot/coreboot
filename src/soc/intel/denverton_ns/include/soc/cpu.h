@@ -7,12 +7,6 @@
 
 int get_cpu_count(void);
 
-#ifndef __ASSEMBLER__
-#include <device/device.h>
-
-void denverton_init_cpus(struct device *dev);
-#endif
-
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
 

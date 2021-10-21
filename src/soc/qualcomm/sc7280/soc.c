@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <symbols.h>
 #include <device/device.h>
 #include <soc/mmu.h>
 #include <soc/mmu_common.h>
@@ -16,6 +15,8 @@ static void soc_read_resources(struct device *dev)
                                REGION_SIZE(dram_wlan) / KiB);
 	reserved_ram_resource(dev, 3, (uintptr_t)_dram_wpss / KiB,
                                REGION_SIZE(dram_wpss) / KiB);
+	reserved_ram_resource(dev, 4, (uintptr_t)_dram_aop / KiB,
+				REGION_SIZE(dram_aop) / KiB);
 }
 
 static void soc_init(struct device *dev)

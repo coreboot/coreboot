@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/ioapic.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -15,6 +16,7 @@
 #include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/espi.h>
+#include <amdblocks/ioapic.h>
 #include <amdblocks/lpc.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
@@ -32,6 +34,12 @@ static void setup_serirq(void)
 		byte |= PM_SERIRQ_MODE;
 
 	pm_write8(PM_SERIRQ_CONF, byte);
+}
+
+static void fch_ioapic_init(void)
+{
+	fch_enable_ioapic_decode();
+	setup_ioapic(VIO_APIC_VADDR, FCH_IOAPIC_ID);
 }
 
 static void lpc_init(struct device *dev)
@@ -83,6 +91,9 @@ static void lpc_init(struct device *dev)
 	setup_i8254();
 
 	setup_serirq();
+
+	fch_ioapic_init();
+	fch_configure_hpet();
 }
 
 static void lpc_read_resources(struct device *dev)

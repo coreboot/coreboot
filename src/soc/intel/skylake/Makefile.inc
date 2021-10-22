@@ -6,7 +6,6 @@ subdirs-y += ../../../cpu/intel/common
 subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
 subdirs-y += ../../../cpu/x86/lapic
-subdirs-y += ../../../cpu/x86/mtrr
 
 bootblock-y += bootblock/bootblock.c
 bootblock-y += i2c.c

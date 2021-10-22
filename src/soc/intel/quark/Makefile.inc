@@ -3,7 +3,6 @@
 ifeq ($(CONFIG_SOC_INTEL_QUARK),y)
 
 subdirs-y += romstage
-subdirs-y += ../../../cpu/x86/mtrr
 
 bootblock-y += bootblock/esram_init.S
 bootblock-y += bootblock/bootblock.c

@@ -7,7 +7,6 @@ subdirs-y += ../model_65x
 subdirs-y += ../model_67x
 subdirs-y += ../model_68x
 subdirs-y += ../model_6bx
-subdirs-y += ../../x86/mtrr
 subdirs-y += ../../x86/lapic
 subdirs-y += ../../x86/cache
 subdirs-y += ../microcode

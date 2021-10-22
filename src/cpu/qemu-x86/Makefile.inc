@@ -7,5 +7,4 @@ romstage-y += ../intel/car/romstage.c
 
 ramstage-y += qemu.c
 
-subdirs-y += ../x86/mtrr
 subdirs-y += ../x86/lapic

@@ -1,3 +1,4 @@
+subdirs-y += mtrr
 subdirs-y += pae
 subdirs-$(CONFIG_HAVE_SMI_HANDLER) += smm
 subdirs-$(CONFIG_UDELAY_TSC) += tsc

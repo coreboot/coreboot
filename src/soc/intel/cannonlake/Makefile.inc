@@ -4,7 +4,6 @@ subdirs-y += romstage
 subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
 subdirs-y += ../../../cpu/x86/lapic
-subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/intel/common
 
 bootblock-y += bootblock/bootblock.c

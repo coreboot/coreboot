@@ -1,5 +1,4 @@
 subdirs-y += ../model_1067x
-subdirs-y += ../../x86/mtrr
 subdirs-y += ../../x86/lapic
 subdirs-y += ../../x86/cache
 subdirs-y += ../microcode

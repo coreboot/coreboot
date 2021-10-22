@@ -3,7 +3,6 @@
 ifeq ($(CONFIG_SOC_AMD_CEZANNE),y)
 
 subdirs-y += ../../../cpu/x86/lapic
-subdirs-y += ../../../cpu/x86/mtrr
 
 subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 

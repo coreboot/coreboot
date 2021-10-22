@@ -10,6 +10,4 @@ romstage-y	+= romstage.c
 ramstage-y	+= chip.c
 ramstage-y	+= timer.c
 
-subdirs-y	+= ../../../cpu/x86/mtrr
-
 endif

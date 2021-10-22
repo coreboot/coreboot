@@ -4,7 +4,6 @@ ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE),y)
 
 subdirs-y += ../../../cpu/amd/mtrr/
 subdirs-y += ../../../cpu/x86/lapic
-subdirs-y += ../../../cpu/x86/cache
 
 bootblock-y += uart.c
 bootblock-y += BiosCallOuts.c

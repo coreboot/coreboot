@@ -7,4 +7,3 @@ ramstage-y += chip_name.c
 ramstage-y += model_16_init.c
 
 subdirs-y += ../../mtrr
-subdirs-y += ../../../x86/lapic

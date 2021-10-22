@@ -6,5 +6,3 @@ bootblock-y += bootblock.c
 romstage-y += ../intel/car/romstage.c
 
 ramstage-y += qemu.c
-
-subdirs-y += ../x86/lapic

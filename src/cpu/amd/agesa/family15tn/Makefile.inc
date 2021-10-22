@@ -10,4 +10,3 @@ smm-y += udelay.c
 
 subdirs-y += ../../mtrr
 subdirs-y += ../../smm
-subdirs-y += ../../../x86/lapic

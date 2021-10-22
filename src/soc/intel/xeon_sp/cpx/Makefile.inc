@@ -3,7 +3,6 @@
 ifeq ($(CONFIG_SOC_INTEL_COOPERLAKE_SP),y)
 
 subdirs-y += ../../../../cpu/intel/turbo
-subdirs-y += ../../../../cpu/x86/lapic
 subdirs-y += ../../../../cpu/intel/microcode
 
 romstage-y += romstage.c ddr.c

@@ -4,7 +4,6 @@ ifeq ($(CONFIG_SOC_INTEL_SKYLAKE_SP),y)
 
 subdirs-y += ../../../../cpu/intel/microcode
 subdirs-y += ../../../../cpu/intel/turbo
-subdirs-y += ../../../../cpu/x86/lapic
 
 postcar-y += soc_util.c
 

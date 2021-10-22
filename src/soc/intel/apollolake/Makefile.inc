@@ -3,7 +3,6 @@ ifeq ($(CONFIG_SOC_INTEL_APOLLOLAKE),y)
 subdirs-y += ../../../cpu/intel/common
 subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
-subdirs-y += ../../../cpu/x86/lapic
 
 bootblock-y += bootblock/bootblock.c
 bootblock-y += ../common/block/cpu/pm_timer_emulation.c

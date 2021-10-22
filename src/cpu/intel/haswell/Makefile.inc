@@ -15,7 +15,6 @@ bootblock-y += bootblock.c
 
 postcar-y += ../car/non-evict/exit_car.S
 
-subdirs-y += ../../x86/lapic
 subdirs-y += ../microcode
 subdirs-y += ../turbo
 

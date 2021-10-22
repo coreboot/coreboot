@@ -3,7 +3,6 @@ ifeq ($(CONFIG_SOC_INTEL_ICELAKE),y)
 subdirs-y += romstage
 subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
-subdirs-y += ../../../cpu/x86/lapic
 
 # all (bootblock, verstage, romstage, postcar, ramstage)
 all-y += gspi.c

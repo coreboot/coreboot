@@ -3,7 +3,6 @@ ifeq ($(CONFIG_SOC_INTEL_CANNONLAKE_BASE),y)
 subdirs-y += romstage
 subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
-subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/intel/common
 
 bootblock-y += bootblock/bootblock.c

@@ -17,7 +17,11 @@ DefinitionBlock(
 
 	Device (\_SB.PCI0)
 	{
-#if CONFIG(SOC_INTEL_CANNONLAKE_BASE)
+#if CONFIG(SOC_INTEL_COMMON_SKYLAKE_BASE)
+		/* Kaby Lake */
+		#include <soc/intel/skylake/acpi/systemagent.asl>
+		#include <soc/intel/skylake/acpi/pch.asl>
+#elif CONFIG(SOC_INTEL_CANNONLAKE_BASE)
 		/* Comet Lake */
 		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 		#include <soc/intel/cannonlake/acpi/southbridge.asl>

@@ -1,5 +1,8 @@
 comment "Star Labs LabTop Series"
 
+config BOARD_STARLABS_LABTOP_KBL
+	bool "Star Labs LabTop Mk III (i7-8550u)"
+
 config BOARD_STARLABS_LABTOP_CML
 	bool "Star Labs LabTop Mk IV (i3-10110U and i7-10710U)"
 

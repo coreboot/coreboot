@@ -1,0 +1,184 @@
+chip soc/intel/skylake
+# CPU
+	# Enable Enhanced Intel SpeedStep
+	register "eist_enable"			= "1"
+
+	# Graphics
+	# IGD Displays
+	register "panel_cfg" = "{
+		.up_delay_ms			=  0,				// T3
+		.backlight_on_delay_ms		=  0,				// T7
+		.backlight_off_delay_ms		=  0,				// T9
+		.down_delay_ms			=  0,				// T10
+		.cycle_delay_ms			=  500,				// T12
+		.backlight_pwm_hz		=  200,				// PWM
+	}"
+
+	# FSP Memory
+	register "SaGv"				= "SaGv_Enabled"
+
+# FSP Silicon
+	# Serial I/O
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0]		= PchSerialIoPci,
+		[PchSerialIoIndexUart2]		= PchSerialIoSkipInit,
+	}"
+
+	# Power
+	register "PmConfigSlpS3MinAssert"	= "2"				# 50ms
+	register "PmConfigSlpS4MinAssert"	= "3"				# 1s
+	register "PmConfigSlpSusMinAssert"	= "3"				# 500ms
+	register "PmConfigSlpAMinAssert"	= "3"				# 2s
+
+	# Thermal
+	register "tcc_offset"			= "10"
+
+	# PM Util
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	# sudo devmem2 0xfe001920 (pmc_bar + GPIO_GPE_CFG)
+	register "gpe0_dw0"			= "GPP_B"
+	register "gpe0_dw1"			= "GPP_C"
+	register "gpe0_dw2"			= "GPP_E"
+
+	# Enable the correct decode ranges on the LPC bus.
+	register "lpc_ioe"			= "LPC_IOE_EC_4E_4F |
+						   LPC_IOE_KBC_60_64 |
+						   LPC_IOE_EC_62_66"
+
+# Actual device tree.
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	device domain 0 on
+		device pci 00.0 on  end						# Host Bridge
+		device pci 02.0 on  end						# Integrated Graphics Device
+		device pci 04.0 on  end						# SA Thermal Device
+		device pci 14.0 on						# USB xHCI
+			### USB 2.0 Devices
+			# Motherboard USB Type C
+			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC_SKIP)"
+			# Motherboard USB 3.0
+			register "usb2_ports[1]"		= "USB2_PORT_MID(OC_SKIP)"
+			# Daughterboard USB 3.0
+			register "usb2_ports[2]"		= "USB2_PORT_MID(OC_SKIP)"
+			# Internal Webcam
+			register "usb2_ports[3]"		= "USB2_PORT_MID(OC_SKIP)"
+			# Internal Bluetooth
+			register "usb2_ports[5]"		= "USB2_PORT_MID(OC_SKIP)"
+			# Daughterboard SD Card
+			register "usb2_ports[6]"		= "USB2_PORT_MID(OC_SKIP)"
+
+			### USB 3.0 Devices
+			# Motherboard USB Type C
+			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+			# Motherboard USB 3.0
+			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+			# Daughterboard USB 3.0
+			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+		end
+		device pci 14.1 off end						# USB xDCI (OTG)
+		device pci 14.2 on  end						# Thermal Subsystem
+		device pci 15.0 on						# I2C #0
+			chip drivers/i2c/hid
+				register "generic.hid"		= ""STAR0001""
+				register "generic.desc"		= ""Touchpad""
+				register "generic.irq"		= "ACPI_IRQ_LEVEL_LOW(GPP_C23_IRQ)"
+				register "generic.probed"	= "1"
+				register "hid_desc_reg_offset"	= "0x20"
+				device i2c 2c on end
+			end
+		end
+		device pci 15.1 off end						# I2C1
+		device pci 15.2 off end						# I2C2
+		device pci 15.3 off end						# I2C3
+		device pci 16.0 on  end						# Management Engine Interface 1
+		device pci 16.1 off end						# Management Engine Interface 2
+		device pci 16.2 off end						# Management Engine IDE-R
+		device pci 16.3 off end						# Management Engine KT Redirection
+		device pci 16.4 off end						# Management Engine Interface 3
+		device pci 17.0 on						# SATA
+			register "SataSalpSupport"		= "1"
+			# Port 1
+			register "SataPortsEnable[1]"		= "1"
+			register "SataPortsDevSlp[1]"		= "1"
+		end
+		device pci 19.0 on  end						# UART #2
+		device pci 19.1 off end						# I2C4
+		device pci 19.2 off end						# I2C5
+		device pci 1c.0 off end						# PCI Express Port 1
+		device pci 1c.1 off end						# PCI Express Port 2
+		device pci 1c.2 off end						# PCI Express Port 3
+		device pci 1c.3 off end						# PCI Express Port 4
+		device pci 1c.4 off end						# PCI Express Port 5
+		device pci 1c.5 on						# PCI Express Port 6
+			register "PcieRpEnable[5]"		= "1"
+			register "PcieRpClkReqSupport[5]"	= "1"
+			register "PcieRpClkReqNumber[5]"	= "4"
+			register "PcieRpClkSrcNumber[5]"	= "4"
+			register "PcieRpLtrEnable[5]"		= "1"
+			chip drivers/wifi/generic
+				device generic 0 on end
+			end
+		end
+		device pci 1c.6 off end						# PCI Express Port 7
+		device pci 1c.7 off end						# PCI Express Port 8
+		device pci 1d.0 on						# PCI Express Port 9(SSD x4)
+			register "PcieRpEnable[8]"		= "1"
+			register "PcieRpClkReqSupport[8]"	= "1"
+			register "PcieRpClkReqNumber[8]"	= "0"
+			register "PcieRpClkSrcNumber[8]"	= "0"
+			register "PcieRpLtrEnable[8]"		= "1"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
+		end
+		device pci 1d.1 off end						# PCI Express Port 10
+		device pci 1d.2 off end						# PCI Express Port 11
+		device pci 1d.3 off end						# PCI Express Port 12
+		device pci 1e.0 on  end						# UART #0
+		device pci 1e.1 off end						# UART #1
+		device pci 1e.2 off end						# GSPI #0
+		device pci 1e.3 off end						# GSPI #1
+		device pci 1e.4 off end						# eMMC
+		device pci 1e.5 off end						# SDIO
+		device pci 1e.6 off end						# SDCard
+		device pci 1f.0 on						# LPC Interface
+			register "gen1_dec"			= "0x000c0681"
+			register "gen2_dec"			= "0x000c1641"
+			register "gen3_dec"			= "0x00000069"
+			register "gen4_dec"			= "0x0000006d"
+
+			chip ec/starlabs/merlin
+				# Port pair 4Eh/4Fh
+				device pnp 4e.00 on  end			# IO Interface
+				device pnp 4e.01 off end			# Com 1
+				device pnp 4e.02 off end			# Com 2
+				device pnp 4e.04 off end			# System Wake-Up
+				device pnp 4e.05 off end			# PS/2 Mouse
+				device pnp 4e.06 on				# PS/2 Keyboard
+					io 0x60			= 0x0060
+					io 0x62			= 0x0064
+					irq 0x70		= 1
+				end
+				device pnp 4e.0a off end			# Consumer IR
+				device pnp 4e.0f off end			# Shared Memory/Flash Interface
+				device pnp 4e.10 off end			# RTC-like Timer
+				device pnp 4e.11 off end			# Power Management Channel 1
+				device pnp 4e.12 off end			# Power Management Channel 2
+				device pnp 4e.13 off end			# Serial Peripheral Interface
+				device pnp 4e.14 off end			# Platform EC Interface
+				device pnp 4e.17 off end			# Power Management Channel 3
+				device pnp 4e.18 off end			# Power Management Channel 4
+				device pnp 4e.19 off end			# Power Management Channel 5
+			end
+		end
+		device pci 1f.1 off end						# P2SB
+		device pci 1f.2 on  end						# Power Management Controller
+		device pci 1f.3 on  end						# Intel HDA
+		device pci 1f.4 on  end						# SMBus
+		device pci 1f.5 on  end						# PCH SPI
+		device pci 1f.6 off end						# GbE
+	end
+end

@@ -19,10 +19,6 @@ config SOC_SPECIFIC_OPTIONS
 	select NO_MMCONF_SUPPORT
 	select UNKNOWN_TSC_RATE
 
-config CPU_X86_LAPIC
-	bool
-	default n
-
 config DCACHE_BSP_STACK_SIZE		# required by arch/x86/car.ld
 	default 0x100
 

@@ -294,6 +294,7 @@ static inline uint32_t inl(unsigned port)
 
 #define PCI_DEVICE_ID_INTEL_APL_LPC		0x5ae8
 #define PCI_DEVICE_ID_INTEL_DNV_LPC		0x19dc
+#define PCI_DEVICE_ID_INTEL_GLK_LPC		0x31E8
 
 /* Intel starts counting these generations with the integration of the DRAM controller */
 #define PCI_DEVICE_ID_INTEL_CORE_0TH_GEN	0xd132 /* Nehalem */

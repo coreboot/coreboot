@@ -117,6 +117,7 @@ void pcr_init(struct pci_dev *const sb)
 		p2sb = pci_get_dev(sb->access, 0, 0, 0x1f, 1);
 		break;
 	case PCI_DEVICE_ID_INTEL_APL_LPC:
+	case PCI_DEVICE_ID_INTEL_GLK_LPC:
 		p2sb = pci_get_dev(sb->access, 0, 0, 0x0d, 0);
 		break;
 	case PCI_DEVICE_ID_INTEL_H310:

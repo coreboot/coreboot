@@ -4,7 +4,6 @@ ifeq ($(CONFIG_SOC_AMD_PICASSO),y)
 
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/cache
-subdirs-y += ../../../cpu/x86/pae
 subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += ../common/psp_verstage
 

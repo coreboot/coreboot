@@ -6,6 +6,7 @@ if CPU_INTEL_SOCKET_MPGA604
 config SOCKET_SPECIFIC_OPTIONS
 	def_bool y
 	select CPU_INTEL_MODEL_F2X
+	select CPU_X86_CACHE_HELPER
 	select MMX
 	select SSE
 	select UDELAY_TSC

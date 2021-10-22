@@ -8,4 +8,3 @@ ramstage-y += model_14_init.c
 
 subdirs-y += ../../mtrr
 subdirs-y += ../../../x86/lapic
-subdirs-y += ../../../x86/cache

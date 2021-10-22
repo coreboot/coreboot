@@ -1,3 +1,4 @@
+subdirs-$(CONFIG_CPU_X86_CACHE_HELPER) += cache
 subdirs-y += mtrr
 subdirs-y += pae
 subdirs-$(CONFIG_HAVE_SMI_HANDLER) += smm

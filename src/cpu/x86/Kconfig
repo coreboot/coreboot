@@ -1,3 +1,9 @@
+config CPU_X86_CACHE_HELPER
+	bool
+	default n
+	help
+	  Add the x86_enable_cache ramstage helper function to the build.
+
 config PARALLEL_MP
 	def_bool y
 	depends on !LEGACY_SMP_INIT

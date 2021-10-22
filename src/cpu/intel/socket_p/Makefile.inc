@@ -1,7 +1,6 @@
 subdirs-y += ../model_6fx
 subdirs-y += ../model_1067x
 subdirs-y += ../../x86/lapic
-subdirs-y += ../../x86/cache
 subdirs-y += ../microcode
 subdirs-y += ../speedstep
 

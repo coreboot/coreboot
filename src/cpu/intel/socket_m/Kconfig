@@ -7,6 +7,7 @@ config SOCKET_SPECIFIC_OPTIONS
 	def_bool y
 	select CPU_INTEL_MODEL_6EX
 	select CPU_INTEL_MODEL_6FX
+	select CPU_X86_CACHE_HELPER
 	select MMX
 	select SSE
 

@@ -8,7 +8,6 @@ subdirs-y += ../model_67x
 subdirs-y += ../model_68x
 subdirs-y += ../model_6bx
 subdirs-y += ../../x86/lapic
-subdirs-y += ../../x86/cache
 subdirs-y += ../microcode
 
 bootblock-y += ../car/p3/cache_as_ram.S

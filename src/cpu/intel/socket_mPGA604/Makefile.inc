@@ -1,6 +1,5 @@
 subdirs-y += ../model_f2x
 subdirs-y += ../../x86/lapic
-subdirs-y += ../../x86/cache
 subdirs-y += ../microcode
 
 bootblock-y += ../car/p4-netburst/cache_as_ram.S

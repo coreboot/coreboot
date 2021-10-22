@@ -3,7 +3,6 @@ subdirs-y += ../../x86/name
 subdirs-y += ../smm/gen1
 
 subdirs-y += ../../x86/lapic
-subdirs-y += ../../x86/cache
 subdirs-y += ../microcode
 subdirs-y += ../turbo
 

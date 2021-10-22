@@ -1,6 +1,5 @@
 ramstage-y += model_2065x_init.c
 subdirs-y += ../../x86/name
-subdirs-y += ../../x86/cache
 subdirs-y += ../../x86/lapic
 subdirs-y += ../../intel/turbo
 subdirs-y += ../../intel/microcode

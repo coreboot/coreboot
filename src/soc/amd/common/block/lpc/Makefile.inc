@@ -13,9 +13,7 @@ endif # CONFIG_SOC_AMD_COMMON_BLOCK_LPC
 
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA),y)
 bootblock-y += spi_dma.c
-ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
-verstage-y += spi_dma.c
-endif
+verstage_x86-y += spi_dma.c
 romstage-y += spi_dma.c
 ramstage-y += spi_dma.c
 smm-y += spi_dma.c

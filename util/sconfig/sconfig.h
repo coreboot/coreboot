@@ -77,7 +77,7 @@ struct device {
 	struct reg *reg;
 };
 
-struct device *head;
+extern struct device *head;
 
 struct header;
 struct header {

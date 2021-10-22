@@ -5,12 +5,8 @@ config DEBUG_CAR
 	bool "Output verbose Cache-as-RAM debug messages"
 	depends on HAVE_DEBUG_CAR
 
-config HAVE_DISPLAY_MTRRS
-	bool
-
 config DISPLAY_MTRRS
 	bool "Display intermediate MTRR settings"
-	depends on HAVE_DISPLAY_MTRRS
 
 config DEBUG_SMM_RELOCATION
 	bool "Debug SMM relocation code"

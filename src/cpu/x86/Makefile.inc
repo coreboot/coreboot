@@ -1,5 +1,5 @@
 subdirs-$(CONFIG_CPU_X86_CACHE_HELPER) += cache
-subdirs-$(CONFIG_CPU_X86_LAPIC) += lapic
+subdirs-y += lapic
 subdirs-y += mtrr
 subdirs-y += pae
 subdirs-$(CONFIG_HAVE_SMI_HANDLER) += smm

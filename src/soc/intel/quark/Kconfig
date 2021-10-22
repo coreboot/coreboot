@@ -24,10 +24,6 @@ config CPU_SPECIFIC_OPTIONS
 	select USE_MARCH_586
 	select NO_SMM
 
-config CPU_X86_LAPIC
-	bool
-	default n
-
 #####
 # Debug serial output
 #     The following options configure the debug serial port

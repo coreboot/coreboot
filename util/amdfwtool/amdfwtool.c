@@ -1618,7 +1618,7 @@ int main(int argc, char **argv)
 	}
 
 	if (comboable)
-		amd_romsig->combo_psp_directory = BUFF_TO_RUN(ctx, pspdir);
+		amd_romsig->new_psp_directory = BUFF_TO_RUN(ctx, pspdir);
 	else
 		amd_romsig->psp_directory = BUFF_TO_RUN(ctx, pspdir);
 

@@ -59,7 +59,7 @@ void ioapic_set_max_vectors(void *ioapic_base, int mre_count)
 		count = mre_count - 1;
 	reg &= ~(0xff << 16);
 	reg |= count << 16;
-	io_apic_write(ioapic_base, 0x01, count);
+	io_apic_write(ioapic_base, 0x01, reg);
 }
 
 void ioapic_lock_max_vectors(void *ioapic_base)

@@ -389,6 +389,9 @@ chip soc/intel/alderlake
 				device i2c 0x2c on end
 			end
 		end
+		device ref pcie_rp6 off end	# PCIE6 WWAN
+		device ref pcie_rp8 off end	# PCIE8 SD card
+		device ref pcie_rp9 off end	# PCIE9-12 SSD
 		device ref gspi1 on
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""

@@ -318,9 +318,9 @@ static const struct pad_config gpio_table[] = {
 	/* R5 : HDA_SDI1 ==> DMIC_DATA0_R */
 	PAD_CFG_NF(GPP_R5, NONE, DEEP, NF3),
 	/* R6 : I2S2_TXD ==> DMIC_CLK1_R */
-	PAD_CFG_NF(GPP_R6, NONE, DEEP, NF3),
+	PAD_CFG_NF(GPP_R6, NONE, DEEP, NF2),
 	/* R7 : I2S2_RXD ==> DMIC_DATA1_R */
-	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF3),
+	PAD_CFG_NF(GPP_R7, NONE, DEEP, NF2),
 
 	/* S0 : SNDW0_CLK ==> NC */
 	PAD_NC(GPP_S0, NONE),

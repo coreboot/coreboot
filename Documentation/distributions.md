@@ -17,11 +17,6 @@ running on the Embedded Controller (EC) – a small microcontroller which provid
 functions like battery management, keyboard support, and sensor interfacing –
 is open source as well.
 
-### Libretrend
-
-[Libretrend](https://libretrend.com) sells the Librebox, a NUC-like PC which
-ships with coreboot firmware.
-
 ### PC Engines APUs
 
 [PC Engines](https://pcengines.ch) designs and sells embedded PC hardware that

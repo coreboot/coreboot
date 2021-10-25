@@ -11,6 +11,12 @@ end
 chip soc/intel/alderlake
 	register "SaGv" = "SaGv_Enabled"
 
+	# FIVR configurations for kano are disabled since the board doesn't have V1p05 and Vnn
+	# bypass rails implemented.
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+	}"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

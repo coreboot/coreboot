@@ -2,4 +2,3 @@ config CPU_INTEL_MODEL_F4X
 	bool
 	select ARCH_X86
 	select SUPPORT_CPU_UCODE_IN_CBFS
-	select CPU_X86_CACHE_HELPER

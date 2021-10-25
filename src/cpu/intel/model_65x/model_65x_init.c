@@ -16,7 +16,7 @@ static void model_65x_init(struct device *dev)
 	p6_configure_l2_cache();
 
 	/* Turn on caching if we haven't already */
-	x86_enable_cache();
+	enable_cache();
 	x86_setup_mtrrs();
 	x86_mtrr_check();
 

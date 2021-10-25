@@ -54,7 +54,7 @@ static void model_14_init(struct device *dev)
 		restore_mtrr();
 
 	x86_mtrr_check();
-	x86_enable_cache();
+	enable_cache();
 
 	/* zero the machine check error status registers */
 	mca_clear_status();

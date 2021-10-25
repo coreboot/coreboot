@@ -8,7 +8,7 @@
 static void model_f4x_init(struct device *cpu)
 {
 	/* Turn on caching if we haven't already */
-	x86_enable_cache();
+	enable_cache();
 
 	/* Enable the local CPU APICs */
 	setup_lapic();

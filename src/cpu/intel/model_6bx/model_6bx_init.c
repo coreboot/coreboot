@@ -14,7 +14,7 @@ static void model_6bx_init(struct device *cpu)
 	char processor_name[49];
 
 	/* Turn on caching if we haven't already */
-	x86_enable_cache();
+	enable_cache();
 
 	/* Update the microcode */
 	intel_update_microcode_from_cbfs();

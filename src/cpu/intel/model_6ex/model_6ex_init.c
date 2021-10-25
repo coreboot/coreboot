@@ -97,7 +97,7 @@ static void model_6ex_init(struct device *cpu)
 	char processor_name[49];
 
 	/* Turn on caching if we haven't already */
-	x86_enable_cache();
+	enable_cache();
 
 	/* Print processor name */
 	fill_processor_name(processor_name);

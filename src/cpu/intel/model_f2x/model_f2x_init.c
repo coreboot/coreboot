@@ -12,7 +12,7 @@
 static void model_f2x_init(struct device *cpu)
 {
 	/* Turn on caching if we haven't already */
-	x86_enable_cache();
+	enable_cache();
 
 	if (!intel_ht_sibling()) {
 		/* MTRRs are shared between threads */

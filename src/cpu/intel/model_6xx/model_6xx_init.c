@@ -10,7 +10,7 @@
 static void model_6xx_init(struct device *dev)
 {
 	/* Turn on caching if we haven't already */
-	x86_enable_cache();
+	enable_cache();
 	x86_setup_mtrrs();
 	x86_mtrr_check();
 

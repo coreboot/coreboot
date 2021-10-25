@@ -23,7 +23,7 @@ static void model_16_init(struct device *dev)
 	u32 siblings;
 #endif
 
-	//x86_enable_cache();
+	//enable_cache();
 	//amd_setup_mtrrs();
 	//x86_mtrr_check();
 	disable_cache();
@@ -51,7 +51,7 @@ static void model_16_init(struct device *dev)
 		restore_mtrr();
 
 	x86_mtrr_check();
-	x86_enable_cache();
+	enable_cache();
 
 	/* zero the machine check error status registers */
 	mca_clear_status();

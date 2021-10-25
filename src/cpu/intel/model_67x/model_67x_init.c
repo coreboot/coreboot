@@ -17,7 +17,7 @@ static void model_67x_init(struct device *cpu)
 	p6_configure_l2_cache();
 
 	/* Turn on caching if we haven't already */
-	x86_enable_cache();
+	enable_cache();
 
 	/* Setup MTRRs */
 	x86_setup_mtrrs();

@@ -1,4 +1,3 @@
-subdirs-$(CONFIG_CPU_X86_CACHE_HELPER) += cache
 subdirs-y += lapic
 subdirs-y += mtrr
 subdirs-y += pae

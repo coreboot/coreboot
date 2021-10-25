@@ -175,6 +175,15 @@ static void handle_cse_eop_result(enum cse_eop_result result)
 
 static void set_cse_end_of_post(void *unused)
 {
+	/*
+	 * If CSE is already hidden then accessing CSE registers would be wrong and will
+	 * receive junk, hence, return as CSE is already disabled.
+	 */
+	if (!is_cse_enabled()) {
+		printk(BIOS_DEBUG, "CSE is disabled, cannot send End-of-Post (EOP) message\n");
+		return;
+	}
+
 	set_cse_device_state(PCH_DEVFN_CSE, DEV_ACTIVE);
 
 	timestamp_add_now(TS_ME_BEFORE_END_OF_POST);

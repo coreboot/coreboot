@@ -7,6 +7,10 @@ fw_config
 		option AUDIO_UNKNOWN		0
 		option MAX98373_NAU88L25B_I2S	1
 	end
+	field UFC 4 5
+		option UFC_USB			0
+		option UFC_MIPI_OVTI2740	1
+	end
 end
 chip soc/intel/alderlake
 	register "SaGv" = "SaGv_Enabled"
@@ -121,7 +125,9 @@ chip soc/intel/alderlake
 				register "cio2_lanes_used" = "{2}" # 2 CSI Camera lanes are used
 				register "cio2_lane_endpoint[0]" = ""^I2C2.CAM0""
 				register "cio2_prt[0]" = "1"
-				device generic 0 on end
+				device generic 0 on
+					probe UFC UFC_MIPI_OVTI2740
+				end
 			end
 		end
 		device ref pcie4_0 on
@@ -349,7 +355,9 @@ chip soc/intel/alderlake
 				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 				register "off_seq.ops[2]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
 
-				device i2c 36 on end
+				device i2c 36 on
+					probe UFC UFC_MIPI_OVTI2740
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
@@ -366,7 +374,9 @@ chip soc/intel/alderlake
 				register "nvm_width" = "0x10"
 				register "nvm_compat" = ""atmel,24c64""
 
-				device i2c 50 on end
+				device i2c 50 on
+					probe UFC UFC_MIPI_OVTI2740
+				end
                         end
 		end
 		device ref i2c3 on end
@@ -462,7 +472,9 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb2_port6 on end
+						device ref usb2_port6 on
+							probe UFC UFC_USB
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Port A0 (MLB)""

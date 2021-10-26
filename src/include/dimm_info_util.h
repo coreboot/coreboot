@@ -28,7 +28,7 @@ uint32_t smbios_memory_size_to_mib(uint16_t memory_size,
  *
  * Use this when setting dimm_info.mod_type.
  */
-uint8_t
-smbios_form_factor_to_spd_mod_type(smbios_memory_form_factor form_factor);
+uint8_t smbios_form_factor_to_spd_mod_type(smbios_memory_type memory_type,
+		smbios_memory_form_factor form_factor);
 
 #endif

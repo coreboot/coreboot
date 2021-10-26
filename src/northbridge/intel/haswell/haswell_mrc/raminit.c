@@ -260,7 +260,7 @@ static void setup_sdram_meminfo(struct pei_data *pei_data)
 				dimm->mod_id =
 					(pei_data->spd_data[index][SPD_DIMM_MOD_ID2] << 8) |
 					(pei_data->spd_data[index][SPD_DIMM_MOD_ID1] & 0xff);
-				dimm->mod_type = SPD_SODIMM;
+				dimm->mod_type = DDR3_SPD_SODIMM;
 				dimm->bus_width = MEMORY_BUS_WIDTH_64;
 				dimm_cnt++;
 			}

@@ -138,6 +138,7 @@ bootmem-test-srcs += src/lib/bootmem.c
 bootmem-test-srcs += src/lib/memrange.c
 
 dimm_info_util-test-srcs += tests/lib/dimm_info_util-test.c
+dimm_info_util-test-srcs += src/device/dram/spd.c
 dimm_info_util-test-srcs += src/lib/dimm_info_util.c
 dimm_info_util-test-srcs += tests/stubs/console.c
 

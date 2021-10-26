@@ -83,5 +83,5 @@ void mainboard_add_dimm_info(
 	int channel, int dimm, int index)
 {
 	/* Mainboard only has DDR4 DIMM slots */
-	mem_info->dimm[index].mod_type = SPD_UDIMM;
+	mem_info->dimm[index].mod_type = DDR4_SPD_UDIMM;
 }

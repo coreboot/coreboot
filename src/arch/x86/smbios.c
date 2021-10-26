@@ -224,6 +224,9 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 					 unsigned long *current, int *handle,
 					 int type16_handle)
 {
+	struct spd_info info;
+	get_spd_info(dimm->ddr_type, dimm->mod_type, &info);
+
 	struct smbios_type17 *t = smbios_carve_table(*current, SMBIOS_MEMORY_DEVICE,
 						     sizeof(*t), *handle);
 
@@ -244,24 +247,7 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	}
 	t->data_width = 8 * (1 << (dimm->bus_width & 0x7));
 	t->total_width = t->data_width + 8 * ((dimm->bus_width & 0x18) >> 3);
-
-	switch (dimm->mod_type) {
-	case SPD_RDIMM:
-	case SPD_MINI_RDIMM:
-		t->form_factor = MEMORY_FORMFACTOR_RIMM;
-		break;
-	case SPD_UDIMM:
-	case SPD_MICRO_DIMM:
-	case SPD_MINI_UDIMM:
-		t->form_factor = MEMORY_FORMFACTOR_DIMM;
-		break;
-	case SPD_SODIMM:
-		t->form_factor = MEMORY_FORMFACTOR_SODIMM;
-		break;
-	default:
-		t->form_factor = MEMORY_FORMFACTOR_UNKNOWN;
-		break;
-	}
+	t->form_factor = info.form_factor;
 
 	smbios_fill_dimm_manufacturer_from_id(dimm->mod_id, t);
 	smbios_fill_dimm_serial_number(dimm, t);
@@ -278,19 +264,8 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	t->maximum_voltage = dimm->vdd_voltage;
 
 	/* Fill in type detail */
-	switch (dimm->mod_type) {
-	case SPD_RDIMM:
-	case SPD_MINI_RDIMM:
-		t->type_detail = MEMORY_TYPE_DETAIL_REGISTERED;
-		break;
-	case SPD_UDIMM:
-	case SPD_MINI_UDIMM:
-		t->type_detail = MEMORY_TYPE_DETAIL_UNBUFFERED;
-		break;
-	default:
-		t->type_detail = MEMORY_TYPE_DETAIL_UNKNOWN;
-		break;
-	}
+	t->type_detail = info.type_detail;
+
 	/* Synchronous = 1 */
 	t->type_detail |= MEMORY_TYPE_DETAIL_SYNCHRONOUS;
 	/* no handle for error information */

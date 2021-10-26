@@ -545,19 +545,19 @@ enum cb_err spd_add_smbios17(const u8 channel, const u8 slot,
 
 		switch (info->dimm_type) {
 		case SPD_DDR3_DIMM_TYPE_SO_DIMM:
-			dimm->mod_type = SPD_SODIMM;
+			dimm->mod_type = DDR3_SPD_SODIMM;
 			break;
 		case SPD_DDR3_DIMM_TYPE_72B_SO_CDIMM:
-			dimm->mod_type = SPD_72B_SO_CDIMM;
+			dimm->mod_type = DDR3_SPD_72B_SO_CDIMM;
 			break;
 		case SPD_DDR3_DIMM_TYPE_72B_SO_RDIMM:
-			dimm->mod_type = SPD_72B_SO_RDIMM;
+			dimm->mod_type = DDR3_SPD_72B_SO_RDIMM;
 			break;
 		case SPD_DDR3_DIMM_TYPE_UDIMM:
-			dimm->mod_type = SPD_UDIMM;
+			dimm->mod_type = DDR3_SPD_UDIMM;
 			break;
 		case SPD_DDR3_DIMM_TYPE_RDIMM:
-			dimm->mod_type = SPD_RDIMM;
+			dimm->mod_type = DDR3_SPD_RDIMM;
 			break;
 		case SPD_DDR3_DIMM_TYPE_UNDEFINED:
 		default:

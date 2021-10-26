@@ -21,8 +21,8 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* SOC_PEN_DETECT_ODL */
 	PAD_WAKE(GPIO_4, PULL_NONE, EDGE_HIGH, S0i3),
-	/* Unused  */
-	PAD_NC(GPIO_5),
+	/* SD_AUX_RESET_L  */
+	PAD_GPO(GPIO_5, HIGH),
 	/* EN_PP3300_WLAN */
 	PAD_GPO(GPIO_6, HIGH),
 	/* EN_PP3300_TCHPAD */
@@ -81,8 +81,8 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_GPI(GPIO_67, PULL_NONE),
 	/* EN_PP3300_TCHSCR */
 	PAD_GPO(GPIO_68, HIGH),
-	/* SD_AUX_RESET_L */
-	PAD_GPO(GPIO_69, HIGH),
+	/* Unused */
+	PAD_NC(GPIO_69),
 	/* Unused TP27  */
 	PAD_NC(GPIO_70),
 	/* GPIO_71 - GPIO_73: Not available */
@@ -170,15 +170,17 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 /* Early GPIO configuration */
 static const struct soc_amd_gpio early_gpio_table[] = {
 	/* Assert all AUX reset lines */
+	/* SD_AUX_RESET_L  */
+	PAD_GPO(GPIO_5, LOW),
 	/* WWAN_AUX_RESET_L */
 	PAD_GPO(GPIO_18, LOW),
 	/* WLAN_AUX_RESET (ACTIVE HIGH) */
 	PAD_GPO(GPIO_29, HIGH),
 	/* SSD_AUX_RESET_L */
 	PAD_GPO(GPIO_40, LOW),
-	/* SD_AUX_RESET_L */
-	PAD_GPO(GPIO_69, LOW),
-	/* Guybrush BID>1: Unused TP27; BID==1: SD_AUX_RESET_L */
+	/* Guybrush BID >= 2: SD_AUX_RESET_L, Other variants: Unused */
+	PAD_NC(GPIO_69),
+	/* Guybrush BID>1, Other variants : Unused TP27; BID==1: SD_AUX_RESET_L */
 	PAD_NC(GPIO_70),
 
 	/* Deassert PCIe Reset lines */
@@ -275,15 +277,17 @@ static const struct soc_amd_gpio sleep_gpio_table[] = {
 /* PCIE_RST needs to be brought high before FSP-M runs */
 static const struct soc_amd_gpio pcie_gpio_table[] = {
 	/* Deassert all AUX_RESET lines & PCIE_RST */
+	/* SD_AUX_RESET_L  */
+	PAD_GPO(GPIO_5, HIGH),
 	/* WWAN_AUX_RESET_L */
 	PAD_GPO(GPIO_18, HIGH),
 	/* WLAN_AUX_RESET (ACTIVE HIGH) */
 	PAD_GPO(GPIO_29, LOW),
 	/* SSD_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
-	/* SD_AUX_RESET_L */
-	PAD_GPO(GPIO_69, HIGH),
-	/* BID>1: Unused TP27; BID==1: SD_AUX_RESET_L */
+	/* Guybrush BID >= 2: SD_AUX_RESET_L, Other variants: Unused */
+	PAD_NC(GPIO_69),
+	/* Guybrush BID>1, Other variants : Unused TP27; BID==1: SD_AUX_RESET_L */
 	PAD_NC(GPIO_70),
 	/* PCIE_RST0_L */
 	PAD_NFO(GPIO_26, PCIE_RST_L, HIGH),

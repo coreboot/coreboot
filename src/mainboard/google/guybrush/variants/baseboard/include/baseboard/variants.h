@@ -58,4 +58,6 @@ enum dxio_port_id {
 	NVME
 };
 
+uint8_t variant_sd_aux_reset_gpio(void);
+
 #endif /* __BASEBOARD_VARIANTS_H__ */

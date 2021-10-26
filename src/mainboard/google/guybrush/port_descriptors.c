@@ -127,6 +127,9 @@ void mainboard_get_dxio_ddi_descriptors(
 		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
 		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
+	/* Get Variant specific SD AUX Reset GPIO */
+	guybrush_czn_dxio_descriptors[SD].gpio_group_id = variant_sd_aux_reset_gpio();
+
 	/* gpp_bridge_2 is used either for WWAN or NVME bridge. Mark it as PCIE_ENGINE when it
 	   is enabled. */
 	if (is_dev_enabled(DEV_PTR(gpp_bridge_2)))

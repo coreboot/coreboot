@@ -195,6 +195,7 @@ static void usage(void)
 	printf("--instance <number>            Sets instance field for the next BIOS\n");
 	printf("                               firmware\n");
 	printf("--apcb <FILE>                  Add AGESA PSP customization block\n");
+	printf("--apcb-combo1 <FILE>           Add APCB for 1st combo\n");
 	printf("--apob-base <HEX_VAL>          Destination for AGESA PSP output block\n");
 	printf("--apob-nv-base <HEX_VAL>       Location of S3 resume data\n");
 	printf("--apob-nv-size <HEX_VAL>       Size of S3 resume data\n");
@@ -1546,6 +1547,7 @@ enum {
 
 	AMDFW_OPT_INSTANCE,
 	AMDFW_OPT_APCB,
+	AMDFW_OPT_APCB_COMBO1,
 	AMDFW_OPT_APOBBASE,
 	AMDFW_OPT_BIOSBIN,
 	AMDFW_OPT_BIOSBIN_SOURCE,
@@ -1604,6 +1606,7 @@ static struct option long_options[] = {
 	/* BIOS Directory Table items */
 	{"instance",         required_argument, 0, AMDFW_OPT_INSTANCE },
 	{"apcb",             required_argument, 0, AMDFW_OPT_APCB },
+	{"apcb-combo1",      required_argument, 0, AMDFW_OPT_APCB_COMBO1 },
 	{"apob-base",        required_argument, 0, AMDFW_OPT_APOBBASE },
 	{"bios-bin",         required_argument, 0, AMDFW_OPT_BIOSBIN },
 	{"bios-bin-src",     required_argument, 0, AMDFW_OPT_BIOSBIN_SOURCE },
@@ -1913,6 +1916,11 @@ int main(int argc, char **argv)
 	psp_directory_table *pspdir2_b = NULL;
 	psp_combo_directory *psp_combo_dir = NULL, *bhd_combo_dir = NULL;
 	char *combo_config[MAX_COMBO_ENTRIES] = { 0 };
+	struct _combo_apcb {
+		char *filename;
+		uint8_t ins;
+		uint8_t sub;
+	} combo_apcb[MAX_COMBO_ENTRIES] = {0}, combo_apcb_bk[MAX_COMBO_ENTRIES] = {0};
 	int combo_index = 0;
 	int fuse_defined = 0;
 	int targetfd;
@@ -2003,9 +2011,29 @@ int main(int argc, char **argv)
 		case AMDFW_OPT_APCB:
 			if ((instance & 0xF0) == 0) {
 				register_bdt_data(AMD_BIOS_APCB, sub, instance & 0xF, optarg);
+				combo_apcb[0].filename = optarg;
+				combo_apcb[0].ins = instance;
+				combo_apcb[0].sub = sub;
 			} else {
 				register_bdt_data(AMD_BIOS_APCB_BK, sub,
 							instance & 0xF, optarg);
+				combo_apcb_bk[0].filename = optarg;
+				combo_apcb_bk[0].ins = instance;
+				combo_apcb_bk[0].sub = sub;
+				cb_config.have_apcb_bk = 1;
+			}
+			sub = instance = 0;
+			break;
+		case AMDFW_OPT_APCB_COMBO1:
+			assert_fw_entry(1, MAX_COMBO_ENTRIES, &ctx);
+			if ((instance & 0xF0) == 0) {
+				combo_apcb[1].filename = optarg;
+				combo_apcb[1].ins = instance;
+				combo_apcb[1].sub = sub;
+			} else {
+				combo_apcb_bk[1].filename = optarg;
+				combo_apcb_bk[1].ins = instance;
+				combo_apcb_bk[1].sub = sub;
 				cb_config.have_apcb_bk = 1;
 			}
 			sub = instance = 0;
@@ -2381,6 +2409,27 @@ int main(int argc, char **argv)
 				ctx.address_mode = AMD_ADDR_REL_BIOS;
 			else
 				ctx.address_mode = AMD_ADDR_PHYSICAL;
+
+			if (combo_apcb[combo_index].filename != NULL) {
+				register_bdt_data(AMD_BIOS_APCB,
+					combo_apcb[combo_index].sub,
+					combo_apcb[combo_index].ins & 0xF,
+					combo_apcb[combo_index].filename);
+				if (cb_config.have_apcb_bk)
+					register_bdt_data(AMD_BIOS_APCB_BK,
+						combo_apcb_bk[combo_index].sub,
+						combo_apcb_bk[combo_index].ins & 0xF,
+						combo_apcb_bk[combo_index].filename);
+			} else {
+				/* Use main APCB if no Combo APCB is provided */
+				register_bdt_data(AMD_BIOS_APCB, combo_apcb[0].sub,
+					combo_apcb[0].ins & 0xF, combo_apcb[0].filename);
+				if (cb_config.have_apcb_bk)
+					register_bdt_data(AMD_BIOS_APCB_BK,
+						combo_apcb_bk[0].sub,
+						combo_apcb_bk[0].ins & 0xF,
+						combo_apcb_bk[0].filename);
+			}
 		}
 
 		if (cb_config.multi_level) {

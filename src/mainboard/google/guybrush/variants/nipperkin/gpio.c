@@ -12,6 +12,8 @@ static const struct soc_amd_gpio override_gpio_table[] = {
 	/* Unused TP1063 */
 	PAD_NC(GPIO_17),
 	PAD_NC(GPIO_18),
+	/* LCD_PRIVACY_PCH */
+	PAD_GPO(GPIO_5, HIGH),
 };
 
 static const struct soc_amd_gpio override_early_gpio_table[] = {

@@ -95,8 +95,8 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* GPIO_77 - GPIO_83: Not available */
 	/* EC_SOC_INT_ODL */
 	PAD_GPI(GPIO_84, PULL_NONE),
-	/* WWAN_DISABLE */
-	PAD_GPO(GPIO_85, LOW),
+	/* Unused */
+	PAD_NC(GPIO_85),
 	/* ESPI_SOC_CLK */
 	PAD_NF(GPIO_86, SPI_CLK, PULL_NONE),
 	/* RAM_ID_1 / DEV_BEEP_DATA */
@@ -198,8 +198,6 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 /* Put WWAN into reset */
 	/* WWAN_RST_L */
 	PAD_GPO(GPIO_24, LOW),
-	/* WWAN_DISABLE */
-	PAD_GPO(GPIO_85, HIGH),
 
 /* Enable ESPI, GSC Interrupt & I2C Communication */
 	/* GSC_SOC_INT_L */
@@ -261,8 +259,6 @@ static const struct soc_amd_gpio bootblock_gpio_table[] = {
 	/* Enable WWAN, Deassert WWAN reset, keep WWAN PCIe Aux reset asserted */
 	/* WWAN_RST_L */
 	PAD_GPO(GPIO_24, HIGH),
-	/* WWAN_DISABLE */
-	PAD_GPO(GPIO_85, LOW),
 
 	/* Enable WLAN */
 	/* WLAN_DISABLE */

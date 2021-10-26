@@ -1,0 +1,8 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config PAYLOAD_SKIBOOT
+	bool "skiboot"
+	depends on ARCH_PPC64
+	help
+	  Select this option if you want to build a coreboot image
+	  with a skiboot payload.

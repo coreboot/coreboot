@@ -8,3 +8,5 @@ tint/tint/
 U-Boot/u-boot/
 Memtest86Plus/memtest86plus/
 iPXE/ipxe/
+skiboot/skiboot
+skiboot/build

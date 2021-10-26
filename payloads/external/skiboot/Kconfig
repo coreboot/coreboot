@@ -1,0 +1,21 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if PAYLOAD_SKIBOOT
+
+config PAYLOAD_FILE
+	default "payloads/external/skiboot/build/skiboot.elf"
+
+config SKIBOOT_GIT_REPO
+	string "Git repository of skiboot payload"
+	default "https://github.com/open-power/skiboot"
+	help
+	  Git repository which will be used to clone skiboot.
+
+config SKIBOOT_REVISION
+	string "Revision of skiboot payload"
+	default "d93ddbd39b4eeac0bc11dacbdadea76df2996c13" if BOARD_EMULATION_QEMU_POWER9
+	help
+	  Revision, that skiboot repository will be checked out to, before building
+	  an image.
+
+endif # PAYLOAD_SKIBOOT

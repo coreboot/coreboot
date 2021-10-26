@@ -61,10 +61,10 @@ chip soc/amd/cezanne
 	register "sustained_power_limit_mW"  = "15000"
 	register "thermctl_limit_degreeC"    = "100"
 
-	register "telemetry_vddcrvddfull_scale_current_mA" = "92165" #mA
-	register "telemetry_vddcrvddoffset" =  "412"
-	register "telemetry_vddcrsocfull_scale_current_mA" = "30233" #mA
-	register "telemetry_vddcrsocoffset" =  "457"
+	register "telemetry_vddcrvddfull_scale_current_mA" = "73457" #mA
+	register "telemetry_vddcrvddoffset" =  "291"
+	register "telemetry_vddcrsocfull_scale_current_mA" = "30761" #mA
+	register "telemetry_vddcrsocoffset" =  "834"
 
 	# I2C Config
 	#+-------------------+---------------------------+

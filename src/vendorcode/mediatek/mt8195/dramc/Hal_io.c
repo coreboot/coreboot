@@ -25,12 +25,12 @@ U32 u4RegBaseAddrTraslate(DRAM_DFS_REG_SHU_T eShu, DRAM_RANK_T eRank, U32 u4reg_
         return u4reg_addr;
     }
 
-    if (u4RegType >= 2 && u4RegType <= 3)// ChA/B Dramc AO Register
+    if (u4RegType >= 2 && u4RegType <= 3)
     {
         if (u4Offset < DRAMC_REG_AO_SHUFFLE0_BASE_ADDR || u4Offset > DRAMC_REG_AO_SHUFFLE0_END_ADDR)
             eShu = 0;
     }
-    else if (u4RegType >= 6 && u4RegType <= 7)// ChA/B Dramc AO Register
+    else if (u4RegType >= 6 && u4RegType <= 7)
     {
         if (u4Offset < DDRPHY_AO_SHUFFLE0_BASE_ADDR || u4Offset > DDRPHY_AO_SHUFFLE0_END_ADDR)
             eShu = 0;
@@ -38,7 +38,7 @@ U32 u4RegBaseAddrTraslate(DRAM_DFS_REG_SHU_T eShu, DRAM_RANK_T eRank, U32 u4reg_
 
     if (eRank == RANK_1)
     {
-        if (u4RegType >= 2 && u4RegType <= 3)// ChA/B Dramc AO Register
+        if (u4RegType >= 2 && u4RegType <= 3)
         {
             if (u4Offset >= DRAMC_REG_AO_RANK0_WO_SHUFFLE_BASE_ADDR &&
                 u4Offset <= DRAMC_REG_AO_RANK0_WO_SHUFFLE_END_ADDR)
@@ -51,52 +51,52 @@ U32 u4RegBaseAddrTraslate(DRAM_DFS_REG_SHU_T eShu, DRAM_RANK_T eRank, U32 u4reg_
                 u4Offset += DRAMC_REG_AO_RANK_OFFSET;
             }
         }
-        else if (u4RegType >= 6 && u4RegType <= 7)// PhyA/B AO Register
+        else if (u4RegType >= 6 && u4RegType <= 7)
         {
-            // 0x60~0xE0
+
             if (u4Offset >= DDRPHY_AO_RANK0_B0_NON_SHU_BASE_ADDR &&
                 u4Offset <= DDRPHY_AO_RANK0_B0_NON_SHU_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }
-            // 0x1E0~0x260
+
             else if (u4Offset >= DDRPHY_AO_RANK0_B1_NON_SHU_BASE_ADDR &&
                      u4Offset <= DDRPHY_AO_RANK0_B1_NON_SHU_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }
-            // 0x360~0x3E0
+
             else if (u4Offset >= DDRPHY_AO_RANK0_CA_NON_SHU_BASE_ADDR &&
                      u4Offset <= DDRPHY_AO_RANK0_CA_NON_SHU_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }
-            // 0x760~0x7E0
+
             else if (u4Offset >= DDRPHY_AO_RANK0_B0_SHU0_BASE_ADDR &&
                      u4Offset <= DDRPHY_AO_RANK0_B0_SHU0_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }
-            // 0x8E0~0x960
+
             else if (u4Offset >= DDRPHY_AO_RANK0_B1_SHU0_BASE_ADDR &&
                      u4Offset <= DDRPHY_AO_RANK0_B1_SHU0_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }
-            // 0xA60~0xAE0
+
             else if (u4Offset >= DDRPHY_AO_RANK0_CA_SHU0_BASE_ADDR &&
                      u4Offset <= DDRPHY_AO_RANK0_CA_SHU0_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }
-            // 0xBE0~0xC60
+
             else if (u4Offset >= DDRPHY_AO_RANK0_MISC_SHU0_BASE_ADDR &&
                      u4Offset <= DDRPHY_AO_RANK0_MISC_SHU0_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }             
         }        
-        else if (u4RegType <= 1)// ChA/B Dramc NAO Register
+        else if (u4RegType <= 1)
         {
             if (u4Offset >= (DRAMC_REG_RK0_DQSOSC_STATUS - DRAMC_NAO_BASE_ADDRESS) &&
                 u4Offset < (DRAMC_REG_RK1_DQSOSC_STATUS - DRAMC_NAO_BASE_ADDRESS))
@@ -109,9 +109,9 @@ U32 u4RegBaseAddrTraslate(DRAM_DFS_REG_SHU_T eShu, DRAM_RANK_T eRank, U32 u4reg_
                 u4Offset += DRAMC_REG_NAO_RANK_OFFSET;
             }
         }
-        else if (u4RegType >= 4 && u4RegType <= 5) // PhyA/B NAO Register
+        else if (u4RegType >= 4 && u4RegType <= 5)
         {
-            // PhyA/B NAO Register
+
             if (u4Offset >= DDRPHY_NAO_RANK0_B0_DQSIEN_AUTOK_STATUS_START &&
                 u4Offset < DDRPHY_NAO_RANK0_B0_DQSIEN_AUTOK_STATUS_END)
             {
@@ -181,12 +181,12 @@ static U32 u4RegBaseAddrTraslate(DRAM_DFS_REG_SHU_T eShu, DRAM_RANK_T eRank, U32
         return u4reg_addr;
     }
 
-    if (u4RegType >= 4 && u4RegType <= 7)// ChA/B Dramc AO Register
+    if (u4RegType >= 4 && u4RegType <= 7)
     {
         if (u4Offset < DRAMC_REG_AO_SHUFFLE0_BASE_ADDR || u4Offset > DRAMC_REG_AO_SHUFFLE0_END_ADDR)
             eShu = 0;
     }
-    else if (u4RegType >= 12 && u4RegType <= 15)// ChA/B Phy AO Register
+    else if (u4RegType >= 12 && u4RegType <= 15)
     {
         if (u4Offset < DDRPHY_AO_SHUFFLE0_BASE_ADDR || u4Offset > DDRPHY_AO_SHUFFLE0_END_ADDR)
             eShu = 0;
@@ -194,7 +194,7 @@ static U32 u4RegBaseAddrTraslate(DRAM_DFS_REG_SHU_T eShu, DRAM_RANK_T eRank, U32
 
     if (eRank == RANK_1)
     {
-        if (u4RegType >= 4 && u4RegType <= 7)// ChA/B Dramc AO Register
+        if (u4RegType >= 4 && u4RegType <= 7)
         {
             if (u4Offset >= DRAMC_REG_AO_RANK0_WO_SHUFFLE_BASE_ADDR &&
                 u4Offset <= DRAMC_REG_AO_RANK0_WO_SHUFFLE_END_ADDR)
@@ -207,52 +207,52 @@ static U32 u4RegBaseAddrTraslate(DRAM_DFS_REG_SHU_T eShu, DRAM_RANK_T eRank, U32
                 u4Offset += DRAMC_REG_AO_RANK_OFFSET;
             }
         }
-        else if (u4RegType >= 12 && u4RegType <= 15)// PhyA/B AO Register
+        else if (u4RegType >= 12 && u4RegType <= 15)
         {
-            // 0x60~0xE0
+
             if (u4Offset >= DDRPHY_AO_RANK0_B0_NON_SHU_BASE_ADDR &&
                 u4Offset <= DDRPHY_AO_RANK0_B0_NON_SHU_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }
-            // 0x1E0~0x260
+
             else if (u4Offset >= DDRPHY_AO_RANK0_B1_NON_SHU_BASE_ADDR &&
                      u4Offset <= DDRPHY_AO_RANK0_B1_NON_SHU_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }
-            // 0x360~0x3E0
+
             else if (u4Offset >= DDRPHY_AO_RANK0_CA_NON_SHU_BASE_ADDR &&
                      u4Offset <= DDRPHY_AO_RANK0_CA_NON_SHU_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }
-            // 0x760~0x7E0
+
             else if (u4Offset >= DDRPHY_AO_RANK0_B0_SHU0_BASE_ADDR &&
                      u4Offset <= DDRPHY_AO_RANK0_B0_SHU0_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }
-            // 0x8E0~0x960
+
             else if (u4Offset >= DDRPHY_AO_RANK0_B1_SHU0_BASE_ADDR &&
                      u4Offset <= DDRPHY_AO_RANK0_B1_SHU0_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }
-            // 0xA60~0xAE0
+
             else if (u4Offset >= DDRPHY_AO_RANK0_CA_SHU0_BASE_ADDR &&
                      u4Offset <= DDRPHY_AO_RANK0_CA_SHU0_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }
-            // 0xBE0~0xC60
+
             else if (u4Offset >= DDRPHY_AO_RANK0_MISC_SHU0_BASE_ADDR &&
                      u4Offset <= DDRPHY_AO_RANK0_MISC_SHU0_END_ADDR)
             {
                 u4Offset += DDRPHY_AO_RANK_OFFSET;
             }             
         }        
-        else if (u4RegType <= 3)// ChA/B Dramc NAO Register
+        else if (u4RegType <= 3)
         {
             if (u4Offset >= (DRAMC_REG_RK0_DQSOSC_STATUS - DRAMC_NAO_BASE_ADDRESS) &&
                 u4Offset < (DRAMC_REG_RK1_DQSOSC_STATUS - DRAMC_NAO_BASE_ADDRESS))
@@ -260,9 +260,9 @@ static U32 u4RegBaseAddrTraslate(DRAM_DFS_REG_SHU_T eShu, DRAM_RANK_T eRank, U32
                 u4Offset += 0x100;
             }
         }
-        else if (u4RegType >= 8 && u4RegType <= 11) // PhyA/B NAO Register
+        else if (u4RegType >= 8 && u4RegType <= 11)
         {
-            // PhyA/B NAO Register
+
             if (u4Offset >= DDRPHY_NAO_RANK0_B0_DQSIEN_AUTOK_STATUS_START &&
                 u4Offset < DDRPHY_NAO_RANK0_B0_DQSIEN_AUTOK_STATUS_END)
             {
@@ -358,30 +358,22 @@ inline U32 _u4Dram_Register_Read(U64 u4reg_addr)
 
 #if QT_GUI_Tool
     ucDramRegRead_1(u4reg_addr, &u4reg_value);
-#elif (FOR_DV_SIMULATION_USED == 1)   //DV
+#elif (FOR_DV_SIMULATION_USED == 1)
     u4reg_value = register_read_c(u4reg_addr);
-#else // real chip
+#else
     u4reg_value = *((volatile unsigned int *)u4reg_addr);
 #endif
 
     return u4reg_value;
 }
 
-//-------------------------------------------------------------------------
-/** ucDram_Register_Read
- *  DRAM register read (32-bit).
- *  @param  u4reg_addr    register address in 32-bit.
- *  @param  pu4reg_value  Pointer of register read value.
- *  @retval 0: OK, 1: FAIL
- */
-//-------------------------------------------------------------------------
-// This function need to be porting by BU requirement
+
 U32 u4Dram_Register_Read(DRAMC_CTX_T *p, U32 u4reg_addr)
 {
 	U32 u4RegType = ((u4reg_addr - Channel_A_DRAMC_NAO_BASE_VIRTUAL) >> POS_BANK_NUM) & 0xf;
 
 #if (fcFOR_CHIP_ID == fc8195)
-	//ignore CH-B
+
     if ((p->support_channel_num == CHANNEL_SINGLE) && (u4reg_addr >= Channel_A_DRAMC_NAO_BASE_VIRTUAL && u4reg_addr < MAX_BASE_VIRTUAL))
 	{
 		if(u4RegType%2!=0)
@@ -396,15 +388,6 @@ U32 u4Dram_Register_Read(DRAMC_CTX_T *p, U32 u4reg_addr)
     return _u4Dram_Register_Read(u4reg_addr);
 }
 
-
-//-------------------------------------------------------------------------
-/** ucDram_Register_Write
- *  DRAM register write (32-bit).
- *  @param  u4reg_addr    register address in 32-bit.
- *  @param  u4reg_value   register write value.
- *  @retval 0: OK, 1: FAIL
- */
-//-------------------------------------------------------------------------
 
 #if REG_ACCESS_NAO_DGB
 #if (fcFOR_CHIP_ID == fcCervino)
@@ -439,8 +422,8 @@ inline void _ucDram_Register_Write(U64 u4reg_addr, U32 u4reg_value)
      ucDramRegWrite_1(u4reg_addr, u4reg_value);
 #elif (FOR_DV_SIMULATION_USED == 1) //DV
     register_write_c(u4reg_addr, u4reg_value);
-#else // real chip
-    (*(volatile unsigned int *)u4reg_addr) = u4reg_value;//real chip
+#else
+    (*(volatile unsigned int *)u4reg_addr) = u4reg_value;
     #if !defined(__DPM__)
     dsb();
     #endif
@@ -451,7 +434,7 @@ inline void _ucDram_Register_Write(U64 u4reg_addr, U32 u4reg_value)
     {
         mcSHOW_DUMP_INIT_RG_MSG(("*((UINT32P)(0x%x)) = 0x%x;\n",u4reg_addr,u4reg_value));
         gDUMP_INIT_RG_LOG_TO_DE_RG_log_flag = 0;
-        mcDELAY_MS(1); // to receive log for log 
+        mcDELAY_MS(1);
         gDUMP_INIT_RG_LOG_TO_DE_RG_log_flag = 1;
     }
 #endif 
@@ -464,13 +447,13 @@ inline void _ucDram_Register_Write(U64 u4reg_addr, U32 u4reg_value)
 #endif
 }
 
-//This function need to be porting by BU requirement
+
 void ucDram_Register_Write(DRAMC_CTX_T *p, U32 u4reg_addr, U32 u4reg_value)
 {
 	U32 u4RegType = ((u4reg_addr - Channel_A_DRAMC_NAO_BASE_VIRTUAL) >> POS_BANK_NUM) & 0xf;
 
 #if (fcFOR_CHIP_ID == fc8195)
-    //ignore CH-B
+
     if ((p->support_channel_num == CHANNEL_SINGLE) && (u4reg_addr >= Channel_A_DRAMC_NAO_BASE_VIRTUAL && u4reg_addr < MAX_BASE_VIRTUAL))
 	{
 		if(u4RegType%2!=0)
@@ -495,7 +478,7 @@ void vIO32Write4BMsk2(DRAMC_CTX_T *p, U32 reg32, U32 val32, U32 msk32)
     U32 u4Val;
 	U32 u4RegType = ((reg32 - Channel_A_DRAMC_NAO_BASE_VIRTUAL) >> POS_BANK_NUM) & 0xf;
 
-	//ignore CH-B
+
     #if (fcFOR_CHIP_ID == fc8195)
     if ((p->support_channel_num == CHANNEL_SINGLE) && (reg32 >= Channel_A_DRAMC_NAO_BASE_VIRTUAL && reg32 <= MAX_BASE_VIRTUAL))
 	{
@@ -520,30 +503,30 @@ void vIO32Write4B_All2(DRAMC_CTX_T *p, U32 reg32, U32 val32)
     U32 u4RegType = (reg32 & (0x1f << POS_BANK_NUM));
     U8 u1BCSupport = TRUE;
 
-    reg32 &= 0xffff;     // remove channel information
+    reg32 &= 0xffff;
 
-    u1AllCount = p->support_channel_num; // for all dramC and PHY
+    u1AllCount = p->support_channel_num;
 
-    if (u4RegType >= Channel_A_DDRPHY_DPM_BASE_VIRTUAL)//DPM
+    if (u4RegType >= Channel_A_DDRPHY_DPM_BASE_VIRTUAL)
     {
         reg32 += Channel_A_DDRPHY_DPM_BASE_VIRTUAL;
         if (u1AllCount > 1)
             u1AllCount >>= 1;
         u1BCSupport = FALSE;
     }
-    else if (u4RegType >= Channel_A_DDRPHY_AO_BASE_VIRTUAL)// PHY AO
+    else if (u4RegType >= Channel_A_DDRPHY_AO_BASE_VIRTUAL)
     {
         reg32 += Channel_A_DDRPHY_AO_BASE_VIRTUAL;
     }
-    else if (u4RegType >= Channel_A_DDRPHY_NAO_BASE_VIRTUAL)// PHY NAO
+    else if (u4RegType >= Channel_A_DDRPHY_NAO_BASE_VIRTUAL)
     {
         reg32 += Channel_A_DDRPHY_NAO_BASE_VIRTUAL;
     }
-    else if (u4RegType >= Channel_A_DRAMC_AO_BASE_VIRTUAL)// DramC AO
+    else if (u4RegType >= Channel_A_DRAMC_AO_BASE_VIRTUAL)
     {
         reg32 += Channel_A_DRAMC_AO_BASE_VIRTUAL;
     }
-    else // DramC NAO
+    else
     {
         reg32 += Channel_A_DRAMC_NAO_BASE_VIRTUAL;
     }
@@ -570,30 +553,30 @@ void vIO32Write4BMsk_All2(DRAMC_CTX_T *p, U32 reg32, U32 val32, U32 msk32)
     U32 u4RegType = (reg32 & (0x1f << POS_BANK_NUM));
     U8 u1BCSupport = TRUE;
 
-    reg32 &= 0xffff;     // remove channel information
+    reg32 &= 0xffff;
 
-    u1AllCount = p->support_channel_num; // for all dramC and PHY
+    u1AllCount = p->support_channel_num;
 
-    if (u4RegType >= Channel_A_DDRPHY_DPM_BASE_VIRTUAL)//DPM
+    if (u4RegType >= Channel_A_DDRPHY_DPM_BASE_VIRTUAL)
     {
         reg32 += Channel_A_DDRPHY_DPM_BASE_VIRTUAL;
         if (u1AllCount > 1)
             u1AllCount >>= 1;
         u1BCSupport = FALSE;
     }
-    else if (u4RegType >= Channel_A_DDRPHY_AO_BASE_VIRTUAL)// PHY AO
+    else if (u4RegType >= Channel_A_DDRPHY_AO_BASE_VIRTUAL)
     {
         reg32 += Channel_A_DDRPHY_AO_BASE_VIRTUAL;
     }
-    else if (u4RegType >= Channel_A_DDRPHY_NAO_BASE_VIRTUAL)// PHY NAO
+    else if (u4RegType >= Channel_A_DDRPHY_NAO_BASE_VIRTUAL)
     {
         reg32 += Channel_A_DDRPHY_NAO_BASE_VIRTUAL;
     }
-    else if (u4RegType >= Channel_A_DRAMC_AO_BASE_VIRTUAL)// DramC AO
+    else if (u4RegType >= Channel_A_DRAMC_AO_BASE_VIRTUAL)
     {
         reg32 += Channel_A_DRAMC_AO_BASE_VIRTUAL;
     }
-    else // DramC NAO
+    else
     {
         reg32 += Channel_A_DRAMC_NAO_BASE_VIRTUAL;
     }

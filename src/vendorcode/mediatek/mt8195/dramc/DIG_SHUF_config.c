@@ -2,13 +2,7 @@
 
 #include "dramc_dv_init.h"
 
-//====================================
-//TX CA delay configuration
-//------------------------------------
-//Notice:
-//TX config with shuffle register with all data_rate the same
-//if under real IC , need to banlance the PI/Dline calibrated result
-//====================================
+
 static void DIG_CONFIG_SHUF_ALG_TXCA(DRAMC_CTX_T *p, int ch_id, int group_id)
 {
     mcSHOW_DBG_MSG6(("[DIG_FREQ_CONFIG][TX_CA][Delay] ch_id:%2d, group_id:%2d >>>>>\n", ch_id, group_id));
@@ -17,7 +11,7 @@ static void DIG_CONFIG_SHUF_ALG_TXCA(DRAMC_CTX_T *p, int ch_id, int group_id)
     u8 backup_ShuRGAccessIdx = p->ShuRGAccessIdx;
     u8 TX_UI;
 
-    TX_UI = (DFS(group_id)->data_rate<=800) ? 1: 0 ; //TODO -- LPDDR5 need  confirm
+    TX_UI = (DFS(group_id)->data_rate<=800) ? 1: 0 ;
 
     vSetPHY2ChannelMapping(p, ch_id);
 
@@ -93,18 +87,12 @@ static void DIG_CONFIG_SHUF_ALG_TXCA(DRAMC_CTX_T *p, int ch_id, int group_id)
     mcSHOW_DBG_MSG6(("[DIG_FREQ_CONFIG][TX_CA][Delay] ch_id:%2d, group_id:%2d <<<<<\n", ch_id, group_id));
 }
 
-//====================================
-//Impdance configuration
-//------------------------------------
-//Notice:
-//ANA result depend on calibration
-//====================================
 static void DIG_CONFIG_SHUF_IMP(DRAMC_CTX_T *p, int ch_id, int group_id)
 {
     mcSHOW_DBG_MSG6(("[DIG_FREQ_CONFIG][IMPDANCE][Configuration] ch_id:%2d, group_id:%2d >>>>>\n", ch_id, group_id));
     U8  IPM_ODT_EN;
-    U8  CHKCYCLE      = 7; //200ns algrith --TODO, @Darren, fix hw imp tracking
-    U8  TXDLY_CMD     = 8; //Need algrithm support .. RL . TODO
+    U8  CHKCYCLE      = 7;
+    U8  TXDLY_CMD     = 8;
     U8  backup_ch_id  = p->channel;
     u8  backup_ShuRGAccessIdx = p->ShuRGAccessIdx;
     vSetPHY2ChannelMapping(p, ch_id);
@@ -134,18 +122,13 @@ static void DIG_CONFIG_SHUF_IMP(DRAMC_CTX_T *p, int ch_id, int group_id)
     mcSHOW_DBG_MSG6(("[DIG_FREQ_CONFIG][IMPDANCE][Configuration] ch_id:%2d, group_id:%2d <<<<<\n", ch_id, group_id));
 }
 
-//====================================
-//RX input delay configuration by mode choose
-//------------------------------------
-//Notice:
-//
-//====================================
+
 static void DIG_CONFIG_SHUF_RXINPUT(DRAMC_CTX_T *p, int ch_id, int group_id)
 {
-    U8 PERBYTE_TRACK_EN = 1;//TODO
-    U8 DQM_TRACK_EN     = 0;//TODO --following RD DBI
-    U8 DQM_FLOW_DQ_SEL  = 3;//TODO
-    U8 RX_force_upd     = 0;//TODO
+    U8 PERBYTE_TRACK_EN = 1;
+    U8 DQM_TRACK_EN     = 0;
+    U8 DQM_FLOW_DQ_SEL  = 3;
+    U8 RX_force_upd     = 0;
 
     U8 backup_ch_id = p->channel;
     u8  backup_ShuRGAccessIdx = p->ShuRGAccessIdx;
@@ -206,20 +189,14 @@ static void WDQSMode2TxDQOE_CNT(DRAMC_CTX_T *p, U8 *u1DQOE_CNT)
 }
 #endif
 
-//====================================
-// MISC shuffle register fit
-//------------------------------------
-//Notice:
-//   MISC shuffle reigster should be fixed
-//====================================
 static void DIG_CONFIG_SHUF_MISC_FIX(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
 {
     U8 PICG_MODE     = 1;
-    U8 LP5_HEFF      = 0;//TODO
-    U8 LP5WRAPEN     = 1;//Could random 1bit
+    U8 LP5_HEFF      = 0;
+    U8 LP5WRAPEN     = 1;
     U8 DQSIEN_DQSSTB_MODE=0;
     U8 irank         = 0;
-    U8 LP5_CASMODE   = 1; //TODO  Impact AC timing  1,2,3 three mode support  1:Low Power; 2:Low Freq; 3:High Eff;
+    U8 LP5_CASMODE   = 1;
     U8 WCKDUAL       = 0;
     U8 NEW_RANK_MODE = 1;
     U8 DUALSCHEN     = 1;
@@ -274,7 +251,7 @@ static void DIG_CONFIG_SHUF_MISC_FIX(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
                                                                    | P_Fld( (A_D->DQ_P2S_RATIO==8)                , SHU_COMMON0_FREQDIV4          ) \
                                                                    | P_Fld( (A_D->DQ_P2S_RATIO==4)                , SHU_COMMON0_FDIV2             ) \
                                                                    | P_Fld( LPDDR4_EN_S                           , SHU_COMMON0_BC4OTF            ) \
-                                                                   | P_Fld( !(A_D->DQ_P2S_RATIO==4)               , SHU_COMMON0_DM64BITEN         ));//TODO
+                                                                   | P_Fld( !(A_D->DQ_P2S_RATIO==4)               , SHU_COMMON0_DM64BITEN         ));
     if(LPDDR5_EN_S == 1)
     {
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_COMMON0)     , P_Fld( (A_D->DQ_P2S_RATIO==16)             , SHU_COMMON0_FREQDIV8          ) \
@@ -285,8 +262,8 @@ static void DIG_CONFIG_SHUF_MISC_FIX(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
                                                                      | P_Fld( LP5WRAPEN                           , SHU_COMMON0_LP5WRAPEN         ) \
                                                                      | P_Fld( LP5_HEFF                            , SHU_COMMON0_LP5HEFF_MODE      ));
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_WCKCTRL)     , P_Fld( WCKDUAL                          , SHU_WCKCTRL_WCKDUAL           ));
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_WCKCTRL_1)   , P_Fld( (A_D->CKR==2)                        , SHU_WCKCTRL_1_WCKSYNC_PRE_MODE));//TODO
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_LP5_CMD)     , P_Fld( (A_D->CA_P2S_RATIO==2)               , SHU_LP5_CMD_LP5_CMD1TO2EN     ));//TODO
+        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_WCKCTRL_1)   , P_Fld( (A_D->CKR==2)                        , SHU_WCKCTRL_1_WCKSYNC_PRE_MODE));
+        vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_LP5_CMD)     , P_Fld( (A_D->CA_P2S_RATIO==2)               , SHU_LP5_CMD_LP5_CMD1TO2EN     ));
     }
 
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_ACTIMING_CONF), P_Fld(  1                                     , SHU_ACTIMING_CONF_TREFBWIG      ) \
@@ -300,24 +277,24 @@ static void DIG_CONFIG_SHUF_MISC_FIX(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_MATYPE)       , P_Fld(  2                                     , SHU_MATYPE_MATYPE               ));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_SCHEDULER)    , P_Fld(  DUALSCHEN                             , SHU_SCHEDULER_DUALSCHEN         ));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0)          , P_Fld(   1                                    , TX_SET0_WPRE2T                  ));
-    //TODO SHU_TX_SET0_WPST1P5T OVER3200 DRAM spec need 1 but in TBA should random
-    //OE_EXT2UI strange rule.--TODO
+
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_TX_SET0)      , P_Fld(  (A_D->DQ_P2S_RATIO==4)                , SHU_TX_SET0_WDATRGO             ) \
                                                                   | P_Fld(  (DFS(group_id)->data_rate>=3200)      , SHU_TX_SET0_WPST1P5T            ) \
                                                                   | P_Fld(   DQOE_OPT                                    , SHU_TX_SET0_DQOE_OPT            ) \
                                                                   | P_Fld(   DQOE_CNT                                    , SHU_TX_SET0_DQOE_CNT            ) \
                                                                   | P_Fld(  LPDDR5_EN_S                           , SHU_TX_SET0_OE_EXT2UI           ) \
-                                                                  | P_Fld(  ((DFS(group_id)->data_rate==1600) && (A_D->DQ_P2S_RATIO==8))?5:2, SHU_TX_SET0_TXUPD_W2R_SEL        )); //TODO
+                                                                  | P_Fld(  ((DFS(group_id)->data_rate==1600) && (A_D->DQ_P2S_RATIO==8))?5:2, SHU_TX_SET0_TXUPD_W2R_SEL        ));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL1), P_Fld(  0x30                                  , MISC_SHU_STBCAL1_STB_PI_TRACKING_RATIO) \
                                                                   | P_Fld(  1                                     , MISC_SHU_STBCAL1_STB_UPDMASK_EN ) \
                                                                   | P_Fld(  9                                     , MISC_SHU_STBCAL1_STB_UPDMASKCYC ) \
-                                                                  | P_Fld(  (DFS(group_id)->data_rate > 1600)     , MISC_SHU_STBCAL1_DQSINCTL_PRE_SEL)); //TODO
+                                                                  | P_Fld(  (DFS(group_id)->data_rate > 1600)     , MISC_SHU_STBCAL1_DQSINCTL_PRE_SEL));
 
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL) , P_Fld(  Gat_p.GAT_TRACK_EN                    , MISC_SHU_STBCAL_STBCALEN          ) \
                                                                   | P_Fld(  Gat_p.GAT_TRACK_EN                    , MISC_SHU_STBCAL_STB_SELPHCALEN    ) \
-                                                                  | P_Fld(  DQSIEN_DQSSTB_MODE                    , MISC_SHU_STBCAL_DQSIEN_DQSSTB_MODE)); //TODO
+                                                                  | P_Fld(  DQSIEN_DQSSTB_MODE                    , MISC_SHU_STBCAL_DQSIEN_DQSSTB_MODE));
 
-    //@Darren, NOTE: Fix gating error or fifo mismatch => DMSTBLAT date_rate=1866 >= 3 : 1
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL) , P_Fld( (((Gat_p.GAT_TRACK_EN)&&(DFS(group_id)->data_rate>=1866))?(2+Gat_p.VALID_LAT_VALUE):(0+Gat_p.VALID_LAT_VALUE)) , MISC_SHU_STBCAL_DMSTBLAT    ) \
                                                                   | P_Fld(   1                                    , MISC_SHU_STBCAL_PICGLAT         ) \
                                                                   | P_Fld(   1                                    , MISC_SHU_STBCAL_DQSG_MODE       ) \
@@ -333,7 +310,7 @@ static void DIG_CONFIG_SHUF_MISC_FIX(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
     }
     vSetRank(p, backup_rank);
 
-    //RODT offset TODO
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RODTENSTB), P_Fld(  1                                   , MISC_SHU_RODTENSTB_RODTENSTB_TRACK_EN       ) \
                                                                     | P_Fld(  0                                   , MISC_SHU_RODTENSTB_RODTEN_P1_ENABLE         ) \
                                                                     | P_Fld(  (NEW_RANK_MODE)?1:PICG_MODE         , MISC_SHU_RODTENSTB_RODTENSTB_SELPH_MODE     ) \
@@ -342,8 +319,8 @@ static void DIG_CONFIG_SHUF_MISC_FIX(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
                                                                     | P_Fld(  ((A_D->DQ_P2S_RATIO == 4)?1:4)      , MISC_SHU_RODTENSTB_RODTENSTB__UI_OFFSET     ) \
                                                                     | P_Fld(  ((A_D->DQ_P2S_RATIO == 16)?19:((A_D->DQ_P2S_RATIO == 8)?13:10))    , MISC_SHU_RODTENSTB_RODTENSTB_EXT            ));
 
-    //[SV] //SHL, fix RODT rd_period low 1T issue
-    // @Darren, confirm MP settings w/ Chau-Wei Wang (Jason)
+
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RODTENSTB1), P_Fld( ((DFS(group_id)->data_rate >=3200)?1:0)   , MISC_SHU_RODTENSTB1_RODTENCGEN_TAIL         ));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RODTENSTB1), P_Fld( ((DFS(group_id)->data_rate >=3200)?2:1)   , MISC_SHU_RODTENSTB1_RODTENCGEN_HEAD         ));
 
@@ -397,26 +374,26 @@ static void DIG_CONFIG_SHUF_DQSGRETRY(DRAMC_CTX_T *p, int ch_id, int group_id)
     mcSHOW_DBG_MSG6(("[DIG_SHUF_CONFIG] DQSG_RETRY >>>>>>, group_id=%2d \n", group_id));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_DQSG_RETRY1), P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_SW_RESET        ) \
                                                                       | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_SW_EN           ) \
-                                                                      | P_Fld( 0 /*@Jimmy, sync MP settings by YT*/ , MISC_SHU_DQSG_RETRY1_RETRY_DDR1866_PLUS    ) \
+                                                                      | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_DDR1866_PLUS    ) \
                                                                       | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_ONCE            ) \
-                                                                      | P_Fld( 0 /*@Jimmy, sync MP settings by YT*/ , MISC_SHU_DQSG_RETRY1_RETRY_3TIMES          ) \
+                                                                      | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_3TIMES          ) \
                                                                       | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_1RANK           ) \
-                                                                      | P_Fld( 0 /*@Jimmy, sync MP settings by YT*/ , MISC_SHU_DQSG_RETRY1_RETRY_BY_RANK         ) \
+                                                                      | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_BY_RANK         ) \
                                                                       | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_DM4BYTE         ) \
                                                                       | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_DQSIENLAT       ) \
                                                                       | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_STBENCMP_ALLBYTE) \
                                                                       | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_XSR_DQSG_RETRY_EN     ) \
-                                                                      | P_Fld( 0 /*@Darren, sync MP settings by YT (DFS(group_id)->data_rate>=3733)*/ , MISC_SHU_DQSG_RETRY1_XSR_RETRY_SPM_MODE    ) \
+                                                                      | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_XSR_RETRY_SPM_MODE    ) \
                                                                       | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_CMP_DATA        ) \
                                                                       | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_ALE_BLOCK_MASK  ) \
-                                                                      | P_Fld( 0 /*@Jimmy, sync MP settings by YT*/ , MISC_SHU_DQSG_RETRY1_RETRY_RDY_SEL_DLE     ) \
-                                                                      | P_Fld( 0 /*@Jimmy, sync MP settings by YT*/ , MISC_SHU_DQSG_RETRY1_RETRY_USE_NON_EXTEND  ) \
-                                                                      | P_Fld( 0 /*@Jimmy, sync MP settings by YT*/ , MISC_SHU_DQSG_RETRY1_RETRY_USE_CG_GATING   ) \
-                                                                      | P_Fld( 0 /*@Jimmy, sync MP settings by YT*/ , MISC_SHU_DQSG_RETRY1_RETRY_ROUND_NUM       ) \
+                                                                      | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_RDY_SEL_DLE     ) \
+                                                                      | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_USE_NON_EXTEND  ) \
+                                                                      | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_USE_CG_GATING   ) \
+                                                                      | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_ROUND_NUM       ) \
                                                                       | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_RANKSEL_FROM_PHY) \
                                                                       | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_PA_DISABLE      ) \
                                                                       | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_STBEN_RESET_MSK ) \
-                                                                      | P_Fld( 0 /*@Jimmy, sync MP settings by YT*/ , MISC_SHU_DQSG_RETRY1_RETRY_USE_BURST_MODE  ));
+                                                                      | P_Fld( 0                                , MISC_SHU_DQSG_RETRY1_RETRY_USE_BURST_MODE  ));
 
     vSetPHY2ChannelMapping(p, backup_ch_id);
     p->ShuRGAccessIdx = backup_ShuRGAccessIdx;
@@ -425,8 +402,8 @@ static void DIG_CONFIG_SHUF_DQSGRETRY(DRAMC_CTX_T *p, int ch_id, int group_id)
 
 static void DIG_CONFIG_SHUF_DBI(DRAMC_CTX_T *p, int ch_id, int group_id)
 {
-    U8 RD_DBI_EN = 1;//TODO
-    U8 WR_DBI_EN = 1;//TODO
+    U8 RD_DBI_EN = 1;
+    U8 WR_DBI_EN = 1;
 
     U8 backup_ch_id = p->channel;
     u8 backup_ShuRGAccessIdx = p->ShuRGAccessIdx;
@@ -456,7 +433,7 @@ static void DIG_CONFIG_SHUF_DBI(DRAMC_CTX_T *p, int ch_id, int group_id)
     mcSHOW_DBG_MSG6(("[DIG_SHUF_CONFIG] DBI <<<<<<, group_id=%2d \n",  group_id));
 }
 
-//TODO LPDDR5
+
 static void DIG_CONFIG_SHUF_DVFSWLRL(DRAMC_CTX_T *p, int ch_id, int group_id)
 {
     U8 backup_ch_id = p->channel;
@@ -476,7 +453,7 @@ static void DIG_CONFIG_SHUF_DVFSWLRL(DRAMC_CTX_T *p, int ch_id, int group_id)
 
         LP4_DRAM_config (DFS(group_id)->data_rate,&LP4_temp);
 
-        HWSET_MR13_OP_Value = ((LP4_temp.WORK_FSP & 1) << 7) | ((LP4_temp.WORK_FSP & 1) << 6) | (( 0 << 5) | 8); //DMI default enable
+        HWSET_MR13_OP_Value = ((LP4_temp.WORK_FSP & 1) << 7) | ((LP4_temp.WORK_FSP & 1) << 6) | (( 0 << 5) | 8);
         HWSET_VRCG_OP_Value = ((LP4_temp.WORK_FSP & 1) << 7) | ((LP4_temp.WORK_FSP & 1) << 6);
         HWSET_MR2_OP_Value  = ((LP4_temp.MR_WL & 7) << 3) | (LP4_temp.MR_WL & 7);
     } else {
@@ -494,13 +471,6 @@ static void DIG_CONFIG_SHUF_DVFSWLRL(DRAMC_CTX_T *p, int ch_id, int group_id)
 }
 
 
-//=================================================
-//Jump ratio calculate and setting
-//------------------------------------------------
-//notice: 400 800 not support tracking TODO
-//  should confirm it with DQ_SEMI_OPEN =1 or not but not data_rate as condition
-//
-//================================================
 #if 0
 void TX_RX_jumpratio_calculate(DRAMC_CTX_T *p,int ch_id,int group_id)
 {
@@ -515,19 +485,17 @@ void TX_RX_jumpratio_calculate(DRAMC_CTX_T *p,int ch_id,int group_id)
     mcSHOW_DBG_MSG(("[TX_RX_jumpratio_calculate]>>>>>>>> group_id = %1d",group_id));
     for(tar = 0; tar<DFS_GROUP_NUM;tar++)
     {
-        if(((DFS(group_id)->data_rate == 800) || (DFS(group_id)->data_rate == 400)) || ((DFS(tar)->data_rate == 800) || (DFS(tar)->data_rate == 400))) //TODO wihtout tracking
+        if(((DFS(group_id)->data_rate == 800) || (DFS(group_id)->data_rate == 400)) || ((DFS(tar)->data_rate == 800) || (DFS(tar)->data_rate == 400)))
         {
             result[tar] = 0;
         }
         else
         {
-            result[tar] = (int)(((float)(DFS(tar)->data_rate) * (float)ratio) / (float)(DFS(group_id)->data_rate) + 0.5); //+0.5 for roundup
+            result[tar] = (int)(((float)(DFS(tar)->data_rate) * (float)ratio) / (float)(DFS(group_id)->data_rate) + 0.5);
         }
         mcSHOW_DBG_MSG(("\n[TXRX_jumpratio]current_group data_rate=%1d,tar_data_rate=%1d,jumpratio=%1d;\n",DFS(group_id)->data_rate,DFS(tar)->data_rate,result[tar]));
     }
-    //=============================
-    //setting
-    //=============================
+
     p->ShuRGAccessIdx = (group_id == 0) ? DRAM_DFS_REG_SHU0 : DRAM_DFS_REG_SHU1;
 
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_FREQ_RATIO_SET0), P_Fld(   result[0]  , SHU_FREQ_RATIO_SET0_TDQSCK_JUMP_RATIO0) \
@@ -557,12 +525,6 @@ static void DIG_CONFIG_DVFS_DEPENDENCE(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
                                                                     | P_Fld(             0               , MISC_SHU_DVFSDLL_R_BYPASS_2ND_DLL  ));
 }
 
-//====================================
-// Digital shuffle configuration entry
-//------------------------------------
-//Notice:
-//
-//====================================
 void DIG_CONFIG_SHUF(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
 {
     DIG_CONFIG_SHUF_ALG_TXCA(p,ch_id,group_id);
@@ -581,12 +543,12 @@ static void OTHER_GP_INIT(DRAMC_CTX_T *p,U32 ch_id, U32 group_id)
     U8 backup_ch_id = p->channel;
     U8 backup_ShuRGAccessIdx = p->ShuRGAccessIdx;
 
-    //notice here.  Replace the A_D A_T with new frequency auto-generation
+
     ANA_TOP_FUNCTION_CFG(A_T,DFS(group_id)->data_rate);
     ANA_CLK_DIV_config(A_D,DFS(group_id));
 
     p->ShuRGAccessIdx = (group_id == 0) ? DRAM_DFS_REG_SHU0 : DRAM_DFS_REG_SHU1;
-    ANA_sequence_shuffle_colletion(p,A_D);//these RG will be set during flow,but for DV another GP should be set directly
+    ANA_sequence_shuffle_colletion(p,A_D);
     ANA_Config_shuffle(p,A_T,group_id);
     DIG_CONFIG_SHUF(p,ch_id,group_id);
     vSetPHY2ChannelMapping(p, backup_ch_id);

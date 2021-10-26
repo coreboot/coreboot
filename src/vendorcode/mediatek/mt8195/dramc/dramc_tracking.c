@@ -14,20 +14,20 @@
 // Global variables
 //-----------------------------------------------------------------------------
 
-//U8 gu1MR23Done = FALSE; /* Not used starting from Vinson (all freqs use MR23=0x3F) */
+//U8 gu1MR23Done = FALSE;
 U8 gu1MR23[CHANNEL_NUM][RANK_MAX];
-/* DQSOSCTHRD_INC & _DEC are 12 bits (Starting from Vinson) */
+
 U16 gu2DQSOSCTHRD_INC[CHANNEL_NUM][RANK_MAX];
 U16 gu2DQSOSCTHRD_DEC[CHANNEL_NUM][RANK_MAX];
-U16 gu2MR18[CHANNEL_NUM][RANK_MAX]; /* Stores MRR MR18 (DQS ocillator count - MSB) */
-U16 gu2MR19[CHANNEL_NUM][RANK_MAX]; /* Stores MRR MR19 (DQS ocillator count - LSB) */
-U16 gu2DQSOSC[CHANNEL_NUM][RANK_MAX]; /* Stores tDQSOSC results */
+U16 gu2MR18[CHANNEL_NUM][RANK_MAX];
+U16 gu2MR19[CHANNEL_NUM][RANK_MAX];
+U16 gu2DQSOSC[CHANNEL_NUM][RANK_MAX];
 U16 gu2DQSOscCnt[CHANNEL_NUM][RANK_MAX][2];
 
 
 void DramcDQSOSCInit(void)
 {
-    memset(gu1MR23, 0x3F, sizeof(gu1MR23)); /* MR23 should be 0x3F for all freqs (Starting from Vinson) */
+    memset(gu1MR23, 0x3F, sizeof(gu1MR23));
     memset(gu2DQSOSCTHRD_INC, 0x6, sizeof(gu2DQSOSCTHRD_INC));
     memset(gu2DQSOSCTHRD_DEC, 0x4, sizeof(gu2DQSOSCTHRD_DEC));
 }
@@ -44,14 +44,12 @@ static DRAM_STATUS_T DramcStartDQSOSC_SCSM(DRAMC_CTX_T *p)
 
     u4MRSRKBak = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), SWCMD_CTRL0_MRSRK);
 
-    //!!R_DMMRSRK(R_DMMPCRKEN=1) specify rank0 or rank1
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_DQSOSCR), 0, DQSOSCR_DQSOSC2RK);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), u1GetRank(p), SWCMD_CTRL0_MRSRK);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MPC_OPTION), 1, MPC_OPTION_MPCRKEN);
 
-    //R_DMDQSOSCENEN, 0x1E4[10]=1 for DQSOSC Start
-    //Wait dqsoscen_response=1 (dramc_conf_nao, 0x3b8[29])
-    //R_DMDQSOSCENEN, 0x1E4[10]=0
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 1, SWCMD_EN_DQSOSCENEN);
 
     do
@@ -65,7 +63,7 @@ static DRAM_STATUS_T DramcStartDQSOSC_SCSM(DRAMC_CTX_T *p)
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), u4MRSRKBak, SWCMD_CTRL0_MRSRK);
 
-    if (u4TimeCnt == 0)//time out
+    if (u4TimeCnt == 0)
     {
         mcSHOW_ERR_MSG(("Start fail (time out)\n"));
         return DRAM_FAIL;
@@ -106,7 +104,7 @@ static DRAM_STATUS_T DramcStartDQSOSC_RTSWCMD(DRAMC_CTX_T *p)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MPC_CTRL),
             0, MPC_CTRL_RTSWCMD_HPRI_EN);
 
-    if (u4TimeCnt == 0)//time out
+    if (u4TimeCnt == 0)
     {
         mcSHOW_ERR_MSG(("[LP5 RT SW Cmd MRW ] Resp fail (time out)\n"));
         return DRAM_FAIL;
@@ -123,27 +121,27 @@ static DRAM_STATUS_T DramcStartDQSOSC_SWCMD(DRAMC_CTX_T *p)
     U32 u4TimeCnt = TIME_OUT_CNT;
     U32 u4RegBackupAddress[] = {DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL), DRAMC_REG_ADDR(DRAMC_REG_CKECTRL)};
 
-    // Backup rank, CKE fix on/off, HW MIOCK control settings
+
     DramcBackupRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress)/sizeof(U32));
 
     mcSHOW_DBG_MSG4(("[ZQCalibration]\n"));
     //mcFPRINTF((fp_A60501, "[ZQCalibration]\n"));
 
-    // Disable HW MIOCK control to make CLK always on
+
     DramCLKAlwaysOnOff(p, ON, TO_ONE_CHANNEL);
     mcDELAY_US(1);
 
-    //if CKE2RANK=1, only need to set CKEFIXON, it will apply to both rank.
+
     CKEFixOnOff(p, TO_ALL_RANK, CKE_FIXON, TO_ONE_CHANNEL);
 
-    //ZQCAL Start
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 1, SWCMD_EN_WCK2DQI_START_SWTRIG);
 
     do
     {
         u4Response = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SPCMDRESP3), SPCMDRESP3_WCK2DQI_START_SWTRIG_RESPONSE);
         u4TimeCnt --;
-        mcDELAY_US(1);  // Wait tZQCAL(min) 1us or wait next polling
+        mcDELAY_US(1);
 
         mcSHOW_DBG_MSG4(("%d- ", u4TimeCnt));
         //mcFPRINTF((fp_A60501, "%d- ", u4TimeCnt));
@@ -158,7 +156,7 @@ static DRAM_STATUS_T DramcStartDQSOSC_SWCMD(DRAMC_CTX_T *p)
         return DRAM_FAIL;
     }
 
-    // Restore rank, CKE fix on, HW MIOCK control settings
+
     DramcRestoreRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress)/sizeof(U32));
 
     mcSHOW_DBG_MSG4(("\n[DramcZQCalibration] Done\n\n"));
@@ -174,7 +172,7 @@ static DRAM_STATUS_T DramcStartDQSOSC(DRAMC_CTX_T *p)
     return DramcStartDQSOSC_SCSM(p);
 #elif DQSOSC_RTSWCMD
     return DramcStartDQSOSC_RTSWCMD(p);
-#else //DQSOSC_SWCMD
+#else
     return DramcStartDQSOSC_SWCMD(p);
 #endif
 }
@@ -194,16 +192,14 @@ DRAM_STATUS_T DramcDQSOSCAuto(DRAMC_CTX_T *p)
     u4RegBak[0] = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL));
     u4RegBak[1] = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL));
 
-    //LPDDR4-3200,     PI resolution = tCK/64 =9.76ps
-    //Only if MR23>=16, then error < PI resolution.
-    //Set MR23 == 0x3f, stop after 63*16 clock
+
     //vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MRS), u1GetRank(p), MRS_MRSRK);
     DramcModeRegWriteByRank(p, p->rank, 23, u1MR23);
 
-    //SW mode
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DQSOSC_SET0), 1, SHU_DQSOSC_SET0_DQSOSCENDIS);
 
-    // Disable HW MIOCK control to make CLK always on
+
     DramCLKAlwaysOnOff(p, ON, TO_ONE_CHANNEL);
 
     CKEFixOnOff(p, p->rank, CKE_FIXON, TO_ONE_CHANNEL);
@@ -215,17 +211,17 @@ DRAM_STATUS_T DramcDQSOSCAuto(DRAMC_CTX_T *p)
     DramcModeRegReadByRank(p, p->rank, 19, &u2MR19);
 
 #if (SW_CHANGE_FOR_SIMULATION == 0)
-    //B0
+
     u2DQSCnt = (u2MR18 & 0x00FF) | ((u2MR19 & 0x00FF) << 8);
     if (u2DQSCnt != 0)
-        u2DQSOsc[0] = u1MR23 * 16 * 1000000 / (2 * u2DQSCnt * DDRPhyGetRealFreq(p)); //tDQSOSC = 16*MR23*tCK/2*count
+        u2DQSOsc[0] = u1MR23 * 16 * 1000000 / (2 * u2DQSCnt * DDRPhyGetRealFreq(p));
     else
         u2DQSOsc[0] = 0;
 
-    //B1
+
     u2DQSCnt = (u2MR18 >> 8) | ((u2MR19 & 0xFF00));
     if (u2DQSCnt != 0)
-        u2DQSOsc[1] = u1MR23 * 16 * 1000000 / (2 * u2DQSCnt * DDRPhyGetRealFreq(p)); //tDQSOSC = 16*MR23*tCK/2*count
+        u2DQSOsc[1] = u1MR23 * 16 * 1000000 / (2 * u2DQSCnt * DDRPhyGetRealFreq(p));
     else
         u2DQSOsc[1] = 0;
     mcSHOW_DBG_MSG2(("[DQSOSCAuto] RK%d, (LSB)MR18= 0x%x, (MSB)MR19= 0x%x, tDQSOscB0 = %d ps tDQSOscB1 = %d ps\n", u1GetRank(p), u2MR18, u2MR19, u2DQSOsc[0], u2DQSOsc[1]));
@@ -246,14 +242,11 @@ DRAM_STATUS_T DramcDQSOSCAuto(DRAMC_CTX_T *p)
 
 
 #if ENABLE_TX_TRACKING
-/* Using gu2DQSOSC results calculated from DramcDQSOSCAuto
- * -> calculate DQSOSCTHRD_INC, DQSOSCTHRD_DEC
- * _INC, _DEC formulas are extracted from "Verification plan of Vinson LPDDR4 HW TX Tracking" doc
- */
+
 DRAM_STATUS_T DramcDQSOSCMR23(DRAMC_CTX_T *p)
 {
 #if (SW_CHANGE_FOR_SIMULATION == 0)
-    /* Preloader doesn't support floating point numbers -> Manually expand/simpify _INC, _DEC formula */
+
     U8 u1MR23 = gu1MR23[p->channel][p->rank];
     U16 u2DQSOSC = gu2DQSOSC[p->channel][p->rank];
     U32 u4tCK = 1000000 / DDRPhyGetRealFreq(p);
@@ -272,16 +265,16 @@ DRAM_STATUS_T DramcDQSOSCMR23(DRAMC_CTX_T *p)
 }
 
 
-/* Sets DQSOSC_BASE for specified rank/byte */
+
 DRAM_STATUS_T DramcDQSOSCSetMR18MR19(DRAMC_CTX_T *p)
 {
     U16 u2DQSOscCnt[2];
 
     DramcDQSOSCAuto(p);
 
-    //B0
+
     gu2DQSOscCnt[p->channel][p->rank][0] = u2DQSOscCnt[0] = (gu2MR18[p->channel][p->rank] & 0x00FF) | ((gu2MR19[p->channel][p->rank] & 0x00FF) << 8);
-    //B1
+
     gu2DQSOscCnt[p->channel][p->rank][1] = u2DQSOscCnt[1] = (gu2MR18[p->channel][p->rank] >> 8) | ((gu2MR19[p->channel][p->rank] & 0xFF00));
 
     if ((p->dram_cbt_mode[p->rank] == CBT_NORMAL_MODE) && (gu2DQSOscCnt[p->channel][p->rank][1] == 0))
@@ -359,7 +352,7 @@ DRAM_STATUS_T DramcDQSOSCShuSettings(DRAMC_CTX_T *p)
         u1FILT_PITHRD = 0x12;
         u1W2R_SEL = 0x2;
     }
-    else    //4266
+    else
     {
         u1FILT_PITHRD = 0x17;
         u1W2R_SEL = 0x2;
@@ -372,7 +365,7 @@ DRAM_STATUS_T DramcDQSOSCShuSettings(DRAMC_CTX_T *p)
     }
 
     u1DQSOSCRCNT = ((p->frequency<< u1IsDiv4))/100;
-    if ((p->frequency%100) != 0) // @Darren,  Round up for tOSCO timing (40ns)
+    if ((p->frequency%100) != 0)
         u1DQSOSCRCNT++;
 
     if (gu1MR23[p->channel][RANK_1] > gu1MR23[p->channel][RANK_0])
@@ -385,16 +378,15 @@ DRAM_STATUS_T DramcDQSOSCShuSettings(DRAMC_CTX_T *p)
      if (u1RoundUp != 0)
         u2PRDCNT++;
 
-    //Don't power down dram during DQS interval timer run time, (MR23[7:0] /4) + (tOSCO/MCK unit/16)
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DQSOSC_SET0), u2PRDCNT, SHU_DQSOSC_SET0_DQSOSC_PRDCNT); //@Darren, unit: 16MCK and tOSCO=40ns/MCK
 
-    //set tOSCO constraint to read MR18/MR19, should be > 40ns/MCK
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DQSOSCR), u1DQSOSCRCNT, SHU_DQSOSCR_DQSOSCRCNT);//@Darren, unit: MCK to meet spec. tOSCO=40ns/MCK
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DQSOSC_SET0), u2PRDCNT, SHU_DQSOSC_SET0_DQSOSC_PRDCNT);
+
+
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DQSOSCR), u1DQSOSCRCNT, SHU_DQSOSCR_DQSOSCRCNT);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_TX_SET0), (u1FILT_PITHRD>>1), SHU_TX_SET0_DQS2DQ_FILT_PITHRD);
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_TX_SET0), P_Fld(u1W2R_SEL, SHU_TX_SET0_TXUPD_W2R_SEL) | P_Fld(0x0, SHU_TX_SET0_TXUPD_SEL));
 
-    /* Starting from Vinson, DQSOSCTHRD_INC & _DEC is split into RK0 and RK1 */
-    //Rank 0/1
+
     for (u1RankIdx = RANK_0; u1RankIdx < p->support_rank_num; u1RankIdx++)
     {
         vSetRank(p, u1RankIdx);
@@ -403,8 +395,7 @@ DRAM_STATUS_T DramcDQSOSCShuSettings(DRAMC_CTX_T *p)
     }
     vSetRank(p, u1RankIdxBak);
 
-    //set interval to do MPC(start DQSOSC) command, and dramc send DQSOSC start to rank0/1/2 at the same time
-    //TX tracking period unit: 3.9us
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DQSOSC_SET0), u2DQSOSCENCNT, SHU_DQSOSC_SET0_DQSOSCENCNT);
 
     return DRAM_OK;
@@ -415,22 +406,22 @@ void DramcHwDQSOSC(DRAMC_CTX_T *p)
     DRAM_RANK_T rank_bak = u1GetRank(p);
     DRAM_CHANNEL_T ch_bak = p->channel;
 
-    //Enable TX tracking new mode
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_FREQ_RATIO_OLD_MODE0), 1, TX_FREQ_RATIO_OLD_MODE0_SHUFFLE_LEVEL_MODE_SELECT);
 
-    //Enable Freq_RATIO update
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_TX_TRACKING_SET0), P_Fld(1, TX_TRACKING_SET0_SHU_PRELOAD_TX_HW)
                                             | P_Fld(0, TX_TRACKING_SET0_SHU_PRELOAD_TX_START)
                                             | P_Fld(0, TX_TRACKING_SET0_SW_UP_TX_NOW_CASE));
 
-    //DQSOSC MPC command violation
+
 #if ENABLE_TMRRI_NEW_MODE
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MPC_CTRL), 1, MPC_CTRL_MPC_BLOCKALE_OPT);
 #else
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MPC_CTRL), 0, MPC_CTRL_MPC_BLOCKALE_OPT);
 #endif
 
-    //DQS2DQ UI/PI setting controlled by HW
+
     #if ENABLE_SW_TX_TRACKING
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL1), 1, MISC_CTRL1_R_DMARPIDQ_SW);
     #else
@@ -441,15 +432,14 @@ void DramcHwDQSOSC(DRAMC_CTX_T *p)
     #endif
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_DQSOSCR), 1, DQSOSCR_ARUIDQ_SW);
 
-    //Set dqsosc oscillator run time by MRW
-    //write RK0 MR23
+
     #if 0
     vSetRank(p, RANK_0);
     vSetPHY2ChannelMapping(p, CHANNEL_A);
     DramcModeRegWrite(p, 23, u1MR23);
     vSetPHY2ChannelMapping(p, CHANNEL_B);
     DramcModeRegWrite(p, 23, u1MR23);
-    //write RK1 MR23
+
     vSetRank(p, RANK_1);
     vSetPHY2ChannelMapping(p, CHANNEL_A);
     DramcModeRegWrite(p, 23, u1MR23);
@@ -457,7 +447,7 @@ void DramcHwDQSOSC(DRAMC_CTX_T *p)
     DramcModeRegWrite(p, 23, u1MR23);
     #endif
 
-    //Enable HW read MR18/MR19 for each rank
+
     #if ENABLE_SW_TX_TRACKING
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_DQSOSCR), 1, DQSOSCR_DQSOSCRDIS);
     #else
@@ -472,8 +462,8 @@ void DramcHwDQSOSC(DRAMC_CTX_T *p)
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK_DQSOSC), 1, RK_DQSOSC_DQSOSCR_RK0EN);
     }
 
-    //@Jouling, Update MP setting
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 1, TX_SET0_DRSCLR_RK0_EN); //Set as 1 to fix issue of RANK_SINGLE, dual rank can also be enable
+
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 1, TX_SET0_DRSCLR_RK0_EN);
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_DQSOSCR), 1, DQSOSCR_DQSOSC_CALEN);
 
@@ -483,7 +473,7 @@ void DramcHwDQSOSC(DRAMC_CTX_T *p)
 
 void Enable_TX_Tracking(DRAMC_CTX_T *p)
 {
-    //open loop mode and semi-open do not enable tracking
+
     if (u1IsPhaseMode(p) == TRUE)
     {
         vIO32WriteFldAlign_All(DRAMC_REG_SHU_DQSOSC_SET0, 1, SHU_DQSOSC_SET0_DQSOSCENDIS);
@@ -498,8 +488,8 @@ void Enable_TX_Tracking(DRAMC_CTX_T *p)
 #if RDSEL_TRACKING_EN
 void Enable_RDSEL_Tracking(DRAMC_CTX_T *p, U16 u2Freq)
 {
-    //Only enable at DDR4266
-    if (u2Freq >= RDSEL_TRACKING_TH) //add if(u1ShuffleIdx==DRAM_DFS_SRAM_MAX) to avoid enable tx-tracking when running DDR800 as RG-SHU0
+
+    if (u2Freq >= RDSEL_TRACKING_TH)
     {
         vIO32WriteFldAlign_All(DDRPHY_REG_SHU_MISC_RDSEL_TRACK, 0x0, SHU_MISC_RDSEL_TRACK_RDSEL_TRACK_EN);
         vIO32WriteFldMulti_All(DDRPHY_REG_SHU_MISC_RDSEL_TRACK, P_Fld(0x1, SHU_MISC_RDSEL_TRACK_RDSEL_TRACK_EN)
@@ -515,7 +505,7 @@ void Enable_RDSEL_Tracking(DRAMC_CTX_T *p, U16 u2Freq)
 #ifdef HW_GATING
 void Enable_Gating_Tracking(DRAMC_CTX_T *p)
 {
-    //open loop mode and semi-open do not enable tracking
+
     if (u1IsPhaseMode(p) == TRUE)
     {
         vIO32WriteFldMulti_All(DDRPHY_REG_MISC_SHU_STBCAL,
@@ -552,14 +542,14 @@ void Enable_ClkTxRxLatchEn(DRAMC_CTX_T *p)
     else
         vIO32WriteFldAlign_All(DDRPHY_REG_SHU_CA_CMD10, 1, SHU_CA_CMD10_RG_RX_ARCLK_DLY_LAT_EN_CA);
 
-    // Set 1 to be make TX DQS/DQ/DQM PI take effect when TX OE low, for new cross rank mode.
+
     vIO32WriteFldAlign_All(DDRPHY_REG_SHU_B0_DQ2, 1, SHU_B0_DQ2_RG_ARPI_OFFSET_LAT_EN_B0);
     if (!isLP4_DSC)
         vIO32WriteFldAlign_All(DDRPHY_REG_SHU_B1_DQ2, 1, SHU_B1_DQ2_RG_ARPI_OFFSET_LAT_EN_B1);
     else
         vIO32WriteFldAlign_All(DDRPHY_REG_SHU_CA_CMD2, 1, SHU_CA_CMD2_RG_ARPI_OFFSET_LAT_EN_CA);
 
-    // Default settings before init
+
     vIO32WriteFldAlign_All(DDRPHY_REG_SHU_B0_DQ11, 1, SHU_B0_DQ11_RG_RX_ARDQ_OFFSETC_LAT_EN_B0);
     vIO32WriteFldAlign_All(DDRPHY_REG_SHU_B1_DQ11, 1, SHU_B1_DQ11_RG_RX_ARDQ_OFFSETC_LAT_EN_B1);
     vIO32WriteFldAlign_All(DDRPHY_REG_SHU_CA_CMD11, 1, SHU_CA_CMD11_RG_RX_ARCA_OFFSETC_LAT_EN_CA);
@@ -578,7 +568,7 @@ void Enable_ClkTxRxLatchEn(DRAMC_CTX_T *p)
     }
 }
 
-#if ENABLE_TX_WDQS // @Darren, To avoid unexpected DQS toggle during calibration
+#if ENABLE_TX_WDQS
 void Enable_TxWDQS(DRAMC_CTX_T *p)
 {
     BOOL isLP4_DSC = (p->DRAMPinmux == PINMUX_DSC)?1:0;
@@ -609,8 +599,8 @@ static void Enable_and_Trigger_TX_Retry(DRAMC_CTX_T *p)
                                             | P_Fld(0, TX_RETRY_SET0_TX_RETRY_UPDPI_CG_OPT)
                                             | P_Fld(1, TX_RETRY_SET0_XSR_TX_RETRY_OPT)
                                             | P_Fld(0, TX_RETRY_SET0_XSR_TX_RETRY_EN)
-                                            | P_Fld(0, TX_RETRY_SET0_XSR_TX_RETRY_SW_EN)); //If using SW mode, don;t have to set this field
-    //open loop mode and semi-open do not enable tracking
+                                            | P_Fld(0, TX_RETRY_SET0_XSR_TX_RETRY_SW_EN));
+
     if (u1IsPhaseMode(p) == TRUE)
     {
         vIO32WriteFldAlign_All(DRAMC_REG_SHU_DQSOSC_SET0, 1, SHU_DQSOSC_SET0_DQSOSCENDIS);
@@ -722,8 +712,7 @@ void DramcSWTxTracking(DRAMC_CTX_T *p)
             u2MR1819_Runtime[p->rank][1] = u2MR1819_Runtime[p->rank][0];
         }
 
-        //INC : MR1819>base. PI-
-        //DEC : MR1819<base. PI+
+
         for (byteIdx = 0; byteIdx < 2; byteIdx++)
         {
             U16 deltaMR1819 = 0;
@@ -828,16 +817,8 @@ void DramcRxInputDelayTrackingInit_byFreq(DRAMC_CTX_T *p)
     U32 u4WbrBackup = GetDramcBroadcast();
     DramcBroadcastOnOff(DRAMC_BROADCAST_ON);
 
-    //Monitor window size setting
-    //DDRPHY.SHU*_B*_DQ5.RG_RX_ARDQS0_DVS_DLY_B* (suggested value from A-PHY owner)
-//WHITNEY_TO_BE_PORTING
+
 #if (fcFOR_CHIP_ID == fc8195)
-    //              6400    5500    4266    3733    3200    2400    1600    1200    800
-    //UI            156p    181p    234p    268p    312p    417p    625p    833p    1250p
-    //DVS_EN        O       O       O       O       O       O       X       X       X
-    //INI           1       2       3       N=5     N=5     N=7     N=12    N=15    N=15
-    //DVS delay     O       O       O       X       X       X       X       X       X
-    //calibration
 
     if(p->frequency >= 3200)
     {
@@ -874,12 +855,12 @@ void DramcRxInputDelayTrackingInit_byFreq(DRAMC_CTX_T *p)
 #if RX_DVS_NOT_SHU_WA
     if (isLP4_DSC)
     {
-        //CA_CMD5_RG_RX_ARCLK_DVS_EN is not shu RG, so always enable. Fixed in IPMv2
+
         u1DVS_En =1;
     }
 #endif
 
-    //Note that DVS DLY is _DQS_ and DVS_EN is _DQ_
+
     vIO32WriteFldAlign((DDRPHY_REG_SHU_B0_DQ5), u1DVS_Delay, SHU_B0_DQ5_RG_RX_ARDQS0_DVS_DLY_B0);
     if (!isLP4_DSC)
     {
@@ -890,13 +871,12 @@ void DramcRxInputDelayTrackingInit_byFreq(DRAMC_CTX_T *p)
         vIO32WriteFldAlign((DDRPHY_REG_SHU_CA_CMD5), u1DVS_Delay, SHU_CA_CMD5_RG_RX_ARCLK_DVS_DLY);
     }
 
-    /* Bian_co HW design issue: run-time PBYTE flag will lose it's function and become per-bit -> set to 0 */
+
     vIO32WriteFldMulti((DDRPHY_REG_SHU_B0_DQ7), P_Fld(0x0, SHU_B0_DQ7_R_DMRXDVS_PBYTE_FLAG_OPT_B0)
                                                         | P_Fld(0x0, SHU_B0_DQ7_R_DMRXDVS_PBYTE_DQM_EN_B0));
     vIO32WriteFldMulti((DDRPHY_REG_SHU_B1_DQ7), P_Fld(0x0, SHU_B1_DQ7_R_DMRXDVS_PBYTE_FLAG_OPT_B1)
                                                         | P_Fld(0x0, SHU_B1_DQ7_R_DMRXDVS_PBYTE_DQM_EN_B1));
-    //Note that DVS DLY is _DQS_ and DVS_EN is _DQ_
-    //Enable A-PHY DVS LEAD/LAG
+
     vIO32WriteFldAlign((DDRPHY_REG_SHU_B0_DQ11), u1DVS_En, SHU_B0_DQ11_RG_RX_ARDQ_DVS_EN_B0);
     if (!isLP4_DSC)
     {
@@ -911,13 +891,12 @@ void DramcRxInputDelayTrackingInit_byFreq(DRAMC_CTX_T *p)
 }
 #endif
 
-///TODO: wait for porting +++
+
 #if __A60868_TO_BE_PORTING__
 #if RX_DLY_TRACK_ONLY_FOR_DEBUG
 void DramcRxDlyTrackDebug(DRAMC_CTX_T *p)
 {
-    /* indicate ROW_ADR = 2 for dummy write & read for Rx dly track debug feature, avoid pattern overwrite by MEM_TEST
-     * pattern(0xAAAA5555) locates: 0x40010000, 0x40010100, 0x80010000, 0x80010100 */
+
 
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DRAMC_REG_RK0_DUMMY_RD_ADR), P_Fld(2, RK0_DUMMY_RD_ADR_DMY_RD_RK0_ROW_ADR)
                         | P_Fld(0, RK0_DUMMY_RD_ADR_DMY_RD_RK0_COL_ADR)
@@ -937,16 +916,16 @@ void DramcRxDlyTrackDebug(DRAMC_CTX_T *p)
     vIO32Write4B_All(DRAMC_REG_RK1_DUMMY_RD_WDATA2, 0xAAAA5555);
     vIO32Write4B_All(DRAMC_REG_RK1_DUMMY_RD_WDATA3, 0xAAAA5555);
 
-    //disable Rx dly track debug and clear status lock
+
     vIO32WriteFldMulti_All((DDRPHY_MISC_RXDVS2), P_Fld(0, MISC_RXDVS2_R_DMRXDVS_DBG_MON_EN)
                         | P_Fld(1, MISC_RXDVS2_R_DMRXDVS_DBG_MON_CLR)
                         | P_Fld(0, MISC_RXDVS2_R_DMRXDVS_DBG_PAUSE_EN));
 
-    //trigger dummy write pattern 0xAAAA5555
+
     vIO32WriteFldAlign_All(DRAMC_REG_DUMMY_RD, 0x1, DUMMY_RD_DMY_WR_DBG);
     vIO32WriteFldAlign_All(DRAMC_REG_DUMMY_RD, 0x0, DUMMY_RD_DMY_WR_DBG);
 
-    // enable Rx dly track debug feature
+
     vIO32WriteFldMulti_All((DDRPHY_MISC_RXDVS2), P_Fld(1, MISC_RXDVS2_R_DMRXDVS_DBG_MON_EN)
                         | P_Fld(0, MISC_RXDVS2_R_DMRXDVS_DBG_MON_CLR)
                         | P_Fld(1, MISC_RXDVS2_R_DMRXDVS_DBG_PAUSE_EN));
@@ -955,7 +934,7 @@ void DramcRxDlyTrackDebug(DRAMC_CTX_T *p)
 void DramcPrintRxDlyTrackDebugStatus(DRAMC_CTX_T *p)
 {
     U32 backup_rank, u1ChannelBak, u4value;
-    U8 u1ChannelIdx, u1ChannelMax = p->support_channel_num;//channel A/B ...
+    U8 u1ChannelIdx, u1ChannelMax = p->support_channel_num;
 
     u1ChannelBak = p->channel;
     backup_rank = u1GetRank(p);
@@ -1025,7 +1004,7 @@ void DummyReadForDqsGatingRetryShuffle(DRAMC_CTX_T *p, bool bEn)
 {
     if (bEn == 1)
     {
-        vIO32WriteFldMulti_All(DDRPHY_REG_MISC_SHU_DQSG_RETRY1, P_Fld(0, MISC_SHU_DQSG_RETRY1_RETRY_ROUND_NUM)//Retry once
+        vIO32WriteFldMulti_All(DDRPHY_REG_MISC_SHU_DQSG_RETRY1, P_Fld(0, MISC_SHU_DQSG_RETRY1_RETRY_ROUND_NUM)
                                      | P_Fld(1, MISC_SHU_DQSG_RETRY1_XSR_RETRY_SPM_MODE)
                                      | P_Fld(0, MISC_SHU_DQSG_RETRY1_XSR_DQSG_RETRY_EN)
                                      | P_Fld(0, MISC_SHU_DQSG_RETRY1_RETRY_SW_EN)
@@ -1049,7 +1028,7 @@ void DummyReadForDqsGatingRetryNonShuffle(DRAMC_CTX_T *p, bool bEn)
 
     if (bEn == 1)
     {
-        vIO32WriteFldAlign_All(DRAMC_REG_TEST2_A4, 4, TEST2_A4_TESTAGENTRKSEL);//Dummy Read rank selection is controlled by Test Agent
+        vIO32WriteFldAlign_All(DRAMC_REG_TEST2_A4, 4, TEST2_A4_TESTAGENTRKSEL);
         vIO32WriteFldMulti_All(DRAMC_REG_DUMMY_RD, P_Fld(1, DUMMY_RD_DQSG_DMYRD_EN)
                                      | P_Fld(p->support_rank_num, DUMMY_RD_RANK_NUM)
                                      | P_Fld(1, DUMMY_RD_DUMMY_RD_SW));
@@ -1079,7 +1058,7 @@ void DramcImpedanceHWSaving(DRAMC_CTX_T *p)
 void DramcImpedanceTrackingEnable(DRAMC_CTX_T *p)
 {
     U8 u1CHAB_en = DISABLE;
-    #if 0  //Impedance tracking offset for DRVP+2
+    #if 0
     vIO32WriteFldMulti_All(DRAMC_REG_IMPEDAMCE_CTRL1, P_Fld(2, IMPEDAMCE_CTRL1_DQS1_OFF) | P_Fld(2, IMPEDAMCE_CTRL1_DOS2_OFF));
     vIO32WriteFldMulti_All(DRAMC_REG_IMPEDAMCE_CTRL2, P_Fld(2, IMPEDAMCE_CTRL2_DQ1_OFF) | P_Fld(2, IMPEDAMCE_CTRL2_DQ2_OFF));
     #endif
@@ -1098,39 +1077,35 @@ void DramcImpedanceTrackingEnable(DRAMC_CTX_T *p)
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_IMP_CTRL1, 1, MISC_IMP_CTRL1_IMP_ABN_LAT_EN);
     #endif
 
-    //Write (DRAMC _BASE+ 0x8B) [31:0] = 32'he4000000//enable impedance tracking
-    //u1CHAB_en = (p->support_channel_num == CHANNEL_DUAL) ? ENABLE : DISABLE;
-    vIO32WriteFldAlign_All(DDRPHY_REG_MISC_CTRL0, u1CHAB_en, MISC_CTRL0_IMPCAL_CHAB_EN);//Set CHA this bit to enable dual channel tracking
 
-    //During shuffle, after CH_A IMP update done, CH_B has no enough time to update (IMPCAL_IMPCAL_DRVUPDOPT=1)
-    //enable ECO function for impedance load last tracking result of previous shuffle level (IMPCAL_IMPCAL_CHGDRV_ECO_OPT=1)
-    //enable ECO function for impcal_sm hange when DRVP>=0x1D (IMPCAL_IMPCAL_SM_ECO_OPT=1)
+    //u1CHAB_en = (p->support_channel_num == CHANNEL_DUAL) ? ENABLE : DISABLE;
+    vIO32WriteFldAlign_All(DDRPHY_REG_MISC_CTRL0, u1CHAB_en, MISC_CTRL0_IMPCAL_CHAB_EN);
+
+
     vIO32WriteFldMulti_All(DDRPHY_REG_MISC_IMPCAL, P_Fld(1, MISC_IMPCAL_IMPCAL_HW) | P_Fld(0, MISC_IMPCAL_IMPCAL_EN) |
                                              P_Fld(1, MISC_IMPCAL_IMPCAL_SWVALUE_EN) | P_Fld(1, MISC_IMPCAL_IMPCAL_NEW_OLD_SL) |
                                              P_Fld(1, MISC_IMPCAL_IMPCAL_DRVUPDOPT) | P_Fld(1, MISC_IMPCAL_IMPCAL_CHGDRV_ECO_OPT) |
                                              P_Fld(1, MISC_IMPCAL_IMPCAL_SM_ECO_OPT) | P_Fld(1, MISC_IMPCAL_IMPBINARY) |
                                              P_Fld(1, MISC_IMPCAL_DRV_ECO_OPT));
 
-    //dual channel continuously tracking @ system busy, self-refresh, Hhbrid-S1
-    //vIO32WriteFldAlign_All(DDRPHY_REG_MISC_CTRL0, 0x1, MISC_CTRL0_IMPCAL_LP_ECO_OPT);
-    //@tg.Only CHA do Impcal tracking, CHB sync CHA result value
+
     vIO32WriteFldMulti(DDRPHY_REG_MISC_CTRL0, P_Fld(0x1, MISC_CTRL0_IMPCAL_LP_ECO_OPT) |
                                          P_Fld(0x0, MISC_CTRL0_IMPCAL_TRACK_DISABLE));
     vIO32WriteFldMulti(DDRPHY_REG_MISC_CTRL0 + SHIFT_TO_CHB_ADDR, P_Fld(0x1, MISC_CTRL0_IMPCAL_LP_ECO_OPT) |
                                          P_Fld(0x1, MISC_CTRL0_IMPCAL_TRACK_DISABLE));
 
-    // no update imp CA, because CA is unterm now
+
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_IMPCAL, 1, MISC_IMPCAL_IMPCAL_BYPASS_UP_CA_DRV);
 
-    // CH_A set 1, CH_B set 0 (mp setting)
+
     vIO32WriteFldMulti(DDRPHY_REG_MISC_IMPCAL, P_Fld(0, MISC_IMPCAL_DIS_SUS_CH0_DRV) |
                                          P_Fld(1, MISC_IMPCAL_DIS_SUS_CH1_DRV) |
-                                         P_Fld(0, MISC_IMPCAL_IMPSRCEXT) |      //Update mp setting
-                                         P_Fld(1, MISC_IMPCAL_IMPCAL_ECO_OPT)); //Update mp setting
+                                         P_Fld(0, MISC_IMPCAL_IMPSRCEXT) |
+                                         P_Fld(1, MISC_IMPCAL_IMPCAL_ECO_OPT));
     vIO32WriteFldMulti(DDRPHY_REG_MISC_IMPCAL + SHIFT_TO_CHB_ADDR, P_Fld(1, MISC_IMPCAL_DIS_SUS_CH0_DRV) |
                                          P_Fld(0, MISC_IMPCAL_DIS_SUS_CH1_DRV) |
-                                         P_Fld(1, MISC_IMPCAL_IMPSRCEXT) |      //Update mp setting
-                                         P_Fld(0, MISC_IMPCAL_IMPCAL_ECO_OPT)); //Update mp setting
+                                         P_Fld(1, MISC_IMPCAL_IMPSRCEXT) |
+                                         P_Fld(0, MISC_IMPCAL_IMPCAL_ECO_OPT));
 #if (CHANNEL_NUM > 2)
 	if (channel_num_auxadc > 2) {
     	vIO32WriteFldMulti(DDRPHY_REG_MISC_IMPCAL + SHIFT_TO_CHC_ADDR, P_Fld(0, MISC_IMPCAL_DIS_SUS_CH0_DRV) | P_Fld(1, MISC_IMPCAL_DIS_SUS_CH1_DRV));
@@ -1142,8 +1117,8 @@ void DramcImpedanceTrackingEnable(DRAMC_CTX_T *p)
 	}
 #endif
 
-    //Maoauo: keep following setting for SPMFW enable REFCTRL0_DRVCGWREF = 1 (Imp SW Save mode)
-    vIO32WriteFldAlign_All(DDRPHY_REG_MISC_IMPCAL, 1, MISC_IMPCAL_DRVCGWREF); //@Maoauo, Wait AB refresh to avoid IO drive via logic design
+
+    vIO32WriteFldAlign_All(DDRPHY_REG_MISC_IMPCAL, 1, MISC_IMPCAL_DRVCGWREF);
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_IMPCAL, 1, MISC_IMPCAL_DQDRVSWUPD);
 }
 #endif
@@ -1164,9 +1139,9 @@ void DramcPrintIMPTrackingStatus(DRAMC_CTX_T *p, U8 u1Channel)
     mcSHOW_DBG_MSG3(("[IMPTrackingStatus] CH=%d\n", p->channel));
 
 //    if (u1Channel == CHANNEL_A)
-    {//460 464: ODTN DRVP, 468 46C: DRVN DRVP
+    {
 
-        //DQS
+
         DQS_DRVN_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS2), MISC_IMPCAL_STATUS2_DRVNDQS_SAVE_2);
         DQS_DRVP_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS2), MISC_IMPCAL_STATUS2_DRVPDQS_SAVE_2);
         DQS_ODTN_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS2), MISC_IMPCAL_STATUS2_ODTNDQS_SAVE_2);
@@ -1174,7 +1149,7 @@ void DramcPrintIMPTrackingStatus(DRAMC_CTX_T *p, U8 u1Channel)
         DQS_DRVP = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS1), MISC_IMPCAL_STATUS1_DRVPDQS_SAVE_1);
         DQS_ODTN = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS1), MISC_IMPCAL_STATUS1_ODTNDQS_SAVE_1);
 
-        //DQ
+
         DQ_DRVN_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS4), MISC_IMPCAL_STATUS4_DRVNDQ_SAVE_2);
         DQ_DRVP_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS4), MISC_IMPCAL_STATUS4_DRVPDQ_SAVE_2);
         DQ_ODTN_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS4), MISC_IMPCAL_STATUS4_ODTNDQ_SAVE_2);
@@ -1182,7 +1157,7 @@ void DramcPrintIMPTrackingStatus(DRAMC_CTX_T *p, U8 u1Channel)
         DQ_DRVP = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS3), MISC_IMPCAL_STATUS3_DRVPDQ_SAVE_1);
         DQ_ODTN = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS3), MISC_IMPCAL_STATUS3_ODTNDQ_SAVE_1);
 
-        //CMD
+
         CMD_DRVN_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS8), MISC_IMPCAL_STATUS8_DRVNCMD_SAVE_2);
         CMD_DRVP_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS8), MISC_IMPCAL_STATUS8_DRVPCMD_SAVE_2);
         CMD_ODTN_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS8), MISC_IMPCAL_STATUS8_ODTNCMD_SAVE_2);
@@ -1195,23 +1170,23 @@ void DramcPrintIMPTrackingStatus(DRAMC_CTX_T *p, U8 u1Channel)
     {
         U8 shu_level;
 
-        //Channel B is workaround
+
         shu_level = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHUSTATUS), SHUSTATUS_SHUFFLE_LEVEL);
         mcSHOW_DBG_MSG(("shu_level=%d\n", shu_level));
 
-        //DQ
+
         DQ_DRVP_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DRVING1 + shu_level * SHU_GRP_DRAMC_OFFSET), SHU_DRVING1_DQDRV2_DRVP);
         DQ_DRVP = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DRVING2 + shu_level * SHU_GRP_DRAMC_OFFSET), SHU_DRVING2_DQDRV1_DRVP);
         DQ_ODTN_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DRVING3 + shu_level * SHU_GRP_DRAMC_OFFSET), SHU_DRVING3_DQODT2_ODTN);
         DQ_ODTN = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DRVING4 + shu_level * SHU_GRP_DRAMC_OFFSET), SHU_DRVING4_DQODT1_ODTN);
 
-        //DQS
+
         DQS_DRVP_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DRVING1 + shu_level * SHU_GRP_DRAMC_OFFSET), SHU_DRVING1_DQSDRV2_DRVP);
         DQS_DRVP = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DRVING1 + shu_level * SHU_GRP_DRAMC_OFFSET), SHU_DRVING1_DQSDRV1_DRVP);
         DQS_ODTN_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DRVING3 + shu_level * SHU_GRP_DRAMC_OFFSET), SHU_DRVING3_DQSODT2_ODTN);
         DQS_ODTN = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DRVING3 + shu_level * SHU_GRP_DRAMC_OFFSET), SHU_DRVING3_DQSODT1_ODTN);
 
-        //CMD
+
         CMD_DRVP_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DRVING2 + shu_level * SHU_GRP_DRAMC_OFFSET), SHU_DRVING2_CMDDRV2_DRVP);
         CMD_DRVP = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DRVING2 + shu_level * SHU_GRP_DRAMC_OFFSET), SHU_DRVING2_CMDDRV1_DRVP);
         CMD_ODTN_2 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_DRVING4 + shu_level * SHU_GRP_DRAMC_OFFSET), SHU_DRVING4_CMDODT2_ODTN);
@@ -1232,9 +1207,7 @@ void DramcPrintIMPTrackingStatus(DRAMC_CTX_T *p, U8 u1Channel)
 #endif
 }
 #endif
-/* divRoundClosest() - to round up to the nearest integer
- * discard four, but treat five as whole (of decimal points)
- */
+
 int divRoundClosest(const int n, const int d)
 {
   return ((n < 0) ^ (d < 0))? ((n - d / 2) / d): ((n + d / 2) / d);
@@ -1245,10 +1218,10 @@ int divRoundClosest(const int n, const int d)
 void FreqJumpRatioCalculation(DRAMC_CTX_T *p)
 {
     U32 shuffle_src_freq, shuffle_dst_index, jump_ratio_index;
-    U16 u2JumpRatio[12] = {0}; /* Used to record __DBQUOTE_ANCHOR__ calulation results */
+    U16 u2JumpRatio[12] = {0};
     U16 u2Freq = 0;
 
-    /* Calculate jump ratios and save to u2JumpRatio array */
+
     jump_ratio_index = 0;
 
     if (vGet_DDR_Loop_Mode(p) == CLOSE_LOOP_MODE)
@@ -1264,7 +1237,7 @@ void FreqJumpRatioCalculation(DRAMC_CTX_T *p)
                 while (1);
                 #endif
             }
-            #if 0 //cc mark since been removed in new flow
+            #if 0
             if (pDstFreqTbl->freq_sel == LP4_DDR800)
             {
                 u2JumpRatio[jump_ratio_index] = 0;
@@ -1287,7 +1260,7 @@ void FreqJumpRatioCalculation(DRAMC_CTX_T *p)
         }
     }
 
-    /* Save jumpRatios into corresponding register fields */
+
     vIO32WriteFldMulti_All(DRAMC_REG_SHU_FREQ_RATIO_SET0, P_Fld(u2JumpRatio[0], SHU_FREQ_RATIO_SET0_TDQSCK_JUMP_RATIO0)
                                                             | P_Fld(u2JumpRatio[1], SHU_FREQ_RATIO_SET0_TDQSCK_JUMP_RATIO1)
                                                             | P_Fld(u2JumpRatio[2], SHU_FREQ_RATIO_SET0_TDQSCK_JUMP_RATIO2)
@@ -1318,13 +1291,13 @@ void DramcDQSPrecalculation_preset(DRAMC_CTX_T *p)
 #if 1//(fcFOR_CHIP_ID == fc8195)
     mck2ui = 4;
 #else
-    ///TODO: use vGet_Div_Mode() instead later
+
     if (vGet_Div_Mode(p) == DIV16_MODE)
-        mck2ui = 4; /* 1:16 mode */
+        mck2ui = 4;
     else if (vGet_Div_Mode(p) == DIV8_MODE)
-        mck2ui = 3; /* 1: 8 mode */
+        mck2ui = 3;
     else
-        mck2ui = 2; /* 1: 4 mode */
+        mck2ui = 2;
 #endif
 
     mcSHOW_DBG_MSG2(("Pre-setting of DQS Precalculation\n"));
@@ -1381,7 +1354,7 @@ void DramcDQSPrecalculation_preset(DRAMC_CTX_T *p)
 
     vSetRank(p, backup_rank);
 
-    /* Disable DDR800semi and DDR400open precal */
+
     if (vGet_DDR_Loop_Mode(p) != CLOSE_LOOP_MODE)
     {
         set_value = 1;
@@ -1401,7 +1374,7 @@ void DramcDQSPrecalculation_preset(DRAMC_CTX_T *p)
 }
 
 #if 0
-void DramcDQSPrecalculation_preset(DRAMC_CTX_T *p)//Test tDQSCK_temp Pre-calculation
+void DramcDQSPrecalculation_preset(DRAMC_CTX_T *p)
 {
     U8 u1ByteIdx, u1RankNum, u1RankBackup = p->rank;
     U8 u1ShuLevel = vGet_Current_SRAMIdx(p);
@@ -1414,28 +1387,28 @@ void DramcDQSPrecalculation_preset(DRAMC_CTX_T *p)//Test tDQSCK_temp Pre-calcula
     mcDUMP_REG_MSG(("Pre-setting of DQS Precalculation\n"));
 
     if ((u1ShuLevel >= SRAM_SHU4) && (u1ShuLevel <= SRAM_SHU7))
-    { //SHU4, 5, 6, 7
-        u1Delay_Addr[0] = ((u1ShuLevel / 6) * 0x4) + 0x30; //Offset of phase0 UI register
-        u1Delay_Addr[1] = 0x38; //Offset of phase1 UI register
+    {
+        u1Delay_Addr[0] = ((u1ShuLevel / 6) * 0x4) + 0x30;
+        u1Delay_Addr[1] = 0x38;
         u2Byte_offset = 0xc;
     }
     else if (u1ShuLevel >= SRAM_SHU8)
-    {  //SHU8, 9
-        u1Delay_Addr[0] = 0x260; //Offset of phase0 UI register
-        u1Delay_Addr[1] = 0x268; //Offset of phase1 UI register
+    {
+        u1Delay_Addr[0] = 0x260;
+        u1Delay_Addr[1] = 0x268;
         u2Byte_offset = 0x4;
     }
-    else //SHU0, 1, 2, 3
+    else
     {
-        u1Delay_Addr[0] = ((u1ShuLevel / 2) * 0x4); //Offset of phase0 UI register
-        u1Delay_Addr[1] = 0x8; //Offset of phase1 UI register
+        u1Delay_Addr[0] = ((u1ShuLevel / 2) * 0x4);
+        u1Delay_Addr[1] = 0x8;
         u2Byte_offset = 0xc;
     }
 
-    u1Delay_Fld[0] = u1ShuLevel % 2; //Field of phase0 PI and UI
-    u1Delay_Fld[1] = u1ShuLevel % 4; //Field of phase1 UI
+    u1Delay_Fld[0] = u1ShuLevel % 2;
+    u1Delay_Fld[1] = u1ShuLevel % 4;
 
-    switch (u1Delay_Fld[0]) //Phase0 UI and PI
+    switch (u1Delay_Fld[0])
     {
         case 0:
             TransferReg.u4UI_Fld = RK0_PRE_TDQSCK1_TDQSCK_UIFREQ1_B0R0;
@@ -1451,17 +1424,17 @@ void DramcDQSPrecalculation_preset(DRAMC_CTX_T *p)//Test tDQSCK_temp Pre-calcula
 
     if (u1ShuLevel == SRAM_SHU8)
     {
-        TransferReg.u4UI_Fld_P1[0] = RK0_PRE_TDQSCK27_TDQSCK_UIFREQ9_P1_B0R0; //Byte0
-        TransferReg.u4UI_Fld_P1[1] = RK0_PRE_TDQSCK27_TDQSCK_UIFREQ9_P1_B1R0; //Byte1
+        TransferReg.u4UI_Fld_P1[0] = RK0_PRE_TDQSCK27_TDQSCK_UIFREQ9_P1_B0R0;
+        TransferReg.u4UI_Fld_P1[1] = RK0_PRE_TDQSCK27_TDQSCK_UIFREQ9_P1_B1R0;
     }
     else if (u1ShuLevel == SRAM_SHU9)
     {
-        TransferReg.u4UI_Fld_P1[0] = RK0_PRE_TDQSCK27_TDQSCK_UIFREQ10_P1_B0R0; //Byte0
-        TransferReg.u4UI_Fld_P1[1] = RK0_PRE_TDQSCK27_TDQSCK_UIFREQ10_P1_B1R0; //Byte1
+        TransferReg.u4UI_Fld_P1[0] = RK0_PRE_TDQSCK27_TDQSCK_UIFREQ10_P1_B0R0;
+        TransferReg.u4UI_Fld_P1[1] = RK0_PRE_TDQSCK27_TDQSCK_UIFREQ10_P1_B1R0;
     }
-    else //(u1ShuLevel < SRAM_SHU8)
+    else
     {
-        switch (u1Delay_Fld[1]) //Phase1 UI
+        switch (u1Delay_Fld[1])
         {
             case 0:
                 TransferReg.u4UI_Fld_P1[0] = RK0_PRE_TDQSCK3_TDQSCK_UIFREQ1_P1_B0R0;
@@ -1492,31 +1465,31 @@ void DramcDQSPrecalculation_preset(DRAMC_CTX_T *p)//Test tDQSCK_temp Pre-calcula
                 u1UI_value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK0_SELPH_DQSG1), SHURK0_SELPH_DQSG1_REG_DLY_DQS0_GATED);
                 u1PI_value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK0_DQSIEN), SHURK0_DQSIEN_R0DQS0IEN);
             }
-            else //Byte1
+            else
             {
                 u1MCK_value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK0_SELPH_DQSG0), SHURK0_SELPH_DQSG0_TX_DLY_DQS1_GATED);
                 u1UI_value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK0_SELPH_DQSG1), SHURK0_SELPH_DQSG1_REG_DLY_DQS1_GATED);
                 u1PI_value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK0_DQSIEN), SHURK0_DQSIEN_R0DQS1IEN);
             }
 
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK0_PRE_TDQSCK1 + u1Delay_Addr[0] + (u1ByteIdx * u2Byte_offset)), (u1MCK_value << 3) | u1UI_value, TransferReg.u4UI_Fld);//UI
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK0_PRE_TDQSCK1 + u1Delay_Addr[0] + (u1ByteIdx * u2Byte_offset)), u1PI_value, TransferReg.u4PI_Fld); //PI
+            vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK0_PRE_TDQSCK1 + u1Delay_Addr[0] + (u1ByteIdx * u2Byte_offset)), (u1MCK_value << 3) | u1UI_value, TransferReg.u4UI_Fld);
+            vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK0_PRE_TDQSCK1 + u1Delay_Addr[0] + (u1ByteIdx * u2Byte_offset)), u1PI_value, TransferReg.u4PI_Fld);
 
             if (u1ByteIdx == 0)
             {
                 u1MCK_value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK0_SELPH_DQSG0), SHURK0_SELPH_DQSG0_TX_DLY_DQS0_GATED_P1);
                 u1UI_value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK0_SELPH_DQSG1), SHURK0_SELPH_DQSG1_REG_DLY_DQS0_GATED_P1);
             }
-            else //Byte1
+            else
             {
                 u1MCK_value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK0_SELPH_DQSG0), SHURK0_SELPH_DQSG0_TX_DLY_DQS1_GATED_P1);
                 u1UI_value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHURK0_SELPH_DQSG1), SHURK0_SELPH_DQSG1_REG_DLY_DQS1_GATED_P1);
             }
 
             if ((u1ShuLevel == SRAM_SHU8) || (u1ShuLevel == SRAM_SHU9))
-                vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK0_PRE_TDQSCK1 + u1Delay_Addr[1]), (u1MCK_value << 3) | u1UI_value, TransferReg.u4UI_Fld_P1[u1ByteIdx]); //phase1 UI
+                vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK0_PRE_TDQSCK1 + u1Delay_Addr[1]), (u1MCK_value << 3) | u1UI_value, TransferReg.u4UI_Fld_P1[u1ByteIdx]);
             else
-                vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK0_PRE_TDQSCK1 + u1Delay_Addr[1] + (u1ByteIdx * u2Byte_offset)), (u1MCK_value << 3) | u1UI_value, TransferReg.u4UI_Fld_P1[0]); //phase1 UI
+                vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK0_PRE_TDQSCK1 + u1Delay_Addr[1] + (u1ByteIdx * u2Byte_offset)), (u1MCK_value << 3) | u1UI_value, TransferReg.u4UI_Fld_P1[0]);
         }
     }
     vSetRank(p, u1RankBackup);
@@ -1527,18 +1500,16 @@ void DramcDQSPrecalculation_preset(DRAMC_CTX_T *p)//Test tDQSCK_temp Pre-calcula
 
 void DramcDQSPrecalculation_enable(DRAMC_CTX_T *p)
 {
-    //DQS pre-K new mode
-    //cc mark removed vIO32WriteFldAlign_All(DRAMC_REG_RK0_PRE_TDQSCK15, 0x1, RK0_PRE_TDQSCK15_SHUFFLE_LEVEL_MODE_SELECT);
-    //Enable pre-K HW
+
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_PRE_TDQSCK1, 0x1, MISC_PRE_TDQSCK1_TDQSCK_PRECAL_HW);
-    //Select HW flow
+
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_PRE_TDQSCK1, 0x1, MISC_PRE_TDQSCK1_TDQSCK_REG_DVFS);
-    //Set Auto save to RG
+
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_PRE_TDQSCK1, 0x1, MISC_PRE_TDQSCK1_TDQSCK_HW_SW_UP_SEL);
 }
 #endif
 
-#if 0 /* CC mark to use DV initial setting */
+#if 0
 void DramcHWGatingInit(DRAMC_CTX_T *p)
 {
 #ifdef HW_GATING
@@ -1546,7 +1517,7 @@ void DramcHWGatingInit(DRAMC_CTX_T *p)
         0, MISC_SHU_STBCAL_STBCALEN);
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL),
         P_Fld(0, MISC_STBCAL_STBCAL2R) |
-        //cc mark P_Fld(0,STBCAL_STB_SELPHYCALEN) |
+        //P_Fld(0,STBCAL_STB_SELPHYCALEN) |
         P_Fld(0, MISC_STBCAL_STBSTATE_OPT) |
         P_Fld(0, MISC_STBCAL_RKCHGMASKDIS) |
         P_Fld(0, MISC_STBCAL_REFUICHG) |
@@ -1585,7 +1556,7 @@ void DramcHWGatingOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
 void DramcHWGatingDebugOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
 {
 #ifdef HW_GATING
-    // STBCAL2_STB_DBG_EN = 0x3, byte0/1 enable
+
     U8 u1EnB0B1 = (u1OnOff == ENABLE)? 0x3: 0x0;
 
     vIO32WriteFldMulti_All(DDRPHY_REG_MISC_STBCAL2,
@@ -1605,7 +1576,7 @@ void DramcHWGatingDebugOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
 
 #if (FOR_DV_SIMULATION_USED == 0 && SW_CHANGE_FOR_SIMULATION == 0)
 #if (__ETT__ || CPU_RW_TEST_AFTER_K)
-#if 0 // Please use memeset to initail value, due to different CHANNEL_NUM
+#if 0
 U16 u2MaxGatingPos[CHANNEL_NUM][RANK_MAX][DQS_NUMBER] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 U16 u2MinGatingPos[CHANNEL_NUM][RANK_MAX][DQS_NUMBER] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 #endif
@@ -1692,7 +1663,7 @@ static void DramcHWGatingTrackingRecord(DRAMC_CTX_T *p, U8 u1Channel)
     else
          u1RankMax = RANK_1;
 
-    //Run Time HW Gating Debug Information
+
     //for(u1RankIdx=0; u1RankIdx<u1RankMax; u1RankIdx++)
     for (u1RankIdx = 0; u1RankIdx < u1RankMax; u1RankIdx++)
     {
@@ -1707,11 +1678,7 @@ static void DramcHWGatingTrackingRecord(DRAMC_CTX_T *p, U8 u1Channel)
 
         for (u1Info_NUM = 0; u1Info_NUM < u1Info_Max_MUM; u1Info_NUM++)
         {
-          //DFS_ST(Shuffle Level): bit[15:14]
-          //Shift_R(Lead): bit[13]
-          //Shift_L(Lag) : bit[12]
-          //UI_DLY : bit[11:06]
-          //PI_DLY : bit[05:00]
+
           u4DBG_Dqs01_Info = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_RK0_B01_STB_DBG_INFO_00 + 0x4 * u1Info_NUM));
           u4DBG_Dqs0_Info = (u4DBG_Dqs01_Info >> 0) & 0xffff;
           u4DBG_Dqs1_Info = (u4DBG_Dqs01_Info >> 16) & 0xffff;
@@ -1742,11 +1709,7 @@ static void DramcHWGatingTrackingRecord(DRAMC_CTX_T *p, U8 u1Channel)
           u1DBG_Dqs1_DFS, u1DBG_Dqs1_Lead, u1DBG_Dqs1_Lag, u1DBG_Dqs1_UI / 8, u1DBG_Dqs1_UI % 8, u1DBG_Dqs1_PI));
         }
 
-        //Run Time HW Gating Max and Min Value Record
-        //Run Time HW Gating MAX_DLY UI : bit[27:22]
-        //Run Time HW Gating MAX_DLY PI : bit[21:16]
-        //Run Time HW Gating MIN_DLY UI : bit[11:06]
-        //Run Time HW Gating MIN_DLY PI : bit[05:00]
+
         u4Dqs0_MAX_MIN_DLY = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_RK0_B0_STB_MAX_MIN_DLY));
         u2Dqs0_UI_MAX_DLY = (u4Dqs0_MAX_MIN_DLY >> 22) & 0x3f;
         u2Dqs0_PI_MAX_DLY = (u4Dqs0_MAX_MIN_DLY >> 16) & 0x3f;
@@ -1779,8 +1742,7 @@ static void DramcHWGatingTrackingRecord(DRAMC_CTX_T *p, U8 u1Channel)
 void DramcPrintRXFIFODebugStatus(DRAMC_CTX_T *p)
 {
 #if RX_PICG_NEW_MODE
-    //RX FIFO debug feature, MP setting should enable debug function for Gating error information
-    //APHY control new mode
+
     U32 u1ChannelBak, u4value;
     U8 u1ChannelIdx;
 
@@ -1790,7 +1752,7 @@ void DramcPrintRXFIFODebugStatus(DRAMC_CTX_T *p)
     {
         p->channel = u1ChannelIdx;
 
-        u4value = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBERR_RK0_R)) & (0xf << 24); //DDRPHY NAO bit24~27
+        u4value = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBERR_RK0_R)) & (0xf << 24);
         if (u4value)
         {
             mcSHOW_DBG_MSG2(("\n[RXFIFODebugStatus] CH_%d MISC_STBERR_RK0_R_RX_ARDQ = 0x\033[1;36m%x\033[m for Gating error information\n", u1ChannelIdx, u4value));

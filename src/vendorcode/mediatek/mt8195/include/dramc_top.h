@@ -96,16 +96,16 @@ typedef struct _AC_TIMING_EXTERNAL_T
     U32 AC_TIME_EMI_TRTW_ODT_ON    :4;
 
     // U 04
-    U32 AC_TIME_EMI_REFCNT         :8; //(REFFRERUN = 0)
-    U32 AC_TIME_EMI_REFCNT_FR_CLK  :8; //(REFFRERUN = 1)
+    U32 AC_TIME_EMI_REFCNT         :8;
+    U32 AC_TIME_EMI_REFCNT_FR_CLK  :8;
     U32 AC_TIME_EMI_TXREFCNT       :8;
     U32 AC_TIME_EMI_TZQCS          :8;
 
     // U 05
-    U32 AC_TIME_EMI_TRTPD            :8; // LP4/LP3, // Olymp_us new
-    U32 AC_TIME_EMI_TWTPD            :8; // LP4/LP3, // Olymp_us new
-    U32 AC_TIME_EMI_TMRR2W_ODT_OFF   :8; // LP4      // Olymp_us new
-    U32 AC_TIME_EMI_TMRR2W_ODT_ON    :8; // LP4      // Olymp_us new
+    U32 AC_TIME_EMI_TRTPD            :8;
+    U32 AC_TIME_EMI_TWTPD            :8;
+    U32 AC_TIME_EMI_TMRR2W_ODT_OFF   :8;
+    U32 AC_TIME_EMI_TMRR2W_ODT_ON    :8;
 
     // U 06
     // Byte0
@@ -121,19 +121,19 @@ typedef struct _AC_TIMING_EXTERNAL_T
     // Byte2
     U32 AC_TIME_EMI_TRCD_05T          :2;
     U32 AC_TIME_EMI_TWR_05T           :2;
-    U32 AC_TIME_EMI_TWTR_05T          :2; // Olymp_us modified
+    U32 AC_TIME_EMI_TWTR_05T          :2;
     U32 AC_TIME_EMI_TRRD_05T          :2;
     // Byte3
     U32 AC_TIME_EMI_TFAW_05T          :2;
     U32 AC_TIME_EMI_TRTW_ODT_OFF_05T  :2;
     U32 AC_TIME_EMI_TRTW_ODT_ON_05T   :2;
-    U32 AC_TIME_EMI_TRTPD_05T         :2; // LP4/LP3 // Olymp_us new
+    U32 AC_TIME_EMI_TRTPD_05T         :2;
 
     // U 07
     // Byte0
-    U32 AC_TIME_EMI_TWTPD_05T           :2; // LP4/LP3 // Olymp_us new
-    U32 AC_TIME_EMI_TMRR2W_ODT_OFF_05T  :2; // Useless, no 0.5T in Olymp_us and Elbr_us
-    U32 AC_TIME_EMI_TMRR2W_ODT_ON_05T   :2; // Useless, no 0.5T in Olymp_us and Elbr_us
+    U32 AC_TIME_EMI_TWTPD_05T           :2;
+    U32 AC_TIME_EMI_TMRR2W_ODT_OFF_05T  :2;
+    U32 AC_TIME_EMI_TMRR2W_ODT_ON_05T   :2;
 
 
 }AC_TIMING_EXTERNAL_T;
@@ -171,8 +171,8 @@ typedef struct {
 
 typedef struct {
     unsigned int type;
-    unsigned int id_length; /* storage ID lengty */
-    unsigned char ID[16]; /* storage ID */
+    unsigned int id_length;
+    unsigned char ID[16];
     u64 DRAM_RANK_SIZE[4];
     unsigned int reserved[6];
     unsigned int iLPDDR3_MODE_REG_5;
@@ -183,7 +183,7 @@ typedef struct {
 void setup_dramc_voltage_by_pmic(void);
 void switch_dramc_voltage_to_auto_mode(void);
 #if ! __ETT__
-uint32 mt_set_emis(uint8* emi, uint32 len, bool use_default); //array of emi setting.
+uint32 mt_set_emis(uint8* emi, uint32 len, bool use_default);
 #endif
 #endif
 
@@ -210,8 +210,8 @@ typedef struct {
     volatile unsigned int last_fatal_err_flag;
     volatile unsigned int fatal_err_flag;
     volatile unsigned int storage_api_err_flag;
-    volatile unsigned int last_gating_err[4][2]; // [channel][rank]
-    volatile unsigned int gating_err[4][2]; // [channel][rank]
+    volatile unsigned int last_gating_err[4][2];
+    volatile unsigned int gating_err[4][2];
     unsigned short mr5;
     unsigned short mr6;
     unsigned short mr7;
@@ -240,7 +240,7 @@ typedef struct {
 #define ERR_CPU_RW_RK0			(1 << 0)
 #define ERR_CPU_RW_RK1			(1 << 1)
 
-/* 0x1f -> bit[4:0] is for DDR reserve mode */
+
 #define DDR_RSV_MODE_ERR_MASK		(0x1f)
 
 unsigned int check_last_dram_fatal_exception(void);
@@ -254,7 +254,7 @@ void dram_fatal_set_stberr(unsigned int chn, unsigned int rk, unsigned int err_c
 void dram_fatal_backup_stberr(void);
 void dram_fatal_init_stberr(void);
 void dram_fatal_set_err(unsigned int err_code, unsigned int mask, unsigned int offset);
-#if 0//DRAM_AUXADC_CONFIG
+#if 0
 unsigned int get_ch_num_by_auxadc(void);
 #endif
 
@@ -288,7 +288,7 @@ unsigned int get_ch_num_by_auxadc(void);
 		dram_fatal_set_err(0x1, 0x1, OFFSET_DDR_RSV_MODE_FLOW);\
 	} while(0)
 
-#endif //LAST_DRAMC
+#endif
 
 typedef enum {
         KSHU0 = 0,
@@ -517,13 +517,7 @@ typedef struct _DRAM_CALIBRATION_DATA_T
 	DRAM_CALIBRATION_SHU_DATA_T	data[DRAM_DFS_SRAM_MAX];
 } DRAM_CALIBRATION_DATA_T;
 
-/*
- * g_dram_storage_api_err_code:
- * 	bit[0:3] -> read api
- * 	bit[4:7] -> write api
- * 	bit[8:11] -> clean api
- * 	bit[12:12] -> data formatted due to fatal exception
- */
+
 #define ERR_NULL_POINTER	(0x1)
 #define ERR_MAGIC_NUMBER	(0x2)
 #define ERR_CHECKSUM		(0x3)

@@ -2,18 +2,18 @@
 
 #include "dramc_dv_init.h"
 
-//DRAM LP4 initial configuration
+
 void LP4_DRAM_config(U32 data_rate, LP4_DRAM_CONFIG_T *tr)
 {
-    tr->BYTE_MODE[0] = 0;//TODO
-    tr->BYTE_MODE[1] = 0;//TODO
-#if 0 // @Darren, remove it
+    tr->BYTE_MODE[0] = 0;
+    tr->BYTE_MODE[1] = 0;
+#if 0
     #if SA_CONFIG_EN
-        tr->EX_ROW_EN[0] = 0;//TODO
-        tr->EX_ROW_EN[1] = 0;//TODO
+        tr->EX_ROW_EN[0] = 0;
+        tr->EX_ROW_EN[1] = 0;
     #else
-        tr->EX_ROW_EN[0] = 1;//TODO
-        tr->EX_ROW_EN[1] = 0;//TODO
+        tr->EX_ROW_EN[0] = 1;
+        tr->EX_ROW_EN[1] = 0;
     #endif
 #endif
     tr->MR_WL     = LP4_DRAM_INIT_RLWL_MRfield_config(data_rate);
@@ -22,7 +22,7 @@ void LP4_DRAM_config(U32 data_rate, LP4_DRAM_CONFIG_T *tr)
     tr->RPST      = 0;
     tr->RD_PRE    = 0;
     tr->WR_PRE    = 1;
-    tr->WR_PST    = (data_rate>=2667)?1:0; //TODO
+    tr->WR_PST    = (data_rate>=2667)?1:0;
 #if SA_CONFIG_EN
         tr->DBI_WR    = 0;
         tr->DBI_RD    = 0;
@@ -33,7 +33,7 @@ void LP4_DRAM_config(U32 data_rate, LP4_DRAM_CONFIG_T *tr)
     //	tr->DMI       = 1;
     tr->OTF       = 1;
 #if (ENABLE_LP4Y_DFS && LP4Y_BACKUP_SOLUTION)
-        tr->LP4Y_EN   = (data_rate>=1866)?0:1; //TODO, @Darren for LP4Y
+        tr->LP4Y_EN   = (data_rate>=1866)?0:1;
 #else
         tr->LP4Y_EN   = 0;
 #endif
@@ -60,7 +60,7 @@ void LP4_DRAM_config(U32 data_rate, LP4_DRAM_CONFIG_T *tr)
     mcSHOW_DBG_MSG2(("OTF          = 0x%1x\n",tr->OTF      ));
     mcSHOW_DBG_MSG2(("=================================== \n"));
 }
-//LP4 dram initial ModeRegister setting
+
 U8 LP4_DRAM_INIT_RLWL_MRfield_config(U32 data_rate)
 {
     U8 MR2_RLWL;

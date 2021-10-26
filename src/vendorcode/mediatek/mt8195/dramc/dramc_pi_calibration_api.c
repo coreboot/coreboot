@@ -17,7 +17,7 @@
 
 #define PASS_RANGE_NA   0x7fff
 
-#define DIE_NUM_MAX         1 //LP4 only
+#define DIE_NUM_MAX         1
 static U8 fgwrlevel_done = 0;
 
 #if __ETT__
@@ -134,18 +134,18 @@ U32 u4DQ_PI_RK1_backup[2];
 U8 u1DVS_increase[RANK_MAX][DQS_BYTE_NUMBER];
 #endif
 
-//static U8 gu1DieNum[RANK_MAX]; // 2 rank may have different die number
+//static U8 gu1DieNum[RANK_MAX];
 static S32 CATrain_CmdDelay[CHANNEL_NUM][RANK_MAX];
 static U32 CATrain_CsDelay[CHANNEL_NUM][RANK_MAX];
 //static S8 iFirstCAPass[RANK_MAX][DIE_NUM_MAX][CATRAINING_NUM];
 //static S8 iLastCAPass[RANK_MAX][DIE_NUM_MAX][CATRAINING_NUM];
 
-static S32 wrlevel_dqs_final_delay[RANK_MAX][DQS_BYTE_NUMBER]; // 3 is channel number
+static S32 wrlevel_dqs_final_delay[RANK_MAX][DQS_BYTE_NUMBER];
 //static U16 u2rx_window_sum;
 
 
-U8 gFinalRXVrefDQForSpeedUp[CHANNEL_NUM][RANK_MAX][2/*ODT_onoff*/][2/*2bytes*/] = {0};
-U32 gDramcImpedanceResult[IMP_VREF_MAX][IMP_DRV_MAX] = {{0,0,0,0},{0,0,0,0},{0,0,0,0}};//ODT_ON/OFF x DRVP/DRVN/ODTP/ODTN
+U8 gFinalRXVrefDQForSpeedUp[CHANNEL_NUM][RANK_MAX][2][2] = {0};
+U32 gDramcImpedanceResult[IMP_VREF_MAX][IMP_DRV_MAX] = {{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 
 S16 gu2RX_DQS_Duty_Offset[DQS_BYTE_NUMBER][2];
 
@@ -179,25 +179,25 @@ static void vSetCalibrationResult(DRAMC_CTX_T *p, U8 ucCalType, U8 ucResult)
         Pointer_CalResult = &p->aru4CalResultFlag[p->channel][p->rank];
     }
 
-    if (ucResult == DRAM_FAIL)  // Calibration FAIL
+    if (ucResult == DRAM_FAIL)
     {
-        *Pointer_CalExecute |= (1<<ucCalType); // ececution done
-        *Pointer_CalResult |= (1<<ucCalType); // no result found
+        *Pointer_CalExecute |= (1<<ucCalType);
+        *Pointer_CalResult |= (1<<ucCalType);
     }
-    else if(ucResult == DRAM_OK)  // Calibration OK
+    else if(ucResult == DRAM_OK)
     {
-        *Pointer_CalExecute |= (1<<ucCalType); // ececution done
-        *Pointer_CalResult &= (~(1<<ucCalType)); // result found
+        *Pointer_CalExecute |= (1<<ucCalType);
+        *Pointer_CalResult &= (~(1<<ucCalType));
     }
-    else if(ucResult == DRAM_FAST_K)  // FAST K
+    else if(ucResult == DRAM_FAST_K)
     {
-         *Pointer_CalExecute &= (~(1<<ucCalType)); // no ececution
-         *Pointer_CalResult &= (~(1<<ucCalType)); // result found
+         *Pointer_CalExecute &= (~(1<<ucCalType));
+         *Pointer_CalResult &= (~(1<<ucCalType));
     }
-    else  // NO K
+    else
     {
-          *Pointer_CalExecute &= (~(1<<ucCalType)); // no ececution
-          *Pointer_CalResult |= (1<<ucCalType); // no result found
+          *Pointer_CalExecute &= (~(1<<ucCalType));
+          *Pointer_CalResult |= (1<<ucCalType);
     }
 }
 
@@ -230,7 +230,7 @@ void Fast_K_CheckResult(DRAMC_CTX_T *p, U8 ucCalType)
     {
         DramcEngine2Init(p, 0x55000000, 0xaa000000 |0x23, TEST_AUDIO_PATTERN, 0, TE_NO_UI_SHIFT);
 
-        //Gating Counter Reset
+
         DramPhyReset(p);
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2), 1,
                 MISC_STBCAL2_DQSG_CNT_RST);
@@ -255,14 +255,14 @@ void Fast_K_CheckResult(DRAMC_CTX_T *p, U8 ucCalType)
     if ((FastK_Check_flag==1)&&(CheckResult==0))
     {
         //mcSHOW_DBG_MSG((" [FAST K CHECK]->PASS\n"))
-        *Pointer_FastKResult &= (~(1<<ucCalType)); // result PASS
-        *Pointer_FastKExecute |= (1<<ucCalType);; // Excuted
+        *Pointer_FastKResult &= (~(1<<ucCalType));
+        *Pointer_FastKExecute |= (1<<ucCalType);;
     }
     else if ((FastK_Check_flag==1)&&(CheckResult !=0))
     {
         //mcSHOW_DBG_MSG((" [FAST K CHECK]->FAIL\n"))
-        *Pointer_FastKResult |= (1<<ucCalType); // result FAIL
-        *Pointer_FastKExecute |= (1<<ucCalType);; // Excuted
+        *Pointer_FastKResult |= (1<<ucCalType);
+        *Pointer_FastKExecute |= (1<<ucCalType);;
     }
 }
 #endif
@@ -310,8 +310,8 @@ void vPrintCalibrationResult(DRAMC_CTX_T *p)
                 {
                     if(ucCalIdx==0)
                     {
-                        ucCalExecute = (U8)p->SWImpCalExecute; //for SW Impedence
-                        ucCalResult = (U8)p->SWImpCalResult; //for SW Impedence
+                        ucCalExecute = (U8)p->SWImpCalExecute;
+                        ucCalResult = (U8)p->SWImpCalResult;
                     }
                     else
                     {
@@ -321,7 +321,7 @@ void vPrintCalibrationResult(DRAMC_CTX_T *p)
 
                     #if PRINT_CALIBRATION_SUMMARY_DETAIL
                     mcSHOW_DBG_MSG(("%s: ", szCalibStatusName[ucCalIdx]))
-                    if(ucCalExecute==1 && ucCalResult ==1) // excuted and fail
+                    if(ucCalExecute==1 && ucCalResult ==1)
                     {
                         u1CalibrationFail =1;
                         mcSHOW_DBG_MSG(("%s\n", "@_@FAIL@_@"))
@@ -330,21 +330,21 @@ void vPrintCalibrationResult(DRAMC_CTX_T *p)
                         while (1);
 #endif
                     }
-                    else if (ucCalExecute==1 && ucCalResult ==0) // DRAM_OK
+                    else if (ucCalExecute==1 && ucCalResult ==0)
                     {
                     	mcSHOW_DBG_MSG(("%s\n", "PASS"))
                     }
-                    else if (ucCalExecute==0 && ucCalResult ==0) // DRAM_FAST K
+                    else if (ucCalExecute==0 && ucCalResult ==0)
                     {
                     	mcSHOW_DBG_MSG(("%s\n", "FAST K"))
                     }
-                    else //DRAM_NO K
+                    else
                     {
                     	mcSHOW_DBG_MSG(("%s\n", "NO K"))
                     }
 
                     #else
-                    if(ucCalExecute==1 && ucCalResult ==1) // excuted and fail
+                    if(ucCalExecute==1 && ucCalResult ==1)
                     {
                         u1CalibrationFail =1;
                         mcSHOW_DBG_MSG(("%s: %s\n", szCalibStatusName[ucCalIdx],"@_@FAIL@_@"))
@@ -431,7 +431,7 @@ void SetDeviationVref(DRAMC_CTX_T *p)
         for(u1RankIdx=0; u1RankIdx<p->support_rank_num; u1RankIdx++)
         {
             vSetRank(p, u1RankIdx);
-            //CBT
+
             if (gSetSpecificedVref_Enable[Deviation_CA]==ENABLE && ((p->channel==gSetSpecificedVref_Channel[Deviation_CA] && p->rank==gSetSpecificedVref_Rank[Deviation_CA]) || gSetSpecificedVref_All_ChRk[Deviation_CA]==ENABLE))
             {
                 deviation_Vref = u1MR12Value[p->channel][p->rank][p->dram_fsp]& 0x3f;
@@ -442,7 +442,7 @@ void SetDeviationVref(DRAMC_CTX_T *p)
                 u1MR12Value[p->channel][p->rank][p->dram_fsp]=temp_Vref;
                 mcSHOW_DBG_MSG2(("CBT Channel%d, Rank%d,  u1MR12Value = 0x%x\n", p->channel, p->rank, u1MR12Value[p->channel][p->rank][p->dram_fsp]));
             }
-            //TX
+
             if (gSetSpecificedVref_Enable[Deviation_TX]==ENABLE && ((p->channel==gSetSpecificedVref_Channel[Deviation_TX] && p->rank==gSetSpecificedVref_Rank[Deviation_TX]) || gSetSpecificedVref_All_ChRk[Deviation_TX]==ENABLE))
             {
                 deviation_Vref = u1MR14Value[p->channel][p->rank][p->dram_fsp]& 0x3f;
@@ -454,10 +454,10 @@ void SetDeviationVref(DRAMC_CTX_T *p)
                 mcSHOW_DBG_MSG2(("TX Channel%d, Rank%d,  u1MR14Value = 0x%x\n", p->channel, p->rank, u1MR14Value[p->channel][p->rank][p->dram_fsp]));
             }
 
-            //RX
+
             if (gSetSpecificedVref_Enable[Deviation_RX]==ENABLE && ((p->channel==gSetSpecificedVref_Channel[Deviation_RX] && p->rank==gSetSpecificedVref_Rank[Deviation_RX]) || gSetSpecificedVref_All_ChRk[Deviation_RX]==ENABLE))
             {
-                    //BYTE_0
+
                     deviation_Vref = gFinalRXVrefDQ[p->channel][p->rank][BYTE_0];
                     DeviationAddVrefOffset(Deviation_RX, NULL, &deviation_Vref, gSetSpecificedVref_Vref_Offset[Deviation_RX]);
                     gFinalRXVrefDQ[p->channel][p->rank][BYTE_0] = deviation_Vref;
@@ -466,7 +466,7 @@ void SetDeviationVref(DRAMC_CTX_T *p)
                             P_Fld(deviation_Vref, SHU_B0_PHY_VREF_SEL_RG_RX_ARDQ_VREF_SEL_UB_B0));
                     mcSHOW_DBG_MSG2(("RX Channel%d, Rank%d,  RX Vref B0 = 0x%x\n", p->channel, p->rank, gFinalRXVrefDQ[p->channel][p->rank][BYTE_0]));
 
-                    //BYTE_1
+
                     deviation_Vref = gFinalRXVrefDQ[p->channel][p->rank][BYTE_1];
                     DeviationAddVrefOffset(Deviation_RX, NULL, &deviation_Vref, gSetSpecificedVref_Vref_Offset[Deviation_RX]);
                     gFinalRXVrefDQ[p->channel][p->rank][BYTE_1] = deviation_Vref;
@@ -489,20 +489,20 @@ void vInitGlobalVariablesByCondition(DRAMC_CTX_T *p)
     u1MR01Value[FSP_0] = 0x26;
     u1MR01Value[FSP_1] = 0x56;
 
-    u1MR03Value[FSP_0] = 0x31; //Set write post-amble as 0.5 tck
-    u1MR03Value[FSP_1] = 0x31; //Set write post-amble as 0.5 tck
+    u1MR03Value[FSP_0] = 0x31;
+    u1MR03Value[FSP_1] = 0x31;
 #ifndef ENABLE_POST_PACKAGE_REPAIR
-    u1MR03Value[FSP_0] |= 0x4; //MR3 OP[2]=1 for PPR protection enabled
-    u1MR03Value[FSP_1] |= 0x4; //MR3 OP[2]=1 for PPR protection enabled
+    u1MR03Value[FSP_0] |= 0x4;
+    u1MR03Value[FSP_1] |= 0x4;
 #endif
 #if ENABLE_WRITE_POST_AMBLE_1_POINT_5_TCK
-    u1MR03Value[FSP_1] |= 0x2; //MR3 OP[1]=1 for Set write post-amble as 1.5 tck, support after Eig_er E2
+    u1MR03Value[FSP_1] |= 0x2;
 #endif
-    // @Darren, Follow samsung PPR recommend flow
+
     u1MR04Value[RANK_0] = 0x3;
     u1MR04Value[RANK_1] = 0x3;
 
-    // @Darren, for LP4Y single-end mode
+
     u1MR21Value[FSP_0] = 0x0;
     u1MR21Value[FSP_1] = 0x0;
     u1MR51Value[FSP_0] = 0x0;
@@ -517,8 +517,8 @@ void vInitGlobalVariablesByCondition(DRAMC_CTX_T *p)
         for (u1RankIdx = 0; u1RankIdx < RANK_MAX; u1RankIdx++)
             for (u1FSPIdx = 0; u1FSPIdx < p->support_fsp_num; u1FSPIdx++)
             {
-                // MR14 default value, LP4 default 0x4d, LP4X 0x5d
-                u1MR14Value[u1CHIdx][u1RankIdx][u1FSPIdx] = (u1FSPIdx == FSP_0)? 0x5d: 0x18;  //0x18: customize for Eig_er
+
+                u1MR14Value[u1CHIdx][u1RankIdx][u1FSPIdx] = (u1FSPIdx == FSP_0)? 0x5d: 0x18;
                 #if FSP1_CLKCA_TERM
                 u1MR12Value[u1CHIdx][u1RankIdx][u1FSPIdx] = (u1FSPIdx == FSP_0)? 0x5d: 0x1b;
                 #else
@@ -536,96 +536,92 @@ void vInitGlobalVariablesByCondition(DRAMC_CTX_T *p)
 const U8 uiLPDDR4_CA_DRAM_Pinmux[PINMUX_MAX][CHANNEL_NUM][6] =
 {
     {
-        // for EMCP
-        //CH-A
+
         {
 			3, 1, 0, 5, 7, 4
         },
 
     #if (CHANNEL_NUM>1)
-        //CH-B
+
         {
 			3, 2, 4, 0, 5, 1
         },
     #endif
     #if (CHANNEL_NUM>2)
-        //CH-C
+
         {
 			3, 1, 0, 5, 7, 4
         },
-        //CH-D
+
         {
 			3, 2, 4, 0, 5, 1
         },
     #endif
     },
     {
-    // for DSC_2CH, HFID RESERVED
-        //CH-A
+
         {
             5, 2, 1, 3, 4, 0
         },
 
     #if (CHANNEL_NUM>1)
-        //CH-B
+
         {
             0, 2, 1, 3, 4, 5
         },
     #endif
     #if (CHANNEL_NUM>2)
-        //CH-C
+
         {
             0, 1, 2, 3, 4, 5
         },
-        //CH-D
+
         {
             0, 1, 2, 3, 4, 5
         },
     #endif
     },
     {
-        // for MCP
-        //CH-A
+
         {
             5, 4, 3, 2, 1, 0
         },
 
     #if (CHANNEL_NUM>1)
-        //CH-B
+
         {
             4, 5, 2, 0, 3, 1
         },
     #endif
     #if (CHANNEL_NUM>2)
-        //CH-C
+
         {
             5, 4, 0, 2, 1, 3
         },
-        //CH-D
+
         {
             3, 5, 2, 4, 0, 1
         },
     #endif
     },
     {
-    // for DSC_2CH, HFID RESERVED
-        //CH-A
+
         {
             3, 0, 2, 4, 1, 5
         },
 
     #if (CHANNEL_NUM>1)
-        //CH-B
+
         {
             4, 1, 0, 2, 3, 5
         },
     #endif
     #if (CHANNEL_NUM>2)
-        //CH-C
+
         {
             5, 0, 4, 3, 1, 2
         },
-        //CH-D
+
         {
             2, 5, 3, 0, 4, 1
         },
@@ -633,30 +629,29 @@ const U8 uiLPDDR4_CA_DRAM_Pinmux[PINMUX_MAX][CHANNEL_NUM][6] =
     },
 };
 
-//O1 DRAM->APHY
+
 const U8 uiLPDDR4_O1_DRAM_Pinmux[PINMUX_MAX][CHANNEL_NUM][16] =
 {
     {
-        // for EMCP
-        //CH-A
+
         {
             0, 1, 2, 3, 5, 7, 6, 4,
             9, 8, 13, 15, 10, 14, 11, 12
         },
         #if (CHANNEL_NUM>1)
-        //CH-B
+
         {
             0, 1, 5, 4, 3, 7, 6, 2,
             9, 8, 13, 14, 10, 15, 11, 12
         },
         #endif
         #if (CHANNEL_NUM>2)
-        //CH-C
+
         {
             0, 1, 2, 3, 5, 7, 6, 4,
             9, 8, 13, 15, 10, 14, 11, 12
         },
-        //CH-D
+
         {
 			0, 1, 5, 4, 3, 7, 6, 2,
 			9, 8, 13, 14, 10, 15, 11, 12
@@ -664,26 +659,25 @@ const U8 uiLPDDR4_O1_DRAM_Pinmux[PINMUX_MAX][CHANNEL_NUM][16] =
         #endif
     },
     {
-    // for DSC_2CH, HFID RESERVED
-        //CH-A
+
         {
             0, 1, 4, 3, 2, 5, 7, 6,
             9, 8, 10, 11, 14, 13, 15, 12
         },
         #if (CHANNEL_NUM>1)
-        //CH-B
+
         {
             0, 1, 2, 4, 5, 3, 7, 6,
             8, 9, 10, 11, 15, 14, 13, 12
         },
         #endif
         #if (CHANNEL_NUM>2)
-        //CH-C
+
         {
             0, 1, 2, 3, 4, 5, 6, 7,
             8, 9, 10, 11, 12, 13, 14, 15
         },
-        //CH-D
+
         {
             0, 1, 2, 3, 4, 5, 6, 7,
             8, 9, 10, 11, 12, 13, 14, 15
@@ -691,26 +685,25 @@ const U8 uiLPDDR4_O1_DRAM_Pinmux[PINMUX_MAX][CHANNEL_NUM][16] =
         #endif
     },
     {
-        // for MCP
-        //CH-A
+
         {
             0, 1, 3, 6, 4, 7, 2, 5,
             8, 9, 10, 13, 11, 12, 15, 14
         },
         #if (CHANNEL_NUM>1)
-        //CH-B
+
         {
             0, 1, 4, 7, 3, 5, 6, 2,
             9, 8, 10, 12, 11, 14, 13, 15
         },
         #endif
         #if (CHANNEL_NUM>2)
-        //CH-C
+
         {
             1, 0, 3, 2, 4, 7, 6, 5,
             8, 9, 10, 14, 11, 15, 13, 12
         },
-        //CH-D
+
         {
             0, 1, 4, 7, 3, 5, 6, 2,
             9, 8, 10, 12, 11, 14, 13, 15
@@ -718,26 +711,25 @@ const U8 uiLPDDR4_O1_DRAM_Pinmux[PINMUX_MAX][CHANNEL_NUM][16] =
         #endif
     },
     {
-    // for DSC_180
-        //CH-A
+
         {
             9, 8, 11, 10, 14, 15, 13, 12,
             0, 1, 7, 6, 4, 5, 2, 3
         },
         #if (CHANNEL_NUM>1)
-        //CH-B
+
         {
             8, 9, 11, 10, 12, 14, 13, 15,
             1, 0, 5, 6, 3, 2, 7, 4
         },
         #endif
         #if (CHANNEL_NUM>2)
-        //CH-C
+
         {
             0, 1, 7, 6, 4, 5, 2, 3,
             9, 8, 11, 10, 14, 15, 13, 12
         },
-        //CH-D
+
         {
             1, 0, 5, 6, 3, 2, 7, 4,
             8, 9, 11, 10, 12, 14, 13, 15
@@ -746,28 +738,28 @@ const U8 uiLPDDR4_O1_DRAM_Pinmux[PINMUX_MAX][CHANNEL_NUM][16] =
     },
 };
 
-//CA DRAM->APHY
+
 #if (CA_PER_BIT_DELAY_CELL || PINMUX_AUTO_TEST_PER_BIT_CA)
 
 U8 uiLPDDR4_CA_Mapping_POP[CHANNEL_NUM][6] =
 {
-    //CH-A
+
     {
 		2, 1, 0, 5, 3, 4
     },
 
 #if (CHANNEL_NUM>1)
-    //CH-B
+
     {
 	3, 5, 1, 0, 2, 4
     },
 #endif
 #if (CHANNEL_NUM>2)
-    //CH-C
+
     {
 	2, 1, 0, 5, 3, 4
     },
-    //CH-D
+
     {
 	3, 5, 1, 0, 2, 4
     },
@@ -775,28 +767,28 @@ U8 uiLPDDR4_CA_Mapping_POP[CHANNEL_NUM][6] =
 };
 #endif
 
-//O1 DRAM->APHY
+
 U8 uiLPDDR4_O1_Mapping_POP[CHANNEL_NUM][16] =
 {
-    //CH-A
+
     {
 	0, 1, 2, 3, 5, 7, 6, 4,
 	9, 8, 13, 15, 10, 14, 11, 12
     },
     #if (CHANNEL_NUM>1)
-    //CH-B
+
     {
 	0, 1, 5, 4, 3, 7, 6, 2,
 	9, 8, 13, 14, 10, 15, 11, 12
     },
     #endif
     #if (CHANNEL_NUM>2)
-    //CH-C
+
     {
 	0, 1, 2, 3, 5, 7, 6, 4,
 	9, 8, 13, 15, 10, 14, 11, 12
     },
-    //CH-D
+
     {
 	0, 1, 5, 4, 3, 7, 6, 2,
 	9, 8, 13, 14, 10, 15, 11, 12
@@ -824,7 +816,7 @@ static void ImpedanceTracking_DisImpHw_Setting(DRAMC_CTX_T *p, U8 u1DisImpHw)
                                                                     | P_Fld(1, MISC_SHU_IMPEDAMCE_UPD_DIS1_WCK_ODTN_UPD_DIS));
 
 #if (fcFOR_CHIP_ID == fc8195)
-    //WCK_ODTN_UPD_DIS is used as the swith of mux for B1/CA swap here.
+
         if (p->DRAMPinmux == PINMUX_DSC){
             vIO32WriteFldAlign(DDRPHY_REG_MISC_SHU_IMPEDAMCE_UPD_DIS1, 1, MISC_SHU_IMPEDAMCE_UPD_DIS1_WCK_ODTN_UPD_DIS);
         }else{
@@ -850,20 +842,19 @@ void vBeforeCalibration(DRAMC_CTX_T *p)
     DramcRxInputDelayTrackingInit_byFreq(p);
 #endif
 
-    DramcHWGatingOnOff(p, 0); //disable gating tracking
+    DramcHWGatingOnOff(p, 0);
 
-    CKEFixOnOff(p, TO_ALL_RANK, CKE_FIXON, TO_ALL_CHANNEL); //Let CLK always on during calibration
+    CKEFixOnOff(p, TO_ALL_RANK, CKE_FIXON, TO_ALL_CHANNEL);
 
 #if ENABLE_TMRRI_NEW_MODE
-    SetCKE2RankIndependent(p); //CKE should be controlled independently
+    SetCKE2RankIndependent(p);
 #endif
 
-    //WDBI-OFF
+
     vIO32WriteFldAlign_All(DRAMC_REG_SHU_TX_SET0, 0x0, SHU_TX_SET0_DBIWR);
 
 #ifdef IMPEDANCE_TRACKING_ENABLE
-    // set correct setting to control IMPCAL HW Tracking in shuffle RG
-    // if p->freq >= 1333, enable IMP HW tracking(SHU_DRVING1_DIS_IMPCAL_HW=0), else SHU_DRVING1_DIS_IMPCAL_HW = 1
+
     U8 u1DisImpHw;
     U32 u4TermFreq, u4WbrBackup;
 
@@ -883,41 +874,39 @@ void vBeforeCalibration(DRAMC_CTX_T *p)
 
 
     vIO32WriteFldMulti_All(DRAMC_REG_SHU_ZQ_SET0,
-            P_Fld(0x1ff, SHU_ZQ_SET0_ZQCSCNT) | //Every refresh number to issue ZQCS commands, only for DDR3/LPDDR2/LPDDR3/LPDDR4
+            P_Fld(0x1ff, SHU_ZQ_SET0_ZQCSCNT) |
             P_Fld(0x1b, SHU_ZQ_SET0_TZQLAT));
 
     if (p->support_channel_num == CHANNEL_SINGLE)
     {
-        //single channel, ZQCSDUAL=0, ZQCSMASK=0
+
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_ZQ_SET0), P_Fld(0, ZQ_SET0_ZQCSDUAL) | P_Fld(0x0, ZQ_SET0_ZQCSMASK));
     }
     else if (p->support_channel_num == CHANNEL_DUAL)
     {
-        // HW ZQ command is channel interleaving since 2 channel share the same ZQ pin.
+
         #ifdef ZQCS_ENABLE_LP4
-        // dual channel, ZQCSDUAL =1, and CHA ZQCSMASK=0, CHB ZQCSMASK=1
+
 
         vIO32WriteFldMulti_All(DRAMC_REG_ZQ_SET0, P_Fld(1, ZQ_SET0_ZQCSDUAL) |
                                                P_Fld(0, ZQ_SET0_ZQCSMASK_OPT) |
                                                P_Fld(0, ZQ_SET0_ZQMASK_CGAR) |
                                                P_Fld(0, ZQ_SET0_ZQCS_MASK_SEL_CGAR));
 
-        // DRAMC CHA(CHN0):ZQCSMASK=1, DRAMC CHB(CHN1):ZQCSMASK=0.
-        // ZQCSMASK setting: (Ch A, Ch B) = (1,0) or (0,1)
-        // if CHA.ZQCSMASK=1, and then set CHA.ZQCALDISB=1 first, else set CHB.ZQCALDISB=1 first
+
         vIO32WriteFldAlign(DRAMC_REG_ZQ_SET0 + (CHANNEL_A << POS_BANK_NUM), 1, ZQ_SET0_ZQCSMASK);
         vIO32WriteFldAlign(DRAMC_REG_ZQ_SET0 + SHIFT_TO_CHB_ADDR, 0, ZQ_SET0_ZQCSMASK);
 
-        // DRAMC CHA(CHN0):ZQ_SET0_ZQCS_MASK_SEL=0, DRAMC CHB(CHN1):ZQ_SET0_ZQCS_MASK_SEL=0.
+
         vIO32WriteFldAlign_All(DRAMC_REG_ZQ_SET0, 0, ZQ_SET0_ZQCS_MASK_SEL);
         #endif
     }
 #if (CHANNEL_NUM > 2)
     else if (p->support_channel_num == CHANNEL_FOURTH)
     {
-        // HW ZQ command is channel interleaving since 2 channel share the same ZQ pin.
+
         #ifdef ZQCS_ENABLE_LP4
-        // dual channel, ZQCSDUAL =1, and CHA ZQCSMASK=0, CHB ZQCSMASK=1
+
 
         vIO32WriteFldMulti_All(DRAMC_REG_ZQ_SET0, P_Fld(1, ZQ_SET0_ZQCSDUAL) |
                                                P_Fld(0, ZQ_SET0_ZQCALL) |
@@ -926,9 +915,7 @@ void vBeforeCalibration(DRAMC_CTX_T *p)
                                                P_Fld(0, ZQ_SET0_ZQMASK_CGAR) |
                                                P_Fld(0, ZQ_SET0_ZQCS_MASK_SEL_CGAR));
 
-        // DRAMC CHA(CHN0):ZQCSMASK=1, DRAMC CHB(CHN1):ZQCSMASK=0.
-        // ZQCSMASK setting: (Ch A, Ch C) = (1,0) or (0,1), (Ch B, Ch D) = (1,0) or (0,1)
-        // if CHA.ZQCSMASK=1, and then set CHA.ZQCALDISB=1 first, else set CHB.ZQCALDISB=1 first
+
     #if fcFOR_CHIP_ID == fcPetrus
         vIO32WriteFldAlign(DRAMC_REG_ZQ_SET0 + (CHANNEL_A << POS_BANK_NUM), 1, ZQ_SET0_ZQCSMASK);
         vIO32WriteFldAlign(DRAMC_REG_ZQ_SET0 + (CHANNEL_B << POS_BANK_NUM), 0, ZQ_SET0_ZQCSMASK);
@@ -941,13 +928,13 @@ void vBeforeCalibration(DRAMC_CTX_T *p)
         vIO32WriteFldAlign(DRAMC_REG_ZQ_SET0 + (CHANNEL_D << POS_BANK_NUM), 0, ZQ_SET0_ZQCSMASK);
     #endif
 
-        // DRAMC CHA(CHN0):ZQ_SET0_ZQCS_MASK_SEL=0, DRAMC CHB(CHN1):ZQ_SET0_ZQCS_MASK_SEL=0.
+
         vIO32WriteFldAlign_All(DRAMC_REG_ZQ_SET0, 0, ZQ_SET0_ZQCS_MASK_SEL);
         #endif
     }
 #endif
 
-    // Set 0 to be able to adjust TX DQS/DQ/DQM PI during calibration, for new cross rank mode.
+
     vIO32WriteFldAlign_All(DDRPHY_REG_SHU_B0_DQ2, 0, SHU_B0_DQ2_RG_ARPI_OFFSET_LAT_EN_B0);
     if (!isLP4_DSC)
         vIO32WriteFldAlign_All(DDRPHY_REG_SHU_B1_DQ2, 0, SHU_B1_DQ2_RG_ARPI_OFFSET_LAT_EN_B1);
@@ -957,15 +944,14 @@ void vBeforeCalibration(DRAMC_CTX_T *p)
 #if ENABLE_PA_IMPRO_FOR_TX_AUTOK
     vIO32WriteFldAlign_All(DRAMC_REG_DCM_SUB_CTRL, 0x0, DCM_SUB_CTRL_SUBCLK_CTRL_TX_AUTOK);
 #endif
-    // ARPI_DQ SW mode mux, TX DQ use 1: PHY Reg 0: DRAMC Reg
+
     #if ENABLE_PA_IMPRO_FOR_TX_TRACKING
     vIO32WriteFldAlign_All(DRAMC_REG_DCM_SUB_CTRL, 0, DCM_SUB_CTRL_SUBCLK_CTRL_TX_TRACKING);
     #endif
-    //Darren-vIO32WriteFldAlign_All(DDRPHY_REG_MISC_CTRL1, 1, MISC_CTRL1_R_DMARPIDQ_SW); @Darren, remove to LP4_UpdateInitialSettings
-    //Disable HW MR18/19 to prevent fail case when doing SW MR18/19 in DQSOSCAuto
+
     vIO32WriteFldAlign_All(DRAMC_REG_DQSOSCR, 0x1, DQSOSCR_DQSOSCRDIS);
 
-    vIO32WriteFldAlign_All(DRAMC_REG_REFCTRL0, 0x1, REFCTRL0_REFDIS); //disable refresh
+    vIO32WriteFldAlign_All(DRAMC_REG_REFCTRL0, 0x1, REFCTRL0_REFDIS);
 
     vIO32WriteFldAlign_All(DRAMC_REG_SHU_MATYPE, u1MaType, SHU_MATYPE_MATYPE);
 
@@ -983,10 +969,10 @@ void vAfterCalibration(DRAMC_CTX_T *p)
     EnableDRAMModeRegWriteDBIAfterCalibration(p);
 #endif
 
-    SetMr13VrcgToNormalOperation(p);// Set VRCG{MR13[3]} to 0
+    SetMr13VrcgToNormalOperation(p);
 
 
-    CKEFixOnOff(p, TO_ALL_RANK, CKE_DYNAMIC, TO_ALL_CHANNEL); //After CKE FIX on/off, CKE should be returned to dynamic (control by HW)
+    CKEFixOnOff(p, TO_ALL_RANK, CKE_DYNAMIC, TO_ALL_CHANNEL);
 
     vIO32WriteFldAlign_All(DRAMC_REG_DUMMY_RD, p->support_rank_num, DUMMY_RD_RANK_NUM);
 
@@ -1002,24 +988,24 @@ void vAfterCalibration(DRAMC_CTX_T *p)
     }
 #endif
 
-    //@Darren, KaiHsin sync MP setting
+
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_CG_CTRL7, 0, MISC_CG_CTRL7_CK_BFE_DCM_EN);
 
-    /* TESTAGENT2 for @Chris sync MP settings*/
-    vIO32WriteFldAlign_All(DRAMC_REG_TEST2_A4, 4, TEST2_A4_TESTAGENTRKSEL); // Rank selection is controlled by Test Agent
-    vIO32WriteFldAlign_All(DRAMC_REG_TEST2_A2, 0x20, TEST2_A2_TEST2_OFF); //@Chris, MP setting for runtime TA2 Length
 
-    //@Darren, CW sync MP setting
+    vIO32WriteFldAlign_All(DRAMC_REG_TEST2_A4, 4, TEST2_A4_TESTAGENTRKSEL);
+    vIO32WriteFldAlign_All(DRAMC_REG_TEST2_A2, 0x20, TEST2_A2_TEST2_OFF);
+
+
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_DUTYSCAN1, 0, MISC_DUTYSCAN1_DQSERRCNT_DIS);
 
-    //@Darren, HJ sync MP setting
+
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_CTRL1, 0, MISC_CTRL1_R_DMSTBENCMP_RK_OPT);
 }
 
 static void O1PathOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
 {
     BOOL isLP4_DSC = (p->DRAMPinmux == PINMUX_DSC)?1:0;
-    #if 0//O1_SETTING_RESTORE
+    #if 0
     const U32 u4O1RegBackupAddress[] =
     {
         (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_VREF)),
@@ -1035,16 +1021,14 @@ static void O1PathOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
 
     if (u1OnOff == ON)
     {
-        // These RG will be restored when leaving each calibration flow
-        // -------------------------------------------------------
-        // VREF_UNTERM_EN
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_VREF), 1, SHU_B0_VREF_RG_RX_ARDQ_VREF_UNTERM_EN_B0);
         if (!isLP4_DSC)
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_VREF), 1, SHU_B1_VREF_RG_RX_ARDQ_VREF_UNTERM_EN_B1);
         else
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_VREF), 1, SHU_CA_VREF_RG_RX_ARCA_VREF_UNTERM_EN_CA);
 
-        u1VrefSel = 0x37;//unterm LP4
+        u1VrefSel = 0x37;
 
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_PHY_VREF_SEL),
                     P_Fld(u1VrefSel, SHU_B0_PHY_VREF_SEL_RG_RX_ARDQ_VREF_SEL_LB_B0) |
@@ -1063,9 +1047,7 @@ static void O1PathOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
         }
     }
 
-    // DQ_O1 enable/release
-    // -------------------------------------------------------
-    // Actually this RG naming is O1_EN in APHY
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ6), u1OnOff, B0_DQ6_RG_RX_ARDQ_O1_SEL_B0);
     if (!isLP4_DSC)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ6), u1OnOff, B1_DQ6_RG_RX_ARDQ_O1_SEL_B1);
@@ -1073,7 +1055,7 @@ static void O1PathOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD6), u1OnOff, CA_CMD6_RG_RX_ARCMD_O1_SEL);
 
 
-    // DQ_IN_BUFF_EN
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ3),
                         P_Fld(u1OnOff, B0_DQ3_RG_RX_ARDQ_IN_BUFF_EN_B0) |
                         P_Fld(u1OnOff, B0_DQ3_RG_RX_ARDQS0_IN_BUFF_EN_B0));
@@ -1090,14 +1072,14 @@ static void O1PathOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
                             P_Fld(u1OnOff, CA_CMD3_RG_RX_ARCLK_IN_BUFF_EN));
     }
 
-    // DQ_BUFF_EN_SEL
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_PHY3), u1OnOff, B0_PHY3_RG_RX_ARDQ_BUFF_EN_SEL_B0);
     if (!isLP4_DSC)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_PHY3), u1OnOff, B1_PHY3_RG_RX_ARDQ_BUFF_EN_SEL_B1);
     else
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_CA_PHY3), u1OnOff, CA_PHY3_RG_RX_ARCA_BUFF_EN_SEL_CA);
 
-    // Gating always ON
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_GATE_EN_CTRL),(u1OnOff << 1) | u1OnOff, MISC_RX_IN_GATE_EN_CTRL_FIX_IN_GATE_EN);
 
     mcDELAY_US(1);
@@ -1127,15 +1109,7 @@ static u8 get_autok_sweep_max_cnt(u8 lenpi, u8 respi)
     return lenpi > max? max: lenpi;
 }
 
-/*
- * cbt_wlev_train_autok -- ca/cs/dqs autok
- * @mode: ca or cs select, 0 for ca, 1 for cs
- * @initpi: init pi select
- * @lenpi: sweep how many pi step, 0 ~ 63
- * @respi: sweep pi resolution, 00 for 1 pi, 01 for 2 pi, 10 for 4 pi, 11 for 8 pi
- *
- * autok result store to @cmp0 and @cmp1.
- */
+
 
 static int cbt_wlev_train_autok(DRAMC_CTX_T *p, ATUOK_MODE_T autok_mode,
         u8 initpi, u8 lenpi, u8 respi,
@@ -1146,10 +1120,7 @@ static int cbt_wlev_train_autok(DRAMC_CTX_T *p, ATUOK_MODE_T autok_mode,
     u8 sweep_max_cnt, i;
     u32 cnt, ready;
 
-    /*
-    * it's takes 3.6us for one step.
-    * max times is 64, about 3.6 * 64 = 231us
-    */
+
     cnt = TIME_OUT_CNT * 3;
 
     switch (autok_mode){
@@ -1292,11 +1263,7 @@ static int cbt_wlev_train_autok(DRAMC_CTX_T *p, ATUOK_MODE_T autok_mode,
     return 0;
 }
 #endif
-/*
- * set_cbt_intv -- set interval related rg according to speed.
- *
- * TODO, move these to ACTimingTable ????!!!
- */
+
 
 struct cbt_intv {
     DRAM_PLL_FREQ_SEL_T freq_sel;
@@ -1342,94 +1309,94 @@ static void set_cbt_wlev_intv_lp4(DRAMC_CTX_T *p)
         {
             LP4_DDR4266,
             DIV8_MODE,
-            17, /*tcmdo1lat*/
-            14, /* catrain_intv */
-            19, /* new_cbt_pat_intv */
-            19, /* wlev_dqspat_lat */
+            17,
+            14,
+            19,
+            19,
         }, {
             LP4_DDR3733,
             DIV8_MODE,
-            16, /*tcmdo1lat*/
-            13, /* catrain_intv */
-            18, /* new_cbt_pat_intv */
-            18, /* wlev_dqspat_lat */
+            16,
+            13,
+            18,
+            18,
         }, {
             LP4_DDR3200,
             DIV8_MODE,
-            14, /*tcmdo1lat*/
-            11, /* catrain_intv */
-            16, /* new_cbt_pat_intv */
-            16, /* wlev_dqspat_lat */
+            14,
+            11,
+            16,
+            16,
         }, {
             LP4_DDR2667,
             DIV8_MODE,
-            13, /*tcmdo1lat*/
-            10, /* catrain_intv */
-            15, /* new_cbt_pat_intv */
-            15, /* wlev_dqspat_lat */
+            13,
+            10,
+            15,
+            15,
         }, {
             LP4_DDR2400,
             DIV8_MODE,
-            12, /*tcmdo1lat*/
-            9, /* catrain_intv */
-            14, /* new_cbt_pat_intv */
-            14, /* wlev_dqspat_lat */
+            12,
+            9,
+            14,
+            14,
         }, {
             LP4_DDR1866,
             DIV8_MODE,
-            11, /*tcmdo1lat*/
-            9, /* catrain_intv */
-            13, /* new_cbt_pat_intv */
-            13, /* wlev_dqspat_lat */
+            11,
+            9,
+            13,
+            13,
         }, {
             LP4_DDR1600,
             DIV8_MODE,
-            10, /*tcmdo1lat*/
-            8, /* catrain_intv */
-            12, /* new_cbt_pat_intv */
-            12, /* wlev_dqspat_lat */
+            10,
+            8,
+            12,
+            12,
         }, {
             LP4_DDR1200,
             DIV8_MODE,
-            9, /*tcmdo1lat*/
-            8, /* catrain_intv */
-            11, /* new_cbt_pat_intv */
-            11, /* wlev_dqspat_lat */
+            9,
+            8,
+            11,
+            11,
         }, {
             LP4_DDR800,
             DIV8_MODE,
-            8, /*tcmdo1lat*/
-            8, /* catrain_intv */
-            10, /* new_cbt_pat_intv */
-            10, /* wlev_dqspat_lat */
+            8,
+            8,
+            10,
+            10,
         }, {
             LP4_DDR1600,
             DIV4_MODE,
-            16, /*tcmdo1lat*/
-            13, /* catrain_intv */
-            16, /* new_cbt_pat_intv */
-            16, /* wlev_dqspat_lat */
+            16,
+            13,
+            16,
+            16,
         }, {
             LP4_DDR1200,
             DIV4_MODE,
-            14, /*tcmdo1lat*/
-            13, /* catrain_intv */
-            14, /* new_cbt_pat_intv */
-            14, /* wlev_dqspat_lat */
+            14,
+            13,
+            14,
+            14,
         }, {
             LP4_DDR800,
             DIV4_MODE,
-            12, /*tcmdo1lat*/
-            13, /* catrain_intv */
-            12, /* new_cbt_pat_intv */
-            12, /* wlev_dqspat_lat */
+            12,
+            13,
+            12,
+            12,
         }, {
             LP4_DDR400,
             DIV4_MODE,
-            12, /*tcmdo1lat*/
-            13, /* catrain_intv */
-            12, /* new_cbt_pat_intv */
-            12, /* wlev_dqspat_lat */
+            12,
+            13,
+            12,
+            12,
         },
     };
 
@@ -1451,21 +1418,21 @@ static void set_cbt_wlev_intv(DRAMC_CTX_T *p)
 }
 
 #if SIMUILATION_CBT == 1
-/* To process LPDDR5 Pinmux */
+
 struct cbt_pinmux {
-    u8 dram_dq_b0; /* EMI_B0 is mapped to which DRAMC byte ?? */
+    u8 dram_dq_b0;
     u8 dram_dq_b1;
-    u8 dram_dmi_b0; /* EMI_DMI0 is mapped to which DRAMC DMI ?? */
+    u8 dram_dmi_b0;
     u8 dram_dmi_b1;
 
-    u8 dram_dq7_b0; /* EMI_DQ7 is mapped to which DRAMC DQ ?? */
-    u8 dram_dq7_b1; /* EMI_DQ15 is mapped to which DRAMC DQ ?? */
+    u8 dram_dq7_b0;
+    u8 dram_dq7_b1;
 };
 
-/* Per-project definition */
+
 static struct cbt_pinmux lp4_cp[CHANNEL_NUM] = {
     {
-        /* CHA */
+
         .dram_dq_b0 = 0,
         .dram_dq_b1 = 1,
 
@@ -1474,7 +1441,7 @@ static struct cbt_pinmux lp4_cp[CHANNEL_NUM] = {
     },
     #if (CHANNEL_NUM>1)
     {
-        /* CHB */
+
         .dram_dq_b0 = 0,
         .dram_dq_b1 = 1,
 
@@ -1484,7 +1451,7 @@ static struct cbt_pinmux lp4_cp[CHANNEL_NUM] = {
     #endif
     #if (CHANNEL_NUM>2)
     {
-        /* CHC */
+
         .dram_dq_b0 = 0,
         .dram_dq_b1 = 1,
 
@@ -1492,7 +1459,7 @@ static struct cbt_pinmux lp4_cp[CHANNEL_NUM] = {
         .dram_dmi_b1 = 1,
     },
     {
-        /* CHD */
+
         .dram_dq_b0 = 0,
         .dram_dq_b1 = 1,
 
@@ -1504,7 +1471,7 @@ static struct cbt_pinmux lp4_cp[CHANNEL_NUM] = {
 #if 0
 static struct cbt_pinmux lp5_cp[CHANNEL_NUM] = {
     {
-        /* CHA */
+
         .dram_dq_b0 = 1,
         .dram_dq_b1 = 0,
 
@@ -1516,7 +1483,7 @@ static struct cbt_pinmux lp5_cp[CHANNEL_NUM] = {
     },
 #if (CHANNEL_NUM > 1)
     {
-        /* CHB */
+
         .dram_dq_b0 = 1,
         .dram_dq_b1 = 0,
 
@@ -1538,7 +1505,7 @@ static void vSetDramMRCBTOnOff(DRAMC_CTX_T *p, U8 u1OnOff, U8 operating_fsp)
 {
     if (u1OnOff)
     {
-        // op[7] = !(p->dram_fsp), dram will switch to another FSP_OP automatically
+
         if (operating_fsp)
         {
             MRWriteFldMulti(p, 13, P_Fld(0, MR13_FSP_OP) |
@@ -1557,15 +1524,14 @@ static void vSetDramMRCBTOnOff(DRAMC_CTX_T *p, U8 u1OnOff, U8 operating_fsp)
         if (p->dram_cbt_mode[p->rank] == CBT_BYTE_MODE1)
         {
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0), P_Fld(1, CBT_WLEV_CTRL0_BYTEMODECBTEN) |
-				P_Fld(1, CBT_WLEV_CTRL0_CBT_CMP_BYTEMODE));    //BYTEMODECBTEN=1
+				P_Fld(1, CBT_WLEV_CTRL0_CBT_CMP_BYTEMODE));
         }
     }
     else
     {
         if (operating_fsp)
         {
-            // !! Remain MR13_FSP_OP = 0, because of system is at low frequency now.
-            // @Darren, Fix high freq keep FSP0 for CA term workaround (PPR abnormal)
+
             MRWriteFldMulti(p, 13, P_Fld(0, MR13_FSP_OP) |
                                    P_Fld(1, MR13_FSP_WR) |
                                    P_Fld(0, MR13_CBT),
@@ -1596,20 +1562,19 @@ static void CBTEntryLP4(DRAMC_CTX_T *p, U8 operating_fsp, U16 operation_frequenc
 
     CKEFixOnOff(p, p->rank, CKE_FIXON, TO_ONE_CHANNEL);
 
-    // yr: CA train old mode and CS traing need to check MRSRK at this point
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), u1GetRank(p), SWCMD_CTRL0_MRSRK);
 
-    //Step 0: MRW MR13 OP[0]=1 to enable CBT
+
     vSetDramMRCBTOnOff(p, ENABLE, operating_fsp);
 
-    //Step 0.1: before CKE low, Let DQS=0 by R_DMwrite_level_en=1, spec: DQS_t has to retain a low level during tDQSCKE period
+
     if (p->dram_cbt_mode[p->rank] == CBT_NORMAL_MODE)
     {
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0),
                 1, CBT_WLEV_CTRL0_WRITE_LEVEL_EN);
 
-        //TODO, pinmux
-        //force byte0 tx
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0),
             0x1, CBT_WLEV_CTRL0_DQSOEAOEN);
 
@@ -1619,34 +1584,33 @@ static void CBTEntryLP4(DRAMC_CTX_T *p, U8 operating_fsp, U16 operation_frequenc
 
     mcDELAY_US(1);
 
-    //Step 1.0: let CKE go low
+
     CKEFixOnOff(p, p->rank, CKE_FIXOFF, TO_ONE_CHANNEL);
 
-    // Adjust u1MR13Value
+
     (operating_fsp == FSP_1)?
             DramcMRWriteFldAlign(p, 13, 1, MR13_FSP_OP, JUST_TO_GLOBAL_VALUE):
             DramcMRWriteFldAlign(p, 13, 0, MR13_FSP_OP, JUST_TO_GLOBAL_VALUE);
 
-    // Step 1.1 : let IO to O1 path valid
+
     if (p->dram_cbt_mode[p->rank] == CBT_NORMAL_MODE)
     {
-        // Let R_DMFIXDQIEN1=1 (byte1), 0xd8[13]  ==> Note: Do not enable again.
-        //Currently set in O1PathOnOff
+
         //vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_PADCTRL), 0x3, PADCTRL_FIXDQIEN);
 
-        // Let DDRPHY RG_RX_ARDQ_SMT_EN_B1=1 (byte1)
+
         //vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_B1_DQ3), 1, B1_DQ3_RG_RX_ARDQ_SMT_EN_B1);
         O1PathOnOff(p, ON);
     }
 
     if (p->dram_cbt_mode[p->rank] == CBT_BYTE_MODE1)
     {
-        // let IO to O1 path valid by DDRPHY RG_RX_ARDQ_SMT_EN_B0=1
+
         //vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_B0_DQ3), 1, B0_DQ3_RG_RX_ARDQ_SMT_EN_B0);
         O1PathOnOff(p, ON);
     }
 
-    // Wait tCAENT
+
     mcDELAY_US(1);
 }
 
@@ -1656,61 +1620,48 @@ static void CBTExitLP4(DRAMC_CTX_T *p, U8 operating_fsp, U8 operation_frequency)
 
     if (p->dram_cbt_mode[p->rank] == CBT_NORMAL_MODE || p->dram_cbt_mode[p->rank] == CBT_BYTE_MODE1)
     {
-        //Step 1: CKE go high (Release R_DMCKEFIXOFF, R_DMCKEFIXON=1)
+
         CKEFixOnOff(p, p->rank, CKE_FIXON, TO_ONE_CHANNEL);
 
-        //Step 2:wait tCATX, wait tFC
+
         mcDELAY_US(1);
 
-        //Step 3: MRW to command bus training exit (MR13 OP[0]=0 to disable CBT)
+
         vSetDramMRCBTOnOff(p, DISABLE, operating_fsp);
 
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0),
                  0, CBT_WLEV_CTRL0_WRITE_LEVEL_EN);
     }
 
-    //Step 4:
-    //Disable O1 path output
+
     if (p->dram_cbt_mode[p->rank] == CBT_NORMAL_MODE)
     {
-        //Let DDRPHY RG_RX_ARDQ_SMT_EN_B1=0
+
         //vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_B1_DQ3), 0, B1_DQ3_RG_RX_ARDQ_SMT_EN_B1);
         O1PathOnOff(p, OFF);
-        //Let FIXDQIEN1=0 ==> Note: Do not enable again.
-        //Moved into O1PathOnOff
+
         //vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_PADCTRL), 0, PADCTRL_FIXDQIEN);
     }
 
     if (p->dram_cbt_mode[p->rank] == CBT_BYTE_MODE1)
     {
-        //Let DDRPHY RG_RX_ARDQ_SMT_EN_B0=0
+
         //vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_B0_DQ3), 0, B0_DQ3_RG_RX_ARDQ_SMT_EN_B0);
         O1PathOnOff(p, OFF);
 
-        //Disable Byte mode CBT enable bit
+
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0), P_Fld(0, CBT_WLEV_CTRL0_BYTEMODECBTEN) |
-			P_Fld(0, CBT_WLEV_CTRL0_CBT_CMP_BYTEMODE));    //BYTEMODECBTEN=1
+			P_Fld(0, CBT_WLEV_CTRL0_CBT_CMP_BYTEMODE));
     }
 
-    // Wait tCAENT
+
     mcDELAY_US(1);
 }
 
-/*
- * get_mck_ck_ratio -- get ratio of mck:ck
- *
- * TODO, remove later, get the ratio from dram ctx dfs table!!!!
- *
- *
- * return 1 means 1:1
- * return 0 means 1:2
- */
+
 static u8 get_mck_ck_ratio(DRAMC_CTX_T *p)
 {
-    /*
-    * as per DE's comments, LP5 mck:ck has only 1:1 and 1:2.
-    * read SHU_LP5_CMD.LP5_CMD1TO2EN to decide which one.
-    */
+
     u32 ratio;
     //u32 ui_max;
 
@@ -1726,17 +1677,7 @@ static u8 get_cbtui_adjustable_maxvalue(DRAMC_CTX_T *p)
 {
     u8 ratio;
 
-    /*
-    * MCK:CK=1:1,
-    * ther are only 0~1 for ui adjust, if ui value is larger than 1, adjust MCK.
-    *
-    * MCK:CK=1:2,
-    * ther are only 0~3 for ui adjust, if ui value is larger than 3, adjust MCK.
-    *
-    * MCK:CK=1:4, (for LP4)
-    * ther are only 0~7 for ui adjust, if ui value is larger than 7, adjust MCK.
-    *
-    */
+
 		ratio = (vGet_Div_Mode(p) == DIV4_MODE) ? 3 : 7;
 
     return ratio;
@@ -1781,8 +1722,7 @@ static inline void put_ca_ui(DRAMC_CTX_T *p, u32 ca_ui)
 
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_SHU_SELPH_CA7), dly);
 
-    // Note: CKE UI must sync CA UI (CA and CKE delay circuit are same) @Lin-Yi
-    // To avoid tXP timing margin issue
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_SELPH_CA5), ca_ui & 0xF, SHU_SELPH_CA5_DLY_CKE);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_SELPH_CA6), ca_ui & 0xF, SHU_SELPH_CA6_DLY_CKE1);
 }
@@ -1884,13 +1824,7 @@ static inline void put_cs_ui(DRAMC_CTX_T *p, u32 cs_ui)
             cs_ui, SHU_SELPH_CA5_DLY_CS);
 }
 
-//void LP5_ShiftCSUI(DRAMC_CTX_T *p, S8 iShiftUI)
-//{
-//  REG_TRANSFER_T TransferUIRegs  = {DRAMC_REG_SHU_SELPH_CA5, SHU_SELPH_CA5_DLY_CS};
-//  REG_TRANSFER_T TransferMCKRegs = {DRAMC_REG_SHU_SELPH_CA1, SHU_SELPH_CA1_TXDLY_CS};
-//
-//  ExecuteMoveDramCDelay(p, TransferUIRegs[i], TransferMCKRegs[i], iShiftUI);
-//}
+
 
 static S16 adjust_cs_ui(DRAMC_CTX_T *p, u32 cs_mck, u32 cs_ui, S16 pi_dly)
 {
@@ -1912,10 +1846,10 @@ static S16 adjust_cs_ui(DRAMC_CTX_T *p, u32 cs_mck, u32 cs_ui, S16 pi_dly)
 
     ratio = get_mck_ck_ratio(p);
     if (ratio) {
-        /* 1:1 */
+
         cs_bit_mask = 1;
     } else {
-        /* 1:2 */
+
         cs_bit_mask = 3;
     }
 
@@ -1990,7 +1924,7 @@ void CmdOEOnOff(DRAMC_CTX_T *p, U8 u1OnOff, CMDOE_DIS_CHANNEL CmdOeDisChannelNUM
                                                     | P_Fld(0xff, B1_DQ2_RG_TX_ARDQ_OE_TIE_EN_B1));
         }
     }
-    else//(CmdOeDisChannelNUM ==CMDOE_DIS_TO_ONE_CHANNEL)
+    else
     {
         if (!isLP4_DSC)
         {
@@ -2012,7 +1946,7 @@ void CmdOEOnOff(DRAMC_CTX_T *p, U8 u1OnOff, CMDOE_DIS_CHANNEL CmdOeDisChannelNUM
 void CBTDelayCACLK(DRAMC_CTX_T *p, S32 iDelay)
 {
     if (iDelay < 0)
-    {   /* Set CLK delay */
+    {
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_CA_CMD0),
             P_Fld(0, SHU_R0_CA_CMD0_RG_ARPI_CMD) |
             P_Fld(-iDelay, SHU_R0_CA_CMD0_RG_ARPI_CLK) |
@@ -2030,7 +1964,7 @@ void CBTDelayCACLK(DRAMC_CTX_T *p, S32 iDelay)
     }
 */
     else
-    {   /* Set CA output delay */
+    {
 //      DramcCmdUIDelaySetting(p, 0);
 
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_CA_CMD0),
@@ -2041,13 +1975,7 @@ void CBTDelayCACLK(DRAMC_CTX_T *p, S32 iDelay)
 }
 
 #if CBT_AUTO_K_SUPPORT
-/*
- * cbt_catrain_autok -- ca autok
- * @initpi: init pi select
- * @steps: sweep how many pi step, 1 ~ 64
- * @respi: step resolution, 0,1,2,3. that means 1, 2, 4, 8 pis
- *
- */
+
 #if 0
 static int cbt_catrain_autok(DRAMC_CTX_T *p,
         u8 initpi, u8 steps, u8 respi,
@@ -2081,17 +2009,7 @@ static int cbt_cstrain_autok(DRAMC_CTX_T *p,
             initpi, lenpi, respi, cmp0, cmp1, 1);
 }
 
-/*
- * cbt_catrain_autok_next_window -- find next zero window
- * @bitmap: window map
- * @start_pos: start position to find
- * @initpi: init pi select
- * @steps: sweep how many pi step, 1 ~ 64
- * @respi: step resolution, 0, 1, 2, 3
- * @pwin: window boundary to store
- *
- * return 1 if found window, 0 otherwise.
- */
+
 static int cbt_catrain_autok_next_window(DRAMC_CTX_T *p,
         u32 *bitmap, u8 start_pos,
         u8 initpi, u8 steps, u8 respi,
@@ -2139,9 +2057,7 @@ static void cbt_autok_maxwindow(DRAMC_CTX_T *p,
 
         if (!res)
         {
-            /*
-             * autok not find pass window
-             */
+
             mcSHOW_DBG_MSG2(("no window @pi [%d, %d]\n",
                         uiDelay + start_pos,
                         uiDelay + pi_step - 1));
@@ -2149,8 +2065,8 @@ static void cbt_autok_maxwindow(DRAMC_CTX_T *p,
             if ((*iFirstPass != PASS_RANGE_NA) &&
                     (*iLastPass == PASS_RANGE_NA))
             {
-                /* window has left boundary */
-                if ((uiDelay - *iFirstPass) < 5) /* prevent glitch */
+
+                if ((uiDelay - *iFirstPass) < 5)
                 {
                     *iFirstPass = PASS_RANGE_NA;
                 }
@@ -2160,19 +2076,17 @@ static void cbt_autok_maxwindow(DRAMC_CTX_T *p,
                 }
             }
 
-            /* ca no pass window yet, break while-1 loop */
+
             break;
         }
         else
         {
-            /*
-             * autok find pass window
-             */
+
             mcSHOW_DBG_MSG2(("find pi pass window [%d, %d] in [%d, %d]\n",
                         win.first_pass, win.last_pass,
                         uiDelay, uiDelay + pi_step - 1));
 
-            /* adjust start_pos to find next pass window */
+
             start_pos = win.last_pass - uiDelay + 1;
 
             if (*iFirstPass == PASS_RANGE_NA)
@@ -2181,26 +2095,26 @@ static void cbt_autok_maxwindow(DRAMC_CTX_T *p,
             }
             else if (*iLastPass != PASS_RANGE_NA)
             {
-                /* have pass window yet */
+
                 if (*iLastPass + (1 << respi) >= win.first_pass)
                 {
                     *iLastPass = win.last_pass;
                 }
                 else
                 {
-                    /* wind is NOT continuous  and larger size */
+
                     if (win.last_pass - win.first_pass >= *iLastPass - *iFirstPass)
                     {
                         *iFirstPass = win.first_pass;
                         *iLastPass = win.last_pass;
                     }
                 }
-                continue; /* find next window */
+                continue;
             }
 
             if (*iLastPass == PASS_RANGE_NA)
             {
-                if ((win.last_pass - *iFirstPass) < 5) /* prevent glitch */
+                if ((win.last_pass - *iFirstPass) < 5)
                 {
                     *iFirstPass = PASS_RANGE_NA;
                     continue;
@@ -2209,7 +2123,7 @@ static void cbt_autok_maxwindow(DRAMC_CTX_T *p,
                 *iLastPass = win.last_pass;
             }
         }
-    } /* while (1) */
+    }
 }
 #endif
 #endif
@@ -2239,7 +2153,7 @@ static void CBTAdjustCS(DRAMC_CTX_T *p, int autok)
     }
 #endif
 
-    // if dual rank, use average position of both rank
+
     if(backup_rank == RANK_1)
     {
         iCSFinalDelay = (CATrain_CsDelay[p->channel][RANK_0] + CATrain_CsDelay[p->channel][RANK_1]) >> 1;
@@ -2249,8 +2163,7 @@ static void CBTAdjustCS(DRAMC_CTX_T *p, int autok)
         iCSFinalDelay = CATrain_CsDelay[p->channel][p->rank];
     }
 
-    //Set CS output delay after training
-    /* p->rank = RANK_0, save to Reg Rank0 and Rank1, p->rank = RANK_1, save to Reg Rank1 */
+
     for (ii = RANK_0; ii <= backup_rank; ii++)
     {
         vSetRank(p, ii);
@@ -2269,7 +2182,7 @@ static void CBTAdjustCS(DRAMC_CTX_T *p, int autok)
 
     vSetRank(p, backup_rank);
 
-    //Also for Dump_Reg
+
     //mcSHOW_DBG_MSG(("CS delay=%d (%d~%d)\n", iCSFinalDelay, iFirstCSPass, iLastCSPass));
     //mcDUMP_REG_MSG(("CS delay=%d (%d~%d)\n", iCSFinalDelay, iFirstCSPass, iLastCSPass));
 }
@@ -2290,7 +2203,7 @@ static void CATrainingSetPerBitDelayCell(DRAMC_CTX_T *p, S16 *iCAFinalCenter, U8
         iCA_PerBit_DelayLine[uiLPDDR_CA_Mapping[u1CA]] = iCAFinalCenter[u1CA];
     }
 
-    // Set CA perbit delay line calibration results
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_CA_TXDLY0),
             P_Fld(iCA_PerBit_DelayLine[0], SHU_R0_CA_TXDLY0_TX_ARCA0_DLY) |
             P_Fld(iCA_PerBit_DelayLine[1], SHU_R0_CA_TXDLY0_TX_ARCA1_DLY) |
@@ -2303,13 +2216,13 @@ static void CATrainingSetPerBitDelayCell(DRAMC_CTX_T *p, S16 *iCAFinalCenter, U8
             P_Fld(iCA_PerBit_DelayLine[6], SHU_R0_CA_TXDLY1_TX_ARCA6_DLY) |
             P_Fld(iCA_PerBit_DelayLine[7], SHU_R0_CA_TXDLY1_TX_ARCA7_DLY));
 }
-#endif// end of CA_PER_BIT_DELAY_CELL
+#endif
 
 static void CBTSetCACLKResult(DRAMC_CTX_T *p, U32 u4MCK, U32 u4UI, U8 ca_pin_num)
 {
     S8 iFinalCACLK;
     U8 backup_rank, rank_i, uiCA;
-    S16 iCAFinalCenter[CATRAINING_NUM]={0}; //for CA_PER_BIT
+    S16 iCAFinalCenter[CATRAINING_NUM]={0};
 
 #if (SUPPORT_SAVE_TIME_FOR_CALIBRATION && BYPASS_CBT)
     if (p->femmc_Ready == 1)
@@ -2392,11 +2305,11 @@ static void CBTSetVrefLP4(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefLevel, U8 ope
 
         fld = (cp->dram_dq_b0) ? CBT_WLEV_CTRL4_CBT_TXDQ_B1 : CBT_WLEV_CTRL4_CBT_TXDQ_B0;
 
-        //vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_WRITE_LEV), ((u1VrefRange&0x1) <<6) | (u1VrefLevel & 0x3f), WRITE_LEV_DMVREFCA);  //MR12, bit[25:20]=OP[5:0]  bit 26=OP[6]
+        //vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_WRITE_LEV), ((u1VrefRange&0x1) <<6) | (u1VrefLevel & 0x3f), WRITE_LEV_DMVREFCA);
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL4),
-            u1VrefValue_pinmux, fld);  //MR12, bit[25:20]=OP[5:0]  bit 26=OP[6]
+            u1VrefValue_pinmux, fld);
 
-         //DQS_SEL=1, DQS_B1_G=1, Toggle R_DMDQS_WLEV (1 to 0)
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0), (0x1 << cp->dram_dq_b0), CBT_WLEV_CTRL0_CBT_WLEV_DQS_SEL);
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL3), 0xa, CBT_WLEV_CTRL3_DQSBX_G);
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0), 1, CBT_WLEV_CTRL0_CBT_WLEV_DQS_TRIG);
@@ -2418,7 +2331,7 @@ static void CBTSetVrefLP4(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefLevel, U8 ope
         DramcModeRegWriteByRank(p, p->rank, 12, u4DbgValue);
     }
 
-    //wait tVREF_LONG
+
     mcDELAY_US(1);
 }
 
@@ -2428,15 +2341,15 @@ static void CBTEntryLP45(DRAMC_CTX_T *p, U8 u1FSP, U16 u2Freq)
     {
         if(p->dram_fsp == FSP_1)
         {
-            //@Darren, Risk here!!!VDDQ term region between 300mv and 360mv. (CaVref_0x20 is 204mv)
+
             CmdOEOnOff(p, DISABLE, CMDOE_DIS_TO_ONE_CHANNEL);
             cbt_switch_freq(p, CBT_LOW_FREQ);
             CmdOEOnOff(p, ENABLE, CMDOE_DIS_TO_ONE_CHANNEL);
         }
-#if ENABLE_LP4Y_WA && LP4Y_BACKUP_SOLUTION //@Darren, debugging for DFS stress
+#if ENABLE_LP4Y_WA && LP4Y_BACKUP_SOLUTION
         CmdBusTrainingLP4YWA(p, DISABLE);
 #endif
-        CBTEntryLP4(p, u1FSP, u2Freq); // @Darren, after CBT entry will not any CMD output (CKE low)
+        CBTEntryLP4(p, u1FSP, u2Freq);
         if(p->dram_fsp == FSP_1)
         {
             cbt_switch_freq(p, CBT_HIGH_FREQ);
@@ -2446,17 +2359,13 @@ static void CBTEntryLP45(DRAMC_CTX_T *p, U8 u1FSP, U16 u2Freq)
 
 static void CBTExitLP45(DRAMC_CTX_T *p, U8 u1FSP, U8 u2Freq, U8 stateFlag)
 {
-    /* by yirong.wang
-     * if stateFlag == OUT_CBT, it means we finished CBT, exit CBT
-     * if stateFlag == IN_CBT, it means we are trying to setup vref by MRW
-     *   IN_CBT case, only for LP5 mode 1 and LP4 byte mode
-     */
+
     {
         if (stateFlag == OUT_CBT || p->dram_cbt_mode[p->rank] == CBT_BYTE_MODE1)
         {
             (p->dram_fsp == FSP_1)? cbt_switch_freq(p, CBT_LOW_FREQ): NULL;
             CBTExitLP4(p, u1FSP, u2Freq);
-#if ENABLE_LP4Y_WA && LP4Y_BACKUP_SOLUTION //@Darren, debugging for DFS stress
+#if ENABLE_LP4Y_WA && LP4Y_BACKUP_SOLUTION
             CmdBusTrainingLP4YWA(p, ENABLE);
 #endif
         }
@@ -2468,7 +2377,7 @@ static void CBTSetVrefLP45(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefLevel, U8 u1
     {
         if (stateFlag == IN_CBT && p->dram_cbt_mode[p->rank] == CBT_BYTE_MODE1)
         {
-            // BYTE MODE: We are not in CBT now, set Vref & enter CBT
+
             (p->dram_fsp == FSP_1)? cbt_switch_freq(p, CBT_LOW_FREQ): NULL;
             CBTExitLP4(p, u1FSP, u2Freq);
 
@@ -2494,13 +2403,13 @@ static void CBTScanPI(DRAMC_CTX_T *p, S16 *s2PIStart, S16 *s2PIEnd, S16 *s2PISte
 	p2u = get_ca_pi_per_ui(p);
 
     if (is_discrete_lpddr4())
-	*s2PIStart = -16; /* improve high frequency CA left boundary */
+	*s2PIStart = -16;
 	else
 	*s2PIStart = 0;
 	*s2PIEnd = p2u * 3 - 1;
 
 	{
-		/* LPDDR4 */
+
 #if !CBT_MOVE_CA_INSTEAD_OF_CLK
 		if (vGet_DDR_Loop_Mode(p) == SEMI_OPEN_LOOP_MODE)
 		{
@@ -2579,12 +2488,12 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
         (DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0)),
         (DRAMC_REG_ADDR(DRAMC_REG_REFCTRL0)),
 
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_VREF)),           //in O1PathOnOff()
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_VREF)),           //in O1PathOnOff()
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_VREF)),           //in O1PathOnOff()
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_PHY_VREF_SEL)),   //in O1PathOnOff()
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_PHY_VREF_SEL)),   //in O1PathOnOff()
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_PHY_VREF_SEL)),   //in O1PathOnOff()
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_VREF)),
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_VREF)),
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_VREF)),
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_PHY_VREF_SEL)),
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_PHY_VREF_SEL)),
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_PHY_VREF_SEL)),
     };
 
     CBTScanPI(p, &pi_start, &pi_end, &pi_step, autok);
@@ -2636,10 +2545,10 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
     mcSHOW_DBG_MSG(("[CmdBusTrainingLP45] new_cbt_mode=%d, autok=%d\n", p->new_cbt_mode, autok));
     mcSHOW_DBG_MSG2(("pi_start=%d, pi_end=%d, pi_step=%d\n", pi_start, pi_end, pi_step));
 
-    //Back up dramC register
+
     DramcBackupRegisters(p, u4RegBackupAddress, ARRAY_SIZE(u4RegBackupAddress));
 
-    //default set FAIL
+
     if (u1CBTEyeScanEnable == DISABLE)
     {
         vSetCalibrationResult(p, DRAM_CALIBRATION_CA_TRAIN, DRAM_FAIL);
@@ -2663,41 +2572,32 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
     }
 #endif
 
-    /* read ca ui and mck */
+
     ca_ui_default = ca_ui = get_ca_ui(p);
     ca_mck = get_ca_mck(p);
     ca_cmd0 = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_CA_CMD0));
 
-    vAutoRefreshSwitch(p, DISABLE); //When doing CA training, should make sure that auto refresh is disable
+    vAutoRefreshSwitch(p, DISABLE);
 
-    /*
-     * TOOD
-     *
-     * here just pass simulation,
-     * remove after ACTiming OK(ACTiming Table includes CATRAIN_INTV)
-     */
+
     //vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL1),
     //      P_Fld(0x1F, CBT_WLEV_CTRL1_CATRAIN_INTV));
     set_cbt_wlev_intv(p);
 
-    /*
-     * tx_rank_sel is selected by SW
-     * Lewis@20180509: tx_rank_sel is selected by SW in CBT if TMRRI design has changed.
-     */
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0),
         p->rank, TX_SET0_TXRANK);
-    /* TXRANKFIX should be write after TXRANK or the rank will be fix at rank 1 */
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0),
         1, TX_SET0_TXRANKFIX);
 
-    //SW variable initialization
+
     uiCAWinSumMax = 0;
 
     operating_fsp = p->dram_fsp;
     operation_frequency = p->frequency;
 
-    // free-run dramc/ddrphy clk (DCMEN2=0, MIOCKCTRLOFF=1, PHYCLKDYNGEN=0, COMBCLKCTRL=0)
-    // free-run dram clk(APHYCKCG_FIXOFF =1, TCKFIXON=1)
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL),
         P_Fld(0, DRAMC_PD_CTRL_DCMEN2) |
         P_Fld(1, DRAMC_PD_CTRL_MIOCKCTRLOFF) |
@@ -2706,14 +2606,14 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
         P_Fld(1, DRAMC_PD_CTRL_APHYCKCG_FIXOFF) |
         P_Fld(1, DRAMC_PD_CTRL_TCKFIXON));
 
-    //Note : Assume that there is a default CS value that can apply for CA.
+
     CBTEntryLP45(p, operating_fsp, operation_frequency);
 
 #if PINMUX_AUTO_TEST_PER_BIT_CA
     CheckCADelayCell(p);
 #endif
 
-    //Step 3: set vref range and step by ddr type
+
 
 #if (SUPPORT_SAVE_TIME_FOR_CALIBRATION && (BYPASS_VREF_CAL || BYPASS_CBT))
     if (p->femmc_Ready == 1)
@@ -2735,18 +2635,17 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
     gFinalCBTVrefCA[p->channel][p->rank] = u1FinalVref;
 #endif
 
-    //Set Vref after training
-    // BYTE MODE: Set Vref & enter CBT
+
     CBTSetVrefLP45(p, u1FinalRange, u1FinalVref, operating_fsp, operation_frequency, IN_CBT);
 #if (SUPPORT_SAVE_TIME_FOR_CALIBRATION && BYPASS_CBT)
     #if CBT_MOVE_CA_INSTEAD_OF_CLK
-    // scan UI from 0, not from the UI we used to enter CBT
+
     DramcCmdUIDelaySetting(p, 0);
     ca_ui = get_ca_ui(p);
     #endif
 #endif
     put_ca_ui(p, ca_ui);
-    //Set CA_PI_Delay after training
+
     if (u1CBTEyeScanEnable == DISABLE)
     {
         CBTSetCACLKResult(p, ca_mck, ca_ui, ca_pin_num);
@@ -2769,15 +2668,14 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
     gEyeScan_CaliDelay[0] = CATrain_CmdDelay[p->channel][p->rank] -pi_start;
 #endif
 
-    /* -------------  CS and CLK ---------- */
-    /* delay ca 1UI before K CS */
+
 
     if (u1CBTEyeScanEnable == DISABLE)
     {
         CBTAdjustCS(p, autok);
     }
 
-//-------  Going to exit Command bus training(CBT) mode.-------------
+
     CBTExitLP45(p, operating_fsp, operation_frequency, OUT_CBT);
     CBTSetVrefLP45(p, u1FinalRange, u1FinalVref, operating_fsp, operation_frequency, OUT_CBT);
 
@@ -2798,31 +2696,24 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
 
     mcSHOW_DBG_MSG4(("\n[CmdBusTrainingLP45] Done\n"));
 
-    //tx_rank_sel is selected by HW //Lewis@20180509: tx_rank_sel is selected by SW in CBT if TMRRI design has changed.
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 0, TX_SET0_TXRANK);
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 0, TX_SET0_TXRANKFIX); //TXRANKFIX should be write after TXRANK or the rank will be fix at rank 1
 
-    //Restore setting registers
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 0, TX_SET0_TXRANK);
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 0, TX_SET0_TXRANKFIX);
+
+
     DramcRestoreRegisters(p, u4RegBackupAddress, ARRAY_SIZE(u4RegBackupAddress));
 
     return DRAM_OK;
 }
 #endif /* SIMUILATION_CBT */
 
-//-------------------------------------------------------------------------
-/** DramcWriteLeveling
- *  start Write Leveling Calibration.
- *  @param p                Pointer of context created by DramcCtxCreate.
- *  @param  apply           (U8): 0 don't apply the register we set  1 apply the register we set ,default don't apply.
- *  @retval status          (DRAM_STATUS_T): DRAM_OK or DRAM_FAIL
- */
-//-------------------------------------------------------------------------
-#define WRITE_LEVELING_MOVD_DQS 1//UI
+
+#define WRITE_LEVELING_MOVD_DQS 1
 
 U8 u1MCK2UI_DivShift(DRAMC_CTX_T *p)
 {
     {
-        //in LP4 1:8 mode, 8 small UI =  1 large UI
+
         if (vGet_Div_Mode(p) == DIV4_MODE)
         {
             return MCK_TO_4UI_SHIFT;
@@ -2900,9 +2791,9 @@ static void _LoopAryToDelay(DRAMC_CTX_T *p,
 
 static void LP4_ShiftDQSUI(DRAMC_CTX_T *p, S8 iShiftUI, BYTES_T eByteIdx)
 {
-    // DQS / DQS_OEN
-    REG_TRANSFER_T TransferUIRegs[]  = {{DRAMC_REG_SHU_SELPH_DQS1, SHU_SELPH_DQS1_DLY_DQS0},        // Byte0
-                                        {DRAMC_REG_SHU_SELPH_DQS1, SHU_SELPH_DQS1_DLY_DQS1}};       // Byte1
+
+    REG_TRANSFER_T TransferUIRegs[]  = {{DRAMC_REG_SHU_SELPH_DQS1, SHU_SELPH_DQS1_DLY_DQS0},
+                                        {DRAMC_REG_SHU_SELPH_DQS1, SHU_SELPH_DQS1_DLY_DQS1}};
     REG_TRANSFER_T TransferMCKRegs[] = {{DRAMC_REG_SHU_SELPH_DQS0, SHU_SELPH_DQS0_TXDLY_DQS0},
                                         {DRAMC_REG_SHU_SELPH_DQS0, SHU_SELPH_DQS0_TXDLY_DQS1}};
 
@@ -2913,9 +2804,9 @@ static void LP4_ShiftDQSUI(DRAMC_CTX_T *p, S8 iShiftUI, BYTES_T eByteIdx)
 
 void LP4_ShiftDQS_OENUI(DRAMC_CTX_T *p, S8 iShiftUI, BYTES_T eByteIdx)
 {
-    // DQS / DQS_OEN
-    REG_TRANSFER_T TransferUIRegs[]  = {{DRAMC_REG_SHU_SELPH_DQS1, SHU_SELPH_DQS1_DLY_OEN_DQS0},    // Byte0
-                                        {DRAMC_REG_SHU_SELPH_DQS1, SHU_SELPH_DQS1_DLY_OEN_DQS1}};   // Byte1
+
+    REG_TRANSFER_T TransferUIRegs[]  = {{DRAMC_REG_SHU_SELPH_DQS1, SHU_SELPH_DQS1_DLY_OEN_DQS0},
+                                        {DRAMC_REG_SHU_SELPH_DQS1, SHU_SELPH_DQS1_DLY_OEN_DQS1}};
     REG_TRANSFER_T TransferMCKRegs[] = {{DRAMC_REG_SHU_SELPH_DQS0, SHU_SELPH_DQS0_TXDLY_OEN_DQS0},
                                         {DRAMC_REG_SHU_SELPH_DQS0, SHU_SELPH_DQS0_TXDLY_OEN_DQS1}};
 
@@ -2926,11 +2817,11 @@ void LP4_ShiftDQS_OENUI(DRAMC_CTX_T *p, S8 iShiftUI, BYTES_T eByteIdx)
 
 static void ShiftDQUI(DRAMC_CTX_T *p, S8 iShiftUI, BYTES_T eByteIdx)
 {
-    // Shift DQ / DQM / DQ_OEN / DQM_OEN
-    REG_TRANSFER_T TransferUIRegs[]  = {{DRAMC_REG_SHURK_SELPH_DQ3, SHURK_SELPH_DQ3_DLY_DQM0},      // Byte0
-                                        {DRAMC_REG_SHURK_SELPH_DQ3, SHURK_SELPH_DQ3_DLY_DQM1},      // Byte1
-                                        {DRAMC_REG_SHURK_SELPH_DQ2, SHURK_SELPH_DQ2_DLY_DQ0},       // Byte0
-                                        {DRAMC_REG_SHURK_SELPH_DQ2, SHURK_SELPH_DQ2_DLY_DQ1}};  // Byte1
+
+    REG_TRANSFER_T TransferUIRegs[]  = {{DRAMC_REG_SHURK_SELPH_DQ3, SHURK_SELPH_DQ3_DLY_DQM0},
+                                        {DRAMC_REG_SHURK_SELPH_DQ3, SHURK_SELPH_DQ3_DLY_DQM1},
+                                        {DRAMC_REG_SHURK_SELPH_DQ2, SHURK_SELPH_DQ2_DLY_DQ0},
+                                        {DRAMC_REG_SHURK_SELPH_DQ2, SHURK_SELPH_DQ2_DLY_DQ1}};
     REG_TRANSFER_T TransferMCKRegs[] = {{DRAMC_REG_SHURK_SELPH_DQ1, SHURK_SELPH_DQ1_TXDLY_DQM0},
                                         {DRAMC_REG_SHURK_SELPH_DQ1, SHURK_SELPH_DQ1_TXDLY_DQM1},
                                         {DRAMC_REG_SHURK_SELPH_DQ0, SHURK_SELPH_DQ0_TXDLY_DQ0},
@@ -2946,7 +2837,7 @@ static void ShiftDQUI_AllRK(DRAMC_CTX_T *p, S8 iShiftUI, BYTES_T eByteIdx)
     U8 backup_rank, rk_i;
     backup_rank = u1GetRank(p);
 
-    // Shift DQ / DQM / DQ_OEN / DQM_OEN
+
     for (rk_i = RANK_0; rk_i < p->support_rank_num; rk_i++)
     {
         vSetRank(p, rk_i);
@@ -2957,10 +2848,10 @@ static void ShiftDQUI_AllRK(DRAMC_CTX_T *p, S8 iShiftUI, BYTES_T eByteIdx)
 
 static void ShiftDQ_OENUI(DRAMC_CTX_T *p, S8 iShiftUI, BYTES_T eByteIdx)
 {
-    REG_TRANSFER_T TransferUIRegs[]  = {{DRAMC_REG_SHURK_SELPH_DQ3, SHURK_SELPH_DQ3_DLY_OEN_DQM0},  // Byte0
-                                        {DRAMC_REG_SHURK_SELPH_DQ3, SHURK_SELPH_DQ3_DLY_OEN_DQM1},  // Byte1
-                                        {DRAMC_REG_SHURK_SELPH_DQ2, SHURK_SELPH_DQ2_DLY_OEN_DQ0},   // Byte0
-                                        {DRAMC_REG_SHURK_SELPH_DQ2, SHURK_SELPH_DQ2_DLY_OEN_DQ1}};  // Byte1
+    REG_TRANSFER_T TransferUIRegs[]  = {{DRAMC_REG_SHURK_SELPH_DQ3, SHURK_SELPH_DQ3_DLY_OEN_DQM0},
+                                        {DRAMC_REG_SHURK_SELPH_DQ3, SHURK_SELPH_DQ3_DLY_OEN_DQM1},
+                                        {DRAMC_REG_SHURK_SELPH_DQ2, SHURK_SELPH_DQ2_DLY_OEN_DQ0},
+                                        {DRAMC_REG_SHURK_SELPH_DQ2, SHURK_SELPH_DQ2_DLY_OEN_DQ1}};
     REG_TRANSFER_T TransferMCKRegs[] = {{DRAMC_REG_SHURK_SELPH_DQ1, SHURK_SELPH_DQ1_TXDLY_OEN_DQM0},
                                         {DRAMC_REG_SHURK_SELPH_DQ1, SHURK_SELPH_DQ1_TXDLY_OEN_DQM1},
                                         {DRAMC_REG_SHURK_SELPH_DQ0, SHURK_SELPH_DQ0_TXDLY_OEN_DQ0},
@@ -2976,7 +2867,7 @@ void ShiftDQ_OENUI_AllRK(DRAMC_CTX_T *p, S8 iShiftUI, BYTES_T eByteIdx)
     U8 backup_rank, rk_i;
     backup_rank = u1GetRank(p);
 
-    // Shift DQ / DQM / DQ_OEN / DQM_OEN
+
     for (rk_i = RANK_0; rk_i < p->support_rank_num; rk_i++)
     {
         vSetRank(p, rk_i);
@@ -3007,14 +2898,14 @@ U8 u1IsLP4Div4DDR800(DRAMC_CTX_T *p)
         return FALSE;
 }
 
-//static void vSetDramMRWriteLevelingOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
+
 static void vSetDramMRWriteLevelingOnOff(DRAMC_CTX_T *p, U8 u1OnOff)
 {
-    // MR2 OP[7] to enable/disable write leveling
+
     if (u1OnOff)
-        u1MR02Value[p->dram_fsp] |= 0x80;  // OP[7] WR LEV =1
+        u1MR02Value[p->dram_fsp] |= 0x80;
     else
-        u1MR02Value[p->dram_fsp] &= 0x7f;  // OP[7] WR LEV =0
+        u1MR02Value[p->dram_fsp] &= 0x7f;
 
     DramcModeRegWriteByRank(p, p->rank, 2, u1MR02Value[p->dram_fsp]);
 }
@@ -3023,21 +2914,18 @@ U8 u1IsPhaseMode(DRAMC_CTX_T *p)
 {
     if ((vGet_DDR_Loop_Mode(p) == OPEN_LOOP_MODE) || (vGet_DDR_Loop_Mode(p) == SEMI_OPEN_LOOP_MODE))
         return TRUE;
-    else // DDR800_CLOSE_LOOP and NORMAL_CLOSE_LOOP
+    else
         return FALSE;
 }
 
 #if 0
 static DRAM_STATUS_T DramcTriggerAndWait(DRAMC_CTX_T *p, REG_TRANSFER_T TriggerReg, REG_TRANSFER_T RepondsReg)
 {
-//    U32 u4TimeCnt = TIME_OUT_CNT;
-    // @Darren, Rx HW AutoK simulation time
-    // RX delay all range -511~255, step:4,DDR800semi + TEST2_OFF=0x100 => 8661us/per rank
-    // RX delay all range -327~252, step:8,DDR800semi, TEST2_OFF=0x100 => 3276us/per rank
+
     U32 u4TimeCnt = DDR_HW_AUTOK_POLLING_CNT;
     DRAM_STATUS_T u4RespFlag = 0;
 
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(TriggerReg.u4Addr), 0, TriggerReg.u4Fld); // Init EN status
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(TriggerReg.u4Addr), 0, TriggerReg.u4Fld);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(TriggerReg.u4Addr), 1, TriggerReg.u4Fld);
     do
     {
@@ -3046,7 +2934,7 @@ static DRAM_STATUS_T DramcTriggerAndWait(DRAMC_CTX_T *p, REG_TRANSFER_T TriggerR
         mcDELAY_US(1);
     }while ((u4RespFlag == 0) && (u4TimeCnt > 0));
 
-    if (u4TimeCnt == 0)//time out
+    if (u4TimeCnt == 0)
     {
         mcSHOW_ERR_MSG(("[DramcTriggerAndWait] Wait 0x%x respond fail (time out)\n", RepondsReg.u4Addr));
         return DRAM_FAIL;
@@ -3057,19 +2945,19 @@ static DRAM_STATUS_T DramcTriggerAndWait(DRAMC_CTX_T *p, REG_TRANSFER_T TriggerR
 
 static DRAM_STATUS_T DramcTriggerAndWait_For_RX_AutoK_WorkAround(DRAMC_CTX_T *p, REG_TRANSFER_T TriggerReg, REG_TRANSFER_T RepondsReg, U16 u16DelayStep)
 {
-    // Set step = 0 to let autoK non-stop
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_AUTOK_CFG0), 0, MISC_RX_AUTOK_CFG0_RX_CAL_STEP);
 
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(TriggerReg.u4Addr), 0, TriggerReg.u4Fld); // Init EN status
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(TriggerReg.u4Addr), 0, TriggerReg.u4Fld);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(TriggerReg.u4Addr), 1, TriggerReg.u4Fld);
 
-    // Trigger and then stop immediately
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(TriggerReg.u4Addr), 0, TriggerReg.u4Fld);
 
-    // PHY reset
+
     DramPhyReset(p);
 
-    // Restor the original step
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_AUTOK_CFG0), u16DelayStep, MISC_RX_AUTOK_CFG0_RX_CAL_STEP);
 
     return DramcTriggerAndWait(p, TriggerReg, RepondsReg);
@@ -3086,7 +2974,7 @@ static void WriteLevelingScanRange_PI(DRAMC_CTX_T *p, S32 *ps4DlyBegin, S32 *ps4
 
     if (stDelayBase == PI_BASED)
     {
-        // Giving PI scan range
+
         s4DlyBegin = WRITE_LEVELING_MOVD_DQS * 32 - MAX_CLK_PI_DELAY - 1;
         s4DlyEnd = s4DlyBegin + 64 - 1;
 
@@ -3106,14 +2994,14 @@ static void WriteLevelingScanRange_PI(DRAMC_CTX_T *p, S32 *ps4DlyBegin, S32 *ps4
             PI_bound = 64;
         }
     }
-    else // stDelayBase == DLY_BASED
+    else
     {
-        // Giving delay cell scan range
+
         s4DlyBegin = 0;
         s4DlyEnd = 2 * STORAGED_DLY_UNIT;
 
-        u1PIStep = 1;    // One step is 1/4 delay cell
-        PI_bound = 1024; // No bounadary as delay cell based
+        u1PIStep = 1;
+        PI_bound = 1024;
     }
     mcSHOW_DBG_MSG2(("Delay: %d->%d, Step: %d, Bound: %d\n", s4DlyBegin, s4DlyEnd, u1PIStep, PI_bound));
 
@@ -3152,14 +3040,14 @@ void WriteLevelingPosCal(DRAMC_CTX_T *p, WLEV_DELAY_BASED_T stDelayBase)
     {
         vSetRank(p, rank_i);
 
-        // set to best values for  DQS
+
         if (stDelayBase == PI_BASED)
         {
-            // Adjust DQS output delay.
+
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_DQ0), wrlevel_dqs_delay[0], SHU_R0_B0_DQ0_ARPI_PBYTE_B0);
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_DQ0), wrlevel_dqs_delay[1], SHU_R0_B1_DQ0_ARPI_PBYTE_B1);
         }
-        else // stDelayBase == DLY_BASED
+        else
         {
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_TXDLY3), wrlevel_dqs_delay[0], SHU_R0_B0_TXDLY3_TX_ARWCK_DLY_B0);
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_TXDLY3), wrlevel_dqs_delay[1], SHU_R0_B1_TXDLY3_TX_ARWCK_DLY_B1);
@@ -3177,7 +3065,7 @@ void WriteLevelingPosCal(DRAMC_CTX_T *p, WLEV_DELAY_BASED_T stDelayBase)
 #define SET_PATTERN_MANUALLY_FOR_DEBUG 1
 DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T stDelayBase)
 {
-// Note that below procedure is based on "ODT off"
+
     DRAM_STATUS_T KResult = DRAM_FAIL;
 
     //U8 *uiLPDDR_O1_Mapping = NULL;
@@ -3201,10 +3089,10 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
     U8 u1OverBoundCnt = 0; //jj = 0
     S16 PI_bound = 64;
 
-    //When doing WriteLeveling, should make sure that auto refresh is disable
+
     vAutoRefreshSwitch(p, DISABLE);
 
-    // error handling
+
     if (!p)
     {
         mcSHOW_ERR_MSG(("context NULL\n"));
@@ -3222,11 +3110,11 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
     backup_rank = u1GetRank(p);
 
     //DramcRankSwap(p, p->rank);
-    //tx_rank_sel is selected by SW //Lewis@20180604: tx_rank_sel is selected by SW in WL if TMRRI design has changed.
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), p->rank, TX_SET0_TXRANK);
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 1, TX_SET0_TXRANKFIX); //TXRANKFIX should be write after TXRANK
 
-    // backup mode settings
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), p->rank, TX_SET0_TXRANK);
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 1, TX_SET0_TXRANKFIX);
+
+
     U32 u4RegBackupAddress[] =
     {
         (DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL)),
@@ -3234,18 +3122,18 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
         (DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL1)),
         (DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL3)),
         (DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL5)),
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_VREF)),           //in O1PathOnOff()
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_VREF)),           //in O1PathOnOff()
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_VREF)),           //in O1PathOnOff()
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_PHY_VREF_SEL)),   //in O1PathOnOff()
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_PHY_VREF_SEL)),   //in O1PathOnOff()
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_PHY_VREF_SEL)),   //in O1PathOnOff()
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_VREF)),
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_VREF)),
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_VREF)),
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_PHY_VREF_SEL)),
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_PHY_VREF_SEL)),
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_PHY_VREF_SEL)),
         (DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL))
     };
     DramcBackupRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress) / sizeof(U32));
 
 
-    //default set DRAM FAIL
+
     vSetCalibrationResult(p, DRAM_CALIBRATION_WRITE_LEVEL, DRAM_FAIL);
 
 #if MRW_CHECK_ONLY
@@ -3254,7 +3142,7 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 
     if (p->isWLevInitShift[p->channel] == FALSE)
     {
-        // It must be PI_BASED or FAIL!!
+
 #if __ETT__
 		while (stDelayBase != PI_BASED);
 #else
@@ -3263,21 +3151,21 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 
         p->isWLevInitShift[p->channel] = TRUE;
 
-        // This flow would be excuted just one time, so all ranks(maybe rank0/1) should be adjusted at once.
+
         ShiftDQUI_AllRK(p, -WRITE_LEVELING_MOVD_DQS, ALL_BYTES);
         ShiftDQ_OENUI_AllRK(p, -WRITE_LEVELING_MOVD_DQS, ALL_BYTES);
         ShiftDQSWCK_UI(p, -WRITE_LEVELING_MOVD_DQS, ALL_BYTES);
 
-        // Set DQS PI-based delay to 0
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_DQ0), 0, SHU_R0_B0_DQ0_ARPI_PBYTE_B0);  //rank0, byte0, DQS delay
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_DQ0), 0, SHU_R0_B1_DQ0_ARPI_PBYTE_B1);  //rank0, byte1, DQS delay
+
+        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_DQ0), 0, SHU_R0_B0_DQ0_ARPI_PBYTE_B0);
+        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_DQ0), 0, SHU_R0_B1_DQ0_ARPI_PBYTE_B1);
 
     }
 
-    // decide algorithm parameters according to freq.(PI mode/ phase mode)
+
     WriteLevelingScanRange_PI(p, &s4DlyBegin, &s4DlyEnd, &u1PIStep, &PI_bound, stDelayBase);
 
-    // Not support autok to delay cell based mode.
+
     if (stDelayBase == DLY_BASED)
         isAutoK = FALSE;
 
@@ -3299,7 +3187,7 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 
     if (ucDoneFlg == 0xff)
     {
-        // all bytes are done
+
         fgwrlevel_done = 1;
         KResult = DRAM_OK;
     }
@@ -3335,26 +3223,26 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 #endif
 
 
-        vSetDramMRWriteLevelingOnOff(p, DISABLE); // Disable DDR write leveling mode:  issue MR2[7] to enable write leveling
+        vSetDramMRWriteLevelingOnOff(p, DISABLE);
 
 
-    // Write leveling enable OFF
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_CBT_WLEV_CTRL0), 0, CBT_WLEV_CTRL0_WRITE_LEVEL_EN);
 
-    //Disable DQ_O1, SELO1ASO=0 for power saving
+
     O1PathOnOff(p, OFF);
 
-    //tx_rank_sel is selected by HW
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 0, TX_SET0_TXRANK);
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 0, TX_SET0_TXRANKFIX); //TXRANKFIX should be write after TXRANK
 
-    //restore registers.
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 0, TX_SET0_TXRANK);
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0), 0, TX_SET0_TXRANKFIX);
+
+
     DramcRestoreRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress) / sizeof(U32));
 
-    // Calculate DQS "PI" delay, nothing to do with delay cell
+
     for (byte_i = 0; byte_i < DQS_BYTE_NUMBER; byte_i++)
     {
-        //Also for Dump_Reg
+
         mcSHOW_DBG_MSG(("Write leveling (Byte %d): %d", byte_i, wrlevel_dqs_final_delay[p->rank][byte_i]));
         //DUMP_REG_MSG(("Write leveling (Byte %d): %d", byte_i, wrlevel_dqs_final_delay[p->rank][byte_i]));
         if (wrlevel_dqs_final_delay[p->rank][byte_i] >= PI_bound)
@@ -3373,14 +3261,14 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
     {
         vSetRank(p, rank_i);
 
-        // set to best values for  DQS
+
         if (stDelayBase == PI_BASED)
         {
-            // Adjust DQS output delay.
+
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_DQ0), wrlevel_dqs_delay[0], SHU_R0_B0_DQ0_ARPI_PBYTE_B0);
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_DQ0), wrlevel_dqs_delay[1], SHU_R0_B1_DQ0_ARPI_PBYTE_B1);
         }
-        else // stDelayBase == DLY_BASED
+        else
         {
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_TXDLY3), wrlevel_dqs_delay[0], SHU_R0_B0_TXDLY3_TX_ARWCK_DLY_B0);
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_TXDLY3), wrlevel_dqs_delay[1], SHU_R0_B1_TXDLY3_TX_ARWCK_DLY_B1);
@@ -3397,26 +3285,23 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 }
 #endif //SIMULATION_WRITE_LEVELING
 
-#if (fcFOR_CHIP_ID == fcA60868) // Just work around for 868 test chip
-// Set OPT6 = 1 after trigger, and OPT6 = 0 before release
-// When WCKDUAL == 1, CAS-FS command, RTSWCMD_RK must be 2'b11
-// When WCKDUAL == 1, CAS-OFF command must be issue 2 times, RTSWCMD_RK must be 2'b00 and 2'b01 for each
+#if (fcFOR_CHIP_ID == fcA60868)
 static void RunTime_SW_Cmd(DRAMC_CTX_T *p, RUNTIME_SWCMD_SEL_T runtime_SW_cmd_sel)
 {
     U32 u4Response = 0;
     U32 u4TimeCnt = TIME_OUT_CNT;
     U32 u4BackupCKECTRL;
 
-    // Backup rank, CKE fix on/off, HW MIOCK control settings
+
     u4BackupCKECTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_CKECTRL));
 
-    // Work around case, set both rank CKE_FIXON for CAS-OFF
+
     CKEFixOnOff(p, TO_ALL_RANK, CKE_FIXON, TO_ALL_CHANNEL);
 
-    // Select a RT SW command
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), runtime_SW_cmd_sel, SWCMD_EN_RTSWCMD_SEL);
 
-    // Set _CNT, _AGE, _RANK
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RTSWCMD_CNT), 0x30, RTSWCMD_CNT_RTSWCMD_CNT);
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL2),
             P_Fld(0, SWCMD_CTRL2_RTSWCMD_AGE) |
@@ -3426,7 +3311,7 @@ static void RunTime_SW_Cmd(DRAMC_CTX_T *p, RUNTIME_SWCMD_SEL_T runtime_SW_cmd_se
     U8 _is_differential_mode = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_WCKCTRL), SHU_WCKCTRL_WCKDUAL);
     while (1)
     {
-        // Work around case, set specific rank value.
+
         if (runtime_SW_cmd_sel == RUNTIME_SWCMD_CAS_OFF)
         {
             if ( _is_differential_mode == 0)
@@ -3438,7 +3323,7 @@ static void RunTime_SW_Cmd(DRAMC_CTX_T *p, RUNTIME_SWCMD_SEL_T runtime_SW_cmd_se
                 vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL2), 0x3, SWCMD_CTRL2_RTSWCMD_RK);
         }
 
-        // Trigger RT SW command
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 1, SWCMD_EN_RTSWCMDEN);
 
         do
@@ -3448,15 +3333,15 @@ static void RunTime_SW_Cmd(DRAMC_CTX_T *p, RUNTIME_SWCMD_SEL_T runtime_SW_cmd_se
             mcDELAY_US(1);
         }while ((u4Response == 0) && (u4TimeCnt > 0));
 
-        if (u4TimeCnt == 0)//time out
+        if (u4TimeCnt == 0)
         {
             mcSHOW_ERR_MSG(("[LP5 RT SW Cmd ] Resp fail (time out)\n"));
         }
 
-        // Release RT SW command
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_RTSWCMDEN);
 
-        // Work around case, loop again sending CAS-OFF command for RK1.
+
         if (runtime_SW_cmd_sel == RUNTIME_SWCMD_CAS_OFF)
         {
             if (_is_differential_mode == 0)
@@ -3466,31 +3351,30 @@ static void RunTime_SW_Cmd(DRAMC_CTX_T *p, RUNTIME_SWCMD_SEL_T runtime_SW_cmd_se
 
         break;
     }
-    // Restore rank, CKE fix on
+
     vIO32Write4B_All(DRAMC_REG_CKECTRL, u4BackupCKECTRL);
 }
-#else // Single end mode
+#else
 #if 0
 static void RunTime_SW_Cmd(DRAMC_CTX_T *p, RUNTIME_SWCMD_SEL_T runtime_SW_cmd_sel)
 {
     U32 u4Response = 0;
     U32 u4TimeCnt = TIME_OUT_CNT;
 
-    // Select a RT SW command
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), runtime_SW_cmd_sel, SWCMD_EN_RTSWCMD_SEL);
 
-    // Set _CNT, _AGE, _RANK
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RTSWCMD_CNT), 0x30, RTSWCMD_CNT_RTSWCMD_CNT);
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL2),
             P_Fld(0, SWCMD_CTRL2_RTSWCMD_AGE) |
             P_Fld(p->rank, SWCMD_CTRL2_RTSWCMD_RK));
 
-    // If command is CAS_FS/CAS_OFF, replace RTSWCMD_RK = 2'b11.
-    // Avoid this RK value at CAS_FS/CAS_OFF no match.
+
     if ((runtime_SW_cmd_sel == RUNTIME_SWCMD_CAS_FS) || (runtime_SW_cmd_sel == RUNTIME_SWCMD_CAS_OFF))
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL2), 0x3, SWCMD_CTRL2_RTSWCMD_RK);
 
-    // Trigger RT SW command
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 1, SWCMD_EN_RTSWCMDEN);
 
     do
@@ -3500,12 +3384,12 @@ static void RunTime_SW_Cmd(DRAMC_CTX_T *p, RUNTIME_SWCMD_SEL_T runtime_SW_cmd_se
         mcDELAY_US(1);
     }while ((u4Response == 0) && (u4TimeCnt > 0));
 
-    if (u4TimeCnt == 0)//time out
+    if (u4TimeCnt == 0)
     {
         mcSHOW_ERR_MSG(("[LP5 RT SW Cmd ] Resp fail (time out)\n"));
     }
 
-    // Release RT SW command
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_RTSWCMDEN);
 
 }
@@ -3526,7 +3410,7 @@ DRAM_STATUS_T DramcDutyCycleMonitor(DRAMC_CTX_T *p)
     U8 backup_rank;
 //    U8 u8ResultDutyCycMonitor[WHOLE_STEPS_NUM] = {0};
 
-    // error handling
+
     if (!p)
     {
         mcSHOW_ERR_MSG(("context NULL\n"));
@@ -3543,44 +3427,43 @@ DRAM_STATUS_T DramcDutyCycleMonitor(DRAMC_CTX_T *p)
     int i = -7;
     for (i = -7; i <= 7; i++)
     {
-        // MRW MR30 OP[7:4] = i(Set DCAU) and OP[3:0] = i(Set DCAL)
+
         U8 u8RGSettingVal = FetchRGSettingVal(i);
         mcSHOW_ERR_MSG(("Set value %d into MR30\n", u8RGSettingVal));
         MRWriteFldMulti(p, 30, P_Fld(u8RGSettingVal, MR30_DCAU) |
                                P_Fld(u8RGSettingVal, MR30_DCAL),
                                TO_MR);
 
-        // Start duty cycle monitor
+
         DramcMRWriteFldAlign(p, 26, 1, MR26_DCM_START_STOP, TO_MR);
 
-        // Delay tDCMM(2us)
+
         mcDELAY_US(2);
 
-        // Duty cycle monitor Flip 0 -> 1, and store result of flip = 0
+
         DramcMRWriteFldAlign(p, 26, 1, MR26_DCM_FLIP, TO_MR);
 
-        // Delay tDCMM(2us)
+
         mcDELAY_US(2);
 
-        // Duty cycle monitor Flip 1 -> 0, and store result of flip = 1
+
         DramcMRWriteFldAlign(p, 26, 0, MR26_DCM_FLIP, TO_MR);
 
-        // Delay tDCMM(2us)
+
         mcDELAY_US(2);
 
-        // Stop Duty cycle monitor
+
         DramcMRWriteFldAlign(p, 26, 0, MR26_DCM_START_STOP, TO_MR);
 
-        // Delay tMRD
+
         mcDELAY_US(2);
 
         mcSHOW_ERR_MSG(("Wait tMRD and MRR MR26\n"));
 
-        ///TODO:  Read back result MR25[5:2]
-        // Store result into u8ResultDutyCycMonitor[]
+
 
     }
-    ///TODO:  Find and set a best MR30 variables
+
 
     RunTime_SW_Cmd(p, RUNTIME_SWCMD_CAS_OFF);
 
@@ -3589,7 +3472,7 @@ DRAM_STATUS_T DramcDutyCycleMonitor(DRAMC_CTX_T *p)
 
     vSetRank(p, backup_rank);
 }
-#endif // SIMULATION_DUTY_CYC_MONITOR
+#endif
 
 
 void vResetDelayChainBeforeCalibration(DRAMC_CTX_T *p)
@@ -3642,16 +3525,14 @@ void vResetDelayChainBeforeCalibration(DRAMC_CTX_T *p)
 }
 
 
-//Reset PHY to prevent glitch when change DQS gating delay or RX DQS input delay
-// [Lynx] Evere_st : cannot reset single channel. All DramC and All Phy have to reset together.
+
 void DramPhyReset(DRAMC_CTX_T *p)
 {
-    // Evere_st change reset order : reset DQS before DQ, move PHY reset to final.
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RX_SET0), 1, RX_SET0_RDATRST);// read data counter reset
+
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RX_SET0), 1, RX_SET0_RDATRST);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL1), 1, MISC_CTRL1_R_DMPHYRST);
 
-    //RG_ARCMD_RESETB & RG_ARDQ_RESETB_B0/1 only reset once at init, Justin Chan.
-    ///TODO: need to confirm RG_ARCMD_RESETB & RG_ARDQ_RESETB_B0/1 is reset at mem.c
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9),
             P_Fld(0, B0_DQ9_RG_RX_ARDQS0_STBEN_RESETB_B0) |
             P_Fld(0, B0_DQ9_RG_RX_ARDQ_STBEN_RESETB_B0));
@@ -3667,17 +3548,11 @@ void DramPhyReset(DRAMC_CTX_T *p)
             P_Fld(1, B0_DQ9_RG_RX_ARDQ_STBEN_RESETB_B0));
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL1), 0, MISC_CTRL1_R_DMPHYRST);
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RX_SET0), 0, RX_SET0_RDATRST);// read data counter reset
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RX_SET0), 0, RX_SET0_RDATRST);
 }
 
 #if SIMULATION_LP4_ZQ
-//-------------------------------------------------------------------------
-/** DramcZQCalibration
- *  start Dram ZQ calibration.
- *  @param p                Pointer of context created by DramcCtxCreate.
- *  @retval status          (DRAM_STATUS_T): DRAM_OK or DRAM_FAIL
- */
-//-------------------------------------------------------------------------
+
 #if ZQ_SWCMD_MODE
 static DRAM_STATUS_T ZQ_SWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 {
@@ -3685,7 +3560,7 @@ static DRAM_STATUS_T ZQ_SWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
     U32 u4TimeCnt = TIME_OUT_CNT;
     U32 u4SWCMDEN, u4SWCMDCTRL, u4SPDCTRL, u4CKECTRL;
 
-    // Backup rank, CKE fix on/off, HW MIOCK control settings
+
     u4SWCMDEN = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN));
     u4SWCMDCTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0));
     u4SPDCTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL));
@@ -3694,24 +3569,24 @@ static DRAM_STATUS_T ZQ_SWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
     mcSHOW_DBG_MSG4(("[ZQCalibration]\n"));
     //mcFPRINTF((fp_A60501, "[ZQCalibration]\n"));
 
-    // Disable HW MIOCK control to make CLK always on
+
     DramCLKAlwaysOnOff(p, ON, TO_ONE_CHANNEL);
     mcDELAY_US(1);
 
-    //if CKE2RANK=1, only need to set CKEFIXON, it will apply to both rank.
+
     CKEFixOnOff(p, rank, CKE_FIXON, TO_ONE_CHANNEL);
 
-    //select rank
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), rank, SWCMD_CTRL0_SWTRIG_ZQ_RK);
 
-    //ZQCAL Start
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 1, SWCMD_EN_ZQCEN_SWTRIG);
 
     do
     {
         u4Response = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SPCMDRESP3), SPCMDRESP3_ZQC_SWTRIG_RESPONSE);
         u4TimeCnt --;
-        mcDELAY_US(1);  // Wait tZQCAL(min) 1us or wait next polling
+        mcDELAY_US(1);
 
         mcSHOW_DBG_MSG4(("%d- ", u4TimeCnt));
         //mcFPRINTF((fp_A60501, "%d- ", u4TimeCnt));
@@ -3719,7 +3594,7 @@ static DRAM_STATUS_T ZQ_SWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_ZQCEN_SWTRIG);
 
-    if(u4TimeCnt==0)//time out
+    if(u4TimeCnt==0)
     {
         vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_FAIL);
         mcSHOW_ERR_MSG(("ZQCAL Start fail (time out)\n"));
@@ -3727,17 +3602,17 @@ static DRAM_STATUS_T ZQ_SWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
         return DRAM_FAIL;
     }
 
-    // [JC] delay tZQCAL
+
     mcDELAY_US(1);
     u4TimeCnt = TIME_OUT_CNT;
 
-    //ZQCAL Latch
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 1, SWCMD_EN_ZQLATEN_SWTRIG);
     do
     {
         u4Response = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SPCMDRESP3), SPCMDRESP3_ZQLAT_SWTRIG_RESPONSE);
         u4TimeCnt --;
-        mcDELAY_US(1);// Wait tZQLAT 30ns or wait next polling
+        mcDELAY_US(1);
 
         mcSHOW_DBG_MSG4(("%d=\n\n", u4TimeCnt));
         //mcFPRINTF((fp_A60501, "%d= ", u4TimeCnt));
@@ -3753,10 +3628,10 @@ static DRAM_STATUS_T ZQ_SWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
         return DRAM_FAIL;
     }
 
-    // [JC] delay tZQLAT
+
     mcDELAY_US(1);
 
-    // Restore rank, CKE fix on, HW MIOCK control settings
+
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), u4SWCMDEN);
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), u4SWCMDCTRL);
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL), u4SPDCTRL);
@@ -3776,7 +3651,7 @@ static DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
     U32 u4TimeCnt = TIME_OUT_CNT;
     U32 u4SWCMDEN, u4SWCMDCTRL, u4MPCCTRL, u4RTSWCMD, u4SPDCTRL, u4CKECTRL;
 
-    // Backup rank, CKE fix on/off, HW MIOCK control settings
+
     u4SWCMDEN = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN));
     u4SWCMDCTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL2));
     u4MPCCTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_MPC_CTRL));
@@ -3787,15 +3662,15 @@ static DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
     mcSHOW_DBG_MSG4(("[ZQCalibration]\n"));
     //mcFPRINTF((fp_A60501, "[ZQCalibration]\n"));
 
-    // Disable HW MIOCK control to make CLK always on
+
     //vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL), 1, DRAMC_PD_CTRL_APHYCKCG_FIXOFF);
     //vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_DRAMC_PD_CTRL), 1, DRAMC_PD_CTRL_TCKFIXON);
     mcDELAY_US(1);
 
-    //if CKE2RANK=1, only need to set CKEFIXON, it will apply to both rank.
+
     //CKEFixOnOff(p, rank, CKE_FIXON, TO_ONE_CHANNEL);
 
-    //select rank
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL2),
         P_Fld(rank, SWCMD_CTRL2_RTSWCMD_RK) |
         P_Fld(0x20, SWCMD_CTRL2_RTSWCMD_AGE));
@@ -3803,7 +3678,7 @@ static DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MPC_CTRL), 0x1, MPC_CTRL_RTSWCMD_HPRI_EN);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RTSWCMD_CNT), 0x2a, RTSWCMD_CNT_RTSWCMD_CNT);
 
-    //ZQCAL Start
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0x5, SWCMD_EN_RTSWCMD_SEL);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 1, SWCMD_EN_RTSWCMDEN);
 
@@ -3811,7 +3686,7 @@ static DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
     {
         u4Response = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SPCMDRESP3), SPCMDRESP3_RTSWCMD_RESPONSE);
         u4TimeCnt --;
-        mcDELAY_US(1);  // Wait tZQCAL(min) 1us or wait next polling
+        mcDELAY_US(1);
 
         mcSHOW_DBG_MSG4(("%d- ", u4TimeCnt));
         //mcFPRINTF((fp_A60501, "%d- ", u4TimeCnt));
@@ -3819,7 +3694,7 @@ static DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_RTSWCMDEN);
 
-    if(u4TimeCnt==0)//time out
+    if(u4TimeCnt==0)
     {
         vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_FAIL);
         mcSHOW_ERR_MSG(("ZQCAL Start fail (time out)\n"));
@@ -3827,11 +3702,11 @@ static DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
         return DRAM_FAIL;
     }
 
-    // [JC] delay tZQCAL
+
     mcDELAY_US(1);
     u4TimeCnt = TIME_OUT_CNT;
 
-    //ZQCAL Latch
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0x6, SWCMD_EN_RTSWCMD_SEL);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 1, SWCMD_EN_RTSWCMDEN);
 
@@ -3839,7 +3714,7 @@ static DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
     {
         u4Response = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SPCMDRESP3), SPCMDRESP3_RTSWCMD_RESPONSE);
         u4TimeCnt --;
-        mcDELAY_US(1);// Wait tZQLAT 30ns or wait next polling
+        mcDELAY_US(1);
 
         mcSHOW_DBG_MSG4(("%d=", u4TimeCnt));
         //mcFPRINTF((fp_A60501, "%d= ", u4TimeCnt));
@@ -3847,7 +3722,7 @@ static DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_RTSWCMDEN);
 
-    if(u4TimeCnt==0)//time out
+    if(u4TimeCnt==0)
     {
         vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_FAIL);
         mcSHOW_ERR_MSG(("ZQCAL Latch fail (time out)\n"));
@@ -3855,10 +3730,10 @@ static DRAM_STATUS_T ZQ_RTSWCMD_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
         return DRAM_FAIL;
     }
 
-    // [JC] delay tZQLAT
+
     mcDELAY_US(1);
 
-    // Restore rank, CKE fix on, HW MIOCK control settings
+
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), u4SWCMDEN);
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL2), u4SWCMDCTRL);
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_MPC_CTRL), u4MPCCTRL);
@@ -3880,7 +3755,7 @@ static DRAM_STATUS_T ZQ_SCSM_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
     U32 u4TimeCnt = TIME_OUT_CNT;
     U32 u4SWCMDEN, u4MPCCTRL, u4SWCMDCTRL, u4SPDCTRL, u4CKECTRL;
 
-    // Backup rank, CKE fix on/off, HW MIOCK control settings
+
     u4SWCMDEN = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN));
     u4SWCMDCTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0));
     u4MPCCTRL = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_MPC_OPTION));
@@ -3890,29 +3765,24 @@ static DRAM_STATUS_T ZQ_SCSM_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
     mcSHOW_DBG_MSG4(("[ZQCalibration]\n"));
     //mcFPRINTF((fp_A60501, "[ZQCalibration]\n"));
 
-    // Disable HW MIOCK control to make CLK always on
+
     DramCLKAlwaysOnOff(p, ON, TO_ONE_CHANNEL);
     mcDELAY_US(1);
 
-    //if CKE2RANK=1, only need to set CKEFIXON, it will apply to both rank.
+
     CKEFixOnOff(p, rank, CKE_FIXON, TO_ONE_CHANNEL);
 
-    //Use rank swap or MRSRK to select rank
-    //DramcRankSwap(p, p->rank);
-    //!!R_DMMRSRK(R_DMMPCRKEN=1) specify rank0 or rank1
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), rank, SWCMD_CTRL0_MRSRK);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_MPC_OPTION), 1, MPC_OPTION_MPCRKEN);
 
-    //ZQCAL Start
-    //R_DMZQCEN, 0x1E4[4]=1 for ZQCal Start
-    //Wait zqc_response=1 (dramc_conf_nao, 0x3b8[4])
-    //R_DMZQCEN, 0x1E4[4]=0
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 1, SWCMD_EN_ZQCEN);
     do
     {
         u4Response = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SPCMDRESP), SPCMDRESP_ZQC_RESPONSE);
         u4TimeCnt --;
-        mcDELAY_US(1);  // Wait tZQCAL(min) 1us or wait next polling
+        mcDELAY_US(1);
 
         mcSHOW_DBG_MSG4(("%d- ", u4TimeCnt));
         //mcFPRINTF((fp_A60501, "%d- ", u4TimeCnt));
@@ -3920,7 +3790,7 @@ static DRAM_STATUS_T ZQ_SCSM_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_ZQCEN);
 
-    if(u4TimeCnt==0)//time out
+    if(u4TimeCnt==0)
     {
         vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_FAIL);
         mcSHOW_ERR_MSG(("ZQCAL Start fail (time out)\n"));
@@ -3928,20 +3798,17 @@ static DRAM_STATUS_T ZQ_SCSM_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
         return DRAM_FAIL;
     }
 
-    // [JC] delay tZQCAL
+
     mcDELAY_US(1);
     u4TimeCnt = TIME_OUT_CNT;
 
-    //ZQCAL Latch
-    //R_DMZQLATEN, 0x1E4[6]=1 for ZQCal latch
-    //Wait zqlat_response=1 (dramc_conf_nao, 0x3b8[28])
-    //R_DMZQLATEN, 0x1E4[6]=0
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 1, SWCMD_EN_ZQLATEN);
     do
     {
         u4Response = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SPCMDRESP), SPCMDRESP_ZQLAT_RESPONSE);
         u4TimeCnt --;
-        mcDELAY_US(1);// Wait tZQLAT 30ns or wait next polling
+        mcDELAY_US(1);
 
         mcSHOW_DBG_MSG4(("%d=", u4TimeCnt));
         //mcFPRINTF((fp_A60501, "%d= ", u4TimeCnt));
@@ -3949,7 +3816,7 @@ static DRAM_STATUS_T ZQ_SCSM_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_ZQLATEN);
 
-    if(u4TimeCnt==0)//time out
+    if(u4TimeCnt==0)
     {
         vSetCalibrationResult(p, DRAM_CALIBRATION_ZQ, DRAM_FAIL);
         mcSHOW_ERR_MSG(("ZQCAL Latch fail (time out)\n"));
@@ -3957,10 +3824,10 @@ static DRAM_STATUS_T ZQ_SCSM_MODE_Cal(DRAMC_CTX_T *p, U8 rank)
         return DRAM_FAIL;
     }
 
-    // [JC] delay tZQLAT
+
     mcDELAY_US(1);
 
-    // Restore rank, CKE fix on, HW MIOCK control settings
+
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), u4SWCMDEN);
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL2), u4SWCMDCTRL);
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_MPC_CTRL), u4MPCCTRL);
@@ -3981,7 +3848,7 @@ DRAM_STATUS_T DramcZQCalibration(DRAMC_CTX_T *p, U8 rank)
     return ZQ_SWCMD_MODE_Cal(p, rank);
     #elif ZQ_RTSWCMD_MODE
     return ZQ_RTSWCMD_MODE_Cal(p, rank);
-    #else //ZQ_SCSM_MODE
+    #else
     return ZQ_SCSM_MODE_Cal(p, rank);
     #endif
 }
@@ -4004,7 +3871,7 @@ static U8 RXInputBuf_DelayExchange(S8 iOfst)
     return u1Value;
 }
 
-// cannot be simulated in DV or DSim, it's analog feature.
+
 DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 {
 	S8 iOffset, s1begin, s1end;
@@ -4042,7 +3909,7 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 
 	DramcBackupRegisters(p, u4RegBackupAddress, ARRAY_SIZE(u4RegBackupAddress));
 
-    //Swith RX from Rank1 to Rank0
+
 	DramcEngine2Run(p, TE_OP_READ_CHECK, TEST_AUDIO_PATTERN);
 
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_GATE_EN_CTRL), 0xf, MISC_RX_IN_GATE_EN_CTRL_FIX_IN_GATE_EN);
@@ -4069,18 +3936,17 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 					P_Fld(1, CA_CMD6_RG_TX_ARCMD_DDR4_SEL));
 	}
 
-	//Enable VREF, (RG_RX_*DQ_VREF_EN_* =1)
+
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ5), 1, B0_DQ5_RG_RX_ARDQ_VREF_EN_B0);
 	if (!isLP4_DSC)
 		vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ5), 1, B1_DQ5_RG_RX_ARDQ_VREF_EN_B1);
 	else
 		vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD5), 1, CA_CMD5_RG_RX_ARCMD_VREF_EN);
 
-	// Wait 1us.
+
 	mcDELAY_US(1);
 
-	//Enable RX input buffer (RG_RX_*DQ_IN_BUFF_EN_* =1, DA_RX_*DQ_IN_GATE_EN_* =1)
-	//Enable RX input buffer offset calibration (RG_RX_*DQ_OFFC_EN_*=1)
+
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ3), P_Fld(1, B0_DQ3_RG_RX_ARDQ_IN_BUFF_EN_B0) | P_Fld(1, B0_DQ3_RG_RX_ARDQ_OFFC_EN_B0));
 	if (!isLP4_DSC)
 	{
@@ -4091,7 +3957,7 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 		vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD3), P_Fld(1, CA_CMD3_RG_RX_ARCMD_IN_BUFF_EN) | P_Fld(1, CA_CMD3_RG_RX_ARCLK_IN_BUFF_EN));
 	}
 
-	// DQ_BUFF_EN_SEL
+
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_PHY3), 1, B0_PHY3_RG_RX_ARDQ_BUFF_EN_SEL_B0);
 	if (!isLP4_DSC)
 	{
@@ -4124,7 +3990,7 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 	else
 		vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD6), 1, CA_CMD6_RG_RX_ARCMD_O1_SEL);
 
-	// SW parameter initialization
+
 	u1FinishCount =0;
     s1begin = -7;
 	s1end = 8;
@@ -4133,14 +3999,14 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 	memset(s1DQFinalFlagChange, 0x7f, sizeof(s1DQFinalFlagChange));
 	memset(s1DQMFinalFlagChange, 0x7f, sizeof(s1DQMFinalFlagChange));
 
-	//Sweep RX offset calibration code (RG_RX_*DQ*_OFFC<3:0>), the MSB is sign bit, sweep the code from -7(1111) to +7(0111)
+
 	for(iOffset = s1begin; iOffset < s1end; iOffset+=u1step)
 	{
 		u1Offc_RgValue = RXInputBuf_DelayExchange(iOffset);
 
 		mcSHOW_DBG_MSG2(("iOffset= %2d, set %2d,", iOffset, u1Offc_RgValue));
 
-		//Delay of B0/B1 DQ0~DQ7.
+
 		vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_RK_B0_DQ0),
             P_Fld(u1Offc_RgValue, SHU_RK_B0_DQ0_RG_RX_ARDQ0_OFFC_B0) |
             P_Fld(u1Offc_RgValue, SHU_RK_B0_DQ0_RG_RX_ARDQ1_OFFC_B0) |
@@ -4176,7 +4042,7 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 				P_Fld(u1Offc_RgValue, SHU_RK_CA_DQ_OFFSET_RG_RX_ARDQ7_OFFSETC_C0));
 		}
 
-		//Delay of B0/B1 DQM0
+
 		vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_RK_B0_DQ1), u1Offc_RgValue, SHU_RK_B0_DQ1_RG_RX_ARDQM0_OFFC_B0);
 		if (!isLP4_DSC)
 		{
@@ -4187,11 +4053,10 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 		    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_RK_CA_CMD1), u1Offc_RgValue, SHU_RK_CA_CMD1_RG_RX_ARCS0_OFFC);
 		}
 
-		//For each code sweep, wait 0.1us to check the flag.
+
 		mcDELAY_US(1);
 
-		//Check offset flag of DQ (RGS_*DQ*_OFFSET_FLAG_*), the value will be from 1(-7) to 0(+7). Record the value when the flag becomes "0".
-		//Flag bit0 is for DQ0,  Flag bit15 for DQ15
+
 		u4RestltDQ_B0 = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_AD_RX_DQ_O1), MISC_AD_RX_DQ_O1_AD_RX_ARDQ_O1_B0);
 		if (!isLP4_DSC)
 		{
@@ -4208,11 +4073,11 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 
 		for(u1BitIdx= 0; u1BitIdx < DQ_DATA_WIDTH ; u1BitIdx++)
 		{
-			if(s1DQFinalFlagChange[u1BitIdx] == 0x7f) //invalid
+			if(s1DQFinalFlagChange[u1BitIdx] == 0x7f)
 			{
 				u1O1_value = (u4RestltDQ >> u1BitIdx) & 0x1;
 
-				if(u1O1_value ==0) // 1 -> 0
+				if(u1O1_value ==0)
 				{
 					s1DQFinalFlagChange[u1BitIdx] = iOffset;
 					u1FinishCount ++;
@@ -4233,7 +4098,7 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 			}
 		}
 
-		//Check offset flag of DQM (RGS_*DQ*_OFFSET_FLAG_*), the value will be from 1(-7) to 0(+7). Record the value when the flag becomes "0".
+
 		u4RestltDQM[0] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_AD_RX_DQ_O1), MISC_AD_RX_DQ_O1_AD_RX_ARDQM0_O1_B0);
 		if (!isLP4_DSC)
 		{
@@ -4248,9 +4113,9 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 
 		for(u1ByteIdx= 0; u1ByteIdx < DQM_BYTE_NUM; u1ByteIdx++)
 		{
-			if(s1DQMFinalFlagChange[u1ByteIdx]== 0x7f) //invalid
+			if(s1DQMFinalFlagChange[u1ByteIdx]== 0x7f)
 			{
-				if(u4RestltDQM[u1ByteIdx]==0)// 1 -> 0
+				if(u4RestltDQM[u1ByteIdx]==0)
 				{
 					s1DQMFinalFlagChange[u1ByteIdx]= iOffset;
 					u1FinishCount++;
@@ -4271,11 +4136,11 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 			}
 		}
 
-		if(u1FinishCount==(DQM_BYTE_NUM+DQ_DATA_WIDTH)) // (DQ8 bits, DQM 1bit, total 9 bits.) x2 bytes
+		if(u1FinishCount==(DQM_BYTE_NUM+DQ_DATA_WIDTH))
 		{
 		    vSetCalibrationResult(p, DRAM_CALIBRATION_RX_INPUT_BUFF_OFFC, DRAM_OK);
 		    mcSHOW_DBG_MSG2(("All bits find pass window, early break!\n"));
-			break; //all bits done, early break
+			break;
 		}
 	}
 
@@ -4358,14 +4223,14 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
     }
 	vSetRank(p, read_val_b0);
 
-	//need to set 0 after DramcRXInputBufferOffsetCal
+
 	//vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_GATE_EN_CTRL), 0x0, MISC_RX_IN_GATE_EN_CTRL_FIX_IN_GATE_EN);
 	//vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ11), 0x0, SHU_B0_DQ11_RG_RX_ARDQ_OFFSETC_EN_B0);
 	//vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ11), 0x0, SHU_B1_DQ11_RG_RX_ARDQ_OFFSETC_EN_B1);
 
 	DramcRestoreRegisters(p, u4RegBackupAddress, ARRAY_SIZE(u4RegBackupAddress));
 
-	//after K, must set OFFSET_BIAS_EN as1 and OFFSET_EN as 0
+
 	vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ11),
             P_Fld(0x1, SHU_B0_DQ11_RG_RX_ARDQ_OFFSETC_BIAS_EN_B0) |
             P_Fld(0x0, SHU_B0_DQ11_RG_RX_ARDQ_OFFSETC_EN_B0));
@@ -4392,10 +4257,7 @@ DRAM_STATUS_T DramcRXInputBufferOffsetCal(DRAMC_CTX_T *p)
 #define GATING_PATTERN_NUM_LP5      0x23
 #define GATING_GOLDEND_DQSCNT_LP5   0x4646
 #define RXDQS_GATING_AUTO_DBG_REG_NUM       6
-/* Preamble & Postamble setting. Currently use macro to define.
- * Later may use speed or MR setting to decide
- * !!! REVIEW !!!
- */
+
 
 #if GATING_ADJUST_TXDLY_FOR_TRACKING
 U8 u1TXDLY_Cal_min =0xff, u1TXDLY_Cal_max=0;
@@ -4464,26 +4326,26 @@ U8 __wa__gating_autok_init_ui[RANK_MAX] = { 0 };
 
 static U8 u1GetGatingStartPos(DRAMC_CTX_T *p, U8 u1AutoK)
 {
-    const U8 au1MR2MappingToRL[2][8] = {{6, 10, 14, 20, 24, 28, 32, 36},   //normal mode
-                                        {6, 10, 16, 22, 26, 32, 36, 40}};  //byte mode
+    const U8 au1MR2MappingToRL[2][8] = {{6, 10, 14, 20, 24, 28, 32, 36},
+                                        {6, 10, 16, 22, 26, 32, 36, 40}};
     //U8 u1CK2WCK, u1DVFSCEn;
     U8 u1MR0_LatencyMode;
     U8 u1MR2RLValue;
 
-    u1MR2RLValue = u1MR02Value[p->dram_fsp] & 0x7; //MR2 Op[2:0]
+    u1MR2RLValue = u1MR02Value[p->dram_fsp] & 0x7;
     U8 u1RX_Path_delay_UI, u1RealRL,u1StartUI, u1ExtraMCKfor1_4mode;
     U8 u1MCK2CK_UI, u1ReadDQSINCTL, u1DQSINCTL_UI;
     U8 u4TDQSCK_UI_min;
     U8 u1GatingAheadDQS_UI;
 
-    /* LPDDR5 uses same bit */
-    if(gu2MR0_Value[p->rank] == 0xffff)  //MR0 is not ready
+
+    if(gu2MR0_Value[p->rank] == 0xffff)
     {
         u1MR0_LatencyMode = CBT_NORMAL_MODE;
     }
     else
     {
-        u1MR0_LatencyMode = (gu2MR0_Value[p->rank]>>1) & 0x1; //MR0 OP[1],  0:normal mode,  1:byte mode
+        u1MR0_LatencyMode = (gu2MR0_Value[p->rank]>>1) & 0x1;
     }
 
     {
@@ -4491,7 +4353,7 @@ static U8 u1GetGatingStartPos(DRAMC_CTX_T *p, U8 u1AutoK)
         u1RealRL = au1MR2MappingToRL[u1MR0_LatencyMode][u1MR2RLValue];
     }
 
-    ///TODO: A60868 does not support LP5 DIV4, current setting is not provided for LP5
+
     if(vGet_Div_Mode(p) == DIV4_MODE)
     {
         u1MCK2CK_UI = 4;
@@ -4506,22 +4368,22 @@ static U8 u1GetGatingStartPos(DRAMC_CTX_T *p, U8 u1AutoK)
     }
     else
     {
-        /* DIV16, only for LP5 */
+
         u1MCK2CK_UI = 16;
         u1ExtraMCKfor1_4mode = 0;
         u1GatingAheadDQS_UI = 8;
     }
 
-    // RX_Path_delay_UI = RL*2 + tDQSCK_UI<1500~3500ps> - PHY_interanl<skip 30ps> - GatingAheadDQS<2UI> + if(1:4 mod)+1MCK
+
     u1RX_Path_delay_UI = (u1RealRL<<1) + u4TDQSCK_UI_min - u1GatingAheadDQS_UI + (u1MCK2CK_UI*u1ExtraMCKfor1_4mode);
 
     u1ReadDQSINCTL = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RK_DQSCTL), MISC_SHU_RK_DQSCTL_DQSINCTL);
     u1DQSINCTL_UI = u1ReadDQSINCTL * u1MCK2CK_UI;
 
     if(u1AutoK)
-        u1RX_Path_delay_UI += 0; //HW K start position =  gating min position(1500ns)
+        u1RX_Path_delay_UI += 0;
     else
-        u1RX_Path_delay_UI -= 3; //SW K start position = gating min position(1500ns) -3UI
+        u1RX_Path_delay_UI -= 3;
 
     if(u1RX_Path_delay_UI >= u1DQSINCTL_UI)
         u1StartUI = u1RX_Path_delay_UI - u1DQSINCTL_UI;
@@ -4595,7 +4457,7 @@ static void rxdqs_gating_fastk_save_restore(DRAMC_CTX_T *p,
                 /* Calculate P1 */
                 best_win->best_dqsien_dly_ui_p1[dqs_i] =
                     best_win->best_dqsien_dly_mck[dqs_i] * ui_per_mck +
-                    best_win->best_dqsien_dly_ui[dqs_i] + freq_div; /* Total UI for Phase1 */
+                    best_win->best_dqsien_dly_ui[dqs_i] + freq_div;
                 best_win->best_dqsien_dly_mck_p1[dqs_i] =
                     best_win->best_dqsien_dly_ui_p1[dqs_i] / ui_per_mck;
                 best_win->best_dqsien_dly_ui_p1[dqs_i] =
@@ -4637,20 +4499,12 @@ static void rxdqs_gating_misc_process(DRAMC_CTX_T *p,
             "Gating_Center_", "PI", dqs_i, rxdqs_best_win->best_dqsien_dly_pi[dqs_i], NULL);
 #endif
 
-        /*TINFO="best DQS%d delay(2T, 0.5T, PI) = (%d, %d, %d)\n", dqs_i, rxdqs_best_win.best_dqsien_dly_mck[dqs_i], rxdqs_best_win.best_dqsien_dly_ui[dqs_i], rxdqs_best_win.best_dqsien_dly_pi[dqs_i])); */
+
         mcSHOW_DBG_MSG(("best DQS%d dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
             rxdqs_best_win->best_dqsien_dly_mck[dqs_i],
             rxdqs_best_win->best_dqsien_dly_ui[dqs_i],
             rxdqs_best_win->best_dqsien_dly_pi[dqs_i]));
-        /*mcDUMP_REG_MSG(("best DQS%d dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
-            rxdqs_best_win->best_dqsien_dly_mck[dqs_i],
-            rxdqs_best_win->best_dqsien_dly_ui[dqs_i],
-            rxdqs_best_win->best_dqsien_dly_pi[dqs_i]));*/
-        /* cc mark mcFPRINTF((fp_A60501,"best DQS%d dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
-            rxdqs_best_win.best_dqsien_dly_mck[dqs_i],
-            rxdqs_best_win.best_dqsien_dly_ui[dqs_i],
-            rxdqs_best_win.best_dqsien_dly_pi[dqs_i]));
-        */
+
 
 #if GATING_ADJUST_TXDLY_FOR_TRACKING
     u1TX_dly_DQSgated = (rxdqs_best_win->best_dqsien_dly_mck[dqs_i] << 4) +
@@ -4672,26 +4526,18 @@ static void rxdqs_gating_misc_process(DRAMC_CTX_T *p,
     }
 
     mcSHOW_DBG_MSG(("\n"));
-    //cc mark mcFPRINTF((fp_A60501,"\n"));
+
 
     for (dqs_i=0; dqs_i<DQS_BYTE_NUMBER; dqs_i++) {
-        /*TINFO="best DQS%d P1 delay(2T, 0.5T, PI) = (%d, %d, %d)\n", dqs_i, rxdqs_best_win.best_dqsien_dly_mck_p1[dqs_i], rxdqs_best_win.best_dqsien_dly_ui_p1[dqs_i], rxdqs_best_win.best_dqsien_dly_pi_p1[dqs_i]*/
+
         mcSHOW_DBG_MSG(("best DQS%d P1 dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
             rxdqs_best_win->best_dqsien_dly_mck_p1[dqs_i],
             rxdqs_best_win->best_dqsien_dly_ui_p1[dqs_i],
             rxdqs_best_win->best_dqsien_dly_pi_p1[dqs_i]));
-        /*mcDUMP_REG_MSG(("best DQS%d P1 dly(MCK, UI, PI) = (%d, %d, %d)\n", dqs_i,
-            rxdqs_best_win->best_dqsien_dly_mck_p1[dqs_i],
-            rxdqs_best_win->best_dqsien_dly_ui_p1[dqs_i],
-            rxdqs_best_win->best_dqsien_dly_pi_p1[dqs_i]));*/
-        /* cc mark mcFPRINTF((fp_A60501,"best DQS%d P1 dly(2T, 0.5T, PI) = (%d, %d, %d)\n", dqs_i,
-            rxdqs_best_win.best_dqsien_dly_mck_p1[dqs_i],
-            rxdqs_best_win.best_dqsien_dly_ui_p1[dqs_i],
-            rxdqs_best_win.best_dqsien_dly_pi_p1[dqs_i]));
-        */
+
 
 #if GATING_ADJUST_TXDLY_FOR_TRACKING
-        // find max gating TXDLY (should be in P1)
+
         u1TX_dly_DQSgated = (rxdqs_best_win->best_dqsien_dly_mck_p1[dqs_i] << 4) +
             rxdqs_best_win->best_dqsien_dly_ui_p1[dqs_i];
 
@@ -4714,18 +4560,18 @@ static void rxdqs_gating_misc_process(DRAMC_CTX_T *p,
     if(p->frequency >= RDSEL_TRACKING_TH)
     {
 
-        //Byte 0
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_INI_UIPI),
             (ucbest_coarse_mck_backup[p->rank][0] << 4) | (ucbest_coarse_ui_backup[p->rank][0]),
-            SHU_R0_B0_INI_UIPI_CURR_INI_UI_B0);//UI
+            SHU_R0_B0_INI_UIPI_CURR_INI_UI_B0);
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_INI_UIPI), rxdqs_best_win->best_dqsien_dly_pi[0],
-            SHU_R0_B0_INI_UIPI_CURR_INI_PI_B0); //PI
-        //Byte 1
+            SHU_R0_B0_INI_UIPI_CURR_INI_PI_B0);
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_INI_UIPI),
             (ucbest_coarse_mck_backup[p->rank][1] << 4) | (ucbest_coarse_ui_backup[p->rank][1]),
-            SHU_R0_B1_INI_UIPI_CURR_INI_UI_B1);//UI
+            SHU_R0_B1_INI_UIPI_CURR_INI_UI_B1);
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_INI_UIPI),
-            rxdqs_best_win->best_dqsien_dly_pi[1], SHU_R0_B1_INI_UIPI_CURR_INI_PI_B1); //PI
+            rxdqs_best_win->best_dqsien_dly_pi[1], SHU_R0_B1_INI_UIPI_CURR_INI_PI_B1);
     }
 #endif
 
@@ -4734,7 +4580,7 @@ static void rxdqs_gating_misc_process(DRAMC_CTX_T *p,
 #if GATING_AUTO_K_SUPPORT
 static void rxdqs_gating_auto_cal_reset(DRAMC_CTX_T *p)
 {
-    /* Reset internal autok status and logic */
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DQSIEN_AUTOK_CFG0),
         P_Fld(0x1, MISC_DQSIEN_AUTOK_CFG0_DQSIEN_AUTOK_RK0_SW_RST) |
         P_Fld(0x1, MISC_DQSIEN_AUTOK_CFG0_DQSIEN_AUTOK_RK1_SW_RST) |
@@ -4750,13 +4596,11 @@ static void rxdqs_gating_auto_cal_reset(DRAMC_CTX_T *p)
 static void rxdqs_gating_auto_cal_cfg(DRAMC_CTX_T *p,
     struct rxdqs_gating_auto_param *auto_param)
 {
-    /* Before start calibration, reset all state machine and all rank's state */
+
     rxdqs_gating_auto_cal_reset(p);
 
 
-    /*-----------
-     * Normal Setting, Same as SW calibration
-     *---------------*/
+
     if (p->frequency == 800) {
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL1),
             0x1, MISC_STBCAL1_STBCNT_SW_RST);
@@ -4765,7 +4609,7 @@ static void rxdqs_gating_auto_cal_cfg(DRAMC_CTX_T *p,
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL1),
         0x1, MISC_STBCAL1_STBCNT_SHU_RST_EN);
 
-    /* SELPH_MODE = BY RANK */
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2),
         0x1, MISC_STBCAL2_DQSIEN_SELPH_BY_RANK_EN);
 
@@ -4777,7 +4621,7 @@ static void rxdqs_gating_auto_cal_cfg(DRAMC_CTX_T *p,
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL1),
         0x1, MISC_STBCAL1_DIS_PI_TRACK_AS_NOT_RD);
 
-    /* PICG_EARLY_EN */
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ6),
         0x1, B0_DQ6_RG_RX_ARDQ_OP_BIAS_SW_EN_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ6),
@@ -4785,7 +4629,7 @@ static void rxdqs_gating_auto_cal_cfg(DRAMC_CTX_T *p,
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2),
         0x1, MISC_STBCAL2_STB_PICG_EARLY_1T_EN);
 
-    /* BURST_MODE */
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL),
         0x1, MISC_SHU_STBCAL_DQSIEN_BURST_MODE);
 
@@ -4803,7 +4647,7 @@ static void rxdqs_gating_auto_cal_cfg(DRAMC_CTX_T *p,
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL),
         0x1, MISC_STBCAL_DQSIENMODE);
 
-    /* New Rank Mode */
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2),
         P_Fld(0x1, MISC_STBCAL2_STB_IG_XRANK_CG_RST) |
         P_Fld(0x1, MISC_STBCAL2_STB_RST_BY_RANK) |
@@ -4814,27 +4658,20 @@ static void rxdqs_gating_auto_cal_cfg(DRAMC_CTX_T *p,
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_PHY2),
         0x1, B1_PHY2_RG_RX_ARDQS_DQSIEN_UI_LEAD_LAG_EN_B1);
 
-    /* dummy read */
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_DUMMY_RD),
         0x1, DUMMY_RD_DUMMY_RD_PA_OPT);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CG_CTRL0),
         0x1, MISC_CG_CTRL0_RG_CG_PHY_OFF_DIABLE);
 
-    //Yulia add workaround for auto K pattern length. : Apply for all project before IPM_V2
-    //Dummy read BL should be controlled by DQSIEN_AUTOK_BURST_LENGTH, but now we can only use dummy read length(DMY_RD_LEN)
-    //DMY_RD_LEN (0 for BL8, 1 for BL16, 3 for BL32)
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK_DUMMY_RD_ADR), 3/*auto_param->burst_len*/, RK_DUMMY_RD_ADR_DMY_RD_LEN);
 
-    /* Decide by HW  Although Dummy read used, but TA2 has higher priority */
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RK_DUMMY_RD_ADR), 3, RK_DUMMY_RD_ADR_DMY_RD_LEN);
+
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TEST2_A4),
         0x4, TEST2_A4_TESTAGENTRKSEL);
 
-    //vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2), 1,
-    //  MISC_STBCAL2_STBENCMPEN);
 
-    /*-----------
-     * Auto calibration setting
-     *-------------------*/
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DQSIEN_AUTOK_CFG0),
         P_Fld(auto_param->init_mck, MISC_DQSIEN_AUTOK_CFG0_DQSIEN_AUTOK_INI_MCK) |
         P_Fld(auto_param->init_ui, MISC_DQSIEN_AUTOK_CFG0_DQSIEN_AUTOK_INI__UI) |
@@ -4852,9 +4689,7 @@ static void rxdqs_gating_auto_cal_cfg(DRAMC_CTX_T *p,
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DQSIEN_AUTOK_CFG0),
         auto_param->early_break, MISC_DQSIEN_AUTOK_CFG0_DQSIEN_AUTOK_EARLY_BREAK_EN);
 
-    /*---------
-     * DV settings
-     *-------------------*/
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL),
         0x0, MISC_STBCAL_PICGEN);
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL),
@@ -4928,7 +4763,7 @@ static void rxdqs_gating_set_final_result(DRAMC_CTX_T *p, U8 mck2ui,
     }
 #endif
 
-    /* Set DQSIEN delay in MCK and UI */
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_RK_B0_DQSIEN_MCK_UI_DLY),
         P_Fld(best_win->best_dqsien_dly_mck[0],
         SHU_RK_B0_DQSIEN_MCK_UI_DLY_DQSIEN_MCK_P0_B0) |
@@ -4981,7 +4816,7 @@ static void rxdqs_gating_set_final_result(DRAMC_CTX_T *p, U8 mck2ui,
 }
 
 #if GATING_AUTO_K_SUPPORT
-/* By autoK: Set the result calibrated by HW to RG */
+
 static void rxdqs_gating_auto_xlate(DRAMC_CTX_T *p,
     struct rxdqs_gating_best_win *best_win,
     struct rxdqs_gating_cal *rxdqs_cal)
@@ -4997,7 +4832,7 @@ static void rxdqs_gating_auto_xlate(DRAMC_CTX_T *p,
     U16 value;
     u8 dqs_i;
 
-    /* Transfer HW unit to RG unit */
+
     for (dqs_i = 0; dqs_i < DQS_BYTE_NUMBER; dqs_i++) {
         mck = best_win->best_dqsien_dly_mck[dqs_i];
         ui = best_win->best_dqsien_dly_ui[dqs_i];
@@ -5006,17 +4841,17 @@ static void rxdqs_gating_auto_xlate(DRAMC_CTX_T *p,
         freq_div = rxdqs_cal->dqsien_freq_div;
 
         if (vGet_Div_Mode(p) == DIV16_MODE)
-            total_ui = (mck << 4) + ui; /* 1:16 mode */
+            total_ui = (mck << 4) + ui;
         else if (vGet_Div_Mode(p) == DIV8_MODE)
-            total_ui = (mck << 3) + ui; /* 1: 8 mode */
+            total_ui = (mck << 3) + ui;
         else
-            total_ui = (mck << 2) + ui; /* 1: 4 mode */
+            total_ui = (mck << 2) + ui;
 
-        /* RG is always 1:16 mode */
+
         mck = (total_ui >> 4);
         ui = (total_ui & 0xf);
 
-        value = mck * mck2ui + ui; /* Total UI number */
+        value = mck * mck2ui + ui;
         mck_p1 = (value + freq_div) / mck2ui;
         ui_p1 = (value + freq_div) % mck2ui;
 
@@ -5055,7 +4890,7 @@ static DRAM_STATUS_T rxdqs_gating_auto_cal_status(DRAMC_CTX_T *p,
 
     while (done_bytes < total_bytes) {
         for (dqs_i = 0; dqs_i < DQS_BYTE_NUMBER; dqs_i++) {
-            /* If already done, skip this byte */
+
             if (done[dqs_i])
                 continue;
 
@@ -5068,9 +4903,9 @@ static DRAM_STATUS_T rxdqs_gating_auto_cal_status(DRAMC_CTX_T *p,
                 DDRPHY_REG_DQSIEN_AUTOK_B0_RK0_STATUS0 + byte_ofst),
                 DQSIEN_AUTOK_B0_RK0_STATUS0_AUTOK_ERR_B0_RK0);
 
-            /* If autok fail, done flag will not be asserted. */
+
             if (done[dqs_i] || error[dqs_i]) {
-                /* Done and Pass */
+
                 if (error[dqs_i] == 0) {
                     mck_center[dqs_i] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(
                         DDRPHY_REG_DQSIEN_AUTOK_B0_RK0_STATUS0 + byte_ofst),
@@ -5092,7 +4927,7 @@ static DRAM_STATUS_T rxdqs_gating_auto_cal_status(DRAMC_CTX_T *p,
                         DDRPHY_REG_DQSIEN_AUTOK_B0_RK0_STATUS1 + byte_ofst),
                         DQSIEN_AUTOK_B0_RK0_STATUS1_DQSIEN_AUTOK_L__PI_B0_RK0);
 
-                    /* If early break mode not enabled, right boundary could be found */
+
                     if (auto_param->early_break == DISABLE) {
                         mck_right[dqs_i] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(
                             DDRPHY_REG_DQSIEN_AUTOK_B0_RK0_STATUS1 + byte_ofst),
@@ -5107,7 +4942,7 @@ static DRAM_STATUS_T rxdqs_gating_auto_cal_status(DRAMC_CTX_T *p,
                 }
                 else
                 {
-                    /* If error occurred for this byte, it will be treated as a DONE condition */
+
                     done[dqs_i] = 1;
                 }
 
@@ -5138,7 +4973,7 @@ static DRAM_STATUS_T rxdqs_gating_auto_cal_status(DRAMC_CTX_T *p,
         mcDELAY_MS(1);
     }
 
-    /* Log it */
+
     for (dqs_i = 0; dqs_i < DQS_BYTE_NUMBER; dqs_i++) {
         mcSHOW_DBG_MSG(("[Gating][%s] AUTOK of CH-%d, Rk-%d, Byte-%d:\n",
             error[dqs_i]? "Fail" : "Pass", p->channel, p->rank, dqs_i));
@@ -5158,7 +4993,7 @@ static DRAM_STATUS_T rxdqs_gating_auto_cal_status(DRAMC_CTX_T *p,
             if (error[dqs_i]) {
                 ret = DRAM_FAIL;
             } else {
-                /* If passed, shall set the result to RG */
+
                 best_win->best_dqsien_dly_mck[dqs_i] = mck_center[dqs_i];
                 best_win->best_dqsien_dly_ui[dqs_i] = ui_center[dqs_i];
                 best_win->best_dqsien_dly_pi[dqs_i] = pi_center[dqs_i];
@@ -5218,14 +5053,14 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_auto_cal(DRAMC_CTX_T *p)
         start_ui = u1GetGatingStartPos(p, AUTOK_ON);
         end_ui = start_ui + 32;
 
-        /* Set auto calibration params */
+
         auto_param.early_break = ENABLE;
         auto_param.dbg_mode = ENABLE;
         auto_param.init_mck = start_ui / mck2ui_hw;
         auto_param.init_ui = start_ui % mck2ui_hw;
         auto_param.end_mck = end_ui / mck2ui_hw;
         auto_param.end_ui = end_ui % mck2ui_hw;
-        auto_param.pi_offset = 2; /* 2 ^ 2 = 4 */
+        auto_param.pi_offset = 2;
         auto_param.burst_len = RXDQS_BURST_LEN_8;
 
 
@@ -5240,11 +5075,11 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_auto_cal(DRAMC_CTX_T *p)
             auto_param.pi_offset =
                     psra->dqsien_autok_pi_offset? ENABLE: DISABLE;
         }
-#endif /* FOR_DV_SIMULATION_USED == 1 */
+#endif
 
         rxdqs_gating_auto_cal_cfg(p, &auto_param);
 
-        /* Trigger HW auto k */
+
         rxdqs_gating_auto_cal_trigger(p);
 
         ret = rxdqs_gating_auto_cal_status(p, &auto_param, &rxdqs_best_win);
@@ -5270,12 +5105,10 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_auto_cal(DRAMC_CTX_T *p)
 static void rxdqs_gating_sw_cal_init(DRAMC_CTX_T *p, U8 use_enhanced_rdqs)
 {
 
-    /* Disable Per-Bank ref */
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_CONF0),  0, SHU_CONF0_PBREFEN);
 
-    /*----------------
-     * From DV
-     *------------------------*/
+
     if (p->frequency == 800) {
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL1),
             0x1, MISC_STBCAL1_STBCNT_SW_RST);
@@ -5284,7 +5117,7 @@ static void rxdqs_gating_sw_cal_init(DRAMC_CTX_T *p, U8 use_enhanced_rdqs)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL1),
         0x1, MISC_STBCAL1_STBCNT_SHU_RST_EN);
 
-    /* SELPH_MODE = BY RANK */
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2),
         0x1, MISC_STBCAL2_DQSIEN_SELPH_BY_RANK_EN);
 
@@ -5296,7 +5129,7 @@ static void rxdqs_gating_sw_cal_init(DRAMC_CTX_T *p, U8 use_enhanced_rdqs)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL1),
         0x1, MISC_STBCAL1_DIS_PI_TRACK_AS_NOT_RD);
 
-    /* PICG_EARLY_EN */
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ6),
         0x1, B0_DQ6_RG_RX_ARDQ_OP_BIAS_SW_EN_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ6),
@@ -5304,7 +5137,7 @@ static void rxdqs_gating_sw_cal_init(DRAMC_CTX_T *p, U8 use_enhanced_rdqs)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2),
         0x1, MISC_STBCAL2_STB_PICG_EARLY_1T_EN);
 
-    /* BURST_MODE */
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL),
         0x1, MISC_SHU_STBCAL_DQSIEN_BURST_MODE);
 
@@ -5322,7 +5155,7 @@ static void rxdqs_gating_sw_cal_init(DRAMC_CTX_T *p, U8 use_enhanced_rdqs)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL),
         0x1, MISC_STBCAL_DQSIENMODE);
 
-    /* New Rank Mode */
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2),
         P_Fld(0x1, MISC_STBCAL2_STB_IG_XRANK_CG_RST) |
         P_Fld(0x1, MISC_STBCAL2_STB_RST_BY_RANK) |
@@ -5341,14 +5174,14 @@ static void rxdqs_gating_sw_cal_init(DRAMC_CTX_T *p, U8 use_enhanced_rdqs)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RX_SET0), 0,
         RX_SET0_DM4TO1MODE);
 
-    /* enable &reset DQS counter */
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2), 1,
         MISC_STBCAL2_DQSG_CNT_EN);
-    mcDELAY_US(4); /* wait 1 auto refresh after DQS Counter enable */
+    mcDELAY_US(4);
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2), 1,
         MISC_STBCAL2_DQSG_CNT_RST);
-    mcDELAY_US(1); /* delay 2T */
+    mcDELAY_US(1);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2), 0,
         MISC_STBCAL2_DQSG_CNT_RST);
 
@@ -5358,7 +5191,7 @@ static void rxdqs_gating_sw_cal_init(DRAMC_CTX_T *p, U8 use_enhanced_rdqs)
         0xaa000000 | GATING_PATTERN_NUM_LP5, TEST_AUDIO_PATTERN, 0, TE_NO_UI_SHIFT);
 
     if (use_enhanced_rdqs) {
-        /* TBD. Enter Enhanced RDQS training mode */
+
     }
 }
 
@@ -5388,7 +5221,7 @@ static void rxdqs_gating_set_dqsien_dly(DRAMC_CTX_T *p, U8 dly_ui,
     value = (reg_mck * mck2ui) + reg_ui;
 
     if (value >= 11) {
-        /* For RODT, MCK2UI is different from Gating */
+
         U8 rodt_mck2ui = get_rodt_mck2ui(p);
 
         value -= 11;
@@ -5407,7 +5240,7 @@ static void rxdqs_gating_set_dqsien_dly(DRAMC_CTX_T *p, U8 dly_ui,
     }
 #endif
 
-    /* Set DQSIEN delay in MCK and UI */
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_RK_B0_DQSIEN_MCK_UI_DLY),
         P_Fld(reg_mck,
         SHU_RK_B0_DQSIEN_MCK_UI_DLY_DQSIEN_MCK_P0_B0) |
@@ -5454,7 +5287,7 @@ static void rxdqs_gating_set_dqsien_dly(DRAMC_CTX_T *p, U8 dly_ui,
 static void rxdqs_gating_sw_cal_trigger(DRAMC_CTX_T *p,
     struct rxdqs_gating_cal *rxdqs_cal)
 {
-#if 0//ENABLE_DDR800_OPEN_LOOP_MODE_OPTION -> No 0.5UI after A60868
+#if 0
     if (u1IsPhaseMode(p) == TRUE) {
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_DQ0),
             rxdqs_cal->dqsien_dly_pi >> 4, SHU_R0_B0_DQ0_DA_ARPI_DDR400_0D5UI_RK0_B0);
@@ -5476,7 +5309,7 @@ static void rxdqs_gating_sw_cal_trigger(DRAMC_CTX_T *p,
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2), 0,
         MISC_STBCAL2_DQSG_CNT_RST);
 
-    /* enable TE2, audio pattern */
+
     DramcEngine2Run(p, TE_OP_READ_CHECK, TEST_AUDIO_PATTERN);
 }
 
@@ -5520,7 +5353,7 @@ static void rxdqs_gating_get_leadlag(DRAMC_CTX_T *p,
             rxdqs_trans->dqs_high[dqs_i]++;
             rxdqs_trans->dqs_transition[dqs_i] = 1;
 
-            /* Record the latest value that causes (lead, lag) = (1, 1) */
+
             rxdqs_trans->dqsien_dly_mck_leadlag[dqs_i] =
                 rxdqs_cal->dqsien_dly_mck;
             rxdqs_trans->dqsien_dly_ui_leadlag[dqs_i] =
@@ -5529,7 +5362,7 @@ static void rxdqs_gating_get_leadlag(DRAMC_CTX_T *p,
                 rxdqs_cal->dqsien_dly_pi;
         } else if ((rxdqs_trans->dqs_high[dqs_i] *
             rxdqs_cal->dqsien_pi_adj_step) >= debounce_thrd_PI) {
-            /* Consecutive 16 PI DQS high for de-glitch */
+
             if (((rxdqs_trans->dqs_lead[dqs_i] == 1) &&
                 (rxdqs_trans->dqs_lag[dqs_i] == 0)) ||
                 ((rxdqs_trans->dqs_lead[dqs_i] == 0) &&
@@ -5541,7 +5374,7 @@ static void rxdqs_gating_get_leadlag(DRAMC_CTX_T *p,
                 (rxdqs_trans->dqs_lag[dqs_i] == 0)){
                 if ((rxdqs_trans->dqs_low[dqs_i] *
                      rxdqs_cal->dqsien_pi_adj_step) >= debounce_thrd_PI) {
-                /* (lead, lag) = (0, 0), transition done */
+
                 rxdqs_trans->dqs_transitioned[dqs_i] = 1;
                     }
                 rxdqs_trans->dqs_low[dqs_i]++;
@@ -5551,12 +5384,12 @@ static void rxdqs_gating_get_leadlag(DRAMC_CTX_T *p,
                 }
         #else
         else {
-            /* (lead, lag) = (0, 0), transition done */
+
             rxdqs_trans->dqs_transitioned[dqs_i] = 1;
         }
         #endif
         } else {
-            /* Lead/lag = (1, 1) number is too few. Reset dqs_high */
+
             rxdqs_trans->dqs_high[dqs_i] = 0;
         #if GATING_LEADLAG_LOW_LEVEL_CHECK
             rxdqs_trans->dqs_low[dqs_i] = 0;
@@ -5599,15 +5432,11 @@ static U8 rxdqs_gating_sw_cal(DRAMC_CTX_T *p,
             MISC_STBERR_ALL_GATING_ERROR_B1_RK1);
     }
 
-    /* read DQS counter
-     * Note: DQS counter is no longer used as pass condition. Here
-     * Read it and log it is just as debug method. Any way, DQS counter
-     * can still be used as a clue: it will be n*0x23 when gating is correct
-     */
+
     debug_cnt[0] = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_CAL_DQSG_CNT_B0));
     debug_cnt[1] = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_CAL_DQSG_CNT_B1));
 
-    /* read (lead, lag) */
+
     rxdqs_gating_get_leadlag(p, rxdqs_trans, rxdqs_cal);
 
     mcSHOW_DBG_MSG2(("%2d %2d %2d | ",
@@ -5621,13 +5450,13 @@ static U8 rxdqs_gating_sw_cal(DRAMC_CTX_T *p,
 
         debug_pass_cnt = GATING_GOLDEND_DQSCNT_LP5;
 
-    /* Decide the window center */
+
     for (dqs_i = 0; dqs_i < DQS_BYTE_NUMBER; dqs_i++) {
         if (passed_bytes & (1 << dqs_i))
             continue;
 
         if ((gating_error[dqs_i] == 0) && (debug_cnt[dqs_i] == debug_pass_cnt)) {
-            /* Calcuate DQSIEN position */
+
             if (rxdqs_trans->dqs_transitioned[dqs_i] != 0) {
                 U8 pass_count = rxdqs_trans->dqs_transition[dqs_i];
                 U8 offset = (pass_count * rxdqs_cal->dqsien_pi_adj_step) / 2;
@@ -5638,23 +5467,23 @@ static U8 rxdqs_gating_sw_cal(DRAMC_CTX_T *p,
                 ui2pi = rxdqs_cal->dqsien_pi_per_ui;
                 freq_div = rxdqs_cal->dqsien_freq_div;
 
-                /* PI */
+
                 tmp = rxdqs_trans->dqsien_dly_pi_leadlag[dqs_i] + offset;
                 best_win->best_dqsien_dly_pi[dqs_i] = tmp % ui2pi;
                 best_win->best_dqsien_dly_pi_p1[dqs_i] =
                     best_win->best_dqsien_dly_pi[dqs_i];
 
-                /* UI & MCK - P0 */
+
                 tmp /= ui2pi;
                 tmp = rxdqs_trans->dqsien_dly_ui_leadlag[dqs_i] + tmp;
                 best_win->best_dqsien_dly_ui[dqs_i] = tmp % mck2ui;
                 best_win->best_dqsien_dly_mck[dqs_i] =
                     rxdqs_trans->dqsien_dly_mck_leadlag[dqs_i] + (tmp / mck2ui);
 
-                /* UI & MCK - P1 */
+
                 best_win->best_dqsien_dly_ui_p1[dqs_i] =
                     best_win->best_dqsien_dly_mck[dqs_i] * mck2ui +
-                    best_win->best_dqsien_dly_ui[dqs_i] + freq_div; /* Total UI for Phase1 */
+                    best_win->best_dqsien_dly_ui[dqs_i] + freq_div;
                 /*mcSHOW_DBG_MSG(("Total UI for P1: %d, mck2ui %d\n",
                     best_win->best_dqsien_dly_mck_p1[dqs_i], mck2ui));*/
                 best_win->best_dqsien_dly_mck_p1[dqs_i] =
@@ -5677,9 +5506,7 @@ static U8 rxdqs_gating_sw_cal(DRAMC_CTX_T *p,
                 }
             }
         } else {
-            /* Clear lead lag info in case lead/lag flag toggled
-             * while gating counter & gating error still incorrect
-             */
+
             rxdqs_trans->dqs_high[dqs_i] = 0;
             rxdqs_trans->dqs_transition[dqs_i] = 0;
             rxdqs_trans->dqs_transitioned[dqs_i] = 0;
@@ -5712,8 +5539,8 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_sw_cal(DRAMC_CTX_T *p,
     memset(&rxdqs_trans, 0, sizeof(struct rxdqs_gating_trans));
     memset(&rxdqs_best_win, 0, sizeof(struct rxdqs_gating_best_win));
 
-    pi_per_ui = DQS_GW_PI_PER_UI; /* 1 UI = ? PI. Sams as CBT, differ according to data rate?? */
-    ui_per_mck = DQS_GW_UI_PER_MCK; /* 1 mck = ? UI. Decided by (Tmck/Tck) * (Tck/Twck) */
+    pi_per_ui = DQS_GW_PI_PER_UI;
+    ui_per_mck = DQS_GW_UI_PER_MCK;
     if (vGet_Div_Mode(p) == DIV4_MODE)
         freq_div = 2;
     else
@@ -5740,7 +5567,6 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_sw_cal(DRAMC_CTX_T *p,
         (DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2)),
     };
 
-    /* Register backup */
     DramcBackupRegisters(p, reg_backup_address,
         sizeof (reg_backup_address) / sizeof (U32));
 
@@ -5754,16 +5580,16 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_sw_cal(DRAMC_CTX_T *p,
         else if((is_lp5_family(p)) && (p->frequency == 2750))
             dly_ui_start = 12;
         else
-            dly_ui_start = u1GetGatingStartPos(p, AUTOK_OFF);//7; //12;ly_ui_start + 32;
+            dly_ui_start = u1GetGatingStartPos(p, AUTOK_OFF);
         #else
-                dly_ui_start = u1GetGatingStartPos(p, AUTOK_OFF);//7; //12;ly_ui_start + 32;
+                dly_ui_start = u1GetGatingStartPos(p, AUTOK_OFF);
         #endif
 
         dly_ui_end = dly_ui_start+ 32;
         pass_byte_count = 0;
 #else
         {
-             dly_ui_start = 9; //12; Eddie change to 9 for Hynix Normal Mode
+             dly_ui_start = 9;
              if(p->freq_sel==LP4_DDR4266)
              {
                 dly_ui_start = 16;
@@ -5791,8 +5617,8 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_sw_cal(DRAMC_CTX_T *p,
 
         DramcEngine2End(p);
 
-        //check if there is no pass taps for each DQS
-        if (pass_byte_count == 0x3)//byte0 pass: pass_byte_count bit0=1, byte1 pass: pass_byte_count bit1=1 .LP4/LP5 pass=0x3(2 bytes). need modification for LP3 pass=0xf(4 bytes)
+
+        if (pass_byte_count == 0x3)
         {
             u1GatingErrorFlag=0;
             vSetCalibrationResult(p, DRAM_CALIBRATION_GATING, DRAM_OK);
@@ -5829,7 +5655,7 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_sw_cal(DRAMC_CTX_T *p,
 
     mcSHOW_DBG_MSG4(("[Gating] SW calibration Done\n"));
 
-    /* Set MCK & UI */
+
     rxdqs_gating_set_final_result(p, ui_per_mck, &rxdqs_best_win);
 
     DramcRestoreRegisters(p, reg_backup_address,
@@ -5840,7 +5666,7 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_sw_cal(DRAMC_CTX_T *p,
     return DRAM_OK;
 }
 
-/* LPDDR5 Rx DQS Gating */
+
 DRAM_STATUS_T dramc_rx_dqs_gating_cal(DRAMC_CTX_T *p,
         u8 autok, U8 use_enhanced_rdqs)
 {
@@ -5858,16 +5684,14 @@ DRAM_STATUS_T dramc_rx_dqs_gating_cal(DRAMC_CTX_T *p,
      }
 #endif
 
-     // default set FAIL
+
     vSetCalibrationResult(p, DRAM_CALIBRATION_GATING, DRAM_FAIL);
 
-    /* Try HW auto calibration first. If failed,
-     * will try SW mode.
-     */
+
 #if GATING_AUTO_K_SUPPORT
     if (autok) {
 #if ENABLE_GATING_AUTOK_WA
-        if (rxdqs_gating_bypass(p)) /* Already done by SWK */
+        if (rxdqs_gating_bypass(p))
             return DRAM_OK;
 #endif
 
@@ -5885,7 +5709,7 @@ DRAM_STATUS_T dramc_rx_dqs_gating_cal(DRAMC_CTX_T *p,
     return dramc_rx_dqs_gating_sw_cal(p, use_enhanced_rdqs);
 }
 
-///TODO: wait for porting +++
+
 #if GATING_ADJUST_TXDLY_FOR_TRACKING
 void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 {
@@ -5909,7 +5733,7 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 #ifdef XRTR2R_PERFORM_ENHANCE_DQSG_RX_DLY
     if (vGet_Div_Mode(p) == DIV8_MODE)
     {
-        // wei-jen: DQSgated_min should be 2 when freq >= 1333, 1 when freq < 1333
+
         if (p->frequency >= 1333)
         {
             reg_TX_dly_DQSgated_min = 2;
@@ -5919,13 +5743,12 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
             reg_TX_dly_DQSgated_min = 1;
         }
     }
-    else // for LPDDR4 1:4 mode
+    else
     {
-        //tg: DDR800/400: reg_TX_dly_DQSgated (min) =1
         reg_TX_dly_DQSgated_min = 1;
     }
 #else
-    // wei-jen: DQSgated_min should be 3 when freq >= 1333, 2 when freq < 1333
+
     if (p->frequency >= 1333)
     {
         reg_TX_dly_DQSgated_min = 3;
@@ -5936,12 +5759,12 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
     }
 #endif
 
-    //Sylv_ia MP setting is switched to new mode, so RANKRXDVS can be set as 0 (review by HJ Huang)
+
 #if 0
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_SHU_B0_DQ7), u1RankRxDVS, SHU_B0_DQ7_R_DMRANKRXDVS_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_SHU_B1_DQ7), u1RankRxDVS, SHU_B1_DQ7_R_DMRANKRXDVS_B1);
 #endif
-    // === End of DVS setting =====
+
 
     s1ChangeDQSINCTL = reg_TX_dly_DQSgated_min - u1TXDLY_Cal_min;
 
@@ -5963,7 +5786,7 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
     else
         mck2ui_shift = 2;
 
-    if (s1ChangeDQSINCTL != 0)  // need to change DQSINCTL and TXDLY of each byte
+    if (s1ChangeDQSINCTL != 0)
     {
         u1TXDLY_Cal_min += s1ChangeDQSINCTL;
         u1TXDLY_Cal_max += s1ChangeDQSINCTL;
@@ -6005,7 +5828,7 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
                     ucbest_coarse_mck_backup[u1RankIdx][dqs_i] = u4ReadTXDLY[u1RankIdx][dqs_i];
                     ucbest_coarse_mck_P1_backup[u1RankIdx][dqs_i] = u4ReadTXDLY_P1[u1RankIdx][dqs_i];
                 }
-                else // LP3 or LP4 1:4 mode
+                else
                 {
                     u4ReadTXDLY[u1RankIdx][dqs_i] = ((ucbest_coarse_mck_backup[u1RankIdx][dqs_i] << 1) + ((ucbest_coarse_ui_backup[u1RankIdx][dqs_i] >> 2) & 0x1));
                     u4ReadTXDLY_P1[u1RankIdx][dqs_i] = ((ucbest_coarse_mck_P1_backup[u1RankIdx][dqs_i] << 1) + ((ucbest_coarse_ui_P1_backup[u1RankIdx][dqs_i] >> 2) & 0x1));
@@ -6039,8 +5862,7 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
         for (u1RankIdx = 0; u1RankIdx < u1RankMax; u1RankIdx++)
         {
             vSetRank(p, u1RankIdx);
-            // 4T or 2T coarse tune
-            /* Set DQSIEN delay in MCK and UI */
+
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_RK_B0_DQSIEN_MCK_UI_DLY),
                 P_Fld(ucbest_coarse_mck_backup[u1RankIdx][0],
                 SHU_RK_B0_DQSIEN_MCK_UI_DLY_DQSIEN_MCK_P0_B0) |
@@ -6063,14 +5885,14 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
         #if RDSEL_TRACKING_EN
             if(p->frequency >= RDSEL_TRACKING_TH)
             {
-                //Byte 0
+
                 vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_INI_UIPI),
                     (ucbest_coarse_mck_backup[u1RankIdx][0] << 4) | (ucbest_coarse_ui_backup[u1RankIdx][0]),
-                    SHU_R0_B0_INI_UIPI_CURR_INI_UI_B0);//UI
-                //Byte 1
+                    SHU_R0_B0_INI_UIPI_CURR_INI_UI_B0);
+
                 vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_INI_UIPI),
                     (ucbest_coarse_mck_backup[u1RankIdx][1] << 4) | (ucbest_coarse_ui_backup[u1RankIdx][1]),
-                    SHU_R0_B1_INI_UIPI_CURR_INI_UI_B1);//UI
+                    SHU_R0_B1_INI_UIPI_CURR_INI_UI_B1);
             }
         #endif
         }
@@ -6086,9 +5908,9 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
     if (p->DBI_R_onoff[p->dram_fsp])
     {
         u4ReadDQSINCTL++;
-        #if 0//cc mark for reg not found
+        #if 0
         u4ReadRODT = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_ODTCTRL), SHU_ODTCTRL_RODT);
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_ODTCTRL), u4ReadRODT + 1, SHU_ODTCTRL_RODT); //update RODT value when READ_DBI is on
+        vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_ODTCTRL), u4ReadRODT + 1, SHU_ODTCTRL_RODT);
         #endif
     }
     #endif
@@ -6121,8 +5943,7 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 #endif
 
 #ifdef XRTR2R_PERFORM_ENHANCE_DQSG_RX_DLY
-    // Wei-Jen: RANKINCTL_RXDLY = RANKINCTL = RankINCTL_ROOT = u4ReadDQSINCTL-2, if XRTR2R_PERFORM_ENHANCE_DQSG_RX_DLY enable
-    // Wei-Jen: New algorithm : u4ReadDQSINCTL-2 >= 0
+
     if (u4ReadDQSINCTL >= 2)
     {
         u4RankINCTL_ROOT = u4ReadDQSINCTL - 2;
@@ -6136,7 +5957,7 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 #endif
     }
 #else
-    //Modify for corner IC failed at HQA test XTLV
+
     if (u4ReadDQSINCTL >= 3)
     {
         u4RankINCTL_ROOT = u4ReadDQSINCTL - 3;
@@ -6148,23 +5969,21 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
     }
 #endif
 
-    //DQSINCTL
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RK_DQSCTL),
-        u4ReadDQSINCTL, MISC_SHU_RK_DQSCTL_DQSINCTL);  //Rank0 DQSINCTL
+        u4ReadDQSINCTL, MISC_SHU_RK_DQSCTL_DQSINCTL);
     vSetRank(p, RANK_1);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RK_DQSCTL),
-        u4ReadDQSINCTL, MISC_SHU_RK_DQSCTL_DQSINCTL);  //Rank1 DQSINCTL
+        u4ReadDQSINCTL, MISC_SHU_RK_DQSCTL_DQSINCTL);
     vSetRank(p, backup_rank);
 
-    //No need to update RODT. If we update RODT, also need to update SELPH_ODTEN0_TXDLY
-    //vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_ODTCTRL), u4ReadDQSINCTL, SHU_ODTCTRL_RODT);           //RODT = DQSINCTL
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RANKCTL),
-        u4ReadDQSINCTL, MISC_SHU_RANKCTL_RANKINCTL_PHY);  //RANKINCTL_PHY = DQSINCTL
+        u4ReadDQSINCTL, MISC_SHU_RANKCTL_RANKINCTL_PHY);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RANKCTL),
-        u4RankINCTL_ROOT, MISC_SHU_RANKCTL_RANKINCTL);  //RANKINCTL= DQSINCTL -3
+        u4RankINCTL_ROOT, MISC_SHU_RANKCTL_RANKINCTL);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RANKCTL),
-        u4RankINCTL_ROOT, MISC_SHU_RANKCTL_RANKINCTL_ROOT1);  //RANKINCTL_ROOT1= DQSINCTL -3
+        u4RankINCTL_ROOT, MISC_SHU_RANKCTL_RANKINCTL_ROOT1);
 
 #ifdef XRTR2R_PERFORM_ENHANCE_DQSG_RX_DLY
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RANKCTL),
@@ -6177,12 +5996,9 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
     //mcDUMP_REG_MSG(("TX_dly_DQSgated check: min %d  max %d, ChangeDQSINCTL=%d\n", u1TXDLY_Cal_min, u1TXDLY_Cal_max, s1ChangeDQSINCTL));
     //mcDUMP_REG_MSG(("DQSINCTL=%d, RANKINCTL=%d, u4XRTR2R=%d\n", u4ReadDQSINCTL, u4RankINCTL_ROOT, u4XRTR2R));
 #else
-    //XRTR2R=A-phy forbidden margin(6T) + reg_TX_dly_DQSgated (max) +Roundup(tDQSCKdiff/MCK+0.25MCK)+1(05T sel_ph margin)-1(forbidden margin overlap part)
-    //Roundup(tDQSCKdiff/MCK+1UI) =1~2 all LP3 and LP4 timing
-    //u4XRTR2R= 8 + u1TXDLY_Cal_max;  // 6+ u1TXDLY_Cal_max +2
 
-    //Modify for corner IC failed at HQA test XTLV @ 3200MHz
-    u4XRTR2R = 8 + u1TXDLY_Cal_max + 1;  // 6+ u1TXDLY_Cal_max +2
+
+    u4XRTR2R = 8 + u1TXDLY_Cal_max + 1;
     if (u4XRTR2R > 12)
     {
         u4XRTR2R = 12;
@@ -6196,12 +6012,8 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
     //mcDUMP_REG_MSG(("DQSINCTL=%d, RANKINCTL=%d, u4XRTR2R=%d\n", u4ReadDQSINCTL, u4RankINCTL_ROOT, u4XRTR2R));
 #endif
 
-#if 0//ENABLE_RODT_TRACKING
-    //Because Ki_bo+,WE2,Bi_anco,Vin_son...or behind project support WDQS, they need to apply the correct new setting
-    //The following 2 items are indepentent
-    //1. if TX_WDQS on(by vendor_id) or p->odt_onoff = 1, ROEN/RODTE/RODTE2 = 1
-    //2. if ENABLE_RODT_TRACKING on, apply new setting and RODTENSTB_TRACK_EN = ROEN
-    // LP4 support only
+#if 0
+
     U8 u1ReadROEN;
     u1ReadROEN = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_ODTCTRL), SHU_ODTCTRL_ROEN);
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_RODTENSTB), P_Fld(0xff, SHU_RODTENSTB_RODTENSTB_EXT) | \
@@ -6209,7 +6021,7 @@ void DramcRxdqsGatingPostProcess(DRAMC_CTX_T *p)
 #endif
 
 #ifdef XRTR2W_PERFORM_ENHANCE_RODTEN
-    // LP4 support only
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RODTENSTB),
         P_Fld(0x0fff, MISC_SHU_RODTENSTB_RODTENSTB_EXT) |
         P_Fld(1, MISC_SHU_RODTENSTB_RODTEN_P1_ENABLE) |
@@ -6229,7 +6041,7 @@ void DramcRxdqsGatingPreProcess(DRAMC_CTX_T *p)
     u1TXDLY_Cal_max = 0;
 }
 #endif
-///TODO: wait for porting ---
+
 
 #endif
 
@@ -6253,26 +6065,25 @@ static void RDDQCPinmuxWorkaround(DRAMC_CTX_T *p)
     const U8 uiLPDDR4_RDDQC_Mapping_POP[PINMUX_MAX][CHANNEL_NUM][16] =
     {
         {
-        // for EMCP
-            //CH-A
+
             {
 		0, 1, 2, 3, 7, 4, 6, 5,
 		9, 8, 12, 14, 15, 10, 13, 11
             },
 #if (CHANNEL_NUM>1)
-            //CH-B
+
             {
 		0, 1, 7, 4, 3, 2, 6, 5,
 		9, 8, 12, 14, 15, 10, 11, 13
             },
 #endif
 #if (CHANNEL_NUM>2)
-            //CH-C
+
             {
 		0, 1, 2, 3, 7, 4, 6, 5,
 		9, 8, 12, 14, 15, 10, 13, 11
             },
-            //CH-D
+
             {
 		0, 1, 7, 4, 3, 2, 6, 5,
 		9, 8, 12, 14, 15, 10, 11, 13
@@ -6280,26 +6091,25 @@ static void RDDQCPinmuxWorkaround(DRAMC_CTX_T *p)
 #endif
         },
         {
-        // for DSC_2CH, HFID RESERVED
-            //CH-A
+
             {
 		0, 1, 4, 3, 2, 5, 7, 6,
 		9, 8, 10, 11, 15, 13, 12, 14
             },
 #if (CHANNEL_NUM>1)
-            //CH-B
+
             {
 		0, 1, 2, 5, 3, 4, 7, 6,
 		8, 9, 10, 11, 15, 14, 13, 12
             },
             #endif
             #if (CHANNEL_NUM>2)
-            //CH-C
+
             {
 		0, 1, 2, 3, 4, 5, 6, 7,
 		8, 9, 10, 11, 12, 13, 14, 15
             },
-            //CH-D
+
             {
 		0, 1, 2, 3, 4, 5, 6, 7,
 		8, 9, 10, 11, 12, 13, 14, 15
@@ -6307,26 +6117,25 @@ static void RDDQCPinmuxWorkaround(DRAMC_CTX_T *p)
 #endif
         },
         {
-        // for MCP
-            //CH-A
+
             {
                 0, 1, 6, 2, 4, 7, 3, 5,
                 8, 9, 10, 12, 13, 11, 15, 14
             },
             #if (CHANNEL_NUM>1)
-            //CH-B
+
             {
                 0, 1, 7, 4, 2, 5, 6, 3,
                 9, 8, 10, 12, 11, 14, 13, 15
             },
             #endif
             #if (CHANNEL_NUM>2)
-            //CH-C
+
             {
                 1, 0, 3, 2, 4, 7, 6, 5,
                 8, 9, 10, 12, 15, 14, 11, 13
             },
-            //CH-D
+
             {
                 0, 1, 7, 4, 2, 5, 6, 3,
                 9, 8, 10, 12, 11, 14, 13, 15
@@ -6334,26 +6143,25 @@ static void RDDQCPinmuxWorkaround(DRAMC_CTX_T *p)
             #endif
         },
         {
-        // for DSC_180
-            //CH-A
+
             {
                 8, 9, 14, 15, 12, 13, 11, 10,
                 1, 0, 3, 2, 7, 6, 4, 5
             },
             #if (CHANNEL_NUM>1)
-            //CH-B
+
             {
                 9, 8, 13, 12, 15, 10, 11, 14,
                 0, 1, 3, 2, 4, 6, 5, 7
             },
             #endif
             #if (CHANNEL_NUM>2)
-            //CH-C
+
             {
                 0, 1, 6, 7, 4, 5, 3, 2,
                 9, 8, 11, 10, 15, 14, 12, 13
             },
-            //CH-D
+
             {
                 1, 0, 5, 4, 7, 2, 3, 6,
                 8, 9, 11, 10, 12, 14, 13, 15
@@ -6367,7 +6175,7 @@ static void RDDQCPinmuxWorkaround(DRAMC_CTX_T *p)
     }
 
 
-    //Set RDDQC pinmux
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_MRR_BIT_MUX1), P_Fld(uiLPDDR_RDDQC_Mapping[0], MRR_BIT_MUX1_MRR_BIT0_SEL) | P_Fld(uiLPDDR_RDDQC_Mapping[1], MRR_BIT_MUX1_MRR_BIT1_SEL) |
                                                                P_Fld(uiLPDDR_RDDQC_Mapping[2], MRR_BIT_MUX1_MRR_BIT2_SEL) | P_Fld(uiLPDDR_RDDQC_Mapping[3], MRR_BIT_MUX1_MRR_BIT3_SEL));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_MRR_BIT_MUX2), P_Fld(uiLPDDR_RDDQC_Mapping[4], MRR_BIT_MUX2_MRR_BIT4_SEL) | P_Fld(uiLPDDR_RDDQC_Mapping[5], MRR_BIT_MUX2_MRR_BIT5_SEL) |
@@ -6403,27 +6211,22 @@ static U32 DramcRxWinRDDQCInit(DRAMC_CTX_T *p)
         RDDQC_Pattern_A = psra->mr_dq_a_golden;
         RDDQC_Pattern_B = psra->mr_dq_b_golden;
 
-        /*
-         * TODO
-         *
-         * sv also passes mr20_6 and mr20_7 to sa.
-         * currently, sa does NOT use these two random arguments.
-         */
-    }
-#endif /* FOR_DV_SIMULATION_USED == 1 */
 
-    // Disable Read DBI
+    }
+#endif
+
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ7), 0, SHU_B0_DQ7_R_DMDQMDBI_SHU_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ7), 0, SHU_B1_DQ7_R_DMDQMDBI_SHU_B1);
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), u1GetRank(p), SWCMD_CTRL0_MRSRK);
 
 #if RDDQC_PINMUX_WORKAROUND
-    // Translate pin order by MRR bit sel
+
     RDDQCPinmuxWorkaround(p);
 #endif
 
-    // Set golden values into dram MR
+
     {
         DramcModeRegWriteByRank(p, p->rank, 15, RDDQC_Bit_Ctrl_Lower);
         DramcModeRegWriteByRank(p, p->rank, 20, RDDQC_Bit_Ctrl_Upper);
@@ -6431,14 +6234,14 @@ static U32 DramcRxWinRDDQCInit(DRAMC_CTX_T *p)
         DramcModeRegWriteByRank(p, p->rank, 40, RDDQC_Pattern_B);
     }
 
-    //Set golden values into RG, watch out the MR_index of RGs are reference LP4
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_RDDQCGOLDEN),
             P_Fld(RDDQC_Bit_Ctrl_Lower, RDDQCGOLDEN_LP5_MR30_BIT_CTRL_LOWER) |
             P_Fld(RDDQC_Bit_Ctrl_Upper, RDDQCGOLDEN_LP5_MR31_BIT_CTRL_UPPER) |
             P_Fld(RDDQC_Pattern_A, RDDQCGOLDEN_LP5_MR32_PATTERN_A) |
             P_Fld(RDDQC_Pattern_B, RDDQCGOLDEN_LP5_MR33_PATTERN_B));
 
-    // Open gated clock, by KaiHsin   (DCM)
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ8),
             P_Fld(1, SHU_B0_DQ8_R_DMRXDLY_CG_IG_B0));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ8),
@@ -6449,7 +6252,7 @@ static U32 DramcRxWinRDDQCInit(DRAMC_CTX_T *p)
 #if PRINT_CALIBRATION_SUMMARY_FASTK_CHECK
 static U32 DramcRxWinRDDQCEnd(DRAMC_CTX_T *p)
 {
-    // Recover MPC Rank
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL0), 0, SWCMD_CTRL0_MRSRK);
 
     return 0;
@@ -6499,51 +6302,44 @@ static void SetRxDqDqsDelay(DRAMC_CTX_T *p, S16 iDelay)
     }
     else
     {
-        // Adjust DQM output delay.
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_RXDLY4), iDelay, SHU_R0_B0_RXDLY4_RX_ARDQM0_R_DLY_B0);
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_RXDLY4), iDelay, SHU_R0_B1_RXDLY4_RX_ARDQM0_R_DLY_B1);
         //DramPhyReset(p);
 
-        // Adjust DQ output delay.
+
         for (ii = 0; ii < 4; ii++)
             SetRxDqDelay(p, ii, iDelay);
 
     }
 }
 
-/* Issue "RD DQ Calibration"
- * 1. SWCMD_CTRL1_RDDQC_LP_ENB = 1 to stop RDDQC burst
- * 2. RDDQCEN = 1 for RDDQC
- * 3. Wait rddqc_response = 1
- * 4. Read compare result
- * 5. RDDQCEN = 0
- */
 
  static U32 DramcRxWinRDDQCRun(DRAMC_CTX_T *p)
 {
     U32 u4Result = 0, u4TmpResult;
     DRAM_STATUS_T u4Response = DRAM_FAIL;
 
-    //Issue RD DQ calibration
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL1), 1, SWCMD_CTRL1_RDDQC_LP_ENB);
 
-    // Trigger and wait
+
     REG_TRANSFER_T TriggerReg = {DRAMC_REG_SWCMD_EN, SWCMD_EN_RDDQCEN};
     REG_TRANSFER_T RepondsReg = {DRAMC_REG_SPCMDRESP, SPCMDRESP_RDDQC_RESPONSE};
     u4Response = DramcTriggerAndWait(p, TriggerReg, RepondsReg);
 
-    // Read RDDQC compare result
+
     u4TmpResult = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_RDQC_CMP));
-    u4Result = (0xFFFF) & ((u4TmpResult) | (u4TmpResult >> 16)); // (BL0~7) | (BL8~15)
+    u4Result = (0xFFFF) & ((u4TmpResult) | (u4TmpResult >> 16));
 
 #if (FEATURE_RDDQC_K_DMI == TRUE)
-    // Read DQM compare result
+
     u4TmpResult = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RDQC_DQM_CMP), RDQC_DQM_CMP_RDDQC_DQM_CMP0_ERR);
     u4TmpResult |= u4IO32ReadFldAlign(DRAMC_REG_ADDR(DRAMC_REG_RDQC_DQM_CMP), RDQC_DQM_CMP_RDDQC_DQM_CMP1_ERR);
     u4Result |= (u4TmpResult << 16);
 #endif
 
-    //R_DMRDDQCEN -> 0
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_EN), 0, SWCMD_EN_RDDQCEN);
 
     return u4Result;
@@ -6587,7 +6383,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
     U8 backup_rank, rank_i, u1KnownVref[2]={0xff, 0xff};
     BOOL isLP4_DSC = (p->DRAMPinmux == PINMUX_DSC)?1:0;
 
-    // error handling
+
     if (!p)
     {
         mcSHOW_ERR_MSG(("context NULL\n"));
@@ -6609,7 +6405,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
     #endif
     };
 
-    //Back up dramC register
+
     DramcBackupRegisters(p, u4RegBackupAddress, ARRAY_SIZE(u4RegBackupAddress));
 
 #if (FEATURE_RDDQC_K_DMI == TRUE)
@@ -6672,7 +6468,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 #endif
     }
 
-    //RX_ARDQS_DLY_LAT_EN=1: RX delay will update when GATE_EN=0, and can prevent glitch in ACD.
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ10), 1, SHU_B0_DQ10_RG_RX_ARDQS_DLY_LAT_EN_B0);
     if (!isLP4_DSC)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ10), 1, SHU_B1_DQ10_RG_RX_ARDQS_DLY_LAT_EN_B1);
@@ -6680,13 +6476,13 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD10), 1, SHU_CA_CMD10_RG_RX_ARCLK_DLY_LAT_EN_CA);
 
 
-    //When doing RxWindowPerbitCal, should make sure that auto refresh is disable
+
     vAutoRefreshSwitch(p, DISABLE);
     //CKEFixOnOff(p, p->rank, CKE_FIXON, TO_ONE_CHANNEL);
 
     backup_rank = u1GetRank(p);
 
-    //defult set result fail. When window found, update the result as oK
+
     if (u1UseTestEngine == PATTERN_TEST_ENGINE)
     {
         if (u1RXEyeScanEnable == DISABLE)
@@ -6694,7 +6490,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
             vSetCalibrationResult(p, DRAM_CALIBRATION_RX_PERBIT, DRAM_FAIL);
         }
 
-        // Something wrong with TA2 pattern -- SI, which causes RX autoK fail.
+
         if (isAutoK == TRUE)
         {
             DramcEngine2Init(p, p->test2_1, p->test2_2, TEST_XTALK_PATTERN, 0, TE_NO_UI_SHIFT);
@@ -6702,7 +6498,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
         else
         {
 #if ENABLE_K_WITH_WORST_SI_UI_SHIFT
-            DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);//UI_SHIFT + LEN1
+            DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);
 #else
             DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern, 0, TE_NO_UI_SHIFT);
 #endif
@@ -6717,7 +6513,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
         DramcRxWinRDDQCInit(p);
     }
 
-    // Intialize, diable RX Vref
+
     u2VrefBegin = 0;
     u2VrefEnd = 0;
     u2VrefStep = 1;
@@ -6745,7 +6541,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 
         //mcDUMP_REG_MSG(("\n[dumpRG] %s\n",u1UseTestEngine==PATTERN_RDDQC?"RDDQC":"DramcRxWindowPerbitCal"));
 #if VENDER_JV_LOG
-#if 0 //BU don't want customer knows our RX's ability
+#if 0
         if (u1UseTestEngine == 1)
             vPrintCalibrationBasicInfo_ForJV(p);
 #endif
@@ -6763,8 +6559,8 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
         {
             u2VrefBegin = 0;
             u2VrefEnd = 0;
-            u1KnownVref[0] = gFinalRXVrefDQForSpeedUp[p->channel][p->rank][p->odt_onoff][0];// byte 0
-            u1KnownVref[1] = gFinalRXVrefDQForSpeedUp[p->channel][p->rank][p->odt_onoff][1];// byte 1
+            u1KnownVref[0] = gFinalRXVrefDQForSpeedUp[p->channel][p->rank][p->odt_onoff][0];
+            u1KnownVref[1] = gFinalRXVrefDQForSpeedUp[p->channel][p->rank][p->odt_onoff][1];
 
             if (u1UseTestEngine == PATTERN_TEST_ENGINE && ((u1KnownVref[0] == 0) || (u1KnownVref[1] == 0)))
             {
@@ -6774,12 +6570,12 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
                 #endif
             }
         }
-        else if (u1AssignedVref != NULL)  // need to specify RX Vref and don't scan RX Vref.
+        else if (u1AssignedVref != NULL)
         {
             u2VrefBegin = 0;
             u2VrefEnd = 0;
-            u1KnownVref[0] = u1AssignedVref[0];  // byte 0
-            u1KnownVref[1] = u1AssignedVref[1];  // byte 1
+            u1KnownVref[0] = u1AssignedVref[0];
+            u1KnownVref[1] = u1AssignedVref[1];
         }
         else
         {
@@ -6802,7 +6598,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
             }
             else
             {
-                u2VrefBegin = 0;//Lewis@20160817: Enlarge RX Vref range for eye scan
+                u2VrefBegin = 0;
                 u2VrefEnd = EYESCAN_RX_VREF_RANGE_END-1;
                 //mcSHOW_DBG_MSG(("\nSet Eyescan Vref Range= %d -> %d\n",u2VrefBegin,u2VrefEnd));
             }
@@ -6824,26 +6620,26 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
         else
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD5), 1, CA_CMD5_RG_RX_ARCMD_VREF_EN);
     }
-    else // Disable RX Vref
+    else
     {
         u2VrefBegin = 0;
         u2VrefEnd = 0;
         u2VrefStep = 1;
     }
 
-    //if RDDQD, roughly calibration
+
     if (u1UseTestEngine == PATTERN_RDDQC)
         u16DelayStep <<= 1;
 
 #if SUPPORT_SAVE_TIME_FOR_CALIBRATION
     if (p->femmc_Ready == 1 && ((p->Bypass_RDDQC && u1UseTestEngine == PATTERN_RDDQC) || (p->Bypass_RXWINDOW && u1UseTestEngine == PATTERN_TEST_ENGINE)))
     {
-        // load RX DQS and DQM delay from eMMC
+
         for (u1ByteIdx = 0; u1ByteIdx < DQS_BYTE_NUMBER; u1ByteIdx++)
         {
             if (u1VrefScanEnable)
             {
-                // load RX Vref from eMMC
+
             #if ( SUPPORT_SAVE_TIME_FOR_CALIBRATION && BYPASS_VREF_CAL)
                 u2FinalVref[u1ByteIdx] = p->pSavetimeData->u1RxWinPerbitVref_Save[p->channel][p->rank][u1ByteIdx];
             #endif
@@ -6853,7 +6649,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
             iDQMDlyPerbyte[u1ByteIdx] = p->pSavetimeData->u1RxWinPerbit_DQM[p->channel][p->rank][u1ByteIdx];
         }
 
-        // load RX DQ delay from eMMC
+
         for (u1BitIdx = 0; u1BitIdx < 16; u1BitIdx++)
         {
             FinalWinPerBit[u1BitIdx].best_dqdly = p->pSavetimeData->u1RxWinPerbit_DQ[p->channel][p->rank][u1BitIdx];
@@ -6890,7 +6686,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 
     if (u1VrefScanEnable == TRUE)
     {
-        // When only calibrate RX Vref for Rank 0, apply the same value for Rank 1.
+
         for (rank_i = p->rank; rank_i < p->support_rank_num; rank_i++)
         {
             vSetRank(p, rank_i);
@@ -6911,7 +6707,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
     mcSHOW_DBG_MSG(("\n"));
 
 #if DUMP_TA2_WINDOW_SIZE_RX_TX
-    //RX
+
     if (u1UseTestEngine == PATTERN_TEST_ENGINE)
     {
         U32 u4B0Tatal =0;
@@ -6933,7 +6729,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
     }
 #endif
 
-    // set dqs delay, (dqm delay)
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_RXDLY5),
             P_Fld((U32)iDQSDlyPerbyte[0], SHU_R0_B0_RXDLY5_RX_ARDQS0_R_DLY_B0));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_RXDLY4),
@@ -6943,7 +6739,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_RXDLY4),
             P_Fld((U32)iDQMDlyPerbyte[1], SHU_R0_B1_RXDLY4_RX_ARDQM0_R_DLY_B1));
 
-    // set dq delay
+
     for (u1BitIdx = 0; u1BitIdx < DQS_BIT_NUMBER; u1BitIdx += 2)
     {
          vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_RXDLY0 + u1BitIdx * 2),
@@ -7012,65 +6808,6 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 
 return DRAM_OK;
 
-    // Log example  ==> Neec to update
-    /*
-------------------------------------------------------
-Start calculate dq time and dqs time /
-Find max DQS delay per byte / Adjust DQ delay to align DQS...
-------------------------------------------------------
-bit# 0 : dq time=11 dqs time= 8
-bit# 1 : dq time=11 dqs time= 8
-bit# 2 : dq time=11 dqs time= 6
-bit# 3 : dq time=10 dqs time= 8
-bit# 4 : dq time=11 dqs time= 8
-bit# 5 : dq time=10 dqs time= 8
-bit# 6 : dq time=11 dqs time= 8
-bit# 7 : dq time= 9 dqs time= 6
-----seperate line----
-bit# 8 : dq time=12 dqs time= 7
-bit# 9 : dq time=10 dqs time= 8
-bit#10 : dq time=11 dqs time= 8
-bit#11 : dq time=10 dqs time= 8
-bit#12 : dq time=11 dqs time= 8
-bit#13 : dq time=11 dqs time= 8
-bit#14 : dq time=11 dqs time= 8
-bit#15 : dq time=12 dqs time= 8
-----seperate line----
-bit#16 : dq time=11 dqs time= 7
-bit#17 : dq time=10 dqs time= 8
-bit#18 : dq time=11 dqs time= 7
-bit#19 : dq time=11 dqs time= 6
-bit#20 : dq time=10 dqs time= 9
-bit#21 : dq time=11 dqs time=10
-bit#22 : dq time=11 dqs time=10
-bit#23 : dq time= 9 dqs time= 9
-----seperate line----
-bit#24 : dq time=12 dqs time= 6
-bit#25 : dq time=13 dqs time= 6
-bit#26 : dq time=13 dqs time= 7
-bit#27 : dq time=11 dqs time= 7
-bit#28 : dq time=12 dqs time= 8
-bit#29 : dq time=10 dqs time= 8
-bit#30 : dq time=13 dqs time= 7
-bit#31 : dq time=11 dqs time= 8
-----seperate line----
-==================================================
-    dramc_rxdqs_perbit_swcal_v2
-    channel=2(2:cha, 3:chb) apply = 1
-==================================================
-DQS Delay :
- DQS0 = 0 DQS1 = 0 DQS2 = 0 DQS3 = 0
-DQ Delay :
-DQ 0 =  1 DQ 1 =  1 DQ 2 =  2 DQ 3 =  1
-DQ 4 =  1 DQ 5 =  1 DQ 6 =  1 DQ 7 =  1
-DQ 8 =  2 DQ 9 =  1 DQ10 =  1 DQ11 =  1
-DQ12 =  1 DQ13 =  1 DQ14 =  1 DQ15 =  2
-DQ16 =  2 DQ17 =  1 DQ18 =  2 DQ19 =  2
-DQ20 =  0 DQ21 =  0 DQ22 =  0 DQ23 =  0
-DQ24 =  3 DQ25 =  3 DQ26 =  3 DQ27 =  2
-DQ28 =  2 DQ29 =  1 DQ30 =  3 DQ31 =  1
-_______________________________________________________________
-   */
 }
 
 #if SIMULATION_RX_DVS
@@ -7085,7 +6822,7 @@ static U8 DramcRxDVSCal(DRAMC_CTX_T *p, U8 u1byte)
         u1rising_lag = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_FT_STATUS0), MISC_FT_STATUS0_AD_RX_ARDQ_DVS_R_LAG_B0);
         u1falling_lag = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_FT_STATUS1), MISC_FT_STATUS1_AD_RX_ARDQ_DVS_F_LAG_B0);
     }
-    else //byte1
+    else
     {
         u1rising_lead = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_FT_STATUS0), MISC_FT_STATUS0_AD_RX_ARDQ_DVS_R_LAG_B1);
         u1falling_lead = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_FT_STATUS1), MISC_FT_STATUS1_AD_RX_ARDQ_DVS_F_LEAD_B1);
@@ -7120,7 +6857,7 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
         (DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_RXDLY4)),
     };
 
-    // error handling
+
     if (!p)
     {
         mcSHOW_ERR_MSG(("context NULL\n"));
@@ -7129,16 +6866,16 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
 
     mcSHOW_DBG_MSG(("[RX DVS calibration]\n"));
 
-    //When doing RxWindowPerbitCal, should make sure that auto refresh is disable
+
     vAutoRefreshSwitch(p, DISABLE);
     //CKEFixOnOff(p, p->rank, CKE_FIXON, TO_ONE_CHANNEL);
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ11), 1, SHU_B0_DQ11_RG_RX_ARDQ_DVS_EN_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ11), 1, SHU_B1_DQ11_RG_RX_ARDQ_DVS_EN_B1);
 
-    //defult set result fail. When window found, update the result as oK
+
 #if ENABLE_K_WITH_WORST_SI_UI_SHIFT
-    DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);//PIC Need to check if need to use UI_SHIFT;//UI_SHIFT + LEN1
+    DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);
 #else
     DramcEngine2Init(p, p->test2_1, p->test2_2, TEST_XTALK_PATTERN, 0, TE_NO_UI_SHIFT);
 #endif
@@ -7146,14 +6883,14 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
     {
         u16DelayStep = 4;
     }
-    // Just for DV SIM test
+
     S16DelayBegin = -80;
     u16DelayEnd = 100;
 
     mcSHOW_DBG_MSG2(("\nRX Delay %d -> %d, step: %d\n", S16DelayBegin, u16DelayEnd, u16DelayStep));
 
     {
-        // Adjust DQM output delay to 0
+
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_RXDLY4),
                 P_Fld(0, SHU_R0_B0_RXDLY4_RX_ARDQM0_R_DLY_B0) |
                 P_Fld(0, SHU_R0_B0_RXDLY4_RX_ARDQM0_F_DLY_B0));
@@ -7161,12 +6898,11 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
                 P_Fld(0, SHU_R0_B1_RXDLY4_RX_ARDQM0_R_DLY_B1) |
                 P_Fld(0, SHU_R0_B1_RXDLY4_RX_ARDQM0_F_DLY_B1));
 
-        // Adjust DQ output delay to 0
-        //every 2bit dq have the same delay register address
+
         for (ii = 0; ii < 4; ii++)
             SetRxDqDelay(p, ii, 0);
         {
-            // non-autok flow
+
             for (iDelay = S16DelayBegin; iDelay <= u16DelayEnd; iDelay += u16DelayStep)
             {
                 SetRxDqDqsDelay(p, iDelay);
@@ -7190,7 +6926,7 @@ DRAM_STATUS_T DramcRxDVSWindowCal(DRAMC_CTX_T *p)
                     {
                         u1DVS_pass_window[u1ByteIdx] = iDelay - u1DVS_first_pass[u1ByteIdx] - u16DelayStep;
 
-                        if (u1DVS_pass_window[u1ByteIdx] < 7) //if window size bigger than 7, consider as real pass window.
+                        if (u1DVS_pass_window[u1ByteIdx] < 7)
                         {
                             u1DVS_pass_window[u1ByteIdx] = 0;
                             u1DVS_first_flag[u1ByteIdx] = 0;
@@ -7252,7 +6988,7 @@ void DramcDramcRxDVSCalPostProcess(DRAMC_CTX_T *p)
             u1DVS_dly_final[u1ByteIdx] = u1DVS_increase_final + (u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ11), SHU_B0_DQ11_RG_RX_ARDQ_DVS_DLY_B0));
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ11), u1DVS_dly_final[u1ByteIdx], SHU_B0_DQ11_RG_RX_ARDQ_DVS_DLY_B0);
         }
-        else //byte1
+        else
         {
             u1DVS_dly_final[u1ByteIdx] = u1DVS_increase_final + (u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ11), SHU_B1_DQ11_RG_RX_ARDQ_DVS_DLY_B1));
             vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ11), u1DVS_dly_final[u1ByteIdx], SHU_B1_DQ11_RG_RX_ARDQ_DVS_DLY_B1);
@@ -7266,7 +7002,7 @@ void DramcDramcRxDVSCalPostProcess(DRAMC_CTX_T *p)
         DramcRxWindowPerbitCal(p, PATTERN_TEST_ENGINE, DVS_CAL_KEEP_VREF, AUTOK_OFF, NORMAL_K);
     }
 
-    if ((DramcRxDVSCal(p, 0) == 1) || (DramcRxDVSCal(p, 1) == 1)) //Prevent set wrong DV dly
+    if ((DramcRxDVSCal(p, 0) == 1) || (DramcRxDVSCal(p, 1) == 1))
     {
         mcSHOW_ERR_MSG(("Final DVS delay is out of RX window\n"));
         for (u1ByteIdx = 0; u1ByteIdx < DQS_BYTE_NUMBER; u1ByteIdx++)
@@ -7278,7 +7014,7 @@ void DramcDramcRxDVSCalPostProcess(DRAMC_CTX_T *p)
                 {
                     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ11), u1DVS_dly_final[u1ByteIdx], SHU_B0_DQ11_RG_RX_ARDQ_DVS_DLY_B0);
                 }
-                else //byte1
+                else
                 {
                     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ11), u1DVS_dly_final[u1ByteIdx], SHU_B1_DQ11_RG_RX_ARDQ_DVS_DLY_B1);
                 }
@@ -7306,8 +7042,7 @@ static void dle_factor_handler(DRAMC_CTX_T *p, U8 curr_val)
     U8 u1DLECG_OptionEXT2 = 0;
     U8 u1DLECG_OptionEXT3 = 0;
 
-    // If (RX_PIPE_BYPASS_ENABLE == 1) bypass RX PIPE, so RG_DATLAT_DSEL = RG_DATLAT
-    // else RG_DATLAT_DSEL = RG_DATLAT - 1
+
     if (u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_MISC_RX_PIPE_CTRL), SHU_MISC_RX_PIPE_CTRL_RX_PIPE_BYPASS_EN))
     {
         u1DATLAT_DSEL = curr_val;
@@ -7327,10 +7062,7 @@ static void dle_factor_handler(DRAMC_CTX_T *p, U8 curr_val)
             P_Fld(u1DATLAT_DSEL, MISC_SHU_RDAT_DATLAT_DSEL) |
             P_Fld(u1DATLAT_DSEL, MISC_SHU_RDAT_DATLAT_DSEL_PHY));
 
-    // Had been adjusted for 868 already.
-    //(>=8 & <14) set EXT1 =1, EXT2=0, EXT3=0
-    //(>= 14 & <19) set EXT1=1, EXT2=1, EXT3=0
-    //(>=19) set EXT1=1, EXT2=1, EXT3=1
+
     u1DLECG_OptionEXT1 = (curr_val >= 8)? (1): (0);
     u1DLECG_OptionEXT2 = (curr_val >= 14)? (1): (0);
     u1DLECG_OptionEXT3 = (curr_val >= 19)? (1): (0);
@@ -7356,7 +7088,7 @@ DRAM_STATUS_T DramcRxdatlatCal(DRAMC_CTX_T *p)
     U8 ucfirst, ucbegin, ucsum, ucbest_step; //ucpipe_num = 0;
     U16 u2DatlatBegin;
 
-    // error handling
+
     if (!p)
     {
         mcSHOW_ERR_MSG(("context NULL\n"));
@@ -7371,29 +7103,23 @@ DRAM_STATUS_T DramcRxdatlatCal(DRAMC_CTX_T *p)
     #endif
     mcSHOW_DBG_MSG(("[RxdatlatCal]\n"));
 
-    // pre-save
-    // 0x07c[6:4]   DATLAT bit2-bit0
+
     u4prv_register_080 = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RDAT));
 
-    //default set FAIL
+
     vSetCalibrationResult(p, DRAM_CALIBRATION_DATLAT, DRAM_FAIL);
 
-    // init best_step to default
+
     ucbest_step = (U8) u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RDAT), MISC_SHU_RDAT_DATLAT);
     mcSHOW_DBG_MSG2(("DATLAT Default: 0x%x\n", ucbest_step));
     //mcDUMP_REG_MSG(("DATLAT Default: 0x%x\n", ucbest_step));
 
-    // 1.set DATLAT 0-15 (0-21 for MT6595)
-    // 2.enable engine1 or engine2
-    // 3.check result  ,3~4 taps pass
-    // 4.set DATLAT 2nd value for optimal
 
-    // Initialize
     ucfirst = 0xff;
     ucbegin = 0;
     ucsum = 0;
 
-    DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);//UI_SHIFT + LEN1
+    DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);
     u2DatlatBegin = 0;
 
 #if (SUPPORT_SAVE_TIME_FOR_CALIBRATION && BYPASS_DATLAT)
@@ -7494,33 +7220,22 @@ DRAM_STATUS_T DramcDualRankRxdatlatCal(DRAMC_CTX_T *p)
     return DRAM_OK;
 
 }
-#endif // SIMULATION_DATLAT
+#endif
 
 #if SIMULATION_TX_PERBIT
 
-//=============================================================
-///// DramC TX perbi calibration ----------Begin--------------
-//=============================================================
-//-------------------------------------------------------------------------
-/** DramcTxWindowPerbitCal (v2)
- *  TX DQS per bit SW calibration.
- *  @param p                Pointer of context created by DramcCtxCreate.
- *  @param  apply           (U8): 0 don't apply the register we set  1 apply the register we set ,default don't apply.
- *  @retval status          (DRAM_STATUS_T): DRAM_OK or DRAM_FAIL
- */
-//-------------------------------------------------------------------------
 #if (SW_CHANGE_FOR_SIMULATION || FOR_DV_SIMULATION_USED)
 #define TX_VREF_RANGE_BEGIN       0
-#define TX_VREF_RANGE_END           2 // binary 110010
+#define TX_VREF_RANGE_END           2
 #define TX_VREF_RANGE_STEP         2
 #else
 #define TX_VREF_RANGE_BEGIN       16
-#define TX_VREF_RANGE_END           50 // binary 110010
+#define TX_VREF_RANGE_END           50
 #define TX_VREF_RANGE_STEP         2
 #endif
 
-#define TX_DQ_UI_TO_PI_TAP         64 // 1 PI = tCK/64, total 128 PI, 1UI = 32 PI
-#define TX_PHASE_DQ_UI_TO_PI_TAP         32 // 1 PI = tCK/64, total 128 PI, 1UI = 32 PI for DDR800 semi open loop mode
+#define TX_DQ_UI_TO_PI_TAP         64
+#define TX_PHASE_DQ_UI_TO_PI_TAP         32
 #define LP4_TX_VREF_DATA_NUM 50
 #define LP4_TX_VREF_PASS_CONDITION 0
 #define TX_PASS_WIN_CRITERIA    7
@@ -7587,12 +7302,12 @@ void TxWinTransferDelayToUIPI(DRAMC_CTX_T *p, U16 uiDelay, U8 u1AdjustPIToCenter
         *pu1PI =u1PI;
     }
 
-    if (u1IsLP4Div4DDR800(p) /*DDR800 close loop mode*/ || u1IsPhaseMode(p))
+    if (u1IsLP4Div4DDR800(p) || u1IsPhaseMode(p))
         u164PIto1UI = 0;
     else
         u164PIto1UI = 1;
 
-    u2TmpValue = (uiDelay /u1PiTap)<<u164PIto1UI; // 1:8 mode for 2UI carry, DDR800 1:4 mode for 1UI carry
+    u2TmpValue = (uiDelay /u1PiTap)<<u164PIto1UI;
 
     if (u1AdjustPIToCenter && (pu1PI != NULL) && (eDdr800Mode == CLOSE_LOOP_MODE))
     {
@@ -7617,17 +7332,17 @@ void TxWinTransferDelayToUIPI(DRAMC_CTX_T *p, U16 uiDelay, U8 u1AdjustPIToCenter
     *pu1UISmall_DQ = u2TmpValue - ((u2TmpValue >> u1Small_ui_to_large) << u1Small_ui_to_large);
     *pu1UILarge_DQ = (u2TmpValue >> u1Small_ui_to_large);
     #endif
-    // calculate DQ OE according to DQ UI
+
     {
         u2TmpValue -= u1TxDQOEShift;
     }
 
-    if(((u1MR03Value[p->dram_fsp]&0x80)>>7)==1) //if WDBI is on, OE_DLY don't need to shift 1 MCK with DLY
+    if(((u1MR03Value[p->dram_fsp]&0x80)>>7)==1)
     {
         if (vGet_Div_Mode(p) == DIV4_MODE)
-            u2DQOE_shift = 4; //OE_shift = OE_shift - 3(original OE position) + 4 (MCK)
+            u2DQOE_shift = 4;
         else
-            u2DQOE_shift = 8; //OE_shift = OE_shift - 3(original OE position) + 8 (MCK)
+            u2DQOE_shift = 8;
 
         u2TmpValue += u2DQOE_shift;
     }
@@ -7682,14 +7397,14 @@ static void TxPrintWidnowInfo(DRAMC_CTX_T *p, PASS_WIN_DATA_T WinPerBitData[])
 
 static void TXPerbitCalibrationInit(DRAMC_CTX_T *p, U8 calType)
 {
-    //Set TX delay chain to 0
+
     if (calType != TX_DQ_DQS_MOVE_DQM_ONLY)
     {
     #if 1
     #if PINMUX_AUTO_TEST_PER_BIT_TX
         if(gTX_check_per_bit_flag == 1)
         {
-            //not reset delay cell
+
         }
         else
     #endif
@@ -7722,25 +7437,13 @@ static void TXPerbitCalibrationInit(DRAMC_CTX_T *p, U8 calType)
     }
 
 
-    //Use HW TX tracking value
-    //R_DMARPIDQ_SW :drphy_conf (0x170[7])(default set 1)
-    //   0: DQS2DQ PI setting controlled by HW
-    //R_DMARUIDQ_SW : Dramc_conf(0x156[15])(default set 1)
-    //    0: DQS2DQ UI setting controlled by HW
-    ///TODO: need backup original setting?
-    //vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_MISC_CTRL1), 1, MISC_CTRL1_R_DMARPIDQ_SW);
-    //vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_DQSOSCR), 1, DQSOSCR_ARUIDQ_SW);
 
 }
 
 #define TX_TDQS2DQ_PRE_CAL 0
 #if TX_TDQS2DQ_PRE_CAL
-//  (1) DDR800 1:4 mode
-//  (2) DDR1200/1600 1:4 mode
-//  (3) 1:8 mode
-// The 3 condition have different MCK2UI/UI2PI. Therefore, TX DQS2DQ should be record separately.
-// Here, we record (2) and (3).  DDR800 1:4 skip recording DQS2DQ.
-U16 u2DQS2DQ_Pre_Cal[CHANNEL_NUM][RANK_MAX][2/*DIV_Mode*/] = {0};
+
+U16 u2DQS2DQ_Pre_Cal[CHANNEL_NUM][RANK_MAX][2] = {0};
 #endif
 
 static void TXScanRange_PI(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T calType, U16 *pu2Begin, U16 *pu2End)
@@ -7764,15 +7467,12 @@ static void TXScanRange_PI(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T ca
         u1UI2PI = 5;
 
 
-    // find smallest DQS delay
+
     for (u1ByteIdx = 0; u1ByteIdx < DQS_BYTE_NUMBER; u1ByteIdx++)
     {
-        ucdq_ui_large_bak[u1ByteIdx] = (u4RegValue_TXDLY >> (u1ByteIdx << 2)) & 0x7;// MCK
-        ucdq_ui_small_bak[u1ByteIdx] = (u4RegValue_dly >> (u1ByteIdx << 2)) & 0x7;// UI
-        //wrlevel_dqs_final_delay[p->rank][u1ByteIdx]  ==> PI
+        ucdq_ui_large_bak[u1ByteIdx] = (u4RegValue_TXDLY >> (u1ByteIdx << 2)) & 0x7;
+        ucdq_ui_small_bak[u1ByteIdx] = (u4RegValue_dly >> (u1ByteIdx << 2)) & 0x7;
 
-        //LP4 : Virtual Delay = 256 * MCK + 32*UI + PI;
-        //LP3 : Virtual Delay = 128 * MCK + 32*UI + PI;
         u2TempVirtualDelay = (((ucdq_ui_large_bak[u1ByteIdx] << u1MCK2UI) + ucdq_ui_small_bak[u1ByteIdx]) << u1UI2PI) + wrlevel_dqs_final_delay[p->rank][u1ByteIdx];
 
         if (u2TempVirtualDelay < u2SmallestVirtualDelay)
@@ -7809,17 +7509,17 @@ static void TXScanRange_PI(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T ca
     #if TX_K_DQM_WITH_WDBI
     if (calType == TX_DQ_DQS_MOVE_DQM_ONLY)
     {
-        // DBI on, calibration range -1MCK
+
         u2DQDelayBegin -= (1 << (u1MCK2UI + 5));
     }
     #endif
-    /* Scan range: 1MCK */
+
     u2DQDelayEnd = u2DQDelayBegin + ((1 << u1MCK2UI) << u1UI2PI);
 
     *pu2Begin = u2DQDelayBegin;
     *pu2End = u2DQDelayEnd;
 
-    #if 0//TX_TDQS2DQ_PRE_CAL
+    #if 0
     mcSHOW_DBG_MSG(("TXScanRange_PI %d~%d\n", u2DQDelayBegin, u2DQDelayEnd));
     #endif
 }
@@ -7834,13 +7534,13 @@ static void TXScanRange_Vref(DRAMC_CTX_T *p, U8 u1VrefScanEnable, U16* pu2Range,
     #if (SUPPORT_SAVE_TIME_FOR_CALIBRATION && BYPASS_VREF_CAL)
         if (p->femmc_Ready == 1)
         {
-            // if fast K, use TX Vref that saved.
+
             u2VrefBegin = p->pSavetimeData->u1TxWindowPerbitVref_Save[p->channel][p->rank];
             u2VrefEnd = u2VrefBegin + 1;
         }
     #endif
     }
-    else //LPDDR3, the for loop will only excute u2VrefLevel=TX_VREF_RANGE_END/2.
+    else
     {
         u2VrefBegin = 0;
         u2VrefEnd = 0;
@@ -7914,14 +7614,14 @@ static U16 TxChooseVref(DRAMC_CTX_T *p, PASS_WIN_DATA_BY_VREF_T pVrefInfo[], U8 
     //if((u1VrefPassBegin_Final !=LP4_TX_VREF_BOUNDARY_NOT_READY) && (u1VrefPassEnd_Final!=LP4_TX_VREF_BOUNDARY_NOT_READY))
     if (u1MaxVerfPassNum > 0)
     {
-        // vref pass window found
+
         u2FinalVref = (u1VrefPassBegin_Final + u1VrefPassEnd_Final) >> 1;
         mcSHOW_DBG_MSG(("[TxChooseVref] Window > %d, Vref (%d~%d), Final Vref %d\n", LP4_TX_VREF_PASS_CONDITION, u1VrefPassBegin_Final, u1VrefPassEnd_Final, u2FinalVref));
     }
     else
     #endif
     {
-        // not vref found
+
         for (u1VrefIdx = 0; u1VrefIdx < u1VrefNum; u1VrefIdx++)
         {
             if ((pVrefInfo[u1VrefIdx].u1WorseBitWinSize_byVref > u1WinSizeOfWorseBit) ||
@@ -7949,7 +7649,7 @@ static void DramcTXSetVref(DRAMC_CTX_T *p, U8 u1VrefRange, U8 u1VrefValue)
         u1TempOPValue = ((u1VrefValue & 0x3f) | (u1VrefRange << 6));
 
     u1MR14Value[p->channel][p->rank][p->dram_fsp] = u1TempOPValue;
-    //For TX VREF of different byte
+
 
     DramcModeRegWriteByRank(p, p->rank, 14, u1TempOPValue);
 
@@ -7987,17 +7687,17 @@ void TXUpdateTXTracking(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T calTy
 {
      if (calType == TX_DQ_DQS_MOVE_DQ_ONLY || calType == TX_DQ_DQS_MOVE_DQM_ONLY)
      {
-         //make a copy to dramc reg for TX DQ tracking used
+
          if (calType == TX_DQ_DQS_MOVE_DQ_ONLY)
          {
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_PI),
                             P_Fld(ucdq_pi[0], SHURK_PI_RK0_ARPI_DQ_B0) | P_Fld(ucdq_pi[1], SHURK_PI_RK0_ARPI_DQ_B1));
 
-            // Source DQ
+
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_DQS2DQ_CAL1),
                                                     P_Fld(ucdq_pi[1], SHURK_DQS2DQ_CAL1_BOOT_ORIG_UI_RK0_DQ1) |
                                                     P_Fld(ucdq_pi[0], SHURK_DQS2DQ_CAL1_BOOT_ORIG_UI_RK0_DQ0));
-            // Target DQ
+
              vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_DQS2DQ_CAL2),
                                                      P_Fld(ucdq_pi[1], SHURK_DQS2DQ_CAL2_BOOT_TARG_UI_RK0_DQ1) |
                                                      P_Fld(ucdq_pi[0], SHURK_DQS2DQ_CAL2_BOOT_TARG_UI_RK0_DQ0));
@@ -8008,7 +7708,7 @@ void TXUpdateTXTracking(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T calTy
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_PI),
                             P_Fld(ucdqm_pi[0], SHURK_PI_RK0_ARPI_DQM_B0) | P_Fld(ucdqm_pi[1], SHURK_PI_RK0_ARPI_DQM_B1));
 
-            // Target DQM
+
              vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_DQS2DQ_CAL5),
                                                  P_Fld(ucdqm_pi[1], SHURK_DQS2DQ_CAL5_BOOT_TARG_UI_RK0_DQM1) |
                                                  P_Fld(ucdqm_pi[0], SHURK_DQS2DQ_CAL5_BOOT_TARG_UI_RK0_DQM0));
@@ -8016,8 +7716,7 @@ void TXUpdateTXTracking(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T calTy
      }
 
 
-#if 0// for LP3 , TX tracking will be disable, don't need to set DQ delay in DramC.
-     ///TODO: check LP3 byte mapping of dramC
+#if 0
      vIO32WriteFldMulti(DRAMC_REG_SHURK0_PI + (CHANNEL_A << POS_BANK_NUM), \
                               P_Fld(ucdq_final_pi[0], SHURK0_PI_RK0_ARPI_DQ_B0) | P_Fld(ucdq_final_pi[1], SHURK0_PI_RK0_ARPI_DQ_B1));
 
@@ -8026,7 +7725,7 @@ void TXUpdateTXTracking(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T calTy
 #endif
 
 }
-#endif //End ENABLE_TX_TRACKING
+#endif
 
 #if !BYPASS_CALIBRATION
 static
@@ -8041,7 +7740,7 @@ void TXSetDelayReg_DQ(DRAMC_CTX_T *p, U8 u1UpdateRegUI, U8 ucdq_ui_large[], U8 u
                                      P_Fld(ucdq_oen_ui_large[0], SHURK_SELPH_DQ0_TXDLY_OEN_DQ0) |
                                      P_Fld(ucdq_oen_ui_large[1], SHURK_SELPH_DQ0_TXDLY_OEN_DQ1));
 
-        // DLY_DQ[2:0]
+
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_SELPH_DQ2), \
                                      P_Fld(ucdq_ui_small[0], SHURK_SELPH_DQ2_DLY_DQ0) |
                                      P_Fld(ucdq_ui_small[1], SHURK_SELPH_DQ2_DLY_DQ1) |
@@ -8067,7 +7766,7 @@ void TXSetDelayReg_DQM(DRAMC_CTX_T *p, U8 u1UpdateRegUI, U8 ucdqm_ui_large[], U8
                                      P_Fld(ucdqm_oen_ui_large[0], SHURK_SELPH_DQ1_TXDLY_OEN_DQM0) |
                                      P_Fld(ucdqm_oen_ui_large[1], SHURK_SELPH_DQ1_TXDLY_OEN_DQM1));
 
-         // DLY_DQM[2:0]
+
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_SELPH_DQ3),
                                      P_Fld(ucdqm_ui_small[0], SHURK_SELPH_DQ3_DLY_DQM0) |
                                      P_Fld(ucdqm_ui_small[1], SHURK_SELPH_DQ3_DLY_DQM1) |
@@ -8102,13 +7801,13 @@ static void Tx_Auto_K_Init(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T ca
     if (calType == TX_DQ_DQS_MOVE_DQ_DQM)
     {
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1),
-                                     P_Fld(0x1, TX_ATK_SET1_TX_ATK_DQ_PI_EN) |    //enable TX DQ auto K
-                                     P_Fld(0x1, TX_ATK_SET1_TX_ATK_DQM_PI_EN));   //enable TX DQM auto K
+                                     P_Fld(0x1, TX_ATK_SET1_TX_ATK_DQ_PI_EN) |
+                                     P_Fld(0x1, TX_ATK_SET1_TX_ATK_DQM_PI_EN));
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET0),
-                                     P_Fld(ucdq_pi, TX_ATK_SET0_TX_ATK_DQ_B0_PI_INIT) |    //Set begin position of DQ B0
-                                     P_Fld(ucdq_pi, TX_ATK_SET0_TX_ATK_DQ_B1_PI_INIT) |    //Set begin position of DQ B1
-                                     P_Fld(ucdq_pi, TX_ATK_SET0_TX_ATK_DQM_B0_PI_INIT) |   //Set begin position of DQM B0
-                                     P_Fld(ucdq_pi, TX_ATK_SET0_TX_ATK_DQM_B1_PI_INIT));   //Set begin position of DQM B1
+                                     P_Fld(ucdq_pi, TX_ATK_SET0_TX_ATK_DQ_B0_PI_INIT) |
+                                     P_Fld(ucdq_pi, TX_ATK_SET0_TX_ATK_DQ_B1_PI_INIT) |
+                                     P_Fld(ucdq_pi, TX_ATK_SET0_TX_ATK_DQM_B0_PI_INIT) |
+                                     P_Fld(ucdq_pi, TX_ATK_SET0_TX_ATK_DQM_B1_PI_INIT));
     }
     else if (calType == TX_DQ_DQS_MOVE_DQM_ONLY)
     {
@@ -8125,18 +7824,18 @@ static void Tx_Auto_K_Init(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION_TYTE_T ca
                                      P_Fld(ucdq_pi, TX_ATK_SET0_TX_ATK_DQ_B1_PI_INIT));
     }
 
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL1), 0, MISC_CTRL1_R_DMARPIDQ_SW); //Switch PI SW mode to HW mode (control by DRAMC not APHY)
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL1), 0, MISC_CTRL1_R_DMARPIDQ_SW);
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1),
-            P_Fld(u1PI_Len, TX_ATK_SET1_TX_ATK_PI_LEN) |    //enable TX auto k len
-            P_Fld(pi_thrd, TX_ATK_SET1_TX_ATK_PASS_PI_THRD));  //Set threshold of PI pass window
-#if (fcFOR_CHIP_ID == fcIPM) //Fix at Mar_gaux
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1), early_break, TX_ATK_SET1_TX_ATK_EARLY_BREAK); //Enable early break
+            P_Fld(u1PI_Len, TX_ATK_SET1_TX_ATK_PI_LEN) |
+            P_Fld(pi_thrd, TX_ATK_SET1_TX_ATK_PASS_PI_THRD));
+#if (fcFOR_CHIP_ID == fcIPM)
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1), early_break, TX_ATK_SET1_TX_ATK_EARLY_BREAK);
 #endif
 
     {
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHU_TX_SET0),
                 P_Fld(0x3, SHU_TX_SET0_TXOEN_AUTOSET_OFFSET) |
-                P_Fld(0x1, SHU_TX_SET0_TXOEN_AUTOSET_EN));   //Enable OE auto adjust
+                P_Fld(0x1, SHU_TX_SET0_TXOEN_AUTOSET_EN));
     }
 
 #if TX_AUTO_K_DEBUG_ENABLE
@@ -8173,11 +7872,11 @@ static void Tx_Auto_K_complete_check(DRAMC_CTX_T *p)
 
 static void Tx_Auto_K_Clear(DRAMC_CTX_T *p)
 {
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1), 0x0, TX_ATK_SET1_TX_ATK_TRIG); //Disable Tx auto K
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1), 0x0, TX_ATK_SET1_TX_ATK_TRIG);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_TX_SET0), 0x0, SHU_TX_SET0_TXOEN_AUTOSET_EN);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL1), 0x1, MISC_CTRL1_R_DMARPIDQ_SW);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1), 0x0, TX_ATK_SET1_TX_ATK_DBG_EN);
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1), 0x1, TX_ATK_SET1_TX_ATK_CLR); //Clear state machine
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1), 0x1, TX_ATK_SET1_TX_ATK_CLR);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1), 0x0, TX_ATK_SET1_TX_ATK_CLR);
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1),
                                  P_Fld(0x0, TX_ATK_SET1_TX_ATK_PI_LEN) |
@@ -8192,7 +7891,7 @@ static void Tx_Auto_K_Clear(DRAMC_CTX_T *p)
 static void Tx_Auto_K_DQM_Workaround(DRAMC_CTX_T *p)
 {
     //U32 u4DQM_MCK, u4DQM_UI, u4DQM_PI_B0, u4DQM_PI_B1;
-    //Set RK1 DQM DLY to RK0
+
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_SHURK_SELPH_DQ1), u4DQM_MCK_RK1_backup);
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_SHURK_SELPH_DQ3), u4DQM_UI_RK1_backup);
     vIO32Write4B(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_DQ0), u4DQM_PI_RK1_backup[0]);
@@ -8201,7 +7900,7 @@ static void Tx_Auto_K_DQM_Workaround(DRAMC_CTX_T *p)
 static void Tx_Auto_K_DQ_Workaround(DRAMC_CTX_T *p)
 {
     //U32 u4DQ_MCK, u4DQ_UI, u4DQ_PI_B0, u4DQ_PI_B1;
-    //Set RK1 DQM DLY to RK0
+
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_SHURK_SELPH_DQ0), u4DQ_MCK_RK1_backup);
     vIO32Write4B(DRAMC_REG_ADDR(DRAMC_REG_SHURK_SELPH_DQ2), u4DQ_UI_RK1_backup);
     vIO32Write4B(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_DQ0), u4DQ_PI_RK1_backup[0]);
@@ -8269,7 +7968,7 @@ void vSwitchWriteDBISettings(DRAMC_CTX_T *p, U8 u1OnOff)
     S8 u1TXShiftMCK;
 
     u1TXShiftMCK = (u1OnOff)? -1: 1;
-    DramcWriteShiftMCKForWriteDBI(p, u1TXShiftMCK); //Tx DQ/DQM -1 MCK for write DBI ON
+    DramcWriteShiftMCKForWriteDBI(p, u1TXShiftMCK);
 
     SetDramModeRegForWriteDBIOnOff(p, p->dram_fsp, u1OnOff);
     DramcWriteDBIOnOff(p, u1OnOff);
@@ -8295,7 +7994,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
     U16 uiDelay, u2DQDelayBegin, u2DQDelayEnd, u2DQDelayStep = 1;
 
     U8 ucdq_pi, ucdq_ui_small, ucdq_ui_large, ucdq_oen_ui_small, ucdq_oen_ui_large;
-    U8 ucdq_ui_small_reg_value, u1UpdateRegUI;  // for UI and TXDLY change check, if different , set reg.
+    U8 ucdq_ui_small_reg_value, u1UpdateRegUI;
 
     U8 ucdq_reg_pi[DQS_BYTE_NUMBER], ucdq_reg_ui_large[DQS_BYTE_NUMBER], ucdq_reg_ui_small[DQS_BYTE_NUMBER];
     U8 ucdq_reg_oen_ui_large[DQS_BYTE_NUMBER], ucdq_reg_oen_ui_small[DQS_BYTE_NUMBER];
@@ -8303,8 +8002,8 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
     U8 ucdq_reg_dqm_pi[DQS_BYTE_NUMBER] = {0}, ucdq_reg_dqm_ui_large[DQS_BYTE_NUMBER] = {0}, ucdq_reg_dqm_ui_small[DQS_BYTE_NUMBER] = {0};
     U8 ucdq_reg_dqm_oen_ui_large[DQS_BYTE_NUMBER] = {0}, ucdq_reg_dqm_oen_ui_small[DQS_BYTE_NUMBER] = {0};
 
-    #if 1//TX_DQM_CALC_MAX_MIN_CENTER
-    U16 u2DQM_Delay;  // LP4 only
+    #if 1
+    U16 u2DQM_Delay;
     U16 u2Center_min[DQS_BYTE_NUMBER] = {0}, u2Center_max[DQS_BYTE_NUMBER] = {0};
     #endif
     U8 u1EnableDelayCell = 0;
@@ -8381,15 +8080,15 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
     TXScanRange_PI(p, calType, &u2DQDelayBegin, &u2DQDelayEnd);
     TXScanRange_Vref(p, u1VrefScanEnable, &u2FinalRange, &u2VrefBegin, &u2VrefEnd, &u2VrefStep);
 
-    //default set FAIL
+
     vSetCalibrationResult(p, DRAM_CALIBRATION_TX_PERBIT, DRAM_FAIL);
 
     if (isAutoK)
     {
     #if TX_AUTO_K_SUPPORT
-    //CKEFixOnOff(p, p->rank, CKE_FIXON, TO_ONE_CHANNEL); //Let CLK always on
+    //CKEFixOnOff(p, p->rank, CKE_FIXON, TO_ONE_CHANNEL);
 
-    //Set base address of TX MCK and UI
+
     u1UpdateRegUI = 1;
     uiDelay = u2DQDelayBegin;
     u1PI_Len = 3;
@@ -8430,7 +8129,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 
         #if TX_AUTO_K_WORKAROUND
         if ((calType == TX_DQ_DQS_MOVE_DQ_ONLY) && (u1backup_Rank == 1))
-            Tx_Auto_K_DQM_Workaround(p); //Set best DLY value of RK1 DQM to RK0 DQM
+            Tx_Auto_K_DQM_Workaround(p);
         #endif
     }
     if (calType == TX_DQ_DQS_MOVE_DQM_ONLY || calType == TX_DQ_DQS_MOVE_DQ_DQM)
@@ -8441,7 +8140,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 
         #if TX_AUTO_K_WORKAROUND
         if ((calType == TX_DQ_DQS_MOVE_DQM_ONLY) && (u1backup_Rank == 1))
-            Tx_Auto_K_DQ_Workaround(p); //Set best DLY value of RK1 DQ to RK0 DQ
+            Tx_Auto_K_DQ_Workaround(p);
         #endif
     }
 
@@ -8450,7 +8149,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
         p->rank = 1;
     #endif
 
-    //Tx_Auto_K_Init(p, calType, ucdq_pi, u1PI_Len); //u1PI_Len = 1 means that PI len is 64 PI
+
     #endif
     }
     else
@@ -8495,14 +8194,14 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
     #endif
     {
 #if ENABLE_K_WITH_WORST_SI_UI_SHIFT
-        DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);//UI_SHIFT + LEN1
+        DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);
 #else
         DramcEngine2Init(p, p->test2_1, p->test2_2, TEST_XTALK_PATTERN, 0, TE_NO_UI_SHIFT);
 #endif
 
         for (u2VrefLevel = u2VrefBegin; u2VrefLevel <= u2VrefEnd; u2VrefLevel += u2VrefStep)
         {
-            // SET tx Vref (DQ) here, LP3 no need to set this.
+
             if (u1VrefScanEnable)
             {
                 #if (!REDUCE_LOG_FOR_PRELOADER)
@@ -8523,7 +8222,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
                 mcSHOW_DBG_MSG(("\n\tTX Vref Scan disable\n"));
             }
 
-            // initialize parameters
+
             uiFinishCount = 0;
             u2TempWinSum = 0;
             ucdq_ui_small_reg_value = 0xff;
@@ -8539,20 +8238,18 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
             if (isAutoK)
             {
             #if TX_AUTO_K_SUPPORT
-            Tx_Auto_K_Init(p, calType, ucdq_pi, u1PI_Len); //u1PI_Len = 1 means that PI len is 64 PI
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1), 0x1, TX_ATK_SET1_TX_ATK_TRIG); //TX Auto K start
+            Tx_Auto_K_Init(p, calType, ucdq_pi, u1PI_Len);
+            vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_ATK_SET1), 0x1, TX_ATK_SET1_TX_ATK_TRIG);
             #endif
             }
             else
             {
-            //Move DQ delay ,  1 PI = tCK/64, total 128 PI, 1UI = 32 PI
-            //For data rate 3200, max tDQS2DQ is 2.56UI (82 PI)
-            //For data rate 4266, max tDQS2DQ is 3.41UI (109 PI)
+
             for (uiDelay = u2DQDelayBegin; uiDelay < u2DQDelayEnd; uiDelay += u2DQDelayStep)
             {
                 TxWinTransferDelayToUIPI(p, uiDelay, 0, &ucdq_ui_large, &ucdq_ui_small, &ucdq_pi, &ucdq_oen_ui_large, &ucdq_oen_ui_small);
 
-                // Check if TX UI changed, if not change , don't need to set reg again
+
                 if (ucdq_ui_small_reg_value != ucdq_ui_small)
                 {
                     u1UpdateRegUI = 1;
@@ -8592,21 +8289,16 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 
                 u4err_value = 0;
 #if ENABLE_K_WITH_WORST_SI_UI_SHIFT
-                //DramcEngine2SetPat(p, p->test_pattern, 0, 0, TE_UI_SHIFT);
+
                 u4err_value = DramcEngine2Run(p, TE_OP_WRITE_READ_CHECK, p->test_pattern);
 #else
-                //audio + xtalk pattern
+
                 DramcEngine2SetPat(p, TEST_AUDIO_PATTERN, 0, 0, TE_NO_UI_SHIFT);
                 u4err_value = DramcEngine2Run(p, TE_OP_WRITE_READ_CHECK, TEST_AUDIO_PATTERN);
                 DramcEngine2SetPat(p, TEST_XTALK_PATTERN, 0, 1, TE_NO_UI_SHIFT);
                 u4err_value |= DramcEngine2Run(p, TE_OP_WRITE_READ_CHECK, TEST_XTALK_PATTERN);
 #endif
-                //audio + xtalk pattern
-                //u4err_value = 0;
-                //DramcEngine2SetPat(p, TEST_AUDIO_PATTERN, 0, 0);
-                //u4err_value = DramcEngine2Run(p, TE_OP_WRITE_READ_CHECK, TEST_AUDIO_PATTERN);
-                //DramcEngine2SetPat(p, TEST_XTALK_PATTERN, 0, 1);
-                //u4err_value |= DramcEngine2Run(p, TE_OP_WRITE_READ_CHECK, TEST_XTALK_PATTERN);
+
 
                 if (u1VrefScanEnable == 0 && (calType != TX_DQ_DQS_MOVE_DQM_ONLY))
                 {
@@ -8621,7 +8313,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
                     #endif
                 }
 
-                // check fail bit ,0 ok ,others fail
+
                 for (u1BitIdx = 0; u1BitIdx < p->data_width; u1BitIdx++)
                 {
                     u4fail_bit = u4err_value & ((U32)1 << u1BitIdx);
@@ -8648,7 +8340,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
 
                     if (WinPerBit[u1BitIdx].first_pass == PASS_RANGE_NA)
                     {
-                        if (u4fail_bit == 0) //compare correct: pass
+                        if (u4fail_bit == 0)
                         {
                             WinPerBit[u1BitIdx].first_pass = uiDelay;
 
@@ -8673,7 +8365,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
                     }
                     else if (WinPerBit[u1BitIdx].last_pass == PASS_RANGE_NA)
                     {
-                        if (u4fail_bit != 0) //compare error : fail
+                        if (u4fail_bit != 0)
                         {
                             WinPerBit[u1BitIdx].last_pass = uiDelay - u2DQDelayStep;
                         }
@@ -8696,17 +8388,17 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
                                         (WinPerBit[u1BitIdx].last_pass - WinPerBit[u1BitIdx].first_pass), (VrefWinPerBit[u1BitIdx].last_pass - VrefWinPerBit[u1BitIdx].first_pass)));
                                 }
 
-                                //if window size bigger than TX_PASS_WIN_CRITERIA, consider as real pass window. If not, don't update finish counte and won't do early break;
+
                                 if (((WinPerBit[u1BitIdx].last_pass - WinPerBit[u1BitIdx].first_pass) > TX_PASS_WIN_CRITERIA)
-                                    ||((u2DQDelayStep>=16) && (WinPerBit[u1BitIdx].first_pass!=PASS_RANGE_NA))) //DDR400 stepsize is too big, can't find last pass.
+                                    ||((u2DQDelayStep>=16) && (WinPerBit[u1BitIdx].first_pass!=PASS_RANGE_NA)))
                                     uiFinishCount |= (1 << u1BitIdx);
 
-                                //update bigger window size
+
                                 VrefWinPerBit[u1BitIdx].first_pass = WinPerBit[u1BitIdx].first_pass;
                                 VrefWinPerBit[u1BitIdx].last_pass = WinPerBit[u1BitIdx].last_pass;
                             }
 
-                            //reset tmp window
+
                             WinPerBit[u1BitIdx].first_pass = PASS_RANGE_NA;
                             WinPerBit[u1BitIdx].last_pass = PASS_RANGE_NA;
                         }
@@ -8721,7 +8413,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
                     }
                 }
 
-                //if all bits widnow found and all bits turns to fail again, early break;
+
                 if (uiFinishCount == 0xffff)
                 {
                     vSetCalibrationResult(p, DRAM_CALIBRATION_TX_PERBIT, DRAM_OK);
@@ -8732,7 +8424,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
                     mcSHOW_DBG_MSG3(("TX calibration finding left boundary early break. PI DQ delay=0x%2x\n", uiDelay));
                     #endif
                     #endif
-                    break;  //early break
+                    break;
                 }
             }
             }
@@ -8747,9 +8439,6 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
             #endif
             }
 
-            // (1) calculate per bit window size
-            // (2) find out min win of all DQ bits
-            // (3) calculate perbit window center
             u1min_winsize = 0xff;
             u1min_bit = 0xff;
             for (u1BitIdx = 0; u1BitIdx < p->data_width; u1BitIdx++)
@@ -8795,7 +8484,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
                     u1min_winsize = VrefWinPerBit[u1BitIdx].win_size;
                 }
 
-                u2TempWinSum += VrefWinPerBit[u1BitIdx].win_size;  //Sum of CA Windows for vref selection
+                u2TempWinSum += VrefWinPerBit[u1BitIdx].win_size;
 
                 #if VENDER_JV_LOG
                 if (calType == TX_DQ_DQS_MOVE_DQ_ONLY)
@@ -8805,7 +8494,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
                 #endif
 
 
-                // calculate per bit window position and print
+
                 VrefWinPerBit[u1BitIdx].win_center = (VrefWinPerBit[u1BitIdx].first_pass + VrefWinPerBit[u1BitIdx].last_pass) >> 1;
                 #if PINMUX_AUTO_TEST_PER_BIT_TX
                 gFinalTXPerbitFirstPass[p->channel][u1BitIdx] = VrefWinPerBit[u1BitIdx].first_pass;
@@ -8864,13 +8553,12 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
         }
         #endif
 
-        if (u1VrefScanEnable == 0)// ..if time domain (not vref scan) , calculate window center of all bits.
+        if (u1VrefScanEnable == 0)
         {
-            // Calculate the center of DQ pass window
-            // Record center sum of each byte
+
             for (u1ByteIdx = 0; u1ByteIdx < DQS_BYTE_NUMBER; u1ByteIdx++)
             {
-                #if 1//TX_DQM_CALC_MAX_MIN_CENTER
+                #if 1
                 u2Center_min[u1ByteIdx] = 0xffff;
                 u2Center_max[u1ByteIdx] = 0;
                 #endif
@@ -8897,7 +8585,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
         }
     }
 
-    // SET tx Vref (DQ) = u2FinalVref, LP3 no need to set this.
+
     if (u1VrefScanEnable)
     {
         #if SUPPORT_SAVE_TIME_FOR_CALIBRATION && BYPASS_VREF_CAL
@@ -8916,7 +8604,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
     }
 
 #ifdef FOR_HQA_TEST_USED
-    // LP4 DQ time domain || LP3 DQ_DQM time domain
+
     if (calType == TX_DQ_DQS_MOVE_DQ_ONLY)
     {
         gFinalTXPerbitWin_min_max[p->channel][p->rank] = u1min_winsize;
@@ -8930,8 +8618,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
     }
 #endif
 
-    // LP3 only use "TX_DQ_DQS_MOVE_DQ_DQM" scan
-    // first freq 800(LP4-1600) doesn't support jitter meter(data < 1T), therefore, don't use delay cell
+
     if ((calType == TX_DQ_DQS_MOVE_DQ_ONLY) && (p->frequency >= 1333) && (p->u2DelayCellTimex100 != 0))
     {
         u1EnableDelayCell = 1;
@@ -8939,23 +8626,22 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
         //mcDUMP_REG_MSG(("[TX_PER_BIT_DELAY_CELL] DelayCellTimex100 =%d/100 ps\n", p->u2DelayCellTimex100));
     }
 
-    //Calculate the center of DQ pass window
-    //average the center delay
+
     for (u1ByteIdx = 0; u1ByteIdx < DQS_BYTE_NUMBER; u1ByteIdx++)
     {
         mcSHOW_DBG_MSG((" == TX Byte %d ==\n", u1ByteIdx));
         //mcDUMP_REG_MSG((" == TX Byte %d ==\n", u1ByteIdx));
-        u2DQM_Delay = ((u2Center_min[u1ByteIdx] + u2Center_max[u1ByteIdx]) >> 1); //(max +min)/2
+        u2DQM_Delay = ((u2Center_min[u1ByteIdx] + u2Center_max[u1ByteIdx]) >> 1);
 
         if (u1EnableDelayCell == 0)
         {
             uiDelay = u2DQM_Delay;
         }
-        else// if(calType == TX_DQ_DQS_MOVE_DQ_ONLY)
+        else
         {
-            uiDelay = u2Center_min[u1ByteIdx];  // for DQ PI delay , will adjust with delay cell
+            uiDelay = u2Center_min[u1ByteIdx];
 
-            // calculate delay cell perbit
+
             for (u1BitIdx = 0; u1BitIdx < DQS_BIT_NUMBER; u1BitIdx++)
             {
                 u1BitTemp = u1ByteIdx * DQS_BIT_NUMBER + u1BitIdx;
@@ -9057,7 +8743,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
     RegLogEnable = 1;
 #endif
 
-        /* p->rank = RANK_0, save to Reg Rank0 and Rank1, p->rank = RANK_1, save to Reg Rank1 */
+
         for (u1RankIdx = p->rank; u1RankIdx < RANK_MAX; u1RankIdx++)
         {
             vSetRank(p, u1RankIdx);
@@ -9107,7 +8793,7 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
                                  P_Fld(ucdq_reg_pi[0], TX_ATK_SET0_TX_ATK_DQ_B0_PI_INIT) |
                                  P_Fld(ucdq_reg_pi[1], TX_ATK_SET0_TX_ATK_DQ_B1_PI_INIT) |
                                  P_Fld(ucdq_reg_dqm_pi[0], TX_ATK_SET0_TX_ATK_DQM_B0_PI_INIT) |
-                                 P_Fld(ucdq_reg_dqm_pi[1], TX_ATK_SET0_TX_ATK_DQM_B1_PI_INIT)); //If TX auto-k is enable, TX_PI will be switch to PI_INIT
+                                 P_Fld(ucdq_reg_dqm_pi[1], TX_ATK_SET0_TX_ATK_DQM_B1_PI_INIT));
             #endif
         #endif
         }
@@ -9133,13 +8819,13 @@ DRAM_STATUS_T DramcTxWindowPerbitCal(DRAMC_CTX_T *p, DRAM_TX_PER_BIT_CALIBRATION
     mcSHOW_DBG_MSG4(("[TxWindowPerbitCal] Done\n\n"));
 
     #if 0
-    vIO32WriteFldAlign_All(DRAMC_REG_ADDR(DRAMC_REG_PADCTL4), 1, PADCTL4_CKEFIXON);  // test only
+    vIO32WriteFldAlign_All(DRAMC_REG_ADDR(DRAMC_REG_PADCTL4), 1, PADCTL4_CKEFIXON);
     #endif
 
     return DRAM_OK;
 }
 
-#endif //SIMULATION_TX_PERBIT
+#endif
 
 #if ENABLE_EYESCAN_GRAPH
 void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
@@ -9154,7 +8840,7 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
     U32 uiFinishCount;
     U16 u2TempWinSum, u2tx_window_sum=0;
     U32 u4err_value, u4fail_bit;
-    #if 1//TX_DQM_CALC_MAX_MIN_CENTER
+    #if 1
     U16 u2Center_min[DQS_BYTE_NUMBER],u2Center_max[DQS_BYTE_NUMBER];
     #endif
 
@@ -9183,15 +8869,15 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
 
     //if (gTX_EYE_Scan_only_higheset_freq_flag==1 && p->frequency != u2DFSGetHighestFreq(p)) return;
 
-    //backup register value
+
     DramcBackupRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress)/sizeof(U32));
 
     backup_u1MR14Value = u1MR14Value[p->channel][p->rank][p->dram_fsp];
 
-    if (gFinalTXVrefDQ[p->channel][p->rank] ==0) //Set final TX Vref as default value
+    if (gFinalTXVrefDQ[p->channel][p->rank] ==0)
         gFinalTXVrefDQ[p->channel][p->rank] = u1MR14Value[p->channel][p->rank][p->dram_fsp];
 
-    //set initial values
+
     for(u1vrefidx=0; u1vrefidx<=VREF_VOLTAGE_TABLE_NUM_LP5-1;u1vrefidx++)
     {
         for (u1BitIdx = 0; u1BitIdx < p->data_width; u1BitIdx++)
@@ -9255,7 +8941,7 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
     mcSHOW_DBG_MSG3(("\nTX Vref %d -> %d, step: %d\n", u2VrefBegin, u2VrefEnd, u2VrefStep));
 
 #if ENABLE_K_WITH_WORST_SI_UI_SHIFT
-    DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);//UI_SHIFT + LEN1
+    DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);
 #else
     DramcEngine2Init(p, p->test2_1, p->test2_2, TEST_XTALK_PATTERN, 0, TE_NO_UI_SHIFT);
 #endif
@@ -9263,12 +8949,11 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
 
     for(u2VrefLevel = u2VrefBegin; u2VrefLevel <= u2VrefEnd; u2VrefLevel += u2VrefStep)
     {
-        //set vref
-//fra        u1MR14Value[p->channel][p->rank][p->dram_fsp] = (u2VrefLevel | (u2VrefRange<<6));
+
         DramcTXSetVref(p, u2VrefRange, u2VrefLevel);
         mcSHOW_DBG_MSG3(("\n\n Set TX VrefRange %d, VrefLevel=%d\n", u2VrefRange, u2VrefLevel));
 
-        // initialize parameters
+
         uiFinishCount = 0;
         u2TempWinSum =0;
 
@@ -9328,20 +9013,13 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
             //DramcEngine2SetPat(p, p->test_pattern, 0, 0, TE_UI_SHIFT);
             u4err_value = DramcEngine2Run(p, TE_OP_WRITE_READ_CHECK, p->test_pattern);
 #else
-            //audio + xtalk pattern
+
             DramcEngine2SetPat(p, TEST_AUDIO_PATTERN, 0, 0, TE_NO_UI_SHIFT);
             u4err_value = DramcEngine2Run(p, TE_OP_WRITE_READ_CHECK, TEST_AUDIO_PATTERN);
             DramcEngine2SetPat(p, TEST_XTALK_PATTERN, 0, 1, TE_NO_UI_SHIFT);
             u4err_value |= DramcEngine2Run(p, TE_OP_WRITE_READ_CHECK, TEST_XTALK_PATTERN);
 #endif
-            // audio + xtalk pattern
-            //u4err_value=0;
-            //DramcEngine2SetPat(p,TEST_AUDIO_PATTERN, 0, 0, TE_NO_UI_SHIFT);
-            //u4err_value = DramcEngine2Run(p, TE_OP_WRITE_READ_CHECK, TEST_AUDIO_PATTERN);
-            //DramcEngine2SetPat(p,TEST_XTALK_PATTERN, 0, 1, TE_NO_UI_SHIFT);
-            //u4err_value |= DramcEngine2Run(p, TE_OP_WRITE_READ_CHECK, TEST_XTALK_PATTERN);
 
-            // check fail bit ,0 ok ,others fail
             for (u1BitIdx = 0; u1BitIdx < p->data_width; u1BitIdx++)
             {
                 u4fail_bit = u4err_value&((U32)1<<u1BitIdx);
@@ -9353,7 +9031,7 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
 
                 if(WinPerBit[u1BitIdx].first_pass== PASS_RANGE_NA)
                 {
-                    if(u4fail_bit==0) //compare correct: pass
+                    if(u4fail_bit==0)
                     {
                         WinPerBit[u1BitIdx].first_pass = uiDelay;
                         u1pass_in_this_vref_flag[u1BitIdx] = 1;
@@ -9361,7 +9039,7 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
                 }
                 else if(WinPerBit[u1BitIdx].last_pass == PASS_RANGE_NA)
                 {
-                    if(u4fail_bit !=0) //compare error : fail
+                    if(u4fail_bit !=0)
                     {
                         WinPerBit[u1BitIdx].last_pass  = (uiDelay-1);
                     }
@@ -9374,11 +9052,11 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
                     {
                         if((WinPerBit[u1BitIdx].last_pass -WinPerBit[u1BitIdx].first_pass) >= (VrefWinPerBit[u1BitIdx].last_pass -VrefWinPerBit[u1BitIdx].first_pass))
                         {
-                            //if window size bigger than 7, consider as real pass window. If not, don't update finish counte and won't do early break;
+
                             if((WinPerBit[u1BitIdx].last_pass -WinPerBit[u1BitIdx].first_pass) >7)
                                 uiFinishCount |= (1<<u1BitIdx);
 
-                            //update bigger window size
+
                             VrefWinPerBit[u1BitIdx].first_pass = WinPerBit[u1BitIdx].first_pass;
                             VrefWinPerBit[u1BitIdx].last_pass = WinPerBit[u1BitIdx].last_pass;
                         }
@@ -9390,18 +9068,17 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
                                 gEyeScan_Min[(u2VrefLevel+u2VrefRange*30)/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]] = WinPerBit[u1BitIdx].first_pass;
                                 gEyeScan_Max[(u2VrefLevel+u2VrefRange*30)/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]] = WinPerBit[u1BitIdx].last_pass;
 #else
-//fra                                gEyeScan_Min[(u2VrefLevel+u2VrefRange*30)/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]] = WinPerBit[u1BitIdx].first_pass + tx_pi_delay[u1BitIdx/8]-32;
-//fra                                gEyeScan_Max[(u2VrefLevel+u2VrefRange*30)/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]] = WinPerBit[u1BitIdx].last_pass + tx_pi_delay[u1BitIdx/8]-32;
+
                                 gEyeScan_Min[(u2VrefLevel+u2VrefRange*30)/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]] = (S8) WinPerBit[u1BitIdx].first_pass;
                                 gEyeScan_Max[(u2VrefLevel+u2VrefRange*30)/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]] = (S8) WinPerBit[u1BitIdx].last_pass;
                                 mcSHOW_DBG_MSG3(("VrefRange %d, VrefLevel=%d, u1BitIdx=%d, index=%d (%d, %d)==\n",u2VrefRange,u2VrefLevel, u1BitIdx, EyeScan_index[u1BitIdx], gEyeScan_Min[u2VrefLevel/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]], gEyeScan_Max[u2VrefLevel/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx][EyeScan_index[u1BitIdx]]));
-                                gEyeScan_MinMax_store_delay[u1BitIdx/8] =  tx_pi_delay[u1BitIdx/8]-32; /* save this information for HQA pass/fail judgement used */
+                                gEyeScan_MinMax_store_delay[u1BitIdx/8] =  tx_pi_delay[u1BitIdx/8]-32;
 #endif
                                 EyeScan_index[u1BitIdx]=EyeScan_index[u1BitIdx]+1;
                             }
 
 
-                        //reset tmp window
+
                         WinPerBit[u1BitIdx].first_pass = PASS_RANGE_NA;
                         WinPerBit[u1BitIdx].last_pass = PASS_RANGE_NA;
                     }
@@ -9421,7 +9098,7 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
                 min_winsize = VrefWinPerBit[u1BitIdx].win_size;
             }
 
-            u2TempWinSum += VrefWinPerBit[u1BitIdx].win_size;  //Sum of CA Windows for vref selection
+            u2TempWinSum += VrefWinPerBit[u1BitIdx].win_size;
 
             gEyeScan_WinSize[(u2VrefLevel+u2VrefRange*30)/EYESCAN_GRAPH_CATX_VREF_STEP][u1BitIdx] = VrefWinPerBit[u1BitIdx].win_size;
 
@@ -9441,11 +9118,10 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
             u2FinalRange = u2VrefRange;
             u2FinalVref = u2VrefLevel;
 
-            //Calculate the center of DQ pass window
-            // Record center sum of each byte
+
             for (u1ByteIdx=0; u1ByteIdx<DQS_BYTE_NUMBER; u1ByteIdx++)
             {
-        #if 1//TX_DQM_CALC_MAX_MIN_CENTER
+        #if 1
                 u2Center_min[u1ByteIdx] = 0xffff;
                 u2Center_max[u1ByteIdx] = 0;
         #endif
@@ -9476,17 +9152,16 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
 
         for (u1BitIdx = 0; u1BitIdx < p->data_width; u1BitIdx++)
         {
-            if (u1pass_in_this_vref_flag[u1BitIdx]) gEyeScan_ContinueVrefHeight[u1BitIdx]+=EYESCAN_GRAPH_CATX_VREF_STEP;  //count pass number of continue vref
+            if (u1pass_in_this_vref_flag[u1BitIdx]) gEyeScan_ContinueVrefHeight[u1BitIdx]+=EYESCAN_GRAPH_CATX_VREF_STEP;
         }
     }
 
     DramcEngine2End(p);
 
-    //Calculate the center of DQ pass window
-    //average the center delay
+
     for (u1ByteIdx=0; u1ByteIdx<DQS_BYTE_NUMBER; u1ByteIdx++)
     {
-        uiDelay = ((u2Center_min[u1ByteIdx] + u2Center_max[u1ByteIdx])>>1); //(max +min)/2
+        uiDelay = ((u2Center_min[u1ByteIdx] + u2Center_max[u1ByteIdx])>>1);
 
 #if VENDER_JV_LOG || defined(RELEASE)
         gEyeScan_CaliDelay[u1ByteIdx] = uiDelay;
@@ -9496,10 +9171,10 @@ void Dramc_K_TX_EyeScan_Log(DRAMC_CTX_T *p)
     }
 
 
-    //restore to orignal value
+
     DramcRestoreRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress)/sizeof(U32));
 
-    //restore Vref
+
     {
        u2VrefRange = backup_u1MR14Value>>6;
        u2VrefLevel = backup_u1MR14Value & 0x3f;
@@ -9544,7 +9219,7 @@ void DramcTxOECalibration(DRAMC_CTX_T *p)
     mcSHOW_DBG_MSG(("\n[DramC_TX_OE_Calibration] DMA\n"));
 #endif
 
-    //default set FAIL
+
     vSetCalibrationResult(p, DRAM_CALIBRATION_TX_OE, DRAM_FAIL);
 
 #if (SUPPORT_SAVE_TIME_FOR_CALIBRATION)
@@ -9573,11 +9248,11 @@ void DramcTxOECalibration(DRAMC_CTX_T *p)
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_SELPH_DQ1), \
                                     P_Fld(ucdq_oen_ui_large[0], SHURK_SELPH_DQ1_TXDLY_OEN_DQM0) | \
                                     P_Fld(ucdq_oen_ui_large[1], SHURK_SELPH_DQ1_TXDLY_OEN_DQM1));
-    // DLY_DQ[2:0]
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_SELPH_DQ2), \
                                     P_Fld(ucdq_oen_ui_small[0], SHURK_SELPH_DQ2_DLY_OEN_DQ0) | \
                                     P_Fld(ucdq_oen_ui_small[1], SHURK_SELPH_DQ2_DLY_OEN_DQ1) );
-     // DLY_DQM[2:0]
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHURK_SELPH_DQ3), \
                                      P_Fld(ucdq_oen_ui_small[0], SHURK_SELPH_DQ3_DLY_OEN_DQM0) | \
                                      P_Fld(ucdq_oen_ui_small[1], SHURK_SELPH_DQ3_DLY_OEN_DQM1));
@@ -9589,10 +9264,7 @@ void DramcTxOECalibration(DRAMC_CTX_T *p)
 	((_reg & Fld2Msk32(_fld)) >> Fld_shft(_fld))
 static void OECKCKE_Control(DRAMC_CTX_T *p, U32 option)
 {
-	/* In case to prevent illegal command during JM/8Phase cal and Duty cal,
-	 * OE for CK/CKE/CA/CS will be disabled. But CK/CKE has timing requirement.
-	 * Adding this flow to fix it
-	 */
+
 	static U32 u4CA_CMD2_backup = 0;
 	static U32 u4SHU_CA_CMD13_backup = 0;
     static U32 u4CS_CTRL_backup = 0;
@@ -9623,24 +9295,23 @@ static void OECKCKE_Control(DRAMC_CTX_T *p, U32 option)
 		}
 		u4backup_done = 1;
 
-		/* CS/CKE/CA */
-        /* CKE need disable before CS */
+
 		if (!isLP4_DSC)
 		{
-            /* CKE/CA */
+
 		    vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD2), P_Fld( 0, CA_CMD2_RG_TX_ARCS_OE_TIE_SEL_CA) \
 															  | P_Fld( 1, CA_CMD2_RG_TX_ARCS_OE_TIE_EN_CA) \
 															  | P_Fld( 0, CA_CMD2_RG_TX_ARCA_OE_TIE_SEL_CA) \
 															  | P_Fld( 0xff, CA_CMD2_RG_TX_ARCA_OE_TIE_EN_CA));
-            /*  CS  */
+
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_TX_ARCS_CTRL), P_Fld( 0, CA_TX_ARCS_CTRL_RG_TX_ARCS_OE_TIE_SEL_C0));
 		}
 		else
 		{
-            /* CKE */
+
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_TX_CKE_CTRL), P_Fld( 0, B1_TX_CKE_CTRL_RG_TX_ARCKE_OE_TIE_SEL_B1) \
                                     | P_Fld( 1, B1_TX_CKE_CTRL_RG_TX_ARCKE_OE_TIE_EN_B1));
-            /* CS/CA */
+
 		    vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2), P_Fld( 0, B1_DQ2_RG_TX_ARDQM_OE_TIE_SEL_B1) \
 															  | P_Fld( 1, B1_DQ2_RG_TX_ARDQM_OE_TIE_EN_B1) \
 															  | P_Fld( 0, B1_DQ2_RG_TX_ARDQ_OE_TIE_SEL_B1) \
@@ -9650,21 +9321,21 @@ static void OECKCKE_Control(DRAMC_CTX_T *p, U32 option)
 		mcDELAY_US(1);
 		if (!isLP4_DSC)
 		{
-			/* CLK */
+
 			vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD2), P_Fld( 0, CA_CMD2_RG_TX_ARCLK_OE_TIE_SEL_CA) \
 																  | P_Fld( 1, CA_CMD2_RG_TX_ARCLK_OE_TIE_EN_CA));
 
-			/* CLKB */
+
 			vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD13), P_Fld( 0, SHU_CA_CMD13_RG_TX_ARCLKB_OE_TIE_SEL_CA) \
 																  | P_Fld( 1, SHU_CA_CMD13_RG_TX_ARCLKB_OE_TIE_EN_CA));
 		}
 		else
 		{
-			/* CLK */
+
 			vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2), P_Fld( 0, B1_DQ2_RG_TX_ARDQS_OE_TIE_SEL_B1) \
 																  | P_Fld( 1, B1_DQ2_RG_TX_ARDQS_OE_TIE_EN_B1));
 
-			/* CLKB */
+
 			vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ13), P_Fld( 0, SHU_B1_DQ13_RG_TX_ARDQSB_OE_TIE_SEL_B1) \
 																  | P_Fld( 1, SHU_B1_DQ13_RG_TX_ARDQSB_OE_TIE_EN_B1));
 		}
@@ -9695,7 +9366,7 @@ static void OECKCKE_Control(DRAMC_CTX_T *p, U32 option)
             u4CSOE_TieSel = fld_val(u4CS_CTRL_backup, CA_TX_ARCS_CTRL_RG_TX_ARCS_OE_TIE_SEL_C0);
             u4CSOE_TieEn = fld_val(u4CA_CMD2_backup, CA_CMD2_RG_TX_ARCA_OE_TIE_EN_CA);
             u4CKEOE_TieSel = fld_val(u4CA_CMD2_backup, CA_CMD2_RG_TX_ARCS_OE_TIE_SEL_CA);
-            /* CKE OE controlled by CS OE */
+
             u4CKEOE_TieEN = u4CSOE_TieEn;
         }
         else
@@ -9708,33 +9379,32 @@ static void OECKCKE_Control(DRAMC_CTX_T *p, U32 option)
 
 		if (!isLP4_DSC)
 		{
-			/* CLK */
+
 			vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD2), P_Fld( u4CKOE_TieSel, CA_CMD2_RG_TX_ARCLK_OE_TIE_SEL_CA) \
 																  | P_Fld( u4CKOE_TieEn, CA_CMD2_RG_TX_ARCLK_OE_TIE_EN_CA));
 
-			/* CLKB */
+
 			vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD13), P_Fld( u4CKBOE_TieSel, SHU_CA_CMD13_RG_TX_ARCLKB_OE_TIE_SEL_CA ) \
 																  | P_Fld( u4CKBOE_TieEn, SHU_CA_CMD13_RG_TX_ARCLKB_OE_TIE_EN_CA));
 		}
 		else
 		{
-			/* CLK */
+
 			vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2), P_Fld( u4CKOE_TieSel, B1_DQ2_RG_TX_ARDQS_OE_TIE_SEL_B1) \
 																  | P_Fld( u4CKOE_TieEn, B1_DQ2_RG_TX_ARDQS_OE_TIE_EN_B1));
 
-			/* CLKB */
+
 			vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ13), P_Fld( u4CKBOE_TieSel, SHU_B1_DQ13_RG_TX_ARDQSB_OE_TIE_SEL_B1 ) \
 																  | P_Fld( u4CKBOE_TieEn, SHU_B1_DQ13_RG_TX_ARDQSB_OE_TIE_EN_B1));
 		}
 
 		mcDELAY_US(1);
-		/* CS/CKE/CA */
-		/* CS need enable before CKE */
+
 		if (!isLP4_DSC)
 		{
-		/*  CS  */
+
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_TX_ARCS_CTRL), P_Fld( u4CSOE_TieSel, CA_TX_ARCS_CTRL_RG_TX_ARCS_OE_TIE_SEL_C0));
-		/*  CKE/CA  */
+
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD2), P_Fld( u4CKEOE_TieSel, CA_CMD2_RG_TX_ARCS_OE_TIE_SEL_CA) \
 																  | P_Fld( u4CSOE_TieEn, CA_CMD2_RG_TX_ARCS_OE_TIE_EN_CA) \
 																  | P_Fld( u4CAOE_TieSel, CA_CMD2_RG_TX_ARCA_OE_TIE_SEL_CA) \
@@ -9742,12 +9412,12 @@ static void OECKCKE_Control(DRAMC_CTX_T *p, U32 option)
 		}
 		else
 		{
-		/*  CS/CA  */
+
 			vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2), P_Fld( u4CSOE_TieSel, B1_DQ2_RG_TX_ARDQM_OE_TIE_SEL_B1) \
 																  | P_Fld( u4CSOE_TieEn, B1_DQ2_RG_TX_ARDQM_OE_TIE_EN_B1) \
 																  | P_Fld( u4CAOE_TieSel, B1_DQ2_RG_TX_ARDQ_OE_TIE_SEL_B1) \
 																  | P_Fld( u4CAOE_TieEn, B1_DQ2_RG_TX_ARDQ_OE_TIE_EN_B1));
-            /*  CKE  */
+
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_TX_CKE_CTRL), P_Fld( u4CKEOE_TieSel, B1_TX_CKE_CTRL_RG_TX_ARCKE_OE_TIE_SEL_B1) \
                               | P_Fld( u4CKEOE_TieEN, B1_TX_CKE_CTRL_RG_TX_ARCKE_OE_TIE_EN_B1));
 		}
@@ -9760,7 +9430,7 @@ static void OEDisable(DRAMC_CTX_T *p)
 {
     BOOL isLP4_DSC = (p->DRAMPinmux == PINMUX_DSC)?1:0;
 
-    //OE disable - start
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2), P_Fld( 0 , B0_DQ2_RG_TX_ARDQS_OE_TIE_SEL_B0 ) \
                                                           | P_Fld( 1       , B0_DQ2_RG_TX_ARDQS_OE_TIE_EN_B0  ) \
                                                           | P_Fld( 0 , B0_DQ2_RG_TX_ARWCK_OE_TIE_SEL_B0 ) \
@@ -9809,11 +9479,11 @@ static void OEDisable(DRAMC_CTX_T *p)
                                                               | P_Fld( 1       , SHU_CA_CMD13_RG_TX_ARCLKB_OE_TIE_EN_CA   ));
     }
 
-    //OE disable - end
+
 }
 
 #ifdef FOR_HQA_TEST_USED
-// P_lm_r is 6nm, use same table with M_rg__x
+
 VCORE_DELAYCELL_T gVcoreDelayCellTable[49]={    {500000, 512},
                                                 {506250, 496},
                                                 {512500, 482},
@@ -9904,28 +9574,20 @@ static U16 GetVcoreDelayCellTimeFromTable(DRAMC_CTX_T *p)
 }
 #endif
 
-//-------------------------------------------------------------------------
-/** DramcJmeterCalib
- *  start MIOCK jitter meter.
- *  @param p                    Pointer of context created by DramcCtxCreate.
- *  @param *pJmtrInfo       DQSIEN signal high/low level transaction status
- *  @param u2JmDlyStep    Clk delay step w/ DQSIEN signal
- */
-//-------------------------------------------------------------------------
+
 #if ENABLE_8PHASE_CALIBRATION || defined(ENABLE_MIOCK_JMETER)
 static void DramcJmeterInit(DRAMC_CTX_T *p, U8 u1IsJmtrK)
 {
     OEDisable(p);
 
-    //DramcHWGatingOnOff(p, 0); // disable Gating tracking for DQS PI, Remove to vApplyConfigBeforeCalibration
+    //DramcHWGatingOnOff(p, 0);
     if(u1IsJmtrK != TRUE)
     {
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL), P_Fld(0x0, MISC_SHU_STBCAL_STBCALEN)
                                                            | P_Fld(0x0, MISC_SHU_STBCAL_STB_SELPHCALEN));
     }
 
-#if 0 // 8-Phase calib must to do before DLL init for test only
-    //@A60868, Reset PI code to avoid 8-phase offset
+#if 0
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DLL_ARPI0), 0, B0_DLL_ARPI0_RG_ARPI_RESETB_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DLL_ARPI0), 0, B1_DLL_ARPI0_RG_ARPI_RESETB_B1);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_CA_DLL_ARPI0), 0, CA_DLL_ARPI0_RG_ARPI_RESETB_CA);
@@ -9933,23 +9595,18 @@ static void DramcJmeterInit(DRAMC_CTX_T *p, U8 u1IsJmtrK)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DLL_ARPI0), 1, B0_DLL_ARPI0_RG_ARPI_RESETB_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DLL_ARPI0), 1, B1_DLL_ARPI0_RG_ARPI_RESETB_B1);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_CA_DLL_ARPI0), 1, CA_DLL_ARPI0_RG_ARPI_RESETB_CA);
-    //@A60868, End
 
-    // @A60868, DQSIEN PI offset clear to 0
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ6), 0, SHU_B0_DQ6_RG_ARPI_OFFSET_DQSIEN_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ6), 0, SHU_B1_DQ6_RG_ARPI_OFFSET_DQSIEN_B1);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD6), 0, SHU_CA_CMD6_RG_ARPI_OFFSET_DQSIEN_CA);
 #endif
 
-    // @A60868 for *RANK_SEL_SER_EN* = 0 to DA_RX_ARDQ_RANK_SEL_TXD_*[0]
-    //              for *RANK_SEL_SER_EN* = 1 to DA_RX_ARDQ_RANK_SEL_TXD_*[7:0]
-    // The *RANK_SEL_SER_EN* = 0 is old mode.
-    // The *RANK_SEL_SER_EN* = 1 is new mode when background no any access.
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ11), 0, SHU_B0_DQ11_RG_RX_ARDQ_RANK_SEL_SER_EN_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ11), 0, SHU_B1_DQ11_RG_RX_ARDQ_RANK_SEL_SER_EN_B1);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD11), 0, SHU_CA_CMD11_RG_RX_ARCA_RANK_SEL_SER_EN_CA);
 
-    //@Darren, DLL off to stable fix middle transion from high to low or low to high at high vcore
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_DLL1), P_Fld(0x0, SHU_CA_DLL1_RG_ARDLL_PHDET_EN_CA)
                                         | P_Fld(0x0, SHU_CA_DLL1_RG_ARDLL_PHDET_OUT_SEL_CA));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DLL1), P_Fld(0x0, SHU_B0_DLL1_RG_ARDLL_PHDET_EN_B0)
@@ -9957,25 +9614,19 @@ static void DramcJmeterInit(DRAMC_CTX_T *p, U8 u1IsJmtrK)
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DLL1), P_Fld(0x0, SHU_B1_DLL1_RG_ARDLL_PHDET_EN_B1)
                                         | P_Fld(0x0, SHU_B1_DLL1_RG_ARDLL_PHDET_OUT_SEL_B1));
 
-    //MCK4X CG
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL1), 0, MISC_CTRL1_R_DMDQSIENCG_EN);
-    //@A60868, DQS PI mode for JMTR
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DLL_ARPI2), 0, SHU_B0_DLL_ARPI2_RG_ARPI_CG_DQSIEN_B0); // DQS PI mode
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DLL_ARPI2), 0, SHU_B1_DLL_ARPI2_RG_ARPI_CG_DQSIEN_B1); // DQS PI mode
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), 1, MISC_DUTYSCAN1_RX_EYE_SCAN_CG_EN); // enable toggle cnt
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL4), 0, MISC_CTRL4_R_OPT2_CG_DQSIEN); // Remove to Golden settings for Jmeter clock
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL), 0, MISC_STBCAL_DQSIENCG_NORMAL_EN); // @Darren need confirm for DQS*_ERR_CNT, APHY PICG freerun
-    //@A60868, End
 
-    // Bypass DQS glitch-free mode
-    // RG_RX_*RDQ_EYE_DLY_DQS_BYPASS_B**
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL1), 0, MISC_CTRL1_R_DMDQSIENCG_EN);
+
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DLL_ARPI2), 0, SHU_B0_DLL_ARPI2_RG_ARPI_CG_DQSIEN_B0);
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DLL_ARPI2), 0, SHU_B1_DLL_ARPI2_RG_ARPI_CG_DQSIEN_B1);
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), 1, MISC_DUTYSCAN1_RX_EYE_SCAN_CG_EN);
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL4), 0, MISC_CTRL4_R_OPT2_CG_DQSIEN);
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL), 0, MISC_STBCAL_DQSIENCG_NORMAL_EN);
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ6), 1, B0_DQ6_RG_RX_ARDQ_EYE_DLY_DQS_BYPASS_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ6), 1, B1_DQ6_RG_RX_ARDQ_EYE_DLY_DQS_BYPASS_B1);
 
-    //Enable DQ eye scan
-    //RG_*_RX_EYE_SCAN_EN
-    //RG_*_RX_VREF_EN
-    //RG_*_RX_SMT_EN
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), 1, MISC_DUTYSCAN1_RX_EYE_SCAN_EN);
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), P_Fld(0x1, MISC_DUTYSCAN1_EYESCAN_DQS_SYNC_EN)
                                         | P_Fld(0x1, MISC_DUTYSCAN1_EYESCAN_NEW_DQ_SYNC_EN)
@@ -9986,26 +9637,25 @@ static void DramcJmeterInit(DRAMC_CTX_T *p, U8 u1IsJmtrK)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ5), 1, B1_DQ5_RG_RX_ARDQ_VREF_EN_B1);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ3), 1, B0_DQ3_RG_RX_ARDQ_SMT_EN_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ3), 1, B1_DQ3_RG_RX_ARDQ_SMT_EN_B1);
-    //@A60868, JMTR en
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_PHY2), 1, B0_PHY2_RG_RX_ARDQS_JM_EN_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_PHY2), 1, B1_PHY2_RG_RX_ARDQS_JM_EN_B1);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_JMETER), 1, MISC_JMETER_JMTR_EN);
-    //@A60868, End
 
-    //@A60868, JM_SEL = 1, JM_SEL = 0 for LPBK
+
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_PHY2), 1, B0_PHY2_RG_RX_ARDQS_JM_SEL_B0);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_PHY2), 1, B1_PHY2_RG_RX_ARDQS_JM_SEL_B1);
-    //@A60868, End
 
-    //Enable MIOCK jitter meter mode ( RG_RX_MIOCK_JIT_EN=1)
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), 1, MISC_DUTYSCAN1_RX_MIOCK_JIT_EN);
 
-    //Disable DQ eye scan (b'1), for counter clear
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), 0, MISC_DUTYSCAN1_RX_EYE_SCAN_EN);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), 0, MISC_DUTYSCAN1_DQSERRCNT_DIS);
 
 #if MIOCK_JMETER_CNT_WA
-    //Fix problem of diff between sample_cnt and ones_cnt. Should be removed after IPMV2.1 (except 60892)
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), 0, MISC_DUTYSCAN1_EYESCAN_DQS_OPT);
 #endif
 
@@ -10023,25 +9673,25 @@ static void DramcJmeterCalib(DRAMC_CTX_T *p, JMETER_T *pJmtrInfo, U16 u2JmDlySte
 
     for (ucdqs_dly = u2Jm_dly_start; ucdqs_dly < u2Jm_dly_end; ucdqs_dly += u2Jm_dly_step)
     {
-        //@A60868, Set CLK delay (RG_*_RX_ARDQS_JM_DLY_B*)
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B0_PHY2), ucdqs_dly, B0_PHY2_RG_RX_ARDQS_JM_DLY_B0);
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_B1_PHY2), ucdqs_dly, B1_PHY2_RG_RX_ARDQS_JM_DLY_B1);
-        //@A60868, End
 
-        //Reset eye scan counters (reg_sw_rst): 1 to 0
+
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), 1, MISC_DUTYSCAN1_REG_SW_RST);
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), 0, MISC_DUTYSCAN1_REG_SW_RST);
 
-        //Enable DQ eye scan (b'1)
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), 1, MISC_DUTYSCAN1_RX_EYE_SCAN_EN);
 
-        //2ns/sample, here we delay 1ms about 500 samples
+
         mcDELAY_US(10);
 
-        //Disable DQ eye scan (b'1), for counter latch
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), 0, MISC_DUTYSCAN1_RX_EYE_SCAN_EN);
 
-        //Read the counter values from registers (toggle_cnt*, dqs_err_cnt*);
+
         u4sample_cnt = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTY_TOGGLE_CNT), MISC_DUTY_TOGGLE_CNT_TOGGLE_CNT);
         u4ones_cnt[0] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTY_DQS0_ERR_CNT), MISC_DUTY_DQS0_ERR_CNT_DQS0_ERR_CNT);
         //u4ones_cnt[1] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTY_DQS1_ERR_CNT), MISC_DUTY_DQS1_ERR_CNT_DQS1_ERR_CNT);
@@ -10053,7 +9703,7 @@ static void DramcJmeterCalib(DRAMC_CTX_T *p, JMETER_T *pJmtrInfo, U16 u2JmDlySte
         }
 #endif
 
-        //change to boolean value
+
         if (u4ones_cnt[0] < (u4sample_cnt / 2))
         {
             fgcurrent_value = 0;
@@ -10066,16 +9716,16 @@ static void DramcJmeterCalib(DRAMC_CTX_T *p, JMETER_T *pJmtrInfo, U16 u2JmDlySte
 
         if (ucsearch_state == 0xffff)
         {
-            //record initial value at the beginning
+
             fginitial_value = fgcurrent_value;
             ucsearch_state = 0;
         }
         else
         {
-            // check if change value
+
             if (fgcurrent_value != fginitial_value)
             {
-                // start of the period
+
                 fginitial_value = fgcurrent_value;
                 pJmtrInfo->JmtrInfo[ucsearch_state].u1JmDelay = ucdqs_dly;
                 pJmtrInfo->JmtrInfo[ucsearch_state].u1TransLevel = fgcurrent_value;
@@ -10083,27 +9733,16 @@ static void DramcJmeterCalib(DRAMC_CTX_T *p, JMETER_T *pJmtrInfo, U16 u2JmDlySte
                 ucsearch_state++;
                 pJmtrInfo->u1TransCnt = ucsearch_state;
                 if (ucsearch_state == CYCLE_1T)
-                    break; // 1T early break;
+                    break;
             }
         }
     }
 }
 #endif
 
-//-------------------------------------------------------------------------
-/** DramcMiockJmeter
- *  start MIOCK jitter meter.
- *  @param p                Pointer of context created by DramcCtxCreate.
- *  @param block_no         (U8): block 0 or 1.
- *  @retval status          (DRAM_STATUS_T): DRAM_OK or DRAM_FAIL
- */
-//-------------------------------------------------------------------------
 
 #ifdef ENABLE_MIOCK_JMETER
-/* "picoseconds per delay cell" depends on Vcore only (frequency doesn't matter)
- * 1. Retrieve current freq's vcore voltage using pmic API
- * 2. Perform delay cell time calculation (Bypass if shuffle vcore value is the same as before)
- */
+
 U16 GetVcoreDelayCellTime(DRAMC_CTX_T *p)
 {
 
@@ -10125,7 +9764,7 @@ void Get_RX_DelayCell(DRAMC_CTX_T *p)
     #if SUPPORT_SAVE_TIME_FOR_CALIBRATION
         if(p->femmc_Ready == 1)
         {
-            return;  //gHQALOG_RX_delay_cell_ps_075V is not used in fastk (Only needed in HQA report and eyescan log).
+            return;
         }
     #endif
 
@@ -10146,27 +9785,19 @@ void Get_RX_DelayCell(DRAMC_CTX_T *p)
                     break;
     }
 #else
-            // set vcore to RX used 0.75V
-            dramc_set_vcore_voltage(SEL_PREFIX_VMDDR);  //set vmddr voltage to vcore to K RX delay cell
+
+            dramc_set_vcore_voltage(SEL_PREFIX_VMDDR);
 #endif
 
             gHQALOG_RX_delay_cell_ps_075V = GetVcoreDelayCellTime(p);
 
-            // set vocre back
+
             vSetVcoreByFreq(p);
     }
 #endif
 }
 #endif
 
-//-------------------------------------------------------------------------
-/** Dramc8PhaseCal
- *  start 8-Phase Calibration.
- *  @param p                Pointer of context created by DramcCtxCreate.
- *  @param block_no         (U8): block 0 or 1.
- *  @retval status          (DRAM_STATUS_T): DRAM_OK or DRAM_FAIL
- */
-//-------------------------------------------------------------------------
 
 DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 {
@@ -10183,20 +9814,20 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
     U8 backup_rank, u1RankIdx, u18PhDlyBackup = 0;
     U8 u1loop_cnt = 0, u1early_break_cnt = 5;
 
-    // Jmeter Scan
+
     JMETER_T JmtrInfo;
     U8 u1JmtrPrintCnt = 0;
 
     U32 u4backup_broadcast= GetDramcBroadcast();
     DRAM_STATUS_T eDRAMStatus = DRAM_OK;
 
-#ifdef DUMP_INIT_RG_LOG_TO_DE //for FT dump 3733 dram_init.c
+#ifdef DUMP_INIT_RG_LOG_TO_DE
     return DRAM_OK;
 #endif
 
     u1DqsienPI = 0x0;
 
-    // error handling
+
     if (!p)
     {
         mcSHOW_ERR_MSG(("context NULL\n"));
@@ -10237,12 +9868,12 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
         (DRAMC_REG_ADDR(DDRPHY_REG_SHU_B1_DQ11)),
         (DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD11)),
         (DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL)),
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_RK_B0_DQSIEN_PI_DLY)), // need porting to Jmeter
-        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_RK_B0_DQSIEN_PI_DLY + DDRPHY_AO_RANK_OFFSET)), // need porting to Jmeter
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_RK_B0_DQSIEN_PI_DLY)),
+        (DRAMC_REG_ADDR(DDRPHY_REG_SHU_RK_B0_DQSIEN_PI_DLY + DDRPHY_AO_RANK_OFFSET)),
         (DRAMC_REG_ADDR(DDRPHY_REG_MISC_JMETER)),
-        //(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2)), // for gating on/off backup/restore
-        //(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFSCTL2)), // for gating on/off backup/restore
-        (DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL)), // for gating on/off backup/restore
+        //(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2)),
+        //(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFSCTL2)),
+        (DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL)),
 #if 0
         (DRAMC_REG_ADDR(DDRPHY_REG_B0_DLL_ARPI0)),
         (DRAMC_REG_ADDR(DDRPHY_REG_B1_DLL_ARPI0)),
@@ -10267,7 +9898,7 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
     memset(&JmtrInfo, 0, sizeof(JmtrInfo));
     DramcBroadcastOnOff(DRAMC_BROADCAST_OFF);
 
-    //backup register value
+
     DramcBackupRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress) / sizeof(U32));
 
     DramcJmeterInit(p, FALSE);
@@ -10302,13 +9933,12 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 
         mcSHOW_DBG_MSG2(("\n[Dramc8PhaseCal] 8-Phase SM_%d, 8PH_dly (%d~%d), DQSIEN PI = %d, 8PH_Dly = %d\n", u18Phase_SM, u18Ph_start, u18Ph_end, u1DqsienPI, u18PhDlyBackup));
 
-        //to see 1T(H,L) or 1T(L,H) from delaycell=0 to 127
-        //NOTE: Must set dual ranks for Rx path
+
         for (u1RankIdx = RANK_0; u1RankIdx < p->support_rank_num; u1RankIdx++)
         {
             vSetRank(p, u1RankIdx);
-            // SHU_RK_B0_DQSIEN_PI_DLY_DQSIEN_PI_B0[6] no use (ignore)
-            vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_RK_B0_DQSIEN_PI_DLY), u1DqsienPI, SHU_RK_B0_DQSIEN_PI_DLY_DQSIEN_PI_B0); // for rank*_B0
+
+            vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_RK_B0_DQSIEN_PI_DLY), u1DqsienPI, SHU_RK_B0_DQSIEN_PI_DLY_DQSIEN_PI_B0);
         }
         vSetRank(p, backup_rank);
 
@@ -10324,7 +9954,7 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 
             for (u1JmtrPrintCnt = 0; u1JmtrPrintCnt < JmtrInfo.u1TransCnt; u1JmtrPrintCnt++)
             {
-                if (JmtrInfo.JmtrInfo[u1JmtrPrintCnt].u1TransLevel == 1) // find the High Level
+                if (JmtrInfo.JmtrInfo[u1JmtrPrintCnt].u1TransLevel == 1)
                 {
                     ucdqs_dly = JmtrInfo.JmtrInfo[u1JmtrPrintCnt].u1JmDelay;
 
@@ -10332,24 +9962,24 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
                     {
                         u2R0 = ucdqs_dly;
                         mcSHOW_DBG_MSG2(("R0 (H) = %d\n", u2R0));
-                        break; // break ucdqs_dly for loop
+                        break;
                     }
                     else if (u18Phase_SM == DQS_8PH_DEGREE_180)
                     {
                         u2R180 = ucdqs_dly;
                         if (u2R180 > u2R0)
                         {
-                            u2R = u2R0 + ((u2R180 - u2R0) >> 2); // u2R180 >= u2R0 for (u1R180 - u1R0)/4 for 180 degree. /2 for 90 degree
+                            u2R = u2R0 + ((u2R180 - u2R0) >> 2);
                             mcSHOW_DBG_MSG2(("R = %d, R180 (H) = %d\n", u2R, u2R180));
-                            break; // break ucdqs_dly for loop
+                            break;
                         }
                     }
                     else if (u18Phase_SM == DQS_8PH_DEGREE_45)
                     {
                         u2P = ucdqs_dly;
-                        if (u2P > u2R0) // u2P ~= DQS_8PH_DEGREE_180
+                        if (u2P > u2R0)
                         {
-                            // Absolute to find min diff
+
                             if (u2R > u2P)
                                 s2Err_code = u2R - u2P;
                             else
@@ -10369,7 +9999,7 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
                             }
                             else if (s2Err_code >= s2Err_code_min)
                             {
-                                // check early break for u18Ph_dly for loop
+
                                 u1loop_cnt++;
                                 if (u1loop_cnt > u1early_break_cnt)
                                     u18Ph_dly_loop_break = 1;
@@ -10377,7 +10007,7 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
 
                             mcSHOW_DBG_MSG2(("diff (P-R) = %d, min = %d, early break count = %d, R45 (H) = %d\n", s2Err_code, s2Err_code_min, u1loop_cnt, u2P));
 
-                            break; // if (s2Err_code == s2Err_code_min) for next u18Ph_dly
+                            break;
                         }
                     }
                     else
@@ -10390,15 +10020,15 @@ DRAM_STATUS_T Dramc8PhaseCal(DRAMC_CTX_T *p)
                 }
             }
 
-            // Error handing when not find transaction
+
             if (JmtrInfo.u1TransCnt == u1JmtrPrintCnt)
             {
-                u18Ph_dly_final = u18PhDlyBackup; //rollback to init settings
+                u18Ph_dly_final = u18PhDlyBackup;
                 eDRAMStatus = DRAM_FAIL;
                 mcSHOW_ERR_MSG(("\n[Dramc8PhaseCal] 8-Phase SM_%d is fail (to Default) !!!\n", u18Phase_SM));
                 goto exit;
             } else if (u18Ph_dly_loop_break == 1)
-                break; // early break
+                break;
         }
     }
 
@@ -10410,7 +10040,7 @@ exit:
     vIO32WriteFldAlign_All(DDRPHY_REG_SHU_B1_DQ1, u18Ph_dly_final, SHU_B1_DQ1_RG_ARPI_MIDPI_8PH_DLY_B1);
     vIO32WriteFldAlign_All(DDRPHY_REG_SHU_CA_CMD1, u18Ph_dly_final, SHU_CA_CMD1_RG_ARPI_MIDPI_8PH_DLY_CA);
 
-    //restore to orignal value
+
     OECKCKE_Control(p, ENABLE);
     DramcRestoreRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress) / sizeof(U32));
 
@@ -10421,34 +10051,25 @@ exit:
 }
 
 #if SIMULATION_SW_IMPED
-/* Impedance have a total of 19 steps, but the HW value mapping to hardware is 0~15, 29~31
-* This function adjusts passed value u1ImpVal by adjust step count "u1AdjStepCnt"
-* After adjustment, if value is 1. Too large (val > 31) -> set to max 31
-*                               2. Too small (val < 0) -> set to min 0
-*                               3. Value is between 15 & 29, adjust accordingly ( 15 < value < 29 )
-* returns: Impedance value after adjustment
-*/
+
 #if 0
 static U32 SwImpedanceAdjust(U32 u4ImpVal, S8 s1StepCnt)
 {
     S32 S4ImpedanceTemp = (S32)u4ImpVal;
 
-   // Perform impedance value adjustment
+
     S4ImpedanceTemp += s1StepCnt;
-    /* After adjustment, if value is 1. Too large (val > 31) -> set to max 31
-     *                               2. Too small (val < 0) -> set to min 0
-     *                               3. Value is between 15 & 29, adjust accordingly ( 15 < value < 29 )
-     */
-    if ((S4ImpedanceTemp > 15) && (S4ImpedanceTemp < 29)) //Value is between 15 & 29 ( 15 < value < 29)
+
+    if ((S4ImpedanceTemp > 15) && (S4ImpedanceTemp < 29))
     {
         S4ImpedanceTemp = S4ImpedanceTemp - 16 + 29;
     }
 
-    if (S4ImpedanceTemp > 31) //Value after adjustment too large -> set to max 31
+    if (S4ImpedanceTemp > 31)
     {
         S4ImpedanceTemp = 31;
     }
-    else if (S4ImpedanceTemp < 0) //Value after adjustment too small -> set to min 0
+    else if (S4ImpedanceTemp < 0)
     {
         S4ImpedanceTemp = 0;
     }
@@ -10456,47 +10077,35 @@ static U32 SwImpedanceAdjust(U32 u4ImpVal, S8 s1StepCnt)
     return (U32)S4ImpedanceTemp;
 }
 #endif
-//-------------------------------------------------------------------------
-/** vImpCalVrefSel
- *  Set IMP_VREF_SEL for DRVP, DRVN, Run-time/Tracking
- *  (Refer to "IMPCAL Settings" document register "RG_RIMP_VREF_SEL" settings)
- *  @param p                Pointer of context created by DramcCtxCreate.
- *  @param  freq_region     (enum): pass freq_region (IMP_LOW_FREQ/IMP_HIGH_FREQ) for LP4X
- *  @param  u1ImpCalStage   (U8): During DRVP, DRVN, run-time/tracking stages
- *                                some vref_sel values are different
- */
-//-------------------------------------------------------------------------
-/* Definitions to make IMPCAL_VREF_SEL function more readable */
+
 #define IMPCAL_STAGE_DRVP     0
 #define IMPCAL_STAGE_DRVN     1
 #define IMPCAL_STAGE_ODTP     2
 #define IMPCAL_STAGE_ODTN     3
 #define IMPCAL_STAGE_TRACKING 4
 
-/* LP4X IMP_VREF_SEL w/o term ==== */
-#define IMP_TRACK_LP4X_LOWFREQ_VREF_SEL  0x37 // for <= DDR3733
-#define IMP_TRACK_LP4X_HIGHFREQ_VREF_SEL  0x3a // for > 3733 and Samsung NT-ODTN
-/* LPDDR5 IMP_VREF_SEL w/o term ==== */
-#define IMP_TRACK_LP5_LOWFREQ_VREF_SEL  0x38 // for <= DDR3733
-#define IMP_TRACK_LP5_HIGHFREQ_VREF_SEL  0x3a // for > 3733 and Samsung NT-ODTN
+
+#define IMP_TRACK_LP4X_LOWFREQ_VREF_SEL  0x37
+#define IMP_TRACK_LP4X_HIGHFREQ_VREF_SEL  0x3a
+
+#define IMP_TRACK_LP5_LOWFREQ_VREF_SEL  0x38
+#define IMP_TRACK_LP5_HIGHFREQ_VREF_SEL  0x3a
 
 static const U8 ImpLP4VrefSel[IMP_VREF_MAX][IMP_DRV_MAX] = {
-                  /* DRVP  DRVN  ODTP  ODTN */
-/* IMP_LOW_FREQ */  {0x37, 0x33, 0x00, 0x37},
-/* IMP_HIGH_FREQ */ {0x3a, 0x33, 0x00, 0x3a},
-/* IMP_NT_ODTN */   {0x2a, 0x2a, 0x00, 0x3a}
+
+    {0x37, 0x33, 0x00, 0x37},
+    {0x3a, 0x33, 0x00, 0x3a},
+    {0x2a, 0x2a, 0x00, 0x3a}
 };
 
 static const U8 ImpLP5VrefSel[IMP_VREF_MAX][IMP_DRV_MAX] = {
-                  /* DRVP  DRVN  ODTP  ODTN */
-/* IMP_LOW_FREQ */  {0x38, 0x33, 0x00, 0x38},
-/* IMP_HIGH_FREQ */ {0x3a, 0x33, 0x00, 0x3a},
-/* IMP_NT_ODTN */   {0x2a, 0x2a, 0x00, 0x3a}
+
+    {0x38, 0x33, 0x00, 0x38},
+    {0x3a, 0x33, 0x00, 0x3a},
+    {0x2a, 0x2a, 0x00, 0x3a}
 };
 
-/* Refer to "IMPCAL Settings" document register "RG_RIMP_VREF_SEL" settings */
-// @Maoauo: DRVP/ODTN for IMP tracking. But DRVN not support IMP tracking. (before La_fite)
-// DRVP/DRVN/ODTN for IMP tracking after Pe_trus
+
 static void vImpCalVrefSel(DRAMC_CTX_T *p, DRAMC_IMP_T efreq_region, U8 u1ImpCalStage)
 {
     U8 u1RegTmpValue = 0;
@@ -10542,13 +10151,13 @@ static void vImpCalVrefSel(DRAMC_CTX_T *p, DRAMC_IMP_T efreq_region, U8 u1ImpCal
             break;
     }
 
-    // dbg msg after vref_sel selection
+
     mcSHOW_DBG_MSG3(("[vImpCalVrefSel] IMP_VREF_SEL 0x%x, IMPCAL stage:%u, freq_region:%u\n",
                       u1RegTmpValue, u1ImpCalStage, efreq_region));
 
-    /* Set IMP_VREF_SEL register field's value */
+
     if (u1ImpCalStage == IMPCAL_STAGE_TRACKING) {
-        /* SEL_DVRP/ODTN shall diff by freq, value of them are equal */
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD12), u1RegTmpValue, SHU_CA_CMD12_RG_RIMP_VREF_SEL_DRVP);
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD12), u1RegTmpValue, SHU_CA_CMD12_RG_RIMP_VREF_SEL_ODTN);
     } else {
@@ -10567,16 +10176,16 @@ void DramcSwImpedanceSaveRegister(DRAMC_CTX_T *p, U8 ca_freq_option, U8 dq_freq_
 
     DramcBroadcastOnOff(DRAMC_BROADCAST_ON);
 
-    /* Save RIMP_VREF_SEL by shuffle. Will be broadcasted to ALL CH even if unused */
+
     vImpCalVrefSel(p, dq_freq_option, IMPCAL_STAGE_TRACKING);
 
-    //DQ
+
     vIO32WriteFldMulti((DDRPHY_REG_SHU_MISC_DRVING1 + save_to_where * SHU_GRP_DDRPHY_OFFSET), P_Fld(gDramcImpedanceResult[dq_freq_option][DRVP], SHU_MISC_DRVING1_DQDRVP2) | P_Fld(gDramcImpedanceResult[dq_freq_option][DRVN], SHU_MISC_DRVING1_DQDRVN2));
     vIO32WriteFldMulti((DDRPHY_REG_SHU_MISC_DRVING2 + save_to_where * SHU_GRP_DDRPHY_OFFSET), P_Fld(gDramcImpedanceResult[dq_freq_option][DRVP], SHU_MISC_DRVING2_DQDRVP1) | P_Fld(gDramcImpedanceResult[dq_freq_option][DRVN], SHU_MISC_DRVING2_DQDRVN1));
     vIO32WriteFldMulti((DDRPHY_REG_SHU_MISC_DRVING3 + save_to_where * SHU_GRP_DDRPHY_OFFSET), P_Fld(gDramcImpedanceResult[dq_freq_option][ODTP], SHU_MISC_DRVING3_DQODTP2) | P_Fld(gDramcImpedanceResult[dq_freq_option][ODTN], SHU_MISC_DRVING3_DQODTN2));
     vIO32WriteFldMulti((DDRPHY_REG_SHU_MISC_DRVING4 + save_to_where * SHU_GRP_DDRPHY_OFFSET), P_Fld(gDramcImpedanceResult[dq_freq_option][ODTP], SHU_MISC_DRVING4_DQODTP1) | P_Fld(gDramcImpedanceResult[dq_freq_option][ODTN], SHU_MISC_DRVING4_DQODTN1));
 
-    //DQS
+
     #if SUPPORT_HYNIX_RX_DQS_WEAK_PULL
     if (p->vendor_id == VENDOR_HYNIX)
     {  U32 temp_value[4];
@@ -10599,33 +10208,18 @@ void DramcSwImpedanceSaveRegister(DRAMC_CTX_T *p, U8 ca_freq_option, U8 dq_freq_
         vIO32WriteFldMulti((DDRPHY_REG_SHU_MISC_DRVING3 + save_to_where * SHU_GRP_DDRPHY_OFFSET), P_Fld(gDramcImpedanceResult[dq_freq_option][ODTP], SHU_MISC_DRVING3_DQSODTP) | P_Fld(gDramcImpedanceResult[dq_freq_option][ODTN], SHU_MISC_DRVING3_DQSODTN));
     }
 
-    //CMD & CLK
+
     vIO32WriteFldMulti((DDRPHY_REG_SHU_MISC_DRVING2 + save_to_where * SHU_GRP_DDRPHY_OFFSET), P_Fld(gDramcImpedanceResult[ca_freq_option][DRVP], SHU_MISC_DRVING2_CMDDRVP2) | P_Fld(gDramcImpedanceResult[ca_freq_option][DRVN], SHU_MISC_DRVING2_CMDDRVN2));
     vIO32WriteFldMulti((DDRPHY_REG_SHU_MISC_DRVING2 + save_to_where * SHU_GRP_DDRPHY_OFFSET), P_Fld(gDramcImpedanceResult[ca_freq_option][DRVP], SHU_MISC_DRVING2_CMDDRVP1) | P_Fld(gDramcImpedanceResult[ca_freq_option][DRVN], SHU_MISC_DRVING2_CMDDRVN1));
     vIO32WriteFldMulti((DDRPHY_REG_SHU_MISC_DRVING4 + save_to_where * SHU_GRP_DDRPHY_OFFSET), P_Fld(gDramcImpedanceResult[ca_freq_option][ODTP], SHU_MISC_DRVING4_CMDODTP2) | P_Fld(gDramcImpedanceResult[ca_freq_option][ODTN], SHU_MISC_DRVING4_CMDODTN2));
     vIO32WriteFldMulti((DDRPHY_REG_SHU_MISC_DRVING4 + save_to_where * SHU_GRP_DDRPHY_OFFSET), P_Fld(gDramcImpedanceResult[ca_freq_option][ODTP], SHU_MISC_DRVING4_CMDODTP1) | P_Fld(gDramcImpedanceResult[ca_freq_option][ODTN], SHU_MISC_DRVING4_CMDODTN1));
 
-    //RG_TX_*RCKE_DRVP/RG_TX_*RCKE_DRVN doesn't set, so set 0xA first
-    //@Maoauo confirm, RG no function
-    //vIO32WriteFldAlign((DDRPHY_SHU_CA_CMD11 + save_to_where * SHU_GRP_DDRPHY_OFFSET), gDramcImpedanceResult[ca_freq_option][DRVP], SHU_CA_CMD11_RG_TX_ARCKE_DRVP);
-    //vIO32WriteFldAlign((DDRPHY_SHU_CA_CMD11 + save_to_where * SHU_GRP_DDRPHY_OFFSET), gDramcImpedanceResult[ca_freq_option][DRVN], SHU_CA_CMD11_RG_TX_ARCKE_DRVN);
 
-    //CKE
-    // CKE is full swing.
-    // LP4/LP4X set DRVP/DRVN as LP3's default value
-    // DRVP=8 -> 0xA for 868 by Alucary Chen
-    // DRVN=9 -> 0xA for 868 by Alucary Chen
-    //DRVP[4:0] = RG_TX_ARCMD_PU_PRE<1:0>, RG_TX_ARCLK_DRVN_PRE<2:0> for La_fite only
-    //@Darren-vIO32WriteFldAlign((DDRPHY_REG_SHU_CA_CMD3 + save_to_where * SHU_GRP_DDRPHY_OFFSET), (8>>3)&0x3, SHU_CA_CMD3_RG_TX_ARCMD_PU_PRE); //Darren need confirm
-    //@Darren-vIO32WriteFldAlign((DDRPHY_REG_SHU_CA_CMD0 + save_to_where * SHU_GRP_DDRPHY_OFFSET), 8&0x7, SHU_CA_CMD0_RG_TX_ARCLK_DRVN_PRE); //Darren need confirm
-    //DRVN[4:0] = RG_ARCMD_REV<12:8>
-    //@Darren-vIO32WriteFldAlign_All((DDRPHY_SHU_CA_DLL2 + save_to_where * SHU_GRP_DDRPHY_OFFSET), 9, SHU_CA_DLL2_RG_TX_ARCKE_DRVN_B0);
-    #if (fcFOR_CHIP_ID == fcA60868) // for 868 CS and CKE control together
+    #if (fcFOR_CHIP_ID == fcA60868)
     vIO32WriteFldAlign((DDRPHY_REG_MISC_SHU_DRVING8 + save_to_where * SHU_GRP_DDRPHY_OFFSET), 0xA, MISC_SHU_DRVING8_CS_DRVP);
     vIO32WriteFldAlign((DDRPHY_REG_MISC_SHU_DRVING8 + save_to_where * SHU_GRP_DDRPHY_OFFSET), 0xA, MISC_SHU_DRVING8_CS_DRVN);
     #elif (fcFOR_CHIP_ID == fc8195)
-    // @Darren, confirm with ACD Alucary,
-    // MISC_SHU_DRVING8_CS_DRVP & MISC_SHU_DRVING8_CS_DRVN -> DA_TX_ARCKE_DRVP_C0[4:0]   & DA_TX_ARCKE_DRVN_C0[4:0]
+
     vIO32WriteFldAlign((DDRPHY_REG_MISC_SHU_DRVING8 + save_to_where * SHU_GRP_DDRPHY_OFFSET), 0xF, MISC_SHU_DRVING8_CS_DRVP);
     vIO32WriteFldAlign((DDRPHY_REG_MISC_SHU_DRVING8 + save_to_where * SHU_GRP_DDRPHY_OFFSET), 0x14, MISC_SHU_DRVING8_CS_DRVN);
     #endif
@@ -10642,29 +10236,28 @@ static void Dramc_Hw_ImpedanceCal(DRAMC_CTX_T *p, DRAMC_IMP_T freq_region)
     vAutoRefreshSwitch(p, ENABLE);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SHU_CONF0), 0, SHU_CONF0_PBREFEN);
 
-    for (u1DrvType = DRVP; u1DrvType < IMP_DRV_MAX; u1DrvType++) // Calibration sequence for DRVP, DRVN and ODTN
+    for (u1DrvType = DRVP; u1DrvType < IMP_DRV_MAX; u1DrvType++)
     {
-        if (u1DrvType == ODTP) // no use, skip ODTP
+        if (u1DrvType == ODTP)
             continue;
 
-        /* Set IMP_VREF_SEL value for DRVP/DRVN and ODTN */
+
         vImpCalVrefSel(p, freq_region, u1DrvType);
     }
 
     ImpedanceTracking_DisImpHw_Setting(p, DISABLE);
-    //IMPCALCNT should be bigger than 0x4 (set as minimum value to save calibration time)
-    //clock_period *IMPCAL_CHKCYCLE* 16 should be bigger than 200ns.
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_MISC_IMPCAL1), P_Fld(4, SHU_MISC_IMPCAL1_IMPCALCNT) | P_Fld(1, SHU_MISC_IMPCAL1_IMPCAL_CHKCYCLE));
     DramcImpedanceTrackingEnable(p);
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL), 0, MISC_IMPCAL_IMPCAL_ECO_OPT); //No need to wait slave channel's handshake signal in calibration
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL), 0, MISC_IMPCAL_IMPCAL_ECO_OPT);
 
-    mcDELAY_US(16); //Need to wait IMPCALCNT times of all-bank refresh
+    mcDELAY_US(16);
 
     u4DRVN_Result = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS3), MISC_IMPCAL_STATUS3_DRVNDQ_SAVE_1);
     u4DRVP_Result = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS3), MISC_IMPCAL_STATUS3_DRVPDQ_SAVE_1);
     u4ODTN_Result = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL_STATUS3), MISC_IMPCAL_STATUS3_ODTNDQ_SAVE_1);
 
-    //DRVP=DRVP_FINAL
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_MISC_IMPCAL1), u4DRVP_Result, SHU_MISC_IMPCAL1_IMPDRVP);
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_MISC_IMPCAL1), u4DRVN_Result, SHU_MISC_IMPCAL1_IMPDRVN);
 
@@ -10687,8 +10280,8 @@ static U32 DramcSwImpCalResult(DRAMC_CTX_T *p, const char *drvType, U32 u4Fld)
 
     for (u4ImpxDrv = 0; u4ImpxDrv < 32; u4ImpxDrv++)
     {
-#if 0 // for A60868 no need
-        if (u4ImpxDrv == 16) //0~15, 29~31
+#if 0
+        if (u4ImpxDrv == 16)
             u4ImpxDrv = 29;
 #endif
 
@@ -10697,14 +10290,14 @@ static U32 DramcSwImpCalResult(DRAMC_CTX_T *p, const char *drvType, U32 u4Fld)
         u4ImpCalResult = u4IO32ReadFldAlign((DDRPHY_REG_MISC_PHY_RGS_CMD), MISC_PHY_RGS_CMD_RGS_RIMPCALOUT);
         mcSHOW_DBG_MSG2(("OCD %s=%d ,CALOUT=%d\n", drvType, u4ImpxDrv, u4ImpCalResult));
 
-        if (u4ImpCalResult == u4CheckImpChange)//first found
+        if (u4ImpCalResult == u4CheckImpChange)
         {
             mcSHOW_DBG_MSG2(("\nOCD %s calibration OK! %s=%d\n\n", drvType, drvType, u4ImpxDrv));
             break;
         }
     }
 
-    if (u4ImpxDrv == 32) // Can't find SwImp drv results
+    if (u4ImpxDrv == 32)
     {
         u4ImpxDrv = 31;
         mcSHOW_DBG_MSG2(("\nOCD %s calibration FAIL! %s=%d\n\n", drvType, drvType, u4ImpxDrv));
@@ -10723,13 +10316,13 @@ static void Dramc_Sw_ImpedanceCal(DRAMC_CTX_T *p, DRAMC_IMP_T freq_region)
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL), 1, MISC_IMPCAL_IMPCAL_CALI_EN);
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_MISC_IMPCAL1), P_Fld(0, SHU_MISC_IMPCAL1_IMPDRVN) | P_Fld(0, SHU_MISC_IMPCAL1_IMPDRVP));
 
-    //LP4X: ODTN/DRVN/DRVP calibration start
-    for (u1DrvType = DRVP; u1DrvType < IMP_DRV_MAX; u1DrvType++) // Calibration sequence for DRVP, DRVN and ODTN
+
+    for (u1DrvType = DRVP; u1DrvType < IMP_DRV_MAX; u1DrvType++)
     {
-        if (u1DrvType == ODTP) // no use, skip ODTP
+        if (u1DrvType == ODTP)
             continue;
 
-        /* Set IMP_VREF_SEL value for DRVP/DRVN and ODTN */
+
         vImpCalVrefSel(p, freq_region, u1DrvType);
 
         switch (u1DrvType)
@@ -10745,7 +10338,7 @@ static void Dramc_Sw_ImpedanceCal(DRAMC_CTX_T *p, DRAMC_IMP_T freq_region)
             case ODTN:
                 drvStr = (u1DrvType == DRVN)? "DRVN" : "ODTN";
                 u1CALI_ENP = 0x0;
-                u1CALI_ENN = (u1DrvType == DRVN)? 0x0: 0x1; // 0x1 change to ODTN path
+                u1CALI_ENN = (u1DrvType == DRVN)? 0x0: 0x1;
                 u4DrvFld = SHU_MISC_IMPCAL1_IMPDRVN;
                 break;
             default:
@@ -10753,18 +10346,16 @@ static void Dramc_Sw_ImpedanceCal(DRAMC_CTX_T *p, DRAMC_IMP_T freq_region)
                 break;
         }
 
-        // @A60868 for DRVn/p and ODTn select
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL), u1CALI_ENP, MISC_IMPCAL_IMPCAL_CALI_ENP);  //MISC_IMP_CTRL1_RG_IMP_OCD_PUCMP_EN move to CALI_ENP
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL), u1CALI_ENN, MISC_IMPCAL_IMPCAL_CALI_ENN);  //MISC_IMP_CTRL1_RG_RIMP_ODT_EN move to CALI_ENN
+
+        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL), u1CALI_ENP, MISC_IMPCAL_IMPCAL_CALI_ENP);
+        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL), u1CALI_ENN, MISC_IMPCAL_IMPCAL_CALI_ENN);
 
         mcSHOW_DBG_MSG2(("\n\n\tK %s\n", drvStr));
 
-        //DRVP=DRVP_FINAL
-        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_MISC_IMPCAL1), u4DRVP_Result, SHU_MISC_IMPCAL1_IMPDRVP);  //PUCMP_EN move to CALI_ENP
 
-        //If RGS_TX_OCD_IMPCALOUTX=1
-        //RG_IMPX_DRVN++;
-        //Else save RG_IMPX_DRVN value and assign to DRVN
+        vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_MISC_IMPCAL1), u4DRVP_Result, SHU_MISC_IMPCAL1_IMPDRVP);
+
+
         u4SwImpCalResult = DramcSwImpCalResult(p, drvStr, u4DrvFld);
 
         switch (u1DrvType)
@@ -10825,7 +10416,7 @@ DRAM_STATUS_T DramcImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_regi
     backup_broadcast = GetDramcBroadcast();
     DramcBroadcastOnOff(DRAMC_BROADCAST_OFF);
 
-    //default set FAIL
+
     vSetCalibrationResult(p, DRAM_CALIBRATION_SW_IMPEDANCE, DRAM_FAIL);
 
 #if VENDER_JV_LOG
@@ -10836,18 +10427,17 @@ DRAM_STATUS_T DramcImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_regi
 
     mcSHOW_DBG_MSG(("[DramcImpedenceCal]\n"));
 
-    //Suspend: DA_RIMP_DMSUS=1
+
     vIO32WriteFldMulti_All(DDRPHY_REG_MISC_LP_CTRL, P_Fld(0x0, MISC_LP_CTRL_RG_ARDMSUS_10) | \
                         P_Fld(0x0, MISC_LP_CTRL_RG_ARDMSUS_10_LP_SEL) | \
                         P_Fld(0x0, MISC_LP_CTRL_RG_RIMP_DMSUS_10) | \
                         P_Fld(0x0, MISC_LP_CTRL_RG_RIMP_DMSUS_10_LP_SEL));
-    //Disable IMP HW Tracking
-    //Hw Imp tracking disable for all channels Because SwImpCal will be K again when resume from DDR reserved mode
+
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_IMPCAL, 0, MISC_IMPCAL_IMPCAL_HW);
     backup_channel = p->channel;
     vSetPHY2ChannelMapping(p, CHANNEL_A);
 
-    //Register backup
+
     //u4BaklReg_DDRPHY_MISC_IMP_CTRL0 = u4IO32Read4B((DDRPHY_MISC_IMP_CTRL0));
     //u4BaklReg_DDRPHY_MISC_IMP_CTRL1 = u4IO32Read4B((DDRPHY_MISC_IMP_CTRL1));
     //u4BaklReg_DRAMC_REG_IMPCAL = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL));
@@ -10859,11 +10449,10 @@ DRAM_STATUS_T DramcImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_regi
                                                    | P_Fld(1, DRAMC_PD_CTRL_DCMEN));
 #endif
 
-    //RG_IMPCAL_VREF_SEL (now set in vImpCalVrefSel())
-    //RG_IMPCAL_LP3_EN=0, RG_IMPCAL_LP4_EN=1
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMP_CTRL1), 0, MISC_IMP_CTRL1_RG_RIMP_PRE_EN);
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL), P_Fld(0, MISC_IMPCAL_IMPCAL_CALI_ENN) | P_Fld(1, MISC_IMPCAL_IMPCAL_IMPPDP) | \
-                                      P_Fld(1, MISC_IMPCAL_IMPCAL_IMPPDN)); //RG_RIMP_BIAS_EN and RG_RIMP_VREF_EN move to IMPPDP and IMPPDN
+                                      P_Fld(1, MISC_IMPCAL_IMPCAL_IMPPDN));
 
         u1DDR4 = 1;
 
@@ -10873,7 +10462,7 @@ DRAM_STATUS_T DramcImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_regi
                         P_Fld(u1DDR4, MISC_IMP_CTRL1_RG_RIMP_DDR4_SEL));
     mcDELAY_US(1);
 
-    //RIMP_DRV05 for LP4/5
+
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD12), u1Drv05, SHU_CA_CMD12_RG_RIMP_DRV05);
 
     #if IMPEDANCE_HW_CALIBRATION
@@ -10881,21 +10470,15 @@ DRAM_STATUS_T DramcImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_regi
     #else
         Dramc_Sw_ImpedanceCal(p, freq_region);
     #endif
-    //Register Restore
+
     DramcRestoreRegisters(p, u4RegBackupAddress, sizeof(u4RegBackupAddress) / sizeof(U32));
     //vIO32Write4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_IMPCAL), u4BaklReg_DRAMC_REG_IMPCAL);
     //vIO32Write4B((DDRPHY_MISC_IMP_CTRL0), u4BaklReg_DDRPHY_MISC_IMP_CTRL0);
     //vIO32Write4B((DDRPHY_MISC_IMP_CTRL1), u4BaklReg_DDRPHY_MISC_IMP_CTRL1);
 
-/*** default value if K fail
-    LP3:  DRVP=8, DRVN=9
-    LP4:  DRVP=6, DRVN=9, ODTN=14
-    LP4X(UT): DRVP=12, DRVN=9
-    LP4X(T):  DRVP=5, DRVN=9, ODTN=14
-    LP4P: DRVP=8, DRVN=10
-***/
 
-    #if 0//HYNIX_IMPX_ADJUST
+
+    #if 0
     if (u1Para)
     {
         u4ODTN_Result = ImpedanceAdjustment_Hynix(u4ODTN_Result, u1Para);
@@ -10937,17 +10520,13 @@ DRAM_STATUS_T DramcImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_regi
 #endif
 
 #if 0
-    //YingYu: only check for freq_region = 0 (un-term, DQ)
+
     if (gDramcSwImpedanceResult[freq_region][DRVP] >= 31 && (freq_region == 0) ) {
         mcSHOW_DBG_MSG(("SLT_BIN2\n"));
         while (1);
     }
 #else
-    // Alucary @ 2019/8/21
-    // freq_region == 0
-    // DRVP 0x1~0x16
-    // DRVN 10~23
-    // ODTN 0x3~0x13
+
     if (freq_region==0)
     {
         if (!(gDramcImpedanceResult[freq_region][DRVP] >= 1 && gDramcImpedanceResult[freq_region][DRVP] <= 0x16) ||
@@ -10967,14 +10546,8 @@ DRAM_STATUS_T DramcImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_regi
         }
     }
     else
-    {   // freq_region == 1
-        // DRVP 1~24 @ 2020/4/7
-        // 4266 VOH is K 395mV
-        // SS 130 LV DRVP 395mV will got 22
-        // need add 2 for margin
-        // so spec change to 24
-        // DRVN 10~30
-        // ODTN 3~12
+    {
+
         if (!(gDramcImpedanceResult[freq_region][DRVP] >= 1 && gDramcImpedanceResult[freq_region][DRVP] <= 24) ||
             !(gDramcImpedanceResult[freq_region][DRVN] >= 10 && gDramcImpedanceResult[freq_region][DRVN] <= 30) ||
             !(gDramcImpedanceResult[freq_region][ODTN] >= 3 && gDramcImpedanceResult[freq_region][ODTN] <= 12)) {
@@ -11018,7 +10591,7 @@ DRAM_STATUS_T DramcImpedanceCal(DRAMC_CTX_T *p, U8 u1Para, DRAMC_IMP_T freq_regi
 
     return DRAM_OK;
 }
-#endif //SIMULATION_SW_IMPED
+#endif
 
 #if ENABLE_WRITE_DBI || TX_K_DQM_WITH_WDBI
 void DramcWriteShiftMCKForWriteDBI(DRAMC_CTX_T *p, S8 iShiftMCK)
@@ -11049,14 +10622,11 @@ void DramcWriteShiftMCKForWriteDBI(DRAMC_CTX_T *p, S8 iShiftMCK)
 #define CLOCK_PI_STEP 2
 #endif
 
-#define ClockDutyFailLowerBound 4500    // 45%
-#define ClockDutyFailUpperBound 5500    // 55%
-#define ClockDutyMiddleBound    5000    // 50%
+#define ClockDutyFailLowerBound 4500
+#define ClockDutyFailUpperBound 5500
+#define ClockDutyMiddleBound    5000
 
-/*
-* duty form smallest to biggest
-* 011111->011110->...->000001-->000000=100000->100001-->...->111111
-*/
+
 static U8 DramcDutyDelayRGSettingConvert(DRAMC_CTX_T *p, S8 scDutyDelay,
     U8 *tDly)
 {
@@ -11216,7 +10786,7 @@ void DramcNewDutyCalibration(DRAMC_CTX_T *p)
     U32 backup_DDRPHY_REG_SHU_B0_DQ13=0, backup_DDRPHY_REG_SHU_B1_DQ13=0, backup_DDRPHY_REG_SHU_CA_CMD13=0;
 
 #if(DQS_DUTY_SLT_CONDITION_TEST)
-        U16 u2TestCnt, u2FailCnt=0, u2TestCntTotal =20; //fra 400;
+        U16 u2TestCnt, u2FailCnt=0, u2TestCntTotal =20;
         U8 u1ByteIdx, u1PI_FB;
         U32 u4Variance;
 #endif
@@ -11225,7 +10795,7 @@ void DramcNewDutyCalibration(DRAMC_CTX_T *p)
     u1backup_rank = u1GetRank(p);
     vSetRank(p, RANK_0);
 
-    //backup OE releated RG , must put at begin of duty function !!
+
     backup_DDRPHY_REG_B0_DQ2 = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2));
     if (!isLP4_DSC)
         backup_DDRPHY_REG_B1_DQ2 = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2));
@@ -11237,14 +10807,14 @@ void DramcNewDutyCalibration(DRAMC_CTX_T *p)
     else
         backup_DDRPHY_REG_SHU_CA_CMD13 = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_SHU_CA_CMD13));
 
-    //default set fail
+
     vSetCalibrationResult(p, DRAM_CALIBRATION_DUTY_SCAN, DRAM_FAIL);
 
 #if !FT_DSIM_USED
 #if DUTY_SCAN_V2_ONLY_K_HIGHEST_FREQ
     if (p->frequency == u2DFSGetHighestFreq(p))
 #else
-    //TODO if(Get_PRE_MIOCK_JMETER_HQA_USED_flag()==0)
+
 #endif
 #endif
     {
@@ -11273,7 +10843,7 @@ void DramcNewDutyCalibration(DRAMC_CTX_T *p)
     }
 
     OECKCKE_Control(p, ENABLE);
-    //restore OE releated RG , must put at end of duty function !!
+
     vIO32Write4B(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ2), backup_DDRPHY_REG_B0_DQ2);
     if (!isLP4_DSC)
         vIO32Write4B(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ2), backup_DDRPHY_REG_B1_DQ2);

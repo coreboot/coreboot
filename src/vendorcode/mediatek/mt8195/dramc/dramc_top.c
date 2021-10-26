@@ -210,12 +210,12 @@ void mdl_setting(DRAMC_CTX_T *p)
 	emi_init();
 
 	enable_infra_emi_broadcast(1);
-	//The following is MDL settings
+
 	set_cen_emi_cona(emi_set->EMI_CONA_VAL);
 	set_cen_emi_conf(emi_set->EMI_CONF_VAL);
 	set_cen_emi_conh(emi_set->EMI_CONH_VAL);
 
-	// CHNA and CHNB uses the same CH0 setting
+
 	set_chn_emi_cona(emi_set->CHN0_EMI_CONA_VAL);
 	//set_chn_emi_conc(0x4);
 	enable_infra_emi_broadcast(0);
@@ -466,13 +466,13 @@ unsigned int is_discrete_lpddr4(void)
 #if DRAM_AUXADC_CONFIG
 	return dram_type_auxadc;
 #else
-	return TRUE; /* for 4ch DSC */
+	return TRUE;
 #endif
 }
 
 unsigned int mt_get_dram_type_from_hw_trap(void)
 {
-	#if  1 //for bring up use
+	#if  1
 		return TYPE_LPDDR4X;
 	#else
 	unsigned int trap = get_dram_type() & 0x7;
@@ -643,7 +643,7 @@ static void restore_pmic_setting(void)
 		return;
 	}
 
-#if 0 //for bring-up
+#if 0
 	dramc_set_vmdd_voltage(TYPE_LPDDR4, 1125000);
 	dramc_set_vmddq_voltage(TYPE_LPDDR4, 600000);
 	dramc_set_vmddr_voltage(750000);
@@ -693,28 +693,28 @@ void release_dram(void)
     int i;
     int counter = TIMEOUT;
 
-    // scy: restore pmic setting (VCORE, VDRAM, VSRAM, VDDQ)
+
     restore_pmic_setting();
 
-    drm_release_rg_dramc_conf_iso();//Release DRAMC/PHY conf ISO
+    drm_release_rg_dramc_conf_iso();
 
-#if DDR_RESERVE_NEW_MODE //new modw
+#if DDR_RESERVE_NEW_MODE
     ASVA5_8_New_Mode_1();
     Dramc_DDR_Reserved_Mode_setting();
-    drm_release_rg_dramc_iso();//Release PHY IO ISO
+    drm_release_rg_dramc_iso();
     ASVA5_8_New_Mode_2();
-#else //old mode
+#else
     Dramc_DDR_Reserved_Mode_setting();
     ASVA5_8_CSCA_Pull_Down_EN();
-    drm_release_rg_dramc_iso();//Release PHY IO ISO
+    drm_release_rg_dramc_iso();
     ASVA5_8_CSCA_Pull_Down_DIS();
 #endif
 
-    drm_release_rg_dramc_sref();//Let DRAM Leave SR
+    drm_release_rg_dramc_sref();
 
     while(counter)
     {
-        if(is_dramc_exit_slf() == 1) /* expect to exit dram-self-refresh */
+        if(is_dramc_exit_slf() == 1)
             break;
         counter--;
     }
@@ -733,15 +733,11 @@ void release_dram(void)
     }
     Dramc_DDR_Reserved_Mode_AfterSR();
 
-#if DDR_RESERVE_NEW_MODE //new modw
+#if DDR_RESERVE_NEW_MODE
     ASVA5_8_New_Mode_3();
 #endif
 
-    //Expect to Use LPDDR3200 and PHYPLL as output, so no need to handle
-    //shuffle status since the status will be reset by system reset
-    //There is an PLLL_SHU_GP in SPM which will reset by system reset
 
-    // setup for EMI: touch center EMI and channel EMI to enable CLK
     dramc_crit("[DDR reserve] EMI CEN CONA: %x\n", get_cen_emi_cona());
     dramc_crit("[DDR reserve] EMI CHN CONA: %x\n", get_chn_emi_cona());
     for (i=0;i<10;i++);
@@ -777,8 +773,8 @@ static int check_qvl(DRAM_INFO_BY_MRR_T *dram_info, unsigned int dram_type)
 
 	mr5 = dram_info->u2MR5VendorID & 0xFF;
 
-	rank_size[0] = dram_info->u8MR8Density[0]; //now only K CHA to save time
-	rank_size[1] = dram_info->u8MR8Density[1]; //now only K CHA to save time
+	rank_size[0] = dram_info->u8MR8Density[0];
+	rank_size[1] = dram_info->u8MR8Density[1];
 
         result = platform_get_mcp_id(id, emmc_nand_id_len,&fw_id_len);
 	for (i = 0; i < num_of_emi_records; i++) {
@@ -786,23 +782,23 @@ static int check_qvl(DRAM_INFO_BY_MRR_T *dram_info, unsigned int dram_type)
 			"qvl", i,
 			"type", qvl_list[i].type,
 			"mr5", qvl_list[i].iLPDDR3_MODE_REG_5,
-			"rank0_size", qvl_list[i].DRAM_RANK_SIZE[0], //DA need  (unsigned int) (qvl_list[i].DRAM_RANK_SIZE[0] & 0xFFFFFFFF), (unsigned int)(qvl_list[i].DRAM_RANK_SIZE[0] >> 32),
-			"rank1_size", qvl_list[i].DRAM_RANK_SIZE[1]);//DA need (unsigned int) (qvl_list[i].DRAM_RANK_SIZE[1] & 0xFFFFFFFF), (unsigned int)(qvl_list[i].DRAM_RANK_SIZE[1] >> 32));
-		/* check DRAM type */
+			"rank0_size", qvl_list[i].DRAM_RANK_SIZE[0],
+			"rank1_size", qvl_list[i].DRAM_RANK_SIZE[1]);
+
 		if ((qvl_list[i].type & 0xF) != (dram_type & 0xF))
 			continue;
 
-		/* check MR5 */
+
 		if (qvl_list[i].iLPDDR3_MODE_REG_5 != mr5)
 			continue;
 
-		/* check rank size */
+
 		if (qvl_list[i].DRAM_RANK_SIZE[0] != rank_size[0])
 			continue;
 		if (qvl_list[i].DRAM_RANK_SIZE[1] != rank_size[1])
 			continue;
 
-		/* check storage ID if MCP */
+
 		if (qvl_list[i].type & 0xF00) {
 			if (!result) {
 				if (memcmp(id, qvl_list[i].ID, qvl_list[i].id_length)) {
@@ -845,8 +841,8 @@ int get_dram_rank_nr(void)
 
 	cen_emi_cona = g_default_emi_setting.EMI_CONA_VAL;
 
-	if ((cen_emi_cona & (1 << 17)) != 0 || //for channel 0
-	    (cen_emi_cona & (1 << 16)) != 0 )  //for channel 1
+	if ((cen_emi_cona & (1 << 17)) != 0 ||
+	    (cen_emi_cona & (1 << 16)) != 0 )
 		return 2;
 	else
 		return 1;
@@ -864,9 +860,7 @@ int get_dram_freq_cnt(void)
 
 #if (FOR_DV_SIMULATION_USED==0)
 #if !__FLASH_TOOL_DA__ && !__ETT__
-/*
- * setup block
- */
+
 
 void get_dram_rank_size(u64 dram_rank_size[DRAMC_MAX_RK])
 {
@@ -1403,14 +1397,14 @@ static int update_dram_setting(EMI_SETTINGS *default_emi_setting, unsigned int d
 
 		default_emi_setting->iLPDDR3_MODE_REG_5 = dram_info->u2MR5VendorID;
 
-		if (dram_info->u4RankNum == 1) { // single rank
+		if (dram_info->u4RankNum == 1) {
 			if (dram_info->u1DieNum[RANK_0] == 1)
 				default_emi_setting->dram_cbt_mode_extern = CBT_R0_R1_NORMAL;
 			else if (dram_info->u1DieNum[RANK_0] == 2)
 				default_emi_setting->dram_cbt_mode_extern = CBT_R0_R1_BYTE;
 			else
 				return -1;
-		} else if (dram_info->u4RankNum == 2) { // dual rank
+		} else if (dram_info->u4RankNum == 2) {
 			if ((dram_info->u1DieNum[RANK_0] == 1) && (dram_info->u1DieNum[RANK_1] == 1))
 				default_emi_setting->dram_cbt_mode_extern = CBT_R0_R1_NORMAL;
 			else if ((dram_info->u1DieNum[RANK_0] == 1) && (dram_info->u1DieNum[RANK_1] == 2))
@@ -1435,7 +1429,7 @@ static int decode_emi_info(EMI_INFO_T *emi_info, unsigned int dram_type, DRAM_IN
 	unsigned long long die_size;
 
 	emi_info->dram_type = dram_type;
-	emi_info->ch_num = 2; //2; //FIXME use GPIO
+	emi_info->ch_num = 2;
 	emi_info->bank_width[0] = 3;
 	emi_info->bank_width[1] = 3;
 	emi_info->col_width[0] = 10;
@@ -1451,37 +1445,30 @@ static int decode_emi_info(EMI_INFO_T *emi_info, unsigned int dram_type, DRAM_IN
         //emi_info->rank_size[1] /= emi_info->ch_num;
 		emi_info->rk_num = dram_info->u4RankNum;
 
-		/**
-		 * ranksize    row width
-		 *     4Gb   ->   15
-		 *     8Gb   ->   16
-		 *    16Gb   ->   17
-		 *    32Gb   ->   18
-		 **/
 		for (i = 0; i < emi_info->rk_num; i++) {
 			die_size = emi_info->rank_size[i] / dram_info->u1DieNum[i];
 
 			switch (die_size | (dram_info->u1DieNum[i] << 4) | u1IsLP4Family(dram_type)) {
-			case 0x20000011ULL: // 4Gb, x16, LP4
-			case 0x20000021ULL: // 4Gb, x8, LP4
-			case 0x40000021ULL: // 8Gb, x8, LP4
-			case 0x30000011ULL: // 6Gb, x16, LP4
-			case 0x40000011ULL: // 8Gb, x16, LP4
+			case 0x20000011ULL:
+			case 0x20000021ULL:
+			case 0x40000021ULL:
+			case 0x30000011ULL:
+			case 0x40000011ULL:
 				emi_info->row_width[i] = 15;
 				break;
-			case 0x30000021ULL: // 6Gb, x8, LP4
-			case 0x60000011ULL: // 12Gb, x16, LP4
-			case 0x80000011ULL: // 16Gb, x16, LP4
+			case 0x30000021ULL:
+			case 0x60000011ULL:
+			case 0x80000011ULL:
 				emi_info->row_width[i] = 16;
 				break;
-			case 0x060000021ULL: // 12Gb, x8, LP4
-			case 0x080000021ULL: // 16Gb, x8, LP4
-			case 0x0C0000011ULL: // 24Gb, x16, LP4
-			case 0x100000011ULL: // 32Gb, x16, LP4
+			case 0x060000021ULL:
+			case 0x080000021ULL:
+			case 0x0C0000011ULL:
+			case 0x100000011ULL:
 				emi_info->row_width[i] = 17;
 				break;
-			case 0x0C0000021ULL: // 24Gb, x8, LP4
-			case 0x100000021ULL: // 32Gb, x8, LP4
+			case 0x0C0000021ULL:
+			case 0x100000021ULL:
 				emi_info->row_width[i] = 18;
 				break;
 			default:
@@ -1542,7 +1529,7 @@ void dram_auto_detection(void)
 		DRAMC_ASSERT(0);
 	}
 
-    // different files for mt6880 and 6890 (different folder)
+
 	ret = update_emi_setting(&g_default_emi_setting, &emi_info);
 	if (ret) {
 		dramc_crit("[DRAMC] update_emi_setting err %d\n", ret);
@@ -1566,20 +1553,9 @@ void mt_set_emi(struct dramc_param *dparam)
 	EMI_rank_swap_handle();
 #endif
 
-	// set voltage and hw trapping before mdl
+
 	setup_dramc_voltage_by_pmic();
-/*
-	if ((doe_get_config("dram_all_3094_0825")) || (doe_get_config("dram_all_3094_0725")))
-		freq_table_are_all_3094();
-	else if	(doe_get_config("dram_all_1534_0725"))
-		freq_table_are_all_1534();
-	else if	(doe_get_config("dram_opp0_3733_others_3094_0825"))
-		freq_table_opp0_3733_others_3094();
-	else if	(doe_get_config("dram_opp0_3094_others_1534_0725"))
-		freq_table_opp0_3094_others_1534();
-	else if	(doe_get_config("dram_opp0_2400_others_1534_0725"))
-		freq_table_opp0_2400_others_1534();
-*/
+
 #if DRAM_AUXADC_CONFIG
 	get_ch_num_by_auxadc();
 #endif
@@ -1690,7 +1666,7 @@ unsigned int get_dramc_addr(dram_addr_t *dram_addr, unsigned int offset)
 
 unsigned int get_dummy_read_addr(dram_addr_t *dram_addr)
 {
-	return get_dramc_addr(dram_addr, 0x20); // 32-byte align for dummy RW pattern
+	return get_dramc_addr(dram_addr, 0x20);
 }
 
 static unsigned int get_ta2_addr(dram_addr_t *dram_addr)
@@ -1705,20 +1681,20 @@ void init_ta2_single_channel(unsigned int channel)
 	DRAMC_CTX_T *p = psCurrDramCtx;
 	int test_cnt;
 
-	// disable self test engine1 and self test engine2
+
 	temp = u4IO32Read4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_TEST2_A3, channel)) & 0x1FFFFFFF;
 	vIO32Write4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_TEST2_A3, channel), temp);
 
-	// set rank address for test agent to auto
+
 	temp = u4IO32Read4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_TEST2_A4, channel)) & 0x8FFFFFFF;
 	temp |= (0x4 << 28);
 	vIO32Write4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_TEST2_A4, channel), temp);
 
-	// set test for both rank0 and rank1
+
 	temp = u4IO32Read4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_TEST2_A3, channel)) & 0xFFFFFFF0;
 	vIO32Write4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_TEST2_A3, channel), temp | 0x1);
 
-	// set base address for test agent to reserved space
+
 	dram_addr.ch = channel;
 	dram_addr.rk = 0;
 	temp = (u4IO32Read4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_RK_TEST2_A1, channel)) & 0x00000007);
@@ -1727,11 +1703,11 @@ void init_ta2_single_channel(unsigned int channel)
 	temp = (u4IO32Read4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_RK_TEST2_A1+0x200, channel)) & 0x00000007);
 	vIO32Write4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_RK_TEST2_A1+0x200, channel), temp | get_ta2_addr(&dram_addr));
 
-	// set test length (offset) to 0x20
+
 	temp = (u4IO32Read4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_TEST2_A2, channel)) & 0x0000000F) | (0x20 << 4);
 	vIO32Write4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_TEST2_A2, channel), temp);
 
-	// set TA2 pattern to the worst case
+
 	test_cnt = (get_dram_rank_nr() > 1) ? 1 : 0;
 	vIO32WriteFldAlign(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_TEST2_A3, channel), 0, TEST2_A3_TESTAUDPAT);
 	vIO32WriteFldAlign(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_TEST2_A3, channel), test_cnt, TEST2_A3_TESTCNT);
@@ -1759,7 +1735,7 @@ void update_last_dramc_info(void)
 	unsigned int *curr;
 	DRAMC_CTX_T *p = psCurrDramCtx;
 
-	// init checksum and magic pattern
+
 	if(last_dramc_info_ptr->ta2_result_magic != LAST_DRAMC_MAGIC_PATTERN) {
 		last_dramc_info_ptr->ta2_result_magic = LAST_DRAMC_MAGIC_PATTERN;
 		last_dramc_info_ptr->ta2_result_last = 0;
@@ -1776,9 +1752,9 @@ void update_last_dramc_info(void)
 		last_dramc_info_ptr->ta2_result_checksum ^= last_dramc_info_ptr->reboot_count;
 	}
 
-	// TODO: check DCS status
 
-	// read data from latch register and reset
+
+
 	for (chn = 0; chn < CHANNEL_NUM; ++chn) {
 		//dramc_crit("[LastDRAMC] latch result before RST: %x\n", u4IO32Read4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_WDT_DBG_SIGNAL, chn)));
 		latch_result = (latch_result << 16) | u4IO32Read4B(DRAMC_ADDR_SHIFT_CHN(DRAMC_REG_WDT_DBG_SIGNAL, chn)) & 0xFFFF;
@@ -1806,11 +1782,11 @@ void init_ta2_all_channel(void)
 
 	update_last_dramc_info();
 
-	//cache flush after update dramc info
+
 	#if CFG_ENABLE_DCACHE
 	plat_clean_invalidate_dcache();
 	#endif
-	// TODO: consider DCS
+
 	for (chn = 0; chn < CHANNEL_NUM; ++chn)
 		init_ta2_single_channel(chn);
 }
@@ -1845,7 +1821,7 @@ void dram_fatal_exception_detection_start(void)
 	last_dramc_info_ptr = (LAST_DRAMC_INFO_T *) get_dbg_info_base(KEY_LAST_DRAMC);
 
 #if SUPPORT_SAVE_TIME_FOR_CALIBRATION
-	part_dram_data_addr = get_part_addr("boot_para") + 0x100000; // addr = 0x108000
+	part_dram_data_addr = get_part_addr("boot_para") + 0x100000;
 	if (part_dram_data_addr != 0x0)
 		dramc_crit("[dramc] init partition address is 0x%llx\n", part_dram_data_addr);
 	else {
@@ -1859,7 +1835,7 @@ void dram_fatal_exception_detection_start(void)
 
 	if ((g_boot_reason == BR_POWER_KEY) || (g_boot_reason == BR_USB)
 			|| mtk_wdt_is_pmic_full_reset() || (is_last_dramc_initialized() == 0)){
-		/* cold boot: initialize last_dram_fatal_err_flag and dram_fatal_err_flag */
+
 		dramc_crit("[dramc] init SRAM region for DRAM exception detection\n");
 		last_dramc_info_ptr->last_fatal_err_flag = 0x0;
 		last_dramc_info_ptr->storage_api_err_flag = 0x0;
@@ -1968,7 +1944,7 @@ void dram_fatal_set_err(unsigned int err_code, unsigned int mask, unsigned int o
 
 #endif
 
-#if (FOR_DV_SIMULATION_USED==0) // for DV sim build pass
+#if (FOR_DV_SIMULATION_USED==0)
 int doe_get_config(const char* feature)
 {
 #if defined(ENABLE_DOE)
@@ -2000,9 +1976,9 @@ void log_to_storage(const char c)
 	if (log_start && (!logen)) {
 		logen = 1;
 		logcount = 0;
-		part_dram_data_addr_uart = get_part_addr("boot_para") + 0x100000; // addr = 0x1f300000, the first 1MB for debug
+		part_dram_data_addr_uart = get_part_addr("boot_para") + 0x100000;
 		memset(&logbuf, 0, sizeof(logbuf));
-		for (clr_count = 0; clr_count < 3072 ; clr_count++) //3M
+		for (clr_count = 0; clr_count < 3072 ; clr_count++)
 			ret = blkdev_write(bootdev, (part_dram_data_addr_uart + (1024 * clr_count)), 1024, (u8*)&logbuf, storage_get_part_id(STORAGE_PHYS_PART_USER));
 	}
 
@@ -2012,7 +1988,7 @@ void log_to_storage(const char c)
 //			else
 				logbuf[logcount] = (char) c;
     	logcount = logcount + 1;
-    	//write to storage
+
     	if (logcount==1024) {
     		logcount = 0;
     		ret = blkdev_write(bootdev, part_dram_data_addr_uart, 1024, (u8*)&logbuf, storage_get_part_id(STORAGE_PHYS_PART_USER));
@@ -2048,7 +2024,7 @@ static u16 crc16(const u8* data, u32 length){
 
 static void assign_checksum_for_dram_data(DRAM_CALIBRATION_SHU_DATA_T *shu_data)
 {
-	/* need to initialize checksum to 0 before calculation */
+
 	shu_data->checksum = 0;
 	shu_data->checksum = crc16((u8*)shu_data, sizeof(*shu_data));
 }
@@ -2065,7 +2041,7 @@ static int check_checksum_for_dram_data(DRAM_CALIBRATION_SHU_DATA_T *shu_data)
 #if !__ETT__
 static void assign_checksum_for_mdl_data(DRAM_CALIBRATION_MRR_DATA_T *mrr_info)
 {
-	/* need to initialize checksum to 0 before calculation */
+
 	mrr_info->checksum = 0;
 	mrr_info->checksum = crc16((u8*)mrr_info, sizeof(*mrr_info));
 }
@@ -2118,7 +2094,7 @@ int read_offline_dram_calibration_data(DRAM_DFS_SRAM_SHU_T shuffle, SAVE_TIME_FO
 
 	dramc_info("read calibration data from shuffle %d(For verify: WL B0:%u, B1: %u)\n",
 		   shuffle, params->wr_level[CHANNEL_A][RANK_0][0], params->wr_level[CHANNEL_B][RANK_0][0]);
-	/* copy the data stored in storage to the data structure for calibration */
+
 	memcpy(offLine_SaveData, params, sizeof(*offLine_SaveData));
 	fastk_data_dump(params, shuffle);
 
@@ -2137,7 +2113,7 @@ int clean_dram_calibration_data(void)
 
 #else
 #if 0
-DRAM_CALIBRATION_DATA_T dram_data; // using global variable to avoid stack overflow
+DRAM_CALIBRATION_DATA_T dram_data;
 
 static int read_offline_dram_mdl_data(DRAM_INFO_BY_MRR_T *DramInfo)
 {
@@ -2273,24 +2249,24 @@ unsigned int get_mr8_by_mrr(U8 channel, U8 rank)
 }
 #endif
 
-/* Get Channel Number from AUXADC */
+
 #if DRAM_AUXADC_CONFIG
 static unsigned int get_ch_num_by_auxadc(void)
 {
-    unsigned int ret = 0, voltage = 0;//, u1ch_num = 0;
+    unsigned int ret = 0, voltage = 0;
     ret = iio_read_channel_processed(5, &voltage);
     if (ret == 0) {
-        if (voltage < 700) /* 4CH with DSC */
+        if (voltage < 700)
         	{
 				channel_num_auxadc = CHANNEL_FOURTH;
 				dram_type_auxadc = PINMUX_DSC;
         	}
-        else if (voltage >= 700 && voltage < 1200) /* 2CH with eMCP */
+        else if (voltage >= 700 && voltage < 1200)
         	{
 	    		channel_num_auxadc = CHANNEL_DUAL;
 				dram_type_auxadc = PINMUX_EMCP;
         	}
-		else /* 2CH with DSC*/
+		else
 			{
 	    		channel_num_auxadc = CHANNEL_DUAL;
 				dram_type_auxadc = PINMUX_DSC;

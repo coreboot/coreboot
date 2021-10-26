@@ -16,9 +16,9 @@
 #include <soc/dramc_soc.h>
 #include <soc/dramc_param.h>
 
-#define SW_CHANGE_FOR_SIMULATION 0  //calibration funciton for whole chip simulation. Code changed due to different compiler
+#define SW_CHANGE_FOR_SIMULATION 0
 #ifndef FOR_DV_SIMULATION_USED
-#define FOR_DV_SIMULATION_USED  (FALSE) ////calibration funciton for DV simulation. Code changed due to different compiler#define FT_DSIM_USED 0
+#define FOR_DV_SIMULATION_USED  (FALSE)
 #endif
 #define DV_SIMULATION_LP4 1
 #define BYPASS_CALIBRATION 0
@@ -52,13 +52,13 @@
 #define EYESCAN_K   (0)
 
 
-//Read Chip QT Tool
+
 #ifndef QT_GUI_Tool
-#define QT_GUI_Tool     0    //Setting 1 when using QT GUI Tool Compiler.
-#define HAPS_FPFG_A60868    0  //Setting 1 when testing HAPS FPGA
+#define QT_GUI_Tool     0
+#define HAPS_FPFG_A60868    0
 #endif
 
-//DRAMC Chip
+
 #define fcA60868        1
 #define fcPetrus        2
 #define fcIPM           3
@@ -78,7 +78,7 @@
 
 
 #define __LP5_COMBO__   (FALSE)
-#define FEATURE_RDDQC_K_DMI   (FALSE)   // This feature is not supported at A60868 test chip
+#define FEATURE_RDDQC_K_DMI   (FALSE)
 
 #if FOR_DV_SIMULATION_USED
 #undef __ETT__
@@ -97,41 +97,41 @@
 #endif
 
 #if FOR_DV_SIMULATION_USED
-#define CHANNEL_NUM    2   // 1 single channel, 2 dual channel, 4 channel
+#define CHANNEL_NUM    2
 #else
-#define CHANNEL_NUM    4 // 1 single channel, 2 dual channel, 4 channel
+#define CHANNEL_NUM    4
 #endif
-#define DPM_CH_NUM     2 // CH0/1 is Master, CH2/3 is Slave
+#define DPM_CH_NUM     2
 
-//ZQ calibration
+
 #define ENABLE_LP4_ZQ_CAL  1
-#if ENABLE_LP4_ZQ_CAL //choose one mode to do ZQ calibration
-#define ZQ_SWCMD_MODE         1 //suggested SW CMD mode
-#define ZQ_RTSWCMD_MODE       0 //run time SW mode
-#define ZQ_SCSM_MODE          0 //old mode
+#if ENABLE_LP4_ZQ_CAL
+#define ZQ_SWCMD_MODE         1
+#define ZQ_RTSWCMD_MODE       0
+#define ZQ_SCSM_MODE          0
 #endif
 
 #define CODE_SIZE_REDUCE 0
 #define CALIBRATION_SPEED_UP_DEBUG 0
 #define VENDER_JV_LOG 0
 
-//SW option
-#define DUAL_FREQ_K 1   //0 : only K 1 freq(1600), 1: K multi freq
+
+#define DUAL_FREQ_K 1
 #define SCRAMBLE_EN 1
 #if 1 //[FOR_CHROMEOS]
 #define ENABLE_EYESCAN_GRAPH 0 //__ETT__ //draw eye diagram after calibration, if enable, need to fix code size problem.
 #else
 #define ENABLE_EYESCAN_GRAPH 1
 #endif
-#define EYESCAN_GRAPH_CATX_VREF_STEP 0x1U  // 1 (origin), 2 (div 2)(save 9K size), 5 for A60868
+#define EYESCAN_GRAPH_CATX_VREF_STEP 0x1U
 #define EYESCAN_GRAPH_RX_VREF_STEP 2
-#define EYESCAN_RX_VREF_RANGE_END 128   //field is 6 bit, but can only use 0~63,7bit ->127
+#define EYESCAN_RX_VREF_RANGE_END 128
 #define EYESCAN_SKIP_UNTERM_CBT_EYESCAN_VREF    10
 #if (fcFOR_CHIP_ID == fcA60868)
-#define ENABLE_EYESCAN_CBT 0      //TO DO:Forece to draw CBT eye diagram after calibration
-#define ENABLE_EYESCAN_RX 0       //TO DO:Forece to draw RX eye diagram after calibration
-#define ENABLE_EYESCAN_TX 0       //TO DO:Forece to draw TX eye diagram after calibration
-#define ENABLE_VREFSCAN 0           //TO DO:Forece to Vref Scan for calibration
+#define ENABLE_EYESCAN_CBT 0
+#define ENABLE_EYESCAN_RX 0
+#define ENABLE_EYESCAN_TX 0
+#define ENABLE_VREFSCAN 0
 #endif
 
 #define CHECK_HQA_CRITERIA  0
@@ -148,7 +148,7 @@
 #define ETT_MINI_STRESS_USE_TA2_LOOP_MODE 1
 #define DUMP_TA2_WINDOW_SIZE_RX_TX 0
 #if ENABLE_TX_TRACKING
-    #define ENABLE_SW_TX_TRACKING 0 //if SW_TX_TRACKING is 0, using HW_TX_TRACKING
+    #define ENABLE_SW_TX_TRACKING 0
     //can only choose 1 to set as 1 in the following 3 define
     #define DQSOSC_SWCMD 1
     #define DQSOSC_RTSWCMD 0
@@ -164,15 +164,15 @@
 #define ENABLE_TMRRI_NEW_MODE 1
 #define ENABLE_8PHASE_CALIBRATION 1
 #define ENABLE_DUTY_SCAN_V2 1
-#define DUTY_SCAN_V2_ONLY_K_HIGHEST_FREQ 0 //0: K all Freq 1: K highest Freq
+#define DUTY_SCAN_V2_ONLY_K_HIGHEST_FREQ 0
 #define APPLY_DQDQM_DUTY_CALIBRATION 1
-#define IMPEDANCE_TRACKING_ENABLE //Impendence tracking
+#define IMPEDANCE_TRACKING_ENABLE
 #ifdef IMPEDANCE_TRACKING_ENABLE
 #define IMPEDANCE_HW_CALIBRATION 0
 #else
 #define IMPEDANCE_HW_CALIBRATION 0
 #endif
-#define IMPEDANCE_HW_SAVING   //mask because function fail, it lets clk swing change larger before DVFS occurs
+#define IMPEDANCE_HW_SAVING
 #define IMP_DEBUG_ENABLE
 #define ENABLE_MIOCK_JMETER
 #define MIOCK_JMETER_CNT_WA 1
@@ -182,8 +182,8 @@
 #define TDQSCK_PRECALCULATION_FOR_DVFS 1
 #define HW_GATING
 #define ENABLE_RX_FIFO_MISMATCH_DEBUG 1
-#define VERIFY_CKE_PWR_DOWN_FLOW 0 //Lewis add for DVT
-#define CBT_MOVE_CA_INSTEAD_OF_CLK 1	// need to check on LP5
+#define VERIFY_CKE_PWR_DOWN_FLOW 0
+#define CBT_MOVE_CA_INSTEAD_OF_CLK 1
 #define MRW_CHECK_ONLY 0
 #define MRW_BACKUP 0
 #define ENABLE_SAMSUNG_NT_ODT 0
@@ -196,31 +196,31 @@
 #define DUMP_ALLSUH_RG 0
 #define PIN_CHECK_TOOL 0
 #define ENABLE_DATLAT_BY_FORMULA 1
-#define ENABLE_RX_AUTOK_MISS_FIRSTPASS_WA 1 //TOBE remove at IPMv2.2
+#define ENABLE_RX_AUTOK_MISS_FIRSTPASS_WA 1
 
 //Debug option
 #define GATING_ONLY_FOR_DEBUG 0
 #define ENABLE_RX_AUTOK_DEBUG_MODE 0
-#define RX_DLY_TRACK_ONLY_FOR_DEBUG 0 // LP4 only, LP3 not support
+#define RX_DLY_TRACK_ONLY_FOR_DEBUG 0
 #if CODE_SIZE_REDUCE || FOR_DV_SIMULATION_USED
-#define CPU_RW_TEST_AFTER_K 0  // need to enable GATING_ONLY_FOR_DEBUG at the same time for gating debug log
+#define CPU_RW_TEST_AFTER_K 0
 #define TA2_RW_TEST_AFTER_K 0
 #else
-#define CPU_RW_TEST_AFTER_K 1  // need to enable GATING_ONLY_FOR_DEBUG at the same time for gating debug log
+#define CPU_RW_TEST_AFTER_K 1
 #define TA2_RW_TEST_AFTER_K 1
 #endif
-//PINMUX auto test per bit related
+
 #define PINMUX_AUTO_TEST_PER_BIT_CA 0
 #define PINMUX_AUTO_TEST_PER_BIT_RX 0
 #define PINMUX_AUTO_TEST_PER_BIT_TX 0
 
-#define CA_PER_BIT_DELAY_CELL 1//LP4
+#define CA_PER_BIT_DELAY_CELL 1
 #if PINMUX_AUTO_TEST_PER_BIT_CA
 #undef CA_PER_BIT_DELAY_CELL
 #define CA_PER_BIT_DELAY_CELL 0
 #endif
 
-//Gating calibration
+
 #define GATING_LEADLAG_LOW_LEVEL_CHECK 0
 
 #if CODE_SIZE_REDUCE
@@ -258,7 +258,7 @@
 #define EYESCAN_LOG 0
 #define FSP1_CLKCA_TERM 1
 #define CBT_FSP1_MATCH_FSP0_UNTERM_WA 1
-#define MR_CBT_SWITCH_FREQ !FOR_DV_SIMULATION_USED //@Darren, Wait DFS ready
+#define MR_CBT_SWITCH_FREQ !FOR_DV_SIMULATION_USED
 #define FT_DSIM_USED 0
 #define GATING_ONLY_FOR_DEBUG 0
 #define MEASURE_DRAM_POWER_INDEX 0
@@ -274,11 +274,11 @@
 #define APPLY_SIGNAL_WAVEFORM_SETTINGS_ADJUST 0
 #define SUPPORT_HYNIX_RX_DQS_WEAK_PULL 0
 #define RX_DLY_TRACK_ONLY_FOR_DEBUG 0
-//Run time config
-#define TEMP_SENSOR_ENABLE // Enable rumtime HMR4
+
+#define TEMP_SENSOR_ENABLE
 #define ENABLE_REFRESH_RATE_DEBOUNCE 1
 #define ENABLE_PER_BANK_REFRESH 1
-#define PER_BANK_REFRESH_USE_MODE 1 // 0: original mode, 1: hybrid mode, 2: always pb mode
+#define PER_BANK_REFRESH_USE_MODE 1
 #define IMP_TRACKING_PB_TO_AB_REFRESH_WA 1
 #define DRAMC_MODIFIED_REFRESH_MODE 1
 #define DRAMC_CKE_DEBOUNCE 1
@@ -286,14 +286,14 @@
 
 #define SAMSUNG_LP4_NWR_WORKAROUND 1
 #define AC_TIMING_DERATE_ENABLE 1
-#define ENABLE_EARLY_BG_CMD 0   // 0: Disable 1: Enable, Reduce the CMD latency by CTO_EBG request
+#define ENABLE_EARLY_BG_CMD 0
 
 //////////////////////////////////// DVFS //////////////////////////////
-#define ENABLE_DVS 1 //DVS need tracking enable
-#define DRAMC_DFS_MODE 1 // 0:Legacy, 1:DPM RG, 2: PHY RG
+#define ENABLE_DVS 1
+#define DRAMC_DFS_MODE 1
 #define ENABLE_RTMRW_DEBUG_LOG 0
-#define ENABLE_TX_REBASE_ODT_WA 0 // for Pexxxs/xxx868
-#define ENABLE_DDR800_SOPEN_DSC_WA 1 //Paxxer
+#define ENABLE_TX_REBASE_ODT_WA 0
+#define ENABLE_DDR800_SOPEN_DSC_WA 1
 #if ENABLE_TX_WDQS
 #define ENABLE_TX_REBASE_WDQS_DQS_PI_WA 0
 #endif
@@ -306,18 +306,18 @@
 #define ENABLE_DFS_TIMING_ENLARGE 0
 #define ENABLE_DFS_208M_CLOCK 0
 #define ENABLE_DFS_HW_SAVE_MASK 0
-#define REPLACE_DFS_RG_MODE 1 //Trial run Remove DFS PHY RG mode
+#define REPLACE_DFS_RG_MODE 1
 #define ENABLE_LP4Y_DFS 0
 #if ENABLE_LP4Y_DFS
-#define LP4Y_BACKUP_SOLUTION 0 // 0:  Set SE after calibration, 1: Set SE before calibration
-#define ENABLE_LP4Y_WA 1 //no que flush actiming extend and CBT can't train in SE
+#define LP4Y_BACKUP_SOLUTION 0
+#define ENABLE_LP4Y_WA 1
 #define ENABLE_DFS_RUNTIME_MRW 1
 #else
 #define LP4Y_BACKUP_SOLUTION 0
 #define ENABLE_LP4Y_WA 0
-#define ENABLE_DFS_RUNTIME_MRW 0 // for LP4x
+#define ENABLE_DFS_RUNTIME_MRW 0
 #endif
-#define ENABLE_TIMING_TXSR_DFS_WA REFRESH_OVERHEAD_REDUCTION // Wait overhead refresh enable, @Darren, Entry SREF -> EXIT SREF -> PDE Command violates tXSR time
+#define ENABLE_TIMING_TXSR_DFS_WA REFRESH_OVERHEAD_REDUCTION
 #define ENABLE_RANK_NUMBER_AUTO_DETECTION 1
 
 #define DDR_HW_AUTOK_POLLING_CNT 100000
@@ -325,9 +325,9 @@
 //////////////////////////////////// FIXME end/////////////////////////
 
 #if (fcFOR_CHIP_ID == fcA60868)
-#define WORKAROUND_LP5_HEFF 1 //High efficiency mode
+#define WORKAROUND_LP5_HEFF 1
 #undef ENABLE_RUNTIME_MRW_FOR_LP5
-#define ENABLE_RUNTIME_MRW_FOR_LP5 0  // DV fail in 868, use RTSWCMD_MRW
+#define ENABLE_RUNTIME_MRW_FOR_LP5 0
 #endif
 
 #if ENABLE_RODT_TRACKING
@@ -337,10 +337,10 @@
 #endif
 
 #define CHECK_GOLDEN_SETTING (FALSE)
-#define APPLY_LOWPOWER_GOLDEN_SETTINGS 1 //0: DCM Off, 1: DCM On
-#define LP5_GOLDEN_SETTING_CHECKER (FALSE) //FALSE: enable LP4 checker
+#define APPLY_LOWPOWER_GOLDEN_SETTINGS 1
+#define LP5_GOLDEN_SETTING_CHECKER (FALSE)
 //#define CMD_PICG_NEW_MODE 1
-//#define ENABLE_RX_DCM_DPHY 1 //Set 0 will lead DCM on/off error (Remove the flag, the setting will be 1)
+//#define ENABLE_RX_DCM_DPHY 1
 //#define CLK_FREE_FUN_FOR_DRAMC_PSEL
 //#define HW_SAVE_FOR_SR
 
@@ -352,10 +352,8 @@
 #define RX_PICG_NEW_MODE 0
 #endif
 
-#define DDR_RESERVE_NEW_MODE 1 //0: old mode 1: new mode
-//=============================================================================
-// for D Sim sumulation used
-//=============================================================================
+#define DDR_RESERVE_NEW_MODE 1
+
 #if QT_GUI_Tool || !FOR_DV_SIMULATION_USED
 #define DV_SIMULATION_INIT_C        1
 #define SIMULATION_LP4_ZQ           1
@@ -370,7 +368,7 @@
 #define SIMULATION_DATLAT           1
 #define SIMULATION_RX_RDDQC         1
 #define SIMULATION_RX_PERBIT        1
-#define SIMULATION_TX_PERBIT        1  // Please enable with write leveling
+#define SIMULATION_TX_PERBIT        1
 #define SIMULATION_RX_DVS           0
 #define SIMULATION_RUNTIME_CONFIG   0
 #else
@@ -387,11 +385,11 @@
 #define SIMULATION_DATLAT           1
 #define SIMULATION_RX_RDDQC         1
 #define SIMULATION_RX_PERBIT        1
-#define SIMULATION_TX_PERBIT        1  // Please enable with write leveling
+#define SIMULATION_TX_PERBIT        1
 #define SIMULATION_RX_DVS           0
-#define SIMULATION_RUNTIME_CONFIG   1 // @Darren for DV sim
+#define SIMULATION_RUNTIME_CONFIG   1
 #endif
-//Used to keep original VREF when doing Rx calibration for RX DVS
+
 #define DVS_CAL_KEEP_VREF 0xf
 
 //#define DDR_INIT_TIME_PROFILING
@@ -405,9 +403,9 @@
 // common
 #define DQS_BYTE_NUMBER             2
 #define DQS_BIT_NUMBER              8
-#define DQ_DATA_WIDTH               16   // define max support bus width in the system (to allocate array size)
+#define DQ_DATA_WIDTH               16
 #define DQM_BYTE_NUM                2
-#define TIME_OUT_CNT                100  //100us
+#define TIME_OUT_CNT                100
 #define HW_REG_SHUFFLE_MAX          4
 
 typedef enum
@@ -417,16 +415,16 @@ typedef enum
     ALL_BYTES
 } BYTES_T;
 
-//Should be removed after A60868
+
 #define LP5_DDR4266_RDBI_WORKAROUND 0
 #define CBT_O1_PINMUX_WORKAROUND  0
 #define WLEV_O1_PINMUX_WORKAROUND 0
 #define WCK_LEVELING_FM_WORKAROUND  0
 
-//RX input buffer offset calibration
+
 #define ENABLE_RX_INPUT_BUFF_OFF_K 1
 
-/* Gating window */
+
 #define DQS_GW_COARSE_STEP      1
 #define DQS_GW_FINE_START       0
 #define DQS_GW_FINE_END         32
@@ -435,23 +433,23 @@ typedef enum
 #define DQS_GW_UI_PER_MCK	16
 #define DQS_GW_PI_PER_UI	32
 
-// DATLAT
+
 #define DATLAT_TAP_NUMBER 32
 
-// RX DQ/DQS
-#define MAX_RX_DQSDLY_TAPS          511    // 0x018, May set back to 64 if no need.
+
+#define MAX_RX_DQSDLY_TAPS          511
 #define MAX_RX_DQDLY_TAPS           252
 #define RX_VREF_NOT_SPECIFY         0xff
-#define RX_VREF_DUAL_RANK_K_FREQ    1866    // if freq >=RX_VREF_DUAL_RANK_K_FREQ, Rank1 rx vref K will be enable.
+#define RX_VREF_DUAL_RANK_K_FREQ    1866
 #define RX_VREF_RANGE_BEGIN         0
 #define RX_VREF_RANGE_BEGIN_ODT_OFF 32
 #define RX_VREF_RANGE_BEGIN_ODT_ON  24
-#define RX_VREF_RANGE_END           128      //field is 6 bit, but can only use 0~63
+#define RX_VREF_RANGE_END           128
 #define RX_VREF_RANGE_STEP          1
 #define RX_PASS_WIN_CRITERIA        30
 #define RDDQC_PINMUX_WORKAROUND     1
 
-// TX DQ/DQS
+
 #if CODE_SIZE_REDUCE
 #define TX_AUTO_K_SUPPORT 0
 #else
@@ -462,8 +460,8 @@ typedef enum
 #define TX_AUTO_K_WORKAROUND 1
 #define ENABLE_PA_IMPRO_FOR_TX_AUTOK 1
 #endif
-#define MAX_TX_DQDLY_TAPS           31   // max DQ TAP number
-#define MAX_TX_DQSDLY_TAPS          31   // max DQS TAP number
+#define MAX_TX_DQDLY_TAPS           31
+#define MAX_TX_DQSDLY_TAPS          31
 #define TX_OE_EXTEND 0
 #define TX_DQ_OE_SHIFT_LP5 5
 #if TX_OE_EXTEND
@@ -483,13 +481,12 @@ typedef enum
 #define TX_RETRY_CONTROL_BY_SPM 0
 #endif
 
-// Sw work around options.
-#define CA_TRAIN_RESULT_DO_NOT_MOVE_CLK                 1 // work around for clock multi phase problem(cannot move clk or the clk will be bad)
+
+#define CA_TRAIN_RESULT_DO_NOT_MOVE_CLK                 1
 #define DramcHWDQSGatingTracking_JADE_TRACKING_MODE 1
 #define DramcHWDQSGatingTracking_FIFO_MODE          1
-#define DONT_MOVE_CLK_DELAY // don't move clk delay
-/* If defined for gFreqTbl and fastK
- */
+#define DONT_MOVE_CLK_DELAY
+
 #define LP4_SHU0_FREQ      (1866)
 #define LP4_SHU8_FREQ      (1600)
 #define LP4_SHU9_FREQ      (1600)
@@ -514,14 +511,14 @@ typedef enum
 #define LP4_SHU7_FREQSEL   (LP4_DDR800)
 
 #if FOR_DV_SIMULATION_USED
-#define DEFAULT_TEST2_1_CAL 0x55000000   // pattern0 and base address for test engine when we do calibration
-#define DEFAULT_TEST2_2_CAL 0xaa000020   // pattern1 and offset address for test engine when we do calibraion
+#define DEFAULT_TEST2_1_CAL 0x55000000
+#define DEFAULT_TEST2_2_CAL 0xaa000020
 #else
-#define DEFAULT_TEST2_1_CAL 0x55000000   // pattern0 and base address for test engine when we do calibration
-#define DEFAULT_TEST2_2_CAL 0xaa000100   // pattern1 and offset address for test engine when we do calibraion
+#define DEFAULT_TEST2_1_CAL 0x55000000
+#define DEFAULT_TEST2_2_CAL 0xaa000100
 #endif
 
-//CBT/CA training
+
 #if CODE_SIZE_REDUCE
 #define CBT_AUTO_K_SUPPORT 0
 #define CBT_OLDMODE_SUPPORT 0
@@ -535,13 +532,13 @@ typedef enum
 #define LP4_MRFSP_TERM_FREQ 1333
 #define LP5_MRFSP_TERM_FREQ 1866
 
-//Calibration Summary
+
 #define PRINT_CALIBRATION_SUMMARY (!SW_CHANGE_FOR_SIMULATION)
 #define PRINT_CALIBRATION_SUMMARY_DETAIL 1
 #define PRINT_CALIBRATION_SUMMARY_FASTK_CHECK 0
 
-#if 1 //(FOR_DV_SIMULATION_USED==0)
-#define ETT_PRINT_FORMAT  // Apply for both preloader and ETT
+#if 1
+#define ETT_PRINT_FORMAT
 #endif
 
 #if !CODE_SIZE_REDUCE
@@ -553,7 +550,7 @@ typedef enum
 //Run Time Config
 //#define DUMMY_READ_FOR_TRACKING
 #define ZQCS_ENABLE_LP4
-#if ENABLE_LP4Y_DFS // @Darren, RT-mrw to HW-zqcal tMRD Violation Report - SW workaround from Robert
+#if ENABLE_LP4Y_DFS
 #undef ZQCS_ENABLE_LP4
 #endif
 #ifndef ZQCS_ENABLE_LP4
@@ -565,7 +562,7 @@ typedef enum
 #define ENABLE_BLOCK_APHY_CLOCK_DFS_OPTION 1
 #define ENABLE_REMOVE_MCK8X_UNCERT_LOWPOWER_OPTION 1
 #define ENABLE_REMOVE_MCK8X_UNCERT_DFS_OPTION 1
-#define RDSEL_TRACKING_EN 1 // @Darren, for SHU0 only (DDR3733 or DDR4266)
+#define RDSEL_TRACKING_EN 1
 #define RDSEL_TRACKING_TH 2133
 #define ENABLE_DFS_SSC_WA 0
 #define ENABLE_DDR800_OPEN_LOOP_MODE_OPTION 1
@@ -587,12 +584,12 @@ typedef enum
 
 
 #if !__ETT__
-// Preloader: using config CFG_DRAM_CALIB_OPTIMIZATION to identify
+
 #if (FOR_DV_SIMULATION_USED==0) && !defined(SLT)
-// Preloader: using config CFG_DRAM_CALIB_OPTIMIZATION to identify
+
 #define SUPPORT_SAVE_TIME_FOR_CALIBRATION		CFG_DRAM_CALIB_OPTIMIZATION
 #else
-// DV simulation, use full calibration flow
+
 #define SUPPORT_SAVE_TIME_FOR_CALIBRATION		0
 #endif
 #define EMMC_READY CFG_DRAM_CALIB_OPTIMIZATION
@@ -632,16 +629,16 @@ typedef enum
 //#define USE_CLK26M
 
 #undef DUAL_FREQ_K
-#define DUAL_FREQ_K 0   //0 : only K 1 freq(1600), 1: K multi freq
+#define DUAL_FREQ_K 0
 
 #undef TDQSCK_PRECALCULATION_FOR_DVFS
-#define TDQSCK_PRECALCULATION_FOR_DVFS  0//DQS pre-calculation
+#define TDQSCK_PRECALCULATION_FOR_DVFS  0
 
 //#undef CHANNEL_NUM
 //#define CHANNEL_NUM 4
 
 #undef REPLACE_DFS_RG_MODE
-#define REPLACE_DFS_RG_MODE 1  //Trial run Remove DFS PHY RG mode
+#define REPLACE_DFS_RG_MODE 1
 
 #undef ENABLE_DUTY_SCAN_V2
 #define ENABLE_DUTY_SCAN_V2 0
@@ -664,7 +661,7 @@ typedef enum
 #define REDUCE_CALIBRATION_OLYMPUS_ONLY 0
 
 #undef APPLY_LOWPOWER_GOLDEN_SETTINGS
-#define APPLY_LOWPOWER_GOLDEN_SETTINGS 0 //Should open APPLY_LOWPOWER_GOLDEN_SETTINGS before SB + 3
+#define APPLY_LOWPOWER_GOLDEN_SETTINGS 0
 
 //#undef SPM_CONTROL_AFTERK //Should open SPM_CONTROL_AFTERK before SB + 3
 
@@ -689,13 +686,13 @@ typedef enum
 #define GATING_ADJUST_TXDLY_FOR_TRACKING 0
 
 #undef ENABLE_PER_BANK_REFRESH
-#define ENABLE_PER_BANK_REFRESH 1  //align bringup setting, Derping
+#define ENABLE_PER_BANK_REFRESH 1
 
 #undef ENABLE_TPBR2PBR_REFRESH_TIMING
-#define ENABLE_TPBR2PBR_REFRESH_TIMING 1  //align bringup setting, Robert
+#define ENABLE_TPBR2PBR_REFRESH_TIMING 1
 
 #undef REFRESH_OVERHEAD_REDUCTION
-#define REFRESH_OVERHEAD_REDUCTION 1  //align bringup setting, Derping
+#define REFRESH_OVERHEAD_REDUCTION 1
 
 #undef AC_TIMING_DERATE_ENABLE
 #define AC_TIMING_DERATE_ENABLE 1
@@ -745,18 +742,18 @@ typedef enum
 #undef XRTW2W_PERFORM_ENHANCE_TX
 #undef XRTR2R_PERFORM_ENHANCE_DQSG_RX_DLY
 #ifdef XRTR2W_PERFORM_ENHANCE_RODTEN
-#undef XRTR2W_PERFORM_ENHANCE_RODTEN     //conflict with ENABLE_RODT_TRACKING, LP4 support only
+#undef XRTR2W_PERFORM_ENHANCE_RODTEN
 #endif
 #endif
-#endif //FIRST_BRING_UP
+#endif
 
 //======================== RSHMOO Definition =====================================
 #define RUNTIME_SHMOO_RELEATED_FUNCTION    CFG_DRAM_SAVE_FOR_RUNTIME_SHMOO
 #define RUNTIME_SHMOO_RG_BACKUP_NUM         (100)
-#define RUNTIME_SHMOO_TX    0    //TX RX can't be opened simultaneously
+#define RUNTIME_SHMOO_TX    0
 #define RUNTIME_SHMOO_RX    0
 
-#if RUNTIME_SHMOO_RELEATED_FUNCTION    //if enable rshmoo, close TX OE calibration
+#if RUNTIME_SHMOO_RELEATED_FUNCTION
 #undef TX_OE_EXTEND
 #define TX_OE_EXTEND 1
 #undef TX_DQ_OE_SHIFT_LP4
@@ -775,19 +772,19 @@ typedef enum
 
 #define RUNTIME_SHMOO_FAST_K 1
 
-#define RUNTIME_SHMOO_TEST_CHANNEL    0   // 0: CHA, 1: CHB
-#define RUNTIME_SHMOO_TEST_RANK       0   // 0: RK0, 1: RK1
-#define RUNTIME_SHMOO_TEST_BYTE       0   // 0: Byte0, 1: Byte1
+#define RUNTIME_SHMOO_TEST_CHANNEL    0
+#define RUNTIME_SHMOO_TEST_RANK       0
+#define RUNTIME_SHMOO_TEST_BYTE       0
 
-#define RUNTIME_SHMOO_TEST_PI_DELAY_START 0   // 0~63
-#define RUNTIME_SHMOO_TEST_PI_DELAY_END   63  // 0~63
+#define RUNTIME_SHMOO_TEST_PI_DELAY_START 0
+#define RUNTIME_SHMOO_TEST_PI_DELAY_END   63
 #define RUNTIME_SHMOO_TEST_PI_DELAY_STEP  1
 
-#define RUNTIME_SHMOO_RX_VREF_RANGE_END          127 //La_fite: 63
-#define RUNTIME_SHMOO_RX_TEST_MARGIN        2 //for RX Delay (start:first_pass-margin, end:last_pass +margin)
+#define RUNTIME_SHMOO_RX_VREF_RANGE_END          127
+#define RUNTIME_SHMOO_RX_TEST_MARGIN        2
 
-#define RUNTIME_SHMOO_TEST_VREF_START     0   // 0~81  : 0~50 is range 0, 51~81 is range 1
-#define RUNTIME_SHMOO_TEST_VREF_END       81  // 0~81  : 0~50 is range 0, 51~81 is range 1
+#define RUNTIME_SHMOO_TEST_VREF_START     0
+#define RUNTIME_SHMOO_TEST_VREF_END       81
 #define RUNTIME_SHMOO_TEST_VREF_STEP      1
 #endif
 //=============================================================================
@@ -850,7 +847,7 @@ typedef enum
 {
     IMP_LOW_FREQ = 0,
     IMP_HIGH_FREQ,
-    IMP_NT_ODTN, // Samsung support only for LP4X
+    IMP_NT_ODTN,
     IMP_VREF_MAX
 } DRAMC_IMP_T;
 
@@ -869,11 +866,11 @@ typedef enum
 
 typedef enum
 {
-    DRAM_OK = 0, // OK
-    DRAM_FAIL,    // FAIL
+    DRAM_OK = 0,
+    DRAM_FAIL,
     DRAM_FAST_K,
     DRAM_NO_K,
-} DRAM_STATUS_T; // DRAM status type
+} DRAM_STATUS_T;
 
 typedef enum
 {
@@ -888,7 +885,7 @@ typedef enum
 {
     CKE_FIXOFF = 0,
     CKE_FIXON,
-    CKE_DYNAMIC //After CKE FIX on/off, CKE should be returned to dynamic (control by HW)
+    CKE_DYNAMIC
 } CKE_FIX_OPTION;
 
 typedef enum
@@ -930,7 +927,7 @@ typedef enum
     LP4_DDR400,
 
     PLL_FREQ_SEL_MAX
-} DRAM_PLL_FREQ_SEL_T; // DRAM DFS type
+} DRAM_PLL_FREQ_SEL_T;
 
 typedef enum
 {
@@ -974,14 +971,14 @@ typedef enum
     SRAM_SHU7,
 #endif
     DRAM_DFS_SRAM_MAX
-} DRAM_DFS_SRAM_SHU_T; // DRAM SRAM RG type
+} DRAM_DFS_SRAM_SHU_T;
 
 typedef enum
 {
     SHUFFLE_RG = 0,
     NONSHUFFLE_RG,
     BOTH_SHU_NONSHU_RG,
-} RG_SHU_TYPE_T; // RG SHUFFLE type
+} RG_SHU_TYPE_T;
 
 typedef enum
 {
@@ -1037,7 +1034,7 @@ typedef struct _DRAM_DFS_FREQUENCY_TABLE_T
     DIV_MODE_T divmode;
     DRAM_DFS_SRAM_SHU_T SRAMIdx;
     DUTY_CALIBRATION_T duty_calibration_mode;
-    VREF_CALIBRATION_ENABLE_T vref_calibartion_enable; // CBT/RX/TX vref calibration enable or not
+    VREF_CALIBRATION_ENABLE_T vref_calibartion_enable;
     DDR800_MODE_T ddr_loop_mode;
 } DRAM_DFS_FREQUENCY_TABLE_T;
 
@@ -1060,13 +1057,7 @@ typedef enum
     RANK_MAX
 } DRAM_RANK_T;
 
-/*
- * Internal CBT mode enum
- * 1. Calibration flow uses vGet_Dram_CBT_Mode to
- *    differentiate between mixed vs non-mixed LP4
- * 2. Declared as dram_cbt_mode[RANK_MAX] internally to
- *    store each rank's CBT mode type
- */
+
 typedef enum
 {
     CBT_NORMAL_MODE = 0,
@@ -1112,10 +1103,7 @@ typedef enum
     PINMUX_MAX
 } DRAM_PINMUX;
 
-/* For faster switching between term and un-term operation
- * FSP_0: For un-terminated freq.
- * FSP_1: For terminated freq.
- */
+
 typedef enum
 {
     FSP_0 = 0,
@@ -1151,17 +1139,13 @@ typedef enum
 	CBT_PHASE_FALLING
 } lp5_cbt_phase_t;
 
-/*
- * External CBT mode enum
- * Due to MDL structure compatibility (single field for dram CBT mode),
- * the below enum is used in preloader to differentiate between dram cbt modes
- */
+
 typedef enum
 {
-    CBT_R0_R1_NORMAL = 0,   // Normal mode
-    CBT_R0_R1_BYTE,         // Byte mode
-    CBT_R0_NORMAL_R1_BYTE,  // Mixed mode R0: Normal R1: Byte
-    CBT_R0_BYTE_R1_NORMAL   // Mixed mode R0: Byte R1: Normal
+    CBT_R0_R1_NORMAL = 0,
+    CBT_R0_R1_BYTE,
+    CBT_R0_NORMAL_R1_BYTE,
+    CBT_R0_BYTE_R1_NORMAL
 } DRAM_CBT_MODE_EXTERN_T;
 
 typedef enum
@@ -1197,9 +1181,9 @@ typedef enum
 
 typedef enum
 {
-    TEST_ISI_PATTERN = 0, //don't change
-    TEST_AUDIO_PATTERN = 1, //don't change
-    TEST_XTALK_PATTERN = 2, //don't change
+    TEST_ISI_PATTERN = 0,
+    TEST_AUDIO_PATTERN = 1,
+    TEST_XTALK_PATTERN = 2,
     TEST_WORST_SI_PATTERN,
     TEST_TA1_SIMPLE,
     TEST_TESTPAT4,
@@ -1228,7 +1212,7 @@ typedef enum
     TX_DQM_WINDOW_SPEC_OUT = 0xff
 } DRAM_TX_PER_BIT_DQM_WINDOW_RESULT_TYPE_T;
 
-// enum for CKE toggle mode (toggle both ranks 1. at the same time (CKE_RANK_DEPENDENT) 2. individually (CKE_RANK_INDEPENDENT))
+
 typedef enum
 {
     CKE_RANK_INDEPENDENT = 0,
@@ -1274,7 +1258,7 @@ enum lpddr5_rpre_mode {
 	LPDDR5_RPRE_4S_0T = 0,
 	LPDDR5_RPRE_2S_2T,
 	LPDDR5_RPRE_0S_4T,
-	LPDDR5_RPRE_XS_4T, /* X = 2~4tWCK */
+	LPDDR5_RPRE_XS_4T,
 };
 
 enum rxdqs_autok_burst_len {
@@ -1313,7 +1297,7 @@ typedef enum
     Deviation_RX,
     Deviation_TX,
     Deviation_MAX
-} DRAM_DEVIATION_TYPE_T; // DRAM SHUFFLE RG type
+} DRAM_DEVIATION_TYPE_T;
 #endif
 
 #if SUPPORT_SAVE_TIME_FOR_CALIBRATION
@@ -1367,7 +1351,7 @@ typedef struct _SAVE_TIME_FOR_CALIBRATION_T
     #endif
 
     // Write leveling
-    U8 u1WriteLeveling_bypass_Save[CHANNEL_NUM][RANK_MAX][DQS_BYTE_NUMBER];  //for bypass writeleveling
+    U8 u1WriteLeveling_bypass_Save[CHANNEL_NUM][RANK_MAX][DQS_BYTE_NUMBER];
 
     // Gating
     U8 u1Gating_MCK_Save[CHANNEL_NUM][RANK_MAX][DQS_BYTE_NUMBER];
@@ -1399,15 +1383,15 @@ typedef struct _SAVE_TIME_FOR_CALIBRATION_T
 
 
 #if RUNTIME_SHMOO_RELEATED_FUNCTION
-    S16 u1RxWinPerbitDQ_firsbypass_Save[CHANNEL_NUM][RANK_MAX][DQ_DATA_WIDTH];  //for bypass rxwindow
-    U8 u1RxWinPerbitDQ_lastbypass_Save[CHANNEL_NUM][RANK_MAX][DQ_DATA_WIDTH];  //for bypass rxwindow
+    S16 u1RxWinPerbitDQ_firsbypass_Save[CHANNEL_NUM][RANK_MAX][DQ_DATA_WIDTH];
+    U8 u1RxWinPerbitDQ_lastbypass_Save[CHANNEL_NUM][RANK_MAX][DQ_DATA_WIDTH];
     U8 u1SwImpedanceResule[2][4];
     U32 u4RG_Backup[CHANNEL_NUM][RUNTIME_SHMOO_RG_BACKUP_NUM];
 
     RUNTIME_SHMOO_SAVE_PARAMETER_T Runtime_Shmoo_para;
 #endif
 }SAVE_TIME_FOR_CALIBRATION_T;
-#endif // SUPPORT_SAVE_TIME_FOR_CALIBRATION
+#endif
 
 #if MRW_CHECK_ONLY
 #define MR_NUM 64
@@ -1423,18 +1407,18 @@ typedef struct _DRAMC_CTX_T
     DRAM_RANK_T rank;
     DRAM_PLL_FREQ_SEL_T freq_sel;
     DRAM_DRAM_TYPE_T dram_type;
-    DRAM_FAST_SWITH_POINT_T dram_fsp;  // only for LP4, uesless in LP3
-    DRAM_FAST_SWITH_POINT_T boot_fsp;  // for RTMRW DFS
-    DRAM_ODT_MODE_T odt_onoff;/// only for LP4, uesless in LP3
-    DRAM_CBT_MODE_T dram_cbt_mode[RANK_MAX]; //only for LP4, useless in LP3
-    DRAM_DBI_MODE_T DBI_R_onoff[FSP_MAX];   // only for LP4, uesless in LP3
-    DRAM_DBI_MODE_T DBI_W_onoff[FSP_MAX];   // only for LP4, uesless in LP3
+    DRAM_FAST_SWITH_POINT_T dram_fsp;
+    DRAM_FAST_SWITH_POINT_T boot_fsp;
+    DRAM_ODT_MODE_T odt_onoff;
+    DRAM_CBT_MODE_T dram_cbt_mode[RANK_MAX];
+    DRAM_DBI_MODE_T DBI_R_onoff[FSP_MAX];
+    DRAM_DBI_MODE_T DBI_W_onoff[FSP_MAX];
     DRAM_DATA_WIDTH_T data_width;
     U32 test2_1;
     U32 test2_2;
     DRAM_TEST_PATTERN_T test_pattern;
     U16 frequency;
-    U16 freqGroup; /* Used to support freq's that are not in ACTimingTable */
+    U16 freqGroup;
     U16 vendor_id;
     U16 revision_id;
     U16 density;
@@ -1445,13 +1429,13 @@ typedef struct _DRAMC_CTX_T
     //U8 enable_tx_scan_vref;
 
     #if PRINT_CALIBRATION_SUMMARY
-    U32 aru4CalResultFlag[CHANNEL_NUM][RANK_MAX];// record the calibration is fail or success,  0:success, 1: fail
-    U32 aru4CalExecuteFlag[CHANNEL_NUM][RANK_MAX]; // record the calibration is execute or not,  0:no operate, 1: done
+    U32 aru4CalResultFlag[CHANNEL_NUM][RANK_MAX];
+    U32 aru4CalExecuteFlag[CHANNEL_NUM][RANK_MAX];
     U32 SWImpCalResult;
     U32 SWImpCalExecute;
     #if PRINT_CALIBRATION_SUMMARY_FASTK_CHECK
-    U32 FastKResultFlag[2][RANK_MAX];// record the calibration is fail or success,  0:success, 1: fail
-    U32 FastKExecuteFlag[2][RANK_MAX]; // record the calibration is execute or not,  0:no operate, 1: done
+    U32 FastKResultFlag[2][RANK_MAX];
+    U32 FastKExecuteFlag[2][RANK_MAX];
     #endif
     #endif
 
@@ -1467,8 +1451,8 @@ typedef struct _DRAMC_CTX_T
     #endif
     DRAM_DFS_FREQUENCY_TABLE_T *pDFSTable;
     DRAM_DFS_REG_SHU_T ShuRGAccessIdx;
-    lp5_training_mode_t lp5_training_mode; //only for LP5
-    lp5_cbt_phase_t lp5_cbt_phase; //only for LP5
+    lp5_training_mode_t lp5_training_mode;
+    lp5_cbt_phase_t lp5_cbt_phase;
     u8 new_cbt_mode;
     U8 u1PLLMode;
     DRAM_DBI_MODE_T curDBIState;
@@ -1524,9 +1508,9 @@ typedef struct _JMETER_DELAYCELL_T
 #if PIN_CHECK_TOOL
 typedef struct _DEBUG_PIN_INF_FOR_FLASHTOOL_T
 {
-    U16 TOTAL_ERR;//DQ,CA
+    U16 TOTAL_ERR;
     U16 IMP_ERR_FLAG;
-    U8 WL_ERR_FLAG;//DQS
+    U8 WL_ERR_FLAG;
     U8 CA_ERR_FLAG[CHANNEL_MAX][RANK_MAX];
     U8 CA_WIN_SIZE[CHANNEL_MAX][RANK_MAX][CATRAINING_NUM_LP4];
     U8 DRAM_PIN_RX_ERR_FLAG[CHANNEL_MAX][RANK_MAX][DQS_BYTE_NUMBER];
@@ -1610,11 +1594,11 @@ typedef struct _PROFILING_TIME_T
 #define JUST_TO_GLOBAL_VALUE (0)
 #define TO_MR     (1)
 
-// LP5 MR30
-#define MR30_DCAU            (Fld(4, 4)) // DCA for upper byte
-#define MR30_DCAL            (Fld(4, 0)) // DCA for lower byte
 
-// LP5 MR26
+#define MR30_DCAU            (Fld(4, 4))
+#define MR30_DCAL            (Fld(4, 0))
+
+
 #define MR26_DCMU1           (Fld(1, 5))
 #define MR26_DCMU0           (Fld(1, 4))
 #define MR26_DCML1           (Fld(1, 3))
@@ -1622,7 +1606,7 @@ typedef struct _PROFILING_TIME_T
 #define MR26_DCM_FLIP        (Fld(1, 1))
 #define MR26_DCM_START_STOP  (Fld(1, 0))
 
-// LP4 MR13
+
 #define MR13_FSP_OP          (Fld(1, 7))
 #define MR13_FSP_WR          (Fld(1, 6))
 #define MR13_DMD             (Fld(1, 5))

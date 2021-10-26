@@ -11,13 +11,10 @@
 //-----------------------------------------------------------------------------
 U8 gDRSEnableSelfWakeup = 0;
 
-//----------------------------------------
-// Auto Gen Code -- START
-//----------------------------------------
 #if (CHECK_GOLDEN_SETTING == TRUE)
 typedef struct _GOLDEN_FIELD_T
 {
-    char fieldName[64]; //field name
+    char fieldName[64];
     U32 group;
     U32 field;
     U32 u4ChaValue;
@@ -25,7 +22,7 @@ typedef struct _GOLDEN_FIELD_T
 GOLDEN_FIELD_T *golden_setting_anwer;
 
 #if APPLY_LOWPOWER_GOLDEN_SETTINGS
-// DCM On
+
 GOLDEN_FIELD_T shuf_golden_setting_anwer[] =
 {
     {"SHU_B1_DQ8_R_DMRANK_CHG_PIPE_CG_IG_B1", DDRPHY_REG_SHU_B1_DQ8, SHU_B1_DQ8_R_DMRANK_CHG_PIPE_CG_IG_B1, 0x0},
@@ -169,7 +166,7 @@ GOLDEN_FIELD_T nonshuf_golden_setting_anwer[] =
 };
 
 #else
-// DCM Off
+
 GOLDEN_FIELD_T shuf_golden_setting_anwer[] =
 {
     {"SHU_B1_DQ8_R_DMRANK_CHG_PIPE_CG_IG_B1", DDRPHY_REG_SHU_B1_DQ8, SHU_B1_DQ8_R_DMRANK_CHG_PIPE_CG_IG_B1, 0x1},
@@ -336,7 +333,7 @@ static void EnableCommonDCMNonShuffle(DRAMC_CTX_T *p)
             P_Fld(0x0, MISC_CG_CTRL2_RG_PIPE0_CG_OFF_DISABLE) |
             P_Fld(0x0, MISC_CG_CTRL2_RG_MEM_DCM_APB_TOG) |
             P_Fld(0x5, MISC_CG_CTRL2_RG_MEM_DCM_DBC_CNT));
-    // RG group needs to be toggled!!
+
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_CG_CTRL2, 1, MISC_CG_CTRL2_RG_MEM_DCM_APB_TOG);
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_CG_CTRL2, 0, MISC_CG_CTRL2_RG_MEM_DCM_APB_TOG);
     vIO32WriteFldAlign_All(DDRPHY_REG_CA_DLL_ARPI1, 0x0, CA_DLL_ARPI1_RG_ARPISM_MCK_SEL_CA_REG_OPT);
@@ -395,7 +392,7 @@ void EnableDramcPhyDCMNonShuffle(DRAMC_CTX_T *p, bool bEn)
 {
     BOOL isLP4_DSC = (p->DRAMPinmux == PINMUX_DSC)?1:0;
     U8 MPDIV_CG = 1;
-    // Special case
+
     EnableCommonDCMNonShuffle(p);
 
     if(bEn)
@@ -407,7 +404,7 @@ void EnableDramcPhyDCMNonShuffle(DRAMC_CTX_T *p, bool bEn)
         vIO32WriteFldMulti_All(DDRPHY_REG_MISC_CG_CTRL2,
                 P_Fld(0x0, MISC_CG_CTRL2_RG_MEM_DCM_FORCE_ON) |
                 P_Fld(0x1, MISC_CG_CTRL2_RG_MEM_DCM_DCM_EN));
-        // RG group needs to be toggled!!
+
         vIO32WriteFldAlign_All(DDRPHY_REG_MISC_CG_CTRL2, 1, MISC_CG_CTRL2_RG_MEM_DCM_APB_TOG);
         vIO32WriteFldAlign_All(DDRPHY_REG_MISC_CG_CTRL2, 0, MISC_CG_CTRL2_RG_MEM_DCM_APB_TOG);
         vIO32WriteFldMulti_All(DRAMC_REG_TX_CG_SET0,
@@ -475,7 +472,7 @@ void EnableDramcPhyDCMNonShuffle(DRAMC_CTX_T *p, bool bEn)
         vIO32WriteFldMulti_All(DDRPHY_REG_MISC_CTRL4,
 #if (RX_PICG_NEW_MODE || TX_PICG_NEW_MODE)
                 P_Fld(0x1, MISC_CTRL4_R_OPT2_CG_MCK) |
-                P_Fld(MPDIV_CG, MISC_CTRL4_R_OPT2_MPDIV_CG) | //WA for DDR800 DSC DRAM, Need to check in Sim
+                P_Fld(MPDIV_CG, MISC_CTRL4_R_OPT2_MPDIV_CG) |
 #endif
 #if RX_PICG_NEW_MODE     
                 P_Fld(0x1, MISC_CTRL4_R_OPT2_CG_DQSIEN) |
@@ -501,7 +498,7 @@ void EnableDramcPhyDCMNonShuffle(DRAMC_CTX_T *p, bool bEn)
         vIO32WriteFldMulti_All(DDRPHY_REG_MISC_CG_CTRL2,
                 P_Fld(0x1, MISC_CG_CTRL2_RG_MEM_DCM_FORCE_ON) |
                 P_Fld(0x0, MISC_CG_CTRL2_RG_MEM_DCM_DCM_EN));
-        // RG group needs to be toggled!!
+
         vIO32WriteFldAlign_All(DDRPHY_REG_MISC_CG_CTRL2, 1, MISC_CG_CTRL2_RG_MEM_DCM_APB_TOG);
         vIO32WriteFldAlign_All(DDRPHY_REG_MISC_CG_CTRL2, 0, MISC_CG_CTRL2_RG_MEM_DCM_APB_TOG);
         vIO32WriteFldMulti_All(DRAMC_REG_TX_CG_SET0,
@@ -582,7 +579,7 @@ void EnableDramcPhyDCMNonShuffle(DRAMC_CTX_T *p, bool bEn)
 void EnableDramcPhyDCMShuffle(DRAMC_CTX_T *p, bool bEn)
 {
     BOOL isLP4_DSC = (p->DRAMPinmux == PINMUX_DSC)?1:0;
-    // Special case
+
     // DRAMC_REG_SHU_RX_CG_SET0 - SHU_RX_CG_SET0_READ_START_EXTEND3: Special case
     // DRAMC_REG_SHU_RX_CG_SET0 - SHU_RX_CG_SET0_READ_START_EXTEND2: Special case
     // DRAMC_REG_SHU_RX_CG_SET0 - SHU_RX_CG_SET0_READ_START_EXTEND1: Special case
@@ -662,9 +659,7 @@ void EnableDramcPhyDCMShuffle(DRAMC_CTX_T *p, bool bEn)
     return;
 }
 
-//----------------------------------------
-// Auto Gen Code -- END
-//----------------------------------------
+
 
 void EnableDramcPhyDCM(DRAMC_CTX_T *p, bool bEn)
 {
@@ -672,7 +667,7 @@ void EnableDramcPhyDCM(DRAMC_CTX_T *p, bool bEn)
     DramcBroadcastOnOff(DRAMC_BROADCAST_OFF);
 
     EnableDramcPhyDCMNonShuffle(p, bEn);
-    EnableDramcPhyDCMShuffle(p, bEn);//only need to set SHU0 RG while init, SHU0 will copy to others
+    EnableDramcPhyDCMShuffle(p, bEn);
 
 #if ((CHECK_GOLDEN_SETTING == TRUE) && (APPLY_LOWPOWER_GOLDEN_SETTINGS == 0))
     DRAM_STATUS_T stResult = CheckGoldenSetting(p);
@@ -726,7 +721,7 @@ DRAM_STATUS_T CheckRxPICGNewModeSetting(DRAMC_CTX_T *p)
         u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2), MISC_STBCAL2_STB_STBENRST_EARLY_1T_EN);
         mcSHOW_DBG_MSG(("MISC_STBCAL2_STB_STBENRST_EARLY_1T_EN:0x%x \n", u4Value));                                
 
-        for (u1RankIdx = 0; u1RankIdx < p->support_rank_num; u1RankIdx++)//Should set 2 rank
+        for (u1RankIdx = 0; u1RankIdx < p->support_rank_num; u1RankIdx++)
         {
             
             vSetRank(p, u1RankIdx);
@@ -774,15 +769,15 @@ static DRAM_STATUS_T CheckGoldenField(DRAMC_CTX_T *p, GOLDEN_FIELD_T *golden_set
     U16 u2Idx = 0;
     for(u2Idx = 0; u2Idx < array_cnt; u2Idx++)
     {
-        for(channel_idx = CHANNEL_A; channel_idx < p->support_channel_num; channel_idx++)//comapre CHA && CHB
+        for(channel_idx = CHANNEL_A; channel_idx < p->support_channel_num; channel_idx++)
         {
             vSetPHY2ChannelMapping(p, channel_idx);
             u4Value = u4IO32ReadFldAlign(DRAMC_REG_ADDR(golden_setting_anwer[u2Idx].group), golden_setting_anwer[u2Idx].field);
             //mcSHOW_DBG_MSG(("%s: 0x%x\n", golden_setting_anwer[u2Idx].fieldName, u4Value));
         
-            u4Answer = *(&golden_setting_anwer[u2Idx].u4ChaValue);//golden_setting_anwer only has CHA value
+            u4Answer = *(&golden_setting_anwer[u2Idx].u4ChaValue);
 
-            if(u4Answer != 0xffffffff)//0xffffffff: no need to compare
+            if(u4Answer != 0xffffffff)
             {
                 if(u4Answer == u4Value)
                 {
@@ -823,11 +818,11 @@ DRAM_STATUS_T CheckGoldenSetting(DRAMC_CTX_T *p)
             else
             {
                 mcSHOW_DBG_MSG3(("CONF SHU0, DDR[%d]\n", p->frequency * 2));
-                u1SramShuffleIdx = u1BkShuffleIdx; //Restore to original freq && check conf SHU0
+                u1SramShuffleIdx = u1BkShuffleIdx;
             }
 
             //mcSHOW_DBG_MSG(("shuf_golden_setting_anwer:%d %d\n",  sizeof(shuf_golden_setting_anwer), sizeof(shuf_golden_setting_anwer[0])));
-            DramcDFSDirectJump(p, u1SramShuffleIdx); //fill conf SHU0 && SHU1 from SRAM SHU(0~9) while DVFS twice
+            DramcDFSDirectJump(p, u1SramShuffleIdx);
             DramcDFSDirectJump(p, u1SramShuffleIdx);
 
             eStatus |= CheckGoldenField(p, shuf_golden_setting_anwer, sizeof(shuf_golden_setting_anwer));
@@ -846,7 +841,7 @@ DRAM_STATUS_T CheckGoldenSetting(DRAMC_CTX_T *p)
 }
 #endif
 
-//#ifdef HW_SAVE_FOR_SR
+
 void HwSaveForSR(DRAMC_CTX_T *p)
 {
     vIO32WriteFldMulti_All(DRAMC_REG_SREF_DPD_CTRL, P_Fld(0, SREF_DPD_CTRL_GT_SYNC_MASK)
@@ -854,15 +849,13 @@ void HwSaveForSR(DRAMC_CTX_T *p)
                 | P_Fld(1, SREF_DPD_CTRL_SREF2_OPTION)                        
                 | P_Fld(0, SREF_DPD_CTRL_SREF3_OPTION));
 
-    vIO32WriteFldAlign_All(DDRPHY_REG_MISC_DVFSCTL2, 0x0, MISC_DVFSCTL2_GT_SYNC_MASK_FOR_PHY);//PIC: Robert
+    vIO32WriteFldAlign_All(DDRPHY_REG_MISC_DVFSCTL2, 0x0, MISC_DVFSCTL2_GT_SYNC_MASK_FOR_PHY);
 }
 //#endif
 
 
 //#ifdef CLK_FREE_FUN_FOR_DRAMC_PSEL
-//If dramc enter SREF and power down, all configure need to sync 2T again after exit SREF.
-//If Psel is 1, clock will be free run at the periof of 2T to let conf be applied. 
-//If Psel is 0, Clock will be gated
+
 void ClkFreeRunForDramcPsel(DRAMC_CTX_T *p)
 {
     vIO32WriteFldMulti_All(DRAMC_REG_TX_CG_SET0, P_Fld(0, TX_CG_SET0_PSEL_OPT1)
@@ -887,26 +880,26 @@ void DDR800semiPowerSavingOn(DRAMC_CTX_T *p, U8 next_shu_level, U8 u1OnOff)
     U8 u1ShuLevel = u4IO32ReadFldAlign(DDRPHY_REG_MISC_DVFSCTL, MISC_DVFSCTL_R_OTHER_SHU_GP);
     U8 u1IsDdr800Semi = u4IO32ReadFldAlign(DDRPHY_REG_SHU_PLL1 + (SHU_GRP_DDRPHY_OFFSET * u1ShuLevel), SHU_PLL1_RG_RPHYPLL_DDR400_EN);
 
-    if (u1IsDdr800Semi != 1) // close mode will return
+    if (u1IsDdr800Semi != 1)
         return;
 
     if ((next_shu_level != SRAM_SHU9) && (u1OnOff == DISABLE))
     {
-        // for NORMAL_CLOSE_LOOP
+
         EnableDllCg(p, DISABLE);
     }
     else if ((next_shu_level == SRAM_SHU9) && (u1OnOff == ENABLE))
     {
-        // for DDR800_SEMI_LOOP power saving, clock gating
+
         EnableDllCg(p, ENABLE);
     }
 #endif
 }
 #endif
-#if 0 //Comment out unused code
+#if 0
 void DramcDRS(DRAMC_CTX_T *p, U8 bEnable)
 {
-    //R_DMDRS_CNTX[6:0](DVT set 0, HQA set 4 or 5)
+
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DRAMC_REG_DRSCTRL), P_Fld(0, DRSCTRL_DRSPB2AB_OPT)
                                                             | P_Fld(0, DRSCTRL_DRSMON_CLR)
                                                             | P_Fld(8, DRSCTRL_DRSDLY)
@@ -919,7 +912,7 @@ void DramcDRS(DRAMC_CTX_T *p, U8 bEnable)
 }
 #endif
 
-#if 0 //Comment out unused code
+#if 0
 #if (FOR_DV_SIMULATION_USED == 0 && SW_CHANGE_FOR_SIMULATION == 0)
 void DramcEnterSelfRefresh(DRAMC_CTX_T *p, U8 op)
 {
@@ -931,11 +924,9 @@ void DramcEnterSelfRefresh(DRAMC_CTX_T *p, U8 op)
 
     mcSHOW_DBG_MSG(("[EnterSelfRefresh] %s\n", ((op == 1) ? "enter" : "exit")));
 
-    if (op == 1) // enter self refresh
+    if (op == 1)
     {
-        // ONLY work for LP4, not LP3
-        // MISCA_SRFPD_DIS =1, self-refresh
-        // MISCA_SRFPD_DIS =0, self-refresh power down
+
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SREFCTRL), 1, SREFCTRL_SRFPD_DIS);
 
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SREFCTRL), 1, SREFCTRL_SELFREF);
@@ -949,7 +940,7 @@ void DramcEnterSelfRefresh(DRAMC_CTX_T *p, U8 op)
             u4TimeCnt --;
         }
     }
-    else // exit self refresh
+    else
     {
         vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_SREFCTRL), 0, SREFCTRL_SELFREF);
 
@@ -974,26 +965,26 @@ void DramcEnterSelfRefresh(DRAMC_CTX_T *p, U8 op)
    }
 }
 #endif
-#endif //Comment out unused code
+#endif
 
 //#if ENABLE_RX_DCM_DPHY
 void EnableRxDcmDPhy(DRAMC_CTX_T *p, U16 u2Freq)
 {
     U8 u1PRECAL_CG_EN = 0;
 
-    //open loop mode and semi-open do not enable tracking
+
     if (u1IsPhaseMode(p) == TRUE)
         u1PRECAL_CG_EN = 1;
     else
         u1PRECAL_CG_EN = 0;
 
-    //power gain
+
     vIO32WriteFldMulti_All(DDRPHY_REG_MISC_SHU_RX_CG_CTRL,
             P_Fld(0x1, MISC_SHU_RX_CG_CTRL_RX_DCM_OPT) |
             P_Fld(0x1, MISC_SHU_RX_CG_CTRL_RX_APHY_CTRL_DCM_OPT) |
             P_Fld(0x1, MISC_SHU_RX_CG_CTRL_RX_RODT_DCM_OPT) |
             P_Fld(0x0, MISC_SHU_RX_CG_CTRL_RX_DQSIEN_STBCAL_CG_EN) |
-            P_Fld(0x1, MISC_SHU_RX_CG_CTRL_RX_DQSIEN_AUTOK_CG_EN) |     // if Rx gating Auto K, set 0, Runtime set 1
+            P_Fld(0x1, MISC_SHU_RX_CG_CTRL_RX_DQSIEN_AUTOK_CG_EN) |
             P_Fld(0x1, MISC_SHU_RX_CG_CTRL_RX_DQSIEN_RETRY_CG_EN) |
             P_Fld(u1PRECAL_CG_EN, MISC_SHU_RX_CG_CTRL_RX_PRECAL_CG_EN) |
             P_Fld(0x2, MISC_SHU_RX_CG_CTRL_RX_DCM_EXT_DLY) |
@@ -1002,7 +993,7 @@ void EnableRxDcmDPhy(DRAMC_CTX_T *p, U16 u2Freq)
 #if RDSEL_TRACKING_EN 
     if(u2Freq >= RDSEL_TRACKING_TH)
     {
-        vIO32WriteFldAlign_All(DDRPHY_REG_MISC_SHU_RX_CG_CTRL, 0x0, MISC_SHU_RX_CG_CTRL_RX_RDSEL_TRACKING_CG_EN);   // if K, set 1, at runtime if enable, set 0, else 1    
+        vIO32WriteFldAlign_All(DDRPHY_REG_MISC_SHU_RX_CG_CTRL, 0x0, MISC_SHU_RX_CG_CTRL_RX_RDSEL_TRACKING_CG_EN);
     }
     else
     #endif
@@ -1022,7 +1013,7 @@ void EnableCmdPicgEffImprove(DRAMC_CTX_T *p)
     {
         u2Clk_Dyn_Gating_Sel = 0x6;
     }
-    else //DIV8_MODE, DIV16_MODE
+    else
     {
         u2Clk_Dyn_Gating_Sel = 0x5;
     }

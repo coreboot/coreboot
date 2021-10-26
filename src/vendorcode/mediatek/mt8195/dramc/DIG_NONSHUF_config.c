@@ -5,9 +5,6 @@
 
 Gating_confg_T Gat_p;
 
-//============================================
-// digital PHY config
-//============================================
 static void DIG_PHY_config(DRAMC_CTX_T *p)
 {
 #if ENABLE_PINMUX_FOR_RANK_SWAP
@@ -43,7 +40,7 @@ static void DIG_PHY_config(DRAMC_CTX_T *p)
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFS_EMI_CLK)      , P_Fld(   1     , MISC_DVFS_EMI_CLK_RG_DLL_SHUFFLE_DDRPHY ));
 
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9)                 , P_Fld(   1     , B0_DQ9_R_DMRXFIFO_STBENCMP_EN_B0        ));
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ9)                 , P_Fld(   (!isLP4_DSC)     , B1_DQ9_R_DMRXFIFO_STBENCMP_EN_B1        ));//TODO:check
+    vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ9)                 , P_Fld(   (!isLP4_DSC)     , B1_DQ9_R_DMRXFIFO_STBENCMP_EN_B1        ));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD9)                 , P_Fld(   isLP4_DSC     , CA_CMD9_R_DMRXFIFO_STBENCMP_EN_CA        ));
 
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL1)             , P_Fld(RK_SWAP_EN, MISC_CTRL1_R_RK_PINMUXSWAP_EN          ));
@@ -52,21 +49,21 @@ static void DIG_PHY_config(DRAMC_CTX_T *p)
 
     if(A_T->NEW_RANK_MODE==0)
     {
-        //B0
+
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9)             , P_Fld(   4     , B0_DQ9_R_IN_GATE_EN_LOW_OPT_B0          ) \
                                                                          | P_Fld(   0     , B0_DQ9_R_DMRXDVS_R_F_DLY_RK_OPT_B0      ));
-        vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ10)            , P_Fld(   0     , B0_DQ10_ARPI_CG_RK1_SRC_SEL_B0          ));//TODO:check
+        vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ10)            , P_Fld(   0     , B0_DQ10_ARPI_CG_RK1_SRC_SEL_B0          ));
 
         if (isLP4_DSC)
         {
-            //CA
+
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD9)             , P_Fld(   4     , CA_CMD9_R_IN_GATE_EN_LOW_OPT_CA          ) \
                                                                          | P_Fld(   0     , CA_CMD9_R_DMRXDVS_R_F_DLY_RK_OPT      ));
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD10)            , P_Fld(   0     , CA_CMD10_ARPI_CG_RK1_SRC_SEL_CA          ));//TODO:check
+            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD10)            , P_Fld(   0     , CA_CMD10_ARPI_CG_RK1_SRC_SEL_CA          ));
         }
         else
         {
-            //B1
+
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ9)             , P_Fld(   4     , B1_DQ9_R_IN_GATE_EN_LOW_OPT_B1          ) \
                                                                          | P_Fld(   0     , B1_DQ9_R_DMRXDVS_R_F_DLY_RK_OPT_B1      ));
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ10)            , P_Fld(   0     , B1_DQ10_ARPI_CG_RK1_SRC_SEL_B1          ));
@@ -74,24 +71,24 @@ static void DIG_PHY_config(DRAMC_CTX_T *p)
     }
     else
     {
-        //B0
+
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9)             , P_Fld(   0     , B0_DQ9_R_IN_GATE_EN_LOW_OPT_B0          ) \
                                                                          | P_Fld(   1     , B0_DQ9_R_DMRXDVS_R_F_DLY_RK_OPT_B0      ));
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ10)            , P_Fld(   1     , B0_DQ10_ARPI_CG_RK1_SRC_SEL_B0          ));
 
         if (isLP4_DSC)
         {
-            //CA
+
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD9)             , P_Fld(   0     , CA_CMD9_R_IN_GATE_EN_LOW_OPT_CA          ) \
                                                                          | P_Fld(   1     , CA_CMD9_R_DMRXDVS_R_F_DLY_RK_OPT      ));
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD10)            , P_Fld(   1     , CA_CMD10_ARPI_CG_RK1_SRC_SEL_CA          ));//TODO:check
+            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_CA_CMD10)            , P_Fld(   1     , CA_CMD10_ARPI_CG_RK1_SRC_SEL_CA          ));
         }
         else
         {
-            //B1
+
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ9)             , P_Fld(   0     , B1_DQ9_R_IN_GATE_EN_LOW_OPT_B1          ) \
                                                                          | P_Fld(   1     , B1_DQ9_R_DMRXDVS_R_F_DLY_RK_OPT_B1      ));
-            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ10)            , P_Fld(   1     , B1_DQ10_ARPI_CG_RK1_SRC_SEL_B1          ));//TODO:check
+            vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ10)            , P_Fld(   1     , B1_DQ10_ARPI_CG_RK1_SRC_SEL_B1          ));
         }
     }
 
@@ -109,11 +106,11 @@ static void DIG_PHY_config(DRAMC_CTX_T *p)
 static void GATING_MODE_CFG(Gating_confg_T *tr)
 {
     tr->GAT_TRACK_EN         = ((A_D->DQ_SEMI_OPEN == 1)||(A_D->DQ_CA_OPEN==1))?0:1;
-    tr->RX_GATING_MODE       = 2; //fix 7UI mode under LPDDR4
-    tr->RX_GATING_TRACK_MODE = 2; //fix FIFO mode under LPDDR4
-    tr->PICG_EARLY_EN        = 1; //fix under LPDDR4, if LPDDR5 have to set 1
-    tr->SELPH_MODE           = 1; //random inside {0,1} //for improve APHY XRTR2R. NEW_APHY MODE with 1.
-    tr->VALID_LAT_VALUE      = 1; //random inside {0,1}
+    tr->RX_GATING_MODE       = 2;
+    tr->RX_GATING_TRACK_MODE = 2;
+    tr->PICG_EARLY_EN        = 1;
+    tr->SELPH_MODE           = 1;
+    tr->VALID_LAT_VALUE      = 1;
 
     mcSHOW_DBG_MSG6(("============================================================== \n"));
     mcSHOW_DBG_MSG6(("Gating Mode config\n"              ));
@@ -132,9 +129,9 @@ static void GATING_MODE_CFG(Gating_confg_T *tr)
     mcSHOW_DBG_MSG6(("============================================================== \n"));
 }
 
-//======================================
-//gating widnow mode
-//======================================
+
+
+
 static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
 {
     BOOL isLP4_DSC = (p->DRAMPinmux == PINMUX_DSC)?1:0;
@@ -155,12 +152,9 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL2)    , P_Fld(   1        , MISC_STBCAL2_STB_PICG_EARLY_1T_EN ));
     }
 
-    //================================
-    //gating Mode config
-    //================================
     switch (gat_c->RX_GATING_MODE)
     {
-        //Pulse Mode
+
         case 0:
         {
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9)          , P_Fld(  0    , B0_DQ9_RG_RX_ARDQS0_DQSIENMODE_B0 ));
@@ -170,7 +164,7 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_STBCAL) , P_Fld(  0    , MISC_SHU_STBCAL_DQSIEN_BURST_MODE ));
             break;
         }
-        // Burst Mode (8UI)
+
         case 1:
         {
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9)          , P_Fld(  1    , B0_DQ9_RG_RX_ARDQS0_DQSIENMODE_B0 ));
@@ -179,7 +173,7 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B1_DQ6)          , P_Fld(  1    , B1_DQ6_RG_RX_ARDQ_BIAS_VREF_SEL_B1));
             break;
         }
-        // Burst Mode (7UI)
+
         case 2:
         {
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9)          , P_Fld(  1    , B0_DQ9_RG_RX_ARDQS0_DQSIENMODE_B0 ));
@@ -189,7 +183,7 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL1)    , P_Fld(  1    , MISC_STBCAL1_DQSIEN_7UI_EN        ));
             break;
         }
-        // Oringinal Burst
+
         case 3:
         {
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9)          , P_Fld(  1    , B0_DQ9_RG_RX_ARDQS0_DQSIENMODE_B0 ));
@@ -205,15 +199,12 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
         }
     }
 
-    //================================
-    //Gating tracking Mode config
-    //================================
     switch (gat_c->RX_GATING_TRACK_MODE)
     {
-        //Valid DLY Mode
+
         case 0:
         {
-            //TODO SHU1_DQSG if -like mode should set STB_UPDMASKCYC = 0 STB_UPDMASK_EN=0 others STB_UPDMASKCYC=9 STB_UPDMASK_EN=1
+
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL)  , P_Fld(   1     , MISC_STBCAL_STB_DQIEN_IG          ) \
                                                                        | P_Fld(   1     , MISC_STBCAL_PICHGBLOCK_NORD       ) \
                                                                        | P_Fld(   0     , MISC_STBCAL_REFUICHG              ) \
@@ -231,7 +222,7 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
                                                                        | P_Fld(   2     , MISC_CTRL0_R_DMVALID_DLY          ) \
                                                                        | P_Fld(   1     , MISC_CTRL0_R_DMVALID_DLY_OPT      ) \
                                                                        | P_Fld(   0     , MISC_CTRL0_R_DMSTBEN_SYNCOPT      ) \
-                                                                       | P_Fld(   0     , MISC_CTRL0_R_DMVALID_NARROW_IG    )); //TODO
+                                                                       | P_Fld(   0     , MISC_CTRL0_R_DMVALID_NARROW_IG    ));
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ6)       , P_Fld(   1     , B0_DQ6_RG_RX_ARDQ_DMRANK_OUTSEL_B0));
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9)       , P_Fld(   0     , B0_DQ9_R_DMDQSIEN_RDSEL_LAT_B0    ) \
                                                                        | P_Fld(   0     , B0_DQ9_R_DMDQSIEN_VALID_LAT_B0    ));
@@ -246,7 +237,7 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
             }
             break;
         }
-        //-like Mode
+
         case 1:
         {
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL)  , P_Fld(   0     , MISC_STBCAL_STB_DQIEN_IG          ) \
@@ -281,7 +272,7 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
             }
             break;
         }
-        //FIFO Mode
+
         case 2:
         {
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_STBCAL)  , P_Fld(   1     , MISC_STBCAL_STB_DQIEN_IG          ) \
@@ -301,7 +292,7 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
                                                                        | P_Fld(   0     , MISC_CTRL0_R_DMVALID_DLY          ) \
                                                                        | P_Fld(   0     , MISC_CTRL0_R_DMVALID_DLY_OPT      ) \
                                                                        | P_Fld(   0     , MISC_CTRL0_R_DMSTBEN_SYNCOPT      ) \
-                                                                       | P_Fld(   0     , MISC_CTRL0_R_DMVALID_NARROW_IG    )); // @Darren, func no use sync MP settings from HJ
+                                                                       | P_Fld(   0     , MISC_CTRL0_R_DMVALID_NARROW_IG    ));
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ6)       , P_Fld(   0     , B0_DQ6_RG_RX_ARDQ_DMRANK_OUTSEL_B0));
             vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_DQ9)       , P_Fld(   1+gat_c->VALID_LAT_VALUE     , B0_DQ9_R_DMDQSIEN_RDSEL_LAT_B0    ) \
                                                                        | P_Fld(   0+gat_c->VALID_LAT_VALUE     , B0_DQ9_R_DMDQSIEN_VALID_LAT_B0    ));
@@ -341,7 +332,7 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
                                                                     | P_Fld(   0  , MISC_STBCAL2_STB_GERR_RST                   ) \
                                                                     | P_Fld(   1  , MISC_STBCAL2_STB_GERR_B01                   ) \
                                                                     | P_Fld(   0  , MISC_STBCAL2_STB_GERR_B23                   ));
-    //PICG_MODE only support new mode  so here fix 1
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_GATE_EN_CTRL), P_Fld(1, MISC_RX_IN_GATE_EN_CTRL_RX_IN_GATE_EN_OPT   ));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RX_IN_BUFF_EN_CTRL), P_Fld(1, MISC_RX_IN_BUFF_EN_CTRL_RX_IN_BUFF_EN_OPT   ));
 
@@ -356,17 +347,17 @@ static void DPHY_GAT_TRACK_Config(DRAMC_CTX_T *p,Gating_confg_T *gat_c)
 
 static void RX_INTPUT_Config(DRAMC_CTX_T *p)
 {
-    U8    VALID_LAT    = 1;// TODO inside {0,1}
-    U8    RDSEL_LAT    = 2;// TODO alywas VALID_LAT+1;
+    U8    VALID_LAT    = 1;
+    U8    RDSEL_LAT    = 2;
     U8    dq_min       = 0;
     U8    dq_max       = 0xff;
     U8    scale        = 3;
     U8    threadhold   = 0;
     U32   dqs_min      = 0;
     U32   dqs_max      = 0x1ff;
-    U8    RX_force_upd = 0; //TODO
-    U8    F_LEADLAG    = 0; //TODO
-    U8    RG_MODE_EN   = 0; //TODO
+    U8    RX_force_upd = 0;
+    U8    F_LEADLAG    = 0;
+    U8    RG_MODE_EN   = 0;
     U8    irank        = 0;
     U8    backup_rank  = 0;
     BOOL isLP4_DSC = (p->DRAMPinmux == PINMUX_DSC)?1:0;
@@ -404,7 +395,7 @@ static void RX_INTPUT_Config(DRAMC_CTX_T *p)
     for(irank = RANK_0; irank < p->support_rank_num; irank++)
     {
         vSetRank(p, irank);
-        //RK0--B0
+
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_RK_B0_RXDVS3 )  , P_Fld(  dq_min   , RK_B0_RXDVS3_RG_RK0_ARDQ_MIN_DLY_B0              ) \
                                                                      | P_Fld(  dq_max   , RK_B0_RXDVS3_RG_RK0_ARDQ_MAX_DLY_B0              ));
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_RK_B0_RXDVS4 )  , P_Fld(  dqs_min  , RK_B0_RXDVS4_RG_RK0_ARDQS0_MIN_DLY_B0            ) \
@@ -421,7 +412,7 @@ static void RX_INTPUT_Config(DRAMC_CTX_T *p)
                                                                      | P_Fld(  threadhold  , RK_B0_RXDVS1_R_RK0_B0_DVS_TH_LEAD             ));
 
 
-        //RK0--B1
+
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_RK_B1_RXDVS3 )  , P_Fld(  dq_min   , RK_B1_RXDVS3_RG_RK0_ARDQ_MIN_DLY_B1              ) \
                                                                      | P_Fld(  dq_max   , RK_B1_RXDVS3_RG_RK0_ARDQ_MAX_DLY_B1              ));
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_RK_B1_RXDVS4 )  , P_Fld(  dqs_min  , RK_B1_RXDVS4_RG_RK0_ARDQS0_MIN_DLY_B1            ) \
@@ -440,7 +431,7 @@ static void RX_INTPUT_Config(DRAMC_CTX_T *p)
     vSetRank(p, backup_rank);
 
 
-    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CG_CTRL1 )     ,   0xffffffff  , MISC_CG_CTRL1_R_DVS_DIV4_CG_CTRL              );  //TODO
+    vIO32WriteFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CG_CTRL1 )     ,   0xffffffff  , MISC_CG_CTRL1_R_DVS_DIV4_CG_CTRL              );
 
 
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_B0_RXDVS1  )  , P_Fld(  F_LEADLAG  , B0_RXDVS1_F_LEADLAG_TRACK_B0           ));
@@ -481,13 +472,13 @@ static void RX_INTPUT_Config(DRAMC_CTX_T *p)
     }
     vSetRank(p, backup_rank);
 
-    //Enable RX input delay tracking..
-    //TODO notice here if SA should not enbale it before RX perbit calibration
+
+
     if (RG_MODE_EN == 1)
     {
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RG_DFS_CTRL)    , P_Fld(  1  , MISC_RG_DFS_CTRL_RG_DPY_RXDLY_TRACK_EN      ));
     } else {
-//        `TBA_TOP.dvfs_spm_vif.sc_dphy_reserved[1:0] = 2'b11; //TODO
+
     }
 
     mcSHOW_DBG_MSG6(("[RX_INPUT] configuration <<<<< \n"));
@@ -495,9 +486,9 @@ static void RX_INTPUT_Config(DRAMC_CTX_T *p)
 
 static void DDRPHY_PICG_Config(DRAMC_CTX_T *p)
 {
-    U8 PICG_MODE  = 1; // only support new Mode under
+    U8 PICG_MODE  = 1;
     U8 MISC_CG_EN = 1;
-    U8 MISC_CG_REVERSE_DEFAULT_ON = 0;  //for default CG enable.
+    U8 MISC_CG_REVERSE_DEFAULT_ON = 0;
 
     mcSHOW_DBG_MSG6(("Enter into PICG configuration >>>> \n"));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL4)        , P_Fld(   PICG_MODE  , MISC_CTRL4_R_OPT2_MPDIV_CG                  ) \
@@ -512,7 +503,7 @@ static void DDRPHY_PICG_Config(DRAMC_CTX_T *p)
                                                                     | P_Fld(  !PICG_MODE  , MISC_CTRL3_ARPI_CG_DQS_OPT                  ) \
                                                                     | P_Fld(  !PICG_MODE  , MISC_CTRL3_ARPI_CG_DQ_OPT                   ));
 
-    //Notice here: MISC_CG_CTRL0_RG_CG_COMB0_OFF_DISABLE = 1 will leading other_shuffle_group before register settle down latch ->error. can not set to 1
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CG_CTRL0)     , P_Fld(  !MISC_CG_EN , MISC_CG_CTRL0_RG_CG_DRAMC_OFF_DISABLE       ) \
                                                                     | P_Fld(  !MISC_CG_EN , MISC_CG_CTRL0_RG_CG_PHY_OFF_DIABLE          ) \
                                                                     | P_Fld(  !MISC_CG_EN , MISC_CG_CTRL0_RG_CG_COMB_OFF_DISABLE        ) \
@@ -536,8 +527,8 @@ static void DDRPHY_PICG_Config(DRAMC_CTX_T *p)
                                                                     | P_Fld(   MISC_CG_EN , MISC_CG_CTRL5_R_DQ0_PI_DCM_EN               ) \
                                                                     | P_Fld(   MISC_CG_EN , MISC_CG_CTRL5_R_CA_PI_DCM_EN                ));
 
-    //defualt DCM enable, if we wanner to test CG enable, modified default CG condition.
-    //disable DCM.--- I think just for debug
+
+
     if(MISC_CG_REVERSE_DEFAULT_ON == 1)
     {
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_RX_CG_SET0)         , P_Fld(   1      , RX_CG_SET0_RDATCKAR                          ) \
@@ -565,7 +556,7 @@ static void DDRPHY_PICG_Config(DRAMC_CTX_T *p)
         DramcBroadcastOnOff(DRAMC_BROADCAST_ON);
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1)    , P_Fld(   1      , MISC_DUTYSCAN1_EYESCAN_DQS_OPT               ));
 
-        //TODO -- for DPHY shuffle RG have to set to different Group into SRAM or not.--here just conf0 but not all frequency group
+
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_SHU_B0_DQ8)        , P_Fld(   1      , SHU_B0_DQ8_R_DMRANK_RXDLY_PIPE_CG_IG_B0      ) \
                                                                         | P_Fld(   1      , SHU_B0_DQ8_R_RMRODTEN_CG_IG_B0               ) \
                                                                         | P_Fld(   1      , SHU_B0_DQ8_R_RMRX_TOPHY_CG_IG_B0             ) \
@@ -610,19 +601,19 @@ static void DDRPHY_PICG_Config(DRAMC_CTX_T *p)
 
 static void DRAMC_COMMON_Config(DRAMC_CTX_T *p)
 {
-    U8 RD2MRR_EXTEND_EN = 1; // for fix Samsung RD2MRR seamless error, If the samsung fix that bug, this could set 0
+    U8 RD2MRR_EXTEND_EN = 1;
     U8 EBG_EN = 0              ;
-    U8 TMRRI_MODE       = 1; // !!!Notice here: 0: Old Mode, 1: New Mode   --- FIX NEW MODE. Pertrus not support old mode anymore
+    U8 TMRRI_MODE       = 1;
     U8 NOBLOCKALE_EN    = 1;
     U8 RUNTIME_MRR      = 1;
 
-    //pre configuration calculate
+
     if(TMRRI_MODE == 1)
     {
         NOBLOCKALE_EN = 1;
         RUNTIME_MRR   = 1;
     } else {
-        //TODO
+
         mcSHOW_DBG_MSG6(("NONBLOCKALE RUNTIMEMRR could be random.--for MP should setting 1. just record it."));
     }
 
@@ -634,7 +625,7 @@ static void DRAMC_COMMON_Config(DRAMC_CTX_T *p)
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_DDRCOMMON0)         , P_Fld(   1             , DDRCOMMON0_BK8EN                 ) \
                                                                     | P_Fld(   LPDDR5_EN_S   , DDRCOMMON0_LPDDR5EN              ) \
                                                                     | P_Fld(   LPDDR4_EN_S   , DDRCOMMON0_LPDDR4EN              ) \
-                                                                    | P_Fld(   0             , DDRCOMMON0_TRCDEARLY             )); //if LPDDR5 set1 HEFF mode ACT -> R/W delay-1
+                                                                    | P_Fld(   0             , DDRCOMMON0_TRCDEARLY             ));
 
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_RX_SET0)            , P_Fld(   0             , RX_SET0_DM4TO1MODE               ));
 
@@ -769,7 +760,7 @@ static void DRAMC_COMMON_Config(DRAMC_CTX_T *p)
                                                                     | P_Fld( TMRRI_MODE      , SCSMCTRL_SC_PG_UPD_OPT           ));
 
 
-    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHUCTRL1)           , P_Fld(   0x1a          , SHUCTRL1_FC_PRDCNT               )); //TODO
+    vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SHUCTRL1)           , P_Fld(   0x1a          , SHUCTRL1_FC_PRDCNT               ));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_DVFS_TIMING_CTRL1)  , P_Fld(   1             , DVFS_TIMING_CTRL1_DMSHU_CNT      ));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_REFPEND1)           , P_Fld(   0x5           , REFPEND1_MPENDREFCNT_TH0         ) \
                                                                     | P_Fld(   0x5           , REFPEND1_MPENDREFCNT_TH1         ) \
@@ -789,7 +780,7 @@ static void DRAMC_COMMON_Config(DRAMC_CTX_T *p)
     {
         vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0)        , P_Fld(   1             , TX_SET0_OE_DOWNGRADE             ));
     }
-    //@Jouling, UI reloade path is updated. (DQSOSCR_SREF_TXUI_RELOAD_OPT)
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_DQSOSCR)            , P_Fld(   0             , DQSOSCR_SREF_TXUI_RELOAD_OPT     ) \
                                                                     | P_Fld(   1             , DQSOSCR_SREF_TXPI_RELOAD_OPT     ));
 
@@ -805,7 +796,7 @@ static void DRAMC_COMMON_Config(DRAMC_CTX_T *p)
                                                                     | P_Fld(   0             , DUMMY_RD_INTV_DUMMY_RD_CNT2      ) \
                                                                     | P_Fld(   0             , DUMMY_RD_INTV_DUMMY_RD_CNT1      ) \
                                                                     | P_Fld(   0             , DUMMY_RD_INTV_DUMMY_RD_CNT0      ));
-    //Byte Mode choose
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_RK_DQSOSC)          , P_Fld( p->dram_cbt_mode[RANK_0] , RK_DQSOSC_RK0_BYTE_MODE          ));
     vSetRank(p, RANK_1);
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_RK_DQSOSC)          , P_Fld( p->dram_cbt_mode[RANK_1] , RK_DQSOSC_RK0_BYTE_MODE          ));
@@ -814,7 +805,7 @@ static void DRAMC_COMMON_Config(DRAMC_CTX_T *p)
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_TX_TRACKING_SET0)   , P_Fld(   0             , TX_TRACKING_SET0_TX_TRACKING_OPT ));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_TX_CG_SET0)         , P_Fld(   1             , TX_CG_SET0_SELPH_4LCG_DIS        ));
 
-    //DVFS support SRAM_EN only
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_TX_FREQ_RATIO_OLD_MODE0), P_Fld(DV_p.SRAM_EN, TX_FREQ_RATIO_OLD_MODE0_SHUFFLE_LEVEL_MODE_SELECT));
 
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_SWCMD_CTRL1)        , P_Fld(   1             , SWCMD_CTRL1_WRFIFO_MODE2         ));
@@ -826,14 +817,14 @@ static void DRAMC_COMMON_Config(DRAMC_CTX_T *p)
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DRAMC_REG_RX_SET0)            , P_Fld(   1             , RX_SET0_PRE_DLE_VLD_OPT           ) \
                                                                     | P_Fld(   7             , RX_SET0_DATLAT_PDLE_TH            ));
 
-    //TODO SRAM DPM control
-    // @Darren, sync MP settings from Joe (APB will be available when SRAM DMA access)
+
+
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SRAM_DMA0)    , P_Fld(   1             , MISC_SRAM_DMA0_PENABLE_LAT_WR     ) \
                                                                     | P_Fld(   1             , MISC_SRAM_DMA0_KEEP_APB_ARB_ENA   ) \
                                                                     | P_Fld(   1             , MISC_SRAM_DMA0_KEEP_SRAM_ARB_ENA  ));
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_MD32_REG_SSPM_MCLK_DIV), P_Fld(   1             , SSPM_MCLK_DIV_MCLK_DCM_EN         ));
 
-    //Indivial random sync
+
     vIO32Write4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DBG_IRQ_CTRL1),   0xFFFFFFFF);
     vIO32Write4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DBG_IRQ_CTRL4),   0xFFFFFFFF);
     vIO32Write4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DBG_IRQ_CTRL7),   0xFFFFFFFF);
@@ -881,8 +872,8 @@ static void IO_Release(DRAMC_CTX_T *p)
                                                                     | P_Fld(   0             , B1_DQ7_RG_TX_ARDQM0_PULL_UP_B1   ) \
                                                                     | P_Fld(   0             , B1_DQ7_RG_TX_ARDQ_PULL_DN_B1     ) \
                                                                     | P_Fld(   0             , B1_DQ7_RG_TX_ARDQ_PULL_UP_B1     ));
-    //for dram spec CA_CMD2_RG_TX_ARCS_OE_TIE_EN_CA will help to fix CKE=0 before  for meet 10ns tINIT2
-    //Assert DRAM reset PIN
+
+
     #if !SA_CONFIG_EN
     vIO32WriteFldMulti(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CTRL1)        , P_Fld(   1             , MISC_CTRL1_R_DMDA_RRESETB_I      ));
     #endif
@@ -891,9 +882,9 @@ static void IO_Release(DRAMC_CTX_T *p)
 static void DVFS_PRE_config(DRAMC_CTX_T *p)
 {
 #if (fcFOR_CHIP_ID == fc8195)
-    U32 MCP_EN = 0; //remove for MCP timing issue
+    U32 MCP_EN = 0;
 #else
-    U32 MCP_EN = 1; //for MCP should adjust some setting between CHs (A-B/C-D)
+    U32 MCP_EN = 1;
 #endif
     U32 REF_104M_EN = 1;
     BOOL isLP4_DSC = (p->DRAMPinmux == PINMUX_DSC)?1:0;
@@ -904,21 +895,21 @@ static void DVFS_PRE_config(DRAMC_CTX_T *p)
                                                                     | P_Fld(   0             , DVFS_CTRL0_DVFS_SYNC_MASK                        ) \
                                                                     | P_Fld(   1             , DVFS_CTRL0_MR13_SHU_EN                           ) \
                                                                     | P_Fld(   1             , DVFS_CTRL0_HWSET_WLRL                            ) \
-                                                                    | P_Fld(   0             , DVFS_CTRL0_MRWWOPRA                              )); //Have to fix 0, 1 with bug (some bank without precharge)
-    //for DVFS sync
-    vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RG_DFS_CTRL)  , P_Fld(   0             , MISC_RG_DFS_CTRL_SPM_DVFS_CONTROL_SEL            ));//SPM mode TODO should random  0 for SPM mode default
+                                                                    | P_Fld(   0             , DVFS_CTRL0_MRWWOPRA                              ));
+
+    vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_MISC_RG_DFS_CTRL)  , P_Fld(   0             , MISC_RG_DFS_CTRL_SPM_DVFS_CONTROL_SEL            ));
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SRAM_DMA0  )  , P_Fld(   0             , MISC_SRAM_DMA0_DMA_TIMER_EN                      ));
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SRAM_DMA1  )  , P_Fld(   0x1ffff         , MISC_SRAM_DMA1_SPM_RESTORE_STEP_EN               ));
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CG_CTRL7   )  , P_Fld(   1             , MISC_CG_CTRL7_ARMCTL_CK_OUT_CG_SEL               ));
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFSCTL    )  , P_Fld(   1             , MISC_DVFSCTL_R_DVFS_PICG_POSTPONE                ) \
                                                                     | P_Fld(   1             , MISC_DVFSCTL_R_DMSHUFFLE_CHANGE_FREQ_OPT         ));
-    //for channel balance
+
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFSCTL2)     , P_Fld(   0             , MISC_DVFSCTL2_R_CDC_MUX_SEL_OPTION               ) \
                                                                     | P_Fld(   0             , MISC_DVFSCTL2_R_DVFS_SYNC_MODULE_RST_SEL         ));
-    //Could be randomed
+
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DRAMC_REG_DVFS_CTRL0    )     , P_Fld(   0             , DVFS_CTRL0_DVFS_CKE_OPT                          ) \
                                                                     | P_Fld(   1             , DVFS_CTRL0_SCARB_PRI_OPT                         ));
-    //here is a flow??--TODO
+
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFSCTL3  )   , P_Fld(   1             , MISC_DVFSCTL3_RG_PHY_ST_DELAY_AFT_CHG_TO_MCLK    ) \
                                                                     | P_Fld(   0             , MISC_DVFSCTL3_RG_PHY_ST_DELAY_AFT_CHG_TO_BCLK    ) \
                                                                     | P_Fld(   0             , MISC_DVFSCTL3_RG_PHY_ST_DELAY_BEF_CHG_TO_MCLK    ) \
@@ -933,7 +924,7 @@ static void DVFS_PRE_config(DRAMC_CTX_T *p)
                                                                     | P_Fld(   1             , MISC_CLK_CTRL_DVFS_MEM_CK_MUX_UPDATE_EN          ));
 
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DVFSCTL3  )   , P_Fld(   0x10          , MISC_DVFSCTL3_RG_CNT_PHY_ST_DELAY_AFT_CHG_TO_BCLK));
-    //flow end??
+
 
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DRAMC_REG_DVFS_TIMING_CTRL1)  , P_Fld(   1             , DVFS_TIMING_CTRL1_DMSHU_CNT                      )\
                                                                     | P_Fld(   1             , DVFS_TIMING_CTRL1_SHU_PERIOD_GO_ZERO_CNT         ));
@@ -945,8 +936,8 @@ static void DVFS_PRE_config(DRAMC_CTX_T *p)
 
     vIO32WriteFldMulti_All(DRAMC_REG_ADDR(DDRPHY_REG_MISC_CKMUX_SEL  )  , P_Fld( REF_104M_EN     , MISC_CKMUX_SEL_RG_52M_104M_SEL                   ));
 
-    //notice here:
-    //*SHU_PHDET_SPM_EN = 1 means during DFS period as master. 2 means slave.
+
+
     U32 MS_DLL_PHDET_FLD,  SLV_DLL_PHDET_FLD;
     if (!isLP4_DSC)
     {
@@ -1035,12 +1026,12 @@ void DIG_STATIC_SETTING(DRAMC_CTX_T *p)
     GATING_MODE_CFG(&Gat_p);
     DPHY_GAT_TRACK_Config(p,&Gat_p);
     DRAMC_COMMON_Config(p);
-    #if 1//!SA_CONFIG_EN
-    DVFS_PRE_config(p);//for DVFS initial config.-- bring-up no need this code. but DVFS will need this
+    #if 1
+    DVFS_PRE_config(p);
     #endif
     DDRPHY_PICG_Config(p);
     IO_Release(p);
-    RX_INTPUT_Config(p);//TODO dummy write trigger
+    RX_INTPUT_Config(p);
 }
 
 #if FOR_DV_SIMULATION_USED

@@ -15,21 +15,13 @@
 U32 u4Datlat = 0;
 
 static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4];
-//static const ACTime_T_LP5 ACTimingTbl_LP5[AC_TIMING_NUMBER_LP5];
-//-------------------------------------------------------------------------
-/** u1GetACTimingIdx()
- *  Retrieve internal ACTimingTbl's index according to dram type, freqGroup, Read DBI status
- *  @param p                Pointer of context created by DramcCtxCreate.
- *  @retval u1TimingIdx     Return ACTimingTbl entry's index
- */
-//-------------------------------------------------------------------------
+
 static U8 u1GetACTimingIdx(DRAMC_CTX_T *p)
 {
     U8 u1TimingIdx = 0xff, u1TmpIdx;
     U8 u1TmpDramType = p->dram_type;
 
     {
-        // LP4/LP4P/LP4X use same table
         if (u1TmpDramType == TYPE_LPDDR4X || u1TmpDramType == TYPE_LPDDR4P)
             u1TmpDramType = TYPE_LPDDR4;
     }
@@ -38,16 +30,16 @@ static U8 u1GetACTimingIdx(DRAMC_CTX_T *p)
         for (u1TmpIdx = 0; u1TmpIdx < AC_TIMING_NUMBER_LP4; u1TmpIdx++)
         {
             if ((ACTimingTbl_LP4[u1TmpIdx].dramType == u1TmpDramType) &&
-                /* p->frequency may not be in ACTimingTable, use p->freqGroup */
+
                 (ACTimingTbl_LP4[u1TmpIdx].freq == p->freqGroup) &&
                 (ACTimingTbl_LP4[u1TmpIdx].readDBI == p->DBI_R_onoff[p->dram_fsp]) &&
-                (ACTimingTbl_LP4[u1TmpIdx].DivMode == vGet_Div_Mode(p)) && // Darren for LP4 1:4 and 1:8 mode
-                (ACTimingTbl_LP4[u1TmpIdx].cbtMode == vGet_Dram_CBT_Mode(p)) //LP4 byte/mixed mode dram both use byte mode ACTiming
+                (ACTimingTbl_LP4[u1TmpIdx].DivMode == vGet_Div_Mode(p)) &&
+                (ACTimingTbl_LP4[u1TmpIdx].cbtMode == vGet_Dram_CBT_Mode(p))
                )
             {
                 u1TimingIdx = u1TmpIdx;
                 //mcDUMP_REG_MSG(("match AC timing %d\n", u1TimingIdx));
-                //Also for Dump_REG
+
                 mcSHOW_DBG_MSG2(("match AC timing %d\n", u1TimingIdx));
                 mcSHOW_DBG_MSG2(("dramType %d, freq %d, readDBI %d, DivMode %d, cbtMode %d\n", u1TmpDramType, p->freqGroup, p->DBI_R_onoff[p->dram_fsp], vGet_Div_Mode(p), vGet_Dram_CBT_Mode(p)));
                 break;
@@ -153,7 +145,7 @@ static void DramcCalculate_Datlat_val(DRAMC_CTX_T *p)
     {
         u4CS2RL_start = 7;
         u4tRPRE_toggle = 0;
-        u4tDQSCK_Max = 3500;  //ps
+        u4tDQSCK_Max = 3500;
         u4RL[0] = Get_RL_by_MR_LP4(p->dram_cbt_mode[RANK_0], 0, LP4_DRAM_INIT_RLWL_MRfield_config(p->frequency * 2));
         u4RL[1] = Get_RL_by_MR_LP4(p->dram_cbt_mode[RANK_1], 0, LP4_DRAM_INIT_RLWL_MRfield_config(p->frequency * 2));
         u4RLMax = (u4RL[0] > u4RL[1]) ? u4RL[0] : u4RL[1];
@@ -191,21 +183,13 @@ static void DramcCalculate_Datlat_val(DRAMC_CTX_T *p)
     u4DQSIEN_ser_latency = u1GetDQSIEN_p2s_latency(u4DQ_P2S_Ratio);
     u4CA_ser_latency = u1GetDQ_CA_p2s_latency(u4CA_p2s_ratio, A_D->CA_FULL_RATE);
     u4CA_MCKIO_ui_unit = u4DQ_ui_unit * u4CKR / (A_D->CA_FULL_RATE + 1);
-    u4RX_rdcmdout2rdcmdbus_by_ps = 3 * u4MCK_unit + u4CAdefault_delay * u4CA_ui_unit + u4CA_ser_latency * u4CA_MCKIO_ui_unit /*+ RX_C->ca_default_PI * RX_C->ca_MCKIO_ps / RX_C->ca_ui_pi_ratio*/ ; // 3 is 1.5T pipe to APHY + 0.5T wait posedge then start P2S + 1T read_cmd_out
+    u4RX_rdcmdout2rdcmdbus_by_ps = 3 * u4MCK_unit + u4CAdefault_delay * u4CA_ui_unit + u4CA_ser_latency * u4CA_MCKIO_ui_unit /*+ RX_C->ca_default_PI * RX_C->ca_MCKIO_ps / RX_C->ca_ui_pi_ratio*/ ;
     u4Datlat_dsel = A_div_B_Round((u4RX_rdcmdout2rdcmdbus_by_ps + (u4CS2RL_start + u4RLMax * 2 )* u4CKR * u4DQ_ui_unit + u4tDQSCK_Max + u4DQ_2_1stDVI4CK), u4MCK_unit) - u4RDSEL_Offset - u4TxPipeline + u4Datlat_margin;
     u4Datlat = u4Datlat_dsel + u4TxPipeline + u4RxPipeline - 1;
 
     mcSHOW_DBG_MSG(("Calculate Datlat value is %d on freq %d\n", u4Datlat, p->frequency));
 }
 
-//-------------------------------------------------------------------------
-/** UpdateACTimingReg()
- *  ACTiming related register field update
- *  @param p                Pointer of context created by DramcCtxCreate.
- *  @param  ACTbl           Pointer to correct ACTiming table struct
- *  @retval status          (DRAM_STATUS_T): DRAM_OK or DRAM_FAIL
- */
-//-------------------------------------------------------------------------
 
 #if ENABLE_WDQS_MODE_2
 static void WDQSMode2AcTimingEnlarge(DRAMC_CTX_T *p, U16 *u2_XRTW2W, U16 *u2_XRTR2W, U16 *u2_XRTW2R, U16 *u2_TRTW)
@@ -267,20 +251,20 @@ static DRAM_STATUS_T DdrUpdateACTimingReg_LP4(DRAMC_CTX_T *p, const ACTime_T_LP4
 {
     ACTime_T_LP4 ACTblFinal;
     U8 backup_rank = p->rank;
-    DRAM_ODT_MODE_T r2w_odt_onoff = p->odt_onoff; //Variable used in step 1 (decide to use odt on or off ACTiming)
-    // ACTiming regs that have ODT on/off values -> declare variables to save the wanted value
-    // -> Used to retrieve correct SHU_ACTIM2_TR2W value and write into final register field
+    DRAM_ODT_MODE_T r2w_odt_onoff = p->odt_onoff;
+
+
 #ifdef XRTR2R_PERFORM_ENHANCE_DQSG_RX_DLY
     U8 u1RANKINCTL = 0;
 #endif
-    U8 RODT_TRACKING_SAVEING_MCK = 0, u1ROOT = 0, u1TXRANKINCTL = 0, u1TXDLY = 0, u1DATLAT_DSEL = 0; //Used to store tmp ACTiming values
+    U8 RODT_TRACKING_SAVEING_MCK = 0, u1ROOT = 0, u1TXRANKINCTL = 0, u1TXDLY = 0, u1DATLAT_DSEL = 0;
 
 #if SAMSUNG_LP4_NWR_WORKAROUND
     U8 u1TWTR = 0, u1TWTR_05T = 0, u1TWTR_TMP = 0;
     U8 u1MCKtoTck = 0, u105TtoTck = 0;
 #endif
-    // ACTiming regs that aren't currently in ACTime_T struct
-    U8 u1TREFBW = 0; //REFBW_FR (tREFBW) for LP3, REFBW_FR=0 & TREFBWIG=1 (by CF)
+
+    U8 u1TREFBW = 0;
     U8 u1TFAW_05T=0, u1TRRD_05T=0;
     U16 u2XRTWTW = 0, u2XTRTRT = 0, u2XRTW2R = 0, u2XRTR2W = 0, u2TFAW = 0;
     U16 u2TRTW=0, u2TRTW_05T=0, u2TMRR2W=0, u2TRRD=0;
@@ -301,21 +285,21 @@ static DRAM_STATUS_T DdrUpdateACTimingReg_LP4(DRAMC_CTX_T *p, const ACTime_T_LP4
     u4Datlat = ACTblFinal.datlat;
 #endif
 
-    // ----Step 1: Perform ACTiming table adjustments according to different usage/scenarios--------------------------
+
 #if ENABLE_TX_WDQS
     r2w_odt_onoff = ODT_ON;
 #else
     r2w_odt_onoff = p->odt_onoff;
 #endif
-    // ACTimings that have different values for odt on/off, retrieve the correct one and store in local variable
-    if (r2w_odt_onoff == ODT_ON) //odt_on
+
+    if (r2w_odt_onoff == ODT_ON)
     {
         u2TRTW = ACTblFinal.trtw_odt_on;
         u2TRTW_05T = ACTblFinal.trtw_odt_on_05T;
         u2XRTW2R = ACTblFinal.xrtw2r_odt_on;
         u2XRTR2W = ACTblFinal.xrtr2w_odt_on;
     }
-    else //odt_off
+    else
     {
         u2TRTW = ACTblFinal.trtw_odt_off;
         u2TRTW_05T = ACTblFinal.trtw_odt_off_05T;
@@ -323,8 +307,8 @@ static DRAM_STATUS_T DdrUpdateACTimingReg_LP4(DRAMC_CTX_T *p, const ACTime_T_LP4
         u2XRTR2W = ACTblFinal.xrtr2w_odt_off;
     }
 
-    // Override the above tRTW & tRTW_05T selection for Hynix LPDDR4P dram (always use odt_on's value for tRTW)
-    if ((p->dram_type == TYPE_LPDDR4P) && (p->vendor_id == VENDOR_HYNIX)) //!SUPPORT_HYNIX_RX_DQS_WEAK_PULL (temp solution, need to discuss with SY)
+
+    if ((p->dram_type == TYPE_LPDDR4P) && (p->vendor_id == VENDOR_HYNIX))
     {
         u2TRTW = ACTblFinal.trtw_odt_on;
         u2TRTW_05T = ACTblFinal.trtw_odt_on_05T;
@@ -358,35 +342,27 @@ static DRAM_STATUS_T DdrUpdateACTimingReg_LP4(DRAMC_CTX_T *p, const ACTime_T_LP4
     }
 
 #if ENABLE_RODT_TRACKING_SAVE_MCK
-    // for rodt tracking save 1 MCK and rodt tracking enable or not(RODTENSTB_TRACK_EN)
+
     u1ODT_ON = p->odt_onoff;
     u1RODT_TRACK = ENABLE_RODT_TRACKING;
     u1ROEN = u1WDQS_ON | u1ODT_ON;
     u1ModeSel = u1RODT_TRACK & u1ROEN;
 
-    // when WDQS on and RODT Track define open and un-term, RODT_TRACKING_SAVEING_MCK = 1 for the future setting
-    // Maybe "Save 1 MCK" will be set after Vins_on project, but Bian_co & Vins_on can not.(different with performance team)
+
     //if (u1RODT_TRACK && (u1ROEN==1))
     //    RODT_TRACKING_SAVEING_MCK = 1;
 #endif
 
 #if (ENABLE_RODT_TRACKING || defined(XRTR2W_PERFORM_ENHANCE_RODTEN))
-    /* yr: same code
-    // set to 0, let TRTW & XRTR2W setting values are the smae with DV-sim's value that DE provided
-    if (r2w_odt_onoff == ODT_ON) RODT_TRACKING_SAVEING_MCK = 0; //RODT_TRACKING eanble can save r2w 1 MCK
-    else RODT_TRACKING_SAVEING_MCK = 0;
-    */
     RODT_TRACKING_SAVEING_MCK = 0;
 #endif
 
-    // Update values that are used by RODT_TRACKING_SAVEING_MCK
     u2TRTW = u2TRTW - RODT_TRACKING_SAVEING_MCK;
     u2XRTR2W = u2XRTR2W - RODT_TRACKING_SAVEING_MCK;
 
 #if SAMSUNG_LP4_NWR_WORKAROUND
-    // If nWR is fixed to 30 for all freqs, tWTR@800Mhz should add 2tCK gap, allowing sufficient Samsung 1xnm DRAM internal IO precharge time
-    // Regarding the nWR setting recommandation, it is effective only for D1x LP4x, we changed logic from D1y (1ynm) to prevent that issue.
-    if ((p->vendor_id == VENDOR_SAMSUNG) && (p->frequency <= 800)) //LP4X, Samsung, DDR1600
+
+    if ((p->vendor_id == VENDOR_SAMSUNG) && (p->frequency <= 800))
     {
         if (vGet_Div_Mode(p) == DIV8_MODE)
         {
@@ -399,16 +375,16 @@ static DRAM_STATUS_T DdrUpdateACTimingReg_LP4(DRAMC_CTX_T *p, const ACTime_T_LP4
             u105TtoTck= 1;
         }
 
-        u1TWTR_TMP = (ACTblFinal.twtr * u1MCKtoTck - ACTblFinal.twtr_05T * u105TtoTck) + 2; //Convert TWTR to tCK, and add 2tCK
-        if ((u1TWTR_TMP % u1MCKtoTck) == 0) //TWTR can be transferred to TWTR directly
+        u1TWTR_TMP = (ACTblFinal.twtr * u1MCKtoTck - ACTblFinal.twtr_05T * u105TtoTck) + 2;
+        if ((u1TWTR_TMP % u1MCKtoTck) == 0)
         {
             u1TWTR = u1TWTR_TMP/u1MCKtoTck;
             u1TWTR_05T = 0;
         }
-        else //Can't be transfered to TWTR directly
+        else
         {
-            u1TWTR = (u1TWTR_TMP + u105TtoTck)/u1MCKtoTck; //Add 2 tCK and set TWTR value (Then minus 2tCK using 05T)
-            u1TWTR_05T = 1;  //05T means minus 2tCK
+            u1TWTR = (u1TWTR_TMP + u105TtoTck)/u1MCKtoTck;
+            u1TWTR_05T = 1;
         }
 
         ACTblFinal.twtr = u1TWTR;
@@ -416,11 +392,11 @@ static DRAM_STATUS_T DdrUpdateACTimingReg_LP4(DRAMC_CTX_T *p, const ACTime_T_LP4
     }
 #endif
 
-    //DATLAT related
+
     if (u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_MISC_RX_PIPE_CTRL), SHU_MISC_RX_PIPE_CTRL_RX_PIPE_BYPASS_EN))
-        u1DATLAT_DSEL = u4Datlat; //ACTblFinal.datlat;
+        u1DATLAT_DSEL = u4Datlat;
     else
-        u1DATLAT_DSEL = u4Datlat - 1; //ACTblFinal.datlat - 1;
+        u1DATLAT_DSEL = u4Datlat - 1;
 
 #if TX_OE_EXTEND
     u2XRTWTW += 1;
@@ -451,7 +427,7 @@ static DRAM_STATUS_T DdrUpdateACTimingReg_LP4(DRAMC_CTX_T *p, const ACTime_T_LP4
     ACTblFinal.ckeprd -= 1;
 #endif
 
-    // ----Step 2: Perform register writes for entries in ACTblFinal struct & ACTiming excel file (all actiming adjustments should be done in Step 1)-------
+
 
     vIO32WriteFldMulti_All(DRAMC_REG_SHU_ACTIM1, P_Fld(ACTblFinal.tras, SHU_ACTIM1_TRAS)
                                                 | P_Fld(ACTblFinal.trp, SHU_ACTIM1_TRP)
@@ -466,7 +442,7 @@ static DRAM_STATUS_T DdrUpdateACTimingReg_LP4(DRAMC_CTX_T *p, const ACTime_T_LP4
     vIO32WriteFldMulti_All(DRAMC_REG_SHU_ACTIM2, P_Fld(ACTblFinal.txp, SHU_ACTIM2_TXP)
                                                 | P_Fld(ACTblFinal.tmrri, SHU_ACTIM2_TMRRI)
                                                 | P_Fld(u2TFAW, SHU_ACTIM2_TFAW)
-                                                | P_Fld(u2TRTW, SHU_ACTIM2_TR2W) // Value has odt_on/off difference, use local variable u1TRTW
+                                                | P_Fld(u2TRTW, SHU_ACTIM2_TR2W)
                                                 | P_Fld(ACTblFinal.trtp, SHU_ACTIM2_TRTP));
 
     vIO32WriteFldMulti_All(DRAMC_REG_SHU_ACTIM0, P_Fld(ACTblFinal.trcd, SHU_ACTIM0_TRCD)
@@ -498,13 +474,13 @@ static DRAM_STATUS_T DdrUpdateACTimingReg_LP4(DRAMC_CTX_T *p, const ACTime_T_LP4
     vIO32WriteFldAlign_All(DRAMC_REG_SHU_HWSET_VRCG, ACTblFinal.vrcgdis_prdcnt, SHU_HWSET_VRCG_VRCGDIS_PRDCNT);
 //    vIO32WriteFldMulti_All(DRAMC_REG_SHU_HWSET_VRCG, P_Fld(ACTblFinal.vrcgdis_prdcnt, SHU_HWSET_VRCG_VRCGDIS_PRDCNT)
 //                                                | P_Fld(ACTblFinal.hwset_vrcg_op, SHU_HWSET_VRCG_HWSET_VRCG_OP));
-    //tg removed. Only DramcModeRegInit_LP4() setting is preserved.
+
     //vIO32WriteFldAlign_All(DRAMC_REG_SHU_HWSET_MR2, ACTblFinal.hwset_mr2_op, SHU_HWSET_MR2_HWSET_MR2_OP);
     //vIO32WriteFldAlign_All(DRAMC_REG_SHU_HWSET_MR13, ACTblFinal.hwset_mr13_op, SHU_HWSET_MR13_HWSET_MR13_OP);
 
-    // AC timing 0.5T
+
     vIO32WriteFldMulti_All(DRAMC_REG_SHU_AC_TIME_05T, P_Fld(ACTblFinal.twtr_05T, SHU_AC_TIME_05T_TWTR_M05T)
-                                                    | P_Fld(u2TRTW_05T, SHU_AC_TIME_05T_TR2W_05T) // Value has odt_on/off difference, use local variable u1TRTW
+                                                    | P_Fld(u2TRTW_05T, SHU_AC_TIME_05T_TR2W_05T)
                                                     | P_Fld(ACTblFinal.twtpd_05T, SHU_AC_TIME_05T_TWTPD_M05T)
                                                     | P_Fld(u1TFAW_05T, SHU_AC_TIME_05T_TFAW_05T)
                                                     | P_Fld(u1TRRD_05T, SHU_AC_TIME_05T_TRRD_05T)
@@ -554,15 +530,15 @@ static DRAM_STATUS_T DdrUpdateACTimingReg_LP4(DRAMC_CTX_T *p, const ACTime_T_LP4
                                                         | P_Fld(ACTblFinal.trcd_derate_05T, SHU_AC_DERATING_05T_TRCD_05T_DERATE)
                                                         | P_Fld(ACTblFinal.trc_derate_05T, SHU_AC_DERATING_05T_TRC_05T_DERATE));
         vIO32WriteFldAlign_All(DRAMC_REG_REFCTRL3, 0xc0, REFCTRL3_REF_DERATING_EN);
-        vIO32WriteFldAlign_All(DRAMC_REG_SHU_AC_DERATING0, 0x1, SHU_AC_DERATING0_ACDERATEEN); //enable derating for AC timing
+        vIO32WriteFldAlign_All(DRAMC_REG_SHU_AC_DERATING0, 0x1, SHU_AC_DERATING0_ACDERATEEN);
     }
 #endif
 
-    // DQSINCTL related
+
     vSetRank(p, RANK_0);
-    vIO32WriteFldAlign_All(DDRPHY_REG_MISC_SHU_RK_DQSCTL, ACTblFinal.dqsinctl, MISC_SHU_RK_DQSCTL_DQSINCTL);// Rank 0 DQSINCTL
+    vIO32WriteFldAlign_All(DDRPHY_REG_MISC_SHU_RK_DQSCTL, ACTblFinal.dqsinctl, MISC_SHU_RK_DQSCTL_DQSINCTL);
     vSetRank(p, RANK_1);
-    vIO32WriteFldAlign_All(DDRPHY_REG_MISC_SHU_RK_DQSCTL, ACTblFinal.dqsinctl, MISC_SHU_RK_DQSCTL_DQSINCTL);// Rank 1 DQSINCTL
+    vIO32WriteFldAlign_All(DDRPHY_REG_MISC_SHU_RK_DQSCTL, ACTblFinal.dqsinctl, MISC_SHU_RK_DQSCTL_DQSINCTL);
     vSetRank(p, backup_rank);
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_SHU_ODTCTRL, ACTblFinal.dqsinctl, MISC_SHU_ODTCTRL_RODT_LAT);
 
@@ -585,22 +561,20 @@ static DRAM_STATUS_T DdrUpdateACTimingReg_LP4(DRAMC_CTX_T *p, const ACTime_T_LP4
     vIO32WriteFldAlign_All(DDRPHY_REG_SHU_MISC_RANK_SEL_STB, u2PHSINCTL, SHU_MISC_RANK_SEL_STB_RANK_SEL_PHSINCTL);
 #endif
 
-    // DATLAT related, tREFBW
+
     vIO32WriteFldMulti_All(DDRPHY_REG_MISC_SHU_RDAT, P_Fld(u4Datlat, MISC_SHU_RDAT_DATLAT)
                                             | P_Fld(u1DATLAT_DSEL, MISC_SHU_RDAT_DATLAT_DSEL)
                                             | P_Fld(u1DATLAT_DSEL, MISC_SHU_RDAT_DATLAT_DSEL_PHY));
 
     vIO32WriteFldAlign_All(DRAMC_REG_SHU_ACTIMING_CONF, u1TREFBW, SHU_ACTIMING_CONF_REFBW_FR);
 
-    // ----Step 3: Perform register writes/calculation for other regs (That aren't in ACTblFinal struct)------------------------------------------------
+
 #ifdef XRTR2R_PERFORM_ENHANCE_DQSG_RX_DLY
-    //Wei-Jen: Ininital setting values are the same, RANKINCTL_RXDLY = RANKINCTL = RANKINCTL_ROOT1
-    //XRTR2R setting will be updated in RxdqsGatingPostProcess
     u1RANKINCTL = u4IO32ReadFldAlign(DDRPHY_REG_MISC_SHU_RANKCTL, MISC_SHU_RANKCTL_RANKINCTL);
     vIO32WriteFldAlign_All(DDRPHY_REG_MISC_SHU_RANKCTL, u1RANKINCTL, MISC_SHU_RANKCTL_RANKINCTL_RXDLY);
 #endif
 
-    //Update releated RG of XRTW2W
+
     if (p->frequency <= 800)
     {
         if (vGet_Div_Mode(p) == DIV4_MODE)
@@ -639,7 +613,7 @@ DRAM_STATUS_T DdrUpdateACTiming(DRAMC_CTX_T *p)
 
     mcSHOW_DBG_MSG4(("[UpdateACTiming]\n"));
 
-    //Retrieve ACTimingTable's corresponding index
+
     u1TimingIdx = u1GetACTimingIdx(p);
 
 
@@ -648,7 +622,7 @@ DRAM_STATUS_T DdrUpdateACTiming(DRAMC_CTX_T *p)
         #if 0
         if (u1TmpDramType = TYPE_LPDDR4)
             u1TimingIdx = 0;
-        else // LPDDR3
+        else
             u1TimingIdx = 6;
         mcSHOW_ERR_MSG(("Error, no match AC timing, use default timing %d\n", u1TimingIdx));
         #else
@@ -657,7 +631,7 @@ DRAM_STATUS_T DdrUpdateACTiming(DRAMC_CTX_T *p)
         #endif
     }
 
-    //Set ACTiming registers
+
     {
         DdrUpdateACTimingReg_LP4(p, &ACTimingTbl_LP4[u1TimingIdx]);
     }
@@ -665,28 +639,21 @@ DRAM_STATUS_T DdrUpdateACTiming(DRAMC_CTX_T *p)
     return DRAM_OK;
 }
 
-/* Optimize all-bank refresh parameters (by density) for LP4 */
+
 void vDramcACTimingOptimize(DRAMC_CTX_T *p)
 {
-    /* TRFC: tRFCab
-     *       Refresh Cycle Time (All Banks)
-     * TXREFCNT: tXSR max((tRFCab + 7.5ns), 2nCK)
-     *           Min self refresh time (Entry to Exit)
-     * u1ExecuteOptimize: Indicate if ACTimings are updated at the end of this function
-     */
+
     U8 u1RFCabGrpIdx = 0, u1FreqGrpIdx = 0, u1ExecuteOptimize = ENABLE;
     U8 u1TRFC=101, u1TRFC_05T=0, u1TRFCpb=44, u1TRFCpb_05T=0,u1TXREFCNT=118;
     typedef struct
-    {   /* Bitfield sizes set to current project register field's size */
+    {
         U8 u1TRFC      : 8;
         U8 u1TRFRC_05T : 1;
         U8 u1TRFCpb      : 8;
         U8 u1TRFRCpb_05T : 1;
         U16 u2TXREFCNT : 10;
     } optimizeACTime;
-    /* JESD209-4B: tRFCab has 4 settings for 7 density settings (130, 180, 280, 380)
-     * tRFCAB_NUM: Used to indicate tRFCab group (since some densities share the same tRFCab)
-     */
+
     enum tRFCABIdx{tRFCAB_130 = 0, tRFCAB_180, tRFCAB_280, tRFCAB_380, tRFCAB_NUM};
     enum ACTimeIdx{GRP_DDR1200_ACTIM, GRP_DDR1600_ACTIM, GRP_DDR1866_ACTIM, GRP_DDR2400_ACTIM, GRP_DDR2667_ACTIM, GRP_DDR3200_ACTIM, GRP_DDR3733_ACTIM, GRP_DDR4266_ACTIM, GRP_ACTIM_NUM};
     enum ACTimeIdxDiv4{
@@ -694,78 +661,78 @@ void vDramcACTimingOptimize(DRAMC_CTX_T *p)
         GRP_DDR400_DIV4_ACTIM = 0,
 #endif
         GRP_DDR800_DIV4_ACTIM, GRP_DDR1200_DIV4_ACTIM, GRP_DDR1600_DIV4_ACTIM, GRP_ACTIM_NUM_DIV4};
-    /* Values retrieved from 1. Alaska ACTiming excel file 2. JESD209-4B Refresh requirement table */
+
 
     optimizeACTime *ptRFCab_Opt;
 
     optimizeACTime tRFCab_Opt [GRP_ACTIM_NUM][tRFCAB_NUM] =
     {
-        //For freqGroup DDR1200
-        {{.u1TRFC = 8, .u1TRFRC_05T = 0, .u1TRFCpb = 0, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 21}, //tRFCab = 130, tRFCpb = 60, @Robert Not enough to Optimize
-         {.u1TRFC = 15, .u1TRFRC_05T = 1, .u1TRFCpb = 2, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 29}, //tRFCab = 180, tRFCpb = 90
-         {.u1TRFC = 30, .u1TRFRC_05T = 1, .u1TRFCpb = 9, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 44}, //tRFCab = 280, tRFCpb = 140
-         {.u1TRFC = 45, .u1TRFRC_05T = 1, .u1TRFCpb = 17, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 59}},//tRFCab = 380, tRFCpb = 190
-        //For freqGroup DDR1600
-        {{.u1TRFC = 14, .u1TRFRC_05T = 0, .u1TRFCpb = 0, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 28}, //tRFCab = 130, tRFCpb = 60
-         {.u1TRFC = 24, .u1TRFRC_05T = 0, .u1TRFCpb = 6, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 38}, //tRFCab = 180, tRFCpb = 90
-         {.u1TRFC = 44, .u1TRFRC_05T = 0, .u1TRFCpb = 16, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 58}, //tRFCab = 280, tRFCpb = 140
-         {.u1TRFC = 64, .u1TRFRC_05T = 0, .u1TRFCpb = 26, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 78}},//tRFCab = 380, tRFCpb = 190
-        //For freqGroup DDR1866
-        {{.u1TRFC = 18, .u1TRFRC_05T = 1, .u1TRFCpb = 2, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 33}, //tRFCab = 130, tRFCpb = 60
-         {.u1TRFC = 30, .u1TRFRC_05T = 0, .u1TRFCpb = 9, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 44}, //tRFCab = 180, tRFCpb = 90
-         {.u1TRFC = 53, .u1TRFRC_05T = 1, .u1TRFCpb = 21, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 68}, //tRFCab = 280, tRFCpb = 140
-         {.u1TRFC = 77, .u1TRFRC_05T = 0, .u1TRFCpb = 32, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 91}},//tRFCab = 380, tRFCpb = 190
-        //For freqGroup DDR2400
-        {{.u1TRFC = 27, .u1TRFRC_05T = 1,  .u1TRFCpb = 6, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 42},   //tRFCab = 130, tRFCpb = 60
-         {.u1TRFC = 42, .u1TRFRC_05T = 1,  .u1TRFCpb = 15, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 57},   //tRFCab = 180, tRFCpb = 90
-         {.u1TRFC = 72, .u1TRFRC_05T = 1,  .u1TRFCpb = 30, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 87},   //tRFCab = 280, tRFCpb = 140
-         {.u1TRFC = 102, .u1TRFRC_05T = 1,  .u1TRFCpb = 45, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 117}},//tRFCab = 380, tRFCpb = 190
-        //For freqGroup DDR2667
-        {{.u1TRFC = 31, .u1TRFRC_05T = 1,  .u1TRFCpb = 8, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 46},    //tRFCab = 130, tRFCpb = 60
-         {.u1TRFC = 48, .u1TRFRC_05T = 1,  .u1TRFCpb = 18, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 63},    //tRFCab = 180, tRFCpb = 90
-         {.u1TRFC = 81, .u1TRFRC_05T = 1,  .u1TRFCpb = 35, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 96},   //tRFCab = 280, tRFCpb = 140
-         {.u1TRFC = 115, .u1TRFRC_05T = 0,  .u1TRFCpb = 51, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 130}}, //tRFCab = 380, tRFCpb = 190
-        //For freqGroup DDR3200
-       {{.u1TRFC = 40, .u1TRFRC_05T = 0,  .u1TRFCpb = 12, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 55},    //tRFCab = 130, tRFCpb = 60
-         {.u1TRFC = 60, .u1TRFRC_05T = 0,  .u1TRFCpb = 24, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 75},    //tRFCab = 180, tRFCpb = 90
-         {.u1TRFC = 100, .u1TRFRC_05T = 0, .u1TRFCpb = 44, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 115},   //tRFCab = 280, tRFCpb = 140
-         {.u1TRFC = 140, .u1TRFRC_05T = 0, .u1TRFCpb = 64, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 155}}, //tRFCab = 380, tRFCpb = 190
-        //For freqGroup DDR3733
-        {{.u1TRFC = 49, .u1TRFRC_05T = 0, .u1TRFCpb = 16, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 65},    //tRFCab = 130, tRFCpb = 60
-         {.u1TRFC = 72, .u1TRFRC_05T = 0, .u1TRFCpb = 30, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 88},    //tRFCab = 180, tRFCpb = 90
-         {.u1TRFC = 119, .u1TRFRC_05T = 0, .u1TRFCpb = 53, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 135},  //tRFCab = 280, tRFCpb = 140
-         {.u1TRFC = 165, .u1TRFRC_05T = 1, .u1TRFCpb = 77, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 181}}, //tRFCab = 380, tRFCpb = 190
-        //For freqGroup DDR4266
-        {{.u1TRFC = 57, .u1TRFRC_05T = 1, .u1TRFCpb = 20, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 74},    //tRFCab = 130, tRFCpb = 60
-         {.u1TRFC = 84, .u1TRFRC_05T = 0, .u1TRFCpb = 36, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 100},    //tRFCab = 180, tRFCpb = 90
-         {.u1TRFC = 137, .u1TRFRC_05T = 1, .u1TRFCpb = 63, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 154},  //tRFCab = 280, tRFCpb = 140
-         {.u1TRFC = 191, .u1TRFRC_05T = 0, .u1TRFCpb = 89, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 207}} //tRFCab = 380, tRFCpb = 190
+
+        {{.u1TRFC = 8, .u1TRFRC_05T = 0, .u1TRFCpb = 0, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 21},
+         {.u1TRFC = 15, .u1TRFRC_05T = 1, .u1TRFCpb = 2, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 29},
+         {.u1TRFC = 30, .u1TRFRC_05T = 1, .u1TRFCpb = 9, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 44},
+         {.u1TRFC = 45, .u1TRFRC_05T = 1, .u1TRFCpb = 17, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 59}},
+
+        {{.u1TRFC = 14, .u1TRFRC_05T = 0, .u1TRFCpb = 0, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 28},
+         {.u1TRFC = 24, .u1TRFRC_05T = 0, .u1TRFCpb = 6, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 38},
+         {.u1TRFC = 44, .u1TRFRC_05T = 0, .u1TRFCpb = 16, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 58},
+         {.u1TRFC = 64, .u1TRFRC_05T = 0, .u1TRFCpb = 26, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 78}},
+
+        {{.u1TRFC = 18, .u1TRFRC_05T = 1, .u1TRFCpb = 2, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 33},
+         {.u1TRFC = 30, .u1TRFRC_05T = 0, .u1TRFCpb = 9, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 44},
+         {.u1TRFC = 53, .u1TRFRC_05T = 1, .u1TRFCpb = 21, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 68},
+         {.u1TRFC = 77, .u1TRFRC_05T = 0, .u1TRFCpb = 32, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 91}},
+
+        {{.u1TRFC = 27, .u1TRFRC_05T = 1,  .u1TRFCpb = 6, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 42},
+         {.u1TRFC = 42, .u1TRFRC_05T = 1,  .u1TRFCpb = 15, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 57},
+         {.u1TRFC = 72, .u1TRFRC_05T = 1,  .u1TRFCpb = 30, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 87},
+         {.u1TRFC = 102, .u1TRFRC_05T = 1,  .u1TRFCpb = 45, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 117}},
+
+        {{.u1TRFC = 31, .u1TRFRC_05T = 1,  .u1TRFCpb = 8, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 46},
+         {.u1TRFC = 48, .u1TRFRC_05T = 1,  .u1TRFCpb = 18, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 63},
+         {.u1TRFC = 81, .u1TRFRC_05T = 1,  .u1TRFCpb = 35, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 96},
+         {.u1TRFC = 115, .u1TRFRC_05T = 0,  .u1TRFCpb = 51, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 130}},
+
+       {{.u1TRFC = 40, .u1TRFRC_05T = 0,  .u1TRFCpb = 12, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 55},
+         {.u1TRFC = 60, .u1TRFRC_05T = 0,  .u1TRFCpb = 24, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 75},
+         {.u1TRFC = 100, .u1TRFRC_05T = 0, .u1TRFCpb = 44, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 115},
+         {.u1TRFC = 140, .u1TRFRC_05T = 0, .u1TRFCpb = 64, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 155}},
+
+        {{.u1TRFC = 49, .u1TRFRC_05T = 0, .u1TRFCpb = 16, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 65},
+         {.u1TRFC = 72, .u1TRFRC_05T = 0, .u1TRFCpb = 30, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 88},
+         {.u1TRFC = 119, .u1TRFRC_05T = 0, .u1TRFCpb = 53, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 135},
+         {.u1TRFC = 165, .u1TRFRC_05T = 1, .u1TRFCpb = 77, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 181}},
+
+        {{.u1TRFC = 57, .u1TRFRC_05T = 1, .u1TRFCpb = 20, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 74},
+         {.u1TRFC = 84, .u1TRFRC_05T = 0, .u1TRFCpb = 36, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 100},
+         {.u1TRFC = 137, .u1TRFRC_05T = 1, .u1TRFCpb = 63, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 154},
+         {.u1TRFC = 191, .u1TRFRC_05T = 0, .u1TRFCpb = 89, .u1TRFRCpb_05T = 1, .u2TXREFCNT = 207}}
     };
 
     optimizeACTime tRFCab_Opt_Div4 [GRP_ACTIM_NUM_DIV4][tRFCAB_NUM] =
     {
 #if ENABLE_DDR400_OPEN_LOOP_MODE_OPTION
-        // @ tg add for DDR400
-        {{.u1TRFC = 1,  .u1TRFRC_05T = 0, .u1TRFCpb = 0, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 14}, //tRFCab = 130, tRFCpb = 60
-         {.u1TRFC = 6,  .u1TRFRC_05T = 0, .u1TRFCpb = 0, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 19}, //tRFCab = 180, tRFCpb = 90
-         {.u1TRFC = 16, .u1TRFRC_05T = 0, .u1TRFCpb = 2, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 29}, //tRFCab = 280, tRFCpb = 140
-         {.u1TRFC = 26, .u1TRFRC_05T = 0, .u1TRFCpb = 7, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 39}},//tRFCab = 380, tRFCpb = 190
+
+        {{.u1TRFC = 1,  .u1TRFRC_05T = 0, .u1TRFCpb = 0, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 14},
+         {.u1TRFC = 6,  .u1TRFRC_05T = 0, .u1TRFCpb = 0, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 19},
+         {.u1TRFC = 16, .u1TRFRC_05T = 0, .u1TRFCpb = 2, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 29},
+         {.u1TRFC = 26, .u1TRFRC_05T = 0, .u1TRFCpb = 7, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 39}},
 #endif
-        //NOTE: @Darren, For freqGroup DDR816
-        {{.u1TRFC = 14, .u1TRFRC_05T = 0, .u1TRFCpb = 0, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 28}, //tRFCab = 130, tRFCpb = 60
-         {.u1TRFC = 24, .u1TRFRC_05T = 0, .u1TRFCpb = 6, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 38}, //tRFCab = 180, tRFCpb = 90
-         {.u1TRFC = 44, .u1TRFRC_05T = 0, .u1TRFCpb = 16, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 58}, //tRFCab = 280, tRFCpb = 140
-         {.u1TRFC = 64, .u1TRFRC_05T = 0, .u1TRFCpb = 26, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 78}},//tRFCab = 380, tRFCpb = 190
-        //For freqGroup DDR1200
-        {{.u1TRFC = 28, .u1TRFRC_05T = 0,  .u1TRFCpb = 7, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 42},   //tRFCab = 130, tRFCpb = 60
-         {.u1TRFC = 43, .u1TRFRC_05T = 0,  .u1TRFCpb = 16, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 57},   //tRFCab = 180, tRFCpb = 90
-         {.u1TRFC = 73, .u1TRFRC_05T = 0,  .u1TRFCpb = 31, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 87},   //tRFCab = 280, tRFCpb = 140
-         {.u1TRFC = 103, .u1TRFRC_05T = 0,  .u1TRFCpb = 46, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 117}},//tRFCab = 380, tRFCpb = 190
-        //For freqGroup DDR1600
-       {{.u1TRFC = 40, .u1TRFRC_05T = 0,  .u1TRFCpb = 12, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 55},    //tRFCab = 130, tRFCpb = 60
-         {.u1TRFC = 60, .u1TRFRC_05T = 0,  .u1TRFCpb = 24, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 75},    //tRFCab = 180, tRFCpb = 90
-         {.u1TRFC = 100, .u1TRFRC_05T = 0, .u1TRFCpb = 44, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 115},   //tRFCab = 280, tRFCpb = 140
-         {.u1TRFC = 140, .u1TRFRC_05T = 0, .u1TRFCpb = 64, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 155}}, //tRFCab = 380, tRFCpb = 190
+
+        {{.u1TRFC = 14, .u1TRFRC_05T = 0, .u1TRFCpb = 0, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 28},
+         {.u1TRFC = 24, .u1TRFRC_05T = 0, .u1TRFCpb = 6, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 38},
+         {.u1TRFC = 44, .u1TRFRC_05T = 0, .u1TRFCpb = 16, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 58},
+         {.u1TRFC = 64, .u1TRFRC_05T = 0, .u1TRFCpb = 26, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 78}},
+
+        {{.u1TRFC = 28, .u1TRFRC_05T = 0,  .u1TRFCpb = 7, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 42},
+         {.u1TRFC = 43, .u1TRFRC_05T = 0,  .u1TRFCpb = 16, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 57},
+         {.u1TRFC = 73, .u1TRFRC_05T = 0,  .u1TRFCpb = 31, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 87},
+         {.u1TRFC = 103, .u1TRFRC_05T = 0,  .u1TRFCpb = 46, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 117}},
+
+       {{.u1TRFC = 40, .u1TRFRC_05T = 0,  .u1TRFCpb = 12, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 55},
+         {.u1TRFC = 60, .u1TRFRC_05T = 0,  .u1TRFCpb = 24, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 75},
+         {.u1TRFC = 100, .u1TRFRC_05T = 0, .u1TRFCpb = 44, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 115},
+         {.u1TRFC = 140, .u1TRFRC_05T = 0, .u1TRFCpb = 64, .u1TRFRCpb_05T = 0, .u2TXREFCNT = 155}},
     };
 
 
@@ -778,29 +745,29 @@ void vDramcACTimingOptimize(DRAMC_CTX_T *p)
         while(1);
     }
 #endif
-    /* Set tRFCab group idx p->density = MR8 OP[5:2]*/
+
     switch (p->density)
     {
-        case 0x0:   //4Gb per die  (2Gb per channel),  tRFCab=130
+        case 0x0:
             u1RFCabGrpIdx = tRFCAB_130;
             break;
-        case 0x1:   //6Gb per die  (3Gb per channel),  tRFCab=180
-        case 0x2:   //8Gb per die  (4Gb per channel),  tRFCab=180
+        case 0x1:
+        case 0x2:
             u1RFCabGrpIdx = tRFCAB_180;
             break;
-        case 0x3:   //12Gb per die (6Gb per channel),  tRFCab=280
-        case 0x4:   //16Gb per die (8Gb per channel),  tRFCab=280
+        case 0x3:
+        case 0x4:
             u1RFCabGrpIdx = tRFCAB_280;
             break;
-        case 0x5:   //24Gb per die (12Gb per channel), tRFCab=380
-        case 0x6:   //32Gb per die (16Gb per channel), tRFCab=380
+        case 0x5:
+        case 0x6:
             u1RFCabGrpIdx = tRFCAB_380;
             break;
         default:
             u1ExecuteOptimize = DISABLE;
             mcSHOW_ERR_MSG(("MR8 density err!\n"));
     }
-    /* Set freqGroup Idx */
+
     switch (p->freqGroup)
     {
 #if ENABLE_DDR400_OPEN_LOOP_MODE_OPTION
@@ -888,7 +855,7 @@ void vDramcACTimingOptimize(DRAMC_CTX_T *p)
     u1TRFCpb_05T = ptRFCab_Opt[u1RFCabGrpIdx].u1TRFRCpb_05T;
     u1TXREFCNT = ptRFCab_Opt[u1RFCabGrpIdx].u2TXREFCNT;
 
-    /* Only execute ACTimingOptimize(write to regs) when corresponding values have been found */
+
     if (u1ExecuteOptimize == ENABLE)
     {
         vIO32WriteFldAlign_All(DRAMC_REG_SHU_ACTIM3, u1TRFC, SHU_ACTIM3_TRFC);
@@ -903,17 +870,12 @@ void vDramcACTimingOptimize(DRAMC_CTX_T *p)
     return;
 }
 
-/* ACTimingTbl: All freq's ACTiming from ACTiming excel file
- * (Some fields don't exist for LP3 -> set to 0)
- * Note: !!All ACTiming adjustments should not be set in-table should be moved into UpdateACTimingReg()!!
- *       Or else preloader's highest freq ACTimings may be set to different values than expected.
- */
 static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
-    //----------LPDDR4---------------------------
+
 #if SUPPORT_LP4_DDR4266_ACTIM
-    //LP4_DDR4266 ACTiming---------------------------------
+
 #if (ENABLE_READ_DBI == 1)
-//LPDDR4 4X_4266_Div 8_DBI1.csv Read 1
+
 {
     .dramType = TYPE_LPDDR4, .freq = 2133, .cbtMode = CBT_NORMAL_MODE, .readDBI = 1,
     .readLat = 40,  .writeLat =  18,    .DivMode =  DIV8_MODE,
@@ -975,10 +937,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 16,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 7,   .datlat = 18
 },
-//LPDDR4 4X_4266_BT_Div 8_DBI1.csv Read 1
+
 {
     .dramType = TYPE_LPDDR4, .freq = 2133, .cbtMode = CBT_BYTE_MODE1, .readDBI = 1,
     .readLat = 44,  .writeLat =  18,    .DivMode =  DIV8_MODE,
@@ -1040,11 +1002,11 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 16,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 7,   .datlat = 18
 },
-#else  //ENABLE_READ_DBI == 0)
-//LPDDR4 4X_4266_Div 8_DBI0.csv Read 0
+#else
+
 {
     .dramType = TYPE_LPDDR4, .freq = 2133, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 36,  .writeLat =  18,    .DivMode =  DIV8_MODE,
@@ -1106,10 +1068,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 16,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 7,   .datlat = 18
 },
-//LPDDR4 4X_4266_BT_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 2133, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 40,  .writeLat =  18,    .DivMode =  DIV8_MODE,
@@ -1171,15 +1133,15 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 16,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 7,   .datlat = 18
 },
 #endif
 #endif
 #if SUPPORT_LP4_DDR3733_ACTIM
-    //LP4_DDR3733 ACTiming---------------------------------
+
 #if (ENABLE_READ_DBI == 1)
-//LPDDR4 4X_3733_Div 8_DBI1.csv Read 1
+
 {
     .dramType = TYPE_LPDDR4, .freq = 1866, .cbtMode = CBT_NORMAL_MODE, .readDBI = 1,
     .readLat = 36,  .writeLat =  16,    .DivMode =  DIV8_MODE,
@@ -1241,10 +1203,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 14,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 6,   .datlat = 16
 },
-//LPDDR4 4X_3733_BT_Div 8_DBI1.csv Read 1
+
 {
     .dramType = TYPE_LPDDR4, .freq = 1866, .cbtMode = CBT_BYTE_MODE1, .readDBI = 1,
     .readLat = 40,  .writeLat =  16,    .DivMode =  DIV8_MODE,
@@ -1306,11 +1268,11 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 14,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 6,   .datlat = 16
 },
-#else  //ENABLE_READ_DBI == 0)
-//LPDDR4 4X_3733_Div 8_DBI0.csv Read 0
+#else
+
 {
     .dramType = TYPE_LPDDR4, .freq = 1866, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 32,  .writeLat =  16,    .DivMode =  DIV8_MODE,
@@ -1372,10 +1334,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 14,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 6,   .datlat = 16
 },
-//LPDDR4 4X_3733_BT_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 1866, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 36,  .writeLat =  16,    .DivMode =  DIV8_MODE,
@@ -1437,15 +1399,15 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 14,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 6,   .datlat = 16
 },
 #endif
 #endif
 #if SUPPORT_LP4_DDR3200_ACTIM
-    //LP4_DDR3200 ACTiming---------------------------------
+
 #if (ENABLE_READ_DBI == 1)
-//LPDDR4 4X_3200_Div 8_DBI1.csv Read 1
+
 {
     .dramType = TYPE_LPDDR4, .freq = 1600, .cbtMode = CBT_NORMAL_MODE, .readDBI = 1,
     .readLat = 32,  .writeLat =  14,    .DivMode =  DIV8_MODE,
@@ -1507,10 +1469,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 12,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 5,   .datlat = 15
 },
-//LPDDR4 4X_3200_BT_Div 8_DBI1.csv Read 1
+
 {
     .dramType = TYPE_LPDDR4, .freq = 1600, .cbtMode = CBT_BYTE_MODE1, .readDBI = 1,
     .readLat = 36,  .writeLat =  14,    .DivMode =  DIV8_MODE,
@@ -1572,11 +1534,11 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 12,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 5,   .datlat = 15
 },
-#else  //ENABLE_READ_DBI == 0)
-//LPDDR4 4X_3200_Div 8_DBI0.csv Read 0
+#else
+
 {
     .dramType = TYPE_LPDDR4, .freq = 1600, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 28,  .writeLat =  14,    .DivMode =  DIV8_MODE,
@@ -1638,10 +1600,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 12,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 5,   .datlat = 15
 },
-//LPDDR4 4X_3200_BT_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 1600, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 32,  .writeLat =  14,    .DivMode =  DIV8_MODE,
@@ -1703,14 +1665,13 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 12,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 5,   .datlat = 15
 },
 #endif
 #endif
 #if SUPPORT_LP4_DDR2667_ACTIM
-    //LP4_DDR2667 ACTiming---------------------------------
-//LPDDR4 4X_2667_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 1333, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 24,  .writeLat =  12,    .DivMode =  DIV8_MODE,
@@ -1772,10 +1733,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 11,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = TBD,     .datlat = TBD
 },
-//LPDDR4 4X_2667_BT_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 1333, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 26,  .writeLat =  12,    .DivMode =  DIV8_MODE,
@@ -1837,13 +1798,12 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 11,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = TBD,     .datlat = TBD
 },
 #endif
 #if SUPPORT_LP4_DDR2400_ACTIM
-    //LP4_DDR2400 ACTiming---------------------------------
-//LPDDR4 4X_2400_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 1200, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 24,  .writeLat =  12,    .DivMode =  DIV8_MODE,
@@ -1905,10 +1865,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 10,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 4,   .datlat = 13
 },
-//LPDDR4 4X_2400_BT_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 1200, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 26,  .writeLat =  12,    .DivMode =  DIV8_MODE,
@@ -1970,13 +1930,12 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 10,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 4,   .datlat = 13
 },
 #endif
 #if SUPPORT_LP4_DDR1866_ACTIM
-    //LP4_DDR1866 ACTiming---------------------------------
-//LPDDR4 4X_1866_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 933, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 20,  .writeLat =  10,    .DivMode =  DIV8_MODE,
@@ -2038,10 +1997,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 7,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 3,   .datlat = 13
 },
-//LPDDR4 4X_1866_BT_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 933, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 22,  .writeLat =  10,    .DivMode =  DIV8_MODE,
@@ -2103,13 +2062,12 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 7,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 3,   .datlat = 13
 },
 #endif
 #if SUPPORT_LP4_DDR1600_ACTIM
-    //LP4_DDR1600 ACTiming---------------------------------
-//LPDDR4 4X_1600_Div 4_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 800, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 14,  .writeLat =  8, .DivMode =  DIV4_MODE,
@@ -2171,10 +2129,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 12,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 2,   .datlat = 10
 },
-//LPDDR4 4X_1600_BT_Div 4_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 800, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 16,  .writeLat =  8, .DivMode =  DIV4_MODE,
@@ -2236,10 +2194,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 12,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 2,   .datlat = 10
 },
-//LPDDR4 4X_1600_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 800, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 14,  .writeLat =  8, .DivMode =  DIV8_MODE,
@@ -2301,10 +2259,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 6,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 2,   .datlat = 10
 },
-//LPDDR4 4X_1600_BT_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 800, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 16,  .writeLat =  8, .DivMode =  DIV8_MODE,
@@ -2366,13 +2324,12 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 6,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 2,   .datlat = 10
 },
 #endif
 #if SUPPORT_LP4_DDR1333_ACTIM
-    //LP4_DDR1333 ACTiming---------------------------------
-//LPDDR4 4X_1333_Div 4_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 666, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 14,  .writeLat =  8, .DivMode =  DIV4_MODE,
@@ -2434,10 +2391,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 10,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = TBD,     .datlat = TBD
 },
-//LPDDR4 4X_1333_BT_Div 4_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 666, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 16,  .writeLat =  8, .DivMode =  DIV4_MODE,
@@ -2499,10 +2456,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 10,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = TBD,     .datlat = TBD
 },
-//LPDDR4 4X_1333_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 666, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 14,  .writeLat =  8, .DivMode =  DIV8_MODE,
@@ -2564,10 +2521,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 5,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = TBD,     .datlat = TBD
 },
-//LPDDR4 4X_1333_BT_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 666, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 16,  .writeLat =  8, .DivMode =  DIV8_MODE,
@@ -2629,13 +2586,12 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 5,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = TBD,     .datlat = TBD
 },
 #endif
 #if SUPPORT_LP4_DDR1200_ACTIM
-    //LP4_DDR1200 ACTiming---------------------------------
-//LPDDR4 4X_1200_Div 4_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 600, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 14,  .writeLat =  8, .DivMode =  DIV4_MODE,
@@ -2697,10 +2653,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 10,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 2,   .datlat = 9
 },
-//LPDDR4 4X_1200_BT_Div 4_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 600, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 16,  .writeLat =  8, .DivMode =  DIV4_MODE,
@@ -2762,10 +2718,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 10,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 2,   .datlat = 9
 },
-//LPDDR4 4X_1200_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 600, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 14,  .writeLat =  8, .DivMode =  DIV8_MODE,
@@ -2827,10 +2783,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 5,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 2,   .datlat = 9
 },
-//LPDDR4 4X_1200_BT_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 600, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 16,  .writeLat =  8, .DivMode =  DIV8_MODE,
@@ -2892,13 +2848,12 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 5,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 2,   .datlat = 9
 },
 #endif
 #if SUPPORT_LP4_DDR800_ACTIM
-    //LP4_DDR800 ACTiming---------------------------------
-//LPDDR4 4X_800_Div 4_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 400, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 14,  .writeLat =  8, .DivMode =  DIV4_MODE,
@@ -2960,10 +2915,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 6,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 4,   .datlat = 15
 },
-//LPDDR4 4X_800_BT_Div 4_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 400, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 16,  .writeLat =  8, .DivMode =  DIV4_MODE,
@@ -3025,10 +2980,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 6,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 4,   .datlat = 15
 },
-//LPDDR4 4X_800_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 400, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 14,  .writeLat =  8, .DivMode =  DIV8_MODE,
@@ -3090,10 +3045,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 3,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 5,   .datlat = 15
 },
-//LPDDR4 4X_800_BT_Div 8_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 400, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 16,  .writeLat =  8, .DivMode =  DIV8_MODE,
@@ -3155,13 +3110,12 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 2,
     .zqlat2 = 3,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 5,   .datlat = 15
 },
 #endif
 #if SUPPORT_LP4_DDR400_ACTIM
-    //LP4_DDR400 ACTiming---------------------------------
-//LPDDR4 4X_400_Div 4_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 200, .cbtMode = CBT_NORMAL_MODE, .readDBI = 0,
     .readLat = 14,  .writeLat =  8, .DivMode =  DIV4_MODE,
@@ -3223,10 +3177,10 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 4,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 2,   .datlat = 15
 },
-//LPDDR4 4X_400_BT_Div 4_DBI0.csv Read 0
+
 {
     .dramType = TYPE_LPDDR4, .freq = 200, .cbtMode = CBT_BYTE_MODE1, .readDBI = 0,
     .readLat = 16,  .writeLat =  8, .DivMode =  DIV4_MODE,
@@ -3288,7 +3242,7 @@ static const ACTime_T_LP4 ACTimingTbl_LP4[AC_TIMING_NUMBER_LP4] = {
     .ckelckcnt = 3,
     .zqlat2 = 4,
 
-    //DQSINCTL, DATLAT aren't in ACTiming excel file
+
     .dqsinctl = 2,   .datlat = 15
 },
 #endif

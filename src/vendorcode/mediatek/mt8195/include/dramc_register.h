@@ -189,7 +189,7 @@
 #define Channel_D_DDRPHY_NAO_BASE_ADDRESS        0x0
 
 #undef Channel_A_DDRPHY_DPM_BASE_ADDRESS
-#define Channel_A_DDRPHY_DPM_BASE_ADDRESS       0xD0000 //@Darren, 0x90000 + 0x40000 for DV sim
+#define Channel_A_DDRPHY_DPM_BASE_ADDRESS       0xD0000
 #elif(HAPS_FPFG_A60868 ==0)
 #undef Channel_A_DRAMC_AO_BASE_ADDRESS
 #define Channel_A_DRAMC_AO_BASE_ADDRESS         0x10230000

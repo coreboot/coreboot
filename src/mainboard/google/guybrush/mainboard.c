@@ -112,10 +112,15 @@ static void mainboard_configure_gpios(void)
 					  override_num_gpios);
 }
 
+void __weak variant_devtree_update(void)
+{
+}
+
 static void mainboard_init(void *chip_info)
 {
 	mainboard_configure_gpios();
 	mainboard_ec_init();
+	variant_devtree_update();
 }
 
 static void mainboard_write_blken(void)

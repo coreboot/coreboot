@@ -9,4 +9,6 @@ bootblock-y += variant.c
 romstage-y += variant.c
 ramstage-y += variant.c
 
+ramstage-y += ramstage.c
+
 subdirs-y += ./memory

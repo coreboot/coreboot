@@ -18,6 +18,10 @@ static const struct soc_amd_gpio bid1_override_gpio_table[] = {
 	PAD_GPO(GPIO_5, HIGH),
 	/* SD_AUX_RESET_L */
 	PAD_GPO(GPIO_69, HIGH),
+	/* GSC_SOC_INT_L */
+	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
+	/* Unused */
+	PAD_NC(GPIO_85),
 };
 
 /* This table is used by nipperkin variant with board version >= 2. */
@@ -33,6 +37,8 @@ static const struct soc_amd_gpio bid2_override_gpio_table[] = {
 };
 
 static const struct soc_amd_gpio override_early_gpio_table[] = {
+	/* BID == 1: GSC_SOC_INT_L, BID > 1: Unused */
+	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	PAD_NC(GPIO_18),
 	/* SD_AUX_RESET_L */
 	PAD_GPO(GPIO_69, LOW),

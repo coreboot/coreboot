@@ -60,4 +60,5 @@ enum dxio_port_id {
 
 uint8_t variant_sd_aux_reset_gpio(void);
 
+void variant_devtree_update(void);
 #endif /* __BASEBOARD_VARIANTS_H__ */

@@ -17,8 +17,8 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_1, SYS_RESET_L, PULL_NONE),
 	/* WAKE_L */
 	PAD_NF_SCI(GPIO_2, WAKE_L, PULL_NONE, EDGE_LOW),
-	/* GSC_SOC_INT_L */
-	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
+	/* Unused */
+	PAD_NC(GPIO_3),
 	/* SOC_PEN_DETECT_ODL */
 	PAD_WAKE(GPIO_4, PULL_NONE, EDGE_HIGH, S0i3),
 	/* SD_AUX_RESET_L  */
@@ -95,8 +95,8 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* GPIO_77 - GPIO_83: Not available */
 	/* EC_SOC_INT_ODL */
 	PAD_GPI(GPIO_84, PULL_NONE),
-	/* Unused */
-	PAD_NC(GPIO_85),
+	/* GSC_SOC_INT_L */
+	PAD_INT(GPIO_85, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* ESPI_SOC_CLK */
 	PAD_NF(GPIO_86, SPI_CLK, PULL_NONE),
 	/* RAM_ID_1 / DEV_BEEP_DATA */
@@ -200,14 +200,16 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 	PAD_GPO(GPIO_24, LOW),
 
 /* Enable ESPI, GSC Interrupt & I2C Communication */
-	/* GSC_SOC_INT_L */
-	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
+	/* Unused */
+	PAD_NC(GPIO_3),
 	/* I2C3_SCL */
 	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
 	/* I2C3_SDA */
 	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
 	/* ESPI_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
+	/* GSC_SOC_INT_L */
+	PAD_INT(GPIO_85, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* ESPI_SOC_CLK */
 	PAD_NF(GPIO_86, SPI_CLK, PULL_NONE),
 	/* ESPI1_DATA0 */

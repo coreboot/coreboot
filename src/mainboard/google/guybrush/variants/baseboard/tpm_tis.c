@@ -1,9 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <boardid.h>
 #include <security/tpm/tis.h>
 #include <soc/gpio.h>
 
 int tis_plat_irq_status(void)
 {
-	return gpio_interrupt_status(GPIO_3);
+	gpio_t irq_gpio = GPIO_85;
+	uint32_t board_ver = board_id();
+
+	if (CONFIG(BOARD_GOOGLE_GUYBRUSH) || (CONFIG(BOARD_GOOGLE_NIPPERKIN) && board_ver == 1))
+		irq_gpio = GPIO_3;
+
+	return gpio_interrupt_status(irq_gpio);
 }

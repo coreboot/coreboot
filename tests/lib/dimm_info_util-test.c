@@ -4,28 +4,51 @@
 #include <spd.h>
 #include <tests/test.h>
 
-static void test_smbios_bus_width_to_spd_width(void **state)
+static void test_smbios_bus_width_to_spd_width_parametrized(smbios_memory_type ddr_type)
 {
 	/* Non-ECC variants */
-	assert_int_equal(MEMORY_BUS_WIDTH_64, smbios_bus_width_to_spd_width(64, 64));
-	assert_int_equal(MEMORY_BUS_WIDTH_32, smbios_bus_width_to_spd_width(32, 32));
-	assert_int_equal(MEMORY_BUS_WIDTH_16, smbios_bus_width_to_spd_width(16, 16));
-	assert_int_equal(MEMORY_BUS_WIDTH_8, smbios_bus_width_to_spd_width(8, 8));
+	assert_int_equal(MEMORY_BUS_WIDTH_64, smbios_bus_width_to_spd_width(ddr_type, 64, 64));
+	assert_int_equal(MEMORY_BUS_WIDTH_32, smbios_bus_width_to_spd_width(ddr_type, 32, 32));
+	assert_int_equal(MEMORY_BUS_WIDTH_16, smbios_bus_width_to_spd_width(ddr_type, 16, 16));
+	assert_int_equal(MEMORY_BUS_WIDTH_8, smbios_bus_width_to_spd_width(ddr_type, 8, 8));
 	/* Incorrect data width. Fallback to 8-bit */
-	assert_int_equal(MEMORY_BUS_WIDTH_8, smbios_bus_width_to_spd_width(15, 15));
+	assert_int_equal(MEMORY_BUS_WIDTH_8, smbios_bus_width_to_spd_width(ddr_type, 15, 15));
 
 	/* ECC variants */
-	assert_int_equal(MEMORY_BUS_WIDTH_64 | SPD_ECC_8BIT,
-			smbios_bus_width_to_spd_width(64 + 8, 64));
-	assert_int_equal(MEMORY_BUS_WIDTH_32 | SPD_ECC_8BIT,
-			smbios_bus_width_to_spd_width(32 + 8, 32));
-	assert_int_equal(MEMORY_BUS_WIDTH_16 | SPD_ECC_8BIT,
-			smbios_bus_width_to_spd_width(16 + 8, 16));
-	assert_int_equal(MEMORY_BUS_WIDTH_8 | SPD_ECC_8BIT,
-			smbios_bus_width_to_spd_width(8 + 8, 8));
+	uint8_t extension_8bits = SPD_ECC_8BIT;
+	if (ddr_type == MEMORY_TYPE_DDR5 || ddr_type == MEMORY_TYPE_LPDDR5)
+		extension_8bits = SPD_ECC_8BIT_LP5_DDR5;
+
+	assert_int_equal(MEMORY_BUS_WIDTH_64 | extension_8bits,
+			smbios_bus_width_to_spd_width(ddr_type, 64 + 8, 64));
+	assert_int_equal(MEMORY_BUS_WIDTH_32 | extension_8bits,
+			smbios_bus_width_to_spd_width(ddr_type, 32 + 8, 32));
+	assert_int_equal(MEMORY_BUS_WIDTH_16 | extension_8bits,
+			smbios_bus_width_to_spd_width(ddr_type, 16 + 8, 16));
+	assert_int_equal(MEMORY_BUS_WIDTH_8 | extension_8bits,
+			smbios_bus_width_to_spd_width(ddr_type, 8 + 8, 8));
 	/* Incorrect data width. Fallback to 8-bit */
-	assert_int_equal(MEMORY_BUS_WIDTH_8 | SPD_ECC_8BIT,
-			smbios_bus_width_to_spd_width(15 + 8, 15));
+	assert_int_equal(MEMORY_BUS_WIDTH_8 | extension_8bits,
+			smbios_bus_width_to_spd_width(ddr_type, 15 + 8, 15));
+}
+
+static void test_smbios_bus_width_to_spd_width(void **state)
+{
+	smbios_memory_type memory_type[] = {
+		MEMORY_TYPE_DDR2,
+		MEMORY_TYPE_DDR3,
+		MEMORY_TYPE_DDR4,
+		MEMORY_TYPE_DDR5,
+		MEMORY_TYPE_LPDDR3,
+		MEMORY_TYPE_LPDDR4,
+		MEMORY_TYPE_LPDDR5,
+	};
+
+	for (int i = 0; i < ARRAY_SIZE(memory_type); i++) {
+		print_message("test_smbios_bus_width_to_spd_width_parametrized(%d)\n",
+			memory_type[i]);
+		test_smbios_bus_width_to_spd_width_parametrized(memory_type[i]);
+	}
 }
 
 static void test_smbios_memory_size_to_mib(void **state)

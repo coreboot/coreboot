@@ -12,7 +12,7 @@
  * Use this when setting dimm_info.bus_width if the raw SPD values are not
  * available.
  */
-uint8_t smbios_bus_width_to_spd_width(uint16_t total_width,
+uint8_t smbios_bus_width_to_spd_width(uint8_t ddr_type, uint16_t total_width,
 				      uint16_t data_width);
 
 /**

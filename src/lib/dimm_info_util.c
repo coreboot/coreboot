@@ -5,7 +5,8 @@
 #include <spd.h>
 #include <console/console.h>
 
-uint8_t smbios_bus_width_to_spd_width(uint16_t total_width, uint16_t data_width)
+uint8_t smbios_bus_width_to_spd_width(uint8_t ddr_type, uint16_t total_width,
+				      uint16_t data_width)
 {
 	uint8_t out;
 
@@ -38,7 +39,10 @@ uint8_t smbios_bus_width_to_spd_width(uint16_t total_width, uint16_t data_width)
 
 	switch (extension_bits) {
 	case 8:
-		out |= SPD_ECC_8BIT;
+		if (ddr_type == MEMORY_TYPE_DDR5 || ddr_type == MEMORY_TYPE_LPDDR5)
+			out |= SPD_ECC_8BIT_LP5_DDR5;
+		else
+			out |= SPD_ECC_8BIT;
 		break;
 	case 0:
 		/* No extension bits */

@@ -65,5 +65,5 @@ void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
 	if (ecc_support)
 		total_width += EXTENSION_BUS_WIDTH_8BITS;
 
-	dimm->bus_width = smbios_bus_width_to_spd_width(total_width, data_width);
+	dimm->bus_width = smbios_bus_width_to_spd_width(ddr_type, total_width, data_width);
 }

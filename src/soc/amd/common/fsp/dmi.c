@@ -54,8 +54,8 @@ static void transfer_memory_info(const TYPE17_DMI_INFO *dmi17,
 
 	dimm->mod_type = smbios_form_factor_to_spd_mod_type(dmi17->FormFactor);
 
-	dimm->bus_width =
-	    smbios_bus_width_to_spd_width(dmi17->TotalWidth, dmi17->DataWidth);
+	dimm->bus_width = smbios_bus_width_to_spd_width(dmi17->MemoryType, dmi17->TotalWidth,
+						dmi17->DataWidth);
 
 	dimm->mod_id = dmi17->ManufacturerIdCode;
 

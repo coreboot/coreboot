@@ -4,6 +4,9 @@ Code coverage for the coreboot unit tests allows us to see what lines of
 code in the coreboot library are covered by unit tests, and allows a test
 author to see where they need to add test cases for additional coverage.
 
+Code coverage requires `lcov`; install the tool if necessary by
+`sudo apt install lcov` or the equivalent for your system.
+
 Enable code coverage in your unit test build by setting the environment
 variable `COV` to 1; either `export COV=1` in your shell, or add it to your
 `make` command, e.g. `COV=1 make unit-tests`.

@@ -96,8 +96,9 @@ endif
 	$(MAKE) xcompile=$(COREBOOT_BUILD_DIR)/xcompile $(COREBOOT_BUILD_DIR)/xcompile
 	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=src/soc/nvidia/tegra124/lp0 BLD=tegra124_lp0 MFLAGS= MAKEFLAGS=xcompile=$(COREBOOT_BUILD_DIR)/xcompile MAKETARGET=all junit.xml
 	$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=src/soc/nvidia/tegra210/lp0 BLD=tegra120_lp0 MFLAGS= MAKEFLAGS=xcompile=$(COREBOOT_BUILD_DIR)/xcompile MAKETARGET=all junit.xml
-	$(MAKE) unit-tests JUNIT_OUTPUT=y
-	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) unit-tests JUNIT_OUTPUT=y)
+	$(MAKE) unit-tests JUNIT_OUTPUT=y COV=1
+	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) unit-tests coverage-report JUNIT_OUTPUT=y COV=1)
+	$(MAKE) coverage-report JUNIT_OUTPUT=y COV=1
 
 test-basic: test-lint test-tools test-abuild test-payloads test-cleanup
 

@@ -4,6 +4,7 @@
 #include <delay.h>
 #include <endian.h>
 #include <device/i2c_simple.h>
+#include <dp_aux.h>
 #include <edid.h>
 #include <timer.h>
 #include <types.h>
@@ -30,14 +31,6 @@
 #define DP_MAX_LINK_RATE		0x001
 #define DP_MAX_SUPPORTED_RATES		8 /* 16-bit little-endian */
 #define DP_LANE_COUNT_MASK		0xf
-
-/* Backlight configuration */
-#define DP_BACKLIGHT_MODE_SET			0x721
-#define DP_BACKLIGHT_CONTROL_MODE_MASK		0x3
-#define DP_BACKLIGHT_CONTROL_MODE_DPCD		0x2
-#define DP_DISPLAY_CONTROL_REGISTER		0x720
-#define DP_BACKLIGHT_ENABLE			0x1
-#define DP_BACKLIGHT_BRIGHTNESS_MSB		0x722
 
 /* link configuration */
 #define DP_LINK_BW_SET		0x100
@@ -132,17 +125,6 @@ enum vstream_config {
 	VSTREAM_ENABLE = 1,
 };
 
-enum i2c_over_aux {
-	I2C_OVER_AUX_WRITE_MOT_0 = 0x0,
-	I2C_OVER_AUX_READ_MOT_0 = 0x1,
-	I2C_OVER_AUX_WRITE_STATUS_UPDATE_0 = 0x2,
-	I2C_OVER_AUX_WRITE_MOT_1 = 0x4,
-	I2C_OVER_AUX_READ_MOT_1 = 0x5,
-	I2C_OVER_AUX_WRITE_STATUS_UPDATE_1 = 0x6,
-	NATIVE_AUX_WRITE = 0x8,
-	NATIVE_AUX_READ = 0x9,
-};
-
 enum aux_cmd_status {
 	NAT_I2C_FAIL = 1 << 6,
 	AUX_SHORT = 1 << 5,
@@ -166,21 +148,6 @@ enum ml_tx_mode {
 	REDRIVER_SEMI_AUTO_LINK_TRAINING = 0xb,
 };
 
-enum aux_request {
-	DPCD_READ,
-	DPCD_WRITE,
-	I2C_RAW_READ,
-	I2C_RAW_WRITE,
-	I2C_RAW_READ_AND_STOP,
-	I2C_RAW_WRITE_AND_STOP,
-};
-
-enum {
-	EDID_LENGTH = 128,
-	EDID_I2C_ADDR = 0x50,
-	EDID_EXTENSION_FLAG = 0x7e,
-};
-
 /*
  * LUT index corresponds to register value and LUT values corresponds
  * to dp data rate supported by the bridge in Mbps unit.
@@ -188,41 +155,6 @@ enum {
 static const unsigned int sn65dsi86_bridge_dp_rate_lut[] = {
 	0, 1620, 2160, 2430, 2700, 3240, 4320, 5400
 };
-
-static bool request_is_write(enum aux_request request)
-{
-	switch (request) {
-	case I2C_RAW_WRITE_AND_STOP:
-	case I2C_RAW_WRITE:
-	case DPCD_WRITE:
-		return true;
-	default:
-		return false;
-	}
-}
-
-static enum i2c_over_aux get_aux_cmd(enum aux_request request, uint32_t remaining_after_this)
-{
-	switch (request) {
-	case I2C_RAW_WRITE_AND_STOP:
-		if (!remaining_after_this)
-			return I2C_OVER_AUX_WRITE_MOT_0;
-		/* fallthrough */
-	case I2C_RAW_WRITE:
-		return I2C_OVER_AUX_WRITE_MOT_1;
-	case I2C_RAW_READ_AND_STOP:
-		if (!remaining_after_this)
-			return I2C_OVER_AUX_READ_MOT_0;
-		/* fallthrough */
-	case I2C_RAW_READ:
-		return I2C_OVER_AUX_READ_MOT_1;
-	case DPCD_WRITE:
-		return NATIVE_AUX_WRITE;
-	case DPCD_READ:
-	default:
-		return NATIVE_AUX_READ;
-	}
-}
 
 static cb_err_t sn65dsi86_bridge_aux_request(uint8_t bus,
 					     uint8_t chip,
@@ -241,10 +173,10 @@ static cb_err_t sn65dsi86_bridge_aux_request(uint8_t bus,
 		   NAT_I2C_FAIL | AUX_SHORT | AUX_DFER | AUX_RPLY_TOUT | SEND_INT);
 
 	while (total_size) {
-		length = MIN(total_size, 16);
+		length = MIN(total_size, DP_AUX_MAX_PAYLOAD_BYTES);
 		total_size -= length;
 
-		enum i2c_over_aux cmd = get_aux_cmd(request, total_size);
+		enum i2c_over_aux cmd = dp_get_aux_cmd(request, total_size);
 		if (i2c_writeb(bus, chip, SN_AUX_CMD_REG, (cmd << 4)) ||
 		    i2c_writeb(bus, chip, SN_AUX_ADDR_19_16_REG, (target_reg >> 16) & 0xF) ||
 		    i2c_writeb(bus, chip, SN_AUX_ADDR_15_8_REG, (target_reg >> 8) & 0xFF) ||
@@ -252,7 +184,7 @@ static cb_err_t sn65dsi86_bridge_aux_request(uint8_t bus,
 		    i2c_writeb(bus, chip, SN_AUX_LENGTH_REG, length))
 			return CB_ERR;
 
-		if (request_is_write(request)) {
+		if (dp_aux_request_is_write(request)) {
 			reg = SN_AUX_WDATA_REG_0;
 			for (i = 0; i < length; i++)
 				if (i2c_writeb(bus, chip, reg++, *data++))
@@ -273,7 +205,7 @@ static cb_err_t sn65dsi86_bridge_aux_request(uint8_t bus,
 			return CB_ERR;
 		}
 
-		if (!request_is_write(request)) {
+		if (!dp_aux_request_is_write(request)) {
 			reg = SN_AUX_RDATA_REG_0;
 			for (i = 0; i < length; i++) {
 				if (i2c_readb(bus, chip, reg++, &buf))

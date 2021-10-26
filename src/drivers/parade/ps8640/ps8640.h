@@ -24,11 +24,33 @@ enum {
 };
 
 enum {
-	EDID_LENGTH         = 128,
-	EDID_I2C_ADDR       = 0x50,
-	EDID_EXTENSION_FLAG = 0x7e,
+	PAGE0_AUXCH_CFG3 = 0x76,
+	AUXCH_CFG3_RESET = 0xff,
+	PAGE0_SWAUX_ADDR_7_0 = 0x7d,
+	PAGE0_SWAUX_ADDR_15_8 = 0x7e,
+	PAGE0_SWAUX_ADDR_23_16 = 0x7f,
+	SWAUX_ADDR_MASK = 0xfffff,
+	PAGE0_SWAUX_LENGTH = 0x80,
+	SWAUX_LENGTH_MASK = 0xf,
+	SWAUX_NO_PAYLOAD = BIT(7),
+	PAGE0_SWAUX_WDATA = 0x81,
+	PAGE0_SWAUX_RDATA = 0x82,
+	PAGE0_SWAUX_CTRL = 0x83,
+	SWAUX_SEND = BIT(0),
+	PAGE0_SWAUX_STATUS = 0x84,
+	SWAUX_M_MASK = 0x1f,
+	SWAUX_STATUS_MASK = (0x7 << 5),
+	SWAUX_STATUS_NACK = (0x1 << 5),
+	SWAUX_STATUS_DEFER = (0x2 << 5),
+	SWAUX_STATUS_ACKM = (0x3 << 5),
+	SWAUX_STATUS_INVALID = (0x4 << 5),
+	SWAUX_STATUS_I2C_NACK = (0x5 << 5),
+	SWAUX_STATUS_I2C_DEFER = (0x6 << 5),
+	SWAUX_STATUS_TIMEOUT = (0x7 << 5),
 };
 
 int ps8640_init(uint8_t bus, uint8_t chip);
 int ps8640_get_edid(uint8_t bus, uint8_t chip, struct edid *out);
+void ps8640_backlight_enable(uint8_t bus, uint8_t chip);
+
 #endif

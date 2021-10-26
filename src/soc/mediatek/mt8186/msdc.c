@@ -33,7 +33,7 @@ enum {
 	MSDC1_GPIO_MODE1_BASE = 0x100053b0,
 };
 
-void mtk_msdc_configure_emmc(void)
+void mtk_msdc_configure_emmc(bool is_early_init)
 {
 	void *gpio_base = (void *)IOCFG_LT_BASE;
 	int i;
@@ -58,6 +58,9 @@ void mtk_msdc_configure_emmc(void)
 
 	/* set eMMC cmd/dat/clk pins driving to 8mA */
 	SET32_BITFIELDS(gpio_base, MSDC0_DRV, MSDC0_DRV_VALUE);
+
+	if (is_early_init)
+		mtk_emmc_early_init((void *)MSDC0_BASE, (void *)MSDC0_TOP_BASE);
 }
 
 void mtk_msdc_configure_sdcard(void)

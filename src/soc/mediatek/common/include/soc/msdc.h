@@ -165,7 +165,7 @@ struct msdc_ctrlr {
 #define msdc_error(format...) printk(BIOS_ERR, "ERROR: " format)
 
 int mtk_emmc_early_init(void *base, void *top_base);
-void mtk_msdc_configure_emmc(void);
+void mtk_msdc_configure_emmc(bool is_early_init);
 void mtk_msdc_configure_sdcard(void);
 
 #endif /* SOC_MEDIATEK_COMMON_MSDC_H */

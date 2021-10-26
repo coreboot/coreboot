@@ -6,7 +6,7 @@
 
 static void mainboard_init(struct device *dev)
 {
-	mtk_msdc_configure_emmc();
+	mtk_msdc_configure_emmc(true);
 	mtk_msdc_configure_sdcard();
 	setup_usb_host();
 }

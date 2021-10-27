@@ -2020,35 +2020,6 @@ void acpigen_write_rom(void *bios, const size_t length)
 	acpigen_pop_len();
 }
 
-/* Soc-implemented functions -- weak definitions. */
-int __weak acpigen_soc_read_rx_gpio(unsigned int gpio_num)
-{
-	printk(BIOS_ERR, "ERROR: %s not implemented\n", __func__);
-	acpigen_write_debug_string("read_rx_gpio not available");
-	return -1;
-}
-
-int __weak acpigen_soc_get_tx_gpio(unsigned int gpio_num)
-{
-	printk(BIOS_ERR, "ERROR: %s not implemented\n", __func__);
-	acpigen_write_debug_string("get_tx_gpio not available");
-	return -1;
-}
-
-int __weak acpigen_soc_set_tx_gpio(unsigned int gpio_num)
-{
-	printk(BIOS_ERR, "ERROR: %s not implemented\n", __func__);
-	acpigen_write_debug_string("set_tx_gpio not available");
-	return -1;
-}
-
-int __weak acpigen_soc_clear_tx_gpio(unsigned int gpio_num)
-{
-	printk(BIOS_ERR, "ERROR: %s not implemented\n", __func__);
-	acpigen_write_debug_string("clear_tx_gpio not available");
-	return -1;
-}
-
 /*
  * Helper functions for enabling/disabling Tx GPIOs based on the GPIO
  * polarity. These functions end up calling acpigen_soc_{set,clear}_tx_gpio to

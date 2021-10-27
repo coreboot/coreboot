@@ -847,6 +847,9 @@ static void write_i2c_camera_device(const struct device *dev, const char *scope)
 	acpigen_write_name_integer("_UID", config->acpi_uid);
 	acpigen_write_name_string("_DDN", config->chip_name);
 	acpigen_write_STA(acpi_device_status(dev));
+	acpigen_write_method("_DSC", 0);
+	acpigen_write_return_integer(config->max_dstate_for_probe);
+	acpigen_pop_len(); /* Method _DSC */
 
 	/* Resources */
 	acpigen_write_name("_CRS");

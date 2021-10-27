@@ -257,6 +257,17 @@ struct drivers_intel_mipi_camera_config {
 	bool has_power_resource;
 	/* Perform low power probe */
 	bool low_power_probe;
+	/*
+	 * This will create a _DSC method in ACPI which returns an integer, to tell the kernel
+	 * the highest allowed D state for a device during probe
+	 * Number   State   Description
+	 * 0	    D0	    Device fully powered on
+	 * 1	    D1
+	 * 2	    D2
+	 * 3	    D3hot
+	 * 4	    D3cold  Off
+	 */
+	uint8_t max_dstate_for_probe;
 };
 
 #endif

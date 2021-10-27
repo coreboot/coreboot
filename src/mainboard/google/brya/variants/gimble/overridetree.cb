@@ -63,7 +63,7 @@ chip soc/intel/alderlake
 				}"
 				register "controls.power_limits" = "{
 					.pl1 = {
-							.min_power = 3000,
+							.min_power = 12000,
 							.max_power = 15000,
 							.time_window_min = 28 * MSECS_PER_SEC,
 							.time_window_max = 32 * MSECS_PER_SEC,

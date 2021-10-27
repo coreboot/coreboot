@@ -11,7 +11,6 @@ entries
 # RTC_CLK_ALTCENTURY
 400	8	r	0	century
 
-409	2	e	7	power_on_after_fail
 412	4	e	6	debug_level
 984	16	h	0	check_sum
 
@@ -29,10 +28,6 @@ enumerations
 6	6	Info
 6	7	Debug
 6	8	Spew
-
-7	0	Disable
-7	1	Enable
-7	2	Keep
 
 checksums
 

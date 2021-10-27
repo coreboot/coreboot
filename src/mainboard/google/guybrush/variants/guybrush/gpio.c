@@ -23,6 +23,8 @@ static const struct soc_amd_gpio bid1_ramstage_gpio_table[] = {
 	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* Unused */
 	PAD_NC(GPIO_85),
+	/* EN_PWR_FP */
+	PAD_GPO(GPIO_32, HIGH),
 };
 
 /* This table is used by guybrush variant with board version >= 2. */
@@ -35,6 +37,8 @@ static const struct soc_amd_gpio bid2_ramstage_gpio_table[] = {
 	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* Unused */
 	PAD_NC(GPIO_85),
+	/* EN_PWR_FP */
+	PAD_GPO(GPIO_32, HIGH),
 };
 
 static const struct soc_amd_gpio override_early_gpio_table[] = {
@@ -61,6 +65,20 @@ static const struct soc_amd_gpio bid2_pcie_gpio_table[] = {
 	PAD_NC(GPIO_5),
 	/* SD_AUX_RESET_L */
 	PAD_GPO(GPIO_69, HIGH),
+};
+
+static const struct soc_amd_gpio fpmcu_shutdown_gpio_table[] = {
+	/* FPMCU_RST_L */
+	PAD_GPO(GPIO_11, LOW),
+	/* EN_PWR_FP */
+	PAD_GPO(GPIO_32, LOW),
+};
+
+static const struct soc_amd_gpio fpmcu_disable_gpio_table[] = {
+	/* FPMCU_RST_L */
+	PAD_NC(GPIO_11),
+	/* EN_PWR_FP */
+	PAD_NC(GPIO_32),
 };
 
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
@@ -99,4 +117,16 @@ const struct soc_amd_gpio *variant_pcie_override_gpio_table(size_t *size)
 
 	*size = ARRAY_SIZE(bid2_pcie_gpio_table);
 	return bid2_pcie_gpio_table;
+}
+
+const struct soc_amd_gpio *variant_fpmcu_shutdown_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(fpmcu_shutdown_gpio_table);
+	return fpmcu_shutdown_gpio_table;
+}
+
+const struct soc_amd_gpio *variant_fpmcu_disable_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(fpmcu_disable_gpio_table);
+	return fpmcu_disable_gpio_table;
 }

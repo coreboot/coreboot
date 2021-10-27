@@ -17,8 +17,8 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_1, SYS_RESET_L, PULL_NONE),
 	/* WAKE_L */
 	PAD_NF_SCI(GPIO_2, WAKE_L, PULL_NONE, EDGE_LOW),
-	/* Unused */
-	PAD_NC(GPIO_3),
+	/* EN_PWR_FP */
+	PAD_GPO(GPIO_3, HIGH),
 	/* SOC_PEN_DETECT_ODL */
 	PAD_WAKE(GPIO_4, PULL_NONE, EDGE_HIGH, S0i3),
 	/* SD_AUX_RESET_L  */
@@ -68,8 +68,8 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* EN_SPKR */
 	PAD_GPO(GPIO_31, HIGH),
-	/* EN_PWR_FP */
-	PAD_GPO(GPIO_32, HIGH),
+	/* Unused */
+	PAD_NC(GPIO_32),
 	/* GPIO_33 - GPIO_39: Not available */
 	/* SSD_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
@@ -291,11 +291,18 @@ static const struct soc_amd_gpio pcie_gpio_table[] = {
 	PAD_NFO(GPIO_26, PCIE_RST_L, HIGH),
 };
 
-static const struct soc_amd_gpio gpio_fp_shutdown_table[] = {
+static const struct soc_amd_gpio fpmcu_shutdown_gpio_table[] = {
 	/* FPMCU_RST_L */
 	PAD_GPO(GPIO_11, LOW),
 	/* EN_PWR_FP */
-	PAD_GPO(GPIO_32, LOW),
+	PAD_GPO(GPIO_3, LOW),
+};
+
+static const struct soc_amd_gpio fpmcu_disable_gpio_table[] = {
+	/* FPMCU_RST_L */
+	PAD_NC(GPIO_11),
+	/* EN_PWR_FP */
+	PAD_NC(GPIO_3),
 };
 
 const struct soc_amd_gpio *__weak variant_pcie_gpio_table(size_t *size)
@@ -348,37 +355,41 @@ const struct soc_amd_gpio *__weak variant_early_gpio_table(size_t *size)
 
 const __weak struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size)
 {
-	if (acpi_get_sleep_type() == ACPI_S5) {
-		*size = ARRAY_SIZE(gpio_fp_shutdown_table);
-		return gpio_fp_shutdown_table;
-	}
+	if (acpi_get_sleep_type() == ACPI_S5)
+		return variant_fpmcu_shutdown_gpio_table(size);
 
 	*size = ARRAY_SIZE(sleep_gpio_table);
 	return sleep_gpio_table;
 }
 
+const __weak struct soc_amd_gpio *variant_fpmcu_shutdown_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(fpmcu_shutdown_gpio_table);
+	return fpmcu_shutdown_gpio_table;
+}
+
+const __weak struct soc_amd_gpio *variant_fpmcu_disable_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(fpmcu_disable_gpio_table);
+	return fpmcu_disable_gpio_table;
+}
+
 __weak void variant_fpmcu_reset(void)
 {
+	size_t size;
+	const struct soc_amd_gpio *gpio_table;
+
 	if (acpi_get_sleep_type() == ACPI_S3)
 		return;
 	/* If the system is not resuming from S3, power off the FPMCU */
-	static const struct soc_amd_gpio fpmcu_bootblock_table[] = {
-		/* SOC_FP_RST_L */
-		PAD_GPO(GPIO_11, LOW),
-		/* EN_PWR_FP */
-		PAD_GPO(GPIO_32, LOW),
-	};
-	gpio_configure_pads(fpmcu_bootblock_table, ARRAY_SIZE(fpmcu_bootblock_table));
+	gpio_table = variant_fpmcu_shutdown_gpio_table(&size);
+	gpio_configure_pads(gpio_table, size);
 }
 
 __weak void variant_finalize_gpios(void)
 {
-	static const struct soc_amd_gpio disable_fpmcu_table[] = {
-		/* FPMCU_RST_L */
-		PAD_NC(GPIO_11),
-		/* EN_PWR_FP */
-		PAD_NC(GPIO_32),
-	};
+	size_t size;
+	const struct soc_amd_gpio *gpio_table;
 
 	if (variant_has_fpmcu()) {
 		if (acpi_get_sleep_type() == ACPI_S3)
@@ -386,6 +397,7 @@ __weak void variant_finalize_gpios(void)
 		/* Deassert the FPMCU reset to enable the FPMCU */
 		gpio_set(GPIO_11, 1); /* FPMCU_RST_L */
 	} else {
-		gpio_configure_pads(disable_fpmcu_table, ARRAY_SIZE(disable_fpmcu_table));
+		gpio_table = variant_fpmcu_disable_gpio_table(&size);
+		gpio_configure_pads(gpio_table, size);
 	}
 }

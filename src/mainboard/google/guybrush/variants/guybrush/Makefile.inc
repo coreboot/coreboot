@@ -12,3 +12,5 @@ ramstage-y += variant.c
 verstage-y += gpio.c
 
 subdirs-y += ./memory
+
+smm-y += gpio.c

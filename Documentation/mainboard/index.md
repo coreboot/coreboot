@@ -182,6 +182,7 @@ The boards in this section are not real mainboards, but emulators.
 
 - [Adder Workstation 1](system76/addw1.md)
 - [Adder Workstation 2](system76/addw2.md)
+- [Bonobo Workstation 14](system76/bonw14.md)
 - [Darter Pro 6](system76/darp6.md)
 - [Darter Pro 7](system76/darp7.md)
 - [Galago Pro 4](system76/galp4.md)

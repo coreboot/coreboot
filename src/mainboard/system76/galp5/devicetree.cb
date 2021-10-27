@@ -256,7 +256,6 @@ chip soc/intel/tigerlake
 			register "SerialIoI2cMode[PchSerialIoIndexI2C2]" = "PchSerialIoPci"
 		end
 		device ref heci1 on
-			# TODO Disable ME and HECI
 			register "HeciEnabled" = "1"
 		end
 		device ref uart2 on

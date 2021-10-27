@@ -6,6 +6,9 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/dram/ddr3.h>
+#include <dimm_info_util.h>
+
+#define EXTENSION_BUS_WIDTH_8BITS	8
 
 /* Fill the SMBIOS memory information from FSP MEM_INFO_DATA_HOB in CBMEM.*/
 void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
@@ -56,27 +59,11 @@ void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
 	if (module_serial_num)
 		memcpy(dimm->serial, module_serial_num,
 		       DIMM_INFO_SERIAL_SIZE);
-	switch (data_width) {
-	case 8:
-		dimm->bus_width = MEMORY_BUS_WIDTH_8;
-		break;
-	case 16:
-		dimm->bus_width = MEMORY_BUS_WIDTH_16;
-		break;
-	case 32:
-		dimm->bus_width = MEMORY_BUS_WIDTH_32;
-		break;
-	case 64:
-		dimm->bus_width = MEMORY_BUS_WIDTH_64;
-		break;
-	case 128:
-		dimm->bus_width = MEMORY_BUS_WIDTH_128;
-		break;
-	default:
-		printk(BIOS_NOTICE, "Incorrect DIMM Data width: %u\n",
-		       (unsigned int)data_width);
-	}
+
+	uint16_t total_width = data_width;
 
 	if (ecc_support)
-		dimm->bus_width |= 0x8;
+		total_width += EXTENSION_BUS_WIDTH_8BITS;
+
+	dimm->bus_width = smbios_bus_width_to_spd_width(total_width, data_width);
 }

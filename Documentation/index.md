@@ -45,6 +45,12 @@ to the payload), but it's also a value that is deeply ingrained in the
 project. We fearlessly rip out parts of the architecture and remodel it
 when a better way of doing the same was identified.
 
+That said, since there are attempts to coerce coreboot to move in various
+directions by outside "standardization", long-established practices of
+coreboot as well as aligned projects can be documented as best practices,
+making them standards in their own right. However we reserve the right to
+retire them as the landscape shifts around us.
+
 ### One tree for everything
 
 Another difference to various other firmware projects is that we try

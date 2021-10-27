@@ -9,12 +9,15 @@
 
 static void setup_gpio(void)
 {
-	const struct soc_amd_gpio *gpios;
-	size_t num_gpios;
+	const struct soc_amd_gpio *gpios, *override_gpios;
+	size_t num_gpios, override_num_gpios;
 
 	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)) {
 		gpios = variant_early_gpio_table(&num_gpios);
-		gpio_configure_pads(gpios, num_gpios);
+		override_gpios = variant_early_override_gpio_table(&override_num_gpios);
+
+		gpio_configure_pads_with_override(gpios, num_gpios,
+				override_gpios, override_num_gpios);
 	}
 }
 

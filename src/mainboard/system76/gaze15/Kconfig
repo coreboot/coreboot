@@ -17,7 +17,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_TPM2
 	select NO_UART_ON_SUPERIO
 	select SOC_INTEL_CANNONLAKE_PCH_H
-	select SOC_INTEL_COMETLAKE_1
+	select SOC_INTEL_COMETLAKE_1 if BOARD_SYSTEM76_GAZE15
 	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
 	select SPD_READ_BY_WORD
 	select SYSTEM_TYPE_LAPTOP
@@ -25,45 +25,43 @@ config BOARD_SPECIFIC_OPTIONS
 config MAINBOARD_DIR
 	default "system76/gaze15"
 
+config VARIANT_DIR
+	default "gaze15" if BOARD_SYSTEM76_GAZE15
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
 config MAINBOARD_PART_NUMBER
-	default "gaze15"
+	default "gaze15" if BOARD_SYSTEM76_GAZE15
 
 config MAINBOARD_SMBIOS_PRODUCT_NAME
-	string
 	default "Gazelle"
 
 config MAINBOARD_VERSION
-	string
-	default "gaze15"
+	default "gaze15" if BOARD_SYSTEM76_GAZE15
 
 config CBFS_SIZE
 	default 0xA00000
 
 config CONSOLE_POST
-	bool
 	default y
 
 config ONBOARD_VGA_IS_PRIMARY
-	bool
 	default y
 
 config UART_FOR_CONSOLE
-	int
 	default 2
 
 config MAX_CPUS
-	int
 	default 16
 
 config DIMM_MAX
 	default 2
 
 config VGA_BIOS_ID
-	string
 	default "8086,9bc4"
 
 config POST_DEVICE
-	bool
 	default n
 
 endif

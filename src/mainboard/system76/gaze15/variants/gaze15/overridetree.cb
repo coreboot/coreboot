@@ -1,0 +1,31 @@
+chip soc/intel/cannonlake
+	# Serial I/O
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0] = PchSerialIoPci, // Touchpad I2C bus
+		[PchSerialIoIndexI2C1] = PchSerialIoPci, // USB-C
+		[PchSerialIoIndexUART2] = PchSerialIoSkipInit, // Debug console
+	}"
+
+	device domain 0 on
+		subsystemid 0x1558 0x8520 inherit
+
+		device pci 15.0 on      # I2C0
+			chip drivers/i2c/hid
+				register "generic.hid" = ""PNP0C50""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""PNP0C50""
+				register "generic.desc" = ""Synaptics Touchpad""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2c on end
+			end
+		end
+	end
+end

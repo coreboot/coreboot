@@ -241,6 +241,9 @@ static const struct pad_config early_gpio_table[] = {
 /* SATAXPCIE1 */       PAD_CFG_NF(GPP_E1, NONE, DEEP,
 				  NF1), /* MB_PCIE_SATA#_DET */
 /* SATA_DEVSLP1 */     PAD_CFG_NF(GPP_E5, NONE, DEEP, NF1), /* DEVSLP1_MB */
+
+/* SM1CLK */		PAD_CFG_GPI_GPIO_DRIVER(GPP_C6, UP_20K,
+						DEEP), /* EC_IN_RW */
 };
 
 const struct pad_config * __weak variant_gpio_table(size_t *num)

@@ -86,6 +86,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPP_C20, NONE, DEEP),
 	/* C21 : H1_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_C21, NONE, PLTRST, LEVEL, INVERT),
+	/* C22 : EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_C22, NONE, DEEP),
 	/* C23 : WLAN_PE_RST# */
 	PAD_CFG_GPO(GPP_C23, 1, DEEP),
 	/* E1  : M2_SSD_PEDET */

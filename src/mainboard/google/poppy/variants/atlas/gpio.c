@@ -345,6 +345,9 @@ static const struct pad_config early_gpio_table[] = {
 	/* B18 : GSPI0_MOSI ==> H1_SLAVE_SPI_MOSI */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF1),
 
+	/* C6  : SM1CLK ==> EC_IN_RW_OD */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_C6, UP_20K, DEEP),
+
 	/* Ensure UART pins are in native mode for H1. */
 	/* C20 : UART2_RXD ==> PCHRX_SERVOTX_UART */
 	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),

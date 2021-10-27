@@ -44,6 +44,8 @@ ramstage-y += vr_config.c
 ramstage-y += xhci.c
 ramstage-$(CONFIG_SOC_INTEL_CRASHLOG) += crashlog.c
 
+verstage-y += gpio.c
+
 smm-y += elog.c
 smm-y += gpio.c
 smm-y += p2sb.c

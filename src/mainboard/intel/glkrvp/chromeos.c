@@ -39,3 +39,10 @@ int __weak get_lid_switch(void)
 {
 	return -1;
 }
+
+int get_ec_is_trusted(void)
+{
+	/* Do not have a Chrome EC involved in entering recovery mode;
+	   Always return trusted. */
+	return 1;
+}

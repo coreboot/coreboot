@@ -49,3 +49,9 @@ int tis_plat_irq_status(void)
 	return gpio_irq_status(GPIO_TPM_IRQ);
 }
 #endif
+
+int get_ec_is_trusted(void)
+{
+	/* EC is trusted if not in RW. */
+	return !gpio_get(GPIO_EC_IN_RW);
+}

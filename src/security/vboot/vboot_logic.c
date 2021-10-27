@@ -306,6 +306,9 @@ void verstage_main(void)
 	if (CONFIG(TPM_CR50))
 		check_boot_mode(ctx);
 
+	if (get_ec_is_trusted())
+		ctx->flags |= VB2_CONTEXT_EC_TRUSTED;
+
 	/* Do early init (set up secdata and NVRAM, load GBB) */
 	printk(BIOS_INFO, "Phase 1\n");
 	rv = vb2api_fw_phase1(ctx);

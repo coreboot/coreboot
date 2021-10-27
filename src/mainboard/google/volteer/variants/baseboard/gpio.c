@@ -432,6 +432,9 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* F11 : THC1_SPI2_CLK ==> EN_PP3300_WWAN */
 	PAD_CFG_GPO(GPP_F11, 1, DEEP),
+
+	/* A9  : I2S2_TXD ==> EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_A9, NONE, DEEP),
 };
 
 const struct pad_config *__weak variant_base_gpio_table(size_t *num)

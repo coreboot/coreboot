@@ -10,6 +10,7 @@ ramstage-y += chromeos.c
 ramstage-y += ec.c
 ramstage-y += sku_id.c
 
+verstage-y += chromeos.c
 verstage-y += verstage.c
 
 subdirs-y += variants/baseboard

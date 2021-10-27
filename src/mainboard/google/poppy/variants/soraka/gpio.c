@@ -342,6 +342,10 @@ static const struct pad_config gpio_table[] = {
 static const struct pad_config early_gpio_table[] = {
 	/* B8  : SRCCLKREQ3# ==> WLAN_PE_RST */
 	PAD_CFG_GPO(GPP_B8, 0, RSMRST),
+
+	/* C6  : SM1CLK ==> EC_IN_RW_OD */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_C6, UP_20K, DEEP),
+
 	/* C18 : I2C1_SDA ==> PCH_I2C1_H1_3V3_SDA */
 	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
 	/* C19 : I2C1_SCL ==> PCH_I2C1_H1_3V3_SCL */

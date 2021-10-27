@@ -228,6 +228,7 @@ static const struct pad_config early_gpio_table[] = {
 /* UART2_CTS# */	PAD_CFG_GPI_GPIO_DRIVER(GPP_C23, UP_20K, DEEP), /* PCH_WP */
 /* GD_UART2_RXD */	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
 /* GD_UART2_TXD */	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
+/* SM1CLK */		PAD_CFG_GPI_GPIO_DRIVER(GPP_C6, UP_20K, DEEP), /* EC_IN_RW */
 };
 
 #endif

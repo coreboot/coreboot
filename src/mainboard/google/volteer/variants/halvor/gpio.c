@@ -233,6 +233,9 @@ static const struct pad_config early_gpio_table[] = {
 	/* D16 : ISH_UART0_CTS# ==> EN_PP3300_SD */
 	PAD_CFG_GPO(GPP_D16, 1, DEEP),
 
+	/* F17 : WWAN_RF_DISABLE_ODL ==> EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_F17, NONE, DEEP),
+
 	/* H11 : SRCCLKREQ5# ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_H11, 1, DEEP),
 };

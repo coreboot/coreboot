@@ -225,6 +225,9 @@ static const struct pad_config early_gpio_table[] = {
 /* Ensure UART pins are in native mode for H1 */
 /* UART2_RXD */		PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1), /* SERVO */
 /* UART2_TXD */		PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), /* SERVO */
+
+/* SM1CLK */		PAD_CFG_GPI_GPIO_DRIVER(GPP_C6, UP_20K,
+						DEEP), /* EC_IN_RW */
 };
 
 #endif

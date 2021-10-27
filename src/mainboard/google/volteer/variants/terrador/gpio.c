@@ -221,6 +221,9 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* E12 : SPI1_MISO_IO1 ==> PEN_ALERT_ODL */
 	PAD_CFG_GPI(GPP_E12, NONE, DEEP),
+
+	/* F17 : WWAN_RF_DISABLE_ODL ==> EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_F17, NONE, DEEP),
 };
 
 const struct pad_config *variant_early_gpio_table(size_t *num)

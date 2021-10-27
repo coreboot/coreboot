@@ -58,16 +58,22 @@ uint32_t antirollback_read_space_kernel(struct vb2_context *ctx)
 		}
 	}
 
-	uint8_t size = VB2_SECDATA_KERNEL_MIN_SIZE;
+	uint8_t size = VB2_SECDATA_KERNEL_SIZE;
+	uint32_t ret;
 
-	RETURN_ON_FAILURE(tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel,
-				    size));
+	/* Start with the version 1.0 size used by all modern cr50-boards. */
+	ret = tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
+	if (ret == TPM_E_RANGE) {
+		/* Fallback to version 0.2(minimum) size and re-read. */
+		VBDEBUG("Antirollback: NV read out of range, trying min size\n");
+		size = VB2_SECDATA_KERNEL_MIN_SIZE;
+		ret = tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
+	}
+	RETURN_ON_FAILURE(ret);
 
-	if (vb2api_secdata_kernel_check(ctx, &size)
-	    == VB2_ERROR_SECDATA_KERNEL_INCOMPLETE)
+	if (vb2api_secdata_kernel_check(ctx, &size) == VB2_ERROR_SECDATA_KERNEL_INCOMPLETE)
 		/* Re-read. vboot will run the check and handle errors. */
-		RETURN_ON_FAILURE(tlcl_read(KERNEL_NV_INDEX,
-					    ctx->secdata_kernel, size));
+		RETURN_ON_FAILURE(tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel, size));
 
 	return TPM_SUCCESS;
 }

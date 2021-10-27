@@ -192,6 +192,8 @@ typedef enum {
 	MEMORY_TYPE_LOGICAL_NON_VOLATILE_DEVICE = 0x1f,
 	MEMORY_TYPE_HBM = 0x20,
 	MEMORY_TYPE_HBM2 = 0x21,
+	MEMORY_TYPE_DDR5 = 0x22,
+	MEMORY_TYPE_LPDDR5 = 0x23,
 } smbios_memory_type;
 
 typedef enum {

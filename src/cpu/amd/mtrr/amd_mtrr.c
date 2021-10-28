@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/cpu.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
@@ -85,7 +86,6 @@ void add_uma_resource_below_tolm(struct device *nb, int idx)
 
 void amd_setup_mtrrs(void)
 {
-	unsigned long address_bits;
 	unsigned long i;
 	msr_t msr, sys_cfg;
 	// Test if this CPU is a Fam 0Fh rev. F or later
@@ -142,13 +142,6 @@ void amd_setup_mtrrs(void)
 
 	enable_cache();
 
-	//K8 could be 40, and GH could be 48
-	address_bits = CONFIG_CPU_ADDR_BITS;
-
-	/* AMD specific cpuid function to query number of address bits */
-	if (cpuid_eax(0x80000000) >= 0x80000008)
-		address_bits = cpuid_eax(0x80000008) & 0xff;
-
 	/* Now that I have mapped what is memory and what is not
 	 * Set up the mtrrs so we can cache the memory.
 	 */
@@ -156,5 +149,5 @@ void amd_setup_mtrrs(void)
 	// Rev. F K8 supports has SYSCFG_MSR_TOM2WB and doesn't need
 	// variable MTRR to span memory above 4GB
 	// Lower revisions K8 need variable MTRR over 4GB
-	x86_setup_var_mtrrs(address_bits, has_tom2wb ? 0 : 1);
+	x86_setup_var_mtrrs(cpu_phys_address_size(), has_tom2wb ? 0 : 1);
 }

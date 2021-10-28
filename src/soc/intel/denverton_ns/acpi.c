@@ -4,6 +4,7 @@
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
 #include <arch/smp/mpspec.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
 #include <string.h>
 #include <device/pci.h>
@@ -60,7 +61,7 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->mmiob = (u32)get_top_of_low_memory();
 	gnvs->mmiol = (u32)(get_pciebase() - 1);
 	gnvs->mmiohb = (u64)get_top_of_upper_memory();
-	gnvs->mmiohl = (u64)(((u64)1 << CONFIG_CPU_ADDR_BITS) - 1);
+	gnvs->mmiohl = (u64)(((u64)1 << cpu_phys_address_size()) - 1);
 	gnvs->tsegb = (u32)get_tseg_memory();
 	gnvs->tsegl = (u32)(get_top_of_low_memory() - get_tseg_memory());
 }

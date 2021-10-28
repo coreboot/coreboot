@@ -10,7 +10,6 @@ config CPU_QEMU_X86
 
 if CPU_QEMU_X86
 
-# coreboot i440fx does not support SMM
 choice
 	prompt "AP init"
 	default CPU_QEMU_X86_LAPIC_INIT
@@ -24,6 +23,7 @@ config CPU_QEMU_X86_PARALLEL_MP
 
 endchoice
 
+# coreboot i440fx does not support SMM
 choice
 	prompt "SMM support"
 	default CPU_QEMU_X86_ASEG_SMM
@@ -35,7 +35,6 @@ config CPU_QEMU_X86_NO_SMM
 
 config CPU_QEMU_X86_ASEG_SMM
 	bool "SMM in ASEG"
-	depends on CPU_QEMU_X86_LAPIC_INIT
 	select SMM_ASEG
 
 config CPU_QEMU_X86_TSEG_SMM

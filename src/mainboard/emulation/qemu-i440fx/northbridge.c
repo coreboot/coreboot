@@ -247,7 +247,7 @@ extern const struct mp_ops mp_ops_with_smm;
 
 void mp_init_cpus(struct bus *cpu_bus)
 {
-	const struct mp_ops *ops = CONFIG(SMM_TSEG) ? &mp_ops_with_smm : &mp_ops_no_smm;
+	const struct mp_ops *ops = CONFIG(NO_SMM) ? &mp_ops_no_smm : &mp_ops_with_smm;
 
 	/* TODO: Handle mp_init_with_smm failure? */
 	mp_init_with_smm(cpu_bus, ops);

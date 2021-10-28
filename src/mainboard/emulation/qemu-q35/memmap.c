@@ -78,6 +78,12 @@ void smm_lock(void)
 	 */
 	printk(BIOS_DEBUG, "Locking SMM.\n");
 
-	pci_or_config8(PCI_DEV(0, 0, 0), ESMRAMC, T_EN);
+	if (CONFIG(SMM_TSEG))
+		pci_or_config8(PCI_DEV(0, 0, 0), ESMRAMC, T_EN);
 	pci_write_config8(PCI_DEV(0, 0, 0), SMRAMC, D_LCK | G_SMRAME | C_BASE_SEG);
+}
+
+void smm_open_aseg(void)
+{
+	pci_write_config8(PCI_DEV(0, 0, 0), SMRAMC, G_SMRAME | C_BASE_SEG | D_OPEN);
 }

@@ -11,6 +11,13 @@ upstream_git_repo=https://github.com/tianocore/edk2
 
 build_flavor=-D BOOTLOADER=COREBOOT -D PCIE_BASE=$(CONFIG_MMCONF_BASE_ADDRESS) -DPS2_KEYBOARD_ENABLE
 
+ifeq ($(CONFIG_TIANOCORE_COREBOOTPAYLOAD),y)
+project_git_branch=coreboot_fb
+bootloader=CorebootPayloadPkg
+else
+bootloader=UefiPayloadPkg
+endif
+
 ifeq ($(CONFIG_TIANOCORE_UPSTREAM),y)
 TAG=upstream/master
 else
@@ -41,7 +48,15 @@ endif
 
 TIMEOUT=-D PLATFORM_BOOT_TIMEOUT=$(CONFIG_TIANOCORE_BOOT_TIMEOUT)
 
+ifneq ($(CONFIG_TIANOCORE_USE_8254_TIMER), y)
+TIMER=-DUSE_HPET_TIMER
+endif
+
+ifeq ($(CONFIG_TIANOCORE_COREBOOTPAYLOAD),y)
+BUILD_STR=-q -a IA32 -a X64 -p CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc -t COREBOOT -b $(BUILD_TYPE) $(TIMER) -DPS2_KEYBOARD_ENABLE
+else
 BUILD_STR=-q -a IA32 -a X64 -p UefiPayloadPkg/UefiPayloadPkg.dsc -t COREBOOT -b $(BUILD_TYPE) $(TIMEOUT) $(build_flavor) $(CBMEM) $(4G)
+endif
 
 all: clean build
 
@@ -99,7 +114,7 @@ build: update checktools
 			cat ../tools_def.txt >> $(project_dir)/Conf/tools_def.txt; \
 		fi; \
 		build $(BUILD_STR); \
-		mv $(project_dir)/Build/UefiPayloadPkg*/*/FV/UEFIPAYLOAD.fd $(project_dir)/Build/UEFIPAYLOAD.fd; \
+		mv $(project_dir)/Build/$(bootloader)*/*/FV/UEFIPAYLOAD.fd $(project_dir)/Build/UEFIPAYLOAD.fd; \
 		git checkout MdeModulePkg/Logo/Logo.bmp > /dev/null 2>&1 || true
 
 clean:

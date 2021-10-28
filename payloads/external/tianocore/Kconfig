@@ -14,6 +14,9 @@ choice
 	  UefiPayload: MrChromebox's customized fork of Tianocore which works on most
 	  x86_64 devices
 	  Upstream: Use upstream Tianocore payload from https://github.com/tianocore/edk2
+	  CorebootPayload: MrChromebox's customized fork of the deprecated CorebootPayloadPkg
+	  Tianocore build target. It may work better on some older hardware (eg, x230)
+	  which does not work properly with the UefiPayloadPkg options.
 
 config TIANOCORE_UEFIPAYLOAD
 	bool "UEFIPayload"
@@ -25,6 +28,12 @@ config TIANOCORE_UPSTREAM
 	bool "Upstream"
 	help
 	  Select this option if you want to use upstream EDK2 to build Tianocore.
+
+config TIANOCORE_COREBOOTPAYLOAD
+	bool "CorebootPayload"
+	help
+	  Select this option to build using MrChromebox's older (now deprecated)
+	  CorebootPayloadPkg-based Tianocore branch
 
 endchoice
 
@@ -102,6 +111,15 @@ config TIANOCORE_ABOVE_4G_MEMORY
 	  Disabling this option, which will reserve memory above 4G, is
 	  useful for bootloaders that are not fully 64-bit aware such as
 	  Qubes R4.0.4 bootloader.
+
+endif
+
+if TIANOCORE_COREBOOTPAYLOAD
+
+config TIANOCORE_USE_8254_TIMER
+	bool "TianoCore 8254 Timer"
+	help
+	  Use 8254 Timer for legacy support.
 
 endif
 

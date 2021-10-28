@@ -1,2 +1,5 @@
+config BOARD_SYSTEM76_GAZE14
+	bool "gaze14"
+
 config BOARD_SYSTEM76_GAZE15
 	bool "gaze15"

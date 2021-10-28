@@ -15,6 +15,17 @@ end
 chip soc/intel/alderlake
 	register "SaGv" = "SaGv_Enabled"
 
+	# This disabled autonomous GPIO power management, otherwise
+	# old cr50 FW only supports short pulses; need to clarify
+	# the minimum PCH IRQ pulse width with Intel, b/180111628
+	register "gpio_override_pm" = "1"
+	register "gpio_pm[COMM_0]" = "0"
+	register "gpio_pm[COMM_1]" = "0"
+	register "gpio_pm[COMM_2]" = "0"
+	register "gpio_pm[COMM_3]" = "0"
+	register "gpio_pm[COMM_4]" = "0"
+	register "gpio_pm[COMM_5]" = "0"
+
 	# FIVR configurations for kano are disabled since the board doesn't have V1p05 and Vnn
 	# bypass rails implemented.
 	register "ext_fivr_settings" = "{

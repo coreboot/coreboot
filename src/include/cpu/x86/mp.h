@@ -45,17 +45,6 @@ struct mp_ops {
 	 */
 	void (*get_microcode_info)(const void **microcode, int *parallel);
 	/*
-	 * Optionally adjust SMM handler parameters to override the default
-	 * values.  The is_perm variable indicates if the parameters to adjust
-	 * are for the relocation handler or the permanent handler. This
-	 * function is therefore called twice -- once for each handler.
-	 * By default the parameters for each SMM handler are:
-	 *       stack_size     num_concurrent_stacks num_concurrent_save_states
-	 * relo: save_state_size    get_cpu_count()          1
-	 * perm: save_state_size    get_cpu_count()          get_cpu_count()
-	 */
-	void (*adjust_smm_params)(struct smm_loader_params *slp, int is_perm);
-	/*
 	 * Optionally provide a callback prior to the APs starting SMM
 	 * relocation or CPU driver initialization. However, note that
 	 * this callback is called after SMM handlers have been loaded.
@@ -92,13 +81,11 @@ struct mp_ops {
  * 3. get_smm_info()
  * 4. get_microcode_info()
  * 5. adjust_cpu_apic_entry() for each number of get_cpu_count()
- * 6. adjust_smm_params(is_perm = 0)
- * 7. adjust_smm_params(is_perm = 1)
- * 8. pre_mp_smm_init()
- * 9. per_cpu_smm_trigger() in parallel for all cpus which calls
+ * 6. pre_mp_smm_init()
+ * 7. per_cpu_smm_trigger() in parallel for all cpus which calls
  *    relocation_handler() in SMM.
- * 10. mp_initialize_cpu() for each cpu
- * 11. post_mp_init()
+ * 8. mp_initialize_cpu() for each cpu
+ * 9. post_mp_init()
  */
 enum cb_err mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops *mp_ops);
 

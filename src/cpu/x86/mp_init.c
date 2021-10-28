@@ -760,10 +760,9 @@ static void adjust_smm_apic_id_map(struct smm_loader_params *smm_params)
 }
 
 static enum cb_err install_relocation_handler(int num_cpus, size_t real_save_state_size,
-				      size_t save_state_size, uintptr_t perm_smbase)
+				      size_t save_state_size)
 {
 	struct smm_loader_params smm_params = {
-		.per_cpu_stack_size = CONFIG_SMM_STUB_STACK_SIZE,
 		.num_concurrent_stacks = num_cpus,
 		.real_cpu_save_state_size = real_save_state_size,
 		.per_cpu_save_state_size = save_state_size,
@@ -771,11 +770,7 @@ static enum cb_err install_relocation_handler(int num_cpus, size_t real_save_sta
 		.handler = smm_do_relocation,
 	};
 
-	/* Allow callback to override parameters. */
-	if (mp_state.ops.adjust_smm_params != NULL)
-		mp_state.ops.adjust_smm_params(&smm_params, 0);
-
-	if (smm_setup_relocation_handler(perm_smbase, &smm_params)) {
+	if (smm_setup_relocation_handler(&smm_params)) {
 		printk(BIOS_ERR, "%s: smm setup failed\n", __func__);
 		return CB_ERR;
 	}
@@ -798,16 +793,11 @@ static enum cb_err install_permanent_handler(int num_cpus, uintptr_t smbase,
 	 * size and save state size for each CPU.
 	 */
 	struct smm_loader_params smm_params = {
-		.per_cpu_stack_size = CONFIG_SMM_MODULE_STACK_SIZE,
 		.num_concurrent_stacks = num_cpus,
 		.real_cpu_save_state_size = real_save_state_size,
 		.per_cpu_save_state_size = save_state_size,
 		.num_concurrent_save_states = num_cpus,
 	};
-
-	/* Allow callback to override parameters. */
-	if (mp_state.ops.adjust_smm_params != NULL)
-		mp_state.ops.adjust_smm_params(&smm_params, 1);
 
 	printk(BIOS_DEBUG, "Installing permanent SMM handler to 0x%08lx\n", smbase);
 
@@ -829,10 +819,15 @@ static void load_smm_handlers(void)
 	if (!is_smm_enabled())
 		return;
 
+	if (smm_setup_stack(mp_state.perm_smbase, mp_state.perm_smsize, mp_state.cpu_count,
+			    CONFIG_SMM_MODULE_STACK_SIZE)) {
+		printk(BIOS_ERR, "Unable to install SMM relocation handler.\n");
+		smm_disable();
+	}
+
 	/* Install handlers. */
 	if (install_relocation_handler(mp_state.cpu_count, real_save_state_size,
-				       smm_save_state_size, mp_state.perm_smbase) !=
-										CB_SUCCESS) {
+				       smm_save_state_size) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Unable to install SMM relocation handler.\n");
 		smm_disable();
 	}

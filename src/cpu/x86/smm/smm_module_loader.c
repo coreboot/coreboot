@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi_gnvs.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 #include <rmodule.h>
@@ -239,32 +240,26 @@ static int smm_place_entry_code(uintptr_t smbase, unsigned int num_cpus,
 	return 1;
 }
 
-/*
- * Place stacks in base -> base + size region, but ensure the stacks don't
- * overlap the staggered entry points.
- */
-static uintptr_t smm_stub_place_stacks(const uintptr_t base, struct smm_loader_params *params)
+static uintptr_t stack_top;
+static size_t g_stack_size;
+
+int smm_setup_stack(const uintptr_t perm_smbase, const size_t perm_smram_size,
+		     const unsigned int total_cpus, const size_t stack_size)
 {
-	size_t total_stack_size;
-	uintptr_t stacks_top;
+	/* Need a minimum stack size and alignment. */
+	if (stack_size <= SMM_MINIMUM_STACK_SIZE || (stack_size & 3) != 0) {
+		printk(BIOS_ERR, "%s: need minimum stack size\n", __func__);
+		return -1;
+	}
 
-	/* If stack space is requested assume the space lives in the lower
-	 * half of SMRAM. */
-	total_stack_size = params->per_cpu_stack_size *
-			   params->num_concurrent_stacks;
-	printk(BIOS_DEBUG, "%s: cpus: %zx : stack space: needed -> %zx\n",
-		__func__, params->num_concurrent_stacks,
-		total_stack_size);
-
-	/* There has to be at least one stack user. */
-	if (params->num_concurrent_stacks < 1)
-		return 0;
-
-	/* Stacks extend down to SMBASE */
-	stacks_top = base + total_stack_size;
-	printk(BIOS_DEBUG, "%s: exit, stack_top %lx\n", __func__, stacks_top);
-
-	return stacks_top;
+	const size_t total_stack_size = total_cpus * stack_size;
+	if (total_stack_size >= perm_smram_size) {
+		printk(BIOS_ERR, "%s: Stack won't fit smram\n", __func__);
+		return -1;
+	}
+	stack_top = perm_smbase + total_stack_size;
+	g_stack_size = stack_size;
+	return 0;
 }
 
 /*
@@ -284,7 +279,7 @@ static int smm_stub_place_staggered_entry_points(char *base,
 	if (params->num_concurrent_save_states > 1 || stub_entry_offset != 0) {
 		rc = smm_place_entry_code((uintptr_t)base,
 					  params->num_concurrent_save_states,
-					  (uintptr_t)params->stack_top, params);
+					  stack_top, params);
 	}
 	return rc;
 }
@@ -309,18 +304,15 @@ static int smm_stub_place_staggered_entry_points(char *base,
  * permanent SMM handler.
  * The CPU stack is decided at runtime in the stub and is treaded as a continuous
  * region. As this might not fit the default SMRAM region, the same region used
- * by the permanent handler can be used during relocation. This is done via the
- * smram_start argument.
+ * by the permanent handler can be used during relocation.
  */
 static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 				 struct smm_loader_params *params,
-				 void *const fxsave_area,
-				 const uintptr_t smram_start)
+				 void *const fxsave_area)
 {
 	size_t total_save_state_size;
 	size_t smm_stub_size;
 	uintptr_t smm_stub_loc;
-	uintptr_t stacks_top;
 	size_t size;
 	uintptr_t base;
 	size_t i;
@@ -361,13 +353,6 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 		return -1;
 	}
 
-	/* Need a minimum stack size and alignment. */
-	if (params->per_cpu_stack_size <= SMM_MINIMUM_STACK_SIZE ||
-	    (params->per_cpu_stack_size & 3) != 0) {
-		printk(BIOS_ERR, "%s: need minimum stack size\n", __func__);
-		return -1;
-	}
-
 	smm_stub_size = rmodule_memory_size(&smm_stub);
 
 	/* Put the stub at the main entry point */
@@ -379,16 +364,10 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 		return -1;
 	}
 
-	/* The stacks, if requested, live in the lower half of SMRAM space
-	 * for default handler, but for relocated handler it lives at the beginning
-	 * of SMRAM which is TSEG base
-	 */
-	stacks_top = smm_stub_place_stacks(smram_start, params);
-	if (stacks_top == 0) {
+	if (stack_top == 0) {
 		printk(BIOS_ERR, "%s: error assigning stacks\n", __func__);
 		return -1;
 	}
-	params->stack_top = stacks_top;
 	/* Load the stub. */
 	if (rmodule_load((void *)smm_stub_loc, &smm_stub)) {
 		printk(BIOS_ERR, "%s: load module failed\n", __func__);
@@ -402,19 +381,15 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 
 	/* Setup the parameters for the stub code. */
 	stub_params = rmodule_parameters(&smm_stub);
-	stub_params->stack_top = (uintptr_t)stacks_top;
-	stub_params->stack_size = params->per_cpu_stack_size;
+	stub_params->stack_top = stack_top;
+	stub_params->stack_size = g_stack_size;
 	stub_params->c_handler = (uintptr_t)params->handler;
 	stub_params->fxsave_area = (uintptr_t)fxsave_area;
 	stub_params->fxsave_area_size = FXSAVE_SIZE;
 
-	const size_t total_stack_size =
-		params->num_concurrent_stacks * params->per_cpu_stack_size;
-	printk(BIOS_DEBUG, "%s: stack_end = 0x%zx\n",
-		__func__, stub_params->stack_top - total_stack_size);
 	printk(BIOS_DEBUG,
 		"%s: stack_top = 0x%x\n", __func__, stub_params->stack_top);
-	printk(BIOS_DEBUG, "%s: stack_size = 0x%x\n",
+	printk(BIOS_DEBUG, "%s: per cpu stack_size = 0x%x\n",
 		__func__, stub_params->stack_size);
 	printk(BIOS_DEBUG, "%s: runtime.start32_offset = 0x%x\n", __func__,
 		stub_params->start32_offset);
@@ -439,7 +414,7 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
  * assumption is that the stub will be entered from the default SMRAM
  * location: 0x30000 -> 0x40000.
  */
-int smm_setup_relocation_handler(const uintptr_t perm_smram,  struct smm_loader_params *params)
+int smm_setup_relocation_handler(struct smm_loader_params *params)
 {
 	uintptr_t smram = SMM_DEFAULT_BASE;
 	printk(BIOS_SPEW, "%s: enter\n", __func__);
@@ -459,7 +434,7 @@ int smm_setup_relocation_handler(const uintptr_t perm_smram,  struct smm_loader_
 
 	printk(BIOS_SPEW, "%s: exit\n", __func__);
 	return smm_module_setup_stub(smram, SMM_DEFAULT_SIZE,
-				     params, fxsave_area_relocation, perm_smram);
+				     params, fxsave_area_relocation);
 }
 
 /*
@@ -519,11 +494,9 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 	if (CONFIG(DEBUG_SMI))
 		memset((void *)smram_base, 0xcd, smram_size);
 
-	total_stack_size = params->per_cpu_stack_size *
-			   params->num_concurrent_stacks;
+	total_stack_size = stack_top - smram_base;
 	total_size += total_stack_size;
 	/* Stacks are the base of SMRAM */
-	params->stack_top = smram_base + total_stack_size;
 
 	/* MSEG starts at the top of SMRAM and works down */
 	if (CONFIG(STM)) {
@@ -580,8 +553,6 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 
 	printk(BIOS_DEBUG, "%s: smram_start: 0x%lx\n",  __func__, smram_base);
 	printk(BIOS_DEBUG, "%s: smram_end: %lx\n", __func__, smram_base + smram_size);
-	printk(BIOS_DEBUG, "%s: stack_top: %lx\n",
-		 __func__, params->stack_top);
 	printk(BIOS_DEBUG, "%s: handler start %p\n",
 		 __func__, params->handler);
 	printk(BIOS_DEBUG, "%s: handler_size %zx\n",
@@ -619,5 +590,5 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 			cpus[i].ss_start + params->per_cpu_save_state_size;
 	}
 
-	return smm_module_setup_stub(base, smram_size, params, fxsave_area, smram_base);
+	return smm_module_setup_stub(base, smram_size, params, fxsave_area);
 }

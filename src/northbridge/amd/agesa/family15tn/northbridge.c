@@ -737,7 +737,7 @@ static void domain_set_resources(struct device *dev)
 				sizek = 0;
 			}
 			else {
-				uint64_t topmem2 = bsp_topmem2();
+				uint64_t topmem2 = amd_topmem2();
 				basek = 4*1024*1024;
 				sizek = topmem2/1024 - basek;
 			}
@@ -900,13 +900,6 @@ static struct device_operations cpu_bus_ops = {
 
 static void root_complex_enable_dev(struct device *dev)
 {
-	static int done = 0;
-
-	if (!done) {
-		setup_bsp_ramtop();
-		done = 1;
-	}
-
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;

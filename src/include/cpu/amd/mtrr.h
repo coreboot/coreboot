@@ -66,10 +66,16 @@ static __always_inline void wrmsr_amd(unsigned int index, msr_t msr)
 		);
 }
 
-/* To distribute topmem MSRs to APs. */
-void setup_bsp_ramtop(void);
-uint64_t bsp_topmem(void);
-uint64_t bsp_topmem2(void);
+static inline uint64_t amd_topmem(void)
+{
+	return rdmsr(TOP_MEM).lo;
+}
+
+static inline uint64_t amd_topmem2(void)
+{
+	msr_t msr = rdmsr(TOP_MEM2);
+	return (uint64_t)msr.hi << 32 | msr.lo;
+}
 #endif
 
 #endif /* CPU_AMD_MTRR_H */

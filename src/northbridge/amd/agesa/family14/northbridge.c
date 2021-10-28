@@ -818,13 +818,6 @@ static struct device_operations cpu_bus_ops = {
 
 static void root_complex_enable_dev(struct device *dev)
 {
-	static int done = 0;
-
-	if (!done) {
-		setup_bsp_ramtop();
-		done = 1;
-	}
-
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;

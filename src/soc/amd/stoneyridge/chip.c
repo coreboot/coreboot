@@ -131,7 +131,6 @@ static void enable_dev(struct device *dev)
 static void soc_init(void *chip_info)
 {
 	fch_init(chip_info);
-	setup_bsp_ramtop();
 }
 
 static void soc_final(void *chip_info)

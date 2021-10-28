@@ -322,7 +322,7 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 	size = smm_size;
 
 	/* The number of concurrent stacks cannot exceed CONFIG_MAX_CPUS. */
-	if (params->num_concurrent_stacks > CONFIG_MAX_CPUS) {
+	if (params->num_cpus > CONFIG_MAX_CPUS) {
 		printk(BIOS_ERR, "%s: not enough stacks\n", __func__);
 		return -1;
 	}
@@ -397,7 +397,7 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 		__func__, smm_size);
 
 	/* Initialize the APIC id to CPU number table to be 1:1 */
-	for (i = 0; i < params->num_concurrent_stacks; i++)
+	for (i = 0; i < params->num_cpus; i++)
 		stub_params->apic_id_to_cpu[i] = i;
 
 	/* Allow the initiator to manipulate SMM stub parameters. */
@@ -429,8 +429,8 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
 
 	/* Since the relocation handler always uses stack, adjust the number
 	 * of concurrent stack users to be CONFIG_MAX_CPUS. */
-	if (params->num_concurrent_stacks == 0)
-		params->num_concurrent_stacks = CONFIG_MAX_CPUS;
+	if (params->num_cpus == 0)
+		params->num_cpus = CONFIG_MAX_CPUS;
 
 	printk(BIOS_SPEW, "%s: exit\n", __func__);
 	return smm_module_setup_stub(smram, SMM_DEFAULT_SIZE,
@@ -506,7 +506,7 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 
 	/* FXSAVE goes below MSEG */
 	if (CONFIG(SSE)) {
-		fxsave_size = FXSAVE_SIZE * params->num_concurrent_stacks;
+		fxsave_size = FXSAVE_SIZE * params->num_cpus;
 		fxsave_area = (char *)base - fxsave_size;
 		base -= fxsave_size;
 		total_size += fxsave_size;
@@ -548,7 +548,7 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 	handler_mod_params->smbase = smram_base;
 	handler_mod_params->smm_size = smram_size;
 	handler_mod_params->save_state_size = params->real_cpu_save_state_size;
-	handler_mod_params->num_cpus = params->num_concurrent_stacks;
+	handler_mod_params->num_cpus = params->num_cpus;
 	handler_mod_params->gnvs_ptr = (uintptr_t)acpi_get_gnvs();
 
 	printk(BIOS_DEBUG, "%s: smram_start: 0x%lx\n",  __func__, smram_base);
@@ -585,7 +585,7 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 		return -1;
 	}
 
-	for (int i = 0; i < params->num_concurrent_stacks; i++) {
+	for (int i = 0; i < params->num_cpus; i++) {
 		handler_mod_params->save_state_top[i] =
 			cpus[i].ss_start + params->per_cpu_save_state_size;
 	}

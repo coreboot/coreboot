@@ -763,7 +763,7 @@ static enum cb_err install_relocation_handler(int num_cpus, size_t real_save_sta
 				      size_t save_state_size)
 {
 	struct smm_loader_params smm_params = {
-		.num_concurrent_stacks = num_cpus,
+		.num_cpus = num_cpus,
 		.real_cpu_save_state_size = real_save_state_size,
 		.per_cpu_save_state_size = save_state_size,
 		.num_concurrent_save_states = 1,
@@ -793,7 +793,7 @@ static enum cb_err install_permanent_handler(int num_cpus, uintptr_t smbase,
 	 * size and save state size for each CPU.
 	 */
 	struct smm_loader_params smm_params = {
-		.num_concurrent_stacks = num_cpus,
+		.num_cpus = num_cpus,
 		.real_cpu_save_state_size = real_save_state_size,
 		.per_cpu_save_state_size = save_state_size,
 		.num_concurrent_save_states = num_cpus,

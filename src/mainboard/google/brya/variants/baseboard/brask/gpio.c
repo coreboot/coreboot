@@ -79,8 +79,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
 	/* B13 : PLTRST# ==> PLT_RST_L */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
-	/* B14 : SPKR ==> GPP_B14_STRAP */
-	PAD_NC(GPP_B14, NONE),
+	/* B14 : SPKR ==> PWM_PP3300_BUZZER */
+	PAD_CFG_NF(GPP_B14, NONE, DEEP, NF1),
 	/* B15 : TIME_SYNC0 ==> TP159 */
 	PAD_NC(GPP_B15, NONE),
 	/* B16 : I2C5_SDA ==> NC */

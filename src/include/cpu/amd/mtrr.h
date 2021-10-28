@@ -43,7 +43,6 @@
 #include <cpu/x86/msr.h>
 #include <stdint.h>
 
-void amd_setup_mtrrs(void);
 struct device;
 void add_uma_resource_below_tolm(struct device *nb, int idx);
 

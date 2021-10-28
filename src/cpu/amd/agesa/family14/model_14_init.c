@@ -25,9 +25,7 @@ static void model_14_init(struct device *dev)
 	disable_cache();
 	/*
 	 * AGESA sets the MTRRs main MTRRs. The shadow area needs to be set
-	 * by coreboot. The amd_setup_mtrrs should work, but needs debug on fam14.
-	 * TODO:
-	 * amd_setup_mtrrs();
+	 * by coreboot.
 	 */
 
 	/* Enable access to AMD RdDram and WrDram extension bits */

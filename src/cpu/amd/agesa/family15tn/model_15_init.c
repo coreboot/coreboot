@@ -25,9 +25,10 @@ static void model_15_init(struct device *dev)
 	u32 siblings;
 #endif
 
-	//enable_cache();
-	//amd_setup_mtrrs();
-	//x86_mtrr_check();
+	/*
+	 * AGESA sets the MTRRs main MTRRs. The shadow area needs to be set
+	 * by coreboot.
+	 */
 	disable_cache();
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr = rdmsr(SYSCFG_MSR);

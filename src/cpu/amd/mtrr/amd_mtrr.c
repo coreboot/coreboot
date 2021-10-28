@@ -48,25 +48,6 @@ void setup_bsp_ramtop(void)
 	amd_topmem2 = (uint64_t) msr2.hi << 32 | msr2.lo;
 }
 
-static void setup_ap_ramtop(void)
-{
-	msr_t msr;
-	uint64_t v;
-
-	v = bsp_topmem();
-	if (!v)
-		return;
-
-	msr.hi = v >> 32;
-	msr.lo = (uint32_t) v;
-	wrmsr(TOP_MEM, msr);
-
-	v = bsp_topmem2();
-	msr.hi = v >> 32;
-	msr.lo = (uint32_t) v;
-	wrmsr(TOP_MEM2, msr);
-}
-
 void add_uma_resource_below_tolm(struct device *nb, int idx)
 {
 	uint32_t topmem = bsp_topmem();
@@ -82,72 +63,4 @@ void add_uma_resource_below_tolm(struct device *nb, int idx)
 			__func__, uma_size, uma_base);
 
 	uma_resource(nb, idx, uma_base / KiB, uma_size / KiB);
-}
-
-void amd_setup_mtrrs(void)
-{
-	unsigned long i;
-	msr_t msr, sys_cfg;
-	// Test if this CPU is a Fam 0Fh rev. F or later
-	const int cpu_id = cpuid_eax(0x80000001);
-	printk(BIOS_SPEW, "CPU ID 0x80000001: %x\n", cpu_id);
-	const int has_tom2wb =
-		// ExtendedFamily > 0
-		 (((cpu_id>>20)&0xf) > 0) ||
-		// Family == 0F
-		((((cpu_id>>8)&0xf) == 0xf) &&
-		// Rev>=F deduced from rev tables
-		 (((cpu_id>>16)&0xf) >= 0x4));
-	if (has_tom2wb)
-		printk(BIOS_DEBUG, "CPU is Fam 0Fh rev.F or later. We can use TOM2WB for any memory above 4GB\n");
-
-	/* Enable the access to AMD RdDram and WrDram extension bits */
-	disable_cache();
-	sys_cfg = rdmsr(SYSCFG_MSR);
-	sys_cfg.lo |= SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYSCFG_MSR, sys_cfg);
-	enable_cache();
-
-	/* Setup fixed MTRRs, but do not enable them just yet. */
-	x86_setup_fixed_mtrrs_no_enable();
-
-	disable_cache();
-
-	setup_ap_ramtop();
-
-	/* if DRAM above 4GB: set SYSCFG_MSR_TOM2En and SYSCFG_MSR_TOM2WB */
-	sys_cfg.lo &= ~(SYSCFG_MSR_TOM2En | SYSCFG_MSR_TOM2WB);
-	if (bsp_topmem2() > (uint64_t)1 << 32) {
-		sys_cfg.lo |= SYSCFG_MSR_TOM2En;
-		if (has_tom2wb)
-			sys_cfg.lo |= SYSCFG_MSR_TOM2WB;
-	}
-
-	/* zero the IORR's before we enable to prevent
-	 * undefined side effects.
-	 */
-	msr.lo = msr.hi = 0;
-	for (i = MTRR_IORR0_BASE; i <= MTRR_IORR1_MASK; i++)
-		wrmsr(i, msr);
-
-	/* Enable Variable Mtrrs
-	 * Enable the RdMem and WrMem bits in the fixed mtrrs.
-	 * Disable access to the RdMem and WrMem in the fixed mtrr.
-	 */
-	sys_cfg.lo |= SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_MtrrFixDramEn;
-	sys_cfg.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
-	wrmsr(SYSCFG_MSR, sys_cfg);
-
-	enable_fixed_mtrr();
-
-	enable_cache();
-
-	/* Now that I have mapped what is memory and what is not
-	 * Set up the mtrrs so we can cache the memory.
-	 */
-
-	// Rev. F K8 supports has SYSCFG_MSR_TOM2WB and doesn't need
-	// variable MTRR to span memory above 4GB
-	// Lower revisions K8 need variable MTRR over 4GB
-	x86_setup_var_mtrrs(cpu_phys_address_size(), has_tom2wb ? 0 : 1);
 }

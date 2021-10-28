@@ -16,6 +16,8 @@ static const int regulator_id[] = {
 	[MTK_REGULATOR_VCC] = REGULATOR_NOT_SUPPORT,
 	[MTK_REGULATOR_VCCQ] = REGULATOR_NOT_SUPPORT,
 	[MTK_REGULATOR_VDRAM1] = MT6366_VDRAM1,
+	[MTK_REGULATOR_VMCH] = MT6366_VMCH,
+	[MTK_REGULATOR_VMC] = MT6366_VMC,
 };
 
 _Static_assert(ARRAY_SIZE(regulator_id) == MTK_REGULATOR_NUM, "regulator_id size error");

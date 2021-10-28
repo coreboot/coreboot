@@ -777,7 +777,7 @@ static enum cb_err install_relocation_handler(int num_cpus, size_t real_save_sta
 	if (mp_state.ops.adjust_smm_params != NULL)
 		mp_state.ops.adjust_smm_params(&smm_params, 0);
 
-	if (smm_setup_relocation_handler((void *)perm_smbase, &smm_params)) {
+	if (smm_setup_relocation_handler(perm_smbase, &smm_params)) {
 		printk(BIOS_ERR, "%s: smm setup failed\n", __func__);
 		return CB_ERR;
 	}
@@ -813,7 +813,7 @@ static enum cb_err install_permanent_handler(int num_cpus, uintptr_t smbase,
 
 	printk(BIOS_DEBUG, "Installing permanent SMM handler to 0x%08lx\n", smbase);
 
-	if (smm_load_module((void *)smbase, smsize, &smm_params))
+	if (smm_load_module(smbase, smsize, &smm_params))
 		return CB_ERR;
 
 	adjust_smm_apic_id_map(&smm_params);

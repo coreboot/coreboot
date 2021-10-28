@@ -3,8 +3,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 
-#define MTRR_HIGH_MASK $((1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1)
-
 /*
  * Configure the MTRRs to cache the BIOS ACM. No general-purpose
  * registers are preserved. Inputs are taken from SSE registers:
@@ -15,6 +13,16 @@
  * These two SSE registers are not preserved, but the others are.
  */
 .macro SET_UP_MTRRS_FOR_BIOS_ACM
+
+	/* Determine CPU_ADDR_BITS and load PHYSMASK high word to %edx. */
+	movl	$0x80000008, %eax
+	cpuid
+	movb	%al, %cl
+	sub	$32, %cl
+	movl	$1, %edx
+	shl	%cl, %edx
+	subl	$1, %edx
+	movl	%edx, %edi /* %edi contains the MTRR_HIGH_MASK */
 
 	/* Get the number of variable MTRRs */
 	movl	$(MTRR_CAP_MSR), %ecx
@@ -56,7 +64,7 @@ body_allocate_var_mtrrs:
 	movd	%eax, %xmm1
 
 	/* Program MTRR mask */
-	movl	MTRR_HIGH_MASK, %edx
+	movl	%edi, %edx
 	xorl	%eax, %eax
 	subl	%ebx, %eax			/* %eax = 4GIB - size to cache */
 	orl	$(MTRR_PHYS_MASK_VALID), %eax

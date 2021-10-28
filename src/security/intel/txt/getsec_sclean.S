@@ -6,8 +6,6 @@
 
 #include "getsec_mtrr_setup.inc"
 
-#define MTRR_HIGH_MASK	$((1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1)
-
 #define NO_EVICT_MODE	0x2e0
 
 .align 4

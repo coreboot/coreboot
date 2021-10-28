@@ -204,10 +204,6 @@ config RO_REGION_ONLY
 	depends on VBOOT_SLOTS_RW_AB || VBOOT_SLOTS_RW_A
 	default "apu/amdfw"
 
-config CPU_ADDR_BITS
-	int
-	default 48
-
 config MMCONF_BASE_ADDRESS
 	default 0xF8000000
 

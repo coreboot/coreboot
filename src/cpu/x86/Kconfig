@@ -90,10 +90,6 @@ config SETUP_XIP_CACHE
 	  non-eviction mode and therefore need to be careful to avoid
 	  eviction.
 
-config CPU_ADDR_BITS
-	int
-	default 36
-
 config LOGICAL_CPUS
 	bool
 	default y

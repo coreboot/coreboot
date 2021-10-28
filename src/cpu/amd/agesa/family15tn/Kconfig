@@ -4,11 +4,3 @@ config CPU_AMD_AGESA_FAMILY15_TN
 	bool
 	select IDS_OPTIONS_HOOKED_UP
 	select X86_AMD_FIXED_MTRRS
-
-if CPU_AMD_AGESA_FAMILY15_TN
-
-config CPU_ADDR_BITS
-	int
-	default 48
-
-endif

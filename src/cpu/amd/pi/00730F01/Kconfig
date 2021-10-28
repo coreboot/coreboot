@@ -5,11 +5,3 @@ config CPU_AMD_PI_00730F01
 	select X86_AMD_FIXED_MTRRS
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select MICROCODE_BLOB_UNDISCLOSED
-
-if CPU_AMD_PI_00730F01
-
-config CPU_ADDR_BITS
-	int
-	default 40
-
-endif

@@ -50,10 +50,6 @@ config MAX_CPUS
 	int
 	default 4
 
-config CPU_ADDR_BITS
-	int
-	default 36
-
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000

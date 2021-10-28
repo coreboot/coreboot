@@ -6,10 +6,6 @@ config CPU_AMD_AGESA_FAMILY16_KB
 
 if CPU_AMD_AGESA_FAMILY16_KB
 
-config CPU_ADDR_BITS
-	int
-	default 40
-
 config FORCE_AM1_SOCKET_SUPPORT
 	bool
 	default n

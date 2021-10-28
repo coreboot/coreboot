@@ -108,10 +108,6 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	help
 	  Increase this value if preram cbmem console is getting truncated
 
-config CPU_ADDR_BITS
-	int
-	default 48
-
 config BOTTOMIO_POSITION
 	hex "Bottom of 32-bit IO space"
 	default 0xD0000000

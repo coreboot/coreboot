@@ -35,6 +35,10 @@ ramstage-y += tseg_region.c
 romstage-y += tseg_region.c
 postcar-y += tseg_region.c
 
+endif
+
+ifeq ($(CONFIG_PARALLEL_MP),y)
+
 smmstub-y += smm_stub.S
 
 smm-y += smm_module_handler.c
@@ -71,7 +75,9 @@ endif
 $(obj)/smm/smm: $(obj)/smm/smm.elf.rmod
 	$(OBJCOPY_smm) -O binary $< $@
 
-else # CONFIG_SMM_TSEG
+endif
+
+ifeq ($(CONFIG_SMM_LEGACY_ASEG),y)
 
 smm-y += smm.ld
 
@@ -83,4 +89,4 @@ $(obj)/smm/smm: $(obj)/smm/smm.o $(call src-to-obj,smm,$(src)/cpu/x86/smm/smm.ld
 smm-y += smmhandler.S
 smm-y += smihandler.c
 
-endif # CONFIG_SMM_TSEG
+endif # CONFIG_SMM_LEGACY_ASEG

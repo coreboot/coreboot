@@ -120,7 +120,7 @@ config SMM_LEGACY_ASEG
 	help
 	  SMM support without PARALLEL_MP, to be deprecated.
 
-if SMM_TSEG
+if HAVE_SMI_HANDLER && !SMM_LEGACY_ASEG
 
 config SMM_MODULE_HEAP_SIZE
 	hex

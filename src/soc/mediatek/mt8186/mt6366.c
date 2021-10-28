@@ -560,6 +560,112 @@ static void pmic_set_vddq_vol(u32 vddq_uv)
 	udelay(1);
 }
 
+static u32 pmic_get_vmch_vol(void)
+{
+	u32 vol_reg, ret;
+
+	vol_reg = pwrap_read_field(PMIC_VMCH_ANA_CON0, 0x7, 8);
+
+	switch (vol_reg) {
+	case 2:
+		ret = 2900000;
+		break;
+	case 3:
+		ret = 3000000;
+		break;
+	case 5:
+		ret = 3300000;
+		break;
+	default:
+		printk(BIOS_ERR, "ERROR[%s] VMCH read fail: %d\n", __func__, vol_reg);
+		ret = 0;
+		break;
+	}
+	return ret;
+}
+
+static void pmic_set_vmch_vol(u32 vmch_uv)
+{
+	u32 val = 0;
+
+	switch (vmch_uv) {
+	case 2900000:
+		val = 2;
+		break;
+	case 3000000:
+		val = 3;
+		break;
+	case 3300000:
+		val = 5;
+		break;
+	default:
+		die("ERROR[%s]: VMCH voltage %u is not support.\n", __func__, vmch_uv);
+		return;
+	}
+
+	pwrap_write_field(PMIC_VMCH_ANA_CON0, val, 0x7, 8);
+
+	/* Force SW to turn on */
+	pwrap_write_field(PMIC_LDO_VMCH_OP_EN, 1, 0xFF, 0);
+	pwrap_write_field(PMIC_LDO_VMCH_CON0, 1, 0xFF, 0);
+}
+
+static u32 pmic_get_vmc_vol(void)
+{
+	u32 vol_reg, ret;
+
+	vol_reg = pwrap_read_field(PMIC_VMC_ANA_CON0, 0xF, 8);
+
+	switch (vol_reg) {
+	case 0x4:
+		ret = 1800000;
+		break;
+	case 0xA:
+		ret = 2900000;
+		break;
+	case 0xB:
+		ret = 3000000;
+		break;
+	case 0xD:
+		ret = 3300000;
+		break;
+	default:
+		printk(BIOS_ERR, "ERROR[%s] VMC read fail: %d\n", __func__, vol_reg);
+		ret = 0;
+		break;
+	}
+	return ret;
+}
+
+static void pmic_set_vmc_vol(u32 vmc_uv)
+{
+	u32 val = 0;
+
+	switch (vmc_uv) {
+	case 1800000:
+		val = 0x4;
+		break;
+	case 2900000:
+		val = 0xA;
+		break;
+	case 3000000:
+		val = 0xB;
+		break;
+	case 3300000:
+		val = 0xD;
+		break;
+	default:
+		die("ERROR[%s]: VMC voltage %u is not support.\n", __func__, vmc_uv);
+		return;
+	}
+
+	pwrap_write_field(PMIC_VMC_ANA_CON0, val, 0xF, 8);
+
+	/* Force SW to turn on */
+	pwrap_write_field(PMIC_LDO_VMC_OP_EN, 1, 0xFF, 0);
+	pwrap_write_field(PMIC_LDO_VMC_CON0, 1, 0xFF, 0);
+}
+
 static void pmic_wdt_set(void)
 {
 	/* [5]=1, RG_WDTRSTB_DEB */
@@ -667,6 +773,12 @@ void mt6366_set_voltage(enum mt6366_regulator_id id, u32 voltage_uv)
 	case MT6366_VDDQ:
 		pmic_set_vddq_vol(voltage_uv);
 		break;
+	case MT6366_VMCH:
+		pmic_set_vmch_vol(voltage_uv);
+		break;
+	case MT6366_VMC:
+		pmic_set_vmc_vol(voltage_uv);
+		break;
 	default:
 		printk(BIOS_ERR, "%s: PMIC %d is not supported\n", __func__, id);
 		break;
@@ -682,6 +794,10 @@ u32 mt6366_get_voltage(enum mt6366_regulator_id id)
 		return pmic_get_vdram1_vol();
 	case MT6366_VDDQ:
 		return pmic_get_vddq_vol();
+	case MT6366_VMCH:
+		return pmic_get_vmch_vol();
+	case MT6366_VMC:
+		return pmic_get_vmc_vol();
 	default:
 		printk(BIOS_ERR, "%s: PMIC %d is not supported\n", __func__, id);
 		break;

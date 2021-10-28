@@ -23,7 +23,7 @@ static const struct soc_amd_gpio bid1_override_gpio_table[] = {
 	/* Unused */
 	PAD_NC(GPIO_85),
 	/* EN_PWR_FP */
-	PAD_GPO(GPIO_32, HIGH),
+	PAD_GPO(GPIO_32, LOW),
 };
 
 /* This table is used by nipperkin variant with board version >= 2. */
@@ -60,38 +60,6 @@ static const struct soc_amd_gpio bid2_override_pcie_gpio_table[] = {
 	PAD_NC(GPIO_69),
 };
 
-/* This table is used by nipperkin variant with board version < 2. */
-static const struct soc_amd_gpio bid1_fpmcu_shutdown_gpio_table[] = {
-	/* FPMCU_RST_L */
-	PAD_GPO(GPIO_11, LOW),
-	/* EN_PWR_FP */
-	PAD_GPO(GPIO_32, LOW),
-};
-
-/* This table is used by nipperkin variant with board version >= 2. */
-static const struct soc_amd_gpio bid2_fpmcu_shutdown_gpio_table[] = {
-	/* FPMCU_RST_L */
-	PAD_GPO(GPIO_11, LOW),
-	/* EN_PWR_FP */
-	PAD_GPO(GPIO_3, LOW),
-};
-
-/* This table is used by nipperkin variant with board version < 2. */
-static const struct soc_amd_gpio bid1_fpmcu_disable_gpio_table[] = {
-	/* FPMCU_RST_L */
-	PAD_NC(GPIO_11),
-	/* EN_PWR_FP */
-	PAD_NC(GPIO_32),
-};
-
-/* This table is used by nipperkin variant with board version >= 2. */
-static const struct soc_amd_gpio bid2_fpmcu_disable_gpio_table[] = {
-	/* FPMCU_RST_L */
-	PAD_NC(GPIO_11),
-	/* EN_PWR_FP */
-	PAD_NC(GPIO_3),
-};
-
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
 {
 	uint32_t board_version = board_id();
@@ -122,30 +90,4 @@ const struct soc_amd_gpio *variant_pcie_override_gpio_table(size_t *size)
 
 	*size = ARRAY_SIZE(bid2_override_pcie_gpio_table);
 	return bid2_override_pcie_gpio_table;
-}
-
-const struct soc_amd_gpio *variant_fpmcu_shutdown_gpio_table(size_t *size)
-{
-	uint32_t board_version = board_id();
-
-	if (board_version < 2) {
-		*size = ARRAY_SIZE(bid1_fpmcu_shutdown_gpio_table);
-		return bid1_fpmcu_shutdown_gpio_table;
-	}
-
-	*size = ARRAY_SIZE(bid2_fpmcu_shutdown_gpio_table);
-	return bid2_fpmcu_shutdown_gpio_table;
-}
-
-const struct soc_amd_gpio *variant_fpmcu_disable_gpio_table(size_t *size)
-{
-	uint32_t board_version = board_id();
-
-	if (board_version < 2) {
-		*size = ARRAY_SIZE(bid1_fpmcu_disable_gpio_table);
-		return bid1_fpmcu_disable_gpio_table;
-	}
-
-	*size = ARRAY_SIZE(bid2_fpmcu_disable_gpio_table);
-	return bid2_fpmcu_disable_gpio_table;
 }

@@ -18,7 +18,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* WAKE_L */
 	PAD_NF_SCI(GPIO_2, WAKE_L, PULL_NONE, EDGE_LOW),
 	/* EN_PWR_FP */
-	PAD_GPO(GPIO_3, HIGH),
+	PAD_GPO(GPIO_3, LOW),
 	/* SOC_PEN_DETECT_ODL */
 	PAD_WAKE(GPIO_4, PULL_NONE, EDGE_HIGH, S0i3),
 	/* SD_AUX_RESET_L  */
@@ -33,7 +33,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_SCI(GPIO_9, PULL_NONE, EDGE_HIGH),
 	/* S0A3 */
 	PAD_NF(GPIO_10, S0A3, PULL_NONE),
-	/* SOC_FP_RST_L - Brought high in finalize */
+	/* SOC_FP_RST_L */
 	PAD_GPO(GPIO_11, LOW),
 	/* SLP_S3_GATED */
 	PAD_GPO(GPIO_12, LOW),
@@ -291,20 +291,6 @@ static const struct soc_amd_gpio pcie_gpio_table[] = {
 	PAD_NFO(GPIO_26, PCIE_RST_L, HIGH),
 };
 
-static const struct soc_amd_gpio fpmcu_shutdown_gpio_table[] = {
-	/* FPMCU_RST_L */
-	PAD_GPO(GPIO_11, LOW),
-	/* EN_PWR_FP */
-	PAD_GPO(GPIO_3, LOW),
-};
-
-static const struct soc_amd_gpio fpmcu_disable_gpio_table[] = {
-	/* FPMCU_RST_L */
-	PAD_NC(GPIO_11),
-	/* EN_PWR_FP */
-	PAD_NC(GPIO_3),
-};
-
 const struct soc_amd_gpio *__weak variant_pcie_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(pcie_gpio_table);
@@ -355,49 +341,6 @@ const struct soc_amd_gpio *__weak variant_early_gpio_table(size_t *size)
 
 const __weak struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size)
 {
-	if (acpi_get_sleep_type() == ACPI_S5)
-		return variant_fpmcu_shutdown_gpio_table(size);
-
 	*size = ARRAY_SIZE(sleep_gpio_table);
 	return sleep_gpio_table;
-}
-
-const __weak struct soc_amd_gpio *variant_fpmcu_shutdown_gpio_table(size_t *size)
-{
-	*size = ARRAY_SIZE(fpmcu_shutdown_gpio_table);
-	return fpmcu_shutdown_gpio_table;
-}
-
-const __weak struct soc_amd_gpio *variant_fpmcu_disable_gpio_table(size_t *size)
-{
-	*size = ARRAY_SIZE(fpmcu_disable_gpio_table);
-	return fpmcu_disable_gpio_table;
-}
-
-__weak void variant_fpmcu_reset(void)
-{
-	size_t size;
-	const struct soc_amd_gpio *gpio_table;
-
-	if (acpi_get_sleep_type() == ACPI_S3)
-		return;
-	/* If the system is not resuming from S3, power off the FPMCU */
-	gpio_table = variant_fpmcu_shutdown_gpio_table(&size);
-	gpio_configure_pads(gpio_table, size);
-}
-
-__weak void variant_finalize_gpios(void)
-{
-	size_t size;
-	const struct soc_amd_gpio *gpio_table;
-
-	if (variant_has_fpmcu()) {
-		if (acpi_get_sleep_type() == ACPI_S3)
-			return;
-		/* Deassert the FPMCU reset to enable the FPMCU */
-		gpio_set(GPIO_11, 1); /* FPMCU_RST_L */
-	} else {
-		gpio_table = variant_fpmcu_disable_gpio_table(&size);
-		gpio_configure_pads(gpio_table, size);
-	}
 }

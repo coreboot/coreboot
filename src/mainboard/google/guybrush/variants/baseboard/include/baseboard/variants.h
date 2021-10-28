@@ -40,19 +40,6 @@ const struct soc_amd_gpio *variant_pcie_gpio_table(size_t *size);
 /* This function provides GPIO settings before entering sleep. */
 const struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size);
 
-/* This function provides GPIO settings for fpmcu shutdown. */
-const struct soc_amd_gpio *variant_fpmcu_shutdown_gpio_table(size_t *size);
-
-/* This function provides GPIO settings for fpmcu disable. */
-const struct soc_amd_gpio *variant_fpmcu_disable_gpio_table(size_t *size);
-
-/* Finalize GPIOs, such as FPMCU power */
-void variant_finalize_gpios(void);
-
-void variant_fpmcu_reset(void);
-
-bool variant_has_fpmcu(void);
-
 bool variant_has_pcie_wwan(void);
 
 void variant_update_dxio_descriptors(fsp_dxio_descriptor *dxio_descriptors);

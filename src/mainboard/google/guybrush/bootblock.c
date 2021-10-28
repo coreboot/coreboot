@@ -99,8 +99,4 @@ void bootblock_mainboard_init(void)
 
 	gpio_configure_pads_with_override(base_gpios, base_num_gpios, override_gpios,
 					  override_num_gpios);
-
-	/* FPMCU check needs to happen after EC initialization for FW_CONFIG bits */
-	if (variant_has_fpmcu())
-		variant_fpmcu_reset();
 }

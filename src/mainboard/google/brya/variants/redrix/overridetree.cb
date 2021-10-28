@@ -31,8 +31,17 @@ fw_config
 	end
 end
 chip soc/intel/alderlake
+	# This disables autonomous GPIO power management, otherwise
+	# old cr50 FW only supports short pulses; need to clarify
+	# the minimum PCH IRQ pulse width with Intel, b/180111628
+	register "gpio_override_pm" = "1"
+	register "gpio_pm[COMM_0]" = "0"
+	register "gpio_pm[COMM_1]" = "0"
+	register "gpio_pm[COMM_2]" = "0"
+	register "gpio_pm[COMM_3]" = "0"
+	register "gpio_pm[COMM_4]" = "0"
+	register "gpio_pm[COMM_5]" = "0"
 	register "SaGv" = "SaGv_Enabled"
-
 	register "CnviBtAudioOffload" = "true"
 	# FIVR RFI Spread Spectrum 6%
 	register "FivrSpreadSpectrum" = "FIVR_SS_6"

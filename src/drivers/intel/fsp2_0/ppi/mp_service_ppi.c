@@ -108,7 +108,8 @@ efi_return_status_t mp_startup_all_cpus(efi_ap_procedure procedure,
 	 * due to lack of acquiring a spin lock while accessing common data structure in
 	 * multiprocessor environment.
 	 */
-	if (mp_run_on_all_aps((void *)procedure, argument, timeout_usec, false)) {
+	if (mp_run_on_all_aps((void *)procedure, argument, timeout_usec, false) !=
+				CB_SUCCESS) {
 		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
 		return FSP_NOT_STARTED;
 	}

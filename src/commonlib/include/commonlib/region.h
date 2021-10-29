@@ -158,6 +158,17 @@ static inline int rdev_chain_full(struct region_device *child,
 }
 
 /*
+ * Returns < 0 on error otherwise returns size of data read at provided
+ * offset filling in the buffer passed.
+ *
+ * You must ensure the buffer is large enough to hold the full region_device.
+ */
+static inline ssize_t rdev_readat_full(const struct region_device *rd, void *b)
+{
+	return rdev_readat(rd, b, 0, region_device_sz(rd));
+}
+
+/*
  * Compute relative offset of the child (c) w.r.t. the parent (p). Returns < 0
  * when child is not within the parent's region.
  */

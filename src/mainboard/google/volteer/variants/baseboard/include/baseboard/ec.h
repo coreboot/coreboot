@@ -56,12 +56,12 @@
 /* Enable EC backed ALS device in ACPI */
 #define EC_ENABLE_ALS_DEVICE
 
+/* Enable MKBP for buttons and switches */
+#define EC_ENABLE_MKBP_DEVICE
+
 /* Enable LID switch and provide wake pin for EC */
 #define EC_ENABLE_LID_SWITCH
 #define EC_ENABLE_WAKE_PIN	GPE_EC_WAKE
-
-/* Enable Tablet switch */
-#define EC_ENABLE_TBMC_DEVICE
 
 #define SIO_EC_MEMMAP_ENABLE	/* EC Memory Map Resources */
 #define SIO_EC_HOST_ENABLE	/* EC Host Interface Resources */

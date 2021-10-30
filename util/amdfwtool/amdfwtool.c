@@ -354,6 +354,16 @@ typedef struct _context {
 #define BUFF_TO_RUN(ctx, ptr) RUN_OFFSET((ctx), ((char *)(ptr) - (ctx).rom))
 #define BUFF_ROOM(ctx) ((ctx).rom_size - (ctx).current)
 
+void assert_fw_entry(uint32_t count, uint32_t max, context *ctx)
+{
+	if (count >= max) {
+		fprintf(stderr, "Error: BIOS entries (%d) exceeds max allowed items "
+			"(%d)\n", count, max);
+		free(ctx->rom);
+		exit(1);
+	}
+}
+
 static void *new_psp_dir(context *ctx, int multi)
 {
 	void *ptr;
@@ -653,6 +663,8 @@ static void integrate_psp_firmwares(context *ctx,
 		if (!(fw_table[i].level & level))
 			continue;
 
+		assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
+
 		if (fw_table[i].type == AMD_TOKEN_UNLOCK) {
 			if (!fw_table[i].other)
 				continue;
@@ -719,6 +731,7 @@ static void integrate_psp_firmwares(context *ctx,
 	}
 
 	if (pspdir2) {
+		assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
 		pspdir->entries[count].type = AMD_FW_L2_PTR;
 		pspdir->entries[count].subprog = 0;
 		pspdir->entries[count].rsvd = 0;
@@ -728,12 +741,6 @@ static void integrate_psp_firmwares(context *ctx,
 
 		pspdir->entries[count].addr = BUFF_TO_RUN(*ctx, pspdir2);
 		count++;
-	}
-
-	if (count > MAX_PSP_ENTRIES) {
-		fprintf(stderr, "Error: PSP entries exceed max allowed items\n");
-		free(ctx->rom);
-		exit(1);
 	}
 
 	fill_dir_header(pspdir, count, cookie, ctx);
@@ -888,6 +895,7 @@ static void integrate_bios_firmwares(context *ctx,
 		if (fw_table[i].type == AMD_BIOS_PSP_SHARED_MEM &&
 				(!fw_table[i].dest || !fw_table[i].size))
 			continue;
+		assert_fw_entry(count, MAX_BIOS_ENTRIES, ctx);
 
 		biosdir->entries[count].type = fw_table[i].type;
 		biosdir->entries[count].region_type = fw_table[i].region_type;
@@ -977,6 +985,7 @@ static void integrate_bios_firmwares(context *ctx,
 	}
 
 	if (biosdir2) {
+		assert_fw_entry(count, MAX_BIOS_ENTRIES, ctx);
 		biosdir->entries[count].type = AMD_BIOS_L2_PTR;
 		biosdir->entries[count].region_type = 0;
 		biosdir->entries[count].size =
@@ -992,13 +1001,6 @@ static void integrate_bios_firmwares(context *ctx,
 		biosdir->entries[count].reset = 0;
 		biosdir->entries[count].ro = 0;
 		count++;
-	}
-
-	if (count > MAX_BIOS_ENTRIES) {
-		fprintf(stderr, "Error: BIOS entries (%d) exceeds max allowed items "
-			"(%d)\n", count, MAX_BIOS_ENTRIES);
-		free(ctx->rom);
-		exit(1);
 	}
 
 	fill_dir_header(biosdir, count, cookie, ctx);

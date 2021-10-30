@@ -5,6 +5,7 @@
 #include <soc/iomap.h>
 #include <soc/i2c.h>
 #include "chip.h"
+#include <drivers/i2c/designware/dw_i2c.h>
 
 static const struct soc_i2c_ctrlr_info i2c_ctrlr[] = {
 	{ I2C_MASTER_MODE, APU_I2C0_BASE, "I2CA" },
@@ -25,4 +26,9 @@ const struct dw_i2c_bus_config *soc_get_i2c_bus_config(size_t *num_buses)
 
 	*num_buses = ARRAY_SIZE(config->i2c);
 	return config->i2c;
+}
+
+void soc_i2c_misc_init(unsigned int bus, const struct dw_i2c_bus_config *cfg)
+{
+	/* Do nothing. */
 }

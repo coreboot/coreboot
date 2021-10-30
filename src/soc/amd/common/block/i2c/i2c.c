@@ -78,11 +78,6 @@ int dw_i2c_soc_dev_to_bus(const struct device *dev)
 	return -1;
 }
 
-void __weak soc_i2c_misc_init(unsigned int bus, const struct dw_i2c_bus_config *cfg)
-{
-	/* Nothing by default. */
-}
-
 static void dw_i2c_soc_init(bool is_early_init)
 {
 	unsigned int bus;

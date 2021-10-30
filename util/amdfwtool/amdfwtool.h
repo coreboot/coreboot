@@ -182,8 +182,8 @@ typedef struct _bios_directory_table {
 	bios_directory_entry entries[];
 } bios_directory_table;
 
-#define BDT_LVL1 0x1
-#define BDT_LVL2 0x2
+#define BDT_LVL1 (1 << 0)
+#define BDT_LVL2 (1 << 1)
 #define BDT_BOTH (BDT_LVL1 | BDT_LVL2)
 typedef struct _amd_bios_entry {
 	amd_bios_type type;
@@ -208,8 +208,8 @@ typedef struct _amd_bios_entry {
 #define BDT1_COOKIE 0x44484224		/* 'DHB$ */
 #define BDT2_COOKIE 0x324c4224		/* '2LB$ */
 
-#define PSP_LVL1 0x1
-#define PSP_LVL2 0x2
+#define PSP_LVL1 (1 << 0)
+#define PSP_LVL2 (1 << 1)
 #define PSP_BOTH (PSP_LVL1 | PSP_LVL2)
 typedef struct _amd_fw_entry {
 	amd_fw_type type;

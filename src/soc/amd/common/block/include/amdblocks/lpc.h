@@ -141,8 +141,6 @@
 /* Clear all decoding to the LPC bus and erase any range registers associated
  * with the enable bits. */
 void lpc_disable_decodes(void);
-/* LPC is typically enabled very early, but this function is last opportunity */
-void soc_late_lpc_bridge_enable(void);
 void lpc_enable_port80(void);
 void lpc_enable_pci_port80(void);
 void lpc_enable_decode(uint32_t decodes);

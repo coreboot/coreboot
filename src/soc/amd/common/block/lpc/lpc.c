@@ -20,9 +20,6 @@
 #include <soc/lpc.h>
 #include <soc/southbridge.h>
 
-/* Most systems should have already enabled the bridge */
-void __weak soc_late_lpc_bridge_enable(void) { }
-
 static void setup_serirq(void)
 {
 	u8 byte;
@@ -40,8 +37,6 @@ static void setup_serirq(void)
 static void lpc_init(struct device *dev)
 {
 	u8 byte;
-
-	soc_late_lpc_bridge_enable();
 
 	/* Initialize isa dma */
 	isa_dma_init();

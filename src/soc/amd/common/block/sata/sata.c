@@ -6,8 +6,6 @@
 #include <device/pci_ids.h>
 #include <amdblocks/sata.h>
 
-void __weak soc_enable_sata_features(struct device *dev) { }
-
 static const char *sata_acpi_name(const struct device *dev)
 {
 	return "STCR";

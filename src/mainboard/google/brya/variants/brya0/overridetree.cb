@@ -320,7 +320,7 @@ chip soc/intel/alderlake
 				register "nvm_size" = "0x2800"
 				register "nvm_pagesize" = "0x01"
 				register "nvm_readonly" = "0x01"
-				register "nvm_width" = "0x0E"
+				register "nvm_width" = "0x10"
 
 				device i2c 58 on end
 			end

@@ -41,7 +41,7 @@ Deprecations and incompatible changes
 Drop the deprecated COREBOOTPAYLOAD option, and replace it with MrChromebox's
 updated UefiPayloadPkg option. Simplify the Kconfig options to make it easier
 to build from upstream edk2 master. Drop the TIANOCORE_USE_8254_TIMER Kconfig
-option since it applied only to CorebootPayloadPkg. Clean up the Makefile now
+option since it applies only to CorebootPayloadPkg. Clean up the Makefile now
 that we're only building from a single Tianocore package/target.
 
 ### Remove old lp4x and ddr4 versions of spd_tools

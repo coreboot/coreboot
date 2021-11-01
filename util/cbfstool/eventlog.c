@@ -157,6 +157,7 @@ static void eventlog_print_type(const struct event_header *event)
 		{ELOG_TYPE_CR50_NEED_RESET, "cr50 Reset Required"},
 		{ELOG_TYPE_EC_DEVICE_EVENT, "EC Device"},
 		{ELOG_TYPE_EXTENDED_EVENT, "Extended Event"},
+		{ELOG_TYPE_CROS_DIAGNOSTICS, "Diagnostics Mode"},
 
 		{ELOG_TYPE_EOL, "End of log"},
 	};
@@ -533,6 +534,11 @@ static int eventlog_print_data(const struct event_header *event)
 		{0, NULL},
 	};
 
+	static const struct valstr cros_diagnostics_types[] = {
+		{ELOG_CROS_LAUNCH_DIAGNOSTICS, "Launch Diagnostics"},
+		{0, NULL},
+	};
+
 	switch (event->type) {
 	case ELOG_TYPE_LOG_CLEAR: {
 		const uint16_t *bytes = event_get_data(event);
@@ -613,6 +619,10 @@ static int eventlog_print_data(const struct event_header *event)
 		eventlog_printf("%s", val2str(ext_event->event_type, extended_event_subtypes));
 		eventlog_printf("0x%X", ext_event->event_complement);
 		break;
+	}
+	case ELOG_TYPE_CROS_DIAGNOSTICS: {
+		const uint8_t *type = event_get_data(event);
+		eventlog_printf("%s", val2str(*type, cros_diagnostics_types));
 	}
 	default:
 		break;

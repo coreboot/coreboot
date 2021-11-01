@@ -68,8 +68,9 @@ clean: clean_tempfiles
 distclean: clean
 	rm -rf tarballs
 
-.PHONY: build_gcc build_iasl build_clang all \
-	build-i386 build-x64 build-arm  \
-	build-aarch64 build-riscv build-ppc64 build-nds32le build-nasm \
-	clean distclean clean_tempfiles
+.PHONY: all build_gcc build_iasl build_clang build_make build_nasm \
+	clean distclean clean_tempfiles \
+	build-i386 build-x64 build-arm build-aarch64 \
+	build-riscv build-ppc64 build-nds32le
+
 .NOTPARALLEL:

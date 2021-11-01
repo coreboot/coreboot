@@ -1,0 +1,8 @@
+config BOARD_SYSTEM76_GAZE16_3050
+	bool "gaze16 3050"
+
+config BOARD_SYSTEM76_GAZE16_3060
+	bool "gaze16 3060"
+
+config BOARD_SYSTEM76_GAZE16_3060_B
+	bool "gaze16 3060-b"

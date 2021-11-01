@@ -1,0 +1,151 @@
+chip soc/intel/tigerlake
+	register "common_soc_config" = "{
+		// Touchpad I2C bus
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 80,
+			.fall_time_ns = 110,
+		},
+	}"
+
+# ACPI (soc/intel/tigerlake/acpi.c)
+	# Enable Enhanced Intel SpeedStep
+	register "eist_enable" = "1"
+
+# CPU (soc/intel/tigerlake/cpu.c)
+	# Power limits
+	register "power_limits_config[POWER_LIMITS_H_8_CORE]" = "{
+		.tdp_pl1_override = 45,
+		.tdp_pl2_override = 109,
+	}"
+	register "power_limits_config[POWER_LIMITS_H_6_CORE]" = "{
+		.tdp_pl1_override = 45,
+		.tdp_pl2_override = 109,
+	}"
+
+# FSP Memory (soc/intel/tigerlake/romstage/fsp_params.c)
+	# Enable C6 DRAM
+	register "enable_c6dram" = "1"
+
+# FSP Silicon (soc/intel/tigerlake/fsp_params.c)
+	# Acoustic settings
+	register "AcousticNoiseMitigation" = "1"
+	register "SlowSlewRate" = "SLEW_FAST_8"
+	register "FastPkgCRampDisable" = "1"
+
+	# FIVR configuration
+	#   Read EXT_RAIL_CONFIG to determine bitmaps
+	#     sudo devmem2 0xfe0011b8
+	#     0x0
+	#   Read EXT_V1P05_VR_CONFIG
+	#     sudo devmem2 0xfe0011c0
+	#     0x1a42000
+	#   Read EXT_VNN_VR_CONFIG0
+	#     sudo devmem2 0xfe0011c4
+	#     0x1a42000
+	# TODO: v1p05 voltage and vnn icc max?
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+		.v1p05_enable_bitmap = 0,
+		.vnn_enable_bitmap = 0,
+		.v1p05_supported_voltage_bitmap = 0,
+		.vnn_supported_voltage_bitmap = 0,
+		.v1p05_icc_max_ma = 500,
+		.vnn_sx_voltage_mv = 1050,
+	}"
+
+	# Disable S0ix substates
+	register "LpmStateDisableMask" = "
+		LPM_S0i2_1 |
+		LPM_S0i2_2 |
+		LPM_S0i3_1 |
+		LPM_S0i3_2 |
+		LPM_S0i3_3 |
+		LPM_S0i3_4
+	"
+
+	# Thermal
+	# rdmsr --bitfield 31:24 --decimal 0x1A2
+	register "tcc_offset" = "8"
+
+	# Enable CNVi BT
+	register "CnviBtCore" = "true"
+
+# PM Util (soc/intel/tigerlake/pmutil.c)
+	# GPE configuration
+	register "pmc_gpe0_dw0" = "PMC_GPP_R"
+	register "pmc_gpe0_dw1" = "PMC_GPP_B"
+	register "pmc_gpe0_dw2" = "PMC_GPP_D"
+
+# Actual device tree
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	device domain 0 on
+		#From CPU EDS(575683)
+		device ref system_agent on end
+		device ref igpu on
+			# DDIA is eDP
+			register "DdiPortAConfig" = "1"
+			register "DdiPortAHpd" = "1"
+			register "DdiPortADdc" = "0"
+
+			# DDIB is HDMI
+			register "DdiPortBConfig" = "0"
+			register "DdiPortBHpd" = "1"
+			register "DdiPortBDdc" = "1"
+		end
+		device ref dptf on
+			register "Device4Enable" = "1"
+		end
+		device ref gna on end
+		device ref north_xhci on
+			# TODO: No TBT, but needed for USB 2.0 on Type-C port?
+			register "TcssXhciEn" = "1"
+		end
+
+		# From PCH EDS(615985)
+		device ref shared_ram on end
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
+		end
+		device ref i2c0 on
+			# Touchpad I2C bus
+			register "SerialIoI2cMode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0412""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_R12)"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+		end
+		device ref heci1 on end
+		device ref uart2 on
+			# Debug console
+			register "SerialIoUartMode[PchSerialIoIndexUART2]" = "PchSerialIoSkipInit"
+		end
+		device ref pch_espi on
+			register "gen1_dec" = "0x00040069" # EC PM channel
+			register "gen2_dec" = "0x00fc0E01" # AP/EC command
+			register "gen3_dec" = "0x00fc0F01" # AP/EC debug
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end
+		device ref p2sb on end
+		device ref pmc hidden end
+		device ref hda on
+			register "PchHdaAudioLinkHdaEnable" = "1"
+		end
+		device ref smbus on
+			register "SmbusEnable" = "1"
+		end
+		device ref fast_spi on end
+	end
+end

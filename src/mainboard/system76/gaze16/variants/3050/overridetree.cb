@@ -1,0 +1,74 @@
+chip soc/intel/tigerlake
+	device domain 0 on
+		subsystemid 0x1558 0x5015 inherit
+
+		device ref peg1 on
+			# PCIe PEG2 (remapped to PEG1 by FSP) x8, Clock 0 (DGPU)
+			register "PcieClkSrcUsage[0]" = "0x42"
+			register "PcieClkSrcClkReq[0]" = "0"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F9)" # DGPU_PWR_EN
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F8)" # DGPU_RST#_PCH
+				register "enable_delay_ms" = "16"
+				register "enable_off_delay_ms" = "4"
+				register "reset_delay_ms" = "10"
+				register "reset_off_delay_ms" = "4"
+				# TODO: Support disable/enable CPU RP clock
+				register "srcclk_pin" = "-1" # GFX_CLKREQ0#
+				device generic 0 on end
+			end
+		end
+		device ref peg0 on
+			# PCIe PEG0 x4, Clock 4 (SSD2)
+			register "PcieClkSrcUsage[4]" = "0x40"
+			register "PcieClkSrcClkReq[4]" = "4"
+		end
+		device ref south_xhci on
+			# USB2
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # USB 3.2 Gen 1 (Right)
+			register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB 3.2 Gen 2 Type C (Right)
+			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)" # USB 3.2 Gen 1 (Left)
+			register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)" # USB 2.0 (Left)
+			register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # Fingerprint
+			register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Camera
+			register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
+			# USB3
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.2 Gen 2 (Right)
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.2 Gen 2 Type C (Right)
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.2 Gen 2 Type C (Right)
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.2 Gen 1 (Left)
+		end
+		device ref sata on
+			register "SataPortsEnable[0]" = "1" # HDD (SATA0B)
+			register "SataPortsEnable[1]" = "1" # SSD1 (SATA1A)
+		end
+		device ref pcie_rp5 on
+			# PCIe root port #5 x1, Clock 5 (GLAN)
+			register "PcieRpEnable[4]" = "1"
+			register "PcieRpLtrEnable[4]" = "1"
+			register "PcieClkSrcUsage[5]" = "4"
+			register "PcieClkSrcClkReq[5]" = "5"
+		end
+		device ref pcie_rp7 on
+			# PCIe root port #7 x1, Clock 7 (CARD)
+			register "PcieRpEnable[6]" = "1"
+			register "PcieRpLtrEnable[6]" = "1"
+			register "PcieClkSrcUsage[7]" = "6"
+			register "PcieClkSrcClkReq[7]" = "7"
+		end
+		device ref pcie_rp8 on
+			# PCIe root port #8 x1, Clock 8 (WLAN)
+			register "PcieRpEnable[7]" = "1"
+			register "PcieRpLtrEnable[7]" = "1"
+			register "PcieClkSrcUsage[8]" = "7"
+			register "PcieClkSrcClkReq[8]" = "8"
+		end
+		device ref pcie_rp9 on
+			# PCIe root port #9 x4, Clock 9 (SSD1)
+			register "PcieRpEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieClkSrcUsage[9]" = "8"
+			register "PcieClkSrcClkReq[9]" = "9"
+		end
+	end
+end

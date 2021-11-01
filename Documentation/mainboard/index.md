@@ -188,6 +188,7 @@ The boards in this section are not real mainboards, but emulators.
 - [Galago Pro 4](system76/galp4.md)
 - [Galago Pro 5](system76/galp5.md)
 - [Gazelle 15](system76/gaze15.md)
+- [Gazelle 16](system76/gaze16.md)
 - [Lemur Pro 9](system76/lemp9.md)
 - [Lemur Pro 10](system76/lemp10.md)
 - [Oryx Pro 5](system76/oryp5.md)

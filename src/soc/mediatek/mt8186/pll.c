@@ -436,6 +436,37 @@ void mt_pll_init(void)
 	write32(&mt8186_infracfg_ao->infra_bus_dcm_ctrl, 0x805f0603);
 	write32(&mt8186_infracfg_ao->peri_bus_dcm_ctrl, 0xb07f0603);
 
+	/* dcm_infracfg_ao_audio_bus and dcm_infracfg_ao_icusb_bus */
+	SET32_BITFIELDS(&mt8186_infracfg_ao->peri_bus_dcm_ctrl,
+			INFRACFG_AO_AUDIO_BUS_REG0, 0,
+			INFRACFG_AO_ICUSB_BUS_REG0, 0,
+			INFRACFG_AO_AUDIO_BUS_REG0, 1,
+			INFRACFG_AO_ICUSB_BUS_REG0, 1);
+
+	/* dcm_infracfg_ao_infra_bus */
+	SET32_BITFIELDS(&mt8186_infracfg_ao->infra_bus_dcm_ctrl,
+			INFRACFG_AO_INFRA_BUS_REG0_0, 0,
+			INFRACFG_AO_INFRA_BUS_REG0_1, 0,
+			INFRACFG_AO_INFRA_BUS_REG0_2, 0,
+			INFRACFG_AO_INFRA_BUS_REG0_0, 0x603,
+			INFRACFG_AO_INFRA_BUS_REG0_1, 0xF,
+			INFRACFG_AO_INFRA_BUS_REG0_2, 1);
+
+	/* dcm_infracfg_ao_p2p_rx_clk */
+	SET32_BITFIELDS(&mt8186_infracfg_ao->p2p_rx_clk_on,
+			INFRACFG_AO_P2P_RX_CLK_REG0_MASK_0, 0,
+			INFRACFG_AO_P2P_RX_CLK_REG0_MASK_1, 0,
+			INFRACFG_AO_P2P_RX_CLK_REG0_MASK_1, 1);
+
+	/* dcm_infracfg_ao_peri_bus */
+	SET32_BITFIELDS(&mt8186_infracfg_ao->peri_bus_dcm_ctrl,
+			INFRACFG_AO_PERI_BUS_REG0_0, 0,
+			INFRACFG_AO_PERI_BUS_REG0_1, 0,
+			INFRACFG_AO_PERI_BUS_REG0_2, 0,
+			INFRACFG_AO_PERI_BUS_REG0_0, 3,
+			INFRACFG_AO_PERI_BUS_REG0_1, 0xFF07C,
+			INFRACFG_AO_PERI_BUS_REG0_2, 1);
+
 	for (i = 0; i < ARRAY_SIZE(mux_sels); i++)
 		mux_set_sel(&muxes[mux_sels[i].id], mux_sels[i].sel);
 

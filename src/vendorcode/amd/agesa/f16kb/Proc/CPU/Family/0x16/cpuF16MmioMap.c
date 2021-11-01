@@ -225,7 +225,7 @@ cpuF16AddingMmioMap (
 
           MmioRange[MmioPair].Base = (MmioRange[MmioPair].Base <= NewMmioRange.Base) ? MmioRange[MmioPair].Base : NewMmioRange.Base;
           MmioRange[MmioPair].Modified = TRUE;
-          for (i = 1; NewMmioRange.Limit >= MmioRange[MmioPair + i].Base; i++) {
+          for (i = 1; ((MmioPair + i) < MMIO_REG_PAIR_NUM) && NewMmioRange.Limit >= MmioRange[MmioPair + i].Base; i++) {
             if ((NewMmioRange.Attribute.MmioPostedRange == MmioRange[MmioPair + i].Attribute.MmioPostedRange) &&
                 (NewMmioRange.Attribute.MmioReadableRange == MmioRange[MmioPair + i].Attribute.MmioReadableRange) &&
                 (NewMmioRange.Attribute.MmioWritableRange == MmioRange[MmioPair + i].Attribute.MmioWritableRange) &&

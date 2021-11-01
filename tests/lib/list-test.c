@@ -116,12 +116,32 @@ void test_list_remove(void **state)
 	free(c1);
 }
 
+void test_list_append(void **state)
+{
+	size_t idx;
+	struct test_container *node;
+	struct list_node root = {};
+	struct test_container nodes[] = {
+		{1}, {2}, {3}
+	};
+
+	for (idx = 0; idx < ARRAY_SIZE(nodes); ++idx)
+		list_append(&nodes[idx].list_node, &root);
+
+	idx = 0;
+	list_for_each(node, root, list_node) {
+		assert_ptr_equal(node, &nodes[idx]);
+		idx++;
+	}
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_list_insert_after),
 		cmocka_unit_test(test_list_insert_before),
 		cmocka_unit_test(test_list_remove),
+		cmocka_unit_test(test_list_append),
 	};
 
 

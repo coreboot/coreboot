@@ -15,6 +15,8 @@ void list_remove(struct list_node *node);
 void list_insert_after(struct list_node *node, struct list_node *after);
 // Insert list_node node before list_node before in a doubly linked list.
 void list_insert_before(struct list_node *node, struct list_node *before);
+// Appends the node to the end of the list.
+void list_append(struct list_node *node, struct list_node *head);
 
 #define list_for_each(ptr, head, member)                                      \
 	for ((ptr) = container_of((head).next, typeof(*(ptr)), member);       \

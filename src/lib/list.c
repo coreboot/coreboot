@@ -28,3 +28,11 @@ void list_insert_before(struct list_node *node, struct list_node *before)
 	if (node->prev)
 		node->prev->next = node;
 }
+
+void list_append(struct list_node *node, struct list_node *head)
+{
+	while (head->next)
+		head = head->next;
+
+	list_insert_after(node, head);
+}

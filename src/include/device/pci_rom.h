@@ -35,6 +35,7 @@ struct  pci_data {
 	uint16_t	reserved_2;
 };
 
+void vga_oprom_preload(void);
 struct rom_header *pci_rom_probe(const struct device *dev);
 struct rom_header *pci_rom_load(struct device *dev,
 	struct rom_header *rom_header);

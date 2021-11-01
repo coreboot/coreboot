@@ -16,6 +16,21 @@
 void __weak map_oprom_vendev_rev(u32 *vendev, u8 *rev) { return; }
 u32 __weak map_oprom_vendev(u32 vendev) { return vendev; }
 
+void vga_oprom_preload(void)
+{
+/* The CONFIG_VGA_BIOS_ID symbol is only defined when VGA_BIOS is selected */
+#if CONFIG(VGA_BIOS)
+	const char name[] = "pci" CONFIG_VGA_BIOS_ID ".rom";
+
+	if (!CONFIG(CBFS_PRELOAD))
+		return;
+
+	printk(BIOS_DEBUG, "Preloading VGA ROM %s\n", name);
+
+	cbfs_preload(name);
+#endif
+}
+
 static void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device)
 {
 	char name[17] = "pciXXXX,XXXX.rom";

@@ -97,6 +97,21 @@ static inline void *cbfs_type_cbmem_alloc(const char *name, uint32_t cbmem_id, s
 static inline void *cbfs_ro_type_cbmem_alloc(const char *name, uint32_t cbmem_id,
 					     size_t *size_out, enum cbfs_type *type);
 
+/*
+ * Starts the processes of preloading a file into RAM.
+ *
+ * This method depends on COOP_MULTITASKING to parallelize the loading. This method is only
+ * effective when the underlying rdev supports DMA operations.
+ *
+ * When `cbfs_load`, `cbfs_alloc`, or `cbfs_map` are called after a preload has been started,
+ * they will wait for the preload to complete (if it hasn't already) and then perform
+ * verification and/or decompression.
+ *
+ * This method does not have a return value because the system should boot regardless if this
+ * method succeeds or fails.
+ */
+void cbfs_preload(const char *name);
+
 /* Removes a previously allocated CBFS mapping. Should try to unmap mappings in strict LIFO
    order where possible, since mapping backends often don't support more complicated cases. */
 void cbfs_unmap(void *mapping);

@@ -83,7 +83,8 @@ static bool is_ps8640_bridge(void)
 	 */
 	return (CONFIG(BOARD_GOOGLE_HOMESTAR) && board_id() >= 4 &&
 		board_id() != 19 && board_id() != 23) ||
-	       (CONFIG(BOARD_GOOGLE_LAZOR) && board_id() >= 9);
+	       (CONFIG(BOARD_GOOGLE_LAZOR) && board_id() >= 9) ||
+	       (CONFIG(BOARD_GOOGLE_KINGOFTOWN) && board_id() >= 1);
 }
 
 static void power_on_sn65dsi86_bridge(void)

@@ -135,6 +135,22 @@ enum lpm_state_mask {
 		     | LPM_S0i3_0 | LPM_S0i3_1 | LPM_S0i3_2 | LPM_S0i3_3 | LPM_S0i3_4,
 };
 
+/*
+ * FivrSpreadSpectrum:
+ * Values
+ *  0 - 0.5%, 3 - 1%, 8 - 1.5%, 18 - 2%, 28 - 3%, 34 - 4%, 39 - 5%, 44 - 6%
+ */
+enum fivr_spread_spectrum_ratio {
+	FIVR_SS_0_5 = 0,
+	FIVR_SS_1 = 3,
+	FIVR_SS_1_5 = 8,
+	FIVR_SS_2 = 18,
+	FIVR_SS_3 = 28,
+	FIVR_SS_4 = 34,
+	FIVR_SS_5 = 39,
+	FIVR_SS_6 = 44,
+};
+
 struct soc_intel_alderlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -495,6 +511,23 @@ struct soc_intel_alderlake_config {
 
 	/* Platform Power Pmax */
 	uint16_t PsysPmax;
+	/*
+	 * FivrRfiFrequency
+	 * PCODE MMIO Mailbox: Set the desired RFI frequency, in increments of 100KHz.
+	 * 0: Auto
+	 * Range varies based on XTAL clock:
+	 *   0-1918*100 KHz (Up to 191.8MHz) for 24MHz clock
+	 *   0-1535*100 KHz (Up to 153.5MHz) for 19MHz clock
+	 */
+	uint32_t FivrRfiFrequency;
+	/*
+	 * FivrSpreadSpectrum
+	 * Set the Spread Spectrum Range.
+	 *   Range: 0.5%, 1%, 1.5%, 2%, 3%, 4%, 5%, 6%.
+	 *   Each Range is translated to an encoded value for FIVR register.
+	 *   0.5% = 0, 1% = 3, 1.5% = 8, 2% = 18, 3% = 28, 4% = 34, 5% = 39, 6% = 44.
+	 */
+	uint8_t FivrSpreadSpectrum;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

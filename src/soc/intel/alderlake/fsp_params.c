@@ -731,6 +731,14 @@ static void fill_fsps_fivr_params(FSP_S_CONFIG *s_cfg,
 			config->ext_fivr_settings.vnn_icc_max_ma;
 }
 
+static void fill_fsps_fivr_rfi_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
+	/* transform from Hz to 100 KHz */
+	s_cfg->FivrRfiFrequency = config->FivrRfiFrequency / (100 * KHz);
+	s_cfg->FivrSpreadSpectrum = config->FivrSpreadSpectrum;
+}
+
 static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		struct soc_intel_alderlake_config *config)
 {
@@ -761,6 +769,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_misc_power_params,
 		fill_fsps_irq_params,
 		fill_fsps_fivr_params,
+		fill_fsps_fivr_rfi_params,
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(fill_fsps_params); i++)

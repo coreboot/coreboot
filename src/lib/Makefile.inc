@@ -28,6 +28,8 @@ CFLAGS_ramstage += $(CFLAGS_asan)
 $(obj)/ramstage/lib/asan.o: CFLAGS_asan =
 endif
 
+all-y += list.c
+
 decompressor-y += decompressor.c
 $(call src-to-obj,decompressor,$(dir)/decompressor.c): $(objcbfs)/bootblock.lz4
 $(call src-to-obj,decompressor,$(dir)/decompressor.c): CCACHE_EXTRAFILES=$(objcbfs)/bootblock.lz4
@@ -155,7 +157,6 @@ ramstage-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 ramstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 ramstage-y += b64_decode.c
 ramstage-$(CONFIG_ACPI_NHLT) += nhlt.c
-ramstage-y += list.c
 ramstage-$(CONFIG_FLATTENED_DEVICE_TREE) += device_tree.c
 ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit.c
 ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit_payload.c

@@ -114,10 +114,10 @@ chip soc/intel/jasperlake
 					}
 				}"
 				register "controls.charger_perf" = "{
-					[0] = {  55, 3500 },
-					[1] = {  47, 3000 },
-					[2] = {  39, 2500 },
-					[3] = {  31, 2000 },
+					[0] = { 255, 2800 },
+					[1] = {  39, 2500 },
+					[2] = {  31, 2000 },
+					[3] = {  23, 1500 },
 				}"
 				device generic 0 on end
 			end

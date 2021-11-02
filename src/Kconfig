@@ -416,6 +416,16 @@ config FW_CONFIG_SOURCE_CBFS
 	  local image to preempt the mainboard selected source and can be used as
 	  FW_CONFIG_SOURCE_CHROMEEC_CBI fallback option.
 
+config FW_CONFIG_SOURCE_VPD
+	bool "Obtain Firmware Configuration value from VPD"
+	depends on FW_CONFIG && VPD
+	default n
+	help
+	  With this option enabled coreboot will look for the 32bit firmware
+	  configuration value in VPD key name "fw_config".  This option will
+	  override other sources and allow the local image to preempt the mainboard
+	  selected source and can be used for other FW_CONFIG_SOURCEs fallback option.
+
 config HAVE_RAMPAYLOAD
 	bool
 

@@ -11,6 +11,7 @@
 #include <lib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <drivers/vpd/vpd.h>
 
 uint64_t fw_config_get(void)
 {
@@ -42,6 +43,17 @@ uint64_t fw_config_get(void)
 		else
 			printk(BIOS_INFO, "FW_CONFIG value from CBFS is 0x%" PRIx64 "\n",
 				fw_config_value);
+	}
+
+	if (CONFIG(FW_CONFIG_SOURCE_VPD) && fw_config_value == UNDEFINED_FW_CONFIG) {
+		int vpd_value;
+		if (vpd_get_int("fw_config", VPD_RW_THEN_RO, &vpd_value)) {
+			fw_config_value = vpd_value;
+			printk(BIOS_INFO, "FW_CONFIG value from VPD is 0x%" PRIx64 "\n",
+				fw_config_value);
+		} else
+			printk(BIOS_WARNING, "%s: Could not get fw_config from vpd\n",
+				__func__);
 	}
 
 	return fw_config_value;

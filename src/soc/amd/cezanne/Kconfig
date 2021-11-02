@@ -19,7 +19,6 @@ config SOC_SPECIFIC_OPTIONS
 	select CPU_INFO_V2
 	select DRIVERS_USB_ACPI
 	select DRIVERS_I2C_DESIGNWARE
-	select COOP_MULTITASKING
 	select DRIVERS_USB_PCI_XHCI
 	select FSP_COMPRESS_FSP_M_LZMA
 	select FSP_COMPRESS_FSP_S_LZMA
@@ -31,7 +30,6 @@ config SOC_SPECIFIC_OPTIONS
 	select HAVE_SMI_HANDLER
 	select IDT_IN_EVERY_STAGE
 	select PARALLEL_MP_AP_WORK
-	select PAYLOAD_PRELOAD
 	select PLATFORM_USES_FSP2_0
 	select PROVIDES_ROM_SHARING
 	select PSP_VERSTAGE_CCP_DMA if VBOOT_STARTS_BEFORE_BOOTBLOCK
@@ -53,7 +51,6 @@ config SOC_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_I2C
 	select SOC_AMD_COMMON_BLOCK_IOMMU
 	select SOC_AMD_COMMON_BLOCK_LPC
-	select SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
 	select SOC_AMD_COMMON_BLOCK_MCAX
 	select SOC_AMD_COMMON_BLOCK_NONCAR
 	select SOC_AMD_COMMON_BLOCK_PCI
@@ -193,6 +190,17 @@ config VERSTAGE_SIZE
 	help
 	  Sets the size of DRAM allocation for verstage in linker script if
 	  running as a separate stage on x86.
+
+config ASYNC_FILE_LOADING
+	bool "Loads files from SPI asynchronously"
+	select COOP_MULTITASKING
+	select SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
+	select PAYLOAD_PRELOAD
+	help
+	  When enabled, the platform will use the LPC SPI DMA controller to
+	  asynchronously load contents from the SPI ROM. This will improve
+	  boot time because the CPUs can be performing useful work while the
+	  SPI contents are being preloaded.
 
 config RAMBASE
 	hex

@@ -15,7 +15,6 @@
 const struct pad_config *variant_gpio_table(size_t *num);
 const struct pad_config *variant_gpio_override_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
-const struct cros_gpio *variant_cros_gpios(size_t *num);
 const struct pad_config *variant_romstage_gpio_table(size_t *num);
 
 const struct mb_cfg *variant_memory_params(void);

@@ -15,7 +15,4 @@
 const struct pad_config *variant_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 
-struct cros_gpio;
-const struct cros_gpio *variant_cros_gpios(size_t *num);
-
 #endif

@@ -6,7 +6,6 @@
 #include <soc/cnl_memcfg_init.h>
 #include <soc/gpio.h>
 #include <stdint.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 /*
  * The next set of functions return the gpio table and fill in the number of
@@ -27,9 +26,6 @@ const struct pad_config *variant_sleep_gpio_table(u8 slp_typ, size_t *num);
 
 /* Return GPIO pads that need to be configured before ramstage */
 const struct pad_config *variant_early_gpio_table(size_t *num);
-
-/* Return ChromeOS gpio table and fill in number of entries. */
-const struct cros_gpio *variant_cros_gpios(size_t *num);
 
 /* Modify devictree settings during ramstage. */
 void variant_devtree_update(void);

@@ -1,12 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <baseboard/variants.h>
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <types.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/gpio.h>
 #include <variant/gpio.h>
 
@@ -25,15 +23,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 int get_write_protect_state(void)
 {
 	return gpio_get(GPIO_PCH_WP);
-}
-
-void mainboard_chromeos_acpi_generate(void)
-{
-	const struct cros_gpio *gpios;
-	size_t num;
-
-	gpios = variant_cros_gpios(&num);
-	chromeos_acpi_gpio_generate(gpios, num);
 }
 
 int get_ec_is_trusted(void)

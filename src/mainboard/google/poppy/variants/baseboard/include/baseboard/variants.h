@@ -5,7 +5,6 @@
 
 #include <soc/gpio.h>
 #include <stdint.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 /*
  * The next set of functions return the gpio table and fill in the number of
@@ -20,7 +19,6 @@ const struct pad_config *variant_early_gpio_table(size_t *num);
  */
 const struct pad_config *variant_romstage_gpio_table(size_t *num);
 
-const struct cros_gpio *variant_cros_gpios(size_t *num);
 /* Config gpio by different sku id */
 const struct pad_config *variant_sku_gpio_table(size_t *num);
 

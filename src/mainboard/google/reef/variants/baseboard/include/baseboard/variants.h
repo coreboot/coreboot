@@ -6,7 +6,6 @@
 #include <soc/gpio.h>
 #include <soc/meminit.h>
 #include <stdint.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 /* Return the sku id based off the strapping resistors attached to SoC. */
 uint8_t sku_strapping_value(void);
@@ -28,9 +27,6 @@ size_t variant_memory_sku(void);
 uint8_t variant_board_sku(void);
 /* Set variant board sku to ec by sku id */
 void variant_board_ec_set_skuid(void);
-
-/* Return ChromeOS gpio table and fill in number of entries. */
-const struct cros_gpio *variant_cros_gpios(size_t *num);
 
 /* Seed the NHLT tables with the board specific information. */
 struct nhlt;

@@ -38,16 +38,9 @@ void chromeos_init_chromeos_acpi(void);
 enum cb_err get_dsm_calibration_from_key(const char *key, uint64_t *value);
 
 /*
- * Create the OIPG package containing the Chrome OS gpios described by
- * the chromeos_gpio array.
- */
-struct cros_gpio;
-void chromeos_acpi_gpio_generate(const struct cros_gpio *gpios, size_t num);
-
-/*
  * Declaration for mainboards to use to generate ACPI-specific Chrome OS needs.
  */
-void mainboard_chromeos_acpi_generate(void);
+void chromeos_acpi_gpio_generate(void);
 
 enum {
 	CROS_GPIO_REC = 1, /* Recovery */
@@ -103,5 +96,7 @@ struct cros_gpio {
 
 #define CROS_GPIO_PE_AH(num, dev) \
 	CROS_GPIO_PE_INITIALIZER(CROS_GPIO_ACTIVE_HIGH, num, dev)
+
+const struct cros_gpio *variant_cros_gpios(size_t *num);
 
 #endif /* __CHROMEOS_H__ */

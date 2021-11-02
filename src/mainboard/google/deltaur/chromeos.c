@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <baseboard/variants.h>
 #include <baseboard/gpio.h>
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
@@ -42,15 +41,6 @@ static bool raw_get_recovery_mode_switch(void)
 	return !gpio_get(GPIO_REC_MODE);
 }
 
-void mainboard_chromeos_acpi_generate(void)
-{
-	const struct cros_gpio *cros_gpios;
-	size_t num_gpios = 0;
-
-	cros_gpios = variant_cros_gpios(&num_gpios);
-
-	chromeos_acpi_gpio_generate(cros_gpios, num_gpios);
-}
 
 int get_recovery_mode_switch(void)
 {

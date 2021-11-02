@@ -6,10 +6,15 @@
 #endif
 #include "chromeos.h"
 
-void chromeos_acpi_gpio_generate(const struct cros_gpio *gpios, size_t num)
+void chromeos_acpi_gpio_generate(void)
 {
-	size_t i;
+	const struct cros_gpio *gpios;
+	size_t i, num;
 	int gpio_num;
+
+	gpios = variant_cros_gpios(&num);
+	if (!gpios)
+		return;
 
 	acpigen_write_scope("\\");
 	acpigen_write_name("OIPG");

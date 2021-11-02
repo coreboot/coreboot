@@ -5,7 +5,6 @@
 
 #include <soc/gpio.h>
 #include <soc/meminit.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 /**
  * variant_board_id() - Get the board id for the current board variant
@@ -26,9 +25,6 @@ extern const struct lpddr4_swizzle_cfg baseboard_lpddr4_swizzle;
 const struct lpddr4_cfg *variant_lpddr4_config(void);
 /* Return memory SKU for the board. */
 size_t variant_memory_sku(void);
-
-/* Return ChromeOS gpio table and fill in number of entries. */
-const struct cros_gpio *variant_cros_gpios(size_t *num);
 
 /* Seed the NHLT tables with the board specific information. */
 struct nhlt;

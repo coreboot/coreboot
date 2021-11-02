@@ -98,6 +98,5 @@ void acpi_fill_cnvs(void)
 	acpigen_write_opregion(&cnvs_op);
 	acpigen_pop_len();
 
-	/* Usually this creates OIPG package for GPIOs. */
-	mainboard_chromeos_acpi_generate();
+	chromeos_acpi_gpio_generate();
 }

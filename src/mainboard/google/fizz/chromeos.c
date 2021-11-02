@@ -3,10 +3,8 @@
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
-#include <baseboard/variants.h>
 #include <soc/gpio.h>
 #include <types.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #include <variant/gpio.h>
 
@@ -26,15 +24,6 @@ int get_write_protect_state(void)
 {
 	/* Read PCH_WP GPIO. */
 	return gpio_get(GPIO_PCH_WP);
-}
-
-void mainboard_chromeos_acpi_generate(void)
-{
-	const struct cros_gpio *gpios;
-	size_t num;
-
-	gpios = variant_cros_gpios(&num);
-	chromeos_acpi_gpio_generate(gpios, num);
 }
 
 int get_ec_is_trusted(void)

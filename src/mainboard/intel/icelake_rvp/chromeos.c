@@ -2,12 +2,10 @@
 
 #include <acpi/acpi.h>
 #include <baseboard/gpio.h>
-#include <baseboard/variants.h>
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
 #include <types.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -34,13 +32,4 @@ int get_write_protect_state(void)
 {
 	/* No write protect */
 	return 0;
-}
-
-void mainboard_chromeos_acpi_generate(void)
-{
-	const struct cros_gpio *gpios;
-	size_t num;
-
-	gpios = variant_cros_gpios(&num);
-	chromeos_acpi_gpio_generate(gpios, num);
 }

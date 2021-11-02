@@ -6,7 +6,6 @@
 #include <soc/gpio.h>
 #include <soc/meminit.h>
 #include <stdint.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 enum adl_boardid {
 	/* ADL-P LPDDR4 RVPs */
@@ -28,9 +27,6 @@ enum adl_boardid {
 	ADL_N_LP5 = 0x7,
 };
 
-/* The next set of functions return the gpio table and fill in the number of
- * entries for each table. */
-const struct cros_gpio *variant_cros_gpios(size_t *num);
 /* Functions to configure GPIO as per variant schematics */
 void variant_configure_gpio_pads(void);
 void variant_configure_early_gpio_pads(void);

@@ -5,3 +5,12 @@ config PSP_VERSTAGE_CCP_DMA
 	  Configure PSP Verstage to use Crypto Co-processor (CCP) DMA while
 	  accessing the boot device. Select it on platforms which supports
 	  using CCP DMA to access the boot device.
+
+config PSP_INIT_TPM_ON_S0I3_RESUME
+	bool
+	depends on TPM2 && VBOOT_STARTS_BEFORE_BOOTBLOCK
+	default VBOOT_STARTS_BEFORE_BOOTBLOCK
+	help
+	  If the TPM is reset while in S0i3, it must be reinitialized
+	  during s0i3 resume. This must be performed in PSP verstage since
+	  coreboot is otherwise not involved with s0i3 resume.

@@ -12,6 +12,8 @@
 #include <pc80/mc146818rtc.h>
 #include <soc/iomap.h>
 #include <soc/psp_transfer.h>
+#include <security/tpm/tspi.h>
+#include <security/tpm/tss.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/symbols.h>
@@ -206,11 +208,42 @@ static uint32_t save_buffers(struct vb2_context **ctx)
 	return 0;
 }
 
+/*
+ * S0i3 resume in PSP verstage is a special case. The FSDL is restoring mostly
+ * everything, so do the minimum necessary here. Unlike normal boot, subsequent
+ * coreboot stages are not run after s0i3 verstage.
+ * If the TPM is reset in S0i3, it must be re-initialized here.
+ */
+static void psp_verstage_s0i3_resume(void)
+{
+	uint32_t rv;
+
+	post_code(POSTCODE_VERSTAGE_S0I3_RESUME);
+
+	printk(BIOS_DEBUG, "Entering PSP verstage S0i3 resume\n");
+
+	if (!CONFIG(PSP_INIT_TPM_ON_S0I3_RESUME))
+		return;
+
+	rv = tpm_setup(true);
+	if (rv != TPM_SUCCESS) {
+		printk(BIOS_ERR, "tpm_setup failed rv:%d\n", rv);
+		reboot_into_recovery(vboot_get_context(), POSTCODE_INIT_TPM_FAILED);
+	}
+
+	rv = tlcl_disable_platform_hierarchy();
+	if (rv != TPM_SUCCESS) {
+		printk(BIOS_ERR, "tlcl_disable_platform_hierarchy failed rv:%d\n", rv);
+		reboot_into_recovery(vboot_get_context(), POSTCODE_INIT_TPM_FAILED);
+	}
+}
+
 void Main(void)
 {
 	uint32_t retval;
 	struct vb2_context *ctx = NULL;
 	void *boot_dev_base;
+	uint32_t bootmode;
 
 	/*
 	 * Do not use printk() before console_init()
@@ -247,17 +280,28 @@ void Main(void)
 	/* mainboard_tpm_init may check board_id, so make sure espi is ready first */
 	verstage_mainboard_tpm_init();
 
-	printk(BIOS_DEBUG, "calling verstage_mainboard_early_init\n");
-	verstage_mainboard_early_init();
-
-	svc_write_postcode(POSTCODE_LATE_INIT);
-	fch_io_enable_legacy_io();
-
 	printk(BIOS_DEBUG, "calling verstage_soc_aoac_init\n");
 	verstage_soc_aoac_init();
 
 	printk(BIOS_DEBUG, "calling verstage_soc_i2c_init\n");
 	verstage_soc_i2c_init();
+
+	/*
+	 * S0i3 resume in PSP verstage is a special case, handle it separately.
+	 * Make sure TPM i2c is ready first.
+	 */
+	svc_get_boot_mode(&bootmode);
+	if (bootmode == PSP_BOOT_MODE_S0i3_RESUME) {
+		psp_verstage_s0i3_resume();
+		unmap_fch_devices();
+		svc_exit(0);
+	}
+
+	printk(BIOS_DEBUG, "calling verstage_mainboard_early_init\n");
+	verstage_mainboard_early_init();
+
+	svc_write_postcode(POSTCODE_LATE_INIT);
+	fch_io_enable_legacy_io();
 
 	printk(BIOS_DEBUG, "calling verstage_soc_spi_init\n");
 	verstage_soc_spi_init();

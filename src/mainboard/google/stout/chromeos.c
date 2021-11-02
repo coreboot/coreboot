@@ -49,8 +49,7 @@ int get_lid_switch(void)
  * The recovery-switch is virtual on Stout and is handled via the EC.
  * Stout recovery mode is only valid if RTC_PWR_STS is set and the EC
  * indicated the recovery keys were pressed. We use a global flag for
- * rec_mode to be used after RTC_POWER_STS has been cleared. This function
- * is complicated by romstage support, which can't use a global variable.
+ * rec_mode to be used after RTC_POWER_STS has been cleared.
  * Note, rec_mode is the only time the EC is in RO mode, otherwise, RW.
  */
 int get_recovery_mode_switch(void)
@@ -75,6 +74,11 @@ int get_recovery_mode_switch(void)
 	return ec_in_rec_mode;
 }
 
+bool mainboard_ec_running_ro(void)
+{
+	return !!get_recovery_mode_switch();
+}
+
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AL(GPIO_SPI_WP, CROS_GPIO_DEVICE_NAME),
@@ -82,8 +86,5 @@ static const struct cros_gpio cros_gpios[] = {
 
 void mainboard_chromeos_acpi_generate(void)
 {
-	if (CONFIG(CHROMEOS_NVS) && !get_recovery_mode_switch())
-		chromeos_set_ecfw_rw();
-
 	chromeos_acpi_gpio_generate(cros_gpios, ARRAY_SIZE(cros_gpios));
 }

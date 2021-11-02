@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
+#include <bootmode.h>
 #include <types.h>
 #include <string.h>
 #include <stdlib.h>
@@ -31,6 +32,8 @@ static size_t chromeos_vpd_region(const char *region, uintptr_t *base)
 	return region_device_sz(&vpd);
 }
 
+__weak bool mainboard_ec_running_ro(void) { return true; }
+
 void chromeos_init_chromeos_acpi(void)
 {
 	size_t vpd_size;
@@ -59,8 +62,13 @@ void chromeos_init_chromeos_acpi(void)
 	/* EC can override to ECFW_RW. */
 	chromeos_acpi->vbt2 = ACTIVE_ECFW_RO;
 
-	if (CONFIG(EC_GOOGLE_CHROMEEC) && !google_ec_running_ro())
-		chromeos_acpi->vbt2 = ACTIVE_ECFW_RW;
+	if (CONFIG(EC_GOOGLE_CHROMEEC)) {
+		if (!google_ec_running_ro())
+			chromeos_acpi->vbt2 = ACTIVE_ECFW_RW;
+	} else {
+		if (!mainboard_ec_running_ro())
+			chromeos_acpi->vbt2 = ACTIVE_ECFW_RW;
+	}
 }
 
 void chromeos_set_me_hash(u32 *hash, int len)
@@ -81,13 +89,6 @@ void chromeos_set_ramoops(void *ram_oops, size_t size)
 	printk(BIOS_DEBUG, "Ramoops buffer: 0x%zx@%p.\n", size, ram_oops);
 	chromeos_acpi->ramoops_base = (uintptr_t)ram_oops;
 	chromeos_acpi->ramoops_len = size;
-}
-
-void chromeos_set_ecfw_rw(void)
-{
-	if (!chromeos_acpi)
-		return;
-	chromeos_acpi->vbt2 = ACTIVE_ECFW_RW;
 }
 
 void smbios_type0_bios_version(uintptr_t address)

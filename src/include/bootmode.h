@@ -3,6 +3,8 @@
 #ifndef __BOOTMODE_H__
 #define __BOOTMODE_H__
 
+#include <stdbool.h>
+
 /* functions implemented per mainboard: */
 void init_bootmode_straps(void);
 int get_write_protect_state(void);
@@ -12,6 +14,7 @@ int clear_recovery_mode_switch(void);
 int get_wipeout_mode_switch(void);
 int get_lid_switch(void);
 int get_ec_is_trusted(void);
+bool mainboard_ec_running_ro(void);
 
 /* Return 1 if display initialization is required. 0 if not. */
 int display_init_required(void);

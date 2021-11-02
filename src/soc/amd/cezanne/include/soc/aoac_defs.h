@@ -1,4 +1,3 @@
-
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #ifndef AMD_CEZANNE_AOAC_DEFS_H

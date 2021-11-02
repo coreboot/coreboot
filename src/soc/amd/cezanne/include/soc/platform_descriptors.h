@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_PICASSO_PLATFORM_DESCRIPTORS_H
-#define AMD_PICASSO_PLATFORM_DESCRIPTORS_H
+#ifndef AMD_CEZANNE_PLATFORM_DESCRIPTORS_H
+#define AMD_CEZANNE_PLATFORM_DESCRIPTORS_H
 
 #include <types.h>
 #include <platform_descriptors.h>
@@ -14,4 +14,4 @@ void mainboard_get_dxio_ddi_descriptors(
 
 void mb_pre_fspm(void);
 
-#endif /* AMD_PICASSO_PLATFORM_DESCRIPTORS_H */
+#endif /* AMD_CEZANNE_PLATFORM_DESCRIPTORS_H */

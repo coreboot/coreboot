@@ -92,6 +92,9 @@ chip soc/intel/elkhartlake
 	register "ScsEmmcDdr50Enabled" = "1"
 	register "SdCardPowerEnableActiveHigh" = "1"
 
+	# GPIO for SD card detect
+	register "sdcard_cd_gpio" = "GPP_G5"
+
 	# LPSS Serial IO (I2C/UART/GSPI) related UPDs
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,

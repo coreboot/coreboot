@@ -23,11 +23,19 @@ New mainboards
 * Siemens mc_ehl
 * SuperMicro x9sae
 * System76 addw1
+* System76 addw2
+* System76 bonw14
 * System76 darp6
 * System76 darp7
+* System76 galp2
+* System76 galp3
+* System76 galp3-b
 * System76 galp4
 * System76 galp5
+* System76 gaze14
 * System76 lemp10
+* System76 oryp7
+* System76 oryp8
 
 Removed mainboards
 ------------------

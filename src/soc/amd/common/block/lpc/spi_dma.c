@@ -122,6 +122,12 @@ static void start_spi_dma_transaction(struct spi_dma_transaction *transaction)
 	ctrl |= LPC_ROM_DMA_CTRL_ERROR; /* Clear error */
 	ctrl |= LPC_ROM_DMA_CTRL_START;
 
+	/*
+	 * Ensure we have exclusive access to the SPI controller before starting the LPC SPI DMA
+	 * transaction.
+	 */
+	thread_mutex_lock(&spi_hw_mutex);
+
 	pci_write_config32(SOC_LPC_DEV, LPC_ROM_DMA_EC_HOST_CONTROL, ctrl);
 }
 
@@ -134,6 +140,12 @@ static bool continue_spi_dma_transaction(const struct region_device *rd,
 
 	if (spi_dma_is_busy())
 		return true;
+
+	/*
+	 * Unlock the SPI mutex between DMA transactions to allow other users of the SPI
+	 * controller to interleave their transactions.
+	 */
+	thread_mutex_unlock(&spi_hw_mutex);
 
 	if (spi_dma_has_error()) {
 		printk(BIOS_ERR,

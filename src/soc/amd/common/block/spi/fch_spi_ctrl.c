@@ -142,7 +142,13 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 static int xfer_vectors(const struct spi_slave *slave,
 			struct spi_op vectors[], size_t count)
 {
-	return spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
+	int rc;
+
+	thread_mutex_lock(&spi_hw_mutex);
+	rc = spi_flash_vector_helper(slave, vectors, count, spi_ctrlr_xfer);
+	thread_mutex_unlock(&spi_hw_mutex);
+
+	return rc;
 }
 
 static int protect_a_range(u32 value)

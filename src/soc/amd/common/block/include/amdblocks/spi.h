@@ -3,6 +3,7 @@
 #ifndef AMD_BLOCK_SPI_H
 #define AMD_BLOCK_SPI_H
 
+#include <thread.h>
 #include <types.h>
 
 #define SPI_CNTRL0			0x00
@@ -118,4 +119,8 @@ void spi_write32(uint8_t reg, uint32_t val);
 
 void fch_spi_config_modes(void);
 void mainboard_spi_fast_speed_override(uint8_t *fast_speed);
+
+/* Ensure you hold the mutex when performing SPI transactions */
+extern struct thread_mutex spi_hw_mutex;
+
 #endif /* AMD_BLOCK_SPI_H */

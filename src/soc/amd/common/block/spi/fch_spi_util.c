@@ -6,6 +6,9 @@
 #include <assert.h>
 #include <stdint.h>
 
+/* Global SPI controller mutex */
+struct thread_mutex spi_hw_mutex;
+
 static uintptr_t spi_base;
 
 void spi_set_base(void *base)

@@ -10,27 +10,34 @@
 #define FSP_HDR_ATTRIB_FSPT		1
 #define FSP_HDR_ATTRIB_FSPM		2
 #define FSP_HDR_ATTRIB_FSPS		3
+#define FSP_IMAGE_ID_LENGTH		8
 
 #if CONFIG(PLATFORM_USES_FSP2_X86_32)
 struct fsp_header {
-	uint32_t fsp_revision;
-	uint16_t extended_fsp_revision;
-	uint32_t image_size;
-	uint32_t image_base;
-	uint16_t image_attribute;
-	uint8_t spec_version;
-	uint16_t component_attribute;
-	uint32_t cfg_region_offset;
-	uint32_t cfg_region_size;
-	uint32_t temp_ram_init_entry;
-	uint32_t temp_ram_exit_entry;
-	uint32_t notify_phase_entry_offset;
-	uint32_t memory_init_entry_offset;
-	uint32_t silicon_init_entry_offset;
-	uint32_t multi_phase_si_init_entry_offset;
-	char image_id[sizeof(uint64_t) + 1];
-	uint8_t revision;
-} __packed;
+	uint32_t  signature; //FSPH
+	uint32_t  header_length;
+	uint8_t   res1[2];
+	uint8_t   spec_version;
+	uint8_t   header_revision;
+	uint32_t  image_revision;
+	char      image_id[FSP_IMAGE_ID_LENGTH]; // not zero terminated
+	uint32_t  image_size;
+	uint32_t  image_base;
+	uint16_t  image_attribute;
+	uint16_t  component_attribute;
+	uint32_t  cfg_region_offset;
+	uint32_t  cfg_region_size;
+	uint32_t  res2;
+	uint32_t  temp_ram_init_entry_offset; //initial stack
+	uint32_t  res3;
+	uint32_t  notify_phase_entry_offset;
+	uint32_t  fsp_memory_init_entry_offset;
+	uint32_t  temp_ram_exit_entry_offset;
+	uint32_t  fsp_silicon_init_entry_offset;
+	uint32_t  fsp_multi_phase_si_init_entry_offset;
+	uint16_t  extended_image_revision;
+	uint16_t  res4;
+}  __packed;
 #else
 #error You need to implement this struct for x86_64 FSP
 #endif

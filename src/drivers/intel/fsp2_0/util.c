@@ -26,11 +26,9 @@ static uint32_t fsp_hdr_get_expected_min_length(void)
 		return dead_code_t(uint32_t);
 }
 
-static bool looks_like_fsp_header(const uint8_t *raw_hdr)
+static bool looks_like_fsp_header(struct fsp_header *hdr)
 {
-	uint32_t fsp_header_length = read32(raw_hdr + 4);
-
-	if (memcmp(raw_hdr, FSP_HDR_SIGNATURE, 4)) {
+	if (memcmp(&hdr->signature, FSP_HDR_SIGNATURE, 4)) {
 		printk(BIOS_ALERT, "Did not find a valid FSP signature\n");
 		return false;
 	}
@@ -39,8 +37,8 @@ static bool looks_like_fsp_header(const uint8_t *raw_hdr)
 	   fields in FSP_INFO_HEADER. The new fields will be ignored based on the reported FSP
 	   version. This check ensures that the reported header length is at least what the
 	   reported FSP version requires so that we do not access any out-of-bound bytes. */
-	if (fsp_header_length < fsp_hdr_get_expected_min_length()) {
-		printk(BIOS_ALERT, "FSP header has invalid length: %d\n", fsp_header_length);
+	if (hdr->header_length < fsp_hdr_get_expected_min_length()) {
+		printk(BIOS_ALERT, "FSP header has invalid length: %d\n", hdr->header_length);
 		return false;
 	}
 
@@ -49,31 +47,9 @@ static bool looks_like_fsp_header(const uint8_t *raw_hdr)
 
 enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob)
 {
-	const uint8_t *raw_hdr = fsp_blob;
-
-	if (!looks_like_fsp_header(raw_hdr))
+	memcpy(hdr, fsp_blob, sizeof(struct fsp_header));
+	if (!looks_like_fsp_header(hdr))
 		return CB_ERR;
-
-	hdr->spec_version = read8(raw_hdr + 10);
-	hdr->revision = read8(raw_hdr + 11);
-	hdr->fsp_revision = read32(raw_hdr + 12);
-	memcpy(hdr->image_id, raw_hdr + 16, ARRAY_SIZE(hdr->image_id));
-	hdr->image_id[ARRAY_SIZE(hdr->image_id) - 1] = '\0';
-	hdr->image_size = read32(raw_hdr + 24);
-	hdr->image_base = read32(raw_hdr + 28);
-	hdr->image_attribute = read16(raw_hdr + 32);
-	hdr->component_attribute = read16(raw_hdr + 34);
-	hdr->cfg_region_offset = read32(raw_hdr + 36);
-	hdr->cfg_region_size = read32(raw_hdr + 40);
-	hdr->temp_ram_init_entry = read32(raw_hdr + 48);
-	hdr->temp_ram_exit_entry = read32(raw_hdr + 64);
-	hdr->notify_phase_entry_offset = read32(raw_hdr + 56);
-	hdr->memory_init_entry_offset = read32(raw_hdr + 60);
-	hdr->silicon_init_entry_offset = read32(raw_hdr + 68);
-	if (CONFIG(PLATFORM_USES_FSP2_2))
-		hdr->multi_phase_si_init_entry_offset = read32(raw_hdr + 72);
-	if (CONFIG(PLATFORM_USES_FSP2_3))
-		hdr->extended_fsp_revision = read16(raw_hdr + 76);
 
 	return CB_SUCCESS;
 }
@@ -192,7 +168,7 @@ void fsp_get_version(char *buf)
 	struct fsp_header *hdr = &fsps_hdr;
 	union fsp_revision revision;
 
-	revision.val = hdr->fsp_revision;
+	revision.val = hdr->image_revision;
 	snprintf(buf, FSP_VER_LEN, "%u.%u-%u.%u.%u.%u", (hdr->spec_version >> 4),
 		hdr->spec_version & 0xf, revision.rev.major,
 		revision.rev.minor, revision.rev.revision, revision.rev.bld_num);

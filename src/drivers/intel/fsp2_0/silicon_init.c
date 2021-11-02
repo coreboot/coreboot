@@ -75,7 +75,7 @@ static void fsps_return_value_handler(enum fsp_silicon_init_phases phases, uint3
 bool fsp_is_multi_phase_init_enabled(void)
 {
 	return CONFIG(FSPS_USE_MULTI_PHASE_INIT) &&
-			 (fsps_hdr.multi_phase_si_init_entry_offset != 0);
+			 (fsps_hdr.fsp_multi_phase_si_init_entry_offset != 0);
 }
 
 static void fsp_fill_common_arch_params(FSPS_UPD *supd)
@@ -127,7 +127,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 
 	/* Call SiliconInit */
 	silicon_init = (void *) (uintptr_t)(hdr->image_base +
-				 hdr->silicon_init_entry_offset);
+				 hdr->fsp_silicon_init_entry_offset);
 	fsp_debug_before_silicon_init(silicon_init, supd, upd);
 
 	timestamp_add_now(TS_FSP_SILICON_INIT_START);
@@ -162,7 +162,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 
 	/* Call MultiPhaseSiInit */
 	multi_phase_si_init = (void *) (uintptr_t)(hdr->image_base +
-			 hdr->multi_phase_si_init_entry_offset);
+			 hdr->fsp_multi_phase_si_init_entry_offset);
 
 	/* Implementing multi_phase_si_init() is optional as per FSP 2.2 spec */
 	if (multi_phase_si_init == NULL)

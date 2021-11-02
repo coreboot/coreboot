@@ -206,7 +206,7 @@ uint8_t fsp_memory_soc_version(void)
 static uint32_t fsp_memory_settings_version(const struct fsp_header *hdr)
 {
 	/* Use the full FSP version by default. */
-	uint32_t ver = hdr->fsp_revision;
+	uint32_t ver = hdr->image_revision;
 
 	if (!CONFIG(FSP_PLATFORM_MEMORY_SETTINGS_VERSIONS))
 		return ver;
@@ -291,7 +291,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	post_code(POST_MEM_PREINIT_PREP_END);
 
 	/* Call FspMemoryInit */
-	fsp_raminit = (void *)(uintptr_t)(hdr->image_base + hdr->memory_init_entry_offset);
+	fsp_raminit = (void *)(uintptr_t)(hdr->image_base + hdr->fsp_memory_init_entry_offset);
 	fsp_debug_before_memory_init(fsp_raminit, upd, &fspm_upd);
 
 	post_code(POST_FSP_MEMORY_INIT);

@@ -195,12 +195,17 @@ config ASYNC_FILE_LOADING
 	bool "Loads files from SPI asynchronously"
 	select COOP_MULTITASKING
 	select SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
+	select CBFS_PRELOAD
 	select PAYLOAD_PRELOAD
 	help
 	  When enabled, the platform will use the LPC SPI DMA controller to
 	  asynchronously load contents from the SPI ROM. This will improve
 	  boot time because the CPUs can be performing useful work while the
 	  SPI contents are being preloaded.
+
+config CBFS_CACHE_SIZE
+	hex
+	default 0x40000 if CBFS_PRELOAD
 
 config RAMBASE
 	hex

@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef __USBC_MUX_H__
+#define __USBC_MUX_H__
+
 /* struct to hold all USB-C mux related variables */
 struct usbc_mux_info {
 	bool dp; /* DP connected */
@@ -67,3 +70,5 @@ struct usbc_ops {
 };
 
 const struct usbc_ops *usbc_get_ops(void);
+
+#endif /* __USBC_MUX_H__ */

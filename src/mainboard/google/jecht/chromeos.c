@@ -71,12 +71,7 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(GPIO_REC_MODE, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AH(GPIO_SPI_WP, CROS_GPIO_DEVICE_NAME),
 };
-
-const struct cros_gpio *variant_cros_gpios(size_t *num)
-{
-	*num = ARRAY_SIZE(cros_gpios);
-	return cros_gpios;
-}
+DECLARE_CROS_GPIOS(cros_gpios);
 
 int get_ec_is_trusted(void)
 {

@@ -263,8 +263,4 @@ variant_sleep_gpio_table(size_t *num)
 static const struct cros_gpio cros_gpios[] = {
 };
 
-const struct cros_gpio * __weak variant_cros_gpios(size_t *num)
-{
-	*num = ARRAY_SIZE(cros_gpios);
-	return cros_gpios;
-}
+DECLARE_WEAK_CROS_GPIOS(cros_gpios);

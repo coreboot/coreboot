@@ -38,8 +38,4 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_WP_AH(0x10013, CROS_GPIO_DEVICE_NAME),
 };
 
-const struct cros_gpio *variant_cros_gpios(size_t *num)
-{
-	*num = ARRAY_SIZE(cros_gpios);
-	return cros_gpios;
-}
+DECLARE_CROS_GPIOS(cros_gpios);

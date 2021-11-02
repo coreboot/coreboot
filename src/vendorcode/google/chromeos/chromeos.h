@@ -98,6 +98,23 @@ struct cros_gpio {
 #define CROS_GPIO_PE_AH(num, dev) \
 	CROS_GPIO_PE_INITIALIZER(CROS_GPIO_ACTIVE_HIGH, num, dev)
 
-const struct cros_gpio *variant_cros_gpios(size_t *num);
+struct cros_gpio_pack {
+	int count;
+	const struct cros_gpio *gpios;
+};
+
+extern const struct cros_gpio_pack variant_cros_gpio;
+
+#define DECLARE_NO_CROS_GPIOS() \
+	const struct cros_gpio_pack variant_cros_gpio = \
+		{ .count = 0, .gpios = NULL }
+
+#define DECLARE_CROS_GPIOS(x) \
+	const struct cros_gpio_pack variant_cros_gpio = \
+		{ .count = ARRAY_SIZE(x), .gpios = x }
+
+#define DECLARE_WEAK_CROS_GPIOS(x) \
+	const struct cros_gpio_pack __weak variant_cros_gpio = \
+		{ .count = ARRAY_SIZE(x), .gpios = x }
 
 #endif /* __CHROMEOS_H__ */

@@ -474,8 +474,4 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_COMM0_NAME),
 };
 
-const struct cros_gpio *__weak variant_cros_gpios(size_t *num)
-{
-	*num = ARRAY_SIZE(cros_gpios);
-	return cros_gpios;
-}
+DECLARE_WEAK_CROS_GPIOS(cros_gpios);

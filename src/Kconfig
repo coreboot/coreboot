@@ -677,12 +677,12 @@ config TIMER_QUEUE
 
 config COOP_MULTITASKING
 	def_bool n
-	depends on TIMER_QUEUE && ARCH_X86 && CPU_INFO_V2
+	select TIMER_QUEUE
+	depends on ARCH_X86 && CPU_INFO_V2
 	help
 	  Cooperative multitasking allows callbacks to be multiplexed on the
-	  main thread of ramstage. With this enabled it allows for multiple
-	  execution paths to take place when they have udelay() calls within
-	  their code.
+	  main thread. With this enabled it allows for multiple execution paths
+	  to take place when they have udelay() calls within their code.
 
 config NUM_THREADS
 	int

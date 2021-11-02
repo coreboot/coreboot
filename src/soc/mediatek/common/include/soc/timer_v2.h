@@ -9,6 +9,19 @@
 
 #define GPT_MHZ	13
 
+enum {
+	TIE_0_EN = 1 << 3,
+	COMP_15_EN = 1 << 10,
+	COMP_20_EN = 1 << 11,
+	COMP_25_EN = 1 << 12,
+
+	COMP_FEATURE_MASK = COMP_15_EN | COMP_20_EN | COMP_25_EN | TIE_0_EN,
+
+	COMP_15_MASK = COMP_15_EN,
+	COMP_20_MASK = COMP_20_EN | TIE_0_EN,
+	COMP_25_MASK = COMP_20_EN | COMP_25_EN,
+};
+
 struct mtk_gpt_regs {
 	u32 reserved1[40];
 	u32 gpt6_con;

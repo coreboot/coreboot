@@ -33,4 +33,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	}
 	/* Initialize variant specific configurations */
 	memcfg_init(&memupd->FspmConfig, board_cfg, &spd_info, false);
+
+	/* Enable Row-Hammer prevention */
+	memupd->FspmConfig.RhPrevention = 1;
 }

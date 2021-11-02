@@ -106,16 +106,6 @@ SECTIONS
 
 	EARLY_RESERVED_DRAM_END(.)
 
-#if CONFIG(PAYLOAD_PRELOAD)
-        /*
-         * This section is outside the early_reserved_dram section. We only read
-         * the payload on non-S3 boots, so we don't need to reserve it from the
-         * OS. The 64 byte alignment is required by the SPI DMA controller.
-         */
-        . = ALIGN(ARCH_CACHELINE_ALIGN_SIZE);
-        REGION(payload_preload_cache, ., CONFIG_PAYLOAD_PRELOAD_CACHE_SIZE, ARCH_CACHELINE_ALIGN_SIZE)
-#endif
-
 	RAMSTAGE(CONFIG_RAMBASE, 8M)
 }
 

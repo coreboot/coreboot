@@ -52,7 +52,6 @@ DECLARE_REGION(asan_shadow)
 
 /* Regions for execution units. */
 
-DECLARE_REGION(payload_preload_cache)
 DECLARE_REGION(payload)
 /* "program" always refers to the current execution unit. */
 DECLARE_REGION(program)

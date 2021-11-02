@@ -29,16 +29,6 @@ config CBFS_CACHE_SIZE
 	help
 	  The size of the cbfs_cache region.
 
-config PAYLOAD_PRELOAD_CACHE_SIZE
-	hex
-	default 0x30000
-	depends on PAYLOAD_PRELOAD
-	help
-	  This config sets the size of the payload_preload_cache memory region.
-	  It is used as the destination for the raw payload. This space is only
-	  populated during non-S3, so it doesn't need to be reserved in the
-	  EARLY_RESERVED_DRAM region.
-
 endif # SOC_AMD_COMMON_BLOCK_NONCAR
 
 config SOC_AMD_COMMON_BLOCK_MCA_COMMON

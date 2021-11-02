@@ -114,14 +114,3 @@ config CBFS_PRELOAD
 	  in the background before they are actually required. This feature
 	  depends on the read-only boot_device having a DMA controller to
 	  perform the background transfer.
-
-config PAYLOAD_PRELOAD
-	bool
-	depends on COOP_MULTITASKING
-	help
-	  On some systems with SPI DMA controllers, it is possible to preload
-	  the payload while ramstage is executing. This can be selected by the
-	  SoC to enable payload preloading.
-
-	  The SoC needs to define a payload_preload_cache region where the
-	  raw payload can be placed.

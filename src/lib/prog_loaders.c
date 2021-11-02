@@ -127,71 +127,37 @@ fail:
 static struct prog global_payload =
 	PROG_INIT(PROG_PAYLOAD, CONFIG_CBFS_PREFIX "/payload");
 
-static struct thread_handle payload_preload_handle;
-
-static enum cb_err payload_preload_thread_entry(void *arg)
-{
-	size_t size;
-	struct prog *payload = &global_payload;
-
-	printk(BIOS_DEBUG, "Preloading payload\n");
-
-	payload->cbfs_type = CBFS_TYPE_QUERY;
-
-	size = cbfs_type_load(prog_name(payload), _payload_preload_cache,
-			      REGION_SIZE(payload_preload_cache), &payload->cbfs_type);
-
-	if (!size) {
-		printk(BIOS_ERR, "ERROR: Preloading payload failed\n");
-		return CB_ERR;
-	}
-
-	printk(BIOS_DEBUG, "Preloading payload complete\n");
-
-	return CB_SUCCESS;
-}
-
 void payload_preload(void)
 {
-	struct thread_handle *handle = &payload_preload_handle;
-
-	if (!CONFIG(PAYLOAD_PRELOAD))
+	if (!CONFIG(CBFS_PRELOAD))
 		return;
 
-	if (thread_run(handle, payload_preload_thread_entry, NULL))
-		printk(BIOS_ERR, "ERROR: Failed to start payload preload thread\n");
+	cbfs_preload(global_payload.name);
 }
 
 void payload_load(void)
 {
 	struct prog *payload = &global_payload;
-	struct thread_handle *handle = &payload_preload_handle;
-	void *mapping = NULL;
-	void *buffer;
+	void *mapping;
 
 	timestamp_add_now(TS_LOAD_PAYLOAD);
 
 	if (prog_locate_hook(payload))
 		goto out;
 
-	if (CONFIG(PAYLOAD_PRELOAD) && thread_join(handle) == CB_SUCCESS) {
-		buffer = _payload_preload_cache;
-	} else {
-		payload->cbfs_type = CBFS_TYPE_QUERY;
-		mapping = cbfs_type_map(prog_name(payload), NULL, &payload->cbfs_type);
-		buffer = mapping;
-	}
+	payload->cbfs_type = CBFS_TYPE_QUERY;
+	mapping = cbfs_type_map(prog_name(payload), NULL, &payload->cbfs_type);
 
-	if (!buffer)
+	if (!mapping)
 		goto out;
 
 	switch (prog_cbfs_type(payload)) {
 	case CBFS_TYPE_SELF: /* Simple ELF */
-		selfload_mapped(payload, buffer, BM_MEM_RAM);
+		selfload_mapped(payload, mapping, BM_MEM_RAM);
 		break;
 	case CBFS_TYPE_FIT: /* Flattened image tree */
 		if (CONFIG(PAYLOAD_FIT_SUPPORT)) {
-			fit_payload(payload, buffer);
+			fit_payload(payload, mapping);
 			break;
 		} /* else fall-through */
 	default:
@@ -200,8 +166,7 @@ void payload_load(void)
 		break;
 	}
 
-	if (mapping)
-		cbfs_unmap(mapping);
+	cbfs_unmap(mapping);
 out:
 	if (prog_entry(payload) == NULL)
 		die_with_post_code(POST_INVALID_ROM, "Payload not loaded.\n");

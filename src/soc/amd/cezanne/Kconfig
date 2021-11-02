@@ -197,7 +197,6 @@ config ASYNC_FILE_LOADING
 	select COOP_MULTITASKING
 	select SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
 	select CBFS_PRELOAD
-	select PAYLOAD_PRELOAD
 	help
 	  When enabled, the platform will use the LPC SPI DMA controller to
 	  asynchronously load contents from the SPI ROM. This will improve

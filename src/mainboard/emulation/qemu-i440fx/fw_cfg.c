@@ -133,7 +133,7 @@ int fw_cfg_max_cpus(void)
 	unsigned short max_cpus;
 
 	if (!fw_cfg_present())
-		return -1;
+		return 0;
 
 	fw_cfg_get(FW_CFG_MAX_CPUS, &max_cpus, sizeof(max_cpus));
 	return max_cpus;

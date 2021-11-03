@@ -34,10 +34,6 @@ static const char *northbridge_acpi_name(const struct device *dev)
 	return NULL;
 }
 
-/*
- * TODO: We could determine how many PCIe buses we need in the bar.
- *       For now, that number is hardcoded to a max of 64.
- */
 static struct device_operations pci_domain_ops = {
 	.read_resources    = pci_domain_read_resources,
 	.set_resources     = pci_domain_set_resources,

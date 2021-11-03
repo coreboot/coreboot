@@ -74,6 +74,9 @@ chip soc/intel/alderlake
 	register "PchHdaIDispLinkFrequency" = "HDA_LINKFREQ_96MHZ"
 	register "PchHdaIDispCodecEnable" = "1"
 
+	# FIVR RFI Spread Spectrum 1.5%
+	register "FivrSpreadSpectrum" = "FIVR_SS_1_5"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

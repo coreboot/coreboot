@@ -34,6 +34,8 @@ chip soc/intel/alderlake
 	register "SaGv" = "SaGv_Enabled"
 
 	register "CnviBtAudioOffload" = "true"
+	# FIVR RFI Spread Spectrum 6%
+	register "FivrSpreadSpectrum" = "FIVR_SS_6"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

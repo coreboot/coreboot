@@ -63,6 +63,7 @@ void bootblock_mainboard_early_init(void)
 
 	/* Early eSPI interface configuration */
 
+	/* Use SPI2 pins for eSPI */
 	dword = pm_read32(PM_SPI_PAD_PU_PD);
 	dword |= PM_ESPI_CS_USE_DATA2;
 	pm_write32(PM_SPI_PAD_PU_PD, dword);

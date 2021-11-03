@@ -6,85 +6,20 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0269,	/* Codec Vendor / Device ID: Realtek ALC269 */
 	0x19910269,	/* Subsystem ID */
-	0x0000000c,	/* Number of jacks (NID entries) */
+	12,		/* Number of jacks (NID entries) */
 
-	0x0017ff00,	/* Function Reset */
-	0x0017ff00,	/* Double Function Reset */
-	0x0017ff00,
-	0x0017ff00,
-
-	/* Bits 31:28 - Codec Address */
-	/* Bits 27:20 - NID */
-	/* Bits 19:8 - Verb ID */
-	/* Bits 7:0  - Payload */
-
-	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x19910269 */
-	0x00172069,
-	0x00172102,
-	0x00172291,
-	0x00172319,
-
-	/* Pin Widget Verb Table */
-
-	/* Pin Complex (NID 0x12) */
-	0x01271c00,
-	0x01271d00,
-	0x01271e00,
-	0x01271f40,
-
-	/* Pin Complex (NID 0x14) */
-	0x01471c10,
-	0x01471d01,
-	0x01471e17,
-	0x01471f90,
-
-	/* Pin Complex (NID 0x17) */
-	0x01771cf0,
-	0x01771d11,
-	0x01771e11,
-	0x01771f41,
-
-	/* Pin Complex (NID 0x18) */
-	0x01871c20,
-	0x01871d10,
-	0x01871ea1,
-	0x01871f04,
-
-	/* Pin Complex (NID 0x19) */
-	0x01971c30,
-	0x01971d01,
-	0x01971ea7,
-	0x01971f90,
-
-	/* Pin Complex (NID 0x1A) */
-	0x01a71cf0,
-	0x01a71d11,
-	0x01a71e11,
-	0x01a71f41,
-
-	/* Pin Complex (NID 0x1B) */
-	0x01b71cf0,
-	0x01b71d11,
-	0x01b71e11,
-	0x01b71f41,
-
-	/* Pin Complex (NID 0x1D) */
-	0x01d71c05,
-	0x01d71d9d,
-	0x01d71e56,
-	0x01d71f40,
-
-	/* Pin Complex (NID 0x1E) */
-	0x01e71cf0,
-	0x01e71d11,
-	0x01e71e11,
-	0x01e71f41,
-
-	/* Pin Complex (NID 0x21) */
-	0x02171c1f,
-	0x02171d10,
-	0x02171e21,
-	0x02171f04,
+	AZALIA_RESET(1),
+	AZALIA_SUBVENDOR(0, 0x19910269),
+	AZALIA_PIN_CFG(0, 0x12, 0x40000000),
+	AZALIA_PIN_CFG(0, 0x14, 0x90170110),
+	AZALIA_PIN_CFG(0, 0x17, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x18, 0x04a11020),
+	AZALIA_PIN_CFG(0, 0x19, 0x90a70130),
+	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1b, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1d, 0x40569d05),
+	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x21, 0x0421101f),
 };
 
 const u32 pc_beep_verbs[] = {};

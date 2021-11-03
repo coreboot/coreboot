@@ -162,21 +162,20 @@ static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 	*smm_save_state_size = sizeof(em64t100_smm_state_save_area_t);
 }
 
-static int detect_num_cpus_via_cpuid(void)
+static unsigned int detect_num_cpus_via_cpuid(void)
 {
-	register int ecx = 0;
-	struct cpuid_result leaf_b;
+	unsigned int ecx = 0;
 
 	while (1) {
-		leaf_b = cpuid_ext(0xb, ecx);
+		const struct cpuid_result leaf_b = cpuid_ext(0xb, ecx);
 
 		/* Processor doesn't have hyperthreading so just determine the
-		* number of cores by from level type (ecx[15:8] == * 2). */
-		if ((leaf_b.ecx & 0xff00) == 0x0200)
-			break;
+		   number of cores from level type (ecx[15:8] == 2). */
+		if ((leaf_b.ecx >> 8 & 0xff) == 2)
+			return leaf_b.ebx & 0xffff;
+
 		ecx++;
 	}
-	return (leaf_b.ebx & 0xffff);
 }
 
 static int detect_num_cpus_via_mch(void)
@@ -209,11 +208,11 @@ static int detect_num_cpus_via_mch(void)
 /* Find CPU topology */
 int get_cpu_count(void)
 {
-	int num_cpus = detect_num_cpus_via_mch();
+	unsigned int num_cpus = detect_num_cpus_via_mch();
 
-	if (num_cpus <= 0 || num_cpus > CONFIG_MAX_CPUS) {
+	if (num_cpus == 0 || num_cpus > CONFIG_MAX_CPUS) {
 		num_cpus = detect_num_cpus_via_cpuid();
-		printk(BIOS_DEBUG, "Number of Cores (CPUID): %d.\n", num_cpus);
+		printk(BIOS_DEBUG, "Number of Cores (CPUID): %u.\n", num_cpus);
 	}
 	return num_cpus;
 }

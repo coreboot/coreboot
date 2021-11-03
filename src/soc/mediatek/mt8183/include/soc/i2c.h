@@ -4,6 +4,7 @@
 #define SOC_MEDIATEK_MT8183_I2C_H
 
 #include <soc/i2c_common.h>
+#include <soc/pll.h>
 
 /* I2C Register */
 struct mt_i2c_regs {
@@ -38,6 +39,10 @@ struct mt_i2c_regs {
 	uint32_t reserved4[2];
 	uint32_t rollback;
 };
+
+#define I2C_CLK_HZ (UNIVPLL_HZ / 20)
+#define I2C_BUS_NUMBER 7
+#define MAX_CLOCK_DIV  32
 
 check_member(mt_i2c_regs, multi_dma, 0xf8c);
 

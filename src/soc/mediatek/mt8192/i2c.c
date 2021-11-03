@@ -2,11 +2,9 @@
 
 #include <assert.h>
 #include <device/mmio.h>
-#include <soc/pll.h>
 #include <soc/i2c.h>
 #include <soc/gpio.h>
 
-#define I2C_CLK_HZ (UNIVPLL_HZ / 20)
 #define I2C_FULL_DUTY 100
 #define I2C_HALF_DUTY 50
 #define I2C_ADJUSTED_DUTY 45
@@ -64,7 +62,8 @@ struct mtk_i2c mtk_i2c_bus_controller[] = {
 	},
 };
 
-#define I2C_BUS_NUMBER ARRAY_SIZE(mtk_i2c_bus_controller)
+_Static_assert(ARRAY_SIZE(mtk_i2c_bus_controller) == I2C_BUS_NUMBER,
+	       "Wrong size of mtk_i2c_bus_controller");
 
 struct pad_func {
 	gpio_t gpio;
@@ -127,7 +126,7 @@ static void mtk_i2c_set_gpio_pinmux(uint8_t bus)
 	}
 }
 
-static void mtk_i2c_speed_init(uint8_t bus)
+static void mtk_i2c_speed_init_soc(uint8_t bus)
 {
 	uint8_t step_div;
 	const uint8_t clock_div = 5;
@@ -178,7 +177,7 @@ static void mtk_i2c_speed_init(uint8_t bus)
 
 void mtk_i2c_bus_init(uint8_t bus)
 {
-	mtk_i2c_speed_init(bus);
+	mtk_i2c_speed_init_soc(bus);
 	mtk_i2c_set_gpio_pinmux(bus);
 }
 

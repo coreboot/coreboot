@@ -4,6 +4,7 @@
 #define SOC_MEDIATEK_MT8173_I2C_H
 
 #include <soc/i2c_common.h>
+#include <soc/pll.h>
 
 /* I2C Register */
 struct mt_i2c_regs {
@@ -34,6 +35,10 @@ struct mt_i2c_regs {
 	uint32_t debug_ctrl;
 	uint32_t transfer_aux_len;
 };
+
+#define I2C_CLK_HZ (AXI_HZ / 16)
+#define I2C_BUS_NUMBER 7
+#define MAX_CLOCK_DIV  32
 
 check_member(mt_i2c_regs, debug_stat, 0x64);
 

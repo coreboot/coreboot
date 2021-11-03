@@ -143,4 +143,15 @@ extern struct mtk_i2c mtk_i2c_bus_controller[];
 const struct i2c_spec_values *mtk_i2c_get_spec(uint32_t speed);
 void mtk_i2c_dump_more_info(struct mt_i2c_regs *regs);
 
+int mtk_i2c_check_ac_timing(uint8_t bus, uint32_t clk_src,
+			    uint32_t check_speed,
+			    uint32_t step_cnt,
+			    uint32_t sample_cnt);
+int mtk_i2c_calculate_speed(uint8_t bus, uint32_t clk_src,
+			    uint32_t target_speed,
+			    uint32_t *timing_step_cnt,
+			    uint32_t *timing_sample_cnt);
+void mtk_i2c_speed_init(uint8_t bus, uint32_t speed);
+void mtk_i2c_config_timing(struct mt_i2c_regs *regs, struct mtk_i2c *bus_ctrl);
+
 #endif

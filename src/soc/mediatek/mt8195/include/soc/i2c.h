@@ -4,6 +4,7 @@
 #define SOC_MEDIATEK_MT8195_I2C_H
 
 #include <soc/i2c_common.h>
+#include <soc/pll.h>
 
 /* I2C Register */
 struct mt_i2c_regs {
@@ -52,7 +53,10 @@ enum {
 	I2C7,
 };
 
+#define I2C_BUS_NUMBER	8
 #define MAX_CLOCK_DIV	32
+#define I2C_CLK_HZ (UNIVPLL_HZ / 20)
+
 check_member(mt_i2c_regs, multi_dma, 0xf8c);
 
 void mtk_i2c_bus_init(uint8_t bus, uint32_t speed);

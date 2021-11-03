@@ -8,6 +8,7 @@
 #include <symbols.h>
 #include <device/mmio.h>
 #include <soc/i2c.h>
+#include <soc/i2c_common.h>
 #include <device/i2c_simple.h>
 
 const struct i2c_spec_values standard_mode_spec = {
@@ -31,7 +32,15 @@ const struct i2c_spec_values fast_mode_plus_spec = {
 	.min_su_dat_ns = 50 + I2C_FAST_MODE_PLUS_BUFFER,
 };
 
-__weak void mtk_i2c_dump_more_info(struct mt_i2c_regs *regs) { /* do nothing */ }
+__weak void mtk_i2c_dump_more_info(struct mt_i2c_regs *regs)
+{
+	/* do nothing */
+}
+
+__weak void mtk_i2c_config_timing(struct mt_i2c_regs *regs, struct mtk_i2c *bus_ctrl)
+{
+	/* do nothing */
+}
 
 const struct i2c_spec_values *mtk_i2c_get_spec(uint32_t speed)
 {
@@ -281,6 +290,14 @@ static bool mtk_i2c_should_combine(struct i2c_msg *seg, int left_count)
 	    seg[0].slave == seg[1].slave);
 }
 
+static int mtk_i2c_max_step_cnt(uint32_t target_speed)
+{
+	if (target_speed > I2C_SPEED_FAST_PLUS)
+		return MAX_HS_STEP_CNT_DIV;
+	else
+		return MAX_STEP_CNT_DIV;
+}
+
 int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 			  int seg_count)
 {
@@ -306,4 +323,231 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 	}
 
 	return ret;
+}
+
+/*
+ * Check and calculate i2c ac-timing.
+ *
+ * Hardware design:
+ * sample_ns = (1000000000 * (sample_cnt + 1)) / clk_src
+ * xxx_cnt_div =  spec->min_xxx_ns / sample_ns
+ *
+ * The calculation of sample_ns is rounded down;
+ * otherwise xxx_cnt_div would be greater than the smallest spec.
+ * The sda_timing is chosen as the middle value between
+ * the largest and smallest.
+ */
+int mtk_i2c_check_ac_timing(uint8_t bus, uint32_t clk_src,
+			    uint32_t check_speed,
+			    uint32_t step_cnt,
+			    uint32_t sample_cnt)
+{
+	const struct i2c_spec_values *spec;
+	uint32_t su_sta_cnt, low_cnt, high_cnt, max_step_cnt;
+	uint32_t sda_max, sda_min, clk_ns, max_sta_cnt = 0x100;
+	uint32_t sample_ns = ((uint64_t)NSECS_PER_SEC * (sample_cnt + 1)) / clk_src;
+	struct mtk_i2c_ac_timing *ac_timing;
+
+	spec = mtk_i2c_get_spec(check_speed);
+
+	clk_ns = NSECS_PER_SEC / clk_src;
+
+	su_sta_cnt = DIV_ROUND_UP(spec->min_su_sta_ns, clk_ns);
+	if (su_sta_cnt > max_sta_cnt)
+		return -1;
+
+	low_cnt = DIV_ROUND_UP(spec->min_low_ns, sample_ns);
+	max_step_cnt = mtk_i2c_max_step_cnt(check_speed);
+	if (2 * step_cnt > low_cnt && low_cnt < max_step_cnt) {
+		if (low_cnt > step_cnt) {
+			high_cnt = 2 * step_cnt - low_cnt;
+		} else {
+			high_cnt = step_cnt;
+			low_cnt = step_cnt;
+		}
+	} else {
+		return -2;
+	}
+
+	sda_max = spec->max_hd_dat_ns / sample_ns;
+	if (sda_max > low_cnt)
+		sda_max = 0;
+
+	sda_min = DIV_ROUND_UP(spec->min_su_dat_ns, sample_ns);
+	if (sda_min < low_cnt)
+		sda_min = 0;
+
+	if (sda_min > sda_max)
+		return -3;
+
+	ac_timing = &mtk_i2c_bus_controller[bus].ac_timing;
+	if (check_speed > I2C_SPEED_FAST_PLUS) {
+		ac_timing->hs = I2C_TIME_DEFAULT_VALUE | (sample_cnt << 12) | (high_cnt << 8);
+		ac_timing->ltiming &= ~GENMASK(15, 9);
+		ac_timing->ltiming |= (sample_cnt << 12) | (low_cnt << 9);
+		ac_timing->ext &= ~GENMASK(7, 1);
+		ac_timing->ext |= (su_sta_cnt << 1) | (1 << 0);
+	} else {
+		ac_timing->htiming = (sample_cnt << 8) | (high_cnt);
+		ac_timing->ltiming = (sample_cnt << 6) | (low_cnt);
+		ac_timing->ext = (su_sta_cnt << 8) | (1 << 0);
+	}
+
+	return 0;
+}
+
+/*
+ * Calculate i2c port speed.
+ *
+ * Hardware design:
+ * i2c_bus_freq = parent_clk / (clock_div * 2 * sample_cnt * step_cnt)
+ * clock_div: fixed in hardware, but may be various in different SoCs
+ *
+ * To calculate sample_cnt and step_cnt, we pick the highest bus frequency
+ * that is still no larger than i2c->speed_hz.
+ */
+int mtk_i2c_calculate_speed(uint8_t bus, uint32_t clk_src,
+			    uint32_t target_speed,
+			    uint32_t *timing_step_cnt,
+			    uint32_t *timing_sample_cnt)
+{
+	uint32_t step_cnt;
+	uint32_t sample_cnt;
+	uint32_t max_step_cnt;
+	uint32_t base_sample_cnt = MAX_SAMPLE_CNT_DIV;
+	uint32_t base_step_cnt;
+	uint32_t opt_div;
+	uint32_t best_mul;
+	uint32_t cnt_mul;
+	uint32_t clk_div = mtk_i2c_bus_controller[bus].ac_timing.inter_clk_div;
+	int32_t clock_div_constraint = 0;
+	int success = 0;
+
+	if (target_speed > I2C_SPEED_HIGH)
+		target_speed = I2C_SPEED_HIGH;
+
+	max_step_cnt = mtk_i2c_max_step_cnt(target_speed);
+	base_step_cnt = max_step_cnt;
+
+	/* Find the best combination */
+	opt_div = DIV_ROUND_UP(clk_src >> 1, target_speed);
+	best_mul = MAX_SAMPLE_CNT_DIV * max_step_cnt;
+
+	/* Search for the best pair (sample_cnt, step_cnt) with
+	 * 0 < sample_cnt < MAX_SAMPLE_CNT_DIV
+	 * 0 < step_cnt < max_step_cnt
+	 * sample_cnt * step_cnt >= opt_div
+	 * optimizing for sample_cnt * step_cnt being minimal
+	 */
+	for (sample_cnt = 1; sample_cnt <= MAX_SAMPLE_CNT_DIV; sample_cnt++) {
+		if (sample_cnt == 1) {
+			if (clk_div != 0)
+				clock_div_constraint = 1;
+			else
+				clock_div_constraint = 0;
+		} else {
+			if (clk_div > 1)
+				clock_div_constraint = 1;
+			else if (clk_div == 0)
+				clock_div_constraint = -1;
+			else
+				clock_div_constraint = 0;
+		}
+
+		step_cnt = DIV_ROUND_UP(opt_div + clock_div_constraint, sample_cnt);
+		if (step_cnt > max_step_cnt)
+			continue;
+
+		cnt_mul = step_cnt * sample_cnt;
+		if (cnt_mul >= best_mul)
+			continue;
+
+		if (mtk_i2c_check_ac_timing(bus, clk_src,
+					    target_speed, step_cnt - 1,
+					    sample_cnt - 1))
+			continue;
+
+		success = 1;
+		best_mul = cnt_mul;
+		base_sample_cnt = sample_cnt;
+		base_step_cnt = step_cnt;
+		if (best_mul == opt_div + clock_div_constraint)
+			break;
+
+	}
+
+	if (!success)
+		return -1;
+
+	sample_cnt = base_sample_cnt;
+	step_cnt = base_step_cnt;
+
+	if (clk_src / (2 * (sample_cnt * step_cnt - clock_div_constraint)) >
+	    target_speed)
+		return -1;
+
+	*timing_step_cnt = step_cnt - 1;
+	*timing_sample_cnt = sample_cnt - 1;
+
+	return 0;
+}
+
+void mtk_i2c_speed_init(uint8_t bus, uint32_t speed)
+{
+	uint32_t max_clk_div = MAX_CLOCK_DIV;
+	uint32_t clk_src, clk_div, step_cnt, sample_cnt;
+	uint32_t l_step_cnt, l_sample_cnt;
+	uint32_t timing_reg_value, ltiming_reg_value;
+	struct mtk_i2c *bus_ctrl;
+
+	if (bus >= I2C_BUS_NUMBER) {
+		printk(BIOS_ERR, "%s, error bus num:%d\n", __func__, bus);
+		return;
+	}
+
+	bus_ctrl = &mtk_i2c_bus_controller[bus];
+
+	for (clk_div = 1; clk_div <= max_clk_div; clk_div++) {
+		clk_src = I2C_CLK_HZ / clk_div;
+		bus_ctrl->ac_timing.inter_clk_div = clk_div - 1;
+
+		if (speed > I2C_SPEED_FAST_PLUS) {
+			/* Set master code speed register */
+			if (mtk_i2c_calculate_speed(bus, clk_src, I2C_SPEED_FAST,
+						    &l_step_cnt, &l_sample_cnt))
+				continue;
+
+			timing_reg_value = (l_sample_cnt << 8) | l_step_cnt;
+
+			/* Set the high speed mode register */
+			if (mtk_i2c_calculate_speed(bus, clk_src, speed,
+						    &step_cnt, &sample_cnt))
+				continue;
+
+			ltiming_reg_value = (l_sample_cnt << 6) | l_step_cnt |
+					    (sample_cnt << 12) | (step_cnt << 9);
+			bus_ctrl->ac_timing.inter_clk_div = (clk_div - 1) << 8 | (clk_div - 1);
+		} else {
+			if (mtk_i2c_calculate_speed(bus, clk_src, speed,
+						    &l_step_cnt, &l_sample_cnt))
+				continue;
+
+			timing_reg_value = (l_sample_cnt << 8) | l_step_cnt;
+
+			/* Disable the high speed transaction */
+			bus_ctrl->ac_timing.hs = I2C_TIME_CLR_VALUE;
+
+			ltiming_reg_value = (l_sample_cnt << 6) | l_step_cnt;
+		}
+
+		break;
+	}
+
+	if (clk_div > max_clk_div) {
+		printk(BIOS_ERR, "%s, cannot support %d hz on i2c-%d\n", __func__, speed, bus);
+		return;
+	}
+
+	/* Init i2c bus timing register. */
+	mtk_i2c_config_timing(bus_ctrl->i2c_regs, bus_ctrl);
 }

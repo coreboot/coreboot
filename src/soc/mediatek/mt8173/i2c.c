@@ -6,9 +6,6 @@
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/i2c.h>
-#include <soc/pll.h>
-
-#define I2C_CLK_HZ (AXI_HZ / 16)
 
 struct mtk_i2c mtk_i2c_bus_controller[7] = {
 	/* i2c0 setting */
@@ -51,6 +48,9 @@ struct mtk_i2c mtk_i2c_bus_controller[7] = {
 		.i2c_dma_regs = (void *)I2C_DMA_BASE,
 	}
 };
+
+_Static_assert(ARRAY_SIZE(mtk_i2c_bus_controller) == I2C_BUS_NUMBER,
+	       "Wrong size of mtk_i2c_bus_controller");
 
 #define I2CTAG                "[I2C][PL] "
 

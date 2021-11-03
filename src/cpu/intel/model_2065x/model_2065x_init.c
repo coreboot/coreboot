@@ -124,8 +124,8 @@ static void pre_mp_init(void)
 static int get_cpu_count(void)
 {
 	msr_t msr;
-	int num_threads;
-	int num_cores;
+	unsigned int num_threads;
+	unsigned int num_cores;
 
 	msr = rdmsr(MSR_CORE_THREAD_COUNT);
 	num_threads = (msr.lo >> 0) & 0xffff;

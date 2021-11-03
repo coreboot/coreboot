@@ -23,7 +23,7 @@ static void pre_mp_init(void)
 static int get_cpu_count(void)
 {
 	const struct cpuid_result cpuid1 = cpuid(1);
-	const char cores = (cpuid1.ebx >> 16) & 0xf;
+	const unsigned int cores = (cpuid1.ebx >> 16) & 0xf;
 
 	printk(BIOS_DEBUG, "CPU has %u cores.\n", cores);
 

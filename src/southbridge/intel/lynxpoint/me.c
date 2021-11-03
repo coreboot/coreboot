@@ -670,7 +670,7 @@ static int intel_mei_setup(struct device *dev)
 	struct mei_csr host;
 
 	/* Find the MMIO base for the ME interface */
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res || res->base == 0 || res->size == 0) {
 		printk(BIOS_DEBUG, "ME: MEI resource not present!\n");
 		return -1;

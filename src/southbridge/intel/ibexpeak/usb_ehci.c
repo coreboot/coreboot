@@ -36,7 +36,7 @@ static void usb_ehci_init(struct device *dev)
 	/* Enable writes to protected registers. */
 	pci_write_config8(dev, 0x80, access_cntl | 1);
 
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (res) {
 		/* Number of ports and companion controllers.  */
 		reg32 = read32((u32 *)(uintptr_t)(res->base + 4));

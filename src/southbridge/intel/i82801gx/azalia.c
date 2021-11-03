@@ -186,7 +186,7 @@ static void azalia_init(struct device *dev)
 	// Docking not supported
 	pci_and_config8(dev, 0x4d, (u8)~(1 << 7)); // Docking Status
 
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res)
 		return;
 

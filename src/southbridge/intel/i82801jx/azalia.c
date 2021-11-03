@@ -179,7 +179,7 @@ static void azalia_init(struct device *dev)
 	/* Lock some R/WO bits by writing their current value. */
 	pci_update_config32(dev, 0x74, ~0, 0);
 
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res)
 		return;
 

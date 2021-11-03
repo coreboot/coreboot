@@ -130,7 +130,7 @@ static void sata_init(struct device *dev)
 		/* Interrupt Pin is set by D31IP.PIP */
 		pci_write_config8(dev, INTR_LN, 0x0a);
 
-		struct resource *ahci_res = find_resource(dev, PCI_BASE_ADDRESS_5);
+		struct resource *ahci_res = probe_resource(dev, PCI_BASE_ADDRESS_5);
 		if (ahci_res != NULL)
 			/* write AHCI GHC_PI register */
 			write32(res2mmio(ahci_res, 0xc, 0), config->sata_ports_implemented);

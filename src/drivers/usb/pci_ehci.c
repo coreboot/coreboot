@@ -75,7 +75,7 @@ static void pci_ehci_set_resources(struct device *dev)
 
 	if (ehci_drv_ops->set_resources)
 		ehci_drv_ops->set_resources(dev);
-	res = find_resource(dev, EHCI_BAR_INDEX);
+	res = probe_resource(dev, EHCI_BAR_INDEX);
 	if (!res)
 		return;
 

@@ -22,7 +22,7 @@ int ast_crtc_do_set_base(struct drm_crtc *crtc)
 	struct drm_framebuffer *fb = crtc->primary->fb;
 
 	/* PCI BAR 0 */
-	struct resource *res = find_resource(crtc->dev->pdev, PCI_BASE_ADDRESS_0);
+	struct resource *res = probe_resource(crtc->dev->pdev, PCI_BASE_ADDRESS_0);
 	if (!res) {
 		printk(BIOS_ERR, "BAR0 resource not found.\n");
 		return -EIO;

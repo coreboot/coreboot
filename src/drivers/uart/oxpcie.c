@@ -12,7 +12,7 @@ static void oxford_oxpcie_enable(struct device *dev)
 {
 	printk(BIOS_DEBUG, "Initializing Oxford OXPCIe952\n");
 
-	struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	struct resource *res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res) {
 		printk(BIOS_WARNING, "OXPCIe952: No UART resource found.\n");
 		return;

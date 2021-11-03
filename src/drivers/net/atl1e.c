@@ -106,7 +106,7 @@ static int atl1e_eeprom_exist(u32 mem_base)
 static void atl1e_init(struct device *dev)
 {
 	/* Get the resource of the NIC mmio */
-	struct resource *nic_res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	struct resource *nic_res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 
 	if (nic_res == NULL) {
 		printk(BIOS_ERR, "atl1e: resource not found\n");

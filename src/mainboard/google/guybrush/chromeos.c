@@ -3,6 +3,7 @@
 #include <amdblocks/spi.h>
 #include <baseboard/gpio.h>
 #include <boardid.h>
+#include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>

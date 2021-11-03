@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
+#include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
 #include <variant/gpio.h>

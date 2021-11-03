@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <baseboard/variants.h>
+#include <bootmode.h>
 #include <chip.h>
 #include <console/console.h>
 #include <delay.h>

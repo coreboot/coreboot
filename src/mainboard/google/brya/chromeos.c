@@ -2,6 +2,7 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
+#include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>

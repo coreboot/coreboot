@@ -4,6 +4,7 @@
 #include <baseboard/variants.h>
 #include <gpio.h>
 #include <soc/romstage.h>
+#include <string.h>
 
 static const struct mb_cfg baseboard_memcfg = {
 	.type = MEM_TYPE_DDR4,

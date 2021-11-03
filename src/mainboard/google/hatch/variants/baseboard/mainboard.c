@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <baseboard/variants.h>
+#include <bootmode.h>
 #include <chip.h>
 #include <console/console.h>
 #include <delay.h>

@@ -126,26 +126,27 @@ enum azalia_pin_location_2 {
 	ARRAY_SIZE(pc_beep_verbs);				\
 	const u32 cim_verb_data_size = sizeof(cim_verb_data)
 
-#define AZALIA_PIN_CFG(codec, pin, val)			\
-	(((codec) << 28) | ((pin) << 20) | (0x71c << 8)	\
-		| ((val) & 0xff)),			\
-	(((codec) << 28) | ((pin) << 20) | (0x71d << 8)	\
-		| (((val) >> 8) & 0xff)),		\
-	(((codec) << 28) | ((pin) << 20) | (0x71e << 8)	\
-		| (((val) >> 16) & 0xff)),		\
-	(((codec) << 28) | ((pin) << 20) | (0x71f << 8)	\
-		| (((val) >> 24) & 0xff))
+#define AZALIA_VERB_12B(codec, pin, verb, val)		\
+	((codec) << 28 | (pin) << 20 | (verb) << 8 | (val))
+
+#define AZALIA_PIN_CFG(codec, pin, val)					\
+	AZALIA_VERB_12B(codec, pin, 0x71c, ((val) >>  0) & 0xff),	\
+	AZALIA_VERB_12B(codec, pin, 0x71d, ((val) >>  8) & 0xff),	\
+	AZALIA_VERB_12B(codec, pin, 0x71e, ((val) >> 16) & 0xff),	\
+	AZALIA_VERB_12B(codec, pin, 0x71f, ((val) >> 24) & 0xff)
 
 #define AZALIA_PIN_CFG_NC(n)   (0x411111f0 | ((n) & 0xf))
 
-#define AZALIA_RESET(pin)					\
-	(((pin) << 20) | 0x7ff00), (((pin) << 20) | 0x7ff00),	\
-	(((pin) << 20) | 0x7ff00), (((pin) << 20) | 0x7ff00)
+#define AZALIA_RESET(pin)			\
+	AZALIA_VERB_12B(0, pin, 0x7ff, 0),	\
+	AZALIA_VERB_12B(0, pin, 0x7ff, 0),	\
+	AZALIA_VERB_12B(0, pin, 0x7ff, 0),	\
+	AZALIA_VERB_12B(0, pin, 0x7ff, 0)
 
-#define AZALIA_SUBVENDOR(codec, val)		    \
-	(((codec) << 28) | (0x01720 << 8) | ((val) & 0xff)),	\
-	(((codec) << 28) | (0x01721 << 8) | (((val) >> 8) & 0xff)), \
-	(((codec) << 28) | (0x01722 << 8) | (((val) >> 16) & 0xff)), \
-	(((codec) << 28) | (0x01723 << 8) | (((val) >> 24) & 0xff))
+#define AZALIA_SUBVENDOR(codec, val)				\
+	AZALIA_VERB_12B(codec, 1, 0x720, ((val) >>  0) & 0xff),	\
+	AZALIA_VERB_12B(codec, 1, 0x721, ((val) >>  8) & 0xff),	\
+	AZALIA_VERB_12B(codec, 1, 0x722, ((val) >> 16) & 0xff),	\
+	AZALIA_VERB_12B(codec, 1, 0x723, ((val) >> 24) & 0xff)
 
 #endif /* DEVICE_AZALIA_H */

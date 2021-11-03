@@ -125,6 +125,11 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 
 	/* Disable P-States */
 	params->MaxRatio = 0;
+
+	/* Disable PMC low power modes */
+	params->PmcLpmS0ixSubStateEnableMask = 0;
+	params->PmcV1p05PhyExtFetControlEn = 0;
+	params->PmcV1p05IsExtFetControlEn = 0;
 }
 
 static void mainboard_init(void *chip_info)

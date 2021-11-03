@@ -2,6 +2,18 @@
 
 This section contains documentation about Intel-FSP in public domain.
 
+## Integration Guidelines
+
+Some guiding principles when working on the glue to integrate FSP into
+coreboot, e.g. on how to configure a board in devicetree when that affects
+the way FSP works:
+
+* It should be possible to replace FSP based boot with a native coreboot
+  implementation for a given chipset without touching the mainboard code.
+* The devicetree configures coreboot and part of what coreboot does with the
+  information is setting some FSP UPDs. The devicetree isn't supposed to
+  directly configure FSP.
+
 ## Bugs
 As Intel doesn't even list known bugs, they are collected here until
 those are fixed. If possible a workaround is described here as well.

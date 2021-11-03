@@ -10,6 +10,7 @@
 #include <hwilib.h>
 #include <i210.h>
 #include <soc/gpio.h>
+#include <soc/ramstage.h>
 #include <string.h>
 #include <timer.h>
 #include <timestamp.h>
@@ -112,6 +113,15 @@ static void wait_for_legacy_dev(void *unused)
 			legacy_delay - us_since_boot, legacy_delay);
 	stopwatch_wait_until_expired(&sw);
 	printk(BIOS_NOTICE, "done!\n");
+}
+
+void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+{
+	/* Disable CPU power states (C-states) */
+	params->Cx = 0;
+
+	/* Set maximum package C-state to PkgC0C1 */
+	params->PkgCStateLimit = 0;
 }
 
 static void mainboard_init(void *chip_info)

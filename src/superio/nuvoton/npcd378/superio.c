@@ -60,7 +60,7 @@ static void npcd378_init(struct device *dev)
 		pc_keyboard_init(PROBE_AUX_DEVICE);
 		break;
 	case NPCD378_HWM:
-		res = find_resource(dev, PNP_IDX_IO0);
+		res = probe_resource(dev, PNP_IDX_IO0);
 		if (!res || !res->base) {
 			printk(BIOS_ERR, "NPCD378: LDN%u IOBASE not set.\n", NPCD378_HWM);
 			break;

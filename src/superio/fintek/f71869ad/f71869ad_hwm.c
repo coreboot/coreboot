@@ -41,7 +41,7 @@
 void f71869ad_hwm_init(struct device *dev)
 {
 	const struct superio_fintek_f71869ad_config *conf = dev->chip_info;
-	struct resource *res = find_resource(dev, PNP_IDX_IO0);
+	struct resource *res = probe_resource(dev, PNP_IDX_IO0);
 
 	if (!res) {
 		printk(BIOS_WARNING, "Super I/O HWM: No HWM resource found.\n");

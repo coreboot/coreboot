@@ -19,7 +19,7 @@ static void it8623e_init(struct device *dev)
 
 	switch (dev->path.pnp.device) {
 	case IT8623E_EC:
-		res = find_resource(dev, PNP_IDX_IO0);
+		res = probe_resource(dev, PNP_IDX_IO0);
 		if (!conf || !res)
 			break;
 		ite_ec_init(res->base, &conf->ec);

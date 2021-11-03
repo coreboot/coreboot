@@ -51,7 +51,7 @@ static void it8720f_init(struct device *dev)
 	switch (dev->path.pnp.device) {
 	case IT8720F_EC:
 		conf = dev->chip_info;
-		res = find_resource(dev, PNP_IDX_IO0);
+		res = probe_resource(dev, PNP_IDX_IO0);
 		if (!conf || !res)
 			break;
 		ite_ec_init(res->base, &conf->ec);

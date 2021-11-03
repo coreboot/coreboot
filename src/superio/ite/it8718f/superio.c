@@ -24,7 +24,7 @@ static void init(struct device *dev)
 		break;
 	case IT8718F_EC:
 		conf = dev->chip_info;
-		res = find_resource(dev, PNP_IDX_IO0);
+		res = probe_resource(dev, PNP_IDX_IO0);
 		if (!conf || !res)
 			break;
 		ite_ec_init(res->base, &conf->ec);

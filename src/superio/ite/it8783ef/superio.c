@@ -20,7 +20,7 @@ static void it8783ef_init(struct device *const dev)
 	switch (dev->path.pnp.device) {
 	case IT8783EF_EC:
 		conf = dev->chip_info;
-		res = find_resource(dev, PNP_IDX_IO0);
+		res = probe_resource(dev, PNP_IDX_IO0);
 		if (!conf || !res)
 			break;
 		ite_ec_init(res->base, &conf->ec);

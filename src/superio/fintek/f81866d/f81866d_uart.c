@@ -19,7 +19,7 @@
  */
 void f81866d_uart_init(struct device *dev)
 {
-	struct resource *res = find_resource(dev, PNP_IDX_IO0);
+	struct resource *res = probe_resource(dev, PNP_IDX_IO0);
 	u8 tmp;
 
 	if (!res) {

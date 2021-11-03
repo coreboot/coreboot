@@ -171,7 +171,7 @@ static void it8772f_init(struct device *dev)
 
 	switch (dev->path.pnp.device) {
 	case IT8772F_EC:
-		res = find_resource(dev, PNP_IDX_IO0);
+		res = probe_resource(dev, PNP_IDX_IO0);
 		if (!res)
 			break;
 
@@ -203,7 +203,7 @@ static void it8772f_init(struct device *dev)
 		break;
 	case IT8772F_GPIO:
 		/* Set GPIO output levels */
-		res = find_resource(dev, PNP_IDX_IO1);
+		res = probe_resource(dev, PNP_IDX_IO1);
 		if (res) {
 			if (conf->gpio_set1)
 				outb(conf->gpio_set1, res->base + 0);

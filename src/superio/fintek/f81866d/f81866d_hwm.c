@@ -38,7 +38,7 @@
 
 void f81866d_hwm_init(struct device *dev)
 {
-	struct resource *res = find_resource(dev, PNP_IDX_IO0);
+	struct resource *res = probe_resource(dev, PNP_IDX_IO0);
 
 	if (!res) {
 		printk(BIOS_WARNING, "Super I/O HWM: No HWM resource found.\n");

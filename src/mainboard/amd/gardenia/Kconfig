@@ -34,4 +34,12 @@ config STONEYRIDGE_LEGACY_FREE
 	bool
 	default y
 
+if !EM100
+config EFS_SPI_READ_MODE
+	default 4          # Dual IO (1-2-2)
+
+config EFS_SPI_SPEED
+	default 0	# 66MHz
+endif
+
 endif # BOARD_AMD_GARDENIA

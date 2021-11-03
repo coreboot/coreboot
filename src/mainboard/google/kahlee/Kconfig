@@ -123,6 +123,14 @@ config OEM_BIN_FILE
 	depends on USE_OEM_BIN
 	default ""
 
+if !EM100
+config EFS_SPI_READ_MODE
+	default 4          # Dual IO (1-2-2)
+
+config EFS_SPI_SPEED
+	default 0	# 66MHz
+endif
+
 # Don't use AMD's Secure OS
 config USE_PSPSECUREOS
 	def_bool n

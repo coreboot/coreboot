@@ -58,4 +58,12 @@ config HWM_PORT
 	  If changed, make sure fan_init.c IO window setting. The HWM
 	  (Hardware Monitor) is used for fan control within padmelon.
 
+if !EM100
+config EFS_SPI_READ_MODE
+	default 4          # Dual IO (1-2-2)
+
+config EFS_SPI_SPEED
+	default 0	# 66MHz
+endif
+
 endif # BOARD_AMD_PADMELON

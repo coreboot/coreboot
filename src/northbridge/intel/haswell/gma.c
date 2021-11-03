@@ -178,7 +178,7 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 {
 	printk(BIOS_DEBUG, "GT Power Management Init\n");
 
-	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	gtt_res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!gtt_res || !gtt_res->base)
 		return;
 

@@ -140,7 +140,7 @@ static void gma_func0_init(struct device *dev)
 	if (!CONFIG(NO_GFX_INIT))
 		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 
-	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	gtt_res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!gtt_res || !gtt_res->base)
 		return;
 
@@ -171,7 +171,7 @@ static void gma_read_resources(struct device *dev)
 	struct resource *res;
 
 	/* Set the graphics memory to write combining. */
-	res = find_resource(dev, PCI_BASE_ADDRESS_2);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_2);
 	if (res == NULL) {
 		printk(BIOS_DEBUG, "gma: memory resource not found.\n");
 		return;

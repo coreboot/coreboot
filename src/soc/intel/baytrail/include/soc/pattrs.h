@@ -29,7 +29,7 @@ struct pattrs {
 	int stepping;
 	const void *microcode_patch;
 	int address_bits;
-	int num_cpus;
+	unsigned int num_cpus;
 	unsigned int bclk_khz;
 };
 

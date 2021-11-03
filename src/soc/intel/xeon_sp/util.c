@@ -74,7 +74,7 @@ msr_t read_msr_ppin(void)
 	return ppin;
 }
 
-int get_threads_per_package(void)
+static unsigned int get_threads_per_package(void)
 {
 	unsigned int core_count, thread_count;
 	cpu_read_topology(&core_count, &thread_count);

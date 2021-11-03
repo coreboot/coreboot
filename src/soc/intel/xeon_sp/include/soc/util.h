@@ -9,7 +9,6 @@
 void unlock_pam_regions(void);
 uint8_t get_stack_busno(const uint8_t stack);
 msr_t read_msr_ppin(void);
-int get_threads_per_package(void);
 int get_platform_thread_count(void);
 const IIO_UDS *get_iio_uds(void);
 unsigned int soc_get_num_cpus(void);

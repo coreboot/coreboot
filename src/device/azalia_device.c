@@ -285,7 +285,7 @@ void azalia_audio_init(struct device *dev)
 	struct resource *res;
 	u16 codec_mask;
 
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res)
 		return;
 

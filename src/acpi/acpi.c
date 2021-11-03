@@ -1248,7 +1248,7 @@ unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
 		printk(BIOS_INFO, "%s: Device not enabled\n", __func__);
 		return current;
 	}
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res) {
 		printk(BIOS_ERR, "%s: Unable to find resource for %s\n",
 		       __func__, dev_path(dev));

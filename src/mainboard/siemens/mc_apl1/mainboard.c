@@ -229,7 +229,7 @@ static void mainboard_final(void *chip_info)
 	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
 	if (dev) {
 		uint32_t reg;
-		struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
+		struct resource *res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 		if (!res)
 			return;
 

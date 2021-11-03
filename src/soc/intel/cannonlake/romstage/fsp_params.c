@@ -13,7 +13,6 @@
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <types.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "../chip.h"
 

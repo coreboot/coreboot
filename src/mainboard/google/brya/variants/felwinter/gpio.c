@@ -4,7 +4,6 @@
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
 #include <soc/gpio.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 /* Pad configuration in ramstage */
 static const struct pad_config override_gpio_table[] = {

@@ -18,7 +18,6 @@
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 static void raminit_common(struct romstage_params *params)
 {

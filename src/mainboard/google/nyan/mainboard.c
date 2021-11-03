@@ -13,7 +13,6 @@
 #include <soc/pmc.h>
 #include <soc/spi.h>
 #include <symbols.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
 

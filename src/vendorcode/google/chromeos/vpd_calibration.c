@@ -3,6 +3,7 @@
 #include <b64_decode.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <vendorcode/google/chromeos/chromeos.h>

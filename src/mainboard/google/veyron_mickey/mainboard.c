@@ -15,7 +15,6 @@
 #include <soc/spi.h>
 #include <soc/i2c.h>
 #include <symbols.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "board.h"
 

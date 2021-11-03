@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <security/vboot/vboot_common.h>
 
 #define VBOOT_HASH_VSLOT 0
 #define VBOOT_HASH_VSLOT_MASK (1 << (VBOOT_HASH_VSLOT))

@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <bl31.h>
 #include <boardid.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <delay.h>
@@ -17,7 +18,6 @@
 #include <soc/i2c.h>
 #include <soc/usb.h>
 #include <string.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #include "board.h"
 

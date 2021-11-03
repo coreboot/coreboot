@@ -17,7 +17,6 @@
 #include <soc/mtcmos.h>
 #include <soc/pll.h>
 #include <soc/usb.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <framebuffer_info.h>
 
 enum {

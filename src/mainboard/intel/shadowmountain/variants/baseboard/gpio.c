@@ -3,6 +3,7 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 /* Pad configuration in ramstage */
 /* Leave eSPI pins untouched from default settings */

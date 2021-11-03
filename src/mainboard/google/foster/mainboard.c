@@ -12,7 +12,6 @@
 #include <soc/nvidia/tegra/dc.h>
 #include <soc/display.h>
 
-#include <vendorcode/google/chromeos/chromeos.h>
 
 static const struct pad_config sdmmc1_pad[] = {
 	/* MMC1(SDCARD) */

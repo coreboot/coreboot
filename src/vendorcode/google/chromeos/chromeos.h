@@ -5,11 +5,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <bootmode.h>
-#include <device/device.h>
-#include <rules.h>
-#include <security/vboot/misc.h>
-#include <security/vboot/vboot_common.h>
 #include <types.h>
 
 #if CONFIG(CHROMEOS)

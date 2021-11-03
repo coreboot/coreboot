@@ -5,6 +5,7 @@
 #include <baseboard/gpio.h>
 #include <soc/gpio.h>
 #include <variant/gpio.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 static const struct pad_config gpio_table[] = {
 	/* A0 thru A6 are ESPI, configured elsewhere */

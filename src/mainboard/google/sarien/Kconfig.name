@@ -1,9 +1,9 @@
 comment "Sarien"
 
 config BOARD_GOOGLE_ARCADA
-	bool "->  Arcada"
+	bool "->  Arcada (Latitude 5300 2-in-1 Chromebook Enterprise)"
 	select BOARD_GOOGLE_BASEBOARD_SARIEN
 
 config BOARD_GOOGLE_SARIEN
-	bool "->  Sarien"
+	bool "->  Sarien (Dell Latitude 5400 Chromebook Enterprise)"
 	select BOARD_GOOGLE_BASEBOARD_SARIEN

@@ -105,4 +105,7 @@ void generate_acpi_power_engine(void);
    substate requirements */
 void generate_acpi_power_engine_with_lpm(const struct soc_pmc_lpm *lpm);
 
+/* Fill SSDT for SGX status, EPC base and length */
+void sgx_fill_ssdt(void);
+
 #endif				/* _SOC_INTEL_COMMON_BLOCK_ACPI_H_ */

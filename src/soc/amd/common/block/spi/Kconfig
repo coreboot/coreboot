@@ -6,7 +6,7 @@ config SOC_AMD_COMMON_BLOCK_SPI
 	  instead of individual SPI specific code.
 
 config SOC_AMD_COMMON_BLOCK_SPI_DEBUG
-	bool
+	bool "Enable SPI debugging"
 
 config SOC_AMD_COMMON_BLOCK_SPI_4DW_BURST
 	bool

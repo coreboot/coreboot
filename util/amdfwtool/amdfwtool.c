@@ -1586,11 +1586,13 @@ int main(int argc, char **argv)
 	amd_romsig->xhci_entry = 0;
 
 	if (soc_id != PLATFORM_UNKNOWN) {
-		retval = set_efs_table(soc_id, amd_romsig, efs_spi_readmode,
-					efs_spi_speed, efs_spi_micron_flag);
-		if (retval) {
-			fprintf(stderr, "ERROR: Failed to initialize EFS table!\n");
-			return retval;
+		if (soc_id != PLATFORM_STONEYRIDGE) {
+			retval = set_efs_table(soc_id, amd_romsig, efs_spi_readmode,
+						efs_spi_speed, efs_spi_micron_flag);
+			if (retval) {
+				fprintf(stderr, "ERROR: Failed to initialize EFS table!\n");
+				return retval;
+			}
 		}
 	} else {
 		fprintf(stderr, "WARNING: No SOC name specified.\n");

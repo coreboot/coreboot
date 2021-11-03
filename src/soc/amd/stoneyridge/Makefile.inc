@@ -123,6 +123,7 @@ endif
 
 ifeq ($(FIRMWARE_TYPE),ST)
 OPT_COMBOCAPABLE=--combo-capable
+OPT_SOCNAME=--soc-name "Stoneyridge"
 endif
 
 ifeq ($(CONFIG_USE_PSPSECUREOS),y)
@@ -147,6 +148,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 		$(OPT_COMBOCAPABLE)\
 		$(OPT_PSP_USE_PSPSECUREOS) \
 		--config $(CONFIG_AMDFW_CONFIG_FILE) \
+		$(OPT_SOCNAME) \
 		--flashsize $(CONFIG_ROM_SIZE) \
 		--location $(shell printf "0x%x" $(STONEYRIDGE_FWM_POSITION)) \
 		--output	$@

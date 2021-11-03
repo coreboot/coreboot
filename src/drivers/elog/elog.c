@@ -16,6 +16,7 @@
 #include <smbios.h>
 #include <stdint.h>
 #include <string.h>
+#include <timestamp.h>
 
 #define ELOG_MIN_AVAILABLE_ENTRIES	2  /* Shrink when this many can't fit */
 #define ELOG_SHRINK_PERCENTAGE		25 /* Percent of total area to remove */
@@ -749,6 +750,9 @@ int elog_init(void)
 	}
 	elog_state.elog_initialized = ELOG_BROKEN;
 
+	if (!ENV_SMM)
+		timestamp_add_now(TS_ELOG_INIT_START);
+
 	elog_debug("%s()\n", __func__);
 
 	/* Set up the backing store */
@@ -781,6 +785,10 @@ int elog_init(void)
 
 	if (ENV_PAYLOAD_LOADER)
 		elog_add_boot_count();
+
+	if (!ENV_SMM)
+		timestamp_add_now(TS_ELOG_INIT_END);
+
 	return 0;
 }
 

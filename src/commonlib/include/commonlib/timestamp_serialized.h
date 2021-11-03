@@ -56,6 +56,8 @@ enum timestamp_id {
 	TS_DELAY_END = 111,
 	TS_READ_UCODE_START = 112,
 	TS_READ_UCODE_END = 113,
+	TS_ELOG_INIT_START = 114,
+	TS_ELOG_INIT_END = 115,
 
 	/* 500+ reserved for vendorcode extensions (500-600: google/chromeos) */
 	TS_START_COPYVER = 501,
@@ -200,6 +202,8 @@ static const struct timestamp_id_to_name {
 	{ TS_DELAY_END,		"Forced delay end" },
 	{ TS_READ_UCODE_START,	"started reading uCode" },
 	{ TS_READ_UCODE_END,	"finished reading uCode" },
+	{ TS_ELOG_INIT_START,	"started elog init" },
+	{ TS_ELOG_INIT_END,	"finished elog init" },
 
 	{ TS_START_COPYVER,	"starting to load verstage" },
 	{ TS_END_COPYVER,	"finished loading verstage" },

@@ -11,7 +11,6 @@ int get_cpu_count(void);
 #ifndef __ACPI__
 
 #define MSR_CORE_THREAD_COUNT 0x35
-#define CORE_BIT_MSK 0x1
 #define MCH_BAR_CORE_EXISTS_MASK 0x7164
 #define MCH_BAR_CORE_DISABLE_MASK 0x7168
 

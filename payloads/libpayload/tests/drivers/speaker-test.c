@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <libpayload.h>
-#include <mocks/x86_io.h>
 
 /* Include source to gain access to private defines */
 #include "../drivers/speaker.c"

@@ -26,4 +26,21 @@ void write16(volatile void *addr, uint16_t val);
 void write32(volatile void *addr, uint32_t val);
 void write64(volatile void *addr, uint64_t val);
 
+/* x86 I/O functions */
+unsigned int inl(int port);
+unsigned short inw(int port);
+unsigned char inb(int port);
+
+void outl(unsigned int val, int port);
+void outw(unsigned short val, int port);
+void outb(unsigned char val, int port);
+
+void outsl(int port, const void *addr, unsigned long count);
+void outsw(int port, const void *addr, unsigned long count);
+void outsb(int port, const void *addr, unsigned long count);
+
+void insl(int port, void *addr, unsigned long count);
+void insw(int port, void *addr, unsigned long count);
+void insb(int port, void *addr, unsigned long count);
+
 #endif /* _ARCH_IO_H */

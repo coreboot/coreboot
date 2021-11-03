@@ -24,7 +24,7 @@ void graphics_soc_panel_init(struct device *dev)
 
 	panel_cfg = &conf->panel_cfg;
 
-	mmio_res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	mmio_res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!mmio_res || !mmio_res->base)
 		return;
 	base = (void *)(uintptr_t)mmio_res->base;

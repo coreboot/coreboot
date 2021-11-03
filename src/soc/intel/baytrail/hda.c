@@ -64,7 +64,7 @@ static void hda_init(struct device *dev)
 
 	reg_script_run_on_dev(dev, init_ops);
 
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (res == NULL)
 		return;
 

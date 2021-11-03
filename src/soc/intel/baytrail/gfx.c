@@ -279,7 +279,7 @@ static void set_backlight_pwm(struct device *dev, uint32_t bklt_reg, int req_hz)
 	int divider;
 	struct resource *res;
 
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 
 	if (res == NULL)
 		return;

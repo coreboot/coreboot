@@ -22,13 +22,13 @@ static void dnv_ns_uart_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 	if (!CONFIG(LEGACY_UART_MODE))
 		return;
-	struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	struct resource *res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (res == NULL)
 		return;
 	res->size = 0x8;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 	/* Do not configure membar */
-	res = find_resource(dev, PCI_BASE_ADDRESS_1);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_1);
 	if (res != NULL)
 		res->flags = 0;
 	compact_resources(dev);

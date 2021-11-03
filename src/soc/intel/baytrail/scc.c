@@ -83,11 +83,11 @@ void scc_enable_acpi_mode(struct device *dev, int iosf_reg, int nvs_index)
 	struct device_nvs *dev_nvs = acpi_get_device_nvs();
 
 	/* Save BAR0 and BAR1 to ACPI NVS */
-	bar = find_resource(dev, PCI_BASE_ADDRESS_0);
+	bar = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (bar)
 		dev_nvs->scc_bar0[nvs_index] = (u32)bar->base;
 
-	bar = find_resource(dev, PCI_BASE_ADDRESS_1);
+	bar = probe_resource(dev, PCI_BASE_ADDRESS_1);
 	if (bar)
 		dev_nvs->scc_bar1[nvs_index] = (u32)bar->base;
 

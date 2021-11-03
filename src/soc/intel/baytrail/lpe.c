@@ -34,7 +34,7 @@ static void assign_device_nvs(struct device *dev, u32 *field, unsigned int index
 {
 	struct resource *res;
 
-	res = find_resource(dev, index);
+	res = probe_resource(dev, index);
 	if (res)
 		*field = res->base;
 }
@@ -112,7 +112,7 @@ static void lpe_stash_firmware_info(struct device *dev)
 	struct resource *mmio;
 	const struct pattrs *pattrs = pattrs_get();
 
-	res = find_resource(dev, FIRMWARE_PCI_REG_BASE);
+	res = probe_resource(dev, FIRMWARE_PCI_REG_BASE);
 	if (res == NULL) {
 		printk(BIOS_DEBUG, "LPE Firmware memory not found.\n");
 		return;

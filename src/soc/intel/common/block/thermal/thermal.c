@@ -55,7 +55,7 @@ void pch_thermal_configuration(void)
 		return;
 	}
 
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res) {
 		printk(BIOS_ERR, "ERROR: PCH thermal device not found!\n");
 		return;

@@ -33,7 +33,7 @@ static bool is_usb_port_connected(const struct xhci_usb_info *info,
 		return false;
 
 	/* Calculate port status register address and read the status */
-	res = find_resource(PCH_DEV_XHCI, PCI_BASE_ADDRESS_0);
+	res = probe_resource(PCH_DEV_XHCI, PCI_BASE_ADDRESS_0);
 	/* If the memory BAR is not allocated for XHCI, leave the devices enabled */
 	if (!res)
 		return true;

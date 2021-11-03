@@ -80,7 +80,7 @@ static void hda_init(struct device *dev)
 	u32 codec_mask;
 
 	/* Find base address */
-	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res)
 		return;
 

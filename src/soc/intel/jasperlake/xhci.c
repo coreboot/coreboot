@@ -31,7 +31,7 @@ const struct xhci_usb_info *soc_get_xhci_usb_info(pci_devfn_t xhci_dev)
 static void set_xhci_lfps_sampling_offtime(struct device *dev, uint8_t time_ms)
 {
 	void *addr;
-	const struct resource *res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	const struct resource *res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 
 	if (!res)
 		return;

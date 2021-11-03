@@ -25,10 +25,10 @@ static void adsp_init(struct device *dev)
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 
 	/* Find BAR0 and BAR1 */
-	bar0 = find_resource(dev, PCI_BASE_ADDRESS_0);
+	bar0 = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!bar0)
 		return;
-	bar1 = find_resource(dev, PCI_BASE_ADDRESS_1);
+	bar1 = probe_resource(dev, PCI_BASE_ADDRESS_1);
 	if (!bar1)
 		return;
 

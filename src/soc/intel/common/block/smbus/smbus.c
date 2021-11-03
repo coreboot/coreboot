@@ -46,7 +46,7 @@ static void pch_smbus_init(struct device *dev)
 		~((1 << 8) | (1 << 10) | (1 << 12) | (1 << 14)), 0);
 
 	/* Set Receive Slave Address */
-	res = find_resource(dev, PCI_BASE_ADDRESS_4);
+	res = probe_resource(dev, PCI_BASE_ADDRESS_4);
 	if (res)
 		smbus_set_slave_addr(res->base, SMBUS_SLAVE_ADDR);
 }

@@ -100,7 +100,7 @@ static uintptr_t graphics_get_bar(struct device *dev, unsigned long index)
 {
 	struct resource *gm_res;
 
-	gm_res = find_resource(dev, index);
+	gm_res = probe_resource(dev, index);
 	if (!gm_res)
 		return 0;
 

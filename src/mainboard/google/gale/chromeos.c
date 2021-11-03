@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boardid.h>
+#include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <delay.h>
@@ -9,7 +10,6 @@
 #include <soc/cdp.h>
 #include <soc/blsp.h>
 #include <timer.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 #define PP_SW   41
 

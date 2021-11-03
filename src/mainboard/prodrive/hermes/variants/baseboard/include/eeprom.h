@@ -47,7 +47,7 @@ struct __packed eeprom_board_settings {
 			uint8_t usb_powered_in_s5;
 			uint8_t power_state_after_g3;
 			uint8_t blue_rear_vref;
-			uint8_t internal_audio_connection;
+			uint8_t front_panel_audio;
 			uint8_t pxe_boot_capability;
 		};
 		uint8_t raw_settings[9];

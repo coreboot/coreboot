@@ -138,7 +138,7 @@ static void mainboard_init(void *chip_info)
 		return;
 
 	/* Enable internal speaker amplifier */
-	if (board_cfg->internal_audio_connection == 2)
+	if (board_cfg->front_panel_audio == 2)
 		mb_hda_amp_enable(1);
 	else
 		mb_hda_amp_enable(0);

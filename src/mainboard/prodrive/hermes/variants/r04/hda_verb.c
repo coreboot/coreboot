@@ -30,9 +30,9 @@ static u32 get_port_c_vref_cfg(uint8_t blue_rear_vref)
 	}
 }
 
-static u32 get_internal_audio_cfg(uint8_t internal_audio_connection)
+static u32 get_front_panel_cfg(uint8_t front_panel_audio)
 {
-	switch (internal_audio_connection) {
+	switch (front_panel_audio) {
 	default:
 	case 0:
 		return AZALIA_PIN_CFG_NC(0);
@@ -62,10 +62,10 @@ void mainboard_r0x_configure_alc888(u8 *base, u32 viddid)
 	if (!board_cfg)
 		return;
 
-	const u32 config = get_internal_audio_cfg(board_cfg->internal_audio_connection);
+	const u32 front_panel_cfg = get_front_panel_cfg(board_cfg->front_panel_audio);
 
 	const u32 verbs[] = {
-		AZALIA_PIN_CFG(0, 0x1b, config),
+		AZALIA_PIN_CFG(0, 0x1b, front_panel_cfg),
 		0x0205000d, /* Pin 37 vrefo hidden register - used as port C vref */
 		get_port_c_vref_cfg(board_cfg->blue_rear_vref),
 	};

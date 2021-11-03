@@ -122,6 +122,9 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 
 	/* Set maximum package C-state to PkgC0C1 */
 	params->PkgCStateLimit = 0;
+
+	/* Disable P-States */
+	params->MaxRatio = 0;
 }
 
 static void mainboard_init(void *chip_info)

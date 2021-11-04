@@ -6,6 +6,7 @@
 #define SMI_GEVENTS			24
 #define SCIMAPS				59 /* 0..58 */
 #define SCI_GPES			32
+#define NUMBER_SMITYPES			160
 
 #define SMI_EVENT_STATUS		0x0
 #define SMI_EVENT_ENABLE		0x04
@@ -138,7 +139,7 @@
 /* 153-155 Reserved */
 #define SMITYPE_CFGTRAP0			156
 /* 157-159 Reserved */
-#define NUMBER_SMITYPES				160
+
 #define TYPE_TO_MASK(X)				(1 << (X) % 32)
 
 #define SMI_REG_SMISTS0			0x80

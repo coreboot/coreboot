@@ -6,7 +6,7 @@
 #include <types.h>
 
 #define SMI_GEVENTS			24
-#define SCIMAPS				58
+#define SCIMAPS				59 /* 0..58 */
 #define SCI_GPES			32
 
 #define SMI_EVENT_STATUS		0x0

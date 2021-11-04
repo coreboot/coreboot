@@ -37,6 +37,11 @@ chip soc/intel/alderlake
 	# FIVR RFI Spread Spectrum 6%
 	register "FivrSpreadSpectrum" = "FIVR_SS_6"
 
+	# Acoustic settings
+	register "AcousticNoiseMitigation" = "1"
+	register "SlowSlewRate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
+	register "FastPkgCRampDisable[VR_DOMAIN_IA]" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

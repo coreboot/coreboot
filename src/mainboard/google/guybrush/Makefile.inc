@@ -18,6 +18,8 @@ ramstage-y += mainboard.c
 ramstage-y += ec.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 
+all-y += spi_speeds.c
+
 verstage-y += verstage.c
 verstage-$(CONFIG_CHROMEOS) += chromeos.c
 

@@ -10,4 +10,12 @@
 
 #include <spi-generic.h>
 
+enum {
+	SPI_NOR_GPIO_SET0 = 0,
+	SPI_NOR_GPIO_SET1,
+	SPI_NOR_GPIO_SET_NUM,
+};
+
+void mtk_snfc_init(int gpio_set);
+
 #endif

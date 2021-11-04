@@ -5,10 +5,10 @@
 #include <arch/hlt.h>
 #include <arch/stages.h>
 #include <program_loading.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/cache.h>
 #include <soc/early_configs.h>
 #include <symbols.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 
 static void enable_cache(void)
 {

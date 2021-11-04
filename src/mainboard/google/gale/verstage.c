@@ -2,7 +2,7 @@
 
 #include <delay.h>
 #include <gpio.h>
-#include <soc/verstage.h>
+#include <security/vboot/vboot_common.h>
 
 #define TPM_RESET_GPIO		19
 

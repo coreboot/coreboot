@@ -273,7 +273,7 @@ static void sar_emit_ewrd(const struct sar_profile *sar)
 	 * Emit 'Domain Type' + 'Dynamic SAR Enable' + 'Extended SAR sets count'
 	 * + number of bytes for Set#2 & 3 & 4
 	 */
-	package_size = 1 + 1 + 1 + table_size * sar->dsar_set_count;
+	package_size = 1 + 1 + 1 + table_size * MAX_DSAR_SET_COUNT;
 	acpigen_write_package(package_size);
 	acpigen_write_dword(DOMAIN_TYPE_WIFI);
 	acpigen_write_dword(1);

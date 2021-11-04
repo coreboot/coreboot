@@ -290,6 +290,9 @@ static void bs_call_callbacks(struct boot_state *state,
 				       mono_time_diff_microseconds(&mt_start, &mt_stop)
 					       / USECS_PER_MSEC);
 			}
+
+			bs_run_timers(0);
+
 			continue;
 		}
 
@@ -354,6 +357,8 @@ static void bs_walk_state_machine(void)
 			state->name);
 
 		bs_sample_time(state);
+
+		bs_run_timers(0);
 
 		bs_call_callbacks(state, current_phase.seq);
 

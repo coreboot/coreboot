@@ -2,7 +2,9 @@
 
 #include <bootblock_common.h>
 #include <device/mmio.h>
+#include <soc/spi.h>
 
 void bootblock_mainboard_init(void)
 {
+	mtk_snfc_init(SPI_NOR_GPIO_SET0);
 }

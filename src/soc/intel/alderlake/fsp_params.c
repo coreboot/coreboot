@@ -739,6 +739,19 @@ static void fill_fsps_fivr_rfi_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->FivrSpreadSpectrum = config->FivrSpreadSpectrum;
 }
 
+static void fill_fsps_acoustic_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
+	s_cfg->AcousticNoiseMitigation = config->AcousticNoiseMitigation;
+
+	if (s_cfg->AcousticNoiseMitigation) {
+		for (int i = 0; i < NUM_VR_DOMAINS; i++) {
+			s_cfg->FastPkgCRampDisable[i] = config->FastPkgCRampDisable[i];
+			s_cfg->SlowSlewRate[i] = config->SlowSlewRate[i];
+		}
+	}
+}
+
 static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		struct soc_intel_alderlake_config *config)
 {
@@ -770,6 +783,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_irq_params,
 		fill_fsps_fivr_params,
 		fill_fsps_fivr_rfi_params,
+		fill_fsps_acoustic_params,
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(fill_fsps_params); i++)

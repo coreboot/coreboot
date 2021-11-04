@@ -398,9 +398,9 @@ enum cb_err thread_join(struct thread_handle *handle)
 	if (handle->state == THREAD_UNINITIALIZED)
 		return CB_ERR_ARG;
 
-	stopwatch_init(&sw);
-
 	printk(BIOS_SPEW, "waiting for thread\n");
+
+	stopwatch_init(&sw);
 
 	while (handle->state != THREAD_DONE)
 		assert(thread_yield() == 0);

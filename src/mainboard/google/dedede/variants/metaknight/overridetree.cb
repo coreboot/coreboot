@@ -243,15 +243,28 @@ chip soc/intel/jasperlake
 				register "hid" = ""10EC1015""
 				register "desc" = ""Realtek SPK AMP L""
 				register "uid" = "0"
-				device i2c 28 on end
+				device i2c 28 on
+					probe AUDIO_AMP UNPROVISIONED
+					probe AUDIO_AMP RT1015_I2C
+				end
 			end
 			chip drivers/i2c/generic
 				register "hid" = ""10EC1015""
 				register "desc" = ""Realtek SPK AMP R""
 				register "uid" = "1"
-				device i2c 29 on end
+				device i2c 29 on
+					probe AUDIO_AMP UNPROVISIONED
+					probe AUDIO_AMP RT1015_I2C
+				end
 			end
 		end
-		device pci 1f.3 on end # Intel HDA
+		device pci 1f.3 on
+			chip drivers/generic/alc1015
+				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"
+				device generic 0 on
+					probe AUDIO_AMP RT1015P_AUTO
+				end
+			end
+		end # Intel HDA
 	end
 end

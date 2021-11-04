@@ -18,7 +18,6 @@ chip soc/intel/elkhartlake
 	# FSP configuration
 	register "SaGv" = "SaGv_Disabled"
 	register "SmbusEnable" = "1"
-	register "Heci2Enable" = "1"
 
 	# Enable IBECC for the complete memory
 	register "ibecc" = "{

@@ -4,6 +4,7 @@
 #define _AMD_FW_TOOL_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef enum _amd_fw_type {
 	AMD_FW_PSP_PUBKEY = 0,
@@ -220,12 +221,12 @@ typedef struct _amd_fw_entry {
 } amd_fw_entry;
 
 typedef struct _amd_cb_config {
-	uint8_t have_whitelist;
-	uint8_t unlock_secure;
-	uint8_t use_secureos;
-	uint8_t load_mp2_fw;
-	uint8_t multi_level;
-	uint8_t s0i3;
+	bool have_whitelist;
+	bool unlock_secure;
+	bool use_secureos;
+	bool load_mp2_fw;
+	bool multi_level;
+	bool s0i3;
 } amd_cb_config;
 
 void register_fw_fuse(char *str);

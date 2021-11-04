@@ -108,7 +108,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	uint8_t subprog;
 
 	if (strcmp(fw_name, "PSPBTLDR_WL_FILE") == 0) {
-		if (cb_config->have_whitelist == 1) {
+		if (cb_config->have_whitelist) {
 			fw_type = AMD_FW_PSP_BOOTLOADER_AB;
 			subprog = 0;
 		} else {
@@ -160,14 +160,14 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		fw_type = AMD_FW_PSP_SMU_FIRMWARE2;
 		subprog = 2;
 	} else if (strcmp(fw_name, "PSP_SEC_DBG_KEY_FILE") == 0) {
-		if (cb_config->unlock_secure == 1) {
+		if (cb_config->unlock_secure) {
 			fw_type = AMD_FW_PSP_SECURED_DEBUG;
 			subprog = 0;
 		} else {
 			fw_type = AMD_FW_SKIP;
 		}
 	} else if (strcmp(fw_name, "PSP_SEC_DEBUG_FILE") == 0) {
-		if (cb_config->unlock_secure == 1) {
+		if (cb_config->unlock_secure) {
 			fw_type = AMD_DEBUG_UNLOCK;
 			subprog = 0;
 		} else {
@@ -198,7 +198,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		fw_type = AMD_ABL7;
 		subprog = 0;
 	} else if (strcmp(fw_name, "PSPSECUREOS_FILE") == 0) {
-		if (cb_config->use_secureos == 1) {
+		if (cb_config->use_secureos) {
 			fw_type = AMD_FW_PSP_SECURED_OS;
 			subprog = 0;
 		} else {
@@ -231,21 +231,21 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		fw_type = AMD_SEC_GASKET;
 		subprog = 2;
 	} else if (strcmp(fw_name, "PSP_MP2FW0_FILE") == 0) {
-		if (cb_config->load_mp2_fw == 1) {
+		if (cb_config->load_mp2_fw) {
 			fw_type = AMD_MP2_FW;
 			subprog = 0;
 		} else {
 			fw_type = AMD_FW_SKIP;
 		}
 	} else if (strcmp(fw_name, "PSP_MP2FW1_FILE") == 0) {
-		if (cb_config->load_mp2_fw == 1) {
+		if (cb_config->load_mp2_fw) {
 			fw_type = AMD_MP2_FW;
 			subprog = 1;
 		} else {
 			fw_type = AMD_FW_SKIP;
 		}
 	} else if (strcmp(fw_name, "PSP_MP2FW2_FILE") == 0) {
-		if (cb_config->load_mp2_fw == 1) {
+		if (cb_config->load_mp2_fw) {
 			fw_type = AMD_MP2_FW;
 			subprog = 2;
 		} else {
@@ -255,7 +255,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		fw_type = AMD_DRIVER_ENTRIES;
 		subprog = 0;
 	} else if (strcmp(fw_name, "PSP_S0I3_FILE") == 0) {
-		if (cb_config->s0i3 == 1) {
+		if (cb_config->s0i3) {
 			fw_type = AMD_S0I3_DRIVER;
 			subprog = 0;
 		} else {
@@ -295,7 +295,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		fw_type = AMD_RPMC_NVRAM;
 		subprog = 0;
 	} else if (strcmp(fw_name, "PSPBTLDR_AB_FILE") == 0) {
-		if (cb_config->have_whitelist == 0) {
+		if (!cb_config->have_whitelist) {
 			fw_type = AMD_FW_PSP_BOOTLOADER_AB;
 			subprog = 0;
 		} else {
@@ -372,7 +372,7 @@ static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
 		subprog = 0;
 		instance = 0;
 	} else if (strcmp(fw_name, "PSP_MP2CFG_FILE") == 0) {
-		if (cb_config->load_mp2_fw == 1) {
+		if (cb_config->load_mp2_fw) {
 			fw_type = AMD_BIOS_MP2_CFG;
 			subprog = 0;
 		} else {

@@ -638,7 +638,7 @@ static void integrate_psp_firmwares(context *ctx,
 	 * 1st-level cookie may indicate level 1 or flattened.  If the caller
 	 * passes a pointer to a 2nd-level table, then assume not flat.
 	 */
-	if (cb_config->multi_level == 0)
+	if (!cb_config->multi_level)
 		level = PSP_BOTH;
 	else if (cookie == PSPL2_COOKIE)
 		level = PSP_LVL2;
@@ -739,7 +739,7 @@ static void integrate_psp_firmwares(context *ctx,
 	fill_dir_header(pspdir, count, cookie, ctx);
 }
 
-static void *new_bios_dir(context *ctx, int multi)
+static void *new_bios_dir(context *ctx, bool multi)
 {
 	void *ptr;
 
@@ -822,7 +822,7 @@ static void integrate_bios_firmwares(context *ctx,
 	 * 1st-level cookie may indicate level 1 or flattened.  If the caller
 	 * passes a pointer to a 2nd-level table, then assume not flat.
 	 */
-	if (cb_config->multi_level == 0)
+	if (!cb_config->multi_level)
 		level = BDT_BOTH;
 	else if (cookie == BDT2_COOKIE)
 		level = BDT_LVL2;
@@ -1293,12 +1293,12 @@ int main(int argc, char **argv)
 	int debug = 0;
 	int list_deps = 0;
 
-	cb_config.have_whitelist = 0;
-	cb_config.unlock_secure = 0;
-	cb_config.use_secureos = 0;
-	cb_config.load_mp2_fw = 0;
-	cb_config.s0i3 = 0;
-	cb_config.multi_level = 0;
+	cb_config.have_whitelist = false;
+	cb_config.unlock_secure = false;
+	cb_config.use_secureos = false;
+	cb_config.load_mp2_fw = false;
+	cb_config.s0i3 = false;
+	cb_config.multi_level = false;
 
 	while (1) {
 		int optindex = 0;
@@ -1322,24 +1322,24 @@ int main(int argc, char **argv)
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_COMBO:
-			comboable = 1;
+			comboable = true;
 			break;
 		case AMDFW_OPT_MULTILEVEL:
-			cb_config.multi_level = 1;
+			cb_config.multi_level = true;
 			break;
 		case AMDFW_OPT_UNLOCK:
 			register_fw_token_unlock();
-			cb_config.unlock_secure = 1;
+			cb_config.unlock_secure = true;
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_USE_PSPSECUREOS:
-			cb_config.use_secureos = 1;
+			cb_config.use_secureos = true;
 			break;
 		case AMDFW_OPT_INSTANCE:
 			instance = strtoul(optarg, &tmp, 16);
 			break;
 		case AMDFW_OPT_LOAD_MP2FW:
-			cb_config.load_mp2_fw = 1;
+			cb_config.load_mp2_fw = true;
 			break;
 		case AMDFW_OPT_NVRAM:
 			register_fw_filename(AMD_FW_PSP_NVRAM, sub, optarg);
@@ -1398,12 +1398,12 @@ int main(int argc, char **argv)
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_LOAD_S0I3:
-			cb_config.s0i3 = 1;
+			cb_config.s0i3 = true;
 			break;
 		case AMDFW_OPT_WHITELIST:
 			register_fw_filename(AMD_FW_PSP_WHITELIST, sub, optarg);
 			sub = instance = 0;
-			cb_config.have_whitelist = 1;
+			cb_config.have_whitelist = true;
 			break;
 		case AMDFW_OPT_VERSTAGE:
 			register_fw_filename(AMD_FW_PSP_VERSTAGE, sub, optarg);
@@ -1603,7 +1603,6 @@ int main(int argc, char **argv)
 		psp_directory_table *pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
 		integrate_psp_firmwares(&ctx, pspdir2, NULL,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
-
 		pspdir = new_psp_dir(&ctx, cb_config.multi_level);
 		integrate_psp_firmwares(&ctx, pspdir, pspdir2,
 						amd_psp_fw_table, PSP_COOKIE, &cb_config);

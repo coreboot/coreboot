@@ -1,17 +1,21 @@
 Upcoming release - coreboot 4.15
 ================================
 
-The 4.15 release is planned for November 1st, 2021.
+The 4.15 release is planned for November 5th, 2021.
 
-Since 4.14 there have been more than 2448 new commits by more than 219 developers.
+Since 4.14 there have been more than 2597 new commits by more than 219 developers.
 Of these, over 73 contributed to coreboot for the first time.
 
 Welcome to the project!
 
-
-
 Thank you to all the developers who continue to make coreboot the
 great open source firmware project that it is.
+
+Important Announcement
+----------------------
+We are going to be changing the cadence from every 6 months, to every 3 months.
+That means the 4.16 release will be coming in February, 2022.
+
 
 New mainboards
 --------------

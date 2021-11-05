@@ -128,22 +128,6 @@
 #define SATA_CAPABILITIES_REG		0xfc
 #define SATA_CAPABILITY_SPM		BIT(12)
 
-typedef struct aoac_devs {
-	unsigned int :7;
-	unsigned int ic2e:1; /* 7: I2C2 */
-	unsigned int ic3e:1; /* 8: I2C3 */
-	unsigned int ic4e:1; /* 9: I2C4 */
-	unsigned int :1;
-	unsigned int ut0e:1; /* 11: UART0 */
-	unsigned int ut1e:1; /* 12: UART1 */
-	unsigned int :3;
-	unsigned int ut2e:1; /* 16: UART2 */
-	unsigned int :9;
-	unsigned int ut3e:1; /* 26: UART3 */
-	unsigned int espi:1; /* 27: ESPI */
-	unsigned int :4;
-} __packed aoac_devs_t;
-
 void fch_pre_init(void);
 void fch_early_init(void);
 void fch_init(void *chip_info);

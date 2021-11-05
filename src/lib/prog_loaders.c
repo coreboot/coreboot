@@ -75,7 +75,15 @@ static int load_relocatable_ramstage(struct prog *ramstage)
 
 	return rmodule_stage_load(&rmod_ram);
 }
+void preload_ramstage(void)
+{
+	if (!CONFIG(CBFS_PRELOAD))
+		return;
 
+	printk(BIOS_DEBUG, "Preloading ramstage\n");
+
+	cbfs_preload(CONFIG_CBFS_PREFIX "/ramstage");
+}
 void run_ramstage(void)
 {
 	struct prog ramstage =

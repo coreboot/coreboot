@@ -1214,6 +1214,10 @@ cbfs-files-$(CONFIG_HAVE_RAMSTAGE) += $(CONFIG_CBFS_PREFIX)/ramstage
 $(CONFIG_CBFS_PREFIX)/ramstage-file := $(RAMSTAGE)
 $(CONFIG_CBFS_PREFIX)/ramstage-type := stage
 $(CONFIG_CBFS_PREFIX)/ramstage-compression := $(CBFS_COMPRESS_FLAG)
+# The AMD LPC SPI DMA controller requires source files to be 64 byte aligned.
+ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA),y)
+$(CONFIG_CBFS_PREFIX)/ramstage-align := 64
+endif
 
 cbfs-files-$(CONFIG_HAVE_REFCODE_BLOB) += $(CONFIG_CBFS_PREFIX)/refcode
 $(CONFIG_CBFS_PREFIX)/refcode-file := $(REFCODE_BLOB)

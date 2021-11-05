@@ -145,6 +145,13 @@ int legacy_romstage_select_and_load(struct prog *romstage);
  *   RAMSTAGE LOADING   *
  ************************/
 
+/*
+ * Asynchronously preloads ramstage.
+ *
+ * This should be called early on to allow ramstage to load before
+ * `run_ramstage` is called.
+ */
+void preload_ramstage(void);
 /* Run ramstage from romstage. */
 void run_ramstage(void);
 

@@ -19,6 +19,7 @@ fw_config
 		option TS_RAYD_0001 4
 		option TS_WDHT0002 5
 		option TS_GTCH7503 6
+		option TS_ELAN_9004 7
 	end
 	field AUDIO_CODEC_SOURCE 49 51
 		option AUDIO_CODEC_UNPROVISIONED 0
@@ -225,6 +226,26 @@ chip soc/intel/jasperlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on
 					probe TS_SOURCE TS_ELAN_6918
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN9004""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D4_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.reset_off_delay_ms" = "2"
+				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A11)"
+				register "generic.stop_delay_ms" = "280"
+				register "generic.stop_off_delay_ms" = "2"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "generic.disable_gpio_export_in_crs" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 10 on
+					probe TS_SOURCE TS_ELAN_9004
 				end
 			end
 			chip drivers/i2c/hid

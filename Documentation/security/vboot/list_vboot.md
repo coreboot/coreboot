@@ -31,6 +31,7 @@
 - Zako (HP Chromebox G1)
 - Butterfly (HP Pavilion Chromebook 14)
 - Cherry
+- Tomato
 - Banon (Acer Chromebook 15 (CB3-532))
 - Celes (Samsung Chromebook 3)
 - Cyan (Acer Chromebook R11 (C738T))
@@ -66,60 +67,68 @@
 - Nefario
 - Rainier
 - Guybrush
-- Akemi
-- Dratini
+- Nipperkin
+- Dewatt
+- Akemi (IdeaPad Flex 5/5i Chromebook)
+- Dratini (HP Pro c640 Chromebook)
 - Duffy Legacy (32MB)
-- Duffy
-- Faffy
+- Duffy (ASUS Chromebox 4)
+- Faffy (ASUS Fanless Chromebox)
 - Hatch
-- Jinlon
+- Jinlon (HP Elite c1030 Chromebook)
 - Kaisa Legacy (32MB)
-- Kaisa
-- Kohaku
-- Kindred
-- Helios
+- Kaisa (Acer Chromebox CXI4)
+- Kohaku (Samsung Galaxy Chromebook)
+- Kindred (Acer Chromebook 712)
+- Helios (ASUS Chromebook Flip C436FA)
 - Mushu
 - Palkia
-- Nightfury
-- Noibat
+- Nightfury (Samsung Galaxy Chromebook 2)
+- Noibat (HP Chromebox G3)
 - Puff
 - Helios_Diskswap
 - Stryke
-- Wyvern
+- Wyvern (CTL Chromebox CBx2)
 - Dooly
 - Ambassador
 - Genesis
+- Scout
+- Moonbuggy
 - Herobrine
+- Senor
+- Piglin
+- Hoglin
 - Guado (ASUS Chromebox CN62)
 - Jecht
 - Rikku (Acer Chromebox CXI2)
 - Tidus (Lenovo ThinkCentre Chromebox)
-- Aleena
-- Careena
+- Aleena/Kasumi (Acer Chromebook  315 (CB315-2H), 311 (C721) / Spin 311 (R721T))
+- Barla/Careena (HP Chromebook 11A G6/G8 EE, 14A G5/G6)
 - Grunt
-- Liara
+- Liara (Lenovo 14e Chromebook, Chromebook S345-14)
 - Nuwani
-- Treeya
+- Treeya (Lenovo 100e/300e Gen2 AMD)
 - Kukui
-- Krane
-- Kodama
+- Krane (Lenovo Chromebook Duet/Lenovo IdeaPad Duet Chromebook)
+- Kodama (Lenovo 10e Chromebook Tablet)
 - Kakadu
 - Flapjack
 - Katsu
 - Jacuzzi
-- Juniper
+- Juniper (Acer Chromebook Spin 311 (CP311-3H))
 - Kappa
-- Damu
+- Damu (ASUS Chromebook Flip CM3 (CM3200))
 - Cerise
 - Stern
 - Willow
-- Esche
-- Burnet
+- Esche (HP Chromebook 11MK G9 EE)
+- Burnet (HP Chromebook x360 11MK G3 EE)
 - Fennel
 - Cozmo
 - Makomo
+- Munna
+- Pico
 - Link (Google Chromebook Pixel (2013))
-- Mancomb
 - Mistral
 - Nyan
 - Nyan Big (Acer Chromebook 13 (CB5-311))
@@ -132,7 +141,7 @@
 - Atlas (Google Pixelbook Go)
 - Poppy
 - Nami
-- Nautilus (Samsung Chromebook Plus (V2 / LTE))
+- Nautilus (Samsung Chromebook Plus V2, V2 LTE)
 - Nocturne (Google Pixel Slate)
 - Rammus (Asus Chromebook C425, Flip C433, Flip C434)
 - Soraka (HP Chromebook x2)
@@ -158,8 +167,8 @@
 - Snappy (HP Chromebook x360 11 G1 EE)
 - Nasher
 - Coral
-- Arcada
-- Sarien
+- Arcada (Latitude 5300 2-in-1 Chromebook Enterprise)
+- Sarien (Dell Latitude 5400 Chromebook Enterprise)
 - Falco (HP Chromebook 14)
 - Leon (Toshiba Chromebook)
 - Peppy (Acer C720/C720P Chromebook)
@@ -177,8 +186,8 @@
 - Pazquel
 - Pompom
 - Quackingstick
-- Trogdor
 - Wormdingler
+- Trogdor
 - Veyron_Jaq (Haier Chromebook 11)
 - Veyron_Jerry (Hisense Chromebook 11)
 - Veyron_Mighty (Haier Chromebook 11(edu))
@@ -187,15 +196,15 @@
 - Veyron_Mickey (Asus Chromebit CS10)
 - Veyron_Rialto
 - Dalboz
-- Vilboz
-- Ezkinil
-- Morphius
+- Vilboz (Lenovo 100e/300e Gen3 AMD)
+- Ezkinil (Acer Chromebook Spin 514)
+- Morphius (Lenovo ThinkPad C13 Yoga Chromebook)
 - Trembyle
-- Berknip
-- Woomax
-- Dirinboz
+- Berknip (HP Pro c645 Chromebook Enterprise)
+- Woomax (ASUS Chromebook Flip CM5)
+- Dirinboz (HP Chromebook 14a-nd0097nr)
 - Shuboz
-- Gumboz
+- Gumboz (HP Chromebook x360 14a)
 
 ## HP
 - Z220 SFF Workstation
@@ -203,6 +212,7 @@
 ## Intel
 - Alderlake-P RVP
 - Alderlake-P RVP with Chrome EC
+- Alderlake-P RVP with Microchip EC
 - Alderlake-M RVP
 - Alderlake-M RVP with Chrome EC
 - Basking Ridge CRB

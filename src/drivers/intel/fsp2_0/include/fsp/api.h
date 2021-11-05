@@ -32,7 +32,9 @@ enum fsp_notify_phase {
 };
 
 /* Main FSP stages */
+void preload_fspm(void);
 void fsp_memory_init(bool s3wake);
+void preload_fsps(void);
 void fsp_silicon_init(void);
 
 /*

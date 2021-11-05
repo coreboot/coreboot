@@ -340,6 +340,15 @@ static void *fspm_allocator(void *arg, size_t size, const union cbfs_mdata *unus
 	return (void *)fspm_begin;
 }
 
+void preload_fspm(void)
+{
+	if (!CONFIG(CBFS_PRELOAD))
+		return;
+
+	printk(BIOS_DEBUG, "Preloading %s\n", CONFIG_FSP_M_CBFS);
+	cbfs_preload(CONFIG_FSP_M_CBFS);
+}
+
 void fsp_memory_init(bool s3wake)
 {
 	struct range_entry prog_ranges[2];

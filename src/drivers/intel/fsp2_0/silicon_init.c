@@ -230,6 +230,15 @@ void fsps_load(void)
 	load_done = 1;
 }
 
+void preload_fsps(void)
+{
+	if (!CONFIG(CBFS_PRELOAD))
+		return;
+
+	printk(BIOS_DEBUG, "Preloading %s\n", CONFIG_FSP_S_CBFS);
+	cbfs_preload(CONFIG_FSP_S_CBFS);
+}
+
 void fsp_silicon_init(void)
 {
 	timestamp_add_now(TS_FSP_SILICON_INIT_LOAD);

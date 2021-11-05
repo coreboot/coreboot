@@ -86,13 +86,18 @@ chip soc/intel/alderlake
 			chip drivers/intel/dptf
 				## sensor information
 				register "options.tsr[0].desc" = ""DRAM""
-				register "options.tsr[1].desc" = ""Charger""
+				register "options.tsr[1].desc" = ""SOC""
+				register "options.tsr[2].desc" = ""Charger""
+				register "options.tsr[3].desc" = ""5V regulator""
+
 				# TODO: below values are initial reference values only
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,         CPU,           55, 5000),
 					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 45, 5000),
-					[2] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_1, 51, 5000),
+					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 51, 5000),
+					[3] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_2, 51, 5000),
+					[4] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_3, 51, 5000),
 				}"
 				register "controls.power_limits" = "{
 					.pl1 = {

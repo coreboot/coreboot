@@ -163,8 +163,8 @@ enum cb_err fsp_load_component(struct fsp_load_descriptor *fspld, struct fsp_hea
 	if (!dest)
 		return CB_ERR;
 
-	/* Don't allow FSP-M relocation. */
-	if (!fspm_env() && fsp_component_relocate((uintptr_t)dest, dest, output_size) < 0) {
+	/* Don't allow FSP-M relocation when XIP. */
+	if (!fspm_xip() && fsp_component_relocate((uintptr_t)dest, dest, output_size) < 0) {
 		printk(BIOS_ERR, "Unable to relocate FSP component!\n");
 		return CB_ERR;
 	}

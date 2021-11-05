@@ -23,6 +23,7 @@ verstage-y += ../common/uart.c
 verstage-y += ../common/wdt.c wdt.c
 
 ramstage-y += apusys.c
+ramstage-y += apusys_devapc.c
 romstage-y += ../common/auxadc.c
 romstage-y += ../common/cbmem.c
 romstage-y += ../common/clkbuf.c

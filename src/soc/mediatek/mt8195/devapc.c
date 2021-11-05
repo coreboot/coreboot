@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <soc/devapc.h>
+#include <soc/apusys_devapc.h>
 
 static const struct apc_infra_peri_dom_16 infra_ao_sys0_devices[] = {
 	/* 0 */
@@ -1884,4 +1885,7 @@ void dapc_init(void)
 		if (devapc_init[i].dump)
 			devapc_init[i].dump(devapc_ao_base);
 	}
+
+	/* Set up APUSYS Permission */
+	start_apusys_devapc();
 }

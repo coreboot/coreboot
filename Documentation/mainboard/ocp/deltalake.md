@@ -7,7 +7,16 @@ Delta Lake server platform.
 
 OCP Delta Lake server platform is a component of multi-host server system
 Yosemite-V3. Both [Delta Lake server design spec] and [Yosemite-V3 design
-spec] were contributed to [OCP].
+spec] were [OCP] accepted.
+
+On the other hand, Wiwynn's Yosemite-V3 system and Delta Lake server product
+along with its OSF implementation, which is based on FSP/coreboot/LinuxBoot
+stack, was [OCP] accepted; For details, check:
+- [The OCP blog]
+- [The Wiwynn Press Release]
+- [The Wiwynn's Yosemite-V3 product in OCP market place]
+Wiwynn and 9Elements formed a partnership to offer the Wiwynn's Yosemite-V3
+product and OSF for it.
 
 Delta Lake server is a single socket Cooper Lake Scalable Processor (CPX-SP) server.
 Intel Cooper Lake Scalable Processor was launched in Q2 2020.
@@ -15,7 +24,7 @@ Intel Cooper Lake Scalable Processor was launched in Q2 2020.
 Yosemite-V3 has multiple configurations. Depending on configurations, it may
 host up to 4 Delta Lake servers (blades) in one sled.
 
-The Yosemite-V3 system is in mass production. Facebook, Intel and partners
+The Yosemite-V3 system is in mass production. Meta, Intel and partners
 jointly develop Open System Firmware (OSF) solution on Delta Lake as an alternative
 solution. The OSF solution is based on FSP/coreboot/LinuxBoot stack. The
 OSF solution reached production quality for some use cases in July, 2021.
@@ -187,6 +196,9 @@ and [u-root] as initramfs.
 [OCP]: https://www.opencompute.org
 [Delta Lake server design spec]: https://www.opencompute.org/documents/delta-lake-1s-server-design-specification-1v05-pdf
 [Yosemite-V3 design spec]: https://www.opencompute.org/documents/ocp-yosemite-v3-platform-design-specification-1v16-pdf
+[The OCP blog]: https://www.opencompute.org/blog/open-system-firmware-for-ocp-server-deltalake-is-published
+[The Wiwynn Press Release]: https://www.prnewswire.com/news-releases/wiwynn-successfully-implemented-open-system-firmware-on-its-ocp-yosemite-v3-server-301417374.html?tc=eml_cleartime
+[The Wiwynn's Yosemite-V3 product in OCP market place]: https://www.opencompute.org/products/423/wiwynn-yosemite-v3-server
 [osf-builder]: https://github.com/facebookincubator/osf-builder
 [OCP virtual summit 2020]: https://www.opencompute.org/summit/virtual-summit/schedule
 [flashrom]: https://flashrom.org/Flashrom

@@ -1312,7 +1312,7 @@ sub print_wholeconfig {
 
     return unless $print_full_output;
 
-    for ( my $i = 0 ; $i < $#wholeconfig ; $i++ ) {
+    for ( my $i = 0 ; $i <= $#wholeconfig ; $i++ ) {
         my $line = $wholeconfig[$i];
         chop( $line->{text} );
 

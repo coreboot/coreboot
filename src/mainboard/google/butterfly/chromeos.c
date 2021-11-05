@@ -11,9 +11,8 @@
 #include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
+#include "onboard.h"
 
-#define WP_GPIO		6
-#define DEVMODE_GPIO	54
 #define FORCE_RECOVERY_MODE	0
 
 void fill_lb_gpios(struct lb_gpios *gpios)

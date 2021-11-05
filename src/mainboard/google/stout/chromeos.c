@@ -12,6 +12,7 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 #include <ec/quanta/it8518/ec.h>
+#include "onboard.h"
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -35,7 +36,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_write_protect_state(void)
 {
-	return !get_gpio(7);
+	return !get_gpio(GPIO_SPI_WP);
 }
 
 int get_lid_switch(void)
@@ -77,7 +78,7 @@ int get_recovery_mode_switch(void)
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_REC_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
-	CROS_GPIO_WP_AL(7, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AL(GPIO_SPI_WP, CROS_GPIO_DEVICE_NAME),
 };
 
 void mainboard_chromeos_acpi_generate(void)

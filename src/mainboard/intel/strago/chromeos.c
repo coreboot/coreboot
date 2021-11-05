@@ -6,10 +6,7 @@
 #include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-#define WP_GPIO	GP_E_22
-
-#define ACTIVE_LOW	0
-#define ACTIVE_HIGH	1
+#include "onboard.h"
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {

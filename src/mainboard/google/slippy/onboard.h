@@ -23,4 +23,7 @@
 #define PEPPY_BOARD_VERSION_PROTO	0
 #define PEPPY_BOARD_VERSION_EVT		1
 
+/* Write protect is active high */
+#define GPIO_SPI_WP	58
+
 #endif

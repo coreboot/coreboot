@@ -29,6 +29,9 @@
 #define JACK_DETECT_GPIO_INDEX		95
 /* SCI: Gpio index in N bank */
 #define BOARD_SCI_GPIO_INDEX		15
+
+#define WP_GPIO				GP_E_22
+
 /* Trackpad: Gpio index in N bank */
 #define BOARD_TRACKPAD_GPIO_INDEX	18
 

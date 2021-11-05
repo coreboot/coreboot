@@ -11,4 +11,7 @@
 #define XHCI_PREBOOT  0  // No PreOS boot support
 #define XHCI_STREAMS  1  // Sure, lets have streams
 
+/* Write protect is active low */
+#define GPIO_SPI_WP	7
+
 #endif

@@ -16,4 +16,8 @@
 #define BOARD_TOUCHSCREEN_I2C_ADDR	0x4a
 #define BOARD_TOUCHSCREEN_IRQ		22
 
+#define GPIO_REC_MODE	9
+
+#define GPIO_SPI_WP	57
+
 #endif

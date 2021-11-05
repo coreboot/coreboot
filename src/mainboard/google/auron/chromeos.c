@@ -7,8 +7,7 @@
 #include <soc/chromeos.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 
-/* SPI Write protect is GPIO 16 */
-#define CROS_WP_GPIO	58
+#include "onboard.h"
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {

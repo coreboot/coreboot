@@ -6,6 +6,7 @@
 #include <southbridge/intel/common/gpio.h>
 #include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include "onboard.h"
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -19,12 +20,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_write_protect_state(void)
 {
-	return get_gpio(58);
+	return get_gpio(GPIO_SPI_WP);
 }
 
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
-	CROS_GPIO_WP_AH(58, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AH(GPIO_SPI_WP, CROS_GPIO_DEVICE_NAME),
 };
 
 void mainboard_chromeos_acpi_generate(void)

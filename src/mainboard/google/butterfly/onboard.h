@@ -16,4 +16,8 @@
 
 /* 0x00: White LINK LED and Amber ACTIVE LED */
 #define BUTTERFLY_NIC_LED_MODE		0x00
+
+/* SPI write protect, active low */
+#define WP_GPIO		6
+
 #endif

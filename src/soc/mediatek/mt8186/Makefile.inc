@@ -38,6 +38,7 @@ ramstage-y += emi.c
 ramstage-y += ../common/flash_controller.c
 ramstage-y += ../common/gpio.c gpio.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
+ramstage-$(CONFIG_COMMONLIB_STORAGE_MMC) += ../common/msdc.c msdc.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += soc.c
 ramstage-y += ../common/timer.c timer.c

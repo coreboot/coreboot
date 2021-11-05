@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef __MSDC_H_
-#define __MSDC_H_
+#ifndef SOC_MEDIATEK_COMMON_MSDC_H
+#define SOC_MEDIATEK_COMMON_MSDC_H
 
 #include <commonlib/sd_mmc_ctrlr.h>
 
@@ -165,5 +165,7 @@ struct msdc_ctrlr {
 #define msdc_error(format...) printk(BIOS_ERR, "ERROR: " format)
 
 int mtk_emmc_early_init(void *base, void *top_base);
+void mtk_msdc_configure_emmc(void);
+void mtk_msdc_configure_sdcard(void);
 
-#endif // MTK_MMC_H_
+#endif /* SOC_MEDIATEK_COMMON_MSDC_H */

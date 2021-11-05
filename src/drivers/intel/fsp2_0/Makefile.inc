@@ -65,6 +65,9 @@ endif
 ifeq ($(CONFIG_FSP_COMPRESS_FSP_M_LZ4),y)
 $(FSP_M_CBFS)-compression := LZ4
 endif
+ifneq ($(CONFIG_FSP_ALIGNMENT_FSP_M),)
+$(FSP_M_CBFS)-align := $(CONFIG_FSP_ALIGNMENT_FSP_M)
+endif
 
 cbfs-files-$(CONFIG_ADD_FSP_BINARIES) += $(FSP_S_CBFS)
 $(FSP_S_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_S_FILE))
@@ -74,6 +77,9 @@ $(FSP_S_CBFS)-compression := LZMA
 endif
 ifeq ($(CONFIG_FSP_COMPRESS_FSP_S_LZ4),y)
 $(FSP_S_CBFS)-compression := LZ4
+endif
+ifneq ($(CONFIG_FSP_ALIGNMENT_FSP_S),)
+$(FSP_S_CBFS)-align := $(CONFIG_FSP_ALIGNMENT_FSP_S)
 endif
 
 ifeq ($(CONFIG_FSP_FULL_FD),y)

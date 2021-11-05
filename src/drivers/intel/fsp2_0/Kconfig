@@ -218,6 +218,16 @@ config FSP_COMPRESS_FSP_M_LZ4
 	bool
 	depends on !FSP_M_XIP
 
+config FSP_ALIGNMENT_FSP_S
+	int
+	help
+	  Sets the CBFS alignment for FSP-S
+
+config FSP_ALIGNMENT_FSP_M
+	int
+	help
+	  Sets the CBFS alignment for FSP-M
+
 config FSP_M_ADDR
 	hex
 	help

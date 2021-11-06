@@ -35,16 +35,6 @@ Method(_PRT,0) {
 
 #include "pcie.asl"
 
-/* PCI slot 1, 2, 3 */
-Device(PIBR) {
-	Name(_ADR, 0x00140004)
-	Name(_PRW, Package() {0x18, 4})
-
-	Method(_PRT, 0) {
-		Return (PCIB)
-	}
-}
-
 Device(STCR) {
 	Name(_ADR, 0x00110000)
 	#include "acpi/sata.asl"
@@ -60,8 +50,14 @@ Device(SBUS) {
 
 #include "lpc.asl"
 
-Device(HPBR) {
+/* PCI bridge */
+Device(PIBR) {
 	Name(_ADR, 0x00140004)
+	Name(_PRW, Package() {0x18, 4})
+
+	Method(_PRT, 0) {
+		Return (PCIB)
+	}
 } /* end HostPciBr */
 
 Device(ACAD) {

@@ -13,29 +13,7 @@ DefinitionBlock (
 {	/* Start of ASL file */
 	#include <acpi/dsdt_top.asl>
 
-
-	/*
-	 * Processor Object
-	 *
-	 */
-	Scope (\_SB) {		/* define processor scope */
-		Device (C000) {
-		Name (_HID, "ACPI0007")
-		Name (_UID, 0)
-		}
-		Device (C001) {
-		Name (_HID, "ACPI0007")
-		Name (_UID, 1)
-		}
-		Device (C002) {
-		Name (_HID, "ACPI0007")
-		Name (_UID, 2)
-		}
-		Device (C003) {
-		Name (_HID, "ACPI0007")
-		Name (_UID, 3)
-		}
-	} /* End _SB scope */
+	#include <cpu/amd/agesa/family14/acpi/cpu.asl>
 
 	#include <southbridge/amd/cimx/sb800/acpi/misc_io.asl>
 
@@ -58,10 +36,9 @@ DefinitionBlock (
 		/*  _SB.PCI0 */
 		/* Note: Only need HID on Primary Bus */
 		Device(PCI0) {
-			External (TOM1)
-			External (TOM2)
-			Name(_HID, EISAID("PNP0A08"))	/* PCI Express Root Bridge */
-			Name(_CID, EISAID("PNP0A03"))	/* PCI Root Bridge */
+
+			/* Describe the AMD Northbridge */
+			#include <northbridge/amd/agesa/family14/acpi/northbridge.asl>
 
 			/* Operating System Capabilities Method */
 			Method (_OSC, 4)
@@ -93,91 +70,6 @@ DefinitionBlock (
 				Return (PR0)                  /* PIC Mode */
 			} /* end _PRT */
 
-			/* Describe the Northbridge devices */
-			Device(AMRT) {
-				Name(_ADR, 0x00000000)
-			} /* end AMRT */
-
-			/* The internal GFX bridge */
-			Device(AGPB) {
-				Name(_ADR, 0x00010000)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					Return (APR1)
-				}
-			}  /* end AGPB */
-
-			/* Dev 2 & 3 are external GFX bridges, not used in Family14 */
-
-			Device(PBR4) {
-				Name(_ADR, 0x00040000)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PICM){ Return(APS4) }   /* APIC mode */
-					Return (PS4)                  /* PIC Mode */
-				} /* end _PRT */
-			} /* end PBR4 */
-
-			Device(PBR5) {
-				Name(_ADR, 0x00050000)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PICM){ Return(APS5) }   /* APIC mode */
-					Return (PS5)                  /* PIC Mode */
-				} /* end _PRT */
-			} /* end PBR5 */
-
-			Device(PBR6) {
-				Name(_ADR, 0x00060000)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PICM){ Return(APS6) }   /* APIC mode */
-					Return (PS6)                  /* PIC Mode */
-				} /* end _PRT */
-			} /* end PBR6 */
-
-			/* The onboard EtherNet chip */
-			Device(PBR7) {
-				Name(_ADR, 0x00070000)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PICM){ Return(APS7) }   /* APIC mode */
-					Return (PS7)                  /* PIC Mode */
-				} /* end _PRT */
-			} /* end PBR7 */
-
-			Device(PE20) {
-				Name(_ADR, 0x00150000)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PICM){ Return(APE0) }   /* APIC mode */
-					Return (PE0)                  /* PIC Mode */
-				} /* end _PRT */
-			} /* end PE20 */
-			Device(PE21) {
-				Name(_ADR, 0x00150001)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PICM){ Return(APE1) }   /* APIC mode */
-					Return (PE1)                  /* PIC Mode */
-				} /* end _PRT */
-			} /* end PE21 */
-			Device(PE22) {
-				Name(_ADR, 0x00150002)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PICM){ Return(APE2) }   /* APIC mode */
-					Return (APE2)                  /* PIC Mode */
-				} /* end _PRT */
-			} /* end PE22 */
-			Device(PE23) {
-				Name(_ADR, 0x00150003)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PICM){ Return(APE3) }   /* APIC mode */
-					Return (PE3)                  /* PIC Mode */
-				} /* end _PRT */
-			} /* end PE23 */
 
 
 			/* Describe the Southbridge devices */

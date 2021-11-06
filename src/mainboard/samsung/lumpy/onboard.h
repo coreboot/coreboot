@@ -12,4 +12,10 @@
 #define BOARD_TRACKPAD_IRQ          21
 #define BOARD_TRACKPAD_WAKE_GPIO    0x1b
 
+/* Write Protect: GPIO24 = KBC3_SPI_WP#, active high */
+#define GPIO_SPI_WP	24
+
+/* Recovery: GPIO42 = CHP3_REC_MODE#, active low */
+#define GPIO_REC_MODE	42
+
 #endif

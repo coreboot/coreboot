@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <device/device.h>
@@ -12,8 +11,6 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 #include "onboard.h"
-
-#define FORCE_RECOVERY_MODE	0
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
@@ -42,23 +39,13 @@ int get_lid_switch(void)
 	return (ec_mem_read(EC_HW_GPI_STATUS) >> EC_GPI_LID_STAT_BIT) & 1;
 }
 
+/* FIXME: VBOOT reads this in ENV_ROMSTAGE. */
 int get_recovery_mode_switch(void)
 {
-	int ec_rec_mode = 0;
+	if (ENV_RAMSTAGE)
+		return (ec_mem_read(EC_CODE_STATE) == EC_COS_EC_RO);
 
-	if (FORCE_RECOVERY_MODE) {
-		printk(BIOS_DEBUG, "FORCING RECOVERY MODE.\n");
-		return 1;
-	}
-
-	if (ENV_RAMSTAGE) {
-		if (ec_mem_read(EC_CODE_STATE) == EC_COS_EC_RO)
-			ec_rec_mode = 1;
-
-		printk(BIOS_DEBUG, "RECOVERY MODE FROM EC: %x\n", ec_rec_mode);
-	}
-
-	return ec_rec_mode;
+	return 0;
 }
 
 static const struct cros_gpio cros_gpios[] = {

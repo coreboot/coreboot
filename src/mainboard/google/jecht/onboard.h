@@ -37,4 +37,10 @@ enum {
 #define IT8772F_GPIO_DEV PNP_DEV(IT8772F_BASE, IT8772F_GPIO)
 #define IT8772F_SUPERIO_DEV PNP_DEV(IT8772F_BASE, 0)
 
+/* Write Protect: GPIO58 = GPIO_SPI_WP, active high */
+#define GPIO_SPI_WP	58
+
+/* Recovery: GPIO12 = RECOVERY_L, active low */
+#define GPIO_REC_MODE	12
+
 #endif

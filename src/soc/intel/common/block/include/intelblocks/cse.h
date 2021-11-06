@@ -41,6 +41,9 @@
 #define MKHI_BUP_COMMON_SET_BOOT_PARTITION_INFO	0x1d
 #define MKHI_BUP_COMMON_DATA_CLEAR		0x20
 
+/* Get boot performance command id */
+#define MKHI_BUP_COMMON_GET_BOOT_PERF_DATA	0x8
+
 /* ME Current Working States */
 #define ME_HFS1_CWS_NORMAL	0x5
 
@@ -59,6 +62,9 @@
 #define ME_HFS3_FW_SKU_CONSUMER	0x2
 #define ME_HFS3_FW_SKU_CORPORATE	0x3
 #define ME_HFS3_FW_SKU_LITE	0x5
+
+/* Number of cse boot performance data */
+#define NUM_CSE_BOOT_PERF_DATA	64
 
 /* HFSTS register offsets in PCI config space */
 enum {
@@ -162,6 +168,130 @@ enum csme_failure_reason {
 	/* CSE Lite sub-partition update success */
 	CSE_LITE_SKU_PART_UPDATE_SUCCESS = 18,
 };
+
+/* Boot performance data */
+enum cse_boot_perf_data {
+	/* CSME ROM start execution  */
+	PERF_DATA_CSME_ROM_START = 0,
+
+	/* EC Boot Load Done (CSME ROM starts main execution) */
+	PERF_DATA_EC_BOOT_LOAD_DONE = 1,
+
+	/* CSME ROM completed execution / CSME RBE started */
+	PERF_DATA_CSME_ROM_COMPLETED = 2,
+
+	/* CSME got ESE Init Done indication from ESE */
+	PERF_DATA_CSME_GOT_ESE_INIT_DONE = 3,
+
+	/* CSME RBE start PMC patch/es loading */
+	PERF_DATA_CSME_RBE_PMC_PATCH_LOADING_START = 4,
+
+	/* CSME RBE completed PMC patch/es loading */
+	PERF_DATA_CSME_RBE_PMC_PATCH_LOADING_COMPLETED = 5,
+
+	/* CSME RBE set "Boot Stall Done" indication to PMC */
+	PERF_DATA_CSME_RBE_BOOT_STALL_DONE_TO_PMC = 6,
+
+	/* CSME start poll for PMC PPS register */
+	PERF_DATA_CSME_POLL_FOR_PMC_PPS_START = 7,
+
+	/* PMC set PPS */
+	PERF_DATA_PMC_SET_PPS = 8,
+
+	/* CSME BUP start running  */
+	PERF_DATA_CSME_BUP_START = 9,
+
+	/* CSME set "Host Boot Prep Done" indication to PMC  */
+	PERF_DATA_CSME_HOST_BOOT_PREP_DONE = 10,
+
+	/* CSME starts PHYs loading */
+	PERF_DATA_CSME_PHY_LOADING_START = 11,
+
+	/* CSME completed PHYs loading */
+	PERF_DATA_CSME_PHY_LOADING_COMPLETED = 12,
+
+	/* PMC indicated CSME that xxPWRGOOD was asserted */
+	PERF_DATA_PMC_PWRGOOD_ASSERTED = 13,
+
+	/* PMC indicated CSME that SYS_PWROK was asserted */
+	PERF_DATA_PMC_SYS_PWROK_ASSERTED = 14,
+
+	/* PMC sent "CPU_BOOT_CONFIG" start message to CSME */
+	PERF_DATA_PMC_CPU_BOOT_CONFIG_START = 15,
+
+	/* CSME sent "CPU_BOOT_CONFIG" done message to PMC */
+	PERF_DATA_CSME_CPU_BOOT_CONFIG_DONW = 16,
+
+	/* PMC indicated CSME that xxPLTRST was de-asserted */
+	PERF_DATA_PMC_PLTRST_DEASSERTED = 17,
+
+	/* PMC indicated CSME that TCO_S0 was asserted */
+	PERF_DATA_PMC_TC0_S0_ASSERTED = 18,
+
+	/* PMC sent "Core Reset Done Ack - Sent" message to CSME */
+	PERF_DATA_PMC_SENT_CRDA = 19,
+
+	/* ACM Active indication - ACM started its execution */
+	PERF_DATA_ACM_START = 20,
+
+	/* ACM Done indication - ACM completed execution */
+	PERF_DATA_ACM_DONE = 21,
+
+	/* BIOS sent DRAM Init Done message */
+	PERF_DATA_BIOS_DRAM_INIT_DONE = 22,
+
+	/* CSME sent DRAM Init Done message back to BIOS */
+	PERF_DATA_CSME_DRAM_INIT_DONE = 23,
+
+	/* CSME completed loading TCSS */
+	PERF_DATA_CSME_LOAD_TCSS_COMPLETED = 24,
+
+	/* CSME started loading ISH Bringup module */
+	PERF_DATA_PERF_DATA_CSME_LOAD_ISH_BRINGUP_START = 25,
+
+	/* CSME completed loading ISH Bringup module */
+	PERF_DATA_CSME_LOAD_ISH_BRINGUP_DONE = 26,
+
+	/* CSME started loading ISH Main module */
+	PERF_DATA_CSME_LOAD_ISH_MAIN_START = 27,
+
+	/* CSME completed loading Main module */
+	PERF_DATA_CSME_LOAD_ISH_MAIN_DONE = 28,
+
+	/* BIOS sent "End Of Post" message to CSME */
+	PERF_DATA_BIOS_END_OF_POST = 29,
+
+	/* CSME sent "End Of Post" ack message back to BIOS */
+	PERF_DATA_CSME_END_OF_POST = 30,
+
+	/* BIOS sent "Core BIOS Done" message to CSME */
+	PERF_DATA_BIOS_BIOS_CORE_DONE = 31,
+
+	/* CSME sent "Core BIOS Done" ack message back to BIOS */
+	PERF_DATA_CSME_BIOS_CORE_DONE = 32,
+
+	/* CSME reached Firmware Init Done */
+	PERF_DATA_CSME_GW_INIT_DONE = 33,
+
+	/* 34 - 62 Reserved */
+
+	/* Timestamp when CSME responded to BupGetBootData message itself */
+	PERF_DATA_CSME_GET_PERF_RESPONSE = 63,
+};
+
+/* CSE boot performance data */
+struct cse_boot_perf_rsp {
+	struct mkhi_hdr hdr;
+
+	/* Data version */
+	uint32_t version;
+
+	/* Data length in DWORDs, represents number of valid elements in timestamp array */
+	uint32_t num_valid_timestamps;
+
+	/* Boot performance data */
+	uint32_t timestamp[NUM_CSE_BOOT_PERF_DATA];
+} __packed;
 
 /* set up device for use in early boot enviroument with temp bar */
 void heci_init(uintptr_t bar);
@@ -349,4 +479,11 @@ bool set_cse_device_state(unsigned int devfn, enum cse_device_state requested_st
  * Returns true if cse sub-parition update is required otherwise false.
  */
 bool skip_cse_sub_part_update(void);
+
+/*
+ * This command retrieves a set of boot performance timestamps CSME collected during
+ * the last platform boot flow.
+ */
+bool cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf);
+
 #endif // SOC_INTEL_COMMON_CSE_H

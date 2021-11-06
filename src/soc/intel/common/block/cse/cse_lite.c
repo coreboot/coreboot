@@ -127,6 +127,38 @@ struct get_bp_info_rsp {
 	struct cse_bp_info bp_info;
 } __packed;
 
+
+bool cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf_rsp)
+{
+	struct cse_boot_perf_req {
+		struct mkhi_hdr hdr;
+		uint32_t reserved;
+	} __packed;
+
+	struct cse_boot_perf_req req = {
+		.hdr.group_id = MKHI_GROUP_ID_BUP_COMMON,
+		.hdr.command = MKHI_BUP_COMMON_GET_BOOT_PERF_DATA,
+		.reserved = 0,
+	};
+
+	size_t resp_size = sizeof(struct cse_boot_perf_rsp);
+
+	if (!heci_send_receive(&req, sizeof(req), boot_perf_rsp, &resp_size,
+									HECI_MKHI_ADDR)) {
+		printk(BIOS_ERR, "cse_lite: Could not get boot performance data\n");
+		return false;
+	}
+
+	if (boot_perf_rsp->hdr.result) {
+		printk(BIOS_ERR, "cse_lite: Get boot performance data resp failed: %d\n",
+				boot_perf_rsp->hdr.result);
+		return false;
+	}
+
+	return true;
+}
+
+
 static uint8_t cse_get_current_bp(const struct cse_bp_info *cse_bp_info)
 {
 	return cse_bp_info->current_bp;

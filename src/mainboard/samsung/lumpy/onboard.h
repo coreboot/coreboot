@@ -18,4 +18,8 @@
 /* Recovery: GPIO42 = CHP3_REC_MODE#, active low */
 #define GPIO_REC_MODE	42
 
+#ifndef __ACPI__
+int get_power_switch(void);
+#endif
+
 #endif

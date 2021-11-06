@@ -15,9 +15,6 @@
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	const pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
-	u16 gen_pmcon_1 = pci_s_read_config32(dev, GEN_PMCON_1);
-
 	struct lb_gpio chromeos_gpios[] = {
 		/* Recovery: GPIO42 = CHP3_REC_MODE# */
 		{GPIO_REC_MODE, ACTIVE_LOW, !get_recovery_mode_switch(),
@@ -27,7 +24,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{100, ACTIVE_HIGH, 1, "lid"},
 
 		/* Power Button */
-		{101, ACTIVE_LOW, (gen_pmcon_1 >> 9) & 1, "power"},
+		{101, ACTIVE_LOW, get_power_switch(), "power"},
 
 		/* Did we load the VGA Option ROM? */
 		/* -1 indicates that this is a pseudo GPIO */
@@ -44,6 +41,13 @@ static bool raw_write_protect_state(void)
 static bool raw_recovery_mode_switch(void)
 {
 	return !get_gpio(GPIO_REC_MODE);
+}
+
+int get_power_switch(void)
+{
+	const pci_devfn_t dev = PCI_DEV(0, 0x1f, 0);
+	u16 gen_pmcon_1 = pci_s_read_config32(dev, GEN_PMCON_1);
+	return (gen_pmcon_1 >> 9) & 1;
 }
 
 int get_write_protect_state(void)

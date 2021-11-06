@@ -9,4 +9,6 @@
 /* Write Protect: GPIO68 = CHP3_SPI_WP, active high */
 #define GPIO_SPI_WP	68
 
+int get_power_switch(void);
+
 #endif

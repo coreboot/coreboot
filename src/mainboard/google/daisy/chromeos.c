@@ -5,6 +5,7 @@
 #include <ec/google/chromeec/ec_commands.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <bootmode.h>
 

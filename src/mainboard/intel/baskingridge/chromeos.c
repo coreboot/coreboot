@@ -5,6 +5,7 @@
 #include <device/device.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/common/gpio.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)

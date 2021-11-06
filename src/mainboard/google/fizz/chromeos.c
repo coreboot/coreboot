@@ -5,6 +5,7 @@
 #include <gpio.h>
 #include <baseboard/variants.h>
 #include <soc/gpio.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #include <variant/gpio.h>

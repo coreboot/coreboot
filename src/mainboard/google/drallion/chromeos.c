@@ -6,6 +6,7 @@
 #include <gpio.h>
 #include <soc/gpio.h>
 #include <variant/gpio.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <security/tpm/tss.h>
 #include <device/device.h>

@@ -3,6 +3,7 @@
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <soc/gpio.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* The WP status pin lives on GPIO_SSUS_6 which is pad 36 in the SUS well. */

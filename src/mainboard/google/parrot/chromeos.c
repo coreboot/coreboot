@@ -9,6 +9,7 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <ec/compal/ene932/ec.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 

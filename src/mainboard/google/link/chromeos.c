@@ -4,6 +4,7 @@
 #include <boot/coreboot_tables.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)

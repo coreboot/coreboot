@@ -2,6 +2,7 @@
 
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/chromeos.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>

@@ -2,7 +2,7 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
-#include <commonlib/helpers.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #if !CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)

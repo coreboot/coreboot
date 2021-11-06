@@ -2,7 +2,7 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
-#include <commonlib/helpers.h>
+#include <types.h>
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

@@ -7,6 +7,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <variant/gpio.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)

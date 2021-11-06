@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>

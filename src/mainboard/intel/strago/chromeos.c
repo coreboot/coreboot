@@ -3,6 +3,7 @@
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 #define WP_GPIO	GP_E_22

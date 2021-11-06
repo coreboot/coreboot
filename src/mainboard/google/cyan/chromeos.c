@@ -5,6 +5,7 @@
 #include <device/mmio.h>
 #include <gpio.h>
 #include <soc/gpio.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* The WP status pin lives on MF_ISH_GPIO_4 */

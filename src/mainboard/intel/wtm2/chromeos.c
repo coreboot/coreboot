@@ -5,6 +5,7 @@
 #include <device/device.h>
 #include <soc/chromeos.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 /* Compile-time settings for recovery mode. */

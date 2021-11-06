@@ -8,6 +8,7 @@
 
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
+#include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "ec.h"
 #include <ec/quanta/it8518/ec.h>

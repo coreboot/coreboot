@@ -106,12 +106,18 @@ static void power_on_ps8640_bridge(void)
 	gpio_output(GPIO_EN_PP3300_DX_EDP, 1);
 
 	gpio_output(GPIO_PS8640_EDP_BRIDGE_3V3_ENABLE, 1);
-	gpio_output(GPIO_PS8640_EDP_BRIDGE_PD_L, 1);
-	gpio_output(GPIO_PS8640_EDP_BRIDGE_RST_L, 0);
 
 	/*
-	 * According to ps8640 app note v0.6, wait for 2ms ("t1") after
-	 * VDD33 goes high and then deassert RST.
+	 * According to ps8640 v1.4 spec, and the raise time of vdd33 is a bit
+	 * long, so wait for 4ms after VDD33 goes high and then deassert PD.
+	 */
+	mdelay(4);
+
+	gpio_output(GPIO_PS8640_EDP_BRIDGE_PD_L, 1);
+
+	/*
+	 * According to ps8640 app note v0.6, wait for 2ms after VDD33 goes
+	 * high and then deassert RST.
 	 */
 	mdelay(2);
 

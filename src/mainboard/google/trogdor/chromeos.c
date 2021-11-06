@@ -22,6 +22,8 @@ void setup_chromeos_gpios(void)
 	} else {
 		gpio_output(GPIO_EN_PP3300_DX_EDP, 0);
 		gpio_output(GPIO_EDP_BRIDGE_ENABLE, 0);
+		gpio_output(GPIO_PS8640_EDP_BRIDGE_3V3_ENABLE, 0);
+		gpio_output(GPIO_PS8640_EDP_BRIDGE_RST_L, 0);
 	}
 
 	if (CONFIG(TROGDOR_HAS_FINGERPRINT)) {

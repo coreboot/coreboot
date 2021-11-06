@@ -41,8 +41,6 @@ DefinitionBlock (
 
 	#include "acpi/routing.asl"
 
-	#include <southbridge/amd/cimx/sb800/acpi/pcie.asl>
-
 	/* Contains the supported sleep states for this chipset */
 	#include <southbridge/amd/common/acpi/sleepstates.asl>
 
@@ -109,17 +107,7 @@ DefinitionBlock (
 				}
 			}  /* end AGPB */
 
-			/* The external GFX bridge */
-			Device(PBR2) {
-				Name(_ADR, 0x00020000)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PICM){ Return(APS2) }   /* APIC mode */
-					Return (PS2)                  /* PIC Mode */
-				} /* end _PRT */
-			} /* end PBR2 */
-
-			/* Dev3 is also an external GFX bridge, not used in Herring */
+			/* Dev 2 & 3 are external GFX bridges, not used in Family14 */
 
 			Device(PBR4) {
 				Name(_ADR, 0x00040000)
@@ -158,25 +146,6 @@ DefinitionBlock (
 				} /* end _PRT */
 			} /* end PBR7 */
 
-			/* GPP */
-			Device(PBR9) {
-				Name(_ADR, 0x00090000)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PICM){ Return(APS9) }   /* APIC mode */
-					Return (PS9)                  /* PIC Mode */
-				} /* end _PRT */
-			} /* end PBR9 */
-
-			Device(PBRa) {
-				Name(_ADR, 0x000A0000)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PICM){ Return(APSA) }   /* APIC mode */
-					Return (PSA)                  /* PIC Mode */
-				} /* end _PRT */
-			} /* end PBRa */
-
 			Device(PE20) {
 				Name(_ADR, 0x00150000)
 				Name(_PRW, Package() {0x18, 4})
@@ -210,17 +179,11 @@ DefinitionBlock (
 				} /* end _PRT */
 			} /* end PE23 */
 
-			/* PCI slot 1, 2, 3 */
-			Device(PIBR) {
-				Name(_ADR, 0x00140004)
-				Name(_PRW, Package() {0x18, 4})
-
-				Method(_PRT, 0) {
-					Return (PCIB)
-				}
-			}
 
 			/* Describe the Southbridge devices */
+
+			#include <southbridge/amd/cimx/sb800/acpi/pcie.asl>
+
 			Device(STCR) {
 				Name(_ADR, 0x00110000)
 				#include "acpi/sata.asl"
@@ -351,8 +314,14 @@ DefinitionBlock (
 				#include "acpi/superio.asl"
 			} /* end LIBR */
 
-			Device(HPBR) {
+			/* PCI bridge */
+			Device(PIBR) {
 				Name(_ADR, 0x00140004)
+				Name(_PRW, Package() {0x18, 4})
+
+				Method(_PRT, 0) {
+					Return (PCIB)
+				}
 			} /* end HostPciBr */
 
 			Device(ACAD) {

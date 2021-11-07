@@ -16,10 +16,6 @@
 #include <southbridge/intel/common/pmclib.h>
 #include <elog.h>
 
-__weak void mainboard_early_init(int s3_resume)
-{
-}
-
 __weak void mainboard_late_rcba_config(void)
 {
 }
@@ -70,8 +66,6 @@ void mainboard_romstage_entry(void)
 	elog_boot_notify(s3resume);
 
 	post_code(0x38);
-
-	mainboard_early_init(s3resume);
 
 	post_code(0x39);
 

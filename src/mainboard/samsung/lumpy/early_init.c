@@ -182,11 +182,6 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 	read_spd(&spd[0], 0x50, id_only);
 }
 
-void mainboard_early_init(int s3resume)
-{
-	init_bootmode_straps();
-}
-
 int mainboard_should_reset_usb(int s3resume)
 {
 	return !s3resume;

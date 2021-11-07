@@ -6,6 +6,7 @@ ramstage-$(CONFIG_ELOG) += elog.c
 ramstage-y += finalize.c
 ramstage-y += ../../../../southbridge/intel/lynxpoint/lp_gpio.c
 romstage-y += ../../../../southbridge/intel/lynxpoint/lp_gpio.c
+verstage-y += ../../../../southbridge/intel/lynxpoint/lp_gpio.c
 smm-y      += ../../../../southbridge/intel/lynxpoint/lp_gpio.c
 ramstage-y += hda.c
 ramstage-y += ../../../../southbridge/intel/lynxpoint/hda_verb.c

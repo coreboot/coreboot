@@ -6,7 +6,6 @@
 #include <stdbool.h>
 
 /* functions implemented per mainboard: */
-void init_bootmode_straps(void);
 int get_write_protect_state(void);
 int get_recovery_mode_switch(void);
 int get_recovery_mode_retrain_switch(void);

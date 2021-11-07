@@ -164,11 +164,6 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 5 }, /* P13: Back port  (OC5) */
 };
 
-void mainboard_early_init(int s3resume)
-{
-	init_bootmode_straps();
-}
-
 int mainboard_should_reset_usb(int s3resume)
 {
 	if (s3resume) {

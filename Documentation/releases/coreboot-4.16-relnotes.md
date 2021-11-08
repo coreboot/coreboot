@@ -1,7 +1,10 @@
 Upcoming release - coreboot 4.16
 ================================
 
-The 4.16 release is planned for May 2022.
+The 4.16 release is planned for Februrary, 2022. 
+
+We are increasing the frequency of releases in order to enable others to release quarterly on
+a fresher version of coreboot.
 
 Update this document with changes that should be in the release notes.
 

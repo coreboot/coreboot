@@ -454,10 +454,10 @@ typedef struct {
   UINT8                       ApertureSize;
 
 /** Offset 0x01D0 - Board Type
-  MrcBoardType, Options are 0=Mobile/Mobile Halo, 1=Desktop/DT Halo, 2=Desktop 2DPC
-  DDR5, 5=ULT/ULX/Mobile Halo Type3, 6=ULT/ULX/Mobile Halo Type4, 8=UP Server
-  0:Mobile/Mobile Halo, 1:Desktop/DT Halo, 2:Desktop 2DPC DDR5, 5:ULT/ULX/Mobile Halo
-  Type3, 6:ULT/ULX/Mobile Halo Type4, 8:UP Server
+  MrcBoardType, Options are 0:Mobile, 1:Desktop1Dpc, 2:Desktop2DpcDaisyChain, 3:Desktop2DpcTeeTopologyAsymmetrical,
+  4:Desktop2DpcTeeTopology, 5:UltMobile, 7:UP Server
+  0:Mobile, 1:Desktop1Dpc, 2:Desktop2DpcDaisyChain, 3:Desktop2DpcTeeTopologyAsymmetrical,
+  4:Desktop2DpcTeeTopology, 5:UltMobile, 7:UP Server
 **/
   UINT8                       UserBd;
 
@@ -474,7 +474,7 @@ typedef struct {
 
 /** Offset 0x01D4 - SA GV
   System Agent dynamic frequency support and when enabled memory will be training
-  at three different frequencies.
+  at four different frequencies.
   0:Disabled, 1:FixedPoint0, 2:FixedPoint1, 3:FixedPoint2, 4:FixedPoint3, 5:Enabled
 **/
   UINT8                       SaGv;
@@ -1966,9 +1966,11 @@ typedef struct {
 **/
   UINT8                       PchHdaIDispCodecDisconnect;
 
-/** Offset 0x080D - Reserved
+/** Offset 0x080D - CNVi DDR RFI Mitigation
+  Enable/Disable DDR RFI Mitigation. Default is ENABLE. 0: DISABLE, 1: ENABLE
+  $EN_DIS
 **/
-  UINT8                       Reserved27;
+  UINT8                       CnviDdrRfim;
 
 /** Offset 0x080E - Debug Interfaces
   Debug Interfaces. BIT0-RAM, BIT1-UART, BIT3-USB3, BIT4-Serial IO, BIT5-TraceHub,
@@ -1991,7 +1993,7 @@ typedef struct {
 
 /** Offset 0x0811 - Reserved
 **/
-  UINT8                       Reserved28[3];
+  UINT8                       Reserved27[3];
 
 /** Offset 0x0814 - Serial Io Uart Debug BaudRate
   Set default BaudRate Supported from 0 - default to 6000000. Recommended values 9600,
@@ -2019,7 +2021,7 @@ typedef struct {
 
 /** Offset 0x081B - Reserved
 **/
-  UINT8                       Reserved29;
+  UINT8                       Reserved28;
 
 /** Offset 0x081C - Serial Io Uart Debug Mmio Base
   Select SerialIo Uart default MMIO resource in SEC/PEI phase when PcdSerialIoUartMode
@@ -2339,7 +2341,7 @@ typedef struct {
 
 /** Offset 0x0854 - Reserved
 **/
-  UINT8                       Reserved30;
+  UINT8                       Reserved29;
 
 /** Offset 0x0855 - Extern Therm Status
   Enables/Disable Extern Therm Status
@@ -2379,7 +2381,7 @@ typedef struct {
 
 /** Offset 0x085B - Reserved
 **/
-  UINT8                       Reserved31;
+  UINT8                       Reserved30;
 
 /** Offset 0x085C - Exit On Failure (MRC)
   Enables/Disable Exit On Failure (MRC)
@@ -2485,7 +2487,7 @@ typedef struct {
 
 /** Offset 0x086D - Reserved
 **/
-  UINT8                       Reserved32[2];
+  UINT8                       Reserved31[2];
 
 /** Offset 0x086F - Select if CLK0 is shared between Rank0 and Rank1 in DDR4 DDP
   Select if CLK0 is shared between Rank0 and Rank1 in DDR4 DDP
@@ -2544,7 +2546,7 @@ typedef struct {
 
 /** Offset 0x087E - Reserved
 **/
-  UINT8                       Reserved33;
+  UINT8                       Reserved32;
 
 /** Offset 0x087F - Idle Energy Mc0Ch0Dimm0
   Idle Energy Consumed for 1 clk w/dimm idle/cke on, range[63;0],(10= Def)
@@ -2754,7 +2756,7 @@ typedef struct {
 
 /** Offset 0x08A8 - Reserved
 **/
-  UINT8                       Reserved34[2];
+  UINT8                       Reserved33[2];
 
 /** Offset 0x08AA - Rapl Power Floor Ch0
   Power budget ,range[255;0],(0= 5.3W Def)
@@ -2786,7 +2788,7 @@ typedef struct {
 
 /** Offset 0x08AF - Reserved
 **/
-  UINT8                       Reserved35;
+  UINT8                       Reserved34;
 
 /** Offset 0x08B0 - User Manual Threshold
   Disabled: Predefined threshold will be used.\n
@@ -2860,7 +2862,7 @@ typedef struct {
 
 /** Offset 0x08BB - Reserved
 **/
-  UINT8                       Reserved36;
+  UINT8                       Reserved35;
 
 /** Offset 0x08BC - Post Code Output Port
   This option configures Post Code Output Port
@@ -2887,7 +2889,7 @@ typedef struct {
 
 /** Offset 0x08C1 - Reserved
 **/
-  UINT8                       Reserved37[3];
+  UINT8                       Reserved36[3];
 
 /** Offset 0x08C4 - BCLK RFI Frequency
   Bclk RFI Frequency for each SAGV point in Hz units. 98000000Hz = 98MHz <b>0 - No
@@ -2937,7 +2939,7 @@ typedef struct {
 
 /** Offset 0x08DB - Reserved
 **/
-  UINT8                       Reserved38[3];
+  UINT8                       Reserved37[3];
 
 /** Offset 0x08DE - REFRESH_PANIC_WM
   DEPRECATED
@@ -2963,7 +2965,7 @@ typedef struct {
 
 /** Offset 0x08E2 - Reserved
 **/
-  UINT8                       Reserved39[9];
+  UINT8                       Reserved38[9];
 
 /** Offset 0x08EB - Skip external display device scanning
   Enable: Do not scan for external display device, Disable (Default): Scan external
@@ -2986,7 +2988,7 @@ typedef struct {
 
 /** Offset 0x08EE - Reserved
 **/
-  UINT8                       Reserved40;
+  UINT8                       Reserved39;
 
 /** Offset 0x08EF - Panel Power Enable
   Control for enabling/disabling VDD force bit (Required only for early enabling of
@@ -3003,7 +3005,7 @@ typedef struct {
 
 /** Offset 0x08F1 - Reserved
 **/
-  UINT8                       Reserved41[3];
+  UINT8                       Reserved40[3];
 
 /** Offset 0x08F4 - PMR Size
   Size of PMR memory buffer. 0x400000 for normal boot and 0x200000 for S3 boot
@@ -3017,7 +3019,7 @@ typedef struct {
 
 /** Offset 0x08F9 - Reserved
 **/
-  UINT8                       Reserved42[95];
+  UINT8                       Reserved41[95];
 
 /** Offset 0x0958 - TotalFlashSize
   Enable/Disable. 0: Disable, define default value of TotalFlashSize , 1: enable
@@ -3033,7 +3035,7 @@ typedef struct {
 
 /** Offset 0x095C - Reserved
 **/
-  UINT8                       Reserved43[12];
+  UINT8                       Reserved42[12];
 
 /** Offset 0x0968 - Smbus dynamic power gating
   Disable or Enable Smbus dynamic power gating.
@@ -3099,7 +3101,7 @@ typedef struct {
 
 /** Offset 0x0972 - Reserved
 **/
-  UINT8                       Reserved44[2];
+  UINT8                       Reserved43[2];
 
 /** Offset 0x0974 - Hybrid Graphics GPIO information for PEG 1
   Hybrid Graphics GPIO information for PEG 1, for Reset, power and wake GPIOs
@@ -3136,7 +3138,7 @@ typedef struct {
 
 /** Offset 0x0A97 - Reserved
 **/
-  UINT8                       Reserved45;
+  UINT8                       Reserved44;
 
 /** Offset 0x0A98 - SerialIoUartDebugRxPinMux - FSPT
   Select RX pin muxing for SerialIo UART used for debug
@@ -3162,7 +3164,7 @@ typedef struct {
 
 /** Offset 0x0AA8 - Reserved
 **/
-  UINT8                       Reserved46[104];
+  UINT8                       Reserved45[104];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration

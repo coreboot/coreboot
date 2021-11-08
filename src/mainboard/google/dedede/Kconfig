@@ -111,6 +111,7 @@ config MAINBOARD_PART_NUMBER
 	default "Corori" if BOARD_GOOGLE_CORORI
 	default "Driblee" if BOARD_GOOGLE_DRIBLEE
 	default "Gooey" if BOARD_GOOGLE_GOOEY
+	default "Beadrix" if BOARD_GOOGLE_BEADRIX
 
 config MAX_CPUS
 	int
@@ -148,6 +149,7 @@ config VARIANT_DIR
 	default "corori" if BOARD_GOOGLE_CORORI
 	default "driblee" if BOARD_GOOGLE_DRIBLEE
 	default "gooey" if BOARD_GOOGLE_GOOEY
+	default "beadrix" if BOARD_GOOGLE_BEADRIX
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 

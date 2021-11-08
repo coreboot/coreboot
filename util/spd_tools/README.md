@@ -590,3 +590,48 @@ util/spd_tools/bin/part_id_gen \
         `dram_id.generated.txt` with the new part.
     *   Upload the changes to `Makefile.inc` and `dram_id.generated.txt` for
         review.
+
+## How to add support for a new memory technology
+
+### 1. Gather the SPD requirements
+
+To generate SPDs for the new memory technology, information is needed about the
+list of bytes in the SPD and how the value of each byte should be determined.
+This information usually comes from a combination of:
+
+*   The JEDEC spec for the memory technology, e.g. JESD209-5B for LPDDR5.
+*   The JEDEC SPD spec for the memory technology, e.g. SPD4.1.2.M-2 for LPDDR3/4
+    (also used for LP4x and LP5).
+*   Platform-specific requirements. SoC vendors often don't follow the JEDEC
+    specs exactly. E.g. the memory training code may expect certain SPD bytes to
+    encode a different value to what is stated in the spec. So for each SoC
+    platform using the new memory technology, any platform-specific requirements
+    need to be gathered.
+
+### 2. Implement support in spd_tools
+
+Support for the new memory technology needs to be added to both the `spd_gen`
+and `part_id_gen` tools.
+
+#### `spd_gen`
+
+Adding support to `spd_gen` requires implementing the logic to generate SPDs for
+the new memory technology. The changes required are:
+
+*   Add the new memory technology to the `memTechMap` in `spd_gen/spd_gen.go`.
+*   Add a new file `spd_gen/<mem_tech>.go`. This file will contain all the logic
+    for generating SPDs for the new memory technology. It needs to implement the
+    `memTech` interface defined in `spd_gen/spd_gen.go`. The interface functions
+    are documented inline. Examples of how the interface is implemented for
+    existing memory technologies can be found in the `spd_gen/` directory, e.g.
+    `lp4x.go`, `ddr4.go`, `lp5.go`. While not strictly necessary, it is
+    recommended to follow the overall structure of these existing files when
+    adding a new memory technology.
+
+#### `part_id_gen`
+
+The `part_id_gen` tool is memory technology-agnostic, so the only change
+required is:
+
+*   Add the new memory technology to the `supportedMemTechs` list in
+    `part_id_gen/part_id_gen.go`.

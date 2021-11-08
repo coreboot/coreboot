@@ -28,10 +28,37 @@ type memPart struct {
 }
 
 type memTech interface {
+	/*
+	 * Returns the set -> platform mapping for the memory technology. Platforms with the
+	 * same SPD requirements should be grouped together into a single set.
+	 */
 	getSetMap() map[int][]int
+
+	/*
+	 * Takes the name and attributes of a part, as read from the memory_parts JSON file.
+	 * Validates the attributes, returning an error if any attribute has an invalid value.
+	 * Stores the name and attributes internally to be used later.
+	 */
 	addNewPart(string, interface{}) error
+
+	/*
+	 * Takes the name of a part and a set number.
+	 * Retrieves the part's attributes which were stored by addNewPart(). Updates them by
+	 * setting any optional attributes which weren't specified in the JSON file to their
+	 * default values.
+	 * Returns these updated attributes.
+	 */
 	getSPDAttribs(string, int) (interface{}, error)
+
+	/*
+	 * Returns the size of an SPD file for this memory technology.
+	 */
 	getSPDLen() int
+
+	/*
+	 * Takes an SPD byte index and the attributes of a part.
+	 * Returns the value which that SPD byte should be set to based on the attributes.
+	 */
 	getSPDByte(int, interface{}) byte
 }
 

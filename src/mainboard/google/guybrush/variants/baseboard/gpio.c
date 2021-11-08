@@ -206,10 +206,23 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
 	/* I2C3_SDA */
 	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
-	/* ESPI_CS_L */
-	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* GSC_SOC_INT_L */
 	PAD_INT(GPIO_85, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
+
+/* Enable UART 0 */
+	/* UART0_RXD */
+	PAD_NF(GPIO_141, UART0_RXD, PULL_NONE),
+	/* UART0_TXD */
+	PAD_NF(GPIO_143, UART0_TXD, PULL_NONE),
+
+/* Support EC trusted */
+	/* SD_EX_PRSNT_L(Guybrush BoardID 1 only) / EC_IN_RW_OD */
+	PAD_GPI(GPIO_91, PULL_NONE),
+};
+
+static const struct soc_amd_gpio espi_gpio_table[] = {
+	/* ESPI_CS_L */
+	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* ESPI_SOC_CLK */
 	PAD_NF(GPIO_86, SPI_CLK, PULL_NONE),
 	/* ESPI1_DATA0 */
@@ -222,16 +235,6 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 	PAD_NF(GPIO_107, SPI2_HOLD_L_ESPI2_D3, PULL_NONE),
 	/* ESPI_ALERT_L */
 	PAD_NF(GPIO_108, ESPI_ALERT_D1, PULL_NONE),
-
-/* Enable UART 0 */
-	/* UART0_RXD */
-	PAD_NF(GPIO_141, UART0_RXD, PULL_NONE),
-	/* UART0_TXD */
-	PAD_NF(GPIO_143, UART0_TXD, PULL_NONE),
-
-/* Support EC trusted */
-	/* SD_EX_PRSNT_L(Guybrush BoardID 1 only) / EC_IN_RW_OD */
-	PAD_GPI(GPIO_91, PULL_NONE),
 };
 
 /* Power-on timing requirements:
@@ -343,4 +346,10 @@ const __weak struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(sleep_gpio_table);
 	return sleep_gpio_table;
+}
+
+const __weak struct soc_amd_gpio *variant_espi_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(espi_gpio_table);
+	return espi_gpio_table;
 }

@@ -40,6 +40,9 @@ const struct soc_amd_gpio *variant_pcie_gpio_table(size_t *size);
 /* This function provides GPIO settings before entering sleep. */
 const struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size);
 
+/* This function provides GPIO settings for eSPI bus. */
+const struct soc_amd_gpio *variant_espi_gpio_table(size_t *size);
+
 bool variant_has_pcie_wwan(void);
 
 void variant_update_dxio_descriptors(fsp_dxio_descriptor *dxio_descriptors);

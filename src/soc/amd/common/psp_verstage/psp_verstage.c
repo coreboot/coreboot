@@ -24,6 +24,7 @@
 extern char _bss_start, _bss_end;
 
 void __weak verstage_mainboard_early_init(void) {}
+void __weak verstage_mainboard_espi_init(void) {}
 void __weak verstage_mainboard_init(void) {}
 uint32_t __weak get_max_workbuf_size(uint32_t *size)
 {
@@ -233,8 +234,11 @@ void Main(void)
 		svc_debug_print("verstage_soc_early_init failed! -- rebooting\n");
 		vboot_reboot();
 	}
-	svc_debug_print("calling verstage_mainboard_early_init\n");
 
+	printk(BIOS_DEBUG, "calling verstage_mainboard_espi_init\n");
+	verstage_mainboard_espi_init();
+
+	printk(BIOS_DEBUG, "calling verstage_mainboard_early_init\n");
 	verstage_mainboard_early_init();
 
 	svc_write_postcode(POSTCODE_LATE_INIT);

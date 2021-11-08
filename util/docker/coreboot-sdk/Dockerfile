@@ -21,6 +21,7 @@ RUN \
 	apt-get -qqy install \
 		bc \
 		bison \
+		bsdextrautils \
 		bzip2 \
 		ccache \
 		cmake \
@@ -39,6 +40,7 @@ RUN \
 		gnat \
 		golang \
 		graphviz \
+		lcov \
 		libcrypto++-dev \
 		libcurl4 \
 		libcurl4-openssl-dev \

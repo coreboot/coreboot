@@ -54,7 +54,7 @@ chip soc/intel/jasperlake
 	#|                   | for TPM communication     |
 	#|                   | before memory is up       |
 	#| I2C0              | Trackpad                  |
-	#| I2C1              | Digitizer                 |
+	#| I2C1              | Digitizer, P-sensor(LTE)  |
 	#| I2C2              | Touchscreen               |
 	#| I2C3              | Camera                    |
 	#| I2C4              | Audio                     |
@@ -208,6 +208,17 @@ chip soc/intel/jasperlake
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0x09 on end
+			end
+			chip drivers/i2c/sx9360
+				register "desc" = ""SAR Proximity Sensor - LTE""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E10_IRQ)"
+				register "uid" = "1"
+				register "proxraw_strength" = "1"
+				register "avg_pos_strength" = "256"
+				register "resolution" = "1024"
+				device i2c 28 on
+					probe DB_PORTS DB_PORTS_1C_1A_LTE
+				end
 			end
 		end # I2C #1
 		device pci 15.2 on

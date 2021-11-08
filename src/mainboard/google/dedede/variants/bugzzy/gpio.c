@@ -46,6 +46,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E0, NONE),
 	/* E1 : EMR_RESET_L */
 	PAD_CFG_GPO(GPP_E1, 0, DEEP),
+	/* E10 : LTE_SAR_SENSOR_INT */
+	PAD_CFG_GPI_APIC(GPP_E10, NONE, PLTRST, LEVEL, NONE),
 	/* E13 : DDI0_DDC_SCL */
 	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF1),
 	/* E14 : DDI0_DDC_SDA */

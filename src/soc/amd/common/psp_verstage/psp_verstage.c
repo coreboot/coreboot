@@ -224,8 +224,14 @@ void Main(void)
 	svc_write_postcode(POSTCODE_EARLY_INIT);
 	retval = verstage_soc_early_init();
 	if (retval) {
-		svc_debug_print("verstage_soc_early_init failed\n");
-		reboot_into_recovery(NULL, retval);
+		/*
+		 * If verstage_soc_early_init fails, cmos is probably not
+		 * accessible, so rebooting into recovery is not an option.
+		 * Just reboot and hope for the best.
+		 */
+		svc_write_postcode(POSTCODE_EARLY_INIT_ERROR);
+		svc_debug_print("verstage_soc_early_init failed! -- rebooting\n");
+		vboot_reboot();
 	}
 	svc_debug_print("calling verstage_mainboard_early_init\n");
 

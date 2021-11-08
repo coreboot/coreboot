@@ -1,0 +1,1 @@
+ramstage-$(CONFIG_DRIVERS_I2C_SX9360) += sx9360.c

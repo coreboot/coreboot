@@ -16,6 +16,12 @@ config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_RETURN_FROM_VERSTAGE
 
+config SSPM_FIRMWARE
+	string
+	default "sspm.bin"
+	help
+	  The file name of the MediaTek SSPM firmware.
+
 config FLASH_DUAL_READ
 	bool
 	default y

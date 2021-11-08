@@ -15,7 +15,7 @@ FLASH 32M {
 			VBLOCK_A 64K
 			FW_MAIN_A(CBFS)
 			RW_FWID_A 64
-			ME_RW_A(CBFS) 4032K
+			ME_RW_A(CBFS) 3520K
 		}
 		RW_LEGACY(CBFS) 1M
 		RW_MISC 1M {
@@ -39,7 +39,7 @@ FLASH 32M {
 			VBLOCK_B 64K
 			FW_MAIN_B(CBFS)
 			RW_FWID_B 64
-			ME_RW_B(CBFS) 4032K
+			ME_RW_B(CBFS) 3520K
 		}
 		# Make WP_RO region align with SPI vendor
 		# memory protected range specification.

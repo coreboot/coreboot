@@ -133,14 +133,14 @@ chip soc/intel/alderlake
 			chip drivers/intel/pmc_mux
 				device generic 0 on
 					chip drivers/intel/pmc_mux/conn
-						register "usb2_port_number" = "2"
-						register "usb3_port_number" = "2"
-						device generic 1 alias conn1 on end
-					end
-					chip drivers/intel/pmc_mux/conn
 						register "usb2_port_number" = "3"
 						register "usb3_port_number" = "3"
 						device generic 2 alias conn2 on end
+					end
+					chip drivers/intel/pmc_mux/conn
+						register "usb2_port_number" = "2"
+						register "usb3_port_number" = "2"
+						device generic 1 alias conn1 on end
 					end
 				end
 			end

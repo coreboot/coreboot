@@ -41,6 +41,12 @@
 
 Scope (\_SB)
 {
+#if CONFIG(SOC_INTEL_TIGERLAKE_S3)
+	Name (S0IX, 0)
+#else
+	Name (S0IX, 1)
+#endif
+
 	/* Device base address */
 	Method (BASE, 1)
 	{
@@ -673,116 +679,118 @@ Scope (\_SB.PCI0)
 		}
 	}
 
-	Method (TCON, 0)
-	{
-		/* Reset IOM D3 cold bit if it is in D3 cold now. */
-		If (TD3C == 1)  /* It was in D3 cold before. */
+	If (S0IX == 1) {
+		Method (TCON, 0)
 		{
-			/* Reset IOM D3 cold bit. */
-			TD3C = 0    /* Request IOM for D3 cold exit sequence. */
-			Local0 = 0  /* Time check counter variable */
-			/* Wait for ack, the maximum wait time for the ack is 100 msec. */
-			While ((TACK != 0) && (Local0 < TCSS_IOM_ACK_TIMEOUT_IN_MS)) {
-				/*
-				 * Wait in this loop until TACK becomes 0 with timeout
-				 * TCSS_IOM_ACK_TIMEOUT_IN_MS by default.
-				 */
-				Sleep (1)  /* Delay of 1ms. */
-				Local0++
-			}
-
-			If (Local0 == TCSS_IOM_ACK_TIMEOUT_IN_MS) {
-				Printf("Error: Timeout occurred.")
-			}
-			Else
+			/* Reset IOM D3 cold bit if it is in D3 cold now. */
+			If (TD3C == 1)  /* It was in D3 cold before. */
 			{
-				/*
-				 * Program IOP MCTP Drop (TCSS_IN_D3) after D3 cold exit and
-				 * acknowledgement by IOM.
-				 */
-				TCD3 = 0
-				/*
-				 * If the TCSS Deven is cleared by BIOS Mailbox request, then
-				 * restore to previously saved value of TCSS DEVNE.
-				 */
-				Local0 = 0
-				While (\_SB.PCI0.TXHC.VDID == 0xFFFFFFFF) {
-					If (DSGS () == 1) {
-						DSCR (0)
-					}
+				/* Reset IOM D3 cold bit. */
+				TD3C = 0    /* Request IOM for D3 cold exit sequence. */
+				Local0 = 0  /* Time check counter variable */
+				/* Wait for ack, the maximum wait time for the ack is 100 msec. */
+				While ((TACK != 0) && (Local0 < TCSS_IOM_ACK_TIMEOUT_IN_MS)) {
+					/*
+					 * Wait in this loop until TACK becomes 0 with timeout
+					 * TCSS_IOM_ACK_TIMEOUT_IN_MS by default.
+					 */
+					Sleep (1)  /* Delay of 1ms. */
 					Local0++
-					If (Local0 == 5) {
-						Printf("pCode mailbox command failed.")
-						Break
+				}
+
+				If (Local0 == TCSS_IOM_ACK_TIMEOUT_IN_MS) {
+					Printf("Error: Timeout occurred.")
+				}
+				Else
+				{
+					/*
+					 * Program IOP MCTP Drop (TCSS_IN_D3) after D3 cold exit and
+					 * acknowledgement by IOM.
+					 */
+					TCD3 = 0
+					/*
+					 * If the TCSS Deven is cleared by BIOS Mailbox request, then
+					 * restore to previously saved value of TCSS DEVNE.
+					 */
+					Local0 = 0
+					While (\_SB.PCI0.TXHC.VDID == 0xFFFFFFFF) {
+						If (DSGS () == 1) {
+							DSCR (0)
+						}
+						Local0++
+						If (Local0 == 5) {
+							Printf("pCode mailbox command failed.")
+							Break
+						}
 					}
 				}
 			}
-		}
-		Else {
-			Printf("Drop TCON due to it is already exit D3 cold.")
-		}
-	}
-
-	Method (TCOF, 0)
-	{
-		If ((\_SB.PCI0.TXHC.SD3C != 0) || (\_SB.PCI0.TDM0.SD3C != 0)
-					       || (\_SB.PCI0.TDM1.SD3C != 0))
-		{
-			Printf("Skip D3C entry.")
-			Return
-		}
-
-		/*
-		 * If the TCSS Deven in normal state, then Save current TCSS DEVEN value and
-		 * clear it.
-		 */
-		Local0 = 0
-		While (\_SB.PCI0.TXHC.VDID != 0xFFFFFFFF) {
-			If (DSGS () == 0) {
-				DSCR (1)
-			}
-			Local0++
-			If (Local0 == 5) {
-				Printf("pCode mailbox command failed.")
-				Break
+			Else {
+				Printf("Drop TCON due to it is already exit D3 cold.")
 			}
 		}
 
-		/*
-		 * Program IOM MCTP Drop (TCSS_IN_D3) in D3Cold entry before entering D3 cold.
-		 */
-		TCD3 = 1
-
-		/* Request IOM for D3 cold entry sequence. */
-		TD3C = 1
-	}
-
-	PowerResource (D3C, 5, 0)
-	{
-		/*
-		 * Variable to save power state
-		 * 1 - TC Cold request cleared.
-		 * 0 - TC Cold request sent.
-		 */
-		Name (STAT, 0x1)
-
-		Method (_STA, 0)
+		Method (TCOF, 0)
 		{
-			Return (STAT)
+			If ((\_SB.PCI0.TXHC.SD3C != 0) || (\_SB.PCI0.TDM0.SD3C != 0)
+						       || (\_SB.PCI0.TDM1.SD3C != 0))
+			{
+				Printf("Skip D3C entry.")
+				Return
+			}
+
+			/*
+			 * If the TCSS Deven in normal state, then Save current TCSS DEVEN value and
+			 * clear it.
+			 */
+			Local0 = 0
+			While (\_SB.PCI0.TXHC.VDID != 0xFFFFFFFF) {
+				If (DSGS () == 0) {
+					DSCR (1)
+				}
+				Local0++
+				If (Local0 == 5) {
+					Printf("pCode mailbox command failed.")
+					Break
+				}
+			}
+
+			/*
+			 * Program IOM MCTP Drop (TCSS_IN_D3) in D3Cold entry before entering D3 cold.
+			 */
+			TCD3 = 1
+
+			/* Request IOM for D3 cold entry sequence. */
+			TD3C = 1
 		}
 
-		Method (_ON, 0)
+		PowerResource (D3C, 5, 0)
 		{
-			\_SB.PCI0.TCON()
-			STAT = 1
-		}
+			/*
+			 * Variable to save power state
+			 * 1 - TC Cold request cleared.
+			 * 0 - TC Cold request sent.
+			 */
+			Name (STAT, 0x1)
 
-		Method (_OFF, 0)
-		{
-			\_SB.PCI0.TCOF()
-			STAT = 0
+			Method (_STA, 0)
+			{
+				Return (STAT)
+			}
+
+			Method (_ON, 0)
+			{
+				\_SB.PCI0.TCON()
+				STAT = 1
+			}
+
+			Method (_OFF, 0)
+			{
+				\_SB.PCI0.TCOF()
+				STAT = 0
+			}
 		}
-	}
+	} /* End: S0IX */
 
 	/*
 	 * TCSS xHCI device

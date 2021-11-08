@@ -27,24 +27,48 @@ Name (STAT, 0x1)  /* Variable to save power state 1 - D0, 0 - D3C */
 
 Method (_S0W, 0x0)
 {
-	Return (0x4)
+	If (S0IX == 1) {
+		Return (0x04)
+	} Else {
+		Return (0x03)
+	}
 }
 
+/*
+ * Get power resources that are dependent on this device for Operating System Power Management
+ * to put the device in the D0 device state
+ */
 Method (_PR0)
 {
-	If (DUID == 0) {
-		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
+	If (S0IX == 1) {
+		If (DUID == 0) {
+			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
+		} Else {
+			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
+		}
 	} Else {
-		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
+		If (DUID == 0) {
+			Return (Package() { \_SB.PCI0.TBT0 })
+		} Else {
+			Return (Package() { \_SB.PCI0.TBT1 })
+		}
 	}
 }
 
 Method (_PR3)
 {
-	If (DUID == 0) {
-		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
+	If (S0IX == 1) {
+		If (DUID == 0) {
+			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
+		} Else {
+			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
+		}
 	} Else {
-		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
+		If (DUID == 0) {
+			Return (Package() { \_SB.PCI0.TBT0 })
+		} Else {
+			Return (Package() { \_SB.PCI0.TBT1 })
+		}
 	}
 }
 
@@ -53,8 +77,8 @@ Method (_PR3)
  */
 Method (D3CX, 0, Serialized)
 {
-	DD3E = 0	/* Disable DMA RTD3 */
-	STAT = 0x1
+	DD3E = 0x00	/* Disable DMA RTD3 */
+	STAT = 0x01
 }
 
 /*
@@ -62,8 +86,8 @@ Method (D3CX, 0, Serialized)
  */
 Method (D3CE, 0, Serialized)
 {
-	DD3E = 1	/* Enable DMA RTD3 */
-	STAT = 0
+	DD3E = 0x01	/* Enable DMA RTD3 */
+	STAT = 0x00
 }
 
 /*
@@ -71,7 +95,6 @@ Method (D3CE, 0, Serialized)
  * TCSS D3 Cold and TBT RTD3 is only available when system power state is in S0.
  */
 Name (SD3C, 0)
-
 Method (_PS0, 0, Serialized)
 {
 }

@@ -267,25 +267,45 @@ Method (_PS3, 0, Serialized)
 
 Method (_S0W, 0x0, NotSerialized)
 {
-	Return (0x4)
+	If (S0IX == 1) {
+		Return (0x4)
+	} Else {
+		Return (0x3)
+	}
 }
 
 Method (_PR0)
 {
-        If ((TUID == 0) || (TUID == 1)) {
-                Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
-        } Else {
-                Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
-        }
+	If (S0IX == 1) {
+		If ((TUID == 0) || (TUID == 1)) {
+			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
+		} Else {
+			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
+		}
+	} Else {
+		If ((TUID == 0) || (TUID == 1)) {
+			Return (Package() { \_SB.PCI0.TBT0 })
+		} Else {
+			Return (Package() { \_SB.PCI0.TBT1 })
+		}
+	}
 }
 
 Method (_PR3)
 {
-        If ((TUID == 0) || (TUID == 1)) {
-                Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
-        } Else {
-                Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
-        }
+	If (S0IX == 1) {
+		If ((TUID == 0) || (TUID == 1)) {
+			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
+		} Else {
+			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
+		}
+	} Else {
+		If ((TUID == 0) || (TUID == 1)) {
+			Return (Package() { \_SB.PCI0.TBT0 })
+		} Else {
+			Return (Package() { \_SB.PCI0.TBT1 })
+		}
+	}
 }
 
 /*

@@ -135,7 +135,7 @@ chip soc/intel/alderlake
 				register "name" = ""MXW0""
 				register "r0_calib_key" = ""dsm_calib_r0_0""
 				register "temperature_calib_key" = ""dsm_calib_temp_0""
-				register "dsm_param_file_name" = ""dsm_param""
+				register "dsm_param_file_name" = ""dsm_param_R""
 				register "vmon_slot_no" = "0"
 				register "imon_slot_no" = "1"
 				device i2c 0x38 on
@@ -147,7 +147,7 @@ chip soc/intel/alderlake
 				register "name" = ""MXW1""
 				register "r0_calib_key" = ""dsm_calib_r0_1""
 				register "temperature_calib_key" = ""dsm_calib_temp_1""
-				register "dsm_param_file_name" = ""dsm_param""
+				register "dsm_param_file_name" = ""dsm_param_L""
 				register "vmon_slot_no" = "1"
 				register "imon_slot_no" = "0"
 				device i2c 0x3c on

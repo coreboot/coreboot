@@ -145,6 +145,12 @@ static void configure_mipi_panel(void)
 		mdelay(5);
 		gpio_output(GPIO_VDD_RESET_1V8, 1);
 	}
+	/*
+	 * In mipi panel, TP_EN(GPIO 85) need pull up before
+	 * GPIO_BACKLIGHT_ENABLE(GPIO12) up.
+	 */
+	if (CONFIG(TROGDOR_HAS_MIPI_PANEL))
+		gpio_output(GPIO_TP_EN, 1);
 }
 
 static struct panel_serializable_data *get_mipi_panel(enum lb_fb_orientation *orientation)

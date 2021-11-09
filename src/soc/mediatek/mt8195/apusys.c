@@ -10,10 +10,10 @@ DEFINE_BITFIELD(NO_MPU, 16, 16)
 
 static void dump_apusys_reg(void)
 {
-	int i;
+	size_t i;
 
 	for (i = 0; i < ARRAY_SIZE(mt8195_apu_mbox); i++) {
-		printk(BIOS_INFO, "APU_MBOX %p = %#x\n",
+		printk(BIOS_DEBUG, "APU_MBOX %p = %#x\n",
 		       (void *)&mt8195_apu_mbox[i]->mbox_func_cfg,
 		       read32(&mt8195_apu_mbox[i]->mbox_func_cfg));
 	}
@@ -21,9 +21,9 @@ static void dump_apusys_reg(void)
 
 void apusys_init(void)
 {
-	int i;
+	size_t i;
 
-	/* Setup MBOX MPU for non secure access */
+	/* Set up MBOX MPU for non secure access */
 	for (i = 0; i < ARRAY_SIZE(mt8195_apu_mbox); i++)
 		SET32_BITFIELDS(&mt8195_apu_mbox[i]->mbox_func_cfg, NO_MPU, 1, LOCK, 1);
 

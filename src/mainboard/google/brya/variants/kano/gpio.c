@@ -30,10 +30,14 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_D3, NONE),
 	/* D5  : SRCCLKREQ0# ==> SSD_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),
+	/* D6  : SRCCLKREQ1# ==> APU_PEN_DETECT_ODL */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_D6, NONE, PLTRST),
 	/* D7  : SRCCLKREQ2# ==> NC */
 	PAD_NC(GPP_D7, NONE),
 	/* D8  : SRCCLKREQ3# ==> NC */
 	PAD_NC(GPP_D8, NONE),
+	/* D17  : UART1_RXD ==> APU_PEN_DETECT_ODL */
+	PAD_CFG_GPI_SCI(GPP_D17, NONE, DEEP, EDGE_SINGLE, NONE),
 	/* D18 : UART1_TXD ==> NC */
 	PAD_NC(GPP_D18, NONE),
 

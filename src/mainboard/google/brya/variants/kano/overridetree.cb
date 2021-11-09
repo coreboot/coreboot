@@ -15,6 +15,9 @@ end
 chip soc/intel/alderlake
 	register "SaGv" = "SaGv_Enabled"
 
+	# GPE configuration
+	register "pmc_gpe0_dw1" = "GPP_D"
+
 	# FIVR configurations for kano are disabled since the board doesn't have V1p05 and Vnn
 	# bypass rails implemented.
 	register "ext_fivr_settings" = "{
@@ -222,6 +225,19 @@ chip soc/intel/alderlake
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 0x10 on end
+			end
+			chip drivers/generic/gpio_keys
+				register "name" = ""PENH""
+				# GPP_D6 is the IRQ source, and GPP_D17 is the wake source
+				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_D6)"
+				register "key.wake_gpe" = "GPE0_DW1_17"
+				register "key.wakeup_route" = "WAKEUP_ROUTE_SCI"
+				register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"
+				register "key.dev_name" = ""EJCT""
+				register "key.linux_code" = "SW_PEN_INSERTED"
+				register "key.linux_input_type" = "EV_SW"
+				register "key.label" = ""pen_eject""
+				device generic 0 on end
 			end
 		end
 		device ref i2c2 on

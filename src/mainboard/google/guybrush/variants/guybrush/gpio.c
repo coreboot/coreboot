@@ -31,8 +31,6 @@ static const struct soc_amd_gpio bid1_ramstage_gpio_table[] = {
 static const struct soc_amd_gpio bid2_ramstage_gpio_table[] = {
 	/* EN_PP5000_PEN */
 	PAD_GPO(GPIO_5, HIGH),
-	/* SD_AUX_RESET_L */
-	PAD_GPO(GPIO_69, HIGH),
 	/* GSC_SOC_INT_L */
 	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* Unused */
@@ -42,9 +40,6 @@ static const struct soc_amd_gpio bid2_ramstage_gpio_table[] = {
 };
 
 static const struct soc_amd_gpio override_early_gpio_table[] = {
-	PAD_NC(GPIO_5),
-	/* BID >= 2: SD_AUX_RESET_L */
-	PAD_GPO(GPIO_69, LOW),
 	/* BID == 1: SD_AUX_RESET_L */
 	PAD_GPO(GPIO_70, LOW),
 	/* GSC_SOC_INT_L */
@@ -55,16 +50,8 @@ static const struct soc_amd_gpio override_early_gpio_table[] = {
 
 /* This table is used by guybrush variant with board version < 2. */
 static const struct soc_amd_gpio bid1_pcie_gpio_table[] = {
-	PAD_NC(GPIO_5),
 	/* SD_AUX_RESET_L */
 	PAD_GPO(GPIO_70, HIGH),
-};
-
-/* This table is used by guybrush variant with board version < 2. */
-static const struct soc_amd_gpio bid2_pcie_gpio_table[] = {
-	PAD_NC(GPIO_5),
-	/* SD_AUX_RESET_L */
-	PAD_GPO(GPIO_69, HIGH),
 };
 
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
@@ -101,6 +88,5 @@ const struct soc_amd_gpio *variant_pcie_override_gpio_table(size_t *size)
 		return bid1_pcie_gpio_table;
 	}
 
-	*size = ARRAY_SIZE(bid2_pcie_gpio_table);
-	return bid2_pcie_gpio_table;
+	return NULL;
 }

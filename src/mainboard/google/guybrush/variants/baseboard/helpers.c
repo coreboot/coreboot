@@ -11,5 +11,5 @@ bool __weak variant_has_pcie_wwan(void)
 
 uint8_t __weak variant_sd_aux_reset_gpio(void)
 {
-	return GPIO_5;
+	return GPIO_69;
 }

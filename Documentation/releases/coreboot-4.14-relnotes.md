@@ -142,7 +142,7 @@ primarily to serve the needs of the server market.
 
 coreboot support for Xeon-SP is in src/soc/intel/xeon_sp directory.
 This release has support for SkyLake-SP (SKX-SP) which is the 2nd
-generation, and for CooperLake-SP (CPX-SP) which is the 3rd generation
+generation, and for Cooper Lake-SP (CPX-SP) which is the 3rd generation
 or the latest generation [2] on market.
 
 With this release, the codebase for multiple generations of Xeon-SP

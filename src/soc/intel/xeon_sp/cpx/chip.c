@@ -186,7 +186,7 @@ static void chip_init(void *data)
 }
 
 struct chip_operations soc_intel_xeon_sp_cpx_ops = {
-	CHIP_NAME("Intel Cooperlake-SP")
+	CHIP_NAME("Intel Cooper Lake-SP")
 	.enable_dev = chip_enable_dev,
 	.init = chip_init,
 	.final = chip_final,

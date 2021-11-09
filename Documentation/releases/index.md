@@ -27,4 +27,4 @@ Upcoming release
 ----------------
 
 Please add to the release notes as changes are added:
-* [4.16 - May 2022](coreboot-4.16-relnotes.md)
+* [4.16 - Feb 2022](coreboot-4.16-relnotes.md)

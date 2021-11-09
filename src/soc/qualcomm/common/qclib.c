@@ -16,8 +16,34 @@
 #include <soc/symbols_common.h>
 #include <security/vboot/misc.h>
 #include <vb2_api.h>
+#include <commonlib/bsd/mem_chip_info.h>
 
 #define QCLIB_VERSION 0
+
+/* store QcLib return data until ROMSTAGE_CBMEM_INIT_HOOK runs */
+static void *mem_chip_addr;
+
+static void write_mem_chip_information(struct qclib_cb_if_table_entry *te)
+{
+	/* Save mem_chip_info in local variables ahead of hook running */
+	mem_chip_addr = (void *)te->blob_address;
+}
+
+static void add_mem_chip_info(int unused)
+{
+	void *mem_region_base = NULL;
+
+	/* Add cbmem table */
+	if (sizeof(struct mem_chip_info) != 0)
+		mem_region_base = cbmem_add(CBMEM_ID_MEM_CHIP_INFO,
+					sizeof(struct mem_chip_info));
+	ASSERT(mem_region_base != NULL);
+
+	/* Migrate the data into CBMEM */
+	memcpy(mem_region_base, mem_chip_addr, sizeof(struct mem_chip_info));
+}
+
+ROMSTAGE_CBMEM_INIT_HOOK(add_mem_chip_info);
 
 struct qclib_cb_if_table qclib_cb_if_table = {
 	.magic = QCLIB_MAGIC_NUMBER,
@@ -87,6 +113,10 @@ static void write_table_entry(struct qclib_cb_if_table_entry *te)
 
 		write_qclib_log_to_cbmemc(te);
 
+	} else if (!strncmp(QCLIB_TE_MEM_CHIP_INFO, te->name,
+			sizeof(te->name))) {
+		write_mem_chip_information(te);
+
 	} else {
 
 		printk(BIOS_WARNING, "%s write not implemented\n", te->name);
@@ -138,6 +168,10 @@ void qclib_load_and_run(void)
 	}
 	qclib_add_if_table_entry(QCLIB_TE_DDR_TRAINING_DATA,
 				 _ddr_training, REGION_SIZE(ddr_training), 0);
+
+	/* Attempt to read MEM CHIP information */
+	qclib_add_if_table_entry(QCLIB_TE_MEM_CHIP_INFO,
+				mem_chip_addr, sizeof(mem_chip_addr), 0);
 
 	/* Attempt to load PMICCFG Blob */
 	data_size = cbfs_load(CONFIG_CBFS_PREFIX "/pmiccfg",

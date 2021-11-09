@@ -22,6 +22,7 @@
 #define QCLIB_TE_DDR_TRAINING_DATA "ddr_training_data"
 #define QCLIB_TE_LIMITS_CFG_DATA   "limits_cfg_data"
 #define QCLIB_TE_QCSDI             "qcsdi"
+#define QCLIB_TE_MEM_CHIP_INFO     "mem_chip_info"
 
 /* BA_BMASK_VALUES (blob_attributes bit mask values) */
 #define QCLIB_BA_SAVE_TO_STORAGE 0x00000001

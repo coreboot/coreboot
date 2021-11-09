@@ -189,7 +189,7 @@ static enum cb_err read_fru_chassis_info_area(const int port, const uint8_t id,
 
 	info->chassis_custom = malloc(info->custom_count * sizeof(char *));
 	if (!info->chassis_custom) {
-		printk(BIOS_ERR, "%s failed to malloc %ld bytes for "
+		printk(BIOS_ERR, "%s failed to malloc %zu bytes for "
 			"chassis custom data array.\n", __func__,
 			info->custom_count * sizeof(char *));
 		ret = CB_ERR;
@@ -288,7 +288,7 @@ static enum cb_err read_fru_board_info_area(const int port, const uint8_t id,
 
 	info->board_custom = malloc(info->custom_count * sizeof(char *));
 	if (!info->board_custom) {
-		printk(BIOS_ERR, "%s failed to malloc %ld bytes for "
+		printk(BIOS_ERR, "%s failed to malloc %zu bytes for "
 			"board custom data array.\n", __func__,
 			info->custom_count * sizeof(char *));
 		ret = CB_ERR;
@@ -395,7 +395,7 @@ static enum cb_err read_fru_product_info_area(const int port, const uint8_t id,
 
 	info->product_custom = malloc(info->custom_count * sizeof(char *));
 	if (!info->product_custom) {
-		printk(BIOS_ERR, "%s failed to malloc %ld bytes for "
+		printk(BIOS_ERR, "%s failed to malloc %zu bytes for "
 			"product custom data array.\n", __func__,
 			info->custom_count * sizeof(char *));
 		ret = CB_ERR;

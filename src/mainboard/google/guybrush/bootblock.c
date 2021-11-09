@@ -53,6 +53,9 @@ void bootblock_mainboard_early_init(void)
 	gpios = variant_espi_gpio_table(&num_gpios);
 	gpio_configure_pads(gpios, num_gpios);
 
+	gpios = variant_tpm_gpio_table(&num_gpios);
+	gpio_configure_pads(gpios, num_gpios);
+
 	gpios = variant_early_gpio_table(&num_gpios);
 	override_gpios = variant_early_override_gpio_table(&override_num_gpios);
 	gpio_configure_pads_with_override(gpios, num_gpios, override_gpios, override_num_gpios);

@@ -199,16 +199,6 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 	/* WWAN_RST_L */
 	PAD_GPO(GPIO_24, LOW),
 
-/* Enable ESPI, GSC Interrupt & I2C Communication */
-	/* Unused */
-	PAD_NC(GPIO_3),
-	/* I2C3_SCL */
-	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
-	/* I2C3_SDA */
-	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
-	/* GSC_SOC_INT_L */
-	PAD_INT(GPIO_85, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
-
 /* Enable UART 0 */
 	/* UART0_RXD */
 	PAD_NF(GPIO_141, UART0_RXD, PULL_NONE),
@@ -235,6 +225,15 @@ static const struct soc_amd_gpio espi_gpio_table[] = {
 	PAD_NF(GPIO_107, SPI2_HOLD_L_ESPI2_D3, PULL_NONE),
 	/* ESPI_ALERT_L */
 	PAD_NF(GPIO_108, ESPI_ALERT_D1, PULL_NONE),
+};
+
+static const struct soc_amd_gpio tpm_gpio_table[] = {
+	/* I2C3_SCL */
+	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
+	/* I2C3_SDA */
+	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
+	/* GSC_SOC_INT_L */
+	PAD_INT(GPIO_85, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 };
 
 /* Power-on timing requirements:
@@ -352,4 +351,10 @@ const __weak struct soc_amd_gpio *variant_espi_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(espi_gpio_table);
 	return espi_gpio_table;
+}
+
+const __weak struct soc_amd_gpio *variant_tpm_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(tpm_gpio_table);
+	return tpm_gpio_table;
 }

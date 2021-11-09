@@ -49,6 +49,7 @@ void test_svc_calls(void);
 uint32_t unmap_fch_devices(void);
 uint32_t verstage_soc_early_init(void);
 void verstage_mainboard_espi_init(void);
+void verstage_mainboard_tpm_init(void);
 void verstage_soc_aoac_init(void);
 void verstage_soc_espi_init(void);
 void verstage_soc_i2c_init(void);

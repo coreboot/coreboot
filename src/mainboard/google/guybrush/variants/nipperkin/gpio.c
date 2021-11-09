@@ -39,13 +39,32 @@ static const struct soc_amd_gpio bid2_override_gpio_table[] = {
 };
 
 static const struct soc_amd_gpio override_early_gpio_table[] = {
-	/* BID == 1: GSC_SOC_INT_L, BID > 1: Unused */
-	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	PAD_NC(GPIO_18),
 };
 
 static const struct soc_amd_gpio override_pcie_gpio_table[] = {
 	PAD_NC(GPIO_18),
+};
+
+
+/* This table is used by nipperkin variant with board version < 2. */
+static const struct soc_amd_gpio bid1_tpm_gpio_table[] = {
+	/* I2C3_SCL */
+	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
+	/* I2C3_SDA */
+	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
+	/* GSC_SOC_INT_L */
+	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
+};
+
+/* This table is used by nipperkin variant with board version >= 2. */
+static const struct soc_amd_gpio bid2_tpm_gpio_table[] = {
+	/* I2C3_SCL */
+	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
+	/* I2C3_SDA */
+	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
+	/* GSC_SOC_INT_L */
+	PAD_INT(GPIO_85, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 };
 
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size)
@@ -71,4 +90,17 @@ const struct soc_amd_gpio *variant_pcie_override_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(override_pcie_gpio_table);
 	return override_pcie_gpio_table;
+}
+
+const struct soc_amd_gpio *variant_tpm_gpio_table(size_t *size)
+{
+	uint32_t board_version = board_id();
+
+	if (board_version < 2) {
+		*size = ARRAY_SIZE(bid1_tpm_gpio_table);
+		return bid1_tpm_gpio_table;
+	}
+
+	*size = ARRAY_SIZE(bid2_tpm_gpio_table);
+	return bid2_tpm_gpio_table;
 }

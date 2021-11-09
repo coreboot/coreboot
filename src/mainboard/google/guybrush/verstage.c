@@ -46,3 +46,15 @@ void verstage_mainboard_espi_init(void)
 	dword |= PM_ACPI_S5_LPC_PIN_MODE | PM_ACPI_S5_LPC_PIN_MODE_SEL;
 	pm_io_write32(PM_ACPI_CONF, dword);
 }
+
+void verstage_mainboard_tpm_init(void)
+{
+	const struct soc_amd_gpio *gpios;
+	size_t num_gpios;
+
+	if (!CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
+		return;
+
+	gpios = variant_tpm_gpio_table(&num_gpios);
+	gpio_configure_pads(gpios, num_gpios);
+}

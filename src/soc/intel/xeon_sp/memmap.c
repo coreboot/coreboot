@@ -36,7 +36,7 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 	/* Try account for the CBMEM region currently used and for future use */
 	cbmem_get_region((void **)&cbmem_base, &cbmem_size);
 	printk(BIOS_DEBUG, "top_of_ram = 0x%lx\n", top_of_ram);
-	printk(BIOS_DEBUG, "cbmem base_ptr: 0x%lx, size: 0x%lx\n", cbmem_base, cbmem_size);
+	printk(BIOS_DEBUG, "cbmem base_ptr: 0x%lx, size: 0x%zx\n", cbmem_base, cbmem_size);
 	/* Assume 4MiB will be enough for future cbmem objects (FSP-S, ramstage, ...) */
 	cbmem_base -= 4 * MiB;
 	cbmem_base = ALIGN_DOWN(cbmem_base, 4 * MiB);

@@ -55,7 +55,7 @@ static void read_pmc_lpm_requirements(const struct soc_pmc_lpm *lpm,
 			enum cb_err result = pmc_send_ipc_cmd(cmd_reg, &req, &res);
 			if (result != CB_SUCCESS) {
 				printk(BIOS_ERR, "Failed to retrieve LPM substate registers"
-				       "from LPM, substate %lu, reg %lu\n", i, j);
+				       "from LPM, substate %zu, reg %zu\n", i, j);
 				free(reg);
 				return;
 			}

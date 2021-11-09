@@ -83,6 +83,7 @@ struct sysinfo_t {
 	uintptr_t compiler;
 	uintptr_t linker;
 	uintptr_t assembler;
+	uintptr_t mem_chip_base;
 
 	uintptr_t cb_version;
 

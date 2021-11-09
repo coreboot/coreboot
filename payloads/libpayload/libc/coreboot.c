@@ -260,6 +260,9 @@ static void cb_parse_cbmem_entry(void *ptr, struct sysinfo_t *info)
 	case CBMEM_ID_TYPE_C_INFO:
 		info->type_c_info = cbmem_entry->address;
 		break;
+	case CBMEM_ID_MEM_CHIP_INFO:
+		info->mem_chip_base = cbmem_entry->address;
+		break;
 	default:
 		break;
 	}

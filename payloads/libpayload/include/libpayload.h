@@ -46,6 +46,7 @@
 #include <libpayload-config.h>
 #include <cbgfx.h>
 #include <commonlib/bsd/fmap_serialized.h>
+#include <commonlib/bsd/mem_chip_info.h>
 #include <ctype.h>
 #include <die.h>
 #include <endian.h>

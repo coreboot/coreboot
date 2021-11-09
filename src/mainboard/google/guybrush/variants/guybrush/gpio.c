@@ -9,8 +9,6 @@
 
 /* This table is used by guybrush variant with board version < 2. */
 static const struct soc_amd_gpio bid1_ramstage_gpio_table[] = {
-	/* Unused TP183 */
-	PAD_NC(GPIO_31),
 	/* EN_SPKR */
 	PAD_GPO(GPIO_69, HIGH),
 	/* SD_AUX_RESET_L */
@@ -37,6 +35,10 @@ static const struct soc_amd_gpio bid2_ramstage_gpio_table[] = {
 	PAD_NC(GPIO_85),
 	/* EN_PWR_FP */
 	PAD_GPO(GPIO_32, LOW),
+	/* EN_SPKR */
+	PAD_GPO(GPIO_31, HIGH),
+	/* Unused TP27 */
+	PAD_NC(GPIO_70),
 };
 
 static const struct soc_amd_gpio override_early_gpio_table[] = {

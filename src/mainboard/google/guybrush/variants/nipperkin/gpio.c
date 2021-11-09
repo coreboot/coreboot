@@ -22,6 +22,10 @@ static const struct soc_amd_gpio bid1_override_gpio_table[] = {
 	PAD_NC(GPIO_85),
 	/* EN_PWR_FP */
 	PAD_GPO(GPIO_32, LOW),
+	/* EN_SPKR */
+	PAD_GPO(GPIO_31, HIGH),
+	/* Unused TP27 */
+	PAD_NC(GPIO_70),
 };
 
 /* This table is used by nipperkin variant with board version >= 2. */

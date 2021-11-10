@@ -8,8 +8,136 @@
 #ifndef SOC_MEDIATEK_MT8186_SPM_H
 #define SOC_MEDIATEK_MT8186_SPM_H
 
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <types.h>
+
+#define SPM_INIT_DONE_US		20
+
+#define CLK_SCP_CFG_0			(IO_PHYS + 0x200)
+#define CLK_SCP_CFG_1			(IO_PHYS + 0x210)
+#define INFRA_AO_RES_CTRL_MASK		(INFRACFG_AO_BASE + 0xB8)
+
+#define AP_PLL_CON3			(APMIXED_BASE + 0xC)
+#define AP_PLL_CON4			(APMIXED_BASE + 0x10)
+
+/* MD32PCM ADDR for SPM code fetch */
+#define MD32PCM_BASE			(SPM_BASE + 0x0A00)
+#define MD32PCM_CFGREG_SW_RSTN		(MD32PCM_BASE + 0x0000)
+#define MD32PCM_DMA0_SRC		(MD32PCM_BASE + 0x0200)
+#define MD32PCM_DMA0_DST		(MD32PCM_BASE + 0x0204)
+#define MD32PCM_DMA0_WPPT		(MD32PCM_BASE + 0x0208)
+#define MD32PCM_DMA0_WPTO		(MD32PCM_BASE + 0x020C)
+#define MD32PCM_DMA0_COUNT		(MD32PCM_BASE + 0x0210)
+#define MD32PCM_DMA0_CON		(MD32PCM_BASE + 0x0214)
+#define MD32PCM_DMA0_START		(MD32PCM_BASE + 0x0218)
+#define MD32PCM_DMA0_RLCT		(MD32PCM_BASE + 0x0224)
+#define MD32PCM_INTC_IRQ_RAW_STA	(MD32PCM_BASE + 0x033C)
+
+#define MD32PCM_CFGREG_SW_RSTN_RUN	1
+#define MD32PCM_DMA0_CON_VAL		0x0003820E
+#define MD32PCM_DMA0_START_VAL		0x00008000
+
+/* SPM */
+#define BCLK_CG_EN_LSB			BIT(0)
+#define PCM_CK_EN_LSB			BIT(2)
+#define PCM_SW_RESET_LSB		BIT(15)
+#define RG_AHBMIF_APBEN_LSB		BIT(3)
+#define REG_MD32_APB_INTERNAL_EN_LSB	BIT(14)
+#define PCM_RF_SYNC_R7			BIT(23)
+#define REG_DDREN_DBC_EN_LSB		BIT(16)
+
+DEFINE_BIT(MD32PCM_CFGREG_SW_RSTN_RESET, 0)
+DEFINE_BIT(REG_SYSCLK1_SRC_MD2_SRCCLKENA, 28)
+DEFINE_BIT(SPM_ACK_CHK_3_CON_CLR_ALL, 1)
+DEFINE_BIT(SPM_ACK_CHK_3_CON_EN_0, 4)
+DEFINE_BIT(SPM_ACK_CHK_3_CON_EN_1, 8)
+DEFINE_BIT(SPM_ACK_CHK_3_CON_HW_MODE_TRIG_0, 9)
+DEFINE_BIT(SPM_ACK_CHK_3_CON_HW_MODE_TRIG_1, 10)
+DEFINE_BIT(INFRA_AO_RES_CTRL_MASK_EMI_IDLE, 18)
+DEFINE_BIT(INFRA_AO_RES_CTRL_MASK_MPU_IDLE, 15)
+DEFINE_BIT(SPM_DVFS_FORCE_ENABLE_LSB, 2)
+DEFINE_BIT(SPM_DVFSRC_ENABLE_LSB, 4)
+DEFINE_BIT(SYS_TIMER_START_EN_LSB, 0)
+
+#define SPM_PROJECT_CODE		0xB16
+#define SPM_REGWR_CFG_KEY		(SPM_PROJECT_CODE << 16)
+#define POWER_ON_VAL1_DEF		0x80015860
+#define SPM_WAKEUP_EVENT_MASK_DEF	0xEFFFFFFF
+#define DDREN_DBC_EN_VAL		0x154
+#define ARMPLL_CLK_SEL_DEF		0x3FF
+#define SPM_RESOURCE_ACK_CON0_DEF	0x00000000
+#define SPM_RESOURCE_ACK_CON1_DEF	0x00000000
+#define SPM_RESOURCE_ACK_CON2_DEF	0xCCCC4E4E
+#define SPM_RESOURCE_ACK_CON3_DEF	0x00000000
+#define APMIX_CON3_DEF			0xFFFF7770
+#define APMIX_CON4_DEF			0xFFFAA007
+#define SCP_CFG0_DEF			0x3FF
+#define SCP_CFG1_DEF			0x3
+#define SPM_DVFS_LEVEL_DEF		0x00000001
+#define SPM_DVS_DFS_LEVEL_DEF		0x00010001
+#define SPM_ACK_CHK_3_SEL_HW_S1		0x0035009F
+#define SPM_ACK_CHK_3_HW_S1_CNT		1
+#define SPM_SYSCLK_SETTLE		0x60FE /* 1685us */
+#define SPM_WAKEUP_EVENT_MASK_BIT0	1
+#define RG_PCM_TIMER_EN_LSB		BIT(5)
+#define RG_PCM_WDT_WAKE_LSB		BIT(9)
+#define PCM_RF_SYNC_R0			BIT(16)
+#define REG_SPM_EVENT_COUNTER_CLR_LSB	BIT(6)
+#define R12_CSYSPWREQ_B			BIT(24)
+#define SPM_BUS_PROTECT_MASK_B_DEF	0xFFFFFFFF
+#define SPM_BUS_PROTECT2_MASK_B_DEF	0xFFFFFFFF
+
+#define SPM_FLAG_DISABLE_VCORE_DVS	BIT(3)
+#define SPM_FLAG_DISABLE_VCORE_DFS	BIT(4)
+#define SPM_FLAG_RUN_COMMON_SCENARIO	BIT(10)
+
+/* PCM_WDT_VAL */
+#define PCM_WDT_TIMEOUT			(30 * 32768) /* 30s */
+/* PCM_TIMER_VAL */
+#define PCM_TIMER_MAX			(0xffffffff - PCM_WDT_TIMEOUT)
+
+/* SPM_IRQ_MASK */
+#define ISRM_TWAM		BIT(2)
+#define ISRM_PCM_RETURN		BIT(3)
+#define ISRM_RET_IRQ0		BIT(8)
+#define ISRM_RET_IRQ1		BIT(9)
+#define ISRM_RET_IRQ2		BIT(10)
+#define ISRM_RET_IRQ3		BIT(11)
+#define ISRM_RET_IRQ4		BIT(12)
+#define ISRM_RET_IRQ5		BIT(13)
+#define ISRM_RET_IRQ6		BIT(14)
+#define ISRM_RET_IRQ7		BIT(15)
+#define ISRM_RET_IRQ8		BIT(16)
+#define ISRM_RET_IRQ9		BIT(17)
+#define ISRM_RET_IRQ_AUX	(ISRM_RET_IRQ9 | ISRM_RET_IRQ8 | ISRM_RET_IRQ7 | \
+				 ISRM_RET_IRQ6 | ISRM_RET_IRQ5 | ISRM_RET_IRQ4 | \
+				 ISRM_RET_IRQ3 | ISRM_RET_IRQ2 | ISRM_RET_IRQ1)
+#define ISRM_ALL_EXC_TWAM	ISRM_RET_IRQ_AUX
+#define ISRM_ALL		(ISRM_ALL_EXC_TWAM | ISRM_TWAM)
+
+/* SPM_IRQ_STA */
+#define ISRS_TWAM		BIT(2)
+#define ISRS_PCM_RETURN		BIT(3)
+#define ISRC_TWAM		ISRS_TWAM
+#define ISRC_ALL_EXC_TWAM	ISRS_PCM_RETURN
+#define ISRC_ALL		(ISRC_ALL_EXC_TWAM | ISRC_TWAM)
+
+/* SPM_SWINT */
+#define PCM_SW_INT0		BIT(0)
+#define PCM_SW_INT1		BIT(1)
+#define PCM_SW_INT2		BIT(2)
+#define PCM_SW_INT3		BIT(3)
+#define PCM_SW_INT4		BIT(4)
+#define PCM_SW_INT5		BIT(5)
+#define PCM_SW_INT6		BIT(6)
+#define PCM_SW_INT7		BIT(7)
+#define PCM_SW_INT8		BIT(8)
+#define PCM_SW_INT9		BIT(9)
+#define PCM_SW_INT_ALL		(PCM_SW_INT9 | PCM_SW_INT8 | PCM_SW_INT7 | \
+				 PCM_SW_INT6 | PCM_SW_INT5 | PCM_SW_INT4 | \
+				 PCM_SW_INT3 | PCM_SW_INT2 | PCM_SW_INT1 | \
+				 PCM_SW_INT0)
 
 struct mtk_spm_regs {
 	uint32_t poweron_config_en;
@@ -522,12 +650,209 @@ struct mtk_spm_regs {
 	uint32_t adsp_ao_pwr_con;
 };
 
+struct pwr_ctrl {
+	/* For SPM */
+	uint32_t pcm_flags;
+	uint32_t pcm_flags_cust;
+	uint32_t pcm_flags_cust_set;
+	uint32_t pcm_flags_cust_clr;
+	uint32_t pcm_flags1;
+	uint32_t pcm_flags1_cust;
+	uint32_t pcm_flags1_cust_set;
+	uint32_t pcm_flags1_cust_clr;
+	uint32_t timer_val;
+	uint32_t timer_val_cust;
+	uint32_t timer_val_ramp_en;
+	uint32_t timer_val_ramp_en_sec;
+	uint32_t wake_src;
+	uint32_t wake_src_cust;
+	uint32_t wakelock_timer_val;
+	uint8_t wdt_disable;
+	/* Auto-gen Start */
+
+	/* SPM_AP_STANDBY_CON */
+	uint8_t reg_wfi_op;
+	uint8_t reg_wfi_type;
+	uint8_t reg_mp0_cputop_idle_mask;
+	uint8_t reg_mp1_cputop_idle_mask;
+	uint8_t reg_mcusys_idle_mask;
+	uint8_t reg_md_apsrc_1_sel;
+	uint8_t reg_md_apsrc_0_sel;
+	uint8_t reg_conn_apsrc_sel;
+
+	/* SPM_SRC6_MASK */
+	uint32_t reg_ccif_event_infra_req_mask_b;
+	uint32_t reg_ccif_event_apsrc_req_mask_b;
+
+	/* SPM_SRC_REQ */
+	uint8_t reg_spm_apsrc_req;
+	uint8_t reg_spm_f26m_req;
+	uint8_t reg_spm_infra_req;
+	uint8_t reg_spm_vrf18_req;
+	uint8_t reg_spm_ddren_req;
+	uint8_t reg_spm_dvfs_req;
+	uint8_t reg_spm_sw_mailbox_req;
+	uint8_t reg_spm_sspm_mailbox_req;
+	uint8_t reg_spm_adsp_mailbox_req;
+	uint8_t reg_spm_scp_mailbox_req;
+
+	/* SPM_SRC_MASK */
+	uint8_t reg_md_0_srcclkena_mask_b;
+	uint8_t reg_md_0_infra_req_mask_b;
+	uint8_t reg_md_0_apsrc_req_mask_b;
+	uint8_t reg_md_0_vrf18_req_mask_b;
+	uint8_t reg_md_0_ddren_req_mask_b;
+	uint8_t reg_md_1_srcclkena_mask_b;
+	uint8_t reg_md_1_infra_req_mask_b;
+	uint8_t reg_md_1_apsrc_req_mask_b;
+	uint8_t reg_md_1_vrf18_req_mask_b;
+	uint8_t reg_md_1_ddren_req_mask_b;
+	uint8_t reg_conn_srcclkena_mask_b;
+	uint8_t reg_conn_srcclkenb_mask_b;
+	uint8_t reg_conn_infra_req_mask_b;
+	uint8_t reg_conn_apsrc_req_mask_b;
+	uint8_t reg_conn_vrf18_req_mask_b;
+	uint8_t reg_conn_ddren_req_mask_b;
+	uint8_t reg_conn_vfe28_mask_b;
+	uint8_t reg_srcclkeni_srcclkena_mask_b;
+	uint8_t reg_srcclkeni_infra_req_mask_b;
+	uint8_t reg_infrasys_apsrc_req_mask_b;
+	uint8_t reg_infrasys_ddren_req_mask_b;
+	uint8_t reg_sspm_srcclkena_mask_b;
+	uint8_t reg_sspm_infra_req_mask_b;
+	uint8_t reg_sspm_apsrc_req_mask_b;
+	uint8_t reg_sspm_vrf18_req_mask_b;
+	uint8_t reg_sspm_ddren_req_mask_b;
+
+	/* SPM_SRC2_MASK */
+	uint8_t reg_scp_srcclkena_mask_b;
+	uint8_t reg_scp_infra_req_mask_b;
+	uint8_t reg_scp_apsrc_req_mask_b;
+	uint8_t reg_scp_vrf18_req_mask_b;
+	uint8_t reg_scp_ddren_req_mask_b;
+	uint8_t reg_audio_dsp_srcclkena_mask_b;
+	uint8_t reg_audio_dsp_infra_req_mask_b;
+	uint8_t reg_audio_dsp_apsrc_req_mask_b;
+	uint8_t reg_audio_dsp_vrf18_req_mask_b;
+	uint8_t reg_audio_dsp_ddren_req_mask_b;
+	uint8_t reg_ufs_srcclkena_mask_b;
+	uint8_t reg_ufs_infra_req_mask_b;
+	uint8_t reg_ufs_apsrc_req_mask_b;
+	uint8_t reg_ufs_vrf18_req_mask_b;
+	uint8_t reg_ufs_ddren_req_mask_b;
+	uint8_t reg_disp0_apsrc_req_mask_b;
+	uint8_t reg_disp0_ddren_req_mask_b;
+	uint8_t reg_disp1_apsrc_req_mask_b;
+	uint8_t reg_disp1_ddren_req_mask_b;
+	uint8_t reg_gce_infra_req_mask_b;
+	uint8_t reg_gce_apsrc_req_mask_b;
+	uint8_t reg_gce_vrf18_req_mask_b;
+	uint8_t reg_gce_ddren_req_mask_b;
+	uint8_t reg_apu_srcclkena_mask_b;
+	uint8_t reg_apu_infra_req_mask_b;
+	uint8_t reg_apu_apsrc_req_mask_b;
+	uint8_t reg_apu_vrf18_req_mask_b;
+	uint8_t reg_apu_ddren_req_mask_b;
+	uint8_t reg_cg_check_srcclkena_mask_b;
+	uint8_t reg_cg_check_apsrc_req_mask_b;
+	uint8_t reg_cg_check_vrf18_req_mask_b;
+	uint8_t reg_cg_check_ddren_req_mask_b;
+
+	/* SPM_SRC3_MASK */
+	uint8_t reg_dvfsrc_event_trigger_mask_b;
+	uint8_t reg_sw2spm_wakeup_mask_b;
+	uint8_t reg_adsp2spm_wakeup_mask_b;
+	uint8_t reg_sspm2spm_wakeup_mask_b;
+	uint8_t reg_scp2spm_wakeup_mask_b;
+	uint8_t reg_csyspwrup_ack_mask;
+	uint8_t reg_spm_reserved_srcclkena_mask_b;
+	uint8_t reg_spm_reserved_infra_req_mask_b;
+	uint8_t reg_spm_reserved_apsrc_req_mask_b;
+	uint8_t reg_spm_reserved_vrf18_req_mask_b;
+	uint8_t reg_spm_reserved_ddren_req_mask_b;
+	uint8_t reg_mcupm_srcclkena_mask_b;
+	uint8_t reg_mcupm_infra_req_mask_b;
+	uint8_t reg_mcupm_apsrc_req_mask_b;
+	uint8_t reg_mcupm_vrf18_req_mask_b;
+	uint8_t reg_mcupm_ddren_req_mask_b;
+	uint8_t reg_msdc0_srcclkena_mask_b;
+	uint8_t reg_msdc0_infra_req_mask_b;
+	uint8_t reg_msdc0_apsrc_req_mask_b;
+	uint8_t reg_msdc0_vrf18_req_mask_b;
+	uint8_t reg_msdc0_ddren_req_mask_b;
+	uint8_t reg_msdc1_srcclkena_mask_b;
+	uint8_t reg_msdc1_infra_req_mask_b;
+	uint8_t reg_msdc1_apsrc_req_mask_b;
+	uint8_t reg_msdc1_vrf18_req_mask_b;
+	uint8_t reg_msdc1_ddren_req_mask_b;
+
+	/* SPM_SRC4_MASK */
+	uint32_t reg_ccif_event_srcclkena_mask_b;
+	uint8_t reg_bak_psri_srcclkena_mask_b;
+	uint8_t reg_bak_psri_infra_req_mask_b;
+	uint8_t reg_bak_psri_apsrc_req_mask_b;
+	uint8_t reg_bak_psri_vrf18_req_mask_b;
+	uint8_t reg_bak_psri_ddren_req_mask_b;
+	uint8_t reg_dramc_md32_infra_req_mask_b;
+	uint8_t reg_dramc_md32_vrf18_req_mask_b;
+	uint8_t reg_conn_srcclkenb2pwrap_mask_b;
+	uint8_t reg_dramc_md32_apsrc_req_mask_b;
+
+	/* SPM_SRC5_MASK */
+	uint32_t reg_mcusys_merge_apsrc_req_mask_b;
+	uint32_t reg_mcusys_merge_ddren_req_mask_b;
+	uint8_t reg_afe_srcclkena_mask_b;
+	uint8_t reg_afe_infra_req_mask_b;
+	uint8_t reg_afe_apsrc_req_mask_b;
+	uint8_t reg_afe_vrf18_req_mask_b;
+	uint8_t reg_afe_ddren_req_mask_b;
+	uint8_t reg_msdc2_srcclkena_mask_b;
+	uint8_t reg_msdc2_infra_req_mask_b;
+	uint8_t reg_msdc2_apsrc_req_mask_b;
+	uint8_t reg_msdc2_vrf18_req_mask_b;
+	uint8_t reg_msdc2_ddren_req_mask_b;
+
+	/* SPM_WAKEUP_EVENT_MASK */
+	uint32_t reg_wakeup_event_mask;
+
+	/* SPM_WAKEUP_EVENT_EXT_MASK */
+	uint32_t reg_ext_wakeup_event_mask;
+
+	/* SPM_SRC7_MASK */
+	uint8_t reg_pcie_srcclkena_mask_b;
+	uint8_t reg_pcie_infra_req_mask_b;
+	uint8_t reg_pcie_apsrc_req_mask_b;
+	uint8_t reg_pcie_vrf18_req_mask_b;
+	uint8_t reg_pcie_ddren_req_mask_b;
+	uint8_t reg_dpmaif_srcclkena_mask_b;
+	uint8_t reg_dpmaif_infra_req_mask_b;
+	uint8_t reg_dpmaif_apsrc_req_mask_b;
+	uint8_t reg_dpmaif_vrf18_req_mask_b;
+	uint8_t reg_dpmaif_ddren_req_mask_b;
+
+	/* Auto-gen End */
+};
+
 check_member(mtk_spm_regs, ap_mdsrc_req, 0x430);
 check_member(mtk_spm_regs, ssusb_top_pwr_con, 0x9F0);
 check_member(mtk_spm_regs, ssusb_top_p1_pwr_con, 0x9F4);
 check_member(mtk_spm_regs, adsp_infra_pwr_con, 0x9F8);
 check_member(mtk_spm_regs, adsp_ao_pwr_con, 0x9FC);
 
+struct pcm_desc {
+	uint32_t pmem_words;
+	uint32_t total_words;
+	uint32_t pmem_start;
+	uint32_t dmem_start;
+};
+
+struct dyna_load_pcm {
+	u8 *buf; /* binary array */
+	struct pcm_desc desc;
+};
+
 static struct mtk_spm_regs *const mtk_spm = (void *)SPM_BASE;
+
+int spm_init(void);
 
 #endif  /* SOC_MEDIATEK_MT8186_SPM_H */

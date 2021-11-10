@@ -46,6 +46,7 @@ ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-$(CONFIG_COMMONLIB_STORAGE_MMC) += ../common/msdc.c msdc.c
 ramstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 ramstage-y += soc.c
+ramstage-y += ../common/spm.c spm.c
 ramstage-y += ../common/sspm.c
 ramstage-y += ../common/timer.c timer.c
 ramstage-y += ../common/uart.c
@@ -59,7 +60,8 @@ CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 MT8186_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8186
 
 mcu-firmware-files := \
-	$(CONFIG_SSPM_FIRMWARE)
+	$(CONFIG_SSPM_FIRMWARE) \
+	$(CONFIG_SPM_FIRMWARE)
 
 $(foreach fw, $(call strip_quotes,$(mcu-firmware-files)), \
 	  $(eval $(fw)-file := $(MT8186_BLOB_DIR)/$(fw)) \

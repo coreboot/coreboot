@@ -25,6 +25,9 @@ config SOUTHBRIDGE_INTEL_I82801JX
 
 if SOUTHBRIDGE_INTEL_I82801JX
 
+config AZALIA_MAX_CODECS
+	default 4
+
 config EHCI_BAR
 	hex
 	default 0xfef00000

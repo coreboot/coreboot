@@ -129,6 +129,8 @@ static void codecs_init(struct device *dev, u8 *base, u32 codec_mask)
 		if (codec_mask & (1 << i))
 			codec_init(dev, base, i);
 	}
+
+	azalia_program_verb_table(base, pc_beep_verbs, pc_beep_verbs_size);
 }
 
 static void azalia_init(struct device *dev)

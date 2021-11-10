@@ -18,6 +18,8 @@ void __noreturn romstage_main(void)
 	/* Snapshot chipset state prior to any FSP call */
 	fill_chipset_state();
 
+	preload_fspm();
+
 	fsp_memory_init(acpi_is_wakeup_s3());
 
 	/* Fixup settings FSP-M should not be changing */

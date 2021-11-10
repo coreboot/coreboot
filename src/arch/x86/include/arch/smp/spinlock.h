@@ -15,10 +15,6 @@ typedef struct {
 
 #define SPIN_LOCK_UNLOCKED { 1 }
 
-#define STAGE_HAS_SPINLOCKS !ENV_ROMSTAGE_OR_BEFORE
-
-#if STAGE_HAS_SPINLOCKS
-
 #define DECLARE_SPIN_LOCK(x)	\
 	static spinlock_t x = SPIN_LOCK_UNLOCKED;
 
@@ -70,15 +66,5 @@ static __always_inline void spin_unlock(spinlock_t *lock)
 		spin_unlock_string
 		: "=m" (lock->lock) : : "memory");
 }
-
-#else
-
-#define DECLARE_SPIN_LOCK(x)
-#define spin_is_locked(lock)	0
-#define spin_unlock_wait(lock)	do {} while (0)
-#define spin_lock(lock)		do {} while (0)
-#define spin_unlock(lock)	do {} while (0)
-
-#endif
 
 #endif /* ARCH_SMP_SPINLOCK_H */

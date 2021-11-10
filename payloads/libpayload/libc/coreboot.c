@@ -29,6 +29,7 @@
 
 #include <libpayload-config.h>
 #include <libpayload.h>
+#include <commonlib/bsd/cbmem_id.h>
 #include <coreboot_tables.h>
 #include <stdint.h>
 
@@ -40,12 +41,6 @@
 
 /* === Parsing code === */
 /* This is the generic parsing code. */
-
-uintptr_t get_cbmem_addr(const void *const cbmem_tab_entry)
-{
-	const struct cb_cbmem_tab *const cbmem = cbmem_tab_entry;
-	return cbmem->cbmem_tab;
-}
 
 static void cb_parse_memory(void *ptr, struct sysinfo_t *info)
 {
@@ -81,11 +76,6 @@ static void cb_parse_memory(void *ptr, struct sysinfo_t *info)
 static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 {
 	info->cb_serial = virt_to_phys(ptr);
-}
-
-static void cb_parse_vboot_workbuf(unsigned char *ptr, struct sysinfo_t *info)
-{
-	info->vboot_workbuf = get_cbmem_addr(ptr);
 }
 
 static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
@@ -128,26 +118,6 @@ static void cb_parse_mac_addresses(unsigned char *ptr,
 		info->macs[i] = macs->mac_addrs[i];
 }
 
-static void cb_parse_tstamp(unsigned char *ptr, struct sysinfo_t *info)
-{
-	info->tstamp_table = get_cbmem_addr(ptr);
-}
-
-static void cb_parse_cbmem_cons(unsigned char *ptr, struct sysinfo_t *info)
-{
-	info->cbmem_cons = get_cbmem_addr(ptr);
-}
-
-static void cb_parse_acpi_gnvs(unsigned char *ptr, struct sysinfo_t *info)
-{
-	info->acpi_gnvs = get_cbmem_addr(ptr);
-}
-
-static void cb_parse_acpi_cnvs(unsigned char *ptr, struct sysinfo_t *info)
-{
-	info->acpi_cnvs = get_cbmem_addr(ptr);
-}
-
 static void cb_parse_board_config(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct cb_board_config *const config = (struct cb_board_config *)ptr;
@@ -186,11 +156,6 @@ static void cb_parse_string(const void *const ptr, uintptr_t *const info)
 	   but we want to keep physical addresses */
 	const struct cb_string *const str = ptr;
 	*info = virt_to_phys(str->string);
-}
-
-static void cb_parse_wifi_calibration(void *ptr, struct sysinfo_t *info)
-{
-	info->wifi_calibration = get_cbmem_addr(ptr);
 }
 
 static void cb_parse_ramoops(void *ptr, struct sysinfo_t *info)
@@ -236,21 +201,6 @@ static void cb_parse_boot_media_params(unsigned char *ptr,
 	info->boot_media_size = bmp->boot_media_size;
 }
 
-static void cb_parse_vpd(void *ptr, struct sysinfo_t *info)
-{
-	info->chromeos_vpd = get_cbmem_addr(ptr);
-}
-
-static void cb_parse_fmap_cache(void *ptr, struct sysinfo_t *info)
-{
-	info->fmap_cache = get_cbmem_addr(ptr);
-}
-
-static void cb_parse_type_c_info(void *ptr, struct sysinfo_t *info)
-{
-	info->type_c_info = get_cbmem_addr(ptr);
-}
-
 #if CONFIG(LP_TIMER_RDTSC)
 static void cb_parse_tsc_info(void *ptr, struct sysinfo_t *info)
 {
@@ -263,6 +213,57 @@ static void cb_parse_tsc_info(void *ptr, struct sysinfo_t *info)
 	info->cpu_khz = tsc_info->freq_khz;
 }
 #endif
+
+static void cb_parse_cbmem_entry(void *ptr, struct sysinfo_t *info)
+{
+	const struct cb_cbmem_entry *cbmem_entry = ptr;
+
+	if (cbmem_entry->size != sizeof(*cbmem_entry))
+		return;
+
+	switch (cbmem_entry->id) {
+	case CBMEM_ID_ACPI_CNVS:
+		info->acpi_cnvs = cbmem_entry->address;
+		break;
+	case CBMEM_ID_ACPI_GNVS:
+		info->acpi_gnvs = cbmem_entry->address;
+		break;
+	case CBMEM_ID_CBFS_RO_MCACHE:
+		info->cbfs_ro_mcache_offset = cbmem_entry->address;
+		info->cbfs_ro_mcache_size = cbmem_entry->size;
+		break;
+	case CBMEM_ID_CBFS_RW_MCACHE:
+		info->cbfs_rw_mcache_offset = cbmem_entry->address;
+		info->cbfs_rw_mcache_size = cbmem_entry->size;
+		break;
+	case CBMEM_ID_CONSOLE:
+		info->cbmem_cons = cbmem_entry->address;
+		break;
+	case CBMEM_ID_MRCDATA:
+		info->mrc_cache = cbmem_entry->address;
+		break;
+	case CBMEM_ID_VBOOT_WORKBUF:
+		info->vboot_workbuf = cbmem_entry->address;
+		break;
+	case CBMEM_ID_TIMESTAMP:
+		info->tstamp_table = cbmem_entry->address;
+		break;
+	case CBMEM_ID_VPD:
+		info->chromeos_vpd = cbmem_entry->address;
+		break;
+	case CBMEM_ID_FMAP:
+		info->fmap_cache = cbmem_entry->address;
+		break;
+	case CBMEM_ID_WIFI_CALIBRATION:
+		info->wifi_calibration = cbmem_entry->address;
+		break;
+	case CBMEM_ID_TYPE_C_INFO:
+		info->type_c_info = cbmem_entry->address;
+		break;
+	default:
+		break;
+	}
+}
 
 int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
@@ -372,32 +373,14 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_VBNV:
 			cb_parse_vbnv(ptr, info);
 			break;
-		case CB_TAG_VBOOT_WORKBUF:
-			cb_parse_vboot_workbuf(ptr, info);
-			break;
 		case CB_TAG_MAC_ADDRS:
 			cb_parse_mac_addresses(ptr, info);
 			break;
 		case CB_TAG_SERIALNO:
 			cb_parse_string(ptr, &info->serialno);
 			break;
-		case CB_TAG_TIMESTAMPS:
-			cb_parse_tstamp(ptr, info);
-			break;
-		case CB_TAG_CBMEM_CONSOLE:
-			cb_parse_cbmem_cons(ptr, info);
-			break;
-		case CB_TAG_ACPI_GNVS:
-			cb_parse_acpi_gnvs(ptr, info);
-			break;
-		case CB_TAG_ACPI_CNVS:
-			cb_parse_acpi_cnvs(ptr, info);
-			break;
 		case CB_TAG_BOARD_CONFIG:
 			cb_parse_board_config(ptr, info);
-			break;
-		case CB_TAG_WIFI_CALIBRATION:
-			cb_parse_wifi_calibration(ptr, info);
 			break;
 		case CB_TAG_RAM_OOPS:
 			cb_parse_ramoops(ptr, info);
@@ -414,20 +397,14 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_BOOT_MEDIA_PARAMS:
 			cb_parse_boot_media_params(ptr, info);
 			break;
+		case CB_TAG_CBMEM_ENTRY:
+			cb_parse_cbmem_entry(ptr, info);
+			break;
 #if CONFIG(LP_TIMER_RDTSC)
 		case CB_TAG_TSC_INFO:
 			cb_parse_tsc_info(ptr, info);
 			break;
 #endif
-		case CB_TAG_VPD:
-			cb_parse_vpd(ptr, info);
-			break;
-		case CB_TAG_FMAP:
-			cb_parse_fmap_cache(ptr, info);
-			break;
-		case CB_TAG_TYPE_C_INFO:
-			cb_parse_type_c_info(ptr, info);
-			break;
 		default:
 			cb_parse_arch_specific(rec, info);
 			break;

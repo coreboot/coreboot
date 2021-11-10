@@ -150,6 +150,12 @@ struct sysinfo_t {
 #endif
 	/* USB Type-C Port Configuration Info */
 	uintptr_t type_c_info;
+
+	/* CBFS RW/RO Metadata Cache */
+	uintptr_t cbfs_ro_mcache_offset;
+	uint32_t cbfs_ro_mcache_size;
+	uintptr_t cbfs_rw_mcache_offset;
+	uint32_t cbfs_rw_mcache_size;
 };
 
 extern struct sysinfo_t lib_sysinfo;

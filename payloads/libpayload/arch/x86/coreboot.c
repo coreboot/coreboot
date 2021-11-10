@@ -47,19 +47,11 @@ static void cb_parse_x86_rom_var_mtrr(void *ptr, struct sysinfo_t *info)
 	info->x86_rom_var_mtrr_index = rom_mtrr->index;
 }
 
-static void cb_parse_mrc_cache(void *ptr, struct sysinfo_t *info)
-{
-	info->mrc_cache = get_cbmem_addr(ptr);
-}
-
 int cb_parse_arch_specific(struct cb_record *rec, struct sysinfo_t *info)
 {
 	switch(rec->tag) {
 	case CB_TAG_X86_ROM_MTRR:
 		cb_parse_x86_rom_var_mtrr(rec, info);
-		break;
-	case CB_TAG_MRC_CACHE:
-		cb_parse_mrc_cache(rec, info);
 		break;
 	default:
 		return 0;

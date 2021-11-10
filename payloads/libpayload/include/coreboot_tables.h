@@ -321,6 +321,16 @@ struct cb_boot_media_params {
 	uint64_t boot_media_size;
 };
 
+
+struct cb_cbmem_entry {
+	uint32_t tag;
+	uint32_t size;
+
+	uint64_t address;
+	uint32_t entry_size;
+	uint32_t id;
+};
+
 struct cb_tsc_info {
 	uint32_t tag;
 	uint32_t size;
@@ -443,6 +453,4 @@ static inline const char *cb_mb_part_string(const struct cb_mainboard *cbm)
 	(void *)(((u8 *) (_rec)) + sizeof(*(_rec)) \
 		+ (sizeof((_rec)->map[0]) * (_idx)))
 
-/* Helper functions */
-uintptr_t get_cbmem_addr(const void *cbmem_tab_entry);
 #endif

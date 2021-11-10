@@ -116,6 +116,17 @@ static const TPMA_NV rw_space_attributes = {
 	.TPMA_NV_WRITE_STCLEAR = 1,
 };
 
+const static TPMA_NV rw_counter_attributes = {
+	.TPMA_NV_AUTHWRITE = 1,
+	.TPMA_NV_AUTHREAD = 1,
+	.TPMA_NV_PPREAD = 1,
+	.TPMA_NV_PPWRITE = 1,
+	.TPMA_NV_PLATFORMCREATE = 1,
+	.TPMA_NV_COUNTER = 1,
+	.TPMA_NV_NO_DA = 1,
+	.TPMA_NV_WRITE_STCLEAR = 1,
+};
+
 static const TPMA_NV fwmp_attr = {
 	.TPMA_NV_PLATFORMCREATE = 1,
 	.TPMA_NV_OWNERWRITE = 1,
@@ -330,6 +341,15 @@ static uint32_t setup_zte_spaces(void)
 	return rv;
 }
 
+static uint32_t enterprise_rollback_create_counter(void)
+{
+	/*
+	 * No need to increment the counter to initialize, this can be done later.
+	 */
+	return tlcl_define_space(ENT_ROLLBACK_COUNTER_INDEX, /*size=*/8,
+				 rw_counter_attributes, NULL, 0);
+}
+
 static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 {
 	RETURN_ON_FAILURE(tlcl_force_clear());
@@ -362,6 +382,14 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	if (CONFIG(CHROMEOS) && (!(CONFIG(MAINBOARD_HAS_SPI_TPM_CR50) ||
 				   CONFIG(MAINBOARD_HAS_I2C_TPM_CR50))))
 		RETURN_ON_FAILURE(setup_zte_spaces());
+
+	/*
+	 * On TPM 2.0, create a counter that survives TPM clear. This allows to
+	 * securely lock data during enterprise rollback by binding to this
+	 * counter's value.
+	 */
+	if (CONFIG(CHROMEOS))
+		RETURN_ON_FAILURE(enterprise_rollback_create_counter());
 
 	RETURN_ON_FAILURE(setup_firmware_space(ctx));
 

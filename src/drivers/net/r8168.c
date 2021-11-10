@@ -17,6 +17,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
+#include <device/pci_ids.h>
 #include <delay.h>
 #include <fmap.h>
 #include <types.h>
@@ -360,10 +361,16 @@ static struct device_operations r8168_ops  = {
 #endif
 };
 
+static const unsigned short pci_device_ids[] = {
+	PCI_DEVICE_ID_REALTEK_8168,
+	PCI_DEVICE_ID_REALTEK_8125,
+	0
+};
+
 static const struct pci_driver r8168_driver __pci_driver = {
 	.ops    = &r8168_ops,
-	.vendor = 0x10ec,
-	.device = 0x8168,
+	.vendor = PCI_VENDOR_ID_REALTEK,
+	.devices = pci_device_ids,
 };
 
 struct chip_operations drivers_net_ops = {

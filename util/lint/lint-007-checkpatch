@@ -11,6 +11,7 @@ INCLUDED_FILES='.*\.[ch]\|Kconfig.*$'
 
 EXCLUDED_DIRS="^payloads/libpayload/util/kconfig\|\
 ^payloads/libpayload/curses/PDCurses\|\
+^util/coreboot-configurator\|\
 ^util/crossgcc/patches\|\
 ^util/inteltool\|\
 ^util/kconfig\|\

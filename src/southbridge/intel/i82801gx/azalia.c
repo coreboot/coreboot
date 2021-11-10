@@ -88,7 +88,6 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	u32 reg32;
 	const u32 *verb;
 	u32 verb_size;
-	int i;
 
 	printk(BIOS_DEBUG, "Azalia: Initializing codec #%d\n", addr);
 
@@ -118,15 +117,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	printk(BIOS_DEBUG, "Azalia: verb_size: %d\n", verb_size);
 
 	/* 3 */
-	for (i = 0; i < verb_size; i++) {
-		if (wait_for_ready(base) < 0)
-			return;
-
-		write32(base + HDA_IC_REG, verb[i]);
-
-		if (wait_for_valid(base) < 0)
-			return;
-	}
+	azalia_program_verb_table(base, verb, verb_size);
 	printk(BIOS_DEBUG, "Azalia: verb loaded.\n");
 }
 

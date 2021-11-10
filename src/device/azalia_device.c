@@ -261,8 +261,11 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	printk(BIOS_DEBUG, "azalia_audio: verb_size: %u\n", verb_size);
 
 	/* 3 */
-	azalia_program_verb_table(base, verb, verb_size);
-	printk(BIOS_DEBUG, "azalia_audio: verb loaded.\n");
+	const int rc = azalia_program_verb_table(base, verb, verb_size);
+	if (rc < 0)
+		printk(BIOS_DEBUG, "azalia_audio: verb not loaded.\n");
+	else
+		printk(BIOS_DEBUG, "azalia_audio: verb loaded.\n");
 
 	mainboard_azalia_program_runtime_verbs(base, reg32);
 }

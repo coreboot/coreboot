@@ -276,6 +276,7 @@ chip soc/intel/alderlake
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "DEFAULT_LINK_FREQ"
 				register "remote_name" = ""IPU0""
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				register "has_power_resource" = "1"
 				#Controls
@@ -311,6 +312,7 @@ chip soc/intel/alderlake
 				register "acpi_name" = ""CAM0""
 				register "chip_name" = ""Hi-556 Camera""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
@@ -351,8 +353,19 @@ chip soc/intel/alderlake
 				register "acpi_name" = ""NVM0""
 				register "chip_name" = ""M24C64X""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
-				register "pr0" = ""\\_SB.PCI0.I2C2.CAM0.PRIC""
+				register "has_power_resource" = "1"
+				#Controls
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_D16" #EN_UCAM_PWR
+
+				#_ON
+				register "on_seq.ops_cnt" = "1"
+				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "1"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				register "nvm_size" = "0x2000"
 				register "nvm_pagesize" = "1"

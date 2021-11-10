@@ -227,7 +227,7 @@ __weak void mainboard_azalia_program_runtime_verbs(u8 *base, u32 viddid)
 {
 }
 
-static void codec_init(struct device *dev, u8 *base, int addr)
+void azalia_codec_init(u8 *base, int addr, const u32 *verb_table, u32 verb_table_bytes)
 {
 	u32 reg32;
 	const u32 *verb;
@@ -252,7 +252,7 @@ static void codec_init(struct device *dev, u8 *base, int addr)
 	/* 2 */
 	reg32 = read32(base + HDA_IR_REG);
 	printk(BIOS_DEBUG, "azalia_audio: codec viddid: %08x\n", reg32);
-	verb_size = azalia_find_verb(cim_verb_data, cim_verb_data_size, reg32, &verb);
+	verb_size = azalia_find_verb(verb_table, verb_table_bytes, reg32, &verb);
 
 	if (!verb_size) {
 		printk(BIOS_DEBUG, "azalia_audio: No verb!\n");
@@ -276,7 +276,7 @@ void azalia_codecs_init(struct device *dev, u8 *base, u16 codec_mask)
 
 	for (i = CONFIG_AZALIA_MAX_CODECS - 1; i >= 0; i--) {
 		if (codec_mask & (1 << i))
-			codec_init(dev, base, i);
+			azalia_codec_init(base, i, cim_verb_data, cim_verb_data_size);
 	}
 
 	azalia_program_verb_table(base, pc_beep_verbs, pc_beep_verbs_size);

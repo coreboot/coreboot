@@ -124,7 +124,7 @@ static void codecs_init(struct device *dev, u8 *base, u32 codec_mask)
 {
 	int i;
 
-	for (i = 2; i >= 0; i--) {
+	for (i = 3; i >= 0; i--) {
 		if (codec_mask & (1 << i))
 			codec_init(dev, base, i);
 	}

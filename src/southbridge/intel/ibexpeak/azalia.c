@@ -35,102 +35,6 @@ no_codec:
 	return 0;
 }
 
-/*
- * Wait 50usec for the codec to indicate it is ready.
- * No response would imply that the codec is non-operative.
- */
-
-static int wait_for_ready(u8 *base)
-{
-	/* Use a 1msec timeout */
-	int timeout = 1000;
-
-	while (timeout--) {
-		u32 reg32 = read32(base + HDA_ICII_REG);
-		if (!(reg32 & HDA_ICII_BUSY))
-			return 0;
-		udelay(1);
-	}
-
-	return -1;
-}
-
-/*
- * Wait 50usec for the codec to indicate that it accepted the previous command.
- * No response would imply that the code is non-operative.
- */
-
-static int wait_for_valid(u8 *base)
-{
-	u32 reg32;
-	/* Use a 1msec timeout */
-	int timeout = 1000;
-
-	/* Send the verb to the codec */
-	reg32 = read32(base + HDA_ICII_REG);
-	reg32 |= HDA_ICII_BUSY | HDA_ICII_VALID;
-	write32(base + HDA_ICII_REG, reg32);
-
-	while (timeout--) {
-		reg32 = read32(base + HDA_ICII_REG);
-		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) == HDA_ICII_VALID)
-			return 0;
-		udelay(1);
-	}
-
-	return -1;
-}
-
-static void codec_init(struct device *dev, u8 *base, int addr)
-{
-	u32 reg32;
-	const u32 *verb;
-	u32 verb_size;
-
-	printk(BIOS_DEBUG, "Azalia: Initializing codec #%d\n", addr);
-
-	/* 1 */
-	if (wait_for_ready(base) < 0) {
-		printk(BIOS_DEBUG, "  codec not ready.\n");
-		return;
-	}
-
-	reg32 = (addr << 28) | 0x000f0000;
-	write32(base + HDA_IC_REG, reg32);
-
-	if (wait_for_valid(base) < 0) {
-		printk(BIOS_DEBUG, "  codec not valid.\n");
-		return;
-	}
-
-	/* 2 */
-	reg32 = read32(base + HDA_IR_REG);
-	printk(BIOS_DEBUG, "Azalia: codec viddid: %08x\n", reg32);
-	verb_size = azalia_find_verb(cim_verb_data, cim_verb_data_size, reg32, &verb);
-
-	if (!verb_size) {
-		printk(BIOS_DEBUG, "Azalia: No verb!\n");
-		return;
-	}
-	printk(BIOS_DEBUG, "Azalia: verb_size: %d\n", verb_size);
-
-	/* 3 */
-	azalia_program_verb_table(base, verb, verb_size);
-	printk(BIOS_DEBUG, "Azalia: verb loaded.\n");
-}
-
-static void codecs_init(struct device *dev, u8 *base, u32 codec_mask)
-{
-	int i;
-
-	for (i = 3; i >= 0; i--) {
-		if (codec_mask & (1 << i))
-			codec_init(dev, base, i);
-	}
-
-	azalia_program_verb_table(base, pc_beep_verbs, pc_beep_verbs_size);
-}
-
 static void azalia_init(struct device *dev)
 {
 	u8 *base;
@@ -212,7 +116,7 @@ static void azalia_init(struct device *dev)
 
 	if (codec_mask) {
 		printk(BIOS_DEBUG, "Azalia: codec_mask = %02x\n", codec_mask);
-		codecs_init(dev, base, codec_mask);
+		azalia_codecs_init(dev, base, codec_mask);
 	}
 
 	/* Enable dynamic clock gating */

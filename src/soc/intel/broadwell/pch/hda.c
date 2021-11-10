@@ -18,9 +18,7 @@ static void codecs_init(u8 *base, u32 codec_mask)
 	/* Can support up to 4 codecs */
 	for (i = 3; i >= 0; i--) {
 		if (codec_mask & (1 << i))
-			hda_codec_init(base, i,
-				       cim_verb_data_size,
-				       cim_verb_data);
+			azalia_codec_init(base, i, cim_verb_data, cim_verb_data_size);
 	}
 
 	if (pc_beep_verbs_size)

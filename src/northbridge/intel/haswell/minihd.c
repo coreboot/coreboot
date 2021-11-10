@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <device/azalia_device.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -78,8 +79,8 @@ static void minihd_init(struct device *dev)
 	if (codec_mask) {
 		for (i = 3; i >= 0; i--) {
 			if (codec_mask & (1 << i))
-				hda_codec_init(base, i, sizeof(minihd_verb_table),
-					       minihd_verb_table);
+				azalia_codec_init(base, i, minihd_verb_table,
+						  sizeof(minihd_verb_table));
 		}
 	}
 }

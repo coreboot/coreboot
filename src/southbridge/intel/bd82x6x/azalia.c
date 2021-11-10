@@ -110,7 +110,7 @@ static void azalia_init(struct device *dev)
 
 	if (codec_mask) {
 		printk(BIOS_DEBUG, "Azalia: codec_mask = %02x\n", codec_mask);
-		azalia_codecs_init(dev, base, codec_mask);
+		azalia_codecs_init(base, codec_mask);
 	}
 
 	/* Enable dynamic clock gating */

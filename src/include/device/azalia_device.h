@@ -24,7 +24,7 @@ int azalia_exit_reset(u8 *base);
 u32 azalia_find_verb(const u32 *verb_table, u32 verb_table_bytes, u32 viddid, const u32 **verb);
 int azalia_program_verb_table(u8 *base, const u32 *verbs, u32 verb_size);
 void azalia_codec_init(u8 *base, int addr, const u32 *verb_table, u32 verb_table_bytes);
-void azalia_codecs_init(struct device *dev, u8 *base, u16 codec_mask);
+void azalia_codecs_init(u8 *base, u16 codec_mask);
 void azalia_audio_init(struct device *dev);
 extern struct device_operations default_azalia_audio_ops;
 

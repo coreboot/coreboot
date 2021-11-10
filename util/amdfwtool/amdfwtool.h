@@ -281,6 +281,7 @@ typedef struct _amd_cb_config {
 	bool recovery_ab;
 	bool recovery_ab_single_copy;
 	bool need_ish;
+	bool use_combo;
 } amd_cb_config;
 
 void register_fw_fuse(char *str);

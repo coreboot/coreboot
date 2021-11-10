@@ -89,7 +89,6 @@
  *
  * TODO: Future work may require fully implementing the PSP_COMBO feature.
  */
-#define PSP_COMBO 0
 
 /*
  * Creates the OSI Fletcher checksum. See 8473-1, Appendix C, section C.3.
@@ -155,6 +154,7 @@ static void usage(void)
 	printf("--combo-capable                Place PSP directory pointer at Embedded\n");
 	printf("                               Firmware\n");
 	printf("                               offset able to support combo directory\n");
+	printf("--use-combo                    Use the COMBO layout\n");
 	printf("--multilevel                   Generate primary and secondary tables\n");
 	printf("--nvram <FILE>                 Add nvram binary\n");
 	printf("--soft-fuse                    Set soft fuse\n");
@@ -430,7 +430,6 @@ static void *new_ish_dir(context *ctx)
 	return ptr;
 }
 
-#if PSP_COMBO
 static void *new_combo_dir(context *ctx)
 {
 	void *ptr;
@@ -441,7 +440,6 @@ static void *new_combo_dir(context *ctx)
 			+ MAX_COMBO_ENTRIES * sizeof(psp_combo_entry);
 	return ptr;
 }
-#endif
 
 static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, context *ctx)
 {
@@ -1207,6 +1205,7 @@ enum {
 	AMDFW_OPT_COMBO,
 	AMDFW_OPT_RECOVERY_AB,
 	AMDFW_OPT_RECOVERY_AB_SINGLE_COPY,
+	AMDFW_OPT_USE_COMBO,
 	AMDFW_OPT_MULTILEVEL,
 	AMDFW_OPT_NVRAM,
 
@@ -1256,6 +1255,7 @@ static struct option long_options[] = {
 	{"combo-capable",          no_argument, 0, AMDFW_OPT_COMBO },
 	{"recovery-ab",            no_argument, 0, AMDFW_OPT_RECOVERY_AB },
 	{"recovery-ab-single-copy", no_argument, 0, AMDFW_OPT_RECOVERY_AB_SINGLE_COPY },
+	{"use-combo",              no_argument, 0, AMDFW_OPT_USE_COMBO },
 	{"multilevel",             no_argument, 0, AMDFW_OPT_MULTILEVEL },
 	{"nvram",            required_argument, 0, AMDFW_OPT_NVRAM },
 	{"soft-fuse",        required_argument, 0, AMDFW_OPT_FUSE },
@@ -1539,6 +1539,7 @@ int main(int argc, char **argv)
 	cb_config.recovery_ab = false;
 	cb_config.need_ish = false;
 	cb_config.recovery_ab_single_copy = false;
+	cb_config.use_combo = false;
 
 	while (1) {
 		int optindex = 0;
@@ -1570,6 +1571,9 @@ int main(int argc, char **argv)
 		case AMDFW_OPT_RECOVERY_AB_SINGLE_COPY:
 			cb_config.recovery_ab = true;
 			cb_config.recovery_ab_single_copy = true;
+			break;
+		case AMDFW_OPT_USE_COMBO:
+			cb_config.use_combo = true;
 			break;
 		case AMDFW_OPT_MULTILEVEL:
 			cb_config.multi_level = true;
@@ -1904,17 +1908,17 @@ int main(int argc, char **argv)
 	else
 		amd_romsig->psp_directory = BUFF_TO_RUN(ctx, pspdir);
 
-#if PSP_COMBO
-	psp_combo_directory *combo_dir = new_combo_dir(&ctx);
-	amd_romsig->combo_psp_directory = BUFF_TO_RUN(ctx, combo_dir);
-	/* 0 -Compare PSP ID, 1 -Compare chip family ID */
-	combo_dir->entries[0].id_sel = 0;
-	combo_dir->entries[0].id = get_psp_id(soc_id);
-	combo_dir->entries[0].lvl2_addr = BUFF_TO_RUN(ctx, pspdir);
+	if (cb_config.use_combo) {
+		psp_combo_directory *combo_dir = new_combo_dir(&ctx);
+		amd_romsig->combo_psp_directory = BUFF_TO_RUN(ctx, combo_dir);
+		/* 0 -Compare PSP ID, 1 -Compare chip family ID */
+		combo_dir->entries[0].id_sel = 0;
+		combo_dir->entries[0].id = get_psp_id(soc_id);
+		combo_dir->entries[0].lvl2_addr = BUFF_TO_RUN(ctx, pspdir);
 
-	combo_dir->header.lookup = 1;
-	fill_dir_header(combo_dir, 1, PSP2_COOKIE, &ctx);
-#endif
+		combo_dir->header.lookup = 1;
+		fill_dir_header(combo_dir, 1, PSP2_COOKIE, &ctx);
+	}
 
 	if (have_bios_tables(amd_bios_table)) {
 		bios_directory_table *biosdir = NULL;

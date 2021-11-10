@@ -12,8 +12,6 @@
 #include "chip.h"
 #include "pch.h"
 
-typedef struct southbridge_intel_bd82x6x_config config_t;
-
 static int codec_detect(u8 *base)
 {
 	u8 reg8;

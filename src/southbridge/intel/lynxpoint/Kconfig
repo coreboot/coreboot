@@ -41,6 +41,9 @@ config INTEL_LYNXPOINT_LP
 	help
 	  Set this option to y for LynxPoint LP (Haswell ULT).
 
+config AZALIA_MAX_CODECS
+	default 4
+
 config EHCI_BAR
 	hex
 	default 0xe8000000

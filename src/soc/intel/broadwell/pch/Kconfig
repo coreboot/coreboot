@@ -24,6 +24,9 @@ config PCH_SPECIFIC_OPTIONS
 	select SOUTHBRIDGE_INTEL_COMMON_SPI_ICH9
 	select SPI_FLASH
 
+config AZALIA_MAX_CODECS
+	default 4
+
 config EHCI_BAR
 	hex
 	default 0xd8000000

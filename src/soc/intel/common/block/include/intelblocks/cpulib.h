@@ -11,6 +11,21 @@
  */
 void cpu_set_max_ratio(void);
 
+/* Get CPU bus frequency in MHz */
+u32 cpu_get_bus_frequency(void);
+
+/* Get CPU's max non-turbo ratio */
+u8 cpu_get_max_non_turbo_ratio(void);
+
+/* Check if CPU is hybrid CPU or not */
+bool cpu_is_hybrid_supported(void);
+
+/*
+ * Returns type of CPU that executing the function. It returns 0x20
+ * if CPU is atom, otherwise 0x40 if CPU is CORE. The API must be called
+ * if CPU is hybrid.
+ */
+uint8_t cpu_get_cpu_type(void);
 /*
  * Get the TDP Nominal Ratio from MSR 0x648 Bits 7:0.
  */

@@ -31,6 +31,13 @@
 #define CPUID_CPU_TOPOLOGY_CORE_BITS(res, threadbits) \
 	((CPUID_CPU_TOPOLOGY(LEVEL_BITS, (res).eax)) - threadbits)
 
+#define CPUID_PROCESSOR_FREQUENCY		0X16
+#define CPUID_HYBRID_INFORMATION		0x1a
+
+/* Structured Extended Feature Flags */
+#define CPUID_STRUCT_EXTENDED_FEATURE_FLAGS	0x7
+#define HYBRID_FEATURE				BIT(15)
+
 /*
  * Set PERF_CTL MSR (0x199) P_Req with
  * Turbo Ratio which is the Maximum Ratio.
@@ -185,6 +192,40 @@ int cpu_get_burst_mode_state(void)
 	return burst_state;
 }
 
+bool cpu_is_hybrid_supported(void)
+{
+	struct cpuid_result cpuid_regs;
+
+	/* CPUID.(EAX=07H, ECX=00H):EDX[15] indicates CPU is hybrid CPU or not*/
+	cpuid_regs = cpuid_ext(CPUID_STRUCT_EXTENDED_FEATURE_FLAGS, 0);
+	return !!(cpuid_regs.edx & HYBRID_FEATURE);
+}
+
+/*
+ * The function must be called if CPU is hybrid. If CPU is hybrid, the CPU type
+ * information is available in the Hybrid Information Enumeration Leaf(EAX=0x1A, ECX=0).
+ */
+uint8_t cpu_get_cpu_type(void)
+{
+	union cpuid_nat_model_id_and_core_type {
+		struct {
+			u32 native_mode_id:24;
+			u32 core_type:8;
+		} bits;
+		u32 hybrid_info;
+	};
+	union cpuid_nat_model_id_and_core_type eax;
+
+	eax.hybrid_info = cpuid_eax(CPUID_HYBRID_INFORMATION);
+	return (u8)eax.bits.core_type;
+}
+
+/* It gets CPU bus frequency in MHz */
+uint32_t cpu_get_bus_frequency(void)
+{
+	return cpuid_ecx(CPUID_PROCESSOR_FREQUENCY);
+}
+
 /*
  * Program CPU Burst mode
  * true = Enable Burst mode.
@@ -273,6 +314,18 @@ uint32_t cpu_get_max_ratio(void)
 		ratio_max = (msr.lo >> 8) & 0xff;
 	}
 	return ratio_max;
+}
+
+uint8_t cpu_get_max_non_turbo_ratio(void)
+{
+	msr_t msr;
+
+	/*
+	 * PLATFORM_INFO(0xCE) MSR Bits[15:8] tells
+	 * MAX_NON_TURBO_LIM_RATIO
+	 */
+	msr = rdmsr(MSR_PLATFORM_INFO);
+	return ((msr.lo >> 8) & 0xff);
 }
 
 void configure_tcc_thermal_target(void)

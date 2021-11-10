@@ -1274,7 +1274,7 @@ int main(int argc, char **argv)
 	char *rom = NULL;
 	embedded_firmware *amd_romsig;
 	psp_directory_table *pspdir;
-	int comboable = 0;
+	bool comboable = false;
 	int fuse_defined = 0;
 	int targetfd;
 	char *output = NULL, *config = NULL;

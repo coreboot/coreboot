@@ -91,23 +91,6 @@ static int hda_wait_for_valid(u8 *base)
 	return -1;
 }
 
-int hda_codec_write(u8 *base, u32 size, const u32 *data)
-{
-	int i;
-
-	for (i = 0; i < size; i++) {
-		if (hda_wait_for_ready(base) < 0)
-			return -1;
-
-		write32(base + HDA_IC_REG, data[i]);
-
-		if (hda_wait_for_valid(base) < 0)
-			return -1;
-	}
-
-	return 0;
-}
-
 int hda_codec_init(u8 *base, int addr, int verb_size, const u32 *verb_data)
 {
 	const u32 *verb;
@@ -146,7 +129,7 @@ int hda_codec_init(u8 *base, int addr, int verb_size, const u32 *verb_data)
 	}
 
 	/* 3 */
-	rc = hda_codec_write(base, size, verb);
+	rc = azalia_program_verb_table(base, verb, size);
 
 	if (rc < 0)
 		printk(BIOS_DEBUG, "HDA: verb not loaded\n");

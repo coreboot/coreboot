@@ -24,7 +24,7 @@ static void codecs_init(u8 *base, u32 codec_mask)
 	}
 
 	if (pc_beep_verbs_size)
-		hda_codec_write(base, pc_beep_verbs_size, pc_beep_verbs);
+		azalia_program_verb_table(base, pc_beep_verbs, pc_beep_verbs_size);
 }
 
 static void azalia_pch_init(struct device *dev, u8 *base)

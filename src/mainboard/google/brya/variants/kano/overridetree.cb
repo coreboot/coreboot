@@ -18,6 +18,12 @@ chip soc/intel/alderlake
 	# GPE configuration
 	register "pmc_gpe0_dw1" = "GPP_D"
 
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"		# Disable USB2_C1
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"		# Disable M.2 WWAN
+	register "usb2_ports[9]" = "USB2_PORT_EMPTY"		# Disable M.2 Bluetooth
+
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Disable M.2 WWAN
+
 	# FIVR configurations for kano are disabled since the board doesn't have V1p05 and Vnn
 	# bypass rails implemented.
 	register "ext_fivr_settings" = "{

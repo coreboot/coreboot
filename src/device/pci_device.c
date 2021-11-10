@@ -1499,7 +1499,7 @@ static void pci_bridge_route(struct bus *link, scan_state state)
 {
 	struct device *dev = link->dev;
 	struct bus *parent = dev->bus;
-	u32 reg, buses = 0;
+	uint8_t primary, secondary, subordinate;
 
 	if (state == PCI_ROUTE_SCAN) {
 		link->secondary = parent->subordinate + 1;
@@ -1507,15 +1507,17 @@ static void pci_bridge_route(struct bus *link, scan_state state)
 	}
 
 	if (state == PCI_ROUTE_CLOSE) {
-		buses |= 0xfeff << 8;
+		primary = 0;
+		secondary = 0xff;
+		subordinate = 0xfe;
 	} else if (state == PCI_ROUTE_SCAN) {
-		buses |= parent->secondary & 0xff;
-		buses |= ((u32) link->secondary & 0xff) << 8;
-		buses |= 0xff << 16; /* MAX PCI_BUS number here */
+		primary = parent->secondary;
+		secondary = link->secondary;
+		subordinate = 0xff; /* MAX PCI_BUS number here */
 	} else if (state == PCI_ROUTE_FINAL) {
-		buses |= parent->secondary & 0xff;
-		buses |= ((u32) link->secondary & 0xff) << 8;
-		buses |= ((u32) link->subordinate & 0xff) << 16;
+		primary = parent->secondary;
+		secondary = link->secondary;
+		subordinate = link->subordinate;
 	}
 
 	if (state == PCI_ROUTE_SCAN) {
@@ -1530,11 +1532,9 @@ static void pci_bridge_route(struct bus *link, scan_state state)
 	 * transactions will not be propagated by the bridge if it is not
 	 * correctly configured.
 	 */
-
-	reg = pci_read_config32(dev, PCI_PRIMARY_BUS);
-	reg &= 0xff000000;
-	reg |= buses;
-	pci_write_config32(dev, PCI_PRIMARY_BUS, reg);
+	pci_write_config8(dev, PCI_PRIMARY_BUS, primary);
+	pci_write_config8(dev, PCI_SECONDARY_BUS, secondary);
+	pci_write_config8(dev, PCI_SUBORDINATE_BUS, subordinate);
 
 	if (state == PCI_ROUTE_FINAL) {
 		pci_write_config16(dev, PCI_COMMAND, link->bridge_cmd);

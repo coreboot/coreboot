@@ -44,4 +44,9 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_CPPC
 	help
 	  Generate CPPC entries for Intel SpeedShift
 
+config SOC_INTEL_COMMON_BLOCK_ACPI_CPU_HYBRID
+	bool
+	help
+	  Defines hybrid CPU specific ACPI helper functions.
+
 endif

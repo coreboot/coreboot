@@ -193,8 +193,10 @@ the wip flag:
 * When pushing patches that are not for submission, these should be marked
 as such. This can be done in the title ‘[DONOTSUBMIT]’, or can be pushed as
 private changes, so that only explicitly added reviewers will see them. These
-sorts of patches are frequently posted as ideas or RFCs for the community
-to look at. To push a private change, use the command:
+sorts of patches are frequently posted as ideas or RFCs for the community to
+look at. Note that private changes can still be fetched from Gerrit by anybody
+who knows their commit ID, so don't use this for sensitive changes. To push
+a private change, use the command:
         git push origin HEAD:refs/for/master%private
 
 * Multiple push options can be combined:

@@ -173,7 +173,9 @@ When you are done with your commit, run `git push` to push your commit to
 coreboot.org. **Note:** To submit as a private patch, use
 `git push origin HEAD:refs/for/master%private`. Submitting as a private patch
 means that your commit will be on review.coreboot.org, but is only visible to
-yourself and those you add as reviewers.
+yourself and those you add as reviewers. This mode isn't perfect: Somebody who
+knows the commit ID can still fetch the change and everything it refers (e.g.
+parent commits).
 
 This has been a quick primer on how to submit a change to Gerrit for review
 using git. You may wish to review the [Gerrit code review workflow

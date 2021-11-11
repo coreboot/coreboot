@@ -144,6 +144,7 @@ struct tpm_header {
 /* Values copied from tpm2/tpm_types.h */
 #define RC_VER1                                         0x100
 #define TPM_RC_INITIALIZE         ((TPM_RC)(RC_VER1 + 0x000))
+#define TPM_RC_NV_RANGE           ((TPM_RC)(RC_VER1 + 0x046))
 #define TPM_RC_NV_UNINITIALIZED	  ((TPM_RC)(RC_VER1 + 0x04A))
 
 /*

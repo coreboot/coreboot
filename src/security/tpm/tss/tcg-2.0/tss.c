@@ -242,6 +242,9 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 	case TPM_RC_CR50_NV_UNDEFINED:
 		return TPM_E_BADINDEX;
 
+	case TPM_RC_NV_RANGE:
+		return TPM_E_RANGE;
+
 	default:
 		return TPM_E_READ_FAILURE;
 	}

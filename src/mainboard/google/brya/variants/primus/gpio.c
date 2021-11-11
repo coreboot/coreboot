@@ -45,8 +45,6 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_E3, NONE),
 	/* E7  : PROC_GP1 ==> NC */
 	PAD_NC(GPP_E7, NONE),
-	/* E20 : USB_C1_LSX_SOC_TX ==> EN_PP3300_eMMC */
-	PAD_CFG_GPO(GPP_E20, 1, DEEP),
 
 	/* F19 : SRCCLKREQ6# ==> EMMC_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF1),
@@ -107,6 +105,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_E16, 0, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
+	/* E20 : USB_C1_LSX_SOC_TX ==> EN_PP3300_eMMC */
+	PAD_CFG_GPO(GPP_E20, 1, DEEP),
 	/* F21 : EXT_PWR_GATE2# ==> WWAN_FCPO_L (updated in romstage) */
 	PAD_CFG_GPO(GPP_F21, 0, DEEP),
 	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */

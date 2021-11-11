@@ -128,6 +128,11 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref pcie_rp3 on
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B3)"
+				register "srcclk_pin" = "6"
+				device generic 0 alias emmc_rtd3 on end
+			end
 			# Enable PCIe-to-eMMC bridge PCIE 3 using clk 6
 			register "pch_pcie_rp[PCH_RP(3)]" = "{
 				.clk_src = 6,

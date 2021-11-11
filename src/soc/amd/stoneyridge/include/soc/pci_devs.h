@@ -6,17 +6,15 @@
 #include <device/pci_def.h>
 #include <amdblocks/pci_devs.h>
 
-/* GNB Root Complex */
+/* GNB Root Complex: GNB_DEVID 0x1576 */
 #define GNB_DEV			0x0
 #define GNB_FUNC		0
-#define GNB_DEVID		0x1576
 #define GNB_DEVFN		PCI_DEVFN(GNB_DEV, GNB_FUNC)
 #define SOC_GNB_DEV		_SOC_DEV(GNB_DEV, GNB_FUNC)
 
-/* IOMMU */
+/* IOMMU: IOMMU_DEVID 0x1577 */
 #define IOMMU_DEV		0x0
 #define IOMMU_FUNC		2
-#define IOMMU_DEVID		0x1577
 #define IOMMU_DEVFN		PCI_DEVFN(IOMMU_DEV, IOMMU_FUNC)
 #define SOC_IOMMU_DEV		_SOC_DEV(IOMMU_DEV, IOMMU_FUNC)
 
@@ -41,59 +39,51 @@
 #define HDA0_DEVFN		PCI_DEVFN(HDA0_DEV, HDA0_FUNC)
 #define SOC_HDA0_DEV		_SOC_DEV(HDA0_DEV, HDA0_FUNC)
 
-/* Host Bridge */
+/* Host Bridge: HOST_DEVID 0x157b */
 #define HOST_DEV		0x2
 #define HOST_FUNC		0
-#define HOST_DEVID		0x157b
 #define HOST_DEVFN		PCI_DEVFN(HOST_DEV, HOST_FUNC)
 #define SOC_HOST_DEV		_SOC_DEV(HOST_DEV, HOST_FUNC)
 
-/* PCIe GPP Bridge 0 */
+/* PCIe GPP Bridge 0: PCIE0_DEVID 0x157c */
 #define PCIE0_DEV		0x2
 #define PCIE0_FUNC		1
-#define PCIE0_DEVID		0x157c
 #define PCIE0_DEVFN		PCI_DEVFN(PCIE0_DEV, PCIE0_FUNC)
 #define SOC_PCIE0_DEV		_SOC_DEV(PCIE0_DEV, PCIE0_FUNC)
 
-/* PCIe GPP Bridge 1 */
+/* PCIe GPP Bridge 1: PCIE1_DEVID 0x157c */
 #define PCIE1_DEV		0x2
 #define PCIE1_FUNC		2
-#define PCIE1_DEVID		0x157c
 #define PCIE1_DEVFN		PCI_DEVFN(PCIE1_DEV, PCIE1_FUNC)
 #define SOC_PCIE1_DEV		_SOC_DEV(PCIE1_DEV, PCIE1_FUNC)
 
-/* PCIe GPP Bridge 2 */
+/* PCIe GPP Bridge 2: PCIE2_DEVID 0x157c */
 #define PCIE2_DEV		0x2
 #define PCIE2_FUNC		3
-#define PCIE2_DEVID		0x157c
 #define PCIE2_DEVFN		PCI_DEVFN(PCIE2_DEV, PCIE2_FUNC)
 #define SOC_PCIE2_DEV		_SOC_DEV(PCIE2_DEV, PCIE2_FUNC)
 
-/* PCIe GPP Bridge 3 */
+/* PCIe GPP Bridge 3: PCIE3_DEVID 0x157c */
 #define PCIE3_DEV		0x2
 #define PCIE3_FUNC		4
-#define PCIE3_DEVID		0x157c
 #define PCIE3_DEVFN		PCI_DEVFN(PCIE3_DEV, PCIE3_FUNC)
 #define SOC_PCIE3_DEV		_SOC_DEV(PCIE3_DEV, PCIE3_FUNC)
 
-/* PCIe GPP Bridge 4 */
+/* PCIe GPP Bridge 4: PCIE4_DEVID 0x157c */
 #define PCIE4_DEV		0x2
 #define PCIE4_FUNC		5
-#define PCIE4_DEVID		0x157c
 #define PCIE4_DEVFN		PCI_DEVFN(PCIE4_DEV, PCIE4_FUNC)
 #define SOC_PCIE4_DEV		_SOC_DEV(PCIE4_DEV, PCIE4_FUNC)
 
-/* Platform Security Processor */
+/* Platform Security Processor: PSP_DEVID 0x1578 */
 #define PSP_DEV			0x8
 #define PSP_FUNC		0
-#define PSP_DEVID		0x1578
 #define PSP_DEVFN		PCI_DEVFN(PSP_DEV, PSP_FUNC)
 #define SOC_PSP_DEV		_SOC_DEV(PSP_DEV, PSP_FUNC)
 
-/* HD Audio 1 */
+/* HD Audio 1: HDA1_DEVID 0x157a */
 #define HDA1_DEV		0x9
 #define HDA1_FUNC		2
-#define HDA1_DEVID		0x157a
 #define HDA1_DEVFN		PCI_DEVFN(HDA1_DEV, HDA1_FUNC)
 #define SOC_HDA1_DEV		_SOC_DEV(HDA1_DEV, HDA1_FUNC)
 
@@ -157,47 +147,44 @@
 #define NB_DEVFN		PCI_DEVFN(NB_DEV, NB_FUNC)
 #define SOC_NB_DEV		_SOC_DEV(NB_DEV, NB_FUNC)
 
-/* XHCI */
+/* XHCI: XHCI_DEVID 0x7914 */
 #define XHCI_DEV		0x10
 #define XHCI_FUNC		0
-#define XHCI_DEVID		0x7914
 #define XHCI_DEVFN		PCI_DEVFN(XHCI_DEV, XHCI_FUNC)
 #define SOC_XHCI_DEV		_SOC_DEV(XHCI_DEV, XHCI_FUNC)
 
-/* SATA */
+/*
+ * SATA:
+ * SATA_IDE_IDEVID		0x7900
+ * AHCI_DEVID_MS		0x7901
+ * AHCI_DEVID_AMD		0x7904
+ */
 #define SATA_DEV		0x11
 #define SATA_FUNC		0
-#define SATA_IDE_DEVID		0x7900
-#define AHCI_DEVID_MS		0x7901
-#define AHCI_DEVID_AMD		0x7904
 #define SATA_DEVFN		PCI_DEVFN(SATA_DEV, SATA_FUNC)
 #define SOC_SATA_DEV		_SOC_DEV(SATA_DEV, SATA_FUNC)
 
-/* EHCI */
+/* EHCI: EHCI_DEVID 0x7908 */
 #define EHCI_DEV		0x12
 #define EHCI_FUNC		0
-#define EHCI_DEVID		0x7908
 #define EHCI1_DEVFN		PCI_DEVFN(EHCI_DEV, EHCI_FUNC)
 #define SOC_EHCI1_DEV		_SOC_DEV(EHCI_DEV, EHCI_FUNC)
 
-/* SMBUS */
+/* SMBUS: SMBUS_DEVID 0x790b */
 #define SMBUS_DEV		0x14
 #define SMBUS_FUNC		0
-#define SMBUS_DEVID		0x790b
 #define SMBUS_DEVFN		PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC)
 #define SOC_SMBUS_DEV		_SOC_DEV(SMBUS_DEV, SMBUS_FUNC)
 
-/* LPC BUS */
+/* LPC BUS: LPC_DEVID 0x790e */
 #define PCU_DEV			0x14
 #define LPC_FUNC		3
-#define LPC_DEVID		0x790e
 #define LPC_DEVFN		PCI_DEVFN(PCU_DEV, LPC_FUNC)
 #define SOC_LPC_DEV		_SOC_DEV(PCU_DEV, LPC_FUNC)
 
-/* SD Controller */
+/* SD Controller: SD_DEVID 0x7906 */
 #define SD_DEV			0x14
 #define SD_FUNC			7
-#define SD_DEVID		0x7906
 #define SD_DEVFN		PCI_DEVFN(SD_DEV, SD_FUNC)
 #define SOC_SD_DEV		_SOC_DEV(SD_DEV, SD_FUNC)
 

@@ -417,13 +417,13 @@ void mt_pll_init(void)
 	}
 
 	/* MCUCFG CLKMUX */
-	clrsetbits32(&mt8192_mcucfg->cpu_plldiv_cfg0, MCU_DIV_MASK, MCU_DIV_1);
-	clrsetbits32(&mt8192_mcucfg->cpu_plldiv_cfg1, MCU_DIV_MASK, MCU_DIV_1);
-	clrsetbits32(&mt8192_mcucfg->bus_plldiv_cfg, MCU_DIV_MASK, MCU_DIV_1);
+	clrsetbits32(&mtk_mcucfg->cpu_plldiv_cfg0, MCU_DIV_MASK, MCU_DIV_1);
+	clrsetbits32(&mtk_mcucfg->cpu_plldiv_cfg1, MCU_DIV_MASK, MCU_DIV_1);
+	clrsetbits32(&mtk_mcucfg->bus_plldiv_cfg, MCU_DIV_MASK, MCU_DIV_1);
 
-	clrsetbits32(&mt8192_mcucfg->cpu_plldiv_cfg0, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
-	clrsetbits32(&mt8192_mcucfg->cpu_plldiv_cfg1, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
-	clrsetbits32(&mt8192_mcucfg->bus_plldiv_cfg, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
+	clrsetbits32(&mtk_mcucfg->cpu_plldiv_cfg0, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
+	clrsetbits32(&mtk_mcucfg->cpu_plldiv_cfg1, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
+	clrsetbits32(&mtk_mcucfg->bus_plldiv_cfg, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
 
 	/* enable infrasys DCM */
 	setbits32(&mt8192_infracfg->infra_bus_dcm_ctrl, 0x3 << 21);
@@ -481,7 +481,7 @@ void mt_pll_raise_little_cpu_freq(u32 freq)
 	setbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 4);
 
 	/* switch ca55 clock source to intermediate clock */
-	clrsetbits32(&mt8192_mcucfg->cpu_plldiv_cfg0, MCU_MUX_MASK, MCU_MUX_SRC_DIV_PLL1);
+	clrsetbits32(&mtk_mcucfg->cpu_plldiv_cfg0, MCU_MUX_MASK, MCU_MUX_SRC_DIV_PLL1);
 
 	/* disable armpll_ll frequency output */
 	clrbits32(plls[APMIXED_ARMPLL_LL].reg, PLL_EN);
@@ -494,7 +494,7 @@ void mt_pll_raise_little_cpu_freq(u32 freq)
 	udelay(PLL_EN_DELAY);
 
 	/* switch ca55 clock source back to armpll_ll */
-	clrsetbits32(&mt8192_mcucfg->cpu_plldiv_cfg0, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
+	clrsetbits32(&mtk_mcucfg->cpu_plldiv_cfg0, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
 
 	/* disable [4] intermediate clock armpll_divider_pll1_ck */
 	clrbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 4);
@@ -566,7 +566,7 @@ void mt_pll_raise_cci_freq(u32 freq)
 	setbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 4);
 
 	/* switch cci clock source to intermediate clock */
-	clrsetbits32(&mt8192_mcucfg->bus_plldiv_cfg, MCU_MUX_MASK, MCU_MUX_SRC_DIV_PLL1);
+	clrsetbits32(&mtk_mcucfg->bus_plldiv_cfg, MCU_MUX_MASK, MCU_MUX_SRC_DIV_PLL1);
 
 	/* disable ccipll frequency output */
 	clrbits32(plls[APMIXED_CCIPLL].reg, PLL_EN);
@@ -579,7 +579,7 @@ void mt_pll_raise_cci_freq(u32 freq)
 	udelay(PLL_EN_DELAY);
 
 	/* switch cci clock source back to ccipll */
-	clrsetbits32(&mt8192_mcucfg->bus_plldiv_cfg, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
+	clrsetbits32(&mtk_mcucfg->bus_plldiv_cfg, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
 
 	/* disable [4] intermediate clock armpll_divider_pll1_ck */
 	clrbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 4);

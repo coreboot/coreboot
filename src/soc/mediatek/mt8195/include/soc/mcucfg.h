@@ -964,6 +964,6 @@ struct mt8195_mcucfg_regs {
 check_member(mt8195_mcucfg_regs, cpu_plldiv_cfg0, 0x22a0);
 check_member(mt8195_mcucfg_regs, bus_plldiv_cfg, 0x22e0);
 
-static struct mt8195_mcucfg_regs *const mt8195_mcucfg = (void *)MCUCFG_BASE;
+static struct mt8195_mcucfg_regs *const mtk_mcucfg = (void *)MCUCFG_BASE;
 
 #endif  /* SOC_MEDIATEK_MT8195_MCUCFG_H */

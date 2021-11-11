@@ -1033,6 +1033,6 @@ check_member(mt8192_mcucfg_regs, mcusys_reserved_reg4, 0x7fd0);
 check_member(mt8192_mcucfg_regs, mcusys_reserved_reg0, 0x7fe0);
 check_member(mt8192_mcucfg_regs, mcusys_reserved_reg3_rd, 0x7ffc);
 
-static struct mt8192_mcucfg_regs *const mt8192_mcucfg = (void *)MCUCFG_BASE;
+static struct mt8192_mcucfg_regs *const mtk_mcucfg = (void *)MCUCFG_BASE;
 
 #endif  /* SOC_MEDIATEK_MT8192_MCUCFG_H */

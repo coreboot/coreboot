@@ -12,7 +12,7 @@ void mtk_soc_disable_l2c_sram(void)
 {
 	unsigned long v;
 
-	SET32_BITFIELDS(&mt8195_mcucfg->mp0_cluster_cfg0,
+	SET32_BITFIELDS(&mtk_mcucfg->mp0_cluster_cfg0,
 			MP0_CLUSTER_CFG0_L3_SHARE_EN, 0);
 	dsb();
 
@@ -25,7 +25,7 @@ void mtk_soc_disable_l2c_sram(void)
 		__asm__ volatile ("mrs %0, S3_0_C15_C3_7" : "=r" (v));
 	} while (((v >> 0x4) & 0xf) != 0xf);
 
-	SET32_BITFIELDS(&mt8195_mcucfg->mp0_cluster_cfg0,
+	SET32_BITFIELDS(&mtk_mcucfg->mp0_cluster_cfg0,
 			MP0_CLUSTER_CFG0_L3_SHARE_PRE_EN, 0);
 	dsb();
 }

@@ -54,6 +54,6 @@ config FLASH_DUAL_READ
 	default y
 	help
 	  When this option is enabled, the flash controller provides the ability
-	  to dual read mode.
+	  to dual IO read mode.
 
 endif

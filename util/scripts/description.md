@@ -23,5 +23,7 @@ __scripts__
                             headers `Shell`
   * _parse-maintainers.pl_ - Script to alphabetize MAINTAINERS file
                              `Perl`
+  * _rm_unused_code_ - Remove all code not used for a platform from the local
+                 git repository for auditing or release `Bash`
   * _ucode_h_to_bin.sh_ - Microcode conversion tool `Bash`
   * _update_submodules_ - Check all submodules for updates `Bash`

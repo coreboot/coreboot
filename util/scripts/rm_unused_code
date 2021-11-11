@@ -1,0 +1,312 @@
+#!/bin/bash
+set -e
+
+VERSION="1.00"
+
+PROGRAM=$0
+PROGNAME="$(basename "${PROGRAM}")"
+
+MODIFIED_FILES=()
+CLEAN_DIR_LIST=(configs Documentation payloads spd src util)
+KEEP_FILES=(util/kconfig/)
+REQUIRED_MAKEFILES="util/testing\|util/crossgcc\|payloads/coreinfo\|payloads/nvramcui\|payloads/libpayload\|payloads/external/tint\|util/amdfwtool\|util/ectool\|util/futility\|util/intelmetool\|util/inteltool\|util/intelvbttool\|til/post\|util/superiotool"
+VERBOSE=
+
+# Text STYLE variables
+BOLD="\033[1m"
+RED='\033[38;5;9m'
+GREEN='\033[38;5;2m'
+NO_COLOR='\033[0m'
+
+################################################################################
+
+usage() {
+cat << EOF
+The ${PROGNAME} script is used to create a git patch that removes all files
+not used in a single build.  It does this by creating a temporary directory
+and configuring it to show the last time a file was accessed.  It then sets
+the time on all files back to midnight on 2021-01-01 and then does a full
+build. Because all Kconfig and Makefiles are accessed during the built,
+it then creates a new Kconfig file containing all of the old Kconfigs.
+The next step is to delete all of the files that have an access time still
+set to 2021.  The final step of the cleaning process is to recursively remove
+any Makefile that is alone in a directory by itself. The script then makes
+a commit and creates a patch.
+
+  Usage: ${PROGNAME} [options]
+
+Options:
+ -b | --blddir <dir>   Set /tmp/<dir> as the build directory
+ -h | --help            Print usage and exit
+ -D | --debug           Print debug information.  Use -DD to show all commands
+ -V | --version         Print the version and exit
+      --nocolor         Don't print color codes
+EOF
+}
+
+_echo_color() {
+  local color="$1"
+  local text="$2"
+  local newline="$3"
+  if [[ ${newline} == "0" ]]; then
+    printf "${color}%s${NO_COLOR}" "${text}"
+  else
+    printf "${color}%s${NO_COLOR}\n" "${text}"
+  fi
+}
+
+_echo_error() {
+  _echo_color "${RED}" "$*" 1 >&2
+}
+
+show_version() {
+  echo
+  _echo_color "${BOLD}${GREEN}" "${PROGNAME} version ${VERSION}"
+  echo
+}
+
+get_args() {
+  if ! args="$(getopt -l version,help,debug,nocolor,blddir: -o b:DhV -- "$@")"; then
+    usage
+    exit 1
+  fi
+
+  eval set -- "${args}"
+
+  while true; do
+    case "$1" in
+    -b | --blddir)
+      shift
+      BLD_DIR="/tmp/$1"
+      ;;
+    -D | --debug)
+      # -d prints extra debug info
+      # -dd prints all script steps
+      if [ -n "${VERBOSE}" ]; then
+        set -x
+      else
+        VERBOSE="V=1"
+      fi
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    --nocolor)
+      BOLD=""
+      RED=""
+      GREEN=""
+      NO_COLOR=""
+      ;;
+    -V | --version) exit 0 ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      _echo_error "Unknown argument '$1'"
+      usage
+      exit 1
+      ;;
+    esac
+    shift
+  done
+
+  if [[ -n $1 ]]; then
+    _echo_error "Unknown command '$1'"
+    usage
+    exit 1
+  fi
+
+  BLD_DIR="${BLD_DIR:-$(mktemp -d)}"
+}
+
+recursively_rm_dir_onlyfile() {
+  local dir=$1
+  local beforecount
+  local aftercount
+
+  while true; do
+    if [[ ! -d ${dir} ]]; then
+      break
+    fi
+    beforecount="$(find "${dir}" | wc -l)"
+    while read -r file; do
+	# Don't delete any of the makefiles required for building.
+      if echo "${file}" | grep -q "${REQUIRED_MAKEFILES}"; then
+        break
+      fi
+      # Remove the directory if a makefile is the only file present.
+      if [[ "$(cd "${file}" && find . -maxdepth 1 | grep -v "./Makefile")" == "." ]]; then
+        rm -rf "${file}"
+      fi
+    done < <(find "${dir}" -depth -type d)
+    if [[ ! -d ${dir} ]]; then
+      break
+    fi
+    find "${dir}" -type d -empty -delete
+    if [[ ! -d ${dir} ]]; then
+      break
+    fi
+    aftercount="$(find "${dir}" | wc -l)"
+    if [[ ${aftercount} -eq ${beforecount} ]]; then
+      break
+    fi
+  done
+}
+
+verify_atime_enabled() {
+  local testfile
+  # Make sure the build directory is mounted correctly
+  if [ ! -d "${BLD_DIR}" ]; then
+    mkdir "${BLD_DIR}"
+  fi
+  if ! grep -q "${BLD_DIR}" /proc/mounts; then
+    echo "Mounting the ${BLD_DIR} directory with atime enabled"
+    sudo mount -t tmpfs -o rw,relatime tmpfs "${BLD_DIR}"
+  elif ! grep "${BLD_DIR}" /proc/mounts | grep -q relatime; then
+    echo "Remounting the ${BLD_DIR} directory with relatime enabled"
+    sudo mount -o remount,relatime "${BLD_DIR}"
+  fi
+
+  testfile="$(mktemp -p "${BLD_DIR}")"
+  touch -a --date="2020-01-01 00:00:00" "${testfile}"
+  if ! stat "${testfile}" | grep -q "Access: 2020-01-01"; then
+    _echo_error "Error: could not set access time."
+    sudo umount "${BLD_DIR}"
+    rm -rf "${BLD_DIR}"
+    exit 1
+  fi
+  rm -f "${testfile}"
+}
+
+update_codebase() {
+  local tempconfig
+  tempconfig="$(mktemp)"
+  if [ ! -f "${BLD_DIR}/COPYING" ]; then
+    echo "Downloading coreboot tree"
+    git clone https://review.coreboot.org/coreboot.git "${BLD_DIR}"
+    make -C "${BLD_DIR}" build/xcompile
+  fi
+
+  # Start from a completely clean tree or we'll miss anything that
+  # doesn't need to be rebuilt.  Save the config if it exists.
+  if [[ -f .config ]]; then
+    mv .config "${tempconfig}"
+  fi
+  _echo_color "${GREEN}" "Cleaning coreboot tree"
+  make -s -C "${BLD_DIR}" distclean
+  if [[ -f ${tempconfig} ]]; then
+    mv "${tempconfig}" .config
+  fi
+
+  # force a refresh of all submodules
+  _echo_color "${GREEN}" "Refreshing all submodules..."
+  git submodule update --recursive --remote --init --checkout
+}
+
+save_kconfig() (
+  cd "${BLD_DIR}" && util/lint/kconfig_lint -w -p -o kconfig.tmp
+)
+
+update_times() {
+  _echo_color "${GREEN}" "Updating access time of all files"
+  git ls-files | xargs touch -a -m -t 202001010000
+  if ! stat "${BLD_DIR}/COPYING" | grep -q "Access: 2020-01-01"; then
+    _echo_error "Error: could not set access time."
+    _echo_error "       One of the following processes may be accessing it."
+    fuser -uvm "${BLD_DIR}/COPYING"
+    exit 1
+  fi
+}
+
+mark_files_to_keep() {
+  for file in "${KEEP_FILES[@]}"; do
+    find "${BLD_DIR}/${file}" -depth -exec touch {} \;
+  done
+}
+
+build_platform() {
+  local extra_text="$1"
+  _echo_color "${GREEN}" "Building platform ${extra_text}"
+  if [[ ! -f "${BLD_DIR}/.config" ]]; then
+    if [[ -n ${CONFIG_FILE} ]]; then
+      cp "${CONFIG_FILE}" "${BLD_DIR}/.config"
+    fi
+    echo "CONFIG_PAYLOAD_NONE=y" >>"${BLD_DIR}/.config"
+  fi
+
+  make -C "${BLD_DIR}" -s clean UPDATED_SUBMODULES=1 BUILD_TIMELESS=1
+  make -C "${BLD_DIR}" -s olddefconfig
+  make -C "${BLD_DIR}" -s UPDATED_SUBMODULES=1 BUILD_TIMELESS=1 ${VERBOSE}
+  HASH="$(sha256sum build/coreboot.rom)"
+  make -C "${BLD_DIR}" -s clean UPDATED_SUBMODULES=1 BUILD_TIMELESS=1
+}
+
+show_modified() {
+  readarray MODIFIED_FILES < <(find "${BLD_DIR}" -atime -1 -type f -path ./.git -prune)
+  echo "Files changed: ${#MODIFIED_FILES[@]}"
+}
+
+remove_kconfigs() {
+  # Dump all Kconfigs into a single file so that directories
+  # can be removed, while maintaining the entire Kconfig
+  # structure.
+  find "${BLD_DIR}/src" -name 'Kconfig*' -delete
+  mv "${BLD_DIR}/kconfig.tmp" "${BLD_DIR}/src/Kconfig"
+}
+
+remove_unused() {
+  local dir
+  # Most files can be removed simply by looking at the time, but
+  # all Kconfig and Makefile.inc files in the entire tree are accessed
+  # whether they're used or not.
+  remove_kconfigs
+
+  echo
+  _echo_color "${GREEN}" "Checking access time and removing unused files in:"
+  for dir in "${CLEAN_DIR_LIST[@]}"; do
+    printf "%s\n" "${BLD_DIR}/${dir}"
+    # find and remove all files without updated times.
+    find "${BLD_DIR}/${dir}" -atime +5 -type f -delete
+
+    recursively_rm_dir_onlyfile "${BLD_DIR}/${dir}"
+  done
+  printf "\n\n"
+}
+
+create_patch() {
+  _echo_color "${GREEN}" "Creating patch"
+  (
+    cd "${BLD_DIR}"
+    git add -A
+    git commit -m "remove unused files" --no-verify
+    git format-patch HEAD^
+  )
+}
+
+main() {
+  show_version
+  get_args "$@"
+
+  verify_atime_enabled
+  update_codebase
+  save_kconfig
+  update_times
+  mark_files_to_keep
+  build_platform "to mark used files"
+  OLDHASH="${HASH}"
+  HASH=""
+  #show_modified
+  remove_unused
+  create_patch
+  build_platform "to verify the build still works"
+  NEWHASH="${HASH}"
+
+  echo
+  _echo_color "${GREEN}" "Checksums:"
+  echo "Old: ${OLDHASH}"
+  echo "New: ${NEWHASH}"
+}
+
+main "$@"

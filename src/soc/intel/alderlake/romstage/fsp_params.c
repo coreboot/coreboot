@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
+#include <cpu/intel/cpu_ids.h>
 #include <device/device.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
@@ -259,6 +260,14 @@ static void fill_fspm_usb4_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
+	const uint32_t cpuid = cpu_get_cpuid();
+
+	/* Disable VT-d for early silicon steppings as it results in a CPU hard hang */
+	if (cpuid == CPUID_ALDERLAKE_A0 || cpuid == CPUID_ALDERLAKE_A1) {
+		m_cfg->VtdDisable = 1;
+		return;
+	}
+
 	m_cfg->VtdBaseAddress[VTD_GFX] = GFXVT_BASE_ADDRESS;
 	m_cfg->VtdBaseAddress[VTD_IPU] = IPUVT_BASE_ADDRESS;
 	m_cfg->VtdBaseAddress[VTD_VTVCO] = VTVC0_BASE_ADDRESS;

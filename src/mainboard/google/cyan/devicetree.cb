@@ -97,7 +97,7 @@ chip soc/intel/braswell
 		device pci 00.0 on  end	# 8086 2280 - SoC transaction router
 		device pci 02.0 on  end	# 8086 22b0/22b1 - B1/C0 stepping Graphics and Display
 		device pci 03.0 off end	# 8086 22b8 - Camera and Image Processor
-		device pci 0b.0 on  end	# 8086 22dc - Signal Processing Controller
+		device pci 0b.0 off end	# 8086 22dc - Signal Processing Controller
 		device pci 10.0 on  end	# 8086 2294 - MMC Port
 		device pci 11.0 off end	# 8086 0F15 - SDIO Port
 		device pci 12.0 on  end	# 8086 0F16 - SD Port
@@ -122,7 +122,7 @@ chip soc/intel/braswell
 		device pci 1e.0 on  end	# 8086 2286 - SIO - DMA
 		device pci 1e.1 off end	# 8086 0F08 -   PWM 1
 		device pci 1e.2 off end	# 8086 0F09 -   PWM 2
-		device pci 1e.3 on  end	# 8086 228a -   HSUART 1
+		device pci 1e.3 off end	# 8086 228a -   HSUART 1
 		device pci 1e.4 off end	# 8086 228c -   HSUART 2
 		device pci 1e.5 on  end	# 8086 228e -   SPI 1
 		device pci 1e.6 off end	# 8086 2290 -   SPI 2

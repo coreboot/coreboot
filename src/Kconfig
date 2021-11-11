@@ -1179,7 +1179,7 @@ config DEBUG_INTEL_ME
 endif
 
 config DEBUG_FUNC
-	bool "Enable function entry and exit reporting macros" if DEFAULT_CONSOLE_LOGLEVEL_8
+	bool "Enable function entry and exit reporting macros" if DEFAULT_CONSOLE_LOGLEVEL_8 || CONSOLE_OVERRIDE_LOGLEVEL
 	default n
 	help
 	  This option enables additional function entry and exit debug messages

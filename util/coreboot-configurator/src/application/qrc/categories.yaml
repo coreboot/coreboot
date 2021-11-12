@@ -1,0 +1,119 @@
+  processor:
+    displayName: Processor
+    hyper_threading:
+      displayName: Hyper-Threading
+      type: bool
+      help: Enable or disable Hyper-Threading
+    vtd:
+      displayName: Intel VT-d
+      type: bool
+      help: Enable or disable Intel VT-d (virtualisation)
+    power_profile:
+      displayName: Power Profile
+      type: enum
+      help: Select whether to maximise performance, battery life or both
+    me_state:
+      displayName: Intel Management Engine
+      type: bool
+      help: Enable or disable the Intel Management Engine
+
+  devices:
+    displayName: Devices
+    wireless:
+      displayName: Wireless
+      type: bool
+      help: Enable or disable the built-in wireless card
+    wlan:
+      displayName: Wireless
+      type: bool
+      help: Enable or disable the built-in wireless card
+    bluetooth:
+      displayName: Bluetooth
+      type: bool
+      help: Enable or disable the built-in bluetooth
+    wwan:
+      displayName: Mobile Network
+      type: bool
+      help: Enable or disable the built-in mobile network
+    ethernet1:
+      displayName: Ethernet 1
+      type: bool
+      help: Enable or disable the built-in Ethernet Port 1
+    ethernet2:
+      displayName: Ethernet 2
+      type: bool
+      help: Enable or disable the built-in Ethernet Port 2
+    ethernet3:
+      displayName: Ethernet 3
+      type: bool
+      help: Enable or disable the built-in Ethernet Port 3
+    webcam:
+      displayName: Webcam
+      type: bool
+      help: Enable or disable the built-in webcam
+    microphone:
+      displayName: Microphone
+      type: bool
+      help: Enable or disable the built-in microphone
+    legacy_8254_timer:
+      displayName: Clock Gating
+      type: bool
+      help: Enable or disable the legacy 8254 timer. Reduces power consumption when enabled but must be disabled for certain distributions such as Qubes
+    usb_always_on:
+      displayName: USB Always On
+      type: bool
+      help: Allow the USB ports to provide power to connected devices when the computer is suspended
+    touchpad:
+      displayName: Touchpad
+      type: bool
+      help: Enable or disable the built-in touchpad
+    trackpoint:
+      displayName: Trackpoint
+      type: bool
+      help: Enable or disable the built-in trackpoint
+    sata_mode:
+      displayName: SATA Mode
+      type: enum
+      help: Set the mode of the SATA controller from AHCI or Compatible
+    thunderbolt:
+      displayName: Thunderbolt
+      type: bool
+      help: Enable or disable Thunderbolt functionality
+
+  system:
+    displayName: System
+    kbl_timeout:
+      displayName: Keyboard Backlight Timeout
+      type: enum
+      help: Adjust the amout of time before the keyboard backlight turns off when un-used
+    fn_ctrl_swap:
+      displayName: Fn Ctrl Reverse
+      type: bool
+      help: Swap the functions of the [Fn] and [Ctrl] keys
+    max_charge:
+      displayName: Max Charge
+      type: enum
+      help: Set the maximum level the battery will charge to
+    fan_mode:
+      displayName: Fan Mode
+      type: enum
+      help: Adjust the fan curve to priotise performance or noise levels
+    f1_to_f12_as_primary:
+      displayName: Function Lock
+      type: bool
+      help: Make the F-keys behave as if you are holding down the Fn key
+
+  advanced:
+    displayName: Advanced
+    boot_option:
+      displayName: Boot Options
+      type: enum
+      help: Change the boot device in the event of a failed boot
+    debug_level:
+      displayName: Debug Level
+      type: enum
+      help: Set the verbosity of the debug output
+    power_on_after_fail:
+      displayName: Power on Behaviour
+      type: enum
+      help: Select whether to power on in the event of a power failure

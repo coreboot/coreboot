@@ -1,0 +1,12 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+option('sizes',
+	type: 'array',
+	choices: ['24', '48', '96', '16', '32', '64', '128', '256', '512'],
+	description: 'Choose icon size(s)',
+)
+
+option('mock',
+	type : 'boolean',
+	value : false
+)

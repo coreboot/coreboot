@@ -1,0 +1,12 @@
+<RCC>
+	<qresource prefix="/toggle">
+		<file alias="toggle-off.svg">qrc/toggle-off.svg</file>
+		<file alias="toggle-on.svg">qrc/toggle-on.svg</file>
+	</qresource>
+	<qresource prefix="/config">
+		<file alias="categories.yaml">qrc/categories.yaml</file>
+	</qresource>
+	<qresource prefix="/images">
+		<file alias="star.svg">qrc/star.svg</file>
+	</qresource>
+</RCC>

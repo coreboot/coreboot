@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=coreboot configurator
+StartupWMCLass=coreboot_configurator
+Exec=/usr/bin/coreboot-configurator
+Icon=coreboot-configurator.png
+Type=Application
+Categories=Settings;System
+Comment=A graphical interface to set options on devices with coreboot firmware.
+Keywords=coreboot;BIOS;Firmware;uefi;

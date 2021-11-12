@@ -21,6 +21,7 @@ enum gpio_tlmm_bmsk {
 	GPIO_CFG_PULL_BMSK = 0x3,
 	GPIO_CFG_FUNC_BMSK = 0xF,
 	GPIO_CFG_DRV_BMSK = 0x7,
+	GPIO_CFG_EGPIO_BMSK = 0x800,
 };
 
 /* GPIO TLMM INTR: Shift */
@@ -35,6 +36,7 @@ enum gpio_tlmm_shft {
 	GPIO_CFG_FUNC_SHFT = 2,
 	GPIO_CFG_DRV_SHFT = 6,
 	GPIO_CFG_OE_SHFT = 9,
+	GPIO_CFG_EGPIO_SHFT = 1,
 };
 
 /* GPIO IO: Shift */

@@ -16,7 +16,9 @@ void gpio_configure(gpio_t gpio, uint32_t func, uint32_t pull,
 	reg_val = ((enable & GPIO_BMSK) << GPIO_CFG_OE_SHFT) |
 		  ((drive_str & GPIO_CFG_DRV_BMSK) << GPIO_CFG_DRV_SHFT) |
 		  ((func & GPIO_CFG_FUNC_BMSK) << GPIO_CFG_FUNC_SHFT) |
-		  ((pull & GPIO_CFG_PULL_BMSK) << GPIO_CFG_PULL_SHFT);
+		  ((pull & GPIO_CFG_PULL_BMSK) << GPIO_CFG_PULL_SHFT) |
+		  ((read32(&regs->cfg) & GPIO_CFG_EGPIO_BMSK)
+			<< GPIO_CFG_EGPIO_SHFT);
 
 	write32(&regs->cfg, reg_val);
 }

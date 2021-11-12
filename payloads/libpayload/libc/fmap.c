@@ -28,10 +28,60 @@
 
 #include <libpayload-config.h>
 #include <libpayload.h>
+#include <commonlib/bsd/fmap_serialized.h>
 #include <coreboot_tables.h>
 #include <cbfs.h>
-#include <fmap_serialized.h>
+#include <boot_device.h>
 #include <stdint.h>
+#include <arch/virtual.h>
+
+/* Private fmap cache. */
+static struct fmap *_fmap_cache;
+
+static cb_err_t fmap_find_area(struct fmap *fmap, const char *name, size_t *offset,
+			       size_t *size)
+{
+	for (size_t i = 0; i < le32toh(fmap->nareas); ++i) {
+		if (strncmp((const char *)fmap->areas[i].name, name, FMAP_STRLEN) != 0)
+			continue;
+		if (offset)
+			*offset = le32toh(fmap->areas[i].offset);
+		if (size)
+			*size = le32toh(fmap->areas[i].size);
+		return CB_SUCCESS;
+	}
+
+	return CB_ERR;
+}
+
+static bool fmap_is_signature_valid(struct fmap *fmap)
+{
+	return memcmp(fmap->signature, FMAP_SIGNATURE, sizeof(fmap->signature)) == 0;
+}
+
+static bool fmap_setup_cache(void)
+{
+	/* Use FMAP cache if available */
+	if (lib_sysinfo.fmap_cache
+	    && fmap_is_signature_valid((struct fmap *)phys_to_virt(lib_sysinfo.fmap_cache))) {
+		_fmap_cache = (struct fmap *)phys_to_virt(lib_sysinfo.fmap_cache);
+		return true;
+	}
+
+	return false;
+}
+
+cb_err_t fmap_locate_area(const char *name, size_t *offset, size_t *size)
+{
+	if (!_fmap_cache && !fmap_setup_cache())
+		return CB_ERR;
+
+	return fmap_find_area(_fmap_cache, name, offset, size);
+}
+
+/***********************************************************************************************
+ *                                         LEGACY CODE                                         *
+ **********************************************************************************************/
 
 int fmap_region_by_name(const uint32_t fmap_offset, const char * const name,
 			uint32_t * const offset, uint32_t * const size)

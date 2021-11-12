@@ -45,10 +45,11 @@
 #include <stdbool.h>
 #include <libpayload-config.h>
 #include <cbgfx.h>
+#include <commonlib/bsd/fmap_serialized.h>
 #include <ctype.h>
 #include <die.h>
 #include <endian.h>
-#include <fmap_serialized.h>
+#include <fmap.h>
 #include <ipchksum.h>
 #include <kconfig.h>
 #include <stddef.h>

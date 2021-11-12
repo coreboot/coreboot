@@ -384,7 +384,7 @@ static void spm_hw_s1_state_monitor(int en)
 static void spm_register_init(void)
 {
 	/* Enable register control */
-	write32(&mtk_spm->poweron_config_en,
+	write32(&mtk_spm->poweron_config_set,
 		SPM_REGWR_CFG_KEY | BCLK_CG_EN_LSB);
 
 	/* Init power control register */

@@ -40,6 +40,7 @@ ramstage-y += ../common/auxadc.c
 ramstage-y += emi.c
 ramstage-y += ../common/flash_controller.c
 ramstage-y += ../common/gpio.c gpio.c
+ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += ../common/i2c.c i2c.c
 ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c

@@ -10,6 +10,7 @@
 
 #include <device/mmio.h>
 #include <soc/addressmap.h>
+#include <soc/mtcmos.h>
 #include <types.h>
 
 #define SPM_INIT_DONE_US		20
@@ -140,7 +141,7 @@ DEFINE_BIT(SYS_TIMER_START_EN_LSB, 0)
 				 PCM_SW_INT0)
 
 struct mtk_spm_regs {
-	uint32_t poweron_config_en;
+	uint32_t poweron_config_set;
 	uint32_t spm_power_on_val0;
 	uint32_t spm_power_on_val1;
 	uint32_t spm_clk_con;
@@ -833,6 +834,8 @@ struct pwr_ctrl {
 	/* Auto-gen End */
 };
 
+check_member(mtk_spm_regs, poweron_config_set, 0x0);
+check_member(mtk_spm_regs, dis_pwr_con, 0x354);
 check_member(mtk_spm_regs, ap_mdsrc_req, 0x430);
 check_member(mtk_spm_regs, ssusb_top_pwr_con, 0x9F0);
 check_member(mtk_spm_regs, ssusb_top_p1_pwr_con, 0x9F4);
@@ -852,6 +855,19 @@ struct dyna_load_pcm {
 };
 
 static struct mtk_spm_regs *const mtk_spm = (void *)SPM_BASE;
+
+static const struct power_domain_data disp[] = {
+	{
+		.pwr_con = &mtk_spm->dis_pwr_con,
+		.pwr_sta_mask = 0x1 << 21,
+		.sram_pdn_mask = 0x1 << 8,
+		.sram_ack_mask = 0x1 << 12,
+	},
+};
+
+/* without audio mtcmos control in MT8186 */
+static const struct power_domain_data audio[] = {
+};
 
 int spm_init(void);
 

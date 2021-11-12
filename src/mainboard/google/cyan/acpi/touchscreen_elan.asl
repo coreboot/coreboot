@@ -20,7 +20,7 @@ Scope (\_SB.PCI0.I2C1)
 					AddressingMode7Bit,       /* AddressingMode */
 					"\\_SB.PCI0.I2C1",        /* ResourceSource */
 				)
-				GpioInt (Level, ActiveLow, ExclusiveAndWake, PullDefault,,
+				GpioInt (Level, ActiveLow, SharedAndWake, PullDefault,,
 					"\\_SB.GPNC") { BOARD_TOUCH_GPIO_INDEX }
 
 			} )

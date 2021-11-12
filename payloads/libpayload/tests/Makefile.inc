@@ -37,7 +37,7 @@ TEST_CFLAGS += -Iinclude -Iinclude/mock
 TEST_CFLAGS += -I$(dir $(TEST_KCONFIG_AUTOHEADER))
 
 # Test specific includes
-TEST_CFLAGS += -I$(testsrc)/include -I$(testsrc)/include/mocks
+TEST_CFLAGS += -I$(testsrc)/include
 TEST_CFLAGS += -I$(cmockasrc)/include
 
 # Minimal subset of warnings and errors. Tests can be less strict than actual build.

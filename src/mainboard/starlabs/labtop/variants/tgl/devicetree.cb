@@ -4,8 +4,6 @@ chip soc/intel/tigerlake
 	register "eist_enable"			= "1"
 
 	# Graphics
-	# IGD Displays
-	register "gfx"				= "GMA_STATIC_DISPLAYS(0)"
 	# Not used but timings left for reference
 	# register "panel_cfg" = "{
 	#	.up_delay_ms			=  2000,			// T3

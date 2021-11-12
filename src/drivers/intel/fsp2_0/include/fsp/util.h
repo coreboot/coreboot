@@ -60,6 +60,14 @@ union fsp_revision {
 	} rev;
 };
 
+union extended_fsp_revision {
+	uint16_t val;
+	struct {
+		uint8_t bld_num;
+		uint8_t revision;
+	} rev;
+};
+
 #if CONFIG_UDK_VERSION < CONFIG_UDK_2017_VERSION
 enum resource_type {
 	EFI_RESOURCE_SYSTEM_MEMORY		= 0,

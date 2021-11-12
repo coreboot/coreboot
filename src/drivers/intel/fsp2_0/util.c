@@ -14,7 +14,9 @@
 
 static uint32_t fsp_hdr_get_expected_min_length(void)
 {
-	if (CONFIG(PLATFORM_USES_FSP2_2))
+	if (CONFIG(PLATFORM_USES_FSP2_3))
+		return 80;
+	else if (CONFIG(PLATFORM_USES_FSP2_2))
 		return 76;
 	else if (CONFIG(PLATFORM_USES_FSP2_1))
 		return 72;
@@ -70,6 +72,8 @@ enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob)
 	hdr->silicon_init_entry_offset = read32(raw_hdr + 68);
 	if (CONFIG(PLATFORM_USES_FSP2_2))
 		hdr->multi_phase_si_init_entry_offset = read32(raw_hdr + 72);
+	if (CONFIG(PLATFORM_USES_FSP2_3))
+		hdr->extended_fsp_revision = read16(raw_hdr + 76);
 
 	return CB_SUCCESS;
 }

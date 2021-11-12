@@ -14,6 +14,7 @@
 #if CONFIG(PLATFORM_USES_FSP2_X86_32)
 struct fsp_header {
 	uint32_t fsp_revision;
+	uint16_t extended_fsp_revision;
 	uint32_t image_size;
 	uint32_t image_base;
 	uint16_t image_attribute;

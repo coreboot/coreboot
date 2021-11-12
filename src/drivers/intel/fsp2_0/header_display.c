@@ -6,16 +6,22 @@
 void fsp_print_header_info(const struct fsp_header *hdr)
 {
 	union fsp_revision revision;
+	union extended_fsp_revision ext_revision;
+	ext_revision.val = 0;
+
+	/* For FSP 2.3 and later use extended image revision field present in header
+	 * for build number and revision calculation */
+	if (CONFIG(PLATFORM_USES_FSP2_3))
+		ext_revision.val = hdr->extended_fsp_revision;
 
 	revision.val = hdr->fsp_revision;
-
 	printk(BIOS_SPEW, "Spec version: v%u.%u\n", (hdr->spec_version >> 4),
 						     hdr->spec_version & 0xf);
 	printk(BIOS_SPEW, "Revision: %u.%u.%u, Build Number %u\n",
-							revision.rev.major,
-							revision.rev.minor,
-							revision.rev.revision,
-							revision.rev.bld_num);
+			revision.rev.major,
+			revision.rev.minor,
+			((ext_revision.rev.revision << 8) | revision.rev.revision),
+			((ext_revision.rev.bld_num << 8) | revision.rev.bld_num));
 	printk(BIOS_SPEW, "Type: %s/%s\n",
 			(hdr->component_attribute & 1) ? "release" : "debug",
 			(hdr->component_attribute & 2) ? "official" : "test");

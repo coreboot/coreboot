@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE = 1
+
+%:
+	dh $@ --buildsystem=meson
+
+override_dh_install:
+	dh_install
+
+override_dh_missing:
+	dh_missing --fail-missing

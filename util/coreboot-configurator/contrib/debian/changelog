@@ -1,0 +1,50 @@
+coreboot-configurator (8) impish; urgency=medium
+
+  * Release version 8
+
+ -- Sean Rhodes <sean@starlabs.systems>  Wed, 03 Nov 2021 21:06:03 +0000
+
+coreboot-configurator (7+a) focal; urgency=medium
+
+  * Version 7 to match coreboot 7
+
+ -- Sean Rhodes <sean@starlabs.systems>  Tue, 24 Aug 2021 07:35:16 +0100
+
+coreboot-configurator (6.h) hirsute; urgency=medium
+
+  * Version 6 to match coreboot 6
+  * Adds support to disable or enable VT-d, wireless, webcam, microphone and clock gating
+  * Adds support to select TDP
+
+ -- Sean Rhodes <sean@starlabs.systems>  Fri, 11 Jun 2021 08:40:38 +0100
+
+coreboot-configurator (5) hirsute; urgency=medium
+
+  * Version 5 to match coreboot 5
+  * Adds support to disable or enable IME
+
+ -- Sean Rhodes <sean@starlabs.systems>  Thu, 29 Apr 2021 14:39:40 +0100
+
+coreboot-configurator (3) hirsute; urgency=medium
+
+  * Added qt5-default dependency
+
+ -- Sean Rhodes <sean@starlabs.systems>  Wed, 14 Apr 2021 16:44:13 +0100
+
+coreboot-configurator (2) hirsute; urgency=medium
+
+  * Fixed values that a read
+
+ -- Sean Rhodes <sean@starlabs.systems>  Tue, 13 Apr 2021 16:40:04 +0100
+
+coreboot-configurator (1) hirsute; urgency=medium
+
+  * Fixed icon
+
+ -- Sean Rhodes <sean@starlabs.systems>  Tue, 13 Apr 2021 11:47:04 +0100
+
+coreboot-configurator (0) hirsute; urgency=medium
+
+  * Initial release.
+
+ -- Sean Rhodes <sean@starlabs.systems>  Mon, 12 Apr 2021 21:14:48 +0100

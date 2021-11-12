@@ -1,0 +1,36 @@
+{
+	"app-id": "org.coreboot.coreboot-configurator",
+	"runtime": "org.kde.Platform",
+	"runtime-version": "5.12",
+	"sdk": "org.kde.Platform",
+	"branch": "stable",
+	"command": "/usr/sbin/coreboot-configurator",
+	"modules": [
+		{
+			"name": "coreboot-configurator",
+			"buildsystem": "meson",
+			"cleanup	": [
+				"/usr/sbin/coreboot-configurator",
+				"/usr/share/coreboot-configurator/aboutIcon.png",
+				"/usr/share/polkit-1/actions/org.coreboot.nvramtool.policy",
+				"/usr/share/polkit-1/actions/org.coreboot.reboot.policy",
+				"usr/share/applications/coreboot-configurator.desktop",
+				"/usr/share/icons/hicolor/24x24/apps/coreboot-configurator.png",
+				"/usr/share/icons/hicolor/48x48/apps/coreboot-configurator.png",
+				"/usr/share/icons/hicolor/96x96/apps/coreboot-configurator.png",
+				"/usr/share/icons/hicolor/16x16/apps/coreboot-configurator.png",
+				"/usr/share/icons/hicolor/32x32/apps/coreboot-configurator.png",
+				"/usr/share/icons/hicolor/64x64/apps/coreboot-configurator.png",
+				"/usr/share/icons/hicolor/128x128/apps/coreboot-configurator.png",
+				"/usr/share/icons/hicolor/256x256/apps/coreboot-configurator.png",
+				"/usr/share/icons/hicolor/512x512/apps/coreboot-configurator.png"
+			],
+			"sources": [
+				{
+					"type": "archive",
+					"path": "build/meson-dist/coreboot-configurator-8.tar.xz"
+				}
+			]
+		}
+	]
+}

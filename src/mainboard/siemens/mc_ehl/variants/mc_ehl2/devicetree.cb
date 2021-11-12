@@ -55,9 +55,9 @@ chip soc/intel/elkhartlake
 	register "PcieClkSrcUsage[0]" = "PCIE_CLK_FREE"
 	register "PcieClkSrcUsage[1]" = "PCIE_CLK_FREE"
 	register "PcieClkSrcUsage[2]" = "PCIE_CLK_FREE"
-	register "PcieClkSrcUsage[3]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[3]" = "PCIE_CLK_FREE"
 	register "PcieClkSrcUsage[4]" = "PCIE_CLK_FREE"
-	register "PcieClkSrcUsage[5]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[5]" = "PCIE_CLK_FREE"
 
 	register "PcieClkSrcClkReq[0]" = "PCIE_CLK_NOTUSED"
 	register "PcieClkSrcClkReq[1]" = "PCIE_CLK_NOTUSED"

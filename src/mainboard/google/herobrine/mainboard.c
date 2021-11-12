@@ -51,7 +51,7 @@ static void mainboard_init(struct device *dev)
 		qupv3_se_fw_load_and_init(QUPV3_0_SE2, SE_PROTOCOL_I2C, MIXED);
 		/* Fingerprint SPI */
 		qupv3_se_fw_load_and_init(QUPV3_1_SE3, SE_PROTOCOL_SPI, MIXED);
-	} else if (CONFIG(BOARD_GOOGLE_PIGLIN)) {
+	} else if (CONFIG(BOARD_GOOGLE_PIGLIN) || CONFIG(BOARD_GOOGLE_HOGLIN)) {
 		/* APPS I2C */
 		qupv3_se_fw_load_and_init(QUPV3_0_SE1, SE_PROTOCOL_I2C, GSI);
 		/* ESIM SPI */

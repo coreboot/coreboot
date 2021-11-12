@@ -15,6 +15,7 @@ chip soc/intel/alderlake
 		.configure_ext_fivr = 1,
 	}"
 
+	register "usb2_ports[0]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[3]" = "USB2_PORT_EMPTY"
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"
 

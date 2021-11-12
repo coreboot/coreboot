@@ -103,6 +103,7 @@ config MAINBOARD_PART_NUMBER
 	default "Taeko" if BOARD_GOOGLE_TAEKO
 	default "Felwinter" if BOARD_GOOGLE_FELWINTER
 	default "Anahera" if BOARD_GOOGLE_ANAHERA
+	default "Vell" if BOARD_GOOGLE_VELL
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -114,6 +115,7 @@ config VARIANT_DIR
 	default "taeko" if BOARD_GOOGLE_TAEKO
 	default "felwinter" if BOARD_GOOGLE_FELWINTER
 	default "anahera" if BOARD_GOOGLE_ANAHERA
+	default "vell" if BOARD_GOOGLE_VELL
 
 config DIMM_SPD_SIZE
 	default 512

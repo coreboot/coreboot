@@ -60,6 +60,7 @@ config BOARD_GOOGLE_TAEKO
 config BOARD_GOOGLE_FELWINTER
 	bool "->  Felwinter"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
+	select DRIVERS_GENERIC_GPIO_KEYS
 
 config BOARD_GOOGLE_ANAHERA
 	bool "->  Anahera"

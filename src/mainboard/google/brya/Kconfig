@@ -51,7 +51,6 @@ config BOARD_GOOGLE_BRYA_COMMON
 	select SOC_INTEL_ALDERLAKE_PCH_P
 	select SOC_INTEL_COMMON_BLOCK_PCIE_RTD3
 	select SOC_INTEL_CSE_LITE_SKU
-	select INTEL_CAR_NEM #TODO - Enable INTEL_CAR_NEM_ENHANCED
 
 config BASEBOARD_DIR
 	string
@@ -171,5 +170,20 @@ config HAVE_WWAN_POWER_SEQUENCE
 
 config USE_PM_ACPI_TIMER
 	default n
+
+choice
+	prompt "Cache as RAM (CAR) setup configuration to use"
+	default USE_ADL_ENEM if BOARD_GOOGLE_KANO || BOARD_GOOGLE_FELWINTER || BOARD_GOOGLE_REDRIX
+	default USE_ADL_NEM
+
+config USE_ADL_ENEM
+	bool "eNEM: when selected, the variant will use eNEM instead of regular NEM."
+	select INTEL_CAR_NEM_ENHANCED
+
+config USE_ADL_NEM
+	bool "NEM: when selected, the variant will use regular NEM."
+	select INTEL_CAR_NEM
+
+endchoice
 
 endif # BOARD_GOOGLE_BASEBOARD_BRYA || BOARD_GOOGLE_BASEBOARD_BRASK

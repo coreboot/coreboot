@@ -57,7 +57,6 @@ config BASEBOARD_DIR
 config CHROMEOS
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select HAS_RECOVERY_MRC_CACHE
-	select VBOOT_LID_SWITCH
 
 config CHROMEOS_WIFI_SAR
 	bool "Enable SAR options for Chrome OS build"
@@ -116,6 +115,10 @@ config VARIANT_DIR
 	default "felwinter" if BOARD_GOOGLE_FELWINTER
 	default "anahera" if BOARD_GOOGLE_ANAHERA
 	default "vell" if BOARD_GOOGLE_VELL
+
+config VBOOT
+	select VBOOT_EARLY_EC_SYNC
+	select VBOOT_LID_SWITCH
 
 config DIMM_SPD_SIZE
 	default 512

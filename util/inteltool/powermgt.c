@@ -780,6 +780,7 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		pm_registers_size = ARRAY_SIZE(lynxpoint_lp_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH10:
+	case PCI_DEVICE_ID_INTEL_ICH10D:
 	case PCI_DEVICE_ID_INTEL_ICH10DO:
 	case PCI_DEVICE_ID_INTEL_ICH10R:
 		pmbase = pci_read_word(sb, 0x40) & 0xff80;

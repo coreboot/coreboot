@@ -32,7 +32,7 @@ config PAYLOAD_CONFIGFILE
 	  from the U-Boot config directory
 
 config PAYLOAD_FILE
-	default "payloads/external/U-Boot/u-boot/u-boot-dtb.bin"
+	default "payloads/external/U-Boot/build/u-boot/u-boot-dtb.bin"
 
 config PAYLOAD_OPTIONS
 	default "-l 0x1110000 -e 0x1110015"

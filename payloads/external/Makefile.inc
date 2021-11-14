@@ -197,7 +197,7 @@ payloads/external/GRUB2/grub2/build/default_payload.elf: grub2
 
 # U-Boot
 
-payloads/external/U-Boot/u-boot/u-boot-dtb.bin u-boot: $(DOTCONFIG)
+payloads/external/U-Boot/build/u-boot/u-boot-dtb.bin u-boot: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/U-Boot \
 			CONFIG_UBOOT_MASTER=$(CONFIG_UBOOT_MASTER) \
 			CONFIG_UBOOT_STABLE=$(CONFIG_UBOOT_STABLE)

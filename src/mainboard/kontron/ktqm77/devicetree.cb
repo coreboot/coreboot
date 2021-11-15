@@ -2,15 +2,11 @@ chip northbridge/intel/sandybridge
 	# IGD Displays
 	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 
-	device cpu_cluster 0 on
-		chip cpu/intel/model_206ax
-			# Magic APIC ID to locate this chip
-			device lapic 0 on end
-			device lapic 0xacac off end
+	chip cpu/intel/model_206ax
+		device cpu_cluster 0 on end
 
-			register "acpi_c2" = "CPU_ACPI_C6"
-			register "acpi_c3" = "CPU_ACPI_DISABLED"
-		end
+		register "acpi_c2" = "CPU_ACPI_C6"
+		register "acpi_c3" = "CPU_ACPI_DISABLED"
 	end
 
 	device domain 0 on

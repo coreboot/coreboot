@@ -19,14 +19,10 @@ chip northbridge/intel/sandybridge
 
 	register "max_mem_clock_mhz" = "666"
 
-	device cpu_cluster 0 on
-		chip cpu/intel/model_206ax
-			# Magic APIC ID to locate this chip
-			device lapic 0 on end
-			device lapic 0xacac off end
+	chip cpu/intel/model_206ax
+		device cpu_cluster 0 on end
 
-			register "tcc_offset" = "5"	# TCC of 95C
-		end
+		register "tcc_offset" = "5"	# TCC of 95C
 	end
 
 	device domain 0 on

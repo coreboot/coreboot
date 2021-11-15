@@ -1,19 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 chip northbridge/intel/sandybridge
-	device cpu_cluster 0 on
-		ops sandybridge_cpu_bus_ops
-		chip cpu/intel/model_206ax
-			# Magic APIC ID to locate this chip
-			device lapic 0 on end
-			device lapic 0xacac off end
+	chip cpu/intel/model_206ax
+		device cpu_cluster 0 on ops sandybridge_cpu_bus_ops end
 
-			register "acpi_c1" = "CPU_ACPI_C1"
-			register "acpi_c2" = "CPU_ACPI_C3"
-			register "acpi_c3" = "CPU_ACPI_C7"
-		end
+		register "acpi_c1" = "CPU_ACPI_C1"
+		register "acpi_c2" = "CPU_ACPI_C3"
+		register "acpi_c3" = "CPU_ACPI_C7"
 	end
-
 	device domain 0 on
 		ops sandybridge_pci_domain_ops
 	end

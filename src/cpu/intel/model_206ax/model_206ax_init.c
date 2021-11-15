@@ -211,17 +211,10 @@ static void configure_c_states(void)
 	wrmsr(MSR_PP1_CURRENT_CONFIG, msr);
 }
 
-static void configure_thermal_target(void)
+static void configure_thermal_target(struct device *dev)
 {
-	struct cpu_intel_model_206ax_config *conf;
-	struct device *lapic;
+	struct cpu_intel_model_206ax_config *conf = dev->bus->dev->chip_info;
 	msr_t msr;
-
-	/* Find pointer to CPU configuration */
-	lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
-	if (!lapic || !lapic->chip_info)
-		return;
-	conf = lapic->chip_info;
 
 	/* Set TCC activation offset if supported */
 	msr = rdmsr(MSR_PLATFORM_INFO);
@@ -346,7 +339,7 @@ static void model_206ax_init(struct device *cpu)
 	configure_misc();
 
 	/* Thermal throttle activation offset */
-	configure_thermal_target();
+	configure_thermal_target(cpu);
 
 	set_aesni_lock();
 

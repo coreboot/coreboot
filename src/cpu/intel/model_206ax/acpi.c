@@ -95,18 +95,9 @@ static int get_logical_cores_per_package(void)
 	return msr.lo & 0xffff;
 }
 
-static void generate_C_state_entries(void)
+static void generate_C_state_entries(const struct device *dev)
 {
-	struct device *lapic;
-	struct cpu_intel_model_206ax_config *conf = NULL;
-
-	/* Find the SpeedStep CPU in the device tree using magic APIC ID */
-	lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
-	if (!lapic)
-		return;
-	conf = lapic->chip_info;
-	if (!conf)
-		return;
+	struct cpu_intel_model_206ax_config *conf = dev->bus->dev->chip_info;
 
 	const int acpi_cstates[3] = { conf->acpi_c1, conf->acpi_c2, conf->acpi_c3 };
 
@@ -324,7 +315,7 @@ void generate_cpu_entries(const struct device *device)
 				cpuID-1, cores_per_package);
 
 			/* Generate C-state tables */
-			generate_C_state_entries();
+			generate_C_state_entries(device);
 
 			/* Generate T-state tables */
 			generate_T_state_entries(

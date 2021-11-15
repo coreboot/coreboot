@@ -387,7 +387,6 @@ static void set_above_4g_pci(const struct device *dev)
 
 static void mc_gen_ssdt(const struct device *dev)
 {
-	generate_cpu_entries(dev);
 	set_above_4g_pci(dev);
 }
 
@@ -416,6 +415,7 @@ struct device_operations sandybridge_cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
 	.init             = mp_cpu_bus_init,
+	.acpi_fill_ssdt   = generate_cpu_entries,
 };
 
 struct chip_operations northbridge_intel_sandybridge_ops = {

@@ -10,8 +10,6 @@
 
 #define ACPIGEN_MAXLEN 0xfffff
 
-#define CPPC_PACKAGE_NAME "GCPC"
-
 #include <lib.h>
 #include <string.h>
 #include <acpi/acpigen.h>

@@ -7,6 +7,7 @@
 #include <commonlib/bsd/cbfs_mdata.h>
 #include <commonlib/cbfs.h>
 #include <commonlib/mem_pool.h>
+#include <commonlib/region.h>
 #include <program_loading.h>
 #include <types.h>
 #include <vb2_sha.h>
@@ -119,6 +120,20 @@ void cbfs_unmap(void *mapping);
 /* Load stage into memory filling in prog. Return 0 on success. < 0 on error. */
 int cbfs_prog_stage_load(struct prog *prog);
 
+/* Returns the size of a CBFS file, or 0 on error. Avoid using this function to allocate space,
+   and instead use cbfs_alloc() so the file only needs to be looked up once. */
+static inline size_t cbfs_get_size(const char *name);
+static inline size_t cbfs_ro_get_size(const char *name);
+
+/* Returns the type of a CBFS file, or CBFS_TYPE_NULL on error. Use cbfs_type_load() instead of
+   this where possible to avoid looking up the file more than once. */
+static inline enum cbfs_type cbfs_get_type(const char *name);
+static inline enum cbfs_type cbfs_ro_get_type(const char *name);
+
+/* Check whether a CBFS file exists. */
+static inline bool cbfs_file_exists(const char *name);
+static inline bool cbfs_ro_file_exists(const char *name);
+
 
 /**********************************************************************************************
  *                                BOOT DEVICE HELPER APIs                                     *
@@ -173,6 +188,9 @@ int cbfs_locate_file_in_region(struct cbfsf *fh, const char *region_name,
 /**********************************************************************************************
  *                         INTERNAL HELPERS FOR INLINES, DO NOT USE.                          *
  **********************************************************************************************/
+cb_err_t _cbfs_boot_lookup(const char *name, bool force_ro,
+			   union cbfs_mdata *mdata, struct region_device *rdev);
+
 void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 		  size_t *size_out, bool force_ro, enum cbfs_type *type);
 
@@ -285,6 +303,60 @@ static inline void *cbfs_ro_type_cbmem_alloc(const char *name, uint32_t cbmem_id
 {
 	return cbfs_ro_type_alloc(name, _cbfs_cbmem_allocator, (void *)(uintptr_t)cbmem_id,
 				  size_out, type);
+}
+
+static inline size_t cbfs_get_size(const char *name)
+{
+	union cbfs_mdata mdata;
+	struct region_device rdev;
+	if (_cbfs_boot_lookup(name, false, &mdata, &rdev) != CB_SUCCESS)
+		return 0;
+	return be32toh(mdata.h.len);
+}
+
+static inline size_t cbfs_ro_get_size(const char *name)
+{
+	union cbfs_mdata mdata;
+	struct region_device rdev;
+	if (_cbfs_boot_lookup(name, true, &mdata, &rdev) != CB_SUCCESS)
+		return 0;
+	return be32toh(mdata.h.len);
+}
+
+static inline enum cbfs_type cbfs_get_type(const char *name)
+{
+	union cbfs_mdata mdata;
+	struct region_device rdev;
+	if (_cbfs_boot_lookup(name, false, &mdata, &rdev) != CB_SUCCESS)
+		return CBFS_TYPE_NULL;
+	return be32toh(mdata.h.type);
+}
+
+static inline enum cbfs_type cbfs_ro_get_type(const char *name)
+{
+	union cbfs_mdata mdata;
+	struct region_device rdev;
+	if (_cbfs_boot_lookup(name, true, &mdata, &rdev) != CB_SUCCESS)
+		return CBFS_TYPE_NULL;
+	return be32toh(mdata.h.type);
+}
+
+static inline bool cbfs_file_exists(const char *name)
+{
+	union cbfs_mdata mdata;
+	struct region_device rdev;
+	if (_cbfs_boot_lookup(name, false, &mdata, &rdev) != CB_SUCCESS)
+		return false;
+	return true;
+}
+
+static inline bool cbfs_ro_file_exists(const char *name)
+{
+	union cbfs_mdata mdata;
+	struct region_device rdev;
+	if (_cbfs_boot_lookup(name, true, &mdata, &rdev) != CB_SUCCESS)
+		return false;
+	return true;
 }
 
 #endif

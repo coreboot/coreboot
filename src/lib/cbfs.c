@@ -3,8 +3,8 @@
 #include <assert.h>
 #include <boot_device.h>
 #include <cbfs.h>
-#include <cbfs_private.h>
 #include <cbmem.h>
+#include <commonlib/bsd/cbfs_private.h>
 #include <commonlib/bsd/compression.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
@@ -35,8 +35,8 @@ static void switch_to_postram_cache(int unused)
 }
 ROMSTAGE_CBMEM_INIT_HOOK(switch_to_postram_cache);
 
-cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
-			  union cbfs_mdata *mdata, struct region_device *rdev)
+cb_err_t _cbfs_boot_lookup(const char *name, bool force_ro,
+			   union cbfs_mdata *mdata, struct region_device *rdev)
 {
 	const struct cbfs_boot_device *cbd = cbfs_get_boot_device(force_ro);
 	if (!cbd)
@@ -65,7 +65,7 @@ cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 
 	if (CONFIG(VBOOT_ENABLE_CBFS_FALLBACK) && !force_ro && err == CB_CBFS_NOT_FOUND) {
 		printk(BIOS_INFO, "CBFS: Fall back to RO region for %s\n", name);
-		return cbfs_boot_lookup(name, true, mdata, rdev);
+		return _cbfs_boot_lookup(name, true, mdata, rdev);
 	}
 	if (err) {
 		if (err == CB_CBFS_NOT_FOUND)
@@ -90,7 +90,7 @@ cb_err_t cbfs_boot_lookup(const char *name, bool force_ro,
 
 int cbfs_boot_locate(struct cbfsf *fh, const char *name, uint32_t *type)
 {
-	if (cbfs_boot_lookup(name, false, &fh->mdata, &fh->data))
+	if (_cbfs_boot_lookup(name, false, &fh->mdata, &fh->data))
 		return -1;
 
 	size_t msize = be32toh(fh->mdata.h.offset);
@@ -330,7 +330,7 @@ void cbfs_preload(const char *name)
 
 	DEBUG("%s(name='%s')\n", __func__, name);
 
-	if (cbfs_boot_lookup(name, force_ro, &mdata, &rdev))
+	if (_cbfs_boot_lookup(name, force_ro, &mdata, &rdev))
 		return;
 
 	size = region_device_sz(&rdev);
@@ -422,7 +422,7 @@ void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 	DEBUG("%s(name='%s', alloc=%p(%p), force_ro=%s, type=%d)\n", __func__, name, allocator,
 	      arg, force_ro ? "true" : "false", type ? *type : -1);
 
-	if (cbfs_boot_lookup(name, force_ro, &mdata, &rdev))
+	if (_cbfs_boot_lookup(name, force_ro, &mdata, &rdev))
 		return NULL;
 
 	if (type) {
@@ -525,7 +525,7 @@ cb_err_t cbfs_prog_stage_load(struct prog *pstage)
 
 	prog_locate_hook(pstage);
 
-	if ((err = cbfs_boot_lookup(prog_name(pstage), false, &mdata, &rdev)))
+	if ((err = _cbfs_boot_lookup(prog_name(pstage), false, &mdata, &rdev)))
 		return err;
 
 	assert(be32toh(mdata.h.type) == CBFS_TYPE_STAGE);

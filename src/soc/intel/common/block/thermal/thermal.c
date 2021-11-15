@@ -23,7 +23,7 @@ static uint8_t get_thermal_trip_temp(void)
 }
 
 /* PCH Low Temp Threshold (LTT) */
-static uint16_t pch_get_ltt_value(struct device *dev)
+static uint32_t pch_get_ltt_value(struct device *dev)
 {
 	uint8_t thermal_config;
 

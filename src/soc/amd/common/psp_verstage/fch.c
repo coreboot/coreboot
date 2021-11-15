@@ -152,15 +152,29 @@ uint32_t verstage_soc_early_init(void)
 	return map_fch_devices();
 }
 
-void verstage_soc_init(void)
+void verstage_soc_espi_init(void)
 {
-	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
-		espi_setup();
+	if (!CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
+		return;
+	printk(BIOS_DEBUG, "Setting up espi\n");
+	espi_setup();
+}
 
-	enable_aoac_devices();
+void verstage_soc_i2c_init(void)
+{
 	printk(BIOS_DEBUG, "Setting up i2c\n");
 	i2c_soc_early_init();
-	printk(BIOS_DEBUG, "i2c setup\n");
+}
+
+void verstage_soc_aoac_init(void)
+{
+	printk(BIOS_DEBUG, "Setting up aoac\n");
+	enable_aoac_devices();
+}
+
+void verstage_soc_spi_init(void)
+{
+	printk(BIOS_DEBUG, "Setting up spi\n");
 	fch_spi_config_modes();
 	show_spi_speeds_and_modes();
 }

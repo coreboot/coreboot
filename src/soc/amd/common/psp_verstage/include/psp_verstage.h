@@ -49,7 +49,10 @@ void test_svc_calls(void);
 uint32_t unmap_fch_devices(void);
 uint32_t verstage_soc_early_init(void);
 void verstage_mainboard_espi_init(void);
-void verstage_soc_init(void);
+void verstage_soc_aoac_init(void);
+void verstage_soc_espi_init(void);
+void verstage_soc_i2c_init(void);
+void verstage_soc_spi_init(void);
 uintptr_t *map_spi_rom(void);
 
 uint32_t get_max_workbuf_size(uint32_t *size);

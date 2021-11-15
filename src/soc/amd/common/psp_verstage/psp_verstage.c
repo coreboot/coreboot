@@ -243,7 +243,19 @@ void Main(void)
 
 	svc_write_postcode(POSTCODE_LATE_INIT);
 	fch_io_enable_legacy_io();
-	verstage_soc_init();
+
+	printk(BIOS_DEBUG, "calling verstage_soc_espi_init\n");
+	verstage_soc_espi_init();
+
+	printk(BIOS_DEBUG, "calling verstage_soc_aoac_init\n");
+	verstage_soc_aoac_init();
+
+	printk(BIOS_DEBUG, "calling verstage_soc_i2c_init\n");
+	verstage_soc_i2c_init();
+
+	printk(BIOS_DEBUG, "calling verstage_soc_spi_init\n");
+	verstage_soc_spi_init();
+
 	verstage_mainboard_init();
 
 	post_code(POSTCODE_VERSTAGE_MAIN);

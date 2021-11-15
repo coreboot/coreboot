@@ -2,12 +2,8 @@
 
 chip northbridge/intel/haswell
 
-	device cpu_cluster 0 on
-		ops haswell_cpu_bus_ops
-		chip cpu/intel/haswell
-			device lapic 0 on end
-			device lapic 0xacac off end
-		end
+	chip cpu/intel/haswell
+		device cpu_cluster 0 on ops haswell_cpu_bus_ops end
 	end
 
 	device domain 0 on

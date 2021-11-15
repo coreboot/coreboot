@@ -172,18 +172,16 @@ static int pcode_mailbox_write(u32 command, u32 data)
 	return 0;
 }
 
+static struct device *cpu_cluster;
+
 static void initialize_vr_config(void)
 {
 	struct cpu_vr_config vr_config = { 0 };
 	msr_t msr;
 
-	const struct device *lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
-
-	if (lapic && lapic->chip_info) {
-		const struct cpu_intel_haswell_config *conf = lapic->chip_info;
-
-		vr_config = conf->vr_config;
-	}
+	/* Make sure your devicetree has the cpu_cluster below chip cpu/intel/haswell! */
+	const struct cpu_intel_haswell_config *conf = cpu_cluster->chip_info;
+	vr_config = conf->vr_config;
 
 	printk(BIOS_DEBUG, "Initializing VR config.\n");
 
@@ -448,17 +446,11 @@ static void configure_c_states(void)
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
 }
 
-static void configure_thermal_target(void)
+static void configure_thermal_target(struct device *dev)
 {
-	struct cpu_intel_haswell_config *conf;
-	struct device *lapic;
+	/* Make sure your devicetree has the cpu_cluster below chip cpu/intel/haswell! */
+	struct cpu_intel_haswell_config *conf = dev->bus->dev->chip_info;
 	msr_t msr;
-
-	/* Find pointer to CPU configuration */
-	lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
-	if (!lapic || !lapic->chip_info)
-		return;
-	conf = lapic->chip_info;
 
 	/* Set TCC activation offset if supported */
 	msr = rdmsr(MSR_PLATFORM_INFO);
@@ -551,7 +543,7 @@ static void cpu_core_init(struct device *cpu)
 	configure_misc();
 
 	/* Thermal throttle activation offset */
-	configure_thermal_target();
+	configure_thermal_target(cpu);
 
 	/* Enable Direct Cache Access */
 	configure_dca_cap();
@@ -638,6 +630,7 @@ static const struct mp_ops mp_ops = {
 
 void mp_init_cpus(struct bus *cpu_bus)
 {
+	cpu_cluster = cpu_bus->dev;
 	/* TODO: Handle mp_init_with_smm failure? */
 	mp_init_with_smm(cpu_bus, &mp_ops);
 }

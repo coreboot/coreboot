@@ -15,13 +15,8 @@ chip northbridge/intel/haswell
 
 	register "usb_xhci_on_resume" = "true"
 
-	device cpu_cluster 0 on
-		ops haswell_cpu_bus_ops
-		chip cpu/intel/haswell
-			device lapic 0 on end
-			# Magic APIC ID to locate this chip
-			device lapic 0xACAC off end
-		end
+	chip cpu/intel/haswell
+		device cpu_cluster 0 on ops haswell_cpu_bus_ops end
 	end
 
 	device domain 0 on

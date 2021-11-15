@@ -398,7 +398,6 @@ static void systemagent_init(struct device *dev)
 
 static struct device_operations systemagent_ops = {
 	.read_resources   = systemagent_read_resources,
-	.acpi_fill_ssdt   = generate_cpu_entries,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = systemagent_init,
@@ -432,6 +431,7 @@ struct device_operations broadwell_cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
 	.init             = mp_cpu_bus_init,
+	.acpi_fill_ssdt   = generate_cpu_entries,
 };
 
 static void broadwell_init_pre_device(void *chip_info)

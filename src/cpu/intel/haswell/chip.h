@@ -1,8 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Magic value used to locate this chip in the device tree */
-#define SPEEDSTEP_APIC_MAGIC 0xACAC
-
 #include <stdbool.h>
 #include <stdint.h>
 

@@ -536,7 +536,6 @@ static struct device_operations mc_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= northbridge_init,
 	.final			= northbridge_final,
-	.acpi_fill_ssdt		= generate_cpu_entries,
 	.ops_pci		= &pci_dev_ops_pci,
 };
 
@@ -561,6 +560,7 @@ struct device_operations haswell_cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
 	.init             = mp_cpu_bus_init,
+	.acpi_fill_ssdt   = generate_cpu_entries,
 };
 
 struct chip_operations northbridge_intel_haswell_ops = {

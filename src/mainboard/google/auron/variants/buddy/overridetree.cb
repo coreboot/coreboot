@@ -11,13 +11,10 @@ chip soc/intel/broadwell
 
 	register "dq_pins_interleaved" = "true"
 
-	device cpu_cluster 0 on
-		chip cpu/intel/haswell
-			register "s0ix_enable" = "0"
+	chip cpu/intel/haswell
+		device cpu_cluster 0 on end
 
-			device lapic 0 on end
-			device lapic 0xacac off end
-		end
+		register "s0ix_enable" = "0"
 	end
 
 	device domain 0 on

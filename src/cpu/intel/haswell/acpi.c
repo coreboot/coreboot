@@ -164,28 +164,22 @@ static void generate_T_state_entries(int core, int cores_per_package)
 			ARRAY_SIZE(tss_table_coarse), tss_table_coarse);
 }
 
-static bool is_s0ix_enabled(void)
+static bool is_s0ix_enabled(const struct device *dev)
 {
 	if (!haswell_is_ult())
 		return false;
 
-	const struct device *lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
-
-	if (!lapic || !lapic->chip_info)
-		return false;
-
-	const struct cpu_intel_haswell_config *conf = lapic->chip_info;
-
+	const struct cpu_intel_haswell_config *conf = dev->chip_info;
 	return conf->s0ix_enable;
 }
 
-static void generate_C_state_entries(void)
+static void generate_C_state_entries(const struct device *dev)
 {
 	acpi_cstate_t acpi_cstate_map[3] = {0};
 
 	const int *acpi_cstates;
 
-	if (is_s0ix_enabled())
+	if (is_s0ix_enabled(dev))
 		acpi_cstates = cstate_set_s0ix;
 	else if (haswell_is_ult())
 		acpi_cstates = cstate_set_lp;
@@ -352,7 +346,7 @@ void generate_cpu_entries(const struct device *device)
 				coreID - 1, cores_per_package);
 
 			/* Generate C-state tables */
-			generate_C_state_entries();
+			generate_C_state_entries(device);
 
 			/* Generate T-state tables */
 			generate_T_state_entries(

@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpi_device.h>
+#include <acpi/acpi_pld.h>
 #include <acpi/acpigen.h>
 #include <acpi/acpigen_usb.h>
 
@@ -131,6 +132,9 @@ void acpigen_write_typec_connector(const struct typec_connector_class_config *co
 	if (add_custom_dsd_property)
 		add_custom_dsd_property(dsd, port_number);
 	acpi_dp_write(dsd);
+
+	/* Add PLD */
+	acpigen_write_pld(config->pld);
 
 	acpigen_pop_len(); /* Device */
 }

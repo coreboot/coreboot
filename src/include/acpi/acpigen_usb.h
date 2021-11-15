@@ -3,6 +3,8 @@
 #ifndef ACPI_ACPIGEN_USB_H
 #define ACPI_ACPIGEN_USB_H
 
+#include <acpi/acpi_pld.h>
+
 enum usb_typec_power_role {
 	TYPEC_POWER_ROLE_SOURCE,
 	TYPEC_POWER_ROLE_SINK,
@@ -39,6 +41,7 @@ enum usb_typec_data_role {
  *	host or device, for the USB port
  * @mode_switch: Reference to the ACPI device that controls routing of data lines to
  *	various endpoints (xHCI, DP, etc.) on the SoC.
+ * @pld: Reference to PLD information.
  */
 struct typec_connector_class_config {
 	enum usb_typec_power_role power_role;
@@ -50,6 +53,7 @@ struct typec_connector_class_config {
 	const struct device *orientation_switch;
 	const struct device *usb_role_switch;
 	const struct device *mode_switch;
+	const struct acpi_pld *pld;
 };
 
 typedef void (*add_custom_dsd_property_cb)(struct acpi_dp *dsd, int port_number);

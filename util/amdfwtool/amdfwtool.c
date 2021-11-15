@@ -343,17 +343,41 @@ amd_bios_entry amd_bios_table[] = {
 typedef struct _context {
 	char *rom;		/* target buffer, size of flash device */
 	uint32_t rom_size;	/* size of flash device */
-	uint32_t abs_address;	/* produce absolute or relative address */
+	uint32_t address_mode;	/* 0:abs address; 1:relative to flash; 2: relative to table */
 	uint32_t current;	/* pointer within flash & proxy buffer */
+	uint32_t current_table;
 } context;
 
+#define ADDRESS_MODE_0_PHY		0
+#define ADDRESS_MODE_1_REL_BIOS		1
+#define ADDRESS_MODE_2_REL_TAB		2
+#define ADDRESS_MODE_3_REL_SLOT		3
+
 #define RUN_BASE(ctx) (0xFFFFFFFF - (ctx).rom_size + 1)
-#define RUN_OFFSET(ctx, offset) ((ctx).abs_address ? RUN_BASE(ctx) + (offset) : (offset))
+#define RUN_OFFSET_MODE(ctx, offset, mode) \
+		((mode) == ADDRESS_MODE_0_PHY ? RUN_BASE(ctx) + (offset) :	\
+		((mode) == ADDRESS_MODE_1_REL_BIOS ? (offset) :	\
+		((mode) == ADDRESS_MODE_2_REL_TAB ? (offset) - ctx.current_table : (offset))))
+#define RUN_OFFSET(ctx, offset) RUN_OFFSET_MODE((ctx), (offset), (ctx).address_mode)
+#define RUN_TO_OFFSET(ctx, run) ((ctx).address_mode == ADDRESS_MODE_0_PHY ?	\
+				(run) - RUN_BASE(ctx) : (run)) /* TODO: */
 #define RUN_CURRENT(ctx) RUN_OFFSET((ctx), (ctx).current)
+/* The mode in entry can not be higher than the header's.
+   For example, if table mode is 0, all the entry mode will be 0. */
+#define RUN_CURRENT_MODE(ctx, mode) RUN_OFFSET_MODE((ctx), (ctx).current, \
+		(ctx).address_mode < (mode) ? (ctx).address_mode : (mode))
 #define BUFF_OFFSET(ctx, offset) ((void *)((ctx).rom + (offset)))
 #define BUFF_CURRENT(ctx) BUFF_OFFSET((ctx), (ctx).current)
 #define BUFF_TO_RUN(ctx, ptr) RUN_OFFSET((ctx), ((char *)(ptr) - (ctx).rom))
+#define BUFF_TO_RUN_MODE(ctx, ptr, mode) RUN_OFFSET_MODE((ctx), ((char *)(ptr) - (ctx).rom), \
+		(ctx).address_mode < (mode) ? (ctx).address_mode : (mode))
 #define BUFF_ROOM(ctx) ((ctx).rom_size - (ctx).current)
+/* Only set the address mode in entry if the table is mode 2. */
+#define SET_ADDR_MODE(table, mode) \
+		((table)->header.additional_info_fields.address_mode ==	\
+		ADDRESS_MODE_2_REL_TAB ? (mode) : 0)
+#define SET_ADDR_MODE_BY_TABLE(table) \
+		SET_ADDR_MODE((table), (table)->header.additional_info_fields.address_mode)
 
 void assert_fw_entry(uint32_t count, uint32_t max, context *ctx)
 {
@@ -380,7 +404,8 @@ static void *new_psp_dir(context *ctx, int multi)
 		ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
 
 	ptr = BUFF_CURRENT(*ctx);
-	((psp_directory_header *)ptr)->additional_info = ctx->current;
+	((psp_directory_header *)ptr)->additional_info = 0;
+	((psp_directory_header *)ptr)->additional_info_fields.address_mode = ctx->address_mode;
 	ctx->current += sizeof(psp_directory_header)
 			+ MAX_PSP_ENTRIES * sizeof(psp_directory_entry);
 	return ptr;
@@ -432,16 +457,16 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 		break;
 	case PSP_COOKIE:
 	case PSPL2_COOKIE:
-		table_size = ctx->current - dir->header.additional_info;
+		table_size = ctx->current - ctx->current_table;
 		if ((table_size % TABLE_ALIGNMENT) != 0) {
 			fprintf(stderr, "The PSP table size should be 4K aligned\n");
 			exit(1);
 		}
 		dir->header.cookie = cookie;
 		dir->header.num_entries = count;
-		dir->header.additional_info = (table_size / 0x1000) | (1 << 10);
-		if (ctx->abs_address == 0)
-			dir->header.additional_info |= 1 << 29;
+		dir->header.additional_info_fields.dir_size = table_size / TABLE_ALIGNMENT;
+		dir->header.additional_info_fields.spi_block_size = 1;
+		dir->header.additional_info_fields.base_addr = 0;
 		/* checksum everything that comes after the Checksum field */
 		dir->header.checksum = fletcher32(&dir->header.num_entries,
 					count * sizeof(psp_directory_entry)
@@ -450,16 +475,16 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 		break;
 	case BDT1_COOKIE:
 	case BDT2_COOKIE:
-		table_size = ctx->current - bdir->header.additional_info;
+		table_size = ctx->current - ctx->current_table;
 		if ((table_size % TABLE_ALIGNMENT) != 0) {
 			fprintf(stderr, "The BIOS table size should be 4K aligned\n");
 			exit(1);
 		}
 		bdir->header.cookie = cookie;
 		bdir->header.num_entries = count;
-		bdir->header.additional_info = (table_size / 0x1000) | (1 << 10);
-		if (ctx->abs_address == 0)
-			bdir->header.additional_info |= 1 << 29;
+		bdir->header.additional_info_fields.dir_size = table_size / TABLE_ALIGNMENT;
+		bdir->header.additional_info_fields.spi_block_size = 1;
+		bdir->header.additional_info_fields.base_addr = 0;
 		/* checksum everything that comes after the Checksum field */
 		bdir->header.checksum = fletcher32(&bdir->header.num_entries,
 					count * sizeof(bios_directory_entry)
@@ -645,6 +670,7 @@ static void integrate_psp_firmwares(context *ctx,
 	ssize_t bytes;
 	unsigned int i, count;
 	int level;
+	uint32_t current_table_save;
 
 	/* This function can create a primary table, a secondary table, or a
 	 * flattened table which contains all applicable types.  These if-else
@@ -662,6 +688,8 @@ static void integrate_psp_firmwares(context *ctx,
 	else
 		level = PSP_BOTH;
 
+	current_table_save = ctx->current_table;
+	ctx->current_table = (char *)pspdir - ctx->rom;
 	ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
 
 	for (i = 0, count = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
@@ -677,6 +705,7 @@ static void integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].type = fw_table[i].type;
 			pspdir->entries[count].size = 4096; /* TODO: doc? */
 			pspdir->entries[count].addr = RUN_CURRENT(*ctx);
+			pspdir->entries[count].address_mode = SET_ADDR_MODE_BY_TABLE(pspdir);
 			pspdir->entries[count].subprog = fw_table[i].subprog;
 			pspdir->entries[count].rsvd = 0;
 			ctx->current = ALIGN(ctx->current + 4096, 0x100U);
@@ -687,6 +716,7 @@ static void integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].rsvd = 0;
 			pspdir->entries[count].size = 0xFFFFFFFF;
 			pspdir->entries[count].addr = fw_table[i].other;
+			pspdir->entries[count].address_mode = 0;
 			count++;
 		} else if (fw_table[i].type == AMD_FW_PSP_NVRAM) {
 			if (fw_table[i].filename == NULL)
@@ -708,7 +738,10 @@ static void integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].rsvd = 0;
 			pspdir->entries[count].size = ALIGN(bytes,
 							ERASE_ALIGNMENT);
-			pspdir->entries[count].addr = RUN_CURRENT(*ctx);
+			pspdir->entries[count].addr =
+				RUN_CURRENT_MODE(*ctx, ADDRESS_MODE_1_REL_BIOS);
+			pspdir->entries[count].address_mode =
+				SET_ADDR_MODE(pspdir, ADDRESS_MODE_1_REL_BIOS);
 
 			ctx->current = ALIGN(ctx->current + bytes,
 							BLOB_ERASE_ALIGNMENT);
@@ -726,6 +759,7 @@ static void integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].rsvd = 0;
 			pspdir->entries[count].size = (uint32_t)bytes;
 			pspdir->entries[count].addr = RUN_CURRENT(*ctx);
+			pspdir->entries[count].address_mode = SET_ADDR_MODE_BY_TABLE(pspdir);
 
 			ctx->current = ALIGN(ctx->current + bytes,
 							BLOB_ALIGNMENT);
@@ -744,11 +778,15 @@ static void integrate_psp_firmwares(context *ctx,
 					+ pspdir2->header.num_entries
 					* sizeof(psp_directory_entry);
 
-		pspdir->entries[count].addr = BUFF_TO_RUN(*ctx, pspdir2);
+		pspdir->entries[count].addr =
+				BUFF_TO_RUN_MODE(*ctx, pspdir2, ADDRESS_MODE_1_REL_BIOS);
+		pspdir->entries[count].address_mode =
+				SET_ADDR_MODE(pspdir, ADDRESS_MODE_1_REL_BIOS);
 		count++;
 	}
 
 	fill_dir_header(pspdir, count, cookie, ctx);
+	ctx->current_table = current_table_save;
 }
 
 static void *new_bios_dir(context *ctx, bool multi)
@@ -765,7 +803,9 @@ static void *new_bios_dir(context *ctx, bool multi)
 	else
 		ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
 	ptr = BUFF_CURRENT(*ctx);
-	((bios_directory_hdr *) ptr)->additional_info = ctx->current;
+	((bios_directory_hdr *) ptr)->additional_info = 0;
+	((bios_directory_hdr *) ptr)->additional_info_fields.address_mode = ctx->address_mode;
+	ctx->current_table = ctx->current;
 	ctx->current += sizeof(bios_directory_hdr)
 			+ MAX_BIOS_ENTRIES * sizeof(bios_directory_entry);
 	return ptr;
@@ -917,16 +957,21 @@ static void integrate_bios_firmwares(context *ctx,
 		case AMD_BIOS_APOB:
 			biosdir->entries[count].size = fw_table[i].size;
 			biosdir->entries[count].source = fw_table[i].src;
+			biosdir->entries[count].address_mode = SET_ADDR_MODE_BY_TABLE(biosdir);
 			break;
 		case AMD_BIOS_APOB_NV:
 			if (fw_table[i].src) {
 				/* If source is given, use that and its size */
 				biosdir->entries[count].source = fw_table[i].src;
+				biosdir->entries[count].address_mode =
+						SET_ADDR_MODE(biosdir, ADDRESS_MODE_1_REL_BIOS);
 				biosdir->entries[count].size = fw_table[i].size;
 			} else {
 				/* Else reserve size bytes within amdfw.rom */
 				ctx->current = ALIGN(ctx->current, ERASE_ALIGNMENT);
 				biosdir->entries[count].source = RUN_CURRENT(*ctx);
+				biosdir->entries[count].address_mode =
+						SET_ADDR_MODE(biosdir, ADDRESS_MODE_1_REL_BIOS);
 				biosdir->entries[count].size = ALIGN(
 						fw_table[i].size, ERASE_ALIGNMENT);
 				memset(BUFF_CURRENT(*ctx), 0xff,
@@ -939,12 +984,16 @@ static void integrate_bios_firmwares(context *ctx,
 			/* Don't make a 2nd copy, point to the same one */
 			if (level == BDT_LVL1 && locate_bdt2_bios(biosdir2, &source, &size)) {
 				biosdir->entries[count].source = source;
+				biosdir->entries[count].address_mode =
+						SET_ADDR_MODE(biosdir, ADDRESS_MODE_1_REL_BIOS);
 				biosdir->entries[count].size = size;
 				break;
 			}
 
 			/* level 2, or level 1 and no copy found in level 2 */
 			biosdir->entries[count].source = fw_table[i].src;
+			biosdir->entries[count].address_mode =
+						SET_ADDR_MODE(biosdir, ADDRESS_MODE_1_REL_BIOS);
 			biosdir->entries[count].dest = fw_table[i].dest;
 			biosdir->entries[count].size = fw_table[i].size;
 
@@ -958,7 +1007,10 @@ static void integrate_bios_firmwares(context *ctx,
 				exit(1);
 			}
 
-			biosdir->entries[count].source = RUN_CURRENT(*ctx);
+			biosdir->entries[count].source =
+				RUN_CURRENT_MODE(*ctx, ADDRESS_MODE_1_REL_BIOS);
+			biosdir->entries[count].address_mode =
+				SET_ADDR_MODE(biosdir, ADDRESS_MODE_1_REL_BIOS);
 
 			ctx->current = ALIGN(ctx->current + bytes, 0x100U);
 			break;
@@ -981,6 +1033,7 @@ static void integrate_bios_firmwares(context *ctx,
 
 			biosdir->entries[count].size = (uint32_t)bytes;
 			biosdir->entries[count].source = RUN_CURRENT(*ctx);
+			biosdir->entries[count].address_mode = SET_ADDR_MODE_BY_TABLE(biosdir);
 
 			ctx->current = ALIGN(ctx->current + bytes, 0x100U);
 			break;
@@ -998,6 +1051,8 @@ static void integrate_bios_firmwares(context *ctx,
 					* sizeof(bios_directory_entry);
 		biosdir->entries[count].source =
 					BUFF_TO_RUN(*ctx, biosdir2);
+		biosdir->entries[count].address_mode =
+					SET_ADDR_MODE(biosdir, ADDRESS_MODE_1_REL_BIOS);
 		biosdir->entries[count].subprog = 0;
 		biosdir->entries[count].inst = 0;
 		biosdir->entries[count].copy = 0;
@@ -1600,15 +1655,17 @@ int main(int argc, char **argv)
 	}
 
 	if (amd_romsig->efs_gen.gen == EFS_SECOND_GEN)
-		ctx.abs_address = 0;
+		ctx.address_mode = ADDRESS_MODE_1_REL_BIOS;
 	else
-		ctx.abs_address = 1;
+		ctx.address_mode = ADDRESS_MODE_0_PHY;
 	printf("    AMDFWTOOL  Using firmware directory location of %s address: 0x%08x\n",
-			ctx.abs_address == 1 ? "absolute" : "relative", RUN_CURRENT(ctx));
+			ctx.address_mode == ADDRESS_MODE_0_PHY ? "absolute" : "relative",
+			RUN_CURRENT(ctx));
 
 	integrate_firmwares(&ctx, amd_romsig, amd_fw_table);
 
 	ctx.current = ALIGN(ctx.current, 0x10000U); /* TODO: is it necessary? */
+	ctx.current_table = 0;
 
 	if (cb_config.multi_level) {
 		/* Do 2nd PSP directory followed by 1st */

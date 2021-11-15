@@ -11,6 +11,7 @@
 #define MAX_TRIP_TEMP 205
 /* This is the safest default Trip Temp value */
 #define DEFAULT_TRIP_TEMP 50
+/* Trip Point Temp = (LTT / 2 - 50 degree C) */
 #define GET_LTT_VALUE(x) (((x) + 50) * (2))
 
 static uint8_t get_thermal_trip_temp(void)
@@ -24,7 +25,6 @@ static uint8_t get_thermal_trip_temp(void)
 /* PCH Low Temp Threshold (LTT) */
 static uint16_t pch_get_ltt_value(struct device *dev)
 {
-	uint16_t ltt_value;
 	uint8_t thermal_config;
 
 	thermal_config = get_thermal_trip_temp();
@@ -34,10 +34,7 @@ static uint16_t pch_get_ltt_value(struct device *dev)
 	if (thermal_config > MAX_TRIP_TEMP)
 		die("Input PCH temp trip is higher than allowed range!");
 
-	/* Trip Point Temp = (LTT / 2 - 50 degree C) */
-	ltt_value = GET_LTT_VALUE(thermal_config);
-
-	return ltt_value;
+	return GET_LTT_VALUE(thermal_config);
 }
 
 /* Enable thermal sensor power management */

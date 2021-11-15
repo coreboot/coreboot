@@ -43,7 +43,8 @@ static const struct apc_apu_dom_16 apusys_noc_dapc[] = {
 	DAPC_APU_NOC_AO_SYS0_ATTR("slv04_05_06_07-2", NO_PROTECTION, FORBIDDEN15),
 	DAPC_APU_NOC_AO_SYS0_ATTR("slv04_05_06_07-3", NO_PROTECTION, FORBIDDEN15),
 };
-_Static_assert(ARRAY_SIZE(apusys_noc_dapc) == APUSYS_NOC_DAPC_AO_SLAVE_NUM);
+_Static_assert(ARRAY_SIZE(apusys_noc_dapc) == APUSYS_NOC_DAPC_AO_SLAVE_NUM,
+	       "Wrong size on apusys_noc_dapc");
 
 /* AO DAPC */
 static const struct apc_apu_dom_16 apusys_ao_apc[] = {
@@ -141,7 +142,8 @@ static const struct apc_apu_dom_16 apusys_ao_apc[] = {
 	/* 70 */
 	DAPC_APU_AO_SYS0_ATTR("apb_infra_dbg_ctl", NO_PROTECTION, FORBIDDEN15),
 };
-_Static_assert(ARRAY_SIZE(apusys_ao_apc) == APUSYS_APC_SYS0_AO_SLAVE_NUM);
+_Static_assert(ARRAY_SIZE(apusys_ao_apc) == APUSYS_APC_SYS0_AO_SLAVE_NUM,
+	       "Wrong size on apusys_ao_apc");
 
 static int set_slave_noc_dapc(u32 slave, enum domain_id domain_id, enum devapc_perm_type perm)
 {

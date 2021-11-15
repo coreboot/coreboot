@@ -18,11 +18,8 @@ chip northbridge/intel/ironlake
 	register "gpu_cpu_backlight" = "0x58d"
 	register "gpu_pch_backlight" = "0x061a061a"
 
-	device cpu_cluster 0 on
-		ops ironlake_cpu_bus_ops
-		chip cpu/intel/model_2065x
-			device lapic 0 on end
-		end
+	chip cpu/intel/model_2065x
+		device cpu_cluster 0 on ops ironlake_cpu_bus_ops end
 	end
 
 	device domain 0 on

@@ -84,6 +84,7 @@ void bootblock_soc_early_init(void)
 #if (CONFIG(CONSOLE_SERIAL))
 	early_uart_init();
 #endif
+	fast_spi_early_init(DEFAULT_SPI_BASE);
 };
 
 void bootblock_soc_init(void)

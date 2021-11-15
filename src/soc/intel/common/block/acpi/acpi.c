@@ -372,6 +372,11 @@ void generate_t_state_entries(int core, int cores_per_package)
 
 static void generate_cppc_entries(int core_id)
 {
+	u32 version = CPPC_VERSION_2;
+
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_ACPI_CPU_HYBRID))
+		version = CPPC_VERSION_3;
+
 	if (!(CONFIG(SOC_INTEL_COMMON_BLOCK_ACPI_CPPC) &&
 	      cpuid_eax(6) & CPUID_6_EAX_ISST))
 		return;
@@ -379,12 +384,15 @@ static void generate_cppc_entries(int core_id)
 	/* Generate GCPC package in first logical core */
 	if (core_id == 0) {
 		struct cppc_config cppc_config;
-		cpu_init_cppc_config(&cppc_config, CPPC_VERSION_2);
+		cpu_init_cppc_config(&cppc_config, version);
 		acpigen_write_CPPC_package(&cppc_config);
 	}
 
 	/* Write _CPC entry for each logical core */
-	acpigen_write_CPPC_method();
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_ACPI_CPU_HYBRID))
+		acpigen_write_CPPC_hybrid_method(core_id);
+	else
+		acpigen_write_CPPC_method();
 }
 
 __weak void soc_power_states_generation(int core_id,

@@ -18,6 +18,12 @@ enum core_type {
 	CPUID_UNKNOWN = 0xff,
 };
 
+/* Gets the scaling factor for small and big core */
+void soc_get_scaling_factor(u16 *big_core_scal_factor, u16 *small_core_scal_factor);
+
+/* Generates ACPI code to define _CPC control method */
+void acpigen_write_CPPC_hybrid_method(int core_id);
+
 /* Forward declare the power state struct here */
 struct chipset_power_state;
 
@@ -125,4 +131,6 @@ void sgx_fill_ssdt(void);
  */
 enum core_type get_soc_cpu_type(void);
 
+/* Check if CPU supports Nominal frequency or not */
+bool soc_is_nominal_freq_supported(void);
 #endif				/* _SOC_INTEL_COMMON_BLOCK_ACPI_H_ */

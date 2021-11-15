@@ -8,6 +8,9 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 
+#define CPPC_NOM_FREQ_IDX	22
+#define CPPC_NOM_PERF_IDX	3
+
 DECLARE_SPIN_LOCK(cpu_lock);
 static u8 global_cpu_type[CONFIG_MAX_CPUS];
 
@@ -54,6 +57,63 @@ static void run_set_cpu_type(void *unused)
 		printk(BIOS_ERR, "cpu_hybrid: Failed to set global_cpu_type with CPU type info\n");
 		return;
 	}
+}
+
+static void acpi_get_cpu_nomi_perf(u16 *small_core_nom_perf, u16 *big_core_nom_perf)
+{
+	u16 big_core_scal_factor, small_core_scal_factor;
+	u8 max_non_turbo_ratio = cpu_get_max_non_turbo_ratio();
+
+	soc_get_scaling_factor(&big_core_scal_factor, &small_core_scal_factor);
+
+	*big_core_nom_perf = (u16)((max_non_turbo_ratio * big_core_scal_factor) / 100);
+
+	*small_core_nom_perf = (u16)((max_non_turbo_ratio * small_core_scal_factor) / 100);
+}
+
+static u16 acpi_get_cpu_nominal_freq(void)
+{
+	return cpu_get_max_non_turbo_ratio() * cpu_get_bus_frequency();
+}
+
+/* Updates Nominal Frequency and Nominal Performance */
+static void acpigen_cppc_update_nominal_freq_perf(const char *pkg_path, s32 core_id)
+{
+	u16 small_core_nom_perf, big_core_nom_perf;
+
+	if (!soc_is_nominal_freq_supported())
+		return;
+
+	acpi_get_cpu_nomi_perf(&small_core_nom_perf, &big_core_nom_perf);
+
+	if (global_cpu_type[core_id])
+		acpigen_set_package_element_int(pkg_path, CPPC_NOM_PERF_IDX, big_core_nom_perf);
+	else
+		acpigen_set_package_element_int(pkg_path, CPPC_NOM_PERF_IDX,
+						small_core_nom_perf);
+
+	/* Update CPU's nominal frequency */
+	acpigen_set_package_element_int(pkg_path, CPPC_NOM_FREQ_IDX,
+					acpi_get_cpu_nominal_freq());
+}
+
+void acpigen_write_CPPC_hybrid_method(s32 core_id)
+{
+	char pkg_path[16];
+
+	if (core_id == 0)
+		snprintf(pkg_path, sizeof(pkg_path), CPPC_PACKAGE_NAME, 0);
+	else
+		snprintf(pkg_path, sizeof(pkg_path),
+			 CONFIG_ACPI_CPU_STRING "." CPPC_PACKAGE_NAME, 0);
+
+	acpigen_write_method("_CPC", 0);
+
+	/* Update nominal performance and nominal frequency */
+	acpigen_cppc_update_nominal_freq_perf(pkg_path, core_id);
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_emit_namestring(pkg_path);
+	acpigen_pop_len();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_EXIT, run_set_cpu_type, NULL);

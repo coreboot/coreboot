@@ -208,11 +208,7 @@ config PDCURSES
 
 endchoice
 
-config CBFS
-	bool "CBFS support"
-	default y
-	help
-	  CBFS is the archive format of coreboot
+source "libcbfs/Kconfig"
 
 config LZMA
 	bool "LZMA decoder"

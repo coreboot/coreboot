@@ -242,7 +242,6 @@ void *cbfs_get_contents(struct cbfs_handle *handle, size_t *size, size_t limit)
 		cbfs_get_attr(handle, CBFS_FILE_ATTR_TAG_COMPRESSION);
 	if (comp) {
 		algo = ntohl(comp->compression);
-		DEBUG("File '%s' is compressed (alg=%d)\n", name, algo);
 		*size = ntohl(comp->decompressed_size);
 		/* TODO: Implement partial decompression with |limit| */
 	}

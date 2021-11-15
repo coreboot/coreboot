@@ -1,0 +1,31 @@
+## SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
+
+config CBFS
+	bool "CBFS support"
+	default y
+	help
+	  CBFS is the archive format of coreboot
+
+if CBFS
+
+config DEBUG_CBFS
+	bool "Output verbose CBFS debug messages"
+	default n
+	help
+	  This option enables additional CBFS related debug messages.
+
+config ENABLE_CBFS_FALLBACK
+	bool "Fallback to RO (COREBOOT) region"
+	default n
+	help
+	  When this option is enabled, the CBFS code will look for a file in the
+	  RO (COREBOOT) region, if it isn't available in the active RW region.
+	  This option makes sense only if CONFIG_VBOOT was enabled in the coreboot.
+
+config CBFS_VERIFICATION
+	bool "Enable CBFS verification"
+	depends on VBOOT
+	help
+	  This option enables hash verification of CBFS files in RO (COREBOOT) and RW regions.
+
+endif

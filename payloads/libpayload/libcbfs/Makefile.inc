@@ -28,3 +28,9 @@
 
 libcbfs-$(CONFIG_LP_CBFS) += cbfs.c
 libcbfs-$(CONFIG_LP_CBFS) += ram_media.c
+libcbfs-$(CONFIG_LP_CBFS) += cbfs_legacy.c
+
+ifeq ($(CONFIG_LP_CBFS),y)
+libcbfs-srcs += $(coreboottop)/src/commonlib/bsd/cbfs_private.c
+libcbfs-srcs += $(coreboottop)/src/commonlib/bsd/cbfs_mcache.c
+endif

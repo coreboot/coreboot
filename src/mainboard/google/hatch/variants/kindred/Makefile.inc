@@ -12,3 +12,5 @@ SPD_SOURCES += 16G_3200   # 0b111
 bootblock-y += gpio.c
 ramstage-y += gpio.c
 ramstage-y += variant.c
+
+$(call add_vbt_to_cbfs, vbt-kled.bin, kled-data.vbt)

@@ -11,3 +11,5 @@ bootblock-y += gpio.c
 ramstage-y += gpio.c
 ramstage-y += ramstage.c
 ramstage-y += variant.c
+
+$(call add_vbt_to_cbfs, vbt-nightfury-qled.bin, nightfury-qled-data.vbt)

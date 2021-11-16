@@ -32,6 +32,7 @@ chip soc/intel/alderlake
 	register "gpio_pm[COMM_4]" = "0"
 	register "gpio_pm[COMM_5]" = "0"
 	register "SaGv" = "SaGv_Enabled"
+	register "PsysPmax" = "143"
 	register "TcssAuxOri" = "1"
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 	register "usb2_ports[1]" = "USB2_PORT_MAX(OC1)" # set MAX to USB2_C1 for eye diagram

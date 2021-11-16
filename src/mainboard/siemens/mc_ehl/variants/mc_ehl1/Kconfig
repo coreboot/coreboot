@@ -4,6 +4,7 @@ config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select DRIVER_INTEL_I210
 	select INTEL_LPSS_UART_FOR_CONSOLE
+	select NC_FPGA_POST_CODE
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/mc_ehl.fmd"
@@ -11,5 +12,20 @@ config FMDFILE
 config UART_FOR_CONSOLE
 	int
 	default 2
+
+config EARLY_PCI_BRIDGE_DEVICE
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0x1c
+
+config EARLY_PCI_BRIDGE_FUNCTION
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0x2
+
+config EARLY_PCI_MMIO_BASE
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0xfe800000
 
 endif # BOARD_SIEMENS_MC_EHL1

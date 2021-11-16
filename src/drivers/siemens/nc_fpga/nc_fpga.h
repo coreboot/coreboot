@@ -17,6 +17,7 @@
 #define  NC_DIAG_FW_DONE		0x10000
 #define NC_BL_BRIGHTNESS_OFFSET		0x88
 #define NC_BL_PWM_OFFSET		0x8C
+#define NC_FPGA_POST_OFFSET		0xE0
 #define NC_FANMON_CTRL_OFFSET		0x400
 
 #define MAX_NUM_SENSORS			8
@@ -57,5 +58,8 @@ typedef struct {
 	uint16_t	res9[4];
 	uint32_t	fanmon;
 } __packed fan_ctrl_t;
+
+void nc_fpga_post(uint8_t value);
+void nc_fpga_remap(uint32_t new_mmio);
 
 #endif /* _SIEMENS_NC_FPGA_H_ */

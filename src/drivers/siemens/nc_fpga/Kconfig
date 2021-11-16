@@ -5,3 +5,8 @@ config DRIVER_SIEMENS_NC_FPGA
 config NC_FPGA_NOTIFY_CB_READY
 	bool
 	default n
+
+config NC_FPGA_POST_CODE
+	bool
+	default n
+	select EARLY_PCI_BRIDGE

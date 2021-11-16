@@ -142,9 +142,21 @@ static void set_fw_done(void *unused)
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, set_fw_done, NULL);
 #endif
 
+static void nc_fpga_set_resources(struct device *dev)
+{
+	pci_dev_set_resources(dev);
+
+	if (CONFIG(NC_FPGA_POST_CODE)) {
+		/* Re-initialize base address after set_resources for POST display
+		   to work properly.*/
+		nc_fpga_remap(pci_read_config32(dev, PCI_BASE_ADDRESS_0) & ~0xf);
+	}
+}
+
+
 static struct device_operations nc_fpga_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources    = nc_fpga_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = nc_fpga_init,
 };

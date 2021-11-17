@@ -23,7 +23,7 @@ static uint8_t get_thermal_trip_temp(void)
 }
 
 /* PCH Low Temp Threshold (LTT) */
-static uint32_t pch_get_ltt_value(struct device *dev)
+static uint32_t pch_get_ltt_value(void)
 {
 	uint8_t thermal_config;
 
@@ -68,6 +68,6 @@ void pch_thermal_configuration(void)
 	reg16 = read16((uint16_t *)thermalbar_pm);
 	reg16 &= ~CATASTROPHIC_TRIP_POINT_MASK;
 	/* Low Temp Threshold (LTT) */
-	reg16 |= pch_get_ltt_value(dev);
+	reg16 |= pch_get_ltt_value();
 	write16((uint16_t *)thermalbar_pm, reg16);
 }

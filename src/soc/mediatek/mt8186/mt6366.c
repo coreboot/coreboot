@@ -493,6 +493,50 @@ static void pmic_set_vcore_vol(u32 vcore_uv)
 	udelay(1);
 }
 
+static u32 pmic_get_vproc12_vol(void)
+{
+	u16 vol_reg;
+
+	vol_reg = pwrap_read_field(PMIC_VPROC12_DBG0, 0x7F, 0);
+	return 500000 + vol_reg * 6250;
+}
+
+static void pmic_set_vproc12_vol(u32 v_uv)
+{
+	u16 vol_reg;
+
+	assert(v_uv >= 500000);
+	assert(v_uv <= 1293750);
+
+	vol_reg = (v_uv - 500000) / 6250;
+
+	pwrap_write_field(PMIC_VPROC12_OP_EN, 1, 0x7F, 0);
+	pwrap_write_field(PMIC_VPROC12_VOSEL, vol_reg, 0x7F, 0);
+	udelay(1);
+}
+
+static u32 pmic_get_vsram_proc12_vol(void)
+{
+	u16 vol_reg;
+
+	vol_reg = pwrap_read_field(PMIC_VSRAM_PROC12_DBG0, 0x7F, 0);
+	return 500000 + vol_reg * 6250;
+}
+
+static void pmic_set_vsram_proc12_vol(u32 v_uv)
+{
+	u16 vol_reg;
+
+	assert(v_uv >= 500000);
+	assert(v_uv <= 1293750);
+
+	vol_reg = (v_uv - 500000) / 6250;
+
+	pwrap_write_field(PMIC_VSRAM_PROC12_OP_EN, 1, 0x7F, 0);
+	pwrap_write_field(PMIC_VSRAM_PROC12_VOSEL, vol_reg, 0x7F, 0);
+	udelay(1);
+}
+
 static u32 pmic_get_vdram1_vol(void)
 {
 	u32 vol_reg;
@@ -779,6 +823,12 @@ void mt6366_set_voltage(enum mt6366_regulator_id id, u32 voltage_uv)
 	case MT6366_VMC:
 		pmic_set_vmc_vol(voltage_uv);
 		break;
+	case MT6366_VPROC12:
+		pmic_set_vproc12_vol(voltage_uv);
+		break;
+	case MT6366_VSRAM_PROC12:
+		pmic_set_vsram_proc12_vol(voltage_uv);
+		break;
 	default:
 		printk(BIOS_ERR, "%s: PMIC %d is not supported\n", __func__, id);
 		break;
@@ -798,6 +848,10 @@ u32 mt6366_get_voltage(enum mt6366_regulator_id id)
 		return pmic_get_vmch_vol();
 	case MT6366_VMC:
 		return pmic_get_vmc_vol();
+	case MT6366_VPROC12:
+		return pmic_get_vproc12_vol();
+	case MT6366_VSRAM_PROC12:
+		return pmic_get_vsram_proc12_vol();
 	default:
 		printk(BIOS_ERR, "%s: PMIC %d is not supported\n", __func__, id);
 		break;

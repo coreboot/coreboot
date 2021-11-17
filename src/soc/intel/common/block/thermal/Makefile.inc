@@ -1,1 +1,2 @@
+romstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_THERMAL) += thermal.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_THERMAL) += thermal.c

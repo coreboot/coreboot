@@ -43,7 +43,7 @@ void pch_thermal_configuration(void)
 	uint16_t reg16;
 	uintptr_t thermalbar;
 	uintptr_t thermalbar_pm;
-	struct device *dev;
+	const struct device *dev;
 	struct resource *res;
 
 	dev = pcidev_path_on_root(PCH_DEVFN_THERMAL);

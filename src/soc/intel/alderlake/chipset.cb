@@ -48,6 +48,11 @@ chip soc/intel/alderlake
 		.tdp_pl4 = 123,
 	}"
 
+	# NOTE: if any variant wants to override this value, use the same format
+	# as register "common_soc_config.pch_thermal_trip" = "value", instead of
+	# putting it under register "common_soc_config" in overridetree.cb file.
+	register "common_soc_config.pch_thermal_trip" = "100"
+
 	device domain 0 on
 		device gpio 0 alias pch_gpio on end
 		device pci 00.0 alias system_agent on end

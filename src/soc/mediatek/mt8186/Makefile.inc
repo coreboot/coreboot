@@ -30,6 +30,7 @@ romstage-y += ../common/flash_controller.c
 romstage-y += ../common/gpio.c gpio.c
 romstage-y += ../common/i2c.c i2c.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
+romstage-y += ../common/pll.c pll.c
 romstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 romstage-y += ../common/timer.c timer.c
 romstage-y += ../common/uart.c

@@ -38,6 +38,12 @@ chip soc/intel/alderlake
 	device domain 0 on
 		device ref dtt on end
 		device ref tbt_pcie_rp0 off end
+		device ref tbt_pcie_rp1 on
+			probe DB_USB USB4_KB8001
+		end
+		device ref tbt_pcie_rp2 on
+			probe DB_USB USB4_KB8001
+		end
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
@@ -45,6 +51,7 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref tcss_dma0 on
+			probe DB_USB USB4_KB8001
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E4)"
 				use tcss_usb3_port2 as dfp[0].typec_port
@@ -52,12 +59,11 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref tcss_dma1 on
+			probe DB_USB USB4_KB8001
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E4)"
 				use tcss_usb3_port3 as dfp[0].typec_port
-				device generic 0 on
-					probe DB_USB USB4_KB8001
-				end
+				device generic 0 on end
 			end
 		end
 		device ref pcie_rp6 off end

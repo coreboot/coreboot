@@ -4,6 +4,7 @@
 #include <boardid.h>
 #include <device/device.h>
 #include <drivers/i2c/hid/chip.h>
+#include <fw_config.h>
 
 static void devtree_update_emmc_rtd3(uint32_t board_ver)
 {
@@ -22,8 +23,8 @@ static void devtree_update_audio_codec(uint32_t board_ver)
 	if (board_ver <= 1)
 		return;
 
-	config->hid = "RTL5682";
-	audio_codec->enabled = 1;
+	if (fw_config_probe(FW_CONFIG(AUDIO, MAX98360_ALC5682I_VS_I2S)))
+		config->hid = "RTL5682";
 }
 
 void variant_devtree_update(void)

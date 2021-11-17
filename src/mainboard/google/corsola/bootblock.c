@@ -4,7 +4,10 @@
 #include <device/mmio.h>
 #include <soc/spi.h>
 
+#include "gpio.h"
+
 void bootblock_mainboard_init(void)
 {
 	mtk_snfc_init(SPI_NOR_GPIO_SET0);
+	setup_chromeos_gpios();
 }

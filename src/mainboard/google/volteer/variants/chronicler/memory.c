@@ -24,3 +24,9 @@ int variant_memory_sku(void)
 
 	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
 }
+
+void memcfg_variant_init(FSPM_UPD *mupd)
+{
+	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
+	mem_cfg->DdrMemoryDown = 1;
+}

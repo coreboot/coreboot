@@ -295,7 +295,7 @@ car_init_done:
 #endif
 
 before_carstage:
-	post_code(0x2A)
+	post_code(0x2a)
 
 	call	bootblock_c_entry
 	/* Never reached */

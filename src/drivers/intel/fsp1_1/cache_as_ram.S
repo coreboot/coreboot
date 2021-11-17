@@ -181,7 +181,7 @@ CAR_init_done:
 	pushl	%eax	/* tsc[31:0] */
 
 before_romstage:
-	post_code(0x2A)
+	post_code(0x2a)
 
 	/* Call bootblock_c_entry(uint64_t base_timestamp) */
 	call	bootblock_c_entry

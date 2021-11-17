@@ -85,7 +85,8 @@ struct bus {
 	uint16_t	bridge_cmd;		/* Bridge command register */
 	unsigned char	link_num;	/* The index of this link */
 	uint16_t	secondary;	/* secondary bus number */
-	uint16_t	subordinate;	/* max subordinate bus number */
+	uint16_t	subordinate;	/* subordinate bus number */
+	uint16_t	max_subordinate;	/* max subordinate bus number */
 	unsigned char   cap;		/* PCi capability offset */
 	uint32_t	hcdn_reg;		/* For HyperTransport link  */
 

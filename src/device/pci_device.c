@@ -1532,6 +1532,18 @@ static void pci_bridge_route(struct bus *link, scan_state state)
 	if (state == PCI_ROUTE_SCAN) {
 		link->secondary = parent->subordinate + 1;
 		link->subordinate = link->secondary + dev->hotplug_buses;
+		link->max_subordinate = parent->max_subordinate
+						? parent->max_subordinate
+						: (CONFIG_ECAM_MMCONF_BUS_NUMBER - 1);
+	}
+
+	if (link->secondary > link->max_subordinate)
+		die("%s: No more busses available!\n", __func__);
+
+	/* This ought to only happen with hotplug buses.  */
+	if (link->subordinate > link->max_subordinate) {
+		printk(BIOS_WARNING, "%s: Limiting subordinate busses\n", __func__);
+		link->subordinate = link->max_subordinate;
 	}
 
 	if (state == PCI_ROUTE_CLOSE) {
@@ -1541,7 +1553,7 @@ static void pci_bridge_route(struct bus *link, scan_state state)
 	} else if (state == PCI_ROUTE_SCAN) {
 		primary = parent->secondary;
 		secondary = link->secondary;
-		subordinate = 0xff; /* MAX PCI_BUS number here */
+		subordinate = link->max_subordinate;
 	} else if (state == PCI_ROUTE_FINAL) {
 		primary = parent->secondary;
 		secondary = link->secondary;

@@ -40,7 +40,6 @@ static uint32_t pch_get_ltt_value(void)
 /* Enable thermal sensor power management */
 void pch_thermal_configuration(void)
 {
-	uint16_t reg16;
 	uintptr_t thermalbar;
 	uintptr_t thermalbar_pm;
 	const struct device *dev;
@@ -65,9 +64,5 @@ void pch_thermal_configuration(void)
 	thermalbar_pm = thermalbar + THERMAL_SENSOR_POWER_MANAGEMENT;
 
 	/* Set Low Temp Threshold (LTT) at TSPM offset 0x1c[8:0] */
-	reg16 = read16((uint16_t *)thermalbar_pm);
-	reg16 &= ~CATASTROPHIC_TRIP_POINT_MASK;
-	/* Low Temp Threshold (LTT) */
-	reg16 |= pch_get_ltt_value();
-	write16((uint16_t *)thermalbar_pm, reg16);
+	clrsetbits32((void *)thermalbar_pm, CATASTROPHIC_TRIP_POINT_MASK, pch_get_ltt_value());
 }

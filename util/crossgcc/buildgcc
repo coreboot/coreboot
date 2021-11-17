@@ -36,7 +36,6 @@ GMP_VERSION=6.2.1
 MPFR_VERSION=4.1.0
 MPC_VERSION=1.2.1
 GCC_VERSION=11.2.0
-GCC_AUTOCONF_VERSION=2.69
 BINUTILS_VERSION=2.37
 IASL_VERSION=20210331
 # CLANG version number
@@ -852,7 +851,6 @@ build_NASM() {
 
 print_supported() {
 	case "$PRINTSUPPORTED" in
-		AUTOCONF|autoconf)  printf "%s\n" "$GCC_AUTOCONF_VERSION";;
 		BINUTILS|binutils)  printf "%s\n" "$BINUTILS_VERSION";;
 		CLANG|clang)  printf "%s\n" "$CLANG_VERSION";;
 		GCC|gcc)  printf "%s\n" "$GCC_VERSION";;

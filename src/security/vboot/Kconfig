@@ -282,6 +282,14 @@ config VBOOT_X86_SHA256_ACCELERATION
 	  Use sha256msg1, sha256msg2, sha256rnds2 instruction to accelerate
 	  SHA hash calculation in vboot.
 
+config VBOOT_DEFINE_WIDEVINE_COUNTERS
+	bool
+	default n
+	help
+	  Set up Widevine Secure Counters in TPM NVRAM by defining space. Enabling this
+	  config will only define the counter space. Counters need to be incremented
+	  separately before any read operation is performed on them.
+
 menu "GBB configuration"
 
 config GBB_HWID

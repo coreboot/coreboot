@@ -158,6 +158,18 @@ static const TPMA_NV zte_rma_bytes_attr = {
 	.TPMA_NV_POLICY_DELETE = 1,
 };
 
+static const TPMA_NV rw_orderly_counter_attributes = {
+	.TPMA_NV_COUNTER = 1,
+	.TPMA_NV_ORDERLY = 1,
+	.TPMA_NV_AUTHREAD = 1,
+	.TPMA_NV_AUTHWRITE = 1,
+	.TPMA_NV_PLATFORMCREATE = 1,
+	.TPMA_NV_WRITE_STCLEAR = 1,
+	.TPMA_NV_PPREAD = 1,
+	.TPMA_NV_PPWRITE = 1,
+	.TPMA_NV_NO_DA = 1,
+};
+
 /*
  * This policy digest was obtained using TPM2_PolicyOR on 3 digests
  * corresponding to a sequence of
@@ -350,6 +362,19 @@ static uint32_t enterprise_rollback_create_counter(void)
 				 rw_counter_attributes, NULL, 0);
 }
 
+static uint32_t setup_widevine_counter_spaces(void)
+{
+	uint32_t index, rv;
+
+	for (index = 0; index < NUM_WIDEVINE_COUNTERS; index++) {
+		rv = define_space(WIDEVINE_COUNTER_NAME, WIDEVINE_COUNTER_NV_INDEX(index),
+				WIDEVINE_COUNTER_SIZE, rw_orderly_counter_attributes, NULL, 0);
+		if (rv != TPM_SUCCESS)
+			return rv;
+	}
+	return TPM_SUCCESS;
+}
+
 static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 {
 	RETURN_ON_FAILURE(tlcl_force_clear());
@@ -390,6 +415,11 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	 */
 	if (CONFIG(CHROMEOS))
 		RETURN_ON_FAILURE(enterprise_rollback_create_counter());
+
+	/* Define widevine counter space. No need to increment/write to the secure counters
+	   and are expected to be incremented during the first use. */
+	if (CONFIG(VBOOT_DEFINE_WIDEVINE_COUNTERS))
+		RETURN_ON_FAILURE(setup_widevine_counter_spaces());
 
 	RETURN_ON_FAILURE(setup_firmware_space(ctx));
 

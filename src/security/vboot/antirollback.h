@@ -29,6 +29,11 @@ enum vb2_pcr_digest;
 #define MRC_RW_HASH_NV_INDEX            0x100d
 #define HASH_NV_SIZE                    VB2_SHA256_DIGEST_SIZE
 #define ENT_ROLLBACK_COUNTER_INDEX      0x100e
+/* Widevine Secure Counter space */
+#define WIDEVINE_COUNTER_NV_INDEX(n)	(0x3000 + (n))
+#define NUM_WIDEVINE_COUNTERS		4
+#define WIDEVINE_COUNTER_NAME		"Widevine Secure Counter"
+#define WIDEVINE_COUNTER_SIZE		sizeof(uint64_t)
 /* Zero-Touch Enrollment related spaces */
 #define ZTE_BOARD_ID_NV_INDEX           0x3fff00
 #define ZTE_RMA_SN_BITS_INDEX           0x3fff01

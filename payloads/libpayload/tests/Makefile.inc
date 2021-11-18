@@ -140,7 +140,7 @@ $($(1)-objs): $(testobj)/$(1)/%.o: $$$$*.c $$($(1)-config-file)
 	objcopy_wrap_flags=''; \
 	for sym in $$($(1)-mocks); do \
 		sym_line="$$$$($(HOSTOBJDUMP) -t $$@.orig \
-			| grep -E \"[0-9a-fA-F]+\\s+w\\s+F\\s+.*\\s$$$$sym$$$$\")"; \
+			| grep -E "[0-9a-fA-F]+\\s+w\\s+F\\s+.*\\s+$$$$sym$$$$")"; \
 		if [ ! -z "$$$$sym_line" ] ; then \
 			addr="$$$$(echo \"$$$$sym_line\" | awk '{ print $$$$1 }')"; \
 			section="$$$$(echo \"$$$$sym_line\" | awk '{ print $$$$(NF - 2) }')"; \

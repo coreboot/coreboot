@@ -26,3 +26,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 }
+
+int get_ec_is_trusted(void)
+{
+	/* EC is trusted if not in RW. This is active low. */
+	return !!gpio_get(GPIO_EC_IN_RW);
+}

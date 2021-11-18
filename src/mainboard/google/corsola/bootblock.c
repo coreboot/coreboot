@@ -8,6 +8,7 @@
 
 void bootblock_mainboard_init(void)
 {
+	mtk_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, SPI_PAD0_MASK, 3 * MHz, 0);
 	mtk_snfc_init(SPI_NOR_GPIO_SET0);
 	setup_chromeos_gpios();
 }

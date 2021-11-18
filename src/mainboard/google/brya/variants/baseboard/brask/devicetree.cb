@@ -108,13 +108,7 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
-		device ref i2c3 on
-			chip drivers/i2c/tpm
-				register "hid" = ""GOOG0005""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
-				device i2c 50 on end
-			end
-		end
+		device ref i2c3 on end
 		device ref heci1 on end
 		device ref sata on end
 		device ref pcie_rp7 on

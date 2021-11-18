@@ -233,6 +233,13 @@ chip soc/intel/alderlake
 				device i2c 40 on end
 			end
 		end
+		device ref i2c3 on
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
+				device i2c 50 on end
+			end
+		end
 		device ref i2c5 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

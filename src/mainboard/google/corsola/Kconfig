@@ -24,6 +24,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_GOOGLE_CHROMEEC_SPI
+	select MAINBOARD_HAS_SPI_TPM_CR50 if VBOOT
+	select MAINBOARD_HAS_TPM2 if VBOOT
 
 config MAINBOARD_DIR
 	string
@@ -42,6 +44,10 @@ config BOOT_DEVICE_SPI_FLASH_BUS
 config SDCARD_INIT
 	bool
 	default n
+
+config DRIVER_TPM_SPI_BUS
+	hex
+	default 0x2
 
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex

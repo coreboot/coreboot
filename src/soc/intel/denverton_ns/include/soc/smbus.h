@@ -17,29 +17,7 @@
 #define TCOBASE_EN (1 << 8)
 #define TCOBASE_LOCK (1 << 0)
 
-/* SMBus I/O bits. */
-#define SMBHSTSTAT 0x0
-#define HST_HBSY (1 << 0)
-#define HST_INTR (1 << 1)
-#define HST_DERR (1 << 2)
-#define HST_BERR (1 << 3)
-#define HST_BYTE_DONE_STS (1 << 7)
-#define HST_HSTS_ALL 0xFF
-#define SMBHSTCTL 0x2
-#define HST_LAST_BYTE (1 << 5)
-#define HST_START (1 << 6)
-#define HST_CMD_IIC_READ 0x18
-#define HST_READ 0x01 // RW
-#define SMBHSTCMD 0x3
-#define SMBXMITADD 0x4
-#define SMBHSTDAT0 0x5
-#define SMBHSTDAT1 0x6
-#define SMBBLKDAT 0x7
-#define SMBTRNSADD 0x9
-#define SMBSLVDATA 0xa
-#define SMBHSTAUXC 0xd
-#define SMLINK_PIN_CTL 0xe
-#define SMBUS_PIN_CTL 0xf
+#define SMBUS_SLAVE_ADDR		0x44
 
 /*
  * SMBus Private Config Registers (PID:SMB)

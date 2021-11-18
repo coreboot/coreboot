@@ -11,6 +11,7 @@
 
 static void i2c_tpm_fill_ssdt(const struct device *dev)
 {
+	struct acpi_dp *dsd;
 	struct drivers_i2c_tpm_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);
 	struct acpi_i2c i2c = {
@@ -46,6 +47,21 @@ static void i2c_tpm_fill_ssdt(const struct device *dev)
 		acpi_device_write_interrupt(&config->irq);
 
 	acpigen_write_resourcetemplate_footer();
+
+	/* _DSD, Device-Specific Data */
+	dsd = acpi_dp_new_table("_DSD");
+	switch (config->power_managed_mode) {
+	case TPM_FIRMWARE_POWER_MANAGED:
+		acpi_dp_add_integer(dsd, "firmware-power-managed", 1);
+		break;
+	case TPM_KERNEL_POWER_MANAGED:
+		acpi_dp_add_integer(dsd, "firmware-power-managed", 0);
+		break;
+	case TPM_DEFAULT_POWER_MANAGED:
+	default:
+		/* Leave firmware-power-managed unset */
+	}
+	acpi_dp_write(dsd);
 
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */

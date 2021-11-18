@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <boardid.h>
 #include <console/console.h>
+#include <ec/google/chromeec/ec.h>
 #include <soc/auxadc.h>
 
 /* board_id is provided by ec/google/chromeec/ec_boardid.c */
@@ -13,6 +14,9 @@ enum {
 	/* RAM IDs */
 	RAM_ID_LOW_CHANNEL = 2,
 	RAM_ID_HIGH_CHANNEL = 3,
+	/* SKU IDs */
+	SKU_ID_LOW_CHANNEL = 4,
+	SKU_ID_HIGH_CHANNEL = 5,
 };
 
 static const unsigned int ram_voltages[ADC_LEVELS] = {
@@ -34,6 +38,8 @@ static const unsigned int ram_voltages[ADC_LEVELS] = {
 static const unsigned int *adc_voltages[] = {
 	[RAM_ID_LOW_CHANNEL] = ram_voltages,
 	[RAM_ID_HIGH_CHANNEL] = ram_voltages,
+	[SKU_ID_LOW_CHANNEL] = ram_voltages,
+	[SKU_ID_HIGH_CHANNEL] = ram_voltages,
 };
 
 static uint32_t get_adc_index(unsigned int channel)
@@ -52,6 +58,24 @@ static uint32_t get_adc_index(unsigned int channel)
 
 	printk(BIOS_DEBUG, "ADC[%u]: Raw value=%u ID=%u\n", channel, value, id);
 	return id;
+}
+
+uint32_t sku_id(void)
+{
+	static uint32_t cached_sku_code = BOARD_ID_INIT;
+
+	if (cached_sku_code == BOARD_ID_INIT) {
+		cached_sku_code = google_chromeec_get_board_sku();
+
+		if (cached_sku_code == CROS_SKU_UNKNOWN) {
+			printk(BIOS_WARNING, "Failed to get SKU code from EC\n");
+			cached_sku_code = (get_adc_index(SKU_ID_HIGH_CHANNEL) << 4 |
+					   get_adc_index(SKU_ID_LOW_CHANNEL));
+		}
+		printk(BIOS_DEBUG, "SKU Code: %#02x\n", cached_sku_code);
+	}
+
+	return cached_sku_code;
 }
 
 uint32_t ram_code(void)

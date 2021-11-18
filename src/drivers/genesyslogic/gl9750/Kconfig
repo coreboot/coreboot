@@ -1,0 +1,8 @@
+config DRIVERS_GENESYSLOGIC_GL9750
+	bool "Genesys Logic GL9750"
+	help
+	  GL9750 is a PCI Express Rev. 1.1 compliant card reader controller
+	  which integrates PCI Express PHY, memory card access interface,
+	  regulators (3.3V-to-1.2V) and card power switch. Enabling this driver
+	  will disable L0s support, which will allow the device to enter the
+	  PCIe L1 link state.

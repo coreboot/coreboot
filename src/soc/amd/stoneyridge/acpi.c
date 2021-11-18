@@ -84,7 +84,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->duty_offset = 1;	/* CLK_VAL bits 3:1 */
 	fadt->duty_width = 3;	/* CLK_VAL bits 3:1 */
-	fadt->day_alrm = 0x0d;
+	fadt->day_alrm = RTC_DATE_ALARM;
 	fadt->mon_alrm = 0;	/* Not supported */
 	fadt->iapc_boot_arch = FADT_BOOT_ARCH;	/* See table 5-10 */
 	fadt->res2 = 0;		/* reserved, MUST be 0 ACPI 3.0 */

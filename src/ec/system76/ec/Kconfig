@@ -13,6 +13,11 @@ config EC_SYSTEM76_EC_COLOR_KEYBOARD
 	bool
 	default n
 
+config EC_SYSTEM76_EC_DGPU
+	depends on EC_SYSTEM76_EC
+	bool
+	default n
+
 config EC_SYSTEM76_EC_OLED
 	depends on EC_SYSTEM76_EC
 	bool

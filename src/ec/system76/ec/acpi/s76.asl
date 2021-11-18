@@ -117,6 +117,9 @@ Device (S76D) {
 	Method (NFAN, 0, Serialized) {
 		Return (Package() {
 			"CPU fan",
+#if CONFIG(EC_SYSTEM76_EC_DGPU)
+			"GPU fan",
+#endif
 		})
 	}
 
@@ -144,6 +147,9 @@ Device (S76D) {
 	Method (NTMP, 0, Serialized) {
 		Return (Package() {
 			"CPU temp",
+#if CONFIG(EC_SYSTEM76_EC_DGPU)
+			"GPU temp",
+#endif
 		})
 	}
 

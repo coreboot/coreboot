@@ -30,4 +30,8 @@ config MAINBOARD_PART_NUMBER
 config BOOT_DEVICE_SPI_FLASH_BUS
 	int
 	default 7
+
+config SDCARD_INIT
+	bool
+	default n
 endif

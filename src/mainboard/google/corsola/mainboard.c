@@ -9,7 +9,12 @@
 static void mainboard_init(struct device *dev)
 {
 	mtk_msdc_configure_emmc(true);
-	mtk_msdc_configure_sdcard();
+
+	if (CONFIG(SDCARD_INIT)) {
+		printk(BIOS_INFO, "SD card init\n");
+		mtk_msdc_configure_sdcard();
+	}
+
 	setup_usb_host();
 
 	if (spm_init())

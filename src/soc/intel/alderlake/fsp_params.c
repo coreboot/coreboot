@@ -303,6 +303,7 @@ static uint16_t get_vccin_aux_imon_iccmax(void)
 	}
 
 	switch (mch_id) {
+	case PCI_DEVICE_ID_INTEL_ADL_P_ID_1:
 	case PCI_DEVICE_ID_INTEL_ADL_P_ID_3:
 		return ICC_MAX_ID_ADL_P_3_MA;
 	case PCI_DEVICE_ID_INTEL_ADL_P_ID_5:

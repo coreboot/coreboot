@@ -231,13 +231,6 @@ F:	src/mainboard/facebook/monolith/
 
 
 
-GETAC P470 MAINBOARD
-M:	Patrick Georgi <patrick@georgi.software>
-S:	Maintained
-F:	src/mainboard/getac/p470/
-
-
-
 GIGABYTE GA-D510UD MAINBOARD
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
@@ -731,7 +724,6 @@ F:	payloads/external/LinuxBoot/
 ################################################################################
 
 ABUILD
-M:	Patrick Georgi <patrick@georgi-clan.de>
 M:	Martin Roth <gaumless@gmail.com>
 S:	Supported
 F:	util/abuild/
@@ -740,7 +732,6 @@ BOARD STATUS
 F:	util/board_status/
 
 BUILD SYSTEM
-M:	Patrick Georgi <patrick@georgi-clan.de>
 M:	Martin Roth <gaumless@gmail.com>
 S:	Supported
 F:	Makefile
@@ -764,7 +755,6 @@ F:	.git*
 F:	/util/gitconfig
 
 LINT SCRIPTS
-M:	Patrick Georgi <patrick@georgi-clan.de>
 M:	Martin Roth <gaumless@gmail.com>
 S:	Supported
 F:	util/lint/
@@ -939,7 +929,6 @@ MISSING: SPI
 
 CODE OF CONDUCT
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
-M:	Patrick Georgi <patrick@coreboot.org>
 M:	Ronald Minnich <rminnich@coreboot.org>
 M:	Martin Roth <martin@coreboot.org>
 S:	Maintained

@@ -89,23 +89,34 @@ struct sc7280_disp_cc {
 	u32 esc0_cbcr;
 	u8 _res3[0x1050 - 0x103c];
 	u32 ahb_cbcr;
-	u8 _res4[0x1078 - 0x1054];
+	u32 edp_pixel_cbcr;
+	u32 edp_link_cbcr;
+	u32 edp_link_intf_cbcr;
+	u32 edp_aux_cbcr;
+	u8 _res4[0x1078 - 0x1064];
 	struct clock_rcg_mnd pclk0;
 	u8 _res5[0x1090 - 0x108c];
-	struct clock_rcg_mnd mdp;
+	struct clock_rcg mdp;
 	u8 _res6[0x10c0 - 0x1098];
-	struct clock_rcg_mnd vsync;
+	struct clock_rcg vsync;
 	u8 _res7[0x10d8 - 0x10c8];
-	struct clock_rcg_mnd byte0;
-	u8 _res8[0x10f4 - 0x10ec];
-	struct clock_rcg_mnd esc0;
-	u8 _res9[0x1170 - 0x1108];
-	struct clock_rcg_mnd ahb;
-	u8 _res10[0x20000 - 0x1178];
+	struct clock_rcg byte0;
+	u8 _res8[0x10f4 - 0x10e0];
+	struct clock_rcg esc0;
+	u8 _res9[0x1170 - 0x10fc];
+	struct clock_rcg mdss_ahb;
+	u8 _res10[0x1188 - 0x1178];
+	struct clock_rcg_mnd edp_pixel;
+	u8 _res11[0x11a0 - 0x119c];
+	struct clock_rcg edp_link;
+	u8 _res12[0x11d0 - 0x11a8];
+	struct clock_rcg edp_aux;
+	u8 _res13[0x20000 - 0x11d8];
 };
 check_member(sc7280_disp_cc, pclk0_cbcr, 0x1010);
 check_member(sc7280_disp_cc, vsync_cbcr, 0x102c);
 check_member(sc7280_disp_cc, ahb_cbcr, 0x1050);
+check_member(sc7280_disp_cc, edp_aux_cbcr, 0x1060);
 
 struct sc7280_pcie {
 	u32 pcie_1_bcr;
@@ -205,7 +216,8 @@ struct sc7280_gcc {
 	struct clock_rcg_mnd sdcc1;
 	u8 _res20[0x8c004 - 0x75020];
 	u32 pcie_clkref_en;
-	u8 _res21[0x8d000 - 0x8c008];
+	u32 edp_clkref_en;
+	u8 _res21[0x8d000 - 0x8c00c];
 	struct sc7280_pcie pcie_1;
 	u8 _res22[0x90010 - 0x8e020];
 	u32 aggre_noc_pcie_tbu_cbcr;
@@ -226,6 +238,7 @@ check_member(sc7280_gcc, apcs_pll_br_en, 0x52010);
 check_member(sc7280_gcc, usb_phy_cfg_ahb2phy_bcr, 0x6a000);
 check_member(sc7280_gcc, sdcc1_ahb_cbcr, 0x75004);
 check_member(sc7280_gcc, pcie_clkref_en, 0x8c004);
+check_member(sc7280_gcc, edp_clkref_en, 0x8c008);
 check_member(sc7280_gcc, aggre_noc_pcie_tbu_cbcr, 0x90010);
 check_member(sc7280_gcc, usb30_sec_bcr, 0x9e000);
 
@@ -293,6 +306,7 @@ enum clk_mdss {
 	GCC_DISP_AHB,
 	GCC_DISP_HF_AXI,
 	GCC_DISP_SF_AXI,
+	GCC_EDP_CLKREF_EN,
 	MDSS_CLK_PCLK0,
 	MDSS_CLK_MDP,
 	MDSS_CLK_VSYNC,
@@ -300,6 +314,10 @@ enum clk_mdss {
 	MDSS_CLK_BYTE0_INTF,
 	MDSS_CLK_ESC0,
 	MDSS_CLK_AHB,
+	MDSS_CLK_EDP_PIXEL,
+	MDSS_CLK_EDP_LINK,
+	MDSS_CLK_EDP_LINK_INTF,
+	MDSS_CLK_EDP_AUX,
 	MDSS_CLK_COUNT
 };
 

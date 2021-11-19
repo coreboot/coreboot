@@ -203,20 +203,28 @@ static struct clock_freq_config mdss_mdp_cfg[] = {
 	},
 };
 
-static struct clock_rcg_mnd *mdss_clock[MDSS_CLK_COUNT] = {
-	[MDSS_CLK_PCLK0] = &mdss->pclk0,
+static struct clock_rcg *mdss_clock[MDSS_CLK_COUNT] = {
 	[MDSS_CLK_MDP] = &mdss->mdp,
 	[MDSS_CLK_VSYNC] = &mdss->vsync,
 	[MDSS_CLK_ESC0] = &mdss->esc0,
 	[MDSS_CLK_BYTE0] = &mdss->byte0,
 	[MDSS_CLK_BYTE0_INTF] = &mdss->byte0,
-	[MDSS_CLK_AHB] = &mdss->ahb,
+	[MDSS_CLK_AHB] = &mdss->mdss_ahb,
+	[MDSS_CLK_EDP_LINK] = &mdss->edp_link,
+	[MDSS_CLK_EDP_LINK_INTF] = &mdss->edp_link,
+	[MDSS_CLK_EDP_AUX] = &mdss->edp_aux,
+};
+
+static struct clock_rcg_mnd *mdss_clock_mnd[MDSS_CLK_COUNT] = {
+	[MDSS_CLK_PCLK0] = &mdss->pclk0,
+	[MDSS_CLK_EDP_PIXEL] = &mdss->edp_pixel,
 };
 
 static u32 *mdss_cbcr[MDSS_CLK_COUNT] = {
 	[GCC_DISP_AHB] = &gcc->disp_ahb_cbcr,
 	[GCC_DISP_HF_AXI] = &gcc->disp_hf_axi_cbcr,
 	[GCC_DISP_SF_AXI] = &gcc->disp_sf_axi_cbcr,
+	[GCC_EDP_CLKREF_EN] = &gcc->edp_clkref_en,
 	[MDSS_CLK_PCLK0] = &mdss->pclk0_cbcr,
 	[MDSS_CLK_MDP] = &mdss->mdp_cbcr,
 	[MDSS_CLK_VSYNC] = &mdss->vsync_cbcr,
@@ -224,6 +232,10 @@ static u32 *mdss_cbcr[MDSS_CLK_COUNT] = {
 	[MDSS_CLK_BYTE0_INTF] = &mdss->byte0_intf_cbcr,
 	[MDSS_CLK_ESC0] = &mdss->esc0_cbcr,
 	[MDSS_CLK_AHB] = &mdss->ahb_cbcr,
+	[MDSS_CLK_EDP_PIXEL] = &mdss->edp_pixel_cbcr,
+	[MDSS_CLK_EDP_LINK] = &mdss->edp_link_cbcr,
+	[MDSS_CLK_EDP_LINK_INTF] = &mdss->edp_link_intf_cbcr,
+	[MDSS_CLK_EDP_AUX] = &mdss->edp_aux_cbcr,
 };
 
 static u32 *gdsc[MAX_GDSC] = {
@@ -401,8 +413,16 @@ enum cb_err mdss_clock_configure(enum clk_mdss clk_type, uint32_t hz,
 	mdss_clk_cfg.n = n;
 	mdss_clk_cfg.d_2 = d_2;
 
-	return clock_configure((struct clock_rcg *)mdss_clock[clk_type],
-			&mdss_clk_cfg, hz, 0);
+	switch (clk_type) {
+	case MDSS_CLK_EDP_PIXEL:
+	case MDSS_CLK_PCLK0:
+		return clock_configure((struct clock_rcg *)
+				mdss_clock_mnd[clk_type],
+				&mdss_clk_cfg, hz, 0);
+	default:
+		return clock_configure(mdss_clock[clk_type],
+				&mdss_clk_cfg, hz, 0);
+	}
 }
 
 enum cb_err mdss_clock_enable(enum clk_mdss clk_type)

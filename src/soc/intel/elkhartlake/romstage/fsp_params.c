@@ -123,6 +123,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 				       config->ibecc.region_mask);
 		}
 	}
+	/* PSE (Intel Programmable Services Engine) switch */
+	m_cfg->PchPseEnable = 0;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

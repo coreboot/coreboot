@@ -1,41 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <device/device.h>
 #include <device/mmio.h>
-#include <intelblocks/cfg.h>
 #include <intelblocks/thermal.h>
 #include <soc/pci_devs.h>
 
 #define THERMAL_SENSOR_POWER_MANAGEMENT 0x1c
 #define CATASTROPHIC_TRIP_POINT_MASK 0x1ff
-#define MAX_TRIP_TEMP 205
-/* This is the safest default Trip Temp value */
-#define DEFAULT_TRIP_TEMP 50
-/* Trip Point Temp = (LTT / 2 - 50 degree C) */
-#define GET_LTT_VALUE(x) (((x) + 50) * (2))
-
-static uint8_t get_thermal_trip_temp(void)
-{
-	const struct soc_intel_common_config *common_config;
-	common_config = chip_get_common_soc_structure();
-
-	return common_config->pch_thermal_trip;
-}
-
-/* PCH Low Temp Threshold (LTT) */
-static uint32_t pch_get_ltt_value(void)
-{
-	uint8_t thermal_config;
-
-	thermal_config = get_thermal_trip_temp();
-	if (!thermal_config)
-		thermal_config = DEFAULT_TRIP_TEMP;
-
-	if (thermal_config > MAX_TRIP_TEMP)
-		die("Input PCH temp trip is higher than allowed range!");
-
-	return GET_LTT_VALUE(thermal_config);
-}
 
 /* Enable thermal sensor power management */
 void pch_thermal_configuration(void)

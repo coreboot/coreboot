@@ -3,6 +3,25 @@
 #ifndef _SOC_INTEL_COMMON_BLOCK_THERMAL_H_
 #define _SOC_INTEL_COMMON_BLOCK_THERMAL_H_
 
+#define MAX_TRIP_TEMP 205
+/* This is the safest default Trip Temp value */
+#define DEFAULT_TRIP_TEMP 50
+
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_THERMAL_PCI_DEV)
+  /* Trip Point Temp = (LTT / 2 - 50 degree C) */
+  #define GET_LTT_VALUE(x) (((x) + 50) * (2))
+#elif CONFIG(SOC_INTEL_COMMON_BLOCK_THERMAL_BEHIND_PMC)
+  /*
+   * Trip Point = T2L | T1L | T0L where T2L > T1L > T0L
+   * T2L = Bit 28:20
+   * T1L = Bit 18:10
+   * T0L = Bit 8:0
+   */
+  #define GET_LTT_VALUE(x) (((x) + 10) << 20 | ((x) + 5) << 10 | (x))
+#else
+  #error <Undefined: GET_LTT_VALUE macro>
+#endif
+
 /* Catastrophic Trip Point Enable */
 #define PMC_PWRM_THERMAL_CTEN			0x150c
 /* Policy Lock-Down Bit */
@@ -30,6 +49,10 @@
 /* PHL Lock */
 #define  PMC_PWRM_THERMAL_PHLC_PHLCLOCK		(1 << 31)
 
+/* Get PCH Thermal Trip from common chip config */
+uint8_t get_thermal_trip_temp(void);
+/* PCH Low Temp Threshold (LTT) */
+uint32_t pch_get_ltt_value(void);
 /* Enable thermal sensor power management */
 void pch_thermal_configuration(void);
 

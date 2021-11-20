@@ -1,45 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <device/mmio.h>
-#include <intelblocks/cfg.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/thermal.h>
-
-#define MAX_TRIP_TEMP 205
-/* This is the safest default Trip Temp value */
-#define DEFAULT_TRIP_TEMP 50
-
-/*
- * Trip Point = T2L | T1L | T0L where T2L > T1L > T0L
- * T2L = Bit 28:20
- * T1L = Bit 18:10
- * T0L = Bit 8:0
- */
-#define GET_LTT_VALUE(x) ((x + 10) << 20 | (x + 5) << 10 | x)
-
-static uint8_t get_thermal_trip_temp(void)
-{
-	const struct soc_intel_common_config *common_config;
-	common_config = chip_get_common_soc_structure();
-
-	return common_config->pch_thermal_trip;
-}
-
-/* PCH Low Temp Threshold (LTT) */
-static uint32_t pch_get_ltt_value(void)
-{
-	uint8_t thermal_config;
-
-	thermal_config = get_thermal_trip_temp();
-	if (!thermal_config)
-		thermal_config = DEFAULT_TRIP_TEMP;
-
-	if (thermal_config > MAX_TRIP_TEMP)
-		die("Input PCH temp trip is higher than allowed range!");
-
-	return GET_LTT_VALUE(thermal_config);
-}
 
 /*
  * Thermal configuration has evolved over time. With older platform the

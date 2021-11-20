@@ -4,9 +4,19 @@ config SOC_INTEL_COMMON_BLOCK_THERMAL
 	help
 	  This option allows to configure PCH thermal registers for supported PCH.
 
+config SOC_INTEL_COMMON_BLOCK_THERMAL_PCI_DEV
+	bool
+	default n
+	select SOC_INTEL_COMMON_BLOCK_THERMAL
+	help
+	  This option allows to configure PCH thermal registers using Thermal PCI device
+	  for chipsets till Ice Lake PCH.
+
 config SOC_INTEL_COMMON_BLOCK_THERMAL_BEHIND_PMC
 	bool
 	default n
+	depends on !SOC_INTEL_COMMON_BLOCK_THERMAL_PCI_DEV
+	select SOC_INTEL_COMMON_BLOCK_THERMAL
 	help
 	  This option allows to configure PCH thermal registers using PMC PWRMBASE
 	  for chipsets since Tiger Lake PCH.

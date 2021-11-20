@@ -17,7 +17,6 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/systemagent.h>
 #include <intelblocks/tco.h>
-#include <intelblocks/thermal.h>
 #include <intelpch/lockdown.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>

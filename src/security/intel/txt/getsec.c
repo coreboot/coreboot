@@ -9,6 +9,7 @@
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <types.h>
+#include <rules.h>
 
 #include "txt_register.h"
 #include "txt_getsec.h"
@@ -24,16 +25,26 @@ static bool getsec_enabled(void)
 	/*
 	 * Check if SMX and VMX is supported by CPU.
 	 */
-	if (!(ecx & CPUID_SMX) || !(ecx & CPUID_VMX))
+	if (!(ecx & CPUID_SMX) || !(ecx & CPUID_VMX)) {
+		printk(BIOS_ERR, "SMX/VMX not supported by CPU\n");
 		return false;
-
+	}
 	/*
-	 * Check if SMX, VMX and GetSec instructions haven't been disabled.
+	 * This requirement is not needed for ENTERACCS, but for SENTER (see SDM).
+	 * Skip check in romstage because IA32_FEATURE_CONTROL cannot be unlocked
+	 * even after a global reset e.g. on Sandy/IvyBridge. However the register
+	 * gets set properly in ramstage where all CPUs are already initialized.
 	 */
-	msr_t msr = rdmsr(IA32_FEATURE_CONTROL);
-	if ((msr.lo & 0xff06) != 0xff06)
-		return false;
-
+	if (!ENV_ROMSTAGE_OR_BEFORE) {
+		/*
+		* Check if SMX, VMX and GetSec instructions haven't been disabled.
+		*/
+		msr_t msr = rdmsr(IA32_FEATURE_CONTROL);
+		if ((msr.lo & 0xff06) != 0xff06) {
+			printk(BIOS_ERR, "GETSEC not enabled in IA32_FEATURE_CONTROL MSR\n");
+			return false;
+		}
+	}
 	/*
 	 * Enable SMX. Required to execute GetSec instruction.
 	 * Chapter 2.2.4.3

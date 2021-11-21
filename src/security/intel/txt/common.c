@@ -141,6 +141,22 @@ bool intel_txt_memory_has_secrets(void)
 	return ret;
 }
 
+bool intel_txt_chipset_is_production_fused(void)
+{
+	/*
+	 * Certain chipsets report production fused information in either
+	 * TXT.VER.FSBIF or TXT.VER.EMIF/TXT.VER.QPIIF.
+	 * Chapter B.1.7 and B.1.9
+	 * Intel TXT Software Development Guide (Document: 315168-015)
+	 */
+	uint32_t reg = read32((void *)TXT_VER_FSBIF);
+
+	if (reg == 0 || reg == UINT32_MAX)
+		reg = read32((void *)TXT_VER_QPIIF);
+
+	return (reg & TXT_VER_PRODUCTION_FUSED) ? true : false;
+}
+
 static struct acm_info_table *find_info_table(const void *ptr)
 {
 	const struct acm_header_v0 *acm_header = (struct acm_header_v0 *)ptr;
@@ -203,8 +219,8 @@ static int validate_acm(const void *ptr)
 	if (memcmp(acm_uuid, info->uuid, sizeof(acm_uuid)) != 0)
 		return ACM_E_UUID_NOT_MATCH;
 
-	if ((acm_header->flags & ACM_FORMAT_FLAGS_DEBUG) ==
-	    (read64((void *)TXT_VER_FSBIF) & TXT_VER_PRODUCTION_FUSED))
+	const bool production_acm = !(acm_header->flags & ACM_FORMAT_FLAGS_DEBUG);
+	if (production_acm != intel_txt_chipset_is_production_fused())
 		return ACM_E_PLATFORM_IS_NOT_PROD;
 
 	return 0;

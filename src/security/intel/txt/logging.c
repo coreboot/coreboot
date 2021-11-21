@@ -7,6 +7,7 @@
 #include <types.h>
 
 #include "txt.h"
+#include "txt_getsec.h"
 #include "txt_register.h"
 
 const char *intel_txt_processor_error_type(uint8_t type)
@@ -219,5 +220,45 @@ void txt_dump_regions(void)
 		       bdr->lcp_pd_size);
 		printk(BIOS_DEBUG, "TEE-TXT: BiosDataRegion.lcp_pd_base 0x%llx\n",
 		       bdr->lcp_pd_base);
+	}
+}
+
+void txt_dump_getsec_parameters(void)
+{
+	uint32_t version_mask;
+	uint32_t version_numbers_supported;
+	uint32_t max_size_acm_area;
+	uint32_t memory_type_mask;
+	uint32_t senter_function_disable;
+	uint32_t txt_feature_flags;
+
+	if (!getsec_parameter(&version_mask, &version_numbers_supported,
+			      &max_size_acm_area, &memory_type_mask,
+			      &senter_function_disable, &txt_feature_flags)) {
+		printk(BIOS_WARNING, "Could not obtain GETSEC parameters\n");
+		return;
+	}
+	printk(BIOS_DEBUG, "TEE-TXT: GETSEC[PARAMETERS] returned:\n");
+	printk(BIOS_DEBUG, " ACM Version comparison mask: %08x\n", version_mask);
+	printk(BIOS_DEBUG, " ACM Version numbers supported: %08x\n",
+		version_numbers_supported);
+	printk(BIOS_DEBUG, " Max size of authenticated code execution area: %08x\n",
+		max_size_acm_area);
+	printk(BIOS_DEBUG, " External memory types supported during AC mode: %08x\n",
+		memory_type_mask);
+	printk(BIOS_DEBUG, " Selective SENTER functionality control: %02x\n",
+		(senter_function_disable >> 8) & 0x7f);
+	printk(BIOS_DEBUG, " Feature Extensions Flags: %08x\n", txt_feature_flags);
+	printk(BIOS_DEBUG, "\tS-CRTM Capability rooted in: ");
+	if (txt_feature_flags & GETSEC_PARAMS_TXT_EXT_CRTM_SUPPORT) {
+		printk(BIOS_DEBUG, "processor\n");
+	} else {
+		printk(BIOS_DEBUG, "BIOS\n");
+	}
+	printk(BIOS_DEBUG, "\tMachine Check Register: ");
+	if (txt_feature_flags & GETSEC_PARAMS_TXT_EXT_MACHINE_CHECK) {
+		printk(BIOS_DEBUG, "preserved\n");
+	} else {
+		printk(BIOS_DEBUG, "must be clear\n");
 	}
 }

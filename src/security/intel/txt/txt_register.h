@@ -283,5 +283,6 @@ struct __packed txt_biosdataregion {
 void txt_dump_regions(void);
 void txt_dump_chipset_info(void);
 void txt_dump_acm_info(const struct acm_header_v0 *acm_header);
+void txt_dump_getsec_parameters(void);
 
 #endif /* SECURITY_INTEL_TXT_REGISTER_H_ */

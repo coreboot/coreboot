@@ -441,6 +441,10 @@ bool intel_txt_prepare_txt_env(void)
 	printk(BIOS_DEBUG, " SENTER available:     %s\n", (eax & BIT(4)) ? "true" : "false");
 	printk(BIOS_DEBUG, " SEXIT available:      %s\n", (eax & BIT(5)) ? "true" : "false");
 	printk(BIOS_DEBUG, " PARAMETERS available: %s\n", (eax & BIT(6)) ? "true" : "false");
+	printk(BIOS_DEBUG, " SMCTRL available:     %s\n", (eax & BIT(7)) ? "true" : "false");
+	printk(BIOS_DEBUG, " WAKEUP available:     %s\n", (eax & BIT(8)) ? "true" : "false");
+
+	txt_dump_getsec_parameters();
 
 	/*
 	 * Causes #GP if function is not supported by getsec.

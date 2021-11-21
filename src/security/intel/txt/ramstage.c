@@ -200,82 +200,139 @@ static void push_sinit_heap(u8 **heap_ptr, void *data, size_t data_length)
 	}
 }
 
-static void txt_initialize_heap(void)
+static void txt_heap_fill_common_bdr(struct txt_biosdataregion *bdr)
 {
-	/*
-	 * BIOS Data Format
-	 * Chapter C.2
-	 * Intel TXT Software Development Guide (Document: 315168-015)
-	 */
-	struct {
-		struct txt_biosdataregion bdr;
-		struct txt_bios_spec_ver_element spec;
-		struct txt_heap_acm_element heap_acm;
-		struct txt_extended_data_element_header end;
-	} __packed data = {0};
-
 	/* TPM2.0 requires version 6 of BDT */
-	data.bdr.version = CONFIG_INTEL_TXT_BDR_VERSION;
+	bdr->version = CONFIG_INTEL_TXT_BDR_VERSION;
 
-	data.bdr.no_logical_procs = dev_count_cpu();
-
-	void *sinit_base = (void *)(uintptr_t)read64((void *)TXT_SINIT_BASE);
-	data.bdr.bios_sinit_size = cbfs_load(CONFIG_INTEL_TXT_CBFS_SINIT_ACM,
-					     sinit_base,
-					     read64((void *)TXT_SINIT_SIZE));
-
-	if (data.bdr.bios_sinit_size) {
-		printk(BIOS_INFO, "TEE-TXT: Placing SINIT ACM in memory.\n");
-		if (CONFIG(INTEL_TXT_LOGGING))
-			txt_dump_acm_info(sinit_base);
-	} else {
-		printk(BIOS_ERR, "TEE-TXT: Couldn't locate SINIT ACM in CBFS.\n");
-		/* Clear memory */
-		memset(sinit_base, 0, read64((void *)TXT_SINIT_SIZE));
-	}
+	bdr->no_logical_procs = dev_count_cpu();
 
 	/* The following have been removed from BIOS Data Table in version 6 */
 	size_t policy_len;
 	void *policy_data = cbfs_map(CONFIG_INTEL_TXT_CBFS_BIOS_POLICY, &policy_len);
 	if (policy_data) {
 		/* Point to FIT Type 9 entry in flash */
-		data.bdr.lcp_pd_base = (uintptr_t)policy_data;
-		data.bdr.lcp_pd_size = (uint64_t)policy_len;
+		bdr->lcp_pd_base = (uintptr_t)policy_data;
+		bdr->lcp_pd_size = (uint64_t)policy_len;
 		cbfs_unmap(policy_data);
 	} else {
 		printk(BIOS_ERR, "TEE-TXT: Couldn't locate LCP PD Policy in CBFS.\n");
 	}
 
-	data.bdr.support_acpi_ppi = 0;
-	data.bdr.platform_type = 0;
+	bdr->support_acpi_ppi = 0;
+	bdr->platform_type = 0;
+}
 
+static void txt_heap_fill_bios_spec(struct txt_bios_spec_ver_element *spec)
+{
 	/* Fill in the version of the used TXT BIOS Specification */
-	data.spec.header.type = HEAP_EXTDATA_TYPE_BIOS_SPEC_VER;
-	data.spec.header.size = sizeof(data.spec);
-	data.spec.ver_major = 2;
-	data.spec.ver_minor = 1;
-	data.spec.ver_revision = 0;
+	spec->header.type = HEAP_EXTDATA_TYPE_BIOS_SPEC_VER;
+	spec->header.size = sizeof(*spec);
+	spec->ver_major = 2;
+	spec->ver_minor = 1;
+	spec->ver_revision = 0;
+}
+
+static void txt_heap_push_bdr_for_two_acms(u8 **heap_struct)
+{
+	/*
+	 * BIOS Data Format
+	 * Chapter C.2
+	 * Intel TXT Software Development Guide (Document: 315168-015)
+	 */
+	/* Structure format for two present ACMs */
+	struct {
+		struct txt_biosdataregion bdr;
+		struct txt_bios_spec_ver_element spec;
+		struct txt_heap_acm_element2 heap_acm;
+		struct txt_extended_data_element_header end;
+	} __packed data = {0};
+
+	txt_heap_fill_common_bdr(&data.bdr);
+	txt_heap_fill_bios_spec(&data.spec);
+
+	void *sinit_base = (void *)(uintptr_t)read64((void *)TXT_SINIT_BASE);
+	data.bdr.bios_sinit_size = cbfs_load(CONFIG_INTEL_TXT_CBFS_SINIT_ACM,
+					     sinit_base,
+					     read64((void *)TXT_SINIT_SIZE));
 
 	/* Extended elements - ACM addresses */
 	data.heap_acm.header.type = HEAP_EXTDATA_TYPE_ACM;
-	data.heap_acm.header.size = sizeof(data.heap_acm);
-	if (data.bdr.bios_sinit_size) {
-		data.heap_acm.num_acms = 2;
-		data.heap_acm.acm_addrs[1] = (uintptr_t)sinit_base;
-	} else {
-		data.heap_acm.num_acms = 1;
-	}
+	data.heap_acm.num_acms = 2;
+	data.heap_acm.acm_addrs[1] = (uintptr_t)sinit_base;
+
+	printk(BIOS_INFO, "TEE-TXT: Placing SINIT ACM in memory.\n");
+	if (CONFIG(INTEL_TXT_LOGGING))
+		txt_dump_acm_info(sinit_base);
+
 	data.heap_acm.acm_addrs[0] =
 		(uintptr_t)cbfs_map(CONFIG_INTEL_TXT_CBFS_BIOS_ACM, NULL);
+
+	data.heap_acm.header.size = sizeof(data.heap_acm);
+
 	/* Extended elements - End marker */
 	data.end.type = HEAP_EXTDATA_TYPE_END;
 	data.end.size = sizeof(data.end);
 
+	/* BiosData */
+	push_sinit_heap(heap_struct, &data, sizeof(data));
+}
+
+static void txt_heap_push_bdr_for_one_acm(u8 **heap_struct)
+{
+	/*
+	 * BIOS Data Format
+	 * Chapter C.2
+	 * Intel TXT Software Development Guide (Document: 315168-015)
+	 */
+	/* Structure format for one present ACM */
+	struct {
+		struct txt_biosdataregion bdr;
+		struct txt_bios_spec_ver_element spec;
+		struct txt_heap_acm_element1 heap_acm;
+		struct txt_extended_data_element_header end;
+	} __packed data = {0};
+
+	txt_heap_fill_common_bdr(&data.bdr);
+	txt_heap_fill_bios_spec(&data.spec);
+
+	void *sinit_base = (void *)(uintptr_t)read64((void *)TXT_SINIT_BASE);
+	/* Clear SINIT ACM memory */
+	memset(sinit_base, 0, read64((void *)TXT_SINIT_SIZE));
+
+	/* Extended elements - ACM addresses */
+	data.heap_acm.header.type = HEAP_EXTDATA_TYPE_ACM;
+	data.heap_acm.acm_addrs[0] =
+		(uintptr_t)cbfs_map(CONFIG_INTEL_TXT_CBFS_BIOS_ACM, NULL);
+	data.heap_acm.num_acms = 1;
+
+	data.heap_acm.header.size = sizeof(data.heap_acm);
+
+	/* Extended elements - End marker */
+	data.end.type = HEAP_EXTDATA_TYPE_END;
+	data.end.size = sizeof(data.end);
+
+	/* BiosData */
+	push_sinit_heap(heap_struct, &data, sizeof(data));
+}
+
+static void txt_initialize_heap(void)
+{
 	/* Fill TXT.HEAP.BASE with 4 subregions */
 	u8 *heap_struct = (void *)((uintptr_t)read64((void *)TXT_HEAP_BASE));
 
-	/* BiosData */
-	push_sinit_heap(&heap_struct, &data, sizeof(data));
+	/*
+	 * Since we may have either BIOS ACM or both BIOS and SINIT ACMs in
+	 * CBFS, the size of txt_heap_acm_element will be different. We cannot
+	 * always hardcode the number of ACM addresses for two ACMs. If we
+	 * include BIOS ACM only, the BDR parsing will fail in TBoot due to
+	 * invalid sizeof BDR. Check if SINIT ACM is present in CBFS and push
+	 * properly formatted BDR region onto the TXT heap.
+	 */
+	if (cbfs_file_exists(CONFIG_INTEL_TXT_CBFS_SINIT_ACM))
+		txt_heap_push_bdr_for_two_acms(&heap_struct);
+	else
+		txt_heap_push_bdr_for_one_acm(&heap_struct);
 
 	/* OsMLEData */
 	/* FIXME: Does firmware need to write this? */

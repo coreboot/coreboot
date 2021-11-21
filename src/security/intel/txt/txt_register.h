@@ -252,7 +252,15 @@ struct __packed txt_bios_spec_ver_element {
 	uint16_t ver_revision;
 };
 
-struct __packed txt_heap_acm_element {
+/* Used when only the BIOS ACM is included in CBFS */
+struct __packed txt_heap_acm_element1 {
+	struct txt_extended_data_element_header header;
+	uint32_t num_acms; // must greater 0, smaller than 3
+	uint64_t acm_addrs[1];
+};
+
+/* Used when both BIOS and SINIT ACMs are included in CBFS */
+struct __packed txt_heap_acm_element2 {
 	struct txt_extended_data_element_header header;
 	uint32_t num_acms; // must greater 0, smaller than 3
 	uint64_t acm_addrs[2];

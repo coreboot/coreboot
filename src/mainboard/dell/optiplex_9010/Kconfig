@@ -19,6 +19,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_OPTION_TABLE
 	select HAVE_CMOS_DEFAULT
 	select PCIEXP_L1_SUB_STATE
+	select DRIVERS_UART_8250IO
 
 config MAINBOARD_DIR
 	default "dell/optiplex_9010"

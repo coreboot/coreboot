@@ -230,11 +230,11 @@ static int validate_acm(const void *ptr)
  * Prepare to run the BIOS ACM: mmap it from the CBFS and verify that it
  * can be launched. Returns pointer to ACM on success, NULL on failure.
  */
-static void *intel_txt_prepare_bios_acm(struct region_device *acm, size_t *acm_len)
+static void *intel_txt_prepare_bios_acm(size_t *acm_len)
 {
 	void *acm_data = NULL;
 
-	if (!acm || !acm_len)
+	if (!acm_len)
 		return NULL;
 
 	acm_data = cbfs_map(CONFIG_INTEL_TXT_CBFS_BIOS_ACM, acm_len);
@@ -307,10 +307,9 @@ static void *intel_txt_prepare_bios_acm(struct region_device *acm, size_t *acm_l
 /* Returns on failure, resets the computer on success */
 void intel_txt_run_sclean(void)
 {
-	struct region_device acm;
 	size_t acm_len;
 
-	void *acm_data = intel_txt_prepare_bios_acm(&acm, &acm_len);
+	void *acm_data = intel_txt_prepare_bios_acm(&acm_len);
 
 	if (!acm_data)
 		return;
@@ -338,7 +337,7 @@ void intel_txt_run_sclean(void)
 	 */
 	printk(BIOS_CRIT, "TEE-TXT: getsec_sclean could not launch the BIOS ACM.\n");
 
-	rdev_munmap(&acm, acm_data);
+	cbfs_unmap(acm_data);
 }
 
 /*
@@ -348,10 +347,9 @@ void intel_txt_run_sclean(void)
  */
 int intel_txt_run_bios_acm(const u8 input_params)
 {
-	struct region_device acm;
 	size_t acm_len;
 
-	void *acm_data = intel_txt_prepare_bios_acm(&acm, &acm_len);
+	void *acm_data = intel_txt_prepare_bios_acm(&acm_len);
 
 	if (!acm_data)
 		return -1;
@@ -359,7 +357,7 @@ int intel_txt_run_bios_acm(const u8 input_params)
 	/* Call into assembly which invokes the referenced ACM */
 	getsec_enteraccs(input_params, (uintptr_t)acm_data, acm_len);
 
-	rdev_munmap(&acm, acm_data);
+	cbfs_unmap(acm_data);
 
 	const uint64_t acm_status = read64((void *)TXT_SPAD);
 	if (acm_status & ACMERROR_TXT_VALID) {

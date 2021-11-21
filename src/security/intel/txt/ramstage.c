@@ -215,10 +215,7 @@ static void txt_initialize_heap(void)
 	} __packed data = {0};
 
 	/* TPM2.0 requires version 6 of BDT */
-	if (CONFIG(TPM2))
-		data.bdr.version = 6;
-	else
-		data.bdr.version = 5;
+	data.bdr.version = CONFIG_INTEL_TXT_BDR_VERSION;
 
 	data.bdr.no_logical_procs = dev_count_cpu();
 

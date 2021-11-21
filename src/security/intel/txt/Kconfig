@@ -39,6 +39,18 @@ config INTEL_TXT_DPR_SIZE
 	  the MRC does not have an input to specify the size of DPR, so this
 	  field is only used to check if the programmed size is large enough.
 
+config INTEL_TXT_BDR_VERSION
+	int "BIOS Data Region version"
+	range 2 6
+	default 5 if TPM1
+	default 6 if TPM2
+	help
+	  Specify the TXT heap BIOS Data Region version. Sometimes when using
+	  an older Trusted Boot version, it may report unsupported BIOS Data
+	  Region version and refuse to set up the measured launch environment.
+	  Setting lower version may work around such issue. Allowed values
+	  currently range from 2 to 6.
+
 config INTEL_TXT_TEST_BIOS_ACM_CALLING_CODE
 	bool "Test BIOS ACM calling code with NOP function"
 	help

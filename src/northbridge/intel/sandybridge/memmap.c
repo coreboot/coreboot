@@ -10,6 +10,7 @@
 #include <cpu/x86/smm.h>
 #include <program_loading.h>
 #include "sandybridge.h"
+#include <security/intel/txt/txt_platform.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -24,12 +25,38 @@ static size_t northbridge_get_tseg_size(void)
 	return CONFIG_SMM_TSEG_SIZE;
 }
 
+union dpr_register txt_get_chipset_dpr(void)
+{
+	return (union dpr_register) { .raw = pci_read_config32(HOST_BRIDGE, DPR) };
+}
+
+/*
+ * Return the topmost memory address below 4 GiB available for general
+ * use, from software's view of memory. Do not confuse this with TOLUD,
+ * which applies to the DRAM as viewed by the memory controller itself.
+ */
+static uintptr_t top_of_low_usable_memory(void)
+{
+	/*
+	 * Base of DPR is top of usable DRAM below 4 GiB. However, DPR
+	 * may not always be enabled. Unlike most memory map registers,
+	 * the DPR register stores top of DPR instead of its base address.
+	 * Top of DPR is R/O, and mirrored from TSEG base by hardware.
+	 */
+	uintptr_t tolum = northbridge_get_tseg_base();
+
+	const union dpr_register dpr = txt_get_chipset_dpr();
+
+	/* Subtract DMA Protected Range size if enabled */
+	if (dpr.epm)
+		tolum -= dpr.size * MiB;
+
+	return tolum;
+}
+
 void *cbmem_top_chipset(void)
 {
-	/* If DPR is disabled, base of TSEG is top of usable DRAM */
-	uintptr_t top_of_ram = northbridge_get_tseg_base();
-
-	return (void *)top_of_ram;
+	return (void *)top_of_low_usable_memory();
 }
 
 void smm_region(uintptr_t *start, size_t *size)

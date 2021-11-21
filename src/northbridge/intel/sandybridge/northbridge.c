@@ -14,6 +14,7 @@
 #include "chip.h"
 #include "sandybridge.h"
 #include <cpu/intel/smm_reloc.h>
+#include <security/intel/txt/txt_platform.h>
 
 /* IGD UMA memory */
 static uint64_t uma_memory_base = 0;
@@ -85,9 +86,11 @@ static void mc_read_resources(struct device *dev)
 {
 	uint64_t tom, me_base, touud;
 	uint32_t tseg_base, uma_size, tolud;
+	uint32_t dpr_base_k, dpr_size_k;
 	uint16_t ggc;
 	unsigned long long tomk;
 	unsigned long index = 3;
+	const union dpr_register dpr = txt_get_chipset_dpr();
 
 	pci_dev_read_resources(dev);
 
@@ -183,6 +186,15 @@ static void mc_read_resources(struct device *dev)
 	uma_memory_base = tomk * 1024ULL;
 	uma_memory_size += uma_size * 1024ULL;
 	printk(BIOS_DEBUG, "TSEG base 0x%08x size %uM\n", tseg_base, uma_size >> 10);
+
+	/* Calculate DMA Protected Region if enabled */
+	if (dpr.epm && dpr.size) {
+		dpr_size_k = dpr.size * MiB / KiB;
+		tomk -= dpr_size_k;
+		dpr_base_k = (tseg_base - dpr.size * MiB) / KiB;
+		reserved_ram_resource(dev, index++, dpr_base_k, dpr_size_k);
+		printk(BIOS_DEBUG, "DPR base 0x%08x size %uM\n", dpr_base_k * KiB, dpr.size);
+	}
 
 	printk(BIOS_INFO, "Available memory below 4GB: %lluM\n", tomk >> 10);
 

@@ -16,6 +16,9 @@
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_SA)
 #include <soc/intel/common/reset.h>
 #else
+#if CONFIG(SOUTHBRIDGE_INTEL_COMMON_ME)
+#include <southbridge/intel/common/me.h>
+#endif
 #include <cf9_reset.h>
 #endif
 
@@ -29,6 +32,9 @@ static void __noreturn txt_reset_platform(void)
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_SA)
 	global_reset();
 #else
+#if CONFIG(SOUTHBRIDGE_INTEL_COMMON_ME)
+	set_global_reset(1);
+#endif
 	full_reset();
 #endif
 }

@@ -63,6 +63,7 @@ ifneq ($(V),1)
 ifneq ($(Q),)
 .SILENT:
 MAKEFLAGS += -s
+quiet_errors := 2>/dev/null
 endif
 endif
 

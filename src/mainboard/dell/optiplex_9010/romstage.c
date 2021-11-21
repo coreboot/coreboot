@@ -5,11 +5,24 @@
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
+#include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <superio/smsc/sch5545/sch5545.h>
 #include <superio/smsc/sch5545/sch5545_emi.h>
 
 #include "sch5545_ec.h"
+
+void mainboard_late_rcba_config(void)
+{
+	DIR_ROUTE(D31IR, PIRQA, PIRQD, PIRQC, PIRQA);
+	DIR_ROUTE(D29IR, PIRQH, PIRQD, PIRQA, PIRQC);
+	DIR_ROUTE(D28IR, PIRQA, PIRQB, PIRQC, PIRQD);
+	DIR_ROUTE(D27IR, PIRQG, PIRQB, PIRQC, PIRQD);
+	DIR_ROUTE(D26IR, PIRQA, PIRQF, PIRQC, PIRQD);
+	DIR_ROUTE(D25IR, PIRQE, PIRQF, PIRQG, PIRQH);
+	DIR_ROUTE(D22IR, PIRQA, PIRQD, PIRQC, PIRQB);
+	DIR_ROUTE(D20IR, PIRQA, PIRQB, PIRQC, PIRQD);
+}
 
 void mainboard_early_init(int s3resume)
 {

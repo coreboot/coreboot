@@ -100,6 +100,13 @@ void sch5545_early_init(unsigned int port)
 	sch5545_set_led(SCH5545_RUNTIME_REG_BASE, SCH5545_LED_COLOR_GREEN,
 			SCH5545_LED_BLINK_ON);
 
+	/*
+	 * Clear global PME status and disable PME generation to avoid
+	 * unexpected wakeups or hangs. OS will re-enable it via ACPI.
+	 */
+	outb(0, SCH5545_RUNTIME_REG_BASE + SCH5545_RR_PME_EN);
+	outb(1, SCH5545_RUNTIME_REG_BASE + SCH5545_RR_PME_STS);
+
 	/* Configure EMI */
 	dev = PNP_DEV(port, SCH5545_LDN_LPC);
 	pnp_set_logical_device(dev);

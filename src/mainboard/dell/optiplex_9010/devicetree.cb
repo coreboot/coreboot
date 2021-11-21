@@ -20,7 +20,7 @@ chip northbridge/intel/sandybridge
 		device pci 06.0 off end # PEG2
 
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
-			register "gpe0_en" = "0x00000146"
+			register "gpe0_en" = "0x00002a46"
 			register "alt_gp_smi_en" = "0x0004"
 			register "gpi2_routing" = "1"
 			register "gpi12_routing" = "2"

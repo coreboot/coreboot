@@ -5,6 +5,8 @@
 
 #include <device/device.h>
 
+static inline void cpu_relax(void) { }
+
 #define asmlinkage
 
 struct cpu_driver {

@@ -23,7 +23,7 @@
 #define GPIO_AVDD_LCD_ENABLE  GPIO(88)
 #define GPIO_AVEE_LCD_ENABLE  GPIO(21)
 #define GPIO_VDD_RESET_1V8    GPIO(87)
-#define GPIO_TP_EN            GPIO(85)
+#define GPIO_TP_EN            (CONFIG(BOARD_GOOGLE_QUACKINGSTICK) ? GPIO(67) :  GPIO(85))
 #define GPIO_EDP_BRIDGE_ENABLE dead_code_t(gpio_t)
 #define GPIO_EN_PP3300_DX_EDP  dead_code_t(gpio_t)
 #define GPIO_PS8640_EDP_BRIDGE_PD_L		dead_code_t(gpio_t)

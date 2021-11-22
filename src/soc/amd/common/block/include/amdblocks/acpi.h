@@ -12,7 +12,7 @@
 #define  MMIO_ACPI_PM1_STS		0x00
 #define  MMIO_ACPI_PM1_EN		0x02
 #define MMIO_ACPI_PM1_CNT_BLK		0x04
-	  /* sleep types defined in arch/x86/include/acpi/acpi.h */
+	  /* sleep types defined in include/acpi/acpi.h */
 #define   ACPI_PM1_CNT_SCIEN		BIT(0)
 #define MMIO_ACPI_PM_TMR_BLK		0x08
 #define MMIO_ACPI_CPU_CONTROL		0x0c

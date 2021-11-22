@@ -60,6 +60,7 @@ static void i2c_tpm_fill_ssdt(const struct device *dev)
 	case TPM_DEFAULT_POWER_MANAGED:
 	default:
 		/* Leave firmware-power-managed unset */
+		break;
 	}
 	acpi_dp_write(dsd);
 

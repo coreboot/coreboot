@@ -303,6 +303,13 @@
 /* When set <arch/smp/spinlock.h> is included for the spinlock implementation. */
 #define ENV_STAGE_SUPPORTS_SMP		(CONFIG(SMP) && STAGE_HAS_SPINLOCKS)
 
+#if ENV_X86 && CONFIG(COOP_MULTITASKING) && (ENV_RAMSTAGE || ENV_ROMSTAGE)
+/* TODO: Enable in all x86 stages */
+#define ENV_STAGE_SUPPORTS_COOP         1
+#else
+#define ENV_STAGE_SUPPORTS_COOP         0
+#endif
+
 /**
  * For pre-DRAM stages and post-CAR always build with simple device model, ie.
  * PCI, PNP and CPU functions operate without use of devicetree. The reason

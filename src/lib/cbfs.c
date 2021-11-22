@@ -359,7 +359,7 @@ static enum cb_err get_preload_rdev(struct region_device *rdev, const char *name
 	enum cb_err err;
 	struct cbfs_preload_context *context;
 
-	if (!CONFIG(CBFS_PRELOAD) || (!ENV_RAMSTAGE && !ENV_ROMSTAGE))
+	if (!CONFIG(CBFS_PRELOAD) || !ENV_STAGE_SUPPORTS_COOP)
 		return CB_ERR_ARG;
 
 	context = find_cbfs_preload_context(name);

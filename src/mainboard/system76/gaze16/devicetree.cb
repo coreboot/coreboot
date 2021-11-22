@@ -125,7 +125,9 @@ chip soc/intel/tigerlake
 				device i2c 15 on end
 			end
 		end
-		device ref heci1 on end
+		device ref heci1 on
+			register "HeciEnabled" = "1"
+		end
 		device ref uart2 on
 			# Debug console
 			register "SerialIoUartMode[PchSerialIoIndexUART2]" = "PchSerialIoSkipInit"

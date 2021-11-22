@@ -28,6 +28,4 @@ DefinitionBlock(
 	{
 		#include <drivers/pc80/pc/ps2_controller.asl>
 	}
-
-	#include "acpi/mainboard.asl"
 }

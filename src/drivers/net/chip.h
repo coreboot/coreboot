@@ -8,6 +8,11 @@
 
 struct drivers_net_config {
 	uint16_t customized_leds;
+	/* RTL8125 LED settings */
+	uint8_t led_feature;
+	uint16_t customized_led0;
+	uint16_t customized_led2;
+
 	unsigned int wake;	/* Wake pin for ACPI _PRW */
 
 	/* Does the device have a power resource? */

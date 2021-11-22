@@ -29,6 +29,9 @@
 #define CMD_REG			0x37
 #define  CMD_REG_RESET		0x10
 #define CMD_LED0_LED1		0x18
+#define CMD_LED_FEATURE		0x94
+#define CMD_LEDSEL0		0x18
+#define CMD_LEDSEL2		0x84
 
 #define CFG_9346		0x50
 #define  CFG_9346_LOCK		0x00
@@ -249,28 +252,69 @@ static void r8168_set_customized_led(struct device *dev, u16 io_base)
 	if (!config)
 		return;
 
-	/* Read the customized LED setting from devicetree */
-	printk(BIOS_DEBUG, "r8168: Customized LED 0x%x\n", config->customized_leds);
+	if (dev->device == PCI_DEVICE_ID_REALTEK_8125) {
+		/* Set LED global Feature register */
+		outb(config->led_feature, io_base + CMD_LED_FEATURE);
+		printk(BIOS_DEBUG, "r8125: read back LED global feature setting as 0x%x\n",
+		inb(io_base + CMD_LED_FEATURE));
 
-	/*
-	 * Refer to RTL8111H datasheet 7.2 Customizable LED Configuration
-	 * Starting from offset 0x18
-	 * Bit[15:12]	LED Feature Control(FC)
-	 * Bit[11:08]	LED Select for PINLED2
-	 * Bit[07:04]	LED Select for PINLED1
-	 * Bit[03:00]	LED Select for PINLED0
-	 *
-	 * Speed	Link10M		Link100M	Link1000M	ACT/Full
-	 * LED0		Bit0		Bit1		Bit2		Bit3
-	 * LED1		Bit4		Bit5		Bit6		Bit7
-	 * LED2		Bit8		Bit9		Bit10		Bit11
-	 * FC		Bit12		Bit13		Bit14		Bit15
-	 */
+		/*
+		 * Refer to RTL8125 datasheet 5.Customizable LED Configuration
+		 * Register Name	IO Address
+		 * LEDSEL0		0x18
+		 * LEDSEL2		0x84
+		 * LEDFEATURE		0x94
+		 *
+		 * LEDSEL Bit[]		Description
+		 * Bit0			Link10M
+		 * Bit1			Link100M
+		 * Bit3			Link1000M
+		 * Bit5			Link2.5G
+		 * Bit9			ACT
+		 * Bit10		preboot enable
+		 * Bit11		lp enable
+		 * Bit12		active low/high
+		 *
+		 * LEDFEATURE		Description
+		 * Bit0			LED Table V1/V2
+		 * Bit1~3		Reserved
+		 * Bit4~5		LED Blinking Duty Cycle	12.5%/ 25%/ 50%/ 75%
+		 * Bit6~7		LED Blinking Freq. 240ms/160ms/80ms/Link-Speed-Dependent
+		 */
 
-	/* Set customized LED registers */
-	outw(config->customized_leds, io_base + CMD_LED0_LED1);
-	printk(BIOS_DEBUG, "r8168: read back LED setting as 0x%x\n",
-		inw(io_base + CMD_LED0_LED1));
+		/* Set customized LED0 register */
+		outw(config->customized_led0, io_base + CMD_LEDSEL0);
+		printk(BIOS_DEBUG, "r8125: read back LED0 setting as 0x%x\n",
+			inw(io_base + CMD_LEDSEL0));
+
+		/* Set customized LED2 register */
+		outw(config->customized_led2, io_base + CMD_LEDSEL2);
+		printk(BIOS_DEBUG, "r8125: read back LED2 setting as 0x%x\n",
+			inw(io_base + CMD_LEDSEL2));
+	} else {
+		/* Read the customized LED setting from devicetree */
+		printk(BIOS_DEBUG, "r8168: Customized LED 0x%x\n", config->customized_leds);
+
+		/*
+		 * Refer to RTL8111H datasheet 7.2 Customizable LED Configuration
+		 * Starting from offset 0x18
+		 * Bit[15:12]	LED Feature Control(FC)
+		 * Bit[11:08]	LED Select for PINLED2
+		 * Bit[07:04]	LED Select for PINLED1
+		 * Bit[03:00]	LED Select for PINLED0
+		 *
+		 * Speed	Link10M		Link100M	Link1000M	ACT/Full
+		 * LED0		Bit0		Bit1		Bit2		Bit3
+		 * LED1		Bit4		Bit5		Bit6		Bit7
+		 * LED2		Bit8		Bit9		Bit10		Bit11
+		 * FC		Bit12		Bit13		Bit14		Bit15
+		 */
+
+		/* Set customized LED registers */
+		outw(config->customized_leds, io_base + CMD_LED0_LED1);
+		printk(BIOS_DEBUG, "r8168: read back LED setting as 0x%x\n",
+			inw(io_base + CMD_LED0_LED1));
+	}
 }
 
 static void r8168_init(struct device *dev)

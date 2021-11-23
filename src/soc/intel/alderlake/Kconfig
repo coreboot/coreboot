@@ -289,7 +289,7 @@ config SOC_INTEL_ALDERLAKE_DEBUG_CONSENT
 	int "Debug Consent for ADL"
 	# USB DBC is more common for developers so make this default to 3 if
 	# SOC_INTEL_DEBUG_CONSENT=y
-	default 3 if SOC_INTEL_DEBUG_CONSENT
+	default 2 if SOC_INTEL_DEBUG_CONSENT
 	default 0
 	help
 	  This is to control debug interface on SOC.
@@ -297,9 +297,8 @@ config SOC_INTEL_ALDERLAKE_DEBUG_CONSENT
 	  PlatformDebugConsent in FspmUpd.h has the details.
 
 	  Desired platform debug type are
-	  0:Disabled, 1:Enabled (DCI OOB+[DbC]), 2:Enabled (DCI OOB),
-	  3:Enabled (USB3 DbC), 4:Enabled (XDP/MIPI60), 5:Enabled (USB2 DbC),
-	  6:Enable (2-wire DCI OOB), 7:Manual
+	  0:Disabled, 2:Enabled (All Probes+TraceHub), 6:Enable (Low Power),
+	  7:Manual
 
 config DATA_BUS_WIDTH
 	int

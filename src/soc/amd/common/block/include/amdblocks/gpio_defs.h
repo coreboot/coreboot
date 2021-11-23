@@ -3,13 +3,13 @@
 #ifndef AMD_BLOCK_GPIO_DEFS_H
 #define AMD_BLOCK_GPIO_DEFS_H
 
-#define GPIO_MASTER_SWITCH	0xFC
+#define GPIO_MASTER_SWITCH	0xfc
 #define   GPIO_MASK_STS_EN	BIT(28)
 #define   GPIO_INTERRUPT_EN	BIT(30)
 #define   GPIO_WAKE_EN		BIT(31)
 
-#define GPIO_WAKE_STAT_0	0x2F0
-#define GPIO_WAKE_STAT_1	0x2F4
+#define GPIO_WAKE_STAT_0	0x2f0
+#define GPIO_WAKE_STAT_1	0x2f4
 
 #define GPIO_PIN_IN		(1 << 0)	/* for byte access */
 #define GPIO_PIN_OUT		(1 << 6)	/* for byte access */

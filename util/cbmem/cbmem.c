@@ -621,22 +621,29 @@ static void dump_timestamps(int mach_readable)
 	if (!tst_p)
 		die("Unable to map full timestamp table\n");
 
-	/* Report the base time within the table. */
-	prev_stamp = 0;
-	if (mach_readable)
-		timestamp_print_parseable_entry(0,  tst_p->base_time,
-						prev_stamp);
-	else
-		timestamp_print_entry(0,  tst_p->base_time, prev_stamp);
-	prev_stamp = tst_p->base_time;
-
-	sorted_tst_p = malloc(size);
+	sorted_tst_p = malloc(size + sizeof(struct timestamp_entry));
 	if (!sorted_tst_p)
 		die("Failed to allocate memory");
 	aligned_memcpy(sorted_tst_p, tst_p, size);
 
+	/*
+	 * Insert a timestamp to represent the base time (start of coreboot),
+	 * in case we have to rebase for negative timestamps below.
+	 */
+	sorted_tst_p->entries[tst_p->num_entries].entry_id = 0;
+	sorted_tst_p->entries[tst_p->num_entries].entry_stamp = 0;
+	sorted_tst_p->num_entries += 1;
+
 	qsort(&sorted_tst_p->entries[0], sorted_tst_p->num_entries,
 	      sizeof(struct timestamp_entry), compare_timestamp_entries);
+
+	/*
+	 * If there are negative timestamp entries, rebase all of the
+	 * timestamps to the lowest one in the list.
+	 */
+	if (sorted_tst_p->entries[0].entry_stamp < 0)
+		sorted_tst_p->base_time = -sorted_tst_p->entries[0].entry_stamp;
+	prev_stamp = 0;
 
 	total_time = 0;
 	for (uint32_t i = 0; i < sorted_tst_p->num_entries; i++) {

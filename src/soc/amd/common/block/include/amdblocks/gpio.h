@@ -75,9 +75,6 @@ void gpio_configure_pads_with_override(const struct soc_amd_gpio *base_cfg,
 					const struct soc_amd_gpio *override_cfg,
 					size_t override_num_pads);
 
-/* Get the address of the control register of a particular pin */
-uintptr_t gpio_get_address(gpio_t gpio_num);
-
 /**
  * @brief program a particular set of GPIO
  *

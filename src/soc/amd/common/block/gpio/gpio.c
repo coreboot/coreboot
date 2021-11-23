@@ -125,11 +125,6 @@ static void program_sci(uint32_t flags, unsigned int gevent_num)
 	configure_scimap(&sci);
 }
 
-uintptr_t gpio_get_address(gpio_t gpio_num)
-{
-	return (uintptr_t)gpio_ctrl_ptr(gpio_num);
-}
-
 static void gpio_update32(gpio_t gpio_num, uint32_t mask, uint32_t or)
 {
 	uint32_t reg;

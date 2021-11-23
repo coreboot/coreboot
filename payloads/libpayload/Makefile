@@ -34,6 +34,7 @@ CC_real:=$(CC)
 endif
 
 export top := $(CURDIR)
+export coreboottop ?= $(abspath $(top)/../../)
 export src := src
 export srck := $(abspath $(top)/../../util/kconfig)
 export obj ?= build

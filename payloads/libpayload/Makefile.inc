@@ -58,6 +58,7 @@ subdirs-$(CONFIG_LP_LZ4) += liblz4
 
 INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
 INCLUDES += -include include/kconfig.h -include include/compiler.h
+INCLUDES += -I$(coreboottop)/src/commonlib/bsd/include
 
 CFLAGS += $(INCLUDES) -Os -pipe -nostdinc -ggdb3
 CFLAGS += -nostdlib -fno-builtin -ffreestanding -fomit-frame-pointer

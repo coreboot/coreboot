@@ -11,8 +11,6 @@ testobj := $(obj)/tests
 endif
 coverage-dir := $(testobj)/coverage_reports
 
-coreboottop := ../../
-
 cmockasrc := $(coreboottop)/3rdparty/cmocka
 cmockaobj := $(objutil)/cmocka
 CMOCKA_LIB := $(cmockaobj)/src/libcmocka.so
@@ -34,6 +32,7 @@ TEST_CONFIG_ := CONFIG_LP_
 # Default includes
 TEST_CFLAGS := -include include/kconfig.h -include include/compiler.h
 TEST_CFLAGS += -Iinclude -Iinclude/mock
+TEST_CFLAGS += -I$(coreboottop)/src/commonlib/bsd/include
 TEST_CFLAGS += -I$(dir $(TEST_KCONFIG_AUTOHEADER))
 
 # Test specific includes

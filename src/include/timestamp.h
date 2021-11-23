@@ -19,7 +19,7 @@ void timestamp_init(uint64_t base);
  * inside REGION(timestamp) before cbmem comes online. For later stages, timestamps
  * added before cbmem_[recovery|initialize] calls will be lost.
  */
-void timestamp_add(enum timestamp_id id, uint64_t ts_time);
+void timestamp_add(enum timestamp_id id, int64_t ts_time);
 /* Calls timestamp_add with current timestamp. */
 void timestamp_add_now(enum timestamp_id id);
 

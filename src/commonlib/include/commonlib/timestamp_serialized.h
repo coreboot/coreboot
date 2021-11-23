@@ -7,7 +7,7 @@
 
 struct timestamp_entry {
 	uint32_t	entry_id;
-	uint64_t	entry_stamp;
+	int64_t		entry_stamp;
 } __packed;
 
 struct timestamp_table {

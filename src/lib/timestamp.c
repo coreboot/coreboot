@@ -102,7 +102,7 @@ static const char *timestamp_name(enum timestamp_id id)
 }
 
 static void timestamp_add_table_entry(struct timestamp_table *ts_table,
-				      enum timestamp_id id, uint64_t ts_time)
+				      enum timestamp_id id, int64_t ts_time)
 {
 	struct timestamp_entry *tse;
 
@@ -117,7 +117,7 @@ static void timestamp_add_table_entry(struct timestamp_table *ts_table,
 		printk(BIOS_ERR, "ERROR: Timestamp table full\n");
 }
 
-void timestamp_add(enum timestamp_id id, uint64_t ts_time)
+void timestamp_add(enum timestamp_id id, int64_t ts_time)
 {
 	struct timestamp_table *ts_table;
 
@@ -135,7 +135,7 @@ void timestamp_add(enum timestamp_id id, uint64_t ts_time)
 	timestamp_add_table_entry(ts_table, id, ts_time);
 
 	if (CONFIG(TIMESTAMPS_ON_CONSOLE))
-		printk(BIOS_INFO, "Timestamp - %s: %llu\n", timestamp_name(id), ts_time);
+		printk(BIOS_INFO, "Timestamp - %s: %lld\n", timestamp_name(id), ts_time);
 }
 
 void timestamp_add_now(enum timestamp_id id)

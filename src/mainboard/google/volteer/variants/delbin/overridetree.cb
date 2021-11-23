@@ -1,3 +1,10 @@
+fw_config
+	field AUDIO_CODEC_SOURCE 41 43
+		option AUDIO_CODEC_UNPROVISIONED 0
+		option AUDIO_CODEC_ALC5682 1
+		option AUDIO_CODEC_ALC5682I_VS 2
+	end
+end
 chip soc/intel/tigerlake
 	register "DdiPort1Hpd" = "0"
 	register "DdiPort2Hpd" = "0"
@@ -129,7 +136,7 @@ chip soc/intel/tigerlake
 		end # DPTF				0x9A03
 		device ref i2c0 on
 			chip drivers/i2c/generic
-				register "hid" = ""10EC5682""
+				# register "hid" is set in variant.c because of FW_CONFIG
 				register "name" = ""RT58""
 				register "desc" = ""Headset Codec""
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_F8)"

@@ -13,9 +13,6 @@
 #define GPIO_IRQ_STAT_0		0x2f8
 #define GPIO_IRQ_STAT_1		0x2fc
 
-#define GPIO_PIN_IN		(1 << 0)	/* for byte access */
-#define GPIO_PIN_OUT		(1 << 6)	/* for byte access */
-
 /* Pad trigger type - Level or Edge */
 #define GPIO_TRIGGER_EDGE	(0 << 8)
 #define GPIO_TRIGGER_LEVEL	(1 << 8)

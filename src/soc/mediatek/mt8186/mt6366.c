@@ -473,7 +473,7 @@ static int pmic_get_efuse_votrim(void)
 
 static u32 pmic_get_vcore_vol(void)
 {
-	u32 vol_reg;
+	u16 vol_reg;
 
 	vol_reg = pwrap_read_field(PMIC_VCORE_DBG0, 0x7F, 0);
 	return 500000 + vol_reg * 6250;
@@ -481,7 +481,7 @@ static u32 pmic_get_vcore_vol(void)
 
 static void pmic_set_vcore_vol(u32 vcore_uv)
 {
-	u32 vol_reg;
+	u16 vol_reg;
 
 	assert(vcore_uv >= 500000);
 	assert(vcore_uv <= 1100000);
@@ -539,7 +539,7 @@ static void pmic_set_vsram_proc12_vol(u32 v_uv)
 
 static u32 pmic_get_vdram1_vol(void)
 {
-	u32 vol_reg;
+	u16 vol_reg;
 
 	vol_reg = pwrap_read_field(PMIC_VDRAM1_DBG0, 0x7F, 0);
 	return 500000 + vol_reg * 12500;
@@ -547,7 +547,7 @@ static u32 pmic_get_vdram1_vol(void)
 
 static void pmic_set_vdram1_vol(u32 vdram_uv)
 {
-	u32 vol_reg;
+	u16 vol_reg;
 
 	assert(vdram_uv >= 500000);
 	assert(vdram_uv <= 1300000);
@@ -562,7 +562,7 @@ static void pmic_set_vdram1_vol(u32 vdram_uv)
 static u32 pmic_get_vddq_vol(void)
 {
 	int efuse_votrim;
-	u32 cali_trim;
+	u16 cali_trim;
 
 	if (!pwrap_read_field(PMIC_VDDQ_OP_EN, 0x1, 15))
 		return 0;
@@ -575,7 +575,8 @@ static u32 pmic_get_vddq_vol(void)
 
 static void pmic_set_vddq_vol(u32 vddq_uv)
 {
-	int target_mv, dram2_ori_mv, cali_offset_uv, cali_trim;
+	int target_mv, dram2_ori_mv, cali_offset_uv;
+	u16 cali_trim;
 
 	assert(vddq_uv >= 530000);
 	assert(vddq_uv <= 680000);
@@ -606,7 +607,8 @@ static void pmic_set_vddq_vol(u32 vddq_uv)
 
 static u32 pmic_get_vmch_vol(void)
 {
-	u32 vol_reg, ret;
+	u32 ret;
+	u16 vol_reg;
 
 	vol_reg = pwrap_read_field(PMIC_VMCH_ANA_CON0, 0x7, 8);
 
@@ -630,7 +632,7 @@ static u32 pmic_get_vmch_vol(void)
 
 static void pmic_set_vmch_vol(u32 vmch_uv)
 {
-	u32 val = 0;
+	u16 val = 0;
 
 	switch (vmch_uv) {
 	case 2900000:
@@ -656,7 +658,8 @@ static void pmic_set_vmch_vol(u32 vmch_uv)
 
 static u32 pmic_get_vmc_vol(void)
 {
-	u32 vol_reg, ret;
+	u32 ret;
+	u16 vol_reg;
 
 	vol_reg = pwrap_read_field(PMIC_VMC_ANA_CON0, 0xF, 8);
 
@@ -683,7 +686,7 @@ static u32 pmic_get_vmc_vol(void)
 
 static void pmic_set_vmc_vol(u32 vmc_uv)
 {
-	u32 val = 0;
+	u16 val = 0;
 
 	switch (vmc_uv) {
 	case 1800000:

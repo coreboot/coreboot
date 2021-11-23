@@ -55,6 +55,9 @@ enum {
 	/* Audio AMP type */
 	FW_CONFIG_MASK_AUDIO_AMP = 0x1,
 	FW_CONFIG_SHIFT_AUDIO_AMP = 35,
+	/* Audio codec type */
+	FW_CONFIG_MASK_AUDIO_CODEC_SOURCE = 0x3,
+	FW_CONFIG_SHIFT_AUDIO_CODEC_SOURCE = 36,
 };
 
 static int get_fw_config(uint64_t *val)

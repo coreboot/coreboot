@@ -17,3 +17,10 @@ Significant changes
 -------------------
 
 ### Add significant changes here
+
+### Option to disable Intel Management Engine
+Disable the Intel (CS)Management Engine via HECI based on Intel Core processors
+from Skylake to Alderlake. State is set baed on a cmos value of `me_state`. A
+value of `0` will result in a (CS)ME state of `0` (working) and value of `1`
+will result in a (CS)ME state of `3` (disabled). For an example cmos layout and
+more info, see [cse.c](../../src/soc/intel/common/block/cse/cse.c).

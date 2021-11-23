@@ -10,6 +10,8 @@
 
 #define GPIO_WAKE_STAT_0	0x2f0
 #define GPIO_WAKE_STAT_1	0x2f4
+#define GPIO_IRQ_STAT_0		0x2f8
+#define GPIO_IRQ_STAT_1		0x2fc
 
 #define GPIO_PIN_IN		(1 << 0)	/* for byte access */
 #define GPIO_PIN_OUT		(1 << 6)	/* for byte access */

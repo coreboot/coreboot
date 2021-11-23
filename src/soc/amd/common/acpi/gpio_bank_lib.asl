@@ -159,7 +159,7 @@ Method (GRXS, 1, Serialized)
 	{
 		VAL0, 32
 	}
-	Local0 = (GPIO_INPUT_VALUE & VAL0) >> GPIO_INPUT_SHIFT
+	Local0 = (GPIO_PIN_STS & VAL0) >> GPIO_PIN_STS_SHIFT
 
 	Return (Local0)
 }

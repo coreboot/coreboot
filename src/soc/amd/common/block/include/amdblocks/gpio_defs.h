@@ -46,9 +46,13 @@
 #define GPIO_INT_ENABLE_STATUS_DELIVERY	(GPIO_INT_ENABLE_STATUS | GPIO_INT_ENABLE_DELIVERY)
 #define GPIO_INT_ENABLE_MASK		(GPIO_INT_ENABLE_STATUS | GPIO_INT_ENABLE_DELIVERY)
 
-#define GPIO_S0I3_WAKE_EN	(1 << 13)
-#define GPIO_S3_WAKE_EN		(1 << 14)
-#define GPIO_S4_S5_WAKE_EN	(1 << 15)
+#define GPIO_WAKE_S0i3			(1 << 13)
+#define GPIO_WAKE_S3			(1 << 14)
+#define GPIO_WAKE_S4_S5			(1 << 15)
+#define GPIO_WAKE_S0i3_S3		(GPIO_WAKE_S0i3 | GPIO_WAKE_S3)
+#define GPIO_WAKE_S0i3_S4_S5		(GPIO_WAKE_S0i3 | GPIO_WAKE_S4_S5)
+#define GPIO_WAKE_S3_S4_S5		(GPIO_WAKE_S3 | GPIO_WAKE_S4_S5)
+#define GPIO_WAKE_MASK			(GPIO_WAKE_S0i3 | GPIO_WAKE_S3 | GPIO_WAKE_S4_S5)
 
 #define GPIO_PIN_STS		(1 << 16)
 
@@ -129,14 +133,6 @@
 #define GPIO_DEB_500mS			(8 | GPIO_TIMEBASE_62440uS)
 
 #define GPIO_DEB_MASK			0xff
-
-#define GPIO_WAKE_S0i3			(1 << 13)
-#define GPIO_WAKE_S3			(1 << 14)
-#define GPIO_WAKE_S4_S5			(1 << 15)
-#define GPIO_WAKE_S0i3_S3		(GPIO_WAKE_S0i3 | GPIO_WAKE_S3)
-#define GPIO_WAKE_S0i3_S4_S5		(GPIO_WAKE_S0i3 | GPIO_WAKE_S4_S5)
-#define GPIO_WAKE_S3_S4_S5		(GPIO_WAKE_S3 | GPIO_WAKE_S4_S5)
-#define GPIO_WAKE_MASK			(GPIO_WAKE_S0i3 | GPIO_WAKE_S3 | GPIO_WAKE_S4_S5)
 
 /*
  * Mask used to reset bits in GPIO control register when configuring pad using `program_gpios()`

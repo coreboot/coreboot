@@ -31,6 +31,7 @@ KCONFIG_TRISTATE := $(obj)/tristate.conf
 KCONFIG_NEGATIVES := 1
 KCONFIG_STRICT := 1
 KCONFIG_PACKAGE := CB.Config
+KCONFIG_MAKEFILE_REAL ?= $(objk)/Makefile.real
 
 COREBOOT_EXPORTS += KCONFIG_CONFIG KCONFIG_AUTOHEADER KCONFIG_AUTOCONFIG
 COREBOOT_EXPORTS += KCONFIG_DEPENDENCIES KCONFIG_SPLITCONFIG KCONFIG_TRISTATE
@@ -44,6 +45,7 @@ CONFIG_SHELL := sh
 KBUILD_DEFCONFIG := configs/defconfig
 UNAME_RELEASE := $(shell uname -r)
 HAVE_DOTCONFIG := $(wildcard $(DOTCONFIG))
+HAVE_KCONFIG_MAKEFILE_REAL := $(wildcard $(KCONFIG_MAKEFILE_REAL))
 MAKEFLAGS += -rR --no-print-directory
 
 # Make is silent per default, but 'make V=1' will show all compiler calls.
@@ -87,13 +89,19 @@ help_coreboot help::
 # Order _does_ matter for pattern rules.
 include $(srck)/Makefile.inc
 
-# Three cases where we don't need fully populated $(obj) lists:
+# The cases where we don't need fully populated $(obj) lists:
 # 1. when no .config exists
-# 2. when make config (in any flavour) is run
-# 3. when make distclean is run
+# 2. When no $(obj)/util/kconfig/Makefile.real exists and we're building tools
+# 3. when make config (in any flavour) is run
+# 4. when make distclean is run
 # Don't waste time on reading all Makefile.incs in these cases
 ifeq ($(strip $(HAVE_DOTCONFIG)),)
 NOCOMPILE:=1
+endif
+ifeq ($(strip $(HAVE_KCONFIG_MAKEFILE_REAL)),)
+ifneq ($(MAKECMDGOALS),tools)
+NOCOMPILE:=1
+endif
 endif
 ifneq ($(MAKECMDGOALS),)
 ifneq ($(filter %config %clean cross% clang iasl lint% help% what-jenkins-does,$(MAKECMDGOALS)),)

@@ -2,7 +2,7 @@
 
 #include <tests/test.h>
 #include <cbmem.h>
-#include <commonlib/cbmem_id.h>
+#include <commonlib/bsd/cbmem_id.h>
 #include <stage_cache.h>
 
 #define CBMEM_SIZE (32 * KiB)

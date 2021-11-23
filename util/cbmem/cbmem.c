@@ -17,7 +17,7 @@
 #include <libgen.h>
 #include <assert.h>
 #include <regex.h>
-#include <commonlib/cbmem_id.h>
+#include <commonlib/bsd/cbmem_id.h>
 #include <commonlib/timestamp_serialized.h>
 #include <commonlib/tcpa_log_serialized.h>
 #include <commonlib/coreboot_tables.h>

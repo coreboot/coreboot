@@ -42,6 +42,8 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_EHL_ID_11, "Elkhartlake SKU-11" },
 	{ PCI_DEVICE_ID_INTEL_EHL_ID_12, "Elkhartlake SKU-12" },
 	{ PCI_DEVICE_ID_INTEL_EHL_ID_13, "Elkhartlake SKU-13" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_14, "Elkhartlake SKU-14" },
+	{ PCI_DEVICE_ID_INTEL_EHL_ID_15, "Elkhartlake SKU-15" },
 };
 
 static struct {

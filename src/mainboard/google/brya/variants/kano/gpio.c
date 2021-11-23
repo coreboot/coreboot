@@ -108,10 +108,6 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 0, DEEP),
-	/* B7  : ISH_12C1_SDA ==> PCH_I2C_TPM_SDA */
-	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF2),
-	/* B8  : ISH_12C1_SCL ==> PCH_I2C_TPM_SCL */
-	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF2),
 	/*
 	 * D1  : ISH_GP1 ==> FP_RST_ODL
 	 * FP_RST_ODL comes out of reset as hi-z and does not have an external pull-down.
@@ -133,6 +129,10 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
 	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
 	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
+	/* H6  : I2C1_SDA ==> PCH_I2C_TPM_SDA */
+	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
+	/* H7  : I2C1_SCL ==> PCH_I2C_TPM_SCL */
+	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */

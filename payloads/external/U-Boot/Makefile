@@ -26,7 +26,7 @@ all: build
 
 $(project_dir):
 	echo "    Cloning $(project_name) from Git"
-	git clone $(project_git_repo) $(project_dir)
+	git clone --depth 1 $(project_git_repo) $(project_dir)
 
 fetch: $(project_dir)
 ifeq ($(CONFIG_UBOOT_MASTER),y)

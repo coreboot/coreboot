@@ -353,27 +353,27 @@ void intel_me_finalize(struct device *dev);
 #define MBP_IDENT(appid, item) \
 	MBP_MAKE_IDENT(MBP_APPID_##appid, MBP_##appid##_##item##_ITEM)
 
-typedef  struct {
+struct mbp_header {
 	u32  mbp_size	 : 8;
 	u32  num_entries : 8;
 	u32  rsvd	 : 16;
-} __packed mbp_header;
+} __packed;
 
-typedef struct {
+struct mbp_item_header {
 	u32  app_id  : 8;
 	u32  item_id : 8;
 	u32  length  : 8;
 	u32  rsvd    : 8;
-}  __packed mbp_item_header;
+} __packed;
 
-typedef struct {
+struct mbp_fw_version_name {
 	u32       major_version  : 16;
 	u32       minor_version  : 16;
 	u32       hotfix_version : 16;
 	u32       build_version  : 16;
-} __packed mbp_fw_version_name;
+} __packed;
 
-typedef struct {
+struct mbp_mefwcaps {
 	u32  full_net		: 1;
 	u32  std_net		: 1;
 	u32  manageability	: 1;
@@ -393,19 +393,19 @@ typedef struct {
 	u32  reserved_4		: 1;
 	u32  wlan		: 1;
 	u32  reserved_5		: 8;
-} __packed mbp_mefwcaps;
+} __packed;
 
-typedef struct {
+struct mbp_rom_bist_data {
 	u16        device_id;
 	u16        fuse_test_flags;
 	u32        umchid[4];
-}  __packed mbp_rom_bist_data;
+}  __packed;
 
-typedef struct {
+struct mbp_platform_key {
 	u32        key[8];
-} mbp_platform_key;
+};
 
-typedef struct {
+struct mbp_me_firmware_type {
 	u32 mobile:		1;
 	u32 desktop:		1;
 	u32 server:		1;
@@ -417,70 +417,70 @@ typedef struct {
 	u32 image_type:		4;
 	u32 brand:		4;
 	u32 rsvd1:		16;
-}  __packed mbp_me_firmware_type;
+} __packed;
 
-typedef struct {
-	mbp_me_firmware_type rule_data;
-	u8                   available;
-} mbp_plat_type;
+struct mbp_plat_type {
+	struct mbp_me_firmware_type rule_data;
+	u8 available;
+};
 
-typedef struct {
+struct icc_address_mask {
 	u16 icc_start_address;
 	u16 mask;
-} __packed icc_address_mask;
+} __packed;
 
-typedef struct {
-	u8        num_icc_profiles;
-	u8        icc_profile_soft_strap;
-	u8        icc_profile_index;
-	u8        reserved;
-	u32       icc_reg_bundles;
-	icc_address_mask icc_address_mask[0];
-} __packed mbp_icc_profile;
+struct mbp_icc_profile {
+	u8  num_icc_profiles;
+	u8  icc_profile_soft_strap;
+	u8  icc_profile_index;
+	u8  reserved;
+	u32 icc_reg_bundles;
+	struct icc_address_mask icc_address_mask[0];
+} __packed;
 
-typedef struct {
+struct tdt_state_flag {
 	u16  lock_state		     : 1;
 	u16  authenticate_module     : 1;
 	u16  s3authentication	     : 1;
 	u16  flash_wear_out          : 1;
 	u16  flash_variable_security : 1;
 	u16  reserved		     : 11;
-} __packed tdt_state_flag;
+} __packed;
 
-typedef struct {
-	u8           state;
-	u8           last_theft_trigger;
-	tdt_state_flag  flags;
-}  __packed mbp_at_state;
+struct mbp_at_state {
+	u8 state;
+	u8 last_theft_trigger;
+	struct tdt_state_flag flags;
+} __packed;
 
-typedef struct {
+struct mbp_plat_time {
 	u32 wake_event_mrst_time_ms;
 	u32 mrst_pltrst_time_ms;
 	u32 pltrst_cpurst_time_ms;
-} __packed mbp_plat_time;
+} __packed;
 
-typedef struct {
+struct mbp_nfc_data {
 	u32 device_type : 2;
 	u32 reserved    : 30;
-} __packed mbp_nfc_data;
+} __packed;
 
-typedef struct {
-	mbp_fw_version_name  *fw_version_name;
-	mbp_mefwcaps         *fw_capabilities;
-	mbp_rom_bist_data    *rom_bist_data;
-	mbp_platform_key     *platform_key;
-	mbp_plat_type        *fw_plat_type;
-	mbp_icc_profile	     *icc_profile;
-	mbp_at_state         *at_state;
-	u32		     *mfsintegrity;
-	mbp_plat_time        *plat_time;
-	mbp_nfc_data         *nfc_data;
-} me_bios_payload;
+struct me_bios_payload {
+	struct mbp_fw_version_name *fw_version_name;
+	struct mbp_mefwcaps        *fw_capabilities;
+	struct mbp_rom_bist_data   *rom_bist_data;
+	struct mbp_platform_key    *platform_key;
+	struct mbp_plat_type       *fw_plat_type;
+	struct mbp_icc_profile     *icc_profile;
+	struct mbp_at_state        *at_state;
+	u32                        *mfsintegrity;
+	struct mbp_plat_time       *plat_time;
+	struct mbp_nfc_data        *nfc_data;
+};
 
 struct me_fwcaps {
 	u32 id;
 	u8 length;
-	mbp_mefwcaps caps_sku;
+	struct mbp_mefwcaps caps_sku;
 	u8 reserved[3];
 } __packed;
 

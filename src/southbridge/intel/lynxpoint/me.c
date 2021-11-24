@@ -452,7 +452,7 @@ static void intel_me_mbp_clear(struct device *dev)
 	}
 }
 
-static void me_print_fw_version(mbp_fw_version_name *vers_name)
+static void me_print_fw_version(struct mbp_fw_version_name *vers_name)
 {
 	if (!vers_name) {
 		printk(BIOS_ERR, "ME: mbp missing version report\n");
@@ -471,7 +471,7 @@ static inline void print_cap(const char *name, int state)
 }
 
 /* Get ME Firmware Capabilities */
-static int mkhi_get_fwcaps(mbp_mefwcaps *cap)
+static int mkhi_get_fwcaps(struct mbp_mefwcaps *cap)
 {
 	u32 rule_id = 0;
 	struct me_fwcaps cap_msg;
@@ -491,9 +491,9 @@ static int mkhi_get_fwcaps(mbp_mefwcaps *cap)
 }
 
 /* Get ME Firmware Capabilities */
-static void me_print_fwcaps(mbp_mefwcaps *cap)
+static void me_print_fwcaps(struct mbp_mefwcaps *cap)
 {
-	mbp_mefwcaps local_caps;
+	struct mbp_mefwcaps local_caps;
 	if (!cap) {
 		cap = &local_caps;
 		printk(BIOS_ERR, "ME: mbp missing fwcaps report\n");
@@ -747,7 +747,7 @@ static u32 me_to_host_words_pending(void)
 }
 
 struct mbp_payload {
-	mbp_header header;
+	struct mbp_header header;
 	u32 data[0];
 };
 
@@ -757,9 +757,9 @@ struct mbp_payload {
  * Return -1 to indicate a problem (give up)
  * Return 0 to indicate success (send LOCK+EOP)
  */
-static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
+static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *dev)
 {
-	mbp_header mbp_hdr;
+	struct mbp_header mbp_hdr;
 	u32 me2host_pending;
 	struct mei_csr host;
 	struct me_hfs2 hfs2;
@@ -826,7 +826,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, struct device *dev)
 		}
 	/* Setup the pointers in the me_bios_payload structure. */
 	for (i = 0; i < mbp->header.mbp_size - 1;) {
-		mbp_item_header *item = (void *)&mbp->data[i];
+		struct mbp_item_header *item = (void *)&mbp->data[i];
 
 		switch (MBP_MAKE_IDENT(item->app_id, item->item_id)) {
 		case MBP_IDENT(KERNEL, FW_VER):
@@ -880,7 +880,7 @@ static void intel_me_init(struct device *dev)
 {
 	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
 	me_bios_path path = intel_me_path(dev);
-	me_bios_payload mbp_data;
+	struct me_bios_payload mbp_data;
 
 	/* Do initial setup and determine the BIOS path */
 	printk(BIOS_NOTICE, "ME: BIOS path: %s\n", me_bios_path_values[path]);

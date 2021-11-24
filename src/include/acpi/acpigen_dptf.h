@@ -24,6 +24,7 @@ enum dptf_participant {
 	DPTF_TEMP_SENSOR_1,
 	DPTF_TEMP_SENSOR_2,
 	DPTF_TEMP_SENSOR_3,
+	DPTF_TEMP_SENSOR_4,
 	DPTF_TPCH,
 	DPTF_PARTICIPANT_COUNT,
 };
@@ -44,7 +45,7 @@ enum {
 	DPTF_FIELD_UNUSED		= 0xFFFFFFFFull,
 
 	/* Max supported by DPTF */
-	DPTF_MAX_TSR			= 4,
+	DPTF_MAX_TSR			= 5,
 };
 
 /* Active Policy */

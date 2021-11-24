@@ -192,7 +192,7 @@ static void write_generic_devices(const struct drivers_intel_dptf_config *config
 				       get_STA_value(config, DPTF_CHARGER),
 				       platform_info);
 
-	for (i = 0, participant = DPTF_TEMP_SENSOR_0; i < 4; ++i, ++participant) {
+	for (i = 0, participant = DPTF_TEMP_SENSOR_0; i < DPTF_MAX_TSR; ++i, ++participant) {
 		snprintf(name, sizeof(name), "TSR%1d", i);
 		dptf_write_generic_participant(name, DPTF_GENERIC_PARTICIPANT_TYPE_TSR,
 					       NULL, get_STA_value(config, participant),
@@ -449,7 +449,7 @@ static void write_options(const struct drivers_intel_dptf_config *config)
 	acpigen_pop_len(); /* Scope */
 
 	/* TSR options */
-	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_3; ++p, ++i) {
+	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_4; ++p, ++i) {
 		if (is_participant_used(config, p) && (config->options.tsr[i].hysteresis ||
 						       config->options.tsr[i].desc)) {
 			dptf_write_scope(p);

@@ -22,6 +22,11 @@ const uint8_t fsp_reserved_memory_guid[16] = {
 	0xa6, 0xc4, 0xc7, 0xf5, 0x9e, 0xfd, 0x98, 0x6e,
 };
 
+const uint8_t fsp_nv_storage_guid_2[16] = {
+	0x8f, 0x78, 0x66, 0x48, 0xa8, 0x6b, 0xd8, 0x47,
+	0x83, 0x6, 0xac, 0xf7, 0x7f, 0x55, 0x10, 0x46
+};
+
 const uint8_t fsp_nv_storage_guid[16] = {
 	0x02, 0xcf, 0x1a, 0x72, 0x77, 0x4d, 0x2a, 0x4c,
 	0xb3, 0xdc, 0x27, 0x0b, 0x7b, 0xa9, 0xe4, 0xb0
@@ -306,6 +311,16 @@ void fsp_display_fvi_version_hob(void)
 
 const void *fsp_find_nv_storage_data(size_t *size)
 {
+	if (CONFIG(PLATFORM_USES_FSP2_3)) {
+		const struct fsp_nvs_hob2_data_region_header *hob;
+
+		hob = (const struct fsp_nvs_hob2_data_region_header *)
+		      fsp_find_extension_hob_by_guid(fsp_nv_storage_guid_2, size);
+		if (hob != NULL) {
+			*size = hob->nvs_data_length;
+			return (void *)(uintptr_t)hob->nvs_data_ptr;
+		}
+	}
 	return fsp_find_extension_hob_by_guid(fsp_nv_storage_guid, size);
 }
 

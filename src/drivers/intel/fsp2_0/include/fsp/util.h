@@ -8,6 +8,7 @@
 #include <commonlib/region.h>
 #include <arch/cpu.h>
 #include <fsp/api.h>
+#include <efi/efi_datatype.h>
 #include <fsp/info_header.h>
 #include <memrange.h>
 #include <program_loading.h>
@@ -26,6 +27,11 @@ struct hob_header {
 	uint16_t type;
 	uint16_t length;
 } __packed;
+
+struct fsp_nvs_hob2_data_region_header {
+	efi_physical_address nvs_data_ptr;
+	uint64_t nvs_data_length;
+};
 
 struct fsp_notify_params {
 	enum fsp_notify_phase phase;

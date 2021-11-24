@@ -303,14 +303,14 @@ struct me_global_reset {
 	u8 reset_type;
 } __packed;
 
-typedef enum {
+enum me_bios_path {
 	ME_NORMAL_BIOS_PATH,
 	ME_S3WAKE_BIOS_PATH,
 	ME_ERROR_BIOS_PATH,
 	ME_RECOVERY_BIOS_PATH,
 	ME_DISABLE_BIOS_PATH,
 	ME_FIRMWARE_UPDATE_BIOS_PATH,
-} me_bios_path;
+};
 
 /* Defined in me_status.c for both romstage and ramstage */
 void intel_me_status(struct me_hfs *hfs, struct me_hfs2 *hfs2);

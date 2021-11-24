@@ -596,9 +596,9 @@ static int me_icc_set_clock_enables(u32 mask)
 }
 
 /* Determine the path that we should take based on ME status */
-static me_bios_path intel_me_path(struct device *dev)
+static enum me_bios_path intel_me_path(struct device *dev)
 {
-	me_bios_path path = ME_DISABLE_BIOS_PATH;
+	enum me_bios_path path = ME_DISABLE_BIOS_PATH;
 	struct me_hfs hfs;
 	struct me_hfs2 hfs2;
 
@@ -879,7 +879,7 @@ mbp_failure:
 static void intel_me_init(struct device *dev)
 {
 	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
-	me_bios_path path = intel_me_path(dev);
+	enum me_bios_path path = intel_me_path(dev);
 	struct me_bios_payload mbp_data;
 
 	/* Do initial setup and determine the BIOS path */

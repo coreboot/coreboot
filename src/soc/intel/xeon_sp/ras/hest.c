@@ -75,7 +75,7 @@ unsigned long hest_create(unsigned long current, struct acpi_rsdp *rsdp)
 	acpi_hest_t *hest;
 
 	/* Reserve memory for Enhanced error logging */
-	void *mem = cbmem_add(CMBMEM_ID_ACPI_HEST, CONFIG_ERROR_LOG_BUFFER_SIZE);
+	void *mem = cbmem_add(CBMEM_ID_ACPI_HEST, CONFIG_ERROR_LOG_BUFFER_SIZE);
 	if (!mem) {
 		printk(BIOS_ERR, "Unable to allocate HEST memory\n");
 		return current;

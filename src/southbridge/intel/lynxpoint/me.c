@@ -92,13 +92,6 @@ static inline void mei_write_dword_ptr(void *ptr, int offset)
 	mei_dump(ptr, dword, offset, "WRITE");
 }
 
-static inline void pci_read_dword_ptr(struct device *dev, void *ptr, int offset)
-{
-	u32 dword = pci_read_config32(dev, offset);
-	memcpy(ptr, &dword, sizeof(dword));
-	mei_dump(ptr, dword, offset, "PCI READ");
-}
-
 static inline void read_host_csr(struct mei_csr *csr)
 {
 	mei_read_dword_ptr(csr, MEI_H_CSR);
@@ -434,11 +427,11 @@ static void intel_me_mbp_give_up(struct device *dev)
 static void intel_me_mbp_clear(struct device *dev)
 {
 	int count;
-	struct me_hfs2 hfs2;
+	union me_hfs2 hfs2;
 
 	/* Wait for the mbp_cleared indicator */
 	for (count = ME_RETRY; count > 0; --count) {
-		pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
+		hfs2.raw = pci_read_config32(dev, PCI_ME_HFS2);
 		if (hfs2.mbp_cleared)
 			break;
 		udelay(ME_DELAY);
@@ -539,7 +532,7 @@ static int mkhi_end_of_post(void)
 
 void intel_me_finalize(struct device *dev)
 {
-	struct me_hfs hfs;
+	union me_hfs hfs;
 	u32 reg32;
 
 	reg32 = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
@@ -553,8 +546,7 @@ void intel_me_finalize(struct device *dev)
 	intel_me_mbp_clear(dev);
 
 	/* Make sure ME is in a mode that expects EOP */
-	reg32 = pci_read_config32(dev, PCI_ME_HFS);
-	memcpy(&hfs, &reg32, sizeof(u32));
+	hfs.raw = pci_read_config32(dev, PCI_ME_HFS);
 
 	/* Abort and leave device alone if not normal mode */
 	if (hfs.fpt_bad ||
@@ -599,11 +591,8 @@ static int me_icc_set_clock_enables(u32 mask)
 static enum me_bios_path intel_me_path(struct device *dev)
 {
 	enum me_bios_path path = ME_DISABLE_BIOS_PATH;
-	struct me_hfs hfs;
-	struct me_hfs2 hfs2;
-
-	pci_read_dword_ptr(dev, &hfs, PCI_ME_HFS);
-	pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
+	union me_hfs hfs = { .raw = pci_read_config32(dev, PCI_ME_HFS) };
+	union me_hfs2 hfs2 = { .raw = pci_read_config32(dev, PCI_ME_HFS2) };
 
 	/* Check and dump status */
 	intel_me_status(&hfs, &hfs2);
@@ -693,11 +682,10 @@ static int intel_mei_setup(struct device *dev)
 /* Read the Extend register hash of ME firmware */
 static int intel_me_extend_valid(struct device *dev)
 {
-	struct me_heres status;
+	union me_heres status = { .raw = pci_read_config32(dev, PCI_ME_HERES) };
 	u32 extend[8] = {0};
 	int i, count = 0;
 
-	pci_read_dword_ptr(dev, &status, PCI_ME_HERES);
 	if (!status.extend_feature_present) {
 		printk(BIOS_ERR, "ME: Extend Feature not present\n");
 		return -1;
@@ -762,11 +750,9 @@ static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *de
 	struct mbp_header mbp_hdr;
 	u32 me2host_pending;
 	struct mei_csr host;
-	struct me_hfs2 hfs2;
+	union me_hfs2 hfs2 = { .raw = pci_read_config32(dev, PCI_ME_HFS2) };
 	struct mbp_payload *mbp;
 	int i;
-
-	pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
 
 	if (!hfs2.mbp_rdy) {
 		printk(BIOS_ERR, "ME: MBP not ready\n");

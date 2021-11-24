@@ -20,26 +20,10 @@ static const char *me_ack_values[] = {
 	[ME_HFS_ACK_CONTINUE]	= "Continue to boot"
 };
 
-static inline void pci_read_dword_ptr(void *ptr, int offset)
-{
-	u32 dword = pci_read_config32(PCH_ME_DEV, offset);
-	memcpy(ptr, &dword, sizeof(dword));
-}
-
-static inline void pci_write_dword_ptr(void *ptr, int offset)
-{
-	u32 dword = 0;
-	memcpy(&dword, ptr, sizeof(dword));
-	pci_write_config32(PCH_ME_DEV, offset, dword);
-}
-
 void intel_early_me_status(void)
 {
-	struct me_hfs hfs;
-	struct me_hfs2 hfs2;
-
-	pci_read_dword_ptr(&hfs, PCI_ME_HFS);
-	pci_read_dword_ptr(&hfs2, PCI_ME_HFS2);
+	union me_hfs hfs = { .raw = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS) };
+	union me_hfs2 hfs2 = { .raw = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS2) };
 
 	intel_me_status(&hfs, &hfs2);
 }
@@ -47,15 +31,15 @@ void intel_early_me_status(void)
 int intel_early_me_init(void)
 {
 	int count;
-	struct me_uma uma;
-	struct me_hfs hfs;
+	union me_uma uma;
+	union me_hfs hfs;
 
 	printk(BIOS_INFO, "Intel ME early init\n");
 
 	/* Wait for ME UMA SIZE VALID bit to be set */
 	/* FIXME: ME9 BGW indicates a 5 sec poll timeout. */
 	for (count = ME_RETRY; count > 0; --count) {
-		pci_read_dword_ptr(&uma, PCI_ME_UMA);
+		uma.raw = pci_read_config32(PCH_ME_DEV, PCI_ME_UMA);
 		if (uma.valid)
 			break;
 		udelay(ME_DELAY);
@@ -66,7 +50,7 @@ int intel_early_me_init(void)
 	}
 
 	/* Check for valid firmware */
-	pci_read_dword_ptr(&hfs, PCI_ME_HFS);
+	hfs.raw = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
 	if (hfs.fpt_bad) {
 		printk(BIOS_WARNING, "WARNING: ME has bad firmware\n");
 		return -1;
@@ -78,9 +62,8 @@ int intel_early_me_init(void)
 
 int intel_early_me_uma_size(void)
 {
-	struct me_uma uma;
+	union me_uma uma = { .raw = pci_read_config32(PCH_ME_DEV, PCI_ME_UMA) };
 
-	pci_read_dword_ptr(&uma, PCI_ME_UMA);
 	if (uma.valid) {
 		printk(BIOS_DEBUG, "ME: Requested %uMB UMA\n", uma.size);
 		return uma.size;
@@ -108,8 +91,8 @@ int intel_early_me_init_done(u8 status)
 	u8 reset;
 	int count;
 	u32 mebase_l, mebase_h;
-	struct me_hfs hfs;
-	struct me_did did = {
+	union me_hfs hfs;
+	union me_did did = {
 		.init_done = ME_INIT_DONE,
 		.status = status
 	};
@@ -123,7 +106,7 @@ int intel_early_me_init_done(u8 status)
 	printk(BIOS_DEBUG, "ME: Sending Init Done with status: %d, "
 	       "UMA base: 0x%04x\n", status, did.uma_base);
 
-	pci_write_dword_ptr(&did, PCI_ME_H_GS);
+	pci_write_config32(PCH_ME_DEV, PCI_ME_H_GS, did.raw);
 
 	/*
 	 * The ME firmware does not respond with an ACK when NOMEM or ERROR
@@ -134,7 +117,7 @@ int intel_early_me_init_done(u8 status)
 
 	/* Must wait for ME acknowledgement */
 	for (count = ME_RETRY; count > 0; --count) {
-		pci_read_dword_ptr(&hfs, PCI_ME_HFS);
+		hfs.raw = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
 		if (hfs.bios_msg_ack)
 			break;
 		udelay(ME_DELAY);

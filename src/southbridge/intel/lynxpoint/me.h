@@ -50,31 +50,37 @@
 #define  ME_HFS_ACK_GBL_RESET	6
 #define  ME_HFS_ACK_CONTINUE	7
 
-struct me_hfs {
-	u32 working_state: 4;
-	u32 mfg_mode: 1;
-	u32 fpt_bad: 1;
-	u32 operation_state: 3;
-	u32 fw_init_complete: 1;
-	u32 ft_bup_ld_flr: 1;
-	u32 update_in_progress: 1;
-	u32 error_code: 4;
-	u32 operation_mode: 4;
-	u32 reserved: 4;
-	u32 boot_options_present: 1;
-	u32 ack_data: 3;
-	u32 bios_msg_ack: 4;
-} __packed;
+union me_hfs {
+	struct __packed {
+		u32 working_state: 4;
+		u32 mfg_mode: 1;
+		u32 fpt_bad: 1;
+		u32 operation_state: 3;
+		u32 fw_init_complete: 1;
+		u32 ft_bup_ld_flr: 1;
+		u32 update_in_progress: 1;
+		u32 error_code: 4;
+		u32 operation_mode: 4;
+		u32 reserved: 4;
+		u32 boot_options_present: 1;
+		u32 ack_data: 3;
+		u32 bios_msg_ack: 4;
+	};
+	u32 raw;
+};
 
 #define PCI_ME_UMA		0x44
 
-struct me_uma {
-	u32 size: 6;
-	u32 reserved_1: 10;
-	u32 valid: 1;
-	u32 reserved_0: 14;
-	u32 set_to_one: 1;
-} __packed;
+union me_uma {
+	struct __packed {
+		u32 size: 6;
+		u32 reserved_1: 10;
+		u32 valid: 1;
+		u32 reserved_0: 14;
+		u32 set_to_one: 1;
+	};
+	u32 raw;
+};
 
 #define PCI_ME_H_GS		0x4c
 #define  ME_INIT_DONE		1
@@ -83,13 +89,16 @@ struct me_uma {
 #define  ME_INIT_STATUS_ERROR	2
 #define  ME_INIT_STATUS_SUCCESS_OTHER 3 /* SEE ME9 BWG */
 
-struct me_did {
-	u32 uma_base: 16;
-	u32 reserved: 7;
-	u32 rapid_start: 1;
-	u32 status: 4;
-	u32 init_done: 4;
-} __packed;
+union me_did {
+	struct __packed {
+		u32 uma_base: 16;
+		u32 reserved: 7;
+		u32 rapid_start: 1;
+		u32 status: 4;
+		u32 init_done: 4;
+	};
+	u32 raw;
+};
 
 /*
  * Apparently the GMES register is renamed to HFS2 (or HFSTS2 according
@@ -165,22 +174,25 @@ struct me_did {
 #define  ME_HFS2_PMEVENT_PWR_CYCLE_RESET_MOFF 0xb
 #define  ME_HFS2_PMEVENT_SXMX_SXMOFF 0xc
 
-struct me_hfs2 {
-	u32 bist_in_progress: 1;
-	u32 reserved1: 2;
-	u32 invoke_mebx: 1;
-	u32 cpu_replaced_sts: 1;
-	u32 mbp_rdy: 1;
-	u32 mfs_failure: 1;
-	u32 warm_reset_request: 1;
-	u32 cpu_replaced_valid: 1;
-	u32 reserved2: 4;
-	u32 mbp_cleared: 1;
-	u32 reserved3: 2;
-	u32 current_state: 8;
-	u32 current_pmevent: 4;
-	u32 progress_code: 4;
-} __packed;
+union me_hfs2 {
+	struct __packed {
+		u32 bist_in_progress: 1;
+		u32 reserved1: 2;
+		u32 invoke_mebx: 1;
+		u32 cpu_replaced_sts: 1;
+		u32 mbp_rdy: 1;
+		u32 mfs_failure: 1;
+		u32 warm_reset_request: 1;
+		u32 cpu_replaced_valid: 1;
+		u32 reserved2: 4;
+		u32 mbp_cleared: 1;
+		u32 reserved3: 2;
+		u32 current_state: 8;
+		u32 current_pmevent: 4;
+		u32 progress_code: 4;
+	};
+	u32 raw;
+};
 
 #define PCI_ME_H_GS2		0x70
 #define   PCI_ME_MBP_GIVE_UP	0x01
@@ -190,12 +202,15 @@ struct me_hfs2 {
 #define  PCI_ME_EXT_SHA256	0x02
 #define PCI_ME_HER(x)		(0xc0+(4*(x)))
 
-struct me_heres {
-	u32 extend_reg_algorithm: 4;
-	u32 reserved: 26;
-	u32 extend_feature_present: 1;
-	u32 extend_reg_valid: 1;
-} __packed;
+union me_heres {
+	struct __packed {
+		u32 extend_reg_algorithm: 4;
+		u32 reserved: 26;
+		u32 extend_feature_present: 1;
+		u32 extend_reg_valid: 1;
+	};
+	u32 raw;
+};
 
 /*
  * Management Engine MEI registers
@@ -313,7 +328,7 @@ enum me_bios_path {
 };
 
 /* Defined in me_status.c for both romstage and ramstage */
-void intel_me_status(struct me_hfs *hfs, struct me_hfs2 *hfs2);
+void intel_me_status(union me_hfs *hfs, union me_hfs2 *hfs2);
 
 void intel_early_me_status(void);
 int intel_early_me_init(void);

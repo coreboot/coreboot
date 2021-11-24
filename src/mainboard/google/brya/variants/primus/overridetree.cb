@@ -266,6 +266,7 @@ chip soc/intel/alderlake
 				register "sdmode_delay" = "5"
 				device generic 0 on
 					probe AUDIO MAX98360_ALC5682I_I2S
+					probe AUDIO MAX98360_ALC5682I_VS_I2S
 				end
 			end
 		end

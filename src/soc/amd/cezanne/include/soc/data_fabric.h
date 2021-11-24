@@ -5,6 +5,9 @@
 
 #include <types.h>
 
+/* SoC-specific bits in D18F0_MMIO_CTRL0 */
+#define   MMIO_NP			BIT(16)
+
 #define IOMS0_FABRIC_ID			10
 
 #define NUM_NB_MMIO_REGS		8

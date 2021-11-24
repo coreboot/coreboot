@@ -15,7 +15,7 @@
 #define D18F0_MMIO_LIMIT0		0x204
 #define   D18F0_MMIO_SHIFT		16
 #define D18F0_MMIO_CTRL0		0x208
-#define   MMIO_NP			BIT(12)
+/* The MMIO_NP bit is SoC-specific */
 #define   MMIO_DST_FABRIC_ID_SHIFT	4
 #define   MMIO_WE			BIT(1)
 #define   MMIO_RE			BIT(0)

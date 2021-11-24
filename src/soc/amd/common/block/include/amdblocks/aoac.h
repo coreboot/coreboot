@@ -24,7 +24,7 @@
 
 /* Bit definitions for Device D3 State AOACx0000[41...7f; odd byte addresses] */
 #define   FCH_AOAC_PWR_RST_STATE	BIT(0)
-#define   FCH_AOAC_RST_CLK_OK_STATE	BIT(1)
+#define   FCH_AOAC_REF_CLK_OK_STATE	BIT(1)
 #define   FCH_AOAC_RST_B_STATE		BIT(2)
 #define   FCH_AOAC_DEV_OFF_GATING_STATE	BIT(3)
 #define   FCH_AOAC_D3COLD		BIT(4)

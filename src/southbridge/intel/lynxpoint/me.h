@@ -221,17 +221,20 @@ union me_heres {
 #define MEI_ME_CB_RW		0x08
 #define MEI_ME_CSR_HA		0x0c
 
-struct mei_csr {
-	u32 interrupt_enable: 1;
-	u32 interrupt_status: 1;
-	u32 interrupt_generate: 1;
-	u32 ready: 1;
-	u32 reset: 1;
-	u32 reserved: 3;
-	u32 buffer_read_ptr: 8;
-	u32 buffer_write_ptr: 8;
-	u32 buffer_depth: 8;
-} __packed;
+union mei_csr {
+	struct __packed {
+		u32 interrupt_enable: 1;
+		u32 interrupt_status: 1;
+		u32 interrupt_generate: 1;
+		u32 ready: 1;
+		u32 reset: 1;
+		u32 reserved: 3;
+		u32 buffer_read_ptr: 8;
+		u32 buffer_write_ptr: 8;
+		u32 buffer_depth: 8;
+	};
+	u32 raw;
+};
 
 #define MEI_ADDRESS_CORE	0x01
 #define MEI_ADDRESS_AMT		0x02
@@ -243,13 +246,16 @@ struct mei_csr {
 
 #define MEI_HOST_ADDRESS	0
 
-struct mei_header {
-	u32 client_address: 8;
-	u32 host_address: 8;
-	u32 length: 9;
-	u32 reserved: 6;
-	u32 is_complete: 1;
-} __packed;
+union mei_header {
+	struct __packed {
+		u32 client_address: 8;
+		u32 host_address: 8;
+		u32 length: 9;
+		u32 reserved: 6;
+		u32 is_complete: 1;
+	};
+	u32 raw;
+};
 
 #define MKHI_GROUP_ID_CBM	0x00
 #define MKHI_GROUP_ID_FWCAPS	0x03
@@ -368,11 +374,14 @@ void intel_me_finalize(struct device *dev);
 #define MBP_IDENT(appid, item) \
 	MBP_MAKE_IDENT(MBP_APPID_##appid, MBP_##appid##_##item##_ITEM)
 
-struct mbp_header {
-	u32  mbp_size	 : 8;
-	u32  num_entries : 8;
-	u32  rsvd	 : 16;
-} __packed;
+union mbp_header {
+	struct __packed {
+		u32 mbp_size    : 8;
+		u32 num_entries : 8;
+		u32 rsvd        : 16;
+	};
+	u32 raw;
+};
 
 struct mbp_item_header {
 	u32  app_id  : 8;

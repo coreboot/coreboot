@@ -265,7 +265,7 @@ static void write_dppm_methods(const struct device *ec)
 
 		/* Local0 = ToInteger(Arg0) */
 		acpigen_write_to_integer(ARG0_OP, LOCAL0_OP);
-		for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_3; ++p, ++i) {
+		for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_4; ++p, ++i) {
 			snprintf(name, sizeof(name), "^TSR%1d", i);
 			acpigen_write_if_lequal_op_int(LOCAL0_OP, i);
 			acpigen_notify(name, THERMAL_EVENT);
@@ -277,7 +277,7 @@ static void write_dppm_methods(const struct device *ec)
 
 	/* TPET */
 	acpigen_write_method("TPET", 0);
-	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_3; ++p, ++i) {
+	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_4; ++p, ++i) {
 		snprintf(name, sizeof(name), "^TSR%1d", i);
 		acpigen_notify(name, TRIP_POINTS_CHANGED_EVENT);
 	}
@@ -355,6 +355,6 @@ void ec_fill_dptf_helpers(const struct device *ec)
 	write_charger_methods(ec);
 	write_fan_methods(ec);
 
-	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_3; ++p, ++i)
+	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_4; ++p, ++i)
 		write_thermal_methods(ec, p, i);
 }

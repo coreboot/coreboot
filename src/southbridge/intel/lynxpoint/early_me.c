@@ -25,7 +25,7 @@ void intel_early_me_status(void)
 	union me_hfs hfs = { .raw = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS) };
 	union me_hfs2 hfs2 = { .raw = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS2) };
 
-	intel_me_status(&hfs, &hfs2);
+	intel_me_status(hfs, hfs2);
 }
 
 int intel_early_me_init(void)

@@ -581,7 +581,7 @@ static enum me_bios_path intel_me_path(struct device *dev)
 	union me_hfs2 hfs2 = { .raw = pci_read_config32(dev, PCI_ME_HFS2) };
 
 	/* Check and dump status */
-	intel_me_status(&hfs, &hfs2);
+	intel_me_status(hfs, hfs2);
 
 	/* Check Current Working State */
 	switch (hfs.working_state) {

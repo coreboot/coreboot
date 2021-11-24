@@ -41,7 +41,102 @@ chip soc/intel/alderlake
 	}"
 
 	device domain 0 on
-		device ref dtt on end
+		device ref dtt on
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""DRAM_SOC""
+				register "options.tsr[1].desc" = ""Ambient""
+				register "options.tsr[2].desc" = ""Charger""
+				register "options.tsr[3].desc" = ""WWAN""
+
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {
+						.target = DPTF_CPU,
+						.thresholds = {
+								TEMP_PCT(55, 65),
+								TEMP_PCT(52, 59),
+								TEMP_PCT(49, 50),
+								TEMP_PCT(46, 43),
+								TEMP_PCT(43, 37),
+						}
+					},
+					[1] = {
+						.target = DPTF_TEMP_SENSOR_1,
+						.thresholds = {
+								TEMP_PCT(55, 65),
+								TEMP_PCT(52, 59),
+								TEMP_PCT(49, 50),
+								TEMP_PCT(46, 43),
+								TEMP_PCT(43, 37),
+						}
+					}
+				}"
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 75, 5000),
+					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 75, 5000),
+					[3] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_2, 75, 5000),
+					[4] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_3, 75, 5000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      85, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      85, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      85, SHUTDOWN),
+					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,      85, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 13000,
+						.max_power = 15000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 28 * MSECS_PER_SEC,
+						.granularity = 200,
+					},
+					.pl2 = {
+						.min_power = 55000,
+						.max_power = 55000,
+						.time_window_min = 32 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 1000,
+					}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 1700 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{
+					[0] = {  90, 6700, 220, 2200, },
+					[1] = {  80, 5800, 180, 1800, },
+					[2] = {  70, 5000, 145, 1450, },
+					[3] = {  60, 4900, 115, 1150, },
+					[4] = {  50, 3838,  90,  900, },
+					[5] = {  40, 2904,  55,  550, },
+					[6] = {  30, 2337,  30,  300, },
+					[7] = {  20, 1608,  15,  150, },
+					[8] = {  10,  800,  10,  100, },
+					[9] = {   0,    0,   0,   50, }
+				}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 0 alias dptf_policy on end
+			end
+		end
 		device ref tbt_pcie_rp0 off end
 		device ref tbt_pcie_rp1 on
 			probe DB_USB USB4_KB8001

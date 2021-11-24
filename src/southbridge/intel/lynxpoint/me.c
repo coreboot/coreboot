@@ -73,22 +73,24 @@ static void mei_dump(u32 dword, int offset, const char *type)
  * ME/MEI access helpers using memcpy to avoid aliasing.
  */
 
-static inline void read_host_csr(union mei_csr *csr)
+static inline union mei_csr read_host_csr(void)
 {
-	csr->raw = read32(mei_base_address + MEI_H_CSR);
-	mei_dump(csr->raw, MEI_H_CSR, "READ");
+	union mei_csr csr = { .raw = read32(mei_base_address + MEI_H_CSR) };
+	mei_dump(csr.raw, MEI_H_CSR, "READ");
+	return csr;
 }
 
-static inline void write_host_csr(union mei_csr *csr)
+static inline void write_host_csr(union mei_csr csr)
 {
-	write32(mei_base_address + MEI_H_CSR, csr->raw);
-	mei_dump(csr->raw, MEI_H_CSR, "WRITE");
+	write32(mei_base_address + MEI_H_CSR, csr.raw);
+	mei_dump(csr.raw, MEI_H_CSR, "WRITE");
 }
 
-static inline void read_me_csr(union mei_csr *csr)
+static inline union mei_csr read_me_csr(void)
 {
-	csr->raw = read32(mei_base_address + MEI_ME_CSR_HA);
-	mei_dump(csr->raw, MEI_ME_CSR_HA, "READ");
+	union mei_csr csr = { .raw = read32(mei_base_address + MEI_ME_CSR_HA) };
+	mei_dump(csr.raw, MEI_ME_CSR_HA, "READ");
+	return csr;
 }
 
 static inline void write_cb(u32 dword)
@@ -111,7 +113,7 @@ static int mei_wait_for_me_ready(void)
 	unsigned int try = ME_RETRY;
 
 	while (try--) {
-		read_me_csr(&me);
+		me = read_me_csr();
 		if (me.ready)
 			return 0;
 		udelay(ME_DELAY);
@@ -129,20 +131,20 @@ static void mei_reset(void)
 		return;
 
 	/* Reset host and ME circular buffers for next message */
-	read_host_csr(&host);
+	host = read_host_csr();
 	host.reset = 1;
 	host.interrupt_generate = 1;
-	write_host_csr(&host);
+	write_host_csr(host);
 
 	if (mei_wait_for_me_ready() < 0)
 		return;
 
 	/* Re-init and indicate host is ready */
-	read_host_csr(&host);
+	host = read_host_csr();
 	host.interrupt_generate = 1;
 	host.ready = 1;
 	host.reset = 0;
-	write_host_csr(&host);
+	write_host_csr(host);
 }
 
 static int mei_send_packet(union mei_header *mei, void *req_data)
@@ -167,11 +169,11 @@ static int mei_send_packet(union mei_header *mei, void *req_data)
 	 * Make sure there is still room left in the circular buffer.
 	 * Reset the buffer pointers if the requested message will not fit.
 	 */
-	read_host_csr(&host);
+	host = read_host_csr();
 	if ((host.buffer_depth - host.buffer_write_ptr) < ndata) {
 		printk(BIOS_ERR, "ME: circular buffer full, resetting...\n");
 		mei_reset();
-		read_host_csr(&host);
+		host = read_host_csr();
 	}
 
 	/* Ensure the requested length will fit in the circular buffer. */
@@ -191,9 +193,9 @@ static int mei_send_packet(union mei_header *mei, void *req_data)
 		write_cb(*data++);
 
 	/* Generate interrupt to the ME */
-	read_host_csr(&host);
+	host = read_host_csr();
 	host.interrupt_generate = 1;
-	write_host_csr(&host);
+	write_host_csr(host);
 
 	/* Make sure ME is ready after sending request data */
 	return mei_wait_for_me_ready();
@@ -214,7 +216,7 @@ static int mei_send_data(u8 me_address, u8 host_address,
 		int remain = req_bytes - current;
 		int buf_len;
 
-		read_host_csr(&host);
+		host = read_host_csr();
 		buf_len = host.buffer_depth - host.buffer_write_ptr;
 
 		if (buf_len > remain) {
@@ -270,7 +272,7 @@ static int mei_recv_msg(void *header, int header_bytes,
 	 * expected number of dwords are present in the circular buffer.
 	 */
 	for (n = ME_RETRY; n; --n) {
-		read_me_csr(&me);
+		me = read_me_csr();
 		if ((me.buffer_write_ptr - me.buffer_read_ptr) >= expected)
 			break;
 		udelay(ME_DELAY);
@@ -318,10 +320,10 @@ static int mei_recv_msg(void *header, int header_bytes,
 		*data++ = read_cb();
 
 	/* Tell the ME that we have consumed the response */
-	read_host_csr(&host);
+	host = read_host_csr();
 	host.interrupt_status = 1;
 	host.interrupt_generate = 1;
-	write_host_csr(&host);
+	write_host_csr(host);
 
 	return mei_wait_for_me_ready();
 }
@@ -398,10 +400,10 @@ static void intel_me_mbp_give_up(struct device *dev)
 
 	pci_write_config32(dev, PCI_ME_H_GS2, PCI_ME_MBP_GIVE_UP);
 
-	read_host_csr(&csr);
+	csr = read_host_csr();
 	csr.reset = 1;
 	csr.interrupt_generate = 1;
-	write_host_csr(&csr);
+	write_host_csr(csr);
 }
 
 /*
@@ -654,11 +656,11 @@ static int intel_mei_setup(struct device *dev)
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 
 	/* Clean up status for next message */
-	read_host_csr(&host);
+	host = read_host_csr();
 	host.interrupt_generate = 1;
 	host.ready = 1;
 	host.reset = 0;
-	write_host_csr(&host);
+	write_host_csr(host);
 
 	return 0;
 }
@@ -710,8 +712,7 @@ static int intel_me_extend_valid(struct device *dev)
 
 static u32 me_to_host_words_pending(void)
 {
-	union mei_csr me;
-	read_me_csr(&me);
+	union mei_csr me = read_me_csr();
 	if (!me.ready)
 		return 0;
 	return (me.buffer_write_ptr - me.buffer_read_ptr) &
@@ -774,9 +775,9 @@ static int intel_me_read_mbp(struct me_bios_payload *mbp_data, struct device *de
 	}
 
 	/* Signal to the ME that the host has finished reading the MBP. */
-	read_host_csr(&host);
+	host = read_host_csr();
 	host.interrupt_generate = 1;
-	write_host_csr(&host);
+	write_host_csr(host);
 
 	/* Dump out the MBP contents. */
 	if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {

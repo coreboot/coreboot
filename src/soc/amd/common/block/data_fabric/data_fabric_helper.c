@@ -63,7 +63,7 @@ void data_fabric_print_mmio_conf(void)
 void data_fabric_disable_mmio_reg(unsigned int reg)
 {
 	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg),
-		IOMS0_FABRIC_ID << MMIO_DST_FABRIC_ID_SHIFT);
+		IOMS0_FABRIC_ID << DF_MMIO_DST_FABRIC_ID_SHIFT);
 	data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), 0);
 	data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), 0);
 }
@@ -71,7 +71,7 @@ void data_fabric_disable_mmio_reg(unsigned int reg)
 static bool is_mmio_reg_disabled(unsigned int reg)
 {
 	uint32_t val = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(reg));
-	return !(val & (MMIO_WE | MMIO_RE));
+	return !(val & (DF_MMIO_WE | DF_MMIO_RE));
 }
 
 int data_fabric_find_unused_mmio_reg(void)

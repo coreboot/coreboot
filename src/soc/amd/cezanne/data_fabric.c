@@ -44,7 +44,7 @@ void data_fabric_set_mmio_np(void)
 	for (i = 0; i < NUM_NB_MMIO_REGS; i++) {
 		/* Adjust all registers that overlap */
 		ctrl = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(i));
-		if (!(ctrl & (MMIO_WE | MMIO_RE)))
+		if (!(ctrl & (DF_MMIO_WE | DF_MMIO_RE)))
 			continue; /* not enabled */
 
 		base = data_fabric_broadcast_read32(0, NB_MMIO_BASE(i));
@@ -92,8 +92,8 @@ void data_fabric_set_mmio_np(void)
 	data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), np_bot);
 	data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), np_top);
 	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg),
-			   (IOMS0_FABRIC_ID << MMIO_DST_FABRIC_ID_SHIFT) | MMIO_NP | MMIO_WE
-				   | MMIO_RE);
+			   (IOMS0_FABRIC_ID << DF_MMIO_DST_FABRIC_ID_SHIFT) | DF_MMIO_NP
+				   | DF_MMIO_WE | DF_MMIO_RE);
 
 	data_fabric_print_mmio_conf();
 }

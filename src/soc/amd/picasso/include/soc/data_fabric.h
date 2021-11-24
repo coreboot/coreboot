@@ -8,7 +8,7 @@
 /* D18F0 - Fabric Configuration registers */
 
 /* SoC-specific bits in D18F0_MMIO_CTRL0 */
-#define   MMIO_NP			BIT(12)
+#define   DF_MMIO_NP			BIT(12)
 
 #define IOMS0_FABRIC_ID			9
 

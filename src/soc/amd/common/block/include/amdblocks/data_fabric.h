@@ -16,9 +16,9 @@
 #define   D18F0_MMIO_SHIFT		16
 #define D18F0_MMIO_CTRL0		0x208
 /* The MMIO_NP bit is SoC-specific */
-#define   MMIO_DST_FABRIC_ID_SHIFT	4
-#define   MMIO_WE			BIT(1)
-#define   MMIO_RE			BIT(0)
+#define   DF_MMIO_DST_FABRIC_ID_SHIFT	4
+#define   DF_MMIO_WE			BIT(1)
+#define   DF_MMIO_RE			BIT(0)
 
 /* The number of data fabric MMIO registers is SoC-specific */
 #define NB_MMIO_BASE(reg)		((reg) * 4 * sizeof(uint32_t) + D18F0_MMIO_BASE0)

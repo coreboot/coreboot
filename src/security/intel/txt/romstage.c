@@ -108,8 +108,8 @@ void intel_txt_romstage_init(void)
 		printk(BIOS_ERR, "TEE-TXT: Secrets remain in memory. SCLEAN is required.\n");
 
 		if (txt_ests & TXT_ESTS_TXT_RESET_STS) {
-			printk(BIOS_ERR, "TEE-TXT: TXT_RESET bit set, doing full reset!\n");
-			full_reset();
+			printk(BIOS_ERR, "TEE-TXT: TXT_RESET bit set, doing global reset!\n");
+			txt_reset_platform();
 		}
 
 		/* FIXME: Clear SLP_TYP# */

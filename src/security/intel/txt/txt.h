@@ -18,7 +18,7 @@
 #define ACM_E_PLATFORM_IS_NOT_PROD          0x10
 
 void intel_txt_romstage_init(void);
-
+void __noreturn txt_reset_platform(void);
 void intel_txt_log_bios_acm_error(void);
 int intel_txt_log_acm_error(const uint32_t acm_error);
 void intel_txt_log_spad(void);

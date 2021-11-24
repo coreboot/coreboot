@@ -27,7 +27,7 @@
 #include "txt_getsec.h"
 
 /* Usual security practice: if an unexpected error happens, reboot */
-static void __noreturn txt_reset_platform(void)
+void __noreturn txt_reset_platform(void)
 {
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_SA)
 	global_reset();

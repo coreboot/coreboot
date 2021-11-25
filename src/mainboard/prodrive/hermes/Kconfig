@@ -45,9 +45,6 @@ config PCIEXP_CLK_PM
 	bool
 	default n
 
-config VARIANT_DIR
-	default "baseboard"	if BOARD_PRODRIVE_HERMES_BASEBOARD
-
 config MAX_CPUS
 	int
 	default 16

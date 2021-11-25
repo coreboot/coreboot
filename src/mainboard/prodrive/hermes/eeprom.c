@@ -9,7 +9,7 @@
 #include <soc/intel/common/block/smbus/smbuslib.h>
 #include <types.h>
 
-#include "variants/baseboard/include/eeprom.h"
+#include "eeprom.h"
 
 #define I2C_ADDR_EEPROM 0x57
 

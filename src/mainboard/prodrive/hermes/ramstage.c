@@ -1,8 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/ramstage.h>
-#include <variant/gpio.h>
-#include "variants/baseboard/include/eeprom.h"
+
+#include "eeprom.h"
+#include "gpio.h"
 
 void mainboard_silicon_init_params(FSPS_UPD *supd)
 {

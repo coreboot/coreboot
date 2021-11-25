@@ -4,7 +4,7 @@
 #include <types.h>
 #include <string.h>
 
-#include "variants/baseboard/include/eeprom.h"
+#include "eeprom.h"
 
 const char *smbios_system_serial_number(void)
 {

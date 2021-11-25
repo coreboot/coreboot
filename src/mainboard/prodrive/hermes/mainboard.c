@@ -8,10 +8,14 @@
 #include <bootstate.h>
 #include <device/device.h>
 #include <device/dram/spd.h>
+#include <gpio.h>
+#include <intelblocks/gpio_defs.h>
 #include <intelblocks/pmclib.h>
+#include <soc/gpio.h>
 #include <types.h>
 #include <smbios.h>
-#include "variants/baseboard/include/eeprom.h"
+
+#include "eeprom.h"
 #include "gpio.h"
 
 /* FIXME: Example code below */

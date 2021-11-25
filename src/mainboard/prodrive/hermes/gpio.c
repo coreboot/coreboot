@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include "include/variant/gpio.h"
 #include <commonlib/helpers.h>
 #include <soc/gpio.h>
 #include <intelblocks/gpio_defs.h>
+
+#include "gpio.h"
 
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {

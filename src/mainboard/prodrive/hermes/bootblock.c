@@ -2,8 +2,9 @@
 
 #include <bootblock_common.h>
 #include <console/console.h>
+#include <gpio.h>
 #include <soc/gpio.h>
-#include <variant/gpio.h>
+
 #include "gpio.h"
 
 void bootblock_mainboard_early_init(void)

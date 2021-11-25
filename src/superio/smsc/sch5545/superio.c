@@ -62,6 +62,12 @@ static void sch5545_init(struct device *dev)
 
 	switch (dev->path.pnp.device) {
 	case SCH5545_LDN_KBC:
+		pnp_enter_conf_mode(dev);
+		pnp_set_logical_device(dev);
+		/* Disable PS/2 clock and data isolation */
+		pnp_unset_and_set_config(dev, 0xf0,
+					 SCH5545_KBD_ISOLATION | SCH5545_MOUSE_ISOLATION, 0);
+		pnp_exit_conf_mode(dev);
 		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	case SCH5545_LDN_LPC:

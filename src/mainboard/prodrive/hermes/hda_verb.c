@@ -90,6 +90,23 @@ static u32 get_port_c_vref_cfg(uint8_t blue_rear_vref)
 	}
 }
 
+static u32 get_port_b_vref_cfg(uint8_t pink_rear_vref)
+{
+	switch (pink_rear_vref) {
+	default:
+	case 0:
+		return 0x411110f0; /* Disabled (Hi-Z) */
+	case 1:
+		return 0x411111f0; /* 50% of LDO out */
+	case 2:
+		return 0x411114f0; /* 80% of LDO out */
+	case 3:
+		return 0x411115f0; /* 100% of LDO out */
+	case 4:
+		return 0x411112f0; /* Ground */
+	}
+}
+
 static u32 get_front_panel_cfg(uint8_t front_panel_audio)
 {
 	switch (front_panel_audio) {
@@ -122,7 +139,16 @@ static void mainboard_r0x_configure_alc888(u8 *base, u32 viddid)
 
 	const u32 front_mic_cfg = get_front_mic_cfg(board_cfg->front_panel_audio);
 
+	const u32 port_b_vref_cfg = get_port_b_vref_cfg(board_cfg->pink_rear_vref);
+
 	const u32 verbs[] = {
+		/*
+		 * Write port B Vref settings to unused non-volatile NID 0x12 instead of
+		 * NID 0x18, the actual port B NID. Because per-port Vref settings don't
+		 * persist after codec resets, a custom Realtek driver (ab)uses NID 0x12
+		 * to restore port B Vref after resetting the codec.
+		 */
+		AZALIA_PIN_CFG(0, 0x12, port_b_vref_cfg),
 		AZALIA_PIN_CFG(0, 0x19, front_mic_cfg),
 		AZALIA_PIN_CFG(0, 0x1b, front_panel_cfg),
 		0x0205000d, /* Pin 37 vrefo hidden register - used as port C vref */

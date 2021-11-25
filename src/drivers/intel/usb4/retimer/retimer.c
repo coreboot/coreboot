@@ -341,6 +341,7 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 	static char dfp[DEVICE_PATH_MAX];
 	struct acpi_pld pld;
 	uint8_t dfp_port, usb_port;
+	int ec_port = 0;
 
 	usb4_retimer_scope = acpi_device_scope(dev);
 	if (!usb4_retimer_scope || !config)
@@ -365,8 +366,14 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 		usb_device = config->dfp[dfp_port].typec_port;
 		usb_port = usb_device->path.usb.port_id;
 
+		ec_port = retimer_get_index_for_typec(usb_port);
+		if (ec_port == -1) {
+			printk(BIOS_ERR, "%s: No relative EC port found for TC port %d\n",
+				__func__, usb_port);
+		 	continue;
+		}
 		/* DFPx */
-		snprintf(dfp, sizeof(dfp), "DFP%1d", usb_port);
+		snprintf(dfp, sizeof(dfp), "DFP%1d", ec_port);
 		acpigen_write_device(dfp);
 		/* _ADR part is for the lane adapter */
 		acpigen_write_ADR(dfp_port*2 + 1);
@@ -396,7 +403,7 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 		/* Return (Buffer (One) { 0x0 }) */
 		acpigen_write_return_singleton_buffer(0x0);
 		acpigen_pop_len();
-		usb4_retimer_write_dsm(usb_port, INTEL_USB4_RETIMER_DSM_UUID,
+		usb4_retimer_write_dsm(ec_port, INTEL_USB4_RETIMER_DSM_UUID,
 			usb4_retimer_callbacks, ARRAY_SIZE(usb4_retimer_callbacks),
 			(void *)&config->dfp[dfp_port].power_gpio);
 		/* Default case: Return (Buffer (One) { 0x0 }) */
@@ -435,4 +442,21 @@ __weak const char *ec_retimer_fw_update_path(void)
 
 __weak void ec_retimer_fw_update(uint8_t data)
 {
+}
+
+/*
+ * This function will convert CPU physical port mapping to abstract
+ * EC port mapping.
+ * For example, board might have enabled TCSS port 1 and 3 as per physical
+ * port mapping. Since only 2 TCSS ports are enabled EC will index it as port 0
+ * and port 1. So there will be an issue when coreboot sends command to EC for
+ * port 3 (with coreboot index of 2). EC will produce an error due to wrong index.
+ *
+ * Note: Each SoC code using retimer driver needs to implement this function
+ * since SoC will have physical port details.
+ */
+__weak int retimer_get_index_for_typec(uint8_t typec_port)
+{
+	/* By default assume that retimer port index = Type C port */
+	return (int)typec_port;
 }

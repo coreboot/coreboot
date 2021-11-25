@@ -30,5 +30,15 @@ struct usb4_retimer_dsm_uuid {
 
 const char *ec_retimer_fw_update_path(void);
 void ec_retimer_fw_update(uint8_t data);
+/*
+ * This function will convert CPU physical port mapping to abstract
+ * EC port mapping. For example, board might have enabled TCSS port 1
+ * and 3 as per physical port mapping. Since only 2 TCSS ports are enabled
+ * EC will name it as port 0 and port 1. So there will be mismatch when
+ * coreboot sends index for port 3.
+ * Each SoC code using retimer driver needs to implement this function
+ * since SoC will have physical port details.
+ */
+int retimer_get_index_for_typec(uint8_t typec_port);
 
 #endif /* _DRIVERS_INTEL_USB4_RETIMER_H_ */

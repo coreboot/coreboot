@@ -120,6 +120,7 @@ config MAINBOARD_PART_NUMBER
 	default "Anahera" if BOARD_GOOGLE_ANAHERA
 	default "Anahera4ES" if BOARD_GOOGLE_ANAHERA4ES
 	default "Vell" if BOARD_GOOGLE_VELL
+	default "Taniks" if BOARD_GOOGLE_TANIKS
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -138,6 +139,7 @@ config VARIANT_DIR
 	default "anahera" if BOARD_GOOGLE_ANAHERA
 	default "anahera4es" if BOARD_GOOGLE_ANAHERA4ES
 	default "vell" if BOARD_GOOGLE_VELL
+	default "taniks" if BOARD_GOOGLE_TANIKS
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC

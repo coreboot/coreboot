@@ -106,10 +106,10 @@ static inline void mtk_i2c_dump_info(struct mt_i2c_regs *regs)
 	mtk_i2c_dump_more_info(regs);
 }
 
-static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,
-				 enum i2c_modes mode)
+static int mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,
+			    enum i2c_modes mode)
 {
-	uint32_t ret_code = I2C_OK;
+	int ret = I2C_OK;
 	uint16_t status;
 	uint16_t dma_sync = 0;
 	uint32_t time_out_val = 0;
@@ -245,23 +245,23 @@ static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,
 	while (1) {
 		status = read32(&regs->intr_stat);
 		if (status & I2C_HS_NACKERR) {
-			ret_code = I2C_TRANSFER_FAIL_HS_NACKERR;
+			ret = I2C_TRANSFER_FAIL_HS_NACKERR;
 			printk(BIOS_ERR, "[i2c%d] transfer NACK error\n", bus);
 			mtk_i2c_dump_info(regs);
 			break;
 		} else if (status & I2C_ACKERR) {
-			ret_code = I2C_TRANSFER_FAIL_ACKERR;
+			ret = I2C_TRANSFER_FAIL_ACKERR;
 			printk(BIOS_ERR, "[i2c%d] transfer ACK error\n", bus);
 			mtk_i2c_dump_info(regs);
 			break;
 		} else if (status & I2C_TRANSAC_COMP) {
-			ret_code = I2C_OK;
+			ret = I2C_OK;
 			memcpy(read_buffer, _dma_coherent, read_len);
 			break;
 		}
 
 		if (stopwatch_expired(&sw)) {
-			ret_code = I2C_TRANSFER_FAIL_TIMEOUT;
+			ret = I2C_TRANSFER_FAIL_TIMEOUT;
 			printk(BIOS_ERR, "[i2c%d] transfer timeout:%d\n", bus,
 			       time_out_val);
 			mtk_i2c_dump_info(regs);
@@ -279,7 +279,7 @@ static uint32_t mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,
 	/* reset the i2c controller for next i2c transfer. */
 	i2c_hw_reset(bus);
 
-	return ret_code;
+	return ret;
 }
 
 static bool mtk_i2c_should_combine(struct i2c_msg *seg, int left_count)
@@ -301,7 +301,7 @@ static int mtk_i2c_max_step_cnt(uint32_t target_speed)
 int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 			  int seg_count)
 {
-	int ret = 0;
+	int ret;
 	int i;
 	int mode;
 
@@ -314,15 +314,14 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,
 		}
 
 		ret = mtk_i2c_transfer(bus, &segments[i], mode);
-
-		if (ret)
-			break;
+		if (ret < 0)
+			return ret;
 
 		if (mode == I2C_WRITE_READ_MODE)
 			i++;
 	}
 
-	return ret;
+	return 0;
 }
 
 /*

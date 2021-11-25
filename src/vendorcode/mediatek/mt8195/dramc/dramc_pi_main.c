@@ -1946,6 +1946,11 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 #endif
     }
 
+    if (p->support_rank_num == RANK_SINGLE){
+        CKEFixOnOff(p, RANK_1, CKE_DYNAMIC, TO_ALL_CHANNEL);
+        mcSHOW_DBG_MSG(("Set RANK1 CKE to DYNAMIC\n"));
+    }
+
     #if (FOR_DV_SIMULATION_USED == 0 && SW_CHANGE_FOR_SIMULATION == 0)
     U32 backup_broadcast;
     backup_broadcast = GetDramcBroadcast();

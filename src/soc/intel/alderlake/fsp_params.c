@@ -38,12 +38,10 @@
 #define DEF_DITOVAL	625
 
 /* VccIn Aux Imon IccMax values in mA */
-#define MILLIAMPS_TO_AMPS         1000
-#define ICC_MAX_ID_ADL_P_3_MA     34250
-#define ICC_MAX_ID_ADL_P_5_MA     32000
-#define ICC_MAX_ID_ADL_P_6_MA     32000
-#define ICC_MAX_ID_ADL_P_7_MA     32000
-#define ICC_MAX_ID_ADL_M_MA       12000
+#define MILLIAMPS_TO_AMPS	1000
+#define ICC_MAX_TDP_45W		34250
+#define ICC_MAX_TDP_15W_28W	32000
+#define ICC_MAX_ID_ADL_M_MA	12000
 
 /*
  * ME End of Post configuration
@@ -296,6 +294,7 @@ static int get_l1_substate_control(enum L1_substates_control ctl)
 static uint16_t get_vccin_aux_imon_iccmax(void)
 {
 	uint16_t mch_id = 0;
+	uint8_t tdp;
 
 	if (!mch_id) {
 		struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
@@ -305,13 +304,13 @@ static uint16_t get_vccin_aux_imon_iccmax(void)
 	switch (mch_id) {
 	case PCI_DEVICE_ID_INTEL_ADL_P_ID_1:
 	case PCI_DEVICE_ID_INTEL_ADL_P_ID_3:
-		return ICC_MAX_ID_ADL_P_3_MA;
 	case PCI_DEVICE_ID_INTEL_ADL_P_ID_5:
-		return ICC_MAX_ID_ADL_P_5_MA;
 	case PCI_DEVICE_ID_INTEL_ADL_P_ID_6:
-		return ICC_MAX_ID_ADL_P_6_MA;
 	case PCI_DEVICE_ID_INTEL_ADL_P_ID_7:
-		return ICC_MAX_ID_ADL_P_7_MA;
+		tdp = get_cpu_tdp();
+		if (tdp == TDP_45W)
+			return ICC_MAX_TDP_45W;
+		return ICC_MAX_TDP_15W_28W;
 	case PCI_DEVICE_ID_INTEL_ADL_M_ID_1:
 	case PCI_DEVICE_ID_INTEL_ADL_M_ID_2:
 		return ICC_MAX_ID_ADL_M_MA;

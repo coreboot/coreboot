@@ -33,14 +33,15 @@
 
 struct vr_lookup {
 	uint16_t mchid;
+	uint8_t tdp;
 	uint32_t conf[NUM_VR_DOMAINS];
 };
 
 static uint32_t load_table(const struct vr_lookup *tbl, const int tbl_entries, const int domain,
-					const uint16_t mch_id)
+					const uint16_t mch_id, uint8_t tdp)
 {
 	for (size_t i = 0; i < tbl_entries; i++) {
-		if (tbl[i].mchid != mch_id)
+		if (tbl[i].mchid != mch_id || tbl[i].tdp != tdp)
 			continue;
 		return tbl[i].conf[domain];
 	}
@@ -50,35 +51,35 @@ static uint32_t load_table(const struct vr_lookup *tbl, const int tbl_entries, c
 }
 
 static const struct vr_lookup vr_config_ll[] = {
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_1, VR_CFG_ALL_DOMAINS_LOADLINE(2.3, 3.2) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, VR_CFG_ALL_DOMAINS_LOADLINE(2.3, 3.2) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, VR_CFG_ALL_DOMAINS_LOADLINE(2.3, 3.2) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, VR_CFG_ALL_DOMAINS_LOADLINE(2.8, 3.2) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, VR_CFG_ALL_DOMAINS_LOADLINE(2.8, 3.2) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_1, 45, VR_CFG_ALL_DOMAINS_LOADLINE(2.3, 3.2) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 45, VR_CFG_ALL_DOMAINS_LOADLINE(2.3, 3.2) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, 28, VR_CFG_ALL_DOMAINS_LOADLINE(2.3, 3.2) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, 15, VR_CFG_ALL_DOMAINS_LOADLINE(2.8, 3.2) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, 15, VR_CFG_ALL_DOMAINS_LOADLINE(2.8, 3.2) },
 };
 
 static const struct vr_lookup vr_config_icc[] = {
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_1, VR_CFG_ALL_DOMAINS_ICC(120, 50) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, VR_CFG_ALL_DOMAINS_ICC(160, 50) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, VR_CFG_ALL_DOMAINS_ICC(85, 50) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, VR_CFG_ALL_DOMAINS_ICC(80, 40) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, VR_CFG_ALL_DOMAINS_ICC(80, 40) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_1, 45, VR_CFG_ALL_DOMAINS_ICC(120, 50) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 45, VR_CFG_ALL_DOMAINS_ICC(160, 50) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, 28, VR_CFG_ALL_DOMAINS_ICC(85, 50) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, 15, VR_CFG_ALL_DOMAINS_ICC(80, 40) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, 15, VR_CFG_ALL_DOMAINS_ICC(80, 40) },
 };
 
 static const struct vr_lookup vr_config_tdc_timewindow[] = {
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_1, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_1, 45, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 45, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, 28, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, 15, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, 15, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
 };
 
 static const struct vr_lookup vr_config_tdc_currentlimit[] = {
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_1, VR_CFG_ALL_DOMAINS_TDC_CURRENT(57, 57) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, VR_CFG_ALL_DOMAINS_TDC_CURRENT(57, 57) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, VR_CFG_ALL_DOMAINS_TDC_CURRENT(40, 40) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, VR_CFG_ALL_DOMAINS_TDC_CURRENT(20, 20) },
-	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, VR_CFG_ALL_DOMAINS_TDC_CURRENT(20, 20) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_1, 45, VR_CFG_ALL_DOMAINS_TDC_CURRENT(57, 57) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_3, 45, VR_CFG_ALL_DOMAINS_TDC_CURRENT(57, 57) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_5, 28, VR_CFG_ALL_DOMAINS_TDC_CURRENT(40, 40) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_6, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(20, 20) },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(20, 20) },
 };
 
 void fill_vr_domain_config(FSP_S_CONFIG *s_cfg,
@@ -103,6 +104,7 @@ void fill_vr_domain_config(FSP_S_CONFIG *s_cfg,
 		s_cfg->TdcCurrentLimit[domain] = cfg->tdc_currentlimit;
 	} else {
 		uint16_t mch_id = 0;
+		uint8_t tdp = get_cpu_tdp();
 
 		if (!mch_id) {
 			struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
@@ -110,17 +112,17 @@ void fill_vr_domain_config(FSP_S_CONFIG *s_cfg,
 		}
 
 		s_cfg->AcLoadline[domain] = load_table(vr_config_ll, ARRAY_SIZE(vr_config_ll),
-							domain, mch_id);
+							domain, mch_id, tdp);
 		s_cfg->DcLoadline[domain] = load_table(vr_config_ll, ARRAY_SIZE(vr_config_ll),
-							domain, mch_id);
+							domain, mch_id, tdp);
 		s_cfg->IccMax[domain] = load_table(vr_config_icc, ARRAY_SIZE(vr_config_icc),
-							domain, mch_id);
+							domain, mch_id, tdp);
 		s_cfg->TdcTimeWindow[domain] = load_table(vr_config_tdc_timewindow,
 							ARRAY_SIZE(vr_config_tdc_timewindow),
-							domain, mch_id);
+							domain, mch_id, tdp);
 		s_cfg->TdcCurrentLimit[domain] = load_table(vr_config_tdc_currentlimit,
 							ARRAY_SIZE(vr_config_tdc_currentlimit),
-							domain, mch_id);
+							domain, mch_id, tdp);
 	}
 
 	/* Check TdcTimeWindow and TdcCurrentLimit,

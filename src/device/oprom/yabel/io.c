@@ -103,7 +103,7 @@ read_io(void *addr, size_t sz)
 {
 	unsigned int ret;
 	/* since we are using inb instructions, we need the port number as 16bit value */
-	u16 port = (u16)(u32) addr;
+	u16 port = (u16)(uintptr_t) addr;
 
 	switch (sz) {
 	case 1:
@@ -125,7 +125,7 @@ read_io(void *addr, size_t sz)
 static int
 write_io(void *addr, unsigned int value, size_t sz)
 {
-	u16 port = (u16)(u32) addr;
+	u16 port = (u16)(uintptr_t) addr;
 	switch (sz) {
 	/* since we are using inb instructions, we need the port number as 16bit value */
 	case 1:

@@ -10,6 +10,7 @@
 #include <device/pci_ids.h>
 #include <pc80/i8259.h>
 #include <pc80/i8254.h>
+#include <stdint.h>
 #include <string.h>
 #include <vbe.h>
 #include <framebuffer_info.h>
@@ -89,14 +90,19 @@ static int intXX_exception_handler(void)
 		.edi=X86_EDI,
 		.vector=M.x86.intno,
 		.error_code=0, // FIXME: fill in
-		.eip=X86_EIP,
 		.cs=X86_CS,
+#if ENV_X86_64
+		.rip=X86_EIP,
+		.rflags=X86_EFLAGS
+#else
+		.eip=X86_EIP,
 		.eflags=X86_EFLAGS
+#endif
 	};
 	struct eregs *regs = &reg_info;
 
 	printk(BIOS_INFO, "Oops, exception %d while executing option rom\n",
-			regs->vector);
+	       (uint32_t)regs->vector);
 	x86_exception(regs);	// Call coreboot exception handler
 
 	return 0;		// Never really returns

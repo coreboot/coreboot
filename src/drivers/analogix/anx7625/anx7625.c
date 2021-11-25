@@ -54,9 +54,11 @@ static int i2c_access_workaround(uint8_t bus, uint8_t saddr)
 	}
 
 	ret = i2c_writeb(bus, saddr, offset, 0x00);
-	if (ret < 0)
+	if (ret < 0) {
 		ANXERROR("Failed to access %#x:%#x\n", saddr, offset);
-	return ret;
+		return ret;
+	}
+	return 0;
 }
 
 static int anx7625_reg_read(uint8_t bus, uint8_t saddr, uint8_t offset,
@@ -70,7 +72,7 @@ static int anx7625_reg_read(uint8_t bus, uint8_t saddr, uint8_t offset,
 		ANXERROR("Failed to read i2c reg=%#x:%#x\n", saddr, offset);
 		return ret;
 	}
-	return *val;
+	return 0;
 }
 
 static int anx7625_reg_block_read(uint8_t bus, uint8_t saddr, uint8_t reg_addr,
@@ -80,10 +82,12 @@ static int anx7625_reg_block_read(uint8_t bus, uint8_t saddr, uint8_t reg_addr,
 
 	i2c_access_workaround(bus, saddr);
 	ret = i2c_read_bytes(bus, saddr, reg_addr, buf, len);
-	if (ret < 0)
+	if (ret < 0) {
 		ANXERROR("Failed to read i2c block=%#x:%#x[len=%#x]\n", saddr,
 			 reg_addr, len);
-	return ret;
+		return ret;
+	}
+	return 0;
 }
 
 static int anx7625_reg_write(uint8_t bus, uint8_t saddr, uint8_t reg_addr,
@@ -93,10 +97,11 @@ static int anx7625_reg_write(uint8_t bus, uint8_t saddr, uint8_t reg_addr,
 
 	i2c_access_workaround(bus, saddr);
 	ret = i2c_writeb(bus, saddr, reg_addr, reg_val);
-	if (ret < 0)
+	if (ret < 0) {
 		ANXERROR("Failed to write i2c id=%#x:%#x\n", saddr, reg_addr);
-
-	return ret;
+		return ret;
+	}
+	return 0;
 }
 
 static int anx7625_write_or(uint8_t bus, uint8_t saddr, uint8_t offset,
@@ -128,30 +133,31 @@ static int anx7625_write_and(uint8_t bus, uint8_t saddr, uint8_t offset,
 static int wait_aux_op_finish(uint8_t bus)
 {
 	uint8_t val;
-	int ret = -1;
 	int loop;
+	int success = 0;
+	int ret;
 
 	for (loop = 0; loop < 150; loop++) {
 		mdelay(2);
 		anx7625_reg_read(bus, RX_P0_ADDR, AP_AUX_CTRL_STATUS, &val);
 		if (!(val & AP_AUX_CTRL_OP_EN)) {
-			ret = 0;
+			success = 1;
 			break;
 		}
 	}
 
-	if (ret != 0) {
+	if (!success) {
 		ANXERROR("Timed out waiting aux operation.\n");
-		return ret;
+		return -1;
 	}
 
 	ret = anx7625_reg_read(bus, RX_P0_ADDR, AP_AUX_CTRL_STATUS, &val);
 	if (ret < 0 || val & 0x0F) {
 		ANXDEBUG("aux status %02x\n", val);
-		ret = -1;
+		return -1;
 	}
 
-	return ret;
+	return 0;
 }
 
 static unsigned long gcd(unsigned long a, unsigned long b)
@@ -210,7 +216,7 @@ static int anx7625_calculate_m_n(u32 pixelclock,
 		ANXERROR("pixelclock %u higher than %lu, "
 			 "output may be unstable\n",
 			 pixelclock, PLL_OUT_FREQ_ABS_MAX / POST_DIVIDER_MIN);
-		return 1;
+		return -1;
 	}
 
 	if (pixelclock < PLL_OUT_FREQ_ABS_MIN / POST_DIVIDER_MAX) {
@@ -218,7 +224,7 @@ static int anx7625_calculate_m_n(u32 pixelclock,
 		ANXERROR("pixelclock %u lower than %lu, "
 			 "output may be unstable\n",
 			 pixelclock, PLL_OUT_FREQ_ABS_MIN / POST_DIVIDER_MAX);
-		return 1;
+		return -1;
 	}
 
 	post_divider = 1;
@@ -237,7 +243,7 @@ static int anx7625_calculate_m_n(u32 pixelclock,
 		if (post_divider > POST_DIVIDER_MAX) {
 			ANXERROR("cannot find property post_divider(%d)\n",
 				 post_divider);
-			return 1;
+			return -1;
 		}
 	}
 
@@ -256,7 +262,7 @@ static int anx7625_calculate_m_n(u32 pixelclock,
 	if (pixelclock * post_divider > PLL_OUT_FREQ_ABS_MAX) {
 		ANXINFO("act clock(%u) large than maximum(%lu)\n",
 			pixelclock * post_divider, PLL_OUT_FREQ_ABS_MAX);
-		return 1;
+		return -1;
 	}
 
 	*m = pixelclock;
@@ -292,10 +298,12 @@ static int anx7625_odfc_config(uint8_t bus, uint8_t post_divider)
 	ret |= anx7625_write_or(bus, RX_P1_ADDR, MIPI_DIGITAL_PLL_7,
 			MIPI_PLL_RESET_N);
 
-	if (ret < 0)
+	if (ret < 0) {
 		ANXERROR("IO error.\n");
+		return ret;
+	}
 
-	return ret;
+	return 0;
 }
 
 static int anx7625_dsi_video_config(uint8_t bus, struct display_timing *dt)
@@ -305,10 +313,8 @@ static int anx7625_dsi_video_config(uint8_t bus, struct display_timing *dt)
 	int ret;
 	uint8_t post_divider = 0;
 
-	ret = anx7625_calculate_m_n(dt->pixelclock * 1000, &m, &n,
-				    &post_divider);
-
-	if (ret != 0) {
+	if (anx7625_calculate_m_n(dt->pixelclock * 1000, &m, &n,
+				  &post_divider) < 0) {
 		ANXERROR("cannot get property m n value.\n");
 		return -1;
 	}
@@ -385,10 +391,12 @@ static int anx7625_dsi_video_config(uint8_t bus, struct display_timing *dt)
 
 	ret |= anx7625_odfc_config(bus, post_divider - 1);
 
-	if (ret < 0)
+	if (ret < 0) {
 		ANXERROR("mipi dsi setup IO error.\n");
+		return ret;
+	}
 
-	return ret;
+	return 0;
 }
 
 static int anx7625_swap_dsi_lane3(uint8_t bus)
@@ -400,7 +408,7 @@ static int anx7625_swap_dsi_lane3(uint8_t bus)
 	ret = anx7625_reg_read(bus, RX_P1_ADDR, MIPI_SWAP, &val);
 	if (ret < 0) {
 		ANXERROR("IO error: access MIPI_SWAP.\n");
-		return -1;
+		return ret;
 	}
 
 	val |= (1 << MIPI_SWAP_CH3);
@@ -461,10 +469,12 @@ static int anx7625_api_dsi_config(uint8_t bus, struct display_timing *dt)
 	ret |= anx7625_reg_write(bus, RX_P1_ADDR, MIPI_LANE_CTRL_10, 0x00);
 	ret |= anx7625_reg_write(bus, RX_P1_ADDR, MIPI_LANE_CTRL_10, 0x80);
 
-	if (ret < 0)
+	if (ret < 0) {
 		ANXERROR("IO error: mipi dsi enable init failed.\n");
+		return ret;
+	}
 
-	return ret;
+	return 0;
 }
 
 static int anx7625_dsi_config(uint8_t bus, struct display_timing *dt)
@@ -487,12 +497,13 @@ static int anx7625_dsi_config(uint8_t bus, struct display_timing *dt)
 	/* clear mute flag */
 	ret |= anx7625_write_and(bus, RX_P0_ADDR, AP_AV_STATUS, ~AP_MIPI_MUTE);
 
-	if (ret < 0)
+	if (ret < 0) {
 		ANXERROR("IO error: enable mipi rx failed.\n");
-	else
-		ANXINFO("success to config DSI\n");
+		return ret;
+	}
 
-	return ret;
+	ANXINFO("success to config DSI\n");
+	return 0;
 }
 
 static int sp_tx_rst_aux(uint8_t bus)
@@ -549,34 +560,32 @@ static int sp_tx_get_edid_block(uint8_t bus)
 
 static int edid_read(uint8_t bus, uint8_t offset, uint8_t *pblock_buf)
 {
-	uint8_t c, cnt = 0;
+	int ret, cnt;
 
-	c = 0;
 	for (cnt = 0; cnt < 3; cnt++) {
 		sp_tx_aux_wr(bus, offset);
 		/* set I2C read com 0x01 mot = 0 and read 16 bytes */
-		c = sp_tx_aux_rd(bus, 0xf1);
+		ret = sp_tx_aux_rd(bus, 0xf1);
 
-		if (c == 1) {
+		if (ret < 0) {
 			sp_tx_rst_aux(bus);
 			ANXERROR("edid read failed, reset!\n");
-			cnt++;
 		} else {
-			anx7625_reg_block_read(bus, RX_P0_ADDR,
-					AP_AUX_BUFF_START,
-					MAX_DPCD_BUFFER_SIZE, pblock_buf);
-			return 0;
+			if (anx7625_reg_block_read(bus, RX_P0_ADDR,
+						   AP_AUX_BUFF_START,
+						   MAX_DPCD_BUFFER_SIZE,
+						   pblock_buf) >= 0)
+				return 0;
 		}
 	}
 
-	return 1;
+	return -1;
 }
 
 static int segments_edid_read(uint8_t bus, uint8_t segment, uint8_t *buf,
 			      uint8_t offset)
 {
-	uint8_t c, cnt = 0;
-	int ret;
+	int ret, cnt;
 
 	/* write address only */
 	ret = anx7625_reg_write(bus, RX_P0_ADDR, AP_AUX_ADDR_7_0, 0x30);
@@ -598,21 +607,21 @@ static int segments_edid_read(uint8_t bus, uint8_t segment, uint8_t *buf,
 	for (cnt = 0; cnt < 3; cnt++) {
 		sp_tx_aux_wr(bus, offset);
 		/* set I2C read com 0x01 mot = 0 and read 16 bytes */
-		c = sp_tx_aux_rd(bus, 0xf1);
+		ret = sp_tx_aux_rd(bus, 0xf1);
 
-		if (c == 1) {
-			ret = sp_tx_rst_aux(bus);
+		if (ret < 0) {
+			sp_tx_rst_aux(bus);
 			ANXERROR("segment read failed, reset!\n");
-			cnt++;
 		} else {
-			ret = anx7625_reg_block_read(bus, RX_P0_ADDR,
-					AP_AUX_BUFF_START,
-					MAX_DPCD_BUFFER_SIZE, buf);
-			return ret;
+			if (anx7625_reg_block_read(bus, RX_P0_ADDR,
+						   AP_AUX_BUFF_START,
+						   MAX_DPCD_BUFFER_SIZE,
+						   buf) >= 0)
+				return 0;
 		}
 	}
 
-	return ret;
+	return -1;
 }
 
 static int sp_tx_edid_read(uint8_t bus, uint8_t *pedid_blocks_buf,
@@ -621,9 +630,7 @@ static int sp_tx_edid_read(uint8_t bus, uint8_t *pedid_blocks_buf,
 	uint8_t offset, edid_pos;
 	int count, blocks_num;
 	uint8_t pblock_buf[MAX_DPCD_BUFFER_SIZE];
-	uint8_t i;
-	uint8_t g_edid_break = 0;
-	int ret;
+	int i, ret, g_edid_break = 0;
 
 	/* address initial */
 	ret = anx7625_reg_write(bus, RX_P0_ADDR, AP_AUX_ADDR_7_0, 0x50);
@@ -637,7 +644,7 @@ static int sp_tx_edid_read(uint8_t bus, uint8_t *pedid_blocks_buf,
 
 	blocks_num = sp_tx_get_edid_block(bus);
 	if (blocks_num < 0)
-		return blocks_num;
+		return -1;
 
 	count = 0;
 
@@ -647,10 +654,10 @@ static int sp_tx_edid_read(uint8_t bus, uint8_t *pedid_blocks_buf,
 		case 1:
 			for (i = 0; i < 8; i++) {
 				offset = (i + count * 8) * MAX_DPCD_BUFFER_SIZE;
-				g_edid_break = edid_read(bus, offset,
-						pblock_buf);
+				g_edid_break = !!edid_read(bus, offset,
+							   pblock_buf);
 
-				if (g_edid_break == 1)
+				if (g_edid_break)
 					break;
 
 				if (offset <= size - MAX_DPCD_BUFFER_SIZE)
@@ -668,11 +675,11 @@ static int sp_tx_edid_read(uint8_t bus, uint8_t *pedid_blocks_buf,
 				edid_pos = (i + count * 8) *
 					MAX_DPCD_BUFFER_SIZE;
 
-				if (g_edid_break == 1)
+				if (g_edid_break)
 					break;
 
 				segments_edid_read(bus, count / 2,
-						pblock_buf, offset);
+						   pblock_buf, offset);
 				if (edid_pos <= size - MAX_DPCD_BUFFER_SIZE)
 					memcpy(&pedid_blocks_buf[edid_pos],
 					       pblock_buf,
@@ -834,12 +841,13 @@ int anx7625_dp_start(uint8_t bus, const struct edid *edid)
 	anx7625_parse_edid(edid, &dt);
 
 	ret = anx7625_dsi_config(bus, &dt);
-	if (ret < 0)
+	if (ret < 0) {
 		ANXERROR("MIPI phy setup error.\n");
-	else
-		ANXINFO("MIPI phy setup OK.\n");
+		return ret;
+	}
 
-	return ret;
+	ANXINFO("MIPI phy setup OK.\n");
+	return 0;
 }
 
 int anx7625_dp_get_edid(uint8_t bus, struct edid *out)
@@ -869,7 +877,7 @@ int anx7625_init(uint8_t bus)
 	int retry_power_on = 3;
 
 	while (--retry_power_on) {
-		if (anx7625_power_on_init(bus) == 0)
+		if (anx7625_power_on_init(bus) >= 0)
 			break;
 	}
 	if (!retry_power_on) {

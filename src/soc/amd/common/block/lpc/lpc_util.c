@@ -145,15 +145,6 @@ void lpc_enable_port80(void)
 	pci_write_config8(_LPCB_DEV, LPC_IO_OR_MEM_DEC_EN_HIGH, byte);
 }
 
-void lpc_enable_pci_port80(void)
-{
-	u8 byte;
-
-	byte = pci_read_config8(_LPCB_DEV, LPC_IO_OR_MEM_DEC_EN_HIGH);
-	byte &= ~DECODE_IO_PORT_ENABLE4_H; /* disable lpc port 80 */
-	pci_write_config8(_LPCB_DEV, LPC_IO_OR_MEM_DEC_EN_HIGH, byte);
-}
-
 void lpc_enable_sio_decode(const bool addr)
 {
 	uint32_t decodes;

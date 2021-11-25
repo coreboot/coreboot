@@ -142,7 +142,6 @@
  * with the enable bits. */
 void lpc_disable_decodes(void);
 void lpc_enable_port80(void);
-void lpc_enable_pci_port80(void);
 void lpc_enable_decode(uint32_t decodes);
 /* addr = index/data to enable:  LPC_SELECT_SIO_2E2F or LPC_SELECT_SIO_4E4F */
 void lpc_enable_sio_decode(const bool addr);

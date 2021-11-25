@@ -23,6 +23,11 @@ names etc.
 
 * [checklist](checklist.md)
 
+For release related communications consider using a template so everything
+important is taken care of.
+
+* [templates](templates.md)
+
 Upcoming release
 ----------------
 

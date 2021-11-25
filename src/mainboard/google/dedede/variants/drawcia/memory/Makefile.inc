@@ -4,4 +4,4 @@
 # ./util/spd_tools/bin/part_id_gen JSL lp4x src/mainboard/google/dedede/variants/drawcia/memory src/mainboard/google/dedede/variants/drawcia/memory/mem_parts_used.txt
 
 SPD_SOURCES =
-SPD_SOURCES += spd/lp4x/set-1/spd-1.hex      # ID = 0(0b0000)  Parts = MT53E512M32D2NP-046 WT:E, H9HCNNNBKMMLXR-NEE, K4U6E3S4AA-MGCR, MT53E512M32D1NP-046 WT:B, H54G46CYRBX267, K4U6E3S4AB-MGCL
+SPD_SOURCES += spd/lp4x/set-1/spd-1.hex      # ID = 0(0b0000)  Parts = MT53E512M32D2NP-046 WT:E, H9HCNNNBKMMLXR-NEE, K4U6E3S4AA-MGCR, MT53E512M32D1NP-046 WT:B, H54G46CYRBX267, K4U6E3S4AB-MGCL, K4U6E3S4AA-MGCL

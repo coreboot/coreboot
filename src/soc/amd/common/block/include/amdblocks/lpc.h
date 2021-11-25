@@ -67,18 +67,6 @@
 #define     LPC_SELECT_SIO_2E2F		0
 #define   WIDEIO_RANGE_ERROR		-1
 
-/* Assuming word access to higher word (register 0x4a) */
-#define LPC_IO_OR_MEM_DEC_EN_HIGH	0x4a
-#define   LPC_WIDEIO2_ENABLE_H		BIT(9)
-#define   LPC_WIDEIO1_ENABLE_H		BIT(8)
-#define   DECODE_IO_PORT_ENABLE6_H	BIT(7)
-#define   DECODE_IO_PORT_ENABLE5_H	BIT(6)
-#define   DECODE_IO_PORT_ENABLE4_H	BIT(5)
-#define   DECODE_IO_PORT_ENABLE3_H	BIT(3)
-#define   DECODE_IO_PORT_ENABLE2_H	BIT(2)
-#define   DECODE_IO_PORT_ENABLE1_H	BIT(1)
-#define   DECODE_IO_PORT_ENABLE0_H	BIT(0)
-
 #define LPC_MEM_PORT1			0x4c
 #define ROM_PROTECT_RANGE0		0x50
 #define   ROM_BASE_MASK			0xfffff000		/* bits 31-12 */

@@ -138,11 +138,11 @@ int lpc_set_wideio_range(uint16_t start, uint16_t size)
 
 void lpc_enable_port80(void)
 {
-	u8 byte;
+	uint32_t tmp;
 
-	byte = pci_read_config8(_LPCB_DEV, LPC_IO_OR_MEM_DEC_EN_HIGH);
-	byte |= DECODE_IO_PORT_ENABLE4_H;
-	pci_write_config8(_LPCB_DEV, LPC_IO_OR_MEM_DEC_EN_HIGH, byte);
+	tmp = pci_read_config32(_LPCB_DEV, LPC_IO_OR_MEM_DECODE_ENABLE);
+	tmp |= DECODE_IO_PORT_ENABLE4;
+	pci_write_config32(_LPCB_DEV, LPC_IO_OR_MEM_DECODE_ENABLE, tmp);
 }
 
 void lpc_enable_sio_decode(const bool addr)

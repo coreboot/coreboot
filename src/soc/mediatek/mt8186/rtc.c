@@ -88,8 +88,8 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 	}
 
 	rtc_read(RTC_OSC32CON, &osc32con);
-	if (rtc_xosc_write((osc32con & ~RTC_XOSCCALI_MASK) |
-			   (val & RTC_XOSCCALI_MASK))) {
+	if (!rtc_xosc_write((osc32con & ~RTC_XOSCCALI_MASK) |
+			    (val & RTC_XOSCCALI_MASK))) {
 		rtc_info("rtc_xosc_write() failed\n");
 		return false;
 	}

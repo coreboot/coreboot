@@ -6,6 +6,7 @@
 #include <edid.h>
 #include <gpio.h>
 #include <string.h>
+#include <types.h>
 
 #include "anx7625.h"
 
@@ -133,20 +134,11 @@ static int anx7625_write_and(uint8_t bus, uint8_t saddr, uint8_t offset,
 static int wait_aux_op_finish(uint8_t bus)
 {
 	uint8_t val;
-	int loop;
-	int success = 0;
 	int ret;
 
-	for (loop = 0; loop < 150; loop++) {
-		mdelay(2);
-		anx7625_reg_read(bus, RX_P0_ADDR, AP_AUX_CTRL_STATUS, &val);
-		if (!(val & AP_AUX_CTRL_OP_EN)) {
-			success = 1;
-			break;
-		}
-	}
-
-	if (!success) {
+	if (!retry(150,
+		   (anx7625_reg_read(bus, RX_P0_ADDR, AP_AUX_CTRL_STATUS, &val),
+		    !(val & AP_AUX_CTRL_OP_EN)), mdelay(2))) {
 		ANXERROR("Timed out waiting aux operation.\n");
 		return -1;
 	}
@@ -874,13 +866,8 @@ int anx7625_dp_get_edid(uint8_t bus, struct edid *out)
 int anx7625_init(uint8_t bus)
 {
 	int retry_hpd_change = 50;
-	int retry_power_on = 3;
 
-	while (--retry_power_on) {
-		if (anx7625_power_on_init(bus) >= 0)
-			break;
-	}
-	if (!retry_power_on) {
+	if (!retry(3, anx7625_power_on_init(bus) >= 0)) {
 		ANXERROR("Failed to power on.\n");
 		return -1;
 	}

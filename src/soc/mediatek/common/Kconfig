@@ -36,9 +36,10 @@ config DPM_FOUR_CHANNEL
 	  This option enables four channel configuration for DPM.
 
 config MTK_DFD
-	bool
-	default n
+	bool "Enable MediaTek DFD (Design For Debug) settings"
 	help
-	  This option enables DFD (Design for Debug) settings.
+	  DFD (Design for Debug) is a debugging tool, which scans flip-flops
+	  and dumps to internal RAM on the WDT reset. We reserve 1MB on DRAM
+	  to store logs of DFD.
 
 endif

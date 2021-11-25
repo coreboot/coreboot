@@ -11,6 +11,7 @@ CFLAGS  = -O2 -g -Wall -Wextra -Wmissing-prototypes -Werror
 CFLAGS += -I../../src/commonlib/include -I../../src/commonlib/bsd/include
 CFLAGS += -I../cbfstool/flashmap
 CFLAGS += -include ../../src/commonlib/bsd/include/commonlib/bsd/compiler.h
+CFLAGS += -D_DEFAULT_SOURCE # for endianness converting functions
 LDFLAGS =
 
 OBJS = ifdtool.o

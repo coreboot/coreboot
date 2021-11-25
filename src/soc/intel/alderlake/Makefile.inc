@@ -39,6 +39,7 @@ ramstage-y += p2sb.c
 ramstage-y += pcie_rp.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
+ramstage-y += retimer.c
 ramstage-y += soundwire.c
 ramstage-y += systemagent.c
 ramstage-y += vr_config.c

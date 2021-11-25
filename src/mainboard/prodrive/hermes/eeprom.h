@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <assert.h>
 #include <soc/ramstage.h>
+#include <types.h>
 
 union eeprom_dimm_layout {
 	struct __packed {
@@ -71,7 +73,7 @@ struct __packed eeprom_layout {
 		FSPM_UPD mupd;
 	};
 	union {
-		uint8_t RawFSPSUPD[0xC00];
+		uint8_t RawFSPSUPD[0xc00];
 		FSPS_UPD supd;
 	};
 	union {
@@ -82,7 +84,7 @@ struct __packed eeprom_layout {
 	char board_serial_number[HERMES_SERIAL_NUMBER_LENGTH];
 	uint8_t BootOrder[0x8c0];
 	union {
-		uint8_t RawBoardSetting[0xF8];
+		uint8_t RawBoardSetting[0xf8];
 		struct eeprom_board_settings BoardSettings;
 	};
 	union {
@@ -92,7 +94,7 @@ struct __packed eeprom_layout {
 };
 
 _Static_assert(sizeof(FSPM_UPD) <= 0x600, "FSPM_UPD too big");
-_Static_assert(sizeof(FSPS_UPD) <= 0xC00, "FSPS_UPD too big");
+_Static_assert(sizeof(FSPS_UPD) <= 0xc00, "FSPS_UPD too big");
 _Static_assert(sizeof(struct eeprom_layout) == 0x2000, "EEPROM layout size mismatch");
 
 bool eeprom_read_buffer(void *blob, size_t read_offset, size_t size);

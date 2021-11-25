@@ -7,22 +7,19 @@ DefinitionBlock(
 	ACPI_DSDT_REV_2,
 	OEM_ID,
 	ACPI_TABLE_CREATOR,
-	0x20110725	// OEM revision
+	0x20110725
 )
 {
 	#include <acpi/dsdt_top.asl>
 	#include <soc/intel/common/block/acpi/acpi/platform.asl>
-
-	// global NVS and variables
 	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
 
 	Scope (\_SB) {
 		Device (PCI0) {
-		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
-		#include <soc/intel/cannonlake/acpi/southbridge.asl>
+			#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
+			#include <soc/intel/cannonlake/acpi/southbridge.asl>
 		}
 	}
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
-
 }

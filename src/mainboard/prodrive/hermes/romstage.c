@@ -9,19 +9,19 @@ static const struct cnl_mb_cfg baseboard_mem_cfg = {
 	/* Access memory info through SMBUS. */
 	.spd[0] = {
 		.read_type = READ_SMBUS,
-		.spd_spec = {.spd_smbus_address = 0xA0}
+		.spd_spec = {.spd_smbus_address = 0xa0}
 	},
 	.spd[1] = {
 		.read_type = READ_SMBUS,
-		.spd_spec = {.spd_smbus_address = 0xA2}
+		.spd_spec = {.spd_smbus_address = 0xa2}
 	},
 	.spd[2] = {
 		.read_type = READ_SMBUS,
-		.spd_spec = {.spd_smbus_address = 0xA4}
+		.spd_spec = {.spd_smbus_address = 0xa4}
 	},
 	.spd[3] = {
 		.read_type = READ_SMBUS,
-		.spd_spec = {.spd_smbus_address = 0xA6}
+		.spd_spec = {.spd_smbus_address = 0xa6}
 	},
 
 	/* Baseboard uses 121, 81 and 100 rcomp resistors */

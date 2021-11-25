@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
-#include <device/pci_ops.h>
-#include <delay.h>
 #include <console/console.h>
 #include <crc_byte.h>
+#include <delay.h>
+#include <device/pci_ops.h>
 #include <device/smbus_host.h>
 #include <soc/intel/common/block/smbus/smbuslib.h>
 #include <types.h>

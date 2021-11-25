@@ -1,19 +1,19 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
 #include <acpi/acpigen.h>
+#include <arch/cpu.h>
+#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <crc_byte.h>
-#include <bootstate.h>
 #include <device/device.h>
 #include <device/dram/spd.h>
 #include <gpio.h>
-#include <intelblocks/gpio_defs.h>
+#include <intelblocks/gpio.h>
 #include <intelblocks/pmclib.h>
+#include <smbios.h>
 #include <soc/gpio.h>
 #include <types.h>
-#include <smbios.h>
 
 #include "eeprom.h"
 #include "gpio.h"

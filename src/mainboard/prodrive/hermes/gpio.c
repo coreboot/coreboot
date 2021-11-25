@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <commonlib/helpers.h>
+#include <intelblocks/gpio.h>
 #include <soc/gpio.h>
-#include <intelblocks/gpio_defs.h>
 
 #include "gpio.h"
 

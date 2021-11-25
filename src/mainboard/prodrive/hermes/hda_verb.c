@@ -21,7 +21,7 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1c, 0x411111f0), /* CD audio - disabled */
 	AZALIA_PIN_CFG(0, 0x1d, 0x4004c601), /* BEEPIN */
 	AZALIA_PIN_CFG(0, 0x1e, 0x01452160), /* SPDIF-OUT */
-	AZALIA_PIN_CFG(0, 0x1f, 0x01C52170), /* SPDIF-IN */
+	AZALIA_PIN_CFG(0, 0x1f, 0x01c52170), /* SPDIF-IN */
 
 	/* Config for R02 and older */
 	AZALIA_PIN_CFG(0, 0x19, 0x02214c40), /* port F - front hp out */
@@ -31,11 +31,11 @@ const u32 cim_verb_data[] = {
 
 	/*
 	 * VerbTable: CFL Display Audio Codec
-	 * Revision ID = 0xFF
-	 * Codec Vendor: 0x8086280B
+	 * Revision ID = 0xff
+	 * Codec Vendor: 0x8086280b
 	 */
-	0x8086280B,
-	0xFFFFFFFF,
+	0x8086280b,
+	0xffffffff,
 	5,	/* Number of 4 dword sets */
 
 	AZALIA_SUBVENDOR(2, 0x80860101),

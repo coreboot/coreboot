@@ -97,19 +97,15 @@ static u32 get_front_panel_cfg(uint8_t front_panel_audio)
 	case 0:
 		return AZALIA_PIN_CFG_NC(0);
 	case 1:
-		return 0x022a4c40;
+		return 0x02214c40;
 	case 2:
-		return AZALIA_PIN_DESC(
-			INTEGRATED,
-			INTERNAL,
-			NA,
-			SPEAKER,
-			TYPE_UNKNOWN,
-			COLOR_UNKNOWN,
-			false,
-			0xf,
-			0);
+		return 0x0227ec40;
 	}
+}
+
+static u32 get_front_mic_cfg(uint8_t front_panel_audio)
+{
+	return front_panel_audio == 2 ? AZALIA_PIN_CFG_NC(0) : 0x02a19c20;
 }
 
 static void mainboard_r0x_configure_alc888(u8 *base, u32 viddid)
@@ -124,7 +120,10 @@ static void mainboard_r0x_configure_alc888(u8 *base, u32 viddid)
 
 	const u32 front_panel_cfg = get_front_panel_cfg(board_cfg->front_panel_audio);
 
+	const u32 front_mic_cfg = get_front_mic_cfg(board_cfg->front_panel_audio);
+
 	const u32 verbs[] = {
+		AZALIA_PIN_CFG(0, 0x19, front_mic_cfg),
 		AZALIA_PIN_CFG(0, 0x1b, front_panel_cfg),
 		0x0205000d, /* Pin 37 vrefo hidden register - used as port C vref */
 		get_port_c_vref_cfg(board_cfg->blue_rear_vref),

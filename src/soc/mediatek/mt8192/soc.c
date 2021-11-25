@@ -9,7 +9,6 @@
 #include <soc/mcupm.h>
 #include <soc/mmu_operations.h>
 #include <soc/sspm.h>
-#include <soc/tracker_common.h>
 #include <soc/ufs.h>
 #include <symbols.h>
 
@@ -34,7 +33,6 @@ static void soc_init(struct device *dev)
 	if (CONFIG(MTK_DFD))
 		dfd_init();
 	ufs_disable_refclk();
-	bustracker_init();
 }
 
 static struct device_operations soc_ops = {

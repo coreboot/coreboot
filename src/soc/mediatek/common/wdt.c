@@ -16,6 +16,8 @@ int mtk_wdt_init(void)
 
 	mtk_wdt_clr_status(wdt_sta);
 
+	printk(BIOS_INFO, "WDT: Status = %#x\n", wdt_sta);
+
 	printk(BIOS_INFO, "WDT: Last reset was ");
 	if (wdt_sta & MTK_WDT_STA_HW_RST) {
 		printk(BIOS_INFO, "hardware watchdog\n");

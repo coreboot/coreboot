@@ -1,12 +1,13 @@
 config PARALLEL_MP
 	def_bool y
 	depends on !LEGACY_SMP_INIT
-	depends on SMP
 	select CPU_INFO_V2
 	help
 	 This option uses common MP infrastructure for bringing up APs
 	 in parallel. It additionally provides a more flexible mechanism
 	 for sequencing the steps of bringing up the APs.
+	 The code also works for just initialising the BSP in case there
+	 are no APs.
 
 config PARALLEL_MP_AP_WORK
 	def_bool n

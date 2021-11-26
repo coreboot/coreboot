@@ -593,6 +593,10 @@ static enum cb_err mp_init(struct bus *cpu_bus, struct mp_params *p)
 		return CB_ERR;
 	}
 
+	/* We just need to run things on the BSP */
+	if (!CONFIG(SMP))
+		return bsp_do_flight_plan(p);
+
 	/* Default to currently running CPU. */
 	num_cpus = allocate_cpu_devices(cpu_bus, p);
 

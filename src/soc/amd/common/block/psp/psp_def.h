@@ -30,10 +30,6 @@
 #define PSPV1_STATUS_HALT		BIT(3)
 #define PSPV1_STATUS_RECOVERY		BIT(4)
 
-/* generic PSP interface status, v2 */
-#define PSPV2_STATUS_ERROR		BIT(30)
-#define PSPV2_STATUS_RECOVERY		BIT(31)
-
 /* psp_mbox consists of hardware registers beginning at PSPx000070
  *   mbox_command: BIOS->PSP command, cleared by PSP when complete
  *   mbox_status:  BIOS->PSP interface status

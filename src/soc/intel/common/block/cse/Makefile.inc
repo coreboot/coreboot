@@ -104,5 +104,23 @@ cbfs-files-y += $(CSE_RW_HASH)
 $(CSE_RW_HASH)-file := $(obj)/cse_rw.hash
 $(CSE_RW_HASH)-name := $(CSE_RW_HASH)
 $(CSE_RW_HASH)-type := raw
+endif
 
+ifeq ($(CONFIG_SOC_INTEL_CSE_SUB_PART_UPDATE),y)
+
+CSE_IOM_FILE = $(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_IOM_CBFS_FILE))
+CSE_IOM = $(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_IOM_CBFS_NAME))
+regions-for-file-$(CSE_IOM) = FW_MAIN_A,FW_MAIN_B,COREBOOT
+cbfs-files-y += $(CSE_IOM)
+$(CSE_IOM)-file := $(CSE_IOM_FILE)
+$(CSE_IOM)-name := $(CSE_IOM)
+$(CSE_IOM)-type := raw
+
+CSE_NPHY_FILE = $(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_NPHY_CBFS_FILE))
+CSE_NPHY = $(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_NPHY_CBFS_NAME))
+regions-for-file-$(CSE_NPHY) = FW_MAIN_A,FW_MAIN_B,COREBOOT
+cbfs-files-y += $(CSE_NPHY)
+$(CSE_NPHY)-file := $(CSE_NPHY_FILE)
+$(CSE_NPHY)-name := $(CSE_NPHY)
+$(CSE_NPHY)-type := raw
 endif

@@ -143,6 +143,24 @@ enum csme_failure_reason {
 
 	/* Error sending EOP to CSE */
 	CSE_EOP_FAIL = 12,
+
+	/* CSE Sub-partition update fail */
+	CSE_LITE_SKU_SUB_PART_UPDATE_FAIL = 13,
+
+	/* CSE sub-partition access failure */
+	CSE_LITE_SKU_SUB_PART_ACCESS_ERR = 14,
+
+	/* CSE CBFS sub-partition access error */
+	CSE_LITE_SKU_SUB_PART_BLOB_ACCESS_ERR = 15,
+
+	/* CSE Lite sub-partition update is not required */
+	CSE_LITE_SKU_SUB_PART_UPDATE_NOT_REQ = 16,
+
+	/* CSE Lite sub-partition layout mismatch error */
+	CSE_LITE_SKU_SUB_PART_LAYOUT_MISMATCH_ERROR = 17,
+
+	/* CSE Lite sub-partition update success */
+	CSE_LITE_SKU_PART_UPDATE_SUCCESS = 18,
 };
 
 /* set up device for use in early boot enviroument with temp bar */
@@ -320,4 +338,9 @@ enum cse_device_state get_cse_device_state(unsigned int devfn);
 /* Function that put the CSE into desired state based on `requested_state` */
 bool set_cse_device_state(unsigned int devfn, enum cse_device_state requested_state);
 
+/*
+ * Check if cse sub-parition update is required or not.
+ * Returns true if cse sub-parition update is required otherwise false.
+ */
+bool skip_cse_sub_part_update(void);
 #endif // SOC_INTEL_COMMON_CSE_H

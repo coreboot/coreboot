@@ -5,9 +5,17 @@
 #include <commonlib/region.h>
 #include <fmap.h>
 #include <intelblocks/cse.h>
+#include <intelblocks/cse_layout.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/misc.h>
 #include <soc/intel/common/reset.h>
+#include <arch/cpu.h>
+
+#define BPDT_HEADER_SZ		sizeof(struct bpdt_header)
+#define BPDT_ENTRY_SZ		sizeof(struct bpdt_entry)
+#define SUBPART_HEADER_SZ	sizeof(struct subpart_hdr)
+#define SUBPART_ENTRY_SZ	sizeof(struct subpart_entry)
+#define SUBPART_MANIFEST_HDR_SZ	sizeof(struct subpart_entry_manifest_header)
 
 /* Converts bp index to boot partition string */
 #define GET_BP_STR(bp_index) (bp_index ? "RW" : "RO")
@@ -627,8 +635,8 @@ static enum csme_failure_reason cse_update_rw(const struct cse_bp_info *cse_bp_i
 		struct region_device *target_rdev)
 {
 	if (region_device_sz(target_rdev) < cse_blob_sz) {
-		printk(BIOS_ERR, "RW update does not fit. CSE RW flash region size: %zx, Update blob size:%zx\n",
-				region_device_sz(target_rdev), cse_blob_sz);
+		printk(BIOS_ERR, "RW update does not fit. CSE RW flash region size: %zx,"
+			"Update blob size:%zx\n", region_device_sz(target_rdev), cse_blob_sz);
 		return CSE_LITE_SKU_LAYOUT_MISMATCH_ERROR;
 	}
 
@@ -727,11 +735,248 @@ static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info)
 	return cse_trigger_fw_update(cse_bp_info, status, &target_rdev);
 }
 
+static const char *cse_sub_part_str(enum bpdt_entry_type type)
+{
+	switch (type) {
+	case IOM_FW:
+		return "IOM";
+	case NPHY_FW:
+		return "NPHY";
+	default:
+		return "Unknown";
+	}
+}
+
+static bool cse_sub_part_get_target_rdev(struct region_device *target_rdev,
+				const char *region_name, enum bpdt_entry_type type)
+{
+	struct bpdt_header bpdt_hdr;
+	struct region_device cse_rdev;
+	struct bpdt_entry bpdt_entries[MAX_SUBPARTS];
+	uint8_t i;
+
+	if (fmap_locate_area_as_rdev_rw(region_name, &cse_rdev) < 0) {
+		printk(BIOS_ERR, "cse_lite: Failed to locate %s in the FMAP\n", region_name);
+		return false;
+	}
+
+	if ((rdev_readat(&cse_rdev, &bpdt_hdr, 0, BPDT_HEADER_SZ)) != BPDT_HEADER_SZ) {
+		printk(BIOS_ERR, "cse_lite: Failed to read BPDT header from CSE region\n");
+		return false;
+	}
+
+	if ((rdev_readat(&cse_rdev, bpdt_entries, BPDT_HEADER_SZ,
+		(bpdt_hdr.descriptor_count * BPDT_ENTRY_SZ))) !=
+		(bpdt_hdr.descriptor_count * BPDT_ENTRY_SZ)) {
+		printk(BIOS_ERR, "cse_lite: Failed to read BPDT entries from CSE region\n");
+		return false;
+	}
+
+	/* walk through BPDT entries to identify sub-partition's payload offset and size */
+	for (i = 0; i < bpdt_hdr.descriptor_count; i++) {
+		if (bpdt_entries[i].type == type) {
+			printk(BIOS_INFO, "cse_lite: Sub-partition %s- offset = 0x%x,"
+				"size = 0x%x\n", cse_sub_part_str(type), bpdt_entries[i].offset,
+					bpdt_entries[i].size);
+
+			if (rdev_chain(target_rdev, &cse_rdev, bpdt_entries[i].offset,
+				bpdt_entries[i].size))
+				return false;
+			else
+				return true;
+		}
+	}
+
+	printk(BIOS_ERR, "cse_lite: Sub-partition %s is not found\n", cse_sub_part_str(type));
+	return false;
+}
+
+static bool cse_get_sub_part_fw_version(enum bpdt_entry_type type,
+					const struct region_device *rdev,
+					struct fw_version *fw_ver)
+{
+	struct subpart_entry subpart_entry;
+	struct subpart_entry_manifest_header man_hdr;
+
+	if ((rdev_readat(rdev, &subpart_entry, SUBPART_HEADER_SZ, SUBPART_ENTRY_SZ))
+			!= SUBPART_ENTRY_SZ) {
+		printk(BIOS_ERR, "cse_lite: Failed to read %s sub partition entry\n",
+				cse_sub_part_str(type));
+		return false;
+	}
+
+	if ((rdev_readat(rdev, &man_hdr, subpart_entry.offset_bytes, SUBPART_MANIFEST_HDR_SZ))
+			!= SUBPART_MANIFEST_HDR_SZ) {
+		printk(BIOS_ERR, "cse_lite: Failed to read %s Sub part entry #0 manifest\n",
+				cse_sub_part_str(type));
+		return false;
+	}
+
+	fw_ver->major = man_hdr.binary_version.major;
+	fw_ver->minor = man_hdr.binary_version.minor;
+	fw_ver->hotfix = man_hdr.binary_version.hotfix;
+	fw_ver->build = man_hdr.binary_version.build;
+
+	return true;
+}
+
+static void cse_sub_part_get_source_fw_version(void *subpart_cbfs_rw, struct fw_version *fw_ver)
+{
+	uint8_t *ptr = (uint8_t *)subpart_cbfs_rw;
+	struct subpart_entry *subpart_entry;
+	struct subpart_entry_manifest_header *man_hdr;
+
+	subpart_entry = (struct subpart_entry *) (ptr + SUBPART_HEADER_SZ);
+	man_hdr = (struct subpart_entry_manifest_header *) (ptr + subpart_entry->offset_bytes);
+
+	fw_ver->major = man_hdr->binary_version.major;
+	fw_ver->minor = man_hdr->binary_version.minor;
+	fw_ver->hotfix = man_hdr->binary_version.hotfix;
+	fw_ver->build = man_hdr->binary_version.build;
+}
+
+static bool cse_prep_for_component_update(const struct cse_bp_info *cse_bp_info)
+{
+	/*
+	 * To set CSE's operation mode to HMRFPO mode:
+	 * 1. Ensure CSE to boot from RO(BP1)
+	 * 2. Send HMRFPO_ENABLE command to CSE
+	 */
+	if (!cse_boot_to_ro(cse_bp_info))
+		return false;
+
+	return cse_hmrfpo_enable();
+}
+
+static uint8_t cse_sub_part_trigger_update(enum bpdt_entry_type type, uint8_t bp,
+		const void *subpart_cbfs_rw, const size_t blob_sz,
+		struct region_device *target_rdev)
+{
+	if (region_device_sz(target_rdev) < blob_sz) {
+		printk(BIOS_ERR, "cse_lite: %s Target sub-partition size: %zx, "
+				"smaller than blob size:%zx, abort update\n",
+				cse_sub_part_str(type), region_device_sz(target_rdev), blob_sz);
+		return CSE_LITE_SKU_SUB_PART_LAYOUT_MISMATCH_ERROR;
+	}
+
+	/* Erase CSE Lite sub-partition */
+	if (!cse_erase_rw_region(target_rdev))
+		return CSE_LITE_SKU_SUB_PART_UPDATE_FAIL;
+
+	/* Update CSE Lite sub-partition */
+	if (!cse_copy_rw(target_rdev, (void *)subpart_cbfs_rw, 0, blob_sz))
+		return CSE_LITE_SKU_SUB_PART_UPDATE_FAIL;
+
+	printk(BIOS_INFO, "cse_lite: CSE %s %s Update successful\n", GET_BP_STR(bp),
+			cse_sub_part_str(type));
+
+	return CSE_LITE_SKU_PART_UPDATE_SUCCESS;
+}
+
+static uint8_t handle_cse_sub_part_fw_update_rv(uint8_t rv)
+{
+	switch (rv) {
+	case CSE_LITE_SKU_PART_UPDATE_SUCCESS:
+	case CSE_LITE_SKU_SUB_PART_UPDATE_NOT_REQ:
+		return rv;
+	default:
+		cse_trigger_vboot_recovery(rv);
+	}
+	/* Control never reaches here */
+	return rv;
+}
+
+static enum csme_failure_reason cse_sub_part_fw_component_update(enum bpdt_entry_type type,
+		const struct cse_bp_info *cse_bp_info, const char *name)
+{
+	struct region_device target_rdev;
+	struct fw_version target_fw_ver, source_fw_ver;
+	enum csme_failure_reason rv;
+	size_t size;
+	static const char * const cse_regions[] = {"CSE_RO", "CSE_RW"};
+
+	void *subpart_cbfs_rw = cbfs_map(name, &size);
+	if (!subpart_cbfs_rw) {
+		printk(BIOS_ERR, "cse_lite: Not able to map %s CBFS file\n",
+				cse_sub_part_str(type));
+		return CSE_LITE_SKU_SUB_PART_BLOB_ACCESS_ERR;
+	}
+
+	cse_sub_part_get_source_fw_version(subpart_cbfs_rw, &source_fw_ver);
+	printk(BIOS_INFO, "cse_lite: CBFS %s FW Version: %x.%x.%x.%x\n", cse_sub_part_str(type),
+			source_fw_ver.major, source_fw_ver.minor, source_fw_ver.hotfix,
+			source_fw_ver.build);
+
+	/* Trigger sub-partition update in CSE RO and CSE RW */
+	for (size_t bp = 0; bp < ARRAY_SIZE(cse_regions); bp++) {
+		if (!cse_sub_part_get_target_rdev(&target_rdev, cse_regions[bp], type)) {
+			rv = CSE_LITE_SKU_SUB_PART_ACCESS_ERR;
+			goto error_exit;
+		}
+
+		if (!cse_get_sub_part_fw_version(type, &target_rdev, &target_fw_ver)) {
+			rv = CSE_LITE_SKU_SUB_PART_ACCESS_ERR;
+			goto error_exit;
+		}
+
+		printk(BIOS_INFO, "cse_lite: %s %s FW Version: %x.%x.%x.%x\n", cse_regions[bp],
+				cse_sub_part_str(type), target_fw_ver.major,
+				target_fw_ver.minor, target_fw_ver.hotfix, target_fw_ver.build);
+
+		if (!cse_compare_sub_part_version(&target_fw_ver, &source_fw_ver)) {
+			printk(BIOS_INFO, "cse_lite: %s %s update is not required\n",
+					cse_regions[bp], cse_sub_part_str(type));
+			rv = CSE_LITE_SKU_SUB_PART_UPDATE_NOT_REQ;
+			continue;
+		}
+
+		printk(BIOS_INFO, "CSE %s %s Update initiated\n", GET_BP_STR(bp),
+				cse_sub_part_str(type));
+
+		if (!cse_prep_for_component_update(cse_bp_info)) {
+			rv = CSE_LITE_SKU_SUB_PART_ACCESS_ERR;
+			goto error_exit;
+		}
+
+		rv = cse_sub_part_trigger_update(type, bp, subpart_cbfs_rw,
+				size, &target_rdev);
+
+		if (rv != CSE_LITE_SKU_PART_UPDATE_SUCCESS)
+			goto error_exit;
+	}
+error_exit:
+	cbfs_unmap(subpart_cbfs_rw);
+	return rv;
+}
+
+static uint8_t cse_sub_part_fw_update(const struct cse_bp_info *cse_bp_info)
+{
+	if (skip_cse_sub_part_update()) {
+		printk(BIOS_INFO, "CSE Sub-partition update not required\n");
+		return CSE_LITE_SKU_SUB_PART_UPDATE_NOT_REQ;
+	}
+
+	int rv;
+	rv = cse_sub_part_fw_component_update(IOM_FW, cse_bp_info,
+			CONFIG_SOC_INTEL_CSE_IOM_CBFS_NAME);
+
+	handle_cse_sub_part_fw_update_rv(rv);
+
+	rv = cse_sub_part_fw_component_update(NPHY_FW, cse_bp_info,
+			CONFIG_SOC_INTEL_CSE_NPHY_CBFS_NAME);
+
+	return handle_cse_sub_part_fw_update_rv(rv);
+}
+
 void cse_fw_sync(void)
 {
 	static struct get_bp_info_rsp cse_bp_info;
 
-	if (vboot_recovery_mode_enabled()) {
+	/*
+	 * If system is in recovery mode, skip CSE Lite update if CSE sub-partition update
+	 * is not enabled and continue to update CSE sub-partitions.
+	 */
+	if (vboot_recovery_mode_enabled() && !CONFIG(SOC_INTEL_CSE_SUB_PART_UPDATE)) {
 		printk(BIOS_DEBUG, "cse_lite: Skip switching to RW in the recovery path\n");
 		return;
 	}
@@ -744,7 +989,31 @@ void cse_fw_sync(void)
 
 	if (!cse_get_bp_info(&cse_bp_info)) {
 		printk(BIOS_ERR, "cse_lite: Failed to get CSE boot partition info\n");
-		cse_trigger_vboot_recovery(CSE_COMMUNICATION_ERROR);
+
+		 /* If system is in recovery mode, don't trigger recovery again */
+		if (!vboot_recovery_mode_enabled()) {
+			cse_trigger_vboot_recovery(CSE_COMMUNICATION_ERROR);
+		} else {
+			printk(BIOS_ERR, "cse_lite: System is already in Recovery Mode, "
+					"so no action\n");
+			return;
+		}
+	}
+
+	/*
+	 * If system is in recovery mode, CSE Lite update has to be skipped but CSE
+	 * sub-partitions like NPHY and IOM have to to be updated. If CSE sub-parition update
+	 * fails during recovery, just continue to boot.
+	 */
+	if (CONFIG(SOC_INTEL_CSE_SUB_PART_UPDATE) && vboot_recovery_mode_enabled()) {
+		if (cse_sub_part_fw_update(&cse_bp_info.bp_info) ==
+				CSE_LITE_SKU_PART_UPDATE_SUCCESS) {
+			cse_board_reset();
+			do_global_reset();
+			die("ERROR: GLOBAL RESET Failed to reset the system\n");
+		}
+
+		return;
 	}
 
 	if (!cse_fix_data_failure_err(&cse_bp_info.bp_info))
@@ -760,6 +1029,9 @@ void cse_fw_sync(void)
 		if (rv)
 			cse_trigger_vboot_recovery(rv);
 	}
+
+	if (CONFIG(SOC_INTEL_CSE_SUB_PART_UPDATE))
+		cse_sub_part_fw_update(&cse_bp_info.bp_info);
 
 	if (!cse_is_rw_bp_status_valid(&cse_bp_info.bp_info))
 		cse_trigger_vboot_recovery(CSE_LITE_SKU_RW_JUMP_ERROR);

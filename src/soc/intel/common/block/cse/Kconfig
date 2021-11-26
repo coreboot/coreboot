@@ -86,6 +86,38 @@ config SOC_INTEL_CSE_SET_EOP
 	  just prior to loading the payload. This is a security feature so the
 	  CSE will no longer respond to Pre-Boot commands.
 
+config SOC_INTEL_CSE_SUB_PART_UPDATE
+	bool "Enable the CSE sub-partition update Feature"
+	default n
+	depends on SOC_INTEL_CSE_LITE_SKU
+	help
+	 This config will enable CSE sub-partition firmware update feature and also will be used ensure
+	 all the required configs are provided by mainboard.
+
+config SOC_INTEL_CSE_IOM_CBFS_NAME
+	string "CBFS name for CSE sub-partition IOM binary" if SOC_INTEL_CSE_SUB_PART_UPDATE
+	default "cse_iom"
+	help
+	 CBFS entry name for Intel CSE sub-partition IOM binary
+
+config SOC_INTEL_CSE_IOM_CBFS_FILE
+	string "Intel CBFS path and file name for CSE sub-partition IOM binary" if SOC_INTEL_CSE_SUB_PART_UPDATE
+	default ""
+	help
+	 CBFS path and file name for Intel CSE sub-partition IOM binary
+
+config SOC_INTEL_CSE_NPHY_CBFS_NAME
+	string "CBFS name for CSE sub-partition NPHY binary" if SOC_INTEL_CSE_SUB_PART_UPDATE
+	default "cse_nphy"
+	help
+	 CBFS entry name for Intel CSE sub-partition NPHY binary
+
+config SOC_INTEL_CSE_NPHY_CBFS_FILE
+	string "Intel CBFS path and file name for CSE sub-partition NPHY binary" if SOC_INTEL_CSE_SUB_PART_UPDATE
+	default ""
+	help
+	 CBFS path and file name for Intel CSE sub-partition NPHY binary
+
 if STITCH_ME_BIN
 
 config CSE_COMPONENTS_PATH

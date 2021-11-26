@@ -1076,7 +1076,9 @@ static void fill_mp_state(struct mp_state *state, const struct mp_ops *ops)
 		ops->get_smm_info(&state->perm_smbase, &state->perm_smsize,
 					&state->smm_real_save_state_size);
 
-	state->smm_save_state_size = MAX(state->smm_real_save_state_size, smm_stub_size());
+	if (CONFIG(HAVE_SMI_HANDLER))
+		state->smm_save_state_size = MAX(state->smm_real_save_state_size,
+						 smm_stub_size());
 
 	/*
 	 * Make sure there is enough room for the SMM descriptor

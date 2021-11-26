@@ -19,7 +19,7 @@ static uintptr_t soc_get_psp_base_address(void)
 	return psp_mmio;
 }
 
-void *soc_get_mbox_address(void)
+static void *soc_get_mbox_address(void)
 {
 	uintptr_t psp_mmio = soc_get_psp_base_address();
 	if (!psp_mmio)

@@ -5,9 +5,6 @@
 
 #include <stdint.h>
 
-/* Get the mailbox base address - specific to family of device. */
-void *soc_get_mbox_address(void);
-
 #define SMM_TRIGGER_IO		0
 #define SMM_TRIGGER_MEM		1
 

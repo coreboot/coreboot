@@ -181,7 +181,6 @@
 void soc_enable_psp_early(void);
 
 #define PSP_MAILBOX_BAR			PCI_BASE_ADDRESS_4 /* BKDG: "BAR3" */
-#define PSP_MAILBOX_OFFSET		0x70 /* offset from BAR3 value */
 
 #define PSP_BAR_ENABLES			0x48
 #define  BAR3HIDE			BIT(12) /* Bit to hide BAR3 addr */

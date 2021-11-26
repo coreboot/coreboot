@@ -1,6 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/amd/msr.h>
+#include <cpu/x86/msr.h>
 #include <device/mmio.h>
+#include <device/pci_ops.h>
+#include <device/pci_def.h>
 #include <cbfs.h>
 #include <region_file.h>
 #include <timer.h>
@@ -8,7 +12,38 @@
 #include <amdblocks/psp.h>
 #include <soc/iomap.h>
 #include <soc/northbridge.h>
+#include <soc/pci_devs.h>
+#include <soc/southbridge.h>
 #include "psp_def.h"
+
+#define PSP_MAILBOX_OFFSET		0x70
+
+static void *soc_get_mbox_address(void)
+{
+	uintptr_t psp_mmio;
+
+	/* Check for presence of the PSP */
+	if (pci_read_config32(SOC_PSP_DEV, PCI_VENDOR_ID) == 0xffffffff) {
+		printk(BIOS_WARNING, "PSP: No SOC_PSP_DEV found at D%xF%x\n",
+			PSP_DEV, PSP_FUNC);
+		return 0;
+	}
+
+	/* Determine if Bar3Hide has been set, and if hidden get the base from
+	 * the MSR instead. */
+	if (pci_read_config32(SOC_PSP_DEV, PSP_BAR_ENABLES) & BAR3HIDE) {
+		psp_mmio = rdmsr(PSP_ADDR_MSR).lo;
+		if (!psp_mmio) {
+			printk(BIOS_WARNING, "PSP: BAR hidden, PSP_ADDR_MSR uninitialized\n");
+			return 0;
+		}
+	} else {
+		psp_mmio = pci_read_config32(SOC_PSP_DEV, PSP_MAILBOX_BAR) &
+				~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+	}
+
+	return (void *)(psp_mmio + PSP_MAILBOX_OFFSET);
+}
 
 static u32 rd_mbox_sts(struct pspv1_mbox *mbox)
 {

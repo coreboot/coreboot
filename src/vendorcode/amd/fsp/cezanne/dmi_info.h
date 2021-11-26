@@ -227,6 +227,9 @@ typedef struct {
   OUT UINT64                    VolatileSize;           ///< Size of the Volatile portion of the memory device in Bytes, if any.
   OUT UINT64                    CacheSize;              ///< Size of the Cache portion of the memory device in Bytes, if any.
   OUT UINT64                    LogicalSize;            ///< Size of the Logical memory device in Bytes.
+  // SMBIOS 3.3
+  OUT UINT32                    ExtendedSpeed;          ///< Extended Speed
+  OUT UINT32                    ExtendedConfiguredMemorySpeed; ///< Extended Configured memory speed
 } __packed TYPE17_DMI_INFO;
 
 /// Collection of pointers to the DMI records

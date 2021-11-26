@@ -3,7 +3,6 @@
 #ifndef _X86_MP_H_
 #define _X86_MP_H_
 
-#include <arch/smp/atomic.h>
 #include <cpu/x86/smm.h>
 #include <types.h>
 

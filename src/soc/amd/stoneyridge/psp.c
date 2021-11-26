@@ -51,7 +51,7 @@ void *soc_get_mbox_address(void)
 			return 0;
 		}
 	} else {
-		psp_mmio = pci_read_config32(SOC_PSP_DEV, PCI_BASE_ADDRESS_4) &
+		psp_mmio = pci_read_config32(SOC_PSP_DEV, PSP_MAILBOX_BAR) &
 				~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 	}
 

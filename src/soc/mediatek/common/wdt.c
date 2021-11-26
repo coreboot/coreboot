@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/cache.h>
 #include <device/mmio.h>
 #include <console/console.h>
 #include <soc/wdt.h>
@@ -27,7 +28,10 @@ int mtk_wdt_init(void)
 		 * We trigger secondary reset by triggering WDT hardware to send signal to EC.
 		 * We do not use do_board_reset() to send signal to EC
 		 * which is controlled by software driver.
+		 * Before triggering secondary reset, clean the data cache so the logs in cbmem
+		 * console (either in SRAM or DRAM) can be flushed.
 		 */
+		dcache_clean_all();
 		write32(&mtk_wdt->wdt_mode, MTK_WDT_MODE_EXTEN | MTK_WDT_MODE_KEY);
 		write32(&mtk_wdt->wdt_swrst, MTK_WDT_SWRST_KEY);
 	} else if (wdt_sta & MTK_WDT_STA_SW_RST)

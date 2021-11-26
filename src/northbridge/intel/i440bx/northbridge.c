@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <cpu/x86/mp.h>
 #include <device/pci_ops.h>
-#include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/cpu.h>
+#include <stdint.h>
 #include "i440bx.h"
 
 static void northbridge_init(struct device *dev)
@@ -72,15 +72,25 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus		= pci_domain_scan_bus,
 };
 
-static void cpu_bus_init(struct device *dev)
+static int get_cpu_count(void)
 {
-	initialize_cpus(dev->link_list);
+	return CONFIG_MAX_CPUS;
+}
+
+static const struct mp_ops mp_ops = {
+	.get_cpu_count = get_cpu_count,
+};
+
+void mp_init_cpus(struct bus *cpu_bus)
+{
+	/* TODO: Handle mp_init_with_smm failure? */
+	mp_init_with_smm(cpu_bus, &mp_ops);
 }
 
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
-	.init             = cpu_bus_init,
+	.init             = mp_cpu_bus_init,
 };
 
 static void enable_dev(struct device *dev)

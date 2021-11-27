@@ -40,10 +40,16 @@ union pci_bank {
 extern u8 *const pci_mmconf;
 
 static __always_inline
-volatile union pci_bank *pcicfg(pci_devfn_t dev)
+volatile union pci_bank *pci_map_bus(pci_devfn_t dev)
 {
 	return (void *)&pci_mmconf[PCI_DEVFN_OFFSET(dev)];
 }
+
+#else
+
+/* For platforms not supporting ECAM, they need to define pci_map_bus function
+ * in their platform-specific code */
+volatile union pci_bank *pci_map_bus(pci_devfn_t dev);
 
 #endif
 
@@ -56,37 +62,37 @@ volatile union pci_bank *pcicfg(pci_devfn_t dev)
 static __always_inline
 uint8_t pci_s_read_config8(pci_devfn_t dev, uint16_t reg)
 {
-	return pcicfg(dev)->reg8[reg];
+	return pci_map_bus(dev)->reg8[reg];
 }
 
 static __always_inline
 uint16_t pci_s_read_config16(pci_devfn_t dev, uint16_t reg)
 {
-	return pcicfg(dev)->reg16[reg / sizeof(uint16_t)];
+	return pci_map_bus(dev)->reg16[reg / sizeof(uint16_t)];
 }
 
 static __always_inline
 uint32_t pci_s_read_config32(pci_devfn_t dev, uint16_t reg)
 {
-	return pcicfg(dev)->reg32[reg / sizeof(uint32_t)];
+	return pci_map_bus(dev)->reg32[reg / sizeof(uint32_t)];
 }
 
 static __always_inline
 void pci_s_write_config8(pci_devfn_t dev, uint16_t reg, uint8_t value)
 {
-	pcicfg(dev)->reg8[reg] = value;
+	pci_map_bus(dev)->reg8[reg] = value;
 }
 
 static __always_inline
 void pci_s_write_config16(pci_devfn_t dev, uint16_t reg, uint16_t value)
 {
-	pcicfg(dev)->reg16[reg / sizeof(uint16_t)] = value;
+	pci_map_bus(dev)->reg16[reg / sizeof(uint16_t)] = value;
 }
 
 static __always_inline
 void pci_s_write_config32(pci_devfn_t dev, uint16_t reg, uint32_t value)
 {
-	pcicfg(dev)->reg32[reg / sizeof(uint32_t)] = value;
+	pci_map_bus(dev)->reg32[reg / sizeof(uint32_t)] = value;
 }
 
 /*
@@ -98,19 +104,19 @@ void pci_s_write_config32(pci_devfn_t dev, uint16_t reg, uint32_t value)
 static __always_inline
 uint8_t *pci_mmio_config8_addr(pci_devfn_t dev, uint16_t reg)
 {
-	return (uint8_t *)&pcicfg(dev)->reg8[reg];
+	return (uint8_t *)&pci_map_bus(dev)->reg8[reg];
 }
 
 static __always_inline
 uint16_t *pci_mmio_config16_addr(pci_devfn_t dev, uint16_t reg)
 {
-	return (uint16_t *)&pcicfg(dev)->reg16[reg / sizeof(uint16_t)];
+	return (uint16_t *)&pci_map_bus(dev)->reg16[reg / sizeof(uint16_t)];
 }
 
 static __always_inline
 uint32_t *pci_mmio_config32_addr(pci_devfn_t dev, uint16_t reg)
 {
-	return (uint32_t *)&pcicfg(dev)->reg32[reg / sizeof(uint32_t)];
+	return (uint32_t *)&pci_map_bus(dev)->reg32[reg / sizeof(uint32_t)];
 }
 
 #endif /* _PCI_MMIO_CFG_H */

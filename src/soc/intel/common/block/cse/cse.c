@@ -744,6 +744,12 @@ int cse_hmrfpo_enable(void)
 	struct hmrfpo_enable_resp resp;
 	size_t resp_size = sizeof(struct hmrfpo_enable_resp);
 
+	if (cse_is_hfs1_com_secover_mei_msg()) {
+		printk(BIOS_DEBUG, "HECI: CSE is already in security override mode, "
+			       "skip sending HMRFPO_ENABLE command to CSE\n");
+		return 1;
+	}
+
 	printk(BIOS_DEBUG, "HECI: Send HMRFPO Enable Command\n");
 
 	if (!cse_is_hmrfpo_enable_allowed()) {

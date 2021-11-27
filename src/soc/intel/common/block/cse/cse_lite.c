@@ -476,12 +476,13 @@ static const char *cse_get_source_rdev_fmap(void)
 }
 
 /*
- * Compare versions of CSE CBFS RW and CSE RW partition
+ * Compare versions of CSE CBFS sub-component and CSE sub-component partition
+ * In case of CSE component comparison:
  * If ver_cmp_status = 0, no update is required
  * If ver_cmp_status < 0, coreboot downgrades CSE RW region
  * If ver_cmp_status > 0, coreboot upgrades CSE RW region
  */
-static int compare_cse_version(const struct fw_version *a, const struct fw_version *b)
+static int cse_compare_sub_part_version(const struct fw_version *a, const struct fw_version *b)
 {
 	if (a->major != b->major)
 		return a->major - b->major;
@@ -590,7 +591,7 @@ static enum cse_update_status cse_check_update_status(const struct cse_bp_info *
 
 	cbfs_unmap(version_str);
 
-	ret = compare_cse_version(&cbfs_rw_version, cse_get_rw_version(cse_bp_info));
+	ret = cse_compare_sub_part_version(&cbfs_rw_version, cse_get_rw_version(cse_bp_info));
 	if (ret == 0)
 		return CSE_UPDATE_NOT_REQUIRED;
 	else if (ret < 0)

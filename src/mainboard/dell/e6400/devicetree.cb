@@ -1,0 +1,98 @@
+chip northbridge/intel/gm45
+	# IGD Displays
+	register "gfx" = "GMA_STATIC_DISPLAYS(1)"
+
+	register "gpu_panel_power_up_delay" = "250"		# T1+T2: 25ms
+	register "gpu_panel_power_down_delay" = "250"		# T3:    25ms
+	register "gpu_panel_power_backlight_on_delay" = "2500"	# T5:   250ms
+	register "gpu_panel_power_backlight_off_delay" = "2500"	# Tx:   250ms
+	register "gpu_panel_power_cycle_delay" = "3"		# T4:   200ms
+
+	register "slfm" = "1"
+
+	device cpu_cluster 0 on ops gm45_cpu_bus_ops end
+
+	register "pci_mmio_size" = "2048"
+
+	device domain 0 on
+		subsystemid 0x1028 0x0233 inherit
+		ops gm45_pci_domain_ops
+
+		device pci 00.0 on end # host bridge
+		device pci 01.0 off end
+		device pci 02.0 on end # VGA
+		device pci 02.1 on end # Display
+		device pci 03.0 on end # ME
+		device pci 03.1 off end # ME
+		device pci 03.2 off end # ME
+		device pci 03.3 off end # ME
+		chip southbridge/intel/i82801ix
+			register "pirqa_routing" = "0x0b"
+			register "pirqb_routing" = "0x03"
+			register "pirqc_routing" = "0x0b"
+			register "pirqd_routing" = "0x0a"
+			register "pirqe_routing" = "0x80"
+			register "pirqf_routing" = "0x80"
+			register "pirqg_routing" = "0x80"
+			register "pirqh_routing" = "0x80"
+
+			register "gpi8_routing"  = "2"
+			register "gpe0_en" = "0x01000000"
+			register "gpi1_routing"  = "2"
+
+			# Set AHCI mode, enable ports 1 and 2.
+			register "sata_port_map"		= "0x03"
+			register "sata_clock_request"		= "0"
+			register "sata_traffic_monitor"		= "0"
+
+			# Set c-state support
+			register "c4onc3_enable"		= "1"
+			register "c5_enable"			= "1"
+			register "c6_enable"			= "1"
+
+			# Set thermal throttling to 75%.
+			register "throttle_duty"		= "THTL_75_0"
+
+			# Enable PCIe ports 1,2,4 as slots (Mini * PCIe).
+			register "pcie_slot_implemented"	= "0xb"
+			# Set power limits to 10 * 10^0 watts.
+			# Maybe we should set less for Mini PCIe.
+			register "pcie_power_limits" = "{
+				[0] = { 10, 0 },
+				[1] = { 10, 0 },
+				[3] = { 10, 0 },
+			}"
+			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
+			register "gen1_dec" = "0x007c0901"
+
+			device pci 19.0 on end # LAN
+			device pci 1a.0 on end # UHCI
+			device pci 1a.1 on end # UHCI
+			device pci 1a.2 on end # UHCI
+			device pci 1a.7 on end # EHCI
+			device pci 1b.0 on end # HD Audio
+			device pci 1c.0 on end # PCIe Port #1 (WWAN)
+			device pci 1c.1 on end # PCIe Port #2 (WLAN)
+			device pci 1c.2 on end # PCIe Port #3 (UWB)
+			device pci 1c.3 on # Expresscard
+				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
+			end # PCIe Port #4
+			device pci 1c.4 off end # PCIe Port #5
+			device pci 1c.5 off end # PCIe Port #6
+			device pci 1d.0 on end # UHCI
+			device pci 1d.1 on end # UHCI
+			device pci 1d.2 on end # UHCI
+			device pci 1d.7 on end # EHCI
+			device pci 1e.0 on end # PCI
+			device pci 1f.0 on # LPC bridge
+				chip ec/dell/mec5035
+					device pnp ff.0 on end
+                                end
+			end
+			device pci 1f.2 on end # SATA/IDE 1
+			device pci 1f.3 on end	# SMBus
+			device pci 1f.5 off end # SATA/IDE 2
+			device pci 1f.6 off end # Thermal
+		end
+	end
+end

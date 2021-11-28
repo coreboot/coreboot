@@ -1,0 +1,2 @@
+config BOARD_DELL_E6400
+	bool "Latitude E6400"

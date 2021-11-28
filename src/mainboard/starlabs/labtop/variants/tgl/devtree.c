@@ -19,6 +19,9 @@ void devtree_update(void)
 		&cfg->power_limits_config[POWER_LIMITS_U_4_CORE];
 
 	struct device *nic_dev = pcidev_on_root(0x14, 3);
+	struct device *tbt_pci_dev = pcidev_on_root(0x07, 0);
+	struct device *tbt_dma_dev = pcidev_on_root(0x0d, 2);
+
 
 	/* Update PL1 & PL2 based on CMOS settings */
 	switch (get_uint_option("power_profile", 0)) {
@@ -50,4 +53,13 @@ void devtree_update(void)
 	/* Enable/Disable Webcam based on CMOS settings */
 	if (get_uint_option("webcam", 1) == 0)
 		cfg->usb2_ports[3].enable = 0;
+
+	/* Enable/Disable Thunderbolt based on CMOS settings */
+	if (get_uint_option("thunderbolt", 1) == 0) {
+		cfg->UsbTcPortEn = 0;
+		cfg->TcssXhciEn = 0;
+		cfg->TcssD3ColdDisable = 0;
+		tbt_pci_dev->enabled = 0;
+		tbt_dma_dev->enabled = 0;
+	}
 }

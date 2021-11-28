@@ -14,6 +14,7 @@ webcam=Enable
 microphone=Enable
 legacy_8254_timer=Enable
 usb_always_on=Disable
+thunderbolt=Disable
 # EC
 kbl_timeout=30 seconds
 fn_ctrl_swap=Disable

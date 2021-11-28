@@ -33,4 +33,12 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	const uint8_t ht = get_uint_option("hyper_threading",
 		mupd->FspmConfig.HyperThreading);
 	mupd->FspmConfig.HyperThreading = ht;
+
+	/* Enable/Disable Thunderbolt based on CMOS settings */
+	if (get_uint_option("thunderbolt", 1) == 0) {
+		mupd->FspmConfig.VtdItbtEnable = 0;
+		mupd->FspmConfig.VtdBaseAddress[3] = 0;
+		mupd->FspmConfig.TcssDma0En = 0;
+		mupd->FspmConfig.TcssItbtPcie0En = 0;
+	}
 };

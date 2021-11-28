@@ -1,3 +1,14 @@
 boot_option=Fallback
 debug_level=Debug
 power_on_after_fail=Disable
+
+# EC options
+ac_fan_always_on=Disable
+camera_boot_state=Keep
+fn_win_swap=Disable
+tp_toggle_mode=CtrlAltF9
+flexicharger_on=Disable
+flexicharger_start=95
+flexicharger_stop=100
+kbled_booteffect=Disable
+kbled_timeout=15

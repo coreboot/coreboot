@@ -29,4 +29,9 @@ DefinitionBlock(
 	}
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
+
+#if CONFIG(EC_CLEVO_IT5570E)
+	#include <variant.asl>
+	#include <ec/clevo/it5570e/acpi/common.asl>
+#endif
 }

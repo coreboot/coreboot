@@ -203,6 +203,10 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref pch_espi on
+			chip ec/clevo/it5570e
+				device generic 0 on end
+				register "pl2_on_battery" = "15"
+			end
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end
 			end

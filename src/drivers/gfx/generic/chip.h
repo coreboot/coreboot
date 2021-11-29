@@ -29,6 +29,8 @@ struct drivers_gfx_generic_privacy_screen_config {
 struct drivers_gfx_generic_device_config {
 	/* ACPI device name of the output device */
 	const char *name;
+	/* Value to use for _HID Name, will take precedence over _ADR */
+	const char *hid;
 	/* The address of the output device. See section A.3.2 */
 	unsigned int addr;
 	/* Electronic privacy screen specific config */

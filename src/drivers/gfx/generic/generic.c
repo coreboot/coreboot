@@ -121,7 +121,11 @@ static void gfx_fill_ssdt_generator(const struct device *dev)
 
 	for (i = 0; i < config->device_count; i++) {
 		acpigen_write_device(config->device[i].name);
-		acpigen_write_name_integer("_ADR", config->device[i].addr);
+		if (config->device[i].hid)
+			acpigen_write_name_string("_HID", config->device[i].hid);
+		else
+			acpigen_write_name_integer("_ADR", config->device[i].addr);
+
 		acpigen_write_name_integer("_STA", 0xF);
 		gfx_fill_privacy_screen_dsm(&config->device[i].privacy);
 		acpigen_pop_len(); /* Device */

@@ -11,9 +11,9 @@
 
 #include <common.h>
 #include <commonlib/bsd/elog.h>
-#include <flashrom.h>
 
 #include "eventlog.h"
+#include "uflashrom.h"
 
 /* Only refers to the data max size. The "-1" is the checksum byte */
 #define ELOG_MAX_EVENT_DATA_SIZE  (ELOG_MAX_EVENT_SIZE - sizeof(struct event_header) - 1)
@@ -78,16 +78,18 @@ static void usage(char *invoked_as)
  */
 static int elog_read(struct buffer *buffer, const char *filename)
 {
-	if (filename == NULL) {
-		uint8_t *buf;
-		uint32_t buf_size;
+	struct firmware_programmer image = {
+		.programmer = FLASHROM_PROGRAMMER_INTERNAL_AP,
+		.data = NULL,
+		.size = 0,
+	};
 
-		if (flashrom_read(FLASHROM_PROGRAMMER_INTERNAL_AP, ELOG_RW_REGION_NAME,
-				  &buf, &buf_size) != VB2_SUCCESS) {
+	if (filename == NULL) {
+		if (flashrom_read(&image, ELOG_RW_REGION_NAME) != 0) {
 			fprintf(stderr, "Could not read RW_ELOG region using flashrom\n");
 			return ELOGTOOL_EXIT_READ_ERROR;
 		}
-		buffer_init(buffer, NULL, buf, buf_size);
+		buffer_init(buffer, NULL, image.data, image.size);
 	} else if (buffer_from_file(buffer, filename) != 0) {
 		fprintf(stderr, "Could not read input file: %s\n", filename);
 		return ELOGTOOL_EXIT_READ_ERROR;
@@ -108,9 +110,14 @@ static int elog_read(struct buffer *buffer, const char *filename)
  */
 static int elog_write(struct buffer *buf, const char *filename)
 {
+	struct firmware_programmer image = {
+		.programmer = FLASHROM_PROGRAMMER_INTERNAL_AP,
+		.data = buffer_get(buf),
+		.size = buffer_size(buf),
+	};
+
 	if (filename == NULL) {
-		if (flashrom_write(FLASHROM_PROGRAMMER_INTERNAL_AP, ELOG_RW_REGION_NAME,
-				   buffer_get(buf), buffer_size(buf)) != VB2_SUCCESS) {
+		if (flashrom_write(&image, ELOG_RW_REGION_NAME) != 0) {
 			fprintf(stderr,
 				"Failed to write to RW_ELOG region using flashrom\n");
 			return ELOGTOOL_EXIT_WRITE_ERROR;

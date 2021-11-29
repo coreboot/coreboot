@@ -94,7 +94,7 @@ struct spi_config {
  * Perform early SPI initialization:
  * 1. Sets SPI ROM base and enables SPI ROM
  * 2. Enables SPI ROM prefetching
- * 3. Disables 4dw burst
+ * 3. Disables 4 DWORD burst if !SOC_AMD_COMMON_BLOCK_SPI_4DW_BURST
  * 4. Configures SPI speed and read mode.
  *
  * This function expects SoC to include soc_amd_common_config in chip SoC config and uses

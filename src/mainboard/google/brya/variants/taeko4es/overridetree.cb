@@ -1,0 +1,500 @@
+fw_config
+	field DB_USB 0 1
+		option DB_USB_ABSENT			0
+		option DB_USB3_NO_A			1
+	end
+	field DB_SD 2 3
+		option DB_SD_ABSENT			0
+		option DB_SD_OZ711LV2LN			1
+		option DB_SD_GL9750			2
+		option DB_SD_RTS5232S			3
+	end
+	field KB_BL 4
+		option KB_BL_ABSENT			0
+		option KB_BL_PRESENT			1
+	end
+	field AUDIO 5 7
+		option AUDIO_UNKNOWN			0
+		option AUDIO_MAX98357_ALC5682I_I2S	1
+		option AUDIO_MAX98357_ALC5682I_VS_I2S	2
+	end
+	field KB_LAYOUT 8 9
+		option KB_LAYOUT_DEFAULT		0
+	end
+	field WIFI_SAR_ID 10 11
+		option WIFI_SAR_ID_0			0
+		option WIFI_SAR_ID_1			1
+		option WIFI_SAR_ID_2			2
+		option WIFI_SAR_ID_3			3
+	end
+	field BOOT_NVME_MASK 12
+		option BOOT_NVME_DISABLED		0
+		option BOOT_NVME_ENABLED		1
+	end
+	field BOOT_EMMC_MASK 13
+		option BOOT_EMMC_DISABLED		0
+		option BOOT_EMMC_ENABLED		1
+	end
+	field HPS 17
+		option HPS_ABSENT			0
+		option HPS_PRESENT			1
+	end
+end
+chip soc/intel/alderlake
+	# This disabled autonomous GPIO power management, otherwise
+	# old cr50 FW only supports short pulses; need to clarify
+	# the minimum PCH IRQ pulse width with Intel, b/180111628
+	register "gpio_override_pm" = "1"
+	register "gpio_pm[COMM_0]" = "0"
+	register "gpio_pm[COMM_1]" = "0"
+	register "gpio_pm[COMM_2]" = "0"
+	register "gpio_pm[COMM_3]" = "0"
+	register "gpio_pm[COMM_4]" = "0"
+	register "gpio_pm[COMM_5]" = "0"
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.vnn_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.v1p05_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL |
+							FIVR_VOLTAGE_MIN_ACTIVE |
+							FIVR_VOLTAGE_MIN_RETENTION,
+		.vnn_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL |
+							FIVR_VOLTAGE_MIN_ACTIVE |
+							FIVR_VOLTAGE_MIN_RETENTION,
+		.v1p05_icc_max_ma = 500,
+		.vnn_sx_voltage_mv = 1250,
+	}"
+	register "TcssAuxOri" = "1"
+	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
+	register "SaGv" = "SaGv_Enabled"
+
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	# Disable Port 1
+	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC2)"	# DB USB2_C1
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"	# Disable M.2 WWAN
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"	# Disable M.2 WWAN
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI1             | Fingerprint MCU           |
+	#| I2C0              | Audio                     |
+	#| I2C1              | Touchscreen               |
+	#| I2C2              | HPS                       |
+	#| I2C3              | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#| I2C5              | Trackpad                  |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+	# I2C Port Config
+	register "SerialIoI2cMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+	}"
+	device domain 0 on
+		device ref dtt on
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""DRAM_SOC""
+				register "options.tsr[1].desc" = ""Ambient""
+				register "options.tsr[2].desc" = ""Charger""
+				register "options.tsr[3].desc" = ""WWAN""
+
+				# TODO: below values are initial reference values only
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {
+						.target = DPTF_CPU,
+						.thresholds = {
+								TEMP_PCT(85, 90),
+								TEMP_PCT(80, 74),
+								TEMP_PCT(75, 74),
+								TEMP_PCT(70, 74),
+								TEMP_PCT(65, 74),
+						}
+					},
+					[1] = {
+						.target = DPTF_TEMP_SENSOR_1,
+						.thresholds = {
+								TEMP_PCT(51, 74),
+								TEMP_PCT(47, 60),
+								TEMP_PCT(45, 45),
+								TEMP_PCT(42, 45),
+								TEMP_PCT(37, 35),
+						}
+					},
+					[2] = {
+						.target = DPTF_TEMP_SENSOR_2,
+						.thresholds = {
+								TEMP_PCT(51, 74),
+								TEMP_PCT(47, 60),
+								TEMP_PCT(45, 45),
+								TEMP_PCT(42, 45),
+								TEMP_PCT(37, 35),
+						}
+					},
+					[3] = {
+						.target = DPTF_TEMP_SENSOR_3,
+						.thresholds = {
+								TEMP_PCT(51, 74),
+								TEMP_PCT(47, 60),
+								TEMP_PCT(45, 45),
+								TEMP_PCT(42, 45),
+								TEMP_PCT(37, 35),
+						}
+					}
+				}"
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 90, 6000),
+					[2] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_1, 90, 6000),
+					[3] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_2, 90, 6000),
+					[4] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_3, 90, 6000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     100, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     100, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     100, SHUTDOWN),
+					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,     100, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+							.min_power = 3000,
+							.max_power = 12000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 200,
+						},
+					.pl2 = {
+							.min_power = 55000,
+							.max_power = 55000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 1000,
+						}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 1700 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{
+					[0] = { 100, 6000, 220, 2200, },
+					[1] = {  92, 5500, 180, 1800, },
+					[2] = {  85, 5000, 145, 1450, },
+					[3] = {  74, 4620, 115, 1150, },
+					[4] = {  60, 4290,  90,  900, },
+					[5] = {  45, 3980,  55,  550, },
+					[6] = {  35, 3170,  30,  300, },
+					[7] = {  30, 2640,  15,  150, },
+					[8] = {  10,  800,  10,  100, },
+					[9] = {   0,    0,   0,   50, }
+				}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 0 alias dptf_policy on end
+			end
+		end
+		device ref pcie4_0 on
+			# Enable CPU PCIE RP 1 using CLK 0
+			register "cpu_pcie_rp[CPU_RP(1)]" = "{
+				.clk_req = 0,
+				.clk_src = 0,
+			}"
+		end
+		device ref tbt_pcie_rp0 off end
+		device ref tbt_pcie_rp1 off end
+		device ref tbt_pcie_rp2 off end
+		device ref i2c0 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+					probe AUDIO AUDIO_MAX98357_ALC5682I_I2S
+				end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""RTL5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+					probe AUDIO AUDIO_MAX98357_ALC5682I_VS_I2S
+				end
+			end
+		end
+		device ref i2c1 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GDIX0000""
+				register "generic.desc" = ""Goodix Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				# Parameter T5 >= 180ms
+				register "generic.reset_delay_ms" = "180"
+				# Parameter T2 >= 1ms
+				register "generic.reset_off_delay_ms" = "3"
+				register "generic.enable_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				# Parameter T1 >= 20ms
+				register "generic.enable_delay_ms" = "20"
+				register "generic.stop_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E3)"
+				# Parameter T4 >= 1ms
+				register "generic.stop_off_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 5d on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0001""
+				register "desc" = ""ELAN Touchscreen""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "probed" = "1"
+				register "reset_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "reset_delay_ms" = "20"
+				register "enable_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "enable_delay_ms" = "1"
+				register "has_power_resource" = "1"
+				device i2c 10 on end
+			end
+		end
+		device ref i2c2 on
+			chip drivers/i2c/generic
+				register "hid" = ""GOOG0020""
+				register "desc" = ""Chrome OS HPS""
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E7)"  # EN_HPS_PWR
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E3_IRQ)"  # HPS_INT_ODL
+				# HPS uses I2C addresses 0x30 and 0x51.
+				# The address we provide here is not significant because
+				# neither coreboot nor Linux have a driver for HPS,
+				# it's only used from userspace.
+				device i2c 30 on
+					probe HPS HPS_PRESENT
+				end
+			end
+		end
+		device ref i2c3 on
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
+				device i2c 50 on end
+			end
+		end
+		device ref i2c5 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
+				register "wake" = "GPE0_DW2_14"
+				register "probed" = "1"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""PNP0C50""
+				register "generic.desc" = ""Synaptics Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
+				register "generic.wake" = "GPE0_DW2_14"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2c on end
+			end
+		end
+		device ref hda on
+			chip drivers/generic/max98357a
+				register "hid" = ""MX98357A""
+				register "sdmode_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
+				register "sdmode_delay" = "5"
+				device generic 0 on
+					probe AUDIO AUDIO_MAX98357_ALC5682I_I2S
+					probe AUDIO AUDIO_MAX98357_ALC5682I_VS_I2S
+				end
+			end
+		end
+		device ref pcie_rp5 on
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B11)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H20)"
+				register "srcclk_pin" = "2"
+				device generic 0 on end
+			end
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp6 off end
+		device ref pcie_rp8 on
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H13)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D18)"
+				register "srcclk_pin" = "3"
+				device generic 0 on
+					probe DB_SD DB_SD_OZ711LV2LN
+					probe DB_SD DB_SD_GL9750
+					probe DB_SD DB_SD_RTS5232S
+				end
+			end
+		end
+		device ref pcie_rp9 on
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D11)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B4)"
+				register "srcclk_pin" = "1"
+				device generic 0 on end
+			end
+		end
+		device ref gspi1 on
+			chip drivers/spi/acpi
+				register "name" = ""CRFP""
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "uid" = "1"
+				register "compat_string" = ""google,cros-ec-spi""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F15_IRQ)"
+				register "wake" = "GPE0_DW2_15"
+				device spi 0 on end
+			end # FPMCU
+		end
+		device ref pch_espi on
+			chip ec/google/chromeec
+				use conn0 as mux_conn[0]
+				use conn1 as mux_conn[1]
+				device pnp 0c09.0 on end
+			end
+		end
+		device ref pmc hidden
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						register "usb2_port_number" = "1"
+						register "usb3_port_number" = "1"
+						device generic 0 alias conn0 on end
+					end
+					chip drivers/intel/pmc_mux/conn
+						register "usb2_port_number" = "3"
+						register "usb3_port_number" = "3"
+						device generic 2 alias conn1 on end
+					end
+				end
+			end
+		end
+		device ref tcss_xhci on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device ref tcss_usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C1 (DB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(3, 1)"
+						device ref tcss_usb3_port3 on
+							probe DB_USB DB_USB3_NO_A
+						end
+					end
+				end
+			end
+		end
+		device ref xhci on
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C1 (DB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(3, 1)"
+						device ref usb2_port3 on
+							probe DB_USB DB_USB3_NO_A
+						end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port6 on
+						end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port (MLB)""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(4, 1)"
+						device ref usb2_port9 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port (MLB)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(4, 1)"
+						device ref usb3_port1 on end
+					end
+				end
+			end
+		end
+	end
+end

@@ -104,26 +104,38 @@ config MAINBOARD_FAMILY
 
 config MAINBOARD_PART_NUMBER
 	default "Brya" if BOARD_GOOGLE_BRYA0
+	default "Brya4ES" if BOARD_GOOGLE_BRYA4ES
 	default "Brask" if BOARD_GOOGLE_BRASK
 	default "Primus" if BOARD_GOOGLE_PRIMUS
+	default "Primus4ES" if BOARD_GOOGLE_PRIMUS4ES
 	default "Gimble" if BOARD_GOOGLE_GIMBLE
+	default "Gimble4ES" if BOARD_GOOGLE_GIMBLE4ES
 	default "Redrix" if BOARD_GOOGLE_REDRIX
+	default "Redrix4ES" if BOARD_GOOGLE_REDRIX4ES
 	default "Kano" if BOARD_GOOGLE_KANO
 	default "Taeko" if BOARD_GOOGLE_TAEKO
+	default "Taeko4ES" if BOARD_GOOGLE_TAEKO4ES
 	default "Felwinter" if BOARD_GOOGLE_FELWINTER
 	default "Anahera" if BOARD_GOOGLE_ANAHERA
+	default "Anahera4ES" if BOARD_GOOGLE_ANAHERA4ES
 	default "Vell" if BOARD_GOOGLE_VELL
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
+	default "brya4es" if BOARD_GOOGLE_BRYA4ES
 	default "brask" if BOARD_GOOGLE_BRASK
 	default "primus" if BOARD_GOOGLE_PRIMUS
+	default "primus4es" if BOARD_GOOGLE_PRIMUS4ES
 	default "gimble" if BOARD_GOOGLE_GIMBLE
+	default "gimble4es" if BOARD_GOOGLE_GIMBLE4ES
 	default "redrix" if BOARD_GOOGLE_REDRIX
+	default "redrix4es" if BOARD_GOOGLE_REDRIX4ES
 	default "kano" if BOARD_GOOGLE_KANO
 	default "taeko" if BOARD_GOOGLE_TAEKO
+	default "taeko4es" if BOARD_GOOGLE_TAEKO4ES
 	default "felwinter" if BOARD_GOOGLE_FELWINTER
 	default "anahera" if BOARD_GOOGLE_ANAHERA
+	default "anahera4es" if BOARD_GOOGLE_ANAHERA4ES
 	default "vell" if BOARD_GOOGLE_VELL
 
 config VBOOT

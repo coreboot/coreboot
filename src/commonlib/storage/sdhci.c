@@ -6,14 +6,15 @@
 #include "bouncebuf.h"
 #include <commonlib/sd_mmc_ctrlr.h>
 #include <commonlib/sdhci.h>
+#include <commonlib/stdlib.h>
 #include <commonlib/storage.h>
 #include <delay.h>
 #include <endian.h>
+#include <lib.h>
 #include "sdhci.h"
 #include "sd_mmc.h"
 #include "storage.h"
 #include <timer.h>
-#include <commonlib/stdlib.h>
 
 #define DMA_AVAILABLE	((CONFIG(SDHCI_ADMA_IN_BOOTBLOCK) && ENV_BOOTBLOCK) \
 			|| (CONFIG(SDHCI_ADMA_IN_VERSTAGE) && ENV_SEPARATE_VERSTAGE) \
@@ -411,36 +412,6 @@ static int sdhci_set_clock(struct sdhci_ctrlr *sdhci_ctrlr, unsigned int clock)
 	return 0;
 }
 
-/* Find leftmost set bit in a 32 bit integer */
-static int fls(u32 x)
-{
-	int r = 32;
-
-	if (!x)
-		return 0;
-	if (!(x & 0xffff0000u)) {
-		x <<= 16;
-		r -= 16;
-	}
-	if (!(x & 0xff000000u)) {
-		x <<= 8;
-		r -= 8;
-	}
-	if (!(x & 0xf0000000u)) {
-		x <<= 4;
-		r -= 4;
-	}
-	if (!(x & 0xc0000000u)) {
-		x <<= 2;
-		r -= 2;
-	}
-	if (!(x & 0x80000000u)) {
-		x <<= 1;
-		r -= 1;
-	}
-	return r;
-}
-
 static void sdhci_set_power(struct sdhci_ctrlr *sdhci_ctrlr,
 	unsigned short power)
 {
@@ -718,7 +689,7 @@ static int sdhci_init(struct sdhci_ctrlr *sdhci_ctrlr)
 	if (rv)
 		return rv; /* The error has been already reported */
 
-	sdhci_set_power(sdhci_ctrlr, fls(ctrlr->voltages) - 1);
+	sdhci_set_power(sdhci_ctrlr, __fls(ctrlr->voltages));
 
 	if (ctrlr->caps & DRVR_CAP_NO_CD) {
 		unsigned int status;

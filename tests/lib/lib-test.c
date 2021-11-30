@@ -37,6 +37,15 @@ void test_ffs(void **state)
 	assert_int_equal(__ffs(0xffffffff), 0);
 }
 
+void test_fls(void **state)
+{
+	assert_int_equal(__fls(0x0), -1);
+	assert_int_equal(__fls(0x1), 0);
+	assert_int_equal(__fls(0x5), 2);
+	assert_int_equal(__fls(0x80000000), 31);
+	assert_int_equal(__fls(0xffffffff), 31);
+}
+
 void test_log2_ceil(void **state)
 {
 	assert_int_equal(log2_ceil(0x0), -1);
@@ -53,6 +62,7 @@ int main(void)
 		cmocka_unit_test(test_clz),
 		cmocka_unit_test(test_log2),
 		cmocka_unit_test(test_ffs),
+		cmocka_unit_test(test_fls),
 		cmocka_unit_test(test_log2_ceil),
 	};
 

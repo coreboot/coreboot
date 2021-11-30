@@ -53,6 +53,8 @@ static inline int clz(u32 x) { return x ? __builtin_clz(x) : sizeof(x) * 8; }
 static inline int log2(u32 x) { return sizeof(x) * 8 - clz(x) - 1; }
 /* Find First Set: __ffs(1) == 0, __ffs(0) == -1, __ffs(1<<31) == 31 */
 static inline int __ffs(u32 x) { return log2(x & (u32)(-(s32)x)); }
+/* Find Last Set: __fls(1) == 0, __fls(5) == 2, __fls(1 << 31) == 31 */
+static inline int __fls(u32 x) { return log2(x); }
 
 /* Integer binary logarithm (rounding up): log2_ceil(0) == -1, log2_ceil(5) == 3 */
 static inline int log2_ceil(u32 x) { return (x == 0) ? -1 : log2(x - 1) + 1; }
@@ -61,5 +63,6 @@ static inline int popcnt64(u64 x) { return __builtin_popcountll(x); }
 static inline int clz64(u64 x) { return x ? __builtin_clzll(x) : sizeof(x) * 8; }
 static inline int log2_64(u64 x) { return sizeof(x) * 8 - clz64(x) - 1; }
 static inline int __ffs64(u64 x) { return log2_64(x & (u64)(-(s64)x)); }
+static inline int __fls64(u64 x) { return log2_64(x); }
 
 #endif /* __LIB_H__ */

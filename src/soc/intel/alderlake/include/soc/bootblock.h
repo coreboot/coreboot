@@ -4,6 +4,7 @@
 #define _SOC_ALDERLAKE_BOOTBLOCK_H_
 
 #if	CONFIG(SOC_INTEL_ALDERLAKE_PCH_M) +	\
+	CONFIG(SOC_INTEL_ALDERLAKE_PCH_N) +	\
 	CONFIG(SOC_INTEL_ALDERLAKE_PCH_P) != 1
 #error "Please select exactly one PCH type"
 #endif

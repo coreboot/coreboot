@@ -11,6 +11,12 @@ config SOC_INTEL_ALDERLAKE_PCH_M
 	help
 	  Choose this option if your mainboard has a PCH-M chipset.
 
+config SOC_INTEL_ALDERLAKE_PCH_N
+	bool
+	select SOC_INTEL_ALDERLAKE
+	help
+	  Choose this option if your mainboard has a PCH-N chipset.
+
 config SOC_INTEL_ALDERLAKE_PCH_P
 	bool
 	select SOC_INTEL_ALDERLAKE
@@ -178,11 +184,13 @@ endif # SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 config MAX_PCH_ROOT_PORTS
 	int
 	default 10 if SOC_INTEL_ALDERLAKE_PCH_M
+	default 12 if SOC_INTEL_ALDERLAKE_PCH_N
 	default 12 if SOC_INTEL_ALDERLAKE_PCH_P
 
 config MAX_CPU_ROOT_PORTS
 	int
 	default 1 if SOC_INTEL_ALDERLAKE_PCH_M
+	default 0 if SOC_INTEL_ALDERLAKE_PCH_N
 	default 3 if SOC_INTEL_ALDERLAKE_PCH_P
 
 config MAX_ROOT_PORTS
@@ -192,11 +200,13 @@ config MAX_ROOT_PORTS
 config MAX_PCIE_CLOCK_SRC
 	int
 	default 6 if SOC_INTEL_ALDERLAKE_PCH_M
+	default 5 if SOC_INTEL_ALDERLAKE_PCH_N
 	default 7 if SOC_INTEL_ALDERLAKE_PCH_P
 
 config MAX_PCIE_CLOCK_REQ
 	int
 	default 6  if SOC_INTEL_ALDERLAKE_PCH_M
+	default 5  if SOC_INTEL_ALDERLAKE_PCH_N
 	default 10 if SOC_INTEL_ALDERLAKE_PCH_P
 
 config SMM_TSEG_SIZE

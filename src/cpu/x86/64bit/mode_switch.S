@@ -15,6 +15,10 @@ protected_mode_call_narg:
 	push	%r14
 	push	%r15
 
+	/* Backup gs to stack */
+	movl	%gs, %eax
+	push	%rax
+
 	/* Arguments to stack */
 	push	%rdi
 	push	%rsi
@@ -23,9 +27,9 @@ protected_mode_call_narg:
 
 	#include <cpu/x86/64bit/exit32.inc>
 
-	movl	-48(%ebp), %eax	/* Argument count */
-	movl	-64(%ebp), %edx	/* Argument 0 */
-	movl	-72(%ebp), %ecx	/* Argument 1 */
+	movl	-56(%ebp), %eax	/* Argument count */
+	movl	-72(%ebp), %edx	/* Argument 0 */
+	movl	-80(%ebp), %ecx	/* Argument 1 */
 
 	/* Align the stack */
 	andl	$0xFFFFFFF0, %esp
@@ -46,7 +50,7 @@ protected_mode_call_narg:
 	pushl	%edx	/* Argument 0 */
 
 1:
-	movl	-56(%ebp), %ebx	/* Function to call */
+	movl	-64(%ebp), %ebx	/* Function to call */
 	call	*%ebx
 	movl	%eax, %ebx
 
@@ -57,6 +61,8 @@ protected_mode_call_narg:
 	movl	%ebx, %eax
 
 	/* Restore registers */
+	mov	-48(%rbp), %rbx
+	movl	%ebx, %gs
 	mov	-40(%rbp), %r15
 	mov	-32(%rbp), %r14
 	mov	-24(%rbp), %r13

@@ -68,7 +68,6 @@ __longmode_compatibility:
 	movl	%eax, %es
 	movl	%eax, %ss
 	movl	%eax, %fs
-	movl	%eax, %gs
 
 	/* Disable paging. */
 	movl	%cr0, %eax

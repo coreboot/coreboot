@@ -3,6 +3,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
+#include <arch/ram_segs.h>
 
 #include "getsec_mtrr_setup.inc"
 
@@ -252,10 +253,10 @@ cond_clear_var_mtrrs:
 	lgdt	-48(%ebp)
 
 	/* Set cs */
-	ljmp	$0x10, $1f
+	ljmp	$RAM_CODE_SEG, $1f
 1:
 	/* Fix segment registers */
-	movl	$0x18, %eax
+	movl	$RAM_DATA_SEG, %eax
 	movl	%eax, %ds
 	movl	%eax, %es
 	movl	%eax, %ss

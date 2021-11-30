@@ -23,21 +23,6 @@ static void model_16_init(struct device *dev)
 	msr_t msr;
 	u32 siblings;
 
-	/*
-	 * All cores are initialized sequentially, so the solution for APs will be created
-	 * before they start.
-	 */
-	x86_setup_mtrrs_with_detect();
-	/*
-	 * Enable ROM caching on BSP we just lost when creating MTRR solution, for faster
-	 * execution of e.g. AmdInitLate
-	 */
-	if (boot_cpu()) {
-		mtrr_use_temp_range(OPTIMAL_CACHE_ROM_BASE, OPTIMAL_CACHE_ROM_SIZE,
-				    MTRR_TYPE_WRPROT);
-	}
-	x86_mtrr_check();
-
 	/* zero the machine check error status registers */
 	mca_clear_status();
 

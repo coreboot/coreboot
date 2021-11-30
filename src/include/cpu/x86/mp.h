@@ -13,7 +13,11 @@ struct bus;
 
 static inline void mfence(void)
 {
-	__asm__ __volatile__("mfence\t\n": : :"memory");
+	/* mfence came with the introduction of SSE2. */
+	if (CONFIG(SSE2))
+		__asm__ __volatile__("mfence\t\n": : :"memory");
+	else
+		__asm__ __volatile__("lock; addl $0,0(%%esp)": : : "memory");
 }
 
 /* The sequence of the callbacks are in calling order. */

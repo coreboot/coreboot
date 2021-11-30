@@ -63,6 +63,6 @@ void console_init(void)
 	if (ENV_BOOTBLOCK && CONFIG(CONSOLE_CBMEM_PRINT_PRE_BOOTBLOCK_CONTENTS))
 		cbmem_dump_console();
 
-	printk(BIOS_NOTICE, "\n\ncoreboot-%s%s %s " ENV_STRING " starting (log level: %i)...\n",
+	printk(BIOS_NOTICE, "\n\ncoreboot-%s%s %s " ENV_ARCH " " ENV_STRING " starting (log level: %i)...\n",
 	       coreboot_version, coreboot_extra_version, coreboot_build, get_log_level());
 }

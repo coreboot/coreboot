@@ -164,9 +164,11 @@
 #if __COREBOOT_ARM_ARCH__ == 4
 #define ENV_ARMV4 1
 #define ENV_ARMV7 0
+#define ENV_ARCH "armv4"
 #elif __COREBOOT_ARM_ARCH__ == 7
 #define ENV_ARMV4 0
 #define ENV_ARMV7 1
+#define ENV_ARCH "armv7"
 #if defined(__COREBOOT_ARM_V7_A__)
 #define ENV_ARMV7_A 1
 #define ENV_ARMV7_M 0
@@ -204,6 +206,7 @@
 #define ENV_X86 0
 #define ENV_X86_32 0
 #define ENV_X86_64 0
+#define ENV_ARCH "aarch64"
 
 #elif defined(__ARCH_riscv__)
 #define ENV_ARM 0
@@ -215,6 +218,7 @@
 #define ENV_X86 0
 #define ENV_X86_32 0
 #define ENV_X86_64 0
+#define ENV_ARCH "riscv"
 
 #elif defined(__ARCH_x86_32__)
 #define ENV_ARM 0
@@ -226,6 +230,7 @@
 #define ENV_X86 1
 #define ENV_X86_32 1
 #define ENV_X86_64 0
+#define ENV_ARCH "x86_32"
 
 #elif defined(__ARCH_x86_64__)
 #define ENV_ARM 0
@@ -237,6 +242,7 @@
 #define ENV_X86 1
 #define ENV_X86_32 0
 #define ENV_X86_64 1
+#define ENV_ARCH "x86_64"
 
 #else
 #define ENV_ARM 0
@@ -248,6 +254,7 @@
 #define ENV_X86 0
 #define ENV_X86_32 0
 #define ENV_X86_64 0
+#define ENV_ARCH "unknown"
 
 #endif
 

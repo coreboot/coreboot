@@ -316,7 +316,7 @@ static enum cb_err cbfs_preload_thread_entry(void *arg)
 {
 	struct cbfs_preload_context *context = arg;
 
-	if (rdev_readat_full(&context->rdev, context->buffer) < 0) {
+	if (rdev_read_full(&context->rdev, context->buffer) < 0) {
 		ERROR("%s(name='%s') readat failed\n", __func__, context->name);
 		return CB_ERR;
 	}

@@ -163,7 +163,7 @@ static inline int rdev_chain_full(struct region_device *child,
  *
  * You must ensure the buffer is large enough to hold the full region_device.
  */
-static inline ssize_t rdev_readat_full(const struct region_device *rd, void *b)
+static inline ssize_t rdev_read_full(const struct region_device *rd, void *b)
 {
 	return rdev_readat(rd, b, 0, region_device_sz(rd));
 }

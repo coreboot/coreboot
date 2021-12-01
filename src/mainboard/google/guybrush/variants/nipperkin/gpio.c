@@ -40,6 +40,8 @@ static const struct soc_amd_gpio bid2_override_gpio_table[] = {
 
 static const struct soc_amd_gpio override_early_gpio_table[] = {
 	PAD_NC(GPIO_18),
+	/* BID==1: EN_SPKR to select RAM_ID input, BID >= 1: Unused in later stages */
+	PAD_GPO(GPIO_31, LOW),
 };
 
 static const struct soc_amd_gpio override_pcie_gpio_table[] = {

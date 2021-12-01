@@ -157,4 +157,7 @@ config HAVE_WWAN_POWER_SEQUENCE
 	  in variant.h, as well as T1_OFF_MS (time between PERST & RST) and T2_OFF_MS (time
 	  between RST and FCPO).
 
+config USE_PM_ACPI_TIMER
+	default n
+
 endif # BOARD_GOOGLE_BASEBOARD_BRYA || BOARD_GOOGLE_BASEBOARD_BRASK

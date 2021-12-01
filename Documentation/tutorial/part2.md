@@ -12,37 +12,24 @@ select **Google OAuth2** (gerrit-oauth-provider plugin). **Note:** Your
 username for the account will be the username of the account you used to
 sign-in with. (ex. your Google username).
 
-## Step 2a: Set up RSA Private/Public Key
+## Step 2a: Set up SSH keys
 
 If you prefer to use an HTTP password instead, skip to Step 2b.
 
-For the most up-to-date instructions on how to set up SSH keys with Gerrit go to
-<https://gerrit-documentation.storage.googleapis.com/Documentation/2.14.2/user-upload.html#configure_ssh>
-and follow the instructions there. Then, skip to Step 3.
-
-Additionally, that section of the Web site provides explanation on starting
-an ssh-agent, which may be particularly helpful for those who anticipate
-frequently uploading changes.
-
-If you instead prefer to have review.coreboot.org specific instructions,
-follow the steps below. Note that this particular section may have the
-most up-to-date instructions.
-
-If you do not have an RSA key set up on your account already (as is the case
+If you do not have an SSH key set up on your account already (as is the case
 with a newly created account), follow the instructions below; otherwise,
 doing so could overwrite an existing key.
 
-In the upper right corner, select your name and click on **Settings**.
-Select **SSH Public Keys** on the left-hand side.
-
-In a terminal, run `ssh-keygen` and confirm the default path `.ssh/id_rsa`.
+In a terminal, run `ssh-keygen -t ed25519` and confirm the default path
+`.ssh/id_ed25519`.
 
 Make a passphrase -- remember this phrase. It will be needed whenever you use
-this RSA Public Key. **Note:** You might want to use a short password, or
+this public key. **Note:** You might want to use a short password, or
 forego the password altogether as you will be using it very often.
 
-Open `id_rsa.pub`, copy all contents and paste into the textbox under
-"Add SSH Public Key" in the https://review.coreboot.org webpage.
+Copy the content of `.ssh/id_ed25519.pub` (notice the ".pub" suffix
+as you need to send the public key) into the textbox "New SSH Key" at
+https://review.coreboot.org/settings/#SSHKeys and save it.
 
 ## Step 2b: Set up an HTTP Password
 

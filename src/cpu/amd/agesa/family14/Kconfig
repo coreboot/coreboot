@@ -2,4 +2,5 @@
 
 config CPU_AMD_AGESA_FAMILY14
 	bool
+	select NO_SMM
 	select X86_AMD_FIXED_MTRRS

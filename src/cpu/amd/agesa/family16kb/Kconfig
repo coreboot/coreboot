@@ -2,6 +2,7 @@
 
 config CPU_AMD_AGESA_FAMILY16_KB
 	bool
+	select SMM_ASEG
 	select X86_AMD_FIXED_MTRRS
 
 if CPU_AMD_AGESA_FAMILY16_KB

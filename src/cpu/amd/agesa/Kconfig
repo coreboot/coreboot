@@ -12,7 +12,6 @@ config CPU_AMD_AGESA
 	select UDELAY_LAPIC
 	select LAPIC_MONOTONIC_TIMER
 	select SPI_FLASH if HAVE_ACPI_RESUME
-	select SMM_ASEG
 	select SSE2
 
 if CPU_AMD_AGESA

@@ -1,12 +1,21 @@
 config SOC_INTEL_ALDERLAKE
 	bool
 	help
-	  Intel Alderlake support
+	  Intel Alderlake support. Mainboards should specify the PCH
+	  type using the `SOC_INTEL_ALDERLAKE_PCH_*` options instead
+	  of selecting this option directly.
 
 config SOC_INTEL_ALDERLAKE_PCH_M
 	bool
+	select SOC_INTEL_ALDERLAKE
 	help
-	  Choose this option if you have PCH-M chipset.
+	  Choose this option if your mainboard has a PCH-M chipset.
+
+config SOC_INTEL_ALDERLAKE_PCH_P
+	bool
+	select SOC_INTEL_ALDERLAKE
+	help
+	  Choose this option if your mainboard has a PCH-P chipset.
 
 if SOC_INTEL_ALDERLAKE
 
@@ -169,12 +178,12 @@ endif # SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 config MAX_PCH_ROOT_PORTS
 	int
 	default 10 if SOC_INTEL_ALDERLAKE_PCH_M
-	default 12
+	default 12 if SOC_INTEL_ALDERLAKE_PCH_P
 
 config MAX_CPU_ROOT_PORTS
 	int
 	default 1 if SOC_INTEL_ALDERLAKE_PCH_M
-	default 3
+	default 3 if SOC_INTEL_ALDERLAKE_PCH_P
 
 config MAX_ROOT_PORTS
 	int
@@ -183,12 +192,12 @@ config MAX_ROOT_PORTS
 config MAX_PCIE_CLOCK_SRC
 	int
 	default 6 if SOC_INTEL_ALDERLAKE_PCH_M
-	default 7
+	default 7 if SOC_INTEL_ALDERLAKE_PCH_P
 
 config MAX_PCIE_CLOCK_REQ
 	int
-	default 6 if SOC_INTEL_ALDERLAKE_PCH_M
-	default 10
+	default 6  if SOC_INTEL_ALDERLAKE_PCH_M
+	default 10 if SOC_INTEL_ALDERLAKE_PCH_P
 
 config SMM_TSEG_SIZE
 	hex

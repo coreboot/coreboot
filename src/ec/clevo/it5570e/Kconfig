@@ -1,0 +1,126 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config EC_CLEVO_IT5570E
+	bool
+	select EC_ACPI
+	help
+	  IT5570E embedded controller in Clevo notebooks
+
+if EC_CLEVO_IT5570E
+
+config EC_CLEVO_IT5570E_MEM_BASE
+	hex
+	help
+	  Memory address for the EC memory region mapped via LGMR
+
+config EC_CLEVO_IT5570E_AC_FAN_ALWAYS_ON
+	bool "Fan always on with AC attached"
+	default n
+	help
+	  Never turn the fan fully off when AC is attached.
+
+	  This setting can be overridden by cmos option `ac_fan_always_on`.
+
+config EC_CLEVO_IT5570E_KBLED_BOOTEFFECT
+	bool "Keyboard boot effect"
+	default n
+	help
+	  Enable the "breathing" boot effect of the LED keyboard.
+
+	  This setting can be overridden by cmos option `kbled_booteffect`.
+
+config EC_CLEVO_IT5570E_KBLED_TIMEOUT
+	int "Keyboard backlight timeout"
+	default 15
+	help
+	  Keyboard backlight timeout in seconds. 0 keeps the backlight
+	  always on.
+
+	  This setting can be overridden by cmos option `kbled_timeout`.
+
+config EC_CLEVO_IT5570E_FN_WIN_SWAP
+	bool "Swap Fn/Windows keys"
+	default n
+	help
+	  Swap the Fn and Windows key.
+
+	  This setting can be overridden by cmos option `fn_win_swap`.
+
+config EC_CLEVO_IT5570E_FLEXICHARGER
+	bool "Flexicharger"
+	default n
+	help
+	  Enable the Flexicharger functionality.
+
+	  This setting can be overridden by cmos option `flexicharger`.
+
+if EC_CLEVO_IT5570E_FLEXICHARGER
+
+config EC_CLEVO_IT5570E_FLEXICHG_START
+	int "Start charge threshold"
+	default 95
+	help
+	  Start charge threshold in percent.
+
+	  This setting can be overridden by cmos option `flexicharger_start`.
+
+config EC_CLEVO_IT5570E_FLEXICHG_STOP
+	int "Stop charge threshold"
+	default 100
+	help
+	  Stop charge threshold in percent.
+
+	  This setting can be overridden by cmos option `flexicharger_stop`.
+
+endif
+
+choice
+	prompt "Camera default state"
+	default EC_CLEVO_IT5570E_CAM_BOOT_STATE_KEEP
+	help
+	  Camera default state.
+
+	  This setting can be overridden by cmos option `camera_boot_state`.
+
+config EC_CLEVO_IT5570E_CAM_BOOT_STATE_KEEP
+	bool "Keep previous state"
+
+config EC_CLEVO_IT5570E_CAM_BOOT_STATE_DISABLE
+	bool "Disable"
+
+config EC_CLEVO_IT5570E_CAM_BOOT_STATE_ENABLE
+	bool "Enable"
+
+endchoice
+
+config EC_CLEVO_IT5570E_CAM_BOOT_STATE
+	int
+	default 0 if EC_CLEVO_IT5570E_CAM_BOOT_STATE_DISABLE
+	default 1 if EC_CLEVO_IT5570E_CAM_BOOT_STATE_ENABLE
+	default 2
+
+choice
+	prompt "Touchpad toggle mode"
+	default EC_CLEVO_IT5570E_TP_TOGGLE_MODE_CTRLALTF9
+	help
+	  There are two modes for the touchpad toggle (Fn-F1):
+	    - Ctrl-Alt-F9 mode sends the windows-native touchpad toggle keyboard shortcut.
+	    - Keycode mode sends special key codes f7/f8 which can be configured in udev
+	      to be handled as touchpad toggle.
+
+	  This setting can be overridden by cmos option `tp_toggle_mode`.
+
+config EC_CLEVO_IT5570E_TP_TOGGLE_MODE_CTRLALTF9
+	bool "Ctrl-Alt-F9"
+
+config EC_CLEVO_IT5570E_TP_TOGGLE_MODE_KEYOCDE_F7F8
+	bool "Keycode f7/f8"
+
+endchoice
+
+config EC_CLEVO_IT5570E_TP_TOGGLE_MODE
+	int
+	default 0 if EC_CLEVO_IT5570E_TP_TOGGLE_MODE_CTRLALTF9
+	default 1 if EC_CLEVO_IT5570E_TP_TOGGLE_MODE_KEYOCDE_F7F8
+
+endif

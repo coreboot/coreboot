@@ -43,6 +43,7 @@ TEST_CFLAGS += -I$(cmockasrc)/include
 TEST_CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wvla
 TEST_CFLAGS += -Wwrite-strings -Wno-trigraphs -Wimplicit-fallthrough
 TEST_CFLAGS += -Wstrict-aliasing -Wshadow -Werror
+TEST_CFLAGS += -Wno-unknown-warning-option -Wno-source-mgr
 
 TEST_CFLAGS += -std=gnu11 -Os -ffunction-sections -fdata-sections -fno-builtin
 

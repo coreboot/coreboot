@@ -16,6 +16,7 @@
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
 #include <cpu/intel/cpu_ids.h>
+#include <timestamp.h>
 #include <string.h>
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
@@ -135,8 +136,11 @@ void mainboard_romstage_entry(void)
 
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 
-	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && !s3wake)
+	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && !s3wake) {
+		timestamp_add_now(TS_START_CSE_FW_SYNC);
 		cse_fw_sync();
+		timestamp_add_now(TS_END_CSE_FW_SYNC);
+	}
 
 	/*
 	 * Set low maximum temp threshold value used for dynamic thermal sensor

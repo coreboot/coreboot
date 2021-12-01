@@ -45,7 +45,7 @@ TEST_CFLAGS += -I$(src) -I$(src)/include -I$(src)/commonlib/include \
 # Only put conservative warnings here that really detect code that's obviously
 # unintentional.
 TEST_CFLAGS += -Wall -Werror -Wundef -Wstrict-prototypes -Wno-inline-asm
-TEST_CFLAGS += -Wno-unknown-warning-option -Wno-source-mgr
+TEST_CFLAGS += -Wno-unknown-warning-option -Wno-source-mgr -Wno-main-return-type
 
 # Path for Kconfig autoheader
 TEST_CFLAGS += -I$(dir $(TEST_KCONFIG_AUTOHEADER))

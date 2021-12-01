@@ -31,12 +31,12 @@ config DRIVER_TIS_DEFAULT
 	default y
 
 config DRIVER_TPM_I2C_BUS
-	hex "I2C TPM chip bus"
+	hex
 	default 0x9 # FIXME, workaround for Kconfig BS
 	depends on I2C_TPM
 
 config DRIVER_TPM_I2C_ADDR
-	hex "I2C TPM chip address"
+	hex
 	default 0x2 # FIXME, workaround for Kconfig BS
 	depends on I2C_TPM
 

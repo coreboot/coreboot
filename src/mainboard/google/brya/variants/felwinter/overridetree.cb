@@ -40,6 +40,33 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 	}"
 
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| I2C0              | Audio	                  |
+	#| I2C1              | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#| I2C3              | Touchscreen               |
+	#| I2C5              | Trackpad                  |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf
@@ -206,6 +233,13 @@ chip soc/intel/alderlake
 			end
 		end #I2C0
 		device ref i2c1 on
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
+				device i2c 50 on end
+			end
+		end #I2C1
+		device ref i2c3 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN9050""
 				register "generic.desc" = ""ELAN Touchscreen""
@@ -237,14 +271,7 @@ chip soc/intel/alderlake
 				register "key.label" = ""pen_eject""
 				device generic 0 on end
 			end
-		end
-		device ref i2c3 on
-			chip drivers/i2c/tpm
-				register "hid" = ""GOOG0005""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
-				device i2c 50 on end
-			end
-		end
+		end #I2C3
 		device ref i2c5 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
@@ -254,7 +281,7 @@ chip soc/intel/alderlake
 				register "probed" = "1"
 				device i2c 15 on end
 			end
-		end
+		end #I2C5
 		device ref hda on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98360A""

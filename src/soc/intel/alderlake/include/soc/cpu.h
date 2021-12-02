@@ -22,6 +22,7 @@
 enum adl_cpu_type {
 	ADL_UNKNOWN,
 	ADL_M,
+	ADL_N,
 	ADL_P,
 	ADL_S,
 };

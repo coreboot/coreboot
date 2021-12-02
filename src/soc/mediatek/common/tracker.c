@@ -6,6 +6,11 @@
 #include <soc/tracker.h>
 #include <soc/tracker_common.h>
 
+__weak void tracker_setup(void)
+{
+	/* do nothing. */
+}
+
 static void tracker_dump_data(void)
 {
 	int i, j, k;

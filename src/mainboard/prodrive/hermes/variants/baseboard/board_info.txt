@@ -1,7 +1,7 @@
 Category: server
 Vendor name: Prodrive
 Board name: Hermes
-Board URL: TBD
+Board URL: https://prodrive-technologies.com/products/embedded-computing-systems/motherboards/hermes-8th-9th-gen-series/
 ROM protocol: SPI
 ROM socketed: n
 Flashrom support: y

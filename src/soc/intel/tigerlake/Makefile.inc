@@ -34,6 +34,7 @@ ramstage-y += lockdown.c
 ramstage-y += lpm.c
 ramstage-y += me.c
 ramstage-y += p2sb.c
+ramstage-y += pcie_rp.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
 ramstage-y += soundwire.c

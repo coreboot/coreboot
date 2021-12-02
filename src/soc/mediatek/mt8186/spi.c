@@ -43,10 +43,12 @@ struct mtk_spi_bus spi_bus[SPI_BUS_NUMBER] = {
 struct pad_func {
 	gpio_t gpio;
 	u8 func;
+	enum pull_select select;
 };
 
-#define PAD_FUNC(name, func) {GPIO(name), PAD_##name##_FUNC_##func}
-#define PAD_FUNC_GPIO(name) {GPIO(name), 0}
+#define PAD_FUNC(name, func) {GPIO(name), PAD_##name##_FUNC_##func, GPIO_PULL_DOWN}
+#define PAD_FUNC_SEL(name, func, sel) {GPIO(name), PAD_##name##_FUNC_##func, sel}
+#define PAD_FUNC_GPIO(name) {GPIO(name), 0, GPIO_PULL_DOWN}
 
 static const struct pad_func pad0_funcs[SPI_BUS_NUMBER][4] = {
 	{
@@ -121,17 +123,17 @@ static const struct pad_func pad1_funcs[SPI_BUS_NUMBER][4] = {
 static const struct pad_func nor_pinmux[SPI_NOR_GPIO_SET_NUM][4] = {
 	/* GPIO 36 ~ 39 */
 	[SPI_NOR_GPIO_SET0] = {
-		PAD_FUNC(SPI0_CLK, SPINOR_CK),
-		PAD_FUNC(SPI0_CSB, SPINOR_CS),
-		PAD_FUNC(SPI0_MO, SPINOR_IO0),
-		PAD_FUNC(SPI0_MI, SPINOR_IO1),
+		PAD_FUNC_SEL(SPI0_CLK, SPINOR_CK, GPIO_PULL_DOWN),
+		PAD_FUNC_SEL(SPI0_CSB, SPINOR_CS, GPIO_PULL_UP),
+		PAD_FUNC_SEL(SPI0_MO, SPINOR_IO0, GPIO_PULL_DOWN),
+		PAD_FUNC_SEL(SPI0_MI, SPINOR_IO1, GPIO_PULL_DOWN),
 	},
 	/* GPIO 61 ~ 64 */
 	[SPI_NOR_GPIO_SET1] = {
-		PAD_FUNC(TDM_RX_BCK, SPINOR_CK),
-		PAD_FUNC(TDM_RX_MCLK, SPINOR_CS),
-		PAD_FUNC(TDM_RX_DATA0, SPINOR_IO0),
-		PAD_FUNC(TDM_RX_DATA1, SPINOR_IO1),
+		PAD_FUNC_SEL(TDM_RX_BCK, SPINOR_CK, GPIO_PULL_DOWN),
+		PAD_FUNC_SEL(TDM_RX_MCLK, SPINOR_CS, GPIO_PULL_UP),
+		PAD_FUNC_SEL(TDM_RX_DATA0, SPINOR_IO0, GPIO_PULL_DOWN),
+		PAD_FUNC_SEL(TDM_RX_DATA1, SPINOR_IO1, GPIO_PULL_DOWN),
 	},
 };
 
@@ -143,7 +145,7 @@ void mtk_snfc_init(int gpio_set)
 
 	ptr = nor_pinmux[gpio_set];
 	for (size_t i = 0; i < ARRAY_SIZE(nor_pinmux[gpio_set]); i++) {
-		gpio_set_pull(ptr[i].gpio, GPIO_PULL_ENABLE, GPIO_PULL_UP);
+		gpio_set_pull(ptr[i].gpio, GPIO_PULL_ENABLE, ptr[i].select);
 		gpio_set_mode(ptr[i].gpio, ptr[i].func);
 	}
 }

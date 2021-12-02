@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
+tests-y += lib-test
 tests-y += string-test
 tests-y += b64_decode-test
 tests-y += hexstrtobin-test
@@ -39,6 +40,8 @@ tests-y += cbfs-no-verification-has-sha512-test
 tests-y += cbfs-lookup-no-mcache-test
 tests-y += cbfs-lookup-has-mcache-test
 tests-y += lzma-test
+
+lib-test-srcs += tests/lib/lib-test.c
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c

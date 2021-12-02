@@ -24,11 +24,11 @@ static const struct cnl_mb_cfg baseboard_mem_cfg = {
 		.spd_spec = {.spd_smbus_address = 0xa6}
 	},
 
-	/* Baseboard uses 121, 81 and 100 rcomp resistors */
-	.rcomp_resistor = {121, 81, 100},
+	/* Rcomp resistors on CFL-S are located on the CPU itself */
+	.rcomp_resistor = {121, 75, 100},
 
-	/* Baseboard Rcomp target values. */
-	.rcomp_targets = {100, 40, 20, 20, 26},
+	/* Rcomp target values for CFL-S, DDR4 and 2 DIMMs per channel */
+	.rcomp_targets = {60, 26, 20, 20, 26},
 
 	/* Baseboard is an interleaved design */
 	.dq_pins_interleaved = 1,

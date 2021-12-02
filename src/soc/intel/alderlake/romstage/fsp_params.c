@@ -23,11 +23,6 @@
 
 #define CPU_PCIE_BASE			0x40
 
-enum pcie_rp_type {
-	PCH_PCIE_RP,
-	CPU_PCIE_RP,
-};
-
 enum vtd_base_index_type {
 	VTD_GFX,
 	VTD_IPU,
@@ -40,11 +35,11 @@ enum vtd_base_index_type {
 
 static uint8_t clk_src_to_fsp(enum pcie_rp_type type, int rp_number)
 {
-	assert(type == PCH_PCIE_RP || type == CPU_PCIE_RP);
+	assert(type == PCIE_RP_PCH || type == PCIE_RP_CPU);
 
-	if (type == PCH_PCIE_RP)
+	if (type == PCIE_RP_PCH)
 		return rp_number;
-	else // type == CPU_PCIE_RP
+	else // type == PCIE_RP_CPU
 		return CPU_PCIE_BASE + rp_number;
 }
 
@@ -82,12 +77,12 @@ static void fill_fspm_pcie_rp_params(FSP_M_CONFIG *m_cfg,
 
 	/* Configure PCH PCIE ports */
 	m_cfg->PcieRpEnableMask = pcie_rp_enable_mask(get_pch_pcie_rp_table());
-	pcie_rp_init(m_cfg, m_cfg->PcieRpEnableMask, PCH_PCIE_RP, config->pch_pcie_rp,
+	pcie_rp_init(m_cfg, m_cfg->PcieRpEnableMask, PCIE_RP_PCH, config->pch_pcie_rp,
 			CONFIG_MAX_PCH_ROOT_PORTS);
 
 	/* Configure CPU PCIE ports */
 	m_cfg->CpuPcieRpEnableMask = pcie_rp_enable_mask(get_cpu_pcie_rp_table());
-	pcie_rp_init(m_cfg, m_cfg->CpuPcieRpEnableMask, CPU_PCIE_RP, config->cpu_pcie_rp,
+	pcie_rp_init(m_cfg, m_cfg->CpuPcieRpEnableMask, PCIE_RP_CPU, config->cpu_pcie_rp,
 			CONFIG_MAX_CPU_ROOT_PORTS);
 }
 

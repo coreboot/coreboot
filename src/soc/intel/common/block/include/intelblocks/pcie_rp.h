@@ -111,4 +111,10 @@ void pcie_rp_update_devicetree(const struct pcie_rp_group *groups);
  */
 uint32_t pcie_rp_enable_mask(const struct pcie_rp_group *groups);
 
+enum pcie_rp_type {
+	PCIE_RP_UNKNOWN,
+	PCIE_RP_CPU,
+	PCIE_RP_PCH,
+};
+
 #endif /* SOC_INTEL_COMMON_BLOCK_PCIE_RP_H */

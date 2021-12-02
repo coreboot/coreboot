@@ -15,12 +15,18 @@
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
+#include <cpu/intel/cpu_ids.h>
 #include <string.h>
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
 {	\
 	0xd4, 0x71, 0x20, 0x9b, 0x54, 0xb0, 0x0c, 0x4e,	\
 	0x8d, 0x09, 0x11, 0xcf, 0x8b, 0x9f, 0x03, 0x23	\
+}
+
+bool skip_cse_sub_part_update(void)
+{
+	return cpu_get_cpuid() != CPUID_ALDERLAKE_A2;
 }
 
 /* Save the DIMM information for SMBIOS table 17 */

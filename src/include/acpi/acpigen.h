@@ -298,6 +298,8 @@ struct cppc_config {
 	cppc_entry_t entries[CPPC_MAX_FIELDS_VER_3];
 };
 
+#define ACPI_MUTEX_NO_TIMEOUT		0xffff
+
 void acpigen_write_return_integer(uint64_t arg);
 void acpigen_write_return_namestr(const char *arg);
 void acpigen_write_return_string(const char *arg);

@@ -18,13 +18,24 @@
 void mainboard_memory_init_params(struct romstage_params *params,
 				  MEMORY_INIT_UPD *memory_params)
 {
-	u8 spd_index = 0;
+	u8 spd_index;
 
-	if (!CONFIG(ONBOARD_SAMSUNG_MEM)) {
-		if (cpld_read_pcb_version() <= 7)
-			spd_index = 1;
-		else
-			spd_index = 2;
+	switch (cpld_read_pcb_version()) {
+	case 0:	/* intentional fallthrough */
+	case 1:	/* intentional fallthrough */
+	case 2:	/* intentional fallthrough */
+	case 3:	/* intentional fallthrough */
+	case 4:	/* intentional fallthrough */
+	case 5:
+		spd_index = 0;
+		break;
+	case 6:	/* intentional fallthrough */
+	case 7:
+		spd_index = 1;
+		break;
+	default:
+		spd_index = 2;
+		break;
 	}
 
 	memory_params->PcdMemoryTypeEnable = MEM_DDR3;

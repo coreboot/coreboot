@@ -29,6 +29,10 @@
 ## SUCH DAMAGE.
 ##
 
+ifneq ($(words $(CURDIR)),1)
+	$(error ERROR: Path to the main directory cannot contain spaces)
+endif
+
 ifeq ($(INNER_SCANBUILD),y)
 CC_real:=$(CC)
 endif
@@ -40,6 +44,7 @@ export srck := $(abspath $(top)/../../util/kconfig)
 export obj ?= build
 export objutil ?= $(obj)/util
 export objk := $(objutil)/lp_kconfig
+export absobj := $(abspath $(obj))
 
 export KCONFIG_AUTOHEADER := $(obj)/config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
@@ -290,9 +295,11 @@ includemakefiles= \
 		$(foreach item,$($(special)-y), $(call $(special)-handler,$(dir $(1)),$(item)))) \
 	$(foreach class,$(classes), \
 		$(eval $(class)-srcs+= \
+			$$(subst $(absobj)/,$(obj)/, \
 			$$(subst $(top)/,, \
-			$$(abspath $$(addprefix $(dir $(1)),$$($(class)-y)))))) \
-	$(eval subdirs+=$$(subst $(CURDIR)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
+			$$(abspath $$(subst $(dir $(1))/,/,$$(addprefix $(dir $(1)),$$($(class)-y)))))))) \
+	$(eval subdirs+=$$(subst $(CURDIR)/,,$$(wildcard $$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y))))))
+
 
 # For each path in $(subdirs) call includemakefiles
 # Repeat until subdirs is empty
@@ -311,8 +318,15 @@ else
 include $(TOPLEVEL)/tests/Makefile.inc
 endif
 
-src-to-obj=$(addsuffix .$(1).o, $(basename $(addprefix $(obj)/, $($(1)-srcs))))
-$(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class))))
+# Converts one or more source file paths to the corresponding build/ paths.
+# $1 lib name
+# $2 file path (list)
+src-to-obj=\
+	$(addsuffix .$(1).o,\
+	$(basename \
+	$(addprefix $(obj)/,\
+	$(subst $(coreboottop)/,coreboot/,$(2)))))
+$(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class),$($(class)-srcs))))
 
 allsrcs:=$(foreach var, $(addsuffix -srcs,$(classes)), $($(var)))
 allobjs:=$(foreach var, $(addsuffix -objs,$(classes)), $($(var)))
@@ -326,7 +340,7 @@ define create_cc_template
 # $4 additional dependencies
 ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
-$(obj)/$$(1).$(1).o: $$(1).$(2) $(obj)/libpayload-config.h $(4)
+$$(call src-to-obj,$(1), $$(1).$(2)): $$(1).$(2) $(obj)/libpayload-config.h $(4)
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(CC) $(3) -MMD $$$$(CFLAGS) $(EXTRA_CFLAGS) -c -o $$$$@ $$$$<
 en$(EMPTY)def

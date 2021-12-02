@@ -22,6 +22,7 @@ romstage-y += gpio.c
 romstage-y += meminit.c
 romstage-y += pcie_rp.c
 romstage-y += reset.c
+romstage-y += cpu.c
 
 ramstage-y += acpi.c
 ramstage-y += chip.c

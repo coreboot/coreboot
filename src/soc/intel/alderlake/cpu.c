@@ -34,7 +34,7 @@ static void configure_misc(void)
 {
 	msr_t msr;
 
-	config_t *conf = config_of_soc();
+	const config_t *conf = config_of_soc();
 
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= (1 << 0);	/* Fast String enable */

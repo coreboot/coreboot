@@ -219,13 +219,13 @@ F:	src/mainboard/clevo/
 
 FACEBOOK FBG1701 MAINBOARD
 M:	Frans Hendriks <fhendriks@eltan.com>
-M:	Wim Vervoorn <wvervoorn@eltan.com>
+M:	Erik van den Bogaert <ebogaert@eltan.com>
 S:	Maintained
 F:	src/mainboard/facebook/fbg1701/
 
 FACEBOOK MONOLITH MAINBOARD
 M:	Frans Hendriks <fhendriks@eltan.com>
-M:	Wim Vervoorn <wvervoorn@eltan.com>
+M:	Erik van den Bogaert <ebogaert@eltan.com>
 S:	Maintained
 F:	src/mainboard/facebook/monolith/
 
@@ -394,7 +394,7 @@ F:	src/mainboard/pcengines/
 
 PORTWELL PQ-M107 MAINBOARD
 M:	Frans Hendriks <fhendriks@eltan.com>
-M:	Wim Vervoorn <wvervoorn@eltan.com>
+M:	Erik van den Bogaert <ebogaert@eltan.com>
 S:	Maintained
 F:	src/mainboard/portwell/m107/
 
@@ -878,7 +878,7 @@ F:	*.ld
 
 ELTAN VENDORCODE
 M:	Frans Hendriks <fhendriks@eltan.com>
-M:	Wim Vervoorn <wvervoorn@eltan.com>
+M:	Erik van den Bogaert <ebogaert@eltan.com>
 S:	Maintained
 F:	src/vendorcode/eltan/
 

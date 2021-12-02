@@ -8,6 +8,7 @@
 #include <crc_byte.h>
 #include <device/device.h>
 #include <device/dram/spd.h>
+#include <drivers/intel/gma/opregion.h>
 #include <gpio.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/pmclib.h>
@@ -17,6 +18,16 @@
 
 #include "eeprom.h"
 #include "gpio.h"
+
+const char *mainboard_vbt_filename(void)
+{
+	const struct eeprom_bmc_settings *bmc_cfg = get_bmc_settings();
+
+	if (bmc_cfg && bmc_cfg->efp3_displayport)
+		return "vbt-avalanche.bin";
+	else
+		return "vbt.bin"; /* Poseidon */
+}
 
 /* FIXME: Example code below */
 

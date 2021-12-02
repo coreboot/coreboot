@@ -63,6 +63,7 @@ _Static_assert(sizeof(struct eeprom_board_settings) == (10 + sizeof(uint32_t)),
 struct __packed eeprom_bmc_settings {
 	uint8_t pcie_mux;
 	uint8_t hsi;
+	uint8_t efp3_displayport;
 };
 
 #define HERMES_SERIAL_NUMBER_LENGTH	32

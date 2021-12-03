@@ -62,6 +62,7 @@ static void gpio_modification_by_ssfc(struct pad_config *table, size_t num)
 	/* For RT5682, GPIO 137 should be set as EDGE_BOTH. */
 	const struct pad_config rt5682_gpio_137 = PAD_CFG_GPI_APIC_IOS(GPIO_137,
 			NONE, DEEP, EDGE_BOTH, INVERT, HIZCRx1, DISPUPD);
+	enum ssfc_audio_codec codec = ssfc_get_audio_codec();
 
 	if (table == NULL || num == 0)
 		return;
@@ -72,7 +73,8 @@ static void gpio_modification_by_ssfc(struct pad_config *table, size_t num)
 	 * provide override_table right now so it will be returned earlier since
 	 * table above is NULL.
 	 */
-	if (ssfc_get_audio_codec() != SSFC_AUDIO_CODEC_RT5682)
+	if ((codec != SSFC_AUDIO_CODEC_RT5682) &&
+		(codec != SSFC_AUDIO_CODEC_RT5682_VS))
 		return;
 
 	while (num--) {
@@ -192,13 +194,26 @@ static void audio_codec_device_update(void)
 			continue;
 		}
 
-		if ((audio_dev->chip_ops == &drivers_i2c_generic_ops) &&
-			(codec == SSFC_AUDIO_CODEC_RT5682)) {
+		if (audio_dev->chip_ops == &drivers_i2c_generic_ops) {
 			struct drivers_i2c_generic_config *cfg =
 				audio_dev->chip_info;
 
-			if (cfg != NULL && !strcmp(cfg->hid, "10EC5682")) {
-				printk(BIOS_INFO, "enable RT5682.\n");
+			if ((cfg != NULL && !strcmp(cfg->hid, "10EC5682")) &&
+				(codec == SSFC_AUDIO_CODEC_RT5682)) {
+				printk(BIOS_INFO, "enable RT5682 VD.\n");
+				continue;
+			}
+
+			if ((cfg != NULL && !strcmp(cfg->hid, "10EC5682")) &&
+				(codec == SSFC_AUDIO_CODEC_RT5682_VS)) {
+				cfg->hid = "RTL5682";
+				printk(BIOS_INFO, "enable RT5682 VS.\n");
+				continue;
+			}
+
+			if ((cfg != NULL && !strcmp(cfg->hid, "RTL5682")) &&
+				(codec == SSFC_AUDIO_CODEC_RT5682_VS)) {
+				printk(BIOS_INFO, "enable RT5682 VS.\n");
 				continue;
 			}
 		}

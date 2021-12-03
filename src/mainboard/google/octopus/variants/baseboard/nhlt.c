@@ -28,7 +28,9 @@ void __weak variant_nhlt_init(struct nhlt *nhlt)
 			printk(BIOS_ERR, "Added Dialog_7219 codec.\n");
 	}
 
-	if (CONFIG(NHLT_RT5682) && codec == SSFC_AUDIO_CODEC_RT5682) {
+	if (CONFIG(NHLT_RT5682) &&
+			(codec == SSFC_AUDIO_CODEC_RT5682 ||
+			codec == SSFC_AUDIO_CODEC_RT5682_VS)) {
 		/* Realtek for Headset codec */
 		if (!nhlt_soc_add_rt5682(nhlt, AUDIO_LINK_SSP2))
 			printk(BIOS_ERR, "Added ALC5682 codec.\n");

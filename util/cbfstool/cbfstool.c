@@ -507,9 +507,10 @@ static int convert_region_offset(unsigned int offset, uint32_t *region_offset)
 	return 0;
 }
 
-static int do_cbfs_locate(uint32_t *cbfs_addr, size_t metadata_size,
-			size_t data_size)
+static int do_cbfs_locate(uint32_t *cbfs_addr, size_t data_size)
 {
+	uint32_t metadata_size = 0;
+
 	if (!param.filename) {
 		ERROR("You need to specify -f/--filename.\n");
 		return 1;
@@ -559,6 +560,8 @@ static int do_cbfs_locate(uint32_t *cbfs_addr, size_t metadata_size,
 	}
 	if (param.precompression || param.compression != CBFS_COMPRESS_NONE)
 		metadata_size += sizeof(struct cbfs_file_attr_compression);
+	if (param.type == CBFS_TYPE_STAGE)
+		metadata_size += sizeof(struct cbfs_file_attr_stageheader);
 
 	/* Take care of the hash attribute if it is used */
 	if (param.hash != VB2_HASH_INVALID)
@@ -776,6 +779,11 @@ static int add_topswap_bootblock(struct buffer *buffer, uint32_t *offset)
 {
 	size_t bb_buf_size = buffer_size(buffer);
 
+	if (!param.baseaddress_assigned) {
+		ERROR("--topswap-size must also have --base-address\n");
+		return 1;
+	}
+
 	if (bb_buf_size > param.topswap_size) {
 		ERROR("Bootblock bigger than the topswap boundary\n");
 		ERROR("size = %zd, ts = %d\n", bb_buf_size,
@@ -812,15 +820,34 @@ static int add_topswap_bootblock(struct buffer *buffer, uint32_t *offset)
 
 static int cbfs_add_component(const char *filename,
 			      const char *name,
-			      uint32_t type,
 			      uint32_t headeroffset,
 			      convert_buffer_t convert)
 {
-	size_t len_align = 0;
+	/*
+	 * The steps used to determine the final placement offset in CBFS, in order:
+	 *
+	 * 1. If --base-address was passed, that value is used.
+	 *
+	 * 2. The convert() function may write a location back to |offset|, usually by calling
+	 *    do_cbfs_locate(). In this case, it needs to ensure that the location found can fit
+	 *    the CBFS file in its final form (after any compression and conversion).
+	 *
+	 * 3. If --align was passed and the offset is still undecided at this point,
+	 *    do_cbfs_locate() is called to find an appropriately aligned location.
+	 *
+	 * 4. If |offset| is still 0 at the end, cbfs_add_entry() will find the first available
+	 *    location that fits.
+	 */
 	uint32_t offset = param.baseaddress_assigned ? param.baseaddress : 0;
+	size_t len_align = 0;
 
 	if (param.alignment && param.baseaddress_assigned) {
 		ERROR("Cannot specify both alignment and base address\n");
+		return 1;
+	}
+
+	if (param.stage_xip && param.compression != CBFS_COMPRESS_NONE) {
+		ERROR("Cannot specify compression for XIP.\n");
 		return 1;
 	}
 
@@ -834,7 +861,7 @@ static int cbfs_add_component(const char *filename,
 		return 1;
 	}
 
-	if (type == 0) {
+	if (param.type == 0) {
 		ERROR("You need to specify a valid -t/--type.\n");
 		return 1;
 	}
@@ -855,12 +882,12 @@ static int cbfs_add_component(const char *filename,
 	}
 
 	struct cbfs_file *header =
-		cbfs_create_file_header(type, buffer.size, name);
+		cbfs_create_file_header(param.type, buffer.size, name);
 
 	/* Bootblock and CBFS header should never have file hashes. When adding
 	   the bootblock it is important that we *don't* look up the metadata
 	   hash yet (before it is added) or we'll cache an outdated result. */
-	if (type != CBFS_TYPE_BOOTBLOCK && type != CBFS_TYPE_CBFSHEADER) {
+	if (param.type != CBFS_TYPE_BOOTBLOCK && param.type != CBFS_TYPE_CBFSHEADER) {
 		enum vb2_hash_algorithm mh_algo = get_mh_cache()->cbfs_hash.algo;
 		if (mh_algo != VB2_HASH_INVALID && param.hash != mh_algo) {
 			if (param.hash == VB2_HASH_INVALID) {
@@ -874,16 +901,11 @@ static int cbfs_add_component(const char *filename,
 		}
 	}
 
-	/* This needs to run after potentially updating param.hash above. */
-	if (param.alignment)
-		if (do_cbfs_locate(&offset, 0, 0))
-			goto error;
-
 	/*
 	 * Check if Intel CPU topswap is specified this will require a
 	 * second bootblock to be added.
 	 */
-	if (type == CBFS_TYPE_BOOTBLOCK && param.topswap_size)
+	if (param.type == CBFS_TYPE_BOOTBLOCK && param.topswap_size)
 		if (add_topswap_bootblock(&buffer, &offset))
 			goto error;
 
@@ -892,7 +914,12 @@ static int cbfs_add_component(const char *filename,
 		goto error;
 	}
 
-	/* This needs to run after convert(). */
+	/* This needs to run after convert() to take compression into account. */
+	if (!offset && param.alignment)
+		if (do_cbfs_locate(&offset, 0))
+			goto error;
+
+	/* This needs to run after convert() to hash the actual final file data. */
 	if (param.hash != VB2_HASH_INVALID &&
 	    cbfs_add_file_hash(header, &buffer, param.hash) == -1) {
 		ERROR("couldn't add hash for '%s'\n", name);
@@ -1028,44 +1055,43 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 {
 	uint32_t address;
 	struct buffer fsp;
-	int do_relocation = 1;
-
-	address = *offset;
 
 	/*
-	 * If the FSP component is xip, then ensure that the address is a memory
-	 * mapped one.
-	 * If the FSP component is not xip, then use param.baseaddress that is
-	 * passed in by the caller.
+	 * There are 4 different cases here:
+	 *
+	 * 1. --xip and --base-address: we need to place the binary at the given base address
+	 *    in the CBFS image and relocate it to that address. *offset was already filled in.
+	 *
+	 * 2. --xip but no --base-address: we implicitly force a 4K minimum alignment so that
+	 *    relocation can occur. Call do_cbfs_locate() here to find an appropriate *offset.
+	 *
+	 * 3. No --xip but a --base-address: special case where --base-address does not have its
+	 *    normal meaning, instead we use it as the relocation target address. We explicitly
+	 *    reset *offset to 0 so that the file will be placed wherever it fits in CBFS.
+	 *
+	 * 4. No --xip and no --base-address: this means that the FSP was pre-linked and should
+	 *    not be relocated. Just chain directly to convert_raw() for compression.
 	 */
+
 	if (param.stage_xip) {
-		if (!IS_HOST_SPACE_ADDRESS(address))
-			address = convert_addr_space(param.image_region, address);
+		if (!param.baseaddress_assigned) {
+			param.alignment = 4*1024;
+			if (do_cbfs_locate(offset, 0))
+				return -1;
+		}
+		if (!IS_HOST_SPACE_ADDRESS(*offset))
+			address = convert_addr_space(param.image_region, *offset);
+		else
+			address = *offset;
 	} else {
 		if (param.baseaddress_assigned == 0) {
-			INFO("Honoring pre-linked FSP module.\n");
-			do_relocation = 0;
+			INFO("Honoring pre-linked FSP module, no relocation.\n");
+			return cbfstool_convert_raw(buffer, offset, header);
 		} else {
 			address = param.baseaddress;
-			/*
-			 * *offset should either be 0 or the value returned by
-			 * do_cbfs_locate. do_cbfs_locate is called only when param.baseaddress
-			 * is not provided by user. Thus, set *offset to 0 if user provides
-			 * a baseaddress i.e. params.baseaddress_assigned is set. The only
-			 * requirement in this case is that the binary should be relocated to
-			 * the base address that is requested. There is no requirement on where
-			 * the file ends up in the cbfs.
-			 */
 			*offset = 0;
 		}
 	}
-
-	/*
-	 * Nothing left to do if relocation is not being attempted. Just add
-	 * the file.
-	 */
-	if (!do_relocation)
-		return cbfstool_convert_raw(buffer, offset, header);
 
 	/* Create a copy of the buffer to attempt relocation. */
 	if (buffer_create(&fsp, buffer_size(buffer), "fsp"))
@@ -1100,15 +1126,12 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 	}
 
 	/*
-	 * If we already did a locate for alignment we need to locate again to
-	 * take the stage header into account. XIP stage parsing also needs the
-	 * location. But don't locate in other cases, because it will ignore
-	 * compression (not applied yet) and thus may cause us to refuse adding
-	 * stages that would actually fit once compressed.
+	 * We need a final location for XIP parsing, so we need to call do_cbfs_locate() early
+	 * here. That is okay because XIP stages may not be compressed, so their size cannot
+	 * change anymore at a later point.
 	 */
-	if ((param.alignment || param.stage_xip) &&
-	     do_cbfs_locate(offset, sizeof(struct cbfs_file_attr_stageheader),
-			    data_size))  {
+	if (param.stage_xip &&
+	    do_cbfs_locate(offset, data_size))  {
 		ERROR("Could not find location for stage.\n");
 		return 1;
 	}
@@ -1240,50 +1263,41 @@ static int cbfs_add(void)
 {
 	convert_buffer_t convert = cbfstool_convert_raw;
 
-	/* Set the alignment to 4KiB minimum for FSP blobs when no base address
-	 * is provided so that relocation can occur. */
 	if (param.type == CBFS_TYPE_FSP) {
-		if (!param.baseaddress_assigned)
-			param.alignment = 4*1024;
 		convert = cbfstool_convert_fsp;
+	} else if (param.type == CBFS_TYPE_STAGE) {
+		ERROR("stages can only be added with cbfstool add-stage\n");
+		return 1;
 	} else if (param.stage_xip) {
-		ERROR("cbfs add supports xip only for FSP component type\n");
+		ERROR("cbfstool add supports xip only for FSP component type\n");
 		return 1;
 	}
 
 	return cbfs_add_component(param.filename,
 				  param.name,
-				  param.type,
 				  param.headeroffset,
 				  convert);
 }
 
 static int cbfs_add_stage(void)
 {
-	if (param.stage_xip) {
-		if (param.baseaddress_assigned) {
-			ERROR("Cannot specify base address for XIP.\n");
-			return 1;
-		}
-
-		if (param.compression != CBFS_COMPRESS_NONE) {
-			ERROR("Cannot specify compression for XIP.\n");
-			return 1;
-		}
+	if (param.stage_xip && param.baseaddress_assigned) {
+		ERROR("Cannot specify base address for XIP.\n");
+		return 1;
 	}
+	param.type = CBFS_TYPE_STAGE;
 
 	return cbfs_add_component(param.filename,
 				  param.name,
-				  CBFS_TYPE_STAGE,
 				  param.headeroffset,
 				  cbfstool_convert_mkstage);
 }
 
 static int cbfs_add_payload(void)
 {
+	param.type = CBFS_TYPE_SELF;
 	return cbfs_add_component(param.filename,
 				  param.name,
-				  CBFS_TYPE_SELF,
 				  param.headeroffset,
 				  cbfstool_convert_mkpayload);
 }
@@ -1300,9 +1314,9 @@ static int cbfs_add_flat_binary(void)
 			"-e/--entry-point.\n");
 		return 1;
 	}
+	param.type = CBFS_TYPE_SELF;
 	return cbfs_add_component(param.filename,
 				  param.name,
-				  CBFS_TYPE_SELF,
 				  param.headeroffset,
 				  cbfstool_convert_mkflatpayload);
 }

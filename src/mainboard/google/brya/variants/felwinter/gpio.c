@@ -10,7 +10,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* A7  : SRCCLK_OE7# ==> PEN_DET_ODL */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_A7, NONE, DEEP),
 	/* A8  : SRCCLKREQ7# ==> PEN_DET_ODL */
-	PAD_CFG_GPI_SCI_LOW(GPP_A8, NONE, DEEP, EDGE_SINGLE),
+	PAD_CFG_GPI_SCI_HIGH(GPP_A8, NONE, DEEP, EDGE_SINGLE),
 	/* B3  : PROC_GP2 ==> NC */
 	PAD_NC(GPP_B3, NONE),
 	/* B5  : ISH_I2C0_SDA ==> NC */

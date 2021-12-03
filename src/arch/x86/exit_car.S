@@ -62,7 +62,7 @@ _start:
 	btl	$CPUID_FEATURE_CLFLUSH_BIT, %edx
 	jnc	skip_clflush
 #if ENV_X86_64
-	movabs	_cbmem_top_ptr, %rax
+	movabs	$_cbmem_top_ptr, %rax
 	clflush	(%rax)
 #else
 	clflush	_cbmem_top_ptr

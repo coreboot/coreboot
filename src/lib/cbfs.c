@@ -307,6 +307,10 @@ void cbfs_preload(const char *name)
 	if (!CONFIG(CBFS_PRELOAD))
 		dead_code();
 
+	/* We don't want to cross the vboot boundary */
+	if (ENV_ROMSTAGE && CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
+		return;
+
 	DEBUG("%s(name='%s')\n", __func__, name);
 
 	if (_cbfs_boot_lookup(name, force_ro, &mdata, &rdev))

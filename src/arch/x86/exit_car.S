@@ -67,8 +67,14 @@ skip_clflush:
 	invd
 
 	movl	$_estack, %esp
+#if ENV_X86_64
+	/* Align stack to 16 bytes at call instruction. */
+	movq	$0xfffffffffffffff0, %rax
+	and	%rax, %rsp
+#else
 	/* Align stack to 16 bytes at call instruction. */
 	andl	$0xfffffff0, %esp
+#endif
 
 	/* Call this in assembly as some platforms like to mess with the bootflow and
 	   call into main directly from chipset_teardown_car. */

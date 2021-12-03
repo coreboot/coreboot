@@ -223,7 +223,7 @@ static void usage(void)
 }
 
 amd_fw_entry amd_psp_fw_table[] = {
-	{ .type = AMD_FW_PSP_PUBKEY, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_PUBKEY, .level = PSP_BOTH | PSP_LVL2_AB, .skip_hashing = true },
 	{ .type = AMD_FW_PSP_BOOTLOADER, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_RECOVERY, .level = PSP_LVL1 },
@@ -231,7 +231,8 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_PSP_SECURED_OS, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_NVRAM, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 2, .level = PSP_BOTH | PSP_LVL2_AB },
-	{ .type = AMD_FW_PSP_SECURED_DEBUG, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_SECURED_DEBUG, .level = PSP_LVL2 | PSP_LVL2_AB,
+									.skip_hashing = true },
 	{ .type = AMD_FW_PSP_TRUSTLETS, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_TRUSTLETKEY, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE2, .subprog = 2, .level = PSP_BOTH | PSP_LVL2_AB },
@@ -242,7 +243,7 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_PSP_FUSE_CHAIN, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_DEBUG_UNLOCK, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_HW_IPCFG, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_WRAPPED_IKEK, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_WRAPPED_IKEK, .level = PSP_BOTH | PSP_LVL2_AB, .skip_hashing = true },
 	{ .type = AMD_TOKEN_UNLOCK, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_SEC_GASKET, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_SEC_GASKET, .subprog = 2, .level = PSP_BOTH | PSP_LVL2_AB },
@@ -267,7 +268,7 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_SPIROM_CFG, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_RPMC_NVRAM, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_BOOTLOADER_AB, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_TA_IKEK, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_TA_IKEK, .level = PSP_BOTH | PSP_LVL2_AB, .skip_hashing = true },
 	{ .type = AMD_ABL0, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_ABL1, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_ABL2, .level = PSP_BOTH | PSP_LVL2_AB },
@@ -543,6 +544,66 @@ static ssize_t copy_blob(void *dest, const char *src_file, size_t room)
 	return bytes;
 }
 
+static ssize_t read_from_file_to_buf(int fd, void *buf, size_t buf_size)
+{
+	ssize_t bytes;
+	size_t total_bytes = 0;
+
+	do {
+		bytes = read(fd, buf + total_bytes, buf_size - total_bytes);
+		if (bytes == 0) {
+			fprintf(stderr, "Reached EOF probably\n");
+			break;
+		}
+
+		if (bytes < 0 && errno == EAGAIN)
+			bytes = 0;
+
+		if (bytes < 0) {
+			fprintf(stderr, "Read failure %s\n", strerror(errno));
+			return bytes;
+		}
+
+		total_bytes += bytes;
+	} while (total_bytes < buf_size);
+
+	if (total_bytes != buf_size) {
+		fprintf(stderr, "Read data size(%zu) != buffer size(%zu)\n",
+								total_bytes, buf_size);
+		return -1;
+	}
+	return buf_size;
+}
+
+static ssize_t write_from_buf_to_file(int fd, const void *buf, size_t buf_size)
+{
+	ssize_t bytes;
+	size_t total_bytes = 0;
+
+	do {
+		bytes = write(fd, buf + total_bytes, buf_size - total_bytes);
+		if (bytes < 0 && errno == EAGAIN)
+			bytes = 0;
+
+		if (bytes < 0) {
+			fprintf(stderr, "Write failure %s\n", strerror(errno));
+			lseek(fd, SEEK_CUR, -total_bytes);
+			return bytes;
+		}
+
+		total_bytes += bytes;
+	} while (total_bytes < buf_size);
+
+	if (total_bytes != buf_size) {
+		fprintf(stderr, "Wrote more data(%zu) than buffer size(%zu)\n",
+								total_bytes, buf_size);
+		lseek(fd, SEEK_CUR, -total_bytes);
+		return -1;
+	}
+
+	return buf_size;
+}
+
 enum platform {
 	PLATFORM_UNKNOWN,
 	PLATFORM_STONEYRIDGE,
@@ -580,6 +641,18 @@ static uint32_t get_psp_id(enum platform soc_id)
 		break;
 	}
 	return psp_id;
+}
+
+static uint16_t get_psp_fw_type(enum platform soc_id, struct amd_fw_header *header)
+{
+	switch (soc_id) {
+	case PLATFORM_MENDOCINO:
+		/* Fallback to fw_type if fw_id is not populated, which serves the same
+		   purpose on older SoCs. */
+		return header->fw_id ? header->fw_id : header->fw_type;
+	default:
+		return header->fw_type;
+	}
 }
 
 static void integrate_firmwares(context *ctx,
@@ -672,6 +745,149 @@ static void free_bdt_firmware_filenames(amd_bios_entry *fw_table)
 				index->type != AMD_BIOS_APCB_BK)
 			free(index->filename);
 	}
+}
+
+/**
+ * process_signed_psp_firmwares() - Process the signed PSP binaries to keep them separate
+ * @signed_rom:	Output file path grouping all the signed PSP binaries.
+ * @fw_table:	Table of all the PSP firmware entries/binaries to be processed.
+ * @signed_start_addr:	Offset of the FMAP section, within the flash device, to hold
+ *                      the signed PSP binaries.
+ * @soc_id:	SoC ID of the PSP binaries.
+ */
+static void process_signed_psp_firmwares(const char *signed_rom,
+		amd_fw_entry *fw_table,
+		uint64_t signed_start_addr,
+		enum platform soc_id)
+{
+	unsigned int i;
+	int fd;
+	int signed_rom_fd;
+	ssize_t bytes, align_bytes;
+	uint8_t *buf;
+	struct amd_fw_header header;
+	struct stat fd_stat;
+	/* Every blob in amdfw*.rom has to start at address aligned to 0x100. Prepare an
+	   alignment data with 0xff to pad the blobs and meet the alignment requirement. */
+	uint8_t align_data[BLOB_ALIGNMENT - 1];
+
+	memset(align_data, 0xff, sizeof(align_data));
+	signed_rom_fd = open(signed_rom, O_RDWR | O_CREAT | O_TRUNC,
+				S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+	if (signed_rom_fd < 0) {
+		fprintf(stderr, "Error opening file: %s: %s\n",
+				signed_rom, strerror(errno));
+		return;
+	}
+
+	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+		if (!(fw_table[i].filename) || fw_table[i].skip_hashing)
+			continue;
+
+		memset(&header, 0, sizeof(header));
+
+		fd = open(fw_table[i].filename, O_RDONLY);
+		if (fd < 0) {
+			/* Keep the file along with set of unsigned PSP binaries & continue. */
+			fprintf(stderr, "Error opening file: %s: %s\n",
+					fw_table[i].filename, strerror(errno));
+			continue;
+		}
+
+		if (fstat(fd, &fd_stat)) {
+			/* Keep the file along with set of unsigned PSP binaries & continue. */
+			fprintf(stderr, "fstat error: %s\n", strerror(errno));
+			close(fd);
+			continue;
+		}
+
+		bytes = read_from_file_to_buf(fd, &header, sizeof(struct amd_fw_header));
+		if (bytes != (ssize_t)sizeof(struct amd_fw_header)) {
+			/* Keep the file along with set of unsigned PSP binaries & continue. */
+			fprintf(stderr, "%s: Error reading header from %s\n",
+						__func__, fw_table[i].filename);
+			close(fd);
+			continue;
+		}
+
+		/* If firmware header looks like invalid, assume it's not signed */
+		if (!header.fw_type && !header.fw_id) {
+			fprintf(stderr, "%s: Invalid FWID for %s\n",
+					__func__, fw_table[i].filename);
+			close(fd);
+			continue;
+		}
+
+		if (header.size_total != fd_stat.st_size) {
+			close(fd);
+			continue;
+		}
+
+		/* PSP binary is not signed and should not be part of signed PSP binaries
+		   set. */
+		if (header.sig_opt != 1) {
+			close(fd);
+			continue;
+		}
+
+		buf = malloc(fd_stat.st_size);
+		if (!buf) {
+			/* Keep the file along with set of unsigned PSP binaries & continue. */
+			fprintf(stderr, "%s: failed to allocate memory with size %lld\n",
+							__func__, (long long)fd_stat.st_size);
+			close(fd);
+			continue;
+		}
+
+		lseek(fd, SEEK_SET, 0);
+		bytes = read_from_file_to_buf(fd, buf, fd_stat.st_size);
+		if (bytes != fd_stat.st_size) {
+			/* Keep the file along with set of unsigned PSP binaries & continue. */
+			fprintf(stderr, "%s: failed to read %s\n",
+					__func__, fw_table[i].filename);
+			free(buf);
+			close(fd);
+			continue;
+		}
+
+		bytes = write_from_buf_to_file(signed_rom_fd, buf, fd_stat.st_size);
+		if (bytes != fd_stat.st_size) {
+			/* Keep the file along with set of unsigned PSP binaries & continue. */
+			fprintf(stderr, "%s: failed to write %s\n",
+					__func__, fw_table[i].filename);
+			free(buf);
+			close(fd);
+			continue;
+		}
+
+		/* Write Blob alignment bytes */
+		align_bytes = 0;
+		if (fd_stat.st_size & (BLOB_ALIGNMENT - 1)) {
+			align_bytes = BLOB_ALIGNMENT -
+				(fd_stat.st_size & (BLOB_ALIGNMENT - 1));
+			bytes = write_from_buf_to_file(signed_rom_fd, align_data, align_bytes);
+			if (bytes != align_bytes) {
+				fprintf(stderr, "%s: failed to write alignment data for %s\n",
+								__func__, fw_table[i].filename);
+				lseek(signed_rom_fd, SEEK_CUR, -fd_stat.st_size);
+				free(buf);
+				close(fd);
+				continue;
+			}
+		}
+
+		/* File is successfully processed and is part of signed PSP binaries set. */
+		fw_table[i].fw_id = get_psp_fw_type(soc_id, &header);
+		fw_table[i].addr_signed = signed_start_addr;
+		fw_table[i].file_size = (uint32_t)fd_stat.st_size;
+
+		signed_start_addr += fd_stat.st_size + align_bytes;
+
+		free(buf);
+		close(fd);
+	}
+
+	close(signed_rom_fd);
 }
 
 static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
@@ -825,22 +1041,31 @@ static void integrate_psp_firmwares(context *ctx,
 
 			count++;
 		} else if (fw_table[i].filename != NULL) {
-			bytes = copy_blob(BUFF_CURRENT(*ctx),
-					fw_table[i].filename, BUFF_ROOM(*ctx));
-			if (bytes < 0) {
-				free(ctx->rom);
-				exit(1);
+			if (fw_table[i].addr_signed) {
+				pspdir->entries[count].addr =
+					RUN_OFFSET(*ctx, fw_table[i].addr_signed);
+				pspdir->entries[count].address_mode =
+							SET_ADDR_MODE_BY_TABLE(pspdir);
+				bytes = fw_table[i].file_size;
+			} else {
+				bytes = copy_blob(BUFF_CURRENT(*ctx),
+						fw_table[i].filename, BUFF_ROOM(*ctx));
+				if (bytes < 0) {
+					free(ctx->rom);
+					exit(1);
+				}
+				pspdir->entries[count].addr = RUN_CURRENT(*ctx);
+				pspdir->entries[count].address_mode =
+							SET_ADDR_MODE_BY_TABLE(pspdir);
+				ctx->current = ALIGN(ctx->current + bytes,
+								BLOB_ALIGNMENT);
 			}
 
 			pspdir->entries[count].type = fw_table[i].type;
 			pspdir->entries[count].subprog = fw_table[i].subprog;
 			pspdir->entries[count].rsvd = 0;
 			pspdir->entries[count].size = (uint32_t)bytes;
-			pspdir->entries[count].addr = RUN_CURRENT(*ctx);
-			pspdir->entries[count].address_mode = SET_ADDR_MODE_BY_TABLE(pspdir);
 
-			ctx->current = ALIGN(ctx->current + bytes,
-							BLOB_ALIGNMENT);
 			count++;
 		} else {
 			/* This APU doesn't have this firmware. */
@@ -1257,6 +1482,8 @@ enum {
 	AMDFW_OPT_SHAREDMEM,
 	AMDFW_OPT_SHAREDMEM_SIZE,
 	AMDFW_OPT_SOC_NAME,
+	AMDFW_OPT_SIGNED_OUTPUT,
+	AMDFW_OPT_SIGNED_ADDR,
 	/* begin after ASCII characters */
 	LONGOPT_SPI_READ_MODE	= 256,
 	LONGOPT_SPI_SPEED	= 257,
@@ -1316,6 +1543,9 @@ static struct option long_options[] = {
 	{"sharedmem",        required_argument, 0, AMDFW_OPT_SHAREDMEM },
 	{"sharedmem-size",   required_argument, 0, AMDFW_OPT_SHAREDMEM_SIZE },
 	{"soc-name",         required_argument, 0, AMDFW_OPT_SOC_NAME },
+
+	{"signed-output",           required_argument, 0, AMDFW_OPT_SIGNED_OUTPUT },
+	{"signed-addr",           required_argument, 0, AMDFW_OPT_SIGNED_ADDR },
 
 	{"config",           required_argument, 0, AMDFW_OPT_CONFIG },
 	{"debug",            no_argument,       0, AMDFW_OPT_DEBUG },
@@ -1567,6 +1797,8 @@ int main(int argc, char **argv)
 	uint8_t efs_spi_readmode = 0xff;
 	uint8_t efs_spi_speed = 0xff;
 	uint8_t efs_spi_micron_flag = 0xff;
+	const char *signed_output_file = NULL;
+	uint64_t signed_start_addr = 0x0;
 
 	amd_cb_config cb_config = { 0 };
 	int debug = 0;
@@ -1711,6 +1943,14 @@ int main(int argc, char **argv)
 				fprintf(stderr, "Error: Invalid SOC name specified\n\n");
 				retval = 1;
 			}
+			sub = instance = 0;
+			break;
+		case AMDFW_OPT_SIGNED_OUTPUT:
+			signed_output_file = optarg;
+			sub = instance = 0;
+			break;
+		case AMDFW_OPT_SIGNED_ADDR:
+			signed_start_addr = strtoull(optarg, NULL, 10);
 			sub = instance = 0;
 			break;
 		case LONGOPT_SPI_READ_MODE:
@@ -1918,6 +2158,14 @@ int main(int argc, char **argv)
 
 	ctx.current = ALIGN(ctx.current, 0x10000U); /* TODO: is it necessary? */
 	ctx.current_table = 0;
+
+	/* If the tool is invoked with command-line options to keep the signed PSP
+	   binaries separate, process the signed binaries first. */
+	if (signed_output_file && signed_start_addr)
+		process_signed_psp_firmwares(signed_output_file,
+				amd_psp_fw_table,
+				signed_start_addr,
+				soc_id);
 
 	if (cb_config.multi_level) {
 		/* Do 2nd PSP directory followed by 1st */

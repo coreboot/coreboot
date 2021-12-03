@@ -69,18 +69,18 @@ typedef struct FWCfgFile {
     uint16_t  select;      /* write this to 0x510 to read it */
     uint16_t  reserved;
     char      name[FW_CFG_MAX_FILE_PATH];
-} FWCfgFile;
+} __packed FWCfgFile;
 
 typedef struct FWCfgFiles {
     uint32_t  count;
     FWCfgFile f[];
-} FWCfgFiles;
+} __packed FWCfgFiles;
 
 typedef struct FwCfgE820Entry {
     uint64_t address;
     uint64_t length;
     uint32_t type;
-} FwCfgE820Entry __attribute((__aligned__(4)));
+} __packed FwCfgE820Entry __attribute((__aligned__(4)));
 
 
 #define SMBIOS_FIELD_ENTRY 0
@@ -91,7 +91,7 @@ typedef struct FwCfgSmbios {
 	uint8_t  headertype;
 	uint8_t  tabletype;
 	uint16_t fieldoffset;
-} FwCfgSmbios;
+} __packed FwCfgSmbios;
 
 /* FW_CFG_ID bits */
 #define FW_CFG_VERSION          0x01
@@ -113,6 +113,6 @@ typedef struct FwCfgDmaAccess {
 	uint32_t control;
 	uint32_t length;
 	uint64_t address;
-} FwCfgDmaAccess;
+} __packed FwCfgDmaAccess;
 
 #endif /* FW_CFG_IF_H */

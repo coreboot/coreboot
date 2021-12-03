@@ -25,6 +25,7 @@ fw_config
 		option AUDIO_CODEC_UNPROVISIONED 0
 		option AUDIO_CODEC_DA7219 1
 		option AUDIO_CODEC_RT5682 2
+		option AUDIO_CODEC_ALC5682I_VS 3
 	end
 end
 
@@ -472,19 +473,45 @@ chip soc/intel/jasperlake
 				end
 			end
 			chip drivers/i2c/generic
+				register "hid" = ""RTL5682""
+				register "name" = ""RT58""
+				register "desc" = ""Realtek RT5682""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682I_VS
+				end
+			end
+			chip drivers/i2c/generic
 				register "hid" = ""10EC1015""
 				register "desc" = ""Realtek SPK AMP L""
 				register "uid" = "0"
-				device i2c 28 on end
+				device i2c 28 on
+					probe AUDIO_AMP UNPROVISIONED
+					probe AUDIO_AMP RT1015_I2C
+				end
 			end
 			chip drivers/i2c/generic
 				register "hid" = ""10EC1015""
 				register "desc" = ""Realtek SPK AMP R""
 				register "uid" = "1"
-				device i2c 29 on end
+				device i2c 29 on
+					probe AUDIO_AMP UNPROVISIONED
+					probe AUDIO_AMP RT1015_I2C
+				end
 			end
 		end
-		device pci 1f.3 on end # Intel HDA
+		device pci 1f.3 on
+			chip drivers/generic/alc1015
+				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"
+				device generic 0 on
+					probe AUDIO_AMP RT1015P_AUTO
+				end
+			end
+		end # Intel HDA
 		device pci 1c.7 on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW2_03"

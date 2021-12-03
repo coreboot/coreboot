@@ -59,6 +59,24 @@ _start:
 	leal	_stack, %edi
 #endif
 
+#if ENV_X86_64
+	/** poison the stack. Code should not count on the
+	 * stack being full of zeros. This stack poisoning
+	 * recently uncovered a bug in the broadcast SIPI
+	 * code.
+	 */
+	movabs	$_estack, %rcx
+	sub	%rdi, %rcx
+	shr	$3, %rcx   /* it is 64 bit aligned, right? */
+	movq	$0xDEADBEEFDEADBEEF, %rax
+	rep
+	stosq
+
+	/* Set new stack with enforced alignment. */
+	movabs	$_estack, %rsp
+	movq	$(0xfffffffffffffff0), %rax
+	and	%rax, %rsp
+#else
 	/** poison the stack. Code should not count on the
 	 * stack being full of zeros. This stack poisoning
 	 * recently uncovered a bug in the broadcast SIPI
@@ -74,6 +92,7 @@ _start:
 	/* Set new stack with enforced alignment. */
 	movl	$_estack, %esp
 	andl	$(0xfffffff0), %esp
+#endif
 
 	/*
 	 *	Now we are finished. Memory is up, data is copied and
@@ -82,7 +101,12 @@ _start:
 	 */
 	post_code(POSTCODE_PRE_HARDWAREMAIN)	/* post 6e */
 
+#if ENV_X86_64
+	movq	$0xFFFFFFFFFFFFFFF0, %rax
+	and	%rax, %rsp
+#else
 	andl	$0xFFFFFFF0, %esp
+#endif
 
 #if CONFIG(ASAN_IN_RAMSTAGE)
 	call asan_init

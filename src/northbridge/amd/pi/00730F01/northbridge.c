@@ -29,8 +29,6 @@
 #define PCIE_CAP_AER		BIT(5)
 #define PCIE_CAP_ACS		BIT(6)
 
-static unsigned int node_nums;
-static unsigned int sblink;
 static struct device *__f0_dev[MAX_NODE_NUMS];
 static struct device *__f1_dev[MAX_NODE_NUMS];
 static struct device *__f2_dev[MAX_NODE_NUMS];
@@ -40,6 +38,23 @@ static unsigned int fx_devs = 0;
 static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
 	return pcidev_on_root(DEV_CDB + nodeid, fn);
+}
+
+static struct device *get_mc_dev(void)
+{
+	return pcidev_on_root(DEV_CDB, 0);
+}
+
+static unsigned int get_node_nums(void)
+{
+	static unsigned int node_nums;
+
+	if (node_nums)
+		return node_nums;
+
+	node_nums = ((pci_read_config32(get_mc_dev(), 0x60)>>4) & 7) + 1; //NodeCnt[2:0]
+
+	return node_nums;
 }
 
 static void get_fx_devs(void)
@@ -164,6 +179,9 @@ static void nb_read_resources(struct device *dev)
 static void create_vga_resource(struct device *dev, unsigned int nodeid)
 {
 	struct bus *link;
+	unsigned int sblink;
+
+	sblink = (pci_read_config32(get_mc_dev(), 0x64)>>8) & 7; // don't forget sublink1
 
 	/* find out which link the VGA card is connected,
 	 * we only deal with the 'first' vga card */
@@ -724,7 +742,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 	int i;
 	mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
 	mem_hole.node_id = -1;
-	for (i = 0; i < node_nums; i++) {
+	for (i = 0; i < get_node_nums(); i++) {
 		resource_t basek, limitk;
 		u32 hole;
 		if (!get_dram_base_limit(i, &basek, &limitk))
@@ -742,7 +760,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 	 */
 	if (mem_hole.node_id == -1) {
 		resource_t limitk_pri = 0;
-		for (i = 0; i < node_nums; i++) {
+		for (i = 0; i < get_node_nums(); i++) {
 			resource_t base_k, limit_k;
 			if (!get_dram_base_limit(i, &base_k, &limit_k))
 				continue; // no memory on this node
@@ -788,7 +806,7 @@ static void domain_read_resources(struct device *dev)
 #endif
 
 	idx = 0x10;
-	for (i = 0; i < node_nums; i++) {
+	for (i = 0; i < get_node_nums(); i++) {
 		resource_t basek, limitk, sizek; // 4 1T
 
 		if (!get_dram_base_limit(i, &basek, &limitk))
@@ -856,24 +874,6 @@ static struct device_operations pci_domain_ops = {
 	.acpi_name        = domain_acpi_name,
 };
 
-static void sysconf_init(struct device *dev) // first node
-{
-	sblink = (pci_read_config32(dev, 0x64)>>8) & 7; // don't forget sublink1
-	node_nums = ((pci_read_config32(dev, 0x60)>>4) & 7) + 1; //NodeCnt[2:0]
-}
-
-static void cpu_bus_scan(struct device *dev)
-{
-	struct device *dev_mc;
-
-	dev_mc = pcidev_on_root(DEV_CDB, 0);
-	if (!dev_mc) {
-		printk(BIOS_ERR, "0:%02x.0 not found", DEV_CDB);
-		die("");
-	}
-	sysconf_init(dev_mc);
-}
-
 static void pre_mp_init(void)
 {
 	x86_setup_mtrrs_with_detect();
@@ -906,7 +906,6 @@ static struct device_operations cpu_bus_ops = {
 	.read_resources	  = noop_read_resources,
 	.set_resources	  = noop_set_resources,
 	.init		  = mp_cpu_bus_init,
-	.scan_bus	  = cpu_bus_scan,
 };
 
 static void root_complex_enable_dev(struct device *dev)

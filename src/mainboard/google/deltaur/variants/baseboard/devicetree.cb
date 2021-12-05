@@ -25,7 +25,6 @@ chip soc/intel/tigerlake
 	# FSP configuration
 	register "SaGv" = "SaGv_Disabled"
 
-	register "SataMode" = "0"
 	register "SataSalpSupport" = "1"
 
 	# TODO: the lengths are all MID for right now.

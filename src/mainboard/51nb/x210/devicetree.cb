@@ -34,7 +34,6 @@ chip soc/intel/skylake
 
 	# FSP Configuration
 	register "SataSalpSupport" = "1"
-	register "SataMode" = "0"
 
 	# The X210 has 3 SATA ports: a full SATA port, mSATA, and SATA over M.2
 	register "SataPortsEnable[0]" = "1"

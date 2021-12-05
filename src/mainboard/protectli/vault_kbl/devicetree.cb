@@ -29,7 +29,6 @@ chip soc/intel/skylake
 
 	# FSP Configuration
 	register "SataSalpSupport" = "0"
-	register "SataMode" = "0"
 	register "DspEnable" = "0"
 	register "IoBufferOwnership" = "0"
 	register "SsicPortEnable" = "0"

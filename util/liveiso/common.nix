@@ -8,7 +8,7 @@
 		<nixpkgs/nixos/modules/installer/cd-dvd/iso-image.nix>
 	];
 
-	system.stateVersion = "21.05";
+	system.stateVersion = "21.11";
 
 	isoImage = {
 		makeEfiBootable = true;
@@ -127,7 +127,6 @@
 		hexdump
 		htop
 		i2c-tools
-		iasl
 		intel-gpu-tools
 		inxi
 		iotools

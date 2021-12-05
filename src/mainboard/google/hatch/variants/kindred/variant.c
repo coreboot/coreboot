@@ -30,7 +30,6 @@ void variant_devtree_update(void)
 			return;
 		ssd_host->enabled = 0;
 		cfg->SataSalpSupport = 0;
-		cfg->SataMode = 0;
 		cfg->SataPortsEnable[1] = 0;
 		cfg->SataPortsDevSlp[1] = 0;
 		cfg->satapwroptimize = 0;

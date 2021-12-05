@@ -1,7 +1,6 @@
 chip soc/intel/cannonlake
 	# FSP configuration
 
-	register "SataMode" = "0"		# AHCI
 	register "SataSalpSupport" = "0"
 	register "satapwroptimize" = "1"
 	register "SataPortsDevSlp[1]" = "1"	# PCH_M2_SATA_DEVSLP1

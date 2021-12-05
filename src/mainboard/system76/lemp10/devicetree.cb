@@ -105,9 +105,7 @@ chip soc/intel/tigerlake
 
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 		end
-		device ref dptf on
-			register "Device4Enable" = "1"
-		end
+		device ref dptf on end
 		device ref peg on
 			# PCIe PEG0 x4, Clock 3 (SSD1)
 			# Despite the name, SSD2_CLKREQ# is used for SSD1

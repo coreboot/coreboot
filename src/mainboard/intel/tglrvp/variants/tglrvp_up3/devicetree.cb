@@ -119,9 +119,6 @@ chip soc/intel/tigerlake
 	# Enable DPTF
 	register "dptf_enable" = "1"
 
-	# Enable Processor Thermal Control
-	register "Device4Enable" = "1"
-
 	# Add PL1 and PL2 values
 	register "power_limits_config[POWER_LIMITS_U_2_CORE]" = "{
 		.tdp_pl1_override = 15,

@@ -274,8 +274,6 @@ struct soc_intel_tigerlake_config {
 	/* Gfx related */
 	uint8_t SkipExtGfxScan;
 
-	uint8_t Device4Enable;
-
 	/* HeciEnabled decides the state of Heci1 at end of boot
 	 * Setting to 0 (default) disables Heci1 and hides the device from OS */
 	uint8_t HeciEnabled;

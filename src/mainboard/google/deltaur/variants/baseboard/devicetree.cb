@@ -130,7 +130,7 @@ chip soc/intel/tigerlake
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Graphics
-		device pci 04.0 on  end # DPTF
+		device pci 04.0 off end # DPTF
 		device pci 05.0 off end # IPU
 		device pci 06.0 off end # PEG60
 		device pci 07.0 on  end # TBT_PCIe0

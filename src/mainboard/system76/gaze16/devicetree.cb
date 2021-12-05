@@ -96,9 +96,7 @@ chip soc/intel/tigerlake
 			register "DdiPortBHpd" = "1"
 			register "DdiPortBDdc" = "1"
 		end
-		device ref dptf on
-			register "Device4Enable" = "1"
-		end
+		device ref dptf on end
 		device ref gna on end
 		device ref north_xhci on
 			# TODO: No TBT, but needed for USB 2.0 on Type-C port?

@@ -110,9 +110,7 @@ chip soc/intel/tigerlake
 			register "DdiPortAHpd" = "1"
 			register "DdiPortADdc" = "0"
 		end
-		device ref dptf on
-			register "Device4Enable" = "1"
-		end
+		device ref dptf on end
 		device ref peg0 on
 			# PCIe PEG0 x4, Clock 7 (SSD1)
 			register "PcieClkSrcUsage[7]" = "0x40"

@@ -474,7 +474,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->SlowSlewRate[0] = config->SlowSlewRate;
 
 	/* Enable TCPU for processor thermal control */
-	params->Device4Enable = config->Device4Enable;
+	params->Device4Enable = is_devfn_enabled(SA_DEVFN_DPTF);
 
 	/* Set TccActivationOffset */
 	params->TccActivationOffset = config->tcc_offset;

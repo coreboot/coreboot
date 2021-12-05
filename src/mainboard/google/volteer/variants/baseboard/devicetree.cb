@@ -146,7 +146,6 @@ chip soc/intel/tigerlake
 	register "PcieClkSrcUsage[6]" = "PCIE_CLK_NOTUSED"
 
 	# Enable SATA
-	register "SataEnable" = "1"
 	register "SataMode" = "0"
 	register "SataSalpSupport" = "1"
 	register "SataPortsEnable[0]" = "0"

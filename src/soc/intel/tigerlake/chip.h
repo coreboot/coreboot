@@ -215,7 +215,6 @@ struct soc_intel_tigerlake_config {
 	uint8_t SlowSlewRate;
 
 	/* SATA related */
-	uint8_t SataEnable;
 	uint8_t SataMode;
 	uint8_t SataSalpSupport;
 	uint8_t SataPortsEnable[8];

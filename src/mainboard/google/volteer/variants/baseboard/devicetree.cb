@@ -92,7 +92,6 @@ chip soc/intel/tigerlake
 
 	# FSP configuration
 	register "SaGv" = "SaGv_Enabled"
-	register "SmbusEnable" = "0"
 
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A1

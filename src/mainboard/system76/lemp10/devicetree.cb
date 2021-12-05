@@ -294,9 +294,7 @@ chip soc/intel/tigerlake
 		device ref hda on
 			register "PchHdaAudioLinkHdaEnable" = "1"
 		end
-		device ref smbus on
-			register "SmbusEnable" = "1"
-		end
+		device ref smbus on end
 		device ref fast_spi on end
 	end
 end

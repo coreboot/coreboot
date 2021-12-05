@@ -130,7 +130,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	/* Channel Hash Mask:0x0001=BIT6 set(Minimal), 0x3FFF=BIT[19:6] set(Maximum) */
 	m_cfg->ChHashMask = 0x30CC;
 	/* Enable SMBus controller based on config */
-	m_cfg->SmbusEnable = config->SmbusEnable;
+	m_cfg->SmbusEnable = is_devfn_enabled(PCH_DEVFN_SMBUS);
 	/* Set debug probe type */
 	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_TIGERLAKE_DEBUG_CONSENT;
 

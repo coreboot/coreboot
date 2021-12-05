@@ -291,7 +291,7 @@ chip soc/intel/tigerlake
 		device pci 1f.1 off end # P2SB
 		device pci 1f.2 hidden end # PMC
 		device pci 1f.3 on  end # Intel HDA
-		device pci 1f.4 on  end # SMBus
+		device pci 1f.4 off end # SMBus
 		device pci 1f.5 on  end # PCH SPI Flash Controller
 		device pci 1f.6 off end # GbE Controller
 		device pci 1f.7 off end # Intel Trace Hub

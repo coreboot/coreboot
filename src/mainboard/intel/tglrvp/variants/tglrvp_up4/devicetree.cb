@@ -13,7 +13,6 @@ chip soc/intel/tigerlake
 
 	# FSP configuration
 	register "SaGv" = "SaGv_Disabled"
-	register "SmbusEnable" = "1"
 
 	# CNVi BT enable/disable
 	register "CnviBtCore" = "true"

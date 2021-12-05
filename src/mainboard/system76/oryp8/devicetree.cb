@@ -212,7 +212,6 @@ chip soc/intel/tigerlake
 			register "PchHdaAudioLinkHdaEnable" = "1"
 		end
 		device ref smbus on
-			register "SmbusEnable" = "1"
 			chip drivers/i2c/tas5825m
 				register "id" = "0"
 				device i2c 4e on end # (8bit address: 0x9c)

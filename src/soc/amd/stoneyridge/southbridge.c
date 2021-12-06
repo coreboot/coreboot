@@ -242,7 +242,7 @@ void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 				(fast << SPI_FAST_SPEED_NEW_SH) |
 				(alt << SPI_ALT_SPEED_NEW_SH) |
 				(tpm << SPI_TPM_SPEED_NEW_SH));
-	spi_write16(SPI100_ENABLE, SPI_USE_SPI100);
+	spi_write16(SPI100_ENABLE, SPI_USE_SPI100 | spi_read16(SPI100_ENABLE));
 }
 
 static void sb_disable_4dw_burst(void)

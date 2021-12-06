@@ -227,6 +227,9 @@ config LZ4
 	help
 	  Decoder implementation for the LZ4 compression algorithm.
 	  Adds standalone functions (CBFS support coming soon).
+
+source "vboot/Kconfig"
+
 endmenu
 
 menu "Console Options"

@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: BSD-3-Clause
+
+config VBOOT_LIB
+	bool "Compile verified boot (vboot) library"
+	default n
+	help
+	  This option enables compiling and building vboot libraries vboot_fw and tlcl.
+
+if VBOOT_LIB
+
+config VBOOT_TPM2_MODE
+	bool "TPM2 Mode"
+	default y
+	help
+	  This option enables TPM 2.0 support in vboot. Disabling it allows using TPM 1.2.
+
+config VBOOT_X86_SHA_EXT
+	bool "x86 SHA Extension"
+	default n
+	depends on ARCH_X86
+	help
+	  This option enables SHA256 implementation using x86 SHA processor extension
+	  instructions: sha256msg1, sha256msg2, sha256rnds2.
+
+endif

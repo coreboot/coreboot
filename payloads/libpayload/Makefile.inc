@@ -46,6 +46,8 @@ classes-$(CONFIG_LP_CBFS) += libcbfs
 classes-$(CONFIG_LP_LZMA) += liblzma
 classes-$(CONFIG_LP_LZ4) += liblz4
 classes-$(CONFIG_LP_REMOTEGDB) += libgdb
+classes-$(CONFIG_LP_VBOOT_LIB) += vboot_fw
+classes-$(CONFIG_LP_VBOOT_LIB) += tlcl
 libraries := $(classes-y)
 classes-y += head.o
 
@@ -55,6 +57,7 @@ subdirs-$(CONFIG_LP_CURSES) += curses
 subdirs-$(CONFIG_LP_CBFS) += libcbfs
 subdirs-$(CONFIG_LP_LZMA) += liblzma
 subdirs-$(CONFIG_LP_LZ4) += liblz4
+subdirs-$(CONFIG_LP_VBOOT_LIB) += vboot
 
 INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
 INCLUDES += -include include/kconfig.h -include include/compiler.h
@@ -91,11 +94,13 @@ includes-handler= \
 
 $(obj)/libpayload.a: $(foreach class,$(libraries),$$($(class)-objs))
 	printf "    AR         $(subst $(CURDIR)/,,$(@))\n"
-	$(AR) rc $@ $^
+	$(AR) rc $@ $(filter-out %.a,$^)
+	printf "open $@\n$(foreach lib,$(filter %.a,$^),addlib $(lib)\n)save\nend\n" | $(AR) -M
 
 $(obj)/%.a: $$(%-objs)
 	printf "    AR         $(subst $(CURDIR)/,,$(@))\n"
-	$(AR) rc $@ $^
+	$(AR) rc $@ $(filter-out %.a,$^)
+	printf "open $@\n$(foreach lib,$(filter %.a,$^),addlib $(lib)\n)save\nend\n" | $(AR) -M
 
 $(obj)/head.o: $(obj)/arch/$(ARCHDIR-y)/head.head.o.o
 	printf "    CP         $(subst $(CURDIR)/,,$(@))\n"

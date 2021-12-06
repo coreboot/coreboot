@@ -326,7 +326,7 @@ src-to-obj=\
 	$(basename \
 	$(addprefix $(obj)/,\
 	$(subst $(coreboottop)/,coreboot/,$(2)))))
-$(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class),$($(class)-srcs))))
+$(foreach class,$(classes),$(eval $(class)-objs+=$(call src-to-obj,$(class),$($(class)-srcs))))
 
 allsrcs:=$(foreach var, $(addsuffix -srcs,$(classes)), $($(var)))
 allobjs:=$(foreach var, $(addsuffix -objs,$(classes)), $($(var)))
@@ -355,7 +355,7 @@ $(foreach class,$(classes), \
 foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(basename $(file)))))
 $(eval $(foreach class,$(classes),$(call foreach-src,$(class))))
 
-DEPENDENCIES = $(allobjs:.o=.d)
+DEPENDENCIES = $($(filter %.o,%(allobjs)):.o=.d)
 -include $(DEPENDENCIES)
 
 printall:

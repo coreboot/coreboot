@@ -492,12 +492,12 @@ enum {
 /* top_div rate */
 enum {
 	CLK26M_HZ	= 26 * MHz,
-	UNIVPLL_D6_D2_HZ = UNIV2PLL_HZ / 2 / 6 / 2,
+	MAINPLL_D5_HZ = MAINPLL_HZ / 5,
 };
 
 /* top_mux rate */
 enum {
-	SPI_HZ		= UNIVPLL_D6_D2_HZ,
+	SPI_HZ		= MAINPLL_D5_HZ,
 	UART_HZ		= CLK26M_HZ,
 };
 

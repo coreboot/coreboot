@@ -180,4 +180,8 @@ config CSE_BPDT_VERSION
 	help
 	  This config indicates the BPDT version used by CSE for a given SoC.
 
+config CSE_OEMP_FILE
+	string "Name of OEM KM file"
+	default "oem_km.bin"
+
 endif

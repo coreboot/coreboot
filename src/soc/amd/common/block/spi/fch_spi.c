@@ -74,7 +74,7 @@ static uint8_t lower_speed(uint8_t speed1, uint8_t speed2)
 static void fch_spi_set_spi100(uint8_t norm, uint8_t fast, uint8_t alt, uint8_t tpm)
 {
 	spi_write16(SPI100_SPEED_CONFIG, SPI_SPEED_CFG(norm, fast, alt, tpm));
-	spi_write16(SPI100_ENABLE, SPI_USE_SPI100);
+	spi_write16(SPI100_ENABLE, SPI_USE_SPI100 | spi_read16(SPI100_ENABLE));
 }
 
 static void fch_spi_configure_4dw_burst(void)

@@ -12,3 +12,9 @@ config BOARD_INTEL_ADLRVP_M
 
 config BOARD_INTEL_ADLRVP_M_EXT_EC
 	bool "Alderlake-M RVP with Chrome EC"
+
+config BOARD_INTEL_ADLRVP_N
+	bool "Alderlake-N RVP"
+
+config BOARD_INTEL_ADLRVP_N_EXT_EC
+	bool "Alderlake-N RVP with Chrome EC"

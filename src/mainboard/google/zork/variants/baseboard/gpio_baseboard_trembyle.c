@@ -360,25 +360,43 @@ const __weak struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size, int slp
 	return gpio_sleep_table;
 }
 
-static const struct soc_amd_gpio early_gpio_table[] = {
-	/* H1_FCH_INT_ODL */
-	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS),
-	/* I2C3_SCL - H1 */
-	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
-	/* I2C3_SDA - H1 */
-	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
+static const struct soc_amd_gpio espi_gpio_table[] = {
 	/* PCIE_RST0_L - Fixed timings */
 	PAD_NF(GPIO_26, PCIE_RST_L, PULL_NONE),
 	/* FCH_ESPI_EC_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* ESPI_ALERT_L */
 	PAD_NF(GPIO_108, ESPI_ALERT_L, PULL_NONE),
+};
+
+const struct soc_amd_gpio *variant_espi_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(espi_gpio_table);
+	return espi_gpio_table;
+}
+
+static const struct soc_amd_gpio tpm_gpio_table[] = {
+	/* H1_FCH_INT_ODL */
+	PAD_INT(GPIO_3, PULL_NONE, EDGE_LOW, STATUS),
+	/* I2C3_SCL - H1 */
+	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
+	/* I2C3_SDA - H1 */
+	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
+	/* EC_IN_RW_OD */
+	PAD_GPI(GPIO_130, PULL_NONE),
+};
+
+const struct soc_amd_gpio *variant_tpm_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(tpm_gpio_table);
+	return tpm_gpio_table;
+}
+
+static const struct soc_amd_gpio early_gpio_table[] = {
 	/* UART0_RXD - DEBUG */
 	PAD_NF(GPIO_136, UART0_RXD, PULL_NONE),
 	/* UART0_TXD - DEBUG */
 	PAD_NF(GPIO_138, UART0_TXD, PULL_NONE),
-	/* EC_IN_RW_OD */
-	PAD_GPI(GPIO_130, PULL_NONE),
 };
 
 const struct soc_amd_gpio *variant_early_gpio_table(size_t *size)

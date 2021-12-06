@@ -25,9 +25,6 @@
 
 extern char _bss_start, _bss_end;
 
-void __weak verstage_mainboard_early_init(void) {}
-void __weak verstage_mainboard_espi_init(void) {}
-void __weak verstage_mainboard_tpm_init(void) {}
 void __weak verstage_mainboard_init(void) {}
 
 uint32_t __weak get_max_workbuf_size(uint32_t *size)

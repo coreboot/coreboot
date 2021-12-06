@@ -33,6 +33,12 @@ const struct soc_amd_gpio *variant_bootblock_gpio_table(size_t *size, int slp_ty
  */
 const struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size, int slp_typ);
 
+/* This function provides GPIO settings for eSPI bus. */
+const struct soc_amd_gpio *variant_espi_gpio_table(size_t *size);
+
+/* This function provides GPIO settings for TPM i2c bus. */
+const struct soc_amd_gpio *variant_tpm_gpio_table(size_t *size);
+
 void variant_updm_update(FSP_M_CONFIG *mcfg);
 
 /* Program any required GPIOs at the finalize phase */

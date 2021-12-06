@@ -23,6 +23,7 @@ static void fch_apmc_smi_handler(void)
 
 	switch (cmd) {
 	case APM_CNT_ACPI_ENABLE:
+		acpi_clear_pm_gpe_status();
 		acpi_enable_sci();
 		break;
 	case APM_CNT_ACPI_DISABLE:

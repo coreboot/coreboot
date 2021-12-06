@@ -225,6 +225,19 @@ chip soc/amd/cezanne
 		.early_init = true,
 	}"
 
+	register "edp_phy_override" = "1"
+
+	# bit vector of phy, bit0=1: DP0, bit1=1: DP1, bit2=1: DP2, bit3=1: DP3
+	register "edp_physel" = "0x1"
+
+	register "edp_tuningset" = "{
+		.dp_vs_pemph_level = 0x00,
+		.tx_eq_main = 0x1f,
+		.tx_eq_pre = 0x0,
+		.tx_eq_post = 0x0,
+		.tx_vboost_lvl = 0x5,
+	}"
+
 	device ref i2c_0 on
 		chip drivers/i2c/generic
 			register "hid" = ""ELAN0000""

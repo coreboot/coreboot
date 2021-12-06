@@ -10,7 +10,7 @@ bootblock-y += ../common/mmu_operations.c
 bootblock-y += ../common/pll.c pll.c
 bootblock-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 bootblock-y += ../common/timer.c
-bootblock-y += ../common/tracker.c
+bootblock-y += ../common/tracker.c ../common/tracker_v2.c
 bootblock-y += ../common/uart.c
 bootblock-y += ../common/wdt.c
 

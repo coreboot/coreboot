@@ -215,7 +215,8 @@ void hudson_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 				(fast << SPI_FAST_SPEED_NEW_SH) |
 				(alt << SPI_ALT_SPEED_NEW_SH) |
 				(tpm << SPI_TPM_SPEED_NEW_SH));
-	write16((void *)(base + SPI100_ENABLE), SPI_USE_SPI100);
+	write16((void *)(base + SPI100_ENABLE), SPI_USE_SPI100 |
+		read16((void *)(base + SPI100_ENABLE)));
 }
 
 void hudson_disable_4dw_burst(void)

@@ -95,7 +95,14 @@ typedef struct __packed {
 	/** Offset 0x04D3**/	uint32_t                    telemetry_vddcrsocOffset;
 	/** Offset 0x04D7**/	uint8_t                     UnusedUpdSpace1;
 	/** Offset 0x04D8**/	struct usb_phy_config       *usb_phy;
-	/** Offset 0x04DC**/	uint8_t                     UnusedUpdSpace2[292];
+	/** Offset 0x04DC**/	uint8_t                     edp_phy_override;
+	/** Offset 0x04DD**/	uint8_t                     edp_physel;
+	/** Offset 0x04DE**/	uint8_t                     dp_vs_pemph_level;
+	/** Offset 0x04DF**/	uint8_t                     tx_eq_main;
+	/** Offset 0x04E0**/	uint8_t                     tx_eq_pre;
+	/** Offset 0x04E1**/	uint8_t                     tx_eq_post;
+	/** Offset 0x04E2**/	uint8_t                     tx_vboost_lvl;
+	/** Offset 0x04E3**/	uint8_t                     UnusedUpdSpace2[285];
 	/** Offset 0x0600**/	uint16_t                    UpdTerminator;
 } FSP_M_CONFIG;
 

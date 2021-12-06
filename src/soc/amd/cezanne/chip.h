@@ -106,6 +106,19 @@ struct soc_amd_cezanne_config {
 
 	uint8_t usb_phy_custom;
 	struct usb_phy_config usb_phy;
+
+	/* eDP phy tuning settings */
+	uint8_t edp_phy_override;
+	/* bit vector of phy, bit0=1: DP0, bit1=1: DP1, bit2=1: DP2 bit3=1: DP3 */
+	uint8_t edp_physel;
+
+	struct {
+		uint8_t dp_vs_pemph_level;
+		uint8_t tx_eq_main;
+		uint8_t tx_eq_pre;
+		uint8_t tx_eq_post;
+		uint8_t tx_vboost_lvl;
+	} edp_tuningset;
 };
 
 #endif /* CEZANNE_CHIP_H */

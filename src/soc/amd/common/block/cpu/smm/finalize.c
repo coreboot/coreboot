@@ -41,6 +41,8 @@ static void soc_finalize(void *unused)
 	finalize_cores();
 
 	if (!acpi_is_wakeup_s3()) {
+		acpi_clear_pm_gpe_status();
+
 		if (CONFIG(HAVE_SMI_HANDLER))
 			acpi_disable_sci();
 		else

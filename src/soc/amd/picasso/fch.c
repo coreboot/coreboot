@@ -225,8 +225,6 @@ void fch_init(void *chip_info)
 	acpi_pm_gpe_add_events_print_events();
 	gpio_add_events();
 
-	acpi_clear_pm_gpe_status();
-
 	al2ahb_clock_gate();
 
 	gpp_clk_setup();

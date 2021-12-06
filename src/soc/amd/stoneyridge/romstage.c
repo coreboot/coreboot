@@ -214,6 +214,5 @@ static void migrate_power_state(int is_recovery)
 		acpi_fill_pm_gpe_state(&state->gpe_state);
 		acpi_pm_gpe_add_events_print_events();
 	}
-	acpi_clear_pm_gpe_status();
 }
 ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state)

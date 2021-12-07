@@ -7,6 +7,9 @@ bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 ifeq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_M),y)
 bootblock-y += early_gpio_m.c
 ramstage-y += gpio_m.c
+else ifeq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_N),y)
+bootblock-y += early_gpio_n.c
+ramstage-y += gpio_n.c
 else
 bootblock-y += early_gpio.c
 ramstage-y += gpio.c

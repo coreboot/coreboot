@@ -479,8 +479,10 @@ void collect_pmc_and_cpu_crashlog_from_srams(void)
 {
 	if (pmc_crashlog_support() && cl_pmc_data_present()
 		&& (cl_get_pmc_record_size() > 0)) {
-		cl_pmc_en_gen_on_all_reboot();
-		printk(BIOS_DEBUG, "Crashlog collection enabled on every reboot.\n");
+		if (CONFIG(SOC_INTEL_CRASHLOG_ON_RESET)) {
+			cl_pmc_en_gen_on_all_reboot();
+			printk(BIOS_DEBUG, "Crashlog collection enabled on every reboot.\n");
+		}
 		cl_get_pmc_sram_data();
 	} else {
 		printk(BIOS_DEBUG, "Skipping PMC crashLog collection. Data not present.\n");

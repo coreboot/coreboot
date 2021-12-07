@@ -79,4 +79,18 @@ config SMM_MODULE_STACK_SIZE
 	hex
 	default 0x800
 
+config SOC_INTEL_CRASHLOG
+	def_bool n
+	select SOC_INTEL_COMMON_BLOCK_CRASHLOG
+	select ACPI_BERT
+	help
+	  Enables Crashlog.
+
+config SOC_INTEL_CRASHLOG_ON_RESET
+	def_bool n
+	help
+	  Enables the PMC to collect crashlog records on every reset event. NOTE:
+	  This will result in a BERT table being populated containing a PMC
+	  crashlog record on every boot.
+
 endif # SOC_INTEL_COMMON

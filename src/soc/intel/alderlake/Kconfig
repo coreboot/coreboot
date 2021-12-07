@@ -333,13 +333,6 @@ config MRC_CHANNEL_WIDTH
 	int
 	default 16
 
-config SOC_INTEL_CRASHLOG
-	def_bool n
-	select SOC_INTEL_COMMON_BLOCK_CRASHLOG
-	select ACPI_BERT
-	help
-	  Enables CrashLog.
-
 config ACPI_ADL_IPU_ES_SUPPORT
 	def_bool n
 	help

@@ -227,35 +227,6 @@ void fch_clk_output_48Mhz(u32 osc)
 	misc_write32(MISC_CLK_CNTL1, ctrl);
 }
 
-static void sb_init_spi_base(void)
-{
-	/* Make sure the base address is predictable */
-	lpc_set_spibase(SPI_BASE_ADDRESS);
-	lpc_enable_spi_rom(SPI_ROM_ENABLE);
-}
-
-void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
-{
-	spi_write16(SPI100_SPEED_CONFIG,
-				(norm << SPI_NORM_SPEED_NEW_SH) |
-				(fast << SPI_FAST_SPEED_NEW_SH) |
-				(alt << SPI_ALT_SPEED_NEW_SH) |
-				(tpm << SPI_TPM_SPEED_NEW_SH));
-	spi_write16(SPI100_ENABLE, SPI_USE_SPI100 | spi_read16(SPI100_ENABLE));
-}
-
-static void sb_disable_4dw_burst(void)
-{
-	spi_write16(SPI100_HOST_PREF_CONFIG,
-			spi_read16(SPI100_HOST_PREF_CONFIG) & ~SPI_RD4DW_EN_HOST);
-}
-
-void sb_read_mode(u32 mode)
-{
-	spi_write32(SPI_CNTRL0,
-			(spi_read32(SPI_CNTRL0) & ~SPI_READ_MODE_MASK) | mode);
-}
-
 static void setup_spread_spectrum(int *reboot)
 {
 	uint16_t rstcfg = pm_read16(PWR_RESET_CFG);
@@ -334,9 +305,9 @@ void bootblock_fch_early_init(void)
 	sb_enable_lpc();
 	lpc_enable_port80();
 	sb_lpc_decode();
-	lpc_enable_spi_prefetch();
-	sb_init_spi_base();
-	sb_disable_4dw_burst(); /* Must be disabled on CZ(ST) */
+	/* Make sure the base address is predictable */
+	lpc_set_spibase(SPI_BASE_ADDRESS);
+	fch_spi_early_init();
 	fch_smbus_init();
 	fch_enable_cf9_io();
 	setup_spread_spectrum(&reboot);

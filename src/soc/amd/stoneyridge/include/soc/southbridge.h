@@ -142,41 +142,6 @@
 #define SATA_CAPABILITIES_REG		0xfc
 #define SATA_CAPABILITY_SPM		BIT(12)
 
-#define SPI_CNTRL0			0x00
-#define   SPI_BUSY			BIT(31)
-#define   SPI_READ_MODE_MASK		(BIT(30) | BIT(29) | BIT(18))
-/* Nominal is 16.7MHz on older devices, 33MHz on newer */
-#define   SPI_READ_MODE_NOM		0x00000000
-#define   SPI_READ_MODE_DUAL112		(          BIT(29)          )
-#define   SPI_READ_MODE_QUAD114		(          BIT(29) | BIT(18))
-#define   SPI_READ_MODE_DUAL122		(BIT(30)                    )
-#define   SPI_READ_MODE_QUAD144		(BIT(30) |           BIT(18))
-#define   SPI_READ_MODE_NORMAL66	(BIT(30) | BIT(29)          )
-#define   SPI_READ_MODE_FAST		(BIT(30) | BIT(29) | BIT(18))
-#define   SPI_ACCESS_MAC_ROM_EN		BIT(22)
-#define   SPI_FIFO_PTR_CLR		BIT(20)
-#define   SPI_ARB_ENABLE		BIT(19)
-#define   EXEC_OPCODE			BIT(16)
-
-#define SPI100_ENABLE			0x20
-#define   SPI_USE_SPI100		BIT(0)
-
-/* Use SPI_SPEED_16M-SPI_SPEED_66M below for the southbridge */
-#define SPI100_SPEED_CONFIG		0x22
-#define   SPI_SPEED_66M			(0x0)
-#define   SPI_SPEED_33M			(                  BIT(0))
-#define   SPI_SPEED_22M			(         BIT(1)         )
-#define   SPI_SPEED_16M			(         BIT(1) | BIT(0))
-#define   SPI_SPEED_100M		(BIT(2)                  )
-#define   SPI_SPEED_800K		(BIT(2) |          BIT(0))
-#define   SPI_NORM_SPEED_NEW_SH		12
-#define   SPI_FAST_SPEED_NEW_SH		8
-#define   SPI_ALT_SPEED_NEW_SH		4
-#define   SPI_TPM_SPEED_NEW_SH		0
-
-#define SPI100_HOST_PREF_CONFIG		0x2c
-#define   SPI_RD4DW_EN_HOST		BIT(15)
-
 /* Platform Security Processor D8F0 */
 void soc_enable_psp_early(void);
 
@@ -219,8 +184,6 @@ void fch_final(void *chip_info);
 
 void enable_aoac_devices(void);
 void fch_clk_output_48Mhz(u32 osc);
-void sb_read_mode(u32 mode);
-void sb_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm);
 
 /*
  * Call the mainboard to get the USB Over Current Map. The mainboard

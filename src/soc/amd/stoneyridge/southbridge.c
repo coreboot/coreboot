@@ -230,8 +230,7 @@ void fch_clk_output_48Mhz(u32 osc)
 static void sb_init_spi_base(void)
 {
 	/* Make sure the base address is predictable */
-	if (ENV_X86)
-		lpc_set_spibase(SPI_BASE_ADDRESS);
+	lpc_set_spibase(SPI_BASE_ADDRESS);
 	lpc_enable_spi_rom(SPI_ROM_ENABLE);
 }
 

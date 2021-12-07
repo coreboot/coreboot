@@ -74,7 +74,7 @@
 #define   ROM_BASE_MASK			0xfffff000		/* bits 31-12 */
 #define   ROM_RANGE_WP			BIT(10)
 #define   ROM_RANGE_RP			BIT(9)
-#define   RANGE_UNIT			BIT(8)
+#define   RANGE_UNIT			BIT(8)			/* 0: 4kiB, 1: 64kiB */
 #define   RANGE_ADDR_MASK		0x000000ff		/* Range defined by bits 7-0 */
 #define ROM_PROTECT_RANGE_REG(n)	(ROM_PROTECT_RANGE0 + (4 * n))
 #define MAX_ROM_PROTECT_RANGES		4

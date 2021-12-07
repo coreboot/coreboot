@@ -123,12 +123,22 @@ config OEM_BIN_FILE
 	depends on USE_OEM_BIN
 	default ""
 
-if !EM100
+if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE
 	default 4          # Dual IO (1-2-2)
 
 config EFS_SPI_SPEED
 	default 0	# 66MHz
+
+config NORMAL_READ_SPI_SPEED
+	default 1	# 33MHz
+
+config ALT_SPI_SPEED
+	default 0	# 66MHz
+
+config TPM_SPI_SPEED
+	default 0	# 66MHz
+
 endif
 
 # Don't use AMD's Secure OS

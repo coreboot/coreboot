@@ -1,0 +1,133 @@
+{{$data := . -}}
+{{- define "colorcode" -}}
+{{- if eq . "n" }}<td style="background:red">N</td>{{else
+    if eq . "y" }}<td style="background:lime">Y</td>{{else
+    if eq . ""  }}<td>?</td>{{else
+                }}<td>{{.}}</td>{{end -}}
+{{end -}}
+<html>
+<head>
+ <meta charset="utf-8">
+ <title>status report for coreboot boards</title>
+</head>
+<body>
+<h1>Mainboards supported by coreboot</h1>
+
+<p>This page shows two representations of the same data:</p>
+
+<p>First a list of all mainboards supported by coreboot (current within
+one hour) ordered by category. For each mainboard the table shows the
+latest user-contributed report of a successful boot on the device.</p>
+
+<p>After that, the page provides a time-ordered list of these contributed
+reports, with the newest report first.</p>
+
+<p>Boards without such reports may boot or there may be some maintenance
+required. The reports contain the coreboot configuration and precise commit
+id, so it is possible to reproduce the build.</p>
+
+<p>We encourage developers and users to contribute reports so we know which
+devices are well-tested.  We have
+<a href='https://review.coreboot.org/plugins/gitiles/coreboot/+/refs/heads/master/util/board_status/'>a tool in the coreboot repository</a>
+to make contributing easy.  The data resides in the
+<a href='https://review.coreboot.org/plugins/gitiles/board-status/'>board status repository</a>.
+Contributing requires an account on review.coreboot.org. After
+logging into the site with your preferred OpenID or GitHub/Google
+credentials, you can get a user name and password for git pushes on <a
+href="https://review.coreboot.org/settings/#HTTPCredentials">gerrit's
+settings screen</a>.</p>
+
+<p>Sometimes the same board is sold under different names, we've tried to
+list all known names but some names might be missing.</p>
+
+<p>If the board is not found in the coreboot's source code, there might
+be some form of support that is not ready yet for inclusion in coreboot,
+usually people willing to send their patches to coreboot goes through
+<a href='https://review.coreboot.org'>gerrit</a>, so looking there could find some
+code for boards that are not yet merged.</p>
+
+<h1>Vendor trees</h1>
+<p>Some vendors have their own coreboot trees/fork, for instance:
+<ul>
+ <li><a href='https://chromium.googlesource.com/chromiumos/third_party/coreboot/'>chrome/chromium's tree</a>
+</ul>
+</p>
+<h1>Motherboards supported in coreboot</h1>
+
+<table border="0" style="font-size: smaller">
+<tr bgcolor="#6699ff">
+<td>Vendor</td>
+<td>Mainboard</td>
+<td>Latest known good</td>
+<td>Northbridge</td>
+<td>Southbridge</td>
+<td>Super&nbsp;I/O</td>
+<td>CPU</td>
+<td>Socket</td>
+<td><span title="ROM chip package">ROM&nbsp;<sup>1</sup></span></td>
+<td><span title="ROM chip protocol">P&nbsp;<sup>2</sup></span></td>
+<td><span title="ROM chip socketed?">S&nbsp;<sup>3</sup></span></td>
+<td><span title="Board supported by flashrom?">F&nbsp;<sup>4</sup></span></td>
+<td><span title="Vendor Cooperation Score">VCS<sup>5</sup></span></td>
+</tr>
+{{range $category := .Categories -}}
+<tr bgcolor="#6699ff">
+<td colspan="13"><h4>{{index $data.CategoryNiceNames $category}}</h4></td>
+</tr>
+
+{{$color := "#eeeeee" -}}
+{{$oldVendor := "" -}}
+{{range $b := index $data.BoardsByCategory $category -}}
+{{if ne $oldVendor $b.VendorNice}}{{$oldVendor = $b.VendorNice -}}
+{{if eq $color "#dddddd"}}{{$color = "#eeeeee"}}{{else}}{{$color = "#dddddd"}}{{end -}}
+{{end -}}
+<tr bgcolor="{{$color}}">
+<td>{{if $b.BoardURL}}<a href='{{$b.BoardURL}}'>{{$b.VendorNice}}</a>{{else}}{{$b.VendorNice}}{{end}}
+{{if $b.Vendor2nd}} ({{$b.Vendor2nd}})
+{{end -}}
+</td><td><a href='https://www.coreboot.org/Board:{{$b.Vendor}}/{{$b.Board}}'>{{$b.BoardNice}}</a></td>
+{{if eq "" (index $data.VendorBoardDate $b.VendorBoard) -}}
+<td style="background:red">Unknown</td>
+{{- else -}}
+{{- $date := index $data.VendorBoardDate $b.VendorBoard -}}
+<td style="background:{{ $date.Color }}"><a href='#{{ $b.VendorBoard }}'>{{ $date }}</a></td>
+{{- end}}
+<td>{{$b.NorthbridgeNice}}</td>
+<td>{{$b.SouthbridgeNice}}</td>
+<td>{{$b.SuperIONice}}</td>
+<td>{{$b.CPUNice}}</td>
+<td>{{$b.SocketNice}}</td>
+<td>{{$b.ROMPackage}}</td>
+<td>{{$b.ROMProtocol}}</td>
+{{template "colorcode" $b.ROMSocketed}}
+{{template "colorcode" $b.FlashromSupport}}
+<td>{{$b.VendorCooperationScore}}
+</td></tr>
+{{end -}}
+{{end -}}
+</table>
+<small>
+<sup>1</sup> ROM chip package (PLCC, DIP32, DIP8, SOIC8).<br />
+<sup>2</sup> ROM chip protocol/type (parallel flash, LPC, FWH, SPI).<br />
+<sup>3</sup> ROM chip socketed (Y/N)?<br />
+<sup>4</sup> Board supported by [http://www.flashrom.org flashrom] (Y/N)?<br />
+<sup>5</sup> Vendor Cooperation Score.<br />
+<sup>6</sup> [http://www.flashrom.org flashrom] does not work when the vendor BIOS is booted, but it does work when the machine is booted with coreboot.<br />
+<sup>7</sup> Some boards have ROM sockets, others are soldered.<br />
+</small>
+{{range $t := .Timeframes -}}
+<h1>{{$t}}</h1>
+{{range $l := index $data.Logs $t -}}
+{{if $l.Reference}}<span id="{{$l.VendorBoard}}"></span>
+{{end -}}
+<a href='https://www.coreboot.org/Board:{{$l.VendorBoard}}'>{{$l.VendorBoard}}</a> at {{$l.TimeReadable}}
+<a href='https://review.coreboot.org/plugins/gitiles/coreboot/+/{{$l.Upstream}}'>upstream tree</a> (
+{{range $f := $l.Files -}}
+<a href='https://review.coreboot.org/plugins/gitiles/board-status/+/refs/heads/master/{{$f.Path}}{{$f.Basename}}'>{{$f.Basename}}</a> {{/* */}}
+{{end -}}
+)<br />
+{{- end -}}
+{{end -}}
+{{/* */}}
+</body>
+</html>

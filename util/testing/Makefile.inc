@@ -105,6 +105,7 @@ endif
 	$(MAKE) unit-tests JUNIT_OUTPUT=y COV=1
 	(cd payloads/libpayload; unset COREBOOT_BUILD_DIR; $(MAKE) unit-tests coverage-report JUNIT_OUTPUT=y COV=1)
 	$(MAKE) coverage-report JUNIT_OUTPUT=y COV=1
+	find . -name 'tests.info' -exec cat {} + >$(COREBOOT_BUILD_DIR)/coverage.info
 
 test-basic: test-lint test-tools test-abuild test-payloads test-cleanup
 

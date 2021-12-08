@@ -1,18 +1,25 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+config UDK_BASE
+	def_bool n
+
 config UEFI_2_4_BINDING
 	def_bool n
+	select UDK_BASE
 
 config UDK_2015_BINDING
 	def_bool n
+	select UDK_BASE
 
 config UDK_2017_BINDING
 	def_bool n
+	select UDK_BASE
 
 config UDK_202005_BINDING
 	def_bool n
+	select UDK_BASE
 
-if (UEFI_2_4_BINDING || UDK_2015_BINDING || UDK_2017_BINDING || UDK_202005_BINDING)
+if UDK_BASE
 config UDK_2013_VERSION
 	int
 	default 2013
@@ -37,4 +44,4 @@ config UDK_VERSION
 	default UDK_2013_VERSION
 	help
 	  UEFI Development Kit version for Platform
-endif # {UEFI,UDK}_BINDING
+endif # UDK_BASE

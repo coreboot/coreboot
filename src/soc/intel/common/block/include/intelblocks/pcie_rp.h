@@ -121,4 +121,7 @@ enum pcie_rp_type {
 struct device; /* Not necessary to include all of device/device.h */
 enum pcie_rp_type soc_get_pcie_rp_type(const struct device *dev);
 
+/* Return the virtual wire index that represents CPU-side PCIe root ports */
+int soc_get_cpu_rp_vw_idx(const struct device *dev);
+
 #endif /* SOC_INTEL_COMMON_BLOCK_PCIE_RP_H */

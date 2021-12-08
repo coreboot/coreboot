@@ -19,6 +19,10 @@ config UDK_202005_BINDING
 	def_bool n
 	select UDK_BASE
 
+config UDK_202111_BINDING
+	def_bool n
+	select UDK_BASE
+
 if UDK_BASE
 config UDK_2013_VERSION
 	int
@@ -36,8 +40,13 @@ config UDK_202005_VERSION
 	int
 	default 202005
 
+config UDK_202111_VERSION
+	int
+	default 202111
+
 config UDK_VERSION
 	int
+	default UDK_202111_VERSION if UDK_202111_BINDING
 	default UDK_202005_VERSION if UDK_202005_BINDING
 	default UDK_2017_VERSION if UDK_2017_BINDING
 	default UDK_2015_VERSION if UDK_2015_BINDING

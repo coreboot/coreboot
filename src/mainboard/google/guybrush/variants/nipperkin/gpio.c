@@ -36,6 +36,8 @@ static const struct soc_amd_gpio bid2_override_gpio_table[] = {
 	PAD_NC(GPIO_17),
 	/* LCD_PRIVACY_PCH */
 	PAD_GPO(GPIO_18, HIGH),
+	/* SOC_SC_PWRSV */
+	PAD_GPO(GPIO_31, HIGH),
 };
 
 static const struct soc_amd_gpio override_early_gpio_table[] = {

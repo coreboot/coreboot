@@ -23,12 +23,14 @@ config BOARD_INTEL_ADLRVP_P
 	select DRIVERS_UART_8250IO
 	select MAINBOARD_USES_IFD_EC_REGION
 	select SOC_INTEL_ALDERLAKE_PCH_P
+	select GEN3_EXTERNAL_CLOCK_BUFFER
 
 config BOARD_INTEL_ADLRVP_P_EXT_EC
 	select BOARD_INTEL_ADLRVP_COMMON
 	select DRIVERS_INTEL_PMC
 	select INTEL_LPSS_UART_FOR_CONSOLE
 	select SOC_INTEL_ALDERLAKE_PCH_P
+	select GEN3_EXTERNAL_CLOCK_BUFFER
 
 config BOARD_INTEL_ADLRVP_P_MCHP
 	select BOARD_INTEL_ADLRVP_COMMON
@@ -140,4 +142,20 @@ config DRIVER_TPM_SPI_BUS
 config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 67 if BOARD_INTEL_ADLRVP_M_EXT_EC  # GPE0_DW2_3 (GPP_E3)
+
+config GEN3_EXTERNAL_CLOCK_BUFFER
+	bool
+	depends on SOC_INTEL_ALDERLAKE_PCH_P
+	default n
+	help
+	  Support external Gen-3 clock chip for ADL-P.
+	  `CONFIG_CLKSRC_FOR_EXTERNAL_BUFFER` provides feed clock to discrete buffer
+	  for further distribution to platform. SRCCLKREQB[7:9] maps to internal
+	  SRCCLKREQB[6]. If any of them asserted, SRC buffer
+	  `CONFIG_CLKSRC_FOR_EXTERNAL_BUFFER` gets enabled.
+
+config CLKSRC_FOR_EXTERNAL_BUFFER
+	depends on GEN3_EXTERNAL_CLOCK_BUFFER
+	int
+	default 6  # CLKSRC 6
 endif

@@ -120,23 +120,16 @@ $(obj)/head.o: $(obj)/arch/$(ARCHDIR-y)/head.head.o.o
 install: real-target
 	printf "    INSTALL    $(DESTDIR)/libpayload/lib\n"
 	install -m 755 -d $(DESTDIR)/libpayload/lib
-	for lib in $(library-targets); do \
-		install -m 644 $$lib $(DESTDIR)/libpayload/lib/; \
-	done
+	install -m 644 $(library-targets) $(DESTDIR)/libpayload/lib/
 	install -m 644 arch/$(ARCHDIR-y)/libpayload.ldscript $(DESTDIR)/libpayload/lib/
 	install -m 755 -d $(DESTDIR)/libpayload/lib/$(ARCHDIR-y)
 	install -m 644 $(obj)/head.o $(DESTDIR)/libpayload/lib/$(ARCHDIR-y)
 	printf "    INSTALL    $(DESTDIR)/libpayload/include\n"
 	install -m 755 -d $(DESTDIR)/libpayload/include
-	for file in `find include -name *.h -type f`; do \
-		install -m 755 -d $(DESTDIR)/libpayload/`dirname $$file`; \
-		install -m 644 $$file $(DESTDIR)/libpayload/$$file; \
-	done
-	for file in `find $(coreboottop)/src/commonlib/bsd/include -name *.h -type f`; do \
-		dest_file=$$(realpath --relative-to=$(coreboottop)/src/commonlib/bsd/ $$file); \
-		install -m 755 -d "$(DESTDIR)/libpayload/`dirname $$dest_file`"; \
-		install -m 644 "$$file" "$(DESTDIR)/libpayload/$$dest_file"; \
-	done
+	find include -type d -exec install -m755 -d $(DESTDIR)/libpayload/{} \;
+	find include -type f -exec install -m644 {} $(DESTDIR)/libpayload/{} \;
+	cd $(coreboottop)/src/commonlib/bsd && find include -type d -exec install -m755 -d $(DESTDIR)/libpayload/{} \;
+	cd $(coreboottop)/src/commonlib/bsd && find include -type f -exec install -m644 {} $(DESTDIR)/libpayload/{} \;
 	install -m 644 $(obj)/libpayload-config.h $(DESTDIR)/libpayload/include
 	$(foreach item,$(includes), \
 		install -m 755 -d $(DESTDIR)/libpayload/include/$(call extract_nth,2,$(item)); \

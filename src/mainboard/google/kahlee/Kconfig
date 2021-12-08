@@ -1,5 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
+config IGNORE_IASL_MISSING_DEPENDENCY
+	def_bool y
+
 config BOARD_GOOGLE_BASEBOARD_KAHLEE
 	bool
 	select SOC_AMD_STONEYRIDGE

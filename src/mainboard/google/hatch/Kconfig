@@ -1,3 +1,5 @@
+config IGNORE_IASL_MISSING_DEPENDENCY
+	def_bool y
 
 config BOARD_GOOGLE_HATCH_COMMON
 	def_bool n

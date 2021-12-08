@@ -1,3 +1,6 @@
+config IGNORE_IASL_MISSING_DEPENDENCY
+	def_bool y
+
 config BOARD_GOOGLE_BASEBOARD_SARIEN
 	def_bool n
 	select BOARD_ROMSIZE_KB_32768

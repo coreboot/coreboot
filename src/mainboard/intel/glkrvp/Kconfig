@@ -1,4 +1,7 @@
 
+config IGNORE_IASL_MISSING_DEPENDENCY
+	def_bool y
+
 config BOARD_INTEL_BASEBOARD_GLKRVP
 	def_bool n
 	select SOC_INTEL_GEMINILAKE

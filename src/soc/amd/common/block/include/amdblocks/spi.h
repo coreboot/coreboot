@@ -71,8 +71,8 @@ enum spi100_speed {
 #define   SPI_RD4DW_EN_HOST		BIT(15)
 
 #define SPI_FIFO			0x80
-#define SPI_FIFO_LAST_BYTE		0xc7
-#define SPI_FIFO_DEPTH			(SPI_FIFO_LAST_BYTE - SPI_FIFO)
+#define SPI_FIFO_LAST_BYTE		0xc6
+#define SPI_FIFO_DEPTH			(SPI_FIFO_LAST_BYTE - SPI_FIFO + 1)
 
 struct spi_config {
 	/*

@@ -173,8 +173,7 @@ pcie_rtd3_acpi_method_off(int pcie_rp,
 }
 
 static void
-pcie_rtd3_acpi_method_status(int pcie_rp,
-			     const struct soc_intel_common_block_pcie_rtd3_config *config)
+pcie_rtd3_acpi_method_status(const struct soc_intel_common_block_pcie_rtd3_config *config)
 {
 	const struct acpi_gpio *gpio;
 
@@ -222,6 +221,29 @@ static void write_modphy_opregion(unsigned int pcie_rp)
 			    FIELD_DWORDACC | FIELD_NOLOCK | FIELD_PRESERVE);
 }
 
+static int get_pcie_rp_pmc_idx(enum pcie_rp_type rp_type, const struct device *dev)
+{
+	int idx = -1;
+
+	switch (rp_type) {
+	case PCIE_RP_PCH:
+		/* Read port number of root port that this device is attached to. */
+		idx = pci_read_config8(dev, PCH_PCIE_CFG_LCAP_PN);
+
+		/* Port number is 1-based, PMC IPC method expects 0-based. */
+		idx--;
+		break;
+	case PCIE_RP_CPU:
+		/* CPU RPs are indexed by their "virtual wire index" to the PCH */
+		idx = soc_get_cpu_rp_vw_idx(dev);
+		break;
+	default:
+		break;
+	}
+
+	return idx;
+}
+
 static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 {
 	static bool mutex_created = false;
@@ -243,7 +265,7 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 		FIELDLIST_NAMESTR(ACPI_REG_PCI_L23_RDY_ENTRY, 1),
 		FIELDLIST_NAMESTR(ACPI_REG_PCI_L23_RDY_DETECT, 1),
 	};
-	uint8_t pcie_rp;
+	int pcie_rp;
 	struct acpi_dp *dsd, *pkg;
 
 	if (!is_dev_enabled(parent)) {
@@ -266,15 +288,11 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 	}
 
 	const enum pcie_rp_type rp_type = soc_get_pcie_rp_type(parent);
-
-	/* Read port number of root port that this device is attached to. */
-	pcie_rp = pci_read_config8(parent, PCH_PCIE_CFG_LCAP_PN);
-	if (pcie_rp == 0 || pcie_rp > CONFIG_MAX_ROOT_PORTS) {
-		printk(BIOS_ERR, "%s: Invalid root port number: %u\n", __func__, pcie_rp);
+	pcie_rp = get_pcie_rp_pmc_idx(rp_type, parent);
+	if (pcie_rp < 0 || pcie_rp > CONFIG_MAX_ROOT_PORTS) {
+		printk(BIOS_ERR, "%s: Unknown PCIe root port\n", __func__);
 		return;
 	}
-	/* Port number is 1-based, PMC IPC method expects 0-based. */
-	pcie_rp--;
 
 	printk(BIOS_INFO, "%s: Enable RTD3 for %s (%s)\n", scope, dev_path(parent),
 	       config->desc ?: dev->chip_ops->name);
@@ -304,7 +322,7 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 
 	/* ACPI Power Resource for controlling the attached device power. */
 	acpigen_write_power_res("RTD3", 0, 0, power_res_states, ARRAY_SIZE(power_res_states));
-	pcie_rtd3_acpi_method_status(pcie_rp, config);
+	pcie_rtd3_acpi_method_status(config);
 	pcie_rtd3_acpi_method_on(pcie_rp, config, rp_type);
 	pcie_rtd3_acpi_method_off(pcie_rp, config, rp_type);
 	acpigen_pop_len(); /* PowerResource */

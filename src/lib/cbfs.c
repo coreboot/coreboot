@@ -57,7 +57,7 @@ cb_err_t _cbfs_boot_lookup(const char *name, bool force_ro,
 			   RO CBFS would have been caught when building the mcache in cbfs_get
 			   boot_device(). (Note that TOCTOU_SAFETY implies !NO_CBFS_MCACHE.) */
 			assert(cbd == vboot_get_cbfs_boot_device());
-			/* TODO: set metadata_hash to RW metadata hash here. */
+			die("TODO: set metadata_hash to RW metadata hash here.\n");
 		}
 		err = cbfs_lookup(&cbd->rdev, name, mdata, &data_offset, metadata_hash);
 	}

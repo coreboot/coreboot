@@ -875,11 +875,8 @@ typedef struct {
   UINT8                       PavpEnable;
 
 /** Offset 0x0436 - CdClock Frequency selection
-  0: (Default) Auto (Max based on reference clock frequency), 1: 172.8 Mhz, 2: 180
-  Mhz, 3: 190 Mhz, 4: 307.2 Mhz, 5: 312 Mhz, 6: 552 Mhz, 7: 556.8 Mhz, 8: 648 Mhz,
-  9: 652.8 Mhz
-  0: Auto (Max based on reference clock frequency), 1: 172.8 Mhz, 2: 180 Mhz, 3: 190
-  Mhz, 4: 307.2 Mhz, 5: 312 Mhz, 6: 552 Mhz, 7: 556.8 Mhz, 8: 648 Mhz, 9: 652.8 Mhz
+  0: 172.8 MHz, 1: 180 MHz, 2: 192 MHz, 3: 307 MHz, 4: 312 MHz, 5: 552 MHz, 6: 556.8 MHz,
+  7: 648 MHz, 8: 652.8 MHz, 0xff: 648 MHz (Default)
 **/
   UINT8                       CdClock;
 

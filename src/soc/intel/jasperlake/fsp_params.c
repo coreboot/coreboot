@@ -209,6 +209,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PchFivrExtVnnRailEnabledStates = 0;
 	}
 
+	/*
+	 * We intentionally want the default to be maximum value(0xff) to align with
+	 * FSP, so we reserve the `0` value here to mean auto instead, and shift the
+	 * other values by 1.
+	 *
+	 * Please refer to src/soc/intel/jasperlake/chip.h for the detail definition.
+	 */
+	params->CdClock = config->cd_clock ? config->cd_clock - 1 : 0xff;
+
 	/* Override/Fill FSP Silicon Param for mainboard */
 	mainboard_silicon_init_params(params);
 }

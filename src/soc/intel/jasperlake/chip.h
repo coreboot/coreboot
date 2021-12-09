@@ -405,6 +405,26 @@ struct soc_intel_jasperlake_config {
 	 */
 	bool disable_external_bypass_vr;
 
+	/*
+	 * Core Display Clock Frequency selection, FSP UPD CdClock values + 1
+	 *
+	 * FSP will use the value to program clock frequency for core display if GOP
+	 * is not run. Ex: the Chromebook normal mode.
+	 * For the cases GOP is run, GOP will be in charge of the related register
+	 * settings.
+	 */
+	enum {
+		CD_CLOCK_172_8_MHZ = 1,
+		CD_CLOCK_180_MHZ   = 2,
+		CD_CLOCK_192_MHZ   = 3,
+		CD_CLOCK_307_MHZ   = 4,
+		CD_CLOCK_312_MHZ   = 5,
+		CD_CLOCK_552_MHZ   = 6,
+		CD_CLOCK_556_8_MHZ = 7,
+		CD_CLOCK_648_MHZ   = 8,
+		CD_CLOCK_652_8_MHZ = 9,
+	} cd_clock;
+
 };
 
 typedef struct soc_intel_jasperlake_config config_t;

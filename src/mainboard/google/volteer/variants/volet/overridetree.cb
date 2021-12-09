@@ -152,13 +152,13 @@ chip soc/intel/tigerlake
 			chip drivers/intel/pmc_mux
 				device generic 0 on
 					chip drivers/intel/pmc_mux/conn
-						register "usb2_port_number" = "9"
-						register "usb3_port_number" = "1"
+						use usb2_port9 as usb2_port
+						use tcss_usb3_port1 as usb3_port
 						device generic 0 alias conn0 on end
 					end
 					chip drivers/intel/pmc_mux/conn
-						register "usb2_port_number" = "4"
-						register "usb3_port_number" = "2"
+						use usb2_port4 as usb2_port
+						use tcss_usb3_port2 as usb3_port
 						# SBU is fixed, HSL follows CC
 						register "sbu_orientation" = "TYPEC_ORIENTATION_NORMAL"
 						device generic 1 alias conn1 on end

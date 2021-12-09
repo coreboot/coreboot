@@ -6,10 +6,10 @@
 #include <boot/coreboot_tables.h>
 
 struct drivers_intel_pmc_mux_conn_config {
-	/* 1-based port numbers (from SoC point of view) */
-	int usb2_port_number;
-	/* 1-based port numbers (from SoC point of view) */
-	int usb3_port_number;
+	/* A pointer to the SoC's USB-2 device */
+	DEVTREE_CONST struct device *usb2_port;
+	/* A pointer to the SoC's USB-3 device */
+	DEVTREE_CONST struct device *usb3_port;
 	/* Orientation of the sideband signals (SBU) */
 	enum type_c_orientation sbu_orientation;
 	/* Orientation of the High Speed lines */

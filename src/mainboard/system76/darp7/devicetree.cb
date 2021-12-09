@@ -316,8 +316,8 @@ chip soc/intel/tigerlake
 				device generic 0 on
 					chip drivers/intel/pmc_mux/conn
 						# J_TYPEC2
-						register "usb2_port_number" = "6"
-						register "usb3_port_number" = "1"
+						use usb2_port6 as usb2_port
+						use tcss_usb3_port1 as usb3_port
 						# SBU & HSL follow CC
 						device generic 0 alias conn0 on end
 					end

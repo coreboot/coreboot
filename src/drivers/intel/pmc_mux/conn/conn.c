@@ -16,6 +16,11 @@ static void conn_init(struct device *dev)
 	total_conn_count++;
 }
 
+static unsigned int get_usb_port_number(const struct device *usb_port)
+{
+	return usb_port->path.usb.port_id + 1;
+}
+
 static struct type_c_info *conn_get_cbmem_buffer(void)
 {
 	struct type_c_info *info;
@@ -57,8 +62,8 @@ static void conn_write_cbmem_entry(struct device *dev)
 
 	count = info->port_count;
 	port_info = &info->port_info[count];
-	port_info->usb2_port_number = config->usb2_port_number;
-	port_info->usb3_port_number = config->usb3_port_number;
+	port_info->usb2_port_number = get_usb_port_number(config->usb2_port);
+	port_info->usb3_port_number = get_usb_port_number(config->usb3_port);
 	port_info->sbu_orientation = config->sbu_orientation;
 	port_info->data_orientation = config->hsl_orientation;
 
@@ -109,8 +114,8 @@ static void conn_fill_ssdt(const struct device *dev)
 
 	/* _DSD, Device-Specific Data */
 	dsd = acpi_dp_new_table("_DSD");
-	acpi_dp_add_integer(dsd, "usb2-port-number", config->usb2_port_number);
-	acpi_dp_add_integer(dsd, "usb3-port-number", config->usb3_port_number);
+	acpi_dp_add_integer(dsd, "usb2-port-number", get_usb_port_number(config->usb2_port));
+	acpi_dp_add_integer(dsd, "usb3-port-number", get_usb_port_number(config->usb3_port));
 
 	/*
 	 * The kernel assumes that these Type-C signals (SBUs and HSLs) follow the CC lines,
@@ -161,8 +166,8 @@ bool intel_pmc_mux_conn_get_ports(const struct device *conn, unsigned int *usb2_
 		return false;
 
 	mux_config = conn->chip_info;
-	*usb2_port = mux_config->usb2_port_number;
-	*usb3_port = mux_config->usb3_port_number;
+	*usb2_port = get_usb_port_number(mux_config->usb2_port);
+	*usb3_port = get_usb_port_number(mux_config->usb3_port);
 
 	return true;
 };

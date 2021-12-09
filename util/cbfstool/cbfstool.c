@@ -779,11 +779,6 @@ static int add_topswap_bootblock(struct buffer *buffer, uint32_t *offset)
 {
 	size_t bb_buf_size = buffer_size(buffer);
 
-	if (!param.baseaddress_assigned) {
-		ERROR("--topswap-size must also have --base-address\n");
-		return 1;
-	}
-
 	if (bb_buf_size > param.topswap_size) {
 		ERROR("Bootblock bigger than the topswap boundary\n");
 		ERROR("size = %zd, ts = %d\n", bb_buf_size,
@@ -826,7 +821,9 @@ static int cbfs_add_component(const char *filename,
 	/*
 	 * The steps used to determine the final placement offset in CBFS, in order:
 	 *
-	 * 1. If --base-address was passed, that value is used.
+	 * 1. If --base-address was passed, that value is used. If it was passed in the host
+	 *    address space, convert it to flash address space. (After that, |*offset| is always
+	 *    in the flash address space.)
 	 *
 	 * 2. The convert() function may write a location back to |offset|, usually by calling
 	 *    do_cbfs_locate(). In this case, it needs to ensure that the location found can fit
@@ -909,6 +906,10 @@ static int cbfs_add_component(const char *filename,
 		if (add_topswap_bootblock(&buffer, &offset))
 			goto error;
 
+	/* With --base-address we allow host space addresses -- if so, convert it here. */
+	if (IS_HOST_SPACE_ADDRESS(offset))
+		offset = convert_addr_space(param.image_region, offset);
+
 	if (convert && convert(&buffer, &offset, header) != 0) {
 		ERROR("Failed to parse file '%s'.\n", filename);
 		goto error;
@@ -974,9 +975,6 @@ static int cbfs_add_component(const char *filename,
 		if (attr == NULL)
 			goto error;
 	}
-
-	if (IS_HOST_SPACE_ADDRESS(offset))
-		offset = convert_addr_space(param.image_region, offset);
 
 	if (cbfs_add_entry(&image, &buffer, offset, header, len_align) != 0) {
 		ERROR("Failed to add '%s' into ROM image.\n", filename);
@@ -1060,10 +1058,12 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 	 * There are 4 different cases here:
 	 *
 	 * 1. --xip and --base-address: we need to place the binary at the given base address
-	 *    in the CBFS image and relocate it to that address. *offset was already filled in.
+	 *    in the CBFS image and relocate it to that address. *offset was already filled in,
+	 *    but we need to convert it to the host address space for relocation.
 	 *
 	 * 2. --xip but no --base-address: we implicitly force a 4K minimum alignment so that
 	 *    relocation can occur. Call do_cbfs_locate() here to find an appropriate *offset.
+	 *    This also needs to be converted to the host address space for relocation.
 	 *
 	 * 3. No --xip but a --base-address: special case where --base-address does not have its
 	 *    normal meaning, instead we use it as the relocation target address. We explicitly
@@ -1079,10 +1079,8 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 			if (do_cbfs_locate(offset, 0))
 				return -1;
 		}
-		if (!IS_HOST_SPACE_ADDRESS(*offset))
-			address = convert_addr_space(param.image_region, *offset);
-		else
-			address = *offset;
+		assert(!IS_HOST_SPACE_ADDRESS(*offset));
+		address = convert_addr_space(param.image_region, *offset);
 	} else {
 		if (param.baseaddress_assigned == 0) {
 			INFO("Honoring pre-linked FSP module, no relocation.\n");
@@ -1143,16 +1141,10 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 		return -1;
 
 	if (param.stage_xip) {
-		/*
-		 * Ensure the address is a memory mapped one. This assumes
-		 * x86 semantics about the boot media being directly mapped
-		 * below 4GiB in the CPU address space.
-		 **/
-		*offset = convert_addr_space(param.image_region, *offset);
-
-		ret = parse_elf_to_xip_stage(buffer, &output, *offset,
-					     param.ignore_section,
-					     stageheader);
+		uint32_t host_space_address = convert_addr_space(param.image_region, *offset);
+		assert(IS_HOST_SPACE_ADDRESS(host_space_address));
+		ret = parse_elf_to_xip_stage(buffer, &output, host_space_address,
+					     param.ignore_section, stageheader);
 	} else {
 		ret = parse_elf_to_stage(buffer, &output, param.ignore_section,
 					 stageheader);

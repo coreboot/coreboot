@@ -181,7 +181,7 @@ static void pciexp_enable_ltr(struct device *dev)
 	(void)_pciexp_enable_ltr(parent, parent_cap, dev, cap);
 }
 
-static bool pciexp_get_ltr_max_latencies(struct device *dev, u16 *max_snoop, u16 *max_nosnoop)
+bool pciexp_get_ltr_max_latencies(struct device *dev, u16 *max_snoop, u16 *max_nosnoop)
 {
 	/* Walk the hierarchy up to find get_ltr_max_latencies(). */
 	do {

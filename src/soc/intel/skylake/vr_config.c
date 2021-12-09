@@ -62,7 +62,7 @@ static const struct vr_config default_configs[NUM_VR_DOMAINS] = {
 
 static uint16_t get_sku_icc_max(int domain)
 {
-	const uint16_t tdp = cpu_get_power_max();
+	const uint16_t tdp = cpu_get_power_max() / 1000;
 
 	static uint16_t mch_id = 0, igd_id = 0;
 	if (!mch_id) {

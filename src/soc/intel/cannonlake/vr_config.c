@@ -619,7 +619,7 @@ void fill_vr_domain_config(void *params,
 	FSP_S_CONFIG *vr_params = (FSP_S_CONFIG *)params;
 	const struct vr_config *cfg;
 	static uint16_t mch_id = 0, igd_id = 0;
-	const uint16_t tdp = cpu_get_power_max();
+	const uint16_t tdp = cpu_get_power_max() / 1000;
 
 	if (!mch_id) {
 		struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);

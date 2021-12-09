@@ -6,10 +6,31 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <device/pci.h>
+#include <device/pciexp.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include "chip.h"
 #include "lv2.h"
+
+/*
+ * This chip has an errata where PCIe config space registers 0x234, 0x248, and
+ * 0x24C only support DWORD access, therefore reprogram these in the `finalize`
+ * callback.
+ */
+static void lv2_enable_ltr(struct device *dev)
+{
+	u16 max_snoop, max_nosnoop;
+	if (!pciexp_get_ltr_max_latencies(dev, &max_snoop, &max_nosnoop))
+		return;
+
+	const unsigned int ltr_cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_LTR_ID);
+	if (!ltr_cap)
+		return;
+
+	pci_write_config32(dev, ltr_cap + PCI_LTR_MAX_SNOOP, (max_snoop << 16) |  max_nosnoop);
+	printk(BIOS_INFO, "%s: Re-programmed LTR max latencies using chip-specific quirk\n",
+	       dev_path(dev));
+}
 
 static void lv2_enable(struct device *dev)
 {
@@ -45,6 +66,7 @@ static struct device_operations lv2_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.ops_pci		= &pci_dev_ops_pci,
 	.enable			= lv2_enable,
+	.final			= lv2_enable_ltr,
 };
 
 static const unsigned short pci_device_ids[] = {

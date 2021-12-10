@@ -98,7 +98,7 @@ static int execute_command(void)
 	spi_write8(SPI_CMD_TRIGGER, SPI_CMD_TRIGGER_EXECUTE);
 
 	if (wait_for_ready()) {
-		printk(BIOS_ERR, "FCH_SC Error: Timeout executing command\n");
+		printk(BIOS_ERR, "FCH SPI Error: Timeout executing command\n");
 		return -1;
 	}
 
@@ -121,8 +121,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	const uint8_t *bufout = dout;
 
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_SPI_DEBUG))
-		printk(BIOS_DEBUG, "%s(%zx, %zx)\n", __func__, bytesout,
-			bytesin);
+		printk(BIOS_DEBUG, "%s(%zx, %zx)\n", __func__, bytesout, bytesin);
 
 	/* First byte is cmd which cannot be sent through FIFO */
 	cmd = bufout[0];
@@ -136,7 +135,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 	 * and followed by other SPI commands.
 	 */
 	if (bytesout + bytesin > SPI_FIFO_DEPTH) {
-		printk(BIOS_WARNING, "FCH_SC: Too much to transfer, code error!\n");
+		printk(BIOS_WARNING, "FCH SPI: Too much to transfer, code error!\n");
 		return -1;
 	}
 

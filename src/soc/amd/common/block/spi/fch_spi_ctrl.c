@@ -97,9 +97,10 @@ static int execute_command(void)
 
 	spi_write8(SPI_CMD_TRIGGER, SPI_CMD_TRIGGER_EXECUTE);
 
-	if (wait_for_ready())
-		printk(BIOS_ERR,
-			"FCH_SC Error: Timeout executing command\n");
+	if (wait_for_ready()) {
+		printk(BIOS_ERR, "FCH_SC Error: Timeout executing command\n");
+		return -1;
+	}
 
 	dump_state(SPI_DUMP_STATE_AFTER_CMD);
 

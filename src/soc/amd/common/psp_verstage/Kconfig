@@ -6,10 +6,17 @@ config PSP_VERSTAGE_CCP_DMA
 	  accessing the boot device. Select it on platforms which supports
 	  using CCP DMA to access the boot device.
 
+config PSP_S0I3_RESUME_VERSTAGE
+	bool "S0i3 resume verstage"
+	depends on VBOOT_STARTS_BEFORE_BOOTBLOCK
+	default n
+	help
+	  Select this item to enable running verstage during S0i3 resume.
+
 config PSP_INIT_TPM_ON_S0I3_RESUME
 	bool
-	depends on TPM2 && VBOOT_STARTS_BEFORE_BOOTBLOCK
-	default VBOOT_STARTS_BEFORE_BOOTBLOCK
+	depends on TPM2 && PSP_S0I3_RESUME_VERSTAGE
+	default PSP_S0I3_RESUME_VERSTAGE
 	help
 	  If the TPM is reset while in S0i3, it must be reinitialized
 	  during s0i3 resume. This must be performed in PSP verstage since

@@ -110,6 +110,10 @@ else
 PSP_SOFTFUSE_BITS += 29
 endif
 
+ifeq ($(CONFIG_PSP_S0I3_RESUME_VERSTAGE),y)
+PSP_SOFTFUSE_BITS += 40
+endif
+
 # Use additional Soft Fuse bits specified in Kconfig
 PSP_SOFTFUSE_BITS += $(call strip_quotes, $(CONFIG_PSP_SOFTFUSE_BITS))
 

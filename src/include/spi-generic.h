@@ -111,7 +111,8 @@ enum ctrlr_prot_type {
 
 enum {
 	/* Deduct the command length from the spi_crop_chunk() calculation for
-	   sizing a transaction. */
+	   sizing a transaction. If SPI_CNTRLR_DEDUCT_OPCODE_LEN is set, only
+	   the bytes after the command byte will be deducted. */
 	SPI_CNTRLR_DEDUCT_CMD_LEN = 1 << 0,
 	/* Remove the opcode size from the command length used in the
 	   spi_crop_chunk() calculation. Controllers which have a dedicated

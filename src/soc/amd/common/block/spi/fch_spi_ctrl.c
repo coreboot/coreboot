@@ -30,7 +30,12 @@
 #define   SPI_FIFO_RD_PTR_SHIFT		16
 #define   SPI_FIFO_RD_PTR_MASK		0x7f
 
-static void dump_state(const char *str, u8 phase)
+enum spi_dump_state_phase {
+	SPI_DUMP_STATE_BEFORE_CMD,
+	SPI_DUMP_STATE_AFTER_CMD,
+};
+
+static void dump_state(enum spi_dump_state_phase phase)
 {
 	u8 dump_size;
 	u32 addr;
@@ -38,19 +43,33 @@ static void dump_state(const char *str, u8 phase)
 	if (!CONFIG(SOC_AMD_COMMON_BLOCK_SPI_DEBUG))
 		return;
 
-	printk(BIOS_DEBUG, "SPI: %s\n", str);
+	switch (phase) {
+	case SPI_DUMP_STATE_BEFORE_CMD:
+		printk(BIOS_DEBUG, "SPI: Before execute\n");
+		break;
+	case SPI_DUMP_STATE_AFTER_CMD:
+		printk(BIOS_DEBUG, "SPI: Transaction finished\n");
+		break;
+	default: /* We shouldn't reach this */
+		return;
+	}
+
 	printk(BIOS_DEBUG, "Cntrl0: %x\n", spi_read32(SPI_CNTRL0));
 	printk(BIOS_DEBUG, "Status: %x\n", spi_read32(SPI_STATUS));
 
 	addr = spi_get_bar() + SPI_FIFO;
-	if (phase == 0) {
+
+	switch (phase) {
+	case SPI_DUMP_STATE_BEFORE_CMD:
 		dump_size = spi_read8(SPI_TX_BYTE_COUNT);
 		printk(BIOS_DEBUG, "TxByteCount: %x\n", dump_size);
 		printk(BIOS_DEBUG, "CmdCode: %x\n", spi_read8(SPI_CMD_CODE));
-	} else {
+		break;
+	case SPI_DUMP_STATE_AFTER_CMD:
 		dump_size = spi_read8(SPI_RX_BYTE_COUNT);
 		printk(BIOS_DEBUG, "RxByteCount: %x\n", dump_size);
 		addr += spi_read8(SPI_TX_BYTE_COUNT);
+		break;
 	}
 
 	if (dump_size > 0)
@@ -74,7 +93,7 @@ static int wait_for_ready(void)
 
 static int execute_command(void)
 {
-	dump_state("Before execute", 0);
+	dump_state(SPI_DUMP_STATE_BEFORE_CMD);
 
 	spi_write8(SPI_CMD_TRIGGER, SPI_CMD_TRIGGER_EXECUTE);
 
@@ -82,7 +101,7 @@ static int execute_command(void)
 		printk(BIOS_ERR,
 			"FCH_SC Error: Timeout executing command\n");
 
-	dump_state("Transaction finished", 1);
+	dump_state(SPI_DUMP_STATE_AFTER_CMD);
 
 	return 0;
 }

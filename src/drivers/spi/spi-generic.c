@@ -98,8 +98,14 @@ unsigned int spi_crop_chunk(const struct spi_slave *slave, unsigned int cmd_len,
 	if (deduct_opcode_len)
 		cmd_len--;
 
-	if (deduct_cmd_len && (ctrlr_max > cmd_len))
-		ctrlr_max -= cmd_len;
+	if (deduct_cmd_len) {
+		if (ctrlr_max >= cmd_len) {
+			ctrlr_max -= cmd_len;
+		} else {
+			ctrlr_max = 0;
+			printk(BIOS_WARNING, "%s: Command longer than buffer\n", __func__);
+		}
+	}
 
 	return MIN(ctrlr_max, buf_len);
 }

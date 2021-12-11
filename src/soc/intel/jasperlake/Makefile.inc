@@ -54,4 +54,6 @@ verstage-y += gpio.c
 CPPFLAGS_common += -I$(src)/soc/intel/jasperlake
 CPPFLAGS_common += -I$(src)/soc/intel/jasperlake/include
 
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-9c-00
+
 endif

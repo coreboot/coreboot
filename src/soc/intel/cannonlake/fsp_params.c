@@ -59,9 +59,9 @@ static const struct slot_irq_constraints irq_constraints[] = {
 		},
 	},
 	{
-		.slot = SA_DEV_SLOT_DSP,
+		.slot = SA_DEV_SLOT_TS,
 		.fns = {
-			ANY_PIRQ(SA_DEVFN_DSP),
+			ANY_PIRQ(SA_DEVFN_TS),
 		},
 	},
 	{

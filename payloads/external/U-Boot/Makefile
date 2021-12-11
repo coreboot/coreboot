@@ -1,7 +1,5 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-STABLE_COMMIT_ID=v2021.07
-
 TAG-$(CONFIG_UBOOT_MASTER)=origin/master
 TAG-$(CONFIG_UBOOT_STABLE)=$(STABLE_COMMIT_ID)
 
@@ -25,7 +23,7 @@ all: build
 
 $(project_dir):
 	echo "    Cloning $(project_name) from Git"
-	git clone --depth 1 $(project_git_repo) $(project_dir)
+	git clone $(project_git_repo) -b $(TAG-y) $(project_dir)
 
 fetch: $(project_dir)
 ifeq ($(CONFIG_UBOOT_MASTER),y)

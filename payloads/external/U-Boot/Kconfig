@@ -5,12 +5,16 @@ config PAYLOAD_SPECIFIC_OPTIONS
 	select PAYLOAD_IS_FLAT_BINARY
 	select WANT_LINEAR_FRAMEBUFFER
 
+config UBOOT_STABLE_COMMIT_ID
+	string
+	default "v2021.07"
+
 choice
 	prompt "U-Boot version"
 	default UBOOT_STABLE
 
 config UBOOT_STABLE
-	bool "v2019.4"
+	bool "v2021.07"
 	help
 	  Stable U-Boot version
 

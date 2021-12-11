@@ -49,4 +49,7 @@ verstage-y += gpio.c
 CPPFLAGS_common += -I$(src)/soc/intel/elkhartlake
 CPPFLAGS_common += -I$(src)/soc/intel/elkhartlake/include
 
+# B0 stepping
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-96-01
+
 endif

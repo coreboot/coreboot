@@ -136,7 +136,7 @@ void cannonlake_memcfg_init(FSP_M_CONFIG *mem_cfg,
 		default:
 			die("no valid way to read mem info");
 		}
-
-		meminit_memcfg(mem_cfg, cnl_cfg);
 	}
+
+	meminit_memcfg(mem_cfg, cnl_cfg);
 }

@@ -4,7 +4,7 @@
 #include <cpu/x86/post_code.h>
 #include <arch/ram_segs.h>
 
-/* Place the stack in the bss section. It's not necessary to define it in the
+/* Place the stack in the bss section. It's not necessary to define it in
  * the linker script. */
 	.section .bss, "aw", @nobits
 .global _stack

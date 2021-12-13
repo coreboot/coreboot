@@ -4,6 +4,10 @@ fw_config
 		option USB3_PS8815		1
 		option USB4_KB8001		2
 	end
+	field STYLUS 5
+		option STYLUS_ABSENT		0
+		option STYLUS_PRESENT		1
+	end
 	field AUDIO_AMP 7 9
 		option UNPROVISIONED		0
 		option MAX98360_ALC5682I_I2S	1
@@ -269,7 +273,9 @@ chip soc/intel/alderlake
 				register "key.linux_code" = "SW_PEN_INSERTED"
 				register "key.linux_input_type" = "EV_SW"
 				register "key.label" = ""pen_eject""
-				device generic 0 on end
+				device generic 0 on
+					probe STYLUS STYLUS_PRESENT
+				end
 			end
 		end #I2C3
 		device ref i2c5 on

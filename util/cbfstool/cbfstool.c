@@ -1771,7 +1771,6 @@ static struct option long_options[] = {
 	{"pow2page",      no_argument,       0, 'Q' },
 	{"ucode-region",  required_argument, 0, 'q' },
 	{"size",          required_argument, 0, 's' },
-	{"top-aligned",   required_argument, 0, 'T' },
 	{"type",          required_argument, 0, 't' },
 	{"verbose",       no_argument,       0, 'v' },
 	{"with-readonly", no_argument,       0, 'w' },
@@ -1927,9 +1926,6 @@ static void usage(char *name)
 			"Create a legacy ROM file with CBFS master header*\n"
 	     " create -M flashmap [-r list,of,regions,containing,cbfses]   "
 			"Create a new-style partitioned firmware image\n"
-	     " locate [-r image,regions] -f FILE -n NAME [-P page-size] \\\n"
-	     "        [-a align] [-T]                                      "
-			"Find a place for a file of that size\n"
 	     " layout [-w]                                                 "
 			"List mutable (or, with -w, readable) image regions\n"
 	     " print [-r image,regions] [-k]                               "
@@ -1964,8 +1960,7 @@ static void usage(char *name)
 	     "  specifying the location of this FMAP itself and a '%s'\n"
 	     "  section describing the primary CBFS. It should also be noted\n"
 	     "  that, when working with such images, the -F and -r switches\n"
-	     "  default to '%s' for convenience, and both the -b switch to\n"
-	     "  CBFS operations and the output of the locate action become\n"
+	     "  default to '%s' for convenience, and the -b switch becomes\n"
 	     "  relative to the selected CBFS region's lowest address.\n"
 	     "  The one exception to this rule is the top-aligned address,\n"
 	     "  which is always relative to the end of the entire image\n"

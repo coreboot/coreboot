@@ -10,13 +10,7 @@
 #include <soc/gpio.h>
 #include <soc/usb.h>
 
-static void usb3_hub_reset(void)
-{
-	gpio_output(GPIO(PERIPHERAL_EN2), 1);
-}
-
 void mtk_usb_prepare(void)
 {
-	usb3_hub_reset();
 	gpio_output(GPIO(USB_DRVVBUS_P1), 1);
 }

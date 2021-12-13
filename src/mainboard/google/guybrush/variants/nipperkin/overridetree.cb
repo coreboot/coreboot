@@ -171,6 +171,4 @@ chip soc/amd/cezanne
 			device generic 0.1 on end
 	end
 
-	register "common_config.espi_config.alert_pin" = "ESPI_ALERT_PIN_IN_BAND"
-
 end	# chip soc/amd/cezanne

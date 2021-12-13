@@ -511,11 +511,6 @@ static int do_cbfs_locate(uint32_t *cbfs_addr, size_t data_size)
 {
 	uint32_t metadata_size = 0;
 
-	if (!param.filename) {
-		ERROR("You need to specify -f/--filename.\n");
-		return 1;
-	}
-
 	if (!param.name) {
 		ERROR("You need to specify -n/--name.\n");
 		return 1;
@@ -530,16 +525,9 @@ static int do_cbfs_locate(uint32_t *cbfs_addr, size_t data_size)
 		WARN("'%s' already in CBFS.\n", param.name);
 
 	if (!data_size) {
-		struct buffer buffer;
-		if (buffer_from_file(&buffer, param.filename) != 0) {
-			ERROR("Cannot load %s.\n", param.filename);
-			return 1;
-		}
-		data_size = buffer.size;
-		buffer_delete(&buffer);
+		ERROR("File '%s' is empty?\n", param.name);
+		return 1;
 	}
-
-	DEBUG("File size is %zd (0x%zx)\n", data_size, data_size);
 
 	/* Compute required page size */
 	if (param.force_pow2_pagesize) {
@@ -571,8 +559,8 @@ static int do_cbfs_locate(uint32_t *cbfs_addr, size_t data_size)
 						param.alignment, metadata_size);
 
 	if (address < 0) {
-		ERROR("'%s' can't fit in CBFS for page-size %#x, align %#x.\n",
-		      param.name, param.pagesize, param.alignment);
+		ERROR("'%s'(%u + %zu) can't fit in CBFS for page-size %#x, align %#x.\n",
+		      param.name, metadata_size, data_size, param.pagesize, param.alignment);
 		return 1;
 	}
 
@@ -917,7 +905,7 @@ static int cbfs_add_component(const char *filename,
 
 	/* This needs to run after convert() to take compression into account. */
 	if (!offset && param.alignment)
-		if (do_cbfs_locate(&offset, 0))
+		if (do_cbfs_locate(&offset, buffer_size(&buffer)))
 			goto error;
 
 	/* This needs to run after convert() to hash the actual final file data. */
@@ -1076,7 +1064,7 @@ static int cbfstool_convert_fsp(struct buffer *buffer,
 	if (param.stage_xip) {
 		if (!param.baseaddress_assigned) {
 			param.alignment = 4*1024;
-			if (do_cbfs_locate(offset, 0))
+			if (do_cbfs_locate(offset, buffer_size(buffer)))
 				return -1;
 		}
 		assert(!IS_HOST_SPACE_ADDRESS(*offset));

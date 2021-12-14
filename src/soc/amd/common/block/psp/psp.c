@@ -56,29 +56,6 @@ void psp_print_cmd_status(int cmd_status, struct mbox_buffer_header *header)
 }
 
 /*
- * Notify the PSP that DRAM is present.  Upon receiving this command, the PSP
- * will load its OS into fenced DRAM that is not accessible to the x86 cores.
- */
-int psp_notify_dram(void)
-{
-	int cmd_status;
-	struct mbox_default_buffer buffer = {
-		.header = {
-			.size = sizeof(buffer)
-		}
-	};
-
-	printk(BIOS_DEBUG, "PSP: Notify that DRAM is available... ");
-
-	cmd_status = send_psp_command(MBOX_BIOS_CMD_DRAM_INFO, &buffer);
-
-	/* buffer's status shouldn't change but report it if it does */
-	psp_print_cmd_status(cmd_status, &buffer.header);
-
-	return cmd_status;
-}
-
-/*
  * Notify the PSP that the system is completing the boot process.  Upon
  * receiving this command, the PSP will only honor commands where the buffer
  * is in SMM space.

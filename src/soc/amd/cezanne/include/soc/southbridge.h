@@ -110,6 +110,7 @@
 #define   USB_PHY_CMCLK_S0I3_DIS	BIT(9)
 #define   USB_PHY_CMCLK_S5_DIS		BIT(10)
 #define MISC_CLK_CNTL0			0x40 /* named MISC_CLK_CNTL1 on Picasso */
+#define   BP_X48M0_S0I3_DIS		BIT(4)
 #define   BP_X48M0_OUTPUT_EN		BIT(2) /* 1=En, unlike Hudson, Kern */
 #define MISC_I2C0_PAD_CTRL		0xd8
 #define MISC_I2C1_PAD_CTRL		0xdc

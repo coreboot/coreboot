@@ -15,9 +15,6 @@ DefinitionBlock(
 	#include "acpi/platform.asl"
 	#include "acpi/mainboard.asl"
 
-	// Thermal Handler
-	#include "acpi/thermal.asl"
-
 	// global NVS and variables
 	#include <soc/intel/denverton_ns/acpi/globalnvs.asl>
 

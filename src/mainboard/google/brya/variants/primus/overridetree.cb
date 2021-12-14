@@ -90,19 +90,22 @@ chip soc/intel/alderlake
 		device ref dtt on
 			chip drivers/intel/dptf
 				## sensor information
-				register "options.tsr[0].desc" = ""SSD""
-				register "options.tsr[1].desc" = ""CHARGER""
-				register "options.tsr[2].desc" = ""MEMORY""
-				register "options.tsr[3].desc" = ""TYPEC""
+				register "options.tsr[0].desc" = ""CPU""
+				register "options.tsr[1].desc" = ""SSD""
+				register "options.tsr[2].desc" = ""CHARGER""
+				register "options.tsr[3].desc" = ""MEMORY""
+				register "options.tsr[4].desc" = ""TYPEC""
 				# TODO: below values are initial reference values only
 
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,      CPU,               95, 5000),
 					[1] = DPTF_PASSIVE(CPU,      TEMP_SENSOR_0,     90, 5000),
-					[2] = DPTF_PASSIVE(CHARGER,  TEMP_SENSOR_1,     90, 5000),
+					[2] = DPTF_PASSIVE(CPU,      TEMP_SENSOR_1,     92, 5000),
 					[3] = DPTF_PASSIVE(CPU,      TEMP_SENSOR_2,     90, 5000),
 					[4] = DPTF_PASSIVE(CPU,      TEMP_SENSOR_3,     90, 5000),
+					[5] = DPTF_PASSIVE(CHARGER,  TEMP_SENSOR_4,     90, 5000),
+
 				}"
 
 				## Critical Policy
@@ -112,6 +115,7 @@ chip soc/intel/alderlake
 					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      89, SHUTDOWN),
 					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      85, SHUTDOWN),
 					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,      85, SHUTDOWN),
+					[5] = DPTF_CRITICAL(TEMP_SENSOR_4,      85, SHUTDOWN),
 				}"
 
 				register "controls.power_limits" = "{

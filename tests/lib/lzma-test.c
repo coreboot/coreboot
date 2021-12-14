@@ -130,7 +130,7 @@ static void test_ulzman_correct_file(void **state)
 
 static void test_ulzman_input_too_small(void **state)
 {
-	uint8_t in_buf[32];
+	uint8_t in_buf[32] = {0};
 	uint8_t out_buf[32];
 
 	assert_int_equal(0, ulzman(in_buf, LZMA_PROPERTIES_SIZE, out_buf, sizeof(out_buf)));

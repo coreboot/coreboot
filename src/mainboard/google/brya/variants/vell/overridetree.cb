@@ -49,6 +49,15 @@ chip soc/intel/alderlake
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"     # Type-A MLB Port
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"     # Smart Card
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A MLB port
+	# I2C Port Config
+	register "SerialIoI2cMode" = "{
+		[PchSerialIoIndexI2C0] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoPci,
+		[PchSerialIoIndexI2C2] = PchSerialIoPci,
+		[PchSerialIoIndexI2C3] = PchSerialIoPci,
+		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5] = PchSerialIoPci,
+	}"
 	device domain 0 on
 		device ref igpu on
 			chip drivers/gfx/generic
@@ -212,12 +221,13 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref i2c5 on
-			chip drivers/i2c/generic
-				register "hid" = ""ELAN0000""
-				register "desc" = ""ELAN Touchpad""
-				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
-				register "wake" = "GPE0_DW2_14"
-				register "probed" = "1"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN2703""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
+				register "generic.wake" = "GPE0_DW2_14"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x01"
 				device i2c 15 on end
 			end
 		end

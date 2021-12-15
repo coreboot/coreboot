@@ -17,13 +17,10 @@ static void devtree_update_emmc_rtd3(uint32_t board_ver)
 	emmc_rtd3->enabled = 0;
 }
 
-static void devtree_update_audio_codec(uint32_t board_ver)
+static void devtree_update_audio_codec(void)
 {
 	struct device *audio_codec = DEV_PTR(audio_codec);
 	struct drivers_i2c_generic_config *config = audio_codec->chip_info;
-
-	if (board_ver <= 1)
-		return;
 
 	if (fw_config_probe(FW_CONFIG(AUDIO, MAX98360_ALC5682I_VS_I2S)))
 		config->hid = "RTL5682";
@@ -58,5 +55,5 @@ void variant_devtree_update(void)
 	uint32_t board_ver = board_id();
 	disable_unused_gpios();
 	devtree_update_emmc_rtd3(board_ver);
-	devtree_update_audio_codec(board_ver);
+	devtree_update_audio_codec();
 }

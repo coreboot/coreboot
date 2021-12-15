@@ -18,8 +18,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A5, NONE),
 	/* A6  : ESPI_ALERT1# ==> TP88 */
 	PAD_NC(GPP_A6, NONE),
-	/* A7  : SRCCLK_OE7# ==> NC */
-	PAD_NC(GPP_A7, NONE),
+	/* A7  : SRCCLK_OE7# ==> LAN_WAKE_ODL */
+	PAD_CFG_GPI_SCI_LOW(GPP_A7, NONE, DEEP, EDGE_SINGLE),
 	/* A8  : SRCCLKREQ7# ==> CLKREQ_7 */
 	PAD_NC(GPP_A8, NONE),
 	/* A9  : ESPI_CLK ==> ESPI_CLK */

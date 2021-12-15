@@ -95,6 +95,7 @@ chip soc/intel/alderlake
 				register "stop_delay_ms" = "12" # NIC needs time to quiesce
 				register "stop_off_delay_ms" = "1"
 				register "has_power_resource" = "1"
+				register "wake" = "GPE0_DW0_07"
 				device pci 00.0 on end
 			end
 		end # RTL8125 Ethernet NIC

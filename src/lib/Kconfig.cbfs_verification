@@ -13,7 +13,7 @@ config CBFS_VERIFICATION
 	  file as it gets loaded by chaining it to a trust anchor that is
 	  embedded in the bootblock. This only makes sense if you use some
 	  out-of-band mechanism to guarantee the integrity of the bootblock
-	  itself, such as Intel BootGuard or flash write-protection.
+	  itself, such as Intel Boot Guard or flash write-protection.
 
 	  If a CBFS image was created with this option enabled, cbfstool will
 	  automatically update the hash embedded in the bootblock whenever it

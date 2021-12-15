@@ -247,7 +247,7 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 
 	/*
 	 * DMA Protected Range can be reserved below TSEG for PCODE patch
-	 * or TXT/BootGuard related data.  Rather than report a base address,
+	 * or TXT/Boot Guard related data.  Rather than report a base address,
 	 * the DPR register reports the TOP of the region, which is the same
 	 * as TSEG base. The region size is reported in MiB in bits 11:4.
 	 */

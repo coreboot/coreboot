@@ -346,7 +346,7 @@ static void dump_bootguard_info(void)
 	if (ME_major_ver &&
 	    (ME_major_ver < 9 ||
 	     (ME_major_ver == 9 && ME_minor_ver < 5))) {
-		printf(CGRN "Your system isn't BootGuard ready.\n"
+		printf(CGRN "Your system isn't Boot Guard ready.\n"
 		       "You can flash other firmware!\n" RESET);
 		rehide_me();
 		return;
@@ -354,7 +354,7 @@ static void dump_bootguard_info(void)
 
 	if (pci_read_long(dev, 0x40) & 0x10)
 		printf(CYEL "Your southbridge configuration is insecure!!\n"
-		       "BootGuard keys can be overwritten or wiped, or you are "
+		       "Boot Guard keys can be overwritten or wiped, or you are "
 		       "in developer mode.\n"
 		       RESET);
 	rehide_me();
@@ -380,10 +380,10 @@ static void dump_bootguard_info(void)
 		return;
 	}
 
-	printf("BootGuard MSR Output : 0x%" PRIx64 "\n", btg.raw);
+	printf("Boot Guard MSR Output : 0x%" PRIx64 "\n", btg.raw);
 
 	if (!btg.btg_capability) {
-		printf(CGRN "Your system isn't BootGuard ready.\n"
+		printf(CGRN "Your system isn't Boot Guard ready.\n"
 		       "You can flash other firmware!\n" RESET);
 		return;
 	}
@@ -412,7 +412,7 @@ static void dump_bootguard_info(void)
 			       "Cache-As-RAM.\nIt might be possible to flash other firmware.\n"
 			       RESET);
 	} else {
-		printf(CGRN "Your system is BootGuard ready but verified boot is disabled.\n"
+		printf(CGRN "Your system is Boot Guard ready but verified boot is disabled.\n"
 		       "You can flash other firmware!\n" RESET);
 	}
 }

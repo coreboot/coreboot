@@ -4,6 +4,7 @@ ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE),y)
 
 subdirs-y += ../../../cpu/amd/mtrr/
 
+bootblock-y += aoac.c
 bootblock-y += uart.c
 bootblock-y += BiosCallOuts.c
 bootblock-y += bootblock.c

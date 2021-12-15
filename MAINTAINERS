@@ -892,6 +892,7 @@ TESTS
 M:	Jakub Czapiga <jacz@semihalf.com>
 S:	Maintained
 F:	tests/
+F:	payloads/libpayload/tests/
 
 MISSING: TIMERS / DELAYS
 

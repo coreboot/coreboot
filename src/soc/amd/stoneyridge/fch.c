@@ -165,12 +165,14 @@ static void set_sb_gnvs(struct global_nvs *gnvs)
 	gnvs->fw02 = fwaddr + XHCI_FW_BOOTRAM_SIZE;
 	gnvs->fw03 = fwsize << 16;
 
+	/* TODO: This might break if the OS decides to re-allocate the PCI BARs. */
 	gnvs->eh10 = pci_read_config32(SOC_EHCI1_DEV, PCI_BASE_ADDRESS_0)
 			& ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 }
 
 void fch_final(void *chip_info)
 {
+	/* TODO: The AOAC states and EHCI/XHCI addresses should be moved out of GNVS */
 	struct global_nvs *gnvs = acpi_get_gnvs();
 	if (gnvs) {
 		set_sb_aoac(&gnvs->aoac);

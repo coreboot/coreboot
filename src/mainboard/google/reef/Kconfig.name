@@ -2,30 +2,18 @@ comment "Reef"
 
 config BOARD_GOOGLE_REEF
 	bool "->  Reef/Electro (Acer Chromebook Spin 11 R751T)"
-	select BASEBOARD_REEF_LAPTOP
-	select BOARD_GOOGLE_BASEBOARD_REEF
 
 config BOARD_GOOGLE_PYRO
 	bool "->  Pyro (Lenovo Thinkpad (Yoga) 11e Chromebook)"
-	select BASEBOARD_REEF_LAPTOP
-	select BOARD_GOOGLE_BASEBOARD_REEF
 
 config BOARD_GOOGLE_SAND
 	bool "->  Sand (Acer Chromebook 15 CB515-1HT/1H)"
-	select BASEBOARD_REEF_LAPTOP
-	select BOARD_GOOGLE_BASEBOARD_REEF
 
 config BOARD_GOOGLE_SNAPPY
 	bool "->  Snappy (HP Chromebook x360 11 G1 EE)"
-	select BASEBOARD_REEF_LAPTOP
-	select BOARD_GOOGLE_BASEBOARD_REEF
 
 config BOARD_GOOGLE_NASHER
 	bool "->  Nasher"
-	select BASEBOARD_REEF_LAPTOP
-	select BOARD_GOOGLE_BASEBOARD_REEF
 
 config BOARD_GOOGLE_CORAL
 	bool "->  Coral"
-	select BASEBOARD_REEF_LAPTOP
-	select BOARD_GOOGLE_BASEBOARD_REEF

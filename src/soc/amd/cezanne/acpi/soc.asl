@@ -27,6 +27,8 @@ Scope(\_SB) {
 
 #include <soc/amd/common/acpi/upep.asl>
 
+#include "rtc_workaround.asl"
+
 /*
  * Platform Wake Notify
  *

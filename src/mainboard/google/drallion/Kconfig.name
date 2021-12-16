@@ -2,4 +2,3 @@ comment "Drallion"
 
 config BOARD_GOOGLE_DRALLION
 	bool "->  Drallion"
-	select BOARD_GOOGLE_BASEBOARD_DRALLION

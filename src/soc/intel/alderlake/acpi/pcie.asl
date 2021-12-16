@@ -299,3 +299,22 @@ Device (RP12)
 		Return (IRQM (RPPN))
 	}
 }
+
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_M) || CONFIG(SOC_INTEL_ALDERLAKE_PCH_P)
+Device (PEG0)
+{
+	Name (_ADR, 0x00060000)
+}
+#endif
+
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_P)
+Device (PEG1)
+{
+	Name (_ADR, 0x00060002)
+}
+
+Device (PEG2)
+{
+	Name (_ADR, 0x00010000)
+}
+#endif

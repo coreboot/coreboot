@@ -615,6 +615,27 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 	}
 }
 
+static void fill_fsps_cpu_pcie_params(FSP_S_CONFIG *s_cfg,
+				      const struct soc_intel_alderlake_config *config)
+{
+	if (!CONFIG_MAX_CPU_ROOT_PORTS)
+		return;
+
+	const uint32_t enable_mask = pcie_rp_enable_mask(get_cpu_pcie_rp_table());
+	for (int i = 0; i < CONFIG_MAX_CPU_ROOT_PORTS; i++) {
+		if (!(enable_mask & BIT(i)))
+			continue;
+
+		const struct pcie_rp_config *rp_cfg = &config->cpu_pcie_rp[i];
+		s_cfg->CpuPcieRpL1Substates[i] =
+			get_l1_substate_control(rp_cfg->PcieRpL1Substates);
+		s_cfg->CpuPcieRpLtrEnable[i] = !!(rp_cfg->flags & PCIE_RP_LTR);
+		s_cfg->CpuPcieRpAdvancedErrorReporting[i] = !!(rp_cfg->flags & PCIE_RP_AER);
+		s_cfg->CpuPcieRpHotPlug[i] = !!(rp_cfg->flags & PCIE_RP_HOTPLUG);
+		s_cfg->PtmEnabled[i] = 0;
+	}
+}
+
 static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
@@ -783,6 +804,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_pm_timer_params,
 		fill_fsps_storage_params,
 		fill_fsps_pcie_params,
+		fill_fsps_cpu_pcie_params,
 		fill_fsps_misc_power_params,
 		fill_fsps_irq_params,
 		fill_fsps_fivr_params,

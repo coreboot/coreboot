@@ -10,6 +10,10 @@ fw_config
 		option DB_PORTS_1C 7
 		option DB_PORTS_1A_HDMI_LTE 8
 	end
+	field STYLUS 4
+		option STYLUS_ABSENT 0
+		option STYLUS_PRESENT 1
+	end
         field TABLETMODE 10
                 option TABLETMODE_DISABLED 0
                 option TABLETMODE_ENABLED 1

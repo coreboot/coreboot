@@ -167,6 +167,8 @@ if [ $_LIBDIR = $_OBJ ]; then
     if [ "$CONFIG_LP_TINYCURSES" = y ]; then
 	_CFLAGS="$_CFLAGS -I$BASE/../curses"
     fi
+
+    _CFLAGS="$_CFLAGS -I$BASE/../../../src/commonlib/bsd/include"
 fi
 
 # Check for the -fno-stack-protector silliness

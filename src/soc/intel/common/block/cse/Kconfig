@@ -45,6 +45,15 @@ config SOC_INTEL_COMMON_BLOCK_HECI1_DISABLE_USING_PCR
 	  Use this config for SoC platform prior to CNL PCH (with postboot_sai implemented)
 	  to make `HECI1` device disable using private configuration register (PCR) write.
 
+config SOC_INTEL_CSE_SEND_EOP_EARLY
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_CSE
+	help
+	  Use this config to send End Of Post (EOP) earlier through SoC code in order to
+	  reduce time required to send EOP and getting CSE response.
+	  In later stages, CSE might be busy and might require more time to process EOP command.
+	  SoC can use this Kconfig to send EOP earlier by itself.
+
 config SOC_INTEL_CSE_LITE_SKU
 	bool
 	default n

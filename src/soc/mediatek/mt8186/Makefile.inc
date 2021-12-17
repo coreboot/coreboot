@@ -44,6 +44,7 @@ romstage-y += ../common/pmic_wrap.c pmic_wrap.c mt6366.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c rtc.c
 
 ramstage-y += ../common/auxadc.c
+ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += devapc.c
 ramstage-y += emi.c
 ramstage-y += ../common/flash_controller.c

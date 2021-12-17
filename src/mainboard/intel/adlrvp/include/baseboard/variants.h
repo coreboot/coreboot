@@ -24,6 +24,8 @@ enum adl_boardid {
 	/* ADL-M LP4 and LP5 RVPs */
 	ADL_M_LP4 = 0x1,
 	ADL_M_LP5 = 0x2,
+	/* ADL-N LP5 RVP */
+	ADL_N_LP5 = 0x7,
 };
 
 /* The next set of functions return the gpio table and fill in the number of

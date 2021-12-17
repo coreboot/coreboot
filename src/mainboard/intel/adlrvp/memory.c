@@ -290,6 +290,68 @@ static const struct mb_cfg adlm_lp5_mem_config = {
 	},
 };
 
+static const struct mb_cfg adln_lp5_mem_config = {
+	.type = MEM_TYPE_LP5X,
+
+	/* DQ byte map */
+	.lpx_dq_map = {
+		.ddr0 = {
+			.dq0 = { 12,  9, 10, 11, 14, 13,  8, 15 },
+			.dq1 = {  3,  1,  2,  0,  4,  7,  5,  6 },
+		},
+		.ddr1 = {
+			.dq0 = {  3,  1,  2,  0,  4,  7,  5,  6 },
+			.dq1 = { 13,  9,  8, 11, 10, 14, 15, 12 },
+		},
+		.ddr2 = {
+			.dq0 = {  2,  1,  3,  0,  4,  6,  5,  7 },
+			.dq1 = {  8,  9, 10, 11, 13, 14, 12, 15 },
+		},
+		.ddr3 = {
+			.dq0 = {  3,  0,  1,  2,  5,  6,  4,  7 },
+			.dq1 = { 13,  9, 11,  8, 14, 15, 10, 12 },
+		},
+		.ddr4 = {
+			.dq0 = { 12,  9, 10, 11, 14, 13,  8, 15 },
+			.dq1 = {  3,  1,  2,  0,  4,  7,  5,  6 },
+		},
+		.ddr5 = {
+			.dq0 = {  3,  1,  2,  0,  4,  7,  5,  6 },
+			.dq1 = { 13,  9,  8, 11, 10, 14, 15, 12 },
+		},
+		.ddr6 = {
+			.dq0 = {  2,  1,  3,  0,  4,  6,  5,  7 },
+			.dq1 = {  8,  9, 10, 11, 13, 14, 12, 15 },
+		},
+		.ddr7 = {
+			.dq0 = {  3,  0,  1,  2,  5,  6,  4,  7 },
+			.dq1 = { 13,  9, 11,  8, 14, 15, 10, 12 },
+		},
+	},
+
+	/* DQS CPU<>DRAM map */
+	.lpx_dqs_map = {
+		.ddr0 = { .dqs0 = 1, .dqs1 = 0 },
+		.ddr1 = { .dqs0 = 0, .dqs1 = 1 },
+		.ddr2 = { .dqs0 = 0, .dqs1 = 1 },
+		.ddr3 = { .dqs0 = 0, .dqs1 = 1 },
+		.ddr4 = { .dqs0 = 1, .dqs1 = 0 },
+		.ddr5 = { .dqs0 = 0, .dqs1 = 1 },
+		.ddr6 = { .dqs0 = 0, .dqs1 = 1 },
+		.ddr7 = { .dqs0 = 0, .dqs1 = 1 }
+	},
+
+	.ect = true, /* Early Command Training */
+
+	.UserBd = BOARD_TYPE_ULT_ULX,
+
+	.LpDdrDqDqsReTraining = 1,
+
+	.lp5x_config = {
+		.ccc_config = 0xff,
+	},
+};
+
 const struct mb_cfg *variant_memory_params(void)
 {
 	int board_id = get_board_id();
@@ -311,6 +373,8 @@ const struct mb_cfg *variant_memory_params(void)
 		return &adlm_lp4_mem_config;
 	case ADL_M_LP5:
 		return &adlm_lp5_mem_config;
+	case ADL_N_LP5:
+		return &adln_lp5_mem_config;
 	default:
 		die("unsupported board id : 0x%x\n", board_id);
 	}

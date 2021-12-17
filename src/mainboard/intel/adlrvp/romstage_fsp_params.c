@@ -80,6 +80,7 @@ void mainboard_memory_init_params(FSP_M_CONFIG *m_cfg)
 	case ADL_P_LP5_2:
 	case ADL_M_LP4:
 	case ADL_M_LP5:
+	case ADL_N_LP5:
 		memcfg_init(m_cfg, mem_config, &memory_down_spd_info, half_populated);
 		break;
 	default:

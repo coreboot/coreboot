@@ -639,8 +639,7 @@ static int espi_set_configuration(uint16_t slave_reg_addr, uint32_t config)
 
 static int espi_get_general_configuration(uint32_t *config)
 {
-	int ret = espi_get_configuration(ESPI_SLAVE_GENERAL_CFG, config);
-	if (ret == -1)
+	if (espi_get_configuration(ESPI_SLAVE_GENERAL_CFG, config) == -1)
 		return -1;
 
 	espi_show_slave_general_configuration(*config);

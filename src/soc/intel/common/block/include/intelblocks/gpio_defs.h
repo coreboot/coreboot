@@ -524,4 +524,16 @@
 
 #endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT */
 
+/* Native function configuration */
+#define PAD_CFG_NF_OWNERSHIP(pad, pull, rst, func, own)				\
+	_PAD_CFG_STRUCT(pad,							\
+		PAD_RESET(rst) | PAD_FUNC(func) | PAD_TRIG(OFF),		\
+		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE) |			\
+		PAD_CFG_OWN_GPIO(own))
+
+#define PAD_CFG_GPIO_OWNERSHIP(pad, pull, rst, own)				\
+	_PAD_CFG_STRUCT(pad,							\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_TRIG(OFF),		\
+		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(own))
+
 #endif /* _SOC_BLOCK_GPIO_DEFS_H_ */

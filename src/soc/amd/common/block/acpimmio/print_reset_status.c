@@ -33,6 +33,7 @@ void fch_print_pmxc0_status(void)
 		[3] = "ThermalTripFromTemp",
 		[4] = "RemotePowerDownFromASF",
 		[5] = "ShutDownFan0",
+		[9] = "InternalThermalTrip",
 		[16] = "UserRst",
 		[17] = "SoftPciRst",
 		[18] = "DoInit",

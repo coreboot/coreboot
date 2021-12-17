@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <chip.h>
+#include <soc/amd/stoneyridge/chip.h>
 #include <amdblocks/agesawrapper.h>
 #include <gpio.h>
 #include <console/console.h>

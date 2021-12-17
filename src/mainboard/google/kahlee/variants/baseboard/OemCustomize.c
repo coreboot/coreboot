@@ -2,7 +2,7 @@
 
 #include <amdblocks/agesawrapper.h>
 #include <variant/gpio.h>
-#include <chip.h>
+#include <soc/amd/stoneyridge/chip.h>
 #include <soc/pci_devs.h>
 
 static const PCIe_PORT_DESCRIPTOR PortList[] = {

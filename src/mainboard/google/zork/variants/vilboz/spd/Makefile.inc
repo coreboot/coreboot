@@ -16,3 +16,4 @@ SPD_SOURCES += spd/ddr4/set-0/spd-9.hex      # ID = 8(0b1000)  Parts = MT40A1G16
 SPD_SOURCES += spd/ddr4/set-0/spd-9.hex      # ID = 9(0b1001)  Parts = H5ANAG6NCJR-XNC
 SPD_SOURCES += spd/ddr4/set-0/spd-1.hex      # ID = 10(0b1010)  Parts = MT40A512M16TB-062E:R
 SPD_SOURCES += spd/ddr4/set-0/spd-1.hex      # ID = 11(0b1011)  Parts = 4JQA-0622AD
+SPD_SOURCES += spd/ddr4/set-0/spd-9.hex      # ID = 12(0b1100)  Parts = K4AAG165WB-BCWE

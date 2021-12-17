@@ -2,18 +2,12 @@ comment "Poppy"
 
 config BOARD_GOOGLE_ATLAS
 	bool "->  Atlas (Google Pixelbook Go)"
-	select BOARD_GOOGLE_BASEBOARD_POPPY
-	select VARIANT_SPECIFIC_OPTIONS_ATLAS
 
 config BOARD_GOOGLE_POPPY
 	bool "->  Poppy"
-	select BOARD_GOOGLE_BASEBOARD_POPPY
-	select VARIANT_SPECIFIC_OPTIONS_POPPY
 
 config BOARD_GOOGLE_NAMI
 	bool "->  Nami"
-	select BOARD_GOOGLE_BASEBOARD_POPPY
-	select VARIANT_SPECIFIC_OPTIONS_NAMI
 	help
 	  The Nami board supports the following devices:
 	  - Acer Chromebook 13 / Spin 13 (Akali)
@@ -24,18 +18,12 @@ config BOARD_GOOGLE_NAMI
 
 config BOARD_GOOGLE_NAUTILUS
 	bool "->  Nautilus (Samsung Chromebook Plus V2, V2 LTE)"
-	select BOARD_GOOGLE_BASEBOARD_POPPY
-	select VARIANT_SPECIFIC_OPTIONS_NAUTILUS
 
 config BOARD_GOOGLE_NOCTURNE
 	bool "->  Nocturne (Google Pixel Slate)"
-	select BOARD_GOOGLE_BASEBOARD_POPPY
-	select VARIANT_SPECIFIC_OPTIONS_NOCTURNE
 
 config BOARD_GOOGLE_RAMMUS
 	bool "->  Rammus"
-	select BOARD_GOOGLE_BASEBOARD_POPPY
-	select VARIANT_SPECIFIC_OPTIONS_RAMMUS
 	help
 	  The Rammus board supports the following devices:
 	  - Asus Chromebook C425 (Leona)
@@ -43,5 +31,3 @@ config BOARD_GOOGLE_RAMMUS
 
 config BOARD_GOOGLE_SORAKA
 	bool "->  Soraka (HP Chromebook x2)"
-	select BOARD_GOOGLE_BASEBOARD_POPPY
-	select VARIANT_SPECIFIC_OPTIONS_SORAKA

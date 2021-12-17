@@ -12,7 +12,7 @@
 #include <soc/platform_descriptors.h>
 #include <types.h>
 #include <commonlib/helpers.h>
-#include <chip.h>
+#include <soc/amd/picasso/chip.h>
 #include "gpio.h"
 #include "mainboard.h"
 

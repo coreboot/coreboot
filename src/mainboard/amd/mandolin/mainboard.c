@@ -10,7 +10,7 @@
 #include <soc/pci_devs.h>
 #include <types.h>
 #include <commonlib/helpers.h>
-#include <chip.h>
+#include <soc/amd/picasso/chip.h>
 #include "gpio.h"
 
 /* TODO: recheck IRQ tables */

@@ -83,7 +83,7 @@ void intel_acpi_gen_def_acpi_pirq(const struct device *lpc)
 		pin_irq_map[map_count].pic_pirq = pirq;
 		/* PIRQs are mapped to GSIs starting at 16 */
 		pin_irq_map[map_count].apic_gsi = 16 + pirq_idx(pirq);
-		printk(BIOS_SPEW, "ACPI_PIRQ_GEN: %s: pin=%d pirq=%ld\n",
+		printk(BIOS_SPEW, "ACPI_PIRQ_GEN: %s: pin=%d pirq=%zd\n",
 		       dev_path(dev), int_pin - PCI_INT_A,
 		       pirq_idx(pin_irq_map[map_count].pic_pirq));
 		map_count++;

@@ -1,27 +1,59 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <console/console.h>
 #include <delay.h>
 #include <drivers/analogix/anx7625/anx7625.h>
-#include <edid.h>
+#include <drivers/parade/ps8640/ps8640.h>
 #include <gpio.h>
 #include <soc/ddp.h>
 #include <soc/dsi.h>
 #include <soc/gpio_common.h>
+#include <soc/regulator.h>
 #include <soc/i2c.h>
 #include <soc/mtcmos.h>
 
 #include "display.h"
 #include "gpio.h"
 
-/* Set up backlight control pins as output pin and power-off by default */
-static void configure_backlight_and_bridge(void)
+/* Bridge functions */
+static void bridge_ps8640_power_on(void)
 {
-	/* Disable backlight before turning on bridge */
-	gpio_output(GPIO_AP_EDP_BKLTEN, 0);
-	gpio_output(GPIO_BL_PWM_1V8, 0);
-	gpio_output(GPIO_EN_PP3300_DISP_X, 1);
+	/* Set VRF12 to 1.2V and VCN33 to 3.3V */
+	mainboard_set_regulator_vol(MTK_REGULATOR_VRF12, 1200000);
+	mainboard_set_regulator_vol(MTK_REGULATOR_VCN33, 3300000);
+	udelay(200);
 
+	/* Turn on bridge */
+	gpio_output(GPIO_EDPBRDG_PWREN, 1);
+	gpio_output(GPIO_EDPBRDG_RST_L, 0);
+	mdelay(2);
+	gpio_output(GPIO_EDPBRDG_RST_L, 1);
+}
+
+static int bridge_ps8640_get_edid(u8 i2c_bus, struct edid *edid)
+{
+	const u8 chip = 0x8;
+
+	if (ps8640_init(i2c_bus, chip) < 0) {
+		printk(BIOS_ERR, "%s: Can't init PS8640 bridge\n", __func__);
+		return -1;
+	}
+	if (ps8640_get_edid(i2c_bus, chip, edid) < 0) {
+		printk(BIOS_ERR, "%s: Can't get panel's edid\n", __func__);
+		return -1;
+	}
+	return 0;
+}
+
+static int bridge_ps8640_post_power_on(u8 i2c_bus, struct edid *edid)
+{
+	/* Do nothing */
+	return 0;
+}
+
+static void bridge_anx7625_power_on(void)
+{
 	/* Turn on bridge */
 	gpio_output(GPIO_EDPBRDG_RST_L, 0);
 	gpio_output(GPIO_EN_PP1000_EDPBRDG, 1);
@@ -33,7 +65,7 @@ static void configure_backlight_and_bridge(void)
 	gpio_output(GPIO_EDPBRDG_RST_L, 1);
 }
 
-static int anx7625_setup(u8 i2c_bus, struct edid *edid)
+static int bridge_anx7625_get_edid(u8 i2c_bus, struct edid *edid)
 {
 	if (anx7625_init(i2c_bus) < 0) {
 		printk(BIOS_ERR, "%s: Can't init ANX7625 bridge\n", __func__);
@@ -46,36 +78,59 @@ static int anx7625_setup(u8 i2c_bus, struct edid *edid)
 	return 0;
 }
 
-static int bridge_setup(u8 i2c_bus, struct edid *edid)
+static int bridge_anx7625_post_power_on(u8 i2c_bus, struct edid *edid)
 {
-	if (CONFIG(BOARD_GOOGLE_KINGLER_COMMON))
-		return anx7625_setup(i2c_bus, edid);
-	else
-		printk(BIOS_ERR, "%s: There is no bridge IC supported\n", __func__);
-
-	return -1;
+	return anx7625_dp_start(i2c_bus, edid);
 }
 
-static int bridge_post_poweron(u8 i2c_bus, struct edid *edid)
+/* Display function */
+static void backlight_control(void)
 {
-	if (CONFIG(BOARD_GOOGLE_KINGLER_COMMON))
-		return anx7625_dp_start(i2c_bus, edid);
-
-	return 0;
+	/* Disable backlight before turning on bridge */
+	gpio_output(GPIO_AP_EDP_BKLTEN, 0);
+	gpio_output(GPIO_BL_PWM_1V8, 0);
+	gpio_output(GPIO_EN_PP3300_DISP_X, 1);
 }
+
+static const struct edp_bridge anx7625_bridge = {
+	.power_on = bridge_anx7625_power_on,
+	.get_edid = bridge_anx7625_get_edid,
+	.post_power_on = bridge_anx7625_post_power_on,
+};
+
+static const struct edp_bridge ps8640_bridge = {
+	.power_on = bridge_ps8640_power_on,
+	.get_edid = bridge_ps8640_get_edid,
+	.post_power_on = bridge_ps8640_post_power_on,
+};
+
+_Static_assert(CONFIG(BOARD_GOOGLE_KINGLER_COMMON) + CONFIG(BOARD_GOOGLE_KRABBY_COMMON) == 1,
+	       "Exactly one of KINGLER and KRABBY must be set");
 
 int configure_display(void)
 {
 	struct edid edid;
 	const u8 i2c_bus = I2C0;
+	const struct edp_bridge *bridge;
+
+	if (CONFIG(BOARD_GOOGLE_KINGLER_COMMON))
+		bridge = &anx7625_bridge;
+	else /* BOARD_GOOGLE_KRABBY_COMMON */
+		bridge = &ps8640_bridge;
 
 	printk(BIOS_INFO, "%s: Starting display init\n", __func__);
 
-	configure_backlight_and_bridge();
 	mtk_i2c_bus_init(i2c_bus, I2C_SPEED_FAST);
 
-	if (bridge_setup(i2c_bus, &edid) < 0) {
-		printk(BIOS_ERR, "%s: Failed to set bridge\n", __func__);
+	/* Set up backlight control pins as output pin and power-off by default */
+	backlight_control();
+
+	assert(bridge->power_on);
+	bridge->power_on();
+
+	assert(bridge->get_edid);
+	if (bridge->get_edid(i2c_bus, &edid) < 0) {
+		printk(BIOS_ERR, "%s: Failed to get edid\n", __func__);
 		return -1;
 	}
 
@@ -101,8 +156,8 @@ int configure_display(void)
 		return -1;
 	}
 
-	if (bridge_post_poweron(i2c_bus, &edid) < 0) {
-		printk(BIOS_ERR, "%s: Failed to post poweron bridge\n", __func__);
+	if (bridge->post_power_on(i2c_bus, &edid) < 0) {
+		printk(BIOS_ERR, "%s: Failed to post power on bridge\n", __func__);
 		return -1;
 	}
 

@@ -11,6 +11,7 @@
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <smbios.h>
+#include <soc/gpio.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <amdblocks/acpimmio.h>

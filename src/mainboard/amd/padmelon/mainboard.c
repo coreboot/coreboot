@@ -5,6 +5,7 @@
 #include <acpi/acpi.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/amd_pci_util.h>
+#include <soc/gpio.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 

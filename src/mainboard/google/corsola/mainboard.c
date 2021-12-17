@@ -1,12 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bl31.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <soc/msdc.h>
 #include <soc/spm.h>
 #include <soc/usb.h>
 
+#include "display.h"
 #include "gpio.h"
 
 #include <arm-trusted-firmware/include/export/plat/mediatek/common/plat_params_exp.h>
@@ -37,6 +39,13 @@ static void mainboard_init(struct device *dev)
 		printk(BIOS_ERR, "spm init failed, system suspend may not work\n");
 
 	register_reset_to_bl31();
+
+	if (display_init_required()) {
+		if (configure_display() < 0)
+			printk(BIOS_ERR, "%s: Failed to init display\n", __func__);
+	} else {
+		printk(BIOS_INFO, "%s: Skipped display init\n", __func__);
+	}
 }
 
 static void mainboard_enable(struct device *dev)

@@ -3,8 +3,7 @@
 #ifndef AMD_BLOCK_ESPI_H
 #define AMD_BLOCK_ESPI_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include <types.h>
 
 /* eSPI MMIO base lives at an offset of 0x10000 from the address in SPI BAR. */
 #define ESPI_OFFSET_FROM_BAR			0x10000
@@ -106,15 +105,13 @@ struct espi_config {
 
 /*
  * Open I/O window using the provided base and size.
- * Return value: 0 = success, -1 = error.
  */
-int espi_open_io_window(uint16_t base, size_t size);
+enum cb_err espi_open_io_window(uint16_t base, size_t size);
 
 /*
  * Open MMIO window using the provided base and size.
- * Return value: 0 = success, -1 = error.
  */
-int espi_open_mmio_window(uint32_t base, size_t size);
+enum cb_err  espi_open_mmio_window(uint32_t base, size_t size);
 
 /*
  * In cases where eSPI BAR is statically provided by SoC, use that BAR instead of reading
@@ -124,9 +121,8 @@ void espi_update_static_bar(uintptr_t bar);
 
 /*
  * Perform eSPI connection setup to the slave. Currently, this supports slave0 only.
- * Returns 0 on success and -1 on error.
  */
-int espi_setup(void);
+enum cb_err  espi_setup(void);
 
 /* Run mainboard configuration needed to set up eSPI */
 void mb_set_up_early_espi(void);

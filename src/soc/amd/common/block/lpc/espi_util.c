@@ -156,7 +156,7 @@ static void espi_write_io_window(int idx, uint16_t base, size_t size)
 	espi_write8(ESPI_IO_RANGE_SIZE(idx), size - 1);
 }
 
-static int espi_open_generic_io_window(uint16_t base, size_t size)
+static enum cb_err espi_open_generic_io_window(uint16_t base, size_t size)
 {
 	size_t win_size;
 	int idx;
@@ -186,24 +186,24 @@ static int espi_open_generic_io_window(uint16_t base, size_t size)
 			printk(BIOS_ERR, "Cannot open IO window base %x size %zx\n", base,
 			       size);
 			printk(BIOS_ERR, "ERROR: No more available IO windows!\n");
-			return -1;
+			return CB_ERR;
 		}
 
 		espi_write_io_window(idx, base, win_size);
 		espi_enable_decode(ESPI_DECODE_IO_RANGE_EN(idx));
 	}
 
-	return 0;
+	return CB_SUCCESS;
 }
 
-int espi_open_io_window(uint16_t base, size_t size)
+enum cb_err espi_open_io_window(uint16_t base, size_t size)
 {
 	int std_io;
 
 	std_io = espi_std_io_decode(base, size);
 	if (std_io != -1) {
 		espi_enable_decode(std_io);
-		return 0;
+		return CB_SUCCESS;
 	} else {
 		return espi_open_generic_io_window(base, size);
 	}
@@ -248,7 +248,7 @@ static void espi_write_mmio_window(int idx, uint32_t base, size_t size)
 	espi_write16(ESPI_MMIO_RANGE_SIZE(idx), size - 1);
 }
 
-int espi_open_mmio_window(uint32_t base, size_t size)
+enum cb_err espi_open_mmio_window(uint32_t base, size_t size)
 {
 	size_t win_size;
 	int idx;
@@ -278,14 +278,14 @@ int espi_open_mmio_window(uint32_t base, size_t size)
 			printk(BIOS_ERR, "Cannot open IO window base %x size %zx\n", base,
 			       size);
 			printk(BIOS_ERR, "ERROR: No more available MMIO windows!\n");
-			return -1;
+			return CB_ERR;
 		}
 
 		espi_write_mmio_window(idx, base, win_size);
 		espi_enable_decode(ESPI_DECODE_MMIO_RANGE_EN(idx));
 	}
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 static const struct espi_config *espi_get_config(void)
@@ -298,7 +298,7 @@ static const struct espi_config *espi_get_config(void)
 	return &soc_cfg->espi_config;
 }
 
-static int espi_configure_decodes(const struct espi_config *cfg)
+static enum cb_err espi_configure_decodes(const struct espi_config *cfg)
 {
 	int i;
 
@@ -308,11 +308,11 @@ static int espi_configure_decodes(const struct espi_config *cfg)
 		if (cfg->generic_io_range[i].size == 0)
 			continue;
 		if (espi_open_generic_io_window(cfg->generic_io_range[i].base,
-						cfg->generic_io_range[i].size))
-			return -1;
+						cfg->generic_io_range[i].size) != CB_SUCCESS)
+			return CB_ERR;
 	}
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 #define ESPI_DN_TX_HDR0			0x00
@@ -947,7 +947,7 @@ static void espi_setup_subtractive_decode(const struct espi_config *mb_cfg)
 	espi_write32(ESPI_GLOBAL_CONTROL_1, global_ctrl_reg);
 }
 
-int espi_setup(void)
+enum cb_err espi_setup(void)
 {
 	uint32_t slave_caps;
 	const struct espi_config *cfg = espi_get_config();
@@ -974,7 +974,7 @@ int espi_setup(void)
 	 */
 	if (espi_send_reset() != CB_SUCCESS) {
 		printk(BIOS_ERR, "Error: In-band reset failed!\n");
-		return -1;
+		return CB_ERR;
 	}
 	espi_set_initial_config(cfg);
 
@@ -984,7 +984,7 @@ int espi_setup(void)
 	 */
 	if (espi_get_general_configuration(&slave_caps) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Error: Slave GET_CONFIGURATION failed!\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	/*
@@ -994,7 +994,7 @@ int espi_setup(void)
 	 */
 	if (espi_set_general_configuration(cfg, slave_caps) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Error: Slave SET_CONFIGURATION failed!\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	/*
@@ -1010,39 +1010,39 @@ int espi_setup(void)
 	/* Set up VW first so we can deassert PLTRST#. */
 	if (espi_setup_vw_channel(cfg, slave_caps) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Error: Setup VW channel failed!\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	/* Assert PLTRST# if VW channel is enabled by mainboard. */
 	if (espi_send_pltrst(cfg, true) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Error: PLTRST# assertion failed!\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	/* De-assert PLTRST# if VW channel is enabled by mainboard. */
 	if (espi_send_pltrst(cfg, false) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Error: PLTRST# deassertion failed!\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	if (espi_setup_periph_channel(cfg, slave_caps) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Error: Setup Periph channel failed!\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	if (espi_setup_oob_channel(cfg, slave_caps) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Error: Setup OOB channel failed!\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	if (espi_setup_flash_channel(cfg, slave_caps) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Error: Setup Flash channel failed!\n");
-		return -1;
+		return CB_ERR;
 	}
 
-	if (espi_configure_decodes(cfg) == -1) {
+	if (espi_configure_decodes(cfg) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Error: Configuring decodes failed!\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	/* Enable subtractive decode if configured */
@@ -1053,7 +1053,7 @@ int espi_setup(void)
 
 	printk(BIOS_SPEW, "Finished initializing ESPI.\n");
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 /* Setup eSPI with any mainboard specific initialization. */

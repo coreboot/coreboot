@@ -300,17 +300,16 @@ static const struct espi_config *espi_get_config(void)
 
 static int espi_configure_decodes(const struct espi_config *cfg)
 {
-	int i, ret;
+	int i;
 
 	espi_enable_decode(cfg->std_io_decode_bitmap);
 
 	for (i = 0; i < ESPI_GENERIC_IO_WIN_COUNT; i++) {
 		if (cfg->generic_io_range[i].size == 0)
 			continue;
-		ret = espi_open_generic_io_window(cfg->generic_io_range[i].base,
-						  cfg->generic_io_range[i].size);
-		if (ret)
-			return ret;
+		if (espi_open_generic_io_window(cfg->generic_io_range[i].base,
+						cfg->generic_io_range[i].size))
+			return -1;
 	}
 
 	return 0;

@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
+#include <soc/amd/picasso/chip.h>
 #include <soc/pci_devs.h>
-#include "chip.h"
 
 uint32_t usb_oc_map_override[USB_PORT_COUNT] = {
 	USB_OC_PIN_0,

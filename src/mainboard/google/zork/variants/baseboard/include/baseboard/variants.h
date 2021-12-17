@@ -7,8 +7,8 @@
 #include <boardid.h>
 #include <ec/google/chromeec/ec.h>
 #include <FspmUpd.h>
+#include <soc/amd/picasso/chip.h>
 #include <soc/platform_descriptors.h>
-#include "chip.h"
 
 const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
 /*

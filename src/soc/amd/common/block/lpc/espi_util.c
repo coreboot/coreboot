@@ -772,7 +772,8 @@ static enum cb_err espi_wait_channel_ready(uint16_t slave_reg_addr)
 
 	stopwatch_init_usecs_expire(&sw, ESPI_CH_READY_TIMEOUT_US);
 	do {
-		espi_get_configuration(slave_reg_addr, &config);
+		if (espi_get_configuration(slave_reg_addr, &config) != CB_SUCCESS)
+			return CB_ERR;
 		if (espi_slave_is_channel_ready(config))
 			return CB_SUCCESS;
 	} while (!stopwatch_expired(&sw));

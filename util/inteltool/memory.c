@@ -192,7 +192,9 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
 		break;
-	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN:
+	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_0048:
 		mchbar_phys = pci_read_long(nb, 0x48);
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
 		mchbar_phys &= 0x0000000fffffc000UL; /* 35:14 */
@@ -266,7 +268,9 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 
 	switch (nb->device_id)
 	{
-	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN:
+	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_0048:
 		printf ("clock_speed_index = %x\n", read_500 (0,0x609, 6) >> 1);
 		dump_timings ();
 		if (dump_spd_file != NULL)

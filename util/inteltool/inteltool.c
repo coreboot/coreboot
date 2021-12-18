@@ -81,7 +81,11 @@ static const struct {
 	/* Host bridges /DRAM controllers integrated in CPUs */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_0TH_GEN,
 	  "0th generation (Nehalem family) Core Processor" },
-	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_1ST_GEN,
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_D,
+	  "1st generation (Westmere family) Core Processor" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_M,
+	  "1st generation (Westmere family) Core Processor" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_0048,
 	  "1st generation (Westmere family) Core Processor" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_D,
 	  "2nd generation (Sandy Bridge family) Core Processor (Desktop)" },

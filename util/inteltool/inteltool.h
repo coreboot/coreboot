@@ -346,7 +346,9 @@ static inline uint32_t inl(unsigned port)
 
 /* Intel starts counting these generations with the integration of the DRAM controller */
 #define PCI_DEVICE_ID_INTEL_CORE_0TH_GEN	0xd132 /* Nehalem */
-#define PCI_DEVICE_ID_INTEL_CORE_1ST_GEN	0x0044 /* Westmere */
+#define PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_D	0x0040 /* Clarkdale (Westmere Desktop) */
+#define PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_M	0x0044 /* Arrandale (Westmere Mobile) */
+#define PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_0048	0x0048 /* Unknown Westmere */
 #define PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_D	0x0100 /* Sandy Bridge (Desktop) */
 #define PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_M	0x0104 /* Sandy Bridge (Mobile) */
 #define PCI_DEVICE_ID_INTEL_CORE_2ND_GEN_E3	0x0108 /* Sandy Bridge (Xeon E3) */

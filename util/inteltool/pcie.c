@@ -378,7 +378,9 @@ int print_dmibar(struct pci_dev *nb)
 		dmi_registers = nehalem_dmi_registers;
 		size = ARRAY_SIZE(nehalem_dmi_registers);
 		break;
-	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN:
+	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_M:
+	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_0048:
 		dmibar_phys = pci_read_long(nb, 0x68);
 		dmibar_phys |= ((uint64_t)pci_read_long(nb, 0x6c)) << 32;
 		dmibar_phys &= 0x0000000ffffff000UL; /* 35:12 */

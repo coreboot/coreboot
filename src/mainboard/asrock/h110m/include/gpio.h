@@ -455,7 +455,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_I10, DN_20K, PLTRST, NF1),
 };
 
-/* Early pad configuration in romstage */
+/* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
 	/* ------- GPIO Group GPP_A ------- */
 	/* GPP_A0 - RCIN# */

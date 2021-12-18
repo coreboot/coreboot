@@ -7,7 +7,7 @@
  * using the stock BIOS and with coreboot.
  */
 
-/* Early pad configuration in romstage. */
+/* Early pad configuration in bootblock. */
 const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
 	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),

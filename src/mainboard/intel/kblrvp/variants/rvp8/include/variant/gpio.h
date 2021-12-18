@@ -159,7 +159,7 @@ static const struct pad_config gpio_table[] = {
 
 };
 
-/* Early pad configuration in romstage. */
+/* Early pad configuration in bootblock. */
 static const struct pad_config early_gpio_table[] = {
 /* UART0_RXD */		PAD_CFG_NF(GPP_C8, NONE, DEEP, NF1),
 /* UART0_TXD */		PAD_CFG_NF(GPP_C9, NONE, DEEP, NF1),

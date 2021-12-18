@@ -214,7 +214,7 @@ static const struct pad_config gpio_table[] = {
 /* LANPHYC */		PAD_NC(GPD11, NONE),
 };
 
-/* Early pad configuration in romstage. */
+/* Early pad configuration in bootblock. */
 static const struct pad_config early_gpio_table[] = {
 /* SPI_WP_STATUS */	PAD_CFG_GPI_GPIO_DRIVER(GPP_C23, UP_20K, DEEP),
 /* GD_UART2_RXD */	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),

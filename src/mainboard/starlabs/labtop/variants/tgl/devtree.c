@@ -24,25 +24,25 @@ void devtree_update(void)
 
 
 	/* Update PL1 & PL2 based on CMOS settings */
-	switch (get_uint_option("power_profile", 0)) {
-	case 1:
-		soc_conf_2core->tdp_pl1_override = 15;
-		soc_conf_4core->tdp_pl1_override = 15;
-		soc_conf_2core->tdp_pl2_override = 25;
-		soc_conf_4core->tdp_pl2_override = 25;
-		break;
-	case 2:
-		soc_conf_2core->tdp_pl1_override = 28;
-		soc_conf_4core->tdp_pl1_override = 28;
-		soc_conf_2core->tdp_pl2_override = 40;
-		soc_conf_4core->tdp_pl2_override = 40;
-		break;
-	default:
+	switch (get_power_profile(PP_POWER_SAVER)) {
+	case PP_POWER_SAVER:
 		disable_turbo();
 		soc_conf_2core->tdp_pl1_override = 15;
 		soc_conf_4core->tdp_pl1_override = 15;
 		soc_conf_2core->tdp_pl2_override = 15;
 		soc_conf_4core->tdp_pl2_override = 15;
+		break;
+	case PP_BALANCED:
+		soc_conf_2core->tdp_pl1_override = 15;
+		soc_conf_4core->tdp_pl1_override = 15;
+		soc_conf_2core->tdp_pl2_override = 25;
+		soc_conf_4core->tdp_pl2_override = 25;
+		break;
+	case PP_PERFORMANCE:
+		soc_conf_2core->tdp_pl1_override = 28;
+		soc_conf_4core->tdp_pl1_override = 28;
+		soc_conf_2core->tdp_pl2_override = 40;
+		soc_conf_4core->tdp_pl2_override = 40;
 		break;
 	}
 

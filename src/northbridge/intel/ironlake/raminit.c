@@ -2937,7 +2937,6 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	info.last_500_command[0] = 0;
 	info.last_500_command[1] = 0;
 
-	info.fsb_frequency = 135 * 2;
 	info.board_lane_delay[0] = 0x14;
 	info.board_lane_delay[1] = 0x07;
 	info.board_lane_delay[2] = 0x07;

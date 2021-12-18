@@ -20,6 +20,7 @@
 
 #define MSR_MISC_PWR_MGMT		0x1aa
 #define  MISC_PWR_MGMT_EIST_HW_DIS	(1 << 0)
+#define MSR_TURBO_POWER_CURRENT_LIMIT	0x1ac
 #define MSR_TURBO_RATIO_LIMIT		0x1ad
 #define MSR_POWER_CTL			0x1fc
 

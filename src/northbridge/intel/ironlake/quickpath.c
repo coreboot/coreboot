@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <cpu/intel/model_2065x/model_2065x.h>
+#include <cpu/x86/msr.h>
 #include <delay.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
@@ -495,10 +497,20 @@ void early_quickpath_init(struct raminfo *info, const u8 x2ca8)
 	if (x1c04 != x1804 && x2ca8 == 0)
 		mchbar_setbits8(0x2ca8, 1 << 0);
 
+	reg32 = 0x3000000;
+	if (info->revision >= 0x18 && qpi_pll_ratio <= 12) {
+		/* Get TDP limit in 1/8W units */
+		const msr_t msr = rdmsr(MSR_TURBO_POWER_CURRENT_LIMIT);
+		if ((msr.lo & 0x7fff) <= 90)
+			reg32 = 0;
+	}
 	mchbar_write32(0x18d8, 0x120000);
-	mchbar_write32(0x18dc, 0x30a484a);
+	mchbar_write32(0x18dc, reg32 | 0xa484a);
+
+	reg32 = qpi_pll_ratio > 20 ? 8 : 16;
 	pci_write_config32(QPI_PHY_0, QPI_PHY_EP_SELECT, 0x0);
-	pci_write_config32(QPI_PHY_0, QPI_PHY_EP_MCTR, 0x9444a);
+	pci_write_config32(QPI_PHY_0, QPI_PHY_EP_MCTR, 0x9404a | reg32 << 7);
+
 	mchbar_write32(0x18d8, 0x40000);
 	mchbar_write32(0x18dc, 0xb000000);
 	pci_write_config32(QPI_PHY_0, QPI_PHY_EP_SELECT, 0x60000);
@@ -522,14 +534,18 @@ void early_quickpath_init(struct raminfo *info, const u8 x2ca8)
 
 	if (qpi_pll_ratio <= 14)
 		reg8 = 0x33;
-	else if (qpi_pll_ratio <= 26)
+	else if (qpi_pll_ratio <= 22)
 		reg8 = 0x42;
 	else
 		reg8 = 0x51;
 
-	mchbar_write32(0x1a10, reg8 << 24 | qpi_pll_ratio * 60);
-	mchbar_setbits32(0x18b8, 0x200);
-	mchbar_setbits32(0x1918, 0x300);
+	info->fsb_frequency = qpi_pll_ratio * 15;
+	mchbar_write32(0x1a10, reg8 << 24 | info->fsb_frequency);
+
+	if (info->silicon_revision == 2 || info->silicon_revision == 3) {
+		mchbar_setbits32(0x18b8, 0x200);
+		mchbar_setbits32(0x1918, 0x300);
+	}
 
 	if (info->revision > 0x17)
 		mchbar_setbits32(0x18b8, 0xc00);

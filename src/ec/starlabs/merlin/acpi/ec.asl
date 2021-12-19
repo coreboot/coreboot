@@ -10,7 +10,7 @@ Scope (\_SB.PCI0.LPCB)
 	{
 		Name (_HID, EisaId ("PNP0C09"))
 		Name (_UID, 0x01)
-		Name (_GPE, EC_GPE_SCI)
+		Name (_GPE, CONFIG_EC_GPE_SCI)
 		Name (ECAV, 0x00)
 		Name (ECTK, 0x01)
 		Name (B2ST, 0x00)

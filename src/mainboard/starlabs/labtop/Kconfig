@@ -40,6 +40,10 @@ config DIMM_SPD_SIZE
 config DRIVER_TPM_SPI_CHIP
 	default 2
 
+config EC_GPE_SCI
+	default 0x6e if BOARD_STARLABS_STARBOOK_TGL
+	default 0x50
+
 config EC_STARLABS_ADD_ITE_BIN
 	default y
 

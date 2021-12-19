@@ -55,3 +55,7 @@ config EC_STARLABS_MERLIN
 config EC_VARIANT_DIR
 	string
 	default "merlin" if EC_STARLABS_MERLIN
+
+config EC_GPE_SCI
+	hex
+	default 0x50

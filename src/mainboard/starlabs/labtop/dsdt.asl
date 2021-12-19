@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#define EC_GPE_SCI 0x6e
-
 #include <acpi/acpi.h>
 DefinitionBlock(
 	"dsdt.aml",

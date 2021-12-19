@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause or GPL-2.0-only */
 
 #include <ctype.h>
-#include <endian.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

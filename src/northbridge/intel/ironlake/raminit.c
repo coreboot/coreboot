@@ -792,7 +792,7 @@ static void compute_derived_timings(struct raminfo *info)
 		info->max_slots_used_in_channel = 2;
 	else
 		info->max_slots_used_in_channel = 1;
-	for (channel = 0; channel < 2; channel++)
+	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		mchbar_write32(0x244 + (channel << 10),
 			((info->revision < 8) ? 1 : 0x200) |
 			((2 - info->max_slots_used_in_channel) << 17) |

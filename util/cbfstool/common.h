@@ -10,10 +10,9 @@
 #include <assert.h>
 
 #include <commonlib/bsd/cbfs_serialized.h>
+#include <commonlib/bsd/sysincludes.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
-
-#include "swab.h"
 
 /*
  * There are two address spaces that this tool deals with - SPI flash address space and host

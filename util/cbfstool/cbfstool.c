@@ -169,11 +169,11 @@ static struct mh_cache *get_mh_cache(void)
 		if (cbfs_image_from_buffer(&cbfs, &buffer, param.headeroffset))
 			goto no_metadata_hash;
 		bootblock = cbfs_get_entry(&cbfs, "bootblock");
-		if (!bootblock || ntohl(bootblock->type) != CBFS_TYPE_BOOTBLOCK)
+		if (!bootblock || be32toh(bootblock->type) != CBFS_TYPE_BOOTBLOCK)
 			goto no_metadata_hash;
-		offset = (void *)bootblock + ntohl(bootblock->offset) -
+		offset = (void *)bootblock + be32toh(bootblock->offset) -
 			 buffer_get(&cbfs.buffer);
-		size = ntohl(bootblock->len);
+		size = be32toh(bootblock->len);
 	}
 
 	/* Find and validate the metadata hash anchor inside the bootblock and
@@ -664,7 +664,7 @@ static int update_master_header_loc_topswap(struct cbfs_image *image,
 	 * Check if the existing topswap boundary matches with
 	 * the one provided.
 	 */
-	if (param.topswap_size != ntohl(entry->len)/2) {
+	if (param.topswap_size != be32toh(entry->len)/2) {
 		ERROR("Top swap boundary does not match\n");
 		return 1;
 	}
@@ -701,16 +701,16 @@ static int cbfs_add_master_header(void)
 		return 1;
 
 	struct cbfs_header *h = (struct cbfs_header *)buffer.data;
-	h->magic = htonl(CBFS_HEADER_MAGIC);
-	h->version = htonl(CBFS_HEADER_VERSION);
+	h->magic = htobe32(CBFS_HEADER_MAGIC);
+	h->version = htobe32(CBFS_HEADER_VERSION);
 	/* The 4 bytes are left out for two reasons:
 	 * 1. the cbfs master header pointer resides there
 	 * 2. some cbfs implementations assume that an image that resides
 	 *    below 4GB has a bootblock and get confused when the end of the
 	 *    image is at 4GB == 0.
 	 */
-	h->bootblocksize = htonl(4);
-	h->align = htonl(CBFS_ALIGNMENT);
+	h->bootblocksize = htobe32(4);
+	h->align = htobe32(CBFS_ALIGNMENT);
 	/* The offset and romsize fields within the master header are absolute
 	 * values within the boot media. As such, romsize needs to relfect
 	 * the end 'offset' for a CBFS. To achieve that the current buffer
@@ -720,9 +720,9 @@ static int cbfs_add_master_header(void)
 	offset = buffer_get(param.image_region) -
 		buffer_get_original_backing(param.image_region);
 	size = buffer_size(param.image_region);
-	h->romsize = htonl(size + offset);
-	h->offset = htonl(offset);
-	h->architecture = htonl(CBFS_ARCHITECTURE_UNKNOWN);
+	h->romsize = htobe32(size + offset);
+	h->offset = htobe32(offset);
+	h->architecture = htobe32(CBFS_ARCHITECTURE_UNKNOWN);
 
 	/* Never add a hash attribute to the master header. */
 	header = cbfs_create_file_header(CBFS_TYPE_CBFSHEADER,
@@ -925,7 +925,7 @@ static int cbfs_add_component(const char *filename,
 					sizeof(struct cbfs_file_attr_position));
 			if (attrs == NULL)
 				goto error;
-			attrs->position = htonl(offset);
+			attrs->position = htobe32(offset);
 		}
 		/* Add alignment attribute if used */
 		if (param.alignment) {
@@ -936,7 +936,7 @@ static int cbfs_add_component(const char *filename,
 					sizeof(struct cbfs_file_attr_align));
 			if (attrs == NULL)
 				goto error;
-			attrs->alignment = htonl(param.alignment);
+			attrs->alignment = htobe32(param.alignment);
 		}
 	}
 
@@ -1024,15 +1024,15 @@ static int cbfstool_convert_raw(struct buffer *buffer,
 		free(compressed);
 		return -1;
 	}
-	attrs->compression = htonl(param.compression);
-	attrs->decompressed_size = htonl(decompressed_size);
+	attrs->compression = htobe32(param.compression);
+	attrs->decompressed_size = htobe32(decompressed_size);
 
 	free(buffer->data);
 	buffer->data = compressed;
 	buffer->size = compressed_size;
 
 out:
-	header->len = htonl(buffer->size);
+	header->len = htobe32(buffer->size);
 	return 0;
 }
 
@@ -1152,7 +1152,7 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 	/* Special care must be taken for LZ4-compressed stages that the BSS is
 	   large enough to provide scratch space for in-place decompression. */
 	if (!param.precompression && param.compression == CBFS_COMPRESS_LZ4) {
-		size_t memlen = ntohl(stageheader->memlen);
+		size_t memlen = be32toh(stageheader->memlen);
 		size_t compressed_size = buffer_size(&output);
 		uint8_t *compare_buffer = malloc(memlen);
 		uint8_t *start = compare_buffer + memlen - compressed_size;
@@ -1196,7 +1196,7 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer,
 	if (ret != 0) {
 		ret = parse_fit_to_payload(buffer, &output, param.compression);
 		if (ret == 0)
-			header->type = htonl(CBFS_TYPE_FIT);
+			header->type = htobe32(CBFS_TYPE_FIT);
 	}
 
 	/* If it's not an FIT, see if it's a UEFI FV */
@@ -1218,7 +1218,7 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer,
 	buffer_delete(buffer);
 	// Direct assign, no dupe.
 	memcpy(buffer, &output, sizeof(*buffer));
-	header->len = htonl(output.size);
+	header->len = htobe32(output.size);
 	return 0;
 }
 
@@ -1235,7 +1235,7 @@ static int cbfstool_convert_mkflatpayload(struct buffer *buffer,
 	buffer_delete(buffer);
 	// Direct assign, no dupe.
 	memcpy(buffer, &output, sizeof(*buffer));
-	header->len = htonl(output.size);
+	header->len = htobe32(output.size);
 	return 0;
 }
 

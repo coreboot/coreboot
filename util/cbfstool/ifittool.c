@@ -356,11 +356,11 @@ int main(int argc, char *argv[])
 				return 1;
 			}
 
-			len = ntohl(cbfs_file->len);
+			len = be32toh(cbfs_file->len);
 			offset = offset_to_ptr(convert_to_from_top_aligned,
 					&image.buffer,
 					cbfs_get_entry_addr(&image, cbfs_file) +
-					ntohl(cbfs_file->offset));
+					be32toh(cbfs_file->offset));
 
 
 			if (fit_add_entry(fit, offset, len, fit_type,
@@ -384,7 +384,7 @@ int main(int argc, char *argv[])
 
 		fit_address = offset_to_ptr(convert_to_from_top_aligned, &image.buffer,
 				       cbfs_get_entry_addr(&image, cbfs_file)
-					       + ntohl(cbfs_file->offset));
+					       + be32toh(cbfs_file->offset));
 
 
 		if (set_fit_pointer(&bootblock, fit_address, convert_to_from_top_aligned,

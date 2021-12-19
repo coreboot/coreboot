@@ -80,9 +80,9 @@ static int fill_cbfs_stageheader(struct cbfs_file_attr_stageheader *stageheader,
 		return -1;
 	}
 
-	stageheader->loadaddr = htonll(loadaddr);
-	stageheader->memlen = htonl(memsize);
-	stageheader->entry_offset = htonl(entry - loadaddr);
+	stageheader->loadaddr = htobe64(loadaddr);
+	stageheader->memlen = htobe32(memsize);
+	stageheader->entry_offset = htobe32(entry - loadaddr);
 
 	return  0;
 }

@@ -15,17 +15,6 @@
 /* Utilities */
 int verbose = 0;
 
-/* Small, OS/libc independent runtime check for endianness */
-int is_big_endian(void)
-{
-	static const uint32_t inttest = 0x12345678;
-	const uint8_t inttest_lsb = *(const uint8_t *)&inttest;
-	if (inttest_lsb == 0x12) {
-		return 1;
-	}
-	return 0;
-}
-
 static off_t get_file_size(FILE *f)
 {
 	off_t fsize;

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
+#include <soc/devapc.h>
 #include <soc/emi.h>
 #include <soc/mmu_operations.h>
 #include <soc/sspm.h>
@@ -15,6 +16,7 @@ static void soc_init(struct device *dev)
 {
 	mtk_mmu_disable_l2c_sram();
 	sspm_init();
+	dapc_init();
 }
 
 static struct device_operations soc_ops = {

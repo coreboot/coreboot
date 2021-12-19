@@ -134,10 +134,6 @@ TOOLCPPFLAGS += -I$(top)/src/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include
 TOOLLDFLAGS ?=
 HOSTCFLAGS += -fms-extensions
 
-ifneq ($(shell uname -o 2>/dev/null), FreeBSD)
-TOOLCPPFLAGS += -D_XOPEN_SOURCE=700 # strdup() from string.h
-endif
-
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
 TOOLCFLAGS += -mno-ms-bitfields
 endif

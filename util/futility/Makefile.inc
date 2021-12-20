@@ -11,6 +11,7 @@ $(VBOOT_FUTILITY): | check-openssl-presence
 		CC="$(HOSTCC)" \
 		PKG_CONFIG="$(HOSTPKGCONFIG)" \
 		V=$(V) \
+		USE_FLASHROM=0 \
 		$@
 
 .PHONY: check-openssl-presence

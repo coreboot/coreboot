@@ -7,14 +7,14 @@
 #include <fw_config.h>
 #include <ec/google/chromeec/ec.h>
 
-/* Pad configuration in ramstage*/
+/* Pad configuration in ramstage */
 static const struct pad_config not_board6or8_gpio_table[] = {
 
 	/* C12 : AP_PEN_DET_ODL */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_C12, UP_20K, DEEP),
 };
 
-/* bid6: Pad configuration for board version 6 or 8 in ramstage*/
+/* bid6: Pad configuration for board version 6 or 8 in ramstage */
 static const struct pad_config board6or8_gpio_table[] = {
 
 	/* A10 : WWAN_EN */

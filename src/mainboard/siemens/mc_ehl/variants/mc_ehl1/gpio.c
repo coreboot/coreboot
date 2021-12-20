@@ -3,7 +3,7 @@
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
 
-/* Pad configuration in ramstage*/
+/* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
 	/* Community 0 - GpioGroup GPP_B */
 	PAD_CFG_NF(GPP_B2, NONE, PLTRST, NF1),		/* PMC_VRALERT_N */

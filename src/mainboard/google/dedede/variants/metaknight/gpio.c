@@ -4,7 +4,7 @@
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
 
-/* Pad configuration in ramstage*/
+/* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
 	/* A10 : WWAN_EN => LTE_PWR_OFF_ODL */
 	PAD_CFG_GPO(GPP_A10, 1, PWROK),

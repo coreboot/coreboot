@@ -5,7 +5,7 @@
 #include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-/* Pad configuration in ramstage*/
+/* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
 /* I2S2_SCLK */
 PAD_CFG_GPI(GPP_A7, NONE, PLTRST),

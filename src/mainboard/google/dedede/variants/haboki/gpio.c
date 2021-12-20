@@ -6,7 +6,7 @@
 #include <fw_config.h>
 #include <ec/google/chromeec/ec.h>
 
-/* Pad configuration in ramstage*/
+/* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
 	/* C12 : AP_PEN_DET_ODL has an external pull-up and hence no pad termination.*/
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_C12, NONE, DEEP),

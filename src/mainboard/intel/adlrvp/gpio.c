@@ -5,7 +5,7 @@
 #include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-/* Pad configuration in ramstage*/
+/* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
 	/* SSD1_PWREN  CPU SSD1 */
 	PAD_CFG_GPO(GPP_D14, 1, PLTRST),

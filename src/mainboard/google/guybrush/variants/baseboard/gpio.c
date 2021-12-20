@@ -8,7 +8,7 @@
 #include <gpio.h>
 #include <soc/gpio.h>
 
-/* GPIO configuration in ramstage*/
+/* GPIO configuration in ramstage */
 /* Please make sure that *ALL* GPIOs are configured in this table */
 static const struct soc_amd_gpio base_gpio_table[] = {
 	/* PWR_BTN_L */

@@ -5,7 +5,7 @@
 #include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-/* Pad configuration in ramstage*/
+/* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
 
 	/* WWAN_WAKE_N */

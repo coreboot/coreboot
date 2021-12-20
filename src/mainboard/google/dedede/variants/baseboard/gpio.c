@@ -5,7 +5,7 @@
 #include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-/* Pad configuration in ramstage*/
+/* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
 	/* GPP_A0 thru GPP_A6 come configured out of reset, do not touch */
 	/* A0  : ESPI_IO0 */

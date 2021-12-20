@@ -5,7 +5,9 @@
 # so new parts must always be added at the end of the file!
 #
 # Generate an updated Makefile.inc and dram_id.generated.txt by running the
-# part_id_gen tool from util/spd_tools.
-# See util/spd_tools/README.md for more details and instructions.
+# gen_part_id tool from util/spd_tools/{ddr4,lp4x}.
+# See util/spd_tools/{ddr4,lp4x}/README.md for more details and instructions.
 
 # Part Name
+MT53E512M32D1NP-046 WT:B
+K4U6E3S4AA-MGCR

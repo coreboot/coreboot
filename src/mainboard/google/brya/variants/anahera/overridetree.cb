@@ -33,6 +33,7 @@ chip soc/intel/alderlake
 	register "gpio_pm[COMM_4]" = "0"
 	register "gpio_pm[COMM_5]" = "0"
 
+	register "SaGv" = "SaGv_Enabled"
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

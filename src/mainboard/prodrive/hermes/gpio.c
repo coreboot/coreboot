@@ -369,7 +369,7 @@ static const struct pad_config gpio_table[] = {
 
 };
 
-/* Early pad configuration in bootblock. */
+/* Early pad configuration in bootblock */
 const struct pad_config early_gpio_table[] = {
 	/* Get PCIe out of reset */
 	PAD_CFG_GPO(GPP_K0, 1, DEEP),			/* PERST_PCH_SLOTS_n */

@@ -193,7 +193,7 @@ static const struct pad_config gpio_table[] = {
 /* LANPHYC */		PAD_CFG_NF(GPD11, NONE, DEEP, NF1),
 };
 
-/* Early pad configuration in bootblock. */
+/* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
 /* UART2_RXD */		PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
 /* UART2_TXD */		PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),

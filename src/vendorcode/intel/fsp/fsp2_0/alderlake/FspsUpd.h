@@ -3380,7 +3380,8 @@ typedef struct {
   UINT8                       ProcHotLock;
 
 /** Offset 0x0CF3 - Configuration for boot TDP selection
-  Deprecated. Move to premem.
+  Configuration for boot TDP selection; <b>0: TDP Nominal</b>; 1: TDP Down; 2: TDP
+  Up;0xFF : Deactivate
 **/
   UINT8                       ConfigTdpLevel;
 
@@ -3868,7 +3869,7 @@ typedef struct {
 
 /** Offset 0x0FD5 - Reserved
 **/
-  UINT8                       Reserved56[123];
+  UINT8                       Reserved56[19];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -3887,11 +3888,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x1050
+/** Offset 0x0FE8
 **/
   UINT8                       UnusedUpdSpace42[6];
 
-/** Offset 0x1056
+/** Offset 0x0FEE
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

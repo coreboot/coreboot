@@ -18,6 +18,46 @@ chip soc/amd/cezanne
 	register "telemetry_vddcrsocfull_scale_current_mA" = "30314" #mA
 	register "telemetry_vddcrsocoffset" =  "560"
 
+	#USB 2.0 phy config
+	register "usb_phy" = "{
+		/* Left USB C0 Port */
+		.Usb2PhyPort[0] = {
+			.compdstune = 3,
+			.sqrxtune = 3,
+			.txfslstune = 3,
+			.txpreempamptune = 3,
+			.txpreemppulsetune = 0,
+			.txrisetune = 1,
+			.txvreftune = 6,
+			.txhsxvtune = 3,
+			.txrestune = 1,
+		},
+		/* Left USB A0 Port */
+		.Usb2PhyPort[1] = {
+			.compdstune = 3,
+			.sqrxtune = 3,
+			.txfslstune = 3,
+			.txpreempamptune = 3,
+			.txpreemppulsetune = 0,
+			.txrisetune = 1,
+			.txvreftune = 6,
+			.txhsxvtune = 3,
+			.txrestune = 1,
+		},
+		/* Right USB C1 Port */
+		.Usb2PhyPort[4] = {
+			.compdstune = 3,
+			.sqrxtune = 3,
+			.txfslstune = 3,
+			.txpreempamptune = 3,
+			.txpreemppulsetune = 0,
+			.txrisetune = 1,
+			.txvreftune = 6,
+			.txhsxvtune = 3,
+			.txrestune = 1,
+		},
+	}"
+
 	# I2C Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

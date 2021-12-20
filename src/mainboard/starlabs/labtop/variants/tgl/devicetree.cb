@@ -28,6 +28,7 @@ chip soc/intel/tigerlake
 	# Serial I/O
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]		= PchSerialIoPci,
+		[PchSerialIoIndexI2C4]		= PchSerialIoSkipInit,
 	}"
 
 	register "SerialIoUartMode" = "{
@@ -165,7 +166,7 @@ chip soc/intel/tigerlake
 			register "SataPortsEnable[1]"		= "1"
 			register "SataPortsDevSlp[1]"		= "1"
 		end
-		device pci 19.0 off end						# I2C4
+		device pci 19.0 on  end						# I2C4
 		device pci 19.1 off end						# I2C5
 		device pci 19.2 on  end						# UART #2
 		device pci 1c.0 off end						# PCI Express Port 1

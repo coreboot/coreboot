@@ -4,10 +4,14 @@ config BOARD_GOOGLE_CORSOLA
 	bool "->  Corsola"
 	select BOARD_GOOGLE_CORSOLA_COMMON
 
+comment "Kingler"
+
 config BOARD_GOOGLE_KINGLER
 	bool "->  Kingler"
-	select BOARD_GOOGLE_CORSOLA_COMMON
+	select BOARD_GOOGLE_KINGLER_COMMON
+
+comment "Krabby"
 
 config BOARD_GOOGLE_KRABBY
 	bool "->  Krabby"
-	select BOARD_GOOGLE_CORSOLA_COMMON
+	select BOARD_GOOGLE_KRABBY_COMMON

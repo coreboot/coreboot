@@ -47,6 +47,7 @@ config MAINBOARD_VENDOR
 
 config MAINBOARD_PART_NUMBER
 	default "Herobrine" if BOARD_GOOGLE_HEROBRINE
+	default "Herobrine.rev0" if BOARD_GOOGLE_HEROBRINE_REV0
 	default "Senor" if BOARD_GOOGLE_SENOR
 	default "Piglin" if BOARD_GOOGLE_PIGLIN
 	default "Hoglin" if BOARD_GOOGLE_HOGLIN

@@ -57,7 +57,7 @@ static void mainboard_init(struct device *dev)
 	qupv3_se_fw_load_and_init(QUPV3_1_SE5, SE_PROTOCOL_I2C, MIXED);	 /* Touch I2C */
 	qupv3_se_fw_load_and_init(QUPV3_0_SE7, SE_PROTOCOL_UART, FIFO);  /* BT UART */
 
-	if (CONFIG(BOARD_GOOGLE_HEROBRINE)) {
+	if (CONFIG(BOARD_GOOGLE_HEROBRINE_REV0)) {
 		/* Audio I2C */
 		qupv3_se_fw_load_and_init(QUPV3_0_SE0, SE_PROTOCOL_I2C, MIXED);
 		/* Trackpad I2C */
@@ -73,6 +73,15 @@ static void mainboard_init(struct device *dev)
 		qupv3_se_fw_load_and_init(QUPV3_1_SE4, SE_PROTOCOL_SPI, MIXED);
 		/* Fingerprint SPI */
 		qupv3_se_fw_load_and_init(QUPV3_1_SE6, SE_PROTOCOL_SPI, MIXED);
+	} else {
+		/* Trackpad I2C */
+		qupv3_se_fw_load_and_init(QUPV3_0_SE0, SE_PROTOCOL_I2C, MIXED);
+		/* SAR sensor I2C */
+		qupv3_se_fw_load_and_init(QUPV3_0_SE1, SE_PROTOCOL_I2C, MIXED);
+		/* Audio I2C */
+		qupv3_se_fw_load_and_init(QUPV3_0_SE2, SE_PROTOCOL_I2C, MIXED);
+		/* Fingerprint SPI */
+		qupv3_se_fw_load_and_init(QUPV3_1_SE1, SE_PROTOCOL_SPI, MIXED);
 	}
 
 	/* Take FPMCU out of reset. Power was already applied

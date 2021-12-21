@@ -22,9 +22,9 @@
 
 /* Fingerprint-specific GPIOs. Only for fingerprint-enabled devices. */
 #if CONFIG(HEROBRINE_HAS_FINGERPRINT)
-#define GPIO_FPMCU_BOOT0	GPIO(77)
+#define GPIO_FPMCU_BOOT0	(CONFIG(BOARD_GOOGLE_HEROBRINE_REV0) ? GPIO(77) : GPIO(68))
 #define GPIO_FP_RST_L		GPIO(78)
-#define GPIO_EN_FP_RAILS	GPIO(42)
+#define GPIO_EN_FP_RAILS	(CONFIG(BOARD_GOOGLE_HEROBRINE_REV0) ? GPIO(42) : GPIO(77))
 #else
 #define GPIO_FPMCU_BOOT0	dead_code_t(gpio_t)
 #define GPIO_FP_RST_L		dead_code_t(gpio_t)

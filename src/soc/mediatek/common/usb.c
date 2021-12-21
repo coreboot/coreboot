@@ -140,7 +140,15 @@ static inline void ssusb_soft_reset(void)
 	clrbits32(&ippc_regs->ip_pw_ctr0, CTRL0_IP_SW_RST);
 }
 
-__weak void mtk_usb_prepare(void) { /* do nothing */ }
+__weak void mtk_usb_prepare(void)
+{
+	/* do nothing */
+}
+
+__weak void mtk_usb_adjust_phy_shift(void)
+{
+	/* do nothing */
+}
 
 void setup_usb_host(void)
 {
@@ -153,5 +161,6 @@ void setup_usb_host(void)
 		return;
 	}
 	u3phy_power_on();
+	mtk_usb_adjust_phy_shift();
 	u3p_msg("phy power-on done.\n");
 }

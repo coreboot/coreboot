@@ -130,9 +130,13 @@ struct sif_u2_phy_com {
 check_member(sif_u2_phy_com, u2phydtm0, 0x68);
 
 struct sif_u3phyd {
-	u32 reserved0[23];
+	u32 reserved0[4];
+	u32 phyd_cal0;
+	u32 phyd_cal1;
+	u32 reserved1[15];
+	u32 phyd_reserved;
 	u32 phyd_cdr1;
-	u32 reserved1[40];
+	u32 reserved2[41];
 };
 
 struct sif_u3phya {
@@ -155,6 +159,7 @@ struct sif_u3phya_da {
  * SOCs will not need it.
  */
 void mtk_usb_prepare(void);
+void mtk_usb_adjust_phy_shift(void);
 
 void setup_usb_host(void);
 

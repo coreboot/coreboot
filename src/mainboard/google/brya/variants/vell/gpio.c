@@ -55,6 +55,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF6),
 	/* H17 : DDPB_CTRLDATA ==> USB_C3_AUX_DC_N */
 	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF6),
+	/* H21 : IMGCLKOUT2 ==>  UCAM_MCLK_R */
+	PAD_CFG_NF(GPP_H21, NONE, DEEP, NF1),
 
 	/* R4 : HDA_RST# ==> DMIC_CLK0_R */
 	PAD_CFG_NF(GPP_R4, NONE, DEEP, NF3),

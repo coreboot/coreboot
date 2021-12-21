@@ -36,8 +36,8 @@ chip soc/intel/alderlake
 	register "TcssAuxOri" = "1"
 	# Acoustic settings
 	register "AcousticNoiseMitigation" = "1"
-	register "SlowSlewRate[VR_DOMAIN_IA]" = "SLEW_FAST_16"
-	register "SlowSlewRate[VR_DOMAIN_GT]" = "SLEW_FAST_16"
+	register "SlowSlewRate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
+	register "SlowSlewRate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
 	register "FastPkgCRampDisable[VR_DOMAIN_IA]" = "1"
 	register "FastPkgCRampDisable[VR_DOMAIN_GT]" = "1"
 

@@ -4,6 +4,7 @@
 #define _AMD_FW_TOOL_H_
 
 #include <commonlib/bsd/compiler.h>
+#include <openssl/sha.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -273,6 +274,14 @@ typedef struct _ish_directory_table {
 #define PSP_LVL2_AB (1 << 3)
 #define PSP_BOTH (PSP_LVL1 | PSP_LVL2)
 #define PSP_BOTH_AB (PSP_LVL1_AB | PSP_LVL2_AB)
+
+typedef struct _amd_fw_entry_hash {
+	uint16_t fw_id;
+	uint16_t subtype;
+	uint32_t sha_len;
+	uint8_t sha[SHA384_DIGEST_LENGTH];
+} amd_fw_entry_hash;
+
 typedef struct _amd_fw_entry {
 	amd_fw_type type;
 	/* Mendocino and later SoCs use fw_id instead of fw_type. fw_type is still around
@@ -292,6 +301,8 @@ typedef struct _amd_fw_entry {
 	/* Some files that don't have amd_fw_header have to be skipped from hashing. These files
 	   include but not limited to: *iKek*, *.tkn, *.stkn */
 	bool skip_hashing;
+	uint32_t num_hash_entries;
+	amd_fw_entry_hash *hash_entries;
 } amd_fw_entry;
 
 /* Most PSP binaries, if not all, have the following header format. */
@@ -319,6 +330,14 @@ struct amd_fw_header {
 	uint8_t fw_subprog;
 	uint8_t reserved_7f;
 	uint8_t reserved_80[128];
+} __packed;
+
+struct psp_fw_hash_table {
+	uint16_t version;
+	uint16_t no_of_entries_256;
+	uint16_t no_of_entries_384;
+	/* The next 2 elements are pointers to arrays of SHA256 and SHA384 entries. */
+	/* It does not make sense to store pointers in the CBFS file */
 } __packed;
 
 typedef struct _amd_cb_config {

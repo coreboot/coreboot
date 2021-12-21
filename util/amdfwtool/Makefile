@@ -1,7 +1,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 top ?= $(abspath ../..)
+ifneq ($(CC),)
+HOSTCC ?= $(CC)
+else
 HOSTCC ?= cc
+endif
 
 READ_SRC = amdfwread.c
 READ_OBJ = $(READ_SRC:%.c=%.o)
@@ -13,16 +17,24 @@ WERROR=-Werror
 CFLAGS=-O2 -Wall -Wextra -Wshadow ${WERROR}
 CFLAGS += -I $(top)/src/commonlib/bsd/include
 
+ifneq ($(PKG_CONFIG),)
+HOSTPKGCONFIG ?= $(PKG_CONFIG)
+else
+HOSTPKGCONFIG ?= pkg-config
+endif
+CFLAGS += $(shell $(HOSTPKGCONFIG) --cflags libcrypto)
+LDFLAGS += $(shell $(HOSTPKGCONFIG) --libs libcrypto)
+
 all: $(TARGETS)
 
 amdfwread: $(READ_OBJ)
-	$(CC) $(READ_OBJ) $(LDFLAGS) -o $@
+	$(HOSTCC) $(READ_OBJ) $(LDFLAGS) -o $@
 
 amdfwtool: $(TOOL_OBJ)
-	$(CC) $(TOOL_OBJ) $(LDFLAGS) -o $@
+	$(HOSTCC) $(TOOL_OBJ) $(LDFLAGS) -o $@
 
 %.o: %.c $(HEADER)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(HOSTCC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	@rm -f $(TARGETS) $(READ_OBJ) $(TOOL_OBJ)

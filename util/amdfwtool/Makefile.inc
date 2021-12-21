@@ -5,9 +5,14 @@ amdfwtoolobj = amdfwtool.o data_parse.o
 AMDFWTOOLCFLAGS=-O2 -Wall -Wextra -Wshadow -Werror
 AMDFWTOOLCFLAGS += -I $(top)/src/commonlib/bsd/include
 
+HOSTPKGCONFIG ?= pkg-config
+
+AMDFWTOOLCFLAGS += $(shell $(HOSTPKGCONFIG) --cflags libcrypto)
+LDFLAGS += $(shell $(HOSTPKGCONFIG) --libs libcrypto)
+
 $(objutil)/amdfwtool/%.o: $(top)/util/amdfwtool/%.c # $(HEADER)
 	$(HOSTCC) $(AMDFWTOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/amdfwtool/amdfwtool: $(addprefix $(objutil)/amdfwtool/,$(amdfwtoolobj))
 	printf "   AMDFWTOOL\n"
-	$(HOSTCC) $(addprefix $(objutil)/amdfwtool/,$(amdfwtoolobj)) -o $@
+	$(HOSTCC) $(addprefix $(objutil)/amdfwtool/,$(amdfwtoolobj)) $(LDFLAGS) -o $@

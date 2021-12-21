@@ -48,6 +48,7 @@
 
 #include <fcntl.h>
 #include <errno.h>
+#include <openssl/sha.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -73,6 +74,17 @@
 #define BLOB_ERASE_ALIGNMENT _MAX(BLOB_ALIGNMENT, ERASE_ALIGNMENT)
 
 #define DEFAULT_SOFT_FUSE_CHAIN "0x1"
+
+/* Defines related to hashing signed binaries */
+enum hash_header_ver {
+	HASH_HDR_V1 = 1,
+};
+/* Signature ID enums are defined by PSP based on the algorithm used. */
+enum signature_id {
+	SIG_ID_RSA2048,
+	SIG_ID_RSA4096 = 2,
+};
+#define HASH_FILE_SUFFIX ".hash"
 
 /*
  * Beginning with Family 15h Models 70h-7F, a.k.a Stoney Ridge, the PSP
@@ -655,6 +667,85 @@ static uint16_t get_psp_fw_type(enum platform soc_id, struct amd_fw_header *head
 	}
 }
 
+static int add_single_sha(amd_fw_entry_hash *entry, void *buf, enum platform soc_id)
+{
+	uint8_t hash[SHA384_DIGEST_LENGTH];
+	struct amd_fw_header *header = (struct amd_fw_header *)buf;
+	/* Include only signed part for hash calculation. */
+	size_t len = header->fw_size_signed + sizeof(struct amd_fw_header);
+	uint8_t *body = (uint8_t *)buf;
+
+	if (len > header->size_total)
+		return -1;
+
+	if (header->sig_id == SIG_ID_RSA4096) {
+		SHA384(body, len, hash);
+		entry->sha_len = SHA384_DIGEST_LENGTH;
+	} else if (header->sig_id == SIG_ID_RSA2048) {
+		SHA256(body, len, hash);
+		entry->sha_len = SHA256_DIGEST_LENGTH;
+	} else {
+		fprintf(stderr, "%s: Unknown signature id: 0x%08x\n",
+						__func__, header->sig_id);
+		return -1;
+	}
+
+	memcpy(entry->sha, hash, entry->sha_len);
+	entry->fw_id = get_psp_fw_type(soc_id, header);
+	entry->subtype = header->fw_subtype;
+
+	return 0;
+}
+
+static int get_num_binaries(void *buf, size_t buf_size)
+{
+	struct amd_fw_header *header = (struct amd_fw_header *)buf;
+	size_t total_len = 0;
+	int num_binaries = 0;
+
+	while (total_len < buf_size) {
+		num_binaries++;
+		total_len += header->size_total;
+		header = (struct amd_fw_header *)(buf + total_len);
+	}
+
+	if (total_len != buf_size) {
+		fprintf(stderr, "Malformed binary\n");
+		return -1;
+	}
+	return num_binaries;
+}
+
+static int add_sha(amd_fw_entry *entry, void *buf, size_t buf_size, enum platform soc_id)
+{
+	struct amd_fw_header *header = (struct amd_fw_header *)buf;
+	/* Include only signed part for hash calculation. */
+	size_t total_len = 0;
+	int num_binaries = get_num_binaries(buf, buf_size);
+
+	if (num_binaries <= 0)
+		return num_binaries;
+
+	entry->hash_entries = malloc(num_binaries * sizeof(amd_fw_entry_hash));
+	if (!entry->hash_entries) {
+		fprintf(stderr, "Error allocating memory to add FW hash\n");
+		return -1;
+	}
+	entry->num_hash_entries = num_binaries;
+
+	/* Iterate through each binary */
+	for (int i = 0; i < num_binaries; i++) {
+		if (add_single_sha(&entry->hash_entries[i], buf + total_len, soc_id)) {
+			free(entry->hash_entries);
+			return -1;
+		}
+		total_len += header->size_total;
+		header = (struct amd_fw_header *)(buf + total_len);
+	}
+
+	return 0;
+}
+
 static void integrate_firmwares(context *ctx,
 				embedded_firmware *romsig,
 				amd_fw_entry *fw_table)
@@ -747,6 +838,88 @@ static void free_bdt_firmware_filenames(amd_bios_entry *fw_table)
 	}
 }
 
+static void write_or_fail(int fd, void *ptr, size_t size)
+{
+	ssize_t written;
+
+	written = write_from_buf_to_file(fd, ptr, size);
+	if (written < 0 || (size_t)written != size) {
+		fprintf(stderr, "%s: Error writing %zu bytes - written %zd bytes\n",
+								__func__, size, written);
+		exit(-1);
+	}
+}
+
+static void write_one_psp_firmware_hash_entry(int fd, amd_fw_entry_hash *entry)
+{
+	uint16_t type = entry->fw_id;
+	uint16_t subtype = entry->subtype;
+
+	write_or_fail(fd, &type, sizeof(type));
+	write_or_fail(fd, &subtype, sizeof(subtype));
+	write_or_fail(fd, entry->sha, entry->sha_len);
+}
+
+static void write_psp_firmware_hash(const char *filename,
+		amd_fw_entry *fw_table)
+{
+	struct psp_fw_hash_table hash_header = {0};
+	int fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0666);
+
+	if (fd < 0) {
+		fprintf(stderr, "Error opening file: %s: %s\n",
+				filename, strerror(errno));
+		exit(-1);
+	}
+
+	hash_header.version = HASH_HDR_V1;
+	for (unsigned int i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+		for (unsigned int j = 0; j < fw_table[i].num_hash_entries; j++) {
+			if (fw_table[i].hash_entries[j].sha_len == SHA256_DIGEST_LENGTH) {
+				hash_header.no_of_entries_256++;
+			} else if (fw_table[i].hash_entries[j].sha_len ==
+								SHA384_DIGEST_LENGTH) {
+				hash_header.no_of_entries_384++;
+			} else if (fw_table[i].hash_entries[j].sha_len) {
+				fprintf(stderr, "%s: Error invalid sha_len %d\n",
+						__func__, fw_table[i].hash_entries[j].sha_len);
+				exit(-1);
+			}
+		}
+	}
+
+	write_or_fail(fd, &hash_header, sizeof(hash_header));
+
+	/* Add all the SHA256 hash entries first followed by SHA384 entries. PSP verstage
+	   processes the table in that order. Mixing and matching SHA256 and SHA384 entries
+	   will cause the hash verification failure at run-time. */
+	for (unsigned int i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+		for (unsigned int j = 0; j < fw_table[i].num_hash_entries; j++) {
+			if (fw_table[i].hash_entries[j].sha_len == SHA256_DIGEST_LENGTH)
+				write_one_psp_firmware_hash_entry(fd,
+						&fw_table[i].hash_entries[j]);
+		}
+	}
+
+	for (unsigned int i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+		for (unsigned int j = 0; j < fw_table[i].num_hash_entries; j++) {
+			if (fw_table[i].hash_entries[j].sha_len == SHA384_DIGEST_LENGTH)
+				write_one_psp_firmware_hash_entry(fd,
+						&fw_table[i].hash_entries[j]);
+		}
+	}
+
+	close(fd);
+	for (unsigned int i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+		if (!fw_table[i].num_hash_entries || !fw_table[i].hash_entries)
+			continue;
+
+		free(fw_table[i].hash_entries);
+		fw_table[i].hash_entries = NULL;
+		fw_table[i].num_hash_entries = 0;
+	}
+}
+
 /**
  * process_signed_psp_firmwares() - Process the signed PSP binaries to keep them separate
  * @signed_rom:	Output file path grouping all the signed PSP binaries.
@@ -765,6 +938,8 @@ static void process_signed_psp_firmwares(const char *signed_rom,
 	int signed_rom_fd;
 	ssize_t bytes, align_bytes;
 	uint8_t *buf;
+	char *signed_rom_hash;
+	size_t signed_rom_hash_strlen;
 	struct amd_fw_header header;
 	struct stat fd_stat;
 	/* Every blob in amdfw*.rom has to start at address aligned to 0x100. Prepare an
@@ -781,6 +956,9 @@ static void process_signed_psp_firmwares(const char *signed_rom,
 	}
 
 	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+		fw_table[i].num_hash_entries = 0;
+		fw_table[i].hash_entries = NULL;
+
 		if (!(fw_table[i].filename) || fw_table[i].skip_hashing)
 			continue;
 
@@ -818,10 +996,6 @@ static void process_signed_psp_firmwares(const char *signed_rom,
 			continue;
 		}
 
-		if (header.size_total != fd_stat.st_size) {
-			close(fd);
-			continue;
-		}
 
 		/* PSP binary is not signed and should not be part of signed PSP binaries
 		   set. */
@@ -876,6 +1050,9 @@ static void process_signed_psp_firmwares(const char *signed_rom,
 			}
 		}
 
+		if (add_sha(&fw_table[i], buf, fd_stat.st_size, soc_id))
+			exit(-1);
+
 		/* File is successfully processed and is part of signed PSP binaries set. */
 		fw_table[i].fw_id = get_psp_fw_type(soc_id, &header);
 		fw_table[i].addr_signed = signed_start_addr;
@@ -888,6 +1065,18 @@ static void process_signed_psp_firmwares(const char *signed_rom,
 	}
 
 	close(signed_rom_fd);
+
+	/* signed_rom file name + ".hash" + '\0' */
+	signed_rom_hash_strlen = strlen(signed_rom) + strlen(HASH_FILE_SUFFIX) + 1;
+	signed_rom_hash = malloc(signed_rom_hash_strlen);
+	if (!signed_rom_hash) {
+		fprintf(stderr, "malloc(%lu) failed\n", signed_rom_hash_strlen);
+		exit(-1);
+	}
+	strcpy(signed_rom_hash, signed_rom);
+	strcat(signed_rom_hash, HASH_FILE_SUFFIX);
+	write_psp_firmware_hash(signed_rom_hash, fw_table);
+	free(signed_rom_hash);
 }
 
 static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,

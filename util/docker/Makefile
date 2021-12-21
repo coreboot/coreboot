@@ -24,7 +24,7 @@ export DOCKER_COMMIT?=$(shell git log -n 1 --pretty=%h)
 export DOCKER_CCACHE?=$(HOME)/.ccache
 
 # SDK architecture
-export COREBOOT_CROSSGCC_PARAM?=all_without_gdb
+export COREBOOT_CROSSGCC_PARAM?=all
 
 UID ?= $(shell id -u)
 GID ?= $(shell id -g)

@@ -9,6 +9,7 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_CID, AUDIO_CODEC_CID)
 		Name (_DDN, AUDIO_CODEC_DDN)
 		Name (_UID, 1)
+		Name (_HRV, 0x02)
 
 		/* Add DT style bindings with _DSD */
 		Name (_DSD, Package () {
@@ -31,8 +32,16 @@ Scope (\_SB.PCI0.I2C2)
 					"\\_SB.PCI0.I2C2",	/* ResourceSource: I2C bus controller name */
 				)
 
+				/* For Linux driver */
 				GpioInt (Edge, ActiveHigh, ExclusiveAndWake, PullDefault,,
 					"\\_SB.GPSE") { BOARD_JACK_MAXIM_GPIO_INDEX }
+
+				/* For coolstar's Windows driver */
+				GpioIo (Exclusive, PullNone, 0x0000, 0x0000, IoRestrictionInputOnly,
+					"\\_SB.GPSE", 0x00, ResourceConsumer, ,)
+				{
+					BOARD_JACK_MAXIM_GPIO_INDEX
+				}
 			} )
 			Return (SBUF)
 		}
@@ -74,7 +83,7 @@ Scope (\_SB.PCI0.I2C2)
 					"\\_SB.PCI0.I2C2",	/* ResourceSource: I2C bus controller name */
 				)
 
-				GpioInt (Edge, ActiveHigh, ExclusiveAndWake, PullDefault,,
+				GpioInt (Level, ActiveLow, ExclusiveAndWake, PullDefault,,
 					"\\_SB.GPSW") { BOARD_JACK_TI_GPIO_INDEX }
 
 			} )

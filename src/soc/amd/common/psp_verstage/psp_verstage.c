@@ -74,6 +74,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	uint32_t psp_dir_addr, bios_dir_addr;
 	uint32_t *psp_dir_in_spi, *bios_dir_in_spi;
 	const char *fname;
+	const char *hash_fname;
 	void *amdfw_location;
 	void *boot_dev_base = rdev_mmap_full(boot_device_ro());
 
@@ -85,8 +86,10 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 
 	if (vboot_is_firmware_slot_a(ctx)) {
 		fname = "apu/amdfw_a";
+		hash_fname = "apu/amdfw_a_hash";
 	} else {
 		fname = "apu/amdfw_b";
+		hash_fname = "apu/amdfw_b_hash";
 	}
 
 	amdfw_location = cbfs_map(fname, NULL);
@@ -129,6 +132,9 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 		printk(BIOS_ERR, "Updated BIOS Directory could not be set.\n");
 		return POSTCODE_UPDATE_PSP_BIOS_DIR_ERROR;
 	}
+
+	if (CONFIG(SEPARATE_SIGNED_PSPFW))
+		update_psp_fw_hash_table(hash_fname);
 
 	return 0;
 }

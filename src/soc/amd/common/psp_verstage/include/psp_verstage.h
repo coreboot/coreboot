@@ -66,4 +66,6 @@ int platform_set_sha_op(enum vb2_hash_algorithm hash_alg,
 			struct sha_generic_data *sha_op);
 void platform_report_mode(int developer_mode_enabled);
 
+void update_psp_fw_hash_table(const char *fname);
+
 #endif /* PSP_VERSTAGE_H */

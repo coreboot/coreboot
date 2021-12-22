@@ -51,8 +51,7 @@ static const struct soc_gpio_map gpse_gpio_map[] = {
 	GPIO_NC, /* 69 MMC1_RCLK */
 	Native_M1, /* 75  GPO USB_OC1_B */
 	Native_M1, /* 76  PMU_RESETBUTTON_B */
-	GPI(trig_edge_both, L0, NA, non_maskable, en_edge_detect, NA, NA),
-	/* GPIO_ALERT 77   */
+	GPIO_NC, /* GPIO_ALERT 77 */
 	Native_M1, /* 78  SDMMC3_PWR_EN_B */
 	GPIO_NC, /* 79  GPI ILB_SERIRQ */
 	Native_M1, /* 80  USB_OC0_B */

@@ -51,8 +51,8 @@ static const struct soc_gpio_map gpse_gpio_map[] = {
 	GPIO_NC, /* 69 MMC1_RCLK */
 	Native_M1, /* 75  GPO USB_OC1_B */
 	Native_M1, /* 76  PMU_RESETBUTTON_B */
-	GPI(trig_edge_both, L0, NA, non_maskable, en_edge_detect, NA, NA),
-	/* GPIO_ALERT 77   */
+	GPI(trig_edge_both, L0, NA, 0, en_edge_detect, NA, NA),
+		/* GPIO_ALERT 77   */
 	Native_M1, /* 78  SDMMC3_PWR_EN_B */
 	GPIO_NC, /* 79  GPI ILB_SERIRQ */
 	Native_M1, /* 80  USB_OC0_B */
@@ -90,8 +90,7 @@ static const struct soc_gpio_map  gpsw_gpio_map[] = {
 		/* 34 MF_HDA_DOCKRSTB */
 	GPIO_NC, /* 35 MF_HDA_SYNC */
 	GPIO_NC, /* 36 GPIO_SW36 MF_HDA_SDI1 */
-	GPI(trig_edge_both, L2, P_1K_H, non_maskable, en_edge_detect, NA, NA),
-		/* 37 MF_HDA_DOCKENB */
+	GPIO_NC, /* 37 MF_HDA_DOCKENB */
 	NATIVE_PU1K_CSEN_INVTX(1), /* 45 I2C5_SDA */
 	GPIO_NC, /* 46 I2C4_SDA */
 	NATIVE_PU20K(2), /* 47 I2C6_SDA */
@@ -124,8 +123,7 @@ static const struct soc_gpio_map  gpsw_gpio_map[] = {
 	   assert it low. */
 	GPIO_OUT_LOW, /* 93 PCIE_CLKREQ2B/PCIE_CLKREQ_WLAN# */
 	Native_M1, /* 94 GP_SSP_2_RXD */
-	GPI(trig_edge_both, L1, P_5K_H, 0, en_edge_detect, NA, NA),
-		/* 95 PCIE_CLKREQ3B/AUDIO_CODEC_IRQ */
+	GPIO_NC, /* 95 RTK_AUDIO_CODEC_IRQ */
 	Native_M1, /* 96 GP_SSP_2_FS */
 	NATIVE_FUNC(1, 0, inv_tx_enable), /* 97 GP_SSP_2f_TXD */
 	GPIO_END

@@ -2,7 +2,6 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
-#include <commonlib/helpers.h>
 #include <soc/gpio.h>
 
 /* Early pad configuration in bootblock */

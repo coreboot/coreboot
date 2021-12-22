@@ -2,7 +2,6 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
-#include <commonlib/helpers.h>
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {

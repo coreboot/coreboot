@@ -43,8 +43,9 @@ Method (_Q88, 0, NotSerialized)			// Event: Trackpad Lock
 {
 	TPLC = TPLE
 }
-Method (_Q11)					// Event: Keyboard Backlight Brightness
+Method (_Q4A)					// Event: Keyboard Backlight Brightness
 {
+	KLSC = KLSE
 	KLBC = KLBE
 }
 

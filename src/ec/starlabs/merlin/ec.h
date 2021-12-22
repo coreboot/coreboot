@@ -79,7 +79,7 @@
 
 /* Keyboard Backlight State */
 #define KBL_DISABLED		0x00
-#define KBL_ENABLED		0xaa
+#define KBL_ENABLED		0xdd
 
 uint16_t it_get_version(void);
 

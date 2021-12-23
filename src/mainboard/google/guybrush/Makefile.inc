@@ -3,14 +3,6 @@
 bootblock-y += bootblock.c
 bootblock-$(CONFIG_CHROMEOS) += chromeos.c
 
-ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4.bin),)
-$(info APCB sources present.)
-APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4.bin
-APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4.bin
-else
-$(info APCB sources not found.  Skipping APCB.)
-endif
-
 romstage-y += port_descriptors.c
 romstage-y += romstage.c
 
@@ -30,3 +22,13 @@ CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
 
 LIB_SPD_DEPS = $(SPD_SOURCES)
+
+APCB_SOURCES = $(obj)/APCB_CZN_D4.gen
+APCB_SOURCES_RECOVERY = $(obj)/APCB_CZN_D4.gen
+
+$(obj)/APCB_CZN_D4.gen: $(SPD_SOURCES) \
+			$(APCB_V3_EDIT_TOOL) \
+			$(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4.bin
+	$(APCB_V3_EDIT_TOOL) $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4.bin \
+			     $(obj)/APCB_CZN_D4.gen  \
+			     --spd_sources $(SPD_SOURCES)

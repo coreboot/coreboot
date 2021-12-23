@@ -13,10 +13,10 @@ chip soc/amd/cezanne
 	register "thermctl_limit_degreeC"    = "100"
 
 	#Update values based on final stardust SDLE test report.
-	register "telemetry_vddcrvddfull_scale_current_mA" = "94648" #mA
-	register "telemetry_vddcrvddoffset" =  "785"
-	register "telemetry_vddcrsocfull_scale_current_mA" = "30314" #mA
-	register "telemetry_vddcrsocoffset" =  "560"
+	register "telemetry_vddcrvddfull_scale_current_mA" = "95359" #mA
+	register "telemetry_vddcrvddoffset" =  "449"
+	register "telemetry_vddcrsocfull_scale_current_mA" = "31481" #mA
+	register "telemetry_vddcrsocoffset" =  "193"
 
 	#USB 2.0 phy config
 	register "usb_phy" = "{

@@ -4,6 +4,10 @@ config BOARD_GOOGLE_CHERRY
 	bool "->  Cherry"
 	select BOARD_GOOGLE_CHERRY_COMMON
 
+config BOARD_GOOGLE_DOJO
+	bool "->  Dojo"
+	select BOARD_GOOGLE_CHERRY_COMMON
+
 config BOARD_GOOGLE_TOMATO
 	bool "->  Tomato"
 	select BOARD_GOOGLE_CHERRY_COMMON

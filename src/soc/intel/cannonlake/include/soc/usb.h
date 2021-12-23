@@ -191,6 +191,6 @@ struct usb3_port_config {
  * to Port 1, Bit n corresponds to Port (n+1). This bitmap is later used to
  * decide what ports need to set PORTSCN/PORTSCXUSB3 register bits.
  */
-#define USB_PORT_WAKE_ENABLE(x)		(1 << (x - 1))
+#define USB_PORT_WAKE_ENABLE(x)		(1 << ((x) - 1))
 
 #endif

@@ -58,6 +58,10 @@ chip soc/amd/cezanne
 		},
 	}"
 
+        # general purpose PCIe clock output configuration
+        register "gpp_clk_config[1]" = "GPP_CLK_OFF"
+        register "gpp_clk_config[2]" = "GPP_CLK_OFF"
+
 	# I2C Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

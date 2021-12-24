@@ -172,33 +172,45 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref i2c0 on
-			chip drivers/i2c/generic
-				register "hid" = ""10EC5682""
-				register "name" = ""RT58""
-				register "desc" = ""Headset Codec""
-				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
-				# Set the jd_src to RT5668_JD1 for jack detection
-				register "property_count" = "1"
-				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
-				register "property_list[0].name" = ""realtek,jd-src""
-				register "property_list[0].integer" = "1"
-				device i2c 1a on
-					probe AUDIO MAX98360_ALC5682I_I2S
-				end
+			chip drivers/i2c/cs35l53
+				register "name" = ""SPK0""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_D14)"
+				register "boost_type" = "EXTERNAL_BOOST"
+				register "asp_sdout_hiz" = "ASP_SDOUT_LOGIC0_UNUSED_LOGIC0_DISABLED"
+				register "gpio1_output_enable" = "true"
+				register "gpio1_src_select" = "GPIO1_SRC_GPIO"
+				register "gpio2_src_select" = "GPIO2_SRC_HIGH_IMPEDANCE"
+				device i2c 0x40 on end
 			end
-			chip drivers/i2c/generic
-				register "hid" = ""RTL5682""
-				register "name" = ""RT58""
-				register "desc" = ""Headset Codec""
-				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
-				# Set the jd_src to RT5668_JD1 for jack detection
-				register "property_count" = "1"
-				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
-				register "property_list[0].name" = ""realtek,jd-src""
-				register "property_list[0].integer" = "1"
-				device i2c 1a on
-                                        probe AUDIO MAX98360_ALC5682IVS_I2S
-				end
+			chip drivers/i2c/cs35l53
+				register "name" = ""SPK1""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_D14)"
+				register "boost_type" = "EXTERNAL_BOOST"
+				register "asp_sdout_hiz" = "ASP_SDOUT_LOGIC0_UNUSED_LOGIC0_DISABLED"
+				register "gpio1_output_enable" = "true"
+				register "gpio1_src_select" = "GPIO1_SRC_GPIO"
+				register "gpio2_src_select" = "GPIO2_SRC_HIGH_IMPEDANCE"
+				device i2c 0x41 on end
+			end
+			chip drivers/i2c/cs35l53
+				register "name" = ""SPK2""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_D14)"
+				register "boost_type" = "EXTERNAL_BOOST"
+				register "asp_sdout_hiz" = "ASP_SDOUT_LOGIC0_UNUSED_LOGIC0_DISABLED"
+				register "gpio1_output_enable" = "true"
+				register "gpio1_src_select" = "GPIO1_SRC_GPIO"
+				register "gpio2_src_select" = "GPIO2_SRC_HIGH_IMPEDANCE"
+				device i2c 0x42 on end
+			end
+			chip drivers/i2c/cs35l53
+				register "name" = ""SPK3""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_D14)"
+				register "boost_type" = "EXTERNAL_BOOST"
+				register "asp_sdout_hiz" = "ASP_SDOUT_LOGIC0_UNUSED_LOGIC0_DISABLED"
+				register "gpio1_output_enable" = "true"
+				register "gpio1_src_select" = "GPIO1_SRC_GPIO"
+				register "gpio2_src_select" = "GPIO2_SRC_HIGH_IMPEDANCE"
+				device i2c 0x43 on end
 			end
 		end #I2C0
 		device ref i2c1 on

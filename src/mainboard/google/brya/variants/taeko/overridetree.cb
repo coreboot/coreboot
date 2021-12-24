@@ -79,11 +79,11 @@ chip soc/intel/alderlake
 	#+-------------------+---------------------------+
 	#| GSPI1             | Fingerprint MCU           |
 	#| I2C0              | Audio                     |
-	#| I2C1              | Touchscreen               |
-	#| I2C2              | HPS                       |
-	#| I2C3              | cr50 TPM. Early init is   |
+	#| I2C1              | cr50 TPM. Early init is   |
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
+	#| I2C2              | HPS                       |
+	#| I2C3              | Touchscreen               |
 	#| I2C5              | Trackpad                  |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
@@ -91,7 +91,11 @@ chip soc/intel/alderlake
 			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[1] = {
+			.early_init = 1,
 			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 600,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
 		},
 		.i2c[2] = {
 			.speed = I2C_SPEED_FAST,
@@ -272,6 +276,28 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref i2c1 on
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
+				device i2c 50 on end
+			end
+		end
+		device ref i2c2 on
+			chip drivers/i2c/generic
+				register "hid" = ""GOOG0020""
+				register "desc" = ""Chrome OS HPS""
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E7)"  # EN_HPS_PWR
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E3_IRQ)"  # HPS_INT_ODL
+				# HPS uses I2C addresses 0x30 and 0x51.
+				# The address we provide here is not significant because
+				# neither coreboot nor Linux have a driver for HPS,
+				# it's only used from userspace.
+				device i2c 30 on
+					probe HPS HPS_PRESENT
+				end
+			end
+		end
+		device ref i2c3 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GDIX0000""
 				register "generic.desc" = ""Goodix Touchscreen""
@@ -310,28 +336,6 @@ chip soc/intel/alderlake
 				register "has_power_resource" = "1"
 				register "disable_gpio_export_in_crs" = "1"
 				device i2c 10 on end
-			end
-		end
-		device ref i2c2 on
-			chip drivers/i2c/generic
-				register "hid" = ""GOOG0020""
-				register "desc" = ""Chrome OS HPS""
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E7)"  # EN_HPS_PWR
-				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E3_IRQ)"  # HPS_INT_ODL
-				# HPS uses I2C addresses 0x30 and 0x51.
-				# The address we provide here is not significant because
-				# neither coreboot nor Linux have a driver for HPS,
-				# it's only used from userspace.
-				device i2c 30 on
-					probe HPS HPS_PRESENT
-				end
-			end
-		end
-		device ref i2c3 on
-			chip drivers/i2c/tpm
-				register "hid" = ""GOOG0005""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
-				device i2c 50 on end
 			end
 		end
 		device ref i2c5 on

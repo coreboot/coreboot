@@ -211,10 +211,6 @@ static struct pmic_setting lp_setting[] = {
 	{0x1C1E, 0x1, 0x1, 2},
 	/* [2:2]: RG_LDO_VRF18_HW1_OP_CFG */
 	{0x1C24, 0x0, 0x1, 2},
-	/* [2:2]: RG_LDO_VRF12_HW1_OP_EN */
-	{0x1C32, 0x1, 0x1, 2},
-	/* [2:2]: RG_LDO_VRF12_HW1_OP_CFG */
-	{0x1C38, 0x0, 0x1, 2},
 	/* [0:0]: RG_LDO_VEFUSE_SW_OP_EN */
 	{0x1C46, 0x1, 0x1, 0},
 	/* [0:0]: RG_LDO_VCN33_SW_OP_EN */
@@ -325,10 +321,6 @@ static struct pmic_setting lp_setting[] = {
 	{0x1C1E, 0x1, 0x1, 2},
 	/* [2:2]: RG_LDO_VRF18_HW1_OP_CFG */
 	{0x1C24, 0x0, 0x1, 2},
-	/* [2:2]: RG_LDO_VRF12_HW1_OP_EN */
-	{0x1C32, 0x1, 0x1, 2},
-	/* [2:2]: RG_LDO_VRF12_HW1_OP_CFG */
-	{0x1C38, 0x0, 0x1, 2},
 	/* [0:0]: RG_LDO_VEFUSE_SW_OP_EN */
 	{0x1C46, 0x1, 0x1, 0},
 	/* [0:0]: RG_LDO_VCN33_SW_OP_EN */

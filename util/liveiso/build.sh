@@ -10,4 +10,5 @@ fi
 
 nix-build '<nixpkgs/nixos>' \
 	-A config.system.build.isoImage \
-	-I nixos-config=$config
+	-I nixos-config=$config \
+	-I nixpkgs=https://github.com/NixOS/nixpkgs/archive/refs/heads/nixos-21.11.tar.gz

@@ -138,6 +138,7 @@
 		mkpasswd
 		ms-sys
 		msr-tools
+		mtdutils
 		neovim
 		nixos-install-tools
 		ntfsprogs

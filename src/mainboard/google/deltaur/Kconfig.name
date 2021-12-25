@@ -2,8 +2,6 @@ comment "Deltaur"
 
 config BOARD_GOOGLE_DELTAN
 	bool "->  Deltan"
-	select BOARD_GOOGLE_BASEBOARD_DELTAUR
 
 config BOARD_GOOGLE_DELTAUR
 	bool "->  Deltaur"
-	select BOARD_GOOGLE_BASEBOARD_DELTAUR

@@ -65,7 +65,7 @@ Device (AC)
 
 Method (_Q06, 0, NotSerialized)
 {
-	Store ("EC: AC STATUS", Debug)
+	Printf ("EC: AC STATUS")
 	PWUP (0x05, (0x02 | 0x01))
 	If (BTDR (0x02))
 	{

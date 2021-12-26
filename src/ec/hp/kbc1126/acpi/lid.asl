@@ -12,6 +12,6 @@ Device (LID)
 
 Method (_Q0A, 0, NotSerialized)
 {
-	Store ("EC: LID STATUS", Debug)
+	Printf ("EC: LID STATUS")
 	Notify (LID, 0x80)
 }

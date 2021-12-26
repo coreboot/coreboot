@@ -202,27 +202,27 @@ Device (EC0)
 
 	Method (_Q04, 0, NotSerialized)
 	{
-		Store ("EC: _Q04", Debug)
+		Printf ("EC: _Q04")
 		PNOT()
 	}
 
 	Method (_Q05, 0, NotSerialized)
 	{
-		Store ("EC: _Q05", Debug)
+		Printf ("EC: _Q05")
 	}
 
 	Method (_Q0B, 0, NotSerialized)
 	{
-		Store ("EC: _Q0B", Debug)
+		Printf ("EC: _Q0B")
 	}
 
 	Method (_Q0C, 0, NotSerialized)
 	{
-		Store ("EC: _Q0C", Debug)
+		Printf ("EC: _Q0C")
 	}
 
 	Method (_Q0D, 0, NotSerialized)
 	{
-		Store ("EC: _Q0D", Debug)
+		Printf ("EC: _Q0D")
 	}
 }

@@ -209,7 +209,7 @@ Device (EC0)
 	// Lid Closed Event
 	Method (_Q01, 0, NotSerialized)
 	{
-		Store ("EC: LID CLOSE", Debug)
+		Printf ("EC: LID CLOSE")
 		Store (LIDS, \LIDS)
 #ifdef EC_ENABLE_LID_SWITCH
 		Notify (LID0, 0x80)
@@ -219,7 +219,7 @@ Device (EC0)
 	// Lid Open Event
 	Method (_Q02, 0, NotSerialized)
 	{
-		Store ("EC: LID OPEN", Debug)
+		Printf ("EC: LID OPEN")
 		Store (LIDS, \LIDS)
 		Notify (CREC, 0x2)
 #ifdef EC_ENABLE_LID_SWITCH
@@ -230,13 +230,13 @@ Device (EC0)
 	// Power Button
 	Method (_Q03, 0, NotSerialized)
 	{
-		Store ("EC: POWER BUTTON", Debug)
+		Printf ("EC: POWER BUTTON")
 	}
 
 	// AC Connected
 	Method (_Q04, 0, NotSerialized)
 	{
-		Store ("EC: AC CONNECTED", Debug)
+		Printf ("EC: AC CONNECTED")
 		Store (ACEX, \PWRS)
 		Notify (AC, 0x80)
 #ifdef DPTF_ENABLE_CHARGER
@@ -250,7 +250,7 @@ Device (EC0)
 	// AC Disconnected
 	Method (_Q05, 0, NotSerialized)
 	{
-		Store ("EC: AC DISCONNECTED", Debug)
+		Printf ("EC: AC DISCONNECTED")
 		Store (ACEX, \PWRS)
 		Notify (AC, 0x80)
 #ifdef DPTF_ENABLE_CHARGER
@@ -264,21 +264,21 @@ Device (EC0)
 	// Battery Low Event
 	Method (_Q06, 0, NotSerialized)
 	{
-		Store ("EC: BATTERY LOW", Debug)
+		Printf ("EC: BATTERY LOW")
 		Notify (BAT0, 0x80)
 	}
 
 	// Battery Critical Event
 	Method (_Q07, 0, NotSerialized)
 	{
-		Store ("EC: BATTERY CRITICAL", Debug)
+		Printf ("EC: BATTERY CRITICAL")
 		Notify (BAT0, 0x80)
 	}
 
 	// Battery Info Event
 	Method (_Q08, 0, NotSerialized)
 	{
-		Store ("EC: BATTERY INFO", Debug)
+		Printf ("EC: BATTERY INFO")
 		Notify (BAT0, 0x81)
 #ifdef EC_ENABLE_SECOND_BATTERY_DEVICE
 		If (CondRefOf (BAT1)) {
@@ -290,41 +290,41 @@ Device (EC0)
 	// Thermal Overload Event
 	Method (_Q0A, 0, NotSerialized)
 	{
-		Store ("EC: THERMAL OVERLOAD", Debug)
+		Printf ("EC: THERMAL OVERLOAD")
 		Notify (\_TZ, 0x80)
 	}
 
 	// Thermal Event
 	Method (_Q0B, 0, NotSerialized)
 	{
-		Store ("EC: THERMAL", Debug)
+		Printf ("EC: THERMAL")
 		Notify (\_TZ, 0x80)
 	}
 
 	// USB Charger
 	Method (_Q0C, 0, NotSerialized)
 	{
-		Store ("EC: USB CHARGER", Debug)
+		Printf ("EC: USB CHARGER")
 	}
 
 	// Key Pressed
 	Method (_Q0D, 0, NotSerialized)
 	{
-		Store ("EC: KEY PRESSED", Debug)
+		Printf ("EC: KEY PRESSED")
 		Notify (CREC, 0x2)
 	}
 
 	// Thermal Shutdown Imminent
 	Method (_Q10, 0, NotSerialized)
 	{
-		Store ("EC: THERMAL SHUTDOWN", Debug)
+		Printf ("EC: THERMAL SHUTDOWN")
 		Notify (\_TZ, 0x80)
 	}
 
 	// Battery Shutdown Imminent
 	Method (_Q11, 0, NotSerialized)
 	{
-		Store ("EC: BATTERY SHUTDOWN", Debug)
+		Printf ("EC: BATTERY SHUTDOWN")
 		Notify (BAT0, 0x80)
 	}
 
@@ -332,7 +332,7 @@ Device (EC0)
 	Method (_Q12, 0, NotSerialized)
 	{
 #ifdef EC_ENABLE_THROTTLING_HANDLER
-		Store ("EC: THROTTLE START", Debug)
+		Printf ("EC: THROTTLE START")
 		\_TZ.THRT (1)
 #endif
 	}
@@ -341,7 +341,7 @@ Device (EC0)
 	Method (_Q13, 0, NotSerialized)
 	{
 #ifdef EC_ENABLE_THROTTLING_HANDLER
-		Store ("EC: THROTTLE STOP", Debug)
+		Printf ("EC: THROTTLE STOP")
 		\_TZ.THRT (0)
 #endif
 	}
@@ -350,7 +350,7 @@ Device (EC0)
 	// PD event
 	Method (_Q16, 0, NotSerialized)
 	{
-		Store ("EC: GOT PD EVENT", Debug)
+		Printf ("EC: GOT PD EVENT")
 		Notify (\_SB.PCI0.LPCB.EC0.CREC.ECPD, 0x80)
 	}
 #endif
@@ -358,7 +358,7 @@ Device (EC0)
 	// Battery Status
 	Method (_Q17, 0, NotSerialized)
 	{
-		Store ("EC: BATTERY STATUS", Debug)
+		Printf ("EC: BATTERY STATUS")
 		Notify (BAT0, 0x80)
 #ifdef EC_ENABLE_SECOND_BATTERY_DEVICE
 		If (CondRefOf (BAT1)) {
@@ -370,7 +370,7 @@ Device (EC0)
 	// MKBP interrupt.
 	Method (_Q1B, 0, NotSerialized)
 	{
-		Store ("EC: MKBP", Debug)
+		Printf ("EC: MKBP")
 		Notify (CREC, 0x80)
 	}
 
@@ -378,7 +378,7 @@ Device (EC0)
 	// USB MUX Interrupt
 	Method (_Q1C, 0, NotSerialized)
 	{
-		Store ("EC: USB MUX", Debug)
+		Printf ("EC: USB MUX")
 		Notify (\_SB.PCI0.LPCB.EC0.CREC.ECPD, 0x80)
 	}
 #endif
@@ -386,7 +386,7 @@ Device (EC0)
 	// TABLET mode switch Event
 	Method (_Q1D, 0, NotSerialized)
 	{
-		Store ("EC: TABLET mode switch Event", Debug)
+		Printf ("EC: TABLET mode switch Event")
 		Notify (CREC, 0x2)
 #ifdef EC_ENABLE_MULTIPLE_DPTF_PROFILES
 		\_SB.DPTF.TPET()

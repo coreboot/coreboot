@@ -11,13 +11,13 @@ Device (LIEC) {
 	Name (_UID, 0)
 
 	Method (RSET, 0, Serialized) {
-		Debug = "LIEC: RSET"
+		Printf ("LIEC: RSET")
 		SAPL(0)
 		SKBL(0)
 	}
 
 	Method (INIT, 0, Serialized) {
-		Debug = "LIEC: INIT"
+		Printf ("LIEC: INIT")
 		RSET()
 		If (^^PCI0.LPCB.EC0.ECOK) {
 			// Set flags to use software control
@@ -29,7 +29,7 @@ Device (LIEC) {
 	}
 
 	Method (FINI, 0, Serialized) {
-		Debug = "LIEC: FINI"
+		Printf ("LIEC: FINI")
 		RSET()
 		If (^^PCI0.LPCB.EC0.ECOK) {
 			// Set flags to use hardware control

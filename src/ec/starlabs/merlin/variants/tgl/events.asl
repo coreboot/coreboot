@@ -65,7 +65,7 @@ Method (_QD6, 0, NotSerialized)			// Event: 10 Second Power Button Released
 
 Method (_Q22, 0, NotSerialized)			// Event: CHARGER_T
 {
-	Store ("EC: CHARGER_T", Debug)
+	Printf ("EC: CHARGER_T")
 }
 
 Method (_Q40, 0, NotSerialized)			// Event: AC and DC Power
@@ -95,22 +95,22 @@ Method (_Q44, 0, NotSerialized)			// Event: AC Power Only
 
 Method (_Q80, 0, NotSerialized)			// Event: Volume Up
 {
-	Store ("EC: VOLUME_UP", Debug)
+	Printf ("EC: VOLUME_UP")
 }
 
 Method (_Q81, 0, NotSerialized)			// Event: Volume Down
 {
-	Store ("EC: VOLUME_DOWN", Debug)
+	Printf ("EC: VOLUME_DOWN")
 }
 
 Method (_Q54, 0, NotSerialized)			// Event: Power Button Press
 {
-	Store ("EC: PWRBTN", Debug)
+	Printf ("EC: PWRBTN")
 }
 
 Method (_QF0, 0, NotSerialized)			// Event: Temperature Report
 {
-	Store ("EC: Temperature Report", Debug)
+	Printf ("EC: Temperature Report")
 }
 
 Method (_QF1, 0, NotSerialized)			// Event: Temperature Trigger
@@ -124,143 +124,143 @@ Method (_QF1, 0, NotSerialized)			// Event: Temperature Trigger
 
 Method (_Q79, 0, NotSerialized)			// Event: USB Type-C
 {
-	Store ("EC: USB Type-C", Debug)
+	Printf ("EC: USB Type-C")
 	UCEV()
 }
 
 Method (_Q85, 0, NotSerialized)			// Event: HOME
 {
-	Store ("EC: HOME", Debug)
+	Printf ("EC: HOME")
 }
 
 Method (_Q01, 0, NotSerialized)			// Event: F1 Hot Key
 {
-	Store ("EC: F1", Debug)
+	Printf ("EC: F1")
 }
 
 Method (_Q02, 0, NotSerialized)			// Event: F2 Hot Key
 {
-	Store ("EC: F2", Debug)
+	Printf ("EC: F2")
 }
 
 Method (_Q03, 0, NotSerialized)			// Event: F3 Hot Key
 {
-	Store ("EC: F3", Debug)
+	Printf ("EC: F3")
 }
 
 Method (_Q04, 0, NotSerialized)			// Event: F4 Hot Key
 {
-	Store ("EC: F4", Debug)
+	Printf ("EC: F4")
 }
 
 Method (_Q08, 0, NotSerialized)			// Event: F5 Hot Key
 {
-	Store ("EC: F5", Debug)
+	Printf ("EC: F5")
 }
 
 Method (_Q09, 0, NotSerialized)			// Event: F6 Hot Key
 {
-	Store ("EC: F6", Debug)
+	Printf ("EC: F6")
 }
 
 Method (_Q07, 0, NotSerialized)			// Event: F7 Hot Key
 {
-	Store ("EC: F7", Debug)
+	Printf ("EC: F7")
 }
 
 Method (_Q10, 0, NotSerialized)			// Event: F10 Hot Key
 {
-	Store ("EC: F10", Debug)
+	Printf ("EC: F10")
 }
 
 Method (_Q12, 0, NotSerialized)			// Event: F12 Hot Key
 {
-	Store ("EC: F6", Debug)
+	Printf ("EC: F6")
 }
 
 Method (_Q0E, 0, NotSerialized)			// Event: SLEEP
 {
-	Store ("EC: SLEEP", Debug)
+	Printf ("EC: SLEEP")
 }
 
 Method (_Q13, 0, NotSerialized)			// Event: BRIGHTNESS
 {
-	Store ("EC: BRIGHTNESS", Debug)
+	Printf ("EC: BRIGHTNESS")
 }
 
 Method (_Q20, 0, NotSerialized)			// Event: CPU_T
 {
-	Store ("EC: CPU_T", Debug)
+	Printf ("EC: CPU_T")
 }
 
 Method (_Q21, 0, NotSerialized)			// Event: SKIN_T
 {
-	Store ("EC: SKIN_T", Debug)
+	Printf ("EC: SKIN_T")
 }
 
 Method (_Q30, 0, NotSerialized)			// Event: THROT_OFF
 {
-	Store ("EC: THROT_OFF", Debug)
+	Printf ("EC: THROT_OFF")
 }
 
 Method (_Q31, 0, NotSerialized)			// Event: THROT_LV1
 {
-	Store ("EC: THROT_LV1", Debug)
+	Printf ("EC: THROT_LV1")
 }
 
 Method (_Q32, 0, NotSerialized)			// Event: THROT_LV2
 {
-	Store ("EC: THROT_LV2", Debug)
+	Printf ("EC: THROT_LV2")
 }
 
 Method (_Q33, 0, NotSerialized)			// Event: THROT_LV3
 {
-	Store ("EC: THROT_LV3", Debug)
+	Printf ("EC: THROT_LV3")
 }
 
 Method (_Q34, 0, NotSerialized)			// Event: THROT_LV4
 {
-	Store ("EC: THROT_LV4", Debug)
+	Printf ("EC: THROT_LV4")
 }
 
 Method (_Q35, 0, NotSerialized)			// Event: THROT_LV5
 {
-	Store ("EC: THROT_LV5", Debug)
+	Printf ("EC: THROT_LV5")
 }
 
 Method (_Q36, 0, NotSerialized)			// Event: THROT_LV6
 {
-	Store ("EC: THROT_LV6", Debug)
+	Printf ("EC: THROT_LV6")
 }
 
 Method (_Q37, 0, NotSerialized)			// Event: THROT_LV7
 {
-	Store ("EC: THROT_LV7", Debug)
+	Printf ("EC: THROT_LV7")
 }
 
 Method (_Q38, 0, NotSerialized)			// Event: CPU_DN_SPEED
 {
-	Store ("EC: CPU_DN_SPEED", Debug)
+	Printf ("EC: CPU_DN_SPEED")
 }
 
 Method (_Q3C, 0, NotSerialized)			// Event: CPU_UP_SPEED
 {
-	Store ("EC: CPU_UP_SPEED", Debug)
+	Printf ("EC: CPU_UP_SPEED")
 }
 
 Method (_Q3D, 0, NotSerialized)			// Event: CPU_TURBO_OFF
 {
-	Store ("EC: CPU_TURBO_OFF", Debug)
+	Printf ("EC: CPU_TURBO_OFF")
 }
 
 Method (_Q3E, 0, NotSerialized)			// Event: CPU_TURBO_ON
 {
-	Store ("EC: CPU_TURBO_ON", Debug)
+	Printf ("EC: CPU_TURBO_ON")
 }
 
 Method (_Q3F, 0, NotSerialized)			// Event: SHUTDOWN
 {
-	Store ("EC: SHUTDOWN", Debug)
+	Printf ("EC: SHUTDOWN")
 }
 
 Method (_Q45, 0, NotSerialized)			// Event: SENSOR_T76
@@ -270,10 +270,10 @@ Method (_Q45, 0, NotSerialized)			// Event: SENSOR_T76
 
 Method (_Q48, 0, NotSerialized)			// Event: Fan Turbo On
 {
-	Store ("EC: Fan Turbo On", Debug)
+	Printf ("EC: Fan Turbo On")
 }
 
 Method (_Q49, 0, NotSerialized)			// Event: Fan Turbo Off
 {
-	Store ("EC: Fan Turbo Off", Debug)
+	Printf ("EC: Fan Turbo Off")
 }

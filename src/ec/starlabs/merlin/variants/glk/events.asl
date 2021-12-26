@@ -70,27 +70,27 @@ Method (_QD6, 0, NotSerialized)			// Event: 10 Second Power Button Released
 
 Method (_Q22, 0, NotSerialized)			// Event: CHARGER_T
 {
-	Store ("EC: CHARGER_T", Debug)
+	Printf ("EC: CHARGER_T")
 }
 
 Method (_Q80, 0, NotSerialized)			// Event: Volume Up
 {
-	Store ("EC: VOLUME_UP", Debug)
+	Printf ("EC: VOLUME_UP")
 }
 
 Method (_Q81, 0, NotSerialized)			// Event: Volume Down
 {
-	Store ("EC: VOLUME_DOWN", Debug)
+	Printf ("EC: VOLUME_DOWN")
 }
 
 Method (_Q54, 0, NotSerialized)			// Event: Power Button Press
 {
-	Store ("EC: PWRBTN", Debug)
+	Printf ("EC: PWRBTN")
 }
 
 Method (_QF0, 0, NotSerialized)			// Event: Temperature Report
 {
-	Store ("EC: Temperature Report", Debug)
+	Printf ("EC: Temperature Report")
 }
 
 Method (_QF1, 0, NotSerialized)			// Event: Temperature Trigger

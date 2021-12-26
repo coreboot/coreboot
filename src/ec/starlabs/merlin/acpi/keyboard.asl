@@ -2,25 +2,25 @@
 
 Method(_Q80)				// Volume up
 {
-	Store ("-----> _Q80", Debug)
+	Printf ("-----> _Q80")
 	Notify (\_SB.HIDD, 0xC4)
 	Notify (\_SB.HIDD, 0xC5)
-	Store ("<----- _Q80", Debug)
+	Printf ("<----- _Q80")
 }
 
 Method(_Q81)				// Volume down
 {
-	Store ("-----> _Q81", Debug)
+	Printf ("-----> _Q81")
 	Notify (\_SB.HIDD, 0xC6)
 	Notify (\_SB.HIDD, 0xC7)
-	Store ("<----- _Q81", Debug)
+	Printf ("<----- _Q81")
 }
 
 Method(_Q99)				// Wireless mode
 {
-	Store ("-----> _Q99", Debug)
+	Printf ("-----> _Q99")
 	^^^^HIDD.HPEM (8)
-	Store ("<----- _Q99", Debug)
+	Printf ("<----- _Q99")
 }
 
 Method(_Q06)				// Brightness decrease
@@ -40,20 +40,20 @@ Method(_Q08)				// FN lock QEvent
 
 Method(_Q54)				// Power Button Event
 {
-	Store ("-----> _Q54", Debug)
-	Store ("<----- _Q54", Debug)
+	Printf ("-----> _Q54")
+	Printf ("<----- _Q54")
 }
 
 Method(_QD5)				// 10 second power button press
 {
-	Store ("-----> _QD5", Debug)
+	Printf ("-----> _QD5")
 	\_SB.PWPR()
-	Store ("<----- _QD5", Debug)
+	Printf ("<----- _QD5")
 }
 
 Method(_QD6)				// 10 second power button de-press
 {
-	Store ("-----> _QD6", Debug)
+	Printf ("-----> _QD6")
 	\_SB.PWRR()
-	Store ("<----- _QD6", Debug)
+	Printf ("<----- _QD6")
 }

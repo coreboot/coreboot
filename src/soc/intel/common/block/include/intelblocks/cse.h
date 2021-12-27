@@ -301,6 +301,12 @@ bool cse_is_hfs1_com_secover_mei_msg(void);
 bool cse_is_hfs1_com_soft_temp_disable(void);
 
 /*
+ * Checks CSE's spi protection mode is protected or unprotected.
+ * Returns true if CSE's spi protection mode is protected, otherwise false.
+ */
+bool cse_is_hfs1_spi_protected(void);
+
+/*
  * Checks CSE's Firmware SKU is Lite or not.
  * Returns true if CSE's Firmware SKU is Lite, otherwise false
  */

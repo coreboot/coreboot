@@ -257,6 +257,22 @@ bool cse_is_hfs1_com_soft_temp_disable(void)
 	return cse_check_hfs1_com(ME_HFS1_COM_SOFT_TEMP_DISABLE);
 }
 
+/*
+ * TGL HFSTS1.spi_protection_mode bit replaces the previous
+ * `manufacturing mode (mfg_mode)` without changing the offset and purpose
+ * of this bit.
+ *
+ * Using HFSTS1.mfg_mode to get the SPI protection status for all PCH.
+ * mfg_mode = 0 means SPI protection in on.
+ * mfg_mode = 1 means SPI is unprotected.
+ */
+bool cse_is_hfs1_spi_protected(void)
+{
+	union me_hfsts1 hfs1;
+	hfs1.data = me_read_config32(PCI_ME_HFSTS1);
+	return !hfs1.fields.mfg_mode;
+}
+
 bool cse_is_hfs3_fw_sku_lite(void)
 {
 	union me_hfsts3 hfs3;

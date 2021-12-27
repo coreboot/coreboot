@@ -7,7 +7,14 @@
 #include <gpio.h>
 #include <sar.h>
 
-#define SKU_ID_BOTENFLEX 0x90000
+enum {
+	SKU_ID_BOTEN_MIN = 0x60000,
+	SKU_ID_BOTEN_MAX = 0x6ffff,
+	SKU_ID_BOTENFLEX_MIN = 0x90000,
+	SKU_ID_BOTENFLEX_MAX = 0x9ffff,
+	SKU_ID_BOOKEM_MIN = 0x290000,
+	SKU_ID_BOOKEM_MAX = 0x29ffff,
+};
 
 static void power_off_lte_module(void)
 {
@@ -30,8 +37,12 @@ const char *get_wifi_sar_cbfs_filename(void)
 {
 	uint32_t sku_id = google_chromeec_get_board_sku();
 
-	if (sku_id >= SKU_ID_BOTENFLEX)
+	if (sku_id >= SKU_ID_BOTEN_MIN && sku_id <= SKU_ID_BOTEN_MAX)
+		return "wifi_sar-boten.hex";
+	if (sku_id >= SKU_ID_BOTENFLEX_MIN && sku_id <= SKU_ID_BOTENFLEX_MAX)
 		return "wifi_sar-botenflex.hex";
+	if (sku_id >= SKU_ID_BOOKEM_MIN && sku_id <= SKU_ID_BOOKEM_MAX)
+		return "wifi_sar-bookem.hex";
 
-	return "wifi_sar-boten.hex";
+	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }

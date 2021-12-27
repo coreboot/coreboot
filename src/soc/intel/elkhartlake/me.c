@@ -32,7 +32,7 @@ static void dump_me_status(void *unused)
 	printk(BIOS_DEBUG, "ME: HFSTS6                  : 0x%08X\n", hfsts6.data);
 
 	printk(BIOS_DEBUG, "ME: SPI Protection Mode      : %s\n",
-		hfsts1.fields.spi_protection_mode ? "YES" : "NO");
+		hfsts1.fields.mfg_mode ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: FW Partition Table      : %s\n",
 		hfsts1.fields.fpt_bad ? "BAD" : "OK");
 	printk(BIOS_DEBUG, "ME: Bringup Loader Failure  : %s\n",

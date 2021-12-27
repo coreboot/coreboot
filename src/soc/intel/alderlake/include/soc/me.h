@@ -10,7 +10,7 @@ union me_hfsts1 {
 	u32 data;
 	struct {
 		u32 working_state: 4;
-		u32 spi_protection_mode: 1;
+		u32 mfg_mode: 1;
 		u32 fpt_bad: 1;
 		u32 operation_state: 3;
 		u32 fw_init_complete: 1;

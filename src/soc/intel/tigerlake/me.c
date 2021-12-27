@@ -121,14 +121,14 @@ static void dump_me_status(void *unused)
 	 * production system to indicate ME Manufacturing mode is disabled.
 	 */
 	printk(BIOS_DEBUG, "ME: Manufacturing Mode          : %s\n",
-		((hfsts1.fields.spi_protection_mode == 0) &&
+		((hfsts1.fields.mfg_mode == 0) &&
 		(hfsts6.fields.fpf_soc_lock == 1)) ? "NO" : "YES");
 	/*
 	 * The SPI Protection Mode bit reflects SPI descriptor
 	 * locked(0) or unlocked(1).
 	 */
 	printk(BIOS_DEBUG, "ME: SPI Protection Mode Enabled : %s\n",
-		hfsts1.fields.spi_protection_mode ? "NO" : "YES");
+		hfsts1.fields.mfg_mode ? "NO" : "YES");
 	printk(BIOS_DEBUG, "ME: FW Partition Table          : %s\n",
 		hfsts1.fields.fpt_bad ? "BAD" : "OK");
 	printk(BIOS_DEBUG, "ME: Bringup Loader Failure      : %s\n",

@@ -377,7 +377,8 @@ int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes, const struct edid *edid,
 	mtk_dsi_clk_hs_mode_disable();
 	mtk_dsi_config_vdo_timing(mode_flags, format, lanes, edid, &phy_timing);
 	mtk_dsi_clk_hs_mode_enable();
-	mipi_panel_parse_init_commands(init_commands, mtk_dsi_cmdq);
+	if (init_commands)
+		mipi_panel_parse_init_commands(init_commands, mtk_dsi_cmdq);
 	mtk_dsi_set_mode(mode_flags);
 	mtk_dsi_start();
 

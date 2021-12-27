@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <soc/devapc.h>
+#include <soc/devapc_common.h>
 #include <soc/apusys_devapc.h>
 
 static const struct apc_infra_peri_dom_16 infra_ao_sys0_devices[] = {

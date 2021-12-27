@@ -11,6 +11,10 @@ fw_config
 		option UFC_USB			0
 		option UFC_MIPI_OVTI2740	1
 	end
+	field STYLUS 6
+		option STYLUS_ABSENT		0
+		option STYLUS_PRESENT		1
+	end
 end
 chip soc/intel/alderlake
 	register "SaGv" = "SaGv_Enabled"
@@ -440,7 +444,9 @@ chip soc/intel/alderlake
 				register "key.linux_code" = "SW_PEN_INSERTED"
 				register "key.linux_input_type" = "EV_SW"
 				register "key.label" = ""pen_eject""
-				device generic 0 on end
+				device generic 0 on
+					probe STYLUS STYLUS_PRESENT
+				end
 			end
 		end
 		device ref i2c5 on

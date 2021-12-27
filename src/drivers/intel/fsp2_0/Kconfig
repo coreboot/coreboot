@@ -310,4 +310,41 @@ config FSPS_USE_MULTI_PHASE_INIT
 	  SoC users to select this Kconfig to set EnableMultiPhaseSiliconInit to enable and
 	  execute FspMultiPhaseSiInit() API.
 
+config SKIP_FSP_NOTIFY_PHASE_AFTER_PCI_ENUM
+	bool
+	help
+	  The FSP API is used to notify the FSP about different phases in the boot process.
+	  The current FSP specification supports three notify phases:
+	  - Post PCI enumeration
+	  - Ready to Boot
+	  - End of Firmware
+	  Select this on a platform where you want to skip calling FSP Notify
+	  `Post PCI enumeration` API. Instead use coreboot native implementations
+	  to perform the required lock down and chipset register configuration prior
+	  boot to payload.
+
+config SKIP_FSP_NOTIFY_PHASE_READY_TO_BOOT
+	bool
+	help
+	  The FSP API is used to notify the FSP about different phases in the boot process.
+	  The current FSP specification supports three notify phases:
+	  - Post PCI enumeration
+	  - Ready to Boot
+	  - End of Firmware
+	  Select this on a platform where you want to skip calling FSP Notify `Ready to Boot`
+	  API. Instead use coreboot native implementations to perform the required lock down
+	  and chipset register configuration prior boot to payload.
+
+config SKIP_FSP_NOTIFY_PHASE_END_OF_FIRMWARE
+	bool
+	help
+	  The FSP API is used to notify the FSP about different phases in the boot process.
+	  The current FSP specification supports three notify phases:
+	  - Post PCI enumeration
+	  - Ready to Boot
+	  - End of Firmware
+	  Select this on a platform where you want to skip calling FSP Notify `End of Firmware`
+	  API. Instead use coreboot native implementations to perform the required lock down
+	  and chipset register configuration prior boot to payload.
+
 endif

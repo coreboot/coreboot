@@ -135,13 +135,11 @@ Device (EC0)
 
 		// Find and program number of P-States
 		Store (SizeOf (\_SB.CP00._PSS), MPST)
-		Store ("Programming number of P-states: ", Debug)
-		Store (MPST, Debug)
+		Printf ("Programming number of P-states: %o", MPST)
 
 		// Find and program the current P-State
 		Store(\_SB.CP00._PPC, NPST)
-		Store ("Programming Current P-state: ", Debug)
-		Store (NPST, Debug)
+		Printf ("Programming Current P-state: %o", NPST)
 	}
 
 /*
@@ -163,20 +161,20 @@ Device (EC0)
 	// Wifi Button Event
 	Method (_Q07)
 	{
-		Store ("Wifi Button Event 0x07", Debug)
+		Printf ("Wifi Button Event 0x07")
 	}
 
 	// Thermal Event
 	Method (_Q08)
 	{
-		Store ("Thermal Event 0x08", Debug)
+		Printf ("Thermal Event 0x08")
 		Notify(\_TZ.THRM, 0x80)
 	}
 
 	// Pstate Down
 	Method (_Q0E)
 	{
-		Store ("Pstate Event 0x0E", Debug)
+		Printf ("Pstate Event 0x0E")
 
 		Store(\_SB.CP00._PPC, Local0)
 		Subtract(PPCM, 0x01, Local1)
@@ -192,7 +190,7 @@ Device (EC0)
 	// Pstate Up
 	Method (_Q0F)
 	{
-		Store ("Pstate Event 0x0F", Debug)
+		Printf ("Pstate Event 0x0F")
 		Store(\_SB.CP00._PPC, Local0)
 
 		If(Local0) {
@@ -206,7 +204,7 @@ Device (EC0)
 	// AC Power Connected
 	Method (_Q10, 0, NotSerialized)
 	{
-		Store ("AC Insertion Event 0x10", Debug)
+		Printf ("AC Insertion Event 0x10")
 		Store (One, \PWRS)
 		Notify (AC, 0x80)
 		Notify (BATX, 0x80)
@@ -216,7 +214,7 @@ Device (EC0)
 	// AC Power Removed
 	Method (_Q11, 0, NotSerialized)
 	{
-		Store ("AC Detach Event 0x11", Debug)
+		Printf ("AC Detach Event 0x11")
 		Store (Zero, \PWRS)
 		Notify (AC, 0x80)
 		Notify (BATX, 0x80)
@@ -226,7 +224,7 @@ Device (EC0)
 	// Battery State Change - Attach Event
 	Method (_Q12, 0, NotSerialized)
 	{
-		Store ("Battery Insertion Event 0x12", Debug)
+		Printf ("Battery Insertion Event 0x12")
 
 		Notify (BATX, 0x81)
 		Notify (BATX, 0x80)
@@ -236,7 +234,7 @@ Device (EC0)
 	// Battery State Change - Detach Event
 	Method (_Q13, 0, NotSerialized)
 	{
-		Store ("Battery Detach Event 0x13", Debug)
+		Printf ("Battery Detach Event 0x13")
 
 		Notify (BATX, 0x81)
 		Notify (BATX, 0x80)
@@ -247,7 +245,7 @@ Device (EC0)
 	// Battery State Change Event
 	Method (_Q14, 0, NotSerialized)
 	{
-		Store ("Battery State Change Event 0x14", Debug)
+		Printf ("Battery State Change Event 0x14")
 
 		Notify (BATX, 0x80)
 	}
@@ -255,7 +253,7 @@ Device (EC0)
 	// Lid Switch Event
 	Method (_Q06)
 	{
-		Store ("Lid Switch Event 0x06", Debug)
+		Printf ("Lid Switch Event 0x06")
 		sleep(20)
 		Store (LIDF, \LIDS)
 		Notify (\_SB.LID0, 0x80)

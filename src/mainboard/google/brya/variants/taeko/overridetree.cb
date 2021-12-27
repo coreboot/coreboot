@@ -142,31 +142,31 @@ chip soc/intel/alderlake
 					[1] = {
 						.target = DPTF_TEMP_SENSOR_1,
 						.thresholds = {
-								TEMP_PCT(51, 74),
-								TEMP_PCT(47, 60),
-								TEMP_PCT(45, 45),
+								TEMP_PCT(50, 70),
+								TEMP_PCT(47, 58),
+								TEMP_PCT(45, 47),
 								TEMP_PCT(42, 45),
-								TEMP_PCT(37, 35),
+								TEMP_PCT(39, 39),
 						}
 					},
 					[2] = {
 						.target = DPTF_TEMP_SENSOR_2,
 						.thresholds = {
-								TEMP_PCT(51, 74),
-								TEMP_PCT(47, 60),
-								TEMP_PCT(45, 45),
+								TEMP_PCT(50, 70),
+								TEMP_PCT(47, 58),
+								TEMP_PCT(45, 47),
 								TEMP_PCT(42, 45),
-								TEMP_PCT(37, 35),
+								TEMP_PCT(39, 39),
 						}
 					},
 					[3] = {
 						.target = DPTF_TEMP_SENSOR_3,
 						.thresholds = {
-								TEMP_PCT(51, 74),
-								TEMP_PCT(47, 60),
-								TEMP_PCT(45, 45),
+								TEMP_PCT(50, 70),
+								TEMP_PCT(47, 58),
+								TEMP_PCT(45, 47),
 								TEMP_PCT(42, 45),
-								TEMP_PCT(37, 35),
+								TEMP_PCT(39, 39),
 						}
 					}
 				}"
@@ -192,7 +192,7 @@ chip soc/intel/alderlake
 				register "controls.power_limits" = "{
 					.pl1 = {
 							.min_power = 3000,
-							.max_power = 12000,
+							.max_power = 15000,
 							.time_window_min = 28 * MSECS_PER_SEC,
 							.time_window_max = 32 * MSECS_PER_SEC,
 							.granularity = 200,
@@ -219,11 +219,11 @@ chip soc/intel/alderlake
 					[0] = { 100, 6000, 220, 2200, },
 					[1] = {  92, 5500, 180, 1800, },
 					[2] = {  85, 5000, 145, 1450, },
-					[3] = {  74, 4620, 115, 1150, },
-					[4] = {  60, 4290,  90,  900, },
-					[5] = {  45, 3980,  55,  550, },
-					[6] = {  35, 3170,  30,  300, },
-					[7] = {  30, 2640,  15,  150, },
+					[3] = {  70, 4400, 115, 1150, },
+					[4] = {  56, 3900,  90,  900, },
+					[5] = {  45, 3300,  55,  550, },
+					[6] = {  38, 3000,  30,  300, },
+					[7] = {  33, 2900,  15,  150, },
 					[8] = {  10,  800,  10,  100, },
 					[9] = {   0,    0,   0,   50, }
 				}"

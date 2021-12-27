@@ -11,6 +11,7 @@ romstage-y += boardid.c
 romstage-y += chromeos.c
 romstage-y += regulator.c
 romstage-y += romstage.c
+romstage-y += sdram_configs.c
 
 ramstage-y += memlayout.ld
 ramstage-y += boardid.c

@@ -3,6 +3,7 @@
 #include <arch/stages.h>
 #include <console/console.h>
 #include <delay.h>
+#include <soc/emi.h>
 #include <soc/mt6366.h>
 #include <soc/pll_common.h>
 #include <soc/regulator.h>
@@ -26,4 +27,5 @@ void platform_romstage_main(void)
 	mt6366_init();
 	raise_little_cpu_freq();
 	rtc_boot();
+	mtk_dram_init();
 }

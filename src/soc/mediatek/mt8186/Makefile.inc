@@ -26,10 +26,14 @@ verstage-y += ../common/wdt.c wdt.c
 
 romstage-y += ../common/auxadc.c
 romstage-y += ../common/cbmem.c
+romstage-y += ../common/dram_init.c
+romstage-y += ../common/dramc_param.c
 romstage-y += emi.c
 romstage-y += ../common/flash_controller.c
 romstage-y += ../common/gpio.c gpio.c
 romstage-y += ../common/i2c.c i2c.c
+romstage-y += ../common/memory.c
+romstage-y += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 romstage-y += ../common/pll.c pll.c
 romstage-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
@@ -77,6 +81,14 @@ $(foreach fw, $(call strip_quotes,$(mcu-firmware-files)), \
 	  $(eval $(fw)-compression := LZ4) \
 	  $(if $(wildcard $($(fw)-file)), $(eval cbfs-files-y += $(fw)), ) \
 )
+
+DRAM_CBFS := $(CONFIG_CBFS_PREFIX)/dram
+$(DRAM_CBFS)-file := $(MT8186_BLOB_DIR)/dram.elf
+$(DRAM_CBFS)-type := stage
+$(DRAM_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+ifneq ($(wildcard $($(DRAM_CBFS)-file)),)
+	cbfs-files-y += $(DRAM_CBFS)
+endif
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	./util/mtkheader/gen-bl-img.py mt8183 sf $< $@

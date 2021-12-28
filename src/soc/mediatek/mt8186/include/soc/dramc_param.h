@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <sys/types.h>
+#include <soc/dramc_param_common.h>
 #include <soc/dramc_soc.h>
 
 #define DRAMC_PARAM_HEADER_VERSION 1
@@ -25,10 +26,6 @@ enum DRAMC_PARAM_STATUS_CODES {
 	DRAMC_ERR_1ST_COMPLEX_RW_MEM_TEST,
 	DRAMC_ERR_2ND_COMPLEX_RW_MEM_TEST,
 	DRAMC_ERR_FAST_CALIBRATION,
-};
-
-enum DRAMC_PARAM_FLAGS {
-	DRAMC_FLAG_HAS_SAVED_DATA = 0x0001,
 };
 
 enum SDRAM_DVFS_FLAG {
@@ -54,14 +51,6 @@ enum SDRAM_VOLTAGE_TYPE {
 	SDRAM_VOLTAGE_NVCORE_NVDRAM,
 	SDRAM_VOLTAGE_HVCORE_HVDRAM,
 	SDRAM_VOLTAGE_LVCORE_LVDRAM,
-};
-
-struct dramc_param_header {
-	u16 version;	/* DRAMC_PARAM_HEADER_VERSION, update in the coreboot */
-	u16 size;	/* size of whole dramc_param, update in the coreboot */
-	u16 status;	/* DRAMC_PARAM_STATUS_CODES, update in the dram blob */
-	u16 flags;	/* DRAMC_PARAM_FLAGS, update in the dram blob */
-	u16 config;	/* DRAMC_PARAM_CONFIG, set in coreboot */
 };
 
 struct sdram_info {

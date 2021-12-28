@@ -72,20 +72,20 @@ Device(EC0)
 
 	Method (_Q11, 0)
 	{
-		Debug = "_Q11: Fn-F8 (Sleep Button) pressed"
+		Printf ("_Q11: Fn-F8 (Sleep Button) pressed")
 		Notify(SLPB, 0x80)
 	}
 
 	Method (_Q12, 0)
 	{
-		Debug = "_Q12: Fn-F9 (Display Switch) pressed"
+		Printf ("_Q12: Fn-F9 (Display Switch) pressed")
 		Notify (\_SB.PCI0.GFX0, 0x82)
 		// TLST = 1
 	}
 
 	Method (_Q30, 0)
 	{
-		Debug = "_Q30: AC In/Out"
+		Printf ("_Q30: AC In/Out")
 		Notify(ADP1, 0x80)	// Tell the Power Adapter
 		PNOT()			// and the CPU and Battery
 		// Notify the Batteries
@@ -95,13 +95,13 @@ Device(EC0)
 
 	Method (_Q31, 0)
 	{
-		Debug = "_Q31: LID Open/Close"
+		Printf ("_Q31: LID Open/Close")
 		Notify(LID0, 0x80)
 	}
 
 	Method (_Q32, 0)
 	{
-		Debug = "_Q32: Battery 1 In/Out"
+		Printf ("_Q32: Battery 1 In/Out")
 		If (ECON) {
 			Local0 = P62S
 			If (~Local0) {
@@ -112,7 +112,7 @@ Device(EC0)
 
 	Method (_Q33, 0)
 	{
-		Debug = "_Q33: Battery 2 In/Out"
+		Printf ("_Q33: Battery 2 In/Out")
 		If (ECON) {
 			Local0 = P63S
 			If (~Local0) {
@@ -123,33 +123,33 @@ Device(EC0)
 
 	Method (_Q34, 0)
 	{
-		Debug = "_Q34: LPT/FDD"
+		Printf ("_Q34: LPT/FDD")
 		// PHSS(0x70)
 	}
 
 	Method (_Q35, 0)
 	{
-		Debug = "_Q35: Processor is hot"
+		Printf ("_Q35: Processor is hot")
 	}
 
 	Method (_Q36, 0)
 	{
-		Debug = "_Q36: Thermal Warning"
+		Printf ("_Q36: Thermal Warning")
 	}
 
 	Method (_Q37, 0)
 	{
-		Debug = "_Q37: PME"
+		Printf ("_Q37: PME")
 	}
 
 	Method (_Q38, 0)
 	{
-		Debug = "_Q38: Thermal"
+		Printf ("_Q38: Thermal")
 	}
 
 	Method (_Q39, 0)
 	{
-		Debug = "_Q39: Thermal"
+		Printf ("_Q39: Thermal")
 	}
 
 	// TODO Scope _SB devices for AC power, LID, Power button

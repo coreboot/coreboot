@@ -212,6 +212,7 @@ config HAVE_PCIE_WWAN
 	def_bool n
 
 config USE_PM_ACPI_TIMER
+	default y if BOARD_GOOGLE_PRIMUS4ES
 	default n
 
 choice

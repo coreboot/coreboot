@@ -79,98 +79,98 @@ Device(EC0)
 
 	Method (_Q11, 0)
 	{
-		Debug = "_Q11: Fn-F8 (Sleep Button) pressed"
+		Printf ("_Q11: Fn-F8 (Sleep Button) pressed")
 		Notify(SLPB, 0x80)
 	}
 
 	Method (_Q30, 0)
 	{
-		Debug = "_Q30: AC In"
+		Printf ("_Q30: AC In")
 		Notify(ADP1, 0x80)	// Tell the Power Adapter
 		PNOT()			// and the CPU and Battery
 	}
 
 	Method (_Q31, 0)
 	{
-		Debug = "_Q31: AC Out"
+		Printf ("_Q31: AC Out")
 		Notify(ADP1, 0x80)	// Tell the Power Adapter
 		PNOT()			// and the CPU and Battery
 	}
 
 	Method (_Q32, 0)
 	{
-		Debug = "_Q32: Bat1 In"
+		Printf ("_Q32: Bat1 In")
 		Notify(BAT1, 0x81)
 	}
 
 	Method (_Q33, 0)
 	{
-		Debug = "_Q33: Bat1 Out"
+		Printf ("_Q33: Bat1 Out")
 		Notify(BAT1, 0x81)
 	}
 
 	Method (_Q34, 0)
 	{
-		Debug = "_Q34: Bat2 In"
+		Printf ("_Q34: Bat2 In")
 		Notify(BAT2, 0x81)
 	}
 
 	Method (_Q35, 0)
 	{
-		Debug = "_Q35: Bat2 Out"
+		Printf ("_Q35: Bat2 Out")
 		Notify(BAT2, 0x81)
 	}
 
 	Method (_Q36, 0)
 	{
-		Debug = "_Q36: Bat1 Low Power"
+		Printf ("_Q36: Bat1 Low Power")
 		Notify(BAT1, 0x80)
 	}
 
 	Method (_Q37, 0)
 	{
-		Debug = "_Q37: Bat1 Full Charge"
+		Printf ("_Q37: Bat1 Full Charge")
 		Notify(BAT1, 0x80)
 	}
 
 	Method (_Q38, 0)
 	{
-		Debug = "_Q38: Bat2 Low Power"
+		Printf ("_Q38: Bat2 Low Power")
 		Notify(BAT2, 0x80)
 	}
 
 	Method (_Q39, 0)
 	{
-		Debug = "_Q39: Bat2 Full Charge"
+		Printf ("_Q39: Bat2 Full Charge")
 		Notify(BAT2, 0x80)
 	}
 
 	Method (_Q40, 0)
 	{
-		Debug = "_Q40: LID Open/Close"
+		Printf ("_Q40: LID Open/Close")
 		Notify(LID0, 0x80)
 	}
 
 	Method (_Q41, 0)
 	{
-		Debug = "_Q41: Floppy on Parallel Port: Call the Museum!"
+		Printf ("_Q41: Floppy on Parallel Port: Call the Museum!")
 	}
 
 	Method (_Q50, 0)
 	{
-		Debug = "_Q50: Processor is hot"
+		Printf ("_Q50: Processor is hot")
 		Notify(\_TZ.THRM, 0x80)
 	}
 
 	Method (_Q51, 0)
 	{
-		Debug = "_Q51: Processor is boiling"
+		Printf ("_Q51: Processor is boiling")
 		Notify(\_TZ.THRM, 0x80)
 	}
 
 	Method (_Q52, 0)
 	{
-		Debug = "_Q52: Processor is burning"
+		Printf ("_Q52: Processor is burning")
 		Notify(\_TZ.THRM, 0x80)
 	}
 

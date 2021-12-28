@@ -37,7 +37,7 @@
 	 */
 	Method (PNOT)
 	{
-		Debug = "Received PNOT call (probably from EC)"
+		Printf ("Received PNOT call (probably from EC)")
 		/* TODO: Implement this */
 	}
 

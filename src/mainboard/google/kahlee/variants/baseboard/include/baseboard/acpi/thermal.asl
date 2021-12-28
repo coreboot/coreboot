@@ -56,8 +56,7 @@ Scope (\_TZ)
 			Store (CTOK (\TCRT), Local1)
 
 			If (LGreaterEqual (Local0, Local1)) {
-				Store ("CRITICAL TEMPERATURE", Debug)
-				Store (Local0, Debug)
+				Printf ("CRITICAL TEMPERATURE: %o", Local0)
 
 				/* Wait 1 second for EC to re-poll */
 				Sleep (1000)
@@ -65,8 +64,7 @@ Scope (\_TZ)
 				/* Re-read temperature from EC */
 				Store (\_SB.PCI0.LPCB.EC0.TSRD (TMPS), Local0)
 
-				Store ("RE-READ TEMPERATURE", Debug)
-				Store (Local0, Debug)
+				Printf ("RE-READ TEMPERATURE: %o", Local0)
 			}
 
 			Return (Local0)

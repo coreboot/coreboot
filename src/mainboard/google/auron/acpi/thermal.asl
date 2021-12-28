@@ -92,8 +92,7 @@ Scope (\_TZ)
 			Local1 = CTOK (\TCRT)
 
 			If (Local0 >= Local1) {
-				Debug = "CRITICAL TEMPERATURE"
-				Debug = Local0
+				Printf ("CRITICAL TEMPERATURE: %o", Local0)
 
 				// Wait 1 second for EC to re-poll
 				Sleep (1000)
@@ -101,8 +100,7 @@ Scope (\_TZ)
 				// Re-read temperature from EC
 				Local0 = TCHK ()
 
-				Debug = "RE-READ TEMPERATURE"
-				Debug = Local0
+				Printf ("RE-READ TEMPERATURE: %o", Local0)
 			}
 
 			Return (Local0)

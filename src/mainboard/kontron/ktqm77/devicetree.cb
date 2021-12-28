@@ -32,7 +32,7 @@ chip northbridge/intel/sandybridge
 			#register "gen4_dec" = "0x00000000"
 
 			# Disable root port coalescing
-			register "pcie_port_coalesce" = "0"
+			register "pcie_port_coalesce" = "false"
 
 			register "xhci_switchable_ports"	= "0x0f"
 			register "superspeed_capable_ports"	= "0x0f"

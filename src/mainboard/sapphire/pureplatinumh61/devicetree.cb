@@ -14,7 +14,7 @@ chip northbridge/intel/sandybridge
 		chip southbridge/intel/bd82x6x	# Intel Series 6 Cougar Point PCH
 			register "gen1_dec" = "0x000c0291"
 			register "gen2_dec" = "0x000c0a01"
-			register "pcie_port_coalesce" = "1"
+			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x33"
 			register "spi.opprefixes" = "{ 0x50, 0x06 }"

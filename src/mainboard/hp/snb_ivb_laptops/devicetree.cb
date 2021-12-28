@@ -29,7 +29,7 @@ chip northbridge/intel/sandybridge
 		device pci 00.0 on  end	# Host bridge
 
 		chip southbridge/intel/bd82x6x # Intel Cougar or Panther Point PCH
-			register "pcie_port_coalesce" = "1"
+			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0"

@@ -3,7 +3,7 @@
 #ifndef _SOC_INTEL_BROADWELL_PCH_CHIP_H_
 #define _SOC_INTEL_BROADWELL_PCH_CHIP_H_
 
-#include <stdint.h>
+#include <types.h>
 
 struct soc_intel_broadwell_pch_config {
 	/* GPE configuration */
@@ -47,7 +47,7 @@ struct soc_intel_broadwell_pch_config {
 	uint32_t gen4_dec;
 
 	/* Enable linear PCIe Root Port function numbers starting at zero */
-	uint8_t pcie_port_coalesce;
+	bool pcie_port_coalesce;
 
 	/* Force root port ASPM configuration with port bitmap */
 	uint8_t pcie_port_force_aspm;

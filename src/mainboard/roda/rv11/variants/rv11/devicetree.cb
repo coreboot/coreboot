@@ -46,7 +46,7 @@ chip northbridge/intel/sandybridge
 			register "gpe0_en" = "0x00800040"
 
 			# Disable root port coalescing
-			register "pcie_port_coalesce" = "0"
+			register "pcie_port_coalesce" = "false"
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
 
 

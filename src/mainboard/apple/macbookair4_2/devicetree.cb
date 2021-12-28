@@ -32,7 +32,7 @@ chip northbridge/intel/sandybridge
 			register "gen4_dec" = "0x00fc0701"
 			register "gpi7_routing" = "2"
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
-			register "pcie_port_coalesce" = "1"
+			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x1"
 			device pci 16.0 on # Management Engine Interface 1

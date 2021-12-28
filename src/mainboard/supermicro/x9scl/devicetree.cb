@@ -20,7 +20,7 @@ chip northbridge/intel/sandybridge
 			register "gen2_dec" = "0x00fc1641" # WPCM450 SuperIO (0x1600-16ff)
 			register "gen3_dec" = "0x00040ca1" # IPMI KCS (0x0ca0-0ca3)
 			register "gen4_dec" = "0x001c03e1" # 3rd UART (0x03e0-03ff)
-			register "pcie_port_coalesce" = "1"
+			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x3f"
 			register "spi_lvscc" = "0x2005"

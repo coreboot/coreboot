@@ -4,7 +4,7 @@
 #define SOUTHBRIDGE_INTEL_BD82X6X_CHIP_H
 
 #include <southbridge/intel/common/spi.h>
-#include <stdint.h>
+#include <types.h>
 
 struct southbridge_intel_bd82x6x_config {
 	/**
@@ -58,7 +58,7 @@ struct southbridge_intel_bd82x6x_config {
 	uint32_t gen4_dec;
 
 	/* Enable linear PCIe Root Port function numbers starting at zero */
-	uint8_t pcie_port_coalesce;
+	bool pcie_port_coalesce;
 
 	/* Override PCIe ASPM */
 	uint8_t pcie_aspm[8];

@@ -137,7 +137,7 @@ static void ich_pcie_device_set_func(int index, int pci_func)
 static void root_port_commit_config(struct device *dev)
 {
 	int i;
-	int coalesce = 0;
+	bool coalesce = false;
 
 	if (dev->chip_info != NULL) {
 		const struct southbridge_intel_i82801gx_config *config = dev->chip_info;
@@ -145,7 +145,7 @@ static void root_port_commit_config(struct device *dev)
 	}
 
 	if (!rpc.ports[0]->enabled)
-		coalesce = 1;
+		coalesce = true;
 
 	for (i = 0; i < rpc.num_ports; i++) {
 		struct device *pcie_dev;

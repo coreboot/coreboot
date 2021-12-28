@@ -36,7 +36,7 @@ chip soc/intel/broadwell
 
 			# Force enable ASPM for PCIe Port 3
 			register "pcie_port_force_aspm" = "0x04"
-			register "pcie_port_coalesce" = "1"
+			register "pcie_port_coalesce" = "true"
 
 			# Disable PCIe CLKOUT 1-5 and CLKOUT_XDP
 			register "icc_clock_disable" = "0x013b0000"

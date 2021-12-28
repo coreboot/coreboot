@@ -6,7 +6,7 @@ chip northbridge/intel/sandybridge
 		chip southbridge/intel/bd82x6x
 			register "gen1_dec" = "0x000c0291"
 			register "gen4_dec" = "0x0000ff29"
-			register "pcie_port_coalesce" = "1"
+			register "pcie_port_coalesce" = "true"
 
 			device pci 1c.0 on  end	# PCIe Port 1 PCIEX_16_3
 			device pci 1c.1 on  end	# PCIe Port 2 RTL8111F

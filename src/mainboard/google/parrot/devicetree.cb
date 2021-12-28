@@ -54,7 +54,7 @@ chip northbridge/intel/sandybridge
 			register "gen2_dec" = "0x00040069"
 
 			# Enable zero-based linear PCIe root port functions
-			register "pcie_port_coalesce" = "1"
+			register "pcie_port_coalesce" = "true"
 
 			device pci 16.0 on end # Management Engine Interface 1
 			device pci 16.1 off end # Management Engine Interface 2

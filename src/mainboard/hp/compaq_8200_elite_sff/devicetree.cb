@@ -28,7 +28,7 @@ chip northbridge/intel/sandybridge
 			register "gen1_dec" = "0x00fc0601"
 			register "gen2_dec" = "0x00fc0801"
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
-			register "pcie_port_coalesce" = "1"
+			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0xf"
 			register "spi_lvscc" = "0x2005"

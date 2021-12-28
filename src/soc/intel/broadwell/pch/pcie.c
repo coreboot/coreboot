@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <cpu/intel/haswell/haswell.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pciexp.h>
@@ -15,7 +16,7 @@
 #include <soc/intel/broadwell/pch/chip.h>
 #include <southbridge/intel/lynxpoint/iobp.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
-#include <delay.h>
+#include <types.h>
 
 /* Low Power variant has 6 root ports. */
 #define MAX_NUM_ROOT_PORTS 6
@@ -31,7 +32,7 @@ struct root_port_config {
 	u32 b0d28f0_32c;
 	u32 b0d28f4_32c;
 	u32 b0d28f5_32c;
-	int coalesce;
+	bool coalesce;
 	int gbe_port;
 	int num_ports;
 	struct device *ports[MAX_NUM_ROOT_PORTS];
@@ -274,7 +275,7 @@ static void root_port_commit_config(void)
 
 	/* If the first root port is disabled the coalesce ports. */
 	if (!rpc.ports[0]->enabled)
-		rpc.coalesce = 1;
+		rpc.coalesce = true;
 
 	/* Perform clock gating configuration. */
 	pcie_enable_clock_gating();

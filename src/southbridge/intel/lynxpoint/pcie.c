@@ -28,7 +28,7 @@ struct root_port_config {
 	u32 b0d28f0_32c;
 	u32 b0d28f4_32c;
 	u32 b0d28f5_32c;
-	int coalesce;
+	bool coalesce;
 	int gbe_port;
 	int num_ports;
 	struct device *ports[MAX_NUM_ROOT_PORTS];
@@ -304,7 +304,7 @@ static void root_port_commit_config(void)
 
 	/* If the first root port is disabled the coalesce ports. */
 	if (!is_rp_enabled(1))
-		rpc.coalesce = 1;
+		rpc.coalesce = true;
 
 	/* Perform clock gating configuration. */
 	pcie_enable_clock_gating();

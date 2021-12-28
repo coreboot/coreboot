@@ -319,7 +319,7 @@ static void pch_pcie_enable(struct device *dev)
 		 * or the other devices will not be enumerated by the OS.
 		 */
 		if (!dev->enabled)
-			config->pcie_port_coalesce = 1;
+			config->pcie_port_coalesce = true;
 
 		if (config->pcie_port_coalesce)
 			printk(BIOS_INFO,

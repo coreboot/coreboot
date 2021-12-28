@@ -38,7 +38,7 @@ chip soc/intel/broadwell
 			register "pcie_port_force_aspm" = "0x10"
 
 			# Enable port coalescing
-			register "pcie_port_coalesce" = "1"
+			register "pcie_port_coalesce" = "true"
 
 			# Disable PCIe CLKOUT 1,5 and CLKOUT_XDP
 			register "icc_clock_disable" = "0x01220000"

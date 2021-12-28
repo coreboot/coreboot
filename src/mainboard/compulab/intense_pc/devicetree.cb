@@ -37,7 +37,7 @@ chip northbridge/intel/sandybridge # FIXME: check gfx
 			register "gen3_dec" = "0x000406f1"
 			register "gen4_dec" = "0x000c06a1"
 			register "gpi7_routing" = "2"
-			register "pcie_port_coalesce" = "1"
+			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			# Intense PC SATA portmap:
 			# Port 0: internal 2.5" bay

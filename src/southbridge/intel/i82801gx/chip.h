@@ -3,7 +3,7 @@
 #ifndef SOUTHBRIDGE_INTEL_I82801GX_CHIP_H
 #define SOUTHBRIDGE_INTEL_I82801GX_CHIP_H
 
-#include <stdint.h>
+#include <types.h>
 
 enum sata_mode {
 	SATA_MODE_AHCI = 0,
@@ -61,7 +61,7 @@ struct southbridge_intel_i82801gx_config {
 	uint32_t sata_ports_implemented;
 
 	/* Enable linear PCIe Root Port function numbers starting at zero */
-	uint8_t pcie_port_coalesce;
+	bool pcie_port_coalesce;
 
 	int c4onc3_enable:1;
 	int docking_supported:1;

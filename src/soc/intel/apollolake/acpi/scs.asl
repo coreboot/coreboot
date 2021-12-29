@@ -118,7 +118,7 @@ Scope (\_SB.PCI0) {
 		Method (_INI, 0)
 		{
 			/* Check SDCard CD port is valid */
-			If (LAnd (LNotEqual (\SCDP, 0), LNotEqual (\SCDO, 0) ))
+			If (LNotEqual (\SCDP, 0) && LNotEqual (\SCDO, 0))
 			{
 				/* Store DW0 address of SD_CD */
 				Store (GDW0 (\SCDP, \SCDO), SCD0)
@@ -133,7 +133,7 @@ Scope (\_SB.PCI0) {
 		Method (_PS0, 0, NotSerialized)
 		{
 			/* Check SDCard CD port is valid */
-			If (LAnd (LNotEqual (\SCDP, 0), LNotEqual (\SCDO, 0) ))
+			If (LNotEqual (\SCDP, 0) && LNotEqual (\SCDO, 0))
 			{
 				/* Store DW0 into local0 to get rxstate of GPIO */
 				Store (\_SB.GPC0 (SCD0), Local0)

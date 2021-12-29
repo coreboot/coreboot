@@ -39,9 +39,7 @@ Device (HDAS)
 				 * NHLT Query only supported for revision 1 and
 				 * if NHLT address and length are set in NVS.
 				 */
-				If (LAnd (LEqual (Arg1, One),
-					LAnd (LNotEqual (NHLA, Zero),
-					     LNotEqual (NHLL, Zero)))) {
+				If (LEqual (Arg1, One) && LNotEqual (NHLA, Zero) && LNotEqual (NHLL, Zero)) {
 					Return (Buffer (One) { 0x03 })
 				}
 				Else {

@@ -3,7 +3,6 @@
 #ifndef AMD_COMMON_ACP_H
 #define AMD_COMMON_ACP_H
 
-#include <stdint.h>
 #include <types.h>
 
 struct acp_config {

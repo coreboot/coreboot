@@ -5,7 +5,6 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <ec/starlabs/merlin/ec.h>
-#include <limits.h>
 #include <option.h>
 #include <smbios.h>
 #include <types.h>

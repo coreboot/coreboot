@@ -11,7 +11,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <intelblocks/cse.h>
-#include <limits.h>
 #include <option.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>

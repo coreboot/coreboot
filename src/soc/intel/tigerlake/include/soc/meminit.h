@@ -3,8 +3,6 @@
 #ifndef _SOC_TIGERLAKE_MEMINIT_H_
 #define _SOC_TIGERLAKE_MEMINIT_H_
 
-#include <stddef.h>
-#include <stdint.h>
 #include <types.h>
 #include <fsp/soc_binding.h>
 #include <intelblocks/meminit.h>

@@ -5,7 +5,6 @@
 
 #include <soc/addressmap.h>
 #include <soc/mcu_common.h>
-#include <stdint.h>
 #include <types.h>
 
 struct dpm_regs {

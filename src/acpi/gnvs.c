@@ -5,7 +5,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <soc/nvs.h>
-#include <stdint.h>
 #include <string.h>
 #include <types.h>
 

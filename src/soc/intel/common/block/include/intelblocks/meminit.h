@@ -3,8 +3,6 @@
 #ifndef __SOC_INTEL_COMMON_BLOCK_MEMINIT_H__
 #define __SOC_INTEL_COMMON_BLOCK_MEMINIT_H__
 
-#include <stddef.h>
-#include <stdint.h>
 #include <types.h>
 
 /*

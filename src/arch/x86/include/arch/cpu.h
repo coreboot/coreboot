@@ -3,7 +3,6 @@
 #ifndef ARCH_CPU_H
 #define ARCH_CPU_H
 
-#include <stdint.h>
 #include <types.h>
 
 /*

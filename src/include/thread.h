@@ -4,7 +4,6 @@
 
 #include <arch/cpu.h>
 #include <bootstate.h>
-#include <commonlib/bsd/cb_err.h>
 #include <types.h>
 
 struct thread_mutex {

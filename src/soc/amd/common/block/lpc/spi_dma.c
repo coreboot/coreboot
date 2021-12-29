@@ -4,7 +4,6 @@
 #include <amdblocks/spi.h>
 #include <assert.h>
 #include <boot_device.h>
-#include <commonlib/bsd/cb_err.h>
 #include <commonlib/bsd/helpers.h>
 #include <commonlib/region.h>
 #include <console/console.h>

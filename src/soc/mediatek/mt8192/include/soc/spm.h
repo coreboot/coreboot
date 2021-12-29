@@ -5,7 +5,6 @@
 
 #include <soc/addressmap.h>
 #include <soc/mtcmos.h>
-#include <stdint.h>
 #include <types.h>
 
 /* SPM READ/WRITE CFG */

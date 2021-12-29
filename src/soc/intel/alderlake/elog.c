@@ -8,7 +8,6 @@
 #include <intelblocks/xhci.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <stdint.h>
 #include <types.h>
 
 struct pme_map {

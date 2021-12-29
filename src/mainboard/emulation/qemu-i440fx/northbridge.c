@@ -8,7 +8,6 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <arch/ioapic.h>
-#include <stdint.h>
 #include <device/device.h>
 #include <stdlib.h>
 #include <string.h>

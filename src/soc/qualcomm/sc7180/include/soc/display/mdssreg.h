@@ -4,7 +4,6 @@
 #define _SOC_DISPLAY_MDSS_REG_H_
 
 #include <types.h>
-#include <stdint.h>
 
 struct dsi_regs {
 	uint32_t hw_version;

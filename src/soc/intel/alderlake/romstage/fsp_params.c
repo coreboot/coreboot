@@ -312,6 +312,9 @@ static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_trace_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
+	/* Set MRC debug level */
+	m_cfg->SerialDebugMrcLevel = fsp_map_console_log_level();
+
 	/* Set debug probe type */
 	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_ALDERLAKE_DEBUG_CONSENT;
 

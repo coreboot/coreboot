@@ -173,7 +173,7 @@ Device (DPTF)
 	Method (_OSC, 4, Serialized)
 	{
 		/* Check for Passive Policy UUID */
-		If (LEqual (DeRefOf (Index (IDSP, 0)), Arg0)) {
+		If (LEqual (DeRefOf (IDSP[0]), Arg0)) {
 			/* Initialize Thermal Devices */
 			^TINI ()
 

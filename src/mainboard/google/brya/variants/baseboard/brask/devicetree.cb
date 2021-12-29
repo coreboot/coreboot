@@ -77,7 +77,7 @@ chip soc/intel/alderlake
 	#+-------------------+---------------------------+
 	#| GSPI1             | Fingerprint MCU           |
 	#| I2C0              | Audio                     |
-	#| I2C3              | cr50 TPM. Early init is   |
+	#| I2C1              | cr50 TPM. Early init is   |
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
 	#+-------------------+---------------------------+
@@ -85,9 +85,12 @@ chip soc/intel/alderlake
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
 		},
-		.i2c[3] = {
+		.i2c[1] = {
 			.early_init = 1,
 			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 600,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
 		},
 	}"
 
@@ -108,7 +111,13 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
-		device ref i2c3 on end
+		device ref i2c1 on
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
+				device i2c 50 on end
+			end
+		end
 		device ref heci1 on end
 		device ref sata on end
 		device ref pcie_rp7 on

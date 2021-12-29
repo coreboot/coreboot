@@ -65,10 +65,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF2),
 	/* B6  : ISH_I2C0_SCL ==> PCH_I2C_MISC_SCL */
 	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF2),
-	/* B7  : ISH_12C1_SDA ==> PCH_I2C_TPM_SDA */
-	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF2),
-	/* B8  : ISH_I2C1_SCL ==> PCH_I2C_TPM_SCL */
-	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF2),
+	/* B7  : ISH_12C1_SDA ==> NC */
+	PAD_NC(GPP_B7, NONE),
+	/* B8  : ISH_I2C1_SCL ==> NC */
+	PAD_NC(GPP_B8, NONE),
 	/* B9  : NC */
 	PAD_NC(GPP_B9, NONE),
 	/* B10 : NC */
@@ -268,10 +268,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H4, NONE, DEEP, NF1),
 	/* H5  : I2C0_SCL ==> PCH_I2C_AUD_SCL */
 	PAD_CFG_NF(GPP_H5, NONE, DEEP, NF1),
-	/* H6  : I2C1_SDA ==> NC */
-	PAD_NC(GPP_H6, NONE),
-	/* H7  : I2C1_SCL ==> NC */
-	PAD_NC(GPP_H7, NONE),
+	/* H6  : I2C1_SDA ==> PCH_I2C_TPM_SDA */
+	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
+	/* H7  : I2C1_SCL ==> PCH_I2C_TPM_SCL */
+	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
 	/* H8  : I2C4_SDA ==> WWAN_WLAN_COEX1 */
 	PAD_CFG_NF(GPP_H8, NONE, DEEP, NF2),
 	/* H9  : I2C4_SCL ==> WWAN_WLAN_COEX2 */
@@ -371,10 +371,6 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 0, DEEP),
-	/* B7  : ISH_12C1_SDA ==> PCH_I2C_TPM_SDA */
-	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF2),
-	/* B8  : ISH_12C1_SCL ==> PCH_I2C_TPM_SCL */
-	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF2),
 	/*
 	 * D1  : ISH_GP1 ==> FP_RST_ODL
 	 * FP_RST_ODL comes out of reset as hi-z and does not have an external pull-down.
@@ -390,6 +386,10 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
 	/* F14 : GSXDIN ==> EN_PP3300_SSD */
 	PAD_CFG_GPO(GPP_F14, 1, DEEP),
+	/* H6  : I2C1_SDA ==> PCH_I2C_TPM_SDA */
+	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
+	/* H7  : I2C1_SCL ==> PCH_I2C_TPM_SCL */
+	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */

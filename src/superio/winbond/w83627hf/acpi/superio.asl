@@ -583,7 +583,7 @@ Device(SIO) {
 			/* DMA off */
 			Store (0x04, DMA0)
 			/* IRQ */
-			Subtract(FindSetLeftBit (IRQL), 1, IRQ0)
+			IRQ0 = FindSetLeftBit (IRQL) - 1
 			/* Activate */
 			Store (One, ACTR)
 			EXIT_CONFIG_MODE ()
@@ -701,7 +701,7 @@ Device(SIO) {
 
 			Divide(IOA0, 256, Local0, Local1)
 
-			Subtract(FindSetLeftBit (IRQL), 1, Local3)
+			Local3 = FindSetLeftBit (IRQL) - 1
 
 			ENTER_CONFIG_MODE (2)
 			Store (Local0, IO1L)
@@ -826,7 +826,7 @@ Device(SIO) {
 
 			Divide(IOA0, 256, Local0, Local1)
 
-			Subtract(FindSetLeftBit (IRQL), 1, Local3)
+			Local3 = FindSetLeftBit (IRQL) - 1
 
 			ENTER_CONFIG_MODE (3)
 			Store (Local0, IO1L)
@@ -951,7 +951,7 @@ Device(SIO) {
 
 			Divide(IOA0, 256, Local0, Local1)
 
-			Subtract(FindSetLeftBit (IRQL), 1, Local3)
+			Local3 = FindSetLeftBit (IRQL) - 1
 
 			ENTER_CONFIG_MODE (3)
 			Store (Local0, IO1L)
@@ -1038,7 +1038,7 @@ Device(SIO) {
 
 			Divide(IOA0, 256, Local0, Local1)
 
-			Subtract(FindSetLeftBit (IRQL), 1, Local3)
+			Local3 = FindSetLeftBit (IRQL) - 1
 
 			ENTER_CONFIG_MODE (6)
 			Store (Local0, IO1L)
@@ -1143,7 +1143,7 @@ Device(SIO) {
 			Divide(IOA0, 256, Local0, Local1)
 			Divide(IOA1, 256, Local2, Local3)
 
-			Subtract(FindSetLeftBit (IRQL), 1, Local4)
+			Local4 = FindSetLeftBit (IRQL) - 1
 
 			ENTER_CONFIG_MODE (5)
 			Store (Local0, IO1L)
@@ -1222,7 +1222,7 @@ Device(SIO) {
 			})
 			CreateWordField (Arg0, IRQX._INT, IRQL)
 
-			Subtract(FindSetLeftBit (IRQL), 1, Local0)
+			Local0 = FindSetLeftBit (IRQL) - 1
 
 			ENTER_CONFIG_MODE (5)
 			Store (Local0, IRQ1)

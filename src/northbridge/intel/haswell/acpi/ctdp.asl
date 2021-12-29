@@ -99,7 +99,7 @@ Scope (\_SB.PCI0.MCHC)
 			Return (0)
 		}
 
-		Debug = "Set TDP Down"
+		Printf ("Set TDP Down")
 
 		/* Set CTC */
 		CTCS = CTCD
@@ -135,7 +135,7 @@ Scope (\_SB.PCI0.MCHC)
 			Return (0)
 		}
 
-		Debug = "Set TDP Nominal"
+		Printf ("Set TDP Nominal")
 
 		/* Set PL1 */
 		PL1V = CTDN
@@ -173,7 +173,7 @@ Scope (\_SB.PCI0.MCHC)
 			Return (0)
 		}
 
-		Debug = "Enable PL1 Limit"
+		Printf ("Enable PL1 Limit")
 
 		/* Set _PPC to LFM */
 		Local0 = PSSS (LFM_)
@@ -201,7 +201,7 @@ Scope (\_SB.PCI0.MCHC)
 			Return (0)
 		}
 
-		Debug = "Disable PL1 Limit"
+		Printf ("Disable PL1 Limit")
 
 		/* Clear PL1 CLAMP bit */
 		PL1C = 0

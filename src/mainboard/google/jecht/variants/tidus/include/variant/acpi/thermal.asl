@@ -182,7 +182,7 @@ Scope (\_TZ)
 			}
 
 			// PECI raw value is an offset from Tj_max
-			Subtract (255, Local0, Local1)
+			Local1 = 255 - Local0
 
 			// Handle values greater than Tj_max
 			If (LGreaterEqual (Local1, \TMAX)) {
@@ -190,7 +190,7 @@ Scope (\_TZ)
 			}
 
 			// Subtract from Tj_max to get temperature
-			Subtract (\TMAX, Local1, Local0)
+			Local0 = \TMAX - Local1
 			Return (CTOK (Local0))
 		}
 

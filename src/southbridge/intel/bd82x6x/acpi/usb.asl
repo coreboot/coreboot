@@ -149,7 +149,7 @@ Device (XHC)
 
 		// Query flag clear and xHCI in auto mode
 		If(!(CDW1 & 0x1) && (XHCI == 2 || XHCI  == 3)) {
-			Debug = "XHCI Switch"
+			Printf ("XHCI Switch")
 			Local0 = 0
 			Local0 = XPRT & 0x03
 			If(Local0 == 0 || Local0 == 1) {

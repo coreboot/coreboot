@@ -37,19 +37,19 @@ Device (BAT)
 	Method (_BIF, 0, Serialized)
 	{
 		/* Design Capacity */
-		Store (DGCP * 10000 / DGVO, Index (PBIF, 1))
+		Store (DGCP * 10000 / DGVO, PBIF[1])
 
 		/* Last Full Charge Capacity */
-		Store (FLCP * 10000 / DGVO, Index (PBIF, 2))
+		Store (FLCP * 10000 / DGVO, PBIF[2])
 
 		/* Design Voltage */
-		Store (DGVO, Index (PBIF, 4))
+		Store (DGVO, PBIF[4])
 
 		/* Design Capacity of Warning */
-		Store (BDW * 10000 / DGVO, Index (PBIF, 5))
+		Store (BDW * 10000 / DGVO, PBIF[5])
 
 		/* Design Capacity of Low */
-		Store (BDL, Index (PBIF, 6))
+		Store (BDL, PBIF[6])
 
 		Return (PBIF)
 	}
@@ -70,22 +70,22 @@ Device (BAT)
 		* bit 1 = charging
 		* bit 2 = critical level
 		*/
-		Store (BSTS, Index (PBST, 0))
+		Store (BSTS, PBST[0])
 
 		/*
 		* 1: BATTERY PRESENT RATE
 		*/
-		Store (BPR, Index (PBST, 1))
+		Store (BPR, PBST[1])
 
 		/*
 		* 2: BATTERY REMAINING CAPACITY
 		*/
-		Store (BRC * 10000 / DGVO, Index (PBST, 2))
+		Store (BRC * 10000 / DGVO, PBST[2])
 
 		/*
 		* 3: BATTERY PRESENT VOLTAGE
 		*/
-		Store (BPV, Index (PBST, 3))
+		Store (BPV, PBST[3])
 
 		Return (PBST)
 	}

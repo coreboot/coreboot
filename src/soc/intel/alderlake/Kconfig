@@ -307,7 +307,7 @@ config FSP_FD_PATH
 
 config SOC_INTEL_ALDERLAKE_DEBUG_CONSENT
 	int "Debug Consent for ADL"
-	# USB DBC is more common for developers so make this default to 3 if
+	# USB DBC is more common for developers so make this default to 2 if
 	# SOC_INTEL_DEBUG_CONSENT=y
 	default 2 if SOC_INTEL_DEBUG_CONSENT
 	default 0

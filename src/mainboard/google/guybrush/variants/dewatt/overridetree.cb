@@ -140,22 +140,14 @@ chip soc/amd/cezanne
 		end
 		chip drivers/i2c/generic
 			register "hid" = ""10EC1019""
-			register "desc" = ""Realtek SPK AMP L""
-			register "uid" = "0"
-			register "probed" = "1"
-			device i2c 28 on end
-		end
-		chip drivers/i2c/generic
-			register "hid" = ""10EC1019""
 			register "desc" = ""Realtek SPK AMP R""
-			register "uid" = "1"
+			register "uid" = "0"
 			device i2c 29 on end
 		end
 		chip drivers/i2c/generic
 			register "hid" = ""10EC1019""
-			register "desc" = ""Realtek SPK AMP L1""
-			register "uid" = "2"
-			register "probed" = "1"
+			register "desc" = ""Realtek SPK AMP L""
+			register "uid" = "1"
 			device i2c 2a on end
 		end
 	end # I2C2

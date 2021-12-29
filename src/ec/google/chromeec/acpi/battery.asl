@@ -68,27 +68,27 @@ Method (BBIF, 2, Serialized)
 		Return (Arg1)
 	}
 	// Last Full Charge Capacity
-	Store (BTDF, Index (Arg1, 2))
+	Store (BTDF, Arg1[2])
 
 	// Design Voltage
-	Store (BTDV, Index (Arg1, 4))
+	Store (BTDV, Arg1[4])
 
 	// Design Capacity
 	Store (BTDA, Local0)
-	Store (Local0, Index (Arg1, 1))
+	Store (Local0, Arg1[1])
 
 	// Design Capacity of Warning
 	Divide (Multiply (Local0, DWRN), 100, , Local2)
-	Store (Local2, Index (Arg1, 5))
+	Store (Local2, Arg1[5])
 
 	// Design Capacity of Low
 	Divide (Multiply (Local0, DLOW), 100, , Local2)
-	Store (Local2, Index (Arg1, 6))
+	Store (Local2, Arg1[6])
 
 	// Get battery info from mainboard
-	Store (ToString(Concatenate(BMOD, 0x00)), Index (Arg1, 9))
-	Store (ToString(Concatenate(BSER, 0x00)), Index (Arg1, 10))
-	Store (ToString(Concatenate(BMFG, 0x00)), Index (Arg1, 12))
+	Store (ToString(Concatenate(BMOD, 0x00)), Arg1[9])
+	Store (ToString(Concatenate(BSER, 0x00)), Arg1[10])
+	Store (ToString(Concatenate(BMFG, 0x00)), Arg1[12])
 
 	Release (^BATM)
 	Return (Arg1)
@@ -108,30 +108,30 @@ Method (BBIX, 2, Serialized)
 		Return (Arg1)
 	}
 	// Last Full Charge Capacity
-	Store (BTDF, Index (Arg1, 3))
+	Store (BTDF, Arg1[3])
 
 	// Design Voltage
-	Store (BTDV, Index (Arg1, 5))
+	Store (BTDV, Arg1[5])
 
 	// Design Capacity
 	Store (BTDA, Local0)
-	Store (Local0, Index (Arg1, 2))
+	Store (Local0, Arg1[2])
 
 	// Design Capacity of Warning
 	Divide (Multiply (Local0, DWRN), 100, , Local2)
-	Store (Local2, Index (Arg1, 6))
+	Store (Local2, Arg1[6])
 
 	// Design Capacity of Low
 	Divide (Multiply (Local0, DLOW), 100, , Local2)
-	Store (Local2, Index (Arg1, 7))
+	Store (Local2, Arg1[7])
 
 	// Cycle Count
-	Store (BTCC, Index (Arg1, 8))
+	Store (BTCC, Arg1[8])
 
 	// Get battery info from mainboard
-	Store (ToString(Concatenate(BMOD, 0x00)), Index (Arg1, 16))
-	Store (ToString(Concatenate(BSER, 0x00)), Index (Arg1, 17))
-	Store (ToString(Concatenate(BMFG, 0x00)), Index (Arg1, 19))
+	Store (ToString(Concatenate(BMOD, 0x00)), Arg1[16])
+	Store (ToString(Concatenate(BSER, 0x00)), Arg1[17])
+	Store (ToString(Concatenate(BMFG, 0x00)), Arg1[19])
 
 	Release (^BATM)
 	Return (Arg1)
@@ -177,7 +177,7 @@ Method (BBST, 4, Serialized)
 	If (BFCR) {
 		Or (Local1, 0x04, Local1)
 	}
-	Store (Local1, Index (Arg1, 0))
+	Store (Local1, Arg1[0])
 
 	// Notify if battery state has changed since last time
 	If (LNotEqual (Local1, DeRefOf (Arg2))) {
@@ -195,7 +195,7 @@ Method (BBST, 4, Serialized)
 	//
 	// 1: BATTERY PRESENT RATE
 	//
-	Store (BTPR, Index (Arg1, 1))
+	Store (BTPR, Arg1[1])
 
 	//
 	// 2: BATTERY REMAINING CAPACITY
@@ -216,12 +216,12 @@ Method (BBST, 4, Serialized)
 			Store (Local2, Local1)
 		}
 	}
-	Store (Local1, Index (Arg1, 2))
+	Store (Local1, Arg1[2])
 
 	//
 	// 3: BATTERY PRESENT VOLTAGE
 	//
-	Store (BTVO, Index (Arg1, 3))
+	Store (BTVO, Arg1[3])
 
 	Release (^BATM)
 	Return (Arg1)

@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <console/streams.h>
 #include <cpu/x86/mtrr.h>
+#include <fsp/debug.h>
 #include <fsp/util.h>
 
 asmlinkage size_t fsp_write_line(uint8_t *buffer, size_t number_of_bytes)
@@ -30,6 +32,41 @@ static void fsp_gpio_config_check(enum fsp_call_phase phase, const char *call_st
 	default:
 		break;
 	}
+}
+
+enum fsp_log_level fsp_map_console_log_level(void)
+{
+	enum fsp_log_level fsp_debug_level;
+
+	switch (get_log_level()) {
+	case BIOS_EMERG:
+	case BIOS_ALERT:
+	case BIOS_CRIT:
+	case BIOS_ERR:
+		fsp_debug_level = FSP_LOG_LEVEL_ERR;
+		break;
+	case BIOS_WARNING:
+		fsp_debug_level = FSP_LOG_LEVEL_ERR_WARN;
+		break;
+	case BIOS_NOTICE:
+		fsp_debug_level = FSP_LOG_LEVEL_ERR_WARN_INFO;
+		break;
+	case BIOS_INFO:
+		fsp_debug_level = FSP_LOG_LEVEL_ERR_WARN_INFO_EVENT;
+		break;
+	case BIOS_DEBUG:
+	case BIOS_SPEW:
+		fsp_debug_level = FSP_LOG_LEVEL_VERBOSE;
+		break;
+	default:
+		fsp_debug_level = FSP_LOG_LEVEL_DISABLE;
+		break;
+	}
+
+	if (!CONFIG(DEBUG_RAM_SETUP))
+		fsp_debug_level = MIN(fsp_debug_level, FSP_LOG_LEVEL_ERR_WARN);
+
+	return fsp_debug_level;
 }
 
 /*-----------

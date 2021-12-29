@@ -156,7 +156,7 @@ Device (MCHC)
 			Return (0)
 		}
 
-		Debug = "Set TDP Down"
+		Printf ("Set TDP Down")
 
 		/* Set CTC */
 		CTCS = CTCD
@@ -192,7 +192,7 @@ Device (MCHC)
 			Return (0)
 		}
 
-		Debug = "Set TDP Nominal"
+		Printf ("Set TDP Nominal")
 
 		/* Set PL1 */
 		PL1V = CTDN

@@ -426,7 +426,7 @@ Device (EC0)
 		Divide (ToInteger (Arg1), 10, , Local1)
 
 		/* Adjust by EC temperature offset */
-		Subtract (Local1, ^TOFS, ^PATT)
+		^PATT = Local1 - ^TOFS
 
 		/* Set commit value with SELECT=0 and ENABLE=1 */
 		Store (0x02, ^PATC)
@@ -453,7 +453,7 @@ Device (EC0)
 		Divide (ToInteger (Arg1), 10, , Local1)
 
 		/* Adjust by EC temperature offset */
-		Subtract (Local1, ^TOFS, ^PATT)
+		^PATT = Local1 - ^TOFS
 
 		/* Set commit value with SELECT=1 and ENABLE=1 */
 		Store (0x03, ^PATC)
@@ -542,7 +542,7 @@ Device (EC0)
 		If (LEqual (^DDPN, 0)) {
 			Return (^TBMD)
 		} Else {
-			Subtract (^DDPN, 1, Local0)
+			Local0 = ^DDPN - 1
 			Return (Local0)
 		}
 	}

@@ -177,7 +177,7 @@ Device (EC0)
 		Printf ("Pstate Event 0x0E")
 
 		Store(\_SB.CP00._PPC, Local0)
-		Subtract(PPCM, 0x01, Local1)
+		Local1 = PPCM - 1
 
 		If(LLess(Local0, Local1)) {
 			Increment(Local0)

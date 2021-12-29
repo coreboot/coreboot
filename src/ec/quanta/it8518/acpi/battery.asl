@@ -306,7 +306,7 @@ Device (BATX)
 			Store (ECRC, Local1)
 		}
 
-		If (LAnd (BFWK, LAnd (ACPW, LNot (Local0))))
+		If (BFWK && ACPW && LNot (Local0))
 		{
 			// On AC power and battery is neither charging
 			// nor discharging.  Linux expects a full battery
@@ -317,8 +317,7 @@ Device (BATX)
 
 			// See if within ~3% of full
 			ShiftRight (Local2, 5, Local3)
-			If (LAnd (LGreater (Local1, Subtract (Local2, Local3)),
-			          LLess (Local1, Add (Local2, Local3))))
+			If (LGreater (Local1, Subtract (Local2, Local3)) && LLess (Local1, Add (Local2, Local3)))
 			{
 				Store (Local2, Local1)
 			}

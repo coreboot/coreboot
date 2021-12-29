@@ -201,7 +201,7 @@ Method (BBST, 4, Serialized)
 	// 2: BATTERY REMAINING CAPACITY
 	//
 	Store (BTRA, Local1)
-	If (LAnd (Arg3, LAnd (ACEX, LNot (LAnd (BFDC, BFCG))))) {
+	If (Arg3 && ACEX && LNot (BFDC && BFCG)) {
 		// On AC power and battery is neither charging
 		// nor discharging.  Linux expects a full battery
 		// to report same capacity as last full charge.
@@ -210,8 +210,7 @@ Method (BBST, 4, Serialized)
 
 		// See if within ~6% of full
 		ShiftRight (Local2, 4, Local3)
-		If (LAnd (LGreater (Local1, Subtract (Local2, Local3)),
-		          LLess (Local1, Add (Local2, Local3))))
+		If (LGreater (Local1, Subtract (Local2, Local3)) && LLess (Local1, Add (Local2, Local3)))
 		{
 			Store (Local2, Local1)
 		}

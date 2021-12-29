@@ -123,8 +123,8 @@
 			Store (2, Local1)
 			While (LLess (Local1, Subtract (SizeOf (BRIG), 1))) {
 				/* Local[23]: adjacent values in BRIG */
-				Store (DeRefOf (Index (BRIG, Local1)), Local2)
-				Store (DeRefOf (Index (BRIG, Add (Local1, 1))), Local3)
+				Store (DeRefOf (BRIG[Local1]), Local2)
+				Store (DeRefOf (BRIG[Add (Local1, 1)]), Local3)
 
 				If (LLess (Local0, Local3)) {
 					If (LOr (LLess (Local0, Local2),

@@ -42,7 +42,7 @@
 			{
 				Decrement (Local0)
 			}
-			XBCM (DerefOf (Index (BRIG, Local0)))
+			XBCM (DerefOf (BRIG[Local0]))
 		}
 	}
 
@@ -60,6 +60,6 @@
 			{
 				Increment (Local0)
 			}
-			XBCM (DerefOf (Index (BRIG, Local0)))
+			XBCM (DerefOf (BRIG[Local0]))
 		}
 	}

@@ -133,8 +133,7 @@ Device (BAT0)
 		//
 
 		Store (SWAB (BTPR), Local1)
-		If (LAnd (LNotEqual (Local1, 0xFFFFFFFF),
-		          LGreaterEqual (Local1, 0x8000))) {
+		If (LNotEqual (Local1, 0xFFFFFFFF) && LGreaterEqual (Local1, 0x8000)) {
 			Xor (Local1, 0xFFFF, Local1)
 			Increment (Local1)
 		}
@@ -144,13 +143,12 @@ Device (BAT0)
 		// 2: BATTERY REMAINING CAPACITY
 		//
 		Store (SWAB (BTRA), Local1)
-		If (LAnd (LNotEqual (Local1, 0xFFFFFFFF),
-		          LGreaterEqual (Local1, 0x8000))) {
+		If (LNotEqual (Local1, 0xFFFFFFFF) && LGreaterEqual (Local1, 0x8000)) {
 			Xor (Local1, 0xFFFF, Local1)
 			Increment (Local1)
 		}
 
-		If (LAnd (BFWK, LAnd (ACEX, LNot (Local0)))) {
+		If (BFWK && ACEX && LNot (Local0)) {
 			// On AC power and battery is neither charging
 			// nor discharging.  Linux expects a full battery
 			// to report same capacity as last full charge.
@@ -159,8 +157,8 @@ Device (BAT0)
 
 			// See if within ~3% of full
 			ShiftRight (Local2, 5, Local3)
-			If (LAnd (LGreater (Local1, Subtract (Local2, Local3)),
-			          LLess (Local1, Add (Local2, Local3))))
+			If (LGreater (Local1, Subtract (Local2, Local3)) &&
+			          LLess (Local1, Add (Local2, Local3)))
 			{
 				Store (Local2, Local1)
 			}

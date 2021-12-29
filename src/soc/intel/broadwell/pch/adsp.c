@@ -9,7 +9,6 @@
 #include <device/mmio.h>
 #include <soc/adsp.h>
 #include <soc/device_nvs.h>
-#include <soc/device_nvs.h>
 #include <soc/pch.h>
 #include <soc/rcba.h>
 #include <soc/intel/broadwell/pch/chip.h>

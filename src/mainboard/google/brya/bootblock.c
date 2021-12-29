@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <commonlib/region.h>
-#include <console/console.h>
 #include <cpu/intel/cpu_ids.h>
 #include <intelblocks/pmclib.h>
 #include <cf9_reset.h>

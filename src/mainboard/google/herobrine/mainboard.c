@@ -3,11 +3,9 @@
 #include "board.h"
 #include <boardid.h>
 #include <bootblock_common.h>
-#include <soc/clock.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
-#include <bootblock_common.h>
 #include <soc/clock.h>
 #include <soc/qupv3_config_common.h>
 #include <soc/qup_se_handlers_common.h>

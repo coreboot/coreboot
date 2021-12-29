@@ -9,7 +9,6 @@
 #include <soc/soc_util.h>
 #include <fsp/api.h>
 #include "chip.h"
-#include <device/pci.h>
 
 static void fsps_update_emmc_config(FSP_S_CONFIG *scfg,
 				const struct soc_amd_picasso_config *cfg)

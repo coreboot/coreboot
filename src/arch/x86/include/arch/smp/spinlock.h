@@ -25,17 +25,17 @@ typedef struct {
  * We make no fairness assumptions. They have a cost.
  */
 #define barrier() __asm__ __volatile__("" : : : "memory")
-#define spin_is_locked(x)	(*(volatile char *)(&(x)->lock) <= 0)
+#define spin_is_locked(x)	(*(volatile int *)(&(x)->lock) <= 0)
 #define spin_unlock_wait(x)	do { barrier(); } while (spin_is_locked(x))
 #undef barrier
 
 #define spin_lock_string \
 	"\n1:\t" \
-	"lock ; decb %0\n\t" \
+	"lock ; decl %0\n\t" \
 	"js 2f\n" \
 	".section .text.lock,\"ax\"\n" \
 	"2:\t" \
-	"cmpb $0,%0\n\t" \
+	"cmpl $0,%0\n\t" \
 	"rep;nop\n\t" \
 	"jle 2b\n\t" \
 	"jmp 1b\n" \
@@ -45,7 +45,7 @@ typedef struct {
  * This works. Despite all the confusion.
  */
 #define spin_unlock_string \
-	"movb $1,%0"
+	"movl $1,%0"
 
 static __always_inline void spin_lock(spinlock_t *lock)
 {

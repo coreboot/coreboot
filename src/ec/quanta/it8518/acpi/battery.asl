@@ -265,7 +265,7 @@ Device (BATX)
 		{
 			If (And (Local0, 1))
 			{
-				Subtract (0x10000, Local1, Local1)
+				Local1 = 0x10000 - Local1
 			}
 			Else
 			{

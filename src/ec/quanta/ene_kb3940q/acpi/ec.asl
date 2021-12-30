@@ -12,7 +12,7 @@ Device (EC0)
 {
 	Name (_HID, EISAID ("PNP0C09"))
 	Name (_UID, 1)
-	Name (_GPE, Add(EC_SCI_GPI, 16))	// GPE for Runtime SCI
+	Name (_GPE, EC_SCI_GPI + 16)	// GPE for Runtime SCI
 
 	OperationRegion (ERAM, EmbeddedControl, 0x00, 0xff)
 	Field (ERAM, ByteAcc, Lock, Preserve)

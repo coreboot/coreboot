@@ -38,7 +38,7 @@ Scope (\_TZ)
 			Multiply (Arg0, 10, Local0)
 
 			// Convert to Kelvin
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}
@@ -87,7 +87,7 @@ Scope (\_TZ)
 			}
 
 			// Adjust by offset to get Kelvin
-			Add (\_SB.PCI0.LPCB.EC0.TOFS, Local0, Local0)
+			Local0 += \_SB.PCI0.LPCB.EC0.TOFS
 
 			// Convert to 1/10 Kelvin
 			Multiply (Local0, 10, Local0)

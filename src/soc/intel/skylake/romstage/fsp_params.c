@@ -4,6 +4,7 @@
 #include <cpu/x86/msr.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
+#include <option.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -101,7 +102,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	/* HPET BDF already handled in coreboot code, so tell FSP to ignore UPDs */
 	m_cfg->PchHpetBdfValid = 0;
 
-	m_cfg->HyperThreading = CONFIG(FSP_HYPERTHREADING);
+	m_cfg->HyperThreading = get_uint_option("hyper_threading", CONFIG(FSP_HYPERTHREADING));
 }
 
 static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,

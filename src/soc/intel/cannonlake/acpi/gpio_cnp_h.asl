@@ -91,6 +91,6 @@ Method (GADD, 1, NotSerialized)
 		Local1 = Arg0 - GPP_I0
 	}
 	Store (PCRB (Local0), Local2)
-	Add (Local2, PAD_CFG_BASE, Local2)
+	Local2 += PAD_CFG_BASE
 	Return (Add (Local2, Multiply (Local1, 16)))
 }

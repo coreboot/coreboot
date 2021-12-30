@@ -109,7 +109,7 @@ Method (_CRS, 0, Serialized)
 		/* Set 64bit MMIO resource base and length */
 		Store (A4GS, MLEN)
 		Store (A4GB, MMIN)
-		Subtract (Add (MMIN, MLEN), 1, MMAX)
+		MMAX = Add (MMIN, MLEN) - 1
 	}
 
 	Return (MCRS)

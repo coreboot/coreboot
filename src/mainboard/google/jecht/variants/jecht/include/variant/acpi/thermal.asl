@@ -27,7 +27,7 @@ Scope (\_TZ)
 			Multiply (Arg0, 10, Local0)
 
 			// Convert to Kelvin
-			Add (Local0, 2732, Local0)
+			Local0 += 2732
 
 			Return (Local0)
 		}

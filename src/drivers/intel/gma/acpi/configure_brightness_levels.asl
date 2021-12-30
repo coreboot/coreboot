@@ -121,15 +121,13 @@
 
 			/* Local1: loop index (selectable values start at 2 in BRIG) */
 			Store (2, Local1)
-			While (LLess (Local1, Subtract (SizeOf (BRIG), 1))) {
+			While (LLess (Local1, SizeOf (BRIG) - 1)) {
 				/* Local[23]: adjacent values in BRIG */
 				Store (DeRefOf (BRIG[Local1]), Local2)
 				Store (DeRefOf (BRIG[Add (Local1, 1)]), Local3)
 
 				If (LLess (Local0, Local3)) {
-					If (LOr (LLess (Local0, Local2),
-						 LLess (Subtract (Local0, Local2),
-							Subtract (Local3, Local0)))) {
+					If (LOr (LLess (Local0, Local2), LLess (Local0 - Local2, Local3 - Local0))) {
 						Return (Local2)
 					} Else {
 						Return (Local3)

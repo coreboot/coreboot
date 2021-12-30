@@ -299,8 +299,8 @@ Device (ECP)
 		/* Report a second port range that is 0x400 above base port. */
 		CreateByteField (BUF6, 0x0B, I2HI)
 		CreateByteField (BUF6, 0x0D, I2RH)
-		Add (I2HI, 0x04, I2RH)
-		Add (I2HI, 0x04, I2HI)
+		I2RH = I2HI + 4
+		I2HI = I2HI + 4
 		EXIT_CONFIG_MODE()
 		Return (BUF6)
 	}

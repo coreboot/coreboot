@@ -73,15 +73,15 @@ Device (LPCB)
 			If (HPTE) {
 				CreateDWordField(BUF0, \_SB.PCI0.LPCB.HPET.FED0._BAS, HPT0)
 				If (Lequal(HPAS, 1)) {
-					Add(CONFIG_HPET_ADDRESS, 0x1000, HPT0)
+					HPT0 = CONFIG_HPET_ADDRESS + 0x1000
 				}
 
 				If (Lequal(HPAS, 2)) {
-					Add(CONFIG_HPET_ADDRESS, 0x2000, HPT0)
+					HPT0 = CONFIG_HPET_ADDRESS + 0x2000
 				}
 
 				If (Lequal(HPAS, 3)) {
-					Add(CONFIG_HPET_ADDRESS, 0x3000, HPT0)
+					HPT0 = CONFIG_HPET_ADDRESS + 0x3000
 				}
 			}
 

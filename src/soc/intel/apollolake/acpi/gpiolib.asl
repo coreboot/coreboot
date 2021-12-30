@@ -31,7 +31,7 @@ Scope (\_SB)
 	Method (GPC1, 0x1, Serialized)
 	{
 		/* Arg0 - GPIO DW0 address */
-		Store (Add (Arg0, 0x4), Local0)
+		Store (Arg0 + 4, Local0)
 		OperationRegion (PDW1, SystemMemory, Local0, 4)
 		Field (PDW1, AnyAcc, NoLock, Preserve) {
 			TEMP, 32
@@ -44,7 +44,7 @@ Scope (\_SB)
 	{
 		/* Arg0 - GPIO DW0 address */
 		/* Arg1 - Value for DW1 register */
-		Store (Add (Arg0, 0x4), Local0)
+		Store (Arg0 + 4, Local0)
 		OperationRegion (PDW1, SystemMemory, Local0, 4)
 		Field(PDW1, AnyAcc, NoLock, Preserve) {
 			TEMP,32
@@ -60,8 +60,8 @@ Scope (\_SB)
 		Store (0, Local1)
 		Or( Or (ShiftLeft (Arg0, 16), CONFIG_PCR_BASE_ADDRESS),
 					Local1, Local1)
-		Or( Add (PAD_CFG_BASE, Multiply (Arg1, Multiply (
-			GPIO_NUM_PAD_CFG_REGS, 4))), Local1, Local1)
+		Or(PAD_CFG_BASE + Multiply (Arg1, Multiply (
+			GPIO_NUM_PAD_CFG_REGS, 4)), Local1, Local1)
 		Return (Local1)
 	}
 

@@ -126,7 +126,7 @@ Scope (\_SB.PCI0.LPCB)
 						}
 						Sleep (1)
 						Arg1 = Arg0
-						Add (Local1, 1, Local1)
+						Local1 += 1
 						If (Local1 == 0x03) {
 							Break
 						}

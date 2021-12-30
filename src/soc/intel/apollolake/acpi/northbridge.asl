@@ -83,7 +83,7 @@ Method (_CRS, 0, Serialized)
 	And(\_SB.PCI0.MCHC.MCNF, 0xF0000000, PMAX)
 
 	/* Calculate PCI MMIO Length */
-	PLEN = Subtract(PMAX, PMIN) + 1
+	PLEN = PMAX - PMIN + 1
 
 	/* Find GFX resource area in GCRS */
 	CreateDwordField(MCRS, STOM._MIN, GMIN)
@@ -96,7 +96,7 @@ Method (_CRS, 0, Serialized)
 	/* Read TOLUD */
 	And(\_SB.PCI0.MCHC.TLUD, 0xFFF00000, GMAX)
 	Decrement(GMAX)
-	GLEN = Subtract(GMAX, GMIN) + 1
+	GLEN = GMAX - GMIN + 1
 
 	/* Patch PM02 range based on Memory Size */
 	If (LEqual (A4GS, 0)) {

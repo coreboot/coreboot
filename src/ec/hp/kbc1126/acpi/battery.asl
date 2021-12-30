@@ -230,7 +230,7 @@ Method (\ISTR, 2, Serialized)
 	{
 		Local1--
 		Divide (Local0, 10, Local2, Local0)
-		Add (Local2, 48, NUMB[Local1])
+		NUMB[Local1] = Local2 + 48
 	}
 	ToString (NUMB, Arg1, Local3)
 	Return (Local3)

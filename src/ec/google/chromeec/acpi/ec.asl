@@ -198,7 +198,7 @@ Device (EC0)
 		}
 
 		/* Adjust by offset to get Kelvin */
-		Add (\_SB.PCI0.LPCB.EC0.TOFS, Local0, Local0)
+		Local0 += \_SB.PCI0.LPCB.EC0.TOFS
 
 		/* Convert to 1/10 Kelvin */
 		Multiply (Local0, 10, Local0)

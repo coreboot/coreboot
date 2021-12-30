@@ -37,13 +37,13 @@ Device (HKEY)
 		Store (BTN, Local0)
 		If (LNotEqual (Local0, Zero)) {
 			Store (Zero, BTN)
-			Add (Local0, 0x1000, Local0)
+			Local0 += 0x1000
 			Return (Local0)
 		}
 		Store (BTAB, Local0)
 		If (LNotEqual (Local0, Zero)) {
 			Store (Zero, BTAB)
-			Add (Local0, 0x5000, Local0)
+			Local0 += 0x5000
 			Return (Local0)
 		}
 		Return (Zero)

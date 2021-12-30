@@ -85,11 +85,11 @@ External (\PPKG, MethodObj)
 			Store (GPSV (), Local0)
 
 			/* Active fan 10 degree below passive threshold */
-			Subtract (Local0, 10, Local0)
+			Local0 -= 10
 
 			If (\FLVL) {
 				/* Turn of 5 degree below trip point */
-				Subtract (Local0, 5, Local0)
+				Local0 -= 5
 			}
 
 			Return (C2K (Local0))

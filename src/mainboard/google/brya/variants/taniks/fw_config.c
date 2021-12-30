@@ -47,8 +47,8 @@ static void fw_config_handle(void *unused)
 		return;
 	}
 
-	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_MAX98357_ALC5682I_I2S))) {
-		printk(BIOS_INFO, "Configure audio over I2S with MAX98357 ALC5682I.\n");
+	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_MAX98357_ALC5682I_I2S_2WAY))) {
+		printk(BIOS_INFO, "Configure audio over I2S with MAX98357 ALC5682I with 4 speakers.\n");
 		gpio_configure_pads(dmic_enable_pads, ARRAY_SIZE(dmic_enable_pads));
 		gpio_configure_pads(i2s_enable_pads, ARRAY_SIZE(i2s_enable_pads));
 	}

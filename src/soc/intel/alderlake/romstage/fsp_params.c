@@ -10,6 +10,7 @@
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pcie_rp.h>
+#include <option.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
@@ -158,8 +159,7 @@ static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,
 
 	m_cfg->PrmrrSize = get_valid_prmrr_size();
 	m_cfg->EnableC6Dram = config->enable_c6dram;
-	/* Enable Hyper Threading */
-	m_cfg->HyperThreading = 1;
+	m_cfg->HyperThreading = get_uint_option("hyper_threading", CONFIG(FSP_HYPERTHREADING));
 }
 
 static void fill_fspm_security_params(FSP_M_CONFIG *m_cfg,

@@ -35,6 +35,7 @@ config CPU_SPECIFIC_OPTIONS
 	select GENERIC_GPIO_LIB
 	select HAVE_FSP_GOP
 	select HAVE_FSP_LOGO_SUPPORT
+	select HAVE_HYPERTHREADING
 	select HAVE_INTEL_FSP_REPO
 	select INTEL_CAR_NEM_ENHANCED
 	select HAVE_SMI_HANDLER
@@ -98,10 +99,6 @@ config MAX_CPUS
 	int
 	default 16 if MAINBOARD_SUPPORTS_COFFEELAKE_CPU
 	default 8
-
-config FSP_HYPERTHREADING
-	bool "Enable Hyper-Threading"
-	default y
 
 config ENABLE_SATA_TEST_MODE
 	bool "Enable SATA test mode"

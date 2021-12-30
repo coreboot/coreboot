@@ -154,3 +154,11 @@ config SOC_INTEL_SET_MIN_CLOCK_RATIO
 	  the lowest possible CPU clock. Enable this option if you need smallest
 	  possible CPU clock. This setting can be overruled by the OS if it has an
 	  p-state driver which can adjust the clock to its need.
+
+config HAVE_HYPERTHREADING
+	def_bool n
+
+config FSP_HYPERTHREADING
+	bool "Enable Hyper-Threading"
+	depends on HAVE_HYPERTHREADING
+	default y

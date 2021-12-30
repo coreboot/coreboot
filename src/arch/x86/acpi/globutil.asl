@@ -24,7 +24,7 @@ Method(SLEN, 1)
 
 Method(S2BF, 1, Serialized)
 {
-	Add(SLEN(Arg0), One, Local0)
+	Local0 = SLEN(Arg0) + 1
 	Name(BUFF, Buffer(Local0) {})
 	Store(Arg0, BUFF)
 	Return(BUFF)

@@ -36,7 +36,7 @@ Device (PM1) {
 			Return (0)
 		}
 		Multiply (Local0, 10, Local0)	/* Convert to 10th °C */
-		Return (Add (Local0, 2732))	/* Return as 10th Kelvin */
+		Return (Local0 + 2732)	/* Return as 10th Kelvin */
 	}
 }
 #endif
@@ -92,7 +92,7 @@ Device (PM2) {
 
 		Or (ShiftLeft (Local1, 8), Local0, Local0)
 		Store (Divide (Multiply (Local0, 10), 64), Local0)	/* Convert to 10th °C */
-		Return (Add (Local0, 2732))				/* Return as 10th Kelvin */
+		Return (Local0 + 2732)				/* Return as 10th Kelvin */
 	}
 }
 #endif

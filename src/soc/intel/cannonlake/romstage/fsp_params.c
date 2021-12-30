@@ -8,6 +8,7 @@
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pmclib.h>
+#include <option.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -25,6 +26,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	FSP_M_TEST_CONFIG *tconfig = &mupd->FspmTestConfig;
 	unsigned int i;
 	uint32_t mask = 0;
+
+	m_cfg->HyperThreading = get_uint_option("hyper_threading", CONFIG(FSP_HYPERTHREADING));
 
 	/*
 	 * Probe for no IGD and disable InternalGfx and panel power to prevent a

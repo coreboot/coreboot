@@ -30,10 +30,6 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	const uint8_t vtd = get_uint_option("vtd", 1);
 		mupd->FspmConfig.VtdDisable = !vtd;
 
-	const uint8_t ht = get_uint_option("hyper_threading",
-		mupd->FspmConfig.HyperThreading);
-	mupd->FspmConfig.HyperThreading = ht;
-
 	/* Enable/Disable Thunderbolt based on CMOS settings */
 	if (get_uint_option("thunderbolt", 1) == 0) {
 		mupd->FspmConfig.VtdItbtEnable = 0;

@@ -7,6 +7,7 @@
 #include <device/device.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
+#include <option.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
@@ -20,6 +21,8 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 {
 	unsigned int i;
 	uint32_t cpu_id, mask = 0;
+
+	m_cfg->HyperThreading = get_uint_option("hyper_threading", CONFIG(FSP_HYPERTHREADING));
 
 	m_cfg->InternalGfx = !CONFIG(SOC_INTEL_DISABLE_IGD) && is_devfn_enabled(SA_DEVFN_IGD);
 

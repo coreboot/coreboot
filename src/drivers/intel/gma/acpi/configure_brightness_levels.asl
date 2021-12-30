@@ -100,7 +100,7 @@
 		/* Divide round closest */
 		Method (DRCL, 2)
 		{
-			Return (Divide (Add (Arg0, Divide (Arg1, 2)), Arg1))
+			Return (Divide (Arg0 + Divide (Arg1, 2), Arg1))
 		}
 
 		Method (XBCM, 1, NotSerialized)
@@ -124,7 +124,7 @@
 			While (LLess (Local1, SizeOf (BRIG) - 1)) {
 				/* Local[23]: adjacent values in BRIG */
 				Store (DeRefOf (BRIG[Local1]), Local2)
-				Store (DeRefOf (BRIG[Add (Local1, 1)]), Local3)
+				Store (DeRefOf (BRIG[Local1 + 1]), Local3)
 
 				If (LLess (Local0, Local3)) {
 					If (LOr (LLess (Local0, Local2), LLess (Local0 - Local2, Local3 - Local0))) {

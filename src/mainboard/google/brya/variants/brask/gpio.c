@@ -26,10 +26,10 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D1, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
-	/* D11 : ISH_SPI_MISO ==> EN_PP3300_SSD */
-	PAD_CFG_GPO(GPP_D11, 1, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
+	/* F14 : GSXDIN ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_F14, 1, DEEP),
 	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
 	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */

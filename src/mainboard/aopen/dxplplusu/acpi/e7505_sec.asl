@@ -44,8 +44,8 @@ Method (_CRS, 0, NotSerialized)
 	And (\_SB.PCI0.TOLM, 0xF800, Local1)
 	ShiftRight (Local1, 0x04, Local1)
 	ShiftLeft (Local1, 0x14, MEML)
-	Subtract (IO_APIC_ADDR, 0x01, MEMH)
-	Subtract (IO_APIC_ADDR, MEML, LENM)
+	MEMH = IO_APIC_ADDR - 1
+	LENM = IO_APIC_ADDR - MEML
 
 	Return (PBRS)
 }

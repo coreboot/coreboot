@@ -52,7 +52,7 @@ Device (MBRS)
 		Decrement (Local1)
 		If (LGreater (Local1, 0x10))
 		{
-			Subtract (Local1, 0x0F, Local1)
+			Local1 -= 0x0F
 			Store (ShiftLeft (Local1, 0x14), MEM2)
 			Store (0x01000000, MS00)
 			Store (MS00, MS01)

@@ -273,7 +273,7 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
+				If (! _STA ()) {
 					Store (0, \FLVL)
 					Store (F0PW,
 						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
@@ -300,7 +300,7 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
+				If (! _STA ()) {
 					Store (1, \FLVL)
 					Store (F1PW,
 						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
@@ -327,7 +327,7 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
+				If (! _STA ()) {
 					Store (2, \FLVL)
 					Store (F2PW,
 						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
@@ -354,7 +354,7 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
+				If (! _STA ()) {
 					Store (3, \FLVL)
 					Store (F3PW,
 						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
@@ -381,7 +381,7 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
+				If (! _STA ()) {
 					Store (4, \FLVL)
 					Store (F4PW,
 						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)

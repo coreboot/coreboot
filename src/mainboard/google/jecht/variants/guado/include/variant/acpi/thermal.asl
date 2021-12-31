@@ -165,7 +165,7 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
+				If (! _STA ()) {
 					Store (0, \FLVL)
 					Store (FAN0_PWM,
 						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
@@ -192,7 +192,7 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
+				If (! _STA ()) {
 					Store (1, \FLVL)
 					Store (FAN1_PWM,
 						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
@@ -219,7 +219,7 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
+				If (! _STA ()) {
 					Store (2, \FLVL)
 					Store (FAN2_PWM,
 						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
@@ -246,7 +246,7 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
+				If (! _STA ()) {
 					Store (3, \FLVL)
 					Store (FAN3_PWM,
 						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
@@ -273,7 +273,7 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				If (LNot (_STA ())) {
+				If (! _STA ()) {
 					Store (4, \FLVL)
 					Store (FAN4_PWM,
 						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)

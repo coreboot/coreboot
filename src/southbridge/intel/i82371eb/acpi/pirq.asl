@@ -50,7 +50,7 @@ Device(intx) {						\
 		/* Use lowest available IRQ */		\
 		FindSetRightBit(IRQM, Local0)		\
 		if (Local0) {				\
-			Decrement(Local0)		\
+			Local0--			\
 		}					\
 		Store(Local0, pinx)			\
 	}						\

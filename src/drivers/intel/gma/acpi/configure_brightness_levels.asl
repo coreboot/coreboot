@@ -53,7 +53,7 @@
 
 			/* Always keep BCLP up to date, even if driver is not ready.
 			   It requires a full 8-bit brightness value. 255 = 100% */
-			Store (Divide (Multiply (Arg0, 255), 100), Local1)
+			Store (Divide (Arg0 * 255, 100), Local1)
 			If (LGreater(Local1, 255)) {
 				Store (255, Local1)
 			}
@@ -105,7 +105,7 @@
 
 		Method (XBCM, 1, NotSerialized)
 		{
-			Store (DRCL (Multiply (Arg0, BCLM), 100), BCLV)
+			Store (DRCL (Arg0 * BCLM, 100), BCLV)
 		}
 
 		/* Find value closest to BCLV in BRIG (which must be ordered) */
@@ -117,7 +117,7 @@
 				Return (Zero)
 			}
 			/* Local0: current percentage */
-			Store (DRCL (Multiply (BCLV, 100), BCLM), Local0)
+			Store (DRCL (BCLV * 100, BCLM), Local0)
 
 			/* Local1: loop index (selectable values start at 2 in BRIG) */
 			Store (2, Local1)

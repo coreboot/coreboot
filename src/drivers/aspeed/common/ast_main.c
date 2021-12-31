@@ -3,7 +3,6 @@
  * Authors: Dave Airlie <airlied@redhat.com>
  */
 
-#include <delay.h>
 #include <device/pci_def.h>
 
 #include "ast_drv.h"

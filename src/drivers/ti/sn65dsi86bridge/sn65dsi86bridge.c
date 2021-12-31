@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
-#include <delay.h>
 #include <endian.h>
 #include <device/i2c_simple.h>
 #include <dp_aux.h>

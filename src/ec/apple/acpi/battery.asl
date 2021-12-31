@@ -91,13 +91,13 @@ Device(BAT0)
 
 	Method(_BIF, 0, NotSerialized)
 	{
-		Index(BATS, 0x01) = ^^SBRW(0x0B, 0x18) * 10
-		Index(BATS, 0x02) = ^^SBRW(0x0B, 0x10) * 10
+		BATS[1] = ^^SBRW(0x0B, 0x18) * 10
+		BATS[2] = ^^SBRW(0x0B, 0x10) * 10
 
-		Index(BATS, 0x04) = ^^SBRW(0x0B, 0x19)
-		Index(BATS, 0x09) = ^^SBRB(0x0B, 0x21)
-		Index(BATS, 0x0B) = ^^SBRB(0x0B, 0x22)
-		Index(BATS, 0x0C) = ^^SBRB(0x0B, 0x20)
+		BATS[4] = ^^SBRW(0x0B, 0x19)
+		BATS[9] = ^^SBRB(0x0B, 0x21)
+		BATS[11] = ^^SBRB(0x0B, 0x22)
+		BATS[12] = ^^SBRB(0x0B, 0x20)
 
 		Return(BATS)
 	}
@@ -124,7 +124,7 @@ Device(BAT0)
 		}
 
 		Local1 = ^^SBRW(0x0B, 0x09)
-		Index(BATI, 0x03) = Local1
+		BATI[3] = Local1
 		Local0 = ^^SBRW(0x0B, 0x0A)
 
 		/* Sign-extend Local0.	*/
@@ -136,16 +136,16 @@ Device(BAT0)
 		}
 
 		Local0 *= Local1
-		Index(BATI, 1) = Local0 / 1000
-		Index(BATI, 2) = ^^SBRW(0x0B, 0x0F) * 10
+		BATI[1] = Local0 / 1000
+		BATI[2] = ^^SBRW(0x0B, 0x0F) * 10
 		If (HPAC) {
 			If (!(^^SBRW(0x0B, 0x16) & 0x40)) {
-				Index(BATI, 0) = 2
+				BATI[0] = 2
 			} Else {
-				Index(BATI, 0) = 0
+				BATI[0] = 0
 			}
 		} Else {
-			Index(BATI, 0) = 1
+			BATI[0] = 1
 		}
 
 		Return(BATI)

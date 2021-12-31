@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <device/mmio.h>
-#include <delay.h>
 #include <edid.h>
 #include <soc/addressmap.h>
 #include <soc/dp_intf.h>

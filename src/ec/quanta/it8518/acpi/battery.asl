@@ -67,7 +67,7 @@ Device (BATX)
 		{
 			// EC Is not ready
 			Sleep (5)
-			Decrement (Local0)
+			Local0--
 			If (LEqual (Local0, Zero))
 			{
 				Break

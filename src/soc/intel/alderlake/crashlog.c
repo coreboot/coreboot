@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <cbmem.h>
-#include <delay.h>
 #include <intelblocks/crashlog.h>
 #include <string.h>
 #include <soc/crashlog.h>

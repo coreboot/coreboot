@@ -18,7 +18,7 @@
 #pragma pack(pop)
 
 #include <commonlib/helpers.h>
-#include <stdlib.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 

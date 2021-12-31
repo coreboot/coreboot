@@ -5,7 +5,6 @@
 #include <device/device.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/i2c_tunnel/chip.h>
-#include <string.h>
 
 #define DALBOZ_DB_HDMI 0x1
 

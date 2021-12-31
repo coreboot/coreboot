@@ -3,7 +3,6 @@
 #include <console/console.h>
 #include <drivers/vpd/vpd.h>
 #include <console/uart.h>
-#include <string.h>
 
 #include "vpd.h"
 

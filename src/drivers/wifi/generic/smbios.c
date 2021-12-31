@@ -3,7 +3,6 @@
 #include <device/device.h>
 #include <device/pci_ids.h>
 #include <smbios.h>
-#include <string.h>
 
 #include "wifi_private.h"
 

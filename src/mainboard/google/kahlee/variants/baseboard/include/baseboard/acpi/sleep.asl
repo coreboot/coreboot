@@ -30,8 +30,8 @@ Method (_PTS, 1)
 
 	/* Clear wake status structure. */
 	Store (0, PEWD)
-	Store (0, Index(WKST,0))
-	Store (0, Index(WKST,1))
+	Store (0, WKST[0])
+	Store (0, WKST[1])
 	Store (7, UPWS)
 }
 

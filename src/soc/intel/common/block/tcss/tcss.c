@@ -11,7 +11,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/tcss.h>
-#include <stdlib.h>
 #include <drivers/intel/pmc_mux/conn/chip.h>
 
 #define BIAS_CTRL_VW_INDEX_SHIFT		16

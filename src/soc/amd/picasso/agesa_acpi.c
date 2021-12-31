@@ -18,7 +18,6 @@
 #include <amdblocks/ioapic.h>
 #include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
-#include <stdlib.h>
 #include <arch/mmio.h>
 
 static unsigned long gen_crat_hsa_entry(struct acpi_crat_header *crat, unsigned long current)

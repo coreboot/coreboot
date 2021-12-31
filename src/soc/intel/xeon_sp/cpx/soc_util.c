@@ -8,7 +8,6 @@
 #include <soc/pci_devs.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
-#include <stdlib.h>
 
 const struct SystemMemoryMapHob *get_system_memory_map(void)
 {

@@ -15,7 +15,6 @@
 #include <soc/acpi.h>
 #include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
-#include <stdlib.h>
 
 #define MAX_DEV_ID 0xFFFF
 

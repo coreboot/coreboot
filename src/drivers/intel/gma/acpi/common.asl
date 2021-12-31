@@ -40,7 +40,7 @@
 			Store (BRID (XBQC ()), Local0)
 			If (LNotEqual (Local0, 2))
 			{
-				Decrement (Local0)
+				Local0--
 			}
 			XBCM (DerefOf (BRIG[Local0]))
 		}

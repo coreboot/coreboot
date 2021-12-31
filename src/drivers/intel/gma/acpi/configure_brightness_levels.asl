@@ -83,7 +83,7 @@
 						Return (Ones)
 					}
 				}
-				Decrement (Local0)
+				Local0--
 			}
 
 			Return (Ones)

@@ -5,7 +5,6 @@
 #include <gpio.h>
 #include <soc/gpio.h>
 #include <soc/smi.h>
-#include <stdlib.h>
 #include <variant/gpio.h>
 
 static const struct soc_amd_gpio gpio_set_stage_ram[] = {

@@ -1166,7 +1166,7 @@ Device(SIO) {
 		{
 			Store (0x00, Local0)
 			ENTER_CONFIG_MODE (5)
-			If (LAnd(ACTR, IRQ1) ) {
+			If (ACTR && IRQ1) {
 				Store (0x0F, Local0)
 			}
 			ElseIf (Lor(LOr (IO1H, IO1L), LOr (IO2H, IO2L)))

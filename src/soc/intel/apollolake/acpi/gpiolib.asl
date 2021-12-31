@@ -68,7 +68,7 @@ Scope (\_SB)
 	Method (CHSA, 0x1, Serialized)
 	{
 		/* Arg0 - GPIO pad offset relative to the community */
-		Local1 = HOSTSW_OWN_REG_0 + Divide (Arg0, 32) * 4
+		Local1 = HOSTSW_OWN_REG_0 + Arg0 / 32 * 4
 		Return (Local1)
 	}
 

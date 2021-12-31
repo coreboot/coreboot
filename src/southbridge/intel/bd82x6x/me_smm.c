@@ -6,7 +6,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
-#include <string.h>
 
 #include "me.h"
 #include "pch.h"

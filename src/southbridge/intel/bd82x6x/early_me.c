@@ -8,7 +8,6 @@
 #include <device/pci_def.h>
 #include <halt.h>
 #include <southbridge/intel/common/me.h>
-#include <string.h>
 #include <timestamp.h>
 #include "me.h"
 #include "pch.h"

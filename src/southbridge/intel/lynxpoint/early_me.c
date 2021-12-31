@@ -5,7 +5,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <halt.h>
-#include <string.h>
+
 #include "me.h"
 #include "pch.h"
 

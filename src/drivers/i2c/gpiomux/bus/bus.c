@@ -5,8 +5,8 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
-#include <stdlib.h>
 #include <string.h>
+
 #include "chip.h"
 
 static const char *i2c_gpiomux_bus_acpi_name(const struct device *dev)

@@ -13,7 +13,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <thread.h>
-#include <timer.h>
 #include <timestamp.h>
 
 #define DEFAULT_MRC_CACHE "RW_MRC_CACHE"

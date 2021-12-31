@@ -201,7 +201,7 @@ Method (BBST, 4, Serialized)
 	// 2: BATTERY REMAINING CAPACITY
 	//
 	Store (BTRA, Local1)
-	If (Arg3 && ACEX && LNot (BFDC && BFCG)) {
+	If (Arg3 && ACEX && !(BFDC && BFCG)) {
 		// On AC power and battery is neither charging
 		// nor discharging.  Linux expects a full battery
 		// to report same capacity as last full charge.

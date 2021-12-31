@@ -489,7 +489,7 @@ Device (EC0)
 	 */
 	Method (_Q09, 0, NotSerialized)
 	{
-		If (LNot(Acquire (^PATM, 1000))) {
+		If (!Acquire (^PATM, 1000)) {
 			/* Read sensor ID for event */
 			Store (^PATI, Local0)
 

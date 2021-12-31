@@ -22,7 +22,7 @@ Method (BTSW, 1)
 	While (LNotEqual (BTIX, Arg0))
 	{
 		Sleep (1)
-		Decrement (Local0)
+		Local0--
 		If (LEqual (Local0, Zero))
 		{
 			Return (One)

@@ -19,7 +19,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <program_loading.h>
-#include <stdlib.h>
 #include <thread.h>
 #include <timer.h>
 #include <timestamp.h>

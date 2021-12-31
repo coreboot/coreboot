@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
+
 #include <assert.h>
 #include <cbmem.h>
 #include <cbfs.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 #include <console/console.h>
 #include <program_loading.h>
 #include <rmodule.h>
+#include <types.h>
 
 /* Change this define to get more verbose debugging for module loading. */
 #define PK_ADJ_LEVEL BIOS_NEVER

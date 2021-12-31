@@ -1,14 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <smp/node.h>
 #include <thread.h>
 #include <timer.h>
+#include <types.h>
 
 static u8 thread_stacks[CONFIG_STACK_SIZE * CONFIG_NUM_THREADS] __aligned(sizeof(uint64_t));
 static bool initialized;

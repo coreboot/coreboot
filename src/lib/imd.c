@@ -4,7 +4,6 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <imd.h>
-#include <stdlib.h>
 #include <string.h>
 #include <types.h>
 #include <imd_private.h>

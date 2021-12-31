@@ -4,9 +4,9 @@
 #include <bootmem.h>
 #include <cbmem.h>
 #include <device/resource.h>
-#include <stdlib.h>
 #include <symbols.h>
 #include <assert.h>
+#include <types.h>
 
 static int initialized;
 static int table_written;

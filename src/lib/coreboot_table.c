@@ -15,7 +15,6 @@
 #include <drivers/tpm/tpm_ppi.h>
 #include <fmap.h>
 #include <fw_config.h>
-#include <stdlib.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <bootmem.h>
@@ -23,6 +22,7 @@
 #include <inttypes.h>
 #include <spi_flash.h>
 #include <smmstore.h>
+#include <types.h>
 
 #if CONFIG(USE_OPTION_TABLE)
 #include <option_table.h>

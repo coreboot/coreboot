@@ -3,8 +3,6 @@
 #include <commonlib/bsd/compression.h>
 #include <commonlib/endian.h>
 #include <console/console.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 #include <symbols.h>
 #include <cbfs.h>
@@ -13,6 +11,7 @@
 #include <program_loading.h>
 #include <timestamp.h>
 #include <cbmem.h>
+#include <types.h>
 
 /* The type syntax for C is essentially unparsable. -- Rob Pike */
 typedef int (*checker_t)(struct cbfs_payload_segment *cbfssegs, void *args);

@@ -5,15 +5,14 @@
 #include <console/console.h>
 #include <ctype.h>
 #include <endian.h>
-#include <stdint.h>
 #include <bootmem.h>
-#include <stdlib.h>
 #include <string.h>
 #include <program_loading.h>
 #include <memrange.h>
 #include <fit.h>
 #include <boardid.h>
 #include <commonlib/stdlib.h>
+#include <types.h>
 
 static struct list_node image_nodes;
 static struct list_node config_nodes;

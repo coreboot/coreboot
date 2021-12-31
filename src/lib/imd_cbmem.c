@@ -7,7 +7,7 @@
 #include <cbmem.h>
 #include <imd.h>
 #include <lib.h>
-#include <stdlib.h>
+#include <types.h>
 
 /* The program loader passes on cbmem_top and the program entry point
    has to fill in the _cbmem_top_ptr symbol based on the calling arguments. */

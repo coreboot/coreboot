@@ -4,7 +4,6 @@
 #include <commonlib/helpers.h>
 #include <device/mmio.h>
 #include <soc/clock.h>
-#include <timer.h>
 #include <types.h>
 
 static struct clock_freq_config qspi_core_cfg[] = {

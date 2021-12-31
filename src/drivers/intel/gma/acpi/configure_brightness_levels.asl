@@ -53,7 +53,7 @@
 
 			/* Always keep BCLP up to date, even if driver is not ready.
 			   It requires a full 8-bit brightness value. 255 = 100% */
-			Store (Divide (Arg0 * 255, 100), Local1)
+			Store (Arg0 * 255 / 100, Local1)
 			If (LGreater(Local1, 255)) {
 				Store (255, Local1)
 			}
@@ -100,7 +100,7 @@
 		/* Divide round closest */
 		Method (DRCL, 2)
 		{
-			Return (Divide (Arg0 + Divide (Arg1, 2), Arg1))
+			Return ((Arg0 + Arg1 / 2) / Arg1)
 		}
 
 		Method (XBCM, 1, NotSerialized)

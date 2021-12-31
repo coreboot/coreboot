@@ -1472,6 +1472,11 @@ void pci_domain_scan_bus(struct device *dev)
 	pci_scan_bus(link, PCI_DEVFN(0, 0), 0xff);
 }
 
+void pci_dev_disable_bus_master(const struct device *dev)
+{
+	pci_update_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MASTER, 0x0);
+}
+
 /**
  * Take an INT_PIN number (0, 1 - 4) and convert
  * it to a string ("NO PIN", "PIN A" - "PIN D")
@@ -1664,10 +1669,5 @@ void pci_assign_irqs(struct device *dev, const unsigned char pIntAtoD[4])
 		/* Change to level triggered. */
 		i8259_configure_irq_trigger(irq, IRQ_LEVEL_TRIGGERED);
 	}
-}
-
-void pci_dev_disable_bus_master(const struct device *dev)
-{
-	pci_update_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MASTER, 0x0);
 }
 #endif

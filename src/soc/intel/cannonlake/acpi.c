@@ -17,7 +17,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/systemagent.h>
-#include <string.h>
 
 #include "chip.h"
 

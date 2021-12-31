@@ -18,7 +18,6 @@
 #include <soc/pm.h>
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
-#include <string.h>
 #include <types.h>
 
 /*

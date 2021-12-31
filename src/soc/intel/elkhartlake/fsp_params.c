@@ -14,7 +14,6 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>
-#include <string.h>
 #include <types.h>
 
 /* SATA DEVSLP idle timeout default values */

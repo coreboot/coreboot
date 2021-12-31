@@ -11,7 +11,6 @@
 #include <soc/pci_devs.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <stdlib.h>
-#include <string.h>
 #include <types.h>
 
 #define MIN_SHARED_IRQ		16

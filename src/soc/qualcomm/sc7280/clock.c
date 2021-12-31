@@ -2,7 +2,6 @@
 
 #include <assert.h>
 #include <commonlib/helpers.h>
-#include <delay.h>
 #include <device/mmio.h>
 #include <soc/clock.h>
 #include <timer.h>

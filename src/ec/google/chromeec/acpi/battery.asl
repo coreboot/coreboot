@@ -78,11 +78,11 @@ Method (BBIF, 2, Serialized)
 	Store (Local0, Arg1[1])
 
 	// Design Capacity of Warning
-	Divide (Multiply (Local0, DWRN), 100, , Local2)
+	Divide (Local0 * DWRN, 100, , Local2)
 	Store (Local2, Arg1[5])
 
 	// Design Capacity of Low
-	Divide (Multiply (Local0, DLOW), 100, , Local2)
+	Divide (Local0 * DLOW, 100, , Local2)
 	Store (Local2, Arg1[6])
 
 	// Get battery info from mainboard
@@ -118,11 +118,11 @@ Method (BBIX, 2, Serialized)
 	Store (Local0, Arg1[2])
 
 	// Design Capacity of Warning
-	Divide (Multiply (Local0, DWRN), 100, , Local2)
+	Divide (Local0 * DWRN, 100, , Local2)
 	Store (Local2, Arg1[6])
 
 	// Design Capacity of Low
-	Divide (Multiply (Local0, DLOW), 100, , Local2)
+	Divide (Local0 * DLOW, 100, , Local2)
 	Store (Local2, Arg1[7])
 
 	// Cycle Count

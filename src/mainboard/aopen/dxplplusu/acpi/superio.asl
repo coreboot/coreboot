@@ -144,7 +144,7 @@ Method (MLED, 1, NotSerialized)
 		Store (0x00, LED1)
 	}
 
-	If (LOr (LEqual (Arg0, 0x01), LEqual (Arg0, 0x02)))
+	If (LEqual (Arg0, 0x01) || LEqual (Arg0, 0x02))
 	{
 		Store (0x01, LED1)
 	}
@@ -154,7 +154,7 @@ Method (MLED, 1, NotSerialized)
 		Store (0x02, LED1)
 	}
 
-	If (LOr (LEqual (Arg0, 0x04), LEqual (Arg0, 0x05)))
+	If (LEqual (Arg0, 0x04) || LEqual (Arg0, 0x05))
 	{
 		Store (0x03, LED1)
 	}

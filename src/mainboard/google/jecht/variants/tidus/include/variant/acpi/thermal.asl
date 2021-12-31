@@ -112,7 +112,7 @@ Scope (\_TZ)
 			}
 
 			// Check for invalid readings
-			If (LOr (LEqual (Local0, 255), LEqual (Local0, 0))) {
+			If (LEqual (Local0, 255) || LEqual (Local0, 0)) {
 				Store (THERMAL_POLICY_0_THRESHOLD_ON, Local0)
 			}
 
@@ -177,7 +177,7 @@ Scope (\_TZ)
 			}
 
 			// Check for invalid readings
-			If (LOr (LEqual (Local0, 255), LEqual (Local0, 0))) {
+			If (LEqual (Local0, 255) || LEqual (Local0, 0)) {
 				Return (CTOK (FAN0_0_THRESHOLD_ON))
 			}
 

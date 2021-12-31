@@ -135,7 +135,7 @@ Device (BAT0)
 		Store (SWAB (BTPR), Local1)
 		If (LNotEqual (Local1, 0xFFFFFFFF) && LGreaterEqual (Local1, 0x8000)) {
 			Xor (Local1, 0xFFFF, Local1)
-			Increment (Local1)
+			Local1++
 		}
 		Store (Local1, PBST[1])
 
@@ -145,7 +145,7 @@ Device (BAT0)
 		Store (SWAB (BTRA), Local1)
 		If (LNotEqual (Local1, 0xFFFFFFFF) && LGreaterEqual (Local1, 0x8000)) {
 			Xor (Local1, 0xFFFF, Local1)
-			Increment (Local1)
+			Local1++
 		}
 
 		If (BFWK && ACEX && LNot (Local0)) {

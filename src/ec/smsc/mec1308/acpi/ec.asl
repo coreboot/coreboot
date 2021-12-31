@@ -69,7 +69,7 @@ Device (EC0)
 		// Force a read of CPU temperature
 		Store (CPUT, Local0)
 		/* So that we don't get a warning that Local0 is unused.  */
-		Increment (Local0)
+		Local0++
 	}
 
 	PowerResource (FNP0, 0, 0)

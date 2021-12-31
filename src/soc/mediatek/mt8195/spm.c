@@ -8,7 +8,6 @@
 #include <soc/spm.h>
 #include <soc/spm_common.h>
 #include <soc/symbols.h>
-#include <string.h>
 #include <timer.h>
 
 #define SPM_SYSTEM_BASE_OFFSET	0x40000000

@@ -148,7 +148,7 @@ Device (BAT0)
 			Local1++
 		}
 
-		If (BFWK && ACEX && LNot (Local0)) {
+		If (BFWK && ACEX && !Local0) {
 			// On AC power and battery is neither charging
 			// nor discharging.  Linux expects a full battery
 			// to report same capacity as last full charge.

@@ -91,7 +91,7 @@ Device (PM2) {
 		Release (EC_MUTEX)
 
 		Or (ShiftLeft (Local1, 8), Local0, Local0)
-		Store (Divide (Multiply (Local0, 10), 64), Local0)	/* Convert to 10th °C */
+		Store (Divide (Local0 * 10, 64), Local0)	/* Convert to 10th °C */
 		Return (Local0 + 2732)				/* Return as 10th Kelvin */
 	}
 }

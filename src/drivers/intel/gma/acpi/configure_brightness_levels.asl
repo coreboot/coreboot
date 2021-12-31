@@ -127,7 +127,7 @@
 				Store (DeRefOf (BRIG[Local1 + 1]), Local3)
 
 				If (LLess (Local0, Local3)) {
-					If (LOr (LLess (Local0, Local2), LLess (Local0 - Local2, Local3 - Local0))) {
+					If (LLess (Local0, Local2) || LLess (Local0 - Local2, Local3 - Local0)) {
 						Return (Local2)
 					} Else {
 						Return (Local3)

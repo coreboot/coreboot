@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <delay.h>
 #include <dp_aux.h>
 #include <console/console.h>
 #include <timer.h>

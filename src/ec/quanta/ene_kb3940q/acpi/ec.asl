@@ -180,7 +180,7 @@ Device (EC0)
 		Local1 = PPCM - 1
 
 		If(LLess(Local0, Local1)) {
-			Increment(Local0)
+			Local0++
 			\PPCN ()
 		}
 

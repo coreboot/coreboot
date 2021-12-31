@@ -113,7 +113,7 @@ Device (ICH0)
 		CreateByteField (MSBF, \_SB_.PCI0.ICH0.PMIO._LEN, IOAL)
 
 		Store (PBAR, Local0)
-		If ( Land(Local0, 0x01) )
+		If (Local0 && 1)
 		{
 			And (Local0, 0xFFFE, Local0)
 			Store (Local0, IOA1)
@@ -128,7 +128,7 @@ Device (ICH0)
 		CreateByteField (MSBF, \_SB_.PCI0.ICH0.GPIO._LEN, IOSL)
 
 		Store (GBAR, Local0)
-		If ( Land(Local0, 0x01) ) {
+		If (Local0 && 1) {
 			And (Local0, 0xFFFE, Local0)
 			Store (Local0, IOS1)
 			Store (Local0, IOS2)

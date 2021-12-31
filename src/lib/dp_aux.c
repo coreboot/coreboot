@@ -2,7 +2,6 @@
 
 #include <dp_aux.h>
 #include <console/console.h>
-#include <timer.h>
 
 bool dp_aux_request_is_write(enum aux_request request)
 {

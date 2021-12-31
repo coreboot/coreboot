@@ -37,7 +37,7 @@ Device (MBRS)
 		CreateQWordField (MSBF, \_SB.MBRS._Y1C._LEN, LELM)
 
 		And (\_SB.PCI0.RLAR, 0x03FF, Local1)
-		Increment (Local1)
+		Local1++
 		If (LGreater (Local1, 0x40))
 		{
 			ShiftLeft (Local1, 0x1A, LELM)

@@ -41,8 +41,8 @@ Method(SCMP, 2)
 	Store(MIN(Local5, Local6), Local7)
 
 	While(LLess(Local4, Local7)) {
-		Store(Derefof(Index(Local0, Local4)), Local2)
-		Store(Derefof(Index(Local1, Local4)), Local3)
+		Store(Derefof(Local0[Local4]), Local2)
+		Store(Derefof(Local1[Local4]), Local3)
 		if (LGreater(Local2, Local3)) {
 			Return(One)
 		} else {
@@ -78,8 +78,8 @@ Method(WCMP, 2)
 	Store(SLEN(Arg1), Local3)
 
 	While(LLess(Local2, Local3)) {
-		if (LNotEqual(Derefof(Index(Local0, Local2)),
-			Derefof(Index(Local1, Local2)))) {
+		if (LNotEqual(Derefof(Local0[Local2]),
+			Derefof(Local1[Local2]))) {
 			Return(0)
 		}
 		Increment(Local2)

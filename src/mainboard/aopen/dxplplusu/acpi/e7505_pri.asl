@@ -49,7 +49,7 @@ Device (MBRS)
 		CreateDWordField (MSBF, \_SB.MBRS._Y1D._LEN, MEM2)
 		And (\_SB.PCI0.TOLM, 0xF800, Local1)
 		ShiftRight (Local1, 0x04, Local1)
-		Decrement (Local1)
+		Local1--
 		If (LGreater (Local1, 0x10))
 		{
 			Local1 -= 0x0F

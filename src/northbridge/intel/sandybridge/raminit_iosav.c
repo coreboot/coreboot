@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <commonlib/helpers.h>
-#include <delay.h>
 #include <types.h>
 
 #include "raminit_native.h"

@@ -50,7 +50,7 @@ Method(SCMP, 2)
 				Return(Ones)
 			}
 		}
-		Increment(Local4)
+		Local4++
 	}
 	if (LLess(Local4, Local5)) {
 		Return(One)
@@ -82,7 +82,7 @@ Method(WCMP, 2)
 			Derefof(Local1[Local2]))) {
 			Return(0)
 		}
-		Increment(Local2)
+		Local2++
 	}
 	Return(One)
 }

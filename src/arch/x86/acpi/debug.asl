@@ -153,7 +153,7 @@ Method(DBGO, 1)
 				return (0)
 			}
 			OUTC(Local0)
-			Increment(Local1)
+			Local1++
 		}
 	}
 	return (0)

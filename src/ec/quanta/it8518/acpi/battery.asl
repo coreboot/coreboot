@@ -275,7 +275,7 @@ Device (BATX)
 		}
 		Else
 		{
-			If (LNot (AND (Local0, 2)))
+			If (!(AND (Local0, 2)))
 			{
 				// Battery is not charging
 				Store (Zero, Local1)
@@ -306,7 +306,7 @@ Device (BATX)
 			Store (ECRC, Local1)
 		}
 
-		If (BFWK && ACPW && LNot (Local0))
+		If (BFWK && ACPW && !Local0)
 		{
 			// On AC power and battery is neither charging
 			// nor discharging.  Linux expects a full battery

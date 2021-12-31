@@ -58,7 +58,7 @@
 			Store (BRID (XBQC ()), Local0)
 			If (LNotEqual (Local0, SizeOf(BRIG) - 1))
 			{
-				Increment (Local0)
+				Local0++
 			}
 			XBCM (DerefOf (BRIG[Local0]))
 		}

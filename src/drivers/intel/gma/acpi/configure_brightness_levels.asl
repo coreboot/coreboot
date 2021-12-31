@@ -134,7 +134,7 @@
 					}
 				}
 
-				Increment (Local1)
+				Local1++
 			}
 
 			/* Didn't find greater/equal value: use the last */

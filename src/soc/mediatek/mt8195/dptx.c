@@ -11,7 +11,6 @@
 #include <soc/dptx_reg.h>
 #include <soc/dp_intf.h>
 #include <string.h>
-#include <timer.h>
 
 #define ONE_BLOCK_SIZE			128
 

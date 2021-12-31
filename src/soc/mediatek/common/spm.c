@@ -6,7 +6,6 @@
 #include <soc/spm.h>
 #include <soc/spm_common.h>
 #include <string.h>
-#include <timer.h>
 
 #define SPMFW_HEADER_SIZE 16
 

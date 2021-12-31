@@ -7,7 +7,6 @@
 #include <soc/dptx.h>
 #include <soc/dptx_hal.h>
 #include <soc/dptx_reg.h>
-#include <timer.h>
 #include <types.h>
 
 #define REG_OFFSET_LIMIT 0x8000

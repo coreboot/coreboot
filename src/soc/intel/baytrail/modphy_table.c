@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <soc/modphy_table.h>
 
 struct modphy_entry reva0_modphy_table[] = { /* SOC stepping A0/A1 */

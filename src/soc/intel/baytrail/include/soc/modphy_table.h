@@ -3,6 +3,8 @@
 #ifndef _BAYTRAIL_MODPHY_TABLE_H_
 #define _BAYTRAIL_MODPHY_TABLE_H_
 
+#include <stdint.h>
+
 struct modphy_entry {
 	u8 port;
 	u32 reg;

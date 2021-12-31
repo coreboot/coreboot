@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <device/pci_ops.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include "gm45.h"

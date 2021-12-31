@@ -95,7 +95,7 @@ Method (_CRS, 0, Serialized)
 
 	/* Read TOLUD */
 	And(\_SB.PCI0.MCHC.TLUD, 0xFFF00000, GMAX)
-	Decrement(GMAX)
+	GMAX--
 	GLEN = GMAX - GMIN + 1
 
 	/* Patch PM02 range based on Memory Size */

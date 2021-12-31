@@ -306,7 +306,7 @@ Device(SIO) {
 			EXIT_CONFIG_MODE ()
 			ShiftLeft(Local1, 8, Local1)
 			Or(Local1, Local2, Local1)
-			If (LNot(Local0)) {
+			If (!Local0) {
 				Return (FDE)
 			}
 
@@ -724,7 +724,7 @@ Device(SIO) {
 		{
 			Store (0x00, Local0)
 			ENTER_CONFIG_MODE (3)
-			If (LNot(And(OPT2, 0x30)))
+			If (!And(OPT2, 0x30))
 			{
 				If (ACTR) {
 					Store (0x0F, Local0)

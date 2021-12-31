@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
-#include <delay.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>

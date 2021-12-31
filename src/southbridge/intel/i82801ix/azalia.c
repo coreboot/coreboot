@@ -6,7 +6,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/mmio.h>
-#include <delay.h>
 #include <device/azalia_device.h>
 #include "chip.h"
 #include "i82801ix.h"

@@ -4,7 +4,6 @@
 #include <boardid.h>
 #include <sar.h>
 #include <baseboard/variants.h>
-#include <delay.h>
 #include <gpio.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/intel/apollolake/chip.h>

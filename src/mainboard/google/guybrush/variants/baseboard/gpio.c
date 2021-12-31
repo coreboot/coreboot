@@ -4,7 +4,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
-#include <delay.h>
 #include <gpio.h>
 #include <soc/gpio.h>
 

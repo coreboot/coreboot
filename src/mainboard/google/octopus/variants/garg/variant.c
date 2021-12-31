@@ -5,7 +5,6 @@
 #include <ec/google/chromeec/ec.h>
 #include <drivers/intel/gma/opregion.h>
 #include <baseboard/variants.h>
-#include <delay.h>
 #include <gpio.h>
 #include <variant/sku.h>
 #include <soc/intel/apollolake/chip.h>

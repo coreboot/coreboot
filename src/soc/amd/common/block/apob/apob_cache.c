@@ -8,7 +8,6 @@
 #include <commonlib/helpers.h>
 #include <commonlib/region.h>
 #include <console/console.h>
-#include <delay.h>
 #include <fmap.h>
 #include <spi_flash.h>
 #include <stdint.h>

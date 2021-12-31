@@ -75,7 +75,7 @@ PowerResource (PXP, 0, 0)
 					Break
 				}
 				Sleep (16)
-				Increment (Local0)
+				Local0++
 			}
 		} /* End PDS condition check */
 	}
@@ -95,7 +95,7 @@ PowerResource (PXP, 0, 0)
 					Break
 				}
 				Sleep (16)
-				Increment (Local0)
+				Local0++
 			}
 			Store (1, BDQA) /* Set BLKDQDA to 1 */
 			Store (1, BPLL) /* Set BLKPLLEN to 1 */

@@ -303,7 +303,7 @@ Device (HIDD)							// HID Device
 					//
 					Case (0x03)
 					{
-						HDSM (DeRefOf(Index(Arg3, 0x00)))
+						HDSM (DeRefOf(Arg3[0]))
 					}
 					//
 					// Function 4, HDEM. HID Driver Event Method.
@@ -332,7 +332,7 @@ Device (HIDD)							// HID Device
 					//
 					Case (0x06)
 					{
-						BTNE (DeRefOf(Index(Arg3, 0x00)))
+						BTNE (DeRefOf(Arg3[0]))
 					}
 					//
 					// Function 7 HEBC. Button implemented state.

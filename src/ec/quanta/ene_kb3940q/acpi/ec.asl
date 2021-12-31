@@ -194,7 +194,7 @@ Device (EC0)
 		Store(\_SB.CP00._PPC, Local0)
 
 		If(Local0) {
-			Decrement(Local0)
+			Local0--
 			\PPCN ()
 		}
 

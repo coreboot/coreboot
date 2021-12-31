@@ -4,7 +4,6 @@
  * ACPI - create the Fixed ACPI Description Tables (FADT)
  */
 
-#include <string.h>
 #include <console/console.h>
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>

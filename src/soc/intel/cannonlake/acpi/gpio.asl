@@ -92,7 +92,7 @@ Method (GADD, 1, NotSerialized)
 	}
 	Store (PCRB (Local0), Local2)
 	Local2 += PAD_CFG_BASE
-	Return (Local2 + Multiply (Local1, 16))
+	Return (Local2 + Local1 * 16)
 }
 
 /*

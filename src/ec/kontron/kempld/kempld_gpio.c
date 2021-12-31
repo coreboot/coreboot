@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <delay.h>
+
 #include "chip.h"
 #include "kempld.h"
 #include "kempld_internal.h"

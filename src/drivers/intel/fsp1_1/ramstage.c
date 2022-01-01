@@ -2,7 +2,6 @@
 
 #include <bootmode.h>
 #include <bootsplash.h>
-#include <acpi/acpi.h>
 #include <console/console.h>
 #include <fsp/ramstage.h>
 #include <fsp/util.h>

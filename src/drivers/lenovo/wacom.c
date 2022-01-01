@@ -2,7 +2,6 @@
 
 #include <types.h>
 #include <console/console.h>
-#include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <device/device.h>
 #include <device/pnp.h>

@@ -121,6 +121,15 @@ config COREINFO_SECONDARY_PAYLOAD
 	  coreinfo can be loaded as a secondary payload under SeaBIOS, GRUB,
 	  or any other payload that can load additional payloads.
 
+config GRUB2_SECONDARY_PAYLOAD
+	bool "Load GRUB2 as a secondary payload"
+	default n
+	depends on !PAYLOAD_GRUB2
+	select PAYLOAD_BUILD_GRUB2
+	help
+	  GRUB2 can be loaded as a secondary payload under SeaBIOS or any
+	  other payload that can load additional payloads.
+
 config MEMTEST_SECONDARY_PAYLOAD
 	bool "Load Memtest86+ as a secondary payload"
 	default n
@@ -136,6 +145,17 @@ config NVRAMCUI_SECONDARY_PAYLOAD
 	help
 	  nvramcui can be loaded as a secondary payload under SeaBIOS, GRUB,
 	  or any other payload that can load additional payloads.
+
+config SEABIOS_SECONDARY_PAYLOAD
+	bool "Load SeaBIOS as a secondary payload"
+	default n
+	depends on ARCH_X86
+	depends on !PAYLOAD_SEABIOS
+	depends on !PAYLOAD_SEAGRUB
+	select PAYLOAD_BUILD_SEABIOS
+	help
+	  SeaBIOS can be loaded as a secondary payload under GRUB or any
+	  other payload that can load additional payloads.
 
 config TINT_SECONDARY_PAYLOAD
 	bool "Load tint as a secondary payload"

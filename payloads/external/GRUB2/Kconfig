@@ -1,4 +1,14 @@
+config PAYLOAD_BUILD_GRUB2
+	bool
+
 if PAYLOAD_GRUB2
+
+config PAYLOAD_FILE
+	default "payloads/external/GRUB2/grub2/build/default_payload.elf"
+
+endif
+
+if PAYLOAD_BUILD_GRUB2
 
 choice
 	prompt "GRUB2 version"
@@ -42,12 +52,9 @@ config GRUB2_EXTRA_MODULES
 	  * gfxmenu for graphical menus (you'll need a theme as well)
 	  * gfxterm_background for setting background
 
-config PAYLOAD_FILE
-	default "payloads/external/GRUB2/grub2/build/default_payload.elf"
-
 config GRUB2_INCLUDE_RUNTIME_CONFIG_FILE
 	bool "Include GRUB2 runtime config file into ROM image"
-	depends on PAYLOAD_GRUB2
+	depends on PAYLOAD_BUILD_GRUB2
 	default n
 	help
 	  The GRUB2 payload reads its runtime configuration file from etc/grub.cfg
@@ -70,5 +77,22 @@ config GRUB2_RUNTIME_CONFIG_FILE
 	default "grub.cfg"
 	help
 	  The path of the GRUB2 runtime configuration file to be added to CBFS.
+
+endif
+
+if PAYLOAD_SEAGRUB
+
+config PAYLOAD_FILE
+	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
+
+config SEABIOS_BOOTORDER_FILE
+	default "payloads/external/GRUB2/bootorder-seagrub"
+
+config SEAGRUB_ALLOW_SEABIOS_BOOTMENU
+	bool "Allow to access SeaBIOS boot menu before launching GRUB"
+	help
+	  Enable this to allow the access to the boot menu of SeaBIOS. It
+	  increases the flexibility but allows to bypass the secure mechanism
+	  implemented in the GRUB runtime config. Please use this with caution.
 
 endif

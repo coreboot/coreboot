@@ -1,6 +1,7 @@
 config PAYLOAD_SEABIOS
 	bool "SeaBIOS"
 	depends on ARCH_X86
+	select PAYLOAD_BUILD_SEABIOS
 	help
 	  Select this option if you want to build a coreboot image
 	  with a SeaBIOS payload. If you don't know what this is

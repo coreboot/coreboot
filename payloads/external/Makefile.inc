@@ -1,7 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 # set up payload config and version files for later inclusion
-ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
+ifeq ($(CONFIG_PAYLOAD_BUILD_SEABIOS),y)
 PAYLOAD_CONFIG=payloads/external/SeaBIOS/seabios/.config
 PAYLOAD_VERSION=payloads/external/SeaBIOS/seabios/out/autoversion.h
 endif
@@ -61,7 +61,8 @@ etc/grub.cfg-required := the GRUB runtime configuration file ($(CONFIG_GRUB2_RUN
 # SeaBIOS
 
 SEABIOS_CC_OFFSET=$(if $(filter %ccache,$(HOSTCC)),2,1)
-payloads/external/SeaBIOS/seabios/out/bios.bin.elf: $(DOTCONFIG)
+SEABIOS_TARGET_PATH=payloads/external/SeaBIOS/seabios/out/bios.bin.elf
+$(SEABIOS_TARGET_PATH): $(DOTCONFIG)
 	$(MAKE) -C payloads/external/SeaBIOS \
 			HOSTCC="$(HOSTCC)" \
 			CC=$(word $(SEABIOS_CC_OFFSET),$(CC_x86_32)) \
@@ -88,9 +89,14 @@ payloads/external/SeaBIOS/seabios/out/bios.bin.elf: $(DOTCONFIG)
 			CONFIG_CONSOLE_UART_BASE_ADDRESS=$(CONFIG_CONSOLE_UART_BASE_ADDRESS) \
 			CONFIG_SEABIOS_HARDWARE_IRQ=$(CONFIG_SEABIOS_HARDWARE_IRQ)
 
-payloads/external/SeaBIOS/seabios/out/vgabios.bin: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
-payloads/external/SeaBIOS/seabios/.config: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
-payloads/external/SeaBIOS/seabios/out/autoversion.h: payloads/external/SeaBIOS/seabios/out/bios.bin.elf
+payloads/external/SeaBIOS/seabios/out/vgabios.bin: $(SEABIOS_TARGET_PATH)
+payloads/external/SeaBIOS/seabios/.config: $(SEABIOS_TARGET_PATH)
+payloads/external/SeaBIOS/seabios/out/autoversion.h: $(SEABIOS_TARGET_PATH)
+
+cbfs-files-$(CONFIG_SEABIOS_SECONDARY_PAYLOAD) += img/seabios
+img/seabios-file := $(SEABIOS_TARGET_PATH)
+img/seabios-type := payload
+img/seabios-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
 # add a SeaBIOS bootorder file
 ifneq ($(strip $(CONFIG_SEABIOS_BOOTORDER_FILE)),)
@@ -120,6 +126,18 @@ $(call add_intermediate, seabios_thread_optionroms, $(CBFSTOOL))
 	@printf "    SeaBIOS    Thread optionroms\n"
 	$(if $(CONFIG_UPDATE_IMAGE),-$(CBFSTOOL) $< remove -n etc/threads 2>/dev/null)
 	$(CBFSTOOL) $< add-int -i 2 -n etc/threads
+endif
+
+ifeq ($(CONFIG_PAYLOAD_SEAGRUB),y)
+ifneq ($(CONFIG_SEAGRUB_ALLOW_SEABIOS_BOOTMENU),y)
+$(call add_intermediate, seabios_bootmenu, $(CBFSTOOL))
+	@printf "    SeaBIOS    Disable boot menu\n"
+	$(if $(CONFIG_UPDATE_IMAGE),-$(CBFSTOOL) $< remove -n etc/show-boot-menu 2>/dev/null)
+	$(CBFSTOOL) $< add-int -i 0 -n etc/show-boot-menu
+else
+$(call add_intermediate, seabios_bootmenu, $(CBFSTOOL))
+	$(if $(CONFIG_UPDATE_IMAGE),-$(CBFSTOOL) $< remove -n etc/show-boot-menu 2>/dev/null)
+endif
 endif
 
 # Depthcharge
@@ -189,6 +207,13 @@ payloads/external/FILO/filo/build/version.h: filo
 
 # Grub
 
+GRUB_TARGET_PATH=payloads/external/GRUB2/grub2/build/default_payload.elf
+
+cbfs-files-$(CONFIG_GRUB2_SECONDARY_PAYLOAD) += img/grub2
+img/grub2-file := $(GRUB_TARGET_PATH)
+img/grub2-type := payload
+img/grub2-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
+
 grub2: $(obj)/config.h
 	$(MAKE) -C payloads/external/GRUB2 \
 			HOSTCC="$(HOSTCC)" \
@@ -201,7 +226,7 @@ grub2: $(obj)/config.h
 			CONFIG_GRUB2_REVISION_ID=$(CONFIG_GRUB2_REVISION_ID) \
 			CONFIG_GRUB2_EXTRA_MODULES=$(CONFIG_GRUB2_EXTRA_MODULES)
 
-payloads/external/GRUB2/grub2/build/default_payload.elf: grub2
+$(GRUB_TARGET_PATH): grub2
 
 # U-Boot
 

@@ -13,7 +13,15 @@ payload or can be made to work as one.
 the PCBIOS API that exists since the original IBM PC and was extended
 since. While originally written for emulators such as QEMU, it can be made
 to work as a coreboot payload and all the necessary code is in SeaBIOS'
-mainline code.
+mainline code, or as a secondary payload load by another payload, e.g. it
+can be loaded from GRUB2 with the following menuentry in the run time
+config of GRUB2:
+
+    menuentry "SeaBIOS" --unrestricted {
+        root=(cbfsdisk)
+        multiboot /img/seabios
+        module /vgaroms/seavgabios.bin
+    }
 
 ## Tianocore
 

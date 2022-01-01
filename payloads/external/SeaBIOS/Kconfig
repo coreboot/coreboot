@@ -1,4 +1,14 @@
+config PAYLOAD_BUILD_SEABIOS
+	bool
+
 if PAYLOAD_SEABIOS
+
+config PAYLOAD_FILE
+	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
+
+endif
+
+if PAYLOAD_BUILD_SEABIOS
 
 choice
 	prompt "SeaBIOS version"
@@ -113,9 +123,6 @@ config SEABIOS_SERCON_PORT_ADDR
 	  adapter emulation.
 
 	  By default primary console UART defined by TTYS0_BASE is used.
-
-config PAYLOAD_FILE
-	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
 
 config PAYLOAD_VGABIOS_FILE
 	string

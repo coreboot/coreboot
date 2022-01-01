@@ -423,7 +423,7 @@ Device (EC0)
 		Store (ToInteger (Arg0), ^PATI)
 
 		/* Temperature is passed in 1/10 Kelvin */
-		Divide (ToInteger (Arg1), 10, , Local1)
+		Local1 = ToInteger (Arg1) / 10
 
 		/* Adjust by EC temperature offset */
 		^PATT = Local1 - ^TOFS
@@ -450,7 +450,7 @@ Device (EC0)
 		Store (ToInteger (Arg0), ^PATI)
 
 		/* Temperature is passed in 1/10 Kelvin */
-		Divide (ToInteger (Arg1), 10, , Local1)
+		Local1 = ToInteger (Arg1) / 10
 
 		/* Adjust by EC temperature offset */
 		^PATT = Local1 - ^TOFS

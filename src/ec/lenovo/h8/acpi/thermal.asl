@@ -73,7 +73,7 @@ External (\PPKG, MethodObj)
 		Method(_TMP) {
 #if defined(EC_LENOVO_H8_ME_WORKAROUND)
 			/* Avoid tripping alarm if ME isn't booted at all yet */
-			If (!MEB1 && LEqual (\_SB.PCI0.LPCB.EC.TMP0, 128)) {
+			If (!MEB1 && \_SB.PCI0.LPCB.EC.TMP0 == 128) {
 				Return (C2K(40))
 			}
 			Store (1, MEB1)
@@ -160,7 +160,7 @@ External (\PPKG, MethodObj)
 		Method(_TMP) {
 #if defined(EC_LENOVO_H8_ME_WORKAROUND)
 			/* Avoid tripping alarm if ME isn't booted at all yet */
-			If (!MEB2 && LEqual (\_SB.PCI0.LPCB.EC.TMP1, 128)) {
+			If (!MEB2 && \_SB.PCI0.LPCB.EC.TMP1 == 128) {
 				Return (C2K(40))
 			}
 			Store (1, MEB2)

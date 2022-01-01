@@ -64,9 +64,9 @@ Device(EC)
 	Method (_REG, 2, NotSerialized)
 	{
 		/* Wait for ERAM driver loaded */
-		if (LEqual(Arg1, One)) {
+		if (Arg1 == 1) {
 			/* Fill HKEY defaults on first boot */
-			if (LEqual(^HKEY.INIT, Zero)) {
+			if (^HKEY.INIT == 0) {
 				Store (BTEB, ^HKEY.WBDC)
 				Store (WWEB, ^HKEY.WWAN)
 				Store (One, ^HKEY.INIT)

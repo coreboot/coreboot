@@ -5,7 +5,7 @@ Scope (\_SI)
 {
 	Method(_SST, 1, NotSerialized)
 	{
-		If (LEqual (Arg0, 0)) {
+		If (Arg0 == 0) {
 			/* Indicator off */
 
 			/* power TLED off */
@@ -14,7 +14,7 @@ Scope (\_SI)
 			\_SB.PCI0.LPCB.EC.TLED(0x07)
 		}
 
-		If (LEqual (Arg0, 1)) {
+		If (Arg0 == 1) {
 			/* working state */
 
 			/* power TLED on */
@@ -23,7 +23,7 @@ Scope (\_SI)
 			\_SB.PCI0.LPCB.EC.TLED(0x07)
 		}
 
-		If (LEqual (Arg0, 2)) {
+		If (Arg0 == 2) {
 			/* waking state */
 
 			/* power LED on */
@@ -32,7 +32,7 @@ Scope (\_SI)
 			\_SB.PCI0.LPCB.EC.TLED(0xc7)
 		}
 
-		If (LEqual (Arg0, 3)) {
+		If (Arg0 == 3) {
 			/* sleep state */
 
 			/* power TLED pulsing */

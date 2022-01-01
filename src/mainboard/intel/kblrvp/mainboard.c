@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
 #include <device/device.h>
 #include <gpio.h>
 #include <soc/nhlt.h>

@@ -35,7 +35,7 @@ Device (PM1) {
 		If (And (Local0, EC_ERROR_MASK)) {
 			Return (0)
 		}
-		Multiply (Local0, 10, Local0)	/* Convert to 10th °C */
+		Local0 *= 10
 		Return (Local0 + 2732)	/* Return as 10th Kelvin */
 	}
 }

@@ -47,6 +47,7 @@ static inline int get_console_loglevel(void)
 	 ENV_LIBAGESA || (ENV_SMM && CONFIG(DEBUG_SMI)))
 
 #if __CONSOLE_ENABLE__
+int get_log_level(void);
 void console_init(void);
 int console_log_level(int msg_level);
 
@@ -62,6 +63,7 @@ void console_time_report(void);
 
 enum { CONSOLE_LOG_NONE = 0, CONSOLE_LOG_FAST, CONSOLE_LOG_ALL };
 #else
+static inline int get_log_level(void) { return -1; }
 static inline void console_init(void) {}
 static inline int console_log_level(int msg_level) { return 0; }
 static inline int

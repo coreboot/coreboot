@@ -51,7 +51,7 @@ Method(DINI)
 Method(THRE)
 {
 	and(CLSR, 0x20, local0)
-	while (Lequal(local0, Zero)) {
+	while (local0 == 0) {
 		and(CLSR, 0x20, local0)
 	}
 }
@@ -72,7 +72,7 @@ Method(OUTX, 1)
 */
 Method(OUTC, 1)
 {
-	if (LEqual(Arg0, 0x0a)) {
+	if (Arg0 == 0x0a) {
 		OUTX(0x0d)
 	}
 	OUTX(Arg0)
@@ -133,7 +133,7 @@ Method(DBGD, 1)
 Method(DBGO, 1)
 {
 	/* DINI() */
-	if (LEqual(ObjectType(Arg0), 1)) {
+	if (ObjectType(Arg0) == 1) {
 		if (LGreater(Arg0, 0xffff)) {
 			DBGD(Arg0)
 		} else {
@@ -149,7 +149,7 @@ Method(DBGO, 1)
 		store(0, Local1)
 		while (One) {
 			store(GETC(BDBG, Local1), Local0)
-			if (LEqual(Local0, 0)) {
+			if (Local0 == 0) {
 				return (0)
 			}
 			OUTC(Local0)

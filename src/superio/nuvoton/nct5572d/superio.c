@@ -5,7 +5,6 @@
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
 #include <option.h>
-#include <acpi/acpi.h>
 #include <superio/conf_mode.h>
 
 #include "nct5572d.h"

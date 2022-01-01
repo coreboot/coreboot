@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
 #include <assert.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/gpio.h>

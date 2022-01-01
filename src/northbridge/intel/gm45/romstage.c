@@ -4,7 +4,6 @@
 #include <romstage_handoff.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
-#include <acpi/acpi.h>
 #include <arch/romstage.h>
 #include <northbridge/intel/gm45/gm45.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>

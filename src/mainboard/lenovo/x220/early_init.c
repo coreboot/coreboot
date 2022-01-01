@@ -2,7 +2,6 @@
 
 #include <arch/hpet.h>
 #include <stdint.h>
-#include <acpi/acpi.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>

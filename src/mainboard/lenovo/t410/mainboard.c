@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
-#include <acpi/acpi.h>
 #include <drivers/intel/gma/int15.h>
 #include "dock.h"
 

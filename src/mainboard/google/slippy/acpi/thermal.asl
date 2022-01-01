@@ -35,7 +35,7 @@ Scope (\_TZ)
 		// Convert from Degrees C to 1/10 Kelvin for ACPI
 		Method (CTOK, 1) {
 			// 10th of Degrees C
-			Multiply (Arg0, 10, Local0)
+			Local0 = Arg0 * 10
 
 			// Convert to Kelvin
 			Local0 += 2732
@@ -90,7 +90,7 @@ Scope (\_TZ)
 			Local0 += \_SB.PCI0.LPCB.EC0.TOFS
 
 			// Convert to 1/10 Kelvin
-			Multiply (Local0, 10, Local0)
+			Local0 *= 10
 			Return (Local0)
 		}
 

@@ -493,7 +493,7 @@ Device(SIO) {
 			If (Local4) {
 				Store(0x04, IOAL)
 			}
-			If (LEqual (Local0, 0xBC))
+			If (Local0 == 0xBC)
 			{
 				Store (0x04, IOLE)
 			}
@@ -564,7 +564,7 @@ Device(SIO) {
 			CreateByteField (Arg0, IO0._LEN, IOLE)
 			CreateWordField (Arg0, IRQX._INT, IRQL)
 
-			If (LEqual(IOAL, 4)) {
+			If (IOAL == 4) {
 				Store(0x0, Local2)
 			} else {
 				Store(0x1, Local2)

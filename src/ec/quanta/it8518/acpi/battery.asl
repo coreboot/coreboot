@@ -119,7 +119,7 @@ Device (BATX)
 		//
 		If (Local7)
 		{
-			Multiply (SBFC, 10, PBIF[2])
+			PBIF[2] = SBFC * 10
 		}
 		Else
 		{
@@ -137,7 +137,7 @@ Device (BATX)
 		//
 		If (Local7)
 		{
-			Multiply (SBDC, 10, Local0)
+			Local0 = SBDC * 10
 		}
 		Else
 		{
@@ -286,7 +286,7 @@ Device (BATX)
 
 		If (Local6)
 		{
-			Multiply (ECVO, Local1, Local1)
+			Local1 *= ECVO
 			Divide (Local1, 1000, , Local1)
 		}
 		Store (Local1, PBST[1])
@@ -299,7 +299,7 @@ Device (BATX)
 		//   ACPI spec     : 0 - mWh   : 1 - mAh
 		If (Local6)
 		{
-			Multiply (ECRC, 10, Local1)
+			Local1 = ECRC * 10
 		}
 		Else
 		{

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
 #include <baseboard/variant.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <ec/google/chromeec/ec.h>

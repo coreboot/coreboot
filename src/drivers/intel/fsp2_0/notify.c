@@ -4,19 +4,19 @@
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <fsp/util.h>
-#include <timestamp.h>
 #include <mode_switch.h>
+#include <timestamp.h>
 
 static void fsp_notify(enum fsp_notify_phase phase)
 {
-	uint32_t ret;
-	fsp_notify_fn fspnotify;
 	struct fsp_notify_params notify_params = { .phase = phase };
+	fsp_notify_fn fspnotify;
+	uint32_t ret;
 
 	if (!fsps_hdr.notify_phase_entry_offset)
 		die("Notify_phase_entry_offset is zero!\n");
 
-	fspnotify = (void *) (uintptr_t)(fsps_hdr.image_base +
+	fspnotify = (void *)(uintptr_t)(fsps_hdr.image_base +
 			    fsps_hdr.notify_phase_entry_offset);
 	fsp_before_debug_notify(fspnotify, &notify_params);
 
@@ -68,14 +68,10 @@ static void fsp_notify_dummy(void *arg)
 		fsp_notify(END_OF_FIRMWARE);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fsp_notify_dummy,
-						(void *) AFTER_PCI_ENUM);
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, fsp_notify_dummy,
-						(void *) READY_TO_BOOT);
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, fsp_notify_dummy,
-						(void *) READY_TO_BOOT);
+BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fsp_notify_dummy, (void *)AFTER_PCI_ENUM);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, fsp_notify_dummy, (void *)READY_TO_BOOT);
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, fsp_notify_dummy, (void *)READY_TO_BOOT);
 
-__weak void platform_fsp_notify_status(
-	enum fsp_notify_phase phase)
+__weak void platform_fsp_notify_status(enum fsp_notify_phase phase)
 {
 }

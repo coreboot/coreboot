@@ -29,10 +29,8 @@ static void fsp_temp_ram_exit(void)
 	printk(BIOS_DEBUG, "Calling TempRamExit: %p\n", temp_ram_exit);
 	status = temp_ram_exit(NULL);
 
-	if (status != FSP_SUCCESS) {
-		printk(BIOS_CRIT, "TempRamExit returned 0x%08x\n", status);
-		die("TempRamExit returned an error!\n");
-	}
+	if (status != FSP_SUCCESS)
+		die("TempRamExit returned with error 0x%08x!\n", status);
 
 	cbfs_unmap(mapping);
 }

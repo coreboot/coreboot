@@ -50,10 +50,8 @@ static void fsp_notify(enum fsp_notify_phase phase)
 
 	/* Handle any errors returned by FspNotify */
 	fsp_handle_reset(ret);
-	if (ret != FSP_SUCCESS) {
-		printk(BIOS_SPEW, "FspNotify returned 0x%08x\n", ret);
-		die("FspNotify returned an error!\n");
-	}
+	if (ret != FSP_SUCCESS)
+		die("FspNotify returned with error 0x%08x!\n", ret);
 
 	/* Allow the platform to run something after FspNotify */
 	platform_fsp_notify_status(phase);

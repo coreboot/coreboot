@@ -309,9 +309,8 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	/* Handle any errors returned by FspMemoryInit */
 	fsp_handle_reset(status);
 	if (status != FSP_SUCCESS) {
-		printk(BIOS_CRIT, "FspMemoryInit returned 0x%08x\n", status);
 		die_with_post_code(POST_RAM_FAILURE,
-			"FspMemoryInit returned an error!\n");
+			"FspMemoryInit returned with error 0x%08x!\n", status);
 	}
 
 	do_fsp_post_memory_init(s3wake, fsp_version);

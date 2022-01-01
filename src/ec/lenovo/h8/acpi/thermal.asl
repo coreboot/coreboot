@@ -11,7 +11,7 @@ Scope(\_TZ)
 
 	Method(C2K, 1, NotSerialized)
 	{
-		Multiply(Arg0, 10, Local0)
+		Local0 = Arg0 * 10
 		Local0 += 2732
 		if (LLessEqual(Local0, 2732)) {
 			Return (3000)

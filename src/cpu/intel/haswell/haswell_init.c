@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <acpi/acpi.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>

@@ -2,7 +2,6 @@
 
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
-#include <acpi/acpi.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
 // mainboard_enable is executed as first thing after

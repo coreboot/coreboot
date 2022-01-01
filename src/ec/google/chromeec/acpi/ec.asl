@@ -201,7 +201,7 @@ Device (EC0)
 		Local0 += \_SB.PCI0.LPCB.EC0.TOFS
 
 		/* Convert to 1/10 Kelvin */
-		Multiply (Local0, 10, Local0)
+		Local0 *= 10
 
 		Return (Local0)
 	}

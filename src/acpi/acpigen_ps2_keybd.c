@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <acpi/acpigen_ps2_keybd.h>
 #include <console/console.h>

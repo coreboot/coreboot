@@ -42,11 +42,11 @@
 		 */
 		Method (XBCM, 1, Serialized)
 		{
-			If (LEqual(ASLS, Zero))
+			If (ASLS == 0)
 			{
 				Return (Ones)
 			}
-			If (LEqual(And(MBOX, 0x4), Zero))
+			If (And(MBOX, 0x4) == 0)
 			{
 				Return (Ones)
 			}
@@ -60,7 +60,7 @@
 			/* also set valid bit */
 			Store (Or (Local1, 0x80000000), BCLP)
 
-			If (LEqual(ARDY, Zero))
+			If (ARDY == 0)
 			{
 				Return (Ones)
 			}
@@ -74,10 +74,10 @@
 			While (LGreater(Local0, Zero))
 			{
 				Sleep (1)
-				If (LEqual (And (ASLC, 0x2), 0)) {
+				If (And (ASLC, 0x2) == 0) {
 					/* Request has been processed, check status: */
 					And (ShiftRight (ASLC, 12), 0x3, Local1)
-					If (LEqual (Local1, 0)) {
+					If (Local1 == 0) {
 						Return (Zero)
 					} Else {
 						Return (Ones)
@@ -144,7 +144,7 @@
 
 	Method (XBCM, 1, NotSerialized)
 	{
-		If (LEqual(^BOX3.XBCM (Arg0), Ones))
+		If (^BOX3.XBCM (Arg0) == Ones)
 		{
 			^LEGA.XBCM (Arg0)
 		}

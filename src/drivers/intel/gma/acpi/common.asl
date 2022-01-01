@@ -7,7 +7,7 @@
 	Method(BRID, 1, NotSerialized)
 	{
 		Store (Match (BRIG, MEQ, Arg0, MTR, Zero, 2), Local0)
-		If (LEqual (Local0, Ones))
+		If (Local0 == Ones)
 		{
 			Return (SizeOf(BRIG) - 1)
 		}

@@ -7,7 +7,7 @@ Device (TBMC)
 	Name (_DDN, "Tablet Motion Control")
 	Method (TBMC)
 	{
-		If (LEqual (^^RCTM, One)) {
+		If (^^RCTM == 1) {
 			Return (0x1)
 		} Else {
 			Return (0x0)

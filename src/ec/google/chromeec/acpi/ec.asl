@@ -178,22 +178,22 @@ Device (EC0)
 		Store (\_SB.PCI0.LPCB.EC0.TINS (Arg0), Local0)
 
 		/* Check for sensor not calibrated */
-		If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNCA)) {
+		If (Local0 == \_SB.PCI0.LPCB.EC0.TNCA) {
 			Return (Zero)
 		}
 
 		/* Check for sensor not present */
-		If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNPR)) {
+		If (Local0 == \_SB.PCI0.LPCB.EC0.TNPR) {
 			Return (Zero)
 		}
 
 		/* Check for sensor not powered */
-		If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNOP)) {
+		If (Local0 == \_SB.PCI0.LPCB.EC0.TNOP) {
 			Return (Zero)
 		}
 
 		/* Check for sensor bad reading */
-		If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TBAD)) {
+		If (Local0 == \_SB.PCI0.LPCB.EC0.TBAD) {
 			Return (Zero)
 		}
 
@@ -539,7 +539,7 @@ Device (EC0)
 		 * DDPN = 0 is reserved for backwards compatibility.
 		 * If DDPN == 0 use TBMD to load appropriate DPTF table.
 		 */
-		If (LEqual (^DDPN, 0)) {
+		If (^DDPN == 0) {
 			Return (^TBMD)
 		} Else {
 			Local0 = ^DDPN - 1

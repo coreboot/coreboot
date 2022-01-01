@@ -23,11 +23,11 @@ Scope (\_SB)
 			/* If query is unsupported, but this code is compiled
 			 * in, assume the backlight exists physically.
 			 */
-			If (LEqual (1, \_SB.PCI0.LPCB.EC0.DFUD)) {
+			If (\_SB.PCI0.LPCB.EC0.DFUD == 1) {
 				Return (0xf)
 			}
 			/* If EC reports that backlight exists, trust it */
-			If (LEqual (1, \_SB.PCI0.LPCB.EC0.KBLE)) {
+			If (\_SB.PCI0.LPCB.EC0.KBLE == 1) {
 				Return (0xf)
 			}
 			/* Otherwise: no device -> disable */

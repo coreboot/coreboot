@@ -11,7 +11,7 @@ Mutex (BATM, 0)
 Method (BTSW, 1)
 {
 #ifdef EC_ENABLE_SECOND_BATTERY_DEVICE
-	If (LEqual (BTIX, Arg0)) {
+	If (BTIX == Arg0) {
 		Return (Zero)
 	}
 	If (Arg0 >= BTCN) {
@@ -23,7 +23,7 @@ Method (BTSW, 1)
 	{
 		Sleep (1)
 		Local0--
-		If (LEqual (Local0, Zero))
+		If (Local0 == 0)
 		{
 			Return (One)
 		}
@@ -182,7 +182,7 @@ Method (BBST, 4, Serialized)
 	// Notify if battery state has changed since last time
 	If (LNotEqual (Local1, DeRefOf (Arg2))) {
 		Store (Local1, Arg2)
-		If (LEqual(Arg0, 0)) {
+		If (Arg0 == 0) {
 			Notify (BAT0, 0x80)
 		}
 #ifdef EC_ENABLE_SECOND_BATTERY_DEVICE

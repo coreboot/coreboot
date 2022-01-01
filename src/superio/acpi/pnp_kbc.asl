@@ -156,7 +156,7 @@ Device (SUPERIO_ID(PS2, SUPERIO_KBC_PS2LDN)) {
 	Method (_STA)
 	{
 		Store (^^SUPERIO_ID(KBD, SUPERIO_KBC_LDN)._STA (), Local0)
-		If (LEqual (Local0, DEVICE_PRESENT_ACTIVE)) {
+		If (Local0 == DEVICE_PRESENT_ACTIVE) {
 			PNP_GENERIC_STA(SUPERIO_KBC_PS2LDN)
 		} Else {
 			Return (Local0)

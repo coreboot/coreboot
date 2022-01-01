@@ -81,7 +81,7 @@
 	ENTER_CONFIG_MODE (PM_LDN)\
 	  Store (PM_REG, Local0)\
 	EXIT_CONFIG_MODE ()\
-	If (LEqual(Local0, PM_VAL)) { Return (3) }\
+	If (Local0 == PM_VAL) { Return (3) }\
 	Else { Return (0) }\
 
 /* Disable power saving mode */

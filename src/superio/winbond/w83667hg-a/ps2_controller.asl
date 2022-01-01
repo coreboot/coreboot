@@ -54,7 +54,7 @@
 			/* Restore default SuperIO access */
 			Store(0xAA, SIOI)
 
-			if (LEqual(Local0, 0x0)) {
+			if (Local0 == 0) {
 				/* Mouse function selected */
 				Return (0xf)
 			}

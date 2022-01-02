@@ -179,7 +179,7 @@ Device (EC0)
 		Store(\_SB.CP00._PPC, Local0)
 		Local1 = PPCM - 1
 
-		If(LLess(Local0, Local1)) {
+		If(Local0 < Local1) {
 			Local0++
 			\PPCN ()
 		}

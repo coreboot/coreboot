@@ -133,7 +133,7 @@ Device (BAT0)
 		//
 
 		Store (SWAB (BTPR), Local1)
-		If (LNotEqual (Local1, 0xFFFFFFFF) && LGreaterEqual (Local1, 0x8000)) {
+		If (LNotEqual (Local1, 0xFFFFFFFF) && Local1 >= 0x8000) {
 			Xor (Local1, 0xFFFF, Local1)
 			Local1++
 		}
@@ -143,7 +143,7 @@ Device (BAT0)
 		// 2: BATTERY REMAINING CAPACITY
 		//
 		Store (SWAB (BTRA), Local1)
-		If (LNotEqual (Local1, 0xFFFFFFFF) && LGreaterEqual (Local1, 0x8000)) {
+		If (LNotEqual (Local1, 0xFFFFFFFF) && Local1 >= 0x8000) {
 			Xor (Local1, 0xFFFF, Local1)
 			Local1++
 		}

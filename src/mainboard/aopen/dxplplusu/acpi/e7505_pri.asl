@@ -38,7 +38,7 @@ Device (MBRS)
 
 		And (\_SB.PCI0.RLAR, 0x03FF, Local1)
 		Local1++
-		If (LGreater (Local1, 0x40))
+		If (Local1 > 0x40)
 		{
 			ShiftLeft (Local1, 0x1A, LELM)
 		}
@@ -50,7 +50,7 @@ Device (MBRS)
 		And (\_SB.PCI0.TOLM, 0xF800, Local1)
 		ShiftRight (Local1, 0x04, Local1)
 		Local1--
-		If (LGreater (Local1, 0x10))
+		If (Local1 > 0x10)
 		{
 			Local1 -= 0x0F
 			Store (ShiftLeft (Local1, 0x14), MEM2)

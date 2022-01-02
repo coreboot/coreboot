@@ -43,7 +43,7 @@ Method(SCMP, 2)
 	While(LLess(Local4, Local7)) {
 		Store(Derefof(Local0[Local4]), Local2)
 		Store(Derefof(Local1[Local4]), Local3)
-		if (LGreater(Local2, Local3)) {
+		if (Local2 > Local3) {
 			Return(One)
 		} else {
 			if (LLess(Local2, Local3)) {

@@ -125,10 +125,10 @@ Method(DBGO, 1)
 {
 	/* DINI() */
 	if (ObjectType(Arg0) == 1) {
-		if (LGreater(Arg0, 0xffff)) {
+		if (Arg0 > 0xffff) {
 			DBGD(Arg0)
 		} else {
-			if (LGreater(Arg0, 0xff)) {
+			if (Arg0 > 0xff) {
 				DBGW(Arg0)
 			} else {
 				DBGB(Arg0)

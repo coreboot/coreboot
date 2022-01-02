@@ -153,7 +153,7 @@ Device(SIO) {
 		Acquire (CRMX, 0xFFFF)
 		Store (0x87, ADDR)
 		Store (0x87, ADDR)
-		If (LLess(Arg0, 0xFF)) {
+		If (Arg0 < 0xFF) {
 			Store(Arg0, LDN)
 		}
 	}

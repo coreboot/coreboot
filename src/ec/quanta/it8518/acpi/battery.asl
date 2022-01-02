@@ -261,7 +261,7 @@ Device (BATX)
 		// 1: BATTERY PRESENT RATE/CURRENT
 		//
 		Store (ECAC, Local1)
-		If (LGreaterEqual (Local1, 0x8000))
+		If (Local1 >= 0x8000)
 		{
 			If (And (Local0, 1))
 			{

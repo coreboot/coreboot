@@ -17,7 +17,7 @@ Scope(\_TZ)
 			Return (3000)
 		}
 
-		if (LGreater(Local0, 4012)) {
+		if (Local0 > 4012) {
 			Return (3000)
 		}
 		Return (Local0)
@@ -47,7 +47,7 @@ External (\PPKG, MethodObj)
 		/* Get critical temperature in degree celsius */
 		Method (GCRT, 0, NotSerialized) {
 			Store (\TCRT, Local0)
-			if (LGreater (Local0, 0)) {
+			if (Local0 > 0) {
 				Return (Local0)
 			}
 			Return (127)
@@ -56,7 +56,7 @@ External (\PPKG, MethodObj)
 		/* Get passive temperature in degree celsius */
 		Method (GPSV, 0, NotSerialized) {
 			Store (\TPSV, Local0)
-			if (LGreater (Local0, 0)) {
+			if (Local0 > 0) {
 				Return (Local0)
 			}
 			Return (95)

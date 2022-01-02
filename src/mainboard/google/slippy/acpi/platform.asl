@@ -16,14 +16,14 @@ Method(_WAK,1)
 {
 	/* Update AC status */
 	Store (\_SB.PCI0.LPCB.EC0.ACEX, Local0)
-	if (LNotEqual (Local0, \PWRS)) {
+	if (Local0 != \PWRS) {
 		Store (Local0, \PWRS)
 		Notify (\_SB.PCI0.LPCB.EC0.AC, 0x80)
 	}
 
 	/* Update LID status */
 	Store (\_SB.PCI0.LPCB.EC0.LIDS, Local0)
-	if (LNotEqual (Local0, \LIDS)) {
+	if (Local0 != \LIDS) {
 		Store (Local0, \LIDS)
 		Notify (\_SB.PCI0.LPCB.EC0.LID0, 0x80)
 	}

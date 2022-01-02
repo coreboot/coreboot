@@ -75,7 +75,7 @@ Device (EC0)
 	PowerResource (FNP0, 0, 0)
 	{
 		Method (_STA) {
-			If (LLessEqual (\FLVL, 0)) {
+			If (\FLVL <= 0) {
 				Return (One)
 			} Else {
 				Return (Zero)
@@ -100,7 +100,7 @@ Device (EC0)
 	PowerResource (FNP1, 0, 0)
 	{
 		Method (_STA) {
-			If (LLessEqual (\FLVL, 1)) {
+			If (\FLVL <= 1) {
 				Return (One)
 			} Else {
 				Return (Zero)
@@ -125,7 +125,7 @@ Device (EC0)
 	PowerResource (FNP2, 0, 0)
 	{
 		Method (_STA) {
-			If (LLessEqual (\FLVL, 2)) {
+			If (\FLVL <= 2) {
 				Return (One)
 			} Else {
 				Return (Zero)
@@ -150,7 +150,7 @@ Device (EC0)
 	PowerResource (FNP3, 0, 0)
 	{
 		Method (_STA) {
-			If (LLessEqual (\FLVL, 3)) {
+			If (\FLVL <= 3) {
 				Return (One)
 			} Else {
 				Return (Zero)
@@ -175,7 +175,7 @@ Device (EC0)
 	PowerResource (FNP4, 0, 0)
 	{
 		Method (_STA) {
-			If (LLessEqual (\FLVL, 4)) {
+			If (\FLVL <= 4) {
 				Return (One)
 			} Else {
 				Return (Zero)

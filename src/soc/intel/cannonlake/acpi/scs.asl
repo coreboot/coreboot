@@ -73,7 +73,7 @@ Scope (\_SB.PCI0) {
 		 */
 		Method (_DSM, 4)
 		{
-			If (LEqual (Arg0, ^DSUU)) {
+			If (Arg0 == ^DSUU) {
 				/* Check the revision */
 				If (LGreaterEqual (Arg1, Zero)) {
 					/*
@@ -92,8 +92,8 @@ Scope (\_SB.PCI0) {
 					 * Bit 6 - Indicates support for HS400 mode
 					 * Bit 9 - Indicates eMMC I/O Driver Strength
 					 */
-					If (LEqual (Arg2, Zero)) {
-						If (Lequal (VDID, 0x02c48086) ) {
+					If (Arg2 == 0) {
+						If (VDID == 0x02c48086) {
 							/*
 							 * Set bit 9 for CML eMMC to indicate
 							 * eMMC I/O driver strength is supported
@@ -111,7 +111,7 @@ Scope (\_SB.PCI0) {
 					 * 3 - 100 ohm
 					 * 4 - 40 ohm
 					 */
-					If (LEqual (Arg2, 9)) {
+					If (Arg2 == 9) {
 						Return(Buffer() {0x4})
 					}
 				}
@@ -146,7 +146,7 @@ Scope (\_SB.PCI0) {
 		 */
 		Method (_DSM, 4)
 		{
-			If (LEqual (Arg0, ^DSUU)) {
+			If (Arg0 == ^DSUU) {
 				/* Check the revision */
 				If (LGreaterEqual (Arg1, Zero)) {
 					/*
@@ -165,7 +165,7 @@ Scope (\_SB.PCI0) {
 					 * For SD we have to support functions to
 					 * set 1.8V signalling and 3.3V signalling [BIT4, BIT3]
 					 */
-					If (LEqual (Arg2, Zero)) {
+					If (Arg2 == 0) {
 						Return (Buffer () { 0x19 })
 					}
 					/*
@@ -175,7 +175,7 @@ Scope (\_SB.PCI0) {
 					 * UHS SD card on PCH. This is to compensate
 					 * for the SD VR slowness.
 					 */
-					If (LEqual (Arg2, 3)) {
+					If (Arg2 == 3) {
 						Sleep (100)
 						Return(Buffer () { 0x00 })
 					}
@@ -186,7 +186,7 @@ Scope (\_SB.PCI0) {
 					 * UHS SD card on PCH. This is to compensate
 					 * for the SD VR slowness.
 					 */
-					If (LEqual (Arg2, 4)) {
+					If (Arg2 == 4) {
 						Sleep (100)
 						Return(Buffer () { 0x00 })
 					}

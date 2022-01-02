@@ -129,7 +129,7 @@ Scope (\_TZ)
 					TTB2 ()
 				}
 			} Else {
-				If (LLess (Local0, THERMAL_POLICY_1_THRESHOLD_OFF)) {
+				If (Local0 < THERMAL_POLICY_1_THRESHOLD_OFF) {
 					TTB2 ()
 				} ElseIf (LLessEqual (Local0, THERMAL_POLICY_0_THRESHOLD_OFF)) {
 					TTB1 ()

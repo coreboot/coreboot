@@ -63,12 +63,12 @@ Device (BATX)
 	Method (WAEC)
 	{
 		Store (20, Local0)	// Timeout 100 msec
-		While (LEqual (HSID, Zero))
+		While (HSID == 0)
 		{
 			// EC Is not ready
 			Sleep (5)
 			Local0--
-			If (LEqual (Local0, Zero))
+			If (Local0 == 0)
 			{
 				Break
 			}
@@ -233,7 +233,7 @@ Device (BATX)
 		}
 
 		// Set critical flag if battery is empty
-		If (LEqual (And (HB0S, 0x0F), 0))
+		If (And (HB0S, 0x0F) == 0)
 		{
 			Or (Local0, 4, Local0)
 		}

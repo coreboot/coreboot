@@ -38,7 +38,7 @@
 			Notify (LCD0, 0x87)
 		} Else {
 			Store (BRID (XBQC ()), Local0)
-			If (LNotEqual (Local0, 2))
+			If (Local0 != 2)
 			{
 				Local0--
 			}
@@ -56,7 +56,7 @@
 			Notify (LCD0, 0x86)
 		} Else {
 			Store (BRID (XBQC ()), Local0)
-			If (LNotEqual (Local0, SizeOf(BRIG) - 1))
+			If (Local0 != SizeOf(BRIG) - 1)
 			{
 				Local0++
 			}

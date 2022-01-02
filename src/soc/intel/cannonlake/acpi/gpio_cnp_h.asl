@@ -67,25 +67,25 @@ Device (GPIO)
 Method (GADD, 1, NotSerialized)
 {
 	/* GPIO Community 0 */
-	If (Arg0 >= GPP_A0 && LLessEqual (Arg0, GSPI1_CLK_LOOPBK))
+	If (Arg0 >= GPP_A0 && Arg0 <= GSPI1_CLK_LOOPBK)
 	{
 		Store (PID_GPIOCOM0, Local0)
 		Local1 = Arg0 - GPP_A0
 	}
 	/* GPIO Community 1 */
-	If (Arg0 >= GPP_C0 && LLessEqual (Arg0, vSSP2_RXD))
+	If (Arg0 >= GPP_C0 && Arg0 <= vSSP2_RXD)
 	{
 		Store (PID_GPIOCOM1, Local0)
 		Local1 = Arg0 - GPP_C0
 	}
 	/* GPIO Community 3*/
-	If (Arg0 >= GPP_K0 && LLessEqual (Arg0, SPI0_CLK_LOOPBK))
+	If (Arg0 >= GPP_K0 && Arg0 <= SPI0_CLK_LOOPBK)
 	{
 		Store (PID_GPIOCOM3, Local0)
 		Local1 = Arg0 - GPP_K0
 	}
 	/* GPIO Community 4*/
-	If (Arg0 >= HDACPU_SDI && LLessEqual (Arg0, GPP_J11))
+	If (Arg0 >= HDACPU_SDI && Arg0 <= GPP_J11)
 	{
 		Store (PID_GPIOCOM4, Local0)
 		Local1 = Arg0 - GPP_I0

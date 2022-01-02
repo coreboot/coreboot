@@ -46,7 +46,7 @@ Method (ENTER_CONFIG_MODE, 1)
 #endif
 #endif
 #endif
-	If (LLess(Arg0, PNP_NO_LDN_CHANGE)) {
+	If (Arg0 < PNP_NO_LDN_CHANGE) {
 		Store(Arg0, PNP_LOGICAL_DEVICE)
 	}
 }

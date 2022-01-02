@@ -76,7 +76,7 @@ Method(OUTC, 1)
 Method(DBGN, 1)
 {
 	and(Arg0, 0x0f, Local0)
-	if (LLess(Local0, 10)) {
+	if (Local0 < 10) {
 		Local0 += 0x30
 	} else {
 		Local0 += 0x37

@@ -9,7 +9,7 @@ Scope(\_SB) {
 /* string compare functions */
 Method(MIN, 2)
 {
-	if (LLess(Arg0, Arg1)) {
+	if (Arg0 < Arg1) {
 		Return(Arg0)
 	} else {
 		Return(Arg1)
@@ -40,22 +40,22 @@ Method(SCMP, 2)
 	Store(SLEN(Arg1), Local6)
 	Store(MIN(Local5, Local6), Local7)
 
-	While(LLess(Local4, Local7)) {
+	While(Local4 < Local7) {
 		Store(Derefof(Local0[Local4]), Local2)
 		Store(Derefof(Local1[Local4]), Local3)
 		if (Local2 > Local3) {
 			Return(One)
 		} else {
-			if (LLess(Local2, Local3)) {
+			if (Local2 < Local3) {
 				Return(Ones)
 			}
 		}
 		Local4++
 	}
-	if (LLess(Local4, Local5)) {
+	if (Local4 < Local5) {
 		Return(One)
 	} else {
-		if (LLess(Local4, Local6)) {
+		if (Local4 < Local6) {
 			Return(Ones)
 		} else {
 			Return(Zero)
@@ -71,13 +71,13 @@ Method(WCMP, 2)
 {
 	Store(S2BF(Arg0), Local0)
 	Store(S2BF(Arg1), Local1)
-	if (LLess(SLEN(Arg0), SLEN(Arg1))) {
+	if (SLEN(Arg0) < SLEN(Arg1)) {
 		Return(0)
 	}
 	Store(Zero, Local2)
 	Store(SLEN(Arg1), Local3)
 
-	While(LLess(Local2, Local3)) {
+	While(Local2 < Local3) {
 		if (LNotEqual(Derefof(Local0[Local2]),
 			Derefof(Local1[Local2]))) {
 			Return(0)

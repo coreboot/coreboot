@@ -14,7 +14,7 @@ Method (BTSW, 1)
 	If (LEqual (BTIX, Arg0)) {
 		Return (Zero)
 	}
-	If (LGreaterEqual (Arg0, BTCN)) {
+	If (Arg0 >= BTCN) {
 		Return (One)
 	}
 	Store (Arg0, \_SB.PCI0.LPCB.EC0.BTID)

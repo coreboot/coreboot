@@ -247,13 +247,13 @@ Method (_OSC, 4)
 	 * Arg3 - A Buffer containing a list of DWORD capabilities
 	 */
 	/* Check for XHCI */
-	If (LEqual (Arg0, ToUUID("7c9512a9-1705-4cb4-af7d-506a2423ab71")))
+	If (Arg0 == ToUUID("7c9512a9-1705-4cb4-af7d-506a2423ab71"))
 	{
 		Return (^XHC.POSC(Arg2, Arg3))
 	}
 
 	/* Check for PCIe */
-	If (LEqual (Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
+	If (Arg0 == ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766"))
 	{
 		/* Let OS control everything */
 		Return (Arg3)

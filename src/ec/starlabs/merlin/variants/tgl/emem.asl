@@ -17,10 +17,10 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	KLBE, 8,	// Keyboard Backlight Brightness
 	KLSE, 8,	// Keyboard Backlight State
 	BDID, 8,	// Board ID
-	TPLA, 8,	// Trackpad State
+	TPLE, 8,	// Trackpad State
 	KBCD, 8,	// Rotate Flag
 	WIFI, 8,	// WiFi Enable
-	FLKA, 8,	// Function Lock State
+	FLKE, 8,	// Function Lock State
 	KLTE, 8,	// Keyboard Backlight Timeout
 
 	Offset(0x13),

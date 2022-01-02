@@ -27,7 +27,7 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	OSFG, 8,	// OS Flag
 
 	Offset(0x14),
-	TPLA, 8,	// Trackpad State
+	TPLE, 8,	// Trackpad State
 	AFG3, 8,	// After G3
 	CLTP, 8,	// Close Trackpad
 	WKOL, 8,	// Wake on Lid
@@ -51,7 +51,7 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	ECT7, 8,	// EC Build Time 7
 	ECT8, 8,	// EC Build Time 8
 	ECT9, 8,	// EC Build Time 9
-	FLKA, 8,	// Function Lock State
+	FLKE, 8,	// Function Lock State
 	MICF, 8,	// Mic Flag
 	MUTF, 8,	// Mute Flag
 	BC12, 8,	// BC12 Flag

@@ -16,7 +16,7 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	CDEV, 8,	// Control Device
 	OSFG, 8,	// OS Flag
 	CWFU, 8,	// CW2015 Full
-	TPLA, 8,	// Trackpad State
+	TPLE, 8,	// Trackpad State
 	AFG3, 8,	// After G3
 	CLTP, 8,	// Close Trackpad
 	WKOL, 8,	// Wake on Lid
@@ -39,7 +39,7 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	ECT9, 8,	// EC Build Time 9
 
 	Offset(0x2c),
-	FLKA, 8,	// Function Lock State
+	FLKE, 8,	// Function Lock State
 
 	Offset(0x30),
 	STEF, 8,	// Sensor T Error F

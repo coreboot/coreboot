@@ -7,8 +7,8 @@ Method (RPTS, 1, NotSerialized)
 	If ((Arg0 == 0x04) || (Arg0 == 0x05))
 	{
 		/* Store current EC settings */
-		\_SB.PCI0.LPCB.EC.TPLA = \_SB.PCI0.LPCB.TPLS
-		\_SB.PCI0.LPCB.EC.FLKA = \_SB.PCI0.LPCB.FLKS
+		\_SB.PCI0.LPCB.EC.TPLE = \_SB.PCI0.LPCB.TPLC
+		\_SB.PCI0.LPCB.EC.FLKE = \_SB.PCI0.LPCB.FLKC
 		\_SB.PCI0.LPCB.EC.KLBE = \_SB.PCI0.LPCB.KLBC
 	}
 }

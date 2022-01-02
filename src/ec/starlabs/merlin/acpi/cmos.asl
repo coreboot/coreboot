@@ -26,8 +26,8 @@ Field (CMS2, ByteAcc, NoLock, Preserve)
 IndexField (IND2, DAT2, ByteAcc, NoLock, Preserve)
 {
 	Offset (0x80),
-	FLKS, 8,		// Function Lock State
-	TPLS, 8,		// Trackpad State
+	FLKC, 8,		// Function Lock State
+	TPLC, 8,		// Trackpad State
 	KLBC, 8,		// Keyboard Backlight Brightness
 	KLSC, 8,		// Keyboard Backlight State
 }

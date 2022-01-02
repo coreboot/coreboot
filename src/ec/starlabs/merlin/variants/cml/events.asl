@@ -36,12 +36,12 @@ Method (_Q07, 0, NotSerialized)			// Event: Backlight Brightness Up
 
 Method (_Q08, 0, NotSerialized)			// Event: Function Lock
 {
-	FLKS = FLKA
+	FLKC = FLKE
 }
 
 Method (_Q04, 0, NotSerialized)			// Event: Trackpad Lock
 {
-	TPLS = TPLA
+	TPLC = TPLE
 }
 //
 // TODO:

@@ -38,8 +38,8 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 
 	Offset(0x30),	// Keyboard:
 	FCLA, 8,	// Fn Ctrl Reverse
-	FLKA, 8,	// Function Lock State
-	TPLA, 8,	// Trackpad State
+	FLKE, 8,	// Function Lock State
+	TPLE, 8,	// Trackpad State
 	KLBE, 8,	// Keyboard Backlight Brightness
 	KLSE, 8,	// Keyboard Backlight State
 	KLTE, 8,	// Keyboard Backlight Timeout

@@ -36,12 +36,12 @@ Method (_Q06)					// Event: Backlight Brightness Up
 
 Method (_Q87)					// Event: Function Lock
 {
-	FLKS = FLKA
+	FLKC = FLKE
 }
 
 Method (_Q88)					// Event: Trackpad Lock
 {
-	TPLS = TPLA
+	TPLC = TPLE
 }
 Method (_Q11)					// Event: Keyboard Backlight Brightness
 {

@@ -22,7 +22,7 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	OSFG, 8,	// OS Flag
 
 	Offset(0x14),
-	TPLA, 8,	// Trackpad State
+	TPLE, 8,	// Trackpad State
 
 	Offset(0x18),
 	KLSE, 8,	// Keyboard Backlight State
@@ -34,7 +34,7 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	TCHF, 8,	// Thermal Charge Flag
 
 	Offset(0x2c),
-	FLKA, 8,	// Function Lock State
+	FLKE, 8,	// Function Lock State
 
 	Offset(0x30),
 	STEF, 8,	// Sensor T Error F

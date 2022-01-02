@@ -19,7 +19,7 @@ Method (BTSW, 1)
 	}
 	Store (Arg0, \_SB.PCI0.LPCB.EC0.BTID)
 	Store (5, Local0)      // Timeout 5 msec
-	While (LNotEqual (BTIX, Arg0))
+	While (BTIX != Arg0)
 	{
 		Sleep (1)
 		Local0--
@@ -29,7 +29,7 @@ Method (BTSW, 1)
 		}
 	}
 #else
-	If (LNotEqual (0, Arg0)) {
+	If (Arg0 != 0) {
 		Return (One)
 	}
 #endif
@@ -180,7 +180,7 @@ Method (BBST, 4, Serialized)
 	Store (Local1, Arg1[0])
 
 	// Notify if battery state has changed since last time
-	If (LNotEqual (Local1, DeRefOf (Arg2))) {
+	If (Local1 != DeRefOf (Arg2)) {
 		Store (Local1, Arg2)
 		If (Arg0 == 0) {
 			Notify (BAT0, 0x80)

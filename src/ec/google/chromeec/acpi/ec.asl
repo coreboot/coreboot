@@ -494,7 +494,7 @@ Device (EC0)
 			Store (^PATI, Local0)
 
 			/* When sensor ID returns 0xFF then no more events */
-			While (LNotEqual (Local0, EC_TEMP_SENSOR_NOT_PRESENT))
+			While (Local0 != EC_TEMP_SENSOR_NOT_PRESENT)
 			{
 #ifdef HAVE_THERM_EVENT_HANDLER
 				\_SB.DPTF.TEVT (Local0)

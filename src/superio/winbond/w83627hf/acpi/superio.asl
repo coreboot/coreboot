@@ -422,7 +422,7 @@ Device(SIO) {
 			ENTER_CONFIG_MODE (1)
 			And(OPT1, 0x3, Local1)
 			If (ACTR) {
-				If (LNotEqual(Local1, 2)) {
+				If (Local1 != 2) {
 					Store (0x0D, Local0)
 				} Else {
 					Store (0x0D, Local0)

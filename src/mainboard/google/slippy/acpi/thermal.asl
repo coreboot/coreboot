@@ -102,7 +102,7 @@ Scope (\_TZ)
 			// Critical temperature in deci-kelvin
 			Store (CTOK (\TCRT), Local1)
 
-			If (LGreaterEqual (Local0, Local1)) {
+			If (Local0 >= Local1) {
 				Printf ("CRITICAL TEMPERATURE: %o", Local0)
 
 				// Wait 1 second for EC to re-poll

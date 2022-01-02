@@ -54,7 +54,7 @@
 			/* Always keep BCLP up to date, even if driver is not ready.
 			   It requires a full 8-bit brightness value. 255 = 100% */
 			Store (Arg0 * 255 / 100, Local1)
-			If (LGreater(Local1, 255)) {
+			If (Local1 > 255) {
 				Store (255, Local1)
 			}
 			/* also set valid bit */
@@ -71,7 +71,7 @@
 			Store (0x1, ASLE)
 
 			Store (0x20, Local0)
-			While (LGreater(Local0, Zero))
+			While (Local0 > 0)
 			{
 				Sleep (1)
 				If (And (ASLC, 0x2) == 0) {

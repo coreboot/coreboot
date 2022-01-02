@@ -77,7 +77,7 @@ Scope (\_TZ)
 			Local1 = 255 - Local0
 
 			// Handle values greater than Tj_max
-			If (LGreaterEqual (Local1, \TMAX)) {
+			If (Local1 >= \TMAX) {
 				Return (CTOK (\TMAX))
 			}
 
@@ -94,7 +94,7 @@ Scope (\_TZ)
 			// Critical temperature in deci-kelvin
 			Store (CTOK (\TMAX), Local1)
 
-			If (LGreaterEqual (Local0, Local1)) {
+			If (Local0 >= Local1) {
 				Printf ("CRITICAL TEMPERATURE: %o", Local0)
 
 				// Wait 1 second for SuperIO to re-poll

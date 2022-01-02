@@ -136,7 +136,7 @@ Method (GPID, 1, Serialized)
 Method (CGPM, 2, Serialized)
 {
 	Store (GPID (Arg0), Local0)
-	If (LNotEqual (Local0, 0)) {
+	If (Local0 != 0) {
 		/* Mask off current PM bits */
 		PCRA (Local0, GPIO_MISCCFG, Not (MISCCFG_GPIO_PM_CONFIG_BITS))
 		/* Mask in requested bits */

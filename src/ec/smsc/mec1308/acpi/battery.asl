@@ -63,7 +63,7 @@ Device (BAT0)
 		ShiftLeft (Arg0, 8, Local1)
 		And (Local1, 0xFF00, Local1)
 		Or (Local0, Local1, Local0)
-		If (LEqual (Local0, 0xFFFF)) {
+		If (Local0 == 0xFFFF) {
 			Store (0xFFFFFFFF, Local0)
 		}
 		Return (Local0)

@@ -83,7 +83,7 @@ Device (HKEY)
 
 	/* Enable/disable event.  */
 	Method (MHKM, 2, NotSerialized) {
-		If (LLessEqual (Arg0, 0x20)) {
+		If (Arg0 <= 0x20) {
 			ShiftLeft (One, Arg0 - 1, Local0)
 			If (Arg1)
 			{

@@ -35,13 +35,13 @@ Device (HKEY)
 	Method (MHKP, 0, NotSerialized)
 	{
 		Store (BTN, Local0)
-		If (LNotEqual (Local0, Zero)) {
+		If (Local0 != 0) {
 			Store (Zero, BTN)
 			Local0 += 0x1000
 			Return (Local0)
 		}
 		Store (BTAB, Local0)
-		If (LNotEqual (Local0, Zero)) {
+		If (Local0 != 0) {
 			Store (Zero, BTAB)
 			Local0 += 0x5000
 			Return (Local0)

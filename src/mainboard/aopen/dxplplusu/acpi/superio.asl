@@ -79,7 +79,7 @@ Method (_CRS, 0, NotSerialized)
 	ShiftLeft (IOM1, 0x08, IOM1)
 	Or (\_SB.PCI0.ICH0.SMSC.IOAL, IOM1, IOM1)
 	Store (IOM1, IOM2)
-	If (LNotEqual (IOM1, 0x00))
+	If (IOM1 != 0)
 	{
 		Store (0x80, IOML)
 	}

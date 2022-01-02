@@ -317,7 +317,7 @@ Device (BATX)
 
 			// See if within ~3% of full
 			ShiftRight (Local2, 5, Local3)
-			If (LGreater (Local1, Local2 - Local3) && LLess (Local1, Local2 + Local3))
+			If (LGreater (Local1, Local2 - Local3) && Local1 < Local2 + Local3)
 			{
 				Store (Local2, Local1)
 			}

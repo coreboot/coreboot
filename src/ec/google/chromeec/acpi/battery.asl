@@ -210,7 +210,7 @@ Method (BBST, 4, Serialized)
 
 		// See if within ~6% of full
 		ShiftRight (Local2, 4, Local3)
-		If (LGreater (Local1, Local2 - Local3) && Local1 < Local2 + Local3)
+		If (Local1 > Local2 - Local3 && Local1 < Local2 + Local3)
 		{
 			Store (Local2, Local1)
 		}

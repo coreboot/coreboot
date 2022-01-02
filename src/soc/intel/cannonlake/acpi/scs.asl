@@ -75,7 +75,7 @@ Scope (\_SB.PCI0) {
 		{
 			If (Arg0 == ^DSUU) {
 				/* Check the revision */
-				If (LGreaterEqual (Arg1, Zero)) {
+				If (Arg1 >= 0) {
 					/*
 					 * Function Index 0 the return value is a buffer
 					 * containing one bit for each function index, starting
@@ -148,7 +148,7 @@ Scope (\_SB.PCI0) {
 		{
 			If (Arg0 == ^DSUU) {
 				/* Check the revision */
-				If (LGreaterEqual (Arg1, Zero)) {
+				If (Arg1 >= 0) {
 					/*
 					 * Function Index 0 the return value is a buffer containing
 					 * one bit for each function index, starting with zero.

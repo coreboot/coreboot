@@ -41,9 +41,9 @@ Method(DINI)
 */
 Method(THRE)
 {
-	and(CLSR, 0x20, local0)
+	local0 = CLSR & 0x20
 	while (local0 == 0) {
-		and(CLSR, 0x20, local0)
+		local0 = CLSR & 0x20
 	}
 }
 
@@ -75,7 +75,7 @@ Method(OUTC, 1)
 */
 Method(DBGN, 1)
 {
-	and(Arg0, 0x0f, Local0)
+	Local0 = Arg0 & 0x0f
 	if (Local0 < 10) {
 		Local0 += 0x30
 	} else {

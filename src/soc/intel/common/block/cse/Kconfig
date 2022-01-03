@@ -5,6 +5,15 @@ config SOC_INTEL_COMMON_BLOCK_CSE
 	  Driver for communication with Converged Security Engine (CSE)
 	  over Host Embedded Controller Interface (HECI)
 
+config DISABLE_HECI1_AT_PRE_BOOT
+	bool "Disable HECI1 at the end of boot"
+	depends on SOC_INTEL_COMMON_BLOCK_CSE
+	default n
+	help
+	  This config decides the state of HECI1(CSE) device at the end of boot.
+	  Mainboard users to select this config to make HECI1 `function disable`
+	  prior to handing off to payload.
+
 config SOC_INTEL_COMMON_BLOCK_HECI_DISABLE_IN_SMM
 	bool
 	default y if HECI_DISABLE_USING_SMM

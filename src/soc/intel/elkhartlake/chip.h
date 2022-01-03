@@ -226,10 +226,6 @@ struct soc_intel_elkhartlake_config {
 
 	uint8_t Device4Enable;
 
-	/* HeciEnabled decides the state of Heci1 at end of boot
-	 * Setting to 0 (default) disables Heci1 and hides the device from OS */
-	uint8_t HeciEnabled;
-
 	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
 	uint8_t eist_enable;
 

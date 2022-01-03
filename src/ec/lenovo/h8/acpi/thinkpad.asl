@@ -52,7 +52,7 @@ Device (HKEY)
 	/* Report event  */
 	Method (RHK, 1, NotSerialized) {
 		ShiftLeft (One, Arg0 - 1, Local0)
-		If (And (EMSK, Local0)) {
+		If (EMSK & Local0) {
 			Store (Arg0, BTN)
 			Notify (HKEY, 0x80)
 		}
@@ -61,7 +61,7 @@ Device (HKEY)
 	/* Report tablet  */
 	Method (RTAB, 1, NotSerialized) {
 		ShiftLeft (One, Arg0 - 1, Local0)
-		If (And (ETAB, Local0)) {
+		If (ETAB & Local0) {
 			Store (Arg0, BTAB)
 			Notify (HKEY, 0x80)
 		}
@@ -91,7 +91,7 @@ Device (HKEY)
 			}
 			Else
 			{
-				And (DHKN, Not (Local0), DHKN)
+				DHKN = DHKN & Not (Local0)
 			}
 			If (EN)
 			{
@@ -184,9 +184,9 @@ Device (HKEY)
 		Store (One, HAST)
 
 		If (HBDC) {
-			ShiftRight (And(Arg0, 2), 1, Local0)
+			ShiftRight (Arg0 & 2, 1, Local0)
 			Store (Local0, \_SB.PCI0.LPCB.EC.BTEB)
-			ShiftRight (And(Arg0, 4), 2, Local0)
+			ShiftRight (Arg0 & 4, 2, Local0)
 			Store (Local0, WBDC)
 		}
 	}
@@ -226,9 +226,9 @@ Device (HKEY)
 		Store (One, HAST)
 
 		If (HWAN) {
-			ShiftRight (And(Arg0, 2), 1, Local0)
+			ShiftRight (Arg0 & 2, 1, Local0)
 			Store (Local0, \_SB.PCI0.LPCB.EC.WWEB)
-			ShiftRight (And(Arg0, 4), 2, WWAN)
+			ShiftRight (Arg0 & 4, 2, WWAN)
 		}
 	}
 
@@ -258,7 +258,7 @@ Device (HKEY)
 	{
 		If (HKBL) {
 			/* FIXME: Support 2bit brightness control */
-			Store (And(Arg0, 1), \_SB.PCI0.LPCB.EC.WWEB)
+			Store (Arg0 & 1, \_SB.PCI0.LPCB.EC.WWEB)
 		}
 	}
 
@@ -288,7 +288,7 @@ Device (HKEY)
 	Method (SUWB, 1)
 	{
 		If (HUWB) {
-			ShiftRight (And(Arg0, 2), 1, Local0)
+			ShiftRight (Arg0 & 2, 1, Local0)
 			Store (Local0, \_SB.PCI0.LPCB.EC.UWBE)
 		}
 	}

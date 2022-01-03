@@ -17,9 +17,13 @@
 
 static inline size_t cbfs_load(const char *name, void *buf, size_t size);
 static inline size_t cbfs_ro_load(const char *name, void *buf, size_t size);
+static inline size_t cbfs_unverified_area_load(const char *area, const char *name, void *buf,
+					       size_t size);
 
 static inline void *cbfs_map(const char *name, size_t *size_out);
 static inline void *cbfs_ro_map(const char *name, size_t *size_out);
+static inline void *cbfs_unverified_area_map(const char *area, const char *name,
+					     size_t *size_out);
 
 void cbfs_unmap(void *mapping);
 
@@ -39,6 +43,9 @@ ssize_t _cbfs_boot_lookup(const char *name, bool force_ro, union cbfs_mdata *mda
 
 void *_cbfs_load(const char *name, void *buf, size_t *size_inout, bool force_ro);
 
+void *_cbfs_unverified_area_load(const char *area, const char *name, void *buf,
+				 size_t *size_inout);
+
 /**********************************************************************************************
  *                                  INLINE IMPLEMENTATIONS                                    *
  **********************************************************************************************/
@@ -53,6 +60,12 @@ static inline void *cbfs_ro_map(const char *name, size_t *size_out)
 	return _cbfs_load(name, NULL, size_out, true);
 }
 
+static inline void *cbfs_unverified_area_map(const char *area, const char *name,
+					     size_t *size_out)
+{
+	return _cbfs_unverified_area_load(area, name, NULL, size_out);
+}
+
 static inline size_t cbfs_load(const char *name, void *buf, size_t size)
 {
 	if (_cbfs_load(name, buf, &size, false))
@@ -64,6 +77,15 @@ static inline size_t cbfs_load(const char *name, void *buf, size_t size)
 static inline size_t cbfs_ro_load(const char *name, void *buf, size_t size)
 {
 	if (_cbfs_load(name, buf, &size, true))
+		return size;
+	else
+		return 0;
+}
+
+static inline size_t cbfs_unverified_area_load(const char *area, const char *name, void *buf,
+					       size_t size)
+{
+	if (_cbfs_unverified_area_load(area, name, buf, &size))
 		return size;
 	else
 		return 0;

@@ -4,6 +4,7 @@
 #include <arch/virtual.h>
 #include <assert.h>
 #include <cbfs.h>
+#include <cbfs_glue.h>
 #include <commonlib/bsd/cbfs_private.h>
 #include <commonlib/bsd/fmap_serialized.h>
 #include <libpayload.h>
@@ -78,9 +79,9 @@ void cbfs_unmap(void *mapping)
 }
 
 static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
-				    const union cbfs_mdata *mdata)
+				    const union cbfs_mdata *mdata, bool skip_verification)
 {
-	if (!CONFIG(LP_CBFS_VERIFICATION))
+	if (!CONFIG(LP_CBFS_VERIFICATION) || skip_verification)
 		return false;
 
 	const struct vb2_hash *hash = cbfs_file_hash(mdata);
@@ -98,7 +99,7 @@ static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
 
 static size_t cbfs_load_and_decompress(size_t offset, size_t in_size, void *buffer,
 				       size_t buffer_size, uint32_t compression,
-				       const union cbfs_mdata *mdata)
+				       const union cbfs_mdata *mdata, bool skip_verification)
 {
 	void *load = buffer;
 	size_t out_size = 0;
@@ -119,7 +120,7 @@ static size_t cbfs_load_and_decompress(size_t offset, size_t in_size, void *buff
 		goto out;
 	}
 
-	if (cbfs_file_hash_mismatch(buffer, in_size, mdata))
+	if (cbfs_file_hash_mismatch(buffer, in_size, mdata, skip_verification))
 		goto out;
 
 	switch (compression) {
@@ -146,46 +147,37 @@ out:
 	return out_size;
 }
 
-void *_cbfs_load(const char *name, void *buf, size_t *size_inout, bool force_ro)
+static void *do_load(union cbfs_mdata *mdata, ssize_t offset, void *buf, size_t *size_inout,
+		     bool skip_verification)
 {
-	ssize_t offset;
-	size_t out_size;
-	union cbfs_mdata mdata;
 	bool malloced = false;
-
-	DEBUG("%s(name='%s', buf=%p, force_ro=%s)\n", __func__, name, buf,
-	      force_ro ? "true" : "false");
-
-	offset = _cbfs_boot_lookup(name, force_ro, &mdata);
-	if (offset < 0)
-		return NULL;
-
+	size_t out_size;
 	uint32_t compression = CBFS_COMPRESS_NONE;
 	const struct cbfs_file_attr_compression *cattr =
-		cbfs_find_attr(&mdata, CBFS_FILE_ATTR_TAG_COMPRESSION, sizeof(*cattr));
+		cbfs_find_attr(mdata, CBFS_FILE_ATTR_TAG_COMPRESSION, sizeof(*cattr));
 	if (cattr) {
 		compression = be32toh(cattr->compression);
 		out_size = be32toh(cattr->decompressed_size);
 	} else {
-		out_size = be32toh(mdata.h.len);
+		out_size = be32toh(mdata->h.len);
 	}
 
 	if (buf) {
 		if (!size_inout || *size_inout < out_size) {
-			ERROR("'%s' buffer too small", mdata.h.filename);
+			ERROR("'%s' buffer too small", mdata->h.filename);
 			return NULL;
 		}
 	} else {
 		buf = malloc(out_size);
 		if (!buf) {
-			ERROR("'%s' allocation failure", mdata.h.filename);
+			ERROR("'%s' allocation failure", mdata->h.filename);
 			return NULL;
 		}
 		malloced = true;
 	}
 
-	if (cbfs_load_and_decompress(offset, be32toh(mdata.h.len), buf, out_size, compression,
-				     &mdata)
+	if (cbfs_load_and_decompress(offset, be32toh(mdata->h.len), buf, out_size, compression,
+				     mdata, skip_verification)
 	    != out_size) {
 		if (malloced)
 			free(buf);
@@ -195,4 +187,39 @@ void *_cbfs_load(const char *name, void *buf, size_t *size_inout, bool force_ro)
 		*size_inout = out_size;
 
 	return buf;
+}
+
+void *_cbfs_load(const char *name, void *buf, size_t *size_inout, bool force_ro)
+{
+	ssize_t offset;
+	union cbfs_mdata mdata;
+
+	DEBUG("%s(name='%s', buf=%p, force_ro=%s)\n", __func__, name, buf,
+	      force_ro ? "true" : "false");
+
+	offset = _cbfs_boot_lookup(name, force_ro, &mdata);
+	if (offset < 0)
+		return NULL;
+
+	return do_load(&mdata, offset, buf, size_inout, false);
+}
+
+void *_cbfs_unverified_area_load(const char *area, const char *name, void *buf,
+				 size_t *size_inout)
+{
+	struct cbfs_dev dev;
+	union cbfs_mdata mdata;
+	size_t data_offset;
+
+	DEBUG("%s(area='%s', name='%s', buf=%p)\n", __func__, area, name, buf);
+
+	if (fmap_locate_area(area, &dev.offset, &dev.size) != CB_SUCCESS)
+		return NULL;
+
+	if (cbfs_lookup(&dev, name, &mdata, &data_offset, NULL)) {
+		ERROR("'%s' not found in '%s'\n", name, area);
+		return NULL;
+	}
+
+	return do_load(&mdata, dev.offset + data_offset, buf, size_inout, true);
 }

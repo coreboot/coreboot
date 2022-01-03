@@ -598,6 +598,92 @@ static void test_cbfs_boot_device_read_failure(void **state)
 	assert_null(mapping);
 }
 
+/* This test uses RW CBFS only */
+static void test_cbfs_unverified_area_map(void **state)
+{
+	struct cbfs_test_state *s = *state;
+	void *mapping = NULL;
+	size_t size_out = 0;
+	const struct cbfs_test_file *cbfs_files[] = {
+		&test_file_int_1, &test_file_2, NULL, &test_file_int_3,
+		&test_file_int_2, NULL,		NULL, &test_file_1,
+	};
+	uint8_t *cbfs_buf = NULL;
+	size_t foffset = 0;
+
+	cbfs_buf = s->cbfs_rw_buf;
+	set_fmap_locate_area_results((size_t)cbfs_buf, s->cbfs_rw_size, CB_SUCCESS);
+	create_cbfs(cbfs_files, ARRAY_SIZE(cbfs_files), s->cbfs_rw_buf, s->cbfs_rw_size);
+
+	size_out = 0;
+	foffset = get_created_cbfs_file_start_offset(cbfs_files, 0);
+	expect_cbfs_lookup(TEST_DATA_INT_1_FILENAME, CB_SUCCESS,
+			   (const union cbfs_mdata *)&cbfs_buf[foffset],
+			   foffset + be32toh(test_file_int_1.header.offset));
+	will_return(cbfs_find_attr, NULL);
+	mapping = cbfs_unverified_area_map("TEST_AREA", TEST_DATA_INT_1_FILENAME, &size_out);
+	assert_non_null(mapping);
+	assert_int_equal(TEST_DATA_INT_1_SIZE, size_out);
+	assert_memory_equal(test_data_int_1, mapping, TEST_DATA_INT_1_SIZE);
+	cbfs_unmap(mapping);
+
+	size_out = 0;
+	foffset = get_created_cbfs_file_start_offset(cbfs_files, 1);
+	expect_cbfs_lookup(TEST_DATA_2_FILENAME, CB_SUCCESS,
+			   (const union cbfs_mdata *)&cbfs_buf[foffset],
+			   foffset + be32toh(test_file_2.header.offset));
+	will_return(cbfs_find_attr, &test_file_2.attrs_and_data);
+	expect_value(ulzman, srcn, TEST_DATA_2_SIZE);
+	expect_value(ulzman, dstn, TEST_DATA_2_SIZE);
+	mapping = cbfs_unverified_area_map("TEST_AREA", TEST_DATA_2_FILENAME, &size_out);
+	assert_non_null(mapping);
+	assert_int_equal(TEST_DATA_2_SIZE, size_out);
+	assert_memory_equal(test_data_2, mapping, TEST_DATA_2_SIZE);
+	cbfs_unmap(mapping);
+
+	size_out = 0;
+	foffset = get_created_cbfs_file_start_offset(cbfs_files, 3);
+	expect_cbfs_lookup(TEST_DATA_INT_3_FILENAME, CB_SUCCESS,
+			   (const union cbfs_mdata *)&cbfs_buf[foffset],
+			   foffset + be32toh(test_file_int_3.header.offset));
+	will_return(cbfs_find_attr, &test_file_int_3.attrs_and_data);
+	expect_value(ulz4fn, srcn, TEST_DATA_INT_3_SIZE);
+	expect_value(ulz4fn, dstn, TEST_DATA_INT_3_SIZE);
+	mapping = cbfs_unverified_area_map("TEST_AREA", TEST_DATA_INT_3_FILENAME, &size_out);
+	assert_non_null(mapping);
+	assert_int_equal(TEST_DATA_INT_3_SIZE, size_out);
+	assert_memory_equal(test_data_int_3, mapping, TEST_DATA_INT_3_SIZE);
+	cbfs_unmap(mapping);
+
+	size_out = 0;
+	foffset = get_created_cbfs_file_start_offset(cbfs_files, 4);
+	expect_cbfs_lookup(TEST_DATA_INT_2_FILENAME, CB_SUCCESS,
+			   (const union cbfs_mdata *)&cbfs_buf[foffset],
+			   foffset + be32toh(test_file_int_2.header.offset));
+	will_return(cbfs_find_attr, NULL);
+	mapping = cbfs_unverified_area_map("TEST_AREA", TEST_DATA_INT_2_FILENAME, &size_out);
+	assert_non_null(mapping);
+	assert_int_equal(TEST_DATA_INT_2_SIZE, size_out);
+	assert_memory_equal(test_data_int_2, mapping, TEST_DATA_INT_2_SIZE);
+	cbfs_unmap(mapping);
+
+	size_out = 0;
+	foffset = get_created_cbfs_file_start_offset(cbfs_files, 7);
+	expect_cbfs_lookup(TEST_DATA_1_FILENAME, CB_SUCCESS,
+			   (const union cbfs_mdata *)&cbfs_buf[foffset],
+			   foffset + be32toh(test_file_1.header.offset));
+	will_return(cbfs_find_attr, NULL);
+	mapping = cbfs_unverified_area_map("TEST_AREA", TEST_DATA_1_FILENAME, &size_out);
+	assert_non_null(mapping);
+	assert_int_equal(TEST_DATA_1_SIZE, size_out);
+	assert_memory_equal(test_data_1, mapping, TEST_DATA_1_SIZE);
+	cbfs_unmap(mapping);
+
+	size_out = 0;
+	expect_cbfs_lookup("invalid_file", CB_CBFS_NOT_FOUND, 0, 0);
+	mapping = cbfs_unverified_area_map("TEST_AREA", "invalid_file", &size_out);
+	assert_null(mapping);
+}
 
 #define TEST_CBFS_NAME_ALIGN_RO_RW(fn, test_name, enable_unaligned, enable_init_ro,            \
 				   enable_init_rw)                                             \
@@ -636,6 +722,7 @@ int main(void)
 		TEST_CBFS_LOOKUP(test_cbfs_load),
 		TEST_CBFS_LOOKUP(test_cbfs_map_with_mcache),
 		TEST_CBFS_LOOKUP(test_cbfs_boot_device_read_failure),
+		TEST_CBFS_LOOKUP(test_cbfs_unverified_area_map),
 	};
 
 	return lp_run_group_tests(tests, NULL, NULL);

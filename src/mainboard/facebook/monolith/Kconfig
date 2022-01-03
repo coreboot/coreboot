@@ -13,6 +13,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select INTEL_GMA_HAVE_VBT
 	select VPD
 
+config DISABLE_HECI1_AT_PRE_BOOT
+	default y
+
 config CBFS_SIZE
 	default 0x00900000
 

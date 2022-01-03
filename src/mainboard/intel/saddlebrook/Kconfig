@@ -16,6 +16,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_CMOS_DEFAULT
 	select MAINBOARD_USES_IFD_GBE_REGION
 
+config DISABLE_HECI1_AT_PRE_BOOT
+	default y
+
 config MAINBOARD_DIR
 	default "intel/saddlebrook"
 

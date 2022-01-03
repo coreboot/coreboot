@@ -410,11 +410,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	tconfig->PowerLimit4 = 0;
 	/*
 	 * To disable HECI, the Psf needs to be left unlocked
-	 * by FSP till end of post sequence. Based on the devicetree
+	 * by FSP till end of post sequence. Based on the config
 	 * setting, we set the appropriate PsfUnlock policy in FSP,
 	 * do the changes and then lock it back in coreboot during finalize.
 	 */
-	tconfig->PchSbAccessUnlock = (config->HeciEnabled == 0) ? 1 : 0;
+	tconfig->PchSbAccessUnlock = CONFIG(DISABLE_HECI1_AT_PRE_BOOT);
 
 	const bool lockdown_by_fsp = get_lockdown_config() == CHIPSET_LOCKDOWN_FSP;
 	tconfig->PchLockDownBiosInterface = lockdown_by_fsp;

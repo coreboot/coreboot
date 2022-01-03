@@ -16,6 +16,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select SPD_READ_BY_WORD
 	select SUPERIO_ITE_COMMON_PRE_RAM
 
+config DISABLE_HECI1_AT_PRE_BOOT
+	default y
+
 config MAINBOARD_DIR
 	default "hp/280_g2"
 

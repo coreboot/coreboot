@@ -60,9 +60,7 @@ chip soc/intel/skylake
 			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-A, left
 		end
 		device ref thermal	on	end
-		device ref heci1	on
-			register "HeciEnabled" = "1"
-		end
+		device ref heci1	on	end
 		device ref sata		on
 			register "SataSalpSupport" = "0"
 			# Ports

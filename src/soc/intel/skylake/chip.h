@@ -395,11 +395,6 @@ struct soc_intel_skylake_config {
 	 * 3 = GT unsliced,  4 = GT sliced
 	 */
 	struct vr_config domain_vr_config[NUM_VR_DOMAINS];
-	/*
-	 * HeciEnabled decides the state of Heci1 at end of boot
-	 * Setting to 0 (default) disables Heci1 and hides the device from OS
-	 */
-	u8 HeciEnabled;
 
 	/*
 	 * Enable VR specific mailbox command

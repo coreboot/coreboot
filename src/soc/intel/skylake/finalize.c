@@ -44,14 +44,10 @@ static void pch_disable_heci(void)
 
 static void pch_finalize_script(struct device *dev)
 {
-	config_t *config;
-
 	tco_lockdown();
 
 	/* Display me status before we hide it */
 	intel_me_status();
-
-	config = config_of(dev);
 
 	/*
 	 * Set low maximum temp value used for dynamic thermal sensor
@@ -62,8 +58,8 @@ static void pch_finalize_script(struct device *dev)
 	 */
 	pch_thermal_configuration();
 
-	/* we should disable Heci1 based on the devicetree policy */
-	if (config->HeciEnabled == 0)
+	/* we should disable Heci1 based on the config */
+	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT))
 		pch_disable_heci();
 
 	/* Hide p2sb device as the OS must not change BAR0. */

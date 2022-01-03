@@ -99,6 +99,9 @@ config BOARD_GOOGLE_SORAKA
 
 if BOARD_GOOGLE_BASEBOARD_POPPY
 
+config DISABLE_HECI1_AT_PRE_BOOT
+	default y
+
 config CHROMEOS_WIFI_SAR
 	bool
 	depends on CHROMEOS

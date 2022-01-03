@@ -17,6 +17,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select RT8168_SET_LED_MODE
 	select MAINBOARD_HAS_LPC_TPM
 
+config DISABLE_HECI1_AT_PRE_BOOT
+	default y
+
 config MAINBOARD_DIR
 	default "asrock/h110m"
 

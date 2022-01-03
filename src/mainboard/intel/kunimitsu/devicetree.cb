@@ -25,7 +25,6 @@ chip soc/intel/skylake
 	register "IoBufferOwnership" = "3"
 	register "ScsEmmcHs400Enabled" = "1"
 	register "SkipExtGfxScan" = "1"
-	register "HeciEnabled" = "0"
 	register "SaGv" = "SaGv_Enabled"
 
 	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch

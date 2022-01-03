@@ -18,7 +18,6 @@ chip soc/intel/tigerlake
 	register "CnviBtCore"			= "true"
 	register "CnviBtAudioOffload"		= "1"
 	register "enable_c6dram"		= "1"
-	register "HeciEnabled"			= "1"
 	register "SaGv"				= "SaGv_Enabled"
 	register "TcssD3ColdDisable"		= "1"
 

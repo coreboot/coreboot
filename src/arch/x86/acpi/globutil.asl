@@ -95,7 +95,7 @@ Method(I2BM, 1)
 	Store(0, Local0)
 	if (LNotEqual(ARG0, 0)) {
 		Store(1, Local1)
-		ShiftLeft(Local1, ARG0, Local0)
+		Local0 = Local1 << ARG0
 	}
 	Return(Local0)
 }

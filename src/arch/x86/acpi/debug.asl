@@ -27,12 +27,12 @@ OperationRegion(CREG, SystemIO, 0x3F8, 8)
 */
 Method(DINI)
 {
-	store(0x83, DLCR)
-	store(0x01, CDAT)	/* 115200 baud (low) */
-	store(0x00, CDLM)	/* 115200 baud (high) */
-	store(0x03, DLCR)	/* word=8 stop=1 parity=none */
-	store(0x03, CMCR)	/* DTR=1 RTS=1 Out2=Off Loop=Off */
-	store(0x00, CDLM)	/* turn off interrupts */
+	DLCR = 0x83
+	CDAT = 1	/* 115200 baud (low) */
+	CDLM = 0	/* 115200 baud (high) */
+	DLCR = 3	/* word=8 stop=1 parity=none */
+	CMCR = 3	/* DTR=1 RTS=1 Out2=Off Loop=Off */
+	CDLM = 0	/* turn off interrupts */
 }
 
 /*
@@ -54,7 +54,7 @@ Method(THRE)
 Method(OUTX, 1)
 {
 	THRE()
-	store(Arg0, CDAT)
+	CDAT = Arg0
 }
 
 /*
@@ -136,10 +136,10 @@ Method(DBGO, 1)
 		}
 	} else {
 		Name(BDBG, Buffer(80) {})
-		store(Arg0, BDBG)
-		store(0, Local1)
+		BDBG = Arg0
+		Local1 = 0
 		while (One) {
-			store(GETC(BDBG, Local1), Local0)
+			Local0 = GETC(BDBG, Local1)
 			if (Local0 == 0) {
 				return (0)
 			}

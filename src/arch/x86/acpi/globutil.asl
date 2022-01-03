@@ -18,7 +18,7 @@ Method(MIN, 2)
 
 Method(SLEN, 1)
 {
-	Store(Arg0, Local0)
+	Local0 = Arg0
 	Return(Sizeof(Local0))
 }
 
@@ -26,23 +26,23 @@ Method(S2BF, 1, Serialized)
 {
 	Local0 = SLEN(Arg0) + 1
 	Name(BUFF, Buffer(Local0) {})
-	Store(Arg0, BUFF)
+	BUFF = Arg0
 	Return(BUFF)
 }
 
 /* Strong string compare.  Checks both length and content */
 Method(SCMP, 2)
 {
-	Store(S2BF(Arg0), Local0)
-	Store(S2BF(Arg1), Local1)
-	Store(Zero, Local4)
-	Store(SLEN(Arg0), Local5)
-	Store(SLEN(Arg1), Local6)
-	Store(MIN(Local5, Local6), Local7)
+	Local0 = S2BF(Arg0)
+	Local1 = S2BF(Arg1)
+	Local4 = 0
+	Local5 = SLEN(Arg0)
+	Local6 = SLEN(Arg1)
+	Local7 = MIN(Local5, Local6)
 
 	While(Local4 < Local7) {
-		Store(Derefof(Local0[Local4]), Local2)
-		Store(Derefof(Local1[Local4]), Local3)
+		Local2 = Derefof(Local0[Local4])
+		Local3 = Derefof(Local1[Local4])
 		if (Local2 > Local3) {
 			Return(One)
 		} else {
@@ -69,13 +69,13 @@ Method(SCMP, 2)
 */
 Method(WCMP, 2)
 {
-	Store(S2BF(Arg0), Local0)
-	Store(S2BF(Arg1), Local1)
+	Local0 = S2BF(Arg0)
+	Local1 = S2BF(Arg1)
 	if (SLEN(Arg0) < SLEN(Arg1)) {
 		Return(0)
 	}
-	Store(Zero, Local2)
-	Store(SLEN(Arg1), Local3)
+	Local2 = 0
+	Local3 = SLEN(Arg1)
 
 	While(Local2 < Local3) {
 		if (Derefof(Local0[Local2]) != Derefof(Local1[Local2])) {
@@ -91,9 +91,9 @@ Method(WCMP, 2)
 */
 Method(I2BM, 1)
 {
-	Store(0, Local0)
+	Local0 = 0
 	if (ARG0 != 0) {
-		Store(1, Local1)
+		Local1 = 1
 		Local0 = Local1 << ARG0
 	}
 	Return(Local0)

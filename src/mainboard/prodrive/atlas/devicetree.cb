@@ -8,9 +8,6 @@ chip soc/intel/alderlake
 	register "pmc_gpe0_dw1" = "GPP_D"
 	register "pmc_gpe0_dw2" = "GPP_E"
 
-	# Enable HECI1 interface
-	register "HeciEnabled" = "1"
-
 	device domain 0 on
 		device ref pcie5 on end
 		device ref igpu on end

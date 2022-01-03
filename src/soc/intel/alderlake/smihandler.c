@@ -16,11 +16,10 @@
  */
 void smihandler_soc_at_finalize(void)
 {
-	const struct soc_intel_alderlake_config *config;
+	if (!CONFIG(HECI_DISABLE_USING_SMM))
+		return;
 
-	config = config_of_soc();
-
-	if (!config->HeciEnabled && CONFIG(HECI_DISABLE_USING_SMM))
+	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT))
 		heci_disable();
 }
 

@@ -19,9 +19,6 @@ chip soc/intel/alderlake
 
 	register "tcc_offset" = "10"     # TCC of 90
 
-	# Enable heci communication
-	register "HeciEnabled" = "1"
-
 	# Enable CNVi BT
 	register "CnviBtCore" = "true"
 

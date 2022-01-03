@@ -17,9 +17,6 @@ chip soc/intel/alderlake
 	# DPTF enable
 	register "dptf_enable" = "1"
 
-	# Enable heci communication
-	register "HeciEnabled" = "1"
-
 	# Enable CNVi BT
 	register "CnviBtCore" = "true"
 

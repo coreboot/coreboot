@@ -65,7 +65,8 @@ static const struct mb_cfg baseboard_memcfg = {
 		.ddr7 = { .dqs0 = 0, .dqs1 = 1 },
 	},
 
-	.ect = true, /* Enable Early Command Training */
+	.ect = false, /* Early Command Training */
+	.UserBd =  BOARD_TYPE_ULT_ULX_T4,
 
 	.lp5x_config = {
 		.ccc_config = 0xff,

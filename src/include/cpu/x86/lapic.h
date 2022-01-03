@@ -18,9 +18,9 @@ static __always_inline void xapic_write(unsigned int reg, uint32_t v)
 	write32((volatile void *)(uintptr_t)(LAPIC_DEFAULT_BASE + reg), v);
 }
 
-static __always_inline void xapic_send_ipi(uint32_t icrlow, uint32_t apicid)
+static __always_inline void xapic_send_ipi(uint32_t icrlow, uint32_t icrhi)
 {
-	xapic_write(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
+	xapic_write(LAPIC_ICR2, icrhi);
 	xapic_write(LAPIC_ICR, icrlow);
 }
 
@@ -51,10 +51,10 @@ static __always_inline void x2apic_write(unsigned int reg, uint32_t v)
 	wrmsr(index, msr);
 }
 
-static __always_inline void x2apic_send_ipi(uint32_t icrlow, uint32_t apicid)
+static __always_inline void x2apic_send_ipi(uint32_t icrlow, uint32_t icrhi)
 {
 	msr_t icr;
-	icr.hi = apicid;
+	icr.hi = icrhi;
 	icr.lo = icrlow;
 	wrmsr(X2APIC_MSR_ICR_ADDRESS, icr);
 }
@@ -112,7 +112,7 @@ static __always_inline void lapic_send_ipi(uint32_t icrlow, uint32_t apicid)
 	if (is_x2apic_mode())
 		x2apic_send_ipi(icrlow, apicid);
 	else
-		xapic_send_ipi(icrlow, apicid);
+		xapic_send_ipi(icrlow, SET_LAPIC_DEST_FIELD(apicid));
 }
 
 static __always_inline int lapic_busy(void)

@@ -10,6 +10,7 @@ config BOARD_GOOGLE_BASEBOARD_SARIEN
 	select GOOGLE_SMBIOS_MAINBOARD_VERSION
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
 	select INTEL_LPSS_UART_FOR_CONSOLE
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_I2C_TPM_CR50
@@ -90,5 +91,10 @@ config DEVICETREE
 config VBOOT
 	select HAS_RECOVERY_MRC_CACHE
 	select VBOOT_LID_SWITCH
+
+# Override the default variant behavior, since the data.vbt is the same
+# for all variants.
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
 
 endif # BOARD_GOOGLE_BASEBOARD_SARIEN

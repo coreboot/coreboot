@@ -587,7 +587,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	params->Heci3Enabled = is_devfn_enabled(PCH_DEVFN_CSE_3);
 #if !CONFIG(HECI_DISABLE_USING_SMM)
-	params->Heci1Disabled = !is_devfn_enabled(PCH_DEVFN_CSE);
+	params->Heci1Disabled = CONFIG(DISABLE_HECI1_AT_PRE_BOOT);
 #endif
 	params->Device4Enable = config->Device4Enable;
 

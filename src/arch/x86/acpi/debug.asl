@@ -90,7 +90,7 @@ Method(DBGN, 1)
 */
 Method(DBGB, 1)
 {
-	ShiftRight(Arg0, 4, Local0)
+	Local0 = Arg0 >> 4
 	DBGN(Local0)
 	DBGN(Arg0)
 }
@@ -101,7 +101,7 @@ Method(DBGB, 1)
 */
 Method(DBGW, 1)
 {
-	ShiftRight(Arg0, 8, Local0)
+	Local0 = Arg0 >> 8
 	DBGB(Local0)
 	DBGB(Arg0)
 }
@@ -112,7 +112,7 @@ Method(DBGW, 1)
 */
 Method(DBGD, 1)
 {
-	ShiftRight(Arg0, 16, Local0)
+	Local0 = Arg0 >> 16
 	DBGW(Local0)
 	DBGW(Arg0)
 }

@@ -203,9 +203,6 @@ chip soc/intel/jasperlake
 	#       - PM_CFG.SLP_LAN_MIN_ASST_WDTH
 	register "PchPmPwrCycDur" = "1"       # 1s
 
-	# Enable HECI
-	register "HeciEnabled" = "1"
-
 	# Set xHCI LFPS period sampling off time, the default is 9ms.
 	register "xhci_lfps_sampling_offtime_ms" = "9"
 

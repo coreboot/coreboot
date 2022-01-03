@@ -16,11 +16,7 @@
  */
 void smihandler_soc_at_finalize(void)
 {
-	const struct soc_intel_jasperlake_config *config;
-
-	config = config_of_soc();
-
-	if (!config->HeciEnabled && CONFIG(HECI_DISABLE_USING_SMM))
+	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT) && CONFIG(HECI_DISABLE_USING_SMM))
 		heci_disable();
 }
 

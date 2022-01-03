@@ -33,6 +33,9 @@ config BOARD_INTEL_JASPERLAKE_RVP_EXT_EC
 
 if BOARD_INTEL_JASPERLAKE_RVP_COMMON
 
+config DISABLE_HECI1_AT_PRE_BOOT
+	default y
+
 config MAINBOARD_DIR
 	default "intel/jasperlake_rvp"
 

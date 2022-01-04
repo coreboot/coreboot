@@ -469,6 +469,9 @@ int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 	uint32_t data;
 	gpio_t pad;
 
+	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_LOCK_GPIO_PADS))
+		return -1;
+
 	/*
 	 * FSP-S will unlock all the GPIO pads and hide the P2SB device.  With
 	 * the device hidden, we will not be able to send the sideband interface

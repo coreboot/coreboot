@@ -45,6 +45,9 @@ chip soc/intel/alderlake
 
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 
+	# Enable CNVi DDR RFIM
+	register "CnviDdrRfim" = "1"
+
 	# FIVR configurations for brya are disabled since the board doesn't have V1p05 and Vnn
 	# bypass rails implemented.
 	register "ext_fivr_settings" = "{

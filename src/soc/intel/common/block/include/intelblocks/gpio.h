@@ -66,7 +66,7 @@
 typedef uint32_t gpio_t;
 
 struct pad_config {
-	int		pad;/* offset of pad within community */
+	gpio_t		pad;/* offset of pad within community */
 	uint32_t	pad_config[GPIO_NUM_PAD_CFG_REGS];/*
 			Pad config data corresponding to DW0, DW1,.... */
 };

@@ -206,7 +206,7 @@ enum gpio_lock_action {
 };
 
 struct gpio_lock_config {
-	gpio_t			gpio;
+	gpio_t			pad;
 	enum gpio_lock_action	action;
 };
 

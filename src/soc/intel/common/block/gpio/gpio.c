@@ -500,7 +500,7 @@ int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 	for (int x = 0; x < count; x++) {
 		int err;
 
-		pad = pad_list[x].gpio;
+		pad = pad_list[x].pad;
 		action = pad_list[x].action;
 
 		if (!(action & GPIO_LOCK_FULL)) {
@@ -555,7 +555,7 @@ int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action action)
 {
 	const struct gpio_lock_config pads = {
-		.gpio = pad,
+		.pad = pad,
 		.action = action
 	};
 

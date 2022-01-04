@@ -345,6 +345,8 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 	gpio_configure_owner(cfg, comm);
 	gpi_enable_smi(cfg, comm);
 	gpi_enable_nmi(cfg, comm);
+	if (cfg->lock_action)
+		gpio_lock_pad(cfg->pad, cfg->lock_action);
 }
 
 void gpio_configure_pads(const struct pad_config *cfg, size_t num_pads)
@@ -468,13 +470,13 @@ gpio_pad_config_lock_using_sbi(const struct gpio_lock_config *pad_info,
 		.fid = 0,
 	};
 
-	if (!(pad_info->action & GPIO_LOCK_FULL)) {
-		printk(BIOS_ERR, "%s: Error: no action specified for pad %d!\n",
+	if (!(pad_info->lock_action & GPIO_LOCK_FULL)) {
+		printk(BIOS_ERR, "%s: Error: no lock_action specified for pad %d!\n",
 				__func__, pad_info->pad);
 		return;
 	}
 
-	if ((pad_info->action & GPIO_LOCK_CONFIG) == GPIO_LOCK_CONFIG) {
+	if ((pad_info->lock_action & GPIO_LOCK_CONFIG) == GPIO_LOCK_CONFIG) {
 		if (CONFIG(DEBUG_GPIO))
 			printk(BIOS_INFO, "%s: Locking pad %d configuration\n",
 						__func__, pad_info->pad);
@@ -484,7 +486,7 @@ gpio_pad_config_lock_using_sbi(const struct gpio_lock_config *pad_info,
 			printk(BIOS_ERR, "Failed to lock GPIO PAD, response = %d\n", response);
 	}
 
-	if ((pad_info->action & GPIO_LOCK_TX) == GPIO_LOCK_TX) {
+	if ((pad_info->lock_action & GPIO_LOCK_TX) == GPIO_LOCK_TX) {
 		if (CONFIG(DEBUG_GPIO))
 			printk(BIOS_INFO, "%s: Locking pad %d Tx state\n",
 						__func__, pad_info->pad);
@@ -552,14 +554,14 @@ static void
 gpio_pad_config_lock_using_pcr(const struct gpio_lock_config *pad_info,
 	uint8_t pid, uint16_t offset, const uint32_t bit_mask)
 {
-	if ((pad_info->action & GPIO_LOCK_CONFIG) == GPIO_LOCK_CONFIG) {
+	if ((pad_info->lock_action & GPIO_LOCK_CONFIG) == GPIO_LOCK_CONFIG) {
 		if (CONFIG(DEBUG_GPIO))
 			printk(BIOS_INFO, "%s: Locking pad %d configuration\n",
 						__func__, pad_info->pad);
 		pcr_or32(pid, offset, bit_mask);
 	}
 
-	if ((pad_info->action & GPIO_LOCK_TX) == GPIO_LOCK_TX) {
+	if ((pad_info->lock_action & GPIO_LOCK_TX) == GPIO_LOCK_TX) {
 		if (CONFIG(DEBUG_GPIO))
 			printk(BIOS_INFO, "%s: Locking pad %d TX state\n",
 				__func__, pad_info->pad);
@@ -612,7 +614,7 @@ static int gpio_non_smm_lock_pad(const struct gpio_lock_config *pad_info)
 	return 0;
 }
 
-int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action action)
+int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action lock_action)
 {
 	/* Skip locking GPIO PAD in early stages */
 	if (ENV_ROMSTAGE_OR_BEFORE)
@@ -620,7 +622,7 @@ int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action action)
 
 	const struct gpio_lock_config pads = {
 		.pad = pad,
-		.action = action
+		.lock_action = lock_action
 	};
 
 	if (!ENV_SMM && !CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_LOCK_GPIO_PADS))

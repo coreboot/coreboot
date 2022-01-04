@@ -3,6 +3,8 @@
 #ifndef _SOC_BLOCK_GPIO_DEFS_H_
 #define _SOC_BLOCK_GPIO_DEFS_H_
 
+#include <intelblocks/gpio.h>
+
 #define PAD_CFG0_TX_STATE_BIT		0
 #define PAD_CFG0_TX_STATE		(1 << PAD_CFG0_TX_STATE_BIT)
 #define PAD_CFG0_RX_STATE_BIT		1
@@ -129,6 +131,7 @@
 #define PAD_IRQ_ROUTE(value)	PAD_CFG0_ROUTE_##value
 #define PAD_TRIG(value)		PAD_CFG0_TRIG_##value
 #define PAD_PULL(value)		PAD_CFG1_PULL_##value
+#define PAD_LOCK(value)		GPIO_##value
 
 /* Disable the input/output buffer of the pad */
 #define PAD_CFG0_BUF_NO_DISABLE		(0)
@@ -161,19 +164,29 @@
 #endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT */
 
 #define _PAD_CFG_STRUCT(__pad, __config0, __config1)	\
+	{					        \
+		.pad = __pad,				\
+		.pad_config[0] = __config0,		\
+		.pad_config[1] = __config1,		\
+		.lock_action = PAD_LOCK(UNLOCK),	\
+	}
+
+#define _PAD_CFG_STRUCT_LOCK(__pad, __config0, __config1, __action)	\
 	{					\
 		.pad = __pad,			\
 		.pad_config[0] = __config0,	\
 		.pad_config[1] = __config1,	\
+		.lock_action = __action,	\
 	}
 
 #if GPIO_NUM_PAD_CFG_REGS > 2
 #define _PAD_CFG_STRUCT_3(__pad, __config0, __config1, __config2)	\
 	{					\
-		.pad = __pad,			\
-		.pad_config[0] = __config0,	\
-		.pad_config[1] = __config1,	\
-		.pad_config[2] = __config2,	\
+		.pad = __pad,			        \
+		.pad_config[0] = __config0,	        \
+		.pad_config[1] = __config1,	        \
+		.pad_config[2] = __config2,	        \
+		.lock_action = PAD_LOCK(UNLOCK),	\
 	}
 #else
 #define _PAD_CFG_STRUCT_3(__pad, __config0, __config1, __config2)	\
@@ -185,6 +198,13 @@
 	_PAD_CFG_STRUCT(pad,					\
 		PAD_RESET(rst) | PAD_FUNC(func),		\
 		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE))
+
+/* Native function configuration with lock */
+#define PAD_CFG_NF_LOCK(pad, pull, func, lock_action)		\
+	_PAD_CFG_STRUCT_LOCK(pad,				\
+		PAD_RESET(PWROK) | PAD_FUNC(func),		\
+		PAD_PULL(pull) | PAD_IOSSTATE(TxLASTRxE),	\
+		PAD_LOCK(lock_action))
 
 #if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_PADCFG_PADTOL)
 /* Native 1.8V tolerant pad, only applies to some pads like I2C/I2S
@@ -230,6 +250,14 @@
 		PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) | !!val,	\
 		PAD_PULL(NONE) | PAD_IOSSTATE(TxLASTRxE))
 
+/* General purpose output with lock, no pullup/down. */
+#define PAD_CFG_GPO_LOCK(pad, val, lock_action)		\
+	_PAD_CFG_STRUCT_LOCK(pad,				\
+	PAD_FUNC(GPIO) | PAD_RESET(PWROK) |			\
+	PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) | !!val,		\
+	PAD_PULL(NONE) | PAD_IOSSTATE(TxLASTRxE),		\
+	PAD_LOCK(lock_action))
+
 /* General purpose output, with termination specified */
 #define PAD_CFG_TERM_GPO(pad, val, pull, rst)			\
 	_PAD_CFG_STRUCT(pad,					\
@@ -258,6 +286,13 @@
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE),	\
 		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE))
 
+/* General purpose input with lock */
+#define PAD_CFG_GPI_LOCK(pad, pull, lock_action)				\
+	_PAD_CFG_STRUCT_LOCK(pad,						\
+		PAD_FUNC(GPIO) | PAD_RESET(PWROK) | PAD_BUF(TX_DISABLE),	\
+		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE),				\
+		PAD_LOCK(lock_action))
+
 #define PAD_CFG_GPI_TRIG_IOSSTATE_OWN(pad, pull, rst, trig, iosstate, own)		\
 	_PAD_CFG_STRUCT(pad,								\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_TRIG(trig) | PAD_BUF(TX_DISABLE),	\
@@ -279,11 +314,24 @@
 		PAD_TRIG(trig) | PAD_RX_POL(NONE) | PAD_BUF(TX_DISABLE),	\
 		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(own))
 
+#define PAD_CFG_GPI_TRIG_OWN_LOCK(pad, pull, rst, trig, own, lock_action)	\
+	_PAD_CFG_STRUCT_LOCK(pad,						\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) |				\
+		PAD_TRIG(trig) | PAD_RX_POL(NONE) | PAD_BUF(TX_DISABLE),	\
+		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(own), PAD_LOCK(lock_action))
+
 #define PAD_CFG_GPI_GPIO_DRIVER(pad, pull, rst)					\
 	_PAD_CFG_STRUCT(pad,							\
 		PAD_FUNC(GPIO) | PAD_RESET(rst) |				\
 		PAD_TRIG(OFF) | PAD_BUF(TX_DISABLE),				\
 		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(DRIVER) | PAD_IOSSTATE(TxDRxE))
+
+#define PAD_CFG_GPI_GPIO_DRIVER_LOCK(pad, pull, lock_action)				\
+	_PAD_CFG_STRUCT_LOCK(pad,							\
+		PAD_FUNC(GPIO) | PAD_RESET(PWROK) |					\
+		PAD_TRIG(OFF) | PAD_BUF(TX_DISABLE),					\
+		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(DRIVER) | PAD_IOSSTATE(TxDRxE),	\
+		PAD_LOCK(lock_action))
 
 #define PAD_CFG_GPIO_DRIVER_HI_Z(pad, pull, rst, iosstate, iosterm)		\
 	_PAD_CFG_STRUCT(pad,							\
@@ -299,6 +347,10 @@
 /* GPIO Interrupt */
 #define PAD_CFG_GPI_INT(pad, pull, rst, trig)	\
 		PAD_CFG_GPI_TRIG_OWN(pad, pull, rst, trig, DRIVER)
+
+/* GPIO Interrupt with lock */
+#define PAD_CFG_GPI_INT_LOCK(pad, pull, trig, lock_action)	\
+		PAD_CFG_GPI_TRIG_OWN_LOCK(pad, pull, PWROK, trig, DRIVER, lock_action)
 
 /*
  * No Connect configuration for unconnected or unused pad.
@@ -318,6 +370,14 @@
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE) |		\
 		PAD_IRQ_CFG(IOAPIC, trig, inv), PAD_PULL(pull) |		\
 		PAD_IOSSTATE(TxDRxE))
+
+/* General purpose input with lock, routed to APIC */
+#define PAD_CFG_GPI_APIC_LOCK(pad, pull, trig, inv, lock_action)		\
+	_PAD_CFG_STRUCT_LOCK(pad,						\
+		PAD_FUNC(GPIO) | PAD_RESET(PWROK) | PAD_BUF(TX_DISABLE) |	\
+		PAD_IRQ_CFG(IOAPIC, trig, inv), PAD_PULL(pull) |		\
+		PAD_IOSSTATE(TxDRxE),						\
+		PAD_LOCK(lock_action))
 
 /* General purpose input, routed to APIC - with IOStandby Config*/
 #define PAD_CFG_GPI_APIC_IOS(pad, pull, rst, trig, inv, iosstate, iosterm)	\
@@ -406,8 +466,18 @@
 		PAD_IRQ_CFG_DUAL_ROUTE(route1, route2,  trig, inv),		\
 		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE))
 
+#define PAD_CFG_GPI_DUAL_ROUTE_LOCK(pad, pull, rst, trig, inv, route1, route2, lock_action)   \
+	_PAD_CFG_STRUCT_LOCK(pad,						\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE) |		\
+		PAD_IRQ_CFG_DUAL_ROUTE(route1, route2,  trig, inv),		\
+		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE),		                \
+		PAD_LOCK(lock_action))
+
 #define PAD_CFG_GPI_IRQ_WAKE(pad, pull, rst, trig, inv)		\
 	PAD_CFG_GPI_DUAL_ROUTE(pad, pull, rst, trig, inv, IOAPIC, SCI)
+
+#define PAD_CFG_GPI_IRQ_WAKE_LOCK(pad, pull, trig, inv, lock_action)		\
+	PAD_CFG_GPI_DUAL_ROUTE_LOCK(pad, pull, PWROK, trig, inv, IOAPIC, SCI, lock_action)
 
 #endif /* CONFIG_SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT */
 

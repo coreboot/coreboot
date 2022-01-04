@@ -24,6 +24,17 @@ static void register_reset_to_bl31(void)
 	register_bl31_aux_param(&param_reset.h);
 }
 
+static void configure_audio(void)
+{
+	mtcmos_audio_power_on();
+
+	/* Set up I2S */
+	gpio_set_mode(GPIO(I2S2_MCK), PAD_I2S2_MCK_FUNC_I2S2_MCK);
+	gpio_set_mode(GPIO(I2S2_BCK), PAD_I2S2_BCK_FUNC_I2S2_BCK);
+	gpio_set_mode(GPIO(I2S2_LRCK), PAD_I2S2_LRCK_FUNC_I2S2_LRCK);
+	gpio_set_mode(GPIO(EINT4), PAD_EINT4_FUNC_I2S3_DO);
+}
+
 static void mainboard_init(struct device *dev)
 {
 	mtk_msdc_configure_emmc(true);
@@ -34,6 +45,8 @@ static void mainboard_init(struct device *dev)
 	}
 
 	setup_usb_host();
+
+	configure_audio();
 
 	if (spm_init())
 		printk(BIOS_ERR, "spm init failed, system suspend may not work\n");

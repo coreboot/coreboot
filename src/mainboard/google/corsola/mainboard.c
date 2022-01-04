@@ -4,6 +4,7 @@
 #include <bootmode.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <gpio.h>
 #include <soc/msdc.h>
 #include <soc/spm.h>
 #include <soc/usb.h>
@@ -41,7 +42,9 @@ static void mainboard_init(struct device *dev)
 
 	if (CONFIG(SDCARD_INIT)) {
 		printk(BIOS_INFO, "SD card init\n");
-		mtk_msdc_configure_sdcard();
+
+		/* External SD Card connected via USB */
+		gpio_output(GPIO_EN_PP3300_SDBRDG_X, 1);
 	}
 
 	setup_usb_host();

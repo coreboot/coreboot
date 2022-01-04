@@ -55,7 +55,8 @@ config BOOT_DEVICE_SPI_FLASH_BUS
 
 config SDCARD_INIT
 	bool
-	default n
+	default y if BOARD_GOOGLE_KINGLER_COMMON
+	default n if BOARD_GOOGLE_KRABBY_COMMON
 
 config DRIVER_TPM_SPI_BUS
 	hex

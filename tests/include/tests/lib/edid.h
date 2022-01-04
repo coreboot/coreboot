@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef TESTS_LIB_EDID_H
+#define TESTS_LIB_EDID_H
+
 #include <stdlib.h>
 #include <commonlib/bsd/helpers.h>
 
@@ -195,3 +198,5 @@ _Static_assert(sizeof(struct edid_raw) == 128,
 					EDID_COLOR_W_X92, \
 					EDID_COLOR_W_Y92, \
 				}
+
+#endif /* TESTS_LIB_EDID_H */

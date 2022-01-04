@@ -5,7 +5,7 @@
 #include <edid.h>
 #include <assert.h>
 #include <string.h>
-#include <lib/edid-test.h>
+#include <tests/lib/edid.h>
 
 struct test_state {
 	int data_size;

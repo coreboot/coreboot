@@ -170,7 +170,7 @@ const struct pad_config gpio_table[] = {
 	/* C13:	Not Connected			*/
 	PAD_NC(GPP_C13, NONE),
 	/* C14:	TPM_IRQ				*/
-	PAD_NC(GPP_C14, NONE),
+	PAD_CFG_NF(GPP_C14, NONE, DEEP, NF1),
 	/* C15:	TPM_RST				*/
 	PAD_NC(GPP_C15, NONE),
 	/* C16:	I2C0_SDA			*/

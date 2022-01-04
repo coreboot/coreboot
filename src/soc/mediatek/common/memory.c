@@ -4,6 +4,7 @@
 #include <bootmode.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <soc/dramc_common.h>
 #include <ip_checksum.h>
 #include <mrc_cache.h>
 #include <soc/dramc_param.h>
@@ -95,31 +96,11 @@ const char *get_dram_type_str(u32 ddr_type)
 	return s;
 }
 
-static int dram_run_fast_calibration(struct dramc_param *dparam)
-{
-	const u16 config = CONFIG(MEDIATEK_DRAM_DVFS) ? DRAMC_ENABLE_DVFS : DRAMC_DISABLE_DVFS;
-	if (dparam->dramc_datas.ddr_info.config_dvfs != config) {
-		printk(BIOS_WARNING,
-		       "DRAM-K: Incompatible config for calibration data from flash "
-		       "(expected: %#x, saved: %#x)\n",
-		       config, dparam->dramc_datas.ddr_info.config_dvfs);
-		return -1;
-	}
-
-	printk(BIOS_INFO, "DRAM-K: DRAM calibration data valid pass\n");
-	init_dram_by_params(dparam);
-	if (mt_mem_test(&dparam->dramc_datas) == 0)
-		return 0;
-
-	return DRAMC_ERR_FAST_CALIBRATION;
-}
-
-static int dram_run_full_calibration(struct dramc_param *dparam)
+static int run_dram_blob(struct dramc_param *dparam)
 {
 	/* Load and run the provided blob for full-calibration if available */
 	struct prog dram = PROG_INIT(PROG_REFCODE, CONFIG_CBFS_PREFIX "/dram");
 
-	initialize_dramc_param(dparam);
 	dump_param_header(dparam);
 
 	if (cbfs_prog_stage_load(&dram)) {
@@ -132,12 +113,13 @@ static int dram_run_full_calibration(struct dramc_param *dparam)
 	prog_set_entry(&dram, prog_entry(&dram), dparam);
 	prog_run(&dram);
 	if (dparam->header.status != DRAMC_SUCCESS) {
-		printk(BIOS_ERR, "DRAM-K: Full calibration failed: status = %d\n",
+		printk(BIOS_ERR, "DRAM-K: calibration failed: status = %d\n",
 		       dparam->header.status);
 		return -3;
 	}
 
-	if (!(dparam->header.flags & DRAMC_FLAG_HAS_SAVED_DATA)) {
+	if (!(dparam->header.config & DRAMC_CONFIG_FAST_K)
+	    && !(dparam->header.flags & DRAMC_FLAG_HAS_SAVED_DATA)) {
 		printk(BIOS_ERR,
 		       "DRAM-K: Full calibration executed without saving parameters. "
 		       "Please ensure the blob is built properly.\n");
@@ -145,6 +127,49 @@ static int dram_run_full_calibration(struct dramc_param *dparam)
 	}
 
 	return 0;
+}
+
+static int dram_run_fast_calibration(struct dramc_param *dparam)
+{
+	const u16 config = CONFIG(MEDIATEK_DRAM_DVFS) ? DRAMC_ENABLE_DVFS : DRAMC_DISABLE_DVFS;
+
+	if (dparam->dramc_datas.ddr_info.config_dvfs != config) {
+		printk(BIOS_WARNING,
+		       "DRAM-K: Incompatible config for calibration data from flash "
+		       "(expected: %#x, saved: %#x)\n",
+		       config, dparam->dramc_datas.ddr_info.config_dvfs);
+		return -1;
+	}
+
+	printk(BIOS_INFO, "DRAM-K: DRAM calibration data valid pass\n");
+
+	if (CONFIG(MEDIATEK_BLOB_FAST_INIT)) {
+		printk(BIOS_INFO, "DRAM-K: Run fast calibration run in blob mode\n");
+
+		/*
+		 * The loaded config should not contain FAST_K (done in full calibration),
+		 * so we have to set that now to indicate the blob taking the config instead
+		 * of generating a new config.
+		 */
+		dparam->header.config |= DRAMC_CONFIG_FAST_K;
+
+		if (run_dram_blob(dparam) < 0)
+			return -3;
+	} else {
+		init_dram_by_params(dparam);
+	}
+
+	if (mt_mem_test(&dparam->dramc_datas) < 0)
+		return -4;
+
+	return 0;
+}
+
+static int dram_run_full_calibration(struct dramc_param *dparam)
+{
+	initialize_dramc_param(dparam);
+
+	return run_dram_blob(dparam);
 }
 
 static void mem_init_set_default_config(struct dramc_param *dparam,

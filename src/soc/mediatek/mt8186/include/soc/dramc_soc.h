@@ -15,6 +15,11 @@ typedef enum {
 	RANK_MAX,
 } DRAM_RANK_T;
 
+typedef enum {
+	RANK_SINGLE = 1,
+	RANK_DUAL,
+} DRAM_RANK_NUMBER_T;
+
 /* DRAM SHUFFLE RG type */
 typedef enum {
 	DRAM_DFS_SHUFFLE_1 = 0,

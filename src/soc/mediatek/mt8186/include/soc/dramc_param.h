@@ -59,48 +59,53 @@ struct sdram_info {
 };
 
 struct sdram_params {
+	/* Sometimes, we may need to compare params member
+	 * between coreboot and blob for analysis. Here,
+	 * add member size using xxxB.
+	 */
+	/* 4 + 4 = 8B */
 	u32 rank_num;
 	u16 num_dlycell_perT;
 	u16 delay_cell_timex100;
 
-	/* duty */
+	/* duty 16B */
 	s8 duty_clk_delay[CHANNEL_MAX][RANK_MAX];
 	s8 duty_dqs_delay[CHANNEL_MAX][DQS_NUMBER_LP4];
-	s8 duty_wck_delay[CHANNEL_MAX][DQS_NUMBER_LP4];
 	s8 duty_dq_delay[CHANNEL_MAX][DQS_NUMBER_LP4];
 	s8 duty_dqm_delay[CHANNEL_MAX][DQS_NUMBER_LP4];
 
-	/* CBT */
+	/* CBT 48B */
 	u8 cbt_final_vref[CHANNEL_MAX][RANK_MAX];
-	s8 cbt_cmd_dly[CHANNEL_MAX][RANK_MAX];
+	u8 cbt_clk_dly[CHANNEL_MAX][RANK_MAX];
+	u8 cbt_cmd_dly[CHANNEL_MAX][RANK_MAX];
 	u8 cbt_cs_dly[CHANNEL_MAX][RANK_MAX];
 	u8 cbt_ca_prebit_dly[CHANNEL_MAX][RANK_MAX][DQS_BIT_NUMBER];
 
-	/* write leveling */
+	/* write leveling 8B */
 	u8 wr_level[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
 
-	/* Gating */
+	/* Gating 32B */
 	u8 gating_MCK[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
 	u8 gating_UI[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
 	u8 gating_PI[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
 	u8 gating_pass_count[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
 
-	/* TX perbit */
+	/* TX perbit 164B */
 	u8 tx_window_vref[CHANNEL_MAX][RANK_MAX];
 	u16 tx_center_min[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
 	u16 tx_center_max[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
 	u16 tx_win_center[CHANNEL_MAX][RANK_MAX][DQ_DATA_WIDTH_LP4];
 
-	/* rx datlat */
+	/* rx datlat 4B */
 	u8 rx_datlat[CHANNEL_MAX][RANK_MAX];
 
-	/* RX perbit */
+	/* RX perbit 88B */
 	u8 rx_best_vref[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
-	u16 rx_perbit_dqs[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
-	u16 rx_perbit_dqm[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
-	u16 rx_perbit_dq[CHANNEL_MAX][RANK_MAX][DQ_DATA_WIDTH_LP4];
+	u8 rx_perbit_dqs[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
+	u8 rx_perbit_dqm[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
+	u8 rx_perbit_dq[CHANNEL_MAX][RANK_MAX][DQ_DATA_WIDTH_LP4];
 
-	/* TX OE */
+	/* TX OE 16B */
 	u8 tx_oe_dq_mck[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
 	u8 tx_oe_dq_ui[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
 };
@@ -112,6 +117,15 @@ struct emi_mdl {
 	u32 chn_cona_val;
 };
 
+struct ddr_mrr_info {
+	u16 mr5_vendor_id;
+	u16 mr6_revision_id;
+	u16 mr7_revision_id;
+	u64 mr8_density[RANK_MAX];
+	u32 rank_nums;
+	u8 die_num[RANK_MAX];
+};
+
 struct ddr_base_info {
 	u32 config_dvfs;		/* SDRAM_DVFS_FLAG */
 	struct sdram_info sdram;
@@ -120,6 +134,8 @@ struct ddr_base_info {
 	u64 rank_size[RANK_MAX];
 	struct emi_mdl emi_config;
 	DRAM_CBT_MODE_T cbt_mode[RANK_MAX];
+	struct ddr_mrr_info mrr_info;
+	u32 data_rate;
 };
 
 struct dramc_data {

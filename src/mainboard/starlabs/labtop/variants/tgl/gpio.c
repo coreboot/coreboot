@@ -51,19 +51,12 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPD11, 0, PWROK),
 
 	/* A0:	ESPI_IO_0			*/
-	PAD_CFG_NF(GPP_A0, UP_20K, DEEP, NF1),
 	/* A1:	ESPI_IO_1			*/
-	PAD_CFG_NF(GPP_A1, UP_20K, DEEP, NF1),
 	/* A2:	ESPI_IO_2			*/
-	PAD_CFG_NF(GPP_A2, UP_20K, DEEP, NF1),
 	/* A3:	ESPI_IO_3			*/
-	PAD_CFG_NF(GPP_A3, UP_20K, DEEP, NF1),
 	/* A4:	ESPI_CS_L			*/
-	PAD_CFG_NF(GPP_A4, UP_20K, DEEP, NF1),
 	/* A5:	ESPI_CLK			*/
-	PAD_CFG_NF(GPP_A5, DN_20K, DEEP, NF1),
 	/* A6:	Not Connected(TP764)		*/
-	PAD_CFG_NF(GPP_A6, NONE, DEEP, NF1),
 	/* A7:	WLAN_PCM_CLK			*/
 	PAD_NC(GPP_A7, NONE),
 	/* A8:	WLAN_PCM_RST			*/

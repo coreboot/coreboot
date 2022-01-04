@@ -152,3 +152,7 @@ config BOARD_GOOGLE_NEREID
 config BOARD_GOOGLE_AGAH
 	bool "->  Agah"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
+
+config BOARD_GOOGLE_VOLMAR
+	bool "->  Volmar"
+	select BOARD_GOOGLE_BASEBOARD_BRYA

@@ -6,6 +6,7 @@
 #include <commonlib/region.h>
 #include <spd_bin.h>
 #include <string.h>
+#include <types.h>
 
 _Static_assert(CONFIG_MRC_CHANNEL_WIDTH > 0, "MRC channel width must be >0!");
 _Static_assert(CONFIG_DATA_BUS_WIDTH > 0, "Data bus width must be >0!");
@@ -93,7 +94,7 @@ static void read_spd_md(const struct soc_mem_cfg *soc_mem_cfg, const struct mem_
 
 #define CH_DIMM_OFFSET(ch, dimm)	((ch) * CONFIG_DIMMS_PER_CHANNEL + (dimm))
 
-static void read_spd_dimm(const struct soc_mem_cfg *soc_mem_cfg, const struct mem_spd *info,
+static bool read_spd_dimm(const struct soc_mem_cfg *soc_mem_cfg, const struct mem_spd *info,
 			bool half_populated, struct mem_channel_data *channel_data,
 			size_t *spd_len)
 {
@@ -109,7 +110,7 @@ static void read_spd_dimm(const struct soc_mem_cfg *soc_mem_cfg, const struct me
 	uint32_t pop_mask = 0;
 
 	if (!(info->topo & MEM_TOPO_DIMM_MODULE))
-		return;
+		return false;
 
 	for (ch = 0; ch < num_phys_ch; ch++) {
 		for (dimm = 0; dimm < CONFIG_DIMMS_PER_CHANNEL; dimm++) {
@@ -137,6 +138,8 @@ static void read_spd_dimm(const struct soc_mem_cfg *soc_mem_cfg, const struct me
 	}
 
 	channel_data->ch_population_flags |= populated_mask_to_flag(pop_mask, num_phys_ch);
+
+	return pop_mask != 0;
 }
 
 void mem_populate_channel_data(const struct soc_mem_cfg *soc_mem_cfg,
@@ -145,11 +148,12 @@ void mem_populate_channel_data(const struct soc_mem_cfg *soc_mem_cfg,
 				struct mem_channel_data *data)
 {
 	size_t spd_md_len = 0, spd_dimm_len = 0;
+	bool have_dimms;
 
 	memset(data, 0, sizeof(*data));
 
 	read_spd_md(soc_mem_cfg, spd_info, half_populated, data, &spd_md_len);
-	read_spd_dimm(soc_mem_cfg, spd_info, half_populated, data, &spd_dimm_len);
+	have_dimms = read_spd_dimm(soc_mem_cfg, spd_info, half_populated, data, &spd_dimm_len);
 
 	if (data->ch_population_flags == NO_CHANNEL_POPULATED)
 		die("No channels are populated. Incorrect memory configuration!\n");
@@ -161,11 +165,12 @@ void mem_populate_channel_data(const struct soc_mem_cfg *soc_mem_cfg,
 	} else {
 		/*
 		 * SPD lengths must match for CBFS and EEPROM SPD for mixed
-		 * topology.
+		 * topology. Skip this check when no DIMMs are installed.
 		 */
-		if (spd_md_len != spd_dimm_len)
+		if (have_dimms && spd_md_len != spd_dimm_len)
 			die("Length of SPD does not match for mixed topology!\n");
 
+		/* Use memory-down SPD length in case there are no DIMMs installed */
 		data->spd_len = spd_md_len;
 	}
 }

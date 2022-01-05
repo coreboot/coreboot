@@ -10,7 +10,7 @@
 uint32_t board_id(void)
 {
 	static uint32_t id = UNDEFINED_STRAPPING_ID;
-	gpio_t pins[3];
+	gpio_t pins[3] = { 0 };
 	if (CONFIG(BOARD_GOOGLE_HEROBRINE)) {
 		pins[2] = GPIO(75);
 		pins[1] = GPIO(74);

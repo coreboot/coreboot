@@ -13,7 +13,6 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		.topo = MEM_TOPO_MIXED,
 		.cbfs_index = 0,
 		.smbus = {
-			[0] = { .addr_dimm[0] = 0x50, },
 			[1] = { .addr_dimm[0] = 0x52, },
 		},
 	};

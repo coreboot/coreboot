@@ -2,7 +2,8 @@
 
 chip soc/amd/cezanne
 	device domain 0 on
-
+		device ref gpp_bridge_1 off end # no SD
+		device ref gpp_bridge_2 off end # no WWAN
 	end # domain
 
 	register "slow_ppt_limit_mW"         = "25000"

@@ -111,7 +111,7 @@ struct fru_product_info {
 	char *asset_tag;
 	char *fru_file_id;
 	char **product_custom;
-	int custom_count; /* Number of custom fields */
+	size_t custom_count; /* Number of custom fields */
 };
 
 struct fru_board_info {
@@ -121,7 +121,7 @@ struct fru_board_info {
 	char *part_number;
 	char *fru_file_id;
 	char **board_custom;
-	int custom_count;
+	size_t custom_count;
 };
 
 struct fru_chassis_info {
@@ -129,7 +129,7 @@ struct fru_chassis_info {
 	char *chassis_partnumber;
 	char *serial_number;
 	char **chassis_custom;
-	int custom_count;
+	size_t custom_count;
 };
 
 struct fru_info_str {

@@ -104,6 +104,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x3 if BOARD_GOOGLE_TANIKS
 	default 0x0 if BOARD_GOOGLE_NIVVIKS
 	default 0x0 if BOARD_GOOGLE_NEREID
+	default 0x3 if BOARD_GOOGLE_AGAH
 
 config DRIVER_TPM_I2C_ADDR
 	hex
@@ -145,6 +146,7 @@ config MAINBOARD_PART_NUMBER
 	default "Taniks" if BOARD_GOOGLE_TANIKS
 	default "Nivviks" if BOARD_GOOGLE_NIVVIKS
 	default "Nereid" if BOARD_GOOGLE_NEREID
+	default "Agah" if BOARD_GOOGLE_AGAH
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -166,6 +168,7 @@ config VARIANT_DIR
 	default "taniks" if BOARD_GOOGLE_TANIKS
 	default "nivviks" if BOARD_GOOGLE_NIVVIKS
 	default "nereid" if BOARD_GOOGLE_NEREID
+	default "agah" if BOARD_GOOGLE_AGAH
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC

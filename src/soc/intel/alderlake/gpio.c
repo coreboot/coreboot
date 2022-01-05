@@ -9,20 +9,20 @@
 
 /*
  * This file is created based on Intel Alder Lake Processor PCH Datasheet
- * Document number: 630094
- * Chapter number: 27
+ * Document number: 630094, Chapter number: 27
+ * Document number: 630603, Chapter number: 16
  */
 
-static const struct reset_mapping rst_map[] = {
-	{ .logical = PAD_CFG0_LOGICAL_RESET_RSMRST, .chipset = 0U << 30 },
-	{ .logical = PAD_CFG0_LOGICAL_RESET_DEEP, .chipset = 1U << 30 },
-	{ .logical = PAD_CFG0_LOGICAL_RESET_PLTRST, .chipset = 2U << 30 },
+static const struct reset_mapping rst_map_gpp[] = {
+	{ .logical = PAD_RESET(PWROK), .chipset = 0U << 30 },
+	{ .logical = PAD_RESET(DEEP), .chipset = 1U << 30 },
+	{ .logical = PAD_RESET(PLTRST), .chipset = 2U << 30 },
 };
-static const struct reset_mapping rst_map_com2[] = {
-	{ .logical = PAD_CFG0_LOGICAL_RESET_PWROK, .chipset = 0U << 30 },
-	{ .logical = PAD_CFG0_LOGICAL_RESET_DEEP, .chipset = 1U << 30 },
-	{ .logical = PAD_CFG0_LOGICAL_RESET_PLTRST, .chipset = 2U << 30 },
-	{ .logical = PAD_CFG0_LOGICAL_RESET_RSMRST, .chipset = 3U << 30 },
+static const struct reset_mapping rst_map_gpd[] = {
+	{ .logical = PAD_RESET(PWROK), .chipset = 0U << 30 },
+	{ .logical = PAD_RESET(DEEP), .chipset = 1U << 30 },
+	{ .logical = PAD_RESET(PLTRST), .chipset = 2U << 30 },
+	{ .logical = PAD_RESET(RSMRST), .chipset = 3U << 30 },
 };
 
 /*
@@ -104,8 +104,8 @@ static const struct pad_community adl_communities[] = {
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
 		.name = "GPP_BTA",
 		.acpi_path = "\\_SB.PCI0.GPIO",
-		.reset_map = rst_map,
-		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.reset_map = rst_map_gpp,
+		.num_reset_vals = ARRAY_SIZE(rst_map_gpp),
 		.groups = adl_community0_groups,
 		.num_groups = ARRAY_SIZE(adl_community0_groups),
 		.vw_base = DEFAULT_VW_BASE,
@@ -128,8 +128,8 @@ static const struct pad_community adl_communities[] = {
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
 		.name = "GPP_SDH",
 		.acpi_path = "\\_SB.PCI0.GPIO",
-		.reset_map = rst_map,
-		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.reset_map = rst_map_gpp,
+		.num_reset_vals = ARRAY_SIZE(rst_map_gpp),
 		.groups = adl_community1_groups,
 		.num_groups = ARRAY_SIZE(adl_community1_groups),
 		.vw_base = DEFAULT_VW_BASE,
@@ -151,8 +151,8 @@ static const struct pad_community adl_communities[] = {
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
 		.name = "GPD",
 		.acpi_path = "\\_SB.PCI0.GPIO",
-		.reset_map = rst_map_com2,
-		.num_reset_vals = ARRAY_SIZE(rst_map_com2),
+		.reset_map = rst_map_gpd,
+		.num_reset_vals = ARRAY_SIZE(rst_map_gpd),
 		.groups = adl_community2_groups,
 		.num_groups = ARRAY_SIZE(adl_community2_groups),
 	},
@@ -171,8 +171,8 @@ static const struct pad_community adl_communities[] = {
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
 		.name = "GPP_VGPIO",
 		.acpi_path = "\\_SB.PCI0.GPIO",
-		.reset_map = rst_map,
-		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.reset_map = rst_map_gpp,
+		.num_reset_vals = ARRAY_SIZE(rst_map_gpp),
 		.groups = adl_community3_groups,
 		.num_groups = ARRAY_SIZE(adl_community3_groups),
 	},
@@ -192,8 +192,8 @@ static const struct pad_community adl_communities[] = {
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
 		.name = "GPP_FCE",
 		.acpi_path = "\\_SB.PCI0.GPIO",
-		.reset_map = rst_map,
-		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.reset_map = rst_map_gpp,
+		.num_reset_vals = ARRAY_SIZE(rst_map_gpp),
 		.groups = adl_community4_groups,
 		.num_groups = ARRAY_SIZE(adl_community4_groups),
 		.vw_base = DEFAULT_VW_BASE,
@@ -216,8 +216,8 @@ static const struct pad_community adl_communities[] = {
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
 		.name = "GPP_RSPI0",
 		.acpi_path = "\\_SB.PCI0.GPIO",
-		.reset_map = rst_map,
-		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.reset_map = rst_map_gpp,
+		.num_reset_vals = ARRAY_SIZE(rst_map_gpp),
 		.groups = adl_community5_groups,
 		.num_groups = ARRAY_SIZE(adl_community5_groups),
 	}

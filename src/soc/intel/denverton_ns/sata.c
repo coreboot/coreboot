@@ -56,8 +56,8 @@ static struct device_operations sata_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_DENVERTON_SATA_AHCI_1,
-	PCI_DEVICE_ID_INTEL_DENVERTON_SATA_AHCI_2,
+	PCI_DEVICE_ID_INTEL_DNV_SATA_AHCI_1,
+	PCI_DEVICE_ID_INTEL_DNV_SATA_AHCI_2,
 	0
 };
 

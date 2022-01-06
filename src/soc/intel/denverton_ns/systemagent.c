@@ -333,8 +333,8 @@ static struct device_operations systemagent_ops = {
 
 /* IDs for System Agent device of Intel Denverton SoC */
 static const unsigned short systemagent_ids[] = {
-	PCI_DEVICE_ID_INTEL_DENVERTON_SA,
-	PCI_DEVICE_ID_INTEL_DENVERTONAD_SA,
+	PCI_DEVICE_ID_INTEL_DNV_SA,
+	PCI_DEVICE_ID_INTEL_DNVAD_SA,
 	0
 };
 

@@ -13,6 +13,7 @@
 #include <fsp/util.h>
 #include <security/intel/txt/txt_platform.h>
 #include <security/intel/txt/txt.h>
+#include <stdint.h>
 
 struct map_entry {
 	uint32_t    reg;
@@ -165,10 +166,8 @@ static void configure_dpr(struct device *dev)
 
 static void mc_add_dram_resources(struct device *dev, int *res_count)
 {
-	struct range_entry fsp_mem;
 	uint64_t base_kb;
 	uint64_t size_kb;
-	uint64_t top_of_ram;
 	uint64_t mc_values[NUM_MAP_ENTRIES];
 	struct resource *resource;
 	int index = *res_count;
@@ -177,16 +176,9 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	if (dev->bus->secondary != 0)
 		return;
 
-	fsp_find_reserved_memory(&fsp_mem);
-
 	/* Read in the MAP registers and report their values. */
 	mc_read_map_entries(dev, &mc_values[0]);
 	mc_report_map_entries(dev, &mc_values[0]);
-
-	top_of_ram = range_entry_base(&fsp_mem) - 1;
-	printk(BIOS_SPEW, "cbmem_top: 0x%lx, fsp range: [0x%llx - 0x%llx], top_of_ram: 0x%llx\n",
-		(uintptr_t) cbmem_top(), range_entry_base(&fsp_mem),
-		range_entry_end(&fsp_mem), top_of_ram);
 
 	/* Conventional Memory (DOS region, 0x0 to 0x9FFFF) */
 	base_kb = 0;
@@ -194,31 +186,11 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	LOG_MEM_RESOURCE("legacy_ram", dev, index, base_kb, size_kb);
 	ram_resource(dev, index++, base_kb, size_kb);
 
-	/* 1MB -> top_of_ram i.e., fsp_mem_base+1*/
+	/* 1MB -> top_of_ram i.e., cbmem_top */
 	base_kb = (0x100000 >> 10);
-	size_kb = (top_of_ram - 0xfffff) >> 10;
+	size_kb = ((uintptr_t)cbmem_top() - 1 * MiB) >> 10;
 	LOG_MEM_RESOURCE("low_ram", dev, index, base_kb, size_kb);
 	ram_resource(dev, index++, base_kb, size_kb);
-
-	/* fsp_mem_base -> cbmem_top */
-	base_kb = top_of_ram / KiB;
-	size_kb = ((uintptr_t)cbmem_top() - top_of_ram) / KiB;
-	reserved_ram_resource(dev, index++, base_kb, size_kb);
-
-	/*
-	 * FSP meomoy, CBMem regions are already added as reserved
-	 * Add TSEG and MESEG Regions as reserved memory
-	 * src/drivers/intel/fsp2_0/memory_init.c sets CBMEM reserved size
-	 * arch_upd->BootLoaderTolumSize = cbmem_overhead_size(); == 2 * CBMEM_ROOT_MIN_SIZE
-	 *    typically 0x2000
-	 *  Example config:
-	 *  FSP_RESERVED_MEMORY_RESOURCE_HOB
-	 *     FspReservedMemoryResource Base : 6FBFE000
-	 *     FspReservedMemoryResource Size : 400000
-	 *  FSP_BOOT_LOADER_TOLUM_HOB
-	 *     FspBootLoaderTolum Base : 6FFFE000
-	 *     FspBootLoaderTolum Size : 2000
-	 */
 
 	/* Mark TSEG/SMM region as reserved */
 	base_kb = (mc_values[TSEG_BASE_REG] >> 10);

@@ -40,10 +40,17 @@ static const struct region_name region_names[MAX_REGIONS] = {
 	{ "Intel ME", "me", "flashregion_2_intel_me.bin", "SI_ME" },
 	{ "GbE", "gbe", "flashregion_3_gbe.bin", "SI_GBE" },
 	{ "Platform Data", "pd", "flashregion_4_platform_data.bin", "SI_PDR" },
-	{ "Reserved", "res1", "flashregion_5_reserved.bin", NULL },
-	{ "Reserved", "res2", "flashregion_6_reserved.bin", NULL },
-	{ "Reserved", "res3", "flashregion_7_reserved.bin", NULL },
+	{ "Device Exp1", "devexp", "flashregion_5_device_exp.bin", "SI_DEVICEEXT" },
+	{ "Secondary BIOS", "bios2", "flashregion_6_bios2.bin", "SI_BIOS2" },
+	{ "Reserved", "res7", "flashregion_7_reserved.bin", NULL },
 	{ "EC", "ec", "flashregion_8_ec.bin", "SI_EC" },
+	{ "Device Exp2", "devexp2", "flashregion_9_device_exp.bin", "SI_DEVICEEXT2" },
+	{ "IE", "ie", "flashregion_10_ie.bin", "SI_IE" },
+	{ "10GbE_0", "10gbe_0", "flashregion_11_10gbe0.bin", "SI_10GBE0" },
+	{ "10GbE_1", "10gbe_1", "flashregion_12_10gbe1.bin", "SI_10GBE1" },
+	{ "Reserved", "res13", "flashregion_13_reserved.bin", NULL },
+	{ "Reserved", "res14", "flashregion_14_reserved.bin", NULL },
+	{ "PTT", "ptt", "flashregion_15_ptt.bin", "SI_PTT" },
 };
 
 /* port from flashrom */
@@ -1642,7 +1649,8 @@ static void print_usage(const char *name)
 	       "   -V | --newvalue                       The new value to write into PCH strap specified by -S\n"
 	       "   -v | --version:                       print the version\n"
 	       "   -h | --help:                          print this help\n\n"
-	       "<region> is one of Descriptor, BIOS, ME, GbE, Platform, res1, res2, res3\n"
+	       "<region> is one of Descriptor, BIOS, ME, GbE, Platform Data, Secondary BIOS, "
+	       "Device Exp1, EC, Device Exp2, IE, 10GbE_0, 10GbE_1, PTT\n"
 	       "\n");
 }
 
@@ -1731,16 +1739,26 @@ int main(int argc, char *argv[])
 				region_type = 2;
 			else if (!strcasecmp("GbE", region_type_string))
 				region_type = 3;
-			else if (!strcasecmp("Platform", region_type_string))
+			else if (!strcasecmp("Platform Data", region_type_string))
 				region_type = 4;
-			else if (!strcasecmp("res1", region_type_string))
+			else if (!strcasecmp("Device Exp1", region_type_string))
 				region_type = 5;
-			else if (!strcasecmp("res2", region_type_string))
+			else if (!strcasecmp("Secondary BIOS", region_type_string))
 				region_type = 6;
-			else if (!strcasecmp("res3", region_type_string))
+			else if (!strcasecmp("Reserved", region_type_string))
 				region_type = 7;
 			else if (!strcasecmp("EC", region_type_string))
 				region_type = 8;
+			else if (!strcasecmp("Device Exp2", region_type_string))
+				region_type = 9;
+			else if (!strcasecmp("IE", region_type_string))
+				region_type = 10;
+			else if (!strcasecmp("10GbE_0", region_type_string))
+				region_type = 11;
+			else if (!strcasecmp("10GbE_1", region_type_string))
+				region_type = 12;
+			else if (!strcasecmp("PTT", region_type_string))
+				region_type = 15;
 			if (region_type == -1) {
 				fprintf(stderr, "No such region type: '%s'\n\n",
 					region_type_string);

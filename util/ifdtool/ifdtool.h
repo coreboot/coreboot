@@ -117,7 +117,7 @@ typedef struct {
 } __attribute__((packed)) fdbar_t;
 
 // regions
-#define MAX_REGIONS 9
+#define MAX_REGIONS 16
 #define MAX_REGIONS_OLD 5
 
 enum flash_regions {
@@ -126,7 +126,14 @@ enum flash_regions {
 	REGION_ME,
 	REGION_GBE,
 	REGION_PDR,
+	REGION_DEV_EXP1,
+	REGION_BIOS2,
 	REGION_EC = 8,
+	REGION_DEV_EXP2,
+	REGION_IE,
+	REGION_10GB_0,
+	REGION_10GB_1,
+	REGION_PTT = 15,
 };
 
 typedef struct {

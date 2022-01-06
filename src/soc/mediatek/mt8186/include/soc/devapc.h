@@ -73,7 +73,7 @@ enum devapc_sys_dom_num {
 };
 
 enum devapc_cfg_index {
-	DEVAPC_DEBUGSYS_INDEX = 17,
+	DEVAPC_DEBUGSYS_INDEX = 94,
 };
 
 /* PERM_ATTR MACRO */

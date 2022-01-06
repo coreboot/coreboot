@@ -1229,6 +1229,14 @@ static void set_infra_ao_apc(uintptr_t base)
 		for (j = 0; j < ARRAY_SIZE(infra_ao_sys0_devices[i].d_permission); j++)
 			set_module_apc(base + SYS0_D0_APC_0, i, domain_map[j],
 				       infra_ao_sys0_devices[i].d_permission[j]);
+
+	/*
+	 * Extra apc setting.
+	 * Block debugsys to avoid privilege escalation.
+	 */
+	if (!CONFIG(CONSOLE_SERIAL))
+		set_module_apc(base + SYS0_D0_APC_0, DEVAPC_DEBUGSYS_INDEX,
+			       DOMAIN_0, SEC_RW_NS_R);
 }
 
 static void set_mm_ao_apc(uintptr_t base)
@@ -1239,14 +1247,6 @@ static void set_mm_ao_apc(uintptr_t base)
 		for (j = 0; j < ARRAY_SIZE(mm_ao_sys0_devices[i].d_permission); j++)
 			set_module_apc(base + SYS0_D0_APC_0, i, domain_map[j],
 				       mm_ao_sys0_devices[i].d_permission[j]);
-	/*
-	 * Extra apc setting.
-	 * Block debugsys to avoid privilege escalation.
-	 */
-	if (!CONFIG(CONSOLE_SERIAL))
-		set_module_apc(base + SYS0_D0_APC_0, DEVAPC_DEBUGSYS_INDEX,
-			       DOMAIN_0, SEC_RW_NS_R);
-
 }
 
 static void dump_infra_ao_apc(uintptr_t base)

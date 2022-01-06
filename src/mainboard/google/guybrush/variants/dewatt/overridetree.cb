@@ -18,7 +18,7 @@ chip soc/amd/cezanne
 	register "telemetry_vddcrsocfull_scale_current_mA" = "31481" #mA
 	register "telemetry_vddcrsocoffset" =  "193"
 
-	#USB 2.0 phy config
+	#USB 2/3 phy config
 	register "usb_phy" = "{
 		/* Left USB C0 Port */
 		.Usb2PhyPort[0] = {
@@ -55,6 +55,20 @@ chip soc/amd/cezanne
 			.txvreftune = 6,
 			.txhsxvtune = 3,
 			.txrestune = 1,
+		},
+		/* Left USB C0 Port */
+		.Usb3PhyPort[0] = {
+			.tx_term_ctrl=3,
+			.rx_term_ctrl=3,
+			.tx_vboost_lvl_en=1,
+			.tx_vboost_lvl=5,
+		},
+		/* Left USB A0 Port */
+		.Usb3PhyPort[1] = {
+			.tx_term_ctrl=3,
+			.rx_term_ctrl=3,
+			.tx_vboost_lvl_en=1,
+			.tx_vboost_lvl=5,
 		},
 	}"
 

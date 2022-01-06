@@ -241,12 +241,12 @@ chip soc/intel/cannonlake
 				register "policies.active[0]" = "{.target=DPTF_CPU,
 					.thresholds={TEMP_PCT(94, 0),}}"
 				register "policies.active[1]" = "{.target=DPTF_TEMP_SENSOR_0,
-					.thresholds={TEMP_PCT(84, 90),
-						     TEMP_PCT(82, 80),
+					.thresholds={TEMP_PCT(82, 80),
 						     TEMP_PCT(80, 70),
-						     TEMP_PCT(66, 60),
-						     TEMP_PCT(52, 50),
-						     TEMP_PCT(35, 40),}}"
+						     TEMP_PCT(78, 60),
+						     TEMP_PCT(75, 50),
+						     TEMP_PCT(73, 40),
+						     TEMP_PCT(35, 30),}}"
 
 				## Passive Policy
 				register "policies.passive[0]" = "DPTF_PASSIVE(CPU, CPU,           95, 5000)"

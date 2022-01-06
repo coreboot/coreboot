@@ -206,7 +206,8 @@ void heci_cse_lockdown(void)
 	 * It is safe to disable HECI1 now since we won't be talking to the ME
 	 * anymore.
 	 */
-	disable_heci1();
+	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT))
+		disable_heci1();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, fpf_blown, NULL);

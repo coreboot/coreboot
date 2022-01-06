@@ -116,6 +116,9 @@ config CPU_SPECIFIC_OPTIONS
 	# provide a custom media driver that facilitates mapping
 	select X86_CUSTOM_BOOTMEDIA
 
+config DISABLE_HECI1_AT_PRE_BOOT
+	default y
+
 config MAX_CPUS
 	int
 	default 4

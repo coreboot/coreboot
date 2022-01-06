@@ -7,55 +7,152 @@
 # number of changes, create a commit to update the submodule to the
 # new version.
 
+set -eu -o pipefail
+
+VERSION="1.01"
+PROGRAM=$0
+PROGNAME="$(basename "${PROGRAM}")"
+
 export LANG=C
 export LC_ALL=C
 export TZ=UTC0
 
 min_commits=10
-
 TOP=${PWD}
 SUBMODULES_WITH_UPDATES=0
-submodule_dirs=$(git submodule foreach pwd | grep -v Entering)
+submodule_dirs=()
+skip_sync=""
+max_commits_to_list=65
 
-(
-echo "Checking submodules..."
-for submodule in $submodule_dirs; do
-	cd "$submodule" || exit 1
-	initial_commit_id="$(git log --pretty='%h' -n 1)"
-	initial_commit_description="$(git log --pretty='%ci - (%s)' -n 1)"
-	git fetch 2>/dev/null
-	updated_commit_id="$(git log --pretty='%h' -n 1 origin/master)"
-	updated_commit_description="$(git log --pretty='%ci - (%s)' -n 1 "${updated_commit_id}")"
-	if [ "${initial_commit_id}" = "${updated_commit_id}" ]; then
-		# echo "No updates for ${submodule}"
-		continue
+show_version() {
+	echo "${PROGNAME} version ${VERSION}"
+	echo
+}
+
+usage() {
+	echo "Usage: ${PROGNAME} [options]"
+	echo
+	echo "Options:"
+	echo " -c | --changes <#>     Specify the minimum number of changes to update a repo"
+	echo " -h | --help            Print usage and exit"
+	echo " -R | --repo <dir>      Specify a single repo directory to update"
+	echo " -s | --skipsync        Assume that repos are already synced"
+	echo " -V | --version         Print the version and exit"
+	echo
+}
+
+get_args() {
+	args=$(getopt -l changes:,help,repo:,skipsync,version -o c:hR:sV -- "$@")
+	getopt_ret=$?
+	eval set -- "${args}"
+
+	if [ ${getopt_ret} != 0 ]; then
+		usage
+		exit 1
 	fi
-	SUBMODULES_WITH_UPDATES+=1
-	update_count="$(git log --oneline "${initial_commit_id}..${updated_commit_id}" | wc -l)"
-	echo "${update_count} new commits for ${submodule}"
-	if [ "${update_count}" -ge "${min_commits}" ]; then
-		echo "Creating commit to update ${submodule##*/} submodule"
-		git checkout "${updated_commit_id}" > /dev/null 2>&1
-		cd "${TOP}" || exit 1
-		sleep 1
-		git add "${submodule}" > /dev/null 2>&1 || exit 1
-		sleep 1
-		git commit -s -F- > /dev/null 2>&1 <<EOF
-Update ${submodule##*/} submodule to upstream master
 
-Updating from commit id ${initial_commit_id}:
-$initial_commit_description
+	while true; do
+		local opt
+		opt="$1"
+		shift
+		case "${opt}" in
+		-c | --changes)
+			min_commits="${1}"
+			shift
+			;;
+		-h | --help)
+			usage
+			exit 0
+			;;
+		-R | --repo)
+			submodule_dirs=("$(readlink -f "${1}")")
+			shift
+			if [[ ! -d "${submodule_dirs[0]}" ]]; then
+				echo "Error: ${submodule_dirs[0]} is not valid."
+				usage
+				exit 1
+			fi
+			;;
+		-s | --skipsync)
+			skip_sync=1
+			;;
+		-V | --version)
+			exit 0
+			;;
+		*)
+			break
+			;;
+		esac
+	done
+}
 
-to commit id ${updated_commit_id}:
-${updated_commit_description}
 
-This brings in ${update_count} new commits.
-EOF
-		sleep 1
+main() {
+	show_version
+	get_args "$@"
+
+	if (( ${#submodule_dirs[@]} == 0 )); then
+		readarray -t submodule_dirs < <(git submodule foreach pwd | grep -v "Entering")
 	fi
-done
 
-if [ "${SUBMODULES_WITH_UPDATES}" = "0" ]; then
-	echo "No submodules with any updates."
-fi
-)
+	for submodule in "${submodule_dirs[@]}"; do
+		echo "Checking submodule ${submodule}"
+		if ! cd "$submodule"; then
+ 			echo "Error: could not cd to $submodule"
+			exit 1
+		fi
+
+		initial_commit_id="$(git log --pretty='%h' -n 1)"
+		initial_commit_description="$(git log --pretty='%ci - (%s)' -n 1)"
+		if [[ ${skip_sync} != "1" ]]; then
+			git fetch 2>/dev/null
+		fi
+
+		if git branch -a | grep -q "origin/main"; then
+			branch_name="origin/main"
+		else
+			branch_name="origin/master"
+		fi
+
+		updated_commit_id="$(git log --pretty='%h' -n 1 "${branch_name}" -- )"
+		updated_commit_description="$(git log --pretty='%ci - (%s)' -n 1 "${updated_commit_id}")"
+		if [ "${initial_commit_id}" = "${updated_commit_id}" ]; then
+			echo "No updates for ${submodule}"
+			continue
+		fi
+		SUBMODULES_WITH_UPDATES+=1
+		update_log="$(git log --oneline "${initial_commit_id}..${updated_commit_id}")"
+		update_count="$(echo "${update_log}" | wc -l)"
+		if [[ "${update_count}" -gt "${max_commits_to_list}" ]]; then
+			update_log=""
+			new_commit_terminator="."
+		else
+			new_commit_terminator=":"
+		fi
+		echo "${update_count} new commits for ${submodule}"
+		if [ "${update_count}" -ge "${min_commits}" ]; then
+			echo "Creating commit to update ${submodule##*/} submodule"
+			git checkout "${updated_commit_id}" > /dev/null 2>&1
+			cd "${TOP}" || exit 1
+			git add "${submodule}" > /dev/null 2>&1 || exit 1
+			git commit -s -F- > /dev/null 2>&1 <<-EOF
+	Update ${submodule##*/} submodule to upstream master
+
+	Updating from commit id ${initial_commit_id}:
+	$initial_commit_description
+
+	to commit id ${updated_commit_id}:
+	${updated_commit_description}
+
+	This brings in ${update_count} new commits${new_commit_terminator}
+	${update_log}
+	EOF
+		fi
+	done
+
+	if [ "${SUBMODULES_WITH_UPDATES}" = "0" ]; then
+		echo "No submodules with any updates."
+	fi
+}
+
+main "$@"

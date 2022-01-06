@@ -1216,6 +1216,9 @@ static bool pci_bus_only_one_child(struct bus *bus)
 	u16 pcie_pos, pcie_flags_reg;
 	int pcie_type;
 
+	if (!bridge)
+		return false;
+
 	pcie_pos = pci_find_capability(bridge, PCI_CAP_ID_PCIE);
 	if (!pcie_pos)
 		return false;

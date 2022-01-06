@@ -146,6 +146,41 @@ config EC_BIN_PATH
 	depends on HAVE_EC_BIN
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/ec.bin"
 
+config MAINBOARD_USES_IFD_10GBE_0_REGION
+	def_bool n
+
+config HAVE_10GBE_0_BIN
+	bool "Add 10GbE Firmware Region 0"
+	depends on HAVE_IFD_BIN && MAINBOARD_USES_IFD_10GBE_0_REGION
+	help
+	  The 10GbE region firmware file for LAN device 0.
+
+	  Select this if you are going to use the 10GbE 0 region and have the
+	  firmware. The firmware will be added to final image through ifdtool.
+
+config 10GBE_0_BIN_PATH
+	string "Path to 10GbE region 0 firmware"
+	depends on HAVE_10GBE_0_BIN
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/10gbe0.bin"
+
+config MAINBOARD_USES_IFD_10GBE_1_REGION
+	def_bool n
+	depends on MAINBOARD_USES_IFD_10GBE_0_REGION
+
+config HAVE_10GBE_1_BIN
+	bool "Add 10GbE Firmware Region 1"
+	depends on HAVE_IFD_BIN && MAINBOARD_USES_IFD_10GBE_1_REGION
+	help
+	  The 10GbE region firmware file for LAN device 1.
+
+	  Select this if you are going to use the 10GbE 1 region and have the
+	  firmware. The firmware will be added to final image through ifdtool.
+
+config 10GBE_1_BIN_PATH
+	string "Path to 10GbE region 1 firmware"
+	depends on HAVE_10GBE_1_BIN
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/10gbe1.bin"
+
 choice
 	prompt "Protect flash regions" if HAVE_IFD_BIN
 	default UNLOCK_FLASH_REGIONS if HAVE_IFD_BIN

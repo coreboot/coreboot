@@ -86,7 +86,22 @@ ifeq ($(CONFIG_HAVE_EC_BIN),y)
 		-O $(obj)/coreboot.pre \
 		$(obj)/coreboot.pre
 endif
-
+ifeq ($(CONFIG_HAVE_10GBE_0_BIN),y)
+	printf "    IFDTOOL    10gbe0.bin -> coreboot.pre\n"
+	$(objutil)/ifdtool/ifdtool \
+		$(IFDTOOL_USE_CHIPSET) \
+		-i 10GbE_0:$(CONFIG_10GBE_0_BIN_PATH) \
+		-O $(obj)/coreboot.pre \
+		$(obj)/coreboot.pre
+endif
+ifeq ($(CONFIG_HAVE_10GBE_1_BIN),y)
+	printf "    IFDTOOL    10gbe1.bin -> coreboot.pre\n"
+	$(objutil)/ifdtool/ifdtool \
+		$(IFDTOOL_USE_CHIPSET) \
+		-i 10GbE_1:$(CONFIG_10GBE_1_BIN_PATH) \
+		-O $(obj)/coreboot.pre \
+		$(obj)/coreboot.pre
+endif
 ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
 	printf "    IFDTOOL    Locking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool \

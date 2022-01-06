@@ -7,13 +7,28 @@
 #include <boardid.h>
 #include <gpio.h>
 
+
+#if CONFIG(BOARD_GOOGLE_HEROBRINE_REV0)
+#define GPIO_EC_IN_RW		GPIO(68)
+#define GPIO_AP_EC_INT		GPIO(142)
+#define GPIO_H1_AP_INT		GPIO(54)
+#elif CONFIG(BOARD_GOOGLE_SENOR)
+#define GPIO_EC_IN_RW		dead_code_t(gpio_t)
+#define GPIO_AP_EC_INT		dead_code_t(gpio_t)
+#define GPIO_H1_AP_INT		dead_code_t(gpio_t)
+#else
+#define GPIO_EC_IN_RW		GPIO(156)
+#define GPIO_AP_EC_INT		GPIO(18)
+#define GPIO_H1_AP_INT		GPIO(104)
+#endif
+
 #define GPIO_SD_CD_L	GPIO(91)
 
-#if CONFIG(BOARD_GOOGLE_SENOR) || CONFIG(BOARD_GOOGLE_PIGLIN) || CONFIG(BOARD_GOOGLE_HOGLIN)
-#define USB_HUB_LDO_EN		GPIO(157)
+#if CONFIG(BOARD_GOOGLE_HEROBRINE_REV0)
+#define USB_HUB_LDO_EN		GPIO(24)
 #else
 /* For Herobrine board and all variants */
-#define USB_HUB_LDO_EN		GPIO(24)
+#define USB_HUB_LDO_EN		GPIO(157)
 #endif
 
 #define QCOM_SC7280_SKU1 0x0

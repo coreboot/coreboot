@@ -174,4 +174,8 @@ config USE_DENVERTON_NS_FSP_CAR
 
 endchoice
 
+config IFD_CHIPSET
+	string
+	default "dnv"
+
 endif ## SOC_INTEL_DENVERTON_NS

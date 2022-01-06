@@ -28,6 +28,22 @@
 	((const char *)(ptr) >= (base) &&		\
 	 (const char *)&(ptr)[1] <= (base) + (limit))
 
+/**
+ * PLATFORM_HAS_GBE_REGION - some platforms do not support the PCH GbE LAN region
+ */
+#define PLATFORM_HAS_GBE_REGION (platform != PLATFORM_DNV)
+
+/*
+ * PLATFORM_HAS_EC_REGION - some platforms do not support the EC region
+ */
+#define PLATFORM_HAS_EC_REGION (ifd_version >= IFD_VERSION_2 && platform != PLATFORM_DNV)
+
+/*
+ * PLATFORM_HAS_10GBE_X_REGION - some platforms have 1 or more 10GbE LAN regions
+ */
+#define PLATFORM_HAS_10GBE_0_REGION (platform == PLATFORM_DNV)
+#define PLATFORM_HAS_10GBE_1_REGION (platform == PLATFORM_DNV)
+
 static int ifd_version;
 static int chipset;
 static unsigned int max_regions = 0;
@@ -237,6 +253,8 @@ static enum ich_chipset ifd2_platform_to_chipset(const int pindex)
 		return CHIPSET_400_SERIES_ICE_POINT;
 	case PLATFORM_LBG:
 		return CHIPSET_C620_SERIES_LEWISBURG;
+	case PLATFORM_DNV:
+		return CHIPSET_DENVERTON;
 	default:
 		return CHIPSET_PCH_UNKNOWN;
 	}
@@ -255,6 +273,7 @@ static int is_platform_ifd_2(void)
 		PLATFORM_GLK,
 		PLATFORM_CNL,
 		PLATFORM_LBG,
+		PLATFORM_DNV,
 		PLATFORM_ICL,
 		PLATFORM_TGL,
 		PLATFORM_JSL,
@@ -713,35 +732,55 @@ static void decode_flmstr(uint32_t flmstr)
 	}
 
 	/* EC region access only available on v2+ */
-	if (ifd_version >= IFD_VERSION_2)
+	if (PLATFORM_HAS_EC_REGION)
 		printf("  EC Region Write Access:            %s\n",
 		       (flmstr & (1 << (wr_shift + 8))) ?
 		       "enabled" : "disabled");
 	printf("  Platform Data Region Write Access: %s\n",
 		(flmstr & (1 << (wr_shift + 4))) ? "enabled" : "disabled");
-	printf("  GbE Region Write Access:           %s\n",
-		(flmstr & (1 << (wr_shift + 3))) ? "enabled" : "disabled");
+	if (PLATFORM_HAS_GBE_REGION) {
+		printf("  GbE Region Write Access:           %s\n",
+			(flmstr & (1 << (wr_shift + 3))) ? "enabled" : "disabled");
+	}
 	printf("  Intel ME Region Write Access:      %s\n",
 		(flmstr & (1 << (wr_shift + 2))) ? "enabled" : "disabled");
 	printf("  Host CPU/BIOS Region Write Access: %s\n",
 		(flmstr & (1 << (wr_shift + 1))) ? "enabled" : "disabled");
 	printf("  Flash Descriptor Write Access:     %s\n",
 		(flmstr & (1 << wr_shift)) ? "enabled" : "disabled");
+	if (PLATFORM_HAS_10GBE_0_REGION) {
+		printf("  10GbE_0 Write Access:               %s\n",
+			(flmstr & (1 << (wr_shift + 11))) ? "enabled" : "disabled");
+	}
+	if (PLATFORM_HAS_10GBE_1_REGION) {
+		printf("  10GbE_1 Write Access:               %s\n",
+			(flmstr & (1 << 4)) ? "enabled" : "disabled");
+	}
 
-	if (ifd_version >= IFD_VERSION_2)
+	if (PLATFORM_HAS_EC_REGION)
 		printf("  EC Region Read Access:             %s\n",
 		       (flmstr & (1 << (rd_shift + 8))) ?
 		       "enabled" : "disabled");
 	printf("  Platform Data Region Read Access:  %s\n",
 		(flmstr & (1 << (rd_shift + 4))) ? "enabled" : "disabled");
-	printf("  GbE Region Read Access:            %s\n",
-		(flmstr & (1 << (rd_shift + 3))) ? "enabled" : "disabled");
+	if (PLATFORM_HAS_GBE_REGION) {
+		printf("  GbE Region Read Access:            %s\n",
+			(flmstr & (1 << (rd_shift + 3))) ? "enabled" : "disabled");
+	}
 	printf("  Intel ME Region Read Access:       %s\n",
 		(flmstr & (1 << (rd_shift + 2))) ? "enabled" : "disabled");
 	printf("  Host CPU/BIOS Region Read Access:  %s\n",
 		(flmstr & (1 << (rd_shift + 1))) ? "enabled" : "disabled");
 	printf("  Flash Descriptor Read Access:      %s\n",
 		(flmstr & (1 << rd_shift)) ? "enabled" : "disabled");
+	if (PLATFORM_HAS_10GBE_0_REGION) {
+		printf("  10GbE_0 Read Access:                %s\n",
+			(flmstr & (1 << (rd_shift + 11))) ? "enabled" : "disabled");
+	}
+	if (PLATFORM_HAS_10GBE_1_REGION) {
+		printf("  10GbE_1 Read Access:                %s\n",
+			(flmstr & (1 << 0)) ? "enabled" : "disabled");
+	}
 
 	/* Requestor ID doesn't exist for ifd 2 */
 	if (ifd_version < IFD_VERSION_2)
@@ -756,11 +795,16 @@ static void dump_fmba(const fmba_t *fmba)
 	decode_flmstr(fmba->flmstr1);
 	printf("FLMSTR2:   0x%08x (Intel ME)\n", fmba->flmstr2);
 	decode_flmstr(fmba->flmstr2);
-	printf("FLMSTR3:   0x%08x (GbE)\n", fmba->flmstr3);
-	decode_flmstr(fmba->flmstr3);
-	if (ifd_version >= IFD_VERSION_2) {
-		printf("FLMSTR5:   0x%08x (EC)\n", fmba->flmstr5);
-		decode_flmstr(fmba->flmstr5);
+	if (PLATFORM_HAS_GBE_REGION) {
+		printf("FLMSTR3:   0x%08x (GbE)\n", fmba->flmstr3);
+		decode_flmstr(fmba->flmstr3);
+		if (ifd_version >= IFD_VERSION_2) {
+			printf("FLMSTR5:   0x%08x (EC)\n", fmba->flmstr5);
+			decode_flmstr(fmba->flmstr5);
+		}
+	} else {
+		printf("FLMSTR6:  0x%08x (IE)\n", fmba->flmstr6);
+		decode_flmstr(fmba->flmstr6);
 	}
 }
 
@@ -1223,6 +1267,18 @@ static void lock_descriptor(const char *filename, char *image, int size)
 			fmba->flmstr5 |= (1 << REGION_EC) << wr_shift;
 		}
 		break;
+	case PLATFORM_DNV:
+		/* CPU/BIOS can read descriptor and BIOS. */
+		fmba->flmstr1 |= (1 << REGION_DESC) << rd_shift;
+		fmba->flmstr1 |= (1 << REGION_BIOS) << rd_shift;
+		/* CPU/BIOS can write BIOS. */
+		fmba->flmstr1 |= (1 << REGION_BIOS) << wr_shift;
+		/* ME can read descriptor and ME. */
+		fmba->flmstr2 |= (1 << REGION_DESC) << rd_shift;
+		fmba->flmstr2 |= (1 << REGION_ME) << rd_shift;
+		/* ME can write ME. */
+		fmba->flmstr2 |= (1 << REGION_ME) << wr_shift;
+		break;
 	default:
 		/* CPU/BIOS can read descriptor and BIOS. */
 		fmba->flmstr1 |= (1 << REGION_DESC) << rd_shift;
@@ -1642,6 +1698,7 @@ static void print_usage(const char *name)
 	       "                                         aplk   - Apollo Lake\n"
 	       "                                         cnl    - Cannon Lake\n"
 	       "                                         lbg    - Lewisburg PCH\n"
+	       "                                         dnv    - Denverton\n"
 	       "                                         ehl    - Elkhart Lake\n"
 	       "                                         glk    - Gemini Lake\n"
 	       "                                         icl    - Ice Lake\n"
@@ -1899,6 +1956,8 @@ int main(int argc, char *argv[])
 				platform = PLATFORM_CNL;
 			} else if (!strcmp(optarg, "lbg")) {
 				platform = PLATFORM_LBG;
+			} else if (!strcmp(optarg, "dnv")) {
+				platform = PLATFORM_DNV;
 			} else if (!strcmp(optarg, "ehl")) {
 				platform = PLATFORM_EHL;
 			} else if (!strcmp(optarg, "glk")) {

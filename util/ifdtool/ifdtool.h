@@ -45,6 +45,7 @@ enum ich_chipset {
 	CHIPSET_500_600_SERIES_TIGER_ALDER_POINT, /* 11th-12th gen Core i/o (LP)
 						   * variants onwards */
 	CHIPSET_C620_SERIES_LEWISBURG,
+	CHIPSET_DENVERTON,
 };
 
 enum platform {
@@ -59,6 +60,7 @@ enum platform {
 	PLATFORM_TGL,
 	PLATFORM_ADL,
 	PLATFORM_IFD2,
+	PLATFORM_DNV,
 };
 
 #define LAYOUT_LINELEN 80
@@ -171,6 +173,7 @@ typedef struct {
 	uint32_t flmstr3;
 	uint32_t flmstr4;
 	uint32_t flmstr5;
+	uint32_t flmstr6;
 } __attribute__((packed)) fmba_t;
 
 // processor strap

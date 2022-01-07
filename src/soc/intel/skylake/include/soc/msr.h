@@ -5,6 +5,9 @@
 
 #include <intelblocks/msr.h>
 
+/* IA_UNTRUSTED_MODE is not supported in Sky Lake */
+#define MSR_BIOS_DONE		0x151
+#define  ENABLE_IA_UNTRUSTED	(1 << 0)
 #define MSR_LT_LOCK_MEMORY		0x2e7
 #define MSR_UNCORE_PRMRR_PHYS_BASE	0x2f4
 #define MSR_UNCORE_PRMRR_PHYS_MASK	0x2f5

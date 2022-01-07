@@ -23,6 +23,14 @@
 #include <soc/soc_util.h>
 #include <types.h>
 
+bool cpu_soc_is_in_untrusted_mode(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_POWER_MISC);
+	return !!(msr.lo & ENABLE_IA_UNTRUSTED);
+}
+
 static struct smm_relocation_attrs relo_attrs;
 
 static void dnv_configure_mca(void)

@@ -20,6 +20,12 @@
 
 static const config_t *chip_config = NULL;
 
+bool cpu_soc_is_in_untrusted_mode(void)
+{
+	/* IA_UNTRUSTED_MODE is not supported in Skylake */
+	return false;
+}
+
 static void xeon_configure_mca(void)
 {
 	msr_t msr;

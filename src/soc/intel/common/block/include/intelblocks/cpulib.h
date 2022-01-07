@@ -112,6 +112,15 @@ void cpu_burst_mode(bool burst_mode_status);
 void cpu_set_eist(bool eist_status);
 
 /*
+ * SoC specific implementation:
+ *
+ * Check CPU security level using ENABLE_IA_UNTRUSTED_MODE of CPU MSR.
+ * If bit is set, meaning CPU has dropped its security level by entering
+ * into `untrusted mode`. Otherwise, it's in `trusted mode`.
+ */
+bool cpu_soc_is_in_untrusted_mode(void);
+
+/*
  * This function fills in the number of Cores(physical) and Threads(virtual)
  * of the CPU in the function arguments. It also returns if the number of cores
  * and number of threads are equal.

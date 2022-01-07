@@ -47,6 +47,14 @@ static const struct reg_script core_msr_script[] = {
 	REG_SCRIPT_END
 };
 
+bool cpu_soc_is_in_untrusted_mode(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_POWER_MISC);
+	return !!(msr.lo & ENABLE_IA_UNTRUSTED);
+}
+
 void soc_core_init(struct device *cpu)
 {
 	/* Configure Core PRMRR for SGX. */

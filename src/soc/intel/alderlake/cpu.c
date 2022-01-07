@@ -25,6 +25,14 @@
 #include <soc/soc_chip.h>
 #include <types.h>
 
+bool cpu_soc_is_in_untrusted_mode(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_BIOS_DONE);
+	return !!(msr.lo & ENABLE_IA_UNTRUSTED);
+}
+
 static void soc_fsp_load(void)
 {
 	fsps_load();

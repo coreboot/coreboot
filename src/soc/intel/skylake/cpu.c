@@ -26,6 +26,16 @@
 
 #include "chip.h"
 
+bool cpu_soc_is_in_untrusted_mode(void)
+{
+	if (!CONFIG(MAINBOARD_SUPPORTS_COFFEELAKE_CPU))
+		return false;
+
+	/* IA_UNTRUSTED_MODE is not supported in Sky Lake */
+	msr_t msr = rdmsr(MSR_BIOS_DONE);
+	return !!(msr.lo & ENABLE_IA_UNTRUSTED);
+}
+
 static void configure_misc(void)
 {
 	config_t *conf = config_of_soc();

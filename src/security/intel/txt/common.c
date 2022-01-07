@@ -489,15 +489,14 @@ bool intel_txt_prepare_txt_env(void)
 		failure = true;
 	}
 
-	if (!getsec_parameter(NULL, NULL, NULL, NULL, NULL, &txt_feature_flags)) {
+	if (!getsec_parameter(NULL, NULL, NULL, NULL, NULL, &txt_feature_flags))
 		return true;
-	} else {
-		printk(BIOS_DEBUG, "TEE-TXT: Machine Check Register: ");
-		if (txt_feature_flags & GETSEC_PARAMS_TXT_EXT_MACHINE_CHECK)
-			printk(BIOS_DEBUG, "preserved\n");
-		else
-			printk(BIOS_DEBUG, "must be clear\n");
-	}
+
+	printk(BIOS_DEBUG, "TEE-TXT: Machine Check Register: ");
+	if (txt_feature_flags & GETSEC_PARAMS_TXT_EXT_MACHINE_CHECK)
+		printk(BIOS_DEBUG, "preserved\n");
+	else
+		printk(BIOS_DEBUG, "must be clear\n");
 
 	if (!(txt_feature_flags & GETSEC_PARAMS_TXT_EXT_MACHINE_CHECK)) {
 		/*

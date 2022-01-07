@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
-#include <bootmode.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/bsd/mem_chip_info.h>

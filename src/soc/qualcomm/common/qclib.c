@@ -2,7 +2,6 @@
 
 #include <console/cbmem_console.h>
 #include <cbmem.h>
-#include <bootmode.h>
 #include <string.h>
 #include <fmap.h>
 #include <assert.h>

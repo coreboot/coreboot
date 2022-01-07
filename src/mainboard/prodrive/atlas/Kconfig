@@ -1,0 +1,32 @@
+config BOARD_PRODRIVE_ATLAS_BASEBOARD
+	def_bool n
+	select BOARD_ROMSIZE_KB_32768
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+	select SOC_INTEL_ALDERLAKE_PCH_P
+
+if BOARD_PRODRIVE_ATLAS_BASEBOARD
+
+config MAINBOARD_FAMILY
+	string
+	default "PRODRIVE_ATLAS_SERIES"
+
+config MAINBOARD_PART_NUMBER
+	default "Atlas ADL-P"
+
+config MAINBOARD_DIR
+	default "prodrive/atlas"
+
+config MAINBOARD_SMBIOS_MANUFACTURER
+	string
+	default "Prodrive Technologies B.V."
+
+config DIMM_SPD_SIZE
+	default 512
+
+config UART_FOR_CONSOLE
+	int
+	default 0
+
+endif #BOARD_PRODRIVE_ATLAS_BASEBOARD

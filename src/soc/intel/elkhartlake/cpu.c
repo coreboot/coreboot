@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/intel/common/common.h>

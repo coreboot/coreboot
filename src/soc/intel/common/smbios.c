@@ -4,7 +4,6 @@
 #include "smbios.h"
 #include <string.h>
 #include <commonlib/helpers.h>
-#include <console/console.h>
 #include <device/dram/ddr3.h>
 #include <dimm_info_util.h>
 

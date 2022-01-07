@@ -6,7 +6,6 @@
  * Chapter number: 15
  */
 
-#include <console/console.h>
 #include <device/pci.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>

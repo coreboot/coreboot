@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <stdint.h>
 #include <soc/dramc_common.h>
 #include <soc/dramc_param.h>

@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <commonlib/helpers.h>
-#include <console/console.h>
 #include <delay.h>
 #include <device/mmio.h>
 #include <soc/infracfg.h>

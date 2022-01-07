@@ -28,6 +28,7 @@
 #include <soc/intel/common/vbt.h>
 #include <soc/iomap.h>
 #include <soc/itss.h>
+#include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/systemagent.h>
@@ -702,10 +703,19 @@ struct chip_operations soc_intel_apollolake_ops = {
 	.final = &soc_final
 };
 
+static void soc_enable_untrusted_mode(void *unused)
+{
+	/*
+	 * Set Bit 6 (ENABLE_IA_UNTRUSTED_MODE) of MSR 0x120
+	 * UCODE_PCR_POWER_MISC MSR to enter IA Untrusted Mode.
+	 */
+	msr_set(MSR_POWER_MISC, ENABLE_IA_UNTRUSTED);
+}
+
 static void drop_privilege_all(void)
 {
 	/* Drop privilege level on all the CPUs */
-	if (mp_run_on_all_cpus(&cpu_enable_untrusted_mode, NULL) != CB_SUCCESS)
+	if (mp_run_on_all_cpus(&soc_enable_untrusted_mode, NULL) != CB_SUCCESS)
 		printk(BIOS_ERR, "failed to enable untrusted mode\n");
 }
 

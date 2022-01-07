@@ -260,19 +260,6 @@ void cpu_set_eist(bool eist_status)
 }
 
 /*
- * Set Bit 6 (ENABLE_IA_UNTRUSTED_MODE) of MSR 0x120
- * UCODE_PCR_POWER_MISC MSR to enter IA Untrusted Mode.
- */
-void cpu_enable_untrusted_mode(void *unused)
-{
-	msr_t msr;
-
-	msr = rdmsr(MSR_POWER_MISC);
-	msr.lo |= ENABLE_IA_UNTRUSTED;
-	wrmsr(MSR_POWER_MISC, msr);
-}
-
-/*
  * This function fills in the number of Cores(physical) and Threads(virtual)
  * of the CPU in the function arguments. It also returns if the number of cores
  * and number of threads are equal.

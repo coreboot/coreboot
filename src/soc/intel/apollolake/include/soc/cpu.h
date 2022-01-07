@@ -5,6 +5,7 @@
 
 #include <cpu/x86/msr.h>
 #include <intelblocks/msr.h>
+#include <soc/msr.h>
 
 struct device;
 void apollolake_init_cpus(struct device *dev);

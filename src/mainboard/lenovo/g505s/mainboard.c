@@ -3,7 +3,6 @@
 #include "ec.h"
 
 #include <acpi/acpi.h>
-#include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <southbridge/amd/common/amd_pci_util.h>

@@ -2,7 +2,6 @@
 
 #include <amdblocks/acpimmio.h>
 #include <device/mmio.h>
-#include <console/console.h>
 #include <device/device.h>
 
 #include <southbridge/amd/common/amd_pci_util.h>

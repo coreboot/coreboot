@@ -3,7 +3,6 @@
 #include <arch/exception.h>
 #include <arch/stages.h>
 #include <cbmem.h>
-#include <console/cbmem_console.h>
 #include <console/console.h>
 #include <lib.h>
 #include <program_loading.h>

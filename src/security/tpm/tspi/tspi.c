@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/cbmem_console.h>
 #include <console/console.h>
 #include <security/tpm/tspi/crtm.h>
 #include <security/tpm/tspi.h>

@@ -5,7 +5,6 @@
 #include <acpi/acpigen_pci.h>
 #include <amdblocks/amd_pci_util.h>
 #include <assert.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

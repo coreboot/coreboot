@@ -2,7 +2,6 @@
 
 #include <cbfs.h>
 #include <cbmem.h>
-#include <console/console.h>
 #include <rmodule.h>
 #include <stage_cache.h>
 #include <amdblocks/agesawrapper.h>

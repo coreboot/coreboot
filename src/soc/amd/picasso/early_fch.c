@@ -7,7 +7,6 @@
 #include <amdblocks/pmlib.h>
 #include <amdblocks/smbus.h>
 #include <amdblocks/spi.h>
-#include <console/console.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
 #include <soc/uart.h>

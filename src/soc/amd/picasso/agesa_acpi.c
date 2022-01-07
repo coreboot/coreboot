@@ -4,7 +4,6 @@
 #include <acpi/acpi_crat.h>
 #include <acpi/acpi_ivrs.h>
 #include <arch/cpu.h>
-#include <console/console.h>
 #include <cpu/amd/cpuid.h>
 #include <cpu/amd/msr.h>
 #include <FspGuids.h>

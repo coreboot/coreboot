@@ -5,7 +5,6 @@
 #include <acpi/acpigen_pci.h>
 #include <amdblocks/amd_pci_util.h>
 #include <arch/ioapic.h>
-#include <console/console.h>
 #include <device/device.h>
 
 static void acpigen_write_PRT_GSI(const struct pci_routing_info *routing_info)

@@ -2,7 +2,6 @@
 
 #include <baseboard/variants.h>
 #include <bootstate.h>
-#include <console/console.h>
 #include <gpio.h>
 #include <intelblocks/pcr.h>
 #include <soc/gpio.h>

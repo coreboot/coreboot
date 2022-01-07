@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
 #include <device/device.h>

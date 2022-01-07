@@ -2,7 +2,6 @@
 
 #include <amdblocks/amd_pci_util.h>
 #include <commonlib/helpers.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <soc/acpi.h>
 #include <string.h>

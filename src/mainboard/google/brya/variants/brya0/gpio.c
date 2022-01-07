@@ -2,7 +2,6 @@
 
 #include <baseboard/variants.h>
 #include <boardid.h>
-#include <console/console.h>
 #include <soc/gpio.h>
 
 static const struct pad_config board_id0_1_overrides[] = {

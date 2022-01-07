@@ -2,7 +2,6 @@
 
 #include <arch/mmio.h>
 #include <bootstate.h>
-#include <console/console.h>
 #include <fw_config.h>
 #include <gpio.h>
 #include <intelblocks/gpio.h>

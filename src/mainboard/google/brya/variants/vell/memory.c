@@ -3,7 +3,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <gpio.h>
-#include <console/console.h>
 #include <soc/romstage.h>
 
 static const struct mb_cfg baseboard_memcfg = {

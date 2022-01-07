@@ -3,7 +3,6 @@
 #include "board.h"
 #include <boardid.h>
 #include <bootblock_common.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <soc/clock.h>

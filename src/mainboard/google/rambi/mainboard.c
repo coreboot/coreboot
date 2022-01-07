@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
-#include <console/console.h>
 #include <smbios.h>
 #include "ec.h"
 #include <variant/onboard.h>

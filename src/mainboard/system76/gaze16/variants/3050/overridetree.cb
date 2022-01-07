@@ -13,8 +13,7 @@ chip soc/intel/tigerlake
 				register "enable_off_delay_ms" = "4"
 				register "reset_delay_ms" = "10"
 				register "reset_off_delay_ms" = "4"
-				# TODO: Support disable/enable CPU RP clock
-				register "srcclk_pin" = "-1" # GFX_CLKREQ0#
+				register "srcclk_pin" = "0" # GFX_CLKREQ0#
 				device generic 0 on end
 			end
 		end

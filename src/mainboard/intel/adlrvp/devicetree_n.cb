@@ -16,20 +16,19 @@ chip soc/intel/alderlake
 	# Sagv Configuration
 	register "SaGv" = "SaGv_Enabled"
 
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"		# Type-C Port1
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"		# Type-C Port2
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC3)"		# Type-C Port3
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC3)"		# Type-C Port1
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC3)"		# Type-C Port2
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC3)"		# FPS connector
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 WWAN
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# Type-C Port4
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# FPS connector
-	register "usb2_ports[6]" = "USB2_PORT_MID(OC0)"		# USB3/2 Type A port1
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC0)"		# USB3/2 Type A port2
-	register "usb2_ports[8]" = "USB2_PORT_MID(OC3)"		# USB3/2 Type A port3
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 WLAN
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# USB3/2 Type A port1
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC1)"		# USB3/2 Type A port2
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC1)"		# USB3/2 Type A port3
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Type A/ M.2 WLAN
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port1
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port2
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port3
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port2
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port3
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# M.2 WWAN
 
 	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
@@ -38,40 +37,19 @@ chip soc/intel/alderlake
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"
 
-	# Enable PCH PCIE RP 5 using CLK 2
-	register "pch_pcie_rp[PCH_RP(5)]" = "{
-		.clk_src = 2,
-		.clk_req = 2,
+	# Enable PCH PCIE RP 7 using CLK 3
+	register "pch_pcie_rp[PCH_RP(7)]" = "{
+		.clk_src = 3,
+		.clk_req = 3,
 		.flags = PCIE_RP_CLK_REQ_DETECT,
 	}"
 
-	# Enable PCH PCIE RP 6 using CLK 5
-	register "pch_pcie_rp[PCH_RP(6)]" = "{
-		.clk_src = 5,
-		.clk_req = 5,
-		.flags = PCIE_RP_CLK_REQ_DETECT,
-	}"
-
-	# Enable PCH PCIE RP 8 using free running CLK (0x80)
-	# Clock source is shared with LAN and hence marked as free running.
-	register "pch_pcie_rp[PCH_RP(8)]" = "{
-		.flags = PCIE_RP_CLK_SRC_UNUSED,
-	}"
-
-	# Enable PCH PCIE RP 9 using CLK 1
+	# Enable PCH PCIE RP 9 using CLK 0
 	register "pch_pcie_rp[PCH_RP(9)]" = "{
-		.clk_src = 1,
-		.clk_req = 1,
+		.clk_src = 0,
+		.clk_req = 0,
 		.flags = PCIE_RP_CLK_REQ_DETECT,
 	}"
-
-	# Enable PCH PCIE RP 11 for optane
-	register "pch_pcie_rp[PCH_RP(11)]" = "{
-		.flags = PCIE_RP_CLK_SRC_UNUSED,
-	}"
-
-	# Hybrid storage mode
-	register "HybridStorageMode" = "1"
 
 	register "SataSalpSupport" = "1"
 
@@ -97,10 +75,10 @@ chip soc/intel/alderlake
 	}"
 
 	# TCSS USB3
-	register "TcssAuxOri" = "0"
+	register "TcssAuxOri" = "4"
+	register "typec_aux_bias_pads[1]" = "{.pad_auxp_dc = GPP_E20, .pad_auxn_dc = GPP_E21}"
 
 	register "s0ix_enable" = "1"
-	register "dptf_enable" = "1"
 
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
@@ -166,103 +144,7 @@ chip soc/intel/alderlake
 	}"
 
 	device domain 0 on
-		device ref pcie5 on end
 		device ref igpu on end
-		device ref dtt on
-			chip drivers/intel/dptf
-
-				## sensor information
-				register "options.tsr[0].desc" = ""Ambient""
-				register "options.tsr[1].desc" = ""Battery""
-				register "options.tsr[2].desc" = ""DDR""
-				register "options.tsr[3].desc" = ""Skin""
-
-				## Active Policy
-				# TODO: below values are initial reference values only
-				register "policies.active" = "{
-					[0] = {
-							.target = DPTF_CPU,
-							.thresholds = {
-								TEMP_PCT(95, 90),
-								TEMP_PCT(90, 80),
-							}
-						},
-					[1] = {
-							.target = DPTF_TEMP_SENSOR_0,
-							.thresholds = {
-								TEMP_PCT(80, 90),
-								TEMP_PCT(70, 80),
-							}
-						}
-				}"
-
-				## Passive Policy
-				# TODO: below values are initial reference values only
-				register "policies.passive" = "{
-					[0] = DPTF_PASSIVE(CPU,		CPU,	       95, 10000),
-					[1] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_0, 85, 50000),
-					[2] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_1, 85, 50000),
-					[3] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_2, 85, 50000),
-					[4] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_3, 85, 50000),
-				}"
-
-				## Critical Policy
-				# TODO: below values are initial reference values only
-				register "policies.critical" = "{
-					[0] = DPTF_CRITICAL(CPU,	  105, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 95, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 95, SHUTDOWN),
-					[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 95, SHUTDOWN),
-					[4] = DPTF_CRITICAL(TEMP_SENSOR_3, 95, SHUTDOWN),
-				}"
-
-				## Power Limits Control
-				register "controls.power_limits" = "{
-					.pl1 = {
-							.min_power = 35000,
-							.max_power = 45000,
-							.time_window_min = 28 * MSECS_PER_SEC,
-							.time_window_max = 32 * MSECS_PER_SEC,
-							.granularity = 200,
-					},
-					.pl2 = {
-							.min_power = 56000,
-							.max_power = 56000,
-							.time_window_min = 28 * MSECS_PER_SEC,
-							.time_window_max = 32 * MSECS_PER_SEC,
-							.granularity = 1000,
-					}
-				}"
-
-				## Charger Performance Control (Control, mA)
-				register "controls.charger_perf" = "{
-					[0] = { 255, 3000 },
-					[1] = {  24, 1500 },
-					[2] = {  16, 1000 },
-					[3] = {   8,  500 }
-				}"
-
-				## Fan Performance Control (Percent, Speed, Noise, Power)
-				register "controls.fan_perf" = "{
-					[0] = {  90, 6700, 220, 2200, },
-					[1] = {  80, 5800, 180, 1800, },
-					[2] = {  70, 5000, 145, 1450, },
-					[3] = {  60, 4900, 115, 1150, },
-					[4] = {  50, 3838,  90,  900, },
-					[5] = {  40, 2904,  55,  550, },
-					[6] = {  30, 2337,  30,  300, },
-					[7] = {  20, 1608,  15,  150, },
-					[8] = {  10,  800,  10,  100, },
-					[9] = {   0,    0,   0,   50, }
-				}"
-
-				## Fan options
-				register "options.fan.fine_grained_control" = "1"
-				register "options.fan.step_size" = "2"
-
-				device generic 0 alias dptf_policy on end
-			end
-		end
 		device ref ipu on
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "0x50000"
@@ -278,16 +160,8 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
-		device ref pcie4_0 on end
-		device ref pcie4_1 on end
-		device ref tbt_pcie_rp0 on end
-		device ref tbt_pcie_rp1 on end
-		device ref tbt_pcie_rp2 on end
-		device ref tbt_pcie_rp3 on end
 		device ref crashlog off end
 		device ref tcss_xhci on end
-		device ref tcss_dma0 on end
-		device ref tcss_dma1 on end
 		device ref xhci on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""
@@ -397,14 +271,8 @@ chip soc/intel/alderlake
 				device i2c 36 on end
 			end
 		end
-		device ref pcie_rp1 on end
-		device ref pcie_rp3 on end # W/A to FSP issue
-		device ref pcie_rp4 on end # W/A to FSP issue
-		device ref pcie_rp5 on end
-		device ref pcie_rp6 on end
-		device ref pcie_rp8 on end
+		device ref pcie_rp7 on end
 		device ref pcie_rp9 on end
-		device ref pcie_rp11 on end
 		device ref uart0 on end
 		device ref gspi0 on end
 		device ref p2sb on end

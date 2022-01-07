@@ -26,9 +26,6 @@ static const struct pad_config gpio_table[] = {
 	/* EC_SLP_S0_CS_N */
 	PAD_CFG_GPO(GPP_E4, 1, PLTRST),
 
-	/* GPPC_E7_EC_SMI_N */
-	PAD_CFG_GPI_SMI(GPP_E7, NONE, PLTRST, EDGE_SINGLE, INVERT),
-
 	/* H15 : DDPB_CTRLCLK ==> DDIB_HDMI_CTRLCLK */
 	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),
 	/* H17 : DDPB_CTRLDATA ==> DDIB_HDMI_CTRLDATA */

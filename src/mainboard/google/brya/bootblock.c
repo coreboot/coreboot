@@ -29,7 +29,12 @@ static void configure_pmc_descriptor(void)
 		return;
 	}
 
-	if (si_desc_buf[PMC_DESC_7_BYTE3] == 0x40) {
+	if (si_desc_buf[PMC_DESC_7_BYTE3] != 0x40) {
+		printk(BIOS_DEBUG, "Update of PMC Descriptor is not required!\n");
+		return;
+	}
+
+	{
 		si_desc_buf[PMC_DESC_7_BYTE3] = 0x44;
 
 		if (rdev_eraseat(&desc_rdev, 0, SI_DESC_REGION_SZ) != SI_DESC_REGION_SZ) {
@@ -49,8 +54,6 @@ static void configure_pmc_descriptor(void)
 		do_full_reset();
 		die("Failed to trigger GLOBAL RESET\n");
 	}
-
-	printk(BIOS_DEBUG, "Update of PMC Descriptor is not required!\n");
 }
 
 void bootblock_mainboard_early_init(void)

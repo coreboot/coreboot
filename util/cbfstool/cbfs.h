@@ -54,7 +54,7 @@ static struct typedesc_t filetypes[] unused = {
 	{0, NULL}
 };
 
-#define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + be32toh((_p)->offset))) )
+#define CBFS_SUBHEADER(_p) ((void *) ((((uint8_t *) (_p)) + be32toh((_p)->offset))))
 
 static inline size_t cbfs_file_attr_hash_size(enum vb2_hash_algorithm algo)
 {

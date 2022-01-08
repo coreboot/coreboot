@@ -86,9 +86,8 @@ static int cbfs_fix_legacy_size(struct cbfs_image *image, char *hdr_loc)
 	     entry && cbfs_is_valid_entry(image, entry);
 	     entry = cbfs_find_next_entry(image, entry)) {
 		/* Is the header guarded by a CBFS file entry? Then exit */
-		if (((char *)entry) + be32toh(entry->offset) == hdr_loc) {
+		if (((char *)entry) + be32toh(entry->offset) == hdr_loc)
 			return 0;
-		}
 		last = entry;
 	}
 	if ((char *)first < (char *)hdr_loc &&
@@ -525,11 +524,9 @@ int cbfs_compact_instance(struct cbfs_image *image)
 		size_t cur_size;
 		size_t empty_metadata_size;
 		size_t spill_size;
-		uint32_t type = htobe32(cur->type);
 
 		/* Current entry is empty. Kepp track of it. */
-		if ((type == htobe32(CBFS_TYPE_NULL)) ||
-		    (type == htobe32(CBFS_TYPE_DELETED))) {
+		if (cur->type == CBFS_TYPE_NULL || cur->type == CBFS_TYPE_DELETED) {
 			prev = cur;
 			continue;
 		}
@@ -1028,7 +1025,7 @@ static int cbfs_stage_make_elf(struct buffer *buff, uint32_t arch,
 		memset(&shdr, 0, sizeof(shdr));
 		shdr.sh_type = SHT_NOBITS;
 		shdr.sh_flags = SHF_WRITE | SHF_ALLOC;
-		shdr.sh_addr = be32toh(stage->loadaddr) + buffer_size(buff);
+		shdr.sh_addr = be64toh(stage->loadaddr) + buffer_size(buff);
 		shdr.sh_size = empty_sz;
 		if (elf_writer_add_section(ew, &shdr, &b, ".empty")) {
 			ERROR("Unable to add ELF section: .empty\n");

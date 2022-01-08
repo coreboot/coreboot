@@ -15,6 +15,7 @@ chip soc/intel/tigerlake
 	register "PcieRpEnable[6]" = "0"
 	register "PcieRpLtrEnable[6]" = "0"
 	register "PcieClkSrcUsage[1]" = "PCIE_CLK_NOTUSED"
+	register "PcieRpSlotImplemented[6]" = "1"
 
 	# Disable SD Card PCIE 8
 	register "PcieRpEnable[7]" = "0"

@@ -62,6 +62,7 @@ chip soc/intel/tigerlake
 			register "PcieRpLtrEnable[7]" = "1"
 			register "PcieClkSrcUsage[2]" = "7"
 			register "PcieClkSrcClkReq[2]" = "2"
+			register "PcieRpSlotImplemented[7]" = "1"
 		end
 		device ref pcie_rp9 on
 			# PCIe root port #9 x4, Clock 10 (SSD2)
@@ -69,6 +70,7 @@ chip soc/intel/tigerlake
 			register "PcieRpLtrEnable[8]" = "1"
 			register "PcieClkSrcUsage[10]" = "8"
 			register "PcieClkSrcClkReq[10]" = "10"
+			register "PcieRpSlotImplemented[8]" = "1"
 		end
 		device ref gbe on end
 	end

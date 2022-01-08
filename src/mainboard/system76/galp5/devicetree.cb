@@ -303,6 +303,7 @@ chip soc/intel/tigerlake
 			register "PcieRpLtrEnable[10]" = "1"
 			register "PcieClkSrcUsage[1]" = "10"
 			register "PcieClkSrcClkReq[1]" = "1"
+			register "PcieRpSlotImplemented[10]" = "1"
 		end
 		device ref pch_espi on
 			register "gen1_dec" = "0x00040069"

@@ -50,6 +50,7 @@ chip soc/intel/tigerlake
 	register "PcieRpEnable[8]" = "1"
 	register "PcieClkSrcUsage[2]" = "8"
 	register "PcieClkSrcClkReq[2]" = "2"
+	register "PcieRpSlotImplemented[8]" = "1"
 
 	# Mark unused SRCCLKREQs as so
 	register "PcieClkSrcUsage[0]" = "PCIE_CLK_NOTUSED"

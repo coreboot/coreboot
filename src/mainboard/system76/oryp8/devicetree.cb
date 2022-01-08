@@ -188,6 +188,7 @@ chip soc/intel/tigerlake
 			register "PcieRpLtrEnable[7]" = "1"
 			register "PcieClkSrcUsage[2]" = "7"
 			register "PcieClkSrcClkReq[2]" = "2"
+			register "PcieRpSlotImplemented[7]" = "1"
 		end
 		device ref pcie_rp9 on
 			# PCIe root port #9 x4, Clock 6 (SSD2)
@@ -195,6 +196,7 @@ chip soc/intel/tigerlake
 			register "PcieRpLtrEnable[8]" = "1"
 			register "PcieClkSrcUsage[6]" = "8"
 			register "PcieClkSrcClkReq[6]" = "6"
+			register "PcieRpSlotImplemented[8]" = "1"
 		end
 		device ref pch_espi on
 			register "gen1_dec" = "0x00040069" # EC PM channel

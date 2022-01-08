@@ -45,6 +45,10 @@ chip soc/intel/tigerlake
 	register "PcieRpEnable[3]" = "1"
 	register "PcieRpEnable[8]" = "1"
 	register "PcieRpEnable[10]" = "1"
+	register "PcieRpSlotImplemented[2]" = "1"
+	register "PcieRpSlotImplemented[3]" = "1"
+	register "PcieRpSlotImplemented[8]" = "1"
+	register "PcieRpSlotImplemented[10]" = "1"
 
 	# Enable PR LTR
 	register "PcieRpLtrEnable[2]" = "1"

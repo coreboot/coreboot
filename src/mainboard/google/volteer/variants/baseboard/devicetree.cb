@@ -120,11 +120,13 @@ chip soc/intel/tigerlake
 	register "PcieRpLtrEnable[8]" = "1"
 	register "PcieClkSrcUsage[0]" = "8"
 	register "PcieClkSrcClkReq[0]" = "0"
+	register "PcieRpSlotImplemented[8]" = "1"
 
 	# Enable Optane PCIE 11 using clk 0
 	register "PcieRpEnable[10]" = "1"
 	register "PcieRpLtrEnable[10]" = "1"
 	register "HybridStorageMode" = "0"
+	register "PcieRpSlotImplemented[10]" = "1"
 
 	# Enable SD Card PCIE 8 using clk 3
 	register "PcieRpEnable[7]" = "1"
@@ -138,6 +140,7 @@ chip soc/intel/tigerlake
 	register "PcieRpLtrEnable[6]" = "1"
 	register "PcieClkSrcUsage[1]" = "6"
 	register "PcieClkSrcClkReq[1]" = "1"
+	register "PcieRpSlotImplemented[6]" = "1"
 
 	# Mark SRCCLKREQ pins as unused that are routed for a Non-Clkreq functionality
 	register "PcieClkSrcUsage[2]" = "PCIE_CLK_NOTUSED"

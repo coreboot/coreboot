@@ -104,7 +104,7 @@ config USE_ME_CLEANER
 
 	  If unsure, say N.
 
-comment "Please test the modified ME/TXE firmware and coreboot in two steps"
+comment "Please test coreboot with the original, unmodified ME firmware before using me_cleaner"
 	depends on USE_ME_CLEANER
 
 config ME_CLEANER_ARGS

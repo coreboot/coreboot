@@ -34,26 +34,24 @@ static void configure_pmc_descriptor(void)
 		return;
 	}
 
-	{
-		si_desc_buf[PMC_DESC_7_BYTE3] = 0x44;
+	si_desc_buf[PMC_DESC_7_BYTE3] = 0x44;
 
-		if (rdev_eraseat(&desc_rdev, 0, SI_DESC_REGION_SZ) != SI_DESC_REGION_SZ) {
-			printk(BIOS_ERR, "Failed to erase Descriptor Region area\n");
-			return;
-		}
-
-		if (rdev_writeat(&desc_rdev, si_desc_buf, 0, SI_DESC_REGION_SZ)
-				!= SI_DESC_REGION_SZ) {
-			printk(BIOS_ERR, "Failed to update Descriptor Region\n");
-			return;
-		}
-
-		printk(BIOS_DEBUG, "Update of PMC Descriptor successful, trigger GLOBAL RESET\n");
-
-		pmc_global_reset_enable(1);
-		do_full_reset();
-		die("Failed to trigger GLOBAL RESET\n");
+	if (rdev_eraseat(&desc_rdev, 0, SI_DESC_REGION_SZ) != SI_DESC_REGION_SZ) {
+		printk(BIOS_ERR, "Failed to erase Descriptor Region area\n");
+		return;
 	}
+
+	if (rdev_writeat(&desc_rdev, si_desc_buf, 0, SI_DESC_REGION_SZ)
+			!= SI_DESC_REGION_SZ) {
+		printk(BIOS_ERR, "Failed to update Descriptor Region\n");
+		return;
+	}
+
+	printk(BIOS_DEBUG, "Update of PMC Descriptor successful, trigger GLOBAL RESET\n");
+
+	pmc_global_reset_enable(true);
+	do_full_reset();
+	die("Failed to trigger GLOBAL RESET\n");
 }
 
 void bootblock_mainboard_early_init(void)

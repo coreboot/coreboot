@@ -3,7 +3,6 @@
 #include <console/console.h>
 #include <string.h>
 #include <rmodule.h>
-#include <arch/cpu.h>
 #include <commonlib/helpers.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/microcode.h>

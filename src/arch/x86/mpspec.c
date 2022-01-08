@@ -6,7 +6,6 @@
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <string.h>
-#include <arch/cpu.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <drivers/generic/ioapic/chip.h>

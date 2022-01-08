@@ -9,7 +9,6 @@
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <types.h>
-#include <rules.h>
 
 #include "txt_register.h"
 #include "txt_getsec.h"

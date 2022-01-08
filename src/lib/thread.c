@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <bootstate.h>
-#include <commonlib/bsd/compiler.h>
 #include <console/console.h>
 #include <smp/node.h>
 #include <thread.h>

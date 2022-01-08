@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <ctype.h>
-#include <rules.h>
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>

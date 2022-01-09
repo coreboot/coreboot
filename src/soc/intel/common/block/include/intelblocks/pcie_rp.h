@@ -111,6 +111,9 @@ void pcie_rp_update_devicetree(const struct pcie_rp_group *groups);
  */
 uint32_t pcie_rp_enable_mask(const struct pcie_rp_group *groups);
 
+/* Get PCH root port groups */
+const struct pcie_rp_group *soc_get_pch_rp_groups(void);
+
 enum pcie_rp_type {
 	PCIE_RP_UNKNOWN,
 	PCIE_RP_CPU,

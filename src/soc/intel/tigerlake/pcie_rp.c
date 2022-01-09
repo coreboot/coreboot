@@ -8,8 +8,7 @@
 
 static const struct pcie_rp_group pch_lp_rp_groups[] = {
 	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8 },
-	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 8 },
-	{ .slot = PCH_DEV_SLOT_PCIE_2,	.count = 4 },
+	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 4 },
 	{ 0 }
 };
 

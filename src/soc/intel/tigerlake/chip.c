@@ -17,19 +17,6 @@
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>
 
-static const struct pcie_rp_group pch_lp_rp_groups[] = {
-	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8 },
-	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 4 },
-	{ 0 }
-};
-
-static const struct pcie_rp_group pch_h_rp_groups[] = {
-	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8 },
-	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 8 },
-	{ .slot = PCH_DEV_SLOT_PCIE_2,	.count = 8 },
-	{ 0 }
-};
-
 #if CONFIG(HAVE_ACPI_TABLES)
 const char *soc_acpi_name(const struct device *dev)
 {
@@ -170,10 +157,8 @@ void soc_init_pre_device(void *chip_info)
 	soc_fill_gpio_pm_configuration();
 
 	/* Swap enabled PCI ports in device tree if needed. */
-	if (CONFIG(SOC_INTEL_TIGERLAKE_PCH_H))
-		pcie_rp_update_devicetree(pch_h_rp_groups);
-	else
-		pcie_rp_update_devicetree(pch_lp_rp_groups);
+	const struct pcie_rp_group *pch_rp_groups = soc_get_pch_rp_groups();
+	pcie_rp_update_devicetree(pch_rp_groups);
 }
 
 static void cpu_fill_ssdt(const struct device *dev)

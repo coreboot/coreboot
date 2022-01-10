@@ -50,17 +50,20 @@ GUID="$(git config user.name) <$(git config user.email)>"
 
 (printf "${MESSAGE_PREFIX}"; commit_message) | tac | awk '/^$/ {
 		if (end==0) {
-			print "Original-Commit-Id: '"${CID}"'\nSigned-off-by: '"${GUID}"'";
+			print "GitOrigin-RevId: '"${CID}"'\nSigned-off-by: '"${GUID}"'";
 			'"${SPLICE_CMD}"'
 		}
 		end=1
 	}; /^(BUG|BRANCH|TEST)=/ {
 		if (end==0) {
-			print "Original-Commit-Id: '"${CID}"'\nSigned-off-by: '"${GUID}"'";
+			print "GitOrigin-RevId: '"${CID}"'\nSigned-off-by: '"${GUID}"'";
 			print "";
 		}
 		end=1
 	}; /^Cq-Depend:/ {
+		print $0;
+		next
+	}; /^Change-Id:/ {
 		print $0;
 		next
 	}; {

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #define DPTF_CPU_PASSIVE	90
-#define DPTF_CPU_CRITICAL	98
+#define DPTF_CPU_CRITICAL	105
 #define DPTF_CPU_ACTIVE_AC0	90
 #define DPTF_CPU_ACTIVE_AC1	77
 

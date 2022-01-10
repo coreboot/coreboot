@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#define __SIMPLE_DEVICE__
+
 #include <assert.h>
 #include <bootstate.h>
 #include <console/console.h>
@@ -10,6 +12,7 @@
 #include <intelblocks/itss.h>
 #include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
+#include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <stdlib.h>
 #include <types.h>
@@ -531,7 +534,7 @@ int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 			if (CONFIG(DEBUG_GPIO))
 				printk(BIOS_INFO, "%s: Locking pad %d configuration\n",
 						__func__, pad);
-			status = pcr_execute_sideband_msg(&msg, &data, &response);
+			status = pcr_execute_sideband_msg(PCH_DEV_P2SB, &msg, &data, &response);
 			if ((err = sideband_msg_err(status, response)) != 0) {
 				err_response = err;
 				continue;
@@ -543,7 +546,7 @@ int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 				printk(BIOS_INFO, "%s: Locking pad %d TX state\n",
 						__func__, pad);
 			msg.offset += sizeof(uint32_t);
-			status = pcr_execute_sideband_msg(&msg, &data, &response);
+			status = pcr_execute_sideband_msg(PCH_DEV_P2SB, &msg, &data, &response);
 			if ((err = sideband_msg_err(status, response)) != 0) {
 				err_response = err;
 				continue;

@@ -36,7 +36,7 @@ void heci_disable(void)
 	p2sb_unhide();
 
 	/* Send SBI command to make HECI#1 function disable */
-	status = pcr_execute_sideband_msg(&msg, &data32, &response);
+	status = pcr_execute_sideband_msg(PCH_DEV_P2SB, &msg, &data32, &response);
 	if (status || response)
 		printk(BIOS_ERR, "Fail to make CSME function disable\n");
 

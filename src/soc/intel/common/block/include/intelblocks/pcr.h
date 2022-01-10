@@ -8,6 +8,7 @@
 
 #if !defined(__ACPI__)
 #include <types.h>
+#include <device/pci_ops.h>
 
 uint32_t pcr_read32(uint8_t pid, uint16_t offset);
 uint16_t pcr_read16(uint8_t pid, uint16_t offset);
@@ -62,7 +63,7 @@ struct pcr_sbi_msg {
  * 0: SBI message is successfully completed
  * -1: SBI message failure
  */
-int pcr_execute_sideband_msg(struct pcr_sbi_msg *msg, uint32_t *data,
+int pcr_execute_sideband_msg(pci_devfn_t dev, struct pcr_sbi_msg *msg, uint32_t *data,
 		uint8_t *response);
 
 /* Get the starting address of the port's registers. */

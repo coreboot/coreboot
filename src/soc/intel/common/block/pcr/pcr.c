@@ -240,10 +240,9 @@ static int pcr_wait_for_completion(const pci_devfn_t dev)
  * 0: SBI message is successfully completed
  * -1: SBI message failure
  */
-int pcr_execute_sideband_msg(struct pcr_sbi_msg *msg, uint32_t *data,
+int pcr_execute_sideband_msg(pci_devfn_t dev, struct pcr_sbi_msg *msg, uint32_t *data,
 		uint8_t *response)
 {
-	const pci_devfn_t dev = PCH_DEV_P2SB;
 	uint32_t sbi_data;
 	uint16_t sbi_status;
 	uint16_t sbi_rid;

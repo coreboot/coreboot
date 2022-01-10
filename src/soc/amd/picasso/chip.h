@@ -6,6 +6,7 @@
 #include <amdblocks/chip.h>
 #include <commonlib/helpers.h>
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <gpio.h>
 #include <soc/i2c.h>
 #include <soc/iomap.h>
 #include <soc/southbridge.h>

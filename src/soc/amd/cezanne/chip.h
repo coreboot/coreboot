@@ -4,6 +4,7 @@
 #define CEZANNE_CHIP_H
 
 #include <amdblocks/chip.h>
+#include <gpio.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
 #include <drivers/i2c/designware/dw_i2c.h>

@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <commonlib/helpers.h>
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <gpio.h>
 #include <soc/i2c.h>
 #include <acpi/acpi_device.h>
 

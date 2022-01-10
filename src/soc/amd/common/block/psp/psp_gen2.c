@@ -7,8 +7,6 @@
 #include <amdblocks/smn.h>
 #include "psp_def.h"
 
-#define SMN_PSP_PUBLIC_BASE		0x3800000
-
 #define PSP_MAILBOX_COMMAND_OFFSET	0x10570 /* 4 bytes */
 #define PSP_MAILBOX_BUFFER_L_OFFSET	0x10574 /* 4 bytes */
 #define PSP_MAILBOX_BUFFER_H_OFFSET	0x10578 /* 4 bytes */

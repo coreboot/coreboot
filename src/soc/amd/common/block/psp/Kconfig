@@ -44,3 +44,15 @@ config SOC_AMD_COMMON_BLOCK_PSP_FUSE_SPL
 	help
 	  Enable sending of set SPL message to PSP. Enable this option if the platform
 	  will require SPL fusing to be performed by PSP.
+
+config PSP_PLATFORM_SECURE_BOOT
+	bool "Platform secure boot enable"
+	depends on SOC_AMD_COMMON_BLOCK_PSP_GEN2
+	default n
+	help
+	  Select this config to enable PSP Platform Secure Boot.
+
+	  Platform Secure Boot will automatically be fused on boot if the
+	  coreboot ROM is properly signed and can not be disabled once fused.
+	  Refer AMD PSB user guide doc# 56654, Revision# 1.00, this document is
+	  only available with NDA customers.

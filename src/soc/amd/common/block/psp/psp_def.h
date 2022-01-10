@@ -17,6 +17,7 @@
 #define MBOX_BIOS_CMD_CLEAR_S3_STS		0x07
 #define MBOX_BIOS_CMD_S3_DATA_INFO		0x08
 #define MBOX_BIOS_CMD_NOP			0x09
+#define MBOX_BIOS_CMD_PSB_AUTO_FUSING		0x21
 #define MBOX_BIOS_CMD_SET_SPL_FUSE		0x2d
 #define MBOX_BIOS_CMD_QUERY_SPL_FUSE		0x47
 #define MBOX_BIOS_CMD_ABORT			0xfe
@@ -25,6 +26,8 @@
 #define MBOX_BIOS_CMD_DRAM_INFO			0x01
 #define MBOX_BIOS_CMD_SMU_FW			0x19
 #define MBOX_BIOS_CMD_SMU_FW2			0x1a
+
+#define SMN_PSP_PUBLIC_BASE			0x3800000
 
 /* command/response format, BIOS builds this in memory
  *   mbox_buffer_header: generic header

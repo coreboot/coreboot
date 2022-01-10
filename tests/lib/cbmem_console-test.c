@@ -47,10 +47,11 @@ void test_cbmemc_tx_byte(void **state)
 {
 	int i;
 	u32 cursor;
-	const unsigned char data[] = "Random testing string\n"
-				"`1234567890-=~!@#$%^&*()_+\n"
-				"abcdefghijklmnopqrstuvwxyz\n"
-				"ABCDEFGHIJKLMNOPQRSTUVWXYZ\n";
+	const unsigned char data[] =
+		"Random testing string\n"
+		"`1234567890-=~!@#$%^&*()_+\n"
+		"abcdefghijklmnopqrstuvwxyz\n"
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ\n";
 
 	for (i = 0; i < ARRAY_SIZE(data); ++i)
 		cbmemc_tx_byte(data[i]);
@@ -69,15 +70,16 @@ void test_cbmemc_tx_byte_overflow(void **state)
 	u32 cursor;
 	u32 flags;
 	const uint32_t console_size = current_console->size;
-	const unsigned char data[] = "Another random string\n"
-				"abcdefghijklmnopqrstuvwxyz\n"
-				"ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
-				"`1234567890-=~!@#$%^&*()_+\n";
+	const unsigned char data[] =
+		"Another random string\n"
+		"abcdefghijklmnopqrstuvwxyz\n"
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"
+		"`1234567890-=~!@#$%^&*()_+\n";
 	const int data_size = ARRAY_SIZE(data) - 1;
 	const int data_stream_length = console_size + data_size;
 	const int overflow_bytes = data_stream_length % console_size;
 	unsigned char *check_buffer =
-			(unsigned char *)malloc(sizeof(unsigned char) * console_size);
+		(unsigned char *)malloc(sizeof(unsigned char) * console_size);
 
 	/* Fill console buffer */
 	for (i = 0; i < console_size; ++i)
@@ -102,16 +104,13 @@ void test_cbmemc_tx_byte_overflow(void **state)
 	assert_int_equal(data_size, cursor);
 
 	/* Check if overflow buffer was overwritten */
-	assert_memory_not_equal(current_console->body,
-			data,
-			overflow_bytes);
+	assert_memory_not_equal(current_console->body, data, overflow_bytes);
 
 	/* Check if rest of the buffer contents, that should not be overridden,
 	 * is the same.
 	 */
 	assert_memory_equal(&current_console->body[overflow_bytes],
-			check_buffer + overflow_bytes,
-			console_size - overflow_bytes);
+			    check_buffer + overflow_bytes, console_size - overflow_bytes);
 
 	free(check_buffer);
 }
@@ -120,10 +119,10 @@ int main(void)
 {
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test_teardown(test_cbmemc_init, teardown_cbmemc),
-		cmocka_unit_test_setup_teardown(test_cbmemc_tx_byte,
-						setup_cbmemc, teardown_cbmemc),
-		cmocka_unit_test_setup_teardown(test_cbmemc_tx_byte_overflow,
-						setup_cbmemc, teardown_cbmemc),
+		cmocka_unit_test_setup_teardown(test_cbmemc_tx_byte, setup_cbmemc,
+						teardown_cbmemc),
+		cmocka_unit_test_setup_teardown(test_cbmemc_tx_byte_overflow, setup_cbmemc,
+						teardown_cbmemc),
 	};
 
 	return cb_run_group_tests(tests, NULL, NULL);

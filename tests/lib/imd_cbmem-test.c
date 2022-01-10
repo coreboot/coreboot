@@ -441,14 +441,13 @@ static void test_cbmem_entry_start(void **state)
 	/* Check if start address of found entry is the same
 	   as the one returned by cbmem_find() function */
 	assert_ptr_equal(cbmem_find(CBMEM_ENTRY_ID),
-			cbmem_entry_start(cbmem_entry_find(CBMEM_ENTRY_ID)));
+			 cbmem_entry_start(cbmem_entry_find(CBMEM_ENTRY_ID)));
 	assert_ptr_equal(cbmem_find(id1), cbmem_entry_start(cbmem_entry_find(id1)));
 	assert_ptr_equal(cbmem_find(id2), cbmem_entry_start(cbmem_entry_find(id2)));
 }
 
 /* Reimplementation for testing purposes */
-void bootmem_add_range(uint64_t start, uint64_t size,
-		       const enum bootmem_type tag)
+void bootmem_add_range(uint64_t start, uint64_t size, const enum bootmem_type tag)
 {
 	check_expected(start);
 	check_expected(size);

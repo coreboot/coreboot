@@ -6,9 +6,9 @@
 
 
 #if CONFIG_STACK_SIZE == 0
-# define STACK_SIZE 0x1000
+#define STACK_SIZE 0x1000
 #else
-# define STACK_SIZE CONFIG_STACK_SIZE
+#define STACK_SIZE CONFIG_STACK_SIZE
 #endif
 
 /* Value used for stack initialization. Change if implementation changes. */

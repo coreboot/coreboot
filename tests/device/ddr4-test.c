@@ -33,9 +33,7 @@ static void ddr4_speed_mhz_to_mts_test(void **state)
 
 int main(void)
 {
-	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(ddr4_speed_mhz_to_mts_test)
-	};
+	const struct CMUnitTest tests[] = {cmocka_unit_test(ddr4_speed_mhz_to_mts_test)};
 
 	return cb_run_group_tests(tests, NULL, NULL);
 }

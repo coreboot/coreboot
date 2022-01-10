@@ -163,37 +163,37 @@ static void test_rtc_mktime_with_rtc_to_tm(void **state)
 
 	/* Conversion from rtc_time to timestamp and back to rtc_time */
 	tm_in = (struct rtc_time){
-		.year = 1970, .mon = 1, .mday = 1, .hour = 0, .min = 0, .sec = 0, .wday = 4
+		.year = 1970, .mon = 1, .mday = 1, .hour = 0, .min = 0, .sec = 0, .wday = 4,
 	};
 	assert_int_equal(0, rtc_to_tm(rtc_mktime(&tm_in), &tm_out));
 	assert_rtc_time_equal(&tm_in, &tm_out);
 
 	tm_in = (struct rtc_time){
-		.year = 2000, .mon = 2, .mday = 29, .hour = 13, .min = 4, .sec = 15, .wday = 2
+		.year = 2000, .mon = 2, .mday = 29, .hour = 13, .min = 4, .sec = 15, .wday = 2,
 	};
 	assert_int_equal(0, rtc_to_tm(rtc_mktime(&tm_in), &tm_out));
 	assert_rtc_time_equal(&tm_in, &tm_out);
 
 	tm_in = (struct rtc_time){
-		.year = 2000, .mon = 3, .mday = 1, .hour = 13, .min = 8, .sec = 37, .wday = 3
+		.year = 2000, .mon = 3, .mday = 1, .hour = 13, .min = 8, .sec = 37, .wday = 3,
 	};
 	assert_int_equal(0, rtc_to_tm(rtc_mktime(&tm_in), &tm_out));
 	assert_rtc_time_equal(&tm_in, &tm_out);
 
 	tm_in = (struct rtc_time){
-		.year = 2017, .mon = 12, .mday = 7, .hour = 8, .min = 18, .sec = 9, .wday = 4
+		.year = 2017, .mon = 12, .mday = 7, .hour = 8, .min = 18, .sec = 9, .wday = 4,
 	};
 	assert_int_equal(0, rtc_to_tm(rtc_mktime(&tm_in), &tm_out));
 	assert_rtc_time_equal(&tm_in, &tm_out);
 
 	tm_in = (struct rtc_time){
-		.year = 2020, .mon = 2, .mday = 29, .hour = 18, .min = 50, .sec = 0, .wday = 6
+		.year = 2020, .mon = 2, .mday = 29, .hour = 18, .min = 50, .sec = 0, .wday = 6,
 	};
 	assert_int_equal(0, rtc_to_tm(rtc_mktime(&tm_in), &tm_out));
 	assert_rtc_time_equal(&tm_in, &tm_out);
 
 	tm_in = (struct rtc_time){
-		.year = 2020, .mon = 3, .mday = 1, .hour = 1, .min = 20, .sec = 23, .wday = 0
+		.year = 2020, .mon = 3, .mday = 1, .hour = 1, .min = 20, .sec = 23, .wday = 0,
 	};
 	assert_int_equal(0, rtc_to_tm(rtc_mktime(&tm_in), &tm_out));
 	assert_rtc_time_equal(&tm_in, &tm_out);
@@ -246,53 +246,53 @@ static void test_leap_day_secday(void **state)
 	memset(&tm_out, 0, sizeof(tm_out));
 
 	/* Non-leap year */
-	tm_in = (struct rtc_time) {
-		.year = 1999, .mon = 2, .mday = 28, .hour = 5, .min = 37, .sec = 15, .wday = 0
+	tm_in = (struct rtc_time){
+		.year = 1999, .mon = 2, .mday = 28, .hour = 5, .min = 37, .sec = 15, .wday = 0,
 	};
 	tim = rtc_mktime(&tm_in) + secday;
-	tm_expected = (struct rtc_time) {
-		.year = 1999, .mon = 3, .mday = 1, .hour = 5, .min = 37, .sec = 15, .wday = 1
+	tm_expected = (struct rtc_time){
+		.year = 1999, .mon = 3, .mday = 1, .hour = 5, .min = 37, .sec = 15, .wday = 1,
 	};
 	assert_int_equal(0, rtc_to_tm(tim, &tm_out));
 	assert_rtc_time_equal(&tm_out, &tm_expected);
 
 	/* Leap-year February 28 to February 29 */
-	tm_in = (struct rtc_time) {
+	tm_in = (struct rtc_time){
 		.year = 2000, .mon = 2, .mday = 28, .hour = 0, .min = 33, .sec = 11, .wday = 1,
 	};
 	tim = rtc_mktime(&tm_in) + secday;
-	tm_expected = (struct rtc_time) {
+	tm_expected = (struct rtc_time){
 		.year = 2000, .mon = 2, .mday = 29, .hour = 0, .min = 33, .sec = 11, .wday = 2,
 	};
 	assert_int_equal(0, rtc_to_tm(tim, &tm_out));
 	assert_rtc_time_equal(&tm_out, &tm_expected);
 
-	tm_in = (struct rtc_time) {
+	tm_in = (struct rtc_time){
 		.year = 2004, .mon = 2, .mday = 28, .hour = 9, .min = 13, .sec = 45, .wday = 6,
 	};
 	tim = rtc_mktime(&tm_in) + secday;
-	tm_expected = (struct rtc_time) {
+	tm_expected = (struct rtc_time){
 		.year = 2004, .mon = 2, .mday = 29, .hour = 9, .min = 13, .sec = 45, .wday = 0,
 	};
 	assert_int_equal(0, rtc_to_tm(tim, &tm_out));
 	assert_rtc_time_equal(&tm_out, &tm_expected);
 
 	/* Leap-year February 29 to March 1 */
-	tm_in = (struct rtc_time) {
+	tm_in = (struct rtc_time){
 		.year = 2000, .mon = 2, .mday = 29, .hour = 22, .min = 50, .sec = 25, .wday = 2,
 	};
 	tim = rtc_mktime(&tm_in) + secday;
-	tm_expected = (struct rtc_time) {
+	tm_expected = (struct rtc_time){
 		.year = 2000, .mon = 3, .mday = 1, .hour = 22, .min = 50, .sec = 25, .wday = 3,
 	};
 	assert_int_equal(0, rtc_to_tm(tim, &tm_out));
 	assert_rtc_time_equal(&tm_out, &tm_expected);
 
-	tm_in = (struct rtc_time) {
+	tm_in = (struct rtc_time){
 		.year = 2004, .mon = 2, .mday = 29, .hour = 17, .min = 56, .sec = 27, .wday = 0,
 	};
 	tim = rtc_mktime(&tm_in) + secday;
-	tm_expected = (struct rtc_time) {
+	tm_expected = (struct rtc_time){
 		.year = 2004, .mon = 3, .mday = 1, .hour = 17, .min = 56, .sec = 27, .wday = 1,
 	};
 	assert_int_equal(0, rtc_to_tm(tim, &tm_out));

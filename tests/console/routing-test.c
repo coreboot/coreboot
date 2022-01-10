@@ -42,7 +42,7 @@ static void test_console_log_level(void **state)
 	for (int i = 0; i < ARRAY_SIZE(combinations); i++) {
 		console_loglevel = combinations[i].log_lvl;
 		assert_int_equal(combinations[i].behavior,
-			console_log_level(combinations[i].msg_lvl));
+				 console_log_level(combinations[i].msg_lvl));
 	}
 }
 
@@ -61,8 +61,7 @@ static int teardown_console_log_level(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test_setup_teardown(test_console_log_level,
-						setup_console_log_level,
+		cmocka_unit_test_setup_teardown(test_console_log_level, setup_console_log_level,
 						teardown_console_log_level),
 	};
 

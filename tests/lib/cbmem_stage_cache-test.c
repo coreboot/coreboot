@@ -180,14 +180,14 @@ void test_stage_cache_load_stage(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test_setup_teardown(test_stage_cache_add,
-						setup_test, teardown_test),
-		cmocka_unit_test_setup_teardown(test_stage_cache_add_raw,
-						setup_test, teardown_test),
-		cmocka_unit_test_setup_teardown(test_stage_cache_get_raw,
-						setup_test, teardown_test),
-		cmocka_unit_test_setup_teardown(test_stage_cache_load_stage,
-						setup_test, teardown_test),
+		cmocka_unit_test_setup_teardown(test_stage_cache_add, setup_test,
+						teardown_test),
+		cmocka_unit_test_setup_teardown(test_stage_cache_add_raw, setup_test,
+						teardown_test),
+		cmocka_unit_test_setup_teardown(test_stage_cache_get_raw, setup_test,
+						teardown_test),
+		cmocka_unit_test_setup_teardown(test_stage_cache_load_stage, setup_test,
+						teardown_test),
 	};
 
 	return cb_run_group_tests(tests, NULL, NULL);

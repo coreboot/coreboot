@@ -43,11 +43,10 @@ static struct lb_record *lb_first_record(struct lb_header *header)
 	return rec;
 }
 
-#define LB_RECORD_FOR_EACH(record_ptr, index, header)					\
-	for (index = 0, record_ptr = lb_first_record(header);				\
-		index < header->table_entries;						\
-		record_ptr = (struct lb_record *)((uintptr_t)record_ptr			\
-							+ record_ptr->size), index++)
+#define LB_RECORD_FOR_EACH(record_ptr, index, header)                                          \
+	for (index = 0, record_ptr = lb_first_record(header); index < header->table_entries;   \
+	     record_ptr = (struct lb_record *)((uintptr_t)record_ptr + record_ptr->size),      \
+	    index++)
 
 static void test_lb_add_gpios(void **state)
 {
@@ -77,7 +76,7 @@ static void test_lb_add_gpios(void **state)
 	assert_int_equal(sizeof(gpios) + 2 * sizeof(gpios[0]), gpios_table->size);
 	assert_memory_equal(&gpios_table->gpios[0], gpios, sizeof(gpios));
 	assert_memory_equal(&gpios_table->gpios[ARRAY_SIZE(gpios)], &gpios[1],
-				2 * sizeof(gpios[0]));
+			    2 * sizeof(gpios[0]));
 }
 
 uint8_t tables_buffer[sizeof(struct lb_header) + 10 * KiB];
@@ -169,20 +168,18 @@ static void test_write_coreboot_forwarding_table(void **state)
 	uint8_t forwarding_table_buffer[sizeof(struct lb_header)
 					+ 2 * sizeof(struct lb_forward)];
 	struct lb_header *forward_header =
-			(struct lb_header *)ALIGN_UP((uintptr_t)forwarding_table_buffer, 16);
-	size_t forwarding_table_size =
-			write_coreboot_forwarding_table((uintptr_t)forwarding_table_buffer,
-							(uintptr_t)header);
-	size_t expected_forwarding_table_size = ALIGN_UP((uintptr_t)forwarding_table_buffer, 16)
-						+ sizeof(struct lb_header)
-						+ sizeof(struct lb_forward)
-						- (uintptr_t)forwarding_table_buffer;
+		(struct lb_header *)ALIGN_UP((uintptr_t)forwarding_table_buffer, 16);
+	size_t forwarding_table_size = write_coreboot_forwarding_table(
+		(uintptr_t)forwarding_table_buffer, (uintptr_t)header);
+	size_t expected_forwarding_table_size =
+		ALIGN_UP((uintptr_t)forwarding_table_buffer, 16) + sizeof(struct lb_header)
+		+ sizeof(struct lb_forward) - (uintptr_t)forwarding_table_buffer;
 	assert_int_equal(expected_forwarding_table_size, forwarding_table_size);
 
 	assert_int_equal(1, forward_header->table_entries);
 	assert_int_equal(sizeof(struct lb_forward), forward_header->table_bytes);
 	assert_ptr_equal(header,
-			((struct lb_forward *)lb_first_record(forward_header))->forward);
+			 ((struct lb_forward *)lb_first_record(forward_header))->forward);
 }
 
 /* Mocks for write_tables() */
@@ -214,8 +211,8 @@ void arch_write_tables(uintptr_t coreboot_table)
 }
 
 struct resource mock_bootmem_ranges[] = {
-	{ .base = 0x1000, .size = 0x2000, .flags = LB_MEM_RAM },
-	{ .base = 0x0000, .size = 0x4000, .flags = LB_MEM_RAM },
+	{.base = 0x1000, .size = 0x2000, .flags = LB_MEM_RAM},
+	{.base = 0x0000, .size = 0x4000, .flags = LB_MEM_RAM},
 };
 
 void bootmem_write_memory_table(struct lb_memory *mem)
@@ -346,14 +343,15 @@ static void test_write_tables(void **state)
 	/* At least one entry should be present. */
 	assert_int_not_equal(0, header->table_entries);
 
-	LB_RECORD_FOR_EACH(record, i, header) {
+	LB_RECORD_FOR_EACH(record, i, header)
+	{
 		switch (record->tag) {
 		case LB_TAG_MEMORY:
 			/* Should be the same as in bootmem_write_memory_table() */
 			assert_int_equal(sizeof(struct lb_memory)
-					+ ARRAY_SIZE(mock_bootmem_ranges)
-						* sizeof(struct lb_memory_range),
-					record->size);
+						 + ARRAY_SIZE(mock_bootmem_ranges)
+							   * sizeof(struct lb_memory_range),
+					 record->size);
 
 			const struct lb_memory *memory = (struct lb_memory *)record;
 			const struct lb_memory_range *range;
@@ -366,38 +364,45 @@ static void test_write_tables(void **state)
 
 				value = pack_lb64(res->base);
 				assert_memory_equal(&value, &range->start,
-							sizeof(struct lb_uint64));
+						    sizeof(struct lb_uint64));
 				value = pack_lb64(res->size);
 				assert_memory_equal(&value, &range->size,
-						sizeof(struct lb_uint64));
+						    sizeof(struct lb_uint64));
 				assert_int_equal(range->type, res->flags);
 			}
 			break;
 		case LB_TAG_MAINBOARD:
 			/* Mainboard record contains its header followed
 			   by two null-terminated strings */
-			assert_int_equal(ALIGN_UP(sizeof(struct lb_mainboard) +
-					ARRAY_SIZE(mainboard_vendor) +
-					ARRAY_SIZE(mainboard_part_number), 8), record->size);
+			assert_int_equal(ALIGN_UP(sizeof(struct lb_mainboard)
+							  + ARRAY_SIZE(mainboard_vendor)
+							  + ARRAY_SIZE(mainboard_part_number),
+						  8),
+					 record->size);
 			break;
 		case LB_TAG_VERSION:
 			assert_int_equal(ALIGN_UP(sizeof(struct lb_string)
-					+ ARRAY_SIZE(coreboot_version), 8), record->size);
+							  + ARRAY_SIZE(coreboot_version),
+						  8),
+					 record->size);
 			break;
 		case LB_TAG_EXTRA_VERSION:
 			assert_int_equal(ALIGN_UP(sizeof(struct lb_string)
-					+ ARRAY_SIZE(coreboot_extra_version), 8),
-					record->size);
+							  + ARRAY_SIZE(coreboot_extra_version),
+						  8),
+					 record->size);
 			break;
 		case LB_TAG_BUILD:
-			assert_int_equal(ALIGN_UP(sizeof(struct lb_string)
-					+ ARRAY_SIZE(coreboot_build), 8),
-					record->size);
+			assert_int_equal(
+				ALIGN_UP(sizeof(struct lb_string) + ARRAY_SIZE(coreboot_build),
+					 8),
+				record->size);
 			break;
 		case LB_TAG_COMPILE_TIME:
 			assert_int_equal(ALIGN_UP(sizeof(struct lb_string)
-					+ ARRAY_SIZE(coreboot_compile_time), 8),
-					record->size);
+							  + ARRAY_SIZE(coreboot_compile_time),
+						  8),
+					 record->size);
 			break;
 		case LB_TAG_SERIAL:
 			assert_int_equal(sizeof(struct lb_serial), record->size);
@@ -428,7 +433,7 @@ static void test_write_tables(void **state)
 			assert_int_equal(sizeof(struct lb_boot_media_params), record->size);
 
 			const struct lb_boot_media_params *bmp =
-					(struct lb_boot_media_params *)record;
+				(struct lb_boot_media_params *)record;
 			const struct cbfs_boot_device *cbd = cbfs_get_boot_device(false);
 			const struct region_device *boot_dev = boot_device_ro();
 			assert_int_equal(region_device_offset(&cbd->rdev), bmp->cbfs_offset);
@@ -441,13 +446,11 @@ static void test_write_tables(void **state)
 			assert_int_equal(sizeof(struct lb_cbmem_entry), record->size);
 
 			const struct lb_cbmem_entry *cbmem_entry =
-					(struct lb_cbmem_entry *)record;
-			const LargestIntegralType expected_tags[] = {
-				CBMEM_ID_CBTABLE,
-				CBMEM_ID_MMC_STATUS
-			};
-			assert_in_set(cbmem_entry->id,
-					expected_tags, ARRAY_SIZE(expected_tags));
+				(struct lb_cbmem_entry *)record;
+			const LargestIntegralType expected_tags[] = {CBMEM_ID_CBTABLE,
+								     CBMEM_ID_MMC_STATUS};
+			assert_in_set(cbmem_entry->id, expected_tags,
+				      ARRAY_SIZE(expected_tags));
 			break;
 		case LB_TAG_TSC_INFO:
 			assert_int_equal(sizeof(struct lb_tsc_info), record->size);
@@ -465,10 +468,10 @@ static void test_write_tables(void **state)
 			assert_int_equal(sizeof(struct lb_board_config), record->size);
 
 			const struct lb_board_config *board_config =
-					(struct lb_board_config *)record;
+				(struct lb_board_config *)record;
 			const struct lb_uint64 expected_fw_version = pack_lb64(fw_config_get());
-			assert_memory_equal(&expected_fw_version,
-					&board_config->fw_config, sizeof(struct lb_uint64));
+			assert_memory_equal(&expected_fw_version, &board_config->fw_config,
+					    sizeof(struct lb_uint64));
 			assert_int_equal(board_id(), board_config->board_id);
 			assert_int_equal(ram_code(), board_config->ram_code);
 			assert_int_equal(sku_id(), board_config->sku_id);
@@ -488,8 +491,7 @@ int main(void)
 		cmocka_unit_test_setup(test_lb_add_console, setup_test_header),
 		cmocka_unit_test_setup(test_multiple_entries, setup_test_header),
 		cmocka_unit_test_setup(test_write_coreboot_forwarding_table, setup_test_header),
-		cmocka_unit_test_setup_teardown(test_write_tables,
-						setup_write_tables_test,
+		cmocka_unit_test_setup_teardown(test_write_tables, setup_write_tables_test,
 						teardown_write_tables_test),
 	};
 

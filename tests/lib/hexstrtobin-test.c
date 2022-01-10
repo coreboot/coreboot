@@ -12,11 +12,11 @@ struct hexstr_t {
 	size_t res;
 } hexstr[] = {
 	{.str = "A", .res = 0},
-	{.str = "AB", .val = (int[]) {171}, .res = 1},
-	{.str = "277a", .val = (int[]) {39, 122}, .res = 2},
-	{.str = "277ab", .val = (int[]) {39, 122}, .res = 2},
-	{.str = "\n\rx1234567ijkl", .val = (int[]) {18, 52, 86}, .res = 3},
-	{.str = "\nB*e/ef-", .val = (int[]) {190, 239}, .res = 2},
+	{.str = "AB", .val = (int[]){171}, .res = 1},
+	{.str = "277a", .val = (int[]){39, 122}, .res = 2},
+	{.str = "277ab", .val = (int[]){39, 122}, .res = 2},
+	{.str = "\n\rx1234567ijkl", .val = (int[]){18, 52, 86}, .res = 3},
+	{.str = "\nB*e/ef-", .val = (int[]){190, 239}, .res = 2},
 };
 
 static void test_hexstrtobin(void **state)

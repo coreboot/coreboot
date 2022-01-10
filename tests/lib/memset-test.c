@@ -106,14 +106,14 @@ static void test_memset_one_byte(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test_setup_teardown(test_memset_full_range,
-				setup_test, teardown_test),
-		cmocka_unit_test_setup_teardown(test_memset_subrange,
-				setup_test, teardown_test),
-		cmocka_unit_test_setup_teardown(test_memset_zero_size,
-				setup_test, teardown_test),
-		cmocka_unit_test_setup_teardown(test_memset_one_byte,
-				setup_test, teardown_test),
+		cmocka_unit_test_setup_teardown(test_memset_full_range, setup_test,
+						teardown_test),
+		cmocka_unit_test_setup_teardown(test_memset_subrange, setup_test,
+						teardown_test),
+		cmocka_unit_test_setup_teardown(test_memset_zero_size, setup_test,
+						teardown_test),
+		cmocka_unit_test_setup_teardown(test_memset_one_byte, setup_test,
+						teardown_test),
 	};
 
 	return cb_run_group_tests(tests, NULL, NULL);

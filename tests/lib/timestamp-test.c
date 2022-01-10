@@ -32,7 +32,7 @@ void test_timestamp_add(void **state)
 	entry = &glob_ts_table->entries[0];
 	assert_int_equal(1, entry->entry_id);
 	assert_int_equal(base_multipler - timestamp_base, /* Added timestamp reduced by base */
-			entry->entry_stamp);
+			 entry->entry_stamp);
 
 	/* Add few timestamps to check if all of them will be added properly */
 	for (i = 1; i < 10; ++i)
@@ -43,8 +43,7 @@ void test_timestamp_add(void **state)
 	for (i = 0; i < 10; ++i) {
 		entry = &glob_ts_table->entries[i];
 		assert_int_equal(i + 1, entry->entry_id);
-		assert_int_equal(base_multipler * (i + 1) - timestamp_base,
-				 entry->entry_stamp);
+		assert_int_equal(base_multipler * (i + 1) - timestamp_base, entry->entry_stamp);
 	}
 }
 
@@ -70,7 +69,7 @@ void test_timestamp_add_now(void **state)
 
 	assert_int_equal(1, entry->entry_id);
 	assert_int_equal(base_multipler - timestamp_base, /* Added timestamp reduced by base */
-			entry->entry_stamp);
+			 entry->entry_stamp);
 }
 
 void test_timestamp_rescale_table(void **state)

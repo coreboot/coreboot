@@ -22,33 +22,28 @@ static void test_smbios_bus_width_to_spd_width_parametrized(smbios_memory_type d
 		extension_8bits = SPD_ECC_8BIT_LP5_DDR5;
 
 	assert_int_equal(MEMORY_BUS_WIDTH_64 | extension_8bits,
-			smbios_bus_width_to_spd_width(ddr_type, 64 + 8, 64));
+			 smbios_bus_width_to_spd_width(ddr_type, 64 + 8, 64));
 	assert_int_equal(MEMORY_BUS_WIDTH_32 | extension_8bits,
-			smbios_bus_width_to_spd_width(ddr_type, 32 + 8, 32));
+			 smbios_bus_width_to_spd_width(ddr_type, 32 + 8, 32));
 	assert_int_equal(MEMORY_BUS_WIDTH_16 | extension_8bits,
-			smbios_bus_width_to_spd_width(ddr_type, 16 + 8, 16));
+			 smbios_bus_width_to_spd_width(ddr_type, 16 + 8, 16));
 	assert_int_equal(MEMORY_BUS_WIDTH_8 | extension_8bits,
-			smbios_bus_width_to_spd_width(ddr_type, 8 + 8, 8));
+			 smbios_bus_width_to_spd_width(ddr_type, 8 + 8, 8));
 	/* Incorrect data width. Fallback to 8-bit */
 	assert_int_equal(MEMORY_BUS_WIDTH_8 | extension_8bits,
-			smbios_bus_width_to_spd_width(ddr_type, 15 + 8, 15));
+			 smbios_bus_width_to_spd_width(ddr_type, 15 + 8, 15));
 }
 
 static void test_smbios_bus_width_to_spd_width(void **state)
 {
 	smbios_memory_type memory_type[] = {
-		MEMORY_TYPE_DDR2,
-		MEMORY_TYPE_DDR3,
-		MEMORY_TYPE_DDR4,
-		MEMORY_TYPE_DDR5,
-		MEMORY_TYPE_LPDDR3,
-		MEMORY_TYPE_LPDDR4,
-		MEMORY_TYPE_LPDDR5,
+		MEMORY_TYPE_DDR2,   MEMORY_TYPE_DDR3,	MEMORY_TYPE_DDR4,   MEMORY_TYPE_DDR5,
+		MEMORY_TYPE_LPDDR3, MEMORY_TYPE_LPDDR4, MEMORY_TYPE_LPDDR5,
 	};
 
 	for (int i = 0; i < ARRAY_SIZE(memory_type); i++) {
 		print_message("test_smbios_bus_width_to_spd_width_parametrized(%d)\n",
-			memory_type[i]);
+			      memory_type[i]);
 		test_smbios_bus_width_to_spd_width_parametrized(memory_type[i]);
 	}
 }
@@ -91,43 +86,34 @@ static void test_smbios_memory_size_to_mib(void **state)
 static void test_smbios_form_factor_to_spd_mod_type_ddr(smbios_memory_type memory_type)
 {
 	const smbios_memory_form_factor undefined_factors[] = {
-		MEMORY_FORMFACTOR_OTHER,
-		MEMORY_FORMFACTOR_UNKNOWN,
-		MEMORY_FORMFACTOR_SIMM,
-		MEMORY_FORMFACTOR_SIP,
-		MEMORY_FORMFACTOR_CHIP,
-		MEMORY_FORMFACTOR_DIP,
-		MEMORY_FORMFACTOR_ZIP,
-		MEMORY_FORMFACTOR_PROPRIETARY_CARD,
-		MEMORY_FORMFACTOR_TSOP,
-		MEMORY_FORMFACTOR_ROC,
-		MEMORY_FORMFACTOR_SRIMM,
-		MEMORY_FORMFACTOR_FBDIMM,
+		MEMORY_FORMFACTOR_OTHER, MEMORY_FORMFACTOR_UNKNOWN,
+		MEMORY_FORMFACTOR_SIMM,	 MEMORY_FORMFACTOR_SIP,
+		MEMORY_FORMFACTOR_CHIP,	 MEMORY_FORMFACTOR_DIP,
+		MEMORY_FORMFACTOR_ZIP,	 MEMORY_FORMFACTOR_PROPRIETARY_CARD,
+		MEMORY_FORMFACTOR_TSOP,	 MEMORY_FORMFACTOR_ROC,
+		MEMORY_FORMFACTOR_SRIMM, MEMORY_FORMFACTOR_FBDIMM,
 		MEMORY_FORMFACTOR_DIE,
 	};
 	for (int i = 0; i < ARRAY_SIZE(undefined_factors); ++i) {
-		assert_int_equal(SPD_UNDEFINED,
-				smbios_form_factor_to_spd_mod_type(memory_type,
-						undefined_factors[i]));
+		assert_int_equal(SPD_UNDEFINED, smbios_form_factor_to_spd_mod_type(
+							memory_type, undefined_factors[i]));
 	}
 }
 
 static void test_smbios_form_factor_to_spd_mod_type_ddrx_parametrized(
-		smbios_memory_type memory_type,
-		const LargestIntegralType udimm_allowed[],
-		const LargestIntegralType rdimm_allowed[],
-		LargestIntegralType expected_module_type)
+	smbios_memory_type memory_type, const LargestIntegralType udimm_allowed[],
+	const LargestIntegralType rdimm_allowed[], LargestIntegralType expected_module_type)
 {
 	print_message("%s(%d)\n", __func__, memory_type);
 
 	assert_in_set(smbios_form_factor_to_spd_mod_type(memory_type, MEMORY_FORMFACTOR_DIMM),
-			udimm_allowed, MAX_ALLOWED_MODULE_TYPE);
+		      udimm_allowed, MAX_ALLOWED_MODULE_TYPE);
 
 	assert_in_set(smbios_form_factor_to_spd_mod_type(memory_type, MEMORY_FORMFACTOR_RIMM),
-			rdimm_allowed, MAX_ALLOWED_MODULE_TYPE);
+		      rdimm_allowed, MAX_ALLOWED_MODULE_TYPE);
 
-	assert_int_equal(expected_module_type, smbios_form_factor_to_spd_mod_type(memory_type,
-					MEMORY_FORMFACTOR_SODIMM));
+	assert_int_equal(expected_module_type, smbios_form_factor_to_spd_mod_type(
+						       memory_type, MEMORY_FORMFACTOR_SODIMM));
 
 	test_smbios_form_factor_to_spd_mod_type_ddr(memory_type);
 }
@@ -136,8 +122,8 @@ static void test_smbios_form_factor_to_spd_mod_type_lpddrx(smbios_memory_type me
 {
 	print_message("%s(%d)\n", __func__, memory_type);
 	/* Form factors defined in coreboot */
-	assert_int_equal(LPX_SPD_NONDIMM, smbios_form_factor_to_spd_mod_type(memory_type,
-					MEMORY_FORMFACTOR_ROC));
+	assert_int_equal(LPX_SPD_NONDIMM, smbios_form_factor_to_spd_mod_type(
+						  memory_type, MEMORY_FORMFACTOR_ROC));
 }
 
 static void test_smbios_form_factor_to_spd_mod_type(void **state)
@@ -150,37 +136,35 @@ static void test_smbios_form_factor_to_spd_mod_type(void **state)
 	} ddrx_info[] = {
 		{
 			.memory_type = MEMORY_TYPE_DDR2,
-			.udimm_allowed = { DDR2_SPD_UDIMM, DDR2_SPD_MICRO_DIMM,
-						DDR2_SPD_MINI_UDIMM },
-			.rdimm_allowed = { DDR2_SPD_RDIMM, DDR2_SPD_MINI_RDIMM },
+			.udimm_allowed = {DDR2_SPD_UDIMM, DDR2_SPD_MICRO_DIMM,
+					  DDR2_SPD_MINI_UDIMM},
+			.rdimm_allowed = {DDR2_SPD_RDIMM, DDR2_SPD_MINI_RDIMM},
 			.expected_module_type = DDR2_SPD_SODIMM,
 		},
 		{
 			.memory_type = MEMORY_TYPE_DDR3,
-			.udimm_allowed = { DDR3_SPD_UDIMM, DDR3_SPD_MICRO_DIMM,
-						DDR3_SPD_MINI_UDIMM },
-			.rdimm_allowed = { DDR3_SPD_RDIMM, DDR3_SPD_MINI_RDIMM },
-			.expected_module_type =	DDR3_SPD_SODIMM,
+			.udimm_allowed = {DDR3_SPD_UDIMM, DDR3_SPD_MICRO_DIMM,
+					  DDR3_SPD_MINI_UDIMM},
+			.rdimm_allowed = {DDR3_SPD_RDIMM, DDR3_SPD_MINI_RDIMM},
+			.expected_module_type = DDR3_SPD_SODIMM,
 		},
 		{
 			.memory_type = MEMORY_TYPE_DDR4,
-			.udimm_allowed = { DDR4_SPD_UDIMM, DDR4_SPD_MINI_UDIMM },
-			.rdimm_allowed = { DDR4_SPD_RDIMM, DDR4_SPD_MINI_RDIMM },
+			.udimm_allowed = {DDR4_SPD_UDIMM, DDR4_SPD_MINI_UDIMM},
+			.rdimm_allowed = {DDR4_SPD_RDIMM, DDR4_SPD_MINI_RDIMM},
 			.expected_module_type = DDR4_SPD_SODIMM,
 		},
-		{
-			.memory_type = MEMORY_TYPE_DDR5,
-			.udimm_allowed = { DDR5_SPD_UDIMM, DDR5_SPD_MINI_UDIMM },
-			.rdimm_allowed = { DDR5_SPD_RDIMM, DDR5_SPD_MINI_RDIMM },
-			.expected_module_type = DDR5_SPD_SODIMM
-		},
+		{.memory_type = MEMORY_TYPE_DDR5,
+		 .udimm_allowed = {DDR5_SPD_UDIMM, DDR5_SPD_MINI_UDIMM},
+		 .rdimm_allowed = {DDR5_SPD_RDIMM, DDR5_SPD_MINI_RDIMM},
+		 .expected_module_type = DDR5_SPD_SODIMM},
 	};
 
 	/* Test for DDRx DIMM Modules */
 	for (int i = 0; i < ARRAY_SIZE(ddrx_info); i++)
 		test_smbios_form_factor_to_spd_mod_type_ddrx_parametrized(
-				ddrx_info[i].memory_type, ddrx_info[i].udimm_allowed,
-				ddrx_info[i].rdimm_allowed, ddrx_info[i].expected_module_type);
+			ddrx_info[i].memory_type, ddrx_info[i].udimm_allowed,
+			ddrx_info[i].rdimm_allowed, ddrx_info[i].expected_module_type);
 
 	smbios_memory_type lpddrx_memory_type[] = {
 		MEMORY_TYPE_LPDDR3,

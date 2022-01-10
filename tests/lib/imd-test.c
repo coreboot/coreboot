@@ -12,8 +12,9 @@
 
 /* Auxiliary functions and definitions. */
 
-#define LG_ROOT_SIZE align_up_pow2(sizeof(struct imd_root_pointer) +\
-	 sizeof(struct imd_root) + 3 * sizeof(struct imd_entry))
+#define LG_ROOT_SIZE                                                                           \
+	align_up_pow2(sizeof(struct imd_root_pointer) + sizeof(struct imd_root)                \
+		      + 3 * sizeof(struct imd_entry))
 #define LG_ENTRY_ALIGN (2 * sizeof(int32_t))
 #define LG_ENTRY_SIZE (2 * sizeof(int32_t))
 #define LG_ENTRY_ID 0xA001
@@ -33,7 +34,7 @@ static uint32_t align_up_pow2(uint32_t x)
 static size_t max_entries(size_t root_size)
 {
 	return (root_size - sizeof(struct imd_root_pointer) - sizeof(struct imd_root))
-			/ sizeof(struct imd_entry);
+	       / sizeof(struct imd_entry);
 }
 
 /*
@@ -47,14 +48,14 @@ static void test_imd_handle_init(void **state)
 	void *base;
 	struct imd imd;
 	uintptr_t test_inputs[] = {
-			0,                   /* Lowest possible address */
-			0xA000,              /* Fits in 16 bits, should not get rounded down*/
-			0xDEAA,              /* Fits in 16 bits */
-			0xB0B0B000,          /* Fits in 32 bits, should not get rounded down */
-			0xF0F0F0F0,          /* Fits in 32 bits */
-			((1ULL << 32) + 4),  /* Just above 32-bit limit */
-			0x6666777788889000,  /* Fits in 64 bits, should not get rounded down */
-			((1ULL << 60) - 100) /* Very large address, fitting in 64 bits */
+		0,		     /* Lowest possible address */
+		0xA000,		     /* Fits in 16 bits, should not get rounded down*/
+		0xDEAA,		     /* Fits in 16 bits */
+		0xB0B0B000,	     /* Fits in 32 bits, should not get rounded down */
+		0xF0F0F0F0,	     /* Fits in 32 bits */
+		((1ULL << 32) + 4),  /* Just above 32-bit limit */
+		0x6666777788889000,  /* Fits in 64 bits, should not get rounded down */
+		((1ULL << 60) - 100) /* Very large address, fitting in 64 bits */
 	};
 
 	for (i = 0; i < ARRAY_SIZE(test_inputs); i++) {
@@ -122,16 +123,15 @@ static void test_imd_create_empty(void **state)
 	imd_handle_init(&imd, (void *)(LIMIT_ALIGN + (uintptr_t)base));
 
 	/* Try incorrect sizes */
-	assert_int_equal(-1, imd_create_empty(&imd,
-					sizeof(struct imd_root_pointer),
-					LG_ENTRY_ALIGN));
+	assert_int_equal(
+		-1, imd_create_empty(&imd, sizeof(struct imd_root_pointer), LG_ENTRY_ALIGN));
 	assert_int_equal(-1, imd_create_empty(&imd, LG_ROOT_SIZE, 2 * LG_ROOT_SIZE));
 
 	/* Working case */
 	assert_int_equal(0, imd_create_empty(&imd, LG_ROOT_SIZE, LG_ENTRY_ALIGN));
 
 	/* Only large allocation initialized with one entry for the root region */
-	r = (struct imd_root *) (imd.lg.r);
+	r = (struct imd_root *)(imd.lg.r);
 	assert_non_null(r);
 
 	e = &r->entries[r->num_entries - 1];
@@ -171,15 +171,13 @@ static void test_imd_create_tiered_empty(void **state)
 
 	/* Too small root_size for small region */
 	assert_int_equal(-1, imd_create_tiered_empty(&imd, LG_ROOT_SIZE, LG_ENTRY_ALIGN,
-			 sizeof(int32_t), 2 * sizeof(int32_t)));
+						     sizeof(int32_t), 2 * sizeof(int32_t)));
 
 	/* Fail when large region doesn't have capacity for more than 1 entry */
-	lg_region_wrong_size = sizeof(struct imd_root_pointer) + sizeof(struct imd_root) +
-			       sizeof(struct imd_entry);
-	expect_assert_failure(
-		imd_create_tiered_empty(&imd, lg_region_wrong_size, LG_ENTRY_ALIGN,
-					SM_ROOT_SIZE, SM_ENTRY_ALIGN)
-	);
+	lg_region_wrong_size = sizeof(struct imd_root_pointer) + sizeof(struct imd_root)
+			       + sizeof(struct imd_entry);
+	expect_assert_failure(imd_create_tiered_empty(
+		&imd, lg_region_wrong_size, LG_ENTRY_ALIGN, SM_ROOT_SIZE, SM_ENTRY_ALIGN));
 
 	assert_int_equal(0, imd_create_tiered_empty(&imd, LG_ROOT_SIZE, LG_ENTRY_ALIGN,
 						    SM_ROOT_SIZE, SM_ENTRY_ALIGN));
@@ -230,11 +228,11 @@ static void test_imd_recover(void **state)
 	struct imd imd = {0};
 	struct imd_root_pointer *rp;
 	struct imd_root *r;
-	struct imd_entry *lg_root_entry, *sm_root_entry,  *ptr;
+	struct imd_entry *lg_root_entry, *sm_root_entry, *ptr;
 	const struct imd_entry *lg_entry;
 
 	/* Fail when the limit for lg was not set. */
-	imd.lg.limit = (uintptr_t) NULL;
+	imd.lg.limit = (uintptr_t)NULL;
 	assert_int_equal(-1, imd_recover(&imd));
 
 	/* Set the limit for lg. */
@@ -327,8 +325,8 @@ static void test_imd_limit_size(void **state)
 	struct imd imd = {0};
 	size_t root_size, max_size;
 
-	max_size = align_up_pow2(sizeof(struct imd_root_pointer)
-			+ sizeof(struct imd_root) + 3 * sizeof(struct imd_entry));
+	max_size = align_up_pow2(sizeof(struct imd_root_pointer) + sizeof(struct imd_root)
+				 + 3 * sizeof(struct imd_entry));
 
 	assert_int_equal(-1, imd_limit_size(&imd, max_size));
 
@@ -337,8 +335,8 @@ static void test_imd_limit_size(void **state)
 		fail_msg("Cannot allocate enough memory - fail test");
 	imd_handle_init(&imd, (void *)(LIMIT_ALIGN + (uintptr_t)base));
 
-	root_size = align_up_pow2(sizeof(struct imd_root_pointer)
-			+ sizeof(struct imd_root) + 2 * sizeof(struct imd_entry));
+	root_size = align_up_pow2(sizeof(struct imd_root_pointer) + sizeof(struct imd_root)
+				  + 2 * sizeof(struct imd_entry));
 	imd.lg.r = (void *)imd.lg.limit - root_size;
 
 	imd_create_empty(&imd, root_size, LG_ENTRY_ALIGN);
@@ -362,7 +360,7 @@ static void test_imd_lockdown(void **state)
 	if (imd.lg.r == NULL)
 		fail_msg("Cannot allocate enough memory - fail test");
 
-	r_lg = (struct imd_root *) (imd.lg.r);
+	r_lg = (struct imd_root *)(imd.lg.r);
 
 	assert_int_equal(0, imd_lockdown(&imd));
 	assert_true(r_lg->flags & IMD_FLAG_LOCKED);
@@ -370,7 +368,7 @@ static void test_imd_lockdown(void **state)
 	imd.sm.r = malloc(sizeof(struct imd_root));
 	if (imd.sm.r == NULL)
 		fail_msg("Cannot allocate enough memory - fail test");
-	r_sm = (struct imd_root *) (imd.sm.r);
+	r_sm = (struct imd_root *)(imd.sm.r);
 
 	assert_int_equal(0, imd_lockdown(&imd));
 	assert_true(r_sm->flags & IMD_FLAG_LOCKED);
@@ -492,7 +490,7 @@ static void test_imd_entry_add(void **state)
 	/* All five new entries should be added to small allocations */
 	for (i = 0; i < 5; i++) {
 		assert_non_null(imd_entry_add(&imd, SM_ENTRY_ID, SM_ENTRY_SIZE));
-		assert_int_equal(i+2, sm_r->num_entries);
+		assert_int_equal(i + 2, sm_r->num_entries);
 		assert_int_equal(2, lg_r->num_entries);
 	}
 
@@ -579,7 +577,7 @@ static void test_imd_entry_find_or_add(void **state)
 
 static void test_imd_entry_size(void **state)
 {
-	struct imd_entry entry = { .size =  LG_ENTRY_SIZE };
+	struct imd_entry entry = {.size = LG_ENTRY_SIZE};
 
 	assert_int_equal(LG_ENTRY_SIZE, imd_entry_size(&entry));
 
@@ -616,7 +614,7 @@ static void test_imd_entry_at(void **state)
 
 static void test_imd_entry_id(void **state)
 {
-	struct imd_entry entry = { .id =  LG_ENTRY_ID };
+	struct imd_entry entry = {.id = LG_ENTRY_ID};
 
 	assert_int_equal(LG_ENTRY_ID, imd_entry_id(&entry));
 }
@@ -761,4 +759,3 @@ int main(void)
 
 	return cb_run_group_tests(tests, NULL, NULL);
 }
-

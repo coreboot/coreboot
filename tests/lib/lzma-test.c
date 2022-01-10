@@ -51,12 +51,12 @@ static int setup_ulzman_file(void **state)
 	if (!s)
 		return 1;
 
-	const size_t raw_filename_size = strlen(path_prefix) + strlen(fname_base)
-		+ ARRAY_SIZE(raw_file_suffix);
+	const size_t raw_filename_size =
+		strlen(path_prefix) + strlen(fname_base) + ARRAY_SIZE(raw_file_suffix);
 	s->raw_filename = test_malloc(raw_filename_size);
 
-	const size_t comp_filename_size = strlen(path_prefix) + strlen(fname_base)
-		+ ARRAY_SIZE(comp_file_suffix);
+	const size_t comp_filename_size =
+		strlen(path_prefix) + strlen(fname_base) + ARRAY_SIZE(comp_file_suffix);
 	s->comp_filename = test_malloc(comp_filename_size);
 
 	if (!s->raw_filename || !s->comp_filename) {
@@ -67,7 +67,7 @@ static int setup_ulzman_file(void **state)
 
 	snprintf(s->raw_filename, raw_filename_size, path_prefix, fname_base, raw_file_suffix);
 	snprintf(s->comp_filename, comp_filename_size, path_prefix, fname_base,
-			comp_file_suffix);
+		 comp_file_suffix);
 
 	s->raw_file_sz = get_file_size(s->raw_filename);
 	s->comp_file_sz = get_file_size(s->comp_filename);
@@ -117,10 +117,10 @@ static void test_ulzman_correct_file(void **state)
 	assert_non_null(comp_buf);
 	assert_int_equal(s->raw_file_sz, read_file(s->raw_filename, raw_buf, s->raw_file_sz));
 	assert_int_equal(s->comp_file_sz,
-			read_file(s->comp_filename, comp_buf, s->comp_file_sz));
+			 read_file(s->comp_filename, comp_buf, s->comp_file_sz));
 
 	assert_int_equal(s->raw_file_sz,
-			ulzman(comp_buf, s->comp_file_sz, decomp_buf, s->raw_file_sz));
+			 ulzman(comp_buf, s->comp_file_sz, decomp_buf, s->raw_file_sz));
 	assert_memory_equal(raw_buf, decomp_buf, s->raw_file_sz);
 
 	test_free(raw_buf);
@@ -148,13 +148,11 @@ static void test_ulzman_zero_buffer(void **state)
 }
 
 #define ULZMAN_CORRECT_FILE_TEST(_file_prefix)                                                 \
-{                                                                                      \
-	.name = "test_ulzman_correct_file(" _file_prefix ")",                          \
-	.test_func = test_ulzman_correct_file,                                         \
-	.setup_func = setup_ulzman_file,                                               \
-	.teardown_func = teardown_ulzman_file,                                         \
-	.initial_state = (_file_prefix)                                                \
-}
+	{                                                                                      \
+		.name = "test_ulzman_correct_file(" _file_prefix ")",                          \
+		.test_func = test_ulzman_correct_file, .setup_func = setup_ulzman_file,        \
+		.teardown_func = teardown_ulzman_file, .initial_state = (_file_prefix)         \
+	}
 
 int main(void)
 {

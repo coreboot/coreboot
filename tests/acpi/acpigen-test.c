@@ -13,7 +13,7 @@ static u32 decode_package_length(const char *ptr)
 {
 	const u8 *aml = (u8 *)ptr;
 	const u32 offset = (aml[0] == EXT_OP_PREFIX ? 2 : 1);
-	u32 byte_zero_mask = 0x3F;  /* Bits [0:5] */
+	u32 byte_zero_mask = 0x3F; /* Bits [0:5] */
 	u32 byte_count = aml[offset] >> 6;
 	u32 package_length = 0;
 
@@ -106,7 +106,7 @@ static void test_acpigen_nested_ifs(void **state)
 
 	for (int i = 0; i < nesting_level; ++i)
 		assert_int_equal(decode_package_length(block_start[i]),
-				block_end[i] - block_start[i] - 1);
+				 block_end[i] - block_start[i] - 1);
 }
 
 static void test_acpigen_write_package(void **state)
@@ -203,14 +203,14 @@ static void test_acpigen_scope_with_contents(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test_setup_teardown(test_acpigen_single_if,
-						setup_acpigen, teardown_acpigen),
-		cmocka_unit_test_setup_teardown(test_acpigen_nested_ifs,
-						setup_acpigen, teardown_acpigen),
-		cmocka_unit_test_setup_teardown(test_acpigen_write_package,
-						setup_acpigen, teardown_acpigen),
-		cmocka_unit_test_setup_teardown(test_acpigen_scope_with_contents,
-						setup_acpigen, teardown_acpigen),
+		cmocka_unit_test_setup_teardown(test_acpigen_single_if, setup_acpigen,
+						teardown_acpigen),
+		cmocka_unit_test_setup_teardown(test_acpigen_nested_ifs, setup_acpigen,
+						teardown_acpigen),
+		cmocka_unit_test_setup_teardown(test_acpigen_write_package, setup_acpigen,
+						teardown_acpigen),
+		cmocka_unit_test_setup_teardown(test_acpigen_scope_with_contents, setup_acpigen,
+						teardown_acpigen),
 	};
 
 	return cb_run_group_tests(tests, NULL, NULL);

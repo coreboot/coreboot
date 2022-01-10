@@ -115,7 +115,7 @@ static void test_memmove_buffer_part(void **state)
 	assert_memory_equal(s->buffer_to, s->helper_buffer, offset);
 	assert_memory_equal(s->buffer_to + offset, s->buffer_from, sz);
 	assert_memory_equal(s->buffer_to + offset + sz, s->helper_buffer + offset + sz,
-				MEMMOVE_BUFFER_SZ - (offset + sz));
+			    MEMMOVE_BUFFER_SZ - (offset + sz));
 }
 
 static void test_memmove_buffer_part_unaligned(void **state)
@@ -137,7 +137,7 @@ static void test_memmove_buffer_part_unaligned(void **state)
 	assert_memory_equal(s->buffer_to, s->helper_buffer, dst_offset);
 	assert_memory_equal(s->buffer_to + dst_offset, s->buffer_from + src_offset, sz);
 	assert_memory_equal(s->buffer_to + dst_offset + sz, s->helper_buffer + dst_offset + sz,
-				MEMMOVE_BUFFER_SZ - (dst_offset + sz));
+			    MEMMOVE_BUFFER_SZ - (dst_offset + sz));
 }
 
 static void test_memmove_copy_to_itself(void **state)
@@ -225,26 +225,25 @@ static void test_memmove_self_lower_to_higher_unaligned(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test_setup_teardown(test_memmove_full_buffer_copy,
-						setup_test, teardown_test),
-		cmocka_unit_test_setup_teardown(test_memmove_zero_size,
-						setup_test, teardown_test),
-		cmocka_unit_test_setup_teardown(test_memmove_buffer_part,
-						setup_test, teardown_test),
-		cmocka_unit_test_setup_teardown(test_memmove_buffer_part_unaligned,
-						setup_test, teardown_test),
-		cmocka_unit_test_setup_teardown(test_memmove_copy_to_itself,
-						setup_test, teardown_test),
-		cmocka_unit_test_setup_teardown(test_memmove_self_higher_to_lower,
-						setup_test, teardown_test),
+		cmocka_unit_test_setup_teardown(test_memmove_full_buffer_copy, setup_test,
+						teardown_test),
+		cmocka_unit_test_setup_teardown(test_memmove_zero_size, setup_test,
+						teardown_test),
+		cmocka_unit_test_setup_teardown(test_memmove_buffer_part, setup_test,
+						teardown_test),
+		cmocka_unit_test_setup_teardown(test_memmove_buffer_part_unaligned, setup_test,
+						teardown_test),
+		cmocka_unit_test_setup_teardown(test_memmove_copy_to_itself, setup_test,
+						teardown_test),
+		cmocka_unit_test_setup_teardown(test_memmove_self_higher_to_lower, setup_test,
+						teardown_test),
 		cmocka_unit_test_setup_teardown(test_memmove_self_higher_to_lower_unaligned,
 						setup_test, teardown_test),
-		cmocka_unit_test_setup_teardown(test_memmove_self_lower_to_higher,
-						setup_test, teardown_test),
+		cmocka_unit_test_setup_teardown(test_memmove_self_lower_to_higher, setup_test,
+						teardown_test),
 		cmocka_unit_test_setup_teardown(test_memmove_self_lower_to_higher_unaligned,
 						setup_test, teardown_test),
 	};
 
 	return cb_run_group_tests(tests, NULL, NULL);
 }
-

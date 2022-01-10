@@ -12,8 +12,8 @@
 
 static struct cbfs_boot_device cbd;
 
-static u8 aligned_cbfs_buffer[(sizeof(struct cbfs_test_file) + CBFS_ALIGNMENT) * 10]
-	__aligned(CBFS_ALIGNMENT);
+static u8 aligned_cbfs_buffer[(sizeof(struct cbfs_test_file) + CBFS_ALIGNMENT) * 10] __aligned(
+	CBFS_ALIGNMENT);
 
 static u8 *unaligned_cbfs_buffer = &aligned_cbfs_buffer[3];
 static uintptr_t unaligned_cbfs_buffer_size = sizeof(aligned_cbfs_buffer) - 3;
@@ -22,7 +22,7 @@ static u8 cbfs_mcache[TEST_MCACHE_SIZE] __aligned(CBFS_MCACHE_ALIGNMENT);
 
 /* Add files to CBFS buffer. NULL in files list equals to one CBFS_ALIGNMENT of spacing. */
 static int create_cbfs(const struct cbfs_test_file *files[], const size_t nfiles, u8 *buffer,
-		const size_t buffer_size)
+		       const size_t buffer_size)
 {
 	u8 *data_ptr = buffer;
 	size_t file_size = 0;
@@ -34,7 +34,7 @@ static int create_cbfs(const struct cbfs_test_file *files[], const size_t nfiles
 			assert_true(&data_ptr[file_size] < &buffer[buffer_size]);
 		} else {
 			file_size = be32_to_cpu(files[i]->header.len)
-				+ be32_to_cpu(files[i]->header.offset);
+				    + be32_to_cpu(files[i]->header.offset);
 			assert_true(&data_ptr[file_size] < &buffer[buffer_size]);
 			memcpy(data_ptr, files[i], file_size);
 		}
@@ -386,7 +386,8 @@ static void test_cbfs_image_not_aligned(void **state)
 	size_t size_out;
 	struct cbfs_test_state *s = *state;
 	const struct cbfs_test_file *cbfs_files[] = {
-		&test_file_int_1, &test_file_2,
+		&test_file_int_1,
+		&test_file_2,
 	};
 	assert_int_equal(0, create_cbfs(cbfs_files, ARRAY_SIZE(cbfs_files), &s->cbfs_buf[5],
 					s->cbfs_size - 5));
@@ -663,8 +664,9 @@ static void test_cbfs_two_files_with_same_name(void **state)
 	size_out = 0;
 	expect_lookup_result(CB_SUCCESS);
 	mapping = cbfs_map(TEST_DATA_INT_1_FILENAME, &size_out);
-	assert_ptr_equal(mapping, &s->cbfs_buf[third_file_start
-					       + be32_to_cpu(test_file_int_1.header.offset)]);
+	assert_ptr_equal(
+		mapping,
+		&s->cbfs_buf[third_file_start + be32_to_cpu(test_file_int_1.header.offset)]);
 	assert_int_equal(size_out, be32_to_cpu(test_file_int_1.header.len));
 }
 
@@ -723,9 +725,8 @@ static void test_cbfs_attributes_offset_larger_than_offset(void **state)
 	assert_true(be32_to_cpu(test_file_2.header.attributes_offset) != 0);
 	memcpy(s->cbfs_buf, &test_file_2, sizeof(test_file_2));
 	f = (struct cbfs_test_file *)s->cbfs_buf;
-	f->header.attributes_offset = cpu_to_be32(
-				sizeof(struct cbfs_file) + FILENAME_SIZE
-				+ sizeof(struct cbfs_file_attr_compression));
+	f->header.attributes_offset = cpu_to_be32(sizeof(struct cbfs_file) + FILENAME_SIZE
+						  + sizeof(struct cbfs_file_attr_compression));
 	f->header.offset = cpu_to_be32(sizeof(struct cbfs_file) + FILENAME_SIZE);
 
 	assert_int_equal(CB_SUCCESS, cbfs_init_boot_device(&cbd, NULL));
@@ -943,8 +944,9 @@ static void test_cbfs_attributes_offset_uint32_max(void **state)
 	EMPTY_WRAP(                                                                            \
 		CBFS_LOOKUP_NAME_SETUP_PRESTATE_COMMON_TEST(                                   \
 			("aligned, " name), (test_fn), setup_test_cbfs_aligned, (prestate)),   \
-		CBFS_LOOKUP_NAME_SETUP_PRESTATE_COMMON_TEST(                                   \
-			("unaligned, " name), (test_fn), setup_test_cbfs_unaligned, (prestate)))
+		CBFS_LOOKUP_NAME_SETUP_PRESTATE_COMMON_TEST(("unaligned, " name), (test_fn),   \
+							    setup_test_cbfs_unaligned,         \
+							    (prestate)))
 
 #define CBFS_LOOKUP_TEST(test_fn) CBFS_LOOKUP_NAME_PRESTATE_TEST(#test_fn, test_fn, NULL)
 

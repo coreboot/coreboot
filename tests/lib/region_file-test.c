@@ -243,12 +243,12 @@ static void test_region_file_update_data_arr(void **state)
 	for (int i = 0; i < dummy_data_size; ++i)
 		dummy_data[i] = 'A' + i % ('Z' - 'A');
 
-	update_entries[0] = (struct update_region_file_entry)
-				{ .size = data1_size, .data = &dummy_data[data1_offset] };
-	update_entries[1] = (struct update_region_file_entry)
-				{ .size = data2_size, .data = &dummy_data[data2_offset] };
-	update_entries[2] = (struct update_region_file_entry)
-				{ .size = data3_size, .data = &dummy_data[data3_offset] };
+	update_entries[0] = (struct update_region_file_entry){
+		.size = data1_size, .data = &dummy_data[data1_offset]};
+	update_entries[1] = (struct update_region_file_entry){
+		.size = data2_size, .data = &dummy_data[data2_offset]};
+	update_entries[2] = (struct update_region_file_entry){
+		.size = data3_size, .data = &dummy_data[data3_offset]};
 
 	ret = region_file_init(&regf, rdev);
 	assert_int_equal(0, ret);
@@ -274,10 +274,9 @@ static void test_region_file_update_data_arr(void **state)
 	ret = rdev_readat(&read_rdev, output_buffer, 0, data1_size + data2_size + data3_size);
 	assert_int_equal(data1_size + data2_size + data3_size, ret);
 	assert_memory_equal(&dummy_data[data1_offset], output_buffer, data1_size);
-	assert_memory_equal(&dummy_data[data2_offset],
-			    &output_buffer[data1_size], data2_size);
-	assert_memory_equal(&dummy_data[data3_offset],
-			    &output_buffer[data1_size + data2_size], data3_size);
+	assert_memory_equal(&dummy_data[data2_offset], &output_buffer[data1_size], data2_size);
+	assert_memory_equal(&dummy_data[data3_offset], &output_buffer[data1_size + data2_size],
+			    data3_size);
 
 	/* Check if data is correctly shrunk down to smaller size and different content */
 	ret = region_file_update_data_arr(&regf, &update_entries[1], 2);
@@ -294,35 +293,35 @@ int main(void)
 {
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test_setup_teardown(test_region_file_init_empty,
-				setup_teardown_region_file_test,
-				setup_teardown_region_file_test),
+						setup_teardown_region_file_test,
+						setup_teardown_region_file_test),
 		cmocka_unit_test_setup_teardown(test_region_file_init_invalid_metadata,
-				setup_teardown_region_file_test,
-				setup_teardown_region_file_test),
+						setup_teardown_region_file_test,
+						setup_teardown_region_file_test),
 		cmocka_unit_test_setup_teardown(test_region_file_init_valid_no_data,
-				setup_teardown_region_file_test,
-				setup_teardown_region_file_test),
+						setup_teardown_region_file_test,
+						setup_teardown_region_file_test),
 		cmocka_unit_test_setup_teardown(test_region_file_init_invalid_data_offset,
-				setup_teardown_region_file_test,
-				setup_teardown_region_file_test),
+						setup_teardown_region_file_test,
+						setup_teardown_region_file_test),
 		cmocka_unit_test_setup_teardown(test_region_file_init_correct_data_offset,
-				setup_teardown_region_file_test,
-				setup_teardown_region_file_test),
+						setup_teardown_region_file_test,
+						setup_teardown_region_file_test),
 		cmocka_unit_test_setup_teardown(test_region_file_init_real_data,
-				setup_teardown_region_file_test,
-				setup_teardown_region_file_test),
+						setup_teardown_region_file_test,
+						setup_teardown_region_file_test),
 		cmocka_unit_test_setup_teardown(test_region_file_init_invalid_region_device,
-				setup_teardown_region_file_test,
-				setup_teardown_region_file_test),
+						setup_teardown_region_file_test,
+						setup_teardown_region_file_test),
 		cmocka_unit_test_setup_teardown(test_region_file_data,
-				setup_teardown_region_file_test,
-				setup_teardown_region_file_test),
+						setup_teardown_region_file_test,
+						setup_teardown_region_file_test),
 		cmocka_unit_test_setup_teardown(test_region_file_update_data,
-				setup_teardown_region_file_test,
-				setup_teardown_region_file_test),
+						setup_teardown_region_file_test,
+						setup_teardown_region_file_test),
 		cmocka_unit_test_setup_teardown(test_region_file_update_data_arr,
-				setup_teardown_region_file_test,
-				setup_teardown_region_file_test),
+						setup_teardown_region_file_test,
+						setup_teardown_region_file_test),
 	};
 
 	return cb_run_group_tests(tests, setup_region_file_test_group,

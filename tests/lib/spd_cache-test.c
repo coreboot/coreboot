@@ -62,12 +62,10 @@ static void test_load_spd_cache(void **state)
 
 static void calc_spd_cache_crc(uint8_t *spd_cache)
 {
-	*(uint16_t *)(spd_cache + SC_CRC_OFFSET) =
-			CRC(spd_cache, SC_SPD_TOTAL_LEN, crc16_byte);
+	*(uint16_t *)(spd_cache + SC_CRC_OFFSET) = CRC(spd_cache, SC_SPD_TOTAL_LEN, crc16_byte);
 }
 
-__attribute__((unused))
-static void fill_spd_cache_ddr3(uint8_t *spd_cache, size_t spd_cache_sz)
+__attribute__((unused)) static void fill_spd_cache_ddr3(uint8_t *spd_cache, size_t spd_cache_sz)
 {
 	assert_true(spd_cache_sz >= (spd_data_ddr3_1_sz + sizeof(uint16_t)));
 
@@ -76,16 +74,15 @@ static void fill_spd_cache_ddr3(uint8_t *spd_cache, size_t spd_cache_sz)
 	calc_spd_cache_crc(spd_cache);
 }
 
-__attribute__((unused))
-static void fill_spd_cache_ddr4(uint8_t *spd_cache, size_t spd_cache_sz)
+__attribute__((unused)) static void fill_spd_cache_ddr4(uint8_t *spd_cache, size_t spd_cache_sz)
 {
-	assert_true(spd_cache_sz >=
-			(spd_data_ddr4_1_sz + spd_data_ddr4_2_sz + sizeof(uint16_t)));
+	assert_true(spd_cache_sz
+		    >= (spd_data_ddr4_1_sz + spd_data_ddr4_2_sz + sizeof(uint16_t)));
 
 	memcpy(spd_cache, spd_data_ddr4_1, spd_data_ddr4_1_sz);
 	memcpy(spd_cache + spd_data_ddr4_1_sz, spd_data_ddr4_2, spd_data_ddr4_2_sz);
 	memset(spd_cache + spd_data_ddr4_1_sz + spd_data_ddr4_2_sz, 0,
-			spd_cache_sz - (spd_data_ddr4_1_sz + spd_data_ddr4_2_sz));
+	       spd_cache_sz - (spd_data_ddr4_1_sz + spd_data_ddr4_2_sz));
 	calc_spd_cache_crc(spd_cache);
 }
 
@@ -127,7 +124,7 @@ static void test_spd_cache_is_valid(void **state)
 
 
 /* Used for setting `sn` parameter value */
-static u32 get_spd_sn_ret_sn[SC_SPD_NUMS] = { 0 };
+static u32 get_spd_sn_ret_sn[SC_SPD_NUMS] = {0};
 static size_t get_spd_sn_ret_sn_idx = 0;
 /* Implementation for testing purposes.  */
 enum cb_err get_spd_sn(u8 addr, u32 *sn)
@@ -145,12 +142,11 @@ static void get_sn_from_spd_cache(uint8_t *spd_cache, u32 arr[])
 }
 
 /* check_if_dimm_changed() has is used only with DDR4, so there tests are not used for DDR3 */
-__attribute__((unused))
-static void test_check_if_dimm_changed_not_changed(void **state)
+__attribute__((unused)) static void test_check_if_dimm_changed_not_changed(void **state)
 {
 	uint8_t *spd_cache;
 	size_t spd_cache_sz;
-	struct spd_block blk = { .addr_map = {0}, .spd_array = {0}, .len = 0 };
+	struct spd_block blk = {.addr_map = {0}, .spd_array = {0}, .len = 0};
 
 	assert_int_equal(CB_SUCCESS, load_spd_cache(&spd_cache, &spd_cache_sz));
 	fill_spd_cache_ddr4(spd_cache, spd_cache_sz);
@@ -162,12 +158,11 @@ static void test_check_if_dimm_changed_not_changed(void **state)
 	assert_false(check_if_dimm_changed(spd_cache, &blk));
 }
 
-__attribute__((unused))
-static void test_check_if_dimm_changed_sn_error(void **state)
+__attribute__((unused)) static void test_check_if_dimm_changed_sn_error(void **state)
 {
 	uint8_t *spd_cache;
 	size_t spd_cache_sz;
-	struct spd_block blk = { .addr_map = {0}, .spd_array = {0}, .len = 0 };
+	struct spd_block blk = {.addr_map = {0}, .spd_array = {0}, .len = 0};
 
 	assert_int_equal(CB_SUCCESS, load_spd_cache(&spd_cache, &spd_cache_sz));
 	fill_spd_cache_ddr4(spd_cache, spd_cache_sz);
@@ -178,12 +173,11 @@ static void test_check_if_dimm_changed_sn_error(void **state)
 	assert_true(check_if_dimm_changed(spd_cache, &blk));
 }
 
-__attribute__((unused))
-static void test_check_if_dimm_changed_sodimm_lost(void **state)
+__attribute__((unused)) static void test_check_if_dimm_changed_sodimm_lost(void **state)
 {
 	uint8_t *spd_cache;
 	size_t spd_cache_sz;
-	struct spd_block blk = { .addr_map = {0}, .spd_array = {0}, .len = 0 };
+	struct spd_block blk = {.addr_map = {0}, .spd_array = {0}, .len = 0};
 
 	assert_int_equal(CB_SUCCESS, load_spd_cache(&spd_cache, &spd_cache_sz));
 	fill_spd_cache_ddr4(spd_cache, spd_cache_sz);
@@ -196,31 +190,29 @@ static void test_check_if_dimm_changed_sodimm_lost(void **state)
 	assert_true(check_if_dimm_changed(spd_cache, &blk));
 }
 
-__attribute__((unused))
-static void test_check_if_dimm_changed_new_sodimm(void **state)
+__attribute__((unused)) static void test_check_if_dimm_changed_new_sodimm(void **state)
 {
 	uint8_t *spd_cache;
 	size_t spd_cache_sz;
-	struct spd_block blk = { .addr_map = {0}, .spd_array = {0}, .len = 0 };
+	struct spd_block blk = {.addr_map = {0}, .spd_array = {0}, .len = 0};
 
 	assert_int_equal(CB_SUCCESS, load_spd_cache(&spd_cache, &spd_cache_sz));
 	fill_spd_cache_ddr4(spd_cache, spd_cache_sz);
 	assert_int_equal(CB_SUCCESS, spd_fill_from_cache(spd_cache, &blk));
 	get_sn_from_spd_cache(spd_cache, get_spd_sn_ret_sn);
-	memcpy(spd_cache + spd_data_ddr4_1_sz + spd_data_ddr4_2_sz,
-			spd_data_ddr4_2, spd_data_ddr4_2_sz);
+	memcpy(spd_cache + spd_data_ddr4_1_sz + spd_data_ddr4_2_sz, spd_data_ddr4_2,
+	       spd_data_ddr4_2_sz);
 
 	get_spd_sn_ret_sn_idx = 0;
 	will_return_always(get_spd_sn, CB_SUCCESS);
 	assert_true(check_if_dimm_changed(spd_cache, &blk));
 }
 
-__attribute__((unused))
-static void test_check_if_dimm_changed_sn_changed(void **state)
+__attribute__((unused)) static void test_check_if_dimm_changed_sn_changed(void **state)
 {
 	uint8_t *spd_cache;
 	size_t spd_cache_sz;
-	struct spd_block blk = { .addr_map = {0}, .spd_array = {0}, .len = 0 };
+	struct spd_block blk = {.addr_map = {0}, .spd_array = {0}, .len = 0};
 
 	assert_int_equal(CB_SUCCESS, load_spd_cache(&spd_cache, &spd_cache_sz));
 	fill_spd_cache_ddr4(spd_cache, spd_cache_sz);
@@ -241,15 +233,15 @@ int main(void)
 		cmocka_unit_test_setup(test_spd_cache_is_valid, setup_spd_cache_test),
 #if __TEST_SPD_CACHE_DDR == 4
 		cmocka_unit_test_setup(test_check_if_dimm_changed_not_changed,
-					setup_spd_cache_test),
+				       setup_spd_cache_test),
 		cmocka_unit_test_setup(test_check_if_dimm_changed_sn_error,
-					setup_spd_cache_test),
+				       setup_spd_cache_test),
 		cmocka_unit_test_setup(test_check_if_dimm_changed_sodimm_lost,
-					setup_spd_cache_test),
+				       setup_spd_cache_test),
 		cmocka_unit_test_setup(test_check_if_dimm_changed_new_sodimm,
-					setup_spd_cache_test),
+				       setup_spd_cache_test),
 		cmocka_unit_test_setup(test_check_if_dimm_changed_sn_changed,
-					setup_spd_cache_test),
+				       setup_spd_cache_test),
 #endif
 	};
 

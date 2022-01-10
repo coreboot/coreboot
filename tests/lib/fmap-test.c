@@ -31,7 +31,7 @@ static void prepare_flash_buffer(void)
 
 	/* Fill rest of buffer with dummy data */
 	for (int i = FMAP_SECTION_FMAP_START + FMAP_SECTION_FMAP_SIZE;
-			i < FMAP_SECTION_FLASH_SIZE; ++i)
+	     i < FMAP_SECTION_FLASH_SIZE; ++i)
 		flash_buffer[i] = 'a' + i % ('z' - 'a');
 }
 
@@ -140,13 +140,13 @@ static void test_fmap_locate_area_as_rdev_rw(void **state)
 	/* Test if returned section region device is writable */
 	assert_int_not_equal(-1, fmap_locate_area_as_rdev_rw("MISC_RW", &rdev));
 	assert_int_equal(ro_rw_section_size,
-			rdev_readat(&rdev, buffer1, 0, ro_rw_section_size));
+			 rdev_readat(&rdev, buffer1, 0, ro_rw_section_size));
 	assert_int_equal(ro_rw_section_size,
-			rdev_writeat(&rdev, dummy_data, 0, ro_rw_section_size));
+			 rdev_writeat(&rdev, dummy_data, 0, ro_rw_section_size));
 	/* Check if written data is visible and correct after locating area as RO */
 	assert_int_not_equal(-1, fmap_locate_area_as_rdev("MISC_RW", &rdev));
 	assert_int_equal(ro_rw_section_size,
-			rdev_readat(&rdev, buffer2, 0, ro_rw_section_size));
+			 rdev_readat(&rdev, buffer2, 0, ro_rw_section_size));
 	assert_memory_not_equal(buffer1, buffer2, ro_rw_section_size);
 	assert_memory_equal(dummy_data, buffer2, ro_rw_section_size);
 
@@ -261,7 +261,7 @@ static void test_fmap_overwrite_area(void **state)
 
 	/* Overwrite part of section. */
 	assert_int_equal(section_size / 2,
-			fmap_overwrite_area(section_name, new_data, section_size / 2));
+			 fmap_overwrite_area(section_name, new_data, section_size / 2));
 
 	/* Read and check if memory has changed as expected */
 	assert_int_equal(section_size, fmap_read_area(section_name, buffer2, section_size));
@@ -272,8 +272,8 @@ static void test_fmap_overwrite_area(void **state)
 	assert_memory_equal(buffer2 + (section_size / 2), zero_buffer, section_size / 2);
 
 	/* Expect error when overwriting incorrect section */
-	assert_int_equal(-1, fmap_overwrite_area("NONEXISTENT_SECTION",
-							new_data, section_size / 2));
+	assert_int_equal(
+		-1, fmap_overwrite_area("NONEXISTENT_SECTION", new_data, section_size / 2));
 	assert_int_equal(-1, fmap_overwrite_area(NULL, new_data, section_size / 2));
 
 	/* Function fmap_overwrite_area is not tested with NULL
@@ -288,18 +288,17 @@ static void test_fmap_overwrite_area(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test_setup_teardown(test_fmap_locate_area_as_rdev,
-						setup_fmap, teardown_fmap),
-		cmocka_unit_test_setup_teardown(test_fmap_locate_area_as_rdev_rw,
-						setup_fmap, teardown_fmap),
-		cmocka_unit_test_setup_teardown(test_fmap_locate_area,
-						setup_fmap, teardown_fmap),
-		cmocka_unit_test_setup_teardown(test_fmap_find_region_name,
-						setup_fmap, teardown_fmap),
-		cmocka_unit_test_setup_teardown(test_fmap_read_area,
-						setup_fmap, teardown_fmap),
-		cmocka_unit_test_setup_teardown(test_fmap_overwrite_area,
-						setup_fmap, teardown_fmap),
+		cmocka_unit_test_setup_teardown(test_fmap_locate_area_as_rdev, setup_fmap,
+						teardown_fmap),
+		cmocka_unit_test_setup_teardown(test_fmap_locate_area_as_rdev_rw, setup_fmap,
+						teardown_fmap),
+		cmocka_unit_test_setup_teardown(test_fmap_locate_area, setup_fmap,
+						teardown_fmap),
+		cmocka_unit_test_setup_teardown(test_fmap_find_region_name, setup_fmap,
+						teardown_fmap),
+		cmocka_unit_test_setup_teardown(test_fmap_read_area, setup_fmap, teardown_fmap),
+		cmocka_unit_test_setup_teardown(test_fmap_overwrite_area, setup_fmap,
+						teardown_fmap),
 	};
 
 	return cb_run_group_tests(tests, NULL, NULL);

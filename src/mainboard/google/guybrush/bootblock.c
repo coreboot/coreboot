@@ -1,15 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <amdblocks/acpimmio.h>
 #include <amdblocks/espi.h>
-#include <amdblocks/lpc.h>
 #include <bootblock_common.h>
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <delay.h>
-#include <device/pci_ops.h>
-#include <soc/lpc.h>
-#include <soc/pci_devs.h>
+#include <soc/espi.h>
 #include <soc/southbridge.h>
 #include <timer.h>
 
@@ -30,16 +26,10 @@ void mb_set_up_early_espi(void)
 
 void bootblock_mainboard_early_init(void)
 {
-	uint32_t dword;
 	size_t num_gpios, override_num_gpios;
 	const struct soc_amd_gpio *gpios, *override_gpios;
 
-	/* Beware that the bit definitions for LPC_LDRQ0_PU_EN and LPC_LDRQ0_PD_EN are swapped
-	   on Picasso and older compared to Renoir/Cezanne and newer */
-	dword = pci_read_config32(SOC_LPC_DEV, LPC_MISC_CONTROL_BITS);
-	dword &= ~(LPC_LDRQ0_PU_EN | LPC_LDRQ1_EN | LPC_LDRQ0_EN);
-	dword |= LPC_LDRQ0_PD_EN;
-	pci_write_config32(SOC_LPC_DEV, LPC_MISC_CONTROL_BITS, dword);
+	espi_disable_lpc_ldrq();
 
 	/*
 	 * All LPC decodes need to be cleared before we can configure the LPC pads as secondary
@@ -67,15 +57,7 @@ void bootblock_mainboard_early_init(void)
 
 	/* Early eSPI interface configuration */
 
-	/* Use SPI2 pins for eSPI */
-	dword = pm_read32(PM_SPI_PAD_PU_PD);
-	dword |= PM_ESPI_CS_USE_DATA2;
-	pm_write32(PM_SPI_PAD_PU_PD, dword);
-
-	/* Switch the pads that can be used as either LPC or secondary eSPI to 1.8V mode */
-	dword = pm_read32(PM_ACPI_CONF);
-	dword |= PM_ACPI_S5_LPC_PIN_MODE | PM_ACPI_S5_LPC_PIN_MODE_SEL;
-	pm_write32(PM_ACPI_CONF, dword);
+	espi_switch_to_spi2_pads();
 }
 
 void bootblock_mainboard_init(void)

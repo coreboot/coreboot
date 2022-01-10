@@ -1,0 +1,4 @@
+comment "Star Labs Lite Series"
+
+config BOARD_STARLABS_LITE_GLK
+	bool "Star Labs Lite Mk III (N5000)"

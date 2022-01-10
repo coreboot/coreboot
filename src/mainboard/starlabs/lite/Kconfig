@@ -1,0 +1,67 @@
+config BOARD_STARLABS_LITE_SERIES
+	def_bool n
+	select BOARD_ROMSIZE_KB_8192
+	select DRIVERS_I2C_HID
+	select EC_STARLABS_ITE
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select HAVE_INTEL_PTT
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MAINBOARD_HAS_CRB_TPM
+	select MAINBOARD_HAS_TPM2
+	select ONBOARD_VGA_IS_PRIMARY
+	select SOC_INTEL_COMMON_BLOCK_HDA
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SPI_FLASH_GIGADEVICE
+	select SYSTEM_TYPE_LAPTOP
+
+config BOARD_STARLABS_LITE_GLK
+	select BOARD_STARLABS_LITE_SERIES
+	select EC_STARLABS_KBL_LEVELS
+	select SOC_INTEL_GEMINILAKE
+
+if BOARD_STARLABS_LITE_SERIES
+
+config DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config EC_GPE_SCI
+	default 0x26
+
+config EC_VARIANT_DIR
+	default "glk"
+
+config FMDFILE
+	default "src/mainboard/starlabs/lite/board.fmd"
+
+config MAINBOARD_DIR
+	default "starlabs/lite"
+
+config MAINBOARD_FAMILY
+	string
+	default "I3"
+
+config MAINBOARD_PART_NUMBER
+	default "Lite Mk III"
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	string
+	default "Lite"
+
+config TRACKPAD_INTERRUPT
+	hex
+	default 0x1
+
+config TIANOCORE_BOOTSPLASH_FILE
+	string
+	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
+
+config UART_FOR_CONSOLE
+	default 2
+
+config VARIANT_DIR
+	default "glk"
+endif

@@ -179,6 +179,7 @@ The boards in this section are not real mainboards, but emulators.
 
 ## Star Labs Systems
 
+- [StarLite Mk III](starlabs/lite_glk.md)
 - [StarBook Mk V](starlabs/starbook_tgl.md)
 
 ## Supermicro

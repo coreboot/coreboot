@@ -14,6 +14,9 @@
 #include <setjmp.h>
 #include <cmocka.h>
 
+/* This macro basically does nothing but suppresses linter messages */
+#define EMPTY_WRAP(...) __VA_ARGS__
+
 /*
  * Set symbol value and make it global.
  */

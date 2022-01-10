@@ -44,9 +44,6 @@ struct cbfs_test_file {
 
 #define HASH_ATTR_SIZE (offsetof(struct cbfs_file_attr_hash, hash.raw) + VB2_SHA256_DIGEST_SIZE)
 
-/* This macro basically does nothing but suppresses linter messages */
-#define EMPTY_WRAP(...) __VA_ARGS__
-
 #define TEST_DATA_1_FILENAME "test/data/1"
 #define TEST_DATA_1_SIZE sizeof((u8[]){TEST_DATA_1})
 #define TEST_DATA_1 EMPTY_WRAP( \

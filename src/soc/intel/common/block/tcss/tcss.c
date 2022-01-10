@@ -1,8 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#define __SIMPLE_DEVICE__
+
 #include <bootmode.h>
 #include <console/console.h>
 #include <device/pci.h>
+#include <intelblocks/p2sb.h>
+#include <intelblocks/pcr.h>
 #include <intelblocks/pmc_ipc.h>
 #include <intelblocks/systemagent.h>
 #include <intelblocks/tcss.h>
@@ -351,8 +355,8 @@ static uint32_t calc_bias_ctrl_reg_value(gpio_t pad)
 		cpu_pid;
 }
 
-static void tcss_configure_aux_bias_pads(
-	const struct typec_aux_bias_pads pads[MAX_TYPE_C_PORTS])
+static void tcss_configure_aux_bias_pads_regbar(
+	const struct typec_aux_bias_pads *pads)
 {
 	for (size_t i = 0; i < MAX_TYPE_C_PORTS; i++) {
 		if (pads[i].pad_auxn_dc && pads[i].pad_auxp_dc) {
@@ -362,6 +366,16 @@ static void tcss_configure_aux_bias_pads(
 				calc_bias_ctrl_reg_value(pads[i].pad_auxn_dc);
 		}
 	}
+}
+
+static void tcss_configure_aux_bias_pads(
+	const struct typec_aux_bias_pads *pads)
+{
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_TCSS_REG_ACCESS_REGBAR))
+		tcss_configure_aux_bias_pads_regbar(pads);
+	else
+		printk(BIOS_ERR, "%s: Error: No TCSS configuration method is selected!\n",
+					__func__);
 }
 
 const struct tcss_port_map *tcss_get_port_info(size_t *num_ports)
@@ -413,4 +427,15 @@ void tcss_configure(const struct typec_aux_bias_pads aux_bias_pads[MAX_TYPE_C_PO
 
 	if (CONFIG(ENABLE_TCSS_DISPLAY_DETECTION))
 		tcss_configure_dp_mode(port_map, num_ports);
+}
+
+uint32_t tcss_valid_tbt_auth(void)
+{
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_TCSS_REG_ACCESS_REGBAR)) {
+		return REGBAR32(PID_IOM, IOM_CSME_IMR_TBT_STATUS) & TBT_VALID_AUTHENTICATION;
+	} else {
+		printk(BIOS_ERR, "%s: Error: No validation for Thunderbolt authentication!\n",
+					__func__);
+		return 0;
+	}
 }

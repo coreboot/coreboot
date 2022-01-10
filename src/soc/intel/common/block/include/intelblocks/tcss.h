@@ -151,4 +151,7 @@ void tcss_configure(const struct typec_aux_bias_pads pads[MAX_TYPE_C_PORTS]);
  */
 const struct tcss_port_map *tcss_get_port_info(size_t *num_ports);
 
+/* Method to validate the Thunderbolt authentication */
+uint32_t tcss_valid_tbt_auth(void);
+
 #endif /* _TCSS_H_ */

@@ -50,6 +50,7 @@ chip soc/intel/alderlake
 		},
 	}"
 	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC3)"  # USB2_C3
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"
 	register "SaGv" = "SaGv_Enabled"
 
 	# I2C Port Config
@@ -416,6 +417,11 @@ chip soc/intel/alderlake
 						register "desc" = ""USB2 Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""RGB Keyboard""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port7 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 WWAN""

@@ -526,7 +526,7 @@ int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 		/* PADCFGLOCK and PADCFGLOCKTX registers for each community are contiguous */
 		offset += gpio_group_index_scaled(comm, rel_pad, 2 * sizeof(uint32_t));
 
-		data = gpio_bitmask_within_group(comm, rel_pad);
+		const uint32_t bit_mask = gpio_bitmask_within_group(comm, rel_pad);
 		msg.pid = comm->port;
 		msg.offset = offset;
 
@@ -534,6 +534,7 @@ int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 			if (CONFIG(DEBUG_GPIO))
 				printk(BIOS_INFO, "%s: Locking pad %d configuration\n",
 						__func__, pad);
+			data = pcr_read32(msg.pid, msg.offset) | bit_mask;
 			status = pcr_execute_sideband_msg(PCH_DEV_P2SB, &msg, &data, &response);
 			if ((err = sideband_msg_err(status, response)) != 0) {
 				err_response = err;
@@ -546,6 +547,7 @@ int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count)
 				printk(BIOS_INFO, "%s: Locking pad %d TX state\n",
 						__func__, pad);
 			msg.offset += sizeof(uint32_t);
+			data = pcr_read32(msg.pid, msg.offset) | bit_mask;
 			status = pcr_execute_sideband_msg(PCH_DEV_P2SB, &msg, &data, &response);
 			if ((err = sideband_msg_err(status, response)) != 0) {
 				err_response = err;

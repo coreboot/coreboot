@@ -62,6 +62,7 @@ chip soc/intel/alderlake
 			.data_hold_time_ns = 50,
 		},
 	}"
+	register "tcc_offset" = "3"  # TCC of 97C
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"     # Type-A MLB Port
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"     # Smart Card
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A MLB port

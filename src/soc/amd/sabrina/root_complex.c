@@ -225,5 +225,5 @@ static struct device_operations root_complex_operations = {
 static const struct pci_driver family17_root_complex __pci_driver = {
 	.ops	= &root_complex_operations,
 	.vendor	= PCI_VENDOR_ID_AMD,
-	.device	= PCI_DEVICE_ID_AMD_17H_MODEL_606F_NB,
+	.device	= PCI_DEVICE_ID_AMD_17H_MODEL_A0AF_NB,
 };

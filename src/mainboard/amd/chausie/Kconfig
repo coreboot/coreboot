@@ -1,0 +1,77 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_AMD_CHAUSIE
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_RESUME
+	select SOC_AMD_SABRINA
+	select SOC_AMD_COMMON_BLOCK_USE_ESPI
+	select AMD_SOC_CONSOLE_UART
+	select MAINBOARD_HAS_CHROMEOS
+
+config FMDFILE
+	default "src/mainboard/amd/chausie/chromeos.fmd" if CHROMEOS
+	default "src/mainboard/amd/chausie/board.fmd"
+
+config MAINBOARD_DIR
+	default "amd/chausie"
+
+config MAINBOARD_PART_NUMBER
+	default "CHAUSIE"
+
+config AMD_FWM_POSITION_INDEX
+	int
+	default 3 if CHROMEOS
+	default 4
+	help
+	  TODO: might need to be adapted for better placement of files in cbfs
+
+config CHAUSIE_HAVE_MCHP_FW
+	bool "Have Microchip EC firmware?"
+	default n
+
+config CHAUSIE_MCHP_FW_FILE
+	string
+	depends on CHAUSIE_HAVE_MCHP_FW
+	default "3rdparty/blobs/mainboard/amd/chausie/EC_chausie.bin"
+	help
+	  The EC firmware blob is usually the first 128kByte of the stock
+	  firmware image.
+
+config VBOOT
+	select VBOOT_NO_BOARD_SUPPORT
+	select VBOOT_SEPARATE_VERSTAGE
+	select VBOOT_STARTS_IN_BOOTBLOCK
+
+config VBOOT_VBNV_OFFSET
+	hex
+	default 0x2A
+
+config CHROMEOS
+	# Use default libpayload config
+	select LP_DEFCONFIG_OVERRIDE if PAYLOAD_DEPTHCHARGE
+
+if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
+config EFS_SPI_READ_MODE
+	default 3	# Quad IO (1-1-4)
+
+config EFS_SPI_SPEED
+	default 0	# 66MHz
+
+config EFS_SPI_MICRON_FLAG
+	default 0
+
+config NORMAL_READ_SPI_SPEED
+	default 1	# 33MHz
+
+config ALT_SPI_SPEED
+	default 1	# 33MHz
+
+config TPM_SPI_SPEED
+	default 1	# 33MHz
+
+endif # !EM100
+
+endif # BOARD_AMD_CHAUSIE

@@ -1,0 +1,91 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/amd/sabrina
+	register "common_config.espi_config" = "{
+		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X2E_0X2F_EN,
+		.io_mode = ESPI_IO_MODE_QUAD,
+		.op_freq_mhz = ESPI_OP_FREQ_16_MHZ,
+		.crc_check_enable = 1,
+		.alert_pin = ESPI_ALERT_PIN_PUSH_PULL,
+		.periph_ch_en = 1,
+		.vw_ch_en = 1,
+		.oob_ch_en = 1,
+		.flash_ch_en = 0,
+	}"
+
+	# I2C Pad Control RX Select Configuration
+	register "i2c_pad_ctrl_rx_sel[0]" = "I2C_PAD_CTRL_RX_SEL_3_3V"
+	register "i2c_pad_ctrl_rx_sel[1]" = "I2C_PAD_CTRL_RX_SEL_3_3V"
+	register "i2c_pad_ctrl_rx_sel[2]" = "I2C_PAD_CTRL_RX_SEL_3_3V"
+	register "i2c_pad_ctrl_rx_sel[3]" = "I2C_PAD_CTRL_RX_SEL_3_3V"
+
+	register "s0ix_enable" = "true"
+
+	register "pspp_policy" = "DXIO_PSPP_BALANCED"
+
+	device domain 0 on
+		device ref iommu on end
+		device ref gpp_gfx_bridge_0 on end # MXM
+		device ref gpp_bridge_0 on end # NVMe
+		device ref gpp_bridge_1 on end
+		device ref gpp_bridge_2 on end # WWAN
+		device ref gpp_bridge_3 on end # LAN
+		device ref gpp_bridge_4 on end # WLAN
+		device ref gpp_bridge_5 on end
+		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
+			device ref gfx on end # Internal GPU (GFX)
+			device ref crypto on end # Crypto Coprocessor
+			device ref xhci_0 on # USB 3.1 (USB0)
+				chip drivers/usb/acpi
+					device ref xhci_0_root_hub on
+						chip drivers/usb/acpi
+							device ref usb3_port0 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb3_port1 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port0 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port1 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port2 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port3 on end
+						end
+					end
+				end
+			end
+			device ref xhci_1 on # USB 3.1 (USB1)
+				chip drivers/usb/acpi
+					device ref xhci_1_root_hub on
+						chip drivers/usb/acpi
+							device ref usb3_port4 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb3_port5 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port4 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port5 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port6 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port7 on end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	device ref uart_0 on end # UART0
+
+end

@@ -2,7 +2,6 @@
 
 #include <device/mmio.h>
 #include <console/console.h>
-#include <cpu/x86/tsc.h>
 #include <device/pci.h>
 #include <delay.h>
 #include <soc/pci_devs.h>

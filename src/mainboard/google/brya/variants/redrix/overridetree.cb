@@ -86,6 +86,7 @@ chip soc/intel/alderlake
 			.data_hold_time_ns = 50,
 		},
 	}"
+	register "tcc_offset" = "3"  # TCC of 97C
 	device domain 0 on
 		device ref igpu on
 			chip drivers/gfx/generic

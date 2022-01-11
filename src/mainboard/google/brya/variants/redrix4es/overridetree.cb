@@ -72,6 +72,7 @@ chip soc/intel/alderlake
 			.speed = I2C_SPEED_FAST,
 		},
 	}"
+	register "tcc_offset" = "3"  # TCC of 97C
 	device domain 0 on
 		device ref igpu on
 			chip drivers/gfx/generic

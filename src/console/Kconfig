@@ -255,6 +255,14 @@ config CONSOLE_CBMEM_DUMP_TO_UART
 	  serial output in case serial console is disabled and the device
 	  resets itself while trying to boot the payload.
 
+config CONSOLE_CBMEM_PRINT_PRE_BOOTBLOCK_CONTENTS
+	bool
+	help
+	  Pre-bootblock stages (i.e., VBOOT_STARTS_BEFORE_BOOTBLOCK) might not
+	  have the ability to log to the UART, so their console messages are
+	  inaccessible until the boot processes gets into the payload or OS.
+	  This feature will dump the pre-bootblock CBMEM console immediately
+	  after the bootblock console is initialized.
 endif
 
 config CONSOLE_SPI_FLASH

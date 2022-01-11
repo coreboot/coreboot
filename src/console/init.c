@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <commonlib/helpers.h>
+#include <console/cbmem_console.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <console/streams.h>
@@ -58,6 +59,9 @@ void console_init(void)
 	console_hw_init();
 
 	console_inited = 1;
+
+	if (ENV_BOOTBLOCK && CONFIG(CONSOLE_CBMEM_PRINT_PRE_BOOTBLOCK_CONTENTS))
+		cbmem_dump_console();
 
 	printk(BIOS_NOTICE, "\n\ncoreboot-%s%s %s " ENV_STRING " starting (log level: %i)...\n",
 	       coreboot_version, coreboot_extra_version, coreboot_build,

@@ -9,6 +9,7 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/gpio.h>
 #include <soc/iomap.h>
 #include <soc/intel/common/vbt.h>
@@ -18,10 +19,100 @@
 #include <spi-generic.h>
 #include <soc/hob_mem.h>
 
+const char *soc_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return "PCI0";
+
+	if (dev->path.type == DEVICE_PATH_USB) {
+		switch (dev->path.usb.port_type) {
+		case 0:
+			/* Root Hub */
+			return "RHUB";
+		case 2:
+			/* USB2 ports */
+			switch (dev->path.usb.port_id) {
+			case 0: return "HS01";
+			case 1: return "HS02";
+			case 2: return "HS03";
+			case 3: return "HS04";
+			}
+			break;
+		case 3:
+			/* USB3 ports */
+			switch (dev->path.usb.port_id) {
+			case 4: return "SS01";
+			case 5: return "SS02";
+			case 6: return "SS03";
+			case 7: return "SS04";
+			}
+			break;
+		}
+		return NULL;
+	}
+
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return NULL;
+
+	switch (dev->path.pci.devfn) {
+	case SA_DEVFN_ROOT:
+		return "MCHC";
+	case PCH_DEVFN_XHCI:
+		return "XHCI";
+	case PCH_DEVFN_UART0:
+		return "UAR0";
+	case PCH_DEVFN_UART1:
+		return "UAR1";
+	case PCH_DEVFN_UART2:
+		return "UAR2";
+	case PCH_DEVFN_PCIE1:
+		return "RP01";
+	case PCH_DEVFN_PCIE2:
+		return "RP02";
+	case PCH_DEVFN_PCIE3:
+		return "RP03";
+	case PCH_DEVFN_PCIE4:
+		return "RP04";
+	case PCH_DEVFN_PCIE5:
+		return "RP05";
+	case PCH_DEVFN_PCIE6:
+		return "RP06";
+	case PCH_DEVFN_PCIE7:
+		return "RP07";
+	case PCH_DEVFN_PCIE8:
+		return "RP08";
+	case PCH_DEVFN_LPC:
+		return "LPCB";
+	case PCH_DEVFN_SMBUS:
+		return "SBUS";
+	case PCH_DEVFN_SATA_0:
+		return "SAT0";
+	case PCH_DEVFN_SATA_1:
+		return "SAT1";
+	case PCH_DEVFN_EMMC:
+		return "EMMC";
+	case PCH_DEVFN_SPI:
+		return "SPI0";
+	case PCH_DEVFN_PMC:
+		return "PMC_";
+	case PCH_DEVFN_QAT:
+		return "QAT_";
+	case PCH_DEVFN_LAN0:
+		return "LAN0";
+	case PCH_DEVFN_LAN1:
+		return "LAN1";
+	}
+
+	return NULL;
+}
+
 static struct device_operations pci_domain_ops = {
 	.read_resources = &pci_domain_read_resources,
 	.set_resources = &pci_domain_set_resources,
 	.scan_bus = &pci_domain_scan_bus,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_name = &soc_acpi_name,
+#endif
 };
 
 static struct device_operations cpu_bus_ops = {

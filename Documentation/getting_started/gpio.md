@@ -162,6 +162,80 @@ The first is configuring a pin as an output, when it was designed to be an
 input. There is a real risk in this case of short-circuiting a component which
 could cause catastrophic failures, up to and including your mainboard!
 
+### Intel SoCs
+
+As per Intel Platform Controller Hub (PCH) EDS since Skylake, a GPIO PAD register
+supports four different types of GPIO reset as:
+
++------------------------+----------------+-------------+-------------+
+|                        |                |         PAD Reset ?       |
++ PAD Reset Config       + Platform Reset +-------------+-------------+
+|                        |                |     GPP     |     GPD     |
++------------------------+----------------+-------------+-------------+
+| 00 - Power Good        |  Warm Reset    |     N       |    N        |
+|  (GPP: RSMRST,         +----------------+-------------+-------------+
+|   GPD: DSW_PWROK)      |  Cold Reset    |     N       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  S3/S4/S5      |     N       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  Global Reset  |     N       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  Deep Sx       |     Y       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  G3            |     Y       |    Y        |
++------------------------+----------------+-------------+-------------+
+| 01 - Deep              |  Warm Reset    |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  Cold Reset    |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  S3/S4/S5      |     N       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  Global Reset  |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  Deep Sx       |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  G3            |     Y       |    Y        |
++------------------------+----------------+-------------+-------------+
+| 10 - Host Reset/PLTRST |  Warm Reset    |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  Cold Reset    |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  S3/S4/S5      |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  Global Reset  |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  Deep Sx       |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  G3            |     Y       |    Y        |
++------------------------+----------------+-------------+-------------+
+| 11 - Resume Reset      |  Warm Reset    |     -       |    N        |
+|  (GPP: Reserved,       +----------------+-------------+-------------+
+|   GPD: RSMRST)         |  Cold Reset    |     -       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  S3/S4/S5      |     -       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  Global Reset  |     -       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  Deep Sx       |     -       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  G3            |     -       |    Y        |
++------------------------+----------------+-------------+-------------+
+
+Each GPIO Community has a Pad Configuration Lock register for a GPP allowing locking
+specific register fields in the PAD configuration register.
+
+The Pad Config Lock registers reset type is default hardcoded to **Power Good** and
+it's **not** configurable by GPIO PAD DW0.PadRstCfg. Hence, it may appear that for a GPP,
+the Pad Reset Config (DW0 Bit 31) is configured differently from `Power Good`.
+
+This would create confusion where the Pad configuration is returned to its `default`
+value but remains `locked`, this would prevent software to reprogram the GPP.
+Additionally, this means software can't rely on GPIOs being reset by PLTRST# or Sx entry.
+
+Hence, as per GPIO BIOS Writers Guide (BWG) it's recommended to change the Pad Reset
+Configuration for lock GPP as `Power Good` so that pad configuration and lock bit are
+always in sync and can be reset at the same time.
+
 ## Soft Straps
 
 Soft straps, that can be configured by the vendor in the Intel Flash Image Tool

@@ -59,7 +59,8 @@
 #define PIRQ_UART0	0x74	/* UART0 */
 #define PIRQ_UART1	0x75	/* UART1 */
 #define PIRQ_I2C4	0x76	/* I2C4 */
-#define PIRQ_I2C5	0x77	/* I2C5 */
-/* 0x78-0x7f reserved */
+#define PIRQ_UART4	0x77	/* UART4 */
+#define PIRQ_UART2	0x78	/* UART2 */
+#define PIRQ_UART3	0x79	/* UART3 */
 
 #endif /* AMD_SABRINA_AMD_PCI_INT_DEFS_H */

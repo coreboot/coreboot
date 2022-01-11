@@ -36,7 +36,9 @@ IndexField(PRQI, PRQD, ByteAcc, NoLock, Preserve) {
 	PUA0, 0x00000008,	/* Index 0x74: UART0 */
 	PUA1, 0x00000008,	/* Index 0x75: UART1 */
 	PI24, 0x00000008,	/* Index 0x76: I2C4 */
-	PI25, 0x00000008,	/* Index 0x77: I2C5 */
+	PUA4, 0x00000008,	/* Index 0x77: UART4 */
+	PUA2, 0x00000008,	/* Index 0x78: UART2 */
+	PUA3, 0x00000008,	/* Index 0x79: UART3 */
 
 	/* IO-APIC IRQs */
 	Offset (0x80),
@@ -63,5 +65,7 @@ IndexField(PRQI, PRQD, ByteAcc, NoLock, Preserve) {
 	IUA0, 0x00000008,	/* Index 0xF4: UART0 */
 	IUA1, 0x00000008,	/* Index 0xF5: UART1 */
 	II24, 0x00000008,	/* Index 0xF6: I2C4 */
-	II25, 0x00000008,	/* Index 0xF7: I2C5 */
+	IUA4, 0x00000008,	/* Index 0xF7: UART4 */
+	IUA2, 0x00000008,	/* Index 0xF8: UART2 */
+	IUA3, 0x00000008,	/* Index 0xF9: UART3 */
 }

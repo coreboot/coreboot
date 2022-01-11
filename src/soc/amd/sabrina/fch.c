@@ -66,7 +66,9 @@ const static struct irq_idx_name irq_association[] = {
 	{ PIRQ_UART0,	"UART0" },
 	{ PIRQ_UART1,	"UART1" },
 	{ PIRQ_I2C4,	"I2C4" },
-	{ PIRQ_I2C5,	"I2C5" },
+	{ PIRQ_UART4,	"UART4" },
+	{ PIRQ_UART2,	"UART2" },
+	{ PIRQ_UART3,	"UART3" },
 };
 
 const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)

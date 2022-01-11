@@ -19,5 +19,5 @@ static inline void __cbmemc_init(void)	{}
 static inline void __cbmemc_tx_byte(u8 data)	{}
 #endif
 
-void cbmem_dump_console(void);
+void cbmem_dump_console_to_uart(void);
 #endif

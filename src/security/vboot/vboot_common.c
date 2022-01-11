@@ -60,7 +60,7 @@ void __weak vboot_platform_prepare_reboot(void)
 void vboot_reboot(void)
 {
 	if (CONFIG(CONSOLE_CBMEM_DUMP_TO_UART))
-		cbmem_dump_console();
+		cbmem_dump_console_to_uart();
 	vboot_platform_prepare_reboot();
 	board_reset();
 }

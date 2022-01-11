@@ -154,7 +154,7 @@ RAMSTAGE_CBMEM_INIT_HOOK(cbmemc_reinit)
 POSTCAR_CBMEM_INIT_HOOK(cbmemc_reinit)
 
 #if CONFIG(CONSOLE_CBMEM_DUMP_TO_UART)
-void cbmem_dump_console(void)
+void cbmem_dump_console_to_uart(void)
 {
 	u32 cursor;
 	if (!current_console)

@@ -8,7 +8,6 @@
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <console/console.h>
-#include <cpu/intel/common/common.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/acpi_wake_source.h>
 #include <intelblocks/cpulib.h>

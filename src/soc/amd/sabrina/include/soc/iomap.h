@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Check if this is still correct */
-
 #ifndef AMD_SABRINA_IOMAP_H
 #define AMD_SABRINA_IOMAP_H
 
@@ -34,6 +32,12 @@
 #define APU_DMAC1_BASE			0xfedc8000
 #define APU_UART0_BASE			0xfedc9000
 #define APU_UART1_BASE			0xfedca000
+#define APU_DMAC2_BASE			0xfedcc000
+#define APU_DMAC3_BASE			0xfedcd000
+#define APU_UART2_BASE			0xfedce000
+#define APU_UART3_BASE			0xfedcf000
+#define APU_DMAC4_BASE			0xfedd0000
+#define APU_UART4_BASE			0xfedd1000
 
 #define APU_EMMC_BASE			0xfedd5000
 #define APU_EMMC_CONFIG_BASE		0xfedd5800

@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/cbmem_console.h>
+#include <console/console.h>
 #include <console/uart.h>
 #include <cbmem.h>
 #include <symbols.h>
+#include <types.h>
 
 /*
  * Structure describing console buffer. It is overlaid on a flat memory area,
@@ -36,6 +38,8 @@ _Static_assert(CONFIG_CONSOLE_CBMEM_BUFFER_SIZE <= MAX_SIZE,
 	"cbmem_console format cannot support buffers larger than 256MB!");
 
 static struct cbmem_console *current_console;
+
+static bool console_paused;
 
 /*
  * While running from ROM, before DRAM is initialized, some area in cache as
@@ -88,7 +92,7 @@ void cbmemc_init(void)
 
 void cbmemc_tx_byte(unsigned char data)
 {
-	if (!current_console || !current_console->size)
+	if (!current_console || !current_console->size || console_paused)
 		return;
 
 	u32 flags = current_console->cursor & ~CURSOR_MASK;
@@ -169,3 +173,21 @@ void cbmem_dump_console_to_uart(void)
 		uart_tx_byte(0, current_console->body[cursor]);
 }
 #endif
+
+void cbmem_dump_console(void)
+{
+	u32 cursor;
+	if (!current_console)
+		return;
+
+	console_paused = true;
+
+	if (current_console->cursor & OVERFLOW)
+		for (cursor = current_console->cursor & CURSOR_MASK;
+		     cursor < current_console->size; cursor++)
+			do_putchar(current_console->body[cursor]);
+	for (cursor = 0; cursor < (current_console->cursor & CURSOR_MASK); cursor++)
+		do_putchar(current_console->body[cursor]);
+
+	console_paused = false;
+}

@@ -6,7 +6,6 @@
 #include <types.h>
 #include <soc/dramc_common.h>
 #include <soc/emi.h>
-#include <console/console.h>
 
 #define DATLAT_TAP_NUMBER 32
 #define HW_REG_SHUFFLE_MAX  4

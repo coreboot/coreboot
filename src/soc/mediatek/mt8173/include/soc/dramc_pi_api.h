@@ -6,7 +6,6 @@
 #include <soc/dramc_common.h>
 #include <soc/dramc_soc.h>
 #include <soc/emi.h>
-#include <console/console.h>
 
 enum {
 	MAX_CLKO_DELAY = 15

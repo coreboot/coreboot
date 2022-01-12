@@ -4,6 +4,7 @@
 #define SOC_MEDIATEK_COMMON_MSDC_H
 
 #include <commonlib/sd_mmc_ctrlr.h>
+#include <console/console.h>
 
 /*------------------------------*/
 /* Register Offset              */

@@ -148,7 +148,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	mcfg->enable_nb_azalia = is_dev_enabled(DEV_PTR(gfx_hda));
 	mcfg->hda_enable = is_dev_enabled(DEV_PTR(hda));
-	mcfg->sata_enable = is_dev_enabled(DEV_PTR(sata_0)) || is_dev_enabled(DEV_PTR(sata_1));
 
 	if (config->usb_phy_custom) {
 		mcfg->usb_phy = (struct usb_phy_config *)&config->usb_phy;

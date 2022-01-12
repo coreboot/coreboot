@@ -1,14 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-/* TODO: Check if this is still correct */
-
 #ifndef AMD_SABRINA_SMI_H
 #define AMD_SABRINA_SMI_H
 
 #include <types.h>
 
 #define SMI_GEVENTS			24
-#define SCIMAPS				59 /* 0..58 */
+#define SCIMAPS				64 /* 0..63 */
 #define SCI_GPES			32
 #define NUMBER_SMITYPES			160
 
@@ -25,13 +23,13 @@
 #define SMITYPE_G_GENINT1_L		0
 #define SMITYPE_G_GENINT2_L		1
 #define SMITYPE_G_AGPIO3		2
-#define SMITYPE_G_LPCPME		3
+#define SMITYPE_G_ESPI_ALERT_L		3
 #define SMITYPE_G_AGPIO4		4
-#define SMITYPE_G_LPCPD			5
+#define SMITYPE_G_BLINK			5
 #define SMITYPE_G_SPKR			6
 #define SMITYPE_G_AGPIO5		7
 #define SMITYPE_G_WAKE_L		8
-#define SMITYPE_G_LPC_SMI_L		9
+#define SMITYPE_G_SPI_TPM_CS_L		9
 #define SMITYPE_G_AGPIO6		10
 #define SMITYPE_G_AGPIO7		11
 #define SMITYPE_G_USBOC0_L		12
@@ -39,7 +37,7 @@
 #define SMITYPE_G_USBOC2_L		14
 #define SMITYPE_G_USBOC3_L		15
 #define SMITYPE_G_AGPIO23		16
-#define SMITYPE_G_ESPI_RESET_L		17
+#define SMITYPE_G_AGPIO32		17
 #define SMITYPE_G_FANIN0		18
 #define SMITYPE_G_SYSRESET_L		19
 #define SMITYPE_G_AGPIO40		20
@@ -49,13 +47,13 @@
 #define GEVENT_MASK ((1 << SMITYPE_G_GENINT1_L)		\
 		   | (1 << SMITYPE_G_GENINT2_L)		\
 		   | (1 << SMITYPE_G_AGPIO3)		\
-		   | (1 << SMITYPE_G_LPCPME)		\
+		   | (1 << SMITYPE_G_ESPI_ALERT_L)	\
 		   | (1 << SMITYPE_G_AGPIO4)		\
-		   | (1 << SMITYPE_G_LPCPD)		\
+		   | (1 << SMITYPE_G_BLINK)		\
 		   | (1 << SMITYPE_G_SPKR)		\
 		   | (1 << SMITYPE_G_AGPIO5)		\
 		   | (1 << SMITYPE_G_WAKE_L)		\
-		   | (1 << SMITYPE_G_LPC_SMI_L)		\
+		   | (1 << SMITYPE_G_SPI_TPM_CS_L)	\
 		   | (1 << SMITYPE_G_AGPIO6)		\
 		   | (1 << SMITYPE_G_AGPIO7)		\
 		   | (1 << SMITYPE_G_USBOC0_L)		\
@@ -63,7 +61,7 @@
 		   | (1 << SMITYPE_G_USBOC2_L)		\
 		   | (1 << SMITYPE_G_USBOC3_L)		\
 		   | (1 << SMITYPE_G_AGPIO23)		\
-		   | (1 << SMITYPE_G_ESPI_RESET_L)	\
+		   | (1 << SMITYPE_G_AGPIO32)		\
 		   | (1 << SMITYPE_G_FANIN0)		\
 		   | (1 << SMITYPE_G_SYSRESET_L)	\
 		   | (1 << SMITYPE_G_AGPIO40)		\
@@ -82,12 +80,12 @@
 #define SMITYPE_PSP			33
 /* 34,35 Reserved */
 #define SMITYPE_ESPI_SCI_B		36
-#define SMITYPE_WLAN_WLAN_PME		37
-#define SMITYPE_WLAN_BT_PME		38
+#define SMITYPE_CIO_FCH_PME_S5_0	37
+#define SMITYPE_CIO_FCH_PME_S5_1	38
 #define SMITYPE_AZPME			39
 #define SMITYPE_USB_PD_I2C4		40
 #define SMITYPE_GPIO_CTL		41
-/* 42 Reserved */
+#define SMITYPE_XHC2_PME		42
 #define SMITYPE_ALT_HPET_ALARM		43
 #define SMITYPE_FAN_THERMAL		44
 #define SMITYPE_ASF_MASTER_SLAVE	45
@@ -104,11 +102,18 @@
 #define SMITYPE_XHC0_PME		56
 #define SMITYPE_XHC1_PME		57
 #define SMITYPE_ACDC_TIMER		58
-/* 59-63 Reserved */
+/* 59-60 Reserved */
+#define SMITYPE_XHC3_PME		61
+#define SMITYPE_XHC4_PME		62
+#define SMITYPE_CUR_TEMP_STATUS_5	63
 #define SMITYPE_KB_RESET		64
 #define SMITYPE_SLP_TYP			65
 #define SMITYPE_AL2H_ACPI		66
-/* 67-71 Reserved */
+/* 67 Reserved */
+#define SMITYPE_NB_GPP_PME_PULSE	68
+#define SMITYPE_NB_GPP_HP_PULSE		69
+#define SMITYPE_USB_PD_I2C4_INTR2	70
+/* 71 Reserved */
 #define SMITYPE_GBL_RLS			72
 #define SMITYPE_BIOS_RLS		73
 #define SMITYPE_PWRBUTTON_DOWN		74
@@ -130,7 +135,7 @@
 #define SMITYPE_SHORT_TIMER		142
 #define SMITYPE_LONG_TIMER		143
 #define SMITYPE_AB_SMI			144
-/* 145 Reserved */
+#define SMITYPE_ANY_RESET		145
 #define SMITYPE_ESPI_SMI		146
 /* 147 Reserved */
 #define SMITYPE_IOTRAP0			148

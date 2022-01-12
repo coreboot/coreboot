@@ -25,7 +25,6 @@ chip soc/amd/sabrina
 
 	device domain 0 on
 		device ref iommu on end
-		device ref gpp_gfx_bridge_0 on end # MXM
 		device ref gpp_bridge_0 on end # NVMe
 		device ref gpp_bridge_1 on end
 		device ref gpp_bridge_2 on end # WWAN

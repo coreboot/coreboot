@@ -46,7 +46,6 @@
 #define _CBFS_LEGACY_H_
 
 #include <cbfs_core.h>
-#include <libpayload.h>
 
 /* legacy APIs */
 const struct cbfs_header *get_cbfs_header(void);

@@ -26,34 +26,55 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#define LIBPAYLOAD
 
-#include <libpayload-config.h>
-#if CONFIG(LP_LZMA)
-# include <lzma.h>
-# define CB_CBFS_CORE_WITH_LZMA
+#ifdef LIBPAYLOAD
+# include <libpayload-config.h>
+# if CONFIG(LP_LZMA)
+#  include <lzma.h>
+#  define CBFS_CORE_WITH_LZMA
+# endif
+# if CONFIG(LP_LZ4)
+#  include <lz4.h>
+#  define CBFS_CORE_WITH_LZ4
+# endif
+# define CBFS_MINI_BUILD
+#elif defined(__SMM__)
+# define CBFS_MINI_BUILD
+#else
+# define CBFS_CORE_WITH_LZMA
+# define CBFS_CORE_WITH_LZ4
+# include <lib.h>
 #endif
-#if CONFIG(LP_LZ4)
-# include <lz4.h>
-# define CB_CBFS_CORE_WITH_LZ4
+
+#include <cbfs.h>
+#include <string.h>
+
+#ifdef LIBPAYLOAD
+# include <stdio.h>
+# define DEBUG(x...)
+# define LOG(x...)
+# define ERROR(x...) printf(x)
+#else
+# include <console/console.h>
+# define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
+# define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
+# if CONFIG_LP_DEBUG_CBFS
+#  define DEBUG(x...) printk(BIOS_SPEW, "CBFS: " x)
+# else
+#  define DEBUG(x...)
+# endif
 #endif
-
-#include <cbfs_legacy.h>
-#include <stdio.h>
-
-#define DEBUG(x...)
-#define LOG(x...)
-#define ERROR(x...) printf(x)
-
-#ifndef __SMM__
 
 #include "cbfs_core.c"
 
+#ifndef __SMM__
 static inline int tohex4(unsigned int c)
 {
 	return (c <= 9) ? (c + '0') : (c - 10 + 'a');
 }
 
-static void tohex16(unsigned int val, char *dest)
+static void tohex16(unsigned int val, char* dest)
 {
 	dest[0] = tohex4(val>>12);
 	dest[1] = tohex4((val>>8) & 0xf);
@@ -72,7 +93,7 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 	return cbfs_get_file_content(media, name, CBFS_TYPE_OPTIONROM, NULL);
 }
 
-void *cbfs_load_stage(struct cbfs_media *media, const char *name)
+void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_stage *stage = (struct cbfs_stage *)
 		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE, NULL);
@@ -84,8 +105,10 @@ void *cbfs_load_stage(struct cbfs_media *media, const char *name)
 	if (stage == NULL)
 		return (void *) -1;
 
-	LOG("loading stage %s @ %p (%d bytes), entry @ 0x%llx\n", name,
-	    (void *)(uintptr_t)stage->load, stage->memlen, stage->entry);
+	LOG("loading stage %s @ %p (%d bytes), entry @ 0x%llx\n",
+			name,
+			(void*)(uintptr_t) stage->load, stage->memlen,
+			stage->entry);
 
 	final_size = cbfs_decompress(stage->compression,
 				     ((unsigned char *) stage) +
@@ -138,8 +161,7 @@ void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 		media, name, CBFS_TYPE_SELF, NULL);
 }
 
-struct cbfs_file *cbfs_find(const char *name)
-{
+struct cbfs_file *cbfs_find(const char *name) {
 	struct cbfs_handle *handle = cbfs_get_handle(CBFS_DEFAULT_MEDIA, name);
 	struct cbfs_media *m = &handle->media;
 	void *ret;
@@ -158,21 +180,19 @@ struct cbfs_file *cbfs_find(const char *name)
 	return ret;
 }
 
-void *cbfs_find_file(const char *name, int type)
-{
+void *cbfs_find_file(const char *name, int type) {
 	return cbfs_get_file_content(CBFS_DEFAULT_MEDIA, name, type, NULL);
 }
 
-const struct cbfs_header *get_cbfs_header(void)
-{
+const struct cbfs_header *get_cbfs_header(void) {
 	return cbfs_get_header(CBFS_DEFAULT_MEDIA);
 }
 
 /* Simple buffer */
 
-void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer, struct cbfs_media *media,
-			     size_t offset, size_t count)
-{
+void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
+			     struct cbfs_media *media,
+			     size_t offset, size_t count) {
 	void *address = buffer->buffer + buffer->allocated;
 	DEBUG("simple_buffer_map(offset=%zu, count=%zu): "
 	      "allocated=%zu, size=%zu, last_allocate=%zu\n",
@@ -190,8 +210,8 @@ void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer, struct cbfs_medi
 	return address;
 }
 
-void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer, const void *address)
-{
+void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
+			       const void *address) {
 	// TODO Add simple buffer management so we can free more than last
 	// allocated one.
 	DEBUG("simple_buffer_unmap(address=%p): "
@@ -215,9 +235,9 @@ void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer, const void *ad
 
 int run_address(void *f)
 {
-	int (*v)(void);
+	int (*v) (void);
 	v = f;
 	return v();
 }
 
-#endif /* __SMM__ */
+#endif

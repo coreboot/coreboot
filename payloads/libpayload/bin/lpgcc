@@ -169,6 +169,9 @@ if [ $_LIBDIR = $_OBJ ]; then
     fi
 
     _CFLAGS="$_CFLAGS -I$BASE/../../../src/commonlib/bsd/include"
+    _CFLAGS="$_CFLAGS -I$BASE/../../../3rdparty/vboot/firmware/include"
+else
+    _CFLAGS="$_CFLAGS -I$_VBOOTINCDIR"
 fi
 
 # Check for the -fno-stack-protector silliness

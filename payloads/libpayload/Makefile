@@ -45,6 +45,7 @@ export obj ?= build
 export objutil ?= $(obj)/util
 export objk := $(objutil)/lp_kconfig
 export absobj := $(abspath $(obj))
+VBOOT_SOURCE ?= $(coreboottop)/3rdparty/vboot
 
 export KCONFIG_AUTOHEADER := $(obj)/config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf

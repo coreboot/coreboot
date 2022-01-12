@@ -63,3 +63,9 @@ if [ -d $BASE/../include ]; then
 else
 	_INCDIR=$LIBPAYLOAD_PREFIX/include
 fi
+
+if [ -d $BASE/../vboot ]; then
+	_VBOOTINCDIR=$BASE/../vboot/include
+else
+	_VBOOTINCDIR=$LIBPAYLOAD_PREFIX/../vboot/include
+fi

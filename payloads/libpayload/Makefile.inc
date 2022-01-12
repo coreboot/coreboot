@@ -131,6 +131,15 @@ install: real-target
 	$(foreach item,$(includes), \
 		install -m 755 -d $(DESTDIR)/libpayload/include/$(call extract_nth,2,$(item)); \
 		install -m 644 $(call extract_nth,1,$(item)) $(DESTDIR)/libpayload/include/$(call extract_nth,2,$(item)); )
+	printf "    INSTALL    $(DESTDIR)/libpayload/vboot\n"
+	install -m 755 -d $(DESTDIR)/libpayload/vboot
+	for file in `find $(VBOOT_SOURCE)/firmware/include \
+			  $(VBOOT_SOURCE)/firmware/2lib/include \
+			  -iname '*.h' -type f \
+			  | sed 's,$(VBOOT_SOURCE)/firmware/,,'`; do \
+		install -m 755 -d $(DESTDIR)/libpayload/vboot/$$(dirname $$file); \
+		install -m 644 $(VBOOT_SOURCE)/firmware/$$file $(DESTDIR)/libpayload/vboot/$$file ; \
+	done
 	printf "    INSTALL    $(DESTDIR)/libpayload/bin\n"
 	install -m 755 -d $(DESTDIR)/libpayload/bin
 	install -m 755 bin/lpgcc $(DESTDIR)/libpayload/bin

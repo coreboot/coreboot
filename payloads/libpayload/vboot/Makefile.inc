@@ -1,7 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
-VBOOT_SOURCE ?= $(coreboottop)/3rdparty/vboot
-
 VBOOT_BUILD_DIR ?= $(abspath $(obj)/external/vboot)
 VBOOT_FW_LIB = $(VBOOT_BUILD_DIR)/vboot_fw.a
 TLCL_LIB = $(VBOOT_BUILD_DIR)/tlcl.a

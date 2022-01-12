@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <bootsplash.h>
 #include <bootstate.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/mp.h>
 #include <device/mmio.h>

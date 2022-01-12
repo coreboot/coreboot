@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootsplash.h>
-#include <cbmem.h>
 #include <fsp/api.h>
 #include <acpi/acpi.h>
 #include <console/console.h>

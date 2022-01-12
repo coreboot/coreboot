@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
-#include <cbmem.h>
 #include <intelblocks/crashlog.h>
 #include <string.h>
 #include <soc/crashlog.h>

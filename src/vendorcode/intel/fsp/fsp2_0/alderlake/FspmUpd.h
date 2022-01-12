@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2021, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2022, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -78,69 +78,85 @@ typedef struct {
 **/
   UINT8                       CpuCrashLogDevice;
 
-/** Offset 0x004C - MemorySpdPtr00
+/** Offset 0x004C - Memory SPD Pointer Controller 0 Channel 0 Dimm 0
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr00;
+  UINT32                      MemorySpdPtr000;
 
-/** Offset 0x0050 - MemorySpdPtr01
+/** Offset 0x0050 - Memory SPD Pointer Controller 0 Channel 0 Dimm 1
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr01;
+  UINT32                      MemorySpdPtr001;
 
-/** Offset 0x0054 - MemorySpdPtr02
+/** Offset 0x0054 - Memory SPD Pointer Controller 0 Channel 1 Dimm 0
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr02;
+  UINT32                      MemorySpdPtr010;
 
-/** Offset 0x0058 - MemorySpdPtr03
+/** Offset 0x0058 - Memory SPD Pointer Controller 0 Channel 1 Dimm 1
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr03;
+  UINT32                      MemorySpdPtr011;
 
-/** Offset 0x005C - MemorySpdPtr04
+/** Offset 0x005C - Memory SPD Pointer Controller 0 Channel 2 Dimm 0
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr04;
+  UINT32                      MemorySpdPtr020;
 
-/** Offset 0x0060 - MemorySpdPtr05
+/** Offset 0x0060 - Memory SPD Pointer Controller 0 Channel 2 Dimm 1
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr05;
+  UINT32                      MemorySpdPtr021;
 
-/** Offset 0x0064 - MemorySpdPtr06
+/** Offset 0x0064 - Memory SPD Pointer Controller 0 Channel 3 Dimm 0
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr06;
+  UINT32                      MemorySpdPtr030;
 
-/** Offset 0x0068 - MemorySpdPtr07
+/** Offset 0x0068 - Memory SPD Pointer Controller 0 Channel 3 Dimm 1
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr07;
+  UINT32                      MemorySpdPtr031;
 
-/** Offset 0x006C - MemorySpdPtr08
+/** Offset 0x006C - Memory SPD Pointer Controller 1 Channel 0 Dimm 0
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr08;
+  UINT32                      MemorySpdPtr100;
 
-/** Offset 0x0070 - MemorySpdPtr09
+/** Offset 0x0070 - Memory SPD Pointer Controller 1 Channel 0 Dimm 1
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr09;
+  UINT32                      MemorySpdPtr101;
 
-/** Offset 0x0074 - MemorySpdPtr10
+/** Offset 0x0074 - Memory SPD Pointer Controller 1 Channel 1 Dimm 0
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr10;
+  UINT32                      MemorySpdPtr110;
 
-/** Offset 0x0078 - MemorySpdPtr11
+/** Offset 0x0078 - Memory SPD Pointer Controller 1 Channel 1 Dimm 1
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr11;
+  UINT32                      MemorySpdPtr111;
 
-/** Offset 0x007C - MemorySpdPtr12
+/** Offset 0x007C - Memory SPD Pointer Controller 1 Channel 2 Dimm 0
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr12;
+  UINT32                      MemorySpdPtr120;
 
-/** Offset 0x0080 - MemorySpdPtr13
+/** Offset 0x0080 - Memory SPD Pointer Controller 1 Channel 2 Dimm 1
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr13;
+  UINT32                      MemorySpdPtr121;
 
-/** Offset 0x0084 - MemorySpdPtr14
+/** Offset 0x0084 - Memory SPD Pointer Controller 1 Channel 3 Dimm 0
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr14;
+  UINT32                      MemorySpdPtr130;
 
-/** Offset 0x0088 - MemorySpdPtr15
+/** Offset 0x0088 - Memory SPD Pointer Controller 1 Channel 3 Dimm 1
+  Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00
 **/
-  UINT32                      MemorySpdPtr15;
+  UINT32                      MemorySpdPtr131;
 
 /** Offset 0x008C - RcompResistor settings
   Indicates  RcompResistor settings: Board-dependent
@@ -152,69 +168,85 @@ typedef struct {
 **/
   UINT16                      RcompTarget[5];
 
-/** Offset 0x0098 - DqsMapCpu2DramCh0
+/** Offset 0x0098 - Dqs Map CPU to DRAM MC 0 CH 0
+  Set Dqs mapping relationship between CPU and DRAM, Channel 0: board-dependent
 **/
-  UINT8                       DqsMapCpu2DramCh0[2];
+  UINT8                       DqsMapCpu2DramMc0Ch0[2];
 
-/** Offset 0x009A - DqsMapCpu2DramCh1
+/** Offset 0x009A - Dqs Map CPU to DRAM MC 0 CH 1
+  Set Dqs mapping relationship between CPU and DRAM, Channel 1: board-dependent
 **/
-  UINT8                       DqsMapCpu2DramCh1[2];
+  UINT8                       DqsMapCpu2DramMc0Ch1[2];
 
-/** Offset 0x009C - DqsMapCpu2DramCh2
+/** Offset 0x009C - Dqs Map CPU to DRAM MC 0 CH 2
+  Set Dqs mapping relationship between CPU and DRAM, Channel 2: board-dependent
 **/
-  UINT8                       DqsMapCpu2DramCh2[2];
+  UINT8                       DqsMapCpu2DramMc0Ch2[2];
 
-/** Offset 0x009E - DqsMapCpu2DramCh3
+/** Offset 0x009E - Dqs Map CPU to DRAM MC 0 CH 3
+  Set Dqs mapping relationship between CPU and DRAM, Channel 3: board-dependent
 **/
-  UINT8                       DqsMapCpu2DramCh3[2];
+  UINT8                       DqsMapCpu2DramMc0Ch3[2];
 
-/** Offset 0x00A0 - DqsMapCpu2DramCh4
+/** Offset 0x00A0 - Dqs Map CPU to DRAM MC 1 CH 0
+  Set Dqs mapping relationship between CPU and DRAM, Channel 0: board-dependent
 **/
-  UINT8                       DqsMapCpu2DramCh4[2];
+  UINT8                       DqsMapCpu2DramMc1Ch0[2];
 
-/** Offset 0x00A2 - DqsMapCpu2DramCh5
+/** Offset 0x00A2 - Dqs Map CPU to DRAM MC 1 CH 1
+  Set Dqs mapping relationship between CPU and DRAM, Channel 1: board-dependent
 **/
-  UINT8                       DqsMapCpu2DramCh5[2];
+  UINT8                       DqsMapCpu2DramMc1Ch1[2];
 
-/** Offset 0x00A4 - DqsMapCpu2DramCh6
+/** Offset 0x00A4 - Dqs Map CPU to DRAM MC 1 CH 2
+  Set Dqs mapping relationship between CPU and DRAM, Channel 2: board-dependent
 **/
-  UINT8                       DqsMapCpu2DramCh6[2];
+  UINT8                       DqsMapCpu2DramMc1Ch2[2];
 
-/** Offset 0x00A6 - DqsMapCpu2DramCh7
+/** Offset 0x00A6 - Dqs Map CPU to DRAM MC 1 CH 3
+  Set Dqs mapping relationship between CPU and DRAM, Channel 3: board-dependent
 **/
-  UINT8                       DqsMapCpu2DramCh7[2];
+  UINT8                       DqsMapCpu2DramMc1Ch3[2];
 
-/** Offset 0x00A8 - DqMapCpu2DramCh0
+/** Offset 0x00A8 - Dq Map CPU to DRAM MC 0 CH 0
+  Set Dq mapping relationship between CPU and DRAM, Channel 0: board-dependent
 **/
-  UINT8                       DqMapCpu2DramCh0[16];
+  UINT8                       DqMapCpu2DramMc0Ch0[16];
 
-/** Offset 0x00B8 - DqMapCpu2DramCh1
+/** Offset 0x00B8 - Dq Map CPU to DRAM MC 0 CH 1
+  Set Dq mapping relationship between CPU and DRAM, Channel 1: board-dependent
 **/
-  UINT8                       DqMapCpu2DramCh1[16];
+  UINT8                       DqMapCpu2DramMc0Ch1[16];
 
-/** Offset 0x00C8 - DqMapCpu2DramCh2
+/** Offset 0x00C8 - Dq Map CPU to DRAM MC 0 CH 2
+  Set Dq mapping relationship between CPU and DRAM, Channel 2: board-dependet
 **/
-  UINT8                       DqMapCpu2DramCh2[16];
+  UINT8                       DqMapCpu2DramMc0Ch2[16];
 
-/** Offset 0x00D8 - DqMapCpu2DramCh3
+/** Offset 0x00D8 - Dq Map CPU to DRAM MC 0 CH 3
+  Set Dq mapping relationship between CPU and DRAM, Channel 3: board-dependent
 **/
-  UINT8                       DqMapCpu2DramCh3[16];
+  UINT8                       DqMapCpu2DramMc0Ch3[16];
 
-/** Offset 0x00E8 - DqMapCpu2DramCh4
+/** Offset 0x00E8 - Dq Map CPU to DRAM MC 1 CH 0
+  Set Dq mapping relationship between CPU and DRAM, Channel 0: board-dependent
 **/
-  UINT8                       DqMapCpu2DramCh4[16];
+  UINT8                       DqMapCpu2DramMc1Ch0[16];
 
-/** Offset 0x00F8 - DqMapCpu2DramCh5
+/** Offset 0x00F8 - Dq Map CPU to DRAM MC 1 CH 1
+  Set Dq mapping relationship between CPU and DRAM, Channel 1: board-dependent
 **/
-  UINT8                       DqMapCpu2DramCh5[16];
+  UINT8                       DqMapCpu2DramMc1Ch1[16];
 
-/** Offset 0x0108 - DqMapCpu2DramCh6
+/** Offset 0x0108 - Dq Map CPU to DRAM MC 1 CH 2
+  Set Dq mapping relationship between CPU and DRAM, Channel 2: board-dependent
 **/
-  UINT8                       DqMapCpu2DramCh6[16];
+  UINT8                       DqMapCpu2DramMc1Ch2[16];
 
-/** Offset 0x0118 - DqMapCpu2DramCh7
+/** Offset 0x0118 - Dq Map CPU to DRAM MC 1 CH 3
+  Set Dq mapping relationship between CPU and DRAM, Channel 3: board-dependent
 **/
-  UINT8                       DqMapCpu2DramCh7[16];
+  UINT8                       DqMapCpu2DramMc1Ch3[16];
 
 /** Offset 0x0128 - Dqs Pins Interleaved Setting
   Indicates DqPinsInterleaved setting: board-dependent
@@ -899,13 +931,18 @@ typedef struct {
 **/
   UINT8                       CpuPcieRpLinkDownGpios;
 
-/** Offset 0x0271 - RpClockReqMsgEnable
+/** Offset 0x0271 - Enable ClockReq Messaging
+  ClockReq Messaging. Disabled(0x0): Disable ClockReq Messaging, Enabled(0x1)(Default):
+  Enable ClockReq Messaging
+  0:Disable, 1:Enable
 **/
-  UINT8                       RpClockReqMsgEnable[3];
+  UINT8                       CpuPcieRpClockReqMsgEnable[3];
 
-/** Offset 0x0274 - RpPcieThresholdBytes
+/** Offset 0x0274 - PCIE RP Pcie Speed
+  Determines each PCIE Port speed capability. 0: Auto; 1: Gen1; 2: Gen2; 3: Gen3;
+  4: Gen4 (see: CPU_PCIE_SPEED).
 **/
-  UINT8                       RpPcieThresholdBytes[4];
+  UINT8                       CpuPcieRpPcieSpeed[4];
 
 /** Offset 0x0278 - Selection of PSMI Support On/Off
   0(Default) = FALSE, 1 = TRUE. When TRUE, it will allow the PSMI Support
@@ -3164,7 +3201,7 @@ typedef struct {
 
 /** Offset 0x0AA8 - Reserved
 **/
-  UINT8                       Reserved45[136];
+  UINT8                       Reserved45[144];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -3183,11 +3220,11 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x0B30
+/** Offset 0x0B38
 **/
   UINT8                       UnusedUpdSpace34[6];
 
-/** Offset 0x0B36
+/** Offset 0x0B3E
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

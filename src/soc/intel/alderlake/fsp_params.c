@@ -663,7 +663,7 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	for (size_t i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++)
 		fill_vr_domain_config(s_cfg, i, &config->domain_vr_config[i]);
 
-	s_cfg->LpmStateEnableMask = get_supported_lpm_mask();
+	s_cfg->PmcLpmS0ixSubStateEnableMask = get_supported_lpm_mask();
 
 	/* Apply minimum assertion width settings */
 	if (config->pch_slp_s3_min_assertion_width == SLP_S3_ASSERTION_DEFAULT)

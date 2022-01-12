@@ -11,7 +11,6 @@
 #include <console/console.h>
 #include <spi_flash.h>
 #include <symbols.h>
-#include <cbmem.h>
 #include <stdint.h>
 #include <timer.h>
 

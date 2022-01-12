@@ -11,7 +11,6 @@
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>
-#include <cbmem.h>
 
 static void display_hob_info(FSP_INFO_HEADER *fsp_info_header)
 {

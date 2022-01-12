@@ -4,7 +4,6 @@
 #define __FRAMEBUFFER_INFO_H_
 
 #include <stdint.h>
-#include <stdbool.h>
 #include <commonlib/coreboot_tables.h>
 
 struct fb_info;

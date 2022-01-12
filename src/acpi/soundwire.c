@@ -5,7 +5,6 @@
 #include <acpi/acpi_soundwire.h>
 #include <commonlib/helpers.h>
 #include <device/soundwire.h>
-#include <stdbool.h>
 #include <stddef.h>
 
 /* Specification-defined prefix for SoundWire properties. */

@@ -5,7 +5,6 @@
 #define _MEMORY_INFO_H_
 
 #include <stdint.h>
-#include <stdbool.h>
 
 #define DIMM_INFO_SERIAL_SIZE		4
 #define DIMM_INFO_PART_NUMBER_SIZE	33

@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
-#include <cbfs.h>
 #include <console/console.h>
+#include <program_loading.h>
 #include <soc/mmu.h>
 #include <soc/cpucp.h>
 #include <soc/clock.h>

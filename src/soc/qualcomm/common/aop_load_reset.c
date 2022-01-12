@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <cbfs.h>
 #include <console/console.h>
+#include <program_loading.h>
 #include <soc/mmu.h>
 #include <soc/aop_common.h>
 #include <soc/clock.h>

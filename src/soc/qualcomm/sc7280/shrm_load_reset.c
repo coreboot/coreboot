@@ -2,8 +2,8 @@
 
 #include <arch/cache.h>
 #include <arch/mmu.h>
-#include <cbfs.h>
 #include <console/console.h>
+#include <program_loading.h>
 #include <soc/mmu.h>
 #include <soc/mmu_common.h>
 #include <soc/shrm.h>

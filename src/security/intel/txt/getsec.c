@@ -3,7 +3,6 @@
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <cpu/intel/common/common.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mp.h>

@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <cbfs.h>
 #include <cpu/x86/cr.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>

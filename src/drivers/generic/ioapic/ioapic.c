@@ -3,7 +3,6 @@
 #include <device/device.h>
 #include "chip.h"
 #include <arch/ioapic.h>
-#include <cpu/x86/lapic.h>
 
 static void ioapic_init(struct device *dev)
 {

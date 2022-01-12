@@ -17,7 +17,6 @@
 #include <Porting.h>
 #include <AGESA.h>
 #include <Topology.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <acpi/acpigen.h>

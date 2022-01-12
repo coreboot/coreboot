@@ -24,7 +24,7 @@ config ENABLE_CBFS_FALLBACK
 
 config CBFS_VERIFICATION
 	bool "Enable CBFS verification"
-	depends on VBOOT
+	depends on VBOOT_LIB
 	help
 	  This option enables hash verification of CBFS files in RO (COREBOOT) and RW regions.
 

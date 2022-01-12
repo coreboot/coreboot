@@ -39,7 +39,6 @@ ramstage-y	+= data_fabric.c
 ramstage-y	+= fch.c
 ramstage-y	+= fsp_s_params.c
 ramstage-y	+= gpio.c
-ramstage-y	+= graphics.c
 ramstage-y	+= i2c.c
 ramstage-y	+= mca.c
 ramstage-y	+= preload.c

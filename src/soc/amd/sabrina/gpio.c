@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Check if this is still correct */
-
 #include <amdblocks/gpio.h>
 #include <soc/gpio.h>
 #include <types.h>
@@ -18,20 +16,20 @@ static const struct soc_amd_event gpio_event_table[] = {
 	{ GPIO_7, GEVENT_11 },
 	{ GPIO_8, GEVENT_23 },
 	{ GPIO_9, GEVENT_22 },
+	{ GPIO_11, GEVENT_5 },
 	{ GPIO_16, GEVENT_12 },
 	{ GPIO_17, GEVENT_13 },
 	{ GPIO_18, GEVENT_14 },
-	{ GPIO_21, GEVENT_5 },
 	{ GPIO_22, GEVENT_3 },
 	{ GPIO_23, GEVENT_16 },
 	{ GPIO_24, GEVENT_15 },
+	{ GPIO_29, GEVENT_9 },
+	{ GPIO_32, GEVENT_17 },
 	{ GPIO_40, GEVENT_20 },
 	{ GPIO_84, GEVENT_18 },
-	{ GPIO_86, GEVENT_9 },
 	{ GPIO_89, GEVENT_0 },
 	{ GPIO_90, GEVENT_1 },
 	{ GPIO_91, GEVENT_6 },
-	{ GPIO_129, GEVENT_17 },
 };
 
 void soc_get_gpio_event_table(const struct soc_amd_event **table, size_t *items)

@@ -6,7 +6,6 @@
 #include <framebuffer_info.h>
 #include <string.h>
 #include <stdlib.h>
-#include <bootsplash.h>
 #include <list.h>
 
 struct fb_info {

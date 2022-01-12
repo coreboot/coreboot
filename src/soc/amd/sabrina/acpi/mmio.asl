@@ -124,6 +124,99 @@ Device (FUR1) {
 	AOAC_DEVICE(FCH_AOAC_DEV_UART1, 0)
 }
 
+Device (FUR2) {
+	Name (_HID, "AMDI0020")
+	Name (_UID, 0x2)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_UART2_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = IUA2
+		} Else {
+			IRQN = PUA2
+		}
+		If (IRQN == 0x1f) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_UART2_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+
+	AOAC_DEVICE(FCH_AOAC_DEV_UART2, 0)
+}
+
+Device (FUR3) {
+	Name (_HID, "AMDI0020")
+	Name (_UID, 0x3)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_UART3_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = IUA3
+		} Else {
+			IRQN = PUA3
+		}
+		If (IRQN == 0x1f) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_UART3_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+
+	AOAC_DEVICE(FCH_AOAC_DEV_UART3, 0)
+}
+
+Device (FUR4) {
+	Name (_HID, "AMDI0020")
+	Name (_UID, 0x4)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_UART4_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = IUA4
+		} Else {
+			IRQN = PUA4
+		}
+		If (IRQN == 0x1f) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_UART4_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+
+	AOAC_DEVICE(FCH_AOAC_DEV_UART4, 0)
+}
+
 Device (I2C0) {
 	Name (_HID, "AMDI0010")
 	Name (_UID, 0x0)

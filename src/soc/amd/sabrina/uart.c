@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Check if this is still correct */
-
 #include <amdblocks/aoac.h>
 #include <amdblocks/gpio.h>
 #include <amdblocks/uart.h>
@@ -26,6 +24,18 @@ static const struct {
 	[1] = { APU_UART1_BASE, {
 			PAD_NF(GPIO_140, UART1_TXD, PULL_NONE),
 			PAD_NF(GPIO_142, UART1_RXD, PULL_NONE),
+	} },
+	[2] = { APU_UART2_BASE, {
+			PAD_NF(GPIO_138, UART2_TXD, PULL_NONE),
+			PAD_NF(GPIO_136, UART2_RXD, PULL_NONE),
+	} },
+	[3] = { APU_UART3_BASE, {
+			PAD_NF(GPIO_135, UART3_TXD, PULL_NONE),
+			PAD_NF(GPIO_137, UART3_RXD, PULL_NONE),
+	} },
+	[4] = { APU_UART4_BASE, {
+			PAD_NF(GPIO_156, UART4_TXD, PULL_NONE),
+			PAD_NF(GPIO_155, UART4_RXD, PULL_NONE),
 	} },
 };
 
@@ -57,6 +67,12 @@ static const char *uart_acpi_name(const struct device *dev)
 		return "FUR0";
 	case APU_UART1_BASE:
 		return "FUR1";
+	case APU_UART2_BASE:
+		return "FUR2";
+	case APU_UART3_BASE:
+		return "FUR3";
+	case APU_UART4_BASE:
+		return "FUR4";
 	default:
 		return NULL;
 	}
@@ -73,6 +89,15 @@ static void uart_enable(struct device *dev)
 		break;
 	case APU_UART1_BASE:
 		dev_id = FCH_AOAC_DEV_UART1;
+		break;
+	case APU_UART2_BASE:
+		dev_id = FCH_AOAC_DEV_UART2;
+		break;
+	case APU_UART3_BASE:
+		dev_id = FCH_AOAC_DEV_UART3;
+		break;
+	case APU_UART4_BASE:
+		dev_id = FCH_AOAC_DEV_UART4;
 		break;
 	default:
 		printk(BIOS_ERR, "%s: Unknown device: %s\n", __func__, dev_path(dev));

@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Check if this is still correct */
-
 #include <stdint.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/aoac.h>
@@ -12,6 +10,9 @@
 #define FCH_AOAC_UART_FOR_CONSOLE \
 		(CONFIG_UART_FOR_CONSOLE == 0 ? FCH_AOAC_DEV_UART0 \
 		: CONFIG_UART_FOR_CONSOLE == 1 ? FCH_AOAC_DEV_UART1 \
+		: CONFIG_UART_FOR_CONSOLE == 2 ? FCH_AOAC_DEV_UART2 \
+		: CONFIG_UART_FOR_CONSOLE == 3 ? FCH_AOAC_DEV_UART3 \
+		: CONFIG_UART_FOR_CONSOLE == 4 ? FCH_AOAC_DEV_UART4 \
 		: -1)
 #if CONFIG(AMD_SOC_CONSOLE_UART) && FCH_AOAC_UART_FOR_CONSOLE == -1
 # error Unsupported UART_FOR_CONSOLE chosen

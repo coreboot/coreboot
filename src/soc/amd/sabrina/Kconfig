@@ -236,6 +236,9 @@ config CONSOLE_UART_BASE_ADDRESS
 	hex
 	default 0xfedc9000 if UART_FOR_CONSOLE = 0
 	default 0xfedca000 if UART_FOR_CONSOLE = 1
+	default 0xfedce000 if UART_FOR_CONSOLE = 2
+	default 0xfedcf000 if UART_FOR_CONSOLE = 3
+	default 0xfedd1000 if UART_FOR_CONSOLE = 4
 
 config SMM_TSEG_SIZE
 	hex

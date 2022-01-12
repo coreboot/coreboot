@@ -59,6 +59,9 @@ static void set_mmio_dev_ops(struct device *dev)
 		break;
 	case APU_UART0_BASE:
 	case APU_UART1_BASE:
+	case APU_UART2_BASE:
+	case APU_UART3_BASE:
+	case APU_UART4_BASE:
 		dev->ops = &sabrina_uart_mmio_ops;
 		break;
 	case APU_EMMC_BASE:

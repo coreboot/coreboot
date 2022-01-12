@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <assert.h>
 #include <commonlib/storage/sd_mmc.h>
-#include <cbmem.h>
 #include <cbfs.h>
 
 #include <soc/ti/am335x/mmc.h>

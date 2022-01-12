@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
-#include <cbmem.h>
 #include <device/device.h>
 #include <device/dram/lpddr4.h>
 #include <memory_info.h>

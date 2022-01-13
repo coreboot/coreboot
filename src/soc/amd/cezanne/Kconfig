@@ -136,7 +136,7 @@ config PRE_X86_CBMEM_CONSOLE_SIZE
 
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
-	default 0x1600
+	default 0x2000
 	help
 	  Increase this value if preram cbmem console is getting truncated
 

@@ -143,6 +143,7 @@
 #define PCH_DEVFN_SPI _PCH_DEVFN(LPC, 5)
 #define PCH_DEV_LPC _PCH_DEV(LPC, 0)
 #define PCH_DEV_SPI _PCH_DEV(LPC, 5)
+#define PCH_DEV_P2SB  _PCH_DEV(LPC, 1)
 #define PCH_DEV_SMBUS _PCH_DEV(LPC, 4)
 
 /* VT-d support value to match FSP settings */

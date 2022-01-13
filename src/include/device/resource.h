@@ -36,8 +36,9 @@
 #define IORESOURCE_FIXED	0x80000000
 
 /* PCI specific resource bits (IORESOURCE_BITS) */
-#define IORESOURCE_PCI64	(1<<0)	/* 64bit long pci resource */
-#define IORESOURCE_PCI_BRIDGE	(1<<1)  /* A bridge pci resource */
+#define IORESOURCE_PCI64		(1<<0)	/* 64bit long pci resource */
+#define IORESOURCE_PCI_BRIDGE		(1<<1)  /* A bridge pci resource */
+#define IORESOURCE_PCIE_RESIZABLE_BAR	(1<<2)  /* A Resizable BAR */
 
 typedef u64 resource_t;
 struct resource {

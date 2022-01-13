@@ -460,10 +460,11 @@
 #define PCI_EXT_CAP_ID_PWR	4
 
 /* Extended Capability lists*/
-#define PCIE_EXT_CAP_OFFSET	0x100
-#define  PCIE_EXT_CAP_AER_ID	0x0001
-#define  PCIE_EXT_CAP_L1SS_ID	0x001E
-#define  PCIE_EXT_CAP_LTR_ID	0x0018
+#define PCIE_EXT_CAP_OFFSET		0x100
+#define  PCIE_EXT_CAP_AER_ID		 0x0001
+#define  PCIE_EXT_CAP_L1SS_ID		 0x001E
+#define  PCIE_EXT_CAP_LTR_ID		 0x0018
+#define  PCIE_EXT_CAP_RESIZABLE_BAR	 0x0015
 
 /* Advanced Error Reporting */
 #define PCI_ERR_UNCOR_STATUS	4	/* Uncorrectable Error Status */
@@ -526,6 +527,16 @@
 /* Latency Tolerance Reporting */
 #define PCI_LTR_MAX_SNOOP	4
 #define PCI_LTR_MAX_NOSNOOP	6
+
+/* PCIe Resizable BARs */
+#define PCI_REBAR_CAP_OFFSET		0x4
+#define  PCI_REBAR_CAP_SIZE_MASK	 0xfffffff0
+#define PCI_REBAR_CTRL_OFFSET		0x8
+#define  PCI_REBAR_CTRL_NBARS_MASK	 0xe0
+#define  PCI_REBAR_CTRL_NBARS_SHIFT	 5
+#define  PCI_REBAR_CTRL_IDX_MASK	 0x07
+#define  PCI_REBAR_CTRL_SIZE_MASK	 0xffff0000
+#define  PCI_REBAR_CTRL_SIZE_SHIFT	 16
 
 /*
  * The PCI interface treats multi-function devices as independent

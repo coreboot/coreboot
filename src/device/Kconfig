@@ -632,6 +632,35 @@ config PCIEXP_L1_SUB_STATE
 	help
 	  Detect and enable ASPM on PCIe links.
 
+config PCIEXP_SUPPORT_RESIZABLE_BARS
+	prompt "Support PCIe Resizable BARs"
+	bool
+	depends on (ECAM_MMCONF_SUPPORT || PCI_IO_CFG_EXT)
+	default n
+	help
+	  When enabled, this will check PCIe devices for Resizable BAR support,
+	  and if found, will use this to discover the preferred BAR sizes of
+	  the device in preference over the traditional moving bits method. The
+	  amount of address space given out to devices in this manner (since
+	  it can range up to 8 EB) can be limited with the
+	  PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS Kconfig setting below.
+
+if PCIEXP_SUPPORT_RESIZABLE_BARS
+
+config PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS
+	int "Bits of address space to give to Resizable BARs"
+	range 20 63	# 1 MiB - 8 EiB
+	default 29	# 512 MiB
+	help
+	  This is the maximum number of bits of address space to allocate for
+	  PCIe devices with resizable BARs. For instance, if a device requests
+	  30 bits of address space (1 GiB), but this field is set to 29, then
+	  the device will only be allocated 29 bits worth of address space (512
+	  MiB). Valid values range from 20 (1 MiB) to 63 (8 EiB); these come
+	  from the Resizable BAR portion of the PCIe spec (7.8.6).
+
+endif # PCIEXP_SUPPORT_RESIZABLE_BARS
+
 config PCIEXP_HOTPLUG
 	prompt "Enable PCIe Hotplug Support"
 	bool

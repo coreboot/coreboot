@@ -3,6 +3,7 @@
 #define _CONSOLE_CBMEM_CONSOLE_H_
 
 #include <stdint.h>
+#include <stddef.h>
 
 void cbmemc_init(void);
 void cbmemc_tx_byte(unsigned char data);
@@ -18,6 +19,11 @@ static inline void __cbmemc_tx_byte(u8 data)	{ cbmemc_tx_byte(data); }
 static inline void __cbmemc_init(void)	{}
 static inline void __cbmemc_tx_byte(u8 data)	{}
 #endif
+
+/*
+ * Copy an external cbmem_console into the active cbmem_console.
+ */
+void cbmemc_copy_in(void *buffer, size_t size);
 
 void cbmem_dump_console_to_uart(void);
 void cbmem_dump_console(void);

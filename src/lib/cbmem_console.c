@@ -139,6 +139,16 @@ static void copy_console_buffer(struct cbmem_console *src_cons_p)
 	src_cons_p->size = 0;
 }
 
+void cbmemc_copy_in(void *buffer, size_t size)
+{
+	struct cbmem_console *previous = (void *)buffer;
+
+	if (!buffer_valid(previous, size))
+		return;
+
+	copy_console_buffer(previous);
+}
+
 static void cbmemc_reinit(int is_recovery)
 {
 	const size_t size = CONFIG_CONSOLE_CBMEM_BUFFER_SIZE;

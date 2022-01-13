@@ -368,6 +368,7 @@ chip soc/intel/alderlake
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "360 * MHz"
 				register "remote_name" = ""IPU0""
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				#Controls
 				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_3"
@@ -399,8 +400,6 @@ chip soc/intel/alderlake
 				register "acpi_name" = ""NVM0""
 				register "chip_name" = ""AT24 EEPROM""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
-
-				register "pr0" = ""\\_SB.PCI0.I2C2.CAM0.PRIC""
 
 				register "nvm_size" = "0x2000"
 				register "nvm_pagesize" = "1"

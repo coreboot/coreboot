@@ -6,7 +6,6 @@
 #include <spd_bin.h>
 #include <soc/meminit.h>
 #include <baseboard/variants.h>
-#include <cbfs.h>
 
 void mainboard_memory_init_params(FSP_M_CONFIG *m_cfg)
 {

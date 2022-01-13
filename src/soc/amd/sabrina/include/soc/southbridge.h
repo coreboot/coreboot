@@ -139,6 +139,9 @@
 #define   I2C_PAD_CTRL_BIAS_CRT_EN	BIT(16)
 #define   I2C_PAD_CTRL_SPARE0		BIT(17)
 #define   I2C_PAD_CTRL_SPARE1		BIT(18)
+#define   I2C_PAD_CTRL_PD_EN		BIT(19)
+#define   I2C_PAD_CTRL_COMP_SEL		BIT(20)
+#define   I2C_PAD_CTRL_RES_BIAS_EN	BIT(21)
 
 void fch_pre_init(void);
 void fch_early_init(void);

@@ -1,13 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Check if this is still correct */
-
 #ifndef AMD_SABRINA_SMU_H
 #define AMD_SABRINA_SMU_H
 
 /* SMU mailbox register offsets in SMN */
 #define SMN_SMU_MESG_ID		0x3b10528
-#define SMN_SMU_MESG_RESP	0x3b10564
+#define SMN_SMU_MESG_RESP	0x3b10578
 #define SMN_SMU_MESG_ARGS_BASE	0x3b10998
 
 #define SMU_NUM_ARGS		6

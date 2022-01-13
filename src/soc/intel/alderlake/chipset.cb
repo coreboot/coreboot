@@ -185,6 +185,8 @@ chip soc/intel/alderlake
 		device pci 19.0 alias i2c4 off end
 		device pci 19.1 alias i2c5 off end
 		device pci 19.2 alias uart2 off end
+		# eMMC device is applicable only for ADL-N
+		device pci 1a.0 alias emmc off end
 		device pci 1c.0 alias pcie_rp1 off end
 		device pci 1c.1 alias pcie_rp2 off end
 		device pci 1c.2 alias pcie_rp3 off end

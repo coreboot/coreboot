@@ -81,18 +81,21 @@ chip soc/intel/alderlake
 	register "cpu_pcie_rp[CPU_RP(1)]" = "{
 		.clk_req = 0,
 		.clk_src = 0,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER,
 	}"
 
 	# Enable CPU PCIE RP 2 using CLK 3
 	register "cpu_pcie_rp[CPU_RP(2)]" = "{
 		.clk_req = 3,
 		.clk_src = 3,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER,
 	}"
 
 	# Enable CPU PCIE RP 3 using CLK 4
 	register "cpu_pcie_rp[CPU_RP(3)]" = "{
 		.clk_req = 4,
 		.clk_src = 4,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER,
 	}"
 
 	register "SataSalpSupport" = "1"

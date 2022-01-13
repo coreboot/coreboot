@@ -144,6 +144,7 @@ chip soc/intel/alderlake
 			register "cpu_pcie_rp[CPU_RP(1)]" = "{
 				.clk_req = 1,
 				.clk_src = 1,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end
 		device ref cnvi_wifi on

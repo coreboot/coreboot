@@ -228,6 +228,7 @@ chip soc/intel/alderlake
 			register "cpu_pcie_rp[CPU_RP(1)]" = "{
 				.clk_req = 0,
 				.clk_src = 0,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			probe BOOT_NVME_MASK BOOT_NVME_ENABLED
 		end

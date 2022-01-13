@@ -89,6 +89,7 @@ chip soc/intel/alderlake
 	register "cpu_pcie_rp[CPU_RP(1)]" = "{
 		.clk_req = 0,
 		.clk_src = 0,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER,
 	}"
 
 	# Enable EDP in PortA

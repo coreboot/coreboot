@@ -73,7 +73,7 @@ static int gtt_setup(u8 *mmiobase)
 
 static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 			  unsigned int pphysbase, unsigned int piobase,
-			  u8 *mmiobase, unsigned int pgfx)
+			  u8 *mmiobase, uintptr_t pgfx)
 {
 	struct edid edid;
 	struct edid_mode *mode;
@@ -373,15 +373,15 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 
 static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
 			  unsigned int pphysbase, unsigned int piobase,
-			  u8 *mmiobase, unsigned int pgfx)
+			  u8 *mmiobase, uintptr_t pgfx)
 {
 	int i;
 	u32 hactive, vactive;
 	u16 reg16;
 	u32 uma_size;
 
-	printk(BIOS_SPEW, "mmiobase %x addrport %x physbase %x\n",
-		(u32)mmiobase, piobase, pphysbase);
+	printk(BIOS_SPEW, "mmiobase %lx addrport %x physbase %x\n",
+		(uintptr_t)mmiobase, piobase, pphysbase);
 
 	gtt_setup(mmiobase);
 

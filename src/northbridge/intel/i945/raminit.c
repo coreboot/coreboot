@@ -70,7 +70,7 @@ static __attribute__((noinline)) void do_ram_command(u32 command)
 	udelay(1);
 }
 
-static void ram_read32(u32 offset)
+static void ram_read32(uintptr_t offset)
 {
 	PRINTK_DEBUG("   RAM read: %08x\n", offset);
 

@@ -10,7 +10,8 @@
  */
 static u32 sample_strobes(int channel_offset, struct sys_info *sysinfo)
 {
-	u32 reg32, addr;
+	u32 reg32;
+	uintptr_t addr;
 	int i;
 
 	mchbar_setbits32(C0DRC1 + channel_offset, 1 << 6);

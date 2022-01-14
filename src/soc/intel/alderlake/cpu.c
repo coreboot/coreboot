@@ -19,11 +19,17 @@
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/msr.h>
+#include <intelblocks/acpi.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_chip.h>
 #include <types.h>
+
+enum alderlake_model {
+	ADL_MODEL_P_M = 0x9A,
+	ADL_MODEL_N = 0xBE,
+};
 
 bool cpu_soc_is_in_untrusted_mode(void)
 {
@@ -67,6 +73,21 @@ static void configure_misc(void)
 	msr.lo |= (1 << 0);	/* Enable Bi-directional PROCHOT as an input */
 	msr.lo |= (1 << 23);	/* Lock it */
 	wrmsr(MSR_POWER_CTL, msr);
+}
+
+enum core_type get_soc_cpu_type(void)
+{
+	struct cpuinfo_x86 cpuinfo;
+
+	if (cpu_is_hybrid_supported())
+		return cpu_get_cpu_type();
+
+	get_fms(&cpuinfo, cpuid_eax(1));
+
+	if (cpuinfo.x86 == 0x6 && cpuinfo.x86_model == ADL_MODEL_N)
+		return CPUID_CORE_TYPE_INTEL_ATOM;
+	else
+		return CPUID_CORE_TYPE_INTEL_CORE;
 }
 
 /* All CPUs including BSP will run the following function. */

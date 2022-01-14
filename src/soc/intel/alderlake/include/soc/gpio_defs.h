@@ -129,6 +129,29 @@
 #define GPP_C22_IRQ				0x24
 #define GPP_C23_IRQ				0x25
 
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+/* Group D */
+#define GPP_D0_IRQ				0x40
+#define GPP_D1_IRQ				0x41
+#define GPP_D2_IRQ				0x42
+#define GPP_D3_IRQ				0x43
+#define GPP_D4_IRQ				0x44
+#define GPP_D5_IRQ				0x45
+#define GPP_D6_IRQ				0x46
+#define GPP_D7_IRQ				0x47
+#define GPP_D8_IRQ				0x48
+#define GPP_D9_IRQ				0x49
+#define GPP_D10_IRQ				0x4A
+#define GPP_D11_IRQ				0x4B
+#define GPP_D12_IRQ				0x4C
+#define GPP_D13_IRQ				0x4D
+#define GPP_D14_IRQ				0x4E
+#define GPP_D15_IRQ				0x4F
+#define GPP_D16_IRQ				0x50
+#define GPP_D17_IRQ				0x51
+#define GPP_D18_IRQ				0x52
+#define GPP_D19_IRQ				0x53
+#else
 /* Group D */
 #define GPP_D0_IRQ				0x2C
 #define GPP_D1_IRQ				0x2D
@@ -150,6 +173,7 @@
 #define GPP_D17_IRQ				0x3D
 #define GPP_D18_IRQ				0x3E
 #define GPP_D19_IRQ				0x3F
+#endif
 
 /* Group E */
 #define GPP_E0_IRQ				0x26
@@ -203,6 +227,55 @@
 #define GPP_F22_IRQ				0x6C
 #define GPP_F23_IRQ				0x6D
 
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+/* Group H */
+#define GPP_H0_IRQ				0x28
+#define GPP_H1_IRQ				0x29
+#define GPP_H2_IRQ				0x2A
+#define GPP_H3_IRQ				0x2B
+#define GPP_H4_IRQ				0x2C
+#define GPP_H5_IRQ				0x2D
+#define GPP_H6_IRQ				0x2E
+#define GPP_H7_IRQ				0x2F
+#define GPP_H8_IRQ				0x30
+#define GPP_H9_IRQ				0x31
+#define GPP_H10_IRQ				0x32
+#define GPP_H11_IRQ				0x33
+#define GPP_H12_IRQ				0x34
+#define GPP_H13_IRQ				0x35
+#define GPP_H14_IRQ				0x36
+#define GPP_H15_IRQ				0x37
+#define GPP_H16_IRQ				0x38
+#define GPP_H17_IRQ				0x39
+#define GPP_H18_IRQ				0x3A
+#define GPP_H19_IRQ				0x3B
+#define GPP_H20_IRQ				0x3C
+#define GPP_H21_IRQ				0x3D
+#define GPP_H22_IRQ				0x3E
+#define GPP_H23_IRQ				0x3F
+
+/* Group I */
+#define GPP_I0_IRQ				0x74
+#define GPP_I1_IRQ				0x75
+#define GPP_I2_IRQ				0x76
+#define GPP_I3_IRQ				0x77
+#define GPP_I4_IRQ				0x18
+#define GPP_I5_IRQ				0x19
+#define GPP_I6_IRQ				0x1A
+#define GPP_I7_IRQ				0x1B
+#define GPP_I8_IRQ				0x1C
+#define GPP_I9_IRQ				0x1D
+#define GPP_I10_IRQ				0x1E
+#define GPP_I11_IRQ				0x1F
+#define GPP_I12_IRQ				0x20
+#define GPP_I13_IRQ				0x21
+#define GPP_I14_IRQ				0x22
+#define GPP_I15_IRQ				0x23
+#define GPP_I16_IRQ				0x24
+#define GPP_I17_IRQ				0x25
+#define GPP_I18_IRQ				0x26
+#define GPP_I19_IRQ				0x27
+#else
 /* Group H */
 #define GPP_H0_IRQ				0x74
 #define GPP_H1_IRQ				0x75
@@ -228,6 +301,7 @@
 #define GPP_H21_IRQ				0x29
 #define GPP_H22_IRQ				0x2A
 #define GPP_H23_IRQ				0x2B
+#endif
 
 /* Group R */
 #define GPP_R0_IRQ				0x58

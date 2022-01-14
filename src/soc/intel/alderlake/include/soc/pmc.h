@@ -112,8 +112,14 @@ extern struct device_operations pmc_ops;
 #define PMC_GPP_R		0x3
 #define PMC_GPD			0x4
 #define PMC_GPP_S		0x5
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+#define PMC_GPP_I		0x6
+#define PMC_GPP_H		0x7
+#define PMC_GPP_D		0x8
+#else
 #define PMC_GPP_H		0x6
 #define PMC_GPP_D		0x7
+#endif
 #define PMC_GPP_F		0xA
 #define PMC_GPP_C		0xB
 #define PMC_GPP_E		0xC

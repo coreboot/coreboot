@@ -46,6 +46,15 @@ static const struct vw_entries adl_community0_vw[] = {
 	{GPP_B0, GPP_B23},
 };
 
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+static const struct pad_group adl_community1_groups[] = {
+	INTEL_GPP_BASE(GPP_S0, GPP_S0, GPP_S7, 96),			/* GPP_S */
+	INTEL_GPP_BASE(GPP_S0, GPP_I0, GPP_I19, 128),			/* GPP_I */
+	INTEL_GPP_BASE(GPP_S0, GPP_H0, GPP_H23, 160),			/* GPP_H */
+	INTEL_GPP_BASE(GPP_S0, GPP_D0, GPP_GSPI2_CLK_LOOPBK, 192),	/* GPP_D */
+	INTEL_GPP(GPP_S0, GPP_VGPIO_0, GPP_VGPIO_THC1),			/* vGPIO */
+};
+#else
 static const struct pad_group adl_community1_groups[] = {
 	INTEL_GPP_BASE(GPP_S0, GPP_S0, GPP_S7, 96),			/* GPP_S */
 	INTEL_GPP_BASE(GPP_S0, GPP_H0, GPP_H23, 128),			/* GPP_H */
@@ -53,6 +62,7 @@ static const struct pad_group adl_community1_groups[] = {
 	INTEL_GPP(GPP_S0, GPP_CPU_RSVD_1, GPP_CPU_RSVD_24),		/* GPP_CPU_RSVD */
 	INTEL_GPP(GPP_S0, GPP_VGPIO_0, GPP_VGPIO_37),			/* vGPIO */
 };
+#endif
 
 static const struct vw_entries adl_community1_vw[] = {
 	{GPP_D0, GPP_D19},
@@ -112,7 +122,8 @@ static const struct pad_community adl_communities[] = {
 		.vw_entries = adl_community0_vw,
 		.num_vw_entries = ARRAY_SIZE(adl_community0_vw),
 	},
-	[COMM_1] = { /* GPP S, D, H */
+	[COMM_1] = { /* GPP S, D, H for ADL-P/M
+			GPP S, I, D, H for ADL-N */
 		.port = PID_GPIOCOM1,
 		.cpu_port = PID_CPU_GPIOCOM1,
 		.first_pad = GPIO_COM1_START,
@@ -126,7 +137,11 @@ static const struct pad_community adl_communities[] = {
 		.gpi_smi_sts_reg_0 = GPI_SMI_STS_0,
 		.gpi_smi_en_reg_0 = GPI_SMI_EN_0,
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+		.name = "GPP_SIHD",
+#else
 		.name = "GPP_SDH",
+#endif
 		.acpi_path = "\\_SB.PCI0.GPIO",
 		.reset_map = rst_map_gpp,
 		.num_reset_vals = ARRAY_SIZE(rst_map_gpp),
@@ -236,6 +251,9 @@ const struct pmc_to_gpio_route *soc_pmc_gpio_routes(size_t *num)
 		{ PMC_GPP_T,     GPP_T },
 		{ PMC_GPP_A,     GPP_A },
 		{ PMC_GPP_S,     GPP_S },
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+		{ PMC_GPP_I,     GPP_I },
+#endif
 		{ PMC_GPP_H,     GPP_H },
 		{ PMC_GPP_D,     GPP_D },
 		{ PMC_GPD,       GPD },

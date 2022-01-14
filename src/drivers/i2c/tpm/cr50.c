@@ -445,13 +445,13 @@ static int cr50_i2c_probe(struct tpm_chip *chip, uint32_t *did_vid)
 	int retries;
 
 	/*
-	 * 150 ms should be enough to synchronize with the TPM even under the
+	 * 200 ms should be enough to synchronize with the TPM even under the
 	 * worst nested reset request conditions. In vast majority of cases
 	 * there would be no wait at all.
 	 */
 	printk(BIOS_INFO, "Probing TPM I2C: ");
 
-	for (retries = 15; retries > 0; retries--) {
+	for (retries = 20; retries > 0; retries--) {
 		int rc;
 
 		rc = cr50_i2c_read(chip, TPM_DID_VID(0), (uint8_t *)did_vid, 4);

@@ -122,7 +122,7 @@ enum timestamp_id {
 	TS_START_CSE_FW_SYNC = 948,
 	TS_END_CSE_FW_SYNC = 949,
 
-	/* 950+ reserved for vendorcode extensions (950-999: intel/fsp) */
+	/* 950+ reserved for vendorcode extensions (950-989: intel/fsp) */
 	TS_FSP_MEMORY_INIT_START = 950,
 	TS_FSP_MEMORY_INIT_END = 951,
 	TS_FSP_TEMP_RAM_EXIT_START = 952,
@@ -139,6 +139,9 @@ enum timestamp_id {
 	TS_FSP_MULTI_PHASE_SI_INIT_END = 963,
 	TS_FSP_MEMORY_INIT_LOAD = 970,
 	TS_FSP_SILICON_INIT_LOAD = 971,
+
+	/* 990+ reserved for vendorcode extensions (990-999: Intel ME continued) */
+	TS_ME_ROM_START = 990,
 
 	/* 1000+ reserved for payloads (1000-1200: ChromeOS depthcharge) */
 
@@ -283,6 +286,7 @@ static const struct timestamp_id_to_name {
 	{ TS_ME_RECEIVED_CRDA_FROM_PMC,	"CSE received 'CPU Reset Done Ack sent' from PMC"},
 	{ TS_START_CSE_FW_SYNC,		"starting CSE firmware sync"},
 	{ TS_END_CSE_FW_SYNC,		"finished CSE firmware sync"},
+	{ TS_ME_ROM_START,		"CSME ROM started execution"},
 
 	/* FSP related timestamps */
 	{ TS_FSP_MEMORY_INIT_START, "calling FspMemoryInit" },

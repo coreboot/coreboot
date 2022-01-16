@@ -110,6 +110,9 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_HDA:		return "HDAS";
 	case PCH_DEVFN_SMBUS:		return "SBUS";
 	case PCH_DEVFN_GBE:		return "GLAN";
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+	case PCH_DEVFN_EMMC:		return "EMMC";
+#endif
 	}
 
 	return NULL;

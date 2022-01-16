@@ -183,6 +183,14 @@ static const struct slot_irq_constraints irq_constraints[] = {
 			DIRECT_IRQ(PCH_DEVFN_UART2),
 		},
 	},
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+	{
+		.slot = PCH_DEV_SLOT_EMMC,
+		.fns = {
+			ANY_PIRQ(PCH_DEVFN_EMMC),
+		},
+	},
+#endif
 	{
 		.slot = PCH_DEV_SLOT_PCIE,
 		.fns = {
@@ -596,6 +604,12 @@ static void fill_fsps_pm_timer_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_storage_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+	/* eMMC Configuration */
+	s_cfg->ScsEmmcEnabled = is_devfn_enabled(PCH_DEVFN_EMMC);
+	if (s_cfg->ScsEmmcEnabled)
+		s_cfg->ScsEmmcHs400Enabled = config->emmc_enable_hs400_mode;
+#endif
 	/* Enable Hybrid storage auto detection */
 	s_cfg->HybridStorageMode = config->HybridStorageMode;
 }

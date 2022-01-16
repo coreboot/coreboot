@@ -419,6 +419,11 @@ struct soc_intel_alderlake_config {
 	 * accordingly */
 	uint8_t HybridStorageMode;
 
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+	/* eMMC HS400 mode */
+	uint8_t emmc_enable_hs400_mode;
+#endif
+
 	/*
 	 * Override CPU flex ratio value:
 	 * CPU ratio value controls the maximum processor non-turbo ratio.

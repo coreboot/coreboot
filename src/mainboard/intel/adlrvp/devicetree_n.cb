@@ -16,6 +16,9 @@ chip soc/intel/alderlake
 	# Sagv Configuration
 	register "SaGv" = "SaGv_Enabled"
 
+	# eMMC HS400
+	register "emmc_enable_hs400_mode" = "1"
+
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC3)"		# Type-C Port1
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC3)"		# Type-C Port2
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC3)"		# FPS connector
@@ -276,6 +279,7 @@ chip soc/intel/alderlake
 		device ref uart0 on end
 		device ref gspi0 on end
 		device ref p2sb on end
+		device ref emmc on end
 		device ref hda on
 			chip drivers/intel/soundwire
 				device generic 0 on

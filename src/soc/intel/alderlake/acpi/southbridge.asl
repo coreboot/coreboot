@@ -26,6 +26,11 @@
 /* Serial IO */
 #include "serialio.asl"
 
+/* eMMC */
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+#include "scs.asl"
+#endif
+
 /* SMBus 0:1f.4 */
 #include <soc/intel/common/block/acpi/acpi/smbus.asl>
 

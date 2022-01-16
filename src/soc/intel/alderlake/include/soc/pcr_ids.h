@@ -33,6 +33,9 @@
 #define PID_ITSS	0xc4
 #define PID_SERIALIO	0xcb
 
+/* eMMC Port ID for Alder Lake N */
+#define PID_EMMC	0xa1
+
 /* CPU Port IDs */
 #define PID_CPU_GPIOCOM0	0xb7
 #define PID_CPU_GPIOCOM1	0xb8

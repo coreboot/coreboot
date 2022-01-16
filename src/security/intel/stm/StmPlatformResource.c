@@ -118,7 +118,7 @@ static void add_simple_resources(void)
 
 	rsc_pm_io.base = (uint16_t)get_pmbase();
 
-	// Local APIC. We assume that all thteads are programmed identically
+	// Local APIC. We assume that all threads are programmed identically
 	// despite that it is possible to have individual APIC address for
 	// each of the threads. If this is the case this programming should
 	// be corrected.

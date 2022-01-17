@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/io.h>
+#include <arch/ioapic.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -8,8 +10,7 @@
 #include <option.h>
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
-#include <arch/io.h>
-#include <arch/ioapic.h>
+#include <pc80/i8259.h>
 #include "chip.h"
 #include "i82801dx.h"
 
@@ -272,6 +273,8 @@ static void lpc_init(struct device *dev)
 
 	/* Initialize the High Precision Event Timers */
 	enable_hpet(dev);
+
+	setup_i8259();
 
 	/* Don't allow evil boot loaders, kernels, or
 	 * userspace applications to deceive us:

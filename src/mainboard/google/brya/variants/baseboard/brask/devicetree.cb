@@ -44,9 +44,9 @@ chip soc/intel/alderlake
 
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
-		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C1] = PchSerialIoPci,
 		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C3] = PchSerialIoPci,
+		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C5] = PchSerialIoDisabled,
 	}"

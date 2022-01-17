@@ -314,12 +314,13 @@ chip soc/intel/jasperlake
 				register "gpio_panel.gpio[2].gpio_num" = "GPP_D12" #reset
 
 				#_ON
-				register "on_seq.ops_cnt" = "5"
+				register "on_seq.ops_cnt" = "6"
 				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
 				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
 				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
-				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 5)"
-				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(2, 5)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_ENABLE(2, 5)"
+				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_DISABLE(2, 5)"
+				register "on_seq.ops[5]" = "SEQ_OPS_GPIO_ENABLE(2, 0)"
 
 				#_OFF
 				register "off_seq.ops_cnt" = "4"
@@ -342,12 +343,16 @@ chip soc/intel/jasperlake
 				register "low_power_probe" = "1"
 
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_D13" #power_enable_2p8
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_D12" #reset
 				#_ON
-				register "on_seq.ops_cnt" = "1"
+				register "on_seq.ops_cnt" = "2"
 				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
 				#_OFF
-				register "off_seq.ops_cnt" = "1"
+				register "off_seq.ops_cnt" = "2"
 				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(1, 5)"
+
 				device i2c 0C on end
 			end
 			chip drivers/intel/mipi_camera

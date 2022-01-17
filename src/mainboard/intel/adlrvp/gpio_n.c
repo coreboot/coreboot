@@ -158,6 +158,8 @@ static const struct pad_config gpio_table[] = {
 
 	/* CAM_STROBE */
 	PAD_CFG_GPO(GPP_B18, 0, PLTRST),
+	/* CAM1_RST_N */
+	PAD_CFG_GPO(GPP_A21, 1, PLTRST),
 	/* CAM1_PWR_EN */
 	PAD_CFG_GPO(GPP_B23, 1, PLTRST),
 	/* CAM2_RST */

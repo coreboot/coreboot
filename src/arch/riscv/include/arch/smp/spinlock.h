@@ -3,10 +3,8 @@
 #ifndef ARCH_SMP_SPINLOCK_H
 #define ARCH_SMP_SPINLOCK_H
 
-#include <arch/encoding.h>
+#include <arch/barrier.h>
 #include <arch/smp/atomic.h>
-
-#define barrier() { asm volatile ("fence" ::: "memory"); }
 
 typedef struct {
 	atomic_t lock;

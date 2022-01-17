@@ -1,10 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/barrier.h>
 #include <arch/encoding.h>
 #include <arch/smp/smp.h>
-#include <arch/smp/spinlock.h>
-#include <mcall.h>
+#include <arch/smp/atomic.h>
 #include <console/console.h>
+#include <mcall.h>
 
 void smp_pause(int working_hartid)
 {

@@ -42,6 +42,7 @@ static struct {
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_7, "Alderlake-P" },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_8, "Alderlake-P" },
 	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_9, "Alderlake-P" },
+	{ PCI_DEVICE_ID_INTEL_ADL_P_ID_10, "Alderlake-P" },
 	{ PCI_DEVICE_ID_INTEL_ADL_M_ID_1, "Alderlake-M" },
 	{ PCI_DEVICE_ID_INTEL_ADL_M_ID_2, "Alderlake-M" },
 	{ PCI_DEVICE_ID_INTEL_ADL_N_ID_1, "Alderlake-N" },

@@ -149,6 +149,7 @@ enum adl_cpu_type get_adl_cpu_type(void)
 		PCI_DEVICE_ID_INTEL_ADL_P_ID_7,
 		PCI_DEVICE_ID_INTEL_ADL_P_ID_8,
 		PCI_DEVICE_ID_INTEL_ADL_P_ID_9,
+		PCI_DEVICE_ID_INTEL_ADL_P_ID_10
 	};
 	const uint16_t adl_s_mch_ids[] = {
 		PCI_DEVICE_ID_INTEL_ADL_S_ID_1,

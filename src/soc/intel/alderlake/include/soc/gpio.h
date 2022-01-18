@@ -6,8 +6,13 @@
 #include <soc/gpio_defs.h>
 #include <intelblocks/gpio.h>
 
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+#define CROS_GPIO_NAME		"INTC1057"
+#define CROS_GPIO_DEVICE_NAME	"INTC1057:00"
+#else
 #define CROS_GPIO_NAME		"INTC1055"
 #define CROS_GPIO_DEVICE_NAME	"INTC1055:00"
+#endif
 
 /* Enable GPIO community power management configuration */
 #define MISCCFG_GPIO_PM_CONFIG_BITS (MISCCFG_GPVNNREQEN | \

@@ -223,6 +223,7 @@ chip soc/intel/alderlake
 				.clk_src = 0,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
+			probe BOOT_NVME_MASK BOOT_NVME_ENABLED
 		end
 		device ref tbt_pcie_rp0 off end
 		device ref tbt_pcie_rp1 off end
@@ -344,6 +345,23 @@ chip soc/intel/alderlake
 					probe DB_SD DB_SD_RTS5232S
 				end
 			end
+		end
+		device ref pcie_rp9 on
+			# Enable NVMe PCIE 9 using clk 0
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 0,
+				.clk_req = 0,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D11)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B4)"
+				register "srcclk_pin" = "0"
+				device generic 0 on
+					probe BOOT_EMMC_MASK BOOT_EMMC_ENABLED
+				end
+			end
+			probe BOOT_EMMC_MASK BOOT_EMMC_ENABLED
 		end
 		device ref pch_espi on
 			chip ec/google/chromeec

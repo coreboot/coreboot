@@ -31,6 +31,9 @@ struct drivers_net_config {
 	 * the device number is and the valid range is [1-10].
 	 */
 	uint8_t device_index;
+
+	/* Allow kernel driver to enable ASPM L1.2. */
+	bool enable_aspm_l1_2;
 };
 
 #endif /* __DRIVERS_R8168_CHIP_H__ */

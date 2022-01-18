@@ -12,7 +12,7 @@
 
 static int transfer_buffer_valid(const struct transfer_info_struct *ptr)
 {
-	if (ptr->magic_val == TRANSFER_MAGIC_VAL)
+	if (ptr->magic_val == TRANSFER_MAGIC_VAL && ptr->struct_bytes == sizeof(*ptr))
 		return 1;
 	else
 		return 0;

@@ -95,13 +95,11 @@ includes-handler= \
 
 $(obj)/libpayload.a: $(foreach class,$(libraries),$$($(class)-objs))
 	printf "    AR         $(subst $(CURDIR)/,,$(@))\n"
-	$(AR) rc $@ $(filter-out %.a,$^)
-	printf "open $@\n$(foreach lib,$(filter %.a,$^),addlib $(lib)\n)save\nend\n" | $(AR) -M
+	printf "create $@\n$(foreach objc,$(filter-out %.a,$^),addmod $(objc)\n)$(foreach lib,$(filter %.a,$^),addlib $(lib)\n)save\nend\n" | $(AR) -M
 
 $(obj)/%.a: $$(%-objs)
 	printf "    AR         $(subst $(CURDIR)/,,$(@))\n"
-	$(AR) rc $@ $(filter-out %.a,$^)
-	printf "open $@\n$(foreach lib,$(filter %.a,$^),addlib $(lib)\n)save\nend\n" | $(AR) -M
+	printf "create $@\n$(foreach objc,$(filter-out %.a,$^),addmod $(objc)\n)$(foreach lib,$(filter %.a,$^),addlib $(lib)\n)save\nend\n" | $(AR) -M
 
 $(obj)/head.o: $(obj)/arch/$(ARCHDIR-y)/head.head.o.o
 	printf "    CP         $(subst $(CURDIR)/,,$(@))\n"

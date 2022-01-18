@@ -27,6 +27,9 @@ BOOTBLOCK_ADDR = BOOTBLOCK_END - CONFIG_C_ENV_BOOTBLOCK_SIZE;
  *                     |                                |
  *                     |      cbfs_cache (if reqd)      |
  *                     |        (CBFS_CACHE_SIZE)       |
+ *                     +--------------------------------+ VERSTAGE_ADDR + VERSTAGE_SIZE + PRERAM_CBMEM_CONSOLE_SIZE
+ *                     |      Preram CBMEM console      |
+ *                     |   (PRERAM_CBMEM_CONSOLE_SIZE)  |
  *                     +--------------------------------+ VERSTAGE_ADDR + VERSTAGE_SIZE
  *                     |                                |
  *                     |       verstage (if reqd)       |
@@ -48,11 +51,11 @@ BOOTBLOCK_ADDR = BOOTBLOCK_END - CONFIG_C_ENV_BOOTBLOCK_SIZE;
  *                     |     FMAP cache (FMAP_SIZE)     |
  *                     +--------------------------------+
  *                     | CBFS mcache (CBFS_MCACHE_SIZE) |
- *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE + PRERAM_CBMEM_CONSOLE_SIZE + 0x200
+ *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE + PRE_X86_CBMEM_CONSOLE_SIZE + 0x200
  *                     |  Early Timestamp region (512B) |
- *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE + PRERAM_CBMEM_CONSOLE_SIZE
- *                     |      Preram CBMEM console      |
- *                     |   (PRERAM_CBMEM_CONSOLE_SIZE)  |
+ *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE + PRE_X86_CBMEM_CONSOLE_SIZE
+ *                     |   PSP Verstage CBMEM console   |
+ *                     |  (PRE_X86_CBMEM_CONSOLE_SIZE)  |
  *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40 + VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE
  *                     |   PSP shared (vboot workbuf)   |
  *                     |(VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE)      |
@@ -98,6 +101,8 @@ SECTIONS
 #if CONFIG(VBOOT_SEPARATE_VERSTAGE)
 	VERSTAGE(CONFIG_VERSTAGE_ADDR, CONFIG_VERSTAGE_SIZE)
 #endif
+
+        PRERAM_CBMEM_CONSOLE(., CONFIG_PRERAM_CBMEM_CONSOLE_SIZE)
 
 #if CONFIG_CBFS_CACHE_SIZE > 0
         . = ALIGN(ARCH_CACHELINE_ALIGN_SIZE);

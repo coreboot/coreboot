@@ -151,6 +151,7 @@ config MAINBOARD_PART_NUMBER
 	default "Nereid" if BOARD_GOOGLE_NEREID
 	default "Agah" if BOARD_GOOGLE_AGAH
 	default "Volmar" if BOARD_GOOGLE_VOLMAR
+	default "Banshee" if BOARD_GOOGLE_BANSHEE
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -174,6 +175,7 @@ config VARIANT_DIR
 	default "nereid" if BOARD_GOOGLE_NEREID
 	default "agah" if BOARD_GOOGLE_AGAH
 	default "volmar" if BOARD_GOOGLE_VOLMAR
+	default "banshee" if BOARD_GOOGLE_BANSHEE
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC

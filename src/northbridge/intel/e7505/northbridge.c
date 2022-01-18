@@ -42,6 +42,9 @@ static void mch_domain_read_resources(struct device *dev)
 	ram_resource_kb(dev, idx++, 0, tolmk);
 	mmio_resource_kb(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
 
+	uintptr_t tseg_memory_base = northbridge_get_tseg_base();
+	size_t tseg_memory_size = northbridge_get_tseg_size();
+	mmio_resource_kb(dev, idx++, tseg_memory_base / KiB, tseg_memory_size / KiB);
 
 	ASSERT(tom == remapbase);
 	upper_ram_end(dev, idx++, remaplimit);

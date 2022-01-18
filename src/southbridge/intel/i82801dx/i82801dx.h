@@ -140,8 +140,8 @@ void i82801dx_lpc_setup(void);
 #define DEVACT_STS	0x44
 #define SS_CNT		0x50
 
-#define TCOBASE		0x60 /* TCO Base Address Register */
-#define TCO1_CNT	0x08 /* TCO1 Control Register */
+/* TCO1 Control Register */
+#define TCO1_CNT	0x68
 
 #define GEN_PMCON_1		0xa0
 #define GEN_PMCON_2		0xa2

@@ -7,6 +7,11 @@
 #ifndef NORTHBRIDGE_INTEL_E7505_E7505_H
 #define NORTHBRIDGE_INTEL_E7505_E7505_H
 
+#include <types.h>
+
+size_t northbridge_get_tseg_size(void);
+uintptr_t northbridge_get_tseg_base(void);
+
 /************  D0:F0 ************/
 // Register offsets
 #define SMRBASE		0x14	/* System Memory RCOMP Base Address Register, 32 bit? */
@@ -28,8 +33,6 @@
 #define DRC		0x7C	/* DRAM Controller Mode register, 32 bit */
 #define DRDCTL		0x80	/* DRAM Read Timing Control register, 16 bit? (if similar to 855PM) */
 #define CKDIS		0x8C	/* Clock disable register, 8 bit */
-#define SMRAMC		0x9D
-#define ESMRAMC		0x9E
 #define APSIZE		0xB4
 #define TOLM		0xC4	/* Top of Low Memory register, 16 bit */
 #define REMAPBASE	0xC6	/* Remap Base Address register, 16 bit */
@@ -37,6 +40,22 @@
 #define SKPD		0xDE	/* Scratchpad register, 16 bit */
 #define DVNP		0xE0	/* Device Not Present, 16 bit */
 #define MCHTST		0xF4	/* MCH Test Register, 32 bit? (if similar to 855PM) */
+
+#define SMRAMC		0x9D
+#define C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
+#define G_SMRAME	(1 << 3)
+#define	D_LCK		(1 << 4)
+#define D_CLS		(1 << 5)
+#define D_OPEN		(1 << 6)
+
+#define ESMRAMC		0x9E
+#define T_EN		(1 << 0)
+#define	TSEG_SZ_128K	(0 << 1)
+#define TSEG_SZ_256K	(1 << 1)
+#define TSEG_SZ_512K	(2 << 1)
+#define TSEG_SZ_1M	(3 << 1)
+#define TSEG_SZ_MASK	TSEG_SZ_1M
+#define H_SMRAME	(1 << 7)
 
 // CAS# Latency bits in the DRAM Timing (DRT) register
 #define DRT_CAS_2_5		(0<<4)

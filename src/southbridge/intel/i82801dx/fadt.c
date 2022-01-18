@@ -1,20 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/pci_ops.h>
 #include <acpi/acpi.h>
-#include <version.h>
-
-/* FIXME: This needs to go into a separate .h file
- * to be included by the ich7 smi handler, ich7 smi init
- * code and the mainboard fadt.
- */
-#define APM_CNT		0x0   /* ACPI mode only */
-#define   CST_CONTROL	0x85
-#define   PST_CONTROL	0x0
-#define   ACPI_DISABLE	0xAA
-#define   ACPI_ENABLE	0x55
-#define   S4_BIOS	0x77
-#define   GNVS_UPDATE   0xea
+#include <cpu/x86/smm.h>
+#include <device/pci_ops.h>
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
@@ -24,9 +12,8 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	if (permanent_smi_handler()) {
 		fadt->smi_cmd = APM_CNT;
-		fadt->acpi_enable = ACPI_ENABLE;
-		fadt->acpi_disable = ACPI_DISABLE;
-		fadt->pstate_cnt = PST_CONTROL;
+		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
 	}
 
 	fadt->pm1a_evt_blk = pmbase;

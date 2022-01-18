@@ -15,4 +15,6 @@ ramstage-y += lpc.c
 ramstage-y += usb.c
 ramstage-y += usb2.c
 
+smm-y += smihandler.c
+
 endif

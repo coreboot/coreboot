@@ -1687,6 +1687,8 @@ static int e7505_mch_is_ready(void)
 	return !!(dword & DRC_DONE);
 }
 
+#define HOST_BRIDGE PCI_DEV(0, 0, 0)
+
 void sdram_initialize(void)
 {
 	static const struct mem_controller memctrl[] = {
@@ -1713,6 +1715,10 @@ void sdram_initialize(void)
 
 		timestamp_add_now(TS_INITRAM_END);
 	}
+
+
+	if (CONFIG(SMM_TSEG))
+		pci_write_config8(HOST_BRIDGE, ESMRAMC, TSEG_SZ_1M | T_EN);
 
 	printk(BIOS_DEBUG, "SDRAM is up.\n");
 }

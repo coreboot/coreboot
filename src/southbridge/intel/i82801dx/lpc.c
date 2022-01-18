@@ -4,6 +4,7 @@
 #include <arch/io.h>
 #include <arch/ioapic.h>
 #include <console/console.h>
+#include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -162,6 +163,15 @@ static void i82801dx_rtc_init(struct device *dev)
 	pci_write_config8(dev, RTC_CONF, 0x04);
 }
 
+static void i82801dx_set_acpi_mode(struct device *dev)
+{
+	if (!acpi_is_wakeup_s3()) {
+		apm_control(APM_CNT_ACPI_DISABLE);
+	} else {
+		apm_control(APM_CNT_ACPI_ENABLE);
+	}
+}
+
 static void i82801dx_lpc_route_dma(struct device *dev, u8 mask)
 {
 	u16 reg16;
@@ -240,6 +250,8 @@ static void lpc_init(struct device *dev)
 	enable_hpet(dev);
 
 	setup_i8259();
+
+	i82801dx_set_acpi_mode(dev);
 }
 
 static void i82801dx_lpc_read_resources(struct device *dev)

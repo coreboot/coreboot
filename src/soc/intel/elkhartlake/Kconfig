@@ -251,4 +251,14 @@ config SOC_INTEL_ELKHARTLAKE_DEBUG_CONSENT
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x1400
+
+config SOC_INTEL_ELKHARTLAKE_TCO_NO_REBOOT_EN
+	bool "Disable reset on second TCO expiration"
+	depends on SOC_INTEL_COMMON_BLOCK_TCO
+	default n
+	help
+	  Setting this option will prevent a host reset if the TCO timer expires
+	  for the second time. Since this feature is not exposed to the OS in the
+	  standard TCO interface, this setting can be enabled on firmware level.
+	  This might be useful depending on the TCO policy.
 endif

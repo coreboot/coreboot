@@ -39,6 +39,8 @@ static const struct soc_amd_gpio override_ramstage_gpio_table[] = {
 	PAD_NC(GPIO_142),
 	/* Unused TP227*/
 	PAD_NC(GPIO_144),
+	/* SOC_TCHPAD_INT_ODL */
+	PAD_SCI(GPIO_9, PULL_NONE, LEVEL_LOW),
 };
 
 static const struct soc_amd_gpio override_early_gpio_table[] = {

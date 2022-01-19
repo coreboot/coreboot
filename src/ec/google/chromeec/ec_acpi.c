@@ -144,13 +144,20 @@ static void fill_ssdt_typec_device(const struct device *dev)
 	struct ec_google_chromeec_config *config = dev->chip_info;
 	int rv;
 	int i;
-	unsigned int num_ports;
+	unsigned int num_ports = 0;
 	struct device *usb2_port;
 	struct device *usb3_port;
 	struct device *usb4_port;
 	struct acpi_pld pld = {0};
+	uint32_t pcap_mask = 0;
 
-	if (google_chromeec_get_num_pd_ports(&num_ports))
+	rv = google_chromeec_get_num_pd_ports(&num_ports);
+	if (rv || num_ports == 0)
+		return;
+
+	/* If we can't get port caps, we shouldn't bother creating a device. */
+	rv = google_chromeec_get_cmd_versions(EC_CMD_GET_PD_PORT_CAPS, &pcap_mask);
+	if (rv || pcap_mask == 0)
 		return;
 
 	acpigen_write_scope(acpi_device_path(dev));

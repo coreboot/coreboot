@@ -26,7 +26,7 @@ Scope (GFX0)
 
 	Method (XBCM, 1, NotSerialized)
 	{
-		Store (Or(ShiftLeft (Arg0, 4), 0xf), ^^DSPC.BRTC)
+		^^DSPC.BRTC = (Arg0 << 4) | 0xf
 #ifdef SMI_SAVE_CMOS
 		Trap(SMI_SAVE_CMOS)
 #endif
@@ -34,8 +34,8 @@ Scope (GFX0)
 
 	Method (XBQC, 0, NotSerialized)
 	{
-		Store (^^DSPC.BRTC, Local0)
-		ShiftRight (Local0, 4, Local0)
+		Local0 = ^^DSPC.BRTC
+		Local0 >>= 4
 		Return (Local0)
 	}
 #include <drivers/intel/gma/acpi/common.asl>

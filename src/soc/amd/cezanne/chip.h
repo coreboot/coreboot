@@ -12,6 +12,12 @@
 #include <types.h>
 #include <vendorcode/amd/fsp/cezanne/FspUsb.h>
 
+enum gpp_clk_req {
+	GPP_CLK_ON,  /* GPP clock always on; default */
+	GPP_CLK_REQ, /* GPP clock controlled by corresponding #CLK_REQx pin */
+	GPP_CLK_OFF, /* GPP clk off */
+};
+
 struct soc_amd_cezanne_config {
 	struct soc_amd_common_config common_config;
 	u8 i2c_scl_reset;
@@ -91,11 +97,7 @@ struct soc_amd_cezanne_config {
 
 	/* The array index is the general purpose PCIe clock output number. Values in here
 	   aren't the values written to the register to have the default to be always on. */
-	enum {
-		GPP_CLK_ON,	/* GPP clock always on; default */
-		GPP_CLK_REQ,	/* GPP clock controlled by corresponding #CLK_REQx pin */
-		GPP_CLK_OFF,	/* GPP clk off */
-	} gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
+	enum gpp_clk_req gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
 
 	/* performance policy for the PCIe links: power consumption vs. link speed */
 	enum {

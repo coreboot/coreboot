@@ -8,6 +8,7 @@ romstage-y += romstage.c
 
 ramstage-y += mainboard.c
 ramstage-y += ec.c
+ramstage-y += port_descriptors.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 all-y += spi_speeds.c

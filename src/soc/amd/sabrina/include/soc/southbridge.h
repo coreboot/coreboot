@@ -75,7 +75,6 @@
 #define   PM_ACPI_USE_GATED_ALINK_CLK	BIT(30)
 #define   PM_ACPI_DELAY_GPP_OFF_TIME	BIT(31)
 #define PM_SPI_PAD_PU_PD		0x90
-#define   PM_ESPI_CS_USE_DATA2		BIT(16)
 #define PM_LPC_GATING			0xec
 #define   PM_LPC_AB_NO_BYPASS_EN	BIT(2)
 #define   PM_LPC_A20_EN			BIT(1)

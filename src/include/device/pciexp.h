@@ -30,7 +30,7 @@ void pciexp_hotplug_scan_bridge(struct device *dev);
 
 extern struct device_operations default_pciexp_hotplug_ops_bus;
 
-unsigned int pciexp_find_extended_cap(struct device *dev, unsigned int cap);
+unsigned int pciexp_find_extended_cap(const struct device *dev, unsigned int cap);
 
 static inline bool pciexp_is_downstream_port(int type)
 {

@@ -12,7 +12,7 @@ Scope (\_SB.PCI0.I2C3)
 			PMOF ()
 		}
 		Method (_STA, 0, Serialized) {
-			If (LGreater(STA,0)) {
+			If (STA > 0) {
 				Return (0x1)
 			}
 			Else {

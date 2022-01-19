@@ -39,8 +39,8 @@ PowerResource (PXP, 0, 0)
 	/* Define the PowerResource for PCIe slot */
 	Method (_STA, 0, Serialized)
 	{
-		Store (PDS, PDST)
-		If (LEqual (PDS, 1)) {
+		PDST = PDS
+		If (PDS == 1) {
 			Return (0xf)
 		} Else {
 			Return (0)
@@ -49,7 +49,7 @@ PowerResource (PXP, 0, 0)
 
 	Method (_ON, 0, Serialized)
 	{
-		If (LEqual (PDST, 1) && LNotEqual (\PRT0, 0)) {
+		If (PDST == 1 && \PRT0 != 0) {
 			/* Enter this condition if device
 			 * is connected
 			 */
@@ -57,21 +57,21 @@ PowerResource (PXP, 0, 0)
 			/* De-assert PERST */
 			\_SB.PCI0.PRDA (\PRT0)
 
-			Store (0, BDQA) /* Set BLKDQDA to 0 */
-			Store (0, BPLL) /* Set BLKPLLEN to 0 */
+			BDQA  = 0 /* Set BLKDQDA to 0 */
+			BPLL  = 0 /* Set BLKPLLEN to 0 */
 
 			/* Set L23_Rdy to Detect Transition
 			 * (L23R2DT)
 			 */
-			Store (1, L23R)
+			L23R = 1
 			Sleep (16)
-			Store (0, Local0)
+			Local0 = 0
 
 			/* Delay for transition Detect
 			 * and link to train
 			 */
 			While (L23R) {
-				If (Lgreater (Local0, 4)) {
+				If (Local0 > 4) {
 					Break
 				}
 				Sleep (16)
@@ -83,22 +83,22 @@ PowerResource (PXP, 0, 0)
 	Method (_OFF, 0, Serialized)
 	{
 		/* Set L23_Rdy Entry Request (L23ER) */
-		If (LEqual (PDST, 1) && LNotEqual (\PRT0, 0)) {
+		If (PDST == 1 && \PRT0 != 0) {
 			/* enter this condition if device
 			 * is connected
 			 */
-			Store (1, L23E)
+			L23E = 1
 			Sleep (16)
-			Store (0, Local0)
+			Local0 = 0
 			While (L23E) {
-				If (Lgreater (Local0, 4)) {
+				If (Local0 > 4) {
 					Break
 				}
 				Sleep (16)
 				Local0++
 			}
-			Store (1, BDQA) /* Set BLKDQDA to 1 */
-			Store (1, BPLL) /* Set BLKPLLEN to 1 */
+			BDQA  = 1 /* Set BLKDQDA to 1 */
+			BPLL  = 1 /* Set BLKPLLEN to 1 */
 
 			/* Assert PERST */
 			\_SB.PCI0.PRAS (\PRT0)

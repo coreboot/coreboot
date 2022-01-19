@@ -78,9 +78,9 @@ Method (_CRS, 0, Serialized)
 	CreateDwordField (MCRS, PM01._LEN, PLEN)
 
 	/* Read C-Unit PCI CFG Reg. 0xBC for TOLUD (shadow from B-Unit) */
-	And(\_SB.PCI0.MCHC.TLUD, 0xFFF00000, PMIN)
+	PMIN = \_SB.PCI0.MCHC.TLUD & 0xFFF00000
 	/* Read MMCONF base */
-	And(\_SB.PCI0.MCHC.MCNF, 0xF0000000, PMAX)
+	PMAX = \_SB.PCI0.MCHC.MCNF & 0xF0000000
 
 	/* Calculate PCI MMIO Length */
 	PLEN = PMAX - PMIN + 1
@@ -91,24 +91,24 @@ Method (_CRS, 0, Serialized)
 	CreateDwordField(MCRS, STOM._LEN, GLEN)
 
 	/* Read BGSM */
-	And(\_SB.PCI0.MCHC.BGSM, 0xFFF00000, GMIN)
+	GMIN = \_SB.PCI0.MCHC.BGSM & 0xFFF00000
 
 	/* Read TOLUD */
-	And(\_SB.PCI0.MCHC.TLUD, 0xFFF00000, GMAX)
+	GMAX = \_SB.PCI0.MCHC.TLUD & 0xFFF00000
 	GMAX--
 	GLEN = GMAX - GMIN + 1
 
 	/* Patch PM02 range based on Memory Size */
-	If (LEqual (A4GS, 0)) {
+	If (A4GS == 0) {
 		CreateQwordField (MCRS, PM02._LEN, MSEN)
-		Store (0, MSEN)
+		MSEN = 0
 	} Else {
 		CreateQwordField (MCRS, PM02._MIN, MMIN)
 		CreateQwordField (MCRS, PM02._MAX, MMAX)
 		CreateQwordField (MCRS, PM02._LEN, MLEN)
 		/* Set 64bit MMIO resource base and length */
-		Store (A4GS, MLEN)
-		Store (A4GB, MMIN)
+		MLEN = A4GS
+		MMIN = A4GB
 		MMAX = MMIN + MLEN - 1
 	}
 

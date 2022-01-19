@@ -4,8 +4,7 @@ Scope (\_SB.PCI0) {
 	/* 0xD6- is the port address */
 	/* 0x600- is the dynamic clock gating control register offset (GENR) */
 	OperationRegion (SBMM, SystemMemory,
-		Or ( Or (CONFIG_PCR_BASE_ADDRESS,
-			ShiftLeft(0xD6, PCR_PORTID_SHIFT)), 0x0600), 0x18)
+		CONFIG_PCR_BASE_ADDRESS | (0xD6 << PCR_PORTID_SHIFT) | 0x0600, 0x18)
 	Field (SBMM, DWordAcc, NoLock, Preserve)
 	{
 		GENR, 32,
@@ -23,10 +22,10 @@ Scope (\_SB.PCI0) {
 	 */
 	Method (SCPG, 2, Serialized)
 	{
-		if (LEqual(Arg0, 0x1)) {
-			Or (^GENR, Arg1, ^GENR)
-		} ElseIf (LEqual(Arg0, 0x0)){
-			And (^GENR, Arg1, ^GENR)
+		if (Arg0 == 1) {
+			^GENR |= Arg1
+		} ElseIf (Arg0 == 0) {
+			^GENR &= Arg1
 		}
 	}
 
@@ -44,13 +43,13 @@ Scope (\_SB.PCI0) {
 		 */
 		Method (_DSM, 4)
 		{
-			If (LEqual (Arg0, ^UUID)) {
+			If (Arg0 == ^UUID) {
 				/*
 				 * Function 9: Device Readiness Durations
 				 * Returns a package of five integers covering
 				 * various device related delays in PCIe Base Spec.
 				 */
-				If (LEqual (Arg2, 9)) {
+				If (Arg2 == 9) {
 					/*
 					 * Function 9 support for revision 3.
 					 * ECN link for function definitions
@@ -58,7 +57,7 @@ Scope (\_SB.PCI0) {
 					 * specification_documents/
 					 * ECN_fw_latency_optimization_final.pdf]
 					 */
-					If (LEqual (Arg1, 3)) {
+					If (Arg1 == 3) {
 						/*
 						 * Integer 0: FW reset time.
 						 * Integer 1: FW data link up time.
@@ -118,14 +117,14 @@ Scope (\_SB.PCI0) {
 		Method (_INI, 0)
 		{
 			/* Check SDCard CD port is valid */
-			If (LNotEqual (\SCDP, 0) && LNotEqual (\SCDO, 0))
+			If (\SCDP != 0 && \SCDO != 0)
 			{
 				/* Store DW0 address of SD_CD */
-				Store (GDW0 (\SCDP, \SCDO), SCD0)
+				SCD0 = GDW0 (\SCDP, \SCDO)
 				/* Get the current SD_CD ownership */
-				Store (\_SB.GHO (\SCDP, \SCDO), Local0)
+				Local0 = \_SB.GHO (\SCDP, \SCDO)
 				/* Set host ownership as GPIO in HOSTSW_OWN reg */
-				Or (Local0, ShiftLeft (1,  Mod (\SCDO, 32)), Local0)
+				Local0 |= 1 << (\SCDO % 32)
 				\_SB.SHO (\SCDP, \SCDO, Local0)
 			}
 		}
@@ -133,20 +132,20 @@ Scope (\_SB.PCI0) {
 		Method (_PS0, 0, NotSerialized)
 		{
 			/* Check SDCard CD port is valid */
-			If (LNotEqual (\SCDP, 0) && LNotEqual (\SCDO, 0))
+			If (\SCDP != 0 && \SCDO != 0)
 			{
 				/* Store DW0 into local0 to get rxstate of GPIO */
-				Store (\_SB.GPC0 (SCD0), Local0)
+				Local0 = \_SB.GPC0 (SCD0)
 				/* Extract rxstate [bit 1] of sdcard card detect pin */
-				And (Local0, PAD_CFG0_RX_STATE, Local0)
+				Local0 &= PAD_CFG0_RX_STATE
 				/* If the sdcard is present, rxstate is low.
 				 * If sdcard is not present, rxstate is High.
 				 * Write the inverted value of rxstate to GRR3.
 				 */
-				If (LEqual (Local0, 0)) {
-					Store (1, ^^GRR3)
+				If (Local0 == 0) {
+					^^GRR3 = 1
 				} Else {
-					Store (0, ^^GRR3)
+					^^GRR3 = 0
 				}
 				Sleep (2)
 			}
@@ -155,7 +154,7 @@ Scope (\_SB.PCI0) {
 		Method (_PS3, 0, NotSerialized)
 		{
 			/* Clear GRR3 to Power Gate SD Controller */
-			Store (0, ^^GRR3)
+			^^GRR3 = 0
 		}
 
 		Device (CARD)

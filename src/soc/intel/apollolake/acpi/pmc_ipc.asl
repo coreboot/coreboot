@@ -30,15 +30,15 @@ scope (\_SB) {
 		Method (_CRS, 0x0, NotSerialized)
 		{
 			CreateDwordField (^RBUF, ^IBAR._BAS, IBAS)
-			Store (PCH_PWRM_BASE_ADDRESS, IBAS)
+			IBAS = PCH_PWRM_BASE_ADDRESS
 
 			CreateDwordField (^RBUF, ^MDAT._BAS, MDBA)
-			Store (MCH_BASE_ADDRESS + MAILBOX_DATA, MDBA)
+			MDBA = MCH_BASE_ADDRESS + MAILBOX_DATA
 			CreateDwordField (^RBUF, ^MINF._BAS, MIBA)
-			Store (MCH_BASE_ADDRESS + MAILBOX_INTF, MIBA)
+			MIBA = MCH_BASE_ADDRESS + MAILBOX_INTF
 
 			CreateDwordField (^RBUF, ^SBAR._BAS, SBAS)
-			Store (SRAM_BASE_0, SBAS)
+			SBAS = SRAM_BASE_0
 
 			Return (^RBUF)
 		}

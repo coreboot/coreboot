@@ -106,6 +106,10 @@ struct soc_intel_apollolake_config {
 	uint8_t gpe0_dw2; /* GPE0_95_64 STS/EN */
 	uint8_t gpe0_dw3; /* GPE0_127_96 STS/EN */
 
+	/* LPC fixed enables and ranges */
+	uint16_t lpc_iod;
+	uint16_t lpc_ioe;
+
 	/* Configure LPSS S0ix Enable */
 	uint8_t lpss_s0ix_enable;
 

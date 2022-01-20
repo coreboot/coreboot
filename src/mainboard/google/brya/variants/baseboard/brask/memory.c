@@ -39,5 +39,7 @@ void __weak variant_get_spd_info(struct mem_spd *spd_info)
 {
 	spd_info->topo = MEM_TOPO_DIMM_MODULE;
 	spd_info->smbus[0].addr_dimm[0] = 0x50;
+	spd_info->smbus[0].addr_dimm[1] = 0x51;
 	spd_info->smbus[1].addr_dimm[0] = 0x52;
+	spd_info->smbus[1].addr_dimm[1] = 0x53;
 }

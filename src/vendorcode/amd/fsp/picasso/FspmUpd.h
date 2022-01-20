@@ -79,4 +79,9 @@ typedef struct __packed {
 	/** Offset 0x0040**/	FSP_M_CONFIG                FspmConfig;
 } FSPM_UPD;
 
+#define IMAGE_REVISION_MAJOR_VERSION 0x01
+#define IMAGE_REVISION_MINOR_VERSION 0x00
+#define IMAGE_REVISION_REVISION 0x02
+#define IMAGE_REVISION_BUILD_NUMBER 0x04
+
 #endif

@@ -515,6 +515,10 @@ int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash)
 			" CONFIG_ROM_SIZE 0x%x!!\n", flash->size,
 			CONFIG_ROM_SIZE);
 	}
+
+	if (CONFIG(SPI_FLASH_EXIT_4_BYTE_ADDR_MODE) && ENV_INITIAL_STAGE)
+		spi_flash_cmd(&flash->spi, CMD_EXIT_4BYTE_ADDR_MODE, NULL, 0);
+
 	return 0;
 }
 

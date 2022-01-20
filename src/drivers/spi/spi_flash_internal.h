@@ -22,6 +22,8 @@
 
 #define CMD_BLOCK_ERASE			0xD8
 
+#define CMD_EXIT_4BYTE_ADDR_MODE	0xe9
+
 /* Common status */
 #define STATUS_WIP			0x01
 

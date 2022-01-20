@@ -162,6 +162,17 @@ config SPI_FLASH_HAS_VOLATILE_GROUP
 	  Allows chipset to group write/erase operations under a single volatile
 	  group.
 
+config SPI_FLASH_EXIT_4_BYTE_ADDR_MODE
+	bool
+	default n
+	help
+	  This will send an Exit 4-Byte Address Mode (E9h) command before the first
+	  access to the SPI flash. On some platforms with SPI flashes larger than 32MB,
+	  the SPI flash may power up in 4-byte addressing mode and this command needs
+	  to be sent before coreboot's 3-byte address commands can be interpreted correctly.
+	  On flashes that don't support 4-byte addressing mode or where it is already
+	  disabled, this command should be a no-op.
+
 endif # SPI_FLASH
 
 config HAVE_EM100PRO_SPI_CONSOLE_SUPPORT

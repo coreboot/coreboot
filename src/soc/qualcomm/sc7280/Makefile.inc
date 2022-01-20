@@ -31,10 +31,12 @@ romstage-y += ../common/qclib.c
 romstage-y += ../common/mmu.c
 romstage-y += mmu.c
 romstage-y += ../common/usb/usb.c
+romstage-y += carve_out.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
 ramstage-y += soc.c
+ramstage-y += carve_out.c
 ramstage-y += cbmem.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ramstage-y += ../common/usb/usb.c

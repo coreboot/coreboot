@@ -9,6 +9,9 @@
 
 static void soc_read_resources(struct device *dev)
 {
+	void *start = NULL;
+	void *end = NULL;
+
 	ram_resource(dev, 0, (uintptr_t)ddr_region->offset / KiB,
 				ddr_region->size / KiB);
 	reserved_ram_resource(dev, 1, (uintptr_t)_dram_soc / KiB,
@@ -21,6 +24,8 @@ static void soc_read_resources(struct device *dev)
 				REGION_SIZE(dram_aop) / KiB);
 	reserved_ram_resource(dev, 5, (uintptr_t)_dram_cpucp / KiB,
 				REGION_SIZE(dram_cpucp) / KiB);
+	if (soc_modem_carve_out(&start, &end))
+		reserved_ram_resource(dev, 6, (uintptr_t)start / KiB, (end - start) / KiB);
 }
 
 static void soc_init(struct device *dev)

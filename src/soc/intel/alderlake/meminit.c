@@ -236,7 +236,7 @@ static void ddr5_fill_dimm_module_info(FSP_M_CONFIG *mem_cfg, const struct mb_cf
 }
 
 void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg,
-		 const struct mem_spd *spd_info, bool half_populated)
+		 const struct mem_spd *spd_info, bool half_populated, bool *dimms_changed)
 {
 	struct mem_channel_data data;
 	bool dq_dqs_auto_detect = false;
@@ -278,7 +278,8 @@ void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg,
 		die("Unsupported memory type(%d)\n", mb_cfg->type);
 	}
 
-	mem_populate_channel_data(&soc_mem_cfg[mb_cfg->type], spd_info, half_populated, &data);
+	mem_populate_channel_data(&soc_mem_cfg[mb_cfg->type], spd_info, half_populated, &data,
+			dimms_changed);
 	mem_init_spd_upds(mem_cfg, &data);
 	mem_init_dq_upds(mem_cfg, &data, mb_cfg, dq_dqs_auto_detect);
 	mem_init_dqs_upds(mem_cfg, &data, mb_cfg, dq_dqs_auto_detect);

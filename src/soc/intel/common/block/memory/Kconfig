@@ -28,4 +28,12 @@ config MRC_CHANNEL_WIDTH
 	  support is expected to set MRC_CHANNEL_WIDTH as per the FSP
 	  MRC expectation.
 
+config SPD_CACHE_ENABLE
+	bool
+	default n
+	help
+	  Enable to cache the spd data to the RW_SPD_CACHE region. If
+	  this option is enabled, please make sure the RW_SPD_CACHE
+	  region is added to the flash layout.
+
 endif

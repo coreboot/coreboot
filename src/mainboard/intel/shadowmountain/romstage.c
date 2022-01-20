@@ -12,11 +12,12 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
 	const struct mb_cfg *mem_config = variant_memory_params();
 	const bool half_populated = false;
+	bool dimms_changed = false;
 
 	const struct mem_spd lp5_spd_info = {
 		.topo = MEM_TOPO_MEMORY_DOWN,
 		.cbfs_index = variant_memory_sku(),
 	};
 
-	memcfg_init(m_cfg, mem_config, &lp5_spd_info, half_populated);
+	memcfg_init(m_cfg, mem_config, &lp5_spd_info, half_populated, &dimms_changed);
 }

@@ -48,6 +48,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	const struct mb_cfg *mem_config = variant_memory_params();
 	int board_id = get_board_id();
 	const bool half_populated = false;
+	bool dimms_changed = false;
 
 	const struct mem_spd memory_down_spd_info = {
 		.topo = MEM_TOPO_MEMORY_DOWN,
@@ -72,7 +73,8 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	case ADL_P_DDR4_1:
 	case ADL_P_DDR4_2:
 	case ADL_P_DDR5_1:
-		memcfg_init(m_cfg, mem_config, &dimm_module_spd_info, half_populated);
+		memcfg_init(m_cfg, mem_config, &dimm_module_spd_info, half_populated,
+				&dimms_changed);
 		break;
 	case ADL_P_DDR5_2:
 	case ADL_P_LP4_1:
@@ -82,7 +84,8 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	case ADL_M_LP4:
 	case ADL_M_LP5:
 	case ADL_N_LP5:
-		memcfg_init(m_cfg, mem_config, &memory_down_spd_info, half_populated);
+		memcfg_init(m_cfg, mem_config, &memory_down_spd_info, half_populated,
+				&dimms_changed);
 		break;
 	default:
 		die("Unknown board id = 0x%x\n", board_id);

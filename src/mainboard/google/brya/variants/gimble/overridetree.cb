@@ -38,6 +38,7 @@ chip soc/intel/alderlake
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Type-A MLB Port
 	register "usb2_ports[8]" = "USB2_PORT_EMPTY" # Type-A DB Port
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A MLB port
+	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -121,6 +122,7 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
+		device ref pcie_rp6 off end
 		device ref pcie_rp8 on
 			chip soc/intel/common/block/pcie/rtd3
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H13)"

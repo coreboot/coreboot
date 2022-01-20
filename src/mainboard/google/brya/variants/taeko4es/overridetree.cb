@@ -39,6 +39,12 @@ fw_config
 	end
 end
 chip soc/intel/alderlake
+	# Acoustic settings
+	register "AcousticNoiseMitigation" = "1"
+	register "SlowSlewRate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
+	register "SlowSlewRate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
+	register "FastPkgCRampDisable[VR_DOMAIN_IA]" = "1"
+	register "FastPkgCRampDisable[VR_DOMAIN_GT]" = "1"
 	register "ext_fivr_settings" = "{
 		.configure_ext_fivr = 1,
 		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX,

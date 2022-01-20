@@ -42,8 +42,9 @@ static void configure_external_clksrc(FSP_M_CONFIG *m_cfg)
 		m_cfg->PcieClkSrcUsage[i] = CONFIG_CLKSRC_FOR_EXTERNAL_BUFFER;
 }
 
-void mainboard_memory_init_params(FSP_M_CONFIG *m_cfg)
+void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
 	const struct mb_cfg *mem_config = variant_memory_params();
 	int board_id = get_board_id();
 	const bool half_populated = false;

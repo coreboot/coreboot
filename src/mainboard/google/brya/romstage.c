@@ -7,8 +7,9 @@
 #include <soc/romstage.h>
 #include <string.h>
 
-void mainboard_memory_init_params(FSP_M_CONFIG *m_cfg)
+void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
 	const struct mb_cfg *mem_config = variant_memory_params();
 	bool half_populated = variant_is_half_populated();
 	struct mem_spd spd_info;

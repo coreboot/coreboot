@@ -289,7 +289,7 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 
 	const enum pcie_rp_type rp_type = soc_get_pcie_rp_type(parent);
 	pcie_rp = get_pcie_rp_pmc_idx(rp_type, parent);
-	if (pcie_rp < 0 || pcie_rp > CONFIG_MAX_ROOT_PORTS) {
+	if (pcie_rp < 0) {
 		printk(BIOS_ERR, "%s: Unknown PCIe root port\n", __func__);
 		return;
 	}

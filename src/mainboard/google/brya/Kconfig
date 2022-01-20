@@ -239,6 +239,7 @@ endchoice
 
 config MEMORY_SODIMM
 	def_bool n
+	select SPD_CACHE_ENABLE
 	select SPD_CACHE_IN_FMAP
 
 config MEMORY_SOLDERDOWN

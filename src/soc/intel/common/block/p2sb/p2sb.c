@@ -1,31 +1,20 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#define __SIMPLE_DEVICE__
+
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <intelblocks/p2sb.h>
+#include <intelblocks/p2sblib.h>
 #include <soc/iomap.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <string.h>
 
 #define PCH_P2SB_EPMASK(mask_number) (PCH_P2SB_EPMASK0 + ((mask_number) * 4))
-
-#define HIDE_BIT (1 << 0)
-
-static bool p2sb_is_hidden(void)
-{
-	const uint16_t pci_vid = pci_read_config16(PCH_DEV_P2SB, PCI_VENDOR_ID);
-
-	if (pci_vid == 0xffff)
-		return true;
-	if (pci_vid == PCI_VENDOR_ID_INTEL)
-		return false;
-	printk(BIOS_ERR, "P2SB PCI_VENDOR_ID is invalid, unknown if hidden\n");
-	return true;
-}
 
 void p2sb_enable_bar(void)
 {
@@ -56,7 +45,7 @@ void p2sb_configure_hpet(void)
 
 union p2sb_bdf p2sb_get_hpet_bdf(void)
 {
-	const bool was_hidden = p2sb_is_hidden();
+	const bool was_hidden = p2sb_dev_is_hidden(PCH_DEV_P2SB);
 	if (was_hidden)
 		p2sb_unhide();
 
@@ -75,7 +64,7 @@ void p2sb_set_hpet_bdf(union p2sb_bdf bdf)
 
 union p2sb_bdf p2sb_get_ioapic_bdf(void)
 {
-	const bool was_hidden = p2sb_is_hidden();
+	const bool was_hidden = p2sb_dev_is_hidden(PCH_DEV_P2SB);
 	if (was_hidden)
 		p2sb_unhide();
 
@@ -92,35 +81,14 @@ void p2sb_set_ioapic_bdf(union p2sb_bdf bdf)
 	pci_write_config16(PCH_DEV_P2SB, PCH_P2SB_IBDF, bdf.raw);
 }
 
-static void p2sb_set_hide_bit(int hide)
-{
-	const uint16_t reg = PCH_P2SB_E0 + 1;
-	const uint8_t mask = HIDE_BIT;
-	uint8_t val;
-
-	val = pci_read_config8(PCH_DEV_P2SB, reg);
-	val &= ~mask;
-	if (hide)
-		val |= mask;
-	pci_write_config8(PCH_DEV_P2SB, reg, val);
-}
-
 void p2sb_unhide(void)
 {
-	p2sb_set_hide_bit(0);
-
-	if (p2sb_is_hidden())
-		die_with_post_code(POST_HW_INIT_FAILURE,
-				   "Unable to unhide PCH_DEV_P2SB device !\n");
+	p2sb_dev_unhide(PCH_DEV_P2SB);
 }
 
 void p2sb_hide(void)
 {
-	p2sb_set_hide_bit(1);
-
-	if (!p2sb_is_hidden())
-		die_with_post_code(POST_HW_INIT_FAILURE,
-				   "Unable to hide PCH_DEV_P2SB device !\n");
+	p2sb_dev_hide(PCH_DEV_P2SB);
 }
 
 static void p2sb_configure_endpoints(int epmask_id, uint32_t mask)

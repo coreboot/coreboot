@@ -43,7 +43,6 @@ void p2sb_set_hpet_bdf(union p2sb_bdf bdf);
 union p2sb_bdf p2sb_get_ioapic_bdf(void);
 void p2sb_set_ioapic_bdf(union p2sb_bdf bdf);
 
-
 /* SOC overrides */
 /*
  * Each SoC should implement EP Mask register to disable SB access

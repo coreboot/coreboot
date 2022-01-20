@@ -61,6 +61,7 @@ enum platform {
 	PLATFORM_ADL,
 	PLATFORM_IFD2,
 	PLATFORM_DNV,
+	PLATFORM_MTL,
 };
 
 #define LAYOUT_LINELEN 80

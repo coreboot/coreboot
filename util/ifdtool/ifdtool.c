@@ -248,6 +248,7 @@ static enum ich_chipset ifd2_platform_to_chipset(const int pindex)
 	case PLATFORM_TGL:
 	case PLATFORM_ADL:
 	case PLATFORM_IFD2:
+	case PLATFORM_MTL:
 		return CHIPSET_500_600_SERIES_TIGER_ALDER_POINT;
 	case PLATFORM_ICL:
 		return CHIPSET_400_SERIES_ICE_POINT;
@@ -281,6 +282,7 @@ static int is_platform_ifd_2(void)
 		PLATFORM_ADL,
 		PLATFORM_SKLKBL,
 		PLATFORM_IFD2,
+		PLATFORM_MTL,
 	};
 	unsigned int i;
 
@@ -1232,6 +1234,7 @@ static void lock_descriptor(const char *filename, char *image, int size)
 	case PLATFORM_EHL:
 	case PLATFORM_ADL:
 	case PLATFORM_IFD2:
+	case PLATFORM_MTL:
 		/* CPU/BIOS can read descriptor and BIOS. */
 		fmba->flmstr1 |= (1 << REGION_DESC) << rd_shift;
 		fmba->flmstr1 |= (1 << REGION_BIOS) << rd_shift;
@@ -1974,6 +1977,8 @@ int main(int argc, char *argv[])
 				platform = PLATFORM_ADL;
 			} else if (!strcmp(optarg, "ifd2")) {
 				platform = PLATFORM_IFD2;
+			} else if (!strcmp(optarg, "mtl")) {
+				platform = PLATFORM_MTL;
 			} else {
 				fprintf(stderr, "Unknown platform: %s\n", optarg);
 				exit(EXIT_FAILURE);

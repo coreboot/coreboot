@@ -117,6 +117,15 @@ config CPU_SPECIFIC_OPTIONS
 	# provide a custom media driver that facilitates mapping
 	select X86_CUSTOM_BOOTMEDIA
 
+config SKIP_CSE_RBP
+	bool
+	default y if BOOT_DEVICE_MEMORY_MAPPED
+	help
+	  Tell CSE we do not need to use Ring Buffer Protocol (RBP) to fetch
+	  firmware for us if we are using memory-mapped SPI. This lets CSE
+	  state machine transition to next boot state, so that it can function
+	  as designed.
+
 config DISABLE_HECI1_AT_PRE_BOOT
 	default y
 

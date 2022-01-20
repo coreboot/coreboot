@@ -293,14 +293,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	/* Do NOT let FSP do any GPIO pad configuration */
 	mupd->FspmConfig.PreMemGpioTablePtr = (uintptr_t) NULL;
 
-	/*
-	 * Tell CSE we do not need to use Ring Buffer Protocol (RBP) to fetch
-	 * firmware for us if we are using memory-mapped SPI. This lets CSE
-	 * state machine transition to next boot state, so that it can function
-	 * as designed.
-	 */
-	mupd->FspmConfig.SkipCseRbp =
-		CONFIG(BOOT_DEVICE_MEMORY_MAPPED);
+	mupd->FspmConfig.SkipCseRbp = CONFIG(SKIP_CSE_RBP);
 
 	/*
 	 * Converged Security Engine (CSE) has secure storage functionality.

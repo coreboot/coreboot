@@ -33,6 +33,10 @@
 #include <FirmwareVersionInfo.h>
 #endif
 
+#if CONFIG(ENABLE_FSP_ERROR_INFO)
+#include <FspErrorInfoHob.h>
+#endif
+
 #pragma pack(pop)
 
 #endif

@@ -45,6 +45,16 @@ config DISPLAY_FSP_VERSION_INFO_2
 	  Select this option to display Firmware version information
 	  using new header 'FirmwareVersionInfo.h'.
 
+config ENABLE_FSP_ERROR_INFO
+	bool "Enable FSP Error Information"
+	default n
+	depends on PLATFORM_USES_FSP2_1
+	help
+	  Select this option to enable FSP Error information. FSP detects certain errors
+	  and notifies coreboot of a fatal error occurring during the execution of the FSP.
+	  Although it's defined in FSP v2.1 but has only been verified on Intel Xeon-SP
+	  Sapphire Rapids.
+
 config HAVE_GPIO_SNAPSHOT_VERIFY_SUPPORT
 	bool
 	default n

@@ -15,6 +15,7 @@ romstage-y += util.c
 romstage-y += memory_init.c
 romstage-$(CONFIG_MMA) += mma_core.c
 romstage-y += cbmem.c
+romstage-$(CONFIG_ENABLE_FSP_ERROR_INFO) += fsp_error_info_hob.c
 
 ramstage-y += debug.c
 ramstage-$(CONFIG_FSP_USES_CB_DEBUG_EVENT_HANDLER) += fsp_debug_event.c
@@ -31,6 +32,7 @@ ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 ramstage-y += util.c
 ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += save_mrc_data.c
 ramstage-$(CONFIG_MMA) += mma_core.c
+ramstage-$(CONFIG_ENABLE_FSP_ERROR_INFO) += fsp_error_info_hob.c
 
 ifneq ($(CONFIG_NO_FSP_TEMP_RAM_EXIT),y)
 postcar-$(CONFIG_FSP_CAR) += temp_ram_exit.c

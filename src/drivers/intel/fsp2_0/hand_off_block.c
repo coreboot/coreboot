@@ -32,6 +32,11 @@ const uint8_t fsp_nv_storage_guid[16] = {
 	0xb3, 0xdc, 0x27, 0x0b, 0x7b, 0xa9, 0xe4, 0xb0
 };
 
+const uint8_t fsp_error_info_guid[16] = {
+	0x88, 0x6a, 0x1e, 0x61, 0xb7, 0xad, 0x01, 0x43,
+	0x93, 0xff, 0xe4, 0x73, 0x04, 0xb4, 0x3d, 0xa6
+};
+
 static const uint8_t uuid_fv_info[16] = {
 	0x2e, 0x72, 0x8e, 0x79, 0xb2, 0x15, 0x13, 0x4e,
 	0x8a, 0xe9, 0x6b, 0xa3, 0x0f, 0xf7, 0xf1, 0x67
@@ -355,4 +360,22 @@ void fsp_find_bootloader_tolum(struct range_entry *re)
 {
 	if (fsp_find_range_hob(re, fsp_bootloader_tolum_guid))
 		die("9.3: FSP_BOOTLOADER_TOLUM_HOB missing!\n");
+}
+
+bool fsp_display_error_info(void)
+{
+	if (!CONFIG(ENABLE_FSP_ERROR_INFO))
+		return false;
+
+	const struct hob_header *hob;
+	size_t size;
+
+	hob = (const struct hob_header *)fsp_find_extension_hob_by_guid(
+		fsp_error_info_guid, &size);
+	if (hob != NULL) {
+		display_fsp_error_info_hob(hob);
+		return true;
+	}
+
+	return false;
 }

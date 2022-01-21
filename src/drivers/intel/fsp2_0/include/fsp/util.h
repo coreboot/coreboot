@@ -137,6 +137,8 @@ const struct hob_resource *fsp_hob_header_to_resource(
 const struct hob_header *fsp_next_hob(const struct hob_header *parent);
 bool fsp_guid_compare(const uint8_t guid1[16], const uint8_t guid2[16]);
 void fsp_find_bootloader_tolum(struct range_entry *re);
+bool fsp_display_error_info(void);
+void display_fsp_error_info_hob(const void *hob);
 void fsp_get_version(char *buf);
 /* fsp_verify_upd_header_signature calls die() on signature mismatch */
 void fsp_verify_upd_header_signature(uint64_t upd_signature, uint64_t expected_signature);

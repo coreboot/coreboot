@@ -201,6 +201,20 @@ static const char bios_log_escape[BIOS_LOG_PREFIX_MAX_LEVEL + 1][8] = {
 	[BIOS_SPEW]    = "0",
 };
 
+/*
+ * When storing console logs somewhere for later retrieval, log level prefixes
+ * and escape sequences should not be stored raw to preserve space. Instead, a
+ * non-printable control character marker is inserted into the log to indicate
+ * the log level. Decoders reading this character should translate it back into
+ * the respective escape sequence and prefix. If a decoder doesn't support this
+ * feature, the non-printable character should usually be harmless.
+ */
+#define BIOS_LOG_MARKER_START 0x10
+#define BIOS_LOG_MARKER_END (BIOS_LOG_MARKER_START + BIOS_LOG_PREFIX_MAX_LEVEL)
+#define BIOS_LOG_IS_MARKER(c) ((c) >= BIOS_LOG_MARKER_START && (c) <= BIOS_LOG_MARKER_END)
+#define BIOS_LOG_LEVEL_TO_MARKER(level) (BIOS_LOG_MARKER_START + (level))
+#define BIOS_LOG_MARKER_TO_LEVEL(c) ((c) - BIOS_LOG_MARKER_START)
+
 #endif /* __ASSEMBLER__ */
 
 #endif /* LOGLEVEL_H */

@@ -78,8 +78,16 @@ static void line_start(union log_state state)
 {
 	if (state.level > BIOS_LOG_PREFIX_MAX_LEVEL)
 		return;
-	if (state.speed == CONSOLE_LOG_FAST)
+
+	/* Stored consoles just get a single control char marker to save space. If we are in
+	   LOG_FAST mode, just write the marker to CBMC and exit -- the rest of this function
+	   implements the LOG_ALL case. */
+	unsigned char marker = BIOS_LOG_LEVEL_TO_MARKER(state.level);
+	if (state.speed == CONSOLE_LOG_FAST) {
+		__cbmemc_tx_byte(marker);
 		return;
+	}
+	console_stored_tx_byte(marker, NULL);
 
 	/* Interactive consoles get a `[DEBUG]  ` style readable prefix,
 	   and potentially an escape sequence for highlighting. */

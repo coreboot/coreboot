@@ -182,12 +182,16 @@ void cbmem_dump_console_to_uart(void)
 	if (current_console->cursor & OVERFLOW) {
 		for (cursor = current_console->cursor & CURSOR_MASK;
 		     cursor < current_console->size; cursor++) {
+			if (BIOS_LOG_IS_MARKER(current_console->body[cursor]))
+				continue;
 			if (current_console->body[cursor] == '\n')
 				uart_tx_byte(console_index, '\r');
 			uart_tx_byte(console_index, current_console->body[cursor]);
 		}
 	}
 	for (cursor = 0; cursor < (current_console->cursor & CURSOR_MASK); cursor++) {
+		if (BIOS_LOG_IS_MARKER(current_console->body[cursor]))
+			continue;
 		if (current_console->body[cursor] == '\n')
 			uart_tx_byte(console_index, '\r');
 		uart_tx_byte(console_index, current_console->body[cursor]);
@@ -206,9 +210,11 @@ void cbmem_dump_console(void)
 	if (current_console->cursor & OVERFLOW)
 		for (cursor = current_console->cursor & CURSOR_MASK;
 		     cursor < current_console->size; cursor++)
-			do_putchar(current_console->body[cursor]);
+			if (!BIOS_LOG_IS_MARKER(current_console->body[cursor]))
+				do_putchar(current_console->body[cursor]);
 	for (cursor = 0; cursor < (current_console->cursor & CURSOR_MASK); cursor++)
-		do_putchar(current_console->body[cursor]);
+		if (!BIOS_LOG_IS_MARKER(current_console->body[cursor]))
+			do_putchar(current_console->body[cursor]);
 
 	console_paused = false;
 }

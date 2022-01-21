@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <regex.h>
 #include <commonlib/bsd/cbmem_id.h>
+#include <commonlib/loglevel.h>
 #include <commonlib/timestamp_serialized.h>
 #include <commonlib/tcpa_log_serialized.h>
 #include <commonlib/coreboot_tables.h>
@@ -783,7 +784,8 @@ static void dump_console(enum console_print_type type)
 	/* Slight memory corruption may occur between reboots and give us a few
 	   unprintable characters like '\0'. Replace them with '?' on output. */
 	for (cursor = 0; cursor < size; cursor++)
-		if (!isprint(console_c[cursor]) && !isspace(console_c[cursor]))
+		if (!isprint(console_c[cursor]) && !isspace(console_c[cursor])
+		    && !BIOS_LOG_IS_MARKER(console_c[cursor]))
 			console_c[cursor] = '?';
 
 	/* We detect the reboot cutoff by looking for a bootblock, romstage or
@@ -822,7 +824,23 @@ static void dump_console(enum console_print_type type)
 		cursor = previous;
 	}
 
-	puts(console_c + cursor);
+	char c;
+	int tty = isatty(fileno(stdout));
+	while ((c = console_c[cursor++])) {
+		if (BIOS_LOG_IS_MARKER(c)) {
+			int lvl = BIOS_LOG_MARKER_TO_LEVEL(c);
+			if (tty)
+				printf(BIOS_LOG_ESCAPE_PATTERN, bios_log_escape[lvl]);
+			printf(BIOS_LOG_PREFIX_PATTERN, bios_log_prefix[lvl]);
+		} else {
+			putchar(c);
+			if (tty && c == '\n')
+				printf(BIOS_LOG_ESCAPE_RESET);
+		}
+	}
+	if (tty)
+		printf(BIOS_LOG_ESCAPE_RESET);
+
 	free(console_c);
 	unmap_memory(&console_mapping);
 }

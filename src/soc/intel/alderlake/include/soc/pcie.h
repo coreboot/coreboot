@@ -7,5 +7,6 @@
 
 const struct pcie_rp_group *get_pch_pcie_rp_table(void);
 const struct pcie_rp_group *get_cpu_pcie_rp_table(void);
+const struct pcie_rp_group *get_tbt_pcie_rp_table(void);
 
 #endif /* __SOC_ALDERLAKE_PCIE_H__ */

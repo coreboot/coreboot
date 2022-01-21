@@ -61,6 +61,16 @@ const struct pcie_rp_group *get_cpu_pcie_rp_table(void)
 	return cpu_rp_groups;
 }
 
+static const struct pcie_rp_group tbt_rp_groups[] = {
+	{ .slot = SA_DEV_SLOT_TBT, .count = CONFIG_MAX_TBT_ROOT_PORTS},
+	{ 0 }
+};
+
+const struct pcie_rp_group *get_tbt_pcie_rp_table(void)
+{
+	return tbt_rp_groups;
+}
+
 static bool is_part_of_group(const struct device *dev,
 			     const struct pcie_rp_group *groups)
 {

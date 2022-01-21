@@ -5,6 +5,17 @@
 
 #include <acpi/acpi_device.h>
 
+enum acpi_pcie_rp_pm_emit {
+	ACPI_PCIE_RP_EMIT_NONE      = 0x00,   /* None            */
+	ACPI_PCIE_RP_EMIT_L23       = 0x01,   /* L23             */
+	ACPI_PCIE_RP_EMIT_PSD0      = 0x02,   /* PSD0            */
+	ACPI_PCIE_RP_EMIT_SRCK      = 0x04,   /* SRCK            */
+	ACPI_PCIE_RP_EMIT_L23_PSD0  = 0x03,   /* L23, PSD0       */
+	ACPI_PCIE_RP_EMIT_L23_SRCK  = 0x05,   /* L23, SRCK       */
+	ACPI_PCIE_RP_EMIT_PSD0_SRCK = 0x06,   /* PSD0, SRCK      */
+	ACPI_PCIE_RP_EMIT_ALL       = 0x07    /* L23, PSD0, SRCK */
+};
+
 /* Device support at least one of enable/reset GPIO. */
 struct soc_intel_common_block_pcie_rtd3_config {
 	const char *desc;
@@ -45,6 +56,26 @@ struct soc_intel_common_block_pcie_rtd3_config {
 	 * Disable the ACPI-driven L23 Ready-to-Detect transition for the root port.
 	 */
 	bool disable_l23;
+
+	/*
+	 * Provides L23, modPHY gating, source clock enabling methods to the device
+	 * connected root port, mainly used in the device ACPI methods such as reset.
+	 * The methods to export are following this table:
+	 *-----------------------------------------------------------------------------------*
+	 | ext_pm_support | disable_l123 | srcclk_pin |   rp_type   |     exported methods   |
+	 *----------------+--------------+------------+-------------+------------------------*
+	 |     false      |       -      |     -      |      -      | None                   |
+	 |     true       |      true    |     =0     | PCIE_RP_CPU | None                   |
+	 |     true       |      true    |     =0     | PCIE_RP_PCH | SRCK                   |
+	 |     true       |      true    |     >0     | PCIE_RP_CPU | PSD0                   |
+	 |     true       |      true    |     >0     | PCIE_RP_PCH | PSD0, SRCK             |
+	 |     true       |      false   |     =0     | PCIE_RP_CPU | L23D, LD23             |
+	 |     true       |      false   |     =0     | PCIE_RP_PCH | L23D, LD23, SRCK       |
+	 |     true       |      false   |     >0     | PCIE_RP_CPU | L23D, LD23, PSD0       |
+	 |     true       |      false   |     >0     | PCIE_RP_PCH | L23D, LD23, PSD0, SRCK |
+	 *-----------------------------------------------------------------------------------*
+	 */
+	enum acpi_pcie_rp_pm_emit ext_pm_support;
 };
 
 #endif /* __SOC_INTEL_COMMON_BLOCK_PCIE_RTD3_CHIP_H__ */

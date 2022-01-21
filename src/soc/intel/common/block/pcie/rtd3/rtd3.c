@@ -100,6 +100,46 @@ static void pcie_rtd3_enable_modphy_pg(unsigned int pcie_rp, enum modphy_pg_stat
 	acpigen_emit_namestring(RTD3_MUTEX_PATH);
 }
 
+/* Method to enter L2/L3 */
+static void pcie_rtd3_acpi_method_dl23(void)
+{
+	acpigen_write_method_serialized("DL23", 0);
+	pcie_rtd3_acpi_l23_entry();
+	acpigen_pop_len(); /* Method */
+}
+
+/* Method to exit L2/L3 */
+static void pcie_rtd3_acpi_method_l23d(void)
+{
+	acpigen_write_method_serialized("L23D", 0);
+	pcie_rtd3_acpi_l23_exit();
+	acpigen_pop_len(); /* Method */
+}
+
+/* Method to disable PCH modPHY power gating */
+static void pcie_rtd3_acpi_method_pds0(unsigned int pcie_rp)
+{
+	acpigen_write_method_serialized("PSD0", 0);
+	pcie_rtd3_enable_modphy_pg(pcie_rp, PG_DISABLE);
+	acpigen_pop_len(); /* Method */
+}
+
+/* Method to enable/disable the source clock */
+static void pcie_rtd3_acpi_method_srck(unsigned int pcie_rp,
+	const struct soc_intel_common_block_pcie_rtd3_config *config)
+{
+	acpigen_write_method_serialized("SRCK", 1);
+
+	if (config->srcclk_pin >= 0) {
+		acpigen_write_if_lequal_op_op(ARG0_OP, 0);
+		pmc_ipc_acpi_set_pci_clock(pcie_rp, config->srcclk_pin, false);
+		acpigen_write_else();
+		pmc_ipc_acpi_set_pci_clock(pcie_rp, config->srcclk_pin, true);
+		acpigen_pop_len(); /* If */
+	}
+	acpigen_pop_len(); /* Method */
+}
+
 static void
 pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 			 const struct soc_intel_common_block_pcie_rtd3_config *config,
@@ -293,6 +333,24 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 		printk(BIOS_ERR, "%s: Unknown PCIe root port\n", __func__);
 		return;
 	}
+	if (config->disable_l23) {
+		if (config->ext_pm_support | ACPI_PCIE_RP_EMIT_L23) {
+			printk(BIOS_ERR, "%s: Can not export L23 methods\n", __func__);
+			return;
+		}
+	}
+	if (rp_type != PCIE_RP_PCH) {
+		if (config->ext_pm_support | ACPI_PCIE_RP_EMIT_PSD0) {
+			printk(BIOS_ERR, "%s: Can not export PSD0 method\n", __func__);
+			return;
+		}
+	}
+	if (config->srcclk_pin == 0) {
+		if (config->ext_pm_support | ACPI_PCIE_RP_EMIT_SRCK) {
+			printk(BIOS_ERR, "%s: Can not export SRCK method\n", __func__);
+			return;
+		}
+	}
 
 	printk(BIOS_INFO, "%s: Enable RTD3 for %s (%s)\n", scope, dev_path(parent),
 	       config->desc ?: dev->chip_ops->name);
@@ -316,9 +374,20 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 	acpigen_write_field("PXCS", fieldlist, ARRAY_SIZE(fieldlist),
 			    FIELD_ANYACC | FIELD_NOLOCK | FIELD_PRESERVE);
 
+	if (config->ext_pm_support | ACPI_PCIE_RP_EMIT_L23) {
+		pcie_rtd3_acpi_method_dl23();
+		pcie_rtd3_acpi_method_l23d();
+	}
+
 	/* Create the OpRegion to access the ModPHY PG registers (PCH RPs only) */
 	if (rp_type == PCIE_RP_PCH)
 		write_modphy_opregion(pcie_rp);
+
+	if (config->ext_pm_support | ACPI_PCIE_RP_EMIT_PSD0)
+		pcie_rtd3_acpi_method_pds0(pcie_rp);
+
+	if (config->ext_pm_support | ACPI_PCIE_RP_EMIT_SRCK)
+		pcie_rtd3_acpi_method_srck(pcie_rp, config);
 
 	/* ACPI Power Resource for controlling the attached device power. */
 	acpigen_write_power_res("RTD3", 0, 0, power_res_states, ARRAY_SIZE(power_res_states));

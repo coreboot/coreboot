@@ -172,17 +172,15 @@ static void mem_init_set_default_config(struct dramc_param *dparam,
 static void mt_mem_init_run(struct dramc_param *dparam,
 			    const struct sdram_info *dram_info)
 {
-	const ssize_t mrc_cache_size = sizeof(dparam->dramc_datas);
+	const ssize_t mrc_cache_size = sizeof(*dparam);
 	ssize_t data_size;
 	struct stopwatch sw;
 	int ret;
 
 	/* Load calibration params from flash and run fast calibration */
-	mem_init_set_default_config(dparam, dram_info);
 	data_size = mrc_cache_load_current(MRC_TRAINING_DATA,
 					   DRAMC_PARAM_HEADER_VERSION,
-					   &dparam->dramc_datas,
-					   mrc_cache_size);
+					   dparam, mrc_cache_size);
 	if (data_size == mrc_cache_size) {
 		printk(BIOS_INFO, "DRAM-K: Running fast calibration\n");
 		stopwatch_init(&sw);
@@ -194,11 +192,10 @@ static void mt_mem_init_run(struct dramc_param *dparam,
 			       stopwatch_duration_msecs(&sw), ret);
 
 			/* Erase flash data after fast calibration failed */
-			memset(&dparam->dramc_datas, 0xa5, mrc_cache_size);
+			memset(dparam, 0xa5, mrc_cache_size);
 			mrc_cache_stash_data(MRC_TRAINING_DATA,
 					     DRAMC_PARAM_HEADER_VERSION,
-					     &dparam->dramc_datas,
-					     mrc_cache_size);
+					     dparam, mrc_cache_size);
 		} else {
 			printk(BIOS_INFO, "DRAM-K: Fast calibration passed in %ld msecs\n",
 			       stopwatch_duration_msecs(&sw));
@@ -220,7 +217,7 @@ static void mt_mem_init_run(struct dramc_param *dparam,
 		       stopwatch_duration_msecs(&sw));
 		mrc_cache_stash_data(MRC_TRAINING_DATA,
 				     DRAMC_PARAM_HEADER_VERSION,
-				     &dparam->dramc_datas, mrc_cache_size);
+				     dparam, mrc_cache_size);
 	} else {
 		printk(BIOS_ERR, "DRAM-K: Full calibration failed in %ld msecs\n",
 		       stopwatch_duration_msecs(&sw));

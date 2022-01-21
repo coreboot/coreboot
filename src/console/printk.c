@@ -67,9 +67,35 @@ union log_state {
 	};
 };
 
+static void wrap_interactive_printf(const char *fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	vtxprintf(console_interactive_tx_byte, fmt, args, NULL);
+}
+
+static void line_start(union log_state state)
+{
+	if (state.level > BIOS_LOG_PREFIX_MAX_LEVEL)
+		return;
+	if (state.speed == CONSOLE_LOG_FAST)
+		return;
+
+	/* Interactive consoles get a `[DEBUG]  ` style readable prefix. */
+	wrap_interactive_printf(BIOS_LOG_PREFIX_PATTERN, bios_log_prefix[state.level]);
+}
+
 static void wrap_putchar(unsigned char byte, void *data)
 {
 	union log_state state = { .as_ptr = data };
+	static bool line_started = false;
+
+	if (byte == '\n') {
+		line_started = false;
+	} else if (!line_started) {
+		line_start(state);
+		line_started = true;
+	}
 
 	if (state.speed == CONSOLE_LOG_FAST)
 		__cbmemc_tx_byte(byte);

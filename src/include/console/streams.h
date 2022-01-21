@@ -10,6 +10,11 @@ void console_hw_init(void);
 void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);
 
+/* Interactive consoles that are usually displayed in real time on a terminal. */
+void console_interactive_tx_byte(unsigned char byte, void *data_unused);
+/* Consoles that store logs on some medium for later retrieval. */
+void console_stored_tx_byte(unsigned char byte, void *data_unused);
+
 /*
  * Write number_of_bytes data bytes from buffer to the serial device.
  * If number_of_bytes is zero, wait until all serial data is output.

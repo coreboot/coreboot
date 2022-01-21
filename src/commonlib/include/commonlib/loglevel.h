@@ -157,4 +157,27 @@
 #define BIOS_NEVER	9
 /** @} */
 
+#ifndef __ASSEMBLER__
+
+/*
+ * When printing logs, lines should be printed with the following prefixes in
+ * front of them according to the BIOS_LOG_PREFIX_PATTERN printf() pattern.
+ */
+#define BIOS_LOG_PREFIX_PATTERN "[%.5s]  "
+#define BIOS_LOG_PREFIX_MAX_LEVEL BIOS_SPEW
+static const char bios_log_prefix[BIOS_LOG_PREFIX_MAX_LEVEL + 1][5] = {
+	/* Note: These strings are *not* null-terminated to save space. */
+	[BIOS_EMERG]   = "EMERG",
+	[BIOS_ALERT]   = "ALERT",
+	[BIOS_CRIT]    = "CRIT ",
+	[BIOS_ERR]     = "ERROR",
+	[BIOS_WARNING] = "WARN ",
+	[BIOS_NOTICE]  = "NOTE ",
+	[BIOS_INFO]    = "INFO ",
+	[BIOS_DEBUG]   = "DEBUG",
+	[BIOS_SPEW]    = "SPEW ",
+};
+
+#endif /* __ASSEMBLER__ */
+
 #endif /* LOGLEVEL_H */

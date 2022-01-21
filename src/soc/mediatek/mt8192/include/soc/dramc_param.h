@@ -15,49 +15,6 @@
 
 #define DRAMC_PARAM_HEADER_VERSION 7
 
-enum DRAMC_PARAM_STATUS_CODES {
-	DRAMC_SUCCESS = 0,
-	DRAMC_ERR_INVALID_VERSION,
-	DRAMC_ERR_INVALID_SIZE,
-	DRAMC_ERR_INVALID_FLAGS,
-	DRAMC_ERR_RECALIBRATE,
-	DRAMC_ERR_INIT_DRAM,
-	DRAMC_ERR_COMPLEX_RW_MEM_TEST,
-	DRAMC_ERR_1ST_COMPLEX_RW_MEM_TEST,
-	DRAMC_ERR_2ND_COMPLEX_RW_MEM_TEST,
-	DRAMC_ERR_FAST_CALIBRATION,
-};
-
-enum SDRAM_DVFS_FLAG {
-	DRAMC_DISABLE_DVFS,
-	DRAMC_ENABLE_DVFS,
-};
-
-enum SDRAM_DDR_TYPE {
-	DDR_TYPE_DISCRETE,
-	DDR_TYPE_EMCP,
-};
-
-enum SDRAM_DDR_GEOMETRY_TYPE {
-	DDR_TYPE_2CH_2RK_4GB_2_2,
-	DDR_TYPE_2CH_2RK_6GB_3_3,
-	DDR_TYPE_2CH_2RK_8GB_4_4_BYTE,
-	DDR_TYPE_2CH_1RK_4GB_4_0,
-	DDR_TYPE_2CH_2RK_6GB_2_4,
-	DDR_TYPE_2CH_2RK_8GB_4_4,
-};
-
-enum SDRAM_VOLTAGE_TYPE {
-	SDRAM_VOLTAGE_NVCORE_NVDRAM,
-	SDRAM_VOLTAGE_HVCORE_HVDRAM,
-	SDRAM_VOLTAGE_LVCORE_LVDRAM,
-};
-
-struct sdram_info {
-	u32 ddr_type;			/* SDRAM_DDR_TYPE */
-	u32 ddr_geometry;		/* SDRAM_DDR_GEOMETRY_TYPE */
-};
-
 struct sdram_params {
 	u32 rank_num;
 	u16 num_dlycell_perT;
@@ -103,23 +60,6 @@ struct sdram_params {
 	/* TX OE */
 	u8 tx_oe_dq_mck[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
 	u8 tx_oe_dq_ui[CHANNEL_MAX][RANK_MAX][DQS_NUMBER_LP4];
-};
-
-struct emi_mdl {
-	u32 cona_val;
-	u32 conh_val;
-	u32 conf_val;
-	u32 chn_cona_val;
-};
-
-struct ddr_base_info {
-	u32 config_dvfs;		/* SDRAM_DVFS_FLAG */
-	struct sdram_info sdram;
-	u32 voltage_type;		/* SDRAM_VOLTAGE_TYPE */
-	u32 support_ranks;
-	u64 rank_size[RANK_MAX];
-	struct emi_mdl emi_config;
-	DRAM_CBT_MODE_T cbt_mode[RANK_MAX];
 };
 
 struct dramc_data {

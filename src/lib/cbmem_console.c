@@ -55,38 +55,6 @@ static bool console_paused;
 #define STATIC_CONSOLE_SIZE 1024
 static u8 static_console[STATIC_CONSOLE_SIZE];
 
-/*
- * Copy the current console buffer (either from the cache as RAM area or from
- * the static buffer, pointed at by src_cons_p) into the newly initialized CBMEM
- * console. The use of cbmemc_tx_byte() ensures that all special cases for the
- * target console (e.g. overflow) will be handled. If there had been an
- * overflow in the source console, log a message to that effect.
- */
-static void copy_console_buffer(struct cbmem_console *src_cons_p)
-{
-	u32 c;
-
-	if (!src_cons_p)
-		return;
-
-	if (src_cons_p->cursor & OVERFLOW) {
-		const char overflow_warning[] = "\n*** Pre-CBMEM " ENV_STRING
-			" console overflowed, log truncated! ***\n";
-		for (c = 0; c < sizeof(overflow_warning) - 1; c++)
-			cbmemc_tx_byte(overflow_warning[c]);
-		for (c = src_cons_p->cursor & CURSOR_MASK;
-		     c < src_cons_p->size; c++)
-			cbmemc_tx_byte(src_cons_p->body[c]);
-	}
-
-	for (c = 0; c < (src_cons_p->cursor & CURSOR_MASK); c++)
-		cbmemc_tx_byte(src_cons_p->body[c]);
-
-	/* Invalidate the source console, so it will be reinitialized on the
-	   next reboot. Otherwise, we might copy the same bytes again. */
-	src_cons_p->size = 0;
-}
-
 static int buffer_valid(struct cbmem_console *cbm_cons_p, u32 total_space)
 {
 	return (cbm_cons_p->cursor & CURSOR_MASK) < cbm_cons_p->size &&
@@ -137,6 +105,38 @@ void cbmemc_tx_byte(unsigned char data)
 	}
 
 	current_console->cursor = flags | cursor;
+}
+
+/*
+ * Copy the current console buffer (either from the cache as RAM area or from
+ * the static buffer, pointed at by src_cons_p) into the newly initialized CBMEM
+ * console. The use of cbmemc_tx_byte() ensures that all special cases for the
+ * target console (e.g. overflow) will be handled. If there had been an
+ * overflow in the source console, log a message to that effect.
+ */
+static void copy_console_buffer(struct cbmem_console *src_cons_p)
+{
+	u32 c;
+
+	if (!src_cons_p)
+		return;
+
+	if (src_cons_p->cursor & OVERFLOW) {
+		const char overflow_warning[] = "\n*** Pre-CBMEM " ENV_STRING
+			" console overflowed, log truncated! ***\n";
+		for (c = 0; c < sizeof(overflow_warning) - 1; c++)
+			cbmemc_tx_byte(overflow_warning[c]);
+		for (c = src_cons_p->cursor & CURSOR_MASK;
+		     c < src_cons_p->size; c++)
+			cbmemc_tx_byte(src_cons_p->body[c]);
+	}
+
+	for (c = 0; c < (src_cons_p->cursor & CURSOR_MASK); c++)
+		cbmemc_tx_byte(src_cons_p->body[c]);
+
+	/* Invalidate the source console, so it will be reinitialized on the
+	   next reboot. Otherwise, we might copy the same bytes again. */
+	src_cons_p->size = 0;
 }
 
 static void cbmemc_reinit(int is_recovery)

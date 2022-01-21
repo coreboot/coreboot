@@ -395,6 +395,15 @@ config DEFAULT_CONSOLE_LOGLEVEL
 
 endif
 
+config CONSOLE_USE_ANSI_ESCAPES
+	bool "Use ANSI escape sequences for console highlighting"
+	default y
+	help
+	  If enabled, certain consoles (e.g. UART) that are meant to be read on
+	  a terminal will use ANSI escape sequences (like `ESC [1m`) to
+	  highlight lines based on their log level. Disable this if your
+	  terminal does not support ANSI escape sequences.
+
 config NO_POST
 	bool "Don't show any POST codes"
 	default n

@@ -81,8 +81,17 @@ static void line_start(union log_state state)
 	if (state.speed == CONSOLE_LOG_FAST)
 		return;
 
-	/* Interactive consoles get a `[DEBUG]  ` style readable prefix. */
+	/* Interactive consoles get a `[DEBUG]  ` style readable prefix,
+	   and potentially an escape sequence for highlighting. */
+	if (CONFIG(CONSOLE_USE_ANSI_ESCAPES))
+		wrap_interactive_printf(BIOS_LOG_ESCAPE_PATTERN, bios_log_escape[state.level]);
 	wrap_interactive_printf(BIOS_LOG_PREFIX_PATTERN, bios_log_prefix[state.level]);
+}
+
+static void line_end(union log_state state)
+{
+	if (CONFIG(CONSOLE_USE_ANSI_ESCAPES) && state.speed != CONSOLE_LOG_FAST)
+		wrap_interactive_printf(BIOS_LOG_ESCAPE_RESET);
 }
 
 static void wrap_putchar(unsigned char byte, void *data)
@@ -91,6 +100,7 @@ static void wrap_putchar(unsigned char byte, void *data)
 	static bool line_started = false;
 
 	if (byte == '\n') {
+		line_end(state);
 		line_started = false;
 	} else if (!line_started) {
 		line_start(state);

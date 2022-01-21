@@ -178,6 +178,29 @@ static const char bios_log_prefix[BIOS_LOG_PREFIX_MAX_LEVEL + 1][5] = {
 	[BIOS_SPEW]    = "SPEW ",
 };
 
+/*
+ * When printing to terminals supporting ANSI escape sequences, the following
+ * escape sequences can be printed to highlight the respective log levels
+ * according to the BIOS_LOG_ESCAPE_PATTERN printf() pattern. At the end of a
+ * line, highlighting should be reset with the BIOS_LOG_ESCAPE_RESET seqence.
+ *
+ * The escape sequences used here set flags with the following meanings:
+ * 1 = bold, 4 = underlined, 5 = blinking, 7 = inverted
+ */
+#define BIOS_LOG_ESCAPE_PATTERN "\x1b[%sm"
+#define BIOS_LOG_ESCAPE_RESET "\x1b[0m"
+static const char bios_log_escape[BIOS_LOG_PREFIX_MAX_LEVEL + 1][8] = {
+	[BIOS_EMERG]   = "1;4;5;7",
+	[BIOS_ALERT]   = "1;4;7",
+	[BIOS_CRIT]    = "1;7",
+	[BIOS_ERR]     = "7",
+	[BIOS_WARNING] = "1;4",
+	[BIOS_NOTICE]  = "1",
+	[BIOS_INFO]    = "0",
+	[BIOS_DEBUG]   = "0",
+	[BIOS_SPEW]    = "0",
+};
+
 #endif /* __ASSEMBLER__ */
 
 #endif /* LOGLEVEL_H */

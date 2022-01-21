@@ -6,6 +6,7 @@
 #include <soc/dramc_param.h>
 
 size_t sdram_size(void);
+size_t mtk_dram_size(void);
 void mt_set_emi(struct dramc_param *dparam);
 void mt_mem_init(struct dramc_param *dparam);
 void mtk_dram_init(void);

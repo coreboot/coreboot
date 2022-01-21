@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <bootmode.h>
 #include <cbfs.h>
+#include <cbmem.h>
+#include <commonlib/bsd/mem_chip_info.h>
 #include <console/console.h>
 #include <soc/dramc_common.h>
 #include <ip_checksum.h>
@@ -22,6 +24,8 @@ _Static_assert(sizeof(struct dramc_param) <= CALIBRATION_REGION_SIZE,
 
 const char *get_dram_geometry_str(u32 ddr_geometry);
 const char *get_dram_type_str(u32 ddr_type);
+
+static const struct ddr_base_info *curr_ddr_info;
 
 static int mt_mem_test(const struct dramc_data *dparam)
 {
@@ -95,6 +99,49 @@ const char *get_dram_type_str(u32 ddr_type)
 
 	return s;
 }
+
+size_t mtk_dram_size(void)
+{
+	size_t size = 0;
+
+	if (!curr_ddr_info)
+		return 0;
+	for (unsigned int i = 0; i < RANK_MAX; ++i)
+		size += curr_ddr_info->mrr_info.mr8_density[i];
+	return size;
+}
+
+static void fill_dram_info(struct mem_chip_info *mc, const struct ddr_base_info *ddr)
+{
+	unsigned int i;
+	size_t size;
+
+	mc->type = MEM_CHIP_LPDDR4X;
+	mc->num_channels = CHANNEL_MAX;
+	size = mtk_dram_size();
+	assert(size);
+
+	for (i = 0; i < mc->num_channels; ++i) {
+		mc->channel[i].density = size / mc->num_channels;
+		mc->channel[i].io_width = DQ_DATA_WIDTH_LP4;
+		mc->channel[i].manufacturer_id = ddr->mrr_info.mr5_vendor_id;
+		mc->channel[i].revision_id[0] = ddr->mrr_info.mr6_revision_id;
+		mc->channel[i].revision_id[1] = ddr->mrr_info.mr7_revision_id;
+	}
+}
+
+static void add_mem_chip_info(int unused)
+{
+	struct mem_chip_info *mc;
+	size_t size;
+
+	size = sizeof(*mc) + sizeof(struct mem_chip_channel) * CHANNEL_MAX;
+	mc = cbmem_add(CBMEM_ID_MEM_CHIP_INFO, size);
+	assert(mc);
+
+	fill_dram_info(mc, curr_ddr_info);
+}
+ROMSTAGE_CBMEM_INIT_HOOK(add_mem_chip_info);
 
 static int run_dram_blob(struct dramc_param *dparam)
 {
@@ -261,5 +308,6 @@ void mtk_dram_init(void)
 	/* dramc_param is too large to fit in stack. */
 	static struct dramc_param dramc_parameter;
 	mt_mem_init(&dramc_parameter);
+	curr_ddr_info = &dramc_parameter.dramc_datas.ddr_info;
 	mtk_mmu_after_dram();
 }

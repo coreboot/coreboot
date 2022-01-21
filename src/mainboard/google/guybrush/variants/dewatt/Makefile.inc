@@ -6,3 +6,5 @@ ramstage-y += gpio.c
 verstage-y += gpio.c
 
 subdirs-y += ./memory
+
+romstage-y += variant.c

@@ -147,6 +147,13 @@ pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 {
 	acpigen_write_method_serialized("_ON", 0);
 
+	/* When this feature is enabled, ONSK indicates if the previous _OFF was
+	 * skipped. If so, since the device was not in Off state, and the current
+	 * _ON can be skipped as well.
+	 */
+	if (config->skip_on_off_support)
+		acpigen_write_if_lequal_namestr_int("ONSK", 0);
+
 	/* Disable modPHY power gating for PCH RPs. */
 	if (rp_type == PCIE_RP_PCH)
 		pcie_rtd3_enable_modphy_pg(pcie_rp, PG_DISABLE);
@@ -173,6 +180,16 @@ pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 	if (!config->disable_l23)
 		pcie_rtd3_acpi_l23_exit();
 
+	if (config->skip_on_off_support) {
+		/* If current _ON is skipped, ONSK is decremented so that _ON will be
+		 * executed normally until _OFF is skipped again.
+		 */
+		acpigen_write_else();
+		acpigen_emit_byte(DECREMENT_OP);
+		acpigen_emit_namestring("ONSK");
+
+		acpigen_pop_len(); /* Else */
+	}
 	acpigen_pop_len(); /* Method */
 }
 
@@ -182,6 +199,14 @@ pcie_rtd3_acpi_method_off(int pcie_rp,
 			  enum pcie_rp_type rp_type)
 {
 	acpigen_write_method_serialized("_OFF", 0);
+
+	/* When this feature is enabled, ONSK is checked to see if the device
+	 * wants _OFF to be skipped for once. ONSK is normally incremented in the
+	 * device method, such as reset _RST, which is invoked during driver reload.
+	 * In such case, _OFF needs to be avoided at the end of driver removal.
+	 */
+	if (config->skip_on_off_support)
+		acpigen_write_if_lequal_namestr_int("OFSK", 0);
 
 	/* Trigger L23 ready entry flow unless disabled by config. */
 	if (!config->disable_l23)
@@ -209,6 +234,22 @@ pcie_rtd3_acpi_method_off(int pcie_rp,
 			acpigen_write_sleep(config->enable_off_delay_ms);
 	}
 
+	if (config->skip_on_off_support) {
+		/* If current _OFF is skipped, ONSK is incremented so that the
+		 * following _ON will also be skipped. In addition, OFSK is decremented
+		 * so that next _OFF will be executed normally until the device method
+		 * increments OFSK again.
+		 */
+		acpigen_write_else();
+		/* OFSK-- */
+		acpigen_emit_byte(DECREMENT_OP);
+		acpigen_emit_namestring("OFSK");
+		/* ONSK++ */
+		acpigen_emit_byte(INCREMENT_OP);
+		acpigen_emit_namestring("ONSK");
+
+		acpigen_pop_len(); /* Else */
+	}
 	acpigen_pop_len(); /* Method */
 }
 
@@ -391,6 +432,21 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 
 	/* ACPI Power Resource for controlling the attached device power. */
 	acpigen_write_power_res("RTD3", 0, 0, power_res_states, ARRAY_SIZE(power_res_states));
+
+	if (config->skip_on_off_support) {
+		/* OFSK:  0 = _OFF Method will be executed normally when called;
+		 *       >1 = _OFF will be skipped.
+		 *       _OFF Method to decrement OFSK and increment ONSK if the
+		 *       current execution is skipped.
+		 * ONSK:  0 = _ON Method will be executed normally when called;
+		 *       >1 = _ONF will be skipped.
+		 *       _ON Method to decrement ONSK if the current execution is
+		 *       skipped.
+		 */
+		acpigen_write_name_integer("ONSK", 0);
+		acpigen_write_name_integer("OFSK", 0);
+	}
+
 	pcie_rtd3_acpi_method_status(config);
 	pcie_rtd3_acpi_method_on(pcie_rp, config, rp_type);
 	pcie_rtd3_acpi_method_off(pcie_rp, config, rp_type);

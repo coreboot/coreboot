@@ -76,6 +76,12 @@ struct soc_intel_common_block_pcie_rtd3_config {
 	 *-----------------------------------------------------------------------------------*
 	 */
 	enum acpi_pcie_rp_pm_emit ext_pm_support;
+
+	/*
+	 * Add support to skip _OFF and _ON execution when needed, such as reloading
+	 * the device driver.
+	 */
+	bool skip_on_off_support;
 };
 
 #endif /* __SOC_INTEL_COMMON_BLOCK_PCIE_RTD3_CHIP_H__ */

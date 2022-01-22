@@ -192,6 +192,17 @@ chip soc/intel/alderlake
 		end
 		device ref pcie_rp6 on
 			probe DB_LTE LTE_PCIE
+			chip drivers/wwan/fm
+				register "fcpo_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F21)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E16)"
+				register "perst_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E0)"
+				register "wake_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A7)"
+				use rp6_rtd3 as rtd3dev
+				device generic 0 on
+					probe DB_LTE LTE_PCIE
+				end
+			end
+
 		end
 		device ref tcss_dma0 on
 			chip drivers/intel/usb4/retimer

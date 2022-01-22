@@ -3,7 +3,6 @@ config CPU_INTEL_SOCKET_P
 	select CPU_INTEL_MODEL_1067X
 	select CPU_INTEL_MODEL_6FX
 	select MMX
-	select SSE
 
 if CPU_INTEL_SOCKET_P
 

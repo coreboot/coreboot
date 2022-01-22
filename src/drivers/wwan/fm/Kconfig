@@ -1,0 +1,11 @@
+config DRIVERS_WWAN_FM350GL
+	bool
+	default n
+	depends on SOC_INTEL_COMMON_BLOCK_PCIE_RTD3
+	help
+	   This driver is for Fibocom FM350-GL PCIe 5G WWAN.
+	   When enabled, this driver will add support for ACPI controlled
+	   WWAN using GPIOs for power/reset control of the device.
+	   This driver depends on rtd3 driver code to build as it needs to
+	   point to the rtd3 chip on the same parent for the methods provided
+	   only for the same root port.

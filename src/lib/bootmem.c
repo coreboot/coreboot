@@ -51,7 +51,7 @@ static uint32_t bootmem_to_lb_tag(const enum bootmem_type tag)
 	case BM_MEM_TABLE:
 		return LB_MEM_TABLE;
 	default:
-		printk(BIOS_ERR, "ERROR: Unsupported tag %u\n", tag);
+		printk(BIOS_ERR, "Unsupported tag %u\n", tag);
 		return LB_MEM_RESERVED;
 	}
 }

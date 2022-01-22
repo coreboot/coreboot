@@ -265,7 +265,7 @@ int am335x_mmc_init_storage(struct am335x_mmc_host *mmc_host)
 
 	err = am335x_mmc_init(mmc_host->reg);
 	if (err != 0) {
-		printk(BIOS_ERR, "ERROR: Initialising AM335X SD failed.\n");
+		printk(BIOS_ERR, "Initialising AM335X SD failed.\n");
 		return err;
 	}
 

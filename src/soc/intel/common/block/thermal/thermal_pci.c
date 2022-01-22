@@ -19,13 +19,13 @@ void pch_thermal_configuration(void)
 
 	dev = pcidev_path_on_root(PCH_DEVFN_THERMAL);
 	if (!dev) {
-		printk(BIOS_ERR, "ERROR: PCH_DEVFN_THERMAL device not found!\n");
+		printk(BIOS_ERR, "PCH_DEVFN_THERMAL device not found!\n");
 		return;
 	}
 
 	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!res) {
-		printk(BIOS_ERR, "ERROR: PCH thermal device not found!\n");
+		printk(BIOS_ERR, "PCH thermal device not found!\n");
 		return;
 	}
 

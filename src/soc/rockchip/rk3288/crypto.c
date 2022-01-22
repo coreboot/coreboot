@@ -94,7 +94,7 @@ vb2_error_t vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
 	do {
 		intsts = read32(&crypto->intsts);
 		if (intsts & HRDMA_ERR) {
-			printk(BIOS_ERR, "ERROR: DMA error during HW crypto\n");
+			printk(BIOS_ERR, "DMA error during HW crypto\n");
 			return VB2_ERROR_UNKNOWN;
 		}
 	} while (!(intsts & HRDMA_DONE));	/* wait for DMA to finish */

@@ -132,7 +132,7 @@ void hs_usb_phy_init(void *board_data)
 	long lock_us = wait_us(160, read32(&hs_phy_reg->phy_dig->debug_stat5) &
 						VSTATUS_PLL_LOCK_STATUS_MASK);
 	if (!lock_us)
-		printk(BIOS_ERR, "ERROR: QUSB PHY PLL LOCK fails\n");
+		printk(BIOS_ERR, "QUSB PHY PLL LOCK fails\n");
 	else
 		printk(BIOS_DEBUG, "QUSB PHY initialized and locked in %ldus\n",
 				lock_us);

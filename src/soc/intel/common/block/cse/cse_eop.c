@@ -172,7 +172,7 @@ static void handle_cse_eop_result(enum cse_eop_result result)
 		break;
 	case CSE_EOP_RESULT_ERROR: /* fallthrough */
 	default:
-		printk(BIOS_ERR, "ERROR: Failed to send EOP to CSE, %d\n", result);
+		printk(BIOS_ERR, "Failed to send EOP to CSE, %d\n", result);
 		/* For vboot, trigger recovery mode if applicable, as there is
 		   likely something very broken in this case. */
 		if (CONFIG(VBOOT) && !vboot_recovery_mode_enabled())

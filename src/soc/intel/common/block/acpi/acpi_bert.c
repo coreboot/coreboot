@@ -39,7 +39,7 @@ enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 	}
 
 	if (!cl_get_total_data_size()) {
-		printk(BIOS_ERR, "Error: No crashlog record present\n");
+		printk(BIOS_ERR, "No crashlog record present\n");
 		return CB_ERR;
 	}
 
@@ -47,12 +47,12 @@ enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 	gesb_header_size = sizeof(*status);
 
 	if (!status) {
-		printk(BIOS_ERR, "Error: unable to allocate GSB\n");
+		printk(BIOS_ERR, "unable to allocate GSB\n");
 		return CB_ERR;
 	}
 
 	if (cl_get_total_data_size() > bert_storage_remaining()) {
-		printk(BIOS_ERR, "Error: Crashlog entry would exceed "
+		printk(BIOS_ERR, "Crashlog entry would exceed "
 				"available region\n");
 		return CB_ERR;
 	}
@@ -61,7 +61,7 @@ enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 	if (cpu_record_size) {
 		cl_data = new_cper_fw_error_crashlog(status, cpu_record_size);
 		if (!cl_data) {
-			printk(BIOS_ERR, "Error: Crashlog CPU entry(size %lu) "
+			printk(BIOS_ERR, "Crashlog CPU entry(size %lu) "
 				"would exceed available region\n",
 				cpu_record_size);
 			return CB_ERR;
@@ -75,14 +75,14 @@ enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 	if (pmc_record_size) {
 		/*  Allocate new FW ERR structure in case CPU crashlog is present */
 		if (cpu_record_size && !bert_append_fw_err(status)) {
-			printk(BIOS_ERR, "Error: Crashlog PMC entry would "
+			printk(BIOS_ERR, "Crashlog PMC entry would "
 				"exceed available region\n");
 			return CB_ERR;
 		}
 
 		cl_data = new_cper_fw_error_crashlog(status, pmc_record_size);
 		if (!cl_data) {
-			printk(BIOS_ERR, "Error: Crashlog PMC entry(size %lu) "
+			printk(BIOS_ERR, "Crashlog PMC entry(size %lu) "
 				"would exceed available region\n",
 				pmc_record_size);
 			return CB_ERR;

@@ -29,12 +29,12 @@ int __weak variant_mainboard_read_spd(uint8_t spdAddress,
 
 	void *spd = (void *)spd_cbfs_map(spd_index);
 	if (!spd) {
-		printk(BIOS_ERR, "Error: spd.bin not found\n");
+		printk(BIOS_ERR, "spd.bin not found\n");
 		return -1;
 	}
 
 	if (len != CONFIG_DIMM_SPD_SIZE) {
-		printk(BIOS_ERR, "Error: spd.bin is not the correct size\n");
+		printk(BIOS_ERR, "spd.bin is not the correct size\n");
 		return -1;
 	}
 

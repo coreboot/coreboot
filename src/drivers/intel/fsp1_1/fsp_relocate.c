@@ -15,14 +15,14 @@ int fsp_relocate(struct prog *fsp_relocd)
 	void *new_loc = cbfs_cbmem_alloc(prog_name(fsp_relocd),
 					 CBMEM_ID_REFCODE, &size);
 	if (new_loc == NULL) {
-		printk(BIOS_ERR, "ERROR: Unable to load FSP into memory.\n");
+		printk(BIOS_ERR, "Unable to load FSP into memory.\n");
 		return -1;
 	}
 
 	fih_offset = fsp1_1_relocate((uintptr_t)new_loc, new_loc, size);
 
 	if (fih_offset <= 0) {
-		printk(BIOS_ERR, "ERROR: FSP relocation failure.\n");
+		printk(BIOS_ERR, "FSP relocation failure.\n");
 		return -1;
 	}
 

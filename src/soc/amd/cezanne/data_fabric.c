@@ -66,8 +66,7 @@ void data_fabric_set_mmio_np(void)
 				/* Although a pair could be freed later, this condition is
 				 * very unusual and deserves analysis.  Flag an error and
 				 * leave the topmost part unconfigured. */
-				printk(BIOS_ERR,
-				       "Error: Not enough NB MMIO routing registers\n");
+				printk(BIOS_ERR, "Not enough NB MMIO routing registers\n");
 				continue;
 			}
 			data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), np_top + 1);
@@ -85,7 +84,7 @@ void data_fabric_set_mmio_np(void)
 
 	reg = data_fabric_find_unused_mmio_reg();
 	if (reg < 0) {
-		printk(BIOS_ERR, "Error: cannot configure region as NP\n");
+		printk(BIOS_ERR, "cannot configure region as NP\n");
 		return;
 	}
 

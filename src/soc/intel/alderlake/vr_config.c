@@ -53,7 +53,7 @@ static uint32_t load_table(const struct vr_lookup *tbl, const int tbl_entries, c
 		return tbl[i].conf[domain];
 	}
 
-	printk(BIOS_ERR, "ERROR: Unknown MCH (0x%x) in %s\n", mch_id, __func__);
+	printk(BIOS_ERR, "Unknown MCH (0x%x) in %s\n", mch_id, __func__);
 	return 0;
 }
 

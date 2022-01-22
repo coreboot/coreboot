@@ -67,7 +67,7 @@ void set_board_env_params(GNB_ENV_CONFIGURATION *params)
 	const struct soc_amd_stoneyridge_config *cfg;
 	const struct device *dev = pcidev_path_on_root(GNB_DEVFN);
 	if (!dev || !dev->chip_info) {
-		printk(BIOS_WARNING, "Warning: Cannot find SoC devicetree config\n");
+		printk(BIOS_WARNING, "Cannot find SoC devicetree config\n");
 		return;
 	}
 	cfg = dev->chip_info;

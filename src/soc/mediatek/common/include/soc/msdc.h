@@ -162,7 +162,7 @@ struct msdc_ctrlr {
 
 #define msdc_debug(format...) printk(BIOS_DEBUG, format)
 #define msdc_trace(format...) printk(BIOS_DEBUG, format)
-#define msdc_error(format...) printk(BIOS_ERR, "ERROR: " format)
+#define msdc_error(format...) printk(BIOS_ERR, format)
 
 int mtk_emmc_early_init(void *base, void *top_base);
 void mtk_msdc_configure_emmc(bool is_early_init);

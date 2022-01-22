@@ -35,7 +35,7 @@ void verify_psp_transfer_buf(void)
 			CMOS_RECOVERY_MAGIC_VAL)
 		die("Error: Reboot into recovery was unsuccessful.  Halting.");
 
-	printk(BIOS_ERR, "ERROR: VBOOT workbuf not valid.\n");
+	printk(BIOS_ERR, "VBOOT workbuf not valid.\n");
 	printk(BIOS_DEBUG, "Signature: %#08x\n", *(uint32_t *)_vboot2_work);
 	cmos_init(0);
 	cmos_write(CMOS_RECOVERY_MAGIC_VAL, CMOS_RECOVERY_BYTE);

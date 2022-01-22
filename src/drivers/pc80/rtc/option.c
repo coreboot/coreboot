@@ -100,7 +100,7 @@ static enum cb_err cmos_get_uint_option(unsigned int *dest, const char *name)
 	}
 
 	if (ce->config != 'e' && ce->config != 'h') {
-		printk(BIOS_ERR, "ERROR: CMOS option '%s' is not of integer type.\n", name);
+		printk(BIOS_ERR, "CMOS option '%s' is not of integer type.\n", name);
 		return CB_ERR_ARG;
 	}
 
@@ -176,7 +176,7 @@ static enum cb_err cmos_set_uint_option(const char *name, unsigned int *value)
 	}
 
 	if (ce->config != 'e' && ce->config != 'h') {
-		printk(BIOS_ERR, "ERROR: CMOS option '%s' is not of integer type.\n", name);
+		printk(BIOS_ERR, "CMOS option '%s' is not of integer type.\n", name);
 		return CB_ERR_ARG;
 	}
 

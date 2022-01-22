@@ -106,7 +106,7 @@ static void write_pci_config_irqs(void)
 	const struct soc_irq_route *ir = &global_soc_irq_route;
 
 	if (ir == NULL) {
-		printk(BIOS_WARNING, "Warning: Can't write PCI IRQ assignments "
+		printk(BIOS_WARNING, "Can't write PCI IRQ assignments "
 			"because 'global_braswell_irq_route' structure does not exist\n");
 		return;
 	}
@@ -142,8 +142,7 @@ static void write_pci_config_irqs(void)
 		device_num = PCI_SLOT(parent_bdf);
 
 		if (ir->pcidev[device_num] == 0) {
-			printk(BIOS_WARNING,
-				"Warning: PCI Device %d does not have an IRQ entry, "
+			printk(BIOS_WARNING, "PCI Device %d does not have an IRQ entry, "
 				"skipping it\n", device_num);
 			continue;
 		}

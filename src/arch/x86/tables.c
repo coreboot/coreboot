@@ -36,7 +36,7 @@ static unsigned long write_pirq_table(unsigned long rom_table_end)
 		// much space it's going to need.
 		if (new_high_table_pointer > (high_table_pointer
 			+ MAX_PIRQ_TABLE_SIZE))
-			printk(BIOS_ERR, "ERROR: Increase PIRQ size.\n");
+			printk(BIOS_ERR, "Increase PIRQ size.\n");
 		printk(BIOS_DEBUG, "PIRQ table: %ld bytes.\n",
 				new_high_table_pointer - high_table_pointer);
 	}
@@ -64,7 +64,7 @@ static unsigned long write_mptable(unsigned long rom_table_end)
 		// much space it's going to need.
 		if (new_high_table_pointer > (high_table_pointer
 			+ MAX_MP_TABLE_SIZE))
-			printk(BIOS_ERR, "ERROR: Increase MP table size.\n");
+			printk(BIOS_ERR, "Increase MP table size.\n");
 
 		printk(BIOS_DEBUG, "MP table: %ld bytes.\n",
 				new_high_table_pointer - high_table_pointer);
@@ -102,7 +102,7 @@ static unsigned long write_acpi_table(unsigned long rom_table_end)
 		new_high_table_pointer = write_acpi_tables(high_table_pointer);
 		if (new_high_table_pointer > (high_table_pointer
 			+ max_acpi_size))
-			printk(BIOS_ERR, "ERROR: Increase ACPI size\n");
+			printk(BIOS_ERR, "Increase ACPI size\n");
 		printk(BIOS_DEBUG, "ACPI tables: %ld bytes.\n",
 				new_high_table_pointer - high_table_pointer);
 
@@ -127,8 +127,7 @@ static unsigned long write_acpi_table(unsigned long rom_table_end)
 			   writes longest size available.  */
 			memcpy(low_rsdp, high_rsdp, sizeof(acpi_rsdp_t));
 		} else {
-			printk(BIOS_ERR,
-				"ERROR: Didn't find RSDP in high table.\n");
+			printk(BIOS_ERR, "Didn't find RSDP in high table.\n");
 		}
 		rom_table_end = ALIGN_UP(rom_table_end + sizeof(acpi_rsdp_t), 16);
 	} else {
@@ -159,7 +158,7 @@ static unsigned long write_smbios_table(unsigned long rom_table_end)
 
 		if (new_high_table_pointer > (high_table_pointer
 			+ MAX_SMBIOS_SIZE))
-			printk(BIOS_ERR, "ERROR: Increase SMBIOS size\n");
+			printk(BIOS_ERR, "Increase SMBIOS size\n");
 		printk(BIOS_DEBUG, "SMBIOS tables: %ld bytes.\n",
 				new_high_table_pointer - high_table_pointer);
 	} else {

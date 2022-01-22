@@ -56,7 +56,7 @@ static void conn_write_cbmem_entry(struct device *dev)
 
 	info = conn_get_cbmem_buffer();
 	if (!info || (info->port_count >= total_conn_count)) {
-		printk(BIOS_ERR, "ERROR: No space for Type-C port info!\n");
+		printk(BIOS_ERR, "No space for Type-C port info!\n");
 		return;
 	}
 

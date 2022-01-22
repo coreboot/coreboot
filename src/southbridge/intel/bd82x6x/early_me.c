@@ -56,14 +56,14 @@ int intel_early_me_init(void)
 		udelay(ME_DELAY);
 	}
 	if (!count) {
-		printk(BIOS_ERR, "ERROR: ME is not ready!\n");
+		printk(BIOS_ERR, "ME is not ready!\n");
 		return -1;
 	}
 
 	/* Check for valid firmware */
 	hfs.raw = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
 	if (hfs.fpt_bad) {
-		printk(BIOS_WARNING, "WARNING: ME has bad firmware\n");
+		printk(BIOS_WARNING, "ME has bad firmware\n");
 		return -1;
 	}
 

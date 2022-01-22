@@ -65,7 +65,7 @@ void mt6691_probe(uint8_t i2c_num)
 {
 	/* Check device ID is MT6691 */
 	if (!get_mt6691_chip_id(i2c_num)) {
-		printk(BIOS_ERR, "ERROR: unknown MT6691 chip_id\n");
+		printk(BIOS_ERR, "unknown MT6691 chip_id\n");
 		return;
 	}
 	/* Slew rate 12mV */

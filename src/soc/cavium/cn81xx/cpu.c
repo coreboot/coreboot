@@ -97,7 +97,7 @@ size_t start_cpu(size_t cpu, void (*entry_64)(size_t core_id))
 	} while (!stopwatch_expired(&sw) && (pending & coremask));
 
 	if (stopwatch_expired(&sw)) {
-		printk(BIOS_ERR, "ERROR: Timeout waiting for reset "
+		printk(BIOS_ERR, "Timeout waiting for reset "
 		       "pending to clear.");
 		return 1;
 	}
@@ -113,7 +113,7 @@ size_t start_cpu(size_t cpu, void (*entry_64)(size_t core_id))
 	dmb();
 
 	if (!read64(&secondary_booted)) {
-		printk(BIOS_ERR, "ERROR: Core %zu failed to start.\n", cpu);
+		printk(BIOS_ERR, "Core %zu failed to start.\n", cpu);
 		return 1;
 	}
 

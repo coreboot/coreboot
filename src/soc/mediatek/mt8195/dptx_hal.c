@@ -719,7 +719,7 @@ void dptx_hal_set_txlane(struct mtk_dp *mtk_dp, int value)
 		mtk_dp_write_byte(mtk_dp, REG_34A4_DP_TRANS_P0,
 				  value << 2, BIT(3) | BIT(2));
 	} else {
-		printk(BIOS_ERR, "ERROR: [%s]value << 2 > 0xff\n", __func__);
+		printk(BIOS_ERR, "[%s]value << 2 > 0xff\n", __func__);
 	}
 }
 
@@ -742,7 +742,7 @@ void dptx_hal_set_txrate(struct mtk_dp *mtk_dp, int value)
 		mtk_dp_write(mtk_dp, 0x103C, 0x3);
 		break;
 	default:
-		printk(BIOS_ERR, "ERROR: Link rate not support(%d)\n", value);
+		printk(BIOS_ERR, "Link rate not support(%d)\n", value);
 		break;
 	}
 

@@ -611,7 +611,7 @@ void pmc_set_power_failure_state(const bool target_on)
 		pmc_soc_set_afterg3_en(target_on);
 		break;
 	default:
-		printk(BIOS_WARNING, "WARNING: Unknown power-failure state: %d\n", state);
+		printk(BIOS_WARNING, "Unknown power-failure state: %d\n", state);
 		break;
 	}
 }

@@ -212,7 +212,7 @@ static void sar_emit_wrds(const struct sar_profile *sar)
 	 * })
 	 */
 	if (sar->revision > MAX_SAR_REVISION) {
-		printk(BIOS_ERR, "ERROR: Invalid SAR table revision: %d\n", sar->revision);
+		printk(BIOS_ERR, "Invalid SAR table revision: %d\n", sar->revision);
 		return;
 	}
 
@@ -258,12 +258,12 @@ static void sar_emit_ewrd(const struct sar_profile *sar)
 	 * })
 	 */
 	if (sar->revision > MAX_SAR_REVISION) {
-		printk(BIOS_ERR, "ERROR: Invalid SAR table revision: %d\n", sar->revision);
+		printk(BIOS_ERR, "Invalid SAR table revision: %d\n", sar->revision);
 		return;
 	}
 
 	if (sar->dsar_set_count == 0) {
-		printk(BIOS_WARNING, "WARNING: DSAR set count is 0\n");
+		printk(BIOS_WARNING, "DSAR set count is 0\n");
 		return;
 	}
 
@@ -341,7 +341,7 @@ static void sar_emit_wgds(struct geo_profile *wgds)
 	 * })
 	 */
 	if (wgds->revision > MAX_GEO_OFFSET_REVISION) {
-		printk(BIOS_ERR, "ERROR: Invalid WGDS revision: %d\n", wgds->revision);
+		printk(BIOS_ERR, "Invalid WGDS revision: %d\n", wgds->revision);
 		return;
 	}
 
@@ -475,7 +475,7 @@ static void emit_sar_acpi_structures(const struct device *dev)
 
 	/* Retrieve the sar limits data */
 	if (get_wifi_sar_limits(&sar_limits) < 0) {
-		printk(BIOS_ERR, "ERROR: failed getting SAR limits!\n");
+		printk(BIOS_ERR, "failed getting SAR limits!\n");
 		return;
 	}
 

@@ -497,7 +497,7 @@ static void pci_store_bridge_resource(const struct device *const dev,
 	} else {
 		/* Don't let me think I stored the resource. */
 		resource->flags &= ~IORESOURCE_STORED;
-		printk(BIOS_ERR, "ERROR: invalid resource->index %lx\n", resource->index);
+		printk(BIOS_ERR, "invalid resource->index %lx\n", resource->index);
 	}
 }
 
@@ -510,7 +510,7 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 			   we can treat it like an empty resource. */
 			resource->size = 0;
 		} else {
-			printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx not assigned\n",
+			printk(BIOS_ERR, "%s %02lx %s size: 0x%010llx not assigned\n",
 			       dev_path(dev), resource->index,
 			       resource_type(resource), resource->size);
 			return;
@@ -1617,8 +1617,7 @@ int get_pci_irq_pins(struct device *dev, struct device **parent_bdg)
 
 		/* Make sure the swizzle returned valid structures */
 		if (parent_bdg == NULL) {
-			printk(BIOS_WARNING,
-				"Warning: Could not find parent bridge for this device!\n");
+			printk(BIOS_WARNING, "Could not find parent bridge for this device!\n");
 			return -2;
 		}
 	} else {	/* Device is not behind a bridge */

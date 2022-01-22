@@ -50,7 +50,7 @@ vb2_error_t vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
 	sha_op.Data = (uint8_t *) buf;
 
 	if (!sha_op_size_remaining) {
-		printk(BIOS_ERR, "ERROR: got more data than expected.\n");
+		printk(BIOS_ERR, "got more data than expected.\n");
 		return VB2_ERROR_UNKNOWN;
 	}
 
@@ -65,7 +65,7 @@ vb2_error_t vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
 
 		retval = svc_crypto_sha(&sha_op, SHA_GENERIC);
 		if (retval) {
-			printk(BIOS_ERR, "ERROR: HW crypto failed - errorcode: %#x\n",
+			printk(BIOS_ERR, "HW crypto failed - errorcode: %#x\n",
 					retval);
 			return VB2_ERROR_UNKNOWN;
 		}
@@ -84,12 +84,12 @@ vb2_error_t vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
 vb2_error_t vb2ex_hwcrypto_digest_finalize(uint8_t *digest, uint32_t digest_size)
 {
 	if (sha_op.Eom == 0) {
-		printk(BIOS_ERR, "ERROR: Got less data than expected.\n");
+		printk(BIOS_ERR, "Got less data than expected.\n");
 		return VB2_ERROR_UNKNOWN;
 	}
 
 	if (digest_size != sha_op.DigestLen) {
-		printk(BIOS_ERR, "ERROR: Digest size does not match expected length.\n");
+		printk(BIOS_ERR, "Digest size does not match expected length.\n");
 		return VB2_ERROR_UNKNOWN;
 	}
 
@@ -134,7 +134,7 @@ vb2_error_t vb2ex_hwcrypto_modexp(const struct vb2_public_key *key,
 
 	retval = svc_modexp(&mod_exp_param);
 	if (retval) {
-		printk(BIOS_ERR, "ERROR: HW crypto failed - errorcode: %#x\n",
+		printk(BIOS_ERR, "HW crypto failed - errorcode: %#x\n",
 				retval);
 		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
 	}

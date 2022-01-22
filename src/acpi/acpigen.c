@@ -1783,7 +1783,7 @@ void acpigen_write_CPPC_package(const struct cppc_config *config)
 		max = CPPC_MAX_FIELDS_VER_3;
 		break;
 	default:
-		printk(BIOS_ERR, "ERROR: CPPC version %u is not implemented\n",
+		printk(BIOS_ERR, "CPPC version %u is not implemented\n",
 		       config->version);
 		return;
 	}

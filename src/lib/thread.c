@@ -282,15 +282,14 @@ int thread_run(struct thread_handle *handle, enum cb_err (*func)(void *), void *
 	current = current_thread();
 
 	if (!thread_can_yield(current)) {
-		printk(BIOS_ERR,
-		       "ERROR: %s() called from non-yielding context!\n", __func__);
+		printk(BIOS_ERR, "%s() called from non-yielding context!\n", __func__);
 		return -1;
 	}
 
 	t = get_free_thread();
 
 	if (t == NULL) {
-		printk(BIOS_ERR, "ERROR: %s: No more threads!\n", __func__);
+		printk(BIOS_ERR, "%s: No more threads!\n", __func__);
 		return -1;
 	}
 
@@ -317,15 +316,14 @@ int thread_run_until(struct thread_handle *handle, enum cb_err (*func)(void *), 
 	current = current_thread();
 
 	if (!thread_can_yield(current)) {
-		printk(BIOS_ERR,
-		       "ERROR: %s() called from non-yielding context!\n", __func__);
+		printk(BIOS_ERR, "%s() called from non-yielding context!\n", __func__);
 		return -1;
 	}
 
 	t = get_free_thread();
 
 	if (t == NULL) {
-		printk(BIOS_ERR, "ERROR: %s: No more threads!\n", __func__);
+		printk(BIOS_ERR, "%s: No more threads!\n", __func__);
 		return -1;
 	}
 

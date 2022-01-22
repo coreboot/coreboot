@@ -78,7 +78,7 @@ static AGESA_STATUS amd_create_struct(AMD_INTERFACE_PARAMS *aip,
 	status = module_dispatch(AMD_CREATE_STRUCT, &aip->StdHeader);
 
 	if (status != AGESA_SUCCESS) {
-		printk(BIOS_ERR, "Error: AmdCreateStruct() for 0x%x returned 0x%x. "
+		printk(BIOS_ERR, "AmdCreateStruct() for 0x%x returned 0x%x. "
 				"Proper system initialization may not be possible.\n",
 				aip->AgesaFunctionName, status);
 	}

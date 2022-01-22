@@ -36,13 +36,13 @@ int verified_boot_check_manifest(void)
 
 	buffer = cbfs_map(RSA_PUBLICKEY_FILE_NAME, &size);
 	if (!buffer || !size) {
-		printk(BIOS_ERR, "ERROR: Public key not found!\n");
+		printk(BIOS_ERR, "Public key not found!\n");
 		goto fail;
 	}
 
 	if ((size != CONFIG_VENDORCODE_ELTAN_VBOOT_KEY_SIZE) ||
 	    (buffer != (void *)CONFIG_VENDORCODE_ELTAN_VBOOT_KEY_LOCATION)) {
-		printk(BIOS_ERR, "ERROR: Illegal public key!\n");
+		printk(BIOS_ERR, "Illegal public key!\n");
 		goto fail;
 	}
 
@@ -53,7 +53,7 @@ int verified_boot_check_manifest(void)
 	if ((sd->workbuf_used + size + sizeof(struct vb2_kernel_preamble) +
 	    ((CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS * DIGEST_SIZE) + (2048/8))) >
 	    sizeof(wb_buffer)) {
-		printk(BIOS_ERR, "ERROR: Work buffer too small\n");
+		printk(BIOS_ERR, "Work buffer too small\n");
 		goto fail;
 	}
 
@@ -74,7 +74,7 @@ int verified_boot_check_manifest(void)
 	/* Fill body_signature (vb2_structure). RSA2048 key is used */
 	cbfs_map("oemmanifest.bin", &size);
 	if (size != ((CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS * DIGEST_SIZE) + (2048/8))) {
-		printk(BIOS_ERR, "ERROR: Incorrect manifest size!\n");
+		printk(BIOS_ERR, "Incorrect manifest size!\n");
 		goto fail;
 	}
 	pre->body_signature.data_size = CONFIG_VENDORCODE_ELTAN_OEM_MANIFEST_ITEMS *

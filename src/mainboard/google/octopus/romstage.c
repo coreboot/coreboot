@@ -34,7 +34,7 @@ void mainboard_save_dimm_info(void)
 
 	if (google_chromeec_cbi_get_dram_part_num(&part_num_store[0],
 			ARRAY_SIZE(part_num_store)) < 0)
-		printk(BIOS_ERR, "ERROR: Couldn't obtain DRAM part number from CBI\n");
+		printk(BIOS_ERR, "Couldn't obtain DRAM part number from CBI\n");
 	else
 		part_num = &part_num_store[0];
 

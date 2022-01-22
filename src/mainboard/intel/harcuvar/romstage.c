@@ -88,7 +88,7 @@ void mainboard_config_gpios(void)
 	}
 
 	if ((!table) || (!num)) {
-		printk(BIOS_ERR, "ERROR: No valid GPIO table found!\n");
+		printk(BIOS_ERR, "No valid GPIO table found!\n");
 		return;
 	}
 

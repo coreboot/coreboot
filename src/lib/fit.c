@@ -78,7 +78,7 @@ static struct fit_image_node *find_image(const char *name)
 		if (!strcmp(image->name, name))
 			return image;
 	}
-	printk(BIOS_ERR, "ERROR: Cannot find image node %s!\n", name);
+	printk(BIOS_ERR, "Cannot find image node %s!\n", name);
 	return NULL;
 }
 
@@ -413,8 +413,7 @@ static int fit_update_compat(struct fit_config_node *config)
 		uint32_t fdt_offset = be32_to_cpu(fdt_header->structure_offset);
 
 		if (config->fdt->compression != CBFS_COMPRESS_NONE) {
-			printk(BIOS_ERR,
-			       "ERROR: config %s has a compressed FDT without "
+			printk(BIOS_ERR, "config %s has a compressed FDT without "
 			       "external compatible property, skipping.\n",
 			       config->name);
 			return -1;
@@ -422,15 +421,13 @@ static int fit_update_compat(struct fit_config_node *config)
 
 		/* FDT overlays are not supported in legacy FIT images. */
 		if (config->overlays.next) {
-			printk(BIOS_ERR,
-			       "ERROR: config %s has overlay but no compat!\n",
+			printk(BIOS_ERR, "config %s has overlay but no compat!\n",
 			       config->name);
 			return -1;
 		}
 
 		if (fdt_find_compat(fdt_blob, fdt_offset, &config->compat)) {
-			printk(BIOS_ERR,
-			       "ERROR: Can't find compat string in FDT %s "
+			printk(BIOS_ERR, "Can't find compat string in FDT %s "
 			       "for config %s, skipping.\n",
 			       config->fdt->name, config->name);
 			return -1;
@@ -467,7 +464,7 @@ struct fit_config_node *fit_load(void *fit)
 
 	struct device_tree *tree = fdt_unflatten(fit);
 	if (!tree) {
-		printk(BIOS_ERR, "ERROR: Failed to unflatten FIT image!\n");
+		printk(BIOS_ERR, "Failed to unflatten FIT image!\n");
 		return NULL;
 	}
 
@@ -494,21 +491,19 @@ struct fit_config_node *fit_load(void *fit)
 	/* Process and list the configs. */
 	list_for_each(config, config_nodes, list_node) {
 		if (!config->kernel) {
-			printk(BIOS_ERR,
-			       "ERROR: config %s has no kernel, skipping.\n",
+			printk(BIOS_ERR, "config %s has no kernel, skipping.\n",
 			       config->name);
 			continue;
 		}
 		if (!config->fdt) {
-			printk(BIOS_ERR,
-			       "ERROR: config %s has no FDT, skipping.\n",
+			printk(BIOS_ERR, "config %s has no FDT, skipping.\n",
 			       config->name);
 			continue;
 		}
 
 		if (config->ramdisk &&
 		    config->ramdisk->compression < 0) {
-			printk(BIOS_WARNING, "WARN: Ramdisk is compressed with "
+			printk(BIOS_WARNING, "Ramdisk is compressed with "
 			       "an unsupported algorithm, discarding config %s."
 			       "\n", config->name);
 			continue;

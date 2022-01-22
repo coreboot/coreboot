@@ -76,7 +76,7 @@ static u8 get_hex_digit(const u8 c)
 			ret = c - 'a' + 0x0a;
 	}
 	if (ret > 0x0f) {
-		printk(BIOS_ERR, "Error: Invalid hex digit found: "
+		printk(BIOS_ERR, "Invalid hex digit found: "
 				 "%c - 0x%02x\n", (char)c, c);
 		ret = 0;
 	}
@@ -94,7 +94,7 @@ static enum cb_err fetch_mac_vpd_key(u8 *macstrbuf, const char *vpd_key)
 	size_t offset;
 
 	if (fmap_locate_area_as_rdev("RO_VPD", &rdev)) {
-		printk(BIOS_ERR, "Error: Couldn't find RO_VPD region.");
+		printk(BIOS_ERR, "Couldn't find RO_VPD region.");
 		return CB_ERR;
 	}
 	search_address = rdev_mmap_full(&rdev);
@@ -108,8 +108,7 @@ static enum cb_err fetch_mac_vpd_key(u8 *macstrbuf, const char *vpd_key)
 			search_length);
 
 	if (offset == search_length) {
-		printk(BIOS_ERR,
-		       "Error: Could not locate '%s' in VPD\n", vpd_key);
+		printk(BIOS_ERR, "Could not locate '%s' in VPD\n", vpd_key);
 		rdev_munmap(&rdev, search_address);
 		return CB_ERR;
 	}

@@ -85,7 +85,7 @@ static void program_smi(uint32_t flags, unsigned int gevent_num)
 	uint8_t level;
 
 	if (!is_gpio_event_level_triggered(flags)) {
-		printk(BIOS_ERR, "ERROR: %s - Only level trigger allowed for SMI!\n", __func__);
+		printk(BIOS_ERR, "%s - Only level trigger allowed for SMI!\n", __func__);
 		BUG();
 		return;
 	}
@@ -247,7 +247,7 @@ static void set_single_gpio(const struct soc_amd_gpio *g)
 
 	gevent_num = get_gpio_gevent(g->gpio, gev_tbl, gev_items);
 	if (gevent_num < 0) {
-		printk(BIOS_WARNING, "Warning: GPIO pin %d has no associated gevent!\n",
+		printk(BIOS_WARNING, "GPIO pin %d has no associated gevent!\n",
 				     g->gpio);
 		return;
 	}

@@ -29,7 +29,7 @@ static int32_t smu_poll_response(bool print_command_duration)
 		}
 	} while (!stopwatch_expired(&sw));
 
-	printk(BIOS_ERR, "Error: timeout sending SMU message\n");
+	printk(BIOS_ERR, "timeout sending SMU message\n");
 	return SMU_MESG_RESP_TIMEOUT;
 }
 

@@ -28,7 +28,7 @@ static int wake_dpm_sram_up(void)
 	}
 
 	if (loop == 0) {
-		printk(BIOS_ERR, "ERROR: failed to wake DPM up.\n");
+		printk(BIOS_ERR, "failed to wake DPM up.\n");
 		return -1;
 	}
 

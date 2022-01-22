@@ -195,8 +195,7 @@ void enter_raminit_or_reset(void)
 
 	if (reg8 & (1 << 2)) { /* S4-assertion-width violation */
 		/* Ignore S4-assertion-width violation like original BIOS. */
-		printk(BIOS_WARNING,
-			"WARNING: Ignoring S4-assertion-width violation.\n");
+		printk(BIOS_WARNING, "Ignoring S4-assertion-width violation.\n");
 		/* Bit2 is R/WC, so it will clear itself below. */
 	}
 

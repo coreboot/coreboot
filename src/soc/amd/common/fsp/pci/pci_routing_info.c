@@ -26,7 +26,7 @@ const struct pci_routing_info *get_pci_routing_table(size_t *entries)
 						       &hob_size);
 
 	if (routing_hob == NULL || hob_size == 0 || routing_hob->num_of_entries == 0) {
-		printk(BIOS_ERR, "ERROR: Couldn't find valid PCIe interrupt routing HOB.\n");
+		printk(BIOS_ERR, "Couldn't find valid PCIe interrupt routing HOB.\n");
 		return NULL;
 	}
 

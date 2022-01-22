@@ -25,7 +25,7 @@ static uint8_t *wifi_hextostr(const char *sar_str, size_t str_len, size_t *sar_b
 	if (!legacy_hex_format) {
 		sar_bin = malloc(str_len);
 		if (!sar_bin) {
-			printk(BIOS_ERR, "ERROR: Failed to allocate space for SAR binary!\n");
+			printk(BIOS_ERR, "Failed to allocate space for SAR binary!\n");
 			return NULL;
 		}
 
@@ -35,12 +35,12 @@ static uint8_t *wifi_hextostr(const char *sar_str, size_t str_len, size_t *sar_b
 		bin_len = ((str_len - 1) / 2);
 		sar_bin = malloc(bin_len);
 		if (!sar_bin) {
-			printk(BIOS_ERR, "ERROR: Failed to allocate space for SAR binary!\n");
+			printk(BIOS_ERR, "Failed to allocate space for SAR binary!\n");
 			return NULL;
 		}
 
 		if (hexstrtobin(sar_str, (uint8_t *)sar_bin, bin_len) != bin_len) {
-			printk(BIOS_ERR, "ERROR: sar_limits contains non-hex value!\n");
+			printk(BIOS_ERR, "sar_limits contains non-hex value!\n");
 			free(sar_bin);
 			return NULL;
 		}
@@ -116,20 +116,20 @@ static int fill_wifi_sar_limits(union wifi_sar_limits *sar_limits, const uint8_t
 	size_t header_size = sar_header_size();
 
 	if (sar_bin_size < header_size) {
-		printk(BIOS_ERR, "ERROR: Invalid SAR format!\n");
+		printk(BIOS_ERR, "Invalid SAR format!\n");
 		return -1;
 	}
 
 	header = (struct sar_header *)sar_bin;
 
 	if (header->version != SAR_FILE_REVISION) {
-		printk(BIOS_ERR, "ERROR: Invalid SAR file version: %d!\n", header->version);
+		printk(BIOS_ERR, "Invalid SAR file version: %d!\n", header->version);
 		return -1;
 	}
 
 	for (i = 0; i < MAX_PROFILE_COUNT; i++) {
 		if (header->offsets[i] > sar_bin_size) {
-			printk(BIOS_ERR, "ERROR: Offset is outside the file size!\n");
+			printk(BIOS_ERR, "Offset is outside the file size!\n");
 			return -1;
 		}
 
@@ -145,7 +145,7 @@ static int fill_wifi_sar_limits(union wifi_sar_limits *sar_limits, const uint8_t
 	expected_sar_bin_size += dsm_table_size(sar_limits->dsm);
 
 	if (sar_bin_size != expected_sar_bin_size) {
-		printk(BIOS_ERR, "ERROR: Invalid SAR size, expected: %ld, obtained: %ld\n",
+		printk(BIOS_ERR, "Invalid SAR size, expected: %ld, obtained: %ld\n",
 		       expected_sar_bin_size, sar_bin_size);
 		return -1;
 	}
@@ -164,7 +164,7 @@ static int fill_wifi_sar_limits_legacy(union wifi_sar_limits *sar_limits,
 
 	new_sar_bin = malloc(size);
 	if (!new_sar_bin) {
-		printk(BIOS_ERR, "ERROR: Failed to allocate space for SAR binary!\n");
+		printk(BIOS_ERR, "Failed to allocate space for SAR binary!\n");
 		return -1;
 	}
 
@@ -259,13 +259,13 @@ int get_wifi_sar_limits(union wifi_sar_limits *sar_limits)
 
 	filename = get_wifi_sar_cbfs_filename();
 	if (filename == NULL) {
-		printk(BIOS_ERR, "ERROR: Filename missing for CBFS SAR file!\n");
+		printk(BIOS_ERR, "Filename missing for CBFS SAR file!\n");
 		return ret;
 	}
 
 	sar_str = cbfs_map(filename, &sar_str_len);
 	if (!sar_str) {
-		printk(BIOS_ERR, "ERROR: Failed to get the %s file size!\n", filename);
+		printk(BIOS_ERR, "Failed to get the %s file size!\n", filename);
 		return ret;
 	}
 
@@ -274,13 +274,13 @@ int get_wifi_sar_limits(union wifi_sar_limits *sar_limits)
 	} else if (valid_legacy_length(sar_str_len)) {
 		legacy_hex_format = true;
 	} else {
-		printk(BIOS_ERR, "ERROR: Invalid SAR format!\n");
+		printk(BIOS_ERR, "Invalid SAR format!\n");
 		goto error;
 	}
 
 	sar_bin = wifi_hextostr(sar_str, sar_str_len, &sar_bin_len, legacy_hex_format);
 	if (sar_bin == NULL) {
-		printk(BIOS_ERR, "ERROR: Failed to parse SAR file %s\n", filename);
+		printk(BIOS_ERR, "Failed to parse SAR file %s\n", filename);
 		goto error;
 	}
 

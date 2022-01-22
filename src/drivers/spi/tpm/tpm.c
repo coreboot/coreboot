@@ -74,7 +74,7 @@ __weak int tis_plat_irq_status(void)
 	static int warning_displayed;
 
 	if (!warning_displayed) {
-		printk(BIOS_WARNING, "WARNING: %s() not implemented, wasting 10ms to wait on"
+		printk(BIOS_WARNING, "%s() not implemented, wasting 10ms to wait on"
 		       " Cr50!\n", __func__);
 		warning_displayed = 1;
 	}
@@ -492,7 +492,7 @@ static void cr50_set_board_cfg(void)
 		/* The high bit is set, meaning that the Cr50 is already locked on a particular
 		 * value for the register, but not the one we wanted. */
 		printk(BIOS_ERR,
-		       "ERROR: Current CR50_BOARD_CFG = 0x%08x, does not match desired = 0x%08x\n",
+		       "Current CR50_BOARD_CFG = 0x%08x, does not match desired = 0x%08x\n",
 		       board_cfg_value, CR50_BOARD_CFG_VALUE);
 		return;
 	}

@@ -67,7 +67,7 @@ static void init_vpd_rdev(const char *fmap_name, struct region_device *rdev)
 
 	/* Try if we can find a google_vpd_info, otherwise read whole VPD. */
 	if (rdev_readat(rdev, &info, 0, sizeof(info)) != sizeof(info)) {
-		printk(BIOS_ERR, "ERROR: Failed to read %s header.\n",
+		printk(BIOS_ERR, "Failed to read %s header.\n",
 		       fmap_name);
 		goto fail;
 	}
@@ -75,13 +75,13 @@ static void init_vpd_rdev(const char *fmap_name, struct region_device *rdev)
 	if (memcmp(info.header.magic, VPD_INFO_MAGIC, sizeof(info.header.magic))
 	    == 0) {
 		if (rdev_chain(rdev, rdev, sizeof(info), info.size)) {
-			printk(BIOS_ERR, "ERROR: %s info size too large.\n",
+			printk(BIOS_ERR, "%s info size too large.\n",
 			       fmap_name);
 			goto fail;
 		}
 	} else if (info.header.tlv.type == VPD_TYPE_TERMINATOR ||
 		   info.header.tlv.type == VPD_TYPE_IMPLICIT_TERMINATOR) {
-		printk(BIOS_WARNING, "WARNING: %s is uninitialized or empty.\n",
+		printk(BIOS_WARNING, "%s is uninitialized or empty.\n",
 		       fmap_name);
 		goto fail;
 	}
@@ -151,7 +151,7 @@ static void cbmem_add_cros_vpd(int is_recovery)
 
 	if (ro_size) {
 		if (rdev_readat(&ro_vpd, cbmem->blob, 0, ro_size) != ro_size) {
-			printk(BIOS_ERR, "ERROR: Couldn't read RO VPD\n");
+			printk(BIOS_ERR, "Couldn't read RO VPD\n");
 			cbmem->ro_size = ro_size = 0;
 		}
 		timestamp_add_now(TS_END_COPYVPD_RO);
@@ -160,7 +160,7 @@ static void cbmem_add_cros_vpd(int is_recovery)
 	if (rw_size) {
 		if (rdev_readat(&rw_vpd, cbmem->blob + ro_size, 0, rw_size)
 								 != rw_size) {
-			printk(BIOS_ERR, "ERROR: Couldn't read RW VPD\n");
+			printk(BIOS_ERR, "Couldn't read RW VPD\n");
 			cbmem->rw_size = rw_size = 0;
 		}
 		timestamp_add_now(TS_END_COPYVPD_RW);

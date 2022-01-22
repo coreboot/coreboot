@@ -73,7 +73,7 @@ static void max98390_fill_ssdt(const struct device *dev)
 					CONFIG_MAINBOARD_PART_NUMBER);
 
 			if (chars >= sizeof(dsm_name))
-				printk(BIOS_ERR, "ERROR: String too long in %s\n", __func__);
+				printk(BIOS_ERR, "String too long in %s\n", __func__);
 
 			acpi_dp_add_string(dp, "maxim,dsm_param_name", dsm_name);
 		}

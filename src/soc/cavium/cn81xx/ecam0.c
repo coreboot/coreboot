@@ -163,7 +163,7 @@ static size_t ecam0_pci_enable_msix(struct device *dev,
 	}
 	nr_entries = pci_msix_table_size(dev);
 	if (nvec > nr_entries) {
-		printk(BIOS_ERR, "ERROR: %s: Specified to many table entries\n",
+		printk(BIOS_ERR, "%s: Specified to many table entries\n",
 		       dev_path(dev));
 		return nr_entries;
 	}
@@ -177,13 +177,13 @@ static size_t ecam0_pci_enable_msix(struct device *dev,
 	offset = 0;
 	bar_idx = 0;
 	if (pci_msix_table_bar(dev, &offset, &bar_idx)) {
-		printk(BIOS_ERR, "ERROR: %s: Failed to find MSI-X entry\n",
+		printk(BIOS_ERR, "%s: Failed to find MSI-X entry\n",
 		       dev_path(dev));
 		return -1;
 	}
 	bar = ecam0_get_bar_val(dev, bar_idx);
 	if (!bar) {
-		printk(BIOS_ERR, "ERROR: %s: Failed to find MSI-X bar\n",
+		printk(BIOS_ERR, "%s: Failed to find MSI-X bar\n",
 		       dev_path(dev));
 		return -1;
 	}

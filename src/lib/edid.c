@@ -1507,7 +1507,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			printk(BIOS_ERR,
 				"EDID block does NOT conform to EDID 1.3!\n");
 		else if (!c.has_name_descriptor || !c.has_range_descriptor)
-			printk(BIOS_WARNING, "WARNING: EDID block does NOT "
+			printk(BIOS_WARNING, "EDID block does NOT "
 			       "fully conform to EDID 1.3.\n");
 
 		if (c.nonconformant_digital_display)

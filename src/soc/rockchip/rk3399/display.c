@@ -72,8 +72,7 @@ retry_edp:
 				break;
 			}
 			if (retry_count_init == 3) {
-				printk(BIOS_WARNING,
-				       "Warning: EDP initialization failed.\n");
+				printk(BIOS_WARNING, "EDP initialization failed.\n");
 				return;
 			} else {
 				reset_edp();

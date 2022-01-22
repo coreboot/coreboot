@@ -115,7 +115,7 @@ static void usb_ehci_reset_and_prepare(struct usb_ctlr *usb, enum usb_phy_type t
 		/* wait for HC to reset */;
 
 	if (!timeout) {
-		printk(BIOS_ERR, "ERROR: EHCI(%p) reset timeout", usb);
+		printk(BIOS_ERR, "EHCI(%p) reset timeout", usb);
 		return;
 	}
 

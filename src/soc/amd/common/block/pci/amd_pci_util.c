@@ -97,7 +97,7 @@ void write_pci_cfg_irqs(void)
 
 	idx_name = sb_get_apic_reg_association(&limit);
 	if (pirq_data_ptr == NULL) {
-		printk(BIOS_WARNING, "Warning: Can't write PCI IRQ assignments"
+		printk(BIOS_WARNING, "Can't write PCI IRQ assignments"
 				" because 'mainboard_pirq_data' structure does"
 				" not exist\n");
 		return;

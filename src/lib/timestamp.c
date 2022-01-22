@@ -114,7 +114,7 @@ static void timestamp_add_table_entry(struct timestamp_table *ts_table,
 	tse->entry_stamp = ts_time;
 
 	if (ts_table->num_entries == ts_table->max_entries)
-		printk(BIOS_ERR, "ERROR: Timestamp table full\n");
+		printk(BIOS_ERR, "Timestamp table full\n");
 }
 
 void timestamp_add(enum timestamp_id id, int64_t ts_time)
@@ -127,7 +127,7 @@ void timestamp_add(enum timestamp_id id, int64_t ts_time)
 	ts_table = timestamp_table_get();
 
 	if (!ts_table) {
-		printk(BIOS_ERR, "ERROR: No timestamp table found\n");
+		printk(BIOS_ERR, "No timestamp table found\n");
 		return;
 	}
 
@@ -155,7 +155,7 @@ void timestamp_init(uint64_t base)
 	ts_cache = timestamp_cache_get();
 
 	if (!ts_cache) {
-		printk(BIOS_ERR, "ERROR: No timestamp cache to init\n");
+		printk(BIOS_ERR, "No timestamp cache to init\n");
 		return;
 	}
 
@@ -170,7 +170,7 @@ static void timestamp_sync_cache_to_cbmem(struct timestamp_table *ts_cbmem_table
 
 	ts_cache_table = timestamp_table_get();
 	if (!ts_cache_table) {
-		printk(BIOS_ERR, "ERROR: No timestamp cache found\n");
+		printk(BIOS_ERR, "No timestamp cache found\n");
 		return;
 	}
 
@@ -223,7 +223,7 @@ static void timestamp_reinit(int is_recovery)
 	}
 
 	if (ts_cbmem_table == NULL) {
-		printk(BIOS_ERR, "ERROR: No timestamp table allocated\n");
+		printk(BIOS_ERR, "No timestamp table allocated\n");
 		timestamp_table_set(NULL);
 		return;
 	}
@@ -253,7 +253,7 @@ void timestamp_rescale_table(uint16_t N, uint16_t M)
 
 	/* No timestamp table found */
 	if (ts_table == NULL) {
-		printk(BIOS_ERR, "ERROR: No timestamp table found\n");
+		printk(BIOS_ERR, "No timestamp table found\n");
 		return;
 	}
 

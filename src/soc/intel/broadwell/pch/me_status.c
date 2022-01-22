@@ -307,7 +307,7 @@ void intel_me_hsio_version(uint16_t *version, uint16_t *checksum)
 		udelay(ME_DELAY);
 	}
 	if (!count) {
-		printk(BIOS_ERR, "ERROR: ME failed to respond\n");
+		printk(BIOS_ERR, "ME failed to respond\n");
 		return;
 	}
 

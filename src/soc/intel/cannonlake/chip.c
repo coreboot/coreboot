@@ -162,7 +162,7 @@ static void cpu_fill_ssdt(const struct device *dev)
 	generate_cpu_entries(dev);
 
 	if (!generate_pin_irq_map())
-		printk(BIOS_ERR, "ERROR: Failed to generate ACPI _PRT table!\n");
+		printk(BIOS_ERR, "Failed to generate ACPI _PRT table!\n");
 }
 
 static void cpu_set_north_irqs(struct device *dev)

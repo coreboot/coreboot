@@ -127,7 +127,7 @@ static acpi_generic_error_status_t *new_bert_status(void)
 	status = bert_allocate_storage(sizeof(*status));
 
 	if (!status) {
-		printk(BIOS_ERR, "Error: New BERT error entry would exceed available region\n");
+		printk(BIOS_ERR, "New BERT error entry would exceed available region\n");
 		return NULL;
 	}
 
@@ -159,13 +159,13 @@ static acpi_hest_generic_data_v300_t *new_generic_error_entry(
 	acpi_hest_generic_data_v300_t *entry;
 
 	if (bert_entry_count(status) == GENERIC_ERR_STS_ENTRY_COUNT_MAX) {
-		printk(BIOS_ERR, "Error: New BERT error would exceed maximum entries\n");
+		printk(BIOS_ERR, "New BERT error would exceed maximum entries\n");
 		return NULL;
 	}
 
 	entry = bert_allocate_storage(sizeof(*entry));
 	if (!entry) {
-		printk(BIOS_ERR, "Error: New BERT error entry would exceed available region\n");
+		printk(BIOS_ERR, "New BERT error entry would exceed available region\n");
 		return NULL;
 	}
 
@@ -191,7 +191,7 @@ static size_t sizeof_error_section(guid_t *guid)
 		return sizeof(cper_fw_err_rec_section_t);
 	/* else if ... sizeof(structures not yet defined) */
 
-	printk(BIOS_ERR, "Error: Requested size of unrecognized CPER GUID\n");
+	printk(BIOS_ERR, "Requested size of unrecognized CPER GUID\n");
 	return 0;
 }
 
@@ -199,7 +199,7 @@ void *new_cper_fw_error_crashlog(acpi_generic_error_status_t *status, size_t cl_
 {
 	void *cl_data = bert_allocate_storage(cl_size);
 	if (!cl_data) {
-		printk(BIOS_ERR, "Error: Crashlog entry (size %zu) would exceed available region\n",
+		printk(BIOS_ERR, "Crashlog entry (size %zu) would exceed available region\n",
 			cl_size);
 		return NULL;
 	}
@@ -348,7 +348,7 @@ cper_ia32x64_context_t *new_cper_ia32x64_ctx(
 		return NULL;
 
 	if (cper_ia32x64_proc_num_ctxs(x86err) == I32X64SEC_VALID_CTXNUM_MAX) {
-		printk(BIOS_ERR, "Error: New IA32X64 %s context entry would exceed max allowable contexts\n",
+		printk(BIOS_ERR, "New IA32X64 %s context entry would exceed max allowable contexts\n",
 				ctx_names[type]);
 		return NULL;
 	}
@@ -356,7 +356,7 @@ cper_ia32x64_context_t *new_cper_ia32x64_ctx(
 	size = cper_ia32x64_ctx_sz_bytype(type, num);
 	ctx = bert_allocate_storage(size);
 	if (!ctx) {
-		printk(BIOS_ERR, "Error: New IA32X64 %s context entry would exceed available region\n",
+		printk(BIOS_ERR, "New IA32X64 %s context entry would exceed available region\n",
 				ctx_names[type]);
 		return NULL;
 	}
@@ -402,14 +402,14 @@ cper_ia32x64_proc_error_info_t *new_cper_ia32x64_check(
 		return NULL;
 
 	if (cper_ia32x64_proc_num_chks(x86err) == I32X64SEC_VALID_ERRNUM_MAX) {
-		printk(BIOS_ERR, "Error: New IA32X64 %s check entry would exceed max allowable errors\n",
+		printk(BIOS_ERR, "New IA32X64 %s check entry would exceed max allowable errors\n",
 				check_names[type]);
 		return NULL;
 	}
 
 	check = bert_allocate_storage(sizeof(*check));
 	if (!check) {
-		printk(BIOS_ERR, "Error: New IA32X64 %s check entry would exceed available region\n",
+		printk(BIOS_ERR, "New IA32X64 %s check entry would exceed available region\n",
 				check_names[type]);
 		return NULL;
 	}
@@ -518,7 +518,7 @@ acpi_generic_error_status_t *bert_new_event(guid_t *guid)
 	size += sizeof_error_section(guid);
 
 	if (size > bert_storage_remaining()) {
-		printk(BIOS_ERR, "Error: Not enough BERT region space to add event for type %s\n",
+		printk(BIOS_ERR, "Not enough BERT region space to add event for type %s\n",
 				generic_error_name(guid));
 		return NULL;
 	}
@@ -571,7 +571,7 @@ cper_ia32x64_context_t *cper_new_ia32x64_context_msr(
  */
 __weak void bert_reserved_region(void **start, size_t *size)
 {
-	printk(BIOS_ERR, "Error: %s not implemented.  BERT region generation disabled\n",
+	printk(BIOS_ERR, "%s not implemented.  BERT region generation disabled\n",
 			__func__);
 	*start = NULL;
 	*size = 0;

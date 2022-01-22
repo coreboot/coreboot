@@ -27,7 +27,7 @@ enum cb_err clock_enable_vote(void *cbcr_addr, void *vote_addr,
 			return CB_SUCCESS;
 		udelay(1);
 	}
-	printk(BIOS_ERR, "ERROR: Failed to enable clock, register val: 0x%x\n",
+	printk(BIOS_ERR, "Failed to enable clock, register val: 0x%x\n",
 			read32(cbcr_addr));
 	return CB_ERR;
 }
@@ -45,7 +45,7 @@ enum cb_err clock_enable(void *cbcr_addr)
 			return CB_SUCCESS;
 		udelay(1);
 	}
-	printk(BIOS_ERR, "ERROR: Failed to enable clock, register val: 0x%x\n",
+	printk(BIOS_ERR, "Failed to enable clock, register val: 0x%x\n",
 			read32(cbcr_addr));
 	return CB_ERR;
 }
@@ -207,7 +207,7 @@ enum cb_err clock_configure_enable_gpll(struct alpha_pll_reg_val_config *cfg,
 
 		/* Wait for Lock Detection */
 		if (!wait_us(100, read32(cfg->reg_mode) & PLL_LOCK_DET_BMSK)) {
-			printk(BIOS_ERR, "ERROR: PLL did not lock!\n");
+			printk(BIOS_ERR, "PLL did not lock!\n");
 			return CB_ERR;
 		}
 	}
@@ -227,7 +227,7 @@ enum cb_err agera_pll_enable(struct alpha_pll_reg_val_config *cfg)
 	setbits32(cfg->reg_mode, BIT(PLL_RESET_SHFT));
 
 	if (!wait_us(100, read32(cfg->reg_mode) & PLL_LOCK_DET_BMSK)) {
-		printk(BIOS_ERR, "ERROR: CPU PLL did not lock!\n");
+		printk(BIOS_ERR, "CPU PLL did not lock!\n");
 		return CB_ERR;
 	}
 
@@ -249,7 +249,7 @@ enum cb_err zonda_pll_enable(struct alpha_pll_reg_val_config *cfg)
 	setbits32(cfg->reg_opmode, PLL_RUN_MODE);
 
 	if (!wait_us(100, read32(cfg->reg_mode) & PLL_LOCK_DET_BMSK)) {
-		printk(BIOS_ERR, "ERROR: CPU PLL did not lock!\n");
+		printk(BIOS_ERR, "CPU PLL did not lock!\n");
 		return CB_ERR;
 	}
 

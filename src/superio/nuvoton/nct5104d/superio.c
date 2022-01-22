@@ -156,7 +156,7 @@ static void disable_gpio_io_port(struct device *dev)
 	if (!((gpio0 && gpio0->enabled) || (gpio1 && gpio1->enabled) ||
 	      (gpio6 && gpio6->enabled))) {
 		dev->enabled = 0;
-		printk(BIOS_WARNING, "WARNING: GPIO IO port configured,"
+		printk(BIOS_WARNING, "GPIO IO port configured,"
 				     " but no GPIO enabled. Disabling...");
 	}
 }

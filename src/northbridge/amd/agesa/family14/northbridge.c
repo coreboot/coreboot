@@ -625,7 +625,7 @@ static void cpu_bus_scan(struct device *dev)
 	/* There is only one node for fam14, but there may be multiple cores. */
 	cpu = pcidev_on_root(0x18, 0);
 	if (!cpu)
-		printk(BIOS_ERR, "ERROR: %02x:%02x.0 not found", 0, 0x18);
+		printk(BIOS_ERR, "%02x:%02x.0 not found", 0, 0x18);
 
 	cores_found = (pci_read_config32(pcidev_on_root(0x18, 0x3),
 					0xe8) >> 12) & 3;

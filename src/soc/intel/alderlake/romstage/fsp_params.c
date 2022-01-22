@@ -284,17 +284,17 @@ static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,
 
 	if (m_cfg->VtdIgdEnable && m_cfg->VtdBaseAddress[VTD_GFX] == 0) {
 		m_cfg->VtdIgdEnable = 0;
-		printk(BIOS_ERR, "ERROR: Requested IGD VT-d, but GFXVT_BASE_ADDRESS is 0\n");
+		printk(BIOS_ERR, "Requested IGD VT-d, but GFXVT_BASE_ADDRESS is 0\n");
 	}
 
 	if (m_cfg->VtdIpuEnable && m_cfg->VtdBaseAddress[VTD_IPU] == 0) {
 		m_cfg->VtdIpuEnable = 0;
-		printk(BIOS_ERR, "ERROR: Requested IPU VT-d, but IPUVT_BASE_ADDRESS is 0\n");
+		printk(BIOS_ERR, "Requested IPU VT-d, but IPUVT_BASE_ADDRESS is 0\n");
 	}
 
 	if (!m_cfg->VtdDisable && m_cfg->VtdBaseAddress[VTD_VTVCO] == 0) {
 		m_cfg->VtdDisable = 1;
-		printk(BIOS_ERR, "ERROR: Requested VT-d, but VTVCO_BASE_ADDRESS is 0\n");
+		printk(BIOS_ERR, "Requested VT-d, but VTVCO_BASE_ADDRESS is 0\n");
 	}
 
 	if (m_cfg->TcssDma0En || m_cfg->TcssDma1En)

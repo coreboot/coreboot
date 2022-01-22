@@ -247,12 +247,12 @@ static void configure_display(void)
 static void usb_power_cycle(int port)
 {
 	if (google_chromeec_set_usb_pd_role(port, USB_PD_CTRL_ROLE_FORCE_SINK))
-		printk(BIOS_ERR, "ERROR: Cannot force USB%d PD sink\n", port);
+		printk(BIOS_ERR, "Cannot force USB%d PD sink\n", port);
 
 	mdelay(10);	/* Make sure USB stick is fully depowered. */
 
 	if (google_chromeec_set_usb_pd_role(port, USB_PD_CTRL_ROLE_TOGGLE_ON))
-		printk(BIOS_ERR, "ERROR: Cannot restore USB%d PD mode\n", port);
+		printk(BIOS_ERR, "Cannot restore USB%d PD mode\n", port);
 }
 
 static void setup_usb(int port)

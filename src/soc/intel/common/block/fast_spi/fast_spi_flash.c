@@ -350,7 +350,7 @@ static int fast_spi_flash_protect(const struct spi_flash *flash,
 	}
 
 	if (fpr >= SPIBAR_FPR_MAX) {
-		printk(BIOS_ERR, "ERROR: No SPI FPR free!\n");
+		printk(BIOS_ERR, "No SPI FPR free!\n");
 		return -1;
 	}
 
@@ -365,7 +365,7 @@ static int fast_spi_flash_protect(const struct spi_flash *flash,
 		protect_mask |= (SPI_FPR_RPE | SPI_FPR_WPE);
 		break;
 	default:
-		printk(BIOS_ERR, "ERROR: Seeking invalid protection!\n");
+		printk(BIOS_ERR, "Seeking invalid protection!\n");
 		return -1;
 	}
 
@@ -376,7 +376,7 @@ static int fast_spi_flash_protect(const struct spi_flash *flash,
 	write32((void *)fpr_base, reg);
 	reg = read32((void *)fpr_base);
 	if (!(reg & protect_mask)) {
-		printk(BIOS_ERR, "ERROR: Unable to set SPI FPR %d\n", fpr);
+		printk(BIOS_ERR, "Unable to set SPI FPR %d\n", fpr);
 		return -1;
 	}
 

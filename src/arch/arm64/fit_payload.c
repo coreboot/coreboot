@@ -52,7 +52,7 @@ static bool decompress_kernel_header(const struct fit_image_node *node)
 		       scratch.raw, sizeof(scratch.raw));
 		break;
 	default:
-		printk(BIOS_ERR, "ERROR: Unsupported compression algorithm!\n");
+		printk(BIOS_ERR, "Unsupported compression algorithm!\n");
 		return false;
 	}
 
@@ -61,8 +61,7 @@ static bool decompress_kernel_header(const struct fit_image_node *node)
 		die("ERROR: Partial decompression ran over scratchbuf!\n");
 
 	if (scratch.header.magic != KERNEL_HEADER_MAGIC) {
-		printk(BIOS_ERR,
-		       "ERROR: Invalid kernel magic: %#.8x\n != %#.8x\n",
+		printk(BIOS_ERR, "Invalid kernel magic: %#.8x\n != %#.8x\n",
 		       scratch.header.magic, KERNEL_HEADER_MAGIC);
 		return false;
 	}

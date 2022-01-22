@@ -328,7 +328,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	write32(mmiobase + EIR, 0xffffffff);
 
 	if (gtt_setup(mmiobase)) {
-		printk(BIOS_ERR, "ERROR: GTT Setup Failed!!!\n");
+		printk(BIOS_ERR, "GTT Setup Failed!!!\n");
 		return 0;
 	}
 
@@ -352,7 +352,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 	if (temp & 1)
 		printk(BIOS_INFO, "GTT Enabled\n");
 	else
-		printk(BIOS_ERR, "ERROR: GTT is still Disabled!!!\n");
+		printk(BIOS_ERR, "GTT is still Disabled!!!\n");
 
 	if (CONFIG(LINEAR_FRAMEBUFFER)) {
 		printk(BIOS_SPEW, "memset %p to 0x00 for %d bytes\n",

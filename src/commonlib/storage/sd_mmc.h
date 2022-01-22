@@ -71,7 +71,7 @@ int sd_set_partition(struct storage_media *media,
 		if (CONFIG(SDHC_TRACE))	\
 			printk(BIOS_DEBUG, format);	\
 	} while (0)
-#define sdhc_error(format...) printk(BIOS_ERR, "ERROR: " format)
+#define sdhc_error(format...) printk(BIOS_ERR, format)
 
 /* Card/device debug functions */
 #define sd_mmc_debug(format...) \
@@ -84,6 +84,6 @@ int sd_set_partition(struct storage_media *media,
 		if (CONFIG(SD_MMC_TRACE))	\
 			printk(BIOS_DEBUG, format);	\
 	} while (0)
-#define sd_mmc_error(format...) printk(BIOS_ERR, "ERROR: " format)
+#define sd_mmc_error(format...) printk(BIOS_ERR, format)
 
 #endif /* __COMMONLIB_STORAGE_SD_MMC_H__ */

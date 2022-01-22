@@ -100,12 +100,12 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 
 	amdfw_location = cbfs_map(fname, NULL);
 	if (!amdfw_location) {
-		printk(BIOS_ERR, "Error: AMD Firmware table not found.\n");
+		printk(BIOS_ERR, "AMD Firmware table not found.\n");
 		return POSTCODE_AMD_FW_MISSING;
 	}
 	ef_table = (struct embedded_firmware *)amdfw_location;
 	if (ef_table->signature != EMBEDDED_FW_SIGNATURE) {
-		printk(BIOS_ERR, "Error: ROMSIG address is not correct.\n");
+		printk(BIOS_ERR, "ROMSIG address is not correct.\n");
 		return POSTCODE_ROMSIG_MISMATCH_ERROR;
 	}
 
@@ -116,11 +116,11 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	bios_dir_in_spi = (uint32_t *)((bios_dir_addr & SPI_ADDR_MASK) +
 			(uint32_t)boot_dev_base);
 	if (*psp_dir_in_spi != PSP_COOKIE) {
-		printk(BIOS_ERR, "Error: PSP Directory address is not correct.\n");
+		printk(BIOS_ERR, "PSP Directory address is not correct.\n");
 		return POSTCODE_PSP_COOKIE_MISMATCH_ERROR;
 	}
 	if (*bios_dir_in_spi != BDT1_COOKIE) {
-		printk(BIOS_ERR, "Error: BIOS Directory address is not correct.\n");
+		printk(BIOS_ERR, "BIOS Directory address is not correct.\n");
 		return POSTCODE_BDT1_COOKIE_MISMATCH_ERROR;
 	}
 
@@ -131,7 +131,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	}
 
 	if (update_psp_bios_dir(&psp_dir_addr, &bios_dir_addr)) {
-		printk(BIOS_ERR, "Error: Updated BIOS Directory could not be set.\n");
+		printk(BIOS_ERR, "Updated BIOS Directory could not be set.\n");
 		return POSTCODE_UPDATE_PSP_BIOS_DIR_ERROR;
 	}
 
@@ -183,7 +183,7 @@ static uint32_t save_buffers(struct vb2_context **ctx)
 	}
 
 	if (buffer_size > max_buffer_size) {
-		printk(BIOS_ERR, "Error: Buffer is larger than max buffer size.\n");
+		printk(BIOS_ERR, "Buffer is larger than max buffer size.\n");
 		post_code(POSTCODE_WORKBUF_BUFFER_SIZE_ERROR);
 		return POSTCODE_WORKBUF_BUFFER_SIZE_ERROR;
 	}
@@ -198,7 +198,7 @@ static uint32_t save_buffers(struct vb2_context **ctx)
 
 	retval = save_uapp_data((void *)_transfer_buffer, buffer_size);
 	if (retval) {
-		printk(BIOS_ERR, "Error: Could not save workbuf. Error code 0x%08x\n", retval);
+		printk(BIOS_ERR, "Could not save workbuf. Error code 0x%08x\n", retval);
 		return POSTCODE_WORKBUF_SAVE_ERROR;
 	}
 

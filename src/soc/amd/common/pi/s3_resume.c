@@ -53,7 +53,7 @@ AGESA_STATUS OemS3LateRestore(S3_DATA_BLOCK *dataBlock)
 
 	stage_cache_get_raw(STAGE_S3_DATA, &base, &size);
 	if (!base || !size) {
-		printk(BIOS_ERR, "Error: S3 volatile data not found\n");
+		printk(BIOS_ERR, "S3 volatile data not found\n");
 		return AGESA_FATAL;
 	}
 

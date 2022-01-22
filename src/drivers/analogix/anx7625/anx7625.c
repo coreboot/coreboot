@@ -11,7 +11,7 @@
 #include "anx7625.h"
 
 #define ANXERROR(format, ...) \
-		printk(BIOS_ERR, "ERROR: %s: " format, __func__, ##__VA_ARGS__)
+		printk(BIOS_ERR, "%s: " format, __func__, ##__VA_ARGS__)
 #define ANXINFO(format, ...) \
 		printk(BIOS_INFO, "%s: " format, __func__, ##__VA_ARGS__)
 #define ANXDEBUG(format, ...) \

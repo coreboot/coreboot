@@ -1051,7 +1051,7 @@ static void me_reset_with_count(void)
 			 * If the (CS)ME fails to change states after 3 attempts, it will
 			 * likely need a cold boot, or recovering.
 			 */
-			printk(BIOS_ERR, "Error: Failed to change ME state in %u attempts!\n",
+			printk(BIOS_ERR, "Failed to change ME state in %u attempts!\n",
 									 ME_DISABLE_ATTEMPTS);
 
 		}

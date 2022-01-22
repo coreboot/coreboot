@@ -19,7 +19,7 @@ void clear_tvalid(void)
 		if (!tvalid) /* not valid but locked means still accessible */
 			return;
 
-		printk(BIOS_ERR, "Error: can't clear TValid, already locked\n");
+		printk(BIOS_ERR, "can't clear TValid, already locked\n");
 		return;
 	}
 

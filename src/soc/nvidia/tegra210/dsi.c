@@ -963,7 +963,7 @@ void dsi_display_startup(struct device *dev)
 		 __func__, disp_ctrl);
 
 	if (disp_ctrl == NULL) {
-		printk(BIOS_ERR, "Error: No dc is assigned by dt.\n");
+		printk(BIOS_ERR, "No dc is assigned by dt.\n");
 		return;
 	}
 

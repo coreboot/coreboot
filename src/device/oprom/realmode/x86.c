@@ -233,7 +233,7 @@ static u8 vbe_get_ctrl_info(vbe_info_block *info)
 			0x0000, buffer_seg, buffer_adr);
 	/* If the VBE function completed successfully, 0x0 is returned in AH */
 	if (X86_AH) {
-		printk(BIOS_WARNING, "Warning: Error from VGA BIOS in %s\n", __func__);
+		printk(BIOS_WARNING, "Error from VGA BIOS in %s\n", __func__);
 		return 1;
 	}
 	memcpy(info, buffer, sizeof(vbe_info_block));

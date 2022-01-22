@@ -140,7 +140,7 @@ void soc_configure_funits(const struct funit_cfg * const entries, size_t num)
 		int funit_usb = is_usb(entry->funit_index);
 
 		if (entry->funit_index >= FUNIT_INDEX_MAX) {
-			printk(BIOS_ERR, "Error: Index out of bounds\n");
+			printk(BIOS_ERR, "Index out of bounds\n");
 			continue;
 		}
 

@@ -91,5 +91,5 @@ void build_bert_mca_error(struct mca_bank_status *mci)
 
 failed:
 	/* We're here because of a hardware error, don't break something else */
-	printk(BIOS_ERR, "Error: Not enough room in BERT region for Machine Check error\n");
+	printk(BIOS_ERR, "Not enough room in BERT region for Machine Check error\n");
 }

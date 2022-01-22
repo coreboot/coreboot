@@ -164,7 +164,7 @@ void soc_init_pre_device(void *chip_info)
 static void cpu_fill_ssdt(const struct device *dev)
 {
 	if (!generate_pin_irq_map())
-		printk(BIOS_ERR, "ERROR: Failed to generate ACPI _PRT table!\n");
+		printk(BIOS_ERR, "Failed to generate ACPI _PRT table!\n");
 
 	generate_cpu_entries(dev);
 }

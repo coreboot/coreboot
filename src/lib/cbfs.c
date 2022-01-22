@@ -681,7 +681,7 @@ static void mcache_to_cbmem(const struct cbfs_boot_device *cbd, u32 cbmem_id)
 	size_t real_size = cbfs_mcache_real_size(cbd->mcache, cbd->mcache_size);
 	void *cbmem_mcache = cbmem_add(cbmem_id, real_size);
 	if (!cbmem_mcache) {
-		printk(BIOS_ERR, "ERROR: Cannot allocate CBMEM mcache %#x (%#zx bytes)!\n",
+		printk(BIOS_ERR, "Cannot allocate CBMEM mcache %#x (%#zx bytes)!\n",
 		       cbmem_id, real_size);
 		return;
 	}

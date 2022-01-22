@@ -30,7 +30,7 @@ static u8 get_hex_digit(const u8 c)
 			ret = c - 'a' + 0x0a;
 	}
 	if (ret > 0x0f) {
-		printk(BIOS_ERR, "Error: Invalid hex digit found: "
+		printk(BIOS_ERR, "Invalid hex digit found: "
 				 "%c - 0x%02x\n", (char)c, c);
 		ret = 0;
 	}

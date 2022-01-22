@@ -46,7 +46,7 @@ static void da9212_hw_init(uint8_t i2c_num, unsigned char variant_id)
 			       DA9212_BUCK_MODE_MASK, DA9212_BUCK_MODE_SHIFT);
 
 	if (ret)
-		printk(BIOS_ERR, "ERROR: %s failed\n", __func__);
+		printk(BIOS_ERR, "%s failed\n", __func__);
 
 }
 
@@ -74,7 +74,7 @@ void da9212_probe(uint8_t i2c_num)
 
 	/* Check device ID is DA9212 */
 	if (device_id != DA9212_ID || ret) {
-		printk(BIOS_ERR, "ERROR: unknown DA9212 device_id\n");
+		printk(BIOS_ERR, "unknown DA9212 device_id\n");
 		return;
 	}
 

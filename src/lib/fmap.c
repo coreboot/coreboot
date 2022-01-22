@@ -80,7 +80,7 @@ static void setup_preram_cache(struct region_device *cache_rdev)
 		if (!verify_fmap(fmap))
 			goto register_cache;
 
-		printk(BIOS_ERR, "ERROR: FMAP cache corrupted?!\n");
+		printk(BIOS_ERR, "FMAP cache corrupted?!\n");
 		if (CONFIG(TOCTOU_SAFETY))
 			die("TOCTOU safety relies on FMAP cache");
 	}
@@ -301,13 +301,13 @@ static void fmap_setup_cbmem_cache(int unused)
 	const size_t s = region_device_sz(&fmrd);
 	struct fmap *fmap = cbmem_add(CBMEM_ID_FMAP, s);
 	if (!fmap) {
-		printk(BIOS_ERR, "ERROR: Failed to allocate CBMEM\n");
+		printk(BIOS_ERR, "Failed to allocate CBMEM\n");
 		return;
 	}
 
 	const ssize_t ret = rdev_readat(&fmrd, fmap, 0, s);
 	if (ret != s) {
-		printk(BIOS_ERR, "ERROR: Failed to read FMAP into CBMEM\n");
+		printk(BIOS_ERR, "Failed to read FMAP into CBMEM\n");
 		cbmem_entry_remove(cbmem_entry_find(CBMEM_ID_FMAP));
 		return;
 	}

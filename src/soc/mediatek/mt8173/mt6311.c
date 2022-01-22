@@ -97,7 +97,7 @@ static void mt6311_hw_init(uint8_t i2c_num)
 			       MT6311_LDO_CON3, 0, 0x1, 0);
 
 	if (ret)
-		printk(BIOS_ERR, "ERROR: %s failed\n", __func__);
+		printk(BIOS_ERR, "%s failed\n", __func__);
 }
 
 void mt6311_probe(uint8_t i2c_num)
@@ -109,7 +109,7 @@ void mt6311_probe(uint8_t i2c_num)
 	printk(BIOS_INFO, "%s: device ID = %#x\n", __func__, val);
 
 	if (val < MT6311_E1_CID_CODE) {
-		printk(BIOS_ERR, "ERROR: unknown MT6311 device_id\n");
+		printk(BIOS_ERR, "unknown MT6311 device_id\n");
 		return;
 	}
 

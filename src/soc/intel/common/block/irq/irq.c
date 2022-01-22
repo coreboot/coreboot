@@ -128,7 +128,7 @@ static int pirq_to_irq(enum pirq pirq)
 static bool assign_pirq(struct pin_info pin_info[PCI_INT_MAX], enum pci_pin pin, enum pirq pirq)
 {
 	if (pirq < PIRQ_A || pirq > PIRQ_H) {
-		printk(BIOS_ERR, "ERROR: Invalid pirq constraint %u\n", pirq);
+		printk(BIOS_ERR, "Invalid pirq constraint %u\n", pirq);
 		return false;
 	}
 
@@ -143,7 +143,7 @@ static bool assign_pin(enum pci_pin pin, unsigned int fn, enum pin_state state,
 		       enum pci_pin fn_pin_map[MAX_FNS])
 {
 	if (pin < PCI_INT_A || pin > PCI_INT_D) {
-		printk(BIOS_ERR, "ERROR: Invalid pin constraint %u\n", pin);
+		printk(BIOS_ERR, "Invalid pin constraint %u\n", pin);
 		return false;
 	}
 
@@ -182,7 +182,7 @@ static bool assign_fixed_pirqs(const struct slot_irq_constraints *constraints,
 		   fixed pin */
 		const enum pci_pin pin = fn_pin_map[i];
 		if (pin == PCI_INT_NONE) {
-			printk(BIOS_ERR, "ERROR: Slot %u, pirq %u, no pin for function %zu\n",
+			printk(BIOS_ERR, "Slot %u, pirq %u, no pin for function %zu\n",
 			       constraints->slot, fixed_pirq, i);
 			return false;
 		}
@@ -210,7 +210,7 @@ static bool assign_direct_irqs(const struct slot_irq_constraints *constraints,
 
 		const int irq = find_free_unique_irq();
 		if (irq == INVALID_IRQ) {
-			printk(BIOS_ERR, "ERROR: No free unique IRQs found\n");
+			printk(BIOS_ERR, "No free unique IRQs found\n");
 			return false;
 		}
 
@@ -234,7 +234,7 @@ static bool assign_shareable_pins(const struct slot_irq_constraints *constraints
 				pin = find_shareable_pin(pin_info);
 
 				if (pin == PCI_INT_NONE) {
-					printk(BIOS_ERR, "ERROR: No shareable pins found\n");
+					printk(BIOS_ERR, "No shareable pins found\n");
 					return false;
 				}
 			}

@@ -408,7 +408,7 @@ void ss_qmp_phy_init(void)
 			!(read32(&ss_phy_reg->qmp_pcs_reg->pcs_ready_status) &
 			USB3_PCS_PHYSTATUS));
 	if (!lock_us)
-		printk(BIOS_ERR, "ERROR: QMP PHY PLL LOCK fails:\n");
+		printk(BIOS_ERR, "QMP PHY PLL LOCK fails:\n");
 	else
 		printk(BIOS_DEBUG, "QMP PHY initialized and locked in %ldus\n",
 				lock_us);

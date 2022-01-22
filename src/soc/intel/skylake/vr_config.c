@@ -222,7 +222,7 @@ static uint16_t get_sku_icc_max(int domain)
 		return icc_max[domain];
 	}
 	default:
-		printk(BIOS_ERR, "ERROR: Unknown MCH (0x%x) in %s\n", mch_id, __func__);
+		printk(BIOS_ERR, "Unknown MCH (0x%x) in %s\n", mch_id, __func__);
 	}
 	return 0;
 }
@@ -292,7 +292,7 @@ static uint16_t get_sku_ac_dc_loadline(const int domain)
 		return loadline[domain];
 	}
 	default:
-		printk(BIOS_ERR, "ERROR: Unknown MCH (0x%x) in %s\n", mch_id, __func__);
+		printk(BIOS_ERR, "Unknown MCH (0x%x) in %s\n", mch_id, __func__);
 	}
 	return 0;
 }

@@ -31,7 +31,7 @@ void pm_set_power_failure_state(void)
 		pwr_fail |= PWR_FAIL_PREV;
 		break;
 	default:
-		printk(BIOS_WARNING, "WARNING: Unknown power-failure state: %d\n",
+		printk(BIOS_WARNING, "Unknown power-failure state: %d\n",
 						CONFIG_MAINBOARD_POWER_FAILURE_STATE);
 		pwr_fail |= PWR_FAIL_OFF;
 		break;

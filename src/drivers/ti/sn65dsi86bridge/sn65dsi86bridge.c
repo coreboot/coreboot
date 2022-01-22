@@ -194,13 +194,13 @@ static cb_err_t sn65dsi86_bridge_aux_request(uint8_t bus,
 			return CB_ERR;
 		if (!wait_ms(100, !i2c_readb(bus, chip, SN_AUX_CMD_REG, &buf) &&
 				  !(buf & AUX_CMD_SEND))) {
-			printk(BIOS_ERR, "ERROR: AUX_CMD_SEND not acknowledged\n");
+			printk(BIOS_ERR, "AUX_CMD_SEND not acknowledged\n");
 			return CB_ERR;
 		}
 		if (i2c_readb(bus, chip, SN_AUX_CMD_STATUS_REG, &buf))
 			return CB_ERR;
 		if (buf & (NAT_I2C_FAIL | AUX_SHORT | AUX_DFER | AUX_RPLY_TOUT)) {
-			printk(BIOS_ERR, "ERROR: AUX command failed, status = %#x\n", buf);
+			printk(BIOS_ERR, "AUX command failed, status = %#x\n", buf);
 			return CB_ERR;
 		}
 
@@ -230,7 +230,7 @@ cb_err_t sn65dsi86_bridge_read_edid(uint8_t bus, uint8_t chip, struct edid *out)
 		err = sn65dsi86_bridge_aux_request(bus, chip, EDID_I2C_ADDR, EDID_LENGTH,
 						   I2C_RAW_READ_AND_STOP, edid);
 	if (err) {
-		printk(BIOS_ERR, "ERROR: Failed to read EDID.\n");
+		printk(BIOS_ERR, "Failed to read EDID.\n");
 		return err;
 	}
 
@@ -249,7 +249,7 @@ cb_err_t sn65dsi86_bridge_read_edid(uint8_t bus, uint8_t chip, struct edid *out)
 	}
 
 	if (decode_edid(edid, edid_size, out) != EDID_CONFORMANT) {
-		printk(BIOS_ERR, "ERROR: Failed to decode EDID.\n");
+		printk(BIOS_ERR, "Failed to decode EDID.\n");
 		return CB_ERR;
 	}
 
@@ -364,7 +364,7 @@ static void sn65dsi86_bridge_set_dp_clock_range(uint8_t bus, uint8_t chip,
 	if (dp_rate_idx < ARRAY_SIZE(sn65dsi86_bridge_dp_rate_lut))
 		i2c_write_field(bus, chip, SN_DATARATE_CONFIG_REG, dp_rate_idx, 8, 5);
 	else
-		printk(BIOS_ERR, "ERROR: valid dp rate not found");
+		printk(BIOS_ERR, "valid dp rate not found");
 }
 
 static void sn65dsi86_bridge_set_bridge_active_timing(uint8_t bus,
@@ -407,7 +407,7 @@ static void sn65dsi86_bridge_link_training(uint8_t bus, uint8_t chip)
 	if (!wait_ms(500,
 	    !(i2c_readb(bus, chip, SN_DPPLL_SRC_REG, &buf)) &&
 	    (buf & BIT(7)))) {
-		printk(BIOS_ERR, "ERROR: PLL lock failure\n");
+		printk(BIOS_ERR, "PLL lock failure\n");
 	}
 
 	/*
@@ -426,14 +426,14 @@ static void sn65dsi86_bridge_link_training(uint8_t bus, uint8_t chip)
 
 		if (!wait_ms(500, !(i2c_readb(bus, chip, SN_ML_TX_MODE_REG, &buf)) &&
 				  (buf == NORMAL_MODE || buf == MAIN_LINK_OFF))) {
-			printk(BIOS_ERR, "ERROR: unexpected link training state: %#x\n", buf);
+			printk(BIOS_ERR, "unexpected link training state: %#x\n", buf);
 			return;
 		}
 		if (buf == NORMAL_MODE)
 			return;
 	}
 
-	printk(BIOS_ERR, "ERROR: Link training failed 10 times\n");
+	printk(BIOS_ERR, "Link training failed 10 times\n");
 }
 
 void sn65dsi86_backlight_enable(uint8_t bus, uint8_t chip)

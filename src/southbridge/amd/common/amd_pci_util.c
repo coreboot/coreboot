@@ -89,7 +89,7 @@ void write_pci_cfg_irqs(void)
 	u32 i = 0;
 
 	if (pirq_data_ptr == NULL) {
-		printk(BIOS_WARNING, "Warning: Can't write PCI IRQ assignments because"
+		printk(BIOS_WARNING, "Can't write PCI IRQ assignments because"
 				" 'mainboard_pirq_data' structure does not exist\n");
 		return;
 	}

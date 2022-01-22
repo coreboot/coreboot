@@ -147,8 +147,7 @@ static bool continue_spi_dma_transaction(const struct region_device *rd,
 	thread_mutex_unlock(&spi_hw_mutex);
 
 	if (spi_dma_has_error()) {
-		printk(BIOS_ERR,
-		       "ERROR: SPI DMA failure: dest: %p, source: %#zx, size: %zu\n",
+		printk(BIOS_ERR, "SPI DMA failure: dest: %p, source: %#zx, size: %zu\n",
 		       transaction->destination, transaction->source,
 		       transaction->transfer_size);
 		return false;

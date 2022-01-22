@@ -29,7 +29,7 @@ uint32_t pcie_rp_enable_mask(const struct pcie_rp_group *const groups)
 
 	for (group = groups; group->count; ++group) {
 		if (group->count + offset >= sizeof(mask) * 8) {
-			printk(BIOS_ERR, "ERROR: %s: Root port count greater than mask size!\n",
+			printk(BIOS_ERR, "%s: Root port count greater than mask size!\n",
 			       __func__);
 			break;
 		}

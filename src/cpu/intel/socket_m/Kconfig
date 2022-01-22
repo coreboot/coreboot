@@ -8,7 +8,6 @@ config SOCKET_SPECIFIC_OPTIONS
 	select CPU_INTEL_MODEL_6EX
 	select CPU_INTEL_MODEL_6FX
 	select MMX
-	select SSE
 
 config DCACHE_RAM_BASE
 	hex

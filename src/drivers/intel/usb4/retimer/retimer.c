@@ -415,7 +415,7 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 	acpigen_pop_len(); /* Host Router */
 	acpigen_pop_len(); /* Scope */
 
-	printk(BIOS_INFO, "%s: %s at %s\n", acpi_device_path(dev), dev->chip_ops->name,
+	printk(BIOS_INFO, "%s.HR: %s at %s\n", usb4_retimer_scope, dev->chip_ops->name,
 	       dev_path(dev));
 }
 

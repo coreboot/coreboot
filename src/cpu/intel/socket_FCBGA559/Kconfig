@@ -9,7 +9,6 @@ config SOCKET_SPECIFIC_OPTIONS
 	def_bool y
 	select CPU_INTEL_MODEL_106CX
 	select MMX
-	select SSE
 	select CPU_HAS_L2_ENABLE_MSR
 
 config DCACHE_RAM_BASE

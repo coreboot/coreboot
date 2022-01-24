@@ -4,6 +4,7 @@
 #include <device/pci.h>
 #include <FsptUpd.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/tco.h>
 #include <soc/iomap.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
@@ -73,4 +74,7 @@ void bootblock_soc_init(void)
 		intel_cbnt_log_registers();
 
 	bootblock_pch_init();
+
+	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
+	tco_configure();
 }

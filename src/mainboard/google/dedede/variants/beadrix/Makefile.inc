@@ -3,3 +3,5 @@
 romstage-y += memory.c
 
 ramstage-y += gpio.c
+
+smm-y += variant.c

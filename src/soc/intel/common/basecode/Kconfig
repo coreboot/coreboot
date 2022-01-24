@@ -2,3 +2,9 @@ config SOC_INTEL_COMMON_BASECODE
 	bool
 	help
 	  Common coreboot stages and non-IP block for Intel platform
+
+if SOC_INTEL_COMMON_BASECODE
+
+source "src/soc/intel/common/basecode/*/Kconfig"
+
+endif

@@ -1,0 +1,6 @@
+config SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE
+	bool
+	default n
+	help
+	  Driver to control runtime features of Intel SoC & coreboot. For example, controlling
+	  the CSE firmware update feature without rebuilding the code.

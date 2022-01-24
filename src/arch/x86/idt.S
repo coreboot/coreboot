@@ -170,6 +170,7 @@ int_hand:
 	pop	%r15
 
 	add	$16, %rsp /* pop of the vector and error code */
+	iretq
 #else
 	/* At this point, on x86-32, on the stack there is:
 	 *  0(%esp) vector
@@ -211,6 +212,5 @@ int_hand:
 	popl	%edi
 
 	addl	$8, %esp /* pop of the vector and error code */
-#endif
-
 	iret
+#endif

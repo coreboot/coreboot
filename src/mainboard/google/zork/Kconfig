@@ -133,22 +133,6 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50
 
-config PICASSO_FW_A_POSITION
-	hex
-	default 0xFF012040
-	depends on VBOOT_SLOTS_RW_AB
-	help
-	  Location of the AMD firmware in the RW_A region. This is the
-	  start of the RW-A region + 64 bytes for the cbfs header.
-
-config PICASSO_FW_B_POSITION
-	hex
-	default 0xFF312040
-	depends on VBOOT_SLOTS_RW_AB
-	help
-	  Location of the AMD firmware in the RW_B region. This is the
-	  start of the RW-A region + 64 bytes for the cbfs header.
-
 config VARIANT_SUPPORTS_PRE_V3_SCHEMATICS
 	bool
 	default y if BOARD_GOOGLE_TREMBYLE

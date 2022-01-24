@@ -72,13 +72,17 @@ SABRINA_FWM_POSITION=$(call int-add, \
 	$(call int-shift-left, \
 	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000 1)
 
+# 0x40 accounts for the cbfs_file struct + filename + metadata structs, aligned to 64 bytes
+# Building the cbfs image will fail if the offset isn't large enough
+AMD_FW_AB_POSITION := 0x40
+
 SABRINA_FW_A_POSITION=$(call int-add, \
 	$(shell awk '$$2 == "FMAP_SECTION_FW_MAIN_A_START" {print $$3}' $(obj)/fmap_config.h) \
-	0x40)
+	$(AMD_FW_AB_POSITION))
 
 SABRINA_FW_B_POSITION=$(call int-add, \
 	$(shell awk '$$2 == "FMAP_SECTION_FW_MAIN_B_START" {print $$3}' $(obj)/fmap_config.h) \
-	0x40)
+	$(AMD_FW_AB_POSITION))
 #
 # PSP Directory Table items
 #
@@ -277,12 +281,12 @@ apu/amdfw-type := raw
 ifeq ($(CONFIG_VBOOT_SLOTS_RW_AB)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
 cbfs-files-y += apu/amdfw_a
 apu/amdfw_a-file := $(obj)/amdfw_a.rom
-apu/amdfw_a-position := $(call strip_quotes, $(SABRINA_FW_A_POSITION))
+apu/amdfw_a-position := $(AMD_FW_AB_POSITION)
 apu/amdfw_a-type := raw
 
 cbfs-files-y += apu/amdfw_b
 apu/amdfw_b-file := $(obj)/amdfw_b.rom
-apu/amdfw_b-position := $(call strip_quotes, $(SABRINA_FW_B_POSITION))
+apu/amdfw_b-position := $(AMD_FW_AB_POSITION)
 apu/amdfw_b-type := raw
 endif
 

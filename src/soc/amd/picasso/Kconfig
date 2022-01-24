@@ -517,16 +517,6 @@ config RWB_REGION_ONLY
 	  Add a space-delimited list of filenames that should only be in the
 	  RW-B section.
 
-config PICASSO_FW_A_POSITION
-	hex
-	help
-	  Location of the AMD firmware in the RW_A region
-
-config PICASSO_FW_B_POSITION
-	hex
-	help
-	  Location of the AMD firmware in the RW_B region
-
 endif # VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 endif # SOC_AMD_PICASSO

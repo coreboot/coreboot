@@ -2,6 +2,7 @@
 
 #include <baseboard/gpio.h>
 
+#if CONFIG(HAVE_SLP_S0_GATE)
 /*
  * S0ix Entry/Exit Notifications
  * Called from \_SB.PEPD._DSM
@@ -22,3 +23,4 @@ Method (MS0X, 1, Serialized)
 		\_SB.PCI0.STXS(GPIO_SLP_S0_GATE);
 	}
 }
+#endif

@@ -95,7 +95,7 @@ static const struct pad_config gpio_table[] = {
 	//PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1), // UART2_RXD
 	//PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), // UART2_TXD
 	PAD_NC(GPP_C22, NONE),
-	PAD_CFG_GPI_APIC_EDGE_LOW(GPP_C23, NONE, PLTRST), // NC on galp3-c, TP_ATTN# on darp5
+	PAD_CFG_GPI_APIC_LOW(GPP_C23, NONE, PLTRST), // NC on galp3-c, TP_ATTN# on darp5
 
 	/* ------- GPIO Group GPP_D ------- */
 	PAD_NC(GPP_D0, NONE),

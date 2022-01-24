@@ -130,6 +130,9 @@ void pcie_rp_update_devicetree(const struct pcie_rp_group *const groups)
 	int mapping[CONFIG_MAX_ROOT_PORTS];
 	unsigned int offset, i;
 
+	if (!groups || !groups->count)
+		return;
+
 	struct bus *const root = pci_root_bus();
 	if (!root)
 		return;

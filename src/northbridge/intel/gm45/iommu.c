@@ -8,7 +8,7 @@
 
 #include "gm45.h"
 
-void init_iommu()
+void init_iommu(void)
 {
 	/* FIXME: proper test? */
 	int me_active = pci_read_config8(PCI_DEV(0, 3, 0), PCI_CLASS_REVISION) != 0xff;

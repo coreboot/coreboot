@@ -32,7 +32,7 @@ static void execute_command(void)
 	       (read8((void *)(spibar+3)) & 0x80));
 }
 
-void spi_init()
+void spi_init(void)
 {
 	struct device *dev;
 

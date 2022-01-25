@@ -104,7 +104,7 @@ u8 pmm_setup(u16 segment, u16 offset)
 /* handle the selfdefined interrupt, this is executed, when the PMM Entry Point
  * is executed, it must handle all PMM requests
  */
-void pmm_handleInt()
+void pmm_handleInt(void)
 {
 	u32 rval = 0;
 	u16 function, flags;

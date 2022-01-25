@@ -65,5 +65,6 @@ uint32_t save_uapp_data(void *address, uint32_t size);
 uint32_t get_bios_dir_addr(struct embedded_firmware *ef_table);
 int platform_set_sha_op(enum vb2_hash_algorithm hash_alg,
 			struct sha_generic_data *sha_op);
+void platform_report_mode(int developer_mode_enabled);
 
 #endif /* PSP_VERSTAGE_H */

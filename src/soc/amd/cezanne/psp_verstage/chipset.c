@@ -33,6 +33,14 @@ int platform_set_sha_op(enum vb2_hash_algorithm hash_alg,
 	return 0;
 }
 
+void platform_report_mode(int developer_mode_enabled)
+{
+	if (developer_mode_enabled)
+		svc_set_platform_boot_mode(CHROME_BOOK_BOOT_MODE_DEVELOPER);
+	else
+		svc_set_platform_boot_mode(CHROME_BOOK_BOOT_MODE_PRODUCTION);
+}
+
 
 /* Functions below are stub functions for not-yet-implemented PSP features.
  * These functions should be replaced with proper implementations later.

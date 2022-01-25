@@ -314,6 +314,8 @@ void Main(void)
 	if (retval)
 		reboot_into_recovery(ctx, retval);
 
+	platform_report_mode(vboot_developer_mode_enabled());
+
 	post_code(POSTCODE_UPDATE_BOOT_REGION);
 
 	/*

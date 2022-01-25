@@ -38,3 +38,9 @@ int platform_set_sha_op(enum vb2_hash_algorithm hash_alg,
 	}
 	return 0;
 }
+
+void platform_report_mode(int developer_mode_enabled)
+{
+	/* Picasso PSP doesn't support this */
+	(void)developer_mode_enabled;
+}

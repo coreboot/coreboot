@@ -3,6 +3,7 @@
 #include <soc/gpio.h>
 #include <soc/platform_descriptors.h>
 #include <types.h>
+#include <amdblocks/cpu.h>
 
 static const fsp_dxio_descriptor majolica_czn_dxio_descriptors[] = {
 	{ /* MXM */
@@ -92,7 +93,7 @@ static const fsp_dxio_descriptor majolica_czn_dxio_descriptors[] = {
 	}
 };
 
-static const fsp_ddi_descriptor majolica_czn_ddi_descriptors[] = {
+static fsp_ddi_descriptor majolica_czn_ddi_descriptors[] = {
 	{ /* DDI0 - DP */
 		.connector_type = DDI_DP,
 		.aux_index = DDI_AUX1,
@@ -124,6 +125,9 @@ void mainboard_get_dxio_ddi_descriptors(
 		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
 		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
+	if ((get_cpu_count() == 4 && get_threads_per_core() == 2) || get_cpu_count() == 2)
+		majolica_czn_ddi_descriptors[1].connector_type = DDI_UNUSED_TYPE;
+
 	*dxio_descs = majolica_czn_dxio_descriptors;
 	*dxio_num = ARRAY_SIZE(majolica_czn_dxio_descriptors);
 	*ddi_descs = majolica_czn_ddi_descriptors;

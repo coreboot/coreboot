@@ -19,4 +19,14 @@ config SOC_INTEL_DISABLE_IGD
 	  where OS can only use one GPU hence need to disable IGD and don't
 	  need to run FSP GOP.
 
+config SOC_INTEL_GFX_FRAMEBUFFER_OFFSET
+	hex
+	default 0x0
+	help
+	  PCI config offset 0x18 point to LMEMBAR and need to add GTT size to
+	  reach at DSM which is referred here as SOC_INTEL_GFX_MEMBASE_OFFSET.
+	  SoC that follow such design would override SOC_INTEL_GFX_FRAMEBUFFER_OFFSET
+	  with GTT_SIZE value. On SoC platform where PCI config offset 0x18 points
+	  to the GMADR directly can use the default value 0x0 without any override.
+
 endif

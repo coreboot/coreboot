@@ -26,6 +26,6 @@ intel_igd_get_controller_info(const struct device *device);
 uint32_t graphics_gtt_read(unsigned long reg);
 void graphics_gtt_write(unsigned long reg, uint32_t data);
 void graphics_gtt_rmw(unsigned long reg, uint32_t andmask, uint32_t ormask);
-uintptr_t graphics_get_memory_base(void);
+uintptr_t graphics_get_framebuffer_address(void);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_GRAPHICS_H */

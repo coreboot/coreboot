@@ -59,7 +59,7 @@ static void gma_init(struct device *const dev)
 	 */
 	if (CONFIG(RUN_FSP_GOP)) {
 		const struct soc_intel_common_config *config = chip_get_common_soc_structure();
-		fsp_report_framebuffer_info(graphics_get_memory_base(),
+		fsp_report_framebuffer_info(graphics_get_framebuffer_address(),
 					    config->panel_orientation);
 		return;
 	}
@@ -107,21 +107,20 @@ static uintptr_t graphics_get_bar(struct device *dev, unsigned long index)
 	return gm_res->base;
 }
 
-uintptr_t graphics_get_memory_base(void)
+uintptr_t graphics_get_framebuffer_address(void)
 {
 	uintptr_t memory_base;
 	struct device *dev = pcidev_path_on_root(SA_DEVFN_IGD);
 
 	if (is_graphics_disabled(dev))
 		return 0;
-	/*
-	 * GFX PCI config space offset 0x18 know as Graphics
-	 * Memory Range Address (GMADR)
-	 */
+
 	memory_base = graphics_get_bar(dev, PCI_BASE_ADDRESS_2);
 	if (!memory_base)
 		die_with_post_code(POST_HW_INIT_FAILURE,
-				   "GMADR is not programmed!");
+				   "Graphic memory bar2 is not programmed!");
+
+	memory_base += CONFIG_SOC_INTEL_GFX_FRAMEBUFFER_OFFSET;
 
 	return memory_base;
 }

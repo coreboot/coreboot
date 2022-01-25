@@ -142,6 +142,7 @@ M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 S:	Maintained
+F:	src/mainboard/amd/chausie/
 F:	src/mainboard/amd/majolica/
 F:	src/mainboard/amd/mandolin/
 

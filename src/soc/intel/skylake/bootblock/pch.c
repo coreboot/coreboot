@@ -2,7 +2,6 @@
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci_def.h>
-#include <intelblocks/cse.h>
 #include <intelblocks/dmi.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/gspi.h>
@@ -140,9 +139,6 @@ void bootblock_pch_init(void)
 	pmc_gpe_init();
 
 	enable_rtc_upper_bank();
-
-	/* initialize Heci interface */
-	heci_init(HECI1_BASE_ADDRESS);
 
 	gspi_early_bar_init();
 }

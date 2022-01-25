@@ -4,6 +4,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <fsp/util.h>
+#include <intelblocks/cse.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smbus.h>
 #include <memory_info.h>
@@ -127,6 +128,8 @@ void mainboard_romstage_entry(void)
 	systemagent_early_init();
 	/* Program SMBus base address and enable it */
 	smbus_common_init();
+	/* initialize Heci interface */
+	heci_init(HECI1_BASE_ADDRESS);
 	ps = pmc_get_power_state();
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);

@@ -26,6 +26,9 @@
 /* Unique ID for the WIFI _DSM */
 #define ACPI_DSM_OEM_WIFI_UUID    "F21202BF-8F78-4DC6-A5B3-1F738E285ADE"
 
+/* Unique ID for the Wifi _DSD */
+#define ACPI_DSD_UNTRUSTED_UUID	  "88566a92-1a61-466d-949a-6d12809d480c"
+
 __weak int get_wifi_sar_limits(union wifi_sar_limits *sar_limits)
 {
 	return -1;
@@ -508,9 +511,21 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 	/* Scope */
 	acpigen_write_scope(scope);
 
-	/* Wake capabilities */
-	if (config)
+	if (config) {
+		/* Wake capabilities */
 		acpigen_write_PRW(config->wake, ACPI_S3);
+
+		/* Add _DSD for UntrustedDevice property. */
+		if (config->is_untrusted) {
+			struct acpi_dp *dsd, *pkg;
+
+			dsd = acpi_dp_new_table("_DSD");
+			pkg = acpi_dp_new_table(ACPI_DSD_UNTRUSTED_UUID);
+			acpi_dp_add_integer(pkg, "UntrustedDevice", 1);
+			acpi_dp_add_package(dsd, pkg);
+			acpi_dp_write(dsd);
+		}
+	}
 
 	/* Fill regulatory domain structure */
 	if (CONFIG(HAVE_REGULATORY_DOMAIN)) {

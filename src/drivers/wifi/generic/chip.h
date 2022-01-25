@@ -9,6 +9,9 @@
  */
 struct drivers_wifi_generic_config {
 	unsigned int wake;
+	/* When set to true, this will add a _DSD which contains a single
+	   property, `UntrustedDevice`, set to 1, to the ACPI Device. */
+	bool is_untrusted;
 };
 
 #endif /* _GENERIC_WIFI_H_ */

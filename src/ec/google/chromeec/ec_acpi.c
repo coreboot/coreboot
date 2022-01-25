@@ -60,7 +60,12 @@ static void get_usb_port_references(int port_number, struct device **usb2_port,
 		 * Check for a matching port number (the 'token' field in 'group').  Note that
 		 * 'port_number' is 0-based, whereas the 'token' field is 1-based.
 		 */
-		if (config->group.token != (port_number + 1))
+		int group_token;
+		if (config->use_custom_pld)
+			group_token = config->custom_pld.group.token;
+		else
+			group_token = config->group.token;
+		if (group_token != (port_number + 1))
 			continue;
 
 		switch (port->path.usb.port_type) {

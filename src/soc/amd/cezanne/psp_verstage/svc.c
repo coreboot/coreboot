@@ -133,3 +133,10 @@ uint32_t svc_ccp_dma(uint32_t spi_rom_offset, void *dest, uint32_t size)
 	SVC_CALL3(SVC_CCP_DMA, spi_rom_offset, dest, size, retval);
 	return retval;
 }
+
+uint32_t svc_set_platform_boot_mode(enum chrome_platform_boot_mode boot_mode)
+{
+	uint32_t retval = 0;
+	SVC_CALL1(SVC_SET_PLATFORM_BOOT_MODE, (uint32_t)boot_mode, retval);
+	return retval;
+}

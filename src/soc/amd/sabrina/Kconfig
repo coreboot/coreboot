@@ -130,6 +130,12 @@ config PSP_SHAREDMEM_SIZE
 	  started.  The workbuf's base depends on the address of the reset
 	  vector.
 
+config PRE_X86_CBMEM_CONSOLE_SIZE
+	hex
+	default 0x1600
+	help
+	  Size of the CBMEM console used in PSP verstage.
+
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x1600

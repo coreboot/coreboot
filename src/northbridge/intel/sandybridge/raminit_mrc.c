@@ -14,6 +14,7 @@
 #include <device/pci_def.h>
 #include <lib.h>
 #include <mrc_cache.h>
+#include <spd.h>
 #include <smbios.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -429,7 +430,7 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 			dimm->mod_id =					/* bytes 117/118 */
 				(pei_data->spd_data[0][118] << 8) |
 				(pei_data->spd_data[0][117] & 0xFF);
-			dimm->mod_type = 3;				/* SPD_SODIMM */
+			dimm->mod_type = DDR3_SPD_SODIMM;
 			dimm->bus_width = MEMORY_BUS_WIDTH_64;
 			dimm_cnt++;
 		}
@@ -453,7 +454,7 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 			dimm->mod_id =					/* bytes 117/118 */
 				(pei_data->spd_data[0][118] << 8) |
 				(pei_data->spd_data[0][117] & 0xFF);
-			dimm->mod_type = 3;				/* SPD_SODIMM */
+			dimm->mod_type = DDR3_SPD_SODIMM;
 			dimm->bus_width = MEMORY_BUS_WIDTH_64;
 			dimm_cnt++;
 		}

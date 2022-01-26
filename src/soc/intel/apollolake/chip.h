@@ -190,6 +190,9 @@ struct soc_intel_apollolake_config {
 	 * 0:Enable (default), 1:Disable.
 	 */
 	uint8_t disable_xhci_lfps_pm;
+
+	/* SATA Aggressive Link Power Management */
+	uint8_t DisableSataSalpSupport;
 };
 
 typedef struct soc_intel_apollolake_config config_t;

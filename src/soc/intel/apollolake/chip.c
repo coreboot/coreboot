@@ -693,6 +693,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 
 	silconfig->PavpEnable = CONFIG(PAVP);
 
+	/* SATA config */
+	if (is_devfn_enabled(PCH_DEVFN_SATA))
+		silconfig->SataSalpSupport = !(cfg->DisableSataSalpSupport);
+
 	mainboard_silicon_init_params(silconfig);
 }
 

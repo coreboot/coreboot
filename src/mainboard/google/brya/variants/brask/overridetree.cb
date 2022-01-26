@@ -1,3 +1,10 @@
+fw_config
+	field AUDIO 0 2
+		option AUDIO_UNKNOWN	0
+		option NAU88L25B_I2S	1
+	end
+end
+
 chip soc/intel/alderlake
 	device domain 0 on
 		device ref dtt on

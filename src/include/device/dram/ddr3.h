@@ -32,21 +32,6 @@
 #define SPD_DIMM_PART_LEN	18
 /** @} */
 
-/**
- * \brief Convenience macro for enabling printk with CONFIG(DEBUG_RAM_SETUP)
- *
- * Use this macro instead of printk(); for verbose RAM initialization messages.
- * When CONFIG(DEBUG_RAM_SETUP) is not selected, these messages are automatically
- * disabled.
- * @{
- */
-#if CONFIG(DEBUG_RAM_SETUP)
-#define printram(x, ...) printk(BIOS_DEBUG, x, ##__VA_ARGS__)
-#else
-#define printram(x, ...)
-#endif
-/** @} */
-
 /*
  * Module type (byte 3, bits 3:0) of SPD
  * This definition is specific to DDR3. DDR2 SPDs have a different structure.

@@ -94,6 +94,10 @@ void heci_init(uintptr_t tempbar)
 
 	u16 pcireg;
 
+	/* Check if device enabled */
+	if (!is_cse_enabled())
+		return;
+
 	/* Assume it is already initialized, nothing else to do */
 	if (get_cse_bar(dev))
 		return;

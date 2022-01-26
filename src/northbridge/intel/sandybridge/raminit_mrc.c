@@ -14,6 +14,7 @@
 #include <device/pci_def.h>
 #include <lib.h>
 #include <mrc_cache.h>
+#include <smbios.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <timestamp.h>
@@ -413,7 +414,7 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 		if (dimm_size) {
 			dimm = &mem_info->dimm[dimm_cnt];
 			dimm->dimm_size = dimm_size;
-			dimm->ddr_type = 0x18;				/* DDR3 */
+			dimm->ddr_type = MEMORY_TYPE_DDR3;
 			dimm->ddr_frequency = ddr_frequency;
 			dimm->rank_per_dimm = 1 + ((ch_conf >> 17) & 1);
 			dimm->channel_num = i;
@@ -429,7 +430,7 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 				(pei_data->spd_data[0][118] << 8) |
 				(pei_data->spd_data[0][117] & 0xFF);
 			dimm->mod_type = 3;				/* SPD_SODIMM */
-			dimm->bus_width = 0x3;				/* 64-bit */
+			dimm->bus_width = MEMORY_BUS_WIDTH_64;
 			dimm_cnt++;
 		}
 		/* DIMM-B */
@@ -437,7 +438,7 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 		if (dimm_size) {
 			dimm = &mem_info->dimm[dimm_cnt];
 			dimm->dimm_size = dimm_size;
-			dimm->ddr_type = 0x18;				/* DDR3 */
+			dimm->ddr_type = MEMORY_TYPE_DDR3;
 			dimm->ddr_frequency = ddr_frequency;
 			dimm->rank_per_dimm =  1 + ((ch_conf >> 18) & 1);
 			dimm->channel_num = i;
@@ -453,7 +454,7 @@ void setup_sdram_meminfo(struct pei_data *pei_data)
 				(pei_data->spd_data[0][118] << 8) |
 				(pei_data->spd_data[0][117] & 0xFF);
 			dimm->mod_type = 3;				/* SPD_SODIMM */
-			dimm->bus_width = 0x3;				/* 64-bit */
+			dimm->bus_width = MEMORY_BUS_WIDTH_64;
 			dimm_cnt++;
 		}
 	}

@@ -17,7 +17,7 @@
 void smihandler_soc_at_finalize(void)
 {
 	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT))
-		heci_disable();
+		heci1_disable();
 }
 
 const smi_handler_t southbridge_smi[SMI_STS_BITS] = {

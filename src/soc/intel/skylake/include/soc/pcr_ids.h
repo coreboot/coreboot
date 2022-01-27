@@ -7,6 +7,7 @@
  * Port ids
  */
 #define PID_PSTH	0x89
+#define PID_CSME0	0x90
 #define PID_GPIOCOM3	0xAC
 #define PID_GPIOCOM2	0xAD
 #define PID_GPIOCOM1	0xAE

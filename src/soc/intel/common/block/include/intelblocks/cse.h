@@ -311,8 +311,8 @@ int heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg, size_t 
  * Returns 0 on failure and 1 on success.
  */
 int heci_reset(void);
-/* Disable HECI using Sideband interface communication */
-void heci_disable(void);
+/* Disable HECI1 using Sideband interface communication */
+void heci1_disable(void);
 
 /* Reads config value from a specified offset in the CSE PCI Config space. */
 uint32_t me_read_config32(int offset);
@@ -488,5 +488,13 @@ bool cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf);
 
 /* Function to make cse disable using PMC IPC */
 bool cse_disable_mei_devices(void);
+
+/*
+ * SoC override API to make heci1 disable using PCR.
+ *
+ * Allow SoC to implement heci1 disable override due to PSF registers being
+ * different across SoC generation.
+ */
+void soc_disable_heci1_using_pcr(void);
 
 #endif // SOC_INTEL_COMMON_CSE_H

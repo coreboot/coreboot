@@ -27,5 +27,6 @@
 
 #define PID_PSF3	0xC6
 #define PID_DMI	0x00 /* Reserved */
+#define PID_CSME0	0x9A /* Reserved */
 
 #endif	/* SOC_INTEL_APL_PCR_H */

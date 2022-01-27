@@ -17,7 +17,7 @@
 void smihandler_soc_at_finalize(void)
 {
 	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT) && CONFIG(HECI_DISABLE_USING_SMM))
-		heci_disable();
+		heci1_disable();
 }
 
 int smihandler_soc_disable_busmaster(pci_devfn_t dev)

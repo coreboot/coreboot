@@ -13,6 +13,7 @@
 #include <intelblocks/itss.h>
 #include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <stdlib.h>
@@ -616,8 +617,8 @@ static int gpio_non_smm_lock_pad(const struct gpio_lock_config *pad_info)
 
 int gpio_lock_pad(const gpio_t pad, enum gpio_lock_action lock_action)
 {
-	/* Skip locking GPIO PAD in early stages */
-	if (ENV_ROMSTAGE_OR_BEFORE)
+	/* Skip locking GPIO PAD in early stages or in recovery mode */
+	if (ENV_ROMSTAGE_OR_BEFORE || vboot_recovery_mode_enabled())
 		return -1;
 
 	const struct gpio_lock_config pads = {

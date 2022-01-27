@@ -167,7 +167,7 @@ static unsigned long acpi_create_dmar_ds_pci_br_for_port(unsigned long current,
 
 	unsigned long atsr_size = 0;
 	unsigned long pci_br_size = 0;
-	if (is_atsr == true && first && *first == true) {
+	if (is_atsr && first && *first) {
 		printk(BIOS_DEBUG, "[Root Port ATS Capability] Flags: 0x%x, "
 			"PCI Segment Number: 0x%x\n", 0, pcie_seg);
 		atsr_size = acpi_create_dmar_atsr(current, 0, pcie_seg);

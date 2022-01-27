@@ -84,7 +84,7 @@ static void eth_pio_write(unsigned char *src, unsigned int dst, unsigned int cnt
 	outb(D8390_COMMAND_RD1 | D8390_COMMAND_STA, eth_nic_base + D8390_P0_COMMAND);
 
 	while (cnt--) {
-			outb(*(src++), eth_nic_base + NE_ASIC_OFFSET + NE_DATA);
+		outb(*(src++), eth_nic_base + NE_ASIC_OFFSET + NE_DATA);
 	}
 	/*
 	#warning "Add timeout"

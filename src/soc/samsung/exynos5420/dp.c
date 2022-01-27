@@ -336,8 +336,8 @@ static unsigned int exynos_dp_enable_rx_to_enhanced_mode(unsigned char enable)
 	ret = exynos_dp_write_byte_to_dpcd(DPCD_LANE_COUNT_SET,
 			data);
 	if (ret != EXYNOS_DP_SUCCESS) {
-			printk(BIOS_ERR, "DP write_to_dpcd failed\n");
-			return -1;
+		printk(BIOS_ERR, "DP write_to_dpcd failed\n");
+		return -1;
 
 	}
 
@@ -467,9 +467,9 @@ static unsigned int exynos_dp_process_clock_recovery(struct edp_device_info
 
 	ret = exynos_dp_read_dpcd_lane_stat(edp_info, &lane_stat);
 	if (ret != EXYNOS_DP_SUCCESS) {
-			printk(BIOS_ERR, "DP read lane status failed\n");
-			edp_info->lt_info.lt_status = DP_LT_FAIL;
-			return ret;
+		printk(BIOS_ERR, "DP read lane status failed\n");
+		edp_info->lt_info.lt_status = DP_LT_FAIL;
+		return ret;
 	}
 
 	if (lane_stat & DP_LANE_STAT_CR_DONE) {

@@ -828,7 +828,7 @@ u32 dramc_engine2(u32 channel, enum dram_tw_op wr, u32 test2_1, u32 test2_2,
 
 	/* 4. enable read/write test */
 	if (wr == TE_OP_READ_CHECK) {
-			if ((testaudpat == 1) || (testaudpat == 2)) {
+		if ((testaudpat == 1) || (testaudpat == 2)) {
 			/* if audio pattern, enable read only */
 			/* (disable write after read), */
 			/* AUDMODE=0x48[15]=0 */

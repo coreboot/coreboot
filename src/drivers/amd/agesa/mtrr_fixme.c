@@ -20,7 +20,7 @@ static void set_range_uc(u32 base, u32 size)
 	for (i = 0; i < max_var_mtrrs; i++) {
 		msr = rdmsr(MTRR_PHYS_MASK(i));
 		if (!(msr.lo & MTRR_PHYS_MASK_VALID))
-				break;
+			break;
 	}
 	if (i == max_var_mtrrs)
 		die("Run out of unused MTRRs\n");

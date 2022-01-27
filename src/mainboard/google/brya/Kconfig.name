@@ -158,3 +158,7 @@ config BOARD_GOOGLE_BANSHEE
 	bool "->  Banshee"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 	select MEMORY_SODIMM
+
+config BOARD_GOOGLE_CROTA
+	bool "->  Crota"
+	select BOARD_GOOGLE_BASEBOARD_BRYA

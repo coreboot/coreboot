@@ -50,7 +50,7 @@ static bool cse_disable_mei_bus(void)
 	return true;
 }
 
-static bool cse_disable_mei_devices(void)
+bool cse_disable_mei_devices(void)
 {
 	struct pmc_ipc_buffer req = { 0 };
 	struct pmc_ipc_buffer rsp;

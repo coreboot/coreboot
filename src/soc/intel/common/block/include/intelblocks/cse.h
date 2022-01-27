@@ -486,4 +486,7 @@ bool skip_cse_sub_part_update(void);
  */
 bool cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf);
 
+/* Function to make cse disable using PMC IPC */
+bool cse_disable_mei_devices(void);
+
 #endif // SOC_INTEL_COMMON_CSE_H

@@ -62,7 +62,7 @@ subdirs-$(CONFIG_LP_VBOOT_LIB) += vboot
 INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
 INCLUDES += -include include/kconfig.h -include include/compiler.h
 INCLUDES += -I$(coreboottop)/src/commonlib/bsd/include
-INCLUDES += -I$(coreboottop)/3rdparty/vboot/firmware/include
+INCLUDES += -I$(VBOOT_SOURCE)/firmware/include
 
 CFLAGS += $(INCLUDES) -Os -pipe -nostdinc -ggdb3
 CFLAGS += -nostdlib -fno-builtin -ffreestanding -fomit-frame-pointer

@@ -2,6 +2,7 @@ fw_config
 	field DB_USB 0 1
 		option DB_USB_ABSENT			0
 		option DB_USB3_NO_A			1
+		option DB_USB3_1C_1A			2
 	end
 	field DB_SD 2 3
 		option DB_SD_ABSENT			0
@@ -65,6 +66,9 @@ chip soc/intel/alderlake
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	# Disable Port 1
 	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC2)"	# DB USB2_C1
 	register "usb2_ports[3]" = "USB2_PORT_EMPTY"	# Disable M.2 WWAN
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# DB Type-A Port A1
+
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port A1
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"	# Disable M.2 WWAN
 
 	# Intel Common SoC Config
@@ -475,6 +479,7 @@ chip soc/intel/alderlake
 							.group = ACPI_PLD_GROUP(2, 1)}"
 						device ref tcss_usb3_port3 on
 							probe DB_USB DB_USB3_NO_A
+							probe DB_USB DB_USB3_1C_1A
 						end
 					end
 				end
@@ -507,12 +512,21 @@ chip soc/intel/alderlake
 							.group = ACPI_PLD_GROUP(2, 1)}"
 						device ref usb2_port3 on
 							probe DB_USB DB_USB3_NO_A
+							probe DB_USB DB_USB3_1C_1A
 						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port6 on
+						end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port (DB)""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(3, 1)"
+						device ref usb2_port7 on
+							probe DB_USB DB_USB3_1C_1A
 						end
 					end
 					chip drivers/usb/acpi
@@ -545,6 +559,14 @@ chip soc/intel/alderlake
 							.shape = PLD_SHAPE_HORIZONTAL_RECTANGLE,
 							.group = ACPI_PLD_GROUP(4, 1)}"
 						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port (DB)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(3, 1)"
+						device ref usb3_port3 on
+							probe DB_USB DB_USB3_1C_1A
+						end
 					end
 				end
 			end

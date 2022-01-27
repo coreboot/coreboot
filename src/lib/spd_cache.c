@@ -154,21 +154,21 @@ bool check_if_dimm_changed(u8 *spd_cache, struct spd_block *blk)
 	bool dimm_present_in_cache;
 	bool dimm_changed = false;
 	/* Check if the dimm is the same with last system boot. */
-	for (i = 0; i < SC_SPD_NUMS && dimm_changed == false; i++) {
+	for (i = 0; i < SC_SPD_NUMS && !dimm_changed; i++) {
 		/* Return true if any error happened here. */
 		if (get_spd_sn(blk->addr_map[i], &sn) == CB_ERR)
 			return true;
 		dimm_present_in_cache = get_cached_dimm_present(spd_cache, i);
 		/* Dimm is not present now. */
 		if (sn == 0xffffffff) {
-			if (dimm_present_in_cache == false)
+			if (!dimm_present_in_cache)
 				printk(BIOS_NOTICE, "SPD_CACHE: DIMM%d is not present\n", i);
 			else {
 				printk(BIOS_NOTICE, "SPD_CACHE: DIMM%d lost\n", i);
 				dimm_changed = true;
 			}
 		} else { /* Dimm is present now. */
-			if (dimm_present_in_cache == true) {
+			if (dimm_present_in_cache) {
 				if (memcmp(&sn, spd_cache + SC_SPD_OFFSET(i) + DDR4_SPD_SN_OFF,
 						SPD_SN_LEN) == 0)
 					printk(BIOS_NOTICE, "SPD_CACHE: DIMM%d is the same\n",
@@ -195,7 +195,7 @@ enum cb_err spd_fill_from_cache(uint8_t *spd_cache, struct spd_block *blk)
 
 	/* Find the first present SPD */
 	for (i = 0; i < SC_SPD_NUMS; i++)
-		if (get_cached_dimm_present(spd_cache, i) == true)
+		if (get_cached_dimm_present(spd_cache, i))
 			break;
 
 	if (i == SC_SPD_NUMS) {
@@ -211,7 +211,7 @@ enum cb_err spd_fill_from_cache(uint8_t *spd_cache, struct spd_block *blk)
 		blk->len = SPD_PAGE_LEN;
 
 	for (i = 0; i < SC_SPD_NUMS; i++)
-		if (get_cached_dimm_present(spd_cache, i) == true)
+		if (get_cached_dimm_present(spd_cache, i))
 			blk->spd_array[i] = spd_cache + SC_SPD_OFFSET(i);
 		else
 			blk->spd_array[i] = NULL;

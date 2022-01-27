@@ -77,13 +77,7 @@ chip soc/intel/elkhartlake
 	register "PcieRpLtrDisable[4]" = "true"
 	register "PcieRpLtrDisable[6]" = "true"
 
-	# Storage (SATA/SDCARD/EMMC) related UPDs
-	register "SataSalpSupport" = "0"
-	register "SataPortsEnable[0]" = "0"
-	register "SataPortsEnable[1]" = "1"
-	register "SataPortsDevSlp[0]" = "0"
-	register "SataPortsDevSlp[1]" = "0"
-
+	# Storage (SDCARD/EMMC) related UPDs
 	register "ScsEmmcHs400Enabled" = "1"
 	register "ScsEmmcDdr50Enabled" = "1"
 	register "SdCardPowerEnableActiveHigh" = "1"
@@ -154,8 +148,6 @@ chip soc/intel/elkhartlake
 		device pci 15.3 on	end # I2C3
 
 		device pci 16.0 hidden	end # Management Engine Interface 1
-
-		device pci 17.0 on	end # SATA
 
 		device pci 19.0 on	end # I2C4
 		device pci 19.1 on	end # I2C5

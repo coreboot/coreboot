@@ -256,6 +256,7 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_DRTM_TA, .level = PSP_LVL2 },
 	{ .type = AMD_FW_KEYDB_BL, .level = PSP_BOTH },
 	{ .type = AMD_FW_KEYDB_TOS, .level = PSP_LVL2 },
+	{ .type = AMD_FW_SPL, .level = PSP_LVL2 },
 	{ .type = AMD_FW_DMCU_ERAM, .level = PSP_LVL2 },
 	{ .type = AMD_FW_DMCU_ISR, .level = PSP_LVL2 },
 	{ .type = AMD_RPMC_NVRAM, .level = PSP_LVL2 },

@@ -14,6 +14,8 @@ enum {
 	MAGISTER_SKU_END = 0xcffff,
 	MAGMA_SKU_START = 0xd0000,
 	MAGMA_SKU_END = 0xdffff,
+	MAGNETO_SKU_START = 0x110000,
+	MAGNETO_SKU_END = 0x11ffff,
 };
 
 const char *get_wifi_sar_cbfs_filename(void)
@@ -26,6 +28,8 @@ const char *get_wifi_sar_cbfs_filename(void)
 		return "wifi_sar-magister.hex";
 	if (sku_id >= MAGMA_SKU_START && sku_id <= MAGMA_SKU_END)
 		return "wifi_sar-magma.hex";
+	if (sku_id >= MAGNETO_SKU_START && sku_id <= MAGNETO_SKU_END)
+		return "wifi_sar-magneto.hex";
 
 	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }

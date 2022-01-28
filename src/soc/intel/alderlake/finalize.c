@@ -106,6 +106,8 @@ static void soc_finalize(void *unused)
 	tbt_finalize();
 	sa_finalize();
 	heci_finalize();
+	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT))
+		heci1_disable();
 
 	/* Indicate finalize step with post code */
 	post_code(POST_OS_BOOT);

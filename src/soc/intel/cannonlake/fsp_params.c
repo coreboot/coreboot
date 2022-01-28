@@ -586,9 +586,12 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->ScsUfsEnabled = is_devfn_enabled(PCH_DEVFN_UFS);
 
 	params->Heci3Enabled = is_devfn_enabled(PCH_DEVFN_CSE_3);
-#if !CONFIG(HECI_DISABLE_USING_SMM)
-	params->Heci1Disabled = CONFIG(DISABLE_HECI1_AT_PRE_BOOT);
-#endif
+	/*
+	 * coreboot will handle disabling of HECI1 device if `DISABLE_HECI1_AT_PRE_BOOT`
+	 * config is selected hence, don't let FSP to disable the HECI1 device and set
+	 * the `Heci1Disabled` UPD to `0`.
+	 */
+	params->Heci1Disabled = 0;
 	params->Device4Enable = config->Device4Enable;
 
 	/* Teton Glacier hybrid storage support */

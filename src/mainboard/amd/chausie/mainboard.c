@@ -6,6 +6,7 @@
 #include <soc/acpi.h>
 #include <string.h>
 #include <types.h>
+#include "gpio.h"
 
 /*
  * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
@@ -87,6 +88,7 @@ static void pirq_setup(void)
 
 static void mainboard_init(void *chip_info)
 {
+	mainboard_program_gpios();
 }
 
 static void mainboard_enable(struct device *dev)

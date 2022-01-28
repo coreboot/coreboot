@@ -1,0 +1,157 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#include <soc/gpio.h>
+#include "gpio.h"
+
+/*
+ * As a rule of thumb, GPIO pins used by coreboot should be initialized at
+ * bootblock while GPIO pins used only by the OS should be initialized at
+ * ramstage.
+ */
+static const struct soc_amd_gpio gpio_set_stage_ram[] = {
+	/* PWR_BTN_L */
+	PAD_NF(GPIO_0, PWR_BTN_L, PULL_NONE),
+	/* SYS_RESET_L */
+	PAD_NF(GPIO_1, SYS_RESET_L, PULL_NONE),
+	/* WAKE_L */
+	PAD_NF_SCI(GPIO_2, WAKE_L, PULL_NONE, EDGE_LOW),
+	/* INT_CLKREQ */
+	PAD_GPI(GPIO_3, PULL_UP),
+	/* UART_WAKE_L_M2_APU */
+	PAD_SCI(GPIO_4, PULL_UP, EDGE_LOW),
+	/* MPM_EVENT_L, input or OD output */
+	PAD_GPI(GPIO_5, PULL_UP),
+	/* TPNL_INT_L */
+	PAD_SCI(GPIO_6, PULL_UP, EDGE_LOW),
+	/* EC SCI */
+	PAD_SCI(GPIO_7, PULL_UP, EDGE_LOW),
+	/* TPAD_INT_L */
+	PAD_SCI(GPIO_8, PULL_UP, EDGE_LOW),
+	/* FP_IRQ_INT */
+	PAD_SCI(GPIO_9, PULL_UP, EDGE_LOW),
+	/* Unused */
+	PAD_NC(GPIO_10),
+	/* HP_MIC_DET_L */
+	PAD_GPI(GPIO_11, PULL_UP),
+	/* ALIGN_FLAG_MU_L */
+	PAD_GPO(GPIO_12, HIGH),
+	/* GPIO_13 - GPIO_15: Not available */
+	/* USB_OC0_L */
+	PAD_NF(GPIO_16, USB_OC0_L, PULL_NONE),
+	/* WAKE_ON_WAN_L */
+	PAD_SCI(GPIO_17, PULL_UP, EDGE_LOW),
+	/* PCIE_WLAN_WAKE_L */
+	PAD_SCI(GPIO_18, PULL_UP, EDGE_LOW),
+	/* I2C3_SCL */
+	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
+	/* I2C3_SDA */
+	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
+	/* KBRST_L */
+	PAD_NF(GPIO_21, KBRST_L, PULL_NONE),
+	/* ESPI_ALERT_L */
+	PAD_NF(GPIO_22, ESPI_ALERT_D1, PULL_NONE),
+	/* AC_PRES */
+	PAD_NF(GPIO_23, AC_PRES, PULL_NONE),
+	/* PCIE_LOM_WAKE_L */
+	PAD_SCI(GPIO_24, PULL_UP, EDGE_LOW),
+	/* GPIO_25: Not available */
+	/* PCIE_RST0_L */
+	PAD_NFO(GPIO_26, PCIE_RST0_L, HIGH),
+	/* PCIE_RST1_L */
+	PAD_NFO(GPIO_27, PCIE_RST1_L, HIGH),
+	/* GPIO_28: Not available */
+	/* TPM CS */
+	PAD_NF(GPIO_29, SPI_TPM_CS_L, PULL_NONE),
+	/* ESPI_CS_L */
+	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
+	/* GPIO_31: Not available */
+	/* LPC_RST_L */
+	PAD_NF(GPIO_32, LPC_RST_L, PULL_NONE),
+	/* GPIO_33 - GPIO_39: Not available */
+	/* USB2_HDR_P0/1_SMI */
+	PAD_SCI(GPIO_40, PULL_UP, EDGE_LOW),
+	/* GPIO_41: Not available */
+	/* SSD_AUX_RESET_L */
+	PAD_GPO(GPIO_42, HIGH),
+	/* GPIO_43 - GPIO_66: Not available */
+	/* SPI_ROM_REQ */
+	PAD_NF(GPIO_67, SPI_ROM_REQ, PULL_NONE),
+	/* ESPI_DATA2 */
+	PAD_NF(GPIO_68, SPI1_DAT2, PULL_NONE),
+	/* ESPI_DATA3 */
+	PAD_NF(GPIO_69, SPI1_DAT3, PULL_NONE),
+	/* GPIO_70 - GPIO_73: Not available */
+	/* SPI1_CS1_L */
+	PAD_NF(GPIO_74, SPI1_CS1_L, PULL_NONE),
+	/* GPIO_75: Not available */
+	/* SPI_ROM_GNT */
+	PAD_NF(GPIO_76, SPI_ROM_GNT, PULL_NONE),
+	/* ESPI_SOC_CLK */
+	PAD_NF(GPIO_77, SPI1_CLK, PULL_NONE),
+	/* SPI1_CS1_L */
+	PAD_NF(GPIO_78, SPI1_CS2_L, PULL_NONE),
+	/* GPIO_79: Not available */
+	/* ESPI_DATA1 */
+	PAD_NF(GPIO_80, SPI1_DAT1, PULL_NONE),
+	/* ESPI_DATA0 */
+	PAD_NF(GPIO_81, SPI1_DAT0, PULL_NONE),
+	/* GPIO_82 - GPIO_83: Not available */
+	/* FANIN0 */
+	PAD_NF(GPIO_84, FANIN0, PULL_NONE),
+	/* FANOUT0 */
+	PAD_NF(GPIO_85, FANOUT0, PULL_NONE),
+	/* GPIO_86 - GPIO_88: Not available */
+	/* I2S CODEC INT */
+	PAD_SCI(GPIO_89, PULL_UP, EDGE_LOW),
+	/* ALERT_L_M2_SSD0 */
+	PAD_SCI(GPIO_90, PULL_UP, EDGE_LOW),
+	/* PC beep to codec */
+	PAD_NF(GPIO_91, SPKR, PULL_NONE),
+	/* CLK_REQ0_L */
+	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_NONE),
+	/* GPIO_93 - GPIO_112: Not available */
+	/* I2C2_SCL */
+	PAD_NF(GPIO_113, I2C2_SCL, PULL_NONE),
+	/* I2C2_SDA */
+	PAD_NF(GPIO_114, I2C2_SDA, PULL_NONE),
+	/* CLK_REQ1_L */
+	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_NONE),
+	/* CLK_REQ2_L */
+	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_NONE),
+	/* GPIO_117 - GPIO_129: Not available */
+	/* TPM IRQ */
+	PAD_SCI(GPIO_130, PULL_UP, EDGE_LOW),
+	/* CLK_REQ3_L */
+	PAD_NF(GPIO_131, CLK_REQ3_L, PULL_NONE),
+	/* GPIO_132 - GPIO_135: Not available */
+	/* UART2_RXD */
+	PAD_NF(GPIO_136, UART2_RXD, PULL_NONE),
+	/* GPIO_137: Not available */
+	/* UART2_TXD */
+	PAD_NF(GPIO_138, UART2_TXD, PULL_NONE),
+	/* ALERT_L_M2_WWAN */
+	PAD_SCI(GPIO_139, PULL_UP, EDGE_LOW),
+	/* UART0_CTS_L */
+	PAD_NF(GPIO_140, UART0_CTS_L, PULL_NONE),
+	/* UART0_RXD */
+	PAD_NF(GPIO_141, UART0_RXD, PULL_NONE),
+	/* UART0_RTS_L */
+	PAD_NF(GPIO_142, UART0_RTS_L, PULL_NONE),
+	/* UART0_TXD */
+	PAD_NF(GPIO_143, UART0_TXD, PULL_NONE),
+	/* CAM_FW_UPDATE_WP_L */
+	PAD_GPO(GPIO_144, LOW),
+	/* I2C0 SCL */
+	PAD_NF(GPIO_145, I2C0_SCL, PULL_NONE),
+	/* I2C0 SDA */
+	PAD_NF(GPIO_146, I2C0_SDA, PULL_NONE),
+	/* I2C1 SCL */
+	PAD_NF(GPIO_147, I2C1_SCL, PULL_NONE),
+	/* I2C1 SDA */
+	PAD_NF(GPIO_148, I2C1_SDA, PULL_NONE),
+};
+
+void mainboard_program_gpios(void)
+{
+	gpio_configure_pads(gpio_set_stage_ram, ARRAY_SIZE(gpio_set_stage_ram));
+}

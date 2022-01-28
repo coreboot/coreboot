@@ -192,7 +192,7 @@ static void dump_cse_state(void)
 #define PCR_PSFX_T0_SHDW_PCIEN		0x1C
 #define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS	(1 << 8)
 
-static void disable_heci1(void)
+void soc_disable_heci1_using_pcr(void)
 {
 	pcr_or32(PID_PSF3, PSF3_BASE_ADDRESS + PCR_PSFX_T0_SHDW_PCIEN,
 		 PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
@@ -207,7 +207,7 @@ void heci_cse_lockdown(void)
 	 * anymore.
 	 */
 	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT))
-		disable_heci1();
+		heci1_disable();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, fpf_blown, NULL);

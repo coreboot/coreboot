@@ -12,6 +12,7 @@
 #include <cpu/x86/smm.h>
 #include <device/mmio.h>
 #include <device/pci.h>
+#include <intelblocks/cse.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>
@@ -64,6 +65,8 @@ static void soc_finalize(void *unused)
 	apm_control(APM_CNT_FINALIZE);
 	tbt_finalize();
 	sa_finalize();
+	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT))
+		heci1_disable();
 
 	/* Indicate finalize step with post code */
 	post_code(POST_OS_BOOT);

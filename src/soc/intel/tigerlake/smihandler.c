@@ -1,24 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/pci_def.h>
-#include <intelblocks/cse.h>
 #include <intelblocks/smihandler.h>
 #include <soc/soc_chip.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-
-/*
- * Specific SOC SMI handler during ramstage finalize phase
- *
- * BIOS can't make CSME function disable as is due to POSTBOOT_SAI
- * restriction in place from TGP chipset. Hence create SMI Handler to
- * perform CSME function disabling logic during SMM mode.
- */
-void smihandler_soc_at_finalize(void)
-{
-	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT) && CONFIG(HECI_DISABLE_USING_SMM))
-		heci1_disable();
-}
 
 int smihandler_soc_disable_busmaster(pci_devfn_t dev)
 {

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <bootstate.h>
 #include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <cpu/x86/msr.h>
@@ -120,3 +121,44 @@ int send_psp_command(u32 command, void *buffer)
 
 	return 0;
 }
+
+enum cb_err soc_read_c2p38(uint32_t *msg_38_value)
+{
+	uintptr_t psp_mmio = soc_get_psp_base_address();
+
+	if (!psp_mmio) {
+		printk(BIOS_WARNING, "PSP: PSP_ADDR_MSR uninitialized\n");
+		return CB_ERR;
+	}
+	*msg_38_value = read32((void *)psp_mmio + CORE_2_PSP_MSG_38_OFFSET);
+	return CB_SUCCESS;
+}
+
+static void psp_set_spl_fuse(void *unused)
+{
+	if (!CONFIG(SOC_AMD_COMMON_BLOCK_PSP_FUSE_SPL))
+		return;
+
+	uint32_t msg_38_value = 0;
+	int cmd_status = 0;
+	struct mbox_cmd_late_spl_buffer buffer = {
+		.header = {
+			.size = sizeof(buffer)
+		}
+	};
+
+	if (soc_read_c2p38(&msg_38_value) != CB_SUCCESS) {
+		printk(BIOS_ERR, "PSP: Failed to read psp base address.\n");
+		return;
+	}
+
+	if (msg_38_value & CORE_2_PSP_MSG_38_FUSE_SPL) {
+		printk(BIOS_DEBUG, "PSP: Fuse SPL requested\n");
+		cmd_status = send_psp_command(MBOX_BIOS_CMD_SET_SPL_FUSE, &buffer);
+		psp_print_cmd_status(cmd_status, NULL);
+	} else {
+		printk(BIOS_DEBUG, "PSP: Fuse SPL not requested\n");
+	}
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, psp_set_spl_fuse, NULL);

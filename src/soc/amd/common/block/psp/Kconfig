@@ -35,3 +35,11 @@ config AMD_SOC_SEPARATE_EFS_SECTION
 	  FMAP section must begin exactly at the location the EFS needs to be
 	  placed in the flash. This option can be used to place the EFS right
 	  after the 128kByte EC firmware at the beginning of the flash.
+
+config SOC_AMD_COMMON_BLOCK_PSP_FUSE_SPL
+	bool
+	default n
+	depends on SOC_AMD_COMMON_BLOCK_PSP_GEN2
+	help
+	  Enable sending of set SPL message to PSP. Enable this option if the platform
+	  will require SPL fusing to be performed by PSP.

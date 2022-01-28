@@ -6,7 +6,7 @@
 #include <soc/wdt.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
-__weak void mtk_wdt_clr_status(uint32_t wdt_sta) { /* do nothing */ }
+__weak void mtk_wdt_clr_status(void) { /* do nothing */ }
 
 int mtk_wdt_init(void)
 {
@@ -15,7 +15,7 @@ int mtk_wdt_init(void)
 	/* Writing mode register will clear status register */
 	wdt_sta = read32(&mtk_wdt->wdt_status);
 
-	mtk_wdt_clr_status(wdt_sta);
+	mtk_wdt_clr_status();
 
 	printk(BIOS_INFO, "WDT: Status = %#x\n", wdt_sta);
 

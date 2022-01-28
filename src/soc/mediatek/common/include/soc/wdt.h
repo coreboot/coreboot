@@ -39,6 +39,6 @@ enum {
 static struct mtk_wdt_regs *const mtk_wdt = (void *)RGU_BASE;
 
 int mtk_wdt_init(void);
-void mtk_wdt_clr_status(uint32_t wdt_sta);
+void mtk_wdt_clr_status(void);
 
 #endif /* SOC_MEDIATEK_COMMON_WDT_H */

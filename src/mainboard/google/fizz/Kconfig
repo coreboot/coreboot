@@ -1,7 +1,3 @@
-
-config IGNORE_IASL_MISSING_DEPENDENCY
-	def_bool y
-
 config BOARD_GOOGLE_BASEBOARD_FIZZ
 	def_bool n
 	select BOARD_ROMSIZE_KB_16384
@@ -43,6 +39,9 @@ config BOARD_GOOGLE_ENDEAVOUR
 	select BOARD_GOOGLE_BASEBOARD_FIZZ
 
 if BOARD_GOOGLE_BASEBOARD_FIZZ
+
+config IGNORE_IASL_MISSING_DEPENDENCY
+	def_bool y
 
 config DEVICETREE
 	default "variants/baseboard/devicetree.cb"

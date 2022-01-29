@@ -1,8 +1,5 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-config IGNORE_IASL_MISSING_DEPENDENCY
-	def_bool y
-
 config BOARD_ASUS_H61_SERIES
 	bool
 	select HAVE_ACPI_RESUME
@@ -16,6 +13,9 @@ config BOARD_ASUS_H61_SERIES
 	select USE_NATIVE_RAMINIT
 
 if BOARD_ASUS_H61_SERIES
+
+config IGNORE_IASL_MISSING_DEPENDENCY
+	def_bool y
 
 config MAINBOARD_DIR
 	default "asus/h61-series"

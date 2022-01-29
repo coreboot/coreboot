@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-config IGNORE_IASL_MISSING_DEPENDENCY
-	def_bool y
-
 config BOARD_GOOGLE_BASEBOARD_GUYBRUSH
 	def_bool n
 
 if BOARD_GOOGLE_BASEBOARD_GUYBRUSH
+
+config IGNORE_IASL_MISSING_DEPENDENCY
+	def_bool y
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y

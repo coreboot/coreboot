@@ -32,8 +32,8 @@ void get_gmch_info(sysinfo_t *sysinfo)
 {
 	sysinfo->stepping = pci_read_config8(PCI_DEV(0, 0, 0), PCI_CLASS_REVISION);
 	if ((sysinfo->stepping > STEPPING_B3) &&
-			(sysinfo->stepping != STEPPING_CONVERSION_A1))
-	       die("Unknown stepping.\n");
+	    (sysinfo->stepping != STEPPING_CONVERSION_A1))
+		die("Unknown stepping.\n");
 	if (sysinfo->stepping <= STEPPING_B3)
 		printk(BIOS_DEBUG, "Stepping %c%d\n", 'A' + sysinfo->stepping / 4, sysinfo->stepping % 4);
 	else

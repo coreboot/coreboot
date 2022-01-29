@@ -57,7 +57,7 @@ void try_enabling_LPC47N207_uart(void)
 			outb(0x12, lpc_port);
 			reg_value = inb(lpc_port + 1);
 			if (reg_value != (lpc_port & 0xff))
-			    break;
+				break;
 
 			outb(0x13, lpc_port);
 			reg_value = inb(lpc_port + 1);

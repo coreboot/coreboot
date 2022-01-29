@@ -147,17 +147,6 @@ config SMM_LAPIC_REMAP_MITIGATION
 	default y if NORTHBRIDGE_INTEL_IRONLAKE
 	default n
 
-config SERIALIZED_SMM_INITIALIZATION
-	bool
-	default n
-	help
-	  On some CPUs, there is a race condition in SMM.
-	  This can occur when both hyperthreads change SMM state
-	  variables in parallel without coordination.
-	  Setting this option serializes the SMM initialization
-	  to avoid an ugly hang in the boot process at the cost
-	  of a slightly longer boot time.
-
 config X86_AMD_FIXED_MTRRS
 	bool
 	default n

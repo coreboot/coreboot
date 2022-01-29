@@ -9,4 +9,4 @@ ramstage-y += model_15_init.c
 smm-y += udelay.c
 
 subdirs-y += ../../mtrr
-subdirs-y += ../../smm
+subdirs-$(CONFIG_SMM_LEGACY_ASEG) += ../../smm

@@ -114,6 +114,12 @@ config SMM_TSEG
 	default y
 	depends on !(NO_SMM || SMM_ASEG)
 
+config SMM_LEGACY_ASEG
+	bool
+	default y if HAVE_SMI_HANDLER && SMM_ASEG && LEGACY_SMP_INIT
+	help
+	  SMM support without PARALLEL_MP, to be deprecated.
+
 if SMM_TSEG
 
 config SMM_MODULE_HEAP_SIZE

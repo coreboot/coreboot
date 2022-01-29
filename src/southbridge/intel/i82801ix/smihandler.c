@@ -9,7 +9,7 @@
 
 #include <soc/nvs.h>
 
-#if !CONFIG(SMM_TSEG)
+#if CONFIG(SMM_LEGACY_ASEG)
 /* For qemu/x86-q35 to build properly. */
 struct global_nvs *gnvs;
 #endif

@@ -11,10 +11,8 @@ ramstage-y += lpc.c
 ramstage-y += usb.c
 ramstage-y += usb2.c
 
-ifeq ($(CONFIG_SMM_ASEG),y)
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += ../../../cpu/x86/smm/smmrelocate.S
-endif
+ramstage-$(CONFIG_SMM_LEGACY_ASEG) += smi.c
+ramstage-$(CONFIG_SMM_LEGACY_ASEG) += ../../../cpu/x86/smm/smmrelocate.S
 
 smm-y += smihandler.c
 

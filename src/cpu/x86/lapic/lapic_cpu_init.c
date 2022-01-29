@@ -391,7 +391,8 @@ void initialize_cpus(struct bus *cpu_bus)
 	if (is_smp_boot())
 		copy_secondary_start_to_lowest_1M();
 
-	smm_init();
+	if (CONFIG(SMM_LEGACY_ASEG))
+		smm_init();
 
 	/* Initialize the bootstrap processor */
 	cpu_initialize(0);
@@ -403,7 +404,8 @@ void initialize_cpus(struct bus *cpu_bus)
 	if (is_smp_boot())
 		wait_other_cpus_stop(cpu_bus);
 
-	smm_init_completion();
+	if (CONFIG(SMM_LEGACY_ASEG))
+		smm_init_completion();
 
 	if (is_smp_boot())
 		recover_lowest_1M();

@@ -50,6 +50,7 @@ chip soc/intel/alderlake
 		},
 	}"
 	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC3)"  # USB2_C3
+	register "SaGv" = "SaGv_Enabled"
 
 	# I2C Port Config
 	register "SerialIoI2cMode" = "{

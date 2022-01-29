@@ -11,6 +11,11 @@
 #define CPPC_NOM_FREQ_IDX	22
 #define CPPC_NOM_PERF_IDX	3
 
+enum cpu_perf_eff_type {
+	CPU_TYPE_SMALL,
+	CPU_TYPE_BIG,
+};
+
 DECLARE_SPIN_LOCK(cpu_lock);
 static u8 global_cpu_type[CONFIG_MAX_CPUS];
 
@@ -46,7 +51,7 @@ static void set_cpu_type(void *unused)
 	u8 cpu_index = get_cpu_index();
 
 	if (is_big_core())
-		global_cpu_type[cpu_index] = 1;
+		global_cpu_type[cpu_index] = CPU_TYPE_BIG;
 
 	spin_unlock(&cpu_lock);
 }
@@ -86,7 +91,7 @@ static void acpigen_cppc_update_nominal_freq_perf(const char *pkg_path, s32 core
 
 	acpi_get_cpu_nomi_perf(&small_core_nom_perf, &big_core_nom_perf);
 
-	if (global_cpu_type[core_id])
+	if (global_cpu_type[core_id] == CPU_TYPE_BIG)
 		acpigen_set_package_element_int(pkg_path, CPPC_NOM_PERF_IDX, big_core_nom_perf);
 	else
 		acpigen_set_package_element_int(pkg_path, CPPC_NOM_PERF_IDX,

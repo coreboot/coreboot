@@ -579,8 +579,6 @@ static void dump_sor_reg(struct tegra_dc_sor_data *sor)
 	DUMP_REG(NV_SOR_DP_SPARE(0));
 	DUMP_REG(NV_SOR_DP_SPARE(1));
 	DUMP_REG(NV_SOR_DP_TPG);
-
-	return;
 }
 #endif
 

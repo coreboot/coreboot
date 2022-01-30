@@ -162,6 +162,4 @@ retry_edp:
 	}
 	mainboard_power_on_backlight();
 	fb_new_framebuffer_info_from_edid(&edid, (uintptr_t)0);
-
-	return;
 }

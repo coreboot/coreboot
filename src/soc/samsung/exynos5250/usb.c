@@ -16,7 +16,7 @@ static void reset_dwc3(struct exynos5_usb_drd_dwc3 *dwc3)
 	setbits32(&dwc3->usb2phycfg, 0x1 << 31);	/* PHY soft reset */
 }
 
-void reset_usb_drd_dwc3()
+void reset_usb_drd_dwc3(void)
 {
 	printk(BIOS_DEBUG, "Starting DWC3 reset for USB DRD\n");
 	reset_dwc3(exynos_usb_drd_dwc3);
@@ -52,7 +52,7 @@ static void setup_dwc3(struct exynos5_usb_drd_dwc3 *dwc3)
 		0x1 << 12);	/* port capability HOST */
 }
 
-void setup_usb_drd_dwc3()
+void setup_usb_drd_dwc3(void)
 {
 	setup_dwc3(exynos_usb_drd_dwc3);
 	printk(BIOS_DEBUG, "DWC3 setup for USB DRD finished\n");
@@ -109,7 +109,7 @@ static void setup_drd_phy(struct exynos5_usb_drd_phy *phy)
 	clrbits32(&phy->clkrst, 0x1 << 1);  /* deassert port reset */
 }
 
-void setup_usb_drd_phy()
+void setup_usb_drd_phy(void)
 {
 	printk(BIOS_DEBUG, "Powering up USB DRD PHY\n");
 	setbits32(&exynos_power->usb_drd_phy_ctrl, POWER_USB_PHY_CTRL_EN);

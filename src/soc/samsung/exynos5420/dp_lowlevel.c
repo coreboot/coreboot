@@ -49,8 +49,6 @@ static void exynos_dp_enable_video_input(u32 enable)
 		reg |= VIDEO_EN_MASK;
 
 	lwrite32(reg, &dp_regs->video_ctl1);
-
-	return;
 }
 
 void exynos_dp_disable_video_bist(void)
@@ -71,8 +69,6 @@ void exynos_dp_enable_video_mute(unsigned int enable)
 		reg |= VIDEO_MUTE_MASK;
 
 	lwrite32(reg, &dp_regs->video_ctl1);
-
-	return;
 }
 
 static void exynos_dp_init_analog_param(void)
@@ -174,8 +170,6 @@ void exynos_dp_reset(void)
 
 	exynos_dp_init_analog_param();
 	exynos_dp_init_interrupt();
-
-	return;
 }
 
 void exynos_dp_enable_sw_func(unsigned int enable)
@@ -189,8 +183,6 @@ void exynos_dp_enable_sw_func(unsigned int enable)
 		reg |= SW_FUNC_EN_N;
 
 	lwrite32(reg, &dp_regs->func_en1);
-
-	return;
 }
 
 unsigned int exynos_dp_set_analog_power_down(unsigned int block, u32 enable)
@@ -336,8 +328,6 @@ void exynos_dp_init_hpd(void)
 	reg = lread32(&dp_regs->sys_ctl3);
 	reg &= ~(F_HPD | HPD_CTRL);
 	lwrite32(reg, &dp_regs->sys_ctl3);
-
-	return;
 }
 
 static inline void exynos_dp_reset_aux(void)
@@ -348,8 +338,6 @@ static inline void exynos_dp_reset_aux(void)
 	reg = lread32(&dp_regs->func_en2);
 	reg |= AUX_FUNC_EN_N;
 	lwrite32(reg, &dp_regs->func_en2);
-
-	return;
 }
 
 void exynos_dp_init_aux(void)
@@ -375,8 +363,6 @@ void exynos_dp_init_aux(void)
 	reg = lread32(&dp_regs->func_en2);
 	reg &= ~AUX_FUNC_EN_N;
 	lwrite32(reg, &dp_regs->func_en2);
-
-	return;
 }
 
 void exynos_dp_config_interrupt(void)
@@ -398,8 +384,6 @@ void exynos_dp_config_interrupt(void)
 
 	reg = INT_STA_MASK;
 	lwrite32(reg, &dp_regs->int_sta_mask);
-
-	return;
 }
 
 unsigned int exynos_dp_get_plug_in_status(void)

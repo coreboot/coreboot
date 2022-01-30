@@ -280,6 +280,4 @@ if (sb_chip->imc_tempin3_enabled) {
 	sb_config.StdHeader.Func = SB_EC_FANCONTROL;
 
 	AmdSbDispatcher(&sb_config);
-
-	return;
 }

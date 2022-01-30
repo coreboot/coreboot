@@ -9,7 +9,6 @@ static struct spi_slave slave;
 void spiconsole_init(void) {
 	spi_init();
 	spi_setup_slave(0, 0, &slave);
-	return;
 }
 
 /*
@@ -49,6 +48,4 @@ void spiconsole_tx_byte(unsigned char c) {
 
 		msg.header.msg_length = 0;
 	}
-
-	return;
 }

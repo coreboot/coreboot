@@ -103,7 +103,6 @@ void ec_mem_write(u8 addr, u8 data)
 	ec_write_cmd(EC_CMD_WRITE_RAM);
 	ec_write_ib(addr);
 	ec_write_ib(data);
-	return;
 }
 
 static void ene_kb3940q_log_events(void)

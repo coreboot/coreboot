@@ -298,7 +298,6 @@ static void write_force_cs(const struct spi_slave *slave, int assert)
 		clrsetbits32(ds->regs->io_control,
 			SPI_IO_CTRL_FORCE_CS_MSK, SPI_IO_CTRL_FORCE_CS_DIS);
 
-	return;
 }
 
 /*
@@ -372,7 +371,6 @@ static void enable_io_config(struct ipq_spi_slave *ds,
 				QUP_CONF_INPUT_MSK, QUP_CONF_NO_INPUT);
 	}
 
-	return;
 }
 
 /*

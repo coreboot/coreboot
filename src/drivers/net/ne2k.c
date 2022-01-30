@@ -307,7 +307,6 @@ static void read_resources(struct device *dev)
 	res->limit = res->base + res->size - 1;
 	res->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_STORED |
 				IORESOURCE_ASSIGNED;
-	return;
 }
 
 static struct device_operations ne2k_ops  = {

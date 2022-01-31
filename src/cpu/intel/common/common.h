@@ -8,6 +8,7 @@
 
 void set_vmx_and_lock(void);
 void set_feature_ctrl_vmx(void);
+void set_feature_ctrl_vmx_arg(bool enable);
 void set_feature_ctrl_lock(void);
 
 /*

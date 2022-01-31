@@ -111,11 +111,8 @@ int dw_i2c_gen_speed_config(uintptr_t dw_i2c_addr,
 
 /*
  * Process given I2C segments in a single transfer
- * Return value:
- * -1 = failure
- *  0 = success
  */
-int dw_i2c_transfer(unsigned int bus,
+enum cb_err dw_i2c_transfer(unsigned int bus,
 			const struct i2c_msg *segments,
 			size_t count);
 

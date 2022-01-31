@@ -453,7 +453,7 @@ out:
 	return ret;
 }
 
-int dw_i2c_transfer(unsigned int bus, const struct i2c_msg *msg, size_t count)
+enum cb_err dw_i2c_transfer(unsigned int bus, const struct i2c_msg *msg, size_t count)
 {
 	const struct i2c_msg *orig_msg = msg;
 	size_t i;
@@ -469,19 +469,19 @@ int dw_i2c_transfer(unsigned int bus, const struct i2c_msg *msg, size_t count)
 	for (i = 0, start = 0; i < count; i++, msg++) {
 		if (addr != msg->slave) {
 			if (_dw_i2c_transfer(bus, &orig_msg[start], i - start) != CB_SUCCESS)
-				return -1;
+				return CB_ERR;
 			start = i;
 			addr = msg->slave;
 		}
 	}
 
-	return _dw_i2c_transfer(bus, &orig_msg[start], count - start) == CB_SUCCESS ? 0 : -1;
+	return _dw_i2c_transfer(bus, &orig_msg[start], count - start);
 }
 
 /* Global I2C bus handler, defined in include/device/i2c_simple.h */
 int platform_i2c_transfer(unsigned int bus, struct i2c_msg *msg, int count)
 {
-	return dw_i2c_transfer(bus, msg, count < 0 ? 0 : count);
+	return dw_i2c_transfer(bus, msg, count < 0 ? 0 : count) == CB_SUCCESS ? 0 : -1;
 }
 
 static enum cb_err dw_i2c_set_speed_config(unsigned int bus,

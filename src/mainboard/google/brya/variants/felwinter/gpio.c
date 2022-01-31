@@ -73,6 +73,10 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_F20, NONE),
 	/* F21 : EXT_PWR_GATE2# ==> NC */
 	PAD_NC(GPP_F21, NONE),
+	/* H6  : I2C1_SDA ==> PCH_I2C_TPM_SDA */
+	PAD_CFG_NF_LOCK(GPP_H6, NONE, NF1, LOCK_CONFIG),
+	/* H7  : I2C1_SCL ==> PCH_I2C_TPM_SCL */
+	PAD_CFG_NF_LOCK(GPP_H7, NONE, NF1, LOCK_CONFIG),
 	/* H8  : I2C4_SDA ==> NC */
 	PAD_NC(GPP_H8, NONE),
 	/* H9  : I2C4_SCL ==> NC */

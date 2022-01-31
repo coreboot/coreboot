@@ -50,6 +50,10 @@ static const struct pad_config override_gpio_table[] = {
 
 	/* H3  : SX_EXIT_HOLDOFF# ==> NC */
 	PAD_NC(GPP_H3, NONE),
+	/* H6  : I2C1_SDA ==> PCH_I2C_TPM_SDA */
+	PAD_CFG_NF_LOCK(GPP_H6, NONE, NF1, LOCK_CONFIG),
+	/* H7  : I2C1_SCL ==> PCH_I2C_TPM_SCL */
+	PAD_CFG_NF_LOCK(GPP_H7, NONE, NF1, LOCK_CONFIG),
 	/* H20 : IMGCLKOUT1 ==> NC */
 	PAD_NC(GPP_H20, NONE),
 	/* H21 : IMGCLKOUT2 ==> Privacy screen */

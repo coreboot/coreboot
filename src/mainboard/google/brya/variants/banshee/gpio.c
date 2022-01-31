@@ -51,8 +51,6 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_B5, NONE),
 	/* B6  : ISH_I2C0_SCL ==> NC */
 	PAD_NC(GPP_B6, NONE),
-	/* B7  : ISH_12C1_SDA ==> PCH_I2C_TPM_SDA */
-	/* B8  : ISH_I2C1_SCL ==> PCH_I2C_TPM_SCL */
 	/* B9  : NC */
 	/* B10 : NC */
 	/* B11 : PMCALERT# ==> EN_PP3300_WLAN */
@@ -197,8 +195,10 @@ static const struct pad_config override_gpio_table[] = {
 	/* H3  : SX_EXIT_HOLDOFF# ==> WLAN_PCIE_WAKE_ODL */
 	/* H4  : I2C0_SDA ==> PCH_I2C_AUD_SDA */
 	/* H5  : I2C0_SCL ==> PCH_I2C_AUD_SCL */
-	/* H6  : I2C1_SDA ==> PCH_I2C_TCHSCR_SDA */
-	/* H7  : I2C1_SCL ==> PCH_I2C_TCHSCR_SCL */
+	/* H6  : I2C1_SDA ==> PCH_I2C_TPM_SDA */
+	PAD_CFG_NF_LOCK(GPP_H6, NONE, NF1, LOCK_CONFIG),
+	/* H7  : I2C1_SCL ==> PCH_I2C_TPM_SCL */
+	PAD_CFG_NF_LOCK(GPP_H7, NONE, NF1, LOCK_CONFIG),
 	/* H8  : I2C4_SDA ==> NC */
 	PAD_NC(GPP_H8, NONE),
 	/* H9  : I2C4_SCL ==> NC */

@@ -110,13 +110,6 @@ int dw_i2c_gen_speed_config(uintptr_t dw_i2c_addr,
 					struct dw_i2c_speed_config *config);
 
 /*
- * Process given I2C segments in a single transfer
- */
-enum cb_err dw_i2c_transfer(unsigned int bus,
-			const struct i2c_msg *segments,
-			size_t count);
-
-/*
  * Map an i2c host controller device to a logical bus number.
  * Return value:
  * -1 = failure

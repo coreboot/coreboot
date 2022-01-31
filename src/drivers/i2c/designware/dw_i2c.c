@@ -453,7 +453,7 @@ out:
 	return ret;
 }
 
-enum cb_err dw_i2c_transfer(unsigned int bus, const struct i2c_msg *msg, size_t count)
+static enum cb_err dw_i2c_transfer(unsigned int bus, const struct i2c_msg *msg, size_t count)
 {
 	const struct i2c_msg *orig_msg = msg;
 	size_t i;

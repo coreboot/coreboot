@@ -29,7 +29,7 @@ static const struct pad_config gpio_table[] = {
 	/* A12 : SATAXPCIE1 ==> EN_PP3300_WWAN */
 	PAD_CFG_GPO(GPP_A12, 1, DEEP),
 	/* A13 : PMC_I2C_SCL ==> GSC_PCH_INT_ODL */
-	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
+	PAD_CFG_GPI_APIC_LOCK(GPP_A13, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* A14 : USB_OC1# ==> USB_C1_OC_ODL */
 	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
 	/* A15 : USB_OC2# ==> USB_C2_OC_ODL */
@@ -458,7 +458,6 @@ const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
 }
 
 static struct gpio_lock_config lockable_brya_gpios[] = {
-	{ GPP_A13, GPIO_LOCK_CONFIG },	/* GSC_PCH_INT_ODL */
 	{ GPP_E15, GPIO_LOCK_CONFIG },	/* PCH_WP_OD */
 	{ GPP_F11, GPIO_LOCK_CONFIG },	/* GSPI_PCH_CLK_FPMCU_R */
 	{ GPP_F13, GPIO_LOCK_CONFIG },	/* GSPI_PCH_D1_FPMCU_D0 */

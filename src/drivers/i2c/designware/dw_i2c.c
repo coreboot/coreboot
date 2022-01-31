@@ -8,6 +8,7 @@
 #include <device/i2c_simple.h>
 #include <string.h>
 #include <timer.h>
+#include <types.h>
 #include "dw_i2c.h"
 
 /* Use a ~10ms timeout for various operations */

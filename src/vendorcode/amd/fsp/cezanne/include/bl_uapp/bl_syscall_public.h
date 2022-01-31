@@ -51,6 +51,7 @@
 #define SVC_SHA                             0x69
 #define SVC_CCP_DMA                         0x6A
 #define SVC_SET_PLATFORM_BOOT_MODE          0x6C
+#define SVC_WRITE_POSTCODE                  0x6D
 
 struct mod_exp_params {
 	char		*pExponent;	// Exponent address

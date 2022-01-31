@@ -140,3 +140,10 @@ uint32_t svc_set_platform_boot_mode(enum chrome_platform_boot_mode boot_mode)
 	SVC_CALL1(SVC_SET_PLATFORM_BOOT_MODE, (uint32_t)boot_mode, retval);
 	return retval;
 }
+
+uint32_t svc_write_postcode(uint32_t postcode)
+{
+	uint32_t retval = 0;
+	SVC_CALL1(SVC_WRITE_POSTCODE, postcode, retval);
+	return retval;
+}

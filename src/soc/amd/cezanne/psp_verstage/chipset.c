@@ -40,13 +40,3 @@ void platform_report_mode(int developer_mode_enabled)
 	else
 		svc_set_platform_boot_mode(CHROME_BOOK_BOOT_MODE_PRODUCTION);
 }
-
-
-/* Functions below are stub functions for not-yet-implemented PSP features.
- * These functions should be replaced with proper implementations later.
- */
-
-uint32_t svc_write_postcode(uint32_t postcode)
-{
-	return 0;
-}

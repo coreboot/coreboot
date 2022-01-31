@@ -121,7 +121,7 @@ normalize_dirs()
 	mkdir -p "$DESTDIR$TARGETDIR/lib"
 	test -d "$DESTDIR$TARGETDIR/lib32" && mv "$DESTDIR$TARGETDIR"/lib32/* "$DESTDIR$TARGETDIR/lib"
 	test -d "$DESTDIR$TARGETDIR/lib64" && mv "$DESTDIR$TARGETDIR"/lib64/* "$DESTDIR$TARGETDIR/lib"
-	rmdir -p "$DESTDIR$TARGETDIR/lib32" "$DESTDIR$TARGETDIR/lib64"
+	rm -rf "$DESTDIR$TARGETDIR/lib32" "$DESTDIR$TARGETDIR/lib64"
 
 	perl -pi -e "s,/lib32,/lib," "$DESTDIR$TARGETDIR"/lib/*.la
 	perl -pi -e "s,/lib64,/lib," "$DESTDIR$TARGETDIR"/lib/*.la
@@ -834,8 +834,6 @@ build_CMAKE() {
 	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
-
-	normalize_dirs
 }
 
 build_NASM() {

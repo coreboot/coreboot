@@ -80,23 +80,6 @@ static void sa_finalize(void)
 		sa_lock_pam();
 }
 
-static void heci_finalize(void)
-{
-	unsigned int cse_dev[] = {
-		PCH_DEVFN_CSE,
-		PCH_DEVFN_CSE_2,
-		PCH_DEVFN_CSE_3,
-		PCH_DEVFN_CSE_4
-	};
-
-	for (int i = 0; i < ARRAY_SIZE(cse_dev); i++) {
-		if (!is_cse_devfn_visible(cse_dev[i]))
-			continue;
-
-		set_cse_device_state(cse_dev[i], DEV_IDLE);
-	}
-}
-
 static void soc_finalize(void *unused)
 {
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
@@ -105,7 +88,7 @@ static void soc_finalize(void *unused)
 	apm_control(APM_CNT_FINALIZE);
 	tbt_finalize();
 	sa_finalize();
-	heci_finalize();
+	heci_set_to_d0i3();
 	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT))
 		heci1_disable();
 

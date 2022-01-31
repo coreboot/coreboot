@@ -988,6 +988,26 @@ bool set_cse_device_state(unsigned int devfn, enum cse_device_state requested_st
 	return true;
 }
 
+void cse_set_to_d0i3(void)
+{
+	if (!is_cse_devfn_visible(PCH_DEVFN_CSE))
+		return;
+
+	set_cse_device_state(PCH_DEVFN_CSE, DEV_IDLE);
+}
+
+/* Function to set D0I3 for all HECI devices */
+void heci_set_to_d0i3(void)
+{
+	for (int i = 0; i < CONFIG_MAX_HECI_DEVICES; i++) {
+		pci_devfn_t dev = PCI_DEV(0, PCI_SLOT(PCH_DEV_SLOT_CSE), PCI_FUNC(i));
+		if (!is_cse_devfn_visible(dev))
+			continue;
+
+		set_cse_device_state(dev, DEV_IDLE);
+	}
+}
+
 #if ENV_RAMSTAGE
 
 /*

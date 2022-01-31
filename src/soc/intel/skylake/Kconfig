@@ -87,6 +87,10 @@ config CPU_SPECIFIC_OPTIONS
 	select UDELAY_TSC
 	select UDK_2015_BINDING
 
+config MAX_HECI_DEVICES
+	int
+	default 5
+
 config MAX_CPUS
 	int
 	default 16 if MAINBOARD_SUPPORTS_COFFEELAKE_CPU

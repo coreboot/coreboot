@@ -489,6 +489,12 @@ bool cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf);
 /* Function to make cse disable using PMC IPC */
 bool cse_disable_mei_devices(void);
 
+/* Set CSE device state to D0I3 */
+void cse_set_to_d0i3(void);
+
+/* Function sets D0I3 for all HECI devices */
+void heci_set_to_d0i3(void);
+
 /*
  * SoC override API to make heci1 disable using PCR.
  *

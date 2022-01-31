@@ -498,6 +498,9 @@ void heci_set_to_d0i3(void);
 /* Function performs the global reset lock */
 void cse_control_global_reset_lock(void);
 
+/* Send End of Post (EOP) command to CSE device */
+void cse_send_end_of_post(void);
+
 /*
  * SoC override API to make heci1 disable using PCR.
  *

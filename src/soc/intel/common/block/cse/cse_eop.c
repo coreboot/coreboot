@@ -185,8 +185,15 @@ static void handle_cse_eop_result(enum cse_eop_result result)
 	}
 }
 
-static void set_cse_end_of_post(void *unused)
+static void do_send_end_of_post(void)
 {
+	static bool eop_sent = false;
+
+	if (eop_sent) {
+		printk(BIOS_ERR, "EOP already sent\n");
+		return;
+	}
+
 	/*
 	 * If CSE is already hidden then accessing CSE registers would be wrong and will
 	 * receive junk, hence, return as CSE is already disabled.
@@ -203,6 +210,18 @@ static void set_cse_end_of_post(void *unused)
 	timestamp_add_now(TS_ME_AFTER_END_OF_POST);
 
 	set_cse_device_state(PCH_DEVFN_CSE, DEV_IDLE);
+
+	eop_sent = true;
+}
+
+void cse_send_end_of_post(void)
+{
+	return do_send_end_of_post();
+}
+
+static void set_cse_end_of_post(void *unused)
+{
+	return do_send_end_of_post();
 }
 
 /*

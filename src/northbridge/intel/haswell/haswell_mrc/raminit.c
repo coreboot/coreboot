@@ -234,7 +234,7 @@ static void setup_sdram_meminfo(struct pei_data *pei_data)
 
 	memset(mem_info, 0, sizeof(struct memory_info));
 
-	const u32 ddr_frequency = (mchbar_read32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100;
+	const u32 ddr_freq_mhz = (mchbar_read32(MC_BIOS_DATA) * 13333 * 2 + 50) / 100;
 
 	for (ch = 0; ch < NUM_CHANNELS; ch++) {
 		const u32 ch_conf = mchbar_read32(MAD_DIMM(ch));
@@ -246,7 +246,7 @@ static void setup_sdram_meminfo(struct pei_data *pei_data)
 				dimm = &mem_info->dimm[dimm_cnt];
 				dimm->dimm_size = dimm_size;
 				dimm->ddr_type = MEMORY_TYPE_DDR3;
-				dimm->ddr_frequency = ddr_frequency;
+				dimm->ddr_frequency = ddr_freq_mhz * 2; /* In MT/s */
 				dimm->rank_per_dimm = 1 + ((ch_conf >> (17 + d_num)) & 1);
 				dimm->channel_num = ch;
 				dimm->dimm_num = d_num;

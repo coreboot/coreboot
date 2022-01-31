@@ -448,6 +448,8 @@ struct soc_intel_cannonlake_config {
 
 	/* Disable CPU Turbo in IA32_MISC_ENABLE */
 	bool cpu_turbo_disable;
+
+	bool disable_vmx;
 };
 
 typedef struct soc_intel_cannonlake_config config_t;

@@ -144,7 +144,8 @@ void soc_core_init(struct device *cpu)
 		enable_turbo();
 
 	/* Enable Vmx */
-	set_vmx_and_lock();
+	set_feature_ctrl_vmx_arg(CONFIG(ENABLE_VMX) && !cfg->disable_vmx);
+	set_feature_ctrl_lock();
 }
 
 static void per_cpu_smm_trigger(void)

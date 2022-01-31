@@ -5,7 +5,7 @@
 
 #include <device/device.h>
 #include <device/i2c.h>
-#include <stdint.h>
+#include <types.h>
 
 #if CONFIG(DRIVERS_I2C_DESIGNWARE_DEBUG)
 #define DW_I2C_DEBUG BIOS_DEBUG

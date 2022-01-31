@@ -265,7 +265,7 @@ static void dw_i2c_enable(struct dw_i2c_regs *regs)
 }
 
 /* Disable this I2C controller */
-static int dw_i2c_disable(struct dw_i2c_regs *regs)
+static enum cb_err dw_i2c_disable(struct dw_i2c_regs *regs)
 {
 	uint32_t enable = read32(&regs->enable);
 
@@ -278,14 +278,14 @@ static int dw_i2c_disable(struct dw_i2c_regs *regs)
 		stopwatch_init_usecs_expire(&sw, DW_I2C_TIMEOUT_US);
 		while (read32(&regs->enable_status) & ENABLE_CONTROLLER)
 			if (stopwatch_expired(&sw))
-				return -1;
+				return CB_ERR;
 	}
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 /* Wait for this I2C controller to go idle for transmit */
-static int dw_i2c_wait_for_bus_idle(struct dw_i2c_regs *regs)
+static enum cb_err dw_i2c_wait_for_bus_idle(struct dw_i2c_regs *regs)
 {
 	struct stopwatch sw;
 
@@ -301,17 +301,17 @@ static int dw_i2c_wait_for_bus_idle(struct dw_i2c_regs *regs)
 
 		/* Check for TX FIFO empty to indicate TX idle */
 		if (status & STATUS_TX_FIFO_EMPTY)
-			return 0;
+			return CB_SUCCESS;
 	}
 
 	/* Timed out while waiting for bus to go idle */
-	return -1;
+	return CB_ERR;
 }
 
 /* Transfer one byte of one segment, sending stop bit if requested */
-static int dw_i2c_transfer_byte(struct dw_i2c_regs *regs,
-				  const struct i2c_msg *segment,
-				  size_t byte, int send_stop)
+static enum cb_err dw_i2c_transfer_byte(struct dw_i2c_regs *regs,
+					const struct i2c_msg *segment,
+					size_t byte, int send_stop)
 {
 	struct stopwatch sw;
 	uint32_t cmd = CMD_DATA_CMD; /* Read op */
@@ -323,7 +323,7 @@ static int dw_i2c_transfer_byte(struct dw_i2c_regs *regs,
 		while (!(read32(&regs->status) & STATUS_TX_FIFO_NOT_FULL)) {
 			if (stopwatch_expired(&sw)) {
 				printk(BIOS_ERR, "I2C transmit timeout\n");
-				return -1;
+				return CB_ERR;
 			}
 		}
 		cmd = segment->buf[byte];
@@ -340,27 +340,27 @@ static int dw_i2c_transfer_byte(struct dw_i2c_regs *regs,
 		while (!(read32(&regs->status) & STATUS_RX_FIFO_NOT_EMPTY)) {
 			if (stopwatch_expired(&sw)) {
 				printk(BIOS_ERR, "I2C receive timeout\n");
-				return -1;
+				return CB_ERR;
 			}
 		}
 		segment->buf[byte] = read32(&regs->cmd_data);
 	}
 
-	return 0;
+	return CB_SUCCESS;
 }
 
-static int _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segments,
-				size_t count)
+static enum cb_err _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segments,
+				    size_t count)
 {
 	struct stopwatch sw;
 	struct dw_i2c_regs *regs;
 	size_t byte;
-	int ret = -1;
+	enum cb_err ret = CB_ERR;
 
 	regs = (struct dw_i2c_regs *)dw_i2c_base_address(bus);
 	if (!regs) {
 		printk(BIOS_ERR, "I2C bus %u base address not found\n", bus);
-		return -1;
+		return CB_ERR;
 	}
 
 	/* The assumption is that the host controller is disabled -- either
@@ -388,8 +388,8 @@ static int _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segments,
 			 * Repeated start will be automatically generated
 			 * by the controller on R->W or W->R switch.
 			 */
-			if (dw_i2c_transfer_byte(regs, segments, byte,
-						   count == 0) < 0) {
+			if (dw_i2c_transfer_byte(regs, segments, byte, count == 0) !=
+			    CB_SUCCESS) {
 				printk(BIOS_ERR, "I2C %s failed: bus %u "
 				       "addr 0x%02x\n",
 				       (segments->flags & I2C_M_RD) ?
@@ -430,7 +430,7 @@ static int _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segments,
 	}
 
 	/* Wait for the bus to go idle */
-	if (dw_i2c_wait_for_bus_idle(regs)) {
+	if (dw_i2c_wait_for_bus_idle(regs) != CB_SUCCESS) {
 		printk(BIOS_ERR, "I2C timeout waiting for bus %u idle\n", bus);
 		goto out;
 	}
@@ -445,7 +445,7 @@ static int _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segments,
 		read32(&regs->cmd_data);
 	}
 
-	ret = 0;
+	ret = CB_SUCCESS;
 
 out:
 	read32(&regs->clear_intr);
@@ -468,14 +468,14 @@ int dw_i2c_transfer(unsigned int bus, const struct i2c_msg *msg, size_t count)
 
 	for (i = 0, start = 0; i < count; i++, msg++) {
 		if (addr != msg->slave) {
-			if (_dw_i2c_transfer(bus, &orig_msg[start], i - start))
+			if (_dw_i2c_transfer(bus, &orig_msg[start], i - start) != CB_SUCCESS)
 				return -1;
 			start = i;
 			addr = msg->slave;
 		}
 	}
 
-	return _dw_i2c_transfer(bus, &orig_msg[start], count - start);
+	return _dw_i2c_transfer(bus, &orig_msg[start], count - start) == CB_SUCCESS ? 0 : -1;
 }
 
 /* Global I2C bus handler, defined in include/device/i2c_simple.h */
@@ -484,19 +484,19 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *msg, int count)
 	return dw_i2c_transfer(bus, msg, count < 0 ? 0 : count);
 }
 
-static int dw_i2c_set_speed_config(unsigned int bus,
-				const struct dw_i2c_speed_config *config)
+static enum cb_err dw_i2c_set_speed_config(unsigned int bus,
+					   const struct dw_i2c_speed_config *config)
 {
 	struct dw_i2c_regs *regs;
 	void *hcnt_reg, *lcnt_reg;
 
 	regs = (struct dw_i2c_regs *)dw_i2c_base_address(bus);
 	if (!regs || !config)
-		return -1;
+		return CB_ERR;
 
 	/* Nothing to do if no values are set */
 	if (!config->scl_lcnt && !config->scl_hcnt && !config->sda_hold)
-		return 0;
+		return CB_SUCCESS;
 
 	if (config->speed >= I2C_SPEED_HIGH) {
 		/* High and Fast Ultra speed */
@@ -522,14 +522,14 @@ static int dw_i2c_set_speed_config(unsigned int bus,
 	if (config->sda_hold)
 		write32(&regs->sda_hold, config->sda_hold);
 
-	return 0;
+	return CB_SUCCESS;
 }
 
-static int dw_i2c_gen_config_rise_fall_time(struct dw_i2c_regs *regs,
-					enum i2c_speed speed,
-					const struct dw_i2c_bus_config *bcfg,
-					int ic_clk,
-					struct dw_i2c_speed_config *config)
+static enum cb_err dw_i2c_gen_config_rise_fall_time(struct dw_i2c_regs *regs,
+						    enum i2c_speed speed,
+						    const struct dw_i2c_bus_config *bcfg,
+						    int ic_clk,
+						    struct dw_i2c_speed_config *config)
 {
 	const struct i2c_descriptor *bus;
 	const struct soc_clock *soc;
@@ -542,13 +542,13 @@ static int dw_i2c_gen_config_rise_fall_time(struct dw_i2c_regs *regs,
 
 	if (bus == NULL) {
 		printk(BIOS_ERR, "dw_i2c: invalid bus speed %d\n", speed);
-		return -1;
+		return CB_ERR;
 	}
 
 	if (soc == NULL) {
 		printk(BIOS_ERR, "dw_i2c: invalid SoC clock speed %d MHz\n",
 			ic_clk);
-		return -1;
+		return CB_ERR;
 	}
 
 	/* Get the proper spike suppression count based on target speed. */
@@ -583,7 +583,7 @@ static int dw_i2c_gen_config_rise_fall_time(struct dw_i2c_regs *regs,
 	if (hcnt < 0 || lcnt < 0) {
 		printk(BIOS_ERR, "dw_i2c: bad counts. hcnt = %d lcnt = %d\n",
 			hcnt, lcnt);
-		return -1;
+		return CB_ERR;
 	}
 
 	/* Now add things back up to ensure the period is hit. If off,
@@ -612,7 +612,7 @@ static int dw_i2c_gen_config_rise_fall_time(struct dw_i2c_regs *regs,
 	printk(DW_I2C_DEBUG, "dw_i2c: hcnt = %d lcnt = %d sda hold = %d\n",
 		hcnt, lcnt, config->sda_hold);
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 int dw_i2c_gen_speed_config(uintptr_t dw_i2c_addr,
@@ -638,11 +638,12 @@ int dw_i2c_gen_speed_config(uintptr_t dw_i2c_addr,
 	}
 
 	/* Use the time calculation. */
-	return dw_i2c_gen_config_rise_fall_time(regs, speed, bcfg, ic_clk, config);
+	return dw_i2c_gen_config_rise_fall_time(regs, speed, bcfg, ic_clk, config) ==
+		CB_SUCCESS ? 0 : -1;
 }
 
-static int dw_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
-				const struct dw_i2c_bus_config *bcfg)
+static enum cb_err dw_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
+				    const struct dw_i2c_bus_config *bcfg)
 {
 	struct dw_i2c_regs *regs;
 	struct dw_i2c_speed_config config;
@@ -651,7 +652,7 @@ static int dw_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
 	/* Clock must be provided by Kconfig */
 	regs = (struct dw_i2c_regs *)dw_i2c_base_address(bus);
 	if (!regs || !speed)
-		return -1;
+		return CB_ERR;
 
 	control = read32(&regs->control);
 	control &= ~CONTROL_SPEED_MASK;
@@ -669,7 +670,7 @@ static int dw_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
 
 	/* Generate speed config based on clock */
 	if (dw_i2c_gen_speed_config((uintptr_t)regs, speed, bcfg, &config) < 0)
-		return -1;
+		return CB_ERR;
 
 	/* Select this speed in the control register */
 	write32(&regs->control, control);
@@ -677,7 +678,7 @@ static int dw_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
 	/* Write the speed config that was generated earlier */
 	dw_i2c_set_speed_config(bus, &config);
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 /*
@@ -710,7 +711,7 @@ int dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg)
 
 	printk(BIOS_DEBUG, "I2C bus %u version 0x%x\n", bus, read32(&regs->comp_version));
 
-	if (dw_i2c_disable(regs) < 0) {
+	if (dw_i2c_disable(regs) != CB_SUCCESS) {
 		printk(BIOS_ERR, "I2C timeout disabling bus %u\n", bus);
 		return -1;
 	}
@@ -720,7 +721,7 @@ int dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg)
 		CONTROL_RESTART_ENABLE);
 
 	/* Set bus speed to FAST by default */
-	if (dw_i2c_set_speed(bus, speed, bcfg) < 0) {
+	if (dw_i2c_set_speed(bus, speed, bcfg) != CB_SUCCESS) {
 		printk(BIOS_ERR, "I2C failed to set speed for bus %u\n", bus);
 		return -1;
 	}

@@ -80,6 +80,7 @@ config BOARD_GOOGLE_KANO
 config BOARD_GOOGLE_NIVVIKS
 	bool "->  Nivviks"
 	select BOARD_GOOGLE_BASEBOARD_NISSA
+	select DRIVERS_INTEL_MIPI_CAMERA
 
 config BOARD_GOOGLE_NEREID
 	bool "->  Nereid"

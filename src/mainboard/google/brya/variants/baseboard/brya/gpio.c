@@ -458,11 +458,6 @@ const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
 }
 
 static struct gpio_lock_config lockable_brya_gpios[] = {
-	{ GPP_F11, GPIO_LOCK_CONFIG },	/* GSPI_PCH_CLK_FPMCU_R */
-	{ GPP_F13, GPIO_LOCK_CONFIG },	/* GSPI_PCH_D1_FPMCU_D0 */
-	{ GPP_F12, GPIO_LOCK_CONFIG },	/* GSPI_PCH_D0_FPMCU_D1_R */
-	{ GPP_F15, GPIO_LOCK_CONFIG },	/* FPMCU_INT_L */
-	{ GPP_F16, GPIO_LOCK_CONFIG },	/* GSPI_PCH_CS_FPMCU_R_L */
 };
 
 const struct gpio_lock_config *mb_gpio_lock_config(size_t *num)

@@ -615,7 +615,7 @@ static enum cb_err dw_i2c_gen_config_rise_fall_time(struct dw_i2c_regs *regs,
 	return CB_SUCCESS;
 }
 
-int dw_i2c_gen_speed_config(uintptr_t dw_i2c_addr,
+enum cb_err dw_i2c_gen_speed_config(uintptr_t dw_i2c_addr,
 					enum i2c_speed speed,
 					const struct dw_i2c_bus_config *bcfg,
 					struct dw_i2c_speed_config *config)
@@ -634,12 +634,11 @@ int dw_i2c_gen_speed_config(uintptr_t dw_i2c_addr,
 		if (bcfg->speed_config[i].speed != speed)
 			continue;
 		memcpy(config, &bcfg->speed_config[i], sizeof(*config));
-		return 0;
+		return CB_SUCCESS;
 	}
 
 	/* Use the time calculation. */
-	return dw_i2c_gen_config_rise_fall_time(regs, speed, bcfg, ic_clk, config) ==
-		CB_SUCCESS ? 0 : -1;
+	return dw_i2c_gen_config_rise_fall_time(regs, speed, bcfg, ic_clk, config);
 }
 
 static enum cb_err dw_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
@@ -669,7 +668,7 @@ static enum cb_err dw_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
 	}
 
 	/* Generate speed config based on clock */
-	if (dw_i2c_gen_speed_config((uintptr_t)regs, speed, bcfg, &config) < 0)
+	if (dw_i2c_gen_speed_config((uintptr_t)regs, speed, bcfg, &config) != CB_SUCCESS)
 		return CB_ERR;
 
 	/* Select this speed in the control register */
@@ -830,7 +829,7 @@ void dw_i2c_acpi_fill_ssdt(const struct device *dev)
 
 	/* Report currently used timing values for the OS driver */
 	acpigen_write_scope(path);
-	if (dw_i2c_gen_speed_config(dw_i2c_addr, speed, bcfg, &sgen) >= 0) {
+	if (dw_i2c_gen_speed_config(dw_i2c_addr, speed, bcfg, &sgen) == CB_SUCCESS) {
 		dw_i2c_acpi_write_speed_config(&sgen);
 	}
 	/* Now check if there are more speed settings available and report them as well. */

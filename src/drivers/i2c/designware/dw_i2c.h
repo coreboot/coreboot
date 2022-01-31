@@ -100,11 +100,8 @@ enum cb_err dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg);
 
 /*
  * Generate speed config based on clock
- * Return value:
- * -1 = failure
- *  0 = success
 */
-int dw_i2c_gen_speed_config(uintptr_t dw_i2c_addr,
+enum cb_err dw_i2c_gen_speed_config(uintptr_t dw_i2c_addr,
 					enum i2c_speed speed,
 					const struct dw_i2c_bus_config *bcfg,
 					struct dw_i2c_speed_config *config);

@@ -456,12 +456,3 @@ const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
 	*num = 0;
 	return NULL;
 }
-
-static struct gpio_lock_config lockable_brya_gpios[] = {
-};
-
-const struct gpio_lock_config *mb_gpio_lock_config(size_t *num)
-{
-	*num = ARRAY_SIZE(lockable_brya_gpios);
-	return lockable_brya_gpios;
-}

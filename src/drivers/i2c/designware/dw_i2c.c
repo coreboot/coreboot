@@ -687,33 +687,33 @@ static enum cb_err dw_i2c_set_speed(unsigned int bus, enum i2c_speed speed,
  * The bus speed can be passed in Hz or using values from device/i2c.h and
  * will default to I2C_SPEED_FAST if it is not provided.
  */
-int dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg)
+enum cb_err dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg)
 {
 	struct dw_i2c_regs *regs;
 	enum i2c_speed speed;
 
 	if (!bcfg)
-		return -1;
+		return CB_ERR;
 
 	speed = bcfg->speed ? : I2C_SPEED_FAST;
 
 	regs = (struct dw_i2c_regs *)dw_i2c_base_address(bus);
 	if (!regs) {
 		printk(BIOS_ERR, "I2C bus %u base address not found\n", bus);
-		return -1;
+		return CB_ERR;
 	}
 
 	if (read32(&regs->comp_type) != DW_I2C_COMP_TYPE) {
 		printk(BIOS_ERR, "I2C bus %u has unknown type 0x%x.\n", bus,
 		       read32(&regs->comp_type));
-		return -1;
+		return CB_ERR;
 	}
 
 	printk(BIOS_DEBUG, "I2C bus %u version 0x%x\n", bus, read32(&regs->comp_version));
 
 	if (dw_i2c_disable(regs) != CB_SUCCESS) {
 		printk(BIOS_ERR, "I2C timeout disabling bus %u\n", bus);
-		return -1;
+		return CB_ERR;
 	}
 
 	/* Put controller in master mode with restart enabled */
@@ -723,7 +723,7 @@ int dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg)
 	/* Set bus speed to FAST by default */
 	if (dw_i2c_set_speed(bus, speed, bcfg) != CB_SUCCESS) {
 		printk(BIOS_ERR, "I2C failed to set speed for bus %u\n", bus);
-		return -1;
+		return CB_ERR;
 	}
 
 	/* Set RX/TX thresholds to smallest values */
@@ -736,7 +736,7 @@ int dw_i2c_init(unsigned int bus, const struct dw_i2c_bus_config *bcfg)
 	printk(BIOS_INFO, "DW I2C bus %u at %p (%u KHz)\n",
 	       bus, regs, speed / KHz);
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 /*

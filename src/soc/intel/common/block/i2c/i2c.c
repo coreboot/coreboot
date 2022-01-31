@@ -72,7 +72,7 @@ static int lpss_i2c_early_init_bus(unsigned int bus)
 	lpss_set_power_state(dev, STATE_D0);
 
 	/* Initialize the controller */
-	if (dw_i2c_init(bus, config) < 0) {
+	if (dw_i2c_init(bus, config) != CB_SUCCESS) {
 		printk(BIOS_ERR, "I2C%u failed to initialize\n", bus);
 		return -1;
 	}

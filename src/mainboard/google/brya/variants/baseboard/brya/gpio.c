@@ -188,7 +188,7 @@ static const struct pad_config gpio_table[] = {
 	/* E14 : DDSP_HPDA ==> SOC_EDP_HPD */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
-	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
+	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_E15, NONE, LOCK_CONFIG),
 	/* E16 : RSVD_TP ==> WWAN_RST_L */
 	PAD_CFG_GPO(GPP_E16, 1, DEEP),
 	/* E17 : THC0_SPI1_INT# ==> WWAN_CONFIG3 */
@@ -458,7 +458,6 @@ const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
 }
 
 static struct gpio_lock_config lockable_brya_gpios[] = {
-	{ GPP_E15, GPIO_LOCK_CONFIG },	/* PCH_WP_OD */
 	{ GPP_F11, GPIO_LOCK_CONFIG },	/* GSPI_PCH_CLK_FPMCU_R */
 	{ GPP_F13, GPIO_LOCK_CONFIG },	/* GSPI_PCH_D1_FPMCU_D0 */
 	{ GPP_F12, GPIO_LOCK_CONFIG },	/* GSPI_PCH_D0_FPMCU_D1_R */

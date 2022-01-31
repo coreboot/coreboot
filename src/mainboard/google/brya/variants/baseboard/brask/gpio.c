@@ -189,7 +189,7 @@ static const struct pad_config gpio_table[] = {
 	/* E14 : DDSP_HPDA ==> SOC_DP_HPD */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
-	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
+	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_E15, NONE, LOCK_CONFIG),
 	/* E16 : RSVD_TP ==> CLKREQ_8 */
 	PAD_NC(GPP_E16, NONE),
 	/* E17 : THC0_SPI1_INT# ==> TP102 */

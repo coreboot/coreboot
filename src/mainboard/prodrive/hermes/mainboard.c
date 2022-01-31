@@ -240,6 +240,8 @@ static void mainboard_early(void *unused)
 		/* Set Deep Sx */
 		config->deep_s5_enable_ac = board_cfg->deep_sx_enabled;
 		config->deep_s5_enable_dc = board_cfg->deep_sx_enabled;
+
+		config->disable_vmx = board_cfg->vtx_disabled;
 	}
 
 	if (check_signature(offsetof(struct eeprom_layout, supd), FSPS_UPD_SIGNATURE)) {

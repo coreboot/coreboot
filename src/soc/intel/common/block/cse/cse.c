@@ -11,6 +11,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <intelblocks/cse.h>
+#include <intelblocks/pmclib.h>
 #include <option.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
@@ -1006,6 +1007,25 @@ void heci_set_to_d0i3(void)
 
 		set_cse_device_state(dev, DEV_IDLE);
 	}
+}
+
+void cse_control_global_reset_lock(void)
+{
+	/*
+	 * As per ME BWG recommendation the BIOS should not lock down CF9GR bit during
+	 * manufacturing and re-manufacturing environment if HFSTS1 [4] is set. Note:
+	 * this recommendation is not applicable for CSE-Lite SKUs where BIOS should set
+	 * CF9LOCK bit irrespectively.
+	 *
+	 * Other than that, make sure payload/OS can't trigger global reset.
+	 *
+	 * BIOS must also ensure that CF9GR is cleared and locked (Bit31 of ETR3)
+	 * prior to transferring control to the OS.
+	 */
+	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) || cse_is_hfs1_spi_protected())
+		pmc_global_reset_disable_and_lock();
+	else
+		pmc_global_reset_enable(false);
 }
 
 #if ENV_RAMSTAGE

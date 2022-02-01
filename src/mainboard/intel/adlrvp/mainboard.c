@@ -68,6 +68,9 @@ struct chip_operations mainboard_ops = {
 
 const char *mainboard_vbt_filename(void)
 {
+	if (!CONFIG(CHROMEOS))
+		return "vbt.bin";
+
 	uint8_t sku_id = get_board_id();
 	switch (sku_id) {
 	case ADL_P_LP5_1:

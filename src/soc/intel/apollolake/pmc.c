@@ -15,7 +15,7 @@
 int pmc_soc_get_resources(struct pmc_resource_config *cfg)
 {
 	cfg->pwrmbase_offset = PCI_BASE_ADDRESS_0;
-	cfg->pwrmbase_addr = PMC_BAR0;
+	cfg->pwrmbase_addr = PCH_PWRM_BASE_ADDRESS;
 	cfg->pwrmbase_size = PMC_BAR0_SIZE;
 	cfg->abase_offset = PCI_BASE_ADDRESS_4;
 	cfg->abase_addr = ACPI_BASE_ADDRESS;

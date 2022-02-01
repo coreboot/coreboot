@@ -24,14 +24,14 @@
 
 #include "chip.h"
 
-static uintptr_t read_pmc_mmio_bar(void)
+uint8_t *pmc_mmio_regs(void)
 {
-	return PMC_BAR0;
+	return (void *)(uintptr_t)PCH_PWRM_BASE_ADDRESS;
 }
 
 uintptr_t soc_read_pmc_base(void)
 {
-	return read_pmc_mmio_bar();
+	return (uintptr_t)pmc_mmio_regs();
 }
 
 uint32_t *soc_pmc_etr_addr(void)
@@ -153,7 +153,7 @@ void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 
 void soc_fill_power_state(struct chipset_power_state *ps)
 {
-	uintptr_t pmc_bar0 = read_pmc_mmio_bar();
+	uintptr_t pmc_bar0 = soc_read_pmc_base();
 
 	ps->tco1_sts = tco_read_reg(TCO1_STS);
 	ps->tco2_sts = tco_read_reg(TCO2_STS);
@@ -200,7 +200,7 @@ int soc_get_rtc_failed(void)
 
 int vbnv_cmos_failed(void)
 {
-	uintptr_t pmc_bar = read_pmc_mmio_bar();
+	uintptr_t pmc_bar = soc_read_pmc_base();
 	uint32_t gen_pmcon1 = read32((void *)(pmc_bar + GEN_PMCON1));
 	int rtc_failure = rtc_failed(gen_pmcon1);
 

@@ -235,6 +235,9 @@ struct chipset_power_state {
 
 void pch_log_state(void);
 
+/* Get base address PMC memory mapped registers. */
+uint8_t *pmc_mmio_regs(void);
+
 /* STM Support */
 uint16_t get_pmbase(void);
 

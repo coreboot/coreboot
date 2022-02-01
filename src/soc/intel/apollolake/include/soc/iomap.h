@@ -25,7 +25,7 @@
 #define ACPI_PMIO_CST_REG	(ACPI_BASE_ADDRESS + 0x14)
 
 /* Accesses to these BARs are hardcoded in FSP */
-#define PMC_BAR0			0xfe042000
+#define PCH_PWRM_BASE_ADDRESS		0xfe042000
 #define PMC_BAR1			0xfe044000
 #define PMC_BAR0_SIZE			(8 * KiB)
 

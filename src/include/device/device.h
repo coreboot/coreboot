@@ -74,7 +74,6 @@ static inline void noop_read_resources(struct device *dev) {}
 static inline void noop_set_resources(struct device *dev) {}
 
 struct bus {
-
 	DEVTREE_CONST struct device *dev;	/* This bridge device */
 	DEVTREE_CONST struct device *children;	/* devices behind this bridge */
 	DEVTREE_CONST struct bus *next;    /* The next bridge on this device */

@@ -8,3 +8,9 @@ config SOC_AMD_COMMON_BLOCK_I2C_PAD_CTRL
 	help
 	  Select this option to add FCH I2C pad configuration functions to the
 	  build.
+
+config SOC_AMD_COMMON_BLOCK_I23C_PAD_CTRL
+	bool
+	help
+	  Select this option to add FCH I2C/I3C pad configuration functions to
+	  the build.

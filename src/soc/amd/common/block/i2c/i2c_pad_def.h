@@ -5,6 +5,8 @@
 
 #include <types.h>
 
+/* MISC_I2Cx_PAD_CTRL and MISC_I23Cx_PAD_CTRL are in the same place, but have different bit
+   definitions. Which one is present depends on the SoC. */
 #define MISC_I2C0_PAD_CTRL		0xd8
 #define MISC_I2C_PAD_CTRL(bus)		(MISC_I2C0_PAD_CTRL + 4 * (bus))
 

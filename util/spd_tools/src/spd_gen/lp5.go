@@ -57,6 +57,7 @@ type LP5SPDAttribTableEntry struct {
 
 type LP5Set struct {
 	SPDRevision    byte
+	busWidthEncoding  byte
 }
 
 /* ------------------------------------------------------------------------------------------ */
@@ -137,14 +138,6 @@ const (
 	 */
 	LP5SPDValueOptionalFeatures = 0x08
 
-	/*
-	 * For ADL (as per advisory #616599):
-	 * 7:5 (Number of system channels) = 000 (1 channel always)
-	 * 4:3 (Bus width extension) = 00 (no ECC)
-	 * 2:0 (Bus width) = 001 (x16 always)
-	 * Set to 0x01.
-	 */
-	LP5SPDValueBusWidth = 0x01
 
 	/*
 	 * From JEDEC spec:
@@ -191,9 +184,25 @@ var LP5PlatformSetMap = map[int][]int{
 var LP5SetInfo = map[int]LP5Set{
 	0: {
 		SPDRevision: LP5SPDValueRevision1_0,
+		/*
+		 * For ADL (as per advisory #616599):
+		 * 7:5 (Number of system channels) = 000 (1 channel always)
+		 * 4:3 (Bus width extension) = 00 (no ECC)
+		 * 2:0 (Bus width) = 001 (x16 always)
+		 * Set to 0x01.
+		 */
+		 busWidthEncoding: 0x01,
 	},
 	1: {
 		SPDRevision: LP5SPDValueRevision1_1,
+		/*
+		 * For Sabrina (as per advisory b/211510456):
+		 * 7:5 (Number of system channels) = 000 (1 channel always)
+		 * 4:3 (Bus width extension) = 00 (no ECC)
+		 * 2:0 (Bus width) = 010 (x32 always)
+		 * Set to 0x02.
+		 */
+		 busWidthEncoding: 0x02,
 	},
 }
 
@@ -306,7 +315,7 @@ var LP5SPDAttribTable = map[int]LP5SPDAttribTableEntry{
 	LP5SPDIndexPackageType:        {getVal: LP5EncodePackageType},
 	LP5SPDIndexOptionalFeatures:   {constVal: LP5SPDValueOptionalFeatures},
 	LP5SPDIndexModuleOrganization: {getVal: LP5EncodeModuleOrganization},
-	LP5SPDIndexBusWidth:           {constVal: LP5SPDValueBusWidth},
+	LP5SPDIndexBusWidth:           {getVal: LP5EncodeBusWidth},
 	LP5SPDIndexTimebases:          {constVal: LP5SPDValueTimebases},
 	LP5SPDIndexTCKMin:             {getVal: LP5EncodeTCKMin},
 	LP5SPDIndexTCKMinFineOffset:   {getVal: LP5EncodeTCKMinFineOffset},
@@ -407,6 +416,16 @@ func LP5EncodeModuleOrganization(memAttribs *LP5MemAttributes) byte {
 	b |= byte(memAttribs.RanksPerChannel-1) << 3
 
 	return b
+}
+
+func LP5EncodeBusWidth(memAttribs *LP5MemAttributes) byte {
+	f, ok := LP5SetInfo[LP5CurrSet]
+
+	if ok == false {
+		return 0
+	}
+
+	return f.busWidthEncoding
 }
 
 func LP5EncodeTCKMin(memAttribs *LP5MemAttributes) byte {

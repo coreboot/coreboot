@@ -6,6 +6,7 @@ smm-y += psp.c
 smm-y += psp_smm.c
 
 bootblock-y += psp_efs.c
+bootblock-$(CONFIG_AMD_SOC_SEPARATE_EFS_SECTION) += efs_fmap_check.c
 verstage-y += psp_efs.c
 
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_PSP

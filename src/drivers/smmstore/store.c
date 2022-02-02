@@ -169,7 +169,6 @@ static enum cb_err scan_end(struct region_device *store)
 		return CB_ERR;
 
 	return CB_SUCCESS;
-
 }
 /*
  * Append data to region

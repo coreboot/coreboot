@@ -110,7 +110,6 @@ static int crb_probe(void)
  */
 static uint8_t crb_activate_locality(void)
 {
-
 	uint8_t locality = (read8(CRB_REG(0, CRB_REG_LOC_STATE)) >> 2) & 0x07;
 	printk(BIOS_SPEW, "Active locality: %i\n", locality);
 
@@ -174,7 +173,6 @@ static int crb_switch_to_ready(void)
  */
 int tpm2_init(void)
 {
-
 	if (crb_probe()) {
 		printk(BIOS_ERR, "TPM: Probe failed.\n");
 		return -1;

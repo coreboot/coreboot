@@ -51,5 +51,4 @@ void fsp_print_header_info(const struct fsp_header *hdr)
 		printk(BIOS_SPEW, "\tNotify phase offset  0x%zx\n",
 		       (size_t)hdr->notify_phase_entry_offset);
 	}
-
 }

@@ -52,7 +52,6 @@ int tis_open(void)
 int tis_close(void)
 {
 	if (tpm_is_open) {
-
 		/*
 		 * Do we need to do something here, like waiting for a
 		 * transaction to stop?

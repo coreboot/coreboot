@@ -349,7 +349,6 @@ static AGESA_STATUS agesa_LocateBuffer(BIOS_HEAP_MANAGER *BiosHeapBasePtr,
 	AllocParams->BufferLength = AllocNodePtr->BufferSize;
 
 	return AGESA_SUCCESS;
-
 }
 
 AGESA_STATUS HeapManagerCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr)

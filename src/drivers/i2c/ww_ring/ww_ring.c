@@ -375,7 +375,6 @@ static void ww_ring_init(unsigned int i2c_bus)
 	for (i = 0, ledc = lp55231s;
 	     i < WW_RING_NUM_LED_CONTROLLERS;
 	     i++, ledc++) {
-
 		ledc->i2c_bus = i2c_bus;
 		ledc->dev_addr = LP55231_I2C_BASE_ADDR + i;
 

@@ -788,8 +788,8 @@ static void finetuneDQSI(struct ast_private *ast)
 	}
 	reg_mcr18 = reg_mcr18 | (g_dqidly << 16) | (g_dqsip << 23);
 	ast_moutdwm(ast, 0x1E6E0018, reg_mcr18);
-
 }
+
 static bool cbr_dll2(struct ast_private *ast, struct ast2300_dram_param *param)
 {
 	u32 dllmin[2], dllmax[2], dlli, data, passcnt, retry = 0;
@@ -1085,7 +1085,6 @@ static void get_ddr3_info(struct ast_private *ast, struct ast2300_dram_param *pa
 		param->dram_config |= 0x0c;
 		break;
 	}
-
 }
 
 static void ddr3_init(struct ast_private *ast, struct ast2300_dram_param *param)
@@ -1226,7 +1225,6 @@ ddr3_init_start:
 	ast_moutdwm(ast, 0x1E6E0050, 0x80000000);
 	ast_moutdwm(ast, 0x1E6E0050, 0x00000000);
 #endif
-
 }
 
 static void get_ddr2_info(struct ast_private *ast, struct ast2300_dram_param *param)
@@ -1617,7 +1615,6 @@ ddr2_init_start:
 	ast_moutdwm(ast, 0x1E6E0050, 0x80000000);
 	ast_moutdwm(ast, 0x1E6E0050, 0x00000000);
 #endif
-
 }
 
 static void ast_post_chip_2300(struct drm_device *dev)
@@ -1883,7 +1880,6 @@ static void reset_mmc_2500(struct ast_private *ast)
 
 static void ddr3_init_2500(struct ast_private *ast, const u32 *ddr_table)
 {
-
 	ast_moutdwm(ast, 0x1E6E0004, 0x00000303);
 	ast_moutdwm(ast, 0x1E6E0010, ddr_table[REGIDX_010]);
 	ast_moutdwm(ast, 0x1E6E0014, ddr_table[REGIDX_014]);

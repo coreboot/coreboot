@@ -19,7 +19,6 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 	 * with different TSEG size configurations. */
 	top_of_ram = ALIGN_DOWN((uintptr_t)cbmem_top(), 8*MiB);
 	postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 16*MiB, MTRR_TYPE_WRBACK);
-
 }
 
 /* This is the romstage entry called from cpu/intel/car/romstage.c */

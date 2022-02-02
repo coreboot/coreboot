@@ -346,7 +346,6 @@ static int recv_data(struct tpm_chip *chip, uint8_t *buf, size_t count)
 				  burstcnt);
 		if (rc == 0)
 			size += burstcnt;
-
 	}
 	return size;
 }

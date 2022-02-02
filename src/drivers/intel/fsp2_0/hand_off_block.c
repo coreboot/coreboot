@@ -134,7 +134,6 @@ struct hob_resource *find_resource_hob_by_guid(const struct hob_header *hob,
 
 	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST;
 		hob = fsp_next_hob(hob)) {
-
 		if (hob->type != HOB_TYPE_RESOURCE_DESCRIPTOR)
 			continue;
 
@@ -198,7 +197,6 @@ const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size)
 
 	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST;
 		hob = fsp_next_hob(hob)) {
-
 		if (hob->type != HOB_TYPE_GUID_EXTENSION)
 			continue;
 

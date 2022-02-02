@@ -159,7 +159,6 @@ static AGESA_STATUS romstage_dispatch(struct sysinfo *cb,
 		{
 			break;
 		}
-
 	}
 	return status;
 }
@@ -222,7 +221,6 @@ static AGESA_STATUS ramstage_dispatch(struct sysinfo *cb,
 		{
 			break;
 		}
-
 	}
 	return status;
 }

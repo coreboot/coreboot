@@ -571,5 +571,4 @@ void print_fru_areas(struct fru_info_str *fru_info_str)
 			printk(BIOS_DEBUG, "chassis custom data %i: %s\n", count,
 				*(chassis_info.chassis_custom + count));
 	}
-
 }

@@ -146,7 +146,6 @@ static bool ast_launch_m68k(struct drm_device *dev)
 
 	data = ast_mindwm(ast, 0x1e6e2100) & 0x01;
 	if (!data) {
-
 		if (ast->dp501_fw_addr) {
 			fw_addr = ast->dp501_fw_addr;
 			len = 32*1024;

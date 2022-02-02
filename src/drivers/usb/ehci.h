@@ -42,7 +42,6 @@ struct ehci_caps {
 
 /* Section 2.3 Host Controller Operational Registers */
 struct ehci_regs {
-
 	/* USBCMD: offset 0x00 */
 	u32		command;
 

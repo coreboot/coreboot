@@ -267,7 +267,6 @@ void set_boot_successful(void)
 		/* If we are in normal mode set the boot count to 0 */
 		if (byte & RTC_BOOT_NORMAL)
 			byte &= 0x0f;
-
 	}
 
 	outb(byte, RTC_PORT(1));

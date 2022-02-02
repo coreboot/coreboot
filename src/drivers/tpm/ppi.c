@@ -581,7 +581,6 @@ void tpm_ppi_acpi_fill_ssdt(const struct device *dev)
 				found = true;
 		}
 	} else {
-
 		for (size_t i = 0; i < ARRAY_SIZE(tpm2_funcs); i++) {
 			ppib->func[tpm2_funcs[i]] = 1;
 			if (ppib->pprq == tpm2_funcs[i])

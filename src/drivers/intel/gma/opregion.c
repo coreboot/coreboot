@@ -290,7 +290,6 @@ static inline bool uses_relative_vbt_addr(opregion_header_t *header)
 static void opregion_add_ext_vbt(igd_opregion_t *opregion, uint8_t *ext_vbt,
 				optionrom_vbt_t *vbt)
 {
-
 	opregion_header_t *header = &opregion->header;
 	/* Copy VBT into extended VBT region (at offset 8 KiB) */
 	memcpy(ext_vbt, vbt, vbt->hdr_vbt_size);

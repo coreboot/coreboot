@@ -26,7 +26,6 @@ static void ast_crtc_load_lut(struct drm_crtc *crtc)
 	/* FIXME: Gamma cor 2.6 ? */
 	for (int i = 0; i < 256; i++)
 		ast_load_palette_index(ast, i, i, i, i);
-
 }
 
 static bool ast_get_vbios_mode_info(struct drm_crtc *crtc, struct drm_display_mode *mode,

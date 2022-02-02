@@ -124,7 +124,6 @@ static void str2mac(const char *str, unsigned char *mac)
 	int acc = 0;
 
 	do {
-
 		c = str[i];
 		if ((c >= '0') && (c <= '9')) {
 			acc *= 16;

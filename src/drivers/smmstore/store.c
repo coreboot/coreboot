@@ -2,6 +2,7 @@
 
 #include <boot_device.h>
 #include <fmap.h>
+#include <fmap_config.h>
 #include <commonlib/helpers.h>
 #include <commonlib/region.h>
 #include <console/console.h>
@@ -9,6 +10,13 @@
 #include <types.h>
 
 #define SMMSTORE_REGION "SMMSTORE"
+
+
+_Static_assert(IS_ALIGNED(FMAP_SECTION_SMMSTORE_START, SMM_BLOCK_SIZE),
+	       "SMMSTORE FMAP region not aligned to 64K");
+
+_Static_assert(SMM_BLOCK_SIZE <= FMAP_SECTION_SMMSTORE_SIZE,
+	       "SMMSTORE FMAP region must be at least 64K");
 
 /*
  * The region format is still not finalized, but so far it looks like this:

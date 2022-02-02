@@ -14,10 +14,10 @@ chip soc/amd/sabrina
 	}"
 
 	# I2C Pad Control RX Select Configuration
-	register "i2c_pad[0].rx_level" = "I2C_PAD_RX_3_3V"
-	register "i2c_pad[1].rx_level" = "I2C_PAD_RX_3_3V"
-	register "i2c_pad[2].rx_level" = "I2C_PAD_RX_3_3V"
-	register "i2c_pad[3].rx_level" = "I2C_PAD_RX_3_3V"
+	register "i2c_pad[0].rx_level" = "I2C_PAD_RX_1_8V"
+	register "i2c_pad[1].rx_level" = "I2C_PAD_RX_1_8V"
+	register "i2c_pad[2].rx_level" = "I2C_PAD_RX_1_8V"
+	register "i2c_pad[3].rx_level" = "I2C_PAD_RX_1_8V"
 
 	register "s0ix_enable" = "true"
 

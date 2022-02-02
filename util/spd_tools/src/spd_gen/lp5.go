@@ -55,6 +55,10 @@ type LP5SPDAttribTableEntry struct {
 	getVal   LP5SPDAttribFunc
 }
 
+type LP5Set struct {
+	SPDRevision    byte
+}
+
 /* ------------------------------------------------------------------------------------------ */
 /*                                         Constants                                          */
 /* ------------------------------------------------------------------------------------------ */
@@ -100,9 +104,13 @@ const (
 	LP5SPDValueSize = 0x23
 
 	/*
-	 * Revision 1.0.
+	 * Revision 1.0. Expected by ADL
 	 */
-	LP5SPDValueRevision = 0x10
+	LP5SPDValueRevision1_0 = 0x10
+	/*
+	 * Revision 1.1. Expected by Sabrina
+	 */
+	LP5SPDValueRevision1_1 = 0x11
 
 	/*
 	 * As per advisory #616599, ADL MRC expects LPDDR5 memory type = 0x13.
@@ -177,6 +185,16 @@ const (
 
 var LP5PlatformSetMap = map[int][]int{
 	0: {PlatformADL},
+	1: {PlatformSBR},
+}
+
+var LP5SetInfo = map[int]LP5Set{
+	0: {
+		SPDRevision: LP5SPDValueRevision1_0,
+	},
+	1: {
+		SPDRevision: LP5SPDValueRevision1_1,
+	},
 }
 
 var LP5PartAttributeMap = map[string]LP5MemAttributes{}
@@ -280,7 +298,7 @@ var LP5SpeedMbpsToSPDEncoding = map[int]LP5SpeedParams{
 
 var LP5SPDAttribTable = map[int]LP5SPDAttribTableEntry{
 	LP5SPDIndexSize:               {constVal: LP5SPDValueSize},
-	LP5SPDIndexRevision:           {constVal: LP5SPDValueRevision},
+	LP5SPDIndexRevision:           {getVal: LP5EncodeSPDRevision},
 	LP5SPDIndexMemoryType:         {constVal: LP5SPDValueMemoryType},
 	LP5SPDIndexModuleType:         {constVal: LP5SPDValueModuleType},
 	LP5SPDIndexDensityBanks:       {getVal: LP5EncodeDensityBanks},
@@ -309,6 +327,15 @@ var LP5SPDAttribTable = map[int]LP5SPDAttribTableEntry{
 /* ------------------------------------------------------------------------------------------ */
 /*                                        Functions                                           */
 /* ------------------------------------------------------------------------------------------ */
+func LP5EncodeSPDRevision(memAttribs *LP5MemAttributes) byte {
+	f, ok := LP5SetInfo[LP5CurrSet]
+
+	if ok == false {
+		return 0
+	}
+
+	return f.SPDRevision
+}
 
 func LP5EncodeDensityBanks(memAttribs *LP5MemAttributes) byte {
 	var b byte

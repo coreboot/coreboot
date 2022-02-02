@@ -72,6 +72,7 @@ const (
 	PlatformJSL
 	PlatformPCO
 	PlatformCZN
+	PlatformSBR
 	PlatformMax
 )
 
@@ -90,6 +91,7 @@ var platformNames = map[int]string{
 	PlatformJSL: "JSL",
 	PlatformPCO: "PCO",
 	PlatformCZN: "CZN",
+	PlatformSBR: "SBR",
 }
 
 var memTechMap = map[string]memTech{

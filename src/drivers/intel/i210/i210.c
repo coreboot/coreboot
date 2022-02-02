@@ -203,7 +203,6 @@ static void init(struct device *dev)
 	} else {
 		printk(BIOS_INFO, "I210: MAC address is up to date.\n");
 	}
-	return;
 }
 
 static void enable_bus_master(struct device *dev)

@@ -231,6 +231,7 @@ static enum ich_chipset ifd2_platform_to_chipset(const int pindex)
 		return CHIPSET_300_SERIES_CANNON_POINT;
 	case PLATFORM_TGL:
 	case PLATFORM_ADL:
+	case PLATFORM_IFD2:
 		return CHIPSET_500_600_SERIES_TIGER_ALDER_POINT;
 	case PLATFORM_ICL:
 		return CHIPSET_400_SERIES_ICE_POINT;
@@ -260,6 +261,7 @@ static int is_platform_ifd_2(void)
 		PLATFORM_EHL,
 		PLATFORM_ADL,
 		PLATFORM_SKLKBL,
+		PLATFORM_IFD2,
 	};
 	unsigned int i;
 
@@ -1185,6 +1187,7 @@ static void lock_descriptor(const char *filename, char *image, int size)
 	case PLATFORM_JSL:
 	case PLATFORM_EHL:
 	case PLATFORM_ADL:
+	case PLATFORM_IFD2:
 		/* CPU/BIOS can read descriptor and BIOS. */
 		fmba->flmstr1 |= (1 << REGION_DESC) << rd_shift;
 		fmba->flmstr1 |= (1 << REGION_BIOS) << rd_shift;
@@ -1642,6 +1645,7 @@ static void print_usage(const char *name)
 	       "                                         ehl    - Elkhart Lake\n"
 	       "                                         glk    - Gemini Lake\n"
 	       "                                         icl    - Ice Lake\n"
+	       "                                         ifd2   - IFDv2 Platform\n"
 	       "                                         jsl    - Jasper Lake\n"
 	       "                                         sklkbl - Sky Lake/Kaby Lake\n"
 	       "                                         tgl    - Tiger Lake\n"
@@ -1909,6 +1913,8 @@ int main(int argc, char *argv[])
 				platform = PLATFORM_TGL;
 			} else if (!strcmp(optarg, "adl")) {
 				platform = PLATFORM_ADL;
+			} else if (!strcmp(optarg, "ifd2")) {
+				platform = PLATFORM_IFD2;
 			} else {
 				fprintf(stderr, "Unknown platform: %s\n", optarg);
 				exit(EXIT_FAILURE);

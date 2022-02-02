@@ -56,6 +56,21 @@ struct soc_i2c_peripheral_reset_info {
 	size_t num_pins;
 };
 
+enum i2c_pad_rx_level {
+	I2C_PAD_RX_NO_CHANGE,
+	I2C_PAD_RX_OFF,
+	I2C_PAD_RX_3_3V,
+	I2C_PAD_RX_1_8V,
+};
+
+struct i2c_pad_control {
+	enum i2c_pad_rx_level rx_level;
+};
+
+void fch_i2c_pad_init(unsigned int bus,
+		      enum i2c_speed speed,
+		      const struct i2c_pad_control *ctrl);
+
 /* Helper function to perform misc I2C configuration specific to SoC. */
 void soc_i2c_misc_init(unsigned int bus, const struct dw_i2c_bus_config *cfg);
 

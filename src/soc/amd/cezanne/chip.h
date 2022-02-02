@@ -4,6 +4,7 @@
 #define CEZANNE_CHIP_H
 
 #include <amdblocks/chip.h>
+#include <amdblocks/i2c.h>
 #include <gpio.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
@@ -15,7 +16,7 @@ struct soc_amd_cezanne_config {
 	struct soc_amd_common_config common_config;
 	u8 i2c_scl_reset;
 	struct dw_i2c_bus_config i2c[I2C_CTRLR_COUNT];
-	u8 i2c_pad_ctrl_rx_sel[I2C_CTRLR_COUNT];
+	struct i2c_pad_control i2c_pad[I2C_CTRLR_COUNT];
 
 	/* Enable S0iX support */
 	bool s0ix_enable;

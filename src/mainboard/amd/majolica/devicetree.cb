@@ -14,10 +14,10 @@ chip soc/amd/cezanne
 	}"
 
 	# I2C Pad Control RX Select Configuration
-	register "i2c_pad_ctrl_rx_sel[0]" = "I2C_PAD_CTRL_RX_SEL_3_3V"
-	register "i2c_pad_ctrl_rx_sel[1]" = "I2C_PAD_CTRL_RX_SEL_3_3V"
-	register "i2c_pad_ctrl_rx_sel[2]" = "I2C_PAD_CTRL_RX_SEL_3_3V"
-	register "i2c_pad_ctrl_rx_sel[3]" = "I2C_PAD_CTRL_RX_SEL_3_3V"
+	register "i2c_pad[0].rx_level" = "I2C_PAD_RX_3_3V"
+	register "i2c_pad[1].rx_level" = "I2C_PAD_RX_3_3V"
+	register "i2c_pad[2].rx_level" = "I2C_PAD_RX_3_3V"
+	register "i2c_pad[3].rx_level" = "I2C_PAD_RX_3_3V"
 
 	register "s0ix_enable" = "true"
 

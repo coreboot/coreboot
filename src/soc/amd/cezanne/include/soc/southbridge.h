@@ -112,33 +112,6 @@
 #define MISC_CLK_CNTL0			0x40 /* named MISC_CLK_CNTL1 on Picasso */
 #define   BP_X48M0_S0I3_DIS		BIT(4)
 #define   BP_X48M0_OUTPUT_EN		BIT(2) /* 1=En, unlike Hudson, Kern */
-#define MISC_I2C0_PAD_CTRL		0xd8
-#define MISC_I2C1_PAD_CTRL		0xdc
-#define MISC_I2C2_PAD_CTRL		0xe0
-#define MISC_I2C3_PAD_CTRL		0xe4
-#define MISC_I2C_PAD_CTRL(bus)		(MISC_I2C0_PAD_CTRL + 4 * (bus))
-#define   I2C_PAD_CTRL_NG_MASK		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
-#define     I2C_PAD_CTRL_NG_NORMAL	0xc
-#define   I2C_PAD_CTRL_RX_SEL_MASK	(BIT(4) | BIT(5))
-#define     I2C_PAD_CTRL_RX_SHIFT	4
-#define     I2C_PAD_CTRL_RX_SEL_OFF	(0 << I2C_PAD_CTRL_RX_SHIFT)
-#define     I2C_PAD_CTRL_RX_SEL_3_3V	(1 << I2C_PAD_CTRL_RX_SHIFT)
-#define     I2C_PAD_CTRL_RX_SEL_1_8V	(3 << I2C_PAD_CTRL_RX_SHIFT)
-#define   I2C_PAD_CTRL_PULLDOWN_EN	BIT(6)
-#define   I2C_PAD_CTRL_FALLSLEW_MASK	(BIT(7) | BIT(8))
-#define     I2C_PAD_CTRL_FALLSLEW_SHIFT	7
-#define     I2C_PAD_CTRL_FALLSLEW_STD	(0 << I2C_PAD_CTRL_FALLSLEW_SHIFT)
-#define     I2C_PAD_CTRL_FALLSLEW_LOW	(1 << I2C_PAD_CTRL_FALLSLEW_SHIFT)
-#define   I2C_PAD_CTRL_FALLSLEW_EN	BIT(9)
-#define   I2C_PAD_CTRL_SPIKE_RC_EN	BIT(10)
-#define   I2C_PAD_CTRL_SPIKE_RC_SEL	BIT(11) /* 0 = 50ns, 1 = 20ns */
-#define   I2C_PAD_CTRL_CAP_DOWN		BIT(12)
-#define   I2C_PAD_CTRL_CAP_UP		BIT(13)
-#define   I2C_PAD_CTRL_RES_DOWN		BIT(14)
-#define   I2C_PAD_CTRL_RES_UP		BIT(15)
-#define   I2C_PAD_CTRL_BIAS_CRT_EN	BIT(16)
-#define   I2C_PAD_CTRL_SPARE0		BIT(17)
-#define   I2C_PAD_CTRL_SPARE1		BIT(18)
 
 void fch_pre_init(void);
 void fch_early_init(void);

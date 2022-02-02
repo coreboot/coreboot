@@ -89,7 +89,6 @@ static void configure_misc(void)
 	msr = rdmsr(IA32_PECI_CTL);
 	msr.lo |= 1;
 	wrmsr(IA32_PECI_CTL, msr);
-
 }
 
 #define PIC_SENS_CFG	0x1aa

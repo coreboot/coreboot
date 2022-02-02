@@ -244,7 +244,6 @@ int read_l2(u32 address)
 	/* If OK then get the result from BBL_CR_ADDR */
 	msr = rdmsr(BBL_CR_ADDR);
 	return (msr.lo >> 0x15);
-
 }
 
 /* Write data into the L2 controller register at address */
@@ -270,7 +269,6 @@ int write_l2(u32 address, u32 data)
 	 */
 
 	for (i = 0; i < v2; i++) {
-
 		u32 data1, data2;
 		// Bits legend
 		// data1   = ffffffff
@@ -352,7 +350,6 @@ int calculate_l2_cache_size(void)
 		 */
 		for (cache_setting = BBLCR3_L2_SIZE_256K;
 		     cache_setting <= BBLCR3_L2_SIZE_4M; cache_setting <<= 1) {
-
 			eax = bblcr3 | cache_setting;
 			msr.lo = eax;
 			wrmsr(BBL_CR_CTL3, msr);
@@ -726,7 +723,6 @@ int p6_configure_l2_cache(void)
 	/* Write to all cache lines to initialize */
 
 	while (cache_size > 0) {
-
 		/* Each cache line is 32 bytes. */
 		cache_size -= 32;
 

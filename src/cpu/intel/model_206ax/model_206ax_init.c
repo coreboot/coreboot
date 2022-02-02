@@ -324,7 +324,6 @@ static void model_206ax_report(void)
 
 static void model_206ax_init(struct device *cpu)
 {
-
 	/* Clear out pending MCEs */
 	/* This should only be done on a cold boot */
 	mca_clear_status();

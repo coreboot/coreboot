@@ -343,7 +343,6 @@ static void commit_fixed_mtrrs(void)
 		wrmsr(msr_index[i], fixed_msrs[i]);
 	enable_cache();
 	fixed_mtrrs_hide_amd_rwdram();
-
 }
 
 void x86_setup_fixed_mtrrs_no_enable(void)

@@ -334,7 +334,6 @@ static void start_other_cpus(struct bus *cpu_bus, struct device *bsp_cpu)
 
 		udelay(10);
 	}
-
 }
 
 static void wait_other_cpus_stop(struct bus *cpu_bus)

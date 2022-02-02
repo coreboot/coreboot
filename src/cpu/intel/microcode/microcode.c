@@ -217,7 +217,6 @@ static const void *find_cbfs_microcode(void)
 			struct ext_sig_entry *entry = (struct ext_sig_entry *)(ext_tbl + 1);
 
 			for (i = 0; i < ext_tbl->ext_sig_cnt; i++, entry++) {
-
 				if ((sig == entry->sig) && (pf & entry->pf)) {
 					return ucode_updates;
 				}

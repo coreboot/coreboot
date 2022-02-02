@@ -116,6 +116,7 @@
 #define MISC_I2C1_PAD_CTRL		0xdc
 #define MISC_I2C2_PAD_CTRL		0xe0
 #define MISC_I2C3_PAD_CTRL		0xe4
+#define MISC_I2C_PAD_CTRL(bus)		(MISC_I2C0_PAD_CTRL + 4 * (bus))
 #define   I2C_PAD_CTRL_NG_MASK		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
 #define     I2C_PAD_CTRL_NG_NORMAL	0xc
 #define   I2C_PAD_CTRL_RX_SEL_MASK	(BIT(4) | BIT(5))

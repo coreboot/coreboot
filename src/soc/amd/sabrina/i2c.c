@@ -39,13 +39,11 @@ void soc_i2c_misc_init(unsigned int bus, const struct dw_i2c_bus_config *cfg)
 {
 	const struct soc_amd_sabrina_config *config = config_of_soc();
 	uint32_t pad_ctrl;
-	int misc_reg;
 
 	if (bus >= ARRAY_SIZE(config->i2c_pad_ctrl_rx_sel))
 		return;
 
-	misc_reg = MISC_I2C0_PAD_CTRL + sizeof(uint32_t) * bus;
-	pad_ctrl = misc_read32(misc_reg);
+	pad_ctrl = misc_read32(MISC_I2C_PAD_CTRL(bus));
 
 	pad_ctrl &= ~I2C_PAD_CTRL_NG_MASK;
 	pad_ctrl |= I2C_PAD_CTRL_NG_NORMAL;
@@ -57,7 +55,7 @@ void soc_i2c_misc_init(unsigned int bus, const struct dw_i2c_bus_config *cfg)
 	pad_ctrl |= cfg->speed == I2C_SPEED_STANDARD ?
 		I2C_PAD_CTRL_FALLSLEW_STD : I2C_PAD_CTRL_FALLSLEW_LOW;
 	pad_ctrl |= I2C_PAD_CTRL_FALLSLEW_EN;
-	misc_write32(misc_reg, pad_ctrl);
+	misc_write32(MISC_I2C_PAD_CTRL(bus), pad_ctrl);
 }
 
 const struct soc_i2c_ctrlr_info *soc_get_i2c_ctrlr_info(size_t *num_ctrlrs)

@@ -1775,7 +1775,6 @@ int google_chromeec_regulator_enable(uint32_t index, uint8_t enable)
 
 int google_chromeec_regulator_is_enabled(uint32_t index, uint8_t *enabled)
 {
-
 	struct ec_params_regulator_is_enabled params = {
 		.index = index,
 	};

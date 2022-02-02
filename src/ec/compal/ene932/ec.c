@@ -113,7 +113,6 @@ static void ene932_init(struct device *dev)
 
 	printk(BIOS_DEBUG, "Compal ENE932: Initializing keyboard.\n");
 	pc_keyboard_init(NO_AUX_DEVICE);
-
 }
 
 static struct device_operations ops = {

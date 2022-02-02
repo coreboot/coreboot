@@ -18,7 +18,6 @@ void h8_trackpoint_enable(int on)
 {
 	ec_write(H8_TRACKPOINT_CTRL,
 		 on ? H8_TRACKPOINT_ON : H8_TRACKPOINT_OFF);
-
 }
 
 /* Controls radio-off pin in WLAN MiniPCIe slot.  */
@@ -119,7 +118,6 @@ void h8_disable_event(int event)
 		return;
 
 	ec_clr_bit(0x10 + (event >> 3), event & 7);
-
 }
 
 void h8_usb_always_on_enable(enum usb_always_on on)

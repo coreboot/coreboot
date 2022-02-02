@@ -4,7 +4,6 @@
 #define EC_LENOVO_H8EC_CHIP_H
 
 struct ec_lenovo_h8_config {
-
 	u8 config0;
 	u8 config1;
 	u8 config2;

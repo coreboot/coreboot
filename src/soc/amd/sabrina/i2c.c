@@ -35,8 +35,6 @@ void i2c_set_bar(unsigned int bus, uintptr_t bar)
 }
 #endif
 
-__weak void mainboard_i2c_override(int bus, uint32_t *pad_settings) { }
-
 void soc_i2c_misc_init(unsigned int bus, const struct dw_i2c_bus_config *cfg)
 {
 	const struct soc_amd_sabrina_config *config = config_of_soc();
@@ -59,8 +57,6 @@ void soc_i2c_misc_init(unsigned int bus, const struct dw_i2c_bus_config *cfg)
 	pad_ctrl |= cfg->speed == I2C_SPEED_STANDARD ?
 		I2C_PAD_CTRL_FALLSLEW_STD : I2C_PAD_CTRL_FALLSLEW_LOW;
 	pad_ctrl |= I2C_PAD_CTRL_FALLSLEW_EN;
-
-	mainboard_i2c_override(bus, &pad_ctrl);
 	misc_write32(misc_reg, pad_ctrl);
 }
 

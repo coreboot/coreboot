@@ -38,8 +38,6 @@ void i2c_set_bar(unsigned int bus, uintptr_t bar)
 }
 #endif
 
-__weak void mainboard_i2c_override(int bus, uint32_t *pad_settings) { }
-
 void soc_i2c_misc_init(unsigned int bus, const struct dw_i2c_bus_config *cfg)
 {
 	uint32_t pad_ctrl;
@@ -59,7 +57,6 @@ void soc_i2c_misc_init(unsigned int bus, const struct dw_i2c_bus_config *cfg)
 		I2C_PAD_CTRL_FALLSLEW_STD : I2C_PAD_CTRL_FALLSLEW_LOW;
 	pad_ctrl |= I2C_PAD_CTRL_FALLSLEW_EN;
 
-	mainboard_i2c_override(bus, &pad_ctrl);
 	misc_write32(misc_reg, pad_ctrl);
 }
 

@@ -1,6 +1,50 @@
+fw_config
+	field AUDIO 8 10
+		option NONE 0
+		option ADL_MAX98373_ALC5682I_I2S 1
+	end
+end
+
 chip soc/intel/alderlake
 
 	device domain 0 on
+		device ref i2c0 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq" = "ACPI_IRQ_EDGE_HIGH(GPP_H3_IRQ)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+					probe AUDIO ADL_MAX98373_ALC5682I_I2S
+				end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "0"
+				register "imon_slot_no" = "1"
+				register "uid" = "0"
+				register "desc" = ""Right Speaker Amp""
+				register "name" = ""MAXR""
+				device i2c 31 on
+					probe AUDIO ADL_MAX98373_ALC5682I_I2S
+				end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "2"
+				register "imon_slot_no" = "3"
+				register "uid" = "1"
+				register "desc" = ""Left Speaker Amp""
+				register "name" = ""MAXL""
+				device i2c 32 on
+					probe AUDIO ADL_MAX98373_ALC5682I_I2S
+				end
+			end
+		end
+
 		device ref pch_espi on
 			chip ec/google/chromeec
 				use conn0 as mux_conn[0]

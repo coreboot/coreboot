@@ -52,7 +52,6 @@ const static struct irq_idx_name irq_association[] = {
 	{ PIRQ_GPIOA,	"GPIOa" },
 	{ PIRQ_GPIOB,	"GPIOb" },
 	{ PIRQ_GPIOC,	"GPIOc" },
-	{ PIRQ_SATA,	"SATA" },
 	{ PIRQ_EMMC,	"eMMC" },
 	{ PIRQ_GPP0,	"GPP0" },
 	{ PIRQ_GPP1,	"GPP1" },

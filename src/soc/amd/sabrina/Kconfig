@@ -45,7 +45,7 @@ config SOC_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_ACPI_ALIB	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI_GPIO	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI_IVRS	# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_AOAC	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_AOAC
 	select SOC_AMD_COMMON_BLOCK_APOB	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_BANKED_GPIOS	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_DATA_FABRIC	# TODO: Check if this is still correct

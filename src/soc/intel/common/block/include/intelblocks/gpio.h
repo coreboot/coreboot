@@ -260,12 +260,6 @@ int gpio_lock_pads(const struct gpio_lock_config *pad_list, const size_t count);
 const struct gpio_lock_config *soc_gpio_lock_config(size_t *num);
 
 /*
- * Returns an array of gpio_lock_config entries that the mainboard
- * deems security risks that should be locked down.
- */
-const struct gpio_lock_config *mb_gpio_lock_config(size_t *num);
-
-/*
  * Returns the pmc_gpe to gpio_gpe mapping table
  *
  */

@@ -4,11 +4,13 @@
 #include <console/console.h>
 #include <console/cbmem_console.h>
 #include <console/streams.h>
+#include <console/uart.h>
 #include <stdarg.h>
 
 void console_hw_init(void)
 {
 	__cbmemc_init();
+	__uart_init();
 }
 
 int printk(int msg_level, const char *fmt, ...)
@@ -33,8 +35,13 @@ int vprintk(int msg_level, const char *fmt, va_list args)
 		return 0;
 
 	cnt = vsnprintf(buf, sizeof(buf), fmt, args);
-	for (i = 0; i < cnt; i++)
+	for (i = 0; i < cnt; i++) {
 		__cbmemc_tx_byte(buf[i]);
+
+		if (buf[i] == '\n')
+			__uart_tx_byte('\r');
+		__uart_tx_byte(buf[i]);
+	}
 	svc_debug_print(buf);
 	return i;
 }

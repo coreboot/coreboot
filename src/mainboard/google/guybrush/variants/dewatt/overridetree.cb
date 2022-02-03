@@ -4,6 +4,14 @@ chip soc/amd/cezanne
 	device domain 0 on
 		device ref gpp_bridge_1 off end # no SD
 		device ref gpp_bridge_2 off end # no WWAN
+		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
+			device ref acp on
+				chip drivers/amd/i2s_machine_dev
+					register "hid" = ""AMDI5619""
+					device generic 0.0 on end
+				end
+			end # Audio
+		end
 	end # domain
 
 	register "slow_ppt_limit_mW"         = "25000"

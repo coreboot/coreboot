@@ -10,10 +10,14 @@
 #include <wrdd.h>
 
 #include "chip.h"
+#include "wifi.h"
 #include "wifi_private.h"
 
 /* WIFI Domain type */
 #define DOMAIN_TYPE_WIFI 0x7
+
+/* Maximum number DSM UUID bifurcations in _DSM */
+#define MAX_DSM_FUNCS 2
 
 /*
  * WIFI ACPI NAME = "WF" + hex value of last 8 bits of dev_path_encode + '\0'
@@ -28,6 +32,9 @@
 
 /* ID for the Wifi DmaProperty _DSD */
 #define ACPI_DSD_DMA_PROPERTY_UUID	  "70D24161-6DD5-4C9E-8070-705531292865"
+
+/* Unique ID for CnviDdrRfim entry in WIFI _DSM */
+#define ACPI_DSM_RFIM_WIFI_UUID   "7266172C-220B-4B29-814F-75E4DD26B5FD"
 
 __weak int get_wifi_sar_limits(union wifi_sar_limits *sar_limits)
 {
@@ -145,6 +152,12 @@ static void wifi_dsm_unii4_control_enable(void *args)
 	acpigen_write_return_integer(dsm_config->unii_4);
 }
 
+static void wifi_dsm_ddrrfim_func3_cb(void *ptr)
+{
+	const bool is_cnvi_ddr_rfim_enabled = *(bool *)ptr;
+	acpigen_write_return_integer(is_cnvi_ddr_rfim_enabled ? 1 : 0);
+}
+
 static void (*wifi_dsm_callbacks[])(void *) = {
 	NULL,					/* Function 0 */
 	wifi_dsm_srd_active_channels,		/* Function 1 */
@@ -154,6 +167,17 @@ static void (*wifi_dsm_callbacks[])(void *) = {
 	wifi_dsm_uart_configurations,		/* Function 5 */
 	wifi_dsm_ukrane_russia_11ax_enable,	/* Function 6 */
 	wifi_dsm_unii4_control_enable,		/* Function 7 */
+};
+
+/*
+ * The current DSM2 table is only exporting one function (function 3), some more
+ * functions are reserved so marking them NULL.
+*/
+static void (*wifi_dsm2_callbacks[])(void *) = {
+	NULL,				/* Function 0 */
+	NULL,				/* Function 1 */
+	NULL,				/* Function 2 */
+	wifi_dsm_ddrrfim_func3_cb,	/* Function 3 */
 };
 
 void wifi_emit_dsm(struct dsm_profile *dsm)
@@ -462,9 +486,9 @@ static void sar_emit_wtas(struct avg_profile *wtas)
 	acpigen_write_package_end();
 }
 
-static void emit_sar_acpi_structures(const struct device *dev)
+static void emit_sar_acpi_structures(const struct device *dev, struct dsm_profile *dsm)
 {
-	union wifi_sar_limits sar_limits;
+	union wifi_sar_limits sar_limits = {{NULL, NULL, NULL, NULL, NULL} };
 
 	/*
 	 * If device type is PCI, ensure that the device has Intel vendor ID. CBFS SAR and SAR
@@ -484,7 +508,10 @@ static void emit_sar_acpi_structures(const struct device *dev)
 	sar_emit_wgds(sar_limits.wgds);
 	sar_emit_ppag(sar_limits.ppag);
 	sar_emit_wtas(sar_limits.wtas);
-	wifi_emit_dsm(sar_limits.dsm);
+
+	/* copy the dsm data to be later used for creating _DSM function */
+	if (sar_limits.dsm != NULL)
+		memcpy(dsm, &sar_limits.dsm, sizeof(struct dsm_profile));
 
 	free(sar_limits.sar);
 }
@@ -506,11 +533,16 @@ static void wifi_ssdt_write_device(const struct device *dev, const char *path)
 
 static void wifi_ssdt_write_properties(const struct device *dev, const char *scope)
 {
+	bool is_cnvi_ddr_rfim_enabled = false;
+
+	const struct drivers_wifi_generic_config *config = dev->chip_info;
+	if (dev && config)
+		is_cnvi_ddr_rfim_enabled = config->enable_cnvi_ddr_rfim;
+
 	/* Scope */
 	acpigen_write_scope(scope);
 
 	if (dev->path.type == DEVICE_PATH_GENERIC) {
-		const struct drivers_wifi_generic_config *config = dev->chip_info;
 		if (config) {
 			/* Wake capabilities */
 			acpigen_write_PRW(config->wake, ACPI_S3);
@@ -549,9 +581,37 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 		acpigen_pop_len();
 	}
 
+	struct dsm_uuid dsm_ids[MAX_DSM_FUNCS];
+	/* We will need a copy dsm data to be used later for creating _DSM function */
+	struct dsm_profile dsm = {0};
+	uint8_t dsm_count = 0;
+
 	/* Fill Wifi sar related ACPI structures */
-	if (CONFIG(USE_SAR))
-		emit_sar_acpi_structures(dev);
+	if (CONFIG(USE_SAR)) {
+		emit_sar_acpi_structures(dev, &dsm);
+
+		if (dsm.supported_functions != 0) {
+			for (int i = 1; i < ARRAY_SIZE(wifi_dsm_callbacks); i++)
+				if (!(dsm.supported_functions & (1 << i)))
+					wifi_dsm_callbacks[i] = NULL;
+
+			dsm_ids[dsm_count].uuid = ACPI_DSM_OEM_WIFI_UUID;
+			dsm_ids[dsm_count].callbacks = &wifi_dsm_callbacks[0];
+			dsm_ids[dsm_count].count = ARRAY_SIZE(wifi_dsm_callbacks);
+			dsm_ids[dsm_count].arg = NULL;
+			dsm_count++;
+		}
+	}
+
+	if (is_cnvi_ddr_rfim_enabled) {
+		dsm_ids[dsm_count].uuid = ACPI_DSM_RFIM_WIFI_UUID;
+		dsm_ids[dsm_count].callbacks = &wifi_dsm2_callbacks[0];
+		dsm_ids[dsm_count].count = ARRAY_SIZE(wifi_dsm2_callbacks);
+		dsm_ids[dsm_count].arg = &is_cnvi_ddr_rfim_enabled;
+		dsm_count++;
+	}
+
+	acpigen_write_dsm_uuid_arr(dsm_ids, dsm_count);
 
 	acpigen_pop_len(); /* Scope */
 

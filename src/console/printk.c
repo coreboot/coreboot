@@ -59,37 +59,43 @@ void do_putchar(unsigned char byte)
 	console_time_stop();
 }
 
+union log_state {
+	void *as_ptr;
+	struct {
+		uint8_t level;
+		uint8_t speed;
+	};
+};
+
 static void wrap_putchar(unsigned char byte, void *data)
 {
-	console_tx_byte(byte);
-}
+	union log_state state = { .as_ptr = data };
 
-static void wrap_putchar_cbmemc(unsigned char byte, void *data)
-{
-	__cbmemc_tx_byte(byte);
+	if (state.speed == CONSOLE_LOG_FAST)
+		__cbmemc_tx_byte(byte);
+	else
+		console_tx_byte(byte);
 }
 
 int vprintk(int msg_level, const char *fmt, va_list args)
 {
-	int i, log_this;
+	union log_state state = { .level = msg_level };
+	int i;
 
 	if (CONFIG(SQUELCH_EARLY_SMP) && ENV_ROMSTAGE_OR_BEFORE && !boot_cpu())
 		return 0;
 
-	log_this = console_log_level(msg_level);
-	if (log_this < CONSOLE_LOG_FAST)
+	state.speed = console_log_level(msg_level);
+	if (state.speed < CONSOLE_LOG_FAST)
 		return 0;
 
 	spin_lock(&console_lock);
 
 	console_time_run();
 
-	if (log_this == CONSOLE_LOG_FAST) {
-		i = vtxprintf(wrap_putchar_cbmemc, fmt, args, NULL);
-	} else {
-		i = vtxprintf(wrap_putchar, fmt, args, NULL);
+	i = vtxprintf(wrap_putchar, fmt, args, state.as_ptr);
+	if (state.speed != CONSOLE_LOG_FAST)
 		console_tx_flush();
-	}
 
 	console_time_stop();
 

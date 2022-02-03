@@ -43,7 +43,7 @@ struct freq {
 enum {
 	CONTROL_MASTER_MODE		= (1 << 0),
 	CONTROL_SPEED_SS		= (1 << 1),
-	CONTROL_SPEED_FS		= (1 << 2),
+	CONTROL_SPEED_FS		= (2 << 1),
 	CONTROL_SPEED_HS		= (3 << 1),
 	CONTROL_SPEED_MASK		= (3 << 1),
 	CONTROL_10BIT_SLAVE		= (1 << 3),

@@ -48,7 +48,7 @@ config SOC_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_AOAC
 	select SOC_AMD_COMMON_BLOCK_APOB	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_BANKED_GPIOS	# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_DATA_FABRIC	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_DATA_FABRIC
 	select SOC_AMD_COMMON_BLOCK_GRAPHICS	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_HAS_ESPI	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_I2C

@@ -166,6 +166,10 @@ chip soc/intel/alderlake
 				.clk_req = 5,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
+			chip drivers/pcie/generic
+				register "is_untrusted" = "1"
+				device pci 0 on end
+			end
 		end	#PCIE6 WWAN
 		device ref pcie_rp8 on
 			# Enable SD Card PCIE 8 using clk 3

@@ -41,7 +41,7 @@ config SOC_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON
 	select SOC_AMD_COMMON_BLOCK_ACP		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI	# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_ACPIMMIO	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_ACPIMMIO
 	select SOC_AMD_COMMON_BLOCK_ACPI_ALIB	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI_GPIO	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI_IVRS	# TODO: Check if this is still correct

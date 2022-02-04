@@ -18,8 +18,7 @@ static uint64_t reg_read(struct reg_script_context *ctx)
 	step = ctx->step;
 	switch (step->id) {
 	default:
-		printk(BIOS_ERR,
-			"ERROR - Unknown register set (0x%08x)!\n",
+		printk(BIOS_ERR, "Unknown register set (0x%08x)!\n",
 			step->id);
 		ctx->display_features = REG_SCRIPT_DISPLAY_NOTHING;
 		break;
@@ -48,8 +47,7 @@ static void reg_write(struct reg_script_context *ctx)
 	step = ctx->step;
 	switch (step->id) {
 	default:
-		printk(BIOS_ERR,
-			"ERROR - Unknown register set (0x%08x)!\n",
+		printk(BIOS_ERR, "Unknown register set (0x%08x)!\n",
 			step->id);
 		ctx->display_features = REG_SCRIPT_DISPLAY_NOTHING;
 		break;

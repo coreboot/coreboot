@@ -61,11 +61,26 @@ extract_partition()
 	ROOTP=$( printf "unit\nB\nprint\nquit\n" | \
 		 parted $FILE 2>/dev/null | grep $NAME )
 
-	START=$(( $( echo $ROOTP | cut -f2 -d\ | tr -d "B" ) ))
-	SIZE=$(( $( echo $ROOTP | cut -f4 -d\ | tr -d "B" ) ))
+	if [ "$ROOTP" == "" ]; then
+		# Automatic extraction failed, likely due to parted detecting
+		# overlapping partitions. Fall back to using fdisk and assume
+		# ROOT-A is partition #3
+		echo "(Extracting via parted failed; falling back to fdisk)"
+		_ssize=$(printf "p q" | fdisk $FILE | grep "Sector size" | \
+			cut -f2 -d: | cut -f2 -d ' ')
+		_start=$(printf "p q" | fdisk $FILE | grep "bin3" | tr -s ' ' | \
+			cut -f2 -d ' ')
+		_nsec=$(printf "p q" | fdisk $FILE | grep "bin3" | tr -s ' ' | \
+			cut -f4 -d ' ')
+		START=$(($_ssize * $_start))
+		SIZE=$(($_ssize * $_nsec))
+	else
+		START=$(( $( echo $ROOTP | cut -f2 -d\ | tr -d "B" ) ))
+		SIZE=$(( $( echo $ROOTP | cut -f4 -d\ | tr -d "B" ) ))
+	fi
 
 	dd if=$FILE of=$ROOTFS bs=$_bs skip=$(( $START / $_bs )) \
-		count=$(( $SIZE / $_bs ))  > /dev/null
+		count=$(( $SIZE / $_bs ))  > /dev/null 2>&1
 }
 
 extract_shellball()

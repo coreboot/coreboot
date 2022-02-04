@@ -39,7 +39,7 @@ static void early_ec_init(void)
 		ec_ioport_base, ec_ioport_size);
 	status = lpc_set_wideio_range(ec_ioport_base, ec_ioport_size);
 	if (status == WIDEIO_RANGE_ERROR)
-		printk(BIOS_WARNING, "ERROR: Failed to assign a range\n");
+		printk(BIOS_ERR, "Failed to assign a range\n");
 	else
 		printk(BIOS_DEBUG, "Range assigned to wide IO %d\n", status);
 }

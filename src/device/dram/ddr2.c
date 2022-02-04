@@ -322,13 +322,13 @@ int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	printram("SPD contains 0x%02x bytes\n", spd_size);
 
 	if (spd_size < 64 || eeprom_size < 64) {
-		printk(BIOS_WARNING, "ERROR: SPD to small\n");
+		printk(BIOS_ERR, "SPD too small\n");
 		dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
 		return SPD_STATUS_INVALID;
 	}
 
 	if (spd_ddr2_calc_checksum(spd, spd_size) != spd[63]) {
-		printk(BIOS_WARNING, "ERROR: SPD checksum error\n");
+		printk(BIOS_ERR, "SPD checksum error\n");
 		dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
 		return SPD_STATUS_CRC_ERROR;
 	}
@@ -336,8 +336,7 @@ int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 
 	reg8 = spd[62];
 	if ((reg8 & 0xf0) != 0x10) {
-		printk(BIOS_WARNING,
-			"ERROR: Unsupported SPD revision %01x.%01x\n",
+		printk(BIOS_ERR, "Unsupported SPD revision %01x.%01x\n",
 			reg8 >> 4, reg8 & 0xf);
 		dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
 		return SPD_STATUS_INVALID;
@@ -348,7 +347,7 @@ int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	reg8 = spd[2];
 	printram("  Type               : 0x%02x\n", reg8);
 	if (reg8 != 0x08) {
-		printk(BIOS_WARNING, "ERROR: Unsupported SPD type %x\n", reg8);
+		printk(BIOS_ERR, "Unsupported SPD type %x\n", reg8);
 		dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
 		return SPD_STATUS_INVALID;
 	}

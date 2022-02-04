@@ -21,14 +21,9 @@ static void iommu_read_resources(struct device *dev)
 	res->flags = IORESOURCE_MEM;
 }
 
-static void iommu_set_resources(struct device *dev)
-{
-	pci_dev_set_resources(dev);
-}
-
 static struct device_operations iommu_ops = {
 	.read_resources = iommu_read_resources,
-	.set_resources = iommu_set_resources,
+	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.ops_pci = &pci_dev_ops_pci,
 };

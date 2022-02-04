@@ -30,11 +30,11 @@
 #define   UART8250_FCR_CLEAR_RCVR	BIT(1) /* Clear the RCVR FIFO */
 #define   UART8250_FCR_CLEAR_XMIT	BIT(2) /* Clear the XMIT FIFO */
 #define   UART8250_FCR_DMA_SELECT	BIT(3) /* For DMA applications */
-#define   UART8250_FCR_TRIGGER_MASK	0xC0 /* Mask for the FIFO trigger range */
-#define   UART8250_FCR_TRIGGER_1	0x00 /* Mask for trigger set at 1 */
-#define   UART8250_FCR_TRIGGER_4	0x40 /* Mask for trigger set at 4 */
-#define   UART8250_FCR_TRIGGER_8	0x80 /* Mask for trigger set at 8 */
-#define   UART8250_FCR_TRIGGER_14	0xC0 /* Mask for trigger set at 14 */
+#define   UART8250_FCR_TRIGGER_MASK	(3 << 6) /* Mask for the FIFO trigger range */
+#define   UART8250_FCR_TRIGGER_1	(0 << 6) /* Mask for trigger set at 1 */
+#define   UART8250_FCR_TRIGGER_4	(1 << 6) /* Mask for trigger set at 4 */
+#define   UART8250_FCR_TRIGGER_8	(2 << 6) /* Mask for trigger set at 8 */
+#define   UART8250_FCR_TRIGGER_14	(3 << 6) /* Mask for trigger set at 14 */
 
 #define UART8250_LCR 0x03
 #define   UART8250_LCR_WLS_MSK	0x03 /* character length select mask */

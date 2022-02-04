@@ -1,6 +1,8 @@
 
 ifeq ($(CONFIG_DRIVERS_WIFI_GENERIC),y)
 
+romstage-y += generic.c
+
 ramstage-y += generic.c
 ramstage-$(CONFIG_GENERATE_SMBIOS_TABLES) += smbios.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c

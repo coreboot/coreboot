@@ -45,9 +45,6 @@ chip soc/intel/alderlake
 
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 
-	# Enable CNVi DDR RFIM
-	register "CnviDdrRfim" = "1"
-
 	# FIVR configurations for brya are disabled since the board doesn't have V1p05 and Vnn
 	# bypass rails implemented.
 	register "ext_fivr_settings" = "{
@@ -187,6 +184,7 @@ chip soc/intel/alderlake
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
+				register "enable_cnvi_ddr_rfim" = "true"
 				device generic 0 on end
 			end
 		end

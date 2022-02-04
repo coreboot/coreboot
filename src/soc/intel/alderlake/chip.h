@@ -559,11 +559,6 @@ struct soc_intel_alderlake_config {
 	 * 0: Fast/2, 1: Fast/4, 2: Fast/8, 3: Fast/16; see enum slew_rate for values
 	 */
 	uint8_t SlowSlewRate[NUM_VR_DOMAINS];
-
-	/* CNVi DDR RFIM Enable/Disable
-	 * Default 0. Setting this to 1 enable CNVi DDR RFIM.
-	 */
-	bool CnviDdrRfim;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

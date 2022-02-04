@@ -7,6 +7,7 @@
 #include <elog.h>
 #include "chip.h"
 #include "wifi_private.h"
+#include "wifi.h"
 
 static void wifi_pci_dev_init(struct device *dev)
 {
@@ -40,17 +41,39 @@ struct device_operations wifi_cnvi_ops = {
 #endif
 };
 
+static bool is_cnvi(const struct device *dev)
+{
+#if !DEVTREE_EARLY
+	return dev && dev->ops == &wifi_cnvi_ops;
+#else
+	return dev && dev->path.type != DEVICE_PATH_PCI;
+#endif
+}
+
+bool wifi_generic_cnvi_ddr_rfim_enabled(const struct device *dev)
+{
+	const struct drivers_wifi_generic_config *config;
+
+	if (!dev || !is_cnvi(dev) || !dev->chip_info)
+		return false;
+
+	config = dev->chip_info;
+	return config->enable_cnvi_ddr_rfim;
+}
+
 static void wifi_generic_enable(struct device *dev)
 {
-	struct drivers_wifi_generic_config *config = dev ? dev->chip_info : NULL;
+	DEVTREE_CONST struct drivers_wifi_generic_config *config = dev ? dev->chip_info : NULL;
 
 	if (!config)
 		return;
 
-	if (dev->path.type == DEVICE_PATH_PCI)
-		dev->ops = &wifi_pcie_ops;
-	else
+#if !DEVTREE_EARLY
+	if (is_cnvi(dev))
 		dev->ops = &wifi_cnvi_ops;
+	else
+		dev->ops = &wifi_pcie_ops;
+#endif
 }
 
 struct chip_operations drivers_wifi_generic_ops = {

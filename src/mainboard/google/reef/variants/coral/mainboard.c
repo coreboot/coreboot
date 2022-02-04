@@ -132,28 +132,22 @@ const char *mainboard_vbt_filename(void)
 	case SKU_0_ASTRONAUT:
 	case SKU_1_ASTRONAUT:
 		return "vbt-astronaut.bin";
-		break;
 	case SKU_2_SANTA:
 	case SKU_3_SANTA:
 		return "vbt-santa.bin";
-		break;
 	case SKU_13_EPAULETTE:
 	case SKU_14_EPAULETTE:
 	case SKU_15_EPAULETTE:
 	case SKU_16_EPAULETTE:
 		return "vbt-epaulette.bin";
-		break;
 	case SKU_28_RABBID_RUGGED:
 		return "vbt-rabbid_rugged.bin";
-		break;
 	case SKU_30_BABYTIGER:
 	case SKU_33_BABYTIGER:
 		return "vbt-babytiger.bin";
-		break;
 	case SKU_52_BABYMEGA:
 	case SKU_53_BABYMEGA:
 		return "vbt-babymega.bin";
-		break;
 	case SKU_160_NASHER:
 	case SKU_161_NASHER:
 	case SKU_162_NASHER:
@@ -162,10 +156,8 @@ const char *mainboard_vbt_filename(void)
 	case SKU_165_NASHER360:
 	case SKU_166_NASHER360:
 		return "vbt-nasher.bin";
-		break;
 	default:
 		return "vbt.bin";
-		break;
 	}
 }
 

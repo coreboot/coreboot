@@ -184,8 +184,7 @@ void storage_test(uint32_t bar, int full_initialization)
 		err = sdhci_controller_init(sdhci_ctrlr, (void *)bar);
 		if (err) {
 			display_log();
-			printk(BIOS_ERR,
-				"ERROR - Controller failed to initialize, err = %d\n",
+			printk(BIOS_ERR, "Controller failed to initialize, err = %d\n",
 				err);
 			return;
 		}

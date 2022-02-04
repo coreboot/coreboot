@@ -2,7 +2,7 @@ if PAYLOAD_TIANOCORE
 
 config PAYLOAD_FILE
 	string "Tianocore binary"
-	default "payloads/external/tianocore/tianocore/Build/UEFIPAYLOAD.fd"
+	default "$(obj)/UEFIPAYLOAD.fd"
 	help
 	  The result of a UefiPayloadPkg build
 
@@ -35,13 +35,30 @@ config TIANOCORE_COREBOOTPAYLOAD
 	  Select this option to build using MrChromebox's older (now deprecated)
 	  CorebootPayloadPkg-based Tianocore branch
 
+config TIANOCORE_CUSTOM
+	bool "Custom"
+	help
+	  Specify your own edk2 repository and branch to use.
+
 endchoice
 
-config TIANOCORE_REVISION_ID
-	string "Insert a commit's SHA-1 or a branch name"
+config TIANOCORE_REPOSITORY
+	string "URL to git repository for edk2"
+	default "https://github.com/tianocore/edk2" if TIANOCORE_UPSTREAM
+	default "https://github.com/mrchromebox/edk2" if TIANOCORE_UEFIPAYLOAD || TIANOCORE_COREBOOTPAYLOAD
 	help
-	   The commit's SHA-1 or branch name of the revision to use. Choose "upstream/master"
-	   for master branch of Tianocore release on github.
+	  coreboot supports an array of build options which can be found below. These options
+	  will only have an effect if the relevant options exist in the target repository.
+
+config TIANOCORE_TAG_OR_REV
+	string "Insert a commit's SHA-1 or a branch name"
+	default "origin/uefipayload_202107" if TIANOCORE_UEFIPAYLOAD
+	default "origin/master" if TIANOCORE_UPSTREAM
+	default "origin/coreboot_fb" if TIANOCORE_COREBOOTPAYLOAD
+	help
+	  The commit's SHA-1 or branch name of the revision to use. This must exist in
+	  TIANOCORE_REPOSITORY, and in the case of a branch name, prefixed with origin i.e.
+	  "origin/uefipayload_202202"
 
 choice
 	prompt "Tianocore build"
@@ -64,32 +81,33 @@ endchoice
 
 if TIANOCORE_UEFIPAYLOAD
 
-config TIANOCORE_CBMEM_LOGGING
-	bool "Enable Tianocore logging to CBMEM"
+config TIANOCORE_ABOVE_4G_MEMORY
+	bool "Enable above 4G memory"
+	default n
 	help
-	  Select this option if you want to enable Tianocore logging to CBMEM.
-	  You may want to increase the default cbmem buffer size when selecting
-	  this option, especially if using a debug (vs release) build.
-	  Selecting this option will increase the payload size in CBFS by ~220KB.
+	  Select this option to enable Above 4G Decode. This will allow the
+	  payload to use all of the memory, rather than an maximum of 4G.
 
-config TIANOCORE_BOOTSPLASH_IMAGE
-	bool "Use a custom bootsplash image"
+	  Disabling memory above 4G is useful for bootloaders that are not
+	  fully 64-bit aware such as Qubes R4.0.4 bootloader.
+
+
+config TIANOCORE_BOOTSPLASH_FILE
+	string "Tianocore Bootsplash path and filename"
+	default "bootsplash.bmp"
 	help
 	  Select this option if you have a bootsplash image that you would
 	  like to be used. If this option is not selected, the default
 	  coreboot logo (European Brown Hare) will used.
 
-config TIANOCORE_BOOTSPLASH_FILE
-	string "Tianocore Bootsplash path and filename"
-	depends on TIANOCORE_BOOTSPLASH_IMAGE
-	default "bootsplash.bmp"
-	help
 	  The path and filename of the file to use as graphical bootsplash
-	  image. The file must be an uncompressed BMP.
+	  image. The file must be an uncompressed BMP, in BMP 3 format.
+
+	  Linux can create these with the below command:
+	      `convert splosh.bmp BMP3:splash.bmp`
 
 	  This image will also be used as the BGRT boot image, which may
-	  persist through your OS boot process, and will be displayed
-	  vertically centered 38.2% from the top of the display.
+	  persist through your OS boot process.
 
 	  See ACPI spec 6.3, 5.2.22 Boot Graphics Resource Table (BGRT), and
 	  Microsoft's documentation on BGRT positioning:
@@ -101,16 +119,21 @@ config TIANOCORE_BOOTSPLASH_FILE
 	  If an absolute path is not given, the path will assumed to be
 	  relative to the coreboot root directory.
 
-config TIANOCORE_ABOVE_4G_MEMORY
-	bool "Enable above 4G memory"
-	default n
+config TIANOCORE_BOOT_TIMEOUT
+	int
+	default 2
 	help
-	  Select this option to enable Above 4G Decode. This will allow the
-	  payload to use all of the memory, rather than an maximum of 4G.
+	  The length of time in seconds for which the boot splash/menu prompt will be displayed.
+	  For boards with an internal display, the default value of 2s is generally sufficient.
+	  For boards with an external display, a value of 5s is generally sufficient.
 
-	  Disabling this option, which will reserve memory above 4G, is
-	  useful for bootloaders that are not fully 64-bit aware such as
-	  Qubes R4.0.4 bootloader.
+config TIANOCORE_CBMEM_LOGGING
+	bool "Enable Tianocore logging to CBMEM"
+	help
+	  Select this option if you want to enable Tianocore logging to CBMEM.
+	  You may want to increase the default cbmem buffer size when selecting
+	  this option, especially if using a debug (vs release) build.
+	  Selecting this option will increase the payload size in CBFS by 0x10000.
 
 endif
 
@@ -122,13 +145,5 @@ config TIANOCORE_USE_8254_TIMER
 	  Use 8254 Timer for legacy support.
 
 endif
-
-config TIANOCORE_BOOT_TIMEOUT
-	int
-	default 2
-	help
-	  The length of time in seconds for which the boot splash/menu prompt will be displayed.
-	  For boards with an internal display, the default value of 2s is generally sufficient.
-	  For boards without an internal display, a value of 5s is generally sufficient.
 
 endif

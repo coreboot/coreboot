@@ -81,7 +81,6 @@ config ME_BIN_PATH
 
 config TIANOCORE_BOOTSPLASH_FILE
 	string
-	depends on TIANOCORE_BOOTSPLASH_IMAGE
 	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
 
 config UART_FOR_CONSOLE

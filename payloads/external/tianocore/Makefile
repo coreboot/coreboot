@@ -3,84 +3,84 @@
 # force the shell to bash - the edksetup.sh script doesn't work with dash
 export SHELL := env bash
 
-project_name=Tianocore
-project_dir=$(CURDIR)/tianocore
-project_git_repo=https://github.com/mrchromebox/edk2
-project_git_branch=uefipayload_202107
-upstream_git_repo=https://github.com/tianocore/edk2
+project_name = Tianocore
+project_dir = $(CURDIR)/$(word 3,$(subst /, ,$(CONFIG_TIANOCORE_REPOSITORY)))
 
-build_flavor=-D BOOTLOADER=COREBOOT -D PCIE_BASE=$(CONFIG_ECAM_MMCONF_BASE_ADDRESS) -DPS2_KEYBOARD_ENABLE
-
+BUILD_STR = -a IA32 -a X64 -t COREBOOT
 ifeq ($(CONFIG_TIANOCORE_COREBOOTPAYLOAD),y)
-project_git_branch=coreboot_fb
-bootloader=CorebootPayloadPkg
+BUILD_STR += -p CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
 else
-bootloader=UefiPayloadPkg
+BUILD_STR += -p UefiPayloadPkg/UefiPayloadPkg.dsc
+endif
+BUILD_STR += -D BOOTLOADER=COREBOOT -q
+
+#
+# EDK II has the following build options relevant to coreboot:
+#
+#
+# OPTION			= DEFAULT_VALUE
+#
+# ABOVE_4G_MEMORY		= TRUE
+ifneq ($(CONFIG_TIANOCORE_ABOVE_4G_MEMORY),y)
+BUILD_STR += -D ABOVE_4G_MEMORY=FALSE
+endif
+# BOOTSPLASH_IMAGE		= FALSE
+ifneq ($(CONFIG_TIANOCORE_BOOTSPLASH_FILE),)
+BUILD_STR += -D BOOTSPLASH_IMAGE=TRUE
+endif
+# BUILD_TARGETS			= DEBUG
+ifeq ($(CONFIG_TIANOCORE_RELEASE),y)
+BUILD_STR += -b RELEASE
+endif
+# PLATFORM_BOOT_TIMEOUT		= 3
+ifneq ($(TIANOCORE_BOOT_TIMEOUT),)
+BUILD_STR += -D PLATFORM_BOOT_TIMEOUT=$(CONFIG_TIANOCORE_BOOT_TIMEOUT)
+endif
+# USE_CBMEM_FOR_CONSOLE		= FALSE
+ifeq ($(CONFIG_TIANOCORE_CBMEM_LOGGING),y)
+BUILD_STR += -D USE_CBMEM_FOR_CONSOLE=TRUE
+endif
+#
+# The below are legacy options only available in CorebootPayloadPkg:
+#
+# PCIE_BASE			= 0
+ifneq ($(CONFIG_ECAM_MMCONF_BASE_ADDRESS),)
+BUILD_STR += -D PCIE_BASE=$(CONFIG_ECAM_MMCONF_BASE_ADDRESS)
+endif
+# USE_HPET_TIMER		= FALSE
+ifeq ($(CONFIG_TIANOCORE_USE_8254_TIMER),y)
+BUILD_STR += -D USE_HPET_TIMER=TRUE
 endif
 
-ifeq ($(CONFIG_TIANOCORE_UPSTREAM),y)
-TAG=upstream/master
-else
-TAG=origin/$(project_git_branch)
-endif
-
-ifneq ($(CONFIG_TIANOCORE_REVISION_ID),)
-TAG=$(CONFIG_TIANOCORE_REVISION_ID)
-endif
+bootloader = $(word 8,$(subst /, ,$(BUILD_STR)))
 
 export EDK_TOOLS_PATH=$(project_dir)/BaseTools
-
-ifeq ($(CONFIG_TIANOCORE_DEBUG),y)
-BUILD_TYPE=DEBUG
-else
-BUILD_TYPE=RELEASE
-endif
-
-ifeq ($(CONFIG_TIANOCORE_CBMEM_LOGGING),y)
-CBMEM=-D USE_CBMEM_FOR_CONSOLE=TRUE
-endif
-
-ifeq ($(CONFIG_TIANOCORE_ABOVE_4G_MEMORY),y)
-4G=-D ABOVE_4G_MEMORY=TRUE
-else
-4G=-D ABOVE_4G_MEMORY=FALSE
-endif
-
-TIMEOUT=-D PLATFORM_BOOT_TIMEOUT=$(CONFIG_TIANOCORE_BOOT_TIMEOUT)
-
-ifneq ($(CONFIG_TIANOCORE_USE_8254_TIMER), y)
-TIMER=-DUSE_HPET_TIMER
-endif
-
-ifeq ($(CONFIG_TIANOCORE_COREBOOTPAYLOAD),y)
-BUILD_STR=-q -a IA32 -a X64 -p CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc -t COREBOOT -b $(BUILD_TYPE) $(TIMER) -DPS2_KEYBOARD_ENABLE
-else
-BUILD_STR=-q -a IA32 -a X64 -p UefiPayloadPkg/UefiPayloadPkg.dsc -t COREBOOT -b $(BUILD_TYPE) $(TIMEOUT) $(build_flavor) $(CBMEM) $(4G)
-endif
 
 all: clean build
 
 $(project_dir):
-	echo "    Cloning $(project_name) from Git"
-	git clone --branch $(project_git_branch) $(project_git_repo) $(project_dir); \
-		cd $(project_dir); \
-		git remote add upstream $(upstream_git_repo)
+	echo "    Cloning $(project_name) from $(CONFIG_TIANOCORE_REPOSITORY)"
+	git clone $(CONFIG_TIANOCORE_REPOSITORY) $(project_dir); \
+		cd $(project_dir);
 
 update: $(project_dir)
+	if [ ! -d "$(project_dir)" ]; then \
+		git clone $(CONFIG_TIANOCORE_REPOSITORY) $(project_dir); \
+	fi
 	cd  $(project_dir); \
-		echo "    Fetching new commits from the $(project_name) repo"; \
-		git fetch --multiple origin upstream 2>/dev/null; \
-		if ! git rev-parse --verify -q $(TAG) >/dev/null; then \
-			echo "    $(TAG) is not a valid git reference"; \
+		echo "    Fetching new commits from $(CONFIG_TIANOCORE_REPOSITORY)"; \
+		git fetch origin 2>/dev/null; \
+		if ! git rev-parse --verify -q $(CONFIG_TIANOCORE_TAG_OR_REV) >/dev/null; then \
+			echo "    $(CONFIG_TIANOCORE_TAG_OR_REV) is not a valid git reference"; \
 			exit 1; \
 		fi; \
 		if git status --ignore-submodules=dirty | grep -qv clean; then \
-			echo "    Checking out $(project_name) revision $(TAG)"; \
-			git checkout --detach $(TAG); \
+			echo "    Checking out $(project_name) revision $(CONFIG_TIANOCORE_TAG_OR_REV)"; \
+			git checkout --detach $(CONFIG_TIANOCORE_TAG_OR_REV) -f; \
 		else \
 			echo "    Working directory not clean; will not overwrite"; \
 		fi; \
-		git submodule update --init
+		git submodule update --init --checkout
 
 checktools:
 	echo "Checking uuid-dev..."
@@ -94,8 +94,8 @@ checktools:
 		( echo " Not found."; echo "Error: Please install nasm."; exit 1 )
 
 build: update checktools
-	unset CC; $(MAKE) -C $(project_dir)/BaseTools
-	echo " build $(project_name) $(TAG)"
+	unset CC; $(MAKE) -C $(project_dir)/BaseTools 2>&1
+	echo " build $(project_name) $(CONFIG_TIANOCORE_TAG_OR_REV)"
 	if [ -n "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" ]; then \
 		echo "    Copying custom bootsplash image"; \
 		case "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" in \
@@ -114,13 +114,14 @@ build: update checktools
 			cat ../tools_def.txt >> $(project_dir)/Conf/tools_def.txt; \
 		fi; \
 		build $(BUILD_STR); \
-		mv $(project_dir)/Build/$(bootloader)*/*/FV/UEFIPAYLOAD.fd $(project_dir)/Build/UEFIPAYLOAD.fd; \
+		mkdir -p $(project_dir)/../output
+		mv $(project_dir)/Build/$(bootloader)*/*/FV/UEFIPAYLOAD.fd $(project_dir)/../output/UEFIPAYLOAD.fd; \
 		git checkout MdeModulePkg/Logo/Logo.bmp > /dev/null 2>&1 || true
 
 clean:
 	test -d $(project_dir) && (cd $(project_dir); rm -rf Build; rm -f Conf/tools_def.txt) || exit 0
 
 distclean:
-	rm -rf $(project_dir)
+	rm -rf */
 
 .PHONY: all update checktools config build clean distclean

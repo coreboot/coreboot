@@ -84,13 +84,29 @@ extract_coreboot()
 	_unpacked=$( mktemp -d )
 
 	echo "Extracting coreboot image"
-	sh $_shellball --sb_extract $_unpacked > /dev/null
+	if ! sh $_shellball --unpack $_unpacked > /dev/null 2>&1; then
+		sh $_shellball --sb_extract $_unpacked > /dev/null 2>&1
+	fi
 
-	_version=$( cat $_unpacked/VERSION | grep BIOS\ version: | \
+	if [ -d $_unpacked/models/ ]; then
+		_version=$( cat $_unpacked/VERSION | grep -m 1 -e Model.*$_board -A5 \
+			| grep "BIOS (RW) version:" | cut -f2 -d: | tr -d \  )
+		if [ "$_version" == "" ]; then
+			_version=$( cat $_unpacked/VERSION | grep -m 1 -e Model.*$_board -A5 \
+				| grep "BIOS version:" | cut -f2 -d: | tr -d \  )
+		fi
+		_bios_image=$(grep "IMAGE_MAIN" $_unpacked/models/$_board/setvars.sh \
+			| cut -f2 -d\")
+	else
+		_version=$( cat $_unpacked/VERSION | grep BIOS\ version: | \
 			cut -f2 -d: | tr -d \  )
-
-	cp $_unpacked/bios.bin coreboot-$_version.bin
-	rm -r "$_unpacked"
+		_bios_image=bios.bin
+	fi
+	if cp $_unpacked/$_bios_image coreboot-$_version.bin; then
+		echo "Extracted coreboot-$_version.bin"
+	fi
+	rm -rf "$_unpacked"
+	rm $_shellball
 }
 
 do_one_board()
@@ -135,7 +151,7 @@ elif [ "$BOARD" != "" ]; then
 	get_inventory $CONF
 
 	echo Processing board $BOARD
-	eval $( grep $BOARD $CONF | grep '\(url=\|file=\)' )
+	eval $( grep -i $BOARD -A8 $CONF | grep '\(url=\|file=\)' )
 	do_one_board $BOARD $url $file
 
 	rm "$CONF"

@@ -20,7 +20,7 @@ static void display_hob_info(FSP_INFO_HEADER *fsp_info_header)
 
 	/* Verify the HOBs */
 	if (hob_list_ptr == NULL) {
-		printk(BIOS_ERR, "ERROR - HOB pointer is NULL!\n");
+		printk(BIOS_ERR, "HOB pointer is NULL!\n");
 		return;
 	}
 
@@ -41,8 +41,7 @@ static void display_hob_info(FSP_INFO_HEADER *fsp_info_header)
 		!get_next_guid_hob(&graphics_info_guid, hob_list_ptr) &&
 		CONFIG(DISPLAY_HOBS)) {
 		printk(BIOS_ERR, "7.5: EFI_PEI_GRAPHICS_INFO_HOB missing!\n");
-		printk(BIOS_ERR,
-		       "ERROR - Missing one or more required FSP HOBs!\n");
+		printk(BIOS_ERR, "Missing one or more required FSP HOBs!\n");
 	}
 }
 

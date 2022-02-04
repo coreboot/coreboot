@@ -11,6 +11,8 @@
 #include <console/flash.h>
 #include <console/system76_ec.h>
 
+/* Note: when adding a new console, make sure you update the definition of
+   HAS_ONLY_FAST_CONSOLES in <console.h>! */
 void console_hw_init(void)
 {
 	__cbmemc_init();

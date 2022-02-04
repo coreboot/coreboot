@@ -61,7 +61,18 @@ void do_putchar(unsigned char byte);
 long console_time_get_and_reset(void);
 void console_time_report(void);
 
+/*
+ * "Fast" basically means only the CBMEM console right now. This is used to still
+ * print debug messages there when loglevel disables the other consoles. It is also
+ * used to compile-time eliminate code paths that only affect "interactive" consoles
+ * (which are all "slow") when none of those are enabled.
+ */
 enum { CONSOLE_LOG_NONE = 0, CONSOLE_LOG_FAST, CONSOLE_LOG_ALL };
+#define HAS_ONLY_FAST_CONSOLES !(CONFIG(SPKMODEM) || CONFIG(CONSOLE_QEMU_DEBUGCON) || \
+	CONFIG(CONSOLE_SERIAL) || CONFIG(CONSOLE_NE2K) || CONFIG(CONSOLE_USB) || \
+	CONFIG(EM100PRO_SPI_CONSOLE) || CONFIG(CONSOLE_SPI_FLASH) || \
+	CONFIG(CONSOLE_SYSTEM76_EC))
+
 #else
 static inline int get_log_level(void) { return -1; }
 static inline void console_init(void) {}

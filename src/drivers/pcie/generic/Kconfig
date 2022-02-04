@@ -1,0 +1,11 @@
+config DRIVERS_PCIE_GENERIC
+	bool
+	default n
+	depends on HAVE_ACPI_TABLES
+	help
+	  This driver allows attaching arbitrary ACPI properties to
+	  arbitrary PCI root ports or devices. Currently it supports one
+	  property, "UntrustedDevice". This property indicates to the
+	  operating system that the PCIe device may be considered
+	  untrusted, and appropriate policies, e.g. IOMMU isolation,
+	  should take place.

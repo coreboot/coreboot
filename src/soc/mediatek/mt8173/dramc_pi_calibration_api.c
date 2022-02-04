@@ -591,7 +591,7 @@ u8 dramk_calcu_best_dly(u8 bit, struct dqs_perbit_dly *p, u8 *p_max_byte)
 		if (hold == 0) {
 			/* like this: (mean this bit is error) */
 			/* xxxxxxxxxxxxxxxxxxxxx|xxxxxxxxxxxxxxxxxxxxxxxxx */
-			printk(BIOS_ERR, "ERROR, error bit %d, "
+			printk(BIOS_ERR, "Error at bit %d, "
 					 "setup_time = hold_time = 0!!\n", bit);
 			fail = 1;
 		}

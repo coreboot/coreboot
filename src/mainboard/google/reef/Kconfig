@@ -34,9 +34,6 @@ config BOARD_GOOGLE_SAND
 config BOARD_GOOGLE_SNAPPY
 	select BOARD_GOOGLE_BASEBOARD_REEF
 
-config BOARD_GOOGLE_NASHER
-	select BOARD_GOOGLE_BASEBOARD_REEF
-
 config BOARD_GOOGLE_CORAL
 	select BOARD_GOOGLE_BASEBOARD_REEF
 
@@ -70,7 +67,6 @@ config VARIANT_DIR
 	default "pyro" if BOARD_GOOGLE_PYRO
 	default "sand" if BOARD_GOOGLE_SAND
 	default "snappy" if BOARD_GOOGLE_SNAPPY
-	default "nasher" if BOARD_GOOGLE_NASHER
 	default "coral" if BOARD_GOOGLE_CORAL
 
 config DEVICETREE
@@ -85,7 +81,6 @@ config MAINBOARD_PART_NUMBER
 	default "Pyro" if BOARD_GOOGLE_PYRO
 	default "Sand" if BOARD_GOOGLE_SAND
 	default "Snappy" if BOARD_GOOGLE_SNAPPY
-	default "Nasher" if BOARD_GOOGLE_NASHER
 	default "Coral" if BOARD_GOOGLE_CORAL
 
 config MAINBOARD_FAMILY

@@ -12,8 +12,5 @@ config BOARD_GOOGLE_SAND
 config BOARD_GOOGLE_SNAPPY
 	bool "->  Snappy (HP Chromebook x360 11 G1 EE)"
 
-config BOARD_GOOGLE_NASHER
-	bool "->  Nasher"
-
 config BOARD_GOOGLE_CORAL
 	bool "->  Coral"

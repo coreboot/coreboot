@@ -40,6 +40,10 @@ void chromeos_init_chromeos_acpi(void)
 	if (!chromeos_acpi)
 		return;
 
+	/* Retain CNVS contents on S3 resume path. */
+	if (acpi_is_wakeup_s3())
+		return;
+
 	vpd_size = chromeos_vpd_region("RO_VPD", &vpd_base);
 	if (vpd_size && vpd_base) {
 		chromeos_acpi->vpd_ro_base = vpd_base;

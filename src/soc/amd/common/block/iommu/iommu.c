@@ -12,7 +12,7 @@ static void iommu_read_resources(struct device *dev)
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);
 
-	/* Add an extra subtractive resource for both memory and I/O. */
+	/* IOMMU MMIO registers */
 	res = new_resource(dev, 0x44);
 	res->size = 512 * KiB;
 	res->align = log2(res->size);

@@ -34,9 +34,6 @@
 #define   UART8250_FCR_TRIGGER_8	0x80 /* Mask for trigger set at 8 */
 #define   UART8250_FCR_TRIGGER_14	0xC0 /* Mask for trigger set at 14 */
 
-#define   UART8250_FCR_RXSR		0x02 /* Receiver soft reset */
-#define   UART8250_FCR_TXSR		0x04 /* Transmitter soft reset */
-
 #define UART8250_LCR 0x03
 #define   UART8250_LCR_WLS_MSK	0x03 /* character length select mask */
 #define   UART8250_LCR_WLS_5	0x00 /* 5 bit character length */
@@ -48,7 +45,6 @@
 #define   UART8250_LCR_EPS	0x10 /* Even Parity Select */
 #define   UART8250_LCR_STKP	0x20 /* Stick Parity */
 #define   UART8250_LCR_SBRK	0x40 /* Set Break */
-#define   UART8250_LCR_BKSE	0x80 /* Bank select enable */
 #define   UART8250_LCR_DLAB	0x80 /* Divisor latch access bit */
 
 #define UART8250_MCR 0x04

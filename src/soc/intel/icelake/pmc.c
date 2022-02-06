@@ -75,6 +75,15 @@ static void pmc_init(void *unused)
 	 */
 	if (!CONFIG(USE_PM_ACPI_TIMER))
 		setbits8(pmc_mmio_regs() + PCH_PWRM_ACPI_TMR_CTL, ACPI_TIM_DIS);
+
+	/*
+	 * Clear PMCON status bits (Global Reset/Power Failure/Host Reset Status bits)
+	 *
+	 * Perform the PMCON status bit clear operation from `.final`
+	 * to cover any such chances where later boot stage requested a global
+	 * reset and PMCON status bit remains set.
+	 */
+	pmc_clear_pmcon_sts();
 }
 
 /*

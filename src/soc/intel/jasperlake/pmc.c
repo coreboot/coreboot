@@ -117,6 +117,22 @@ static void pmc_fill_ssdt(const struct device *dev)
 		generate_acpi_power_engine();
 }
 
+/*
+ * `pmc_final` function is native implementation of equivalent events performed by
+ * each FSP NotifyPhase() API invocations.
+ *
+ *
+ * Clear PMCON status bits (Global Reset/Power Failure/Host Reset Status bits)
+ *
+ * Perform the PMCON status bit clear operation from `.final`
+ * to cover any such chances where later boot stage requested a global
+ * reset and PMCON status bit remains set.
+ */
+static void pmc_final(struct device *dev)
+{
+	pmc_clear_pmcon_sts();
+}
+
 struct device_operations pmc_ops = {
 	.read_resources		= soc_pmc_read_resources,
 	.set_resources		= noop_set_resources,
@@ -125,4 +141,5 @@ struct device_operations pmc_ops = {
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt		= pmc_fill_ssdt,
 #endif
+	.final			= pmc_final,
 };

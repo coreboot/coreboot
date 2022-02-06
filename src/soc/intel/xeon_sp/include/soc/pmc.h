@@ -22,6 +22,7 @@
 #define PWRMBASE		0x48
 #define GEN_PMCON_A		0xa0
 #define  DISB			(1 << 23)
+#define  MS4V			(1 << 18)
 #define  GBL_RST_STS		(1 << 16)
 #define  SMI_LOCK		(1 << 4)
 #define GEN_PMCON_B		0xa4

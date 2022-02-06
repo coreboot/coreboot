@@ -65,6 +65,8 @@ static void pch_finalize_script(struct device *dev)
 
 	/* Hide p2sb device as the OS must not change BAR0. */
 	p2sb_hide();
+
+	pmc_clear_pmcon_sts();
 }
 
 static void soc_lockdown(struct device *dev)

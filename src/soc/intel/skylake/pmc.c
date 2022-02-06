@@ -96,7 +96,6 @@ void pmc_soc_init(struct device *dev)
 	config_deep_sx(config->deep_sx_config);
 
 	/* Clear registers that contain write-1-to-clear bits. */
-	pci_or_config32(dev, GEN_PMCON_A, 0);
 	pci_or_config32(dev, GEN_PMCON_B, 0);
 	pci_or_config32(dev, GEN_PMCON_B, 0);
 	setbits32(pwrmbase + GBLRST_CAUSE0, 0);

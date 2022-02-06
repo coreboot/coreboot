@@ -189,4 +189,7 @@ static inline int deep_s5_enabled(void)
 /* STM Support */
 uint16_t get_pmbase(void);
 
+/* Clear PMCON status bits */
+void pmc_clear_pmcon_sts(void);
+
 #endif

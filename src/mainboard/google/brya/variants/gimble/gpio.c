@@ -27,11 +27,11 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_A22, NONE),
 
 	/* B3  : PROC_GP2 ==> NC */
-	PAD_NC(GPP_B3, NONE),
+	PAD_NC_LOCK(GPP_B3, NONE, LOCK_CONFIG),
 	/* B5  : ISH_I2C0_SDA ==> NC */
-	PAD_NC(GPP_B5, NONE),
+	PAD_NC_LOCK(GPP_B5, NONE, LOCK_CONFIG),
 	/* B6  : ISH_I2C0_SCL ==> NC */
-	PAD_NC(GPP_B6, NONE),
+	PAD_NC_LOCK(GPP_B6, NONE, LOCK_CONFIG),
 
 	/* C3 : SML0CLK ==> NC */
 	PAD_NC(GPP_C3, NONE),
@@ -39,17 +39,17 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_C4, NONE),
 
 	/* D3  : ISH_GP3 ==> NC */
-	PAD_NC(GPP_D3, NONE),
+	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D5  : SRCCLKREQ0# ==> NC */
 	PAD_NC(GPP_D5, NONE),
 	/* D9  : ISH_SPI_CS# ==> NC */
-	PAD_NC(GPP_D9, NONE),
+	PAD_NC_LOCK(GPP_D9, NONE, LOCK_CONFIG),
 	/* D15 : ISH_UART0_RTS# ==> NC */
-	PAD_NC(GPP_D15, NONE),
+	PAD_NC_LOCK(GPP_D15, NONE, LOCK_CONFIG),
 	/* D16 : ISH_UART0_CTS# ==> EN_WCAM_PWR */
-	PAD_CFG_GPO(GPP_D16, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_D16, 1, LOCK_CONFIG),
 	/* D17 : UART1_RXD ==> NC */
-	PAD_NC(GPP_D17, NONE),
+	PAD_NC_LOCK(GPP_D17, NONE, LOCK_CONFIG),
 
 	/* E0  : SATAXPCIE0 ==> NC */
 	PAD_NC(GPP_E0, NONE),
@@ -60,11 +60,11 @@ static const struct pad_config override_gpio_table[] = {
 	/* E7  : PROC_GP1 ==> NC */
 	PAD_NC(GPP_E7, NONE),
 	/* E10 : THC0_SPI1_CS# ==> NC */
-	PAD_NC(GPP_E10, NONE),
+	PAD_NC_LOCK(GPP_E10, NONE, LOCK_CONFIG),
 	/* E16 : RSVD_TP ==> NC */
 	PAD_NC(GPP_E16, NONE),
 	/* E17 : THC0_SPI1_INT# ==> NC */
-	PAD_NC(GPP_E17, NONE),
+	PAD_NC_LOCK(GPP_E17, NONE, LOCK_CONFIG),
 	/* E18 : DDP1_CTRLCLK ==> NC */
 	PAD_NC(GPP_E18, NONE),
 	/* E20 : DDP2_CTRLCLK ==> NC */
@@ -88,7 +88,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* H9  : I2C4_SCL ==> NC */
 	PAD_NC(GPP_H9, NONE),
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
-	PAD_CFG_GPO(GPP_H13, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_H13, 1, LOCK_CONFIG),
 	/* H15 : DDPB_CTRLCLK ==> NC */
 	PAD_NC(GPP_H15, NONE),
 	/* H17 : DDPB_CTRLDATA ==> NC*/

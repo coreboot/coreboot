@@ -23,6 +23,7 @@
 #include <intelblocks/gpio.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/pmclib.h>
+#include <option.h>
 #include <soc/cpu.h>
 #include <soc/heci.h>
 #include <soc/intel/common/vbt.h>
@@ -709,7 +710,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	silconfig->VmxEnable = CONFIG(ENABLE_VMX);
 
 	/* Set VTD feature according to devicetree */
-	silconfig->VtdEnable = cfg->enable_vtd;
+	silconfig->VtdEnable = get_uint_option("vtd", cfg->enable_vtd);
 
 	silconfig->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_devfn_enabled(SA_DEVFN_IGD);
 

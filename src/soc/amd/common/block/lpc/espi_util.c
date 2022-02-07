@@ -60,6 +60,36 @@ static void espi_write8(unsigned int reg, uint8_t val)
 	write8((void *)(espi_get_bar() + reg), val);
 }
 
+static inline uint32_t espi_decode_io_range_en_bit(unsigned int idx)
+{
+	return ESPI_DECODE_IO_RANGE_EN(idx);
+}
+
+static inline uint32_t espi_decode_mmio_range_en_bit(unsigned int idx)
+{
+	return ESPI_DECODE_MMIO_RANGE_EN(idx);
+}
+
+static inline unsigned int espi_io_range_base_reg(unsigned int idx)
+{
+	return ESPI_IO_RANGE_BASE(idx);
+}
+
+static inline unsigned int espi_io_range_size_reg(unsigned int idx)
+{
+	return ESPI_IO_RANGE_SIZE(idx);
+}
+
+static inline unsigned int espi_mmio_range_base_reg(unsigned int idx)
+{
+	return ESPI_MMIO_RANGE_BASE(idx);
+}
+
+static inline unsigned int espi_mmio_range_size_reg(unsigned int idx)
+{
+	return ESPI_MMIO_RANGE_SIZE(idx);
+}
+
 static void espi_enable_decode(uint32_t decode_en)
 {
 	uint32_t val;
@@ -82,10 +112,10 @@ static int espi_find_io_window(uint16_t win_base)
 	int i;
 
 	for (i = 0; i < ESPI_GENERIC_IO_WIN_COUNT; i++) {
-		if (!espi_is_decode_enabled(ESPI_DECODE_IO_RANGE_EN(i)))
+		if (!espi_is_decode_enabled(espi_decode_io_range_en_bit(i)))
 			continue;
 
-		if (espi_read16(ESPI_IO_RANGE_BASE(i)) == win_base)
+		if (espi_read16(espi_io_range_base_reg(i)) == win_base)
 			return i;
 	}
 
@@ -97,7 +127,7 @@ static int espi_get_unused_io_window(void)
 	int i;
 
 	for (i = 0; i < ESPI_GENERIC_IO_WIN_COUNT; i++) {
-		if (!espi_is_decode_enabled(ESPI_DECODE_IO_RANGE_EN(i)))
+		if (!espi_is_decode_enabled(espi_decode_io_range_en_bit(i)))
 			return i;
 	}
 
@@ -112,12 +142,12 @@ static void espi_clear_decodes(void)
 	espi_write16(ESPI_DECODE, 0);
 
 	for (idx = 0; idx < ESPI_GENERIC_IO_WIN_COUNT; idx++) {
-		espi_write16(ESPI_IO_RANGE_BASE(idx), 0);
-		espi_write8(ESPI_IO_RANGE_SIZE(idx), 0);
+		espi_write16(espi_io_range_base_reg(idx), 0);
+		espi_write8(espi_io_range_size_reg(idx), 0);
 	}
 	for (idx = 0; idx < ESPI_GENERIC_MMIO_WIN_COUNT; idx++) {
-		espi_write32(ESPI_MMIO_RANGE_BASE(idx), 0);
-		espi_write16(ESPI_MMIO_RANGE_SIZE(idx), 0);
+		espi_write32(espi_mmio_range_base_reg(idx), 0);
+		espi_write16(espi_mmio_range_size_reg(idx), 0);
 	}
 }
 
@@ -149,13 +179,13 @@ static int espi_std_io_decode(uint16_t base, size_t size)
 
 static size_t espi_get_io_window_size(int idx)
 {
-	return espi_read8(ESPI_IO_RANGE_SIZE(idx)) + 1;
+	return espi_read8(espi_io_range_size_reg(idx)) + 1;
 }
 
 static void espi_write_io_window(int idx, uint16_t base, size_t size)
 {
-	espi_write16(ESPI_IO_RANGE_BASE(idx), base);
-	espi_write8(ESPI_IO_RANGE_SIZE(idx), size - 1);
+	espi_write16(espi_io_range_base_reg(idx), base);
+	espi_write8(espi_io_range_size_reg(idx), size - 1);
 }
 
 static enum cb_err espi_open_generic_io_window(uint16_t base, size_t size)
@@ -192,7 +222,7 @@ static enum cb_err espi_open_generic_io_window(uint16_t base, size_t size)
 		}
 
 		espi_write_io_window(idx, base, win_size);
-		espi_enable_decode(ESPI_DECODE_IO_RANGE_EN(idx));
+		espi_enable_decode(espi_decode_io_range_en_bit(idx));
 	}
 
 	return CB_SUCCESS;
@@ -216,10 +246,10 @@ static int espi_find_mmio_window(uint32_t win_base)
 	int i;
 
 	for (i = 0; i < ESPI_GENERIC_MMIO_WIN_COUNT; i++) {
-		if (!espi_is_decode_enabled(ESPI_DECODE_MMIO_RANGE_EN(i)))
+		if (!espi_is_decode_enabled(espi_decode_mmio_range_en_bit(i)))
 			continue;
 
-		if (espi_read32(ESPI_MMIO_RANGE_BASE(i)) == win_base)
+		if (espi_read32(espi_mmio_range_base_reg(i)) == win_base)
 			return i;
 	}
 
@@ -231,7 +261,7 @@ static int espi_get_unused_mmio_window(void)
 	int i;
 
 	for (i = 0; i < ESPI_GENERIC_MMIO_WIN_COUNT; i++) {
-		if (!espi_is_decode_enabled(ESPI_DECODE_MMIO_RANGE_EN(i)))
+		if (!espi_is_decode_enabled(espi_decode_mmio_range_en_bit(i)))
 			return i;
 	}
 
@@ -241,13 +271,13 @@ static int espi_get_unused_mmio_window(void)
 
 static size_t espi_get_mmio_window_size(int idx)
 {
-	return espi_read16(ESPI_MMIO_RANGE_SIZE(idx)) + 1;
+	return espi_read16(espi_mmio_range_size_reg(idx)) + 1;
 }
 
 static void espi_write_mmio_window(int idx, uint32_t base, size_t size)
 {
-	espi_write32(ESPI_MMIO_RANGE_BASE(idx), base);
-	espi_write16(ESPI_MMIO_RANGE_SIZE(idx), size - 1);
+	espi_write32(espi_mmio_range_base_reg(idx), base);
+	espi_write16(espi_mmio_range_size_reg(idx), size - 1);
 }
 
 enum cb_err espi_open_mmio_window(uint32_t base, size_t size)
@@ -284,7 +314,7 @@ enum cb_err espi_open_mmio_window(uint32_t base, size_t size)
 		}
 
 		espi_write_mmio_window(idx, base, win_size);
-		espi_enable_decode(ESPI_DECODE_MMIO_RANGE_EN(idx));
+		espi_enable_decode(espi_decode_mmio_range_en_bit(idx));
 	}
 
 	return CB_SUCCESS;

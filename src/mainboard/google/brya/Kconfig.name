@@ -85,6 +85,7 @@ config BOARD_GOOGLE_NIVVIKS
 	bool "->  Nivviks"
 	select BOARD_GOOGLE_BASEBOARD_NISSA
 	select DRIVERS_INTEL_MIPI_CAMERA
+	select HAVE_WWAN_POWER_SEQUENCE
 
 config BOARD_GOOGLE_NEREID
 	bool "->  Nereid"

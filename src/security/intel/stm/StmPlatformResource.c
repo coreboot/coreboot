@@ -167,8 +167,13 @@ static void add_msr_resources(void)
 /*
  * Add resources to BIOS resource database.
  */
+
+extern uint8_t *m_stm_resources_ptr;
+
 void add_resources_cmd(void)
 {
+
+	m_stm_resources_ptr = NULL;
 
 	add_simple_resources();
 

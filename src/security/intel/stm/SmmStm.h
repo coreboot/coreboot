@@ -75,7 +75,7 @@ void notify_stm_resource_change(void *stm_resource);
  */
 void *get_stm_resource(void);
 
-void setup_smm_descriptor(void *smbase, void *base_smbase, int32_t apic_id,
+void setup_smm_descriptor(void *smbase, int32_t apic_id,
 				int32_t entry32_off);
 
 /*

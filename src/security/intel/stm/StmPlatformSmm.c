@@ -77,8 +77,7 @@ static void read_gdtr(struct descriptor *gdtr)
 	__asm__ __volatile__("sgdt %0" : "=m"(*gdtr));
 }
 
-void setup_smm_descriptor(void *smbase, void *base_smbase, int32_t apic_id,
-			  int32_t entry32_off)
+void setup_smm_descriptor(void *smbase, int32_t apic_id, int32_t entry32_off)
 {
 	struct descriptor gdtr;
 	void *smbase_processor;
@@ -103,7 +102,7 @@ void setup_smm_descriptor(void *smbase, void *base_smbase, int32_t apic_id,
 	psd->smm_descriptor_ver_minor =
 		TXT_PROCESSOR_SMM_DESCRIPTOR_VERSION_MINOR;
 	psd->smm_smi_handler_rip =
-		(uint64_t)((uintptr_t)base_smbase + SMM_ENTRY_OFFSET +
+		(uint64_t)((uintptr_t)smbase + SMM_ENTRY_OFFSET +
 		entry32_off);
 	psd->local_apic_id = apic_id;
 	psd->size = sizeof(TXT_PROCESSOR_SMM_DESCRIPTOR);
@@ -123,7 +122,7 @@ void setup_smm_descriptor(void *smbase, void *base_smbase, int32_t apic_id,
 	read_gdtr(&gdtr);
 
 	gdtr.base -= (uintptr_t) smbase_processor;
-	gdtr.base += (uintptr_t) base_smbase;
+	gdtr.base += (uintptr_t) smbase;
 
 	psd->smm_gdt_ptr = gdtr.base;
 	psd->smm_gdt_size = gdtr.limit + 1; // the stm will subtract, so add
@@ -183,8 +182,8 @@ void stm_setup(uintptr_t mseg, int cpu, uintptr_t smbase,
 			cpu, MsegChk.hi, MsegChk.lo);
 
 		// setup the descriptor for this cpu
-		setup_smm_descriptor((void *)smbase, (void *) base_smbase,
-			cpu, offset32);
+		setup_smm_descriptor((void *)smbase, cpu, offset32);
+
 	} else {
 		printk(BIOS_DEBUG,
 			"STM: Error in STM load, STM not enabled: %d\n",

@@ -80,7 +80,7 @@ static const struct pad_config gpio_table[] = {
 	/* B13 : PLTRST# ==> PLT_RST_L */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 	/* B14 : SPKR ==> GPP_B14_STRAP */
-	PAD_NC(GPP_B14, NONE),
+	PAD_NC_LOCK(GPP_B14, NONE, LOCK_CONFIG),
 	/* B15 : TIME_SYNC0 ==> FP_USER_PRES_FP_L */
 	PAD_CFG_GPI_LOCK(GPP_B15, NONE, LOCK_CONFIG),
 	/* B16 : I2C5_SDA ==> PCH_I2C_TCHPAD_SDA */
@@ -118,7 +118,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_C7, NONE, PLTRST, LEVEL, NONE),
 
 	/* D0  : ISH_GP0 ==> PCH_FP_BOOT0 */
-	PAD_NC(GPP_D0, NONE),
+	PAD_NC_LOCK(GPP_D0, NONE, LOCK_CONFIG),
 	/* D1  : ISH_GP1 ==> FP_RST_ODL */
 	PAD_CFG_GPO_LOCK(GPP_D1, 1, LOCK_CONFIG),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
@@ -142,7 +142,7 @@ static const struct pad_config gpio_table[] = {
 	/* D11 : ISH_SPI_MISO ==> EN_PP3300_SSD */
 	PAD_CFG_GPO_LOCK(GPP_D11, 1, LOCK_CONFIG),
 	/* D12 : ISH_SPI_MOSI ==> GPP_D12_STRAP */
-	PAD_NC(GPP_D12, NONE),
+	PAD_NC_LOCK(GPP_D12, NONE, LOCK_CONFIG),
 	/* D13 : ISH_UART0_RXD ==> CAM_PSW_L */
 	PAD_CFG_GPI_INT_LOCK(GPP_D13, NONE, EDGE_BOTH, LOCK_CONFIG),
 	/* D14 : ISH_UART0_TXD ==> SPKR_INT_L */
@@ -170,7 +170,7 @@ static const struct pad_config gpio_table[] = {
 	/* E5  : SATA_DEVSLP1 ==> USB_A0_RT_RST_ODL */
 	PAD_CFG_GPO(GPP_E5, 1, DEEP),
 	/* E6  : THC0_SPI1_RST# ==> GPPE6_STRAP */
-	PAD_NC(GPP_E6, NONE),
+	PAD_NC_LOCK(GPP_E6, NONE, LOCK_CONFIG),
 	/* E7  : PROC_GP1 ==> EN_HPS_PWR */
 	PAD_CFG_GPO(GPP_E7, 1, DEEP),
 	/* E8  : SLP_DRAM# ==> WIFI_DISABLE_L */
@@ -285,9 +285,9 @@ static const struct pad_config gpio_table[] = {
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* H12 : I2C7_SDA ==> SD_PE_WAKE_ODL */
-	PAD_CFG_GPI(GPP_H12, NONE, DEEP),
+	PAD_CFG_GPI_LOCK(GPP_H12, NONE, LOCK_CONFIG),
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
-	PAD_NC(GPP_H13, UP_20K),
+	PAD_NC_LOCK(GPP_H13, UP_20K, LOCK_CONFIG),
 	/* H14 : NC */
 	PAD_NC(GPP_H14, NONE),
 	/* H15 : DDPB_CTRLCLK ==> DDIB_HDMI_CTRLCLK */

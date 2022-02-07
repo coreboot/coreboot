@@ -59,7 +59,7 @@ config SOC_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_MCAX	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_NONCAR	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_PCI		# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_PCI_MMCONF	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_PCI_MMCONF
 	select SOC_AMD_COMMON_BLOCK_PCIE_GPP_DRIVER	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_PM		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_PM_CHIPSET_STATE_SAVE	# TODO: Check if this is still correct

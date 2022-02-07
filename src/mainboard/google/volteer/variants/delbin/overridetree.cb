@@ -145,7 +145,7 @@ chip soc/intel/tigerlake
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
-				device i2c 1a on end
+				device i2c 1a alias audio_codec on end
 			end
 			chip drivers/i2c/max98373
 				register "vmon_slot_no" = "0"

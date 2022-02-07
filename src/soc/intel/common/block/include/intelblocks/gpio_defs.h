@@ -364,6 +364,14 @@
 		PAD_TRIG(OFF) | PAD_BUF(TX_RX_DISABLE),		\
 		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE))
 
+/* No Connect configuration with lock */
+#define PAD_NC_LOCK(pad, pull, lock_action)			\
+	_PAD_CFG_STRUCT_LOCK(pad,				\
+		PAD_RESET(PWROK) | PAD_FUNC(GPIO) |		\
+		PAD_TRIG(OFF) | PAD_BUF(TX_RX_DISABLE),		\
+		PAD_PULL(pull) | PAD_IOSSTATE(TxDRxE),		\
+		PAD_LOCK(lock_action))
+
 /* General purpose input, routed to APIC */
 #define PAD_CFG_GPI_APIC(pad, pull, rst, trig, inv)				\
 	_PAD_CFG_STRUCT(pad,							\
@@ -426,6 +434,13 @@
 		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE) |		\
 		PAD_IRQ_CFG(SCI, trig, inv), PAD_PULL(pull) |			\
 		PAD_IOSSTATE(TxDRxE))
+
+/* General purpose input with lock, routed to SCI */
+#define PAD_CFG_GPI_SCI_LOCK(pad, pull, trig, inv, lock_action)			\
+	_PAD_CFG_STRUCT_LOCK(pad,						\
+		PAD_FUNC(GPIO) | PAD_RESET(PWROK) | PAD_BUF(TX_DISABLE) |	\
+		PAD_IRQ_CFG(SCI, trig, inv), PAD_PULL(pull) |			\
+		PAD_IOSSTATE(TxDRxE), PAD_LOCK(lock_action))
 
 /* General purpose input, routed to SCI */
 #define PAD_CFG_GPI_SCI_IOS(pad, pull, rst, trig, inv, iosstate, iosterm)	\

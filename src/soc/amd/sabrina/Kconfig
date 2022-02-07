@@ -235,7 +235,7 @@ config ECAM_MMCONF_BUS_NUMBER
 
 config MAX_CPUS
 	int
-	default 16
+	default 8
 	help
 	  Maximum number of threads the platform can have.
 

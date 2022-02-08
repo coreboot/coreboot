@@ -19,9 +19,9 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_A22, NONE),
 
 	/* B3  : PROC_GP2 ==> NC */
-	PAD_NC(GPP_B3, NONE),
+	PAD_NC_LOCK(GPP_B3, NONE, LOCK_CONFIG),
 	/* B15  : TIME_SYNC0 ==> NC */
-	PAD_NC(GPP_B15, NONE),
+	PAD_NC_LOCK(GPP_B15, NONE, LOCK_CONFIG),
 
 	/* C3 : SML0CLK ==> NC */
 	PAD_NC(GPP_C3, NONE),
@@ -31,7 +31,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* D7  : SRCCLKREQ2# ==> NC */
 	PAD_NC(GPP_D7, NONE),
 	/* D13 : ISH_UART0_RXD ==> NC */
-	PAD_NC(GPP_D13, NONE),
+	PAD_NC_LOCK(GPP_D13, NONE, LOCK_CONFIG),
 
 	/* E3  : PROC_GP0 ==> NC */
 	PAD_NC(GPP_E3, NONE),
@@ -49,7 +49,7 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_F20, NONE),
 
 	/* H3  : SX_EXIT_HOLDOFF# ==> NC */
-	PAD_NC(GPP_H3, NONE),
+	PAD_NC_LOCK(GPP_H3, NONE, LOCK_CONFIG),
 	/* H6  : I2C1_SDA ==> PCH_I2C_TPM_SDA */
 	PAD_CFG_NF_LOCK(GPP_H6, NONE, NF1, LOCK_CONFIG),
 	/* H7  : I2C1_SCL ==> PCH_I2C_TPM_SCL */

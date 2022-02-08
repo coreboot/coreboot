@@ -76,16 +76,6 @@ chip soc/intel/alderlake
         # FIVR RFI Spread Spectrum 1.5%
         register "FivrSpreadSpectrum" = "FIVR_SS_1_5"
 
-	# This disables autonomous GPIO power management, otherwise
-	# old cr50 FW only supports short pulses.
-	register "gpio_override_pm" = "1"
-	register "gpio_pm[COMM_0]" = "0"
-	register "gpio_pm[COMM_1]" = "0"
-	register "gpio_pm[COMM_2]" = "0"
-	register "gpio_pm[COMM_3]" = "0"
-	register "gpio_pm[COMM_4]" = "0"
-	register "gpio_pm[COMM_5]" = "0"
-
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

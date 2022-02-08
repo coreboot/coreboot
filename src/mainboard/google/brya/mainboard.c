@@ -1,12 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpigen.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
+#include <drivers/tpm/cr50.h>
+#include <drivers/wwan/fm/chip.h>
 #include <ec/ec.h>
 #include <soc/ramstage.h>
 #include <fw_config.h>
-#include <acpi/acpigen.h>
-#include <drivers/wwan/fm/chip.h>
+#include <security/tpm/tss.h>
+#include <soc/gpio.h>
+#include <soc/ramstage.h>
 
 WEAK_DEV_PTR(rp6_wwan);
 
@@ -28,6 +32,29 @@ static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t
 
 void mainboard_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
+	int ret;
+
+	ret = tlcl_lib_init();
+	if (ret != VB2_SUCCESS) {
+		printk(BIOS_ERR, "tlcl_lib_init() failed: 0x%x\n", ret);
+		return;
+	}
+
+	if (cr50_is_long_interrupt_pulse_enabled()) {
+		printk(BIOS_INFO, "Enabling GPIO PM b/c CR50 has long IRQ pulse support\n");
+		config->gpio_override_pm = 0;
+	} else {
+		printk(BIOS_INFO, "Disabling GPIO PM b/c CR50 does not have long IRQ pulse "
+		       "support\n");
+		config->gpio_override_pm = 1;
+		config->gpio_pm[COMM_0] = 0;
+		config->gpio_pm[COMM_1] = 0;
+		config->gpio_pm[COMM_2] = 0;
+		config->gpio_pm[COMM_3] = 0;
+		config->gpio_pm[COMM_4] = 0;
+		config->gpio_pm[COMM_5] = 0;
+	}
+
 	variant_update_soc_chip_config(config);
 }
 

@@ -32,7 +32,7 @@ int mtk_wdt_init(void)
 		 * console (either in SRAM or DRAM) can be flushed.
 		 */
 		dcache_clean_all();
-		write32(&mtk_wdt->wdt_mode, MTK_WDT_MODE_EXTEN | MTK_WDT_MODE_KEY);
+		setbits32(&mtk_wdt->wdt_mode, MTK_WDT_MODE_EXTEN | MTK_WDT_MODE_KEY);
 		write32(&mtk_wdt->wdt_swrst, MTK_WDT_SWRST_KEY);
 	} else if (wdt_sta & MTK_WDT_STA_SW_RST)
 		printk(BIOS_INFO, "normal software reboot\n");

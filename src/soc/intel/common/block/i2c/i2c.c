@@ -127,7 +127,12 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 	if (res)
 		return res->base;
 
-	return (uintptr_t)NULL;
+	/* No resource found yet, it's possible this is running in the
+	 * PAYLOAD_LOADER stage before resources have been assigned yet,
+	 * therefore, any early init BAR should still be valid. */
+
+	/* Read the first base address for this device */
+	return (uintptr_t)ALIGN_DOWN(pci_read_config32(dev, PCI_BASE_ADDRESS_0), 16);
 }
 
 /*

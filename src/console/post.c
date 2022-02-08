@@ -19,7 +19,7 @@ void post_code(uint8_t value)
 		arch_post_code(value);
 
 		if (CONFIG(CONSOLE_POST))
-			printk(BIOS_EMERG, "POST: 0x%02x\n", value);
+			printk(BIOS_INFO, "POST: 0x%02x\n", value);
 
 		mainboard_post(value);
 	}

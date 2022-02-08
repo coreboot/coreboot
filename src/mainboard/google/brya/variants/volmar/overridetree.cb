@@ -11,6 +11,14 @@ fw_config
 		option AUDIO_UNKNOWN		0
 		option MAX98373_NAU88L25B_I2S	1
 	end
+	field BOOT_NVME_MASK 8
+		option BOOT_NVME_DISABLED		0
+		option BOOT_NVME_ENABLED		1
+	end
+	field BOOT_EMMC_MASK 9
+		option BOOT_EMMC_DISABLED		0
+		option BOOT_EMMC_ENABLED		1
+	end
 end
 chip soc/intel/alderlake
 	register "SaGv" = "SaGv_Enabled"
@@ -181,6 +189,7 @@ chip soc/intel/alderlake
 				.clk_src = 0,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
+			probe BOOT_NVME_MASK BOOT_NVME_ENABLED
 		end
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
@@ -283,12 +292,18 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref pcie_rp3 on
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B4)"
+				register "srcclk_pin" = "4"
+				device generic 0 alias emmc_rtd3 on end
+			end
 			# Enable PCIe-to-eMMC bridge PCIE 3 using clk 4
 			register "pch_pcie_rp[PCH_RP(3)]" = "{
 				.clk_src = 4,
 				.clk_req = 4,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
+			probe BOOT_EMMC_MASK BOOT_EMMC_ENABLED
 		end	#PCIE3 BH799BB
 		device ref pcie_rp6 off end	# PCIE6 WWAN
 		device ref pcie_rp8 off end	# PCIE8 SD card

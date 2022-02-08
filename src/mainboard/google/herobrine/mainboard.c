@@ -83,8 +83,6 @@ static void mainboard_init(struct device *dev)
 		qupv3_se_fw_load_and_init(QUPV3_0_SE1, SE_PROTOCOL_I2C, GSI);
 		/* ESIM SPI */
 		qupv3_se_fw_load_and_init(QUPV3_1_SE4, SE_PROTOCOL_SPI, MIXED);
-		/* Fingerprint SPI */
-		qupv3_se_fw_load_and_init(QUPV3_1_SE6, SE_PROTOCOL_SPI, MIXED);
 	} else {
 		/* Trackpad I2C */
 		qupv3_se_fw_load_and_init(QUPV3_0_SE0, SE_PROTOCOL_I2C, MIXED);

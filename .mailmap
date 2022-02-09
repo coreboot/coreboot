@@ -1,0 +1,425 @@
+# Map author and committer names and email addresses to canonical real names and
+# email addresses. https://git-scm.com/docs/gitmailmap
+#
+# Note that this is only needed in the case where someone has contributed
+# with multiple different email addresses or Names.
+#
+# Forms: Proper Name <commit@email.xx>
+#        Proper Name <proper@email.xx> <commit@email.xx>
+#        Proper Name <proper@email.xx> Commit Name <commit@email.xx>
+
+
+Aamir Bohra <aamirbohra@gmail.com> <aamir.bohra@intel.com>
+Aaron Durbin <adurbin@chromium.org>
+Aaron Durbin <adurbin@chromium.org> <adurbin@adurbin.bld.corp.google.com>
+Aaron Durbin <adurbin@chromium.org> <adurbin@google.com>
+Abhay Kumar <abhay.kumar@intel.com>
+Abhinav Hardikar <realdevmaster64@gmail.com> devmaster64 <devmaster64@gmail.com>
+Alex Levin <levinale@google.com> <levinale@chromium.org>
+Alex Miao <alex.miao@mediatek.corp-partner.google.com>
+Alexandru Gagniuc <mr.nuke.me@gmail.com> <alexandrux.gagniuc@intel.com>
+Alexandru Gagniuc <mr.nuke.me@gmail.com> mrnuke <mrnuke@nukelap.gtech>
+Amanda Huang <amanda_hwang@compal.corp-partner.google.com>
+Amol N Sukerkar <amol.n.sukerkar@intel.com>
+Andrea Barberio <barberio@fb.com> <insomniac@slackware.it>
+Andrey Petrov <anpetrov@fb.com> <andrey.petrov@intel.com>
+Andrey Pronin <apronin@chromium.org> <apronin@google.com>
+Andriy Gapon <avg@FreeBSD.org> <avg@icyb.net.ua>
+Anil Kumar <anil.kumar.k@intel.com> <anil.kumar.k@intel.corp-partner.google.com>
+Anish K. Patel <anishp@win-ent.com>
+Anton Kochkov <anton.kochkov@gmail.com> <a.kochkov@securitycode.ru>
+Antonello Dettori <dev@dettori.io> <dettori.an@gmail.com>
+Ariel Fang <ariel_fang@wistron.corp-partner.google.com>
+Arne Georg Gleditsch <arne.gleditsch@numascale.com> <arne.gleditsch@numscale.com>
+Asami Doi <d0iasm.pub@gmail.com> <doiasami1219@gmail.com>
+Ashwin Kumar <ashk@codeaurora.org>
+Axel Holewa <mono@posteo.de> Mono <mono-for-coreboot@donderklumpen.de>
+Axel Holewa <mono@posteo.de> Mono <mono@posteo.de>
+Bao Zheng <fishbaozi@gmail.com>
+Bao Zheng <fishbaozi@gmail.com> <Zheng Bao zheng.bao@amd.com>
+Bao Zheng <fishbaozi@gmail.com> <zheng.bao@amd.com>
+Bayi Cheng <bayi.cheng@mediatek.com>
+Ben Zhang <benzh@google.com> <benzh@chromium.org>
+Bernhard M. Wiedermann <corebootbmw@lsmod.de>
+Bill Xie <persmule@hardenedlinux.org> <persmule@gmail.com>
+Bill Xie <persmule@hardenedlinux.org> Bill XIE <persmule@hardenedlinux.org>
+Bingxun Shi <bingxunshi@gmail.com>
+Bingxun Shi <bingxunshi@gmail.com> <bxshi@msik.com.cn>
+Brandon Breitenstein <brandon.breitenstein@intel.com> <brandon.breitenstein@intel.corp-partner.google.com>
+Bruce Griffith <bruce.griffith@se-eng.com> <Bruce.Griffith@se-eng.com>
+Bryant Ou <Bryant.Ou.Q@gmail.com>
+Carl-Daniel Hailfinger <c-d.hailfinger.devel.2006@gmx.net> <Carl-Daniel Hailfinger>
+Casper Chang<casper_chang@wistron.corp-partner.google.com> <casper.chang@bitland.corp-partner.google.com>
+Caveh Jalali <caveh@chromium.org> <caveh@google.com>
+Caveh Jalali <caveh@chromium.org> caveh jalali <caveh@chromium.org>
+Charles Marslett <charles@scarlettechnologies.com> <charles.marslett@silverbackltd.com>
+Chee Soon Lew <chee.soon.lew@intel.com>
+Cheng-Yi Chiang <cychiang@chromium.org> <cychiang@google.com>
+Chris Ching <chris@ching.codes> <chingcodes@chromium.org>
+Chris Ching <chris@ching.codes> <chingcodes@google.com>
+Chris Wang <chris.wang@amd-corp-partner.google.com> <chriswang@ami.corp-partner.google.com>
+Chris Wang <chris.wang@amd-corp-partner.google.com> Chris Wang <chris.wang@amd-corp-partner.google.com>
+Chris Wang <chris.wang@amd-corp-partner.google.com> chris wang <chris.wang@amd.corp-partner.google.com>
+Chris Wang <chris.wang@amd-corp-partner.google.com> Chris.Wang <chris.wang@amd.corp-partner.google.com>
+Chris Zhou <chris_zhou@compal.corp-partner.google.com>
+Christian Ruppert <idl0r@qasl.de> <idl0r@gentoo.org>
+Chun-Jie Chen <chun-jie.chen@mediatek.corp-partner.google.com>
+Clay Daniels Jr <clay.daniels.jr@gmail.com>
+Cole Nelson<colex.nelson@intel.com>
+Corey Osgood <corey.osgod@gmail.com> <corey_osgood@verizon.net>
+Corey Osgood <corey.osgod@gmail.com> <corey.osgood@gmail.com>
+Cristian Măgherușan-Stanciu <cristi.magherusan@gmail.com>
+Cristian Măgherușan-Stanciu <cristi.magherusan@gmail.com> Cristi Magherusan <cristi.magherusan@net.utcluj.ro>
+Da Lao <dalao@tutanota.com> dalao <dalao@tutanota.com>
+Daisuke Nojiri <dnojiri@chromium.org> dnojiri <dnojiri@chromium.org>
+Dan Elkouby <streetwalkermc@gmail.com> <streetwalrus@codewalr.us>
+Daphne Jansen <dcjansen@chromium.org> Justin TerAvest <teravest@chromium.org>
+Daphne Jansen <dcjansen@chromium.org> Justin TerAvest <teravest@google.com>
+Dave Parker <dparker@chromium.org>
+David Hendricks <davidhendricks@gmail.com> <david.hendricks@gmail.com>
+David Hendricks <davidhendricks@gmail.com> <dhendricks@fb.com>
+David Hendricks <davidhendricks@gmail.com> <dhendrix@chromium.org>
+David Hendricks <davidhendricks@gmail.com> <dhendrix@fb.com>
+David Hendricks <davidhendricks@gmail.com> <dhendrix@google.com>
+David Hendricks <davidhendricks@gmail.com> David W. Hendricks <dwh@lanl.gov>
+David Wu <david_wu@quantatw.com> <david_wu@quanta.corp-partner.google.com>
+David Wu <david_wu@quantatw.com> david <david_wu@quantatw.com>
+Dawei Chien <dawei.chien@mediatek.com>
+Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org> <GNUtoo@no-log.org>
+Derek Huang <derek.huang@intel.com> <derek.huang@intel.corp-partner.google.com>
+Dmitry Ponamorev <dponamorev@gmail.com>
+Douglas Anderson <dianders@chromium.org>
+Duncan Laurie <dlaurie@chromium.org> <dlaurie@google.com>
+Ed Swierk <eswierk@aristanetworks.com> <eswierk@arastra.com>
+Edward O'Callaghan <quasisec@google.com> <edward.ocallaghan@koparo.com>
+Edward O'Callaghan <quasisec@google.com> <eocallaghan@alterapraxis.com>
+Edward O'Callaghan <quasisec@google.com> <funfunctor@folklore1984.net>
+Edward O'Callaghan <quasisec@google.com> <quasisec@chromium.org>
+Eric Biederman <ebiederm@xmission.com> <ebiederman@lnxi.com>
+Eric Biederman <ebiederm@xmission.com> Eric W. Biederman <ebiederm@xmission.com>
+Eugene Myers <edmyers@tycho.nsa.gov> <cedarhouse@comcast.net>
+Evgeny Zinoviev <me@ch1p.io> <me@ch1p.com>
+Felix Durairaj <felixx.durairaj@intel.com>
+Felix Held <felix-coreboot@felixheld.de> <felix-github@felixheld.de>
+Felix Held <felix-coreboot@felixheld.de> <felix.held@amd.corp-partner.google.com>
+Felix Singer <felixsinger@posteo.net> <felix.singer@9elements.com>
+Felix Singer <felixsinger@posteo.net> <felix.singer@secunet.com>
+Felix Singer <felixsinger@posteo.net> <migy@darmstadt.ccc.de>
+Francois Toguo Fotso <francois.toguo.fotso@intel.com> Francois Toguo <francois.toguo.fotso@intel.com>
+Frank Chu <frank_chu@pegatron.corp-partner.google.com>
+Frank Chu <frank_chu@pegatron.corp-partner.google.com> Frank Chu <Frank_Chu@pegatron.corp-partner.google.com>
+Frank Chu <frank_chu@pegatron.corp-partner.google.com> FrankChu <Frank_Chu@pegatron.corp-partner.google.com>
+Frank Vibrans <efdesign98@gmail.com> efdesign98 <efdesign98@gmail.com>
+Frank Vibrans <efdesign98@gmail.com> Frank Vibrans <frank.vibrans@amd.com>
+Frank Vibrans <efdesign98@gmail.com> frank vibrans <frank.vibrans@scarletltd.com>
+Frank Vibrans <efdesign98@gmail.com> Frank Vibrans <frank.vibrans@se-eng.com>
+Frank Vibrans <efdesign98@gmail.com> Frank.Vibrans <frank.vibrans@amd.com>
+Furquan Shaikh <furquan@chromium.org> <furquan@google.com>
+G. Pangao <gtk_pangao@mediatek.com> <gtk_pangao@mediatek.corp-partner.google.com>
+Gabe Black <gabeblack@chromium.org> <gabeblack@chromium.com>
+Gabe Black <gabeblack@chromium.org> <gabeblack@google.com>
+Gaggery Tsai <gaggery.tsai@intel.com>
+Georg Wicherski <gwicherski@gmail.com> <gw@oxff.net>
+Gomathi Kumar <gomathi.kumar@intel.com>
+Greg V <greg@unrelenting.technology>
+Greg Watson <gwatson@lanl.gov> <jarrah@users.sourceforge.net>
+Hannah Williams <hannah.williams@dell.com> <hannah.williams@intel.com>
+Hao Chou <hao_chou@pegatron.corp-partner.google.com>
+Haridhar Kalvala <haridhar.kalvala@intel.com> haridhar <haridhar.kalvala@intel.com>
+Harsha Priya <harshapriya.n@intel.com>
+Harsha Priya <harshapriya.n@intel.com> <harhapriya.n@intel.com>
+Harshit Sharma <harshitsharmajs@gmail.com> harshit <harshitsharmajs@gmail.com>
+Henry C Chen <henryc.chen@mediatek.com> henryc.chen <henryc.chen@mediatek.com>
+Himanshu Sahdev <sahdev.himan@gmail.com> <himanshusah@hcl.com>
+Himanshu Sahdev <sahdev.himan@gmail.com> Himanshu Sahdev aka CunningLearner <sahdev.himan@gmail.com>
+Hsuan Ting Chen <roccochen@chromium.org> Hsuan-ting Chen <roccochen@google.com>
+Huang Lin <hl@rock-chips.com>
+Huayang Duan <huayang.duan@mediatek.com>
+Huki Huang <huki.huang@intel.com>
+Idwer Vollering <vidwer@gmail.com> <idwer_v@hotmail.com>
+Igor Bagnucki <bagnucki02@gmail.com> <igor.bagnucki@3mdeb.com>
+Indrek Kruusa <indrek.kruusa@artecdesign.ee>  <Indrek Kruusa>
+Ivy Jian <ivy_jian@compal.com> <ivy_jian@compal.corp-partner.google.com>
+Jacob Laska <jlaska91@gmail.com> <jlaska@xes-inc.com>
+Jakub Czapiga <jacz@semihalf.com>
+Jason Wang <Qingpei.Wang@amd.com> Jason WangQingpei.wang <Jason WangQingpei.wang@amd.com>
+JasonX Z Chen <jasonx.z.chen@intel.com>
+Jens Kühnel <coreboot@jens.kuehnel.org> Jens Kuehnel <coreboot@jens.kuehnel.org>
+Jens Rottmann <JRottmann@LiPPERTembedded.de> <JRottmann@LiPPERTEmbedded.de>
+Jeremy Compostella  <jeremy.compostella@intel.com> <jeremy.compostella@gmail.com>
+Jeremy Soller <jackpot51@gmail.com> <jeremy@system76.com>
+Jiaxin Yu <jiaxin.yu@mediatek.com>
+Jiazi Yang <Tomato_Yang@asus.com>
+Jim Lai <jim.lai@intel.com>
+Jingle Hsu <jingle_hsu@wiwynn.com>
+Jinkun Hong <jinkun.hong@rock-chips.com>
+Joe Moore <awokd@danwin1210.me>
+Joe Pillow <joseph.a.pillow@gmail.com>
+Johanna Schander <coreboot@mimoja.de>
+John Zhao <john.zhao@intel.com>
+Jonathan Kollasch <jakllsch@kollasch.net>
+Jordan Crouse <jordan@cosmicpenguin.net>  <Jordan Crouse>
+Jordan Crouse <jordan@cosmicpenguin.net> <jordan.crouse@amd.com>
+Josef Kellermann <Joseph.Kellermann@heitec.de> <seppk@arcor.de>
+Josef Kellermann <Joseph.Kellermann@heitec.de> Josef Kellermannseppk <Josef Kellermannseppk@arcor.de>
+Joseph Smith <joe@settoplinux.org> <joe@settoplinux.org Acked-by: Joseph Smith joe@settoplinux.org>
+Joseph Smith <joe@settoplinux.org> <joe@smittys.pointclark.net>
+Juergen Beisert <juergen@kreuzholzen.de> <juergen127@kreuzholzen.de>
+Julian Schroeder <julianmarcusschroeder@gmail.com> <julian.schroeder@amd.com>
+Julien Viard de Galbert <julien@vdg.name> <jviarddegalbert@online.net>
+Justin Wu <amersel@runbox.me>
+Kaiyen Chang <kaiyen.chang@intel.com> <kaiyen.chang@intel.corp-partner.google.com>
+Kane Chen <kane.chen@intel.com> <kane_chen@pegatron.corp-partner.google.com>
+Kane Chen <kane.chen@intel.com> <kane.chen@intel.corp-partner.google.com>
+Kane Chen <kane.chen@intel.com> Kane Chenffd <kane_chen@pegatron.corp-partner.google.com>
+Kane Chen <kane.chen@intel.com> kane_chen <kane_chen@pegatron.corp-partner.google.com>
+Kane Chen <kane.chen@intel.com> YanRu Chen <kane_chen@pegatron.corp-partner.google.com>
+Kane Chen <kane.chen@intel.com> YenLu Chen <kane_chen@pegatron.corp-partner.google.com>
+Karthikeyan Ramasubramanian <kramasub@google.com> <kramasub@chromium.org>
+Katie Roberts-Hoffman <katierh@chromium.org>  <katierh@google.com>
+Kerry She <kerry.she@amd.com> <Kerry.she@amd.com>
+Kerry Sheh <shekairui@gmail.com>
+Kevin Chang <kevin.chang@lcfc.corp-partner.google.com>
+Kevin Chiu <kevin.chiu.17802@gmail.com> <kevin.chiu@quanta.corp-partner.google.com>
+Kevin Chiu <kevin.chiu.17802@gmail.com> <kevin.chiu@quantatw.com>
+Kevin Chiu <kevin.chiu.17802@gmail.com> <Kevin.Chiu@quantatw.com>
+Kevin Paul Herbert <kph@platinasystems.com> <kevin@trippers.org>
+Kevin Paul Herbert <kph@platinasystems.com> <kph@meraki.net>
+Kirk Wang <kirk_wang@pegatron.corp-partner.google.com> kirk_wang <kirk_wang@pegatron.corp-partner.google.com>
+Konstantin Aladyshev <aladyshev22@gmail.com> <aladyshev@nicevt.ru>
+Kyösti Mälkki <kyosti.malkki@gmail.com>
+Kyösti Mälkki <kyosti.malkki@gmail.com> <kyosti.malkki@3mdeb.com>
+Lean Sheng Tan <sheng.tan@9elements.com> <lean.sheng.tan@intel.com>
+Lee Leahy <lpleahyjr@gmail.com> <leroy.p.leahy@intel.com>
+Li Cheng Sooi <li.cheng.sooi@intel.com>
+Lijian Zhao <lijian.zhao@intel.com>
+Lin Huang <hl@rock-chips.com>
+Maciej Matuszczyk <maccraft123mc@gmail.com>
+Maggie Li <maggie.li@amd.com> <Maggie.li@amd.com>
+Manideep Kurumella <mkurumel@qualcomm.corp-partner.google.com> <mkurumel@codeaurora.org>
+Marc Jones <marc@marcjonesconsulting.com> <marc.jones@amd.com>
+Marc Jones <marc@marcjonesconsulting.com> <marc.jones@gmail.com>
+Marc Jones <marc@marcjonesconsulting.com> <marc.jones@scarletltd.com>
+Marc Jones <marc@marcjonesconsulting.com> <marc.jones@se-eng.com>
+Marc Jones <marc@marcjonesconsulting.com> <marcj.jones@amd.com>
+Marc Jones <marc@marcjonesconsulting.com> <marcj303@gmail.com>
+Marc Jones <marc@marcjonesconsulting.com> <marcj303@yahoo.com>
+Marc Jones <marc@marcjonesconsulting.com> <marcjones@sysproconsulting.com>
+Marc Jones <marc@marcjonesconsulting.com> Marc Jones (marc.jones <Marc Jones (marc.jones@amd.com)>
+Marc Jones <marc@marcjonesconsulting.com> Marc Jones(marc.jones <Marc Jones(marc.jones@amd.com)>
+Marcello Sylvester Bauer <sylv@sylv.io>
+Marcello Sylvester Bauer <sylv@sylv.io> <info@marcellobauer.com>
+Marcello Sylvester Bauer <sylv@sylv.io> <sylvblck@sylv.io>
+Marco Chen <marcochen@google.com> <marcochen@chromium.org>
+Mariusz Szafrański <mariuszx.szafranski@intel.com> Mariusz Szafranski <mariuszx.szafranski@intel.com>
+Marshall Dawson <marshalldawson3rd@gmail.com> <marshall.dawson@amd.corp-partner.google.com>
+Marshall Dawson <marshalldawson3rd@gmail.com> <marshall.dawson@scarletltd.com>
+Mart Raudsepp <leio@gentoo.org> <mart.raudsepp@artecdesign.ee>
+Martin Kepplinger <martink@posteo.de> <martin.kepplinger@puri.sm>
+Martin Roth <gaumless@gmail.com> <martin.roth@se-eng.com>
+Martin Roth <gaumless@gmail.com> <martin@coreboot.org>
+Martin Roth <gaumless@gmail.com> <martinr@coreboot.org>
+Martin Roth <gaumless@gmail.com> <martinroth@chromium.org>
+Martin Roth <gaumless@gmail.com> <martinroth@google.com>
+Martin Roth <gaumless@gmail.com> Martin Roth <martin@se-eng.com>
+Marx Wang <marx.wang@intel.com>
+Mathias Krause <minipli@googlemail.com> <mathias.krause@secunet.com>
+Mathias Krause <minipli@googlemail.com> <Mathias.Krause@secunet.com>
+Mats Erik Andersson <mats.andersson@gisladisker.org> <mats.andersson@gisladisker.se>
+Matt DeVillier <matt.devillier@gmail.com> <matt.devillier@puri.sm>
+Matt Papageorge <matthewpapa07@gmail.com> <matt.papageorge@amd.corp-partner.google.com>
+Matt Ziegelbaum <ziegs@google.com> <ziegs@chromium.org>
+Maulik V Vaghela <maulik.v.vaghela@intel.com>
+Maulik V Vaghela <maulik.v.vaghela@intel.com> <maulik.v.vaghela@intel.corp-partner.google.com>
+Max Blau <tripleshiftone@gmail.com> Bluemax <1403092+BlueMax@users.noreply.github.com>
+Maxim Polyakov <max.senia.poliak@gmail.com> <m.poliakov@yahoo.com>
+Mengqi Zhang <Mengqi.Zhang@mediatek.com> mengqi.zhang <mengqi.zhang@mediatek.com>
+Michael Niewöhner <foss@mniewoehner.de> <michael.niewoehner@8com.de>
+Michael Xie <Michael.Xie@amd.com> <Michael Xie Michael.Xie@amd.com>
+Michele Guerini Rocco <rnhmjoj@inventati.org>
+Mike Banon <mikebdp2@gmail.com> <mike.banon@3mdeb.com>
+Mike Hsieh <Mike_Hsieh@wistron.com> <mike_hsieh@wistron.corp-partner.google.com>
+Mike Loptien <loptienm@gmail.com> <mike.loptien@se-eng.com>
+Mondrian Nuessle <nuessle@uni-hd.de>
+Mondrian Nuessle <nuessle@uni-hd.de> <nuessle@uni-mannheim.de>
+Motiejus Jakštys <desired.mta@gmail.com>
+Myles Watson <mylesgw@gmail.com>  <myles@pel.cs.byu.edu>
+Nancy Lin <nancy.lin@mediatek.com>
+Naresh Solanki <naresh.solanki@intel.com>
+Naresh Solanki <naresh.solanki@intel.com> <Naresh.Solanki@intel.com>
+Naveen Manohar <naveen.m@intel.com>
+Naveen Manohar <naveen.m@intel.com>
+Neil Chen <neilc@nvidia.com> <neilc%nvidia.com@gtempaccount.com>
+Nick Chen <nick_xr_chen@wistron.corp-partner.google.com>
+Nick Vaccaro <nvaccaro@google.com> <nvaccaro@chromium.org>
+Nicky Sielicki <nlsielicki@wisc.edu>
+Nico Huber <nico.h@gmx.de> <nico.huber@secunet.com>
+Nicolas Boichat <drinkcat@chromium.org> <drinkcat@google.com>
+Nicolas Reinecke <nr@das-labor.org>
+Nils Jacobs <njacobs8@adsltotaal.nl> <njacobs8@hetnet.nl>
+Nina Wu <nina-cm.wu@mediatek.com> <nina-cm.wu@mediatek.corp-partner.google.com>
+Oskar Enoksson <enok@lysator.liu.se>
+Oskar Enoksson <enok@lysator.liu.se> <oskeno@foi.se>
+Pablo Moyano <42.pablo.ms@gmail.com> p4block <p4block@users.noreply.github.com>
+Patrick Georgi <patrick@coreboot.org> <Patrick Georgi patrick.georgi@coresystems.de>
+Patrick Georgi <patrick@coreboot.org> <Patrick Georgi patrick@georgi-clan.de>
+Patrick Georgi <patrick@coreboot.org> <patrick.georgi@coresystems.de>
+Patrick Georgi <patrick@coreboot.org> <patrick.georgi@secunet.com>
+Patrick Georgi <patrick@coreboot.org> <Patrick.Georgi@secunet.com>
+Patrick Georgi <patrick@coreboot.org> <patrick@georgi-clan.de>
+Patrick Georgi <patrick@coreboot.org> <patrick@georgi.software>
+Patrick Georgi <patrick@coreboot.org> Patrick Georgi <pgeorgi@chromium.org>
+Patrick Georgi <patrick@coreboot.org> Patrick Georgi <pgeorgi@google.com>
+Patrick Rudolph  <siro@das-labor.org> <patrick.rudolph@9elements.com>
+Paul Fagerburg <pfagerburg@chromium.org> <pfagerburg@google.com>
+Paul Kocialkowski <contact@paulk.fr>
+Paul Ma <magf@bitland.com.cn> <magf@bitland.corp-partner.google.com>
+Paul Ma <magf@bitland.com.cn> Magf - <magf@bitland.corp-partner.google.com>
+Paul Menzel <pmenzel@molgen.mpg.de> <paulepanter@mailbox.org>
+Paul Menzel <pmenzel@molgen.mpg.de> <paulepanter@users.sourceforge.net>
+Peichao Wang <peichao.wang@bitland.corp-partner.google.com>
+Peichao Wang <peichao.wang@bitland.corp-partner.google.com>
+Philip Chen <philipchen@google.com>
+Philip Chen <philipchen@google.com> <philipchen@chromium.org>
+Philipp Deppenwiese <zaolin.daisuki@gmail.com>
+Philipp Deppenwiese <zaolin.daisuki@gmail.com> <philipp.deppenwiese@9elements.com>
+Philipp Deppenwiese <zaolin.daisuki@gmail.com> <zaolin@das-labor.org>
+Ping-chung Chen <ping-chung.chen@intel.com>
+Ping-chung Chen <ping-chung.chen@intel.com>
+Piotr Kleinschmidt <piotr.kleinschmidt@3mdeb.com> <piotr.kleins@gmail.com>
+Piotr Szymaniak <szarpaj@grubelek.pl>
+Po Xu <jg_poxu@mediatek.com>
+Po Xu <jg_poxu@mediatek.com> <jg_poxu@mediatek.corp-partner.google.com>
+Praveen Hodagatta Pranesh <praveenx.hodagatta.pranesh@intel.com>
+Preetham Chandrian <preetham.chandrian@intel.com>
+Puthikorn Voravootivat <puthik@chromium.org> <puthik@google.com>
+QingPei Wang <wangqingpei@gmail.com>
+Quan Tran <qeed.quan@gmail.com>
+Rasheed Hsueh <rasheed.hsueh@lcfc.corp-partner.google.com>
+Raul Rangel <rrangel@chromium.org>
+Ravi Kumar Bokka <rbokka@codeaurora.org>
+Ravindra <ravindra@intel.com>
+Ravindra <ravindra@intel.com> Ravindra N <ravindra@intel.corp-partner.google.com>
+Ravishankar Sarawadi <ravishankar.sarawadi@intel.com>
+Raymond Chung <raymondchung@ami.corp-partner.google.com>
+Raymond Danks <raymonddanks@gmail.com> <ray.danks@se-eng.com>
+Reka Norman <rekanorman@google.com> <rekanorman@chromium.org>
+Ren Kuo <ren.kuo@quantatw.com>
+Ren Kuo <ren.kuo@quantatw.com> <ren.kuo@quanta.corp-partner.google.com>
+Rex-BC Chen <rex-bc.chen@mediatek.com> <rex-bc.chen@mediatek.corp-partner.google.com>
+Ricardo Ribalda <ribalda@chromium.org> <ricardo.ribalda@gmail.com>
+Richard Spiegel <richard.spiegel@silverbackltd.com> <richard.spiegel@amd.corp-partner.google.com>
+Rishavnath Satapathy <rishavnath.satapathy@intel.com>
+Ritul Guru <ritul.bits@gmail.com>
+Rizwan Qureshi <rizwan.qureshi@intel.com> <rizwan.qureshi@intel.corp-partner.google.com>
+Robbie Zhang <robbie.zhang@intel.com>
+Robert Chen <robert.chen@quanta.corp-partner.google.com>
+Robert Chen <robert.chen@quanta.corp-partner.google.com> = <robert.chen@quanta.corp-partner.google.com>
+Roger Pau Monne <roger.pau@citrix.com>
+Roman Kononov <kononov@dls.net> <kononov195-lbl@yahoo.com>
+Ron Minnich <rminnich@gmail.com>
+Ron Minnich <rminnich@gmail.com> <Ron Minnich>
+Ron Minnich <rminnich@gmail.com> <Ronald G. Minnich rminnich@gmail.com>
+Ron Minnich <rminnich@gmail.com> Ronald G. Minnich <minnich@google.com>
+Ron Minnich <rminnich@gmail.com> Ronald G. Minnich <rminnich@chromium.org>
+Ron Minnich <rminnich@gmail.com> Ronald G. Minnich <rminnich@google.com>
+Ron Minnich <rminnich@gmail.com> Ronald G. Minnich <rminnich@lanl.gov>
+Ron Minnich <rminnich@gmail.com> ronald g. minnich <ronald g. minnich>
+Ron Minnich <rminnich@gmail.com> Ronald G. Minnich <Ronald G. Minnich>
+Ronak Kanabar <ronak.kanabar@intel.com>
+Rudolf Marek <r.marek@assembler.cz> <r.marek@asssembler.cz>
+Ryan Chuang <ryan.chuang@mediatek.com> <ryan.chuang@mediatek.corp-partner.google.com>
+Santhosh Janardhana Hassan <sahassan@google.com>
+Scott Chao <scott_chao@wistron.corp-partner.google.com> <scott.chao@bitland.corp-partner.google.com>
+Scott Duplichan <scott@notabs.org> <sc...@notabs.org>
+Scott Tsai <AT>
+Sebastian "Swift Geek" Grzywna <swiftgeek@gmail.com>
+Selma Bensaid <selma.bensaid@intel.com>
+Seunghwan Kim <sh_.kim@samsung.com>
+Seunghwan Kim <sh_.kim@samsung.com> <sh_.kim@samsung.corp-partner.google.com>
+Seunghwan Kim <sh_.kim@samsung.com> sh.kim <sh_.kim@samsung.corp-partner.google.com>
+Shawn Chang <citypw@gmail.com>
+Shawn Nematbakhsh <shawnn@google.com> <shawnn@chromium.org>
+Shelley Chen <shchen@google.com> <shchen@chromium.org>
+Sheng-Liang Pan <Sheng-Liang.Pan@quantatw.com> <sheng-liang.pan@quanta.corp-partner.google.com>
+Shreesh Chhabbi <shreesh.chhabbi@intel.com> <shreesh.chhabbi@intel.corp-partner.google.com>
+Shunqian Zheng <zhengsq@rock-chips.com>
+Siyuan Wang <wangsiyuanbuaa@gmail.com>
+Sowmya <v.sowmya@intel.com>
+Sridhar Siricilla <sridhar.siricilla@intel.com>
+Sridhar Siricilla <sridhar.siricilla@intel.com> <sridhar.siricilla@intel.corp-partner.google.com>
+Srinidhi Kaushik <srinidhi.n.kaushik@intel.com>
+Stanley Wu <stanley1.wu@lcfc.corp-partner.google.com>
+Stefan Ott <stefan@ott.net> <coreboot@desire.ch>
+Stefan Reinauer <stepan@coreboot.org> <reinauer@chromium.org>
+Stefan Reinauer <stepan@coreboot.org> <reinauer@google.com>
+Stefan Reinauer <stepan@coreboot.org> <Stefan Reinauerstepan@coresystems.de>
+Stefan Reinauer <stepan@coreboot.org> <stefan.reinauer@coreboot.org>
+Stefan Reinauer <stepan@coreboot.org> <stepan@coresystems.de>
+Stefan Reinauer <stepan@coreboot.org> <stepan@openbios.org>
+Stephan Guilloux <stephan.guilloux@free.fr> <mailto:stephan.guilloux@free.fr>
+Subrata Banik <subratabanik@google.com> <subi.banik@gmail.com>
+Subrata Banik <subratabanik@google.com> <subrata.banik@intel.com>
+Subrata Banik <subratabanik@google.com> <subrata.banik@intel.com>
+Sudheer Kumar Amrabadi <samrab@codeaurora.org>
+Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+Sunwei Li <lisunwei@huaqin.corp-partner.google.com>
+Susendra Selvaraj <susendra.selvaraj@intel.com>
+Sylvain "ythier" Hitier <sylvain.hitier@gmail.com>
+T Michael Turney <mturney@codeaurora.org> mturney mturney <quic_mturney@quicinc.com>
+T Michael Turney <mturney@codeaurora.org> T Michael Turney <quic_mturney@quicinc.com>
+T.H. Lin <T.H_Lin@quantatw.com> <t.h_lin@quanta.corp-partner.google.com>
+T.H. Lin <T.H_Lin@quantatw.com> T.H.Lin <T.H_Lin@quantatw.com>
+Taniya Das <quic_tdas@quicinc.com> <tdas@codeaurora.org>
+Tao Xia <xiatao5@huaqin.corp-partner.google.com>
+Thejaswani Putta  <thejaswani.putta@intel.com> <thejaswani.putta@intel.corp-partner.google.com>
+Thejaswani Putta <thejaswani.putta@intel.com>
+Thejaswani Putta <thejaswani.putta@intel.com> Thejaswani Puta thejaswani.putta@intel.com <thejaswani.putta@intel.com>
+Thomas Heijligen <thomas.heijligen@secunet.com> <src@posteo.de>
+Tim Chen <Tim-Chen@quantatw.com> <tim-chen@quanta.corp-partner.google.com>
+Tim Chu <Tim.Chu@quantatw.com>
+Tim Wawrzynczak <twawrzynczak@chromium.org> <twawrzynczak@google.com>
+Timothy Pearson <tpearson@raptorengineering.com> <tpearson@raptorengineeringinc.com>
+Tinghan Shen <tinghan.shen@mediatek.com>
+Tobias Diedrich <ranma+coreboot@tdiedrich.de> <ranma+openocd@tdiedrich.de>
+Tracy Wu <tracy.wu@intel.com> <tracy.wu@intel.corp-partner.google.com>
+Tristan Corrick <tristan@corrick.kiwi> <tristancorrick86@gmail.com>
+Tyler Wang <tyler.wang@quanta.corp-partner.google.com> <Tyler.Wang@quanta.corp-partner.google.com>
+Usha P <usha.p@intel.com> <usha.p@intel.corp-partner.google.com>
+V Sujith Kumar Reddy <vsujithk@codeaurora.org>
+Vadim Bendebury <vbendeb@chromium.org> <vbendeb@google.com>
+Vaibhav Shankar <vaibhav.shankar@intel.com>
+Van Chen <van_chen@compal.corp-partner.google.com>
+Varshit Pandya <varshit.b.pandya@intel.com>
+Varshit Pandya <varshit.b.pandya@intel.com> Varshit B Pandya <varshit.b.pandya@intel.com>
+Varun Joshi <varun.joshi@intel.com> <varun.joshi@intel.corp-partner.google.com>
+Vincent Lim <vincent.lim@amd.com>  <Vincent Lim vincent.lim@amd.com>
+Vladimir Serbinenko <phcoder@gmail.com>
+Wayne3 Wang <wayne3_wang@pegatron.corp-partner.google.com> <Wayne3_Wang@pegatron.corp-partner.google.com>
+William Wu <wulf@rock-chips.com>
+Wim Vervoorn <wvervoorn@eltan.com>
+Wisley Chen <wisley.chen@quantatw.com>
+Wisley Chen <wisley.chen@quantatw.com> <wisley.chen@quanta.corp-partner.google.com>
+Xi Chen <xixi.chen@mediatek.com> <xixi.chen@mediatek.corp-partner.google.com>
+Xiang Wang <merle@hardenedlinux.org> <wxjstz@126.com>
+Xingyu Wu <wuxy@bitland.corp-partner.google.com>
+Xuxin Xiong <xuxinxiong@huaqin.corp-partner.google.com>
+Yang A Fang <yang.a.fang@intel.com>
+Yinghai Lu <yinghailu@gmail.com> <yinghai.lu at amd.com>
+Yinghai Lu <yinghailu@gmail.com> <yinghai.lu@amd.com>
+Yinghai Lu <yinghailu@gmail.com> <yinghai@kernel.org>
+Yongkun Yu <yuyongkun@huaqin.corp-partner.google.com>
+Yongqiang Niu <yongqiang.niu@mediatek.com>
+Youness Alaoui <snifikino@gmail.com> <kakaroto@kakaroto.homelinux.net>
+Youness Alaoui <snifikino@gmail.com> <youness.alaoui@puri.sm>
+Yu-Hsuan Hsu <yuhsuan@google.com>
+Yu-Hsuan Hsu <yuhsuan@google.com> <yuhsuan@chromium.org>
+Yu-Ping Wu <yupingso@google.com> <yupingso@chromium.org>
+Yuanlidingm <yuanliding@huaqin.corp-partner.google.com>
+Yuchen Huang <yuchen.huang@mediatek.com> <yuchen.huang@mediatek.corp-partner.google.com>
+Yuji Sasaki <sasakiy@chromium.org> <sasakiy@google.com>
+Zanxi Chen <chenzanxi@huaqin.corp-partner.google.com>
+Zhi Li <lizhi7@huaqin.corp-partner.google.com>
+Zhongze Hu <frankhu@chromium.org> <frankhu@google.com>
+Zhuo-Hao Lee <zhuo-hao.lee@intel.com>
+Zhuohao Lee <zhuohao@chromium.org> <zhuohao@google.com>

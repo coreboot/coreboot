@@ -74,6 +74,7 @@ static void wrap_interactive_printf(const char *fmt, ...)
 	va_list args;
 	va_start(args, fmt);
 	vtxprintf(console_interactive_tx_byte, fmt, args, NULL);
+	va_end(args);
 }
 
 static void line_start(union log_state state)

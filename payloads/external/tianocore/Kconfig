@@ -156,6 +156,12 @@ config TIANOCORE_HAVE_EFI_SHELL
 	help
 	  Include the EFI shell Binary
 
+config TIANOCORE_PS2_SUPPORT
+	bool "Support PS/2 Keyboards"
+	default y
+	help
+	  Include support for PS/2 keyboards
+
 endif
 
 if TIANOCORE_COREBOOTPAYLOAD

@@ -97,8 +97,15 @@ int __weak variant_memory_sku(void)
 
 bool __weak variant_is_half_populated(void)
 {
-	/* ADL-N only has a single memory channel. */
-	return false;
+	/*
+	 * Ideally half_populated is used in platforms with multiple channels to
+	 * enable only one half of the channel. Alder Lake N has single channel,
+	 * and it would require for new structures to be defined in meminit block
+	 * driver for LPx memory configurations. In order to avoid adding new
+	 * structures, set half_populated to true. This has the same effect as
+	 * having single channel with 64-bit width.
+	*/
+	return true;
 }
 
 void __weak variant_get_spd_info(struct mem_spd *spd_info)

@@ -101,25 +101,30 @@ smm_trampoline32:
 	 * the OS can manipulate the APIC id use the non-changing cpuid result
 	 * for APIC id (eax). A table is used to handle a discontiguous
 	 * APIC id space.  */
+apic_id:
+	mov	$LAPIC_BASE_MSR, %ecx
+	rdmsr
+	and	$LAPIC_BASE_X2APIC_ENABLED, %eax
+	cmp	$LAPIC_BASE_X2APIC_ENABLED, %eax
+	jne	xapic
 
-	mov	$0, %eax
-	cpuid
-	cmp	$0xb, %eax
-	jc	1f
+x2apic:
 	mov	$0xb, %eax
 	mov	$0, %ecx
 	cpuid
 	mov	%edx, %eax
-	jmp	2f
-1:
+	jmp	apicid_end
+
+xapic:
 	mov	$1, %eax
 	cpuid
 	mov	%ebx, %eax
 	shr	$24, %eax
-2:
 
+apicid_end:
 	mov	$(apic_to_cpu_num), %ebx
 	xor	%ecx, %ecx
+
 1:
 	cmp	(%ebx, %ecx, 2), %ax
 	je	1f

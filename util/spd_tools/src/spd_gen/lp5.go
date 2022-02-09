@@ -57,6 +57,8 @@ type LP5SPDAttribTableEntry struct {
 
 type LP5Set struct {
 	SPDRevision    byte
+	optionalFeatures  byte
+	otherOptionalFeatures  byte
 	busWidthEncoding  byte
 }
 
@@ -74,6 +76,7 @@ const (
 	LP5SPDIndexAddressing                      = 5
 	LP5SPDIndexPackageType                     = 6
 	LP5SPDIndexOptionalFeatures                = 7
+	LP5SPDIndexOtherOptionalFeatures           = 9
 	LP5SPDIndexModuleOrganization              = 12
 	LP5SPDIndexBusWidth                        = 13
 	LP5SPDIndexTimebases                       = 17
@@ -132,15 +135,6 @@ const (
 
 	/*
 	 * From JEDEC spec:
-	 * 5:4 (Maximum Activate Window) = 00 (8192 * tREFI)
-	 * 3:0 (Maximum Activate Count) = 1000 (Unlimited MAC)
-	 * Set to 0x08.
-	 */
-	LP5SPDValueOptionalFeatures = 0x08
-
-
-	/*
-	 * From JEDEC spec:
 	 * 3:2 (MTB) = 00 (0.125ns)
 	 * 1:0 (FTB) = 00 (1ps)
 	 * Set to 0x00.
@@ -185,6 +179,13 @@ var LP5SetInfo = map[int]LP5Set{
 	0: {
 		SPDRevision: LP5SPDValueRevision1_0,
 		/*
+		 * From JEDEC spec:
+		 * 5:4 (Maximum Activate Window) = 00 (8192 * tREFI)
+		 * 3:0 (Maximum Activate Count) = 1000 (Unlimited MAC)
+		 * Set to 0x08.
+		 */
+		optionalFeatures: 0x08,
+		/*
 		 * For ADL (as per advisory #616599):
 		 * 7:5 (Number of system channels) = 000 (1 channel always)
 		 * 4:3 (Bus width extension) = 00 (no ECC)
@@ -195,6 +196,19 @@ var LP5SetInfo = map[int]LP5Set{
 	},
 	1: {
 		SPDRevision: LP5SPDValueRevision1_1,
+		/*
+		 * For Sabrina (as per advisory b/211510456):
+		 * 5:4 (Maximum Activate Window) = 01 (4096 * tREFI)
+		 * 3:0 (Maximum Activate Count) = 1000 (Unlimited MAC)
+		 * Set to 0x18.
+		 */
+		 optionalFeatures: 0x18,
+		/*
+		 * For Sabrina (as per advisory b/211510456):
+		 * 7:6 (PPR) = 1 (Post Package Repair is supported)
+		 * Set to 0x40.
+		 */
+		 otherOptionalFeatures: 0x40,
 		/*
 		 * For Sabrina (as per advisory b/211510456):
 		 * 7:5 (Number of system channels) = 000 (1 channel always)
@@ -306,31 +320,32 @@ var LP5SpeedMbpsToSPDEncoding = map[int]LP5SpeedParams{
 }
 
 var LP5SPDAttribTable = map[int]LP5SPDAttribTableEntry{
-	LP5SPDIndexSize:               {constVal: LP5SPDValueSize},
-	LP5SPDIndexRevision:           {getVal: LP5EncodeSPDRevision},
-	LP5SPDIndexMemoryType:         {constVal: LP5SPDValueMemoryType},
-	LP5SPDIndexModuleType:         {constVal: LP5SPDValueModuleType},
-	LP5SPDIndexDensityBanks:       {getVal: LP5EncodeDensityBanks},
-	LP5SPDIndexAddressing:         {getVal: LP5EncodeSdramAddressing},
-	LP5SPDIndexPackageType:        {getVal: LP5EncodePackageType},
-	LP5SPDIndexOptionalFeatures:   {constVal: LP5SPDValueOptionalFeatures},
-	LP5SPDIndexModuleOrganization: {getVal: LP5EncodeModuleOrganization},
-	LP5SPDIndexBusWidth:           {getVal: LP5EncodeBusWidth},
-	LP5SPDIndexTimebases:          {constVal: LP5SPDValueTimebases},
-	LP5SPDIndexTCKMin:             {getVal: LP5EncodeTCKMin},
-	LP5SPDIndexTCKMinFineOffset:   {getVal: LP5EncodeTCKMinFineOffset},
-	LP5SPDIndexTAAMin:             {getVal: LP5EncodeTAAMin},
-	LP5SPDIndexTAAMinFineOffset:   {getVal: LP5EncodeTAAMinFineOffset},
-	LP5SPDIndexTRCDMin:            {getVal: LP5EncodeTRCDMin},
-	LP5SPDIndexTRCDMinFineOffset:  {getVal: LP5EncodeTRCDMinFineOffset},
-	LP5SPDIndexTRPABMin:           {getVal: LP5EncodeTRPABMin},
-	LP5SPDIndexTRPABMinFineOffset: {getVal: LP5EncodeTRPABMinFineOffset},
-	LP5SPDIndexTRPPBMin:           {getVal: LP5EncodeTRPPBMin},
-	LP5SPDIndexTRPPBMinFineOffset: {getVal: LP5EncodeTRPPBMinFineOffset},
-	LP5SPDIndexTRFCABMinLSB:       {getVal: LP5EncodeTRFCABMinLsb},
-	LP5SPDIndexTRFCABMinMSB:       {getVal: LP5EncodeTRFCABMinMsb},
-	LP5SPDIndexTRFCPBMinLSB:       {getVal: LP5EncodeTRFCPBMinLsb},
-	LP5SPDIndexTRFCPBMinMSB:       {getVal: LP5EncodeTRFCPBMinMsb},
+	LP5SPDIndexSize:                  {constVal: LP5SPDValueSize},
+	LP5SPDIndexRevision:              {getVal: LP5EncodeSPDRevision},
+	LP5SPDIndexMemoryType:            {constVal: LP5SPDValueMemoryType},
+	LP5SPDIndexModuleType:            {constVal: LP5SPDValueModuleType},
+	LP5SPDIndexDensityBanks:          {getVal: LP5EncodeDensityBanks},
+	LP5SPDIndexAddressing:            {getVal: LP5EncodeSdramAddressing},
+	LP5SPDIndexPackageType:           {getVal: LP5EncodePackageType},
+	LP5SPDIndexOptionalFeatures:      {getVal: LP5EncodeOptionalFeatures},
+	LP5SPDIndexOtherOptionalFeatures: {getVal: LP5EncodeOtherOptionalFeatures},
+	LP5SPDIndexModuleOrganization:    {getVal: LP5EncodeModuleOrganization},
+	LP5SPDIndexBusWidth:              {getVal: LP5EncodeBusWidth},
+	LP5SPDIndexTimebases:             {constVal: LP5SPDValueTimebases},
+	LP5SPDIndexTCKMin:                {getVal: LP5EncodeTCKMin},
+	LP5SPDIndexTCKMinFineOffset:      {getVal: LP5EncodeTCKMinFineOffset},
+	LP5SPDIndexTAAMin:                {getVal: LP5EncodeTAAMin},
+	LP5SPDIndexTAAMinFineOffset:      {getVal: LP5EncodeTAAMinFineOffset},
+	LP5SPDIndexTRCDMin:               {getVal: LP5EncodeTRCDMin},
+	LP5SPDIndexTRCDMinFineOffset:     {getVal: LP5EncodeTRCDMinFineOffset},
+	LP5SPDIndexTRPABMin:              {getVal: LP5EncodeTRPABMin},
+	LP5SPDIndexTRPABMinFineOffset:    {getVal: LP5EncodeTRPABMinFineOffset},
+	LP5SPDIndexTRPPBMin:              {getVal: LP5EncodeTRPPBMin},
+	LP5SPDIndexTRPPBMinFineOffset:    {getVal: LP5EncodeTRPPBMinFineOffset},
+	LP5SPDIndexTRFCABMinLSB:          {getVal: LP5EncodeTRFCABMinLsb},
+	LP5SPDIndexTRFCABMinMSB:          {getVal: LP5EncodeTRFCABMinMsb},
+	LP5SPDIndexTRFCPBMinLSB:          {getVal: LP5EncodeTRFCPBMinLsb},
+	LP5SPDIndexTRFCPBMinMSB:          {getVal: LP5EncodeTRFCPBMinMsb},
 }
 
 /* ------------------------------------------------------------------------------------------ */
@@ -416,6 +431,26 @@ func LP5EncodeModuleOrganization(memAttribs *LP5MemAttributes) byte {
 	b |= byte(memAttribs.RanksPerChannel-1) << 3
 
 	return b
+}
+
+func LP5EncodeOptionalFeatures(memAttribs *LP5MemAttributes) byte {
+	f, ok := LP5SetInfo[LP5CurrSet]
+
+	if ok == false {
+		return 0
+	}
+
+	return f.optionalFeatures
+}
+
+func LP5EncodeOtherOptionalFeatures(memAttribs *LP5MemAttributes) byte {
+	f, ok := LP5SetInfo[LP5CurrSet]
+
+	if ok == false {
+		return 0
+	}
+
+	return f.otherOptionalFeatures
 }
 
 func LP5EncodeBusWidth(memAttribs *LP5MemAttributes) byte {

@@ -160,6 +160,7 @@ config MAINBOARD_PART_NUMBER
 	default "Volmar" if BOARD_GOOGLE_VOLMAR
 	default "Banshee" if BOARD_GOOGLE_BANSHEE
 	default "Crota" if BOARD_GOOGLE_CROTA
+	default "Moli" if BOARD_GOOGLE_MOLI
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -185,6 +186,7 @@ config VARIANT_DIR
 	default "volmar" if BOARD_GOOGLE_VOLMAR
 	default "banshee" if BOARD_GOOGLE_BANSHEE
 	default "crota" if BOARD_GOOGLE_CROTA
+	default "moli" if BOARD_GOOGLE_MOLI
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC

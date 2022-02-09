@@ -120,6 +120,10 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50
 
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-serger.fmd" if BOARD_GOOGLE_KANO || BOARD_GOOGLE_BRASK
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
+
 config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 13 # GPE0_DW0_13 (GPP_A13_IRQ)

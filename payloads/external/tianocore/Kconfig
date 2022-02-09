@@ -119,6 +119,13 @@ config TIANOCORE_BOOTSPLASH_FILE
 	  If an absolute path is not given, the path will assumed to be
 	  relative to the coreboot root directory.
 
+config TIANOCORE_BOOT_MANAGER_ESCAPE
+	bool "Use Escape key for Boot Manager"
+	default n
+	help
+	  Use Escape as the hot-key to access the Boot Manager. This replaces
+	  the default key of F2.
+
 config TIANOCORE_BOOT_TIMEOUT
 	int
 	default 2

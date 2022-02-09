@@ -147,8 +147,14 @@ config TIANOCORE_FOLLOW_BGRT_SPEC
 	default n
 	help
 	  Follow the BGRT Specification implemented by Microsoft and
-	  the Boot Logo will be vertically centered 38.2% from the
-	  top of the display.
+	  the Boot Logo 38.2% will be vertically centered 38.2% from
+	  the top of the display.
+
+config TIANOCORE_HAVE_EFI_SHELL
+	bool "Include EFI Shell"
+	default y
+	help
+	  Include the EFI shell Binary
 
 endif
 

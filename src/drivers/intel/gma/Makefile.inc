@@ -8,6 +8,7 @@ endif
 ramstage-$(CONFIG_INTEL_GMA_ACPI) += acpi.c
 ramstage-$(CONFIG_INTEL_GMA_ACPI) += opregion.c
 
+ifeq ($(CONFIG_INTEL_GMA_ADD_VBT),y)
 # add_vbt_to_cbfs, first argument is the filename in cbfs, the second one
 # is the filename in the coreboot tree.
 add_vbt_to_cbfs= \
@@ -15,10 +16,9 @@ add_vbt_to_cbfs= \
 	$(eval $1-file := $2) \
 	$(eval $1-type := raw) \
 	$(eval $1-compression := lzma)
-
-ifeq ($(CONFIG_INTEL_GMA_ADD_VBT),y)
-$(call add_vbt_to_cbfs, vbt.bin, $(call strip_quotes,$(CONFIG_INTEL_GMA_VBT_FILE)))
 endif
+
+$(call add_vbt_to_cbfs, vbt.bin, $(call strip_quotes,$(CONFIG_INTEL_GMA_VBT_FILE)))
 
 ifeq ($(CONFIG_GFX_GMA),y)
 

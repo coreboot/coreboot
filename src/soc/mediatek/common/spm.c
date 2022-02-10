@@ -50,5 +50,7 @@ void spm_parse_firmware(struct mtk_mcu *mcu)
 	/* Version */
 	offset += copy_size;
 	assert(offset < file_size);
-	printk(BIOS_INFO, "SPM: spmfw (version %s)\n", (u8 *)mcu->load_buffer + offset);
+	printk(BIOS_INFO, "SPM: spmfw (version %.*s)\n",
+	       (int)(file_size - offset),
+	       (u8 *)mcu->load_buffer + offset);
 }

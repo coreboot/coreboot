@@ -39,7 +39,7 @@ config SOC_SPECIFIC_OPTIONS
 	select RESET_VECTOR_IN_RAM
 	select RTC
 	select SOC_AMD_COMMON
-	select SOC_AMD_COMMON_BLOCK_ACP_GEN1	# TODO: Check if this is still correct - change to GEN2
+	select SOC_AMD_COMMON_BLOCK_ACP_GEN2
 	select SOC_AMD_COMMON_BLOCK_ACPI	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPIMMIO
 	select SOC_AMD_COMMON_BLOCK_ACPI_ALIB	# TODO: Check if this is still correct

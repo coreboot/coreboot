@@ -170,6 +170,7 @@ Contents:
 * [Tutorial](tutorial/index.md)
 * [Coding Style](contributing/coding_style.md)
 * [Project Ideas](contributing/project_ideas.md)
+* [Google Summer of Code](contributing/gsoc.md)
 * [Documentation Ideas](contributing/documentation_ideas.md)
 * [Code of Conduct](community/code_of_conduct.md)
 * [Language style](community/language_style.md)

@@ -64,14 +64,6 @@ void enable_lapic(void)
 	enable_lapic_mode(try_set_x2apic);
 }
 
-void disable_lapic(void)
-{
-	msr_t msr;
-	msr = rdmsr(LAPIC_BASE_MSR);
-	msr.lo &= ~(LAPIC_BASE_MSR_ENABLE | LAPIC_BASE_MSR_X2APIC_MODE);
-	wrmsr(LAPIC_BASE_MSR, msr);
-}
-
 uintptr_t cpu_get_lapic_addr(void)
 {
 	return LAPIC_DEFAULT_BASE;

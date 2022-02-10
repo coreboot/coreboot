@@ -20,7 +20,7 @@ struct fsp_notify_phase_data {
 static const struct fsp_notify_phase_data notify_data[] = {
 	{
 		.notify_phase     = AFTER_PCI_ENUM,
-		.skip             = CONFIG(SKIP_FSP_NOTIFY_PHASE_AFTER_PCI_ENUM),
+		.skip             = !CONFIG(USE_FSP_NOTIFY_PHASE_POST_PCI_ENUM),
 		.post_code_before = POST_FSP_NOTIFY_BEFORE_ENUMERATE,
 		.post_code_after  = POST_FSP_NOTIFY_AFTER_ENUMERATE,
 		.timestamp_before = TS_FSP_BEFORE_ENUMERATE,
@@ -28,7 +28,7 @@ static const struct fsp_notify_phase_data notify_data[] = {
 	},
 	{
 		.notify_phase     = READY_TO_BOOT,
-		.skip             = CONFIG(SKIP_FSP_NOTIFY_PHASE_READY_TO_BOOT),
+		.skip             = !CONFIG(USE_FSP_NOTIFY_PHASE_READY_TO_BOOT),
 		.post_code_before = POST_FSP_NOTIFY_BEFORE_FINALIZE,
 		.post_code_after  = POST_FSP_NOTIFY_AFTER_FINALIZE,
 		.timestamp_before = TS_FSP_BEFORE_FINALIZE,
@@ -36,7 +36,7 @@ static const struct fsp_notify_phase_data notify_data[] = {
 	},
 	{
 		.notify_phase     = END_OF_FIRMWARE,
-		.skip             = CONFIG(SKIP_FSP_NOTIFY_PHASE_END_OF_FIRMWARE),
+		.skip             = !CONFIG(USE_FSP_NOTIFY_PHASE_END_OF_FIRMWARE),
 		.post_code_before = POST_FSP_NOTIFY_BEFORE_END_OF_FIRMWARE,
 		.post_code_after  = POST_FSP_NOTIFY_AFTER_END_OF_FIRMWARE,
 		.timestamp_before = TS_FSP_BEFORE_END_OF_FIRMWARE,

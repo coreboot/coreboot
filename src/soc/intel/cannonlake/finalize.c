@@ -7,6 +7,7 @@
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <intelblocks/cpulib.h>
+#include <intelblocks/cse.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>
@@ -95,6 +96,9 @@ static void soc_finalize(void *unused)
 	pch_finalize();
 	apm_control(APM_CNT_FINALIZE);
 	sa_finalize();
+	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT) &&
+			CONFIG(SOC_INTEL_COMMON_BLOCK_HECI1_DISABLE_USING_PMC_IPC))
+		heci1_disable();
 
 	/* Indicate finalize step with post code */
 	post_code(POST_OS_BOOT);

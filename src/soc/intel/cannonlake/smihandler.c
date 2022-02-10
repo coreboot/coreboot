@@ -16,7 +16,7 @@
  */
 void smihandler_soc_at_finalize(void)
 {
-	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT))
+	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT) && CONFIG(HECI_DISABLE_USING_SMM))
 		heci1_disable();
 }
 

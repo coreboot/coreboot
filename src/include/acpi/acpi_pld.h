@@ -68,6 +68,33 @@ enum acpi_pld_rotate {
 		.position = __position,		\
 	}
 
+/*
+ * ACPI specification 6.3 third paragraph of section 6.1.8:
+ * All Panel references (Top, Bottom, Right, Left, etc.) are interpreted
+ * as though the user is facing the front of the system.
+ *
+ * A `_PLD` describes the offset and rotation of a single device connection point
+ * from an `origin` that resides in the lower left hand corner of its Panel.
+ */
+
+#define ACPI_PLD_TYPE_A(__panel, __horiz, __grp)				\
+	{									\
+		.visible = true,						\
+		.panel = PLD_PANEL_##__panel,					\
+		.shape = PLD_SHAPE_HORIZONTAL_RECTANGLE,			\
+		.horizontal_position = PLD_HORIZONTAL_POSITION_##__horiz,	\
+		.group = __grp,							\
+	}
+
+#define ACPI_PLD_TYPE_C(__panel, __horiz, __grp)				\
+	{									\
+		.visible = true,						\
+		.panel = PLD_PANEL_##__panel,					\
+		.shape = PLD_SHAPE_OVAL,					\
+		.horizontal_position = PLD_HORIZONTAL_POSITION_##__horiz,	\
+		.group = __grp,							\
+	}
+
 struct acpi_pld_group {
 	uint8_t token;
 	uint8_t position;

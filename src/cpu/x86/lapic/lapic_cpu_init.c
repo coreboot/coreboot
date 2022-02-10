@@ -384,6 +384,8 @@ void initialize_cpus(struct bus *cpu_bus)
 	if (is_smp_boot()) {
 		enable_lapic();
 		setup_lapic_interrupts();
+	} else {
+		disable_lapic();
 	}
 
 	/* Get the device path of the boot CPU */

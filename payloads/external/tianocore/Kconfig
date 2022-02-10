@@ -156,6 +156,12 @@ config TIANOCORE_HAVE_EFI_SHELL
 	help
 	  Include the EFI shell Binary
 
+config TIANOCORE_PRIORITIZE_INTERNAL
+	bool "Prioritize internal boot devices"
+	default y
+	help
+	  Prioritize internal boot devices over external devices
+
 config TIANOCORE_PS2_SUPPORT
 	bool "Support PS/2 Keyboards"
 	default y

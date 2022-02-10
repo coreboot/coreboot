@@ -729,8 +729,31 @@ enum console_print_type {
 	CONSOLE_PRINT_PREVIOUS,
 };
 
+static int parse_loglevel(char *arg, int *print_unknown_logs)
+{
+	if (arg[0] == '+') {
+		*print_unknown_logs = 1;
+		arg++;
+	} else {
+		*print_unknown_logs = 0;
+	}
+
+	char *endptr;
+	int loglevel = strtol(arg, &endptr, 0);
+	if (*endptr == '\0' && loglevel >= BIOS_EMERG && loglevel <= BIOS_LOG_PREFIX_MAX_LEVEL)
+		return loglevel;
+
+	/* Only match first 3 characters so `NOTE` and `NOTICE` both match. */
+	for (int i = BIOS_EMERG; i <= BIOS_LOG_PREFIX_MAX_LEVEL; i++)
+		if (!strncasecmp(arg, bios_log_prefix[i], 3))
+			return i;
+
+	*print_unknown_logs = 1;
+	return BIOS_NEVER;
+}
+
 /* dump the cbmem console */
-static void dump_console(enum console_print_type type)
+static void dump_console(enum console_print_type type, int max_loglevel, int print_unknown_logs)
 {
 	const struct cbmem_console *console_p;
 	char *console_c;
@@ -825,17 +848,27 @@ static void dump_console(enum console_print_type type)
 	}
 
 	char c;
+	int suppressed = 0;
 	int tty = isatty(fileno(stdout));
 	while ((c = console_c[cursor++])) {
 		if (BIOS_LOG_IS_MARKER(c)) {
 			int lvl = BIOS_LOG_MARKER_TO_LEVEL(c);
+			if (lvl > max_loglevel) {
+				suppressed = 1;
+				continue;
+			}
+			suppressed = 0;
 			if (tty)
 				printf(BIOS_LOG_ESCAPE_PATTERN, bios_log_escape[lvl]);
 			printf(BIOS_LOG_PREFIX_PATTERN, bios_log_prefix[lvl]);
 		} else {
-			putchar(c);
-			if (tty && c == '\n')
-				printf(BIOS_LOG_ESCAPE_RESET);
+			if (!suppressed)
+				putchar(c);
+			if (c == '\n') {
+				if (tty && !suppressed)
+					printf(BIOS_LOG_ESCAPE_RESET);
+				suppressed = !print_unknown_logs;
+			}
 		}
 	}
 	if (tty)
@@ -1126,6 +1159,7 @@ static void print_usage(const char *name, int exit_code)
 	     "   -c | --console:                   print cbmem console\n"
 	     "   -1 | --oneboot:                   print cbmem console for last boot only\n"
 	     "   -2 | --2ndtolast:                 print cbmem console for the boot that came before the last one only\n"
+	     "   -B | --loglevel:                  maximum loglevel to print; prefix `+` (e.g. -B +INFO) to also print lines that have no level\n"
 	     "   -C | --coverage:                  dump coverage information\n"
 	     "   -l | --list:                      print cbmem table of contents\n"
 	     "   -x | --hexdump:                   print hexdump of cbmem area\n"
@@ -1268,12 +1302,15 @@ int main(int argc, char** argv)
 	int machine_readable_timestamps = 0;
 	enum console_print_type console_type = CONSOLE_PRINT_FULL;
 	unsigned int rawdump_id = 0;
+	int max_loglevel = BIOS_NEVER;
+	int print_unknown_logs = 1;
 
 	int opt, option_index = 0;
 	static struct option long_options[] = {
 		{"console", 0, 0, 'c'},
 		{"oneboot", 0, 0, '1'},
 		{"2ndtolast", 0, 0, '2'},
+		{"loglevel", required_argument, 0, 'B'},
 		{"coverage", 0, 0, 'C'},
 		{"list", 0, 0, 'l'},
 		{"tcpa-log", 0, 0, 'L'},
@@ -1286,7 +1323,7 @@ int main(int argc, char** argv)
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
-	while ((opt = getopt_long(argc, argv, "c12CltTLxVvh?r:",
+	while ((opt = getopt_long(argc, argv, "c12B:CltTLxVvh?r:",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'c':
@@ -1302,6 +1339,9 @@ int main(int argc, char** argv)
 			print_console = 1;
 			console_type = CONSOLE_PRINT_PREVIOUS;
 			print_defaults = 0;
+			break;
+		case 'B':
+			max_loglevel = parse_loglevel(optarg, &print_unknown_logs);
 			break;
 		case 'C':
 			print_coverage = 1;
@@ -1428,7 +1468,7 @@ int main(int argc, char** argv)
 		die("Table not found.\n");
 
 	if (print_console)
-		dump_console(console_type);
+		dump_console(console_type, max_loglevel, print_unknown_logs);
 
 	if (print_coverage)
 		dump_coverage();

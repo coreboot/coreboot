@@ -1,4 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
+fw_config
+	field AUDIO_CODEC_SOURCE 36 37
+		option AUDIO_CODEC_ALC5682 0
+		option AUDIO_CODEC_ALC5682I_VS 1
+	end
+end
+
 chip soc/amd/picasso
 
 	# Start : OPN Performance Configuration
@@ -105,6 +112,86 @@ chip soc/amd/picasso
 	# See AMD 55570-B1 Table 13: PCI Device ID Assignments.
 	device domain 0 on
 		subsystemid 0x1022 0x1510 inherit
+		device pci 8.1 on
+			device pci 0.5 on
+				chip drivers/amd/i2s_machine_dev
+					register "hid" = ""AMDI5682""
+					# DMIC select GPIO for ACP machine device
+					# This GPIO is used to select DMIC0 or DMIC1 by the
+					# kernel driver. It does not really have a polarity
+					# since low and high control the selection of DMIC and
+					# hence does not have an active polarity.
+					# Kernel driver does not use the polarity field and
+					# instead treats the GPIO selection as follows:
+					# Set low (0) = Select DMIC0
+					# Set high (1) = Select DMIC1
+					register "dmic_select_gpio" = "ACPI_GPIO_OUTPUT(GPIO_67)"
+					device generic 0.0 on
+						probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682
+					end
+				end
+				chip drivers/amd/i2s_machine_dev
+					register "hid" = ""10029835""
+					# DMIC select GPIO for ACP machine device
+					# This GPIO is used to select DMIC0 or DMIC1 by the
+					# kernel driver. It does not really have a polarity
+					# since low and high control the selection of DMIC and
+					# hence does not have an active polarity.
+					# Kernel driver does not use the polarity field and
+					# instead treats the GPIO selection as follows:
+					# Set low (0) = Select DMIC0
+					# Set high (1) = Select DMIC1
+					register "dmic_select_gpio" = "ACPI_GPIO_OUTPUT(GPIO_67)"
+					device generic 1.0 on
+						probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682I_VS
+					end
+				end
+			end # Audio
+		end
+		device pci 14.3 on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on
+					chip ec/google/chromeec/i2c_tunnel
+						device generic 0.0 on
+							chip drivers/i2c/generic
+								register "hid" = ""10EC5682""
+								register "name" = ""RT58""
+								register "uid" = "1"
+								register "desc" = ""Realtek RT5682""
+								register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPIO_84)"
+								register "property_count" = "2"
+								register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+								register "property_list[0].name" = ""realtek,jd-src""
+								register "property_list[0].integer" = "1"
+								register "property_list[1].type" = "ACPI_DP_TYPE_STRING"
+								register "property_list[1].name" = ""realtek,mclk-name""
+								register "property_list[1].string" = ""oscout1""
+								device i2c 1a on end
+							end
+							probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682
+						end
+						device generic 1.0 on
+							chip drivers/i2c/generic
+								register "hid" = ""RTL5682""
+								register "name" = ""RT58""
+								register "uid" = "1"
+								register "desc" = ""Realtek RT5682""
+								register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPIO_84)"
+								register "property_count" = "2"
+								register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+								register "property_list[0].name" = ""realtek,jd-src""
+								register "property_list[0].integer" = "1"
+								register "property_list[1].type" = "ACPI_DP_TYPE_STRING"
+								register "property_list[1].name" = ""realtek,mclk-name""
+								register "property_list[1].string" = ""oscout1""
+								device i2c 1a on end
+							end
+							probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682I_VS
+						end
+					end
+				end
+			end
+		end
 	end # domain
 
 	device ref i2c_2 on

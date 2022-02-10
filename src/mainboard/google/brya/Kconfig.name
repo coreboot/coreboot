@@ -178,3 +178,7 @@ config BOARD_GOOGLE_CROTA
 config BOARD_GOOGLE_MOLI
 	bool "->  Moli"
 	select BOARD_GOOGLE_BASEBOARD_BRASK
+
+config BOARD_GOOGLE_KINOX
+	bool "->  Kinox"
+	select BOARD_GOOGLE_BASEBOARD_BRASK

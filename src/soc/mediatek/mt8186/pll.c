@@ -253,7 +253,7 @@ static const struct mux_sel mux_sels[] = {
 	{ .id = TOP_DSI_OCC_SEL, .sel = 1 },		/* 1: univpll_d3_d2 */
 	{ .id = TOP_SPMI_MST_SEL, .sel = 2 },		/* 2: ulposc1_d4 */
 	/* CLK_CFG_13 */
-	{ .id = TOP_SPINOR_SEL, .sel = 5 },		/* 5: mainpll_d7_d2 */
+	{ .id = TOP_SPINOR_SEL, .sel = 3 },		/* 3: univpll_d3_d8 */
 	{ .id = TOP_NNA_SEL, .sel = 14 },		/* 14: nnapll_ck */
 	{ .id = TOP_NNA1_SEL, .sel = 14 },		/* 14: nnapll_ck */
 	{ .id = TOP_NNA2_SEL, .sel = 15 },		/* 15: nna2pll_ck */

@@ -3,3 +3,9 @@ config SOC_AMD_COMMON_BLOCK_ACP_GEN1
 	help
 	  Select this option to perform Audio Co-Processor(ACP) configuration.
 	  Used by the ACP in AMD family 17h, 19h, and earlier (picasso, cezanne)
+
+config SOC_AMD_COMMON_BLOCK_ACP_GEN2
+	bool
+	help
+	  Select this option to perform Audio Co-Processor(ACP) configuration.
+	  Used by the ACP in AMD sabrina (family 17h) and possibly newer CPUs.

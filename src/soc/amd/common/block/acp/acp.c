@@ -12,6 +12,8 @@
 #include <commonlib/helpers.h>
 #include "acp_def.h"
 
+_Static_assert(!(CONFIG(SOC_AMD_COMMON_BLOCK_ACP_GEN1) && CONFIG(SOC_AMD_COMMON_BLOCK_ACP_GEN2)),
+	"Cannot select both ACP_GEN1 and ACP_GEN2 - check your config");
 
 static const char *acp_acpi_name(const struct device *dev)
 {

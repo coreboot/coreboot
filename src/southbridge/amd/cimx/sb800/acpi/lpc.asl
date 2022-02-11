@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+/* 0:14.3 - LPC */
 Device(LIBR) {
 	Name(_ADR, 0x00140003)
 

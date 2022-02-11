@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-Device(AZHD) {
+Device(AZHD) {	/* 0:14.2 - HD Audio */
 	Name(_ADR, 0x00140002)
 	OperationRegion(AZPD, PCI_Config, 0x00, 0x100)
 		Field(AZPD, AnyAcc, NoLock, Preserve) {

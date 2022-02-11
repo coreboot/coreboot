@@ -20,7 +20,7 @@ Method(WACK, 0)
 {
 	Local0 = 0
 	Local1 = 50
-	While ((Local0 != 0xFA) && (Local1 > 0)) {
+	While ((Local0 != 0xfa) && (Local1 > 0)) {
 		Local0 = MRG0
 		Sleep(10)
 		Local1--

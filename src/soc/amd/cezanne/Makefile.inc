@@ -127,6 +127,11 @@ ifeq ($(CONFIG_HAVE_PSP_WHITELIST_FILE),y)
 PSP_WHITELIST_FILE=$(CONFIG_PSP_WHITELIST_FILE)
 endif
 
+# type = 0x55
+ifeq ($(CONFIG_HAVE_SPL_FILE),y)
+SPL_TABLE_FILE=$(CONFIG_SPL_TABLE_FILE)
+endif
+
 #
 # BIOS Directory Table items - proper ordering is managed by amdfwtool
 #
@@ -196,6 +201,7 @@ OPT_EFS_SPI_MICRON_FLAG=$(call add_opt_prefix, $(CONFIG_EFS_SPI_MICRON_FLAG), --
 OPT_PSP_SOFTFUSE=$(call add_opt_prefix, $(PSP_SOFTFUSE), --soft-fuse)
 
 OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
+OPT_SPL_TABLE_FILE=$(call add_opt_prefix, $(SPL_TABLE_FILE), --spl-table)
 
 # Add all the files listed in the config file
 POUND_SIGN=$(call strip_quotes, "\#")
@@ -213,6 +219,7 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		--combo-capable \
 		$(OPT_TOKEN_UNLOCK) \
 		$(OPT_WHITELIST_FILE) \
+		$(OPT_SPL_TABLE_FILE) \
 		$(OPT_PSP_SHAREDMEM_BASE) \
 		$(OPT_PSP_SHAREDMEM_SIZE) \
 		$(OPT_EFS_SPI_READ_MODE) \

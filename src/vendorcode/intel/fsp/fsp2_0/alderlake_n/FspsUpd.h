@@ -3865,9 +3865,61 @@ typedef struct {
 **/
   UINT32                      FspEventHandler;
 
-/** Offset 0x0FD4 - Reserved
+/** Offset 0x0FD4 - Enable eMMC Controller
+  Enable/disable eMMC Controller.
+  $EN_DIS
 **/
-  UINT8                       Reserved56[97];
+  UINT8                       ScsEmmcEnabled;
+
+/** Offset 0x0FD5 - Enable eMMC HS400 Mode
+  Enable eMMC HS400 Mode.
+  $EN_DIS
+**/
+  UINT8                       ScsEmmcHs400Enabled;
+
+/** Offset 0x0FD6 - Use DLL values from policy
+  Set if FSP should use HS400 DLL values from policy
+  $EN_DIS
+**/
+  UINT8                       EmmcUseCustomDlls;
+
+/** Offset 0x0FD7 - Reserved
+**/
+  UINT8                       Reserved56;
+
+/** Offset 0x0FD8 - Emmc Tx CMD Delay control register value
+  Please see Tx CMD Delay Control register definition for help
+**/
+  UINT32                      EmmcTxCmdDelayRegValue;
+
+/** Offset 0x0FDC - Emmc Tx DATA Delay control 1 register value
+  Please see Tx DATA Delay control 1 register definition for help
+**/
+  UINT32                      EmmcTxDataDelay1RegValue;
+
+/** Offset 0x0FE0 - Emmc Tx DATA Delay control 2 register value
+  Please see Tx DATA Delay control 2 register definition for help
+**/
+  UINT32                      EmmcTxDataDelay2RegValue;
+
+/** Offset 0x0FE4 - Emmc Rx CMD + DATA Delay control 1 register value
+  Please see Rx CMD + DATA Delay control 1 register definition for help
+**/
+  UINT32                      EmmcRxCmdDataDelay1RegValue;
+
+/** Offset 0x0FE8 - Emmc Rx CMD + DATA Delay control 2 register value
+  Please see Rx CMD + DATA Delay control 2 register definition for help
+**/
+  UINT32                      EmmcRxCmdDataDelay2RegValue;
+
+/** Offset 0x0FEC - Emmc Rx Strobe Delay control register value
+  Please see Rx Strobe Delay control register definition for help
+**/
+  UINT32                      EmmcRxStrobeDelayRegValue;
+
+/** Offset 0x0FF0 - Reserved
+**/
+  UINT8                      Reserved57[69];
 
 /** Offset 0x1035 - Enable VMD Global Mapping
   Enable/disable to VMD controller.0: Disable; 1: Enable(Default)
@@ -3877,7 +3929,7 @@ typedef struct {
 
 /** Offset 0x1036 - Reserved
 **/
-  UINT8                       Reserved57[122];
+  UINT8                       Reserved58[122];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration

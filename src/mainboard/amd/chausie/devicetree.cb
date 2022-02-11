@@ -13,6 +13,9 @@ chip soc/amd/sabrina
 		.flash_ch_en = 0,
 	}"
 
+	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
+					GPIO_I2C2_SCL | GPIO_I2C3_SCL"
+
 	# I2C Pad Control RX Select Configuration
 	register "i2c_pad[0].rx_level" = "I2C_PAD_RX_1_8V"
 	register "i2c_pad[1].rx_level" = "I2C_PAD_RX_1_8V"

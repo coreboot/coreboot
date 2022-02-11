@@ -7,7 +7,7 @@
 #include <cf9_reset.h>
 #include <reset.h>
 
-#define HT_INIT_CONTROL		0x6C
+#define HT_INIT_CONTROL		0x6c
 #define HTIC_BIOSR_Detect	(1<<5)
 
 #define DEV_CDB 0x18

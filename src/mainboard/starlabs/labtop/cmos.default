@@ -12,7 +12,7 @@ smi_handler=Enable
 wireless=Enable
 webcam=Enable
 microphone=Enable
-legacy_8254_timer=Enable
+legacy_8254_timer=Disable
 usb_always_on=Disable
 thunderbolt=Disable
 # EC

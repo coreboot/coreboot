@@ -25,7 +25,7 @@
 #define PID_PSF4	0xbd
 #define PID_RTC		0xc3
 #define PID_ITSS	0xc4
-#define PID_ESPI	0xc7
+#define PID_ESPI	0x72
 #define PID_SERIALIO	0xcb
 
 #endif

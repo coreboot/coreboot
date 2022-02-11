@@ -4,7 +4,7 @@
 #include <amdblocks/uart.h>
 #include <types.h>
 
-static void *uart_bars[FCH_UART_ID_MAX - 1];
+static void *uart_bars[FCH_UART_ID_MAX];
 
 uintptr_t get_uart_base(unsigned int idx)
 {

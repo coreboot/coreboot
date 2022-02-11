@@ -8,6 +8,8 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <types.h>
+
 #include "hudson.h"
 #include "imc.h"
 #include "smbus.h"
@@ -47,7 +49,7 @@ void hudson_enable(struct device *dev)
 			if (usb_device_id == PCI_DID_AMD_SB900_USB_20_5) {
 				/* turn off and remove device 0:14.5 from PCI space */
 				reg8 = pm_read8(0xef);
-				reg8 &= ~(1 << 6);
+				reg8 &= ~BIT(6);
 				pm_write8(0xef, reg8);
 			}
 		}
@@ -60,16 +62,16 @@ void hudson_enable(struct device *dev)
 			u8 reg8;
 			if (sd_device_id == PCI_DID_AMD_HUDSON_SD) {
 				reg8 = pm_read8(0xe7);
-				reg8 &= ~(1 << 0);
+				reg8 &= ~BIT(0);
 				pm_write8(0xe7, reg8);
 			} else if (sd_device_id == PCI_DID_AMD_YANGTZE_SD) {
 				reg8 = pm_read8(0xe8);
-				reg8 &= ~(1 << 0);
+				reg8 &= ~BIT(0);
 				pm_write8(0xe8, reg8);
 			}
 			/* remove device 0:14.7 from PCI space */
 			reg8 = pm_read8(0xd3);
-			reg8 &= ~(1 << 6);
+			reg8 &= ~BIT(6);
 			pm_write8(0xd3, reg8);
 		}
 		break;
@@ -127,7 +129,7 @@ static void hudson_init_acpi_ports(void)
 	/* AcpiDecodeEnable, When set, SB uses the contents of the PM registers
 	 * at index 60-6B to decode ACPI I/O address. AcpiSmiEn & SmiCmdEn
 	 */
-	pm_write8(0x74, 1<<0 | 1<<1 | 1<<4 | 1<<2);
+	pm_write8(0x74, BIT(0) | BIT(1) | BIT(4) | BIT(2));
 }
 
 static void hudson_init(void *chip_info)
@@ -138,8 +140,7 @@ static void hudson_init(void *chip_info)
 static void hudson_final(void *chip_info)
 {
 	/* AMD AGESA does not enable thermal zone, so we enable it here. */
-	if (CONFIG(HUDSON_IMC_FWM) &&
-			!CONFIG(ACPI_ENABLE_THERMAL_ZONE))
+	if (CONFIG(HUDSON_IMC_FWM) && !CONFIG(ACPI_ENABLE_THERMAL_ZONE))
 		enable_imc_thermal_zone();
 }
 

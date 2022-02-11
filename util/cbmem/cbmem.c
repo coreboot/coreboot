@@ -642,9 +642,12 @@ static void dump_timestamps(int mach_readable)
 	 * If there are negative timestamp entries, rebase all of the
 	 * timestamps to the lowest one in the list.
 	 */
-	if (sorted_tst_p->entries[0].entry_stamp < 0)
+	if (sorted_tst_p->entries[0].entry_stamp < 0) {
 		sorted_tst_p->base_time = -sorted_tst_p->entries[0].entry_stamp;
-	prev_stamp = 0;
+		prev_stamp = 0;
+	} else {
+		prev_stamp = tst_p->base_time;
+	}
 
 	total_time = 0;
 	for (uint32_t i = 0; i < sorted_tst_p->num_entries; i++) {

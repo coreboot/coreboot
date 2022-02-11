@@ -13,6 +13,8 @@
 #include <soc/pmic_wrap.h>
 #include <timer.h>
 
+#define MT8186_RTC_DXCO_CAPID 0xC0
+
 /* Initialize RTC setting of using DCXO clock */
 static bool rtc_enable_dcxo(void)
 {
@@ -231,6 +233,16 @@ static void mt6366_dcxo_disable_unused(void)
 	rtc_write(PMIC_RG_DCXO_CW23, 0x0052);
 }
 
+static void rtc_set_capid(u16 capid)
+{
+	u16 read_capid;
+
+	rtc_write(PMIC_RG_DCXO_CW03, 0xFF00 | capid);
+
+	rtc_read(PMIC_RG_DCXO_CW03, &read_capid);
+	rtc_info("read back capid: %#x\n", read_capid & 0xFF);
+}
+
 /* Check RTC Initialization */
 int rtc_init(int recover)
 {
@@ -336,6 +348,8 @@ static void dcxo_init(void)
 	udelay(100);
 	rtc_write(PMIC_RG_DCXO_CW09, 0x408F);
 	mdelay(5);
+
+	rtc_set_capid(MT8186_RTC_DXCO_CAPID);
 
 	mt6366_dcxo_disable_unused();
 }

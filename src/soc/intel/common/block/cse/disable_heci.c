@@ -10,6 +10,7 @@
 #include <intelblocks/cse.h>
 #include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
+#include <intelblocks/pmc_ipc.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 
@@ -17,10 +18,29 @@
 #define CSME0_BAR	0x0
 #define CSME0_FID	0xb0
 
+#define PMC_IPC_MEI_DISABLE_ID			0xa9
+#define PMC_IPC_MEI_DISABLE_SUBID_ENABLE	0
+#define PMC_IPC_MEI_DISABLE_SUBID_DISABLE	1
+
 /* Disable HECI using PCR */
 static void heci1_disable_using_pcr(void)
 {
 	soc_disable_heci1_using_pcr();
+}
+
+bool cse_disable_mei_devices(void)
+{
+	struct pmc_ipc_buffer req = { 0 };
+	struct pmc_ipc_buffer rsp;
+	uint32_t cmd;
+
+	cmd = pmc_make_ipc_cmd(PMC_IPC_MEI_DISABLE_ID, PMC_IPC_MEI_DISABLE_SUBID_DISABLE, 0);
+	if (pmc_send_ipc_cmd(cmd, &req, &rsp) != CB_SUCCESS) {
+		printk(BIOS_ERR, "CSE: Failed to disable MEI devices\n");
+		return false;
+	}
+
+	return true;
 }
 
 /* Disable HECI using PMC IPC communication */

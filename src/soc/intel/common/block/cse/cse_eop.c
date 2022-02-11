@@ -10,10 +10,6 @@
 #include <timestamp.h>
 #include <types.h>
 
-#define PMC_IPC_MEI_DISABLE_ID			0xa9
-#define PMC_IPC_MEI_DISABLE_SUBID_ENABLE	0
-#define PMC_IPC_MEI_DISABLE_SUBID_DISABLE	1
-
 enum cse_eop_result {
 	CSE_EOP_RESULT_GLOBAL_RESET_REQUESTED,
 	CSE_EOP_RESULT_SUCCESS,
@@ -44,21 +40,6 @@ static bool cse_disable_mei_bus(void)
 
 	if (reply.status) {
 		printk(BIOS_ERR, "HECI: MEI_Bus_Disable Failed (status: %d)\n", reply.status);
-		return false;
-	}
-
-	return true;
-}
-
-bool cse_disable_mei_devices(void)
-{
-	struct pmc_ipc_buffer req = { 0 };
-	struct pmc_ipc_buffer rsp;
-	uint32_t cmd;
-
-	cmd = pmc_make_ipc_cmd(PMC_IPC_MEI_DISABLE_ID, PMC_IPC_MEI_DISABLE_SUBID_DISABLE, 0);
-	if (pmc_send_ipc_cmd(cmd, &req, &rsp) != CB_SUCCESS) {
-		printk(BIOS_ERR, "CSE: Failed to disable MEI devices\n");
 		return false;
 	}
 

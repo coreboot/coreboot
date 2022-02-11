@@ -10,6 +10,7 @@
 static int smbus_wait_until_ready(u32 smbus_io_base)
 {
 	u32 loops;
+
 	loops = SMBUS_TIMEOUT;
 	do {
 		u8 val;
@@ -20,12 +21,14 @@ static int smbus_wait_until_ready(u32 smbus_io_base)
 		}
 		outb(val, smbus_io_base + SMBHSTSTAT);
 	} while (--loops);
+
 	return -2;		/* time out */
 }
 
 static int smbus_wait_until_done(u32 smbus_io_base)
 {
 	u32 loops;
+
 	loops = SMBUS_TIMEOUT;
 	do {
 		u8 val;
@@ -40,6 +43,7 @@ static int smbus_wait_until_done(u32 smbus_io_base)
 			return 0;
 		}
 	} while (--loops);
+
 	return -3;		/* timeout */
 }
 
@@ -97,8 +101,7 @@ int do_smbus_send_byte(u32 smbus_io_base, u32 device, u8 val)
 	return 0;
 }
 
-int do_smbus_read_byte(u32 smbus_io_base, u32 device,
-			      u32 address)
+int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address)
 {
 	u8 byte;
 
@@ -128,8 +131,7 @@ int do_smbus_read_byte(u32 smbus_io_base, u32 device,
 	return byte;
 }
 
-int do_smbus_write_byte(u32 smbus_io_base, u32 device,
-			       u32 address, u8 val)
+int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val)
 {
 	u8 byte;
 
@@ -159,8 +161,7 @@ int do_smbus_write_byte(u32 smbus_io_base, u32 device,
 	return 0;
 }
 
-void alink_ab_indx(u32 reg_space, u32 reg_addr,
-			  u32 mask, u32 val)
+void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val)
 {
 	u32 tmp;
 
@@ -181,8 +182,7 @@ void alink_ab_indx(u32 reg_space, u32 reg_addr,
 	outl(0, AB_INDX);
 }
 
-void alink_rc_indx(u32 reg_space, u32 reg_addr, u32 port,
-			  u32 mask, u32 val)
+void alink_rc_indx(u32 reg_space, u32 reg_addr, u32 port, u32 mask, u32 val)
 {
 	u32 tmp;
 
@@ -206,8 +206,7 @@ void alink_rc_indx(u32 reg_space, u32 reg_addr, u32 port,
 /* space = 0: AX_INDXC, AX_DATAC
  * space = 1: AX_INDXP, AX_DATAP
  */
-void alink_ax_indx(u32 space /*c or p? */, u32 axindc,
-			  u32 mask, u32 val)
+void alink_ax_indx(u32 space /*c or p? */, u32 axindc, u32 mask, u32 val)
 {
 	u32 tmp;
 

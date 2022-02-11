@@ -129,11 +129,34 @@ static int wait_for_hwseq_xfer(struct fast_spi_flash_ctx *ctx,
 	return E_TIMEOUT;
 }
 
+static int wait_for_hwseq_spi_cycle_complete(struct fast_spi_flash_ctx *ctx)
+{
+	struct stopwatch sw;
+	uint32_t hsfsts;
+
+	stopwatch_init_msecs_expire(&sw, SPIBAR_HWSEQ_XFER_TIMEOUT_MS);
+	do {
+		hsfsts = fast_spi_flash_ctrlr_reg_read(ctx, SPIBAR_HSFSTS_CTL);
+
+		if (!(hsfsts & SPIBAR_HSFSTS_SCIP))
+			return SUCCESS;
+	} while (!(stopwatch_expired(&sw)));
+
+	return E_TIMEOUT;
+}
+
 /* Execute FAST_SPI flash transfer. This is a blocking call. */
 static int exec_sync_hwseq_xfer(struct fast_spi_flash_ctx *ctx,
 				uint32_t hsfsts_cycle, uint32_t flash_addr,
 				size_t len)
 {
+	if (wait_for_hwseq_spi_cycle_complete(ctx) != SUCCESS) {
+		printk(BIOS_ERR, "SPI Transaction Timeout (Exceeded %d ms) due to prior"
+				" operation at Flash Offset %x\n",
+				SPIBAR_HWSEQ_XFER_TIMEOUT_MS, flash_addr);
+		return E_TIMEOUT;
+	}
+
 	start_hwseq_xfer(ctx, hsfsts_cycle, flash_addr, len);
 	return wait_for_hwseq_xfer(ctx, flash_addr);
 }

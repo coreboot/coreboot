@@ -642,6 +642,7 @@ static void free_psp_firmware_filenames(amd_fw_entry *fw_table)
 		if (index->filename &&
 				index->type != AMD_FW_VERSTAGE_SIG &&
 				index->type != AMD_FW_PSP_VERSTAGE &&
+				index->type != AMD_FW_SPL &&
 				index->type != AMD_FW_PSP_WHITELIST) {
 			free(index->filename);
 		}
@@ -1086,6 +1087,7 @@ enum {
 	AMDFW_OPT_USE_PSPSECUREOS,
 	AMDFW_OPT_LOAD_MP2FW,
 	AMDFW_OPT_LOAD_S0I3,
+	AMDFW_OPT_SPL_TABLE,
 	AMDFW_OPT_VERSTAGE,
 	AMDFW_OPT_VERSTAGE_SIG,
 
@@ -1131,6 +1133,7 @@ static struct option long_options[] = {
 	{"use-pspsecureos",        no_argument, 0, AMDFW_OPT_USE_PSPSECUREOS },
 	{"load-mp2-fw",            no_argument, 0, AMDFW_OPT_LOAD_MP2FW },
 	{"load-s0i3",              no_argument, 0, AMDFW_OPT_LOAD_S0I3 },
+	{"spl-table",        required_argument, 0, AMDFW_OPT_SPL_TABLE },
 	{"verstage",         required_argument, 0, AMDFW_OPT_VERSTAGE },
 	{"verstage_sig",     required_argument, 0, AMDFW_OPT_VERSTAGE_SIG },
 	/* BIOS Directory Table items */
@@ -1462,6 +1465,11 @@ int main(int argc, char **argv)
 			break;
 		case AMDFW_OPT_LOAD_S0I3:
 			cb_config.s0i3 = true;
+			break;
+		case AMDFW_OPT_SPL_TABLE:
+			register_fw_filename(AMD_FW_SPL, sub, optarg);
+			sub = instance = 0;
+			cb_config.have_mb_spl = true;
 			break;
 		case AMDFW_OPT_WHITELIST:
 			register_fw_filename(AMD_FW_PSP_WHITELIST, sub, optarg);

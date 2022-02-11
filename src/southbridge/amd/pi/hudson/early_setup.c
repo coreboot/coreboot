@@ -77,7 +77,7 @@ void hudson_lpc_decode(void)
 	pm_write8(0xec, pm_read8(0xec) | 0x01);
 
 	const pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
-	/* Serial port numeration on Hudson:
+	/* Serial port enumeration on Hudson:
 	 * PORT0 - 0x3f8
 	 * PORT1 - 0x2f8
 	 * PORT5 - 0x2e8

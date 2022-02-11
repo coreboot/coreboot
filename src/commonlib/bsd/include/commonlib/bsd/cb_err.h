@@ -41,6 +41,16 @@ enum cb_err {
 	CB_CBFS_NOT_FOUND	= -401, /**< File not found in directory */
 	CB_CBFS_HASH_MISMATCH	= -402, /**< Master hash validation failed */
 	CB_CBFS_CACHE_FULL	= -403, /**< Metadata cache overflowed */
+
+	/* EFI errors */
+	CB_EFI_FVH_INVALID		= -500, /**< UEFI FVH (Firmware Volume Header) is corrupted */
+	CB_EFI_CHECKSUM_INVALID		= -501, /**< UEFI FVH checksum is invalid */
+	CB_EFI_VS_NOT_FORMATTED_INVALID	= -502, /**< UEFI variable store not formatted */
+	CB_EFI_VS_CORRUPTED_INVALID	= -503, /**< UEFI variable store is corrupted */
+	CB_EFI_ACCESS_ERROR		= -504, /**< UEFI variable store access error */
+	CB_EFI_STORE_FULL		= -505, /**< UEFI variable store is full */
+	CB_EFI_OPTION_NOT_FOUND		= -506, /**< UEFI variable not found */
+	CB_EFI_BUFFER_TOO_SMALL		= -507, /**< UEFI Buffer is too small. */
 };
 
 #endif	/* _COMMONLIB_BSD_CB_ERR_H_ */

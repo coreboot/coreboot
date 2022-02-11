@@ -173,6 +173,7 @@ static const struct device_operations graphics_ops = {
 	.set_resources		= graphics_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= graphics_dev_init,
+	.scan_bus               = scan_static_bus,
 	.ops_pci		= &pci_dev_ops_pci,
 	.write_acpi_tables	= pci_rom_write_acpi_tables,
 	.acpi_fill_ssdt		= graphics_fill_ssdt,

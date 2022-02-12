@@ -332,8 +332,8 @@ enum cb_err intel_gma_init_igd_opregion(void)
 		return CB_ERR;
 	}
 
-	if (is_ext_vbt_required(opregion, vbt))
-		opregion_size += vbt->hdr_vbt_size;
+	/* Add the space for the extended VBT header even if it's not used */
+	opregion_size += vbt->hdr_vbt_size;
 
 	opregion = cbmem_add(CBMEM_ID_IGD_OPREGION, opregion_size);
 	if (!opregion) {

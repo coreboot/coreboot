@@ -184,6 +184,22 @@ static void wwan_fm350gl_acpi_method_mrst_rst(const struct device *parent_dev,
 	acpigen_write_method_end(); /* Method */
 }
 
+/*
+ * Generate DPTS (Device Prepare To Seep) Method. This is called in
+ *  \.SB.MPTS Method.
+ */
+static void wwan_fm350gl_acpi_method_dpts(const struct device *parent_dev,
+			 const struct drivers_wwan_fm_config *config)
+{
+	acpigen_write_method_serialized("DPTS", 1);
+	{
+		/* Perform 1st Half of FLDR Flow for cold reset: FHRF (1) */
+		acpigen_emit_namestring("FHRF");
+		acpigen_emit_byte(RESET_TYPE_COLD);
+	}
+	acpigen_write_method_end(); /* Method */
+}
+
 static const char *wwan_fm350gl_acpi_name(const struct device *dev)
 {
 	/* Attached device name must be "PXSX" for the Linux Kernel to recognize it. */
@@ -224,6 +240,7 @@ static void wwan_fm350gl_acpi_fill_ssdt(const struct device *dev)
 			wwan_fm350gl_acpi_method_fhrf(parent, config);
 			wwan_fm350gl_acpi_method_shrf(parent, config);
 			wwan_fm350gl_acpi_method_rst(parent, config);
+			wwan_fm350gl_acpi_method_dpts(parent, config);
 			/* NOTE: the 5G driver will call MRST._RST to trigger a cold reset
 			 * during firmware update.
 			 */
@@ -243,7 +260,7 @@ static struct device_operations wwan_fm350gl_ops = {
 	.read_resources  = noop_read_resources,
 	.set_resources   = noop_set_resources,
 	.acpi_fill_ssdt  = wwan_fm350gl_acpi_fill_ssdt,
-	.acpi_name       = wwan_fm350gl_acpi_name,
+	.acpi_name       = wwan_fm350gl_acpi_name
 };
 
 static void wwan_fm350gl_acpi_enable(struct device *dev)

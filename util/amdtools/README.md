@@ -1,6 +1,10 @@
 # amdtools
 Various tools for AMD platforms
 
+## A tool to update the SPI speed set in the EFS table
+This works for Stoney Ridge and Zen class AMD processors.
+ - update_efs_spi_speed
+
 ## A set of tools to compare (extended) K8 memory settings.
  - k8-compare-pci-space.pl
  - k8-interpret-extended-memory-settings.pl

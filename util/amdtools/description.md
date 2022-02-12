@@ -1,4 +1,5 @@
 Various tools for AMD processors
+* update_efs_spi_speed - Change SPI speed in binary. `Bash`
 * A set of tools to compare extended K8 memory settings. `Perl`
   * k8-compare-pci-space.pl - Shows differences between values
     in PCI space and the default value. `Perl`

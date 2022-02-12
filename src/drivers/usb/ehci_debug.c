@@ -20,16 +20,15 @@ struct ehci_debug_info {
 	struct dbgp_pipe ep_pipe[DBGP_MAX_ENDPOINTS];
 } __packed;
 
-#if CONFIG(DEBUG_CONSOLE_INIT)
-/* When selected, you can debug the connection of usbdebug dongle.
- * EHCI port register bits and USB packets are dumped on console,
- * assuming some other console already works.
+/* With CONFIG(DEBUG_CONSOLE_INIT), you can debug the connection of
+ * usbdebug dongle. EHCI port register bits and USB packets are dumped
+ * on console, assuming some other console already works.
  */
-# define dprintk(LEVEL, args...) \
-	do { if (!dbgp_enabled()) printk(LEVEL, ##args); } while (0)
-#else
-# define dprintk(LEVEL, args...)   do {} while (0)
-#endif
+#define dprintk(LEVEL, args...)						\
+	do {								\
+		if (CONFIG(DEBUG_CONSOLE_INIT) && !dbgp_enabled())	\
+			printk(LEVEL, ##args);				\
+	} while (0)
 
 #define DBGP_LEN_UPDATE(x, len) (((x) & ~0x0f) | ((len) & 0x0f))
 

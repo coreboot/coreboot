@@ -23,6 +23,7 @@ void variant_get_spd_info(struct mem_spd *spd_info);
 int variant_memory_sku(void);
 bool variant_is_half_populated(void);
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config);
+void variant_fill_ssdt(const struct device *dev);
 
 /* Modify devictree settings during ramstage */
 void variant_devtree_update(void);

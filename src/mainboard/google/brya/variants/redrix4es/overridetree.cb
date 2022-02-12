@@ -78,6 +78,7 @@ chip soc/intel/alderlake
 		},
 	}"
 	register "tcc_offset" = "3"  # TCC of 97C
+
 	device domain 0 on
 		device ref igpu on
 			chip drivers/gfx/generic
@@ -164,7 +165,7 @@ chip soc/intel/alderlake
 				register "perst_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E0)"
 				register "wake_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A7)"
 				use rp6_rtd3 as rtd3dev
-				device generic 0 on
+				device generic 0 alias rp6_wwan on
 					probe DB_LTE LTE_PCIE
 				end
 			end

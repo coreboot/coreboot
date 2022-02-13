@@ -168,6 +168,13 @@ config TIANOCORE_PS2_SUPPORT
 	help
 	  Include support for PS/2 keyboards
 
+config TIANOCORE_SD_MMC_TIMEOUT
+	int "Timeout in μs for initializing SD Card reader"
+	default 1000
+	help
+	  The amount of time allowed to initialize the SD Card reader and/or eMMC drive.
+	  Most only require 1000μs, but certain readers can take 1000000μs.
+
 endif
 
 if TIANOCORE_COREBOOTPAYLOAD

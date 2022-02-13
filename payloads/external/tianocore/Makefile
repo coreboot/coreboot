@@ -64,6 +64,10 @@ endif
 ifeq ($(CONFIG_TIANOCORE_CBMEM_LOGGING),y)
 BUILD_STR += -D USE_CBMEM_FOR_CONSOLE=TRUE
 endif
+# SD_MMC_TIMEOUT		= 1000000
+ifneq ($(CONFIG_TIANOCORE_SD_MMC_TIMEOUT),)
+BUILD_STR += -D SD_MMC_TIMEOUT=$(CONFIG_TIANOCORE_SD_MMC_TIMEOUT)
+endif
 #
 # The below are legacy options only available in CorebootPayloadPkg:
 #

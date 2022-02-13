@@ -5,91 +5,46 @@
 #include <types.h>
 
 static const fsp_dxio_descriptor chausie_czn_dxio_descriptors[] = {
-	{ /* MXM */
-		.engine_type = PCIE_ENGINE,
-		.port_present = true,
-		.start_logical_lane = 16,
-		.end_logical_lane = 23,
-		.device_number = 1,
-		.function_number = 1,
-		.turn_off_unused_lanes = true,
-		.clk_req = CLK_REQ0,
-		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
-	},
-	{ /* SSD */
+	{ /* GBE*/
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
 		.start_logical_lane = 0,
-		.end_logical_lane = 1,
+		.end_logical_lane = 0,
 		.device_number = 2,
 		.function_number = 1,
+		.link_speed_capability = GEN3,
 		.turn_off_unused_lanes = true,
-		.clk_req = CLK_REQ5,
-		.gpio_group_id = GPIO_40,
-		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
+		.link_aspm = 2,
+		.link_hotplug = 3,
+		.clk_req = CLK_REQ3,
 	},
-	{ /* DT */
+	{ /* WIFI */
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
-		.start_logical_lane = 4,
-		.end_logical_lane = 4,
+		.start_logical_lane = 1,
+		.end_logical_lane = 1,
 		.device_number = 2,
 		.function_number = 2,
+		.link_speed_capability = GEN3,
 		.turn_off_unused_lanes = true,
-		.clk_req = CLK_REQ4_GFX,
-		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
-	},
-	{ /* WWAN */
-		.engine_type = PCIE_ENGINE,
-		.port_present = true,
-		.start_logical_lane = 5,
-		.end_logical_lane = 5,
-		.device_number = 2,
-		.function_number = 3,
-		.turn_off_unused_lanes = true,
-		.clk_req = CLK_REQ2,
-		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
-	},
-	{ /* LAN */
-		.engine_type = PCIE_ENGINE,
-		.port_present = true,
-		.start_logical_lane = 6,
-		.end_logical_lane = 6,
-		.device_number = 2,
-		.function_number = 4,
-		.turn_off_unused_lanes = true,
+		.link_aspm = 2,
+		.link_hotplug = 3,
 		.clk_req = CLK_REQ1,
-		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
-	{ /* WLAN */
+	{ /* NVMe SSD */
 		.engine_type = PCIE_ENGINE,
-		.port_present = true,
-		.start_logical_lane = 7,
-		.end_logical_lane = 7,
-		.device_number = 2,
-		.function_number = 5,
-		.turn_off_unused_lanes = true,
-		.clk_req = CLK_REQ6,
-		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
-	},
-	{ /* TB */
-		.engine_type = PCIE_ENGINE,
-		.port_present = true,
-		.start_logical_lane = 8,
-		.end_logical_lane = 11,
-		.device_number = 2,
-		.function_number = 6,
-		.turn_off_unused_lanes = true,
-		.clk_req = CLK_REQ3,
-		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
-	},
-	{ /* SATA */
-		.engine_type = SATA_ENGINE,
 		.port_present = true,
 		.start_logical_lane = 2,
 		.end_logical_lane = 3,
-		.channel_type = SATA_CHANNEL_LONG,
-	}
+		.device_number = 2,
+		.function_number = 3,
+		.link_speed_capability = GEN3,
+		.turn_off_unused_lanes = true,
+		.link_aspm = 2,
+		.link_hotplug = 3,
+		.gpio_group_id = GPIO_27,
+		.clk_req = CLK_REQ0,
+	},
 };
 
 static const fsp_ddi_descriptor chausie_czn_ddi_descriptors[] = {

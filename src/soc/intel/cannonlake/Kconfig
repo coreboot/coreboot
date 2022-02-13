@@ -111,9 +111,6 @@ config CPU_SPECIFIC_OPTIONS
 	select UDELAY_TSC
 	select UDK_2017_BINDING
 
-config DISABLE_HECI1_AT_PRE_BOOT
-	default y if MAINBOARD_HAS_CHROMEOS
-
 config MAX_CPUS
 	int
 	default 12

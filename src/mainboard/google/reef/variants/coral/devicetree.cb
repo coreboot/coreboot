@@ -124,7 +124,7 @@ chip soc/intel/apollolake
 		device pci 02.0 on	# - Gen
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 		end
-		device pci 03.0 on  end	# - Iunit
+		device pci 03.0 off end	# - Iunit
 		device pci 0d.0 on  end	# - P2SB
 		device pci 0d.1 on  end	# - PMC
 		device pci 0d.2 on  end	# - SPI
@@ -238,8 +238,8 @@ chip soc/intel/apollolake
 		device pci 17.2 off end	# - I2C 6
 		device pci 17.3 off end	# - I2C 7
 		device pci 18.0 on  end	# - UART 0
-		device pci 18.1 on  end	# - UART 1
-		device pci 18.2 on  end	# - UART 2
+		device pci 18.1 off end	# - UART 1
+		device pci 18.2 off end	# - UART 2
 		device pci 18.3 off end	# - UART 3
 		device pci 19.0 on  end	# - SPI 0
 		device pci 19.1 off end	# - SPI 1

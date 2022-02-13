@@ -24,6 +24,12 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	PAD_NF(GPIO_22, ESPI_ALERT_D1, PULL_NONE),
 	/* TPM IRQ */
 	PAD_SCI(GPIO_130, PULL_UP, EDGE_LOW),
+	/* SPI_ROM_REQ */
+	PAD_NF(GPIO_67, SPI_ROM_REQ, PULL_NONE),
+	/* SPI_ROM_GNT */
+	PAD_NF(GPIO_76, SPI_ROM_GNT, PULL_NONE),
+	/* KBRST_L */
+	PAD_NF(GPIO_21, KBRST_L, PULL_NONE),
 
 	/* Deassert PCIe Reset lines */
 	/* PCIE_RST0_L */

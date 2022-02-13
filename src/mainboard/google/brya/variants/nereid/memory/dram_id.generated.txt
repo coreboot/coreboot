@@ -5,3 +5,4 @@
 
 DRAM Part Name                 ID to assign
 K3LKBKB0BM-MGCP                0 (0000)
+H9JCNNNBK3MLYR-N6E             1 (0001)

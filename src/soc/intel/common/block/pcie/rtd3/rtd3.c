@@ -375,19 +375,19 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 		return;
 	}
 	if (config->disable_l23) {
-		if (config->ext_pm_support | ACPI_PCIE_RP_EMIT_L23) {
+		if (config->ext_pm_support & ACPI_PCIE_RP_EMIT_L23) {
 			printk(BIOS_ERR, "%s: Can not export L23 methods\n", __func__);
 			return;
 		}
 	}
 	if (rp_type != PCIE_RP_PCH) {
-		if (config->ext_pm_support | ACPI_PCIE_RP_EMIT_PSD0) {
+		if (config->ext_pm_support & ACPI_PCIE_RP_EMIT_PSD0) {
 			printk(BIOS_ERR, "%s: Can not export PSD0 method\n", __func__);
 			return;
 		}
 	}
 	if (config->srcclk_pin == 0) {
-		if (config->ext_pm_support | ACPI_PCIE_RP_EMIT_SRCK) {
+		if (config->ext_pm_support & ACPI_PCIE_RP_EMIT_SRCK) {
 			printk(BIOS_ERR, "%s: Can not export SRCK method\n", __func__);
 			return;
 		}
@@ -415,7 +415,7 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 	acpigen_write_field("PXCS", fieldlist, ARRAY_SIZE(fieldlist),
 			    FIELD_ANYACC | FIELD_NOLOCK | FIELD_PRESERVE);
 
-	if (config->ext_pm_support | ACPI_PCIE_RP_EMIT_L23) {
+	if (config->ext_pm_support & ACPI_PCIE_RP_EMIT_L23) {
 		pcie_rtd3_acpi_method_dl23();
 		pcie_rtd3_acpi_method_l23d();
 	}
@@ -424,10 +424,10 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 	if (rp_type == PCIE_RP_PCH)
 		write_modphy_opregion(pcie_rp);
 
-	if (config->ext_pm_support | ACPI_PCIE_RP_EMIT_PSD0)
+	if (config->ext_pm_support & ACPI_PCIE_RP_EMIT_PSD0)
 		pcie_rtd3_acpi_method_pds0(pcie_rp);
 
-	if (config->ext_pm_support | ACPI_PCIE_RP_EMIT_SRCK)
+	if (config->ext_pm_support & ACPI_PCIE_RP_EMIT_SRCK)
 		pcie_rtd3_acpi_method_srck(pcie_rp, config);
 
 	/* ACPI Power Resource for controlling the attached device power. */

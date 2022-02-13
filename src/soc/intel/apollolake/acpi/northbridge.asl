@@ -79,8 +79,8 @@ Method (_CRS, 0, Serialized)
 
 	/* Read C-Unit PCI CFG Reg. 0xBC for TOLUD (shadow from B-Unit) */
 	PMIN = \_SB.PCI0.MCHC.TLUD & 0xFFF00000
-	/* Read MMCONF base */
-	PMAX = \_SB.PCI0.MCHC.MCNF & 0xF0000000
+	/* Use PCR base to ensure PMAX below GPIO controllers attached to _SB */
+	PMAX = CONFIG_PCR_BASE_ADDRESS & 0xF0000000
 
 	/* Calculate PCI MMIO Length */
 	PLEN = PMAX - PMIN + 1

@@ -8,9 +8,12 @@ romstage-y += port_descriptors.c
 ramstage-y += chromeos.c
 ramstage-y += gpio.c
 
-#TODO: add APCB binaries
-#APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4.bin
-#APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_CZN_D4_DefaultRecovery.bin
+ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_FT6_Updatable.bin),)
+APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_FT6_Updatable.bin
+APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_FT6_DefaultRecovery.bin
+else
+$(info APCB sources not found. Skipping APCB. The resulting image won't boot.)
+endif
 
 ifeq ($(CONFIG_CHAUSIE_HAVE_MCHP_FW),y)
 $(call add_intermediate, add_mchp_fw)

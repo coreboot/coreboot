@@ -60,7 +60,7 @@ static void wwan_fm350gl_acpi_method_fhrf(const struct device *parent_dev,
 		acpigen_get_tx_gpio(&config->perst_gpio);
 		acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
 		{
-			if (wwan_fm350gl_get_rtd3_method_support(config) |
+			if (wwan_fm350gl_get_rtd3_method_support(config) &
 				ACPI_PCIE_RP_EMIT_L23) {
 				acpigen_emit_namestring(acpi_device_path_join(parent_dev,
 					"DL23"));
@@ -83,7 +83,7 @@ static void wwan_fm350gl_acpi_method_fhrf(const struct device *parent_dev,
 			acpigen_write_if_lequal_op_int(ARG0_OP, RESET_TYPE_COLD);
 			{
 				/* disable source clock */
-				if (wwan_fm350gl_get_rtd3_method_support(config) |
+				if (wwan_fm350gl_get_rtd3_method_support(config) &
 					ACPI_PCIE_RP_EMIT_SRCK) {
 					acpigen_emit_namestring(acpi_device_path_join(
 						parent_dev, "SRCK"));
@@ -110,13 +110,13 @@ static void wwan_fm350gl_acpi_method_shrf(const struct device *parent_dev,
 	acpigen_write_method_serialized("SHRF", 0);
 	{
 		/* call rtd3 method to Disable ModPHY Power Gating. */
-		if (wwan_fm350gl_get_rtd3_method_support(config) |
+		if (wwan_fm350gl_get_rtd3_method_support(config) &
 			ACPI_PCIE_RP_EMIT_PSD0) {
 			acpigen_emit_namestring(acpi_device_path_join(parent_dev,
 				"PSD0"));
 		}
 		/* call rtd3 method to Enable SRC Clock. */
-		if (wwan_fm350gl_get_rtd3_method_support(config) |
+		if (wwan_fm350gl_get_rtd3_method_support(config) &
 			ACPI_PCIE_RP_EMIT_SRCK) {
 			acpigen_emit_namestring(acpi_device_path_join(parent_dev,
 				"SRCK"));
@@ -131,7 +131,7 @@ static void wwan_fm350gl_acpi_method_shrf(const struct device *parent_dev,
 		/* De-assert PERST# GPIO. */
 		acpigen_disable_tx_gpio(&config->perst_gpio);
 		/* Call rtd3 method to trigger L2/L3 ready exit flow in root port */
-		if (wwan_fm350gl_get_rtd3_method_support(config) |
+		if (wwan_fm350gl_get_rtd3_method_support(config) &
 			ACPI_PCIE_RP_EMIT_L23) {
 			acpigen_emit_namestring(acpi_device_path_join(parent_dev,
 				"L23D"));

@@ -193,7 +193,7 @@ static void send_heci_uma_message(const u64 heci_uma_addr, const unsigned int he
 		die("HECI init failed\n");
 }
 
-static void setup_heci_uma(struct raminfo *info)
+void setup_heci_uma(struct raminfo *info)
 {
 	if (!info->memory_reserved_for_heci_mb && !(pci_read_config32(HECIDEV, 0x40) & 0x20))
 		return;

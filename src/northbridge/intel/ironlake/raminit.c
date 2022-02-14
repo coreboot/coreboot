@@ -1503,9 +1503,6 @@ static const struct ram_training *get_cached_training(void)
 					   NULL);
 }
 
-/* TODO: Remove */
-#include "raminit_heci.c"
-
 static int have_match_ranks(struct raminfo *info, int channel, int ranks)
 {
 	int ranks_in_channel;

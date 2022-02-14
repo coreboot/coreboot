@@ -106,4 +106,6 @@ u16 get_max_timing(struct raminfo *info, int channel);
 void early_quickpath_init(struct raminfo *info, const u8 x2ca8);
 void late_quickpath_init(struct raminfo *info, const int s3resume);
 
+void setup_heci_uma(struct raminfo *info);
+
 #endif				/* RAMINIT_H */

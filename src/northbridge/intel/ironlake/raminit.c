@@ -913,21 +913,21 @@ static void compute_derived_timings(struct raminfo *info)
 
 static void jedec_read(struct raminfo *info,
 		       int channel, int slot, int rank,
-		       int total_rank, u8 addr3, unsigned int value)
+		       int total_rank, u8 sms, unsigned int value)
 {
 	/* Handle mirrored mapping.  */
 	if ((rank & 1) && (info->spd[channel][slot][RANK1_ADDRESS_MAPPING] & 1)) {
-		addr3 = (addr3 & 0xCF) | ((addr3 & 0x10) << 1) | ((addr3 >> 1) & 0x10);
+		sms = (sms & 0xCF) | ((sms & 0x10) << 1) | ((sms >> 1) & 0x10);
 		value = (value & ~0x1f8) | ((value >> 1) & 0xa8) | ((value & 0xa8) << 1);
 	}
 
-	mchbar_clrsetbits8(0x271, 0x1f << 1, addr3);
-	mchbar_clrsetbits8(0x671, 0x1f << 1, addr3);
+	mchbar_clrsetbits8(CxJEDEC(0), CxJEDEC_MASK, sms);
+	mchbar_clrsetbits8(CxJEDEC(1), CxJEDEC_MASK, sms);
 
 	read32p((value << 3) | (total_rank << 28));
 
-	mchbar_clrsetbits8(0x271, 0x1f << 1, 1 << 1);
-	mchbar_clrsetbits8(0x671, 0x1f << 1, 1 << 1);
+	mchbar_clrsetbits8(CxJEDEC(0), CxJEDEC_MASK, SMS_NOP_COMMAND);
+	mchbar_clrsetbits8(CxJEDEC(1), CxJEDEC_MASK, SMS_NOP_COMMAND);
 
 	read32p(total_rank << 28);
 }
@@ -1018,7 +1018,7 @@ static void jedec_init(struct raminfo *info)
 			for (rank = 0; rank < NUM_RANKS; rank++)
 				if (info->populated_ranks[channel][slot][rank]) {
 					jedec_read(info, channel, slot, rank,
-						   total_rank, 0x28,
+						   total_rank, CxJEDEC_EMRS(2),
 						   rtt_wr | (info->
 							     clock_speed_index
 							     << 3)
@@ -1026,12 +1026,12 @@ static void jedec_init(struct raminfo *info)
 						   (self_refresh_temperature <<
 						    7));
 					jedec_read(info, channel, slot, rank,
-						   total_rank, 0x38, 0);
+						   total_rank, CxJEDEC_EMRS(3), 0);
 					jedec_read(info, channel, slot, rank,
-						   total_rank, 0x18,
+						   total_rank, CxJEDEC_EMRS(1),
 						   rtt | MR1_ODS34OHM);
 					jedec_read(info, channel, slot, rank,
-						   total_rank, 6,
+						   total_rank, SMS_MODE_REG_SET,
 						   (dll_on << 12) |
 						   (write_recovery << 9)
 						   | ((info->cas_latency - 4) <<
@@ -3341,8 +3341,8 @@ void raminit(const bool s3resume, const u8 *spd_addrmap)
 	mchbar_write8(0x12d, 0x56);
 	mchbar_write8(0x12e, 0x31);
 	mchbar_write8(0x12f, 0);
-	mchbar_write8(0x271, 1 << 1);
-	mchbar_write8(0x671, 1 << 1);
+	mchbar_write8(CxJEDEC(0), SMS_NOP_COMMAND);
+	mchbar_write8(CxJEDEC(1), SMS_NOP_COMMAND);
 	mchbar_write8(0x1e8, 1 << 2);
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		mchbar_write32(0x294 + (channel << 10),
@@ -3362,14 +3362,14 @@ void raminit(const bool s3resume, const u8 *spd_addrmap)
 			for (rank = 0; rank < NUM_RANKS; rank++)
 				if (info.populated_ranks[channel][slot][rank]) {
 					jedec_read(&info, channel, slot, rank,
-						   totalrank, 0xa, 0x400);
+						   totalrank, SMS_ZQ_CALIBRATION, 1 << 10);
 					totalrank++;
 				}
 
 	mchbar_write8(0x12c, 0x9f);
 
-	mchbar_clrsetbits8(0x271, 0x3e, 0x0e);
-	mchbar_clrsetbits8(0x671, 0x3e, 0x0e);
+	mchbar_clrsetbits8(CxJEDEC(0), CxJEDEC_MASK, SMS_NORMAL_MODE);
+	mchbar_clrsetbits8(CxJEDEC(1), CxJEDEC_MASK, SMS_NORMAL_MODE);
 
 	if (!s3resume) {
 		for (channel = 0; channel < NUM_CHANNELS; channel++) {

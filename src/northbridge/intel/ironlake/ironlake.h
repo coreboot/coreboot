@@ -87,6 +87,7 @@
  */
 
 #include <northbridge/intel/common/fixed_bars.h>
+#include "registers/mchbar.h"
 
 /*
  * EPBAR - Egress Port Root Complex Register Block

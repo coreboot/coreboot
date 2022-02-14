@@ -915,18 +915,13 @@ static void jedec_read(struct raminfo *info,
 		       int total_rank, u8 addr3, unsigned int value)
 {
 	/* Handle mirrored mapping.  */
-	if ((rank & 1) && (info->spd[channel][slot][RANK1_ADDRESS_MAPPING] & 1))
-		addr3 = (addr3 & 0xCF) | ((addr3 & 0x10) << 1) |
-			((addr3 >> 1) & 0x10);
+	if ((rank & 1) && (info->spd[channel][slot][RANK1_ADDRESS_MAPPING] & 1)) {
+		addr3 = (addr3 & 0xCF) | ((addr3 & 0x10) << 1) | ((addr3 >> 1) & 0x10);
+		value = (value & ~0x1f8) | ((value >> 1) & 0xa8) | ((value & 0xa8) << 1);
+	}
 
 	mchbar_clrsetbits8(0x271, 0x1f << 1, addr3);
 	mchbar_clrsetbits8(0x671, 0x1f << 1, addr3);
-
-	/* Handle mirrored mapping.  */
-	if ((rank & 1) && (info->spd[channel][slot][RANK1_ADDRESS_MAPPING] & 1))
-		value =
-		    (value & ~0x1f8) | ((value >> 1) & 0xa8) | ((value & 0xa8)
-								<< 1);
 
 	read32p((value << 3) | (total_rank << 28));
 

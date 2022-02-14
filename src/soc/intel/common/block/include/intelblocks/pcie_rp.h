@@ -62,11 +62,17 @@ struct pcie_rp_config {
  * in case the root port numbers are not contiguous within the slot.
  * `count` is the number of functions within the group starting with the `start`
  * function number.
+ * `lcap_port_base` is the starting index of physical port as described in LCAP
+ * register in PCIe config space. coreboot always uses 0 based indexing while
+ * referring to the PCIe port but LCAP registers uses 1-based indexing in
+ * most of the cases. Remapping logic needs to correctly map LCAP port number
+ * (1-based or n-based) to coreboot indexing (0-based).
  */
 struct pcie_rp_group {
 	unsigned int slot;
 	unsigned int start;
 	unsigned int count;
+	unsigned int lcap_port_base;
 };
 
 static inline unsigned int rp_start_fn(const struct pcie_rp_group *group)

@@ -7,21 +7,21 @@
 #define CPU_CPIE_VW_IDX_BASE		24
 
 static const struct pcie_rp_group pch_lp_rp_groups[] = {
-	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8 },
-	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 4 },
+	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8, .lcap_port_base = 1 },
+	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 4, .lcap_port_base = 1 },
 	{ 0 }
 };
 
 static const struct pcie_rp_group pch_h_rp_groups[] = {
-	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8 },
-	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 8 },
-	{ .slot = PCH_DEV_SLOT_PCIE_2,	.count = 8 },
+	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8, .lcap_port_base = 1 },
+	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 8, .lcap_port_base = 1 },
+	{ .slot = PCH_DEV_SLOT_PCIE_2,	.count = 8, .lcap_port_base = 1 },
 	{ 0 }
 };
 
 static const struct pcie_rp_group cpu_rp_groups[] = {
-	{ .slot = SA_DEV_SLOT_PEG,	.start = 0, .count = 3 },
-	{ .slot = SA_DEV_SLOT_CPU_PCIE,	.start = 0, .count = 1 },
+	{ .slot = SA_DEV_SLOT_PEG,	.start = 0, .count = 3, .lcap_port_base = 1 },
+	{ .slot = SA_DEV_SLOT_CPU_PCIE,	.start = 0, .count = 1, .lcap_port_base = 1 },
 	{ 0 }
 };
 

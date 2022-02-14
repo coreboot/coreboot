@@ -31,20 +31,25 @@ static int pcie_rp_original_idx(
 	}
 
 	const uint32_t lcap = pci_s_read_config32(dev, clist + PCI_EXP_LNKCAP);
-	/* Read 1-based absolute port number. This reflects the numbering
-	   scheme that Intel uses in their documentation and what we use
-	   as index (0-based, though) in our mapping. */
+
+	/* Read n-based absolute port number from LCAP register.
+	   This reflects the numbering scheme that Intel uses in their
+	   documentation and what we use as index (0-based, though) in
+	   our mapping. */
 	const unsigned int port_num = (lcap & PCI_EXP_LNKCAP_PORT) >> 24;
 
-	/* `port_num` is 1-based, `offset` is 0-based. */
-	if (port_num <= offset || port_num > offset + group->count) {
+	/* Subtract lcap_port_base from port_num to get 0-based index */
+	const unsigned int port_idx = port_num - group->lcap_port_base;
+
+	/* Check if port_idx (0-based) is out of bounds */
+	if (port_idx < offset || port_idx >= offset + group->count) {
 		printk(BIOS_WARNING, "%s: Unexpected root-port number '%u'"
 				     " at PCI: 00:%02x.%x, ignoring.\n",
 		       __func__, port_num, group->slot, PCI_FUNC(PCI_DEV2DEVFN(dev)));
 		return -1;
 	}
 
-	return port_num - 1;
+	return port_idx;
 }
 
 /* Scan actual PCI config space to reconstruct current mapping */

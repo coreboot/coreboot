@@ -17,7 +17,7 @@
 #include <soc/soc_chip.h>
 
 static const struct pcie_rp_group pch_rp_groups[] = {
-	{ .slot = PCH_DEV_SLOT_PCIE,    .count = 8 },
+	{ .slot = PCH_DEV_SLOT_PCIE,    .count = 8, .lcap_port_base = 1 },
 	{ 0 }
 };
 

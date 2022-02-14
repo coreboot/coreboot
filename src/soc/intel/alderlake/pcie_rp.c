@@ -9,14 +9,14 @@
 #define CPU_CPIE_VW_IDX_BASE	24
 
 static const struct pcie_rp_group pch_lp_rp_groups[] = {
-	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8 },
-	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 4 },
+	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8, .lcap_port_base = 1 },
+	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 4, .lcap_port_base = 1 },
 	{ 0 }
 };
 
 static const struct pcie_rp_group pch_m_rp_groups[] = {
-	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8 },
-	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 2 },
+	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8, .lcap_port_base = 1 },
+	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 2, .lcap_port_base = 1 },
 	{ 0 }
 };
 
@@ -35,14 +35,14 @@ const struct pcie_rp_group *get_pch_pcie_rp_table(void)
  * RP3: PEG62 : 0:6:2 : x4 CPU Slot
  */
 static const struct pcie_rp_group cpu_rp_groups[] = {
-	{ .slot = SA_DEV_SLOT_CPU_6, .start = 0, .count = 1 },
-	{ .slot = SA_DEV_SLOT_CPU_1, .start = 0, .count = 1 },
-	{ .slot = SA_DEV_SLOT_CPU_6, .start = 2, .count = 1 },
+	{ .slot = SA_DEV_SLOT_CPU_6, .start = 0, .count = 1, .lcap_port_base = 1 },
+	{ .slot = SA_DEV_SLOT_CPU_1, .start = 0, .count = 1, .lcap_port_base = 1 },
+	{ .slot = SA_DEV_SLOT_CPU_6, .start = 2, .count = 1, .lcap_port_base = 1 },
 	{ 0 }
 };
 
 static const struct pcie_rp_group cpu_m_rp_groups[] = {
-	{ .slot = SA_DEV_SLOT_CPU_6, .start = 0, .count = 1 },
+	{ .slot = SA_DEV_SLOT_CPU_6, .start = 0, .count = 1, .lcap_port_base = 1 },
 	{ 0 }
 };
 
@@ -61,8 +61,14 @@ const struct pcie_rp_group *get_cpu_pcie_rp_table(void)
 	return cpu_rp_groups;
 }
 
+/*
+ * TBT's LCAP registers are returning port index which starts from 2 (Usually for other PCIe
+ * root ports index starts from 1). Thus keeping lcap_port_base 2 for TBT, so that coreboot's
+ * PCIe remapping logic can return correct index (0-based)
+ */
+
 static const struct pcie_rp_group tbt_rp_groups[] = {
-	{ .slot = SA_DEV_SLOT_TBT, .count = CONFIG_MAX_TBT_ROOT_PORTS},
+	{ .slot = SA_DEV_SLOT_TBT, .count = CONFIG_MAX_TBT_ROOT_PORTS, .lcap_port_base = 2 },
 	{ 0 }
 };
 

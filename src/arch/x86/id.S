@@ -11,7 +11,7 @@ vendor:
 part:
 	.asciz CONFIG_MAINBOARD_PART_NUMBER
 
-#if ENV_X86_64
+#if ENV_X86_64 || defined(__clang__)
 .long	0xffffffff - ver + 1		/* Reverse offset to the version */
 .long	0xffffffff - vendor + 1		/* Reverse offset to the vendor id */
 .long	0xffffffff - part + 1		/* Reverse offset to the part number */

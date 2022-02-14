@@ -3,7 +3,7 @@
 chip northbridge/amd/agesa/family14/root_complex
 	device cpu_cluster 0 on
 			chip cpu/amd/agesa/family14
-			  device lapic 0 on end
+				device lapic 0 on end
 			end
 	end
 	device domain 0 on
@@ -19,7 +19,7 @@ chip northbridge/amd/agesa/family14/root_complex
 				device pci 8.0 off end # NB/SB Link P2P bridge
 			end # agesa northbridge
 
-			chip southbridge/amd/cimx/sb800 # it is under NB/SB Link, but on the same pri bus
+			chip southbridge/amd/cimx/sb800 # it is under NB/SB Link, but on the same pci bus
 				device pci 11.0 on end # SATA
 				device pci 12.0 on end # USB
 				device pci 12.1 on end # USB

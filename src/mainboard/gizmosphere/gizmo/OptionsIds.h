@@ -32,5 +32,4 @@
 //#define IDSOPT_TRACING_ENABLED TRUE
 #define IDSOPT_ASSERT_ENABLED  TRUE
 
-
 #endif

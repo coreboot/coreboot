@@ -99,6 +99,15 @@ config AMDFW_CONFIG_FILE
 	string
 	default "src/mainboard/google/guybrush/variants/baseboard/amdfw.cfg"
 
+config HAVE_SPL_FILE
+	bool
+	default y
+
+config SPL_TABLE_FILE
+	string
+	depends on HAVE_SPL_FILE
+	default "3rdparty/blobs/mainboard/google/guybrush/TypeId0x55_SplTable_Prod_CZN_Chrome.sbin"
+
 if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE
 	default 4          # Dual IO (1-2-2)

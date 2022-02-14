@@ -22,6 +22,7 @@
 /* TODO Make sure these don't get changed by stage2 */
 #define DEFAULT_GPIOBASE	0x0480
 #define DEFAULT_PMBASE		0x0500
+#define DEFAULT_HECIBAR		((u8 *)0xfed17000)
 
 #include <southbridge/intel/common/rcba.h>
 

@@ -106,10 +106,6 @@ void ironlake_early_initialization(int chipset_type)
 
 	early_cpu_init();
 
-	pci_write_config32(PCI_DEV(0, 0x16, 0), 0x10, (uintptr_t)DEFAULT_HECIBAR);
-	pci_write_config32(PCI_DEV(0, 0x16, 0), PCI_COMMAND,
-			   PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-
 	/* Magic for S3 resume. Must be done early.  */
 	if (s3_resume) {
 		mchbar_clrsetbits32(0x1e8, 1, 6);

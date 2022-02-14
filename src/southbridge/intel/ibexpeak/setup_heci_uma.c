@@ -6,6 +6,7 @@
 #include <device/pci_ops.h>
 #include <northbridge/intel/ironlake/ironlake.h>
 #include <southbridge/intel/ibexpeak/me.h>
+#include <southbridge/intel/ibexpeak/pch.h>
 #include <types.h>
 
 #define HECIDEV PCI_DEV(0, 0x16, 0)

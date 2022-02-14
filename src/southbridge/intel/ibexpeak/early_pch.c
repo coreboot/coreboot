@@ -2,6 +2,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/smbus_host.h>
 #include <northbridge/intel/ironlake/ironlake.h>
@@ -46,6 +47,10 @@ void ibexpeak_setup_bars(void)
 	/* halt timer */
 	outw(inw(DEFAULT_PMBASE | 0x60 | 0x06) | 2, DEFAULT_PMBASE | 0x60 | 0x06);
 	printk(BIOS_DEBUG, " done.\n");
+
+	pci_write_config32(PCI_DEV(0, 0x16, 0), 0x10, (uintptr_t)DEFAULT_HECIBAR);
+	pci_write_config32(PCI_DEV(0, 0x16, 0), PCI_COMMAND,
+			   PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 }
 
 void early_pch_init(void)

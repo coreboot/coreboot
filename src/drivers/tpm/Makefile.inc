@@ -5,3 +5,9 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += ppi.c
 else
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += ppi_stub.c
 endif
+
+bootblock-$(CONFIG_TPM_CR50) += cr50.c
+verstage-$(CONFIG_TPM_CR50) += cr50.c
+romstage-$(CONFIG_TPM_CR50) += cr50.c
+ramstage-$(CONFIG_TPM_CR50) += cr50.c
+postcar-$(CONFIG_TPM_CR50) += cr50.c

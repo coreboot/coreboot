@@ -23,8 +23,6 @@
 
 #include "tpm.h"
 
-#define TPM_LOCALITY_0_SPI_BASE 0x00d40000
-
 /* Assorted TPM2 registers for interface type FIFO. */
 #define TPM_ACCESS_REG    (TPM_LOCALITY_0_SPI_BASE + 0)
 #define TPM_STS_REG       (TPM_LOCALITY_0_SPI_BASE + 0x18)
@@ -34,14 +32,6 @@
 #define TPM_FW_VER	  (TPM_LOCALITY_0_SPI_BASE + 0xf90)
 #define CR50_BOARD_CFG     (TPM_LOCALITY_0_SPI_BASE + 0xfe0)
 
-#define CR50_BOARD_CFG_LOCKBIT_MASK 0x80000000U
-#define CR50_BOARD_CFG_FEATUREBITS_MASK 0x3FFFFFFFU
-
-#define CR50_BOARD_CFG_100US_READY_PULSE 0x00000001U
-#define CR50_BOARD_CFG_VALUE \
-		(CONFIG(CR50_USE_LONG_INTERRUPT_PULSES) \
-		 ? CR50_BOARD_CFG_100US_READY_PULSE : 0)
-
 #define CR50_TIMEOUT_INIT_MS 30000 /* Very long timeout for TPM init */
 
 /* SPI slave structure for TPM device. */
@@ -49,7 +39,6 @@ static struct spi_slave spi_slave;
 
 /* Cached TPM device identification. */
 static struct tpm2_info tpm_info;
-static struct cr50_firmware_version cr50_firmware_version;
 
 /*
  * TODO(vbendeb): make CONFIG(DEBUG_TPM) an int to allow different level of
@@ -427,113 +416,11 @@ static enum cb_err tpm2_claim_locality(void)
 	return CB_ERR;
 }
 
-static enum cb_err cr50_parse_fw_version(const char *version_str,
-				      struct cr50_firmware_version *ver)
-{
-	int epoch, major, minor;
-
-	char *number = strstr(version_str, " RW_A:");
-	if (!number)
-		number = strstr(version_str, " RW_B:");
-	if (!number)
-		return CB_ERR_ARG;
-	number += 6; /* Skip past the colon. */
-
-	epoch = skip_atoi(&number);
-	if (*number++ != '.')
-		return CB_ERR_ARG;
-	major = skip_atoi(&number);
-	if (*number++ != '.')
-		return CB_ERR_ARG;
-	minor = skip_atoi(&number);
-
-	ver->epoch = epoch;
-	ver->major = major;
-	ver->minor = minor;
-	return CB_SUCCESS;
-}
-
-static bool cr50_fw_supports_board_cfg(struct cr50_firmware_version *version)
-{
-	/* Cr50 supports the CR50_BOARD_CFG register from version 0.5.5 / 0.6.5
-	 * and onwards. */
-	if (version->epoch > 0 || version->major >= 7
-	    || (version->major >= 5 && version->minor >= 5))
-		return true;
-	printk(BIOS_INFO, "Cr50 firmware does not support CR50_BOARD_CFG, version: %d.%d.%d\n",
-	       version->epoch, version->major, version->minor);
-	return false;
-}
-
-/**
- * Set the BOARD_CFG register on the TPM chip to a particular compile-time constant value.
- */
-static void cr50_set_board_cfg(void)
-{
-	uint32_t board_cfg_value;
-	if (!cr50_fw_supports_board_cfg(&cr50_firmware_version))
-		return;
-	/* Set the CR50_BOARD_CFG register, for e.g. asking cr50 to use longer ready pulses. */
-	if (tpm2_read_reg(CR50_BOARD_CFG, &board_cfg_value, sizeof(board_cfg_value))
-	    != CB_SUCCESS) {
-		printk(BIOS_INFO, "Error reading from cr50\n");
-		return;
-	}
-	if ((board_cfg_value & CR50_BOARD_CFG_FEATUREBITS_MASK) == CR50_BOARD_CFG_VALUE) {
-		printk(BIOS_INFO,
-		       "Current CR50_BOARD_CFG = 0x%08x, matches desired = 0x%08x\n",
-		       board_cfg_value, CR50_BOARD_CFG_VALUE);
-		return;
-	}
-	if (board_cfg_value & CR50_BOARD_CFG_LOCKBIT_MASK) {
-		/* The high bit is set, meaning that the Cr50 is already locked on a particular
-		 * value for the register, but not the one we wanted. */
-		printk(BIOS_ERR,
-		       "Current CR50_BOARD_CFG = 0x%08x, does not match desired = 0x%08x\n",
-		       board_cfg_value, CR50_BOARD_CFG_VALUE);
-		return;
-	}
-	printk(BIOS_INFO, "Current CR50_BOARD_CFG = 0x%08x, setting to 0x%08x\n",
-	       board_cfg_value, CR50_BOARD_CFG_VALUE);
-	board_cfg_value = CR50_BOARD_CFG_VALUE;
-	if (tpm2_write_reg(CR50_BOARD_CFG, &board_cfg_value, sizeof(board_cfg_value))
-	    != CB_SUCCESS)
-		printk(BIOS_INFO, "Error writing to cr50\n");
-}
-
-/*
- * Expose method to read the CR50_BOARD_CFG register, will return zero if
- * register not supported by Cr50 firmware.
- */
-static uint32_t cr50_get_board_cfg(void)
-{
-	uint32_t board_cfg_value;
-	if (!cr50_fw_supports_board_cfg(&cr50_firmware_version))
-		return 0;
-
-	if (tpm2_read_reg(CR50_BOARD_CFG, &board_cfg_value, sizeof(board_cfg_value))
-	    != CB_SUCCESS) {
-		printk(BIOS_INFO, "Error reading from cr50\n");
-		return 0;
-	}
-	return board_cfg_value & CR50_BOARD_CFG_FEATUREBITS_MASK;
-}
-
-bool cr50_is_long_interrupt_pulse_enabled(void)
-{
-	return cr50_get_board_cfg() & CR50_BOARD_CFG_100US_READY_PULSE;
-}
-
 /* Device/vendor ID values of the TPM devices this driver supports. */
 static const uint32_t supported_did_vids[] = {
 	0x00281ae0,  /* H1 based Cr50 security chip. */
 	0x0000104a   /* ST33HTPH2E32 */
 };
-
-static bool first_access_this_boot(void)
-{
-	return ENV_SEPARATE_VERSTAGE || ENV_BOOTBLOCK || !CONFIG(VBOOT);
-}
 
 int tpm2_init(struct spi_slave *spi_if)
 {
@@ -579,7 +466,7 @@ int tpm2_init(struct spi_slave *spi_if)
 	printk(BIOS_INFO, " done!\n");
 
 	// FIXME: Move this to tpm_setup()
-	if (first_access_this_boot())
+	if (tpm_first_access_this_boot())
 		/*
 		 * Claim locality 0, do it only during the first
 		 * initialization after reset.
@@ -609,40 +496,15 @@ int tpm2_init(struct spi_slave *spi_if)
 	printk(BIOS_INFO, "Connected to device vid:did:rid of %4.4x:%4.4x:%2.2x\n",
 	       tpm_info.vendor_id, tpm_info.device_id, tpm_info.revision);
 
-	/* Let's report device FW version if available. */
+	/* Do some cr50-specific things here. */
 	if (CONFIG(TPM_CR50) && tpm_info.vendor_id == 0x1ae0) {
-		int chunk_count = 0;
-		size_t chunk_size = 50;
-		char version_str[301];
+		struct cr50_firmware_version ver;
 
-		/*
-		 * Does not really matter what's written, this just makes sure
-		 * the version is reported from the beginning.
-		 */
-		tpm2_write_reg(TPM_FW_VER, &chunk_size, 1);
-
-		/*
-		 * Read chunk_size bytes at a time, last chunk will be zero padded.
-		 */
-		do {
-			tpm2_read_reg(TPM_FW_VER,
-				      version_str + chunk_count * chunk_size,
-				      chunk_size);
-			if (!version_str[++chunk_count * chunk_size - 1])
-				/* Zero padding detected: end of string. */
-				break;
-			/* Check if there is enough room for reading one more chunk. */
-		} while (chunk_count * chunk_size < sizeof(version_str) - chunk_size);
-		version_str[chunk_count * chunk_size] = '\0';
-		printk(BIOS_INFO, "Firmware version: %s\n", version_str);
-
-		if (cr50_parse_fw_version(version_str, &cr50_firmware_version) != CB_SUCCESS) {
-			printk(BIOS_ERR, "Did not recognize Cr50 version format\n");
-			return -1;
-		}
-		if (CR50_BOARD_CFG_VALUE) {
-			if (first_access_this_boot())
-				cr50_set_board_cfg();
+		if (tpm_first_access_this_boot()) {
+			/* This is called for the side-effect of printing the firmware version
+			   string */
+			cr50_get_firmware_version(&ver);
+			cr50_set_board_cfg();
 		}
 	}
 	return 0;
@@ -866,7 +728,12 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	return payload_size;
 }
 
-void cr50_get_firmware_version(struct cr50_firmware_version *version)
+cb_err_t tis_vendor_write(unsigned int addr, const void *buffer, size_t bytes)
 {
-	memcpy(version, &cr50_firmware_version, sizeof(*version));
+	return tpm2_write_reg(addr, buffer, bytes);
+}
+
+cb_err_t tis_vendor_read(unsigned int addr, void *buffer, size_t bytes)
+{
+	return tpm2_read_reg(addr, buffer, bytes);
 }

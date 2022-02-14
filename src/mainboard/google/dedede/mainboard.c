@@ -4,7 +4,7 @@
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <drivers/spi/tpm/tpm.h>
+#include <drivers/tpm/cr50.h>
 #include <ec/ec.h>
 #include <security/tpm/tss.h>
 #include <soc/soc_chip.h>

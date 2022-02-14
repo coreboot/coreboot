@@ -3,7 +3,7 @@
 #include <console/console.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
-#include <drivers/spi/tpm/tpm.h>
+#include <drivers/tpm/cr50.h>
 #include <ec/ec.h>
 #include <fw_config.h>
 #include <gpio.h>

@@ -3,8 +3,11 @@
 #ifndef __COREBOOT_SRC_DRIVERS_SPI_TPM_TPM_H
 #define __COREBOOT_SRC_DRIVERS_SPI_TPM_TPM_H
 
+#include <drivers/tpm/cr50.h>
 #include <stddef.h>
 #include <spi-generic.h>
+
+#define TPM_LOCALITY_0_SPI_BASE 0x00d40000
 
 /*
  * A tpm device descriptor, values read from the appropriate device regisrers
@@ -14,13 +17,6 @@ struct tpm2_info {
 	uint16_t vendor_id;
 	uint16_t device_id;
 	uint16_t revision;
-};
-
-/* Structure describing the elements of Cr50 firmware version. */
-struct cr50_firmware_version {
-	int epoch;
-	int major;
-	int minor;
 };
 
 /*
@@ -46,11 +42,5 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 
 /* Get information about previously initialized TPM device. */
 void tpm2_get_info(struct tpm2_info *info);
-
-/* Indicates whether Cr50 ready pulses are guaranteed to be at least 100us. */
-bool cr50_is_long_interrupt_pulse_enabled(void);
-
-/* Get the cr50 firmware version information. */
-void cr50_get_firmware_version(struct cr50_firmware_version *version);
 
 #endif  /* ! __COREBOOT_SRC_DRIVERS_SPI_TPM_TPM_H */

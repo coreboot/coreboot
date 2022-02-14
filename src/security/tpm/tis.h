@@ -111,5 +111,9 @@ cb_err_t tis_vendor_write(unsigned int addr, const void *sendbuf, size_t send_si
  */
 cb_err_t tis_vendor_read(unsigned int addr, void *recvbuf, size_t recv_size);
 
+static inline bool tpm_first_access_this_boot(void)
+{
+	return ENV_SEPARATE_VERSTAGE || ENV_BOOTBLOCK || !CONFIG(VBOOT);
+}
 
 #endif /* TIS_H_ */

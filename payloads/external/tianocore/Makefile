@@ -127,10 +127,10 @@ build: update checktools
 	if [ -n "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" ]; then \
 		echo "    Copying custom bootsplash image"; \
 		case "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" in \
-			/*) cp $(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
-				$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
-			*) cp $(top)/$(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
-				$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
+			/*) convert $(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
+				BMP3:$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
+			*) convert $(top)/$(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
+				BMP3:$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
 		esac \
 	fi; \
 	cd $(project_dir); \

@@ -112,7 +112,7 @@ chip soc/intel/apollolake
 		device pci 02.0 on	# - Gen
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 		end
-		device pci 03.0 on  end # - Gaussian Mixture Model (GMM)
+		device pci 03.0 off end # - Gaussian Mixture Model (GMM)
 		device pci 0c.0 on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0A_CNVI_PME_STS"
@@ -235,7 +235,7 @@ chip soc/intel/apollolake
 				end
 			end
 		end	# - XHCI
-		device pci 15.1 on  end	# - XDCI
+		device pci 15.1 off end	# - XDCI
 		device pci 16.0 on  end	# - I2C 0
 		device pci 16.1 off  end	# - I2C 1
 		device pci 16.2 off  end	# - I2C 2

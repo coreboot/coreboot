@@ -8,7 +8,6 @@
 #include <southbridge/intel/ibexpeak/me.h>
 #include <types.h>
 
-#define NORTHBRIDGE PCI_DEV(0, 0, 0)
 #define HECIDEV PCI_DEV(0, 0x16, 0)
 
 /* FIXME: add timeout.  */
@@ -193,18 +192,12 @@ static void send_heci_uma_message(const u64 heci_uma_addr, const unsigned int he
 		die("HECI init failed\n");
 }
 
-void setup_heci_uma(struct raminfo *info)
+void setup_heci_uma(u64 heci_uma_addr, unsigned int heci_uma_size)
 {
-	if (!info->memory_reserved_for_heci_mb && !(pci_read_config32(HECIDEV, 0x40) & 0x20))
+	if (!heci_uma_size && !(pci_read_config32(HECIDEV, 0x40) & 0x20))
 		return;
 
-	const u64 heci_uma_addr =
-	    ((u64)
-	     ((((u64)pci_read_config16(NORTHBRIDGE, TOM)) << 6) -
-	      info->memory_reserved_for_heci_mb)) << 20;
-
-	pci_read_config32(NORTHBRIDGE, DMIBAR);
-	if (info->memory_reserved_for_heci_mb) {
+	if (heci_uma_size) {
 		dmibar_clrbits32(DMIVC0RCTL, 1 << 7);
 		RCBA32(0x14) &= ~0x80;
 		dmibar_clrbits32(DMIVC1RCTL, 1 << 7);
@@ -221,9 +214,9 @@ void setup_heci_uma(struct raminfo *info)
 			;
 	}
 
-	mchbar_write32(0x24, 0x10000 + info->memory_reserved_for_heci_mb);
+	mchbar_write32(0x24, 0x10000 + heci_uma_size);
 
-	send_heci_uma_message(heci_uma_addr, info->memory_reserved_for_heci_mb);
+	send_heci_uma_message(heci_uma_addr, heci_uma_size);
 
 	pci_write_config32(HECIDEV, 0x10, 0x0);
 	pci_write_config8(HECIDEV, 0x4, 0x0);

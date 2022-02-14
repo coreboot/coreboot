@@ -3598,7 +3598,12 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		mchbar_write8(0x101c, 0xb8);
 	}
 
-	setup_heci_uma(&info);
+	const u64 heci_uma_addr =
+	    ((u64)
+	     ((((u64)pci_read_config16(NORTHBRIDGE, TOM)) << 6) -
+	      info.memory_reserved_for_heci_mb)) << 20;
+
+	setup_heci_uma(heci_uma_addr, info.memory_reserved_for_heci_mb);
 
 	if (info.uma_enabled) {
 		u16 ax;

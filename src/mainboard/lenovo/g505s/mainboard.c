@@ -26,7 +26,6 @@ static const u8 mainboard_intr_data[0x54] = {
 	0x10, 0x11, 0x12, 0x13
 };
 
-
 static void pavilion_cold_boot_init(void)
 {
 	/* Lid SMI is only used in non-ACPI mode; leave it off in S3 resume */

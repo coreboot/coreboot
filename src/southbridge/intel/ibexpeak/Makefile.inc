@@ -33,6 +33,7 @@ romstage-y += early_thermal.c
 romstage-y += ../bd82x6x/early_rcba.c
 romstage-y += early_cir.c
 romstage-y += early_usb.c
+romstage-y += setup_heci_uma.c
 
 CPPFLAGS_common += -I$(src)/southbridge/intel/ibexpeak/include
 

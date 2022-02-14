@@ -4,7 +4,7 @@
 #include <device/mmio.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <northbridge/intel/ironlake/raminit.h>
+#include <northbridge/intel/ironlake/ironlake.h>
 #include <southbridge/intel/ibexpeak/me.h>
 #include <types.h>
 

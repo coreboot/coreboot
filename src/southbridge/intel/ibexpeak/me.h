@@ -231,6 +231,8 @@ int intel_early_me_init(void);
 int intel_early_me_uma_size(void);
 int intel_early_me_init_done(u8 status);
 
+void setup_heci_uma(u64 heci_uma_addr, unsigned int heci_uma_size);
+
 typedef struct {
 	u32       major_version  : 16;
 	u32       minor_version  : 16;

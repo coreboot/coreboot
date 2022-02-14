@@ -11,7 +11,6 @@ ramstage-y += gma.c
 
 romstage-y += memmap.c
 romstage-y += raminit.c
-romstage-y += raminit_heci.c
 romstage-y += raminit_tables.c
 romstage-y += early_init.c
 romstage-y += romstage.c

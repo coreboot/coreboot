@@ -25,8 +25,6 @@
 
 #define NMI_OFF	0
 
-typedef struct southbridge_intel_ibexpeak_config config_t;
-
 /**
  * Set miscellaneous static southbridge features.
  *
@@ -113,7 +111,7 @@ static void pch_pirq_init(struct device *dev)
 static void pch_gpi_routing(struct device *dev)
 {
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
+	const struct southbridge_intel_ibexpeak_config *config = dev->chip_info;
 	u32 reg32 = 0;
 
 	/* An array would be much nicer here, or some
@@ -146,7 +144,7 @@ static void pch_power_options(struct device *dev)
 	u32 reg32;
 	const char *state;
 	/* Get the chip configuration */
-	config_t *config = dev->chip_info;
+	const struct southbridge_intel_ibexpeak_config *config = dev->chip_info;
 
 	/* Which state do we want to goto after g3 (power restored)?
 	 * 0 == S0 Full On
@@ -446,7 +444,7 @@ static void lpc_init(struct device *dev)
 static void pch_lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
-	config_t *config = dev->chip_info;
+	const struct southbridge_intel_ibexpeak_config *config = dev->chip_info;
 	u8 io_index = 0;
 
 	/* Get the normal PCI resources of this device. */
@@ -521,7 +519,7 @@ static const char *lpc_acpi_name(const struct device *dev)
 static void southbridge_fill_ssdt(const struct device *device)
 {
 	struct device *dev = pcidev_on_root(0x1f, 0);
-	config_t *chip = dev->chip_info;
+	struct southbridge_intel_ibexpeak_config *chip = dev->chip_info;
 
 	intel_acpi_pcie_hotplug_generator(chip->pcie_hotplug_map, 8);
 	intel_acpi_gen_def_acpi_pirq(dev);

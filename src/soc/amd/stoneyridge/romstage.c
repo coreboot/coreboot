@@ -23,6 +23,7 @@
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <amdblocks/psp.h>
+#include <stdint.h>
 
 #include "chip.h"
 
@@ -50,7 +51,6 @@ static void bsp_agesa_call(void)
 asmlinkage void car_stage_entry(void)
 {
 	struct postcar_frame pcf;
-	uintptr_t top_of_ram;
 	msr_t base, mask;
 	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
 	int vmtrrs = mtrr_cap.lo & MTRR_CAP_VCNT;
@@ -121,28 +121,16 @@ asmlinkage void car_stage_entry(void)
 		smm_list_regions();
 
 	post_code(0x44);
-	if (postcar_frame_init(&pcf))
-		die("Unable to initialize postcar frame.\n");
+	prepare_and_run_postcar(&pcf);
+}
 
-	/*
-	 * We need to make sure ramstage will be run cached. At this point exact
-	 * location of ramstage in cbmem is not known. Instruct postcar to cache
-	 * 16 megs under cbmem top which is a safe bet to cover ramstage.
-	 */
-	top_of_ram = (uintptr_t) cbmem_top();
-	postcar_frame_add_mtrr(&pcf, top_of_ram - 16*MiB, 16*MiB,
-		MTRR_TYPE_WRBACK);
-
-	/* Cache the memory-mapped boot media. */
-	postcar_frame_add_romcache(&pcf, MTRR_TYPE_WRPROT);
+void fill_postcar_frame(struct postcar_frame *pcf)
+{
+	uintptr_t top_of_ram = (uintptr_t)cbmem_top();
+	postcar_frame_add_mtrr(pcf, top_of_ram - 16 * MiB, 16 * MiB, MTRR_TYPE_WRBACK);
 
 	/* Cache the TSEG region */
-	postcar_enable_tseg_cache(&pcf);
-
-	post_code(0x45);
-	run_postcar_phase(&pcf);
-
-	post_code(0x50);  /* Should never see this post code. */
+	postcar_enable_tseg_cache(pcf);
 }
 
 void SetMemParams(AMD_POST_PARAMS *PostParams)

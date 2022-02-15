@@ -136,7 +136,7 @@ chip soc/intel/alderlake
 				register "cio2_num_ports" = "1"
 				register "cio2_lanes_used" = "{4}" # 4 CSI Camera lanes are used
 				register "cio2_lane_endpoint[0]" = ""^I2C2.CAM0""
-				register "cio2_prt[0]" = "2"
+				register "cio2_prt[0]" = "1"
 				device generic 0 on end
 			end
 		end

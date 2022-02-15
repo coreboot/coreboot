@@ -42,7 +42,7 @@ void mainboard_romstage_entry(void)
 
 	early_thermal_init();
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 
 	chipset_init(s3resume);
 
@@ -52,7 +52,7 @@ void mainboard_romstage_entry(void)
 
 	raminit(s3resume, spd_addrmap);
 
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 
 	intel_early_me_status();
 

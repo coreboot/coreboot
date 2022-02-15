@@ -1704,7 +1704,7 @@ void sdram_initialize(void)
 	if (!e7505_mch_is_ready()) {
 
 		/* The real MCH initialisation. */
-		timestamp_add_now(TS_BEFORE_INITRAM);
+		timestamp_add_now(TS_INITRAM_START);
 
 		sdram_set_registers(memctrl);
 		sdram_set_spd_registers(memctrl);
@@ -1713,7 +1713,7 @@ void sdram_initialize(void)
 		/* Hook for post ECC scrub settings and debug. */
 		sdram_post_ecc(memctrl);
 
-		timestamp_add_now(TS_AFTER_INITRAM);
+		timestamp_add_now(TS_INITRAM_END);
 	}
 
 	printk(BIOS_DEBUG, "SDRAM is up.\n");

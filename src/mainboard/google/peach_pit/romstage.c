@@ -212,7 +212,7 @@ void main(void)
 	power_init_failed = setup_power(is_resume);
 
 	timestamp_init(timestamp_get());
-	timestamp_add_now(TS_START_ROMSTAGE);
+	timestamp_add_now(TS_ROMSTAGE_START);
 
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */
@@ -228,11 +228,11 @@ void main(void)
 	/* re-initialize PMIC I2C channel after (re-)setting system clocks */
 	i2c_init(PMIC_I2C_BUS, 1000000, 0x00); /* 1MHz */
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 
 	setup_memory(&mem_timings, is_resume);
 
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 
 	primitive_mem_test();
 

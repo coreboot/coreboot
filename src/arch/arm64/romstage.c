@@ -12,7 +12,7 @@ __weak void platform_romstage_postram(void) { /* no-op */ }
 
 void main(void)
 {
-	timestamp_add_now(TS_START_ROMSTAGE);
+	timestamp_add_now(TS_ROMSTAGE_START);
 
 	console_init();
 	exception_init();

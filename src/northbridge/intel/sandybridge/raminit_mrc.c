@@ -364,9 +364,9 @@ void perform_raminit(int s3resume)
 	disable_p2p();
 
 	pei_data.boot_mode = s3resume ? 2 : 0;
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 	sdram_initialize(&pei_data);
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 
 	/* Sanity check mrc_var location by verifying a known field */
 	mrc_var = (void *)DCACHE_RAM_MRC_VAR_BASE;

@@ -134,17 +134,17 @@ void fsp_notify(u32 phase)
 	notify_phase_params.Phase = phase;
 
 	if (phase == EnumInitPhaseReadyToBoot) {
-		timestamp_add_now(TS_FSP_BEFORE_FINALIZE);
+		timestamp_add_now(TS_FSP_FINALIZE_START);
 		post_code(POST_FSP_NOTIFY_BEFORE_FINALIZE);
 	} else {
-		timestamp_add_now(TS_FSP_BEFORE_ENUMERATE);
+		timestamp_add_now(TS_FSP_ENUMERATE_START);
 		post_code(POST_FSP_NOTIFY_BEFORE_ENUMERATE);
 	}
 
 	status = notify_phase_proc(&notify_phase_params);
 
 	timestamp_add_now(phase == EnumInitPhaseReadyToBoot ?
-		TS_FSP_AFTER_FINALIZE : TS_FSP_AFTER_ENUMERATE);
+		TS_FSP_FINALIZE_END : TS_FSP_ENUMERATE_END);
 
 	if (status != 0)
 		printk(BIOS_ERR, "FSP API NotifyPhase failed for phase 0x%x with status: 0x%x\n",

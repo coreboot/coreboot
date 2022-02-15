@@ -140,7 +140,7 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 	 * (This split won't make sense with memory-mapped media like on x86.)
 	 */
 	load_ts = timestamp_get();
-	timestamp_add(TS_START_HASH_BODY, load_ts);
+	timestamp_add(TS_HASH_BODY_START, load_ts);
 
 	remaining = region_device_sz(fw_body);
 	offset = 0;
@@ -169,15 +169,15 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 		offset += block_size;
 	}
 
-	timestamp_add(TS_DONE_LOADING, load_ts);
-	timestamp_add_now(TS_DONE_HASHING);
+	timestamp_add(TS_LOADING_END, load_ts);
+	timestamp_add_now(TS_HASHING_END);
 
 	/* Check the result (with RSA signature verification) */
 	rv = vb2api_check_hash_get_digest(ctx, hash_digest, hash_digest_sz);
 	if (rv)
 		return rv;
 
-	timestamp_add_now(TS_END_HASH_BODY);
+	timestamp_add_now(TS_HASH_BODY_END);
 
 	if (handle_digest_result(hash_digest, hash_digest_sz))
 		return VB2_ERROR_UNKNOWN;
@@ -248,7 +248,7 @@ void verstage_main(void)
 	struct region_device fw_body;
 	vb2_error_t rv;
 
-	timestamp_add_now(TS_START_VBOOT);
+	timestamp_add_now(TS_VBOOT_START);
 
 	/* Lockdown SPI flash controller if required */
 	if (CONFIG(BOOTMEDIA_LOCK_IN_VERSTAGE))
@@ -271,12 +271,12 @@ void verstage_main(void)
 	/* Read secdata from TPM. Initialize TPM if secdata not found. We don't
 	 * check the return value here because vb2api_fw_phase1 will catch
 	 * invalid secdata and tell us what to do (=reboot). */
-	timestamp_add_now(TS_START_TPMINIT);
+	timestamp_add_now(TS_TPMINIT_START);
 	if (vboot_setup_tpm(ctx) == TPM_SUCCESS) {
 		antirollback_read_space_firmware(ctx);
 		antirollback_read_space_kernel(ctx);
 	}
-	timestamp_add_now(TS_END_TPMINIT);
+	timestamp_add_now(TS_TPMINIT_END);
 
 	if (get_recovery_mode_switch()) {
 		ctx->flags |= VB2_CONTEXT_FORCE_RECOVERY_MODE;
@@ -343,9 +343,9 @@ void verstage_main(void)
 
 	/* Try that slot (verify its keyblock and preamble) */
 	printk(BIOS_INFO, "Phase 3\n");
-	timestamp_add_now(TS_START_VERIFY_SLOT);
+	timestamp_add_now(TS_VERIFY_SLOT_START);
 	rv = vb2api_fw_phase3(ctx);
-	timestamp_add_now(TS_END_VERIFY_SLOT);
+	timestamp_add_now(TS_VERIFY_SLOT_END);
 	if (rv) {
 		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
 		vboot_save_data(ctx);
@@ -367,7 +367,7 @@ void verstage_main(void)
 
 	/* Only extend PCRs once on boot. */
 	if (!(ctx->flags & VB2_CONTEXT_S3_RESUME)) {
-		timestamp_add_now(TS_START_TPMPCR);
+		timestamp_add_now(TS_TPMPCR_START);
 		rv = extend_pcrs(ctx);
 		if (rv) {
 			printk(BIOS_WARNING,
@@ -376,12 +376,12 @@ void verstage_main(void)
 			vboot_save_data(ctx);
 			vboot_reboot();
 		}
-		timestamp_add_now(TS_END_TPMPCR);
+		timestamp_add_now(TS_TPMPCR_END);
 	}
 
 	/* Lock TPM */
 
-	timestamp_add_now(TS_START_TPMLOCK);
+	timestamp_add_now(TS_TPMLOCK_START);
 	rv = antirollback_lock_space_firmware();
 	if (rv) {
 		printk(BIOS_INFO, "Failed to lock TPM (%x)\n", rv);
@@ -389,7 +389,7 @@ void verstage_main(void)
 		vboot_save_data(ctx);
 		vboot_reboot();
 	}
-	timestamp_add_now(TS_END_TPMLOCK);
+	timestamp_add_now(TS_TPMLOCK_END);
 
 	/* Lock rec hash space if available. */
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE)) {
@@ -408,5 +408,5 @@ void verstage_main(void)
 	       vboot_is_firmware_slot_a(ctx) ? 'A' : 'B');
 
  verstage_main_exit:
-	timestamp_add_now(TS_END_VBOOT);
+	timestamp_add_now(TS_VBOOT_END);
 }

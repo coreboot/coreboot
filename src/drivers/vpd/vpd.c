@@ -126,7 +126,7 @@ static void cbmem_add_cros_vpd(int is_recovery)
 {
 	struct vpd_cbmem *cbmem;
 
-	timestamp_add_now(TS_START_COPYVPD);
+	timestamp_add_now(TS_COPYVPD_START);
 
 	init_vpd_rdevs();
 
@@ -154,7 +154,7 @@ static void cbmem_add_cros_vpd(int is_recovery)
 			printk(BIOS_ERR, "Couldn't read RO VPD\n");
 			cbmem->ro_size = ro_size = 0;
 		}
-		timestamp_add_now(TS_END_COPYVPD_RO);
+		timestamp_add_now(TS_COPYVPD_RO_END);
 	}
 
 	if (rw_size) {
@@ -163,7 +163,7 @@ static void cbmem_add_cros_vpd(int is_recovery)
 			printk(BIOS_ERR, "Couldn't read RW VPD\n");
 			cbmem->rw_size = rw_size = 0;
 		}
-		timestamp_add_now(TS_END_COPYVPD_RW);
+		timestamp_add_now(TS_COPYVPD_RW_END);
 	}
 
 	init_vpd_rdevs_from_cbmem();

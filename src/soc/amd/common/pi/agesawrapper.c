@@ -102,7 +102,7 @@ static AGESA_STATUS amd_init_reset(AMD_RESET_PARAMS *ResetParams)
 
 	timestamp_add_now(TS_AGESA_INIT_RESET_START);
 	status = amd_dispatch(ResetParams);
-	timestamp_add_now(TS_AGESA_INIT_RESET_DONE);
+	timestamp_add_now(TS_AGESA_INIT_RESET_END);
 
 	return status;
 }
@@ -116,7 +116,7 @@ static AGESA_STATUS amd_init_early(AMD_EARLY_PARAMS *EarlyParams)
 
 	timestamp_add_now(TS_AGESA_INIT_EARLY_START);
 	status = amd_dispatch(EarlyParams);
-	timestamp_add_now(TS_AGESA_INIT_EARLY_DONE);
+	timestamp_add_now(TS_AGESA_INIT_EARLY_END);
 
 	return status;
 }
@@ -173,7 +173,7 @@ static AGESA_STATUS amd_init_post(AMD_POST_PARAMS *PostParams)
 
 	timestamp_add_now(TS_AGESA_INIT_POST_START);
 	status = amd_dispatch(PostParams);
-	timestamp_add_now(TS_AGESA_INIT_POST_DONE);
+	timestamp_add_now(TS_AGESA_INIT_POST_END);
 
 	/*
 	 * AGESA passes back the base and size of UMA. This is the only
@@ -208,7 +208,7 @@ static AGESA_STATUS amd_init_env(AMD_ENV_PARAMS *EnvParams)
 
 	timestamp_add_now(TS_AGESA_INIT_ENV_START);
 	status = amd_dispatch(EnvParams);
-	timestamp_add_now(TS_AGESA_INIT_ENV_DONE);
+	timestamp_add_now(TS_AGESA_INIT_ENV_END);
 
 	return status;
 }
@@ -251,7 +251,7 @@ static AGESA_STATUS amd_init_mid(AMD_MID_PARAMS *MidParams)
 
 	timestamp_add_now(TS_AGESA_INIT_MID_START);
 	status = amd_dispatch(MidParams);
-	timestamp_add_now(TS_AGESA_INIT_MID_DONE);
+	timestamp_add_now(TS_AGESA_INIT_MID_END);
 
 	return status;
 }
@@ -268,7 +268,7 @@ static AGESA_STATUS amd_init_late(AMD_LATE_PARAMS *LateParams)
 
 	timestamp_add_now(TS_AGESA_INIT_LATE_START);
 	Status = amd_dispatch(LateParams);
-	timestamp_add_now(TS_AGESA_INIT_LATE_DONE);
+	timestamp_add_now(TS_AGESA_INIT_LATE_END);
 
 	DmiTable = LateParams->DmiTable;
 	AcpiPstate = LateParams->AcpiPState;
@@ -295,7 +295,7 @@ static AGESA_STATUS amd_init_rtb(AMD_RTB_PARAMS *RtbParams)
 
 	timestamp_add_now(TS_AGESA_INIT_RTB_START);
 	Status = amd_dispatch(RtbParams);
-	timestamp_add_now(TS_AGESA_INIT_RTB_DONE);
+	timestamp_add_now(TS_AGESA_INIT_RTB_END);
 
 	if (Status != AGESA_SUCCESS)
 		return Status;
@@ -314,7 +314,7 @@ static AGESA_STATUS amd_init_resume(AMD_RESUME_PARAMS *InitResumeParams)
 
 	timestamp_add_now(TS_AGESA_INIT_RESUME_START);
 	status = amd_dispatch(InitResumeParams);
-	timestamp_add_now(TS_AGESA_INIT_RESUME_DONE);
+	timestamp_add_now(TS_AGESA_INIT_RESUME_END);
 
 	return status;
 }
@@ -329,7 +329,7 @@ static AGESA_STATUS amd_s3late_restore(AMD_S3LATE_PARAMS *S3LateParams)
 
 	timestamp_add_now(TS_AGESA_S3_LATE_START);
 	Status = amd_dispatch(S3LateParams);
-	timestamp_add_now(TS_AGESA_S3_LATE_DONE);
+	timestamp_add_now(TS_AGESA_S3_LATE_END);
 
 	return Status;
 }
@@ -342,7 +342,7 @@ static AGESA_STATUS amd_s3final_restore(AMD_S3FINAL_PARAMS *S3FinalParams)
 
 	timestamp_add_now(TS_AGESA_S3_FINAL_START);
 	Status = amd_dispatch(S3FinalParams);
-	timestamp_add_now(TS_AGESA_S3_FINAL_DONE);
+	timestamp_add_now(TS_AGESA_S3_FINAL_END);
 
 	return Status;
 }

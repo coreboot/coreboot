@@ -23,8 +23,8 @@ struct bootblock_arg arg = {
 	.base_timestamp = 0,
 	.num_timestamps = 2,
 	.timestamps = {
-		{ .entry_id = TS_START_ULZ4F },
-		{ .entry_id = TS_END_ULZ4F },
+		{ .entry_id = TS_ULZ4F_START },
+		{ .entry_id = TS_ULZ4F_END },
 	},
 };
 

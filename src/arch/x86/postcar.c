@@ -30,7 +30,7 @@ void main(void)
 	if (!cbmem_online())
 		cbmem_initialize();
 
-	timestamp_add_now(TS_START_POSTCAR);
+	timestamp_add_now(TS_POSTCAR_START);
 
 	display_mtrrs();
 

@@ -166,7 +166,7 @@ int intel_early_me_init_done(u8 status)
 			"ME: ME is reporting as disabled, "
 			"so not waiting for a response.\n");
 	} else {
-		timestamp_add_now(TS_ME_INFORM_DRAM_WAIT);
+		timestamp_add_now(TS_ME_INFORM_DRAM_START);
 		udelay(100);
 		millisec = 0;
 		do {
@@ -177,7 +177,7 @@ int intel_early_me_init_done(u8 status)
 			millisec++;
 		} while ((((hfs & 0xf0) >> 4) != ME_HFS_BIOS_DRAM_ACK)
 			&& (millisec <= 5000));
-		timestamp_add_now(TS_ME_INFORM_DRAM_DONE);
+		timestamp_add_now(TS_ME_INFORM_DRAM_END);
 	}
 
 	me_fws2 = pci_read_config32(PCH_ME_DEV, PCI_ME_GMES);

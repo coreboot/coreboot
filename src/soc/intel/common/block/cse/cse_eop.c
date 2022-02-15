@@ -192,9 +192,9 @@ static void do_send_end_of_post(void)
 
 	set_cse_device_state(PCH_DEVFN_CSE, DEV_ACTIVE);
 
-	timestamp_add_now(TS_ME_BEFORE_END_OF_POST);
+	timestamp_add_now(TS_ME_END_OF_POST_START);
 	handle_cse_eop_result(cse_send_eop());
-	timestamp_add_now(TS_ME_AFTER_END_OF_POST);
+	timestamp_add_now(TS_ME_END_OF_POST_END);
 
 	set_cse_device_state(PCH_DEVFN_CSE, DEV_IDLE);
 

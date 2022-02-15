@@ -50,9 +50,9 @@ void mainboard_romstage_entry(void)
 	get_mb_spd_addrmap(&spd_addrmap[0]);
 
 	printk(BIOS_DEBUG, "Initializing memory\n");
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 	sdram_initialize(boot_path, spd_addrmap);
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 	printk(BIOS_DEBUG, "Memory initialized\n");
 
 	post_code(0x31);

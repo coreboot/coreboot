@@ -298,7 +298,7 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 	size_t mrc_size;
 	ramctr_timing *ctrl_cached = NULL;
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 
 	mchbar_setbits32(SAPMCTL, 1 << 0);
 
@@ -460,7 +460,7 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 
 	report_memory_config();
 
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 
 	cbmem_was_inited = !cbmem_recovery(s3resume);
 	if (!fast_boot)

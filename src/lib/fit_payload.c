@@ -62,14 +62,14 @@ static bool extract(struct region *region, struct fit_image_node *node)
 		true_size = node->size;
 		break;
 	case CBFS_COMPRESS_LZMA:
-		timestamp_add_now(TS_START_ULZMA);
+		timestamp_add_now(TS_ULZMA_START);
 		true_size = ulzman(node->data, node->size, dst, region->size);
-		timestamp_add_now(TS_END_ULZMA);
+		timestamp_add_now(TS_ULZMA_END);
 		break;
 	case CBFS_COMPRESS_LZ4:
-		timestamp_add_now(TS_START_ULZ4F);
+		timestamp_add_now(TS_ULZ4F_START);
 		true_size = ulz4fn(node->data, node->size, dst, region->size);
-		timestamp_add_now(TS_END_ULZ4F);
+		timestamp_add_now(TS_ULZ4F_END);
 		break;
 	default:
 		return true;
@@ -240,5 +240,5 @@ void fit_payload(struct prog *payload, void *data)
 		return;
 	}
 
-	timestamp_add_now(TS_START_KERNEL);
+	timestamp_add_now(TS_KERNEL_START);
 }

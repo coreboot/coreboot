@@ -101,7 +101,7 @@ void mainboard_romstage_entry(void)
 	memset(&mp, 0, sizeof(mp));
 	mainboard_fill_mrc_params(&mp);
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 
 	ps = fill_power_state();
 	prev_sleep_state = chipset_prev_sleep_state(ps);
@@ -115,7 +115,7 @@ void mainboard_romstage_entry(void)
 	/* Initialize RAM */
 	raminit(&mp, prev_sleep_state);
 
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 
 	romstage_handoff_init(s3resume);
 }

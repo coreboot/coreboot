@@ -457,7 +457,7 @@ void main(void)
 	 */
 	cbmem_initialize();
 
-	timestamp_add_now(TS_START_RAMSTAGE);
+	timestamp_add_now(TS_RAMSTAGE_START);
 	post_code(POST_ENTRY_HARDWAREMAIN);
 
 	/* Handoff sleep type from romstage. */

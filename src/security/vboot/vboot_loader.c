@@ -52,10 +52,10 @@ void vboot_run_logic(void)
 
 		printk(BIOS_DEBUG, "VBOOT: Loading verstage.\n");
 
-		timestamp_add_now(TS_START_COPYVER);
+		timestamp_add_now(TS_COPYVER_START);
 		if (cbfs_prog_stage_load(&verstage))
 			die("failed to load verstage");
-		timestamp_add_now(TS_END_COPYVER);
+		timestamp_add_now(TS_COPYVER_END);
 
 		/* verify and select a slot */
 		prog_run(&verstage);

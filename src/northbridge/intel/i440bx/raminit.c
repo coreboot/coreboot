@@ -1004,7 +1004,7 @@ void __weak disable_spd(void) { }
 
 void sdram_initialize(int s3resume)
 {
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 	enable_spd();
 
 	dump_spd_registers();
@@ -1013,5 +1013,5 @@ void sdram_initialize(int s3resume)
 	sdram_enable();
 
 	disable_spd();
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 }

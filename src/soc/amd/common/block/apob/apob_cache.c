@@ -171,7 +171,7 @@ static void soc_update_apob_cache(void *unused)
 		printk(BIOS_DEBUG, "APOB valid copy is already in flash\n");
 
 	if (!update_needed) {
-		timestamp_add_now(TS_AMD_APOB_DONE);
+		timestamp_add_now(TS_AMD_APOB_END);
 		return;
 	}
 
@@ -199,7 +199,7 @@ static void soc_update_apob_cache(void *unused)
 		return;
 	}
 
-	timestamp_add_now(TS_AMD_APOB_DONE);
+	timestamp_add_now(TS_AMD_APOB_END);
 
 	printk(BIOS_INFO, "Updated APOB in flash\n");
 }

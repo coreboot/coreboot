@@ -40,7 +40,7 @@ static void romstage_main(void)
 
 	fill_sysinfo(cb);
 
-	timestamp_add_now(TS_START_ROMSTAGE);
+	timestamp_add_now(TS_ROMSTAGE_START);
 
 	board_BeforeAgesa(cb);
 
@@ -55,14 +55,14 @@ static void romstage_main(void)
 
 	agesa_execute_state(cb, AMD_INIT_EARLY);
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 
 	if (!cb->s3resume)
 		agesa_execute_state(cb, AMD_INIT_POST);
 	else
 		agesa_execute_state(cb, AMD_INIT_RESUME);
 
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 
 	/* Work around AGESA setting all memory as WB on normal
 	 * boot path.

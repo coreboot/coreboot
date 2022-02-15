@@ -72,18 +72,18 @@ static int load_one_segment(uint8_t *dest,
 	switch (compression) {
 	case CBFS_COMPRESS_LZMA: {
 		printk(BIOS_DEBUG, "using LZMA\n");
-		timestamp_add_now(TS_START_ULZMA);
+		timestamp_add_now(TS_ULZMA_START);
 		len = ulzman(src, len, dest, memsz);
-		timestamp_add_now(TS_END_ULZMA);
+		timestamp_add_now(TS_ULZMA_END);
 		if (!len) /* Decompression Error. */
 			return 0;
 		break;
 	}
 	case CBFS_COMPRESS_LZ4: {
 		printk(BIOS_DEBUG, "using LZ4\n");
-		timestamp_add_now(TS_START_ULZ4F);
+		timestamp_add_now(TS_ULZ4F_START);
 		len = ulz4fn(src, len, dest, memsz);
-		timestamp_add_now(TS_END_ULZ4F);
+		timestamp_add_now(TS_ULZ4F_END);
 		if (!len) /* Decompression Error. */
 			return 0;
 		break;

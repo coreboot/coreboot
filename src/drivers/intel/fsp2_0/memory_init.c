@@ -380,9 +380,9 @@ void fsp_memory_init(bool s3wake)
 		die("FSPM XIP base does not match: %p vs %p\n",
 		    (void *)(uintptr_t)hdr->image_base, prog_start(&fspld.fsp_prog));
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 
 	do_fsp_memory_init(&context, s3wake);
 
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 }

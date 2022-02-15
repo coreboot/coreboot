@@ -2683,7 +2683,7 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 {
 	struct sys_info sysinfo;
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 	printk(BIOS_DEBUG, "Setting up RAM controller.\n");
 
 	memset(&sysinfo, 0, sizeof(sysinfo));
@@ -2783,5 +2783,5 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
 
 	sdram_setup_processor_side();
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 }

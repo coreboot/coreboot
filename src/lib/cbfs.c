@@ -215,9 +215,9 @@ static size_t cbfs_load_and_decompress(const struct region_device *rdev, void *b
 			return 0;
 
 		if (!cbfs_file_hash_mismatch(map, in_size, mdata, skip_verification)) {
-			timestamp_add_now(TS_START_ULZ4F);
+			timestamp_add_now(TS_ULZ4F_START);
 			out_size = ulz4fn(map, in_size, buffer, buffer_size);
-			timestamp_add_now(TS_END_ULZ4F);
+			timestamp_add_now(TS_ULZ4F_END);
 		}
 
 		rdev_munmap(rdev, map);
@@ -233,9 +233,9 @@ static size_t cbfs_load_and_decompress(const struct region_device *rdev, void *b
 
 		if (!cbfs_file_hash_mismatch(map, in_size, mdata, skip_verification)) {
 			/* Note: timestamp not useful for memory-mapped media (x86) */
-			timestamp_add_now(TS_START_ULZMA);
+			timestamp_add_now(TS_ULZMA_START);
 			out_size = ulzman(map, in_size, buffer, buffer_size);
-			timestamp_add_now(TS_END_ULZMA);
+			timestamp_add_now(TS_ULZMA_END);
 		}
 
 		rdev_munmap(rdev, map);

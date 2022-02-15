@@ -1695,7 +1695,7 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 
 	int ch;
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 
 	/* Wait for some bit, maybe TXT clear. */
 	if (sysinfo->txt_enabled) {
@@ -1803,5 +1803,5 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	raminit_thermal(sysinfo);
 	init_igd(sysinfo);
 
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 }

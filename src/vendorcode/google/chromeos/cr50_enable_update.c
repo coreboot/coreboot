@@ -89,7 +89,7 @@ static void enable_update(void *unused)
 		return;
 	}
 
-	timestamp_add_now(TS_START_TPM_ENABLE_UPDATE);
+	timestamp_add_now(TS_TPM_ENABLE_UPDATE_START);
 
 	/* Reboot in 1000 ms if necessary. */
 	ret = tlcl_cr50_enable_update(CR50_RESET_DELAY_MS,
@@ -117,7 +117,7 @@ static void enable_update(void *unused)
 		 */
 		cr50_reset_reqd = cr50_is_reset_needed();
 		if (!cr50_reset_reqd) {
-			timestamp_add_now(TS_END_TPM_ENABLE_UPDATE);
+			timestamp_add_now(TS_TPM_ENABLE_UPDATE_END);
 			return;
 		}
 

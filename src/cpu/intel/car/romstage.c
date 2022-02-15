@@ -60,7 +60,7 @@ static void romstage_main(void)
 
 asmlinkage void car_stage_entry(void)
 {
-	timestamp_add_now(TS_START_ROMSTAGE);
+	timestamp_add_now(TS_ROMSTAGE_START);
 
 	/* Assumes the hardware was set up during the bootblock */
 	console_init();

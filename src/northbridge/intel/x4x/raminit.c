@@ -566,7 +566,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 	int fast_boot, cbmem_was_inited;
 	size_t mrc_size;
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 	printk(BIOS_DEBUG, "Setting up RAM controller.\n");
 
 	pci_write_config8(HOST_BRIDGE, 0xdf, 0xff);
@@ -638,7 +638,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 
 	pci_or_config8(HOST_BRIDGE, 0xf4, 1);
 
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
 

@@ -39,7 +39,7 @@ void bootblock_main_with_timestamp(uint64_t base_timestamp,
 				      timestamps[i].entry_stamp);
 	}
 
-	timestamp_add_now(TS_START_BOOTBLOCK);
+	timestamp_add_now(TS_BOOTBLOCK_START);
 
 	bootblock_soc_early_init();
 	bootblock_mainboard_early_init();
@@ -63,7 +63,7 @@ void bootblock_main_with_timestamp(uint64_t base_timestamp,
 		tpm_setup(s3resume);
 	}
 
-	timestamp_add_now(TS_END_BOOTBLOCK);
+	timestamp_add_now(TS_BOOTBLOCK_END);
 
 	run_romstage();
 }

@@ -188,14 +188,14 @@ void perform_raminit(const struct chipset_power_state *const power_state)
 
 	post_code(0x32);
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 
 	pei_data.boot_mode = power_state->prev_sleep_state;
 
 	/* Initialize RAM */
 	sdram_initialize(&pei_data);
 
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 
 	int cbmem_was_initted = !cbmem_recovery(s3resume);
 	if (s3resume && !cbmem_was_initted) {

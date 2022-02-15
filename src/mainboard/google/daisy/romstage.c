@@ -123,7 +123,7 @@ void main(void)
 	int is_resume = (get_wakeup_state() != IS_NOT_WAKEUP);
 
 	timestamp_init(timestamp_get());
-	timestamp_add_now(TS_START_ROMSTAGE);
+	timestamp_add_now(TS_ROMSTAGE_START);
 
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */
@@ -134,11 +134,11 @@ void main(void)
 
 	setup_power(is_resume);
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 
 	setup_memory(mem, is_resume);
 
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 
 	/* This needs to happen on normal boots and on resume. */
 	trustzone_init();

@@ -192,7 +192,7 @@ void run_postcar_phase(struct postcar_frame *pcf)
 		load_postcar_cbfs(&prog, pcf);
 
 	/* As postcar exist, it's end of romstage here */
-	timestamp_add_now(TS_END_ROMSTAGE);
+	timestamp_add_now(TS_ROMSTAGE_END);
 
 	console_time_report();
 

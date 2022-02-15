@@ -25,7 +25,7 @@ void test_timestamp_add(void **state)
 
 	timestamp_init(timestamp_base);
 
-	timestamp_add(TS_START_ROMSTAGE, base_multipler);
+	timestamp_add(TS_ROMSTAGE_START, base_multipler);
 
 	assert_int_equal(1, glob_ts_table->num_entries);
 
@@ -61,7 +61,7 @@ void test_timestamp_add_now(void **state)
 
 	dummy_timestamp_set(base_multipler);
 
-	timestamp_add_now(TS_START_ROMSTAGE);
+	timestamp_add_now(TS_ROMSTAGE_START);
 
 	assert_int_equal(1, glob_ts_table->num_entries);
 

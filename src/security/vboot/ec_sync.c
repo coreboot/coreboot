@@ -42,7 +42,7 @@ void vboot_sync_ec(void)
 	vb2_error_t retval = VB2_SUCCESS;
 	struct vb2_context *ctx;
 
-	timestamp_add_now(TS_START_EC_SYNC);
+	timestamp_add_now(TS_EC_SYNC_START);
 
 	ctx = vboot_get_context();
 	ctx->flags |= VB2_CONTEXT_EC_SYNC_SUPPORTED;
@@ -84,7 +84,7 @@ void vboot_sync_ec(void)
 		break;
 	}
 
-	timestamp_add_now(TS_END_EC_SYNC);
+	timestamp_add_now(TS_EC_SYNC_END);
 }
 
 /* Convert firmware image type into a flash offset */

@@ -14,7 +14,7 @@
 
 asmlinkage void car_stage_entry(void)
 {
-	timestamp_add_now(TS_START_ROMSTAGE);
+	timestamp_add_now(TS_ROMSTAGE_START);
 
 	post_code(0x40);
 

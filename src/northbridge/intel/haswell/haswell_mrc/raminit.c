@@ -405,13 +405,13 @@ void perform_raminit(const int s3resume)
 	pei_data.dimm_channel0_disabled = make_channel_disabled_mask(&pei_data, 0);
 	pei_data.dimm_channel1_disabled = make_channel_disabled_mask(&pei_data, 1);
 
-	timestamp_add_now(TS_BEFORE_INITRAM);
+	timestamp_add_now(TS_INITRAM_START);
 
 	copy_spd(&pei_data, &spdi);
 
 	sdram_initialize(&pei_data);
 
-	timestamp_add_now(TS_AFTER_INITRAM);
+	timestamp_add_now(TS_INITRAM_END);
 
 	post_code(0x3b);
 

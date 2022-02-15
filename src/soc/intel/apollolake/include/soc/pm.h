@@ -152,6 +152,7 @@
 /* Memory mapped IO registers behind PMC_BASE_ADDRESS */
 #define PRSTS			0x1000
 #define GEN_PMCON1		0x1020
+#define GEN_PMCON_A		GEN_PMCON1
 #define  COLD_BOOT_STS		(1 << 27)
 #define  COLD_RESET_STS		(1 << 26)
 #define  WARM_RESET_STS		(1 << 25)

@@ -37,19 +37,24 @@ static void wait_heci_cb_avail(int len)
 					       csr.csr.buffer_read_ptr));
 }
 
-static void send_heci_packet(struct mei_header *head, u32 *payload)
+static void send_heci_packet_dword(u8 *payload, size_t length)
 {
-	int len = (head->length + 3) / 4;
 	int i;
+	for (i = 0; i < length; i += sizeof(uint32_t)) {
+		uint32_t dword = 0;
+		size_t bytes = MIN(length - i, sizeof(dword));
+		memcpy(&dword, payload + i, bytes);
+		write32(DEFAULT_HECIBAR + 0, dword);
+	}
+}
 
-	wait_heci_cb_avail(len + 1);
+static void send_heci_packet(struct mei_header *head, u8 *payload)
+{
+	wait_heci_cb_avail(DIV_ROUND_UP(sizeof(*head) + head->length, sizeof(u32)));
 
-	/* FIXME: handle leftovers correctly.  */
-	write32(DEFAULT_HECIBAR + 0, *(u32 *) head);
-	for (i = 0; i < len - 1; i++)
-		write32(DEFAULT_HECIBAR + 0, payload[i]);
+	send_heci_packet_dword((u8 *)head, sizeof(*head));
+	send_heci_packet_dword(payload, head->length);
 
-	write32(DEFAULT_HECIBAR + 0, payload[i] & ((1 << (8 * len)) - 1));
 	write32(DEFAULT_HECIBAR + 0x4, read32(DEFAULT_HECIBAR + 0x4) | 0x4);
 }
 
@@ -72,7 +77,7 @@ static void send_heci_message(u8 *msg, int len, u8 hostaddress, u8 clientaddress
 		head.reserved = 0;
 		head.client_address = clientaddress;
 		head.host_address = hostaddress;
-		send_heci_packet(&head, (u32 *) msg);
+		send_heci_packet(&head, msg);
 		len -= cur;
 		msg += cur;
 	}

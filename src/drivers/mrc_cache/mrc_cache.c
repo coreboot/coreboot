@@ -255,7 +255,7 @@ static int mrc_cache_get_latest_slot_info(const char *name,
 
 	/* No data to return. */
 	if (region_file_data(cache_file, rdev) < 0) {
-		printk(BIOS_ERR, "MRC: no data in '%s'\n", name);
+		printk(BIOS_NOTICE, "MRC: no data in '%s'\n", name);
 		return fail_bad_data ? -1 : 0;
 	}
 

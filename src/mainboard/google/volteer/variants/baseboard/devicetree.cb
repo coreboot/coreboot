@@ -357,7 +357,9 @@ chip soc/intel/tigerlake
 	register "FastPkgCRampDisable" = "1"
 
 	device domain 0 on
-		device ref igpu on end
+		device ref igpu on
+			register "gfx" = "GMA_DEFAULT_PANEL(0)"
+		end
 		device ref dptf on
 			# Default DPTF Policy for all Volteer boards if not overridden
 			chip drivers/intel/dptf

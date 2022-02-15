@@ -64,7 +64,7 @@ enum fsp_log_level fsp_map_console_log_level(void)
 	}
 
 	if (!CONFIG(DEBUG_RAM_SETUP))
-		fsp_debug_level = MIN(fsp_debug_level, FSP_LOG_LEVEL_ERR_WARN);
+		fsp_debug_level = MIN(fsp_debug_level, FSP_LOG_LEVEL_ERR_WARN_INFO);
 
 	return fsp_debug_level;
 }

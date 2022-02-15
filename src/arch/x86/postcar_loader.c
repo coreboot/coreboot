@@ -19,7 +19,7 @@ static size_t var_mtrr_ctx_size(void)
 	return sizeof(struct var_mtrr_context) + mtrr_count * 2 * sizeof(msr_t);
 }
 
-int postcar_frame_init(struct postcar_frame *pcf)
+static int postcar_frame_init(struct postcar_frame *pcf)
 {
 	struct var_mtrr_context *ctx;
 
@@ -56,6 +56,8 @@ static void postcar_frame_common_mtrrs(struct postcar_frame *pcf)
 	/* Cache the ROM as WP just below 4GiB. */
 	postcar_frame_add_romcache(pcf, MTRR_TYPE_WRPROT);
 }
+
+static void run_postcar_phase(struct postcar_frame *pcf);
 
 /* prepare_and_run_postcar() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use. */
@@ -129,7 +131,7 @@ static void postcar_cache_invalid(void)
 	board_reset();
 }
 
-void run_postcar_phase(struct postcar_frame *pcf)
+static void run_postcar_phase(struct postcar_frame *pcf)
 {
 	struct prog prog =
 		PROG_INIT(PROG_POSTCAR, CONFIG_CBFS_PREFIX "/postcar");

@@ -21,12 +21,6 @@ struct postcar_frame {
 };
 
 /*
- * Initialize postcar_frame object.
- * Returns 0 on success, < 0 on error.
- */
-int postcar_frame_init(struct postcar_frame *pcf);
-
-/*
  * Add variable MTRR covering the provided range with MTRR type.
  */
 void postcar_frame_add_mtrr(struct postcar_frame *pcf,
@@ -50,17 +44,6 @@ void fill_postcar_frame(struct postcar_frame *pcf);
  * cache-as-ram is torn down as well as the MTRR settings to use.
  */
 void prepare_and_run_postcar(struct postcar_frame *pcf);
-
-/*
- * Load and run a program that takes control of execution that
- * tears down CAR and loads ramstage. The postcar_frame object
- * indicates how to set up the frame. If caching is enabled at
- * the time of the call it is up to the platform code to handle
- * coherency with dirty lines in the cache using some mechanism
- * such as platform_prog_run() because run_postcar_phase()
- * utilizes prog_run() internally.
- */
-void run_postcar_phase(struct postcar_frame *pcf);
 
 /*
  * Systems without a native coreboot cache-as-ram teardown may implement

@@ -21,6 +21,8 @@ static size_t var_mtrr_ctx_size(void)
 
 static int postcar_frame_init(struct postcar_frame *pcf)
 {
+	memset(pcf, 0, sizeof(*pcf));
+
 	struct var_mtrr_context *ctx;
 
 	ctx = cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK, var_mtrr_ctx_size());
@@ -61,16 +63,18 @@ static void run_postcar_phase(struct postcar_frame *pcf);
 
 /* prepare_and_run_postcar() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use. */
-void prepare_and_run_postcar(struct postcar_frame *pcf)
+void prepare_and_run_postcar(void)
 {
-	if (postcar_frame_init(pcf))
+	struct postcar_frame pcf;
+
+	if (postcar_frame_init(&pcf))
 		die("Unable to initialize postcar frame.\n");
 
-	fill_postcar_frame(pcf);
+	fill_postcar_frame(&pcf);
 
-	postcar_frame_common_mtrrs(pcf);
+	postcar_frame_common_mtrrs(&pcf);
 
-	run_postcar_phase(pcf);
+	run_postcar_phase(&pcf);
 	/* We do not return here. */
 }
 

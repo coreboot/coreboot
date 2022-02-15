@@ -50,7 +50,6 @@ static void bsp_agesa_call(void)
 
 asmlinkage void car_stage_entry(void)
 {
-	struct postcar_frame pcf;
 	msr_t base, mask;
 	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
 	int vmtrrs = mtrr_cap.lo & MTRR_CAP_VCNT;
@@ -121,7 +120,7 @@ asmlinkage void car_stage_entry(void)
 		smm_list_regions();
 
 	post_code(0x44);
-	prepare_and_run_postcar(&pcf);
+	prepare_and_run_postcar();
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)

@@ -43,7 +43,7 @@ void fill_postcar_frame(struct postcar_frame *pcf);
  * prepare_and_run_postcar() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use.
  */
-void prepare_and_run_postcar(struct postcar_frame *pcf);
+void prepare_and_run_postcar(void);
 
 /*
  * Systems without a native coreboot cache-as-ram teardown may implement

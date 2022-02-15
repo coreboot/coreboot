@@ -14,8 +14,6 @@
    following as a guideline for acceptable stack usage. */
 #define DCACHE_RAM_ROMSTAGE_STACK_SIZE 0x2000
 
-static struct postcar_frame early_mtrrs;
-
 static void romstage_main(void)
 {
 	int i;
@@ -54,7 +52,7 @@ static void romstage_main(void)
 	if (CONFIG(SMM_TSEG))
 		smm_list_regions();
 
-	prepare_and_run_postcar(&early_mtrrs);
+	prepare_and_run_postcar();
 	/* We do not return here. */
 }
 

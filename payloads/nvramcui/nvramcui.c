@@ -49,22 +49,19 @@ static void render_form(FORM *form)
 	wclear(der);
 	wrefresh(der);
 	delwin(der);
-	copywin(inner_w, w, line, 0, 1, 1,
-		min(numlines, getmaxy(inner_w) - line), 68, 0);
+	copywin(inner_w, w, line, 0, 1, 1, min(numlines, getmaxy(inner_w) - line), 68, 0);
 	wmove(w, y + 1 - line, x + 1);
 	wrefresh(w);
 }
 
 /* determine number of options, and maximum option name length */
-static int count_cmos_options(struct cb_cmos_entries *option, int *numopts,
-		int *maxlength)
+static int count_cmos_options(struct cb_cmos_entries *option, int *numopts, int *maxlength)
 {
 	int n_opts = 0;
 	int max_l = 0;
 
 	while (option) {
-		if ((option->config != 'r') &&
-		    (strcmp("check_sum", (char *)option->name) != 0)) {
+		if ((option->config != 'r') && (strcmp("check_sum", (char *)option->name) != 0)) {
 			max_l = max(max_l, strlen((char *)option->name));
 			n_opts++;
 		}
@@ -81,12 +78,11 @@ static int count_cmos_options(struct cb_cmos_entries *option, int *numopts,
 	*maxlength = max_l;
 
 	return 0;
-
 }
 
 /* walk over options, fetch details */
-static void cmos_walk_options(struct cb_cmos_option_table *opttbl,
-		FIELD **fields, int numopts, int maxlength)
+static void cmos_walk_options(struct cb_cmos_option_table *opttbl, FIELD **fields, int numopts,
+			      int maxlength)
 {
 	struct cb_cmos_entries *option = first_cmos_entry(opttbl);
 	int i;
@@ -96,16 +92,13 @@ static void cmos_walk_options(struct cb_cmos_option_table *opttbl,
 		       (strcmp("check_sum", (char *)option->name) == 0)) {
 			option = next_cmos_entry(option);
 		}
-		fields[2 * i] =
-		    new_field(1, strlen((char *)option->name), i * 2, 1, 0, 0);
+		fields[2 * i] = new_field(1, strlen((char *)option->name), i * 2, 1, 0, 0);
 		set_field_buffer(fields[2 * i], 0, (char *)option->name);
 		field_opts_off(fields[2 * i], O_ACTIVE);
 
-		fields[2 * i + 1] =
-		    new_field(1, 40, i * 2, maxlength + 2, 0, 0);
+		fields[2 * i + 1] = new_field(1, 40, i * 2, maxlength + 2, 0, 0);
 		char *buf = NULL;
-		int fail =
-		    get_option_as_string(use_nvram, opttbl, &buf, (char *)option->name);
+		int fail = get_option_as_string(use_nvram, opttbl, &buf, (char *)option->name);
 		switch (option->config) {
 		case 'h': {
 			set_field_type(fields[2 * i + 1], TYPE_INTEGER, 0, 0,
@@ -130,8 +123,7 @@ static void cmos_walk_options(struct cb_cmos_option_table *opttbl,
 
 			while (cmos_enum) {
 				numvals++;
-				cmos_enum = next_cmos_enum_of_id(
-				    cmos_enum, option->config_id);
+				cmos_enum = next_cmos_enum_of_id(cmos_enum, option->config_id);
 			}
 
 			char **values = malloc(sizeof(char *) * (numvals + 1));
@@ -142,13 +134,11 @@ static void cmos_walk_options(struct cb_cmos_option_table *opttbl,
 			while (cmos_enum) {
 				values[cnt] = (char *)cmos_enum->text;
 				cnt++;
-				cmos_enum = next_cmos_enum_of_id(
-				    cmos_enum, option->config_id);
+				cmos_enum = next_cmos_enum_of_id(cmos_enum, option->config_id);
 			}
 			values[cnt] = NULL;
 			field_opts_off(fields[2 * i + 1], O_EDIT);
-			set_field_type(fields[2 * i + 1], TYPE_ENUM, values, 1,
-				       1);
+			set_field_type(fields[2 * i + 1], TYPE_ENUM, values, 1, 1);
 			free(values); // copied by set_field_type
 			break;
 		}
@@ -161,8 +151,7 @@ static void cmos_walk_options(struct cb_cmos_option_table *opttbl,
 		// underline is non-trivial on VGA text
 		set_field_back(fields[2 * i + 1], A_UNDERLINE);
 #endif
-		field_opts_off(fields[2 * i + 1],
-			       O_BLANK | O_AUTOSKIP | O_NULLOK);
+		field_opts_off(fields[2 * i + 1], O_BLANK | O_AUTOSKIP | O_NULLOK);
 
 		option = next_cmos_entry(option);
 	}

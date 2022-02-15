@@ -48,6 +48,12 @@ type LP5SpeedParams struct {
 	MaxCASLatency int
 }
 
+type LP5BankArchParams struct {
+	NumBanks		int
+	BankGroups		int
+	BurstAddressBits	int
+}
+
 type LP5SPDAttribFunc func(*LP5MemAttributes) byte
 
 type LP5SPDAttribTableEntry struct {
@@ -55,8 +61,11 @@ type LP5SPDAttribTableEntry struct {
 	getVal   LP5SPDAttribFunc
 }
 
+type LP5SetFunc func(*LP5MemAttributes) int
+
 type LP5Set struct {
 	SPDRevision    byte
+	getBankArch  LP5SetFunc
 	optionalFeatures  byte
 	otherOptionalFeatures  byte
 	busWidthEncoding  byte
@@ -146,24 +155,15 @@ const (
 )
 
 const (
-	/*
-	 * LPDDR5 has a flexible bank architecture with three programmable bank modes: BG, 8B, 16B.
-	 * ADL will use 8B mode for all parts.
-	 *
-	 * From JEDEC spec:
-	 * 7:6 (Bank Group Bits) = 00 (no bank groups)
-	 * 5:4 (Bank Address Bits) = 01 (8 banks)
-	 * Set bits 7:4 to 0b0001.
-	 */
-	LP5BankGroupsBanks = 0x1
+	// The column addresses are the same for x8 & x16 and for all Bank Architectures.
+	LP5ColAddressBits = 6
+)
 
-	/*
-	 * Tables 8 and 9 from JESD209-5B.
-	 * ADL uses 8B mode for all parts. The column addresses are the same for x8 and x16.
-	 * Effective column address bits = column address bits + burst address bits = 6 + 5 = 11.
-	 * As per JESD 21-C, this is encoded as 0b010.
-	 */
-	LP5ColumnAddressBits = 0x2
+const (
+	// LPDDR5 has a flexible bank architecture with three programmable bank modes: BG, 8B, 16B.
+	LP5BGBankArch = iota
+	LP58BBankArch
+	LP516BBankArch
 )
 
 /* ------------------------------------------------------------------------------------------ */
@@ -178,6 +178,7 @@ var LP5PlatformSetMap = map[int][]int{
 var LP5SetInfo = map[int]LP5Set{
 	0: {
 		SPDRevision: LP5SPDValueRevision1_0,
+		getBankArch: LP5GetBankArchSet0,
 		/*
 		 * From JEDEC spec:
 		 * 5:4 (Maximum Activate Window) = 00 (8192 * tREFI)
@@ -196,6 +197,7 @@ var LP5SetInfo = map[int]LP5Set{
 	},
 	1: {
 		SPDRevision: LP5SPDValueRevision1_1,
+		getBankArch: LP5GetBankArchSet1,
 		/*
 		 * For Sabrina (as per advisory b/211510456):
 		 * 5:4 (Maximum Activate Window) = 01 (4096 * tREFI)
@@ -286,6 +288,24 @@ var LP5DensityGbToSPDEncoding = map[int]LP5DensityParams{
 }
 
 /*
+ * Maps the number of banks to the SPD encoding as per JESD 21-C.
+ */
+var LP5NumBanksEncoding = map[int]byte{
+	4: 0x0,
+	8: 0x1,
+	16: 0x2,
+}
+
+/*
+ * Maps the Bank Group bits to the SPD encoding as per JESD 21-C.
+ */
+var LP5BankGroupsEncoding = map[int]byte{
+	1: 0x0,
+	2: 0x1,
+	4: 0x2,
+}
+
+/*
  * Maps the number of row address bits to the SPD encoding as per JESD 21-C.
  */
 var LP5RowAddressBitsEncoding = map[int]byte{
@@ -294,6 +314,34 @@ var LP5RowAddressBitsEncoding = map[int]byte{
 	16: 0x4,
 	17: 0x5,
 	18: 0x6,
+}
+
+/*
+ * Maps the number of column address bits to the SPD encoding as per JESD 21-C.
+ */
+var LP5ColAddressBitsEncoding = map[int]byte{
+	9: 0x0,
+	10: 0x1,
+	11: 0x2,
+	12: 0x3,
+}
+
+var LP5BankArchToSPDEncoding = map[int]LP5BankArchParams{
+	LP5BGBankArch: {
+		NumBanks: 4,
+		BankGroups: 4,
+		BurstAddressBits: 4,
+	},
+	LP58BBankArch: {
+		NumBanks: 8,
+		BankGroups: 1,
+		BurstAddressBits: 5,
+	},
+	LP516BBankArch: {
+		NumBanks: 16,
+		BankGroups: 1,
+		BurstAddressBits: 4,
+	},
 }
 
 /*
@@ -361,6 +409,40 @@ func LP5EncodeSPDRevision(memAttribs *LP5MemAttributes) byte {
 	return f.SPDRevision
 }
 
+func LP5GetBankArchSet0(memAttribs *LP5MemAttributes) int {
+	// ADL will use 8B mode for all parts.
+	return LP58BBankArch
+}
+
+func LP5GetBankArchSet1(memAttribs *LP5MemAttributes) int {
+	/*
+	 * Sabrina does not support 8B. It uses 16B Bank Architecture for speed <= 3200 Mbps.
+	 * It uses BG Bank Architecture for speed > 3200 Mbps.
+	 */
+	 if memAttribs.SpeedMbps <= 3200 {
+		return LP516BBankArch
+	}
+	return LP5BGBankArch
+}
+
+func LP5GetBankArch(memAttribs *LP5MemAttributes) int {
+	f, ok := LP5SetInfo[LP5CurrSet]
+
+	if ok == false || f.getBankArch == nil {
+		return LP5BGBankArch
+	}
+
+	return f.getBankArch(memAttribs)
+}
+
+func LP5GetNumBanks(memAttribs *LP5MemAttributes) int {
+	return LP5BankArchToSPDEncoding[LP5GetBankArch(memAttribs)].NumBanks
+}
+
+func LP5GetBankGroups(memAttribs *LP5MemAttributes) int {
+	return LP5BankArchToSPDEncoding[LP5GetBankArch(memAttribs)].BankGroups
+}
+
 func LP5EncodeDensityBanks(memAttribs *LP5MemAttributes) byte {
 	var b byte
 
@@ -368,17 +450,22 @@ func LP5EncodeDensityBanks(memAttribs *LP5MemAttributes) byte {
 	b = LP5DensityGbToSPDEncoding[memAttribs.DensityPerDieGb].DensityEncoding
 
 	// 5:4 Bank address bits.
+	b |= LP5NumBanksEncoding[LP5GetNumBanks(memAttribs)] << 4
 	// 7:6 Bank group bits.
-	b |= LP5BankGroupsBanks << 4
+	b |= LP5BankGroupsEncoding[LP5GetBankGroups(memAttribs)] << 6
 
 	return b
+}
+
+func LP5GetBurstAddressBits(memAttribs *LP5MemAttributes) int {
+	return LP5BankArchToSPDEncoding[LP5GetBankArch(memAttribs)].BurstAddressBits
 }
 
 func LP5EncodeSdramAddressing(memAttribs *LP5MemAttributes) byte {
 	var b byte
 
 	// 2:0 Column address bits.
-	b = LP5ColumnAddressBits
+	b = LP5ColAddressBitsEncoding[LP5ColAddressBits + LP5GetBurstAddressBits(memAttribs)]
 
 	// 5:3 Row address bits.
 	density := memAttribs.DensityPerDieGb

@@ -24,7 +24,6 @@ config MAINBOARD_PART_NUMBER
 config AMD_FWM_POSITION_INDEX
 	int
 	default 3 if CHROMEOS
-	default 4
 	help
 	  TODO: might need to be adapted for better placement of files in cbfs
 
@@ -32,13 +31,31 @@ config CHAUSIE_HAVE_MCHP_FW
 	bool "Have Microchip EC firmware?"
 	default n
 
+config CHAUSIE_MCHP_SIG_FILE
+	string
+	depends on CHAUSIE_HAVE_MCHP_FW
+	default "3rdparty/blobs/mainboard/amd/chausie/EC_chausie_sig.bin"
+	help
+	  The EC sig blob is the first 4kBytes of the firmware image.
+	  The first 4 bytes form a pointer (with CRC) to where the EC firmware
+	  is located
+
 config CHAUSIE_MCHP_FW_FILE
 	string
 	depends on CHAUSIE_HAVE_MCHP_FW
 	default "3rdparty/blobs/mainboard/amd/chausie/EC_chausie.bin"
 	help
-	  The EC firmware blob is usually the first 128kByte of the stock
+	  The EC firmware blob is at the CHAUSIE_MCHP_FW_OFFSET offset of the
 	  firmware image.
+
+config CHAUSIE_MCHP_FW_OFFSET
+	hex
+	depends on CHAUSIE_HAVE_MCHP_FW
+	default 0x400000
+	help
+	  The EC firmware blob defaults to the 4MByte offset of the firmware
+	  image. If this offset needs to change, a new signature block must be
+	  generated with the updated offset.
 
 config VBOOT
 	select VBOOT_NO_BOARD_SUPPORT

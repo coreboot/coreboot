@@ -10,7 +10,7 @@ uintptr_t get_uart_base(unsigned int idx)
 {
 	uint32_t err;
 
-	if (idx > ARRAY_SIZE(uart_bars))
+	if (idx >= ARRAY_SIZE(uart_bars))
 		return 0;
 
 	if (uart_bars[idx])

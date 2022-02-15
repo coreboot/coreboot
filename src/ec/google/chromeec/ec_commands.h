@@ -177,13 +177,17 @@ extern "C" {
 #define EC_MEMMAP_ACC_STATUS_PRESENCE_BIT    BIT(7)
 
 /* Number of temp sensors at EC_MEMMAP_TEMP_SENSOR */
-#define EC_TEMP_SENSOR_ENTRIES     16
+#define EC_TEMP_SENSOR_ENTRIES        16
 /*
  * Number of temp sensors at EC_MEMMAP_TEMP_SENSOR_B.
  *
  * Valid only if EC_MEMMAP_THERMAL_VERSION returns >= 2.
  */
 #define EC_TEMP_SENSOR_B_ENTRIES      8
+
+/* Max temp sensor entries for host commands */
+#define EC_MAX_TEMP_SENSOR_ENTRIES    (EC_TEMP_SENSOR_ENTRIES + \
+				       EC_TEMP_SENSOR_B_ENTRIES)
 
 /* Special values for mapped temperature sensors */
 #define EC_TEMP_SENSOR_NOT_PRESENT    0xff
@@ -1499,6 +1503,10 @@ enum ec_feature_code {
 	 * mux.
 	 */
 	EC_FEATURE_TYPEC_MUX_REQUIRE_AP_ACK = 43,
+	/*
+	 * The EC supports entering and residing in S4.
+	 */
+	EC_FEATURE_S4_RESIDENCY = 44,
 };
 
 #define EC_FEATURE_MASK_0(event_code) BIT(event_code % 32)
@@ -1765,6 +1773,8 @@ struct ec_params_flash_erase_v1 {
 #define EC_FLASH_PROTECT_ROLLBACK_AT_BOOT   BIT(9)
 /* Rollback information flash region protected now */
 #define EC_FLASH_PROTECT_ROLLBACK_NOW       BIT(10)
+/* Error - Unknown error */
+#define EC_FLASH_PROTECT_ERROR_UNKNOWN      BIT(11)
 
 
 /**
@@ -2706,6 +2716,8 @@ enum motionsensor_chip {
 	MOTIONSENSE_CHIP_ICM42607 = 26,
 	MOTIONSENSE_CHIP_BMA422 = 27,
 	MOTIONSENSE_CHIP_BMI323 = 28,
+	MOTIONSENSE_CHIP_BMI220 = 29,
+	MOTIONSENSE_CHIP_CM32183 = 30,
 	MOTIONSENSE_CHIP_MAX,
 };
 
@@ -2856,7 +2868,7 @@ struct ec_params_motion_sense {
 		 */
 		struct __ec_todo_unpacked {
 			/* Data to set or EC_MOTION_SENSE_NO_VALUE to read.
-			 * kb_wake_angle: angle to wake up AP.
+			 * kb_wake_angle: angle to wakup AP.
 			 */
 			int16_t data;
 		} kb_wake_angle;
@@ -6051,7 +6063,10 @@ struct ec_params_set_cbi {
  * - The semantic meaning of an entry should not change.
  * - Do not exceed 2^15 - 1 for reset reasons or 2^16 - 1 for shutdown reasons.
  */
-enum chipset_reset_reason {
+enum chipset_shutdown_reason {
+	/*
+	 * Beginning of reset reasons.
+	 */
 	CHIPSET_RESET_BEGIN = 0,
 	CHIPSET_RESET_UNKNOWN = CHIPSET_RESET_BEGIN,
 	/* Custom reason defined by a board.c or baseboard.c file */
@@ -6075,13 +6090,11 @@ enum chipset_reset_reason {
 	/* EC detected an AP watchdog event. */
 	CHIPSET_RESET_AP_WATCHDOG,
 
-	CHIPSET_RESET_COUNT,
-};
+	CHIPSET_RESET_COUNT, /* End of reset reasons. */
 
-/*
- * AP hard shutdowns are logged on the same path as resets.
- */
-enum chipset_shutdown_reason {
+	/*
+	 * Beginning of shutdown reasons.
+	 */
 	CHIPSET_SHUTDOWN_BEGIN = BIT(15),
 	CHIPSET_SHUTDOWN_POWERFAIL = CHIPSET_SHUTDOWN_BEGIN,
 	/* Forcing a shutdown as part of EC initialization */
@@ -6103,7 +6116,7 @@ enum chipset_shutdown_reason {
 	/* Force a chipset shutdown from the power button through EC */
 	CHIPSET_SHUTDOWN_BUTTON,
 
-	CHIPSET_SHUTDOWN_COUNT,
+	CHIPSET_SHUTDOWN_COUNT, /* End of shutdown reasons. */
 };
 
 
@@ -6410,6 +6423,7 @@ enum action_key {
 	TK_PREV_TRACK = 17,
 	TK_KBD_BKLIGHT_TOGGLE = 18,
 	TK_MICMUTE = 19,
+	TK_MENU = 20,
 };
 
 /*
@@ -6619,6 +6633,7 @@ enum typec_control_command {
 	TYPEC_CONTROL_COMMAND_EXIT_MODES,
 	TYPEC_CONTROL_COMMAND_CLEAR_EVENTS,
 	TYPEC_CONTROL_COMMAND_ENTER_MODE,
+	TYPEC_CONTROL_COMMAND_TBT_UFP_REPLY,
 };
 
 /* Modes (USB or alternate) that a type-C port may enter. */
@@ -6626,6 +6641,12 @@ enum typec_mode {
 	TYPEC_MODE_DP,
 	TYPEC_MODE_TBT,
 	TYPEC_MODE_USB4,
+};
+
+/* Replies the AP may specify to the TBT EnterMode command as a UFP */
+enum typec_tbt_ufp_reply {
+	TYPEC_TBT_UFP_REPLY_NAK,
+	TYPEC_TBT_UFP_REPLY_ACK,
 };
 
 struct ec_params_typec_control {
@@ -6639,8 +6660,12 @@ struct ec_params_typec_control {
 	 * the command version when adding new sub-commands.
 	 */
 	union {
+		/* Used for CLEAR_EVENTS */
 		uint32_t clear_events_mask;
-		uint8_t mode_to_enter;      /* enum typec_mode */
+		/* Used for ENTER_MODE - enum typec_mode */
+		uint8_t mode_to_enter;
+		/* Used for TBT_UFP_REPLY - enum typec_tbt_ufp_reply */
+		uint8_t tbt_ufp_reply;
 		uint8_t placeholder[128];
 	};
 } __ec_align1;
@@ -6932,8 +6957,9 @@ enum pchg_state {
 
 /* Port number is encoded in bit[28:31]. */
 #define EC_MKBP_PCHG_PORT_SHIFT		28
-/* Utility macro for converting MKBP event to port number. */
+/* Utility macros for converting MKBP event <-> port number. */
 #define EC_MKBP_PCHG_EVENT_TO_PORT(e)	(((e) >> EC_MKBP_PCHG_PORT_SHIFT) & 0xf)
+#define EC_MKBP_PCHG_PORT_TO_EVENT(p)	(BIT((p) + EC_MKBP_PCHG_PORT_SHIFT))
 /* Utility macro for extracting event bits. */
 #define EC_MKBP_PCHG_EVENT_MASK(e)	((e) \
 					& GENMASK(EC_MKBP_PCHG_PORT_SHIFT-1, 0))
@@ -6942,6 +6968,7 @@ enum pchg_state {
 #define EC_MKBP_PCHG_WRITE_COMPLETE	BIT(1)
 #define EC_MKBP_PCHG_UPDATE_CLOSED	BIT(2)
 #define EC_MKBP_PCHG_UPDATE_ERROR	BIT(3)
+#define EC_MKBP_PCHG_DEVICE_EVENT	BIT(4)
 
 enum ec_pchg_update_cmd {
 	/* Reset chip to normal mode. */
@@ -7005,6 +7032,31 @@ enum ec_set_base_state_cmd {
 	EC_SET_BASE_STATE_ATTACH,
 	EC_SET_BASE_STATE_RESET,
 };
+
+#define EC_CMD_I2C_CONTROL 0x0139
+
+/* Subcommands for I2C control */
+
+enum ec_i2c_control_command {
+	EC_I2C_CONTROL_GET_SPEED,
+	EC_I2C_CONTROL_SET_SPEED,
+};
+
+#define EC_I2C_CONTROL_SPEED_UNKNOWN 0
+
+struct ec_params_i2c_control {
+	uint8_t port;		/* I2C port number */
+	uint8_t cmd;		/* enum ec_i2c_control_command */
+	union {
+		uint16_t speed_khz;
+	} cmd_params;
+} __ec_align_size1;
+
+struct ec_response_i2c_control {
+	union {
+		uint16_t speed_khz;
+	} cmd_response;
+} __ec_align_size1;
 
 /*****************************************************************************/
 /* The command range 0x200-0x2FF is reserved for Rotor. */

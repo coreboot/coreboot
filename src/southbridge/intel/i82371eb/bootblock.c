@@ -30,7 +30,6 @@ static pci_devfn_t pci_locate_device(unsigned int pci_id, pci_devfn_t dev)
 void bootblock_early_southbridge_init(void)
 {
 	u16 reg16;
-	pci_devfn_t dev;
 
 	/*
 	 * Note: The Intel 82371AB/EB/MB ISA device can be on different
@@ -39,7 +38,7 @@ void bootblock_early_southbridge_init(void)
 	 * But scanning for the PCI IDs (instead of hardcoding
 	 * bus/device/function numbers) works on all boards.
 	 */
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
+	const pci_devfn_t dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
 				       PCI_DEVICE_ID_INTEL_82371AB_ISA), 0);
 
 	/* Enable access to the whole ROM, disable ROM write access. */

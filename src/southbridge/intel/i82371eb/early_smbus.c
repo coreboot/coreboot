@@ -21,12 +21,11 @@ uintptr_t smbus_base(void)
 
 int smbus_enable_iobar(uintptr_t base)
 {
-	pci_devfn_t dev;
 	u8 reg8;
 	u16 reg16;
 
 	/* Get the SMBus/PM device of the 82371AB/EB/MB. */
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
+	const pci_devfn_t dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
 				PCI_DEVICE_ID_INTEL_82371AB_SMB_ACPI), 0);
 
 	/* Set the SMBus I/O base. */

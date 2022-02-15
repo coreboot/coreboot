@@ -8,7 +8,7 @@ config ACPI_AMD_HARDWARE_SLEEP_VALUES
 
 config ACPI_CPU_STRING
 	string
-	default "\\_SB.CP%02d"
+	default "\\_SB.CP%02X"
 	depends on HAVE_ACPI_TABLES
 	help
 	  Sets the ACPI name string in the processor scope as written by

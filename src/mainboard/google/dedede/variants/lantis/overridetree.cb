@@ -4,6 +4,11 @@ fw_config
 		option AUDIO_CODEC_ALC5682	1
 		option AUDIO_CODEC_ALC5682I_VS	2
 	end
+	field TS_DRIVER_SOURCE 43 45
+		option TS_UNPROVISIONED 0
+		option TS_ELAN0001       1
+		option TS_ELAN2513           2
+	end
 end
 chip soc/intel/jasperlake
 
@@ -176,7 +181,25 @@ chip soc/intel/jasperlake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
 				register "enable_delay_ms" = "1"
 				register "has_power_resource" = "1"
-				device i2c 10 on end
+				device i2c 10 on
+					probe TS_DRIVER_SOURCE TS_UNPROVISIONED
+					probe TS_DRIVER_SOURCE TS_ELAN0001
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN2513""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D4_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D5)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 10 on
+					probe TS_DRIVER_SOURCE TS_ELAN2513
+				end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GTCH7503""

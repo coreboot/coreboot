@@ -45,4 +45,7 @@ void enable_gpe(uint32_t mask);
 void disable_gpe(uint32_t mask);
 void disable_all_gpe(void);
 
+/* Clear PMCON status bits */
+void pmc_clear_pmcon_sts(void);
+
 #endif /* _DENVERTON_NS_PM_H_ */

@@ -36,7 +36,7 @@ static void display_fsp_smbios_memory_info_hob(void)
 static void early_pmc_init(void)
 {
 	/* PMC (B0:D31:F2). */
-	pci_devfn_t dev = PCH_PMC_DEV;
+	pci_devfn_t dev = PCH_DEV_PMC;
 
 	/* Is PMC present */
 	if (pci_read_config16(dev, 0) == 0xffff) {
@@ -66,16 +66,16 @@ static void early_pmc_init(void)
 	   Status : Plan Fix.
 	*/
 	if (silicon_stepping() == SILICON_REV_DENVERTON_B0) {
-		if (!(pci_read_config32(dev, PMC_GEN_PMCON_B)
-					& PMC_GEN_PMCON_B_RTC_PWR_STS)) {
+		if (!(pci_read_config32(dev, GEN_PMCON_B)
+					& GEN_PMCON_B_RTC_PWR_STS)) {
 			if (read32((void *)(pwrm_base + 0x124))
 				   & ((1 << 11) | (1 << 12))) {
 				/* Performs a global reset */
 				printk(BIOS_DEBUG,
 					"Requesting Global Reset...\n");
-				pci_write_config32(dev, PMC_ETR3,
-					pci_read_config32(dev, PMC_ETR3)
-					| PMC_ETR3_CF9GR);
+				pci_write_config32(dev, ETR3,
+					pci_read_config32(dev, ETR3)
+					| ETR3_CF9GR);
 				full_reset();
 			}
 		}

@@ -1,12 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#define __SIMPLE_DEVICE__
+
 #include <stdint.h>
 #include <arch/io.h>
 #include <console/console.h>
-
+#include <device/pci.h>
+#include <intelblocks/pmclib.h>
 #include <soc/iomap.h>
-#include <soc/soc_util.h>
+#include <soc/pci_devs.h>
 #include <soc/pm.h>
+#include <soc/soc_util.h>
 
 static void print_num_status_bits(int num_bits, uint32_t status,
 				  const char *const bit_names[])
@@ -231,3 +235,18 @@ static uint32_t print_gpe_sts(uint32_t gpe_sts)
 uint32_t clear_gpe_status(void) { return print_gpe_sts(reset_gpe_status()); }
 
 void clear_pmc_status(void) { /* TODO */ }
+
+void pmc_clear_pmcon_sts(void)
+{
+	uint32_t reg_val;
+	const pci_devfn_t dev = PCH_DEV_PMC;
+
+	reg_val = pci_read_config32(dev, GEN_PMCON_A);
+	/*
+	 * Clear SUS_PWR_FLR, GBL_RST_STS, HOST_RST_STS, PWR_FLR bits
+	 * while retaining MS4V write-1-to-clear bit
+	 */
+	reg_val &= ~(MS4V);
+
+	pci_write_config32(dev, GEN_PMCON_A, reg_val);
+}

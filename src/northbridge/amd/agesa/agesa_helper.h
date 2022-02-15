@@ -36,7 +36,6 @@ void EmptyHeap(void);
 #define HIGH_MEMORY_SCRATCH		0x30000
 
 void fixup_cbmem_to_UC(int s3resume);
-void recover_postcar_frame(struct postcar_frame *pcf, int s3resume);
 
 void restore_mtrr(void);
 void backup_mtrr(void *mtrr_store, u32 *mtrr_store_size);

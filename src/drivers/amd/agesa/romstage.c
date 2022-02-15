@@ -78,10 +78,7 @@ static void romstage_main(void)
 
 	romstage_handoff_init(cb->s3resume);
 
-	postcar_frame_init(&pcf);
-	recover_postcar_frame(&pcf, cb->s3resume);
-
-	run_postcar_phase(&pcf);
+	prepare_and_run_postcar(&pcf);
 	/* We do not return. */
 }
 

@@ -171,7 +171,7 @@ void init_pm(const sysinfo_t *const sysinfo, int do_freq_scaling_cfg)
 	mchbar_setbits32(0xf80, 1 << 31);
 
 	mchbar_write32(0x40, (mchbar_read32(0x40) & ~(0x3f << 24)) |
-		(sysinfo->cores == 4) ? (1 << 24) : 0);
+		       ((sysinfo->cores == 4) ? (1 << 24) : 0));
 
 	mchbar_clrbits32(0x40, 1 << 19);
 	mchbar_setbits32(0x40, 1 << 13);

@@ -48,7 +48,7 @@ check-fmap-16mib-crossing: $(obj)/fmap_config.h
 	flash_offset=$$(fmap_get FMAP_SECTION_FLASH_START);		\
 	flash_size=$$(fmap_get FMAP_SECTION_FLASH_SIZE);		\
 	if [ $$((flash_size)) -le $$((0x1000000)) ]; then		\
-	   exit;		   	     				\
+	   exit;							\
 	fi;								\
 	bios_16M_boundary=$$((flash_size-0x1000000)); 			\
 	for x in $$(grep "FMAP_TERMINAL_SECTIONS" < $< | cut -d\" -f2);	\

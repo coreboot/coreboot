@@ -23,6 +23,9 @@ enum cr50_register {
 #define CR50_FW_VER_REG_SPI		(TPM_LOCALITY_0_SPI_BASE + 0xf90)
 #define CR50_BOARD_CFG_REG_SPI		(TPM_LOCALITY_0_SPI_BASE + 0xfe0)
 
+#define CR50_FW_VER_REG_I2C		0x0f
+#define CR50_BOARD_CFG_REG_I2C		0x1c
+
 /* Return register address, which depends on the bus type, or -1 for error. */
 static int get_reg_addr(enum cr50_register reg)
 {
@@ -37,6 +40,16 @@ static int get_reg_addr(enum cr50_register reg)
 		}
 	}
 
+	if (CONFIG(I2C_TPM)) {
+		switch (reg) {
+		case CR50_FW_VER_REG:
+			return CR50_FW_VER_REG_I2C;
+		case CR50_BOARD_CFG_REG:
+			return CR50_BOARD_CFG_REG_I2C;
+		default:
+			return -1;
+		}
+	}
 
 	return -1;
 }

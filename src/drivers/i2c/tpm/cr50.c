@@ -17,14 +17,15 @@
 
 #include <commonlib/endian.h>
 #include <commonlib/helpers.h>
+#include <console/console.h>
+#include <delay.h>
+#include <device/i2c_simple.h>
+#include <drivers/tpm/cr50.h>
+#include <endian.h>
+#include <security/tpm/tis.h>
 #include <string.h>
 #include <types.h>
-#include <delay.h>
-#include <console/console.h>
-#include <device/i2c_simple.h>
-#include <endian.h>
 #include <timer.h>
-#include <security/tpm/tis.h>
 
 #include "tpm.h"
 
@@ -126,7 +127,7 @@ static int cr50_i2c_read(uint8_t addr, uint8_t *buffer, size_t len)
  *
  * Returns -1 on error, 0 on success.
  */
-static int cr50_i2c_write(uint8_t addr, uint8_t *buffer, size_t len)
+static int cr50_i2c_write(uint8_t addr, const uint8_t *buffer, size_t len)
 {
 	if (tpm_dev.addr == 0)
 		return -1;
@@ -473,6 +474,7 @@ static int cr50_i2c_probe(struct tpm_chip *chip, uint32_t *did_vid)
 
 int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 {
+	struct cr50_firmware_version ver;
 	uint32_t did_vid = 0;
 
 	if (dev_addr == 0) {
@@ -498,10 +500,26 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	printk(BIOS_DEBUG, "cr50 TPM 2.0 (i2c %u:0x%02x id 0x%x)\n",
 	       bus, dev_addr, did_vid >> 16);
 
+	if (tpm_first_access_this_boot()) {
+		/* This is called for the side-effect of printing the version string. */
+		cr50_get_firmware_version(&ver);
+		cr50_set_board_cfg();
+	}
+
 	chip->is_open = 1;
 	return 0;
 }
 
 void tpm_vendor_cleanup(struct tpm_chip *chip)
 {
+}
+
+cb_err_t tis_vendor_write(unsigned int addr, const void *buffer, size_t bytes)
+{
+	return cr50_i2c_write(addr & 0xff, buffer, bytes) ? CB_ERR : CB_SUCCESS;
+}
+
+cb_err_t tis_vendor_read(unsigned int addr, void *buffer, size_t bytes)
+{
+	return cr50_i2c_read(addr & 0xff, buffer, bytes) ? CB_ERR : CB_SUCCESS;
 }

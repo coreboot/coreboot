@@ -7,3 +7,12 @@ void bootblock_mainboard_early_init(void)
 {
 	/* TODO: Perform mainboard initialization */
 }
+
+void bootblock_mainboard_init(void)
+{
+	size_t num_gpios;
+	const struct soc_amd_gpio *gpios;
+
+	variant_bootblock_gpio_table(&gpios, &num_gpios);
+	gpio_configure_pads(gpios, num_gpios);
+}

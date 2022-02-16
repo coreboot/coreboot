@@ -11,10 +11,10 @@ static void audio_codec_update(void)
 	struct drivers_i2c_generic_config *config;
 
 	config = codec->chip_info;
-	if (fw_config_probe(FW_CONFIG(AUDIO_CODEC_SOURCE, AUDIO_CODEC_ALC5682)))
-		config->hid = "10EC5682";
-	else
+	if (fw_config_probe(FW_CONFIG(AUDIO_CODEC_SOURCE, AUDIO_CODEC_ALC5682I_VS)))
 		config->hid = "RTL5682";
+	else
+		config->hid = "10EC5682";
 }
 void variant_devtree_update(void)
 {

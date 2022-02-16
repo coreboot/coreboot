@@ -187,7 +187,7 @@ static void init(struct device *dev)
 	/*Check first whether there is a valid MAC address available */
 	status = mainboard_get_mac_address(dev, adr_to_set);
 	if (status != CB_SUCCESS) {
-		printk(BIOS_ERR, "I210: No valid MAC address found\n");
+		printk(BIOS_NOTICE, "I210: Mainboard has no address, keep the one in MAC.\n");
 		return;
 	}
 	/* Before we will write a new address, check the existing one */

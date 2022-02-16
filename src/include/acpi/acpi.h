@@ -747,7 +747,7 @@ typedef struct acpi_fadt {
 	acpi_addr_t reset_reg;
 	u8 reset_value;
 	u16 ARM_boot_arch;	/* Revision 6 only, Revision 5: Must be zero */
-	u8 FADT_MinorVersion;	/* Revision 6 only, Revision 5: Must be zero */
+	u8 FADT_MinorVersion;	/* Must be zero if ACPI Revision <= 5.0 */
 	u32 x_firmware_ctl_l;
 	u32 x_firmware_ctl_h;
 	u32 x_dsdt_l;
@@ -768,12 +768,21 @@ typedef struct acpi_fadt {
 } __packed acpi_fadt_t;
 
 /* FADT TABLE Revision values */
-#define ACPI_FADT_REV_ACPI_1_0		1
-#define ACPI_FADT_REV_ACPI_2_0		3
-#define ACPI_FADT_REV_ACPI_3_0		4
-#define ACPI_FADT_REV_ACPI_4_0		4
-#define ACPI_FADT_REV_ACPI_5_0		5
-#define ACPI_FADT_REV_ACPI_6_0		6
+#define ACPI_FADT_REV_ACPI_1	1
+#define ACPI_FADT_REV_ACPI_2	3
+#define ACPI_FADT_REV_ACPI_3	4
+#define ACPI_FADT_REV_ACPI_4	4
+#define ACPI_FADT_REV_ACPI_5	5
+#define ACPI_FADT_REV_ACPI_6	6
+
+/* FADT Minor Version value:
+ *  Bits 0-3: minor version
+ *  Bits 4-7: Errata
+ *   value of 1 means this is compatible with Errata A,
+ *   value of 2 would be compatible with Errata B, and so on
+ * Version 6.3 Errata A would be: (1 << 4) | 3
+ */
+#define ACPI_FADT_MINOR_VERSION_0	0 /* coreboot currently use this version */
 
 /* Flags for p_lvl2_lat and p_lvl3_lat */
 #define ACPI_FADT_C2_NOT_SUPPORTED	101
@@ -1434,6 +1443,7 @@ static inline uintptr_t acpi_align_current(uintptr_t current)
  * be made into a weak function if there is ever a need to override the
  * coreboot default ACPI spec version supported. */
 int get_acpi_table_revision(enum acpi_tables table);
+u8 get_acpi_fadt_minor_version(void);
 
 #endif  // !defined(__ASSEMBLER__) && !defined(__ACPI__)
 

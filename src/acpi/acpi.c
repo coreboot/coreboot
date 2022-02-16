@@ -1944,11 +1944,16 @@ __weak int acpi_get_gpe(int gpe)
 	return -1; /* implemented by SOC */
 }
 
+u8 get_acpi_fadt_minor_version(void)
+{
+	return ACPI_FADT_MINOR_VERSION_0;
+}
+
 int get_acpi_table_revision(enum acpi_tables table)
 {
 	switch (table) {
 	case FADT:
-		return ACPI_FADT_REV_ACPI_6_0;
+		return ACPI_FADT_REV_ACPI_6;
 	case MADT: /* ACPI 3.0: 2, ACPI 4.0/5.0: 3, ACPI 6.2b/6.3: 5 */
 		return 3;
 	case MCFG:

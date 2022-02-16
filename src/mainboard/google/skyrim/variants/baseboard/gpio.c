@@ -141,6 +141,11 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_148, I2C1_SDA, PULL_NONE),
 };
 
+/* GPIO configuration for sleep */
+static const struct soc_amd_gpio sleep_gpio_table[] = {
+	/* TODO: Fill sleep gpio configuration */
+};
+
 /* Early GPIO configuration in bootblock */
 static const struct soc_amd_gpio bootblock_gpio_table[] = {
 	/* TODO: Fill bootblock gpio configuration */
@@ -162,4 +167,10 @@ __weak void variant_bootblock_gpio_table(const struct soc_amd_gpio **gpio, size_
 {
 	*size = ARRAY_SIZE(bootblock_gpio_table);
 	*gpio = bootblock_gpio_table;
+}
+
+__weak void variant_sleep_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+{
+	*size = ARRAY_SIZE(sleep_gpio_table);
+	*gpio = sleep_gpio_table;
 }

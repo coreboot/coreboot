@@ -878,7 +878,7 @@ config GDB_STUB
 	depends on DRIVERS_UART
 	help
 	  If enabled, you will be able to set breakpoints for gdb debugging.
-	  See src/arch/x86/lib/c_start.S for details.
+	  See src/arch/x86/c_start.S for details.
 
 config GDB_WAIT
 	bool "Wait for a GDB connection in the ramstage"

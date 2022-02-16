@@ -88,6 +88,30 @@ static int lookup_store(struct region_device *rstore)
 	return rdev_chain(rstore, rdev, 0, region_device_sz(rdev));
 }
 
+ /* this function is non reentrant */
+int smmstore_lookup_region(struct region_device *rstore)
+{
+	static int done;
+	static int ret;
+	static struct region_device rdev;
+
+	if (!done) {
+
+		done = 1;
+
+		if (fmap_locate_area_as_rdev_rw(SMMSTORE_REGION, &rdev)) {
+			printk(BIOS_WARNING,
+			       "smm store: Unable to find SMM store FMAP region '%s'\n",
+				SMMSTORE_REGION);
+			ret = -1;
+		} else {
+			ret = 0;
+		}
+	}
+
+	*rstore = rdev;
+	return ret;
+}
 /*
  * Read entire store into user provided buffer
  *

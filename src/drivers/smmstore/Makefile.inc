@@ -1,4 +1,4 @@
-ramstage-$(CONFIG_SMMSTORE) += store.c
+all-$(CONFIG_SMMSTORE) += store.c
 
 ifeq ($(CONFIG_SMMSTORE),y)
 $(call src-to-obj,ramstage,$(dir)/store.c) : $(obj)/fmap_config.h

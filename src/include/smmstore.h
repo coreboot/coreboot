@@ -115,6 +115,8 @@ int smmstore_rawclear_region(uint32_t block_id);
 #if ENV_RAMSTAGE
 int smmstore_get_info(struct smmstore_params_info *info);
 #endif
+struct region_device;
+int smmstore_lookup_region(struct region_device *rstore);
 
 /* Advertise SMMSTORE v2 support */
 struct lb_header;

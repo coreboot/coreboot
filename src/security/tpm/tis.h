@@ -5,6 +5,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <types.h>
 
 enum tis_access {
 	TPM_ACCESS_VALID = (1 << 7),
@@ -83,5 +84,32 @@ int tis_sendrecv(const u8 *sendbuf, size_t send_size, u8 *recvbuf,
  * Returns 1 when irq pending or 0 when not.
  */
 int tis_plat_irq_status(void);
+
+/*
+ * tis_vendor_write()
+ *
+ * Vendor-specific function to send the requested data to the TPM.
+ *
+ * @addr - address of the register to write to
+ * @sendbuf - buffer of the data to send
+ * @send_size - size of the data to send
+ *
+ * Returns CB_SUCCESS 0 on success, CB_ERR on failure.
+ */
+cb_err_t tis_vendor_write(unsigned int addr, const void *sendbuf, size_t send_size);
+
+/*
+ * tis_vendor_read()
+ *
+ * Vendor-specific function to read the requested data from the TPM.
+ *
+ * @addr - address of the register to read from
+ * @recvbuf - buffer of the data to read
+ * @recv_size - size of the output buffer
+ *
+ * Returns CB_SUCCESS on success or -1 on failure.
+ */
+cb_err_t tis_vendor_read(unsigned int addr, void *recvbuf, size_t recv_size);
+
 
 #endif /* TIS_H_ */

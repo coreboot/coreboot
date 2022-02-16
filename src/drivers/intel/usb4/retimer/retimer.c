@@ -370,7 +370,7 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 		if (ec_port == -1) {
 			printk(BIOS_ERR, "%s: No relative EC port found for TC port %d\n",
 				__func__, usb_port);
-		 	continue;
+			continue;
 		}
 		/* DFPx */
 		snprintf(dfp, sizeof(dfp), "DFP%1d", ec_port);

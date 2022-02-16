@@ -38,7 +38,7 @@ enum spi_dump_state_phase {
 static void dump_state(enum spi_dump_state_phase phase)
 {
 	u8 dump_size;
-	u32 addr;
+	uintptr_t addr;
 
 	if (!CONFIG(SOC_AMD_COMMON_BLOCK_SPI_DEBUG))
 		return;

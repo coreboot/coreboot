@@ -382,7 +382,7 @@ chip soc/intel/alderlake
 							.panel = PLD_PANEL_LEFT,
 							.horizontal_position = PLD_HORIZONTAL_POSITION_LEFT,
 							.shape = PLD_SHAPE_HORIZONTAL_RECTANGLE,
-							.group = ACPI_PLD_GROUP(4, 1)}"
+							.group = ACPI_PLD_GROUP(3, 1)}"
 						device ref usb2_port8 on end
 					end
 					chip drivers/usb/acpi
@@ -425,7 +425,7 @@ chip soc/intel/alderlake
 							.panel = PLD_PANEL_LEFT,
 							.horizontal_position = PLD_HORIZONTAL_POSITION_LEFT,
 							.shape = PLD_SHAPE_HORIZONTAL_RECTANGLE,
-							.group = ACPI_PLD_GROUP(4, 1)}"
+							.group = ACPI_PLD_GROUP(3, 1)}"
 						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi

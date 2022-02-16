@@ -545,6 +545,9 @@ void probe_idregs_fintek(uint16_t port)
 		hwmport = regval(port, 0x60) << 8;
 		hwmport |= regval(port, 0x61);
 
+		/* HWM address register = HWM base address + 5. */
+		hwmport += 5;
+
 		printf("Hardware monitor (0x%04x)\n", hwmport);
 		dump_superio("Fintek-HWM", hwm_table, hwmport, did, LDN_SEL);
 	}

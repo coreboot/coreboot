@@ -746,7 +746,7 @@ typedef struct acpi_fadt {
 	u32 flags;
 	acpi_addr_t reset_reg;
 	u8 reset_value;
-	u16 ARM_boot_arch;	/* Revision 6 only, Revision 5: Must be zero */
+	u16 ARM_boot_arch;	/* Must be zero if ACPI Revision <= 5.0 */
 	u8 FADT_MinorVersion;	/* Must be zero if ACPI Revision <= 5.0 */
 	u32 x_firmware_ctl_l;
 	u32 x_firmware_ctl_h;

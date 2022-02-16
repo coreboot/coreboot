@@ -78,28 +78,27 @@ chip soc/intel/alderlake
 				register "options.tsr[0].desc" = ""DRAM_SOC""
 				register "options.tsr[1].desc" = ""Ambient""
 				register "options.tsr[2].desc" = ""Charger""
-				register "options.tsr[3].desc" = ""WWAN""
 
 				## Active Policy
 				register "policies.active" = "{
 					[0] = {
 						.target = DPTF_CPU,
 						.thresholds = {
-								TEMP_PCT(55, 65),
-								TEMP_PCT(52, 59),
-								TEMP_PCT(49, 50),
-								TEMP_PCT(46, 43),
-								TEMP_PCT(43, 37),
+								TEMP_PCT(44, 76),
+								TEMP_PCT(40, 65),
+								TEMP_PCT(36, 53),
+								TEMP_PCT(32, 41),
+								TEMP_PCT(28, 29),
 						}
 					},
 					[1] = {
 						.target = DPTF_TEMP_SENSOR_1,
 						.thresholds = {
-								TEMP_PCT(55, 65),
-								TEMP_PCT(52, 59),
-								TEMP_PCT(49, 50),
-								TEMP_PCT(46, 43),
-								TEMP_PCT(43, 37),
+								TEMP_PCT(44, 76),
+								TEMP_PCT(40, 65),
+								TEMP_PCT(36, 53),
+								TEMP_PCT(32, 41),
+								TEMP_PCT(28, 29),
 						}
 					}
 				}"
@@ -110,7 +109,6 @@ chip soc/intel/alderlake
 					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 75, 5000),
 					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 75, 5000),
 					[3] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_2, 75, 5000),
-					[4] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_3, 75, 5000),
 				}"
 
 				## Critical Policy
@@ -119,7 +117,6 @@ chip soc/intel/alderlake
 					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      85, SHUTDOWN),
 					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      85, SHUTDOWN),
 					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      85, SHUTDOWN),
-					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,      85, SHUTDOWN),
 				}"
 
 				register "controls.power_limits" = "{

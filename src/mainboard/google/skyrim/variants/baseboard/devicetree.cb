@@ -1,5 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 chip soc/amd/sabrina
 	device domain 0 on
+		device ref lpc_bridge on
+			chip ec/google/chromeec
+				device pnp 0c09.0 alias chrome_ec on end
+			end
+		end
 	end # domain
 end	# chip soc/amd/sabrina

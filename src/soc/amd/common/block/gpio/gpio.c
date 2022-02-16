@@ -148,7 +148,7 @@ static void gpio_and32(gpio_t gpio_num, uint32_t mask)
 
 static void gpio_or32(gpio_t gpio_num, uint32_t or)
 {
-	gpio_update32(gpio_num, -1UL, or);
+	gpio_update32(gpio_num, 0xffffffff, or);
 }
 
 static void master_switch_clr(uint32_t mask)

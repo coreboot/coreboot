@@ -1,4 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
+fw_config
+	# TODO define when available
+end
+
 chip soc/amd/sabrina
 	device domain 0 on
 	end # domain

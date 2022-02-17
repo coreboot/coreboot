@@ -20,8 +20,8 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	AFG3, 8,	// After G3
 	CLTP, 8,	// Close Trackpad
 	WKOL, 8,	// Wake on Lid
-	KLSE, 8,	// Keyboard Backlight State
 	KLBE, 8,	// Keyboard Backlight Brightness
+	KLSE, 8,	// Keyboard Backlight State
 
 	Offset(0x1a),
 	KLTE, 8,	// Keyboard Backlight Timeout

@@ -33,6 +33,14 @@ config MAINBOARD_FAMILY
 config MAINBOARD_PART_NUMBER
 	default "Skyrim" if BOARD_GOOGLE_SKYRIM
 
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config VARIANT_DIR
+	string
+	default "skyrim" if BOARD_GOOGLE_SKYRIM
+
 config VBOOT
 	select VBOOT_NO_BOARD_SUPPORT
 	select VBOOT_SEPARATE_VERSTAGE

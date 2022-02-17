@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
+#include <console/console.h>
 #include <device/device.h>
 
 static void mainboard_configure_gpios(void)
@@ -22,7 +23,7 @@ static void mainboard_init(void *chip_info)
 
 static void mainboard_enable(struct device *dev)
 {
-	/* TODO: Enable mainboard */
+	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 }
 
 struct chip_operations mainboard_ops = {

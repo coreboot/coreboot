@@ -18,7 +18,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* A15 : USB_OC2# ==> USB_C2_OC_ODL */
 	PAD_CFG_NF(GPP_A15, NONE, DEEP, NF1),
 	/* A17 : DISP_MISCC ==> EN_GPU_PPVAR_GPU_NVVDD_X_PCH */
-	PAD_CFG_GPO(GPP_A17, 1, DEEP),
+	PAD_CFG_GPI(GPP_A17, NONE, DEEP),
 	/* A19 : DDSP_HPD1 ==> EN_PCH_PPVAR_GPU_FBVDDQ_X_L */
 	PAD_CFG_GPO(GPP_A19, 0, DEEP),
 	/* A20 : DDSP_HPD2 ==> NC */
@@ -29,7 +29,7 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPI(GPP_A22, NONE, DEEP),
 
 	/* B3  : PROC_GP2 ==> GPU_PERST_L */
-	PAD_CFG_GPO_LOCK(GPP_B3, 1, LOCK_CONFIG),
+	PAD_CFG_GPO(GPP_B3, 1, DEEP),
 	/* B5  : ISH_I2C0_SDA ==> PCH_I2C_NVDD_GPU_SDA */
 	PAD_CFG_NF_LOCK(GPP_B5, NONE, NF2, LOCK_CONFIG),
 	/* B6  : ISH_I2C0_SDA ==> PCH_I2C_NVDD_GPU_SCL */
@@ -65,7 +65,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* D5  : SRCCLKREQ0# ==> GPU_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),
 	/* D9  : ISH_SPI_CS# ==> GPU_THERM_INT_ODL */
-	PAD_CFG_GPI_LOCK(GPP_D9, NONE, LOCK_CONFIG),
+	PAD_CFG_GPI(GPP_D9, NONE, DEEP),
 	/* D10 : ISH_SPI_CLK ==> GPP_D10_STRAP */
 	PAD_NC_LOCK(GPP_D10, NONE, LOCK_CONFIG),
 	/* D13 : ISH_UART0_RXD ==> NC */
@@ -80,9 +80,9 @@ static const struct pad_config override_gpio_table[] = {
 	/* E3  : PROC_GP0 ==> NC */
 	PAD_NC(GPP_E3, NONE),
 	/* E4  : SATA_DEVSLP0 ==> PG_PPVAR_GPU_FBVDDQ_X_OD */
-	PAD_CFG_GPO(GPP_E4, 0, DEEP),
+	PAD_CFG_GPI(GPP_E4, NONE, DEEP),
 	/* E5  : SATA_DEVSLP1 ==> PG_GPU_ALLRAILS */
-	PAD_CFG_GPI(GPP_E5, NONE, DEEP),
+	PAD_CFG_GPO(GPP_E5, 0, DEEP),
 	/* E7  : PROC_GP1 ==> NC */
 	PAD_NC(GPP_E7, NONE),
 	/* E9  : USB_OC0# ==> USB_A2_OC_ODL */
@@ -90,9 +90,9 @@ static const struct pad_config override_gpio_table[] = {
 	/* E10 : THC0_SPI1_CS# ==> EN_PP0950_GPU_X */
 	PAD_CFG_GPO_LOCK(GPP_E10, 0, LOCK_CONFIG),
 	/* E16 : RSVD_TP ==> PG_PPVAR_GPU_NVVDD_X_OD */
-	PAD_CFG_GPO(GPP_E16, 0, DEEP),
+	PAD_CFG_GPI(GPP_E16, NONE, DEEP),
 	/* E17 : RSVD_TP ==> PG_PP0950_GPU_X_OD */
-	PAD_CFG_GPI_LOCK(GPP_E17, NONE, LOCK_CONFIG),
+	PAD_CFG_GPI(GPP_E17, NONE, DEEP),
 	/* E18 : DDP1_CTRLCLK ==> EN_PP1800_GPU_X */
 	PAD_CFG_GPO(GPP_E18, 0, DEEP),
 	/* E19 : DDP1_CTRLDATA ==> GPP_E19_STRAP */

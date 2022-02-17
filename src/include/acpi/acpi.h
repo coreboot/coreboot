@@ -1233,7 +1233,6 @@ void acpi_fill_gnvs(void);
 void acpi_fill_cnvs(void);
 
 void update_ssdt(void *ssdt);
-void update_ssdtx(void *ssdtx, int i);
 
 unsigned long acpi_fill_lpit(unsigned long current);
 

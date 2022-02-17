@@ -75,8 +75,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* D16 : ISH_UART0_CTS# ==> NC */
 	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
 
-	/* E0 : SATAXPCIE0 ==> EN_PPVAR_GPU_NVVDD_X_OD */
-	PAD_CFG_GPO(GPP_E0, 0, DEEP),
+	/* E0 : SATAXPCIE0 ==> EN_PPVAR_GPU_NVVDD_X_ODL */
+	PAD_CFG_GPO(GPP_E0, 1, DEEP),
 	/* E3  : PROC_GP0 ==> NC */
 	PAD_NC(GPP_E3, NONE),
 	/* E4  : SATA_DEVSLP0 ==> PG_PPVAR_GPU_FBVDDQ_X_OD */

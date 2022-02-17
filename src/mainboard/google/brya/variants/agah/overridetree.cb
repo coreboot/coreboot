@@ -58,6 +58,15 @@ chip soc/intel/alderlake
         }"
 
         device domain 0 on
+		device ref pcie4_0 on
+			# Enable CPU PCIe RP 1 using CLKREQ 0 and CLKSRC 0
+			register "cpu_pcie_rp[CPU_RP(1)]" = "{
+				.clk_req = 0,
+				.clk_src = 0,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			device pci 00.0 alias dgpu on end
+		end
 		device ref dtt on
 			chip drivers/intel/dptf
 				## sensor information

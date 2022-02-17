@@ -130,11 +130,12 @@ static void merlin_init(struct device *dev)
 		CHARGE_60
 	};
 
-	ec_write(ECRAM_MAX_CHARGE,
-		get_ec_value_from_option("max_charge",
-					 0,
-					 max_charge,
-					 ARRAY_SIZE(max_charge)));
+	if (CONFIG(EC_STARLABS_MAX_CHARGE))
+		ec_write(ECRAM_MAX_CHARGE,
+			get_ec_value_from_option("max_charge",
+						 0,
+						 max_charge,
+						 ARRAY_SIZE(max_charge)));
 
 	/*
 	 * Fan Mode

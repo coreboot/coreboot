@@ -164,13 +164,13 @@ static void *do_load(union cbfs_mdata *mdata, ssize_t offset, void *buf, size_t 
 
 	if (buf) {
 		if (!size_inout || *size_inout < out_size) {
-			ERROR("'%s' buffer too small", mdata->h.filename);
+			ERROR("'%s' buffer too small\n", mdata->h.filename);
 			return NULL;
 		}
 	} else {
 		buf = malloc(out_size);
 		if (!buf) {
-			ERROR("'%s' allocation failure", mdata->h.filename);
+			ERROR("'%s' allocation failure\n", mdata->h.filename);
 			return NULL;
 		}
 		malloced = true;

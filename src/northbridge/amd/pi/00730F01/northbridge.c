@@ -682,8 +682,8 @@ static const struct pci_driver family10_northbridge __pci_driver = {
 static void fam16_finalize(void *chip_info)
 {
 	struct device *dev;
-	u32 value;
 	dev = pcidev_on_root(0, 0); /* clear IoapicSbFeatureEn */
+
 	pci_write_config32(dev, 0xF8, 0);
 	pci_write_config32(dev, 0xFC, 5); /* TODO: move it to dsdt.asl */
 
@@ -698,30 +698,24 @@ static void fam16_finalize(void *chip_info)
 
 	/* Select GPP link core IO Link Strap Control register 0xB0 */
 	pci_write_config32(dev, 0xE0, 0x014000B0);
-	value = pci_read_config32(dev, 0xE4);
 
 	/* Enable AER (bit 5) and ACS (bit 6 undocumented) */
-	value |= PCIE_CAP_AER | PCIE_CAP_ACS;
-	pci_write_config32(dev, 0xE4, value);
+	pci_or_config32(dev, 0xE4, PCIE_CAP_AER | PCIE_CAP_ACS);
 
 	/* Select GPP link core Wrapper register 0x00 (undocumented) */
 	pci_write_config32(dev, 0xE0, 0x01300000);
-	value = pci_read_config32(dev, 0xE4);
 
 	/*
 	 * Enable ACS capabilities straps including sub-items. From lspci it
 	 * looks like these bits enable: Source Validation and Translation
 	 * Blocking
 	 */
-	value |= (BIT(24) | BIT(25) | BIT(26));
-	pci_write_config32(dev, 0xE4, value);
+	pci_or_config32(dev, 0xE4, (BIT(24) | BIT(25) | BIT(26)));
 
 	/* disable No Snoop */
 	dev = pcidev_on_root(1, 1);
 	if (dev != NULL) {
-		value = pci_read_config32(dev, 0x60);
-		value &= ~(1 << 11);
-		pci_write_config32(dev, 0x60, value);
+		pci_and_config32(dev, 0x60, ~(1 << 11));
 	}
 }
 

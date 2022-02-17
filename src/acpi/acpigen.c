@@ -406,8 +406,7 @@ void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 	acpigen_emit_byte(pblock_len);
 }
 
-void acpigen_write_processor_package(const char *const name,
-				     const unsigned int first_core,
+void acpigen_write_processor_package(const char *const name, const unsigned int first_core,
 				     const unsigned int core_count)
 {
 	unsigned int i;
@@ -430,8 +429,7 @@ void acpigen_write_processor_cnot(const unsigned int number_of_cores)
 	acpigen_write_method("\\_SB.CNOT", 1);
 	for (core_id = 0; core_id < number_of_cores; core_id++) {
 		char buffer[DEVICE_PATH_MAX];
-		snprintf(buffer, sizeof(buffer), CONFIG_ACPI_CPU_STRING,
-			 core_id);
+		snprintf(buffer, sizeof(buffer), CONFIG_ACPI_CPU_STRING, core_id);
 		acpigen_emit_byte(NOTIFY_OP);
 		acpigen_emit_namestring(buffer);
 		acpigen_emit_byte(ARG0_OP);
@@ -514,22 +512,19 @@ static void acpigen_write_field_length(uint32_t len)
 		acpigen_emit_byte(emit[j]);
 }
 
-static void acpigen_write_field_offset(uint32_t offset,
-				       uint32_t current_bit_pos)
+static void acpigen_write_field_offset(uint32_t offset, uint32_t current_bit_pos)
 {
 	uint32_t diff_bits;
 
 	if (offset < current_bit_pos) {
-		printk(BIOS_WARNING, "%s: Cannot move offset backward",
-			__func__);
+		printk(BIOS_WARNING, "%s: Cannot move offset backward", __func__);
 		return;
 	}
 
 	diff_bits = offset - current_bit_pos;
 	/* Upper limit */
 	if (diff_bits > 0xFFFFFFF) {
-		printk(BIOS_WARNING, "%s: Offset very large to encode",
-			__func__);
+		printk(BIOS_WARNING, "%s: Offset very large to encode", __func__);
 		return;
 	}
 
@@ -601,8 +596,7 @@ void acpigen_write_field(const char *name, const struct fieldlist *l, size_t cou
 			current_bit_pos = l[i].bits;
 			break;
 		default:
-			printk(BIOS_ERR, "%s: Invalid field type 0x%X\n"
-				, __func__, l[i].type);
+			printk(BIOS_ERR, "%s: Invalid field type 0x%X\n", __func__, l[i].type);
 			break;
 		}
 	}
@@ -630,8 +624,8 @@ void acpigen_write_field(const char *name, const struct fieldlist *l, size_t cou
  *		PMCS,   2
  *	}
  */
-void acpigen_write_indexfield(const char *idx, const char *data,
-			      struct fieldlist *l, size_t count, uint8_t flags)
+void acpigen_write_indexfield(const char *idx, const char *data, struct fieldlist *l,
+			      size_t count, uint8_t flags)
 {
 	uint16_t i;
 	uint32_t current_bit_pos = 0;
@@ -658,8 +652,7 @@ void acpigen_write_indexfield(const char *idx, const char *data,
 			current_bit_pos = l[i].bits;
 			break;
 		default:
-			printk(BIOS_ERR, "%s: Invalid field type 0x%X\n"
-				, __func__, l[i].type);
+			printk(BIOS_ERR, "%s: Invalid field type 0x%X\n", __func__, l[i].type);
 			break;
 		}
 	}
@@ -945,8 +938,8 @@ void acpigen_write_PRW(u32 wake, u32 level)
 	acpigen_pop_len();
 }
 
-void acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat,
-			      u32 busmLat, u32 control, u32 status)
+void acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat, u32 busmLat, u32 control,
+			       u32 status)
 {
 	acpigen_write_package(6);
 	acpigen_write_dword(coreFreq);
@@ -957,8 +950,8 @@ void acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat,
 	acpigen_write_dword(status);
 	acpigen_pop_len();
 
-	printk(BIOS_DEBUG, "PSS: %uMHz power %u control 0x%x status 0x%x\n",
-	       coreFreq, power, control, status);
+	printk(BIOS_DEBUG, "PSS: %uMHz power %u control 0x%x status 0x%x\n", coreFreq, power,
+	       control, status);
 }
 
 void acpigen_write_pss_object(const struct acpi_sw_pstate *pstate_values, size_t nentries)
@@ -1193,14 +1186,12 @@ void acpigen_write_resourcetemplate_footer(void)
 	acpigen_pop_len();
 }
 
-static void acpigen_add_mainboard_rsvd_mem32(void *gp, struct device *dev,
-						struct resource *res)
+static void acpigen_add_mainboard_rsvd_mem32(void *gp, struct device *dev, struct resource *res)
 {
 	acpigen_write_mem32fixed(0, res->base, res->size);
 }
 
-static void acpigen_add_mainboard_rsvd_io(void *gp, struct device *dev,
-						struct resource *res)
+static void acpigen_add_mainboard_rsvd_io(void *gp, struct device *dev, struct resource *res)
 {
 	resource_t base = res->base;
 	resource_t size = res->size;
@@ -1219,13 +1210,13 @@ void acpigen_write_mainboard_resource_template(void)
 	/* Add reserved memory ranges. */
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_RESERVE,
-		 IORESOURCE_MEM | IORESOURCE_RESERVE,
+		IORESOURCE_MEM | IORESOURCE_RESERVE,
 		acpigen_add_mainboard_rsvd_mem32, 0);
 
 	/* Add reserved io ranges. */
 	search_global_resources(
 		IORESOURCE_IO | IORESOURCE_RESERVE,
-		 IORESOURCE_IO | IORESOURCE_RESERVE,
+		IORESOURCE_IO | IORESOURCE_RESERVE,
 		acpigen_add_mainboard_rsvd_io, 0);
 
 	acpigen_write_resourcetemplate_footer();
@@ -1635,8 +1626,7 @@ void acpigen_write_pld(const struct acpi_pld *pld)
 	acpigen_pop_len();
 }
 
-void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *),
-		       size_t count, void *arg)
+void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *), size_t count, void *arg)
 {
 	struct dsm_uuid id = DSM_UUID(uuid, callbacks, count, arg);
 	acpigen_write_dsm_uuid_arr(&id, 1);
@@ -1783,8 +1773,7 @@ void acpigen_write_CPPC_package(const struct cppc_config *config)
 		max = CPPC_MAX_FIELDS_VER_3;
 		break;
 	default:
-		printk(BIOS_ERR, "CPPC version %u is not implemented\n",
-		       config->version);
+		printk(BIOS_ERR, "CPPC version %u is not implemented\n", config->version);
 		return;
 	}
 	acpigen_write_name(CPPC_PACKAGE_NAME);
@@ -1885,8 +1874,7 @@ void acpigen_write_rom(void *bios, const size_t length)
 	acpigen_write_method_serialized("_ROM", 2);
 
 	/* OperationRegion("ROMS", SYSTEMMEMORY, current, length) */
-	struct opregion opreg = OPREGION("ROMS", SYSTEMMEMORY,
-			(uintptr_t)bios, length);
+	struct opregion opreg = OPREGION("ROMS", SYSTEMMEMORY, (uintptr_t)bios, length);
 	acpigen_write_opregion(&opreg);
 
 	struct fieldlist l[] = {
@@ -1899,8 +1887,7 @@ void acpigen_write_rom(void *bios, const size_t length)
 	 *  Offset (0),
 	 *  RBF0,   0x80000
 	 * } */
-	acpigen_write_field(opreg.name, l, 2, FIELD_ANYACC |
-			    FIELD_NOLOCK | FIELD_PRESERVE);
+	acpigen_write_field(opreg.name, l, 2, FIELD_ANYACC | FIELD_NOLOCK | FIELD_PRESERVE);
 
 	/* Store (Arg0, Local0) */
 	acpigen_write_store();
@@ -2058,8 +2045,8 @@ void acpigen_get_tx_gpio(const struct acpi_gpio *gpio)
 }
 
 /* refer to ACPI 6.4.3.5.3 Word Address Space Descriptor section for details */
-void acpigen_resource_word(u16 res_type, u16 gen_flags, u16 type_flags, u16 gran,
-	u16 range_min, u16 range_max, u16 translation, u16 length)
+void acpigen_resource_word(u16 res_type, u16 gen_flags, u16 type_flags, u16 gran, u16 range_min,
+			   u16 range_max, u16 translation, u16 length)
 {
 	acpigen_emit_byte(0x88);
 	/* Byte 1+2: length (0x000d) */
@@ -2081,8 +2068,8 @@ void acpigen_resource_word(u16 res_type, u16 gen_flags, u16 type_flags, u16 gran
 }
 
 /* refer to ACPI 6.4.3.5.2 DWord Address Space Descriptor section for details */
-void acpigen_resource_dword(u16 res_type, u16 gen_flags, u16 type_flags,
-	u32 gran, u32 range_min, u32 range_max, u32 translation, u32 length)
+void acpigen_resource_dword(u16 res_type, u16 gen_flags, u16 type_flags, u32 gran,
+			    u32 range_min, u32 range_max, u32 translation, u32 length)
 {
 	acpigen_emit_byte(0x87);
 	/* Byte 1+2: length (0023) */
@@ -2110,8 +2097,8 @@ static void acpigen_emit_qword(u64 data)
 }
 
 /* refer to ACPI 6.4.3.5.1 QWord Address Space Descriptor section for details */
-void acpigen_resource_qword(u16 res_type, u16 gen_flags, u16 type_flags,
-	u64 gran, u64 range_min, u64 range_max, u64 translation, u64 length)
+void acpigen_resource_qword(u16 res_type, u16 gen_flags, u16 type_flags, u64 gran,
+			    u64 range_min, u64 range_max, u64 translation, u64 length)
 {
 	acpigen_emit_byte(0x8a);
 	/* Byte 1+2: length (0x002b) */

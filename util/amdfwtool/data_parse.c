@@ -331,6 +331,11 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	else
 		return 1;
 }
+#define PMUI_STR_BASE	"PSP_PMUI_FILE"
+#define PMUD_STR_BASE	"PSP_PMUD_FILE"
+#define PMU_STR_BASE_LEN strlen(PMUI_STR_BASE)
+#define PMU_STR_SUB_INDEX strlen(PMUI_STR_BASE"_SUB")
+#define PMU_STR_INS_INDEX strlen(PMUI_STR_BASE"_SUBx_INS")
 
 static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
 		char level_to_set, amd_cb_config *cb_config)
@@ -342,38 +347,14 @@ static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
 
 	(void) (cb_config);	/* Remove warning and reserved for future. */
 
-	if (strcmp(fw_name, "PSP_PMUI_FILE1") == 0) {
+	if (strncmp(fw_name, PMUI_STR_BASE, PMU_STR_BASE_LEN) == 0) {
 		fw_type = AMD_BIOS_PMUI;
-		subprog = 0;
-		instance = 1;
-	} else if (strcmp(fw_name, "PSP_PMUI_FILE2") == 0) {
-		fw_type = AMD_BIOS_PMUI;
-		subprog = 0;
-		instance = 4;
-	} else if (strcmp(fw_name, "PSP_PMUI_FILE3") == 0) {
-		fw_type = AMD_BIOS_PMUI;
-		subprog = 1;
-		instance = 1;
-	} else if (strcmp(fw_name, "PSP_PMUI_FILE4") == 0) {
-		fw_type = AMD_BIOS_PMUI;
-		subprog = 1;
-		instance = 4;
-	} else if (strcmp(fw_name, "PSP_PMUD_FILE1") == 0) {
+		subprog = fw_name[PMU_STR_SUB_INDEX] - '0';
+		instance = fw_name[PMU_STR_INS_INDEX] - '0';
+	} else if (strncmp(fw_name, PMUD_STR_BASE, PMU_STR_BASE_LEN) == 0) {
 		fw_type = AMD_BIOS_PMUD;
-		subprog = 0;
-		instance = 1;
-	} else if (strcmp(fw_name, "PSP_PMUD_FILE2") == 0) {
-		fw_type = AMD_BIOS_PMUD;
-		subprog = 0;
-		instance = 4;
-	} else if (strcmp(fw_name, "PSP_PMUD_FILE3") == 0) {
-		fw_type = AMD_BIOS_PMUD;
-		subprog = 1;
-		instance = 1;
-	} else if (strcmp(fw_name, "PSP_PMUD_FILE4") == 0) {
-		fw_type = AMD_BIOS_PMUD;
-		subprog = 1;
-		instance = 4;
+		subprog = fw_name[PMU_STR_SUB_INDEX] - '0';
+		instance = fw_name[PMU_STR_INS_INDEX] - '0';
 	} else if (strcmp(fw_name, "RTM_PUBKEY_FILE") == 0) {
 		fw_type = AMD_BIOS_RTM_PUBKEY;
 		subprog = 0;

@@ -1,9 +1,21 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpi.h>
+#include <amdblocks/gpio.h>
+#include <amdblocks/smi.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
+#include <soc/smi.h>
 #include <variant/ec.h>
+
+static const struct sci_source espi_sci_sources[] = {
+	{
+		.scimap = SMITYPE_ESPI_SYS,
+		.gpe = GEVENT_3,
+		.direction = SMI_SCI_LVL_HIGH, /* enum smi_sci_lvl */
+		.level = SMI_SCI_EDG, /* enum smi_sci_dir */
+	}
+};
 
 void mainboard_ec_init(void)
 {
@@ -16,4 +28,7 @@ void mainboard_ec_init(void)
 	};
 
 	google_chromeec_events_init(&info, acpi_is_wakeup_s3());
+
+	/* Configure eSPI SCI events */
+	gpe_configure_sci(espi_sci_sources, ARRAY_SIZE(espi_sci_sources));
 }

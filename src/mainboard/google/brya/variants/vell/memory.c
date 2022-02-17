@@ -8,13 +8,7 @@
 static const struct mb_cfg baseboard_memcfg = {
 	.type = MEM_TYPE_LP5X,
 
-	.rcomp = {
-		/* Baseboard uses only 100ohm Rcomp resistors */
-		.resistor = 100,
-
-		/* Baseboard Rcomp target values */
-		.targets = { 40, 36, 35, 35, 35 },
-	},
+	/* Leave Rcomp unspecified to use the FSP optimized defaults */
 
 	/* DQ byte map */
 	.lpx_dq_map = {

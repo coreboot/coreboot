@@ -2,6 +2,7 @@
 
 config VBOOT_LIB
 	bool "Compile verified boot (vboot) library"
+	default y if CHROMEOS
 	default n
 	help
 	  This option enables compiling and building vboot libraries vboot_fw and tlcl.
@@ -16,6 +17,7 @@ config VBOOT_TPM2_MODE
 
 config VBOOT_X86_SHA_EXT
 	bool "x86 SHA Extension"
+	default y if CHROMEOS
 	default n
 	depends on ARCH_X86
 	help

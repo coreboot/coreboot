@@ -7,11 +7,11 @@
 #include <drivers/tpm/cr50.h>
 #include <drivers/wwan/fm/chip.h>
 #include <ec/ec.h>
-#include <soc/ramstage.h>
 #include <fw_config.h>
 #include <security/tpm/tss.h>
 #include <soc/gpio.h>
 #include <soc/ramstage.h>
+#include <stdio.h>
 
 WEAK_DEV_PTR(rp6_wwan);
 
@@ -64,6 +64,11 @@ __weak void variant_update_soc_chip_config(struct soc_intel_alderlake_config *co
 	/* default implementation does nothing */
 }
 
+__weak void variant_init(void)
+{
+	/* default implementation does nothing */
+}
+
 static void mainboard_init(void *chip_info)
 {
 	const struct pad_config *base_pads;
@@ -74,6 +79,7 @@ static void mainboard_init(void *chip_info)
 	override_pads = variant_gpio_override_table(&override_num);
 	gpio_configure_pads_with_override(base_pads, base_num, override_pads, override_num);
 
+	variant_init();
 	variant_devtree_update();
 }
 
@@ -174,7 +180,18 @@ static void mainboard_enable(struct device *dev)
 	dev->ops->acpi_fill_ssdt = mainboard_fill_ssdt;
 }
 
+
+void __weak variant_finalize(void)
+{
+}
+
+static void mainboard_final(void *chip_info)
+{
+	variant_finalize();
+}
+
 struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
 	.enable_dev = mainboard_enable,
+	.final = mainboard_final,
 };

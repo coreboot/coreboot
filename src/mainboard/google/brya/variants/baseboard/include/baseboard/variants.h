@@ -82,4 +82,7 @@ void variant_update_psys_power_limits(const struct cpu_power_limits *limits,
 					size_t num_entries,
 					const struct psys_config *config);
 
+void variant_init(void);
+void variant_finalize(void);
+
 #endif /*__BASEBOARD_VARIANTS_H__ */

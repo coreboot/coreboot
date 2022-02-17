@@ -12,6 +12,7 @@
 
 /* Southbridge internal device IO BARs (Set to match FSP settings) */
 #define DEFAULT_PMBASE 0x1800
+#define DEFAULT_PMBASE_SIZE 0x100
 #define ACPI_BASE_ADDRESS DEFAULT_PMBASE
 #define DEFAULT_TCO_BASE 0x400
 
@@ -20,6 +21,7 @@
 /* Southbridge internal device MEM BARs (Set to match FSP settings) */
 #define DEFAULT_PCR_BASE 0xfd000000
 #define DEFAULT_PWRM_BASE 0xfe000000
+#define DEFAULT_PWRM_SIZE 0x10000
 #define DEFAULT_HPET_ADDR CONFIG_HPET_ADDRESS
 #define DEFAULT_SPI_BASE 0xfed01000
 

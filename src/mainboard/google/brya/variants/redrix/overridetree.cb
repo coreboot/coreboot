@@ -41,6 +41,11 @@ chip soc/intel/alderlake
 	register "SlowSlewRate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
 	register "FastPkgCRampDisable[VR_DOMAIN_IA]" = "1"
 
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[9]" = "USB2_PORT_EMPTY"
+	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

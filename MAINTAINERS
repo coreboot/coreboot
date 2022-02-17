@@ -141,6 +141,7 @@ AMD family 17h and 19h reference boards
 M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
+M:	Fred Reitberger <reitbergerfred@gmail.com>
 S:	Maintained
 F:	src/mainboard/amd/chausie/
 F:	src/mainboard/amd/majolica/
@@ -613,6 +614,7 @@ M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Raul E Rangel <rrangel@chromium.org>
+M:	Fred Reitberger <reitbergerfred@gmail.com>
 S:	Maintained
 F:	src/soc/amd/cezanne/
 F:	src/vendorcode/amd/fsp/cezanne/
@@ -622,6 +624,7 @@ M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Raul E Rangel <rrangel@chromium.org>
+M:	Fred Reitberger <reitbergerfred@gmail.com>
 S:	Maintained
 F:	src/soc/amd/common/
 
@@ -630,6 +633,7 @@ M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Raul E Rangel <rrangel@chromium.org>
+M:	Fred Reitberger <reitbergerfred@gmail.com>
 S:	Maintained
 F:	src/soc/amd/picasso/
 F:	src/vendorcode/amd/fsp/picasso/
@@ -639,6 +643,7 @@ M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Raul E Rangel <rrangel@chromium.org>
+M:	Fred Reitberger <reitbergerfred@gmail.com>
 S:	Maintained
 F:	src/soc/amd/sabrina/
 F:	src/vendorcode/amd/fsp/sabrina/

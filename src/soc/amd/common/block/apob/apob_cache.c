@@ -9,15 +9,15 @@
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
+#include <fmap_config.h>
 #include <spi_flash.h>
 #include <stdint.h>
 #include <string.h>
 #include <thread.h>
 #include <timestamp.h>
 
-#define DEFAULT_MRC_CACHE "RW_MRC_CACHE"
-/* PSP requires this value to be 64KiB */
-#define DEFAULT_MRC_CACHE_SIZE 0x10000
+#define DEFAULT_MRC_CACHE	"RW_MRC_CACHE"
+#define DEFAULT_MRC_CACHE_SIZE	FMAP_SECTION_RW_MRC_CACHE_SIZE
 
 #if !CONFIG_PSP_APOB_DRAM_ADDRESS
 #error Incorrect APOB configuration setting(s)

@@ -1232,8 +1232,6 @@ void mainboard_fill_fadt(acpi_fadt_t *fadt);
 void acpi_fill_gnvs(void);
 void acpi_fill_cnvs(void);
 
-void update_ssdt(void *ssdt);
-
 unsigned long acpi_fill_lpit(unsigned long current);
 
 /* These can be used by the target port. */

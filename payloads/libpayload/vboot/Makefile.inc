@@ -7,7 +7,7 @@ TLCL_LIB = $(VBOOT_BUILD_DIR)/tlcl.a
 vboot_fw-objs += $(VBOOT_FW_LIB)
 tlcl-objs += $(TLCL_LIB)
 
-kconfig-to-binary=$(if $(1),1,0)
+kconfig-to-binary=$(if $(strip $(1)),1,0)
 vboot-fixup-includes = $(patsubst -I%,-I$(top)/%,\
 		       $(patsubst include/%.h,$(top)/include/%.h,\
 		       $(filter-out -I$(obj),$(1))))

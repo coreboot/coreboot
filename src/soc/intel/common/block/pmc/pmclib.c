@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <bootmode.h>
 #include <device/mmio.h>
+#include <device/pci.h>
 #include <cbmem.h>
 #include <cpu/x86/smm.h>
 #include <console/console.h>
@@ -14,6 +15,7 @@
 #include <intelblocks/tco.h>
 #include <option.h>
 #include <security/vboot/vboot_common.h>
+#include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <stdint.h>
 #include <string.h>
@@ -579,6 +581,44 @@ void pmc_gpe_init(void)
 	/* Set the routes in the GPIO communities as well. */
 	gpio_route_gpe(dw0, dw1, dw2);
 }
+
+#if ENV_RAMSTAGE
+static void pmc_clear_pmcon_sts_mmio(void)
+{
+	uint8_t *addr = pmc_mmio_regs();
+
+	clrbits32((addr + GEN_PMCON_A), MS4V);
+}
+
+static void pmc_clear_pmcon_sts_pci(void)
+{
+	struct device *dev = pcidev_path_on_root(PCH_DEVFN_PMC);
+	if (!dev)
+		return;
+
+	pci_and_config32(dev, GEN_PMCON_A, ~MS4V);
+}
+
+/*
+ * Clear PMC GEN_PMCON_A register status bits:
+ * SUS_PWR_FLR, GBL_RST_STS, HOST_RST_STS, PWR_FLR bits
+ * while retaining MS4V write-1-to-clear bit
+ */
+void pmc_clear_pmcon_sts(void)
+{
+	/*
+	 * Accessing PMC GEN_PMCON_A register differs between different Intel chipsets.
+	 * Typically, there are two possible ways to perform GEN_PMCON_A register programming
+	 * (like `pmc_clear_pmcon_sts()`) as:
+	 * 1. Using PCI configuration space when GEN_PMCON_A is a PCI configuration register.
+	 * 2. Using MMIO access when GEN_PMCON_A is a memory mapped register.
+	 */
+	if (CONFIG(SOC_INTEL_MEM_MAPPED_PM_CONFIGURATION))
+		pmc_clear_pmcon_sts_mmio();
+	else
+		pmc_clear_pmcon_sts_pci();
+}
+#endif
 
 void pmc_set_power_failure_state(const bool target_on)
 {

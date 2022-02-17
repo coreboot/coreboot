@@ -7,6 +7,7 @@
 #include <device/pci_ids.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/pmc.h>
+#include <intelblocks/pmclib.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 

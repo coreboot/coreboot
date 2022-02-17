@@ -133,20 +133,6 @@ void pmc_set_disb(void)
 	write8(addr, disb_val);
 }
 
-void pmc_clear_pmcon_sts(void)
-{
-	uint32_t reg_val;
-	uint8_t *addr;
-	addr = pmc_mmio_regs();
-
-	reg_val = read32(addr + GEN_PMCON_A);
-	/* Clear SUS_PWR_FLR, GBL_RST_STS, HOST_RST_STS, PWR_FLR bits
-	 * while retaining MS4V write-1-to-clear bit */
-	reg_val &= ~(MS4V);
-
-	write32((addr + GEN_PMCON_A), reg_val);
-}
-
 /*
  * PMC controller gets hidden from PCI bus
  * during FSP-Silicon init call. Hence PWRMBASE

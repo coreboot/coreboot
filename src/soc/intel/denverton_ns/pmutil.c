@@ -247,18 +247,3 @@ static uint32_t print_gpe_sts(uint32_t gpe_sts)
 uint32_t clear_gpe_status(void) { return print_gpe_sts(reset_gpe_status()); }
 
 void clear_pmc_status(void) { /* TODO */ }
-
-void pmc_clear_pmcon_sts(void)
-{
-	uint32_t reg_val;
-	const pci_devfn_t dev = PCH_DEV_PMC;
-
-	reg_val = pci_read_config32(dev, GEN_PMCON_A);
-	/*
-	 * Clear SUS_PWR_FLR, GBL_RST_STS, HOST_RST_STS, PWR_FLR bits
-	 * while retaining MS4V write-1-to-clear bit
-	 */
-	reg_val &= ~(MS4V);
-
-	pci_write_config32(dev, GEN_PMCON_A, reg_val);
-}

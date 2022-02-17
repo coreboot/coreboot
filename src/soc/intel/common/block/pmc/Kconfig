@@ -10,6 +10,12 @@ config SOC_INTEL_COMMON_BLOCK_PMC
 
 if SOC_INTEL_COMMON_BLOCK_PMC
 
+config SOC_INTEL_MEM_MAPPED_PM_CONFIGURATION
+	bool
+	help
+	  Select this on platforms where the PMC register for PM configuration (i.e.,
+	  GEN_PMCON_A/B etc. are memory mapped).
+
 config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 	default y
 

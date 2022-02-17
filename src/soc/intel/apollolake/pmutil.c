@@ -237,17 +237,3 @@ void pmc_soc_set_afterg3_en(const bool on)
 		reg32 |= SLEEP_AFTER_POWER_FAIL;
 	write32p(gen_pmcon1, reg32);
 }
-
-void pmc_clear_pmcon_sts(void)
-{
-	uint32_t reg_val;
-	uint8_t *addr;
-	addr = pmc_mmio_regs();
-
-	reg_val = read32(addr + GEN_PMCON1);
-	/* Clear SUS_PWR_FLR, GBL_RST_STS, HOST_RST_STS, PWR_FLR bits
-	 * while retaining MS4V write-1-to-clear bit */
-	reg_val &= ~(MS4V);
-
-	write32((addr + GEN_PMCON1), reg_val);
-}

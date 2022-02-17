@@ -447,6 +447,10 @@ static void disable_dev(struct device *dev, FSP_S_CONFIG *silconfig)
 	case SA_DEVFN_IPU:
 		silconfig->IpuEn = 0;
 		break;
+#else
+	case PCH_DEVFN_CNVI:
+		silconfig->CnviMode = 0;
+		break;
 #endif
 	case PCH_DEVFN_HDA:
 		silconfig->HdaEnable = 0;

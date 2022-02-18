@@ -28,6 +28,9 @@ struct chipset_power_state {
 	uint32_t prev_sleep_state;
 } __attribute__((packed));
 
+/* Get base address PMC memory mapped registers. */
+uint8_t *pmc_mmio_regs(void);
+
 struct chipset_power_state *fill_power_state(void);
 
 /* Power Management Utility Functions. */

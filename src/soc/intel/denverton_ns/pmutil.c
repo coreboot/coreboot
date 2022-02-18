@@ -84,6 +84,18 @@ void enable_smi(uint32_t mask)
 	outl(smi_en, (uint16_t)(pmbase + SMI_EN));
 }
 
+uint8_t *pmc_mmio_regs(void)
+{
+	uint32_t reg32;
+
+	reg32 = pci_read_config32(PCH_DEV_PMC, PMC_PWRM_BASE);
+
+	/* 4KiB alignment. */
+	reg32 &= ~0xfff;
+
+	return (void *)(uintptr_t) reg32;
+}
+
 void disable_smi(uint32_t mask)
 {
 	uint16_t pmbase = get_pmbase();

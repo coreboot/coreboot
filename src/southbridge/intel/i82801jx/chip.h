@@ -42,16 +42,16 @@ struct southbridge_intel_i82801jx_config {
 
 	/* IDE configuration */
 	uint8_t sata_port_map : 6;
-	int sata_clock_request : 1;
+	unsigned int sata_clock_request : 1;
 
-	int c4onc3_enable:1;
-	int c5_enable : 1;
-	int c6_enable : 1;
+	unsigned int c4onc3_enable:1;
+	unsigned int c5_enable : 1;
+	unsigned int c6_enable : 1;
 
-	int throttle_duty : 3;
+	unsigned int throttle_duty : 3;
 
 	/* Bit mask to tell whether a PCIe slot is implemented as slot. */
-	int pcie_slot_implemented : 6;
+	unsigned int pcie_slot_implemented : 6;
 
 	/* Power limits for PCIe ports. Values are in 10^(-scale) watts. */
 	struct {

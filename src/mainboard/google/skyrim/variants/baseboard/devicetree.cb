@@ -47,6 +47,11 @@ chip soc/amd/sabrina
 				device pnp 0c09.0 alias chrome_ec on end
 			end
 		end
+		device ref gpp_bridge_0 on end # WLAN
+		device ref gpp_bridge_1 on end # SD
+		device ref gpp_bridge_2 on end # WWAN
+		device ref gpp_bridge_3 on end # NVMe
+
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
 			device ref xhci_0 on # USB 3.1 (USB0)

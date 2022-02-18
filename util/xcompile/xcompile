@@ -238,6 +238,7 @@ CLANG_CFLAGS_${TARCH}+=-Qunused-arguments -m${TWIDTH}
 # tone down clang compiler warnings
 CLANG_CFLAGS_${TARCH}+=-Wno-unused-variable -Wno-unused-function -Wno-tautological-compare
 CLANG_CFLAGS_${TARCH}+=-Wno-shift-overflow -Wno-address-of-packed-member -Wno-initializer-overrides
+CLANG_CFLAGS_${TARCH}+=-fbracket-depth=2048
 CLANG_COMPILER_RT_${TARCH}:=${CC_RT_CLANG}
 CLANG_COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_CLANG}
 

@@ -150,7 +150,7 @@ static void report_cache_info(void)
 	printk(BIOS_INFO, "Associativity = %zd Partitions = %zd Line Size = %zd Sets = %zd\n",
 		info.num_ways, info.physical_partitions, info.line_size, info.num_sets);
 
-	printk(BIOS_INFO, "Cache size = %ld MiB\n", get_cache_size(&info)/MiB);
+	printk(BIOS_INFO, "Cache size = %zu MiB\n", get_cache_size(&info)/MiB);
 }
 
 static void report_cpu_info(void)

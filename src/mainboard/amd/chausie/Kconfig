@@ -51,7 +51,7 @@ config CHAUSIE_MCHP_FW_FILE
 config CHAUSIE_MCHP_FW_OFFSET
 	hex
 	depends on CHAUSIE_HAVE_MCHP_FW
-	default 0x400000
+	default 0xB80000
 	help
 	  The EC firmware blob defaults to the 4MByte offset of the firmware
 	  image. If this offset needs to change, a new signature block must be

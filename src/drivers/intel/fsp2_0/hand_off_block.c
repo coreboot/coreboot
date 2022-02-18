@@ -286,7 +286,6 @@ void fsp_display_fvi_version_hob(void)
 {
 	const uint8_t *hob_uuid;
 	const struct hob_header *hob = fsp_get_hob_list();
-	size_t size;
 
 	if (!hob)
 		return;
@@ -300,7 +299,6 @@ void fsp_display_fvi_version_hob(void)
 		hob_uuid = hob_header_to_struct(hob);
 
 		if (fsp_guid_compare(hob_uuid, uuid_fv_info)) {
-			size = hob->length - (HOB_HEADER_LEN + 16);
 			display_fsp_version_info_hob(hob);
 		}
 	}

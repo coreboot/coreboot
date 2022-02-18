@@ -1,5 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 chip soc/amd/sabrina
+	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
+					GPIO_I2C2_SCL | GPIO_I2C3_SCL"
+
 	device domain 0 on
 		device ref lpc_bridge on
 			chip ec/google/chromeec
@@ -84,4 +87,8 @@ chip soc/amd/sabrina
 		end
 	end # domain
 	device ref uart_0 on end # UART0
+	device ref i2c_0 on end
+	device ref i2c_1 on end
+	device ref i2c_2 on end
+	device ref i2c_3 on end
 end	# chip soc/amd/sabrina

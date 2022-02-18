@@ -141,6 +141,15 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_148, I2C1_SDA, PULL_NONE),
 };
 
+static const struct soc_amd_gpio tpm_gpio_table[] = {
+	/* I2C3_SCL */
+	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
+	/* I2C3_SDA */
+	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
+	/* GSC_SOC_INT_L */
+	PAD_INT(GPIO_18, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
+};
+
 /* GPIO configuration for sleep */
 static const struct soc_amd_gpio sleep_gpio_table[] = {
 	/* TODO: Fill sleep gpio configuration */
@@ -149,6 +158,11 @@ static const struct soc_amd_gpio sleep_gpio_table[] = {
 /* Early GPIO configuration in bootblock */
 static const struct soc_amd_gpio bootblock_gpio_table[] = {
 	/* TODO: Fill bootblock gpio configuration */
+};
+
+/* Early GPIO configuration */
+static const struct soc_amd_gpio early_gpio_table[] = {
+	/* TODO: Fill early gpio configuration */
 };
 
 __weak void variant_base_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
@@ -169,8 +183,26 @@ __weak void variant_bootblock_gpio_table(const struct soc_amd_gpio **gpio, size_
 	*gpio = bootblock_gpio_table;
 }
 
+__weak void variant_early_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+{
+	*size = ARRAY_SIZE(early_gpio_table);
+	*gpio = early_gpio_table;
+}
+
+__weak void variant_early_override_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+{
+	*size = 0;
+	*gpio = NULL;
+}
+
 __weak void variant_sleep_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
 {
 	*size = ARRAY_SIZE(sleep_gpio_table);
 	*gpio = sleep_gpio_table;
+}
+
+__weak void variant_tpm_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+{
+	*size = ARRAY_SIZE(tpm_gpio_table);
+	*gpio = tpm_gpio_table;
 }

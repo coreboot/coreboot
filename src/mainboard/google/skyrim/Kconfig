@@ -26,6 +26,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select ELOG_GSMI
 	select FW_CONFIG
 	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_I2C_TPM_CR50
+	select MAINBOARD_HAS_TPM2
 	select SOC_AMD_SABRINA
 	select SOC_AMD_COMMON_BLOCK_USE_ESPI
 
@@ -34,6 +36,14 @@ config CHROMEOS
 
 config DEVICETREE
 	default "variants/baseboard/devicetree.cb"
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0x03
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x50
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"

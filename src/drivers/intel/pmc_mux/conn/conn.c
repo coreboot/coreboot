@@ -67,7 +67,7 @@ static void conn_write_cbmem_entry(struct device *dev)
 	port_info->sbu_orientation = config->sbu_orientation;
 	port_info->data_orientation = config->hsl_orientation;
 
-	printk(BIOS_INFO, "added type-c port%ld info to cbmem: usb2:%d usb3:%d sbu:%d data:%d\n",
+	printk(BIOS_INFO, "added type-c port%zu info to cbmem: usb2:%d usb3:%d sbu:%d data:%d\n",
 			count, port_info->usb2_port_number, port_info->usb3_port_number,
 			port_info->sbu_orientation, port_info->data_orientation);
 

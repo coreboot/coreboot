@@ -30,14 +30,14 @@ endif
 
 $(VBOOT_FW_LIB): $(obj)/libpayload-config.h
 	@printf "    MAKE       $(subst $(obj)/,,$(@))\n"
-	+$(Q) FIRMWARE_ARCH=$(VBOOT_FIRMWARE_ARCH-y) \
-		CC=$(CC) \
+	+$(Q) FIRMWARE_ARCH="$(VBOOT_FIRMWARE_ARCH-y)" \
+		CC="$(CC)" \
 		CFLAGS="$(VBOOT_CFLAGS)" \
 		$(MAKE) -C "$(VBOOT_SOURCE)" \
 		TPM2_MODE=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_TPM2_MODE)) \
 		X86_SHA_EXT=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_X86_SHA_EXT)) \
 		UNROLL_LOOPS=1 \
-		BUILD=$(VBOOT_BUILD_DIR) \
+		BUILD="$(VBOOT_BUILD_DIR)" \
 		V=$(V) \
 		$(VBOOT_BUILD_DIR)/vboot_fw.a tlcl
 

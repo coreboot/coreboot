@@ -185,9 +185,10 @@ static void fill_ssdt_typec_device(const struct device *dev)
 		get_pld_from_usb_ports(&pld, usb2_port, usb3_port, usb4_port);
 
 		struct typec_connector_class_config typec_config = {
-			.power_role = port_caps.power_role_cap,
-			.try_power_role = port_caps.try_power_role_cap,
-			.data_role = port_caps.data_role_cap,
+			.power_role = (enum usb_typec_power_role)port_caps.power_role_cap,
+			.try_power_role =
+				(enum usb_typec_try_power_role)port_caps.try_power_role_cap,
+			.data_role = (enum usb_typec_data_role)port_caps.data_role_cap,
 			.usb2_port = usb2_port,
 			.usb3_port = usb3_port,
 			.usb4_port = usb4_port,

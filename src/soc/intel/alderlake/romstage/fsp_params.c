@@ -330,7 +330,7 @@ static void fill_fspm_trace_params(FSP_M_CONFIG *m_cfg,
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
-	const void (*fill_fspm_params[])(FSP_M_CONFIG *m_cfg,
+	void (*const fill_fspm_params[])(FSP_M_CONFIG *m_cfg,
 			const struct soc_intel_alderlake_config *config) = {
 		fill_fspm_igd_params,
 		fill_fspm_mrc_params,

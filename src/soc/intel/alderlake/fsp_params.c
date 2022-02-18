@@ -799,7 +799,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 	/* Override settings per board if required. */
 	mainboard_update_soc_chip_config(config);
 
-	const void (*fill_fsps_params[])(FSP_S_CONFIG *s_cfg,
+	void (*const fill_fsps_params[])(FSP_S_CONFIG *s_cfg,
 			const struct soc_intel_alderlake_config *config) = {
 		fill_fsps_lpss_params,
 		fill_fsps_cpu_params,

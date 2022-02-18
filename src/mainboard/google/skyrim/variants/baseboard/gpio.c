@@ -155,15 +155,36 @@ static const struct soc_amd_gpio sleep_gpio_table[] = {
 	/* TODO: Fill sleep gpio configuration */
 };
 
-/* Early GPIO configuration in bootblock */
+/* GPIO configuration in bootblock */
 static const struct soc_amd_gpio bootblock_gpio_table[] = {
-	/* TODO: Fill bootblock gpio configuration */
+	/* Enable WLAN */
+	/* WLAN_DISABLE */
+	PAD_GPO(GPIO_21, LOW),
 };
 
 /* Early GPIO configuration */
 static const struct soc_amd_gpio early_gpio_table[] = {
-	/* TODO: Fill early gpio configuration */
+	/* WLAN_AUX_RESET_L (ACTIVE LOW) */
+	PAD_GPO(GPIO_7, LOW),
+	/* Power on WLAN */
+	/* EN_PP3300_WLAN */
+	PAD_GPO(GPIO_9, HIGH),
 };
+
+/* PCIE_RST needs to be brought high before FSP-M runs */
+static const struct soc_amd_gpio pcie_gpio_table[] = {
+	/* Deassert all AUX_RESET lines & PCIE_RST */
+	/* WLAN_AUX_RESET_L (ACTIVE LOW) */
+	PAD_GPO(GPIO_7, HIGH),
+	/* PCIE_RST0_L */
+	PAD_NFO(GPIO_26, PCIE_RST0_L, HIGH),
+};
+
+__weak void variant_pcie_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+{
+	*size = ARRAY_SIZE(pcie_gpio_table);
+	*gpio = pcie_gpio_table;
+}
 
 __weak void variant_base_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
 {

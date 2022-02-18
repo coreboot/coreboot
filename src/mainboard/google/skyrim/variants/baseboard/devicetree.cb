@@ -47,7 +47,12 @@ chip soc/amd/sabrina
 				device pnp 0c09.0 alias chrome_ec on end
 			end
 		end
-		device ref gpp_bridge_0 on end # WLAN
+		device ref gpp_bridge_0 on # WLAN
+			chip drivers/wifi/generic
+				register "wake" = "GEVENT_8"
+				device pci 00.0 on end
+			end
+		end
 		device ref gpp_bridge_1 on end # SD
 		device ref gpp_bridge_2 on end # WWAN
 		device ref gpp_bridge_3 on end # NVMe

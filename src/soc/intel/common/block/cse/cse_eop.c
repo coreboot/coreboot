@@ -11,12 +11,28 @@
 #include <timestamp.h>
 #include <types.h>
 
+#define CSE_MAX_RETRY_CMD	3
+
 enum cse_cmd_result {
 	CSE_CMD_RESULT_GLOBAL_RESET_REQUESTED,
 	CSE_CMD_RESULT_SUCCESS,
 	CSE_CMD_RESULT_ERROR,
 	CSE_CMD_RESULT_DISABLED,
+	CSE_CMD_RESULT_RETRY,
 };
+
+static enum cse_cmd_result decode_heci_send_receive_error(enum cse_tx_rx_status ret)
+{
+	switch (ret) {
+	case CSE_TX_ERR_CSE_NOT_READY:
+	case CSE_RX_ERR_CSE_NOT_READY:
+	case CSE_RX_ERR_RESP_LEN_MISMATCH:
+	case CSE_RX_ERR_TIMEOUT:
+		return CSE_CMD_RESULT_RETRY;
+	default:
+		return CSE_CMD_RESULT_ERROR;
+	}
+}
 
 static bool cse_disable_mei_bus(void)
 {
@@ -49,6 +65,7 @@ static bool cse_disable_mei_bus(void)
 
 static enum cse_cmd_result cse_send_eop(void)
 {
+	enum cse_tx_rx_status ret;
 	enum {
 		EOP_REQUESTED_ACTION_CONTINUE = 0,
 		EOP_REQUESTED_ACTION_GLOBAL_RESET = 1,
@@ -98,10 +115,9 @@ static enum cse_cmd_result cse_send_eop(void)
 
 	printk(BIOS_INFO, "HECI: Sending End-of-Post\n");
 
-	if (heci_send_receive(&msg, sizeof(msg), &resp, &resp_size, HECI_MKHI_ADDR)) {
-		printk(BIOS_ERR, "HECI: EOP send/receive fail\n");
-		return CSE_CMD_RESULT_ERROR;
-	}
+	ret = heci_send_receive(&msg, sizeof(msg), &resp, &resp_size, HECI_MKHI_ADDR);
+	if (ret)
+		return decode_heci_send_receive_error(ret);
 
 	if (resp.hdr.result) {
 		printk(BIOS_ERR, "HECI: EOP Resp Failed: %u\n", resp.hdr.result);
@@ -121,6 +137,18 @@ static enum cse_cmd_result cse_send_eop(void)
 		printk(BIOS_INFO, "unknown %u\n", resp.requested_actions);
 		return CSE_CMD_RESULT_ERROR;
 	}
+}
+
+static enum cse_cmd_result cse_send_cmd_retries(enum cse_cmd_result (*cse_send_command)(void))
+{
+	size_t retry;
+	enum cse_cmd_result ret;
+	for (retry = 0; retry < CSE_MAX_RETRY_CMD; retry++) {
+		ret = cse_send_command();
+		if (ret != CSE_CMD_RESULT_RETRY)
+			break;
+	}
+	return ret;
 }
 
 /*
@@ -193,7 +221,7 @@ static void do_send_end_of_post(void)
 	set_cse_device_state(PCH_DEVFN_CSE, DEV_ACTIVE);
 
 	timestamp_add_now(TS_ME_END_OF_POST_START);
-	handle_cse_eop_result(cse_send_eop());
+	handle_cse_eop_result(cse_send_cmd_retries(cse_send_eop));
 	timestamp_add_now(TS_ME_END_OF_POST_END);
 
 	set_cse_device_state(PCH_DEVFN_CSE, DEV_IDLE);

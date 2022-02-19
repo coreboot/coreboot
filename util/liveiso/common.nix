@@ -93,11 +93,13 @@
 			user = {
 				isNormalUser = true;
 				group = "user";
-				extraGroups = [ "users" "wheel" "networkmanager" "uucp" ];
+				extraGroups = [ "users" "wheel" "networkmanager" "uucp" "flashrom" ];
 				initialHashedPassword = "";
 			};
 		};
 	};
+
+	programs.flashrom.enable = true;
 
 	environment.systemPackages = with pkgs; [
 		acpica-tools
@@ -116,7 +118,6 @@
 		efivar
 		exfat
 		f2fs-tools
-		flashrom
 		fuse
 		fuse3
 		fwts

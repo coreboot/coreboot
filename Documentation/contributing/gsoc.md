@@ -237,13 +237,13 @@ questions.
   * Ron Minnich
 
 
-[community forums]: https://doc.coreboot.org/community/forums.html
+[community forums]: ../community/forums.md
 [mailing list]: https://mail.coreboot.org/postorius/lists/coreboot.coreboot.org
-[Getting started]: https://doc.coreboot.org/getting_started/index.html
-[Tutorial]: https://doc.coreboot.org/tutorial/index.html
-[Flashing firmware tutorial]: https://doc.coreboot.org/flash_tutorial/index.html
-[Coding style]: https://doc.coreboot.org/contributing/coding_style.html
-[Code of Conduct]: https://doc.coreboot.org/community/code_of_conduct.html
-[Language style]: https://doc.coreboot.org/community/language_style.html
+[Getting started]: ../getting_started/index.md
+[Tutorial]: ../tutorial/index.md
+[Flashing firmware tutorial]: ../flash_tutorial/index.md
+[Coding style]: coding_style.md
+[Code of Conduct]: ../community/code_of_conduct.md
+[Language style]: ../community/language_style.md
 [GSoC Contributor Guide]: https://google.github.io/gsocguides/student
 [GSoC Mentor Guide]: https://google.github.io/gsocguides/mentor

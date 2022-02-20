@@ -7,7 +7,7 @@
 #include <superio/smsc/sch5545/sch5545.h>
 #include <superio/smsc/sch5545/sch5545_emi.h>
 
-#include "sch5545_ec.h"
+#include <baseboard/sch5545_ec.h>
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 6, 0 },

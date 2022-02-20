@@ -10,7 +10,7 @@
 #include <superio/smsc/sch5545/sch5545.h>
 #include <superio/smsc/sch5545/sch5545_emi.h>
 
-#include "sch5545_ec.h"
+#include <baseboard/sch5545_ec.h>
 
 void mainboard_late_rcba_config(void)
 {

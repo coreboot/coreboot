@@ -1,2 +1,0 @@
-config BOARD_DELL_OPTIPLEX_9010
-	bool "OptiPlex 9010 SFF"

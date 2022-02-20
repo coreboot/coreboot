@@ -9,7 +9,7 @@
 #include <southbridge/intel/common/gpio.h>
 #include <superio/smsc/sch5545/sch5545.h>
 
-#include "sch5545_ec.h"
+#include <baseboard/sch5545_ec.h>
 
 #define SIO_PORT				0x2e
 
@@ -64,12 +64,15 @@ static void mainboard_enable(struct device *dev)
 	printk(BIOS_DEBUG, "Chassis type: ");
 	switch (pin_sts) {
 	case 0:
-	case 4:
 		printk(BIOS_DEBUG, "MT\n");
 		break;
 	case 3:
 	case 11:
 		printk(BIOS_DEBUG, "USFF\n");
+		break;
+	case 4:
+		/* As per table in schematics, but don't know what this is */
+		printk(BIOS_DEBUG, "Comoros\n");
 		break;
 	case 1:
 	case 9:

@@ -4,7 +4,7 @@
 #include <superio/smsc/sch5545/sch5545.h>
 #include <superio/smsc/sch5545/sch5545_emi.h>
 
-#include "sch5545_ec.h"
+#include <baseboard/sch5545_ec.h>
 
 static uint16_t emi_bar;
 

@@ -1,0 +1,14 @@
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		subsystemid 0x1028 0x052c inherit
+		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
+			register "sata_port_map" = "0x7"
+			device pci 1c.4 on	# PCIe Port #5
+				smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong" "SLOT2" "SlotDataBusWidth4X"
+			end
+			device pci 1c.5 on  end	# PCIe Port #6
+			device pci 1c.6 on  end	# PCIe Port #7
+			device pci 1c.7 on  end	# PCIe Port #8
+		end
+	end
+end

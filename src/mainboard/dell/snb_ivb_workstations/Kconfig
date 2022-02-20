@@ -1,17 +1,11 @@
-if BOARD_DELL_OPTIPLEX_9010
-
-config IGNORE_IASL_MISSING_DEPENDENCY
-	def_bool y
-
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_DELL_SNB_IVB_WORKSTATIONS
+	def_bool n
 	select BOARD_ROMSIZE_KB_12288
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select INTEL_INT15
 	select NORTHBRIDGE_INTEL_SANDYBRIDGE
 	select SERIRQ_CONTINUOUS_MODE
-	select SOUTHBRIDGE_INTEL_C216
 	select USE_NATIVE_RAMINIT
 	select MAINBOARD_HAS_LPC_TPM
 	select MAINBOARD_HAS_TPM1
@@ -24,11 +18,25 @@ config BOARD_SPECIFIC_OPTIONS
 	select PCIEXP_L1_SUB_STATE
 	select DRIVERS_UART_8250IO
 
+if BOARD_DELL_SNB_IVB_WORKSTATIONS
+
+config IGNORE_IASL_MISSING_DEPENDENCY
+	def_bool y
+
 config MAINBOARD_DIR
-	default "dell/optiplex_9010"
+	default "dell/snb_ivb_workstations"
 
 config MAINBOARD_PART_NUMBER
-	default "OptiPlex 9010"
+	default "OptiPlex 9010" if BOARD_DELL_OPTIPLEX_9010
+
+config VARIANT_DIR
+	default "optiplex_9010_sff" if BOARD_DELL_OPTIPLEX_9010
+
+config DEVICETREE
+	default "variants/baseboard/devicetree.cb"
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config DRAM_RESET_GATE_GPIO
 	int

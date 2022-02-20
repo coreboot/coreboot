@@ -28,9 +28,11 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	default "OptiPlex 9010" if BOARD_DELL_OPTIPLEX_9010
+	default "Precision T1650" if BOARD_DELL_PRECISION_T1650
 
 config VARIANT_DIR
 	default "optiplex_9010_sff" if BOARD_DELL_OPTIPLEX_9010
+	default "precision_t1650" if BOARD_DELL_PRECISION_T1650
 
 config DEVICETREE
 	default "variants/baseboard/devicetree.cb"

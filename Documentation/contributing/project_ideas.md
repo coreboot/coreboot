@@ -20,6 +20,24 @@ doubt if you can bring yourself up to speed in a required time frame
 with the projects. We can then try together to figure out if you're a
 good match for a project, even when requirements might not all be met.
 
+## Easy projects
+
+This is a collection of tasks which don't require deep knowledge on
+coreboot itself. If you are a beginner and want to get familiar with the
+the project and the code base, or if you just want to get your hands
+dirty with some easy tasks, then these are for you.
+
+  * Resolve static analysis issues reported by [scan-build] and
+    [Coverity scan]. More details on the page for
+    [Coverity scan integration].
+
+  * Resolve issues reported by the [linter][Linter issues]
+
+[scan-build]: https://coreboot.org/scan-build/
+[Coverity scan]: https://scan.coverity.com/projects/coreboot
+[Coverity scan integration]: ../infrastructure/coverity.md
+[Linter issues]: https://qa.coreboot.org/job/untested-coreboot-files/lastSuccessfulBuild/artifact/lint.txt
+
 ## Provide toolchain binaries
 Our crossgcc subproject provides a uniform compiler environment for
 working on coreboot and related projects. Sadly, building it takes hours,

@@ -527,14 +527,6 @@ config AZALIA_PLUGIN_SUPPORT
 	bool
 	default n
 
-config AZALIA_MAX_CODECS
-	int
-	depends on AZALIA_PLUGIN_SUPPORT
-	default 3
-	range 1 15
-	help
-	  The maximum number of codecs supported on a single HD Audio controller.
-
 config AZALIA_LOCK_DOWN_R_WO_GCAP
 	def_bool n
 	depends on AZALIA_PLUGIN_SUPPORT

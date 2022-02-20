@@ -64,15 +64,12 @@ static void mainboard_enable(struct device *dev)
 	printk(BIOS_DEBUG, "Chassis type: ");
 	switch (pin_sts) {
 	case 0:
+	case 4:
 		printk(BIOS_DEBUG, "MT\n");
 		break;
 	case 3:
 	case 11:
 		printk(BIOS_DEBUG, "USFF\n");
-		break;
-	case 4:
-		/* As per table in schematics, but don't know what this is */
-		printk(BIOS_DEBUG, "Comoros\n");
 		break;
 	case 1:
 	case 9:

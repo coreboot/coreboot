@@ -547,6 +547,7 @@ static uint8_t get_chassis_type(void)
 	/* This mapping will determine which EC init sequence to use */
 	switch (chassis_id) {
 	case 0x0:
+	case 0x4:
 		return 5;
 	case 0x8:
 		return 4;

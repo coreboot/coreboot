@@ -141,7 +141,7 @@ damaged, or stolen, or in case of a natural disaster that disrupts internet
 service. You risk automatically failing if your mentor cannot contact you and if
 you cannot provide updates according to GSoC deadlines.
 
-** Personal Information **
+**Personal Information**
 
   * Name
 
@@ -158,7 +158,7 @@ you cannot provide updates according to GSoC deadlines.
   * What are your other time commitments? Do you have a job, classes, vacations?
     When and how long?
 
-** Software experience **
+**Software experience**
 
 If applicable, please provide the following information:
 
@@ -176,7 +176,7 @@ If applicable, please provide the following information:
   * What was your experience while building and running coreboot? Did you have
     problems?
 
-** Your project **
+**Your project**
 
   * Provide an overview of your project (in your own words).
 
@@ -191,7 +191,7 @@ If applicable, please provide the following information:
 
   * Do you have a stretch goal?
 
-** Other **
+**Other**
 
   * Resume (optional)
 

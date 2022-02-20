@@ -548,17 +548,17 @@ static uint8_t get_chassis_type(void)
 	switch (chassis_id) {
 	case 0x0:
 	case 0x4:
-		return 5;
+		return 5; /* MT */
 	case 0x8:
-		return 4;
+		return 4; /* DT */
 	case 0x3:
 	case 0xb:
-		return 3;
+		return 3; /* USFF */
 	case 0x1:
 	case 0x9:
 	case 0x5:
 	case 0xd:
-		return 6;
+		return 6; /* SFF */
 	default:
 		printk(BIOS_DEBUG, "Unknown chassis ID %x\n", chassis_id);
 		break;
@@ -640,7 +640,7 @@ void sch5545_ec_hwm_init(void *unused)
 			ec_hwm_init_late(ec_hwm_chassis4, ARRAY_SIZE(ec_hwm_chassis4));
 			break;
 		case 5:
-			ec_hwm_init_late(ec_hwm_chassis6, ARRAY_SIZE(ec_hwm_chassis5));
+			ec_hwm_init_late(ec_hwm_chassis5, ARRAY_SIZE(ec_hwm_chassis5));
 			break;
 		case 6:
 			ec_hwm_init_late(ec_hwm_chassis6, ARRAY_SIZE(ec_hwm_chassis6));
@@ -673,21 +673,25 @@ void sch5545_ec_hwm_init(void *unused)
 	ec_read_write_reg(EC_HWM_LDN, 0x00b8, &val, READ_OP);
 
 	if (chassis_type == 4 || chassis_type == 5) {
-		ec_read_write_reg(EC_HWM_LDN, 0x00a0, &val, READ_OP);
-		val &= 0xfb;
-		ec_read_write_reg(EC_HWM_LDN, 0x00a0, &val, WRITE_OP);
-		ec_read_write_reg(EC_HWM_LDN, 0x00a1, &val, READ_OP);
-		val &= 0xfb;
-		ec_read_write_reg(EC_HWM_LDN, 0x00a1, &val, WRITE_OP);
-		ec_read_write_reg(EC_HWM_LDN, 0x00a2, &val, READ_OP);
-		val &= 0xfb;
-		ec_read_write_reg(EC_HWM_LDN, 0x00a2, &val, WRITE_OP);
-		val = 0x99;
-		ec_read_write_reg(EC_HWM_LDN, 0x008a, &val, WRITE_OP);
-		val = 0x47;
-		ec_read_write_reg(EC_HWM_LDN, 0x008b, &val, WRITE_OP);
-		val = 0x91;
-		ec_read_write_reg(EC_HWM_LDN, 0x008c, &val, WRITE_OP);
+		ec_read_write_reg(EC_HWM_LDN, 0x0027, &val, READ_OP);
+		if (val == 0) {
+			printk(BIOS_INFO, "Applying HWM fix-up for MT/DT chassis\n");
+			ec_read_write_reg(EC_HWM_LDN, 0x00a0, &val, READ_OP);
+			val &= 0xfb;
+			ec_read_write_reg(EC_HWM_LDN, 0x00a0, &val, WRITE_OP);
+			ec_read_write_reg(EC_HWM_LDN, 0x00a1, &val, READ_OP);
+			val &= 0xfb;
+			ec_read_write_reg(EC_HWM_LDN, 0x00a1, &val, WRITE_OP);
+			ec_read_write_reg(EC_HWM_LDN, 0x00a2, &val, READ_OP);
+			val &= 0xfb;
+			ec_read_write_reg(EC_HWM_LDN, 0x00a2, &val, WRITE_OP);
+			val = 0x99;
+			ec_read_write_reg(EC_HWM_LDN, 0x008a, &val, WRITE_OP);
+			val = 0x47;
+			ec_read_write_reg(EC_HWM_LDN, 0x008b, &val, WRITE_OP);
+			val = 0x91;
+			ec_read_write_reg(EC_HWM_LDN, 0x008c, &val, WRITE_OP);
+		}
 	}
 
 	ec_read_write_reg(EC_HWM_LDN, 0x0049, &val, READ_OP);

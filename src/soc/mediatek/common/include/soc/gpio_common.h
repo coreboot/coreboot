@@ -18,9 +18,38 @@ enum pull_select {
 	GPIO_PULL_UP = 1,
 };
 
+/*
+ * GPIO DRIVING
+ * Special IO(I2C, HDMI...) advanced drive strength:
+ * GPIO_DRV_ADV_125_UA: 0.125mA
+ * GPIO_DRV_ADV_250_UA: 0.25mA
+ * GPIO_DRV_ADV_500_UA: 0.5mA
+ * GPIO_DRV_ADV_1_MA: 1mA
+ */
+enum gpio_drv_adv {
+	GPIO_DRV_ADV_125_UA = 0,
+	GPIO_DRV_ADV_250_UA = 1,
+	GPIO_DRV_ADV_500_UA = 2,
+	GPIO_DRV_ADV_1_MA = 3,
+};
+
+struct gpio_drv_info {
+	uint32_t offset;
+	uint8_t shift;
+	uint8_t width;
+};
+
 void gpio_set_pull(gpio_t gpio, enum pull_enable enable,
 		   enum pull_select select);
 void gpio_set_mode(gpio_t gpio, int mode);
+
+/* Normal driving function */
+int gpio_set_driving(gpio_t gpio, uint8_t drv);
+int gpio_get_driving(gpio_t gpio);
+
+/* Advanced driving function */
+int gpio_set_driving_adv(gpio_t gpio, enum gpio_drv_adv drv);
+int gpio_get_driving_adv(gpio_t gpio);
 
 enum gpio_irq_type {
 	IRQ_TYPE_EDGE_RISING,

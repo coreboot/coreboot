@@ -116,8 +116,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 
-	fadt->header.revision = get_acpi_table_revision(FADT);
-
 	fadt->sci_int = acpi_sci_irq();
 
 	if (permanent_smi_handler()) {

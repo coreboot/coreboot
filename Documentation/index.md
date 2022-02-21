@@ -168,10 +168,7 @@ Contents:
 
 * [Getting Started](getting_started/index.md)
 * [Tutorial](tutorial/index.md)
-* [Coding Style](contributing/coding_style.md)
-* [Project Ideas](contributing/project_ideas.md)
-* [Google Summer of Code](contributing/gsoc.md)
-* [Documentation Ideas](contributing/documentation_ideas.md)
+* [Contributing](contributing/index.md)
 * [Community](community/index.md)
 * [Payloads](payloads.md)
 * [Distributions](distributions.md)

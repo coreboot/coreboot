@@ -6,6 +6,7 @@
  */
 
 #include <assert.h>
+#include <console/console.h>
 #include <device/mmio.h>
 #include <spi_flash.h>
 #include <soc/addressmap.h>
@@ -147,6 +148,14 @@ void mtk_snfc_init(int gpio_set)
 	for (size_t i = 0; i < ARRAY_SIZE(nor_pinmux[gpio_set]); i++) {
 		gpio_set_pull(ptr[i].gpio, GPIO_PULL_ENABLE, ptr[i].select);
 		gpio_set_mode(ptr[i].gpio, ptr[i].func);
+
+		if (gpio_set_driving(ptr[i].gpio, GPIO_DRV_8_MA) < 0)
+			printk(BIOS_WARNING,
+			       "%s: failed to set pin drive to 8 mA for %d\n",
+			       __func__, ptr[i].gpio.id);
+		else
+			printk(BIOS_DEBUG, "%s: got pin drive: %#x\n", __func__,
+			       gpio_get_driving(ptr[i].gpio));
 	}
 }
 

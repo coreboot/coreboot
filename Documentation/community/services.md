@@ -1,6 +1,6 @@
 # Accounts on coreboot.org
 
-There are a number of places where you can benefit from creaating an account
+There are a number of places where you can benefit from creating an account
 in our community. Since there is no single sign-on system in place (at this
 time), they come with their own setup routines.
 

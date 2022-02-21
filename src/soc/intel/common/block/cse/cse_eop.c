@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <intelblocks/cse.h>
@@ -172,6 +173,11 @@ static void do_send_end_of_post(void)
 
 	if (eop_sent) {
 		printk(BIOS_ERR, "EOP already sent\n");
+		return;
+	}
+
+	if (acpi_get_sleep_type() == ACPI_S3) {
+		printk(BIOS_INFO, "Skip sending EOP during S3 resume\n");
 		return;
 	}
 

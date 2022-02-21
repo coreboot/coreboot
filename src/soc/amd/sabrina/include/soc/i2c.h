@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Check if this is still correct */
-
 #ifndef AMD_SABRINA_I2C_H
 #define AMD_SABRINA_I2C_H
 

@@ -640,7 +640,7 @@ static void espi_set_io_mode_config(enum espi_io_mode mb_io_mode, uint32_t slave
 			break;
 		}
 		printk(BIOS_ERR, "eSPI Quad I/O not supported. Dropping to dual mode.\n");
-		/* Intentional fall-through */
+		__fallthrough;
 	case ESPI_IO_MODE_DUAL:
 		if (espi_slave_supports_dual_io(slave_caps)) {
 			*slave_config |= ESPI_SLAVE_IO_MODE_SEL_DUAL;
@@ -648,7 +648,7 @@ static void espi_set_io_mode_config(enum espi_io_mode mb_io_mode, uint32_t slave
 			break;
 		}
 		printk(BIOS_ERR, "eSPI Dual I/O not supported. Dropping to single mode.\n");
-		/* Intentional fall-through */
+		__fallthrough;
 	case ESPI_IO_MODE_SINGLE:
 		/* Single I/O mode is always supported. */
 		*slave_config |= ESPI_SLAVE_IO_MODE_SEL_SINGLE;
@@ -672,7 +672,7 @@ static void espi_set_op_freq_config(enum espi_op_freq mb_op_freq, uint32_t slave
 			break;
 		}
 		printk(BIOS_ERR, "eSPI 66MHz not supported. Dropping to 33MHz.\n");
-		/* Intentional fall-through */
+		__fallthrough;
 	case ESPI_OP_FREQ_33_MHZ:
 		if (slave_max_speed_mhz >= 33) {
 			*slave_config |= ESPI_SLAVE_OP_FREQ_SEL_33_MHZ;
@@ -680,7 +680,7 @@ static void espi_set_op_freq_config(enum espi_op_freq mb_op_freq, uint32_t slave
 			break;
 		}
 		printk(BIOS_ERR, "eSPI 33MHz not supported. Dropping to 16MHz.\n");
-		/* Intentional fall-through */
+		__fallthrough;
 	case ESPI_OP_FREQ_16_MHZ:
 		/*
 		 * eSPI spec says the minimum frequency is 20MHz, but AMD datasheets support
@@ -691,7 +691,7 @@ static void espi_set_op_freq_config(enum espi_op_freq mb_op_freq, uint32_t slave
 			*ctrlr_config |= ESPI_OP_FREQ_16_MHZ;
 			break;
 		}
-		/* Intentional fall-through */
+		__fallthrough;
 	default:
 		die("No supported eSPI Operating Frequency!\n");
 	}

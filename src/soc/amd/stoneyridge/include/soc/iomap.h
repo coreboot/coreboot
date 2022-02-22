@@ -16,10 +16,10 @@
 #define APU_I2C2_BASE			0xfedc4000
 #define APU_I2C3_BASE			0xfedc5000
 
-#if CONFIG(HPET_ADDRESS_OVERRIDE)
-#error HPET address override is not allowed and must be fixed at 0xfed00000
-#endif
 #define HPET_BASE_ADDRESS		0xfed00000
+#if CONFIG_HPET_ADDRESS != HPET_BASE_ADDRESS
+#error HPET address must be 0xfed00000
+#endif
 
 #define APU_UART0_BASE			0xfedc6000
 #define APU_UART1_BASE			0xfedc8000

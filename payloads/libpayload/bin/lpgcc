@@ -182,7 +182,7 @@ trygccoption -fno-stack-protector
 _CFLAGS="$_CFLAGS -include $BASE/../include/kconfig.h -include $BASE/../include/compiler.h"
 _CFLAGS="$_CFLAGS -I`$DEFAULT_CC $_ARCHEXTRA -print-search-dirs | head -n 1 | cut -d' ' -f2`include"
 
-_LDFLAGS="-L$_LIBDIR $_LDSCRIPT -static"
+_LDFLAGS="-L$_LIBDIR $_LDSCRIPT -static -Wl,--gc-sections"
 
 if [ $DOLINK -eq 0 ]; then
     if [ $DEBUGME -eq 1 ]; then

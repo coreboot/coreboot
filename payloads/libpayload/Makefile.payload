@@ -122,26 +122,26 @@ LIBPAYLOAD_OPTS += DOTCONFIG="$(LIBPAYLOAD_DOTCONFIG)"
 LIBPAYLOAD_OPTS += CONFIG_=CONFIG_LP_
 LIBPAYLOAD_OPTS += $(if $(CCACHE),CONFIG_LP_CCACHE=y)
 
-defconfig: lp-defconfig
-lp-defconfig: $(LIBPAYLOAD_DOTCONFIG)
-$(LIBPAYLOAD_DOTCONFIG): $(LIBPAYLOAD_DEFCONFIG) | $(PAYLOAD_DEPS)
+ifneq ($(LIBPAYLOAD_DEFCONFIG),)
+$(LIBPAYLOAD_DOTCONFIG): $(LIBPAYLOAD_DEFCONFIG)
 	$(MAKE) -C $(LIBPAYLOAD_SRC) $(LIBPAYLOAD_OPTS) \
 		KBUILD_DEFCONFIG=$(LIBPAYLOAD_DEFCONFIG) defconfig
+endif
 
 $(LIBPAYLOAD_CONFIG_H): $(LIBPAYLOAD_DOTCONFIG)
 	$(MAKE) -C $(LIBPAYLOAD_SRC) $(LIBPAYLOAD_OPTS) $(LIBPAYLOAD_CONFIG_H)
 
-oldconfig: lp-oldconfig
-lp-oldconfig:
-	[ ! -f $(LIBPAYLOAD_DOTCONFIG) ] || \
-	$(MAKE) -C $(LIBPAYLOAD_SRC) $(LIBPAYLOAD_OPTS) oldconfig
+force-relay:
 
-$(LIBPAYLOAD): lp-defconfig | $(LIBPAYLOAD_CONFIG_H)
+lp-%: force-relay
+	$(MAKE) -C $(LIBPAYLOAD_SRC) $(LIBPAYLOAD_OPTS) $*
+
+$(LIBPAYLOAD): force-relay | $(LIBPAYLOAD_CONFIG_H)
 	$(MAKE) -C $(LIBPAYLOAD_SRC) $(LIBPAYLOAD_OPTS)
 
 $(shell mkdir -p $(sort $(dir $(OBJS))))
 
-.PHONY: oldconfig lp-oldconfig defconfig lp-defconfig
+.PHONY: force-relay
 
 else # %clean,$(MAKECMDGOALS)
 

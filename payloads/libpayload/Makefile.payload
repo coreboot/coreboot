@@ -36,7 +36,7 @@ ARCH ?=
 OBJS ?=
 CCACHE ?=
 
-CFLAGS  = $(GCC_CFLAGS_$(ARCH))
+CFLAGS  = $(CFLAGS_$(ARCH))
 CFLAGS += -Os -ffreestanding
 CFLAGS += -Wall -Wextra -Wmissing-prototypes -Wvla -Werror
 

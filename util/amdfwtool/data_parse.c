@@ -348,6 +348,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 #define PMU_STR_BASE_LEN strlen(PMUI_STR_BASE)
 #define PMU_STR_SUB_INDEX strlen(PMUI_STR_BASE"_SUB")
 #define PMU_STR_INS_INDEX strlen(PMUI_STR_BASE"_SUBx_INS")
+#define PMU_STR_ALL_LEN  strlen(PMUI_STR_BASE"_SUBx_INSx")
 
 static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
 		char level_to_set, amd_cb_config *cb_config)
@@ -360,10 +361,12 @@ static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
 	(void) (cb_config);	/* Remove warning and reserved for future. */
 
 	if (strncmp(fw_name, PMUI_STR_BASE, PMU_STR_BASE_LEN) == 0) {
+		assert(strlen(fw_name) == PMU_STR_ALL_LEN);
 		fw_type = AMD_BIOS_PMUI;
 		subprog = fw_name[PMU_STR_SUB_INDEX] - '0';
 		instance = fw_name[PMU_STR_INS_INDEX] - '0';
 	} else if (strncmp(fw_name, PMUD_STR_BASE, PMU_STR_BASE_LEN) == 0) {
+		assert(strlen(fw_name) == PMU_STR_ALL_LEN);
 		fw_type = AMD_BIOS_PMUD;
 		subprog = fw_name[PMU_STR_SUB_INDEX] - '0';
 		instance = fw_name[PMU_STR_INS_INDEX] - '0';

@@ -6,6 +6,7 @@
 #include <fsp/util.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/cfg.h>
+#include <intelblocks/cse.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/irq.h>
 #include <intelblocks/itss.h>
@@ -148,6 +149,20 @@ void soc_init_pre_device(void *chip_info)
 
 	/* Swap enabled TBT root ports in device tree if needed. */
 	pcie_rp_update_devicetree(get_tbt_pcie_rp_table());
+
+	/*
+	 * Earlier when coreboot used to send EOP at late as possible caused
+	 * issue of delayed response from CSE since CSE was busy loading payload.
+	 * To resolve the issue, EOP should be sent earlier than current sequence
+	 * in the boot sequence at BS_DEV_INIT.
+	 * Intel CSE team recommends to send EOP close to FW init (between FSP-S exit and
+	 * current boot sequence) to reduce message response time from CSE hence moving
+	 * sending EOP to earlier stage.
+	 */
+	if (CONFIG(SOC_INTEL_CSE_SEND_EOP_EARLY)) {
+		printk(BIOS_INFO, "Sending EOP early from SoC\n");
+		cse_send_end_of_post();
+	}
 }
 
 static void cpu_fill_ssdt(const struct device *dev)

@@ -26,7 +26,9 @@ enum {
 	VDOSYS1_PROT_STEP_2_MASK	= 0x00400000,
 	VDOSYS1_PROT_STEP_1_MASK	= 0xC0000000,
 
-	AUDIO_PROT_STEP_1_MASK		= 0x00000600,
+	ADSP_PROT_STEP_1_MASK		= 0x0001D000,
+
+	AUDIO_PROT_STEP_1_MASK		= 0x00000A00,
 };
 
 void mtcmos_protect_display_bus(void)
@@ -72,6 +74,9 @@ void mtcmos_protect_display_bus(void)
 
 void mtcmos_protect_audio_bus(void)
 {
+	write32(&mt8195_infracfg_ao->infra_topaxi_protecten_clr_2,
+		ADSP_PROT_STEP_1_MASK);
+
 	write32(&mt8195_infracfg_ao->infra_topaxi_protecten_clr_2,
 		AUDIO_PROT_STEP_1_MASK);
 }

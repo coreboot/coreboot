@@ -946,6 +946,7 @@ struct mtk_spm_regs {
 
 check_member(mtk_spm_regs, pwr_status, 0x016c);
 check_member(mtk_spm_regs, audio_pwr_con, 0x0358);
+check_member(mtk_spm_regs, adsp_pwr_con, 0x0360);
 check_member(mtk_spm_regs, ap_mdsrc_req, 0x043c);
 check_member(mtk_spm_regs, ulposc_con, 0x644);
 
@@ -1000,10 +1001,16 @@ static const struct power_domain_data disp[] = {
 
 static const struct power_domain_data audio[] = {
 	{
+		.pwr_con = &mtk_spm->adsp_pwr_con,
+		.pwr_sta_mask = 0x1 << 10,
+		.sram_pdn_mask = 0x1 << 8,
+		.sram_ack_mask = 0x1 << 12,
+	},
+	{
 		.pwr_con = &mtk_spm->audio_pwr_con,
-		.pwr_sta_mask = AUDIO_PWR_STA_MASK,
-		.sram_pdn_mask = AUDIO_SRAM_PDN_MASK,
-		.sram_ack_mask = AUDIO_SRAM_ACK_MASK,
+		.pwr_sta_mask = 0x1 << 8,
+		.sram_pdn_mask = 0x1 << 8,
+		.sram_ack_mask = 0x1 << 12,
 	},
 };
 

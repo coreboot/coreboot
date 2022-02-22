@@ -779,12 +779,8 @@ static void lpc_tpm_set_resources(struct device *dev)
 #if CONFIG(HAVE_ACPI_TABLES)
 static void lpc_tpm_fill_ssdt(const struct device *dev)
 {
-	const char *path = acpi_device_path(dev->bus->dev);
-
-	if (!path) {
-		path = "\\_SB_.PCI0.LPCB";
-		printk(BIOS_DEBUG, "Using default TPM ACPI path: '%s'\n", path);
-	}
+	/* Windows 11 requires the following path for TPM to be detected */
+	const char *path = "\\_SB_.PCI0";
 
 	/* Device */
 	acpigen_write_scope(path);

@@ -67,7 +67,7 @@ union log_state {
 	};
 };
 
-#define LOG_FAST(state) (HAS_ONLY_FAST_CONSOLES || ((state).level == CONSOLE_LOG_FAST))
+#define LOG_FAST(state) (HAS_ONLY_FAST_CONSOLES || ((state).speed == CONSOLE_LOG_FAST))
 
 static void wrap_interactive_printf(const char *fmt, ...)
 {

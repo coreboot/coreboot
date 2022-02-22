@@ -191,12 +191,9 @@ config CMOS_DEFAULT_FILE
 	default "src/mainboard/\$(MAINBOARDDIR)/cmos.default"
 	depends on HAVE_CMOS_DEFAULT
 
-config HPET_ADDRESS_OVERRIDE
-	def_bool n
-
 config HPET_ADDRESS
 	hex
-	default 0xfed00000 if !HPET_ADDRESS_OVERRIDE
+	default 0xfed00000
 
 config C_ENV_BOOTBLOCK_SIZE
 	hex

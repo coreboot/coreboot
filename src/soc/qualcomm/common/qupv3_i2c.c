@@ -117,6 +117,7 @@ static int i2c_do_xfer(unsigned int bus, struct i2c_msg segment,
 	unsigned int master_cmd_reg_val = (cmd << M_OPCODE_SHFT);
 	struct qup_regs *regs = qup[bus].regs;
 	void *dout = NULL, *din = NULL;
+	struct stopwatch timeout;
 
 	if (!(segment.flags & I2C_M_RD)) {
 		write32(&regs->i2c_tx_trans_len, segment.len);
@@ -130,7 +131,8 @@ static int i2c_do_xfer(unsigned int bus, struct i2c_msg segment,
 	master_cmd_reg_val |= (prams & M_PARAMS_MSK);
 	write32(&regs->geni_m_cmd0, master_cmd_reg_val);
 
-	return qup_handle_transfer(bus, dout, din, segment.len);
+	stopwatch_init_usecs_expire(&timeout, CONFIG_I2C_TRANSFER_TIMEOUT_US);
+	return qup_handle_transfer(bus, dout, din, segment.len, &timeout);
 }
 
 int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments,

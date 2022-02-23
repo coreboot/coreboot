@@ -3,6 +3,7 @@
 #include <device/mmio.h>
 #include <console/console.h>
 #include <delay.h>
+#include <timer.h>
 #include <soc/iomap.h>
 #include <soc/qup.h>
 
@@ -87,35 +88,33 @@ static qup_return_t qup_reset_master_status(gsbi_id_t gsbi_id)
 	return QUP_SUCCESS;
 }
 
-static qup_return_t qup_fifo_wait_for(gsbi_id_t gsbi_id, uint32_t status)
+static qup_return_t qup_fifo_wait_for(gsbi_id_t gsbi_id, uint32_t status,
+				      struct stopwatch *timeout)
 {
 	qup_return_t ret = QUP_ERR_UNDEFINED;
-	unsigned int count = TIMEOUT_CNT;
 
 	while (!(read32(QUP_ADDR(gsbi_id, QUP_OPERATIONAL)) & status)) {
 		ret = qup_i2c_master_status(gsbi_id);
 		if (ret)
 			return ret;
-		if (count == 0)
+		if (stopwatch_expired(timeout))
 			return QUP_ERR_TIMEOUT;
-		count--;
 	}
 
 	return QUP_SUCCESS;
 }
 
-static qup_return_t qup_fifo_wait_while(gsbi_id_t gsbi_id, uint32_t status)
+static qup_return_t qup_fifo_wait_while(gsbi_id_t gsbi_id, uint32_t status,
+					struct stopwatch *timeout)
 {
 	qup_return_t ret = QUP_ERR_UNDEFINED;
-	unsigned int count = TIMEOUT_CNT;
 
 	while (read32(QUP_ADDR(gsbi_id, QUP_OPERATIONAL)) & status) {
 		ret = qup_i2c_master_status(gsbi_id);
 		if (ret)
 			return ret;
-		if (count == 0)
+		if (stopwatch_expired(timeout))
 			return QUP_ERR_TIMEOUT;
-		count--;
 	}
 
 	return QUP_SUCCESS;
@@ -129,6 +128,7 @@ static qup_return_t qup_i2c_write_fifo(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj,
 	uint8_t *data_ptr = p_tx_obj->p.iic.data;
 	unsigned int data_len = p_tx_obj->p.iic.data_len;
 	unsigned int idx = 0;
+	struct stopwatch timeout;
 
 	qup_reset_master_status(gsbi_id);
 	qup_set_state(gsbi_id, QUP_STATE_RUN);
@@ -136,6 +136,7 @@ static qup_return_t qup_i2c_write_fifo(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj,
 	write32(QUP_ADDR(gsbi_id, QUP_OUTPUT_FIFO),
 		(QUP_I2C_START_SEQ | QUP_I2C_ADDR(addr)));
 
+	stopwatch_init_usecs_expire(&timeout, CONFIG_I2C_TRANSFER_TIMEOUT_US);
 	while (data_len) {
 		if (data_len == 1 && stop_seq) {
 			write32(QUP_ADDR(gsbi_id, QUP_OUTPUT_FIFO),
@@ -147,7 +148,8 @@ static qup_return_t qup_i2c_write_fifo(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj,
 		data_len--;
 		idx++;
 		if (data_len) {
-			ret = qup_fifo_wait_while(gsbi_id, OUTPUT_FIFO_FULL);
+			ret = qup_fifo_wait_while(gsbi_id, OUTPUT_FIFO_FULL,
+						  &timeout);
 			if (ret)
 				return ret;
 		}
@@ -166,7 +168,7 @@ static qup_return_t qup_i2c_write_fifo(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj,
 		}
 	}
 
-	ret = qup_fifo_wait_while(gsbi_id, OUTPUT_FIFO_NOT_EMPTY);
+	ret = qup_fifo_wait_while(gsbi_id, OUTPUT_FIFO_NOT_EMPTY, &timeout);
 	if (ret)
 		return ret;
 
@@ -202,6 +204,7 @@ static qup_return_t qup_i2c_read_fifo(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj)
 	uint8_t *data_ptr = p_tx_obj->p.iic.data;
 	unsigned int data_len = p_tx_obj->p.iic.data_len;
 	unsigned int idx = 0;
+	struct stopwatch timeout;
 
 	qup_reset_master_status(gsbi_id);
 	qup_set_state(gsbi_id, QUP_STATE_RUN);
@@ -212,7 +215,8 @@ static qup_return_t qup_i2c_read_fifo(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj)
 	write32(QUP_ADDR(gsbi_id, QUP_OUTPUT_FIFO),
 		QUP_I2C_RECV_SEQ | data_len);
 
-	ret = qup_fifo_wait_while(gsbi_id, OUTPUT_FIFO_NOT_EMPTY);
+	stopwatch_init_usecs_expire(&timeout, CONFIG_I2C_TRANSFER_TIMEOUT_US);
+	ret = qup_fifo_wait_while(gsbi_id, OUTPUT_FIFO_NOT_EMPTY, &timeout);
 	if (ret)
 		return ret;
 
@@ -221,7 +225,7 @@ static qup_return_t qup_i2c_read_fifo(gsbi_id_t gsbi_id, qup_data_t *p_tx_obj)
 	while (data_len) {
 		uint32_t data;
 
-		ret = qup_fifo_wait_for(gsbi_id, INPUT_SERVICE_FLAG);
+		ret = qup_fifo_wait_for(gsbi_id, INPUT_SERVICE_FLAG, &timeout);
 		if (ret)
 			return ret;
 

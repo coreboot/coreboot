@@ -243,7 +243,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segment,
 	status = regs->ic_clr_tx_abrt;
 
 	/* Start the timeout */
-	stopwatch_init_msecs_expire(&timeout, 1000);
+	stopwatch_init_usecs_expire(&timeout, CONFIG_I2C_TRANSFER_TIMEOUT_US);
 
 	/* Process each of the segments */
 	total_bytes = 0;

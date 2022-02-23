@@ -83,6 +83,7 @@ int qup_spi_xfer(const struct spi_slave *slave, const void *dout,
 	int size;
 	unsigned int se_bus = slave->bus;
 	struct qup_regs *regs = qup[se_bus].regs;
+	struct stopwatch timeout;
 
 	if ((bytes_in == 0) && (bytes_out == 0))
 		return 0;
@@ -114,7 +115,8 @@ int qup_spi_xfer(const struct spi_slave *slave, const void *dout,
 
 	qup_setup_m_cmd(se_bus, m_cmd, m_param);
 
-	if (qup_handle_transfer(se_bus, dout, din, size))
+	stopwatch_init_msecs_expire(&timeout, 1000);
+	if (qup_handle_transfer(se_bus, dout, din, size, &timeout))
 		return -1;
 
 	qup_spi_xfer(slave, dout + size, MAX((int)bytes_out - size, 0),

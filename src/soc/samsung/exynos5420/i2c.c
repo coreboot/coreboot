@@ -11,6 +11,8 @@
 #include <soc/pinmux.h>
 #include <timer.h>
 
+#define I2C_TIMEOUT_US (1000 * USECS_PER_MSEC)
+
 struct __packed i2c_regs
 {
 	uint8_t con;
@@ -508,9 +510,9 @@ static int i2c_got_ack(struct i2c_regs *regs)
 	return !(read8(&regs->stat) & I2cStatAck);
 }
 
-static int i2c_wait_for_idle(struct i2c_regs *regs)
+static int i2c_wait_for_idle(struct i2c_regs *regs, int timeout_us)
 {
-	int timeout = 1000 * 100; // 1s.
+	int timeout = timeout_us / 10;
 	while (timeout--) {
 		if (!(read8(&regs->stat) & I2cStatBusy))
 			return 0;
@@ -520,9 +522,9 @@ static int i2c_wait_for_idle(struct i2c_regs *regs)
 	return 1;
 }
 
-static int i2c_wait_for_int(struct i2c_regs *regs)
+static int i2c_wait_for_int(struct i2c_regs *regs, int timeout_us)
 {
-	int timeout = 1000 * 100; // 1s.
+	int timeout = timeout_us / 10;
 	while (timeout--) {
 		if (i2c_int_pending(regs))
 			return 0;
@@ -537,7 +539,7 @@ static int i2c_send_stop(struct i2c_regs *regs)
 	uint8_t mode = read8(&regs->stat) & (I2cStatModeMask);
 	write8(&regs->stat, mode | I2cStatEnable);
 	i2c_clear_int(regs);
-	return i2c_wait_for_idle(regs);
+	return i2c_wait_for_idle(regs, I2C_TIMEOUT_US);
 }
 
 static int i2c_send_start(struct i2c_regs *regs, int read, int chip)
@@ -547,7 +549,7 @@ static int i2c_send_start(struct i2c_regs *regs, int read, int chip)
 	write8(&regs->stat, mode | I2cStatStartStop | I2cStatEnable);
 	i2c_clear_int(regs);
 
-	if (i2c_wait_for_int(regs))
+	if (i2c_wait_for_int(regs, I2C_TIMEOUT_US))
 		return 1;
 
 	if (!i2c_got_ack(regs)) {
@@ -569,7 +571,7 @@ static int i2c_xmit_buf(struct i2c_regs *regs, uint8_t *data, int len)
 		write8(&regs->ds, data[i]);
 
 		i2c_clear_int(regs);
-		if (i2c_wait_for_int(regs))
+		if (i2c_wait_for_int(regs, CONFIG_I2C_TRANSFER_TIMEOUT_US))
 			return 1;
 
 		if (!i2c_got_ack(regs)) {
@@ -593,7 +595,7 @@ static int i2c_recv_buf(struct i2c_regs *regs, uint8_t *data, int len)
 			i2c_ack_disable(regs);
 
 		i2c_clear_int(regs);
-		if (i2c_wait_for_int(regs))
+		if (i2c_wait_for_int(regs, CONFIG_I2C_TRANSFER_TIMEOUT_US))
 			return 1;
 
 		data[i] = read8(&regs->ds);
@@ -611,7 +613,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments, int count)
 	struct i2c_regs *regs = i2c->regs;
 	int res = 0;
 
-	if (!regs || i2c_wait_for_idle(regs))
+	if (!regs || i2c_wait_for_idle(regs, I2C_TIMEOUT_US))
 		return 1;
 
 	write8(&regs->stat, I2cStatMasterXmit | I2cStatEnable);

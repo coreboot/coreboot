@@ -13,6 +13,8 @@
 
 /* Use a ~10ms timeout for various operations */
 #define DW_I2C_TIMEOUT_US		10000
+/* Timeout for waiting for FIFO to flush */
+#define DW_I2C_FLUSH_TIMEOUT_US		160000
 
 /* High and low times in different speed modes (in ns) */
 enum {
@@ -290,7 +292,7 @@ static enum cb_err dw_i2c_wait_for_bus_idle(struct dw_i2c_regs *regs)
 	struct stopwatch sw;
 
 	/* Start timeout for up to 16 bytes in FIFO */
-	stopwatch_init_usecs_expire(&sw, 16 * DW_I2C_TIMEOUT_US);
+	stopwatch_init_usecs_expire(&sw, DW_I2C_FLUSH_TIMEOUT_US);
 
 	while (!stopwatch_expired(&sw)) {
 		uint32_t status = read32(&regs->status);
@@ -316,7 +318,7 @@ static enum cb_err dw_i2c_transfer_byte(struct dw_i2c_regs *regs,
 	struct stopwatch sw;
 	uint32_t cmd = CMD_DATA_CMD; /* Read op */
 
-	stopwatch_init_usecs_expire(&sw, DW_I2C_TIMEOUT_US);
+	stopwatch_init_usecs_expire(&sw, CONFIG_I2C_TRANSFER_TIMEOUT_US);
 
 	if (!(segment->flags & I2C_M_RD)) {
 		/* Write op only: Wait for FIFO not full */
@@ -409,7 +411,7 @@ static enum cb_err _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segm
 	}
 
 	/* Wait for interrupt status to indicate transfer is complete */
-	stopwatch_init_usecs_expire(&sw, DW_I2C_TIMEOUT_US);
+	stopwatch_init_usecs_expire(&sw, CONFIG_I2C_TRANSFER_TIMEOUT_US);
 	while (!(read32(&regs->raw_intr_stat) & INTR_STAT_STOP_DET)) {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "I2C stop bit not received\n");
@@ -436,7 +438,7 @@ static enum cb_err _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segm
 	}
 
 	/* Flush the RX FIFO in case it is not empty */
-	stopwatch_init_usecs_expire(&sw, 16 * DW_I2C_TIMEOUT_US);
+	stopwatch_init_usecs_expire(&sw, DW_I2C_FLUSH_TIMEOUT_US);
 	while (read32(&regs->status) & STATUS_RX_FIFO_NOT_EMPTY) {
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "I2C timeout flushing RX FIFO\n");

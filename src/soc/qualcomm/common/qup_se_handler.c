@@ -149,15 +149,14 @@ void qup_s_cancel_and_abort(unsigned int bus)
 	}
 }
 
-int qup_handle_transfer(unsigned int bus, const void *dout, void *din, int size)
+int qup_handle_transfer(unsigned int bus, const void *dout, void *din, int size,
+			struct stopwatch *timeout)
 {
 	unsigned int m_irq;
-	struct stopwatch sw;
 	unsigned int rx_rem_bytes = din ? size : 0;
 	unsigned int tx_rem_bytes = dout ? size : 0;
 	struct qup_regs *regs = qup[bus].regs;
 
-	stopwatch_init_msecs_expire(&sw, 1000);
 	do {
 		m_irq = qup_wait_for_m_irq(bus);
 		if ((m_irq & M_RX_FIFO_WATERMARK_EN) ||
@@ -172,7 +171,7 @@ int qup_handle_transfer(unsigned int bus, const void *dout, void *din, int size)
 			break;
 		}
 		write32(&regs->geni_m_irq_clear, m_irq);
-	} while (!stopwatch_expired(&sw));
+	} while (!stopwatch_expired(timeout));
 
 	if (!(m_irq & M_CMD_DONE_EN) || tx_rem_bytes || rx_rem_bytes) {
 		printk(BIOS_INFO, "%s:Error: Transfer failed\n", __func__);

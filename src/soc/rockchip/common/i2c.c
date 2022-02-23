@@ -114,7 +114,6 @@ static int i2c_read(struct rk_i2c_regs *reg_addr, struct i2c_msg segment)
 {
 	int res = 0;
 	uint8_t *data = segment.buf;
-	int timeout = I2C_TIMEOUT_US;
 	unsigned int bytes_remaining = segment.len;
 	unsigned int con = 0;
 
@@ -122,6 +121,7 @@ static int i2c_read(struct rk_i2c_regs *reg_addr, struct i2c_msg segment)
 	write32(&reg_addr->i2c_mrxraddr, 0);
 	con = I2C_MODE_TRX | I2C_EN | I2C_ACT2NAK;
 	while (bytes_remaining) {
+		int timeout = CONFIG_I2C_TRANSFER_TIMEOUT_US;
 		size_t size = MIN(bytes_remaining, 32);
 		bytes_remaining -= size;
 		if (!bytes_remaining)
@@ -132,7 +132,6 @@ static int i2c_read(struct rk_i2c_regs *reg_addr, struct i2c_msg segment)
 		write32(&reg_addr->i2c_con, con);
 		write32(&reg_addr->i2c_mrxcnt, size);
 
-		timeout = I2C_TIMEOUT_US;
 		while (timeout--) {
 			if (read32(&reg_addr->i2c_ipd) & I2C_NAKRCVI) {
 				write32(&reg_addr->i2c_mrxcnt, 0);
@@ -161,7 +160,6 @@ static int i2c_write(struct rk_i2c_regs *reg_addr, struct i2c_msg segment)
 {
 	int res = 0;
 	uint8_t *data = segment.buf;
-	int timeout = I2C_TIMEOUT_US;
 	int bytes_remaining = segment.len + 1;
 
 	/* Prepend one byte for the slave address to the transfer. */
@@ -169,6 +167,7 @@ static int i2c_write(struct rk_i2c_regs *reg_addr, struct i2c_msg segment)
 	int prefsz = 1;
 
 	while (bytes_remaining) {
+		int timeout = CONFIG_I2C_TRANSFER_TIMEOUT_US;
 		size_t size = MIN(bytes_remaining, 32);
 		buffer_to_fifo32_prefix(data, prefix, prefsz, size,
 					&reg_addr->txdata, 4, 4);
@@ -180,7 +179,6 @@ static int i2c_write(struct rk_i2c_regs *reg_addr, struct i2c_msg segment)
 			I2C_EN | I2C_MODE_TX | I2C_ACT2NAK);
 		write32(&reg_addr->i2c_mtxcnt, size);
 
-		timeout = I2C_TIMEOUT_US;
 		while (timeout--) {
 			if (read32(&reg_addr->i2c_ipd) & I2C_NAKRCVI) {
 				write32(&reg_addr->i2c_mtxcnt, 0);

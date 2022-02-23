@@ -12,6 +12,7 @@
 #include <delay.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>
+#include <timer.h>
 
 #define TWSI_THP		24
 
@@ -348,17 +349,15 @@ static u8 twsi_read_status(void *baseaddr)
  *
  * @return	0 for success, 1 if timeout
  */
-static int twsi_wait(void *baseaddr)
+static int twsi_wait(void *baseaddr, struct stopwatch *timeout)
 {
-	unsigned long timeout = 500000;
 	u8 twsi_ctl;
 
 	printk(BIOS_SPEW, "%s(%p)\n", __func__, baseaddr);
 	do {
 		twsi_ctl = twsi_read_ctl(baseaddr);
 		twsi_ctl &= TWSI_CTL_IFLG;
-		timeout--;
-	} while (!twsi_ctl && timeout > 0);
+	} while (!twsi_ctl && !stopwatch_expired(timeout));
 
 	printk(BIOS_SPEW, "  return: %u\n", !twsi_ctl);
 	return !twsi_ctl;
@@ -438,10 +437,12 @@ static int twsi_start(void *baseaddr)
 {
 	int result;
 	u8 stat;
+	struct stopwatch timeout;
 
 	printk(BIOS_SPEW, "%s(%p)\n", __func__, baseaddr);
+	stopwatch_init_usecs_expire(&timeout, CONFIG_I2C_TRANSFER_TIMEOUT_US);
 	twsi_write_ctl(baseaddr, TWSI_CTL_STA | TWSI_CTL_ENAB);
-	result = twsi_wait(baseaddr);
+	result = twsi_wait(baseaddr, &timeout);
 	if (result) {
 		stat = twsi_read_status(baseaddr);
 		printk(BIOS_SPEW, "%s: result: 0x%x, status: 0x%x\n", __func__,
@@ -475,9 +476,11 @@ static int twsi_write_data(void *baseaddr, const u8 slave_addr,
 	union twsx_sw_twsi twsi_sw;
 	unsigned int curr = 0;
 	int result;
+	struct stopwatch timeout;
 
 	printk(BIOS_SPEW, "%s(%p, 0x%x, %p, 0x%x)\n", __func__, baseaddr,
 	       slave_addr, buffer, length);
+	stopwatch_init_usecs_expire(&timeout, CONFIG_I2C_TRANSFER_TIMEOUT_US);
 	result = twsi_start(baseaddr);
 	if (result) {
 		printk(BIOS_ERR, "%s: Could not start BUS transaction\n",
@@ -485,7 +488,7 @@ static int twsi_write_data(void *baseaddr, const u8 slave_addr,
 		return -1;
 	}
 
-	result = twsi_wait(baseaddr);
+	result = twsi_wait(baseaddr, &timeout);
 	if (result) {
 		printk(BIOS_ERR, "%s: wait failed\n", __func__);
 		return result;
@@ -500,7 +503,7 @@ static int twsi_write_data(void *baseaddr, const u8 slave_addr,
 	twsi_write_ctl(baseaddr, TWSI_CTL_ENAB);
 
 	printk(BIOS_SPEW, "%s: Waiting\n", __func__);
-	result = twsi_wait(baseaddr);
+	result = twsi_wait(baseaddr, &timeout);
 	if (result) {
 		printk(BIOS_ERR, "%s: Timed out writing slave address 0x%x\n",
 		      __func__, slave_addr);
@@ -521,7 +524,7 @@ static int twsi_write_data(void *baseaddr, const u8 slave_addr,
 		twsi_write_sw(baseaddr, twsi_sw);
 		twsi_write_ctl(baseaddr, TWSI_CTL_ENAB);
 
-		result = twsi_wait(baseaddr);
+		result = twsi_wait(baseaddr, &timeout);
 		if (result) {
 			printk(BIOS_ERR, "%s: Timed out writing data to 0x%x\n",
 			      __func__, slave_addr);
@@ -549,16 +552,18 @@ static int twsi_read_data(void *baseaddr, const u8 slave_addr,
 	union twsx_sw_twsi twsi_sw;
 	unsigned int curr = 0;
 	int result;
+	struct stopwatch timeout;
 
 	printk(BIOS_SPEW, "%s(%p, 0x%x, %p, %u)\n", __func__, baseaddr,
 	       slave_addr, buffer, length);
+	stopwatch_init_usecs_expire(&timeout, CONFIG_I2C_TRANSFER_TIMEOUT_US);
 	result = twsi_start(baseaddr);
 	if (result) {
 		printk(BIOS_ERR, "%s: start failed\n", __func__);
 		return result;
 	}
 
-	result = twsi_wait(baseaddr);
+	result = twsi_wait(baseaddr, &timeout);
 	if (result) {
 		printk(BIOS_ERR, "%s: wait failed\n", __func__);
 		return result;
@@ -574,7 +579,7 @@ static int twsi_read_data(void *baseaddr, const u8 slave_addr,
 	twsi_write_sw(baseaddr, twsi_sw);
 	twsi_write_ctl(baseaddr, TWSI_CTL_ENAB);
 
-	result = twsi_wait(baseaddr);
+	result = twsi_wait(baseaddr, &timeout);
 	if (result) {
 		printk(BIOS_ERR, "%s: waiting for sending addr failed\n", __func__);
 		return result;
@@ -590,7 +595,7 @@ static int twsi_read_data(void *baseaddr, const u8 slave_addr,
 		twsi_write_ctl(baseaddr, TWSI_CTL_ENAB |
 				((curr < length - 1) ? TWSI_CTL_AAK : 0));
 
-		result = twsi_wait(baseaddr);
+		result = twsi_wait(baseaddr, &timeout);
 		if (result) {
 			printk(BIOS_ERR, "%s: waiting for data failed\n",
 			       __func__);

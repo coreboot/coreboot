@@ -463,6 +463,6 @@ u32 qup_wait_for_s_irq(unsigned int bus);
 void qup_m_cancel_and_abort(unsigned int bus);
 void qup_s_cancel_and_abort(unsigned int bus);
 int qup_handle_transfer(unsigned int bus, const void *dout, void *din,
-	int size);
+	int size, struct stopwatch *timeout);
 
 #endif /* __SOC_COMMON_QCOM_QUP_SE_H__ */

@@ -906,6 +906,14 @@ config SOFTWARE_I2C
 	  I2C controller is not (yet) available. The platform code needs to
 	  provide bindings to manually toggle I2C lines.
 
+config I2C_TRANSFER_TIMEOUT_US
+	int "I2C transfer timeout in microseconds"
+	default 500000
+	help
+	  Timeout for a read/write transfers on the I2C bus, that is, the
+	  maximum time a device could stretch clock bits before the transfer
+	  is aborted and an error returned.
+
 config RESOURCE_ALLOCATOR_V3
 	bool
 	default n

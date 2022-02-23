@@ -239,7 +239,7 @@ static int mtk_i2c_transfer(uint8_t bus, struct i2c_msg *seg,
 	/* start transfer transaction */
 	write32(&regs->start, 0x1);
 
-	stopwatch_init_msecs_expire(&sw, 100);
+	stopwatch_init_usecs_expire(&sw, CONFIG_I2C_TRANSFER_TIMEOUT_US);
 
 	/* polling mode : see if transaction complete */
 	while (1) {

@@ -16,11 +16,6 @@
 #define APU_I2C2_BASE			0xfedc4000
 #define APU_I2C3_BASE			0xfedc5000
 
-#include <arch/hpet.h> /* This will be removed in a follow-up patch */
-#if CONFIG_HPET_ADDRESS != HPET_BASE_ADDRESS
-#error HPET address must be 0xfed00000
-#endif
-
 #define APU_UART0_BASE			0xfedc6000
 #define APU_UART1_BASE			0xfedc8000
 

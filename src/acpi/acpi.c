@@ -18,6 +18,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_ivrs.h>
 #include <acpi/acpigen.h>
+#include <arch/hpet.h>
 #include <arch/mmio.h>
 #include <device/pci.h>
 #include <cbmem.h>
@@ -848,10 +849,10 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	addr->space_id = ACPI_ADDRESS_SPACE_MEMORY;
 	addr->bit_width = 64;
 	addr->bit_offset = 0;
-	addr->addrl = CONFIG_HPET_ADDRESS & 0xffffffff;
-	addr->addrh = ((unsigned long long)CONFIG_HPET_ADDRESS) >> 32;
+	addr->addrl = HPET_BASE_ADDRESS & 0xffffffff;
+	addr->addrh = ((unsigned long long)HPET_BASE_ADDRESS) >> 32;
 
-	hpet->id = read32p(CONFIG_HPET_ADDRESS);
+	hpet->id = read32p(HPET_BASE_ADDRESS);
 	hpet->number = 0;
 	hpet->min_tick = CONFIG_HPET_MIN_TICKS;
 

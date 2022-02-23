@@ -191,10 +191,6 @@ config CMOS_DEFAULT_FILE
 	default "src/mainboard/\$(MAINBOARDDIR)/cmos.default"
 	depends on HAVE_CMOS_DEFAULT
 
-config HPET_ADDRESS
-	hex
-	default 0xfed00000
-
 config HPET_MIN_TICKS
 	hex
 

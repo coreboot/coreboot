@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h>
+
 // Intel LPC Bus Device  - 0:1f.0
 
 Device (LPCB)
@@ -60,7 +62,7 @@ Device (LPCB)
 
 		Name(BUF0, ResourceTemplate()
 		{
-			Memory32Fixed(ReadOnly, CONFIG_HPET_ADDRESS, 0x400, FED0)
+			Memory32Fixed(ReadOnly, HPET_BASE_ADDRESS, 0x400, FED0)
 		})
 
 		Method (_STA, 0)	// Device Status
@@ -73,15 +75,15 @@ Device (LPCB)
 			If (HPTE) {
 				CreateDWordField(BUF0, \_SB.PCI0.LPCB.HPET.FED0._BAS, HPT0)
 				If (HPAS == 1) {
-					HPT0 = CONFIG_HPET_ADDRESS + 0x1000
+					HPT0 = HPET_BASE_ADDRESS + 0x1000
 				}
 
 				If (HPAS == 2) {
-					HPT0 = CONFIG_HPET_ADDRESS + 0x2000
+					HPT0 = HPET_BASE_ADDRESS + 0x2000
 				}
 
 				If (HPAS == 3) {
-					HPT0 = CONFIG_HPET_ADDRESS + 0x3000
+					HPT0 = HPET_BASE_ADDRESS + 0x3000
 				}
 			}
 

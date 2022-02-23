@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h>
 #include <console/console.h>
 #include <console/usb.h>
 #include <string.h>
@@ -351,7 +352,7 @@ void perform_raminit(const int s3resume)
 		.epbar			= CONFIG_FIXED_EPBAR_MMIO_BASE,
 		.pciexbar		= CONFIG_ECAM_MMCONF_BASE_ADDRESS,
 		.smbusbar		= CONFIG_FIXED_SMBUS_IO_BASE,
-		.hpet_address		= CONFIG_HPET_ADDRESS,
+		.hpet_address		= HPET_BASE_ADDRESS,
 		.rcba			= CONFIG_FIXED_RCBA_MMIO_BASE,
 		.pmbase			= DEFAULT_PMBASE,
 		.gpiobase		= DEFAULT_GPIOBASE,

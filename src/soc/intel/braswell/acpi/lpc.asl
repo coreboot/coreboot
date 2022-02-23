@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h>
+
 /* Intel LPC Bus Device  - 0:1f.0 */
 
 Device (LPCB)
@@ -55,7 +57,7 @@ Device (LPCB)
 
 		Name(_CRS, ResourceTemplate()
 		{
-			Memory32Fixed(ReadOnly, CONFIG_HPET_ADDRESS, 0x400)
+			Memory32Fixed(ReadOnly, HPET_BASE_ADDRESS, 0x400)
 		})
 	}
 #endif

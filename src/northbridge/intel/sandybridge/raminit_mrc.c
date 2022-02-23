@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h>
 #include <console/console.h>
 #include <console/usb.h>
 #include <cf9_reset.h>
@@ -235,7 +236,7 @@ static void northbridge_fill_pei_data(struct pei_data *pei_data)
 	pei_data->dmibar       = CONFIG_FIXED_DMIBAR_MMIO_BASE;
 	pei_data->epbar        = CONFIG_FIXED_EPBAR_MMIO_BASE;
 	pei_data->pciexbar     = CONFIG_ECAM_MMCONF_BASE_ADDRESS;
-	pei_data->hpet_address = CONFIG_HPET_ADDRESS;
+	pei_data->hpet_address = HPET_BASE_ADDRESS;
 	pei_data->thermalbase  = 0xfed08000;
 	pei_data->system_type  = !(get_platform_type() == PLATFORM_MOBILE);
 	pei_data->tseg_size    = CONFIG_SMM_TSEG_SIZE;

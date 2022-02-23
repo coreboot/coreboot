@@ -10,11 +10,6 @@
 #define GNB_IO_APIC_ADDR		0xfec01000
 #define SPI_BASE_ADDRESS		0xfec10000
 
-#include <arch/hpet.h> /* This will be removed in a follow-up patch */
-#if CONFIG_HPET_ADDRESS != HPET_BASE_ADDRESS
-#error HPET address must be 0xfed00000
-#endif
-
 /* FCH AL2AHB Registers */
 #define ALINK_AHB_ADDRESS		0xfedc0000
 #define AL2AHB_CONTROL_CLK_OFFSET	0x10

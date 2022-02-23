@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h>
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>
@@ -123,7 +124,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 		.smbusbar = CONFIG_FIXED_SMBUS_IO_BASE,
 		.wdbbar = 0x4000000,
 		.wdbsize = 0x1000,
-		.hpet_address = CONFIG_HPET_ADDRESS,
+		.hpet_address = HPET_BASE_ADDRESS,
 		.rcba = (uintptr_t)DEFAULT_RCBA,
 		.pmbase = DEFAULT_PMBASE,
 		.gpiobase = DEFAULT_GPIOBASE,

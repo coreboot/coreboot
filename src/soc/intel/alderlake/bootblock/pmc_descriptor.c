@@ -11,8 +11,6 @@
 #include <soc/bootblock.h>
 #include <types.h>
 
-#define SI_DESC_REGION		"SI_DESC"
-#define SI_DESC_REGION_SZ	4096
 #define PMC_DESC_7_BYTE3	0xc32
 
 /* Flash Master 1 : HOST/BIOS */
@@ -44,18 +42,19 @@ static int is_descriptor_writeable(uint8_t *desc)
 /* It updates PMC Descriptor in the Descriptor Region */
 void configure_pmc_descriptor(void)
 {
-	uint8_t si_desc_buf[SI_DESC_REGION_SZ];
+	uint8_t si_desc_buf[CONFIG_SI_DESC_REGION_SZ];
 	struct region_device desc_rdev;
 
 	if (cpu_get_cpuid() != CPUID_ALDERLAKE_A0)
 		return;
 
-	if (fmap_locate_area_as_rdev_rw(SI_DESC_REGION, &desc_rdev) < 0) {
-		printk(BIOS_ERR, "Failed to locate %s in the FMAP\n", SI_DESC_REGION);
+	if (fmap_locate_area_as_rdev_rw(CONFIG_SI_DESC_REGION, &desc_rdev) < 0) {
+		printk(BIOS_ERR, "Failed to locate %s in the FMAP\n", CONFIG_SI_DESC_REGION);
 		return;
 	}
 
-	if (rdev_readat(&desc_rdev, si_desc_buf, 0, SI_DESC_REGION_SZ) != SI_DESC_REGION_SZ) {
+	if (rdev_readat(&desc_rdev, si_desc_buf, 0, CONFIG_SI_DESC_REGION_SZ) !=
+			CONFIG_SI_DESC_REGION_SZ) {
 		printk(BIOS_ERR, "Failed to read Descriptor Region from SPI Flash\n");
 		return;
 	}
@@ -70,13 +69,13 @@ void configure_pmc_descriptor(void)
 
 	si_desc_buf[PMC_DESC_7_BYTE3] = 0x44;
 
-	if (rdev_eraseat(&desc_rdev, 0, SI_DESC_REGION_SZ) != SI_DESC_REGION_SZ) {
+	if (rdev_eraseat(&desc_rdev, 0, CONFIG_SI_DESC_REGION_SZ) != CONFIG_SI_DESC_REGION_SZ) {
 		printk(BIOS_ERR, "Failed to erase Descriptor Region area\n");
 		return;
 	}
 
-	if (rdev_writeat(&desc_rdev, si_desc_buf, 0, SI_DESC_REGION_SZ)
-			!= SI_DESC_REGION_SZ) {
+	if (rdev_writeat(&desc_rdev, si_desc_buf, 0, CONFIG_SI_DESC_REGION_SZ)
+			!= CONFIG_SI_DESC_REGION_SZ) {
 		printk(BIOS_ERR, "Failed to update Descriptor Region\n");
 		return;
 	}

@@ -30,7 +30,6 @@ config EHCI_BAR
 	default 0xfef00000
 
 config HPET_MIN_TICKS
-	hex
 	default 0x80
 
 ## Some enterprise variants may require an IFD

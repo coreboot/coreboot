@@ -49,7 +49,6 @@ config SERIRQ_CONTINUOUS_MODE
 	  operated in continuous mode.
 
 config HPET_MIN_TICKS
-	hex
 	default 0x80
 
 config HIDE_MEI_ON_ERROR

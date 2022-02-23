@@ -195,6 +195,9 @@ config HPET_ADDRESS
 	hex
 	default 0xfed00000
 
+config HPET_MIN_TICKS
+	hex
+
 config C_ENV_BOOTBLOCK_SIZE
 	hex
 	default 0x40000 if !FIXED_BOOTBLOCK_SIZE

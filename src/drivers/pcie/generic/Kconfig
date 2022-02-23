@@ -5,7 +5,6 @@ config DRIVERS_PCIE_GENERIC
 	help
 	  This driver allows attaching arbitrary ACPI properties to
 	  arbitrary PCI root ports or devices. Currently it supports one
-	  property, "UntrustedDevice". This property indicates to the
-	  operating system that the PCIe device may be considered
-	  untrusted, and appropriate policies, e.g. IOMMU isolation,
-	  should take place.
+	  property, "DmaProperty", which indicates to the operating system that
+	  the PCIe device may be considered untrusted, and appropriate policies,
+	  e.g. IOMMU isolation, should take place.

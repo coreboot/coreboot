@@ -515,13 +515,13 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 		/* Wake capabilities */
 		acpigen_write_PRW(config->wake, ACPI_S3);
 
-		/* Add _DSD for UntrustedDevice property. */
+		/* Add _DSD for DmaProperty property. */
 		if (config->is_untrusted) {
 			struct acpi_dp *dsd, *pkg;
 
 			dsd = acpi_dp_new_table("_DSD");
 			pkg = acpi_dp_new_table(ACPI_DSD_UNTRUSTED_UUID);
-			acpi_dp_add_integer(pkg, "UntrustedDevice", 1);
+			acpi_dp_add_integer(pkg, "DmaProperty", 1);
 			acpi_dp_add_package(dsd, pkg);
 			acpi_dp_write(dsd);
 		}

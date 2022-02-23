@@ -34,7 +34,7 @@ static void pcie_generic_fill_ssdt(const struct device *dev)
 	acpigen_write_ADR_pci_device(dev);
 
 	dsd = acpi_dp_new_table("_DSD");
-	acpi_dp_add_integer(dsd, "UntrustedDevice", 1);
+	acpi_dp_add_integer(dsd, "DmaProperty", 1);
 	acpi_dp_write(dsd);
 
 	acpigen_write_device_end();

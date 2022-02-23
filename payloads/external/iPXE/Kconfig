@@ -31,12 +31,12 @@ choice
 	depends on BUILD_IPXE
 
 config IPXE_STABLE
-	bool "2019.3"
+	bool "2022.1"
 	help
 	  iPXE uses a rolling release with no stable version, for
 	  reproducibility, use the last commit of a given month as the
 	  'stable' version.
-	  This is iPXE from the end of March, 2019.
+	  This is iPXE from the end of January, 2022.
 
 config IPXE_MASTER
 	bool "master"

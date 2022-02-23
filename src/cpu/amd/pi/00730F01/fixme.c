@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
@@ -32,7 +33,7 @@ void amd_initcpuio(void)
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x80);
 	/* lowest NP address is HPET at FED00000 */
-	PciData = (0xFED00000 >> 8) | 3;
+	PciData = (HPET_BASE_ADDRESS >> 8) | 3;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
 	/* Map the remaining PCI hole as posted MMIO */

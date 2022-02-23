@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <commonlib/bsd/helpers.h>
@@ -26,7 +27,7 @@ static void add_fixed_resources(struct device *dev, int index)
 	struct resource *resource;
 
 	resource = new_resource(dev, index++);
-	resource->base = (resource_t) 0xfed00000;
+	resource->base = (resource_t) HPET_BASE_ADDRESS;
 	resource->size = (resource_t) 0x00100000;
 	resource->flags = IORESOURCE_MEM
 			| IORESOURCE_RESERVE

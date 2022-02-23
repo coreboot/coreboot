@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <acpi/acpi.h>
+#include <arch/hpet.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
 #include <cpu/intel/model_2065x/model_2065x.h>
@@ -48,7 +49,7 @@ static void add_fixed_resources(struct device *dev, int index)
 	   0xff800000-0xffffffff ROM. */
 
 	resource = new_resource(dev, index++);
-	resource->base = (resource_t) 0xfed00000;
+	resource->base = (resource_t) HPET_BASE_ADDRESS;
 	resource->size = (resource_t) 0x00100000;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE | IORESOURCE_FIXED |
 			  IORESOURCE_STORED | IORESOURCE_ASSIGNED;

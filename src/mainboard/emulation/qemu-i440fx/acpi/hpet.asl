@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h>
+
 /****************************************************************
  * HPET
  ****************************************************************/
@@ -8,7 +10,7 @@ Scope(\_SB) {
     Device(HPET) {
         Name(_HID, EISAID("PNP0103"))
         Name(_UID, 0)
-        OperationRegion(HPTM, SystemMemory, 0xFED00000, 0x400)
+        OperationRegion(HPTM, SystemMemory, HPET_BASE_ADDRESS, 0x400)
         Field(HPTM, DWordAcc, Lock, Preserve) {
             VEND, 32,
             PRD, 32,
@@ -27,7 +29,7 @@ Scope(\_SB) {
         }
         Name(_CRS, ResourceTemplate() {
             Memory32Fixed(ReadOnly,
-                0xFED00000,         // Address Base
+                HPET_BASE_ADDRESS,  // Address Base
                 0x00000400,         // Address Length
                 )
         })

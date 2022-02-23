@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h>
 #include <soc/iomap.h>
 
 Name(_HID,EISAID("PNP0A08"))	// PCIe
@@ -120,7 +121,7 @@ Name (MCRS, ResourceTemplate() {
 
 	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 		Cacheable, ReadWrite,
-		0x00000000, 0xfed00000, 0xfedfffff, 0x00000000,
+		0x00000000, HPET_BASE_ADDRESS, 0xfedfffff, 0x00000000,
 		0x00100000,,, PCHR)
 
 	QWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed, NonCacheable, ReadWrite,

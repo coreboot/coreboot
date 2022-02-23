@@ -109,6 +109,39 @@ struct me_fw_ver_resp {
 	struct me_version fitc;
 } __packed;
 
+/* CSE RX and TX error status */
+enum cse_tx_rx_status {
+	/*
+	 * Transmission of HECI message is success or
+	 * Reception of HECI message is success.
+	 */
+	CSE_TX_RX_SUCCESS = 0,
+
+	 /* Timeout to send a message to CSE */
+	CSE_TX_ERR_TIMEOUT = 1,
+
+	/* Timeout to receive the response message from CSE */
+	CSE_RX_ERR_TIMEOUT = 2,
+
+	/*
+	 * Response length doesn't match with expected
+	 * response message length
+	 */
+	CSE_RX_ERR_RESP_LEN_MISMATCH = 3,
+
+	/* CSE is not ready during TX flow */
+	CSE_TX_ERR_CSE_NOT_READY = 4,
+
+	/* CSE is not ready during RX flow */
+	CSE_RX_ERR_CSE_NOT_READY = 5,
+
+	/* Invalid input arguments provided for TX API */
+	CSE_TX_ERR_INPUT = 6,
+
+	/* Invalid input arguments provided for RX API */
+	CSE_RX_ERR_INPUT = 7,
+};
+
 /* CSE recovery sub-error codes */
 enum csme_failure_reason {
 	/* No error */
@@ -300,10 +333,10 @@ void heci_init(uintptr_t bar);
  * Send message from BIOS_HOST_ADDR to cse_addr.
  * Sends snd_msg of size snd_sz, and reads message into buffer pointed by
  * rcv_msg of size rcv_sz
- * Returns 0 on failure and 1 on success.
+ * Returns CSE_TX_RX_SUCCESS on success and other enum values on failure scenarios.
  */
-int heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg, size_t *rcv_sz,
-									uint8_t cse_addr);
+enum cse_tx_rx_status heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg,
+					size_t *rcv_sz,	uint8_t cse_addr);
 
 /*
  * Attempt device reset. This is useful and perhaps only thing left to do when

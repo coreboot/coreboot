@@ -143,7 +143,7 @@ bool cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf_rsp)
 
 	size_t resp_size = sizeof(struct cse_boot_perf_rsp);
 
-	if (!heci_send_receive(&req, sizeof(req), boot_perf_rsp, &resp_size,
+	if (heci_send_receive(&req, sizeof(req), boot_perf_rsp, &resp_size,
 									HECI_MKHI_ADDR)) {
 		printk(BIOS_ERR, "cse_lite: Could not get boot performance data\n");
 		return false;
@@ -241,7 +241,7 @@ static bool cse_get_bp_info(struct get_bp_info_rsp *bp_info_rsp)
 
 	size_t resp_size = sizeof(struct get_bp_info_rsp);
 
-	if (!heci_send_receive(&info_req, sizeof(info_req), bp_info_rsp, &resp_size,
+	if (heci_send_receive(&info_req, sizeof(info_req), bp_info_rsp, &resp_size,
 									HECI_MKHI_ADDR)) {
 		printk(BIOS_ERR, "cse_lite: Could not get partition info\n");
 		return false;
@@ -294,7 +294,7 @@ static bool cse_set_next_boot_partition(enum boot_partition_id bp)
 	struct mkhi_hdr switch_resp;
 	size_t sw_resp_sz = sizeof(struct mkhi_hdr);
 
-	if (!heci_send_receive(&switch_req, sizeof(switch_req), &switch_resp, &sw_resp_sz,
+	if (heci_send_receive(&switch_req, sizeof(switch_req), &switch_resp, &sw_resp_sz,
 									HECI_MKHI_ADDR))
 		return false;
 
@@ -331,7 +331,7 @@ static bool cse_data_clear_request(const struct cse_bp_info *cse_bp_info)
 	struct mkhi_hdr data_clr_rsp;
 	size_t data_clr_rsp_sz = sizeof(data_clr_rsp);
 
-	if (!heci_send_receive(&data_clr_rq, sizeof(data_clr_rq), &data_clr_rsp,
+	if (heci_send_receive(&data_clr_rq, sizeof(data_clr_rq), &data_clr_rsp,
 				&data_clr_rsp_sz, HECI_MKHI_ADDR)) {
 		return false;
 	}

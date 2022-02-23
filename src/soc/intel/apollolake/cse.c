@@ -78,7 +78,7 @@ static int read_cse_file(const char *path, void *buff, size_t *size,
 
 	reply_size = sizeof(rmsg);
 
-	if (!heci_send_receive(&msg, sizeof(msg), &rmsg, &reply_size, HECI_MKHI_ADDR)) {
+	if (heci_send_receive(&msg, sizeof(msg), &rmsg, &reply_size, HECI_MKHI_ADDR)) {
 		printk(BIOS_ERR, "HECI: Failed to read file\n");
 		return 0;
 	}

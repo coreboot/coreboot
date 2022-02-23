@@ -34,7 +34,7 @@ static bool cse_disable_mei_bus(void)
 
 	size_t reply_sz = sizeof(reply);
 
-	if (!heci_send_receive(&msg, sizeof(msg), &reply, &reply_sz, HECI_MEI_ADDR)) {
+	if (heci_send_receive(&msg, sizeof(msg), &reply, &reply_sz, HECI_MEI_ADDR)) {
 		printk(BIOS_ERR, "HECI: Failed to Disable MEI bus\n");
 		return false;
 	}
@@ -98,7 +98,7 @@ static enum cse_eop_result cse_send_eop(void)
 
 	printk(BIOS_INFO, "HECI: Sending End-of-Post\n");
 
-	if (!heci_send_receive(&msg, sizeof(msg), &resp, &resp_size, HECI_MKHI_ADDR)) {
+	if (heci_send_receive(&msg, sizeof(msg), &resp, &resp_size, HECI_MKHI_ADDR)) {
 		printk(BIOS_ERR, "HECI: EOP send/receive fail\n");
 		return CSE_EOP_RESULT_ERROR;
 	}

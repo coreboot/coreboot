@@ -407,7 +407,7 @@ send_one_message(uint32_t hdr, const void *buff)
  * Returns 1 on success and 0 otherwise.
  * In case of error heci_reset() may be required.
  */
-static int
+static enum cse_tx_rx_status
 heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t client_addr)
 {
 	uint8_t retry;
@@ -416,7 +416,7 @@ heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t client_addr)
 	const uint8_t *p;
 
 	if (!msg || !len)
-		return 0;
+		return CSE_TX_ERR_INPUT;
 
 	clear_int();
 
@@ -455,40 +455,41 @@ heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t client_addr)
 		} while (remaining > 0 && sent != 0);
 
 		if (!remaining)
-			return 1;
+			return CSE_TX_RX_SUCCESS;
 	}
-	return 0;
+
+	return CSE_TX_ERR_CSE_NOT_READY;
 }
 
-static size_t
-recv_one_message(uint32_t *hdr, void *buff, size_t maxlen)
+static enum cse_tx_rx_status
+recv_one_message(uint32_t *hdr, void *buff, size_t maxlen, size_t *recv_len)
 {
 	uint32_t reg, *p = buff;
-	size_t recv_slots, recv_len, remainder, i;
+	size_t recv_slots, remainder, i;
 
 	/* first get the header */
 	if (!wait_read_slots(1))
-		return 0;
+		return CSE_RX_ERR_TIMEOUT;
 
 	*hdr = read_slot();
-	recv_len = hdr_get_length(*hdr);
+	*recv_len = hdr_get_length(*hdr);
 
-	if (!recv_len)
+	if (!*recv_len)
 		printk(BIOS_WARNING, "HECI: message is zero-sized\n");
 
-	recv_slots = bytes_to_slots(recv_len);
+	recv_slots = bytes_to_slots(*recv_len);
 
 	i = 0;
-	if (recv_len > maxlen) {
+	if (*recv_len > maxlen) {
 		printk(BIOS_ERR, "HECI: response is too big\n");
-		return 0;
+		return CSE_RX_ERR_RESP_LEN_MISMATCH;
 	}
 
 	/* wait for the rest of messages to arrive */
 	wait_read_slots(recv_slots);
 
 	/* fetch whole slots first */
-	while (i < ALIGN_DOWN(recv_len, SLOT_SIZE)) {
+	while (i < ALIGN_DOWN(*recv_len, SLOT_SIZE)) {
 		*p++ = read_slot();
 		i += SLOT_SIZE;
 	}
@@ -498,16 +499,15 @@ recv_one_message(uint32_t *hdr, void *buff, size_t maxlen)
 	 * we received junk
 	 */
 	if (!cse_ready())
-		return 0;
+		return CSE_RX_ERR_CSE_NOT_READY;
 
-	remainder = recv_len % SLOT_SIZE;
+	remainder = *recv_len % SLOT_SIZE;
 
 	if (remainder) {
 		reg = read_slot();
 		memcpy(p, &reg, remainder);
 	}
-
-	return recv_len;
+	return CSE_TX_RX_SUCCESS;
 }
 
 /*
@@ -518,15 +518,16 @@ recv_one_message(uint32_t *hdr, void *buff, size_t maxlen)
  * and 1 on success.
  * In case of error heci_reset() may be required.
  */
-static int heci_receive(void *buff, size_t *maxlen)
+static enum cse_tx_rx_status heci_receive(void *buff, size_t *maxlen)
 {
 	uint8_t retry;
 	size_t left, received;
 	uint32_t hdr = 0;
 	uint8_t *p;
+	enum cse_tx_rx_status ret = CSE_RX_ERR_TIMEOUT;
 
 	if (!buff || !maxlen || !*maxlen)
-		return 0;
+		return CSE_RX_ERR_INPUT;
 
 	clear_int();
 
@@ -544,10 +545,10 @@ static int heci_receive(void *buff, size_t *maxlen)
 		 * complete or we run out of space in caller-provided buffer.
 		 */
 		do {
-			received = recv_one_message(&hdr, p, left);
-			if (!received) {
+			ret = recv_one_message(&hdr, p, left, &received);
+			if (ret) {
 				printk(BIOS_ERR, "HECI: Failed to receive!\n");
-				return 0;
+				return ret;
 			}
 			left -= received;
 			p += received;
@@ -558,27 +559,32 @@ static int heci_receive(void *buff, size_t *maxlen)
 
 		if ((hdr & MEI_HDR_IS_COMPLETE) && received) {
 			*maxlen = p - (uint8_t *) buff;
-			return 1;
+			return CSE_TX_RX_SUCCESS;
 		}
 	}
-	return 0;
+
+	return CSE_RX_ERR_CSE_NOT_READY;
 }
 
-int heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg, size_t *rcv_sz,
-									uint8_t cse_addr)
+enum cse_tx_rx_status heci_send_receive(const void *snd_msg, size_t snd_sz, void *rcv_msg,
+					size_t *rcv_sz, uint8_t cse_addr)
 {
-	if (!heci_send(snd_msg, snd_sz, BIOS_HOST_ADDR, cse_addr)) {
+	enum cse_tx_rx_status ret;
+
+	ret = heci_send(snd_msg, snd_sz, BIOS_HOST_ADDR, cse_addr);
+	if (ret) {
 		printk(BIOS_ERR, "HECI: send Failed\n");
-		return 0;
+		return ret;
 	}
 
 	if (rcv_msg != NULL) {
-		if (!heci_receive(rcv_msg, rcv_sz)) {
+		ret = heci_receive(rcv_msg, rcv_sz);
+		if (ret) {
 			printk(BIOS_ERR, "HECI: receive Failed\n");
-			return 0;
+			return ret;
 		}
 	}
-	return 1;
+	return ret;
 }
 
 /*
@@ -704,7 +710,7 @@ static int cse_request_reset(enum rst_req_type rst_type)
 		status = heci_send_receive(&msg, sizeof(msg), &reply, &reply_size,
 									HECI_MKHI_ADDR);
 
-	printk(BIOS_DEBUG, "HECI: Global Reset %s!\n", status ? "success" : "failure");
+	printk(BIOS_DEBUG, "HECI: Global Reset %s!\n", !status ? "success" : "failure");
 	return status;
 }
 
@@ -777,7 +783,7 @@ int cse_hmrfpo_enable(void)
 		return 0;
 	}
 
-	if (!heci_send_receive(&msg, sizeof(struct hmrfpo_enable_msg),
+	if (heci_send_receive(&msg, sizeof(struct hmrfpo_enable_msg),
 				&resp, &resp_size, HECI_MKHI_ADDR))
 		return 0;
 
@@ -826,7 +832,7 @@ int cse_hmrfpo_get_status(void)
 		return -1;
 	}
 
-	if (!heci_send_receive(&msg, sizeof(struct hmrfpo_get_status_msg),
+	if (heci_send_receive(&msg, sizeof(struct hmrfpo_get_status_msg),
 				&resp, &resp_size, HECI_MKHI_ADDR)) {
 		printk(BIOS_ERR, "HECI: HMRFPO send/receive fail\n");
 		return -1;
@@ -893,7 +899,7 @@ enum cb_err get_me_fw_version(struct me_fw_ver_resp *resp)
 
 	heci_reset();
 
-	if (!heci_send_receive(&fw_ver_msg, sizeof(fw_ver_msg), resp, &resp_size,
+	if (heci_send_receive(&fw_ver_msg, sizeof(fw_ver_msg), resp, &resp_size,
 									HECI_MKHI_ADDR))
 		return CB_ERR;
 
@@ -1171,7 +1177,7 @@ static void cse_set_state(struct device *dev)
 	}
 
 	printk(BIOS_DEBUG, "HECI: ME state change send %s!\n",
-							send ? "success" : "failure");
+							!send ? "success" : "failure");
 	printk(BIOS_DEBUG, "HECI: ME state change result %s!\n",
 							result ? "success" : "failure");
 

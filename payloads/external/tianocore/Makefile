@@ -82,6 +82,12 @@ endif
 
 bootloader = $(word 8,$(subst /, ,$(BUILD_STR)))
 
+ifeq ($(CONFIG_TIANOCORE_CUSTOM),y)
+ifneq ($(CONFIG_TIANOCORE_CUSTOM_BUILD_PARAMS),)
+BUILD_STR += $(CONFIG_TIANOCORE_CUSTOM_BUILD_PARAMS)
+endif
+endif
+
 all: clean build
 
 $(project_dir):

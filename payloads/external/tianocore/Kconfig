@@ -186,4 +186,15 @@ config TIANOCORE_USE_8254_TIMER
 
 endif
 
+if TIANOCORE_CUSTOM
+
+config TIANOCORE_CUSTOM_BUILD_PARAMS
+	string "TianoCore additional custom build parameters"
+	help
+	  Custom TianoCore forks may have different sets of parameters passed
+	  to build command. You may specify additional parameters to the custom
+	  TianoCore build
+
+endif
+
 endif

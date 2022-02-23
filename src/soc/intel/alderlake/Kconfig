@@ -368,4 +368,16 @@ config CSE_BPDT_VERSION
 
 endif
 
+config SI_DESC_REGION
+	string "Descriptor Region name"
+	default "SI_DESC"
+	help
+	  Name of Descriptor Region in the FMAP
+
+config SI_DESC_REGION_SZ
+	int
+	default 4096
+	help
+	  Size of Descriptor Region in the FMAP
+
 endif

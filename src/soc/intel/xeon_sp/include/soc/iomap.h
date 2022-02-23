@@ -26,9 +26,6 @@
 #define VGA_BASE_ADDRESS             0xa0000
 #define VGA_BASE_SIZE                0x20000
 
-/* High Performance Event Timer */
-#define HPET_BASE_ADDRESS            0xfed00000
-
 #define HECI1_BASE_ADDRESS	0xfed1a000
 
 #define PCH_PWRM_BASE_ADDRESS   CONFIG_INTEL_PCH_PWRM_BASE_ADDRESS

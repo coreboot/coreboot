@@ -5,8 +5,6 @@
 
 #include <northbridge/intel/haswell/memmap.h>
 
-#define HPET_BASE_ADDRESS	0xfed00000
-
 #define ACPI_BASE_ADDRESS	0x1000
 #define ACPI_BASE_SIZE		0x100
 

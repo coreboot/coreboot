@@ -15,7 +15,7 @@
 #define GNB_IO_APIC_ADDR		0xfec01000
 #define SPI_BASE_ADDRESS		0xfec10000
 
-#define HPET_BASE_ADDRESS		0xfed00000
+#include <arch/hpet.h> /* This will be removed in a follow-up patch */
 #if CONFIG_HPET_ADDRESS != HPET_BASE_ADDRESS
 #error HPET address must be 0xfed00000
 #endif

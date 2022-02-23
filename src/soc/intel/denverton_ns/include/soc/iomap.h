@@ -16,8 +16,6 @@
 #define ACPI_BASE_ADDRESS DEFAULT_PMBASE
 #define DEFAULT_TCO_BASE 0x400
 
-#define HPET_BASE_ADDRESS	0xfed00000
-
 /* Southbridge internal device MEM BARs (Set to match FSP settings) */
 #define DEFAULT_PCR_BASE 0xfd000000
 #define DEFAULT_PWRM_BASE 0xfe000000

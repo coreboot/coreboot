@@ -4,6 +4,7 @@
 
 #include <acpi/acpi_device.h>
 #include <amdblocks/data_fabric.h>
+#include <arch/hpet.h>
 #include <console/console.h>
 #include <cpu/x86/lapic_def.h>
 #include <device/device.h>

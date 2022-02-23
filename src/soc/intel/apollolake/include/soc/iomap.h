@@ -10,8 +10,6 @@
 #define MCH_BASE_ADDRESS		0xfed10000
 #define MCH_BASE_SIZE			(32 * KiB)
 
-#define HPET_BASE_ADDRESS		0xfed00000
-
 #define ACPI_BASE_ADDRESS		0x400
 #define ACPI_BASE_SIZE			0x100
 #define R_ACPI_PM1_TMR			0x8

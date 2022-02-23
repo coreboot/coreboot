@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpigen.h>
+#include <arch/hpet.h>
 #include <assert.h>
 #include <cbmem.h>
 #include <device/mmio.h>

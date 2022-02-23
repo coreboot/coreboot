@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /* Intel LPC/eSPI Bus Device  - 0:1f.0 */
+#include <arch/hpet.h>
 #include <soc/iomap.h>
 
 Device (LPCB)

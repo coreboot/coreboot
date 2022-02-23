@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h> /* Include this before OEM.h to have HPET_BASE_ADDRESS from arch/x86 */
 #include "SBPLATFORM.h"
 #include "cfg.h"
 #include <OEM.h>

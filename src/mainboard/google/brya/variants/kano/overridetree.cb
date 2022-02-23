@@ -425,6 +425,7 @@ chip soc/intel/alderlake
 				register "generic.enable_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
 				register "generic.enable_delay_ms" = "6"
+				register "generic.enable_off_delay_ms" = "30"
 				register "generic.stop_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
 				register "generic.stop_off_delay_ms" = "1"

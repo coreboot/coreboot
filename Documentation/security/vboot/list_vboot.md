@@ -1,6 +1,7 @@
 # vboot-enabled devices
 
 ## AMD
+- Chausie
 - Majolica
 
 ## Clevo
@@ -29,9 +30,37 @@
 - Panther (ASUS Chromebox CN60)
 - Tricky (Dell Chromebox 3010)
 - Zako (HP Chromebox G1)
+- Agah
+- Anahera
+- Anahera4ES
+- Brask
+- Brya 0
+- Brya4ES
+- Felwinter
+- Gimble
+- Gimble4ES
+- Kano
+- Nivviks
+- Nereid
+- Primus
+- Primus4ES
+- Redrix
+- Redrix4ES
+- Taeko
+- Taeko4ES
+- Taniks
+- Vell
+- Volmar
+- Banshee
+- Crota
+- Moli
+- Kinox
 - Butterfly (HP Pavilion Chromebook 14)
 - Cherry
+- Dojo
 - Tomato
+- Kingler
+- Krabby
 - Banon (Acer Chromebook 15 (CB3-532))
 - Celes (Samsung Chromebook 3)
 - Cyan (Acer Chromebook R11 (C738T))
@@ -70,31 +99,31 @@
 - Nipperkin
 - Dewatt
 - Akemi (IdeaPad Flex 5/5i Chromebook)
+- Ambassador
+- Dooly
 - Dratini (HP Pro c640 Chromebook)
 - Duffy Legacy (32MB)
 - Duffy (ASUS Chromebox 4)
 - Faffy (ASUS Fanless Chromebox)
+- Genesis
 - Hatch
+- Helios (ASUS Chromebook Flip C436FA)
+- Helios_Diskswap
 - Jinlon (HP Elite c1030 Chromebook)
 - Kaisa Legacy (32MB)
 - Kaisa (Acer Chromebox CXI4)
-- Kohaku (Samsung Galaxy Chromebook)
 - Kindred (Acer Chromebook 712)
-- Helios (ASUS Chromebook Flip C436FA)
+- Kohaku (Samsung Galaxy Chromebook)
+- Moonbuggy
 - Mushu
-- Palkia
 - Nightfury (Samsung Galaxy Chromebook 2)
 - Noibat (HP Chromebox G3)
+- Palkia
 - Puff
-- Helios_Diskswap
-- Stryke
-- Wyvern (CTL Chromebox CBx2)
-- Dooly
-- Ambassador
-- Genesis
 - Scout
-- Moonbuggy
+- Wyvern (CTL Chromebox CBx2)
 - Herobrine
+- Herobrine_Rev0
 - Senor
 - Piglin
 - Hoglin
@@ -165,7 +194,6 @@
 - Pyro (Lenovo Thinkpad (Yoga) 11e Chromebook)
 - Sand (Acer Chromebook 15 CB515-1HT/1H)
 - Snappy (HP Chromebook x360 11 G1 EE)
-- Nasher
 - Coral
 - Arcada (Latitude 5300 2-in-1 Chromebook Enterprise)
 - Sarien (Dell Latitude 5400 Chromebook Enterprise)
@@ -215,6 +243,8 @@
 - Alderlake-P RVP with Microchip EC
 - Alderlake-M RVP
 - Alderlake-M RVP with Chrome EC
+- Alderlake-N RVP
+- Alderlake-N RVP with Chrome EC
 - Basking Ridge CRB
 - Coffeelake U SO-DIMM DDR4 RVP
 - Coffeelake H SO-DIMM DDR4 RVP11

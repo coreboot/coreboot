@@ -13,7 +13,6 @@
 #include <types.h>
 
 #define CPUID_EXTENDED_CPU_TOPOLOGY 0x0b
-#define CPUID_EXTENDED_CPU_TOPOLOGY_V2 0x1f
 #define LEVEL_TYPE_CORE 2
 #define LEVEL_TYPE_SMT 1
 
@@ -443,11 +442,7 @@ static void get_cpu_core_thread_bits(uint32_t *core_bits, uint32_t *thread_bits)
 	/* Assert if extended CPU topology not supported */
 	assert(cpuid_max_func >= CPUID_EXTENDED_CPU_TOPOLOGY);
 
-	/* Check for extended CPU topology CPUID support */
-	if (cpuid_max_func >= CPUID_EXTENDED_CPU_TOPOLOGY_V2)
-		cpu_id_op = CPUID_EXTENDED_CPU_TOPOLOGY_V2;
-	else if (cpuid_max_func >= CPUID_EXTENDED_CPU_TOPOLOGY)
-		cpu_id_op = CPUID_EXTENDED_CPU_TOPOLOGY;
+	cpu_id_op = CPUID_EXTENDED_CPU_TOPOLOGY;
 
 	*core_bits = level_num = 0;
 	cpuid_regs = cpuid_ext(cpu_id_op, level_num);

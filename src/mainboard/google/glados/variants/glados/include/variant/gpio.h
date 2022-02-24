@@ -145,7 +145,7 @@ static const struct pad_config gpio_table[] = {
 			/* GPP_D21 */
 			/* GPP_D22 */
 /* I2S_MCLK */		PAD_CFG_NF(GPP_D23, NONE, DEEP, NF1),
-/* SATAXPCI0 */		PAD_CFG_GPI_APIC_HIGH(GPP_E0, NONE, DEEP), /* TPM_PIRQ_L */
+/* SPI_TPM_IRQ */	PAD_NC(GPP_E0, NONE),
 /* SATAXPCIE1 */	/* GPP_E1 */
 /* SATAXPCIE2 */	/* GPP_E2 */
 /* CPU_GP0 */		/* GPP_E3 */

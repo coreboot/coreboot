@@ -113,10 +113,6 @@ config VARIANT_DIR
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
-config TPM_PIRQ
-	hex
-	default 0x18  # GPP_E0_IRQ
-
 config INCLUDE_NHLT_BLOBS
 	bool "Include blobs for audio."
 	select NHLT_DMIC_2CH

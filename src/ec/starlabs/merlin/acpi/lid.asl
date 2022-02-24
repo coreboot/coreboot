@@ -11,6 +11,6 @@ Device (LID0)
 	{
 		// 0x00 == Closed
 		// 0x01 == Open
-		Return (^^LSTE)
+		Return (ECRD (RefOf (LSTE)))
 	}
 }

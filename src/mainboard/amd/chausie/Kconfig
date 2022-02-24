@@ -76,6 +76,8 @@ config RO_REGION_ONLY
 config CHROMEOS
 	# Use default libpayload config
 	select LP_DEFCONFIG_OVERRIDE if PAYLOAD_DEPTHCHARGE
+	# We don't have recovery buttons, so we can't manually enable devmode.
+	select GBB_FLAG_FORCE_DEV_SWITCH_ON
 
 if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE

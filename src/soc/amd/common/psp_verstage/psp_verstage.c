@@ -27,15 +27,6 @@ extern char _bss_start, _bss_end;
 
 void __weak verstage_mainboard_init(void) {}
 
-uint32_t __weak get_max_workbuf_size(uint32_t *size)
-{
-	/* This svc only exists in picasso and deprecated for later platforms.
-	 * Provide sane default function here for those platforms.
-	 */
-	*size = (uint32_t)((uintptr_t)_etransfer_buffer - (uintptr_t)_transfer_buffer);
-	return 0;
-}
-
 static void reboot_into_recovery(struct vb2_context *ctx, uint32_t subcode)
 {
 	subcode += PSP_VBOOT_ERROR_SUBCODE;
@@ -142,51 +133,21 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
  * Save workbuf (and soon memory console and timestamps) to the bootloader to pass
  * back to coreboot.
  */
-static uint32_t save_buffers(struct vb2_context **ctx)
+static uint32_t save_buffers(void)
 {
 	uint32_t retval;
-	uint32_t buffer_size = MIN_TRANSFER_BUFFER_SIZE;
-	uint32_t max_buffer_size;
+	uint32_t buffer_size;
 	struct transfer_info_struct buffer_info = {0};
 
-	/*
-	 * This should never fail on picasso, but if it does, we should still
-	 * try to save the buffer. If that fails, then we should go to
-	 * recovery mode.
-	 */
-	if (get_max_workbuf_size(&max_buffer_size)) {
-		post_code(POSTCODE_DEFAULT_BUFFER_SIZE_NOTICE);
-		printk(BIOS_NOTICE, "Notice: using default transfer buffer size.\n");
-		max_buffer_size = MIN_TRANSFER_BUFFER_SIZE;
-	}
-	printk(BIOS_DEBUG, "\nMaximum buffer size: %d bytes\n", max_buffer_size);
+	buffer_size =
+		(uint32_t)((uintptr_t)_etransfer_buffer - (uintptr_t)_transfer_buffer);
 
-	/* Shrink workbuf if MP2 is in use and cannot be used to save buffer */
-	if (max_buffer_size < VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE) {
-		retval = vb2api_relocate(_vboot2_work, _vboot2_work, MIN_WORKBUF_TRANSFER_SIZE,
-				ctx);
-		if (retval != VB2_SUCCESS) {
-			printk(BIOS_ERR, "Error shrinking workbuf. Error code %#x\n", retval);
-			buffer_size = VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE;
-			post_code(POSTCODE_WORKBUF_RESIZE_WARNING);
-		}
-	} else {
-		buffer_size =
-			(uint32_t)((uintptr_t)_etransfer_buffer - (uintptr_t)_transfer_buffer);
-
-		buffer_info.console_offset = (uint32_t)((uintptr_t)_preram_cbmem_console -
-					(uintptr_t)_transfer_buffer);
-		buffer_info.timestamp_offset = (uint32_t)((uintptr_t)_timestamp -
-					(uintptr_t)_transfer_buffer);
-		buffer_info.fmap_offset = (uint32_t)((uintptr_t)_fmap_cache -
-					(uintptr_t)_transfer_buffer);
-	}
-
-	if (buffer_size > max_buffer_size) {
-		printk(BIOS_ERR, "Buffer is larger than max buffer size.\n");
-		post_code(POSTCODE_WORKBUF_BUFFER_SIZE_ERROR);
-		return POSTCODE_WORKBUF_BUFFER_SIZE_ERROR;
-	}
+	buffer_info.console_offset = (uint32_t)((uintptr_t)_preram_cbmem_console -
+				(uintptr_t)_transfer_buffer);
+	buffer_info.timestamp_offset = (uint32_t)((uintptr_t)_timestamp -
+				(uintptr_t)_transfer_buffer);
+	buffer_info.fmap_offset = (uint32_t)((uintptr_t)_fmap_cache -
+				(uintptr_t)_transfer_buffer);
 
 	buffer_info.magic_val = TRANSFER_MAGIC_VAL;
 	buffer_info.struct_bytes = sizeof(buffer_info);
@@ -332,7 +293,7 @@ void Main(void)
 		reboot_into_recovery(ctx, retval);
 
 	post_code(POSTCODE_SAVE_BUFFERS);
-	retval = save_buffers(&ctx);
+	retval = save_buffers();
 	if (retval)
 		reboot_into_recovery(ctx, retval);
 

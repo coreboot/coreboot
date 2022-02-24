@@ -59,7 +59,6 @@ void verstage_soc_i2c_init(void);
 void verstage_soc_spi_init(void);
 uintptr_t *map_spi_rom(void);
 
-uint32_t get_max_workbuf_size(uint32_t *size);
 uint32_t update_psp_bios_dir(uint32_t *psp_dir_offset, uint32_t *bios_dir_offset);
 uint32_t save_uapp_data(void *address, uint32_t size);
 uint32_t get_bios_dir_addr(struct embedded_firmware *ef_table);

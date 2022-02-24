@@ -14,11 +14,6 @@ uint32_t save_uapp_data(void *address, uint32_t size)
 	return svc_save_uapp_data(UAPP_COPYBUF_CHROME_WORKBUF, address, size);
 }
 
-uint32_t get_max_workbuf_size(uint32_t *size)
-{
-	return svc_get_max_workbuf_size(size);
-}
-
 uint32_t get_bios_dir_addr(struct embedded_firmware *ef_table)
 {
 	return ef_table->bios1_entry;

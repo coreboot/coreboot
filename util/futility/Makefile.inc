@@ -16,7 +16,7 @@ $(VBOOT_FUTILITY): | check-openssl-presence
 
 .PHONY: check-openssl-presence
 check-openssl-presence:
-	$(HOSTPKGCONFIG) --exists libcrypto || \
+	@$(HOSTPKGCONFIG) --exists libcrypto || \
 	(echo "Error: Ensure that pkg-config and openssl's libcrypto, including header files, are installed."; exit 1)
 
 $(objutil)/futility/futility: $(VBOOT_FUTILITY)

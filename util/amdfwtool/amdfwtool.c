@@ -221,8 +221,8 @@ static void usage(void)
 }
 
 amd_fw_entry amd_psp_fw_table[] = {
-	{ .type = AMD_FW_PSP_PUBKEY, .level = PSP_BOTH | PSP_BOTH_AB },
-	{ .type = AMD_FW_PSP_BOOTLOADER, .level = PSP_BOTH | PSP_LVL1_AB },
+	{ .type = AMD_FW_PSP_PUBKEY, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_BOOTLOADER, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_RECOVERY, .level = PSP_LVL1 },
 	{ .type = AMD_FW_PSP_RTM_PUBKEY, .level = PSP_BOTH },
@@ -240,7 +240,7 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_PSP_FUSE_CHAIN, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_DEBUG_UNLOCK, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_HW_IPCFG, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_WRAPPED_IKEK, .level = PSP_BOTH | PSP_BOTH_AB },
+	{ .type = AMD_WRAPPED_IKEK, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_TOKEN_UNLOCK, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_SEC_GASKET, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_SEC_GASKET, .subprog = 2, .level = PSP_BOTH | PSP_LVL2_AB },

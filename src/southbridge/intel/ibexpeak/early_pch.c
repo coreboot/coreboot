@@ -48,7 +48,8 @@ void ibexpeak_setup_bars(void)
 	outw(inw(DEFAULT_PMBASE | 0x60 | 0x06) | 2, DEFAULT_PMBASE | 0x60 | 0x06);
 	printk(BIOS_DEBUG, " done.\n");
 
-	pci_write_config32(PCI_DEV(0, 0x16, 0), 0x10, (uintptr_t)DEFAULT_HECIBAR);
+	pci_write_config32(PCI_DEV(0, 0x16, 0), PCI_BASE_ADDRESS_0,
+			   (uintptr_t)DEFAULT_HECIBAR);
 	pci_write_config32(PCI_DEV(0, 0x16, 0), PCI_COMMAND,
 			   PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
 }

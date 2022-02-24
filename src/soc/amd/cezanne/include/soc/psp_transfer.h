@@ -48,9 +48,13 @@ _Static_assert(sizeof(struct transfer_info_struct) == TRANSFER_INFO_SIZE,
 		"TRANSFER_INFO_SIZE is incorrect");
 
 /* Make sure the PSP transferred information over to x86 side. */
+int transfer_buffer_valid(const struct transfer_info_struct *ptr);
+/* Verify vboot work buffer is valid in transfer buffer */
 void verify_psp_transfer_buf(void);
 /* Display the transfer block's PSP_info data */
 void show_psp_transfer_info(void);
+/* Replays the pre-x86 cbmem console into the x86 cbmem console */
+void replay_transfer_buffer_cbmemc(const struct transfer_info_struct *info);
 /* Called by bootblock_c_entry in the VBOOT_STARTS_BEFORE_BOOTBLOCK case */
 void boot_with_psp_timestamp(uint64_t base_timestamp);
 

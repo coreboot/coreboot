@@ -27,7 +27,7 @@ void soc_validate_fspm_header(const struct fsp_header *hdr)
 	/* a coding bug on the AMD FSP side makes this value 1 in
 	older versions of the FSP.*/
 	if (hdr->image_revision == 1) {
-		printk(BIOS_ERR, "No AMD FSP image revision information available\n");
+		printk(BIOS_WARNING, "No AMD FSP image revision information available\n");
 		return;
 	}
 

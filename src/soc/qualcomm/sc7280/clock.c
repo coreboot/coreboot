@@ -201,6 +201,11 @@ static struct clock_freq_config mdss_mdp_cfg[] = {
 		.src = SRC_GCC_DISP_GPLL0_CLK,
 		.div = QCOM_CLOCK_DIV(2),
 	},
+	{
+		.hz = 400 * MHz,
+		.src = SRC_GCC_DISP_GPLL0_CLK,
+		.div = QCOM_CLOCK_DIV(1.5),
+	},
 };
 
 static struct clock_rcg *mdss_clock[MDSS_CLK_COUNT] = {

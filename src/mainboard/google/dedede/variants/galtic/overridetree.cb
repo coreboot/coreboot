@@ -1,4 +1,12 @@
 fw_config
+	field TOUCHSCREEN_SOURCE 39 40
+		option TOUCHSCREEN_UNPROVISIONED 0
+		option TOUCHSCREEN_ELAN1001 1
+		option TOUCHSCREEN_ELAN9008 2
+	end
+end
+
+fw_config
 	field AUDIO_CODEC_SOURCE 41 43
 		option AUDIO_CODEC_UNPROVISIONED 0
 		option AUDIO_CODEC_ALC5682 1
@@ -165,7 +173,27 @@ chip soc/intel/jasperlake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
 				register "enable_delay_ms" = "1"
 				register "has_power_resource" = "1"
-				device i2c 10 on end
+				device i2c 10 on
+					probe TOUCHSCREEN_SOURCE TOUCHSCREEN_ELAN1001
+					probe TOUCHSCREEN_SOURCE TOUCHSCREEN_UNPROVISIONED
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN9008""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D4_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"
+				register "generic.enable_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
+				register "generic.enable_delay_ms" = "7"
+				register "generic.reset_delay_ms" = "70"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 10 on
+					probe TOUCHSCREEN_SOURCE TOUCHSCREEN_ELAN9008
+				end
 			end
 		end # I2C 2
 		device pci 19.0 on

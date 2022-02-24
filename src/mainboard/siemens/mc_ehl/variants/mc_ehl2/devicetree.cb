@@ -69,7 +69,7 @@ chip soc/intel/elkhartlake
 	register "PcieRpLtrDisable[6]" = "true"
 
 	# Storage (SDCARD/EMMC) related UPDs
-	register "ScsEmmcHs400Enabled" = "1"
+	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsEmmcDdr50Enabled" = "1"
 	register "SdCardPowerEnableActiveHigh" = "1"
 

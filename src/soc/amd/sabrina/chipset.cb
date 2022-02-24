@@ -64,7 +64,7 @@ chip soc/amd/sabrina
 		end
 		device pci 08.2 alias gpp_bridge_b off end # Internal GPP Bridge 1 to Bus B
 		device pci 08.3 alias gpp_bridge_c off # Internal GPP Bridge 2 to Bus C
-			device pci 0.0 alias dummy_function_c off end # PCIe Dummy Function
+			device pci 0.0 alias xhci_2 off end # Might also be a dummy device with different PCI DID
 		end
 
 		device pci 14.0 alias smbus on end # primary FCH function

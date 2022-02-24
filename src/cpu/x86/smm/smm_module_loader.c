@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <rmodule.h>
+#include <cbmem.h>
 #include <cpu/x86/smm.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
@@ -479,6 +480,7 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 	void *fxsave_area;
 	size_t total_size = 0;
 	uintptr_t base; /* The base for the permanent handler */
+	const struct cbmem_entry *cbmemc;
 
 	if (CONFIG(SMM_ASEG))
 		return smm_load_module_aseg(smram_base, smram_size, params);
@@ -557,6 +559,14 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 	handler_mod_params->num_cpus = params->num_cpus;
 	handler_mod_params->gnvs_ptr = (uintptr_t)acpi_get_gnvs();
 
+	if (CONFIG(CONSOLE_CBMEM) && (cbmemc = cbmem_entry_find(CBMEM_ID_CONSOLE))) {
+		handler_mod_params->cbmemc = cbmem_entry_start(cbmemc);
+		handler_mod_params->cbmemc_size = cbmem_entry_size(cbmemc);
+	} else {
+		handler_mod_params->cbmemc = 0;
+		handler_mod_params->cbmemc_size = 0;
+	}
+
 	printk(BIOS_DEBUG, "%s: smram_start: 0x%lx\n",  __func__, smram_base);
 	printk(BIOS_DEBUG, "%s: smram_end: %lx\n", __func__, smram_base + smram_size);
 	printk(BIOS_DEBUG, "%s: handler start %p\n",
@@ -577,6 +587,8 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 	printk(BIOS_DEBUG, "%s: per_cpu_save_state_size = 0x%x\n", __func__,
 	       handler_mod_params->save_state_size);
 	printk(BIOS_DEBUG, "%s: num_cpus = 0x%x\n", __func__, handler_mod_params->num_cpus);
+	printk(BIOS_DEBUG, "%s: cbmemc = %p, cbmemc_size = %#x\n", __func__,
+	       handler_mod_params->cbmemc, handler_mod_params->cbmemc_size);
 	printk(BIOS_DEBUG, "%s: total_save_state_size = 0x%x\n", __func__,
 	       (handler_mod_params->save_state_size * handler_mod_params->num_cpus));
 

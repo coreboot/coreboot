@@ -61,6 +61,8 @@ struct smm_runtime {
 	u32 save_state_size;
 	u32 num_cpus;
 	u32 gnvs_ptr;
+	u32 cbmemc_size;
+	void *cbmemc;
 	uintptr_t save_state_top[CONFIG_MAX_CPUS];
 } __packed;
 

@@ -220,6 +220,9 @@ smm-y += delay.c
 smm-y += fmap.c
 smm-y += cbfs.c memcmp.c
 smm-$(CONFIG_GENERIC_UDELAY) += timer.c
+ifeq ($(CONFIG_DEBUG_SMI),y)
+smm-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
+endif
 
 bootblock-y += version.c
 romstage-y += version.c

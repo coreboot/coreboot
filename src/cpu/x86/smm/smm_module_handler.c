@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/io.h>
+#include <console/cbmem_console.h>
 #include <console/console.h>
 #include <commonlib/region.h>
 #include <cpu/x86/smm.h>
@@ -46,6 +47,12 @@ static void smi_release_lock(void)
 		: "g" (SMI_UNLOCKED)
 		: "eax"
 	);
+}
+
+void smm_get_cbmemc_buffer(void **buffer_out, size_t *size_out)
+{
+	*buffer_out = smm_runtime.cbmemc;
+	*size_out = smm_runtime.cbmemc_size;
 }
 
 void io_trap_handler(int smif)

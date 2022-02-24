@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h>
 #include <southbridge/intel/common/rcba.h>
 #include <stdint.h>
 
@@ -7,8 +8,7 @@
 
 #define HPTC		0x3404
 
-#define HPET_BASE 0xfed00000
-#define HPET32(x) (*((volatile u32 *)(HPET_BASE + (x))))
+#define HPET32(x) (*((volatile u32 *)(HPET_BASE_ADDRESS + (x))))
 
 void enable_hpet(void)
 {

@@ -10,7 +10,7 @@ Device (ADP1)
 	Method (_PSR, 0)
 	{
 		PWRS = ECPS & 0x01
-		Return(PWRS)
+		Return (PWRS)
 	}
 	Method (_PCL, 0)
 	{

@@ -39,7 +39,7 @@ Scope (\_SB.PCI0.LPCB)
 		Name (PVOL, 0x00)
 		Mutex (ECMT, 0x00)
 
-		Name(BFFR, ResourceTemplate()
+		Name (BFFR, ResourceTemplate()
 		{
 			IO(Decode16, 0x0062, 0x0062, 0x00, 0x01)
 			IO(Decode16, 0x0066, 0x0066, 0x00, 0x01)
@@ -47,8 +47,7 @@ Scope (\_SB.PCI0.LPCB)
 
 		Method (_CRS, 0, Serialized)
 		{
-
-			Return(BFFR)
+			Return (BFFR)
 		}
 
 		Method (_STA, 0, NotSerialized)
@@ -98,7 +97,7 @@ Scope (\_SB.PCI0.LPCB)
 					Release (ECMT)
 				}
 			}
-			Return(0)						// Return in case Arg0 doesn't exist
+			Return (0)						// Return in case Arg0 doesn't exist
 		}
 
 		// ECWR (Embedded Controller Write Method)

@@ -26,7 +26,7 @@ Device (HIDD)							// HID Device
 	// Output:
 	// Package containing a complete HID Descriptor information.
 	//
-	Name(DPKG, Package(4)
+	Name (DPKG, Package(4)
 	{
 		0x11111111,
 		0x22222222,
@@ -35,7 +35,7 @@ Device (HIDD)							// HID Device
 	})
 	Method (HDDM, 0, Serialized)
 	{
-		Return(DPKG)
+		Return (DPKG)
 	}
 	//
 	// HID Driver Event Method - Called by HID Driver to get the specific
@@ -54,9 +54,9 @@ Device (HIDD)							// HID Device
 		// Simple Mode is hardcoded for now.  Return Simple Mode HID Index Value.
 		If (HMDE == 0x00)
 		{
-			Return(HIDX)
+			Return (HIDX)
 		}
-		Return(HMDE)
+		Return (HMDE)
 	}
 	//
 	// HID Driver Mode Method - Called by HID Driver during initialization to get
@@ -71,7 +71,7 @@ Device (HIDD)							// HID Device
 	//
 	Method (HDMM, 0, Serialized)
 	{
-		Return(HMDE)						// Return Mode of operation.
+		Return (HMDE)						// Return Mode of operation.
 	}
 	//
 	// HID Driver Status Method - called by HID Driver to report platform readiness status.
@@ -196,7 +196,7 @@ Device (HIDD)							// HID Device
 	//
 	Method (BTNC, 0, Serialized)					// HID Button Capabilities Method
 	{
-		Return(0x1F)
+		Return (0x1F)
 	}
 
 	//
@@ -253,7 +253,7 @@ Device (HIDD)							// HID Device
 	//
 	Method (HEEC, 0, Serialized) {
 		// It's possible to return (\HEB2)
-		Return(0x00)
+		Return (0x00)
 	}
 	//
 	// HIDD _DSM

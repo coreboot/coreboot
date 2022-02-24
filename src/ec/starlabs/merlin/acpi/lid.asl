@@ -7,7 +7,7 @@ Device (LID0)
 	{
 		Return (0x0F)
 	}
-	Method (_LID,0)
+	Method (_LID, 0)
 	{
 		// 0x00 == Closed
 		// 0x01 == Open

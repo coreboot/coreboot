@@ -251,7 +251,11 @@ void Main(void)
 	svc_get_boot_mode(&bootmode);
 	if (bootmode == PSP_BOOT_MODE_S0i3_RESUME) {
 		psp_verstage_s0i3_resume();
+
+		post_code(POSTCODE_UNMAP_FCH_DEVICES);
 		unmap_fch_devices();
+
+		post_code(POSTCODE_LEAVING_VERSTAGE);
 		svc_exit(0);
 	}
 

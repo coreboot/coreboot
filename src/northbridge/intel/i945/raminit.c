@@ -74,7 +74,7 @@ static void ram_read32(uintptr_t offset)
 {
 	PRINTK_DEBUG("   RAM read: %08x\n", offset);
 
-	read32((void *)offset);
+	read32p(offset);
 }
 
 void sdram_dump_mchbar_registers(void)

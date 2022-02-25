@@ -709,7 +709,7 @@ static void domain_set_resources(struct device *dev)
 
 		sizek = limitk - basek;
 
-		/* see if we need a hole from 0xa0000 to 0xbffff */
+		/* See if we need a hole from 0xa0000 (640K) to 0xbffff (768K) */
 		if ((basek < ((8*64)+(8*16))) && (sizek > ((8*64)+(16*16)))) {
 			ram_resource(dev, (idx | i), basek, ((8*64)+(8*16)) - basek);
 			idx += 0x10;

@@ -157,6 +157,8 @@ asmlinkage void smm_handler_start(void *arg)
 
 	smi_backup_pci_address();
 
+	smm_soc_early_init();
+
 	console_init();
 
 	printk(BIOS_SPEW, "\nSMI# #%d\n", cpu);
@@ -186,6 +188,8 @@ asmlinkage void smm_handler_start(void *arg)
 			die("SMM Handler caused a stack overflow\n");
 	}
 
+	smm_soc_exit();
+
 	smi_release_lock();
 
 	/* De-assert SMI# signal to allow another SMI */
@@ -206,3 +210,6 @@ void __weak mainboard_smi_gpi(u32 gpi_sts) {}
 int __weak mainboard_smi_apmc(u8 data) { return 0; }
 void __weak mainboard_smi_sleep(u8 slp_typ) {}
 void __weak mainboard_smi_finalize(void) {}
+
+void __weak smm_soc_early_init(void) {}
+void __weak smm_soc_exit(void) {}

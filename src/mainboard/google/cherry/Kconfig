@@ -71,4 +71,7 @@ config CHERRY_USE_MAX98390
 
 endchoice
 
+config OVERRIDE_DEVICETREE
+	default "variants/dojo/overridetree.cb" if BOARD_GOOGLE_DOJO
+
 endif

@@ -1,0 +1,22 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/mediatek/mt8195
+	device domain 0 on
+		register "pcie_config" = "{
+			.base = 0x112f0000,
+			.mmio_res_io = {
+				.cpu_addr = 0x20000000,
+				.pci_addr = 0x20000000,
+				.size = 16 * MiB,
+				.type = IORESOURCE_IO,
+			},
+			.mmio_res_mem = {
+				.cpu_addr = 0x21000000,
+				.pci_addr = 0x21000000,
+				.size = 48 * MiB,
+				.type = IORESOURCE_MEM,
+			},
+		}"
+		device pci 00.0 on end # - Host Bridge
+	end
+end

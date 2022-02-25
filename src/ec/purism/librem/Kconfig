@@ -1,4 +1,0 @@
-config EC_PURISM_LIBREM
-	bool
-	help
-	  Purism Librem EC

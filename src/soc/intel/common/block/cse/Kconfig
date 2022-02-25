@@ -150,6 +150,13 @@ config SOC_INTEL_CSE_NPHY_CBFS_FILE
 	help
 	 CBFS path and file name for Intel CSE sub-partition NPHY binary
 
+config SOC_INTEL_CSE_LITE_COMPRESS_ME_RW
+	bool
+	default n
+	depends on SOC_INTEL_CSE_LITE_SKU
+	help
+	 Enable compression on Intel CSE CBFS RW blob
+
 if STITCH_ME_BIN
 
 config CSE_COMPONENTS_PATH

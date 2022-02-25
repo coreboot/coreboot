@@ -85,6 +85,9 @@ cbfs-files-y += $(CSE_LITE_ME_RW)
 $(CSE_LITE_ME_RW)-file := $(CSE_RW_FILE)
 $(CSE_LITE_ME_RW)-name := $(CSE_LITE_ME_RW)
 $(CSE_LITE_ME_RW)-type := raw
+ifeq ($(CONFIG_SOC_INTEL_CSE_LITE_COMPRESS_ME_RW),y)
+$(CSE_LITE_ME_RW)-compression := LZMA
+endif
 
 $(obj)/cse_rw.version:
 	@echo '$(call strip_quotes,$(CONFIG_SOC_INTEL_CSE_RW_VERSION))' > $@

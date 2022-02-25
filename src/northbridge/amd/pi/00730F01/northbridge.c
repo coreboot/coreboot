@@ -811,10 +811,10 @@ static void domain_read_resources(struct device *dev)
 				   i, basek, limitk, sizek);
 
 		/* See if we need a hole from 0xa0000 (640K) to 0xfffff (1024K) */
-		if ((basek < (0xa0000 >> 10) && (sizek > (0x100000 >> 10)))) {
-			ram_resource(dev, (idx | i), basek, (0xa0000 >> 10) - basek);
+		if (basek < 640 && sizek > 1024) {
+			ram_resource(dev, (idx | i), basek, 640 - basek);
 			idx += 0x10;
-			basek = 0x100000 >> 10;
+			basek = 1024;
 			sizek = limitk - basek;
 		}
 

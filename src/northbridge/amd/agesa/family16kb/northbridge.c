@@ -722,11 +722,11 @@ static void domain_set_resources(struct device *dev)
 		sizek = limitk - basek;
 
 		/* See if we need a hole from 0xa0000 (640K) to 0xbffff (768K) */
-		if ((basek < ((8*64)+(8*16))) && (sizek > ((8*64)+(16*16)))) {
-			ram_resource(dev, (idx | i), basek, ((8*64)+(8*16)) - basek);
+		if (basek < 640 && sizek > 768) {
+			ram_resource(dev, (idx | i), basek, 640 - basek);
 			idx += 0x10;
-			basek = (8*64)+(16*16);
-			sizek = limitk - ((8*64)+(16*16));
+			basek = 768;
+			sizek = limitk - basek;
 		}
 
 		//printk(BIOS_DEBUG, "node %d : mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n", i, mmio_basek, basek, limitk);

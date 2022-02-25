@@ -1352,6 +1352,9 @@ static bool pci_bus_only_one_child(struct bus *bus)
 	if (!bridge)
 		return false;
 
+	if (bridge->path.type != DEVICE_PATH_PCI)
+		return false;
+
 	pcie_pos = pci_find_capability(bridge, PCI_CAP_ID_PCIE);
 	if (!pcie_pos)
 		return false;

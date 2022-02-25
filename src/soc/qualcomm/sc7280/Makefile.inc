@@ -46,6 +46,11 @@ ramstage-y += ../common/usb/snps_usb_phy.c
 ramstage-y += ../common/usb/qmpv4_usb_phy.c
 ramstage-y += ../common/aop_load_reset.c
 ramstage-y += cpucp_load_reset.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/edp_aux.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/edp_ctrl.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/edp_phy_7nm.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += ../common/display/mdss.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/disp.c
 ramstage-$(CONFIG_PCI) += ../common/pcie_common.c
 ramstage-$(CONFIG_PCI) += pcie.c
 

@@ -264,4 +264,9 @@ config MEMORY_SOLDERDOWN
 config HAVE_SLP_S0_GATE
 	def_bool n
 
+config INCLUDE_NVIDIA_GPU_ASL
+	def_bool n
+	help
+	  Select this if the variant has an Nvidia GN20 GPU attached to PEG1
+
 endif # BOARD_GOOGLE_BRYA_COMMON

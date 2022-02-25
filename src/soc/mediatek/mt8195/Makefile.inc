@@ -9,6 +9,7 @@ bootblock-y += ../common/gpio.c gpio.c
 bootblock-y += ../common/i2c.c i2c.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-y += ../common/tracker.c ../common/tracker_v2.c
+bootblock-$(CONFIG_PCI) += pcie.c
 bootblock-y += ../common/pll.c pll.c
 bootblock-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 bootblock-y += ../common/timer.c timer.c

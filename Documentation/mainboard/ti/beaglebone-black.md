@@ -127,5 +127,5 @@ ROM.
   hang on a bad SD card or when the SD card is removed during boot.
 
 
-[Beaglebone Black]: https://beagleboard.org/black [U-Boot Falcon mode]:
-https://elixir.bootlin.com/u-boot/v2020.07/source/doc/README.falcon
+[Beaglebone Black]: https://beagleboard.org/black
+[U-Boot Falcon mode]: https://elixir.bootlin.com/u-boot/v2020.07/source/doc/README.falcon

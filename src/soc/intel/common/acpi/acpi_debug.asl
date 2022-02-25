@@ -20,6 +20,37 @@ Method (LURT, 1, Serialized)
 	Return (Local0)
 }
 
+#if CONFIG(DRIVERS_UART_8250MEM_32)
+OperationRegion (UBAR, SystemMemory,
+			CONFIG_CONSOLE_UART_BASE_ADDRESS, 24)
+Field (UBAR, AnyAcc, NoLock, Preserve)
+{
+	TDR, 8,	/* Transmit Data Register BAR + 0x000 */
+		, 24,
+	IER, 8,	/* Interrupt Enable Register BAR + 0x004 */
+		, 24,
+	IIR, 8,	/* Interrupt Identification Register BAR + 0x008 */
+		, 24,
+	LCR, 8,	/* Line Control Register BAR + 0x00C */
+		, 24,
+	MCR, 8,	/* Modem Control Register BAR + 0x010 */
+		, 24,
+	LSR, 8,	/* Line Status Register BAR + 0x014 */
+		, 24
+}
+#else
+OperationRegion (UBAR, SystemIO, LURT (CONFIG_UART_FOR_CONSOLE), 6)
+Field (UBAR, ByteAcc, NoLock, Preserve)
+{
+	TDR, 8,	/* Transmit Data Register IO Port + 0x0 */
+	IER, 8,	/* Interrupt Enable Register IO Port + 0x1 */
+	IIR, 8,	/* Interrupt Identification Register IO Port + 0x2 */
+	LCR, 8,	/* Line Control Register IO Port + 0x3 */
+	MCR, 8,	/* Modem Control Register IO Port + 0x4 */
+	LSR, 8	/* Line Status Register IO Port + 0x5 */
+}
+#endif
+
 Method (APRT, 1, Serialized)
 {
 	Name(OPDT, 0)
@@ -43,37 +74,6 @@ Method (APRT, 1, Serialized)
 		INDX++
 	}
 	LENG = INDX /* Length of the String */
-
-#if CONFIG(DRIVERS_UART_8250MEM_32)
-	OperationRegion (UBAR, SystemMemory,
-				CONFIG_CONSOLE_UART_BASE_ADDRESS, 24)
-	Field (UBAR, AnyAcc, NoLock, Preserve)
-	{
-		TDR, 8,	/* Transmit Data Register BAR + 0x000 */
-			, 24,
-		IER, 8,	/* Interrupt Enable Register BAR + 0x004 */
-			, 24,
-		IIR, 8,	/* Interrupt Identification Register BAR + 0x008 */
-			, 24,
-		LCR, 8,	/* Line Control Register BAR + 0x00C */
-			, 24,
-		MCR, 8,	/* Modem Control Register BAR + 0x010 */
-			, 24,
-		LSR, 8,	/* Line Status Register BAR + 0x014 */
-			, 24
-	}
-#else
-	OperationRegion (UBAR, SystemIO, LURT (CONFIG_UART_FOR_CONSOLE), 6)
-	Field (UBAR, ByteAcc, NoLock, Preserve)
-	{
-		TDR, 8,	/* Transmit Data Register IO Port + 0x0 */
-		IER, 8,	/* Interrupt Enable Register IO Port + 0x1 */
-		IIR, 8,	/* Interrupt Identification Register IO Port + 0x2 */
-		LCR, 8,	/* Line Control Register IO Port + 0x3 */
-		MCR, 8,	/* Modem Control Register IO Port + 0x4 */
-		LSR, 8	/* Line Status Register IO Port + 0x5 */
-	}
-#endif
 
 	If (UFLG == 0) {
 		/* Enable Baud Rate Divisor Latch, Set Word length to 8 bit*/

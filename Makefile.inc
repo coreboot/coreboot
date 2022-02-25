@@ -791,11 +791,14 @@ endif
 $(objcbfs)/%.bin: $(objcbfs)/%.raw.bin
 	cp $< $@
 
-$(objcbfs)/%.elf: $(objcbfs)/%.debug
+$(objcbfs)/%.map: $(objcbfs)/%.debug
+	$(eval class := $(call find-class,$(@F)))
+	$(NM_$(class)) -n $< | sort > $(basename $@).map
+
+$(objcbfs)/%.elf: $(objcbfs)/%.debug $(objcbfs)/%.map
 	$(eval class := $(call find-class,$(@F)))
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	cp $< $@.tmp
-	$(NM_$(class)) -n $@.tmp | sort > $(basename $@).map
 	$(OBJCOPY_$(class)) --strip-debug $@.tmp
 	$(OBJCOPY_$(class)) --add-gnu-debuglink=$< $@.tmp
 	mv $@.tmp $@

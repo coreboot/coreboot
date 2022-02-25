@@ -125,6 +125,7 @@ config DRIVER_TPM_I2C_ADDR
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-serger.fmd" if BOARD_GOOGLE_KANO || BOARD_GOOGLE_BRASK
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-nissa.fmd" if BOARD_GOOGLE_BASEBOARD_NISSA
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
 
 config TPM_TIS_ACPI_INTERRUPT

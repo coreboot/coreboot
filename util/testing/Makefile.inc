@@ -51,6 +51,7 @@ junit.xml:
 
 TOOLLIST= \
 amdfwtool \
+cbfstool \
 cbmem \
 ectool \
 futility \

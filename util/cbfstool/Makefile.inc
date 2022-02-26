@@ -1,5 +1,3 @@
-HOSTPKGCONFIG ?= /usr/bin/pkg-config
-
 compressionobj :=
 compressionobj += compress.o
 # LZ4
@@ -94,7 +92,6 @@ amdcompobj += xdr.o
 elogobj :=
 elogobj := elogtool.o
 elogobj += eventlog.o
-elogobj += uflashrom.o
 elogobj += valstr.o
 elogobj += elog.o
 elogobj += common.o
@@ -147,12 +144,6 @@ else
 TOOLCFLAGS+=-std=c11
 endif
 
-.PHONY: check-flashrom-presence
-check-flashrom-presence:
-	$(HOSTPKGCONFIG) --exists flashrom || \
-	(echo "Error: Ensure that pkg-config and flashrom are installed."; exit 1)
-
-FLASHROM := $$($(HOSTPKGCONFIG) --libs flashrom)
 VBOOT_HOSTLIB = $(VBOOT_HOST_BUILD)/libvboot_host.a
 
 $(VBOOT_HOSTLIB):
@@ -233,9 +224,9 @@ $(objutil)/cbfstool/amdcompress: $(addprefix $(objutil)/cbfstool/,$(amdcompobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
 	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(amdcompobj)) -lz
 
-$(objutil)/cbfstool/elogtool: | check-flashrom-presence $(addprefix $(objutil)/cbfstool/,$(elogobj))
+$(objutil)/cbfstool/elogtool: $(addprefix $(objutil)/cbfstool/,$(elogobj)) $(VBOOT_HOSTLIB)
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
-	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(elogobj)) $(FLASHROM)
+	$(HOSTCC) $(TOOLLDFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(elogobj)) $(VBOOT_HOSTLIB)
 
 $(objutil)/cbfstool/cse_fpt: $(addprefix $(objutil)/cbfstool/,$(cse_fpt_obj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"

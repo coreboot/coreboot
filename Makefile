@@ -193,6 +193,7 @@ strip_quotes = $(strip $(subst ",,$(subst \",,$(1))))
 real-all: real-target
 
 # must come rather early
+.SECONDARY:
 .SECONDEXPANSION:
 .DELETE_ON_ERROR:
 

@@ -19,6 +19,12 @@
 * [4.15 - November 2021](coreboot-4.15-relnotes.md)
 * [4.16 - Feb 2022](coreboot-4.16-relnotes.md)
 
+
+## Upcoming release
+
+Please add to the release notes as changes are added:
+* [4.17 - May 2022](coreboot-4.17-relnotes.md)
+
 The checklist contains instructions to ensure that a release covers all
 important things and provides a reliable format for tarballs, branch
 names etc.
@@ -29,8 +35,3 @@ For release related communications consider using a template so everything
 important is taken care of.
 
 * [templates](templates.md)
-
-## Upcoming release
-
-Please add to the release notes as changes are added:
-* [4.17 - May 2022](coreboot-4.17-relnotes.md)

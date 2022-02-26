@@ -9,9 +9,11 @@
 #include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
+#include <console/cbmem_console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
+#include <soc/psp_transfer.h>
 #include <soc/smi.h>
 #include <soc/smu.h>
 #include <soc/southbridge.h>
@@ -149,4 +151,10 @@ void *get_smi_source_handler(int source)
 			return smi_sources[i].handler;
 
 	return NULL;
+}
+
+void smm_soc_early_init(void)
+{
+	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && __CBMEM_CONSOLE_ENABLE__)
+		replay_transfer_buffer_cbmemc();
 }

@@ -1,5 +1,6 @@
-Release notes for previous releases
-===================================
+# Release notes
+
+## Previous releases
 
 * [4.1 - July 2015](coreboot-4.1-relnotes.md)
 * [4.2 - October 2015](coreboot-4.2-relnotes.md)
@@ -29,8 +30,7 @@ important is taken care of.
 
 * [templates](templates.md)
 
-Upcoming release
-----------------
+## Upcoming release
 
 Please add to the release notes as changes are added:
 * [4.17 - May 2022](coreboot-4.17-relnotes.md)

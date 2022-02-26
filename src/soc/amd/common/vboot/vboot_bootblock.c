@@ -14,7 +14,7 @@ void boot_with_psp_timestamp(uint64_t base_timestamp)
 	if (!transfer_buffer_valid(info) || info->timestamp == 0)
 		return;
 
-	replay_transfer_buffer_cbmemc(info);
+	replay_transfer_buffer_cbmemc();
 
 	/*
 	 * info->timestamp is PSP's timestamp (in microseconds)

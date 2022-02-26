@@ -61,11 +61,16 @@ void show_psp_transfer_info(void)
 	}
 }
 
-void replay_transfer_buffer_cbmemc(const struct transfer_info_struct *info)
+void replay_transfer_buffer_cbmemc(void)
 {
+	const struct transfer_info_struct *info = (const struct transfer_info_struct *)
+		(void *)(uintptr_t)_transfer_buffer;
 
 	void *cbmemc;
 	size_t cbmemc_size;
+
+	if (!transfer_buffer_valid(info))
+		return;
 
 	if (info->console_offset < sizeof(*info))
 		return;

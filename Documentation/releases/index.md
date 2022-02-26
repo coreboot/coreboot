@@ -5,16 +5,12 @@
 Please add to the release notes as changes are added:
 * [4.17 - May 2022](coreboot-4.17-relnotes.md)
 
-The checklist contains instructions to ensure that a release covers all
+The [checklist] contains instructions to ensure that a release covers all
 important things and provides a reliable format for tarballs, branch
 names etc.
 
-* [checklist](checklist.md)
-
-For release related communications consider using a template so everything
+For release related communications consider using a [template] so everything
 important is taken care of.
-
-* [templates](templates.md)
 
 
 ## Previous releases
@@ -35,3 +31,7 @@ important is taken care of.
 * [4.3 - January 2016](coreboot-4.3-relnotes.md)
 * [4.2 - October 2015](coreboot-4.2-relnotes.md)
 * [4.1 - July 2015](coreboot-4.1-relnotes.md)
+
+
+[checklist]: checklist.md
+[template]: templates.md

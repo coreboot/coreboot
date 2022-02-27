@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-Method (RPTS, 1, NotSerialized)
+Method (RPTS, 1, Serialized)
 {
 	If ((Arg0 == 0x04) || (Arg0 == 0x05))
 	{

@@ -2,10 +2,7 @@
 
 Method (MPTS, 1, NotSerialized)
 {
-	If (Arg0)
-	{
-		RPTS (Arg0)
-	}
+	RPTS (Arg0)
 }
 
 Method (MWAK, 1, NotSerialized)

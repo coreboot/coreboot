@@ -159,5 +159,5 @@ TOC tree.
 [guide]: http://www.sphinx-doc.org/en/stable/install.html
 [Sphinx]: http://www.sphinx-doc.org/en/master/
 [Markdown Guide]: https://www.markdownguide.org/
-[Gerrit Guidelines]: gerrit_guidelines.md
+[Gerrit Guidelines]: ../contributing/gerrit_guidelines.md
 [review.coreboot.org]: https://review.coreboot.org

@@ -260,7 +260,7 @@ questions.
 [mailing list]: https://mail.coreboot.org/postorius/lists/coreboot.coreboot.org
 [Getting started]: ../getting_started/index.md
 [Tutorial]: ../tutorial/index.md
-[Flashing firmware tutorial]: ../flash_tutorial/index.md
+[Flashing firmware tutorial]: ../tutorial/flashing_firmware/index.md
 [Coding style]: coding_style.md
 [Code of Conduct]: ../community/code_of_conduct.md
 [Language style]: ../community/language_style.md

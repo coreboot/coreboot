@@ -361,4 +361,4 @@ Note that you should have an external SPI programmer as a backup method.
 It will help you recover if you flash non-working ROM by mistake.
 
 
-[flash internally]: ../../flash_tutorial/int_flashrom.md
+[flash internally]: ../../tutorial/flashing_firmware/int_flashrom.md

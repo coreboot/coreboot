@@ -124,7 +124,7 @@ $ sudo flashrom \
 
 ```eval_rst
 In addition to the information here, please see the
-:doc:`../../flash_tutorial/index`.
+:doc:`../../tutorial/flashing_firmware/index`.
 ```
 
 ### External flashing

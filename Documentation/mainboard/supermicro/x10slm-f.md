@@ -42,7 +42,7 @@ Now, run `make` to build the coreboot image.
 
 ```eval_rst
 In addition to the information here, please see the
-:doc:`../../flash_tutorial/index`.
+:doc:`../../tutorial/flashing_firmware/index`.
 ```
 
 ### Internal programming

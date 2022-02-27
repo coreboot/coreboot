@@ -142,7 +142,7 @@ Built gigabyte/ga-g41m-es2l (GA-G41M-ES2L)
 
 ```eval_rst
 In addition to the information here, please see the
-:doc:`../../flash_tutorial/index`.
+:doc:`../../tutorial/flashing_firmware/index`.
 ```
 
 ### Do backup

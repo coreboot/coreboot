@@ -105,4 +105,4 @@ seems that it shall not appear on X9SAE even if it is defined.
 [X9SAE-V]:  https://www.supermicro.com/products/motherboard/xeon/c216/x9sae-v.cfm
 [W25Q128FVSG]: https://static.chipdip.ru/lib/093/DOC001093213.pdf
 [flashrom]: https://flashrom.org/Flashrom
-[flash internally]: ../../flash_tutorial/int_flashrom.md
+[flash internally]: ../../tutorial/flashing_firmware/int_flashrom.md

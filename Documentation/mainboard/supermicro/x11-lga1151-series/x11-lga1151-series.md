@@ -56,6 +56,6 @@ These issues apply to all boards. Have a look at the board-specific issues, too.
 [Supermicro X11 LGA1151 series]: https://www.supermicro.com/products/motherboard/Xeon3000/#1151
 [OpenBMC]: https://www.openbmc.org/
 [flashrom]: https://flashrom.org/Flashrom
-[flashing tutorial]: ../../../../flash_tutorial/ext_power.md
+[flashing tutorial]: ../../../../tutorial/flashing_firmware/ext_power.md
 [Intel FSP2.0]: ../../../../soc/intel/fsp/index.md
 [AST2400]: https://www.aspeedtech.com/products.php?fPath=20&rId=376

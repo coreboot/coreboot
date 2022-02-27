@@ -81,4 +81,4 @@ Make sure to include all partitions into the ROM:
 * ME
 * BIOS
 
-[external programmer]: ../../../flash_tutorial/index.md
+[external programmer]: ../../../tutorial/flashing_firmware/index.md

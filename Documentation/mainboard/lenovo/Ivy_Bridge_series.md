@@ -38,7 +38,7 @@ This information is valid for all supported models, except T430s, [T431s](t431s.
 * ROM chip size should be set to 12MiB.
 
 ```eval_rst
-Please also have a look at :doc:`../../flash_tutorial/index`.
+Please also have a look at :doc:`../../tutorial/flashing_firmware/index`.
 ```
 
 ## Splitting the coreboot.rom
@@ -90,4 +90,4 @@ Tests on Lenovo W530 showed no issues with a stripped and shrunken ME firmware.
 
 
 [me_cleaner]: ../../northbridge/intel/sandybridge/me_cleaner.md
-[external programmer]: ../../flash_tutorial/index.md
+[external programmer]: ../../tutorial/flashing_firmware/index.md

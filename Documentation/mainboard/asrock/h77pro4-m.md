@@ -115,7 +115,7 @@ region is not readable even by the host.
 
 ```eval_rst
 In addition to the information here, please see the
-:doc:`../../flash_tutorial/index`.
+:doc:`../../tutorial/flashing_firmware/index`.
 ```
 
 ## Hardware monitoring and fan control

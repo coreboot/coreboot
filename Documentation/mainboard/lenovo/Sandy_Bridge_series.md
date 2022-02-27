@@ -70,5 +70,5 @@ the remaining space for the `bios` partition.
 
 
 [me_cleaner]: ../../northbridge/intel/sandybridge/me_cleaner.md
-[external programmer]: ../../flash_tutorial/index.md
-[flashing tutorial]: ../../flash_tutorial/index.md
+[external programmer]: ../../tutorial/flashing_firmware/index.md
+[flashing tutorial]: ../../tutorial/flashing_firmware/index.md

@@ -58,7 +58,7 @@ The main SPI flash can be accessed using [flashrom]. By default, only
 the BIOS region of the flash is writable. If you wish to change any
 other region, such as the Management Engine or firmware descriptor, then
 an external programmer is required (unless you find a clever way around
-the flash protection). More information about this [here](../../flash_tutorial/index.md).
+the flash protection). More information about this [here](../../tutorial/flashing_firmware/index.md).
 
 ### External programming
 

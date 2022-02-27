@@ -1,5 +1,6 @@
 top ?= $(abspath ../..)
 objutil ?= $(top)/util
+RM ?= rm
 
 CONFIG_FMD_GENPARSER ?= n
 
@@ -8,6 +9,7 @@ PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
 INSTALL ?= /usr/bin/env install
 OBJCOPY ?= objcopy
+override objutil := ..
 
 VBOOT_SOURCE ?= $(top)/3rdparty/vboot
 VBOOT_HOST_BUILD ?= $(abspath $(objutil)/vboot_lib)
@@ -35,17 +37,17 @@ cse_serger: $(objutil)/cbfstool/cse_serger
 
 .PHONY: clean cbfstool ifittool fmaptool rmodtool ifwitool cbfs-compression-tool elogtool cse_fpt cse_serger
 clean:
-	$(RM) fmd_parser.c fmd_parser.h fmd_scanner.c fmd_scanner.h
-	$(RM) $(objutil)/cbfstool/cbfstool $(cbfsobj)
-	$(RM) $(objutil)/cbfstool/fmaptool $(fmapobj)
-	$(RM) $(objutil)/cbfstool/rmodtool $(rmodobj)
-	$(RM) $(objutil)/cbfstool/ifwitool $(ifwiobj)
-	$(RM) $(objutil)/cbfstool/ifittool $(ifitobj)
-	$(RM) $(objutil)/cbfstool/cbfs-compression-tool $(cbfscompobj)
-	$(RM) $(objutil)/cbfstool/elogtool $(elogobj)
-	$(RM) $(objutil)/cbfstool/cse_fpt $(cse_fpt_obj)
-	$(RM) $(objutil)/cbfstool/cse_serger $(cse_serger_obj)
-	$(RM) -r $(VBOOT_HOST_BUILD)
+	$(RM) -f fmd_parser.c fmd_parser.h fmd_scanner.c fmd_scanner.h
+	$(RM) -f $(objutil)/cbfstool/cbfstool $(cbfsobj)
+	$(RM) -f $(objutil)/cbfstool/fmaptool $(fmapobj)
+	$(RM) -f $(objutil)/cbfstool/rmodtool $(rmodobj)
+	$(RM) -f $(objutil)/cbfstool/ifwitool $(ifwiobj)
+	$(RM) -f $(objutil)/cbfstool/ifittool $(ifitobj)
+	$(RM) -f $(objutil)/cbfstool/cbfs-compression-tool $(cbfscompobj)
+	$(RM) -f $(objutil)/cbfstool/elogtool $(elogobj)
+	$(RM) -f $(objutil)/cbfstool/cse_fpt $(cse_fpt_obj)
+	$(RM) -f $(objutil)/cbfstool/cse_serger $(cse_serger_obj)
+	$(RM) -rf $(VBOOT_HOST_BUILD)
 
 linux_trampoline.c: linux_trampoline.S
 	rm -f linux_trampoline.c

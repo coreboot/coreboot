@@ -16,19 +16,20 @@
 
 if ! ( git --version && cloc --version && rename --version ) > /dev/null 2>&1
 then
-	echo "ERROR: cloc, git or rename is not installed.  Exiting"
+	echo "ERROR: cloc, git or rename is not installed.  Exiting" >&2
 	exit 1
 fi
 
 if ! { cdup="$(git rev-parse --show-cdup 2>/dev/null)" && [ -z "${cdup}" ]; }
 then
-	echo "ERROR: This is not the top directory of a git repo.  Exiting."
+	echo "ERROR: This is not the top directory of a git repo.  Exiting." >&2
 	exit 1
 fi
 
 # Try to verify that the repo is clean before losing state.
-if ! git diff-index --quiet --cached HEAD 2>/dev/null; then
-	echo "ERROR: repo is not clean.  Exiting."
+if ! git diff-index --quiet --cached HEAD 2>/dev/null || \
+	[ "$(git diff origin/master --shortstat 2>/dev/null | tail -n1)" != "" ]; then
+	echo "ERROR: repo is not clean.  Exiting." >&2
 	exit 1
 fi
 
@@ -37,7 +38,7 @@ if [ "$1" == "--help" ] || [ -z "$1" ] || [ -z "$2" ]; then
 	echo
 	echo "Usage: $0 <old_version> <new_version> [release notes file]"
 	echo "Old version should be a tag (4.1), a branch (origin/4.1), or a commit id"
-	echo "New version can be 'HEAD' a branch (origin/master) a tag (4.2), or a commit id"
+	echo "New version can be a branch (origin/master) a tag (4.2), or a commit id"
 	echo "Logfile can be a new file or an existing file to update"
 	echo "Example: \"$0 origin/4.1 4.2 rnotes.txt\""
 	echo
@@ -47,8 +48,8 @@ if [ "$1" == "--help" ] || [ -z "$1" ] || [ -z "$2" ]; then
 else
 	OLD_GIT_VERSION="$1"
 	NEW_GIT_VERSION="$2"
-	if [ "$OLD_GIT_VERSION" = "HEAD" -o "$NEW_GIT_VERSION" = "HEAD" ]; then
-		echo "Error: using HEAD as a reference doesn't work"
+	if [[ "$OLD_GIT_VERSION" = "HEAD" || "$NEW_GIT_VERSION" = "HEAD" ]]; then
+		echo "Error: using HEAD as a reference doesn't work" >&2
 		echo
 		exit 1
 	fi
@@ -91,8 +92,8 @@ log_versions() {
 # Get the first commit id in the current tree
 get_latest_commit_id() {
 (
-	cd "$1"
-	git log 2>/dev/null | grep '^commit ' | head -1 | sed 's/commit //'
+	cd "$1" || exit 1
+	git log -n 1 2>/dev/null | grep '^commit ' | head -1 | sed 's/commit //' | sed 's/ .*//'
 )
 }
 
@@ -139,9 +140,11 @@ get_log_dedupe() {
 	log=$(grep -Fxv -f "$LOGFILE" "$dedupe_tmpfile")
 	commits=$(echo "$log" | wc -l)
 
-	#echo "$title: $paths $keywords" >> "$LOGFILE"
-	printf "%s\n%s\n\n" "##### $title ($commits commits) #####" \
-		"$log" >> "$LOGFILE"
+	if [ -n "$log" ]; then
+		#echo "$title: $paths $keywords" >> "$LOGFILE"
+		printf "%s\n%s\n\n" "##### $title ($commits commits) #####" \
+			"$log" >> "$LOGFILE"
+	fi
 
 	rm "$dedupe_tmpfile"
 }
@@ -157,16 +160,18 @@ get_log_submodule() {
 	printf "Submodule %s\n" "$submodule_dir"
 	printf "commit %s to commit %s\n\n" "$old_version" "$new_version"
 
-	(
-	cd "${TOP}/$submodule_dir"
-	log="$(_get_log "$old_version" "$new_version" "$submodule_dir" "." "")"
+	if ! (
+	cd "${TOP}/$submodule_dir" || exit 1
+	log="$(_get_log "$old_version" "$new_version" "$submodule_dir" "." "")" || exit 1
 	commits=$(echo "$log" | wc -l)
 
 	if [ -n "$log" ]; then
 		printf "%s\n" "$submodule_dir ($commits commits)" >> "$LOGFILE"
 		printf "\n" >> "$LOGFILE"
 	fi
-	)
+	); then
+	version_ctrl_c
+	fi
 }
 
 find_areas() {
@@ -180,7 +185,7 @@ find_areas() {
 # is checked out and files are renamed.  This can be a real mess to clean
 # up manually.
 version_ctrl_c() {
-	printf "\n** Trapped CTRL-C\n Cleaning up and exiting.\n"
+	printf "\n Cleaning up and exiting.\n" >&2
 	find 'src' -name 'gnumakefile' \
 		-exec rename 's/gnumakefile/Makefile\.inc/' {} \;
 	git checkout origin/master > /dev/null 2>&1
@@ -203,8 +208,8 @@ show_diff () {
 		new=$(echo "$new" | $4 new | sort)
 		old=$(echo "$old" | $4 old | sort)
 	fi
-	new="$(printf "$new" | sed 's/^/* /')"
-	old="$(printf "$old" | sed 's/^/* /')"
+	new="$(printf "%s" "$new" | sed 's/^/* /')"
+	old="$(printf "%s" "$old" | sed 's/^/* /')"
 
 	if [ -n "$new" ]; then
 		printf "Added %s $1:\n-------------------\n%s\n\n" \
@@ -222,25 +227,26 @@ get_sloc () {
 	# really C, do three passes: everything but .inc files, all .inc files
 	# that aren't Makefiles, all Makefile.inc, then combine them.
 
-	local base=`mktemp`
-	find src -name Makefile.inc > ${base}.mak
+	local base
+	base=$(mktemp)
+	find src -name Makefile.inc > "${base}.mak"
 
 	cloc --progress-rate=0 --quiet \
 		--script-lang="Bourne Shell",bash --exclude-ext=inc \
-		--exclude-dir=vendorcode --out=${base} src
+		--exclude-dir=vendorcode "--out=${base}" src
 	cloc --progress-rate=0 --quiet \
-		--exclude-list-file=${base}.mak --force-lang=c,inc \
-		--exclude-dir=vendorcode --out=${base}.c src
+		"--exclude-list-file=${base}.mak" --force-lang=c,inc \
+		--exclude-dir=vendorcode "--out=${base}.c" src
 	cloc --progress-rate=0 --quiet \
-		--list-file=${base}.mak --force-lang=make,inc \
-		--exclude-dir=vendorcode --out=${base}.m src
+		"--list-file=${base}.mak" --force-lang=make,inc \
+		--exclude-dir=vendorcode "--out=${base}.m" src
 	cloc --progress-rate=0 --quiet --sum-reports \
-		${base} ${base}.c ${base}.m --out ${base}.result
+		"${base}" "${base}.c" "${base}.m" --out "${base}.result"
 
 	echo
-	cat ${base}.result.lang
+	cat "${base}.result.lang"
 
-	rm -f ${base}*
+	rm -f "${base}"*
 }
 
 # Start collecting data from the old and new revisions.
@@ -249,16 +255,17 @@ get_sloc () {
 trap version_ctrl_c SIGINT
 
 #check out old version and get information
-printf -- "Finding old submodule versions...\n"
+echo "Finding old submodule versions..." >&2
 git checkout "$OLD_GIT_VERSION" > /dev/null 2>&1
+echo "Git version: $(git log --oneline -n 1)"
 git submodule update --init --checkout  > /dev/null 2>&1
 for module in $(git submodule --quiet foreach pwd); do
 	name="$(basename "$module" | sed 's/-/_/g')"
 	version="${name^^}_OLD_VERSION"
-	declare "$version"=$(get_latest_commit_id "$module")
+	declare "$version"="$(get_latest_commit_id "$module")"
 done
 
-printf "Logging directories in the old tree\n"
+printf "Logging directories in the old tree\n" >&2
 mainboard_list_old=$(grep -h "^[[:space:]]*config\>[[:space:]]*\<BOARD_" src/mainboard/*/*/Kconfig.name 2>/dev/null | sed "s,^.*\<BOARD_\([A-Z0-9_]*\)\>.*$,\1," | sort)
 cpu_list_old=$(find_areas "src/cpu" "Kconfig" "intel/common")
 soc_list_old=$(find_areas "src/soc" "Makefile.inc" "intel/common\|amd/common\|romstage")
@@ -266,21 +273,22 @@ northbridge_list_old=$(find_areas "src/northbridge" "Kconfig" "")
 sio_list_old=$(find_areas "src/superio" "Makefile.inc" "")
 southbridge_list_old=$(find_areas "src/southbridge" "Kconfig" "")
 
-printf "Calculating old SLOC\n"
+echo "Calculating old SLOC"
 OLD_SLOC=$(get_sloc)
 
 #check out new version and get information
-printf -- "\nFinding new submodule versions...\n"
+printf -- "\nFinding new submodule versions...\n" >&2
 git checkout "$NEW_GIT_VERSION"  > /dev/null 2>&1
+echo "Git version: $(git log --oneline -n 1)"
 git submodule update --init --checkout  > /dev/null 2>&1
 
 for module in $(git submodule --quiet foreach pwd); do
 	name="$(basename "$module" | sed 's/-/_/g')"
 	version="${name^^}_NEW_VERSION"
-	declare "$version"=$(get_latest_commit_id "$module")
+	declare "$version"="$(get_latest_commit_id "$module")"
 done
 
-printf "Logging directories in the new tree\n"
+echo "Logging directories in the new tree." >&2
 mainboard_list_new=$(grep -h "^[[:space:]]*config\>[[:space:]]*\<BOARD_" src/mainboard/*/*/Kconfig.name 2>/dev/null | sed "s,^.*\<BOARD_\([A-Z0-9_]*\)\>.*$,\1," | sort)
 cpu_list_new=$(find_areas "src/cpu" "Kconfig" "intel/common")
 soc_list_new=$(find_areas "src/soc" "Makefile.inc" "intel/common\|amd/common\|romstage")
@@ -294,6 +302,7 @@ NEW_SLOC=$(get_sloc)
 git checkout origin/master  > /dev/null 2>&1
 git submodule update --init --checkout  > /dev/null 2>&1
 trap "" SIGINT
+
 # Done collecting data from the old and new versions
 
 # Start outputting to logfile
@@ -308,15 +317,44 @@ log_versions "$(git log --pretty=%H \
 echo "" >> "$LOGFILE"
 
 ### SPECIFIC AREAS FOR RELEASE ###
-get_log_dedupe "cleanup" "" "spelling\|Use tabs\|transition away from device_t\|space [around\|before]\|code formatting\|commented code\|code cleanup\|capitalize\|unnecessary whitespace\|checkpatch\|remove unused\|remove.*not used"
+get_log_dedupe "Documentation"	"Documentation README"
+
+get_log_dedupe "cleanup" "" "add missing\|fix typo\|clean up\|spelling\|Use tabs\|space [around\|before]\|code formatting\|commented code\|code cleanup\|capitalize\|[unnecessary\|unneeded\|trailing] whitespace\|checkpatch\|remove [unused\|dead\|unneeded\|duplicated\|not used]\|[transition away from\|get rid of\|don't use] device_t"
+
+get_log_dedupe "ACPI Changes" "" "ASL 2.0 syntax"
 
 get_log_dedupe "Google Kahlee / AMD Gardenia" "src/mainboard/google/kahlee src/mainboard/amd/gardenia" "kahlee\|gardenia"
 get_log_dedupe "AMD Stoney Ridge" "src/soc/amd/stoneyridge" "stoney"
 
+get_log_dedupe "Google Zork / AMD Mandolin / AMD Bilby" "src/mainboard/amd/mandolin src/mainboard/google/zork src/mainboard/amd/bilby" "mandolin\|zork\|bilby"
+get_log_dedupe "AMD Picasso" "src/soc/amd/picasso" "picasso"
+
+get_log_dedupe "Google Guybrush / AMD Majolica" "src/mainboard/google/guybrush src/mainboard/amd/majolica" "majolica\|guybrush"
+get_log_dedupe "AMD cezanne" "src/soc/amd/cezanne" "cezanne"
+
+get_log_dedupe "AMD chausie / Google Skyrim" "src/mainboard/amd/chausie src/mainboard/google/skyrim" "chausie\|skyrim"
+get_log_dedupe "AMD sabrina" "src/soc/amd/sabrina" "sabrina"
+
+get_log_dedupe "Google Brya / Intel adlrvp" "src/mainboard/intel/adlrvp src/mainboard/google/brya" "brya\|adlrvp"
+get_log_dedupe "Intel Alder Lake" "src/soc/intel/alderlake" "alderlake\|adl\|alder lake"
+
+get_log_dedupe "intel Elkhart Lake" "src/soc/intel/elkhartlake" "elkhartlake\|ehl\|elkhart lake"
+
+get_log_dedupe "Google Dedede" "src/mainboard/google/dedede" "dedede"
+get_log_dedupe "intel Jasper Lake" "src/soc/intel/jasperlake" "jasperlake\|jsl\|jasper lake"
+
+get_log_dedupe "Intel Tiger Lake" "src/soc/intel/tigerlake" "tigerlake\|tgl\|tiger lake"
+
+get_log_dedupe "Google Hatch" "src/mainboard/google/hatch" "hatch"
+get_log_dedupe "Intel Comet Lake" "src/soc/intel/cometlake" "cometlake\|cml\|comet lake"
+
 get_log_dedupe "Google Eve / Poppy / Fizz / Soraka / Nautilus / Intel KblRvp" "src/mainboard/google/eve src/mainboard/google/poppy src/mainboard/google/fizz src/mainboard/intel/kblrvp" "eve[ :]\|poppy\|fizz\|soraka\|nautilus\|kblrvp"
-#get_log_dedupe "Intel Kunimitsu / Google Chell / Lars / Glados" "src/mainboard/google/lars src/mainboard/google/chell src/mainboard/google/glados src/mainboard/intel/kunimitsu" "chell\|lars\|kunimitsu"
+
+get_log_dedupe "Intel Kunimitsu / Google Chell / Lars / Glados" "src/mainboard/google/lars src/mainboard/google/chell src/mainboard/google/glados src/mainboard/intel/kunimitsu" "chell\|lars\|kunimitsu"
 get_log_dedupe "Purism SKL" "src/mainboard/purism/librem_skl" "librem13v2\|librem_skl"
 get_log_dedupe "Intel Skylake / Kabylake" "src/soc/intel/skylake"  "skylake\|sky.lake\|kabylake\|kaby.lake"
+
+get_log_dedupe "Intel Glkrvp / Google Octopus / Bip / Yorp" "src/mainboard/google/octopus src/mainboard/intel/glkrvp" "octopus\|glkrvp|\bip\|yorp"
 
 get_log_dedupe "Google Cyan / Intel Strago" "src/mainboard/google/cyan src/mainboard/intel/strago" "cyan\|strago"
 get_log_dedupe "Intel Braswell" "src/soc/intel/braswell" "braswell"
@@ -327,21 +365,45 @@ get_log_dedupe "Rockchip rk3399" "src/soc/rockchip/rk3399" "rk3399"
 get_log_dedupe "Google Reef / Pyro / Sand / Snappy / Nasher" "src/mainboard/google/reef" "reef\|pyro\|sand[ :]\|snappy\|nasher"
 #get_log_dedupe "Intel apollolake_rvp leafhill minnow3" "src/mainboard/intel/apollolake_rvp src/mainboard/intel/leafhill src/mainboard/intel/minnow3" "apollolake_rvp\|leafhill\|minnow3"
 get_log_dedupe "Siemens mc_apl1" "src/mainboard/siemens/mc_apl1" "mc_apl1"
-get_log_dedupe "Intel Apollolake" "src/soc/intel/apollolake" "apollolake\|apollo.lake"
+get_log_dedupe "Intel Apollolake/ Geminilake" "src/soc/intel/apollolake" "apollolake\|apollo.lake\|geminilake\|gemini.lake\|apl\|glk"
 
+get_log_dedupe "Google Zoombini / Intel cannonlake_rvp" "src/mainboard/google/zoombini src/mainboard/intel/cannonlake_rvp" "zoombini\|cannonlake_rvp"
 get_log_dedupe "Intel CannonLake" "src/soc/intel/cannonlake src/mainboard/intel/cannonlake_rvp" "cannonlake"
+
+get_log_dedupe "Google Kuki" "src/mainboard/google/kukui" "kukui"
+get_log_dedupe "mediatek/mt8183" "src/soc/mediatek/mt8183" "mt8183"
+
+get_log_dedupe "Google Cheza" "src/mainboard/google/cheza" "cheza"
+get_log_dedupe "Qualcomm sdm845" "src/soc/qualcomm/sdm845" "sdm845"
+
+get_log_dedupe "Prodrive Hermes / Google Sarien / Intel coffeelake_rvp" "src/mainboard/intel/coffeelake_rvp src/mainboard/google/sarien src/mainboard/prodrive/hermes"
+get_log_dedupe "Intel Coffeelake" "soc/intel/coffeelake"
+
+get_log_dedupe "Intel Icelake" "src/soc/intel/icelake src/mainboard/intel/icelake_rvp" "icelake"
+
+get_log_dedupe "Cavium" "src/soc/cavium src/mainboard/cavium src/mainboard/opencellular/elgon "
+get_log_dedupe "Scaleway Tagada" "src/mainboard/scaleway/tagada" "tagada"
 
 get_log_dedupe "Intel Galileo" "src/mainboard/intel/galileo" "galileo"
 get_log_dedupe "Intel Quark" "src/soc/intel/quark" "quark"
 
 get_log_dedupe "Intel Baytrail" "src/soc/intel/baytrail" "baytrail"
-#get_log_dedupe "Google Gale / Qualcomm QX ipq40xx" "src/mainboard/google/gale src/soc/qualcomm/ipq40xx" "gale\|ipq40"
-#et_log_dedupe "Google Rotor / Marvell Mvmap2315" "src/soc/marvell/mvmap2315 src/mainboard/google/rotor" "marvell\|mvmap\|rotor"
+get_log_dedupe "Google Gale / Qualcomm QX ipq40xx" "src/mainboard/google/gale src/soc/qualcomm/ipq40xx" "gale\|ipq40"
+get_log_dedupe "Google Rotor / Marvell Mvmap2315" "src/soc/marvell/mvmap2315 src/mainboard/google/rotor" "marvell\|mvmap\|rotor"
 
 get_log_dedupe "Gigabyte ga-g41m-es2l" "src/mainboard/gigabyte/ga-g41m-es2l" "es2l"
 get_log_dedupe "Intel x4x northbridge / LGA775" "src/northbridge/intel/x4x src/cpu/intel/socket_LGA775" "x4x\|lga775"
 
+get_log_dedupe "Intel Haswell / Broadwell" "src/northbridge/haswell" "haswell"
+get_log_dedupe "Intel Lynxpoint" "src/southbridge/intel/lynxpoint" "lynxpoint"
+
 get_log_dedupe "Intel Sandybridge / Ivybridge" "src/southbridge/intel/bd82x6x src/southbridge/intel/fsp_bd82x6x src/northbridge/intel/sandybridge src/northbridge/intel/fsp_sandybridge src/cpu/intel/fsp_model_206ax src/cpu/intel/model_206ax" "sandybridge\|ivybridge\|bd82x6x"
+
+get_log_dedupe "Google Herbrine" "src/mainboard/google/herobrine" "herobrine"
+get_log_dedupe "Qualcomm SC7280" "src/soc/qualcomm/sc2780" "sc2780"
+
+get_log_dedupe "Google Corsola" "src/mainboard/google/corsola" "corsola"
+get_log_dedupe "Mediatek MT8186" "src/soc/mediatek/mt8186" "mt8186"
 
 get_log_dedupe "Intel Common" "src/soc/intel/common src/southbridge/intel/common src/northbridge/intel/common" ""
 get_log_dedupe "Amd Common" "src/soc/amd/common src/southbridge/amd/common" ""
@@ -350,18 +412,32 @@ get_log_dedupe "Nvidia" "src/southbridge/nvidia" ""
 get_log_dedupe "Via" "src/northbridge/via src/southbridge/via" ""
 get_log_dedupe "Broadcom" "src/southbridge/broadcom" ""
 get_log_dedupe "Qualcomm" "src/soc/qualcomm" ""
+get_log_dedupe "Mediatek" "src/soc/mediatek" ""
 
 get_log_dedupe "Intel vendorcode / FSP" "src/drivers/intel/fsp* src/vendorcode/intel" ""
-get_log_dedupe "AMD vendorcode / AGESA / PI" "src/vendorcode/amd" ""
+get_log_dedupe "AMD vendorcode / AGESA / PI" "src/vendorcode/amd" "agesa\|binarypi"
 get_log_dedupe "Google vendorcode" "src/vendorcode/google"
+get_log_dedupe "Cavium vendorcode" "src/vendorcode/cavium"
 
-get_log_dedupe "TPM" "src/drivers/i2c/tpm src/security/tpm" "tpm"
+get_log_dedupe "Security" "src/drivers/i2c/tpm src/security" "tpm"
 get_log_dedupe "Vboot" "src/vboot" "vboot"
 
 
 ### GENERAL AREAS FOR RELEASE ###
 # shellcheck disable=SC2013
 {
+
+get_log_dedupe "X86 intel" \
+	"src/cpu/intel src/soc/intel src/northbridge/intel \
+	src/southbridge/intel src/include/intel src/drivers/intel"
+
+get_log_dedupe "X86 AMD" \
+	"src/cpu/amd src/northbridge/amd src/southbridge/amd src/include/amd src/soc/amd" \
+	"agesa\|binarypi\|binary.pi"
+
+get_log_dedupe "X86 common" \
+	"src/arch/x86 src/cpu/x86 src/include/x86 src/include/pc80"
+
 get_log_dedupe "ARM" \
 	"$(for codedir in $(grep -rl "_ARM" --include=Kconfig | \
 	grep -v 'src/mainboard\|payloads/\|drivers/\|vendorcode/\|console' ); \
@@ -369,20 +445,12 @@ get_log_dedupe "ARM" \
 
 get_log_dedupe "RISC-V" \
 	"$(for codedir in $(grep -rl "_RISCV" --include=Kconfig | grep -v 'payloads/\|drivers/\|vendorcode/\|console' ); do dirname "$codedir"; done | grep -v '^src$')" \
-	"riscv\|risc-v\|sifive"
+	"riscv\|risc-v\|lowrisc\|sifive"
 }
 
-get_log_dedupe "X86 intel" \
-	"src/cpu/intel src/soc/intel src/northbridge/intel \
-	src/southbridge/intel src/include/intel src/drivers/intel"
-
-get_log_dedupe "X86 amd" \
-	"src/cpu/amd src/northbridge/amd src/southbridge/amd src/include/amd src/soc/amd" \
-	"agesa\|binarypi\|binary.pi"
-
-get_log_dedupe "X86 common" \
-	"src/arch/x86 src/cpu/x86 src/include/x86 src/include/pc80"
-
+get_log_dedupe "Google Mainboards" "src/mainboard/google"
+get_log_dedupe "Intel Mainboards" "src/mainboard/intel"
+get_log_dedupe "AMD Mainboards" "src/mainboard/amd"
 get_log_dedupe "Mainboards" "src/mainboard/"
 
 # Next, print all the rest of the specific areas
@@ -404,7 +472,6 @@ get_log_dedupe "Include"	"src/include"
 get_log_dedupe "Utilities"	"util"
 get_log_dedupe "Payloads"	"payloads"
 get_log_dedupe "Vendorcode"	"src/vendorcode"
-get_log_dedupe "Documentation"	"Documentation README"
 
 # Then look at areas that are usually outside the mainboards and architectures
 get_log_dedupe "Build system" \
@@ -423,15 +490,17 @@ real_mainboard_names() {
 	local git_version_var=${tree_version^^}_GIT_VERSION
 	local git_version=${!git_version_var}
 	local line
+	local file
+	local vendor
 
-	while read line; do
-		local file="$(git grep -l "^[[:space:]]*config\>[[:space:]]*\<BOARD_${line}\$" ${git_version} -- src/mainboard/\*/\*/Kconfig.name | sed "s,^${git_version}:,,")"
+	while read -r line; do
+		file="$(git grep -l "^[[:space:]]*config\>[[:space:]]*\<BOARD_${line}\$" "${git_version}" -- src/mainboard/\*/\*/Kconfig.name | sed "s,^${git_version}:,,")"
 		if [ -z "$file" ]; then
 			echo "This shouldn't happen: couldn't find Kconfig for $line"
 			exit 1
 		fi
-		local vendor="$(git grep \" ${git_version} -- $(echo ${file} | cut -d/ -f1-3,5) | cut -d\" -f2)"
-		git grep -h -A1 "^[[:space:]]*config\>[[:space:]]*\<BOARD_${line}\$" ${git_version} -- ${file} | grep \" |cut -d\" -f2 |sed "s,^,${vendor} ,"
+		vendor="$(git grep \" "${git_version}" -- "$(echo "${file}" | cut -d/ -f1-3,5)" | cut -d\" -f2)"
+		git grep -h -A1 "^[[:space:]]*config\>[[:space:]]*\<BOARD_${line}\$" "${git_version}" -- "${file}" | grep \" |cut -d\" -f2 |sed "s,^,${vendor} ,"
 	done
 }
 
@@ -447,11 +516,13 @@ show_diff "sios"         "$sio_list_old"         "$sio_list_new"
 printf "Submodules\n----------\n" >> "$LOGFILE"
 for module in $(git submodule --quiet foreach pwd); do
 	name=$(basename "$module")
+	module="$(realpath "${module}")"
+	workingdir="$(realpath "${PWD}")"
 	# shellcheck disable=SC2001
-	path=${module#$PWD}
+	path=${module#"$workingdir"}
 	old_version=$(echo "${name^^}_OLD_VERSION" | sed 's/-/_/g')
 	new_version=$(echo "${name^^}_NEW_VERSION" | sed 's/-/_/g')
-	get_log_submodule "${!old_version}" "${!new_version}" "$path"
+	get_log_submodule "${!old_version}" "${!new_version}" "${path}"
 done
 
 printf "\nrepo statistics\n-------------------\n" >> "$LOGFILE"

@@ -8,8 +8,8 @@ Let a jenkins admin know that you’re interested in setting up a jenkins
 build system.
 
 For a permanent build system, this should generally be a dedicated
-machine that is not generally being used for other purposes.  The
-coreboot builds are very intensive.
+machine workstation or server class machine that is not generally being
+used for other purposes.  The coreboot builds are very intensive.
 
 It's also best to be aware that although we don't know of any security
 issues, the jenkins-node image is run with the privileged flag which
@@ -26,34 +26,40 @@ Currently active Jenkins admins:
 *   Patrick Georgi:
     *   Email: [patrick@georgi-clan.de](mailto:patrick@georgi-clan.de)
     *   IRC: pgeorgi
-
+*   Martin Roth:
+    *   Email: [gaumless@gmail.com](mailto:gaumless@gmail.com)
+    *   IRC: martinr
 
 ### Build Machine requirements
 
-For a builder, we need a fast system with lots of threads and plenty of
-RAM.  The builder builds and stores the git repos and output in tmpfs
-along with the ccache save area, so if there isn't enough memory, the
-builds will slow down because of smaller ccache areas and can run into
-"out of storage space" errors.
+For a builder, we need a very fast system with lots of threads and
+plenty of RAM.  The builder builds and stores the git repos and output
+in tmpfs along with the ccache save area, so if there isn't enough
+memory, the builds will slow down because of smaller ccache areas and
+can run into "out of storage space" errors.
 
 #### Current Build Machines
 
 To give an idea of what a suitable build machine might be, currently the
-coreboot project has 3 active jenkins build machines.
+coreboot project has 4 active jenkins build machines.
+
+These times are taken from the week of Feb 21 - Feb 28, 2022
 
 * Congenialbuilder - 128 threads, 256GiB RAM
-  *  Fastest Passing coreboot gerrit build: 4 min, 30 sec
-  *  Slowest Passing coreboot gerrit build: 9 min, 56 sec
+  *  Fastest Passing coreboot gerrit build: 6 min, 47 sec
+  *  Slowest Passing coreboot gerrit build: 14 min
 
+* Gleefulbuilder - 64 thread, 64GiB RAM
+  *  Fastest Passing coreboot gerrit build: 10 min
+  *  Slowest Passing coreboot gerrit build: 46 min
 
-* Gleeful builder - 64 thread, 64GiB RAM
-  *  Fastest Passing coreboot gerrit build: 6 min, 6 sec
-  *  Slowest Passing coreboot gerrit build, 34 min
-
+* Fabulousbuilder - 64 threads, 64GiB RAM
+  *  Fastest Passing coreboot gerrit build: 7 min, 56 sec
+  *  Slowest Passing coreboot gerrit build: 56 min (No ccache)
 
 * Ultron (9elements) - 48 threads, 128GiB RAM
-  *  Fastest Passing coreboot gerrit build: 6 min, 32 sec
-  *  Slowest Passing coreboot gerrit build: 44 min
+  *  Fastest Passing coreboot gerrit build: 12
+  *  Slowest Passing coreboot gerrit build: 58 min
 
 
 ### Jenkins Builds
@@ -67,7 +73,7 @@ You can see all the builds here:
 [https://qa.coreboot.org/](https://qa.coreboot.org/)
 
 Most of the time on the builders is taken up by the coreboot master and
-gerrit builds.
+coreboot gerrit builds.
 
 * [coreboot gerrit build](https://qa.coreboot.org/job/coreboot-gerrit/)
 ([Time trend](https://qa.coreboot.org/job/coreboot-gerrit/buildTimeTrend))
@@ -127,10 +133,23 @@ the machine remotely (if you allow them).
 
 ### Install and set up docker
 
-Install docker by following the
-[directions](https://docs.docker.com/engine/install/) on the docker
-site.  These instructions keep changing, so just check the latest
-information.
+Install docker by following [the
+directions](https://docs.docker.com/engine/install/) on the docker site.
+These instructions keep changing, so just check the latest information.
+
+
+### Set up the system for the jenkins builder
+
+As a regular user - *Not root*, run:
+
+```
+sudo mkdir -p ${COREBOOT_JENKINS_CACHE_DIR}
+sudo mkdir -p ${COREBOOT_JENKINS_CCACHE_DIR}
+sudo chown $(whoami):$(whoami) ${COREBOOT_JENKINS_CCACHE_DIR}
+sudo chown $(whoami):$(whoami) ${COREBOOT_JENKINS_CACHE_DIR}
+wget http://www.dediprog.com/save/78.rar/to/EM100Pro.rar
+mv EM100Pro.rar ${COREBOOT_JENKINS_CACHE_DIR}
+```
 
 
 #### Set up environment variables
@@ -143,8 +162,8 @@ using something other than the default.
 # Set the port used on your machine to connect to jenkins.
 export COREBOOT_JENKINS_PORT=49151
 
-# Set the revision of the container from docker hub
-export DOCKER_COMMIT=65718760fa
+# Set the revision of the container from [docker hub](https://hub.docker.com/repository/docker/coreboot/coreboot-sdk)
+export DOCKER_COMMIT=2021-09-23_b0d87f753c
 
 # Set the location of where the jenkins cache directory will be.
 export COREBOOT_JENKINS_CACHE_DIR="/srv/docker/coreboot-builder/cache"
@@ -199,18 +218,6 @@ Variables:
   DOCKER_COMMIT=65718760fa
 ```
 
-### Set up the system for the jenkins builder
-
-As a regular user - *Not root*, run:
-
-```
-sudo mkdir -p ${COREBOOT_JENKINS_CACHE_DIR}
-sudo mkdir -p ${COREBOOT_JENKINS_CCACHE_DIR}
-sudo chown $(whoami):$(whoami) ${COREBOOT_JENKINS_CCACHE_DIR}
-sudo chown $(whoami):$(whoami) ${COREBOOT_JENKINS_CACHE_DIR}
-wget http://www.dediprog.com/save/78.rar/to/EM100Pro.rar
-mv EM100Pro.rar ${COREBOOT_JENKINS_CACHE_DIR}
-```
 
 ### Install the coreboot jenkins builder
 
@@ -226,17 +233,17 @@ machine profile on qa.coreboot.org.
 
 They need to know:
 *   Your external IP address or domain name.  If you don’t have a static
-IP, make sure you have a dynamic dns hostname configured.
+    IP, make sure you have a dynamic dns hostname configured.
 *   The port on your machine and firewall that’s exposed for jenkins:
-`$COREBOOT_JENKINS_PORT`
+    `$COREBOOT_JENKINS_PORT`
 *   The core count of the machine.
 *   How much memory is available on the machine.  This helps determine
-the amount of memory used for ccache.
+    the amount of memory used for ccache.
 
 
 ### First build
 On the first build after a machine is reset, it will frequently take
-20-25 minutes to do the entire what-jenkins-does build while the ccache
+an hour to do the entire what-jenkins-does build while the ccache
 is getting filled up and the entire coreboot repo gets downloaded.  As
 the ccache gets populated, the build time will drop.
 
@@ -254,12 +261,12 @@ the ccache gets populated, the build time will drop.
 
 
 WARNING: This should not be used to make changes to the build system,
-but just to debug issues. Changes to the build system are highly
+but just to debug issues. Changes to the build system image are highly
 discouraged as it leads to situations where patches can pass the build
 testing on one builder and fail on another builder. Any changes that are
 made in the image will be lost on the next update, so if you
-accidentally change something, you can remove the containers and images
-and update to get a fresh installation.
+accidentally change something, you can remove the containers and images,
+then update to get a fresh installation.
 
 
 ### How to download containers/images for a fresh installation and remove old containers
@@ -376,6 +383,7 @@ to be marked as a coverity builder.
 
 Download the Linux-64 coverity build tool and decompress it into your
 cache directory as defined by the `$COREBOOT_JENKINS_CACHE_DIR` variable
+on the jenkins server.
 
 [https://scan.coverity.com/download](https://scan.coverity.com/download)
 

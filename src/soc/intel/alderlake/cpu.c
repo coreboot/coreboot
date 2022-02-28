@@ -231,6 +231,11 @@ enum adl_cpu_type get_adl_cpu_type(void)
 		PCI_DID_INTEL_ADL_N_ID_4,
 	};
 
+	const uint16_t rpl_p_mch_ids[] = {
+		PCI_DID_INTEL_RPL_P_ID_1,
+		PCI_DID_INTEL_RPL_P_ID_2,
+	};
+
 	const uint16_t mchid = pci_s_read_config16(PCI_DEV(0, PCI_SLOT(SA_DEVFN_ROOT),
 							   PCI_FUNC(SA_DEVFN_ROOT)),
 						   PCI_DEVICE_ID);
@@ -255,6 +260,11 @@ enum adl_cpu_type get_adl_cpu_type(void)
 			return ADL_N;
 	}
 
+	for (size_t i = 0; i < ARRAY_SIZE(rpl_p_mch_ids); i++) {
+		if (rpl_p_mch_ids[i] == mchid)
+			return RPL_P;
+	}
+
 	return ADL_UNKNOWN;
 }
 
@@ -265,6 +275,7 @@ uint8_t get_supported_lpm_mask(void)
 	case ADL_M: /* fallthrough */
 	case ADL_N:
 	case ADL_P:
+	case RPL_P:
 		return LPM_S0i2_0 | LPM_S0i3_0;
 	case ADL_S:
 		return LPM_S0i2_0 | LPM_S0i2_1;

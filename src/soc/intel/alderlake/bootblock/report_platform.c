@@ -29,6 +29,7 @@ static struct {
 	{ CPUID_ALDERLAKE_Q0, "Alderlake Q0 Platform" },
 	{ CPUID_ALDERLAKE_R0, "Alderlake R0 Platform" },
 	{ CPUID_ALDERLAKE_N_A0, "Alderlake-N Platform" },
+	{ CPUID_RAPTORLAKE_P_J0, "Raptorlake-P J0 Platform" },
 };
 
 static struct {
@@ -50,6 +51,8 @@ static struct {
 	{ PCI_DID_INTEL_ADL_N_ID_2, "Alderlake-N" },
 	{ PCI_DID_INTEL_ADL_N_ID_3, "Alderlake-N" },
 	{ PCI_DID_INTEL_ADL_N_ID_4, "Alderlake-N" },
+	{ PCI_DID_INTEL_RPL_P_ID_1, "Raptorlake-P" },
+	{ PCI_DID_INTEL_RPL_P_ID_2, "Raptorlake-P" },
 
 };
 
@@ -89,11 +92,40 @@ static struct {
 	{ PCI_DID_INTEL_ADP_P_ESPI_29, "Alderlake-P SKU" },
 	{ PCI_DID_INTEL_ADP_P_ESPI_30, "Alderlake-P SKU" },
 	{ PCI_DID_INTEL_ADP_P_ESPI_31, "Alderlake-P SKU" },
-	{ PCI_DID_INTEL_ADP_P_ESPI_32, "Alderlake-P SKU" },
-	{ PCI_DID_INTEL_ADP_P_ESPI_33, "Alderlake-P SKU" },
-	{ PCI_DID_INTEL_ADP_M_ESPI_32, "Alderlake-M SKU" },
 	{ PCI_DID_INTEL_ADP_M_N_ESPI_1, "Alderlake-N SKU" },
 	{ PCI_DID_INTEL_ADP_M_N_ESPI_2, "Alderlake-N SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_0, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ADP_P_ESPI_1, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ADP_P_ESPI_2, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_3, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_4, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_5, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ADP_M_ESPI_6, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_7, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_8, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_9, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_10, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_11, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_12, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_13, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_14, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_15, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_16, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_17, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_18, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_19, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_20, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_21, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_22, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_23, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_24, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_25, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_26, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_27, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_28, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_29, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_30, "Raptorlake-P SKU" },
+	{ PCI_DID_INTEL_RPP_P_ESPI_31, "Raptorlake-P SKU" },
 };
 
 static struct {
@@ -127,6 +159,9 @@ static struct {
 	{ PCI_DID_INTEL_ADL_N_GT1, "Alderlake N GT1" },
 	{ PCI_DID_INTEL_ADL_N_GT2, "Alderlake N GT2" },
 	{ PCI_DID_INTEL_ADL_N_GT3, "Alderlake N GT3" },
+	{ PCI_DID_INTEL_RPL_P_GT1, "Raptorlake P GT1" },
+	{ PCI_DID_INTEL_RPL_P_GT2, "Raptorlake P GT2" },
+	{ PCI_DID_INTEL_RPL_P_GT3, "Raptorlake P GT3" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

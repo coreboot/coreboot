@@ -14,6 +14,8 @@ static struct device_operations sata_ops = {
 
 static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_MTL_SATA,
+	PCI_DID_INTEL_RPP_P_SATA_1,
+	PCI_DID_INTEL_RPP_P_SATA_2,
 	PCI_DID_INTEL_SPT_U_SATA,
 	PCI_DID_INTEL_SPT_U_Y_PREMIUM_SATA,
 	PCI_DID_INTEL_SPT_KBL_SATA,

@@ -5,6 +5,7 @@
 #include <device/pci_ids.h>
 
 static const unsigned short pci_device_ids[] = {
+	PCI_DID_INTEL_RPL_DTT,
 	PCI_DID_INTEL_MTL_DTT,
 	PCI_DID_INTEL_CML_DTT,
 	PCI_DID_INTEL_TGL_DTT,

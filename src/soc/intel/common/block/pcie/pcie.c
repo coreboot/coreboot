@@ -66,6 +66,9 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pcie_device_ids[] = {
+	PCI_DID_INTEL_RPL_P_PCIE_RP1,
+	PCI_DID_INTEL_RPL_P_PCIE_RP2,
+	PCI_DID_INTEL_RPL_P_PCIE_RP3,
 	PCI_DID_INTEL_MTL_SOC_PCIE_RP1,
 	PCI_DID_INTEL_MTL_SOC_PCIE_RP2,
 	PCI_DID_INTEL_MTL_SOC_PCIE_RP3,

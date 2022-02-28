@@ -10,6 +10,8 @@
 #include <timestamp.h>
 #include <2struct.h>
 
+DECLARE_REGION(cbmemc_transfer)
+
 int transfer_buffer_valid(const struct transfer_info_struct *ptr)
 {
 	if (ptr->magic_val == TRANSFER_MAGIC_VAL && ptr->struct_bytes == sizeof(*ptr))
@@ -84,6 +86,13 @@ void replay_transfer_buffer_cbmemc(void)
 		return;
 
 	cbmemc = (void *)((uintptr_t)info + info->console_offset);
+
+	/* Verify the cbmemc transfer buffer is where we expect it to be. */
+	if ((void *)_cbmemc_transfer != (void *)cbmemc)
+		return;
+
+	if (REGION_SIZE(cbmemc_transfer) != cbmemc_size)
+		return;
 
 	/* We need to manually initialize cbmemc so we can fill the new buffer. cbmemc_init()
 	 * will also be called later in console_hw_init(), but it will be a no-op. */

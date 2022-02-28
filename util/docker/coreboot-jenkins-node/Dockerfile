@@ -28,6 +28,7 @@ RUN apt-get -y update && \
 	parallel \
 	meson ninja-build \
 	sdcc \
+	linkchecker \
 	lua5.3 liblua5.3-dev default-jre-headless openssh-server && \
 	apt-get clean
 

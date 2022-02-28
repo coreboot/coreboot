@@ -188,6 +188,6 @@ Contents:
 * [SuperIO](superio/index.md)
 * [Vendorcode](vendorcode/index.md)
 * [Utilities](util.md)
-* [coreboot infrastructure](infrastructure/index.md)
+* [Project infrastructure & services](infrastructure/index.md)
 * [Release notes](releases/index.md)
 * [Documentation License](documentation_license.md)

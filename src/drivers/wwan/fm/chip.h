@@ -20,6 +20,9 @@ struct drivers_wwan_fm_config {
 
 	/* Pointer to the corresponding RTD3 */
 	DEVTREE_CONST struct device *rtd3dev;
+
+	/* Add `DmaProperty` in _DSD */
+	bool add_acpi_dma_property;
 };
 
 #endif /* __DRIVERS_WWAN_FM_CHIP_H__ */

@@ -25,12 +25,16 @@ USER root
 
 RUN apt-get -y update && \
 	apt-get -y install \
-	parallel \
-	meson ninja-build \
-	sdcc \
-	linkchecker \
-	lua5.3 liblua5.3-dev default-jre-headless openssh-server && \
-	apt-get clean
+		default-jre-headless \
+		liblua5.3-dev \
+		linkchecker \
+		lua5.3 \
+		meson \
+		ninja-build \
+		openssh-server \
+		parallel \
+		sdcc \
+	&& apt-get clean
 
 # Because of the way that the variables are being replaced, docker's 'COPY'
 # command does not work
@@ -63,10 +67,17 @@ RUN gcc -o /usr/sbin/encapsulate /tmp/encapsulate.c && \
 COPY --from=zephyr-sdk /opt/zephyr-sdk /opt/zephyr-sdk
 
 RUN apt-get update && \
-	apt-get install -y python3-pip pykwalify python3-yaml \
-		python3-pyelftools python3-jsonschema python3-colorama \
-		python3-pyrsistent python3-setuptools swig && \
-	apt-get clean
+	apt-get install -y \
+		python3-pip \
+		pykwalify \
+		python3-yaml \
+		python3-pyelftools \
+		python3-jsonschema \
+		python3-colorama \
+		python3-pyrsistent \
+		python3-setuptools \
+		swig \
+	&& apt-get clean
 
 RUN mkdir /tmp/b && cd /tmp/b && \
 	git clone https://git.kernel.org/pub/scm/utils/dtc/dtc.git dtc && \

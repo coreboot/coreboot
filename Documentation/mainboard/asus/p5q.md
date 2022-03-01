@@ -130,5 +130,5 @@ You can also control the CPU fan with similar rules:
     echo 2000 >/sys/class/hwmon/hwmon2/pwm1_tolerance
 
 [ASUS P5Q]: https://www.asus.com/Motherboards/P5Q
-[this guide]: https://doc.coreboot.org/flash_tutorial/int_flashrom.html
+[this guide]: ../../flash_tutorial/int_flashrom.md
 [kernel docs]: https://www.kernel.org/doc/Documentation/hwmon/w83627ehf.rst

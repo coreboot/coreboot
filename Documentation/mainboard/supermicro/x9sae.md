@@ -41,10 +41,9 @@ first, otherwise ME may write something back and break the firmware you write.
 The following command may be used to flash coreboot. (To do so, linux kernel
 could be started with `iomem=relaxed` or unload the `lpc_ich` kernel module)
 
-Now you can [flash internally](/flash_tutorial/int_flashrom.md). It is
-recommended to flash only the `bios` region (use `--ifd -i bios -N` flashrom
-arguments), in order to minimize the chances of messing something up in the
-beginning.
+Now you can [flash internally]. It is recommended to flash only the `bios`
+region (use `--ifd -i bios -N` flashrom arguments), in order to minimize the
+chances of messing something up in the beginning.
 
 The flash chip is a SOIC-8 SPI flash, and may be socketed, so it's also easy
 to do in-system programming, or remove and flash externally if it is socketed.
@@ -106,3 +105,4 @@ seems that it shall not appear on X9SAE even if it is defined.
 [X9SAE-V]:  https://www.supermicro.com/products/motherboard/xeon/c216/x9sae-v.cfm
 [W25Q128FVSG]: https://static.chipdip.ru/lib/093/DOC001093213.pdf
 [flashrom]: https://flashrom.org/Flashrom
+[flash internally]: ../../flash_tutorial/int_flashrom.md

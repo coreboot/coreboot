@@ -353,9 +353,12 @@ Verify that it worked:
 
 Bingo!
 
-Now you can [flash internally](/flash_tutorial/int_flashrom.md).
-Remember to flash only the `bios` region (use `--ifd -i bios -N`
-flashrom arguments). `fd` and `me` are still locked.
+Now you can [flash internally]. Remember to flash only the `bios` region
+(use `--ifd -i bios -N` flashrom arguments). `fd` and `me` are still
+locked.
 
 Note that you should have an external SPI programmer as a backup method.
 It will help you recover if you flash non-working ROM by mistake.
+
+
+[flash internally]: ../../flash_tutorial/int_flashrom.md

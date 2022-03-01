@@ -25,7 +25,7 @@ New mainboards
 * Google nipperkin
 * Lenovo w541
 * Siemens mc_ehl
-* SuperMicro x9sae
+* Supermicro x9sae
 * System76 addw1
 * System76 addw2
 * System76 bonw14

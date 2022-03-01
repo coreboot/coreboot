@@ -48,10 +48,10 @@ This section contains documentation about coreboot on specific mainboards.
 The boards in this section are not real mainboards, but emulators.
 
 - [Spike RISC-V emulator](emulation/spike-riscv.md)
-- [Qemu RISC-V emulator](emulation/qemu-riscv.md)
-- [Qemu AArch64 emulator](emulation/qemu-aarch64.md)
-- [Qemu x86 Q35](emulation/qemu-q35.md)
-- [Qemu x86 PC](emulation/qemu-i440fx.md)
+- [QEMU RISC-V emulator](emulation/qemu-riscv.md)
+- [QEMU AArch64 emulator](emulation/qemu-aarch64.md)
+- [QEMU x86 Q35](emulation/qemu-q35.md)
+- [QEMU x86 PC](emulation/qemu-i440fx.md)
 
 ## Facebook
 

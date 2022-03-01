@@ -1,0 +1,249 @@
+chip soc/intel/tigerlake
+	device cpu_cluster 0 on
+		register "tcc_offset" = "12"
+		register "eist_enable" = "true"
+		device lapic 0 on end
+	end
+	device domain 0 on
+		subsystemid 0x1558 0x14a1 inherit
+		device ref system_agent on
+			register "power_limits_config[POWER_LIMITS_U_4_CORE]" = "{
+				.tdp_pl1_override = 20,
+				.tdp_pl2_override = 30,
+				.psys_pmax = 65,
+			}"
+			register "power_limits_config[POWER_LIMITS_U_2_CORE]" = "{
+				.tdp_pl1_override = 20,
+				.tdp_pl2_override = 30,
+				.psys_pmax = 65,
+			}"
+			register "SaGv" = "SaGv_Enabled"
+			register "enable_c6dram" = "true"
+		end
+		device ref igpu on
+			register "gfx" = "GMA_DEFAULT_PANEL(0)"
+			# eDP
+			register "DdiPortAConfig" = "1"
+			register "DdiPortAHpd" = "1"
+			register "DdiPortADdc" = "0"
+			# HDMI
+			register "DdiPortBConfig" = "0"
+			register "DdiPortBHpd" = "1"
+			register "DdiPortBDdc" = "1"
+		end
+		device ref dptf on end
+		device ref tbt_pcie_rp0 on end
+		device ref tbt_dma0 on
+			chip drivers/intel/usb4/retimer
+				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A23)"
+				use tcss_usb3_port1 as dfp[0].typec_port
+				device generic 0 on end
+			end
+		end
+		device ref north_xhci on
+			register "UsbTcPortEn" = "true"
+			register "TcssXhciEn" = "true"
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 J_TYPEC1""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device ref tcss_usb3_port1 on end
+					end
+				end
+			end
+		end
+		device ref south_xhci on
+			# USB2
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A, left (J_USB3_1)
+			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A, right (J_USB3_2)
+			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-C (J_TYPEC1)
+			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# 3G/LTE
+			register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"	# Camera
+			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
+			# USB3
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-A, left (J_USB3_1)
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-A, right (J_USB3_2)
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# 3G/LTE
+			# ACPI
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 J_USB3_1""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 J_USB3_2""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 J_TYPEC1""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 3G/LTE""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port7 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 J_USB3_1""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 J_USB3_2""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device ref usb3_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 3G/LTE""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb3_port4 on end
+					end
+				end
+			end
+		end
+		device ref i2c0 on
+			register "SerialIoI2cMode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+			register "common_soc_config.i2c[0]" = "{
+				.speed = I2C_SPEED_FAST,
+				.rise_time_ns = 80,
+				.fall_time_ns = 110,
+				.speed_config[0] = {
+					.speed = I2C_SPEED_FAST,
+					.scl_lcnt = 0x13b,
+					.scl_hcnt = 0xc8,
+					.sda_hold = 0x5a,
+				}
+			}"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN040D""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_B3_IRQ)"
+				register "generic.probed" = "true"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+		end
+		device ref i2c1 on # Retimer ROM
+			register "SerialIoI2cMode[PchSerialIoIndexI2C1]" = "PchSerialIoPci"
+		end
+		device ref cnvi_wifi on
+			register "CnviBtCore" = "true"
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
+		end
+		device ref pcie_rp3 on
+			register "PcieRpEnable[2]" = "true"
+			register "PcieRpLtrEnable[2]" = "true"
+			register "PcieClkSrcUsage[1]" = "2"
+			register "PcieClkSrcClkReq[1]" = "1"
+			register "PcieRpSlotImplemented[2]" = "true"
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
+			chip drivers/wifi/generic
+				device pci 00.0 on end
+			end
+		end
+		device ref pcie_rp6 on
+			# Card reader
+			device pci 00.0 on end
+			register "PcieRpEnable[5]" = "true"
+			register "PcieRpLtrEnable[5]" = "true"
+			register "PcieClkSrcUsage[2]" = "5"
+			register "PcieClkSrcClkReq[2]" = "2"
+		end
+		device ref pcie_rp9 on
+			# SSD2 - PCIe mode
+			register "PcieRpEnable[8]" = "true"
+			register "PcieRpLtrEnable[8]" = "true"
+			register "PcieClkSrcUsage[0]" = "8"
+			register "PcieClkSrcClkReq[0]" = "0"
+			register "PcieRpSlotImplemented[8]" = "true"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD2)" "SlotDataBusWidth4X"
+			chip soc/intel/common/block/pcie/rtd3
+				device generic 0 on end
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D14)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D9)"
+				register "srcclk_pin" = "0"
+			end
+		end
+		device ref peg on
+			# SSD1 - PCIe4
+			register "PcieClkSrcUsage[3]" = "0x40"
+			register "PcieClkSrcClkReq[3]" = "3"
+			#register "CpuPcieRpLtrEnable[0]" = "true"       # currently set in ramstage.c
+			#register "CpuPcieRpSlotImplemented[0]" = "true" # currently set in ramstage.c
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
+			chip soc/intel/common/block/pcie/rtd3
+				device generic 0 on end
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C13)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C22)"
+				register "srcclk_pin" = "3"
+			end
+		end
+		device ref pch_espi on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end
+		device ref sata on
+			# SSD2 - SATA mode
+			register "SataPortsEnable[1]" = "true"
+			register "SataPortsDevSlp[1]" = "true"
+			register "SataPortsEnableDitoConfig[1]" = "true"
+			register "SataSalpSupport" = "true"
+		end
+		device ref pmc hidden
+			register "AcousticNoiseMitigation" = "true"
+			register "SlowSlewRate" = "SLEW_FAST_4"
+			register "FastPkgCRampDisable" = "true"
+			register "PchPmSlpS3MinAssert" = "3" # 50ms
+			register "PchPmSlpS4MinAssert" = "1" # 1s
+			register "PchPmSlpAMinAssert" = "4" # 2s
+			register "PchPmSlpSusMinAssert" = "4" # 4s
+			register "PchPmPwrCycDur" = "0" # 4-5s
+			register "s0ix_enable" = "true"
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port3 as usb2_port
+						use tcss_usb3_port1 as usb3_port
+						device generic 0 alias conn0 on end
+					end
+				end
+			end
+		end
+		device ref hda on
+			register "PchHdaAudioLinkHdaEnable" = "true"
+		end
+		device ref uart2 on
+			register "SerialIoUartMode[PchSerialIoIndexUART2]" = "PchSerialIoSkipInit"
+		end
+		device ref heci1 on end
+		device ref smbus on end
+		device ref shared_ram on end
+		device ref p2sb hidden end
+		device ref fast_spi on end
+	end
+end

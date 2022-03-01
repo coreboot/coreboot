@@ -1,0 +1,3 @@
+boot_option=Fallback
+debug_level=Debug
+power_on_after_fail=Disable

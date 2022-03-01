@@ -1,0 +1,63 @@
+config BOARD_CLEVO_TGLU_COMMON
+	def_bool n
+	select BOARD_ROMSIZE_KB_16384
+	select DRIVERS_I2C_HID
+	select DRIVERS_INTEL_PMC
+	select DRIVERS_INTEL_USB4_RETIMER
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MAINBOARD_HAS_LPC_TPM
+	select MAINBOARD_HAS_TPM2
+	select NO_UART_ON_SUPERIO
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+	select SOC_INTEL_TIGERLAKE
+	select SPD_READ_BY_WORD
+	select SYSTEM_TYPE_LAPTOP
+
+config BOARD_CLEVO_L140MU
+	select BOARD_CLEVO_TGLU_COMMON
+	select HAVE_SPD_IN_CBFS
+
+if BOARD_CLEVO_TGLU_COMMON
+
+config MAINBOARD_DIR
+	default "clevo/tgl-u"
+
+config VARIANT_DIR
+	default "l140mu" if BOARD_CLEVO_L140MU
+
+config MAINBOARD_PART_NUMBER
+	default "L140MU" if BOARD_CLEVO_L140MU
+
+config MAINBOARD_VERSION
+	default "2.2A" if BOARD_CLEVO_L140MU
+
+config DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config CBFS_SIZE
+	default 0xb00000 if BOARD_CLEVO_L140MU
+
+config CONSOLE_POST
+	default y
+
+config UART_FOR_CONSOLE
+	default 2
+
+config TPM_PIRQ
+	default 0x77 if BOARD_CLEVO_L140MU # GPP_C9_IRQ
+
+config POST_DEVICE
+	default n
+
+config SEABIOS_PS2_TIMEOUT
+	default 500
+
+config USE_PM_ACPI_TIMER
+	default n
+
+endif

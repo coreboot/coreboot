@@ -1,0 +1,4 @@
+comment "Tiger Lake U"
+
+config BOARD_CLEVO_L140MU
+	bool "L140MU / L141MU / L142MU"

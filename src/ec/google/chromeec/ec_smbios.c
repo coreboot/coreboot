@@ -37,3 +37,8 @@ const char *smbios_mainboard_manufacturer(void)
 
 	return manuf;
 }
+
+const char *smbios_system_manufacturer(void)
+{
+	return "Google";
+}

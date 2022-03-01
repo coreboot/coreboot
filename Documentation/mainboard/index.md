@@ -52,6 +52,7 @@ The boards in this section are not real mainboards, but emulators.
 - [QEMU AArch64 emulator](emulation/qemu-aarch64.md)
 - [QEMU x86 Q35](emulation/qemu-q35.md)
 - [QEMU x86 PC](emulation/qemu-i440fx.md)
+- [QEMU POWER9](emulation/qemu-power9.md)
 
 ## Facebook
 

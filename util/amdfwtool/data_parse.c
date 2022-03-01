@@ -472,6 +472,25 @@ static int skip_comment_blank_line(char *oneline)
 	return retval;
 }
 
+char get_level_from_config(char *line, regoff_t level_index, amd_cb_config *cb_config)
+{
+	char lvl = 'x';
+	/* If the optional level field is present,
+	   extract the level char. */
+	if (level_index != -1) {
+		if (cb_config->recovery_ab == 0)
+			lvl = line[level_index + 1];
+		else if (strlen(&line[level_index]) >= 3)
+			lvl = line[level_index + 2];
+	}
+
+	assert(lvl == 'x' || lvl == 'X' ||
+		lvl == 'b' || lvl == 'B' ||
+		lvl == '1' || lvl == '2');
+
+	return lvl;
+}
+
 /*
   return value:
 	0: The config file can not be parsed correctly.
@@ -537,16 +556,8 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 
 				/* If the optional level field is present,
 				   extract the level char. */
-				if (match[3].rm_so != -1) {
-					if (cb_config->recovery_ab == 0)
-						ch_lvl = oneline[match[3].rm_so + 1];
-					else
-						ch_lvl = oneline[match[3].rm_so + 2];
-				}
-
-				assert(ch_lvl == 'x' || ch_lvl == 'X' ||
-					ch_lvl == 'b' || ch_lvl == 'B' ||
-					ch_lvl == '1' || ch_lvl == '2');
+				ch_lvl = get_level_from_config(oneline,
+						match[3].rm_so, cb_config);
 
 				if (find_register_fw_filename_psp_dir(
 						&(oneline[match[1].rm_so]),

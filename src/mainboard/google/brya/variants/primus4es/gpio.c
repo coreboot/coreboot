@@ -23,7 +23,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* B2  : VRALERT# ==> NC */
 	PAD_NC(GPP_B2, NONE),
 	/* B3  : PROC_GP2 ==> eMMC_PERST_L */
-	PAD_CFG_GPO_LOCK(GPP_B3, 1, LOCK_CONFIG),
+	PAD_CFG_GPO(GPP_B3, 1, DEEP),
 	/* B7  : ISH_12C1_SDA ==> PCH_I2C_TPM_SDA */
 	PAD_CFG_NF_LOCK(GPP_B7, NONE, NF2, LOCK_CONFIG),
 	/* B8  : ISH_12C1_SCL ==> PCH_I2C_TPM_SCL */
@@ -88,6 +88,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_A12, 1, DEEP),
 	/* A13 : PMC_I2C_SCL ==> GSC_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
+	/* B3  : PROC_GP2 ==> eMMC_PERST_L */
+	PAD_CFG_GPO(GPP_B3, 0, DEEP),
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 0, DEEP),
 	/* B7  : ISH_12C1_SDA ==> PCH_I2C_TPM_SDA */

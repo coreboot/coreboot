@@ -7,8 +7,6 @@
 #include <soc/pmic_wrap.h>
 #include <types.h>
 
-#define RTC_GPIO_USER_MASK	  ((1 << 13) - (1 << 8))
-
 /* initialize rtc related gpio */
 static bool rtc_gpio_init(void)
 {

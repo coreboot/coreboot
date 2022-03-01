@@ -9,8 +9,6 @@
 #include <soc/rtc_common.h>
 #include <timer.h>
 
-#define RTC_GPIO_USER_MASK	  ((1 << 13) - (1 << 8))
-
 static struct pmif *pmif_arb = NULL;
 
 void rtc_read(u16 addr, u16 *rdata)

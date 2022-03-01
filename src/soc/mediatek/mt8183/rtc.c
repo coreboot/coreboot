@@ -8,8 +8,6 @@
 #include <soc/pmic_wrap.h>
 #include <timer.h>
 
-#define RTC_GPIO_USER_MASK	  ((1 << 13) - (1 << 8))
-
 /* initialize rtc setting of using dcxo clock */
 static bool rtc_enable_dcxo(void)
 {

@@ -168,7 +168,7 @@ static void read_resources(struct device *dev)
 	}
 
 	/* GNB IOAPIC resource */
-	gnb_apic = new_resource(dev, GNB_IO_APIC_ADDR);
+	gnb_apic = new_resource(dev, idx++);
 	gnb_apic->base = GNB_IO_APIC_ADDR;
 	gnb_apic->size = 0x00001000;
 	gnb_apic->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;

@@ -68,7 +68,7 @@ static void read_resources(struct device *dev)
 	mmconf_resource(dev, idx++);
 
 	/* NB IOAPIC2 resource */
-	res = new_resource(dev, IO_APIC2_ADDR); /* IOAPIC2 */
+	res = new_resource(dev, idx++); /* IOAPIC2 */
 	res->base = IO_APIC2_ADDR;
 	res->size = 0x00001000;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;

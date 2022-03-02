@@ -57,6 +57,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index,
 
 static void read_resources(struct device *dev)
 {
+	unsigned int idx = 0;
 	struct resource *res;
 
 	/*
@@ -64,7 +65,7 @@ static void read_resources(struct device *dev)
 	 * It is not honored by the coreboot resource allocator if it is in
 	 * the CPU_CLUSTER.
 	 */
-	mmconf_resource(dev, MMIO_CONF_BASE);
+	mmconf_resource(dev, idx++);
 
 	/* NB IOAPIC2 resource */
 	res = new_resource(dev, IO_APIC2_ADDR); /* IOAPIC2 */

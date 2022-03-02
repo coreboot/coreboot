@@ -140,7 +140,7 @@ static void read_resources(struct device *dev)
 	ram_resource(dev, idx++, early_reserved_dram_end / KiB,
 		     (mem_usable - early_reserved_dram_end) / KiB);
 
-	mmconf_resource(dev, MMIO_CONF_BASE);
+	mmconf_resource(dev, idx++);
 
 	if (!hob) {
 		printk(BIOS_ERR, "Error: %s incomplete because no HOB list was found\n",

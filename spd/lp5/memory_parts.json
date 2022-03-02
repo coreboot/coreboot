@@ -49,6 +49,16 @@
                 "ranksPerChannel": 1,
                 "speedMbps": 6400
             }
+        },
+	{
+            "name": "MT62F2G32D8DR-031 WT:B",
+            "attribs": {
+                "densityPerDieGb": 8,
+                "diesPerPackage": 8,
+                "bitWidthPerChannel": 8,
+                "ranksPerChannel": 2,
+                "speedMbps": 6400
+            }
         }
     ]
 }

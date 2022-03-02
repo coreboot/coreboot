@@ -60,6 +60,9 @@ static void read_resources(struct device *dev)
 	unsigned int idx = 0;
 	struct resource *res;
 
+	/* The northbridge has no PCI BARs implemented, so there's no need to call
+	   pci_dev_read_resources for it */
+
 	/*
 	 * This MMCONF resource must be reserved in the PCI domain.
 	 * It is not honored by the coreboot resource allocator if it is in

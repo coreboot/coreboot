@@ -116,6 +116,9 @@ static void read_resources(struct device *dev)
 	early_reserved_dram_start = e->base;
 	early_reserved_dram_end = e->base + e->size;
 
+	/* The root complex has no PCI BARs implemented, so there's no need to call
+	   pci_dev_read_resources for it */
+
 	/* 0x0 - 0x9ffff */
 	ram_resource(dev, idx++, 0, 0xa0000 / KiB);
 

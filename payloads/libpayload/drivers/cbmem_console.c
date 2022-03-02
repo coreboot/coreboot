@@ -80,11 +80,28 @@ void cbmem_console_write(const void *buffer, size_t count)
 	do_write(buffer, count);
 }
 
+static void snapshot_putc(char *console, uint32_t *cursor, char c)
+{
+	/* This is BIOS_LOG_IS_MARKER() from coreboot. Due to stupid
+	   licensing restrictions, we can't use it directly. */
+	if (c >= 0x10 && c <= 0x18)
+		return;
+
+	/* Slight memory corruption may occur between reboots and give us a few
+	   unprintable characters like '\0'. Replace them with '?' on output. */
+	if (!isprint(c) && !isspace(c))
+		console[*cursor] = '?';
+	else
+		console[*cursor] = c;
+
+	*cursor += 1;
+}
+
 char *cbmem_console_snapshot(void)
 {
 	const struct cbmem_console *const console_p = phys_to_virt(cbmem_console_p);
 	char *console_c;
-	uint32_t size, cursor, overflow;
+	uint32_t size, cursor, overflow, newc, oldc;
 
 	if (!console_p) {
 		printf("ERROR: No cbmem console found in coreboot table\n");
@@ -104,24 +121,19 @@ char *cbmem_console_snapshot(void)
 		       size);
 		return NULL;
 	}
-	console_c[size] = '\0';
 
+	newc = 0;
 	if (overflow) {
 		if (cursor >= size) {
 			printf("ERROR: CBMEM console struct is corrupted\n");
 			return NULL;
 		}
-		memcpy(console_c, console_p->body + cursor, size - cursor);
-		memcpy(console_c + size - cursor, console_p->body, cursor);
-	} else {
-		memcpy(console_c, console_p->body, size);
+		for (oldc = cursor; oldc < size; oldc++)
+			snapshot_putc(console_c, &newc, console_p->body[oldc]);
 	}
-
-	/* Slight memory corruption may occur between reboots and give us a few
-	   unprintable characters like '\0'. Replace them with '?' on output. */
-	for (cursor = 0; cursor < size; cursor++)
-		if (!isprint(console_c[cursor]) && !isspace(console_c[cursor]))
-			console_c[cursor] = '?';
+	for (oldc = 0; oldc < size && oldc < cursor; oldc++)
+		snapshot_putc(console_c, &newc, console_p->body[oldc]);
+	console_c[newc] = '\0';
 
 	return console_c;
 }

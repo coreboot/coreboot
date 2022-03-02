@@ -26,7 +26,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* S6  : DMIC_CLK_A_1 ==> DMIC_WCAM_CLK_R */
 	PAD_CFG_NF(GPP_S6, NONE, DEEP, NF2),
 	/* S7  : DMIC_DATA_1 ==> DMIC_WCAM_DATA */
-	PAD_CFG_NF(GPP_S6, NONE, DEEP, NF2),
+	PAD_CFG_NF(GPP_S7, NONE, DEEP, NF2),
 };
 
 /* Early pad configuration in bootblock */

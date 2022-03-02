@@ -151,7 +151,5 @@ void generate_cpu_entries(const struct device *device)
 		acpigen_pop_len();
 	}
 
-	acpigen_write_scope("\\");
-	acpigen_write_name_integer("PCNT", cores);
-	acpigen_pop_len();
+	acpigen_write_processor_package("PPKG", 0, cores);
 }

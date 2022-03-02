@@ -182,6 +182,14 @@ trygccoption -fno-stack-protector
 _CFLAGS="$_CFLAGS -include $BASE/../include/kconfig.h -include $BASE/../include/compiler.h"
 _CFLAGS="$_CFLAGS -I`$DEFAULT_CC $_ARCHEXTRA -print-search-dirs | head -n 1 | cut -d' ' -f2`include"
 
+if [ "$CONFIG_LP_VBOOT_LIB" = y ]; then
+	if [ "$CONFIG_LP_VBOOT_TPM2_MODE" = y ]; then
+		_CFLAGS="$_CFLAGS -DTPM2_MODE"
+	else
+		_CFLAGS="$_CFLAGS -DTPM1_MODE"
+	fi
+fi
+
 _LDFLAGS="-L$_LIBDIR $_LDSCRIPT -static -Wl,--gc-sections"
 
 if [ $DOLINK -eq 0 ]; then

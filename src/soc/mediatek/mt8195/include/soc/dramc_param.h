@@ -13,7 +13,7 @@
 #include <soc/dramc_param_common.h>
 #include <soc/dramc_soc.h>
 
-#define DRAMC_PARAM_HEADER_VERSION 8
+#define DRAMC_PARAM_HEADER_VERSION 9
 
 struct sdram_params {
 	u32 rank_num;

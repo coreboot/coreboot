@@ -2,6 +2,8 @@
 
 #include <variant/thermal.h>
 
+External (\PPKG, MethodObj)
+
 /* Thermal Zone */
 
 Scope (\_TZ)

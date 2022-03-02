@@ -29,6 +29,9 @@ static inline uint32_t read32(const void *addr)
 	return *(volatile uint32_t *)__builtin_assume_aligned(addr, sizeof(uint32_t));
 }
 
+/* Not supported */
+uint64_t read64(const void *addr);
+
 static inline void write8(void *addr, uint8_t val)
 {
 	dmb();
@@ -49,5 +52,8 @@ static inline void write32(void *addr, uint32_t val)
 	*(volatile uint32_t *)__builtin_assume_aligned(addr, sizeof(uint32_t)) = val;
 	dmb();
 }
+
+/* Not supported */
+void write64(void *addr, uint64_t val);
 
 #endif /* __ARCH_MMIO_H__ */

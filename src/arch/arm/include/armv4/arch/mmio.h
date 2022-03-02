@@ -24,6 +24,9 @@ static inline uint32_t read32(const void *addr)
 	return *(volatile uint32_t *)addr;
 }
 
+/* Not supported */
+uint64_t read64(const void *addr);
+
 static inline void write8(void *addr, uint8_t val)
 {
 	*(volatile uint8_t *)addr = val;
@@ -38,5 +41,8 @@ static inline void write32(void *addr, uint32_t val)
 {
 	*(volatile uint32_t *)addr = val;
 }
+
+/* Not supported */
+void write64(void *addr, uint64_t val);
 
 #endif /* __ARCH_MMIO_H__ */

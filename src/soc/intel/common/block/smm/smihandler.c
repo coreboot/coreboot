@@ -2,8 +2,6 @@
 
 #include <arch/hlt.h>
 #include <arch/io.h>
-#include <arch/mmio.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
@@ -12,7 +10,9 @@
 #include <cpu/intel/em64t101_save_state.h>
 #include <cpu/intel/msr.h>
 #include <delay.h>
+#include <device/mmio.h>
 #include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include <elog.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pmclib.h>

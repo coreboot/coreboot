@@ -207,4 +207,44 @@ static inline void buffer_to_fifo32(const void *buffer, size_t size, void *fifo,
 #define READ32_BITFIELD(addr, name) \
 	EXTRACT_BITFIELD(read32(addr), name)
 
+static __always_inline uint8_t read8p(const uintptr_t addr)
+{
+	return read8((void *)addr);
+}
+
+static __always_inline uint16_t read16p(const uintptr_t addr)
+{
+	return read16((void *)addr);
+}
+
+static __always_inline uint32_t read32p(const uintptr_t addr)
+{
+	return read32((void *)addr);
+}
+
+static __always_inline uint64_t read64p(const uintptr_t addr)
+{
+	return read64((void *)addr);
+}
+
+static __always_inline void write8p(const uintptr_t addr, const uint8_t value)
+{
+	write8((void *)addr, value);
+}
+
+static __always_inline void write16p(const uintptr_t addr, const uint16_t value)
+{
+	write16((void *)addr, value);
+}
+
+static __always_inline void write32p(const uintptr_t addr, const uint32_t value)
+{
+	write32((void *)addr, value);
+}
+
+static __always_inline void write64p(const uintptr_t addr, const uint64_t value)
+{
+	write64((void *)addr, value);
+}
+
 #endif	/* __DEVICE_MMIO_H__ */

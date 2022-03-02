@@ -13,22 +13,22 @@
  * in coreboot.
  */
 
-#include <console/console.h>
-#include <string.h>
 #include <acpi/acpi.h>
 #include <acpi/acpi_ivrs.h>
 #include <acpi/acpigen.h>
 #include <arch/hpet.h>
-#include <arch/mmio.h>
-#include <device/pci.h>
+#include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/helpers.h>
+#include <commonlib/sort.h>
+#include <console/console.h>
 #include <cpu/cpu.h>
-#include <cbfs.h>
+#include <device/mmio.h>
+#include <device/pci.h>
+#include <pc80/mc146818rtc.h>
+#include <string.h>
 #include <types.h>
 #include <version.h>
-#include <commonlib/sort.h>
-#include <pc80/mc146818rtc.h>
 
 static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp);
 

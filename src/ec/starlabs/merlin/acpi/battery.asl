@@ -34,6 +34,9 @@ Device (BAT0)
 	Method (_BIF, 0, Serialized)
 	{
 		BPKG[1] = B1DC
+		If (B1FC >= B1DC) {
+			B1FC = B1DC
+		}
 		BPKG[2] = B1FC
 		BPKG[4] = B1DV
 		If (B1FC)

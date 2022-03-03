@@ -4,7 +4,7 @@
   data hobs.
 
   @copyright
-  Copyright (c) 1999 - 2021, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 1999 - 2022, Intel Corporation. All rights reserved.<BR>
   This program and the accompanying materials are licensed and made available under
   the terms and conditions of the BSD License that accompanies this distribution.
   The full text of the license may be found at
@@ -17,6 +17,7 @@
 **/
 #ifndef _MEM_INFO_HOB_H_
 #define _MEM_INFO_HOB_H_
+
 
 #pragma pack (push, 1)
 
@@ -256,7 +257,7 @@ typedef struct {
   SiMrcVersion      Version;
   BOOLEAN           EccSupport;
   UINT8             MemoryProfile;
-  UINT8             IsDMBRunning;                      ///< Memory Trained with Dynamic Memory Boost (DMB)
+  UINT8             IsDMBRunning;                      ///< Deprecated.
   UINT32            TotalPhysicalMemorySize;
   UINT32            DefaultXmptCK[MAX_XMP_PROFILE_NUM];///< Stores the tCK value read from SPD XMP profiles if they exist.
   ///
@@ -278,6 +279,10 @@ typedef struct {
   UINT16            Ratio_UINT16;                      ///< DDR Frequency Ratio, used for programs that require ratios higher then 255
   UINT32            NumPopulatedChannels;              ///< Total number of memory channels populated
   HOB_SAGV_INFO     SagvConfigInfo;                    ///< This data structure contains SAGV config values that are considered output by the MRC.
+  UINT16            TotalMemWidth;                     ///< Total Memory Width in bits from all populated channels
+  BOOLEAN           MemorySpeedReducedWrongDimmSlot;   ///< Can be used by OEM BIOS to display a warning on the screen that DDR speed was reduced due to wrong DIMM population
+  BOOLEAN           MemorySpeedReducedMixedConfig;     ///< Can be used by OEM BIOS to display a warning on the screen that DDR speed was reduced due to mixed DIMM config
+  BOOLEAN           DynamicMemoryBoostTrainingFailed;  ///< TRUE if Dynamic Memory Boost failed to train and was force disabled on the last full training boot. FALSE otherwise.
 } MEMORY_INFO_DATA_HOB;
 
 /**

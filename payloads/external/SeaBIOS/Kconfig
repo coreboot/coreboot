@@ -5,7 +5,7 @@ choice
 	default SEABIOS_STABLE
 
 config SEABIOS_STABLE
-	bool "1.14.0"
+	bool "1.16.0"
 	help
 	  Stable SeaBIOS version
 config SEABIOS_MASTER

@@ -13,7 +13,7 @@
 #include <soc/pmic_wrap.h>
 #include <timer.h>
 
-#define MT8186_RTC_DXCO_CAPID 0xC0
+#define MT8186_RTC_DXCO_CAPID 0xE0
 
 /* Initialize RTC setting of using DCXO clock */
 static bool rtc_enable_dcxo(void)

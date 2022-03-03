@@ -717,6 +717,8 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 		/* PsysPmax is in unit of 1/8 Watt */
 		s_cfg->PsysPmax = config->platform_pmax * 8;
 	}
+
+	s_cfg->C1StateAutoDemotion = !config->disable_c1_state_auto_demotion;
 }
 
 static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,

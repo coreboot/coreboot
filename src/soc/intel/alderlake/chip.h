@@ -560,6 +560,12 @@ struct soc_intel_alderlake_config {
 	/* Energy-Performance Preference (HWP feature) */
 	bool enable_energy_perf_pref;
 	uint8_t energy_perf_pref_value;
+
+	/*
+	 * Enable or Disable C1 Cstate Demotion.
+	 * Default 0. Set this to 1 in order to disable C state demotion.
+	 */
+	bool disable_c1_state_auto_demotion;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

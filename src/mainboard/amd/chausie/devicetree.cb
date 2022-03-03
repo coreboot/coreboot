@@ -36,6 +36,7 @@ chip soc/amd/sabrina
 		device ref gpp_bridge_5 on end
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
+			device ref gfx_hda on end # Display HD Audio Controller (GFXAZ)
 			device ref crypto on end # Crypto Coprocessor
 			device ref xhci_0 on # USB 3.1 (USB0)
 				chip drivers/usb/acpi
@@ -69,6 +70,19 @@ chip soc/amd/sabrina
 						end
 						chip drivers/usb/acpi
 							device ref usb2_port4 on end
+						end
+					end
+				end
+			end
+			device ref acp on end # Audio Processor (ACP)
+		end
+		device ref gpp_bridge_c on  # Internal GPP Bridge 2 to Bus C
+			device ref xhci_2 on
+				chip drivers/usb/acpi
+					register "type" = "UPC_TYPE_HUB"
+					device usb 0.0 alias xhci_2_root_hub on
+						chip drivers/usb/acpi
+							device usb 2.0 alias usb2_port5 on end
 						end
 					end
 				end

@@ -127,7 +127,7 @@ config TIANOCORE_BOOT_MANAGER_ESCAPE
 	  the default key of F2.
 
 config TIANOCORE_BOOT_TIMEOUT
-	int
+	int "Set the timeout for boot menu prompt"
 	default 2
 	help
 	  The length of time in seconds for which the boot splash/menu prompt will be displayed.

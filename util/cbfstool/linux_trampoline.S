@@ -13,7 +13,9 @@
 #define CB_TAG_FORWARD 0x11
 #define CB_TAG_MEMORY 0x1
 #define CB_TAG_FRAMEBUFFER 0x12
+#define CB_TAG_ACPI_RSDP 0x43
 
+#define ACPI_RSDP_ADDR 0x70
 #define E820_NR_OFFSET 0x1e8
 #define LINUX_ENTRY_OFFSET 0x214
 #define E820_OFFSET 0x2d0
@@ -52,7 +54,7 @@ jmp .headerSearch
 
 .testMemory:
 cmp $CB_TAG_MEMORY, (%ebx)
-jne .testFramebuffer
+jne .testAcpiRsdp
 
 /* memory tag: copy e820 map and entry count. also determine alt_mem_k */
 mov 4(%ebx), %eax
@@ -86,6 +88,16 @@ mov $2, 16(%edi)
 dec %eax
 add $20, %edi
 jmp .test_e820_entry
+
+.testAcpiRsdp:
+cmp $CB_TAG_ACPI_RSDP, (%ebx)
+jne .testFramebuffer
+
+mov 8(%ebx), %eax
+mov %eax, (LINUX_PARAM_LOC + ACPI_RSDP_ADDR)
+mov 12(%ebx), %eax
+mov %eax, (LINUX_PARAM_LOC + ACPI_RSDP_ADDR + 4)
+jmp .endScan
 
 .testFramebuffer:
 cmp $CB_TAG_FRAMEBUFFER, (%ebx)

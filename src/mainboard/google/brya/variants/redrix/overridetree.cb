@@ -43,7 +43,6 @@ chip soc/intel/alderlake
 
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[5]" = "USB2_PORT_EMPTY"
-	register "usb2_ports[9]" = "USB2_PORT_EMPTY"
 	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"
 
 	# Intel Common SoC Config

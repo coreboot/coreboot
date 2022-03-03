@@ -268,6 +268,12 @@ static void cb_parse_cbmem_entry(void *ptr, struct sysinfo_t *info)
 	}
 }
 
+static void cb_parse_rsdp(void *ptr, struct sysinfo_t *info)
+{
+	const struct cb_acpi_rsdp *cb_acpi_rsdp = ptr;
+	info->acpi_rsdp = cb_unpack64(cb_acpi_rsdp->rsdp_pointer);
+}
+
 int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
 	struct cb_header *header;
@@ -408,6 +414,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			cb_parse_tsc_info(ptr, info);
 			break;
 #endif
+		case CB_TAG_ACPI_RSDP:
+			cb_parse_rsdp(ptr, info);
+			break;
 		default:
 			cb_parse_arch_specific(rec, info);
 			break;

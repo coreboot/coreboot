@@ -66,6 +66,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_D14, NONE, PLTRST, LEVEL, INVERT),
 	/* D15 : USI_RST_L */
 	PAD_CFG_GPO(GPP_D15, 1, DEEP),
+	/* D16 TOUCH_INT */
+	PAD_CFG_GPI_IRQ_WAKE(GPP_D16, NONE, PLTRST, LEVEL, INVERT),
 
 	/* E2 : Not connected */
 	PAD_NC(GPP_E2, NONE),

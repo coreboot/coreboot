@@ -395,6 +395,15 @@ config DEFAULT_CONSOLE_LOGLEVEL
 
 endif
 
+config CONSOLE_USE_LOGLEVEL_PREFIX
+	bool "Use loglevel prefix to indicate line loglevel"
+	default y
+	help
+	  When enabled, if the code contains a:
+	  `printk(BIOS_DEBUG, "This is a debug message!\n")`,
+	  it will show up as:
+	  `[DEBUG]  This is a debug message!`
+
 config CONSOLE_USE_ANSI_ESCAPES
 	bool "Use ANSI escape sequences for console highlighting"
 	default y

@@ -96,7 +96,8 @@ static void line_start(union log_state state)
 	   and potentially an escape sequence for highlighting. */
 	if (CONFIG(CONSOLE_USE_ANSI_ESCAPES))
 		wrap_interactive_printf(BIOS_LOG_ESCAPE_PATTERN, bios_log_escape[state.level]);
-	wrap_interactive_printf(BIOS_LOG_PREFIX_PATTERN, bios_log_prefix[state.level]);
+	if (CONFIG(CONSOLE_USE_LOGLEVEL_PREFIX))
+		wrap_interactive_printf(BIOS_LOG_PREFIX_PATTERN, bios_log_prefix[state.level]);
 }
 
 static void line_end(union log_state state)

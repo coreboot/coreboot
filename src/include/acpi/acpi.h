@@ -1220,6 +1220,7 @@ typedef struct acpi_einj {
 } __packed acpi_einj_t;
 
 
+uintptr_t get_coreboot_rsdp(void);
 void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions);
 
 unsigned long fw_cfg_acpi_tables(unsigned long start);

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <arch/cbconfig.h>
 #include <console/console.h>
 #include <console/uart.h>
@@ -420,6 +421,16 @@ static unsigned long lb_table_fini(struct lb_header *head)
 	return (unsigned long)rec + rec->size;
 }
 
+static void lb_add_acpi_rsdp(struct lb_header *head)
+{
+	struct lb_acpi_rsdp *acpi_rsdp;
+	struct lb_record *rec = lb_new_record(head);
+	acpi_rsdp = (struct lb_acpi_rsdp *)rec;
+	acpi_rsdp->tag = LB_TAG_ACPI_RSDP;
+	acpi_rsdp->size = sizeof(*acpi_rsdp);
+	acpi_rsdp->rsdp_pointer = pack_lb64(get_coreboot_rsdp());
+}
+
 size_t write_coreboot_forwarding_table(uintptr_t entry, uintptr_t target)
 {
 	struct lb_header *head;
@@ -522,6 +533,9 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 
 	/* Add all cbmem entries into the coreboot tables. */
 	cbmem_add_records_to_cbtable(head);
+
+	if (CONFIG(HAVE_ACPI_TABLES))
+		lb_add_acpi_rsdp(head);
 
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head);

@@ -85,6 +85,7 @@ enum {
 	LB_TAG_BOARD_CONFIG		= 0x0040,
 	LB_TAG_ACPI_CNVS		= 0x0041,
 	LB_TAG_TYPE_C_INFO		= 0x0042,
+	LB_TAG_ACPI_RSDP                = 0x0043,
 	/* The following options are CMOS-related */
 	LB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	LB_TAG_OPTION			= 0x00c9,
@@ -574,4 +575,15 @@ struct lb_tpm_physical_presence {
 	uint8_t tpm_version;	/* 1: TPM1.2, 2: TPM2.0 */
 	uint8_t ppi_version;	/* BCD encoded */
 } __packed;
+
+
+/*
+ * Handoff the ACPI RSDP
+ */
+struct lb_acpi_rsdp {
+	uint32_t tag;
+	uint32_t size;
+	struct lb_uint64 rsdp_pointer; /* Address of the ACPI RSDP */
+};
+
 #endif

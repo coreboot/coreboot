@@ -210,6 +210,12 @@ void arch_write_tables(uintptr_t coreboot_table)
 {
 }
 
+static const uintptr_t ebda_base = 0xf0000;
+uintptr_t get_coreboot_rsdp(void)
+{
+	return ebda_base;
+}
+
 struct resource mock_bootmem_ranges[] = {
 	{.base = 0x1000, .size = 0x2000, .flags = LB_MEM_RAM},
 	{.base = 0x0000, .size = 0x4000, .flags = LB_MEM_RAM},
@@ -475,6 +481,12 @@ static void test_write_tables(void **state)
 			assert_int_equal(board_id(), board_config->board_id);
 			assert_int_equal(ram_code(), board_config->ram_code);
 			assert_int_equal(sku_id(), board_config->sku_id);
+			break;
+		case LB_TAG_ACPI_RSDP:
+			assert_int_equal(sizeof(struct lb_acpi_rsdp), record->size);
+
+			const struct lb_acpi_rsdp *acpi_rsdp = (struct lb_acpi_rsdp *)record;
+			assert_int_equal(ebda_base, unpack_lb64(acpi_rsdp->rsdp_pointer));
 			break;
 		default:
 			fail_msg("Unexpected tag found in record. Tag ID: 0x%x", record->tag);

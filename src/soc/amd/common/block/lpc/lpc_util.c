@@ -187,13 +187,13 @@ uintptr_t lpc_spibase(void)
 	u32 base, enables;
 
 	/* Make sure the base address is predictable */
-	base = pci_read_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER);
+	base = pci_read_config32(_LPCB_DEV, SPI_BASE_ADDRESS_REGISTER);
 	enables = base & SPI_PRESERVE_BITS;
 	base &= ~(SPI_PRESERVE_BITS | SPI_BASE_RESERVED);
 
 	if (!base) {
 		base = SPI_BASE_ADDRESS;
-		pci_write_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER,
+		pci_write_config32(_LPCB_DEV, SPI_BASE_ADDRESS_REGISTER,
 					base | enables | SPI_ROM_ENABLE);
 		/* PCI_COMMAND_MEMORY is read-only and enabled. */
 	}
@@ -233,8 +233,8 @@ void lpc_tpm_decode_spi(void)
 
 	/* Route TPM accesses to SPI */
 	u32 spibase = pci_read_config32(_LPCB_DEV,
-					SPIROM_BASE_ADDRESS_REGISTER);
-	pci_write_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER, spibase
+					SPI_BASE_ADDRESS_REGISTER);
+	pci_write_config32(_LPCB_DEV, SPI_BASE_ADDRESS_REGISTER, spibase
 					| ROUTE_TPM_2_SPI);
 }
 
@@ -310,7 +310,7 @@ uintptr_t lpc_get_spibase(void)
 {
 	u32 base;
 
-	base = pci_read_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER);
+	base = pci_read_config32(_LPCB_DEV, SPI_BASE_ADDRESS_REGISTER);
 	base = ALIGN_DOWN(base, SPI_BASE_ALIGNMENT);
 	return (uintptr_t)base;
 }
@@ -319,12 +319,12 @@ void lpc_set_spibase(uint32_t base)
 {
 	uint32_t reg32;
 
-	reg32 = pci_read_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER);
+	reg32 = pci_read_config32(_LPCB_DEV, SPI_BASE_ADDRESS_REGISTER);
 
 	reg32 &= SPI_BASE_ALIGNMENT - 1; /* preserve only reserved, enables */
 	reg32 |= ALIGN_DOWN(base, SPI_BASE_ALIGNMENT);
 
-	pci_write_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER, reg32);
+	pci_write_config32(_LPCB_DEV, SPI_BASE_ADDRESS_REGISTER, reg32);
 }
 
 void lpc_enable_spi_rom(uint32_t enable)
@@ -334,12 +334,12 @@ void lpc_enable_spi_rom(uint32_t enable)
 	/* only two types of CS# enables are allowed */
 	enable &= SPI_ROM_ENABLE | SPI_ROM_ALT_ENABLE;
 
-	reg32 = pci_read_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER);
+	reg32 = pci_read_config32(_LPCB_DEV, SPI_BASE_ADDRESS_REGISTER);
 
 	reg32 &= ~(SPI_ROM_ENABLE | SPI_ROM_ALT_ENABLE);
 	reg32 |= enable;
 
-	pci_write_config32(_LPCB_DEV, SPIROM_BASE_ADDRESS_REGISTER, reg32);
+	pci_write_config32(_LPCB_DEV, SPI_BASE_ADDRESS_REGISTER, reg32);
 }
 
 static void lpc_enable_controller(void)

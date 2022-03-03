@@ -142,6 +142,8 @@ choice
 	prompt "Option backend to use"
 	default USE_MAINBOARD_SPECIFIC_OPTION_BACKEND if HAVE_MAINBOARD_SPECIFIC_OPTION_BACKEND
 	default USE_OPTION_TABLE if NVRAMCUI_SECONDARY_PAYLOAD
+	default USE_UEFI_VARIABLE_STORE if DRIVERS_EFI_VARIABLE_STORE && \
+		PAYLOAD_EDK2 && SMMSTORE_V2
 
 config OPTION_BACKEND_NONE
 	bool "None"
@@ -152,6 +154,15 @@ config USE_OPTION_TABLE
 	help
 	  Enable this option if coreboot shall read options from the "CMOS"
 	  NVRAM instead of using hard-coded values.
+
+config USE_UEFI_VARIABLE_STORE
+	bool "Use UEFI variable-store in SPI flash as option backend"
+	depends on DRIVERS_EFI_VARIABLE_STORE
+	depends on SMMSTORE_V2
+	help
+	  Enable this option if coreboot shall read/write options from the
+	  SMMSTORE region within the SPI flash. The region must be formatted
+	  by the payload first before it can be used.
 
 config USE_MAINBOARD_SPECIFIC_OPTION_BACKEND
 	bool "Use mainboard-specific option backend"

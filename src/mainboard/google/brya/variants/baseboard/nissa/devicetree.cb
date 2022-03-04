@@ -25,7 +25,6 @@ chip soc/intel/alderlake
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# USB2_A0
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# USB2_A1
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Camera
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Bluetooth
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A0
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A1

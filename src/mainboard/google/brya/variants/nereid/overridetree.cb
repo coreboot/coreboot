@@ -13,6 +13,7 @@ chip soc/intel/alderlake
 	register "typec_aux_bias_pads[1]" = "{.pad_auxp_dc = GPP_A21, .pad_auxn_dc = GPP_A22}"
 
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# WFC
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for PCIe WLAN
 
 	device domain 0 on
 		device ref i2c1 on

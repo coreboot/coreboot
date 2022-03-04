@@ -12,6 +12,8 @@ chip soc/intel/alderlake
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 	register "typec_aux_bias_pads[1]" = "{.pad_auxp_dc = GPP_A21, .pad_auxn_dc = GPP_A22}"
 
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
+
 	device domain 0 on
 		device ref ipu on
 			chip drivers/intel/mipi_camera
@@ -300,7 +302,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "reset_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
-						device ref usb2_port8 on end
+						device ref usb2_port10 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-A Port A0 (MLB)""

@@ -34,7 +34,7 @@ static enum cse_cmd_result decode_heci_send_receive_error(enum cse_tx_rx_status 
 	}
 }
 
-static bool cse_disable_mei_bus(void)
+static enum cse_cmd_result cse_disable_mei_bus(void)
 {
 	struct bus_disable_message {
 		uint8_t command;
@@ -49,18 +49,22 @@ static bool cse_disable_mei_bus(void)
 	} __packed reply = {};
 
 	size_t reply_sz = sizeof(reply);
+	enum cse_tx_rx_status ret;
 
-	if (heci_send_receive(&msg, sizeof(msg), &reply, &reply_sz, HECI_MEI_ADDR)) {
+	printk(BIOS_DEBUG, "HECI, Sending MEI BIOS DISABLE command\n");
+	ret = heci_send_receive(&msg, sizeof(msg), &reply, &reply_sz, HECI_MEI_ADDR);
+
+	if (ret) {
 		printk(BIOS_ERR, "HECI: Failed to Disable MEI bus\n");
-		return false;
+		return decode_heci_send_receive_error(ret);
 	}
 
 	if (reply.status) {
 		printk(BIOS_ERR, "HECI: MEI_Bus_Disable Failed (status: %d)\n", reply.status);
-		return false;
+		return CSE_CMD_RESULT_ERROR;
 	}
 
-	return true;
+	return CSE_CMD_RESULT_SUCCESS;
 }
 
 static enum cse_cmd_result cse_send_eop(void)
@@ -158,7 +162,7 @@ static enum cse_cmd_result cse_send_cmd_retries(enum cse_cmd_result (*cse_send_c
  */
 static void cse_handle_eop_error(void)
 {
-	if (!cse_disable_mei_bus())
+	if (cse_send_cmd_retries(cse_disable_mei_bus))
 		die("Failed to disable MEI bus while recovering from EOP error\n"
 		    "Preventing system from booting into an insecure state.\n");
 

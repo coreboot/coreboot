@@ -137,6 +137,7 @@ chip soc/intel/alderlake
 				device generic 0 alias dptf_policy on end
 			end
 		end
+		device ref tbt_pcie_rp1 off end
 		device ref ipu on
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "0x50000"

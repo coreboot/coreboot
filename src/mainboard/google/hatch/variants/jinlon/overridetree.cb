@@ -69,10 +69,8 @@ chip soc/intel/cannonlake
 	register "ScsEmmcHs400Enabled" = "1"
 
 	device domain 0 on
-		device pci 02.0 alias igpu on	# Integrated Graphics Device
-			register "gfx" = "GMA_DEFAULT_PANEL(0)"
-		end
 		device pci 02.0 on
+			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 			chip drivers/gfx/generic
 				register "device_count" = "1"
 				register "device[0].name" = ""LCD""
@@ -80,7 +78,7 @@ chip soc/intel/cannonlake
 				register "device[0].addr" = "0x80010400"
 				register "device[0].privacy.enabled" = "1"
 				register "device[0].privacy.gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E0)"
-				device generic 0 on end
+				device generic 0 alias eps on end
 			end
 		end # Integrated Graphics Device
                 device pci 14.0 on

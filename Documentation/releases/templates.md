@@ -1,3 +1,7 @@
+```eval_rst
+:orphan:
+```
+
 # Communication templates related to release management
 
 ## Deprecation notices

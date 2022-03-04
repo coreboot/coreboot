@@ -1,3 +1,7 @@
+```eval_rst
+:orphan:
+```
+
 # coreboot Release Process
 
 This document describes our release process and all prerequisites to implement

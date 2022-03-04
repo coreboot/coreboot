@@ -138,6 +138,7 @@ chip soc/intel/alderlake
 		device ref pcie_rp3 on
 			chip soc/intel/common/block/pcie/rtd3
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B3)"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E20)"
 				register "srcclk_pin" = "6"
 				device generic 0 alias emmc_rtd3 on end
 			end

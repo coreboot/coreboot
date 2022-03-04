@@ -177,15 +177,15 @@ if LINUXBOOT_UROOT
 
 choice
 	prompt "U-root version"
-	default LINUXBOOT_UROOT_MASTER
+	default LINUXBOOT_UROOT_MAIN
 
 config LINUXBOOT_UROOT_CUSTOM
 	bool "custom"
 	help
 	  choose a custom u-root branch
 
-config LINUXBOOT_UROOT_MASTER
-	bool "master"
+config LINUXBOOT_UROOT_MAIN
+	bool "main"
 	help
 	  Latest u-root version
 
@@ -207,7 +207,7 @@ config LINUXBOOT_UROOT_CHECKOUT
 config LINUXBOOT_UROOT_VERSION
 	string
 	default LINUXBOOT_UROOT_CHECKOUT if LINUXBOOT_UROOT_CUSTOM
-	default "master" if LINUXBOOT_UROOT_MASTER
+	default "main" if LINUXBOOT_UROOT_MAIN
 	default "v3.0.0" if LINUXBOOT_UROOT_V3_0_0
 	default "v2.0.0" if LINUXBOOT_UROOT_V2_0_0
 	default "v1.0.0" if LINUXBOOT_UROOT_V1_0_0

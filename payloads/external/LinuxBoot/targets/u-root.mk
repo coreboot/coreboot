@@ -39,7 +39,7 @@ endif
 
 get: version
 	if [ -d "$(go_path_dir)/src/$(uroot_package)" ]; then \
-	git -C $(go_path_dir)/src/$(uroot_package) checkout --quiet master; \
+	git -C $(go_path_dir)/src/$(uroot_package) checkout --quiet main; \
 	GOPATH=$(go_path_dir) go get -d -u -v $(uroot_package) || \
 	echo -e "\n<<u-root package update failed>>\n"; \
 	else \

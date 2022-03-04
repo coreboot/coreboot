@@ -7,6 +7,11 @@
 #include <cpu/x86/smm.h>
 #include <soc/smi.h>
 
+__weak void mainboard_handle_smi(int event)
+{
+	printk(BIOS_WARNING, "SMI event %d is missing handler\n", event);
+}
+
 static void process_smi_sources(uint32_t reg)
 {
 	const uint32_t status = smi_read32(reg);
@@ -19,6 +24,8 @@ static void process_smi_sources(uint32_t reg)
 			source_handler = get_smi_source_handler(i + bit_zero);
 			if (source_handler)
 				source_handler();
+			else if (reg != SMI_REG_SMISTS0 || (status & GEVENT_MASK) == 0)
+				mainboard_handle_smi(i + bit_zero);
 		}
 	}
 

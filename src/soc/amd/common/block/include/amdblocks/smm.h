@@ -14,3 +14,5 @@ void *get_smi_source_handler(int source);
 void handle_smi_gsmi(void);
 void handle_smi_store(void);
 void clear_tvalid(void);
+/* See SMITYPE_* for list possible of events. GEVENTS are handled with mainboard_smi_gpi. */
+void mainboard_handle_smi(int event);

@@ -31,10 +31,10 @@ struct panel_serializable_data {
 	u8 init[]; /* A packed array of panel_init_command */
 };
 
-typedef cb_err_t (*mipi_cmd_func_t)(enum mipi_dsi_transaction type, const u8 *data, u8 len);
+typedef enum cb_err (*mipi_cmd_func_t)(enum mipi_dsi_transaction type, const u8 *data, u8 len);
 
 /* Parse a command array and call cmd_func() for each entry. Delays get handled internally. */
-cb_err_t mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func);
+enum cb_err mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func);
 
 #define PANEL_DCS(...) \
 	PANEL_CMD_DCS, \

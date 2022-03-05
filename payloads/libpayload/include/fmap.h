@@ -7,6 +7,6 @@
 #include <stddef.h>
 
 /* Looks for area with |name| in FlashMap. Requires lib_sysinfo.fmap_cache. */
-cb_err_t fmap_locate_area(const char *name, size_t *offset, size_t *size);
+enum cb_err fmap_locate_area(const char *name, size_t *offset, size_t *size);
 
 #endif /* _FMAP_H */

@@ -247,8 +247,8 @@ static int maybe_update_metadata_hash(struct cbfs_image *cbfs)
 	if (mhc->cbfs_hash.algo == VB2_HASH_INVALID)
 		return 0;
 
-	cb_err_t err = cbfs_walk(cbfs, NULL, NULL, &mhc->cbfs_hash,
-				 CBFS_WALK_WRITEBACK_HASH);
+	enum cb_err err = cbfs_walk(cbfs, NULL, NULL, &mhc->cbfs_hash,
+				    CBFS_WALK_WRITEBACK_HASH);
 	if (err != CB_CBFS_NOT_FOUND) {
 		ERROR("Unexpected cbfs_walk() error %d\n", err);
 		return -1;
@@ -1508,8 +1508,8 @@ static int cbfs_print(void)
 			return 0;
 
 		struct vb2_hash real_hash = { .algo = mhc->cbfs_hash.algo };
-		cb_err_t err = cbfs_walk(&image, NULL, NULL, &real_hash,
-					 CBFS_WALK_WRITEBACK_HASH);
+		enum cb_err err = cbfs_walk(&image, NULL, NULL, &real_hash,
+					    CBFS_WALK_WRITEBACK_HASH);
 		if (err != CB_CBFS_NOT_FOUND) {
 			ERROR("Unexpected cbfs_walk() error %d\n", err);
 			return 1;

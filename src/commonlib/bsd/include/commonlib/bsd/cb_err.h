@@ -42,7 +42,4 @@ enum cb_err {
 	CB_CBFS_CACHE_FULL	= -403, /**< Metadata cache overflowed */
 };
 
-/* Don't typedef the enum directly, so the size is unambiguous for serialization. */
-typedef int32_t cb_err_t;
-
 #endif	/* _COMMONLIB_BSD_CB_ERR_H_ */

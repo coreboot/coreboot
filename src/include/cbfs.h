@@ -132,7 +132,7 @@ void cbfs_preload(const char *name);
 void cbfs_unmap(void *mapping);
 
 /* Load stage into memory filling in prog. Return 0 on success. < 0 on error. */
-int cbfs_prog_stage_load(struct prog *prog);
+enum cb_err cbfs_prog_stage_load(struct prog *prog);
 
 /* Returns the size of a CBFS file, or 0 on error. Avoid using this function to allocate space,
    and instead use cbfs_alloc() so the file only needs to be looked up once. */
@@ -185,15 +185,15 @@ const struct cbfs_boot_device *cbfs_get_boot_device(bool force_ro);
  * hash was still verified. Should be called once per *boot* (not once per stage) before the
  * first CBFS access.
  */
-cb_err_t cbfs_init_boot_device(const struct cbfs_boot_device *cbd,
-			       struct vb2_hash *metadata_hash);
+enum cb_err cbfs_init_boot_device(const struct cbfs_boot_device *cbd,
+				  struct vb2_hash *metadata_hash);
 
 
 /**********************************************************************************************
  *                         INTERNAL HELPERS FOR INLINES, DO NOT USE.                          *
  **********************************************************************************************/
-cb_err_t _cbfs_boot_lookup(const char *name, bool force_ro,
-			   union cbfs_mdata *mdata, struct region_device *rdev);
+enum cb_err _cbfs_boot_lookup(const char *name, bool force_ro,
+			      union cbfs_mdata *mdata, struct region_device *rdev);
 
 void *_cbfs_alloc(const char *name, cbfs_allocator_t allocator, void *arg,
 		  size_t *size_out, bool force_ro, enum cbfs_type *type);

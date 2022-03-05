@@ -40,8 +40,8 @@ struct cbfs_mcache_build_args {
 	int count;
 };
 
-static cb_err_t build_walker(cbfs_dev_t dev, size_t offset, const union cbfs_mdata *mdata,
-			     size_t already_read, void *arg)
+static enum cb_err build_walker(cbfs_dev_t dev, size_t offset, const union cbfs_mdata *mdata,
+				size_t already_read, void *arg)
 {
 	struct cbfs_mcache_build_args *args = arg;
 	union mcache_entry *entry = args->mcache;
@@ -62,8 +62,8 @@ static cb_err_t build_walker(cbfs_dev_t dev, size_t offset, const union cbfs_mda
 	return CB_CBFS_NOT_FOUND;
 }
 
-cb_err_t cbfs_mcache_build(cbfs_dev_t dev, void *mcache, size_t size,
-			   struct vb2_hash *metadata_hash)
+enum cb_err cbfs_mcache_build(cbfs_dev_t dev, void *mcache, size_t size,
+			      struct vb2_hash *metadata_hash)
 {
 	struct cbfs_mcache_build_args args = {
 		.mcache = mcache,
@@ -73,7 +73,7 @@ cb_err_t cbfs_mcache_build(cbfs_dev_t dev, void *mcache, size_t size,
 	};
 
 	assert(size > sizeof(uint32_t) && IS_ALIGNED((uintptr_t)mcache, CBFS_MCACHE_ALIGNMENT));
-	cb_err_t ret = cbfs_walk(dev, build_walker, &args, metadata_hash, 0);
+	enum cb_err ret = cbfs_walk(dev, build_walker, &args, metadata_hash, 0);
 	union mcache_entry *entry = args.mcache;
 	if (ret == CB_CBFS_NOT_FOUND) {
 		ret = CB_SUCCESS;
@@ -88,8 +88,8 @@ cb_err_t cbfs_mcache_build(cbfs_dev_t dev, void *mcache, size_t size,
 	return ret;
 }
 
-cb_err_t cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *name,
-			    union cbfs_mdata *mdata_out, size_t *data_offset_out)
+enum cb_err cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *name,
+			       union cbfs_mdata *mdata_out, size_t *data_offset_out)
 {
 	const size_t namesize = strlen(name) + 1; /* Count trailing \0 so we can memcmp() it. */
 	const void *end = mcache + mcache_size;

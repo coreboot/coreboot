@@ -34,7 +34,7 @@ static void after_verstage(void)
 	if (!cbd)	/* Can't initialize RW CBFS in recovery mode. */
 		return;
 
-	cb_err_t err = cbfs_init_boot_device(cbd, NULL); /* TODO: RW hash */
+	enum cb_err err = cbfs_init_boot_device(cbd, NULL); /* TODO: RW hash */
 	if (err && err != CB_CBFS_CACHE_FULL)	/* TODO: -> recovery? */
 		die("RW CBFS initialization failure: %d", err);
 }

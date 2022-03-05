@@ -4,7 +4,7 @@
 #include <delay.h>
 #include <mipi/panel.h>
 
-cb_err_t mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func)
+enum cb_err mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func)
 {
 	const struct panel_init_command *init = buf;
 	enum mipi_dsi_transaction type;
@@ -68,7 +68,7 @@ cb_err_t mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_fun
 			return CB_ERR;
 		}
 
-		cb_err_t ret = cmd_func(type, init->data, len);
+		enum cb_err ret = cmd_func(type, init->data, len);
 		if (ret != CB_SUCCESS)
 			return ret;
 		buf += len;

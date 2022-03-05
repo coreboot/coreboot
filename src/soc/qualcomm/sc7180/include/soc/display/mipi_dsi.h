@@ -22,6 +22,6 @@ enum {
 enum cb_err mdss_dsi_config(struct edid *edid, uint32_t num_of_lanes, uint32_t bpp);
 void mdss_dsi_clock_config(void);
 void mdss_dsi_video_mode_config(struct edid *edid, uint32_t bpp);
-cb_err_t mdss_dsi_panel_initialize(const u8 *init_cmds);
+enum cb_err mdss_dsi_panel_initialize(const u8 *init_cmds);
 
 #endif

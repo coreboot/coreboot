@@ -81,12 +81,12 @@ int ps8640_init(uint8_t bus, uint8_t chip)
 	return 0;
 }
 
-static cb_err_t ps8640_bridge_aux_request(uint8_t bus,
-					  uint8_t chip,
-					  unsigned int target_reg,
-					  unsigned int total_size,
-					  enum aux_request request,
-					  uint8_t *data)
+static enum cb_err ps8640_bridge_aux_request(uint8_t bus,
+					     uint8_t chip,
+					     unsigned int target_reg,
+					     unsigned int total_size,
+					     enum aux_request request,
+					     uint8_t *data)
 {
 	int i;
 	uint32_t length;

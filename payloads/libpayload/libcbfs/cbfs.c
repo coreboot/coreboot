@@ -48,7 +48,7 @@ ssize_t _cbfs_boot_lookup(const char *name, bool force_ro, union cbfs_mdata *mda
 		return CB_ERR;
 
 	size_t data_offset;
-	cb_err_t err = CB_CBFS_CACHE_FULL;
+	enum cb_err err = CB_CBFS_CACHE_FULL;
 	if (cbd->mcache_size)
 		err = cbfs_mcache_lookup(cbd->mcache, cbd->mcache_size, name, mdata,
 					 &data_offset);

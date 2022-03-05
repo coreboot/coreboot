@@ -204,11 +204,12 @@ static int mdss_dsi_cmd_dma_trigger_for_panel(void)
 	return status;
 }
 
-static cb_err_t mdss_dsi_send_init_cmd(enum mipi_dsi_transaction type, const u8 *body, u8 len)
+static enum cb_err mdss_dsi_send_init_cmd(enum mipi_dsi_transaction type, const u8 *body,
+					  u8 len)
 {
 	uint8_t *pload = _dma_coherent;
 	uint32_t size;
-	cb_err_t ret = CB_SUCCESS;
+	enum cb_err ret = CB_SUCCESS;
 	int data = 0;
 	uint32_t *bp = NULL;
 
@@ -276,7 +277,7 @@ static void mdss_dsi_clear_intr(void)
 	write32(&dsi0->err_int_mask0, 0x13FF3BFF);
 }
 
-cb_err_t mdss_dsi_panel_initialize(const u8 *init_cmds)
+enum cb_err mdss_dsi_panel_initialize(const u8 *init_cmds)
 {
 	uint32_t ctrl_mode = 0;
 
@@ -286,7 +287,7 @@ cb_err_t mdss_dsi_panel_initialize(const u8 *init_cmds)
 	/* Enable command mode before sending the commands */
 	write32(&dsi0->ctrl, ctrl_mode | 0x04);
 
-	cb_err_t ret = mipi_panel_parse_init_commands(init_cmds, mdss_dsi_send_init_cmd);
+	enum cb_err ret = mipi_panel_parse_init_commands(init_cmds, mdss_dsi_send_init_cmd);
 	write32(&dsi0->ctrl, ctrl_mode);
 	mdss_dsi_clear_intr();
 

@@ -303,7 +303,7 @@ static bool mtk_dsi_is_read_command(enum mipi_dsi_transaction type)
 	}
 }
 
-static cb_err_t mtk_dsi_cmdq(enum mipi_dsi_transaction type, const u8 *data, u8 len)
+static enum cb_err mtk_dsi_cmdq(enum mipi_dsi_transaction type, const u8 *data, u8 len)
 {
 	const u8 *tx_buf = data;
 	u32 config;

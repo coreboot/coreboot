@@ -40,7 +40,7 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 
 static size_t test_fmap_offset = 0;
 static size_t test_fmap_size = 0;
-static cb_err_t test_fmap_result = CB_SUCCESS;
+static enum cb_err test_fmap_result = CB_SUCCESS;
 
 static void set_fmap_locate_area_results(size_t offset, size_t size, size_t result)
 {
@@ -49,15 +49,15 @@ static void set_fmap_locate_area_results(size_t offset, size_t size, size_t resu
 	test_fmap_result = result;
 }
 
-cb_err_t fmap_locate_area(const char *name, size_t *offset, size_t *size)
+enum cb_err fmap_locate_area(const char *name, size_t *offset, size_t *size)
 {
 	*offset = test_fmap_offset;
 	*size = test_fmap_size;
 	return test_fmap_result;
 }
 
-cb_err_t cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *name,
-			    union cbfs_mdata *mdata_out, size_t *data_offset_out)
+enum cb_err cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *name,
+			       union cbfs_mdata *mdata_out, size_t *data_offset_out)
 {
 	assert_non_null(mcache);
 	assert_true(mcache_size > 0 && mcache_size % CBFS_MCACHE_ALIGNMENT == 0);
@@ -66,7 +66,7 @@ cb_err_t cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *
 
 	check_expected(name);
 
-	cb_err_t ret = mock_type(cb_err_t);
+	enum cb_err ret = mock_type(enum cb_err);
 	if (ret != CB_SUCCESS)
 		return ret;
 
@@ -75,7 +75,7 @@ cb_err_t cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *
 	return CB_SUCCESS;
 }
 
-static void expect_cbfs_mcache_lookup(const char *name, cb_err_t err,
+static void expect_cbfs_mcache_lookup(const char *name, enum cb_err err,
 				      const union cbfs_mdata *mdata, size_t data_offset_out)
 {
 	expect_string(cbfs_mcache_lookup, name, name);
@@ -87,13 +87,13 @@ static void expect_cbfs_mcache_lookup(const char *name, cb_err_t err,
 	}
 }
 
-cb_err_t cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_out,
-		     size_t *data_offset_out, struct vb2_hash *metadata_hash)
+enum cb_err cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_out,
+			size_t *data_offset_out, struct vb2_hash *metadata_hash)
 {
 	assert_non_null(dev);
 	check_expected(name);
 
-	cb_err_t ret = mock_type(cb_err_t);
+	enum cb_err ret = mock_type(enum cb_err);
 	if (ret != CB_SUCCESS)
 		return ret;
 
@@ -102,7 +102,7 @@ cb_err_t cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_o
 	return CB_SUCCESS;
 }
 
-static void expect_cbfs_lookup(const char *name, cb_err_t err, const union cbfs_mdata *mdata,
+static void expect_cbfs_lookup(const char *name, enum cb_err err, const union cbfs_mdata *mdata,
 			       size_t data_offset_out)
 {
 	expect_string(cbfs_lookup, name, name);

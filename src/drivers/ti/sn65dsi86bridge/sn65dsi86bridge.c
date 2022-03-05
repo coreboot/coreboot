@@ -155,12 +155,12 @@ static const unsigned int sn65dsi86_bridge_dp_rate_lut[] = {
 	0, 1620, 2160, 2430, 2700, 3240, 4320, 5400
 };
 
-static cb_err_t sn65dsi86_bridge_aux_request(uint8_t bus,
-					     uint8_t chip,
-					     unsigned int target_reg,
-					     unsigned int total_size,
-					     enum aux_request request,
-					     uint8_t *data)
+static enum cb_err sn65dsi86_bridge_aux_request(uint8_t bus,
+						uint8_t chip,
+						unsigned int target_reg,
+						unsigned int total_size,
+						enum aux_request request,
+						uint8_t *data)
 {
 	int i;
 	uint32_t length;
@@ -217,9 +217,9 @@ static cb_err_t sn65dsi86_bridge_aux_request(uint8_t bus,
 	return CB_SUCCESS;
 }
 
-cb_err_t sn65dsi86_bridge_read_edid(uint8_t bus, uint8_t chip, struct edid *out)
+enum cb_err sn65dsi86_bridge_read_edid(uint8_t bus, uint8_t chip, struct edid *out)
 {
-	cb_err_t err;
+	enum cb_err err;
 	u8 edid[EDID_LENGTH * 2];
 	int edid_size = EDID_LENGTH;
 

@@ -70,29 +70,29 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 	return dstn;
 }
 
-extern cb_err_t __real_cbfs_lookup(cbfs_dev_t dev, const char *name,
-				   union cbfs_mdata *mdata_out, size_t *data_offset_out,
-				   struct vb2_hash *metadata_hash);
+extern enum cb_err __real_cbfs_lookup(cbfs_dev_t dev, const char *name,
+				      union cbfs_mdata *mdata_out, size_t *data_offset_out,
+				      struct vb2_hash *metadata_hash);
 
-cb_err_t cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_out,
-		     size_t *data_offset_out, struct vb2_hash *metadata_hash)
+enum cb_err cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_out,
+			size_t *data_offset_out, struct vb2_hash *metadata_hash)
 {
-	const cb_err_t err =
+	const enum cb_err err =
 		__real_cbfs_lookup(dev, name, mdata_out, data_offset_out, metadata_hash);
-	assert_int_equal(err, mock_type(cb_err_t));
+	assert_int_equal(err, mock_type(enum cb_err));
 	return err;
 }
 
-extern cb_err_t __real_cbfs_mcache_lookup(const void *mcache, size_t mcache_size,
+extern enum cb_err __real_cbfs_mcache_lookup(const void *mcache, size_t mcache_size,
 					  const char *name, union cbfs_mdata *mdata_out,
 					  size_t *data_offset_out);
 
-cb_err_t cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *name,
-			    union cbfs_mdata *mdata_out, size_t *data_offset_out)
+enum cb_err cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *name,
+			       union cbfs_mdata *mdata_out, size_t *data_offset_out)
 {
-	const cb_err_t err = __real_cbfs_mcache_lookup(mcache, mcache_size, name, mdata_out,
+	const enum cb_err err = __real_cbfs_mcache_lookup(mcache, mcache_size, name, mdata_out,
 						       data_offset_out);
-	assert_int_equal(err, mock_type(cb_err_t));
+	assert_int_equal(err, mock_type(enum cb_err));
 	return err;
 }
 
@@ -128,7 +128,7 @@ void *cbmem_add(u32 id, u64 size)
 struct cbfs_test_state_ex {
 	u32 file_type;
 	u32 file_length;
-	cb_err_t lookup_result;
+	enum cb_err lookup_result;
 };
 
 struct cbfs_test_state {
@@ -198,7 +198,7 @@ static int teardown_test_cbfs(void **state)
 
 /* Utils */
 
-static void expect_lookup_result(cb_err_t res)
+static void expect_lookup_result(enum cb_err res)
 {
 	if (CONFIG(NO_CBFS_MCACHE))
 		will_return(cbfs_lookup, (res));

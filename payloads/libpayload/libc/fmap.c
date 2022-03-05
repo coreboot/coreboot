@@ -38,8 +38,8 @@
 /* Private fmap cache. */
 static struct fmap *_fmap_cache;
 
-static cb_err_t fmap_find_area(struct fmap *fmap, const char *name, size_t *offset,
-			       size_t *size)
+static enum cb_err fmap_find_area(struct fmap *fmap, const char *name, size_t *offset,
+				  size_t *size)
 {
 	for (size_t i = 0; i < le32toh(fmap->nareas); ++i) {
 		if (strncmp((const char *)fmap->areas[i].name, name, FMAP_STRLEN) != 0)
@@ -71,7 +71,7 @@ static bool fmap_setup_cache(void)
 	return false;
 }
 
-cb_err_t fmap_locate_area(const char *name, size_t *offset, size_t *size)
+enum cb_err fmap_locate_area(const char *name, size_t *offset, size_t *size)
 {
 	if (!_fmap_cache && !fmap_setup_cache())
 		return CB_ERR;

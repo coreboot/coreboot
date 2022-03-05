@@ -80,15 +80,15 @@ vb2_error_t vb2_digest_finalize(struct vb2_digest_context *dc, uint8_t *digest, 
 }
 
 /* Original function alias created by test framework. Used for call wrapping in mock below. */
-cb_err_t __real_cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_out,
-			    size_t *data_offset_out, struct vb2_hash *metadata_hash);
+enum cb_err __real_cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_out,
+			       size_t *data_offset_out, struct vb2_hash *metadata_hash);
 
-cb_err_t cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_out,
-		     size_t *data_offset_out, struct vb2_hash *metadata_hash)
+enum cb_err cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_out,
+			size_t *data_offset_out, struct vb2_hash *metadata_hash)
 {
-	const cb_err_t err =
+	const enum cb_err err =
 		__real_cbfs_lookup(dev, name, mdata_out, data_offset_out, metadata_hash);
-	assert_int_equal(mock_type(cb_err_t), err);
+	assert_int_equal(mock_type(enum cb_err), err);
 	return err;
 }
 

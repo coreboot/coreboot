@@ -3,8 +3,8 @@
 #include <commonlib/bsd/cbfs_private.h>
 #include <assert.h>
 
-static cb_err_t read_next_header(cbfs_dev_t dev, size_t *offset, struct cbfs_file *buffer,
-				 const size_t devsize)
+static enum cb_err read_next_header(cbfs_dev_t dev, size_t *offset, struct cbfs_file *buffer,
+				    const size_t devsize)
 {
 	DEBUG("Looking for next file @%#zx...\n", *offset);
 	*offset = ALIGN_UP(*offset, CBFS_ALIGNMENT);
@@ -22,10 +22,10 @@ static cb_err_t read_next_header(cbfs_dev_t dev, size_t *offset, struct cbfs_fil
 	return CB_CBFS_NOT_FOUND;
 }
 
-cb_err_t cbfs_walk(cbfs_dev_t dev, cb_err_t (*walker)(cbfs_dev_t dev, size_t offset,
-						      const union cbfs_mdata *mdata,
-						      size_t already_read, void *arg),
-		   void *arg, struct vb2_hash *metadata_hash, enum cbfs_walk_flags flags)
+enum cb_err cbfs_walk(cbfs_dev_t dev, enum cb_err (*walker)(cbfs_dev_t dev, size_t offset,
+							    const union cbfs_mdata *mdata,
+							    size_t already_read, void *arg),
+		      void *arg, struct vb2_hash *metadata_hash, enum cbfs_walk_flags flags)
 {
 	const bool do_hash = CBFS_ENABLE_HASHING && metadata_hash;
 	const size_t devsize = cbfs_dev_size(dev);
@@ -39,8 +39,8 @@ cb_err_t cbfs_walk(cbfs_dev_t dev, cb_err_t (*walker)(cbfs_dev_t dev, size_t off
 	}
 
 	size_t offset = 0;
-	cb_err_t ret_header;
-	cb_err_t ret_walker = CB_CBFS_NOT_FOUND;
+	enum cb_err ret_header;
+	enum cb_err ret_walker = CB_CBFS_NOT_FOUND;
 	union cbfs_mdata mdata;
 	while ((ret_header = read_next_header(dev, &offset, &mdata.h, devsize)) == CB_SUCCESS) {
 		const uint32_t attr_offset = be32toh(mdata.h.attributes_offset);
@@ -113,8 +113,8 @@ next_file:
 	return ret_walker;
 }
 
-cb_err_t cbfs_copy_fill_metadata(union cbfs_mdata *dst, const union cbfs_mdata *src,
-				 size_t already_read, cbfs_dev_t dev, size_t offset)
+enum cb_err cbfs_copy_fill_metadata(union cbfs_mdata *dst, const union cbfs_mdata *src,
+				    size_t already_read, cbfs_dev_t dev, size_t offset)
 {
 	/* First, copy the stuff that cbfs_walk() already read for us. */
 	memcpy(dst, src, already_read);
@@ -135,8 +135,8 @@ struct cbfs_lookup_args {
 	size_t *data_offset_out;
 };
 
-static cb_err_t lookup_walker(cbfs_dev_t dev, size_t offset, const union cbfs_mdata *mdata,
-			      size_t already_read, void *arg)
+static enum cb_err lookup_walker(cbfs_dev_t dev, size_t offset, const union cbfs_mdata *mdata,
+				 size_t already_read, void *arg)
 {
 	struct cbfs_lookup_args *args = arg;
 	/* Check if the name we're looking for could fit, then we can safely memcmp() it. */
@@ -152,8 +152,8 @@ static cb_err_t lookup_walker(cbfs_dev_t dev, size_t offset, const union cbfs_md
 	return CB_SUCCESS;
 }
 
-cb_err_t cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_out,
-		     size_t *data_offset_out, struct vb2_hash *metadata_hash)
+enum cb_err cbfs_lookup(cbfs_dev_t dev, const char *name, union cbfs_mdata *mdata_out,
+			size_t *data_offset_out, struct vb2_hash *metadata_hash)
 {
 	struct cbfs_lookup_args args = {
 		.mdata_out = mdata_out,

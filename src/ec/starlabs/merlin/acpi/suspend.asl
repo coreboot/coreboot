@@ -5,8 +5,25 @@ Method (RPTS, 1, Serialized)
 	If ((Arg0 == 0x04) || (Arg0 == 0x05))
 	{
 		/* Store current EC settings in CMOS */
-		\_SB.PCI0.LPCB.TPLC =
-			\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.TPLE))
+		Switch (ToInteger (\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.TPLE))))
+		{
+			// 0x00 == Enabled    == 0x00
+			// 0x11 == Re-enabled == 0x00
+			// 0x22 == Disabled   == 0x01
+			Case (0x00)
+			{
+				\_SB.PCI0.LPCB.TPLC = 0x00
+			}
+			Case (0x11)
+			{
+				\_SB.PCI0.LPCB.TPLC = 0x00
+			}
+			Case (0x22)
+			{
+				\_SB.PCI0.LPCB.TPLC = 0x01
+			}
+		}
+
 		\_SB.PCI0.LPCB.FLKC =
 			\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.FLKE))
 		\_SB.PCI0.LPCB.KLSC =

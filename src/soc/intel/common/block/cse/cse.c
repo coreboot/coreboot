@@ -458,6 +458,8 @@ heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t client_addr)
 			return CSE_TX_RX_SUCCESS;
 	}
 
+	printk(BIOS_DEBUG, "HECI: Trigger HECI reset\n");
+	heci_reset();
 	return CSE_TX_ERR_CSE_NOT_READY;
 }
 
@@ -548,7 +550,7 @@ static enum cse_tx_rx_status heci_receive(void *buff, size_t *maxlen)
 			ret = recv_one_message(&hdr, p, left, &received);
 			if (ret) {
 				printk(BIOS_ERR, "HECI: Failed to receive!\n");
-				return ret;
+				goto CSE_RX_ERR_HANDLE;
 			}
 			left -= received;
 			p += received;
@@ -563,6 +565,9 @@ static enum cse_tx_rx_status heci_receive(void *buff, size_t *maxlen)
 		}
 	}
 
+CSE_RX_ERR_HANDLE:
+	printk(BIOS_DEBUG, "HECI: Trigger HECI Reset\n");
+	heci_reset();
 	return CSE_RX_ERR_CSE_NOT_READY;
 }
 

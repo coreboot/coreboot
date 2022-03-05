@@ -82,7 +82,21 @@ Method (RWAK, 1, Serialized)
 	\_SB.PCI0.LPCB.EC.OSFG = 0x01
 
 	/* Restore EC settings from CMOS */
-	\_SB.PCI0.LPCB.EC.TPLE = \_SB.PCI0.LPCB.TPLC
+	Switch (ToInteger (\_SB.PCI0.LPCB.TPLC))
+	{
+		// 0x00 == Enabled    == 0x00
+		// 0x00 == Re-enabled == 0x11
+		// 0x01 == Disabled   == 0x22
+		Case (0x00)
+		{
+			\_SB.PCI0.LPCB.EC.TPLE = 0x00
+		}
+		Case (0x01)
+		{
+			\_SB.PCI0.LPCB.EC.TPLE = 0x22
+		}
+	}
+
 	\_SB.PCI0.LPCB.EC.FLKE = \_SB.PCI0.LPCB.FLKC
 	\_SB.PCI0.LPCB.EC.KLSE = \_SB.PCI0.LPCB.KLSC
 	\_SB.PCI0.LPCB.EC.KLBE = \_SB.PCI0.LPCB.KLBC

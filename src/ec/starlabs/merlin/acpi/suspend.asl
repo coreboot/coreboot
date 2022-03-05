@@ -26,8 +26,21 @@ Method (RPTS, 1, Serialized)
 
 		\_SB.PCI0.LPCB.FLKC =
 			\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.FLKE))
-		\_SB.PCI0.LPCB.KLSC =
-			\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.KLSE))
+
+		Switch (ToInteger (\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.KLSE))))
+		{
+			// 0x00 == Disabled == 0x00
+			// 0xdd == Enabled  == 0x01
+			Case (0x00)
+			{
+				\_SB.PCI0.LPCB.KLSC = 0x00
+			}
+			Case (0xdd)
+			{
+				\_SB.PCI0.LPCB.KLSC = 0x01
+			}
+		}
+
 		\_SB.PCI0.LPCB.KLBC =
 			\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.KLBE))
 	}

@@ -98,6 +98,20 @@ Method (RWAK, 1, Serialized)
 	}
 
 	\_SB.PCI0.LPCB.EC.FLKE = \_SB.PCI0.LPCB.FLKC
-	\_SB.PCI0.LPCB.EC.KLSE = \_SB.PCI0.LPCB.KLSC
+
+	Switch (ToInteger (\_SB.PCI0.LPCB.KLSC))
+	{
+		// 0x00 == Disabled == 0x00
+		// 0x01 == Enabled  == 0xdd
+		Case (0x00)
+		{
+			\_SB.PCI0.LPCB.EC.KLSE = 0x00
+		}
+		Case (0x01)
+		{
+			\_SB.PCI0.LPCB.EC.KLSE = 0xdd
+		}
+	}
+
 	\_SB.PCI0.LPCB.EC.KLBE = \_SB.PCI0.LPCB.KLBC
 }

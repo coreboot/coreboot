@@ -113,5 +113,27 @@ Method (RWAK, 1, Serialized)
 		}
 	}
 
-	\_SB.PCI0.LPCB.EC.KLBE = \_SB.PCI0.LPCB.KLBC
+	Switch (ToInteger (\_SB.PCI0.LPCB.KLBC))
+	{
+		// 0x00 == On   == 0xdd
+		// 0x01 == Off  == 0xcc
+		// 0x02 == Low  == 0xbb
+		// 0x03 == High == 0xaa
+		Case (0x00)
+		{
+			\_SB.PCI0.LPCB.EC.KLBE = 0xdd
+		}
+		Case (0x01)
+		{
+			\_SB.PCI0.LPCB.EC.KLBE = 0xcc
+		}
+		Case (0x02)
+		{
+			\_SB.PCI0.LPCB.EC.KLBE = 0xbb
+		}
+		Case (0x03)
+		{
+			\_SB.PCI0.LPCB.EC.KLBE = 0xaa
+		}
+	}
 }

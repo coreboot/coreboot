@@ -41,8 +41,29 @@ Method (RPTS, 1, Serialized)
 			}
 		}
 
-		\_SB.PCI0.LPCB.KLBC =
-			\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.KLBE))
+		Switch (ToInteger (\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.KLBE))))
+		{
+			// 0xdd == On   == 0x00
+			// 0xcc == Off  == 0x01
+			// 0xbb == Low  == 0x02
+			// 0xaa == High == 0x03
+			Case (0xdd)
+			{
+				\_SB.PCI0.LPCB.KLBC = 0x00
+			}
+			Case (0xcc)
+			{
+				\_SB.PCI0.LPCB.KLBC = 0x01
+			}
+			Case (0xbb)
+			{
+				\_SB.PCI0.LPCB.KLBC = 0x02
+			}
+			Case (0xaa)
+			{
+				\_SB.PCI0.LPCB.KLBC = 0x03
+			}
+		}
 	}
 
 	/*

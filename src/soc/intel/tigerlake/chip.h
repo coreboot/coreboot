@@ -78,18 +78,6 @@ enum lpm_state_mask {
 };
 
 /*
- * VR domains. The domains are IA,GT,SA,VLCC and FIVR.
- */
-enum vr_domains {
-	VR_DOMAIN_IA,
-	VR_DOMAIN_GT,
-	VR_DOMAIN_SA,
-	VR_DOMAIN_VLCC,
-	VR_DOMAIN_FIVR,
-	VR_DOMAIN_MAX
-};
-
-/*
  * Slew Rate configuration for Deep Package C States for VR domain.
  * They are fast time divided by 2.
  * 0 - Fast/2

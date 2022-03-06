@@ -152,6 +152,6 @@ chip soc/intel/tigerlake
 		device pci 1f.4 alias smbus off end
 		device pci 1f.5 alias fast_spi on end
 		device pci 1f.6 alias gbe off end
-		device pci 1f.7 alias thermal off end
+		device pci 1f.7 alias tracehub off end
 	end
 end

@@ -8,5 +8,4 @@ Method (MPTS, 1, NotSerialized)
 Method (MWAK, 1, NotSerialized)
 {
 	RWAK (Arg0)
-	Return (0x00)
 }

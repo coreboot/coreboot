@@ -46,6 +46,11 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmTestConfig.SmbusSpdWriteDisable = 0;
 	cannonlake_memcfg_init(&memupd->FspmConfig, &baseboard_mem_cfg);
 
+	/* Tell FSP-M about the desired primary video adapter so that GGC is set up properly */
+	const struct eeprom_board_settings *board_cfg = get_board_settings();
+	if (board_cfg && board_cfg->primary_video == PRIMARY_VIDEO_INTEL)
+		memupd->FspmConfig.PrimaryDisplay = 0; /* iGPU is primary */
+
 	/* Overwrite memupd */
 	if (!check_signature(offsetof(struct eeprom_layout, mupd), FSPM_UPD_SIGNATURE))
 		return;

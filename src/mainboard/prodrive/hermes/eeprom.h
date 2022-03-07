@@ -65,6 +65,11 @@ struct __packed eeprom_board_settings {
 	};
 };
 
+enum {
+	PRIMARY_VIDEO_ASPEED = 0,
+	PRIMARY_VIDEO_INTEL  = 1,
+};
+
 _Static_assert(sizeof(struct eeprom_board_settings) == (12 + sizeof(uint32_t)),
 		"struct eeprom_board_settings has invalid size!");
 

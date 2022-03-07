@@ -8,6 +8,7 @@
 #include <crc_byte.h>
 #include <device/device.h>
 #include <device/dram/spd.h>
+#include <device/pci_ids.h>
 #include <drivers/intel/gma/opregion.h>
 #include <gpio.h>
 #include <intelblocks/gpio.h>
@@ -302,3 +303,26 @@ static void mainboard_early(void *unused)
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, mainboard_early, NULL);
+
+/*
+ * coreboot only exposes the last framebuffer that is set up.
+ * The ASPEED BMC will always be initialized after the IGD due to its higher
+ * bus number. To have coreboot only expose the IGD framebuffer skip the init
+ * function on the ASPEED.
+ */
+static void mainboard_configure_internal_gfx(void *unused)
+{
+	struct device *dev;
+	const struct eeprom_board_settings *board_cfg = get_board_settings();
+	if (!board_cfg)
+		return;
+
+	if (board_cfg->primary_video == PRIMARY_VIDEO_INTEL) {
+		dev = dev_find_device(PCI_VID_ASPEED, PCI_DID_ASPEED_AST2050_VGA, NULL);
+		dev->on_mainboard = false;
+		dev->enabled = false;
+		dev->ops->init = NULL;
+	}
+}
+
+BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_ENTRY, mainboard_configure_internal_gfx, NULL)

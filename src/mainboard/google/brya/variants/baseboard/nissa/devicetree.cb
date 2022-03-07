@@ -15,7 +15,7 @@ chip soc/intel/alderlake
 	register "s0ix_enable" = "1"
 
 	# Enable CNVi BT
-	register "CnviBtCore" = "true"
+	register "cnvi_bt_core" = "true"
 
 	# eMMC HS400
 	register "emmc_enable_hs400_mode" = "1"
@@ -32,7 +32,7 @@ chip soc/intel/alderlake
 	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
 	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
 
-	register "SerialIoI2cMode" = "{
+	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,
 		[PchSerialIoIndexI2C2] = PchSerialIoPci,
@@ -41,22 +41,22 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
-	register "SerialIoGSpiMode" = "{
+	register "serial_io_gspi_mode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 	}"
 
-	register "SerialIoUartMode" = "{
+	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoPci,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
 	# HD Audio
-	register "PchHdaDspEnable" = "1"
-	register "PchHdaIDispLinkTmode" = "HDA_TMODE_8T"
-	register "PchHdaIDispLinkFrequency" = "HDA_LINKFREQ_96MHZ"
-	register "PchHdaIDispCodecEnable" = "1"
+	register "pch_hda_dsp_enable" = "1"
+	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+	register "pch_hda_idisp_codec_enable" = "1"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

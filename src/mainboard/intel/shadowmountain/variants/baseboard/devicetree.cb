@@ -13,14 +13,14 @@ chip soc/intel/alderlake
 	register "pmc_gpe0_dw2" = "GPP_E"
 
 	# TCSS
-	register "TcssAuxOri" = "1"
+	register "tcss_aux_ori" = "1"
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_A5, .pad_auxn_dc = GPP_A6}"
 
 	# Enable CNVi Bluetooth
-	register "CnviBtCore" = "true"
+	register "cnvi_bt_core" = "true"
 
 	# FSP configuration
-	register "SaGv" = "SaGv_Enabled"
+	register "sagv" = "SaGv_Enabled"
 
 	# S0ix enable
 	register "s0ix_enable" = "1"
@@ -65,16 +65,15 @@ chip soc/intel/alderlake
 	}"
 
 	# Enable SATA
-	register "SataEnable" = "1"
-	register "SataMode" = "0"
-	register "SataSalpSupport" = "1"
-	register "SataPortsEnable[0]" = "0"
-	register "SataPortsEnable[1]" = "1"
-	register "SataPortsDevSlp[0]" = "0"
-	register "SataPortsDevSlp[1]" = "1"
-	register "SataPortsEnableDitoConfig[1]" = "1"
+	register "sata_mode" = "0"
+	register "sata_salp_support" = "1"
+	register "sata_ports_enable[0]" = "0"
+	register "sata_ports_enable[1]" = "1"
+	register "sata_ports_dev_slp[0]" = "0"
+	register "sata_ports_dev_slp[1]" = "1"
+	register "sata_ports_enable_dito_config[1]" = "1"
 
-	register "SerialIoI2cMode" = "{
+	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
@@ -83,36 +82,36 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 	}"
 
-	register "SerialIoGSpiMode" = "{
+	register "serial_io_gspi_mode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
 		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI3] = PchSerialIoDisabled,
 	}"
 
-	register "SerialIoGSpiCsMode" = "{
+	register "serial_io_gspi_cs_mode" = "{
 		[PchSerialIoIndexGSPI0] = 1,
 	}"
 
-	register "SerialIoGSpiCsState" = "{
+	register "serial_io_gspi_cs_state" = "{
 		[PchSerialIoIndexGSPI0] = 1,
 	}"
 
-	register "SerialIoUartMode" = "{
+	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
 	# HD Audio
-	register "PchHdaDspEnable" = "1"
-	register "PchHdaIDispLinkTmode" = "HDA_TMODE_8T"
-	register "PchHdaIDispLinkFrequency" = "HDA_LINKFREQ_96MHZ"
-	register "PchHdaIDispCodecEnable" = "1"
+	register "pch_hda_dsp_enable" = "1"
+	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+	register "pch_hda_idisp_codec_enable" = "1"
 
 	# DP port
-	register "DdiPortAConfig" = "1"	# eDP
-	register "DdiPortBConfig" = "0"
+	register "ddi_portA_config" = "1"	# eDP
+	register "ddi_portB_config" = "0"
 
 	# Enable Display Port Configuration
 	register "ddi_ports_config" = "{

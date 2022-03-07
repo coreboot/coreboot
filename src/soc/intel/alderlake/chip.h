@@ -195,9 +195,9 @@ struct soc_intel_alderlake_config {
 	/* Enable S0iX support */
 	int s0ix_enable;
 	/* Support for TCSS xhci, xdci, TBT PCIe root ports and DMA controllers */
-	uint8_t TcssD3HotDisable;
+	uint8_t tcss_d3_hot_disable;
 	/* Support for TBT PCIe root ports and DMA controllers with D3Hot->D3Cold */
-	uint8_t TcssD3ColdDisable;
+	uint8_t tcss_d3_cold_disable;
 	/* Enable DPTF support */
 	int dptf_enable;
 
@@ -227,7 +227,7 @@ struct soc_intel_alderlake_config {
 		SaGv_FixedPoint2,
 		SaGv_FixedPoint3,
 		SaGv_Enabled,
-	} SaGv;
+	} sagv;
 
 	/* Rank Margin Tool. 1:Enable, 0:Disable */
 	uint8_t RMT;
@@ -243,31 +243,31 @@ struct soc_intel_alderlake_config {
 	struct tcss_port_config tcss_ports[MAX_TYPE_C_PORTS];
 
 	/* SATA related */
-	uint8_t SataEnable;
-	uint8_t SataMode;
-	uint8_t SataSalpSupport;
-	uint8_t SataPortsEnable[8];
-	uint8_t SataPortsDevSlp[8];
+	uint8_t sata_mode;
+	uint8_t sata_salp_support;
+	uint8_t sata_ports_enable[8];
+	uint8_t sata_ports_dev_slp[8];
 
 	/*
 	 * Enable(0)/Disable(1) SATA Power Optimizer on PCH side.
 	 * Default 0. Setting this to 1 disables the SATA Power Optimizer.
 	 */
-	uint8_t SataPwrOptimizeDisable;
+	uint8_t sata_pwr_optimize_disable;
 
 	/*
 	 * SATA Port Enable Dito Config.
 	 * Enable DEVSLP Idle Timeout settings (DmVal, DitoVal).
 	 */
-	uint8_t SataPortsEnableDitoConfig[8];
+	uint8_t sata_ports_enable_dito_config[8];
 
 	/* SataPortsDmVal is the DITO multiplier. Default is 15. */
-	uint8_t SataPortsDmVal[8];
+	uint8_t sata_ports_dm_val[8];
+
 	/* SataPortsDitoVal is the DEVSLP Idle Timeout, default is 625ms */
-	uint16_t SataPortsDitoVal[8];
+	uint16_t sata_ports_dito_val[8];
 
 	/* Audio related */
-	uint8_t PchHdaDspEnable;
+	uint8_t pch_hda_dsp_enable;
 
 	/* iDisp-Link T-Mode 0: 2T, 2: 4T, 3: 8T, 4: 16T */
 	enum {
@@ -275,15 +275,15 @@ struct soc_intel_alderlake_config {
 		HDA_TMODE_4T = 2,
 		HDA_TMODE_8T = 3,
 		HDA_TMODE_16T = 4,
-	} PchHdaIDispLinkTmode;
+	} pch_hda_idisp_link_tmode;
 
 	/* iDisp-Link Freq 4: 96MHz, 3: 48MHz. */
 	enum {
 		HDA_LINKFREQ_48MHZ = 3,
 		HDA_LINKFREQ_96MHZ = 4,
-	} PchHdaIDispLinkFrequency;
+	} pch_hda_idisp_link_frequency;
 
-	bool PchHdaIDispCodecEnable;
+	bool pch_hda_idisp_codec_enable;
 
 	struct pcie_rp_config pch_pcie_rp[CONFIG_MAX_PCH_ROOT_PORTS];
 	struct pcie_rp_config cpu_pcie_rp[CONFIG_MAX_CPU_ROOT_PORTS];
@@ -311,8 +311,8 @@ struct soc_intel_alderlake_config {
 		IGD_SM_52MB = 0xFC,
 		IGD_SM_56MB = 0xFD,
 		IGD_SM_60MB = 0xFE,
-	} IgdDvmt50PreAlloc;
-	uint8_t SkipExtGfxScan;
+	} igd_dvmt50_pre_alloc;
+	uint8_t skip_ext_gfx_scan;
 
 	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
 	uint8_t eist_enable;
@@ -328,21 +328,21 @@ struct soc_intel_alderlake_config {
 	 * PchSerialIoLegacyUart,
 	 * PchSerialIoSkipInit
 	 */
-	uint8_t SerialIoI2cMode[CONFIG_SOC_INTEL_I2C_DEV_MAX];
-	uint8_t SerialIoGSpiMode[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
-	uint8_t SerialIoUartMode[CONFIG_SOC_INTEL_UART_DEV_MAX];
+	uint8_t serial_io_i2c_mode[CONFIG_SOC_INTEL_I2C_DEV_MAX];
+	uint8_t serial_io_gspi_mode[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+	uint8_t serial_io_uart_mode[CONFIG_SOC_INTEL_UART_DEV_MAX];
 	/*
 	 * GSPIn Default Chip Select Mode:
 	 * 0:Hardware Mode,
 	 * 1:Software Mode
 	 */
-	uint8_t SerialIoGSpiCsMode[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+	uint8_t serial_io_gspi_cs_mode[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 	/*
 	 * GSPIn Default Chip Select State:
 	 * 0: Low,
 	 * 1: High
 	 */
-	uint8_t SerialIoGSpiCsState[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+	uint8_t serial_io_gspi_cs_state[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 
 	/* Debug interface selection */
 	enum {
@@ -357,10 +357,10 @@ struct soc_intel_alderlake_config {
 	uint8_t pch_isclk;
 
 	/* CNVi BT Core Enable/Disable */
-	bool CnviBtCore;
+	bool cnvi_bt_core;
 
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
-	bool CnviBtAudioOffload;
+	bool cnvi_bt_audio_offload;
 
 	/*
 	 * These GPIOs will be programmed by the IOM to handle biasing of the
@@ -379,10 +379,7 @@ struct soc_intel_alderlake_config {
 	 * Odd numbered bits (1, 3, 5, 7) control the orientation of the physical aux lines
 	 * on the motherboard.
 	 */
-	uint16_t TcssAuxOri;
-
-	/* Connect Topology Command timeout value */
-	uint16_t ITbtConnectTopologyTimeoutInMs;
+	uint16_t tcss_aux_ori;
 
 	/*
 	 * Override GPIO PM configuration:
@@ -408,8 +405,8 @@ struct soc_intel_alderlake_config {
 	 * Port config
 	 * 0:Disabled, 1:eDP, 2:MIPI DSI
 	 */
-	uint8_t DdiPortAConfig;
-	uint8_t DdiPortBConfig;
+	uint8_t ddi_portA_config;
+	uint8_t ddi_portB_config;
 
 	/* Enable(1)/Disable(0) HPD/DDC */
 	uint8_t ddi_ports_config[DDI_PORT_COUNT];
@@ -417,7 +414,7 @@ struct soc_intel_alderlake_config {
 	/* Hybrid storage mode enable (1) / disable (0)
 	 * This mode makes FSP detect Optane and NVME and set PCIe lane mode
 	 * accordingly */
-	uint8_t HybridStorageMode;
+	uint8_t hybrid_storage_mode;
 
 #if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
 	/* eMMC HS400 mode */
@@ -441,19 +438,19 @@ struct soc_intel_alderlake_config {
 	 * Enable(0)/Disable(1) DMI Power Optimizer on PCH side.
 	 * Default 0. Setting this to 1 disables the DMI Power Optimizer.
 	 */
-	uint8_t DmiPwrOptimizeDisable;
+	uint8_t dmi_power_optimize_disable;
 
 	/*
 	 * Enable(1)/Disable(0) CPU Replacement check.
 	 * Default 0. Setting this to 1 to check CPU replacement.
 	 */
-	uint8_t CpuReplacementCheck;
+	uint8_t cpu_replacement_check;
 
 	/* ISA Serial Base selection. */
 	enum {
 		ISA_SERIAL_BASE_ADDR_3F8,
 		ISA_SERIAL_BASE_ADDR_2F8,
-	} IsaSerialUartBase;
+	} isa_serial_uart_base;
 
 	/* structure containing various settings for PCH FIVRs */
 	struct {
@@ -480,7 +477,7 @@ struct soc_intel_alderlake_config {
 	*/
 	struct vr_config domain_vr_config[NUM_VR_DOMAINS];
 
-	uint16_t MaxDramSpeed;
+	uint16_t max_dram_speed;
 
 	enum {
 		SLP_S3_ASSERTION_DEFAULT,
@@ -532,7 +529,7 @@ struct soc_intel_alderlake_config {
 	} pch_reset_power_cycle_duration;
 
 	/* Platform Power Pmax */
-	uint16_t PsysPmax;
+	uint16_t platform_pmax;
 	/*
 	 * FivrRfiFrequency
 	 * PCODE MMIO Mailbox: Set the desired RFI frequency, in increments of 100KHz.
@@ -541,7 +538,7 @@ struct soc_intel_alderlake_config {
 	 *   0-1918*100 KHz (Up to 191.8MHz) for 24MHz clock
 	 *   0-1535*100 KHz (Up to 153.5MHz) for 19MHz clock
 	 */
-	uint32_t FivrRfiFrequency;
+	uint32_t fivr_rfi_frequency;
 	/*
 	 * FivrSpreadSpectrum
 	 * Set the Spread Spectrum Range.
@@ -549,16 +546,16 @@ struct soc_intel_alderlake_config {
 	 *   Each Range is translated to an encoded value for FIVR register.
 	 *   0.5% = 0, 1% = 3, 1.5% = 8, 2% = 18, 3% = 28, 4% = 34, 5% = 39, 6% = 44.
 	 */
-	uint8_t FivrSpreadSpectrum;
+	uint8_t fivr_spread_spectrum;
 	/* Enable or Disable Acoustic Noise Mitigation feature */
-	uint8_t AcousticNoiseMitigation;
+	uint8_t acoustic_noise_mitigation;
 	/* Disable Fast Slew Rate for Deep Package C States for VR domains */
-	uint8_t FastPkgCRampDisable[NUM_VR_DOMAINS];
+	uint8_t fast_pkg_c_ramp_disable[NUM_VR_DOMAINS];
 	/*
 	 * Slew Rate configuration for Deep Package C States for VR domains
 	 * 0: Fast/2, 1: Fast/4, 2: Fast/8, 3: Fast/16; see enum slew_rate for values
 	 */
-	uint8_t SlowSlewRate[NUM_VR_DOMAINS];
+	uint8_t slow_slew_rate[NUM_VR_DOMAINS];
 
 	/* Energy-Performance Preference (HWP feature) */
 	bool enable_energy_perf_pref;

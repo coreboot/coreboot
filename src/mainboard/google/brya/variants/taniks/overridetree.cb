@@ -49,11 +49,11 @@ chip soc/intel/alderlake
 		.v1p05_icc_max_ma = 500,
 		.vnn_sx_voltage_mv = 1250,
 	}"
-	register "TcssAuxOri" = "1"
+	register "tcss_aux_ori" = "1"
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
-	register "SaGv" = "SaGv_Enabled"
+	register "sagv" = "SaGv_Enabled"
 
-	register "PsysPmax" = "145"
+	register "platform_pmax" = "145"
 
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	# Disable Port 1
 	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC2)"	# DB USB2_C1
@@ -94,7 +94,7 @@ chip soc/intel/alderlake
 		},
 	}"
 	# I2C Port Config
-	register "SerialIoI2cMode" = "{
+	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,

@@ -35,9 +35,9 @@ fw_config
 end
 
 chip soc/intel/alderlake
-	register "SaGv" = "SaGv_Enabled"
+	register "sagv" = "SaGv_Enabled"
 
-	register "PsysPmax" = "145"
+	register "platform_pmax" = "145"
 
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A MLB Port
 

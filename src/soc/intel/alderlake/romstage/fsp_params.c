@@ -115,8 +115,8 @@ static void fill_fspm_igd_params(FSP_M_CONFIG *m_cfg,
 		/* IGD is enabled, set IGD stolen size to 60MB. */
 		m_cfg->IgdDvmt50PreAlloc = IGD_SM_60MB;
 		/* DP port config */
-		m_cfg->DdiPortAConfig = config->DdiPortAConfig;
-		m_cfg->DdiPortBConfig = config->DdiPortBConfig;
+		m_cfg->DdiPortAConfig = config->ddi_portA_config;
+		m_cfg->DdiPortBConfig = config->ddi_portB_config;
 		for  (i = 0; i < ARRAY_SIZE(ddi_port_upds); i++) {
 			*ddi_port_upds[i].ddc = !!(config->ddi_ports_config[i] &
 								DDI_ENABLE_DDC);
@@ -138,10 +138,10 @@ static void fill_fspm_igd_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
-	m_cfg->SaGv = config->SaGv;
+	m_cfg->SaGv = config->sagv;
 	m_cfg->RMT = config->RMT;
-	if (config->MaxDramSpeed)
-		m_cfg->DdrFreqLimit = config->MaxDramSpeed;
+	if (config->max_dram_speed)
+		m_cfg->DdrFreqLimit = config->max_dram_speed;
 }
 
 static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,
@@ -203,7 +203,7 @@ static void fill_fspm_misc_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->LockPTMregs = 0;
 
 	/* Skip CPU replacement check */
-	m_cfg->SkipCpuReplacementCheck = !config->CpuReplacementCheck;
+	m_cfg->SkipCpuReplacementCheck = !config->cpu_replacement_check;
 
 	/* Skip GPIO configuration from FSP */
 	m_cfg->GpioOverride = 0x1;
@@ -223,10 +223,10 @@ static void fill_fspm_audio_params(FSP_M_CONFIG *m_cfg,
 {
 	/* Audio: HDAUDIO_LINK_MODE I2S/SNDW */
 	m_cfg->PchHdaEnable = is_devfn_enabled(PCH_DEVFN_HDA);
-	m_cfg->PchHdaDspEnable = config->PchHdaDspEnable;
-	m_cfg->PchHdaIDispLinkTmode = config->PchHdaIDispLinkTmode;
-	m_cfg->PchHdaIDispLinkFrequency = config->PchHdaIDispLinkFrequency;
-	m_cfg->PchHdaIDispCodecDisconnect = !config->PchHdaIDispCodecEnable;
+	m_cfg->PchHdaDspEnable = config->pch_hda_dsp_enable;
+	m_cfg->PchHdaIDispLinkTmode = config->pch_hda_idisp_link_tmode;
+	m_cfg->PchHdaIDispLinkFrequency = config->pch_hda_idisp_link_frequency;
+	m_cfg->PchHdaIDispCodecDisconnect = !config->pch_hda_idisp_codec_enable;
 	/*
 	 * All the PchHdaAudioLink{Hda|Dmic|Ssp|Sndw}Enable UPDs are used by FSP only to
 	 * configure GPIO pads for audio. Mainboard is expected to perform all GPIO

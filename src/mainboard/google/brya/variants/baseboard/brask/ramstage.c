@@ -146,7 +146,7 @@ void variant_update_psys_power_limits(const struct cpu_power_limits *limits,
 
 	/* voltage unit is milliVolts and current is in milliAmps */
 	soc_config->psys_pmax = (u16)(((u32)config_psys->psys_imax_ma * volts_mv) / 1000000);
-	conf->PsysPmax = soc_config->psys_pmax;
+	conf->platform_pmax = soc_config->psys_pmax;
 
 	soc_config->tdp_pl2_override = pl2;
 	soc_config->tdp_psyspl2 = psyspl2;

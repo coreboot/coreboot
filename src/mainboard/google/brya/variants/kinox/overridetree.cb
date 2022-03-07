@@ -31,7 +31,7 @@ chip soc/intel/alderlake
 	register "tcss_ports[2]" = "TCSS_PORT_EMPTY"            # Disable Port2
 
 	# I2C Port Config
-	register "SerialIoI2cMode" = "{
+	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,
 		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
@@ -40,7 +40,7 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C5] = PchSerialIoDisabled,
 	}"
 
-	register "SerialIoGSpiMode" = "{
+	register "serial_io_gspi_mode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 	}"

@@ -6,5 +6,6 @@
 
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
-	config->CnviBtAudioOffload = fw_config_probe(FW_CONFIG(AUDIO, NAU88L25B_I2S));
+	config->cnvi_bt_audio_offload = fw_config_probe(FW_CONFIG(AUDIO,
+							NAU88L25B_I2S));
 }

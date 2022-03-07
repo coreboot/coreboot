@@ -20,7 +20,7 @@ chip soc/intel/alderlake
 	register "tcc_offset" = "10"     # TCC of 90
 
 	# Enable CNVi BT
-	register "CnviBtCore" = "true"
+	register "cnvi_bt_core" = "true"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"	# USB2_C1
@@ -37,7 +37,7 @@ chip soc/intel/alderlake
 	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC1)"
 	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC2)"
 
-	register "SerialIoI2cMode" = "{
+	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,
 		[PchSerialIoIndexI2C2] = PchSerialIoPci,
@@ -46,12 +46,12 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
-	register "SerialIoGSpiMode" = "{
+	register "serial_io_gspi_mode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
 	}"
 
-	register "SerialIoUartMode" = "{
+	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoPci,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
@@ -64,13 +64,13 @@ chip soc/intel/alderlake
 	register "pch_reset_power_cycle_duration" = "POWER_CYCLE_DURATION_1S"
 
 	# HD Audio
-	register "PchHdaDspEnable" = "1"
-	register "PchHdaIDispLinkTmode" = "HDA_TMODE_8T"
-	register "PchHdaIDispLinkFrequency" = "HDA_LINKFREQ_96MHZ"
-	register "PchHdaIDispCodecEnable" = "1"
+	register "pch_hda_dsp_enable" = "1"
+	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+	register "pch_hda_idisp_codec_enable" = "1"
 
 	# FIVR RFI Spread Spectrum 1.5%
-	register "FivrSpreadSpectrum" = "FIVR_SS_1_5"
+	register "fivr_spread_spectrum" = "FIVR_SS_1_5"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

@@ -21,9 +21,9 @@ fw_config
 	end
 end
 chip soc/intel/alderlake
-	register "SaGv" = "SaGv_Enabled"
+	register "sagv" = "SaGv_Enabled"
 
-	register "TcssAuxOri" = "1"
+	register "tcss_aux_ori" = "1"
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"		# Disable USB2_C1

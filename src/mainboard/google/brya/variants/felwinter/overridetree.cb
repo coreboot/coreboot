@@ -16,7 +16,7 @@ fw_config
 end
 
 chip soc/intel/alderlake
-	register "SaGv" = "SaGv_Enabled"
+	register "sagv" = "SaGv_Enabled"
 
 	# FIVR configurations for brya are disabled since the board doesn't have V1p05 and Vnn
 	# bypass rails implemented.
@@ -30,7 +30,7 @@ chip soc/intel/alderlake
 
 	register "tcss_ports[0]" = "TCSS_PORT_EMPTY"
 
-	register "SerialIoI2cMode" = "{
+	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,
 		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
@@ -39,7 +39,7 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
-	register "SerialIoGSpiMode" = "{
+	register "serial_io_gspi_mode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 	}"

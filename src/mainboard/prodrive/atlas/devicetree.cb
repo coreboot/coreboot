@@ -23,19 +23,19 @@ chip soc/intel/alderlake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"
 
-	register "SataSalpSupport" = "1"
+	register "sata_salp_support" = "1"
 
-	register "SataPortsEnable" = "{
+	register "sata_ports_enable" = "{
 		[0] = 1,
 		[1] = 1,
 	}"
 
-	register "SataPortsDevSlp" = "{
+	register "sata_ports_dev_slp" = "{
 		[0] = 1,
 		[1] = 1,
 	}"
 
-	register "SerialIoUartMode" = "{
+	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUART1] = PchSerialIoPci,
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,

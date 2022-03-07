@@ -23,14 +23,15 @@ fw_config
 end
 
 chip soc/intel/alderlake
-	register "SaGv" = "SaGv_Enabled"
-	register "MaxDramSpeed" = "3733"
+	register "sagv" = "SaGv_Enabled"
+	register "max_dram_speed" = "3733"
+
 	# Acoustic settings
-  	register "AcousticNoiseMitigation" = "1"
-  	register "SlowSlewRate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
-  	register "SlowSlewRate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
-  	register "FastPkgCRampDisable[VR_DOMAIN_IA]" = "1"
-  	register "FastPkgCRampDisable[VR_DOMAIN_GT]" = "1"
+	register "acoustic_noise_mitigation" = "1"
+	register "slow_slew_rate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
+	register "slow_slew_rate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_IA]" = "1"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_GT]" = "1"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

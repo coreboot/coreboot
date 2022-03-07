@@ -7,7 +7,7 @@ fw_config
 end
 
 chip soc/intel/alderlake
-	register "SaGv" = "SaGv_Enabled"
+	register "sagv" = "SaGv_Enabled"
 
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 	register "typec_aux_bias_pads[1]" = "{.pad_auxp_dc = GPP_A21, .pad_auxn_dc = GPP_A22}"

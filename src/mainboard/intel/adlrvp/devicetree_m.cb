@@ -36,10 +36,10 @@ chip soc/intel/alderlake
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # M.2 WLAN
 
 	# Sagv Configuration
-	register "SaGv" = "SaGv_Enabled"
+	register "sagv" = "SaGv_Enabled"
 
 	# Enable CNVi Bluetooth
-	register "CnviBtCore" = "true"
+	register "cnvi_bt_core" = "true"
 
 	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
 	register "gen1_dec" = "0x00fc0801"
@@ -80,7 +80,7 @@ chip soc/intel/alderlake
 	}"
 
 	# Hybrid storage mode
-	register "HybridStorageMode" = "1"
+	register "hybrid_storage_mode" = "1"
 
 	# Enable CPU PCIE RP 1 using CLK 0
 	register "cpu_pcie_rp[CPU_RP(1)]" = "{
@@ -90,18 +90,18 @@ chip soc/intel/alderlake
 	}"
 
 	# Enable EDP in PortA
-	register "DdiPortAConfig" = "1"
+	register "ddi_portA_config" = "1"
 	# Enable HDMI in Port B
 	register "ddi_ports_config" = "{
 		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 	}"
 
 	# TCSS USB3
-	register "TcssAuxOri" = "0"
+	register "tcss_aux_ori" = "0"
 
 	register "s0ix_enable" = "1"
 
-	register "SerialIoI2cMode" = "{
+	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,
 		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
@@ -110,38 +110,38 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
-	register "SerialIoGSpiMode" = "{
+	register "serial_io_gspi_mode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
 		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
 		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI3] = PchSerialIoDisabled,
 	}"
 
-	register "SerialIoGSpiCsMode" = "{
+	register "serial_io_gspi_cs_mode" = "{
 		[PchSerialIoIndexGSPI0] = 0,
 		[PchSerialIoIndexGSPI1] = 1,
 		[PchSerialIoIndexGSPI2] = 0,
 		[PchSerialIoIndexGSPI3] = 0,
 	}"
 
-	register "SerialIoGSpiCsState" = "{
+	register "serial_io_gspi_cs_state" = "{
 		[PchSerialIoIndexGSPI0] = 0,
 		[PchSerialIoIndexGSPI1] = 0,
 		[PchSerialIoIndexGSPI2] = 0,
 		[PchSerialIoIndexGSPI3] = 0,
 	}"
 
-	register "SerialIoUartMode" = "{
+	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
 	# HD Audio
-	register "PchHdaDspEnable" = "1"
-	register "PchHdaIDispLinkTmode" = "HDA_TMODE_8T"
-	register "PchHdaIDispLinkFrequency" = "HDA_LINKFREQ_96MHZ"
-	register "PchHdaIDispCodecEnable" = "1"
+	register "pch_hda_dsp_enable" = "1"
+	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+	register "pch_hda_idisp_codec_enable" = "1"
 
 	# Intel Common SoC Config
 	register "common_soc_config" = "{

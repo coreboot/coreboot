@@ -17,7 +17,7 @@ fw_config
 	end
 end
 chip soc/intel/alderlake
-	register "SaGv" = "SaGv_Enabled"
+	register "sagv" = "SaGv_Enabled"
 
 	# GPE configuration
 	register "pmc_gpe0_dw1" = "GPP_D"

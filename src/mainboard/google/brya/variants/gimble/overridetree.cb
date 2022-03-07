@@ -21,15 +21,15 @@ fw_config
 	end
 end
 chip soc/intel/alderlake
-	register "SaGv" = "SaGv_Enabled"
-	register "PsysPmax" = "143"
-	register "TcssAuxOri" = "1"
+	register "sagv" = "SaGv_Enabled"
+	register "platform_pmax" = "143"
+	register "tcss_aux_ori" = "1"
 	# Acoustic settings
-	register "AcousticNoiseMitigation" = "1"
-	register "SlowSlewRate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
-	register "SlowSlewRate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
-	register "FastPkgCRampDisable[VR_DOMAIN_IA]" = "1"
-	register "FastPkgCRampDisable[VR_DOMAIN_GT]" = "1"
+	register "acoustic_noise_mitigation" = "1"
+	register "slow_slew_rate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
+	register "slow_slew_rate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_IA]" = "1"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_GT]" = "1"
 
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 	register "usb2_ports[1]" = "USB2_PORT_MAX_TYPE_C(OC1)" # set MAX to USB2_C1 for eye diagram

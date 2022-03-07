@@ -24,7 +24,7 @@ chip soc/amd/sabrina
 
 	register "s0ix_enable" = "true"
 
-	register "pspp_policy" = "DXIO_PSPP_BALANCED"
+	register "pspp_policy" = "DXIO_PSPP_DISABLED" # TODO: reenable when PSPP works
 
 	device domain 0 on
 		device ref iommu on end

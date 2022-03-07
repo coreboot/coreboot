@@ -50,7 +50,7 @@ enum cb_err pci_xhci_get_wake_gpe(const struct device *dev, int *gpe)
 		}
 	} else if (dev->bus->dev->path.pci.devfn == PCIE_GPP_C_DEVFN) {
 		if (dev->path.pci.devfn == XHCI2_DEVFN
-		    && dev->device == PCI_DEVICE_ID_AMD_FAM17H_MODELA0H_XHCI2) {
+		    && dev->device == PCI_DID_AMD_FAM17H_MODELA0H_XHCI2) {
 			*gpe = xhci_sci_sources[2].gpe;
 			return CB_SUCCESS;
 		}
@@ -62,7 +62,7 @@ enum cb_err pci_xhci_get_wake_gpe(const struct device *dev, int *gpe)
 static void configure_xhci_sci(void *unused)
 {
 	const struct device *xhci_2 = DEV_PTR(xhci_2);
-	if (xhci_2->device == PCI_DEVICE_ID_AMD_FAM17H_MODELA0H_XHCI2)
+	if (xhci_2->device == PCI_DID_AMD_FAM17H_MODELA0H_XHCI2)
 		gpe_configure_sci(xhci_sci_sources, ARRAY_SIZE(xhci_sci_sources));
 	else
 		gpe_configure_sci(xhci_sci_sources, ARRAY_SIZE(xhci_sci_sources) - 1);

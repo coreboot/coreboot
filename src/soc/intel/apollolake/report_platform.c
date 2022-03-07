@@ -28,27 +28,27 @@ static struct {
 	u16 mchid;
 	const char *name;
 } mch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_GLK_NB, "Geminilake" },
-	{ PCI_DEVICE_ID_INTEL_APL_NB, "Apollolake" },
+	{ PCI_DID_INTEL_GLK_NB, "Geminilake" },
+	{ PCI_DID_INTEL_APL_NB, "Apollolake" },
 };
 
 static struct {
 	u16 lpcid;
 	const char *name;
 } pch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_APL_LPC, "Apollolake" },
-	{ PCI_DEVICE_ID_INTEL_GLK_LPC, "Geminilake" },
-	{ PCI_DEVICE_ID_INTEL_GLK_ESPI, "Geminilake" },
+	{ PCI_DID_INTEL_APL_LPC, "Apollolake" },
+	{ PCI_DID_INTEL_GLK_LPC, "Geminilake" },
+	{ PCI_DID_INTEL_GLK_ESPI, "Geminilake" },
 };
 
 static struct {
 	u16 igdid;
 	const char *name;
 } igd_table[] = {
-	{ PCI_DEVICE_ID_INTEL_APL_IGD_HD_505, "Apollolake HD 505" },
-	{ PCI_DEVICE_ID_INTEL_APL_IGD_HD_500, "Apollolake HD 500" },
-	{ PCI_DEVICE_ID_INTEL_GLK_IGD, "Geminilake" },
-	{ PCI_DEVICE_ID_INTEL_GLK_IGD_EU12, "Geminilake EU12" },
+	{ PCI_DID_INTEL_APL_IGD_HD_505, "Apollolake HD 505" },
+	{ PCI_DID_INTEL_APL_IGD_HD_500, "Apollolake HD 500" },
+	{ PCI_DID_INTEL_GLK_IGD, "Geminilake" },
+	{ PCI_DID_INTEL_GLK_IGD_EU12, "Geminilake EU12" },
 };
 
 static uint8_t get_dev_revision(pci_devfn_t dev)

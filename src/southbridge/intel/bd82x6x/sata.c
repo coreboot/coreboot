@@ -272,6 +272,6 @@ static const unsigned short pci_device_ids[] = { 0x1c00, 0x1c01, 0x1c02, 0x1c03,
 
 static const struct pci_driver pch_sata __pci_driver = {
 	.ops	 = &sata_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.vendor	 = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

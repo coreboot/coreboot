@@ -44,8 +44,8 @@ static struct device_operations uart_ops = {
 
 static const struct pci_driver uart_driver __pci_driver = {
 	.ops = &uart_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_DNV_HSUART
+	.vendor = PCI_VID_INTEL,
+	.device = PCI_DID_INTEL_DNV_HSUART
 };
 
 static void hide_hsuarts(void)

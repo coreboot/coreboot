@@ -92,6 +92,6 @@ static struct device_operations azalia_ops = {
 /* ICH9DH/ICH9DO/ICH9R/ICH9/ICH9M-E/ICH9M */
 static const struct pci_driver i82801ix_azalia __pci_driver = {
 	.ops	= &azalia_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801IB_HD_AUDIO,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82801IB_HD_AUDIO,
 };

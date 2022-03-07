@@ -252,12 +252,12 @@ static struct device_operations ac97_modem_ops  = {
 /* 82801DB/DBL/DBM (ICH4/ICH4-L/ICH4-M) */
 static const struct pci_driver i82801db_ac97_audio __pci_driver = {
 	.ops	= &ac97_audio_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801DB_AC97_AUDIO,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82801DB_AC97_AUDIO,
 };
 
 static const struct pci_driver i82801db_ac97_modem __pci_driver = {
 	.ops	= &ac97_modem_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801DB_AC97_MODEM,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82801DB_AC97_MODEM,
 };

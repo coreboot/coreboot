@@ -181,17 +181,17 @@ static const struct device_operations graphics_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_ATI_FAM17H_MODEL18H_GPU,
-	PCI_DEVICE_ID_ATI_FAM17H_MODEL60H_GPU,
-	PCI_DEVICE_ID_ATI_FAM17H_MODEL68H_GPU,
-	PCI_DEVICE_ID_ATI_FAM17H_MODELA0H_GPU,
-	PCI_DEVICE_ID_ATI_FAM19H_MODEL51H_GPU_CEZANNE,
-	PCI_DEVICE_ID_ATI_FAM19H_MODEL51H_GPU_BARCELO,
+	PCI_DID_ATI_FAM17H_MODEL18H_GPU,
+	PCI_DID_ATI_FAM17H_MODEL60H_GPU,
+	PCI_DID_ATI_FAM17H_MODEL68H_GPU,
+	PCI_DID_ATI_FAM17H_MODELA0H_GPU,
+	PCI_DID_ATI_FAM19H_MODEL51H_GPU_CEZANNE,
+	PCI_DID_ATI_FAM19H_MODEL51H_GPU_BARCELO,
 	0,
 };
 
 static const struct pci_driver graphics_driver __pci_driver = {
 	.ops		= &graphics_ops,
-	.vendor		= PCI_VENDOR_ID_ATI,
+	.vendor		= PCI_VID_ATI,
 	.devices	= pci_device_ids,
 };

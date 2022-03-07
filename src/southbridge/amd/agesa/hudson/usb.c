@@ -20,18 +20,18 @@ static struct device_operations usb_ops = {
 
 static const struct pci_driver usb_0_driver __pci_driver = {
 	.ops = &usb_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_SB900_USB_18_0,
+	.vendor = PCI_VID_AMD,
+	.device = PCI_DID_AMD_SB900_USB_18_0,
 };
 
 static const struct pci_driver usb_1_driver __pci_driver = {
 	.ops = &usb_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_SB900_USB_18_2,
+	.vendor = PCI_VID_AMD,
+	.device = PCI_DID_AMD_SB900_USB_18_2,
 };
 
 static const struct pci_driver usb_4_driver __pci_driver = {
 	.ops = &usb_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_SB900_USB_20_5,
+	.vendor = PCI_VID_AMD,
+	.device = PCI_DID_AMD_SB900_USB_20_5,
 };

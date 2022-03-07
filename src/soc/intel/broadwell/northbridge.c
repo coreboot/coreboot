@@ -420,7 +420,7 @@ static const unsigned short systemagent_ids[] = {
 
 static const struct pci_driver systemagent_driver __pci_driver = {
 	.ops     = &systemagent_ops,
-	.vendor  = PCI_VENDOR_ID_INTEL,
+	.vendor  = PCI_VID_INTEL,
 	.devices = systemagent_ids
 };
 

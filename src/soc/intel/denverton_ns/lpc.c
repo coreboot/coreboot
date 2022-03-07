@@ -534,8 +534,8 @@ static struct device_operations device_ops = {
 
 static const struct pci_driver lpc_driver __pci_driver = {
 	.ops = &device_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_DNV_LPC,
+	.vendor = PCI_VID_INTEL,
+	.device = PCI_DID_INTEL_DNV_LPC,
 };
 
 static void finalize_chipset(void *unused)

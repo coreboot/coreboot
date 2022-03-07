@@ -16,7 +16,7 @@ bool p2sb_dev_is_hidden(pci_devfn_t dev)
 
 	if (pci_vid == 0xffff)
 		return true;
-	if (pci_vid == PCI_VENDOR_ID_INTEL)
+	if (pci_vid == PCI_VID_INTEL)
 		return false;
 	printk(BIOS_ERR, "P2SB PCI_VENDOR_ID is invalid, unknown if hidden\n");
 	return true;

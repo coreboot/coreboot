@@ -45,6 +45,6 @@ static struct device_operations iommu_ops = {
 
 static const struct pci_driver iommu_driver __pci_driver = {
 	.ops = &iommu_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_15H_MODEL_101F_NB_IOMMU,
+	.vendor = PCI_VID_AMD,
+	.device = PCI_DID_AMD_15H_MODEL_101F_NB_IOMMU,
 };

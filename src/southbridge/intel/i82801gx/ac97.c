@@ -255,7 +255,7 @@ static struct device_operations ac97_modem_ops = {
 /* Note: 82801GU (ICH7-U) doesn't have AC97 audio. */
 static const struct pci_driver i82801gx_ac97_audio __pci_driver = {
 	.ops	= &ac97_audio_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.vendor	= PCI_VID_INTEL,
 	.device	= 0x27de,
 };
 
@@ -263,6 +263,6 @@ static const struct pci_driver i82801gx_ac97_audio __pci_driver = {
 /* Note: 82801GU (ICH7-U) doesn't have AC97 modem. */
 static const struct pci_driver i82801gx_ac97_modem __pci_driver = {
 	.ops	= &ac97_modem_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.vendor	= PCI_VID_INTEL,
 	.device	= 0x27dd,
 };

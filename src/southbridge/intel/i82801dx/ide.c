@@ -52,13 +52,13 @@ static struct device_operations ide_ops = {
 /* 82801DB */
 static const struct pci_driver i82801db_ide __pci_driver = {
 	.ops = &ide_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
+	.vendor = PCI_VID_INTEL,
 	.device = 0x24cb,
 };
 
 /* 82801DBM */
 static const struct pci_driver i82801dbm_ide __pci_driver = {
 	.ops = &ide_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
+	.vendor = PCI_VID_INTEL,
 	.device = 0x24ca,
 };

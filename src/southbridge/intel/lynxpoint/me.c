@@ -920,13 +920,13 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_LPT_H_MEI,
-	PCI_DEVICE_ID_INTEL_LPT_LP_MEI,
+	PCI_DID_INTEL_LPT_H_MEI,
+	PCI_DID_INTEL_LPT_LP_MEI,
 	0
 };
 
 static const struct pci_driver intel_me __pci_driver = {
 	.ops     = &device_ops,
-	.vendor  = PCI_VENDOR_ID_INTEL,
+	.vendor  = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

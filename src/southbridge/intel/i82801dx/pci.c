@@ -28,13 +28,13 @@ static struct device_operations pci_ops = {
 /* 82801DB */
 static const struct pci_driver pci_driver_db __pci_driver = {
 	.ops = &pci_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_82801DB_PCI,
+	.vendor = PCI_VID_INTEL,
+	.device = PCI_DID_INTEL_82801DB_PCI,
 };
 
 /* 82801DBM/DBL */
 static const struct pci_driver pci_driver_dbm __pci_driver = {
 	.ops = &pci_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_82801DBM_PCI,
+	.vendor = PCI_VID_INTEL,
+	.device = PCI_DID_INTEL_82801DBM_PCI,
 };

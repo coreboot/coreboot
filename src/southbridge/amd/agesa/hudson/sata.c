@@ -53,12 +53,12 @@ static struct device_operations sata_ops = {
 
 static const struct pci_driver sata0_driver __pci_driver = {
 	.ops = &sata_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_SB900_SATA,
+	.vendor = PCI_VID_AMD,
+	.device = PCI_DID_AMD_SB900_SATA,
 };
 
 static const struct pci_driver sata0_driver_ahci __pci_driver = {
 	.ops = &sata_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_SB900_SATA_AHCI,
+	.vendor = PCI_VID_AMD,
+	.device = PCI_DID_AMD_SB900_SATA_AHCI,
 };

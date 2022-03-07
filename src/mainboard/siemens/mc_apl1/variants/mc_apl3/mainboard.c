@@ -37,7 +37,7 @@ void variant_mainboard_final(void)
 	pcr_or32(PID_LPC, PCR_LPC_PRC, (PCR_LPC_CCE_EN | PCR_LPC_PCE_EN));
 
 	/* Set Master Enable for on-board PCI device if allowed. */
-	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403e, 0);
+	dev = dev_find_device(PCI_VID_SIEMENS, 0x403e, 0);
 	if (dev) {
 		if (CONFIG(PCI_ALLOW_BUS_MASTER_ANY_DEVICE))
 			pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
@@ -46,17 +46,17 @@ void variant_mainboard_final(void)
 		 * XIO2001 PCIe to PCI Bridge.
 		 */
 		struct device *parent = dev->bus->dev;
-		if (parent && parent->device == PCI_DEVICE_ID_TI_XIO2001)
+		if (parent && parent->device == PCI_DID_TI_XIO2001)
 			pci_write_config8(parent, 0xd8, 0x1d);
 	}
 
 	/* Disable clock outputs 2-5 (CLKOUT) for another XIO2001 PCIe to PCI
 	 * Bridge on this mainboard.
 	 */
-	dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403f, 0);
+	dev = dev_find_device(PCI_VID_SIEMENS, 0x403f, 0);
 	if (dev) {
 		struct device *parent = dev->bus->dev;
-		if (parent && parent->device == PCI_DEVICE_ID_TI_XIO2001)
+		if (parent && parent->device == PCI_DID_TI_XIO2001)
 			pci_write_config8(parent, 0xd8, 0x3c);
 	}
 

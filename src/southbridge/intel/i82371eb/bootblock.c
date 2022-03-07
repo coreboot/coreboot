@@ -38,8 +38,8 @@ void bootblock_early_southbridge_init(void)
 	 * But scanning for the PCI IDs (instead of hardcoding
 	 * bus/device/function numbers) works on all boards.
 	 */
-	const pci_devfn_t dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
-				       PCI_DEVICE_ID_INTEL_82371AB_ISA), 0);
+	const pci_devfn_t dev = pci_locate_device(PCI_ID(PCI_VID_INTEL,
+				       PCI_DID_INTEL_82371AB_ISA), 0);
 
 	/* Enable access to the whole ROM, disable ROM write access. */
 	reg16 = pci_read_config16(dev, XBCS);

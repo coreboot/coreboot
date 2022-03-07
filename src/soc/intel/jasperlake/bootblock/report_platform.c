@@ -24,28 +24,28 @@ static struct {
 	u16 mchid;
 	const char *name;
 } mch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_JSL_ID_1, "Jasperlake SKU4-1" },
-	{ PCI_DEVICE_ID_INTEL_JSL_ID_2, "Jasperlake SKU4-2" },
-	{ PCI_DEVICE_ID_INTEL_JSL_ID_3, "Jasperlake SKU2-1" },
-	{ PCI_DEVICE_ID_INTEL_JSL_ID_4, "Jasperlake SKU2-2" },
-	{ PCI_DEVICE_ID_INTEL_JSL_ID_5, "Jasperlake SKU4-3" },
+	{ PCI_DID_INTEL_JSL_ID_1, "Jasperlake SKU4-1" },
+	{ PCI_DID_INTEL_JSL_ID_2, "Jasperlake SKU4-2" },
+	{ PCI_DID_INTEL_JSL_ID_3, "Jasperlake SKU2-1" },
+	{ PCI_DID_INTEL_JSL_ID_4, "Jasperlake SKU2-2" },
+	{ PCI_DID_INTEL_JSL_ID_5, "Jasperlake SKU4-3" },
 };
 
 static struct {
 	u16 espiid;
 	const char *name;
 } pch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_JSP_SUPER_ESPI, "Jasperlake Super" },
+	{ PCI_DID_INTEL_JSP_SUPER_ESPI, "Jasperlake Super" },
 };
 
 static struct {
 	u16 igdid;
 	const char *name;
 } igd_table[] = {
-	{ PCI_DEVICE_ID_INTEL_JSL_GT1, "Jasperlake GT1" },
-	{ PCI_DEVICE_ID_INTEL_JSL_GT2, "Jasperlake GT2" },
-	{ PCI_DEVICE_ID_INTEL_JSL_GT3, "Jasperlake GT3" },
-	{ PCI_DEVICE_ID_INTEL_JSL_GT4, "Jasperlake GT4" },
+	{ PCI_DID_INTEL_JSL_GT1, "Jasperlake GT1" },
+	{ PCI_DID_INTEL_JSL_GT2, "Jasperlake GT2" },
+	{ PCI_DID_INTEL_JSL_GT3, "Jasperlake GT3" },
+	{ PCI_DID_INTEL_JSL_GT4, "Jasperlake GT4" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

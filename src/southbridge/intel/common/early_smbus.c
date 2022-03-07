@@ -17,7 +17,7 @@ int smbus_enable_iobar(uintptr_t base)
 	const pci_devfn_t dev = PCI_DEV_SMBUS;
 
 	/* Check to make sure we've got the right device. */
-	if (pci_read_config16(dev, PCI_VENDOR_ID) != PCI_VENDOR_ID_INTEL)
+	if (pci_read_config16(dev, PCI_VENDOR_ID) != PCI_VID_INTEL)
 		return -1;
 
 	/* Set SMBus I/O base. */

@@ -48,7 +48,7 @@ static void mainboard_init(struct device *dev)
 	}
 
 	/* Set SDHCI write protect polarity "SDWPPol" */
-	sdhci_dev = dev_find_device(PCI_VENDOR_ID_RICOH, PCI_DEVICE_ID_RICOH_R5C822, 0);
+	sdhci_dev = dev_find_device(PCI_VID_RICOH, PCI_DID_RICOH_R5C822, 0);
 	if (sdhci_dev) {
 		if (pci_read_config8(sdhci_dev, 0xfa) != 0x20) {
 			/* unlock */

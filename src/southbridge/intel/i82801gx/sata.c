@@ -219,6 +219,6 @@ static const unsigned short sata_ids[] = {
 
 static const struct pci_driver i82801gx_sata_driver __pci_driver = {
 	.ops		= &sata_ops,
-	.vendor		= PCI_VENDOR_ID_INTEL,
+	.vendor		= PCI_VID_INTEL,
 	.devices	= sata_ids,
 };

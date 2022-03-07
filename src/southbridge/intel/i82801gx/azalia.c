@@ -111,6 +111,6 @@ static struct device_operations azalia_ops = {
 /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
 static const struct pci_driver i82801gx_azalia __pci_driver = {
 	.ops	= &azalia_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.vendor	= PCI_VID_INTEL,
 	.device	= 0x27d8,
 };

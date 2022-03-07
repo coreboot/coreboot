@@ -33,8 +33,8 @@ static struct device_operations pcix_ops  = {
 
 static const struct pci_driver pcix_driver __pci_driver = {
 	.ops    = &pcix_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_82870_1F0,
+	.vendor = PCI_VID_INTEL,
+	.device = PCI_DID_INTEL_82870_1F0,
 };
 
 struct chip_operations southbridge_intel_i82870_ops = {

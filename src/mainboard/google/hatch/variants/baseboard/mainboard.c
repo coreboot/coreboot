@@ -113,8 +113,8 @@ static void mainboard_set_power_limits(struct soc_power_limits_config *conf)
 		psyspl2 = SET_PSYSPL2(watts);
 
 		/* Limit PL2 if the adapter is with lower capability */
-		if (mch_id == PCI_DEVICE_ID_INTEL_CML_ULT ||
-			mch_id == PCI_DEVICE_ID_INTEL_CML_ULT_6_2)
+		if (mch_id == PCI_DID_INTEL_CML_ULT ||
+			mch_id == PCI_DID_INTEL_CML_ULT_6_2)
 			pl2 = (psyspl2 > PUFF_U62_U42_PL2) ? PUFF_U62_U42_PL2 : psyspl2;
 		else
 			pl2 = (psyspl2 > PUFF_U22_PL2) ? PUFF_U22_PL2 : psyspl2;
@@ -134,11 +134,11 @@ static void mainboard_set_power_limits(struct soc_power_limits_config *conf)
 		 */
 		volts_mv = BJ_VOLTS_MV;
 		/* Use IGD ID to check if CPU is Core SKUs */
-		if (igd_id != PCI_DEVICE_ID_INTEL_CML_GT1_ULT_1 &&
-			igd_id != PCI_DEVICE_ID_INTEL_CML_GT2_ULT_5) {
+		if (igd_id != PCI_DID_INTEL_CML_GT1_ULT_1 &&
+			igd_id != PCI_DID_INTEL_CML_GT2_ULT_5) {
 			psyspl2 = PUFF_CORE_CPU_PSYSPL2;
-			if (mch_id == PCI_DEVICE_ID_INTEL_CML_ULT ||
-				mch_id == PCI_DEVICE_ID_INTEL_CML_ULT_6_2)
+			if (mch_id == PCI_DID_INTEL_CML_ULT ||
+				mch_id == PCI_DID_INTEL_CML_ULT_6_2)
 				pl2 = PUFF_U62_U42_PL2;
 		}
 	}

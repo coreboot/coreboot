@@ -224,7 +224,7 @@ void spi_init(void)
 
 	/* Determine the base address of the SPI flash controller */
 	context = &spi_driver_context;
-	dev = dev_find_device(PCI_VENDOR_ID_INTEL, LPC_DEVID, NULL);
+	dev = dev_find_device(PCI_VID_INTEL, LPC_DEVID, NULL);
 	rcba = pci_read_config32(dev, R_QNC_LPC_RCBA);
 	if (!(rcba & B_QNC_LPC_RCBA_EN)) {
 		printk(BIOS_ERR, "RBCA not enabled\n");

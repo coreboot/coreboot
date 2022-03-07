@@ -25,8 +25,8 @@ int smbus_enable_iobar(uintptr_t base)
 	u16 reg16;
 
 	/* Get the SMBus/PM device of the 82371AB/EB/MB. */
-	const pci_devfn_t dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
-				PCI_DEVICE_ID_INTEL_82371AB_SMB_ACPI), 0);
+	const pci_devfn_t dev = pci_locate_device(PCI_ID(PCI_VID_INTEL,
+				PCI_DID_INTEL_82371AB_SMB_ACPI), 0);
 
 	/* Set the SMBus I/O base. */
 	pci_write_config32(dev, SMBBA, base | 1);

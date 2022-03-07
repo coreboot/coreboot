@@ -465,17 +465,17 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_82801IH_LPC,   /* ICH9DH  */
-	PCI_DEVICE_ID_INTEL_82801IO_LPC,   /* ICH9DO  */
-	PCI_DEVICE_ID_INTEL_82801IR_LPC,   /* ICH9R   */
-	PCI_DEVICE_ID_INTEL_82801IEM_LPC,  /* ICH9M-E */
-	PCI_DEVICE_ID_INTEL_82801IB_LPC,   /* ICH9    */
-	PCI_DEVICE_ID_INTEL_82801IBM_LPC,  /* ICH9M   */
+	PCI_DID_INTEL_82801IH_LPC,   /* ICH9DH  */
+	PCI_DID_INTEL_82801IO_LPC,   /* ICH9DO  */
+	PCI_DID_INTEL_82801IR_LPC,   /* ICH9R   */
+	PCI_DID_INTEL_82801IEM_LPC,  /* ICH9M-E */
+	PCI_DID_INTEL_82801IB_LPC,   /* ICH9    */
+	PCI_DID_INTEL_82801IBM_LPC,  /* ICH9M   */
 	0
 };
 
 static const struct pci_driver ich9_lpc __pci_driver = {
 	.ops		= &device_ops,
-	.vendor		= PCI_VENDOR_ID_INTEL,
+	.vendor		= PCI_VID_INTEL,
 	.devices	= pci_device_ids,
 };

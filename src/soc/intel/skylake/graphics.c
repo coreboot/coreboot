@@ -87,8 +87,8 @@ u32 map_oprom_vendev(u32 vendev)
 	u32 new_vendev = vendev;
 
 	switch (vendev) {
-	case 0x80865916: /* PCI_DEVICE_ID_INTEL_KBL_GT2_SULTM */
-	case 0x80865917: /* PCI_DEVICE_ID_INTEL_KBL_GT2_SULTMR */
+	case 0x80865916: /* PCI_DID_INTEL_KBL_GT2_SULTM */
+	case 0x80865917: /* PCI_DID_INTEL_KBL_GT2_SULTMR */
 		new_vendev = SA_IGD_OPROM_VENDEV;
 		break;
 	}

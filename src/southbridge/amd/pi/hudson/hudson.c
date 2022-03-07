@@ -33,12 +33,11 @@ void hudson_enable(struct device *dev)
 			u32 sd_device_id = pci_read_config16(dev, PCI_DEVICE_ID);
 			/* turn off the SDHC controller in the PM reg */
 			u8 reg8;
-			if (sd_device_id == PCI_DEVICE_ID_AMD_HUDSON_SD) {
+			if (sd_device_id == PCI_DID_AMD_HUDSON_SD) {
 				reg8 = pm_read8(PM_HUD_SD_FLASH_CTRL);
 				reg8 &= ~BIT(0);
 				pm_write8(PM_HUD_SD_FLASH_CTRL, reg8);
-			}
-			else if (sd_device_id == PCI_DEVICE_ID_AMD_YANGTZE_SD) {
+			} else if (sd_device_id == PCI_DID_AMD_YANGTZE_SD) {
 				reg8 = pm_read8(PM_YANG_SD_FLASH_CTRL);
 				reg8 &= ~BIT(0);
 				pm_write8(PM_YANG_SD_FLASH_CTRL, reg8);

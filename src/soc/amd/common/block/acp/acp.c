@@ -55,6 +55,6 @@ static struct device_operations acp_ops = {
 
 static const struct pci_driver acp_driver __pci_driver = {
 	.ops = &acp_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_FAM17H_ACP,
+	.vendor = PCI_VID_AMD,
+	.device = PCI_DID_AMD_FAM17H_ACP,
 };

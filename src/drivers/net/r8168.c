@@ -267,7 +267,7 @@ static void r8168_set_customized_led(struct device *dev, u16 io_base)
 	if (!config)
 		return;
 
-	if (dev->device == PCI_DEVICE_ID_REALTEK_8125) {
+	if (dev->device == PCI_DID_REALTEK_8125) {
 		/* Set LED global Feature register */
 		outb(config->led_feature, io_base + CMD_LED_FEATURE);
 		printk(BIOS_DEBUG, "r8125: read back LED global feature setting as 0x%x\n",
@@ -425,14 +425,14 @@ static struct device_operations r8168_ops  = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_REALTEK_8168,
-	PCI_DEVICE_ID_REALTEK_8125,
+	PCI_DID_REALTEK_8168,
+	PCI_DID_REALTEK_8125,
 	0
 };
 
 static const struct pci_driver r8168_driver __pci_driver = {
 	.ops    = &r8168_ops,
-	.vendor = PCI_VENDOR_ID_REALTEK,
+	.vendor = PCI_VID_REALTEK,
 	.devices = pci_device_ids,
 };
 

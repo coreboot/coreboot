@@ -30,6 +30,6 @@ static const struct device_operations device_ops = {
 
 static const struct pci_driver pmc __pci_driver = {
 	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.vendor	= PCI_VID_INTEL,
 	.device	= 0x08A7,
 };

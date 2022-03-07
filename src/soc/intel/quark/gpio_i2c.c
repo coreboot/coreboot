@@ -24,6 +24,6 @@ static struct device_operations device_ops = {
 
 static const struct pci_driver gfx_driver __pci_driver = {
 	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.vendor	= PCI_VID_INTEL,
 	.device	= I2CGPIO_DEVID,
 };

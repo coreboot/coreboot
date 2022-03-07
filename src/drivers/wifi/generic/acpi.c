@@ -470,7 +470,7 @@ static void emit_sar_acpi_structures(const struct device *dev)
 	 * If device type is PCI, ensure that the device has Intel vendor ID. CBFS SAR and SAR
 	 * ACPI tables are currently used only by Intel WiFi devices.
 	 */
-	if (dev->path.type == DEVICE_PATH_PCI && dev->vendor != PCI_VENDOR_ID_INTEL)
+	if (dev->path.type == DEVICE_PATH_PCI && dev->vendor != PCI_VID_INTEL)
 		return;
 
 	/* Retrieve the sar limits data */

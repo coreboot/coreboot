@@ -140,8 +140,8 @@ static void sata_init(struct device *const dev)
 	const config_t *const config = dev->chip_info;
 
 	const u16 devid = pci_read_config16(dev, PCI_DEVICE_ID);
-	const int is_mobile = (devid == PCI_DEVICE_ID_INTEL_82801IBM_IEM_SATA_IDE_P01) ||
-			      (devid == PCI_DEVICE_ID_INTEL_82801IBM_IEM_SATA_AHCI_P0145);
+	const int is_mobile = (devid == PCI_DID_INTEL_82801IBM_IEM_SATA_IDE_P01) ||
+			      (devid == PCI_DID_INTEL_82801IBM_IEM_SATA_AHCI_P0145);
 
 	printk(BIOS_DEBUG, "i82801ix_sata: initializing...\n");
 
@@ -251,17 +251,17 @@ static struct device_operations sata_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_82801IB_SATA_P0123,
-	PCI_DEVICE_ID_INTEL_82801IB_SATA_P01,
-	PCI_DEVICE_ID_INTEL_82801IB_SATA_AHCI1,
-	PCI_DEVICE_ID_INTEL_82801IB_SATA_AHCI2,
-	PCI_DEVICE_ID_INTEL_82801IBM_IEM_SATA_IDE_P01,
-	PCI_DEVICE_ID_INTEL_82801IBM_IEM_SATA_AHCI_P0145,
+	PCI_DID_INTEL_82801IB_SATA_P0123,
+	PCI_DID_INTEL_82801IB_SATA_P01,
+	PCI_DID_INTEL_82801IB_SATA_AHCI1,
+	PCI_DID_INTEL_82801IB_SATA_AHCI2,
+	PCI_DID_INTEL_82801IBM_IEM_SATA_IDE_P01,
+	PCI_DID_INTEL_82801IBM_IEM_SATA_AHCI_P0145,
 	0,
 };
 
 static const struct pci_driver pch_sata __pci_driver = {
 	.ops	 = &sata_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.vendor	 = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

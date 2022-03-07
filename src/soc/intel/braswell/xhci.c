@@ -39,6 +39,6 @@ static struct device_operations xhci_device_ops = {
 
 static const struct pci_driver soc_xhci __pci_driver = {
 	.ops	= &xhci_device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.vendor	= PCI_VID_INTEL,
 	.device	= XHCI_DEVID
 };

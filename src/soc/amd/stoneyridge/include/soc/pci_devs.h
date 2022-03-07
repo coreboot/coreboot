@@ -21,8 +21,8 @@
 /*
  * Internal Graphics
  * Device IDs subject to SKU/OPN variation
- * GFX_DEVID for merlinfalcon		PCI_DEVICE_ID_AMD_15H_MODEL_606F_GFX
- * GFX_DEVID for stoneyridge		PCI_DEVICE_ID_AMD_15H_MODEL_707F_GFX
+ * GFX_DEVID for merlinfalcon		PCI_DID_AMD_15H_MODEL_606F_GFX
+ * GFX_DEVID for stoneyridge		PCI_DID_AMD_15H_MODEL_707F_GFX
  */
 #define GFX_DEV			0x1
 #define GFX_FUNC		0
@@ -31,8 +31,8 @@
 
 /* HD Audio 0
  * Device IDs
- * HDA0_DEVID			PCI_DEVICE_ID_AMD_15H_MODEL_606F_HDA
- * HDA0_DEVID			PCI_DEVICE_ID_AMD_15H_MODEL_707F_HDA
+ * HDA0_DEVID			PCI_DID_AMD_15H_MODEL_606F_HDA
+ * HDA0_DEVID			PCI_DID_AMD_15H_MODEL_707F_HDA
  */
 #define HDA0_DEV		0x1
 #define HDA0_FUNC		1
@@ -89,8 +89,8 @@
 
 /* HT Configuration
  * Device IDs
- * HT_DEVID for merlinfalcon	PCI_DEVICE_ID_AMD_15H_MODEL_606F_NB_HT
- * HT_DEVID for stoneyridge	PCI_DEVICE_ID_AMD_15H_MODEL_707F_NB_HT
+ * HT_DEVID for merlinfalcon	PCI_DID_AMD_15H_MODEL_606F_NB_HT
+ * HT_DEVID for stoneyridge	PCI_DID_AMD_15H_MODEL_707F_NB_HT
  */
 #define HT_DEV			0x18
 #define HT_FUNC			0

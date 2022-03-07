@@ -17,7 +17,7 @@ static uint32_t get_pl2(void)
 
 	id = pci_read_config16(igd_dev, PCI_DEVICE_ID);
 	/* Assume we only have KLB-Y and AML-Y SKUs */
-	if (id == PCI_DEVICE_ID_INTEL_KBL_GT2_SULXM)
+	if (id == PCI_DID_INTEL_KBL_GT2_SULXM)
 		return PL2_KBL;
 
 	return PL2_AML;

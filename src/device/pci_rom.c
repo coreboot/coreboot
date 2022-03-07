@@ -276,7 +276,7 @@ pci_rom_write_acpi_tables(const struct device *device, unsigned long current,
 		return current;
 
 	/* AMD/ATI uses VFCT */
-	if (device->vendor == PCI_VENDOR_ID_ATI) {
+	if (device->vendor == PCI_VID_ATI) {
 		acpi_vfct_t *vfct;
 
 		current = ALIGN_UP(current, 8);

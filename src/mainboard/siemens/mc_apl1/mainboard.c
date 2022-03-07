@@ -217,7 +217,7 @@ static void mainboard_final(void *chip_info)
 
 	/* Set Master Enable for on-board PCI device if allowed. */
 	if (CONFIG(PCI_ALLOW_BUS_MASTER_ANY_DEVICE)) {
-		dev = dev_find_device(PCI_VENDOR_ID_SIEMENS, 0x403f, 0);
+		dev = dev_find_device(PCI_VID_SIEMENS, 0x403f, 0);
 		if (dev) {
 			pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 		}

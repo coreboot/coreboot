@@ -150,8 +150,8 @@ static struct device_operations lpc_ops = {
 
 static const struct pci_driver lpc_driver __pci_driver = {
 	.ops = &lpc_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_SB800_LPC,
+	.vendor = PCI_VID_ATI,
+	.device = PCI_DID_ATI_SB800_LPC,
 };
 
 static struct device_operations sata_ops = {
@@ -164,19 +164,19 @@ static struct device_operations sata_ops = {
 
 static const struct pci_driver ahci_driver __pci_driver = {
 	.ops = &sata_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_SB800_SATA_AHCI,
+	.vendor = PCI_VID_ATI,
+	.device = PCI_DID_ATI_SB800_SATA_AHCI,
 };
 
 static const struct pci_driver raid_driver __pci_driver = {
 	.ops = &sata_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_SB800_SATA_RAID,
+	.vendor = PCI_VID_ATI,
+	.device = PCI_DID_ATI_SB800_SATA_RAID,
 };
 static const struct pci_driver raid5_driver __pci_driver = {
 	.ops = &sata_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_SB800_SATA_RAID5,
+	.vendor = PCI_VID_ATI,
+	.device = PCI_DID_ATI_SB800_SATA_RAID5,
 };
 
 static struct device_operations usb_ops = {
@@ -191,20 +191,20 @@ static struct device_operations usb_ops = {
  */
 static const struct pci_driver usb_ohci123_driver __pci_driver = {
 	.ops = &usb_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_SB800_USB_18_0, /* OHCI-USB1, OHCI-USB2, OHCI-USB3 */
+	.vendor = PCI_VID_ATI,
+	.device = PCI_DID_ATI_SB800_USB_18_0, /* OHCI-USB1, OHCI-USB2, OHCI-USB3 */
 };
 
 static const struct pci_driver usb_ehci123_driver __pci_driver = {
 	.ops = &usb_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_SB800_USB_18_2, /* EHCI-USB1, EHCI-USB2, EHCI-USB3 */
+	.vendor = PCI_VID_ATI,
+	.device = PCI_DID_ATI_SB800_USB_18_2, /* EHCI-USB1, EHCI-USB2, EHCI-USB3 */
 };
 
 static const struct pci_driver usb_ohci4_driver __pci_driver = {
 	.ops = &usb_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_SB800_USB_20_5, /* OHCI-USB4 */
+	.vendor = PCI_VID_ATI,
+	.device = PCI_DID_ATI_SB800_USB_20_5, /* OHCI-USB4 */
 };
 
 static struct device_operations azalia_ops = {
@@ -216,8 +216,8 @@ static struct device_operations azalia_ops = {
 
 static const struct pci_driver azalia_driver __pci_driver = {
 	.ops = &azalia_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_SB800_HDA,
+	.vendor = PCI_VID_ATI,
+	.device = PCI_DID_ATI_SB800_HDA,
 };
 
 static struct device_operations gec_ops = {
@@ -229,8 +229,8 @@ static struct device_operations gec_ops = {
 
 static const struct pci_driver gec_driver __pci_driver = {
 	.ops = &gec_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_SB800_GEC,
+	.vendor = PCI_VID_ATI,
+	.device = PCI_DID_ATI_SB800_GEC,
 };
 
 /**

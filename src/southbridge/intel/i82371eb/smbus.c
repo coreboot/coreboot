@@ -110,6 +110,6 @@ static const struct device_operations smbus_ops = {
 /* Intel 82371AB/EB/MB */
 static const struct pci_driver smbus_driver __pci_driver = {
 	.ops	= &smbus_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82371AB_SMB_ACPI,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82371AB_SMB_ACPI,
 };

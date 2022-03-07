@@ -44,6 +44,6 @@ static const unsigned short pci_device_ids[] = { 0x1c22, 0x1e22, 0 };
 
 static const struct pci_driver pch_smbus __pci_driver = {
 	.ops	 = &smbus_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.vendor	 = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

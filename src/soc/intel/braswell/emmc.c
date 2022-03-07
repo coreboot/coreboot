@@ -39,6 +39,6 @@ static struct device_operations emmc_device_ops = {
 
 static const struct pci_driver southcluster __pci_driver = {
 	.ops		= &emmc_device_ops,
-	.vendor		= PCI_VENDOR_ID_INTEL,
+	.vendor		= PCI_VID_INTEL,
 	.device		= MMC_DEVID,
 };

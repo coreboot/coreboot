@@ -320,13 +320,13 @@ static struct device_operations northbridge_operations = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_AMD_15H_MODEL_606F_NB_HT,
-	PCI_DEVICE_ID_AMD_15H_MODEL_707F_NB_HT,
+	PCI_DID_AMD_15H_MODEL_606F_NB_HT,
+	PCI_DID_AMD_15H_MODEL_707F_NB_HT,
 	0 };
 
 static const struct pci_driver family15_northbridge __pci_driver = {
 	.ops	= &northbridge_operations,
-	.vendor = PCI_VENDOR_ID_AMD,
+	.vendor = PCI_VID_AMD,
 	.devices = pci_device_ids,
 };
 

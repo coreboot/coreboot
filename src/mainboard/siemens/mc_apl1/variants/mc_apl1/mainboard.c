@@ -24,7 +24,7 @@ void variant_mainboard_final(void)
 	pcr_write16(PID_ITSS, 0x314c, 0x0321);
 
 	/* Disable clock outputs 1-5 (CLKOUT) for XIO2001 PCIe to PCI Bridge. */
-	dev = dev_find_device(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_XIO2001, 0);
+	dev = dev_find_device(PCI_VID_TI, PCI_DID_TI_XIO2001, 0);
 	if (dev)
 		pci_write_config8(dev, 0xd8, 0x3e);
 

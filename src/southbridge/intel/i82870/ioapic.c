@@ -73,7 +73,7 @@ static struct device_operations ioapic_ops = {
 
 static const struct pci_driver ioapic_driver __pci_driver = {
 	.ops    = &ioapic_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_82870_1E0,
+	.vendor = PCI_VID_INTEL,
+	.device = PCI_DID_INTEL_82870_1E0,
 
 };

@@ -27,6 +27,6 @@ static const unsigned short pci_device_ids[] = {
 
 static const struct pci_driver bcm57xx_aspm_fixup __pci_driver = {
 	.ops	 = &bcm57xx_aspm_fixup_ops,
-	.vendor	 = PCI_VENDOR_ID_BROADCOM,
+	.vendor	 = PCI_VID_BROADCOM,
 	.devices = pci_device_ids,
 };

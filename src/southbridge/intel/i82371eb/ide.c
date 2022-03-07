@@ -148,34 +148,34 @@ static const struct device_operations ide_ops_ab_eb_mb = {
 /* Intel 82371FB (PIIX) */
 static const struct pci_driver ide_driver_fb __pci_driver = {
 	.ops	= &ide_ops_fb_sb,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82371FB_IDE,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82371FB_IDE,
 };
 
 /* Intel 82371SB (PIIX3) */
 static const struct pci_driver ide_driver_sb __pci_driver = {
 	.ops	= &ide_ops_fb_sb,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82371SB_IDE,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82371SB_IDE,
 };
 
 /* Intel 82371MX (MPIIX) */
 static const struct pci_driver ide_driver_mx __pci_driver = {
 	.ops	= &ide_ops_fb_sb,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82371MX_ISA_IDE,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82371MX_ISA_IDE,
 };
 
 /* Intel 82437MX (part of the 430MX chipset) */
 static const struct pci_driver ide_driver_82437mx __pci_driver = {
 	.ops	= &ide_ops_fb_sb,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82437MX_ISA_IDE,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82437MX_ISA_IDE,
 };
 
 /* Intel 82371AB/EB/MB */
 static const struct pci_driver ide_driver_ab_eb_mb __pci_driver = {
 	.ops	= &ide_ops_ab_eb_mb,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82371AB_IDE,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82371AB_IDE,
 };

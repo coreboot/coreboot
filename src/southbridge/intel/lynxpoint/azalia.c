@@ -121,13 +121,13 @@ static struct device_operations azalia_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_LPT_H_AUDIO,
-	PCI_DEVICE_ID_INTEL_LPT_LP_AUDIO,
+	PCI_DID_INTEL_LPT_H_AUDIO,
+	PCI_DID_INTEL_LPT_LP_AUDIO,
 	0
 };
 
 static const struct pci_driver pch_azalia __pci_driver = {
 	.ops	 = &azalia_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.vendor	 = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

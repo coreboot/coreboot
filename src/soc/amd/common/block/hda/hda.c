@@ -9,9 +9,9 @@
 #include <device/azalia_device.h>
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_AMD_SB900_HDA,
-	PCI_DEVICE_ID_AMD_CZ_HDA,
-	PCI_DEVICE_ID_AMD_FAM17H_HDA1,
+	PCI_DID_AMD_SB900_HDA,
+	PCI_DID_AMD_CZ_HDA,
+	PCI_DID_AMD_FAM17H_HDA1,
 	0
 };
 
@@ -42,6 +42,6 @@ static struct device_operations hda_audio_ops = {
 static const struct pci_driver hdaaudio_driver __pci_driver = {
 	.ops			= CONFIG(AZALIA_PLUGIN_SUPPORT) ?
 				&default_azalia_audio_ops : &hda_audio_ops,
-	.vendor			= PCI_VENDOR_ID_AMD,
+	.vendor			= PCI_VID_AMD,
 	.devices		= pci_device_ids,
 };

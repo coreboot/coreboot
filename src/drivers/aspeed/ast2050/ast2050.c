@@ -60,6 +60,6 @@ static struct device_operations aspeed_ast2050_ops  = {
 
 static const struct pci_driver aspeed_ast2050_driver __pci_driver = {
 	.ops    = &aspeed_ast2050_ops,
-	.vendor = PCI_VENDOR_ID_ASPEED,
-	.device = PCI_DEVICE_ID_ASPEED_AST2050_VGA,
+	.vendor = PCI_VID_ASPEED,
+	.device = PCI_DID_ASPEED_AST2050_VGA,
 };

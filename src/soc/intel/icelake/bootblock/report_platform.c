@@ -25,44 +25,44 @@ static struct {
 	u16 mchid;
 	const char *name;
 } mch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_ICL_ID_U, "Icelake-U" },
-	{ PCI_DEVICE_ID_INTEL_ICL_ID_U_2_2, "Icelake-U-2-2" },
-	{ PCI_DEVICE_ID_INTEL_ICL_ID_Y, "Icelake-Y" },
-	{ PCI_DEVICE_ID_INTEL_ICL_ID_Y_2, "Icelake-Y-2" },
+	{ PCI_DID_INTEL_ICL_ID_U, "Icelake-U" },
+	{ PCI_DID_INTEL_ICL_ID_U_2_2, "Icelake-U-2-2" },
+	{ PCI_DID_INTEL_ICL_ID_Y, "Icelake-Y" },
+	{ PCI_DID_INTEL_ICL_ID_Y_2, "Icelake-Y-2" },
 };
 
 static struct {
 	u16 espiid;
 	const char *name;
 } pch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_ICL_BASE_U_ESPI, "Icelake-U Base" },
-	{ PCI_DEVICE_ID_INTEL_ICL_BASE_Y_ESPI, "Icelake-Y Base" },
-	{ PCI_DEVICE_ID_INTEL_ICL_U_PREMIUM_ESPI, "Icelake-U Premium" },
-	{ PCI_DEVICE_ID_INTEL_ICL_U_SUPER_U_ESPI, "Icelake-U Super" },
-	{ PCI_DEVICE_ID_INTEL_ICL_U_SUPER_U_ESPI_REV0, "Icelake-U Super REV0" },
-	{ PCI_DEVICE_ID_INTEL_ICL_SUPER_Y_ESPI, "Icelake-Y Super" },
-	{ PCI_DEVICE_ID_INTEL_ICL_Y_PREMIUM_ESPI, "Icelake-Y Premium" },
+	{ PCI_DID_INTEL_ICL_BASE_U_ESPI, "Icelake-U Base" },
+	{ PCI_DID_INTEL_ICL_BASE_Y_ESPI, "Icelake-Y Base" },
+	{ PCI_DID_INTEL_ICL_U_PREMIUM_ESPI, "Icelake-U Premium" },
+	{ PCI_DID_INTEL_ICL_U_SUPER_U_ESPI, "Icelake-U Super" },
+	{ PCI_DID_INTEL_ICL_U_SUPER_U_ESPI_REV0, "Icelake-U Super REV0" },
+	{ PCI_DID_INTEL_ICL_SUPER_Y_ESPI, "Icelake-Y Super" },
+	{ PCI_DID_INTEL_ICL_Y_PREMIUM_ESPI, "Icelake-Y Premium" },
 };
 
 static struct {
 	u16 igdid;
 	const char *name;
 } igd_table[] = {
-	{ PCI_DEVICE_ID_INTEL_ICL_GT0_ULT, "Icelake ULT GT0" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT0_5_ULT, "Icelake ULT GT0.5" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT1_ULT, "Icelake U GT1" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULX_0, "Icelake Y GT2" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULX_1, "Icelake Y GT2_1" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULT_1, "Icelake U GT2_1" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULX_2, "Icelake Y GT2_2" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULT_2, "Icelake U GT2_2" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULX_3, "Icelake Y GT2_3" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULT_3, "Icelake U GT2_3" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULX_4, "Icelake Y GT2_4" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULT_4, "Icelake U GT2_4" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULX_5, "Icelake Y GT2_5" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT2_ULT_5, "Icelake U GT2_5" },
-	{ PCI_DEVICE_ID_INTEL_ICL_GT3_ULT, "Icelake U GT3" },
+	{ PCI_DID_INTEL_ICL_GT0_ULT, "Icelake ULT GT0" },
+	{ PCI_DID_INTEL_ICL_GT0_5_ULT, "Icelake ULT GT0.5" },
+	{ PCI_DID_INTEL_ICL_GT1_ULT, "Icelake U GT1" },
+	{ PCI_DID_INTEL_ICL_GT2_ULX_0, "Icelake Y GT2" },
+	{ PCI_DID_INTEL_ICL_GT2_ULX_1, "Icelake Y GT2_1" },
+	{ PCI_DID_INTEL_ICL_GT2_ULT_1, "Icelake U GT2_1" },
+	{ PCI_DID_INTEL_ICL_GT2_ULX_2, "Icelake Y GT2_2" },
+	{ PCI_DID_INTEL_ICL_GT2_ULT_2, "Icelake U GT2_2" },
+	{ PCI_DID_INTEL_ICL_GT2_ULX_3, "Icelake Y GT2_3" },
+	{ PCI_DID_INTEL_ICL_GT2_ULT_3, "Icelake U GT2_3" },
+	{ PCI_DID_INTEL_ICL_GT2_ULX_4, "Icelake Y GT2_4" },
+	{ PCI_DID_INTEL_ICL_GT2_ULT_4, "Icelake U GT2_4" },
+	{ PCI_DID_INTEL_ICL_GT2_ULX_5, "Icelake Y GT2_5" },
+	{ PCI_DID_INTEL_ICL_GT2_ULT_5, "Icelake U GT2_5" },
+	{ PCI_DID_INTEL_ICL_GT3_ULT, "Icelake U GT3" },
 };
 
 static uint8_t get_dev_revision(pci_devfn_t dev)

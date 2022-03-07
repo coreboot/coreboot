@@ -34,14 +34,14 @@ static struct device_operations smbus_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_LPT_H_SMBUS,
-	PCI_DEVICE_ID_INTEL_LPT_LP_SMBUS,
-	PCI_DEVICE_ID_INTEL_WPT_LP_SMBUS,
+	PCI_DID_INTEL_LPT_H_SMBUS,
+	PCI_DID_INTEL_LPT_LP_SMBUS,
+	PCI_DID_INTEL_WPT_LP_SMBUS,
 	0
 };
 
 static const struct pci_driver pch_smbus __pci_driver = {
 	.ops	 = &smbus_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.vendor	 = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

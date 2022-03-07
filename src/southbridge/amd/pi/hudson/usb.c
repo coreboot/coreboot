@@ -19,17 +19,17 @@ static struct device_operations usb_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_AMD_SB900_USB_18_0,
-	PCI_DEVICE_ID_AMD_SB900_USB_18_2,
-	PCI_DEVICE_ID_AMD_SB900_USB_20_5,
-	PCI_DEVICE_ID_AMD_CZ_USB_0,
-	PCI_DEVICE_ID_AMD_CZ_USB_1,
-	PCI_DEVICE_ID_AMD_CZ_USB3_0,
+	PCI_DID_AMD_SB900_USB_18_0,
+	PCI_DID_AMD_SB900_USB_18_2,
+	PCI_DID_AMD_SB900_USB_20_5,
+	PCI_DID_AMD_CZ_USB_0,
+	PCI_DID_AMD_CZ_USB_1,
+	PCI_DID_AMD_CZ_USB3_0,
 	0
 };
 
 static const struct pci_driver usb_0_driver __pci_driver = {
 	.ops = &usb_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
+	.vendor = PCI_VID_AMD,
 	.devices = pci_device_ids,
 };

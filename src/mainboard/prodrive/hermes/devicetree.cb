@@ -174,7 +174,7 @@ chip soc/intel/cannonlake
 		device pci 19.0 hidden end
 		chip soc/intel/common/block/uart
 			device pci 19.2 hidden
-				register "devid" = "PCI_DEVICE_ID_INTEL_CNP_H_UART2"
+				register "devid" = "PCI_DID_INTEL_CNP_H_UART2"
 			end # UART #2, in ACPI mode
 		end
 		device pci 1b.4 on	# PCIe root port 21 (Slot 1)

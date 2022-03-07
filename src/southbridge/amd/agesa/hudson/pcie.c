@@ -25,22 +25,22 @@ static struct device_operations pci_ops = {
 
 static const struct pci_driver pciea_driver __pci_driver = {
 	.ops = &pci_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_SB900_PCIEA,
+	.vendor = PCI_VID_AMD,
+	.device = PCI_DID_AMD_SB900_PCIEA,
 };
 
 static const struct pci_driver pcieb_driver __pci_driver = {
 	.ops = &pci_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_SB900_PCIEB,
+	.vendor = PCI_VID_AMD,
+	.device = PCI_DID_AMD_SB900_PCIEB,
 };
 static const struct pci_driver pciec_driver __pci_driver = {
 	.ops = &pci_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_SB900_PCIEC,
+	.vendor = PCI_VID_AMD,
+	.device = PCI_DID_AMD_SB900_PCIEC,
 };
 static const struct pci_driver pcied_driver __pci_driver = {
 	.ops = &pci_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
-	.device = PCI_DEVICE_ID_AMD_SB900_PCIED,
+	.vendor = PCI_VID_AMD,
+	.device = PCI_DID_AMD_SB900_PCIED,
 };

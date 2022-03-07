@@ -77,6 +77,6 @@ static struct device_operations gfx_device_ops = {
 
 static const struct pci_driver gfx_driver __pci_driver = {
 	.ops	= &gfx_device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.vendor	= PCI_VID_INTEL,
 	.device	= GFX_DEVID,
 };

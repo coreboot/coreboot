@@ -224,6 +224,6 @@ static const unsigned short i210_device_ids[] = { 0x1537, 0x1538, 0x1533, 0 };
 
 static const struct pci_driver i210_driver __pci_driver = {
 	.ops    = &i210_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
+	.vendor = PCI_VID_INTEL,
 	.devices = i210_device_ids,
 };

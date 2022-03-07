@@ -159,7 +159,7 @@ static enum cb_err locate_vbt_vbios(const u8 *vbios, struct region_device *rdev)
 
 	/* Make sure we got an Intel VGA option rom */
 	if ((oprom->signature != OPROM_SIGNATURE) ||
-	    (pcir->vendor != PCI_VENDOR_ID_INTEL) ||
+	    (pcir->vendor != PCI_VID_INTEL) ||
 	    (pcir->signature != 0x52494350) ||
 	    (pcir->classcode[0] != 0x00) ||
 	    (pcir->classcode[1] != 0x00) ||

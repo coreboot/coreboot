@@ -39,16 +39,16 @@ static struct device_operations iommu_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_AMD_15H_MODEL_303F_NB_IOMMU,
-	PCI_DEVICE_ID_AMD_15H_MODEL_707F_NB_IOMMU,
-	PCI_DEVICE_ID_AMD_17H_MODEL_1020_NB_IOMMU,
-	PCI_DEVICE_ID_AMD_17H_MODEL_606F_NB_IOMMU,
-	PCI_DEVICE_ID_AMD_17H_MODEL_A0AF_NB_IOMMU,
+	PCI_DID_AMD_15H_MODEL_303F_NB_IOMMU,
+	PCI_DID_AMD_15H_MODEL_707F_NB_IOMMU,
+	PCI_DID_AMD_17H_MODEL_1020_NB_IOMMU,
+	PCI_DID_AMD_17H_MODEL_606F_NB_IOMMU,
+	PCI_DID_AMD_17H_MODEL_A0AF_NB_IOMMU,
 	0
 };
 
 static const struct pci_driver iommu_driver __pci_driver = {
 	.ops = &iommu_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
+	.vendor = PCI_VID_AMD,
 	.devices = pci_device_ids,
 };

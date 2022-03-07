@@ -259,19 +259,19 @@ static struct device_operations device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_LPT_LP_SDMA,
-	PCI_DEVICE_ID_INTEL_LPT_LP_I2C0,
-	PCI_DEVICE_ID_INTEL_LPT_LP_I2C1,
-	PCI_DEVICE_ID_INTEL_LPT_LP_GSPI0,
-	PCI_DEVICE_ID_INTEL_LPT_LP_GSPI1,
-	PCI_DEVICE_ID_INTEL_LPT_LP_UART0,
-	PCI_DEVICE_ID_INTEL_LPT_LP_UART1,
-	PCI_DEVICE_ID_INTEL_LPT_LP_SD,
+	PCI_DID_INTEL_LPT_LP_SDMA,
+	PCI_DID_INTEL_LPT_LP_I2C0,
+	PCI_DID_INTEL_LPT_LP_I2C1,
+	PCI_DID_INTEL_LPT_LP_GSPI0,
+	PCI_DID_INTEL_LPT_LP_GSPI1,
+	PCI_DID_INTEL_LPT_LP_UART0,
+	PCI_DID_INTEL_LPT_LP_UART1,
+	PCI_DID_INTEL_LPT_LP_SD,
 	0
 };
 
 static const struct pci_driver pch_pcie __pci_driver = {
 	.ops	 = &device_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.vendor	 = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

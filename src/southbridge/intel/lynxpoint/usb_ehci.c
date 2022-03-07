@@ -170,15 +170,15 @@ static struct device_operations usb_ehci_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_LPT_LP_EHCI,
-	PCI_DEVICE_ID_INTEL_LPT_H_EHCI_1,
-	PCI_DEVICE_ID_INTEL_LPT_H_EHCI_2,
+	PCI_DID_INTEL_LPT_LP_EHCI,
+	PCI_DID_INTEL_LPT_H_EHCI_1,
+	PCI_DID_INTEL_LPT_H_EHCI_2,
 	0
 };
 
 static const struct pci_driver pch_usb_ehci __pci_driver = {
 	.ops	 = &usb_ehci_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.vendor	 = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };
 

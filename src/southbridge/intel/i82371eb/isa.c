@@ -107,12 +107,12 @@ static const struct device_operations isa_ops = {
 
 static const struct pci_driver isa_driver __pci_driver = {
 	.ops	= &isa_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82371AB_ISA,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82371AB_ISA,
 };
 
 static const struct pci_driver isa_SB_driver __pci_driver = {
 	.ops	= &isa_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82371SB_ISA,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82371SB_ISA,
 };

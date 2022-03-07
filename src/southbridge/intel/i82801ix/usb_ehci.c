@@ -33,8 +33,8 @@ static void usb_ehci_set_subsystem(struct device *dev, unsigned int vendor,
 }
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_82801IB_EHCI1,
-	PCI_DEVICE_ID_INTEL_82801IB_EHCI2,
+	PCI_DID_INTEL_82801IB_EHCI1,
+	PCI_DID_INTEL_82801IB_EHCI2,
 	0
 };
 
@@ -52,6 +52,6 @@ static struct device_operations usb_ehci_ops = {
 
 static const struct pci_driver pch_usb_ehci1 __pci_driver = {
 	.ops	= &usb_ehci_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.vendor	= PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

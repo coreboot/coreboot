@@ -47,7 +47,7 @@ static struct device_operations device_ops = {
 /* 82801BA/CA/DB/EB/ER/FB/FR/FW/FRW/GB/GR/GDH/HB/IB/6300ESB/i3100 */
 static const struct pci_driver i82801g_pci __pci_driver = {
 	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.vendor	= PCI_VID_INTEL,
 	.device	= 0x244e,
 };
 
@@ -55,6 +55,6 @@ static const struct pci_driver i82801g_pci __pci_driver = {
 /* 82801BAM/CAM/DBL/DBM/FBM/GBM/GHM/GU/HBM/HEM */
 static const struct pci_driver i82801gmu_pci __pci_driver = {
 	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.vendor	= PCI_VID_INTEL,
 	.device	= 0x2448,
 };

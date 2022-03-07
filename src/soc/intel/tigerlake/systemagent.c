@@ -78,22 +78,22 @@ void soc_systemagent_init(struct device *dev)
 	 * differentiated here based on SA PCI ID.
 	 */
 	switch (sa_pci_id) {
-	case PCI_DEVICE_ID_INTEL_TGL_ID_U_2_2:
+	case PCI_DID_INTEL_TGL_ID_U_2_2:
 		soc_config = &config->power_limits_config[POWER_LIMITS_U_2_CORE];
 		break;
-	case PCI_DEVICE_ID_INTEL_TGL_ID_U_4_2:
+	case PCI_DID_INTEL_TGL_ID_U_4_2:
 		soc_config = &config->power_limits_config[POWER_LIMITS_U_4_CORE];
 		break;
-	case PCI_DEVICE_ID_INTEL_TGL_ID_Y_2_2:
+	case PCI_DID_INTEL_TGL_ID_Y_2_2:
 		soc_config = &config->power_limits_config[POWER_LIMITS_Y_2_CORE];
 		break;
-	case PCI_DEVICE_ID_INTEL_TGL_ID_Y_4_2:
+	case PCI_DID_INTEL_TGL_ID_Y_4_2:
 		soc_config = &config->power_limits_config[POWER_LIMITS_Y_4_CORE];
 		break;
-	case PCI_DEVICE_ID_INTEL_TGL_ID_H_6_1:
+	case PCI_DID_INTEL_TGL_ID_H_6_1:
 		soc_config = &config->power_limits_config[POWER_LIMITS_H_6_CORE];
 		break;
-	case PCI_DEVICE_ID_INTEL_TGL_ID_H_8_1:
+	case PCI_DID_INTEL_TGL_ID_H_8_1:
 		soc_config = &config->power_limits_config[POWER_LIMITS_H_8_CORE];
 		break;
 	default:

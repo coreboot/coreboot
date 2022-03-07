@@ -43,6 +43,6 @@ static struct device_operations device_ops = {
 
 static const struct pci_driver ich9_thermal __pci_driver = {
 	.ops	= &device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801IB_THERMAL,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82801IB_THERMAL,
 };

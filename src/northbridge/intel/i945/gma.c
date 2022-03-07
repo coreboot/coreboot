@@ -767,12 +767,12 @@ static const unsigned short i945_gma_func1_ids[] = {
 
 static const struct pci_driver i945_gma_func0_driver __pci_driver = {
 	.ops		= &gma_func0_ops,
-	.vendor		= PCI_VENDOR_ID_INTEL,
+	.vendor		= PCI_VID_INTEL,
 	.devices	= i945_gma_func0_ids,
 };
 
 static const struct pci_driver i945_gma_func1_driver __pci_driver = {
 	.ops		= &gma_func1_ops,
-	.vendor		= PCI_VENDOR_ID_INTEL,
+	.vendor		= PCI_VID_INTEL,
 	.devices	= i945_gma_func1_ids,
 };

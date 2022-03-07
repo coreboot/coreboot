@@ -108,13 +108,13 @@ static struct device_operations bh720_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_O2_BH720,
+	PCI_DID_O2_BH720,
 	0
 };
 
 static const struct pci_driver bayhub_bh720 __pci_driver = {
 	.ops		= &bh720_ops,
-	.vendor		= PCI_VENDOR_ID_O2,
+	.vendor		= PCI_VID_O2,
 	.devices	= pci_device_ids,
 };
 

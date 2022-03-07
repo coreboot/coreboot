@@ -121,8 +121,8 @@ static uint16_t get_sku_icc_max(int domain)
 	 */
 
 	switch (mch_id) {
-	case PCI_DEVICE_ID_INTEL_SKL_ID_S_2: /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_KBL_ID_S: {
+	case PCI_DID_INTEL_SKL_ID_S_2: /* fallthrough */
+	case PCI_DID_INTEL_KBL_ID_S: {
 		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(11.1, 40, 48, 48);
 		if (tdp >= 54)
 			icc_max[VR_IA_CORE] = VR_CFG_AMP(58);
@@ -131,9 +131,9 @@ static uint16_t get_sku_icc_max(int domain)
 
 		return icc_max[domain];
 	}
-	case PCI_DEVICE_ID_INTEL_SKL_ID_S_4:  /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_KBL_ID_DT_2: /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_KBL_ID_DT: {
+	case PCI_DID_INTEL_SKL_ID_S_4:  /* fallthrough */
+	case PCI_DID_INTEL_KBL_ID_DT_2: /* fallthrough */
+	case PCI_DID_INTEL_KBL_ID_DT: {
 		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(11.1, 55, 45, 45);
 		if (tdp >= 91)
 			icc_max[VR_IA_CORE] = VR_CFG_AMP(100);
@@ -155,7 +155,7 @@ static uint16_t get_sku_icc_max(int domain)
 
 		return icc_max[domain];
 	}
-	case PCI_DEVICE_ID_INTEL_SKL_ID_H_4: {
+	case PCI_DID_INTEL_SKL_ID_H_4: {
 		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(11.1, 60, 94, 20);
 		if (tdp >= 45) {
 			icc_max[VR_IA_CORE] = VR_CFG_AMP(74);
@@ -166,9 +166,9 @@ static uint16_t get_sku_icc_max(int domain)
 		}
 		return icc_max[domain];
 	}
-	case PCI_DEVICE_ID_INTEL_SKL_ID_H_2:  /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_SKL_ID_H_EM: /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_KBL_ID_H: {
+	case PCI_DID_INTEL_SKL_ID_H_2:  /* fallthrough */
+	case PCI_DID_INTEL_SKL_ID_H_EM: /* fallthrough */
+	case PCI_DID_INTEL_KBL_ID_H: {
 		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(6.6, 60, 55, 55);
 		if (tdp >= 35) {
 			if (tdp >= 45)
@@ -179,11 +179,11 @@ static uint16_t get_sku_icc_max(int domain)
 
 		return icc_max[domain];
 	}
-	case PCI_DEVICE_ID_INTEL_SKL_ID_U: {
+	case PCI_DID_INTEL_SKL_ID_U: {
 		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(5.1, 29, 57, 19);
 		if (tdp >= 28)
 			icc_max[VR_IA_CORE] = VR_CFG_AMP(32);
-		else if (igd_id != PCI_DEVICE_ID_INTEL_SKL_GT3E_SULTM_1) {
+		else if (igd_id != PCI_DID_INTEL_SKL_GT3E_SULTM_1) {
 			const uint16_t icc_max_gt2[NUM_VR_DOMAINS] =
 				VR_CFG_ALL_DOMAINS_ICC(4.5, 29, 31, 31);
 
@@ -191,28 +191,28 @@ static uint16_t get_sku_icc_max(int domain)
 		}
 		return icc_max[domain];
 	}
-	case PCI_DEVICE_ID_INTEL_KBL_U_R: {
+	case PCI_DID_INTEL_KBL_U_R: {
 		const uint16_t icc_max[NUM_VR_DOMAINS] =
 				VR_CFG_ALL_DOMAINS_ICC(6, 64, 31, 31);
 		return icc_max[domain];
 	}
-	case PCI_DEVICE_ID_INTEL_SKL_ID_Y: /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_KBL_ID_Y: {
+	case PCI_DID_INTEL_SKL_ID_Y: /* fallthrough */
+	case PCI_DID_INTEL_KBL_ID_Y: {
 		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(4.1, 24, 24, 24);
 
-		if (igd_id == PCI_DEVICE_ID_INTEL_AML_GT2_ULX)
+		if (igd_id == PCI_DID_INTEL_AML_GT2_ULX)
 			icc_max[VR_IA_CORE] = VR_CFG_AMP(28);
 
 		return icc_max[domain];
 	}
-	case PCI_DEVICE_ID_INTEL_KBL_ID_U: {
+	case PCI_DID_INTEL_KBL_ID_U: {
 		uint16_t icc_max[NUM_VR_DOMAINS] = VR_CFG_ALL_DOMAINS_ICC(4.5, 32, 31, 31);
 
-		if (igd_id == PCI_DEVICE_ID_INTEL_KBL_GT1_SULTM)
+		if (igd_id == PCI_DID_INTEL_KBL_GT1_SULTM)
 			icc_max[VR_IA_CORE] = VR_CFG_AMP(29);
 
-		else if ((igd_id == PCI_DEVICE_ID_INTEL_KBL_GT3E_SULTM_1) ||
-		         (igd_id == PCI_DEVICE_ID_INTEL_KBL_GT3E_SULTM_2)) {
+		else if ((igd_id == PCI_DID_INTEL_KBL_GT3E_SULTM_1) ||
+			 (igd_id == PCI_DID_INTEL_KBL_GT3E_SULTM_2)) {
 			const uint16_t icc_max_gt3[NUM_VR_DOMAINS] =
 				VR_CFG_ALL_DOMAINS_ICC(5.1, 32, 57, 19);
 
@@ -240,24 +240,24 @@ static uint16_t get_sku_ac_dc_loadline(const int domain)
 	}
 
 	switch (mch_id) {
-	case PCI_DEVICE_ID_INTEL_SKL_ID_S_2: /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_SKL_ID_S_4: /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_KBL_ID_S:   /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_KBL_ID_DT:  /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_KBL_ID_DT_2: {
+	case PCI_DID_INTEL_SKL_ID_S_2: /* fallthrough */
+	case PCI_DID_INTEL_SKL_ID_S_4: /* fallthrough */
+	case PCI_DID_INTEL_KBL_ID_S:   /* fallthrough */
+	case PCI_DID_INTEL_KBL_ID_DT:  /* fallthrough */
+	case PCI_DID_INTEL_KBL_ID_DT_2: {
 		/* SA Loadline is not specified */
 		const uint16_t loadline[NUM_VR_DOMAINS] =
 				VR_CFG_ALL_DOMAINS_LOADLINE(0, 2.1, 3.1, 3.1);
 		return loadline[domain];
 	}
-	case PCI_DEVICE_ID_INTEL_SKL_ID_H_2:  /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_SKL_ID_H_EM: /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_SKL_ID_H_4:  /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_KBL_ID_H: {
+	case PCI_DID_INTEL_SKL_ID_H_2:  /* fallthrough */
+	case PCI_DID_INTEL_SKL_ID_H_EM: /* fallthrough */
+	case PCI_DID_INTEL_SKL_ID_H_4:  /* fallthrough */
+	case PCI_DID_INTEL_KBL_ID_H: {
 		const uint16_t loadline[NUM_VR_DOMAINS] =
 				VR_CFG_ALL_DOMAINS_LOADLINE(10, 1.8, 2.65, 2.65);
 
-		if (igd_id == PCI_DEVICE_ID_INTEL_SKL_GT4_SHALM) {
+		if (igd_id == PCI_DID_INTEL_SKL_GT4_SHALM) {
 			const uint16_t loadline_gt4[NUM_VR_DOMAINS] =
 					VR_CFG_ALL_DOMAINS_LOADLINE(6, 1.6, 1.4, 6);
 			return loadline_gt4[domain];
@@ -265,26 +265,26 @@ static uint16_t get_sku_ac_dc_loadline(const int domain)
 
 		return loadline[domain];
 	}
-	case PCI_DEVICE_ID_INTEL_SKL_ID_Y: /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_KBL_ID_Y: {
+	case PCI_DID_INTEL_SKL_ID_Y: /* fallthrough */
+	case PCI_DID_INTEL_KBL_ID_Y: {
 		uint16_t loadline[NUM_VR_DOMAINS] =
 				VR_CFG_ALL_DOMAINS_LOADLINE(18, 5.9, 5.7, 5.7);
 
-		if (igd_id == PCI_DEVICE_ID_INTEL_AML_GT2_ULX)
+		if (igd_id == PCI_DID_INTEL_AML_GT2_ULX)
 			loadline[VR_IA_CORE] = VR_CFG_MOHMS(4);
 
 		return loadline[domain];
 	}
-	case PCI_DEVICE_ID_INTEL_SKL_ID_U: /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_KBL_U_R:  /* fallthrough */
-	case PCI_DEVICE_ID_INTEL_KBL_ID_U: {
+	case PCI_DID_INTEL_SKL_ID_U: /* fallthrough */
+	case PCI_DID_INTEL_KBL_U_R:  /* fallthrough */
+	case PCI_DID_INTEL_KBL_ID_U: {
 		uint16_t loadline[NUM_VR_DOMAINS] =
 				VR_CFG_ALL_DOMAINS_LOADLINE(10.3, 2.4, 3.1, 3.1);
 
-		if ((igd_id == PCI_DEVICE_ID_INTEL_SKL_GT3E_SULTM_1) ||
-		    (igd_id == PCI_DEVICE_ID_INTEL_SKL_GT3E_SULTM_2) ||
-		    (igd_id == PCI_DEVICE_ID_INTEL_KBL_GT3E_SULTM_1) ||
-		    (igd_id == PCI_DEVICE_ID_INTEL_KBL_GT3E_SULTM_2)) {
+		if ((igd_id == PCI_DID_INTEL_SKL_GT3E_SULTM_1) ||
+		    (igd_id == PCI_DID_INTEL_SKL_GT3E_SULTM_2) ||
+		    (igd_id == PCI_DID_INTEL_KBL_GT3E_SULTM_1) ||
+		    (igd_id == PCI_DID_INTEL_KBL_GT3E_SULTM_2)) {
 			loadline[VR_GT_UNSLICED] = VR_CFG_MOHMS(2);
 			loadline[VR_GT_SLICED] = VR_CFG_MOHMS(6);
 		}

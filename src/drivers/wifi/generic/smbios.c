@@ -8,7 +8,7 @@
 
 static int smbios_write_intel_wifi(struct device *dev, int *handle, unsigned long *current)
 {
-	if (dev->vendor != PCI_VENDOR_ID_INTEL)
+	if (dev->vendor != PCI_VID_INTEL)
 		return 0;
 
 	struct smbios_type_intel_wifi {

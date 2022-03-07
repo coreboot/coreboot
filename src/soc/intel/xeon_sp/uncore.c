@@ -296,7 +296,7 @@ static const unsigned short mmapvtd_ids[] = {
 
 static const struct pci_driver mmapvtd_driver __pci_driver = {
 	.ops      = &mmapvtd_ops,
-	.vendor   = PCI_VENDOR_ID_INTEL,
+	.vendor   = PCI_VID_INTEL,
 	.devices  = mmapvtd_ids
 };
 
@@ -317,7 +317,7 @@ static struct device_operations vtd_ops = {
 /* VTD devices on other stacks */
 static const struct pci_driver vtd_driver __pci_driver = {
 	.ops      = &vtd_ops,
-	.vendor   = PCI_VENDOR_ID_INTEL,
+	.vendor   = PCI_VID_INTEL,
 	.device   = MMAP_VTD_STACK_CFG_REG_DEVID,
 };
 
@@ -345,7 +345,7 @@ static struct device_operations dmi3_ops = {
 
 static const struct pci_driver dmi3_driver __pci_driver = {
 	.ops		= &dmi3_ops,
-	.vendor		= PCI_VENDOR_ID_INTEL,
+	.vendor		= PCI_VID_INTEL,
 	.device		= DMI3_DEVID,
 };
 
@@ -379,6 +379,6 @@ static struct device_operations iio_dfx_global_ops = {
 
 static const struct pci_driver iio_dfx_global_driver __pci_driver = {
 	.ops		= &iio_dfx_global_ops,
-	.vendor		= PCI_VENDOR_ID_INTEL,
+	.vendor		= PCI_VID_INTEL,
 	.devices	= iio_dfx_global_ids,
 };

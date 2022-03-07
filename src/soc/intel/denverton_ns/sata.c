@@ -56,13 +56,13 @@ static struct device_operations sata_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_DNV_SATA_AHCI_1,
-	PCI_DEVICE_ID_INTEL_DNV_SATA_AHCI_2,
+	PCI_DID_INTEL_DNV_SATA_AHCI_1,
+	PCI_DID_INTEL_DNV_SATA_AHCI_2,
 	0
 };
 
 static const struct pci_driver soc_sata __pci_driver = {
 	.ops = &sata_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
+	.vendor = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

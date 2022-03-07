@@ -82,16 +82,16 @@ static struct device_operations device_ops = {
 
 /* 82801Ix (ICH9DH/ICH9DO/ICH9R/ICH9/ICH9M-E/ICH9M) */
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_82801IB_PCIE1, /* Port 1 */
-	PCI_DEVICE_ID_INTEL_82801IB_PCIE2, /* Port 2 */
-	PCI_DEVICE_ID_INTEL_82801IB_PCIE3, /* Port 3 */
-	PCI_DEVICE_ID_INTEL_82801IB_PCIE4, /* Port 4 */
-	PCI_DEVICE_ID_INTEL_82801IB_PCIE5, /* Port 5 */
-	PCI_DEVICE_ID_INTEL_82801IB_PCIE6, /* Port 6 */
+	PCI_DID_INTEL_82801IB_PCIE1, /* Port 1 */
+	PCI_DID_INTEL_82801IB_PCIE2, /* Port 2 */
+	PCI_DID_INTEL_82801IB_PCIE3, /* Port 3 */
+	PCI_DID_INTEL_82801IB_PCIE4, /* Port 4 */
+	PCI_DID_INTEL_82801IB_PCIE5, /* Port 5 */
+	PCI_DID_INTEL_82801IB_PCIE6, /* Port 6 */
 	0
 };
 static const struct pci_driver ich9_pcie __pci_driver = {
 	.ops		= &device_ops,
-	.vendor		= PCI_VENDOR_ID_INTEL,
+	.vendor		= PCI_VID_INTEL,
 	.devices	= pci_device_ids,
 };

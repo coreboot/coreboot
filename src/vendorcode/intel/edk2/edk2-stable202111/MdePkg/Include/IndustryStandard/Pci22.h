@@ -516,8 +516,8 @@ typedef struct {
 #define PCI_MAX_BAR                   0x0006
 #define PCI_MAX_CONFIG_OFFSET         0x0100
 
-#define PCI_VENDOR_ID_OFFSET                        0x00
-#define PCI_DEVICE_ID_OFFSET                        0x02
+#define PCI_VID_OFFSET                        0x00
+#define PCI_DID_OFFSET                        0x02
 #define PCI_COMMAND_OFFSET                          0x04
 #define PCI_PRIMARY_STATUS_OFFSET                   0x06
 #define PCI_REVISION_ID_OFFSET                      0x08

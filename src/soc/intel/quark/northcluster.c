@@ -63,6 +63,6 @@ static struct device_operations nc_ops = {
 
 static const struct pci_driver systemagent_driver __pci_driver = {
 	.ops	= &nc_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.vendor	= PCI_VID_INTEL,
 	.device	= QUARK_MC_DEVICE_ID
 };

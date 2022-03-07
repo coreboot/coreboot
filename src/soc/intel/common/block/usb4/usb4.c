@@ -53,12 +53,12 @@ static void tbt_dma_fill_ssdt(const struct device *dev)
 #endif
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_TGL_TBT_DMA0,
-	PCI_DEVICE_ID_INTEL_TGL_TBT_DMA1,
-	PCI_DEVICE_ID_INTEL_TGL_H_TBT_DMA0,
-	PCI_DEVICE_ID_INTEL_TGL_H_TBT_DMA1,
-	PCI_DEVICE_ID_INTEL_ADL_TBT_DMA0,
-	PCI_DEVICE_ID_INTEL_ADL_TBT_DMA1,
+	PCI_DID_INTEL_TGL_TBT_DMA0,
+	PCI_DID_INTEL_TGL_TBT_DMA1,
+	PCI_DID_INTEL_TGL_H_TBT_DMA0,
+	PCI_DID_INTEL_TGL_H_TBT_DMA1,
+	PCI_DID_INTEL_ADL_TBT_DMA0,
+	PCI_DID_INTEL_ADL_TBT_DMA1,
 	0
 };
 
@@ -76,6 +76,6 @@ static struct device_operations usb4_dev_ops = {
 
 static const struct pci_driver usb4_driver __pci_driver = {
 	.ops			= &usb4_dev_ops,
-	.vendor			= PCI_VENDOR_ID_INTEL,
+	.vendor			= PCI_VID_INTEL,
 	.devices		= pci_device_ids,
 };

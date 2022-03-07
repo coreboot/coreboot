@@ -158,6 +158,6 @@ static struct device_operations ehci_device_ops = {
 
 static const struct pci_driver baytrail_ehci __pci_driver = {
 	.ops    = &ehci_device_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
+	.vendor	= PCI_VID_INTEL,
 	.device = EHCI_DEVID
 };

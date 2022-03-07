@@ -106,6 +106,6 @@ static const unsigned short pci_device_ids[] = {
 
 static const struct pci_driver minihd_driver __pci_driver = {
 	.ops	 = &minihd_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.vendor	 = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

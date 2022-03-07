@@ -26,14 +26,14 @@ static struct device_operations usb4_xhci_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_TGP_TCSS_XHCI,
-	PCI_DEVICE_ID_INTEL_TGP_H_TCSS_XHCI,
-	PCI_DEVICE_ID_INTEL_ADP_TCSS_XHCI,
+	PCI_DID_INTEL_TGP_TCSS_XHCI,
+	PCI_DID_INTEL_TGP_H_TCSS_XHCI,
+	PCI_DID_INTEL_ADP_TCSS_XHCI,
 	0
 };
 
 static const struct pci_driver usb4_xhci __pci_driver = {
 	.ops	 = &usb4_xhci_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.vendor	 = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

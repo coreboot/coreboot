@@ -35,13 +35,13 @@ static struct device_operations gl9750_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_GLI_9750,
+	PCI_DID_GLI_9750,
 	0
 };
 
 static const struct pci_driver genesyslogic_gl9750 __pci_driver = {
 	.ops		= &gl9750_ops,
-	.vendor		= PCI_VENDOR_ID_GLI,
+	.vendor		= PCI_VID_GLI,
 	.devices	= pci_device_ids,
 };
 

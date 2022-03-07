@@ -22,7 +22,7 @@ static struct device_operations device_ops = {
 static const struct pci_driver soc_cavium_uart __pci_driver = {
 	.ops    = &device_ops,
 	.vendor = PCI_VENDOR_CAVIUM,
-	.device = PCI_DEVICE_ID_CAVIUM_THUNDERX_UART,
+	.device = PCI_DID_CAVIUM_THUNDERX_UART,
 };
 
 struct chip_operations soc_cavium_common_pci_ops = {

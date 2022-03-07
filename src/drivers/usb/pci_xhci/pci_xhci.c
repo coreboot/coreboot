@@ -253,15 +253,15 @@ static const struct device_operations xhci_pci_ops = {
 };
 
 static const unsigned short amd_pci_device_ids[] = {
-	PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI0,
-	PCI_DEVICE_ID_AMD_FAM17H_MODEL18H_XHCI1,
-	PCI_DEVICE_ID_AMD_FAM17H_MODEL20H_XHCI0,
-	PCI_DEVICE_ID_AMD_FAM17H_MODEL60H_XHCI,
+	PCI_DID_AMD_FAM17H_MODEL18H_XHCI0,
+	PCI_DID_AMD_FAM17H_MODEL18H_XHCI1,
+	PCI_DID_AMD_FAM17H_MODEL20H_XHCI0,
+	PCI_DID_AMD_FAM17H_MODEL60H_XHCI,
 	0
 };
 
 static const struct pci_driver xhci_pci_driver __pci_driver = {
 	.ops = &xhci_pci_ops,
-	.vendor = PCI_VENDOR_ID_AMD,
+	.vendor = PCI_VID_AMD,
 	.devices = amd_pci_device_ids,
 };

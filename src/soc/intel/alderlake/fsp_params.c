@@ -309,17 +309,17 @@ static uint16_t get_vccin_aux_imon_iccmax(void)
 	}
 
 	switch (mch_id) {
-	case PCI_DEVICE_ID_INTEL_ADL_P_ID_1:
-	case PCI_DEVICE_ID_INTEL_ADL_P_ID_3:
-	case PCI_DEVICE_ID_INTEL_ADL_P_ID_5:
-	case PCI_DEVICE_ID_INTEL_ADL_P_ID_6:
-	case PCI_DEVICE_ID_INTEL_ADL_P_ID_7:
+	case PCI_DID_INTEL_ADL_P_ID_1:
+	case PCI_DID_INTEL_ADL_P_ID_3:
+	case PCI_DID_INTEL_ADL_P_ID_5:
+	case PCI_DID_INTEL_ADL_P_ID_6:
+	case PCI_DID_INTEL_ADL_P_ID_7:
 		tdp = get_cpu_tdp();
 		if (tdp == TDP_45W)
 			return ICC_MAX_TDP_45W;
 		return ICC_MAX_TDP_15W_28W;
-	case PCI_DEVICE_ID_INTEL_ADL_M_ID_1:
-	case PCI_DEVICE_ID_INTEL_ADL_M_ID_2:
+	case PCI_DID_INTEL_ADL_M_ID_1:
+	case PCI_DID_INTEL_ADL_M_ID_2:
 		return ICC_MAX_ID_ADL_M_MA;
 	default:
 		printk(BIOS_ERR, "Unknown MCH ID: 0x%4x, skipping VccInAuxImonIccMax config\n",

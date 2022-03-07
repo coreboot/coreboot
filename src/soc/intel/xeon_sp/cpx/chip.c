@@ -145,14 +145,14 @@ static void set_pcu_locks(void)
 static void set_imc_locks(void)
 {
 	struct device *dev = 0;
-	while ((dev = dev_find_device(PCI_VENDOR_ID_INTEL, IMC_M2MEM_DEVID, dev)))
+	while ((dev = dev_find_device(PCI_VID_INTEL, IMC_M2MEM_DEVID, dev)))
 		pci_or_config32(dev, IMC_M2MEM_TIMEOUT, TIMEOUT_LOCK);
 }
 
 static void set_upi_locks(void)
 {
 	struct device *dev = 0;
-	while ((dev = dev_find_device(PCI_VENDOR_ID_INTEL, UPI_LL_CR_DEVID, dev)))
+	while ((dev = dev_find_device(PCI_VID_INTEL, UPI_LL_CR_DEVID, dev)))
 		pci_or_config32(dev, UPI_LL_CR_KTIMISCMODLCK, KTIMISCMODLCK_LOCK);
 }
 

@@ -31,14 +31,14 @@ static const struct device_operations usb_ops = {
 /* Intel 82371SB (PIIX3) */
 static const struct pci_driver usb_driver_sb __pci_driver = {
 	.ops	= &usb_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82371SB_USB,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82371SB_USB,
 };
 
 /* Intel 82371AB/EB/MB (PIIX4/PIIX4E/PIIX4M) */
 /* The 440MX (82443MX) consists of 82443BX + 82371EB (uses same PCI IDs). */
 static const struct pci_driver usb_driver_ab_eb_mb __pci_driver = {
 	.ops	= &usb_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82371AB_USB,
+	.vendor	= PCI_VID_INTEL,
+	.device	= PCI_DID_INTEL_82371AB_USB,
 };

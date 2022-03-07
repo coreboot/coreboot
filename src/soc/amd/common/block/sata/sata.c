@@ -22,17 +22,17 @@ static struct device_operations sata_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_AMD_CZ_SATA,
-	PCI_DEVICE_ID_AMD_CZ_SATA_AHCI,
-	PCI_DEVICE_ID_AMD_FAM17H_SATA_AHCI_VER0,
-	PCI_DEVICE_ID_AMD_FAM17H_SATA_AHCI_VER1,
-	PCI_DEVICE_ID_AMD_FAM17H_SATA_AHCI_RAID_VER0,
-	PCI_DEVICE_ID_AMD_FAM17H_SATA_AHCI_RAID_VER1,
+	PCI_DID_AMD_CZ_SATA,
+	PCI_DID_AMD_CZ_SATA_AHCI,
+	PCI_DID_AMD_FAM17H_SATA_AHCI_VER0,
+	PCI_DID_AMD_FAM17H_SATA_AHCI_VER1,
+	PCI_DID_AMD_FAM17H_SATA_AHCI_RAID_VER0,
+	PCI_DID_AMD_FAM17H_SATA_AHCI_RAID_VER1,
 	0
 };
 
 static const struct pci_driver sata0_driver __pci_driver = {
 	.ops			= &sata_ops,
-	.vendor			= PCI_VENDOR_ID_AMD,
+	.vendor			= PCI_VID_AMD,
 	.devices		= pci_device_ids,
 };

@@ -25,49 +25,49 @@ static struct {
 	u16 mchid;
 	const char *name;
 } mch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_0, "Elkhartlake SKU-0" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_1, "Elkhartlake SKU-1" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_1A, "Elkhartlake SKU-1A" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_2, "Elkhartlake SKU-2" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_2_1, "Elkhartlake SKU-2" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_3, "Elkhartlake SKU-3" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_3A, "Elkhartlake SKU-3A" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_4, "Elkhartlake SKU-4" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_5, "Elkhartlake SKU-5" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_6, "Elkhartlake SKU-6" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_7, "Elkhartlake SKU-7" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_8, "Elkhartlake SKU-8" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_9, "Elkhartlake SKU-9" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_10, "Elkhartlake SKU-10" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_11, "Elkhartlake SKU-11" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_12, "Elkhartlake SKU-12" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_13, "Elkhartlake SKU-13" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_14, "Elkhartlake SKU-14" },
-	{ PCI_DEVICE_ID_INTEL_EHL_ID_15, "Elkhartlake SKU-15" },
+	{ PCI_DID_INTEL_EHL_ID_0, "Elkhartlake SKU-0" },
+	{ PCI_DID_INTEL_EHL_ID_1, "Elkhartlake SKU-1" },
+	{ PCI_DID_INTEL_EHL_ID_1A, "Elkhartlake SKU-1A" },
+	{ PCI_DID_INTEL_EHL_ID_2, "Elkhartlake SKU-2" },
+	{ PCI_DID_INTEL_EHL_ID_2_1, "Elkhartlake SKU-2" },
+	{ PCI_DID_INTEL_EHL_ID_3, "Elkhartlake SKU-3" },
+	{ PCI_DID_INTEL_EHL_ID_3A, "Elkhartlake SKU-3A" },
+	{ PCI_DID_INTEL_EHL_ID_4, "Elkhartlake SKU-4" },
+	{ PCI_DID_INTEL_EHL_ID_5, "Elkhartlake SKU-5" },
+	{ PCI_DID_INTEL_EHL_ID_6, "Elkhartlake SKU-6" },
+	{ PCI_DID_INTEL_EHL_ID_7, "Elkhartlake SKU-7" },
+	{ PCI_DID_INTEL_EHL_ID_8, "Elkhartlake SKU-8" },
+	{ PCI_DID_INTEL_EHL_ID_9, "Elkhartlake SKU-9" },
+	{ PCI_DID_INTEL_EHL_ID_10, "Elkhartlake SKU-10" },
+	{ PCI_DID_INTEL_EHL_ID_11, "Elkhartlake SKU-11" },
+	{ PCI_DID_INTEL_EHL_ID_12, "Elkhartlake SKU-12" },
+	{ PCI_DID_INTEL_EHL_ID_13, "Elkhartlake SKU-13" },
+	{ PCI_DID_INTEL_EHL_ID_14, "Elkhartlake SKU-14" },
+	{ PCI_DID_INTEL_EHL_ID_15, "Elkhartlake SKU-15" },
 };
 
 static struct {
 	u16 espiid;
 	const char *name;
 } pch_table[] = {
-	{ PCI_DEVICE_ID_INTEL_MCC_ESPI_0, "Elkhartlake-0" },
-	{ PCI_DEVICE_ID_INTEL_MCC_ESPI_1, "Elkhartlake-1" },
-	{ PCI_DEVICE_ID_INTEL_MCC_BASE_ESPI, "Elkhartlake Base" },
-	{ PCI_DEVICE_ID_INTEL_MCC_PREMIUM_ESPI, "Elkhartlake Premium" },
-	{ PCI_DEVICE_ID_INTEL_MCC_SUPER_ESPI, "Elkhartlake Super" },
+	{ PCI_DID_INTEL_MCC_ESPI_0, "Elkhartlake-0" },
+	{ PCI_DID_INTEL_MCC_ESPI_1, "Elkhartlake-1" },
+	{ PCI_DID_INTEL_MCC_BASE_ESPI, "Elkhartlake Base" },
+	{ PCI_DID_INTEL_MCC_PREMIUM_ESPI, "Elkhartlake Premium" },
+	{ PCI_DID_INTEL_MCC_SUPER_ESPI, "Elkhartlake Super" },
 };
 
 static struct {
 	u16 igdid;
 	const char *name;
 } igd_table[] = {
-	{ PCI_DEVICE_ID_INTEL_EHL_GT1_1, "Elkhartlake GT1-1" },
-	{ PCI_DEVICE_ID_INTEL_EHL_GT2_1, "Elkhartlake GT2-1" },
-	{ PCI_DEVICE_ID_INTEL_EHL_GT1_2, "Elkhartlake GT1-2" },
-	{ PCI_DEVICE_ID_INTEL_EHL_GT1_2_1, "Elkhartlake GT1-2-1" },
-	{ PCI_DEVICE_ID_INTEL_EHL_GT2_2, "Elkhartlake GT2-2" },
-	{ PCI_DEVICE_ID_INTEL_EHL_GT1_3, "Elkhartlake GT1-3" },
-	{ PCI_DEVICE_ID_INTEL_EHL_GT2_3, "Elkhartlake GT2-3" },
+	{ PCI_DID_INTEL_EHL_GT1_1, "Elkhartlake GT1-1" },
+	{ PCI_DID_INTEL_EHL_GT2_1, "Elkhartlake GT2-1" },
+	{ PCI_DID_INTEL_EHL_GT1_2, "Elkhartlake GT1-2" },
+	{ PCI_DID_INTEL_EHL_GT1_2_1, "Elkhartlake GT1-2-1" },
+	{ PCI_DID_INTEL_EHL_GT2_2, "Elkhartlake GT2-2" },
+	{ PCI_DID_INTEL_EHL_GT1_3, "Elkhartlake GT1-3" },
+	{ PCI_DID_INTEL_EHL_GT2_3, "Elkhartlake GT2-3" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

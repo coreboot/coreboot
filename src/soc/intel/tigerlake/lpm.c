@@ -20,8 +20,8 @@ static bool platform_is_up3(void)
 	if ((cpu_id != CPUID_TIGERLAKE_A0) && (cpu_id != CPUID_TIGERLAKE_B0))
 		return false;
 
-	return ((mchid == PCI_DEVICE_ID_INTEL_TGL_ID_U_2_2) ||
-		(mchid == PCI_DEVICE_ID_INTEL_TGL_ID_U_4_2));
+	return ((mchid == PCI_DID_INTEL_TGL_ID_U_2_2) ||
+		(mchid == PCI_DID_INTEL_TGL_ID_U_4_2));
 }
 
 int get_supported_lpm_mask(struct soc_intel_tigerlake_config *config)

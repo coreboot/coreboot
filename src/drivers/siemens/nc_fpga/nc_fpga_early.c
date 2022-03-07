@@ -17,7 +17,7 @@ int pci_early_device_probe(u8 bus, u8 dev, u32 mmio_base)
 	pci_devfn_t pci_dev = PCI_DEV(bus, dev, 0);
 	uint32_t id = pci_s_read_config32(pci_dev, PCI_VENDOR_ID);
 
-	if (id != (0x4091 << 16 | PCI_VENDOR_ID_SIEMENS))
+	if (id != (0x4091 << 16 | PCI_VID_SIEMENS))
 		return -1;
 
 	/* Setup base address for BAR0. */

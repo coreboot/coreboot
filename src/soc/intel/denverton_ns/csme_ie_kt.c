@@ -59,13 +59,13 @@ static struct device_operations csme_ie_kt_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_DNV_ME_KT,
-	PCI_DEVICE_ID_INTEL_DNV_IE_KT,
+	PCI_DID_INTEL_DNV_ME_KT,
+	PCI_DID_INTEL_DNV_IE_KT,
 	0
 };
 
 static const struct pci_driver csme_ie_kt __pci_driver = {
 	.ops = &csme_ie_kt_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
+	.vendor = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

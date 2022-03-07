@@ -41,6 +41,6 @@ static struct device_operations thermal_ops = {
 
 static const struct pci_driver pch_thermal __pci_driver = {
 	.ops = &thermal_ops,
-	.vendor = PCI_VENDOR_ID_INTEL,
+	.vendor = PCI_VID_INTEL,
 	.device = PCI_DID_INTEL_IBEXPEAK_THERMAL,
 };

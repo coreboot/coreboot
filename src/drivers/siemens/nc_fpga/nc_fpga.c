@@ -165,6 +165,6 @@ static const unsigned short nc_fpga_device_ids[] = { 0x4080, 0x4091, 0 };
 
 static const struct pci_driver nc_fpga_driver __pci_driver = {
 	.ops    = &nc_fpga_ops,
-	.vendor = PCI_VENDOR_ID_SIEMENS,
+	.vendor = PCI_VID_SIEMENS,
 	.devices = nc_fpga_device_ids,
 };

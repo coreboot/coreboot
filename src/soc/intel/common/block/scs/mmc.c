@@ -71,14 +71,14 @@ static struct device_operations dev_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_CMP_EMMC,
-	PCI_DEVICE_ID_INTEL_JSP_EMMC,
-	PCI_DEVICE_ID_INTEL_ADP_EMMC,
+	PCI_DID_INTEL_CMP_EMMC,
+	PCI_DID_INTEL_JSP_EMMC,
+	PCI_DID_INTEL_ADP_EMMC,
 	0
 };
 
 static const struct pci_driver pch_sd __pci_driver = {
 	.ops		= &dev_ops,
-	.vendor		= PCI_VENDOR_ID_INTEL,
+	.vendor		= PCI_VID_INTEL,
 	.devices	= pci_device_ids,
 };

@@ -51,16 +51,16 @@ static const struct device_operations pci_ish_device_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_INTEL_CNL_ISHB,
-	PCI_DEVICE_ID_INTEL_CML_ISHB,
-	PCI_DEVICE_ID_INTEL_TGL_ISHB,
-	PCI_DEVICE_ID_INTEL_TGL_H_ISHB,
+	PCI_DID_INTEL_CNL_ISHB,
+	PCI_DID_INTEL_CML_ISHB,
+	PCI_DID_INTEL_TGL_ISHB,
+	PCI_DID_INTEL_TGL_H_ISHB,
 	0
 };
 
 static const struct pci_driver ish_intel_driver __pci_driver = {
 	.ops		= &pci_ish_device_ops,
-	.vendor		= PCI_VENDOR_ID_INTEL,
+	.vendor		= PCI_VID_INTEL,
 	.devices	= pci_device_ids,
 };
 

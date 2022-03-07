@@ -70,13 +70,13 @@ static struct device_operations lv2_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DEVICE_ID_O2_LV2,
+	PCI_DID_O2_LV2,
 	0
 };
 
 static const struct pci_driver bayhub_lv2 __pci_driver = {
 	.ops		= &lv2_ops,
-	.vendor		= PCI_VENDOR_ID_O2,
+	.vendor		= PCI_VID_O2,
 	.devices	= pci_device_ids,
 };
 

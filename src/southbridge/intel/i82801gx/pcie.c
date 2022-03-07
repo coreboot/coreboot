@@ -228,6 +228,6 @@ static const unsigned short i82801gx_pcie_ids[] = {
 
 static const struct pci_driver i82801gx_pcie __pci_driver = {
 	.ops		= &device_ops,
-	.vendor		= PCI_VENDOR_ID_INTEL,
+	.vendor		= PCI_VID_INTEL,
 	.devices	= i82801gx_pcie_ids,
 };

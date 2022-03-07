@@ -249,6 +249,6 @@ static const unsigned short pci_device_ids[] = { 0x1c10, 0x1c12, 0x1c14, 0x1c16,
 
 static const struct pci_driver pch_pcie __pci_driver = {
 	.ops	 = &device_ops,
-	.vendor	 = PCI_VENDOR_ID_INTEL,
+	.vendor	 = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

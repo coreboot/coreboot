@@ -46,6 +46,147 @@ chip soc/intel/alderlake
 	}"
 
 	device domain 0 on
+		device ref dtt on
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""DRAM_SOC""
+				register "options.tsr[1].desc" = ""Ambient""
+				register "options.tsr[2].desc" = ""Charger""
+				register "options.tsr[3].desc" = ""WWAN""
+
+				# TODO: below values are initial reference values only
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {
+						.target = DPTF_CPU,
+						.thresholds = {
+								TEMP_PCT(80, 97),
+								TEMP_PCT(65, 93),
+								TEMP_PCT(58, 86),
+								TEMP_PCT(50, 80),
+								TEMP_PCT(45, 64),
+								TEMP_PCT(43, 52),
+								TEMP_PCT(40, 47),
+								TEMP_PCT(35, 40),
+						}
+					},
+					[1] = {
+						.target = DPTF_TEMP_SENSOR_1,
+						.thresholds = {
+								TEMP_PCT(75, 97),
+								TEMP_PCT(70, 93),
+								TEMP_PCT(60, 86),
+								TEMP_PCT(52, 80),
+								TEMP_PCT(47, 64),
+								TEMP_PCT(43, 52),
+								TEMP_PCT(40, 47),
+								TEMP_PCT(35, 40),
+						}
+					},
+					[2] = {
+						.target = DPTF_TEMP_SENSOR_2,
+						.thresholds = {
+								TEMP_PCT(75, 97),
+								TEMP_PCT(70, 93),
+								TEMP_PCT(60, 86),
+								TEMP_PCT(52, 80),
+								TEMP_PCT(47, 64),
+								TEMP_PCT(43, 52),
+								TEMP_PCT(40, 47),
+								TEMP_PCT(35, 40),
+						}
+					},
+					[3] = {
+						.target = DPTF_TEMP_SENSOR_3,
+						.thresholds = {
+								TEMP_PCT(75, 97),
+								TEMP_PCT(70, 93),
+								TEMP_PCT(60, 86),
+								TEMP_PCT(52, 80),
+								TEMP_PCT(47, 64),
+								TEMP_PCT(43, 52),
+								TEMP_PCT(40, 47),
+								TEMP_PCT(35, 40),
+						}
+					},
+					[4] = {
+						.target = DPTF_TEMP_SENSOR_4,
+						.thresholds = {
+								TEMP_PCT(75, 97),
+								TEMP_PCT(70, 93),
+								TEMP_PCT(60, 86),
+								TEMP_PCT(52, 80),
+								TEMP_PCT(47, 64),
+								TEMP_PCT(43, 52),
+								TEMP_PCT(40, 47),
+								TEMP_PCT(35, 40),
+						}
+					}
+				}"
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,         CPU,           90, 10000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 90, 10000),
+					[2] = DPTF_PASSIVE(CPU,     	TEMP_SENSOR_1, 90, 10000),
+					[3] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_2, 90, 10000),
+					[4] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_3, 90, 10000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               100, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      93, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      93, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      93, SHUTDOWN),
+					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,      93, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+							.min_power = 15000,
+							.max_power = 17000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 28 * MSECS_PER_SEC,
+							.granularity = 500,
+						},
+					.pl2 = {
+							.min_power = 39000,
+							.max_power = 39000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 1000,
+						}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 1700 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{
+					[0] = {  90, 6700, 220, 2200, },
+					[1] = {  80, 5800, 180, 1800, },
+					[2] = {  70, 5000, 145, 1450, },
+					[3] = {  60, 4900, 115, 1150, },
+					[4] = {  50, 3838,  90,  900, },
+					[5] = {  40, 2904,  55,  550, },
+					[6] = {  30, 2337,  30,  300, },
+					[7] = {  20, 1608,  15,  150, },
+					[8] = {  10,  800,  10,  100, },
+					[9] = {   0,    0,   0,   50, }
+				}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 0 alias dptf_policy on end
+			end
+		end
 		device ref pcie_rp7 on
 			chip drivers/net
 				register "customized_leds" = "0x05af"

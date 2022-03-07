@@ -76,6 +76,9 @@ chip soc/intel/alderlake
 	# FIVR RFI Spread Spectrum 1.5%
 	register "fivr_spread_spectrum" = "FIVR_SS_1_5"
 
+	# Disable C state auto-demotion for all brask baseboards
+	register "disable_c1_state_auto_demotion" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

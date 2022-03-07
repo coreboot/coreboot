@@ -23,6 +23,13 @@ fw_config
 end
 chip soc/intel/alderlake
 	register "SaGv" = "SaGv_Enabled"
+	# Acoustic settings
+	register "AcousticNoiseMitigation" = "1"
+	register "SlowSlewRate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
+	register "SlowSlewRate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
+	register "FastPkgCRampDisable[VR_DOMAIN_IA]" = "1"
+	register "FastPkgCRampDisable[VR_DOMAIN_GT]" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

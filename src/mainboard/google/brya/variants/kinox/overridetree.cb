@@ -187,6 +187,20 @@ chip soc/intel/alderlake
 				device generic 0 alias dptf_policy on end
 			end
 		end
+		device ref pcie_rp6 on
+			# Enable PCIe-to-eMMC bridge PCIE 6 using clk 1
+			register "pch_pcie_rp[PCH_RP(6)]" = "{
+				.clk_src = 1,
+				.clk_req = 1,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H13)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D18)"
+				register "srcclk_pin" = "1"
+				device generic 0 alias emmc_rtd3 on end
+			end
+		end # BH799BBLN
 		device ref pcie_rp7 on
 			chip drivers/net
 				register "customized_leds" = "0x05af"

@@ -41,7 +41,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* D17 : UART1_RXD ==> NC */
 	PAD_NC_LOCK(GPP_D17, NONE, LOCK_CONFIG),
 	/* D18 : UART1_TXD ==> EMMC_PE_RST_L */
-	PAD_CFG_GPO_LOCK(GPP_D18, 1, LOCK_CONFIG),
+	PAD_CFG_GPO(GPP_D18, 1, DEEP),
 	/* D19 : I2S_MCLK1_OUT ==> I2S_MCLK_R */
 
 	/* E4  : SATA_DEVSLP0 ==> USB_A1_RT_RST_ODL */
@@ -93,6 +93,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 0, DEEP),
+	/* D18 : UART1_TXD ==> EMMC_PE_RST_L */
+	PAD_CFG_GPO(GPP_D18, 0, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
 	/* F14 : GSXDIN ==> EN_PP3300_SSD */
@@ -107,7 +109,7 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
-	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
+	/* H13 : I2C7_SCL ==> EN_PP3300_EMMC */
 	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 
 	/* CPU PCIe VGPIO for PEG60 */

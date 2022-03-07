@@ -65,6 +65,7 @@ chip soc/intel/alderlake
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"     # Type-A MLB Port
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"     # Smart Card
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A MLB port
+	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"
 	device domain 0 on
 		device ref igpu on
 			chip drivers/gfx/generic
@@ -131,6 +132,7 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
+		device ref tbt_pcie_rp1 off end
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"

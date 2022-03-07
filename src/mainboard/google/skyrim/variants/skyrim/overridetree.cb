@@ -1,6 +1,29 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 fw_config
-	# TODO define when available
+	field FORM_FACTOR 0
+		option FORM_FACTOR_CLAMSHELL 0
+		option FORM_FACTOR_CONVERTIBLE 1
+	end
+	field FP 1
+		option FP_ABSENT 0
+		option FP_PRESENT 1
+	end
+	field WLAN 2 3
+		option WLAN_MT7921LE 0
+		option WLAN_RTL8852 1
+	end
+	field WWAN 4 5
+		option WWAN_DIASABLED 0
+		option WWAN_FM101GL 1
+	end
+	field IO_DB 6 7
+		option IO_DB_A1_PS8811_C1_PS8818 0
+		option IO_DB_A1_None_C1_ANX7483QN 1
+	end
+	field AUDIO_DB 8 9
+		option AUDIO_DB_C_ALC5682I_A_ALC1019 0
+		option AUDIO_DB_C_NAU88L25YGB_A_MAX98360AENL 1
+	end
 end
 
 chip soc/amd/sabrina

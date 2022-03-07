@@ -39,7 +39,9 @@ chip soc/intel/alderlake
 	# Acoustic settings
 	register "AcousticNoiseMitigation" = "1"
 	register "SlowSlewRate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
+	register "SlowSlewRate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
 	register "FastPkgCRampDisable[VR_DOMAIN_IA]" = "1"
+	register "FastPkgCRampDisable[VR_DOMAIN_GT]" = "1"
 
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[5]" = "USB2_PORT_EMPTY"

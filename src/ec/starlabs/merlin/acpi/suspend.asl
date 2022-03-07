@@ -89,15 +89,15 @@ Method (RWAK, 1, Serialized)
 		// 0x01 == Disabled   == 0x22
 		Case (0x00)
 		{
-			\_SB.PCI0.LPCB.EC.TPLE = 0x00
+			\_SB.PCI0.LPCB.EC.ECWR (0x00,  RefOf(\_SB.PCI0.LPCB.EC.TPLE))
 		}
 		Case (0x01)
 		{
-			\_SB.PCI0.LPCB.EC.TPLE = 0x22
+			\_SB.PCI0.LPCB.EC.ECWR (0x22,  RefOf(\_SB.PCI0.LPCB.EC.TPLE))
 		}
 	}
 
-	\_SB.PCI0.LPCB.EC.FLKE = \_SB.PCI0.LPCB.FLKC
+	\_SB.PCI0.LPCB.EC.ECWR (\_SB.PCI0.LPCB.FLKC,  RefOf(\_SB.PCI0.LPCB.EC.FLKE))
 
 	Switch (ToInteger (\_SB.PCI0.LPCB.KLSC))
 	{
@@ -105,11 +105,11 @@ Method (RWAK, 1, Serialized)
 		// 0x01 == Enabled  == 0xdd
 		Case (0x00)
 		{
-			\_SB.PCI0.LPCB.EC.KLSE = 0x00
+			\_SB.PCI0.LPCB.EC.ECWR (0x00,  RefOf(\_SB.PCI0.LPCB.EC.KLSE))
 		}
 		Case (0x01)
 		{
-			\_SB.PCI0.LPCB.EC.KLSE = 0xdd
+			\_SB.PCI0.LPCB.EC.ECWR (0xdd,  RefOf(\_SB.PCI0.LPCB.EC.KLSE))
 		}
 	}
 
@@ -121,19 +121,19 @@ Method (RWAK, 1, Serialized)
 		// 0x03 == High == 0xaa
 		Case (0x00)
 		{
-			\_SB.PCI0.LPCB.EC.KLBE = 0xdd
+			\_SB.PCI0.LPCB.EC.ECWR (0xdd,  RefOf(\_SB.PCI0.LPCB.EC.KLBE))
 		}
 		Case (0x01)
 		{
-			\_SB.PCI0.LPCB.EC.KLBE = 0xcc
+			\_SB.PCI0.LPCB.EC.ECWR (0xcc,  RefOf(\_SB.PCI0.LPCB.EC.KLBE))
 		}
 		Case (0x02)
 		{
-			\_SB.PCI0.LPCB.EC.KLBE = 0xbb
+			\_SB.PCI0.LPCB.EC.ECWR (0xbb,  RefOf(\_SB.PCI0.LPCB.EC.KLBE))
 		}
 		Case (0x03)
 		{
-			\_SB.PCI0.LPCB.EC.KLBE = 0xaa
+			\_SB.PCI0.LPCB.EC.ECWR (0xaa,  RefOf(\_SB.PCI0.LPCB.EC.KLBE))
 		}
 	}
 }

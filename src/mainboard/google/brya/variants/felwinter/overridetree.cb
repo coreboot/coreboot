@@ -275,10 +275,10 @@ chip soc/intel/alderlake
 			end
 			chip drivers/generic/gpio_keys
 				register "name" = ""PENH""
-				register "gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A7)"
+				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_A7)"
 				register "key.wake_gpe" = "GPE0_DW0_08"
 				register "key.wakeup_route" = "WAKEUP_ROUTE_SCI"
-				register "key.wakeup_event_action" = "EV_ACT_ASSERTED"
+				register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"
 				register "key.dev_name" = ""EJCT""
 				register "key.linux_code" = "SW_PEN_INSERTED"
 				register "key.linux_input_type" = "EV_SW"

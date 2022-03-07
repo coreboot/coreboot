@@ -73,6 +73,7 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 config MAINBOARD_PART_NUMBER
 	default "Bubs" if BOARD_GOOGLE_BUBS
 	default "Coachz" if BOARD_GOOGLE_COACHZ
+	default "Gelarshie" if BOARD_GOOGLE_GELARSHIE
 	default "Homestar" if BOARD_GOOGLE_HOMESTAR
 	default "Kingoftown" if BOARD_GOOGLE_KINGOFTOWN
 	default "Lazor" if BOARD_GOOGLE_LAZOR

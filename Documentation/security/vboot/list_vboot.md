@@ -206,6 +206,7 @@
 - Stout (Lenovo Thinkpad X131e Chromebook)
 - Bubs
 - Coachz
+- Gelarshie
 - Homestar
 - Kingoftown
 - Lazor

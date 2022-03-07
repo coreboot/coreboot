@@ -10,6 +10,10 @@ config BOARD_GOOGLE_COACHZ
 	bool "->  Coachz"
 	select BOARD_GOOGLE_TROGDOR_COMMON
 
+config BOARD_GOOGLE_GELARSHIE
+	bool "->  Gelarshie"
+	select BOARD_GOOGLE_TROGDOR_COMMON
+
 config BOARD_GOOGLE_HOMESTAR
 	bool "->  Homestar"
 	select BOARD_GOOGLE_TROGDOR_COMMON

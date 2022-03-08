@@ -559,6 +559,10 @@ struct soc_intel_alderlake_config {
 	 * 0: Fast/2, 1: Fast/4, 2: Fast/8, 3: Fast/16; see enum slew_rate for values
 	 */
 	uint8_t SlowSlewRate[NUM_VR_DOMAINS];
+
+	/* Energy-Performance Preference (HWP feature) */
+	bool enable_energy_perf_pref;
+	uint8_t energy_perf_pref_value;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

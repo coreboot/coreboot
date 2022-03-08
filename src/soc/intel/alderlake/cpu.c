@@ -122,6 +122,11 @@ void soc_core_init(struct device *cpu)
 	/* Set energy policy */
 	set_energy_perf_bias(ENERGY_POLICY_NORMAL);
 
+	const config_t *conf = config_of_soc();
+	/* Set energy-performance preference */
+	if (conf->enable_energy_perf_pref)
+		if (check_energy_perf_cap())
+			set_energy_perf_pref(conf->energy_perf_pref_value);
 	/* Enable Turbo */
 	enable_turbo();
 }
@@ -130,6 +135,19 @@ static void per_cpu_smm_trigger(void)
 {
 	/* Relocate the SMM handler. */
 	smm_relocate();
+}
+
+static void pre_mp_init(void)
+{
+	soc_fsp_load();
+
+	const config_t *conf = config_of_soc();
+	if (conf->enable_energy_perf_pref) {
+		if (check_energy_perf_cap())
+			enable_energy_perf_pref();
+		else
+			printk(BIOS_WARNING, "Energy Performance Preference not supported!\n");
+	}
 }
 
 static void post_mp_init(void)
@@ -152,7 +170,7 @@ static const struct mp_ops mp_ops = {
 	 * that are set prior to ramstage.
 	 * Real MTRRs programming are being done after resource allocation.
 	 */
-	.pre_mp_init = soc_fsp_load,
+	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = smm_info,
 	.get_microcode_info = get_microcode_info,

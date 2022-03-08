@@ -270,6 +270,8 @@ chip soc/intel/alderlake
 		device ref gspi0 on end
 		device ref p2sb on end
 		device ref emmc on end
+		device ref ish on end
+		device ref ufs on end
 		device ref hda on
 			chip drivers/intel/soundwire
 				device generic 0 on

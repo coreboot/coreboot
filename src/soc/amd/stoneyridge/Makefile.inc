@@ -136,10 +136,6 @@ OPT_PSP_USE_PSPSECUREOS=$(call strip_quotes, $(PSP_USE_PSPSECUREOS))
 OPT_EFS_SPI_READ_MODE=$(call add_opt_prefix, $(CONFIG_EFS_SPI_READ_MODE), --spi-read-mode)
 OPT_EFS_SPI_SPEED=$(call add_opt_prefix, $(CONFIG_EFS_SPI_SPEED), --spi-speed)
 
-# Add all the files listed in the config file
-POUND_SIGN=$(call strip_quotes, "\#")
-DEP_FILES= $(patsubst %,$(FIRMWARE_LOCATION)/%, $(shell sed -e /^$(POUND_SIGN)/d -e /^FIRMWARE_LOCATION/d $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}' ))
-
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_STONEYRIDGE_GEC_FWM_FILE)) \
 			$(DEP_FILES) \

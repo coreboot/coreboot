@@ -75,7 +75,6 @@ endif
 ifeq ($(CONFIG_HUDSON_PSP), y)
 
 ifeq ($(CONFIG_CPU_AMD_PI_00730F01), y)
-FIRMWARE_LOCATION=$(shell grep -e FIRMWARE_LOCATION $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}')
 FIRMWARE_TYPE=
 
 endif
@@ -104,10 +103,6 @@ OPT_PSPTRUSTLETS_FILE=$(call add_opt_prefix, $(PSPTRUSTLETS_FILE), --trustlets)
 OPT_TRUSTLETKEY_FILE=$(call add_opt_prefix, $(TRUSTLETKEY_FILE), --trustletkey)
 OPT_SMUFIRMWARE2_FILE=$(call add_opt_prefix, $(SMUFIRMWARE2_FILE), --smufirmware2)
 OPT_SMUSCS_FILE=$(call add_opt_prefix, $(SMUSCS_FILE), --smuscs)
-
-# Add all the files listed in the config file
-POUND_SIGN=$(call strip_quotes, "\#")
-DEP_FILES= $(patsubst %,$(FIRMWARE_LOCATION)/%, $(shell sed -e /^$(POUND_SIGN)/d -e /^FIRMWARE_LOCATION/d $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}' ))
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_HUDSON_IMC_FWM_FILE)) \

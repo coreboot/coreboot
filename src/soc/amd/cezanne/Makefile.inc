@@ -91,7 +91,6 @@ CEZANNE_FW_B_POSITION=$(call int-add, \
 # Design Guide for AMD Family 17h Processors" (PID #55758, NDA only).
 #
 
-FIRMWARE_LOCATION=$(shell grep -e FIRMWARE_LOCATION $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}')
 
 ifeq ($(CONFIG_PSP_DISABLE_POSTCODES),y)
 PSP_SOFTFUSE_BITS += 7
@@ -202,10 +201,6 @@ OPT_PSP_SOFTFUSE=$(call add_opt_prefix, $(PSP_SOFTFUSE), --soft-fuse)
 OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
 OPT_SPL_TABLE_FILE=$(call add_opt_prefix, $(SPL_TABLE_FILE), --spl-table)
 
-# Add all the files listed in the config file
-POUND_SIGN=$(call strip_quotes, "\#")
-DEP_FILES= $(patsubst %,$(FIRMWARE_LOCATION)/%, $(shell sed -e /^$(POUND_SIGN)/d -e /*/d -e /^FIRMWARE_LOCATION/d $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}' ))
-
 AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_APOB_ADDR) \
 		$(OPT_PSP_BIOSBIN_FILE) \
@@ -298,7 +293,5 @@ apu/amdfw_b-file := $(obj)/amdfw_b.rom
 apu/amdfw_b-position := $(AMD_FW_AB_POSITION)
 apu/amdfw_b-type := raw
 endif
-
-amd_microcode_bins += $(wildcard ${FIRMWARE_LOCATION}/UcodePatch_*.bin)
 
 endif # ($(CONFIG_SOC_AMD_CEZANNE),y)

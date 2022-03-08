@@ -9,6 +9,7 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smbus.h>
 #include <intelblocks/thermal.h>
+#include <intelbasecode/debug_feature.h>
 #include <memory_info.h>
 #include <soc/intel/common/smbios.h>
 #include <soc/iomap.h>
@@ -133,6 +134,9 @@ void mainboard_romstage_entry(void)
 	smbus_common_init();
 	/* Initialize HECI interface */
 	heci_init(HECI1_BASE_ADDRESS);
+
+	if (CONFIG(SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE))
+		pre_mem_debug_init();
 
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 

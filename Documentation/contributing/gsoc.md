@@ -33,6 +33,25 @@ Felix Singer, David Hendricks and Martin Roth are the coreboot GSoC admins for
     framework for initial hardware initialization and you can help us succeed.
 
 
+## Collection of official GSoC guides & documents
+
+  * [Timeline][GSoC Timeline]
+
+  * [Roles and Responsibilities][GSoC Roles and Responsibilities]
+
+  * [Contributor Guide][GSoC Contributor Guide]
+
+  * [Contributor Advice][GSoC Contributor Advice]
+
+  * [Mentor Guide][GSoC Mentor Guide]
+
+  * [FAQ][GSoC FAQ]
+
+  * [Rules][GSoC Rules]
+
+  * [Glossary][GSoC Glossary]
+
+
 ## Contributor requirements & commitments
 
 Google Summer of Code is a significant time commitment for you. Medium-sized
@@ -245,5 +264,11 @@ questions.
 [Coding style]: coding_style.md
 [Code of Conduct]: ../community/code_of_conduct.md
 [Language style]: ../community/language_style.md
+[GSoC Timeline]: https://developers.google.com/open-source/gsoc/timeline
+[GSoC Roles and Responsibilities]: https://developers.google.com/open-source/gsoc/help/responsibilities
 [GSoC Contributor Guide]: https://google.github.io/gsocguides/student
+[GSoC Contributor Advice]: https://developers.google.com/open-source/gsoc/help/student-advice
 [GSoC Mentor Guide]: https://google.github.io/gsocguides/mentor
+[GSoC FAQ]: https://developers.google.com/open-source/gsoc/faq
+[GSoC Rules]: https://summerofcode.withgoogle.com/rules
+[GSoC Glossary]: https://developers.google.com/open-source/gsoc/resources/glossary

@@ -61,7 +61,7 @@ coreboot project has 3 active jenkins build machines.
 There are a number of builds handled by the coreboot jenkins builders,
 for a number of different projects - coreboot, flashrom, memtest86+,
 em100, etc.  Many of these have builders for their current master branch
-as well as gerrit and coverity builds.
+as well as Gerrit and [Coverity](coverity.md) builds.
 
 You can see all the builds here:
 [https://qa.coreboot.org/](https://qa.coreboot.org/)

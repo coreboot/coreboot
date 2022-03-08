@@ -142,4 +142,32 @@ static inline int i2c_writeb(unsigned int bus, uint8_t slave, uint8_t reg,
 	return i2c_transfer(bus, &seg, 1);
 }
 
+/**
+ * Read multi-bytes from an I2C device with two bytes register address/offset
+ * with two segments in one frame
+ *
+ * [start][slave addr][w][register high addr][register low addr]
+ * [start][slave addr][r][data...][stop]
+ */
+static inline int i2c_2ba_read_bytes(unsigned int bus, uint8_t slave, uint16_t offset,
+				     uint8_t *data, int len)
+{
+	struct i2c_msg seg[2];
+	uint8_t eeprom_offset[2];
+
+	eeprom_offset[0] = offset >> 8;
+	eeprom_offset[1] = offset & 0xff;
+
+	seg[0].flags = 0;
+	seg[0].slave = slave;
+	seg[0].buf   = eeprom_offset;
+	seg[0].len   = sizeof(eeprom_offset);
+	seg[1].flags = I2C_M_RD;
+	seg[1].slave = slave;
+	seg[1].buf   = data;
+	seg[1].len   = len;
+
+	return i2c_transfer(bus, seg, ARRAY_SIZE(seg));
+}
+
 #endif	/* _DEVICE_I2C_SIMPLE_H_ */

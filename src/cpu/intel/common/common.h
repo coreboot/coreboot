@@ -47,4 +47,23 @@ void configure_dca_cap(void);
  */
 void set_energy_perf_bias(u8 policy);
 
+/*
+ * Check energy performance preference and HWP capabilities from Thermal and
+ * Power Management Leaf CPUID.
+ */
+bool check_energy_perf_cap(void);
+
+/*
+ * Set the IA32_HWP_REQUEST Energy-Performance Preference bits on the logical
+ * thread. 0 is a hint to the HWP to prefer performance, and 255 is a hint to
+ * prefer energy efficiency.
+ */
+void set_energy_perf_pref(u8 pref);
+
+/*
+ * Instructs the CPU to use EPP hints. This means that any energy policies set
+ * up in `set_energy_perf_bias` will be ignored afterwards.
+ */
+void enable_energy_perf_pref(void);
+
 #endif

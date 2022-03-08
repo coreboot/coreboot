@@ -46,7 +46,7 @@ config CHROMEOS_DISABLE_PLATFORM_HIERARCHY_ON_RESUME
 	default y
 	depends on TPM2 && RESUME_PATH_SAME_AS_BOOT
 	help
-	  Disable the platform heirarchy on resume path if the firmware
+	  Disable the platform hierarchy on resume path if the firmware
 	  is involved in resume. The hierarchy is disabled prior to jumping
 	  to the OS.  Note that this option is sepcific to TPM2 boards.
 	  This option is auto selected if CHROMEOS because it matches with

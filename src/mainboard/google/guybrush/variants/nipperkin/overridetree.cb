@@ -187,7 +187,7 @@ chip soc/amd/cezanne
 					# Internal panel on the first port of the graphics chip
 					register "device[0].addr" = "0x80010400"
 					register "device[0].privacy.enabled" = "1"
-					register "device[0].privacy.gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_5)"
+					register "device[0].privacy.gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_18)"
 					device generic 0.0 on end
 				end
 			end

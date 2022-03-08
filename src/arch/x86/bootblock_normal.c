@@ -12,7 +12,7 @@ static const char *get_fallback(const char *stagelist)
 	return ++stagelist;
 }
 
-int legacy_romstage_select_and_load(struct prog *romstage)
+enum cb_err legacy_romstage_select_and_load(struct prog *romstage)
 {
 	static const char *default_filenames = "normal/romstage\0fallback/romstage";
 	const char *boot_candidate;
@@ -24,8 +24,8 @@ int legacy_romstage_select_and_load(struct prog *romstage)
 
 	if (do_normal_boot()) {
 		romstage->name = boot_candidate;
-		if (!cbfs_prog_stage_load(romstage))
-			return 0;
+		if (cbfs_prog_stage_load(romstage) == CB_SUCCESS)
+			return CB_SUCCESS;
 	}
 
 	romstage->name = get_fallback(boot_candidate);

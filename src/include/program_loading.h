@@ -5,8 +5,7 @@
 #include <bootmem.h>
 #include <commonlib/bsd/cbfs_serialized.h>
 #include <commonlib/region.h>
-#include <stdint.h>
-#include <stddef.h>
+#include <types.h>
 
 enum {
 	/* Last segment of program. Can be used to take different actions for
@@ -139,7 +138,7 @@ void platform_prog_run(struct prog *prog);
 void run_romstage(void);
 
 /* Runtime selector for CBFS_PREFIX of romstage. */
-int legacy_romstage_select_and_load(struct prog *romstage);
+enum cb_err legacy_romstage_select_and_load(struct prog *romstage);
 
 /************************
  *   RAMSTAGE LOADING   *

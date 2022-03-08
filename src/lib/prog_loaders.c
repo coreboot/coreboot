@@ -27,7 +27,7 @@ void run_romstage(void)
 	timestamp_add_now(TS_COPYROM_START);
 
 	if (ENV_X86 && CONFIG(BOOTBLOCK_NORMAL)) {
-		if (legacy_romstage_select_and_load(&romstage))
+		if (legacy_romstage_select_and_load(&romstage) != CB_SUCCESS)
 			goto fail;
 	} else {
 		if (cbfs_prog_stage_load(&romstage))

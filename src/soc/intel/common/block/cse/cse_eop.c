@@ -11,11 +11,11 @@
 #include <timestamp.h>
 #include <types.h>
 
-enum cse_eop_result {
-	CSE_EOP_RESULT_GLOBAL_RESET_REQUESTED,
-	CSE_EOP_RESULT_SUCCESS,
-	CSE_EOP_RESULT_ERROR,
-	CSE_EOP_RESULT_DISABLED,
+enum cse_cmd_result {
+	CSE_CMD_RESULT_GLOBAL_RESET_REQUESTED,
+	CSE_CMD_RESULT_SUCCESS,
+	CSE_CMD_RESULT_ERROR,
+	CSE_CMD_RESULT_DISABLED,
 };
 
 static bool cse_disable_mei_bus(void)
@@ -47,7 +47,7 @@ static bool cse_disable_mei_bus(void)
 	return true;
 }
 
-static enum cse_eop_result cse_send_eop(void)
+static enum cse_cmd_result cse_send_eop(void)
 {
 	enum {
 		EOP_REQUESTED_ACTION_CONTINUE = 0,
@@ -74,7 +74,7 @@ static enum cse_eop_result cse_send_eop(void)
 	    cse_is_hfs1_com_soft_temp_disable()) {
 		printk(BIOS_INFO, "HECI: coreboot in recovery mode; found CSE in expected SOFT "
 		       "TEMP DISABLE state, skipping EOP\n");
-		return CSE_EOP_RESULT_SUCCESS;
+		return CSE_CMD_RESULT_SUCCESS;
 	}
 
 	/*
@@ -87,25 +87,25 @@ static enum cse_eop_result cse_send_eop(void)
 	if (cse_is_hfs1_com_soft_temp_disable()) {
 		printk(BIOS_ERR, "HECI: Prerequisites not met for sending EOP\n");
 		if (CONFIG(SOC_INTEL_CSE_LITE_SKU))
-			return CSE_EOP_RESULT_ERROR;
-		return CSE_EOP_RESULT_DISABLED;
+			return CSE_CMD_RESULT_ERROR;
+		return CSE_CMD_RESULT_DISABLED;
 	}
 
 	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_normal()) {
 		printk(BIOS_ERR, "HECI: Prerequisites not met for sending EOP\n");
-		return CSE_EOP_RESULT_ERROR;
+		return CSE_CMD_RESULT_ERROR;
 	}
 
 	printk(BIOS_INFO, "HECI: Sending End-of-Post\n");
 
 	if (heci_send_receive(&msg, sizeof(msg), &resp, &resp_size, HECI_MKHI_ADDR)) {
 		printk(BIOS_ERR, "HECI: EOP send/receive fail\n");
-		return CSE_EOP_RESULT_ERROR;
+		return CSE_CMD_RESULT_ERROR;
 	}
 
 	if (resp.hdr.result) {
 		printk(BIOS_ERR, "HECI: EOP Resp Failed: %u\n", resp.hdr.result);
-		return CSE_EOP_RESULT_ERROR;
+		return CSE_CMD_RESULT_ERROR;
 	}
 
 	printk(BIOS_INFO, "CSE: EOP requested action: ");
@@ -113,13 +113,13 @@ static enum cse_eop_result cse_send_eop(void)
 	switch (resp.requested_actions) {
 	case EOP_REQUESTED_ACTION_GLOBAL_RESET:
 		printk(BIOS_INFO, "global reset\n");
-		return CSE_EOP_RESULT_GLOBAL_RESET_REQUESTED;
+		return CSE_CMD_RESULT_GLOBAL_RESET_REQUESTED;
 	case EOP_REQUESTED_ACTION_CONTINUE:
 		printk(BIOS_INFO, "continue boot\n");
-		return CSE_EOP_RESULT_SUCCESS;
+		return CSE_CMD_RESULT_SUCCESS;
 	default:
 		printk(BIOS_INFO, "unknown %u\n", resp.requested_actions);
-		return CSE_EOP_RESULT_ERROR;
+		return CSE_CMD_RESULT_ERROR;
 	}
 }
 
@@ -139,20 +139,20 @@ static void cse_handle_eop_error(void)
 		    "Preventing system from booting into an insecure state.\n");
 }
 
-static void handle_cse_eop_result(enum cse_eop_result result)
+static void handle_cse_eop_result(enum cse_cmd_result result)
 {
 	switch (result) {
-	case CSE_EOP_RESULT_GLOBAL_RESET_REQUESTED:
+	case CSE_CMD_RESULT_GLOBAL_RESET_REQUESTED:
 		printk(BIOS_INFO, "CSE requested global reset in EOP response, resetting...\n");
 		do_global_reset();
 		break;
-	case CSE_EOP_RESULT_SUCCESS:
+	case CSE_CMD_RESULT_SUCCESS:
 		printk(BIOS_INFO, "CSE EOP successful, continuing boot\n");
 		break;
-	case CSE_EOP_RESULT_DISABLED:
+	case CSE_CMD_RESULT_DISABLED:
 		printk(BIOS_INFO, "CSE is disabled, continuing boot\n");
 		break;
-	case CSE_EOP_RESULT_ERROR: /* fallthrough */
+	case CSE_CMD_RESULT_ERROR: /* fallthrough */
 	default:
 		printk(BIOS_ERR, "Failed to send EOP to CSE, %d\n", result);
 		/* For vboot, trigger recovery mode if applicable, as there is

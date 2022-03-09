@@ -14,7 +14,9 @@ struct mtk_wdt_regs {
 	u32 wdt_interval;
 	u32 wdt_swrst;
 	u32 wdt_swsysrst;
-	u32 reserved[9];
+	u32 reserved0[5];
+	u32 wdt_req_mode;
+	u32 reserved1[3];
 	u32 wdt_debug_ctrl;
 };
 
@@ -38,6 +40,7 @@ enum {
 
 static struct mtk_wdt_regs *const mtk_wdt = (void *)RGU_BASE;
 
+void mtk_wdt_preinit(void);
 int mtk_wdt_init(void);
 void mtk_wdt_clr_status(void);
 

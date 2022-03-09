@@ -1,15 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/cpu.h>
 #include <console/console.h>
 #include <cbfs.h>
 #include <commonlib/region.h>
 #include <fmap.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/cse_layout.h>
+#include <intelbasecode/debug_feature.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/misc.h>
 #include <soc/intel/common/reset.h>
-#include <arch/cpu.h>
 
 #define BPDT_HEADER_SZ		sizeof(struct bpdt_header)
 #define BPDT_ENTRY_SZ		sizeof(struct bpdt_entry)
@@ -663,6 +664,17 @@ static bool cse_write_rw_region(const struct region_device *target_rdev,
 	return true;
 }
 
+static bool is_cse_fw_update_enabled(void)
+{
+	if (!CONFIG(SOC_INTEL_CSE_RW_UPDATE))
+		return false;
+
+	if (CONFIG(SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE))
+		return !is_debug_cse_fw_update_disable();
+
+	return true;
+}
+
 static enum csme_failure_reason cse_update_rw(const struct cse_bp_info *cse_bp_info,
 		const void *cse_cbfs_rw, const size_t cse_blob_sz,
 		struct region_device *target_rdev)
@@ -1079,10 +1091,11 @@ void cse_fw_sync(void)
 		cse_trigger_vboot_recovery(CSE_LITE_SKU_DATA_WIPE_ERROR);
 
 	/*
-	 * If SOC_INTEL_CSE_RW_UPDATE is defined , then trigger CSE firmware update. The driver
-	 * triggers recovery if CSE CBFS RW metadata or CSE CBFS RW blob is not available.
+	 * cse firmware update is skipped if SOC_INTEL_CSE_RW_UPDATE is not defined and
+	 * runtime debug control flag is not enabled. The driver triggers recovery if CSE CBFS
+	 * RW metadata or CSE CBFS RW blob is not available.
 	 */
-	if (CONFIG(SOC_INTEL_CSE_RW_UPDATE)) {
+	if (is_cse_fw_update_enabled()) {
 		uint8_t rv;
 		rv = cse_fw_update(&cse_bp_info.bp_info);
 		if (rv)

@@ -14,7 +14,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
 	static struct spd_info spd_info;
 	const struct mb_cfg *board_cfg = variant_memcfg_config();
-	static uint8_t spd_data[0x100];
+	static uint8_t spd_data[CONFIG_DIMM_SPD_SIZE];
 	const char *cbfs_hwi_name = "hwinfo.hex";
 
 	/* Initialize SPD information for LPDDR4x from HW-Info primarily with a fallback to
@@ -24,7 +24,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	    (hwilib_get_field(SPD, spd_data, 0x80) == 0x80) &&
 	    (ddr_crc16(spd_data, 126) == read16((void *)&spd_data[126]))) {
 		spd_info.spd_spec.spd_data_ptr_info.spd_data_ptr = (uintptr_t)spd_data;
-		spd_info.spd_spec.spd_data_ptr_info.spd_data_len = sizeof(spd_data);
+		spd_info.spd_spec.spd_data_ptr_info.spd_data_len = CONFIG_DIMM_SPD_SIZE;
 		spd_info.read_type = READ_SPD_MEMPTR;
 	} else {
 		printk(BIOS_WARNING, "SPD in HW-Info not valid, fall back to spd.bin!\n");

@@ -1,0 +1,153 @@
+chip soc/intel/apollolake
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	# Graphics
+	# TODO:
+	# register "panel_cfg" = "{
+	#	.up_delay_ms			=  0,				// T3
+	#	.backlight_on_delay_ms		=  0,				// T7
+	#	.backlight_off_delay_ms		=  0,				// T9
+	#	.down_delay_ms			=  0,				// T10
+	#	.cycle_delay_ms			=  500,				// T12
+	#	.backlight_pwm_hz		=  200,				// PWM
+	# }"
+
+# PM Util (soc/intel/apollolake/pmutil.c)
+	# Enable the correct decode ranges on the LPC bus.
+	register "lpc_ioe"                      = "LPC_IOE_EC_4E_4F |
+						   LPC_IOE_EC_62_66 |
+						   LPC_IOE_KBC_60_64"
+
+	# Enable Audio Clock and Power gating
+	register "hdaudio_clk_gate_enable"	= "1"
+	register "hdaudio_pwr_gate_enable"	= "1"
+	register "hdaudio_bios_config_lockdown"	= "1"
+
+	register "pnp_settings"			= "PNP_PERF_POWER"
+
+	register "ModPhyIfValue"		= "0x12"
+
+	register "usb_config_override"		= "1"
+	register "DisableComplianceMode"	= "1"
+
+	register "pcie_rp_clkreq_pin[0]"	= "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[1]"	= "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[2]"	= "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[3]"	= "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[4]"	= "CLKREQ_DISABLED"
+	register "pcie_rp_clkreq_pin[5]"	= "CLKREQ_DISABLED"
+
+	register "pcie_rp_deemphasis_enable[0]"	= "1"
+	register "pcie_rp_deemphasis_enable[1]"	= "1"
+	register "pcie_rp_deemphasis_enable[2]"	= "1"
+	register "pcie_rp_deemphasis_enable[3]"	= "1"
+	register "pcie_rp_deemphasis_enable[4]"	= "1"
+	register "pcie_rp_deemphasis_enable[5]"	= "1"
+
+	# GPE configuration
+	register "gpe0_dw1"			= "PMC_GPE_NW_63_32"
+	register "gpe0_dw2"			= "PMC_GPE_N_95_64"
+	register "gpe0_dw3"			= "PMC_GPE_NW_31_0"
+
+	register "slp_s3_assertion_width_usecs"	= "50000"
+
+	device domain 0 on
+		device pci 00.0 on  end						# Host Bridge
+		device pci 00.1 on  end						# DPTF
+		device pci 00.2 off end						# NPK
+		device pci 02.0 on  end						# Gen
+		device pci 03.0 off end						# Iunit
+		device pci 0c.0 on						# CNVi
+			chip drivers/wifi/generic
+				register "wake" = "GPE0A_CNVI_PME_STS"
+				device generic 0 on end
+			end
+		end
+		device pci 0d.0 off end						# P2SB
+		device pci 0d.1 hidden end					# PMC
+		device pci 0d.2 on  end						# SPI
+		device pci 0d.3 off end						# Shared SRAM
+		device pci 0e.0 on						# Audio
+			subsystemid 0x10ec 0x111e
+		end
+		device pci 0f.0 on  end						# Heci1
+		device pci 0f.1 on  end						# Heci2
+		device pci 0f.2 on  end						# Heci3
+		device pci 11.0 off end						# ISH
+		device pci 12.0 on  end						# SATA
+		device pci 13.0 off end						# PCIe-A 0 Slot 1
+		device pci 13.1 off end						# PCIe-A 1
+		device pci 13.2 off end						# PCIe-A 2 Onboard Lan
+		device pci 13.3 off end						# PCIe-A 3
+		device pci 14.0 off end						# PCIe-B 0 Slot2
+		device pci 14.1 off end						# PCIe-B 1 Onboard M2 Slot(Wifi/BT)
+		device pci 15.0 on						# XHCI
+			### USB 2.0 Devices
+			# Motherboard USB Type C
+			register "usb2_port[0]"		= "PORT_EN(OC_SKIP)"
+			# Motherboard USB 3.0
+			register "usb2_port[1]"		= "PORT_EN(OC_SKIP)"
+			# Daughterboard USB 3.0
+			register "usb2_port[3]"		= "PORT_EN(OC_SKIP)"
+			# Daughterboard SD Card
+			register "usb2_port[5]"		= "PORT_EN(OC_SKIP)"
+			# Internal Webcam
+			register "usb2_port[7]"		= "PORT_EN(OC_SKIP)"
+
+			### USB 3.0 Devices
+			# Motherboard USB 3.0
+			register "usb3_port[0]"		= "PORT_EN(OC_SKIP)"
+			# Motherboard USB Type C
+			register "usb3_port[1]"		= "PORT_EN(OC_SKIP)"
+			# Daughterboard USB 3.0
+			register "usb3_port[3]"		= "PORT_EN(OC_SKIP)"
+		end
+		device pci 15.1 off end						# XDCI
+		device pci 16.0 off end						# I2C0
+		device pci 16.1 off end						# I2C1
+		device pci 16.2 off end						# I2C2
+		device pci 16.3 off end						# I2C3
+		device pci 17.0 on  end						# I2C4
+		device pci 17.1 off end						# I2C5
+		device pci 17.2 off end						# I2C6
+		device pci 17.3 on						# I2C7
+			# Handled by touchpad.asl
+		end
+		device pci 18.0 on  end						# UART #0
+		device pci 18.1 off end						# UART #1
+		device pci 18.2 on  end						# UART #2
+		device pci 18.3 off end						# UART #3
+		device pci 19.0 off end						# SPI #0
+		device pci 19.1 off end						# SPI #1
+		device pci 19.2 on  end						# SPI #2
+		device pci 1a.0 off end						# PWM
+		device pci 1b.0 off end						# SDCard
+		device pci 1c.0 off end						# eMMC
+		device pci 1e.0 off end						# SDIO
+		device pci 1f.0 on						# LPC Interface
+			chip ec/starlabs/merlin
+				# Port pair 4Eh/4Fh
+				device pnp 4e.00 on  end			# IO Interface
+				device pnp 4e.04 off end			# System Wake-Up
+				device pnp 4e.05 off end			# Mouse
+				device pnp 4e.06 on				# Keyboard
+					io 0x60			= 0x0060
+					io 0x62			= 0x0064
+					irq 0x70		= 1
+				end
+				device pnp 4e.0f off end			# Shared Memory/Flash Interface
+				device pnp 4e.11 off end			# Power Management Channel 1
+				device pnp 4e.12 off end			# Power Management Channel 2
+				device pnp 4e.17 off end			# Power Management Channel 3
+				device pnp 4e.1d off end			# Extended Shared Memory (ESHM)
+				device pnp 4e.1e off end			# Power Management Channel 4
+			end
+		end
+		device pci 1f.1 off  end					# SMBus
+	end
+	chip drivers/crb
+		device mmio 0xfed40000 on end
+	end
+end

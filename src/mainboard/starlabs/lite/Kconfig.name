@@ -2,3 +2,6 @@ comment "Star Labs Lite Series"
 
 config BOARD_STARLABS_LITE_GLK
 	bool "Star Labs Lite Mk III (N5000)"
+
+config BOARD_STARLABS_LITE_GLKR
+	bool "Star Labs Lite Mk IV (N5030)"

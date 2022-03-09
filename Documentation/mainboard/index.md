@@ -182,6 +182,7 @@ The boards in this section are not real mainboards, but emulators.
 
 - [LabTop Mk IV](starlabs/labtop_cml.md)
 - [StarLite Mk III](starlabs/lite_glk.md)
+- [StarLite Mk IV](starlabs/lite_glkr.md)
 - [StarBook Mk V](starlabs/starbook_tgl.md)
 
 ## Supermicro

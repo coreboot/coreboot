@@ -2,7 +2,6 @@ config BOARD_STARLABS_LITE_SERIES
 	def_bool n
 	select BOARD_ROMSIZE_KB_8192
 	select DRIVERS_I2C_HID
-	select EC_STARLABS_ITE
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select HAVE_CMOS_DEFAULT
@@ -20,6 +19,13 @@ config BOARD_STARLABS_LITE_SERIES
 
 config BOARD_STARLABS_LITE_GLK
 	select BOARD_STARLABS_LITE_SERIES
+	select EC_STARLABS_ITE
+	select EC_STARLABS_KBL_LEVELS
+	select SOC_INTEL_GEMINILAKE
+
+config BOARD_STARLABS_LITE_GLKR
+	select BOARD_STARLABS_LITE_SERIES
+	select EC_STARLABS_NUVOTON
 	select EC_STARLABS_KBL_LEVELS
 	select SOC_INTEL_GEMINILAKE
 
@@ -32,7 +38,8 @@ config EC_GPE_SCI
 	default 0x26
 
 config EC_VARIANT_DIR
-	default "glk"
+	default "glk"  if BOARD_STARLABS_LITE_GLK
+	default "glkr" if BOARD_STARLABS_LITE_GLKR
 
 config FMDFILE
 	default "src/mainboard/starlabs/lite/board.fmd"
@@ -42,10 +49,12 @@ config MAINBOARD_DIR
 
 config MAINBOARD_FAMILY
 	string
-	default "I3"
+	default "I3" if BOARD_STARLABS_LITE_GLK
+	default "I4" if BOARD_STARLABS_LITE_GLKR
 
 config MAINBOARD_PART_NUMBER
-	default "Lite Mk III"
+	default "Lite Mk III" if BOARD_STARLABS_LITE_GLK
+	default "Lite Mk IV"  if BOARD_STARLABS_LITE_GLKR
 
 config MAINBOARD_SMBIOS_PRODUCT_NAME
 	string
@@ -53,7 +62,8 @@ config MAINBOARD_SMBIOS_PRODUCT_NAME
 
 config TRACKPAD_INTERRUPT
 	hex
-	default 0x1
+	default 0x1 if BOARD_STARLABS_LITE_GLK
+	default 0x0 if BOARD_STARLABS_LITE_GLKR
 
 config TIANOCORE_BOOTSPLASH_FILE
 	string
@@ -63,5 +73,6 @@ config UART_FOR_CONSOLE
 	default 2
 
 config VARIANT_DIR
-	default "glk"
+	default "glk"  if BOARD_STARLABS_LITE_GLK
+	default "glkr" if BOARD_STARLABS_LITE_GLKR
 endif

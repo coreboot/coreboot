@@ -728,12 +728,12 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	return payload_size;
 }
 
-cb_err_t tis_vendor_write(unsigned int addr, const void *buffer, size_t bytes)
+enum cb_err tis_vendor_write(unsigned int addr, const void *buffer, size_t bytes)
 {
 	return tpm2_write_reg(addr, buffer, bytes);
 }
 
-cb_err_t tis_vendor_read(unsigned int addr, void *buffer, size_t bytes)
+enum cb_err tis_vendor_read(unsigned int addr, void *buffer, size_t bytes)
 {
 	return tpm2_read_reg(addr, buffer, bytes);
 }

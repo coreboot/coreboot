@@ -79,7 +79,7 @@ static uint32_t cr50_get_board_cfg(void)
 	if (!cr50_fw_supports_board_cfg(&cr50_firmware_version))
 		return 0;
 
-	const cb_err_t ret = tis_vendor_read(get_reg_addr(CR50_BOARD_CFG_REG), &value,
+	const enum cb_err ret = tis_vendor_read(get_reg_addr(CR50_BOARD_CFG_REG), &value,
 					     sizeof(value));
 	if (ret != CB_SUCCESS) {
 		printk(BIOS_INFO, "Error reading from cr50\n");
@@ -92,10 +92,10 @@ static uint32_t cr50_get_board_cfg(void)
 /**
  * Set the BOARD_CFG register on the TPM chip to a particular compile-time constant value.
  */
-cb_err_t cr50_set_board_cfg(void)
+enum cb_err cr50_set_board_cfg(void)
 {
 	uint32_t value;
-	cb_err_t ret;
+	enum cb_err ret;
 
 	if (!cr50_fw_supports_board_cfg(&cr50_firmware_version))
 		return CB_ERR;
@@ -139,7 +139,7 @@ bool cr50_is_long_interrupt_pulse_enabled(void)
 	return !!(cr50_get_board_cfg() & CR50_BOARD_CFG_100US_READY_PULSE);
 }
 
-static cb_err_t cr50_parse_fw_version(const char *version_str,
+static enum cb_err cr50_parse_fw_version(const char *version_str,
 				      struct cr50_firmware_version *ver)
 {
 	int epoch, major, minor;
@@ -165,7 +165,7 @@ static cb_err_t cr50_parse_fw_version(const char *version_str,
 	return CB_SUCCESS;
 }
 
-cb_err_t cr50_get_firmware_version(struct cr50_firmware_version *version)
+enum cb_err cr50_get_firmware_version(struct cr50_firmware_version *version)
 {
 	if (cr50_firmware_version.epoch || cr50_firmware_version.major ||
 	    cr50_firmware_version.minor)

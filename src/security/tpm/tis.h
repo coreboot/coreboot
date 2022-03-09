@@ -96,7 +96,7 @@ int tis_plat_irq_status(void);
  *
  * Returns CB_SUCCESS 0 on success, CB_ERR on failure.
  */
-cb_err_t tis_vendor_write(unsigned int addr, const void *sendbuf, size_t send_size);
+enum cb_err tis_vendor_write(unsigned int addr, const void *sendbuf, size_t send_size);
 
 /*
  * tis_vendor_read()
@@ -109,7 +109,7 @@ cb_err_t tis_vendor_write(unsigned int addr, const void *sendbuf, size_t send_si
  *
  * Returns CB_SUCCESS on success or -1 on failure.
  */
-cb_err_t tis_vendor_read(unsigned int addr, void *recvbuf, size_t recv_size);
+enum cb_err tis_vendor_read(unsigned int addr, void *recvbuf, size_t recv_size);
 
 static inline bool tpm_first_access_this_boot(void)
 {

@@ -514,12 +514,12 @@ void tpm_vendor_cleanup(struct tpm_chip *chip)
 {
 }
 
-cb_err_t tis_vendor_write(unsigned int addr, const void *buffer, size_t bytes)
+enum cb_err tis_vendor_write(unsigned int addr, const void *buffer, size_t bytes)
 {
 	return cr50_i2c_write(addr & 0xff, buffer, bytes) ? CB_ERR : CB_SUCCESS;
 }
 
-cb_err_t tis_vendor_read(unsigned int addr, void *buffer, size_t bytes)
+enum cb_err tis_vendor_read(unsigned int addr, void *buffer, size_t bytes)
 {
 	return cr50_i2c_read(addr & 0xff, buffer, bytes) ? CB_ERR : CB_SUCCESS;
 }

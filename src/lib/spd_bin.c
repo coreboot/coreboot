@@ -167,8 +167,10 @@ static void spd_get_name(const uint8_t spd[], int type, const char **spd_name, s
 	case SPD_DRAM_DDR5:
 	case SPD_DRAM_LPDDR4:
 	case SPD_DRAM_LPDDR4X:
-		*spd_name = (const char *) &spd[DDR4_SPD_PART_OFF];
-		*len = DDR4_SPD_PART_LEN;
+		if (spd[DDR4_SPD_PART_OFF]) {
+			*spd_name = (const char *) &spd[DDR4_SPD_PART_OFF];
+			*len = DDR4_SPD_PART_LEN;
+		}
 		break;
 	default:
 		*len = 0;

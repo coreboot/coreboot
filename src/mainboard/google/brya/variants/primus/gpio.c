@@ -49,6 +49,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_E3, NONE),
 	/* E7  : PROC_GP1 ==> NC */
 	PAD_NC(GPP_E7, NONE),
+	/* E20 : USB_C1_LSX_SOC_TX ==> EN_PP3300_eMMC */
+	PAD_CFG_GPO(GPP_E20, 1, DEEP),
 	/* E21 : DDP2_CTRLDATA ==> NC */
 	PAD_NC(GPP_E21, NONE),
 

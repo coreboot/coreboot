@@ -1,19 +1,20 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /*
- * EC communication interface for ITE Embedded Controller.
+ * EC communication interface for Embedded Controller.
  */
 
-#ifndef _EC_STARLABS_ITE_H
-#define _EC_STARLABS_ITE_H
+#ifndef _EC_STARLABS_EC_H
+#define _EC_STARLABS_EC_H
 
 /*
  * Define the expected value of the PNP base address that is fixed through
  * the BADRSEL register controlled within the EC domain by the EC Firmware.
  */
 #define ITE_FIXED_ADDR		0x4e
+#define NUVOTON_FIXED_ADDR	0x4e
 
-/* Logical device number (LDN) assignments. */
+/* Logical device number (LDN) assignments for ITE. */
 #define ITE_SP1			0x01	/* Serial Port 1 (UART) */
 #define ITE_SP2			0x02	/* Serial Port 2 (UART) */
 #define ITE_SWUC		0x04	/* System Wake-Up Control (SWUC) */
@@ -30,9 +31,21 @@
 #define ITE_PMC4		0x18	/* Power Management I/F Channel 4 (PMC4) */
 #define ITE_PMC5		0x19	/* Power Management I/F Channel 5 (PMC5) */
 
+/* Logical device number (LDN) assignments for Nuvoton. */
+#define NUVOTON_MSWC		0x04	/* Mobile System Wake-Up Control (MSWC) */
+#define NUVOTON_KBCM		0x05	/* KBC / Mouse Interface */
+#define NUVOTON_KBCK		0x06	/* KBC / Keyboard Interface */
+#define NUVOTON_SHM		0x0f	/* Shared Memory (SHM) */
+#define NUVOTON_PM1		0x11	/* Power Management I/F Channel 1 (PM1) */
+#define NUVOTON_PM2		0x12	/* Power Management I/F Channel 2 (PM2) */
+#define NUVOTON_PM3		0x17	/* Power Management I/F Channel 3 (PM3) */
+#define NUVOTON_ESHM		0x1d	/* Extended Shared Memory (ESHM) */
+#define NUVOTON_PM4		0x1e	/* Power Management I/F Channel 3 (PM4) */
+
 /* Host domain registers. */
 #define ITE_CHIPID1		0x20	/* Device ID register 1 */
 #define ITE_CHIPID2		0x21	/* Device ID register 2 */
+#define NUVOTON_CHIPID		0x27	/* Device ID register */
 
 /* EC RAM common offsets */
 #define ECRAM_MAJOR_VERSION	0x00

@@ -26,3 +26,12 @@ warn_no_ite_fw:
 endif
 endif
 endif
+
+ifeq ($(CONFIG_EC_STARLABS_NUVOTON),y)
+
+EC_VARIANT_DIR := $(call strip_quotes, $(CONFIG_EC_VARIANT_DIR))
+CPPFLAGS_common += -I$(src)/ec/starlabs/merlin/variants/$(EC_VARIANT_DIR)
+
+all-y += nuvoton.c
+
+endif

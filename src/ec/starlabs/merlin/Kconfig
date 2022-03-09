@@ -1,5 +1,11 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+config EC_STARLABS_NUVOTON
+	bool
+	select EC_ACPI
+	help
+	  Interface to Nuvoton embedded controller principally in Star Labs notebooks.
+
 config EC_STARLABS_ITE
 	bool
 	select EC_ACPI
@@ -33,21 +39,21 @@ config EC_STARLABS_ITE_BIN_PATH
 config EC_STARLABS_KBL_LEVELS
 	bool
 	default n
-	depends on EC_STARLABS_ITE
+	depends on EC_STARLABS_ITE || EC_STARLABS_NUVOTON
 	help
 	  Select if the mainboard supports multiple levels of brightness for the keyboard.
 
 config EC_STARLABS_FAN
 	bool
 	default n
-	depends on EC_STARLABS_ITE
+	depends on EC_STARLABS_ITE || EC_STARLABS_NUVOTON
 	help
 	  Select if the mainboard has a fan.
 
 config EC_STARLABS_MAX_CHARGE
 	bool
 	default n
-	depends on EC_STARLABS_ITE
+	depends on EC_STARLABS_ITE || EC_STARLABS_NUVOTON
 	help
 	  Select if the mainboard supports limiting the maximum charge of the battery.
 

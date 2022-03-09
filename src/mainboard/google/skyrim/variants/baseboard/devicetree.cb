@@ -127,7 +127,7 @@ chip soc/amd/sabrina
 							register "desc" = ""Bluetooth""
 							register "type" = "UPC_TYPE_INTERNAL"
 							register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_10)"
-							device usb 2.3 alias usb2_port5 on end
+							device usb 2.0 alias usb2_port5 on end
 						end
 					end
 				end

@@ -131,4 +131,4 @@ facing towards the bottom of the board.
 [ASRock H110M-DVS]: https://www.asrock.com/mb/Intel/H110M-DVS%20R2.0/
 [MX25L6473E]: http://www.macronix.com/Lists/Datasheet/Attachments/7380/MX25L6473E,%203V,%2064Mb,%20v1.4.pdf
 [flashrom]: https://flashrom.org/Flashrom
-[H110M-DVS manual]: http://asrock.pc.cdn.bitgravity.com/Manual/H110M-DVS%20R2.0.pdf
+[H110M-DVS manual]: https://web.archive.org/web/20191023230631/http://asrock.pc.cdn.bitgravity.com/Manual/H110M-DVS%20R2.0.pdf

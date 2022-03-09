@@ -106,6 +106,6 @@ region is not readable even by the host.
 - [Flash chip datasheet][W25Q32BV]
 
 [ASUS P8H61-M LX]: https://www.asus.com/Motherboards/P8H61M_LX/
-[W25Q32BV]: https://www.winbond.com/resource-files/w25q32bv_revi_100413_wo_automotive.pdf
+[W25Q32BV]: https://web.archive.org/web/20211002141814/https://www.winbond.com/resource-files/w25q32bv_revi_100413_wo_automotive.pdf
 [flashrom]: https://flashrom.org/Flashrom
 [Board manual]: http://dlcdnet.asus.com/pub/ASUS/mb/LGA1155/P8H61_M_LX/E6803_P8H61-M_LX.zip

@@ -115,4 +115,4 @@ Our arbitration team consists of the following people
 This Code of Conduct is distributed under
 a [Creative Commons Attribution-ShareAlike
 license](http://creativecommons.org/licenses/by-sa/3.0/).  It is based
-on the [Citizen Code of Conduct](http://citizencodeofconduct.org/)
+on the [Citizen Code of Conduct](https://web.archive.org/web/20200330154000/http://citizencodeofconduct.org/)

@@ -81,6 +81,6 @@
 #define KBL_DISABLED		0x00
 #define KBL_ENABLED		0xdd
 
-uint16_t it_get_version(void);
+uint16_t ec_get_version(void);
 
 #endif

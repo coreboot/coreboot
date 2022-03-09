@@ -10,7 +10,7 @@
 #include "ec.h"
 #include "ecdefs.h"
 
-uint16_t it_get_version(void)
+uint16_t ec_get_version(void)
 {
 	return (ec_read(ECRAM_MAJOR_VERSION) << 8) | ec_read(ECRAM_MINOR_VERSION);
 }
@@ -26,7 +26,7 @@ static uint8_t get_ec_value_from_option(const char *name,
 	return lut[index];
 }
 
-static uint16_t ite_get_chip_id(unsigned int port)
+static uint16_t ec_get_chip_id(unsigned int port)
 {
 	return (pnp_read_index(port, ITE_CHIPID1) << 8) |
 		pnp_read_index(port, ITE_CHIPID2);
@@ -49,7 +49,7 @@ static void merlin_init(struct device *dev)
 		return;
 	}
 
-	const uint16_t chip_id = ite_get_chip_id(dev->path.pnp.port);
+	const uint16_t chip_id = ec_get_chip_id(dev->path.pnp.port);
 
 	if (chip_id != ITE_CHIPID_VAL) {
 		printk(BIOS_ERR, "ITE: Expected chip ID 0x%04x, but got 0x%04x instead.\n",

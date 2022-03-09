@@ -17,7 +17,7 @@ const char *smbios_mainboard_bios_version(void)
 /* Get the Embedded Controller firmware version */
 void smbios_ec_revision(uint8_t *ec_major_revision, uint8_t *ec_minor_revision)
 {
-	u16 ec_version = it_get_version();
+	u16 ec_version = ec_get_version();
 
 	*ec_major_revision = ec_version >> 8;
 	*ec_minor_revision = ec_version & 0xff;

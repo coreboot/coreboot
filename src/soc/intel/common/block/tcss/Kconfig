@@ -9,16 +9,3 @@ config ENABLE_TCSS_DISPLAY_DETECTION
 	depends on SOC_INTEL_COMMON_BLOCK_TCSS && RUN_FSP_GOP
 	help
 	  Enable displays to be detected over Type-C ports during boot.
-
-config SOC_INTEL_COMMON_BLOCK_TCSS_REG_ACCESS_REGBAR
-	def_bool n
-	depends on SOC_INTEL_COMMON_BLOCK_TCSS
-	help
-	  Enable TCSS registers access through REGBAR for platforms like
-	  Tiger Lake and Alder Lake
-
-config SOC_INTEL_COMMON_BLOCK_TCSS_REG_ACCESS_SBI
-	def_bool n
-	depends on SOC_INTEL_COMMON_BLOCK_TCSS
-	help
-	  Enable TCSS registers access through Sideband interface on applicable SoC platforms

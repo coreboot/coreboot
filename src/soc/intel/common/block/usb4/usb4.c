@@ -29,7 +29,7 @@ static void tbt_dma_fill_ssdt(const struct device *dev)
 {
 	struct acpi_dp *dsd, *pkg;
 
-	if (!tcss_valid_tbt_auth())
+	if (tcss_ops.valid_tbt_auth && !tcss_ops.valid_tbt_auth())
 		return;
 
 	acpigen_write_scope(acpi_device_path(dev));

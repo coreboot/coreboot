@@ -137,12 +137,22 @@ struct typec_aux_bias_pads {
 	gpio_t pad_auxp_dc;
 };
 
+struct soc_tcss_ops {
+	void (*configure_aux_bias_pads)(const struct typec_aux_bias_pads *pads);
+	bool (*valid_tbt_auth)(void);
+};
+
+extern const struct soc_tcss_ops tcss_ops;
+
+/* Method to configure pads */
+void tcss_configure_aux_bias_pads_regbar(const struct typec_aux_bias_pads *pads);
+
 /*
  * 1) Initialize TCSS muxes to disconnected state
  * 2) Configure GPIO pads to provide DC Bias on AUX signals
  * 3) Detect DP-over-Type-C alternate mode
  */
-void tcss_configure(const struct typec_aux_bias_pads pads[MAX_TYPE_C_PORTS]);
+void tcss_configure(const struct typec_aux_bias_pads aux_bias_pads[MAX_TYPE_C_PORTS]);
 
 /*
  * Method to get only the port information to initialize the muxes to
@@ -152,6 +162,6 @@ void tcss_configure(const struct typec_aux_bias_pads pads[MAX_TYPE_C_PORTS]);
 const struct tcss_port_map *tcss_get_port_info(size_t *num_ports);
 
 /* Method to validate the Thunderbolt authentication */
-uint32_t tcss_valid_tbt_auth(void);
+bool tcss_valid_tbt_auth(void);
 
 #endif /* _TCSS_H_ */

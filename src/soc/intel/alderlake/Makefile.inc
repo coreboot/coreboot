@@ -43,6 +43,7 @@ ramstage-y += reset.c
 ramstage-y += retimer.c
 ramstage-y += soundwire.c
 ramstage-y += systemagent.c
+ramstage-y += tcss.c
 ramstage-y += vr_config.c
 ramstage-y += xhci.c
 ramstage-$(CONFIG_SOC_INTEL_CRASHLOG) += crashlog.c

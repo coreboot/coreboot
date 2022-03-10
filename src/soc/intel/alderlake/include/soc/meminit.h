@@ -110,6 +110,6 @@ struct mb_cfg {
 };
 
 void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
-		 const struct mem_spd *spd_info, bool half_populated, bool *dimms_changed);
+		 const struct mem_spd *spd_info, bool half_populated);
 
 #endif /* _SOC_ALDERLAKE_MEMINIT_H_ */

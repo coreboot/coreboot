@@ -136,13 +136,11 @@ struct mem_channel_data {
  *                 the mainboard.
  * spd_info      : Information about the memory topology.
  * half_populated: Hint from mainboard if channels are half populated.
- * dimms_changed: True if the dimms is changed after caching the spd data.
  */
 void mem_populate_channel_data(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cfg,
 				const struct mem_spd *spd_info,
 				bool half_populated,
-				struct mem_channel_data *data,
-				bool *dimms_changed);
+				struct mem_channel_data *data);
 
 /*
  * Given a channel number and the maximum number of supported channels, this

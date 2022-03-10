@@ -98,7 +98,7 @@ static void read_spd_md(const struct soc_mem_cfg *soc_mem_cfg, const struct mem_
 static bool read_spd_dimm(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cfg,
 			const struct mem_spd *info, bool half_populated,
 			struct mem_channel_data *channel_data,
-			size_t *spd_len, bool *dimms_changed)
+			size_t *spd_len)
 {
 	size_t ch, dimm;
 	struct spd_block blk = { 0 };
@@ -110,7 +110,6 @@ static bool read_spd_dimm(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cf
 	 * channel is marked as populated.
 	 */
 	uint32_t pop_mask = 0;
-	*dimms_changed = false;
 
 	if (!(info->topo & MEM_TOPO_DIMM_MODULE))
 		return false;
@@ -134,14 +133,15 @@ static bool read_spd_dimm(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cf
 				printk(BIOS_WARNING, "Invalid SPD cache\n");
 			} else {
 				dimm_changed = check_if_dimm_changed(spd_cache, &blk);
-				if (dimm_changed) {
+				if (dimm_changed && memupd->FspmArchUpd.NvsBufferPtr != 0) {
 					/*
-					 * Set flag to indicate that the
+					 * Set FSP-M Arch UPD to indicate that the
 					 * mrc_cache need to be invalidated
 					 */
-					printk(BIOS_INFO,
-					"DIMM change, invalidate cache.\n");
-					*dimms_changed = true;
+					printk(BIOS_INFO, "DIMM change, invalidate cache.\n");
+					memupd->FspmArchUpd.NvsBufferPtr = 0;
+					memupd->FspmArchUpd.BootMode =
+						 FSP_BOOT_WITH_FULL_CONFIGURATION;
 				}
 			}
 			need_update_cache = true;
@@ -187,8 +187,7 @@ static bool read_spd_dimm(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cf
 void mem_populate_channel_data(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cfg,
 				const struct mem_spd *spd_info,
 				bool half_populated,
-				struct mem_channel_data *data,
-				bool *dimms_changed)
+				struct mem_channel_data *data)
 {
 	size_t spd_md_len = 0, spd_dimm_len = 0;
 	bool have_dimms;
@@ -197,7 +196,7 @@ void mem_populate_channel_data(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_m
 
 	read_spd_md(soc_mem_cfg, spd_info, half_populated, data, &spd_md_len);
 	have_dimms = read_spd_dimm(memupd, soc_mem_cfg, spd_info, half_populated, data,
-				&spd_dimm_len, dimms_changed);
+				&spd_dimm_len);
 
 	if (data->ch_population_flags == NO_CHANNEL_POPULATED)
 		die("No channels are populated. Incorrect memory configuration!\n");

@@ -151,14 +151,13 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 		 const struct mem_spd *spd_info, bool half_populated)
 {
 	struct mem_channel_data data;
-	bool dimms_changed = false;
 	FSP_M_CONFIG *mem_cfg = &memupd->FspmConfig;
 
 	if (mb_cfg->type >= ARRAY_SIZE(soc_mem_cfg))
 		die("Invalid memory type(%x)!\n", mb_cfg->type);
 
 	mem_populate_channel_data(memupd, &soc_mem_cfg[mb_cfg->type], spd_info, half_populated,
-			&data, &dimms_changed);
+			&data);
 	mem_init_spd_upds(mem_cfg, &data);
 	mem_init_dq_upds(mem_cfg, &data, mb_cfg);
 	mem_init_dqs_upds(mem_cfg, &data, mb_cfg);

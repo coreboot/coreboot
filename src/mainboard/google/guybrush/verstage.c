@@ -13,9 +13,6 @@ void verstage_mainboard_early_init(void)
 	const struct soc_amd_gpio *gpios, *override_gpios;
 	size_t num_gpios, override_num_gpios;
 
-	if (!CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
-		return;
-
 	gpios = variant_early_gpio_table(&num_gpios);
 	override_gpios = variant_early_override_gpio_table(&override_num_gpios);
 	gpio_configure_pads_with_override(gpios, num_gpios, override_gpios, override_num_gpios);
@@ -26,9 +23,6 @@ void verstage_mainboard_espi_init(void)
 	const struct soc_amd_gpio *gpios;
 	size_t num_gpios;
 	uint32_t dword;
-
-	if (!CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
-		return;
 
 	gpios = variant_espi_gpio_table(&num_gpios);
 	gpio_configure_pads(gpios, num_gpios);
@@ -51,9 +45,6 @@ void verstage_mainboard_tpm_init(void)
 {
 	const struct soc_amd_gpio *gpios;
 	size_t num_gpios;
-
-	if (!CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
-		return;
 
 	gpios = variant_tpm_gpio_table(&num_gpios);
 	gpio_configure_pads(gpios, num_gpios);

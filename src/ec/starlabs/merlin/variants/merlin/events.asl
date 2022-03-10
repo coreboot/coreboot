@@ -36,17 +36,16 @@ Method (_Q06)					// Event: Backlight Brightness Up
 
 Method (_Q87)					// Event: Function Lock
 {
-	FLKC = FLKE
+	Printf ("EC: Function Lock")
 }
 
 Method (_Q88)					// Event: Trackpad Lock
 {
-	TPLC = TPLE
+	Printf ("EC: Trackpad Lock")
 }
 Method (_Q11)					// Event: Keyboard Backlight Brightness
 {
-	KLBC = KLBE
-	KLSC = KLSE
+	Printf ("EC: Keyboard Brightness")
 }
 
 Method (_Q99)					// Event: Airplane Mode

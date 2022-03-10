@@ -77,7 +77,7 @@ static int variant_memory_sku(void)
 	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
 }
 
-void variant_memory_init(FSP_M_CONFIG *mem_cfg)
+void variant_memory_init(FSPM_UPD *mupd)
 {
 	const struct mb_cfg *board_cfg = variant_memory_params();
 	const struct mem_spd spd_info = {
@@ -85,5 +85,5 @@ void variant_memory_init(FSP_M_CONFIG *mem_cfg)
 		.cbfs_index = variant_memory_sku(),
 	};
 	const bool half_populated = false;
-	memcfg_init(mem_cfg, board_cfg, &spd_info, half_populated);
+	memcfg_init(mupd, board_cfg, &spd_info, half_populated);
 }

@@ -40,8 +40,6 @@ static uintptr_t mainboard_get_spd_index(void)
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
-
 	const struct mb_cfg *mem_config = variant_memory_params();
 	const struct mem_spd spd_info = {
 		.topo = MEM_TOPO_MEMORY_DOWN,
@@ -49,6 +47,6 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	};
 	bool half_populated = false;
 
-	memcfg_init(mem_cfg, mem_config, &spd_info, half_populated);
+	memcfg_init(mupd, mem_config, &spd_info, half_populated);
 
 }

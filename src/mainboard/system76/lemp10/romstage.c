@@ -18,5 +18,5 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	};
 	const bool half_populated = false;
 
-	memcfg_init(&mupd->FspmConfig, &board_cfg, &spd_info, half_populated);
+	memcfg_init(mupd, &board_cfg, &spd_info, half_populated);
 }

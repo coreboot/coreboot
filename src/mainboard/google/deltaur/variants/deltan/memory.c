@@ -61,7 +61,7 @@ static const struct mb_cfg baseboard_memcfg = {
 	.ect = false, /* Disable Early Command Training */
 };
 
-void variant_memory_init(FSP_M_CONFIG *mem_cfg)
+void variant_memory_init(FSPM_UPD *mupd)
 {
 	const struct mem_spd spd_info = {
 		.topo = MEM_TOPO_DIMM_MODULE,
@@ -77,5 +77,5 @@ void variant_memory_init(FSP_M_CONFIG *mem_cfg)
 
 	new_board_cfg_ddr4.ddr4_config.dq_pins_interleaved = gpio_get(MEMORY_INTERLEAVED);
 
-	memcfg_init(mem_cfg, &new_board_cfg_ddr4, &spd_info, half_populated);
+	memcfg_init(mupd, &new_board_cfg_ddr4, &spd_info, half_populated);
 }

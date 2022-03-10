@@ -111,7 +111,7 @@ struct mb_cfg {
 	struct mem_ddr4_config ddr4_config;
 };
 
-void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg,
+void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 		 const struct mem_spd *spd_info, bool half_populated);
 
 #endif /* _SOC_TIGERLAKE_MEMINIT_H_ */

@@ -9,7 +9,6 @@
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-	FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
 	const struct mb_cfg *mem_config = variant_memory_params();
 	bool half_populated = variant_is_half_populated();
 	struct mem_spd spd_info;
@@ -21,7 +20,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	const struct pad_config *pads;
 	size_t pads_num;
 
-	memcfg_init(m_cfg, mem_config, &spd_info, half_populated, &dimms_changed);
+	memcfg_init(memupd, mem_config, &spd_info, half_populated, &dimms_changed);
 	if (dimms_changed) {
 		memupd->FspmArchUpd.NvsBufferPtr = 0;
 		memupd->FspmArchUpd.BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;

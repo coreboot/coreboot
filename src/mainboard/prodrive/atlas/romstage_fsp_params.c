@@ -29,7 +29,6 @@ static const struct mb_cfg ddr5_mem_config = {
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-	FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
 	const struct mb_cfg *mem_config = &ddr5_mem_config;
 	const bool half_populated = false;
 	bool dimms_changed = false;
@@ -48,5 +47,5 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 		},
 	};
 
-	memcfg_init(m_cfg, mem_config, &dimm_module_spd_info, half_populated, &dimms_changed);
+	memcfg_init(memupd, mem_config, &dimm_module_spd_info, half_populated, &dimms_changed);
 }

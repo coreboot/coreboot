@@ -5,6 +5,5 @@
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-	FSP_M_CONFIG *mem_cfg = &mupd->FspmConfig;
-	variant_memory_init(mem_cfg);
+	variant_memory_init(mupd);
 }

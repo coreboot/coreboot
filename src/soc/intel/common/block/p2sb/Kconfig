@@ -9,3 +9,9 @@ config SOC_INTEL_COMMON_BLOCK_P2SB
 	select SOC_INTEL_COMMON_BLOCK_BASE_P2SB
 	help
 	  Intel Processor common P2SB driver for PCH or SoC die
+
+config SOC_INTEL_COMMON_BLOCK_IOE_P2SB
+	bool
+	select SOC_INTEL_COMMON_BLOCK_BASE_P2SB
+	help
+	  Intel Processor common P2SB driver for IOE die

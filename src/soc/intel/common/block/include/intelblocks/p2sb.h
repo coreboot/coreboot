@@ -29,6 +29,14 @@ void p2sb_disable_sideband_access(void);
 void p2sb_enable_bar(void);
 void p2sb_configure_hpet(void);
 
+/*
+ * Functions to access IOE P2SB.
+ * pid argument: SBI port Id
+ */
+void ioe_p2sb_enable_bar(void);
+uint32_t ioe_p2sb_sbi_read(uint8_t pid, uint16_t reg);
+void ioe_p2sb_sbi_write(uint8_t pid, uint16_t reg, uint32_t val);
+
 union p2sb_bdf {
 	struct {
 		uint16_t fn  : 3;

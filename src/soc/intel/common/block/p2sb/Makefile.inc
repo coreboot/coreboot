@@ -8,3 +8,9 @@ bootblock-$(CONFIG_SOC_INTEL_COMMON_BLOCK_P2SB) += p2sb.c
 romstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_P2SB) += p2sb.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_P2SB) += p2sb.c
 smm-$(CONFIG_SOC_INTEL_COMMON_BLOCK_P2SB) += p2sb.c
+
+# ioe_p2sb.c for IOE die P2SB IP
+bootblock-$(CONFIG_SOC_INTEL_COMMON_BLOCK_IOE_P2SB) += ioe_p2sb.c
+romstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_IOE_P2SB) += ioe_p2sb.c
+ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_IOE_P2SB) += ioe_p2sb.c
+smm-$(CONFIG_SOC_INTEL_COMMON_BLOCK_IOE_P2SB) += ioe_p2sb.c

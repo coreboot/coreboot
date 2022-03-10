@@ -3,6 +3,7 @@
 #ifndef __SOC_INTEL_COMMON_BLOCK_MEMINIT_H__
 #define __SOC_INTEL_COMMON_BLOCK_MEMINIT_H__
 
+#include <fsp/api.h>
 #include <types.h>
 
 /*
@@ -130,13 +131,14 @@ struct mem_channel_data {
 /*
  * This change populates data regarding memory channels in `struct
  * mem_channel_data` using the following inputs from SoC code:
+ * memupd        : FSP-M UPD configuration.
  * soc_mem_cfg   : SoC-specific information about the memory technology used by
  *                 the mainboard.
  * spd_info      : Information about the memory topology.
  * half_populated: Hint from mainboard if channels are half populated.
  * dimms_changed: True if the dimms is changed after caching the spd data.
  */
-void mem_populate_channel_data(const struct soc_mem_cfg *soc_mem_cfg,
+void mem_populate_channel_data(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cfg,
 				const struct mem_spd *spd_info,
 				bool half_populated,
 				struct mem_channel_data *data,

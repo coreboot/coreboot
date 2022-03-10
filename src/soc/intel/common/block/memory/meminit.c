@@ -95,8 +95,9 @@ static void read_spd_md(const struct soc_mem_cfg *soc_mem_cfg, const struct mem_
 
 #define CH_DIMM_OFFSET(ch, dimm)	((ch) * CONFIG_DIMMS_PER_CHANNEL + (dimm))
 
-static bool read_spd_dimm(const struct soc_mem_cfg *soc_mem_cfg, const struct mem_spd *info,
-			bool half_populated, struct mem_channel_data *channel_data,
+static bool read_spd_dimm(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cfg,
+			const struct mem_spd *info, bool half_populated,
+			struct mem_channel_data *channel_data,
 			size_t *spd_len, bool *dimms_changed)
 {
 	size_t ch, dimm;
@@ -183,7 +184,7 @@ static bool read_spd_dimm(const struct soc_mem_cfg *soc_mem_cfg, const struct me
 	return pop_mask != 0;
 }
 
-void mem_populate_channel_data(const struct soc_mem_cfg *soc_mem_cfg,
+void mem_populate_channel_data(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cfg,
 				const struct mem_spd *spd_info,
 				bool half_populated,
 				struct mem_channel_data *data,
@@ -195,7 +196,7 @@ void mem_populate_channel_data(const struct soc_mem_cfg *soc_mem_cfg,
 	memset(data, 0, sizeof(*data));
 
 	read_spd_md(soc_mem_cfg, spd_info, half_populated, data, &spd_md_len);
-	have_dimms = read_spd_dimm(soc_mem_cfg, spd_info, half_populated, data,
+	have_dimms = read_spd_dimm(memupd, soc_mem_cfg, spd_info, half_populated, data,
 				&spd_dimm_len, dimms_changed);
 
 	if (data->ch_population_flags == NO_CHANNEL_POPULATED)

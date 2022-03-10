@@ -26,8 +26,8 @@
 /* Unique ID for the WIFI _DSM */
 #define ACPI_DSM_OEM_WIFI_UUID    "F21202BF-8F78-4DC6-A5B3-1F738E285ADE"
 
-/* Unique ID for the Wifi _DSD */
-#define ACPI_DSD_UNTRUSTED_UUID	  "88566a92-1a61-466d-949a-6d12809d480c"
+/* ID for the Wifi DmaProperty _DSD */
+#define ACPI_DSD_DMA_PROPERTY_UUID	  "70D24161-6DD5-4C9E-8070-705531292865"
 
 __weak int get_wifi_sar_limits(union wifi_sar_limits *sar_limits)
 {
@@ -506,24 +506,25 @@ static void wifi_ssdt_write_device(const struct device *dev, const char *path)
 
 static void wifi_ssdt_write_properties(const struct device *dev, const char *scope)
 {
-	const struct drivers_wifi_generic_config *config = dev->chip_info;
-
 	/* Scope */
 	acpigen_write_scope(scope);
 
-	if (config) {
-		/* Wake capabilities */
-		acpigen_write_PRW(config->wake, ACPI_S3);
+	if (dev->path.type == DEVICE_PATH_GENERIC) {
+		const struct drivers_wifi_generic_config *config = dev->chip_info;
+		if (config) {
+			/* Wake capabilities */
+			acpigen_write_PRW(config->wake, ACPI_S3);
 
-		/* Add _DSD for DmaProperty property. */
-		if (config->is_untrusted) {
-			struct acpi_dp *dsd, *pkg;
+			/* Add _DSD for DmaProperty property. */
+			if (config->is_untrusted) {
+				struct acpi_dp *dsd, *pkg;
 
-			dsd = acpi_dp_new_table("_DSD");
-			pkg = acpi_dp_new_table(ACPI_DSD_UNTRUSTED_UUID);
-			acpi_dp_add_integer(pkg, "DmaProperty", 1);
-			acpi_dp_add_package(dsd, pkg);
-			acpi_dp_write(dsd);
+				dsd = acpi_dp_new_table("_DSD");
+				pkg = acpi_dp_new_table(ACPI_DSD_DMA_PROPERTY_UUID);
+				acpi_dp_add_integer(pkg, "DmaProperty", 1);
+				acpi_dp_add_package(dsd, pkg);
+				acpi_dp_write(dsd);
+			}
 		}
 	}
 
@@ -567,7 +568,9 @@ void wifi_pcie_fill_ssdt(const struct device *dev)
 		return;
 
 	wifi_ssdt_write_device(dev, path);
-	wifi_ssdt_write_properties(dev, path);
+	const struct device *child = dev->link_list->children;
+	if (child && child->path.type == DEVICE_PATH_GENERIC)
+		wifi_ssdt_write_properties(child, path);
 }
 
 const char *wifi_pcie_acpi_name(const struct device *dev)

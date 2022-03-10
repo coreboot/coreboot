@@ -21,6 +21,7 @@ struct device_operations wifi_pcie_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= wifi_pci_dev_init,
 	.ops_pci		= &pci_dev_ops_pci,
+	.scan_bus		= scan_static_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= wifi_pcie_acpi_name,
 	.acpi_fill_ssdt		= wifi_pcie_fill_ssdt,
@@ -41,6 +42,11 @@ struct device_operations wifi_cnvi_ops = {
 #endif
 };
 
+struct device_operations wifi_generic_ops = {
+	.read_resources		= noop_read_resources,
+	.set_resources		= noop_set_resources,
+};
+
 static bool is_cnvi(const struct device *dev)
 {
 	return dev && dev->path.type != DEVICE_PATH_PCI;
@@ -59,16 +65,12 @@ bool wifi_generic_cnvi_ddr_rfim_enabled(const struct device *dev)
 
 static void wifi_generic_enable(struct device *dev)
 {
-	DEVTREE_CONST struct drivers_wifi_generic_config *config = dev ? dev->chip_info : NULL;
-
-	if (!config)
-		return;
-
 #if !DEVTREE_EARLY
-	if (is_cnvi(dev))
-		dev->ops = &wifi_cnvi_ops;
+	const struct device *parent = dev->bus->dev;
+	if (parent && parent->ops == &wifi_pcie_ops)
+		dev->ops = &wifi_generic_ops;
 	else
-		dev->ops = &wifi_pcie_ops;
+		dev->ops = &wifi_cnvi_ops;
 #endif
 }
 

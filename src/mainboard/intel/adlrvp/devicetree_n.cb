@@ -127,6 +127,10 @@ chip soc/intel/alderlake
 
 	register "cnvi_bt_audio_offload" = "true"
 
+	# set EPP to 45%: 45 * 256/100 = 115 = 0x73
+	register "enable_energy_perf_pref" = "true"
+	register "energy_perf_pref_value" = "0x73"
+
 	# Intel Common SoC Config
 	register "common_soc_config" = "{
 		.i2c[0] = {

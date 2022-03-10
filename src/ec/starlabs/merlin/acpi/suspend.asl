@@ -2,67 +2,65 @@
 
 Method (RPTS, 1, Serialized)
 {
-	If ((Arg0 == 0x04) || (Arg0 == 0x05))
+
+	/* Store current EC settings in CMOS */
+	Switch (ToInteger (\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.TPLE))))
 	{
-		/* Store current EC settings in CMOS */
-		Switch (ToInteger (\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.TPLE))))
+		// 0x00 == Enabled    == 0x00
+		// 0x11 == Re-enabled == 0x00
+		// 0x22 == Disabled   == 0x01
+		Case (0x00)
 		{
-			// 0x00 == Enabled    == 0x00
-			// 0x11 == Re-enabled == 0x00
-			// 0x22 == Disabled   == 0x01
-			Case (0x00)
-			{
-				\_SB.PCI0.LPCB.TPLC = 0x00
-			}
-			Case (0x11)
-			{
-				\_SB.PCI0.LPCB.TPLC = 0x00
-			}
-			Case (0x22)
-			{
-				\_SB.PCI0.LPCB.TPLC = 0x01
-			}
+			\_SB.PCI0.LPCB.TPLC = 0x00
 		}
-
-		\_SB.PCI0.LPCB.FLKC =
-			\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.FLKE))
-
-		Switch (ToInteger (\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.KLSE))))
+		Case (0x11)
 		{
-			// 0x00 == Disabled == 0x00
-			// 0xdd == Enabled  == 0x01
-			Case (0x00)
-			{
-				\_SB.PCI0.LPCB.KLSC = 0x00
-			}
-			Case (0xdd)
-			{
-				\_SB.PCI0.LPCB.KLSC = 0x01
-			}
+			\_SB.PCI0.LPCB.TPLC = 0x00
 		}
-
-		Switch (ToInteger (\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.KLBE))))
+		Case (0x22)
 		{
-			// 0xdd == On   == 0x00
-			// 0xcc == Off  == 0x01
-			// 0xbb == Low  == 0x02
-			// 0xaa == High == 0x03
-			Case (0xdd)
-			{
-				\_SB.PCI0.LPCB.KLBC = 0x00
-			}
-			Case (0xcc)
-			{
-				\_SB.PCI0.LPCB.KLBC = 0x01
-			}
-			Case (0xbb)
-			{
-				\_SB.PCI0.LPCB.KLBC = 0x02
-			}
-			Case (0xaa)
-			{
-				\_SB.PCI0.LPCB.KLBC = 0x03
-			}
+			\_SB.PCI0.LPCB.TPLC = 0x01
+		}
+	}
+
+	\_SB.PCI0.LPCB.FLKC =
+		\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.FLKE))
+
+	Switch (ToInteger (\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.KLSE))))
+	{
+		// 0x00 == Disabled == 0x00
+		// 0xdd == Enabled  == 0x01
+		Case (0x00)
+		{
+			\_SB.PCI0.LPCB.KLSC = 0x00
+		}
+		Case (0xdd)
+		{
+			\_SB.PCI0.LPCB.KLSC = 0x01
+		}
+	}
+
+	Switch (ToInteger (\_SB.PCI0.LPCB.EC.ECRD (RefOf (\_SB.PCI0.LPCB.EC.KLBE))))
+	{
+		// 0xdd == On   == 0x00
+		// 0xcc == Off  == 0x01
+		// 0xbb == Low  == 0x02
+		// 0xaa == High == 0x03
+		Case (0xdd)
+		{
+			\_SB.PCI0.LPCB.KLBC = 0x00
+		}
+		Case (0xcc)
+		{
+			\_SB.PCI0.LPCB.KLBC = 0x01
+		}
+		Case (0xbb)
+		{
+			\_SB.PCI0.LPCB.KLBC = 0x02
+		}
+		Case (0xaa)
+		{
+			\_SB.PCI0.LPCB.KLBC = 0x03
 		}
 	}
 

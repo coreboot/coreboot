@@ -40,6 +40,46 @@ chip soc/intel/jasperlake
 	}"
 
 	device domain 0 on
+		device pci 04.0 on
+			# Default DPTF Policy for all Dedede boards if not overridden
+			chip drivers/intel/dptf
+				register "options.tsr[0].desc" = ""Memory""
+				register "options.tsr[1].desc" = ""CPU""
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU, CPU,           80, 4000),
+					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 110, 6000),
+					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 110, 4000),
+				}"
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,           110, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 110, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 110, SHUTDOWN),
+				}"
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 4000,
+						.max_power = 6000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 250,
+					},
+					.pl2 = {
+						.min_power = 20000,
+						.max_power = 20000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 1000,
+					}
+				}"
+				register "controls.charger_perf" = "{
+					[0] = {  55, 3500 },
+					[1] = {  47, 3000 },
+					[2] = {  39, 2500 },
+					[3] = {  31, 2000 },
+				}"
+				device generic 0 on end
+			end
+		end
 		device pci 05.0 off end # IPU - MIPI Camera
 		device pci 14.0 on
 			chip drivers/usb/acpi

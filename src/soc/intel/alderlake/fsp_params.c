@@ -311,9 +311,13 @@ static uint16_t get_vccin_aux_imon_iccmax(void)
 	switch (mch_id) {
 	case PCI_DID_INTEL_ADL_P_ID_1:
 	case PCI_DID_INTEL_ADL_P_ID_3:
+	case PCI_DID_INTEL_ADL_P_ID_4:
 	case PCI_DID_INTEL_ADL_P_ID_5:
 	case PCI_DID_INTEL_ADL_P_ID_6:
 	case PCI_DID_INTEL_ADL_P_ID_7:
+	case PCI_DID_INTEL_ADL_P_ID_8:
+	case PCI_DID_INTEL_ADL_P_ID_9:
+	case PCI_DID_INTEL_ADL_P_ID_10:
 		tdp = get_cpu_tdp();
 		if (tdp == TDP_45W)
 			return ICC_MAX_TDP_45W;

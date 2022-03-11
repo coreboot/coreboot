@@ -3,5 +3,6 @@
 bootblock-y += gpio.c
 
 ramstage-y += gpio.c
+ramstage-y += hda_verb.c
 
 romstage-y += romstage.c

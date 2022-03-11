@@ -6,7 +6,6 @@ subdirs-y += variants/$(VARIANT_DIR)
 bootblock-y += bootblock.c
 
 ramstage-y += devtree.c
-ramstage-y += hda_verb.c
 ramstage-y += mainboard.c
 ramstage-y += smbios.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads

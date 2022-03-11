@@ -16,10 +16,10 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_A19, NONE),
 	/* A20 : DDSP_HPD2 ==> NC */
 	PAD_NC(GPP_A20, NONE),
-	/* A21 : DDPC_CTRCLK ==> NC */
-	PAD_NC(GPP_A21, NONE),
-	/* A22 : DDPC_CTRLDATA ==> NC */
-	PAD_NC(GPP_A22, NONE),
+	/* A21 : DDPC_CTRCLK ==> TCP_DP1_CTRLCLK */
+	PAD_CFG_NF(GPP_A21, NONE, DEEP, NF1),
+	/* A22 : DDPC_CTRLDATA ==> TCP_DP1_CTRLDATA */
+	PAD_CFG_NF(GPP_A22, NONE, DEEP, NF1),
 
 	/* B2  : VRALERT# ==> TP153 */
 	PAD_NC(GPP_B2, NONE),
@@ -56,10 +56,6 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_E20, NONE),
 	/* E21 : DDP2_CTRLDATA ==> NC */
 	PAD_NC(GPP_E21, NONE),
-	/* E22 : DDPA_CTRLCLK ==> DDIA_DP_CTRLCLK */
-	PAD_CFG_NF(GPP_E22, NONE, DEEP, NF1),
-	/* E23 : DDPA_CTRLDATA ==> DDIA_DP_CTRLDATA */
-	PAD_CFG_NF(GPP_E23, NONE, DEEP, NF1),
 
 	/* F11 : THC1_SPI2_CLK ==> NC */
 	PAD_NC_LOCK(GPP_F11, NONE, LOCK_CONFIG),

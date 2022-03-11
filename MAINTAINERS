@@ -330,7 +330,6 @@ F:	src/mainboard/kontron/mal10/
 
 LENOVO MAINBOARDS
 M:	Alexander Couzens <lynxis@fe80.eu>
-M:	Patrick Rudolph <siro@das-labor.org>
 S:	Maintained
 F:	src/mainboard/lenovo/
 
@@ -582,7 +581,6 @@ F:	src/southbridge/amd/
 F:	src/include/cpu/amd/
 
 INTEL SUPPORT
-M:	Patrick Rudolph <siro@das-labor.org>
 S:	Maintained
 F:	src/vendorcode/intel/
 F:	src/cpu/intel/

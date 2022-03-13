@@ -94,6 +94,9 @@ config MAX_CPUS
 	default 16 if SOC_INTEL_TIGERLAKE_PCH_H
 	default 8
 
+config DIMM_SPD_SIZE
+	default 512
+
 config DCACHE_RAM_BASE
 	default 0xfef00000
 

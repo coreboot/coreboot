@@ -60,9 +60,6 @@ config MAINBOARD_FAMILY
 config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
-config DIMM_SPD_SIZE
-	default 512
-
 choice
 	prompt "ON BOARD EC"
 	default TGL_CHROME_EC

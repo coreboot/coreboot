@@ -49,9 +49,6 @@ config CONSOLE_POST
 config DIMM_MAX
 	default 4
 
-config DIMM_SPD_SIZE
-	default 512
-
 config ONBOARD_VGA_IS_PRIMARY
 	default y
 

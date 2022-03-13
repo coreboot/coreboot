@@ -36,9 +36,6 @@ config CHROMEOS
 	select GBB_FLAG_FORCE_DEV_BOOT_USB
 	select GBB_FLAG_FORCE_DEV_SWITCH_ON
 
-config DIMM_SPD_SIZE
-	default 512
-
 config DEVICETREE
 	default "variants/baseboard/devicetree.cb"
 

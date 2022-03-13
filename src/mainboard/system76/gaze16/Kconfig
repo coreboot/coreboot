@@ -55,9 +55,6 @@ config CBFS_SIZE
 config CONSOLE_POST
 	default y
 
-config DIMM_SPD_SIZE
-	default 512
-
 config ONBOARD_VGA_IS_PRIMARY
 	default y
 

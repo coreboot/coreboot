@@ -46,9 +46,6 @@ if BOARD_STARLABS_LABTOP_SERIES
 config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 
-config DIMM_SPD_SIZE
-	default 512
-
 config DRIVER_TPM_SPI_CHIP
 	default 2
 

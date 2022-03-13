@@ -144,9 +144,6 @@ config CHROMEOS_WIFI_SAR
 	select SAR_ENABLE
 	select USE_SAR
 
-config DIMM_SPD_SIZE
-	default 512
-
 config DEVICETREE
 	default "variants/baseboard/devicetree.cb"
 

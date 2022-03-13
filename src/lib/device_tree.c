@@ -554,7 +554,7 @@ struct device_tree_node *dt_find_node(struct device_tree_node *parent,
 		if (!create)
 			return NULL;
 
-		found = malloc(sizeof(*found));
+		found = calloc(1, sizeof(*found));
 		if (!found)
 			return NULL;
 		found->name = strdup(*path);

@@ -190,3 +190,4 @@ Contents:
 * [Utilities](util.md)
 * [coreboot infrastructure](infrastructure/index.md)
 * [Release notes](releases/index.md)
+* [Documentation License](documentation_license.md)

@@ -4,6 +4,5 @@
 * [Build System](build_system.md)
 * [Submodules](submodules.md)
 * [Kconfig](kconfig.md)
-* [Documentation License](license.md)
 * [Writing Documentation](writing_documentation.md)
 * [Setting up GPIOs](gpio.md)

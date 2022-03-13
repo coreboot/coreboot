@@ -12,7 +12,7 @@ Download, configure, and build coreboot
 ### Step 1 - Install tools and libraries needed for coreboot
     $ sudo apt-get install -y bison build-essential curl flex git gnat libncurses5-dev m4 zlib1g-dev
     $ sudo pacman -S base-devel curl git gcc-ada ncurses zlib
-    $ sudo dnf install git make gcc-gnat flex bison xz bzip2 gcc g++ ncurses-devel wget zlib-devel
+    $ sudo dnf install git make gcc-gnat flex bison xz bzip2 gcc g++ ncurses-devel wget zlib-devel patch
 
 ### Step 2 - Download coreboot source tree
     $ git clone https://review.coreboot.org/coreboot

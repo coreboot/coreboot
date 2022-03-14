@@ -109,6 +109,12 @@ static void write_fan_fst(const struct device *ec)
 	acpigen_emit_namestring("TFST");
 	acpigen_write_integer(1);
 	acpigen_emit_byte(ZERO_OP); /* 3rd arg to Index */
+	acpigen_write_store();
+	acpigen_emit_namestring(acpi_device_path_join(ec, "FAN0"));
+	acpigen_emit_byte(INDEX_OP);
+	acpigen_emit_namestring("TFST");
+	acpigen_write_integer(2);
+	acpigen_emit_byte(ZERO_OP);
 	acpigen_emit_byte(RETURN_OP);
 	acpigen_emit_namestring("TFST");
 	acpigen_pop_len(); /* Method _FST */

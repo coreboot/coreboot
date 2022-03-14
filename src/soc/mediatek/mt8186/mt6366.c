@@ -821,7 +821,7 @@ static void mt6366_lp_setting(void)
 
 static void pmic_check_hwcid(void)
 {
-	printk(BIOS_WARNING, "%s: ID = %#x\n", __func__,
+	printk(BIOS_INFO, "%s: ID = %#x\n", __func__,
 	       pwrap_read_field(0x8, 0xFFFF, 0));
 }
 

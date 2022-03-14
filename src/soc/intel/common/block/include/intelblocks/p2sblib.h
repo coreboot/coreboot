@@ -10,6 +10,7 @@
 #define P2SBC		0xe0
 #define P2SBC_HIDE_BIT	(1 << 0)
 
+void p2sb_dev_enable_bar(pci_devfn_t dev, uint64_t bar);
 bool p2sb_dev_is_hidden(pci_devfn_t dev);
 void p2sb_dev_unhide(pci_devfn_t dev);
 void p2sb_dev_hide(pci_devfn_t dev);

@@ -18,13 +18,7 @@
 
 void p2sb_enable_bar(void)
 {
-	/* Enable PCR Base address in PCH */
-	pci_write_config32(PCH_DEV_P2SB, PCI_BASE_ADDRESS_0, P2SB_BAR);
-	pci_write_config32(PCH_DEV_P2SB, PCI_BASE_ADDRESS_1, 0);
-
-	/* Enable P2SB MSE */
-	pci_write_config16(PCH_DEV_P2SB, PCI_COMMAND,
-			  PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+	p2sb_dev_enable_bar(PCH_DEV_P2SB, P2SB_BAR);
 }
 
 /*

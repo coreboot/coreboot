@@ -1,5 +1,11 @@
-config SOC_INTEL_COMMON_BLOCK_P2SB
+config SOC_INTEL_COMMON_BLOCK_BASE_P2SB
 	bool
 	depends on SOC_INTEL_COMMON_BLOCK_PCR
 	help
-	  Intel Processor common P2SB driver
+	  Intel Processor common P2SB base driver
+
+config SOC_INTEL_COMMON_BLOCK_P2SB
+	bool
+	select SOC_INTEL_COMMON_BLOCK_BASE_P2SB
+	help
+	  Intel Processor common P2SB driver for PCH or SoC die

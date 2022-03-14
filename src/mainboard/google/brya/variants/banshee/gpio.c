@@ -180,8 +180,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_F16, NONE, LOCK_CONFIG),
 	/* F17 : THC1_SPI2_RST# ==> EC_PCH_INT_ODL */
 	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
-	/* F19 : SRCCLKREQ6# ==> NC */
-	PAD_NC(GPP_F19, NONE),
+	/* F19 : SRCCLKREQ6# ==> CAM_SW */
+	PAD_CFG_GPI_INT(GPP_F19, NONE, PLTRST, EDGE_BOTH),
 	/* F20 : EXT_PWR_GATE# ==> NC */
 	PAD_NC(GPP_F20, NONE),
 	/* F21 : EXT_PWR_GATE2# ==> NC */

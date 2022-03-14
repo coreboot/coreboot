@@ -358,18 +358,13 @@ typedef struct _context {
 	uint32_t current_table;
 } context;
 
-#define ADDRESS_MODE_0_PHY		0
-#define ADDRESS_MODE_1_REL_BIOS		1
-#define ADDRESS_MODE_2_REL_TAB		2
-#define ADDRESS_MODE_3_REL_SLOT		3
-
 #define RUN_BASE(ctx) (0xFFFFFFFF - (ctx).rom_size + 1)
 #define RUN_OFFSET_MODE(ctx, offset, mode) \
-		((mode) == ADDRESS_MODE_0_PHY ? RUN_BASE(ctx) + (offset) :	\
-		((mode) == ADDRESS_MODE_1_REL_BIOS ? (offset) :	\
-		((mode) == ADDRESS_MODE_2_REL_TAB ? (offset) - ctx.current_table : (offset))))
+		((mode) == AMD_ADDR_PHYSICAL ? RUN_BASE(ctx) + (offset) :	\
+		((mode) == AMD_ADDR_REL_BIOS ? (offset) :	\
+		((mode) == AMD_ADDR_REL_TAB ? (offset) - ctx.current_table : (offset))))
 #define RUN_OFFSET(ctx, offset) RUN_OFFSET_MODE((ctx), (offset), (ctx).address_mode)
-#define RUN_TO_OFFSET(ctx, run) ((ctx).address_mode == ADDRESS_MODE_0_PHY ?	\
+#define RUN_TO_OFFSET(ctx, run) ((ctx).address_mode == AMD_ADDR_PHYSICAL ?	\
 				(run) - RUN_BASE(ctx) : (run)) /* TODO: */
 #define RUN_CURRENT(ctx) RUN_OFFSET((ctx), (ctx).current)
 /* The mode in entry can not be higher than the header's.
@@ -385,7 +380,7 @@ typedef struct _context {
 /* Only set the address mode in entry if the table is mode 2. */
 #define SET_ADDR_MODE(table, mode) \
 		((table)->header.additional_info_fields.address_mode ==	\
-		ADDRESS_MODE_2_REL_TAB ? (mode) : 0)
+		AMD_ADDR_REL_TAB ? (mode) : 0)
 #define SET_ADDR_MODE_BY_TABLE(table) \
 		SET_ADDR_MODE((table), (table)->header.additional_info_fields.address_mode)
 
@@ -696,7 +691,7 @@ static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 	pspdir->entries[count].subprog = 0;
 	pspdir->entries[count].rsvd = 0;
 	if (ish != NULL) {
-		ish->pl2_location = BUFF_TO_RUN_MODE(*ctx, pspdir2, ADDRESS_MODE_1_REL_BIOS);
+		ish->pl2_location = BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
 		ish->boot_priority = ab == AMD_FW_RECOVERYAB_A ? 0xFFFFFFFF : 1;
 		ish->update_retry_count = 2;
 		ish->glitch_retry_count = 0;
@@ -704,15 +699,15 @@ static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 		ish->checksum = fletcher32(&ish->boot_priority,
 				sizeof(ish_directory_table) - sizeof(uint32_t));
 		pspdir->entries[count].addr =
-				BUFF_TO_RUN_MODE(*ctx, ish, ADDRESS_MODE_1_REL_BIOS);
+				BUFF_TO_RUN_MODE(*ctx, ish, AMD_ADDR_REL_BIOS);
 		pspdir->entries[count].address_mode =
-				SET_ADDR_MODE(pspdir, ADDRESS_MODE_1_REL_BIOS);
+				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
 		pspdir->entries[count].size = TABLE_ALIGNMENT;
 	} else {
 		pspdir->entries[count].addr =
-				BUFF_TO_RUN_MODE(*ctx, pspdir2, ADDRESS_MODE_1_REL_BIOS);
+				BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
 		pspdir->entries[count].address_mode =
-				SET_ADDR_MODE(pspdir, ADDRESS_MODE_1_REL_BIOS);
+				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
 		pspdir->entries[count].size = pspdir2->header.num_entries *
 				sizeof(psp_directory_entry) +
 				sizeof(psp_directory_header);
@@ -814,9 +809,9 @@ static void integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].size = ALIGN(bytes,
 							ERASE_ALIGNMENT);
 			pspdir->entries[count].addr =
-				RUN_CURRENT_MODE(*ctx, ADDRESS_MODE_1_REL_BIOS);
+				RUN_CURRENT_MODE(*ctx, AMD_ADDR_REL_BIOS);
 			pspdir->entries[count].address_mode =
-				SET_ADDR_MODE(pspdir, ADDRESS_MODE_1_REL_BIOS);
+				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
 
 			ctx->current = ALIGN(ctx->current + bytes,
 							BLOB_ERASE_ALIGNMENT);
@@ -871,9 +866,9 @@ static void integrate_psp_firmwares(context *ctx,
 					* sizeof(psp_directory_entry);
 
 		pspdir->entries[count].addr =
-				BUFF_TO_RUN_MODE(*ctx, pspdir2, ADDRESS_MODE_1_REL_BIOS);
+				BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
 		pspdir->entries[count].address_mode =
-				SET_ADDR_MODE(pspdir, ADDRESS_MODE_1_REL_BIOS);
+				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
 		count++;
 	}
 
@@ -1092,14 +1087,14 @@ static void integrate_bios_firmwares(context *ctx,
 				/* If source is given, use that and its size */
 				biosdir->entries[count].source = fw_table[i].src;
 				biosdir->entries[count].address_mode =
-						SET_ADDR_MODE(biosdir, ADDRESS_MODE_1_REL_BIOS);
+						SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
 				biosdir->entries[count].size = fw_table[i].size;
 			} else {
 				/* Else reserve size bytes within amdfw.rom */
 				ctx->current = ALIGN(ctx->current, ERASE_ALIGNMENT);
 				biosdir->entries[count].source = RUN_CURRENT(*ctx);
 				biosdir->entries[count].address_mode =
-						SET_ADDR_MODE(biosdir, ADDRESS_MODE_1_REL_BIOS);
+						SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
 				biosdir->entries[count].size = ALIGN(
 						fw_table[i].size, ERASE_ALIGNMENT);
 				memset(BUFF_CURRENT(*ctx), 0xff,
@@ -1113,7 +1108,7 @@ static void integrate_bios_firmwares(context *ctx,
 			if (level == BDT_LVL1 && locate_bdt2_bios(biosdir2, &source, &size)) {
 				biosdir->entries[count].source = source;
 				biosdir->entries[count].address_mode =
-						SET_ADDR_MODE(biosdir, ADDRESS_MODE_1_REL_BIOS);
+						SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
 				biosdir->entries[count].size = size;
 				break;
 			}
@@ -1121,7 +1116,7 @@ static void integrate_bios_firmwares(context *ctx,
 			/* level 2, or level 1 and no copy found in level 2 */
 			biosdir->entries[count].source = fw_table[i].src;
 			biosdir->entries[count].address_mode =
-						SET_ADDR_MODE(biosdir, ADDRESS_MODE_1_REL_BIOS);
+						SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
 			biosdir->entries[count].dest = fw_table[i].dest;
 			biosdir->entries[count].size = fw_table[i].size;
 
@@ -1136,9 +1131,9 @@ static void integrate_bios_firmwares(context *ctx,
 			}
 
 			biosdir->entries[count].source =
-				RUN_CURRENT_MODE(*ctx, ADDRESS_MODE_1_REL_BIOS);
+				RUN_CURRENT_MODE(*ctx, AMD_ADDR_REL_BIOS);
 			biosdir->entries[count].address_mode =
-				SET_ADDR_MODE(biosdir, ADDRESS_MODE_1_REL_BIOS);
+				SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
 
 			ctx->current = ALIGN(ctx->current + bytes, 0x100U);
 			break;
@@ -1180,7 +1175,7 @@ static void integrate_bios_firmwares(context *ctx,
 		biosdir->entries[count].source =
 					BUFF_TO_RUN(*ctx, biosdir2);
 		biosdir->entries[count].address_mode =
-					SET_ADDR_MODE(biosdir, ADDRESS_MODE_1_REL_BIOS);
+					SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
 		biosdir->entries[count].subprog = 0;
 		biosdir->entries[count].inst = 0;
 		biosdir->entries[count].copy = 0;
@@ -1861,13 +1856,13 @@ int main(int argc, char **argv)
 	}
 
 	if (cb_config.need_ish)
-		ctx.address_mode = ADDRESS_MODE_2_REL_TAB;
+		ctx.address_mode = AMD_ADDR_REL_TAB;
 	else if (cb_config.second_gen)
-		ctx.address_mode = ADDRESS_MODE_1_REL_BIOS;
+		ctx.address_mode = AMD_ADDR_REL_BIOS;
 	else
-		ctx.address_mode = ADDRESS_MODE_0_PHY;
+		ctx.address_mode = AMD_ADDR_PHYSICAL;
 	printf("    AMDFWTOOL  Using firmware directory location of %s address: 0x%08x\n",
-			ctx.address_mode == ADDRESS_MODE_0_PHY ? "absolute" : "relative",
+			ctx.address_mode == AMD_ADDR_PHYSICAL ? "absolute" : "relative",
 			RUN_CURRENT(ctx));
 
 	integrate_firmwares(&ctx, amd_romsig, amd_fw_table);

@@ -83,6 +83,13 @@ typedef enum _amd_bios_type {
 	AMD_BIOS_SKIP
 } amd_bios_type;
 
+typedef enum _amd_addr_mode {
+	AMD_ADDR_PHYSICAL = 0,	/* Physical address */
+	AMD_ADDR_REL_BIOS,	/* Relative to beginning of image */
+	AMD_ADDR_REL_TAB,	/* Relative to table */
+	AMD_ADDR_REL_SLOT,	/* Relative to slot */
+} amd_addr_mode;
+
 struct second_gen_efs { /* todo: expand for Server products */
 	int gen:1; /* Client products only use bit 0 */
 	int reserved:31;
@@ -293,5 +300,6 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 #define LINE_EOF (1)
 #define LINE_TOO_LONG (2)
 
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 #endif	/* _AMD_FW_TOOL_H_ */

@@ -50,6 +50,7 @@ junit.xml:
 	echo
 
 TOOLLIST= \
+amdfwread \
 amdfwtool \
 cbfstool \
 cbmem \

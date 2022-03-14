@@ -43,11 +43,7 @@ struct device_operations wifi_cnvi_ops = {
 
 static bool is_cnvi(const struct device *dev)
 {
-#if !DEVTREE_EARLY
-	return dev && dev->ops == &wifi_cnvi_ops;
-#else
 	return dev && dev->path.type != DEVICE_PATH_PCI;
-#endif
 }
 
 bool wifi_generic_cnvi_ddr_rfim_enabled(const struct device *dev)

@@ -20,3 +20,8 @@ kbl_timeout=30 seconds
 fn_ctrl_swap=Disable
 # southbridge
 power_on_after_fail=Disable
+# Functions
+fn_lock_state=0x1
+trackpad_state=0x1
+kbl_brightness=0x0
+kbl_state=0x1

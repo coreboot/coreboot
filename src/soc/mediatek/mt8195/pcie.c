@@ -19,23 +19,6 @@
 #define PCIE_BRG_RSTB		BIT(2)
 #define PCIE_PE_RSTB		BIT(3)
 
-
-/* MMIO range (64MB): 0x20000000 ~ 0x24000000 */
-/* Some devices still need io ranges, reserve 16MB for compatibility */
-static const struct mtk_pcie_mmio_res pcie_mmio_res_io = {
-	.cpu_addr = 0x20000000,
-	.pci_addr = 0x20000000,
-	.size = 16 * MiB,
-	.type = IORESOURCE_IO,
-};
-
-static const struct mtk_pcie_mmio_res pcie_mmio_res_mem = {
-	.cpu_addr = 0x21000000,
-	.pci_addr = 0x21000000,
-	.size = 48 * MiB,
-	.type = IORESOURCE_MEM,
-};
-
 struct pad_func {
 	gpio_t gpio;
 	u8 func;
@@ -67,7 +50,7 @@ static void mtk_pcie_set_pinmux(uint8_t port)
 	}
 }
 
-static void mtk_pcie_reset(uintptr_t reg, bool enable)
+void mtk_pcie_reset(uintptr_t reg, bool enable)
 {
 	uint32_t val;
 
@@ -89,12 +72,4 @@ void mtk_pcie_pre_init(void)
 
 	/* Assert all reset signals at early stage */
 	mtk_pcie_reset(PCIE_RST_CTRL_REG, true);
-}
-
-void mtk_pcie_get_hw_info(struct mtk_pcie_controller *ctrl)
-{
-	ctrl->base = PCIE_REG_BASE_PORT0;
-	ctrl->mmio_res_io = &pcie_mmio_res_io;
-	ctrl->mmio_res_mem = &pcie_mmio_res_mem;
-	ctrl->reset = &mtk_pcie_reset;
 }

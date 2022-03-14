@@ -13,12 +13,10 @@ struct mtk_pcie_mmio_res {
 	unsigned long type;
 };
 
-struct mtk_pcie_controller {
+struct mtk_pcie_config {
 	uintptr_t base;		/* MAC physical address */
-	int (*phy_init)(void);
-	void (*reset)(uintptr_t base, bool enable);
-	const struct mtk_pcie_mmio_res *mmio_res_io;
-	const struct mtk_pcie_mmio_res *mmio_res_mem;
+	const struct mtk_pcie_mmio_res mmio_res_io;
+	const struct mtk_pcie_mmio_res mmio_res_mem;
 };
 
 void mtk_pcie_domain_read_resources(struct device *dev);

@@ -5,7 +5,7 @@
 
 #include <soc/pcie_common.h>
 
+void mtk_pcie_reset(uintptr_t reg, bool enable);
 void mtk_pcie_pre_init(void);
-void mtk_pcie_get_hw_info(struct mtk_pcie_controller *ctrl);
 
 #endif

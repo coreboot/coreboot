@@ -13,6 +13,7 @@
 #include <soc/addressmap.h>
 #include <soc/pcie.h>
 #include <soc/pcie_common.h>
+#include <soc/soc_chip.h>
 #include <stdlib.h>
 #include <types.h>
 
@@ -64,7 +65,7 @@
 #define PCIE_ATR_TLP_TYPE_MEM		PCIE_ATR_TLP_TYPE(0)
 #define PCIE_ATR_TLP_TYPE_IO		PCIE_ATR_TLP_TYPE(2)
 
-static struct mtk_pcie_controller pcie_ctrl;
+static const struct mtk_pcie_config *pcie_ctrl;
 
 /* LTSSM state in PCIE_LTSSM_STATUS_REG bit[28:24] */
 static const char *const ltssm_str[] = {
@@ -105,56 +106,9 @@ volatile union pci_bank *pci_map_bus(pci_devfn_t dev)
 	bus = PCI_DEV2SEGBUS(dev);
 	val = PCIE_CFG_HEADER(bus, devfn);
 
-	write32p(pcie_ctrl.base + PCIE_CFGNUM_REG, val);
+	write32p(pcie_ctrl->base + PCIE_CFGNUM_REG, val);
 
-	return (void *)(pcie_ctrl.base + PCIE_CFG_OFFSET_ADDR);
-}
-
-static int mtk_pcie_startup_port(struct mtk_pcie_controller *ctrl)
-{
-	uint32_t val;
-	size_t tries = 0;
-	const char *ltssm_state;
-
-	/* Set as RC mode */
-	val = read32p(ctrl->base + PCIE_SETTING_REG);
-	val |= PCIE_RC_MODE;
-	write32p(ctrl->base + PCIE_SETTING_REG, val);
-
-	/* Set class code */
-	val = read32p(ctrl->base + PCIE_PCI_IDS_1);
-	val &= ~GENMASK(31, 8);
-	val |= PCI_CLASS(PCI_CLASS_BRIDGE_PCI << 8);
-	write32p(ctrl->base + PCIE_PCI_IDS_1, val);
-
-	/* Mask all INTx interrupts */
-	val = read32p(ctrl->base + PCIE_INT_ENABLE_REG);
-	val &= ~PCIE_INTX_ENABLE;
-	write32p(ctrl->base + PCIE_INT_ENABLE_REG, val);
-
-	if (!ctrl->reset) {
-		printk(BIOS_ERR, "%s: Missing reset function\n", __func__);
-		return -1;
-	}
-
-	/* De-assert reset signals */
-	ctrl->reset(ctrl->base + PCIE_RST_CTRL_REG, false);
-
-	if (!retry(100,
-		   (tries++, read32p(ctrl->base + PCIE_LINK_STATUS_REG) &
-		    PCIE_CTRL_LINKUP), mdelay(1))) {
-		val = read32p(ctrl->base + PCIE_LTSSM_STATUS_REG);
-		ltssm_state = PCIE_LTSSM_STATE(val) >= ARRAY_SIZE(ltssm_str) ?
-			    "Unknown state" : ltssm_str[PCIE_LTSSM_STATE(val)];
-		printk(BIOS_ERR, "%s: PCIe link down, current ltssm state: %s\n",
-		       __func__, ltssm_state);
-		return -1;
-	}
-
-	printk(BIOS_INFO, "%s: PCIe link up success (%ld tries)\n", __func__,
-	       tries);
-
-	return 0;
+	return (void *)(pcie_ctrl->base + PCIE_CFG_OFFSET_ADDR);
 }
 
 static int mtk_pcie_set_trans_window(struct device *dev, uintptr_t table,
@@ -210,29 +164,31 @@ static void mtk_pcie_domain_new_res(struct device *dev, unsigned int index,
 
 void mtk_pcie_domain_read_resources(struct device *dev)
 {
-	struct mtk_pcie_controller *ctrl = dev->chip_info;
+	const mtk_soc_config_t *config = config_of(dev);
+	const struct mtk_pcie_config *conf = &config->pcie_config;
 
 	mtk_pcie_domain_new_res(dev, IOINDEX_SUBTRACTIVE(0, 0),
-				ctrl->mmio_res_io);
+				&conf->mmio_res_io);
 
 	mtk_pcie_domain_new_res(dev, IOINDEX_SUBTRACTIVE(1, 0),
-				ctrl->mmio_res_mem);
+				&conf->mmio_res_mem);
 }
 
 void mtk_pcie_domain_set_resources(struct device *dev)
 {
-	struct mtk_pcie_controller *ctrl = dev->chip_info;
+	const mtk_soc_config_t *config = config_of(dev);
+	const struct mtk_pcie_config *conf = &config->pcie_config;
 	uintptr_t table;
 
 	/* Initialize I/O space constraints. */
-	table = ctrl->base + PCIE_TRANS_TABLE_BASE_REG;
-	if (mtk_pcie_set_trans_window(dev, table, ctrl->mmio_res_io) < 0)
+	table = conf->base + PCIE_TRANS_TABLE_BASE_REG;
+	if (mtk_pcie_set_trans_window(dev, table, &conf->mmio_res_io) < 0)
 		printk(BIOS_ERR, "%s: Failed to set IO window\n", __func__);
 
 	/* Initialize memory resources constraints. */
-	table = ctrl->base + PCIE_TRANS_TABLE_BASE_REG +
+	table = conf->base + PCIE_TRANS_TABLE_BASE_REG +
 		PCIE_ATR_TLB_SET_OFFSET;
-	if (mtk_pcie_set_trans_window(dev, table, ctrl->mmio_res_mem) < 0)
+	if (mtk_pcie_set_trans_window(dev, table, &conf->mmio_res_mem) < 0)
 		printk(BIOS_ERR, "%s: Failed to set MEM window\n", __func__);
 
 	pci_domain_set_resources(dev);
@@ -240,10 +196,43 @@ void mtk_pcie_domain_set_resources(struct device *dev)
 
 void mtk_pcie_domain_enable(struct device *dev)
 {
-	mtk_pcie_get_hw_info(&pcie_ctrl);
+	const mtk_soc_config_t *config = config_of(dev);
+	const char *ltssm_state;
+	size_t tries = 0;
+	uint32_t val;
 
-	if (mtk_pcie_startup_port(&pcie_ctrl) < 0)
+	pcie_ctrl = &config->pcie_config;
+
+	/* Set as RC mode */
+	val = read32p(pcie_ctrl->base + PCIE_SETTING_REG);
+	val |= PCIE_RC_MODE;
+	write32p(pcie_ctrl->base + PCIE_SETTING_REG, val);
+
+	/* Set class code */
+	val = read32p(pcie_ctrl->base + PCIE_PCI_IDS_1);
+	val &= ~GENMASK(31, 8);
+	val |= PCI_CLASS(PCI_CLASS_BRIDGE_PCI << 8);
+	write32p(pcie_ctrl->base + PCIE_PCI_IDS_1, val);
+
+	/* Mask all INTx interrupts */
+	val = read32p(pcie_ctrl->base + PCIE_INT_ENABLE_REG);
+	val &= ~PCIE_INTX_ENABLE;
+	write32p(pcie_ctrl->base + PCIE_INT_ENABLE_REG, val);
+
+	/* De-assert reset signals */
+	mtk_pcie_reset(pcie_ctrl->base + PCIE_RST_CTRL_REG, false);
+
+	if (!retry(100,
+		   (tries++, read32p(pcie_ctrl->base + PCIE_LINK_STATUS_REG) &
+		    PCIE_CTRL_LINKUP), mdelay(1))) {
+		val = read32p(pcie_ctrl->base + PCIE_LTSSM_STATUS_REG);
+		ltssm_state = PCIE_LTSSM_STATE(val) >= ARRAY_SIZE(ltssm_str) ?
+			    "Unknown state" : ltssm_str[PCIE_LTSSM_STATE(val)];
+		printk(BIOS_ERR, "%s: PCIe link down, current ltssm state: %s\n",
+		       __func__, ltssm_state);
 		return;
+	}
 
-	dev->chip_info = &pcie_ctrl;
+	printk(BIOS_INFO, "%s: PCIe link up success (%ld tries)\n", __func__,
+	       tries);
 }

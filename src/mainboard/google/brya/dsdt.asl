@@ -22,7 +22,6 @@ DefinitionBlock(
 	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {
-		#include "mainboard.asl"
 #if CONFIG(HAVE_WWAN_POWER_SEQUENCE)
 		#include "wwan_power.asl"
 #endif

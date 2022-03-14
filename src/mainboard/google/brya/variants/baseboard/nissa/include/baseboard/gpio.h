@@ -16,5 +16,7 @@
 #define GPIO_EC_IN_RW		GPP_F18
 /* GPIO IRQ for tight timestamps */
 #define EC_SYNC_IRQ		GPD2_IRQ
+/* GPP_H18 used as dummy here since nissa not selected HAVE_SLP_S0_GATE */
+#define GPIO_SLP_S0_GATE	GPP_H18
 
 #endif /* __BASEBOARD_GPIO_H__ */

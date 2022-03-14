@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpigen.h>
+#include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <drivers/tpm/cr50.h>
@@ -109,6 +110,23 @@ static void mainboard_generate_shutdown(const struct device *dev)
 	}
 }
 
+static void mainboard_generate_s0ix_hook(void)
+{
+	acpigen_write_if_lequal_op_int(ARG0_OP, 1);
+	{
+		if (CONFIG(HAVE_SLP_S0_GATE))
+			acpigen_soc_clear_tx_gpio(GPIO_SLP_S0_GATE);
+		variant_generate_s0ix_hook(S0IX_ENTRY);
+	}
+	acpigen_write_else();
+	{
+		if (CONFIG(HAVE_SLP_S0_GATE))
+			acpigen_soc_set_tx_gpio(GPIO_SLP_S0_GATE);
+		variant_generate_s0ix_hook(S0IX_EXIT);
+	}
+	acpigen_write_if_end();
+}
+
 static void mainboard_fill_ssdt(const struct device *dev)
 {
 	const struct device *wwan = DEV_PTR(rp6_wwan);
@@ -122,11 +140,31 @@ static void mainboard_fill_ssdt(const struct device *dev)
 	}
 	/* for variant to fill additional SSDT */
 	variant_fill_ssdt(dev);
+
+	acpigen_write_scope("\\_SB");
+	acpigen_write_method_serialized("MS0X", 1);
+	mainboard_generate_s0ix_hook();
+	acpigen_write_method_end(); /* Method */
+	acpigen_write_scope_end(); /* Scope */
+
 }
 
 void __weak variant_fill_ssdt(const struct device *dev)
 {
 	/* Add board-specific SSDT entries */
+}
+
+void __weak variant_generate_s0ix_hook(enum s0ix_entry)
+{
+	/* Add board-specific MS0X entries */
+	/*
+	   if (s0ix_entry == S0IX_ENTRY) {
+		implement variant operations here
+	   }
+	   if (s0ix_entry == S0IX_EXIT) {
+		implement variant operations here
+	   }
+	 */
 }
 
 static void mainboard_enable(struct device *dev)

@@ -50,6 +50,8 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 	}"
 
+	register "tcc_offset" = "10"     # TCC of 90
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf
@@ -64,21 +66,21 @@ chip soc/intel/alderlake
 					[0] = {
 						.target = DPTF_CPU,
 						.thresholds = {
-								TEMP_PCT(85, 90),
-								TEMP_PCT(80, 80),
-								TEMP_PCT(75, 70),
-								TEMP_PCT(70, 50),
-								TEMP_PCT(65, 30),
+								TEMP_PCT(57, 78),
+								TEMP_PCT(54, 70),
+								TEMP_PCT(51, 60),
+								TEMP_PCT(48, 50),
+								TEMP_PCT(44, 37),
 						}
 					},
 					[1] = {
 						.target = DPTF_TEMP_SENSOR_1,
 						.thresholds = {
-								TEMP_PCT(50, 90),
-								TEMP_PCT(48, 70),
-								TEMP_PCT(46, 60),
-								TEMP_PCT(43, 40),
-								TEMP_PCT(40, 30),
+								TEMP_PCT(55, 78),
+								TEMP_PCT(52, 70),
+								TEMP_PCT(49, 60),
+								TEMP_PCT(46, 50),
+								TEMP_PCT(43, 37),
 						}
 					}
 				}"
@@ -86,33 +88,33 @@ chip soc/intel/alderlake
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,        CPU,           95, 5000),
-					[1] = DPTF_PASSIVE(CPU,        TEMP_SENSOR_0, 75, 5000),
-					[2] = DPTF_PASSIVE(CPU,        TEMP_SENSOR_1, 75, 5000),
-					[3] = DPTF_PASSIVE(CHARGER,    TEMP_SENSOR_2, 75, 5000),
+					[1] = DPTF_PASSIVE(CPU,        TEMP_SENSOR_0, 85, 5000),
+					[2] = DPTF_PASSIVE(CPU,        TEMP_SENSOR_1, 85, 5000),
+					[3] = DPTF_PASSIVE(CHARGER,    TEMP_SENSOR_2, 85, 5000),
 				}"
 
 				## Critical Policy
 				register "policies.critical" = "{
-					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      85, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      85, SHUTDOWN),
-					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      85, SHUTDOWN),
+					[0] = DPTF_CRITICAL(CPU,               127, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      90, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      90, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      90, SHUTDOWN),
 				}"
 
 				register "controls.power_limits" = "{
 					.pl1 = {
-							.min_power = 3000,
-							.max_power = 15000,
-							.time_window_min = 28 * MSECS_PER_SEC,
-							.time_window_max = 32 * MSECS_PER_SEC,
-							.granularity = 200,
+							.min_power = 5000,
+							.max_power = 30000,
+							.time_window_min = 30 * MSECS_PER_SEC,
+							.time_window_max = 30 * MSECS_PER_SEC,
+							.granularity = 100,
 						},
 					.pl2 = {
-							.min_power = 55000,
-							.max_power = 55000,
-							.time_window_min = 28 * MSECS_PER_SEC,
+							.min_power = 60000,
+							.max_power = 60000,
+							.time_window_min = 32 * MSECS_PER_SEC,
 							.time_window_max = 32 * MSECS_PER_SEC,
-							.granularity = 1000,
+							.granularity = 500,
 						}
 				}"
 

@@ -245,10 +245,14 @@ static void fast_spi_cache_ext_bios_window(void)
 	if (!fast_spi_ext_bios_cache_range(&ext_bios_base, &ext_bios_size))
 		return;
 
-	int mtrr = get_free_var_mtrr();
-	if (mtrr == -1)
-		return;
-	set_var_mtrr(mtrr, ext_bios_base, ext_bios_size, type);
+	if (ENV_PAYLOAD_LOADER) {
+		mtrr_use_temp_range(ext_bios_base, ext_bios_size, type);
+	} else {
+		int mtrr = get_free_var_mtrr();
+		if (mtrr == -1)
+			return;
+		set_var_mtrr(mtrr, ext_bios_base, ext_bios_size, type);
+	}
 }
 
 void fast_spi_cache_ext_bios_postcar(struct postcar_frame *pcf)

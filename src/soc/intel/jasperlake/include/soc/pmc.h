@@ -121,8 +121,13 @@
 
 #define SLP_S0_RES			0x193c
 
+#define CORE_SPARE_GCR_0		0x195C
+
 #define CPPMVRIC			0x1B1C
 #define   XTALSDQDIS			(1 << 22)
+
+#define CPPMVRIC2			0x1B4C
+#define   CNVIVNNAONREQQDIS		(1 << 26)
 
 #define CPPMVRIC3			0x1E4C
 #define   USBSUSPGQDIS			(1 << 15)

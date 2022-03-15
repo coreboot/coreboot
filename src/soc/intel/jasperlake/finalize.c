@@ -59,6 +59,11 @@ static void pch_finalize(void)
 		reg32 = read32(pmcbase + CPPMVRIC3);
 		reg32 &= ~USBSUSPGQDIS;
 		write32(pmcbase + CPPMVRIC3, reg32);
+
+		if (config->cnvi_reduce_s0ix_pwr_usage) {
+			setbits32(pmcbase + CPPMVRIC2, CNVIVNNAONREQQDIS);
+			setbits32(pmcbase + CORE_SPARE_GCR_0, BIT(0));
+		}
 	}
 
 	pch_handle_sideband(config);

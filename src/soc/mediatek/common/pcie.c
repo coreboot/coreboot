@@ -65,8 +65,6 @@
 #define PCIE_ATR_TLP_TYPE_MEM		PCIE_ATR_TLP_TYPE(0)
 #define PCIE_ATR_TLP_TYPE_IO		PCIE_ATR_TLP_TYPE(2)
 
-static const struct mtk_pcie_config *pcie_ctrl;
-
 /* LTSSM state in PCIE_LTSSM_STATUS_REG bit[28:24] */
 static const char *const ltssm_str[] = {
 	"detect.quiet",			/* 0x00 */
@@ -98,17 +96,34 @@ static const char *const ltssm_str[] = {
 	"hotreset",			/* 0x1A */
 };
 
+static uintptr_t mtk_pcie_get_controller_base(pci_devfn_t devfn)
+{
+	struct device *root_dev;
+	const mtk_soc_config_t *config;
+	static uintptr_t base = 0;
+
+	if (!base) {
+		root_dev = pcidev_path_on_root(devfn);
+		config = config_of(root_dev);
+		base = config->pcie_config.base;
+	}
+
+	return base;
+}
+
 volatile union pci_bank *pci_map_bus(pci_devfn_t dev)
 {
 	u32 val, devfn, bus;
+	uintptr_t base;
 
 	devfn = PCI_DEV2DEVFN(dev);
 	bus = PCI_DEV2SEGBUS(dev);
 	val = PCIE_CFG_HEADER(bus, devfn);
 
-	write32p(pcie_ctrl->base + PCIE_CFGNUM_REG, val);
+	base = mtk_pcie_get_controller_base(dev);
+	write32p(base + PCIE_CFGNUM_REG, val);
 
-	return (void *)(pcie_ctrl->base + PCIE_CFG_OFFSET_ADDR);
+	return (void *)(base + PCIE_CFG_OFFSET_ADDR);
 }
 
 static int mtk_pcie_set_trans_window(struct device *dev, uintptr_t table,
@@ -197,35 +212,34 @@ void mtk_pcie_domain_set_resources(struct device *dev)
 void mtk_pcie_domain_enable(struct device *dev)
 {
 	const mtk_soc_config_t *config = config_of(dev);
+	const struct mtk_pcie_config *conf = &config->pcie_config;
 	const char *ltssm_state;
 	size_t tries = 0;
 	uint32_t val;
 
-	pcie_ctrl = &config->pcie_config;
-
 	/* Set as RC mode */
-	val = read32p(pcie_ctrl->base + PCIE_SETTING_REG);
+	val = read32p(conf->base + PCIE_SETTING_REG);
 	val |= PCIE_RC_MODE;
-	write32p(pcie_ctrl->base + PCIE_SETTING_REG, val);
+	write32p(conf->base + PCIE_SETTING_REG, val);
 
 	/* Set class code */
-	val = read32p(pcie_ctrl->base + PCIE_PCI_IDS_1);
+	val = read32p(conf->base + PCIE_PCI_IDS_1);
 	val &= ~GENMASK(31, 8);
 	val |= PCI_CLASS(PCI_CLASS_BRIDGE_PCI << 8);
-	write32p(pcie_ctrl->base + PCIE_PCI_IDS_1, val);
+	write32p(conf->base + PCIE_PCI_IDS_1, val);
 
 	/* Mask all INTx interrupts */
-	val = read32p(pcie_ctrl->base + PCIE_INT_ENABLE_REG);
+	val = read32p(conf->base + PCIE_INT_ENABLE_REG);
 	val &= ~PCIE_INTX_ENABLE;
-	write32p(pcie_ctrl->base + PCIE_INT_ENABLE_REG, val);
+	write32p(conf->base + PCIE_INT_ENABLE_REG, val);
 
 	/* De-assert reset signals */
-	mtk_pcie_reset(pcie_ctrl->base + PCIE_RST_CTRL_REG, false);
+	mtk_pcie_reset(conf->base + PCIE_RST_CTRL_REG, false);
 
 	if (!retry(100,
-		   (tries++, read32p(pcie_ctrl->base + PCIE_LINK_STATUS_REG) &
+		   (tries++, read32p(conf->base + PCIE_LINK_STATUS_REG) &
 		    PCIE_CTRL_LINKUP), mdelay(1))) {
-		val = read32p(pcie_ctrl->base + PCIE_LTSSM_STATUS_REG);
+		val = read32p(conf->base + PCIE_LTSSM_STATUS_REG);
 		ltssm_state = PCIE_LTSSM_STATE(val) >= ARRAY_SIZE(ltssm_str) ?
 			    "Unknown state" : ltssm_str[PCIE_LTSSM_STATE(val)];
 		printk(BIOS_ERR, "%s: PCIe link down, current ltssm state: %s\n",

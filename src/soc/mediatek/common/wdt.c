@@ -40,18 +40,21 @@ int mtk_wdt_init(void)
 	printk(BIOS_INFO, "WDT: Status = %#x\n", wdt_sta);
 
 	printk(BIOS_INFO, "WDT: Last reset was ");
-	if (wdt_sta & MTK_WDT_STA_HW_RST) {
-		printk(BIOS_INFO, "hardware watchdog\n");
+	if (!wdt_sta) {
+		printk(BIOS_INFO, "cold boot\n");
+	} else {
+		if (wdt_sta & MTK_WDT_STA_HW_RST)
+			printk(BIOS_INFO, "hardware watchdog\n");
+		else if (wdt_sta & MTK_WDT_STA_SW_RST)
+			printk(BIOS_INFO, "normal software reboot\n");
+		else if (wdt_sta & MTK_WDT_STA_SPM_RST)
+			printk(BIOS_INFO, "SPM reboot\n");
+		else
+			printk(BIOS_INFO, "other reset type: %#.8x\n", wdt_sta);
+
 		mark_watchdog_tombstone();
 		mtk_wdt_swreset();
-	} else if (wdt_sta & MTK_WDT_STA_SW_RST)
-		printk(BIOS_INFO, "normal software reboot\n");
-	else if (wdt_sta & MTK_WDT_STA_SPM_RST)
-		printk(BIOS_INFO, "SPM reboot\n");
-	else if (!wdt_sta)
-		printk(BIOS_INFO, "cold boot\n");
-	else
-		printk(BIOS_INFO, "unexpected reset type: %#.8x\n", wdt_sta);
+	}
 
 	/* Config watchdog reboot mode:
 	 * Clearing bits:

@@ -7,8 +7,12 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config override_gpio_table[] = {
-	/* A15 : USB_OC2# ==> DDIC_DP_HPD4 */
-	PAD_CFG_NF(GPP_A15, NONE, DEEP, NF2),
+	/* A14 : USB_OC1# ==> NC */
+	PAD_NC(GPP_A14, NONE),
+	/* A19 : DDSP_HPD1 ==> NC */
+	PAD_NC(GPP_A19, NONE),
+	/* A20 : DDSP_HPD2 ==> DDIC_DP_HPD4 */
+	PAD_CFG_NF(GPP_A20, NONE, DEEP, NF1),
 	/* A21 : DDPC_CTRCLK ==> DDIC_DP_CTRCLK */
 	PAD_CFG_NF(GPP_A21, NONE, DEEP, NF1),
 	/* A22 : DDPC_CTRLDATA ==> DDIC_DP_CTRLDATA */
@@ -19,30 +23,17 @@ static const struct pad_config override_gpio_table[] = {
 	/* B3  : PROC_GP2 ==> EMMC_PERST_L */
 	PAD_CFG_GPO(GPP_B3, 1, DEEP),
 
-	/* C3 : SML0CLK ==> PCH_SML0_CLK */
-	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),
-	/* C4 : SML0DATA ==> PCH_SML0_DATA */
-	PAD_CFG_NF(GPP_C4, NONE, DEEP, NF1),
-
 	/* D6  : SRCCLKREQ1# ==> EMMC_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D6, NONE, DEEP, NF1),
-	/* D9  : ISH_SPI_CS# ==> NC */
-	PAD_NC(GPP_D9, NONE),
 	/* D14 : ISH_UART0_TXD ==> USB_A1_RT_RST_ODL */
 	PAD_CFG_GPO(GPP_D14, 1, DEEP),
-	/* D16 : ISH_UART0_CTS# ==> USB_A2_RT_RST_ODL */
-	PAD_CFG_GPO(GPP_D16, 1, DEEP),
 
 	/* E1  : THC0_SPI1_IO2 ==> B2B_HDMICARD_DETN */
 	PAD_CFG_GPI(GPP_E1, NONE, DEEP),
 	/* E2  : THC0_SPI1_IO3 ==> B2B_DPCARD_DETN */
 	PAD_CFG_GPI(GPP_E2, NONE, DEEP),
-	/* E5  : SATA_DEVSLP1 ==> USB_A0_RT_RST_ODL */
-	PAD_CFG_GPO(GPP_E5, 1, DEEP),
-	/* E12 : THC0_SPI1_IO1 ==> B2B_USBCCARD_DETN */
-	PAD_NC(GPP_E12, NONE),
-	/* E13 : THC0_SPI1_IO2 ==> B2B_SERIAL_DETN */
-	PAD_CFG_GPI(GPP_E13, NONE, DEEP),
+	/* E14 : DDSP_HPDA ==> HDMI2_HPD */
+	PAD_CFG_GPI(GPP_E14, NONE, DEEP),
 	/* E20 : DDP2_CTRLCLK ==> EN_PP3300_EMMC */
 	PAD_CFG_GPO(GPP_E20, 1, DEEP),
 	/* E21 : DDP2_CTRLDATA ==> NC */
@@ -51,10 +42,6 @@ static const struct pad_config override_gpio_table[] = {
 	/* H19 : SRCCLKREQ4# ==> LAN_I225V_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
 
-	/* R4 : HDA_RST# ==> NC */
-	PAD_NC(GPP_R4, NONE),
-	/* R5 : HDA_SDI1 ==> NC */
-	PAD_NC(GPP_R5, NONE),
 	/* R6 : I2S2_TXD ==> NC */
 	PAD_NC(GPP_R6, NONE),
 	/* R7 : I2S2_RXD ==> NC */

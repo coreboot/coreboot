@@ -2,11 +2,12 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
+#include <boardid.h>
 #include <commonlib/helpers.h>
 #include <soc/gpio.h>
 
 /* Pad configuration in ramstage */
-static const struct pad_config override_gpio_table[] = {
+static const struct pad_config board_id0_overrides[] = {
 	/* R4 : I2S2_SCLK ==> I2S_SPK_BCLK_R */
 	PAD_CFG_NF(GPP_R4, NONE, DEEP, NF2),
 	/* R5 : I2S2_SFRM ==> I2S_SPK_LRCK_R */
@@ -58,8 +59,14 @@ static const struct pad_config romstage_gpio_table[] = {
 
 const struct pad_config *variant_gpio_override_table(size_t *num)
 {
-	*num = ARRAY_SIZE(override_gpio_table);
-	return override_gpio_table;
+	const uint32_t id = board_id();
+	if (id == BOARD_ID_UNKNOWN || id == 0) {
+		*num = ARRAY_SIZE(board_id0_overrides);
+		return board_id0_overrides;
+	}
+
+	*num = 0;
+	return NULL;
 }
 
 const struct pad_config *variant_early_gpio_table(size_t *num)

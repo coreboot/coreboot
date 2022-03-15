@@ -204,7 +204,7 @@ static void do_send_end_of_post(void)
 	static bool eop_sent = false;
 
 	if (eop_sent) {
-		printk(BIOS_ERR, "EOP already sent\n");
+		printk(BIOS_WARNING, "EOP already sent\n");
 		return;
 	}
 

@@ -186,7 +186,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_F20, NONE),
 	/* F21 : EXT_PWR_GATE2# ==> NC */
 	PAD_NC(GPP_F21, NONE),
-	/* F22 : NC */
+	/* F22 : NC ==> MIC_SW */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_F22, NONE, DEEP),
 	/* F23 : NC */
 
 	/* H0  : GPPH0_BOOT_STRAP1 */

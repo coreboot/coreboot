@@ -97,7 +97,9 @@ chip soc/intel/jasperlake
 						register "reset_off_delay_ms" = "20"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
 						register "enable_delay_ms" = "20"
-						device usb 3.3 on end
+						device usb 3.3 on
+							probe LTE LTE_PRESENT
+						end
 					end
 				end
 			end

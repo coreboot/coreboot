@@ -1,0 +1,12 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		subsystemid 0x103c 0x1791 inherit
+
+		chip southbridge/intel/bd82x6x
+			register "sata_port_map" = "0xf"
+			device pci 1c.4 on  end	# dummy setting
+		end
+	end
+end

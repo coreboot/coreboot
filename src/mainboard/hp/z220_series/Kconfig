@@ -1,7 +1,5 @@
-if BOARD_HP_Z220_SFF_WORKSTATION
-
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_HP_Z220_SERIES_COMMON
+	def_bool n
 	select BOARD_ROMSIZE_KB_16384
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
@@ -20,6 +18,11 @@ config BOARD_SPECIFIC_OPTIONS
 	select GFX_GMA_ANALOG_I2C_HDMI_B
 	select MAINBOARD_USES_IFD_GBE_REGION
 
+config BOARD_HP_Z220_SFF_WORKSTATION
+	select BOARD_HP_Z220_SERIES_COMMON
+
+if BOARD_HP_Z220_SERIES_COMMON
+
 config VBOOT
 	select VBOOT_VBNV_CMOS
 	select VBOOT_NO_BOARD_SUPPORT
@@ -36,10 +39,19 @@ config CBFS_SIZE
 	default 0x570000
 
 config MAINBOARD_DIR
-	default "hp/z220_sff_workstation"
+	default "hp/z220_series"
+
+config VARIANT_DIR
+	default "z220_sff_workstation" if BOARD_HP_Z220_SFF_WORKSTATION
 
 config MAINBOARD_PART_NUMBER
-	default "HP Z220 SFF Workstation"
+	default "HP Z220 SFF Workstation" if BOARD_HP_Z220_SFF_WORKSTATION
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
 
 config DRAM_RESET_GATE_GPIO
 	int

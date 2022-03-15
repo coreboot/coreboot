@@ -84,6 +84,11 @@ chip soc/intel/alderlake
 	}"
 
 	device domain 0 on
+		device ref tbt_pcie_rp0 off end
+		device ref tbt_pcie_rp1 off end
+		device ref tbt_pcie_rp2 off end
+		device ref tcss_dma0 off end
+		device ref tcss_dma1 off end
 		device ref dtt on
 			chip drivers/intel/dptf
 				## sensor information

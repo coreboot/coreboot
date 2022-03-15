@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-config BOARD_HP_SNB_IVB_LAPTOPS
+config BOARD_HP_SNB_IVB_LAPTOPS_COMMON
 	def_bool n
 	select EC_HP_KBC1126
 	select HAVE_ACPI_RESUME
@@ -14,7 +14,7 @@ config BOARD_HP_SNB_IVB_LAPTOPS
 	select SYSTEM_TYPE_LAPTOP
 	select USE_NATIVE_RAMINIT
 
-if BOARD_HP_SNB_IVB_LAPTOPS
+if BOARD_HP_SNB_IVB_LAPTOPS_COMMON
 
 config MAINBOARD_DIR
 	default "hp/snb_ivb_laptops"

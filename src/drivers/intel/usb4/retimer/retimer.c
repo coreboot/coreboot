@@ -358,7 +358,7 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 	for (dfp_port = 0; dfp_port < DFP_NUM_MAX; dfp_port++) {
 
 		if (!config->dfp[dfp_port].power_gpio.pin_count) {
-			printk(BIOS_ERR, "%s: No DFP%1d power GPIO for %s\n",
+			printk(BIOS_WARNING, "%s: No DFP%1d power GPIO for %s\n",
 				__func__, dfp_port, dev_path(dev));
 			continue;
 		}

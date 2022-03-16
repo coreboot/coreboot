@@ -39,7 +39,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* SOC_SAR_INT_L */
 	PAD_SCI(GPIO_17, PULL_NONE, EDGE_LOW),
 	/* GSC_SOC_INT_L */
-	PAD_GPI(GPIO_18, PULL_NONE),
+	PAD_INT(GPIO_18, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* I2C3_SCL */
 	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
 	/* I2C3_SDA */

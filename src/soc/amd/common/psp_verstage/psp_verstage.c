@@ -206,16 +206,21 @@ void Main(void)
 	/*
 	 * Do not use printk() before console_init()
 	 * Do not use post_code() before verstage_mainboard_init()
+	 * Do not use svc_write_postcode before verstage_soc_espi_init() if PSP uses ESPI
+	 * to write postcodes.
 	 */
 	timestamp_init(timestamp_get());
-	svc_write_postcode(POSTCODE_ENTERED_PSP_VERSTAGE);
+	if (!CONFIG(PSP_POSTCODES_ON_ESPI))
+		svc_write_postcode(POSTCODE_ENTERED_PSP_VERSTAGE);
 	svc_debug_print("Entering verstage on PSP\n");
 	memset(&_bss_start, '\0', &_bss_end - &_bss_start);
 
-	svc_write_postcode(POSTCODE_CONSOLE_INIT);
+	if (!CONFIG(PSP_POSTCODES_ON_ESPI))
+		svc_write_postcode(POSTCODE_CONSOLE_INIT);
 	console_init();
 
-	svc_write_postcode(POSTCODE_EARLY_INIT);
+	if (!CONFIG(PSP_POSTCODES_ON_ESPI))
+		svc_write_postcode(POSTCODE_EARLY_INIT);
 	retval = verstage_soc_early_init();
 	if (retval) {
 		/*

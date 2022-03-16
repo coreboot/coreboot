@@ -345,6 +345,14 @@ config PSP_DISABLE_POSTCODES
 	help
 	  Disables the output of port80 post codes from PSP.
 
+config PSP_POSTCODES_ON_ESPI
+	bool "Use eSPI bus for PSP post codes"
+	depends on !PSP_DISABLE_POSTCODES
+	default y
+	help
+	  Select to send PSP port80 post codes on eSPI bus.
+	  If not selected, PSP port80 codes will be sent on LPC bus.
+
 config PSP_INIT_ESPI
 	bool "Initialize eSPI in PSP Stage 2 Boot Loader"
 	help

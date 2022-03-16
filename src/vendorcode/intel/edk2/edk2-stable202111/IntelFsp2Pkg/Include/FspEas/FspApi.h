@@ -128,6 +128,7 @@ typedef struct {
   UINT8                       Reserved1[20];
 } FSPT_ARCH_UPD;
 
+#if CONFIG(PLATFORM_USES_FSP2_X86_32)
 ///
 /// FSPM_ARCH_UPD Configuration.
 ///
@@ -141,12 +142,16 @@ typedef struct {
   /// Pointer to the non-volatile storage (NVS) data buffer.
   /// If it is NULL it indicates the NVS data is not available.
   ///
-  VOID                        *NvsBufferPtr;
+  /// Note: This ought to be VOID*, but that won't allow calling this binary on x86_64.
+  ///
+  UINT32                      NvsBufferPtr;
   ///
   /// Pointer to the temporary stack base address to be
   /// consumed inside FspMemoryInit() API.
   ///
-  VOID                        *StackBase;
+  /// Note: This ought to be VOID*, but that won't allow calling this binary on x86_64.
+  ///
+  UINT32                      StackBase;
   ///
   /// Temporary stack size to be consumed inside
   /// FspMemoryInit() API.
@@ -165,9 +170,14 @@ typedef struct {
   /// Optional event handler for the bootloader to be informed of events occurring during FSP execution.
   /// This value is only valid if Revision is >= 2.
   ///
-  FSP_EVENT_HANDLER           *FspEventHandler;
+  /// Note: This ought to be FSP_EVENT_HANDLER*, but that won't allow calling this binary on x86_64.
+  ///
+  UINT32                      FspEventHandler;
   UINT8                       Reserved1[4];
 } FSPM_ARCH_UPD;
+#else
+#error You need to implement this struct for x86_64 FSP
+#endif
 
 typedef struct {
   ///

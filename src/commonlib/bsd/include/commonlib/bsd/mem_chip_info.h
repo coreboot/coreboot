@@ -15,7 +15,7 @@ struct mem_chip_info {
 	uint8_t type;  /* enum mem_chip_type */
 	uint8_t num_channels;
 	uint8_t reserved[6];
-	struct {
+	struct mem_chip_channel {
 		uint64_t density;
 		uint8_t io_width;
 		uint8_t manufacturer_id;

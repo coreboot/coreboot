@@ -172,6 +172,7 @@ config BOARD_GOOGLE_BANSHEE
 	bool "->  Banshee"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 	select MEMORY_SODIMM
+	select CHROMEOS_WIFI_SAR if CHROMEOS
 
 config BOARD_GOOGLE_CROTA
 	bool "->  Crota"

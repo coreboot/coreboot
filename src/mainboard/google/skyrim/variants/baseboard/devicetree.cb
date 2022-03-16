@@ -41,6 +41,12 @@ chip soc/amd/sabrina
 	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
 					GPIO_I2C2_SCL | GPIO_I2C3_SCL"
 
+	# I2C Pad Control RX Select Configuration
+	register "i2c_pad[0].rx_level" = "I2C_PAD_RX_1_8V" # Touchpad
+	register "i2c_pad[1].rx_level" = "I2C_PAD_RX_1_8V" # Touchscreen
+	register "i2c_pad[2].rx_level" = "I2C_PAD_RX_1_8V" # Audio/SAR
+	register "i2c_pad[3].rx_level" = "I2C_PAD_RX_1_8V" # GSC
+
 	device domain 0 on
 		device ref lpc_bridge on
 			chip ec/google/chromeec

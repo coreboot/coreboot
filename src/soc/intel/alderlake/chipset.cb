@@ -118,6 +118,7 @@ chip soc/intel/alderlake
 		device pci 10.7 alias thc1 off end
 		device pci 12.0 alias ish off end
 		device pci 12.6 alias gspi2 off end
+		device pci 12.7 alias ufs off end
 		device pci 13.0 alias gspi3 off end
 		device pci 14.0 alias xhci off
 			chip drivers/usb/acpi

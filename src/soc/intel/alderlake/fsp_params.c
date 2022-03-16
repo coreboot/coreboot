@@ -642,6 +642,11 @@ static void fill_fsps_storage_params(FSP_S_CONFIG *s_cfg,
 	if (s_cfg->ScsEmmcEnabled)
 		s_cfg->ScsEmmcHs400Enabled = config->emmc_enable_hs400_mode;
 #endif
+
+	/* UFS Configuration */
+	s_cfg->UfsEnable[0] = 0; /* UFS Controller 0 is fuse disabled */
+	s_cfg->UfsEnable[1] = is_devfn_enabled(PCH_DEVFN_UFS);
+
 	/* Enable Hybrid storage auto detection */
 	s_cfg->HybridStorageMode = config->hybrid_storage_mode;
 }

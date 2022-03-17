@@ -91,8 +91,8 @@ amount of spare time. If this is not the case, then you should not apply.
       process and common issues.
 
     * Get signed up for Gerrit and push at least one patch to Gerrit for review.
-      Check Easy projects or ask for simple tasks on the [mailing list] or on our
-      other [community forums] if you need ideas.
+      Check the [easy project list][Project ideas] or ask for simple tasks on
+      the [mailing list] or on our other [community forums] if you need ideas.
 
 
 ### During the program
@@ -264,6 +264,7 @@ questions.
 [Coding style]: coding_style.md
 [Code of Conduct]: ../community/code_of_conduct.md
 [Language style]: ../community/language_style.md
+[Project ideas]: project_ideas.md
 [GSoC Timeline]: https://developers.google.com/open-source/gsoc/timeline
 [GSoC Roles and Responsibilities]: https://developers.google.com/open-source/gsoc/help/responsibilities
 [GSoC Contributor Guide]: https://google.github.io/gsocguides/student

@@ -459,10 +459,14 @@ This program takes the following inputs:
 *   The memory technology used by the board, e.g. lp4x.
 *   The path to the directory where the generated Makefile.inc should be placed.
 *   A CSV file containing a list of the memory parts used by the board, with an
-    optional fixed ID for each part. NOTE: Only assign a fixed ID if required
-    for legacy reasons.
+*   optional fixed or exclusive ID for each part. A fixed ID is simply an integer
+*   and it ensure that part (and any that share the same SPD) will be assigned
+*   that ID. An exclusive ID is prefixed with `*` and ensures that only parts with
+*   the same exclusive ID will be assigned that ID, even if they would otherwise
+*   share the same ID.
+*   NOTE: Only assign a fixed/exclusive ID if required for legacy reasons.
 
-Example of a CSV file using fixed IDs:
+Example of a CSV file using fixed and exclusive IDs:
 
 ```
 K4AAG165WA-BCWE,1
@@ -470,13 +474,15 @@ MT40A512M16TB-062E:J
 MT40A1G16KD-062E:E
 K4A8G165WC-BCWE
 H5AN8G6NDJR-XNC,8
-H5ANAG6NCMR-XNC
+H5ANAG6NCMR-XNC,*9
 ```
 
 Explanation: This will ensure that the SPDs for K4AAG165WA-BCWE and
-H5AN8G6NDJR-XNC are assigned to IDs 1 and 8 respectively. The SPDs for all other
-memory parts will be assigned to the first compatible ID. Assigning fixed IDs
-may result in duplicate SPD entries or gaps in the ID mapping.
+H5AN8G6NDJR-XNC are assigned to IDs 1 and 8 respectively. H5ANAG6NCMR-XNC
+will be assigned ID 9 and no other part will be assigned ID 9 even if it
+shares the same SPD. The SPDs for all other memory parts will be assigned to
+the first compatible ID. Assigning fixed/exclusive IDs may result in duplicate
+SPD entries or gaps in the ID mapping.
 
 ### Output
 

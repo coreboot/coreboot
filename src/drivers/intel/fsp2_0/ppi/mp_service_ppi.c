@@ -94,10 +94,23 @@ efi_return_status_t mp_startup_all_cpus(efi_ap_procedure procedure,
 	/* Run on BSP */
 	procedure(argument);
 
-	/* Run on APs */
-	if (mp_run_on_aps((void *)procedure, argument,
-			MP_RUN_ON_ALL_CPUS, timeout_usec) != CB_SUCCESS) {
-		printk(BIOS_ERR, "%s: Exit with Failure\n", __func__);
+	/*
+	 * Run on APs Serially
+	 *
+	 * FIXME: As per MP service specification, EDK2 is allowed to specify the mode
+	 * in which a 'func' routine should be executed on APs (i.e. execute serially
+	 * or concurrently).
+	 *
+	 * MP service API `StartupAllCPUs` doesn't specify such requirement.
+	 * Hence, running the `CpuCacheInfoCollectCoreAndCacheData`
+	 * (UefiCpuPkg/Library/CpuCacheInfoLib/CpuCacheInfoLib.c#194)
+	 * simultaneously on APs results in a coherency issue (hang while executing `func`)
+	 * due to lack of acquiring a spin lock while accessing common data structure in
+	 * multiprocessor environment.
+	 */
+	if (mp_run_on_all_aps((void *)procedure, argument, timeout_usec, false) !=
+				CB_SUCCESS) {
+		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
 		return FSP_NOT_STARTED;
 	}
 

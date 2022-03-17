@@ -238,7 +238,7 @@ Method (_Q37, 0, NotSerialized)			// Event: THROT_LV7
 	Printf ("EC: THROT_LV7")
 }
 
-Method (_Q38, 0, NotSerialized)			// Event: CPU_DN_SPEED
+Method (_Q3B, 0, NotSerialized)			// Event: CPU_DN_SPEED
 {
 	Printf ("EC: CPU_DN_SPEED")
 }

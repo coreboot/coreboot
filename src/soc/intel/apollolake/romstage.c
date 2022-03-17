@@ -232,8 +232,8 @@ static void check_full_retrain(const FSPM_UPD *mupd)
 static void soc_gpu_init_params(FSPM_UPD *mupd)
 {
 	enum {
-		GPU_PRIMARY_IGD = 2,
-		GPU_PRIMARY_PCI = 3,
+		GPU_PRIMARY_IGD = 0,
+		GPU_PRIMARY_PCI = 1,
 	};
 	/* Select primary GPU device */
 	if (CONFIG(ONBOARD_VGA_IS_PRIMARY) && is_devfn_enabled(SA_DEVFN_IGD))

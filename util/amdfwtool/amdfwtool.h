@@ -163,7 +163,7 @@ typedef struct _psp_directory_table {
 	psp_directory_entry entries[];
 } __attribute__((packed, aligned(16))) psp_directory_table;
 
-#define MAX_PSP_ENTRIES 0x1f
+#define MAX_PSP_ENTRIES 0x2f
 
 typedef struct _psp_combo_header {
 	uint32_t cookie;
@@ -221,6 +221,8 @@ typedef struct _bios_directory_table {
 	bios_directory_hdr header;
 	bios_directory_entry entries[];
 } bios_directory_table;
+
+#define MAX_BIOS_ENTRIES 0x2f
 
 #define BDT_LVL1 (1 << 0)
 #define BDT_LVL2 (1 << 1)

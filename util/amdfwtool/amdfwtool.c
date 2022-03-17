@@ -347,9 +347,6 @@ amd_bios_entry amd_bios_table[] = {
 	{ .type = AMD_BIOS_INVALID },
 };
 
-
-#define MAX_BIOS_ENTRIES 0x2f
-
 typedef struct _context {
 	char *rom;		/* target buffer, size of flash device */
 	uint32_t rom_size;	/* size of flash device */

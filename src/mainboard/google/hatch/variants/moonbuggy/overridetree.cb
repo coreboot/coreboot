@@ -13,7 +13,7 @@ chip soc/intel/cannonlake
 		[PchSerialIoIndexSPI1] = PchSerialIoPci,
 		[PchSerialIoIndexSPI2] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
-		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART1] = PchSerialIoPci,
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
@@ -451,6 +451,8 @@ chip soc/intel/cannonlake
 		device pci 1d.5 on end # PCI Root Port 14 (non-root)
 		device pci 1d.6 on end # PCI Root Port 15 (non-root)
 		device pci 1d.7 on end # PCI Root Port 16 (non-root)
+		device pci 1e.0 on end # UART #0
+		device pci 1e.1 on end # UART #1
 		device pci 1e.3 off end # GSPI #1
 	end
 

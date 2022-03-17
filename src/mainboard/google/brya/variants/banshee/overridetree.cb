@@ -217,7 +217,7 @@ chip soc/intel/alderlake
 		end
 		device ref hda on
 			chip drivers/generic/max98357a
-				register "hid" = ""MX98357A""
+				register "hid" = ""MX98360A""
 				register "sdmode_gpio" =
 					"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
 				register "sdmode_delay" = "5"

@@ -229,26 +229,29 @@ static const struct pad_config override_gpio_table[] = {
 	/* R1 : HDA_SYNC ==> I2S_HP_SFRM_R */
 	/* R2 : HDA_SDO ==> I2S_PCH_TX_HP_RX_STRAP */
 	/* R3 : HDA_SDIO ==> I2S_PCH_RX_HP_TX */
-	/* R4 : HDA_RST# ==> I2S_SPKR_SCLK_R */
-	/* R5 : HDA_SDI1 ==> I2S_SPKR_SFRM_R */
-	/* R6 : I2S2_TXD ==> I2S_PCH_TX_SPKR_RX_R */
+	/* R4 : HDA_RST# ==> NC */
+	PAD_NC(GPP_R4, NONE),
+	/* R5 : HDA_SDI1 ==> NC */
+	PAD_NC(GPP_R5, NONE),
+	/* R6 : I2S2_TXD ==> NC */
+	PAD_NC(GPP_R6, NONE),
 	/* R7 : I2S2_RXD ==> NC */
 	PAD_NC(GPP_R7, NONE),
 
-	/* S0 : SNDW0_CLK ==> NC */
-	PAD_NC(GPP_S0, NONE),
-	/* S1 : SNDW0_DATA ==> NC */
-	PAD_NC(GPP_S1, NONE),
-	/* S2 : SNDW1_CLK ==> DMIC_CLK0_R */
-	/* S3 : SNDW1_DATA ==> DMIC_DATA0_R */
+	/* S0 : SNDW0_CLK ==> I2S_SPKR_SCLK_R */
+	PAD_CFG_NF(GPP_S0, NONE, DEEP, NF4),
+	/* S1 : SNDW0_DATA ==> I2S_SPKR_SFRM_R */
+	PAD_CFG_NF(GPP_S1, NONE, DEEP, NF4),
+	/* S2 : SNDW1_CLK ==> I2S_PCH_TX_SPKR_RX_R */
+	PAD_CFG_NF(GPP_S2, NONE, DEEP, NF4),
+	/* S3 : SNDW1_DATA ==> NC */
+	PAD_NC(GPP_S3, NONE),
 	/* S4 : SNDW2_CLK ==> NC */
 	PAD_NC(GPP_S4, NONE),
 	/* S5 : SNDW2_DATA ==> NC */
 	PAD_NC(GPP_S5, NONE),
-	/* S6 : SNDW3_CLK ==> NC */
-	PAD_NC(GPP_S6, NONE),
-	/* S7 : SNDW3_DATA ==> NC */
-	PAD_NC(GPP_S7, NONE),
+	/* S6 : SNDW3_CLK ==> DMIC_CLK0_R */
+	/* S7 : SNDW3_DATA ==> DMIC_DATA0_R */
 };
 
 /* Early pad configuration in bootblock */

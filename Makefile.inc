@@ -1116,6 +1116,10 @@ ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
 TS_OPTIONS := -j $(CONFIG_INTEL_TOP_SWAP_BOOTBLOCK_SIZE)
 endif
 
+# coreboot.pre doesn't follow the standard Make conventions. It gets modified
+# by multiple rules, and thus we can't compute the dependencies correctly.
+$(shell rm -f $(obj)/coreboot.pre)
+
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
 $(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $(obj)/fmap.fmap $(obj)/fmap.desc
 	$(CBFSTOOL) $@.tmp create -M $(obj)/fmap.fmap -r $(shell cat $(obj)/fmap.desc)

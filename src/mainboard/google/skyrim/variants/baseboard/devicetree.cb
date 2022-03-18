@@ -47,6 +47,8 @@ chip soc/amd/sabrina
 	register "i2c_pad[2].rx_level" = "I2C_PAD_RX_1_8V" # Audio/SAR
 	register "i2c_pad[3].rx_level" = "I2C_PAD_RX_1_8V" # GSC
 
+	register "pspp_policy" = "DXIO_PSPP_DISABLED" # TODO: reenable when PSPP works
+
 	device domain 0 on
 		device ref lpc_bridge on
 			chip ec/google/chromeec

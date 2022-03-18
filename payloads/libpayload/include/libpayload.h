@@ -46,6 +46,7 @@
 #include <libpayload-config.h>
 #include <cbgfx.h>
 #include <commonlib/bsd/fmap_serialized.h>
+#include <commonlib/bsd/helpers.h>
 #include <commonlib/bsd/mem_chip_info.h>
 #include <ctype.h>
 #include <die.h>
@@ -67,32 +68,7 @@
 #include <pci.h>
 #include <archive.h>
 
-/* Double-evaluation unsafe min/max, for bitfields and outside of functions */
-#define __CMP_UNSAFE(a, b, op) ((a) op (b) ? (a) : (b))
-#define MIN_UNSAFE(a, b) __CMP_UNSAFE(a, b, <)
-#define MAX_UNSAFE(a, b) __CMP_UNSAFE(a, b, >)
-
-#define __CMP_SAFE(a, b, op, var_a, var_b) ({ \
-	__TYPEOF_UNLESS_CONST(a, b) var_a = (a); \
-	__TYPEOF_UNLESS_CONST(b, a) var_b = (b); \
-	var_a op var_b ? var_a : var_b; \
-})
-
-#define __CMP(a, b, op) __builtin_choose_expr( \
-	__builtin_constant_p(a) && __builtin_constant_p(b), \
-	__CMP_UNSAFE(a, b, op), __CMP_SAFE(a, b, op, __TMPNAME, __TMPNAME))
-
-#define MIN(a, b) __CMP(a, b, <)
-#define MAX(a, b) __CMP(a, b, >)
-
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 #define BIT(x)	(1ul << (x))
-
-#define DIV_ROUND_UP(x, y) ({ \
-	typeof(x) _div_local_x = (x); \
-	typeof(y) _div_local_y = (y); \
-	(_div_local_x + _div_local_y - 1) / _div_local_y; \
-})
 
 static inline u32 div_round_up(u32 n, u32 d) { return (n + d - 1) / d; }
 

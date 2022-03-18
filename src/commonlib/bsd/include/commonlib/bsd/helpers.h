@@ -126,4 +126,10 @@
 #define retry(attempts, condition, ...) \
 	_retry_impl(attempts, condition, __VA_ARGS__)
 
+/* Stringify a token */
+#ifndef STRINGIFY
+#define _STRINGIFY(x)	#x
+#define STRINGIFY(x)	_STRINGIFY(x)
+#endif
+
 #endif /* COMMONLIB_BSD_HELPERS_H */

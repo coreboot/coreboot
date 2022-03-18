@@ -57,7 +57,6 @@ static const struct cb_framebuffer *fbinfo;
 #define PIVOT_H_MASK	(PIVOT_H_LEFT|PIVOT_H_CENTER|PIVOT_H_RIGHT)
 #define PIVOT_V_MASK	(PIVOT_V_TOP|PIVOT_V_CENTER|PIVOT_V_BOTTOM)
 #define ROUNDUP(x, y)	((((x) + ((y) - 1)) / (y)) * (y))
-#define ABS(x)		((x) < 0 ? -(x) : (x))
 
 static char initialized = 0;
 

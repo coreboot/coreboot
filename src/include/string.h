@@ -7,12 +7,6 @@
 #include <stddef.h>
 #include <stdio.h>
 
-/* Stringify a token */
-#ifndef STRINGIFY
-#define _STRINGIFY(x)	#x
-#define STRINGIFY(x)	_STRINGIFY(x)
-#endif
-
 void *memcpy(void *dest, const void *src, size_t n);
 void *memmove(void *dest, const void *src, size_t n);
 void *memset(void *s, int c, size_t n);

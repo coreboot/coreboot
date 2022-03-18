@@ -297,6 +297,26 @@ static int get_l1_substate_control(enum L1_substates_control ctl)
 	return ctl - 1;
 }
 
+/*
+ * Chip config parameter pcie_rp_aspm uses (UPD value + 1) because
+ * a UPD value of 0 for pcie_rp_aspm means disabled. In order to ensure
+ * that the mainboard setting does not disable ASPM incorrectly, chip
+ * config parameter values are offset by 1 with 0 meaning use FSP UPD default.
+ * get_aspm_control() ensures that the right UPD value is set in fsp_params.
+ * 0: Use FSP UPD default
+ * 1: Disable ASPM
+ * 2: L0s only
+ * 3: L1 only
+ * 4: L0s and L1
+ * 5: Auto configuration
+ */
+static unsigned int get_aspm_control(enum ASPM_control ctl)
+{
+	if ((ctl > ASPM_AUTO) || (ctl == ASPM_DEFAULT))
+		ctl = ASPM_AUTO;
+	return ctl - 1;
+}
+
 /* This function returns the VccIn Aux Imon IccMax values for ADL-P SKU's */
 static uint16_t get_vccin_aux_imon_iccmax(void)
 {
@@ -632,6 +652,8 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->PcieRpAdvancedErrorReporting[i] = !!(rp_cfg->flags & PCIE_RP_AER);
 		s_cfg->PcieRpHotPlug[i] = !!(rp_cfg->flags & PCIE_RP_HOTPLUG);
 		s_cfg->PcieRpClkReqDetect[i] = !!(rp_cfg->flags & PCIE_RP_CLK_REQ_DETECT);
+		if (rp_cfg->pcie_rp_aspm)
+			s_cfg->PcieRpAspm[i] = get_aspm_control(rp_cfg->pcie_rp_aspm);
 	}
 }
 

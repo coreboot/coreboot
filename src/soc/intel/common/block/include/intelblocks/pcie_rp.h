@@ -42,6 +42,16 @@ enum L1_substates_control {
 	L1_SS_L1_2,
 };
 
+/* This enum is for passing into an FSP UPD, typically ASPM */
+enum ASPM_control {
+	ASPM_DEFAULT,
+	ASPM_DISABLE,
+	ASPM_L0S,
+	ASPM_L1,
+	ASPM_L0S_L1,
+	ASPM_AUTO,
+};
+
 /* PCIe Root Ports */
 struct pcie_rp_config {
 	/* CLKOUT_PCIE_P/N# used by this root port as per schematics. */
@@ -51,6 +61,8 @@ struct pcie_rp_config {
 	enum pcie_rp_flags flags;
 	/* PCIe RP L1 substate */
 	enum L1_substates_control PcieRpL1Substates;
+	/* PCIe RP ASPM */
+	enum ASPM_control pcie_rp_aspm;
 };
 
 /*

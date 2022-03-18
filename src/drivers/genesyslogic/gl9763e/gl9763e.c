@@ -23,6 +23,11 @@ static void gl9763e_init(struct device *dev)
 	pci_or_config32(dev, SCR, SCR_AXI_REQ);
 	/* Disable L0s support */
 	pci_and_config32(dev, CFG_REG_2, ~CFG_REG_2_L0S);
+
+	if (CONFIG(DRIVERS_GENESYSLOGIC_GL9763E_L1_MAX))
+		/* Set  L1 entry delay to MAX */
+		pci_or_config32(dev, CFG_REG_2, CFG_REG_2_L1DLY_MAX);
+
 	/* Set SSC to 30000 ppm */
 	pci_update_config32(dev, PLL_CTL_2, ~PLL_CTL_2_MAX_SSC_MASK, MAX_SSC_30000PPM);
 	/* Enable SSC */

@@ -1,2 +1,8 @@
 config DRIVERS_GENESYSLOGIC_GL9763E
-	bool
+	bool "Genesys Logic GL9763E"
+	default n
+
+config DRIVERS_GENESYSLOGIC_GL9763E_L1_MAX
+	bool "Set L1 entry delay to MAX"
+	depends on DRIVERS_GENESYSLOGIC_GL9763E
+	default n

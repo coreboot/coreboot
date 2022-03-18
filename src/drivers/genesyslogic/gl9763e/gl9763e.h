@@ -14,6 +14,7 @@
 
 #define CFG_REG_2	0x8A4
 #define   CFG_REG_2_L0S	BIT(11)
+#define   CFG_REG_2_L1DLY_MAX	(0x3FF << 19)
 
 #define PLL_CTL		0x938
 #define   PLL_CTL_SSC	BIT(19)

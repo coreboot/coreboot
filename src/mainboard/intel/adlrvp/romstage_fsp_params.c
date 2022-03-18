@@ -47,7 +47,16 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
 	const struct mb_cfg *mem_config = variant_memory_params();
 	int board_id = get_board_id();
-	const bool half_populated = false;
+
+	/*
+	 * Alder Lake common meminit block driver considers bus width to be 128-bit and
+	 * populates the meminit data accordingly. Alder Lake-N has single memory controller
+	 * with 64-bit bus width. By setting half_populated to true, only the bottom half is
+	 * populated.
+	 * TODO: Implement __weak variant_is_half_populated(void) function.
+	 */
+	const bool half_populated = (CONFIG(BOARD_INTEL_ADLRVP_N_EXT_EC)
+			 || CONFIG(BOARD_INTEL_ADLRVP_N));
 
 	const struct mem_spd memory_down_spd_info = {
 		.topo = MEM_TOPO_MEMORY_DOWN,

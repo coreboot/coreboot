@@ -6,3 +6,6 @@ config BOARD_LENOVO_X230T
 
 config BOARD_LENOVO_X230S
 	bool "ThinkPad X230s"
+
+config BOARD_LENOVO_X230_EDP
+	bool "ThinkPad X230 eDP Mod (2K/FHD)"

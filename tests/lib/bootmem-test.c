@@ -311,7 +311,7 @@ static void test_bootmem_region_targets_type(void **state)
 	ret = bootmem_region_targets_type(RAMSTAGE_START, RAMSTAGE_SIZE, BM_MEM_RESERVED);
 	assert_int_equal(ret, 0);
 
-	/* Range covering one more byte than one region*/
+	/* Range covering one more byte than one region */
 	ret = bootmem_region_targets_type(RAMSTAGE_START, RAMSTAGE_SIZE + 1, BM_MEM_RAMSTAGE);
 	assert_int_equal(ret, 0);
 

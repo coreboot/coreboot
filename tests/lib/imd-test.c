@@ -49,7 +49,7 @@ static void test_imd_handle_init(void **state)
 	struct imd imd;
 	uintptr_t test_inputs[] = {
 		0,		     /* Lowest possible address */
-		0xA000,		     /* Fits in 16 bits, should not get rounded down*/
+		0xA000,		     /* Fits in 16 bits, should not get rounded down */
 		0xDEAA,		     /* Fits in 16 bits */
 		0xB0B0B000,	     /* Fits in 32 bits, should not get rounded down */
 		0xF0F0F0F0,	     /* Fits in 32 bits */

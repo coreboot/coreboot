@@ -19,6 +19,7 @@ romstage-y += cbmem.c
 ramstage-y += debug.c
 ramstage-$(CONFIG_FSP_USES_CB_DEBUG_EVENT_HANDLER) += fsp_debug_event.c
 ramstage-$(CONFIG_USE_INTEL_FSP_MP_INIT) += fsp_mpinit.c
+ramstage-$(CONFIG_DISPLAY_FSP_TIMESTAMPS) += fsp_timestamp.c
 ramstage-$(CONFIG_RUN_FSP_GOP) += graphics.c
 ramstage-y += hand_off_block.c
 ramstage-$(CONFIG_DISPLAY_FSP_HEADER) += header_display.c

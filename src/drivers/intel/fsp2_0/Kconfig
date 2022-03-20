@@ -359,4 +359,14 @@ config FSP_USES_CB_DEBUG_EVENT_HANDLER
 	  This option allows to create `Debug Event Handler` to print FSP debug messages
 	  to output device using coreboot native implementation.
 
+config DISPLAY_FSP_TIMESTAMPS
+	bool "Display FSP Timestamps"
+	default n
+	help
+	  Select this config to retrieve FSP timestamps from Firmware Performance Data Table
+	  (FPDT) and display from ramstage after FSP-S is executed.
+
+	  To be able to use this, FSP has to be compiled with `PcdFspPerformanceEnable` set to
+	  `TRUE`.
+
 endif

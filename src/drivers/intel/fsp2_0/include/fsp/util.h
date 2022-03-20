@@ -106,6 +106,8 @@ extern const uint8_t fsp_bootloader_tolum_guid[16];
 extern const uint8_t fsp_nv_storage_guid[16];
 extern const uint8_t fsp_reserved_memory_guid[16];
 
+/* Function to extract the FSP timestamp from FPDT Hob and display */
+void fsp_display_timestamp(void);
 const void *fsp_get_hob_list(void);
 void *fsp_get_hob_list_ptr(void);
 const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size);

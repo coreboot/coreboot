@@ -6,6 +6,9 @@
  * re-evaluate their _PPC and _CST tables.
  */
 
+// DTT Power Participant Device Notification
+#define POWER_STATE_CHANGE_NOTIFICATION 0x81
+
 // Mainboard specific throttle handler
 #ifdef DPTF_ENABLE_CHARGER
 External (\_SB.DPTF.TCHG, DeviceObj)
@@ -14,6 +17,8 @@ External (\_SB.DPTF.TCHG, DeviceObj)
 #ifdef EC_ENABLE_AMD_DPTC_SUPPORT
 External(\_SB.DPTC, MethodObj)
 #endif
+
+External (\_SB.DPTF.TPWR, DeviceObj)
 
 Device (EC0)
 {
@@ -82,6 +87,7 @@ Device (EC0)
 		BTID, 8,	// Battery index that host wants to read
 		USPP, 8,	// USB Port Power
 		RFWU, 8,	// Retimer Firmware Update
+		PBOK, 8,	// Power source change count from dptf
 	}
 
 #if CONFIG(EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
@@ -345,6 +351,9 @@ Device (EC0)
 	{
 		Printf ("EC: GOT PD EVENT")
 		Notify (\_SB.PCI0.LPCB.EC0.CREC.ECPD, 0x80)
+		If (CondRefOf (\_SB.DPTF.TPWR)) {
+			Notify (\_SB.DPTF.TPWR, POWER_STATE_CHANGE_NOTIFICATION)
+		}
 	}
 #endif
 

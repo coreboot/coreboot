@@ -51,3 +51,5 @@ Offset (0x80),
 ALS0, 16,	// ALS reading 0 in lux
 Offset (0xa6),
 GPUD, 8,	// GPU Data
+Offset (0xa7),
+PWRT, 8,	// Power source and change count

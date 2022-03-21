@@ -13,8 +13,6 @@
 		(CONFIG(CR50_USE_LONG_INTERRUPT_PULSES) \
 		 ? CR50_BOARD_CFG_100US_READY_PULSE : 0)
 
-static struct cr50_firmware_version cr50_firmware_version;
-
 enum cr50_register {
 	CR50_FW_VER_REG,
 	CR50_BOARD_CFG_REG,
@@ -74,9 +72,13 @@ static bool cr50_fw_supports_board_cfg(struct cr50_firmware_version *version)
  */
 static uint32_t cr50_get_board_cfg(void)
 {
+	struct cr50_firmware_version ver;
 	uint32_t value;
 
-	if (!cr50_fw_supports_board_cfg(&cr50_firmware_version))
+	if (cr50_get_firmware_version(&ver) != CB_SUCCESS)
+		return 0;
+
+	if (!cr50_fw_supports_board_cfg(&ver))
 		return 0;
 
 	const enum cb_err ret = tis_vendor_read(get_reg_addr(CR50_BOARD_CFG_REG), &value,
@@ -94,10 +96,14 @@ static uint32_t cr50_get_board_cfg(void)
  */
 enum cb_err cr50_set_board_cfg(void)
 {
-	uint32_t value;
+	struct cr50_firmware_version ver;
 	enum cb_err ret;
+	uint32_t value;
 
-	if (!cr50_fw_supports_board_cfg(&cr50_firmware_version))
+	if (cr50_get_firmware_version(&ver) != CB_SUCCESS)
+		return CB_ERR;
+
+	if (!cr50_fw_supports_board_cfg(&ver))
 		return CB_ERR;
 
 	/* Set the CR50_BOARD_CFG register, for e.g. asking cr50 to use longer ready pulses. */
@@ -167,6 +173,8 @@ static enum cb_err cr50_parse_fw_version(const char *version_str,
 
 enum cb_err cr50_get_firmware_version(struct cr50_firmware_version *version)
 {
+	static struct cr50_firmware_version cr50_firmware_version;
+
 	if (cr50_firmware_version.epoch || cr50_firmware_version.major ||
 	    cr50_firmware_version.minor)
 		goto success;

@@ -1,0 +1,6 @@
+Vendor name: Google
+Board name: Rex
+Category: laptop
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

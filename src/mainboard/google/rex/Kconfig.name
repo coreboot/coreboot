@@ -1,0 +1,4 @@
+comment "Rex"
+
+config BOARD_GOOGLE_REX0
+	bool "-> Rex 0"

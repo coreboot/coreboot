@@ -1,0 +1,34 @@
+config BOARD_GOOGLE_REX_COMMON
+	def_bool n
+	select BOARD_ROMSIZE_KB_32768
+	select HAVE_ACPI_TABLES
+
+config BOARD_GOOGLE_BASEBOARD_REX
+	def_bool n
+	select BOARD_GOOGLE_REX_COMMON
+	select SOC_INTEL_METEORLAKE
+	select SYSTEM_TYPE_LAPTOP
+
+config BOARD_GOOGLE_REX0
+	select BOARD_GOOGLE_BASEBOARD_REX
+
+if BOARD_GOOGLE_REX_COMMON
+
+config BASEBOARD_DIR
+	string
+	default "rex" if BOARD_GOOGLE_BASEBOARD_REX
+
+config DEVICETREE
+	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree.cb"
+
+config MAINBOARD_DIR
+	default "google/rex"
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Rex" if BOARD_GOOGLE_BASEBOARD_REX
+
+config MAINBOARD_PART_NUMBER
+	default "Rex" if BOARD_GOOGLE_REX0
+
+endif # BOARD_GOOGLE_REX_COMMON

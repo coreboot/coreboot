@@ -344,8 +344,10 @@ comment "AMD Firmware Directory Table set to location for 16MB ROM"
 	depends on AMD_FWM_POSITION_INDEX = 5
 
 config AMDFW_CONFIG_FILE
-	string
+	string "AMD PSP Firmware config file"
 	default "src/soc/amd/sabrina/fw.cfg"
+	help
+	  Specify the path/location of AMD PSP Firmware config file.
 
 config PSP_DISABLE_POSTCODES
 	bool "Disable PSP post codes"

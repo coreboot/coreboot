@@ -160,29 +160,20 @@ typedef struct __packed {
 } fsp_ddi_descriptor;
 
 /*
- * Cezanne DXIO Descriptor: Used for assigning lanes to PCIe/SATA/XGBE engines,
- * configure bifurcation and other settings. Beware that the lane numbers in
- * here are the logical and not the physical lane numbers!
+ * Sabrina DXIO Descriptor: Used for assigning lanes to PCIe engines, configure
+ * bifurcation and other settings. Beware that the lane numbers in here are the
+ * logical and not the physical lane numbers!
  *
- * Cezanne DXIO logical lane to physical PCIe lane mapping:
+ * Sabrina DXIO logical lane to physical PCIe lane mapping:
  *
- * logical |   FT6      |   AM4
- * --------|------------|----------------------
- * [00:03] | GPP[00:03] | GPP[00:03]
- * [04:07] | GPP[04:07] | GPP[04:07]/HUB[00:03]
- * [08:11] | GPP[08:11] | GFX[15:12]
- * [12:15] |        n/a | GFX[11:08]
- * [16:23] | GFX[00:07] | GFX[07:0]
+ * logical | physical
+ * --------|------------
+ * [00:03] | GPP[03:00]
  *
  * Different ports mustn't overlap or be assigned to the same lane(s). Within
  * ports with the same width the one with a higher start logical lane number
  * needs to be assigned to a higher PCIe root port number; ports of the same
  * size don't have to be assigned to consecutive PCIe root ports though.
- *
- * Lanes 2 and 3 can be mapped to the SATA controller on all packages; the FT6
- * platform additionally supports mapping lanes 8 and 9 to a SATA controller.
- * On embedded SKUs lanes 0 and 1 can be mapped to the Gigabit Ethernet
- * controllers.
  */
 typedef struct __packed {
 	uint8_t		engine_type;			// See dxio_engine_type

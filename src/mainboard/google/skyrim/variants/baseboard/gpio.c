@@ -61,7 +61,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* EN_PP3300_TCHSCR */
 	PAD_GPO(GPIO_29, HIGH),
 	/* SOC_DISABLE_DISP_BL */
-	PAD_GPO(GPIO_30, HIGH),
+	PAD_GPO(GPIO_30, LOW),
 	/* Unused */
 	PAD_NC(GPIO_31),
 	/* LPC_RST_L */

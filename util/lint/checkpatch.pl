@@ -2265,7 +2265,6 @@ sub process {
 	my $in_commit_log = 0;		#Scanning lines before patch
 	my $has_commit_log = 0;		#Encountered lines before patch
 	my $commit_log_possible_stack_dump = 0;
-	my $commit_log_long_line = 0;
 	my $commit_log_has_diff = 0;
 	my $reported_maintainer_file = 0;
 	my $non_utf8_charset = 0;
@@ -2658,10 +2657,9 @@ sub process {
 			$commit_log_possible_stack_dump = 1;
 		}
 
-# coreboot: The line lengeth limit is 72
-# Check for line lengths > 72 in commit log, warn once
-		if ($in_commit_log && !$commit_log_long_line &&
-		    length($line) > 72 &&
+# coreboot: The line length limit is 72
+# Check for line lengths > 72 in commit log
+		if ($in_commit_log && length($line) > 72 &&
 		    !($line =~ /^\s*[a-zA-Z0-9_\/\.]+\s+\|\s+\d+/ ||
 					# file delta changes
 		      $line =~ /^\s*(?:[\w\.\-\+]*\/)++[\w\.\-\+]+:/ ||
@@ -2671,7 +2669,18 @@ sub process {
 		      $commit_log_possible_stack_dump)) {
 			WARN("COMMIT_LOG_LONG_LINE",
 			     "Possible unwrapped commit description (prefer a maximum 72 chars per line)\n" . $herecurr);
-			$commit_log_long_line = 1;
+		}
+
+# coreboot: The line subject limit is 65
+# Check for line lengths > 65 in commit subject
+		if ($in_header_lines &&
+		    $line =~ /^Subject: /) {
+			$line = $line.$rawlines[$linenr];
+			$line =~ s/^Subject: \[PATCH\] //;
+			if (length($line) > 65) {
+			WARN("COMMIT_LOG_LONG_LINE",
+			     "Possible long commit subject (prefer a maximum 65 characters)\n" . $herecurr);
+			}
 		}
 
 # Reset possible stack dump if a blank line is found

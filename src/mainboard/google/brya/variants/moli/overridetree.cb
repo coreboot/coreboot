@@ -16,7 +16,7 @@ chip soc/intel/alderlake
 	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC2)"  # USB2_Type-A Port A3
 	register "usb2_ports[8]" = "USB2_PORT_EMPTY"	# Disable USB2_Type-A Port A9
 	register "tcss_ports[2]" = "TCSS_PORT_EMPTY"	# Disable TCP3
-	register "CnviBtAudioOffload" = "true"
+	register "cnvi_bt_audio_offload" = "true"
 	device domain 0 on
 		device ref tcss_dma0 on
 			chip drivers/intel/usb4/retimer

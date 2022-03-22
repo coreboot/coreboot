@@ -7,13 +7,23 @@
 #include <Uefi/UefiBaseType.h>
 
 #if CONFIG_UDK_VERSION >= CONFIG_UDK_2017_VERSION
+#include <Guid/StatusCodeDataTypeId.h>
 #include <Pi/PiPeiCis.h>
+#include <Pi/PiStatusCode.h>
 #include <Protocol/MpService.h>
 
 /* Data structure for EFI_PEI_SERVICE. */
 typedef EFI_PEI_SERVICES efi_pei_services;
 /*  Structure that describes information about a logical CPU. */
 typedef EFI_PROCESSOR_INFORMATION efi_processor_information;
+/* Status code type definition */
+typedef EFI_STATUS_CODE_TYPE efi_status_code_type_t;
+/* Status value type definition */
+typedef EFI_STATUS_CODE_VALUE efi_status_code_value_t;
+/* Status data type definition */
+typedef EFI_STATUS_CODE_DATA efi_status_code_data_t;
+/* Status string data type definition */
+typedef EFI_STATUS_CODE_STRING_DATA efi_status_code_string_data;
 #endif
 
 /* Basic Data types */
@@ -47,6 +57,8 @@ typedef INTN efi_intn_t;
 typedef EFI_STATUS efi_return_status_t;
 /* Data structure for EFI_PHYSICAL_ADDRESS */
 typedef EFI_PHYSICAL_ADDRESS efi_physical_address;
+/* 128-bit buffer containing a unique identifier value */
+typedef EFI_GUID efi_guid_t;
 
 /*
  * The function prototype for invoking a function on an

@@ -57,11 +57,18 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 0x0
 
-config CHERRY_USE_RT1011
-	bool
-	default n
+choice
+	prompt "Speaker AMP for Cherry"
+	default CHERRY_USE_RT1019 if BOARD_GOOGLE_CHERRY || BOARD_GOOGLE_TOMATO
+	default CHERRY_USE_MAX98390 if BOARD_GOOGLE_DOJO
 
+config CHERRY_USE_RT1011
+	bool "RT1011"
 config CHERRY_USE_RT1019
-	bool
-	default y
+	bool "RT1019"
+config CHERRY_USE_MAX98390
+	bool "MAX98390"
+
+endchoice
+
 endif

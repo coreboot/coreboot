@@ -28,6 +28,14 @@ struct mt8195_pericfg_ao_regs {
 check_member(mt8195_pericfg_ao_regs, peri_module_sw_cg_0_set, 0x0010);
 static struct mt8195_pericfg_ao_regs *const mt8195_pericfg_ao = (void *)PERICFG_AO_BASE;
 
+struct mt8195_scp_adsp_regs {
+	u32 reserved1[96];
+	u32 audiodsp_ck_cg;	/* 0x180 */
+};
+check_member(mt8195_scp_adsp_regs, audiodsp_ck_cg, 0x0180);
+static struct mt8195_scp_adsp_regs *const mt8195_scp_adsp =
+	(void *)SCP_ADSP_CFG_BASE;
+
 enum mux_id {
 	TOP_AXI_SEL,
 	TOP_SPM_SEL,
@@ -760,6 +768,12 @@ void mt_pll_init(void)
 
 	/* turn off unused clock */
 	write32(&mt8195_pericfg_ao->peri_module_sw_cg_0_set, 0x10);
+
+	/* scp_dsp for audio */
+	clrbits32(&mt8195_scp_adsp->audiodsp_ck_cg, BIT(0));
+
+	/* audio 26M */
+	setbits32(&mt8195_infracfg_ao->module_sw_cg_2_clr, BIT(4));
 }
 
 void mt_pll_raise_little_cpu_freq(u32 freq)

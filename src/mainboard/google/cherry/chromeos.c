@@ -47,12 +47,18 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_EN_SPK.id, ACTIVE_HIGH, -1, "speaker enable"},
 	};
 
+	struct lb_gpio spk_gpios[] = {
+		{GPIO_EN_SPK.id, ACTIVE_HIGH, -1, "speaker enable"},
+	};
+
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 
 	if (CONFIG(CHERRY_USE_RT1019))
 		lb_add_gpios(gpios, rt1019_gpios, ARRAY_SIZE(rt1019_gpios));
 	else if (CONFIG(CHERRY_USE_RT1011))
 		lb_add_gpios(gpios, rt1011_gpios, ARRAY_SIZE(rt1011_gpios));
+	else if (CONFIG(CHERRY_USE_MAX98390))
+		lb_add_gpios(gpios, spk_gpios, ARRAY_SIZE(spk_gpios));
 }
 
 int tis_plat_irq_status(void)

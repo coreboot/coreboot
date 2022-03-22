@@ -92,6 +92,27 @@ static bool configure_display(void)
 	return true;
 }
 
+static void configure_i2s(void)
+{
+	/* Audio PWR */
+	mtcmos_audio_power_on();
+	mtcmos_protect_audio_bus();
+
+	/* SoC I2S */
+	gpio_set_mode(GPIO(GPIO_02), PAD_GPIO_02_FUNC_TDMIN_LRCK);
+	gpio_set_mode(GPIO(GPIO_03), PAD_GPIO_03_FUNC_TDMIN_BCK);
+	gpio_set_mode(GPIO(I2SO2_D0), PAD_I2SO2_D0_FUNC_I2SO2_D0);
+}
+
+static void configure_audio(void)
+{
+	if (CONFIG(CHERRY_USE_RT1011) || CONFIG(CHERRY_USE_MAX98390))
+		mtk_i2c_bus_init(I2C2, I2C_SPEED_FAST);
+
+	if (CONFIG(CHERRY_USE_MAX98390))
+		configure_i2s();
+}
+
 static void mainboard_init(struct device *dev)
 {
 	if (display_init_required())
@@ -103,9 +124,7 @@ static void mainboard_init(struct device *dev)
 	mtk_msdc_configure_sdcard();
 	setup_usb_host();
 
-	/* for audio usage */
-	if (CONFIG(CHERRY_USE_RT1011))
-		mtk_i2c_bus_init(I2C2, I2C_SPEED_FAST);
+	configure_audio();
 
 	if (dpm_init())
 		printk(BIOS_ERR, "dpm init failed, DVFS may not work\n");

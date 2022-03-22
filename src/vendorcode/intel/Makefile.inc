@@ -9,11 +9,6 @@ ifeq ($(CONFIG_UEFI_2_4_BINDING),y)
 CPPFLAGS_x86_32 += -I$(src)/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include/Ia32
 CPPFLAGS_x86_64 += -I$(src)/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include/X64
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include
-else ifeq ($(CONFIG_UDK_2015_BINDING),y)
-CPPFLAGS_x86_32 += -I$(src)/vendorcode/intel/edk2/UDK2015/MdePkg/Include/Ia32
-CPPFLAGS_x86_64 += -I$(src)/vendorcode/intel/edk2/UDK2015/MdePkg/Include/X64
-CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2015/MdePkg/Include
-CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/UDK2015/IntelFsp2Pkg/Include
 else ifeq ($(CONFIG_UDK_2017_BINDING),y)
 CPPFLAGS_x86_32 += -I$(src)/vendorcode/intel/edk2/UDK2017/MdePkg/Include/Ia32
 CPPFLAGS_x86_64 += -I$(src)/vendorcode/intel/edk2/UDK2017/MdePkg/Include/X64

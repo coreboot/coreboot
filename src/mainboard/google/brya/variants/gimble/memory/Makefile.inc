@@ -4,6 +4,6 @@
 # util/spd_tools/bin/part_id_gen ADL lp4x src/mainboard/google/brya/variants/gimble/memory src/mainboard/google/brya/variants/gimble/memory/mem_parts_used.txt
 
 SPD_SOURCES =
-SPD_SOURCES += spd/lp4x/set-0/spd-1.hex      # ID = 0(0b0000)  Parts = MT53E512M32D2NP-046 WT:E, H9HCNNNBKMMLXR-NEE, K4U6E3S4AA-MGCR, MT53E512M32D1NP-046 WT:B
-SPD_SOURCES += spd/lp4x/set-0/spd-3.hex      # ID = 1(0b0001)  Parts = H9HCNNNCPMMLXR-NEE, K4UBE3D4AA-MGCR, MT53E1G32D2NP-046 WT:B
+SPD_SOURCES += spd/lp4x/set-0/spd-1.hex      # ID = 0(0b0000)  Parts = MT53E512M32D2NP-046 WT:E, H9HCNNNBKMMLXR-NEE, K4U6E3S4AA-MGCR, MT53E512M32D1NP-046 WT:B, H54G46CYRBX267, K4U6E3S4AB-MGCL
+SPD_SOURCES += spd/lp4x/set-0/spd-3.hex      # ID = 1(0b0001)  Parts = H9HCNNNCPMMLXR-NEE, K4UBE3D4AA-MGCR, MT53E1G32D2NP-046 WT:B, H54G56CYRBX247, K4UBE3D4AB-MGCL
 SPD_SOURCES += spd/lp4x/set-0/spd-4.hex      # ID = 2(0b0010)  Parts = MT53E1G32D2NP-046 WT:A

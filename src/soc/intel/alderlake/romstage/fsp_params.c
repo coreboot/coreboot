@@ -6,6 +6,7 @@
 #include <cpu/intel/cpu_ids.h>
 #include <device/device.h>
 #include <drivers/wifi/generic/wifi.h>
+#include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pcie_rp.h>
@@ -364,6 +365,11 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	const struct soc_intel_alderlake_config *config;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
+	FSPM_ARCH_UPD *arch_upd = &mupd->FspmArchUpd;
+
+	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER))
+		arch_upd->FspEventHandler = (UINT32)((FSP_EVENT_HANDLER *)
+						fsp_debug_event_handler);
 
 	config = config_of_soc();
 

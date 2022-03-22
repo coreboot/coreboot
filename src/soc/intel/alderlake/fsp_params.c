@@ -7,6 +7,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <fsp/api.h>
+#include <fsp/fsp_debug_event.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
 #include <option.h>
@@ -509,6 +510,8 @@ static void fill_fsps_xdci_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_uart_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
+	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER))
+		s_cfg->FspEventHandler = (UINT32)((FSP_EVENT_HANDLER *)fsp_debug_event_handler);
 	/* PCH UART selection for FSP Debug */
 	s_cfg->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;
 	ASSERT(ARRAY_SIZE(s_cfg->SerialIoUartAutoFlow) > CONFIG_UART_FOR_CONSOLE);

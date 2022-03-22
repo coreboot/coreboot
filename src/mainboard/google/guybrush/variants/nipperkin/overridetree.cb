@@ -207,10 +207,10 @@ chip soc/amd/cezanne
 	register "sustained_power_limit_mW"  = "12000"
 	register "thermctl_limit_degreeC"    = "100"
 
-	register "telemetry_vddcrvddfull_scale_current_mA" = "73331" #mA
-	register "telemetry_vddcrvddoffset" =  "1893"
-	register "telemetry_vddcrsocfull_scale_current_mA" = "31955" #mA
-	register "telemetry_vddcrsocoffset" =  "852"
+	register "telemetry_vddcrvddfull_scale_current_mA" = "94623" #mA
+	register "telemetry_vddcrvddoffset" =  "1847"
+	register "telemetry_vddcrsocfull_scale_current_mA" = "29904" #mA
+	register "telemetry_vddcrsocoffset" =  "756"
 
 	# Enable STT support
 	register "stt_control" = "1"

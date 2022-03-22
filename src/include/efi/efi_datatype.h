@@ -8,6 +8,7 @@
 
 #if CONFIG_UDK_VERSION >= CONFIG_UDK_2017_VERSION
 #include <Pi/PiPeiCis.h>
+#include <Protocol/MpService.h>
 
 /* Data structure for EFI_PEI_SERVICE. */
 typedef EFI_PEI_SERVICES efi_pei_services;

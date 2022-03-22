@@ -3,9 +3,6 @@
 #ifndef _DENVERTON_NS_GPIO_H_
 #define _DENVERTON_NS_GPIO_H_
 
-#define RShiftU64(Operand, Count) (Operand >> Count)
-#define LShiftU64(Operand, Count) (Operand << Count)
-
 #include <soc/gpio_defs.h>
 
 #ifndef __ACPI__

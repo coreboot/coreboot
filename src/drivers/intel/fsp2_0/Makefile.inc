@@ -5,6 +5,7 @@ ifeq ($(CONFIG_PLATFORM_USES_FSP2_0),y)
 bootblock-$(CONFIG_FSP_CAR) += fspt_report.c
 
 romstage-y += debug.c
+romstage-$(CONFIG_FSP_USES_CB_DEBUG_EVENT_HANDLER) += fsp_debug_event.c
 romstage-y += hand_off_block.c
 romstage-$(CONFIG_DISPLAY_FSP_HEADER) += header_display.c
 romstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c
@@ -16,6 +17,7 @@ romstage-$(CONFIG_MMA) += mma_core.c
 romstage-y += cbmem.c
 
 ramstage-y += debug.c
+ramstage-$(CONFIG_FSP_USES_CB_DEBUG_EVENT_HANDLER) += fsp_debug_event.c
 ramstage-$(CONFIG_USE_INTEL_FSP_MP_INIT) += fsp_mpinit.c
 ramstage-$(CONFIG_RUN_FSP_GOP) += graphics.c
 ramstage-y += hand_off_block.c

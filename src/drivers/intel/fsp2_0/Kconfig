@@ -352,4 +352,11 @@ config USE_FSP_NOTIFY_PHASE_END_OF_FIRMWARE
 	  to perform the required lock down and chipset register configuration prior
 	  boot to payload.
 
+config FSP_USES_CB_DEBUG_EVENT_HANDLER
+	bool
+	default n
+	help
+	  This option allows to create `Debug Event Handler` to print FSP debug messages
+	  to output device using coreboot native implementation.
+
 endif

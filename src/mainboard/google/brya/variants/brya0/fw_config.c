@@ -126,5 +126,10 @@ static void fw_config_handle(void *unused)
 		printk(BIOS_INFO, "Configure audio over I2S with ALC1019 NAU88L25B.\n");
 		enable_i2s();
 	}
+
+	if (fw_config_probe(FW_CONFIG(AUDIO, MAX98360_ALC5682I_I2S_AMP_SSP2))) {
+		printk(BIOS_INFO, "Configure audio over I2S with MAX98360 ALC5682I.\n");
+		enable_i2s();
+	}
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

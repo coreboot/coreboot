@@ -471,6 +471,7 @@
 #define  PCIE_EXT_CAP_L1SS_ID		 0x001E
 #define  PCIE_EXT_CAP_LTR_ID		 0x0018
 #define  PCIE_EXT_CAP_RESIZABLE_BAR	 0x0015
+#define  PCIE_EXT_CAP_RCECEA_ID	0x0007
 
 /* Secondary PCI Express Extended Capability Structure */
 #define PCI_EXP_SEC_CAP_ID	0x19
@@ -567,6 +568,10 @@
 #define  PCI_REBAR_CTRL_IDX_MASK	 0x07
 #define  PCI_REBAR_CTRL_SIZE_MASK	 0xffff0000
 #define  PCI_REBAR_CTRL_SIZE_SHIFT	 16
+
+/* Root Complex Event Collector Endpoint Association */
+#define PCI_RCECEA_BITMAP 4
+#define PCI_RCECEA_BUSNUM 8
 
 /*
  * The PCI interface treats multi-function devices as independent

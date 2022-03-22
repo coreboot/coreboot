@@ -8,10 +8,11 @@ vboot_fw-objs += $(VBOOT_FW_LIB)
 tlcl-objs += $(TLCL_LIB)
 
 kconfig-to-binary=$(if $(strip $(1)),1,0)
-vboot-fixup-includes = $(patsubst -I%,-I$(top)/%,\
+vboot-fixup-includes = $(filter -I$(coreboottop)/%, $(1)) \
+		       $(patsubst -I%,-I$(top)/%,\
 		       $(patsubst include/%.h,$(top)/include/%.h,\
-		       $(filter-out -I$(obj),$(1))))
-
+		       $(filter-out -I$(obj),\
+		       $(filter-out -I$(coreboottop)/%,$(1)))))
 ifeq ($(CONFIG_LP_ARCH_MOCK),)
 VBOOT_CFLAGS += $(call vboot-fixup-includes,$(CFLAGS))
 VBOOT_CFLAGS += -I$(abspath $(obj))

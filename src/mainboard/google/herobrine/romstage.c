@@ -5,6 +5,7 @@
 #include <soc/qclib_common.h>
 #include "board.h"
 #include <soc/shrm.h>
+#include <soc/cpucp.h>
 
 static void prepare_usb(void)
 {
@@ -18,6 +19,7 @@ static void prepare_usb(void)
 void platform_romstage_main(void)
 {
 	shrm_fw_load_reset();
+	cpucp_prepare();
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();
 	prepare_usb();

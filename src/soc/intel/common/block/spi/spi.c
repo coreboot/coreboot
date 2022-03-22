@@ -1,8 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#define __SIMPLE_DEVICE__
+
 #include <device/device.h>
+#include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include <device/spi.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/gspi.h>
@@ -19,6 +23,83 @@ const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
 };
 
 const size_t spi_ctrlr_bus_map_count = ARRAY_SIZE(spi_ctrlr_bus_map);
+
+#define MMIO_BIOS_GPR0	0x98
+
+union spi_bios_gpr0 {
+	struct {
+		/* Specified write protection is enabled */
+		/*
+		 * This field corresponds to flash address bits 26:12
+		 * and specifies the lower limit of protected range.
+		 */
+		uint32_t protect_range_base:15;
+
+		/* Specifies read protection is enabled */
+		uint32_t read_protect_en:1;
+
+		/*
+		 * This field corresponds to flash address bits 26:12
+		 * and specifies the upper limit of the protected range
+		 */
+		uint32_t protect_range_limit:15;
+
+		uint32_t write_protect_en:1;
+	} __packed fields;
+
+	uint32_t data;
+};
+
+/* Read SPI BAR 0 from PCI configuration space */
+static uintptr_t get_spi_bar(pci_devfn_t dev)
+{
+	uintptr_t bar;
+
+	bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+	assert(bar != 0);
+	/*
+	 * Bits 31-12 are the base address as per EDS for SPI,
+	 * Don't care about 0-11 bit
+	 */
+	return bar & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+}
+
+static uint32_t spi_read_bar(pci_devfn_t dev, uint32_t offset)
+{
+	return read32p(get_spi_bar(dev) + offset);
+}
+
+static uint32_t spi_read_bios_gpr0(void)
+{
+	return spi_read_bar(PCH_DEV_SPI, MMIO_BIOS_GPR0);
+}
+
+static uint32_t spi_get_wp_cse_ro_start_offset(union spi_bios_gpr0 bios_gpr0)
+{
+	return bios_gpr0.fields.protect_range_base << 12;
+}
+
+static uint32_t spi_get_wp_cse_ro_limit(union spi_bios_gpr0 bios_gpr0)
+{
+	return bios_gpr0.fields.protect_range_limit << 12 | 0xfff;
+}
+
+bool is_spi_wp_cse_ro_en(void)
+{
+	union spi_bios_gpr0 bios_gpr0;
+
+	bios_gpr0.data = spi_read_bios_gpr0();
+	return !!bios_gpr0.fields.write_protect_en;
+}
+
+void spi_get_wp_cse_ro_range(uint32_t *base, uint32_t *limit)
+{
+	union spi_bios_gpr0 bios_gpr0;
+
+	bios_gpr0.data = spi_read_bios_gpr0();
+	*base = spi_get_wp_cse_ro_start_offset(bios_gpr0);
+	*limit = spi_get_wp_cse_ro_limit(bios_gpr0);
+}
 
 static int spi_dev_to_bus(struct device *dev)
 {

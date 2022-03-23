@@ -971,9 +971,9 @@ fam15_skipClearingBit4:
 1:  #.if (al == 01h)				# TN only
     #Enable MSRC001_001F[EnableCf8ExtCfg]
     mov     $NB_CFG, %ecx    # MSR:C001_001F
-    _rdmsr
+    _RDMSR
     bts     $(ENABLE_CF8_EXT_CFG - 32), %edx
-    _wrmsr
+    _WRMSR
     # Set F3x44[6, CpuErrDis] = 1
     MAKE_EXT_PCI_ADDR  0, 0, 24, FUNC_3, 0x44 //MCA_NB_CFG
     //mov $(1 << 31 | 2 << 28 | (((MCA_NB_CFG) & (0x0F00)) >> 8) << 24 | 2 << 16 | 1 << 11 | FUNC_3 << 8), %eax

@@ -19,6 +19,9 @@
 	_ = ASSERT(size % 4K == 0, \
 		"DRAM DMA buffer should be multiple of smallest page size (4K)!");
 
+#define EARLY_INIT(addr, size) \
+	REGION(early_init_data, addr, size, 4)
+
 SECTIONS
 {
 	SRAM_START(0x00100000)
@@ -26,6 +29,7 @@ SECTIONS
 	TPM_TCPA_LOG(0x00103000, 2K)
 	FMAP_CACHE(0x00103800, 2K)
 	WATCHDOG_TOMBSTONE(0x00104000, 4)
+	EARLY_INIT(0x00104010, 128)
 	CBFS_MCACHE(0x00107c00, 8K)
 	TIMESTAMP(0x00109c00, 1K)
 	STACK(0x0010a000, 12K)

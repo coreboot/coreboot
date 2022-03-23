@@ -2,6 +2,7 @@ ifeq ($(CONFIG_SOC_MEDIATEK_MT8195),y)
 
 bootblock-y += ../common/auxadc.c
 bootblock-y += bootblock.c
+bootblock-y += ../common/early_init.c
 bootblock-y += ../common/eint_event.c
 bootblock-y += ../common/flash_controller.c
 bootblock-y += ../common/gpio.c gpio.c
@@ -53,6 +54,7 @@ romstage-y += mt6360.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-y += ../common/auxadc.c
+ramstage-y += ../common/early_init.c
 ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += devapc.c
 ramstage-y += ../common/dfd.c

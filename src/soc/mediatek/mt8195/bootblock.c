@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootblock_common.h>
+#include <soc/early_init.h>
 #include <soc/eint_event.h>
 #include <soc/mmu_operations.h>
 #include <soc/pll.h>
@@ -14,4 +15,5 @@ void bootblock_soc_init(void)
 	mtk_wdt_init();
 	mt_pll_init();
 	unmask_eint_event_mask();
+	early_init_clear();
 }

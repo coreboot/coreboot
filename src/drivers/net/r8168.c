@@ -427,6 +427,7 @@ static struct device_operations r8168_ops  = {
 static const unsigned short pci_device_ids[] = {
 	PCI_DID_REALTEK_8168,
 	PCI_DID_REALTEK_8125,
+	PCI_DID_REALTEK_8111,
 	0
 };
 

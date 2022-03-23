@@ -24,6 +24,15 @@ config MAINBOARD_HAS_I2C_TPM_GENERIC
 	help
 	  Board has a generic I2C TPM support
 
+config MAINBOARD_NEEDS_I2C_TI50_WORKAROUND
+	bool
+	default n
+	help
+	  Ti50 FW versions below 0.15 don't support the firmware_version or board_cfg registers,
+	  and trying to access them causes I2C errors. This config will skip accesses to these
+	  registers, and should be selected for boards using Ti50 chips with FW < 0.15. The config
+	  will be removed once all Ti50 stocks are updated to 0.15 or higher.
+
 config DRIVER_TIS_DEFAULT
 	bool
 	depends on I2C_TPM

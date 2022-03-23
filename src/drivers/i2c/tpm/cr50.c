@@ -500,7 +500,9 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	printk(BIOS_DEBUG, "cr50 TPM 2.0 (i2c %u:0x%02x id 0x%x)\n",
 	       bus, dev_addr, did_vid >> 16);
 
-	if (tpm_first_access_this_boot()) {
+	/* Ti50 FW version under 0.15 doesn't support board cfg command
+	   TODO: remove this flag after all stocks Ti50 uprev to 0.15 or above */
+	if (!CONFIG(MAINBOARD_NEEDS_I2C_TI50_WORKAROUND) && tpm_first_access_this_boot()) {
 		/* This is called for the side-effect of printing the version string. */
 		cr50_get_firmware_version(&ver);
 		cr50_set_board_cfg();

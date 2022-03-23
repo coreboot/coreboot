@@ -101,8 +101,6 @@ SbReset (
   IN       UINT8 OpFlag
   )
 {
-  UINT8 Temp;
-  Temp = OpFlag;
   RWIO (0xcf9, AccWidthUint8, 0x0, 0x06);
 }
 

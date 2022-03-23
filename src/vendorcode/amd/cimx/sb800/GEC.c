@@ -137,9 +137,7 @@ gecInitLatePost (
   IN       AMDSBCFG* pConfig
   )
 {
-  if ( !pConfig->GecConfig == 0) {
-    return;   //return if GEC controller is disabled.
-  }
+  /* if ( !pConfig->GecConfig == 0) { */
+  /*   return;   //return if GEC controller is disabled. */
+  /* } */
 }
-
-

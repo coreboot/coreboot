@@ -63,8 +63,6 @@ sbSmmService (
   IN       AMDSBCFG* pConfig
   )
 {
-  AMDSBCFG*   pTmp;      //lx-dummy for /W4 build
-  pTmp = pConfig;
 }
 
 /**
@@ -79,8 +77,3 @@ softwareSMIservice (
   )
 {
 }
-
-
-
-
-

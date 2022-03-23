@@ -141,14 +141,12 @@ sbPowerOnInit (
   UINT8   dbCg2WR;
   UINT8   dbCg1Pll;
   UINT8  cimNbSbGen2;
-  UINT8  cimSataMode;
   UINT8  cimSpiFastReadEnable;
   UINT8  cimSpiFastReadSpeed;
   UINT8  cimSioHwmPortEnable;
   UINT8  SataPortNum;
 
   cimNbSbGen2 = pConfig->NbSbGen2;
-  cimSataMode = pConfig->SATAMODE.SataModeReg;
 // Adding Fast Read Function support
   if (pConfig->BuildParameters.SpiFastReadEnable != 0 ) {
     cimSpiFastReadEnable = (UINT8) pConfig->BuildParameters.SpiFastReadEnable;

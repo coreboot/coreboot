@@ -330,14 +330,11 @@ commonInitEarlyBoot (
   UINT32   abValue;
   UINT16   dwTempVar;
   CPUID_DATA  CpuId;
-  UINT8   cimNativepciesupport;
   UINT8   cimIrConfig;
   UINT8   Data;
 
-  cimNativepciesupport = (UINT8) pConfig->NativePcieSupport;
   cimIrConfig = (UINT8) pConfig->IrConfig;
 #if  SB_CIMx_PARAMETER == 0
-  cimNativepciesupport = cimNativepciesupportDefault;
   cimIrConfig = cimIrConfigDefault;
 #endif
 
@@ -518,8 +515,6 @@ commonInitEarlyPost (
   UINT8  dbPortStatus;
   UINT8  cimSpreadSpectrum;
   UINT32 cimSpreadSpectrumType;
-  AMDSBCFG*   pTmp;
-  pTmp = pConfig;
 
   cimSpreadSpectrum = pConfig->SpreadSpectrum;
   cimSpreadSpectrumType = pConfig->BuildParameters.SpreadSpectrumType;
@@ -606,13 +601,11 @@ abLinkInitBeforePciEnum (
 {
   UINT32  cimResetCpuOnSyncFlood;
   ABTBLENTRY  *pAbTblPtr;
-  AMDSBCFG* Temp;
 
   cimResetCpuOnSyncFlood = pConfig->ResetCpuOnSyncFlood;
 #if  SB_CIMx_PARAMETER == 0
   cimResetCpuOnSyncFlood = cimResetCpuOnSyncFloodDefault;
 #endif
-  Temp = pConfig;
   if ( pConfig->SbPcieOrderRule ) {
     pAbTblPtr = (ABTBLENTRY *) FIXUP_PTR (&SbPcieOrderRule[0]);
     abcfgTbl (pAbTblPtr);
@@ -800,9 +793,7 @@ c3PopupSetting (
   IN       AMDSBCFG* pConfig
   )
 {
-  AMDSBCFG* Temp;
   UINT8  dbValue;
-  Temp = pConfig;
   //RPR C-State and VID/FID Change
   dbValue = getNumberOfCpuCores  ();
   if (dbValue > 1) {

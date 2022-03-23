@@ -88,9 +88,6 @@ AmdSbDispatcher (
 {
   AGESA_STATUS Status;
 
-  UINT64  tdValue;
-  tdValue = 0x32314130384253ULL;
-
   Status = AGESA_UNSUPPORTED;
 
   saveConfigPointer (pConfig);

@@ -109,8 +109,8 @@ ecInitBeforePciEnum (
   IN       AMDSBCFG* pConfig
   )
 {
-  AMDSBCFG*     pTmp;                                    // dummy code
-  pTmp = pConfig;
+  /* AMDSBCFG*     pTmp;                                    // dummy code */
+  /* pTmp = pConfig; */
 }
 
 /**
@@ -125,7 +125,7 @@ ecInitLatePost (
   IN       AMDSBCFG* pConfig
   )
 {
-  AMDSBCFG*     pTmp;                                    // dummy code
-  pTmp = pConfig;
+  /* AMDSBCFG*     pTmp;                                    // dummy code */
+  /* pTmp = pConfig; */
 }
 #endif

@@ -218,8 +218,6 @@ sbSmmAcpiOn (
 {
   // Commented the following code since we need to leave the IRQ1/12 filtering enabled always as per latest
   // recommendation in RPR. This is required to fix the keyboard stuck issue when playing games under Windows
-  AMDSBCFG*   pTmp;      //lx-dummy for /W4 build
-  pTmp = pConfig;
 
   // Disable Power Button SMI
   RWMEM (ACPI_MMIO_BASE + SMI_BASE + SB_SMI_REGB2, AccWidthUint8, ~(BIT4 + BIT5), 0);
@@ -250,5 +248,3 @@ CallBackToOEM (
 
   return Result;
 }
-
-

@@ -270,13 +270,11 @@ azaliaInitAfterPciEnum (
   UINT8   dbTempVariable;
   UINT16   dwTempVariable;
   UINT32   ddBAR0;
-  UINT32   ddTempVariable;
   dbEnableAzalia = 0;
   dbChannelNum = 0;
   dbTempVariable = 0;
   dwTempVariable = 0;
   ddBAR0 = 0;
-  ddTempVariable = 0;
 
   if ( pConfig->AzaliaController == 1 ) {
     return;
@@ -509,4 +507,3 @@ configureAzaliaSetConfigD4Dword (
     ++tempAzaliaCodecEntryPtr;
   }
 }
-

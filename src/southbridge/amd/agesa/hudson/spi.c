@@ -97,15 +97,15 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 
 	readoffby1 = bytesout ? 0 : 1;
 
-#if CONFIG(SOUTHBRIDGE_AMD_AGESA_YANGTZE)
-	spi_write(0x1E, 5);
-	spi_write(0x1F, bytesout); /* SpiExtRegIndx [5] - TxByteCount */
-	spi_write(0x1E, 6);
-	spi_write(0x1F, bytesin);  /* SpiExtRegIndx [6] - RxByteCount */
-#else
-	u8 readwrite = (bytesin + readoffby1) << 4 | bytesout;
-	spi_write(SPI_REG_CNTRL01, readwrite);
-#endif
+	if (CONFIG(SOUTHBRIDGE_AMD_AGESA_YANGTZE)) {
+		spi_write(0x1E, 5);
+		spi_write(0x1F, bytesout); /* SpiExtRegIndx [5] - TxByteCount */
+		spi_write(0x1E, 6);
+		spi_write(0x1F, bytesin);  /* SpiExtRegIndx [6] - RxByteCount */
+	} else {
+		u8 readwrite = (bytesin + readoffby1) << 4 | bytesout;
+		spi_write(SPI_REG_CNTRL01, readwrite);
+	}
 	spi_write(SPI_REG_OPCODE, cmd);
 
 	reset_internal_fifo_pointer();

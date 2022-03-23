@@ -11,6 +11,7 @@
 #include <delay.h>
 #include <lib.h>
 #include <soc/addressmap.h>
+#include <soc/early_init.h>
 #include <soc/pcie.h>
 #include <soc/pcie_common.h>
 #include <soc/soc_chip.h>
@@ -214,6 +215,7 @@ void mtk_pcie_domain_enable(struct device *dev)
 	const mtk_soc_config_t *config = config_of(dev);
 	const struct mtk_pcie_config *conf = &config->pcie_config;
 	const char *ltssm_state;
+	uint64_t perst_time_us;
 	size_t tries = 0;
 	uint32_t val;
 
@@ -232,6 +234,32 @@ void mtk_pcie_domain_enable(struct device *dev)
 	val = read32p(conf->base + PCIE_INT_ENABLE_REG);
 	val &= ~PCIE_INTX_ENABLE;
 	write32p(conf->base + PCIE_INT_ENABLE_REG, val);
+
+	perst_time_us = early_init_get_elapsed_time_us(EARLY_INIT_PCIE);
+	printk(BIOS_DEBUG, "%s: %lld us elapsed since assert PERST#\n",
+	       __func__, perst_time_us);
+
+	/*
+	 * Described in PCIe CEM specification sections 2.2
+	 * (PERST# Signal) and 2.2.1 (Initial Power-Up (G3 to S0)).
+	 * The deassertion of PERST# should be delayed 100ms (TPVPERL)
+	 * for the power and clock to become stable.
+	 */
+	const uint64_t min_perst_time_us = 100000; /* 100 ms */
+	if (perst_time_us < min_perst_time_us) {
+		if (!perst_time_us) {
+			printk(BIOS_WARNING,
+			       "%s: PCIe early init data not found, sleeping 100ms\n",
+			       __func__);
+			mtk_pcie_reset(conf->base + PCIE_RST_CTRL_REG, true);
+		} else {
+			printk(BIOS_WARNING,
+			       "%s: Need an extra %lld us delay to meet PERST# deassertion requirement\n",
+			       __func__, min_perst_time_us - perst_time_us);
+		}
+
+		udelay(min_perst_time_us - perst_time_us);
+	}
 
 	/* De-assert reset signals */
 	mtk_pcie_reset(conf->base + PCIE_RST_CTRL_REG, false);

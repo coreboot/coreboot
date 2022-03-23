@@ -6,6 +6,7 @@
 #include <device/resource.h>
 #include <delay.h>
 #include <soc/addressmap.h>
+#include <soc/early_init.h>
 #include <soc/gpio.h>
 #include <soc/pcie.h>
 #include <soc/pcie_common.h>
@@ -72,4 +73,6 @@ void mtk_pcie_pre_init(void)
 
 	/* Assert all reset signals at early stage */
 	mtk_pcie_reset(PCIE_RST_CTRL_REG, true);
+
+	early_init_save_time(EARLY_INIT_PCIE);
 }

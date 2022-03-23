@@ -16,4 +16,7 @@ ramstage-y += image.c
 ramstage-y += refcode_loader.c
 ramstage-y += s3_resume.c
 
+CFLAGS_x86_32 += -Wno-pragma-pack
+CFLAGS_x86_64 += -Wno-pragma-pack
+
 endif # CONFIG_SOC_AMD_PI

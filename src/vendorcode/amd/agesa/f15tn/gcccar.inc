@@ -224,7 +224,7 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
 .endm
 
 .macro MAKE_EXT_PCI_ADDR  Seg, Bus, Dev, Func, Offset
-	mov $(1 << 31 | (Seg) << 28 | (((Offset) & (0x0F00)) >> 8) << 24 | (Bus) << 16 | (Dev) << 11 | (Func) << 8) | ((Offset) & (0xFC)), %eax
+	mov $(1 << 31 | (\Seg) << 28 | (((\Offset) & (0x0F00)) >> 8) << 24 | (\Bus) << 16 | (\Dev) << 11 | (\Func) << 8) | ((\Offset) & (0xFC)), %eax
 .endm
 /****************************************************************************
 *

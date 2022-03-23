@@ -13,7 +13,7 @@ intel_fit-align := 16
 
 $(call add_intermediate, set_fit_ptr, $(IFITTOOL))
 	@printf "    UPDATE-FIT set FIT pointer to table\n"
-	$(IFITTOOL) -f $< -F -n intel_fit -r COREBOOT
+	$(IFITTOOL) -f $< -F -n intel_fit -r COREBOOT -c
 
 FIT_ENTRY=$(call strip_quotes, $(CONFIG_INTEL_TOP_SWAP_FIT_ENTRY_FMAP_REG))
 

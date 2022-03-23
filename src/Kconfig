@@ -312,6 +312,7 @@ config ASAN
 	default n
 	select ASAN_IN_ROMSTAGE if HAVE_ASAN_IN_ROMSTAGE
 	select ASAN_IN_RAMSTAGE if HAVE_ASAN_IN_RAMSTAGE
+	depends on COMPILER_GCC
 	help
 	  Enable address sanitizer - runtime memory debugger,
 	  designed to find out-of-bounds accesses and use-after-scope bugs.

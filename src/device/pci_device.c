@@ -1518,6 +1518,8 @@ static void pci_bridge_route(struct bus *link, scan_state state)
 		primary = parent->secondary;
 		secondary = link->secondary;
 		subordinate = link->subordinate;
+	} else {
+		return;
 	}
 
 	if (state == PCI_ROUTE_SCAN) {

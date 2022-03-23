@@ -90,35 +90,35 @@ struct {
 	struct pllcx_dividers	plldp;	/* target;  270 MHz */
 	/* PLLDP treats p differently (OUT = VCO / (p + 1) for p < 6). */
 } static const osc_table[16] = {
-	[OSC_FREQ_12]{
+	[OSC_FREQ_12] = {
 		.khz = 12000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 12000, .m =  1, .p = 0},
 		.pllc = {.n =  50, .m =  1, .p = 0},
 		.pllu = {.n = 960, .m = 12, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 90, .m =  1, .p = 3},
 	},
-	[OSC_FREQ_13]{
+	[OSC_FREQ_13] = {
 		.khz = 13000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 13000, .m =  1, .p = 0},
 		.pllc = {.n =  46, .m =  1, .p = 0},		 /* 598.0 MHz */
 		.pllu = {.n = 960, .m = 13, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 83, .m =  1, .p = 3},		 /* 269.8 MHz */
 	},
-	[OSC_FREQ_16P8]{
+	[OSC_FREQ_16P8] = {
 		.khz = 16800,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 16800, .m =  1, .p = 0},
 		.pllc = {.n =  71, .m =  1, .p = 1},		 /* 596.4 MHz */
 		.pllu = {.n = 400, .m =  7, .p = 0, .cpcon = 5, .lfcon = 2},
 		.plldp = {.n = 64, .m =  1, .p = 3},		 /* 268.8 MHz */
 	},
-	[OSC_FREQ_19P2]{
+	[OSC_FREQ_19P2] = {
 		.khz = 19200,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 19200, .m =  1, .p = 0},
 		.pllc = {.n =  62, .m =  1, .p = 1},		 /* 595.2 MHz */
 		.pllu = {.n = 200, .m =  4, .p = 0, .cpcon = 3, .lfcon = 2},
 		.plldp = {.n = 56, .m =  1, .p = 3},		 /* 268.8 MHz */
 	},
-	[OSC_FREQ_26]{
+	[OSC_FREQ_26] = {
 		.khz = 26000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 26000, .m =  1, .p = 0},
 		.pllc = {.n =  23, .m =  1, .p = 0},		 /* 598.0 MHz */
@@ -127,14 +127,14 @@ struct {
 	},
 	/* These oscillators get predivided as PLL inputs... n/m/p divisors for
 	 * 38.4 should always match 19.2, and 48 should always match 12. */
-	[OSC_FREQ_38P4]{
+	[OSC_FREQ_38P4] = {
 		.khz = 38400,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 19200, .m =  1, .p = 0},
 		.pllc = {.n =  62, .m =  1, .p = 1},		 /* 595.2 MHz */
 		.pllu = {.n = 200, .m =  4, .p = 0, .cpcon = 3, .lfcon = 2},
 		.plldp = {.n = 56, .m =  1, .p = 3},		 /* 268.8 MHz */
 	},
-	[OSC_FREQ_48]{
+	[OSC_FREQ_48] = {
 		.khz = 48000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 12000, .m =  1, .p = 0},
 		.pllc = {.n =  50, .m =  1, .p = 0},

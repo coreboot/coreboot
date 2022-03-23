@@ -40,11 +40,11 @@
  * disabled.
  * @{
  */
-#if CONFIG(DEBUG_RAM_SETUP)
-#define printram(x, ...) printk(BIOS_DEBUG, x, ##__VA_ARGS__)
-#else
-#define printram(x, ...)
-#endif
+#define printram(x, ...)						\
+	do {								\
+		if (CONFIG(DEBUG_RAM_SETUP))				\
+			printk(BIOS_DEBUG, x, ##__VA_ARGS__);		\
+	} while (0)
 /** @} */
 
 /** Result of the SPD decoding process */

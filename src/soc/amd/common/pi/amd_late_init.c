@@ -36,8 +36,9 @@ static void transfer_memory_info(TYPE17_DMI_INFO *dmi17,
 
 	dimm->rank_per_dimm = dmi17->Attributes;
 
-	dimm->mod_type = smbios_form_factor_to_spd_mod_type(dmi17->MemoryType,
-						dmi17->FormFactor);
+	dimm->mod_type = smbios_form_factor_to_spd_mod_type(
+		(smbios_memory_type)dmi17->MemoryType,
+		(smbios_memory_form_factor)dmi17->FormFactor);
 
 	dimm->bus_width = smbios_bus_width_to_spd_width(dmi17->MemoryType, dmi17->TotalWidth,
 						dmi17->DataWidth);

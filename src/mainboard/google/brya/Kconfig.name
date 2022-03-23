@@ -179,6 +179,7 @@ config BOARD_GOOGLE_BANSHEE
 config BOARD_GOOGLE_CROTA
 	bool "->  Crota"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
+	select DRIVERS_I2C_CS42L42
 
 config BOARD_GOOGLE_MOLI
 	bool "->  Moli"

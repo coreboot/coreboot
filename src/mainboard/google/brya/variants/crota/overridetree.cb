@@ -1,6 +1,314 @@
+fw_config
+	field MB_SD 0 1
+		option SD_ABSENT		0
+		option SD_GL9750		1
+	end
+	field KB_BL 2 2
+		option KB_BL_ABSENT		0
+		option KB_BL_PRESENT		1
+	end
+	field AUDIO 3 5
+		option AUDIO_UNKNOWN		0
+        	option MAX98360_CS42L42		1
+	end
+	field DB_LTE 6 7
+		option LTE_ABSENT		0
+		option LTE_USB			1
+	end
+end
+
 chip soc/intel/alderlake
 
-        device domain 0 on
-        end
+	# Acoustic settings
+	register "acoustic_noise_mitigation" = "1"
+	register "slow_slew_rate[VR_DOMAIN_IA]" = "SLEW_FAST_4"
+	register "slow_slew_rate[VR_DOMAIN_GT]" = "SLEW_FAST_4"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_IA]" = "1"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_GT]" = "1"
 
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI1             | Fingerprint MCU           |
+	#| I2C0              | Audio                     |
+	#| I2C1              | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#| I2C2              |                           |
+	#| I2C3              | Touchscreen               |
+	#| I2C5              | Trackpad                  |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 600,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 650,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY" # Disable USB2_C1
+	register "usb2_ports[4]" = "USB2_PORT_EMPTY" # Disable USB2_C4
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY" # Disable USB2_C6
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A MLB Port
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY" # Disable USB2_C8
+	register "usb3_ports[0]" = "USB3_PORT_EMPTY"
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A MLB port
+	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"
+
+	device domain 0 on
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
+		end
+		device ref pcie_rp3 on
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B3)"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E20)"
+				register "srcclk_pin" = "1"
+				device generic 0 alias emmc_rtd3 on end
+			end
+			# Enable PCIe-to-eMMC bridge PCIE 3 using clk 1
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.clk_src = 1,
+				.clk_req = 1,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE3 BH799BB
+		device ref tcss_dma0 on
+			chip drivers/intel/usb4/retimer
+				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E4)"
+				use tcss_usb3_port1 as dfp[0].typec_port
+				device generic 0 on end
+			end
+		end
+		device ref tcss_dma1 on
+			chip drivers/intel/usb4/retimer
+				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E4)"
+				use tcss_usb3_port3 as dfp[0].typec_port
+				device generic 0 on end
+			end
+		end
+		device ref pcie_rp6 off end #PCIE6 WWAN
+		device ref pcie_rp8 on
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H13)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D18)"
+				register "srcclk_pin" = "3"
+				device generic 0 on end
+			end
+		end	#PCIE8 SD card
+		device ref pcie4_0 on
+			# Enable CPU PCIE RP 1 using CLK 1
+			register "cpu_pcie_rp[CPU_RP(1)]" = "{
+				.clk_req = 1,
+				.clk_src = 1,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref i2c0 on
+			chip drivers/i2c/cs42l42
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_A23_IRQ)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B13)"
+				register "ts_inv" = "true"
+				register "ts_dbnc_rise" = "RISE_DEB_1000_MS"
+				register "ts_dbnc_fall" = "FALL_DEB_0_MS"
+				register "btn_det_init_dbnce" = "100"
+				register "btn_det_event_dbnce" = "10"
+				register "bias_lvls[0]" = "15"
+				register "bias_lvls[1]" = "8"
+				register "bias_lvls[2]" = "4"
+				register "bias_lvls[3]" = "1"
+				register "hs_bias_ramp_rate" = "HSBIAS_RAMP_SLOW"
+				register "hs_bias_sense_disable" = "true"
+				device i2c 48 on end
+			end
+		end #I2C0
+		device ref i2c1 on
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
+				device i2c 50 on end
+			end
+		end
+		device ref i2c3 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN9050""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "300"
+				register "generic.reset_off_delay_ms" = "1"
+				register "generic.enable_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "6"
+				register "generic.stop_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
+				register "generic.stop_off_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "generic.disable_gpio_export_in_crs" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 0x10 on end
+			end
+		end
+		device ref i2c5 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
+				register "wake" = "GPE0_DW2_14"
+				register "probed" = "1"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GXTP7288""
+				register "generic.desc" = ""Goodix Touchpad""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F14_IRQ)"
+				register "generic.wake" = "GPE0_DW2_14"
+				register "generic.probed" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 2c on end
+			end
+		end
+		device ref hda on
+			chip drivers/generic/max98357a
+				register "hid" = ""MX98360A""
+				register "sdmode_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
+				register "sdmode_delay" = "5"
+				device generic 0 on end
+			end
+		end
+		device ref gspi1 on
+			chip drivers/spi/acpi
+				register "name" = ""CRFP""
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "uid" = "1"
+				register "compat_string" = ""google,cros-ec-spi""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F15_IRQ)"
+				register "wake" = "GPE0_DW2_15"
+				device spi 0 on end
+			end # FPMCU
+		end
+		device ref pch_espi on
+			chip ec/google/chromeec
+				use conn0 as mux_conn[0]
+				use conn1 as mux_conn[1]
+				device pnp 0c09.0 on end
+			end
+		end
+		device ref pmc hidden
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port1 as usb2_port
+						use tcss_usb3_port1 as usb3_port
+						device generic 0 alias conn0 on end
+					end
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port3 as usb2_port
+						use tcss_usb3_port3 as usb3_port
+						device generic 1 alias conn1 on end
+					end
+				end
+			end
+		end
+		device ref tcss_xhci on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+						device ref tcss_usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C2 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+						device ref tcss_usb3_port3 on end
+					end
+				end
+			end
+		end
+		device ref xhci on
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C2 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 WWAN""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port (MLB)""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, LEFT, ACPI_PLD_GROUP(3, 1))"
+						device ref usb2_port8 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port (MLB)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, LEFT, ACPI_PLD_GROUP(3, 1))"
+						device ref usb3_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 WWAN""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb3_port4 on end
+					end
+				end
+			end
+		end
+	end
 end

@@ -2854,6 +2854,7 @@ sub process {
 
 # coreboot: The line subject limit is 65
 # Check for line lengths > 65 in commit subject
+# coreboot: Check for a period at the end of the subject line
 		if ($in_header_lines &&
 		    $line =~ /^Subject: /) {
 			$line = $line.$rawlines[$linenr];
@@ -2861,6 +2862,10 @@ sub process {
 			if (length($line) - length("Subject: [PATCH] ") > 65) {
 				WARN("COMMIT_LOG_LONG_LINE",
 				     "Possible long commit subject (prefer a maximum 65 characters)\n" . $herecurr);
+			}
+			if ($line =~ /\.$/) {
+				WARN("SUBJECT_HAS_FULL_STOP",
+				     "Subject line should not end with a period.\n" . $herecurr);
 			}
 		}
 

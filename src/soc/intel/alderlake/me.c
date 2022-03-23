@@ -2,6 +2,7 @@
 
 #include <bootstate.h>
 #include <intelblocks/cse.h>
+#include <intelblocks/spi.h>
 #include <console/console.h>
 #include <soc/me.h>
 #include <stdint.h>
@@ -90,6 +91,25 @@ union me_hfsts6 {
 	} __packed fields;
 };
 
+static void log_me_ro_write_protection_info(bool mfg_mode)
+{
+	bool cse_ro_wp_en = is_spi_wp_cse_ro_en();
+
+	printk(BIOS_DEBUG, "ME: WP for RO is enabled        : %s\n",
+			cse_ro_wp_en ? "YES" : "NO");
+
+	if (cse_ro_wp_en) {
+		uint32_t base, limit;
+		spi_get_wp_cse_ro_range(&base, &limit);
+		printk(BIOS_DEBUG, "ME: RO write protection scope - Start=0x%X, End=0x%X\n",
+				base, limit);
+	}
+
+	/* If EOM is disabled, but CSE RO is not write protected, log error */
+	if (!mfg_mode && !cse_ro_wp_en)
+		printk(BIOS_ERR, "ME: Write protection for CSE RO is not enabled\n");
+}
+
 static void dump_me_status(void *unused)
 {
 	union me_hfsts1 hfsts1;
@@ -161,6 +181,9 @@ static void dump_me_status(void *unused)
 		hfsts6.fields.cpu_debug_disable ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: TXT Support                 : %s\n",
 		hfsts6.fields.txt_support ? "YES" : "NO");
+
+	if (CONFIG(SOC_INTEL_CSE_LITE_SKU))
+		log_me_ro_write_protection_info(!!hfsts1.fields.mfg_mode);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, print_me_fw_version, NULL);

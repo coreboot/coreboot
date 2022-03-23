@@ -39,13 +39,11 @@ static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigP
 static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
-	uint32_t		FcnData;
 	PCIe_SLOT_RESET_INFO	*ResetInfo;
 
 	uint32_t	GpioMmioAddr;
 	uint8_t	 Data8;
 
-	FcnData = Data;
 	ResetInfo = ConfigPtr;
 	Status = AGESA_UNSUPPORTED;
 	GpioMmioAddr = (uintptr_t)acpimmio_gpio_100;

@@ -28,13 +28,11 @@ const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS      Status;
-	UINTN             FcnData;
 	MEM_DATA_STRUCT   *MemData;
 	UINT32            GpioMmioAddr;
 	UINT8             Data8;
 	UINT8             TempData8;
 
-	FcnData = Data;
 	MemData = ConfigPtr;
 
 	Status  = AGESA_SUCCESS;
@@ -101,13 +99,11 @@ static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigP
 static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
-	UINTN                 FcnData;
 	PCIe_SLOT_RESET_INFO  *ResetInfo;
 
 	UINT32  GpioMmioAddr;
 	UINT8   Data8;
 
-	FcnData   = Data;
 	ResetInfo = ConfigPtr;
 	GpioMmioAddr = (uintptr_t)acpimmio_gpio_100;
 	Status = AGESA_UNSUPPORTED;

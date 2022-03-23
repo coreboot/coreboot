@@ -25,13 +25,11 @@ const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS       Status;
-	UINTN              FcnData;
 	MEM_DATA_STRUCT    *MemData;
 	UINT32             GpioMmioAddr;
 	UINT8              Data8;
 	UINT8              TempData8;
 
-	FcnData = Data;
 	MemData = ConfigPtr;
 
 	Status = AGESA_SUCCESS;

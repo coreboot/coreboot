@@ -103,7 +103,7 @@ static void ite_gpio_conf(pnp_devfn_t dev)
 
 void bootblock_mainboard_early_init(void)
 {
-	u32 val, i;
+	u32 i;
 
 	/* Disable PCI-PCI bridge and release GPIO32/33 for other uses. */
 	pm_write8(0xea, 0x1);
@@ -128,5 +128,5 @@ void bootblock_mainboard_early_init(void)
 	* because of the buffer ICS551M
 	*/
 	for (i = 0; i < 200000; i++)
-		val = inb(0xcd6);
+		inb(0xcd6);
 }

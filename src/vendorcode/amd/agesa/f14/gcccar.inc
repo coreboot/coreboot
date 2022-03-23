@@ -245,7 +245,6 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
 *     SI[31:27]= reserved, =0
 ****************************************************************************/
 .macro  GET_NODE_ID_CORE_ID
-    LOCAL  node_core_exit
 
     mov     $-1, %si
     GET_NODE_ID_CORE_ID_F10
@@ -256,16 +255,16 @@ MSR_MASK    = ((1 << MTRR_DEF_TYPE_EN)+(1 << MTRR_DEF_TYPE_FIX_EN))
      * Check for unrecognized Family
      */
     cmp     $-1, %si                      # Has family (node/core) already been discovered?
-    jnz     node_core_exit              # Br if yes
+    jnz     node_core_exit\@              # Br if yes
 
    mov     $((1 << FLAG_UNKNOWN_FAMILY)+(1 << FLAG_IS_PRIMARY)), %esi # No, Set error code, Only let BSP continue
 
     mov     $APIC_BASE_ADDRESS, %ecx      # MSR:0000_001B
     _RDMSR
     bt      $APIC_BSC, %eax               # Is this the BSC?
-    jc      node_core_exit              # Br if yes
+    jc      node_core_exit\@              # Br if yes
     hlt                                 # Kill APs
-node_core_exit:
+node_core_exit\@:
 
 .endm
 
@@ -297,12 +296,11 @@ node_core_exit:
 #   * No INVD or WBINVD, no exceptions, page faults or interrupts
 ****************************************************************************/
 .macro AMD_ENABLE_STACK_FAMILY_HOOK_F10
-    LOCAL   fam10_enable_stack_hook_exit
 
     AMD_CPUID   $CPUID_MODEL
     shr     $20, %eax                     # AL = cpu extended family
     cmp     $0x01, %al                      # Is this family 10h?
-    jnz     fam10_enable_stack_hook_exit # Br if no
+    jnz     fam10_enable_stack_hook_exit\@ # Br if no
 
     mov     $DC_CFG, %ecx                 # MSR:C001_1022
     _RDMSR
@@ -333,7 +331,7 @@ node_core_exit:
 fam10_skipClearingBit4:
     mov %esi, %eax                         # load core#
     or %al, %al                       # If (BSP)
-    jne  fam10_enable_stack_hook_exit
+    jne  fam10_enable_stack_hook_exit\@
     mov     $PERF_COUNTER3, %ecx       #   Select performance counter three
                                         #   to count number of CAR evictions
     xor     %eax, %eax                #   Initialize the lower part of the counter to zero
@@ -350,7 +348,7 @@ fam10_skipClearingBit4:
     bts     $EVENT_ENABLE, %eax        #   Enable it
     _WRMSR                          #   Save it
 
-fam10_enable_stack_hook_exit:
+fam10_enable_stack_hook_exit\@:
 .endm
 
 /****************************************************************************
@@ -378,7 +376,6 @@ fam10_enable_stack_hook_exit:
 *****************************************************************************/
 
 .macro  AMD_DISABLE_STACK_FAMILY_HOOK_F10
-    LOCAL   fam10_disable_stack_hook_exit
 
     AMD_CPUID   $CPUID_MODEL
     shr     $20, %eax                     # AL = cpu extended family
@@ -448,22 +445,20 @@ fam10_disable_stack_hook_exit:
 *****************************************************************************/
 .macro  GET_NODE_ID_CORE_ID_F10
 
-    LOCAL   node_core_f10_exit
-    LOCAL   node_core_f10_AP
 
     cmp     $-1, %si                      # Has node/core already been discovered?
-    jnz     node_core_f10_exit          # Br if yes
+    jnz     node_core_f10_exit\@          # Br if yes
 
     AMD_CPUID   $CPUID_MODEL
     shr     $20, %eax                     # AL = cpu extended family
     cmp     $0x01, %al                     # Is this family 10h?
-    jnz     node_core_f10_exit          # Br if no
+    jnz     node_core_f10_exit\@          # Br if no
 
     xor     %esi, %esi                    # Assume BSC, clear flags
     mov     $APIC_BASE_ADDRESS, %ecx      # MSR:0000_001B
     _RDMSR
     bt      $APIC_BSC, %eax             # Is this the BSC?
-    jnc      node_core_f10_AP            # Br if no
+    jnc      node_core_f10_AP\@            # Br if no
 
         # This is the BSP.
     # Enable routing tables on BSP (just in case the HT init code has not yet enabled them)
@@ -476,7 +471,7 @@ fam10_disable_stack_hook_exit:
     out     %eax, %dx
     jmp     1f          #
 
-node_core_f10_AP:
+node_core_f10_AP\@:
     #
     # This is an AP. Routing tables have been enabled by the HT Init process.
     # Also, the MailBox register was set by the BSP during early init
@@ -532,7 +527,7 @@ node_core_f10_AP:
     mov     %eax, %esi                    # ESI = return value
 1:
  bts     $FLAG_IS_PRIMARY, %esi        # all Family 10h cores are primary
-node_core_f10_exit:
+node_core_f10_exit\@:
 .endm
 
 
@@ -564,12 +559,11 @@ node_core_f10_exit:
 *   * No INVD or WBINVD, no exceptions, page faults or interrupts
 *****************************************************************************/
 .macro  AMD_ENABLE_STACK_FAMILY_HOOK_F12
-    LOCAL   fam12_enable_stack_hook_exit
 
     AMD_CPUID   $CPUID_MODEL
     shr     $20, %eax                     # AL = cpu extended family
     cmp     $0x03, %al                     # Is this family 12h?
-    jnz     fam12_enable_stack_hook_exit # Br if no
+    jnz     fam12_enable_stack_hook_exit\@ # Br if no
 
     mov     $DC_CFG, %ecx                 # MSR:C001_1022
     _RDMSR
@@ -601,7 +595,7 @@ fam12_skipClearingBit4:
     bts     $CL_FLUSH_SERIALIZE, %eax     # Serialize all CL Flush actions
     _WRMSR
 
-fam12_enable_stack_hook_exit:
+fam12_enable_stack_hook_exit\@:
 .endm
 
 /*****************************************************************************
@@ -627,12 +621,11 @@ fam12_enable_stack_hook_exit:
 *   * MSRC001_1029[ClflushSerialize]=0
 *****************************************************************************/
 .macro  AMD_DISABLE_STACK_FAMILY_HOOK_F12
-    LOCAL   fam12_disable_stack_hook_exit
 
     AMD_CPUID   $CPUID_MODEL
     shr     $20, %eax                     # AL = cpu extended family
     cmp     $0x03, %al                     # Is this family 12h?
-    jnz     fam12_disable_stack_hook_exit # Br if no
+    jnz     fam12_disable_stack_hook_exit\@ # Br if no
 
     mov     $DC_CFG, %ecx                 # MSR:C001_1022
     _RDMSR
@@ -673,7 +666,7 @@ fam12_enable_stack_hook_exit:
     # End critical sequence in which EAX, BX, ECX, and EDX must be preserved.
     #--------------------------------------------------------------------------
 
-fam12_disable_stack_hook_exit:
+fam12_disable_stack_hook_exit\@:
 .endm
 
 /*****************************************************************************
@@ -690,20 +683,19 @@ fam12_disable_stack_hook_exit:
 *****************************************************************************/
 .macro  GET_NODE_ID_CORE_ID_F12
 
-    LOCAL   node_core_f12_exit
 
     cmp     $-1, %si                      # Has node/core already been discovered?
-    jnz     node_core_f12_exit          # Br if yes
+    jnz     node_core_f12_exit\@          # Br if yes
 
     AMD_CPUID   $CPUID_MODEL
     shr     $20, %eax                     # AL = cpu extended family
     cmp     $0x03, %al                     # Is this family 12h?
-    jnz     node_core_f12_exit          # Br if no
+    jnz     node_core_f12_exit\@          # Br if no
 
     shr     $24, %ebx                     # CPUID_0000_0001_EBX[31:24]: initial local APIC physical ID
     bts     $FLAG_IS_PRIMARY, %ebx        # all family 12h cores are primary
     mov     %ebx, %esi                    # ESI = Node#=0, core number
-node_core_f12_exit:
+node_core_f12_exit\@:
 .endm
 
 /*****************************************************************************
@@ -730,12 +722,11 @@ node_core_f12_exit:
 *   * No INVD or WBINVD, no exceptions, page faults or interrupts
 *****************************************************************************/
 .macro  AMD_ENABLE_STACK_FAMILY_HOOK_F14
-    LOCAL   fam14_enable_stack_hook_exit
 
     AMD_CPUID   $CPUID_MODEL
     shr     $20, %eax                     # AL = cpu extended family
     cmp     $0x05, %al                     # Is this family 14h?
-    jnz     fam14_enable_stack_hook_exit # Br if no
+    jnz     fam14_enable_stack_hook_exit\@ # Br if no
 
     mov     $DC_CFG, %ecx                 # MSR:C001_1022
     _RDMSR
@@ -760,7 +751,7 @@ node_core_f12_exit:
     _WRMSR
 fam14_skipClearingBit4:                 # Keeping this label
 
-fam14_enable_stack_hook_exit:
+fam14_enable_stack_hook_exit\@:
 .endm
 
 /*****************************************************************************
@@ -783,12 +774,11 @@ fam14_enable_stack_hook_exit:
 *   * MSRC001_1022[DIS_HW_PF]=0.
 *****************************************************************************/
 .macro  AMD_DISABLE_STACK_FAMILY_HOOK_F14
-    LOCAL   fam14_disable_stack_hook_exit
 
     AMD_CPUID   $CPUID_MODEL
     shr     $20, %eax                     # AL = cpu extended family
     cmp     $0x05, %al                     # Is this family 14h?
-    jnz     fam14_disable_stack_hook_exit # Br if no
+    jnz     fam14_disable_stack_hook_exit\@ # Br if no
 
     mov     $LS_CFG, %ecx                 # MSR:C001_1020
     _RDMSR
@@ -821,7 +811,7 @@ fam14_enable_stack_hook_exit:
     # End critical sequence in which EAX, BX, ECX, and EDX must be preserved.
     #--------------------------------------------------------------------------
 
-fam14_disable_stack_hook_exit:
+fam14_disable_stack_hook_exit\@:
 .endm
 
 /*****************************************************************************
@@ -838,24 +828,23 @@ fam14_disable_stack_hook_exit:
 *****************************************************************************/
 .macro  GET_NODE_ID_CORE_ID_F14
 
-    LOCAL   node_core_f14_exit
 
     cmp     $-1, %si                    # Has node/core already been discovered?
-    jnz     node_core_f14_exit          # Br if yes
+    jnz     node_core_f14_exit\@          # Br if yes
 
     AMD_CPUID   $CPUID_MODEL
     shr     $20, %eax                     # AL = cpu extended family
     cmp     $0x05, %al                     # Is this family 14h?
-    jnz     node_core_f14_exit          # Br if no
+    jnz     node_core_f14_exit\@          # Br if no
 
     xor     %esi, %esi                    # Node must be 0
     bts     $FLAG_IS_PRIMARY, %esi        # all family 14h cores are primary
     mov     $APIC_BASE_ADDRESS, %ecx      # MSR:0000_001B
     _RDMSR
     bt      $APIC_BSC, %eax               # Is this the BSC?
-    jc      node_core_f14_exit          # Br if yes
+    jc      node_core_f14_exit\@          # Br if yes
     inc     %si                          # Set core to 1
-node_core_f14_exit:
+node_core_f14_exit\@:
 .endm
 
 
@@ -885,12 +874,11 @@ node_core_f14_exit:
 *   * No INVD or WBINVD, no exceptions, page faults or interrupts
 *****************************************************************************/
 .macro  AMD_ENABLE_STACK_FAMILY_HOOK_F15
-    LOCAL   fam15_enable_stack_hook_exit
 
     AMD_CPUID   $CPUID_MODEL
     shr     $20, %eax                     # AL = cpu extended family
     cmp     $0x06, %al                     # Is this family 15h?
-    jnz     fam15_enable_stack_hook_exit # Br if no
+    jnz     fam15_enable_stack_hook_exit\@ # Br if no
 
     bt      $FLAG_STACK_REENTRY , %esi                 # Check if stack has already been set
     jc      fam15_skipClearingBit4
@@ -921,7 +909,7 @@ fam15_skipClearingBit4:
     btr     $(COMBINE_CR0_CD - 32), %edx         # Clear CombineCr0Cd bit
     _WRMSR
 
-fam15_enable_stack_hook_exit:
+fam15_enable_stack_hook_exit\@:
 .endm
 
 
@@ -946,13 +934,12 @@ fam15_enable_stack_hook_exit:
 *   * MSRC001_1022[DIS_HW_PF]=0
 *****************************************************************************/
 .macro  AMD_DISABLE_STACK_FAMILY_HOOK_F15
-    LOCAL   fam15_disable_stack_hook_exit
 
     AMD_CPUID   $CPUID_MODEL
     mov     %eax, %ebx                    # Save revision info to EBX
     shr     $20, %eax                     # AL = cpu extended family
     cmp     $0x06, %al                     # Is this family 15h?
-    jnz     fam15_disable_stack_hook_exit # Br if no
+    jnz     fam15_disable_stack_hook_exit\@ # Br if no
 
     mov     $LS_CFG, %ecx                 # MSR:C001_1020
     #.if (ebx != 00600F00h)              ; Is this rev A0?
@@ -1005,7 +992,7 @@ fam15_enable_stack_hook_exit:
     bts     $(COMBINE_CR0_CD - 32), %edx         # Set CombineCr0Cd bit
     _WRMSR
 
-fam15_disable_stack_hook_exit:
+fam15_disable_stack_hook_exit\@:
 .endm
 
 
@@ -1023,23 +1010,20 @@ fam15_disable_stack_hook_exit:
 *****************************************************************************/
 .macro  GET_NODE_ID_CORE_ID_F15
 
-    LOCAL   node_core_f15_exit
-    LOCAL   node_core_f15_AP
-    LOCAL   node_core_f15_shared
 
     cmp     $-1, %si                      # Has node/core already been discovered?
-    jnz     node_core_f15_exit          # Br if yes
+    jnz     node_core_f15_exit\@          # Br if yes
 
     AMD_CPUID   $CPUID_MODEL
     shr     $20, %eax                     # AL = cpu extended family
     cmp     $06, %al                     # Is this family 15h?
-    jnz     node_core_f15_exit          # Br if no
+    jnz     node_core_f15_exit\@          # Br if no
 
     xor     %esi, %esi                    # Assume BSC, clear local flags
     mov     $APIC_BASE_ADDRESS, %ecx      # MSR:0000_001B
     _RDMSR
     bt      $APIC_BSC, %eax               # Is this the BSC?
-    jnc      node_core_f15_AP            # Br if no
+    jnc      node_core_f15_AP\@            # Br if no
 
     # This is the BSP.
     # Enable routing tables on BSP (just in case the HT init code has not yet enabled them)
@@ -1050,9 +1034,9 @@ fam15_disable_stack_hook_exit:
     in      %dx, %eax
     btr     $0, %eax                      # Set LinkInitializationControl[RouteTblDis] = 0
     out     %eax, %dx
-    jmp     node_core_f15_shared        #
+    jmp     node_core_f15_shared\@        #
 
-node_core_f15_AP:
+node_core_f15_AP\@:
     #
     # This is an AP. Routing tables have been enabled by the HT Init process.
     # Also, the MailBox register was set by the BSP during early init
@@ -1110,7 +1094,7 @@ node_core_f15_AP:
       #
       #   determine if this core shares MTRRs
       #
-node_core_f15_shared:
+node_core_f15_shared\@:
     mov     $0x8000C580, %eax              # Compute Unit Status
     mov     %si, %bx
     shl     $3, %bh                       # Move node# to PCI Dev# field
@@ -1173,7 +1157,7 @@ node_core_f15_shared:
     #.endif
     2:
 
-node_core_f15_exit:
+node_core_f15_exit\@:
 
 .endm
 
@@ -1245,10 +1229,6 @@ node_core_f15_exit:
 .macro  AMD_ENABLE_STACK
 
 # These are local labels. Declared so linker doesn't cause 'redefined label' errors
-    LOCAL   SetupStack
-    LOCAL   Real16bMode
-    LOCAL   Protected32Mode
-    LOCAL   ClearTheStack
 
 #   Note that SS:ESP will be default stack.  Note that this stack
 #   routine will not be used after memory has been initialized.  Because
@@ -1262,14 +1242,14 @@ node_core_f15_exit:
     # It is =0 after reset; CAR setup sets it to enable the MTRRs
     mov     %cr0, %eax
     test    $CR0_MASK, %eax              # Is cache disabled? (CD & NW bits)
-    jnz     SetupStack                  # Jump if yes
+    jnz     SetupStack\@                  # Jump if yes
     mov     $AMD_MTRR_DEFTYPE, %ecx       # MSR:0000_02FF
     _RDMSR
     test    $MSR_MASK, %eax                     # Are the default types enabled? (MTRR_DEF_TYPE_EN + MTRR_DEF_TYPE_FIX_EN)
-    jz      SetupStack                  # Jump if no
+    jz      SetupStack\@                  # Jump if no
     or      $FLAG_STACK_REENTRY, %esi             # Bit25, indicate stack has already been initialized
 
-SetupStack:
+SetupStack\@:
     # Set node to map the first 16MB to node 0# 0000_0000 to 00FF_FFFF as DRAM
     mov     %esi, %ebx                    # Get my Node/Core info
     xor     %bl, %bl
@@ -1500,12 +1480,12 @@ SetupStack:
     mov     %cr0, %ecx                    # Check for 32-bit protect mode
     bt      $CR0_PE, %ecx                 #
     #.if (!carry?)                       # PE=0 means real mode
-    jc      Protected32Mode
+    jc      Protected32Mode\@
     mov     %cs, %cx                      # PE=1
     cmp     $0x0D000, %cx                  # Check for CS
-    jb      Protected32Mode             # If CS < D000, it is a selector instead of a segment
+    jb      Protected32Mode\@             # If CS < D000, it is a selector instead of a segment
             # alter SS:ESP for 16b Real Mode:
-Real16bMode:
+Real16bMode\@:
     mov     %edi, %eax
     shr     $4, %eax                      # Create a Real Mode segment for ss, ds, es
     mov     %ax, %ss
@@ -1520,7 +1500,7 @@ Real16bMode:
     #   Default is to use Protected 32b Mode
     #.endif
     ;
-Protected32Mode:
+Protected32Mode\@:
     #
     # Clear The Stack
     #   Now that we have set the location and the MTRRs, initialize the cache by
@@ -1533,7 +1513,7 @@ Protected32Mode:
     #       edi -  address of start of stack block
     #
 
-ClearTheStack:                          # Stack base is in SS, stack pointer is in ESP
+ClearTheStack\@:                          # Stack base is in SS, stack pointer is in ESP
     shr     $2, %ebx                      # ebx = stack block size in dwords
     mov     %bx, %cx                      #
     # Check our flags - Don't clear an existing stack

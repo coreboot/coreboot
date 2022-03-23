@@ -12,7 +12,7 @@ static void spd_read_from_cbfs(const struct spd_info *spd_info, uintptr_t *spd_d
 {
 	size_t spd_index = spd_info->spd_spec.spd_index;
 
-	printk(BIOS_DEBUG, "SPD INDEX = %lu\n", spd_index);
+	printk(BIOS_DEBUG, "SPD INDEX = %zu\n", spd_index);
 
 	/* Memory leak is ok since we have memory mapped boot media */
 	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));

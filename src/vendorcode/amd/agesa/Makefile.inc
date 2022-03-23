@@ -11,6 +11,11 @@ libagesa-y =
 libagesa-generic-ccopts += -D__LIBAGESA__
 libagesa-generic-ccopts += -fno-zero-initialized-in-bss
 libagesa-generic-ccopts += $(AGESA_INC) $(AGESA_AUTOINCLUDES)
+libagesa-generic-ccopts += -Wno-pragma-pack -Wno-unused-but-set-variable
+libagesa-generic-ccopts += -Wno-implicit-fallthrough
+
+romstage-generic-ccopts += -Wno-pragma-pack
+ramstage-generic-ccopts += -Wno-pragma-pack
 
 AGESA_CFLAGS := -march=k8-sse3 -mtune=k8-sse3 -fno-strict-aliasing
 

@@ -39,15 +39,11 @@ static void enable_dev(struct device *dev)
 
 static void kbc1100_init(struct device *dev)
 {
-	struct resource *res0, *res1;
-
 	if (!dev->enabled)
 		return;
 
 	switch (dev->path.pnp.device) {
 	case KBC1100_KBC:
-		res0 = find_resource(dev, PNP_IDX_IO0);
-		res1 = find_resource(dev, PNP_IDX_IO1);
 		pc_keyboard_init(NO_AUX_DEVICE);
 		break;
 	}

@@ -97,10 +97,6 @@ ifeq ($(CONFIG_PSP_DISABLE_POSTCODES),y)
 PSP_SOFTFUSE_BITS += 7
 endif
 
-ifeq ($(CONFIG_PSP_POSTCODES_ON_ESPI),y)
-PSP_SOFTFUSE_BITS += 15
-endif
-
 ifeq ($(CONFIG_PSP_UNLOCK_SECURE_DEBUG),y)
 # Enable secure debug unlock
 PSP_SOFTFUSE_BITS += 0

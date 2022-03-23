@@ -399,8 +399,8 @@ config PSP_SOFTFUSE_BITS
 	  Bit 0:  Enable secure debug (Set by PSP_UNLOCK_SECURE_DEBUG)
 	  Bit 7:  Disable PSP postcodes on Renoir and newer chips only
 	          (Set by PSP_DISABLE_PORT80)
-	  Bit 15: PSP post code destination: 0=LPC 1=eSPI
-	          (Set by PSP_INITIALIZE_ESPI)
+	  Bit 15: PSP debug output destination:
+	          0=SoC MMIO UART, 1=IO port 0x3F8
 	  Bit 29: Disable MP2 firmware loading (Set by PSP_LOAD_MP2_FW)
 
 	  See #55758 (NDA) for additional bit definitions.

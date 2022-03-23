@@ -70,7 +70,7 @@ void intel_txt_log_bios_acm_error(void)
 	/* Errors by BIOS ACM or FIT */
 	if ((txt_error & ACMERROR_TXT_VALID) &&
 	    (acm_status & ACMERROR_TXT_VALID)) {
-		intel_txt_log_acm_error(read32((void *)TXT_BIOSACM_ERRORCODE));
+		intel_txt_log_acm_error(bios_acm_error);
 		log_txt_error("FIT MICROCODE");
 	}
 	/* Errors by SINIT */

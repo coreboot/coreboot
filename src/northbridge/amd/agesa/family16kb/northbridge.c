@@ -469,9 +469,9 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	/* HEST */
 	current = ALIGN(current, 8);
 	hest = (acpi_hest_t *)current;
-	acpi_write_hest((void *)current, acpi_fill_hest);
-	acpi_add_table(rsdp, (void *)current);
-	current += ((acpi_header_t *)current)->length;
+	acpi_write_hest(hest, acpi_fill_hest);
+	acpi_add_table(rsdp, hest);
+	current += hest->header.length;
 
 	current   = ALIGN(current, 8);
 	printk(BIOS_DEBUG, "ACPI:    * IVRS at %lx\n", current);

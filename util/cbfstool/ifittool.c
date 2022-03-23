@@ -308,13 +308,12 @@ int main(int argc, char *argv[])
 			ERROR("FIT not found.\n");
 			return 1;
 		}
-	}
-
-	if (clear_table) {
-		if (fit_clear_table(fit)) {
-			partitioned_file_close(image_file);
-			ERROR("Failed to clear table.\n");
-			return 1;
+		if (clear_table) {
+			if (fit_clear_table(fit)) {
+				partitioned_file_close(image_file);
+				ERROR("Failed to clear table.\n");
+				return 1;
+			}
 		}
 	}
 
@@ -394,6 +393,15 @@ int main(int argc, char *argv[])
 			return 1;
 		}
 		fit = fit_get_table(&bootblock, convert_to_from_top_aligned, topswap_size);
+
+		if (clear_table) {
+			if (fit_clear_table(fit)) {
+				partitioned_file_close(image_file);
+				ERROR("Failed to clear table.\n");
+				return 1;
+			}
+		}
+
 		break;
 	}
 	case DEL_OP:

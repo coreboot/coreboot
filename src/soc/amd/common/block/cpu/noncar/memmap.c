@@ -64,5 +64,5 @@ void bert_reserved_region(void **start, size_t *size)
 {
 	*start = cbmem_add(CBMEM_ID_ACPI_BERT, CONFIG_ACPI_BERT_SIZE);
 	*size = CONFIG_ACPI_BERT_SIZE;
-	printk(BIOS_INFO, "Reserved BERT region base: %p, size: 0x%lx\n", *start, *size);
+	printk(BIOS_INFO, "Reserved BERT region base: %p, size: 0x%zx\n", *start, *size);
 }

@@ -12,6 +12,7 @@ all-y		+= aoac.c
 
 bootblock-y	+= bootblock.c
 bootblock-y	+= early_fch.c
+bootblock-y	+= espi_util.c
 bootblock-y	+= gpio.c
 bootblock-y	+= i2c.c
 bootblock-y	+= reset.c

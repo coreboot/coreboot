@@ -46,7 +46,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
 	/* WLAN_DISABLE */
 	PAD_GPO(GPIO_21, LOW),
-	/* ESPI_ALERT_D1 */
+	/* ESPI_ALERT_L */
 	PAD_NF(GPIO_22, ESPI_ALERT_D1, PULL_NONE),
 	/* AC_PRES */
 	PAD_NF(GPIO_23, AC_PRES, PULL_UP),
@@ -60,8 +60,8 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* GPIO_28: Not available */
 	/* EN_PP3300_TCHSCR */
 	PAD_GPO(GPIO_29, HIGH),
-	/* SOC_DISABLE_DISP_BL */
-	PAD_GPO(GPIO_30, LOW),
+	/* ESPI_CS_L */
+	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* Unused */
 	PAD_NC(GPIO_31),
 	/* LPC_RST_L */
@@ -75,21 +75,21 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* GPIO_43 - GPIO_66: Not available */
 	/* GPIO_67 */
 	PAD_GPI(GPIO_67, PULL_NONE),
-	/* SPI1_DATA2 */
+	/* ESPI1_DATA2 */
 	PAD_NF(GPIO_68, SPI1_DAT2, PULL_NONE),
-	/* SPI1_DATA3 */
+	/* ESPI1_DATA3 */
 	PAD_NF(GPIO_69, SPI1_DAT3, PULL_NONE),
-	/* ESPI_CS_L */
-	PAD_NF(GPIO_74, SPI1_CS1_L, PULL_NONE),
+	/* SOC_DISABLE_DISP_BL */
+	PAD_GPO(GPIO_74, LOW),
 	/* TCHSCR_REPORT_EN */
 	PAD_GPO(GPIO_76, LOW),
-	/* SPI1_CLK */
+	/* ESPI_CLK */
 	PAD_NF(GPIO_77, SPI1_CLK, PULL_NONE),
 	/* EN_PP3300_CAM */
 	PAD_GPO(GPIO_78, HIGH),
-	/* SPI1_DATA1 */
+	/* ESPI1_DATA1 */
 	PAD_NF(GPIO_80, SPI1_DAT1, PULL_NONE),
-	/* SPI1_DATA0 */
+	/* ESPI1_DATA0 */
 	PAD_NF(GPIO_81, SPI1_DAT0, PULL_NONE),
 	/* EC_SOC_INT_ODL */
 	PAD_GPI(GPIO_84, PULL_NONE),

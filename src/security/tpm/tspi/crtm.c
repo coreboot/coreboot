@@ -140,7 +140,6 @@ uint32_t tspi_cbfs_measurement(const char *name, uint32_t type, const struct vb2
 int tspi_measure_cache_to_pcr(void)
 {
 	int i;
-	enum vb2_hash_algorithm hash_alg;
 	struct tcpa_table *tclt = tcpa_log_init();
 
 	/* This means the table is empty. */
@@ -150,11 +149,6 @@ int tspi_measure_cache_to_pcr(void)
 	if (!tclt) {
 		printk(BIOS_WARNING, "TCPA: Log non-existent!\n");
 		return VB2_ERROR_UNKNOWN;
-	}
-	if (CONFIG(TPM1)) {
-		hash_alg = VB2_HASH_SHA1;
-	} else { /* CONFIG_TPM2 */
-		hash_alg = VB2_HASH_SHA256;
 	}
 
 	printk(BIOS_DEBUG, "TPM: Write digests cached in TCPA log to PCR\n");

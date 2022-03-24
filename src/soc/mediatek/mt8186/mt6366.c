@@ -10,6 +10,7 @@
 #include <delay.h>
 #include <soc/mt6366.h>
 #include <soc/pmic_wrap.h>
+#include <soc/pmif.h>
 #include <soc/regulator.h>
 #include <timer.h>
 
@@ -953,6 +954,7 @@ void mt6366_init(void)
 	wk_sleep_voltage_by_ddr();
 	wk_power_down_seq();
 	mt6366_lp_setting();
+	pmif_spmi_set_lp_mode();
 
 	while (!stopwatch_expired(&voltage_settled))
 		/* wait for voltages to settle */;

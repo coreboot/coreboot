@@ -3,7 +3,7 @@
 #ifndef __ESPI_H__
 #define __ESPI_H__
 
-#include <stdint.h>
+#include <types.h>
 
 /* ESPI Slave Registers (Document # 327432-004 Revision 1.0 Chapter 7) */
 

@@ -456,6 +456,14 @@ function build_config
 		local FORCE_ENABLED_CROS=0
 	fi
 
+	if [ "$clang" = true ]; then
+		check_config "$build_dir" "clang" "CONFIG_COMPILER_LLVM_CLANG=y"
+		if [ $? -ne 0 ]; then
+			echo "${MAINBOARD} doesn't support clang, skipping."
+			return
+		fi
+	fi
+
 	if [ $BUILDENV_CREATED -ne 0 ] || [ $MAINBOARD_OK -ne 0 ] || [ $VENDOR_OK -ne 0 ] || [ $FORCE_ENABLED_CROS -eq 1 ]; then
 		junit " <testcase classname='board${testclass/#/.}' name='$BUILD_NAME' >"
 
@@ -587,7 +595,7 @@ Options:\n"
     [-J|--junit]                  Write JUnit formatted xml log file
     [-K|--kconfig <name>]         Prepend file to generated Kconfig
     [-l|--loglevel <num>]         Set loglevel
-    [-L|--clang]                  Use clang
+    [-L|--clang]                  Use clang on supported arch
     [-o|--outdir <path>]          Store build results in path
                                   (defaults to $TARGET)
     [-p|--payloads <dir>]         Use payloads in <dir> to build images
@@ -671,6 +679,7 @@ if [ $retval != 0 ]; then
 fi
 
 chromeos=false
+clang=false
 clean_work=false
 clean_objs=false
 verboseopt='V=0'
@@ -738,6 +747,7 @@ while true ; do
 			configoptions="${configoptions}CONFIG_ANY_TOOLCHAIN=y\n"
 			;;
 		-L|--clang)	shift
+			clang=true
 			customizing="${customizing}, clang"
 			configoptions="${configoptions}CONFIG_COMPILER_LLVM_CLANG=y\n# CONFIG_COMPILER_GCC is not set\n"
 			;;

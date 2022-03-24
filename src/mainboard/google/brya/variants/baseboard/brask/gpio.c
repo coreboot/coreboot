@@ -118,7 +118,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C7, NONE),
 
 	/* D0  : ISH_GP0 ==> PCH_FP_BOOT0 */
-	PAD_NC_LOCK(GPP_D0, NONE, LOCK_CONFIG),
+	PAD_CFG_GPO_LOCK(GPP_D0, 0, LOCK_CONFIG),
 	/* D1  : ISH_GP1 ==> FP_RST_ODL */
 	PAD_CFG_GPO_LOCK(GPP_D1, 1, LOCK_CONFIG),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */

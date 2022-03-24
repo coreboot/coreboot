@@ -141,6 +141,23 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_148, I2C1_SDA, PULL_NONE),
 };
 
+static const struct soc_amd_gpio espi_gpio_table[] = {
+	/* ESPI_CS_L */
+	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
+	/* ESPI_CLK */
+	PAD_NF(GPIO_77, SPI1_CLK, PULL_NONE),
+	/* ESPI1_DATA0 */
+	PAD_NF(GPIO_81, SPI1_DAT0, PULL_NONE),
+	/* ESPI1_DATA1 */
+	PAD_NF(GPIO_80, SPI1_DAT1, PULL_NONE),
+	/* ESPI1_DATA2 */
+	PAD_NF(GPIO_68, SPI1_DAT2, PULL_NONE),
+	/* ESPI1_DATA3 */
+	PAD_NF(GPIO_69, SPI1_DAT3, PULL_NONE),
+	/* ESPI_ALERT_L */
+	PAD_NF(GPIO_22, ESPI_ALERT_D1, PULL_NONE),
+};
+
 static const struct soc_amd_gpio tpm_gpio_table[] = {
 	/* I2C3_SCL */
 	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
@@ -220,6 +237,12 @@ __weak void variant_sleep_gpio_table(const struct soc_amd_gpio **gpio, size_t *s
 {
 	*size = ARRAY_SIZE(sleep_gpio_table);
 	*gpio = sleep_gpio_table;
+}
+
+__weak void variant_espi_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+{
+	*size = ARRAY_SIZE(espi_gpio_table);
+	*gpio = espi_gpio_table;
 }
 
 __weak void variant_tpm_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)

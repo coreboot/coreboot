@@ -37,6 +37,9 @@ void variant_early_override_gpio_table(const struct soc_amd_gpio **gpio, size_t 
 /* This function provides GPIO settings before entering sleep. */
 void variant_sleep_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 
+/* This function provides GPIO settings for eSPI bus. */
+void variant_espi_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
+
 /* This function provides GPIO settings for TPM i2c bus. */
 void variant_tpm_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 

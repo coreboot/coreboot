@@ -159,12 +159,6 @@ static void soc_silicon_init_params(FSPS_UPD *silupd)
 	if (get_fiamux_hsio_info(supported_hsio_lanes, num, &hsio_config))
 		die("HSIO Configuration is invalid, please correct it!");
 
-	/* Check the requested FIA MUX Configuration */
-	if (!(&hsio_config->FiaConfig)) {
-		die("Requested FIA MUX Configuration is invalid,"
-		    " please correct it!");
-	}
-
 	/* Initialize PCIE Bifurcation & HSIO configuration */
 	silupd->FspsConfig.PcdBifurcationPcie0 = hsio_config->PcieBifCtr[0];
 	silupd->FspsConfig.PcdBifurcationPcie1 = hsio_config->PcieBifCtr[1];

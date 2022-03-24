@@ -158,12 +158,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
 			die("HSIO Configuration is invalid, please correct "
 			    "it!");
 
-		/* Check the requested FIA MUX Configuration */
-		if (!(&hsio_config->FiaConfig)) {
-			die("Requested FIA MUX Configuration is invalid,"
-			    " please correct it!");
-		}
-
 		mupd->FspmConfig.PcdHsioLanesNumber =
 		    (uint32_t)hsio_config->NumLanesSupported;
 		mupd->FspmConfig.PcdFiaMuxConfigPtr =

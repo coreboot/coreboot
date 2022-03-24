@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 
-#ifndef __ARCH_BARRIER_H_
+#ifndef __ARCH_BARRIER_H__
 #define __ARCH_BARRIER_H__
 
 static inline void mb(void)  { asm volatile("fence"); }

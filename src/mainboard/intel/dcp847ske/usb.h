@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #ifndef DCP847SKE_USB_H
-#define DPC847SKE_USB_H
+#define DCP847SKE_USB_H
 
 USB_CONFIG(1, 1, 0), /* back, towards HDMI plugs */
 USB_CONFIG(1, 1, 0), /* back, towards power plug */

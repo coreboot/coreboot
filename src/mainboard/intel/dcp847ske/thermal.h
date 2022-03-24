@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #ifndef DCP847SKE_THERMAL_H
-#define DPC847SKE_THERMAL_H
+#define DCP847SKE_THERMAL_H
 
 /* TODO: These should be generated at runtime from
  * MSR_TEMPERATURE_TARGET (0x1a2) */

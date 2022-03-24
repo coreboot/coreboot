@@ -10,6 +10,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/smm.h>
+#include <acpi/acpi.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
@@ -41,7 +42,10 @@ static void pre_mp_init(void)
 static void post_mp_init(void)
 {
 	global_smi_enable();
-	apm_control(APM_CNT_SMMINFO);
+
+	/* SMMINFO only needs to be set up when booting from S5 */
+	if (!acpi_is_wakeup_s3())
+		apm_control(APM_CNT_SMMINFO);
 }
 
 static const struct mp_ops mp_ops = {

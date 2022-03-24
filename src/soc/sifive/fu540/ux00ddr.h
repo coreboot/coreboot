@@ -176,10 +176,10 @@ static inline uint64_t ux00ddr_phy_fixup(size_t ahbregaddr) {
         if (failc0 || failc1) {
           //if (fails==0) uart_puts((void*) UART0_CTRL_ADDR, "DDR error in fixing up \n");
           fails |= (1<<dq);
-          char slicelsc = '0';
-          char slicemsc = '0';
-          slicelsc += (dq % 10);
-          slicemsc += (dq / 10);
+          /* char slicelsc = '0'; */
+          /* char slicemsc = '0'; */
+          /* slicelsc += (dq % 10); */
+          /* slicemsc += (dq / 10); */
           //uart_puts((void*) UART0_CTRL_ADDR, "S ");
           //uart_puts((void*) UART0_CTRL_ADDR, &slicemsc);
           //uart_puts((void*) UART0_CTRL_ADDR, &slicelsc);

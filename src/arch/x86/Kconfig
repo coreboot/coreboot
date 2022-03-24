@@ -33,6 +33,7 @@ config ARCH_ALL_STAGES_X86_32
 	select ARCH_VERSTAGE_X86_32
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_RAMSTAGE_X86_32
+	select ARCH_SUPPORTS_CLANG
 
 # stage selectors for x64
 

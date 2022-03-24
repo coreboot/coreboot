@@ -137,7 +137,7 @@ static void mbist_workaround(void)
 			break;
 		case OP_UDELAY:
 			udelay(wa_op->val);
-			/* fall thru */
+			__fallthrough;
 		default:
 			continue;
 		}

@@ -63,7 +63,7 @@ void rk_display_init(struct device *dev, u32 lcdbase, unsigned long fb_size)
 			if (conf->vop_mode == VOP_MODE_EDP)
 				return;
 		}
-		/* fall thru */
+		__fallthrough;
 	case VOP_MODE_HDMI:
 		printk(BIOS_DEBUG, "Attempting to setup HDMI display.\n");
 		rkclk_configure_hdmi();
@@ -78,7 +78,7 @@ void rk_display_init(struct device *dev, u32 lcdbase, unsigned long fb_size)
 			if (conf->vop_mode == VOP_MODE_HDMI)
 				return;
 		}
-		/* fall thru */
+		__fallthrough;
 	default:
 		printk(BIOS_WARNING, "Cannot read any edid info, aborting.\n");
 		return;

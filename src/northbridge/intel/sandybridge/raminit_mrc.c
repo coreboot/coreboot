@@ -394,7 +394,7 @@ void perform_raminit(int s3resume)
 
 static void setup_sdram_meminfo(struct pei_data *pei_data)
 {
-	u32 addr_decoder_common, addr_decode_ch[2];
+	u32 addr_decode_ch[2];
 	struct memory_info *mem_info;
 	struct dimm_info *dimm;
 	int dimm_size;
@@ -404,7 +404,6 @@ static void setup_sdram_meminfo(struct pei_data *pei_data)
 	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(struct memory_info));
 	memset(mem_info, 0, sizeof(struct memory_info));
 
-	addr_decoder_common = mchbar_read32(MAD_CHNL);
 	addr_decode_ch[0] = mchbar_read32(MAD_DIMM_CH0);
 	addr_decode_ch[1] = mchbar_read32(MAD_DIMM_CH1);
 

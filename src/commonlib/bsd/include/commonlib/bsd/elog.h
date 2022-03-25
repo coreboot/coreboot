@@ -3,7 +3,7 @@
 #ifndef _COMMONLIB_BSD_ELOG_H_
 #define _COMMONLIB_BSD_ELOG_H_
 
-#include <inttypes.h>
+#include <stdint.h>
 
 #include <commonlib/bsd/cb_err.h>
 

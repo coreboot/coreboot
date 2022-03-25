@@ -139,7 +139,10 @@ static void espi_clear_decodes(void)
 	unsigned int idx;
 
 	/* First turn off all enable bits, then zero base, range, and size registers */
-	espi_write16(ESPI_DECODE, 0);
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_ESPI_RETAIN_PORT80_EN))
+		espi_write16(ESPI_DECODE, (espi_read16(ESPI_DECODE) & ESPI_DECODE_IO_0x80_EN));
+	else
+		espi_write16(ESPI_DECODE, 0);
 
 	for (idx = 0; idx < ESPI_GENERIC_IO_WIN_COUNT; idx++) {
 		espi_write16(espi_io_range_base_reg(idx), 0);

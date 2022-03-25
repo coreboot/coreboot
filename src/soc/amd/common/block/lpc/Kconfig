@@ -42,3 +42,11 @@ config SOC_AMD_COMMON_BLOCK_USE_ESPI
 	help
 	  Select this option if mainboard uses eSPI instead of LPC (if supported
 	  by platform).
+
+config SOC_AMD_COMMON_BLOCK_ESPI_RETAIN_PORT80_EN
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_USE_ESPI
+	help
+	  SMU will lock up at times if the port80h enable bit is cleared. Select
+	  this option to retain the port80 enable bit while clearing other enable
+	  bits in the ESPI Decode register.

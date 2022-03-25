@@ -470,10 +470,10 @@ doxyclean: doxygen-clean
 doxygen-clean:
 	rm -rf $(DOXYGEN_OUTPUT_DIR)
 
-clean-for-update: doxygen-clean clean-for-update-target
+clean-for-update: doxygen-clean
 	rm -rf $(obj) .xcompile
 
-clean: clean-for-update clean-target clean-utils
+clean: clean-for-update clean-utils clean-payloads
 	rm -f .ccwrap
 
 clean-cscope:

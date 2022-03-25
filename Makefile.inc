@@ -676,19 +676,6 @@ decompressor-y += $(CONFIG_MEMLAYOUT_LD_FILE)
 clean-abuild:
 	rm -rf coreboot-builds
 
-clean-for-update-target: clean-payloads
-	rm -f $(obj)/ramstage?* $(obj)/coreboot.romstage $(obj)/coreboot.pre* $(obj)/coreboot.bootblock $(obj)/coreboot.a
-	rm -rf $(obj)/bootblock?* $(obj)/romstage?* $(obj)/location.*
-	rm -f $(obj)/option_table.* $(obj)/crt0.S $(obj)/ldscript
-	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
-	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm
-	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
-	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.* $(obj)/dsdt.*
-	rm -f $(obj)/cpu/x86/smm/smm_bin.c $(obj)/cpu/x86/smm/smm.* $(obj)/cpu/x86/smm/smm
-
-clean-target:
-	rm -f $(obj)/coreboot*
-
 #######################################################################
 # Development utilities
 printcrt0s:

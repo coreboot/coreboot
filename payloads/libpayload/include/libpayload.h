@@ -45,6 +45,7 @@
 #include <stdbool.h>
 #include <libpayload-config.h>
 #include <cbgfx.h>
+#include <commonlib/bsd/elog.h>
 #include <commonlib/bsd/fmap_serialized.h>
 #include <commonlib/bsd/helpers.h>
 #include <commonlib/bsd/mem_chip_info.h>

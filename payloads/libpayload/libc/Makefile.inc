@@ -39,3 +39,7 @@ libc-$(CONFIG_LP_LIBC) += die.c
 libc-$(CONFIG_LP_LIBC) += coreboot.c
 libc-$(CONFIG_LP_LIBC) += fmap.c
 libc-$(CONFIG_LP_LIBC) += fpmath.c
+
+ifeq ($(CONFIG_LP_LIBC),y)
+libc-srcs += $(coreboottop)/src/commonlib/bsd/elog.c
+endif

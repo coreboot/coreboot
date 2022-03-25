@@ -50,4 +50,10 @@ config MTK_DFD
 	  and dumps to internal RAM on the WDT reset. We reserve 1MB on DRAM
 	  to store logs of DFD.
 
+config USE_CBMEM_DRAM_INFO
+	bool "Support filling dram information to cbmem"
+	help
+	  The DRAM initialization will keep and return DRAM information (size,
+	  geometry and other DDR info) so we can fill that into the CBMEM.
+
 endif

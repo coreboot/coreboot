@@ -53,6 +53,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_E17, NONE, LOCK_CONFIG),
 	/* E18 : DDP1_CTRLCLK ==> NC */
 	PAD_NC(GPP_E18, NONE),
+	/* E19 : DDP1_CTRLDATA ==> GPP_E19_STRAP */
+	PAD_NC(GPP_E19, NONE),
 	/* E22 : DDPA_CTRLCLK ==> NC */
 	PAD_NC(GPP_E22, NONE),
 	/* E23 : DDPA_CTRLDATA ==> NC */

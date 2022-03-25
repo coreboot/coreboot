@@ -585,6 +585,7 @@ static void pciexp_hotplug_dummy_read_resources(struct device *dev)
 
 static struct device_operations pciexp_hotplug_dummy_ops = {
 	.read_resources   = pciexp_hotplug_dummy_read_resources,
+	.set_resources    = noop_set_resources,
 };
 
 void pciexp_hotplug_scan_bridge(struct device *dev)

@@ -167,32 +167,61 @@ could cause catastrophic failures, up to and including your mainboard!
 As per Intel Platform Controller Hub (PCH) EDS since Skylake, a GPIO PAD register
 supports four different types of GPIO reset as:
 
-| PAD   Reset Config                              | Platform Reset | GPP | GPD |
-|-------------------------------------------------|----------------|-----|-----|
-| 00 - Power Good (GPP: RSMRST,  GPD: DSW_PWROK)  | Warm Reset     | N   | N   |
-|                                                 | Cold Reset     | N   | N   |
-|                                                 | S3/S4/S5       | N   | N   |
-|                                                 | Global Reset   | N   | N   |
-|                                                 | Deep Sx        | Y   | N   |
-|                                                 | G3             | Y   | N   |
-| 01 - Deep                                       | Warm Reset     | Y   | Y   |
-|                                                 | Cold Reset     | Y   | Y   |
-|                                                 | S3/S4/S5       | N   | N   |
-|                                                 | Global Reset   | Y   | Y   |
-|                                                 | Deep Sx        | Y   | Y   |
-|                                                 | G3             | Y   | Y   |
-| 10 - Host Reset/PLTRST                          | Warm Reset     | Y   | Y   |
-|                                                 | Cold Reset     | Y   | Y   |
-|                                                 | S3/S4/S5       | Y   | Y   |
-|                                                 | Global Reset   | Y   | Y   |
-|                                                 | Deep Sx        | Y   | Y   |
-|                                                 | G3             | Y   | Y   |
-| 11 - Resume Reset (GPP: Reserved,  GPD: RSMRST) | Warm Reset     | -   | N   |
-|                                                 | Cold Reset     | -   | N   |
-|                                                 | S3/S4/S5       | -   | N   |
-|                                                 | Global Reset   | -   | N   |
-|                                                 | Deep Sx        | -   | Y   |
-|                                                 | G3             | -   | Y   |
+```eval_rst
++------------------------+----------------+-------------+-------------+
+|                        |                |         PAD Reset ?       |
++ PAD Reset Config       + Platform Reset +-------------+-------------+
+|                        |                |     GPP     |     GPD     |
++========================+================+=============+=============+
+| | 00 - Power Good      |  Warm Reset    |     N       |    N        |
+| | (GPP: RSMRST,        +----------------+-------------+-------------+
+| | GPD: DSW_PWROK)      |  Cold Reset    |     N       |    N        |
+|                        |----------------+-------------+-------------+
+|                        |  S3/S4/S5      |     N       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  Global Reset  |     N       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  Deep Sx       |     Y       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  G3            |     Y       |    Y        |
++------------------------+----------------+-------------+-------------+
+| 01 - Deep              |  Warm Reset    |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  Cold Reset    |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  S3/S4/S5      |     N       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  Global Reset  |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  Deep Sx       |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  G3            |     Y       |    Y        |
++------------------------+----------------+-------------+-------------+
+| 10 - Host Reset/PLTRST |  Warm Reset    |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  Cold Reset    |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  S3/S4/S5      |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  Global Reset  |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  Deep Sx       |     Y       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  G3            |     Y       |    Y        |
++------------------------+----------------+-------------+-------------+
+| | 11 - Resume Reset    |  Warm Reset    |     -       |    N        |
+| | (GPP: Reserved,      +----------------+-------------+-------------+
+| | GPD: RSMRST)         |  Cold Reset    |     -       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  S3/S4/S5      |     -       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  Global Reset  |     -       |    N        |
+|                        +----------------+-------------+-------------+
+|                        |  Deep Sx       |     -       |    Y        |
+|                        +----------------+-------------+-------------+
+|                        |  G3            |     -       |    Y        |
++------------------------+----------------+-------------+-------------+
+```
 
 Each GPIO Community has a Pad Configuration Lock register for a GPP allowing locking
 specific register fields in the PAD configuration register.

@@ -87,7 +87,7 @@ config ARCH_ALL_STAGES_X86
 	default n
 
 config SOC_AMD_COMMON_BLOCK_UCODE_SIZE
-	default 5568
+	default 3200
 
 config CHIPSET_DEVICETREE
 	string

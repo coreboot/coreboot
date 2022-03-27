@@ -368,6 +368,19 @@ void tcss_configure_aux_bias_pads_regbar(
 	}
 }
 
+void ioe_tcss_configure_aux_bias_pads_sbi(
+	const struct typec_aux_bias_pads *pads)
+{
+	for (size_t i = 0; i < MAX_TYPE_C_PORTS; i++) {
+		if (pads[i].pad_auxn_dc && pads[i].pad_auxp_dc) {
+			ioe_p2sb_sbi_write(PID_IOM, IOM_AUX_BIAS_CTRL_PULLUP_OFFSET(i),
+				calc_bias_ctrl_reg_value(pads[i].pad_auxp_dc));
+			ioe_p2sb_sbi_write(PID_IOM, IOM_AUX_BIAS_CTRL_PULLDOWN_OFFSET(i),
+				calc_bias_ctrl_reg_value(pads[i].pad_auxn_dc));
+		}
+	}
+}
+
 const struct tcss_port_map *tcss_get_port_info(size_t *num_ports)
 {
 	static struct tcss_port_map port_map[MAX_TYPE_C_PORTS];
@@ -423,4 +436,9 @@ void tcss_configure(const struct typec_aux_bias_pads aux_bias_pads[MAX_TYPE_C_PO
 bool tcss_valid_tbt_auth(void)
 {
 	return REGBAR32(PID_IOM, IOM_CSME_IMR_TBT_STATUS) & TBT_VALID_AUTHENTICATION;
+}
+
+bool ioe_tcss_valid_tbt_auth(void)
+{
+	return ioe_p2sb_sbi_read(PID_IOM, IOM_CSME_IMR_TBT_STATUS) & TBT_VALID_AUTHENTICATION;
 }

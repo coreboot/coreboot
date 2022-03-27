@@ -146,6 +146,7 @@ extern const struct soc_tcss_ops tcss_ops;
 
 /* Method to configure pads */
 void tcss_configure_aux_bias_pads_regbar(const struct typec_aux_bias_pads *pads);
+void ioe_tcss_configure_aux_bias_pads_sbi(const struct typec_aux_bias_pads *pads);
 
 /*
  * 1) Initialize TCSS muxes to disconnected state
@@ -163,5 +164,6 @@ const struct tcss_port_map *tcss_get_port_info(size_t *num_ports);
 
 /* Method to validate the Thunderbolt authentication */
 bool tcss_valid_tbt_auth(void);
+bool ioe_tcss_valid_tbt_auth(void);
 
 #endif /* _TCSS_H_ */

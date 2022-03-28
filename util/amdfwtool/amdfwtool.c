@@ -1785,6 +1785,7 @@ int main(int argc, char **argv)
 	amd_romsig->imc_entry = 0;
 	amd_romsig->gec_entry = 0;
 	amd_romsig->xhci_entry = 0;
+	amd_romsig->efs_gen.reserved = 0;
 
 	if (soc_id != PLATFORM_UNKNOWN) {
 		retval = set_efs_table(soc_id, amd_romsig, efs_spi_readmode,

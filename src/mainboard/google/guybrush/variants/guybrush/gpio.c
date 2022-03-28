@@ -35,7 +35,7 @@ static const struct soc_amd_gpio bid2_ramstage_gpio_table[] = {
 	/* EN_PWR_FP */
 	PAD_GPO(GPIO_32, LOW),
 	/* EN_SPKR */
-	PAD_GPO(GPIO_31, HIGH),
+	PAD_GPO(GPIO_31, LOW),
 	/* Unused TP27 */
 	PAD_NC(GPIO_70),
 };

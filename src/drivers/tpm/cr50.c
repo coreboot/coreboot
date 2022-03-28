@@ -5,6 +5,9 @@
 #include <string.h>
 #include <types.h>
 
+#define CR50_DID_VID	0x00281ae0L
+#define TI50_DID_VID	0x504a6666L
+
 #define CR50_BOARD_CFG_LOCKBIT_MASK 0x80000000U
 #define CR50_BOARD_CFG_FEATUREBITS_MASK 0x3FFFFFFFU
 
@@ -84,7 +87,7 @@ static uint32_t cr50_get_board_cfg(void)
 	const enum cb_err ret = tis_vendor_read(get_reg_addr(CR50_BOARD_CFG_REG), &value,
 					     sizeof(value));
 	if (ret != CB_SUCCESS) {
-		printk(BIOS_INFO, "Error reading from cr50\n");
+		printk(BIOS_ERR, "Error reading from Cr50\n");
 		return 0;
 	}
 
@@ -96,6 +99,11 @@ static uint32_t cr50_get_board_cfg(void)
  */
 enum cb_err cr50_set_board_cfg(void)
 {
+	/* If we get here and we aren't cr50, then we must be ti50 which does
+	 * not currently need to support a board_cfg register. */
+	if (!CONFIG(TPM_GOOGLE_CR50))
+		return CB_SUCCESS;
+
 	struct cr50_firmware_version ver;
 	enum cb_err ret;
 	uint32_t value;
@@ -109,7 +117,7 @@ enum cb_err cr50_set_board_cfg(void)
 	/* Set the CR50_BOARD_CFG register, for e.g. asking cr50 to use longer ready pulses. */
 	ret = tis_vendor_read(get_reg_addr(CR50_BOARD_CFG_REG), &value, sizeof(value));
 	if (ret != CB_SUCCESS) {
-		printk(BIOS_INFO, "Error reading from cr50\n");
+		printk(BIOS_ERR, "Error reading from Cr50\n");
 		return CB_ERR;
 	}
 
@@ -142,19 +150,15 @@ enum cb_err cr50_set_board_cfg(void)
 
 bool cr50_is_long_interrupt_pulse_enabled(void)
 {
-	/*
-	 * Ti50 FW versions under 0.15 don't support the board cfg register,
-	 * and all Ti50 versions only support long IRQ pulses.
-	 * TODO: Remove this after all Ti50 stocks uprev to 0.15 or above.
-	 */
-	if (CONFIG(MAINBOARD_NEEDS_I2C_TI50_WORKAROUND))
-		return true;
+	if (CONFIG(TPM_GOOGLE_CR50))
+		return !!(cr50_get_board_cfg() & CR50_BOARD_CFG_100US_READY_PULSE);
 
-	return !!(cr50_get_board_cfg() & CR50_BOARD_CFG_100US_READY_PULSE);
+        /* Ti50 and future GSCs will support only long interrupt pulses. */
+        return true;
 }
 
 static enum cb_err cr50_parse_fw_version(const char *version_str,
-				      struct cr50_firmware_version *ver)
+					 struct cr50_firmware_version *ver)
 {
 	int epoch, major, minor;
 
@@ -219,6 +223,7 @@ enum cb_err cr50_get_firmware_version(struct cr50_firmware_version *version)
 	}
 
 success:
-	*version = cr50_firmware_version;
+	if (version)
+		*version = cr50_firmware_version;
 	return CB_SUCCESS;
 }

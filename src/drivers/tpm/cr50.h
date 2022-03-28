@@ -5,7 +5,7 @@
 
 #include <types.h>
 
-/* Structure describing the elements of Cr50 firmware version. */
+/* Structure describing the elements of GSC firmware version. */
 struct cr50_firmware_version {
 	int epoch;
 	int major;
@@ -15,7 +15,7 @@ struct cr50_firmware_version {
 /* Indicates whether Cr50 ready pulses are guaranteed to be at least 100us. */
 bool cr50_is_long_interrupt_pulse_enabled(void);
 
-/* Get the Cr50 firmware version information. */
+/* Get the GSC firmware version information. */
 enum cb_err cr50_get_firmware_version(struct cr50_firmware_version *version);
 
 /* Set the BOARD_CFG register depending on Cr50 Kconfigs */

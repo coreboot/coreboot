@@ -36,6 +36,7 @@
 #define CR50_TIMEOUT_NOIRQ_MS	20	/* Timeout for TPM ready without IRQ */
 #define CR50_TIMEOUT_IRQ_MS	100	/* Timeout for TPM ready with IRQ */
 #define CR50_DID_VID		0x00281ae0L
+#define TI50_DID_VID		0x504a6666L
 
 struct tpm_inf_dev {
 	int bus;
@@ -455,7 +456,7 @@ static int cr50_i2c_probe(struct tpm_chip *chip, uint32_t *did_vid)
 		rc = cr50_i2c_read(TPM_DID_VID(0), (uint8_t *)did_vid, 4);
 
 		/* Exit once DID and VID verified */
-		if (!rc && (*did_vid == CR50_DID_VID)) {
+		if (!rc && (*did_vid == CR50_DID_VID || *did_vid == TI50_DID_VID)) {
 			printk(BIOS_INFO, "done! DID_VID 0x%08x\n", *did_vid);
 			return 0;
 		}
@@ -474,7 +475,6 @@ static int cr50_i2c_probe(struct tpm_chip *chip, uint32_t *did_vid)
 
 int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 {
-	struct cr50_firmware_version ver;
 	uint32_t did_vid = 0;
 
 	if (dev_addr == 0) {
@@ -500,12 +500,10 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	printk(BIOS_DEBUG, "cr50 TPM 2.0 (i2c %u:0x%02x id 0x%x)\n",
 	       bus, dev_addr, did_vid >> 16);
 
-	/* Ti50 FW version under 0.15 doesn't support board cfg command
-	   TODO: remove this flag after all stocks Ti50 uprev to 0.15 or above */
-	if (!CONFIG(MAINBOARD_NEEDS_I2C_TI50_WORKAROUND) && tpm_first_access_this_boot()) {
+	if (tpm_first_access_this_boot()) {
 		/* This is called for the side-effect of printing the version string. */
-		cr50_get_firmware_version(&ver);
-		cr50_set_board_cfg();
+		cr50_get_firmware_version(NULL);
+                cr50_set_board_cfg();
 	}
 
 	chip->is_open = 1;

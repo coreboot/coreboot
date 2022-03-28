@@ -66,12 +66,12 @@ static const struct mb_cfg baseboard_memcfg = {
 	.ect = 1, /* Enable Early Command Training */
 };
 
-const struct mb_cfg *__weak variant_memory_params(void)
+const struct mb_cfg *variant_memory_params(void)
 {
 	return &baseboard_memcfg;
 }
 
-int __weak variant_memory_sku(void)
+int variant_memory_sku(void)
 {
 	/*
 	 * Memory configuration board straps
@@ -90,7 +90,7 @@ int __weak variant_memory_sku(void)
 	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
 }
 
-bool __weak variant_is_half_populated(void)
+bool variant_is_half_populated(void)
 {
 	/* GPIO_MEM_CH_SEL GPP_E13 */
 	return gpio_get(GPP_E13);

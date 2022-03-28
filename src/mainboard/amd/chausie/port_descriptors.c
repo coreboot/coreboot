@@ -48,30 +48,30 @@ static const fsp_dxio_descriptor chausie_czn_dxio_descriptors[] = {
 };
 
 static const fsp_ddi_descriptor chausie_czn_ddi_descriptors[] = {
-	{ /* DDI0 - DP */
-		.connector_type = DDI_DP,
+	{ /* DDI0 - eDP */
+		.connector_type = DDI_EDP,
 		.aux_index = DDI_AUX1,
 		.hdp_index = DDI_HDP1
 	},
-	{ /* DDI1 - HDMI */
+	{ /* DDI1 - HDMI - TODO: add runtime HDMI/DP connector card detection */
 		.connector_type = DDI_HDMI,
 		.aux_index = DDI_AUX2,
 		.hdp_index = DDI_HDP2
 	},
-	{ /* DDI2 */
-		.connector_type = DDI_UNUSED_TYPE,
+	{ /* DDI2 - DP (type C) */
+		.connector_type = DDI_DP,
 		.aux_index = DDI_AUX3,
 		.hdp_index = DDI_HDP3,
 	},
 	{ /* DDI3 - DP (type C) */
 		.connector_type = DDI_DP,
-		.aux_index = DDI_AUX3,
-		.hdp_index = DDI_HDP3,
-	},
-	{ /* DDI4 - DP (type C) */
-		.connector_type = DDI_DP,
 		.aux_index = DDI_AUX4,
 		.hdp_index = DDI_HDP4,
+	},
+	{ /* DDI4 - unused */
+		.connector_type = DDI_UNUSED_TYPE,
+		.aux_index = DDI_AUX5,
+		.hdp_index = DDI_HDP5,
 	}
 };
 

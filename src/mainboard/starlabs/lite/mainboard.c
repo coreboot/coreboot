@@ -2,7 +2,6 @@
 
 #include <device/device.h>
 #include <soc/ramstage.h>
-#include <option.h>
 #include <variants.h>
 
 static void init_mainboard(void *chip_info)

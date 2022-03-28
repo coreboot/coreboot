@@ -59,12 +59,12 @@ void mainboard_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 	variant_update_soc_chip_config(config);
 }
 
-__weak void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
+void __weak variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
 	/* default implementation does nothing */
 }
 
-__weak void variant_init(void)
+void __weak variant_init(void)
 {
 	/* default implementation does nothing */
 }

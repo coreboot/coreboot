@@ -85,11 +85,6 @@ void init_bootmode_straps(void)
 	pci_s_write_config32(dev, SATA_SP, flags);
 }
 
-bool mainboard_ec_running_ro(void)
-{
-	return !ec_read(0xcb);
-}
-
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(GPIO_REC_MODE, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AH(GPIO_SPI_WP, CROS_GPIO_DEVICE_NAME),

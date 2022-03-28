@@ -46,11 +46,6 @@ int get_recovery_mode_switch(void)
 	return !get_gpio(GPIO_REC_MODE);
 }
 
-bool mainboard_ec_running_ro(void)
-{
-	return get_recovery_mode_switch();
-}
-
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AL(GPIO_SPI_WP, CROS_GPIO_DEVICE_NAME),

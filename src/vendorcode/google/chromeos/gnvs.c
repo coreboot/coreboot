@@ -32,8 +32,6 @@ static size_t chromeos_vpd_region(const char *region, uintptr_t *base)
 	return region_device_sz(&vpd);
 }
 
-__weak bool mainboard_ec_running_ro(void) { return true; }
-
 void chromeos_init_chromeos_acpi(void)
 {
 	size_t vpd_size;
@@ -57,17 +55,6 @@ void chromeos_init_chromeos_acpi(void)
 	if (vpd_size && vpd_base) {
 		chromeos_acpi->vpd_rw_base = vpd_base;
 		chromeos_acpi->vpd_rw_size = vpd_size;
-	}
-
-	/* EC can override to ECFW_RW. */
-	chromeos_acpi->vbt2 = ACTIVE_ECFW_RO;
-
-	if (CONFIG(EC_GOOGLE_CHROMEEC)) {
-		if (!google_ec_running_ro())
-			chromeos_acpi->vbt2 = ACTIVE_ECFW_RW;
-	} else {
-		if (!mainboard_ec_running_ro())
-			chromeos_acpi->vbt2 = ACTIVE_ECFW_RW;
 	}
 }
 

@@ -48,15 +48,6 @@ int get_recovery_mode_switch(void)
 	return 0;
 }
 
-bool mainboard_ec_running_ro(void)
-{
-	// TODO: MLR
-	// The firmware read/write status is a "virtual" switch and
-	// will be handled elsewhere.  Until then hard-code to
-	// read/write instead of read-only for developer mode.
-	return false;
-}
-
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AH(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AL(WP_GPIO, CROS_GPIO_DEVICE_NAME),

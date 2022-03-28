@@ -232,7 +232,7 @@ static const struct pad_config gpio_table[] = {
 	/* F11 : NC */
 	PAD_NC(GPP_F11, NONE),
 	/* F12 : GSXDOUT ==> WWAN_RST_L */
-	PAD_CFG_GPO(GPP_F12, 0, DEEP),
+	PAD_CFG_GPO(GPP_F12, 1, DEEP),
 	/* F13 : GSXSLOAD ==> SOC_PEN_DETECT_R_ODL */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_F13, NONE, DEEP),
 	/* F14 : GSXDIN ==> TCHPAD_INT_ODL */

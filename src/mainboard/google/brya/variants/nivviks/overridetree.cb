@@ -304,11 +304,6 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						register "has_power_resource" = "1"
-						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F12)"
-						register "reset_off_delay_ms" = "20"
-						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
-						register "enable_delay_ms" = "20"
 						device ref usb2_port4 on
 							probe DB_USB DB_1C_LTE
 						end

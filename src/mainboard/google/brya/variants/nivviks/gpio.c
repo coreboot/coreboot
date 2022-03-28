@@ -32,10 +32,14 @@ static const struct pad_config board_id0_overrides[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* F12 : GSXDOUT ==> WWAN_RST_L */
+	PAD_CFG_GPO(GPP_F12, 0, DEEP),
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_H12, 0, DEEP),
 	/* A13 : GPP_A13 ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
+	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
+	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* E12 : THC0_SPI1_IO1 ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E12, NONE, DEEP),
 	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */

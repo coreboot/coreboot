@@ -142,6 +142,14 @@ enum cb_err cr50_set_board_cfg(void)
 
 bool cr50_is_long_interrupt_pulse_enabled(void)
 {
+	/*
+	 * Ti50 FW versions under 0.15 don't support the board cfg register,
+	 * and all Ti50 versions only support long IRQ pulses.
+	 * TODO: Remove this after all Ti50 stocks uprev to 0.15 or above.
+	 */
+	if (CONFIG(MAINBOARD_NEEDS_I2C_TI50_WORKAROUND))
+		return true;
+
 	return !!(cr50_get_board_cfg() & CR50_BOARD_CFG_100US_READY_PULSE);
 }
 

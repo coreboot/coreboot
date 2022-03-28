@@ -321,7 +321,7 @@ static void soc_init(void *data)
 	 */
 	p2sb_unhide();
 
-	if (CONFIG(APL_SKIP_SET_POWER_LIMITS)) {
+	if (CONFIG(SOC_INTEL_DISABLE_POWER_LIMITS)) {
 		printk(BIOS_INFO, "Skip setting RAPL per configuration\n");
 	} else {
 		config = config_of_soc();

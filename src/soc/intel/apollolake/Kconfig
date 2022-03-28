@@ -347,25 +347,6 @@ config CONSOLE_UART_BASE_ADDRESS
 	default 0xddffc000
 	depends on INTEL_LPSS_UART_FOR_CONSOLE
 
-config APL_SKIP_SET_POWER_LIMITS
-	bool
-	default n
-	help
-	  Some Apollo Lake mainboards do not need the Running Average Power
-	  Limits (RAPL) algorithm for a constant power management.
-	  Set this config option to skip the RAPL configuration.
-
-config APL_SET_MIN_CLOCK_RATIO
-	bool
-	depends on !APL_SKIP_SET_POWER_LIMITS
-	default n
-	help
-	  If the power budget of the mainboard is limited, it can be useful to
-	  limit the CPU power dissipation at the cost of performance by setting
-	  the lowest possible CPU clock. Enable this option if you need smallest
-	  possible CPU clock. This setting can be overruled by the OS if it has an
-	  p-state driver which can adjust the clock to its need.
-
 # M and N divisor values for clock frequency configuration.
 # These values get us a 1.836 MHz clock (ideally we want 1.843 MHz)
 config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL

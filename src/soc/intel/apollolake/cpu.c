@@ -79,11 +79,11 @@ void soc_core_init(struct device *cpu)
 	enable_pm_timer_emulation();
 
 	/* Set Max Non-Turbo ratio if RAPL is disabled. */
-	if (CONFIG(APL_SKIP_SET_POWER_LIMITS)) {
+	if (CONFIG(SOC_INTEL_DISABLE_POWER_LIMITS)) {
 		cpu_set_p_state_to_max_non_turbo_ratio();
 		/* Disable speed step */
 		cpu_set_eist(false);
-	} else if (CONFIG(APL_SET_MIN_CLOCK_RATIO)) {
+	} else if (CONFIG(SOC_INTEL_SET_MIN_CLOCK_RATIO)) {
 		cpu_set_p_state_to_min_clock_ratio();
 		/* Disable speed step */
 		cpu_set_eist(false);

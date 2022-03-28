@@ -136,3 +136,21 @@ config SOC_INTEL_NO_BOOTGUARD_MSR
 	help
 	  Select this on platforms that do not support Bootguard related MSRs
 	  0x139, MSR_BC_PBEC and 0x13A, MSR_BOOT_GUARD_SACM_INFO.
+
+config SOC_INTEL_DISABLE_POWER_LIMITS
+	bool
+	default n
+	help
+	  Select this if the Running Average Power Limits (RAPL) algorithm
+	  for constant power management is not needed.
+
+config SOC_INTEL_SET_MIN_CLOCK_RATIO
+	bool
+	depends on !SOC_INTEL_DISABLE_POWER_LIMITS
+	default n
+	help
+	  If the power budget of the mainboard is limited, it can be useful to
+	  limit the CPU power dissipation at the cost of performance by setting
+	  the lowest possible CPU clock. Enable this option if you need smallest
+	  possible CPU clock. This setting can be overruled by the OS if it has an
+	  p-state driver which can adjust the clock to its need.

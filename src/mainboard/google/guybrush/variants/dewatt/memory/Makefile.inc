@@ -13,6 +13,6 @@ SPD_SOURCES += spd/lp4x/set-1/spd-empty.hex      # ID = 5(0b0101)
 SPD_SOURCES += spd/lp4x/set-1/spd-empty.hex      # ID = 6(0b0110)
 SPD_SOURCES += spd/lp4x/set-1/spd-empty.hex      # ID = 7(0b0111)
 SPD_SOURCES += spd/lp4x/set-1/spd-empty.hex      # ID = 8(0b1000)
-SPD_SOURCES += spd/lp4x/set-1/spd-1.hex      # ID = 9(0b1001)  Parts = K4U6E3S4AB-MGCL
+SPD_SOURCES += $(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/memory/K4U6E3S4AB-MGCL.hex     # ID = 9(0b1001)  Parts = K4U6E3S4AB-MGCL
 SPD_SOURCES += spd/lp4x/set-1/spd-empty.hex      # ID = 10(0b1010)
-SPD_SOURCES += spd/lp4x/set-1/spd-3.hex      # ID = 11(0b1011)  Parts = K4UBE3D4AB-MGCL
+SPD_SOURCES += $(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/memory/K4UBE3D4AB-MGCL.hex      # ID = 11(0b1011) Parts = K4UBE3D4AB-MGCL

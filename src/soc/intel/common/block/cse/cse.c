@@ -1212,7 +1212,8 @@ struct cse_notify_phase_data {
  */
 static void cse_final_ready_to_boot(void)
 {
-	cse_send_end_of_post();
+	if (CONFIG(SOC_INTEL_CSE_SET_EOP))
+		cse_send_end_of_post();
 
 	cse_control_global_reset_lock();
 

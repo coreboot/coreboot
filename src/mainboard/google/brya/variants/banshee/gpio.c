@@ -101,7 +101,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* D10 : ISH_SPI_CLK ==> USB_C2_LSX_RX_STRAP */
 	/* D11 : ISH_SPI_MISO ==> USB_C3_LSX_TX */
 	PAD_CFG_NF_LOCK(GPP_D11, NONE, NF4, LOCK_CONFIG),
-	/* D12 : ISH_SPI_MOSI ==> GPP_D12_STRAP */
+	/* D12 : ISH_SPI_MOSI ==> USB_C3_LSX_RX */
+	PAD_CFG_NF_LOCK(GPP_D12, NONE, NF4, LOCK_CONFIG),
 	/* D13 : ISH_UART0_RXD ==> NC */
 	PAD_NC_LOCK(GPP_D13, NONE, LOCK_CONFIG),
 	/* D14 : ISH_UART0_TXD ==> NC */

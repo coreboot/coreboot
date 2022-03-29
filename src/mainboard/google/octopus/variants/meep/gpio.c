@@ -15,8 +15,11 @@ static const struct pad_config default_override_table[] = {
 				DISPUPD),
 
 	/* EN_PP3300_TOUCHSCREEN */
-	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 0, DEEP, NONE, Tx0RxDCRx0,
-				     DISPUPD),
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 1, DEEP, NONE, Tx0RxDCRx0, DISPUPD),
+	/* GPIO_105 -- TOUCHSCREEN_RST */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_105, 0, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
+	/* GPIO_140 -- PEN_RESET */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_140, 0, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
 };
 
 static const struct pad_config hdmi_sku_override_table[] = {
@@ -34,8 +37,11 @@ static const struct pad_config hdmi_sku_override_table[] = {
 				DISPUPD),
 
 	/* EN_PP3300_TOUCHSCREEN */
-	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 0, DEEP, NONE, Tx0RxDCRx0,
-					DISPUPD),
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 1, DEEP, NONE, Tx0RxDCRx0, DISPUPD),
+	/* GPIO_105 -- TOUCHSCREEN_RST */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_105, 0, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
+	/* GPIO_140 -- PEN_RESET */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_140, 0, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
 };
 
 const struct pad_config *variant_override_gpio_table(size_t *num)
@@ -54,4 +60,21 @@ const struct pad_config *variant_override_gpio_table(size_t *num)
 		*num = ARRAY_SIZE(default_override_table);
 		return default_override_table;
 	}
+}
+
+/* GPIOs needed to be set in romstage. */
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	 /* EN_PP3300_TOUCHSCREEN */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 1, DEEP, NONE, Tx0RxDCRx0, DISPUPD),
+	/* GPIO_105 -- TOUCHSCREEN_RST */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_105, 1, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
+	/* GPIO_140 -- PEN_RESET */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_140, 1, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
+};
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

@@ -53,13 +53,14 @@ static const struct pad_config variant_override_table[] = {
 	/* LPSS */
 	PAD_CFG_GPIO_HI_Z(GPIO_81, UP_20K, DEEP, HIZCRx0, DISPUPD), /* GPIO_81_DEBUG (Boot halt) -- MIPI60 DEBUG */
 	PAD_NC(GPIO_84, NONE), /* LPSS_SPI_2_CLK - unused */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_105, 0, DEEP, NONE, Tx1RxDCRx0, DISPUPD),/* GPIO_105 -- TOUCHSCREEN_RST */
 	PAD_CFG_GPI_APIC_IOS(GPIO_137, NONE, DEEP, EDGE_BOTH, INVERT, HIZCRx1,
 				DISPUPD),/* GPIO_137 -- HP_INT_ODL */
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_140, 0, DEEP, NONE, Tx1RxDCRx0, DISPUPD),/* GPIO_140 -- PEN_RESET */
 	PAD_NC(GPIO_143, UP_20K), /* GPIO_143 - NC */
 	PAD_NC(GPIO_144, UP_20K), /* GPIO_144 - PEN_EJECT */
 	PAD_NC(GPIO_145, UP_20K), /* GPIO_145 - PEN_EJECT */
-	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 0, DEEP, NONE, Tx0RxDCRx0, DISPUPD), /* EN_PP3300_TOUCHSCREEN */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 1, DEEP, NONE, Tx0RxDCRx0, DISPUPD), /* EN_PP3300_TOUCHSCREEN */
 
 	/* AUDIO COMMUNITY GPIOS*/
 	PAD_NC(GPIO_157, DN_20K),/* AVS_I2S0_BCLK -- unused */
@@ -114,4 +115,21 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
+}
+
+/* GPIOs needed to be set in romstage. */
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	 /* EN_PP3300_TOUCHSCREEN */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 1, DEEP, NONE, Tx0RxDCRx0, DISPUPD),
+	/* GPIO_105 -- TOUCHSCREEN_RST */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_105, 1, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
+	/* GPIO_140 -- PEN_RESET */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_140, 1, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
+};
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

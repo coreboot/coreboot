@@ -14,8 +14,11 @@ static const struct pad_config default_override_table[] = {
 	PAD_NC(GPIO_143, UP_20K),
 
 	/* EN_PP3300_TOUCHSCREEN */
-	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 0, DEEP, NONE, Tx0RxDCRx0,
-					DISPUPD),
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 1, DEEP, NONE, Tx0RxDCRx0, DISPUPD),
+	/* GPIO_105 -- TOUCHSCREEN_RST */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_105, 0, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
+	/* GPIO_140 -- PEN_RESET */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_140, 0, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
 
 	PAD_NC(GPIO_161, DN_20K),
 
@@ -63,6 +66,34 @@ const struct pad_config *variant_override_gpio_table(size_t *num)
 	} else {
 		c = default_override_table;
 		*num = ARRAY_SIZE(default_override_table);
+	}
+
+	return c;
+}
+
+/* Touchscreen GPIOs needed to be set in romstage. */
+static const struct pad_config romstage_touch_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	 /* EN_PP3300_TOUCHSCREEN */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_146, 1, DEEP, NONE, Tx0RxDCRx0, DISPUPD),
+	/* GPIO_105 -- TOUCHSCREEN_RST */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_105, 1, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
+	/* GPIO_140 -- PEN_RESET */
+	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_140, 1, DEEP, NONE, Tx1RxDCRx0, DISPUPD),
+};
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	const struct pad_config *c;
+	uint32_t sku_id;
+
+	sku_id = google_chromeec_get_board_sku();
+	if (no_touchscreen_sku(sku_id)) {
+		c = NULL;
+		*num = 0;
+	} else {
+		c = romstage_touch_gpio_table;
+		*num = ARRAY_SIZE(romstage_touch_gpio_table);
 	}
 
 	return c;

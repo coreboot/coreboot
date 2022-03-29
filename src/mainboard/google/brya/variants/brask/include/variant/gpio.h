@@ -5,4 +5,6 @@
 
 #include <baseboard/gpio.h>
 
+#define NFC_POWER	GPP_D3
+
 #endif /* __MAINBOARD_GPIO_H__ */

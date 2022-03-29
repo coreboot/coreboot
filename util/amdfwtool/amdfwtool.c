@@ -1684,6 +1684,12 @@ int main(int argc, char **argv)
 		}
 	}
 
+	if (cb_config.need_ish)
+		cb_config.recovery_ab = true;
+
+	if (cb_config.recovery_ab)
+		cb_config.multi_level = true;
+
 	if (config) {
 		config_handle = fopen(config, "r");
 		if (config_handle == NULL) {
@@ -1722,10 +1728,6 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Error: ROM Size (%dKB) must be at least %dKB.\n\n",
 			ctx.rom_size / 1024, MIN_ROM_KB);
 		retval = 1;
-	}
-
-	if (cb_config.recovery_ab) {
-		cb_config.multi_level = true;
 	}
 
 	if (retval) {

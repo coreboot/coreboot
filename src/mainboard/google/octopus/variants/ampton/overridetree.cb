@@ -79,6 +79,7 @@ chip soc/intel/apollolake
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_140)"
 				register "generic.reset_delay_ms" = "20"
 				register "generic.has_power_resource" = "1"
+				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0x9 on end
 			end
@@ -113,7 +114,7 @@ chip soc/intel/apollolake
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_212_IRQ)"
-				register "probed" = "1"
+				register "detect" = "1"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_105)"
 				register "reset_delay_ms" = "20"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_146)"
@@ -125,7 +126,7 @@ chip soc/intel/apollolake
 				register "generic.hid" = ""GTCH7502""
 				register "generic.desc" = ""G2TOUCH Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_212_IRQ)"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_105)"
 				register "generic.reset_delay_ms" = "70"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_146)"

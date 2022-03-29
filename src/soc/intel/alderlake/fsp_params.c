@@ -511,8 +511,10 @@ static void fill_fsps_xdci_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_uart_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
-	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER))
-		s_cfg->FspEventHandler = (UINT32)((FSP_EVENT_HANDLER *)fsp_debug_event_handler);
+	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER) && CONFIG(CONSOLE_SERIAL) &&
+			 CONFIG(FSP_ENABLE_SERIAL_DEBUG))
+		s_cfg->FspEventHandler = (UINT32)((FSP_EVENT_HANDLER *)
+				fsp_debug_event_handler);
 	/* PCH UART selection for FSP Debug */
 	s_cfg->SerialIoDebugUartNumber = CONFIG_UART_FOR_CONSOLE;
 	ASSERT(ARRAY_SIZE(s_cfg->SerialIoUartAutoFlow) > CONFIG_UART_FOR_CONSOLE);

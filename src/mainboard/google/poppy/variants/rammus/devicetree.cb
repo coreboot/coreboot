@@ -280,7 +280,7 @@ chip soc/intel/skylake
 				register "generic.hid" = ""PNP0C50""
 				register "generic.desc" = ""SISC Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C22)"
 				register "generic.enable_delay_ms" = "105"
 				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E3)"
@@ -297,6 +297,7 @@ chip soc/intel/skylake
 				register "desc" = ""ELAN Touchpad""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_B3_IRQ)"
 				register "wake" = "GPE0_DW0_05" # GPP_B5
+				register "detect" = "1"
 				device i2c 15 on end
 			end
 		end # I2C #1

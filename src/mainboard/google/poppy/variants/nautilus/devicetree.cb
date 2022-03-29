@@ -288,7 +288,7 @@ chip soc/intel/skylake
 				register "generic.hid" = ""SYTS7813""
 				register "generic.desc" = ""Synaptics Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C22)"
 				register "generic.enable_delay_ms" = "45"
 				register "generic.has_power_resource" = "1"
@@ -324,6 +324,7 @@ chip soc/intel/skylake
 				register "generic.has_power_resource" = "1"
 				register "generic.disable_gpio_export_in_crs" = "1"
 				register "generic.wake" = "GPE0_DW0_21"
+				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0x9 on end
 			end

@@ -113,7 +113,7 @@ static void update_save_state(int cpu, uintptr_t curr_smbase,
 void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 				uintptr_t staggered_smbase)
 {
-	msr_t mtrr_cap;
+	msr_t mtrr_cap, msr;
 	struct smm_relocation_params *relo_params = &smm_reloc_params;
 
 	printk(BIOS_DEBUG, "%s : CPU %d\n", __func__, cpu);
@@ -123,6 +123,17 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 
 	/* Write SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRR_CAP_MSR);
+
+	/* Set Lock bit if supported */
+	if (mtrr_cap.lo & SMRR_LOCK_SUPPORTED) {
+		msr = rdmsr(IA32_SMRR_PHYS_MASK);
+		/* Don't write the same core scope MSR if another thread has locked it,
+		   otherwise system would hang. */
+		if (msr.lo & SMRR_PHYS_MASK_LOCK)
+			return;
+		relo_params->smrr_mask.lo |= SMRR_PHYS_MASK_LOCK;
+	}
+
 	if (mtrr_cap.lo & SMRR_SUPPORTED)
 		write_smrr(relo_params);
 }

@@ -21,14 +21,14 @@ struct i2c_bus_operations {
  * `->dev->ops->ops_i2c_bus` or `->dev->ops->ops_smbus_bus` are
  * not NULL.
  */
-struct bus *i2c_link(struct device *);
+struct bus *i2c_link(const struct device *dev);
 
 /*
  * Shorthand for `i2c_link(dev)->dev`.
  *
  * Returns NULL if i2c_link(dev) returns NULL.
  */
-static inline DEVTREE_CONST struct device *i2c_busdev(struct device *dev)
+static inline DEVTREE_CONST struct device *i2c_busdev(const struct device *dev)
 {
 	struct bus *const link = i2c_link(dev);
 	return link ? link->dev : NULL;

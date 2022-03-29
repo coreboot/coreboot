@@ -6,7 +6,7 @@
 #include <device/i2c_bus.h>
 #include <commonlib/endian.h>
 
-struct bus *i2c_link(struct device *const dev)
+struct bus *i2c_link(const struct device *const dev)
 {
 	if (!dev || !dev->bus)
 		return NULL;

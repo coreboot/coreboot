@@ -1798,7 +1798,9 @@ int main(int argc, char **argv)
 		fprintf(stderr, "WARNING: No SOC name specified.\n");
 	}
 
-	if (amd_romsig->efs_gen.gen == EFS_SECOND_GEN)
+	if (cb_config.need_ish)
+		ctx.address_mode = ADDRESS_MODE_2_REL_TAB;
+	else if (amd_romsig->efs_gen.gen == EFS_SECOND_GEN)
 		ctx.address_mode = ADDRESS_MODE_1_REL_BIOS;
 	else
 		ctx.address_mode = ADDRESS_MODE_0_PHY;

@@ -12,6 +12,8 @@ static const struct dptf_platform_info adl_dptf_platform_info = {
 	.fan_hid = "INTC1048",
 	/* _HID for the toplevel TPCH device, typically \_SB.TPCH */
 	.tpch_device_hid = "INTC1049",
+	/* _HID for the toplevel TPWR device, typically \_SB.DPTF.TPWR */
+	.tpwr_device_hid = "INTC1060",
 
 	.tpch_method_names = {
 		.set_fivr_low_clock_method = "RFC0",

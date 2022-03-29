@@ -91,10 +91,8 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	BATT, 16,	// Battery Temperature
 	BATC, 8,	// Battery Temperature Ces
 
-	// Unicorn - doesn't actually exist
 	Offset(0x9d),	// OPM:
 	OPWE, 8,	// OPM write to EC flag for UCSI
-	// Unicorn - doesn't actually exist
 
 	Offset(0xb0),	// MGO;
 	MGO0, 8,	// UCSI DS MGO 0

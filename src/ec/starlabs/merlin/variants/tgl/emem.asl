@@ -98,10 +98,8 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	B1PV, 16,	// Battery Present Voltage
 	BPRP, 8,	// Battery Remaining percentage
 
-	// Unicorn - doesn't actually exist
 	Offset(0x9d),
 	OPWE, 8,	// OPM write to EC flag for UCSI
-	// Unicorn - doesn't actually exist
 
 	Offset(0xb0),
 	MGO0, 8,	// UCSI DS MGO 0

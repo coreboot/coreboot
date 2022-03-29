@@ -85,10 +85,8 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	BPRP, 8,	// Battery Remaining percentage
 	BT1A, 8,	// Bt1 ASOC
 
-	// Unicorn - doesn't actually exist
 	Offset(0x9d),
 	OPWE, 8,	// OPM write to EC flag for UCSI
-	// Unicorn - doesn't actually exist
 
 	Offset(0xbf),
 	EJ8A, 8,	// EJ898A Firmware Version

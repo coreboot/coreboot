@@ -98,10 +98,8 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	BT1T, 16,	// Bt1 Temperature
 	BT1C, 8,	// Bt1 Control
 
-	// Unicorn - doesn't actually exist
 	Offset(0x9d),
 	OPWE, 8,	// OPM write to EC flag for UCSI
-	// Unicorn - doesn't actually exist
 
 	Offset(0xbf),
 	EJ8A, 8,	// EJ898A Firmware Version

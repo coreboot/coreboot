@@ -29,12 +29,14 @@ static const struct pad_config gpio_table[] = {
 	/* C1 : NC */
 	PAD_NC(GPP_C1, NONE),
 	/* C12 : EN_PP3300_TSP_DX */
-	PAD_CFG_GPO(GPP_C12, 0, DEEP),
+	PAD_CFG_GPO(GPP_C12, 1, DEEP),
 	/* C13 : EC_PCH_INT_L - needs to wake the system */
 	PAD_CFG_GPI_IRQ_WAKE(GPP_C13, NONE, PLTRST, LEVEL, INVERT),
 	/* C23 : UART2_CTS# ==> NC */
 	PAD_NC(GPP_C23, NONE),
 
+	/* D15 : TOUCHSCREEN_RST_L */
+	PAD_CFG_GPO(GPP_D15, 1, DEEP),
 	/* D16 : TOUCHSCREEN_INT_L */
 	PAD_CFG_GPI_APIC(GPP_D16, NONE, PLTRST, LEVEL, INVERT),
 	/* D19 : DMIC_CLK_0_SNDW4_CLK */
@@ -170,4 +172,19 @@ const struct pad_config *variant_sleep_gpio_table(u8 slp_typ, size_t *num)
 	}
 	*num = ARRAY_SIZE(default_sleep_gpio_table);
 	return default_sleep_gpio_table;
+}
+
+/* GPIOs needed to be set in romstage. */
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	/* C12 : EN_PP3300_TSP_DX */
+	PAD_CFG_GPO(GPP_C12, 1, DEEP),
+	/* D15 : TOUCHSCREEN_RST_L */
+	PAD_CFG_GPO(GPP_D15, 0, DEEP),
+};
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

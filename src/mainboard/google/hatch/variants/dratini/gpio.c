@@ -16,6 +16,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A19, NONE),
 	/* C12 : FPMCU_PCH_BOOT1 */
 	PAD_CFG_GPO(GPP_C12, 0, DEEP),
+	/* D9  : EN_PP3300_DX_TOUCHSCREEN */
+	PAD_CFG_GPO(GPP_D9, 1, DEEP),
+	/* D15 : TOUCHSCREEN_RST_L */
+	PAD_CFG_GPO(GPP_D15, 1, DEEP),
 	/* F1  : NC */
 	PAD_NC(GPP_F1, NONE),
 	/* F3  : MEM_STRAP_3 */
@@ -155,4 +159,19 @@ const struct pad_config *variant_sleep_gpio_table(u8 slp_typ, size_t *num)
 	}
 	*num = ARRAY_SIZE(default_sleep_gpio_table);
 	return default_sleep_gpio_table;
+}
+
+/* GPIOs needed to be set in romstage. */
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	/* D9  : EN_PP3300_DX_TOUCHSCREEN */
+	PAD_CFG_GPO(GPP_D9, 1, DEEP),
+	/* D15 : TOUCHSCREEN_RST_L */
+	PAD_CFG_GPO(GPP_D15, 0, DEEP),
+};
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

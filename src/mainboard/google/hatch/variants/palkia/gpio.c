@@ -42,8 +42,12 @@ static const struct pad_config gpio_table[] = {
 
 	/* D4  : USI_BASE_REPORT_EN */
 	PAD_CFG_GPO(GPP_D4, 0, DEEP),
+	/* D9  : GPP_D9 ==> EN_PP3300_DX_TOUCHSCREEN */
+	PAD_CFG_GPO(GPP_D9, 1, DEEP),
 	/* D10  : GPP_D10 ==> EN_PP3300_DX_BASE_TOUCHSCREEN */
-	PAD_CFG_GPO(GPP_D10, 0, DEEP),
+	PAD_CFG_GPO(GPP_D10, 1, DEEP),
+	/* D15 : GPP_D15 ==> TOUCHSCREEN_RST_L */
+	PAD_CFG_GPO(GPP_D15, 1, DEEP),
 	/* D16 : USI_INT_L */
 	PAD_CFG_GPI_APIC(GPP_D16, NONE, PLTRST, LEVEL, INVERT),
 
@@ -141,4 +145,21 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
+}
+
+/* GPIOs needed to be set in romstage. */
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreens, hold in reset */
+	/* D9  : EN_PP3300_DX_TOUCHSCREEN */
+	PAD_CFG_GPO(GPP_D9, 1, DEEP),
+	/* D10 : EN_PP3300_DX_BASE_TOUCHSCREEN */
+	PAD_CFG_GPO(GPP_D10, 1, DEEP),
+	/* D15 : TOUCHSCREEN_RST_L */
+	PAD_CFG_GPO(GPP_D15, 0, DEEP),
+};
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

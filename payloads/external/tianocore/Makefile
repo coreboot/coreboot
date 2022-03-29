@@ -82,8 +82,6 @@ endif
 
 bootloader = $(word 8,$(subst /, ,$(BUILD_STR)))
 
-export EDK_TOOLS_PATH=$(project_dir)/BaseTools
-
 all: clean build
 
 $(project_dir):

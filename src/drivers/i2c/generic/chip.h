@@ -31,6 +31,17 @@ struct drivers_i2c_generic_config {
 	 */
 	int probed;
 
+	/*
+	 * This flag will add a device property which will indicate
+	 * that coreboot should attempt to detect the device on the i2c
+	 * bus before generating a device entry in the SSDT.
+	 *
+	 * This can be used to declare a device that may not exist on
+	 * the board, for example to support multiple touchpads and/or
+	 * touchscreens.
+	 */
+	int detect;
+
 	/* GPIO used to indicate if this device is present */
 	unsigned int device_present_gpio;
 	unsigned int device_present_gpio_invert;

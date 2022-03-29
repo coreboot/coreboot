@@ -3,6 +3,7 @@
 #include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
 #include <console/console.h>
+#include <device/i2c_bus.h>
 #include <device/i2c_simple.h>
 #include <device/device.h>
 #include <device/path.h>
@@ -63,6 +64,17 @@ void i2c_generic_fill_ssdt(const struct device *dev,
 	if (!config->hid) {
 		printk(BIOS_ERR, "%s: ERROR: HID required\n", dev_path(dev));
 		return;
+	}
+
+	if (config->detect) {
+		struct device *const busdev = i2c_busdev(dev);
+		if (!i2c_dev_detect(busdev, dev->path.i2c.device)) {
+			printk(BIOS_SPEW, "%s: %s at %s -- NOT FOUND, skipping\n",
+				path,
+				config->desc ? : dev->chip_ops->name,
+				dev_path(dev));
+			return;
+		}
 	}
 
 	/* Device */

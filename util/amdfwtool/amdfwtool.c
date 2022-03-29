@@ -1458,6 +1458,14 @@ static int identify_platform(char *soc_name)
 
 }
 
+static bool needs_ish(enum platform platform_type)
+{
+	if (platform_type == PLATFORM_SABRINA)
+		return true;
+	else
+		return false;
+}
+
 int main(int argc, char **argv)
 {
 	int c;
@@ -1688,6 +1696,9 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
+
+	if (needs_ish(soc_id))
+		cb_config.need_ish = true;
 
 	if (cb_config.need_ish)
 		cb_config.recovery_ab = true;

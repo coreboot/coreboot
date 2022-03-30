@@ -21,7 +21,9 @@
 #define VTBAR_MASK		0x7ffffff000ull
 
 #define MCH_PKG_POWER_LIMIT_LO	0x59a0
+#define PKG_PWR_LIM_1_EN	(1 << 15)
 #define MCH_PKG_POWER_LIMIT_HI	0x59a4
+#define PKG_PWR_LIM_2_EN	(1 << 15)
 #define MCH_DDR_POWER_LIMIT_LO	0x58e0
 #define MCH_DDR_POWER_LIMIT_HI	0x58e4
 

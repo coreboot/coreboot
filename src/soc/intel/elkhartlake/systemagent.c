@@ -48,6 +48,7 @@ void soc_systemagent_init(struct device *dev)
 {
 	struct soc_power_limits_config *soc_config;
 	config_t *config;
+	uint32_t value;
 
 	/* Enable Power Aware Interrupt Routing */
 	enable_power_aware_intr();
@@ -56,7 +57,16 @@ void soc_systemagent_init(struct device *dev)
 	enable_bios_reset_cpl();
 
 	mdelay(1);
-	config = config_of_soc();
-	soc_config = &config->power_limits_config;
-	set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
+	if (CONFIG(SOC_INTEL_DISABLE_POWER_LIMITS)) {
+		printk(BIOS_INFO, "Skip setting RAPL per configuration\n");
+		/* clear bits 47, 15 in PACKAGE_RAPL_LIMIT_0_0_0_MCHBAR_PCU */
+		value = MCHBAR32(MCH_PKG_POWER_LIMIT_LO);
+		MCHBAR32(MCH_PKG_POWER_LIMIT_LO) = value & ~(PKG_PWR_LIM_1_EN);
+		value = MCHBAR32(MCH_PKG_POWER_LIMIT_HI);
+		MCHBAR32(MCH_PKG_POWER_LIMIT_HI) = value & ~(PKG_PWR_LIM_2_EN);
+	} else {
+		config = config_of_soc();
+		soc_config = &config->power_limits_config;
+		set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
+	}
 }

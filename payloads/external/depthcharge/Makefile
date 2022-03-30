@@ -68,6 +68,8 @@ $(libpayload_install_dir): $(project_dir)
 		false)
 	echo $(DEPTHCHARGE_LIBPAYLOAD_MSG)
 	cp $(libpayload_config) $(libpayload_dir)/.config
+	(grep -q '^\s*CONFIG_LP_CHROMEOS=' $(libpayload_dir)/.config) || \
+		(echo "CONFIG_LP_CHROMEOS=y" >> $(libpayload_dir)/.config)
 	$(MAKE) -C $(libpayload_dir) olddefconfig
 	$(MAKE) -C $(libpayload_dir)
 	$(MAKE) -C $(libpayload_dir) install DESTDIR=$(libpayload_install_dir)

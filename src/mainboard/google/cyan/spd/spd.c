@@ -118,7 +118,7 @@ static void set_dimm_info(const uint8_t *spd, struct dimm_info *dimm)
 
 	/* Locate the memory info HOB, presence validated by raminit */
 	hob_list_ptr = fsp_get_hob_list();
-	hob_ptr = get_next_guid_hob(&memory_info_hob_guid, hob_list_ptr);
+	hob_ptr = get_guid_hob(&memory_info_hob_guid, hob_list_ptr);
 	if (hob_ptr != NULL) {
 		memory_info_hob = (FSP_SMBIOS_MEMORY_INFO *)(hob_ptr + 1);
 		dimm->ddr_frequency = memory_info_hob->MemoryFrequencyInMHz;

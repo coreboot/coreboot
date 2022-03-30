@@ -120,7 +120,7 @@ void raminit(struct romstage_params *params)
 
 	/* Locate the FSP reserved memory area */
 	fsp_reserved_bytes = 0;
-	fsp_memory = get_next_resource_hob(&fsp_reserved_guid, hob_list_ptr);
+	fsp_memory = get_resource_hob(&fsp_reserved_guid, hob_list_ptr);
 	if (fsp_memory == NULL) {
 		fsp_verification_failure = 1;
 		printk(BIOS_ERR,
@@ -155,7 +155,7 @@ void raminit(struct romstage_params *params)
 	fsp_set_runtime(fsp_header, hob_list_ptr);
 
 	/* Lookup the FSP_BOOTLOADER_TOLUM_HOB */
-	cbmem_root = get_next_resource_hob(&bootldr_tolum_guid, hob_list_ptr);
+	cbmem_root = get_resource_hob(&bootldr_tolum_guid, hob_list_ptr);
 	if (cbmem_root == NULL) {
 		fsp_verification_failure = 1;
 		printk(BIOS_ERR, "7.4: FSP_BOOTLOADER_TOLUM_HOB missing!\n");
@@ -164,7 +164,7 @@ void raminit(struct romstage_params *params)
 	}
 
 	/* Locate the FSP_SMBIOS_MEMORY_INFO HOB */
-	memory_info_hob = get_next_guid_hob(&memory_info_hob_guid,
+	memory_info_hob = get_guid_hob(&memory_info_hob_guid,
 		hob_list_ptr);
 	if (memory_info_hob == NULL) {
 		printk(BIOS_ERR, "FSP_SMBIOS_MEMORY_INFO HOB missing!\n");
@@ -185,7 +185,7 @@ void raminit(struct romstage_params *params)
 	 *	7.5: EFI_PEI_GRAPHICS_INFO_HOB produced by SiliconInit
 	 *	FSP_SMBIOS_MEMORY_INFO HOB verified above
 	 */
-	hob_ptr.Raw = get_next_guid_hob(&mrc_guid, hob_list_ptr);
+	hob_ptr.Raw = get_guid_hob(&mrc_guid, hob_list_ptr);
 	if ((hob_ptr.Raw == NULL) && (params->saved_data == NULL)) {
 		printk(BIOS_ERR, "7.3: FSP_NON_VOLATILE_STORAGE_HOB missing!\n");
 		fsp_verification_failure = 1;
@@ -236,7 +236,7 @@ void raminit(struct romstage_params *params)
 				   "ERROR - coreboot's requirements not met by FSP binary!\n");
 
 	/* Locate the memory configuration data to speed up the next reboot */
-	mrc_hob = get_next_guid_hob(&mrc_guid, hob_list_ptr);
+	mrc_hob = get_guid_hob(&mrc_guid, hob_list_ptr);
 	if (mrc_hob == NULL) {
 		printk(BIOS_DEBUG,
 			"Memory Configuration Data Hob not present\n");

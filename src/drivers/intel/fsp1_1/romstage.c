@@ -152,7 +152,7 @@ __weak void mainboard_save_dimm_info(
 
 	/* Locate the memory info HOB, presence validated by raminit */
 	hob_list_ptr = fsp_get_hob_list();
-	hob_ptr = get_next_guid_hob(&memory_info_hob_guid, hob_list_ptr);
+	hob_ptr = get_guid_hob(&memory_info_hob_guid, hob_list_ptr);
 	memory_info_hob = (FSP_SMBIOS_MEMORY_INFO *)(hob_ptr + 1);
 
 	/* Display the data in the FSP_SMBIOS_MEMORY_INFO HOB */

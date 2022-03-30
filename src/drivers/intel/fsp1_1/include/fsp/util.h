@@ -24,7 +24,7 @@ void fsp_early_init(FSP_INFO_HEADER *fsp_info);
 void fsp_notify(u32 phase);
 void print_hob_type_structure(u16 hob_type, void *hob_list_ptr);
 void print_fsp_info(FSP_INFO_HEADER *fsp_header);
-void *get_next_resource_hob(const EFI_GUID *guid, const void *hob_start);
+void *get_resource_hob(const EFI_GUID *guid, const void *hob_start);
 void fsp_display_upd_value(const char *name, uint32_t size, uint64_t old,
 	uint64_t new);
 void report_fsp_output(void);
@@ -77,7 +77,7 @@ extern void *FspHobListPtr;
 #endif
 
 void *get_hob_list(void);
-void *get_next_guid_hob(const EFI_GUID *guid, const void *hob_start);
+void *get_guid_hob(const EFI_GUID *guid, const void *hob_start);
 
 asmlinkage void chipset_teardown_car_main(void);
 

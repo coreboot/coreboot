@@ -45,7 +45,7 @@ static void *get_next_hob(uint16_t type, const void *hob_start)
 }
 
 /* Returns the next instance of the matched GUID HOB from the starting HOB. */
-void *get_next_guid_hob(const EFI_GUID *guid, const void *hob_start)
+void *get_guid_hob(const EFI_GUID *guid, const void *hob_start)
 {
 	EFI_PEI_HOB_POINTERS hob;
 
@@ -62,7 +62,7 @@ void *get_next_guid_hob(const EFI_GUID *guid, const void *hob_start)
 /*
  * Returns the next instance of the matching resource HOB from the starting HOB.
  */
-void *get_next_resource_hob(const EFI_GUID *guid, const void *hob_start)
+void *get_resource_hob(const EFI_GUID *guid, const void *hob_start)
 {
 	EFI_PEI_HOB_POINTERS hob;
 

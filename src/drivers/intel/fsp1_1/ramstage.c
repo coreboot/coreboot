@@ -38,7 +38,7 @@ static void display_hob_info(FSP_INFO_HEADER *fsp_info_header)
 	 *	FSP_SMBIOS_MEMORY_INFO HOB verified by raminit
 	 */
 	if ((fsp_info_header->ImageAttribute & GRAPHICS_SUPPORT_BIT) &&
-		!get_next_guid_hob(&graphics_info_guid, hob_list_ptr) &&
+		!get_guid_hob(&graphics_info_guid, hob_list_ptr) &&
 		CONFIG(DISPLAY_HOBS)) {
 		printk(BIOS_ERR, "7.5: EFI_PEI_GRAPHICS_INFO_HOB missing!\n");
 		printk(BIOS_ERR, "Missing one or more required FSP HOBs!\n");
@@ -117,7 +117,7 @@ static void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header)
 		u32 *vbt_hob;
 
 		void *hob_list_ptr = get_hob_list();
-		vbt_hob = get_next_guid_hob(&vbt_guid, hob_list_ptr);
+		vbt_hob = get_guid_hob(&vbt_guid, hob_list_ptr);
 		if (vbt_hob == NULL) {
 			printk(BIOS_ERR, "FSP_ERR: Graphics Data HOB is not present\n");
 		} else {

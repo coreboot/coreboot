@@ -127,6 +127,7 @@ struct get_bp_info_rsp {
 	struct cse_bp_info bp_info;
 } __packed;
 
+static const char * const cse_regions[] = {"RO", "RW"};
 
 bool cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf_rsp)
 {
@@ -779,16 +780,43 @@ static const char *cse_sub_part_str(enum bpdt_entry_type type)
 	}
 }
 
-static bool cse_sub_part_get_target_rdev(struct region_device *target_rdev,
-				const char *region_name, enum bpdt_entry_type type)
+static bool cse_locate_area_as_rdev_rw(const struct cse_bp_info *cse_bp_info,
+		size_t bp, struct region_device  *cse_rdev)
+{
+	struct region_device cse_region_rdev;
+	uint32_t size;
+	uint32_t start_offset;
+	uint32_t end_offset;
+
+	if (!cse_get_rw_rdev(&cse_region_rdev))
+		return false;
+
+	if (!strcmp(cse_regions[bp], "RO"))
+		cse_get_bp_entry_range(cse_bp_info, RO, &start_offset, &end_offset);
+	else
+		cse_get_bp_entry_range(cse_bp_info, RW, &start_offset, &end_offset);
+
+	size = end_offset + 1 - start_offset;
+
+	if (rdev_chain(cse_rdev, &cse_region_rdev, start_offset, size))
+		return false;
+
+	printk(BIOS_DEBUG, "cse_lite: CSE %s  partition: offset = 0x%x, size = 0x%x\n",
+			cse_regions[bp], start_offset, size);
+	return true;
+}
+
+static bool cse_sub_part_get_target_rdev(const struct cse_bp_info *cse_bp_info,
+	struct region_device *target_rdev, size_t bp, enum bpdt_entry_type type)
 {
 	struct bpdt_header bpdt_hdr;
 	struct region_device cse_rdev;
 	struct bpdt_entry bpdt_entries[MAX_SUBPARTS];
 	uint8_t i;
 
-	if (fmap_locate_area_as_rdev_rw(region_name, &cse_rdev) < 0) {
-		printk(BIOS_ERR, "cse_lite: Failed to locate %s in the FMAP\n", region_name);
+	if (!cse_locate_area_as_rdev_rw(cse_bp_info, bp, &cse_rdev)) {
+		printk(BIOS_ERR, "cse_lite: Failed to locate %s in the CSE Region\n",
+				cse_regions[bp]);
 		return false;
 	}
 
@@ -925,7 +953,6 @@ static enum csme_failure_reason cse_sub_part_fw_component_update(enum bpdt_entry
 	struct fw_version target_fw_ver, source_fw_ver;
 	enum csme_failure_reason rv;
 	size_t size;
-	static const char * const cse_regions[] = {"CSE_RO", "CSE_RW"};
 
 	void *subpart_cbfs_rw = cbfs_map(name, &size);
 	if (!subpart_cbfs_rw) {
@@ -941,7 +968,7 @@ static enum csme_failure_reason cse_sub_part_fw_component_update(enum bpdt_entry
 
 	/* Trigger sub-partition update in CSE RO and CSE RW */
 	for (size_t bp = 0; bp < ARRAY_SIZE(cse_regions); bp++) {
-		if (!cse_sub_part_get_target_rdev(&target_rdev, cse_regions[bp], type)) {
+		if (!cse_sub_part_get_target_rdev(cse_bp_info, &target_rdev, bp, type)) {
 			rv = CSE_LITE_SKU_SUB_PART_ACCESS_ERR;
 			goto error_exit;
 		}

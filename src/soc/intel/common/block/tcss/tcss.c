@@ -394,7 +394,7 @@ const struct tcss_port_map *tcss_get_port_info(size_t *num_ports)
 								ARRAY_SIZE(conn_path));
 		unsigned int usb2_port, usb3_port;
 
-		if (!conn)
+		if (!is_dev_enabled(conn))
 			continue;
 
 		if (CONFIG(DRIVERS_INTEL_PMC) &&

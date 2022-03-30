@@ -24,6 +24,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* B2  : VRALERT# ==> TP153 */
 	PAD_NC(GPP_B2, NONE),
 
+	/* D0  : ISH_GP0 ==> NC */
+	PAD_NC_LOCK(GPP_D0, NONE, LOCK_CONFIG),
 	/* D1  : ISH_GP1 ==> NC */
 	PAD_NC_LOCK(GPP_D1, NONE, LOCK_CONFIG),
 	/* D2  : ISH_GP2 ==> NC */

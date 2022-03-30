@@ -24,7 +24,7 @@ void *get_hob_list(void)
 }
 
 /* Returns the next instance of a HOB type from the starting HOB. */
-void *get_next_hob(uint16_t type, const void *hob_start)
+static void *get_next_hob(uint16_t type, const void *hob_start)
 {
 	EFI_PEI_HOB_POINTERS hob;
 
@@ -44,12 +44,6 @@ void *get_next_hob(uint16_t type, const void *hob_start)
 	return NULL;
 }
 
-/* Returns the first instance of a HOB type among the whole HOB list. */
-void *get_first_hob(uint16_t type)
-{
-	return get_next_hob(type, get_hob_list());
-}
-
 /* Returns the next instance of the matched GUID HOB from the starting HOB. */
 void *get_next_guid_hob(const EFI_GUID *guid, const void *hob_start)
 {
@@ -63,14 +57,6 @@ void *get_next_guid_hob(const EFI_GUID *guid, const void *hob_start)
 		hob.Raw = GET_NEXT_HOB(hob.Raw);
 	}
 	return hob.Raw;
-}
-
-/*
- * Returns the first instance of the matched GUID HOB among the whole HOB list.
- */
-void *get_first_guid_hob(const EFI_GUID *guid)
-{
-	return get_next_guid_hob(guid, get_hob_list());
 }
 
 /*
@@ -88,15 +74,6 @@ void *get_next_resource_hob(const EFI_GUID *guid, const void *hob_start)
 		hob.Raw = GET_NEXT_HOB(hob.Raw);
 	}
 	return hob.Raw;
-}
-
-/*
- * Returns the first instance of the matching resource HOB among the whole HOB
- * list.
- */
-void *get_first_resource_hob(const EFI_GUID *guid)
-{
-	return get_next_resource_hob(guid, get_hob_list());
 }
 
 static void print_hob_mem_attributes(void *hob_ptr)

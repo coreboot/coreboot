@@ -20,6 +20,10 @@ config SOC_AMD_COMMON_BLOCK_NONCAR
 
 if SOC_AMD_COMMON_BLOCK_NONCAR
 
+config BOOTBLOCK_IN_CBFS
+	bool
+	default n
+
 config MEMLAYOUT_LD_FILE
 	string
 	default "src/soc/amd/common/block/cpu/noncar/memlayout.ld"

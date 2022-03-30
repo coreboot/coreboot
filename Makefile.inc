@@ -1116,10 +1116,6 @@ ifeq ($(CONFIG_ARCH_X86),y)
 		-b -$(call file-size,$(objcbfs)/bootblock.bin) $(cbfs-autogen-attributes) \
 		$(TS_OPTIONS) \
 		$(CBFSTOOL_ADD_CMD_OPTIONS)
-else # ifeq ($(CONFIG_ARCH_X86),y)
-	$(CBFSTOOL) $@.tmp write -u \
-		-r BOOTBLOCK \
-		-f $(objcbfs)/bootblock.bin
 endif # ifeq ($(CONFIG_ARCH_X86),y)
 	$(prebuild-files) true
 	mv $@.tmp $@
@@ -1149,6 +1145,12 @@ endif
 add_intermediate = \
 	$(1): $(obj)/coreboot.pre $(2) | $(INTERMEDIATE) \
 	$(eval INTERMEDIATE+=$(1)) $(eval PHONY+=$(1))
+
+ifneq ($(CONFIG_ARCH_X86),y)
+$(call add_intermediate, add_bootblock, $(objcbfs)/bootblock.bin)
+	printf "    FMAP       writing BOOTBLOCK region\n"
+	$(CBFSTOOL) $< write -u -r BOOTBLOCK -f $(objcbfs)/bootblock.bin
+endif
 
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(CBFSTOOL) $(IFITTOOL) $$(INTERMEDIATE)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"

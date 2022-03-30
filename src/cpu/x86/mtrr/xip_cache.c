@@ -14,8 +14,7 @@
    the MTRR, no matter the caching type, are filled and not overlapping. */
 static uint32_t max_cache_used(void)
 {
-	msr_t msr = rdmsr(MTRR_CAP_MSR);
-	int i, total_mtrrs = msr.lo & MTRR_CAP_VCNT;
+	int i, total_mtrrs = get_var_mtrr_count();
 	uint32_t total_cache = 0;
 
 	for (i = 0; i < total_mtrrs; i++) {

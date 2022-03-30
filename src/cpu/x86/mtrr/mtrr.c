@@ -41,11 +41,7 @@ static int total_mtrrs;
 
 static void detect_var_mtrrs(void)
 {
-	msr_t msr;
-
-	msr = rdmsr(MTRR_CAP_MSR);
-
-	total_mtrrs = msr.lo & 0xff;
+	total_mtrrs = get_var_mtrr_count();
 
 	if (total_mtrrs > NUM_MTRR_STATIC_STORAGE) {
 		printk(BIOS_WARNING,

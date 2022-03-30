@@ -14,8 +14,7 @@ static void set_range_uc(u32 base, u32 size)
 {
 	int i, max_var_mtrrs;
 	msr_t msr;
-	msr = rdmsr(MTRR_CAP_MSR);
-	max_var_mtrrs = msr.lo & MTRR_CAP_VCNT;
+	max_var_mtrrs = get_var_mtrr_count();
 
 	for (i = 0; i < max_var_mtrrs; i++) {
 		msr = rdmsr(MTRR_PHYS_MASK(i));

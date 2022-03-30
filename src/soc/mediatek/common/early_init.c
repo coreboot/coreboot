@@ -31,15 +31,13 @@ void early_init_save_time(enum early_init_type init_type)
 	timer_monotonic_get(&data->init_time[init_type]);
 }
 
-uint64_t early_init_get_elapsed_time_us(enum early_init_type init_type)
+long early_init_get_elapsed_time_us(enum early_init_type init_type)
 {
 	struct early_init_data *data = find_early_init();
-	struct mono_time cur_time;
+	struct mono_time cur_time = {0};
 
 	if (!data)
 		return 0;
-
-	memset(&cur_time, 0, sizeof(cur_time));
 
 	/* If early init data was never saved */
 	if (!memcmp(&data->init_time[init_type], &cur_time, sizeof(cur_time)))

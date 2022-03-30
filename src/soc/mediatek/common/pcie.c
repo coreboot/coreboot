@@ -215,7 +215,7 @@ void mtk_pcie_domain_enable(struct device *dev)
 	const mtk_soc_config_t *config = config_of(dev);
 	const struct mtk_pcie_config *conf = &config->pcie_config;
 	const char *ltssm_state;
-	uint64_t perst_time_us;
+	long perst_time_us;
 	size_t tries = 0;
 	uint32_t val;
 
@@ -236,7 +236,7 @@ void mtk_pcie_domain_enable(struct device *dev)
 	write32p(conf->base + PCIE_INT_ENABLE_REG, val);
 
 	perst_time_us = early_init_get_elapsed_time_us(EARLY_INIT_PCIE);
-	printk(BIOS_DEBUG, "%s: %lld us elapsed since assert PERST#\n",
+	printk(BIOS_DEBUG, "%s: %ld us elapsed since assert PERST#\n",
 	       __func__, perst_time_us);
 
 	/*
@@ -245,7 +245,7 @@ void mtk_pcie_domain_enable(struct device *dev)
 	 * The deassertion of PERST# should be delayed 100ms (TPVPERL)
 	 * for the power and clock to become stable.
 	 */
-	const uint64_t min_perst_time_us = 100000; /* 100 ms */
+	const long min_perst_time_us = 100000; /* 100 ms */
 	if (perst_time_us < min_perst_time_us) {
 		if (!perst_time_us) {
 			printk(BIOS_WARNING,
@@ -254,7 +254,7 @@ void mtk_pcie_domain_enable(struct device *dev)
 			mtk_pcie_reset(conf->base + PCIE_RST_CTRL_REG, true);
 		} else {
 			printk(BIOS_WARNING,
-			       "%s: Need an extra %lld us delay to meet PERST# deassertion requirement\n",
+			       "%s: Need an extra %ld us delay to meet PERST# deassertion requirement\n",
 			       __func__, min_perst_time_us - perst_time_us);
 		}
 

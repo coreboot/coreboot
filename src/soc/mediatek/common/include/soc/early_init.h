@@ -21,6 +21,6 @@ struct early_init_data {
 
 void early_init_clear(void);
 void early_init_save_time(enum early_init_type init_type);
-uint64_t early_init_get_elapsed_time_us(enum early_init_type init_type);
+long early_init_get_elapsed_time_us(enum early_init_type init_type);
 
 #endif /* SOC_MEDIATEK_EARLY_INIT_H */

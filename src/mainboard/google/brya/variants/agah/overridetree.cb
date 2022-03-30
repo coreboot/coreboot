@@ -127,28 +127,6 @@ chip soc/intel/alderlake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on end
 			end
-			chip drivers/i2c/max98390
-				register "desc" = ""MAX98390 Speaker Amp 0""
-				register "uid" = "0"
-				register "name" = ""MXW0""
-				register "r0_calib_key" = ""dsm_calib_r0_0""
-				register "temperature_calib_key" = ""dsm_calib_temp_0""
-				register "dsm_param_file_name" = ""dsm_param_R""
-				register "vmon_slot_no" = "0"
-				register "imon_slot_no" = "1"
-				device i2c 0x3a on end
-			end
-			chip drivers/i2c/max98390
-				register "desc" = ""MAX98390 Speaker Amp 1""
-				register "uid" = "1"
-				register "name" = ""MXW1""
-				register "r0_calib_key" = ""dsm_calib_r0_1""
-				register "temperature_calib_key" = ""dsm_calib_temp_1""
-				register "dsm_param_file_name" = ""dsm_param_L""
-				register "vmon_slot_no" = "1"
-				register "imon_slot_no" = "0"
-				device i2c 0x3b on end
-			end
 		end #I2C0
 		device ref i2c1 on end # GPU
 		device ref i2c2 on end # External GPU
@@ -191,6 +169,15 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end     #PCIE8 SD card
+		device ref hda on
+			chip drivers/generic/max98357a
+				register "hid" = ""MX98360A""
+				register "sdmode_gpio" =
+					"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
+				register "sdmode_delay" = "5"
+				device generic 0 on end
+			end
+                end
 		device ref pch_espi on
 			chip ec/google/chromeec
 				use conn0 as mux_conn[0]

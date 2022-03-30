@@ -28,7 +28,6 @@ config CPU_SPECIFIC_OPTIONS
 	select BOOT_DEVICE_SUPPORTS_WRITES
 	# CPU specific options
 	select CPU_INTEL_COMMON
-	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	select CPU_SUPPORTS_PM_TIMER_EMULATION
 	select PCR_COMMON_IOSF_1_0
 	select SSE2
@@ -413,5 +412,9 @@ config INTEL_GMA_BCLM_OFFSET
 
 config INTEL_GMA_BCLM_WIDTH
 	default 32
+
+config BOOTBLOCK_IN_CBFS
+	bool
+	default n
 
 endif

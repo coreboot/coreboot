@@ -146,6 +146,16 @@ $(call add_intermediate, write_ifwi, $(objcbfs)/bootblock.bin $(IFWITOOL))
 	$(CBFSTOOL) $< write -r $(CONFIG_IFWI_FMAP_NAME) -f $(objcbfs)/ifwi.bin.tmp --fill-upward
 endif
 
+# When booting APL the IBBL loader places the microcode updates embedded
+# in the IFWI image and a matching FIT table in SRAM. After copying the
+# bootblock to SRAM, it updates the FIT pointer at 0xffffffc0 to point
+# to that table. Before releasing the x86 cores from reset, the regular FIT
+# mechanism does the updates. So coreboot does not need to generate a FIT
+# table + pointer, but reserving the pointer is still needed. Otherwise the
+# IBBL loader thrashes code there. So include fit.c so that the linker
+# reserves that pointer.
+bootblock-y += ../../../cpu/intel/fit/fit.c
+
 # DSP firmware settings files.
 ifeq ($(CONFIG_SOC_INTEL_GEMINILAKE),y)
 NHLT_BLOB_PATH = 3rdparty/blobs/soc/intel/glk/nhlt-blobs

@@ -73,9 +73,14 @@ SECTIONS {
 	_X86_RESET_VECTOR = .;
 	.reset . : {
 		*(.reset);
-		. = 15;
-		BYTE(0x00);
+		. = _X86_RESET_VECTOR_FILLING;
+		BYTE(0);
 	}
+	. = 0xfffffffc;
+	.header_pointer . : {
+		KEEP(*(.header_pointer));
+	}
+	_X86_RESET_VECTOR_FILLING = 15 - SIZEOF(.header_pointer);
 	_ebootblock = .;
 }
 

@@ -393,3 +393,18 @@ endif
 ramstage-y += uuid.c
 
 romstage-$(CONFIG_SPD_CACHE_IN_FMAP) += spd_cache.c
+
+cbfs-files-y += cbfs_master_header
+cbfs_master_header-file := cbfs_master_header.c:struct
+cbfs_master_header-type := "cbfs header"
+cbfs_master_header-position := 0
+
+ifeq ($(CONFIG_ARCH_X86),y)
+$(call src-to-obj,bootblock,$(dir)/header_pointer.c): $(obj)/fmap_config.h
+bootblock-y += master_header_pointer.c
+else
+cbfs-files-y += header_pointer
+header_pointer-file := master_header_pointer.c:struct
+header_pointer-position := -4
+header_pointer-type := "cbfs header"
+endif

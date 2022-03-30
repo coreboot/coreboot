@@ -175,6 +175,8 @@ regions-for-file = $(subst $(spc),$(comma),$(sort \
 		$(regions-for-file-$(1)), \
 		$(if $(filter $(if $(filter y,$(CONFIG_VBOOT_STARTS_IN_ROMSTAGE)), \
 			%/romstage,) \
+		header_pointer \
+		cbfs_master_header \
 		mts \
 		%/verstage \
 		locales \

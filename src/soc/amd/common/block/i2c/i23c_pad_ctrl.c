@@ -48,7 +48,7 @@ void fch_i23c_pad_init(unsigned int bus,
 	pad_ctrl |= speed == I2C_SPEED_STANDARD ?
 		I23C_PAD_CTRL_FALLSLEW_SEL_STD : I23C_PAD_CTRL_FALLSLEW_SEL_LOW;
 
-	pad_ctrl &= I23C_PAD_CTRL_SLEW_N_MASK;
+	pad_ctrl &= ~I23C_PAD_CTRL_SLEW_N_MASK;
 	pad_ctrl |= I23C_PAD_CTRL_SLEW_N_FAST;
 
 	misc_write32(MISC_I23C_PAD_CTRL(bus), pad_ctrl);

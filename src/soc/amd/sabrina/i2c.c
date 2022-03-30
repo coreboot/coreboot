@@ -39,12 +39,7 @@ void soc_i2c_misc_init(unsigned int bus, const struct dw_i2c_bus_config *cfg)
 	if (bus >= ARRAY_SIZE(config->i2c_pad))
 		return;
 
-	/* The I/O pads of I2C0..2 are the new I23C pads and the I/O pads of I2C3 still are the
-	   same I2C pads as in Picasso and Cezanne. */
-	if (bus <= 2)
-		fch_i23c_pad_init(bus, cfg->speed, &config->i2c_pad[bus]);
-	else
-		fch_i2c_pad_init(bus, cfg->speed, &config->i2c_pad[bus]);
+	fch_i23c_pad_init(bus, cfg->speed, &config->i2c_pad[bus]);
 }
 
 const struct soc_i2c_ctrlr_info *soc_get_i2c_ctrlr_info(size_t *num_ctrlrs)

@@ -100,6 +100,13 @@ else
 $(eval $(call early_x86_stage,bootblock,elf64-x86-64))
 endif
 
+ifneq ($(CONFIG_UPDATE_IMAGE),y)
+$(call add_intermediate, add_bootblock, $(objcbfs)/bootblock.bin)
+	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
+	$(CBFSTOOL) $< add -f $(objcbfs)/bootblock.bin  -n bootblock -t bootblock $(TXTIBB) -b -$(call file-size,$(objcbfs)/bootblock.bin) \
+	$(cbfs-autogen-attributes) $(TS_OPTIONS) $(CBFSTOOL_ADD_CMD_OPTIONS)
+endif
+
 $(call src-to-obj,bootblock,$(dir)/walkcbfs.S): $(obj)/fmap_config.h
 bootblock-y += walkcbfs.S
 

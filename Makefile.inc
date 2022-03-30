@@ -1105,18 +1105,8 @@ endif
 $(shell rm -f $(obj)/coreboot.pre)
 
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
-$(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $(obj)/fmap.fmap $(obj)/fmap.desc
+$(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL) $(obj)/fmap.fmap $(obj)/fmap.desc
 	$(CBFSTOOL) $@.tmp create -M $(obj)/fmap.fmap -r $(shell cat $(obj)/fmap.desc)
-ifeq ($(CONFIG_ARCH_X86),y)
-	$(CBFSTOOL) $@.tmp add \
-		-f $(objcbfs)/bootblock.bin \
-		-n bootblock \
-		-t bootblock \
-		$(TXTIBB) \
-		-b -$(call file-size,$(objcbfs)/bootblock.bin) $(cbfs-autogen-attributes) \
-		$(TS_OPTIONS) \
-		$(CBFSTOOL_ADD_CMD_OPTIONS)
-endif # ifeq ($(CONFIG_ARCH_X86),y)
 	$(prebuild-files) true
 	mv $@.tmp $@
 else # ifneq ($(CONFIG_UPDATE_IMAGE),y)

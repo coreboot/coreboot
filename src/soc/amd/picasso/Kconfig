@@ -207,10 +207,6 @@ config VERSTAGE_SIZE
 	  Sets the size of DRAM allocation for verstage in linker script if
 	  running as a separate stage on x86.
 
-config RAMBASE
-	hex
-	default 0x10000000
-
 config ECAM_MMCONF_BASE_ADDRESS
 	default 0xF8000000
 

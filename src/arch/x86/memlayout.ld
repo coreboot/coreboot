@@ -13,7 +13,8 @@ SECTIONS
 	 * conditionalize with macros.
 	 */
 #if ENV_RAMSTAGE
-	RAMSTAGE(CONFIG_RAMBASE, 8M)
+	/* Relocated at runtime in cbmem so the address does not matter. */
+	RAMSTAGE(64M, 8M)
 
 #elif ENV_ROMSTAGE
 	/* The 1M size is not allocated. It's just for basic size checking.

@@ -118,22 +118,6 @@ config SIPI_VECTOR_IN_ROM
 	default n
 	depends on ARCH_X86
 
-# Set the rambase for systems that still need it, only 5 chipsets as of
-# Sep 2018. This value was 0x100000, chosen to match the entry point
-# of Linux 2.2 in 1999. The new value, 14 MiB, makes a lot more sense
-# for as long as we need it; with luck, that won't be much longer.
-# In the long term, both RAMBASE and RAMTOP should be removed.
-# This value leaves more than 1 MiB which is required for fam10
-# and broadwell_de.
-config RAMBASE
-	hex
-	default 0xe00000
-
-config RAMTOP
-	hex
-	default 0x1000000
-	depends on ARCH_X86
-
 # Traditionally BIOS region on SPI flash boot media was memory mapped right below
 # 4G and it was the last region in the IFD. This way translation between CPU
 # address space to flash address was trivial. However some IFDs on newer SoCs

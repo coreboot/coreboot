@@ -217,10 +217,6 @@ config CBFS_CACHE_SIZE
 	hex
 	default 0x40000 if CBFS_PRELOAD
 
-config RAMBASE
-	hex
-	default 0x10000000
-
 config RO_REGION_ONLY
 	string
 	depends on VBOOT_SLOTS_RW_AB || VBOOT_SLOTS_RW_A

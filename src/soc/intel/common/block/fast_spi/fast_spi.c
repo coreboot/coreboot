@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <console/console.h>
 #include <commonlib/helpers.h>
 #include <cpu/x86/mtrr.h>
 #include <fast_spi_def.h>
@@ -196,6 +197,18 @@ void fast_spi_set_strap_msg_data(uint32_t soft_reset_data)
 	write32(spibar + SPIBAR_RESET_LOCK, ssl);
 }
 
+static void fast_spi_enable_cache_range(unsigned int base, unsigned int size)
+{
+	const int type = MTRR_TYPE_WRPROT;
+	int mtrr = get_free_var_mtrr();
+	if (mtrr == -1) {
+		printk(BIOS_WARNING, "ROM caching failed due to no free MTRR available!\n");
+		return;
+	}
+
+	set_var_mtrr(mtrr, base, size, type);
+}
+
 /*
  * Returns bios_start and fills in size of the BIOS region.
  */
@@ -240,19 +253,11 @@ static void fast_spi_cache_ext_bios_window(void)
 {
 	size_t ext_bios_size;
 	uintptr_t ext_bios_base;
-	const int type = MTRR_TYPE_WRPROT;
 
 	if (!fast_spi_ext_bios_cache_range(&ext_bios_base, &ext_bios_size))
 		return;
 
-	if (ENV_PAYLOAD_LOADER) {
-		mtrr_use_temp_range(ext_bios_base, ext_bios_size, type);
-	} else {
-		int mtrr = get_free_var_mtrr();
-		if (mtrr == -1)
-			return;
-		set_var_mtrr(mtrr, ext_bios_base, ext_bios_size, type);
-	}
+	fast_spi_enable_cache_range(ext_bios_base, ext_bios_size);
 }
 
 void fast_spi_cache_ext_bios_postcar(struct postcar_frame *pcf)
@@ -271,7 +276,6 @@ void fast_spi_cache_bios_region(void)
 {
 	size_t bios_size;
 	uint32_t alignment;
-	const int type = MTRR_TYPE_WRPROT;
 	uintptr_t base;
 
 	/* Only the IFD BIOS region is memory mapped (at top of 4G) */
@@ -290,16 +294,7 @@ void fast_spi_cache_bios_region(void)
 	bios_size = ALIGN_UP(bios_size, alignment);
 	base = 4ULL*GiB - bios_size;
 
-	if (ENV_PAYLOAD_LOADER) {
-		mtrr_use_temp_range(base, bios_size, type);
-	} else {
-		int mtrr = get_free_var_mtrr();
-
-		if (mtrr == -1)
-			return;
-
-		set_var_mtrr(mtrr, base, bios_size, type);
-	}
+	fast_spi_enable_cache_range(base, bios_size);
 
 	/* Check if caching is needed for extended bios region if supported */
 	fast_spi_cache_ext_bios_window();

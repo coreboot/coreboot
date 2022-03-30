@@ -9,6 +9,10 @@
 static const struct pad_config override_gpio_table[] = {
 	/* A8  : WWAN_RF_DISABLE_ODL */
 	PAD_NC(GPP_A8, NONE),
+	/* A21 : GPP_A21 ==> USB_C1_AUX_DC_P */
+	PAD_CFG_GPO(GPP_A21, 0, DEEP),
+	/* A22 : GPP_A22 ==> USB_C1_AUX_DC_N */
+	PAD_CFG_GPO(GPP_A22, 1, DEEP),
 
 	/* B5  : SOC_I2C_SUB_SDA */
 	PAD_NC(GPP_B5, NONE),

@@ -56,4 +56,14 @@ chip soc/amd/sabrina
 		.early_init = true,
 	}"
 
+	device ref i2c_0 on
+		chip drivers/i2c/generic
+			register "hid" = ""ELAN0000""
+			register "desc" = ""ELAN Touchpad""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_40)"
+			register "wake" = "GEVENT_20"
+			register "probed" = "1"
+			device i2c 15 on end
+		end
+	end # I2C0
 end	# chip soc/amd/sabrina

@@ -77,7 +77,7 @@ chip soc/intel/apollolake
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
-				register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPIO_135_IRQ)"
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPIO_135_IRQ)"
 				register "wake" = "GPE0_DW3_27"
 				register "detect" = "1"
 				device i2c 15 on end
@@ -87,7 +87,7 @@ chip soc/intel/apollolake
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_212_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_212_IRQ)"
 				register "probed" = "1"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_105)"
 				register "reset_delay_ms" = "20"

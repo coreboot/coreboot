@@ -232,7 +232,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		$(OPT_VERSTAGE_FILE) \
 		$(OPT_VERSTAGE_SIG_FILE) \
 		--location $(shell printf "%#x" $(SABRINA_FWM_POSITION)) \
-		--multilevel \
 		--output $@
 
 $(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE) $(AMDCOMPRESS)
@@ -250,7 +249,6 @@ $(obj)/amdfw_a.rom: $(obj)/amdfw.rom
 		$(OPT_APOB_NV_BASE) \
 		--location $(shell printf "%#x" $(SABRINA_FW_A_POSITION)) \
 		--anywhere \
-		--multilevel \
 		--output $@
 
 $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
@@ -262,7 +260,6 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		$(OPT_APOB_NV_BASE) \
 		--location $(shell printf "%#x" $(SABRINA_FW_B_POSITION)) \
 		--anywhere \
-		--multilevel \
 		--output $@
 
 

@@ -122,8 +122,9 @@ else
 	cp $(CONFIG_LBP2_FILE_NAME) $@
 endif
 
-files_added:: $(objcbfs)/lbp2.bin
-	$(CBFSTOOL) $(obj)/coreboot.rom write -r $(CONFIG_LBP2_FMAP_NAME) -f $< --fill-upward
+$(call add_intermediate, write_lbp2, $(objcbfs)/lbp2.bin)
+	@printf "    FMAP      writing lbp2 to %s\n" $(CONFIG_LBP2_FMAP_NAME)
+	$(CBFSTOOL) $< write -r $(CONFIG_LBP2_FMAP_NAME) -f $< --fill-upward
 endif
 
 # Bootblock on Apollolake platform lies in the IFWI region. In order to place
@@ -137,11 +138,12 @@ endif
 # b. Using cbfstool:
 #    1. Write ifwi.bin.tmp to coreboot.rom using CONFIG_IFWI_FMAP_NAME.
 ifeq ($(CONFIG_NEED_IFWI),y)
-files_added:: $(IFWITOOL)
+$(call add_intermediate, write_ifwi, $(objcbfs)/bootblock.bin $(IFWITOOL))
+	@printf "    IFWI       Embedding %s in %s\n" $(objcbfs)/bootblock.bin $(CONFIG_IFWI_FMAP_NAME)
 	$(IFWITOOL) $(CONFIG_IFWI_FILE_NAME) create -f $(objcbfs)/ifwi.bin.tmp
 	$(IFWITOOL) $(objcbfs)/ifwi.bin.tmp delete -n OBBP
 	$(IFWITOOL) $(objcbfs)/ifwi.bin.tmp replace -n IBBP -f $(objcbfs)/bootblock.bin -d -e IBBL
-	$(CBFSTOOL) $(obj)/coreboot.rom write -r $(CONFIG_IFWI_FMAP_NAME) -f $(objcbfs)/ifwi.bin.tmp --fill-upward
+	$(CBFSTOOL) $< write -r $(CONFIG_IFWI_FMAP_NAME) -f $(objcbfs)/ifwi.bin.tmp --fill-upward
 endif
 
 # DSP firmware settings files.

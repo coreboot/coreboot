@@ -5,7 +5,7 @@
 #include <types.h>
 #include <amdblocks/cpu.h>
 
-static const fsp_dxio_descriptor majolica_czn_dxio_descriptors[] = {
+static const fsp_dxio_descriptor majolica_dxio_descriptors[] = {
 	{ /* MXM */
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
@@ -93,7 +93,7 @@ static const fsp_dxio_descriptor majolica_czn_dxio_descriptors[] = {
 	}
 };
 
-static fsp_ddi_descriptor majolica_czn_ddi_descriptors[] = {
+static fsp_ddi_descriptor majolica_ddi_descriptors[] = {
 	{ /* DDI0 - DP */
 		.connector_type = DDI_DP,
 		.aux_index = DDI_AUX1,
@@ -126,10 +126,10 @@ void mainboard_get_dxio_ddi_descriptors(
 		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	if ((get_cpu_count() == 4 && get_threads_per_core() == 2) || get_cpu_count() == 2)
-		majolica_czn_ddi_descriptors[1].connector_type = DDI_UNUSED_TYPE;
+		majolica_ddi_descriptors[1].connector_type = DDI_UNUSED_TYPE;
 
-	*dxio_descs = majolica_czn_dxio_descriptors;
-	*dxio_num = ARRAY_SIZE(majolica_czn_dxio_descriptors);
-	*ddi_descs = majolica_czn_ddi_descriptors;
-	*ddi_num = ARRAY_SIZE(majolica_czn_ddi_descriptors);
+	*dxio_descs = majolica_dxio_descriptors;
+	*dxio_num = ARRAY_SIZE(majolica_dxio_descriptors);
+	*ddi_descs = majolica_ddi_descriptors;
+	*ddi_num = ARRAY_SIZE(majolica_ddi_descriptors);
 }

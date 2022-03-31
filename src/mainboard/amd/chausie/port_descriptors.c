@@ -4,7 +4,7 @@
 #include <soc/platform_descriptors.h>
 #include <types.h>
 
-static const fsp_dxio_descriptor chausie_czn_dxio_descriptors[] = {
+static const fsp_dxio_descriptor chausie_dxio_descriptors[] = {
 	{ /* GBE*/
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
@@ -47,7 +47,7 @@ static const fsp_dxio_descriptor chausie_czn_dxio_descriptors[] = {
 	},
 };
 
-static const fsp_ddi_descriptor chausie_czn_ddi_descriptors[] = {
+static const fsp_ddi_descriptor chausie_ddi_descriptors[] = {
 	{ /* DDI0 - eDP */
 		.connector_type = DDI_EDP,
 		.aux_index = DDI_AUX1,
@@ -79,8 +79,8 @@ void mainboard_get_dxio_ddi_descriptors(
 		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
 		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
-	*dxio_descs = chausie_czn_dxio_descriptors;
-	*dxio_num = ARRAY_SIZE(chausie_czn_dxio_descriptors);
-	*ddi_descs = chausie_czn_ddi_descriptors;
-	*ddi_num = ARRAY_SIZE(chausie_czn_ddi_descriptors);
+	*dxio_descs = chausie_dxio_descriptors;
+	*dxio_num = ARRAY_SIZE(chausie_dxio_descriptors);
+	*ddi_descs = chausie_ddi_descriptors;
+	*ddi_num = ARRAY_SIZE(chausie_ddi_descriptors);
 }

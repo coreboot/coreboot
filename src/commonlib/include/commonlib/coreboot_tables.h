@@ -86,6 +86,7 @@ enum {
 	LB_TAG_ACPI_CNVS		= 0x0041,
 	LB_TAG_TYPE_C_INFO		= 0x0042,
 	LB_TAG_ACPI_RSDP                = 0x0043,
+	LB_TAG_PCIE			= 0x0044,
 	/* The following options are CMOS-related */
 	LB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	LB_TAG_OPTION			= 0x00c9,
@@ -143,6 +144,14 @@ struct lb_memory {
 	uint32_t size;
 	struct lb_memory_range map[0];
 };
+
+struct lb_pcie {
+	uint32_t tag;
+	uint32_t size;
+	lb_uint64_t ctrl_base;		/* Base address of PCIe controller */
+};
+_Static_assert(_Alignof(struct lb_pcie) == 4,
+	       "lb_uint64_t alignment doesn't work as expected for struct lb_pcie!");
 
 struct lb_hwrpb {
 	uint32_t tag;

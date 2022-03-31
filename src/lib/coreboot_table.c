@@ -33,6 +33,11 @@
 void lb_string_platform_blob_version(struct lb_header *header);
 #endif
 
+__weak enum cb_err lb_fill_pcie(struct lb_pcie *pcie)
+{
+	return CB_ERR_NOT_IMPLEMENTED;
+}
+
 static struct lb_header *lb_table_init(unsigned long addr)
 {
 	struct lb_header *header;
@@ -116,6 +121,16 @@ void lb_add_console(uint16_t consoletype, void *data)
 	console->tag = LB_TAG_CONSOLE;
 	console->size = sizeof(*console);
 	console->type = consoletype;
+}
+
+static void lb_pcie(struct lb_header *header)
+{
+	struct lb_pcie pcie = { .tag = LB_TAG_PCIE, .size = sizeof(pcie) };
+
+	if (lb_fill_pcie(&pcie) != CB_SUCCESS)
+		return;
+
+	memcpy(lb_new_record(header), &pcie, sizeof(pcie));
 }
 
 static void lb_framebuffer(struct lb_header *header)
@@ -482,6 +497,9 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 
 	if (CONFIG(CONSOLE_USB))
 		lb_add_console(LB_TAG_CONSOLE_EHCI, head);
+
+	if (CONFIG(PCI))
+		lb_pcie(head);
 
 	/* Record our various random string information */
 	lb_strings(head);

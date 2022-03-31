@@ -13,9 +13,10 @@
  * success. Allocate a new group or errors every 100 values.
  */
 enum cb_err {
-	CB_SUCCESS = 0,		/**< Call completed successfully */
-	CB_ERR = -1,		/**< Generic error code */
-	CB_ERR_ARG = -2,	/**< Invalid argument */
+	CB_SUCCESS = 0,			/**< Call completed successfully */
+	CB_ERR = -1,			/**< Generic error code */
+	CB_ERR_ARG = -2,		/**< Invalid argument */
+	CB_ERR_NOT_IMPLEMENTED = -3,	/**< Function not implemented */
 
 	/* NVRAM/CMOS errors */
 	CB_CMOS_OTABLE_DISABLED = -100,		/**< Option table disabled */

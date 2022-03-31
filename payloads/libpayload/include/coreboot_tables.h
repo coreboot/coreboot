@@ -84,6 +84,7 @@ enum {
 	CB_TAG_ACPI_CNVS		= 0x0041,
 	CB_TAG_TYPE_C_INFO		= 0x0042,
 	CB_TAG_ACPI_RSDP                = 0x0043,
+	CB_TAG_PCIE			= 0x0044,
 	CB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	CB_TAG_OPTION			= 0x00c9,
 	CB_TAG_OPTION_ENUM		= 0x00ca,
@@ -263,6 +264,12 @@ struct cb_gpios {
 
 	u32 count;
 	struct cb_gpio gpios[0];
+};
+
+struct cb_pcie {
+	uint32_t tag;
+	uint32_t size;
+	cb_uint64_t ctrl_base;	/* Base address of PCIe controller */
 };
 
 struct lb_range {

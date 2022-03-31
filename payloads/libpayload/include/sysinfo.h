@@ -84,6 +84,7 @@ struct sysinfo_t {
 	uintptr_t linker;
 	uintptr_t assembler;
 	uintptr_t mem_chip_base;
+	uintptr_t pcie_ctrl_base; /* Base address of PCIe controller */
 
 	uintptr_t cb_version;
 

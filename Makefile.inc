@@ -277,8 +277,8 @@ ifeq ($(CONFIG_IGNORE_IASL_MISSING_DEPENDENCY),y)
 build_complete::
 	printf "*** WARNING: The ASL code for this platform is incomplete.  Please fix it. ***\n"
 	printf "*** If _PRS is present, must have _CRS and _SRS ***\n"
-	printf "*** If _SRS is present, must have _PRS, _CRS, and _SRS ***\n"
-	printf "*** If _DIS is present, must have _SRS, _PRS, _CRS, and _SRS ***\n"
+	printf "*** If _SRS is present, must have _PRS and _CRS ***\n"
+	printf "*** If _DIS is present, must have _SRS, _PRS and _CRS ***\n"
 endif
 
 IGNORED_IASL_WARNINGS = $(addprefix -vw , $(IASL_WARNINGS_LIST))

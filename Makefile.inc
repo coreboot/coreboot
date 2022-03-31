@@ -261,9 +261,6 @@ endef
 # ResourceTemplate is the correct code.
 # As it's valid ASL, disable the warning.
 EMPTY_RESOURCE_TEMPLATE_WARNING = 3150
-# Redundant offset remarks are not useful in any way and are masking useful
-# ones that might indicate an issue so it is better to hide them.
-REDUNDANT_OFFSET_REMARK = 2158
 # IASL compiler check for usage of _CRS, _DIS, _PRS, and _SRS objects:
 #	1) If _PRS is present, must have _CRS and _SRS
 #	2) If _SRS is present, must have _PRS (_PRS requires _CRS and _SRS)

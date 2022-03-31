@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <boot/coreboot_tables.h>
 #include <commonlib/stdlib.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -208,6 +209,15 @@ void mtk_pcie_domain_set_resources(struct device *dev)
 		printk(BIOS_ERR, "%s: Failed to set MEM window\n", __func__);
 
 	pci_domain_set_resources(dev);
+}
+
+enum cb_err lb_fill_pcie(struct lb_pcie *pcie)
+{
+	if (!pci_root_bus())
+		return CB_ERR;
+
+	pcie->ctrl_base = mtk_pcie_get_controller_base(0);
+	return CB_SUCCESS;
 }
 
 void mtk_pcie_domain_enable(struct device *dev)

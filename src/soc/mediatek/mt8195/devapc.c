@@ -1955,7 +1955,9 @@ static void infra2_init(uintptr_t base)
 
 static void scp_master_init(uintptr_t base)
 {
-	write32(getreg(base, SCP_DOM), DOMAIN_3);
+	SET32_BITFIELDS(getreg(base, SCP_DOM),
+			FOUR_BIT_DOM_REMAP_0, DOMAIN_3,
+			FOUR_BIT_DOM_REMAP_1, DOMAIN_3);
 	write32(getreg(base, ADSP_DOM), DOMAIN_4);
 
 	/* Let SCP_DOM and ADSP_DOM registers be read-only for security */

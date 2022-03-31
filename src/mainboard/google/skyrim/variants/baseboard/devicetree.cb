@@ -27,9 +27,9 @@ chip soc/amd/sabrina
 		},
 
 		.io_mode = ESPI_IO_MODE_QUAD,
-		.op_freq_mhz = ESPI_OP_FREQ_33_MHZ,
+		.op_freq_mhz = ESPI_OP_FREQ_16_MHZ,
 		.crc_check_enable = 1,
-		.alert_pin = ESPI_ALERT_PIN_IN_BAND,
+		.alert_pin = ESPI_ALERT_PIN_OPEN_DRAIN,
 		.periph_ch_en = 1,
 		.vw_ch_en = 1,
 		.oob_ch_en = 0,

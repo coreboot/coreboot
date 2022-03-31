@@ -182,6 +182,12 @@ chip soc/intel/tigerlake
 			register "PcieClkSrcClkReq[3]"		= "3"
 			register "PcieRpSlotImplemented[8]"	= "1"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
+				register "reset_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A11)"
+				register "srcclk_pin"		= "3"
+				device generic 0 on end
+			end
 		end
 		device pci 1d.1 off end						# PCI Express Port 10
 		device pci 1d.2 off end						# PCI Express Port 11

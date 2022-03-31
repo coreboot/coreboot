@@ -362,6 +362,9 @@ static void spm_set_power_control(const struct pwr_ctrl *pwrctrl)
 		((pwrctrl->reg_dpmaif_vrf18_req_mask_b & 0x1) << 8) |
 		((pwrctrl->reg_dpmaif_ddren_req_mask_b & 0x1) << 9));
 	/* Auto-gen End */
+
+	/* Disable unused optional components */
+	write32(&mtk_spm->nna_pwr_con, BIT(1) | BIT(4) | BIT(8));
 }
 
 static void spm_hw_s1_state_monitor(int en)

@@ -836,6 +836,7 @@ struct pwr_ctrl {
 
 check_member(mtk_spm_regs, poweron_config_set, 0x0);
 check_member(mtk_spm_regs, dis_pwr_con, 0x354);
+check_member(mtk_spm_regs, nna_pwr_con, 0x3E0);
 check_member(mtk_spm_regs, ap_mdsrc_req, 0x430);
 check_member(mtk_spm_regs, ssusb_top_pwr_con, 0x9F0);
 check_member(mtk_spm_regs, ssusb_top_p1_pwr_con, 0x9F4);

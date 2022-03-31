@@ -17,7 +17,7 @@ static struct imd imd;
 
 void *cbmem_top(void)
 {
-	if (ENV_ROMSTAGE) {
+	if (ENV_CREATES_CBMEM) {
 		static void *top;
 		if (top)
 			return top;
@@ -49,9 +49,8 @@ void cbmem_initialize_empty(void)
 
 static void cbmem_top_init_once(void)
 {
-	/* Call one-time hook on expected cbmem init during boot. This sequence
-	   assumes first init call is in romstage. */
-	if (!ENV_ROMSTAGE)
+	/* Call one-time hook on expected cbmem init during boot. */
+	if (!ENV_CREATES_CBMEM)
 		return;
 
 	/* The test is only effective on X86 and when address hits UC memory. */
@@ -106,7 +105,7 @@ int cbmem_initialize_id_size(u32 id, u64 size)
 	 * if the imd area was recovered in romstage then S3 resume path
 	 * is being taken.
 	 */
-	if (ENV_ROMSTAGE)
+	if (ENV_CREATES_CBMEM)
 		imd_lockdown(&imd);
 
 	/* Add the specified range first */
@@ -206,8 +205,7 @@ void cbmem_get_region(void **baseptr, size_t *size)
 	imd_region_used(&imd, baseptr, size);
 }
 
-#if ENV_PAYLOAD_LOADER || (CONFIG(EARLY_CBMEM_LIST) \
-	&& (ENV_POSTCAR || ENV_ROMSTAGE))
+#if ENV_PAYLOAD_LOADER || (CONFIG(EARLY_CBMEM_LIST) && ENV_HAS_CBMEM)
 /*
  * -fdata-sections doesn't work so well on read only strings. They all
  * get put in the same section even though those strings may never be

@@ -85,7 +85,7 @@ static void migrate_power_state(int is_recovery)
 	}
 	memcpy(ps_cbmem, &power_state, sizeof(*ps_cbmem));
 }
-ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state)
+CBMEM_CREATION_HOOK(migrate_power_state);
 
 static void print_num_status_bits(int num_bits, uint32_t status,
 				  const char *const bit_names[])

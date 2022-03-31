@@ -295,4 +295,4 @@ bool vpd_get_int(const char *const key, const enum vpd_region region, int *const
 	return true;
 }
 
-ROMSTAGE_CBMEM_INIT_HOOK(cbmem_add_cros_vpd)
+CBMEM_CREATION_HOOK(cbmem_add_cros_vpd);

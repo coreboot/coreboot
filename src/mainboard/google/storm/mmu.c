@@ -25,7 +25,7 @@ void setup_dram_mappings(enum dram_state dram)
 		mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
 		/* Map DMA memory */
 		mmu_config_range(DMA_START, DMA_SIZE, DCACHE_OFF);
-		if (ENV_ROMSTAGE)
+		if (ENV_CREATES_CBMEM)
 			/* Mark cbmem backing store as ready. */
 			ipq_cbmem_backing_store_ready();
 	} else {

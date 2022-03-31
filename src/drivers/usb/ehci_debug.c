@@ -680,7 +680,7 @@ static void migrate_ehci_debug(int is_recovery)
 	struct ehci_debug_info *dbg_info_cbmem;
 	int rv;
 
-	if (ENV_ROMSTAGE) {
+	if (ENV_CREATES_CBMEM) {
 		/* Move state from CAR to CBMEM. */
 		struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 		dbg_info_cbmem = cbmem_add(CBMEM_ID_EHCI_DEBUG,
@@ -706,9 +706,7 @@ static void migrate_ehci_debug(int is_recovery)
 		printk(BIOS_DEBUG, "usbdebug: " ENV_STRING " starting...\n");
 }
 
-ROMSTAGE_CBMEM_INIT_HOOK(migrate_ehci_debug);
-POSTCAR_CBMEM_INIT_HOOK(migrate_ehci_debug);
-RAMSTAGE_CBMEM_INIT_HOOK(migrate_ehci_debug);
+CBMEM_READY_HOOK(migrate_ehci_debug);
 
 int dbgp_ep_is_active(struct dbgp_pipe *pipe)
 {
@@ -728,7 +726,7 @@ struct dbgp_pipe *dbgp_console_input(void)
 void usbdebug_init(void)
 {
 	/* USB console init is done early in romstage, yet delayed to
-	 * CBMEM_INIT_HOOKs for postcar and ramstage as we recover state
+	 * CBMEM_READY_HOOKs for postcar and ramstage as we recover state
 	 * from CBMEM.
 	 */
 	if (CONFIG(USBDEBUG_IN_PRE_RAM)

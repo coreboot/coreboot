@@ -30,7 +30,7 @@ static void migrate_power_state(int is_recovery)
 	}
 	memcpy(ps_cbmem, ps_car, sizeof(*ps_cbmem));
 }
-ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state)
+CBMEM_CREATION_HOOK(migrate_power_state);
 
 /* Return 0, 3, or 5 to indicate the previous sleep state. */
 static int prev_sleep_state(const struct chipset_power_state *ps)

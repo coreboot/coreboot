@@ -26,7 +26,7 @@ static void migrate_power_state(int is_recovery)
 	}
 	memcpy(ps_cbmem, &power_state, sizeof(*ps_cbmem));
 }
-ROMSTAGE_CBMEM_INIT_HOOK(migrate_power_state);
+CBMEM_CREATION_HOOK(migrate_power_state);
 
 struct chipset_power_state *fill_power_state(void)
 {

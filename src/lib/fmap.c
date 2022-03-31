@@ -315,13 +315,11 @@ static void fmap_add_cbmem_cache(void)
 
 static void fmap_setup_cbmem_cache(int unused)
 {
-	if (ENV_ROMSTAGE)
+	if (ENV_CREATES_CBMEM)
 		fmap_add_cbmem_cache();
 
 	/* Finally advertise the cache for the current stage */
 	fmap_register_cbmem_cache();
 }
 
-ROMSTAGE_CBMEM_INIT_HOOK(fmap_setup_cbmem_cache)
-RAMSTAGE_CBMEM_INIT_HOOK(fmap_setup_cbmem_cache)
-POSTCAR_CBMEM_INIT_HOOK(fmap_setup_cbmem_cache)
+CBMEM_READY_HOOK(fmap_setup_cbmem_cache);

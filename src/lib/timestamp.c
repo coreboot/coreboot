@@ -215,7 +215,7 @@ static void timestamp_reinit(int is_recovery)
 
 	/* First time into romstage we make a clean new table. For platforms that travel
 	   through this path on resume, ARCH_X86 S3, timestamps are also reset. */
-	if (ENV_ROMSTAGE) {
+	if (ENV_CREATES_CBMEM) {
 		ts_cbmem_table = timestamp_alloc_cbmem_table();
 	} else {
 		/* Find existing table in cbmem. */
@@ -228,7 +228,7 @@ static void timestamp_reinit(int is_recovery)
 		return;
 	}
 
-	if (ENV_ROMSTAGE)
+	if (ENV_CREATES_CBMEM)
 		timestamp_sync_cache_to_cbmem(ts_cbmem_table);
 
 	/* Seed the timestamp tick frequency in ENV_PAYLOAD_LOADER. */
@@ -279,9 +279,7 @@ uint32_t get_us_since_boot(void)
 	return (timestamp_get() - ts->base_time) / ts->tick_freq_mhz;
 }
 
-ROMSTAGE_CBMEM_INIT_HOOK(timestamp_reinit)
-POSTCAR_CBMEM_INIT_HOOK(timestamp_reinit)
-RAMSTAGE_CBMEM_INIT_HOOK(timestamp_reinit)
+CBMEM_READY_HOOK(timestamp_reinit);
 
 /* Provide default timestamp implementation using monotonic timer. */
 uint64_t  __weak timestamp_get(void)

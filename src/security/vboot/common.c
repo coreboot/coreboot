@@ -96,4 +96,4 @@ static void vboot_setup_cbmem(int unused)
 
 	assert(rv == VB2_SUCCESS);
 }
-ROMSTAGE_CBMEM_INIT_HOOK(vboot_setup_cbmem)
+CBMEM_CREATION_HOOK(vboot_setup_cbmem);

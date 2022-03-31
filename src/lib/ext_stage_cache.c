@@ -158,6 +158,4 @@ static void stage_cache_setup(int is_recovery)
 		stage_cache_create_empty();
 }
 
-ROMSTAGE_CBMEM_INIT_HOOK(stage_cache_setup)
-RAMSTAGE_CBMEM_INIT_HOOK(stage_cache_setup)
-POSTCAR_CBMEM_INIT_HOOK(stage_cache_setup)
+CBMEM_READY_HOOK(stage_cache_setup);

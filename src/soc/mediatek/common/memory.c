@@ -146,7 +146,7 @@ static void add_mem_chip_info(int unused)
 
 	fill_dram_info(mc, curr_ddr_info);
 }
-ROMSTAGE_CBMEM_INIT_HOOK(add_mem_chip_info);
+CBMEM_CREATION_HOOK(add_mem_chip_info);
 
 static int run_dram_blob(struct dramc_param *dparam)
 {

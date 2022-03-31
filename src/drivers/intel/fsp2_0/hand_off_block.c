@@ -109,7 +109,7 @@ static void save_hob_list(int is_recovery)
 	*cbmem_loc = (uintptr_t)hob_list;
 }
 
-ROMSTAGE_CBMEM_INIT_HOOK(save_hob_list);
+CBMEM_CREATION_HOOK(save_hob_list);
 
 const void *fsp_get_hob_list(void)
 {

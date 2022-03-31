@@ -19,7 +19,7 @@
 
 #define QCLIB_VERSION 0
 
-/* store QcLib return data until ROMSTAGE_CBMEM_INIT_HOOK runs */
+/* store QcLib return data until CBMEM_CREATION_HOOK runs */
 static void *mem_chip_addr;
 
 static void write_mem_chip_information(struct qclib_cb_if_table_entry *te)
@@ -51,7 +51,7 @@ static void add_mem_chip_info(int unused)
 	memcpy(mem_region_base, mem_chip_addr, size);
 }
 
-ROMSTAGE_CBMEM_INIT_HOOK(add_mem_chip_info);
+CBMEM_CREATION_HOOK(add_mem_chip_info);
 
 struct qclib_cb_if_table qclib_cb_if_table = {
 	.magic = QCLIB_MAGIC_NUMBER,

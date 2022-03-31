@@ -106,49 +106,35 @@ void cbmem_get_region(void **baseptr, size_t *size);
 void cbmem_list(void);
 void cbmem_add_records_to_cbtable(struct lb_header *header);
 
-#if ENV_RAMSTAGE
-#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
-	static cbmem_init_hook_t init_fn_ ## _unused_rom_ = init_fn_;
-#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) \
+#define _CBMEM_INIT_HOOK_UNUSED(init_fn_) __attribute__((unused)) \
+	static cbmem_init_hook_t init_fn_ ## _unused_ = init_fn_
+
+#define _CBMEM_INIT_HOOK(init_fn_) \
 	static cbmem_init_hook_t init_fn_ ## _ptr_ __attribute__((used, \
-	section(".rodata.cbmem_init_hooks"))) = init_fn_;
-#define POSTCAR_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
-	static cbmem_init_hook_t init_fn_ ## _unused_pc_ = init_fn_;
-#elif ENV_ROMSTAGE
-#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) \
-	static cbmem_init_hook_t init_fn_ ## _ptr_ __attribute__((used, \
-	section(".rodata.cbmem_init_hooks"))) = init_fn_;
-#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
-	static cbmem_init_hook_t init_fn_ ## _unused_ram_ = init_fn_;
-#define POSTCAR_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
-	static cbmem_init_hook_t init_fn_ ## _unused_pc_ = init_fn_;
-#elif ENV_POSTCAR
-#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
-	static cbmem_init_hook_t init_fn_ ## _unused_rom_ = init_fn_;
-#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
-	static cbmem_init_hook_t init_fn_ ## _unused_ram_ = init_fn_;
-#define POSTCAR_CBMEM_INIT_HOOK(init_fn_) \
-	static cbmem_init_hook_t init_fn_ ## _ptr_ __attribute__((used, \
-	section(".rodata.cbmem_init_hooks"))) = init_fn_;
-#else
-#define ROMSTAGE_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
-	static cbmem_init_hook_t init_fn_ ## _unused_rom_ = init_fn_;
-#define RAMSTAGE_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
-	static cbmem_init_hook_t init_fn_ ## _unused_ram_ = init_fn_;
-#define POSTCAR_CBMEM_INIT_HOOK(init_fn_) __attribute__((unused)) \
-	static cbmem_init_hook_t init_fn_ ## _unused_pc_ = init_fn_;
-#endif /* ENV_RAMSTAGE */
+	section(".rodata.cbmem_init_hooks"))) = init_fn_
 
 /* Early hooks get executed before other hooks. Use sparingly for hooks that create
    CBMEM regions which need to remain in a constant location across boot modes. */
-#if ENV_ROMSTAGE
-#define ROMSTAGE_CBMEM_INIT_HOOK_EARLY(init_fn_) \
+#define _CBMEM_INIT_HOOK_EARLY(init_fn_) \
 	static cbmem_init_hook_t init_fn_ ## _ptr_ __attribute__((used, \
-	section(".rodata.cbmem_init_hooks_early"))) = init_fn_;
+	section(".rodata.cbmem_init_hooks_early"))) = init_fn_
+
+/* Use CBMEM_CREATION_HOOK for code that needs to be run when cbmem is initialized
+   for the first time. */
+#if ENV_CREATES_CBMEM
+#define CBMEM_CREATION_HOOK(x)		_CBMEM_INIT_HOOK(x)
 #else
-#define ROMSTAGE_CBMEM_INIT_HOOK_EARLY(init_fn_) __attribute__((unused)) \
-	static cbmem_init_hook_t init_fn_ ## _unused_rom_ = init_fn_;
-#endif /* ENV_ROMSTAGE */
+#define CBMEM_CREATION_HOOK(x)		_CBMEM_INIT_HOOK_UNUSED(x)
+#endif
+
+/* Use CBMEM_READY_HOOK for code that needs to run in all stages that have cbmem. */
+#if ENV_HAS_CBMEM
+#define CBMEM_READY_HOOK(x)		_CBMEM_INIT_HOOK(x)
+#define CBMEM_READY_HOOK_EARLY(x)	_CBMEM_INIT_HOOK_EARLY(x)
+#else
+#define CBMEM_READY_HOOK(x)		_CBMEM_INIT_HOOK_UNUSED(x)
+#define CBMEM_READY_HOOK_EARLY(x)	_CBMEM_INIT_HOOK_UNUSED(x)
+#endif
 
 /*
  * Returns 0 for the stages where we know that cbmem does not come online.

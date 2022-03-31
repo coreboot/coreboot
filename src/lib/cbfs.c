@@ -32,7 +32,7 @@ static void switch_to_postram_cache(int unused)
 		mem_pool_init(&cbfs_cache, _postram_cbfs_cache, REGION_SIZE(postram_cbfs_cache),
 			      CONFIG_CBFS_CACHE_ALIGN);
 }
-ROMSTAGE_CBMEM_INIT_HOOK(switch_to_postram_cache);
+CBMEM_CREATION_HOOK(switch_to_postram_cache);
 
 enum cb_err _cbfs_boot_lookup(const char *name, bool force_ro,
 			      union cbfs_mdata *mdata, struct region_device *rdev)
@@ -693,5 +693,5 @@ static void cbfs_mcache_migrate(int unused)
 	mcache_to_cbmem(vboot_get_cbfs_boot_device(), CBMEM_ID_CBFS_RW_MCACHE);
 	mcache_to_cbmem(cbfs_get_boot_device(true), CBMEM_ID_CBFS_RO_MCACHE);
 }
-ROMSTAGE_CBMEM_INIT_HOOK(cbfs_mcache_migrate)
+CBMEM_CREATION_HOOK(cbfs_mcache_migrate);
 #endif

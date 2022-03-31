@@ -24,7 +24,7 @@
 	*(.text);
 	*(.text.*);
 
-#if ENV_RAMSTAGE || ENV_ROMSTAGE || ENV_POSTCAR
+#if ENV_HAS_CBMEM
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_cbmem_init_hooks = .;
 	KEEP(*(.rodata.cbmem_init_hooks_early));

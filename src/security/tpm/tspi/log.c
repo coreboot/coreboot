@@ -39,8 +39,8 @@ struct tcpa_table *tcpa_log_init(void)
 	if (!cbmem_possibly_online() &&
 		!CONFIG(VBOOT_RETURN_FROM_VERSTAGE))
 		return (struct tcpa_table *)_tpm_tcpa_log;
-	else if (ENV_ROMSTAGE &&
-		!CONFIG(VBOOT_RETURN_FROM_VERSTAGE)) {
+	else if (ENV_CREATES_CBMEM
+		 && !CONFIG(VBOOT_RETURN_FROM_VERSTAGE)) {
 		tclt = tcpa_cbmem_init();
 		if (!tclt)
 			return (struct tcpa_table *)_tpm_tcpa_log;
@@ -154,7 +154,7 @@ static void recover_tcpa_log(int is_recovery)
 		memcpy(tce->digest, preram_log->entries[i].digest, tce->digest_length);
 	}
 }
-ROMSTAGE_CBMEM_INIT_HOOK(recover_tcpa_log);
+CBMEM_CREATION_HOOK(recover_tcpa_log);
 #endif
 
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, tcpa_log_dump, NULL);

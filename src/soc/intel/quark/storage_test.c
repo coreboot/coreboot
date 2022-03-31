@@ -159,7 +159,7 @@ void storage_test(uint32_t bar, int full_initialization)
 
 	/* Get the structure addresses */
 	media = NULL;
-	if (ENV_ROMSTAGE)
+	if (ENV_CREATES_CBMEM)
 		media = (struct storage_media *)drivers_storage;
 	else
 		media = cbmem_find(CBMEM_ID_STORAGE_DATA);
@@ -225,7 +225,6 @@ void storage_test(uint32_t bar, int full_initialization)
 }
 #endif
 
-#if ENV_ROMSTAGE
 static void copy_storage_structures(int is_recovery)
 {
 	struct storage_media *media;
@@ -242,5 +241,4 @@ static void copy_storage_structures(int is_recovery)
 	media->ctrlr = &sdhci_ctrlr->sd_mmc_ctrlr;
 }
 
-ROMSTAGE_CBMEM_INIT_HOOK(copy_storage_structures);
-#endif
+CBMEM_CREATION_HOOK(copy_storage_structures);

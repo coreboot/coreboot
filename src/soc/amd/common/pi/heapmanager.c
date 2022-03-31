@@ -127,7 +127,7 @@ static void ConcatenateNodes(BIOS_BUFFER_NODE *FirstNodePtr,
 	memset(SecondNodePtr, 0, sizeof(BIOS_BUFFER_NODE));
 }
 
-ROMSTAGE_CBMEM_INIT_HOOK(EmptyHeap)
+CBMEM_CREATION_HOOK(EmptyHeap);
 
 AGESA_STATUS agesa_AllocateBuffer(uint32_t Func, uintptr_t Data,
 							void *ConfigPtr)

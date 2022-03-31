@@ -31,4 +31,4 @@ static void add_chipset_state_cbmem(int unused)
 		memcpy(state, &chipset_state, sizeof(*state));
 }
 
-ROMSTAGE_CBMEM_INIT_HOOK(add_chipset_state_cbmem);
+CBMEM_CREATION_HOOK(add_chipset_state_cbmem);

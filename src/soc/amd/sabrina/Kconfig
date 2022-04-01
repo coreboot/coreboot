@@ -387,6 +387,23 @@ config PSP_WHITELIST_FILE
 	depends on HAVE_PSP_WHITELIST_FILE
 	default "3rdparty/amd_blobs/cezanne/PSP/wtl-czn.sbin"
 
+config HAVE_SPL_FILE
+	bool "Have a mainboard specific SPL table file"
+	default n
+	help
+	  Have a mainboard specific Security Patch Level (SPL) table file. SPL file
+	  is required to support PSP FW anti-rollback and needs to be created by AMD.
+	  The default SPL file applies to all boards that use the concerned SoC and
+	  is dropped under 3rdparty/blobs. The mainboard specific SPL file override
+	  can be applied through SPL_TABLE_FILE config.
+
+	  If unsure, answer 'n'
+
+config SPL_TABLE_FILE
+	string "SPL table file"
+	depends on HAVE_SPL_FILE
+	default "3rdparty/amd_blobs/cezanne/PSP/TypeId0x55_SplTableBl_CZN.sbin"
+
 config PSP_SOFTFUSE_BITS
 	string "PSP Soft Fuse bits to enable"
 	default "28 6"

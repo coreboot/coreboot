@@ -291,45 +291,46 @@ void clock_enable_qup(int qup)
 	}
 }
 
-void clock_configure_sdcc(enum clk_sdcc sdcc, uint32_t hz)
+void clock_configure_sdcc1(uint32_t hz)
 {
-	if (sdcc == SDCC1_CLK) {
-		if (hz > CLK_100MHZ) {
-			struct alpha_pll_reg_val_config gpll10_cfg = {0};
-			gpll10_cfg.reg_mode = &gcc->gpll10.mode;
-			gpll10_cfg.reg_opmode = &gcc->gpll10.opmode;
-			gpll10_cfg.reg_l = &gcc->gpll10.l;
-			gpll10_cfg.l_val = 0x14;
-			gpll10_cfg.reg_cal_l = &gcc->gpll10.cal_l;
-			gpll10_cfg.cal_l_val = 0x44;
-			gpll10_cfg.fsm_enable = true;
-			gpll10_cfg.reg_apcs_pll_br_en = &gcc->apcs_pll_br_en;
-			clock_configure_enable_gpll(&gpll10_cfg, true, 9);
-		}
-		clock_configure((struct clock_rcg *)&gcc->sdcc1, sdcc1_core_cfg,
-					hz, ARRAY_SIZE(sdcc1_core_cfg));
-		clock_enable(&gcc->sdcc1_ahb_cbcr);
-		clock_enable(&gcc->sdcc1_apps_cbcr);
-	} else if (sdcc == SDCC2_CLK) {
-		if (hz > CLK_100MHZ) {
-			struct alpha_pll_reg_val_config gpll9_cfg = {0};
-			gpll9_cfg.reg_mode = &gcc->gpll9.mode;
-			gpll9_cfg.reg_opmode = &gcc->gpll9.opmode;
-			gpll9_cfg.reg_alpha = &gcc->gpll9.alpha;
-			gpll9_cfg.alpha_val = 0x1555;
-			gpll9_cfg.reg_l = &gcc->gpll9.l;
-			gpll9_cfg.l_val = 0x2A;
-			gpll9_cfg.reg_cal_l = &gcc->gpll9.cal_l;
-			gpll9_cfg.cal_l_val = 0x44;
-			gpll9_cfg.fsm_enable = true;
-			gpll9_cfg.reg_apcs_pll_br_en = &gcc->apcs_pll_br_en;
-			clock_configure_enable_gpll(&gpll9_cfg, true, 8);
-		}
-		clock_configure((struct clock_rcg *)&gcc->sdcc2, sdcc2_core_cfg,
-			       hz, ARRAY_SIZE(sdcc2_core_cfg));
-		clock_enable(&gcc->sdcc2_ahb_cbcr);
-		clock_enable(&gcc->sdcc2_apps_cbcr);
+	if (hz > CLK_100MHZ) {
+		struct alpha_pll_reg_val_config gpll10_cfg = {0};
+		gpll10_cfg.reg_mode = &gcc->gpll10.mode;
+		gpll10_cfg.reg_opmode = &gcc->gpll10.opmode;
+		gpll10_cfg.reg_l = &gcc->gpll10.l;
+		gpll10_cfg.l_val = 0x14;
+		gpll10_cfg.reg_cal_l = &gcc->gpll10.cal_l;
+		gpll10_cfg.cal_l_val = 0x44;
+		gpll10_cfg.fsm_enable = true;
+		gpll10_cfg.reg_apcs_pll_br_en = &gcc->apcs_pll_br_en;
+		clock_configure_enable_gpll(&gpll10_cfg, true, 9);
 	}
+	clock_configure((struct clock_rcg *)&gcc->sdcc1, sdcc1_core_cfg,
+			hz, ARRAY_SIZE(sdcc1_core_cfg));
+	clock_enable(&gcc->sdcc1_ahb_cbcr);
+	clock_enable(&gcc->sdcc1_apps_cbcr);
+}
+
+void clock_configure_sdcc2(uint32_t hz)
+{
+	if (hz > CLK_100MHZ) {
+		struct alpha_pll_reg_val_config gpll9_cfg = {0};
+		gpll9_cfg.reg_mode = &gcc->gpll9.mode;
+		gpll9_cfg.reg_opmode = &gcc->gpll9.opmode;
+		gpll9_cfg.reg_alpha = &gcc->gpll9.alpha;
+		gpll9_cfg.alpha_val = 0x1555;
+		gpll9_cfg.reg_l = &gcc->gpll9.l;
+		gpll9_cfg.l_val = 0x2A;
+		gpll9_cfg.reg_cal_l = &gcc->gpll9.cal_l;
+		gpll9_cfg.cal_l_val = 0x44;
+		gpll9_cfg.fsm_enable = true;
+		gpll9_cfg.reg_apcs_pll_br_en = &gcc->apcs_pll_br_en;
+		clock_configure_enable_gpll(&gpll9_cfg, true, 8);
+	}
+	clock_configure((struct clock_rcg *)&gcc->sdcc2, sdcc2_core_cfg,
+			hz, ARRAY_SIZE(sdcc2_core_cfg));
+	clock_enable(&gcc->sdcc2_ahb_cbcr);
+	clock_enable(&gcc->sdcc2_apps_cbcr);
 }
 
 void clock_configure_dfsr(int qup)

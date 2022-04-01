@@ -272,11 +272,6 @@ struct pcie {
 	int vote_bit;
 };
 
-enum clk_sdcc {
-	SDCC1_CLK,
-	SDCC2_CLK,
-};
-
 enum clk_qup {
 	QUP_WRAP0_S0,
 	QUP_WRAP0_S1,
@@ -385,7 +380,8 @@ static struct sc7280_disp_cc *const mdss = (void *)DISP_CC_BASE;
 void clock_init(void);
 void clock_configure_qspi(uint32_t hz);
 void clock_enable_qup(int qup);
-void clock_configure_sdcc(enum clk_sdcc, uint32_t hz);
+void clock_configure_sdcc1(uint32_t hz);
+void clock_configure_sdcc2(uint32_t hz);
 void clock_configure_dfsr(int qup);
 int clock_enable_gdsc(enum clk_gdsc gdsc_type);
 

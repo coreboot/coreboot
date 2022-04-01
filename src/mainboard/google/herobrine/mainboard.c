@@ -50,9 +50,9 @@ static void qi2s_configure_gpios(void)
 static void mainboard_init(struct device *dev)
 {
 	/* Configure clock for eMMC */
-	clock_configure_sdcc(1, 384 * MHz);
+	clock_configure_sdcc1(384 * MHz);
 	/* Configure clock for SD card */
-	clock_configure_sdcc(2, 50 * MHz);
+	clock_configure_sdcc2(50 * MHz);
 	configure_sdhci();
 
 	gpi_firmware_load(QUP_0_GSI_BASE);

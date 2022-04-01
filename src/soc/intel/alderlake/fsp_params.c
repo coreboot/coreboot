@@ -406,6 +406,7 @@ static void fill_fsps_igd_params(FSP_S_CONFIG *s_cfg,
 	/* Check if IGD is present and fill Graphics init param accordingly */
 	s_cfg->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_devfn_enabled(SA_DEVFN_IGD);
 	s_cfg->LidStatus = CONFIG(RUN_FSP_GOP);
+	s_cfg->PavpEnable = CONFIG(PAVP);
 }
 
 static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,

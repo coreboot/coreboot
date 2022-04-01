@@ -25,9 +25,6 @@ void bootblock_soc_early_init(void)
 
 void bootblock_soc_init(void)
 {
-	if (CONFIG(ALDERLAKE_A0_CONFIGURE_PMC_DESCRIPTOR))
-		configure_pmc_descriptor();
-
 	report_platform_info();
 	bootblock_pch_init();
 

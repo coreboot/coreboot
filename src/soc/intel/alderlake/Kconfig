@@ -112,15 +112,6 @@ config CPU_SPECIFIC_OPTIONS
 	select UDK_202005_BINDING
 	select USE_FSP_NOTIFY_PHASE_POST_PCI_ENUM
 
-config ALDERLAKE_A0_CONFIGURE_PMC_DESCRIPTOR
-	bool
-	help
-	  Alder Lake stepping A0 needs a different value for a PMC setting in
-	  the IFD. When this option is selected, coreboot will update the IFD
-	  value at runtime, which allows using an IFD with the new value with
-	  any CPU stepping. To apply this workaround, the IFD region needs to
-	  be writable by the host.
-
 config ALDERLAKE_CAR_ENHANCED_NEM
 	bool
 	default y if !INTEL_CAR_NEM

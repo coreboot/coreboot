@@ -17,6 +17,4 @@ void bootblock_pch_init(void);
 void pch_early_iorange_init(void);
 void report_platform_info(void);
 
-void configure_pmc_descriptor(void);
-
 #endif

@@ -45,7 +45,7 @@ void configure_pmc_descriptor(void)
 	uint8_t si_desc_buf[CONFIG_SI_DESC_REGION_SZ];
 	struct region_device desc_rdev;
 
-	if (cpu_get_cpuid() != CPUID_ALDERLAKE_A0)
+	if (cpu_get_cpuid() != CPUID_ALDERLAKE_J0)
 		return;
 
 	if (fmap_locate_area_as_rdev_rw(CONFIG_SI_DESC_REGION, &desc_rdev) < 0) {

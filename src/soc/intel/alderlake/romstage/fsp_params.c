@@ -273,7 +273,7 @@ static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,
 	const uint32_t cpuid = cpu_get_cpuid();
 
 	/* Disable VT-d for early silicon steppings as it results in a CPU hard hang */
-	if (cpuid == CPUID_ALDERLAKE_A0 || cpuid == CPUID_ALDERLAKE_A1) {
+	if (cpuid == CPUID_ALDERLAKE_J0 || cpuid == CPUID_ALDERLAKE_Q0) {
 		m_cfg->VtdDisable = 1;
 		return;
 	}

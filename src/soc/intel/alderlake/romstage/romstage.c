@@ -27,7 +27,7 @@
 
 bool skip_cse_sub_part_update(void)
 {
-	return cpu_get_cpuid() != CPUID_ALDERLAKE_A2;
+	return cpu_get_cpuid() != CPUID_ALDERLAKE_K0;
 }
 
 /* Save the DIMM information for SMBIOS table 17 */

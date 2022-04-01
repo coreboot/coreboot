@@ -441,6 +441,13 @@ struct soc_intel_alderlake_config {
 	uint8_t dmi_power_optimize_disable;
 
 	/*
+	 * Used to communicate the power delivery design capability of the board. This
+	 * value is an enum of the available power delivery segments that are defined in
+	 * the Platform Design Guide.
+	 */
+	uint8_t vr_power_delivery_design;
+
+	/*
 	 * Enable(1)/Disable(0) CPU Replacement check.
 	 * Default 0. Setting this to 1 to check CPU replacement.
 	 */

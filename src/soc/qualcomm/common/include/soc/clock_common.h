@@ -145,8 +145,17 @@ enum cb_err enable_and_poll_gdsc_status(void *gdscr_addr);
 
 void clock_reset_bcr(void *bcr_addr, bool assert);
 
+/*
+ * clock_configure(): Configure the clock at the given clock speed (hz).  If hz
+ * does not match any entries in the clk_cfg array, will throw and error and die().
+ *
+ * @param clk          struct clock_rcg pointer (root clock generator)
+ * @param clk_cfg      Array with possible clock configurations
+ * @param hz           frequency of clock to set
+ * @param num_perfs    size of clock array
+ */
 enum cb_err clock_configure(struct clock_rcg *clk, struct clock_freq_config *clk_cfg,
-		uint32_t hz, uint32_t num_perfs);
+			    uint32_t hz, uint32_t num_perfs);
 
 void clock_configure_dfsr_table(int qup, struct clock_freq_config *clk_cfg,
 		uint32_t num_perfs);

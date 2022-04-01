@@ -90,14 +90,19 @@ static void clock_configure_mnd(struct clock_rcg *clk, uint32_t m, uint32_t n,
 
 /* Clock Root clock Generator Operations */
 enum cb_err clock_configure(struct clock_rcg *clk,
-			struct clock_freq_config *clk_cfg, uint32_t hz,
-			uint32_t num_perfs)
+			    struct clock_freq_config *clk_cfg, uint32_t hz,
+			    uint32_t num_perfs)
 {
 	uint32_t reg_val, idx;
 
 	for (idx = 0; idx < num_perfs; idx++)
-		if (hz <= clk_cfg[idx].hz)
+		if (hz == clk_cfg[idx].hz)
 			break;
+
+	/* Verify we matched an entry.  If not, throw error. */
+	if (idx >= num_perfs)
+		die("Failed to find a matching clock frequency (%d hz) for %p!\n",
+		    hz, clk);
 
 	reg_val = (clk_cfg[idx].src << CLK_CTL_CFG_SRC_SEL_SHFT) |
 			(clk_cfg[idx].div << CLK_CTL_CFG_SRC_DIV_SHFT);

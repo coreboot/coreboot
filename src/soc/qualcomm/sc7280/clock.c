@@ -403,31 +403,33 @@ enum cb_err mdss_clock_configure(enum clk_mdss clk_type, uint32_t hz,
 
 	/* Initialize it with received arguments */
 	mdss_clk_cfg.div = divider ?  QCOM_CLOCK_DIV(divider) : 0;
-
-	if (clk_type == MDSS_CLK_MDP) {
-		for (idx = 0; idx < ARRAY_SIZE(mdss_mdp_cfg); idx++) {
-			if (hz <= mdss_mdp_cfg[idx].hz) {
-				source = mdss_mdp_cfg[idx].src;
-				mdss_clk_cfg.div = mdss_mdp_cfg[idx].div;
-				m = 0;
-				break;
-			}
-		}
-	}
 	mdss_clk_cfg.src = source;
 	mdss_clk_cfg.m = m;
 	mdss_clk_cfg.n = n;
 	mdss_clk_cfg.d_2 = d_2;
+	mdss_clk_cfg.hz = hz;
+
+	if (clk_type == MDSS_CLK_MDP) {
+		for (idx = 0; idx < ARRAY_SIZE(mdss_mdp_cfg); idx++) {
+			if (hz <= mdss_mdp_cfg[idx].hz) {
+				mdss_clk_cfg.src = mdss_mdp_cfg[idx].src;
+				mdss_clk_cfg.div = mdss_mdp_cfg[idx].div;
+				mdss_clk_cfg.hz = mdss_mdp_cfg[idx].hz;
+				mdss_clk_cfg.m = 0;
+				break;
+			}
+		}
+	}
 
 	switch (clk_type) {
 	case MDSS_CLK_EDP_PIXEL:
 	case MDSS_CLK_PCLK0:
 		return clock_configure((struct clock_rcg *)
-				mdss_clock_mnd[clk_type],
-				&mdss_clk_cfg, hz, 0);
+				       mdss_clock_mnd[clk_type],
+				       &mdss_clk_cfg, mdss_clk_cfg.hz, 1);
 	default:
 		return clock_configure(mdss_clock[clk_type],
-				&mdss_clk_cfg, hz, 0);
+				       &mdss_clk_cfg, mdss_clk_cfg.hz, 1);
 	}
 }
 

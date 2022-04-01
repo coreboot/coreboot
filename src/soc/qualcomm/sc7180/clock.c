@@ -215,7 +215,7 @@ enum cb_err mdss_clock_configure(enum mdss_clock clk_type, uint32_t source,
 	mdss_clk_cfg.d_2 = d_2;
 
 	return clock_configure((struct clock_rcg *)mdss_clock[clk_type],
-			&mdss_clk_cfg, 0, 0);
+			       &mdss_clk_cfg, 0, 1);
 }
 
 int mdss_clock_enable(enum mdss_clock clk_type)

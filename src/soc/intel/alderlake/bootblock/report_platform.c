@@ -25,6 +25,7 @@ static struct {
 } cpu_table[] = {
 	{ CPUID_ALDERLAKE_J0, "Alderlake J0 Platform" },
 	{ CPUID_ALDERLAKE_K0, "Alderlake K0 Platform" },
+	{ CPUID_ALDERLAKE_L0, "Alderlake L0 Platform" },
 	{ CPUID_ALDERLAKE_Q0, "Alderlake Q0 Platform" },
 	{ CPUID_ALDERLAKE_R0, "Alderlake R0 Platform" },
 	{ CPUID_ALDERLAKE_N_A0, "Alderlake-N Platform" },

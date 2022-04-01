@@ -282,7 +282,7 @@ static int fch_spi_flash_protect(const struct spi_flash *flash, const struct reg
 	}
 
 	/* Final steps to protect region */
-	pci_write_config32(SOC_LPC_DEV, SPI_RESTRICTED_CMD1, reg32);
+	spi_write32(SPI_RESTRICTED_CMD1, reg32);
 	reg32 = spi_read32(SPI_CNTRL0);
 	reg32 &= ~SPI_ACCESS_MAC_ROM_EN;
 	spi_write32(SPI_CNTRL0, reg32);

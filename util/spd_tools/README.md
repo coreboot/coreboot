@@ -459,14 +459,16 @@ This program takes the following inputs:
 *   The memory technology used by the board, e.g. lp4x.
 *   The path to the directory where the generated Makefile.inc should be placed.
 *   A CSV file containing a list of the memory parts used by the board, with an
-*   optional fixed or exclusive ID for each part. A fixed ID is simply an integer
-*   and it ensure that part (and any that share the same SPD) will be assigned
-*   that ID. An exclusive ID is prefixed with `*` and ensures that only parts with
-*   the same exclusive ID will be assigned that ID, even if they would otherwise
-*   share the same ID.
+*   optional fixed or exclusive ID for each part and an optional SPD override file.
+*   A fixed ID is simply an integer and it ensure that part (and any that share the same SPD)
+*   will be assigned that ID. An exclusive ID is prefixed with `*` and ensures that
+*   only parts with the same exclusive ID will be assigned that ID, even if they would
+*   otherwise share the same ID. When using an SPD override file, the file will be searched
+*   for in the directory where mem_parts_used is located, if it is not found there then it
+*   will be searched for in the appropriate default spd directory.
 *   NOTE: Only assign a fixed/exclusive ID if required for legacy reasons.
 
-Example of a CSV file using fixed and exclusive IDs:
+Example of a CSV file using fixed and exclusive IDs, and SPD file overrides:
 
 ```
 K4AAG165WA-BCWE,1
@@ -475,6 +477,8 @@ MT40A1G16KD-062E:E
 K4A8G165WC-BCWE
 H5AN8G6NDJR-XNC,8
 H5ANAG6NCMR-XNC,*9
+H9HCNNNCPMMLXR-NEE,,H9HCNNNCPMMLXR-NEE.hex
+H54G56CYRBX247,4,H54G56CYRBX247.hex
 ```
 
 Explanation: This will ensure that the SPDs for K4AAG165WA-BCWE and

@@ -102,9 +102,10 @@ const (
 )
 
 type usedPart struct {
-	partName string
-	index    int
-	mapping  mappingType
+	partName    string
+	index       int
+	mapping     mappingType
+	SPDOverride string
 }
 
 func readPlatformsManifest(memTech string) (map[string]string, error) {
@@ -183,30 +184,44 @@ func readParts(memPartsUsedFileName string) ([]usedPart, error) {
 		}
 
 		if len(fields) == 1 {
-			parts = append(parts, usedPart{fields[0], -1, Auto})
-		} else if len(fields) == 2 {
+			parts = append(parts, usedPart{fields[0], -1, Auto, ""})
+		} else {
 			var mapping = Auto
 			var assignedId = -1
 			var err error = nil
+			var spdOverride string = ""
 
-			if len(fields[1]) >= 2 && fields[1][0] == '*' {
-				// Exclusive mapping
-				mapping = Exclusive
-				assignedId, err = strconv.Atoi(fields[1][1:])
-			} else {
-				mapping = Fixed
-				assignedId, err = strconv.Atoi(fields[1])
+			// Second column, ID override
+			if len(fields) >= 2 {
+				if len(fields[1]) >= 2 && fields[1][0] == '*' {
+					// Exclusive mapping
+					mapping = Exclusive
+					assignedId, err = strconv.Atoi(fields[1][1:])
+				} else if fields[1] != "" {
+					// Fixed mapping
+					mapping = Fixed
+					assignedId, err = strconv.Atoi(fields[1])
+				}
+			}
+
+			// Third column, SPD file override
+			if len(fields) >= 3 {
+				if len(fields[2]) == 0 {
+					err = fmt.Errorf("mem_parts_used_file file is incorrectly formatted, SPD file column is empty")
+				} else {
+					spdOverride = fields[2]
+				}
 			}
 
 			if err != nil {
 				return nil, err
 			}
-			if assignedId > MaxMemoryId || assignedId < 0 {
+
+			if assignedId > MaxMemoryId {
 				return nil, fmt.Errorf("Out of bounds assigned id %d for part %s", assignedId, fields[0])
 			}
-			parts = append(parts, usedPart{fields[0], assignedId, mapping})
-		} else {
-			return nil, fmt.Errorf("mem_parts_used_file file is incorrectly formatted")
+
+			parts = append(parts, usedPart{fields[0], assignedId, mapping, spdOverride})
 		}
 	}
 
@@ -288,7 +303,6 @@ func genPartIdInfo(parts []usedPart, partToSPDMap map[string]string, SPDToIndexM
 
 	// Assign parts with fixed ids first
 	for _, p := range parts {
-
 		if p.index == -1 {
 			continue
 		}
@@ -299,7 +313,7 @@ func genPartIdInfo(parts []usedPart, partToSPDMap map[string]string, SPDToIndexM
 
 		SPDFileName, ok := partToSPDMap[p.partName]
 		if !ok {
-			return nil, fmt.Errorf("Failed to find part ", p.partName, " in SPD Manifest. Please add the part to global part list and regenerate SPD Manifest")
+			return nil, fmt.Errorf("Failed to find part %s in SPD Manifest. Please add the part to global part list and regenerate SPD Manifest", p.partName)
 		}
 
 		// Extend partIdList and assignedMapping with empty entries if needed
@@ -396,7 +410,7 @@ func genPartIdInfo(parts []usedPart, partToSPDMap map[string]string, SPDToIndexM
  * This function generates Makefile.inc under the variant directory path and adds assigned SPDs
  * to SPD_SOURCES.
  */
-func genMakefile(partIdList []partIds, makefileDirName string, SPDDir string) error {
+func genMakefile(partIdList []partIds, makefileDirName string, SPDDir string, partsDir string) error {
 	s := getFileHeader()
 	s += fmt.Sprintf("SPD_SOURCES =\n")
 
@@ -405,7 +419,18 @@ func genMakefile(partIdList []partIds, makefileDirName string, SPDDir string) er
 			s += fmt.Sprintf("SPD_SOURCES += %v ", filepath.Join(SPDDir, SPDEmptyFileName))
 			s += fmt.Sprintf("     # ID = %d(0b%04b)\n", i, int64(i))
 		} else {
-			s += fmt.Sprintf("SPD_SOURCES += %v ", filepath.Join(SPDDir, partIdList[i].SPDFileName))
+			SPDFileName := partIdList[i].SPDFileName
+			path := filepath.Join(partsDir, SPDFileName)
+
+			// Check if the file exists in the directory of the parts file
+			if _, err := os.Stat(path); err != nil {
+				// File doesn't exist, check spd directory
+				path = filepath.Join(SPDDir, SPDFileName)
+				if _, err = os.Stat(path); err != nil {
+					return fmt.Errorf("Failed to write Makefile, SPD file '%s' doesn't exist", SPDFileName)
+				}
+			}
+			s += fmt.Sprintf("SPD_SOURCES += %v ", path)
 			s += fmt.Sprintf("     # ID = %d(0b%04b) ", i, int64(i))
 			s += fmt.Sprintf(" Parts = %04s\n", partIdList[i].memParts)
 		}
@@ -442,12 +467,20 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Update our SPD maps with part specific overrides
+	for _, p := range parts {
+		if p.SPDOverride != "" {
+			partToSPDMap[p.partName] = p.SPDOverride
+			SPDToIndexMap[p.SPDOverride] = -1
+		}
+	}
+
 	partIdList, err := genPartIdInfo(parts, partToSPDMap, SPDToIndexMap, makefileDir)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err := genMakefile(partIdList, makefileDir, SPDDir); err != nil {
+	if err := genMakefile(partIdList, makefileDir, SPDDir, filepath.Dir(memPartsUsedFile)); err != nil {
 		log.Fatal(err)
 	}
 }

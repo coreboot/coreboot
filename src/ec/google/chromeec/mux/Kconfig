@@ -1,0 +1,11 @@
+if EC_GOOGLE_CHROMEEC
+
+config EC_GOOGLE_CHROMEEC_MUX
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	  This enables the Cros EC Mux driver that is required to fill the
+	  SSDT nodes for the EC Mux platform device which is used to
+	  configure Type C muxes and retimers.
+
+endif

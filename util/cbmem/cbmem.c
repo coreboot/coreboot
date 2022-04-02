@@ -639,7 +639,7 @@ static void print_with_path(struct ts_range_stack *range_stack, const int stackl
 	}
 	if (last_part)
 		printf("%s", last_part);
-	printf(" %lu\n", arch_convert_raw_ts_entry(stamp));
+	printf(" %llu\n", (long long)arch_convert_raw_ts_entry(stamp));
 }
 
 enum timestamps_print_type {

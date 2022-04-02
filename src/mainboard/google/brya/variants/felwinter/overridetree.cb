@@ -44,6 +44,10 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 	}"
 
+	# As per Intel Advisory doc#723158, the change is required to prevent possible
+	# display flickering issue.
+	register "usb2_phy_sus_pg_disable" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

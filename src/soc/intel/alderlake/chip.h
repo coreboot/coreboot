@@ -573,6 +573,13 @@ struct soc_intel_alderlake_config {
 	 * Default 0. Set this to 1 in order to disable C state demotion.
 	 */
 	bool disable_c1_state_auto_demotion;
+
+	/*
+	 * Enable or Disable PCH USB2 Phy power gating.
+	 * Default 0. Set this to 1 in order to disable PCH USB2 Phy Power gating.
+	 * Workaround for Intel TA# 723158 to prevent possible display flicker.
+	 */
+	bool usb2_phy_sus_pg_disable;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

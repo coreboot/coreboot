@@ -500,6 +500,8 @@ static void fill_fsps_xhci_params(FSP_S_CONFIG *s_cfg,
 		if (config->tcss_ports[i].enable)
 			s_cfg->CpuUsb3OverCurrentPin[i] = config->tcss_ports[i].ocpin;
 	}
+
+	s_cfg->PmcUsb2PhySusPgEnable = !config->usb2_phy_sus_pg_disable;
 }
 
 static void fill_fsps_xdci_params(FSP_S_CONFIG *s_cfg,

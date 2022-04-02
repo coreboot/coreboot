@@ -14,6 +14,8 @@ static const struct dptf_platform_info adl_dptf_platform_info = {
 	.tpch_device_hid = "INTC1049",
 	/* _HID for the toplevel TPWR device, typically \_SB.DPTF.TPWR */
 	.tpwr_device_hid = "INTC1060",
+	/* _HID for the toplevel BAT1 device, typically \_SB.DPTF.BAT1 */
+	.tbat_device_hid = "INTC1061",
 
 	.tpch_method_names = {
 		.set_fivr_low_clock_method = "RFC0",

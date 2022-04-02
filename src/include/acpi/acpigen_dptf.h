@@ -27,6 +27,7 @@ enum dptf_participant {
 	DPTF_TEMP_SENSOR_4,
 	DPTF_TPCH,
 	DPTF_POWER,
+	DPTF_BATTERY,
 	DPTF_PARTICIPANT_COUNT,
 };
 

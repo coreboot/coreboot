@@ -19,3 +19,10 @@ config DRIVERS_INTEL_DPTF_SUPPORTS_TPWR
 	help
 	  When enabled, chip driver/intel/dptf will publish information to the
 	  SSDT for TPWR device.
+
+config DRIVERS_INTEL_DPTF_SUPPORTS_TBAT
+	def_bool n
+	depends on DRIVERS_INTEL_DPTF
+	help
+	  When enabled, chip driver/intel/dptf will publish information to the
+	  SSDT for TBAT device.

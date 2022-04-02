@@ -76,6 +76,8 @@ static const char *namestring_of(enum dptf_participant participant)
 		return "TPCH";
 	case DPTF_POWER:
 		return "TPWR";
+	case DPTF_BATTERY:
+		return "TBAT";
 	default:
 		return "";
 	}

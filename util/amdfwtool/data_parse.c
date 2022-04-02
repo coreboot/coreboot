@@ -295,10 +295,10 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		subprog = 0;
 	} else if (strcmp(fw_name, "SPL_TABLE_FILE") == 0) {
 		if (cb_config->have_mb_spl) {
+			fw_type = AMD_FW_SKIP;
+		} else {
 			fw_type = AMD_FW_SPL;
 			subprog = 0;
-		} else {
-			fw_type = AMD_FW_SKIP;
 		}
 	} else if (strcmp(fw_name, "DMCUERAMDCN21_FILE") == 0) {
 		fw_type = AMD_FW_DMCU_ERAM;

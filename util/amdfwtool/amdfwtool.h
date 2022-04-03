@@ -88,6 +88,7 @@ struct second_gen_efs { /* todo: expand for Server products */
 } __attribute__((packed));
 
 #define EFS_SECOND_GEN 0
+#define EFS_BEFORE_SECOND_GEN 1
 
 typedef struct _embedded_firmware {
 	uint32_t signature; /* 0x55aa55aa */

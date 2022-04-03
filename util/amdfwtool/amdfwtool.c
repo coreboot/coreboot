@@ -1383,6 +1383,8 @@ static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
 	}
 	switch (soc_id) {
 	case PLATFORM_STONEYRIDGE:
+		amd_romsig->efs_gen.gen = EFS_BEFORE_SECOND_GEN;
+		amd_romsig->efs_gen.reserved = ~0;
 		amd_romsig->spi_readmode_f15_mod_60_6f = efs_spi_readmode;
 		amd_romsig->fast_speed_new_f15_mod_60_6f = efs_spi_speed;
 		break;
@@ -1390,6 +1392,8 @@ static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
 	case PLATFORM_PICASSO:
 		/* amd_romsig->efs_gen introduced after RAVEN/PICASSO.
 		 * Leave as 0xffffffff for first gen */
+		amd_romsig->efs_gen.gen = EFS_BEFORE_SECOND_GEN;
+		amd_romsig->efs_gen.reserved = ~0;
 		amd_romsig->spi_readmode_f17_mod_00_2f = efs_spi_readmode;
 		amd_romsig->spi_fastspeed_f17_mod_00_2f = efs_spi_speed;
 		switch (efs_spi_micron_flag) {
@@ -1410,6 +1414,7 @@ static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
 	case PLATFORM_MENDOCINO:
 	case PLATFORM_SABRINA:
 		amd_romsig->efs_gen.gen = EFS_SECOND_GEN;
+		amd_romsig->efs_gen.reserved = 0;
 		amd_romsig->spi_readmode_f17_mod_30_3f = efs_spi_readmode;
 		amd_romsig->spi_fastspeed_f17_mod_30_3f = efs_spi_speed;
 		switch (efs_spi_micron_flag) {
@@ -1803,7 +1808,6 @@ int main(int argc, char **argv)
 	amd_romsig->imc_entry = 0;
 	amd_romsig->gec_entry = 0;
 	amd_romsig->xhci_entry = 0;
-	amd_romsig->efs_gen.reserved = 0;
 
 	if (soc_id != PLATFORM_UNKNOWN) {
 		retval = set_efs_table(soc_id, amd_romsig, efs_spi_readmode,

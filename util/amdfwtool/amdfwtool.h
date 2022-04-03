@@ -276,6 +276,7 @@ typedef struct _amd_cb_config {
 	bool load_mp2_fw;
 	bool multi_level;
 	bool s0i3;
+	bool second_gen;
 	bool have_mb_spl;
 	bool recovery_ab;
 	bool need_ish;

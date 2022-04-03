@@ -1373,27 +1373,32 @@ static void register_fw_addr(amd_bios_type type, char *src_str,
 	}
 }
 
-static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
-			 uint8_t efs_spi_readmode, uint8_t efs_spi_speed,
-			 uint8_t efs_spi_micron_flag)
+static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
+			 embedded_firmware *amd_romsig, uint8_t efs_spi_readmode,
+			 uint8_t efs_spi_speed, uint8_t efs_spi_micron_flag)
 {
 	if ((efs_spi_readmode == 0xFF) || (efs_spi_speed == 0xFF)) {
 		fprintf(stderr, "Error: EFS read mode and SPI speed must be set\n");
 		return 1;
 	}
-	switch (soc_id) {
-	case PLATFORM_STONEYRIDGE:
+
+	/* amd_romsig->efs_gen introduced after RAVEN/PICASSO.
+	 * Leave as 0xffffffff for first gen */
+	if (cb_config->second_gen) {
+		amd_romsig->efs_gen.gen = EFS_SECOND_GEN;
+		amd_romsig->efs_gen.reserved = 0;
+	} else {
 		amd_romsig->efs_gen.gen = EFS_BEFORE_SECOND_GEN;
 		amd_romsig->efs_gen.reserved = ~0;
+	}
+
+	switch (soc_id) {
+	case PLATFORM_STONEYRIDGE:
 		amd_romsig->spi_readmode_f15_mod_60_6f = efs_spi_readmode;
 		amd_romsig->fast_speed_new_f15_mod_60_6f = efs_spi_speed;
 		break;
 	case PLATFORM_RAVEN:
 	case PLATFORM_PICASSO:
-		/* amd_romsig->efs_gen introduced after RAVEN/PICASSO.
-		 * Leave as 0xffffffff for first gen */
-		amd_romsig->efs_gen.gen = EFS_BEFORE_SECOND_GEN;
-		amd_romsig->efs_gen.reserved = ~0;
 		amd_romsig->spi_readmode_f17_mod_00_2f = efs_spi_readmode;
 		amd_romsig->spi_fastspeed_f17_mod_00_2f = efs_spi_speed;
 		switch (efs_spi_micron_flag) {
@@ -1413,8 +1418,6 @@ static int set_efs_table(uint8_t soc_id, embedded_firmware *amd_romsig,
 	case PLATFORM_CEZANNE:
 	case PLATFORM_MENDOCINO:
 	case PLATFORM_SABRINA:
-		amd_romsig->efs_gen.gen = EFS_SECOND_GEN;
-		amd_romsig->efs_gen.reserved = 0;
 		amd_romsig->spi_readmode_f17_mod_30_3f = efs_spi_readmode;
 		amd_romsig->spi_fastspeed_f17_mod_30_3f = efs_spi_speed;
 		switch (efs_spi_micron_flag) {
@@ -1469,6 +1472,25 @@ static bool needs_ish(enum platform platform_type)
 		return true;
 	else
 		return false;
+}
+
+static bool is_second_gen(enum platform platform_type)
+{
+	switch (platform_type) {
+	case PLATFORM_STONEYRIDGE:
+	case PLATFORM_RAVEN:
+	case PLATFORM_PICASSO:
+		return false;
+	case PLATFORM_RENOIR:
+	case PLATFORM_LUCIENNE:
+	case PLATFORM_CEZANNE:
+	case PLATFORM_SABRINA:
+		return true;
+	case PLATFORM_UNKNOWN:
+	default:
+		fprintf(stderr, "Error: Invalid SOC name.\n\n");
+		return false;
+	}
 }
 
 int main(int argc, char **argv)
@@ -1702,6 +1724,8 @@ int main(int argc, char **argv)
 		}
 	}
 
+	cb_config.second_gen = is_second_gen(soc_id);
+
 	if (needs_ish(soc_id))
 		cb_config.need_ish = true;
 
@@ -1810,7 +1834,7 @@ int main(int argc, char **argv)
 	amd_romsig->xhci_entry = 0;
 
 	if (soc_id != PLATFORM_UNKNOWN) {
-		retval = set_efs_table(soc_id, amd_romsig, efs_spi_readmode,
+		retval = set_efs_table(soc_id, &cb_config, amd_romsig, efs_spi_readmode,
 					efs_spi_speed, efs_spi_micron_flag);
 		if (retval) {
 			fprintf(stderr, "ERROR: Failed to initialize EFS table!\n");
@@ -1822,7 +1846,7 @@ int main(int argc, char **argv)
 
 	if (cb_config.need_ish)
 		ctx.address_mode = ADDRESS_MODE_2_REL_TAB;
-	else if (amd_romsig->efs_gen.gen == EFS_SECOND_GEN)
+	else if (cb_config.second_gen)
 		ctx.address_mode = ADDRESS_MODE_1_REL_BIOS;
 	else
 		ctx.address_mode = ADDRESS_MODE_0_PHY;

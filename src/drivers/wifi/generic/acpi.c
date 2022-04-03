@@ -533,11 +533,9 @@ static void wifi_ssdt_write_device(const struct device *dev, const char *path)
 
 static void wifi_ssdt_write_properties(const struct device *dev, const char *scope)
 {
-	bool is_cnvi_ddr_rfim_enabled = false;
-
 	const struct drivers_wifi_generic_config *config = dev->chip_info;
-	if (dev && config)
-		is_cnvi_ddr_rfim_enabled = config->enable_cnvi_ddr_rfim;
+
+	bool is_cnvi_ddr_rfim_enabled = config && config->enable_cnvi_ddr_rfim;
 
 	/* Scope */
 	acpigen_write_scope(scope);
@@ -646,6 +644,8 @@ const char *wifi_pcie_acpi_name(const struct device *dev)
 void wifi_cnvi_fill_ssdt(const struct device *dev)
 {
 	const char *path;
+	if (!dev)
+		return;
 
 	path = acpi_device_path(dev->bus->dev);
 	if (!path)

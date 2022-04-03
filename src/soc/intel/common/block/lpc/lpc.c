@@ -6,6 +6,8 @@
 #include <intelblocks/lpc_lib.h>
 #include <soc/pm.h>
 
+#include "lpc_def.h"
+
 /* SoC overrides */
 
 /* Common weak definition, needs to be implemented in each soc LPC driver. */
@@ -32,12 +34,39 @@ void pch_lpc_add_new_resource(struct device *dev, uint8_t offset,
 
 static void pch_lpc_add_io_resources(struct device *dev)
 {
+	uint32_t gen_io_dec;
+	uint16_t base, size;
+
 	/* Add the default claimed legacy IO range for the LPC device. */
 	pch_lpc_add_new_resource(dev, 0, 0, 0x1000, IORESOURCE_IO |
 			IORESOURCE_ASSIGNED | IORESOURCE_FIXED);
 
+	/* LPC Generic IO Decode ranges */
+	for (size_t i = 0; i < LPC_NUM_GENERIC_IO_RANGES; i++) {
+		gen_io_dec = pci_read_config32(dev, LPC_GENERIC_IO_RANGE(i));
+		if (gen_io_dec & LPC_LGIR_EN) {
+			base = gen_io_dec & LPC_LGIR_ADDR_MASK;
+			size = (0x3 | ((gen_io_dec >> 16) & 0xfc)) + 1;
+			pch_lpc_add_new_resource(dev, LPC_GENERIC_IO_RANGE(i), base, size,
+						 IORESOURCE_IO | IORESOURCE_ASSIGNED |
+						 IORESOURCE_FIXED);
+		}
+	}
+
 	/* SoC IO resource overrides */
 	pch_lpc_soc_fill_io_resources(dev);
+}
+
+static void pch_lpc_add_mmio_resources(struct device *dev)
+{
+	/* LPC Memory Decode */
+	uint32_t lgmr = pci_read_config32(dev, LPC_GENERIC_MEM_RANGE);
+	if (lgmr & LPC_LGMR_EN) {
+		lgmr &= LPC_LGMR_ADDR_MASK;
+		pch_lpc_add_new_resource(dev, LPC_GENERIC_MEM_RANGE, lgmr, LPC_LGMR_WINDOW_SIZE,
+					 IORESOURCE_MEM | IORESOURCE_ASSIGNED |
+					 IORESOURCE_FIXED | IORESOURCE_RESERVE);
+	}
 }
 
 static void pch_lpc_read_resources(struct device *dev)
@@ -47,6 +76,9 @@ static void pch_lpc_read_resources(struct device *dev)
 
 	/* Add IO resources to LPC. */
 	pch_lpc_add_io_resources(dev);
+
+	/* Add non-standard MMIO resources. */
+	pch_lpc_add_mmio_resources(dev);
 }
 
 static void pch_lpc_set_child_resources(struct device *dev);

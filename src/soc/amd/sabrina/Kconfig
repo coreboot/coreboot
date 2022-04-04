@@ -2,12 +2,23 @@
 
 # TODO: Check if this is still correct
 
+config SOC_AMD_REMBRANDT_BASE
+	bool
+
 config SOC_AMD_SABRINA
 	bool
+	select SOC_AMD_REMBRANDT_BASE
 	help
 	  AMD Sabrina support
 
-if SOC_AMD_SABRINA
+config SOC_AMD_REMBRANDT
+	bool
+	select SOC_AMD_REMBRANDT_BASE
+	help
+	  AMD Rembrandt support
+
+
+if SOC_AMD_REMBRANDT_BASE
 
 config SOC_SPECIFIC_OPTIONS
 	def_bool y
@@ -88,7 +99,8 @@ config ARCH_ALL_STAGES_X86
 
 config CHIPSET_DEVICETREE
 	string
-	default "soc/amd/sabrina/chipset.cb"
+	default "soc/amd/sabrina/chipset_sabrina.cb" if SOC_AMD_SABRINA
+	default "soc/amd/sabrina/chipset_rembrandt.cb"
 
 config EARLY_RESERVED_DRAM_BASE
 	hex
@@ -231,7 +243,8 @@ config ECAM_MMCONF_BUS_NUMBER
 
 config MAX_CPUS
 	int
-	default 8
+	default 8 if SOC_AMD_SABRINA
+	default 16
 	help
 	  Maximum number of threads the platform can have.
 
@@ -489,4 +502,4 @@ config RWB_REGION_ONLY
 
 endif # VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
 
-endif # SOC_AMD_SABRINA
+endif # SOC_AMD_REMBRANDT_BASE

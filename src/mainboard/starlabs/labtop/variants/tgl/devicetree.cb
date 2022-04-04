@@ -232,7 +232,6 @@ chip soc/intel/tigerlake
 		device pci 1f.1 off end						# P2SB
 		device pci 1f.2 hidden end					# Power Management Controller
 		device pci 1f.3 on						# Intel HDA
-			subsystemid 0x10ec 0x1200
 			register "PchHdaAudioLinkHdaEnable"	= "1"
 		end
 		device pci 1f.4 on  end						# SMBus

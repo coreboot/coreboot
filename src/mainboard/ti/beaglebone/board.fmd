@@ -1,4 +1,4 @@
-SDCARD@0x000 32M {
+FLASH@0x000 32M {
     BIOS@0x0 109K {
         BOOTBLOCK@0x0 20K
     }

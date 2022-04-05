@@ -1327,6 +1327,12 @@ config BOOTBLOCK_CUSTOM
 	# src/lib/bootblock.c#main() C entry point.
 	bool
 
+config BOOTBLOCK_IN_CBFS
+	bool
+	default y if ARCH_X86
+	help
+	  Select this on platforms that have a top aligned bootblock inside cbfs.
+
 config MEMLAYOUT_LD_FILE
 	string
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/memlayout.ld"

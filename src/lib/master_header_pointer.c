@@ -5,7 +5,7 @@
 #include <fmap_config.h>
 #include <stdint.h>
 
-#if ENV_X86
+#if CONFIG(BOOTBLOCK_IN_CBFS)
 __attribute__((used, __section__(".header_pointer")))
 #endif
 

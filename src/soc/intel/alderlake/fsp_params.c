@@ -42,6 +42,7 @@
 #define ICC_MAX_TDP_45W		34250
 #define ICC_MAX_TDP_15W_28W	32000
 #define ICC_MAX_ID_ADL_M_MA	12000
+#define ICC_MAX_ID_ADL_N_MA	27000
 
 /*
  * ME End of Post configuration
@@ -346,6 +347,11 @@ static uint16_t get_vccin_aux_imon_iccmax(void)
 	case PCI_DID_INTEL_ADL_M_ID_1:
 	case PCI_DID_INTEL_ADL_M_ID_2:
 		return ICC_MAX_ID_ADL_M_MA;
+	case PCI_DID_INTEL_ADL_N_ID_1:
+	case PCI_DID_INTEL_ADL_N_ID_2:
+	case PCI_DID_INTEL_ADL_N_ID_3:
+	case PCI_DID_INTEL_ADL_N_ID_4:
+		return ICC_MAX_ID_ADL_N_MA;
 	default:
 		printk(BIOS_ERR, "Unknown MCH ID: 0x%4x, skipping VccInAuxImonIccMax config\n",
 			mch_id);

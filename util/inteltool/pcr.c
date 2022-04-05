@@ -153,6 +153,20 @@ void pcr_init(struct pci_dev *const sb)
 		sbbar_phys = 0xfd000000;
 		use_p2sb = false;
 		break;
+	case PCI_DEVICE_ID_INTEL_H610:
+	case PCI_DEVICE_ID_INTEL_B660:
+	case PCI_DEVICE_ID_INTEL_H670:
+	case PCI_DEVICE_ID_INTEL_Q670:
+	case PCI_DEVICE_ID_INTEL_Z690:
+	case PCI_DEVICE_ID_INTEL_W680:
+	case PCI_DEVICE_ID_INTEL_W685:
+	case PCI_DEVICE_ID_INTEL_WM690:
+	case PCI_DEVICE_ID_INTEL_HM670:
+	case PCI_DEVICE_ID_INTEL_WM790:
+	case PCI_DEVICE_ID_INTEL_HM770:
+		sbbar_phys = 0xe0000000;
+		use_p2sb = false;
+		break;
 	default:
 		perror("Unknown LPC device.");
 		exit(1);

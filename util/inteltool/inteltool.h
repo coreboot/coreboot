@@ -223,6 +223,18 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_C256		0x438d
 #define PCI_DEVICE_ID_INTEL_W580		0x438f
 
+#define PCI_DEVICE_ID_INTEL_H610		0x7a87
+#define PCI_DEVICE_ID_INTEL_B660		0x7a86
+#define PCI_DEVICE_ID_INTEL_H670		0x7a85
+#define PCI_DEVICE_ID_INTEL_Q670		0x7a83
+#define PCI_DEVICE_ID_INTEL_Z690		0x7a84
+#define PCI_DEVICE_ID_INTEL_W680		0x7a88
+#define PCI_DEVICE_ID_INTEL_W685		0x7a8a
+#define PCI_DEVICE_ID_INTEL_WM690		0x7a8d
+#define PCI_DEVICE_ID_INTEL_HM670		0x7a8c
+#define PCI_DEVICE_ID_INTEL_WM790		0x7a0d
+#define PCI_DEVICE_ID_INTEL_HM770		0x7a0c
+
 #define PCI_DEVICE_ID_INTEL_82810		0x7120
 #define PCI_DEVICE_ID_INTEL_82810_DC	0x7122
 #define PCI_DEVICE_ID_INTEL_82810E_DC	0x7124
@@ -337,6 +349,14 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_TGL_ID_H_8	0x9a36 /* Tigerlake H 8 Cores */
 #define PCI_DEVICE_ID_INTEL_HEWITTLAKE		0x6f00 /* Hewitt Lake */
 #define PCI_DEVICE_ID_INTEL_SAPPHIRERAPIDS_SP	0x09a2 /* Sapphire Rapids SP */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_S_8_8	0x4660 /* Alderlake S LGA 8+8 */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_S_8_4	0x4668 /* Alderlake S LGA 8+4 */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_S_6_4	0x4648 /* Alderlake S LGA 6+4 */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_S_8_0	0x4670 /* Alderlake S LGA 8+0 */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_S_6_0	0x4650 /* Alderlake S LGA 6+0 */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_HX_8_8	0x4637 /* Alderlake HX 8+8 */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_HX_6_8	0x463B /* Alderlake HX 6+8 */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_HX_4_8	0x4623 /* Alderlake HX 4+8 */
 
 
 /* Intel GPUs */
@@ -413,6 +433,10 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_TGL_GT1_2		0x9A68
 #define PCI_DEVICE_ID_INTEL_TGL_GT2_ULT_1	0x9A78
 #define PCI_DEVICE_ID_INTEL_TGL_GT2_ULT_2	0x9A70
+#define PCI_DEVICE_ID_INTEL_ADL_S_GT1		0x4680
+#define PCI_DEVICE_ID_INTEL_ADL_S_GT1_2		0x4682
+#define PCI_DEVICE_ID_INTEL_ADL_S_GT1_3		0x4690
+#define PCI_DEVICE_ID_INTEL_ADL_S_GT1_4		0x4692
 
 #if !defined(__DARWIN__) && !defined(__FreeBSD__)
 typedef struct { uint32_t hi, lo; } msr_t;

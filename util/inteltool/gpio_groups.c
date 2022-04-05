@@ -19,6 +19,7 @@
 #include "gpio_names/lewisburg.h"
 #include "gpio_names/sunrise.h"
 #include "gpio_names/tigerlake.h"
+#include "gpio_names/alderlake_h.h"
 
 #define SBBAR_SIZE	(16 * MiB)
 #define PCR_PORT_SIZE	(64 * KiB)
@@ -202,6 +203,20 @@ const struct gpio_community *const *get_gpio_communities(struct pci_dev *const s
 		*community_count = ARRAY_SIZE(tigerlake_pch_h_communities);
 		*pad_stepping = 16;
 		return tigerlake_pch_h_communities;
+	case PCI_DEVICE_ID_INTEL_H610:
+	case PCI_DEVICE_ID_INTEL_B660:
+	case PCI_DEVICE_ID_INTEL_H670:
+	case PCI_DEVICE_ID_INTEL_Q670:
+	case PCI_DEVICE_ID_INTEL_Z690:
+	case PCI_DEVICE_ID_INTEL_W680:
+	case PCI_DEVICE_ID_INTEL_W685:
+	case PCI_DEVICE_ID_INTEL_WM690:
+	case PCI_DEVICE_ID_INTEL_HM670:
+	case PCI_DEVICE_ID_INTEL_WM790:
+	case PCI_DEVICE_ID_INTEL_HM770:
+		*community_count = ARRAY_SIZE(alderlake_pch_h_communities);
+		*pad_stepping = 16;
+		return alderlake_pch_h_communities;
 	default:
 		return NULL;
 	}

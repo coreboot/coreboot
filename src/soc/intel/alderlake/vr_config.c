@@ -38,6 +38,36 @@
  * +----------------+-----------+-------+-------+---------+-------------+----------+
  */
 
+/*
+ * VR Configurations for IA and GT domains for ADL-N SKU's.
+ * Per doc#646929 ADL N Platform Design Guide -> Power_Map_Rev1p0
+ *
+ * +----------------+-----------+-------+-------+---------+-------------+----------+
+ * |      SKU       | Setting   | AC LL | DC LL | ICC MAX | TDC Current | TDC Time |
+ * |                |           |(mOhms)|(mOhms)|   (A)   |     (A)     |   (msec) |
+ * +----------------+-----------+-------+-------+---------+-------------+----------+
+ * | ADL-N 081(15W) |    IA     |  4.7  |  4.7  |    53   |      22     |  28000   |
+ * +                +-----------+-------+-------+---------+-------------+----------+
+ * |                |    GT     |  6.5  |  6.5  |    29   |      22     |  28000   |
+ * +----------------+-----------+-------+-------+---------+-------------+----------+
+ * | ADL-N 081(7W)  |    IA     |  5.0  |  5.0  |    37   |      14     |  28000   |
+ * +                +-----------+-------+-------+---------+-------------+----------+
+ * |                |    GT     |  6.5  |  6.5  |    29   |      14     |  28000   |
+ * +----------------+-----------+-------+-------+---------+-------------+----------+
+ * | ADL-N 041(6W)  |    IA     |  5.0  |  5.0  |    37   |      12     |  28000   |
+ * +  Pentium       +-----------+-------+-------+---------+-------------+----------+
+ * |                |    GT     |  6.5  |  6.5  |    29   |      12     |  28000   |
+ * +----------------+-----------+-------+-------+---------+-------------+----------+
+ * | ADL-N 041(6W)  |    IA     |  5.0  |  5.0  |    37   |      12     |  28000   |
+ * +  Celeron       +-----------+-------+-------+---------+-------------+----------+
+ * |                |    GT     |  6.5  |  6.5  |    26   |      12     |  28000   |
+ * +----------------+-----------+-------+-------+---------+-------------+----------+
+ * | ADL-N 021(6W)  |    IA     |  5.0  |  5.0  |    27   |      10     |  28000   |
+ * +                +-----------+-------+-------+---------+-------------+----------+
+ * |                |    GT     |  6.5  |  6.5  |    23   |      10     |  28000   |
+ * +----------------+-----------+-------+-------+---------+-------------+----------+
+ */
+
 struct vr_lookup {
 	uint16_t mchid;
 	uint8_t tdp;
@@ -69,6 +99,11 @@ static const struct vr_lookup vr_config_ll[] = {
 	{ PCI_DID_INTEL_ADL_P_ID_6, 15, VR_CFG_ALL_DOMAINS_LOADLINE(2.8, 3.2) },
 	{ PCI_DID_INTEL_ADL_P_ID_7, 15, VR_CFG_ALL_DOMAINS_LOADLINE(2.8, 3.2) },
 	{ PCI_DID_INTEL_ADL_P_ID_10, 15, VR_CFG_ALL_DOMAINS_LOADLINE(2.8, 3.2) },
+	{ PCI_DID_INTEL_ADL_N_ID_1, 15, VR_CFG_ALL_DOMAINS_LOADLINE(4.7, 6.5) },
+	{ PCI_DID_INTEL_ADL_N_ID_1, 7, VR_CFG_ALL_DOMAINS_LOADLINE(5.0, 6.5) },
+	{ PCI_DID_INTEL_ADL_N_ID_2, 6, VR_CFG_ALL_DOMAINS_LOADLINE(5.0, 6.5) },
+	{ PCI_DID_INTEL_ADL_N_ID_3, 6, VR_CFG_ALL_DOMAINS_LOADLINE(5.0, 6.5) },
+	{ PCI_DID_INTEL_ADL_N_ID_4, 6, VR_CFG_ALL_DOMAINS_LOADLINE(5.0, 6.5) },
 };
 
 static const struct vr_lookup vr_config_icc[] = {
@@ -82,6 +117,11 @@ static const struct vr_lookup vr_config_icc[] = {
 	{ PCI_DID_INTEL_ADL_P_ID_6, 15, VR_CFG_ALL_DOMAINS_ICC(80, 40) },
 	{ PCI_DID_INTEL_ADL_P_ID_7, 15, VR_CFG_ALL_DOMAINS_ICC(80, 40) },
 	{ PCI_DID_INTEL_ADL_P_ID_10, 15, VR_CFG_ALL_DOMAINS_ICC(80, 40) },
+	{ PCI_DID_INTEL_ADL_N_ID_1, 15, VR_CFG_ALL_DOMAINS_ICC(53, 29) },
+	{ PCI_DID_INTEL_ADL_N_ID_1, 7, VR_CFG_ALL_DOMAINS_ICC(37, 29) },
+	{ PCI_DID_INTEL_ADL_N_ID_2, 6, VR_CFG_ALL_DOMAINS_ICC(37, 29) },
+	{ PCI_DID_INTEL_ADL_N_ID_3, 6, VR_CFG_ALL_DOMAINS_ICC(37, 26) },
+	{ PCI_DID_INTEL_ADL_N_ID_4, 6, VR_CFG_ALL_DOMAINS_ICC(27, 23) },
 };
 
 static const struct vr_lookup vr_config_tdc_timewindow[] = {
@@ -95,6 +135,11 @@ static const struct vr_lookup vr_config_tdc_timewindow[] = {
 	{ PCI_DID_INTEL_ADL_P_ID_6, 15, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
 	{ PCI_DID_INTEL_ADL_P_ID_7, 15, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
 	{ PCI_DID_INTEL_ADL_P_ID_10, 15, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
+	{ PCI_DID_INTEL_ADL_N_ID_1, 15, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
+	{ PCI_DID_INTEL_ADL_N_ID_1, 7, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
+	{ PCI_DID_INTEL_ADL_N_ID_2, 6, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
+	{ PCI_DID_INTEL_ADL_N_ID_3, 6, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
+	{ PCI_DID_INTEL_ADL_N_ID_4, 6, VR_CFG_ALL_DOMAINS_TDC(28000, 28000) },
 };
 
 static const struct vr_lookup vr_config_tdc_currentlimit[] = {
@@ -108,6 +153,11 @@ static const struct vr_lookup vr_config_tdc_currentlimit[] = {
 	{ PCI_DID_INTEL_ADL_P_ID_6, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(20, 20) },
 	{ PCI_DID_INTEL_ADL_P_ID_7, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(20, 20) },
 	{ PCI_DID_INTEL_ADL_P_ID_10, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(20, 20) },
+	{ PCI_DID_INTEL_ADL_N_ID_1, 15, VR_CFG_ALL_DOMAINS_TDC_CURRENT(22, 22) },
+	{ PCI_DID_INTEL_ADL_N_ID_1, 7, VR_CFG_ALL_DOMAINS_TDC_CURRENT(14, 14) },
+	{ PCI_DID_INTEL_ADL_N_ID_2, 6, VR_CFG_ALL_DOMAINS_TDC_CURRENT(12, 12) },
+	{ PCI_DID_INTEL_ADL_N_ID_3, 6, VR_CFG_ALL_DOMAINS_TDC_CURRENT(12, 12) },
+	{ PCI_DID_INTEL_ADL_N_ID_4, 6, VR_CFG_ALL_DOMAINS_TDC_CURRENT(10, 10) },
 };
 
 void fill_vr_domain_config(FSP_S_CONFIG *s_cfg,

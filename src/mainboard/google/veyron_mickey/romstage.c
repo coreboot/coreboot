@@ -8,11 +8,12 @@
 #include <console/console.h>
 #include <device/mmio.h>
 #include <program_loading.h>
-#include <soc/sdram.h>
+#include <romstage_common.h>
 #include <soc/clock.h>
-#include <soc/pwm.h>
 #include <soc/grf.h>
+#include <soc/pwm.h>
 #include <soc/rk808.h>
+#include <soc/sdram.h>
 #include <soc/tsadc.h>
 #include <symbols.h>
 #include <timestamp.h>
@@ -62,6 +63,12 @@ void main(void)
 
 	console_init();
 	exception_init();
+
+	romstage_main();
+}
+
+void __noreturn romstage_main(void)
+{
 	configure_l2ctlr();
 	tsadc_init();
 

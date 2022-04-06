@@ -4,17 +4,18 @@
 #include <armv7.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <program_loading.h>
 #include <device/i2c_simple.h>
 #include <drivers/maxim/max77686/max77686.h>
+#include <program_loading.h>
+#include <romstage_common.h>
 #include <soc/clk.h>
 #include <soc/cpu.h>
 #include <soc/dmc.h>
 #include <soc/gpio.h>
 #include <soc/i2c.h>
-#include <soc/setup.h>
 #include <soc/periph.h>
 #include <soc/power.h>
+#include <soc/setup.h>
 #include <soc/trustzone.h>
 #include <soc/wakeup.h>
 #include <timestamp.h>
@@ -119,11 +120,21 @@ static struct mem_timings *setup_clock(void)
 
 void main(void)
 {
-	struct mem_timings *mem;
-	int is_resume = (get_wakeup_state() != IS_NOT_WAKEUP);
-
 	timestamp_init(timestamp_get());
 	timestamp_add_now(TS_ROMSTAGE_START);
+
+	/*
+	 * From the clocks comment below it looks like serial console won't
+	 * work in the bootblock so keep in the romstage_main flow even with
+	 * !CONFIG  SEPARATE_ROMSTAGE.
+	 */
+	romstage_main();
+}
+
+void __noreturn romstage_main(void)
+{
+	struct mem_timings *mem;
+	int is_resume = (get_wakeup_state() != IS_NOT_WAKEUP);
 
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */

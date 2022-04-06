@@ -9,6 +9,7 @@
 #include <device/i2c_simple.h>
 #include <drivers/maxim/max77802/max77802.h>
 #include <program_loading.h>
+#include <romstage_common.h>
 #include <soc/clk.h>
 #include <soc/cpu.h>
 #include <soc/dmc.h>
@@ -203,6 +204,19 @@ static void simple_spi_test(void)
 
 void main(void)
 {
+	timestamp_init(timestamp_get());
+	timestamp_add_now(TS_ROMSTAGE_START);
+
+	/*
+	 * From the clocks comment below it looks like serial console won't
+	 * work in the bootblock so keep in the romstage_main flow even with
+	 * !CONFIG SEPARATE_ROMSTAGE.
+	 */
+	romstage_main();
+}
+
+void __noreturn romstage_main(void)
+{
 
 	extern struct mem_timings mem_timings;
 	int is_resume = (get_wakeup_state() != IS_NOT_WAKEUP);
@@ -210,9 +224,6 @@ void main(void)
 
 	exynos5420_config_smp();
 	power_init_failed = setup_power(is_resume);
-
-	timestamp_init(timestamp_get());
-	timestamp_add_now(TS_ROMSTAGE_START);
 
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */

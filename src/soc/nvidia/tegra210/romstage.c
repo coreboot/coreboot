@@ -6,13 +6,14 @@
 #include <console/console.h>
 #include <lib.h>
 #include <program_loading.h>
+#include <romstage_common.h>
 #include <soc/addressmap.h>
 #include <soc/ccplex.h>
 #include <soc/clock.h>
+#include <soc/nvidia/tegra/apbmisc.h>
+#include <soc/romstage.h>
 #include <soc/sdram.h>
 #include <soc/sdram_configs.h>
-#include <soc/romstage.h>
-#include <soc/nvidia/tegra/apbmisc.h>
 #include <symbols.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
@@ -26,6 +27,11 @@ void romstage(void)
 	console_init();
 	exception_init();
 
+	romstage_main();
+}
+
+void __noreturn romstage_main(void)
+{
 	printk(BIOS_INFO, "T210: romstage here\n");
 
 #if CONFIG(BOOTROM_SDRAM_INIT)

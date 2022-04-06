@@ -880,7 +880,7 @@ F:	src/security/tpm/
 
 SUPERIOS & SUPERIOTOOL
 M:	Felix Held <felix-coreboot@felixheld.de>
-S:	Maintained
+S:	Odd Fixes
 F:	src/superio/
 F:	util/superiotool/
 

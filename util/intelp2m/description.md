@@ -36,6 +36,7 @@ platform type is set using the -p option (Sunrise by default):
 		lbg - Lewisburg PCH with Xeon SP CPU
 		apl - Apollo Lake SoC
 		cnl - CannonLake-LP or Whiskeylake/Coffeelake/Cometlake-U SoC
+		adl - AlderLake PCH
 	(default "snr")
 
 (shell)$ ./intelp2m -p <platform> -file path/to/inteltool.log

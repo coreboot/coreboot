@@ -10,6 +10,7 @@ import (
 	"../platforms/lbg"
 	"../platforms/apl"
 	"../platforms/cnl"
+	"../platforms/adl"
 	"../config"
 )
 
@@ -147,6 +148,7 @@ func (parser *ParserData) PlatformSpecificInterfaceSet() {
 		config.CannonType    : cnl.PlatformSpecific{
 			InheritanceTemplate : snr.PlatformSpecific{},
 		},
+		config.AlderType    : adl.PlatformSpecific{},
 	}
 	parser.platform = platform[config.PlatformGet()]
 }

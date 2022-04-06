@@ -54,6 +54,15 @@ provides ready-made firmware images for supported devices: those which can be
 built entirely from source code. Their copy of the coreboot repository is
 therefore stripped of all devices that require binary components to boot.
 
+
+### Dasharo
+
+[Dasharo](https://dasharo.com/) is an open-source based firmware distribution
+focusing on clean and simple code, long-term maintenance, transparent
+validation, privacy-respecting implementation, liberty for the owners, and
+trustworthiness for all.
+
+
 ### MrChromebox
 
 [MrChromebox](https://mrchromebox.tech/) provides upstream coreboot firmware

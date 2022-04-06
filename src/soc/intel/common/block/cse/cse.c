@@ -1012,11 +1012,11 @@ void cse_set_to_d0i3(void)
 void heci_set_to_d0i3(void)
 {
 	for (int i = 0; i < CONFIG_MAX_HECI_DEVICES; i++) {
-		pci_devfn_t dev = PCI_DEV(0, PCI_SLOT(PCH_DEV_SLOT_CSE), PCI_FUNC(i));
-		if (!is_cse_devfn_visible(dev))
+		pci_devfn_t devfn = PCI_DEVFN(PCH_DEV_SLOT_CSE, i);
+		if (!is_cse_devfn_visible(devfn))
 			continue;
 
-		set_cse_device_state(dev, DEV_IDLE);
+		set_cse_device_state(devfn, DEV_IDLE);
 	}
 }
 

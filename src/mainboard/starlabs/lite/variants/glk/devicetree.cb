@@ -68,7 +68,7 @@ chip soc/intel/apollolake
 			end
 		end
 		device pci 0d.0 off end						# P2SB
-		device pci 0d.1 hidden end					# PMC
+		device pci 0d.1 on  end						# PMC
 		device pci 0d.2 on  end						# SPI
 		device pci 0d.3 off end						# Shared SRAM
 		device pci 0e.0 on						# Audio

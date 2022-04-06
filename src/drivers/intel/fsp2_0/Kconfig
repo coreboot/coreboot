@@ -369,4 +369,16 @@ config DISPLAY_FSP_TIMESTAMPS
 	  To be able to use this, FSP has to be compiled with `PcdFspPerformanceEnable` set to
 	  `TRUE`.
 
+config FSP_ENABLE_SERIAL_DEBUG
+	bool "Output FSP debug messages on serial console"
+	default y
+	depends on FSP_USES_CB_DEBUG_EVENT_HANDLER
+	help
+	  Output FSP debug messages on serial console.
+
+	  The config option is selected based on your FSP configuration i.e., debug or
+	  release. Enable this option from site-local to print FSP serial messages using
+	  coreboot native debug driver when coreboot has integrated the debug FSP
+	  binaries. coreboot disables serial messages when this config is not enabled.
+
 endif

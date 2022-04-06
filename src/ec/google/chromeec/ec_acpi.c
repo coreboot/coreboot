@@ -270,6 +270,7 @@ void google_chromeec_fill_ssdt_generator(const struct device *dev)
 	/* Set up a minimal EC0 device to pass to the DPTF helpers */
 	path.type = DEVICE_PATH_GENERIC;
 	path.generic.id = 0;
+	path.generic.subid = 0;
 	ec = alloc_find_dev(dev->bus, &path);
 	ec->ops = &ec_ops;
 

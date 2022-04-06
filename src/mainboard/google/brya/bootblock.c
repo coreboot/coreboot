@@ -10,3 +10,10 @@ void bootblock_mainboard_early_init(void)
 	pads = variant_early_gpio_table(&num);
 	gpio_configure_pads(pads, num);
 }
+
+void bootblock_mainboard_init(void)
+{
+	variant_update_descriptor();
+}
+
+void __weak variant_update_descriptor(void) {}

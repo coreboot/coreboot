@@ -34,6 +34,8 @@ void variant_generate_s0ix_hook(enum s0ix_entry);
 /* Modify devictree settings during ramstage */
 void variant_devtree_update(void);
 
+void variant_update_descriptor(void);
+
 struct cpu_power_limits {
 	uint16_t mchid;
 	u8 cpu_tdp;

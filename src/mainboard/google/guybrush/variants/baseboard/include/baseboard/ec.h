@@ -54,12 +54,12 @@
 /* Set GPI for SCI */
 #define EC_SCI_GPI GEVENT_24 /* eSPI system event -> GPE 24 */
 
+/* Enable MKBP for buttons and switches */
+#define EC_ENABLE_MKBP_DEVICE
+
 /* Enable LID switch and provide wake pin for EC */
 #define EC_ENABLE_LID_SWITCH
 #define EC_ENABLE_WAKE_PIN GEVENT_3 /* AGPIO 22 -> GPE 3 */
-
-/* Enable Tablet switch */
-#define EC_ENABLE_TBMC_DEVICE
 
 #define SIO_EC_MEMMAP_ENABLE /* EC Memory Map Resources */
 #define SIO_EC_HOST_ENABLE   /* EC Host Interface Resources */

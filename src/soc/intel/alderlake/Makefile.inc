@@ -16,6 +16,7 @@ bootblock-y += bootblock/report_platform.c
 bootblock-y += espi.c
 bootblock-y += gpio.c
 bootblock-y += p2sb.c
+bootblock-$(CONFIG_ALDERLAKE_CONFIGURE_DESCRIPTOR) += bootblock/update_descriptor.c
 
 romstage-y += espi.c
 romstage-y += gpio.c

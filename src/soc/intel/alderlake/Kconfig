@@ -112,6 +112,13 @@ config CPU_SPECIFIC_OPTIONS
 	select UDK_202005_BINDING
 	select USE_FSP_NOTIFY_PHASE_POST_PCI_ENUM
 
+config ALDERLAKE_CONFIGURE_DESCRIPTOR
+	bool
+	help
+	  Select this if the descriptor needs to be updated at runtime. This
+	  can only be done if the descriptor region is writable, and should only
+	  be used as a temporary workaround.
+
 config ALDERLAKE_CAR_ENHANCED_NEM
 	bool
 	default y if !INTEL_CAR_NEM

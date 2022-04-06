@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/name.h>
@@ -577,7 +578,7 @@ __weak void bert_reserved_region(void **start, size_t *size)
 	*size = 0;
 }
 
-static void bert_storage_setup(int unused)
+static void bert_storage_setup(void *unused)
 {
 	/* Always start with a blank bert region.  Make sure nothing is
 	 * maintained across reboots or resumes.
@@ -596,4 +597,4 @@ static void bert_storage_setup(int unused)
 	memset(bert_region_base, 0, bert_region_size);
 }
 
-RAMSTAGE_CBMEM_INIT_HOOK(bert_storage_setup)
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, bert_storage_setup, NULL);

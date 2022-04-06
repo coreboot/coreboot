@@ -24,22 +24,31 @@ static void *mem_chip_addr;
 
 static void write_mem_chip_information(struct qclib_cb_if_table_entry *te)
 {
-	/* Save mem_chip_info in local variables ahead of hook running */
-	mem_chip_addr = (void *)te->blob_address;
+	if (te->size > sizeof(struct mem_chip_info) &&
+	    te->size == mem_chip_info_size((void *)te->blob_address)) {
+		/* Save mem_chip_addr in global variable ahead of hook running */
+		mem_chip_addr = (void *)te->blob_address;
+	}
 }
 
 static void add_mem_chip_info(int unused)
 {
 	void *mem_region_base = NULL;
+	size_t size;
+
+	if (!mem_chip_addr) {
+		printk(BIOS_ERR, "Did not receive valid mem_chip_info from QcLib!");
+		return;
+	}
+
+	size = mem_chip_info_size(mem_chip_addr);
 
 	/* Add cbmem table */
-	if (sizeof(struct mem_chip_info) != 0)
-		mem_region_base = cbmem_add(CBMEM_ID_MEM_CHIP_INFO,
-					sizeof(struct mem_chip_info));
+	mem_region_base = cbmem_add(CBMEM_ID_MEM_CHIP_INFO, size);
 	ASSERT(mem_region_base != NULL);
 
 	/* Migrate the data into CBMEM */
-	memcpy(mem_region_base, mem_chip_addr, sizeof(struct mem_chip_info));
+	memcpy(mem_region_base, mem_chip_addr, size);
 }
 
 ROMSTAGE_CBMEM_INIT_HOOK(add_mem_chip_info);
@@ -168,9 +177,8 @@ void qclib_load_and_run(void)
 	qclib_add_if_table_entry(QCLIB_TE_DDR_TRAINING_DATA,
 				 _ddr_training, REGION_SIZE(ddr_training), 0);
 
-	/* Attempt to read MEM CHIP information */
-	qclib_add_if_table_entry(QCLIB_TE_MEM_CHIP_INFO,
-				mem_chip_addr, sizeof(mem_chip_addr), 0);
+	/* Address and size of this entry will be filled in by QcLib. */
+	qclib_add_if_table_entry(QCLIB_TE_MEM_CHIP_INFO, NULL, 0, 0);
 
 	/* Attempt to load PMICCFG Blob */
 	data_size = cbfs_load(CONFIG_CBFS_PREFIX "/pmiccfg",

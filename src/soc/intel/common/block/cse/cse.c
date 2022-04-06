@@ -1254,7 +1254,7 @@ static void cse_final(struct device *dev)
 {
 	for (size_t i = 0; i < ARRAY_SIZE(notify_data); i++) {
 		if (!notify_data[i].skip)
-			return notify_data[i].notify_func();
+			notify_data[i].notify_func();
 	}
 }
 

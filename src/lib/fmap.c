@@ -273,7 +273,7 @@ ssize_t fmap_overwrite_area(const char *name, const void *buffer, size_t size)
 	return rdev_writeat(&rdev, buffer, 0, size);
 }
 
-static void fmap_register_cbmem_cache(int unused)
+static void fmap_register_cbmem_cache(void)
 {
 	const struct cbmem_entry *e;
 
@@ -290,7 +290,7 @@ static void fmap_register_cbmem_cache(int unused)
  * The main reason to copy the FMAP into CBMEM is to make it available to the
  * OS on every architecture. As side effect use the CBMEM copy as cache.
  */
-static void fmap_setup_cbmem_cache(int unused)
+static void fmap_add_cbmem_cache(void)
 {
 	struct region_device fmrd;
 
@@ -311,11 +311,17 @@ static void fmap_setup_cbmem_cache(int unused)
 		cbmem_entry_remove(cbmem_entry_find(CBMEM_ID_FMAP));
 		return;
 	}
+}
+
+static void fmap_setup_cbmem_cache(int unused)
+{
+	if (ENV_ROMSTAGE)
+		fmap_add_cbmem_cache();
 
 	/* Finally advertise the cache for the current stage */
-	fmap_register_cbmem_cache(unused);
+	fmap_register_cbmem_cache();
 }
 
 ROMSTAGE_CBMEM_INIT_HOOK(fmap_setup_cbmem_cache)
-RAMSTAGE_CBMEM_INIT_HOOK(fmap_register_cbmem_cache)
-POSTCAR_CBMEM_INIT_HOOK(fmap_register_cbmem_cache)
+RAMSTAGE_CBMEM_INIT_HOOK(fmap_setup_cbmem_cache)
+POSTCAR_CBMEM_INIT_HOOK(fmap_setup_cbmem_cache)

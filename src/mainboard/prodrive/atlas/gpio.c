@@ -76,6 +76,7 @@ static const struct pad_config gpio_table[] = {
 
 	/* ------- GPIO Group GPD ------- */
 	PAD_NC(GPD8, NONE),					/* SUSCLK */
+	PAD_CFG_GPO(GPD11, 1, PLTRST),				/* LAN_DISABLE_N */
 };
 
 void configure_gpio_pads(void)

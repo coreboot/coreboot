@@ -11,6 +11,9 @@ static const struct pad_config early_gpio_table[] = {
 	/* SMB_DATA */
 	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),
 
+	/* EC_SMI_N */
+	PAD_CFG_GPI(GPP_E7, NONE, DEEP),
+
 	/* PCH HSID */
 	PAD_CFG_GPI(GPP_A8, NONE, DEEP),
 	PAD_CFG_GPI(GPP_F19, NONE, DEEP),

@@ -7,7 +7,6 @@
 
 struct global_nvs;
 
-void acpi_create_gnvs(void);
 size_t size_of_dnvs(void);
 
 #if CONFIG(ACPI_SOC_NVS)

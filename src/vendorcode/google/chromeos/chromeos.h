@@ -26,7 +26,6 @@ void mainboard_prepare_cr50_reset(void);
 void cbmem_add_vpd_calibration_data(void);
 void chromeos_set_me_hash(u32*, int);
 void chromeos_set_ramoops(void *ram_oops, size_t size);
-void chromeos_init_chromeos_acpi(void);
 
 /**
  * get_dsm_calibration_from_key - Gets value related to DSM calibration from VPD

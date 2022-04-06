@@ -2,7 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
-#include <bootmode.h>
+#include <bootstate.h>
 #include <types.h>
 #include <string.h>
 #include <stdlib.h>
@@ -32,7 +32,7 @@ static size_t chromeos_vpd_region(const char *region, uintptr_t *base)
 	return region_device_sz(&vpd);
 }
 
-void chromeos_init_chromeos_acpi(void)
+static void chromeos_init_chromeos_acpi(void *unused)
 {
 	size_t vpd_size;
 	uintptr_t vpd_base = 0;
@@ -57,6 +57,8 @@ void chromeos_init_chromeos_acpi(void)
 		chromeos_acpi->vpd_rw_size = vpd_size;
 	}
 }
+
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, chromeos_init_chromeos_acpi, NULL);
 
 void chromeos_set_me_hash(u32 *hash, int len)
 {

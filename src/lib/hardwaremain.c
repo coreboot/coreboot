@@ -23,7 +23,6 @@
 #include <timer.h>
 #include <timestamp.h>
 #include <types.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <version.h>
 
 static boot_state_t bs_pre_device(void *arg);
@@ -461,13 +460,6 @@ void main(void)
 
 	/* Handoff sleep type from romstage. */
 	acpi_is_wakeup_s3();
-
-	/* Initialise GNVS early. */
-	if (CONFIG(ACPI_SOC_NVS))
-		acpi_create_gnvs();
-
-	if (CONFIG(CHROMEOS_NVS))
-		chromeos_init_chromeos_acpi();
 
 	/* Schedule the static boot state entries. */
 	boot_state_schedule_static_entries();

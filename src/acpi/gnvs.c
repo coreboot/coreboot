@@ -2,6 +2,7 @@
 
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
+#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <soc/nvs.h>
@@ -11,7 +12,7 @@
 static struct global_nvs *gnvs;
 static void *dnvs;
 
-void acpi_create_gnvs(void)
+static void acpi_create_gnvs(void *unused)
 {
 	const size_t gnvs_size = ALIGN_UP(sizeof(struct global_nvs), sizeof(uint64_t));
 	const size_t dnvs_size = ALIGN_UP(size_of_dnvs(), sizeof(uint64_t));
@@ -33,6 +34,8 @@ void acpi_create_gnvs(void)
 	if (CONFIG(CONSOLE_CBMEM))
 		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
 }
+
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, acpi_create_gnvs, NULL);
 
 void *acpi_get_gnvs(void)
 {

@@ -299,11 +299,12 @@ chip soc/intel/alderlake
 				register "has_power_resource" = "1"
 
 				register "ssdb.lanes_used" = "4"
-				register "ssdb.link_used" = "0"
+				register "ssdb.link_used" = "1"
 				register "num_freq_entries" = "2"
 				register "link_freq[0]" = "360000000"
 				register "link_freq[1]" = "180000000"
 				register "remote_name" = ""IPU0""
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				#Controls
 				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_2"
@@ -313,28 +314,27 @@ chip soc/intel/alderlake
 				register "gpio_panel.gpio[1].gpio_num" = "GPP_C4" #power
 
 				#_ON
-				register "on_seq.ops_cnt" = "5"
+				register "on_seq.ops_cnt" = "4"
 				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
-				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(1, 5)"
-				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
-				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 5)"
-				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 5)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
 
 				#_OFF
 				register "off_seq.ops_cnt" = "3"
-				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
-				register "off_seq.ops[1]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
-				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
 
 				device i2c 36 on end
 			end
 			chip drivers/intel/mipi_camera
+				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
 				register "acpi_uid" = "1"
 				register "acpi_name" = ""NVM0""
 				register "chip_name" = ""GT24C08""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
 
-				register "pr0" = ""\\_SB.PCI0.I2C2.CAM0.PRIC""
 				register "nvm_compat" = ""atmel,24c1024""
 
 				register "nvm_size" = "0x2000"

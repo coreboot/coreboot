@@ -288,101 +288,51 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 				 struct smm_loader_params *params,
 				 void *const fxsave_area)
 {
-	size_t total_save_state_size;
-	size_t smm_stub_size;
-	uintptr_t smm_stub_loc;
-	size_t size;
-	uintptr_t base;
-	size_t i;
-	struct smm_stub_params *stub_params;
 	struct rmodule smm_stub;
-	base = smbase;
-	size = smm_size;
-
-	/* The number of concurrent stacks cannot exceed CONFIG_MAX_CPUS. */
-	if (params->num_cpus > CONFIG_MAX_CPUS) {
-		printk(BIOS_ERR, "%s: not enough stacks\n", __func__);
-		return -1;
-	}
-
-	/* Fail if can't parse the smm stub rmodule. */
 	if (rmodule_parse(&_binary_smmstub_start, &smm_stub)) {
 		printk(BIOS_ERR, "%s: unable to parse smm stub\n", __func__);
 		return -1;
 	}
+	const size_t stub_size = rmodule_memory_size(&smm_stub);
 
-	/* Adjust remaining size to account for save state. */
-	total_save_state_size = params->per_cpu_save_state_size *
-				params->num_concurrent_save_states;
-	if (total_save_state_size > size) {
-		printk(BIOS_ERR,
-			"%s: more state save space needed:need -> %zx:available->%zx\n",
-			__func__, total_save_state_size, size);
+	/* Some sanity check */
+	if (stub_size >= SMM_ENTRY_OFFSET) {
+		printk(BIOS_ERR, "%s: Stub too large\n", __func__);
 		return -1;
 	}
 
-	size -= total_save_state_size;
-
-	/* The save state size encroached over the first SMM entry point. */
-	if (size <= SMM_ENTRY_OFFSET) {
-		printk(BIOS_ERR, "%s: encroachment over SMM entry point\n", __func__);
-		printk(BIOS_ERR, "%s: state save size: %zx : smm_entry_offset -> %zx\n",
-		       __func__, size, (size_t)SMM_ENTRY_OFFSET);
-		return -1;
-	}
-
-	smm_stub_size = rmodule_memory_size(&smm_stub);
-
-	/* Put the stub at the main entry point */
-	smm_stub_loc = base + SMM_ENTRY_OFFSET;
-
-	/* Stub is too big to fit. */
-	if (smm_stub_size > (size - SMM_ENTRY_OFFSET)) {
-		printk(BIOS_ERR, "%s: stub is too big to fit\n", __func__);
-		return -1;
-	}
-
-	if (stack_top == 0) {
-		printk(BIOS_ERR, "%s: error assigning stacks\n", __func__);
-		return -1;
-	}
-	/* Load the stub. */
+	const uintptr_t smm_stub_loc = smbase + SMM_ENTRY_OFFSET;
 	if (rmodule_load((void *)smm_stub_loc, &smm_stub)) {
 		printk(BIOS_ERR, "%s: load module failed\n", __func__);
 		return -1;
 	}
 
-	if (!smm_stub_place_staggered_entry_points((void *)base, params, &smm_stub)) {
-		printk(BIOS_ERR, "%s: staggered entry points failed\n", __func__);
-		return -1;
-	}
-
-	/* Setup the parameters for the stub code. */
-	stub_params = rmodule_parameters(&smm_stub);
+	struct smm_stub_params *stub_params = rmodule_parameters(&smm_stub);
 	stub_params->stack_top = stack_top;
 	stub_params->stack_size = g_stack_size;
 	stub_params->c_handler = (uintptr_t)params->handler;
 	stub_params->fxsave_area = (uintptr_t)fxsave_area;
 	stub_params->fxsave_area_size = FXSAVE_SIZE;
 
-	printk(BIOS_DEBUG,
-		"%s: stack_top = 0x%x\n", __func__, stub_params->stack_top);
-	printk(BIOS_DEBUG, "%s: per cpu stack_size = 0x%x\n",
-		__func__, stub_params->stack_size);
-	printk(BIOS_DEBUG, "%s: runtime.start32_offset = 0x%x\n", __func__,
-		stub_params->start32_offset);
-	printk(BIOS_DEBUG, "%s: runtime.smm_size = 0x%zx\n",
-		__func__, smm_size);
-
 	/* Initialize the APIC id to CPU number table to be 1:1 */
-	for (i = 0; i < params->num_cpus; i++)
+	for (int i = 0; i < params->num_cpus; i++)
 		stub_params->apic_id_to_cpu[i] = i;
 
-	/* Allow the initiator to manipulate SMM stub parameters. */
-	params->stub_params = stub_params;
 
-	printk(BIOS_DEBUG, "SMM Module: stub loaded at %lx. Will call %p\n",
-	       smm_stub_loc, params->handler);
+	printk(BIOS_DEBUG, "%s: stack_top = 0x%x\n", __func__, stub_params->stack_top);
+	printk(BIOS_DEBUG, "%s: per cpu stack_size = 0x%x\n", __func__,
+	       stub_params->stack_size);
+	printk(BIOS_DEBUG, "%s: runtime.start32_offset = 0x%x\n", __func__,
+	       stub_params->start32_offset);
+	printk(BIOS_DEBUG, "%s: runtime.smm_size = 0x%zx\n", __func__, smm_size);
+
+	if (!smm_stub_place_staggered_entry_points((void *)smbase, params, &smm_stub)) {
+		printk(BIOS_ERR, "%s: staggered entry points failed\n", __func__);
+		return -1;
+	}
+
+	printk(BIOS_DEBUG, "SMM Module: stub loaded at %lx. Will call %p\n", smm_stub_loc,
+	       params->handler);
 	return 0;
 }
 

@@ -251,6 +251,7 @@ config SMM_RESERVED_SIZE
 
 config PCR_BASE_ADDRESS
 	hex
+	default 0xe0000000 if SOC_INTEL_ALDERLAKE_PCH_S
 	default 0xfd000000
 	help
 	  This option allows you to select MMIO Base Address of sideband bus.

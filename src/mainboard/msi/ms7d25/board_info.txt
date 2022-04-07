@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://www.msi.com/Motherboard/PRO-Z690-A-WIFI-DDR4
+ROM IC: MX25U25673G
+ROM package: WSON-8
+ROM socketed: no
+Flashrom support: yes
+Release year: 2021

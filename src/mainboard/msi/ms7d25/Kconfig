@@ -1,0 +1,45 @@
+config BOARD_MSI_Z690_A_PRO_WIFI_DDR4
+	select BOARD_MSI_MS7D25
+
+config BOARD_MSI_MS7D25
+	def_bool n
+	select SOC_INTEL_ALDERLAKE_PCH_S
+	select BOARD_ROMSIZE_KB_32768
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SUPERIO_NUVOTON_NCT6687D
+	select DRIVERS_UART_8250IO
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+
+if BOARD_MSI_MS7D25
+
+config MAINBOARD_DIR
+	default "msi/ms7d25"
+
+config MAINBOARD_PART_NUMBER
+	default "PRO Z690-A WIFI DDR4(MS-7D25)" if BOARD_MSI_Z690_A_PRO_WIFI_DDR4
+
+config MAINBOARD_VENDOR
+	string
+	default "Micro-Star International Co., Ltd."
+
+config DIMM_SPD_SIZE
+	default 512
+
+config UART_FOR_CONSOLE
+	int
+	default 0
+
+config USE_PM_ACPI_TIMER
+	bool
+	default n
+
+config USE_LEGACY_8254_TIMER
+	bool
+	default n
+
+config CBFS_SIZE
+	hex
+	default 0x1000000
+
+endif

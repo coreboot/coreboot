@@ -1,0 +1,28 @@
+chip soc/intel/alderlake
+	device domain 0 on
+		device ref igpu on end
+		device ref crashlog off end
+		device ref xhci on end
+		device ref heci1 on end
+		device ref heci2 off end
+		device ref ide_r off end
+		device ref kt off end
+		device ref heci3 off end
+		device ref heci4 off end
+		device ref sata on end
+		device ref pcie_rp1 on end
+		device ref pcie_rp2 on end
+		device ref pcie_rp3 on end
+		device ref pcie_rp4 on end
+		device ref pcie_rp5 on end
+		device ref pcie_rp6 on end
+		device ref pcie_rp7 on end
+		device ref pcie_rp8 on end
+		device ref pcie_rp9 on end
+		device ref pcie_rp10 on end
+		device ref pcie_rp11 on end
+		device ref p2sb on end
+		device ref hda on end
+		device ref smbus on end
+	end
+end

@@ -13,6 +13,8 @@
 #include <cpxsp_dl_gpio.h>
 
 #define ASPEED_SIO_PORT 0x2E
+#define PCR_DMI_LPCIOD 0x2770
+#define PCR_DMI_LPCIOE 0x2774
 
 static void enable_espi_lpc_io_windows(void)
 {

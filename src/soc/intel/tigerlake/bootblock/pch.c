@@ -11,7 +11,6 @@
 #include <device/device.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
-#include <intelblocks/dmi.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
@@ -41,11 +40,6 @@
 #define PCR_PSFX_TO_SHDW_BAR4	0x10
 #define PCR_PSFX_TO_SHDW_PCIEN_IOEN	0x01
 #define PCR_PSFX_T0_SHDW_PCIEN	0x1C
-
-#define PCR_DMI_ACPIBA		0x27B4
-#define PCR_DMI_ACPIBDID	0x27B8
-#define PCR_DMI_PMBASEA		0x27AC
-#define PCR_DMI_PMBASEC		0x27B0
 
 static void soc_config_pwrmbase(void)
 {

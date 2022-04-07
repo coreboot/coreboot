@@ -2,7 +2,6 @@
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci_def.h>
-#include <intelblocks/dmi.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/itss.h>

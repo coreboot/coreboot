@@ -25,13 +25,6 @@
 #define LPC_IOE_COMA_EN			(1 << 0)
 #define LPC_NUM_GENERIC_IO_RANGES	4
 
-#define PCR_DMI_LPCLGIR1		0x2730
-
-#define PCR_DMI_LPCGMR			0x2740
-
-#define PCR_DMI_LPCIOD			0x2770
-#define PCR_DMI_LPCIOE			0x2774
-
 /* LPC PCR configuration */
 #define PCR_LPC_PRC			0x341c
 #define PCR_LPC_CCE_EN			0xf

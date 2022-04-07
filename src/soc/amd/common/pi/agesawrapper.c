@@ -68,7 +68,7 @@ static AGESA_STATUS amd_create_struct(AMD_INTERFACE_PARAMS *aip,
 		aip->NewStructPtr = buf;
 		aip->NewStructSize = len;
 	} else {
-		if (ENV_ROMSTAGE)
+		if (ENV_RAMINIT)
 			aip->AllocationMethod = PreMemHeap;
 		if (ENV_RAMSTAGE)
 			aip->AllocationMethod = PostMemDram;
@@ -412,7 +412,7 @@ AGESA_STATUS agesa_execute_state(AGESA_STRUCT_NAME func)
 	StdHeader = aip->NewStructPtr;
 	StdHeader->Func = func;
 
-	if (ENV_ROMSTAGE)
+	if (ENV_RAMINIT)
 		status = romstage_dispatch(StdHeader);
 	if (ENV_RAMSTAGE)
 		status = ramstage_dispatch(StdHeader);

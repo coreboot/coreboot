@@ -38,7 +38,7 @@ static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *Confi
 {
 	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
 
-	if (!ENV_ROMSTAGE)
+	if (!ENV_RAMINIT)
 		return AGESA_UNSUPPORTED;
 
 	u8 index = get_spd_offset();

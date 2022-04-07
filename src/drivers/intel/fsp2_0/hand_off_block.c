@@ -115,7 +115,7 @@ const void *fsp_get_hob_list(void)
 {
 	uint32_t *list_loc;
 
-	if (ENV_ROMSTAGE)
+	if (ENV_RAMINIT)
 		return fsp_hob_list_ptr;
 	list_loc = cbmem_find(CBMEM_ID_FSP_RUNTIME);
 	return (list_loc) ? (void *)(uintptr_t)(*list_loc) : NULL;

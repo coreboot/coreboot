@@ -56,7 +56,7 @@ static struct prci_ctlr *prci = (void *)FU540_PRCI;
 #define PRCI_DEVICESRESET_GEMGXL_RST_N(x)   (((x) & 0x1)  << 5)
 
 /* Clock initialization should only be done in romstage. */
-#if ENV_ROMSTAGE
+#if ENV_RAMINIT
 struct pll_settings {
 	unsigned int divr:6;
 	unsigned int divf:9;
@@ -247,7 +247,7 @@ void clock_init(void)
 
 	asm volatile ("fence");
 }
-#endif /* ENV_ROMSTAGE */
+#endif /* ENV_RAMINIT */
 
 /* Get the core clock's frequency, in KHz */
 int clock_get_coreclk_khz(void)

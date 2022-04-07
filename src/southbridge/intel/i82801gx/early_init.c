@@ -57,7 +57,7 @@ void i82801gx_setup_bars(void)
 
 #define TCO_BASE 0x60
 
-#if ENV_ROMSTAGE
+#if ENV_RAMINIT
 void i82801gx_early_init(void)
 {
 	enable_smbus();

@@ -86,7 +86,7 @@ AGESA_STATUS agesa_ReadSpd(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 	DEVTREE_CONST struct soc_amd_stoneyridge_config *conf;
 	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
 
-	if (!ENV_ROMSTAGE)
+	if (!ENV_RAMINIT)
 		return AGESA_UNSUPPORTED;
 
 	dev = pcidev_path_on_root(DCT_DEVFN);

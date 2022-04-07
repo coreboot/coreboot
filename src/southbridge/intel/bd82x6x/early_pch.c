@@ -310,6 +310,6 @@ void early_pch_init(void)
 
 	setup_pch_gpios(&mainboard_gpio_map);
 
-	if (ENV_ROMSTAGE)
+	if (ENV_RAMINIT)
 		enable_smbus();
 }

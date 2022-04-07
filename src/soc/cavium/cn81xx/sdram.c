@@ -29,7 +29,7 @@ size_t sdram_size_mb(void)
 #define BDK_RNM_CTL_STATUS	0
 #define BDK_RNM_RANDOM		0x100000
 
-#if ENV_ROMSTAGE
+#if ENV_RAMINIT
 /* Enable RNG for DRAM init */
 static void rnm_init(void)
 {

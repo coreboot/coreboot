@@ -15,7 +15,7 @@ size_t sdram_size(void)
 	const struct mem_chip_info *mc;
 	size_t size = 0;
 
-	if (ENV_ROMSTAGE) {
+	if (ENV_RAMINIT) {
 		size = mtk_dram_size();
 		printk(BIOS_INFO, "dram size (romstage): %#lx\n", size);
 		return size;

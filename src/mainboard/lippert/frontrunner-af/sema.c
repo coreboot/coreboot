@@ -53,7 +53,7 @@ int sema_send_alive(void)
 	char one_spd_byte;
 
 	/* Fake read just to setup SMBUS controller. */
-	if (ENV_ROMSTAGE)
+	if (ENV_RAMINIT)
 		smbus_readSpd(0xa0, &one_spd_byte, 1);
 
 	/* Notify the SMC we're alive and kicking, or after a while it will

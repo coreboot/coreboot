@@ -129,7 +129,7 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData, VOID *ConfigPrt)
 
 AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
-	if (!ENV_ROMSTAGE)
+	if (!ENV_RAMINIT)
 		return AGESA_UNSUPPORTED;
 
 	return AmdMemoryReadSPD (Func, Data, ConfigPtr);
@@ -139,7 +139,7 @@ AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
 
-	if (!ENV_ROMSTAGE)
+	if (!ENV_RAMINIT)
 		return AGESA_UNSUPPORTED;
 
 	if (info->MemChannelId > 0)

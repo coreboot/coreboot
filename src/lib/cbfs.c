@@ -106,7 +106,7 @@ static inline bool fsps_env(void)
 static inline bool fspm_env(void)
 {
 	/* FSP-M is assumed to be loaded in romstage. */
-	if (ENV_ROMSTAGE)
+	if (ENV_RAMINIT)
 		return true;
 	return false;
 }

@@ -77,7 +77,7 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr, void *fsp_file, size_
 		return CB_ERR;
 	}
 
-	if (ENV_ROMSTAGE)
+	if (ENV_RAMINIT)
 		soc_validate_fspm_header(hdr);
 
 	return CB_SUCCESS;
@@ -118,7 +118,7 @@ void fsp_handle_reset(uint32_t status)
 
 static inline bool fspm_env(void)
 {
-	if (ENV_ROMSTAGE)
+	if (ENV_RAMINIT)
 		return true;
 	return false;
 }

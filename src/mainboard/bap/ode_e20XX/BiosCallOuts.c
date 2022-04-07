@@ -180,7 +180,7 @@ static AGESA_STATUS board_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *Confi
 	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
 	u8 index;
 
-	if (!ENV_ROMSTAGE)
+	if (!ENV_RAMINIT)
 		return AGESA_UNSUPPORTED;
 
 	if (CONFIG(BAP_E20_DDR3_1066))

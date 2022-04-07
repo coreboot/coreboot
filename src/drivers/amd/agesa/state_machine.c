@@ -18,7 +18,7 @@
 #include "Dispatcher.h"
 #endif
 
-#if ENV_ROMSTAGE
+#if ENV_RAMINIT
 #include <PlatformMemoryConfiguration.h>
 CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {PSO_END};
 #endif
@@ -262,7 +262,7 @@ int agesa_execute_state(struct sysinfo *cb, AGESA_STRUCT_NAME func)
 	if (CONFIG(AGESA_EXTRA_TIMESTAMPS) && task.ts_entry_id)
 		timestamp_add_now(task.ts_entry_id);
 
-	if (ENV_ROMSTAGE)
+	if (ENV_RAMINIT)
 		final = romstage_dispatch(cb, func, StdHeader);
 
 	if (ENV_RAMSTAGE)

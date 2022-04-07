@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include "assert.h"
 #include <acpi/acpi_gnvs.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -85,65 +86,54 @@ struct cpu_smm_info cpus[CONFIG_MAX_CPUS] = { 0 };
  * input : num_cpus in the system. The map will
  *         be created from 0 to num_cpus.
  */
-static int smm_create_map(uintptr_t smbase, unsigned int num_cpus,
-			const struct smm_loader_params *params)
+static int smm_create_map(const uintptr_t smbase, const unsigned int num_cpus,
+			  const struct smm_loader_params *params)
 {
-	unsigned int i;
 	struct rmodule smm_stub;
-	unsigned int ss_size = params->per_cpu_save_state_size, stub_size;
-	unsigned int smm_entry_offset = SMM_ENTRY_OFFSET;
-	unsigned int seg_count = 0, segments = 0, available;
-	unsigned int cpus_in_segment = 0;
-	unsigned int base = smbase;
+
+	if (ARRAY_SIZE(cpus) < num_cpus) {
+		printk(BIOS_ERR, "%s: increase MAX_CPUS in Kconfig\n", __func__);
+		return 0;
+	}
 
 	if (rmodule_parse(&_binary_smmstub_start, &smm_stub)) {
 		printk(BIOS_ERR, "%s: unable to get SMM module size\n", __func__);
 		return 0;
 	}
 
-	stub_size = rmodule_memory_size(&smm_stub);
-	/* How many CPUs can fit into one 64K segment? */
-	available = 0xFFFF - smm_entry_offset - ss_size - stub_size;
-	if (available > 0) {
-		cpus_in_segment = available / ss_size;
-		/* minimum segments needed will always be 1 */
-		segments = num_cpus / cpus_in_segment + 1;
-		printk(BIOS_DEBUG,
-			"%s: cpus allowed in one segment %d\n", __func__, cpus_in_segment);
-		printk(BIOS_DEBUG,
-			"%s: min # of segments needed %d\n", __func__, segments);
-	} else {
-		printk(BIOS_ERR, "%s: not enough space in SMM to setup all CPUs\n", __func__);
-		printk(BIOS_ERR, "    save state & stub size need to be reduced\n");
-		printk(BIOS_ERR, "    or increase SMRAM size\n");
+	/*
+	 * How many CPUs can fit into one 64K segment?
+	 * Make sure that the first stub does not overlap with the last save state of a segment.
+	 */
+	const size_t stub_size = rmodule_memory_size(&smm_stub);
+	const size_t needed_ss_size = MAX(params->real_cpu_save_state_size, stub_size);
+	const size_t cpus_per_segment =
+		(SMM_CODE_SEGMENT_SIZE - SMM_ENTRY_OFFSET - stub_size) / needed_ss_size;
+
+	if (cpus_per_segment == 0) {
+		printk(BIOS_ERR, "%s: CPUs won't fit in segment. Broken stub or save state size\n",
+		       __func__);
 		return 0;
 	}
 
-	if (ARRAY_SIZE(cpus) < num_cpus) {
-		printk(BIOS_ERR,
-			"%s: increase MAX_CPUS in Kconfig\n", __func__);
-		return 0;
-	}
-
-	for (i = 0; i < num_cpus; i++) {
+	for (unsigned int i = 0; i < num_cpus; i++) {
+		if (i % cpus_per_segment == 0)
+			printk(BIOS_DEBUG, "-------------NEW CODE SEGMENT --------------\n");
 		printk(BIOS_DEBUG, "CPU 0x%x\n", i);
-		cpus[i].smbase = base;
-		cpus[i].entry = base + smm_entry_offset;
-		printk(BIOS_DEBUG, "    smbase %lx  entry %lx\n", cpus[i].smbase,
-		       cpus[i].entry);
-		cpus[i].ss_start = cpus[i].entry + (smm_entry_offset - ss_size);
+		/* We copy the same stub for each CPU so they all need the same 'smbase'. */
+		const size_t segment_number = i / cpus_per_segment;
+		cpus[i].smbase = smbase - SMM_CODE_SEGMENT_SIZE * segment_number
+			- needed_ss_size * (i % cpus_per_segment);
+		cpus[i].entry = cpus[i].smbase + SMM_ENTRY_OFFSET;
+		cpus[i].ss_start = cpus[i].smbase + SMM_CODE_SEGMENT_SIZE - needed_ss_size;
 		cpus[i].code_start = cpus[i].entry;
 		cpus[i].code_end = cpus[i].entry + stub_size;
-		printk(BIOS_DEBUG, "           ss_start %lx  code_end %lx\n", cpus[i].ss_start,
+		printk(BIOS_DEBUG, "  Stub       [0x%lx-0x%lx[\n", cpus[i].code_start,
 		       cpus[i].code_end);
+		printk(BIOS_DEBUG, "  Save state [0x%lx-0x%lx[\n",
+		       cpus[i].ss_start + needed_ss_size - params->real_cpu_save_state_size,
+		       cpus[i].ss_start + needed_ss_size);
 		cpus[i].active = 1;
-		base -= ss_size;
-		seg_count++;
-		if (seg_count >= cpus_in_segment) {
-			base -= smm_entry_offset;
-			seg_count = 0;
-			printk(BIOS_DEBUG, "-------------NEW CODE SEGMENT --------------\n");
-		}
 	}
 
 	return 1;

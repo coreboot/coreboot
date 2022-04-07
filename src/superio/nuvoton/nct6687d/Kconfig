@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SUPERIO_NUVOTON_NCT6687D
+	bool
+	select SUPERIO_NUVOTON_COMMON_PRE_RAM

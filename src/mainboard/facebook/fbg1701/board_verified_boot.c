@@ -2,7 +2,8 @@
 
 #include "board_verified_boot.h"
 
-/* The items verified by the bootblock, the bootblock will not measure the
+/*
+ * The items verified by the bootblock, the bootblock will not measure the
  * items to the TPM
  */
 const verify_item_t bootblock_verify_list[] = {
@@ -10,6 +11,10 @@ const verify_item_t bootblock_verify_list[] = {
 		HASH_IDX_ROM_STAGE, MBOOT_PCR_INDEX_0 },
 	{ VERIFY_FILE, BOOTBLOCK, { { NULL, CBFS_TYPE_BOOTBLOCK } },
 		HASH_IDX_BOOTBLOCK, MBOOT_PCR_INDEX_0 },
+	{ VERIFY_FILE, FSP, { { NULL, CBFS_TYPE_FSP } }, HASH_IDX_FSP,
+		MBOOT_PCR_INDEX_1 },
+	{ VERIFY_FILE, "spd.bin", { { NULL, CBFS_TYPE_SPD } },
+		HASH_IDX_SPD0, MBOOT_PCR_INDEX_1 },
 #if CONFIG(VENDORCODE_ELTAN_VBOOT_SIGNED_MANIFEST)
 	{ VERIFY_BLOCK, "PublicKey",
 		{ { (void *)CONFIG_VENDORCODE_ELTAN_VBOOT_KEY_LOCATION,
@@ -20,7 +25,7 @@ const verify_item_t bootblock_verify_list[] = {
 };
 
 /*
- * The items used by the romstage. Bootblock and PublicKey are added here to make sure they
+ * The items used by the romstage. Items verified by bootblock are added here to make sure they
  * are measured
  */
 const verify_item_t romstage_verify_list[] = {

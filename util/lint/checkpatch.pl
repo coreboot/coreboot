@@ -56,7 +56,7 @@ my @ignore = ();
 my @exclude = (); #coreboot
 my $help = 0;
 my $configuration_file = ".checkpatch.conf";
-my $max_line_length = 80;
+my $max_line_length = 100;
 my $ignore_perl_version = 0;
 my $minimum_perl_version = 5.10.0;
 my $min_conf_desc_length = 4;
@@ -111,7 +111,9 @@ Options:
   --ignore TYPE(,TYPE2...)   ignore various comma separated message types
   --exclude DIR(,DIR22...)   exclude directories
   --show-types               show the specific message type in the output
-  --max-line-length=n        set the maximum line length, if exceeded, warn
+  --max-line-length=n        set the maximum line length, (default $max_line_length)
+                             if exceeded, warn on patches
+                             requires --strict for use with --file
   --min-conf-desc-length=n   set the min description length, if shorter, warn
   --tab-size=n               set the number of spaces for tab (default $tabsize)
   --root=PATH                PATH to the kernel tree root
@@ -3208,8 +3210,10 @@ sub process {
 
 			if ($msg_type ne "" &&
 			    (show_type("LONG_LINE") || show_type($msg_type))) {
-				WARN($msg_type,
-				     "line over $max_line_length characters\n" . $herecurr);
+				my $msg_level = \&WARN;
+				$msg_level = \&CHK if ($file);
+				&{$msg_level}($msg_type,
+					      "line length of $length exceeds $max_line_length columns\n" . $herecurr);
 			}
 		}
 

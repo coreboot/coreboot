@@ -169,41 +169,14 @@ u32 smm_get_cpu_smbase(unsigned int cpu_num)
  * important to enter protected mode before the jump because the "jump to
  * address" might be larger than the 20bit address supported by real mode.
  * SMI entry right now is in real mode.
- * input: smbase - this is the smbase of the first cpu not the smbase
- *        where tseg starts (aka smram_start). All CPUs code segment
- *        and stack will be below this point except for the common
- *        SMI handler which is one segment above
  * input: num_cpus - number of cpus that need relocation including
  *        the first CPU (though its code is already loaded)
- * input: top of stack (stacks work downward by default in Intel HW)
- * output: return -1, if runtime smi code could not be installed. In
- *         this case SMM will not work and any SMI's generated will
- *         cause a CPU shutdown or general protection fault because
- *         the appropriate smi handling code was not installed
  */
 
-static int smm_place_entry_code(uintptr_t smbase, unsigned int num_cpus,
-				uintptr_t stack_top, const struct smm_loader_params *params)
+static void smm_place_entry_code(const unsigned int num_cpus)
 {
 	unsigned int i;
 	unsigned int size;
-
-	/*
-	 * Ensure there was enough space and the last CPUs smbase
-	 * did not encroach upon the stack. Stack top is smram start
-	 * + size of stack.
-	 */
-	if (cpus[num_cpus].active) {
-		if (cpus[num_cpus - 1].smbase + SMM_ENTRY_OFFSET < stack_top) {
-			printk(BIOS_ERR, "%s: stack encroachment\n", __func__);
-				printk(BIOS_ERR, "%s: smbase %lx, stack_top %lx\n",
-				       __func__, cpus[num_cpus].smbase, stack_top);
-				return 0;
-		}
-	}
-
-	printk(BIOS_INFO, "%s: smbase %lx, stack_top %lx\n",
-		__func__, cpus[num_cpus-1].smbase, stack_top);
 
 	/* start at 1, the first CPU stub code is already there */
 	size = cpus[0].code_end - cpus[0].code_start;
@@ -215,7 +188,6 @@ static int smm_place_entry_code(uintptr_t smbase, unsigned int num_cpus,
 		printk(BIOS_DEBUG, "%s: copying from %lx to %lx 0x%x bytes\n",
 			__func__, cpus[0].code_start, cpus[i].code_start, size);
 	}
-	return 1;
 }
 
 static uintptr_t stack_top;
@@ -245,21 +217,10 @@ int smm_setup_stack(const uintptr_t perm_smbase, const size_t perm_smram_size,
  * staggered by the per CPU SMM save state size extending down from
  * SMM_ENTRY_OFFSET.
  */
-static int smm_stub_place_staggered_entry_points(char *base,
-	const struct smm_loader_params *params, const struct rmodule *smm_stub)
+static void smm_stub_place_staggered_entry_points(const struct smm_loader_params *params)
 {
-	size_t stub_entry_offset;
-	int rc = 1;
-	stub_entry_offset = rmodule_entry_offset(smm_stub);
-	/* Each CPU now has its own stub code, which enters protected mode,
-	 * sets up the stack, and then jumps to common SMI handler
-	 */
-	if (params->num_concurrent_save_states > 1 || stub_entry_offset != 0) {
-		rc = smm_place_entry_code((uintptr_t)base,
-					  params->num_concurrent_save_states,
-					  stack_top, params);
-	}
-	return rc;
+	if (params->num_concurrent_save_states > 1)
+		smm_place_entry_code(params->num_concurrent_save_states);
 }
 
 /*
@@ -328,10 +289,7 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 	       stub_params->start32_offset);
 	printk(BIOS_DEBUG, "%s: runtime.smm_size = 0x%zx\n", __func__, smm_size);
 
-	if (!smm_stub_place_staggered_entry_points((void *)smbase, params, &smm_stub)) {
-		printk(BIOS_ERR, "%s: staggered entry points failed\n", __func__);
-		return -1;
-	}
+	smm_stub_place_staggered_entry_points(params);
 
 	printk(BIOS_DEBUG, "SMM Module: stub loaded at %lx. Will call %p\n", smm_stub_loc,
 	       params->handler);

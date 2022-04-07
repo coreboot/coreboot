@@ -126,38 +126,26 @@ static int smm_create_map(uintptr_t smbase, unsigned int num_cpus,
 	}
 
 	for (i = 0; i < num_cpus; i++) {
+		printk(BIOS_DEBUG, "CPU 0x%x\n", i);
 		cpus[i].smbase = base;
 		cpus[i].entry = base + smm_entry_offset;
+		printk(BIOS_DEBUG, "    smbase %lx  entry %lx\n", cpus[i].smbase,
+		       cpus[i].entry);
 		cpus[i].ss_start = cpus[i].entry + (smm_entry_offset - ss_size);
 		cpus[i].code_start = cpus[i].entry;
 		cpus[i].code_end = cpus[i].entry + stub_size;
+		printk(BIOS_DEBUG, "           ss_start %lx  code_end %lx\n", cpus[i].ss_start,
+		       cpus[i].code_end);
 		cpus[i].active = 1;
 		base -= ss_size;
 		seg_count++;
 		if (seg_count >= cpus_in_segment) {
 			base -= smm_entry_offset;
 			seg_count = 0;
+			printk(BIOS_DEBUG, "-------------NEW CODE SEGMENT --------------\n");
 		}
 	}
 
-	if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) {
-		seg_count = 0;
-		for (i = 0; i < num_cpus; i++) {
-			printk(BIOS_DEBUG, "CPU 0x%x\n", i);
-			printk(BIOS_DEBUG,
-				"    smbase %lx  entry %lx\n",
-				cpus[i].smbase, cpus[i].entry);
-			printk(BIOS_DEBUG,
-				"           ss_start %lx  code_end %lx\n",
-				cpus[i].ss_start, cpus[i].code_end);
-			seg_count++;
-			if (seg_count >= cpus_in_segment) {
-				printk(BIOS_DEBUG,
-					"-------------NEW CODE SEGMENT --------------\n");
-				seg_count = 0;
-			}
-		}
-	}
 	return 1;
 }
 

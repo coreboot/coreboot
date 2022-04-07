@@ -106,7 +106,7 @@ static int smm_create_map(const uintptr_t smbase, const unsigned int num_cpus,
 	 * Make sure that the first stub does not overlap with the last save state of a segment.
 	 */
 	const size_t stub_size = rmodule_memory_size(&smm_stub);
-	const size_t needed_ss_size = MAX(params->real_cpu_save_state_size, stub_size);
+	const size_t needed_ss_size = MAX(params->cpu_save_state_size, stub_size);
 	const size_t cpus_per_segment =
 		(SMM_CODE_SEGMENT_SIZE - SMM_ENTRY_OFFSET - stub_size) / needed_ss_size;
 
@@ -127,7 +127,7 @@ static int smm_create_map(const uintptr_t smbase, const unsigned int num_cpus,
 		cpus[i].code_start = cpus[i].smbase + SMM_ENTRY_OFFSET;
 		cpus[i].code_end = cpus[i].code_start + stub_size;
 		cpus[i].ss_top = cpus[i].smbase + SMM_CODE_SEGMENT_SIZE;
-		cpus[i].ss_start = cpus[i].ss_top - params->real_cpu_save_state_size;
+		cpus[i].ss_start = cpus[i].ss_top - params->cpu_save_state_size;
 		printk(BIOS_DEBUG, "  Stub       [0x%lx-0x%lx[\n", cpus[i].code_start,
 		       cpus[i].code_end);
 		printk(BIOS_DEBUG, "  Save state [0x%lx-0x%lx[\n", cpus[i].ss_start,
@@ -372,7 +372,7 @@ static void setup_smihandler_params(struct smm_runtime *mod_params,
 {
 	mod_params->smbase = smram_base;
 	mod_params->smm_size = smram_size;
-	mod_params->save_state_size = loader_params->real_cpu_save_state_size;
+	mod_params->save_state_size = loader_params->cpu_save_state_size;
 	mod_params->num_cpus = loader_params->num_cpus;
 	mod_params->gnvs_ptr = (uint32_t)(uintptr_t)acpi_get_gnvs();
 	const struct cbmem_entry *cbmemc;

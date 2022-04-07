@@ -673,9 +673,6 @@ struct mp_state {
 	int cpu_count;
 	uintptr_t perm_smbase;
 	size_t perm_smsize;
-	/* Size of the real CPU save state */
-	size_t smm_real_save_state_size;
-	/* Size of allocated CPU save state, MAX(real save state size, stub size) */
 	size_t smm_save_state_size;
 	uintptr_t reloc_start32_offset;
 	int do_smm;
@@ -756,13 +753,11 @@ static void adjust_smm_apic_id_map(struct smm_loader_params *smm_params)
 		stub_params->apic_id_to_cpu[i] = cpu_get_apic_id(i);
 }
 
-static enum cb_err install_relocation_handler(int num_cpus, size_t real_save_state_size,
-				      size_t save_state_size)
+static enum cb_err install_relocation_handler(int num_cpus, size_t save_state_size)
 {
 	struct smm_loader_params smm_params = {
 		.num_cpus = num_cpus,
-		.real_cpu_save_state_size = real_save_state_size,
-		.per_cpu_save_state_size = save_state_size,
+		.cpu_save_state_size = save_state_size,
 		.num_concurrent_save_states = 1,
 		.handler = smm_do_relocation,
 	};
@@ -779,8 +774,7 @@ static enum cb_err install_relocation_handler(int num_cpus, size_t real_save_sta
 }
 
 static enum cb_err install_permanent_handler(int num_cpus, uintptr_t smbase,
-				     size_t smsize, size_t real_save_state_size,
-				     size_t save_state_size)
+				     size_t smsize, size_t save_state_size)
 {
 	/*
 	 * All the CPUs will relocate to permanaent handler now. Set parameters
@@ -791,8 +785,7 @@ static enum cb_err install_permanent_handler(int num_cpus, uintptr_t smbase,
 	 */
 	struct smm_loader_params smm_params = {
 		.num_cpus = num_cpus,
-		.real_cpu_save_state_size = real_save_state_size,
-		.per_cpu_save_state_size = save_state_size,
+		.cpu_save_state_size = save_state_size,
 		.num_concurrent_save_states = num_cpus,
 	};
 
@@ -809,8 +802,7 @@ static enum cb_err install_permanent_handler(int num_cpus, uintptr_t smbase,
 /* Load SMM handlers as part of MP flight record. */
 static void load_smm_handlers(void)
 {
-	size_t real_save_state_size = mp_state.smm_real_save_state_size;
-	size_t smm_save_state_size = mp_state.smm_save_state_size;
+	const size_t save_state_size = mp_state.smm_save_state_size;
 
 	/* Do nothing if SMM is disabled.*/
 	if (!is_smm_enabled())
@@ -823,15 +815,13 @@ static void load_smm_handlers(void)
 	}
 
 	/* Install handlers. */
-	if (install_relocation_handler(mp_state.cpu_count, real_save_state_size,
-				       smm_save_state_size) != CB_SUCCESS) {
+	if (install_relocation_handler(mp_state.cpu_count, save_state_size) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Unable to install SMM relocation handler.\n");
 		smm_disable();
 	}
 
 	if (install_permanent_handler(mp_state.cpu_count, mp_state.perm_smbase,
-				      mp_state.perm_smsize, real_save_state_size,
-				      smm_save_state_size) != CB_SUCCESS) {
+				      mp_state.perm_smsize, save_state_size) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Unable to install SMM permanent handler.\n");
 		smm_disable();
 	}
@@ -1090,26 +1080,11 @@ static struct mp_flight_record mp_steps[] = {
 	MP_FR_BLOCK_APS(ap_wait_for_instruction, NULL),
 };
 
-static size_t smm_stub_size(void)
-{
-	extern unsigned char _binary_smmstub_start[];
-	struct rmodule smm_stub;
-
-	if (rmodule_parse(&_binary_smmstub_start, &smm_stub)) {
-		printk(BIOS_ERR, "%s: unable to get SMM module size\n", __func__);
-		return 0;
-	}
-
-	return rmodule_memory_size(&smm_stub);
-}
-
 static void fill_mp_state_smm(struct mp_state *state, const struct mp_ops *ops)
 {
 	if (ops->get_smm_info != NULL)
 		ops->get_smm_info(&state->perm_smbase, &state->perm_smsize,
-				  &state->smm_real_save_state_size);
-
-	state->smm_save_state_size = MAX(state->smm_real_save_state_size, smm_stub_size());
+				  &state->smm_save_state_size);
 
 	/*
 	 * Make sure there is enough room for the SMM descriptor

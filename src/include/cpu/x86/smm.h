@@ -127,7 +127,7 @@ static inline bool smm_points_to_smram(const void *ptr, const size_t len)
 /* The smm_loader_params structure provides direction to the SMM loader:
  * - num_cpus - number of concurrent cpus in handler needing stack
  *                           optional for setting up relocation handler.
- * - per_cpu_save_state_size - the SMM save state size per cpu
+ * - cpu_save_state_size - the SMM save state size per cpu
  * - num_concurrent_save_states - number of concurrent cpus needing save state
  *                                space
  * - handler - optional handler to call. Only used during SMM relocation setup.
@@ -139,8 +139,7 @@ static inline bool smm_points_to_smram(const void *ptr, const size_t len)
 struct smm_loader_params {
 	size_t num_cpus;
 
-	size_t real_cpu_save_state_size;
-	size_t per_cpu_save_state_size;
+	size_t cpu_save_state_size;
 	size_t num_concurrent_save_states;
 
 	smm_handler_t handler;

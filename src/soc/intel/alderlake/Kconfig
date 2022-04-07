@@ -23,6 +23,12 @@ config SOC_INTEL_ALDERLAKE_PCH_P
 	help
 	  Choose this option if your mainboard has a PCH-P chipset.
 
+config SOC_INTEL_ALDERLAKE_PCH_S
+	bool
+	select SOC_INTEL_ALDERLAKE
+	help
+	  Choose this option if your mainboard has a PCH-S chipset.
+
 if SOC_INTEL_ALDERLAKE
 
 config CPU_SPECIFIC_OPTIONS

@@ -96,6 +96,7 @@ void x86_setup_fixed_mtrrs(void);
 /* Set up fixed MTRRs but do not enable them. */
 void x86_setup_fixed_mtrrs_no_enable(void);
 void x86_mtrr_check(void);
+void need_restore_mtrr(void);
 
 /* Insert a temporary MTRR range for the duration of coreboot's runtime.
  * This function needs to be called after the first MTRR solution is derived. */

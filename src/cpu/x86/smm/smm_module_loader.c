@@ -42,7 +42,6 @@ extern unsigned char _binary_smmstub_start[];
 struct cpu_smm_info {
 	uint8_t active;
 	uintptr_t smbase;
-	uintptr_t entry;
 	uintptr_t ss_start;
 	uintptr_t code_start;
 	uintptr_t code_end;
@@ -124,10 +123,9 @@ static int smm_create_map(const uintptr_t smbase, const unsigned int num_cpus,
 		const size_t segment_number = i / cpus_per_segment;
 		cpus[i].smbase = smbase - SMM_CODE_SEGMENT_SIZE * segment_number
 			- needed_ss_size * (i % cpus_per_segment);
-		cpus[i].entry = cpus[i].smbase + SMM_ENTRY_OFFSET;
+		cpus[i].code_start = cpus[i].smbase + SMM_ENTRY_OFFSET;
+		cpus[i].code_end = cpus[i].code_start + stub_size;
 		cpus[i].ss_start = cpus[i].smbase + SMM_CODE_SEGMENT_SIZE - needed_ss_size;
-		cpus[i].code_start = cpus[i].entry;
-		cpus[i].code_end = cpus[i].entry + stub_size;
 		printk(BIOS_DEBUG, "  Stub       [0x%lx-0x%lx[\n", cpus[i].code_start,
 		       cpus[i].code_end);
 		printk(BIOS_DEBUG, "  Save state [0x%lx-0x%lx[\n",

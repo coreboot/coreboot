@@ -516,6 +516,8 @@ static int smbios_write_type3(unsigned long *current, int handle)
 	return len;
 }
 
+#define MAX_CPUS_ENABLED (CONFIG_MAX_CPUS > 0xff ? 0xff : CONFIG_MAX_CPUS)
+
 static int smbios_write_type4(unsigned long *current, int handle)
 {
 	unsigned int cpu_voltage;
@@ -570,7 +572,7 @@ static int smbios_write_type4(unsigned long *current, int handle)
 		t->thread_count = t->thread_count2;
 	}
 	/* Assume we enable all the cores always, capped only by MAX_CPUS */
-	t->core_enabled = MIN(t->core_count, CONFIG_MAX_CPUS);
+	t->core_enabled = MIN(t->core_count, MAX_CPUS_ENABLED);
 	t->core_enabled2 = MIN(t->core_count2, CONFIG_MAX_CPUS);
 	t->l1_cache_handle = 0xffff;
 	t->l2_cache_handle = 0xffff;

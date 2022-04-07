@@ -14,12 +14,10 @@ bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/pch.c
 bootblock-y += bootblock/report_platform.c
 bootblock-y += espi.c
-bootblock-y += gpio.c
 bootblock-y += p2sb.c
 bootblock-$(CONFIG_ALDERLAKE_CONFIGURE_DESCRIPTOR) += bootblock/update_descriptor.c
 
 romstage-y += espi.c
-romstage-y += gpio.c
 romstage-y += meminit.c
 romstage-y += pcie_rp.c
 romstage-y += reset.c
@@ -33,7 +31,6 @@ ramstage-y += elog.c
 ramstage-y += espi.c
 ramstage-y += finalize.c
 ramstage-y += fsp_params.c
-ramstage-y += gpio.c
 ramstage-y += lockdown.c
 ramstage-y += me.c
 ramstage-y += p2sb.c
@@ -48,15 +45,26 @@ ramstage-y += vr_config.c
 ramstage-y += xhci.c
 ramstage-$(CONFIG_SOC_INTEL_CRASHLOG) += crashlog.c
 
-verstage-y += gpio.c
-
 smm-y += elog.c
-smm-y += gpio.c
 smm-y += p2sb.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 smm-y += uart.c
 smm-y += xhci.c
+
+ifeq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_S),y)
+bootblock-y += gpio_pch_s.c
+romstage-y += gpio_pch_s.c
+ramstage-y += gpio_pch_s.c
+smm-y += gpio_pch_s.c
+verstage-y += gpio_pch_s.c
+else
+bootblock-y += gpio.c
+romstage-y += gpio.c
+ramstage-y += gpio.c
+smm-y += gpio.c
+verstage-y += gpio.c
+endif
 
 CPPFLAGS_common += -I$(src)/soc/intel/alderlake
 CPPFLAGS_common += -I$(src)/soc/intel/alderlake/include

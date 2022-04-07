@@ -110,6 +110,22 @@ extern struct device_operations pmc_ops;
 #define  GPE0_DWX_MASK			0xf
 #define  GPE0_DW_SHIFT(x)		(4*(x))
 
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_S)
+#define PMC_GPP_I		0x0
+#define PMC_GPP_R		0x1
+#define PMC_GPP_J		0x2
+#define PMC_GPD			0x4
+#define PMC_GPP_D		0x5
+#define PMC_GPP_S		0x6
+#define PMC_GPP_E		0x7
+#define PMC_GPP_K		0x8
+#define PMC_GPP_F		0x9
+#define PMC_GPP_A		0xA
+#define PMC_GPP_C		0xB
+#define PMC_GPP_B		0xC
+#define PMC_GPP_G		0xD
+#define PMC_GPP_H		0xE
+#else
 #define PMC_GPP_B		0x0
 #define PMC_GPP_T		0x1
 #define PMC_GPP_A		0x2
@@ -127,6 +143,7 @@ extern struct device_operations pmc_ops;
 #define PMC_GPP_F		0xA
 #define PMC_GPP_C		0xB
 #define PMC_GPP_E		0xC
+#endif
 
 #define GBLRST_CAUSE0			0x1924
 #define   GBLRST_CAUSE0_THERMTRIP	(1 << 5)

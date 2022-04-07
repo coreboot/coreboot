@@ -142,7 +142,7 @@ static unsigned long write_smbios_table(unsigned long rom_table_end)
 {
 	unsigned long high_table_pointer;
 
-#define MAX_SMBIOS_SIZE (4 * KiB)
+#define MAX_SMBIOS_SIZE (32 * KiB)
 
 	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_SMBIOS,
 		MAX_SMBIOS_SIZE);

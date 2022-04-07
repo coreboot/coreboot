@@ -60,6 +60,7 @@ chip soc/intel/alderlake
 	}"
 	register "pch_pcie_rp[PCH_RP(10)]" = "{
 		.flags = PCIE_RP_CLK_SRC_UNUSED,
+		.pcie_rp_aspm = ASPM_DISABLE,
 	}"
 	register "pcie_clk_config_flag[0]" = "PCIE_CLK_FREE_RUNNING"
 	register "pcie_clk_config_flag[1]" = "PCIE_CLK_FREE_RUNNING"

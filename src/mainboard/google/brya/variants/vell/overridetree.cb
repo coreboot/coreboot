@@ -71,6 +71,9 @@ chip soc/intel/alderlake
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"
 	register "sagv" = "SaGv_Enabled"
 
+	# FIVR RFI Spread Spectrum 6%
+	register "fivr_spread_spectrum" = "FIVR_SS_6"
+
 	# I2C Port Config
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,

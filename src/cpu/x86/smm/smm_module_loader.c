@@ -185,7 +185,7 @@ static void smm_place_entry_code(const unsigned int num_cpus)
 		printk(BIOS_DEBUG,
 			"SMM Module: placing smm entry code at %lx,  cpu # 0x%x\n",
 			cpus[i].code_start, i);
-		printk(BIOS_DEBUG, "%s: copying from %lx to %lx 0x%x bytes\n",
+		printk(BIOS_SPEW, "%s: copying from %lx to %lx 0x%x bytes\n",
 			__func__, cpus[0].code_start, cpus[i].code_start, size);
 	}
 }

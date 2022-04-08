@@ -82,7 +82,7 @@ enum ddi_port_flags {
 
 /*
  * Enable External V1P05/Vnn/VnnSx Rail in: BIT0:S0i1/S0i2,
- * BIT1:S0i3, BIT2:S3, BIT3:S4, BIT4:S5
+ * BIT1:S0i3, BIT2:S3, BIT3:S4, BIT4:S5, BIT5:S0.
  */
 enum fivr_enable_states {
 	FIVR_ENABLE_S0i1_S0i2	= BIT(0),
@@ -90,6 +90,7 @@ enum fivr_enable_states {
 	FIVR_ENABLE_S3		= BIT(2),
 	FIVR_ENABLE_S4		= BIT(3),
 	FIVR_ENABLE_S5		= BIT(4),
+	FIVR_ENABLE_S0		= BIT(5),
 };
 
 /*
@@ -107,7 +108,7 @@ enum fivr_voltage_supported {
 };
 
 #define FIVR_ENABLE_ALL_SX (FIVR_ENABLE_S0i1_S0i2 | FIVR_ENABLE_S0i3 |	\
-			    FIVR_ENABLE_S3 | FIVR_ENABLE_S4 | FIVR_ENABLE_S5)
+			    FIVR_ENABLE_S3 | FIVR_ENABLE_S4 | FIVR_ENABLE_S5 | FIVR_ENABLE_S0)
 /*
  * The Max Pkg Cstate
  * Values 0 - C0/C1, 1 - C2, 2 - C3, 3 - C6, 4 - C7, 5 - C7S, 6 - C8, 7 - C9, 8 - C10,

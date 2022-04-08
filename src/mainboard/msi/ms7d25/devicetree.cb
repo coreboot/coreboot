@@ -70,6 +70,17 @@ chip soc/intel/alderlake
 		[7] = 1,
 	}"
 
+	# HDMI on port B
+	register "ddi_portB_config" = "1"
+	register "ddi_ports_config" = "{
+		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+		[DDI_PORT_C] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+		[DDI_PORT_1] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+		[DDI_PORT_2] = DDI_ENABLE_HPD,
+		[DDI_PORT_3] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+		[DDI_PORT_4] = DDI_ENABLE_HPD,
+	}"
+
 	device domain 0 on
 		device ref igpu on end
 		device ref crashlog off end

@@ -229,8 +229,8 @@ void bootmem_write_memory_table(struct lb_memory *mem)
 	/* Insert entries for testing */
 	for (i = 0; i < ARRAY_SIZE(mock_bootmem_ranges); ++i) {
 		struct resource *res = &mock_bootmem_ranges[i];
-		lb_r->start = pack_lb64(res->base);
-		lb_r->size = pack_lb64(res->size);
+		lb_r->start = res->base;
+		lb_r->size = res->size;
 		lb_r->type = res->flags;
 		lb_r++;
 		mem->size += sizeof(struct lb_memory_range);
@@ -362,18 +362,18 @@ static void test_write_tables(void **state)
 			const struct lb_memory *memory = (struct lb_memory *)record;
 			const struct lb_memory_range *range;
 			const struct resource *res;
-			struct lb_uint64 value;
+			lb_uint64_t value;
 
 			for (int i = 0; i < ARRAY_SIZE(mock_bootmem_ranges); ++i) {
 				res = &mock_bootmem_ranges[i];
 				range = &memory->map[i];
 
-				value = pack_lb64(res->base);
+				value = res->base;
 				assert_memory_equal(&value, &range->start,
-						    sizeof(struct lb_uint64));
-				value = pack_lb64(res->size);
+						    sizeof(lb_uint64_t));
+				value = res->size;
 				assert_memory_equal(&value, &range->size,
-						    sizeof(struct lb_uint64));
+						    sizeof(lb_uint64_t));
 				assert_int_equal(range->type, res->flags);
 			}
 			break;
@@ -475,9 +475,9 @@ static void test_write_tables(void **state)
 
 			const struct lb_board_config *board_config =
 				(struct lb_board_config *)record;
-			const struct lb_uint64 expected_fw_version = pack_lb64(fw_config_get());
+			const lb_uint64_t expected_fw_version = fw_config_get();
 			assert_memory_equal(&expected_fw_version, &board_config->fw_config,
-					    sizeof(struct lb_uint64));
+					    sizeof(lb_uint64_t));
 			assert_int_equal(board_id(), board_config->board_id);
 			assert_int_equal(ram_code(), board_config->ram_code);
 			assert_int_equal(sku_id(), board_config->sku_id);
@@ -486,7 +486,7 @@ static void test_write_tables(void **state)
 			assert_int_equal(sizeof(struct lb_acpi_rsdp), record->size);
 
 			const struct lb_acpi_rsdp *acpi_rsdp = (struct lb_acpi_rsdp *)record;
-			assert_int_equal(ebda_base, unpack_lb64(acpi_rsdp->rsdp_pointer));
+			assert_int_equal(ebda_base, acpi_rsdp->rsdp_pointer);
 			break;
 		default:
 			fail_msg("Unexpected tag found in record. Tag ID: 0x%x", record->tag);

@@ -177,8 +177,8 @@ static void test_bootmem_write_mem_table(void **state)
 			required_unused_space_size);
 
 	for (i = 0; i < lb_mem->size / sizeof(struct lb_memory_range); i++) {
-		assert_int_equal(unpack_lb64(lb_mem->map[i].start), os_ranges[i].start);
-		assert_int_equal(unpack_lb64(lb_mem->map[i].size), os_ranges[i].size);
+		assert_int_equal(lb_mem->map[i].start, os_ranges[i].start);
+		assert_int_equal(lb_mem->map[i].size, os_ranges[i].size);
 		assert_int_equal(lb_mem->map[i].type, bootmem_to_lb_tag(os_ranges[i].type));
 	}
 

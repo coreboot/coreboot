@@ -632,8 +632,8 @@ static void memory_print_fn(const struct lb_record *rec)
 			break;
 		}
 
-		size = unpack_lb64(ranges[i].size);
-		start = unpack_lb64(ranges[i].start);
+		size = ranges[i].size;
+		start = ranges[i].start;
 		end = start + size - 1;
 		printf("%s memory:\n"
 		       "    from physical addresses 0x%016" PRIx64

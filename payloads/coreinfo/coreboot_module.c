@@ -94,10 +94,8 @@ static int coreboot_module_redraw(WINDOW *win)
 			mvwprintw(win, row++, 3, "   Table: ");
 		}
 
-		wprintw(win, "%16.16llx - %16.16llx",
-			cb_unpack64(cb_info.range[i].start),
-			cb_unpack64(cb_info.range[i].start) +
-			cb_unpack64(cb_info.range[i].size) - 1);
+		wprintw(win, "%16.16llx - %16.16llx", cb_info.range[i].start,
+			cb_info.range[i].start + cb_info.range[i].size - 1);
 	}
 
 	return 0;

@@ -110,8 +110,8 @@ void bootmem_write_memory_table(struct lb_memory *mem)
 	bootmem_dump_ranges();
 
 	memranges_each_entry(r, &bootmem_os) {
-		lb_r->start = pack_lb64(range_entry_base(r));
-		lb_r->size = pack_lb64(range_entry_size(r));
+		lb_r->start = range_entry_base(r);
+		lb_r->size = range_entry_size(r);
 		lb_r->type = bootmem_to_lb_tag(range_entry_tag(r));
 
 		lb_r++;

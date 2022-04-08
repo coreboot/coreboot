@@ -1016,7 +1016,7 @@ static void dump_cbmem_hex(void)
 		return;
 	}
 
-	hexdump(unpack_lb64(cbmem.start), unpack_lb64(cbmem.size));
+	hexdump(cbmem.start, cbmem.size);
 }
 
 static void rawdump(uint64_t base, uint64_t size)

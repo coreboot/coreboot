@@ -313,7 +313,7 @@ static struct lb_board_config *lb_board_config(struct lb_header *header)
 	config->board_id = board_id();
 	config->ram_code = ram_code();
 	config->sku_id = sku_id();
-	config->fw_config = pack_lb64(fw_config);
+	config->fw_config = fw_config;
 
 	if (config->board_id != UNDEFINED_STRAPPING_ID)
 		printk(BIOS_INFO, "Board ID: %d\n", config->board_id);
@@ -428,7 +428,7 @@ static void lb_add_acpi_rsdp(struct lb_header *head)
 	acpi_rsdp = (struct lb_acpi_rsdp *)rec;
 	acpi_rsdp->tag = LB_TAG_ACPI_RSDP;
 	acpi_rsdp->size = sizeof(*acpi_rsdp);
-	acpi_rsdp->rsdp_pointer = pack_lb64(get_coreboot_rsdp());
+	acpi_rsdp->rsdp_pointer = get_coreboot_rsdp();
 }
 
 size_t write_coreboot_forwarding_table(uintptr_t entry, uintptr_t target)

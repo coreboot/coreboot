@@ -45,33 +45,11 @@
  * 64bit system, a uint64_t would be aligned to 64bit boundaries,
  * breaking the table format.
  *
- * lb_uint64 will keep 64bit coreboot table values aligned to 32bit
- * to ensure compatibility. They can be accessed with the two functions
- * below: unpack_lb64() and pack_lb64()
- *
- * See also: util/lbtdump/lbtdump.c
+ * lb_uint64_t will keep 64bit coreboot table values aligned to 32bit
+ * to ensure compatibility.
  */
 
-struct lb_uint64 {
-	uint32_t lo;
-	uint32_t hi;
-};
-
-static inline uint64_t unpack_lb64(struct lb_uint64 value)
-{
-	uint64_t result;
-	result = value.hi;
-	result = (result << 32) + value.lo;
-	return result;
-}
-
-static inline struct lb_uint64 pack_lb64(uint64_t value)
-{
-	struct lb_uint64 result;
-	result.lo = (value >> 0) & 0xffffffff;
-	result.hi = (value >> 32) & 0xffffffff;
-	return result;
-}
+typedef __attribute__((aligned(4))) uint64_t lb_uint64_t;
 
 struct lb_header {
 	union {
@@ -101,8 +79,8 @@ struct lb_record {
 #define LB_TAG_MEMORY		0x0001
 
 struct lb_memory_range {
-	struct lb_uint64 start;
-	struct lb_uint64 size;
+	lb_uint64_t start;
+	lb_uint64_t size;
 	uint32_t type;
 #define LB_MEM_RAM	1	/* Memory anyone can use */
 #define LB_MEM_RESERVED	2	/* Don't use this memory region */

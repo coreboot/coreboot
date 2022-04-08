@@ -26,6 +26,19 @@ static const struct pad_config sndw_enable_pads[] = {
 	PAD_CFG_NF(GPP_S5, NONE, DEEP, NF1),	/* SDW_SPKR_DATA */
 };
 
+static const struct pad_config max98360_enable_pads[] = {
+	PAD_CFG_NF(GPP_S0, NONE, DEEP, NF4),	/* I2S_SPKR_SCLK_R */
+	PAD_CFG_NF(GPP_S1, NONE, DEEP, NF4),	/* I2S_SPKR_SFRM_R */
+	PAD_CFG_NF(GPP_S2, NONE, DEEP, NF4),    /* I2S_PCH_TX_SPKR_RX_R */
+	PAD_CFG_NF(GPP_S3, NONE, DEEP, NF4),    /* I2S_PCH_RX_SPKR_TX */
+	PAD_CFG_NF(GPP_S6, NONE, DEEP, NF2),    /* DMIC_CLK0_R */
+	PAD_CFG_NF(GPP_S7, NONE, DEEP, NF2),    /* DMIC_DATA0_R */
+	PAD_CFG_NF(GPP_R4, NONE, DEEP, NF3),    /* DMIC_CLK1_R */
+	PAD_CFG_NF(GPP_R5, NONE, DEEP, NF3),    /* DMIC_DATA1_R */
+	PAD_NC(GPP_R6, NONE),
+	PAD_NC(GPP_R7, NONE),
+};
+
 static const struct pad_config sndw_disable_pads[] = {
 	PAD_NC(GPP_S0, NONE),
 	PAD_NC(GPP_S1, NONE),
@@ -110,7 +123,7 @@ static void fw_config_handle(void *unused)
 		gpio_configure_pads(i2s0_enable_pads, ARRAY_SIZE(i2s0_enable_pads));
 		gpio_configure_pads(i2s2_disable_pads, ARRAY_SIZE(i2s2_disable_pads));
 		gpio_configure_pads(bt_i2s_enable_pads, ARRAY_SIZE(bt_i2s_enable_pads));
-	} else {
+	} else if (!fw_config_probe(FW_CONFIG(AUDIO, MAX98360_ALC5682I_I2S))) {
 		printk(BIOS_INFO, "BT offload disabled\n");
 		gpio_configure_pads(i2s0_disable_pads, ARRAY_SIZE(i2s0_disable_pads));
 		gpio_configure_pads(i2s2_disable_pads, ARRAY_SIZE(i2s2_disable_pads));
@@ -127,9 +140,12 @@ static void fw_config_handle(void *unused)
 		enable_i2s();
 	}
 
-	if (fw_config_probe(FW_CONFIG(AUDIO, MAX98360_ALC5682I_I2S_AMP_SSP2))) {
+	if (fw_config_probe(FW_CONFIG(AUDIO, MAX98360_ALC5682I_I2S))) {
 		printk(BIOS_INFO, "Configure audio over I2S with MAX98360 ALC5682I.\n");
-		enable_i2s();
+		gpio_configure_pads(max98360_enable_pads, ARRAY_SIZE(max98360_enable_pads));
+		printk(BIOS_INFO, "BT offload enabled\n");
+		gpio_configure_pads(i2s0_disable_pads, ARRAY_SIZE(i2s0_disable_pads));
+		gpio_configure_pads(bt_i2s_enable_pads, ARRAY_SIZE(bt_i2s_enable_pads));
 	}
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

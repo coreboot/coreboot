@@ -17,7 +17,7 @@ fw_config
 		option MAX98373_ALC5682_SNDW		2
 		option MAX98373_NAU88L25B_I2S		3
 		option ALC1019_NAU88L25B_I2S		4
-		option MAX98360_ALC5682I_I2S_AMP_SSP2	5
+		option MAX98360_ALC5682I_I2S		5
 	end
 	field DB_LTE 11 12
 		option LTE_ABSENT		0
@@ -255,7 +255,7 @@ chip soc/intel/alderlake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on
 					probe AUDIO MAX98357_ALC5682I_I2S
-					probe AUDIO MAX98360_ALC5682I_I2S_AMP_SSP2
+					probe AUDIO MAX98360_ALC5682I_I2S
 				end
 			end
 			chip drivers/i2c/nau8825
@@ -619,7 +619,7 @@ chip soc/intel/alderlake
 						"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
 				register "sdmode_delay" = "5"
 				device generic 0 on
-					probe AUDIO MAX98360_ALC5682I_I2S_AMP_SSP2
+					probe AUDIO MAX98360_ALC5682I_I2S
 				end
 			end
 

@@ -599,6 +599,11 @@ static void fill_fsps_igd_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->PavpEnable = CONFIG(PAVP);
 }
 
+WEAK_DEV_PTR(tcss_usb3_port1);
+WEAK_DEV_PTR(tcss_usb3_port2);
+WEAK_DEV_PTR(tcss_usb3_port3);
+WEAK_DEV_PTR(tcss_usb3_port4);
+
 static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {

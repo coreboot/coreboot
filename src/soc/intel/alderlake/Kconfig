@@ -177,6 +177,7 @@ config FSP_TEMP_RAM_SIZE
 
 config CHIPSET_DEVICETREE
 	string
+	default "soc/intel/alderlake/chipset_pch_s.cb" if SOC_INTEL_ALDERLAKE_PCH_S
 	default "soc/intel/alderlake/chipset.cb"
 
 config EXT_BIOS_WIN_BASE

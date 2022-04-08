@@ -1,0 +1,217 @@
+chip soc/intel/alderlake
+
+	device cpu_cluster 0 on end
+
+	register "power_limits_config[ADL_S_882_35W_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 106,
+		.tdp_pl4 = 177,
+	}"
+
+	register "power_limits_config[ADL_S_882_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 202,
+		.tdp_pl4 = 311,
+	}"
+
+	register "power_limits_config[ADL_S_882_125W_CORE]" = "{
+		.tdp_pl1_override = 125,
+		.tdp_pl2_override = 241,
+		.tdp_pl4 = 359,
+	}"
+
+	register "power_limits_config[ADL_S_842_35W_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 99,
+		.tdp_pl4 = 140,
+	}"
+
+	register "power_limits_config[ADL_S_842_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 180,
+		.tdp_pl4 = 260,
+	}"
+
+	register "power_limits_config[ADL_S_842_125W_CORE]" = "{
+		.tdp_pl1_override = 125,
+		.tdp_pl2_override = 190,
+		.tdp_pl4 = 280,
+	}"
+
+	register "power_limits_config[ADL_S_642_125W_CORE]" = "{
+		.tdp_pl1_override = 125,
+		.tdp_pl2_override = 150,
+		.tdp_pl4 = 230,
+	}"
+
+	register "power_limits_config[ADL_S_602_35W_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 74,
+		.tdp_pl4 = 112,
+	}"
+
+	register "power_limits_config[ADL_S_602_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 117,
+		.tdp_pl4 = 176,
+	}"
+
+	# NOTE: if any variant wants to override this value, use the same format
+	# as register "common_soc_config.pch_thermal_trip" = "value", instead of
+	# putting it under register "common_soc_config" in overridetree.cb file.
+	register "common_soc_config.pch_thermal_trip" = "100"
+
+	device domain 0 on
+		device gpio 0 alias pch_gpio on end
+		device pci 00.0 alias system_agent on end
+		device pci 01.0 alias pcie5_0 off end
+		device pci 01.1 alias pcie5_1 off end
+		device pci 02.0 alias igpu off end
+		device pci 04.0 alias dtt off end
+		device pci 06.0 alias pcie4_0 off end
+		device pci 08.0 alias gna off end
+		device pci 09.0 alias north_tracehub off end
+		device pci 0a.0 alias crashlog on end
+		device pci 0e.0 alias vmd off end
+		device pci 11.0 alias uart3 off end
+		device pci 12.0 alias ish off end
+		device pci 12.6 alias gspi2 off end
+		device pci 13.0 alias gspi3 off end
+		device pci 14.0 alias xhci off
+			chip drivers/usb/acpi
+				register "type" = "UPC_TYPE_HUB"
+				device usb 0.0 alias xhci_root_hub off
+					chip drivers/usb/acpi
+						device usb 2.0 alias usb2_port1 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.1 alias usb2_port2 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.2 alias usb2_port3 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.3 alias usb2_port4 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.4 alias usb2_port5 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.5 alias usb2_port6 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.6 alias usb2_port7 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.7 alias usb2_port8 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.8 alias usb2_port9 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.9 alias usb2_port10 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.a alias usb2_port11 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.b alias usb2_port12 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.c alias usb2_port13 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.d alias usb2_port14 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.0 alias usb3_port1 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.1 alias usb3_port2 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.2 alias usb3_port3 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.3 alias usb3_port4 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.4 alias usb3_port5 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.5 alias usb3_port6 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.6 alias usb3_port7 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.7 alias usb3_port8 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.8 alias usb3_port9 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.9 alias usb3_port10 off end
+					end
+				end
+			end
+		end
+		device pci 14.1 alias xdci off end
+		device pci 14.2 alias shared_sram off end
+		device pci 14.3 alias cnvi_wifi off end
+		device pci 15.0 alias i2c0 off end
+		device pci 15.1 alias i2c1 off end
+		device pci 15.2 alias i2c2 off end
+		device pci 15.3 alias i2c3 off end
+		device pci 16.0 alias heci1 on  end
+		device pci 16.1 alias heci2 off end
+		device pci 16.2 alias ide_r off end
+		device pci 16.3 alias kt off end
+		device pci 16.4 alias heci3 off end
+		device pci 16.5 alias heci4 off end
+		device pci 17.0 alias sata off end
+		device pci 19.0 alias i2c4 off end
+		device pci 19.1 alias i2c5 off end
+		device pci 19.2 alias uart2 off end
+		device pci 1a.0 alias pcie_rp25 off end
+		device pci 1a.1 alias pcie_rp26 off end
+		device pci 1a.2 alias pcie_rp27 off end
+		device pci 1a.3 alias pcie_rp28 off end
+		device pci 1b.0 alias pcie_rp17 off end
+		device pci 1b.1 alias pcie_rp18 off end
+		device pci 1b.2 alias pcie_rp19 off end
+		device pci 1b.3 alias pcie_rp20 off end
+		device pci 1b.4 alias pcie_rp21 off end
+		device pci 1b.5 alias pcie_rp22 off end
+		device pci 1b.6 alias pcie_rp23 off end
+		device pci 1b.7 alias pcie_rp24 off end
+		device pci 1c.0 alias pcie_rp1 off end
+		device pci 1c.1 alias pcie_rp2 off end
+		device pci 1c.2 alias pcie_rp3 off end
+		device pci 1c.3 alias pcie_rp4 off end
+		device pci 1c.4 alias pcie_rp5 off end
+		device pci 1c.5 alias pcie_rp6 off end
+		device pci 1c.6 alias pcie_rp7 off end
+		device pci 1c.7 alias pcie_rp8 off end
+		device pci 1d.0 alias pcie_rp9 off end
+		device pci 1d.1 alias pcie_rp10 off end
+		device pci 1d.2 alias pcie_rp11 off end
+		device pci 1d.3 alias pcie_rp12 off end
+		device pci 1d.4 alias pcie_rp13 off end
+		device pci 1d.5 alias pcie_rp14 off end
+		device pci 1d.6 alias pcie_rp15 off end
+		device pci 1d.7 alias pcie_rp16 off end
+		device pci 1e.0 alias uart0 off end
+		device pci 1e.1 alias uart1 off end
+		device pci 1e.2 alias gspi0 off end
+		device pci 1e.3 alias gspi1 off end
+		device pci 1f.0 alias pch_espi on end
+		device pci 1f.1 alias p2sb off end
+		device pci 1f.2 alias pmc hidden end
+		device pci 1f.3 alias hda off end
+		device pci 1f.4 alias smbus off end
+		device pci 1f.5 alias fast_spi on end
+		device pci 1f.6 alias gbe off end
+		device pci 1f.7 alias south_tracehub off end
+	end
+end

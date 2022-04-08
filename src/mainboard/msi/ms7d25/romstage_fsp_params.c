@@ -9,18 +9,13 @@
 static const struct mb_cfg ddr4_mem_config = {
 	.type = MEM_TYPE_DDR4,
 
-	.rcomp = {
-		/* Baseboard uses only 100ohm Rcomp resistor FIXME */
-		.resistor = 100,
-
-		/* Baseboard Rcomp target values FIXME */
-		.targets = { 50, 20, 25, 25, 25 },
-	},
+	/* According to DOC #573387 rcomp values no longer have to be provided */
+	/* DDR DIMM configuration does not need to set DQ/DQS maps */
 
 	.UserBd = BOARD_TYPE_DESKTOP_2DPC, /* FIXME */
 
 	.ddr_config = {
-		.dq_pins_interleaved = false, /* FIXME */
+		.dq_pins_interleaved = true,
 	},
 };
 

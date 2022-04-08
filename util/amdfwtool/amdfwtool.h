@@ -279,6 +279,7 @@ typedef struct _amd_cb_config {
 	bool second_gen;
 	bool have_mb_spl;
 	bool recovery_ab;
+	bool recovery_ab_single_copy;
 	bool need_ish;
 } amd_cb_config;
 

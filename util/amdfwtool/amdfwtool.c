@@ -857,6 +857,10 @@ static void integrate_psp_firmwares(context *ctx,
 		if (pspdir2_b != NULL)
 			integrate_psp_ab(ctx, pspdir, pspdir2_b, ish_b_dir,
 				AMD_FW_RECOVERYAB_B, soc_id);
+		else
+			integrate_psp_ab(ctx, pspdir, pspdir2, ish_b_dir,
+				AMD_FW_RECOVERYAB_B, soc_id);
+
 		count = pspdir->header.num_entries;
 	} else if (pspdir2 != NULL) {
 		assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
@@ -1202,6 +1206,7 @@ enum {
 	AMDFW_OPT_GEC,
 	AMDFW_OPT_COMBO,
 	AMDFW_OPT_RECOVERY_AB,
+	AMDFW_OPT_RECOVERY_AB_SINGLE_COPY,
 	AMDFW_OPT_MULTILEVEL,
 	AMDFW_OPT_NVRAM,
 
@@ -1250,6 +1255,7 @@ static struct option long_options[] = {
 	/* PSP Directory Table items */
 	{"combo-capable",          no_argument, 0, AMDFW_OPT_COMBO },
 	{"recovery-ab",            no_argument, 0, AMDFW_OPT_RECOVERY_AB },
+	{"recovery-ab-single-copy", no_argument, 0, AMDFW_OPT_RECOVERY_AB_SINGLE_COPY },
 	{"multilevel",             no_argument, 0, AMDFW_OPT_MULTILEVEL },
 	{"nvram",            required_argument, 0, AMDFW_OPT_NVRAM },
 	{"soft-fuse",        required_argument, 0, AMDFW_OPT_FUSE },
@@ -1532,6 +1538,7 @@ int main(int argc, char **argv)
 	cb_config.multi_level = false;
 	cb_config.recovery_ab = false;
 	cb_config.need_ish = false;
+	cb_config.recovery_ab_single_copy = false;
 
 	while (1) {
 		int optindex = 0;
@@ -1559,6 +1566,10 @@ int main(int argc, char **argv)
 			break;
 		case AMDFW_OPT_RECOVERY_AB:
 			cb_config.recovery_ab = true;
+			break;
+		case AMDFW_OPT_RECOVERY_AB_SINGLE_COPY:
+			cb_config.recovery_ab = true;
+			cb_config.recovery_ab_single_copy = true;
 			break;
 		case AMDFW_OPT_MULTILEVEL:
 			cb_config.multi_level = true;
@@ -1864,14 +1875,18 @@ int main(int argc, char **argv)
 		pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
 		integrate_psp_firmwares(&ctx, pspdir2, NULL, NULL,
 					amd_psp_fw_table, PSPL2_COOKIE, soc_id, &cb_config);
-		if (cb_config.recovery_ab) {
-			/* B is same as above directories for A */
-			/* Skip creating pspdir2_b here to save flash space. Related
-			 * biosdir2_b will be skipped automatically. */
+		if (cb_config.recovery_ab && !cb_config.recovery_ab_single_copy) {
+			/* Create a copy of PSP Directory 2 in the backup slot B.
+			   Related biosdir2_b copy will be created later. */
 			pspdir2_b = new_psp_dir(&ctx, cb_config.multi_level);
 			integrate_psp_firmwares(&ctx, pspdir2_b, NULL, NULL,
 					amd_psp_fw_table, PSPL2_COOKIE, soc_id, &cb_config);
 		} else {
+			/*
+			 * Either the platform is using only one slot or B is same as above
+			 * directories for A. Skip creating pspdir2_b here to save flash space.
+			 * Related biosdir2_b will be skipped automatically.
+			 */
 			pspdir2_b = NULL; /* More explicitly */
 		}
 		pspdir = new_psp_dir(&ctx, cb_config.multi_level);

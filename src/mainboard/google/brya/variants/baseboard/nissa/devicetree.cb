@@ -74,33 +74,43 @@ chip soc/intel/alderlake
 		.i2c[0] = {
 			.early_init = 1,
 			.speed = I2C_SPEED_FAST,
-			.rise_time_ns = 650,
-			.fall_time_ns = 400,
 			.data_hold_time_ns = 50,
+			.speed_config[0] = {
+				.scl_lcnt = 157,
+				.scl_hcnt = 78,
+			}
 		},
 		.i2c[1] = {
 			.speed = I2C_SPEED_FAST,
-			.rise_time_ns = 650,
-			.fall_time_ns = 400,
 			.data_hold_time_ns = 50,
+			.speed_config[0] = {
+				.scl_lcnt = 157,
+				.scl_hcnt = 78,
+			}
 		},
 		.i2c[2] = {
 			.speed = I2C_SPEED_FAST,
-			.rise_time_ns = 650,
-			.fall_time_ns = 400,
 			.data_hold_time_ns = 50,
+			.speed_config[0] = {
+				.scl_lcnt = 157,
+				.scl_hcnt = 78,
+			}
 		},
 		.i2c[3] = {
 			.speed = I2C_SPEED_FAST,
-			.rise_time_ns = 650,
-			.fall_time_ns = 400,
 			.data_hold_time_ns = 50,
+			.speed_config[0] = {
+				.scl_lcnt = 157,
+				.scl_hcnt = 78,
+			}
 		},
 		.i2c[5] = {
 			.speed = I2C_SPEED_FAST,
-			.rise_time_ns = 650,
-			.fall_time_ns = 400,
 			.data_hold_time_ns = 50,
+			.speed_config[0] = {
+				.scl_lcnt = 157,
+				.scl_hcnt = 78,
+			}
 		},
 	}"
 

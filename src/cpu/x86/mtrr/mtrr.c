@@ -908,7 +908,7 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 			(long long)begin, (long long)begin + size,
 			(long long)size, type);
 	else
-		put_back_original_solution = true;
+		need_restore_mtrr();
 
 	memranges_teardown(&addr_space);
 }

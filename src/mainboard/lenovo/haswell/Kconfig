@@ -1,7 +1,5 @@
-if BOARD_LENOVO_THINKPAD_T440P
-
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_LENOVO_HASWELL_COMMON
+	def_bool n
 	select BOARD_ROMSIZE_KB_12288
 	select EC_LENOVO_H8
 	select EC_LENOVO_PMH7
@@ -23,6 +21,11 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOUTHBRIDGE_INTEL_LYNXPOINT
 	select SYSTEM_TYPE_LAPTOP
 
+config BOARD_LENOVO_THINKPAD_T440P
+	select BOARD_LENOVO_HASWELL_COMMON
+
+if BOARD_LENOVO_HASWELL_COMMON
+
 config VBOOT
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
 	select GBB_FLAG_DISABLE_FWMP
@@ -38,6 +41,12 @@ config VBOOT_VBNV_OFFSET
 	hex
 	default 0x2a
 
+config VARIANT_DIR
+	default "t440p" if BOARD_LENOVO_THINKPAD_T440P
+
+config DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab.fmd" if VBOOT
 
@@ -45,7 +54,7 @@ config MAINBOARD_DIR
 	default "lenovo/haswell"
 
 config MAINBOARD_PART_NUMBER
-	default "ThinkPad T440p"
+	default "ThinkPad T440p" if BOARD_LENOVO_THINKPAD_T440P
 
 config VGA_BIOS_ID
 	string

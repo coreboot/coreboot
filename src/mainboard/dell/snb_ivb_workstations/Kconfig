@@ -20,9 +20,6 @@ config BOARD_DELL_SNB_IVB_WORKSTATIONS
 
 if BOARD_DELL_SNB_IVB_WORKSTATIONS
 
-config IGNORE_IASL_MISSING_DEPENDENCY
-	def_bool y
-
 config MAINBOARD_DIR
 	default "dell/snb_ivb_workstations"
 

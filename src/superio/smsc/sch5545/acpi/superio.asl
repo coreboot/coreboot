@@ -232,22 +232,6 @@ Device(SIO1) {
 				)
 			IRQ (Edge, ActiveHigh, Exclusive) {1}
 		})
-		Name (_PRS, ResourceTemplate ()
-		{
-			StartDependentFn (0x00, 0x00)
-			{
-				FixedIO (
-					0x0060,			 // Address
-					0x01,
-					)
-				FixedIO (
-					0x0064,			 // Address
-					0x01,
-					)
-				IRQ (Edge, ActiveHigh, Exclusive) {1}
-			}
-			EndDependentFn ()
-		})
 		Method (_PSW, 1, NotSerialized)  // _PSW: Power State Wake
 		{
 			KBFG = Arg0
@@ -266,15 +250,6 @@ Device(SIO1) {
 		Name (_CRS, ResourceTemplate ()
 		{
 			IRQ (Edge, ActiveHigh, Exclusive) {12}
-		})
-
-		Name (_PRS, ResourceTemplate ()
-		{
-			StartDependentFn (0x00, 0x00)
-			{
-				IRQ (Edge, ActiveHigh, Exclusive) {12}
-			}
-			EndDependentFn ()
 		})
 
 		Method (_PSW, 1, NotSerialized)

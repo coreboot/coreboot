@@ -2,9 +2,6 @@
 
 if BOARD_ODE_E20XX
 
-config IGNORE_IASL_MISSING_DEPENDENCY
-	def_bool y
-
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select CPU_AMD_AGESA_FAMILY16_KB

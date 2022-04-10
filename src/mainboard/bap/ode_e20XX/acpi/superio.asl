@@ -10,22 +10,12 @@ Device (UAR1) {
 		IO (Decode16, 0x03F8, 0x03F8, 0x08, 0x08)
 		IRQNoFlags () {4}
 	})
-	Name (_PRS, ResourceTemplate ()
-	{
-		IO (Decode16, 0x03F8, 0x03F8, 0x08, 0x08)
-		IRQNoFlags () {4}
-	})
 }
 
 Device (UAR2) {
 	Name (_HID, EISAID ("PNP0501"))
 	Name (_UID, 2)
 	Name (_CRS, ResourceTemplate ()
-	{
-		IO (Decode16, 0x02F8, 0x02F8, 0x08, 0x08)
-		IRQNoFlags () {3}
-	})
-	Name (_PRS, ResourceTemplate ()
 	{
 		IO (Decode16, 0x02F8, 0x02F8, 0x08, 0x08)
 		IRQNoFlags () {3}

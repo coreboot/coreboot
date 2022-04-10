@@ -18,15 +18,6 @@ Device (SIO1)
 			Return (0x0f)
 		}
 
-		Method (_DIS, 0) { /* NOOP */ }
-
-		Name (_PRS, ResourceTemplate() {
-			StartDependentFn(0, 1) {
-				IO(Decode16, 0x3f8, 0x3f8, 0x8, 0x8)
-				IRQNoFlags() { 4 }
-			} EndDependentFn()
-		})
-
 		Method (_CRS, 0)
 		{
 			Return(ResourceTemplate() {
@@ -50,15 +41,6 @@ Device (SIO1)
 			// always enable for now
 			Return (0x0f)
 		}
-
-		Method (_DIS, 0) { /* NOOP */ }
-
-		Name (_PRS, ResourceTemplate() {
-			StartDependentFn(0, 1) {
-				IO(Decode16, 0x2f8, 0x2f8, 0x8, 0x8)
-				IRQNoFlags() { 3 }
-			} EndDependentFn()
-		})
 
 		Method (_CRS, 0)
 		{

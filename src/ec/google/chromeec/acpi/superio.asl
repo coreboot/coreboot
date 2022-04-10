@@ -37,12 +37,6 @@ Device (SIO) {
 			IO (Decode16, EC_LPC_ADDR_MEMMAP, EC_LPC_ADDR_MEMMAP,
 			    0x08, EC_MEMMAP_SIZE)
 		})
-
-		Name (_PRS, ResourceTemplate ()
-		{
-			IO (Decode16, EC_LPC_ADDR_MEMMAP, EC_LPC_ADDR_MEMMAP,
-			    0x08, EC_MEMMAP_SIZE)
-		})
 	}
 #endif
 
@@ -70,23 +64,6 @@ Device (SIO) {
 			    EC_HOST_CMD_REGION1, EC_HOST_CMD_REGION1, 0x08,
 			    EC_HOST_CMD_REGION_SIZE)
 		})
-
-		Name (_PRS, ResourceTemplate ()
-		{
-			StartDependentFn (0, 0) {
-				IO (Decode16, EC_LPC_ADDR_HOST_DATA,
-				    EC_LPC_ADDR_HOST_DATA, 0x01, 0x01)
-				IO (Decode16, EC_LPC_ADDR_HOST_CMD,
-				    EC_LPC_ADDR_HOST_CMD, 0x01, 0x01)
-				IO (Decode16,
-				    EC_HOST_CMD_REGION0, EC_HOST_CMD_REGION0,
-				    0x08, EC_HOST_CMD_REGION_SIZE)
-				IO (Decode16,
-				    EC_HOST_CMD_REGION1, EC_HOST_CMD_REGION1,
-				    0x08, EC_HOST_CMD_REGION_SIZE)
-			}
-			EndDependentFn ()
-		})
 	}
 #endif
 
@@ -103,15 +80,6 @@ Device (SIO) {
 		{
 			IO (Decode16, 0x03F8, 0x3F8, 0x08, 0x08)
 			IRQNoFlags () {4}
-		})
-
-		Name (_PRS, ResourceTemplate ()
-		{
-			StartDependentFn (0, 0) {
-				IO (Decode16, 0x03F8, 0x3F8, 0x08, 0x08)
-				IRQNoFlags () {4}
-			}
-			EndDependentFn ()
 		})
 	}
 #endif
@@ -139,20 +107,6 @@ Scope (\_SB.PCI0)
 #else
 			IRQ (Edge, ActiveHigh, Exclusive) {1}
 #endif
-		})
-
-		Name (_PRS, ResourceTemplate()
-		{
-			StartDependentFn (0, 0) {
-				IO (Decode16, 0x60, 0x60, 0x01, 0x01)
-				IO (Decode16, 0x64, 0x64, 0x01, 0x01)
-#ifdef SIO_EC_PS2K_IRQ
-				SIO_EC_PS2K_IRQ
-#else
-				IRQ (Edge, ActiveHigh, Exclusive) {1}
-#endif
-			}
-			EndDependentFn ()
 		})
 	}
 }

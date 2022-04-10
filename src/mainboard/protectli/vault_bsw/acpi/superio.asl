@@ -14,13 +14,4 @@ Device (COM1) {
 		FixedIO (0x03F8, 0x08)
 		IRQNoFlags () {4}
 	})
-
-	Name (_PRS, ResourceTemplate ()
-	{
-		StartDependentFn (0, 0) {
-			FixedIO (0x03F8, 0x08)
-			IRQNoFlags () {4}
-		}
-		EndDependentFn ()
-	})
 }

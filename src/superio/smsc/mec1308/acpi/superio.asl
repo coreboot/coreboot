@@ -101,11 +101,6 @@ Device (SIO) {
 		{
 			IO (Decode16, SIO_SPM1_IO0, SIO_SPM1_IO0, 0x08, 0x08)
 		})
-
-		Name (_PRS, ResourceTemplate ()
-		{
-			IO (Decode16, SIO_SPM1_IO0, SIO_SPM1_IO0, 0x08, 0x08)
-		})
 	}
 #endif
 
@@ -119,11 +114,6 @@ Device (SIO) {
 		}
 
 		Name (_CRS, ResourceTemplate ()
-		{
-			IO (Decode16, SIO_SEC1_IO0, SIO_SEC1_IO0, 0x04, 0x04)
-		})
-
-		Name (_PRS, ResourceTemplate ()
 		{
 			IO (Decode16, SIO_SEC1_IO0, SIO_SEC1_IO0, 0x04, 0x04)
 		})
@@ -143,11 +133,6 @@ Device (SIO) {
 		{
 			IO (Decode16, SIO_SEC2_IO0, SIO_SEC2_IO0, 0x04, 0x04)
 		})
-
-		Name (_PRS, ResourceTemplate ()
-		{
-			IO (Decode16, SIO_SEC2_IO0, SIO_SEC2_IO0, 0x04, 0x04)
-		})
 	}
 #endif
 
@@ -161,12 +146,6 @@ Device (SIO) {
 		}
 
 		Name (_CRS, ResourceTemplate ()
-		{
-			IO (Decode16, SIO_SSP1_IO0, SIO_SSP1_IO0, 0x08, 0x08)
-			IRQNoFlags () {SIO_SSP1_IRQ}
-		})
-
-		Name (_PRS, ResourceTemplate ()
 		{
 			IO (Decode16, SIO_SSP1_IO0, SIO_SSP1_IO0, 0x08, 0x08)
 			IRQNoFlags () {SIO_SSP1_IRQ}
@@ -190,13 +169,6 @@ Device (SIO) {
 			IO (Decode16, 0x64, 0x64, 0x01, 0x01)
 			IRQNoFlags () {1}
 		})
-
-		Name (_PRS, ResourceTemplate()
-		{
-			IO (Decode16, 0x60, 0x60, 0x01, 0x01)
-			IO (Decode16, 0x64, 0x64, 0x01, 0x01)
-			IRQNoFlags () {1}
-		})
 	}
 #endif
 
@@ -210,11 +182,6 @@ Device (SIO) {
 		}
 
 		Name (_CRS, ResourceTemplate ()
-		{
-			IO (Decode16, SIO_SEC0_IO0, SIO_SEC0_IO0, 0x04, 0x04)
-		})
-
-		Name (_PRS, ResourceTemplate ()
 		{
 			IO (Decode16, SIO_SEC0_IO0, SIO_SEC0_IO0, 0x04, 0x04)
 		})
@@ -232,11 +199,6 @@ Device (SIO) {
 		}
 
 		Name (_CRS, ResourceTemplate()
-		{
-			IO (Decode16, SIO_SMBX_IO0, SIO_SMBX_IO0, 0x01, 0x34)
-		})
-
-		Name (_PRS, ResourceTemplate()
 		{
 			IO (Decode16, SIO_SMBX_IO0, SIO_SMBX_IO0, 0x01, 0x34)
 		})

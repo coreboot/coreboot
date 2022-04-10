@@ -1,8 +1,5 @@
 if BOARD_SAMSUNG_LUMPY
 
-config IGNORE_IASL_MISSING_DEPENDENCY
-	def_bool y
-
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select SYSTEM_TYPE_LAPTOP

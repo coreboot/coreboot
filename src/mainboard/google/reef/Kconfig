@@ -39,9 +39,6 @@ config BOARD_GOOGLE_CORAL
 
 if BOARD_GOOGLE_BASEBOARD_REEF
 
-config IGNORE_IASL_MISSING_DEPENDENCY
-	def_bool y
-
 config DRIVER_TPM_I2C_BUS
 	hex
 	default 0x2

@@ -37,9 +37,6 @@ config BOARD_GOOGLE_BASEBOARD_KAHLEE
 
 if BOARD_GOOGLE_BASEBOARD_KAHLEE
 
-config IGNORE_IASL_MISSING_DEPENDENCY
-	def_bool y
-
 config MAINBOARD_DIR
 	default "google/kahlee"
 

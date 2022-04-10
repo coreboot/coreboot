@@ -40,9 +40,6 @@ if BOARD_GOOGLE_BASEBOARD_FIZZ
 config DISABLE_HECI1_AT_PRE_BOOT
 	default y
 
-config IGNORE_IASL_MISSING_DEPENDENCY
-	def_bool y
-
 config DEVICETREE
 	default "variants/baseboard/devicetree.cb"
 

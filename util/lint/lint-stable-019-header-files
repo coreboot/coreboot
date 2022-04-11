@@ -22,7 +22,7 @@ else
 fi
 
 for header in $HEADER_FILES; do
-	${GREP_FILES} "#\s*include\s\+[\"<]\s*${header}\.h\s*[\">]" | \
+	${GREP_FILES} "#[[:blank:]]*include[[:blank:]]\+[\"<][[:blank:]]*${header}\.h[[:blank:]]*[\">]" | \
 		grep "$INCLUDED_DIRS" | \
 		grep -v "$EXCLUDED_FILES"; \
 done

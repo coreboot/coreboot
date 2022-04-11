@@ -2,7 +2,37 @@
 
 #include <soc/soc_util.h>
 #include <lib.h>
+#include <drivers/ipmi/ocp/ipmi_ocp.h>
 #include "ocp_ewl.h"
+
+static void ipmi_send_sel_ewl_type3_err(EWL_ENTRY_HEADER *header,
+		EWL_ENTRY_MEMORY_LOCATION memory_location)
+{
+	struct ipmi_sel_mem_err sel;
+	uint8_t socketid;
+	EWL_ENTRY_TYPE3 *basic_warning;
+	basic_warning = (EWL_ENTRY_TYPE3 *)header;
+
+	/* Ignore invalid EWL DIMM location before sending SEL */
+	if (memory_location.Channel == 0xff || memory_location.Dimm == 0xff)
+		return;
+	memset(&sel, 0, sizeof(struct ipmi_sel_mem_err));
+	sel.record_id = 0x0000;
+	sel.record_type = 0xfb;
+	sel.general_info = SEL_INTEL_MEMORY_ERROR;
+	sel.timestamp = 0;
+	socketid = get_blade_id() - 1;
+	sel.socket =  socketid <<= 4;
+	sel.channel = memory_location.Channel;
+	sel.dimm_slot = memory_location.Dimm;
+	sel.rsvd1 = 0xff;
+	sel.dimm_failure_type = MEM_TRAINING_ERR;
+	sel.major_code = basic_warning->Context.MajorWarningCode;
+	sel.minor_code = basic_warning->Context.MinorWarningCode;
+	sel.rsvd2 = 0xff;
+	ipmi_send_to_bmc((unsigned char *)&sel, sizeof(sel));
+	printk(BIOS_DEBUG, "ipmi send memory training error\n");
+}
 
 static void process_ewl_type3(EWL_ENTRY_HEADER *header, EWL_ENTRY_MEMORY_LOCATION memory_location)
 {
@@ -47,6 +77,7 @@ void get_ewl(void)
 			type3 = (EWL_ENTRY_TYPE3 *)warning_header;
 			process_ewl_type3(warning_header, type3->MemoryLocation);
 			type3_flag = 1;
+			ipmi_send_sel_ewl_type3_err(warning_header, type3->MemoryLocation);
 		} else {
 			printk(BIOS_DEBUG, "EWL type: %d size:%d severity level:%d\n",
 					warning_header->Type,

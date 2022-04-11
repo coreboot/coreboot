@@ -89,6 +89,16 @@ enum fail_type {
 	PCIE_ECRC_EVNT = 5,
 };
 
+enum sel_err_type {
+	MEM_TRAINING_ERR = 0,
+	MEM_CORR_ERR = 1,
+	MEM_UNCORR_ERR = 2,
+	MEM_CORR_ERR_PATROL = 3,
+	MEM_UNCORR_ERR_PATROL = 4,
+	MEM_PARITY_ERR = 5,
+	MEM_UNDEFINED = 0xF,
+};
+
 struct ipmi_sel_pcie_dev_fail {
 	uint16_t record_id;
 	uint8_t record_type;
@@ -102,6 +112,21 @@ struct ipmi_sel_pcie_dev_fail {
 	uint8_t rsvd2;
 } __packed;
 
+struct ipmi_sel_mem_err {
+	uint16_t record_id;
+	uint8_t record_type;
+	uint8_t general_info;
+	uint32_t timestamp;
+	uint8_t socket;
+	uint8_t channel;
+	uint8_t dimm_slot;
+	uint8_t rsvd1;
+	uint8_t dimm_failure_type;
+	uint8_t major_code;
+	uint8_t minor_code;
+	uint8_t rsvd2;
+} __packed;
+
 struct ipmi_config_rsp {
 	uint8_t board_sku_id;
 	uint8_t board_rev_id;
@@ -111,6 +136,7 @@ struct ipmi_config_rsp {
 
 #define SEL_RECORD_ID			0x01
 #define SEL_PCIE_DEV_ERR		0x20
+#define SEL_INTEL_MEMORY_ERROR		0x21
 #define SEL_PCIE_IIO_ERR		0x23
 #define SEL_PCIE_DEV_FAIL_ID		0x29
 

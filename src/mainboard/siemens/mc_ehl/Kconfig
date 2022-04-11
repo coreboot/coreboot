@@ -13,6 +13,7 @@ config BOARD_SIEMENS_BASEBOARD_MC_EHL
 	select TPM_MEASURED_BOOT
 	select TPM_MEASURED_BOOT_INIT_BOOTBLOCK
 	select USE_SIEMENS_HWILIB
+	select SOC_INTEL_DISABLE_POWER_LIMITS
 
 source "src/mainboard/siemens/mc_ehl/variants/*/Kconfig"
 

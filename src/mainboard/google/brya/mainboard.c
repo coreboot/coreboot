@@ -154,7 +154,7 @@ void __weak variant_fill_ssdt(const struct device *dev)
 	/* Add board-specific SSDT entries */
 }
 
-void __weak variant_generate_s0ix_hook(enum s0ix_entry)
+void __weak variant_generate_s0ix_hook(enum s0ix_entry entry)
 {
 	/* Add board-specific MS0X entries */
 	/*

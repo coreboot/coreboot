@@ -29,7 +29,7 @@ enum s0ix_entry {
 	S0IX_ENTRY,
 };
 
-void variant_generate_s0ix_hook(enum s0ix_entry);
+void variant_generate_s0ix_hook(enum s0ix_entry entry);
 
 /* Modify devictree settings during ramstage */
 void variant_devtree_update(void);

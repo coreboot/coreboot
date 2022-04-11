@@ -9,6 +9,7 @@
  */
 
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 #include <bootstate.h>
 #include <commonlib/helpers.h>
@@ -873,6 +874,28 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	struct memranges addr_space;
 	const int above4gb = 1; /* Cover above 4GiB by default. */
 	int address_bits;
+	static struct temp_range {
+		uintptr_t begin;
+		size_t size;
+		int type;
+	} temp_ranges[10];
+
+	if (size == 0)
+		return;
+
+	int i;
+	for (i = 0; i < ARRAY_SIZE(temp_ranges); i++) {
+		if (temp_ranges[i].size == 0) {
+			temp_ranges[i].begin = begin;
+			temp_ranges[i].size = size;
+			temp_ranges[i].type = type;
+			break;
+		}
+	}
+	if (i == ARRAY_SIZE(temp_ranges)) {
+		printk(BIOS_ERR, "Out of temporary ranges for MTRR use\n");
+		return;
+	}
 
 	/* Make a copy of the original address space and tweak it with the
 	 * provided range. */
@@ -891,7 +914,11 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	}
 
 	/* Place new range into the address space. */
-	memranges_insert(&addr_space, begin, size, type);
+	for (i = 0; i < ARRAY_SIZE(temp_ranges); i++) {
+		if (temp_ranges[i].size != 0)
+			memranges_insert(&addr_space, temp_ranges[i].begin,
+					 temp_ranges[i].size, temp_ranges[i].type);
+	}
 
 	print_physical_address_space(&addr_space, "TEMPORARY");
 

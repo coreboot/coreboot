@@ -358,6 +358,7 @@ static enum cb_err _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segm
 	struct dw_i2c_regs *regs;
 	size_t byte;
 	enum cb_err ret = CB_ERR;
+	bool seg_zero_len = segments->len == 0;
 
 	regs = (struct dw_i2c_regs *)dw_i2c_base_address(bus);
 	if (!regs) {
@@ -373,6 +374,10 @@ static enum cb_err _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segm
 	write32(&regs->target_addr, segments->slave);
 
 	dw_i2c_enable(regs);
+
+	if (seg_zero_len)
+		/* stop immediately */
+		write32(&regs->cmd_data, CMD_DATA_STOP);
 
 	/* Process each segment */
 	while (count--) {
@@ -424,8 +429,8 @@ static enum cb_err _dw_i2c_transfer(unsigned int bus, const struct i2c_msg *segm
 
 	/* Check TX abort */
 	if (read32(&regs->raw_intr_stat) & INTR_STAT_TX_ABORT) {
-		printk(BIOS_ERR, "I2C TX abort detected (%08x)\n",
-		       read32(&regs->tx_abort_source));
+		printk(seg_zero_len ? BIOS_SPEW : BIOS_ERR, "I2C TX abort detected (%08x)\n",
+			read32(&regs->tx_abort_source));
 		/* clear INTR_STAT_TX_ABORT */
 		read32(&regs->clear_tx_abrt_intr);
 		goto out;
@@ -462,7 +467,7 @@ static enum cb_err dw_i2c_transfer(unsigned int bus, const struct i2c_msg *msg, 
 	size_t start;
 	uint16_t addr;
 
-	if (count == 0 || !msg)
+	if (!msg)
 		return -1;
 
 	/* Break up the transfers at the differing slave address boundary. */

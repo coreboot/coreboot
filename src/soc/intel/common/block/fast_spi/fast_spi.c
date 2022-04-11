@@ -223,6 +223,11 @@ void fast_spi_set_strap_msg_data(uint32_t soft_reset_data)
 
 static void fast_spi_enable_cache_range(unsigned int base, unsigned int size)
 {
+	if (ENV_RAMSTAGE) {
+		mtrr_use_temp_range(base, size, MTRR_TYPE_WRPROT);
+		return;
+	}
+
 	const int type = MTRR_TYPE_WRPROT;
 	int mtrr = get_free_var_mtrr();
 	if (mtrr == -1) {

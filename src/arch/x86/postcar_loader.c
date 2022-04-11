@@ -60,7 +60,7 @@ static void postcar_var_mtrr_set(const struct var_mtrr_context *ctx,
 	struct postcar_frame *pcf = ctx->arg;
 
 	printk(BIOS_DEBUG, "MTRR Range: Start=%lx End=%lx (Size %zx)\n",
-			addr, addr + size, size);
+			addr, addr + size - 1, size);
 
 	stack_push(pcf, mask.hi);
 	stack_push(pcf, mask.lo);

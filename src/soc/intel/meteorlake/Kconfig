@@ -8,13 +8,22 @@ config CPU_SPECIFIC_OPTIONS
 	select ARCH_X86
 	select BOOT_DEVICE_SUPPORTS_WRITES
 	select INTEL_DESCRIPTOR_MODE_CAPABLE
+	select CACHE_MRC_SETTINGS
+	select CPU_INTEL_COMMON
+	select FSP_M_XIP
 	select IDT_IN_EVERY_STAGE
 	select INTEL_CAR_NEM
+	select INTEL_GMA_ADD_VBT if RUN_FSP_GOP
+	select IOAPIC
 	select MICROCODE_BLOB_UNDISCLOSED
+	select MRC_SETTINGS_PROTECT
 	select SOC_INTEL_COMMON
+	select SOC_INTEL_COMMON_BLOCK
 	select SOC_INTEL_COMMON_BLOCK_CAR
+	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
 	select SOC_INTEL_COMMON_BLOCK_CPU
 	select SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2
+	select SOC_INTEL_COMMON_BLOCK_MEMINIT
 	select SOC_INTEL_COMMON_BLOCK_SA
 	select SOC_INTEL_COMMON_PCH_BASE
 	select SOC_INTEL_COMMON_RESET
@@ -97,14 +106,6 @@ config SOC_INTEL_UART_DEV_MAX
 	int
 	default 3
 
-config SOC_INTEL_USB2_DEV_MAX
-	int
-	default 10
-
-config SOC_INTEL_USB3_DEV_MAX
-	int
-	default 2
-
 config CONSOLE_UART_BASE_ADDRESS
 	hex
 	default 0xfe03e000
@@ -121,6 +122,13 @@ config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
 	hex
 	default 0x7fff
 
+config VBOOT
+	select VBOOT_MUST_REQUEST_DISPLAY
+	select VBOOT_STARTS_IN_BOOTBLOCK
+	select VBOOT_VBNV_CMOS
+	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
+	select VBOOT_X86_SHA256_ACCELERATION
+
 config CBFS_SIZE
 	hex
 	default 0x200000
@@ -128,5 +136,42 @@ config CBFS_SIZE
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x2000
+
+config FSP_HEADER_PATH
+	string "Location of FSP headers"
+	default "src/vendorcode/intel/fsp/fsp2_0/meteorlake/"
+
+config FSP_FD_PATH
+	string
+	depends on FSP_USE_REPO
+	default "3rdparty/fsp/MeteorLakeFspBinPkg/Fsp.fd"
+
+config SOC_INTEL_METEORLAKE_DEBUG_CONSENT
+	int "Debug Consent for MTL"
+	# USB DBC is more common for developers so make this default to 3 if
+	# SOC_INTEL_DEBUG_CONSENT=y
+	default 3 if SOC_INTEL_DEBUG_CONSENT
+	default 0
+	help
+	  This is to control debug interface on SOC.
+	  Setting non-zero value will allow to use DBC or DCI to debug SOC.
+	  PlatformDebugConsent in FspmUpd.h has the details.
+
+	  Desired platform debug type are
+	  0:Disabled, 1:Enabled (DCI OOB+[DbC]), 2:Enabled (DCI OOB),
+	  3:Enabled (USB3 DbC), 4:Enabled (XDP/MIPI60), 5:Enabled (USB2 DbC),
+	  6:Enable (2-wire DCI OOB), 7:Manual
+
+config DATA_BUS_WIDTH
+	int
+	default 128
+
+config DIMMS_PER_CHANNEL
+	int
+	default 2
+
+config MRC_CHANNEL_WIDTH
+	int
+	default 16
 
 endif

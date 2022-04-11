@@ -1,0 +1,132 @@
+config SOC_INTEL_METEORLAKE
+	bool
+
+if SOC_INTEL_METEORLAKE
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_X86
+	select BOOT_DEVICE_SUPPORTS_WRITES
+	select INTEL_DESCRIPTOR_MODE_CAPABLE
+	select IDT_IN_EVERY_STAGE
+	select INTEL_CAR_NEM
+	select MICROCODE_BLOB_UNDISCLOSED
+	select SOC_INTEL_COMMON
+	select SOC_INTEL_COMMON_BLOCK_CAR
+	select SOC_INTEL_COMMON_BLOCK_CPU
+	select SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2
+	select SOC_INTEL_COMMON_BLOCK_SA
+	select SOC_INTEL_COMMON_PCH_BASE
+	select SOC_INTEL_COMMON_RESET
+	select SSE2
+	select SUPPORT_CPU_UCODE_IN_CBFS
+	select TSC_MONOTONIC_TIMER
+	select UDELAY_TSC
+
+config DCACHE_RAM_BASE
+	default 0xfef00000
+
+config DCACHE_RAM_SIZE
+	default 0xc0000
+	help
+	  The size of the cache-as-ram region required during bootblock
+	  and/or romstage.
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x80400
+	help
+	  The amount of anticipated stack usage in CAR by bootblock and
+	  other stages. In the case of FSP_USES_CB_STACK default value will be
+	  sum of FSP-M stack requirement(512KiB) and CB romstage stack requirement
+	  (~1KiB).
+
+config FSP_TEMP_RAM_SIZE
+	hex
+	default 0x20000
+	help
+	  The amount of anticipated heap usage in CAR by FSP.
+	  Refer to Platform FSP integration guide document to know
+	  the exact FSP requirement for Heap setup.
+
+config IFD_CHIPSET
+	string
+	default "mtl"
+
+config IED_REGION_SIZE
+	hex
+	default 0x400000
+
+config HEAP_SIZE
+	hex
+	default 0x10000
+
+config PCR_BASE_ADDRESS
+	hex
+	default 0xe0000000
+	help
+	  This option allows you to select MMIO Base Address of sideband bus.
+
+config ECAM_MMCONF_BASE_ADDRESS
+	default 0xc0000000
+
+config CPU_BCLK_MHZ
+	int
+	default 100
+
+config SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ
+	int
+	default 120
+
+config CPU_XTAL_HZ
+	default 38400000
+
+config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
+	int
+	default 133
+
+config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
+	int
+	default 2
+
+config SOC_INTEL_I2C_DEV_MAX
+	int
+	default 6
+
+config SOC_INTEL_UART_DEV_MAX
+	int
+	default 3
+
+config SOC_INTEL_USB2_DEV_MAX
+	int
+	default 10
+
+config SOC_INTEL_USB3_DEV_MAX
+	int
+	default 2
+
+config CONSOLE_UART_BASE_ADDRESS
+	hex
+	default 0xfe03e000
+	depends on INTEL_LPSS_UART_FOR_CONSOLE
+
+# Clock divider parameters for 115200 baud rate
+# Baudrate = (UART source clcok * M) /(N *16)
+# MTL UART source clock: 120MHz
+config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
+	hex
+	default 0x25a
+
+config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
+	hex
+	default 0x7fff
+
+config CBFS_SIZE
+	hex
+	default 0x200000
+
+config PRERAM_CBMEM_CONSOLE_SIZE
+	hex
+	default 0x1400
+
+endif

@@ -198,7 +198,7 @@ chip soc/intel/alderlake
 				register "wake_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A7)"
 				register "add_acpi_dma_property" = "true"
 				use rp6_rtd3 as rtd3dev
-				device generic 0 on
+				device generic 0 alias rp6_wwan on
 					probe DB_LTE LTE_PCIE
 				end
 			end

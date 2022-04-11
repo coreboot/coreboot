@@ -570,7 +570,7 @@ static enum cb_err dw_i2c_gen_config_rise_fall_time(struct dw_i2c_regs *regs,
 	printk(DW_I2C_DEBUG, "dw_i2c: SoC %d/%d ns Bus: %d/%d ns\n",
 		soc->freq.ticks, soc->freq.ns, bus->freq.ticks, bus->freq.ns);
 	printk(DW_I2C_DEBUG,
-"		dw_i2c: period %d rise %d fall %d tlow %d thigh %d spk %d\n",
+		"dw_i2c: period %d rise %d fall %d tlow %d thigh %d spk %d\n",
 		period_cnt, rise_cnt, fall_cnt, min_tlow_cnt, min_thigh_cnt,
 		spk_cnt);
 

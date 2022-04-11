@@ -219,14 +219,7 @@ chip soc/intel/alderlake
 					end
 				end
 			end
-		end #USB2 and USB3 Port
-		device ref i2c1 on
-			chip drivers/i2c/tpm
-				register "hid" = ""GOOG0005""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
-				device i2c 50 on end
-			end
-		end # tpm
+		end # USB2 and USB3 Port
 	end
 
 end

@@ -82,7 +82,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* SD_AUX_RESET_L  */
 	PAD_GPO(GPIO_69, HIGH),
 	/* EN_SPKR */
-	PAD_GPO(GPIO_70, HIGH),
+	PAD_GPO(GPIO_70, LOW),
 	/* GPIO_71 - GPIO_73: Not available */
 	/* Unused TP49 */
 	PAD_NC(GPIO_74),

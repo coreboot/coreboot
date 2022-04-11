@@ -13,9 +13,33 @@
 #define XHCI_USB2	2
 #define XHCI_USB3	3
 
+#define XHCI_USBCMD	0x80
+#define  USBCMD_HCRST	(1 << 1)
+
 /* Current Connect Status */
 #define XHCI_STATUS_CCS		(1 << 0)
 
+static uint8_t *xhci_mem_base(void)
+{
+	uint32_t mem_base = pci_read_config32(PCH_DEV_XHCI, PCI_BASE_ADDRESS_0);
+
+	/* Check if the controller is disabled or not present */
+	if (mem_base == 0 || mem_base == 0xffffffff)
+		return 0;
+
+	return (uint8_t *)(mem_base & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK);
+}
+
+void xhci_host_reset(void)
+{
+	uint8_t *xhci_base = xhci_mem_base();
+	if (!xhci_base)
+		return;
+
+	setbits8(xhci_base + XHCI_USBCMD, USBCMD_HCRST);
+}
+
+#if ENV_RAMSTAGE
 static bool is_usb_port_connected(const struct xhci_usb_info *info,
 			unsigned int port_type, unsigned int port_id)
 {
@@ -134,3 +158,4 @@ static const struct pci_driver pch_usb_xhci __pci_driver = {
 	.vendor	 = PCI_VID_INTEL,
 	.devices	 = pci_device_ids,
 };
+#endif

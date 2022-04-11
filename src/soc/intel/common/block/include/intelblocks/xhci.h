@@ -46,6 +46,8 @@ struct xhci_wake_info {
 bool xhci_update_wake_event(const struct xhci_wake_info *wake_info,
 			    size_t wake_info_count);
 
+/* xhci_host_reset() - Function to reset the host controller */
+void xhci_host_reset(void);
 void soc_xhci_init(struct device *dev);
 
 /*

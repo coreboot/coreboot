@@ -16,8 +16,19 @@ CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/in
 
 ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_SBR_D5.bin),)
 $(info APCB sources present.)
-APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_SBR_D5.bin
-APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_SBR_D5.bin
+
+LIB_SPD_DEPS = $(SPD_SOURCES)
+
+APCB_SOURCES = $(obj)/APCB_SBR_D5.gen
+APCB_SOURCES_RECOVERY = $(obj)/APCB_SBR_D5.gen
+
+$(obj)/APCB_SBR_D5.gen: $(SPD_SOURCES) \
+			$(APCB_V3_EDIT_TOOL) \
+			$(MAINBOARD_BLOBS_DIR)/APCB_SBR_D5.bin
+	$(APCB_V3_EDIT_TOOL) $(MAINBOARD_BLOBS_DIR)/APCB_SBR_D5.bin \
+			     $(obj)/APCB_SBR_D5.gen  \
+			     --spd_sources $(SPD_SOURCES) \
+			     --mem_type 'lp5'
 else
 $(info APCB sources not found.  Skipping APCB.)
 endif

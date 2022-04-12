@@ -87,6 +87,10 @@ void get_ewl(void)
 		}
 		offset += warning_header->Size;
 	}
-	if (type3_flag)
+	if (type3_flag) {
+		/* If Fastboot is enabled, the next boot will skip MRC and won't detect
+		   MRC error via EWL and still can boot up, so enforce MRC after reboot. */
+		soc_set_mrc_cold_boot_flag(true);
 		die("Memory Training Error!\n");
+	}
 }

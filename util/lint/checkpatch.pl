@@ -113,6 +113,7 @@ Options:
   --show-types               show the specific message type in the output
   --max-line-length=n        set the maximum line length, if exceeded, warn
   --min-conf-desc-length=n   set the min description length, if shorter, warn
+  --tab-size=n               set the number of spaces for tab (default $tabsize)
   --root=PATH                PATH to the kernel tree root
   --no-summary               suppress the per-file summary
   --mailback                 only produce a report in case of warnings/errors
@@ -308,6 +309,7 @@ GetOptions(
 	'list-types!'	=> \$list_types,
 	'max-line-length=i' => \$max_line_length,
 	'min-conf-desc-length=i' => \$min_conf_desc_length,
+	'tab-size=i'	=> \$tabsize,
 	'root=s'	=> \$root,
 	'summary!'	=> \$summary,
 	'mailback!'	=> \$mailback,
@@ -386,6 +388,9 @@ if ($^V && $^V lt $minimum_perl_version) {
 if ($#ARGV < 0) {
 	push(@ARGV, '-');
 }
+
+# skip TAB size 1 to avoid additional checks on $tabsize - 1
+die "$P: Invalid TAB size: $tabsize\n" if ($tabsize < 2);
 
 if ($color =~ /^[01]$/) {
 	$color = !$color;

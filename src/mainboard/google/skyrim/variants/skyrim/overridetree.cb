@@ -66,4 +66,23 @@ chip soc/amd/sabrina
 			device i2c 15 on end
 		end
 	end # I2C0
+	device ref i2c_1 on
+		chip drivers/i2c/hid
+			register "generic.hid" = ""GDIX0000""
+			register "generic.desc" = ""Goodix Touchscreen""
+			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_29)"
+			register "generic.probed" = "1"
+			register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_131)"
+			register "generic.enable_delay_ms" = "10"
+			register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_136)"
+			register "generic.reset_off_delay_ms" = "1"
+			register "generic.reset_delay_ms" = "10"
+			register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_76)"
+			register "generic.stop_delay_ms" = "180"
+			register "generic.stop_off_delay_ms" = "1"
+			register "generic.has_power_resource" = "1"
+			register "hid_desc_reg_offset" = "0x01"
+			device i2c 5d on end
+		end
+	end # I2C1
 end	# chip soc/amd/sabrina

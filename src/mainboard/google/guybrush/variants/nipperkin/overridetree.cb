@@ -188,7 +188,9 @@ chip soc/amd/cezanne
 					register "device[0].addr" = "0x80010400"
 					register "device[0].privacy.enabled" = "1"
 					register "device[0].privacy.gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_18)"
-					device generic 0.0 on end
+					device generic 0.0 on
+						probe KB_MAP KB_MAP_PRIVACY
+					end
 				end
 			end
 			device ref acp on

@@ -452,8 +452,14 @@
 #define PAD_CFG_GPI_SCI_LOW(pad, pull, rst, trig) \
 	PAD_CFG_GPI_SCI(pad, pull, rst, trig, INVERT)
 
+#define PAD_CFG_GPI_SCI_LOW_LOCK(pad, pull, trig, lock_action) \
+	PAD_CFG_GPI_SCI_LOCK(pad, pull, trig, INVERT, lock_action)
+
 #define PAD_CFG_GPI_SCI_HIGH(pad, pull, rst, trig) \
 	PAD_CFG_GPI_SCI(pad, pull, rst, trig, NONE)
+
+#define PAD_CFG_GPI_SCI_HIGH_LOCK(pad, pull, trig, lock_action) \
+	PAD_CFG_GPI_SCI_LOCK(pad, pull, trig, NONE, lock_action)
 
 #define PAD_CFG_GPI_SCI_DEBEN(pad, pull, rst, trig, inv, dur)			\
 	_PAD_CFG_STRUCT_3(pad,							\

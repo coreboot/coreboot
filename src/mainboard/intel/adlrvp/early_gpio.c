@@ -6,8 +6,12 @@
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-	/* WWAN_RST# */
-	PAD_CFG_GPO(GPP_F14, 0, PLTRST),
+	/* WWAN_RST# (updated in ramstage) */
+	PAD_CFG_GPO(GPP_F14, 0, DEEP),
+	/* WWAN_PERST_L (updated in ramstage) */
+	PAD_CFG_GPO(GPP_C5, 0, DEEP),
+	/* WWAN_FCPO_L (updated in romstage) */
+	PAD_CFG_GPO(GPP_F15, 0, DEEP),
 	/* WWAN_PWR_EN */
 	PAD_CFG_GPO(GPP_F21, 1, DEEP),
 	/* SMB_CLK */

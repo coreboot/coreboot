@@ -14,8 +14,10 @@ import os
 # Byte 0 = 0x23 = 512 bytes total / 384 bytes used
 # Byte 1 = 0x11 = Revision 1.1
 # Byte 2 = 0x11 = LPDDR4X SDRAM
+#        = 0x13 = LP5 SDRAM
 # Byte 3 = 0x0E = Non-DIMM Solution
-SPD_MAGIC = bytes.fromhex('2311110E')
+LP4_SPD_MAGIC = bytes.fromhex('2311110E')
+LP5_SPD_MAGIC = bytes.fromhex('2311130E')
 EMPTY_SPD = b'\x00' * 512
 
 spd_ssp_struct_fmt = '??B?IIBBBxIIBBBx'
@@ -47,6 +49,11 @@ def parseargs():
         '--spd_sources',
         nargs='+',
         help='List of SPD sources')
+    parser.add_argument(
+        '--mem_type',
+        type=str,
+        default='lp4',
+        help='Memory type [lp4|lp5]. Default = lp4')
     return parser.parse_args()
 
 
@@ -62,6 +69,8 @@ def inject(orig, insert, offset):
 
 
 def main():
+    spd_magic = LP4_SPD_MAGIC
+
     args = parseargs()
 
     print(f'Reading input APCB from {args.apcb_in}')
@@ -75,6 +84,9 @@ def main():
 
     print(f'Using SPD Sources = {args.spd_sources}')
 
+    if args.mem_type == 'lp5':
+        spd_magic = LP5_SPD_MAGIC
+
     spds = []
     for spd_source in args.spd_sources:
         with open(spd_source, 'rb') as f:
@@ -85,7 +97,7 @@ def main():
     spd_offset = 0
     instance = 0
     while True:
-        spd_offset = apcb.find(SPD_MAGIC, spd_offset)
+        spd_offset = apcb.find(spd_magic, spd_offset)
         if spd_offset < 0:
             print('No more SPD magic numbers in APCB')
             break

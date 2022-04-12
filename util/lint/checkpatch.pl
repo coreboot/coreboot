@@ -68,7 +68,7 @@ my $conststructsfile = "$D/const_structs.checkpatch";
 my $docsfile = "";
 my $typedefsfile;
 my $color = "auto";
-my $allow_c99_comments = 1;
+my $allow_c99_comments = 1; # Can be overridden by --ignore C99_COMMENT_TOLERANCE
 my $git_command ='git'; # coreboot
 my $tabsize = 8;
 my ${CONFIG_} = "CONFIG_";
@@ -1130,6 +1130,7 @@ if ($git) {
 }
 
 my $vname;
+$allow_c99_comments = !defined $ignore_type{"C99_COMMENT_TOLERANCE"};
 for my $filename (@ARGV) {
 	my $FILE;
 

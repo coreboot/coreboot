@@ -73,7 +73,6 @@ config SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
 
 config SOC_AMD_COMMON_BLOCK_UCODE
 	bool
-	select SUPPORT_CPU_UCODE_IN_CBFS
 	help
 	  Builds in support for loading uCode.
 

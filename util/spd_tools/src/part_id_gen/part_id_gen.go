@@ -40,6 +40,7 @@ var supportedPlatforms = [...]string{
 	"JSL",
 	"PCO",
 	"CZN",
+	"SBR",
 }
 
 var supportedMemTechs = [...]string{

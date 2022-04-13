@@ -140,9 +140,9 @@
 #define SPIBAR_PTINX_IDX_MASK		0xffc
 
 /* Register Offsets of BIOS Flash Program Registers */
-#define SPIBAR_RESET_LOCK               0xf0
-#define SPIBAR_RESET_CTRL               0xf4
-#define SPIBAR_RESET_DATA               0xf8
+#define SPIBAR_RESET_LOCK		0xf0
+#define SPIBAR_RESET_CTRL		0xf4
+#define SPIBAR_RESET_DATA		0xf8
 
 /* Programmable values of Bit0 (SSL) of Set STRAP MSG LOCK (0xF0) Register */
 #define SPIBAR_RESET_LOCK_DISABLE	0 /* Set_Strap Lock(SSL) Bit 0 = 0 */

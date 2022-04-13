@@ -5,6 +5,8 @@
 
 #include <types.h>
 
+/* Clear any SPI outstanding status bits, i.e., FCERR, FDONE etc. */
+void fast_spi_clear_outstanding_status(void);
 /* Check if SPI transaction is pending */
 int fast_spi_cycle_in_progress(void);
 /*

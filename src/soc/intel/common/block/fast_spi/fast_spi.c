@@ -428,3 +428,11 @@ void fast_spi_disable_wp(void)
 	bios_cntl |= SPI_BIOS_CONTROL_WPD;
 	pci_write_config8(dev, SPI_BIOS_CONTROL, bios_cntl);
 }
+
+void fast_spi_clear_outstanding_status(void)
+{
+	void *spibar = fast_spi_get_bar();
+
+	/* Make sure all W1C status bits get cleared. */
+	write32(spibar + SPIBAR_HSFSTS_CTL, SPIBAR_HSFSTS_W1C_BITS);
+}

@@ -2,10 +2,10 @@
 
 #include <bootstate.h>
 #include <intelblocks/cfg.h>
-#include <intelblocks/dmi.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/pcr.h>
 #include <intelpch/lockdown.h>
+#include <intelblocks/gpmr.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/soc_chip.h>
@@ -25,7 +25,7 @@ int get_lockdown_config(void)
 	return common_config->chipset_lockdown;
 }
 
-static void dmi_lockdown_cfg(void)
+static void lockdown_cfg(void)
 {
 	/*
 	 * GCS reg of DMI
@@ -37,13 +37,13 @@ static void dmi_lockdown_cfg(void)
 	 *	"0b": SPI
 	 *	"1b": LPC/eSPI
 	 */
-	pcr_or8(PID_DMI, PCR_DMI_GCS, PCR_DMI_GCS_BILD);
+	gpmr_or32(GPMR_GCS, GPMR_GCS_BILD);
 
 	/*
 	 * Set Secure Register Lock (SRL) bit in DMI control register to lock
 	 * DMI configuration.
 	 */
-	pcr_or32(PID_DMI, PCR_DMI_DMICTL, PCR_DMI_DMICTL_SRLOCK);
+	gpmr_or32(GPMR_DMICTL, GPMR_DMICTL_SRLOCK);
 }
 
 static void fast_spi_lockdown_cfg(int chipset_lockdown)
@@ -94,7 +94,7 @@ static void platform_lockdown_config(void *unused)
 	fast_spi_lockdown_cfg(chipset_lockdown);
 
 	/* DMI lock down configuration */
-	dmi_lockdown_cfg();
+	lockdown_cfg();
 
 	/* SoC lock down configuration */
 	soc_lockdown_config(chipset_lockdown);

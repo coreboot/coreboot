@@ -7,6 +7,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
+#include <intelblocks/gpmr.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/tco.h>
@@ -15,10 +16,6 @@
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <soc/smbus.h>
-
-#define PCR_DMI_TCOBASE 0x2778
-/* Enable TCO I/O range decode. */
-#define TCOEN (1 << 1)
 
 /* SMBUS TCO base address. */
 #define TCOBASE		0x50
@@ -122,10 +119,8 @@ static void tco_enable_bar(void)
 	/* Enable TCO in SMBUS */
 	pci_write_config32(dev, TCOCTL, reg32 | TCO_BASE_EN);
 
-	/*
-	* Program "TCO Base Address" PCR[DMI] + 2778h[15:5, 1]
-	*/
-	pcr_write32(PID_DMI, PCR_DMI_TCOBASE, tcobase | TCOEN);
+	/* Program TCO Base Address */
+	gpmr_write32(GPMR_TCOBASE, tcobase | GPMR_TCOEN);
 }
 
 /*

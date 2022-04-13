@@ -11,8 +11,8 @@
 #include <commonlib/helpers.h>
 #include <cpu/x86/mtrr.h>
 #include <fast_spi_def.h>
-#include <intelblocks/dmi.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/gpmr.h>
 #include <lib.h>
 #include <soc/pci_devs.h>
 #include <spi_flash.h>
@@ -342,7 +342,7 @@ static void fast_spi_enable_ext_bios(void)
 #endif
 
 	/* Configure Source decode for Extended BIOS Region */
-	if (dmi_enable_gpmr(CONFIG_EXT_BIOS_WIN_BASE, CONFIG_EXT_BIOS_WIN_SIZE,
+	if (enable_gpmr(CONFIG_EXT_BIOS_WIN_BASE, CONFIG_EXT_BIOS_WIN_SIZE,
 				soc_get_spi_psf_destination_id()) == CB_ERR)
 		return;
 

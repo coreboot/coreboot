@@ -7,6 +7,7 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
+#include <intelblocks/gpmr.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
@@ -25,7 +26,7 @@ uint16_t lpc_enable_fixed_io_ranges(uint16_t io_enables)
 	io_enables |= reg_io_enables;
 	pci_write_config16(PCH_DEV_LPC, LPC_IO_ENABLES, io_enables);
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR))
-		pcr_write16(PID_DMI, PCR_DMI_LPCIOE, io_enables);
+		gpmr_write32(GPMR_LPCIOE, io_enables);
 
 	return io_enables;
 }
@@ -43,7 +44,7 @@ uint16_t lpc_set_fixed_io_ranges(uint16_t io_ranges, uint16_t mask)
 	io_ranges |= reg_io_ranges & mask;
 	pci_write_config16(PCH_DEV_LPC, LPC_IO_DECODE, io_ranges);
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR))
-		pcr_write16(PID_DMI, PCR_DMI_LPCIOD, io_ranges);
+		gpmr_write32(GPMR_LPCIOD, io_ranges);
 
 	return io_ranges;
 }
@@ -113,7 +114,7 @@ void lpc_open_pmio_window(uint16_t base, uint16_t size)
 
 		pci_write_config32(PCH_DEV_LPC, lgir_reg_offset, lgir);
 		if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR))
-			pcr_write32(PID_DMI, PCR_DMI_LPCLGIR1 + lgir_reg_num * 4, lgir);
+			gpmr_write32(GPMR_LPCLGIR1 + lgir_reg_num * 4, lgir);
 
 		printk(BIOS_DEBUG,
 		       "LPC: Opened IO window LGIR%d: base %llx size %x\n",
@@ -148,7 +149,7 @@ void lpc_open_mmio_window(uintptr_t base, size_t size)
 
 	pci_write_config32(PCH_DEV_LPC, LPC_GENERIC_MEM_RANGE, lgmr);
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR))
-		pcr_write32(PID_DMI, PCR_DMI_LPCGMR, lgmr);
+		gpmr_write32(GPMR_LPCGMR, lgmr);
 }
 
 /*
@@ -249,7 +250,7 @@ static void lpc_set_gen_decode_range(
 	for (i = 0; i < LPC_NUM_GENERIC_IO_RANGES; i++) {
 		pci_write_config32(PCH_DEV_LPC, LPC_GENERIC_IO_RANGE(i), gen_io_dec[i]);
 		if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR))
-			pcr_write32(PID_DMI, PCR_DMI_LPCLGIR1 + i * 4, gen_io_dec[i]);
+			gpmr_write32(GPMR_LPCLGIR1 + i * 4, gen_io_dec[i]);
 	}
 }
 

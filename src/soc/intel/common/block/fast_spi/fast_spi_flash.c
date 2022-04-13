@@ -161,6 +161,18 @@ static int exec_sync_hwseq_xfer(struct fast_spi_flash_ctx *ctx,
 	return wait_for_hwseq_xfer(ctx, flash_addr);
 }
 
+int fast_spi_cycle_in_progress(void)
+{
+	BOILERPLATE_CREATE_CTX(ctx);
+
+	int ret = wait_for_hwseq_spi_cycle_complete(ctx);
+	if (ret != SUCCESS)
+		printk(BIOS_ERR, "SPI Transaction Timeout (Exceeded %d ms) due to prior"
+				" operation is pending\n", SPIBAR_HWSEQ_XFER_TIMEOUT_MS);
+
+	return ret;
+}
+
 /*
  * Ensure read/write xfer len is not greater than SPIBAR_FDATA_FIFO_SIZE and
  * that the operation does not cross page boundary.

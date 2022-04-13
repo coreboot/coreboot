@@ -5,6 +5,8 @@
 
 #include <types.h>
 
+/* Check if SPI transaction is pending */
+int fast_spi_cycle_in_progress(void);
 /*
  * Disable the BIOS write protect and Enable Prefetching and Caching.
  */

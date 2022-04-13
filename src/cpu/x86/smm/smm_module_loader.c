@@ -2,15 +2,18 @@
 
 #include "assert.h"
 #include <acpi/acpi_gnvs.h>
+#include <cbmem.h>
+#include <commonlib/helpers.h>
+#include <commonlib/region.h>
+#include <console/console.h>
+#include <cpu/x86/smm.h>
+#include <rmodule.h>
+#include <security/intel/stm/SmmStm.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <rmodule.h>
-#include <cbmem.h>
-#include <cpu/x86/smm.h>
-#include <commonlib/helpers.h>
-#include <console/console.h>
-#include <security/intel/stm/SmmStm.h>
 
 #define FXSAVE_SIZE 512
 #define SMM_CODE_SEGMENT_SIZE 0x10000
@@ -118,8 +121,8 @@ static int smm_create_map(const uintptr_t smbase, const unsigned int num_cpus,
 
 	for (unsigned int i = 0; i < num_cpus; i++) {
 		if (i % cpus_per_segment == 0)
-			printk(BIOS_DEBUG, "-------------NEW CODE SEGMENT --------------\n");
-		printk(BIOS_DEBUG, "CPU 0x%x\n", i);
+			printk(BIOS_SPEW, "-------------NEW CODE SEGMENT --------------\n");
+		printk(BIOS_SPEW, "CPU 0x%x\n", i);
 		/* We copy the same stub for each CPU so they all need the same 'smbase'. */
 		const size_t segment_number = i / cpus_per_segment;
 		cpus[i].smbase = smbase - SMM_CODE_SEGMENT_SIZE * segment_number
@@ -128,9 +131,9 @@ static int smm_create_map(const uintptr_t smbase, const unsigned int num_cpus,
 		cpus[i].code_end = cpus[i].code_start + stub_size;
 		cpus[i].ss_top = cpus[i].smbase + SMM_CODE_SEGMENT_SIZE;
 		cpus[i].ss_start = cpus[i].ss_top - params->cpu_save_state_size;
-		printk(BIOS_DEBUG, "  Stub       [0x%lx-0x%lx[\n", cpus[i].code_start,
+		printk(BIOS_SPEW, "  Stub       [0x%lx-0x%lx[\n", cpus[i].code_start,
 		       cpus[i].code_end);
-		printk(BIOS_DEBUG, "  Save state [0x%lx-0x%lx[\n", cpus[i].ss_start,
+		printk(BIOS_SPEW, "  Save state [0x%lx-0x%lx[\n", cpus[i].ss_start,
 		       cpus[i].ss_top);
 		cpus[i].active = 1;
 	}
@@ -348,6 +351,48 @@ static void setup_smihandler_params(struct smm_runtime *mod_params,
 		mod_params->save_state_top[i] = cpus[i].ss_top;
 }
 
+static void print_region(const char *name, const struct region region)
+{
+	printk(BIOS_DEBUG, "%-12s [0x%lx-0x%lx]\n", name, region_offset(&region),
+	       region_end(&region));
+}
+
+/* STM + FX_SAVE + Handler + (Stub + Save state) * CONFIG_MAX_CPUS + stacks */
+#define SMM_REGIONS_ARRAY_SIZE (1 + 1 + 1 + CONFIG_MAX_CPUS * 2 + 1)
+
+static int append_and_check_region(const struct region smram,
+				   const struct region region,
+				   struct region *region_list,
+				   const char *name)
+{
+	unsigned int region_counter = 0;
+	for (; region_counter < SMM_REGIONS_ARRAY_SIZE; region_counter++)
+		if (region_list[region_counter].size == 0)
+			break;
+
+	if (region_counter >= SMM_REGIONS_ARRAY_SIZE) {
+		printk(BIOS_ERR, "Array used to check regions too small\n");
+		return 1;
+	}
+
+	if (!region_is_subregion(&smram, &region)) {
+		printk(BIOS_ERR, "%s not in SMM\n", name);
+		return 1;
+	}
+
+	print_region(name, region);
+	for (unsigned int i = 0; i < region_counter; i++) {
+		if (region_overlap(&region_list[i], &region)) {
+			printk(BIOS_ERR, "%s overlaps with a previous region\n", name);
+			return 1;
+		}
+	}
+
+	region_list[region_counter] = region;
+
+	return 0;
+}
+
 /*
  *The SMM module is placed within the provided region in the following
  * manner:
@@ -368,68 +413,100 @@ static void setup_smihandler_params(struct smm_runtime *mod_params,
  * |                 |
  * |    stacks       |
  * +-----------------+ <- smram start
-
- * It should be noted that this algorithm will not work for
- * SMM_DEFAULT_SIZE SMRAM regions such as the A segment. This algorithm
- * expects a region large enough to encompass the handler and stacks
- * as well as the SMM_DEFAULT_SIZE.
+ *
+ * With CONFIG(SMM_TSEG) the stubs will be placed in the same segment as the
+ * permanent handler and the stacks.
  */
-static int smm_load_module_tseg(const uintptr_t smram_base, const size_t smram_size,
-				struct smm_loader_params *params)
+int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
+		    struct smm_loader_params *params)
 {
-	if (smram_size <= SMM_DEFAULT_SIZE)
-		return -1;
+	/*
+	 * Place in .bss to reduce stack usage.
+	 * TODO: once CPU_INFO_V2 is used everywhere, use smaller stack for APs and move
+	 * this back to the BSP stack.
+	 */
+	static struct region region_list[SMM_REGIONS_ARRAY_SIZE] = {};
 
 	struct rmodule smi_handler;
 	if (rmodule_parse(&_binary_smm_start, &smi_handler))
 		return -1;
 
-	const uintptr_t smram_top = smram_base + smram_size;
+	const struct region smram = { .offset = smram_base, .size = smram_size };
+	const uintptr_t smram_top = region_end(&smram);
 
 	const size_t stm_size =
 		CONFIG(STM) ? CONFIG_MSEG_SIZE - CONFIG_BIOS_RESOURCE_LIST_SIZE : 0;
-	const uintptr_t stm_base = CONFIG(STM) ? smram_top - stm_size : 0;
-	if (stm_size) {
-		printk(BIOS_DEBUG,     "STM          [0x%lx-0x%lx[\n", stm_base,
-		       stm_base + stm_size);
 
+	if (CONFIG(STM)) {
+		struct region stm = {};
+		stm.offset = smram_top - stm_size;
+		stm.size = stm_size;
+		if (append_and_check_region(smram, stm, region_list, "STM"))
+			return -1;
 		printk(BIOS_DEBUG, "MSEG size     0x%x\n", CONFIG_MSEG_SIZE);
 		printk(BIOS_DEBUG, "BIOS res list 0x%x\n", CONFIG_BIOS_RESOURCE_LIST_SIZE);
 	}
+
 	const size_t fx_save_area_size = CONFIG(SSE) ? FXSAVE_SIZE * params->num_cpus : 0;
-	const uintptr_t fx_save_area_base =
-		CONFIG(SSE) ? smram_top - stm_size - fx_save_area_size : 0;
-	if (fx_save_area_size)
-		printk(BIOS_DEBUG, "fx_save      [0x%lx-0x%lx[\n", fx_save_area_base,
-		       fx_save_area_base + fx_save_area_size);
+	struct region fx_save = {};
+	if (CONFIG(SSE)) {
+		fx_save.offset = smram_top - stm_size - fx_save_area_size;
+		fx_save.size = fx_save_area_size;
+		if (append_and_check_region(smram, fx_save, region_list, "FX_SAVE"))
+			return -1;
+	}
+
 	const size_t handler_size = rmodule_memory_size(&smi_handler);
 	const size_t handler_alignment = rmodule_load_alignment(&smi_handler);
 	const uintptr_t handler_base =
 		ALIGN_DOWN(smram_top - stm_size - fx_save_area_size - handler_size,
 			   handler_alignment);
-	printk(BIOS_DEBUG, "smihandler   [0x%lx-0x%lx[\n", handler_base,
-	       handler_base + handler_size);
-
-	if (handler_base <= smram_base) {
-		printk(BIOS_ERR, "Permanent handler won't FIT smram\n");
+	struct region handler = {
+		.offset = handler_base,
+		.size = handler_size
+	};
+	if (append_and_check_region(smram, handler, region_list, "HANDLER"))
 		return -1;
+
+	uintptr_t stub_segment_base;
+
+	if (CONFIG(SMM_TSEG)) {
+		stub_segment_base = handler_base - SMM_CODE_SEGMENT_SIZE;
+	} else if (CONFIG(SMM_ASEG)) {
+		stub_segment_base = smram_base;
+		if (smram_base != SMM_BASE || smram_size != SMM_CODE_SEGMENT_SIZE) {
+			printk(BIOS_ERR, "SMM base & size are 0x%lx, 0x%zx, but must be 0x%x, 0x%x\n",
+			       smram_base, smram_size, SMM_BASE, SMM_CODE_SEGMENT_SIZE);
+			return -1;
+		}
 	}
 
-	const uintptr_t stub_segment_base = handler_base - SMM_CODE_SEGMENT_SIZE;
 	if (!smm_create_map(stub_segment_base, params->num_concurrent_save_states, params)) {
 		printk(BIOS_ERR, "%s: Error creating CPU map\n", __func__);
 		return -1;
 	}
-
-	const uintptr_t lowest_stub = cpus[params->num_concurrent_save_states - 1].code_start;
-	const uintptr_t smm_stack_top =
-		smram_base + params->num_concurrent_save_states * CONFIG_SMM_MODULE_STACK_SIZE;
-	printk(BIOS_DEBUG, "cpu stacks   [0x%lx-0x%lx[\n", smram_base, smm_stack_top);
-	if (lowest_stub < smm_stack_top) {
-		printk(BIOS_ERR, "SMM stubs won't fit in SMRAM 0x%lx\n",
-		       cpus[params->num_concurrent_save_states - 1].code_start);
-		return -1;
+	for (unsigned int i = 0; i < params->num_concurrent_save_states; i++) {
+		printk(BIOS_DEBUG, "\nCPU %u\n", i);
+		struct region ss = { .offset = cpus[i].ss_start,
+				     .size = cpus[i].ss_top - cpus[i].ss_start };
+		char string[13];
+		snprintf(string, sizeof(string), "  ss%d", i);
+		if (append_and_check_region(smram, ss, region_list, string))
+			return -1;
+		struct region stub = {.offset = cpus[i].code_start,
+				       .size = cpus[i].code_end - cpus[i].code_start};
+		snprintf(string, sizeof(string), "  stub%d", i);
+		if (append_and_check_region(smram, stub, region_list, string))
+			return -1;
 	}
+
+	struct region stacks = {
+		.offset = smram_base,
+		.size = params->num_concurrent_save_states * CONFIG_SMM_MODULE_STACK_SIZE
+	};
+	printk(BIOS_DEBUG, "\n");
+	if (append_and_check_region(smram, stacks, region_list, "stacks"))
+		return -1;
 
 	if (rmodule_load((void *)handler_base, &smi_handler))
 		return -1;
@@ -439,112 +516,5 @@ static int smm_load_module_tseg(const uintptr_t smram_base, const size_t smram_s
 	setup_smihandler_params(smihandler_params, smram_base, smram_size, params);
 
 	return smm_module_setup_stub(stub_segment_base, smram_size, params,
-				     (void *)fx_save_area_base);
-}
-
-/*
- *The SMM module is placed within the provided region in the following
- * manner:
- * +-----------------+ <- smram + size == 0xB0000
- * |  save states    |
- * +-----------------+
- * |  fxsave area    |
- * +-----------------+
- * |  smi handler    | (or below the stubs if there is more space there)
- * |      ...        |
- * +-----------------+ <- cpu0
- * |    stub code    | <- cpu1
- * |    stub code    | <- cpu2
- * |    stub code    | <- cpu3, etc
- * |                 |
- * |                 |
- * |                 |
- * |    stacks       |
- * +-----------------+ <- smram start = 0xA0000
- */
-static int smm_load_module_aseg(const uintptr_t smram_base, const size_t smram_size,
-				struct smm_loader_params *params)
-{
-	if (smram_size != SMM_DEFAULT_SIZE)
-		return -1;
-
-	struct rmodule smi_handler;
-	if (rmodule_parse(&_binary_smm_start, &smi_handler))
-		return -1;
-
-	if (!smm_create_map(smram_base, params->num_concurrent_save_states, params)) {
-		printk(BIOS_ERR, "%s: Error creating CPU map\n", __func__);
-		return -1;
-	}
-
-	const uintptr_t smm_stack_top =
-		smram_base + params->num_concurrent_save_states * CONFIG_SMM_MODULE_STACK_SIZE;
-	printk(BIOS_DEBUG, "cpu stacks   [0x%lx-0x%lx[\n", smram_base, smm_stack_top);
-	if (smm_stack_top > cpus[params->num_concurrent_save_states - 1].code_start) {
-		printk(BIOS_ERR, "stack won't fit in smram\n");
-		return -1;
-	}
-
-	const uintptr_t save_state_bottom =
-		cpus[params->num_concurrent_save_states - 1].ss_start;
-	const size_t fx_save_area_size = CONFIG(SSE) ? FXSAVE_SIZE * params->num_cpus : 0;
-	const uintptr_t fx_save_area_base =
-		CONFIG(SSE) ? save_state_bottom - fx_save_area_size : 0;
-	if (fx_save_area_size) {
-		printk(BIOS_DEBUG, "fx_save      [0x%lx-0x%lx[\n", fx_save_area_base,
-		       fx_save_area_base + fx_save_area_size);
-
-		if (fx_save_area_base < cpus[0].code_end) {
-			printk(BIOS_ERR, "fxsave won't fit in smram\n");
-			return -1;
-		}
-	}
-
-	const size_t top_space = save_state_bottom - fx_save_area_size - cpus[0].code_end;
-	const size_t bottom_space =
-		cpus[params->num_concurrent_save_states - 1].code_start - smm_stack_top;
-	const bool use_top = top_space >= bottom_space;
-
-	const size_t handler_size = rmodule_memory_size(&smi_handler);
-	const size_t handler_alignment = rmodule_load_alignment(&smi_handler);
-	uintptr_t handler_base;
-	if (use_top) {
-		handler_base = ALIGN_DOWN(save_state_bottom - fx_save_area_size - handler_size,
-					  handler_alignment);
-		if (handler_base < cpus[0].code_end) {
-			printk(BIOS_ERR, "handler won't fit in top of smram\n");
-			return -1;
-		}
-	} else {
-		handler_base = ALIGN_UP(stack_top, handler_alignment);
-		const uintptr_t handler_top = handler_base + handler_size;
-		if (handler_top > cpus[params->num_concurrent_save_states - 1].code_start) {
-			printk(BIOS_ERR, "handler won't fit in bottom of smram\n");
-			return -1;
-		}
-	}
-	printk(BIOS_DEBUG, "handler      [0x%lx-0x%lx[\n", handler_base,
-	       handler_base + handler_size);
-
-	if (rmodule_load((void *)handler_base, &smi_handler))
-		return -1;
-
-	struct smm_runtime *smihandler_params = rmodule_parameters(&smi_handler);
-	params->handler = rmodule_entry(&smi_handler);
-	setup_smihandler_params(smihandler_params, smram_base, smram_size, params);
-
-	return smm_module_setup_stub(smram_base, smram_size, params,
-				     (void *)fx_save_area_base);
-}
-
-
-int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
-		    struct smm_loader_params *params)
-{
-	if (CONFIG(SMM_ASEG))
-		return smm_load_module_aseg(smram_base, smram_size, params);
-	else if (CONFIG(SMM_TSEG))
-		return smm_load_module_tseg(smram_base, smram_size, params);
-
-	return -1;
+				     (void *)region_offset(&fx_save));
 }

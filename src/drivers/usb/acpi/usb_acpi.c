@@ -95,7 +95,8 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 			config->enable_off_delay_ms,
 			NULL,
 			0,
-			0
+			0,
+			config->use_gpio_for_status
 		};
 		acpi_device_add_power_res(&power_res_params);
 	}

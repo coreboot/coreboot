@@ -66,6 +66,12 @@ struct drivers_usb_acpi_config {
 	 * E.g. On a mic: if it is one, it is recording white-noise.
 	 */
 	struct acpi_gpio privacy_gpio;
+
+	/* Write a _STA method that uses the state of the GPIOs to determine if
+	 * the PowerResource is ON or OFF. If this is false, the _STA method
+	 * will always return ON.
+	 */
+	bool use_gpio_for_status;
 };
 
 /* Method to get PLD structure from USB device */

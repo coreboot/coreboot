@@ -22,6 +22,13 @@ chip soc/intel/alderlake
 	# GPE configuration
 	register "pmc_gpe0_dw1" = "GPP_D"
 
+	# Acoustic settings
+	register "acoustic_noise_mitigation" = "1"
+	register "slow_slew_rate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
+	register "slow_slew_rate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_IA]" = "1"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_GT]" = "1"
+
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"		# Disable USB2_C1
 	register "usb2_ports[3]" = "USB2_PORT_EMPTY"		# Disable M.2 WWAN
 

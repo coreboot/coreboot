@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <intelblocks/dmi.h>
+#include <intelblocks/gpmr.h>
 #include <intelblocks/pcr.h>
 #include <soc/pcr_ids.h>
 
@@ -16,15 +17,20 @@
 #define  DMI_PCR_GPMR_EN			BIT(31)
 
 /* GPMR Register read given offset */
-static uint32_t gpmr_read32(uint16_t offset)
+uint32_t gpmr_read32(uint16_t offset)
 {
 	return pcr_read32(PID_DMI, offset);
 }
 
 /* GPMR Register write given offset and val */
-static void gpmr_write32(uint16_t offset, uint32_t val)
+void gpmr_write32(uint16_t offset, uint32_t val)
 {
 	return pcr_write32(PID_DMI, offset, val);
+}
+
+void gpmr_or32(uint16_t offset, uint32_t ordata)
+{
+	return pcr_or32(PID_DMI, offset, ordata);
 }
 
 /* Check for available free gpmr */

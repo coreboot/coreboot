@@ -57,8 +57,17 @@ static void fast_spi_lockdown_cfg(int chipset_lockdown)
 	/* Discrete Lock Flash PR registers */
 	fast_spi_pr_dlock();
 
+	/* Check if SPI transaction is pending */
+	fast_spi_cycle_in_progress();
+
+	/* Clear any outstanding status bits like AEL, FCERR, FDONE, SAF etc. */
+	fast_spi_clear_outstanding_status();
+
 	/* Lock FAST_SPIBAR */
 	fast_spi_lock_bar();
+
+	/* Set Vendor Component Lock (VCL) */
+	fast_spi_vscc0_lock();
 
 	/* Set BIOS Interface Lock, BIOS Lock */
 	if (chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {

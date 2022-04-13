@@ -321,6 +321,7 @@ chip soc/amd/cezanne
 							# TODO(rrangel): Find data sheet
 							register "enable_delay_ms" = "500"
 							register "enable_off_delay_ms" = "10"
+							register "use_gpio_for_status" = "true"
 							device ref usb2_port6 on end
 						end
 					end

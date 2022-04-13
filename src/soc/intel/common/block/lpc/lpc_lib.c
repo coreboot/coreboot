@@ -24,7 +24,7 @@ uint16_t lpc_enable_fixed_io_ranges(uint16_t io_enables)
 	reg_io_enables = pci_read_config16(PCH_DEV_LPC, LPC_IO_ENABLES);
 	io_enables |= reg_io_enables;
 	pci_write_config16(PCH_DEV_LPC, LPC_IO_ENABLES, io_enables);
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_DMI))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR))
 		pcr_write16(PID_DMI, PCR_DMI_LPCIOE, io_enables);
 
 	return io_enables;
@@ -42,7 +42,7 @@ uint16_t lpc_set_fixed_io_ranges(uint16_t io_ranges, uint16_t mask)
 	reg_io_ranges = lpc_get_fixed_io_decode() & ~mask;
 	io_ranges |= reg_io_ranges & mask;
 	pci_write_config16(PCH_DEV_LPC, LPC_IO_DECODE, io_ranges);
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_DMI))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR))
 		pcr_write16(PID_DMI, PCR_DMI_LPCIOD, io_ranges);
 
 	return io_ranges;
@@ -112,7 +112,7 @@ void lpc_open_pmio_window(uint16_t base, uint16_t size)
 		lgir_reg_offset = LPC_GENERIC_IO_RANGE(lgir_reg_num);
 
 		pci_write_config32(PCH_DEV_LPC, lgir_reg_offset, lgir);
-		if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_DMI))
+		if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR))
 			pcr_write32(PID_DMI, PCR_DMI_LPCLGIR1 + lgir_reg_num * 4, lgir);
 
 		printk(BIOS_DEBUG,
@@ -147,7 +147,7 @@ void lpc_open_mmio_window(uintptr_t base, size_t size)
 	lgmr = (base & LPC_LGMR_ADDR_MASK) | LPC_LGMR_EN;
 
 	pci_write_config32(PCH_DEV_LPC, LPC_GENERIC_MEM_RANGE, lgmr);
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_DMI))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR))
 		pcr_write32(PID_DMI, PCR_DMI_LPCGMR, lgmr);
 }
 
@@ -248,7 +248,7 @@ static void lpc_set_gen_decode_range(
 	/* Set in PCI generic decode range registers */
 	for (i = 0; i < LPC_NUM_GENERIC_IO_RANGES; i++) {
 		pci_write_config32(PCH_DEV_LPC, LPC_GENERIC_IO_RANGE(i), gen_io_dec[i]);
-		if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_DMI))
+		if (CONFIG(SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR))
 			pcr_write32(PID_DMI, PCR_DMI_LPCLGIR1 + i * 4, gen_io_dec[i]);
 	}
 }

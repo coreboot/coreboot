@@ -1,5 +1,5 @@
-config SOC_INTEL_COMMON_BLOCK_DMI
+config SOC_INTEL_COMMON_BLOCK_GPMR
 	bool
 	select SOC_INTEL_COMMON_BLOCK_PCR
 	help
-	  Intel Processor common DMI support
+	  Intel Processor common GPMR support

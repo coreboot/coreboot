@@ -12,9 +12,9 @@ config SOC_INTEL_COMMON_BLOCK_LPC_COMB_ENABLE
 	  By default COMA range to LPC is enable. COMB range to LPC is optional
 	  and should select based on platform dedicated selection.
 
-config SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_DMI
+config SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR
 	bool
-	depends on SOC_INTEL_COMMON_BLOCK_DMI
+	depends on SOC_INTEL_COMMON_BLOCK_GPMR
 	help
-	  Mirror LPC registers for IO/MMIO to their corresponding DMI registers.
+	  Mirror LPC registers for IO/MMIO to their corresponding GPMR registers.
 	  Required for platforms starting from SPT.

@@ -670,6 +670,19 @@ void acpi_device_add_power_res(const struct acpi_power_res_params *params)
 
 	/* Method (_ON, 0, Serialized) */
 	acpigen_write_method_serialized("_ON", 0);
+	/* Call _STA and early return if the device is already enabled, since the Linux
+	   kernel doesn't check the device status before calling _ON. This avoids
+	   unnecessary delays while booting. */
+	if (params->use_gpio_for_status) {
+		/* Local0 = _STA () */
+		acpigen_write_store();
+		acpigen_emit_namestring("_STA");
+		acpigen_emit_byte(LOCAL0_OP);
+		/* If (( Local0 == ACPI_POWER_RESOURCE_STATUS_ON_OP)) */
+		acpigen_write_if_lequal_op_op(LOCAL0_OP, ACPI_POWER_RESOURCE_STATUS_ON_OP);
+		acpigen_write_return_op(ZERO_OP);
+		acpigen_write_if_end();
+	}
 	if (reset_gpio)
 		acpigen_enable_tx_gpio(params->reset_gpio);
 	if (enable_gpio) {

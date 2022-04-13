@@ -5,7 +5,9 @@
 #include <device/device.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <drivers/intel/gma/opregion.h>
 #include <ec/google/chromeec/ec.h>
+#include <fw_config.h>
 #include <intelblocks/power_limit.h>
 
 const struct cpu_power_limits limits[] = {
@@ -29,6 +31,15 @@ const struct psys_config psys_config = {
 	.psys_imax_ma = 11000,
 	.bj_volts_mv = 19500
 };
+
+const char *mainboard_vbt_filename(void)
+{
+	if (fw_config_probe(FW_CONFIG(DB_OPT, OPT_HDMI)))
+		return "vbt-moli_HDMI.bin";
+	else if (fw_config_probe(FW_CONFIG(DB_OPT, OPT_DP)))
+		return "vbt-moli_DP.bin";
+	return "vbt-moli.bin";
+}
 
 void variant_devtree_update(void)
 {

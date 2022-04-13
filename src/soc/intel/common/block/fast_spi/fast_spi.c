@@ -171,6 +171,23 @@ void fast_spi_pr_dlock(void)
 }
 
 /*
+ * Set FAST_SPIBAR + VSCC0 (0xC4) register VCL (bit 30).
+ */
+void fast_spi_vscc0_lock(void)
+{
+	void *spibar = fast_spi_get_bar();
+
+	/*
+	 * SPI Flash Programming Guide Section 5.5.2 describes Vendor Component Lock (VCL).
+	 * It is recommended to set the VCL bit. VCL applies to both VSCC0 and VSCC1.
+	 * Without this bit being set, it is possible to modify Host/GbE VSCC register(s),
+	 * which might results in undesired host and integrated GbE Serial Flash
+	 * functionality.
+	 */
+	setbits32(spibar + SPIBAR_SFDP0_VSCC0, SPIBAR_VSCC0_VCL);
+}
+
+/*
  * Set FAST_SPIBAR Soft Reset Data Register value.
  */
 void fast_spi_set_strap_msg_data(uint32_t soft_reset_data)

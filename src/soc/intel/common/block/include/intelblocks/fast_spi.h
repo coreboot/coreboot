@@ -43,6 +43,10 @@ void fast_spi_lock_bar(void);
  */
 void fast_spi_pr_dlock(void);
 /*
+ * Set FAST_SPIBAR + VSCC0 (0xC4) register VCL (bit 30).
+ */
+void fast_spi_vscc0_lock(void);
+/*
  * Set FAST_SPIBAR Soft Reset Data Register value.
  */
 void fast_spi_set_strap_msg_data(uint32_t soft_reset_data);

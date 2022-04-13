@@ -131,6 +131,13 @@
 		    (SPI_OPTYPE_1 << 2) | (SPI_OPTYPE_0))
 #define SPI_OPPREFIX ((0x50 << 8) | 0x06) /* EWSR and WREN */
 
+/*
+ * Register Offset of BIOS Vendor Specific Component Capabilities (VSCC)
+ * for Component 0 Register
+ */
+#define SPIBAR_SFDP0_VSCC0		0xc4
+#define SPIBAR_VSCC0_VCL		(1 << 30)
+
 /* Bit definitions for PTINX (0xcc) register */
 #define SPIBAR_PTINX_COMP_0		(0 << 14)
 #define SPIBAR_PTINX_COMP_1		(1 << 14)

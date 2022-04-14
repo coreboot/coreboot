@@ -7,6 +7,7 @@
 #include <device/pci_ids.h>
 #include <soc/smbus.h>
 #include <device/smbus_host.h>
+#include <intelblocks/tco.h>
 #include "smbuslib.h"
 
 static int lsmbus_read_byte(struct device *dev, u8 address)
@@ -63,6 +64,19 @@ static void smbus_read_resources(struct device *dev)
 		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
+/*
+ * `finalize_smbus` function is native implementation of equivalent events
+ * performed by each FSP NotifyPhase() API invocations.
+ *
+ * Operations are:
+ * 1. TCO Lock.
+ */
+static void finalize_smbus(struct device *dev)
+{
+	if (!CONFIG(USE_FSP_NOTIFY_PHASE_POST_PCI_ENUM))
+		tco_lockdown();
+}
+
 static struct device_operations smbus_ops = {
 	.read_resources		= smbus_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -71,6 +85,7 @@ static struct device_operations smbus_ops = {
 	.init			= pch_smbus_init,
 	.ops_pci		= &pci_dev_ops_pci,
 	.ops_smbus_bus		= &lops_smbus_bus,
+	.final			= finalize_smbus,
 };
 
 static const unsigned short pci_device_ids[] = {

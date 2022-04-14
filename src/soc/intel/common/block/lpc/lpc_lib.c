@@ -152,7 +152,7 @@ void lpc_open_mmio_window(uintptr_t base, size_t size)
 }
 
 /*
- * Set FAST_SPIBAR BIOS Control register based on input bit field.
+ * Set LPC BIOS Control register based on input bit field.
  */
 static void lpc_set_bios_control_reg(uint8_t bios_cntl_bit)
 {

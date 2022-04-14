@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-
 #include <arch/cpu.h>
+#include <arch/breakpoint.h>
+#include <arch/null_breakpoint.h>
 #include <arch/exception.h>
+#include <arch/registers.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <console/streams.h>
@@ -371,7 +373,7 @@ static void put_packet(char *buffer)
 }
 #endif /* CONFIG_GDB_STUB */
 
-#include <arch/registers.h>
+#define DEBUG_VECTOR 1
 
 void x86_exception(struct eregs *info);
 
@@ -487,6 +489,11 @@ void x86_exception(struct eregs *info)
 
 	int logical_processor = 0;
 	u32 apic_id = CONFIG(SMP) ? lapicid() : 0;
+
+	if (info->vector == DEBUG_VECTOR) {
+		if (breakpoint_dispatch_handler(info) == 0)
+			return;
+	}
 
 #if ENV_RAMSTAGE
 	logical_processor = cpu_index();
@@ -657,4 +664,6 @@ asmlinkage void exception_init(void)
 	}
 
 	load_idt(idt, sizeof(idt));
+
+	null_breakpoint_init();
 }

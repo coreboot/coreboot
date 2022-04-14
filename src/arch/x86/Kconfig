@@ -320,6 +320,38 @@ config MEMLAYOUT_LD_FILE
 	string
 	default "src/arch/x86/memlayout.ld"
 
+config DEBUG_HW_BREAKPOINTS
+	bool
+	default y
+	help
+	  Enable support for hardware data and instruction breakpoints through
+	  the x86 debug registers
+
+config DEBUG_HW_BREAKPOINTS_IN_ALL_STAGES
+	bool
+	default y
+	depends on DEBUG_HW_BREAKPOINTS && IDT_IN_EVERY_STAGE
+
+config DEBUG_NULL_DEREF_BREAKPOINTS
+	bool
+	default y
+	depends on DEBUG_HW_BREAKPOINTS
+	help
+	  Enable support for catching null dereferences and instruction execution
+
+config DEBUG_NULL_DEREF_BREAKPOINTS_IN_ALL_STAGES
+	bool
+	default y
+	depends on DEBUG_NULL_DEREF_BREAKPOINTS && DEBUG_HW_BREAKPOINTS_IN_ALL_STAGES
+
+config DEBUG_NULL_DEREF_HALT
+	bool
+	default n
+	depends on DEBUG_NULL_DEREF_BREAKPOINTS
+	help
+	  When enabled null dereferences and instruction fetches will halt execution.
+	  Otherwise an error will be printed.
+
 # Some EC need an "EC firmware pointer" (a data structure hinting the address
 # of its firmware blobs) being put at a fixed position. Its space
 # (__section__(".ecfw_ptr")) should be reserved if it lies in the range of a

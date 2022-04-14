@@ -1,0 +1,25 @@
+tag-ids were generated as follows. Note that tag-ids are currently only unique inside the SBOM itself, not globally.
+payload-BOOTBOOT:    uuidgen --name bootboot         --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+payload-depthcharge: uuidgen --name depthcharge      --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+payload-FILO:        uuidgen --name filo             --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+payload-GRUB2:       uuidgen --name grub2            --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+payload-iPXE:        uuidgen --name iPXE             --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+payload-LinuxBoot:   uuidgen --name linuxboot        --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+payload-SeaBIOS:     uuidgen --name seabios          --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+payload-skiboot:     uuidgen --name skiboot          --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+payload-U-Boot:      uuidgen --name uboot            --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+payload-Yabits:      uuidgen --name yabits           --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+coreboot:            uuidgen --name coreboot         --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+generic-ec:          uuidgen --name generic-ec       --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+intel-me:            uuidgen --name intel-me         --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+intel-bios-acm:      uuidgen --name intel-bios-acm   --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+intel-sinit-acm:     uuidgen --name intel-sinit-acm  --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+intel-fsp-s:         uuidgen --name intel-fsp-s      --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+intel-fsp-m:         uuidgen --name intel-fsp-m      --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+intel-fsp-t:         uuidgen --name intel-fsp-t      --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+intel-fsp:           uuidgen --name intel-fsp        --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+intel-mircocode:     uuidgen --name intel-microcode  --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+amd-mircocode:       uuidgen --name amd-microcode    --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+compiler-gcc:        uuidgen --name compiler-gcc     --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+compiler-clang:      uuidgen --name compiler-clang   --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1
+compiler-generic:    uuidgen --name compiler-generic --namespace "6ba7b810-9dad-11d1-80b4-00c04fd430c8" --sha1

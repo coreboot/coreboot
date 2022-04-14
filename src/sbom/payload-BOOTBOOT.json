@@ -1,0 +1,25 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+{
+  "lang": "en-US",
+  "tag-id": "978ba556-e0f4-592d-9a70-413138653155",
+  "tag-version": 0,
+  "software-name": "BOOTBOOT",
+  "software-version": "<software_version>",
+  "version-scheme": "alphanumeric",
+  "software-meta": [
+    {
+      "colloquial-version": "<colloquial_version>",
+      "persistent-id": "",
+      "summary": "BOOTBOOT multi platform micro-kernel loader"
+    }
+  ],
+  "entity": [
+    {
+      "entity-name": "coreboot",
+      "reg-id": "coreboot.org",
+      "role": [
+        "tagCreator"
+      ]
+    }
+  ]
+}

@@ -93,6 +93,7 @@ endif
 		exit 1; \
 	fi
 	cd 3rdparty/intel-sec-tools/ ; go mod vendor
+	cd util/goswid ; go mod vendor
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos.xml
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default $(ABUILD_OPTIONS)
 	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR="util/$(tool)" BLD="$(tool)" MFLAGS= MAKEFLAGS= MAKETARGET= junit.xml; )

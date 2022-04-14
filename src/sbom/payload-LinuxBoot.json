@@ -1,0 +1,25 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+{
+  "lang": "en-US",
+  "tag-id": "792c4921-cb02-54ac-8b61-c359336f3600",
+  "tag-version": 0,
+  "software-name": "LinuxBoot",
+  "software-version": "<software_version>",
+  "version-scheme": "alphanumeric",
+  "software-meta": [
+    {
+      "colloquial-version": "<colloquial_version>",
+      "persistent-id": "org.linuxboot",
+      "summary": "LinuxBoot is a firmware for modern servers that replaces specific firmware functionality like the UEFI DXE phase with a Linux kernel and runtime"
+    }
+  ],
+  "entity": [
+    {
+      "entity-name": "coreboot",
+      "reg-id": "coreboot.org",
+      "role": [
+        "tagCreator"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+{
+  "lang": "en-US",
+  "tag-id": "b714bb4f-c590-5bb7-af60-65374ecd097d",
+  "tag-version": 0,
+  "software-name": "U-Boot",
+  "software-version": "<software_version>",
+  "version-scheme": "alphanumeric",
+  "software-meta": [
+    {
+      "colloquial-version": "<colloquial_version>",
+      "persistent-id": "org.u-boot",
+      "summary": "Das U-Boot (subtitled 'the Universal Boot Loader') is an open-source, primary boot loader used in embedded devices to package the instructions to boot the device's operating system kernel"
+    }
+  ],
+  "entity": [
+    {
+      "entity-name": "coreboot",
+      "reg-id": "coreboot.org",
+      "role": [
+        "tagCreator"
+      ]
+    }
+  ]
+}

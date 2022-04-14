@@ -93,6 +93,7 @@ subdirs-y += $(wildcard src/arch/*)
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
 subdirs-y += src/security
 subdirs-y += payloads payloads/external
+subdirs-$(CONFIG_SBOM) += src/sbom
 
 subdirs-y += site-local
 subdirs-y += util/checklist util/testing

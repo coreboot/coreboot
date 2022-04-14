@@ -1,0 +1,25 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+{
+  "lang": "en-US",
+  "tag-id": "239e03d9-06b0-5ed0-a409-3c32f7f2ee2a",
+  "tag-version": 0,
+  "software-name": "skiboot",
+  "software-version": "<software_version>",
+  "version-scheme": "alphanumeric",
+  "software-meta": [
+    {
+      "colloquial-version": "<colloquial_version>",
+      "persistent-id": "org.skiboot",
+      "summary": "Skiboot is boot and runtime firmware for OpenPOWER systems. It’s loaded by earlier boot firmware (typically Hostboot). Along with loading the bootloader, it provides some runtime services to the OS (typically Linux)"
+    }
+  ],
+  "entity": [
+    {
+      "entity-name": "coreboot",
+      "reg-id": "coreboot.org",
+      "role": [
+        "tagCreator"
+      ]
+    }
+  ]
+}

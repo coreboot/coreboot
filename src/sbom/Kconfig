@@ -1,0 +1,171 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SBOM
+	bool "Include SBOM data for coreboot"
+	default n
+	help
+	  Select this option if you want to include a
+	  coswid (Concise Software Identification Tag) of coreboot itself
+	  into the SBOM (Software Bill of Materials) File in your build
+
+if SBOM
+
+config SBOM_COMPILER
+	bool "Include compiler metadata in SBOM"
+	default n
+	help
+	  Select this option if you want to include a
+	  coswid (Concise Software Identification Tag) of the compiler
+	  used to compile coreboot into the SBOM (Software Bill of Materials)
+	  File in your build
+	  Note: if the system toolchain is used to build coreboot
+	  one should check the final SBOM file for the expected results
+
+config SBOM_PAYLOAD
+	bool "Include payload metadata in SBOM"
+	default n
+	help
+	  Select this option if you want to include a
+	  coswid (Concise Software Identification Tag) of the payload into
+	  the SBOM (Software Bill of Materials) File in your build
+
+config SBOM_PAYLOAD_GENERATE
+	bool "Auto-generate generic SBOM info for payload"
+	depends on SBOM_PAYLOAD && (PAYLOAD_BOOTBOOT || PAYLOAD_DEPTHCHARGE || PAYLOAD_FILO || PAYLOAD_GRUB2 || PAYLOAD_LINUXBOOT || PAYLOAD_SEABIOS || PAYLOAD_SKIBOOT || PAYLOAD_UBOOT || PAYLOAD_YABITS)
+	default y
+	help
+	  Select this option if you want coreboot to generate and include
+	  the coswid (Concise Software Identification Tag) instead of supplying
+	  it manually. Be aware that this option is only meant to be a
+	  transition and suppliers of Software should always prefer to include
+	  their own Software descriptions, since ours may be incomplete or
+	  straight up wrong.
+
+config SBOM_PAYLOAD_PATH
+	string "SBOM file path"
+	depends on SBOM_PAYLOAD && !SBOM_PAYLOAD_GENERATE
+	help
+	  The path of the .ini file describing the payload
+	  Software included in the build
+
+config SBOM_ME
+	bool "Include ME metadata in SBOM"
+	depends on HAVE_ME_BIN
+	default n
+	help
+	  Select this option if you want to include a
+	  coswid (Concise Software Identification Tag) of the
+	  ME firmware into the SBOM (Software Bill of Materials)
+	  File in your build
+
+config SBOM_ME_GENERATE
+	bool "Auto-generate generic SBOM info for ME firmware"
+	depends on SBOM_ME
+	default y
+	help
+	  Select this option if you want coreboot to generate and include
+	  the coswid (Concise Software Identification Tag) instead of
+	  supplying it manually. Be aware that this option is only meant
+	  to be a transition and suppliers of Software should always prefer
+	  to include their own Software descriptions, since ours may be
+	  incomplete or straight up wrong.
+
+config SBOM_ME_PATH
+	string "Path to sbom.json for the ME firmware"
+	depends on SBOM_ME && !SBOM_ME_GENERATE
+	help
+	  The path of the SBOM file (sbom.json file)
+	  The path of the .json file describing the Software included in the build
+
+config SBOM_EC
+	bool "Include EC metadata in SBOM"
+	depends on HAVE_EC_BIN
+	default n
+	help
+	  Select this option if you want to include a
+	  coswid (Concise Software Identification Tag) of the
+	  EC (Embedded Controller) firmware into the
+	  SBOM (Software Bill of Materials) File in your build
+
+config SBOM_EC_PATH
+	string "Path to SBOM file for the EC firmware"
+	depends on SBOM_EC
+	default "src/sbom/generic-ec.json"
+	help
+	  The path of the SBOM file describing the Software included in the build
+	  File can be a .json, .xml, .cbor, .uswid, or .pc
+
+config SBOM_SINIT_ACM
+	bool "Include SINIT ACM metadata in SBOM"
+	depends on INTEL_TXT_SINITACM_FILE != ""
+	default n
+	help
+	  Select this option if you want to include a
+	  coswid (Concise Software Identification Tag) of the
+	  SINIT ACM (Authenticated Code Module) firmware into the
+	  SBOM (Software Bill of Materials) File in your build
+
+config SBOM_SINIT_ACM_PATH
+	string "Path to SBOM file for the SINIT AMC firmware"
+	depends on SBOM_SINIT_ACM
+	default "src/sbom/intel-sinit-acm.json"
+	help
+	  The path of the SBOM file describing the Software included in the build
+	  File can be a .json, .xml, .cbor, .uswid, or .pc
+
+config SBOM_BIOS_ACM
+	bool "Include BIOS ACM metadata in SBOM"
+	depends on INTEL_TXT_BIOSACM_FILE != ""
+	default n
+	help
+	  Select this option if you want to include a
+	  coswid (Concise Software Identification Tag) of the
+	  BIOS ACM (Authenticated Code Module) firmware into the
+	  SBOM (Software Bill of Materials) File in your build
+
+config SBOM_BIOS_ACM_PATH
+	string "Path to SBOM file for the BIOS AMC firmware"
+	depends on SBOM_SINIT_ACM
+	default "src/sbom/intel-bios-acm.json"
+	help
+	  The path of the SBOM file describing the Software included in the build
+	  File can be a .json, .xml, .cbor, .uswid, or .pc
+
+config SBOM_MICROCODE
+	bool "Include microcode metadata in SBOM"
+	default n
+	help
+	  Select this option if you want to include a
+	  coswid (Concise Software Identification Tag) of the
+	  microcode firmware into the SBOM (Software Bill of Materials)
+	  File in your build
+
+config SBOM_FSP
+	bool "Include Intel FSP metadata in SBOM"
+	default n
+	depends on (FSP_S_FILE != "" || FSP_M_FILE != "" || FSP_T_FILE != "")
+	help
+	  Select this option if you want to include a
+	  coswid (Concise Software Identification Tag) of the
+	  FSP firmware into the SBOM (Software Bill of Materials)
+	  File in your build
+
+config SBOM_FSP_PATH
+	string "Path to SBOM file for the FSP firmware"
+	depends on SBOM_FSP
+	default "build/sbom/generic-fsp.json"
+	help
+	  The path of the SBOM file describing the Software included in the build
+	  File can be a .json, .xml, .cbor, .uswid, or .pc
+
+config SBOM_VBOOT
+	bool "Include VBOOT metadata in SBOM"
+	default n
+	depends on VBOOT_LIB
+	help
+	  Select this option if you want to include a
+	  coswid (Concise Software Identification Tag) of the
+	  VBOOT Software into the SBOM (Software Bill of Materials)
+	  File in your build
+
+endif

@@ -1,0 +1,21 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+{
+  "lang": "en-US",
+  "tag-id": "9579af2b-39d8-59f1-ac5a-5b1fd4c03bd0",
+  "tag-version": 0,
+  "software-name": "Intel Management Engine",
+  "software-meta": [
+    {
+      "persistent-id": "com.intel.me"
+    }
+  ],
+  "entity": [
+    {
+      "entity-name": "coreboot",
+      "reg-id": "coreboot.org",
+      "role": [
+        "tagCreator"
+      ]
+    }
+  ]
+}

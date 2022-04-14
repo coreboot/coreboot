@@ -1,0 +1,25 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+{
+  "lang": "en-US",
+  "tag-id": "0e801aae-699e-5674-94a0-9259afb7d12f",
+  "tag-version": 0,
+  "software-name": "GRUB2",
+  "software-version": "<software_version>",
+  "version-scheme": "alphanumeric",
+  "software-meta": [
+    {
+      "colloquial-version": "<colloquial_version>",
+      "persistent-id": "org.grub",
+      "summary": "GNU GRUB is a boot loader, which can load a wide variety of free and proprietary operating systems with chain-loading"
+    }
+  ],
+  "entity": [
+    {
+      "entity-name": "coreboot",
+      "reg-id": "coreboot.org",
+      "role": [
+        "tagCreator"
+      ]
+    }
+  ]
+}

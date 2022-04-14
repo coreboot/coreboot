@@ -476,6 +476,12 @@ config MINIMAL_PCI_SCANNING
 	help
 	  If this option is enabled, coreboot will scan only PCI devices
 	  marked as mandatory in devicetree.cb
+
+menu "Software Bill Of Materials (SBOM)"
+
+source "src/sbom/Kconfig"
+
+endmenu
 endmenu
 
 menu "Mainboard"

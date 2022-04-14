@@ -1,0 +1,21 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+{
+  "lang": "en-US",
+  "tag-id": "cb643972-4544-525e-a25e-31651fe9fcbe",
+  "tag-version": 0,
+  "software-name": "Embedded Controller Firmware",
+  "software-meta": [
+    {
+      "summary": "The Embedded Controller is a microcontroller which handles various tasks such as power management and keyboard control"
+    }
+  ],
+  "entity": [
+    {
+      "entity-name": "coreboot",
+      "reg-id": "coreboot.org",
+      "role": [
+        "tagCreator"
+      ]
+    }
+  ]
+}

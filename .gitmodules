@@ -61,3 +61,7 @@
 	path = 3rdparty/stm
 	url = ../STM
 	branch = stmpe
+[submodule "util/goswid"]
+	path = util/goswid
+	url = ../goswid
+	branch = trunk

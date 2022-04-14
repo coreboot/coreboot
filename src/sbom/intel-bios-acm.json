@@ -1,0 +1,16 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+{
+  "lang": "en-US",
+  "tag-id": "2de383e0-1721-5369-8511-e3d07743b09a",
+  "tag-version": 0,
+  "software-name": "Intel BIOS ACM",
+  "entity": [
+    {
+      "entity-name": "coreboot",
+      "reg-id": "coreboot.org",
+      "role": [
+        "tagCreator"
+      ]
+    }
+  ]
+}

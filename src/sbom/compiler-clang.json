@@ -1,0 +1,21 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+{
+  "lang": "en-US",
+  "tag-id": "56ed2b98-6b90-574f-aa1d-11579df90e25",
+  "tag-version": 0,
+  "software-name": "clang",
+  "software-meta": [
+    {
+      "persistent-id": "org.llvm.clang"
+    }
+  ],
+  "entity": [
+    {
+      "entity-name": "coreboot",
+      "reg-id": "coreboot.org",
+      "role": [
+        "tagCreator"
+      ]
+    }
+  ]
+}

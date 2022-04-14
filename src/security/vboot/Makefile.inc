@@ -32,7 +32,8 @@ $$(VBOOT_LIB_$(1)): $(obj)/config.h
 	$(MAKE) -C $(VBOOT_SOURCE) \
 		BUILD=$$(abspath $$(dir $$(VBOOT_LIB_$(1)))) \
 		V=$(V) \
-		fwlib
+		fwlib \
+		$(if $(CONFIG_INCLUDE_VBOOT_SBOM),$$(abspath $$(dir $$(VBOOT_LIB_$(1))))/vboot_host.pc)
 
 $(1)-srcs += $$(VBOOT_LIB_$(1))
 

@@ -1,0 +1,25 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+{
+  "lang": "en-US",
+  "tag-id": "a8c6b076-e3c2-5a8f-91c9-151aa7bd3284",
+  "tag-version": 0,
+  "software-name": "depthcharge",
+  "software-version": "<software_version>",
+  "version-scheme": "alphanumeric",
+  "software-meta": [
+    {
+      "colloquial-version": "<colloquial_version>",
+      "persistent-id": "org.depthcharge",
+      "summary": "Depthcharge is a payload used by google to load and verify the Linux Kernel, run recovery mode, or boot to alternate payloads on ChromeOS devices"
+    }
+  ],
+  "entity": [
+    {
+      "entity-name": "coreboot",
+      "reg-id": "coreboot.org",
+      "role": [
+        "tagCreator"
+      ]
+    }
+  ]
+}

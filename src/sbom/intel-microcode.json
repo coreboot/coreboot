@@ -1,0 +1,24 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+{
+  "lang": "en-US",
+  "tag-id": "23edb84c-5d68-544e-b389-8a67f6c80247",
+  "tag-version": 0,
+  "software-name": "Intel-Microcode",
+  "software-version": "<software_version>",
+  "version-scheme": "alphanumeric",
+  "software-meta": [
+    {
+      "persistent-id": "com.intel.microcode",
+      "summary": "Micrcode Updates for Intel Processors"
+    }
+  ],
+  "entity": [
+    {
+      "entity-name": "coreboot",
+      "reg-id": "coreboot.org",
+      "role": [
+        "tagCreator"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+{
+  "lang": "en-US",
+  "tag-id": "231b1f39-28c2-596a-a33e-3d2d6570888f",
+  "tag-version": 0,
+  "software-name": "Intel SINIT ACM",
+  "entity": [
+    {
+      "entity-name": "coreboot",
+      "reg-id": "coreboot.org",
+      "role": [
+        "tagCreator"
+      ]
+    }
+  ]
+}

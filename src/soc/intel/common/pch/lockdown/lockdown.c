@@ -3,6 +3,7 @@
 #include <bootstate.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <intelpch/lockdown.h>
 #include <intelblocks/gpmr.h>
@@ -88,6 +89,24 @@ static void fast_spi_lockdown_cfg(int chipset_lockdown)
 	}
 }
 
+static void lpc_lockdown_config(int chipset_lockdown)
+{
+	/* Set BIOS Interface Lock, BIOS Lock */
+	if (chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
+		/* BIOS Interface Lock */
+		lpc_set_bios_interface_lock_down();
+
+		/* Only allow writes in SMM */
+		if (CONFIG(BOOTMEDIA_SMM_BWP)) {
+			lpc_set_eiss();
+			lpc_enable_wp();
+		}
+
+		/* BIOS Lock */
+		lpc_set_lock_enable();
+	}
+}
+
 /*
  * platform_lockdown_config has 2 major part.
  * 1. Common SoC lockdown configuration.
@@ -101,6 +120,9 @@ static void platform_lockdown_config(void *unused)
 
 	/* SPI lock down configuration */
 	fast_spi_lockdown_cfg(chipset_lockdown);
+
+	/* LPC/eSPI lock down configuration */
+	lpc_lockdown_config(chipset_lockdown);
 
 	/* DMI lock down configuration */
 	lockdown_cfg();

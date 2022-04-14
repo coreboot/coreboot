@@ -48,6 +48,7 @@
 	path = 3rdparty/cmocka
 	url = ../cmocka.git
 	update = none
+	branch = stable-1.1
 [submodule "3rdparty/qc_blobs"]
 	path = 3rdparty/qc_blobs
 	url = ../qc_blobs.git

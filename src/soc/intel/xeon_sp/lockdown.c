@@ -3,20 +3,10 @@
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <intelblocks/cfg.h>
-#include <intelblocks/lpc_lib.h>
 #include <intelblocks/pmclib.h>
 #include <intelpch/lockdown.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-
-static void lpc_lockdown_config(int chipset_lockdown)
-{
-	/* Set BIOS Interface Lock, BIOS Lock */
-	if (chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
-		lpc_set_bios_interface_lock_down();
-		lpc_set_lock_enable();
-	}
-}
 
 static void pmc_lockdown_config(int chipset_lockdown)
 {
@@ -46,7 +36,6 @@ static void sata_lockdown_config(int chipset_lockdown)
 
 void soc_lockdown_config(int chipset_lockdown)
 {
-	lpc_lockdown_config(chipset_lockdown);
 	pmc_lockdown_config(chipset_lockdown);
 	sata_lockdown_config(chipset_lockdown);
 }

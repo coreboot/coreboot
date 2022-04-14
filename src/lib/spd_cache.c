@@ -155,6 +155,10 @@ bool check_if_dimm_changed(u8 *spd_cache, struct spd_block *blk)
 	bool dimm_changed = false;
 	/* Check if the dimm is the same with last system boot. */
 	for (i = 0; i < SC_SPD_NUMS && !dimm_changed; i++) {
+		if (blk->addr_map[i] == 0) {
+			printk(BIOS_NOTICE, "SPD_CACHE: DIMM%d does not exist\n", i);
+			continue;
+		}
 		/* Return true if any error happened here. */
 		if (get_spd_sn(blk->addr_map[i], &sn) == CB_ERR)
 			return true;

@@ -84,5 +84,17 @@ chip soc/amd/sabrina
 			register "hid_desc_reg_offset" = "0x01"
 			device i2c 5d on end
 		end
+		chip drivers/generic/gpio_keys
+			register "name" = ""PENH""
+			register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPIO_3)"
+			register "key.dev_name" = ""EJCT""
+			register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"
+			register "key.linux_code" = "SW_PEN_INSERTED"
+			register "key.linux_input_type" = "EV_SW"
+			register "key.label" = ""pen_eject""
+			register "key.debounce_interval" = "100"
+			register "key.wakeup_route" = "WAKEUP_ROUTE_GPIO_IRQ"
+			device generic 0 on end
+		end
 	end # I2C1
 end	# chip soc/amd/sabrina

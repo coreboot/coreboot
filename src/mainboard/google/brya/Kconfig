@@ -119,6 +119,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x1 if BOARD_GOOGLE_BANSHEE
 	default 0x1 if BOARD_GOOGLE_KINOX
 	default 0x0 if BOARD_GOOGLE_CRAASK
+	default 0x1 if BOARD_GOOGLE_CROTA
 
 config DRIVER_TPM_I2C_ADDR
 	hex

@@ -20,10 +20,21 @@ static const struct pcie_rp_group pch_m_rp_groups[] = {
 	{ 0 }
 };
 
+static const struct pcie_rp_group pch_s_rp_groups[] = {
+	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8, .lcap_port_base = 1 },
+	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 8, .lcap_port_base = 1 },
+	{ .slot = PCH_DEV_SLOT_PCIE_2,	.count = 8, .lcap_port_base = 1 },
+	{ .slot = PCH_DEV_SLOT_PCIE_3,	.count = 4, .lcap_port_base = 1 },
+	{ 0 }
+};
+
 const struct pcie_rp_group *get_pch_pcie_rp_table(void)
 {
 	if (CONFIG(SOC_INTEL_ALDERLAKE_PCH_M))
 		return pch_m_rp_groups;
+
+	if (CONFIG(SOC_INTEL_ALDERLAKE_PCH_S))
+		return pch_s_rp_groups;
 
 	return pch_lp_rp_groups; /* Valid for PCH-P and PCH-N */
 }
@@ -50,6 +61,12 @@ static const struct pcie_rp_group cpu_n_rp_groups[] = {
 	{ 0 }
 };
 
+static const struct pcie_rp_group cpu_s_rp_groups[] = {
+	{ .slot = SA_DEV_SLOT_CPU_6, .start = 0, .count = 1, .lcap_port_base = 1 },
+	{ .slot = SA_DEV_SLOT_CPU_1, .start = 0, .count = 2, .lcap_port_base = 1 },
+	{ 0 }
+};
+
 const struct pcie_rp_group *get_cpu_pcie_rp_table(void)
 {
 	if (CONFIG(SOC_INTEL_ALDERLAKE_PCH_M))
@@ -57,6 +74,9 @@ const struct pcie_rp_group *get_cpu_pcie_rp_table(void)
 
 	if (CONFIG(SOC_INTEL_ALDERLAKE_PCH_N))
 		return cpu_n_rp_groups;
+
+	if (CONFIG(SOC_INTEL_ALDERLAKE_PCH_S))
+		return cpu_s_rp_groups;
 
 	return cpu_rp_groups;
 }

@@ -73,9 +73,15 @@ const char *soc_acpi_name(const struct device *dev)
 
 	switch (dev->path.pci.devfn) {
 	case SA_DEVFN_ROOT:		return "MCHC";
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_S)
+	case SA_DEVFN_CPU_PCIE1_0:	return "PEG1";
+	case SA_DEVFN_CPU_PCIE1_1:	return "PEG2";
+	case SA_DEVFN_CPU_PCIE6_0:	return "PEG0";
+#else
 	case SA_DEVFN_CPU_PCIE1_0:	return "PEG2";
 	case SA_DEVFN_CPU_PCIE6_0:	return "PEG0";
 	case SA_DEVFN_CPU_PCIE6_2:	return "PEG1";
+#endif
 	case SA_DEVFN_IGD:		return "GFX0";
 	case SA_DEVFN_TCSS_XHCI:	return "TXHC";
 	case SA_DEVFN_TCSS_XDCI:	return "TXDC";
@@ -110,6 +116,25 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_PCIE10:		return "RP10";
 	case PCH_DEVFN_PCIE11:		return "RP11";
 	case PCH_DEVFN_PCIE12:		return "RP12";
+	case PCH_DEVFN_PCIE13:		return "RP13";
+	case PCH_DEVFN_PCIE14:		return "RP14";
+	case PCH_DEVFN_PCIE15:		return "RP15";
+	case PCH_DEVFN_PCIE16:		return "RP16";
+	case PCH_DEVFN_PCIE17:		return "RP17";
+	case PCH_DEVFN_PCIE18:		return "RP18";
+	case PCH_DEVFN_PCIE19:		return "RP19";
+	case PCH_DEVFN_PCIE20:		return "RP20";
+	case PCH_DEVFN_PCIE21:		return "RP21";
+	case PCH_DEVFN_PCIE22:		return "RP22";
+	case PCH_DEVFN_PCIE23:		return "RP23";
+	case PCH_DEVFN_PCIE24:		return "RP24";
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_S)
+	/* Avoid conflicts with PCH-N eMMC */
+	case PCH_DEVFN_PCIE25:		return "RP25";
+	case PCH_DEVFN_PCIE26:		return "RP26";
+	case PCH_DEVFN_PCIE27:		return "RP27";
+	case PCH_DEVFN_PCIE28:		return "RP28";
+#endif
 	case PCH_DEVFN_PMC:		return "PMC";
 	case PCH_DEVFN_UART0:		return "UAR0";
 	case PCH_DEVFN_UART1:		return "UAR1";

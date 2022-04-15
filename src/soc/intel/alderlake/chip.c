@@ -44,6 +44,10 @@ const char *soc_acpi_name(const struct device *dev)
 			case 7: return "HS08";
 			case 8: return "HS09";
 			case 9: return "HS10";
+			case 10: return "HS11";
+			case 11: return "HS12";
+			case 12: return "HS13";
+			case 13: return "HS14";
 			}
 			break;
 		case 3:
@@ -53,6 +57,12 @@ const char *soc_acpi_name(const struct device *dev)
 			case 1: return "SS02";
 			case 2: return "SS03";
 			case 3: return "SS04";
+			case 4: return "SS05";
+			case 5: return "SS06";
+			case 6: return "SS07";
+			case 7: return "SS08";
+			case 8: return "SS09";
+			case 9: return "SS10";
 			}
 			break;
 		}

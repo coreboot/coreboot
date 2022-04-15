@@ -118,6 +118,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x0 if BOARD_GOOGLE_CRAASK
 	default 0x1 if BOARD_GOOGLE_CROTA
 	default 0x1 if BOARD_GOOGLE_MOLI
+	default 0x1 if BOARD_GOOGLE_OSIRIS
 
 config DRIVER_TPM_I2C_ADDR
 	hex
@@ -171,6 +172,7 @@ config MAINBOARD_PART_NUMBER
 	default "Moli" if BOARD_GOOGLE_MOLI
 	default "Kinox" if BOARD_GOOGLE_KINOX
 	default "Craask" if BOARD_GOOGLE_CRAASK
+	default "Osiris" if BOARD_GOOGLE_OSIRIS
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -199,6 +201,7 @@ config VARIANT_DIR
 	default "moli" if BOARD_GOOGLE_MOLI
 	default "kinox" if BOARD_GOOGLE_KINOX
 	default "craask" if BOARD_GOOGLE_CRAASK
+	default "osiris" if BOARD_GOOGLE_OSIRIS
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC

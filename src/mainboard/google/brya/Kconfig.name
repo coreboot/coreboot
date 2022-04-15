@@ -198,3 +198,7 @@ config BOARD_GOOGLE_KINOX
 config BOARD_GOOGLE_CRAASK
 	bool "->  Craask"
 	select BOARD_GOOGLE_BASEBOARD_NISSA
+
+config BOARD_GOOGLE_OSIRIS
+	bool "->  Osiris"
+	select BOARD_GOOGLE_BASEBOARD_BRYA

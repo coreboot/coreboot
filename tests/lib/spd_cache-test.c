@@ -230,6 +230,25 @@ __attribute__((unused)) static void test_check_if_dimm_changed_sn_changed(void *
 	assert_true(check_if_dimm_changed(spd_cache, &blk));
 }
 
+__attribute__((unused)) static void test_check_if_dimm_changed_with_nonexistent(void **state)
+{
+	uint8_t *spd_cache;
+	size_t spd_cache_sz;
+	struct spd_block blk = {.addr_map = {0x50, 0, 0, 0},
+				.spd_array = {0}, .len = 0};
+
+	assert_int_equal(CB_SUCCESS, load_spd_cache(&spd_cache, &spd_cache_sz));
+	memcpy(spd_cache, spd_data_ddr4_1, spd_data_ddr4_1_sz);
+	memset(spd_cache + spd_data_ddr4_1_sz, 0xff, spd_cache_sz - spd_data_ddr4_1_sz);
+	calc_spd_cache_crc(spd_cache);
+	assert_int_equal(CB_SUCCESS, spd_fill_from_cache(spd_cache, &blk));
+
+	get_sn_from_spd_cache(spd_cache, get_spd_sn_ret_sn);
+	get_spd_sn_ret_sn_idx = 0;
+	will_return_always(get_spd_sn, CB_SUCCESS);
+	assert_false(check_if_dimm_changed(spd_cache, &blk));
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -246,6 +265,8 @@ int main(void)
 		cmocka_unit_test_setup(test_check_if_dimm_changed_new_sodimm,
 				       setup_spd_cache_test),
 		cmocka_unit_test_setup(test_check_if_dimm_changed_sn_changed,
+				       setup_spd_cache_test),
+		cmocka_unit_test_setup(test_check_if_dimm_changed_with_nonexistent,
 				       setup_spd_cache_test),
 #endif
 	};

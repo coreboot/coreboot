@@ -21,6 +21,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C19, NONE),
 	/* C22 : UART2_RTS_N ==> NC */
 	PAD_NC(GPP_C22, NONE),
+	/* C23 : UART2_CTS_N ==> NC */
+	PAD_NC(GPP_C23, NONE),
 
 	/* D0  : WWAN_HOST_WAKE ==> WWAN_WDISABLE_L */
 	PAD_CFG_GPO(GPP_D0, 1, DEEP),
@@ -38,6 +40,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D20, NONE),
 	/* D21 : WWAN_WLAN_COEX3 ==> TP */
 	PAD_NC(GPP_D21, NONE),
+	/* D22 : AP_I2C_SUB_SDA*/
+	PAD_CFG_NF(GPP_D22, NONE, DEEP, NF1),
+	/* D23 : AP_I2C_SUB_SCL */
+	PAD_CFG_NF(GPP_D23, NONE, DEEP, NF1),
 
 	/* E1  : EMR_RESET_L ==> NC */
 	PAD_NC(GPP_E1, NONE),
@@ -47,6 +53,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E5, NONE),
 	/* E10 : GPP_E10/SML_DATA0 ==> NC */
 	PAD_NC(GPP_E10, NONE),
+	/* E11 : AP_I2C_SUB_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_E11, NONE, PLTRST, LEVEL, NONE),
 
 	/* G0  : SD_CMD ==> NC */
 	PAD_NC(GPP_G0, NONE),

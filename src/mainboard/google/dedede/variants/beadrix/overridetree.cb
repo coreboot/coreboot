@@ -14,10 +14,11 @@ chip soc/intel/jasperlake
 	#|                   | for TPM communication     |
 	#|                   | before memory is up       |
 	#| I2C0              | Trackpad                  |
-	#| I2C1              | Digitizer                 |
+	#| I2C1              |                           |
 	#| I2C2              | Touchscreen               |
-	#| I2C3              | Camera                    |
+	#| I2C3              |                           |
 	#| I2C4              | Audio                     |
+	#| I2C5              | P-sensor                  |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
 		.gspi[0] = {
@@ -39,6 +40,18 @@ chip soc/intel/jasperlake
 		.i2c[4] = {
 			.speed = I2C_SPEED_FAST,
 		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
+	register "SerialIoI2cMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 	}"
 
 	device domain 0 on
@@ -131,6 +144,60 @@ chip soc/intel/jasperlake
 				device i2c 1a on end
 			end
 		end # I2C 4
+		device pci 19.1 on
+			chip drivers/i2c/sx9324
+				register "desc" = ""SAR Proximity Sensor""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E11_IRQ)"
+				register "uid" = "0"
+				register "reg_gnrl_ctrl0" = "0x0a"
+				register "reg_gnrl_ctrl1" = "0x22"
+				register "reg_afe_ctrl0" = "0x20"
+				register "reg_afe_ctrl3" = "0x01"
+				register "reg_afe_ctrl4" = "0x47"
+				register "reg_afe_ctrl6" = "0x00"
+				register "reg_afe_ctrl7" = "0x47"
+				register "reg_afe_ctrl8" = "0x12"
+				register "reg_afe_ctrl9" = "0x0f"
+				register "reg_afe_ph0" = "0x37"
+				register "reg_afe_ph1" = "0x29"
+				register "reg_afe_ph2" = "0x1f"
+				register "reg_afe_ph3" = "0x3d"
+				register "reg_prox_ctrl0" = "0x0b"
+				register "reg_prox_ctrl1" = "0x0b"
+				register "reg_prox_ctrl2" = "0x20"
+				register "reg_prox_ctrl3" = "0x20"
+				register "reg_prox_ctrl4" = "0x0c"
+				register "reg_prox_ctrl5" = "0x00"
+				register "reg_prox_ctrl6" = "0x2d"
+				register "reg_prox_ctrl7" = "0xc0"
+				register "reg_adv_ctrl0" = "0x00"
+				register "reg_adv_ctrl1" = "0x00"
+				register "reg_adv_ctrl2" = "0x00"
+				register "reg_adv_ctrl3" = "0x00"
+				register "reg_adv_ctrl4" = "0x00"
+				register "reg_adv_ctrl5" = "0x05"
+				register "reg_adv_ctrl6" = "0x00"
+				register "reg_adv_ctrl7" = "0x00"
+				register "reg_adv_ctrl8" = "0x00"
+				register "reg_adv_ctrl9" = "0x00"
+				register "reg_adv_ctrl10" = "0x00"
+				register "reg_adv_ctrl11" = "0x00"
+				register "reg_adv_ctrl12" = "0x00"
+				register "reg_adv_ctrl13" = "0x00"
+				register "reg_adv_ctrl14" = "0x80"
+				register "reg_adv_ctrl15" = "0x0c"
+				register "reg_adv_ctrl16" = "0x04"
+				register "reg_adv_ctrl17" = "0x70"
+				register "reg_adv_ctrl18" = "0x40"
+				register "reg_adv_ctrl19" = "0x00"
+				register "reg_adv_ctrl20" = "0x00"
+				register "reg_irq_msk" = "0x6f"
+				register "reg_irq_cfg0" = "0x00"
+				register "reg_irq_cfg1" = "0x80"
+				register "reg_irq_cfg2" = "0x00"
+				device i2c 28 on end
+			end
+		end # I2C 5
 		device pci 1c.6 off end # PCI Express Root Port 7 / SATA_0. Baseboard/devicetree.cb is off
 		device pci 1c.7 off end # PCI Express Root Port 8 / SATA_1
 		device pci 1f.3 on

@@ -81,11 +81,42 @@ chip soc/intel/alderlake
 		[DDI_PORT_4] = DDI_ENABLE_HPD,
 	}"
 
+	register "hybrid_storage_mode" = "1"
+	register "dmi_power_optimize_disable" = "1"
+
 	device domain 0 on
+		subsystemid 0x1462 0x7d25 inherit
+		device ref pcie5_0 on
+			register "cpu_pcie_rp[CPU_RP(2)]" = "{
+				.clk_src = 0,
+				.clk_req = 0,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_HOTPLUG,
+				.PcieRpL1Substates = L1_SS_L1_2,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+			}"
+			smbios_slot_desc "SlotTypePciExpressGen5x16" "SlotLengthLong"
+					 "PCI_E1" "SlotDataBusWidth16X"
+		end
+		device ref pcie5_1 off end
 		device ref igpu on end
+		device ref pcie4_0 on
+			register "cpu_pcie_rp[CPU_RP(1)]" = "{
+				.clk_src = 9,
+				.clk_req = 9,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+				.PcieRpL1Substates = L1_SS_L1_2,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					 "M2_1" "SlotDataBusWidth4X"
+		end
 		device ref crashlog off end
 		device ref xhci on end
-		device ref cnvi_wifi on end
+		device ref cnvi_wifi on
+			# Enable CNVi BT
+			register "cnvi_bt_core" = "true"
+			register "cnvi_bt_audio_offload" = "false"
+		end
 		device ref heci1 on end
 		device ref heci2 off end
 		device ref ide_r off end
@@ -93,6 +124,98 @@ chip soc/intel/alderlake
 		device ref heci3 off end
 		device ref heci4 off end
 		device ref sata on end
+		device ref pcie_rp1 on
+			register "pch_pcie_rp[PCH_RP(1)]" = "{
+				.clk_src = 10,
+				.clk_req = 10,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_HOTPLUG | PCIE_RP_CLK_REQ_DETECT,
+				.PcieRpL1Substates = L1_SS_L1_2,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+			}"
+			smbios_slot_desc "SlotTypePciExpressGen3X1" "SlotLengthShort"
+					 "PCI_E2" "SlotDataBusWidth1X"
+		end
+		device ref pcie_rp2 on
+			register "pch_pcie_rp[PCH_RP(2)]" = "{
+				.clk_src = 17,
+				.clk_req = 17,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_HOTPLUG | PCIE_RP_CLK_REQ_DETECT,
+				.PcieRpL1Substates = L1_SS_L1_2,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+			}"
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
+					 "PCI_E4" "SlotDataBusWidth1X"
+		end
+		device ref pcie_rp3 on
+			# i225 Ethernet, Clock PM unsupported, onboard device
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.clk_src = 12,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_BUILT_IN,
+				.PcieRpL1Substates = L1_SS_L1_2,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+			}"
+		end
+		device ref pcie_rp4 off end
+
+		device ref pcie_rp5 on
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 15,
+				.clk_req = 15,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_HOTPLUG | PCIE_RP_CLK_REQ_DETECT,
+				.PcieRpL1Substates = L1_SS_L1_2,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+			}"
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
+					 "PCI_E3" "SlotDataBusWidth4X"
+		end
+
+		device ref pcie_rp9 on
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 13,
+				.clk_req = 13,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+				.PcieRpL1Substates = L1_SS_L1_2,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					 "M2_3" "SlotDataBusWidth4X"
+		end
+
+		# These are not enabled. The Flex I/O mode is SATA to cover all 8 SATA ports.
+		# There is an ASMedia switch on-board to mux the SATA ports 7, 8 and PCIe
+		# 9-12, 21-24 to M2_3 and M2_4 slots
+		device ref pcie_rp13 off end
+		device ref pcie_rp14 off end
+		device ref pcie_rp15 off end
+		device ref pcie_rp16 off end
+		device ref pcie_rp17 off end
+		device ref pcie_rp18 off end
+		device ref pcie_rp19 off end
+		device ref pcie_rp20 off end
+
+		device ref pcie_rp21 on
+			register "pch_pcie_rp[PCH_RP(21)]" = "{
+				.clk_src = 14,
+				.clk_req = 14,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+				.PcieRpL1Substates = L1_SS_L1_2,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					 "M2_4" "SlotDataBusWidth4X"
+		end
+
+		device ref pcie_rp25 on
+			register "pch_pcie_rp[PCH_RP(25)]" = "{
+				.clk_src = 8,
+				.clk_req = 8,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+				.PcieRpL1Substates = L1_SS_L1_2,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					 "M2_2" "SlotDataBusWidth4X"
+		end
 		device ref p2sb on end
 		device ref hda on end
 		device ref smbus on end

@@ -6,6 +6,8 @@
 #include <soc/romstage.h>
 #include <soc/meminit.h>
 
+#include "gpio.h"
+
 static const struct mb_cfg ddr4_mem_config = {
 	.type = MEM_TYPE_DDR4,
 
@@ -35,5 +37,24 @@ static const struct mem_spd dimm_module_spd_info = {
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[0] = 1;
+	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[1] = 1;
+	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[2] = 0;
+	memupd->FspmConfig.DmiMaxLinkSpeed = 4; // Gen4 speed, undocumented
+	memupd->FspmConfig.SkipExtGfxScan = 0;
+
+	memupd->FspmConfig.PchHdaAudioLinkHdaEnable = 1;
+	memupd->FspmConfig.PchHdaSdiEnable[0] = 1;
+
+	/*
+	 * Let FSP configure virtual wires, CLKREQs, etc.
+	 * Otherwise undefined behaviour occurs when coreboot enables ASPM on
+	 * CPU PCIe root ports. This is caused by FSP reprogramming certain
+	 * pads including CLKREQ pins, despite GpioOverride = 1.
+	 */
+	memupd->FspmConfig.GpioOverride = 0;
+
 	memcfg_init(memupd, &ddr4_mem_config, &dimm_module_spd_info, false);
+
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }

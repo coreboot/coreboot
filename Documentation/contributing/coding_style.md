@@ -960,6 +960,41 @@ asm ("magic %reg1, #42nt"
 	: /* outputs */ : /* inputs */ : /* clobbers */);
 ```
 
+GCC extensions
+--------------
+
+GCC is the only officially-supported compiler for coreboot, and a
+variety of its C language extensions are heavily used throughout the
+code base. There have been occasional attempts to add clang as a second
+compiler option, which is generally compatible to the same language
+extensions that have been long-established by GCC.
+
+Some GCC extensions (e.g. inline assembly) are basically required for
+proper firmware development. Others enable more safe or flexible
+coding patterns than can be expressed with standard C (e.g. statement
+expressions and `typeof()` to avoid double evaluation in macros like
+`MAX()`). Yet others just add some simple convenience and reduce
+boilerplate (e.g. `void *` arithmetic).
+
+Since some GCC extensions are necessary either way, there is no gain
+from avoiding other GCC extensions elsewhere. The use of all official
+GCC extensions is expressly allowed within coreboot. In cases where an
+extension can be replaced by a 100% equivalent C standard feature with
+no extra boilerplate or loss of readability, the C standard feature
+should be preferred (this usually only happens when GCC retains an
+older pre-standardization extension for backwards compatibility, e.g.
+the old pre-C99 syntax for designated initializers). But if there is
+any advantage offered by the GCC extension (e.g. using GCC zero-length
+arrays instead of C99 variable-length arrays because they don't inhibit
+`sizeof()`), there is no reason to deprive ourselves of that, and "this
+is not C standard compliant" should not be a reason to argue against
+its use in reviews.
+
+This rule only applies to explicit GCC extensions listed in the
+"Extensions to the C Language Family" section of the GCC manual. Code
+should never rely on incidental GCC translation behavior that is not
+explicitly documented as a feature and could change at any moment.
+
 References
 ----------
 

@@ -57,8 +57,7 @@
 /* Enable MKBP for buttons and switches */
 #define EC_ENABLE_MKBP_DEVICE
 
-/* Enable LID switch and provide wake pin for EC */
-#define EC_ENABLE_LID_SWITCH
+/* Provide wake pin for EC */
 #define EC_ENABLE_WAKE_PIN GEVENT_3 /* AGPIO 22 -> GPE 3 */
 
 #define SIO_EC_MEMMAP_ENABLE /* EC Memory Map Resources */

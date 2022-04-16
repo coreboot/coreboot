@@ -60,7 +60,7 @@ Scope (\_SB.PCI0.I2C0)
 				AddressingMode7Bit,       // AddressingMode
 				"\\_SB.PCI0.I2C0"        // ResourceSource
 			)
-			Interrupt (ResourceConsumer, Edge, ActiveLow, Shared)
+			Interrupt (ResourceConsumer, Level, ActiveLow, Shared)
 			{
 				BOARD_TRACKPAD_IRQ
 			}

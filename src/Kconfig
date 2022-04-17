@@ -1210,7 +1210,7 @@ config DEBUG_ADA_CODE
 	  `pragma Debug`.
 
 config HAVE_EM100_SUPPORT
-	bool "Platform can support the Dediprog EM100 SPI emulator"
+	bool
 	help
 	  This is enabled by platforms which can support using the EM100.
 

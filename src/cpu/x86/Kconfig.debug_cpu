@@ -1,3 +1,5 @@
+if ARCH_X86
+
 config HAVE_DEBUG_CAR
 	bool
 
@@ -11,3 +13,5 @@ config DISPLAY_MTRRS
 config DEBUG_SMM_RELOCATION
 	bool "Debug SMM relocation code"
 	depends on HAVE_SMI_HANDLER && SMM_ASEG
+
+endif # ARCH_X86

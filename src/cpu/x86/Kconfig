@@ -1,3 +1,5 @@
+if ARCH_X86
+
 config PARALLEL_MP
 	def_bool y
 	depends on !LEGACY_SMP_INIT
@@ -194,3 +196,5 @@ config CPU_INFO_V2
 	  Enables the new method of locating struct cpu_info. This new method
 	  uses the %gs segment to locate the cpu_info pointer. The old method
 	  relied on the stack being CONFIG_STACK_SIZE aligned.
+
+endif # ARCH_X86

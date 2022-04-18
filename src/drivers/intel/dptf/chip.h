@@ -59,6 +59,9 @@ struct drivers_intel_dptf_config {
 	struct {
 		uint32_t oem_variables[DPTF_OEM_VARIABLE_COUNT];
 	} oem_data;
+
+	/* Rest of platform Power */
+	uint32_t prop;
 };
 
 #endif /* _DRIVERS_INTEL_DPTF_CHIP_H_ */

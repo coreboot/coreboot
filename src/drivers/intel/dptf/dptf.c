@@ -372,7 +372,8 @@ static void write_tpch_methods(const struct dptf_platform_info *platform_info)
 	acpigen_write_device_end(); /* TPCH Device */
 }
 
-static void write_create_tpwr(const struct dptf_platform_info *platform_info)
+static void write_create_tpwr(const struct drivers_intel_dptf_config *config,
+			      const struct dptf_platform_info *platform_info)
 {
 	acpigen_write_device("TPWR");
 	acpigen_write_name("_HID");
@@ -382,12 +383,21 @@ static void write_create_tpwr(const struct dptf_platform_info *platform_info)
 	acpigen_write_name_string("_STR", DEFAULT_POWER_STR);
 	acpigen_write_name_integer("PTYP", DPTF_GENERIC_PARTICIPANT_TYPE_POWER);
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
+
+	/* PROP method */
+	if(config->prop != 0) {
+		acpigen_write_method_serialized("PROP", 0);
+		acpigen_emit_byte(RETURN_OP);
+		acpigen_write_integer(config->prop);
+		acpigen_pop_len(); /* Method PROP */
+	}
 	acpigen_write_device_end(); /* TPWR Power Participant Device */
 }
 
-static void write_tpwr_methods(const struct dptf_platform_info *platform_info)
+static void write_tpwr_methods(const struct drivers_intel_dptf_config *config,
+			       const struct dptf_platform_info *platform_info)
 {
-	write_create_tpwr(platform_info);
+	write_create_tpwr(config, platform_info);
 }
 
 static void write_create_tbat(const struct dptf_platform_info *platform_info)
@@ -449,7 +459,7 @@ static void write_device_definitions(const struct device *dev)
 		write_tpch_methods(platform_info);
 
 	if (CONFIG(DRIVERS_INTEL_DPTF_SUPPORTS_TPWR))
-		write_tpwr_methods(platform_info);
+		write_tpwr_methods(config, platform_info);
 
 	if (CONFIG(DRIVERS_INTEL_DPTF_SUPPORTS_TBAT))
 		write_tbat_methods(platform_info);

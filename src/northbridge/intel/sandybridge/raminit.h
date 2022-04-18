@@ -9,10 +9,6 @@
 #define BOOT_PATH_RESET		1
 #define BOOT_PATH_RESUME	2
 
-void sdram_initialize(struct pei_data *pei_data);
-void save_mrc_data(struct pei_data *pei_data);
 void mainboard_fill_pei_data(struct pei_data *pei_data);
-int fixup_sandybridge_errata(void);
-void setup_sdram_meminfo(struct pei_data *pei_data);
 
 #endif /* RAMINIT_H */

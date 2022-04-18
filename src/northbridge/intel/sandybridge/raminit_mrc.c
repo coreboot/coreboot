@@ -49,7 +49,7 @@
 
 #define MRC_CACHE_VERSION 0
 
-void save_mrc_data(struct pei_data *pei_data)
+static void save_mrc_data(struct pei_data *pei_data)
 {
 	u16 c1, c2, checksum;
 
@@ -127,7 +127,7 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
  *
  * @param pei_data: configuration data for UEFI PEI reference code
  */
-void sdram_initialize(struct pei_data *pei_data)
+static void sdram_initialize(struct pei_data *pei_data)
 {
 	int (*entry)(struct pei_data *pei_data) __attribute__((regparm(1)));
 
@@ -320,6 +320,8 @@ static void disable_p2p(void)
 	RCBA32(FD) |= PCH_DISABLE_P2P;
 }
 
+static void setup_sdram_meminfo(struct pei_data *pei_data);
+
 void perform_raminit(int s3resume)
 {
 	struct pei_data pei_data;
@@ -390,7 +392,7 @@ void perform_raminit(int s3resume)
 	setup_sdram_meminfo(&pei_data);
 }
 
-void setup_sdram_meminfo(struct pei_data *pei_data)
+static void setup_sdram_meminfo(struct pei_data *pei_data)
 {
 	u32 addr_decoder_common, addr_decode_ch[2];
 	struct memory_info *mem_info;

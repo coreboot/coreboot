@@ -195,6 +195,31 @@ void lpc_set_eiss(void)
 	lpc_set_bios_control_reg(LPC_BC_EISS);
 }
 
+static void lpc_configure_write_protect(bool status)
+{
+	const pci_devfn_t dev = PCH_DEV_LPC;
+	uint8_t bios_cntl;
+
+	bios_cntl = pci_read_config8(dev, LPC_BIOS_CNTL);
+	if (status)
+		bios_cntl &= ~LPC_BC_WPD;
+	else
+		bios_cntl |= LPC_BC_WPD;
+	pci_write_config8(dev, LPC_BIOS_CNTL, bios_cntl);
+}
+
+/* Enable LPC Write Protect. */
+void lpc_enable_wp(void)
+{
+	lpc_configure_write_protect(true);
+}
+
+/* Disable LPC Write Protect. */
+void lpc_disable_wp(void)
+{
+	lpc_configure_write_protect(false);
+}
+
 /*
 * Set LPC Serial IRQ mode.
 */

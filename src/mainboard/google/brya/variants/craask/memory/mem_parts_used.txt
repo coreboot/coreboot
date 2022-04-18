@@ -9,3 +9,5 @@
 # See util/spd_tools/README.md for more details and instructions.
 
 # Part Name
+MT62F1G32D4DR-031 WT:B
+MT62F512M32D2DR-031 WT:B

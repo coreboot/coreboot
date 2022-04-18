@@ -142,6 +142,9 @@ extern struct device_operations pmc_ops;
 #define   ACPI_EN			(1 << 7)
 #define   SCI_IRQ_SEL			(7 << 0)
 
+#define ST_PG_FDIS1			0x1e20
+#define   ST_FDIS_LOCK			(1 << 31)
+
 #define  SCIS_IRQ9			0
 #define  SCIS_IRQ10			1
 #define  SCIS_IRQ11			2

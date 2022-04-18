@@ -84,8 +84,8 @@ chip soc/intel/alderlake
 		end
 		device ref pcie_rp3 on
 			chip soc/intel/common/block/pcie/rtd3
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B3)"
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E20)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B4)"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D11)"
 				register "srcclk_pin" = "1"
 				device generic 0 alias emmc_rtd3 on end
 			end
@@ -96,6 +96,7 @@ chip soc/intel/alderlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end	#PCIE3 BH799BB
+		device ref pcie_rp9 off end
 		device ref tcss_dma0 on
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E4)"
@@ -120,10 +121,10 @@ chip soc/intel/alderlake
 			end
 		end	#PCIE8 SD card
 		device ref pcie4_0 on
-			# Enable CPU PCIE RP 1 using CLK 1
+			# Enable CPU PCIE RP 1 using CLK 0
 			register "cpu_pcie_rp[CPU_RP(1)]" = "{
-				.clk_req = 1,
-				.clk_src = 1,
+				.clk_req = 0,
+				.clk_src = 0,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end

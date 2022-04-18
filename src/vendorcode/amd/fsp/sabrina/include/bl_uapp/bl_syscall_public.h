@@ -32,24 +32,29 @@
 
 #include <stdint.h>
 
-#define SVC_EXIT                            0x00
-#define SVC_ENTER                           0x02
-#define SVC_DEBUG_PRINT                     0x06
-#define SVC_MODEXP                          0x0C
-#define SVC_DEBUG_PRINT_EX                  0x1A
-#define SVC_GET_BOOT_MODE                   0x1C
-#define SVC_DELAY_IN_MICRO_SECONDS          0x2F
-#define SVC_GET_SPI_INFO                    0x60
-#define SVC_MAP_SPIROM_DEVICE               0x61
-#define SVC_UNMAP_SPIROM_DEVICE             0x62
-#define SVC_MAP_FCH_IO_DEVICE               0x63
-#define SVC_UNMAP_FCH_IO_DEVICE             0x64
-#define SVC_UPDATE_PSP_BIOS_DIR             0x65
-#define SVC_COPY_DATA_FROM_UAPP             0x66
-#define SVC_RESET_SYSTEM                    0x67
-#define SVC_READ_TIMER_VAL                  0x68
-#define SVC_SHA                             0x69
-#define SVC_CCP_DMA                         0x6A
+#define SVC_EXIT		0x00
+#define SVC_ENTER		0x02
+#define SVC_VERSTAGE_CMD	0x3A
+
+enum verstage_cmd_id {
+	CMD_SHA	= 1,
+	CMD_MODEXP,
+	CMD_DEBUG_PRINT,
+	CMD_DEBUG_PRINT_EX,
+	CMD_UPDATE_PSP_BIOS_DIR,
+	CMD_GET_SPI_INFO,
+	CMD_MAP_SPIROM_DEVICE,
+	CMD_UNMAP_SPIROM_DEVICE,
+	CMD_READ_TIMER_VAL,
+	CMD_DELAY_IN_MICRO_SECONDS,
+	CMD_RESET_SYSTEM,
+	CMD_GET_BOOT_MODE,
+	CMD_COPY_DATA_FROM_UAPP,
+	CMD_MAP_FCH_IO_DEVICE,
+	CMD_UNMAP_FCH_IO_DEVICE,
+	CMD_CCP_DMA,
+	CMD_SET_PLATFORM_BOOT_MODE,
+};
 
 struct mod_exp_params {
 	char		*pExponent;	// Exponent address
@@ -86,7 +91,6 @@ enum fch_io_device {
 	FCH_IO_DEVICE_MISC,
 	FCH_IO_DEVICE_AOAC,
 	FCH_IO_DEVICE_IOPORT,
-
 	FCH_IO_DEVICE_END,
 };
 
@@ -133,6 +137,19 @@ struct sha_generic_data {
 	uint32_t	IntermediateMsgLen;
 	uint32_t	Init;
 	uint32_t	Eom;
+};
+
+/*
+ * This is state that PSP manages internally.
+ * We only report BOOT_MODE_DEVELOPER or BOOT_MODE_NORMAL in verstage.
+ */
+enum chrome_platform_boot_mode
+{
+	NON_CHROME_BOOK_BOOT_MODE                = 0x0,
+	CHROME_BOOK_BOOT_MODE_UNSIGNED_VERSTAGE  = 0x1,
+	CHROME_BOOK_BOOT_MODE_NORMAL             = 0x2,
+	CHROME_BOOK_BOOT_MODE_DEVELOPER          = 0x3,
+	CHROME_BOOK_BOOT_MODE_TYPE_MAX_LIMIT     = 0x4, // used for boundary check
 };
 
 /*
@@ -312,6 +329,14 @@ uint32_t svc_modexp(struct mod_exp_params *mod_exp_param);
  * Return value: BL_OK or error code
  */
 uint32_t svc_ccp_dma(uint32_t spi_rom_offset, void *dest, uint32_t size);
+
+/*
+ * Get the Platform boot mode from verstage. Normal or developer
+ *
+ * Parameters:
+ *       - boot mode
+ -----------------------------------------------------------------------------*/
+uint32_t svc_set_platform_boot_mode(enum chrome_platform_boot_mode boot_mode);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

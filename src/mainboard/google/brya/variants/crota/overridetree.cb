@@ -19,6 +19,8 @@ end
 
 chip soc/intel/alderlake
 
+	register "max_dram_speed" = "4800"
+
 	# Acoustic settings
 	register "acoustic_noise_mitigation" = "1"
 	register "slow_slew_rate[VR_DOMAIN_IA]" = "SLEW_FAST_4"

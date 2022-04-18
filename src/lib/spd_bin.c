@@ -34,6 +34,7 @@ static bool use_ddr4_params(int dram_type)
 	case SPD_DRAM_LPDDR3_JEDEC:
 	case SPD_DRAM_DDR4:
 	case SPD_DRAM_DDR5:
+	case SPD_DRAM_LPDDR5:
 	case SPD_DRAM_LPDDR4:
 	case SPD_DRAM_LPDDR4X:
 		return true;
@@ -165,6 +166,7 @@ static void spd_get_name(const uint8_t spd[], int type, const char **spd_name, s
 	case SPD_DRAM_LPDDR3_JEDEC:
 	case SPD_DRAM_DDR4:
 	case SPD_DRAM_DDR5:
+	case SPD_DRAM_LPDDR5:
 	case SPD_DRAM_LPDDR4:
 	case SPD_DRAM_LPDDR4X:
 		if (spd[DDR4_SPD_PART_OFF]) {

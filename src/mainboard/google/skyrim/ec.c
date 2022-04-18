@@ -10,8 +10,8 @@
 
 static const struct sci_source espi_sci_sources[] = {
 	{
-		.scimap = SMITYPE_ESPI_SYS,
-		.gpe = GEVENT_3,
+		.scimap = SMITYPE_ESPI_SCI_B,
+		.gpe = EC_SCI_GPI,
 		.direction = SMI_SCI_LVL_HIGH, /* enum smi_sci_lvl */
 		.level = SMI_SCI_EDG, /* enum smi_sci_dir */
 	}

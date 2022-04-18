@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <amdblocks/acpimmio.h>
 #include <amdblocks/amd_pci_util.h>
 #include <baseboard/variants.h>
 #include <console/console.h>
@@ -111,6 +112,10 @@ static void mainboard_enable(struct device *dev)
 	init_tables();
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
+
+	/* TODO: b/184678786 - Move into espi_config */
+	/* Unmask eSPI IRQ 1 (Keyboard) */
+	pm_write32(PM_ESPI_INTR_CTRL, PM_ESPI_DEV_INTR_MASK & ~(BIT(1)));
 }
 
 struct chip_operations mainboard_ops = {

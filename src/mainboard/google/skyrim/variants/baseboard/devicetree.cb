@@ -35,7 +35,7 @@ chip soc/amd/sabrina
 		.oob_ch_en = 0,
 		.flash_ch_en = 0,
 
-		.vw_irq_polarity = ESPI_VW_IRQ_LEVEL_HIGH(1) | ESPI_VW_IRQ_LEVEL_HIGH(12),
+		.vw_irq_polarity = ESPI_VW_IRQ_LEVEL_HIGH(1),
 	}"
 
 	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |

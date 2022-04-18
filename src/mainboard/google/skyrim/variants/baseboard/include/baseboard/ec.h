@@ -52,7 +52,7 @@
  */
 
 /* Set GPI for SCI */
-#define EC_SCI_GPI GEVENT_3 /* eSPI system event -> GPE 3 */
+#define EC_SCI_GPI GEVENT_24 /* eSPI system event -> GPE 24 */
 
 /* Enable LID switch and provide wake pin for EC */
 #define EC_ENABLE_LID_SWITCH

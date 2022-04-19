@@ -6,12 +6,12 @@
 #define AMD_SABRINA_PSP_VERSTAGE_ADDR_H
 
 /*
- * Start of available space is 0x36000 and this is where the
+ * Start of available space is 0x0 and this is where the
  * header for the user app (verstage) must be mapped.
- * Size is 0x14000 bytes
+ * Size is 208KB
  */
-#define PSP_SRAM_START			0x26000
-#define PSP_SRAM_SIZE			(148K)
+#define PSP_SRAM_START			0x0
+#define PSP_SRAM_SIZE			(208K)
 #define VERSTAGE_START			PSP_SRAM_START
 
 /*
@@ -19,7 +19,7 @@
  * and make the size a multiple of 4k
  */
 
-#define PSP_VERSTAGE_STACK_START	0x41000
+#define PSP_VERSTAGE_STACK_START	0x2a000
 #define PSP_VERSTAGE_STACK_SIZE		(40K)
 
 #endif  /* AMD_SABRINA_PSP_VERSTAGE_ADDR_H */

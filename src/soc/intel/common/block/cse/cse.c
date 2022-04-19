@@ -1195,11 +1195,6 @@ static void cse_set_state(struct device *dev)
 		me_reset_with_count();
 }
 
-struct cse_notify_phase_data {
-	bool skip;
-	void (*notify_func)(void);
-};
-
 /*
  * `cse_final_ready_to_boot` function is native implementation of equivalent events
  * performed by FSP NotifyPhase(Ready To Boot) API invocations.
@@ -1235,27 +1230,17 @@ static void cse_final_end_of_firmware(void)
 	heci_set_to_d0i3();
 }
 
-static const struct cse_notify_phase_data notify_data[] = {
-	{
-		.skip         = CONFIG(USE_FSP_NOTIFY_PHASE_READY_TO_BOOT),
-		.notify_func  = cse_final_ready_to_boot,
-	},
-	{
-		.skip         = CONFIG(USE_FSP_NOTIFY_PHASE_END_OF_FIRMWARE),
-		.notify_func  = cse_final_end_of_firmware,
-	},
-};
-
 /*
  * `cse_final` function is native implementation of equivalent events performed by
  * each FSP NotifyPhase() API invocations.
  */
 static void cse_final(struct device *dev)
 {
-	for (size_t i = 0; i < ARRAY_SIZE(notify_data); i++) {
-		if (!notify_data[i].skip)
-			notify_data[i].notify_func();
-	}
+	if (!CONFIG(USE_FSP_NOTIFY_PHASE_READY_TO_BOOT))
+		cse_final_ready_to_boot();
+
+	if (!CONFIG(USE_FSP_NOTIFY_PHASE_END_OF_FIRMWARE))
+		cse_final_end_of_firmware();
 }
 
 static struct device_operations cse_ops = {

@@ -25,6 +25,10 @@ bootblock_resume_entry:
 bootblock_pre_c_entry:
 	post_code(0xa0)
 
+#if ENV_X86_64
+	#include <cpu/x86/64bit/entry64.inc>
+#endif
+
 	/* Clear .bss section */
 	cld
 	xor	%eax, %eax
@@ -40,10 +44,17 @@ bootblock_pre_c_entry:
 	and	$0xfffffff0, %esp
 	sub	$8, %esp
 
+#if ENV_X86_64
+	movd	%mm2, %rdi
+	shlq	$32, %rdi
+	movd	%mm1, %rsi
+	or	%rsi, %rdi
+#else
 	movd	%mm2, %eax
 	pushl	%eax		/* tsc[63:32] */
 	movd	%mm1, %eax
 	pushl	%eax		/* tsc[31:0] */
+#endif
 
 	post_code(0xa2)
 

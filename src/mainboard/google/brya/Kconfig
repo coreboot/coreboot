@@ -92,7 +92,7 @@ config DEVICETREE
 
 config DRIVER_TPM_I2C_BUS
 	hex
-	default 0x3 if BOARD_GOOGLE_BRYA0
+	default 0x1 if BOARD_GOOGLE_BRYA0
 	default 0x3 if BOARD_GOOGLE_BRYA4ES
 	default 0x1 if BOARD_GOOGLE_BRASK
 	default 0x1 if BOARD_GOOGLE_PRIMUS

@@ -52,6 +52,53 @@ chip soc/intel/alderlake
 		.configure_ext_fivr = 1,
 	}"
 
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI1             | Fingerprint MCU           |
+	#| I2C0              | Audio                     |
+	#| I2C1              | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#| I2C2              | SAR                       |
+	#| I2C3              | TouchScreen               |
+	#| I2C5              | Trackpad                  |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 650,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[1] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 600,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 900,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 650,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 650,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+	}"
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf
@@ -359,62 +406,12 @@ chip soc/intel/alderlake
 			end
 		end #I2C0
 		device ref i2c1 on
-			chip drivers/i2c/hid
-				register "generic.hid" = ""ELAN9050""
-				register "generic.desc" = ""ELAN Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
-				register "generic.probed" = "1"
-				register "generic.reset_gpio" =
-							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
-				register "generic.reset_delay_ms" = "300"
-				register "generic.reset_off_delay_ms" = "1"
-				register "generic.enable_gpio" =
-							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
-				register "generic.enable_delay_ms" = "6"
-				register "generic.stop_gpio" =
-							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
-				register "generic.stop_off_delay_ms" = "1"
-				register "generic.has_power_resource" = "1"
-				register "hid_desc_reg_offset" = "0x01"
-				device i2c 0x10 on end
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
+				device i2c 50 on end
 			end
-			chip drivers/i2c/hid
-				register "generic.hid" = ""GDIX0000""
-				register "generic.desc" = ""Goodix Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
-				register "generic.probed" = "1"
-				register "generic.reset_gpio" =
-							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
-				register "generic.reset_delay_ms" = "120"
-				register "generic.reset_off_delay_ms" = "3"
-				register "generic.enable_gpio" =
-							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
-				register "generic.enable_delay_ms" = "12"
-				register "generic.stop_gpio" =
-							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
-				register "generic.stop_off_delay_ms" = "1"
-				register "generic.has_power_resource" = "1"
-				register "hid_desc_reg_offset" = "0x01"
-				device i2c 0x5d on end
-			end
-			chip drivers/i2c/hid
-				register "generic.hid" = ""SIS9815""
-				register "generic.desc" = ""SIS Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
-				register "generic.probed" = "1"
-				register "generic.reset_gpio" =
-							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
-				register "generic.stop_gpio" =
-							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
-				register "generic.stop_delay_ms" = "100"
-				register "generic.enable_gpio" =
-							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
-				register "generic.enable_delay_ms" = "7"
-				register "generic.has_power_resource" = "1"
-				register "hid_desc_reg_offset" = "0x00"
-				device i2c 5c on end
-			end
-		end
+		end #I2C1
 		device ref i2c2 on
 			chip drivers/i2c/sx9324
 				register "desc" = ""SAR1 Proximity Sensor""
@@ -584,14 +581,64 @@ chip soc/intel/alderlake
 					probe HPS HPS_PRESENT
 				end
 			end
-		end
+		end #I2C2
 		device ref i2c3 on
-			chip drivers/i2c/tpm
-				register "hid" = ""GOOG0005""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
-				device i2c 50 on end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN9050""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "300"
+				register "generic.reset_off_delay_ms" = "1"
+				register "generic.enable_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "6"
+				register "generic.stop_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
+				register "generic.stop_off_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 0x10 on end
 			end
-		end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GDIX0000""
+				register "generic.desc" = ""Goodix Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "120"
+				register "generic.reset_off_delay_ms" = "3"
+				register "generic.enable_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "12"
+				register "generic.stop_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
+				register "generic.stop_off_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 0x5d on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""SIS9815""
+				register "generic.desc" = ""SIS Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.stop_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
+				register "generic.stop_delay_ms" = "100"
+				register "generic.enable_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "7"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x00"
+				device i2c 5c on end
+			end
+		end #I2C3
 		device ref i2c5 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
@@ -601,7 +648,7 @@ chip soc/intel/alderlake
 				register "probed" = "1"
 				device i2c 15 on end
 			end
-		end
+		end #I2C5
 		device ref hda on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98357A""

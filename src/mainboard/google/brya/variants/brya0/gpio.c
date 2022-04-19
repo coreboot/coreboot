@@ -117,6 +117,52 @@ static const struct pad_config early_gpio_table_id2[] = {
 	PAD_NC(GPP_H13, UP_20K),
 };
 
+/* Early pad configuration in bootblock for board id 4 */
+static const struct pad_config early_gpio_table_id4[] = {
+	/* A12 : SATAXPCIE1 ==> EN_PP3300_WWAN */
+	PAD_CFG_GPO(GPP_A12, 1, DEEP),
+	/* A13 : PMC_I2C_SCL ==> GSC_PCH_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
+	/* B4  : PROC_GP3 ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 0, DEEP),
+	/* H6  : ISH_12C1_SDA ==> PCH_I2C_TPM_SDA */
+	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
+	/* H7  : ISH_12C1_SCL ==> PCH_I2C_TPM_SCL */
+	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
+	/*
+	 * D1  : ISH_GP1 ==> FP_RST_ODL
+	 * FP_RST_ODL comes out of reset as hi-z and does not have an external
+	 * pull-down. To ensure proper power sequencing for the FPMCU device,
+	 * reset signal is driven low early on in bootblock, followed by
+	 * enabling of power. Reset signal is deasserted later on in ramstage.
+	 * Since reset signal is asserted in bootblock, it results in FPMCU not
+	 * working after a S3 resume. This is a known issue.
+	 */
+	PAD_CFG_GPO(GPP_D1, 0, DEEP),
+	/* D2  : ISH_GP2 ==> EN_FP_PWR */
+	PAD_CFG_GPO(GPP_D2, 1, DEEP),
+	/* D11 : ISH_SPI_MISO ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_D11, 1, DEEP),
+	/* E0  : SATAXPCIE0 ==> WWAN_PERST_L (updated in ramstage) */
+	PAD_CFG_GPO(GPP_E0, 0, DEEP),
+	/* E13 : THC0_SPI1_IO2 ==> MEM_CH_SEL */
+	PAD_CFG_GPI(GPP_E13, NONE, DEEP),
+	/* E16 : RSVD_TP ==> WWAN_RST_L (updated in ramstage) */
+	PAD_CFG_GPO(GPP_E16, 0, DEEP),
+	/* E15 : RSVD_TP ==> PCH_WP_OD */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
+	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
+	/* F21 : EXT_PWR_GATE2# ==> WWAN_FCPO_L (updated in romstage) */
+	PAD_CFG_GPO(GPP_F21, 0, DEEP),
+	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
+	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
+	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
+	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
+	PAD_NC(GPP_H13, UP_20K),
+};
+
 static const struct pad_config romstage_gpio_table[] = {
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
@@ -142,6 +188,9 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 	if (id == BOARD_ID_UNKNOWN || id < 2) {
 		*num = ARRAY_SIZE(early_gpio_table);
 		return early_gpio_table;
+	} else if (id >= 4) {
+		*num = ARRAY_SIZE(early_gpio_table_id4);
+		return early_gpio_table_id4;
 	}
 
 	*num = ARRAY_SIZE(early_gpio_table_id2);

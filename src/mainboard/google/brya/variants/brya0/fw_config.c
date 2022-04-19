@@ -144,7 +144,7 @@ static void fw_config_handle(void *unused)
 		printk(BIOS_INFO, "Configure audio over I2S with MAX98360 ALC5682I.\n");
 		gpio_configure_pads(max98360_enable_pads, ARRAY_SIZE(max98360_enable_pads));
 		printk(BIOS_INFO, "BT offload enabled\n");
-		gpio_configure_pads(i2s0_disable_pads, ARRAY_SIZE(i2s0_disable_pads));
+		gpio_configure_pads(i2s0_enable_pads, ARRAY_SIZE(i2s0_enable_pads));
 		gpio_configure_pads(bt_i2s_enable_pads, ARRAY_SIZE(bt_i2s_enable_pads));
 	}
 }

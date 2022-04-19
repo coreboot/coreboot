@@ -82,5 +82,5 @@ void handle_smi_store(void)
 	reg_ebx = io_smi->rbx;
 
 	/* drivers/smmstore/smi.c */
-	io_smi->rax = smmstore_exec(sub_command, (void *)reg_ebx);
+	io_smi->rax = smmstore_exec(sub_command, (void *)(uintptr_t)reg_ebx);
 }

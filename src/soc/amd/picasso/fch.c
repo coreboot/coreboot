@@ -109,7 +109,7 @@ static void sb_rfmux_config_override(void)
 
 	for (port = 0; port < USB_PD_PORT_COUNT; port++) {
 		if (cfg->usb_pd_config_override[port].rfmux_override_en) {
-			write32((void *)(USB_PD_PORT_CONTROL + PD_PORT_MUX_OFFSET(port)),
+			write32p(USB_PD_PORT_CONTROL + PD_PORT_MUX_OFFSET(port),
 				cfg->usb_pd_config_override[port].rfmux_config
 				| USB_PD_RFMUX_OVERRIDE);
 		}

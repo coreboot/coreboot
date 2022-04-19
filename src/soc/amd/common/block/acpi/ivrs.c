@@ -219,8 +219,8 @@ static unsigned long acpi_fill_ivrs40(unsigned long current, acpi_ivrs_t *ivrs)
 	ivhd_40->iommu_attributes = ivrs->ivhd.iommu_feature_info & 0xfffe000;
 
 	if (pci_read_config32(iommu_dev, ivhd_40->capability_offset) & EFR_FEATURE_SUP) {
-		ivhd_40->efr_reg_image_low  = read32((void *)ivhd_40->iommu_base_low + 0x30);
-		ivhd_40->efr_reg_image_high = read32((void *)ivhd_40->iommu_base_low + 0x34);
+		ivhd_40->efr_reg_image_low  = read32p(ivhd_40->iommu_base_low + 0x30);
+		ivhd_40->efr_reg_image_high = read32p(ivhd_40->iommu_base_low + 0x34);
 	}
 
 	current += sizeof(acpi_ivrs_ivhd40_t);
@@ -293,8 +293,8 @@ static unsigned long acpi_fill_ivrs11(unsigned long current, acpi_ivrs_t *ivrs)
 	ivhd_11->iommu_attributes.msi_num_ppr = ivhd11_attr_ptr->msi_num_ppr;
 
 	if (pci_read_config32(iommu_dev, ivhd_11->capability_offset) & EFR_FEATURE_SUP) {
-		ivhd_11->efr_reg_image_low  = read32((void *)ivhd_11->iommu_base_low + 0x30);
-		ivhd_11->efr_reg_image_high = read32((void *)ivhd_11->iommu_base_low + 0x34);
+		ivhd_11->efr_reg_image_low  = read32p(ivhd_11->iommu_base_low + 0x30);
+		ivhd_11->efr_reg_image_high = read32p(ivhd_11->iommu_base_low + 0x34);
 	}
 
 	current += sizeof(acpi_ivrs_ivhd11_t);
@@ -361,9 +361,9 @@ unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 		cap_offset_0 = pci_read_config32(iommu_dev, ivrs->ivhd.capability_offset);
 		cap_offset_10 = pci_read_config32(iommu_dev,
 						ivrs->ivhd.capability_offset + 0x10);
-		mmio_x18_value = read64((void *)ivrs->ivhd.iommu_base_low + 0x18);
-		mmio_x30_value = read64((void *)ivrs->ivhd.iommu_base_low + 0x30);
-		mmio_x4000_value = read64((void *)ivrs->ivhd.iommu_base_low + 0x4000);
+		mmio_x18_value = read64p(ivrs->ivhd.iommu_base_low + 0x18);
+		mmio_x30_value = read64p(ivrs->ivhd.iommu_base_low + 0x30);
+		mmio_x4000_value = read64p(ivrs->ivhd.iommu_base_low + 0x4000);
 
 		ivrs->ivhd.flags |= ((mmio_x30_value & MMIO_EXT_FEATURE_PPR_SUP) ?
 							IVHD_FLAG_PPE_SUP : 0);

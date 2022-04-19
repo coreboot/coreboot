@@ -217,7 +217,13 @@ chip soc/intel/alderlake
 					 "M2_2" "SlotDataBusWidth4X"
 		end
 		device ref p2sb on end
-		device ref hda on end
+		device ref hda on
+			subsystemid 0x1462 0x9d25
+			register "pch_hda_dsp_enable" = "0"
+			register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+			register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+			register "pch_hda_idisp_codec_enable" = "true"
+		end
 		device ref smbus on end
 	end
 end

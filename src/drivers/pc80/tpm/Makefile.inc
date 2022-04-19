@@ -1,5 +1,3 @@
-bootblock-$(CONFIG_MAINBOARD_HAS_LPC_TPM) += tis.c
-verstage-$(CONFIG_MAINBOARD_HAS_LPC_TPM) += tis.c
-romstage-$(CONFIG_MAINBOARD_HAS_LPC_TPM) += tis.c
-ramstage-$(CONFIG_MAINBOARD_HAS_LPC_TPM) += tis.c
-postcar-$(CONFIG_MAINBOARD_HAS_LPC_TPM) += tis.c
+ifeq ($(CONFIG_MEMORY_MAPPED_TPM),y)
+all-y += tis.c
+endif

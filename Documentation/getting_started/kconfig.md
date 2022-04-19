@@ -786,7 +786,7 @@ select &lt;symbol&gt; \[if &lt;expr&gt;\]
     config TPM
         bool
         default n
-        select LPC_TPM if ARCH_X86
+        select MEMORY_MAPPED_TPM if ARCH_X86
         select I2C_TPM if ARCH_ARM
         select I2C_TPM if ARCH_ARM64
         help

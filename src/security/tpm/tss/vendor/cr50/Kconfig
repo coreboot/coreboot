@@ -1,11 +1,21 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-config TPM_CR50
+config TPM_GOOGLE
 	bool
-	depends on TPM2
-	default y if MAINBOARD_HAS_I2C_TPM_CR50 || MAINBOARD_HAS_SPI_TPM_CR50
 
-if TPM_CR50
+config TPM_GOOGLE_CR50
+	bool
+	select TPM_GOOGLE
+
+config TPM_GOOGLE_TI50
+	bool
+	select TPM_GOOGLE
+
+if TPM_GOOGLE
+
+config TPM_GOOGLE_IMMEDIATELY_COMMIT_FW_SECDATA
+	bool
+	default y
 
 config POWER_OFF_ON_CR50_UPDATE
 	bool

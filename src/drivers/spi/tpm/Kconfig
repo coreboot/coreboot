@@ -12,17 +12,3 @@ config DRIVER_TPM_SPI_CHIP
 	int "Chip Select of the TPM chip on its SPI bus"
 	default 0
 	depends on SPI_TPM
-
-config MAINBOARD_HAS_SPI_TPM_CR50
-	bool
-	default n
-	select MAINBOARD_HAS_SPI_TPM
-	help
-	  Board has a CR50 SPI TPM
-
-config MAINBOARD_HAS_SPI_TPM
-	bool
-	default n
-	select SPI_TPM
-	help
-	  Board has SPI TPM support

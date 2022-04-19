@@ -171,7 +171,7 @@ Method (_CRS, 0, Serialized)
 				0x00000000, PCH_PRESERVED_BASE_ADDRESS, 0xfe7fffff,
 				0x00000000, PCH_PRESERVED_BASE_SIZE)
 
-#if !CONFIG(TPM_CR50)
+#if !CONFIG(TPM_GOOGLE)
 		/* TPM Area (0xfed40000-0xfed44fff) */
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				Cacheable, ReadWrite,

@@ -31,7 +31,7 @@ vb2_error_t antirollback_read_space_kernel(struct vb2_context *ctx)
 	/*
 	 * The new kernel secdata v1 stores the last read EC hash, and reboots the
 	 * device during EC software sync when that hash didn't match the currently
-	 * active hash on the EC (this is used with TPM_CR50 to support EC-EFS2 and
+	 * active hash on the EC (this is used with TPM_GOOGLE to support EC-EFS2 and
 	 * pretty much a no-op for other devices). Generally, of course the whole
 	 * point of secdata is always that it persists across reboots, but with
 	 * MOCK_SECDATA we can't do that. Previously we always happened to somewhat

@@ -303,7 +303,7 @@ void verstage_main(void)
 	 * If there is an communication error, a recovery reason will be set and
 	 * vb2api_fw_phase1 will route us to recovery mode.
 	 */
-	if (CONFIG(TPM_CR50))
+	if (CONFIG(TPM_GOOGLE))
 		check_boot_mode(ctx);
 
 	if (get_ec_is_trusted())

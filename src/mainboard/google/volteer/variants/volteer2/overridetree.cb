@@ -22,14 +22,14 @@ chip soc/intel/tigerlake
 	register "common_soc_config" = "{
 		.gspi[0] = {
 			.speed_mhz = 1,
-			.early_init = CONFIG(MAINBOARD_HAS_SPI_TPM_CR50),
+			.early_init = CONFIG(SPI_TPM),
 		},
 		.i2c[0] = {
 			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[1] = {
 			.speed = I2C_SPEED_FAST,
-			.early_init = CONFIG(MAINBOARD_HAS_I2C_TPM_CR50),
+			.early_init = CONFIG(I2C_TPM),
 		},
 		.i2c[2] = {
 			.speed = I2C_SPEED_FAST,

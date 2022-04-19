@@ -1,17 +1,11 @@
 config CRB_TPM
 	bool
+	default n
 	help
-	  CRB TPM driver is enabled!
+	  Mainboard has Command Response Buffer support
 
 config CRB_TPM_BASE_ADDRESS
 	hex
 	default 0xfed40000
 	help
 	  Base Address of the CRB TPM Command Structure
-
-config MAINBOARD_HAS_CRB_TPM
-	bool
-	default n
-	select CRB_TPM
-	help
-	  Mainboard has Command Response Buffer support

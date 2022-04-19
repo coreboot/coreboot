@@ -20,11 +20,7 @@ ramstage-$(CONFIG_MMA) += mma.c
 ramstage-y += vbt.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_NHLT) += nhlt.c
 
-bootblock-$(CONFIG_TPM_CR50) += tpm_tis.c
-verstage-$(CONFIG_TPM_CR50) += tpm_tis.c
-romstage-$(CONFIG_TPM_CR50) += tpm_tis.c
-ramstage-$(CONFIG_TPM_CR50) += tpm_tis.c
-postcar-$(CONFIG_TPM_CR50) += tpm_tis.c
+all-$(CONFIG_TPM_GOOGLE) += tpm_tis.c
 
 romstage-$(CONFIG_SOC_INTEL_COMMON_FSP_RESET) += fsp_reset.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_FSP_RESET) += fsp_reset.c

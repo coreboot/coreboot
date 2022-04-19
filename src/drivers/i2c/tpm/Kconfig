@@ -3,27 +3,6 @@ config I2C_TPM
 	help
 	  I2C TPM driver is enabled!
 
-config MAINBOARD_HAS_I2C_TPM_ATMEL
-	bool
-	default n
-	select I2C_TPM
-	help
-	  Board has an Atmel I2C TPM support
-
-config MAINBOARD_HAS_I2C_TPM_CR50
-	bool
-	default n
-	select I2C_TPM
-	help
-	  Board has a Cr50 I2C TPM support
-
-config MAINBOARD_HAS_I2C_TPM_GENERIC
-	bool
-	default n
-	select I2C_TPM
-	help
-	  Board has a generic I2C TPM support
-
 config MAINBOARD_NEEDS_I2C_TI50_WORKAROUND
 	bool
 	default n
@@ -36,7 +15,7 @@ config MAINBOARD_NEEDS_I2C_TI50_WORKAROUND
 config DRIVER_TIS_DEFAULT
 	bool
 	depends on I2C_TPM
-	default n if MAINBOARD_HAS_I2C_TPM_ATMEL
+	default n if TPM_ATMEL
 	default y
 
 config DRIVER_TPM_I2C_BUS
@@ -58,3 +37,9 @@ config DRIVER_TPM_DISPLAY_TIS_BYTES
 	bool "TPM: Display the TIS transactions to I2C TPM chip"
 	default n
 	depends on I2C_TPM
+
+config TPM_ATMEL
+	bool
+	default n
+	help
+	  The mainboard has an Atmel TPM chip.

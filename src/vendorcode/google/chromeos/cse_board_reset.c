@@ -16,7 +16,7 @@ void cse_board_reset(void)
 	int ret;
 	struct cr50_firmware_version version;
 
-	if (CONFIG(MAINBOARD_HAS_SPI_TPM_CR50)) {
+	if (CONFIG(TPM2) && CONFIG(TPM_GOOGLE_CR50)) {
 		/* Initialize TPM and get the cr50 firmware version. */
 		ret = tlcl_lib_init();
 		if (ret != VB2_SUCCESS) {
@@ -35,6 +35,10 @@ void cse_board_reset(void)
 		if (version.epoch != 0 || version.major > 4 ||
 		    (version.major >= 3 && version.minor >= 20))
 			return;
+	}
+	if (CONFIG(TPM_GOOGLE_TI50)) {
+		/* All versions of Ti50 firmware support the above PLTRST wiring. */
+		return;
 	}
 
 	printk(BIOS_INFO, "Initiating request to EC to trigger cold reset\n");

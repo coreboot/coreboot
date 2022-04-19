@@ -384,8 +384,7 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	 * Define and write zero-touch enrollment (ZTE) spaces.  For Cr50 devices,
 	 * these are set up elsewhere via TPM vendor commands.
 	 */
-	if (CONFIG(CHROMEOS) && (!(CONFIG(MAINBOARD_HAS_SPI_TPM_CR50) ||
-				   CONFIG(MAINBOARD_HAS_I2C_TPM_CR50))))
+	if (CONFIG(CHROMEOS) && !(CONFIG(TPM_GOOGLE)))
 		RETURN_ON_FAILURE(setup_zte_spaces());
 
 	/* Define widevine counter space. No need to increment/write to the secure counters
@@ -613,7 +612,7 @@ uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
 
 uint32_t antirollback_write_space_firmware(struct vb2_context *ctx)
 {
-	if (CONFIG(CR50_IMMEDIATELY_COMMIT_FW_SECDATA))
+	if (CONFIG(TPM_GOOGLE_IMMEDIATELY_COMMIT_FW_SECDATA))
 		tlcl_cr50_enable_nvcommits();
 	return safe_write(FIRMWARE_NV_INDEX, ctx->secdata_firmware,
 			  VB2_SECDATA_FIRMWARE_SIZE);
@@ -632,7 +631,7 @@ uint32_t antirollback_write_space_kernel(struct vb2_context *ctx)
 	 * recovery, software sync, or other special boot flows. When the AP
 	 * wants to write, it is imporant to actually commit changes.
 	 */
-	if (CONFIG(CR50_IMMEDIATELY_COMMIT_FW_SECDATA))
+	if (CONFIG(TPM_GOOGLE_IMMEDIATELY_COMMIT_FW_SECDATA))
 		tlcl_cr50_enable_nvcommits();
 
 	return safe_write(KERNEL_NV_INDEX, ctx->secdata_kernel, size);

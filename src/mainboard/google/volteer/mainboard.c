@@ -84,7 +84,7 @@ static void mainboard_enable(struct device *dev)
 void mainboard_update_soc_chip_config(struct soc_intel_tigerlake_config *cfg)
 {
 	int ret;
-	if (!CONFIG(MAINBOARD_HAS_SPI_TPM_CR50)) {
+	if (!CONFIG(TPM_GOOGLE_CR50) || !CONFIG(SPI_TPM)) {
 		/*
 		 * Negotiation of long interrupt pulses is only supported via SPI.  I2C is only
 		 * used on reworked prototypes on which the TPM is replaced with Dauntless under

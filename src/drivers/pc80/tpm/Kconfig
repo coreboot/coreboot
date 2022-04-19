@@ -1,10 +1,10 @@
-config MAINBOARD_HAS_LPC_TPM
+config MEMORY_MAPPED_TPM
 	bool
 	default n
 	help
-	  Board has LPC TPM support
+	  Board has memory mapped TPM support
 
-if MAINBOARD_HAS_LPC_TPM
+if MEMORY_MAPPED_TPM
 
 config TPM_TIS_BASE_ADDRESS
 	hex

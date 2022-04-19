@@ -150,10 +150,10 @@ config VBOOT
 config TPM_ON_FAST_SPI
 	bool
 	default n
-	depends on MAINBOARD_HAS_LPC_TPM
+	depends on MEMORY_MAPPED_TPM
 	help
-	 TPM part is conntected on Fast SPI interface, but the LPC MMIO
-	 TPM transactions are decoded and serialized over the SPI interface.
+	  TPM part is conntected on Fast SPI interface and is mapped to the
+	  linear address space.
 
 config PCR_BASE_ADDRESS
 	hex

@@ -20,6 +20,6 @@ static void devtree_enable_i2c_tpm(void)
 
 void variant_devtree_update(void)
 {
-	if (CONFIG(MAINBOARD_HAS_I2C_TPM_CR50))
+	if (CONFIG(I2C_TPM))
 		devtree_enable_i2c_tpm();
 }

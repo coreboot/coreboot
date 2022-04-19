@@ -1,4 +1,4 @@
-subdirs-$(CONFIG_TPM_CR50) += tss/vendor/cr50
+subdirs-$(CONFIG_TPM_GOOGLE) += tss/vendor/cr50
 
 ## TSS
 

@@ -552,7 +552,7 @@ struct lb_tpm_physical_presence {
 	uint32_t ppi_address;	/* Address of ACPI PPI communication buffer */
 	uint8_t tpm_version;	/* 1: TPM1.2, 2: TPM2.0 */
 	uint8_t ppi_version;	/* BCD encoded */
-} __packed;
+};
 
 
 /*

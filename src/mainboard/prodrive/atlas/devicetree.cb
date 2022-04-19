@@ -103,6 +103,11 @@ chip soc/intel/alderlake
 		device ref pcie_rp10 on end
 		device ref uart0 on end
 		device ref uart1 on end
+		device ref pch_espi on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end
 		device ref p2sb on end
 		device ref hda on end
 		device ref smbus on end

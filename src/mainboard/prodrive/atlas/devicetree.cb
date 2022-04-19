@@ -95,6 +95,7 @@ chip soc/intel/alderlake
 		device ref sata on end
 		device ref pcie_rp5 on end
 		device ref pcie_rp6 on end
+		device ref pcie_rp7 on end
 		device ref pcie_rp8 on end
 		device ref pcie_rp9 on end
 		device ref pcie_rp10 on end

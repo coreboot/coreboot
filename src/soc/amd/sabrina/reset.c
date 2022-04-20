@@ -19,9 +19,7 @@ void do_cold_reset(void)
 
 void do_warm_reset(void)
 {
-	/* Warm resets are not supported and must be executed as cold */
-	pm_write16(PWR_RESET_CFG, pm_read16(PWR_RESET_CFG) |
-		TOGGLE_ALL_PWR_GOOD);
+	/* Assert reset signals only. */
 	outb(RST_CPU | SYS_RST, RST_CNT);
 }
 

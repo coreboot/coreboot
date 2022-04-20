@@ -138,6 +138,7 @@ config OVERRIDE_EFS_SPI_SPEED_MIN_BOARD
 	hex
 	default 0x4 if BOARD_GOOGLE_GUYBRUSH
 	default 0x2 if BOARD_GOOGLE_NIPPERKIN
+	default 0x3 if BOARD_GOOGLE_DEWATT
 	default 0xffffffff
 	help
 	  Minimum board version starting which the Override EFS SPI Speed

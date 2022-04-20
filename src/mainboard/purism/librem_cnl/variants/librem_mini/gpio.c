@@ -539,8 +539,8 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E7 - NC */
 	PAD_NC(GPP_E7, NONE),
 
-	/* GPP_E8 - SATALED# */
-	PAD_CFG_NF(GPP_E8, NONE, DEEP, NF1),
+	/* GPP_E8 - STATUSLED# */
+	PAD_CFG_GPO(GPP_E8, 1, PLTRST),
 
 	/* GPP_E9 - USB2_OC0# */
 	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),

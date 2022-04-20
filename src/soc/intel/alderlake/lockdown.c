@@ -24,8 +24,10 @@ static void pmc_lockdown_cfg(int chipset_lockdown)
 	if (chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT)
 		setbits32(pmcbase + GEN_PMCON_B, SMI_LOCK);
 
-	if (!CONFIG(USE_FSP_NOTIFY_PHASE_POST_PCI_ENUM))
+	if (!CONFIG(USE_FSP_NOTIFY_PHASE_POST_PCI_ENUM)) {
 		setbits32(pmcbase + ST_PG_FDIS1, ST_FDIS_LOCK);
+		setbits32(pmcbase + SSML, SSML_SSL_EN);
+	}
 }
 
 void soc_lockdown_config(int chipset_lockdown)

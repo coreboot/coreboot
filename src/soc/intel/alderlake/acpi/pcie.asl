@@ -54,7 +54,7 @@ Method (IRQM, 1, Serialized) {
 
 	Switch (ToInteger (Arg0))
 	{
-		Case (Package () { 1, 5, 9, 13 }) {
+		Case (Package () { 1, 5, 9, 13, 17, 21, 25 }) {
 			If (PICM) {
 				Return (IQAA)
 			} Else {
@@ -62,7 +62,7 @@ Method (IRQM, 1, Serialized) {
 			}
 		}
 
-		Case (Package () { 2, 6, 10, 14 }) {
+		Case (Package () { 2, 6, 10, 14, 18, 22, 26 }) {
 			If (PICM) {
 				Return (IQBA)
 			} Else {
@@ -70,7 +70,7 @@ Method (IRQM, 1, Serialized) {
 			}
 		}
 
-		Case (Package () { 3, 7, 11, 15 }) {
+		Case (Package () { 3, 7, 11, 15, 19, 23, 27 }) {
 			If (PICM) {
 				Return (IQCA)
 			} Else {
@@ -78,7 +78,7 @@ Method (IRQM, 1, Serialized) {
 			}
 		}
 
-		Case (Package () { 4, 8, 12, 16 }) {
+		Case (Package () { 4, 8, 12, 16, 20, 24, 28 }) {
 			If (PICM) {
 				Return (IQDA)
 			} Else {
@@ -299,6 +299,11 @@ Device (RP12)
 		Return (IRQM (RPPN))
 	}
 }
+
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_S)
+#include "pcie_pch_s.asl"
+#endif
+
 
 #if CONFIG(SOC_INTEL_ALDERLAKE_PCH_M) || CONFIG(SOC_INTEL_ALDERLAKE_PCH_P)
 Device (PEG0)

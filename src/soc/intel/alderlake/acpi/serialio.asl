@@ -91,3 +91,9 @@ Device (UAR2)
 	Name (_ADR, 0x00190002)
 	Name (_DDN, "Serial IO UART Controller 2")
 }
+
+Device (UAR3)
+{
+	Name (_ADR, 0x00110000)
+	Name (_DDN, "Serial IO UART Controller 3")
+}

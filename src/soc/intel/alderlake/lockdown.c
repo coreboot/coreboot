@@ -27,6 +27,8 @@ static void pmc_lockdown_cfg(int chipset_lockdown)
 	if (!CONFIG(USE_FSP_NOTIFY_PHASE_POST_PCI_ENUM)) {
 		setbits32(pmcbase + ST_PG_FDIS1, ST_FDIS_LOCK);
 		setbits32(pmcbase + SSML, SSML_SSL_EN);
+		setbits32(pmcbase + PM_CFG, PM_CFG_DBG_MODE_LOCK |
+					 PM_CFG_XRAM_READ_DISABLE);
 	}
 }
 

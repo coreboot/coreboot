@@ -76,6 +76,10 @@ extern struct device_operations pmc_ops;
 
 #define PRSTS				0x1810
 
+#define PM_CFG				0x1818
+#define    PM_CFG_DBG_MODE_LOCK		(1 << 27)
+#define    PM_CFG_XRAM_READ_DISABLE	(1 << 22)
+
 #define S3_PWRGATE_POL			0x1828
 #define    S3DC_GATE_SUS		(1 << 1)
 #define    S3AC_GATE_SUS		(1 << 0)

@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: GPL-2.0-only
 
-CC     ?= gcc
-INSTALL = /usr/bin/env install
-PREFIX  = /usr/local
+CC      ?= gcc
+INSTALL ?= /usr/bin/env install
+PREFIX  ?= /usr/local
 
 HOSTCC ?= $(CC)
 HOSTCFLAGS ?= $(CFLAGS)
@@ -21,7 +21,7 @@ clean:
 distclean: clean
 
 install: $(PROGRAM)
-	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/bin
 	$(INSTALL) $(PROGRAM) $(DESTDIR)$(PREFIX)/bin
 
 .PHONY: all clean distclean install

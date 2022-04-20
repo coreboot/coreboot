@@ -721,14 +721,20 @@ static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *
 {
 	enum csme_failure_reason rv;
 	uint8_t *cbfs_rw_hash;
+	void *cse_cbfs_rw = NULL;
 	size_t size;
 
 	const char *area_name = cse_get_source_rdev_fmap();
 	if (!area_name)
 		return CSE_LITE_SKU_RW_BLOB_NOT_FOUND;
 
-	void *cse_cbfs_rw = cbfs_unverified_area_map(area_name,
-		CONFIG_SOC_INTEL_CSE_RW_CBFS_NAME, &size);
+	if (CONFIG(SOC_INTEL_CSE_LITE_COMPRESS_ME_RW)) {
+		cse_cbfs_rw = cbfs_unverified_area_cbmem_alloc(area_name,
+			CONFIG_SOC_INTEL_CSE_RW_CBFS_NAME, CBMEM_ID_CSE_UPDATE, &size);
+	} else {
+		cse_cbfs_rw = cbfs_unverified_area_map(area_name,
+			CONFIG_SOC_INTEL_CSE_RW_CBFS_NAME, &size);
+	}
 	if (!cse_cbfs_rw) {
 		printk(BIOS_ERR, "cse_lite: CSE CBFS RW blob could not be mapped\n");
 		return CSE_LITE_SKU_RW_BLOB_NOT_FOUND;

@@ -24,7 +24,7 @@ end
 
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
-	register "max_dram_speed" = "3733"
+	register "max_dram_speed_mts" = "3733"
 
 	# Acoustic settings
 	register "acoustic_noise_mitigation" = "1"

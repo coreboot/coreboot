@@ -484,7 +484,7 @@ struct soc_intel_alderlake_config {
 	*/
 	struct vr_config domain_vr_config[NUM_VR_DOMAINS];
 
-	uint16_t max_dram_speed;
+	uint16_t max_dram_speed_mts;
 
 	enum {
 		SLP_S3_ASSERTION_DEFAULT,

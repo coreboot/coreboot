@@ -1,12 +1,12 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-CC = gcc
+CC ?= gcc
 WERROR=-Werror
 CFLAGS = -O2 -Wall -Wextra -Wshadow $(WERROR)
 PROGRAM = ectool
-INSTALL = /usr/bin/env install
-PREFIX  = /usr/local
-OS_ARCH = $(shell uname)
+INSTALL ?= /usr/bin/env install
+PREFIX  ?= /usr/local
+OS_ARCH ?= $(shell uname)
 
 ifeq ($(shell uname -o 2>/dev/null), Cygwin)
 LDFLAGS = -lioperm

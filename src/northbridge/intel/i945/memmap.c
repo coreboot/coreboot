@@ -40,7 +40,7 @@ static uintptr_t northbridge_get_tseg_base(void)
 		/* IGD enabled, get top of Memory from BSM register */
 		tom = pci_read_config32(IGD_DEV, BSM);
 	else
-		tom = (pci_read_config8(HOST_BRIDGE, TOLUD) & 0xf7) << 24;
+		tom = (pci_read_config8(HOST_BRIDGE, TOLUD) & 0xf8) << 24;
 
 	/* subtract TSEG size */
 	tom -= decode_tseg_size(pci_read_config8(HOST_BRIDGE, ESMRAMC));

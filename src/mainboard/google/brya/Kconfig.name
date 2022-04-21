@@ -203,3 +203,7 @@ config BOARD_GOOGLE_CRAASK
 config BOARD_GOOGLE_OSIRIS
 	bool "->  Osiris"
 	select BOARD_GOOGLE_BASEBOARD_BRYA
+
+config BOARD_GOOGLE_MITHRAX
+	bool "->  Mithrax"
+	select BOARD_GOOGLE_BASEBOARD_BRYA

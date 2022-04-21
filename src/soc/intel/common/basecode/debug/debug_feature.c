@@ -1,10 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <boot_device.h>
-#include <commonlib/region.h>
 #include <intelbasecode/debug_feature.h>
 #include <console/console.h>
-#include <fmap.h>
+#include <spi_flash.h>
 
 #define SI_DESC_OEM_SECTION_OFFSET	0xF00
 #define PRE_MEM_FEATURE_CTRL_OFFSET	SI_DESC_OEM_SECTION_OFFSET
@@ -22,21 +20,8 @@ _Static_assert(sizeof(struct pre_mem_ft) % 64 == 0 && sizeof(struct pre_mem_ft) 
 
 uint8_t pre_mem_debug_init(void)
 {
-	struct region_device desc_rdev;
-	const struct region_device *boot_device = boot_device_ro();
-
-	if (!boot_device) {
-		printk(BIOS_ERR, "Failed to get RW boot device\n");
-		return 1;
-	}
-
-	if (rdev_chain(&desc_rdev, boot_device, 0, SI_DESC_REGION_SZ)) {
-		printk(BIOS_ERR, "Failed to get description region device\n");
-		return 1;
-	}
-
-	if (rdev_readat(&desc_rdev, &pre_mem_debug, PRE_MEM_FEATURE_CTRL_OFFSET,
-				PRE_MEM_FEATURE_CTRL_SZ) != PRE_MEM_FEATURE_CTRL_SZ) {
+	if (spi_flash_read(boot_device_spi_flash(), PRE_MEM_FEATURE_CTRL_OFFSET,
+				PRE_MEM_FEATURE_CTRL_SZ, &pre_mem_debug)) {
 		printk(BIOS_ERR, "Failed to read Descriptor Region from SPI Flash\n");
 		return 1;
 	}

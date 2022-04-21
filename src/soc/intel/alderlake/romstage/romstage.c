@@ -140,7 +140,7 @@ void mainboard_romstage_entry(void)
 
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 
-	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && !s3wake) {
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE) && !s3wake) {
 		timestamp_add_now(TS_CSE_FW_SYNC_START);
 		cse_fw_sync();
 		timestamp_add_now(TS_CSE_FW_SYNC_END);

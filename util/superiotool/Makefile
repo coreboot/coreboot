@@ -17,7 +17,7 @@ LDFLAGS += -lz
 OBJS = superiotool.o serverengines.o ali.o exar.o fintek.o ite.o nsc.o \
        nuvoton.o smsc.o winbond.o infineon.o aspeed.o
 
-OS_ARCH = $(shell uname)
+OS_ARCH ?= $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
 LIBS = -framework IOKit -framework DirectHW -lpci -lz
 endif
@@ -54,9 +54,9 @@ $(PROGRAM): $(OBJS) superiotool.h
 	$(CC) $(LDFLAGS) -o $(PROGRAM) $(OBJS) $(LIBS)
 
 install: $(PROGRAM)
-	mkdir -p $(DESTDIR)$(PREFIX)/sbin
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/sbin
 	$(INSTALL) $(PROGRAM) $(DESTDIR)$(PREFIX)/sbin
-	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man8
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/man8
 	$(INSTALL) -p -m644 $(PROGRAM).8 $(DESTDIR)$(PREFIX)/share/man/man8
 
 clean:

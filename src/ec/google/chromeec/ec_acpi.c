@@ -195,6 +195,7 @@ static void fill_ssdt_typec_device(const struct device *dev)
 			.orientation_switch = config->mux_conn[i],
 			.usb_role_switch = config->mux_conn[i],
 			.mode_switch = config->mux_conn[i],
+			.retimer_switch = config->retimer_conn[i],
 			.pld = &pld,
 		};
 

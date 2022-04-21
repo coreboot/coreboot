@@ -106,6 +106,7 @@ static void add_device_references(struct acpi_dp *dsd,
 	add_device_ref(dsd, "orientation-switch", config->orientation_switch);
 	add_device_ref(dsd, "usb-role-switch", config->usb_role_switch);
 	add_device_ref(dsd, "mode-switch", config->mode_switch);
+	add_device_ref(dsd, "retimer-switch", config->retimer_switch);
 }
 
 void acpigen_write_typec_connector(const struct typec_connector_class_config *config,

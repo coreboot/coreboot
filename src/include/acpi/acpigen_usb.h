@@ -41,6 +41,8 @@ enum usb_typec_data_role {
  *	host or device, for the USB port
  * @mode_switch: Reference to the ACPI device that controls routing of data lines to
  *	various endpoints (xHCI, DP, etc.) on the SoC.
+ * @retimer_switch: Reference to the ACPI device that controls the configuration
+ * of the retimer in the Type C signal chain.
  * @pld: Reference to PLD information.
  */
 struct typec_connector_class_config {
@@ -53,6 +55,7 @@ struct typec_connector_class_config {
 	const struct device *orientation_switch;
 	const struct device *usb_role_switch;
 	const struct device *mode_switch;
+	const struct device *retimer_switch;
 	const struct acpi_pld *pld;
 };
 

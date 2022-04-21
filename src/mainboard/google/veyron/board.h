@@ -3,7 +3,6 @@
 #ifndef __MAINBOARD_GOOGLE_VEYRON_BOARD_H
 #define __MAINBOARD_GOOGLE_VEYRON_BOARD_H
 
-#include <boardid.h>
 #include <gpio.h>
 
 #define GPIO_BACKLIGHT	GPIO(7, A, 2)

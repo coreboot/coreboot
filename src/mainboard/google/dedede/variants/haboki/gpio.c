@@ -2,7 +2,6 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
-#include <boardid.h>
 #include <fw_config.h>
 #include <ec/google/chromeec/ec.h>
 

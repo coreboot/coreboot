@@ -4,7 +4,6 @@
 #define _COREBOOT_SRC_MAINBOARD_GOOGLE_HEROBRINE_BOARD_H_
 
 #include <assert.h>
-#include <boardid.h>
 #include <gpio.h>
 
 

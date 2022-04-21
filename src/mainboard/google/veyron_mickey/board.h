@@ -3,7 +3,6 @@
 #ifndef __MAINBOARD_GOOGLE_VEYRON_MICKEY_BOARD_H
 #define __MAINBOARD_GOOGLE_VEYRON_MICKEY_BOARD_H
 
-#include <boardid.h>
 #include <gpio.h>
 
 #define GPIO_RESET	GPIO(0, B, 5)

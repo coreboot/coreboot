@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <boardid.h>
 #include <sar.h>
 #include <baseboard/variants.h>
 #include <gpio.h>

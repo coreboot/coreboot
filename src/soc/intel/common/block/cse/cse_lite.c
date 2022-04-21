@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <arch/cpu.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <cbfs.h>
 #include <commonlib/region.h>
@@ -11,6 +13,7 @@
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/misc.h>
 #include <soc/intel/common/reset.h>
+#include <timestamp.h>
 
 #define BPDT_HEADER_SZ		sizeof(struct bpdt_header)
 #define BPDT_ENTRY_SZ		sizeof(struct bpdt_entry)
@@ -1119,3 +1122,17 @@ void cse_fw_sync(void)
 		cse_trigger_vboot_recovery(CSE_LITE_SKU_RW_SWITCH_ERROR);
 	}
 }
+
+static void ramstage_cse_fw_sync(void *unused)
+{
+	bool s3wake;
+	s3wake = acpi_get_sleep_type() == ACPI_S3;
+
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE) && !s3wake) {
+		timestamp_add_now(TS_CSE_FW_SYNC_START);
+		cse_fw_sync();
+		timestamp_add_now(TS_CSE_FW_SYNC_END);
+	}
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, ramstage_cse_fw_sync, NULL);

@@ -56,8 +56,6 @@ static void read_pmc_lpm_requirements(const struct soc_pmc_lpm *lpm,
 			if (result != CB_SUCCESS) {
 				printk(BIOS_ERR, "Failed to retrieve LPM substate registers"
 				       "from LPM, substate %zu, reg %zu\n", i, j);
-				free(reg);
-				return;
 			}
 
 			uint32_t *ptr = reg + i * lpm->num_req_regs + j;

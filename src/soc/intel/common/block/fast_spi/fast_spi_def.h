@@ -75,7 +75,7 @@
 #define SPIBAR_HSFSTS_AEL		(1 << 2)
 #define SPIBAR_HSFSTS_FCERR		(1 << 1)
 #define SPIBAR_HSFSTS_FDONE		(1 << 0)
-#define SPIBAR_HSFSTS_W1C_BITS		0xff
+#define SPIBAR_HSFSTS_W1C_BITS		0x1ff
 
 /* Bit definitions for FADDR (0x08) register */
 #define SPIBAR_FADDR_MASK		0x7ffffff

@@ -95,6 +95,11 @@
 #define TXT_ACM_KEY_HASH (TXT_BASE + 0x400)
 #define  TXT_ACM_KEY_HASH_LEN 0x4
 
+#define TXT_STS_FTIF (TXT_BASE + 0x800)
+#define   TXT_LPC_TPM_PRESENT	0x10000 /* Location of TPM: 001b - LPC TPM */
+#define   TXT_SPI_TPM_PRESENT	0x50000 /* Location of TPM: 101b - SPI TPM */
+#define   TXT_PTT_PRESENT	0x70000 /* Location of TPM: 111b - PTT present and active */
+
 #define TXT_E2STS (TXT_BASE + 0x8f0)
 #define  TXT_E2STS_SECRET_STS (1ull << 1)
 

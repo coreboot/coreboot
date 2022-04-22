@@ -1,8 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/mmio.h>
 #include <soc/pci_devs.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
+#include <security/intel/txt/txt_register.h>
+#include <stdint.h>
 
 #include "ptt.h"
 
@@ -27,6 +30,7 @@ static uint32_t read_register(int reg_addr)
  */
 bool ptt_active(void)
 {
+	uint32_t sts_ftif;
 	uint32_t fwsts4 = read_register(PCI_ME_HFSTS4);
 
 	if (fwsts4 == 0xFFFFFFFF)
@@ -34,6 +38,14 @@ bool ptt_active(void)
 
 	if ((fwsts4 & PTT_ENABLE) == 0) {
 		printk(BIOS_DEBUG, "Intel ME Establishment bit not valid.\n");
+		sts_ftif = read32p(TXT_STS_FTIF);
+
+		if (sts_ftif != 0 && sts_ftif != UINT32_MAX) {
+			if ((sts_ftif & TXT_PTT_PRESENT) == TXT_PTT_PRESENT) {
+				printk(BIOS_DEBUG, "TXT_STS_FTIF: PTT present and active\n");
+				return true;
+			}
+		}
 		return false;
 	}
 

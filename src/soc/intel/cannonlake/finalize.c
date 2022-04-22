@@ -14,7 +14,6 @@
 #include <intelblocks/systemagent.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/thermal.h>
-#include <intelpch/lockdown.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
@@ -83,19 +82,12 @@ static void pch_finalize(void)
 
 }
 
-static void sa_finalize(void)
-{
-	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT)
-		sa_lock_pam();
-}
-
 static void soc_finalize(void *unused)
 {
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
 
 	pch_finalize();
 	apm_control(APM_CNT_FINALIZE);
-	sa_finalize();
 	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT) &&
 			CONFIG(SOC_INTEL_COMMON_BLOCK_HECI1_DISABLE_USING_PMC_IPC))
 		heci1_disable();

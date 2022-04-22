@@ -19,7 +19,6 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/systemagent.h>
 #include <intelblocks/tco.h>
-#include <intelpch/lockdown.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
@@ -74,12 +73,6 @@ static void tbt_finalize(void)
 	}
 }
 
-static void sa_finalize(void)
-{
-	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT)
-		sa_lock_pam();
-}
-
 static void heci_finalize(void)
 {
 	heci_set_to_d0i3();
@@ -94,7 +87,6 @@ static void soc_finalize(void *unused)
 	pch_finalize();
 	apm_control(APM_CNT_FINALIZE);
 	tbt_finalize();
-	sa_finalize();
 	if (CONFIG(USE_FSP_NOTIFY_PHASE_READY_TO_BOOT) &&
 			 CONFIG(USE_FSP_NOTIFY_PHASE_END_OF_FIRMWARE))
 		heci_finalize();

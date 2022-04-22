@@ -11,7 +11,6 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/systemagent.h>
 #include <intelblocks/tco.h>
-#include <intelpch/lockdown.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
@@ -71,19 +70,12 @@ static void pch_finalize(void)
 	pmc_clear_pmcon_sts();
 }
 
-static void sa_finalize(void)
-{
-	if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT)
-		sa_lock_pam();
-}
-
 static void soc_finalize(void *unused)
 {
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
 
 	pch_finalize();
 	apm_control(APM_CNT_FINALIZE);
-	sa_finalize();
 
 	/* Indicate finalize step with post code */
 	post_code(POST_OS_BOOT);

@@ -5,6 +5,7 @@
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
+#include <intelblocks/systemagent.h>
 #include <intelpch/lockdown.h>
 #include <intelblocks/gpmr.h>
 #include <soc/pci_devs.h>
@@ -107,6 +108,15 @@ static void lpc_lockdown_config(int chipset_lockdown)
 	}
 }
 
+static void sa_lockdown_config(int chipset_lockdown)
+{
+	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_SA))
+		return;
+
+	if (chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT)
+		sa_lock_pam();
+}
+
 /*
  * platform_lockdown_config has 2 major part.
  * 1. Common SoC lockdown configuration.
@@ -126,6 +136,9 @@ static void platform_lockdown_config(void *unused)
 
 	/* GPMR lock down configuration */
 	gpmr_lockdown_cfg();
+
+	/* SA lock down configuration */
+	sa_lockdown_config(chipset_lockdown);
 
 	/* SoC lock down configuration */
 	soc_lockdown_config(chipset_lockdown);

@@ -6,12 +6,22 @@
 /* Flags representing mux state */
 #define USB_PD_MUX_NONE               0      /* Open switch */
 #define USB_PD_MUX_USB_ENABLED        BIT(0) /* USB connected */
+#define USB_PD_MUX_DP_ENABLED         BIT(1) /* DP connected */
 #define USB_PD_MUX_SAFE_MODE          BIT(5) /* DP is in safe mode */
 #define USB_PD_MUX_TBT_COMPAT_ENABLED BIT(6) /* TBT compat enabled */
 #define USB_PD_MUX_USB4_ENABLED       BIT(7) /* USB4 enabled */
 
-#define USB_RETIMER_FW_UPDATE_OP_SHIFT 4
-#define USB_RETIMER_FW_UPDATE_ERROR 0xfe
+/* USB Retimer firmware update mux mask */
+#define USB_RETIMER_FW_UPDATE_MUX_MASK (USB_PD_MUX_USB_ENABLED | \
+					USB_PD_MUX_DP_ENABLED  | \
+					USB_PD_MUX_SAFE_MODE   | \
+					USB_PD_MUX_TBT_COMPAT_ENABLED | \
+					USB_PD_MUX_USB4_ENABLED)
+
+#define USB_RETIMER_FW_UPDATE_OP_SHIFT		4
+#define USB_RETIMER_FW_UPDATE_ERROR		0xfe
+#define USB_RETIMER_FW_UPDATE_INVALID_MUX	0xff
+
 /* Retimer firmware update operations */
 #define USB_RETIMER_FW_UPDATE_SUSPEND_PD 1 /* Suspend PD port */
 #define USB_RETIMER_FW_UPDATE_RESUME_PD  2 /* Resume PD port  */

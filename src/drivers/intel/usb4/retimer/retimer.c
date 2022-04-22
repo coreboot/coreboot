@@ -27,7 +27,8 @@ static const char *usb4_retimer_path_arg(const char *arg)
 /* Each polling cycle takes up to 25 ms with a total of 12 of these iterations */
 #define USB4_RETIMER_ITERATION_NUM	12
 #define USB4_RETIMER_POLL_CYCLE_MS	25
-static void usb4_retimer_execute_ec_cmd(uint8_t port, uint8_t cmd, uint8_t expected_value)
+static void usb4_retimer_execute_ec_cmd(uint8_t port, uint8_t cmd, uint8_t expected_value,
+					struct acpi_gpio *power_gpio)
 {
 	const char *RFWU = ec_retimer_fw_update_path();
 	const uint8_t data = cmd << USB_RETIMER_FW_UPDATE_OP_SHIFT | port;
@@ -36,6 +37,7 @@ static void usb4_retimer_execute_ec_cmd(uint8_t port, uint8_t cmd, uint8_t expec
 	ec_retimer_fw_update(data);
 	/* If RFWU has return value 0xfe, return error -1 */
 	acpigen_write_if_lequal_namestr_int(RFWU, USB_RETIMER_FW_UPDATE_ERROR);
+	acpigen_disable_tx_gpio(power_gpio);
 	acpigen_write_return_integer(-1);
 	acpigen_pop_len(); /* If */
 
@@ -49,7 +51,27 @@ static void usb4_retimer_execute_ec_cmd(uint8_t port, uint8_t cmd, uint8_t expec
 	acpigen_emit_byte(BREAK_OP);
 	acpigen_pop_len(); /* If */
 
-	if (cmd == USB_RETIMER_FW_UPDATE_SET_TBT) {
+	if (cmd == USB_RETIMER_FW_UPDATE_GET_MUX) {
+		acpigen_write_if_lequal_namestr_int(RFWU, USB_RETIMER_FW_UPDATE_INVALID_MUX);
+		acpigen_write_sleep(USB4_RETIMER_POLL_CYCLE_MS);
+		acpigen_emit_byte(DECREMENT_OP);
+		acpigen_emit_byte(LOCAL2_OP);
+		acpigen_emit_byte(CONTINUE_OP);
+		acpigen_pop_len(); /* If */
+
+		acpigen_emit_byte(AND_OP);
+		acpigen_emit_namestring(RFWU);
+		acpigen_write_integer(USB_RETIMER_FW_UPDATE_MUX_MASK);
+		acpigen_emit_byte(LOCAL3_OP);
+		acpigen_write_if();
+		acpigen_emit_byte(LNOT_OP);
+		acpigen_emit_byte(LEQUAL_OP);
+		acpigen_emit_byte(LOCAL3_OP);
+		acpigen_emit_byte(0);
+		acpigen_disable_tx_gpio(power_gpio);
+		acpigen_write_return_integer(-1);
+		acpigen_pop_len(); /* If */
+	} else if (cmd == USB_RETIMER_FW_UPDATE_SET_TBT) {
 		/*
 		 * EC return either USB_PD_MUX_USB4_ENABLED or USB_PD_MUX_TBT_COMPAT_ENABLED
 		 * to RFWU after the USB_RETIMER_FW_UPDATE_SET_TBT command execution. It is
@@ -70,6 +92,7 @@ static void usb4_retimer_execute_ec_cmd(uint8_t port, uint8_t cmd, uint8_t expec
 	 * Return: -1 if timeout error occurring
 	 */
 	acpigen_write_if_lequal_op_int(LOCAL2_OP, 0);
+	acpigen_disable_tx_gpio(power_gpio);
 	acpigen_write_return_integer(-1);
 	acpigen_pop_len(); /* If */
 }
@@ -97,7 +120,8 @@ static void enable_retimer_online_state(uint8_t port, struct acpi_gpio *power_gp
 	 * Otherwise proceed Retimer firmware upgrade operation.
 	 */
 	expected_value = USB_PD_MUX_NONE;
-	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_GET_MUX, expected_value);
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_GET_MUX, expected_value,
+					power_gpio);
 
 	/*
 	 * Suspend PD
@@ -105,7 +129,8 @@ static void enable_retimer_online_state(uint8_t port, struct acpi_gpio *power_gp
 	 * Expect return value: 0
 	 */
 	expected_value = 0;
-	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_SUSPEND_PD, expected_value);
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_SUSPEND_PD, expected_value,
+					power_gpio);
 
 	/*
 	 * Set MUX USB Mode
@@ -113,7 +138,8 @@ static void enable_retimer_online_state(uint8_t port, struct acpi_gpio *power_gp
 	 * Expect return value: USB_PD_MUX_USB_ENABLED
 	 */
 	expected_value = USB_PD_MUX_USB_ENABLED;
-	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_SET_USB, expected_value);
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_SET_USB, expected_value,
+					power_gpio);
 
 	/*
 	 * Set MUX Safe Mode
@@ -121,7 +147,8 @@ static void enable_retimer_online_state(uint8_t port, struct acpi_gpio *power_gp
 	 * Expect return value: USB_PD_MUX_SAFE_MODE
 	 */
 	expected_value = USB_PD_MUX_SAFE_MODE;
-	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_SET_SAFE, expected_value);
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_SET_SAFE, expected_value,
+					power_gpio);
 
 	/*
 	 * Set MUX TBT Mode
@@ -129,7 +156,8 @@ static void enable_retimer_online_state(uint8_t port, struct acpi_gpio *power_gp
 	 * Expect return value: USB_PD_MUX_USB4_ENABLED or USB_PD_MUX_TBT_COMPAT_ENABLED
 	 */
 	expected_value = USB_PD_MUX_USB4_ENABLED;
-	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_SET_TBT, expected_value);
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_SET_TBT, expected_value,
+					power_gpio);
 }
 
 static void disable_retimer_online_state(uint8_t port, struct acpi_gpio *power_gpio)
@@ -149,7 +177,8 @@ static void disable_retimer_online_state(uint8_t port, struct acpi_gpio *power_g
 	 * Expect return value: 0
 	 */
 	expected_value = 0;
-	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_DISCONNECT, expected_value);
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_DISCONNECT, expected_value,
+					power_gpio);
 
 	/*
 	 * Resume PD
@@ -157,7 +186,8 @@ static void disable_retimer_online_state(uint8_t port, struct acpi_gpio *power_g
 	 * Expect return value: 1
 	 */
 	expected_value = 1;
-	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_RESUME_PD, expected_value);
+	usb4_retimer_execute_ec_cmd(port, USB_RETIMER_FW_UPDATE_RESUME_PD, expected_value,
+					power_gpio);
 
 	/* Force power off */
 	acpigen_disable_tx_gpio(power_gpio);

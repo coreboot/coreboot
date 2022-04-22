@@ -225,5 +225,9 @@ chip soc/intel/alderlake
 			register "pch_hda_idisp_codec_enable" = "true"
 		end
 		device ref smbus on end
+
+		chip drivers/crb
+			device mmio 0xfed40000 on end
+		end
 	end
 end

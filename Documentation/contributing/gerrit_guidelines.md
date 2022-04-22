@@ -53,7 +53,10 @@ it's implemented, should restart the wait period.
 a recently-introduced issue (build, boot or OS-level compatibility, not
 necessarily identified by coreboot.org facilities). Its commit message
 has to explain what change introduced the problem and the nature of
-the problem so that the emergency need becomes apparent. The change
+the problem so that the emergency need becomes apparent. Avoid stating
+something like "fix build error" in the commit summary, describe what
+the commit does instead, just like any other commit. In addition, it is
+recommended to reference the commit that introduced the issue. The change
 itself should be as limited in scope and impact as possible to make it
 simple to assess the impact. Such a change can be merged early with 3
 Code-Review+2. For emergency fixes that affect a single project (SoC,

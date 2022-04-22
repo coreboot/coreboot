@@ -39,7 +39,7 @@ static bool use_ddr4_params(int dram_type)
 	case SPD_DRAM_LPDDR4X:
 		return true;
 	default:
-		printk(BIOS_ERR, "Defaulting to using DDR4 params. Please add dram_type check for %d to %s\n",
+		printk(BIOS_NOTICE, "Defaulting to using DDR4 params. Please add dram_type check for %d to %s\n",
 			dram_type, __func__);
 		return true;
 	}

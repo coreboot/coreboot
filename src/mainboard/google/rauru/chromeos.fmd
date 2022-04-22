@@ -10,7 +10,7 @@
 # instead of a group section; otherwise the preserved data may be wrong if you
 # resize or reorder sections inside a group.
 
-FLASH@0x0 8M {
+FLASH 8M {
 	WP_RO@0x0 4M {
 		RO_SECTION {
 			BOOTBLOCK 128K

@@ -7,7 +7,7 @@
 # | CBFS        |
 # +-------------+ <-- 4GB / end of flash
 
-FLASH@##ROM_BASE## ##ROM_SIZE## {
+FLASH ##ROM_SIZE## {
 	BIOS@##BIOS_BASE## ##BIOS_SIZE## {
 		##CONSOLE_ENTRY##
 		##MRC_CACHE_ENTRY##

@@ -52,10 +52,10 @@ AMD_FW_AB_POSITION := 0x40
 endif # ($(CONFIG_CBFS_VERIFICATION), y)
 
 MENDOCINO_FW_A_POSITION=$(call int-add, \
-	$(call get_fmap_value,FMAP_SECTION_FW_MAIN_A_START) $(AMD_FW_AB_POSITION))
+	$(call get_fmap_value,FMAP_SECTION_FW_MAIN_A_START) $(AMD_FW_AB_POSITION)) \
 
 MENDOCINO_FW_B_POSITION=$(call int-add, \
-	$(call get_fmap_value,FMAP_SECTION_FW_MAIN_B_START) $(AMD_FW_AB_POSITION))
+	$(call get_fmap_value,FMAP_SECTION_FW_MAIN_B_START) $(AMD_FW_AB_POSITION)) \
 
 MENDOCINO_FW_BODY_OFFSET := 0x100
 
@@ -157,12 +157,8 @@ PSP_VERSTAGE_SIG_FILE=$(call strip_quotes,$(CONFIG_PSP_VERSTAGE_SIGNING_TOKEN))
 endif # CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 ifeq ($(CONFIG_SEPARATE_SIGNED_PSPFW),y)
-SIGNED_AMDFW_A_POSITION=$(call int-subtract, \
-	$(call get_fmap_value,FMAP_SECTION_SIGNED_AMDFW_A_START) \
-	$(call get_fmap_value,FMAP_SECTION_FLASH_START))
-SIGNED_AMDFW_B_POSITION=$(call int-subtract, \
-	$(call get_fmap_value,FMAP_SECTION_SIGNED_AMDFW_B_START) \
-	$(call get_fmap_value,FMAP_SECTION_FLASH_START))
+SIGNED_AMDFW_A_POSITION=$(call get_fmap_value,FMAP_SECTION_SIGNED_AMDFW_A_START)
+SIGNED_AMDFW_B_POSITION=$(call get_fmap_value,FMAP_SECTION_SIGNED_AMDFW_B_START)
 SIGNED_AMDFW_A_FILE=$(obj)/amdfw_a.rom.body.signed
 SIGNED_AMDFW_B_FILE=$(obj)/amdfw_b.rom.body.signed
 endif # CONFIG_SEPARATE_SIGNED_PSPFW

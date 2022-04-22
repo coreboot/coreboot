@@ -8,10 +8,6 @@
 #include <unistd.h>
 #include "amdfwtool.h"
 
-/* An address can be relative to the image/file start but it can also be the address when
- * the image is mapped at 0xff000000. Used to ensure that we only attempt to read within
- * the limits of the file. */
-#define SPI_ROM_BASE 0xff000000
 #define FILE_REL_MASK 0xffffff
 
 #define ERR(...) fprintf(stderr, __VA_ARGS__)

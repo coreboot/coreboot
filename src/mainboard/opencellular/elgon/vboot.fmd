@@ -1,4 +1,4 @@
-FLASH@0x0 16M {
+FLASH 16M {
 	# must use a power of two in MiB for WP_RO
 	WP_RO@0x0 0x400000 {
 		RO_SECTION@0x0 0x3fc000 {

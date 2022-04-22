@@ -524,7 +524,7 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_SIGNED_ADDR:
-			cb_config->signed_start_addr = strtoull(optarg, NULL, 10);
+			cb_config->signed_start_addr = strtoull(optarg, NULL, 16);
 			sub = instance = 0;
 			break;
 		case LONGOPT_SPI_READ_MODE:

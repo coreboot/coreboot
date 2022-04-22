@@ -1,5 +1,5 @@
 # TODO(b/276944900): Update for 32 MB support, evaluate WP_RO size
-FLASH@0xFF000000 16M {
+FLASH 16M {
 	SI_BIOS {
 		WP_RO 4M {
 			RO_GSCVD 8K

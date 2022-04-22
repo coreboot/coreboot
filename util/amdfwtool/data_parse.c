@@ -734,6 +734,30 @@ bool needs_ish(enum platform platform_type)
 		return false;
 }
 
+/*
+ * For some SOC generations the APOB_NV binary seems to be treated special regarding the
+ * interpretaion of the source address. No matter the address_mode specified for the address
+ * the memory ABL always seems to the interpret the source address as MMIO address even if
+ * AMD_ADDR_REL_BIOS is specified. So for them we need to always use an MMIO address.
+ * This seems to be a bug which affects all SOCs before phoenix generation.
+ */
+static bool has_apob_nv_quirk(enum platform platform_type)
+{
+	switch (platform_type) {
+	case PLATFORM_CARRIZO:
+	case PLATFORM_STONEYRIDGE:
+	case PLATFORM_RAVEN:
+	case PLATFORM_PICASSO:
+	case PLATFORM_RENOIR:
+	case PLATFORM_CEZANNE:
+	case PLATFORM_MENDOCINO:
+	case PLATFORM_LUCIENNE:
+		return true;
+	default:
+		return false;
+	}
+}
+
 static bool is_second_gen(enum platform platform_type)
 {
 	switch (platform_type) {
@@ -803,6 +827,16 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config)
 	}
 
 	cb_config->second_gen = is_second_gen(cb_config->soc_id);
+
+	if (has_apob_nv_quirk(cb_config->soc_id)) {
+		for (int i = 0; amd_bios_table[i].type != AMD_BIOS_INVALID; i++) {
+			amd_bios_entry *entry = &amd_bios_table[i];
+			//TODO once ROM3 mapping (>16MiB) is possible, this needs to be updated.
+			if (entry->type == AMD_BIOS_APOB_NV && entry->size > 0) {
+				entry->src += SPI_ROM_BASE; // convert to MMIO address
+			}
+		}
+	}
 
 	if (needs_ish(cb_config->soc_id))
 		cb_config->need_ish = true;

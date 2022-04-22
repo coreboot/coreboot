@@ -1,4 +1,4 @@
-FLASH@0x0 16M {
+FLASH 16M {
 	WP_RO@0x0 0x1000000 {
 		RO_SECTION@0x0 0xffc000 {
 			# 0 - 0x10000 is free for firmware usage.

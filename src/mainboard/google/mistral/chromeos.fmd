@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-FLASH@0x0 8M {
+FLASH 8M {
 	WP_RO 4M {
 		RO_SECTION 0x204000 {
 			BOOTBLOCK 128K

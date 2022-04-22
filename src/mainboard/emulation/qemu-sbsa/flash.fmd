@@ -12,7 +12,7 @@
 # +-------------+ <-- ROM_SIZE
 #
 
-FLASH@0x10000000 CONFIG_ROM_SIZE {
+FLASH CONFIG_ROM_SIZE {
 
 	BIOS {
 

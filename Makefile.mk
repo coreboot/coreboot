@@ -1096,7 +1096,6 @@ endif # ifeq($(CONFIG_HAVE_IFD_BIN),y)
 endif # ifneq($(CONFIG_IFD_CHIPSET),)
 
 # entire flash
-FMAP_ROM_ADDR := $(call int-subtract, 0x100000000 $(CONFIG_ROM_SIZE))
 FMAP_ROM_SIZE := $(CONFIG_ROM_SIZE)
 # entire "BIOS" region (everything directly of concern to the host system)
 # relative to ROM_BASE
@@ -1185,7 +1184,6 @@ else # ifeq ($(CONFIG_ARCH_X86),y)
 
 DEFAULT_FLASHMAP:=$(top)/util/cbfstool/default.fmd
 # entire flash
-FMAP_ROM_ADDR := 0
 FMAP_ROM_SIZE := $(CONFIG_ROM_SIZE)
 # entire "BIOS" region (everything directly of concern to the host system)
 # relative to ROM_BASE
@@ -1233,8 +1231,7 @@ FMAP_CBFS_SIZE := $(call int-subtract,$(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
 endif # ifeq ($(CONFIG_ARCH_X86),y)
 
 $(obj)/fmap.fmd: $(top)/Makefile.mk $(DEFAULT_FLASHMAP) $(obj)/config.h
-	sed -e "s,##ROM_BASE##,$(FMAP_ROM_ADDR)," \
-	    -e "s,##ROM_SIZE##,$(FMAP_ROM_SIZE)," \
+	sed -e "s,##ROM_SIZE##,$(FMAP_ROM_SIZE)," \
 	    -e "s,##BIOS_BASE##,$(FMAP_BIOS_BASE)," \
 	    -e "s,##BIOS_SIZE##,$(FMAP_BIOS_SIZE)," \
 	    -e "s,##FMAP_BASE##,$(FMAP_FMAP_BASE)," \

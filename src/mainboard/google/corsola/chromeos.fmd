@@ -19,6 +19,7 @@ FLASH@0x0 8M {
 			GBB 0x2f00
 			RO_FRID 0x100
 		}
+		RO_GSCVD 8K
 		RO_VPD(PRESERVE) 32K  # At least 16K.
 	}
 	RW_SECTION_A 1500K {

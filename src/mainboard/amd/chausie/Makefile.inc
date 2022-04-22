@@ -2,6 +2,7 @@
 
 bootblock-y += bootblock.c
 bootblock-y += early_gpio.c
+bootblock-y += ec.c
 
 romstage-y += port_descriptors.c
 

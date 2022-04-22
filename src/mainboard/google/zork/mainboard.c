@@ -80,7 +80,7 @@ static const struct fch_irq_routing {
 
 	/* The MISC registers are not interrupt numbers */
 	{ PIRQ_MISC,	0xfa,		0x00 },
-	{ PIRQ_MISC0,	0xf1,		0x00 },
+	{ PIRQ_MISC0,	0x91,		0x00 },
 	{ PIRQ_MISC1,	0x00,		0x00 },
 	{ PIRQ_MISC2,	0x00,		0x00 },
 };

@@ -27,13 +27,13 @@ const char *smbios_mainboard_manufacturer(void)
 	if (manuf)
 		return manuf;
 
-	if (google_chromeec_cbi_get_oem_name(&oem_name[0],
-			ARRAY_SIZE(oem_name)) < 0) {
+	manuf = CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
+	if (google_chromeec_cbi_get_oem_name(&oem_name[0], ARRAY_SIZE(oem_name)) < 0)
 		printk(BIOS_INFO, "Couldn't obtain OEM name from CBI\n");
-		manuf = CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
-	} else {
+	else if (strlen(oem_name) > 0)
 		manuf = &oem_name[0];
-	}
+	else
+		printk(BIOS_INFO, "OEM name from CBI is empty, use default\n");
 
 	return manuf;
 }

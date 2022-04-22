@@ -120,7 +120,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* SOC_BIOS_WP_L */
 	PAD_GPI(GPIO_138, PULL_NONE),
 	/* EN_SPKR */
-	PAD_GPO(GPIO_139, HIGH),
+	PAD_GPO(GPIO_139, LOW),
 	/* RAM_ID_0 / DEV_BEEP_EN */
 	PAD_GPI(GPIO_144, PULL_NONE),
 	/* UART1_TXD / FP */

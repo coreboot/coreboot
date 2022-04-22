@@ -156,4 +156,67 @@ chip soc/amd/sabrina
 			device generic 0 on end
 		end
 	end # I2C1
+	device ref i2c_2 on
+		chip drivers/i2c/generic
+			register "hid" = ""RTL5682""
+			register "name" = ""RT58""
+			register "desc" = ""Realtek RT5682""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPIO_90)"
+			register "property_count" = "1"
+			register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+			register "property_list[0].name" = ""realtek,jd-src""
+			register "property_list[0].integer" = "1"
+			device i2c 1a on
+				probe AUDIO_DB AUDIO_DB_C_ALC5682I_A_ALC1019
+			end
+		end
+		chip drivers/i2c/nau8825
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_90)"
+			register "jkdet_enable" = "1"
+			register "jkdet_pull_enable" = "0"
+			register "jkdet_polarity" = "1"		# ActiveLow
+			register "vref_impedance" = "2"		# 125kOhm
+			register "micbias_voltage" = "6"	# 2.754
+			register "sar_threshold_num" = "4"
+			register "sar_threshold[0]" = "0x0c"
+			register "sar_threshold[1]" = "0x1c"
+			register "sar_threshold[2]" = "0x38"
+			register "sar_threshold[3]" = "0x60"
+			register "sar_hysteresis" = "1"
+			register "sar_voltage" = "0"		# VDDA
+			register "sar_compare_time" = "0"	# 500ns
+			register "sar_sampling_time" = "0"	# 2us
+			register "short_key_debounce" = "2"	# 100ms
+			register "jack_insert_debounce" = "7"	# 512ms
+			register "jack_eject_debounce" = "7"	# 512ms
+			device i2c 1a on
+				probe AUDIO_DB AUDIO_DB_C_NAU88L25YGB_A_MAX98360AENL
+			end
+		end
+		chip drivers/i2c/generic
+			register "hid" = ""10EC1019""
+			register "desc" = ""Realtek SPK AMP R""
+			register "uid" = "1"
+			device i2c 29 on
+				probe AUDIO_DB AUDIO_DB_C_ALC5682I_A_ALC1019
+			end
+		end
+		chip drivers/i2c/generic
+			register "hid" = ""10EC1019""
+			register "desc" = ""Realtek SPK AMP L""
+			register "uid" = "2"
+			register "probed" = "1"
+			device i2c 2a on
+				probe AUDIO_DB AUDIO_DB_C_ALC5682I_A_ALC1019
+			end
+		end
+	end # I2C2
+	chip drivers/generic/max98357a
+			register "hid" = ""MX98360A""
+			register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_139)"
+			register "sdmode_delay" = "5"
+			device generic 0.1 on
+				probe AUDIO_DB AUDIO_DB_C_NAU88L25YGB_A_MAX98360AENL
+			end
+	end
 end	# chip soc/amd/sabrina

@@ -26,7 +26,7 @@ int get_lockdown_config(void)
 	return common_config->chipset_lockdown;
 }
 
-static void lockdown_cfg(void)
+static void gpmr_lockdown_cfg(void)
 {
 	/*
 	 * GCS reg of DMI
@@ -124,8 +124,8 @@ static void platform_lockdown_config(void *unused)
 	/* LPC/eSPI lock down configuration */
 	lpc_lockdown_config(chipset_lockdown);
 
-	/* DMI lock down configuration */
-	lockdown_cfg();
+	/* GPMR lock down configuration */
+	gpmr_lockdown_cfg();
 
 	/* SoC lock down configuration */
 	soc_lockdown_config(chipset_lockdown);

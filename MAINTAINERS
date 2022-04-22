@@ -450,6 +450,7 @@ SIEMENS MC_xxxx MAINBOARDS
 M:	Werner Zeh <werner.zeh@siemens.com>
 S:	Maintained
 F:	src/mainboard/siemens/mc_apl1/
+F:	src/mainboard/siemens/mc_ehl/
 
 
 

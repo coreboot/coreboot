@@ -417,8 +417,6 @@ struct soc_intel_jasperlake_config {
 		CD_CLOCK_312_MHZ   = 5,
 		CD_CLOCK_552_MHZ   = 6,
 		CD_CLOCK_556_8_MHZ = 7,
-		CD_CLOCK_648_MHZ   = 8,
-		CD_CLOCK_652_8_MHZ = 9,
 	} cd_clock;
 
 	/*

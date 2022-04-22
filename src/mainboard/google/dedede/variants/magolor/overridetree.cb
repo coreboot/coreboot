@@ -108,9 +108,6 @@ chip soc/intel/jasperlake
 	register "SlowSlewRate" = "SlewRateFastBy8"
 	register "FastPkgCRampDisable" = "1"
 
-	# Core Display Clock Frequency selection
-	register "cd_clock" = "CD_CLOCK_172_8_MHZ"
-
 	device domain 0 on
 		device pci 04.0 on
 			chip drivers/intel/dptf

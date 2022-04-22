@@ -2,9 +2,6 @@ chip soc/intel/jasperlake
 	# MIPI display panel
 	register "DdiPortAConfig" = "2" # DdiPortMipiDsi
 
-	# Core Display Clock Frequency selection
-	register "cd_clock" = "CD_CLOCK_172_8_MHZ"
-
 	# Enable Acoustic noise mitigation and set slew rate to 1/8
 	# Rest of the parameters are 0 by default.
 	register "AcousticNoiseMitigation" = "1"

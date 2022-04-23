@@ -25,5 +25,8 @@ __scripts__
                              `Perl`
   * _rm_unused_code_ - Remove all code not used for a platform from the local
                  git repository for auditing or release `Bash`
+  * _show_platforms.sh_ - Makes a list of platforms in the tree. Does
+                          not show variants.
+                          `Shell`
   * _ucode_h_to_bin.sh_ - Microcode conversion tool `Bash`
   * _update_submodules_ - Check all submodules for updates `Bash`

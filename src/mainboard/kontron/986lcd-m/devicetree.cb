@@ -56,7 +56,9 @@ chip northbridge/intel/i945
 			device pci 1d.2 on end # USB UHCI
 			device pci 1d.3 on end # USB UHCI
 			device pci 1d.7 on end # USB2 EHCI
-			device pci 1e.0 on end # PCI bridge
+			device pci 1e.0 on # PCI slot + Firewire
+				device pci 00.0 on end # Firewire TSB43AB22A
+			end
 			device pci 1e.2 off end # AC'97 Audio
 			device pci 1e.3 off end # AC'97 Modem
 			device pci 1f.0 on # LPC bridge

@@ -12,8 +12,8 @@ chip northbridge/intel/i945
 
 	device domain 0 on
 		device pci 00.0 on end # host bridge
-		device pci 01.0 off end # i945 PCIe root port
-		device pci 02.0 on end # vga controller
+		device pci 01.0 off end # i945 PCIe x16 bridge
+		device pci 02.0 on end # GMA950 iGPU + VGA
 		device pci 02.1 on end # display controller
 
 		chip southbridge/intel/i82801gx
@@ -38,18 +38,19 @@ chip northbridge/intel/i945
 			register "c3_latency" = "85"
 			register "p_cnt_throttling_supported" = "0"
 
+			# ICH-7 generic decode IO ports range for LPC
 			register "gen1_dec" = "0x00fc0a01" # HWM
 			register "gen2_dec" = "0x000403e9" # COM3
 			register "gen3_dec" = "0x000402e9" # COM4
 			register "gen4_dec" = "0x00000301" # ??
 
 			device pci 1b.0 on end # High Definition Audio
-			device pci 1c.0 on end # PCIe
-			device pci 1c.1 on end # PCIe
-			device pci 1c.2 on end # PCIe
-			device pci 1c.3 off end # PCIe port 4
-			device pci 1c.4 off end # PCIe port 5
-			device pci 1c.5 off end # PCIe port 6
+			device pci 1c.0 on end # Ethernet 1
+			device pci 1c.1 on end # Ethernet 2
+			device pci 1c.2 on end # Ethernet 3
+			device pci 1c.3 off end # MiniPCIe
+			device pci 1c.4 off end # PCIe port 5 (not connected)
+			device pci 1c.5 off end # PCIe port 6 (not connected)
 			device pci 1d.0 on end # USB UHCI
 			device pci 1d.1 on end # USB UHCI
 			device pci 1d.2 on end # USB UHCI
@@ -82,7 +83,7 @@ chip northbridge/intel/i945
 						irq 0x72 = 12
 						irq 0xf0 = 0x82		# HW accel A20.
 					end
-					device pnp 2e.7 on		# GPIO1, GAME, MIDI
+					device pnp 2e.7 on		# GPIO1/5, GAME, MIDI
 						 io 0x60 = 0x220	# allocator workaround
 						 io 0x62 = 0x330
 						irq 0x70 = 9
@@ -119,7 +120,7 @@ chip northbridge/intel/i945
 					end
 					device pnp 4e.5 off		# Keyboard
 					end
-					device pnp 4e.7 off		# GPIO1, GAME, MIDI
+					device pnp 4e.7 off		# GPIO1/5, GAME, MIDI
 					end
 					device pnp 4e.8 off		# GPIO2
 					end

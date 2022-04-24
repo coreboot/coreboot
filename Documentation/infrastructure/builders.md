@@ -46,20 +46,20 @@ coreboot project has 4 active jenkins build machines.
 These times are taken from the week of Feb 21 - Feb 28, 2022
 
 * Congenialbuilder - 128 threads, 256GiB RAM
-  *  Fastest Passing coreboot gerrit build: 6 min, 47 sec
-  *  Slowest Passing coreboot gerrit build: 14 min
+  * Fastest Passing coreboot gerrit build: 6 min, 47 sec
+  * Slowest Passing coreboot gerrit build: 14 min
 
-* Gleefulbuilder - 64 thread, 64GiB RAM
-  *  Fastest Passing coreboot gerrit build: 10 min
-  *  Slowest Passing coreboot gerrit build: 46 min
+* Gleefulbuilder - 64 threads, 64GiB RAM
+  * Fastest Passing coreboot gerrit build: 10 min
+  * Slowest Passing coreboot gerrit build: 46 min
 
 * Fabulousbuilder - 64 threads, 64GiB RAM
-  *  Fastest Passing coreboot gerrit build: 7 min, 56 sec
-  *  Slowest Passing coreboot gerrit build: 56 min (No ccache)
+  * Fastest Passing coreboot gerrit build: 7 min, 56 sec
+  * Slowest Passing coreboot gerrit build: 56 min (No ccache)
 
 * Ultron (9elements) - 48 threads, 128GiB RAM
-  *  Fastest Passing coreboot gerrit build: 12
-  *  Slowest Passing coreboot gerrit build: 58 min
+  * Fastest Passing coreboot gerrit build: 12
+  * Slowest Passing coreboot gerrit build: 58 min
 
 
 ### Jenkins Builds
@@ -75,11 +75,11 @@ You can see all the builds here:
 Most of the time on the builders is taken up by the coreboot master and
 coreboot gerrit builds.
 
-* [coreboot gerrit build](https://qa.coreboot.org/job/coreboot-gerrit/)
+*[coreboot gerrit build](https://qa.coreboot.org/job/coreboot-gerrit/)
 ([Time trend](https://qa.coreboot.org/job/coreboot-gerrit/buildTimeTrend))
 
 
-* [coreboot master build](https://qa.coreboot.org/job/coreboot/)
+*[coreboot master build](https://qa.coreboot.org/job/coreboot/)
  ([Time trend](https://qa.coreboot.org/job/coreboot/buildTimeTrend))
 
 
@@ -91,8 +91,8 @@ hour.
 
 On a system with 32 cores, it was tested with this command:
 
-```
-$ stress-ng --cpu 20 --io 6 --vm 6 --vm-bytes 1G --verify --metrics-brief -t 60m
+```sh
+stress-ng --cpu 20 --io 6 --vm 6 --vm-bytes 1G --verify --metrics-brief -t 60m
 ```
 
 You can watch the temperature with the sensors package or with ‘acpi -t’
@@ -102,8 +102,8 @@ You can check for thermal throttling by running this command and seeing
 if the values go down on any of the cores after it's been running for a
 while.
 
-```
-$ while [ true ]; do clear; cat /proc/cpuinfo | grep 'cpu MHz' ; sleep 1; done
+```sh
+while [ true ]; do clear; cat /proc/cpuinfo | grep 'cpu MHz' ; sleep 1; done
 ```
 
 If the machine throttles or resets, you probably need to upgrade the
@@ -142,7 +142,7 @@ These instructions keep changing, so just check the latest information.
 
 As a regular user - *Not root*, run:
 
-```
+```sh
 sudo mkdir -p ${COREBOOT_JENKINS_CACHE_DIR}
 sudo mkdir -p ${COREBOOT_JENKINS_CCACHE_DIR}
 sudo chown $(whoami):$(whoami) ${COREBOOT_JENKINS_CCACHE_DIR}
@@ -158,7 +158,7 @@ To make configuration and the later commands easier, these should go in
 your shell's .rc file.  Note that you only need to set them if you're
 using something other than the default.
 
-```
+```sh
 # Set the port used on your machine to connect to jenkins.
 export COREBOOT_JENKINS_PORT=49151
 
@@ -180,13 +180,13 @@ continuing to the next step.
 
 From the coreboot directory, run
 
-```
+```sh
 make -C util/docker help
 ```
 
 This will show you the available targets and variables needed:
 
-```
+```text
 Commands for working with docker images:
   coreboot-sdk                 - Build coreboot-sdk container
   upload-coreboot-sdk          - Upload coreboot-sdk to hub.docker.com
@@ -221,7 +221,7 @@ Variables:
 
 ### Install the coreboot jenkins builder
 
-```
+```sh
 make -C util/docker docker-jenkins-server
 ```
 
@@ -252,11 +252,12 @@ the ccache gets populated, the build time will drop.
 
 
 ### How to log in to the docker instance for debugging
-```
-    $ make -C util/docker docker-jenkins-attach
-    $ su coreboot
-    $ cd ~/slave-root/workspace
-    $ bash
+
+```sh
+make -C util/docker docker-jenkins-attach
+su coreboot
+cd ~/slave-root/workspace
+bash
 ```
 
 
@@ -273,18 +274,18 @@ then update to get a fresh installation.
 
 To delete the old containers & images:
 
-```
-$ docker stop $COREBOOT_JENKINS_CONTAINER
-$ docker rm $COREBOOT_JENKINS_CONTAINER
-$ docker images # lists all existing images
-$ docker rmi XXXX # Use the image ID found in the above command.
+```sh
+docker stop $COREBOOT_JENKINS_CONTAINER
+docker rm $COREBOOT_JENKINS_CONTAINER
+docker images # lists all existing images
+docker rmi XXXX # Use the image ID found in the above command.
 ```
 
 To get and run the new coreboot-jenkins image, change the value in the
 `DOCKER_COMMIT` variable to the new image value.
 
-```
-$ make -C util/docker docker-jenkins-server
+```sh
+make -C util/docker docker-jenkins-server
 ```
 
 #### Getting ready to push the docker images
@@ -298,15 +299,15 @@ Get an admin to add the account to the coreboot team on hub.docker.com
 Make sure your credentials are configured on your host machine by
 running
 
-```
-$ docker login
+```sh
+docker login
 ```
 
 This will prompt you for your docker username, password, and your email
 address, and write out to ~/.docker/config.json.  Without this file, you
 won’t be able to push the images.
 
-#### Updating the Dockerfiles:
+#### Updating the Dockerfiles
 
 The coreboot-sdk Dockerfile will need to be updated when any additional
 dependencies are added.  Both the coreboot-sdk and the
@@ -317,15 +318,15 @@ files are stored in the coreboot repo under coreboot/util/docker.
 Read the [dockerfile best practices](https://docs.docker.com/v1.8/articles/dockerfile_best-practices/)
 page before updating the files.
 
-#### Rebuilding the coreboot-sdk docker image to update the toolchain:
+#### Rebuilding the coreboot-sdk docker image to update the toolchain
 
-```
-$ make -C util/docker coreboot-sdk
+```sh
+make -C util/docker coreboot-sdk
 ```
 
 This takes a relatively long time.
 
-#### Test the coreboot-sdk docker image:
+#### Test the coreboot-sdk docker image
 
 There are two methods of running the docker image - interactively as a
 shell, or doing the build directly.  Running interactively as a shell is
@@ -333,44 +334,44 @@ useful for early testing, because it allows you to update the image
 (without any changes getting saved) and re-test builds.  This saves the
 time of having to rebuild the image for every issue you find.
 
-#### Running the docker image interactively:
+#### Running the docker image interactively
 
 Run:
 
-```
-$ make -C util/docker docker-jenkins-server
-$ make -C util/docker docker-jenkins-attach
+```sh
+make -C util/docker docker-jenkins-server
+make -C util/docker docker-jenkins-attach
 ```
 
-#### Running the build directly:
+#### Running the build directly
 
 From the coreboot directory:
 
-```
-$ make -C util/docker docker-build-coreboot
+```sh
+make -C util/docker docker-build-coreboot
 ```
 
 You’ll also want to test building the other projects and payloads:
 ChromeEC, flashrom, memtest86+, em100, Grub2, SeaBIOS, iPXE, coreinfo,
 nvramcui, tint...
 
-#### Pushing the coreboot-sdk image to hub.docker.com for use:
+#### Pushing the coreboot-sdk image to hub.docker.com for use
 
 When you’re satisfied with the testing, push the coreboot-sdk image to
 the hub.docker.com
 
-```
-$ make -C util/docker upload-coreboot-sdk
+```sh
+make -C util/docker upload-coreboot-sdk
 ```
 
-#### Building and pushing the coreboot-jenkins-node docker image:
+#### Building and pushing the coreboot-jenkins-node docker image
 
 This docker image is pretty simple, so there’s not really any testing
 that needs to be done.
 
-```
-$ make -C util/docker coreboot-jenkins-node
-$ make -C util/docker upload-coreboot-jenkins-node
+```sh
+make -C util/docker coreboot-jenkins-node
+make -C util/docker upload-coreboot-jenkins-node
 ```
 
 ### Coverity Setup
@@ -391,7 +392,7 @@ Rename the directory from its original name
 (cov-analysis-linux64-7.7.0.4) to ‘coverity’, or better, create a
 symlink:
 
-```
+```sh
 ln -s cov-analysis-linux64-7.7.0.4 coverity
 ```
 

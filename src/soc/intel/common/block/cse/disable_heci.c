@@ -83,9 +83,6 @@ static void heci1_disable_using_sbi(void)
 
 void heci1_disable(void)
 {
-	if (!CONFIG(DISABLE_HECI1_AT_PRE_BOOT))
-		return;
-
 	if (ENV_SMM && CONFIG(SOC_INTEL_COMMON_BLOCK_HECI1_DISABLE_USING_SBI)) {
 		printk(BIOS_INFO, "Disabling Heci using SBI in SMM mode\n");
 		return heci1_disable_using_sbi();

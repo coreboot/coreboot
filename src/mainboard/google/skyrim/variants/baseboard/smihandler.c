@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <amdblocks/gpio.h>
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
@@ -16,7 +17,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS, MAINBOARD_EC_S5_WAKE_EVENTS);
 
 	variant_sleep_gpio_table(&gpios, &num_gpios);
-	program_gpios(gpios, num_gpios);
+	gpio_configure_pads(gpios, num_gpios);
 }
 
 int mainboard_smi_apmc(u8 apmc)

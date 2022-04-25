@@ -1203,7 +1203,8 @@ static void cse_set_state(struct device *dev)
  * 1. Send EOP to CSE if not done.
  * 2. Perform global reset lock.
  * 3. Put HECI1 to D0i3 and disable the HECI1 if the user selects
- *      DISABLE_HECI1_AT_PRE_BOOT config.
+ *      DISABLE_HECI1_AT_PRE_BOOT config or CSE HFSTS1 Operation Mode is
+ *      `Software Temporary Disable`.
  */
 static void cse_final_ready_to_boot(void)
 {
@@ -1212,7 +1213,7 @@ static void cse_final_ready_to_boot(void)
 
 	cse_control_global_reset_lock();
 
-	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT)) {
+	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT) || cse_is_hfs1_com_soft_temp_disable()) {
 		cse_set_to_d0i3();
 		heci1_disable();
 	}

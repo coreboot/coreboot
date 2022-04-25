@@ -9,7 +9,6 @@
 #include <cpu/amd/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <cpu/x86/pae.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <smp/node.h>

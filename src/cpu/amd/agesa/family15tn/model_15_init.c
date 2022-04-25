@@ -7,7 +7,6 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
-#include <cpu/x86/pae.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <acpi/acpi.h>

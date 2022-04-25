@@ -863,6 +863,70 @@ static void fill_fsps_acoustic_params(FSP_S_CONFIG *s_cfg,
 	}
 }
 
+static void fill_fsps_pci_ssid_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
+	struct device *dev;
+	int i;
+	/*
+	 * Prevent FSP from programming write-once subsystem IDs by providing
+	 * a custom SSID table. Must have at least one entry for the FSP to
+	 * use the table.
+	 */
+	struct svid_ssid_init_entry {
+		union {
+			struct {
+				uint64_t reg:12;	/* Register offset */
+				uint64_t function:3;
+				uint64_t device:5;
+				uint64_t bus:8;
+				uint64_t :4;
+				uint64_t segment:16;
+				uint64_t :16;
+			};
+			uint64_t segbusdevfuncregister;
+		};
+		struct {
+			uint16_t svid;
+			uint16_t ssid;
+		};
+		uint32_t reserved;
+	};
+
+	/*
+	 * The xHCI and HDA devices have RW/L rather than RW/O registers for
+	 * subsystem IDs and so must be written before FspSiliconInit locks
+	 * them with their default values.
+	 */
+	const pci_devfn_t devfn_table[] = { PCH_DEVFN_XHCI, PCH_DEVFN_HDA };
+	static struct svid_ssid_init_entry ssid_table[ARRAY_SIZE(devfn_table)];
+
+	for (i = 0; i < ARRAY_SIZE(devfn_table); i++) {
+		ssid_table[i].reg	= PCI_SUBSYSTEM_VENDOR_ID;
+		ssid_table[i].device	= PCI_SLOT(devfn_table[i]);
+		ssid_table[i].function	= PCI_FUNC(devfn_table[i]);
+		dev = pcidev_path_on_root(devfn_table[i]);
+		if (dev) {
+			ssid_table[i].svid = dev->subsystem_vendor;
+			ssid_table[i].ssid = dev->subsystem_device;
+		}
+	}
+
+	s_cfg->SiSsidTablePtr = (uintptr_t)ssid_table;
+	s_cfg->SiNumberOfSsidTableEntry = ARRAY_SIZE(ssid_table);
+
+	/*
+	 * Replace the default SVID:SSID value with the values specified in
+	 * the devicetree for the root device.
+	 */
+	dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+	s_cfg->SiCustomizedSvid = dev->subsystem_vendor;
+	s_cfg->SiCustomizedSsid = dev->subsystem_device;
+
+	/* Ensure FSP will program the registers */
+	s_cfg->SiSkipSsidProgramming = 0;
+}
+
 static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		struct soc_intel_alderlake_config *config)
 {
@@ -896,6 +960,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_fivr_params,
 		fill_fsps_fivr_rfi_params,
 		fill_fsps_acoustic_params,
+		fill_fsps_pci_ssid_params,
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(fill_fsps_params); i++)

@@ -3,7 +3,6 @@
 #include <arch/io.h>
 #include <stdint.h>
 #include <console/console.h>
-#include <cf9_reset.h>
 #include <device/pci_ops.h>
 #include <timestamp.h>
 #include <romstage_handoff.h>

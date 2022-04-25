@@ -2,7 +2,6 @@
 
 #include <bootblock_common.h>
 #include <stdint.h>
-#include <cf9_reset.h>
 #include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 

@@ -2,7 +2,6 @@
 
 #include <arch/cpu.h>
 #include <arch/mmio.h>
-#include <cf9_reset.h>
 #include <console/console.h>
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/cr.h>

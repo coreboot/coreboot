@@ -3,7 +3,6 @@
 #include <bootblock_common.h>
 #include <stdint.h>
 #include <arch/io.h>
-#include <cf9_reset.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>

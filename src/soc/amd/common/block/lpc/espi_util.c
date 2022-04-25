@@ -936,7 +936,7 @@ static void espi_setup_subtractive_decode(const struct espi_config *mb_cfg)
 
 enum cb_err espi_setup(void)
 {
-	uint32_t slave_caps;
+	uint32_t slave_caps, ctrl;
 	const struct espi_config *cfg = espi_get_config();
 
 	printk(BIOS_SPEW, "Initializing ESPI.\n");
@@ -1035,8 +1035,13 @@ enum cb_err espi_setup(void)
 	/* Enable subtractive decode if configured */
 	espi_setup_subtractive_decode(cfg);
 
-	espi_write32(ESPI_GLOBAL_CONTROL_1,
-		     espi_read32(ESPI_GLOBAL_CONTROL_1) | ESPI_BUS_MASTER_EN);
+	ctrl = espi_read32(ESPI_GLOBAL_CONTROL_1);
+	ctrl |= ESPI_BUS_MASTER_EN;
+
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_HAS_ESPI_ALERT_ENABLE))
+		ctrl |= ESPI_ALERT_ENABLE;
+
+	espi_write32(ESPI_GLOBAL_CONTROL_1, ctrl);
 
 	printk(BIOS_SPEW, "Finished initializing ESPI.\n");
 

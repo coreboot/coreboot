@@ -36,6 +36,12 @@ config SOC_AMD_COMMON_BLOCK_HAS_ESPI
 	  Select this option if platform supports eSPI using D14F3 configuration
 	  registers.
 
+config SOC_AMD_COMMON_BLOCK_HAS_ESPI_ALERT_ENABLE
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_HAS_ESPI
+	help
+	  Selected by the SoC if it supports the ALERT_ENABLE bit.
+
 config SOC_AMD_COMMON_BLOCK_USE_ESPI
 	bool
 	depends on SOC_AMD_COMMON_BLOCK_HAS_ESPI

@@ -25,6 +25,7 @@
 #define  ESPI_WDG_EN			(1 << 0)
 
 #define ESPI_GLOBAL_CONTROL_1		0x34
+#define  ESPI_ALERT_ENABLE		(1 << 20) /* Sabrina and later SoCs */
 #define  ESPI_RGCMD_INT_MAP_SHIFT	13
 #define  ESPI_RGCMD_INT_MAP_MASK	(0x1f << ESPI_RGCMD_INT_MAP_SHIFT)
 #define    ESPI_RGCMD_INT(irq)		((irq) << ESPI_RGCMD_INT_MAP_SHIFT)

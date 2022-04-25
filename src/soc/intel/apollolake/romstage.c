@@ -7,7 +7,6 @@
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <cpu/x86/pae.h>
 #include <delay.h>
 #include <device/pci_def.h>
 #include <device/resource.h>

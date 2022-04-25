@@ -39,5 +39,6 @@ Scope(\_SB) {
 Method (PNOT)
 {
 	/* Report AC/DC state to ALIB using WAL1() */
-	\WAL1 ()
+	/* TODO: b/228496169 - Re-enable */
+	/* \WAL1 () */
 }

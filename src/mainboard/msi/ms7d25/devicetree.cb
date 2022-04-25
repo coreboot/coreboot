@@ -122,6 +122,11 @@ chip soc/intel/alderlake
 			# Enable CNVi BT
 			register "cnvi_bt_core" = "true"
 			register "cnvi_bt_audio_offload" = "false"
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "enable_cnvi_ddr_rfim" = "true"
+				device generic 0 on end
+			end
 		end
 		device ref heci1 on end
 		device ref heci2 off end

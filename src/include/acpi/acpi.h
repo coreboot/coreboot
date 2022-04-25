@@ -636,6 +636,15 @@ typedef struct acpi_madt_ioapic {
 	u32 gsi_base;			/* Global system interrupt base */
 } __packed acpi_madt_ioapic_t;
 
+#define MP_IRQ_POLARITY_DEFAULT		0x0
+#define MP_IRQ_POLARITY_HIGH		0x1
+#define MP_IRQ_POLARITY_LOW		0x3
+#define MP_IRQ_POLARITY_MASK		0x3
+#define MP_IRQ_TRIGGER_DEFAULT		0x0
+#define MP_IRQ_TRIGGER_EDGE		0x4
+#define MP_IRQ_TRIGGER_LEVEL		0xc
+#define MP_IRQ_TRIGGER_MASK		0xc
+
 /* MADT: Interrupt Source Override Structure */
 typedef struct acpi_madt_irqoverride {
 	u8 type;			/* Type (2) */

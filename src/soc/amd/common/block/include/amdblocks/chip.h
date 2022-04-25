@@ -34,7 +34,7 @@ struct soc_amd_common_config {
 	 */
 	struct {
 		uint8_t irq;
-		/* See MP_IRQ_* from mpspec.h */
+		/* See MP_IRQ_* from acpi.h */
 		uint8_t flags;
 	} irq_override[16];
 

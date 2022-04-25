@@ -3,6 +3,7 @@
 #ifndef __ASM_MPSPEC_H
 #define __ASM_MPSPEC_H
 
+#include <acpi/acpi.h>
 #include <device/device.h>
 #include <cpu/x86/lapic_def.h>
 
@@ -119,15 +120,6 @@ enum mp_irq_source_types {
 	mp_SMI = 2,
 	mp_ExtINT = 3
 };
-
-#define MP_IRQ_POLARITY_DEFAULT	0x0
-#define MP_IRQ_POLARITY_HIGH	0x1
-#define MP_IRQ_POLARITY_LOW	0x3
-#define MP_IRQ_POLARITY_MASK    0x3
-#define MP_IRQ_TRIGGER_DEFAULT	0x0
-#define MP_IRQ_TRIGGER_EDGE	0x4
-#define MP_IRQ_TRIGGER_LEVEL	0xc
-#define MP_IRQ_TRIGGER_MASK     0xc
 
 struct mpc_config_lintsrc {
 	u8 mpc_type;

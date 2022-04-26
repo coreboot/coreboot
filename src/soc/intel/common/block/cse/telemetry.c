@@ -6,7 +6,7 @@
 
 #define MSEC_TO_USEC(x) (x * 1000)
 
-void cse_get_telemetry_data(void)
+static void cbmem_inject_telemetry_data(void)
 {
 	struct cse_boot_perf_rsp cse_perf_data;
 	s64 ts[NUM_CSE_BOOT_PERF_DATA] = {0};
@@ -71,4 +71,15 @@ void cse_get_telemetry_data(void)
 		start_stamp + ts[PERF_DATA_CSME_HOST_BOOT_PREP_DONE]);
 	timestamp_add(TS_ME_RECEIVED_CRDA_FROM_PMC,
 		start_stamp + ts[PERF_DATA_PMC_SENT_CRDA]);
+}
+
+void cse_get_telemetry_data(void)
+{
+	/* If CSE is already hidden then accessing CSE registers should be avoided */
+	if (!is_cse_enabled()) {
+		printk(BIOS_DEBUG, "CSE is disabled, not sending `Get Boot Perf` message\n");
+		return;
+	}
+
+	cbmem_inject_telemetry_data();
 }

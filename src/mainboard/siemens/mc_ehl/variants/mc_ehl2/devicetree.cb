@@ -103,6 +103,10 @@ chip soc/intel/elkhartlake
 	# TSN GBE related UPDs
 	register "PchTsnGbeLinkSpeed" = "Tsn_2_5_Gbps"
 	register "PchTsnGbeSgmiiEnable" = "1"
+	register "PseTsnGbeSgmiiEnable[0]" = "1"
+	register "PseTsnGbeSgmiiEnable[1]" = "1"
+	register "PseDmaOwn[0]" = "Host_Owned"
+	register "PseDmaOwn[1]" = "Host_Owned"
 
 	register "common_soc_config" = "{
 		.i2c[2] = {

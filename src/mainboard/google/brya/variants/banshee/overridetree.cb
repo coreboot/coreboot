@@ -22,6 +22,20 @@ chip soc/intel/alderlake
 		},
 	}"
 
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.vnn_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.v1p05_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL |
+						FIVR_VOLTAGE_MIN_ACTIVE |
+						FIVR_VOLTAGE_MIN_RETENTION,
+		.vnn_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL |
+						FIVR_VOLTAGE_MIN_ACTIVE |
+						FIVR_VOLTAGE_MIN_RETENTION,
+		.v1p05_icc_max_ma = 500,
+		.vnn_sx_voltage_mv = 1250,
+	}"
+
 	register "usb2_ports[3]" = "USB2_PORT_EMPTY"    # Disable Port 3
 	register "usb2_ports[4]" = "USB2_PORT_EMPTY"    # Disable Port 4
 	register "usb2_ports[6]" = "USB2_PORT_EMPTY"    # Disable Port 6

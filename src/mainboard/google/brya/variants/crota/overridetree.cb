@@ -185,12 +185,12 @@ chip soc/intel/alderlake
 				device i2c 15 on end
 			end
 			chip drivers/i2c/hid
-				register "generic.hid" = ""GXTP7288""
+				register "generic.hid" = ""GXTP7863""
 				register "generic.desc" = ""Goodix Touchpad""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F14_IRQ)"
 				register "generic.wake" = "GPE0_DW2_14"
 				register "generic.probed" = "1"
-				register "hid_desc_reg_offset" = "0x01"
+				register "hid_desc_reg_offset" = "0x20"
 				device i2c 2c on end
 			end
 		end

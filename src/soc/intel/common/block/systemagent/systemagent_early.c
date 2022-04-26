@@ -69,13 +69,14 @@ void sa_set_pci_bar(const struct sa_mmio_descriptor *fixed_set_resources,
 		base = pci_read_config32(SA_DEV_ROOT, index);
 
 		/* If enabled don't program it. */
-		if (base & 0x1)
+		if (base & PCIEXBAR_PCIEXBAREN)
 			return;
 
 		base = fixed_set_resources[i].base;
 		if (base >> 32)
 			pci_write_config32(SA_DEV_ROOT, index + 4, base >> 32);
-		pci_write_config32(SA_DEV_ROOT, index, (base & 0xffffffff) | 1);
+		pci_write_config32(SA_DEV_ROOT, index,
+			(base & 0xffffffff) | PCIEXBAR_PCIEXBAREN);
 	}
 }
 
@@ -97,7 +98,8 @@ void sa_set_mch_bar(const struct sa_mmio_descriptor *fixed_set_resources,
 		index = fixed_set_resources[i].index;
 		if (base >> 32)
 			write32((void *)(uintptr_t)(MCH_BASE_ADDRESS + index + 4), base >> 32);
-		write32((void *)(uintptr_t)(MCH_BASE_ADDRESS + index), (base & 0xffffffff) | 1);
+		write32((void *)(uintptr_t)(MCH_BASE_ADDRESS + index),
+			(base & 0xffffffff) | PCIEXBAR_PCIEXBAREN);
 	}
 }
 

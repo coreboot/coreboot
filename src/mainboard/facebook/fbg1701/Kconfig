@@ -47,12 +47,6 @@ config RO_REGION_ONLY
 
 endif # VBOOT
 
-config ONBOARD_SAMSUNG_MEM
-	bool "Onboard memory manufacturer Samsung"
-	default n
-	help
-	  Samsung K4B8G1646D memory
-
 config MAINBOARD_DIR
 	default "facebook/fbg1701"
 

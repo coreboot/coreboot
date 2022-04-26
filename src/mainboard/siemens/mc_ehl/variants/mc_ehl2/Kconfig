@@ -4,6 +4,7 @@ config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select DRIVER_INTEL_I210
 	select SOC_INTEL_COMMON_BLOCK_LPC_COMB_ENABLE
+	select EHL_TSN_DRIVER
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/mc_ehl.fmd"

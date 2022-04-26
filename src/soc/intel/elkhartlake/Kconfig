@@ -236,6 +236,13 @@ config PSE_CONFIG_BUFFER_SIZE_KIB
 	  data (FSP will append PSE config data to memory region right
 	  after PSE FW memory region).
 
+config EHL_TSN_DRIVER
+	bool
+	default n
+	help
+	  Enable TSN GbE driver to provide board specific settings in the GBE MAC.
+	  As an example of a possible change, the MAC address could be adjusted.
+
 config SOC_INTEL_ELKHARTLAKE_DEBUG_CONSENT
 	int "Debug Consent for EHL"
 	# USB DBC is more common for developers so make this default to 3 if

@@ -69,6 +69,7 @@ chip soc/intel/alderlake
 	}"
 	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC3)"  # USB2_C3
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"
+	register "tcss_ports[3]" = "TCSS_PORT_DEFAULT(OC3)"
 	register "sagv" = "SaGv_Enabled"
 
 	# FIVR RFI Spread Spectrum 6%
@@ -171,6 +172,7 @@ chip soc/intel/alderlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end
+		device ref tbt_pcie_rp3 on end
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"

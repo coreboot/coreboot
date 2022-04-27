@@ -559,6 +559,8 @@ static uint64_t timestamp_get(uint64_t table_tick_freq_mhz)
 
 	if (tsc_freq_khz)
 		return tsc * table_tick_freq_mhz * 1000 / tsc_freq_khz;
+#else
+	(void)table_tick_freq_mhz;
 #endif
 	die("Don't know how to obtain timestamps on this platform.\n");
 	return 0;

@@ -1,0 +1,175 @@
+chip soc/intel/alderlake
+
+	# GPE configuration
+	register "pmc_gpe0_dw0" = "GPP_A"
+	register "pmc_gpe0_dw1" = "GPP_E"
+	register "pmc_gpe0_dw2" = "GPP_F"
+
+	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
+	register "gen1_dec" = "0x00fc0801"
+	register "gen2_dec" = "0x000c0201"
+	# EC memory map range is 0x900-0x9ff
+	register "gen3_dec" = "0x00fc0901"
+
+	# S0ix enable
+	register "s0ix_enable" = "1"
+
+	# DPTF enable
+	register "dptf_enable" = "1"
+
+	register "tcc_offset" = "10"     # TCC of 90
+
+	# Enable CNVi BT
+	register "cnvi_bt_core" = "true"
+
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C0
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"	# USB2_C1
+	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC2)"	# USB2_C2
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 WWAN
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Camera
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Bluetooth
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port A0
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# M.2 WWAN
+
+	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC0)"
+	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC1)"
+	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC2)"
+
+	register "serial_io_i2c_mode" = "{
+		[PchSerialIoIndexI2C0] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoPci,
+		[PchSerialIoIndexI2C2] = PchSerialIoPci,
+		[PchSerialIoIndexI2C3] = PchSerialIoPci,
+		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5] = PchSerialIoPci,
+	}"
+
+	register "serial_io_gspi_mode" = "{
+		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
+	}"
+
+	register "serial_io_uart_mode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoPci,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
+	register "pch_slp_s3_min_assertion_width" = "SLP_S3_ASSERTION_50_MS"
+	register "pch_slp_s4_min_assertion_width" = "SLP_S4_ASSERTION_1S"
+	register "pch_slp_sus_min_assertion_width" = "SLP_SUS_ASSERTION_1_S"
+	register "pch_slp_a_min_assertion_width" = "SLP_A_ASSERTION_98_MS"
+	register "pch_reset_power_cycle_duration" = "POWER_CYCLE_DURATION_1S"
+
+	# HD Audio
+	register "pch_hda_dsp_enable" = "1"
+	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+	register "pch_hda_idisp_codec_enable" = "1"
+
+	# FIVR RFI Spread Spectrum 1.5%
+	register "fivr_spread_spectrum" = "FIVR_SS_1_5"
+
+	# Disable C state auto-demotion for all brya baseboards
+	register "disable_c1_state_auto_demotion" = "1"
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI1             | Fingerprint MCU           |
+	#| I2C0              | Audio and WFC             |
+	#| I2C1              | Touchscreen               |
+	#| I2C2              | SAR0                      |
+	#| I2C3              | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#| I2C5              | Trackpad                  |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 650,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 650,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 900,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[3] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 600,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 650,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+	}"
+
+	# set EPP to 45%: 45 * 256/100 = 115 = 0x73
+	register "enable_energy_perf_pref" = "true"
+	register "energy_perf_pref_value" = "0x73"
+
+	device domain 0 on
+		device ref igpu on end
+		device ref dtt on end
+		device ref tbt_pcie_rp0 on end
+		device ref tbt_pcie_rp1 on end
+		device ref tbt_pcie_rp2 on end
+		device ref tcss_xhci on end
+		device ref tcss_dma0 on end
+		device ref tcss_dma1 on end
+		device ref xhci on end
+		device ref shared_sram on end
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "is_untrusted" = "true"
+				device generic 0 on end
+			end
+		end
+		device ref i2c3 on end
+		device ref heci1 on end
+		device ref sata on end
+		device ref pcie_rp8 on
+			# Enable SD Card PCIE 8 using clk 3
+			register "pch_pcie_rp[PCH_RP(8)]" = "{
+				.clk_src = 3,
+				.clk_req = 3,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE8 SD card
+		device ref pcie_rp9 on
+			# Enable NVMe PCIE 9 using clk 1
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 1,
+				.clk_req = 1,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE9-12 SSD
+		device ref uart0 on end
+		device ref gspi1 on end
+		device ref pch_espi on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
+		end
+		device ref hda on end
+	end
+end

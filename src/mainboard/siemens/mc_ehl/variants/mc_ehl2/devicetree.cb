@@ -104,6 +104,9 @@ chip soc/intel/elkhartlake
 	register "PchTsnGbeSgmiiEnable" = "1"
 	register "PseDmaOwn[0]" = "Host_Owned"
 	register "PseDmaOwn[1]" = "Host_Owned"
+	register "pch_tsn_phy_irq_edge" = "RISING_EDGE"
+	register "pse_tsn_phy_irq_edge[0]" = "RISING_EDGE"
+	register "pse_tsn_phy_irq_edge[1]" = "RISING_EDGE"
 
 	register "common_soc_config" = "{
 		.i2c[2] = {

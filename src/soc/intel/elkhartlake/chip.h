@@ -56,6 +56,12 @@ enum tsn_phy_type {
 	SGMII_plus	= 3,
 };
 
+/* TSN GBE PHY-to-MAC IRQ polarity:  0: falling edge, 1: rising edge */
+enum tsn_phy_irq_polarity {
+	FALLING_EDGE,
+	RISING_EDGE,
+};
+
 /*
  * PSE native pins and ownership assignment:-
  * 0: Disable/pins are not owned by PSE/host
@@ -395,6 +401,8 @@ struct soc_intel_elkhartlake_config {
 	bool PseTsnGbeMultiVcEnable[MAX_PSE_TSN_PORTS];
 	/* PSE TSN Phy Interface Type */
 	enum tsn_phy_type PseTsnGbePhyType[MAX_PSE_TSN_PORTS];
+	enum tsn_phy_irq_polarity pch_tsn_phy_irq_edge;
+	enum tsn_phy_irq_polarity pse_tsn_phy_irq_edge[MAX_PSE_TSN_PORTS];
 
 	/* PSE related */
 	/*

@@ -5,6 +5,9 @@
 
 #include <types.h>
 
+/* Get cpu and pch tracehub modes defined in the OEM Section of descriptor region */
+void debug_get_pch_cpu_tracehub_modes(uint8_t *cpu_tracehub_mode, uint8_t *pch_trachub_mode);
+
 /* Check if CSE firmware update is enabled or not */
 bool is_debug_cse_fw_update_disable(void);
 

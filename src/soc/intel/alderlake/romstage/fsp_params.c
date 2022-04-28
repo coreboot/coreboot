@@ -8,6 +8,7 @@
 #include <drivers/wifi/generic/wifi.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
+#include <intelbasecode/debug_feature.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pcie_rp.h>
 #include <option.h>
@@ -387,6 +388,11 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		fill_fspm_params[i](m_cfg, config);
 }
 
+static void debug_override_memory_init_params(FSP_M_CONFIG *mupd)
+{
+	debug_get_pch_cpu_tracehub_modes(&mupd->CpuTraceHubMode, &mupd->PchTraceHubMode);
+}
+
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	const struct soc_intel_alderlake_config *config;
@@ -413,6 +419,10 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	soc_memory_init_params(m_cfg, config);
 	mainboard_memory_init_params(mupd);
+
+	/* Override the memory init params through runtime debug capability */
+	if (CONFIG(SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE))
+		debug_override_memory_init_params(m_cfg);
 }
 
 __weak void mainboard_memory_init_params(FSPM_UPD *memupd)

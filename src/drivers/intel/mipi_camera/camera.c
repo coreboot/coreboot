@@ -139,7 +139,7 @@ static void camera_fill_cio2(const struct device *dev)
 		if (CONFIG(ACPI_ADL_IPU_ES_SUPPORT)) {
 			u32 cpu_id = cpu_get_cpuid();
 			if (cpu_id == CPUID_ALDERLAKE_J0 || cpu_id == CPUID_ALDERLAKE_Q0 ||
-				cpu_id == CPUID_ALDERLAKE_N_A0)
+				cpu_id == CPUID_ALDERLAKE_N_A0 || cpu_id == CPUID_RAPTORLAKE_P_J0)
 				acpi_dp_add_integer(dsd, "is_es", 1);
 			else
 				acpi_dp_add_integer(dsd, "is_es", 0);

@@ -21,33 +21,39 @@
 
 SECTIONS
 {
+	/* MT8186 has 64KB SRAM in total. */
 	SRAM_START(0x00100000)
-	VBOOT2_WORK(0x00100000, 12K)
-	TTB(0x00103000, 28K)
-	DMA_COHERENT(0x0010A000, 4K)
-	TPM_TCPA_LOG(0x0010B000, 2K)
-	FMAP_CACHE(0x0010B800, 2K)
-	WATCHDOG_TOMBSTONE(0x0010C000, 4)
-	CBFS_MCACHE(0x0010C004, 8K - 4)
-	STACK(0x0010E000, 7K)
-	TIMESTAMP(0x0010FC00, 1K)
-	/* MT8186 has 64KB SRAM. */
+	/* Regions that need to stay in SRAM. */
+	TTB(0x00100000, 28K)
+	DMA_COHERENT(0x00107000, 4K)
+	STACK(0x00108000, 10K)
+	WATCHDOG_TOMBSTONE(0x0010a800, 4)
+	/* EMPTY(0x0010a804, 1K - 4) */
+	/* Regions that can also be moved to SRAM_L2C. */
+	TIMESTAMP(0x0010ac00, 1K)
+	TPM_TCPA_LOG(0x0010b000, 2K)
+	FMAP_CACHE(0x0010b800, 2K)
+	CBFS_MCACHE(0x0010c000, 16K)
 	SRAM_END(0x00110000)
 
 	/*
-	 * The L3 (can be used as SRAM_L2C) is 1MB in total. However the BootROM
-	 * has configured only half of L2/L3 cache as SRAM and the rest for cache
-	 * so we can't use them unless if we disable L2C and reconfigure (be aware
-	 * we can't configure whole L3 to SRAM without any cache).
+	 * The L3 (can be used as SRAM_L2C) is 1MB in total. However the bootROM has configured
+	 * only half of L2/L3 cache as SRAM and the rest for cache so we can't use them unless
+	 * if we disable L2C and reconfigure (be aware we can't configure whole L3 to SRAM
+	 * without any cache).
 	 */
 	SRAM_L2C_START(0x00200000)
-	/* 4K reserved for BOOTROM until BOOTBLOCK is started */
+	/*
+	 * The bootROM needs 4K starting from SRAM_L2C_START so the bootblock starting address
+	 * is fixed at SRAM_L2C_START + 4K, and the 4K can be reused after bootblock is started.
+	 */
 	BOOTBLOCK(0x00201000, 60K)
 	/*
 	 * The needed size can be obtained by:
 	 *  aarch64-cros-linux-gnu-objdump -x dram.elf | grep memsz
 	 */
-	DRAM_INIT_CODE(0x00210000, 196K)
+	DRAM_INIT_CODE(0x00210000, 184K)
+	VBOOT2_WORK(0x0023e000, 12K)
 	OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE(0x00241000, 140K)
 	PRERAM_CBFS_CACHE(0x00264000, 48K)
 	PRERAM_CBMEM_CONSOLE(0x00270000, 64K)

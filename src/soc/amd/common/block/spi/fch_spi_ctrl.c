@@ -139,8 +139,10 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		return -1;
 	}
 
-	if (wait_for_ready())
+	if (wait_for_ready()) {
+		printk(BIOS_ERR, "FCH SPI: Failed to acquire the SPI bus\n");
 		return -1;
+	}
 
 	spi_write8(SPI_CMD_CODE, cmd);
 	spi_write8(SPI_TX_BYTE_COUNT, bytesout);

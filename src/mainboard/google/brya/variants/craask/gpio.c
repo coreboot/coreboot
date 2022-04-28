@@ -5,6 +5,14 @@
 #include <commonlib/helpers.h>
 #include <soc/gpio.h>
 
+/* Pad configuration in ramstage for craask */
+static const struct pad_config override_gpio_table[] = {
+	/* D6  : WWAN_EN */
+	PAD_CFG_GPO(GPP_D6, 1, DEEP),
+	/* F12 : WWAN_RST_L */
+	PAD_CFG_GPO(GPP_F12, 1, DEEP),
+};
+
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
 	/* F12 : GSXDOUT ==> WWAN_RST_L */
@@ -35,6 +43,12 @@ static const struct pad_config romstage_gpio_table[] = {
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_H12, 1, DEEP),
 };
+
+const struct pad_config *variant_gpio_override_table(size_t *num)
+{
+	*num = ARRAY_SIZE(override_gpio_table);
+	return override_gpio_table;
+}
 
 const struct pad_config *variant_early_gpio_table(size_t *num)
 {

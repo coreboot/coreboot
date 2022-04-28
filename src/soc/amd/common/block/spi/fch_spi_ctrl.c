@@ -39,6 +39,7 @@ static void dump_state(enum spi_dump_state_phase phase)
 {
 	u8 dump_size;
 	uintptr_t addr;
+	u32 status;
 
 	if (!CONFIG(SOC_AMD_COMMON_BLOCK_SPI_DEBUG))
 		return;
@@ -55,7 +56,17 @@ static void dump_state(enum spi_dump_state_phase phase)
 	}
 
 	printk(BIOS_DEBUG, "Cntrl0: %x\n", spi_read32(SPI_CNTRL0));
-	printk(BIOS_DEBUG, "Status: %x\n", spi_read32(SPI_STATUS));
+
+	status = spi_read32(SPI_STATUS);
+	printk(BIOS_DEBUG, "Status: %x\n", status);
+	printk(BIOS_DEBUG,
+	       "  Busy: %u, FIFO Read Pointer: %u, FIFO Write Pointer: %u, Done Bytes: %u\n",
+	       !!(status & SPI_BUSY),
+	       (status >> SPI_FIFO_RD_PTR_SHIFT) & SPI_FIFO_RD_PTR_MASK,
+	       (status >> SPI_FIFO_WR_PTR_SHIFT) & SPI_FIFO_WR_PTR_MASK,
+	       (status >> SPI_DONE_BYTE_COUNT_SHIFT) & SPI_DONE_BYTE_COUNT_MASK);
+
+	printk(BIOS_DEBUG, "CmdCode: %x\n", spi_read8(SPI_CMD_CODE));
 
 	addr = spi_get_bar() + SPI_FIFO;
 
@@ -63,7 +74,6 @@ static void dump_state(enum spi_dump_state_phase phase)
 	case SPI_DUMP_STATE_BEFORE_CMD:
 		dump_size = spi_read8(SPI_TX_BYTE_COUNT);
 		printk(BIOS_DEBUG, "TxByteCount: %x\n", dump_size);
-		printk(BIOS_DEBUG, "CmdCode: %x\n", spi_read8(SPI_CMD_CODE));
 		break;
 	case SPI_DUMP_STATE_AFTER_CMD:
 		dump_size = spi_read8(SPI_RX_BYTE_COUNT);

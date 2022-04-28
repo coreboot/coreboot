@@ -144,6 +144,8 @@ else
 TOOLCFLAGS+=-std=c11
 endif
 
+LZ4CFLAGS ?= -Wno-strict-prototypes
+
 VBOOT_HOSTLIB = $(VBOOT_HOST_BUILD)/libvboot_host.a
 
 $(VBOOT_HOSTLIB):
@@ -186,7 +188,7 @@ $(objutil)/cbfstool/%.o: $(top)/src/commonlib/bsd/%.c
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lz4/lib/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) $(LZ4CFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/fpt_formats/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"

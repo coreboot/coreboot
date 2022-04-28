@@ -1,3 +1,11 @@
+fw_config
+	field DB_DISPLAY 0 3
+		option DB_ABSENT	0
+		option DB_HDMI		1
+		option DB_DP		2
+	end
+end
+
 chip soc/intel/alderlake
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

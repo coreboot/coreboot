@@ -147,7 +147,7 @@ static void nvme_detach_device(struct storage_dev *dev)
 	if (delete_admin_queues(nvme))
 		printf("NVME ERROR: Failed to delete admin queues\n");
 
-	write32(nvme->config + 0x1c, 0);
+	write32(nvme->config + 0x14, 0);
 
 	int status, timeout = (read64(nvme->config) >> 24 & 0xff) * 500;
 	do {
@@ -347,7 +347,7 @@ static void nvme_init(pcidev_t dev)
 	const uint32_t cc = NVME_CC_EN | NVME_CC_CSS | NVME_CC_MPS | NVME_CC_AMS | NVME_CC_SHN
 			| NVME_CC_IOSQES | NVME_CC_IOCQES;
 
-	write32(nvme->config + 0x1c, 0);
+	write32(nvme->config + 0x14, 0);
 
 	int status, timeout = (read64(nvme->config) >> 24 & 0xff) * 500;
 	do {

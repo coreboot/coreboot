@@ -321,7 +321,7 @@ static void nvme_init(pcidev_t dev)
 
 	void *pci_bar0 = phys_to_virt(pci_read_config32(dev, 0x10) & ~0x3ff);
 
-	if (!(((read64(pci_bar0) >> 37) & 0xff) == 0x01)) {
+	if (!(read64(pci_bar0) >> 37 & 0x01)) {
 		printf("NVMe ERROR: PCIe device does not support the NVMe command set\n");
 		return;
 	}

@@ -11,6 +11,8 @@ void bootblock_mainboard_early_init(void)
 {
 	/* Replicate vendor settings for multi-function pins in global config LDN */
 	nuvoton_pnp_enter_conf_state(SERIAL_DEV);
+	pnp_write_config(SERIAL_DEV, 0x13, 0xff); // IRQ8-15 level triggered, low
+	pnp_write_config(SERIAL_DEV, 0x14, 0xff); // IRQ0-7 level triggered, low
 	pnp_write_config(SERIAL_DEV, 0x15, 0xaa);
 	pnp_write_config(SERIAL_DEV, 0x1a, 0x02);
 	pnp_write_config(SERIAL_DEV, 0x1b, 0x02);

@@ -216,6 +216,37 @@ chip soc/intel/alderlake
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
 					 "M2_2" "SlotDataBusWidth4X"
 		end
+		device ref pch_espi on
+			chip superio/nuvoton/nct6687d
+				device pnp 4e.1 off end		# Parallel port
+				device pnp 4e.2 on		# COM1
+					io 0x60 = 0x3f8
+					irq 0x70 = 4
+				end
+				device pnp 4e.3 off end		# COM2, IR
+				device pnp 4e.5 on		# Keyboard
+					io 0x60 = 0x60
+					io 0x62 = 0x64
+					irq 0x70 = 1
+					irq 0x72 = 12
+				end
+				device pnp 4e.6 off end		# CIR
+				device pnp 4e.7 off end		# GPIO0-7
+				device pnp 4e.8 off end		# P80 UART
+				device pnp 4e.9 off end		# GPIO8-9, GPIO1-8 AF
+				device pnp 4e.a on		# ACPI
+					# Vendor firmware did not assign I/O and IRQ
+				end
+				device pnp 4e.b on		# EC
+					io 0x60 = 0xa20
+					# Vendor firmware did not assign IRQ
+				end
+				device pnp 4e.c off end		# RTC
+				device pnp 4e.d off end		# Deep Sleep
+				device pnp 4e.e off end		# TACH/PWM assignment
+				device pnp 4e.f off end		# Function register
+			end
+		end
 		device ref p2sb on end
 		device ref hda on
 			subsystemid 0x1462 0x9d25

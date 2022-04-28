@@ -27,12 +27,12 @@ bool is_debug_cse_fw_update_disable(void)
 	return pre_mem_debug.cse_fw_update_disable == 1;
 }
 
-uint8_t pre_mem_debug_init(void)
+enum cb_err pre_mem_debug_init(void)
 {
 	if (spi_flash_read(boot_device_spi_flash(), PRE_MEM_FEATURE_CTRL_OFFSET,
 				PRE_MEM_FEATURE_CTRL_SZ, &pre_mem_debug)) {
 		printk(BIOS_ERR, "Failed to read Descriptor Region from SPI Flash\n");
-		return 1;
+		return CB_ERR;
 	}
-	return 0;
+	return CB_SUCCESS;
 }

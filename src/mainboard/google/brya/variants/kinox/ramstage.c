@@ -10,9 +10,9 @@
 
 const struct cpu_power_limits limits[] = {
 	/* SKU_ID, TDP (Watts), pl1_min, pl1_max, pl2_min, pl2_max, pl4 */
-	{ PCI_DID_INTEL_ADL_P_ID_10, 15, 15000, 15000,  39000,  39000, 100000 },
-	{ PCI_DID_INTEL_ADL_P_ID_7, 15, 15000, 15000,  39000,  39000, 100000 },
-	{ PCI_DID_INTEL_ADL_P_ID_6, 15, 15000, 15000,  39000,  39000, 100000 },
+	{ PCI_DID_INTEL_ADL_P_ID_10, 15, 15000, 15000,  39000,  39000, 72500 },
+	{ PCI_DID_INTEL_ADL_P_ID_7, 15, 15000, 15000,  55000,  55000, 123000 },
+	{ PCI_DID_INTEL_ADL_P_ID_6, 15, 15000, 15000,  55000,  55000, 123000 },
 	{ PCI_DID_INTEL_ADL_P_ID_5, 28, 28000, 28000,  64000,  64000,  90000 },
 	{ PCI_DID_INTEL_ADL_P_ID_3, 28, 28000, 28000,  64000,  64000, 140000 },
 	{ PCI_DID_INTEL_ADL_P_ID_5, 45, 45000, 45000,  95000,  95000, 125000 },
@@ -24,8 +24,8 @@ const struct cpu_power_limits limits[] = {
 const struct system_power_limits sys_limits[] = {
 	/* SKU_ID, TDP (Watts), psys_pl2 (Watts) */
 	{ PCI_DID_INTEL_ADL_P_ID_10, 15, 65 },
-	{ PCI_DID_INTEL_ADL_P_ID_7, 15, 65 },
-	{ PCI_DID_INTEL_ADL_P_ID_6, 15, 65 },
+	{ PCI_DID_INTEL_ADL_P_ID_7, 15, 90 },
+	{ PCI_DID_INTEL_ADL_P_ID_6, 15, 90 },
 	{ PCI_DID_INTEL_ADL_P_ID_5, 28, 230 },
 	{ PCI_DID_INTEL_ADL_P_ID_3, 28, 230 },
 	{ PCI_DID_INTEL_ADL_P_ID_5, 45, 230 },
@@ -40,23 +40,23 @@ const struct system_power_limits sys_limits[] = {
  * Given the hardware design in kinox, the serial shunt resistor is 0.01ohm.
  * The full scale of hardware PSYS signal 1.6v maps to system current 5A
  * instead of real system power. The equation is shown below:
- * PSYS = 1.6v ~= (0.01ohm x 5A) x 50 (INA213, gain 50V/V) x R501/(R501 + R510)
- * R501/(R501 + R510) = 0.63 = 300K / (300K + 169K)
+ * PSYS = 1.6v ~= (0.01ohm x 6.75A) x 50 (INA213, gain 50V/V) x R501/(R501 + R510)
+ * R501/(R501 + R510) = 0.475 = 200K / (200K + 221K)
  *
  * The Psys_pmax is a SW setting which tells IMVP9.1 the mapping b/w system input
  * current and the actual system power. Since there is no voltage information
  * from PSYS, different voltage input would map to different Psys_pmax settings:
- * For Type-C 15V, the Psys_pmax should be 15v x 5A = 75W
- * For Type-C 20V, the Psys_pmax should be 20v x 5A = 100W
- * For a barrel jack, the Psys_pmax should be 20v x 5A = 100W
+ * For Type-C 15V, the Psys_pmax should be 15v x 6.75A = 101.25W
+ * For Type-C 20V, the Psys_pmax should be 20v x 6.75A = 135W
+ * For a barrel jack, the Psys_pmax should be 20v x 6.75A = 135W
  *
  * Imagine that there is a type-c 100W (20V/5A) connected to DUT w/ full loading,
- * and the Psys_pmax setting is 100W. Then IMVP9.1 can calculate the current system
- * power = 100W * 5A / 5A = 100W, which is the actual system power.
+ * and the Psys_pmax setting is 135W. Then IMVP9.1 can calculate the current system
+ * power = 135W * 5A / 6.75A = 100W, which is the actual system power.
  */
 const struct psys_config psys_config = {
 	.efficiency = 97,
-	.psys_imax_ma = 5000,
+	.psys_imax_ma = 6750,
 	.bj_volts_mv = 20000
 };
 

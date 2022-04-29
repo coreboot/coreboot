@@ -425,9 +425,6 @@ chip soc/intel/alderlake
 				device i2c 36 on end
 			end
 		end
-		device ref pcie_rp1 on end
-		device ref pcie_rp3 on end # W/A to FSP issue
-		device ref pcie_rp4 on end # W/A to FSP issue
 		device ref pcie_rp5 on end
 		device ref pcie_rp6 on end
 		device ref pcie_rp8 on end

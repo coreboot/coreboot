@@ -46,10 +46,7 @@ static void *soc_get_mbox_address(void)
 
 static u16 rd_mbox_sts(struct pspv2_mbox *mbox)
 {
-	union {
-		u32 val;
-		struct pspv2_mbox_cmd_fields fields;
-	} tmp = { 0 };
+	union pspv2_mbox_command tmp = { .val = 0 };
 
 	tmp.val = read32(&mbox->command);
 	return tmp.fields.mbox_status;
@@ -57,10 +54,7 @@ static u16 rd_mbox_sts(struct pspv2_mbox *mbox)
 
 static void wr_mbox_cmd(struct pspv2_mbox *mbox, u8 cmd)
 {
-	union {
-		u32 val;
-		struct pspv2_mbox_cmd_fields fields;
-	} tmp = { 0 };
+	union pspv2_mbox_command tmp = { .val = 0 };
 
 	/* Write entire 32-bit area to begin command execution */
 	tmp.fields.mbox_command = cmd;
@@ -69,10 +63,7 @@ static void wr_mbox_cmd(struct pspv2_mbox *mbox, u8 cmd)
 
 static u8 rd_mbox_recovery(struct pspv2_mbox *mbox)
 {
-	union {
-		u32 val;
-		struct pspv2_mbox_cmd_fields fields;
-	} tmp = { 0 };
+	union pspv2_mbox_command tmp = { .val = 0 };
 
 	tmp.val = read32(&mbox->command);
 	return !!tmp.fields.recovery;

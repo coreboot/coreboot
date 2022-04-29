@@ -27,6 +27,8 @@ enum pcie_rp_flags {
 	PCIE_RP_CLK_REQ_DETECT = (1 << 4),
 	/* Clock request signal is not used by the root port. */
 	PCIE_RP_CLK_REQ_UNUSED = (1 << 5),
+	/* indicates that this root port is built-in. */
+	PCIE_RP_BUILT_IN = (1 << 6),
 };
 
 enum pcie_clk_src_flags {
@@ -63,6 +65,8 @@ struct pcie_rp_config {
 	enum L1_substates_control PcieRpL1Substates;
 	/* PCIe RP ASPM */
 	enum ASPM_control pcie_rp_aspm;
+	/* timeout for device detect */
+	uint32_t pcie_rp_detect_timeout_ms;
 };
 
 /*

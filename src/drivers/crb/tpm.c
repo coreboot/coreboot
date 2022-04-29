@@ -48,6 +48,22 @@ static void crb_readControlArea(void)
 	control_area.response_size = read32(CRB_REG(cur_loc, CRB_REG_RESP_SIZE));
 	control_area.response_bfr =
 		(void *)(uintptr_t)read64(CRB_REG(cur_loc, CRB_REG_RESP_ADDR));
+
+	/*
+	 * Intel PTT has to write the command/response address and size
+	 * register before each command submission otherwise the control area
+	 * is all zeroed. This has been observed on Alder Lake S CPU and may be
+	 * applicable to other new microarchitectures. Update the local control
+	 * area data to make tpm2_process_command not fail on buffer checks.
+	 * PTT command/response buffer is fixed to be at offset 0x80 and spans
+	 * up to the end of 4KB region for the current locality.
+	 */
+	if (CONFIG(HAVE_INTEL_PTT)) {
+		control_area.command_size = 0x1000 - CRB_REG_DATA_BUFF;
+		control_area.response_size = control_area.command_size;
+		control_area.command_bfr = CRB_REG(cur_loc, CRB_REG_DATA_BUFF);
+		control_area.response_bfr = CRB_REG(cur_loc, CRB_REG_DATA_BUFF);
+	}
 }
 
 /* Wait for Reg to be expected Value  */
@@ -115,6 +131,7 @@ static uint8_t crb_activate_locality(void)
 
 	int rc = crb_wait_for_reg32(CRB_REG(locality, CRB_REG_LOC_STATE), 750,
 				    LOC_STATE_LOC_ASSIGN, LOC_STATE_LOC_ASSIGN);
+
 	if (!rc && (locality == 0))
 		return locality;
 
@@ -181,10 +198,31 @@ int tpm2_init(void)
 	/* Read back control area structure */
 	crb_readControlArea();
 
+	/*
+	 * PTT may have no assigned locality before startup. Request locality here to save
+	 * some precious milliseconds which would be wasted in crb_activate_locality polling
+	 * for LOC_STATE_LOC_ASSIGN bit for the first time.
+	 */
+	if (CONFIG(HAVE_INTEL_PTT)) {
+		uint8_t locality = (read8(CRB_REG(0, CRB_REG_LOC_STATE)) >> 2) & 0x07;
+		write8(CRB_REG(locality, CRB_REG_LOC_CTRL), LOC_CTRL_REQ_ACCESS);
+	}
+
 	/* Good to go. */
 	printk(BIOS_SPEW, "TPM: CRB TPM initialized successfully\n");
 
 	return 0;
+}
+
+static void set_ptt_cmd_resp_buffers(void)
+{
+	write32(CRB_REG(cur_loc, CRB_REG_CMD_ADDR + 4), 0);
+	write32(CRB_REG(cur_loc, CRB_REG_CMD_ADDR),
+		(uintptr_t)CRB_REG(cur_loc, CRB_REG_DATA_BUFF));
+	write32(CRB_REG(cur_loc, CRB_REG_CMD_SIZE), control_area.command_size);
+	write64(CRB_REG(cur_loc, CRB_REG_RESP_ADDR),
+		(uintptr_t)CRB_REG(cur_loc, CRB_REG_DATA_BUFF));
+	write32(CRB_REG(cur_loc, CRB_REG_RESP_SIZE), control_area.response_size);
 }
 
 /*
@@ -219,6 +257,14 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size, void 
 
 	// Write to Command Buffer
 	memcpy(control_area.command_bfr, tpm2_command, command_size);
+
+	/*
+	 * Initialize CRB addresses and sizes for PTT. It seems to be possible
+	 * only after CRB is switched to ready and before writing start bit.
+	 * This is also what EDK2 TPM CRB drivers do.
+	 */
+	if (CONFIG(HAVE_INTEL_PTT))
+		set_ptt_cmd_resp_buffers();
 
 	// Write Start Bit
 	write8(CRB_REG(cur_loc, CRB_REG_START), 0x1);

@@ -33,6 +33,7 @@
 #define CRB_REG_CMD_ADDR		0x5C
 #define CRB_REG_RESP_SIZE		0x64
 #define CRB_REG_RESP_ADDR		0x68
+#define CRB_REG_DATA_BUFF		0x80
 
 /* CRB INTF BIT MASK */
 #define CRB_INTF_REG_CAP_CRB	(1<<14)

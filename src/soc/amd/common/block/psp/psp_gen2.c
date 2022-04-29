@@ -23,7 +23,7 @@ struct pspv2_mbox {
 			u32 ready:1;
 		} __packed fields;
 	};
-	u64 cmd_response;
+	u64 buffer;
 } __packed;
 
 static uintptr_t soc_get_psp_base_address(void)
@@ -76,9 +76,9 @@ static u8 rd_mbox_recovery(struct pspv2_mbox *mbox)
 	return !!tmp.fields.recovery;
 }
 
-static void wr_mbox_cmd_resp(struct pspv2_mbox *mbox, void *buffer)
+static void wr_mbox_buffer_ptr(struct pspv2_mbox *mbox, void *buffer)
 {
-	write64(&mbox->cmd_response, (uintptr_t)buffer);
+	write64(&mbox->buffer, (uintptr_t)buffer);
 }
 
 static int wait_command(struct pspv2_mbox *mbox, bool wait_for_ready)
@@ -121,7 +121,7 @@ int send_psp_command(u32 command, void *buffer)
 		return -PSPSTS_CMD_TIMEOUT;
 
 	/* set address of command-response buffer and write command register */
-	wr_mbox_cmd_resp(mbox, buffer);
+	wr_mbox_buffer_ptr(mbox, buffer);
 	wr_mbox_cmd(mbox, command);
 
 	/* PSP clears command register when complete.  All commands except

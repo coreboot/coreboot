@@ -77,5 +77,4 @@ static void psp_notify_boot_done(void *unused)
 	psp_print_cmd_status(cmd_status, &buffer.header);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY,
-		psp_notify_boot_done, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, psp_notify_boot_done, NULL);

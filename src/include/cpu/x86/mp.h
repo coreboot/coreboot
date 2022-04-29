@@ -117,6 +117,10 @@ enum cb_err mp_run_on_all_aps(void (*func)(void *), void *arg, long expire_us,
 /* Like mp_run_on_aps() but also runs func on BSP. */
 enum cb_err mp_run_on_all_cpus(void (*func)(void *), void *arg);
 
+/* Like mp_run_on_all_cpus but make sure all APs finish executing the
+   function call. The time limit on a function call is 1 second. */
+enum cb_err mp_run_on_all_cpus_synchronously(void (*func)(void *), void *arg);
+
 /*
  * Park all APs to prepare for OS boot. This is handled automatically
  * by the coreboot infrastructure.

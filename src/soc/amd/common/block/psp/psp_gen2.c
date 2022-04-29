@@ -137,7 +137,7 @@ enum cb_err soc_read_c2p38(uint32_t *msg_38_value)
 		printk(BIOS_WARNING, "PSP: PSP_ADDR_MSR uninitialized\n");
 		return CB_ERR;
 	}
-	*msg_38_value = read32((void *)psp_mmio + CORE_2_PSP_MSG_38_OFFSET);
+	*msg_38_value = read32p(psp_mmio + CORE_2_PSP_MSG_38_OFFSET);
 	return CB_SUCCESS;
 }
 

@@ -52,12 +52,14 @@ chip soc/intel/alderlake
 		.flags = PCIE_RP_CLK_REQ_DETECT,
 	}"
 
-	# Enable PCH PCIE RP 8 using free running CLK (0x80)
-	# Clock source is shared with LAN and hence marked as free running.
+	# NOTE: requires GPP_A7 set to Native Function 1 for SRCCLK_OE7
 	register "pch_pcie_rp[PCH_RP(8)]" = "{
-		.flags = PCIE_RP_CLK_SRC_UNUSED,
+                .clk_src = 7,
+                .clk_req = 7,
+                .flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+                .PcieRpL1Substates = L1_SS_L1_2,
+		.pcie_rp_detect_timeout_ms = 50,
 	}"
-	register "pcie_clk_config_flag[6]" = "PCIE_CLK_FREE_RUNNING"
 
 	# Enable PCH PCIE RP 9 using CLK 1
 	register "pch_pcie_rp[PCH_RP(9)]" = "{

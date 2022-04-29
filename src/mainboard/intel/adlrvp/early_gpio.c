@@ -18,6 +18,15 @@ static const struct pad_config early_gpio_table[] = {
 	/* EC_IN_RW */
 	PAD_CFG_GPI(GPP_E7, NONE, DEEP),
 
+	/* x4 PCIE slot 1 RESET */
+	PAD_CFG_GPO(GPP_F10, 0, PLTRST),
+
+	/* Support external source clock via OEB6 and OEB7 */
+	/* SRCCLK_OEB6 for built-in LAN */
+	PAD_CFG_NF(GPP_E5, NONE, PLTRST, NF2),
+	/* SRCCLK_OEB7 for x4 slot */
+	PAD_CFG_NF(GPP_A7, NONE, PLTRST, NF1),
+
 	/* CPU PCIe VGPIO for RP0 */
 	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_0, NONE, PLTRST, NF1),
 	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_1, NONE, PLTRST, NF1),

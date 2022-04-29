@@ -67,10 +67,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_B4, 1, PLTRST),
 	/* M.2_PCH_SSD_PWREN */
 	PAD_CFG_GPO(GPP_D16, 1, PLTRST),
-	/* SRCCLK_OEB7 */
-	PAD_CFG_GPO(GPP_A7, 0, PLTRST),
-	/* SRCCLK_OEB6 */
-	PAD_CFG_GPO(GPP_E5, 0, PLTRST),
 
 	/* CAM1_RST */
 	PAD_CFG_GPO(GPP_R5, 1, PLTRST),
@@ -189,8 +185,6 @@ static const struct pad_config gpio_table[] = {
 	/* I2S0_RXD */
 	PAD_CFG_NF(GPP_R3, NONE, DEEP, NF2),
 
-	/* I2S2_SCLK */
-	PAD_CFG_NF(GPP_A7, NONE, DEEP, NF1),
 	/* I2S2_SFRM */
 	PAD_CFG_NF(GPP_A8, NONE, DEEP, NF1),
 	/* I2S2_TXD */

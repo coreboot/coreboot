@@ -12,6 +12,20 @@
 
 #define PSP_MAILBOX_OFFSET		0x10570
 
+struct pspv2_mbox {
+	union {
+		u32 val;
+		struct pspv2_mbox_cmd_fields {
+			u16 mbox_status;
+			u8 mbox_command;
+			u32 reserved:6;
+			u32 recovery:1;
+			u32 ready:1;
+		} __packed fields;
+	};
+	u64 cmd_response;
+} __packed;
+
 static uintptr_t soc_get_psp_base_address(void)
 {
 	uintptr_t psp_mmio = rdmsr(PSP_ADDR_MSR).lo;

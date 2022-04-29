@@ -18,6 +18,25 @@
 
 #define PSP_MAILBOX_OFFSET		0x70
 
+/* generic PSP interface status, v1 */
+#define PSPV1_STATUS_INITIALIZED	BIT(0)
+#define PSPV1_STATUS_ERROR		BIT(1)
+#define PSPV1_STATUS_TERMINATED		BIT(2)
+#define PSPV1_STATUS_HALT		BIT(3)
+#define PSPV1_STATUS_RECOVERY		BIT(4)
+
+/*
+ * pspv1_mbox consists of hardware registers beginning at PSPx000070
+ *   mbox_command: BIOS->PSP command, cleared by PSP when complete
+ *   mbox_status:  BIOS->PSP interface status
+ *   cmd_response: pointer to command/response buffer
+ */
+struct pspv1_mbox {
+	u32 mbox_command;
+	u32 mbox_status;
+	u64 cmd_response; /* definition conflicts w/BKDG but matches agesa */
+} __packed;
+
 static void *soc_get_mbox_address(void)
 {
 	uintptr_t psp_mmio;

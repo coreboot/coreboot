@@ -34,7 +34,7 @@ static uintptr_t soc_get_psp_base_address(void)
 
 static u16 rd_mbox_sts(uintptr_t psp_mmio)
 {
-	union pspv2_mbox_command tmp = { .val = 0 };
+	union pspv2_mbox_command tmp;
 
 	tmp.val = read32p(psp_mmio + PSP_MAILBOX_COMMAND_OFFSET);
 	return tmp.fields.mbox_status;
@@ -51,7 +51,7 @@ static void wr_mbox_cmd(uintptr_t psp_mmio, u8 cmd)
 
 static u8 rd_mbox_recovery(uintptr_t psp_mmio)
 {
-	union pspv2_mbox_command tmp = { .val = 0 };
+	union pspv2_mbox_command tmp;
 
 	tmp.val = read32p(psp_mmio + PSP_MAILBOX_COMMAND_OFFSET);
 	return !!tmp.fields.recovery;

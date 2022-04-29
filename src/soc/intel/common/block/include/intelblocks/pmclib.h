@@ -28,6 +28,9 @@ enum pch_pmc_xtal {
  */
 enum pch_pmc_xtal pmc_get_xtal_freq(void);
 
+/* pmc_send_pci_enum_done() - send PMC IPC to inform PCI enumeration is done. */
+void pmc_send_pci_enum_done(void);
+
 /* Forward declare the power state struct here */
 struct chipset_power_state;
 

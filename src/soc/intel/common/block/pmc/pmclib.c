@@ -10,6 +10,7 @@
 #include <cpu/x86/smm.h>
 #include <console/console.h>
 #include <halt.h>
+#include <intelblocks/pmc_ipc.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/tco.h>
@@ -20,6 +21,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <timer.h>
+
+#define PMC_IPC_BIOS_RST_COMPLETE		0xd0
+#define PMC_IPC_BIOS_RST_SUBID_PCI_ENUM_DONE	0
 
 static struct chipset_power_state power_state;
 
@@ -784,4 +788,16 @@ enum pch_pmc_xtal pmc_get_xtal_freq(void)
 		printk(BIOS_ERR, "Unknown EPOC XTAL frequency setting %u\n", xtal_freq);
 		return XTAL_UNKNOWN_FREQ;
 	}
+}
+
+void pmc_send_pci_enum_done(void)
+{
+	struct pmc_ipc_buffer req = { 0 };
+	struct pmc_ipc_buffer rsp;
+	uint32_t cmd;
+
+	cmd = pmc_make_ipc_cmd(PMC_IPC_BIOS_RST_COMPLETE,
+			 PMC_IPC_BIOS_RST_SUBID_PCI_ENUM_DONE, 0);
+	if (pmc_send_ipc_cmd(cmd, &req, &rsp) != CB_SUCCESS)
+		printk(BIOS_ERR, "PMC: Failed sending PCI Enumeration Done Command\n");
 }

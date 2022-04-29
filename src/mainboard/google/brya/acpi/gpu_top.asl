@@ -22,6 +22,7 @@ Scope (\_SB.PCI0.PEG0)
 		#include "power.asl"
 		#include "nvop.asl"
 		#include "nvjt.asl"
+		#include "nbci.asl"
 
 		Method (_DSM, 4, Serialized)
 		{
@@ -37,6 +38,13 @@ Scope (\_SB.PCI0.PEG0)
 				If (ToInteger (Arg1) >= REVISION_MIN_NVJT)
 				{
 					Return (NVJT (Arg2, Arg3))
+				}
+			}
+			ElseIf (Arg0 == ToUUID (UUID_NBCI))
+			{
+				If (ToInteger (Arg1) >= REVISION_MIN_NBCI)
+				{
+					Return (NBCI (Arg2, Arg3))
 				}
 			}
 

@@ -2,16 +2,16 @@
 
 #include <bootstate.h>
 #include <console/console.h>
-#include <cpu/amd/msr.h>
-#include <cpu/x86/msr.h>
-#include <device/mmio.h>
 #include <timer.h>
 #include <amdblocks/psp.h>
-#include <soc/iomap.h>
+#include <amdblocks/smn.h>
 #include "psp_def.h"
 
+#define SMN_PSP_PUBLIC_BASE		0x3800000
+
 #define PSP_MAILBOX_COMMAND_OFFSET	0x10570 /* 4 bytes */
-#define PSP_MAILBOX_BUFFER_OFFSET	0x10574 /* 8 bytes */
+#define PSP_MAILBOX_BUFFER_L_OFFSET	0x10574 /* 4 bytes */
+#define PSP_MAILBOX_BUFFER_H_OFFSET	0x10578 /* 4 bytes */
 
 #define CORE_2_PSP_MSG_38_OFFSET	0x10998 /* 4 byte */
 #define   CORE_2_PSP_MSG_38_FUSE_SPL	BIT(12)
@@ -27,45 +27,40 @@ union pspv2_mbox_command {
 	} __packed fields;
 };
 
-static uintptr_t soc_get_psp_base_address(void)
-{
-	uintptr_t psp_mmio = rdmsr(PSP_ADDR_MSR).lo;
-	if (!psp_mmio)
-		printk(BIOS_ERR, "PSP: PSP_ADDR_MSR uninitialized\n");
-	return psp_mmio;
-}
-
-static u16 rd_mbox_sts(uintptr_t psp_mmio)
+static u16 rd_mbox_sts(void)
 {
 	union pspv2_mbox_command tmp;
 
-	tmp.val = read32p(psp_mmio + PSP_MAILBOX_COMMAND_OFFSET);
+	tmp.val = smn_read32(SMN_PSP_PUBLIC_BASE + PSP_MAILBOX_COMMAND_OFFSET);
 	return tmp.fields.mbox_status;
 }
 
-static void wr_mbox_cmd(uintptr_t psp_mmio, u8 cmd)
+static void wr_mbox_cmd(u8 cmd)
 {
 	union pspv2_mbox_command tmp = { .val = 0 };
 
 	/* Write entire 32-bit area to begin command execution */
 	tmp.fields.mbox_command = cmd;
-	write32p(psp_mmio + PSP_MAILBOX_COMMAND_OFFSET, tmp.val);
+	smn_write32(SMN_PSP_PUBLIC_BASE + PSP_MAILBOX_COMMAND_OFFSET, tmp.val);
 }
 
-static u8 rd_mbox_recovery(uintptr_t psp_mmio)
+static u8 rd_mbox_recovery(void)
 {
 	union pspv2_mbox_command tmp;
 
-	tmp.val = read32p(psp_mmio + PSP_MAILBOX_COMMAND_OFFSET);
+	tmp.val = smn_read32(SMN_PSP_PUBLIC_BASE + PSP_MAILBOX_COMMAND_OFFSET);
 	return !!tmp.fields.recovery;
 }
 
-static void wr_mbox_buffer_ptr(uintptr_t psp_mmio, void *buffer)
+static void wr_mbox_buffer_ptr(void *buffer)
 {
-	write64p(psp_mmio + PSP_MAILBOX_BUFFER_OFFSET, (uintptr_t)buffer);
+	const uint32_t buf_addr_h = (uint64_t)(uintptr_t)buffer >> 32;
+	const uint32_t buf_addr_l = (uint64_t)(uintptr_t)buffer & 0xffffffff;
+	smn_write32(SMN_PSP_PUBLIC_BASE + PSP_MAILBOX_BUFFER_H_OFFSET, buf_addr_h);
+	smn_write32(SMN_PSP_PUBLIC_BASE + PSP_MAILBOX_BUFFER_L_OFFSET, buf_addr_l);
 }
 
-static int wait_command(uintptr_t psp_mmio, bool wait_for_ready)
+static int wait_command(bool wait_for_ready)
 {
 	union pspv2_mbox_command and_mask = { .val = ~0 };
 	union pspv2_mbox_command expected = { .val = 0 };
@@ -83,7 +78,7 @@ static int wait_command(uintptr_t psp_mmio, bool wait_for_ready)
 	stopwatch_init_msecs_expire(&sw, PSP_CMD_TIMEOUT);
 
 	do {
-		tmp = read32p(psp_mmio + PSP_MAILBOX_COMMAND_OFFSET);
+		tmp = smn_read32(SMN_PSP_PUBLIC_BASE + PSP_MAILBOX_COMMAND_OFFSET);
 		tmp &= ~and_mask.val;
 		if (tmp == expected.val)
 			return 0;
@@ -94,27 +89,23 @@ static int wait_command(uintptr_t psp_mmio, bool wait_for_ready)
 
 int send_psp_command(u32 command, void *buffer)
 {
-	uintptr_t psp_mmio = soc_get_psp_base_address();
-	if (!psp_mmio)
-		return -PSPSTS_NOBASE;
-
-	if (rd_mbox_recovery(psp_mmio))
+	if (rd_mbox_recovery())
 		return -PSPSTS_RECOVERY;
 
-	if (wait_command(psp_mmio, true))
+	if (wait_command(true))
 		return -PSPSTS_CMD_TIMEOUT;
 
 	/* set address of command-response buffer and write command register */
-	wr_mbox_buffer_ptr(psp_mmio, buffer);
-	wr_mbox_cmd(psp_mmio, command);
+	wr_mbox_buffer_ptr(buffer);
+	wr_mbox_cmd(command);
 
 	/* PSP clears command register when complete.  All commands except
 	 * SxInfo set the Ready bit. */
-	if (wait_command(psp_mmio, command != MBOX_BIOS_CMD_SX_INFO))
+	if (wait_command(command != MBOX_BIOS_CMD_SX_INFO))
 		return -PSPSTS_CMD_TIMEOUT;
 
 	/* check delivery status */
-	if (rd_mbox_sts(psp_mmio))
+	if (rd_mbox_sts())
 		return -PSPSTS_SEND_ERROR;
 
 	return 0;
@@ -122,13 +113,7 @@ int send_psp_command(u32 command, void *buffer)
 
 enum cb_err soc_read_c2p38(uint32_t *msg_38_value)
 {
-	uintptr_t psp_mmio = soc_get_psp_base_address();
-
-	if (!psp_mmio) {
-		printk(BIOS_WARNING, "PSP: PSP_ADDR_MSR uninitialized\n");
-		return CB_ERR;
-	}
-	*msg_38_value = read32p(psp_mmio + CORE_2_PSP_MSG_38_OFFSET);
+	*msg_38_value = smn_read32(SMN_PSP_PUBLIC_BASE + CORE_2_PSP_MSG_38_OFFSET);
 	return CB_SUCCESS;
 }
 

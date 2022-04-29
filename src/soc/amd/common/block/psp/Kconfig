@@ -14,6 +14,7 @@ config SOC_AMD_COMMON_BLOCK_PSP_GEN1
 config SOC_AMD_COMMON_BLOCK_PSP_GEN2
 	bool
 	select SOC_AMD_COMMON_BLOCK_PSP
+	select SOC_AMD_COMMON_BLOCK_SMN
 	help
 	  Used by the PSP in AMD family 17h, 19h and possibly newer CPUs.
 

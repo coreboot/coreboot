@@ -14,16 +14,16 @@ enum mem_chip_type {
 };
 
 struct mem_chip_info {
-	uint8_t type;  /* enum mem_chip_type */
+	uint8_t type;			/* enum mem_chip_type */
 	uint8_t num_channels;
 	uint8_t reserved[6];
 	struct mem_chip_channel {
-		uint64_t density;
-		uint8_t io_width;
-		uint8_t manufacturer_id;
-		uint8_t revision_id[2];
+		uint64_t density;	/* number in _bytes_, not Megabytes! */
+		uint8_t io_width;	/* should be `8`, `16`, `32` or `64` */
+		uint8_t manufacturer_id; /* raw value from MR5 */
+		uint8_t revision_id[2];	/* raw values from MR6 and MR7 */
 		uint8_t reserved[4];
-		uint8_t serial_id[8]; /* LPDDR5 only */
+		uint8_t serial_id[8];	/* LPDDR5 only, MR47 - MR54 */
 	} channel[0];
 };
 

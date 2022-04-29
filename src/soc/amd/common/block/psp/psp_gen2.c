@@ -13,18 +13,20 @@
 #define PSP_MAILBOX_OFFSET		0x10570
 
 struct pspv2_mbox {
-	union {
-		u32 val;
-		struct pspv2_mbox_cmd_fields {
-			u16 mbox_status;
-			u8 mbox_command;
-			u32 reserved:6;
-			u32 recovery:1;
-			u32 ready:1;
-		} __packed fields;
-	};
+	u32 command;
 	u64 buffer;
 } __packed;
+
+union pspv2_mbox_command {
+	u32 val;
+	struct pspv2_mbox_cmd_fields {
+		u16 mbox_status;
+		u8 mbox_command;
+		u32 reserved:6;
+		u32 recovery:1;
+		u32 ready:1;
+	} __packed fields;
+};
 
 static uintptr_t soc_get_psp_base_address(void)
 {
@@ -49,7 +51,7 @@ static u16 rd_mbox_sts(struct pspv2_mbox *mbox)
 		struct pspv2_mbox_cmd_fields fields;
 	} tmp = { 0 };
 
-	tmp.val = read32(&mbox->val);
+	tmp.val = read32(&mbox->command);
 	return tmp.fields.mbox_status;
 }
 
@@ -62,7 +64,7 @@ static void wr_mbox_cmd(struct pspv2_mbox *mbox, u8 cmd)
 
 	/* Write entire 32-bit area to begin command execution */
 	tmp.fields.mbox_command = cmd;
-	write32(&mbox->val, tmp.val);
+	write32(&mbox->command, tmp.val);
 }
 
 static u8 rd_mbox_recovery(struct pspv2_mbox *mbox)
@@ -72,7 +74,7 @@ static u8 rd_mbox_recovery(struct pspv2_mbox *mbox)
 		struct pspv2_mbox_cmd_fields fields;
 	} tmp = { 0 };
 
-	tmp.val = read32(&mbox->val);
+	tmp.val = read32(&mbox->command);
 	return !!tmp.fields.recovery;
 }
 
@@ -83,8 +85,8 @@ static void wr_mbox_buffer_ptr(struct pspv2_mbox *mbox, void *buffer)
 
 static int wait_command(struct pspv2_mbox *mbox, bool wait_for_ready)
 {
-	struct pspv2_mbox and_mask = { .val = ~0 };
-	struct pspv2_mbox expected = { .val = 0 };
+	union pspv2_mbox_command and_mask = { .val = ~0 };
+	union pspv2_mbox_command expected = { .val = 0 };
 	struct stopwatch sw;
 	u32 tmp;
 
@@ -99,7 +101,7 @@ static int wait_command(struct pspv2_mbox *mbox, bool wait_for_ready)
 	stopwatch_init_msecs_expire(&sw, PSP_CMD_TIMEOUT);
 
 	do {
-		tmp = read32(&mbox->val);
+		tmp = read32(&mbox->command);
 		tmp &= ~and_mask.val;
 		if (tmp == expected.val)
 			return 0;

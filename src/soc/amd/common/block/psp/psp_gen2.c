@@ -10,12 +10,8 @@
 #include <soc/iomap.h>
 #include "psp_def.h"
 
-#define PSP_MAILBOX_OFFSET		0x10570
-
-struct pspv2_mbox {
-	u32 command;
-	u64 buffer;
-} __packed;
+#define PSP_MAILBOX_COMMAND_OFFSET	0x10570 /* 4 bytes */
+#define PSP_MAILBOX_BUFFER_OFFSET	0x10574 /* 8 bytes */
 
 union pspv2_mbox_command {
 	u32 val;
@@ -36,45 +32,37 @@ static uintptr_t soc_get_psp_base_address(void)
 	return psp_mmio;
 }
 
-static void *soc_get_mbox_address(void)
-{
-	uintptr_t psp_mmio = soc_get_psp_base_address();
-	if (!psp_mmio)
-		return 0;
-	return (void *)(psp_mmio + PSP_MAILBOX_OFFSET);
-}
-
-static u16 rd_mbox_sts(struct pspv2_mbox *mbox)
+static u16 rd_mbox_sts(uintptr_t psp_mmio)
 {
 	union pspv2_mbox_command tmp = { .val = 0 };
 
-	tmp.val = read32(&mbox->command);
+	tmp.val = read32p(psp_mmio + PSP_MAILBOX_COMMAND_OFFSET);
 	return tmp.fields.mbox_status;
 }
 
-static void wr_mbox_cmd(struct pspv2_mbox *mbox, u8 cmd)
+static void wr_mbox_cmd(uintptr_t psp_mmio, u8 cmd)
 {
 	union pspv2_mbox_command tmp = { .val = 0 };
 
 	/* Write entire 32-bit area to begin command execution */
 	tmp.fields.mbox_command = cmd;
-	write32(&mbox->command, tmp.val);
+	write32p(psp_mmio + PSP_MAILBOX_COMMAND_OFFSET, tmp.val);
 }
 
-static u8 rd_mbox_recovery(struct pspv2_mbox *mbox)
+static u8 rd_mbox_recovery(uintptr_t psp_mmio)
 {
 	union pspv2_mbox_command tmp = { .val = 0 };
 
-	tmp.val = read32(&mbox->command);
+	tmp.val = read32p(psp_mmio + PSP_MAILBOX_COMMAND_OFFSET);
 	return !!tmp.fields.recovery;
 }
 
-static void wr_mbox_buffer_ptr(struct pspv2_mbox *mbox, void *buffer)
+static void wr_mbox_buffer_ptr(uintptr_t psp_mmio, void *buffer)
 {
-	write64(&mbox->buffer, (uintptr_t)buffer);
+	write64p(psp_mmio + PSP_MAILBOX_BUFFER_OFFSET, (uintptr_t)buffer);
 }
 
-static int wait_command(struct pspv2_mbox *mbox, bool wait_for_ready)
+static int wait_command(uintptr_t psp_mmio, bool wait_for_ready)
 {
 	union pspv2_mbox_command and_mask = { .val = ~0 };
 	union pspv2_mbox_command expected = { .val = 0 };
@@ -92,7 +80,7 @@ static int wait_command(struct pspv2_mbox *mbox, bool wait_for_ready)
 	stopwatch_init_msecs_expire(&sw, PSP_CMD_TIMEOUT);
 
 	do {
-		tmp = read32(&mbox->command);
+		tmp = read32p(psp_mmio + PSP_MAILBOX_COMMAND_OFFSET);
 		tmp &= ~and_mask.val;
 		if (tmp == expected.val)
 			return 0;
@@ -103,27 +91,27 @@ static int wait_command(struct pspv2_mbox *mbox, bool wait_for_ready)
 
 int send_psp_command(u32 command, void *buffer)
 {
-	struct pspv2_mbox *mbox = soc_get_mbox_address();
-	if (!mbox)
+	uintptr_t psp_mmio = soc_get_psp_base_address();
+	if (!psp_mmio)
 		return -PSPSTS_NOBASE;
 
-	if (rd_mbox_recovery(mbox))
+	if (rd_mbox_recovery(psp_mmio))
 		return -PSPSTS_RECOVERY;
 
-	if (wait_command(mbox, true))
+	if (wait_command(psp_mmio, true))
 		return -PSPSTS_CMD_TIMEOUT;
 
 	/* set address of command-response buffer and write command register */
-	wr_mbox_buffer_ptr(mbox, buffer);
-	wr_mbox_cmd(mbox, command);
+	wr_mbox_buffer_ptr(psp_mmio, buffer);
+	wr_mbox_cmd(psp_mmio, command);
 
 	/* PSP clears command register when complete.  All commands except
 	 * SxInfo set the Ready bit. */
-	if (wait_command(mbox, command != MBOX_BIOS_CMD_SX_INFO))
+	if (wait_command(psp_mmio, command != MBOX_BIOS_CMD_SX_INFO))
 		return -PSPSTS_CMD_TIMEOUT;
 
 	/* check delivery status */
-	if (rd_mbox_sts(mbox))
+	if (rd_mbox_sts(psp_mmio))
 		return -PSPSTS_SEND_ERROR;
 
 	return 0;

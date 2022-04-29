@@ -9,6 +9,7 @@
 #include <device/mmio.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/pcr.h>
+#include <intelblocks/pmclib.h>
 #include <intelpch/lockdown.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
@@ -36,6 +37,9 @@ static void pmc_lockdown_cfg(int chipset_lockdown)
 		setbits32(pmcbase + PM_CFG, PM_CFG_DBG_MODE_LOCK |
 					 PM_CFG_XRAM_READ_DISABLE);
 	}
+
+	/* Send PMC IPC to inform about PCI enumeration done */
+	pmc_send_pci_enum_done();
 }
 
 static void pch_lockdown_cfg(void)

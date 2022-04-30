@@ -58,10 +58,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 		 * after the transition into suspend.
 		 */
 		if (gnvs->xhci) {
-			u32 reg32 = pci_read_config32(PCH_XHCI_DEV, 0x74);
-			reg32 &= ~(1 << 8); /* disable PME */
-			reg32 |= (1 << 15); /* clear PME status */
-			pci_write_config32(PCH_XHCI_DEV, 0x74, reg32);
+			pci_update_config32(PCH_XHCI_DEV, 0x74, ~(1 << 8), 1 << 15);
 		}
 	}
 

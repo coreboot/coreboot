@@ -28,8 +28,6 @@ static void sbxxx_enable_48mhzout(void)
 
 void bootblock_mainboard_early_init(void)
 {
-	u8 byte;
-
 	/* Enable the AcpiMmio space */
 	pm_io_write8(0x24, 1);
 
@@ -37,15 +35,11 @@ void bootblock_mainboard_early_init(void)
 	const pci_devfn_t dev = PCI_DEV(0, 0x14, 3);
 	pci_write_config32(dev, 0x44, 0xff03ffd5);
 
-	/* enable SIO LPC decode */
-	byte = pci_read_config8(dev, 0x48);
-	byte |= 3;	/* 2e, 2f */
-	pci_write_config8(dev, 0x48, byte);
+	/* enable SIO LPC decode at 0x2e/2f */
+	pci_or_config8(dev, 0x48, 3);
 
-	/* enable serial decode */
-	byte = pci_read_config8(dev, 0x44);
-	byte |= (1 << 6);  /* 0x3f8 */
-	pci_write_config8(dev, 0x44, byte);
+	/* enable serial decode at 0x3f8 */
+	pci_or_config8(dev, 0x44, 1 << 6);
 
 	/* enable SIO clock */
 	sbxxx_enable_48mhzout();

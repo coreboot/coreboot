@@ -135,6 +135,7 @@ int print_rcba(struct pci_dev *sb)
 
 	if (rcba == NULL) {
 		perror("Error mapping RCBA");
+		printf("Try booting with iomem=relaxed.\n");
 		exit(1);
 	}
 

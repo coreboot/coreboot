@@ -13,11 +13,9 @@
 /* Enable IO access to port, then enable UART HW control pins */
 static void enable_serial(unsigned int base_port, unsigned int io_enable)
 {
-	u32 temp;
 	u8 reg;
-	temp = pci_read_config32(SOC_LPC_DEV, LPC_IO_PORT_DECODE_ENABLE);
-	temp |= io_enable;
-	pci_write_config32(SOC_LPC_DEV, LPC_IO_PORT_DECODE_ENABLE, temp);
+
+	pci_or_config32(SOC_LPC_DEV, LPC_IO_PORT_DECODE_ENABLE, io_enable);
 
 	/*
 	 * Remove this section if HW handshake is not needed. This is needed

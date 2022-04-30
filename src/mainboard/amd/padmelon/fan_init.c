@@ -72,11 +72,8 @@ struct fintek_fan system_fan = {
 
 static void init_fan_control(void *unused)
 {
-	u32 temp;
 	/* Open a LPC IO access to 0x0220-0x0227 */
-	temp = pci_read_config32(SOC_LPC_DEV, LPC_IO_PORT_DECODE_ENABLE);
-	temp |= DECODE_ENABLE_SERIAL_PORT2;
-	pci_write_config32(SOC_LPC_DEV, LPC_IO_PORT_DECODE_ENABLE, temp);
+	pci_or_config32(SOC_LPC_DEV, LPC_IO_PORT_DECODE_ENABLE, DECODE_ENABLE_SERIAL_PORT2);
 
 	set_fan(&cpu_fan);
 	set_fan(&system_fan);

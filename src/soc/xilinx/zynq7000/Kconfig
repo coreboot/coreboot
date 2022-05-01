@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+#
+config SOC_XILINX_ZYNQ7000
+	bool
+	default n
+	select ARCH_BOOTBLOCK_ARMV7
+	select ARCH_VERSTAGE_ARMV7
+	select ARCH_ROMSTAGE_ARMV7
+	select ARCH_RAMSTAGE_ARMV7
+
+if SOC_XILINX_ZYNQ7000
+
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/xilinx/zynq7000/memlayout.ld"
+
+endif

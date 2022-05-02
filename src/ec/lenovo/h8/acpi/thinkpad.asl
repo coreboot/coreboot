@@ -304,7 +304,7 @@ Device (HKEY)
 		}
 	}
 
-	#if CONFIG(H8_HAS_BAT_TRESHOLDS_IMPL)
+	#if CONFIG(H8_HAS_BAT_THRESHOLDS_IMPL)
 	#include "thinkpad_bat_thresholds.asl"
 	#endif
 }

@@ -28,7 +28,7 @@ config H8_SUPPORT_BT_ON_WIFI
 	  Disable BDC detection and assume bluetooth is installed. Required for
 	  bluetooth on wifi cards, as it's not possible to detect it in coreboot.
 
-config H8_HAS_BAT_TRESHOLDS_IMPL
+config H8_HAS_BAT_THRESHOLDS_IMPL
 	bool
 	default n
 

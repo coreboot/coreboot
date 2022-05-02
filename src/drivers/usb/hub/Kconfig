@@ -1,0 +1,8 @@
+config DRIVERS_USB_HUB
+	bool
+	default n
+	depends on HAVE_ACPI_TABLES
+	help
+	   This driver is for soldered down USB Hub in the mainboard. When enabled,
+	   this driver will add ACPI support for the USB hub and any devices on the
+	   downstream facing ports.

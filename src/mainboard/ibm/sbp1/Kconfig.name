@@ -1,0 +1,2 @@
+config BOARD_IBM_SBP1
+	bool "SBP1"

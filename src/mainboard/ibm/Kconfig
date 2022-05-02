@@ -1,0 +1,15 @@
+if VENDOR_IBM
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/ibm/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/ibm/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "IBM"
+
+endif # VENDOR_IBM

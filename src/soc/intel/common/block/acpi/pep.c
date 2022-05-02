@@ -17,6 +17,8 @@
 #define MAINBOARD_DISPLAY_HOOK		"\\_SB.MDSX"
 #define ENABLE_PM_BITS_HOOK		"\\_SB.PCI0.EGPM"
 #define RESTORE_PM_BITS_HOOK		"\\_SB.PCI0.RGPM"
+#define THUNDERBOLT_DEVICE		"\\_SB.PCI0.TXHC"
+#define THUNDERBOLT_IOM_DPOF		"\\_SB.PCI0.DPOF"
 #define LPI_STATES_ALL			0xff
 #define MIN_DEVICE_STATE		ACPI_DEVICE_SLEEP_D0
 #define PEPD_SCOPE			"\\_SB.PCI0"
@@ -129,6 +131,11 @@ static void lpi_s0ix_entry(void *unused)
 	acpigen_write_if_cond_ref_of(ENABLE_PM_BITS_HOOK);
 	acpigen_emit_namestring(ENABLE_PM_BITS_HOOK);
 	acpigen_write_if_end();
+
+	/* Handle Thunderbolt displays */
+	acpigen_write_if_cond_ref_of(THUNDERBOLT_DEVICE);
+	acpigen_write_store_int_to_namestr(1, THUNDERBOLT_IOM_DPOF);
+	acpigen_write_if_end();
 }
 
 static void lpi_s0ix_exit(void *unused)
@@ -148,6 +155,11 @@ static void lpi_s0ix_exit(void *unused)
 	/* Restore GPIO all Community PM */
 	acpigen_write_if_cond_ref_of(RESTORE_PM_BITS_HOOK);
 	acpigen_emit_namestring(RESTORE_PM_BITS_HOOK);
+	acpigen_write_if_end();
+
+	/* Handle Thunderbolt displays */
+	acpigen_write_if_cond_ref_of(THUNDERBOLT_DEVICE);
+	acpigen_write_store_int_to_namestr(0, THUNDERBOLT_IOM_DPOF);
 	acpigen_write_if_end();
 }
 

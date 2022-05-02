@@ -219,6 +219,7 @@ Community <community/index.md>
 Payloads <payloads.md>
 Distributions <distributions.md>
 Technotes <technotes/index.md>
+Internal APIs & Configuration <internals/index.md>
 ACPI <acpi/index.md>
 Native Graphics Initialization with libgfxinit <gfx/libgfxinit.md>
 Display panel <gfx/display-panel.md>

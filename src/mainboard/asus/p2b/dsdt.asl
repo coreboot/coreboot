@@ -22,10 +22,12 @@ DefinitionBlock (
 	#include <acpi/dsdt_top.asl>
 	/* \_SB scope defining the main processor is generated in SSDT. */
 
-	OperationRegion(X80, SystemIO, 0x80, 1)
-	Field(X80, ByteAcc, NoLock, Preserve)
+	/* Port 80 POST */
+
+	OperationRegion (POST, SystemIO, 0x80, 1)
+	Field (POST, ByteAcc, Lock, Preserve)
 	{
-		P80, 8
+		DBG0, 8
 	}
 
 	/*
@@ -77,7 +79,7 @@ DefinitionBlock (
 		/* Arms SMI for device 12 */
 		TO12 = 1
 		/* Put out a POST code */
-		P80 = Arg0 | 0xF0
+		DBG0 = Arg0 | 0xF0
 	}
 
 	Method (\_WAK, 1, NotSerialized)

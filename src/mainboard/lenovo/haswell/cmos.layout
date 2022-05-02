@@ -48,8 +48,6 @@ enumerations
 #ID	value	text
 1	0	Disable
 1	1	Enable
-2	0	Enable
-2	1	Disable
 4	0	Fallback
 4	1	Normal
 6	0	Emergency
@@ -66,8 +64,6 @@ enumerations
 7	2	Keep
 8	0	Secondary
 8	1	Primary
-9	0	AHCI
-9	1	Compatible
 # Haswell ThinkPads have no Thinklight
 #10	0	Both
 10	1	Keyboard

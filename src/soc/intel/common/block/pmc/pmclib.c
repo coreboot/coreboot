@@ -399,6 +399,9 @@ static int pmc_prev_sleep_state(const struct chipset_power_state *ps)
 			if (CONFIG(HAVE_ACPI_RESUME))
 				prev_sleep_state = ACPI_S3;
 			break;
+		case ACPI_S4:
+			prev_sleep_state = ACPI_S4;
+			break;
 		case ACPI_S5:
 			prev_sleep_state = ACPI_S5;
 			break;

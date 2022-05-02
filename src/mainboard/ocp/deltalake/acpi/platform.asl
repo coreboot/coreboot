@@ -21,13 +21,7 @@ Field (APMP, ByteAcc, NoLock, Preserve)
 	APMS, 8		// APM status
 }
 
-/* Port 80 POST */
-OperationRegion (DBG0, SystemIO, 0x80, 0x02)
-Field (DBG0, ByteAcc, Lock, Preserve)
-{
-	IO80, 8,
-	IO81, 8
-}
+#include <arch/x86/acpi/post.asl>
 
 /* IO-Trap at 0x800.
  * This is the ACPI->SMI communication interface.

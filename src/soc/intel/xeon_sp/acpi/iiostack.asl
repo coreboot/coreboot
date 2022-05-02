@@ -58,7 +58,7 @@
 			{							\
 				/* indicate unrecognized UUID */		\
 				CDW1 |= 0x04					\
-				IO80 = 0xEE					\
+				DBG0 = 0xEE					\
 				Return (Arg3)					\
 			}							\
 		}								\

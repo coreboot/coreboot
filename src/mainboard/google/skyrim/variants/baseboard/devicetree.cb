@@ -105,22 +105,10 @@ chip soc/amd/sabrina
 							device ref usb3_port2 on end
 						end
 						chip drivers/usb/acpi
-							register "desc" = ""Left Type-A Port""
-							register "type" = "UPC_TYPE_USB3_A"
-							register "group" = "ACPI_PLD_GROUP(2, 2)"
-							device ref usb3_port3 on end
-						end
-						chip drivers/usb/acpi
 							register "desc" = ""Left Type-C Port""
 							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 							register "group" = "ACPI_PLD_GROUP(2, 1)"
 							device ref usb2_port2 on end
-						end
-						chip drivers/usb/acpi
-							register "desc" = ""Left Type-A Port""
-							register "type" = "UPC_TYPE_USB3_A"
-							register "group" = "ACPI_PLD_GROUP(2, 2)"
-							device ref usb2_port3 on end
 						end
 						chip drivers/usb/acpi
 							register "desc" = ""World-Facing Camera""

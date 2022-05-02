@@ -1,10 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /*
-* 0x80: POST_BASE
 * 0x3F8: DEBCOM_BASE
-* X80: POST_REGION
-* P80: PORT80
 *
 * CREG: DEBCOM_REGION
 * CUAR: DEBCOM_UART
@@ -16,12 +13,6 @@
 *
 * DEBUG_INIT	DINI
 */
-
-OperationRegion(X80, SystemIO, 0x80, 1)
-	Field(X80, ByteAcc, NoLock, Preserve)
-{
-	P80, 8
-}
 
 OperationRegion(CREG, SystemIO, 0x3F8, 8)
 	Field(CREG, ByteAcc, NoLock, Preserve)

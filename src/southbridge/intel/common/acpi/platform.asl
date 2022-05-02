@@ -9,13 +9,7 @@ Field (APMP, ByteAcc, NoLock, Preserve)
 	APMS, 8		// APM status
 }
 
-/* Port 80 POST */
-
-OperationRegion (POST, SystemIO, 0x80, 1)
-Field (POST, ByteAcc, Lock, Preserve)
-{
-	DBG0, 8
-}
+#include <arch/x86/acpi/post.asl>
 
 #if CONFIG(ACPI_SOC_NVS)
 /* SMI I/O Trap */

@@ -22,13 +22,7 @@ DefinitionBlock (
 	#include <acpi/dsdt_top.asl>
 	/* \_SB scope defining the main processor is generated in SSDT. */
 
-	/* Port 80 POST */
-
-	OperationRegion (POST, SystemIO, 0x80, 1)
-	Field (POST, ByteAcc, Lock, Preserve)
-	{
-		DBG0, 8
-	}
+	#include <arch/x86/acpi/post.asl>
 
 	/*
 	 * Intel 82371EB (PIIX4E) datasheet, section 7.2.3, page 142

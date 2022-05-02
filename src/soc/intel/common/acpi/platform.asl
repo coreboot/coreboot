@@ -7,13 +7,7 @@ External(\_SB.MWAK, MethodObj)
 External(\_SB.PCI0.EGPM, MethodObj)
 External(\_SB.PCI0.RGPM, MethodObj)
 
-/* Port 80 POST */
-
-OperationRegion (POST, SystemIO, CONFIG_POST_IO_PORT, 1)
-Field (POST, ByteAcc, Lock, Preserve)
-{
-	DBG0, 8
-}
+#include <arch/x86/acpi/post.asl>
 
 /*
  * The _PTS method (Prepare To Sleep) is called before the OS is

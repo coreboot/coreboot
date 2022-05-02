@@ -9,5 +9,6 @@ programming APIs internal to coreboot
 :maxdepth: 1
 
 coreboot devicetree <devicetree.md>
+coreboot devicetree language <devicetree_language.md>
 
 ```

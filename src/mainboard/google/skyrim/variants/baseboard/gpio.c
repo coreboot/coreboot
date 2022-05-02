@@ -24,7 +24,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* WLAN_AUX_RST_L */
 	PAD_GPO(GPIO_7, HIGH),
 	/* EN_PWR_WWAN_X */
-	PAD_GPO(GPIO_8, HIGH),
+	PAD_GPO(GPIO_8, LOW),
 	/* EN_PP3300_WLAN */
 	PAD_GPO(GPIO_9, HIGH),
 	/* BT_DISABLE */

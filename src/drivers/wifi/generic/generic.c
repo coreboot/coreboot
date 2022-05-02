@@ -118,6 +118,7 @@ static const unsigned short intel_pci_device_ids[] = {
 	/* Garfield Peak */
 	PCI_DID_GrP_6SERIES_1_WIFI,
 	PCI_DID_GrP_6SERIES_2_WIFI,
+	PCI_DID_GrP_6SERIES_3_WIFI,
 	0
 };
 

@@ -707,7 +707,24 @@ chip soc/intel/alderlake
 				use conn0 as mux_conn[0]
 				use conn1 as mux_conn[1]
 				use conn2 as mux_conn[2]
-				device pnp 0c09.0 on end
+				use ecmux0 as retimer_conn[0]
+				use ecmux1 as retimer_conn[1]
+				use ecmux2 as retimer_conn[2]
+				device pnp 0c09.0 on
+					chip ec/google/chromeec/mux
+						device generic 0 on
+							chip ec/google/chromeec/mux/conn
+								device generic 0 alias ecmux0 on end
+							end
+							chip ec/google/chromeec/mux/conn
+								device generic 1 alias ecmux1 on end
+							end
+							chip ec/google/chromeec/mux/conn
+								device generic 2 alias ecmux2 on end
+							end
+						end
+					end
+				end
 			end
 		end
 		device ref pmc hidden

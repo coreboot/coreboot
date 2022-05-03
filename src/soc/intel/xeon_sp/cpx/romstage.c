@@ -81,7 +81,7 @@ void save_dimm_info(void)
 	struct memory_info *mem_info;
 	const struct SystemMemoryMapHob *hob;
 	MEMMAP_DIMM_DEVICE_INFO_STRUCT src_dimm;
-	int dimm_max, index = 0;
+	int dimm_max, index = 0, num_dimms = 0;
 	uint32_t vdd_voltage;
 
 	hob = get_system_memory_map();
@@ -134,13 +134,25 @@ void save_dimm_info(void)
 					src_dimm.actKeyByte2,
 					0);
 				index++;
+				num_dimms++;
+			} else if (mainboard_dimm_slot_exists(0, ch, dimm)) {
+				if (index >= dimm_max) {
+					printk(BIOS_WARNING, "Too many DIMMs info for %s.\n",
+						__func__);
+					return;
+				}
+				dest_dimm = &mem_info->dimm[index];
+				dest_dimm->dimm_size = 0;
+				dest_dimm->channel_num = ch;
+				dest_dimm->dimm_num = dimm;
+				index++;
 			}
 		}
 	}
 
-	/* Save available DIMM information */
+	/* Save available DIMM slot information */
 	mem_info->dimm_cnt = index;
-	printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
+	printk(BIOS_DEBUG, "%d out of %d DIMMs found\n", num_dimms, mem_info->dimm_cnt);
 }
 
 static void set_cmos_mrc_cold_boot_flag(bool cold_boot_required)

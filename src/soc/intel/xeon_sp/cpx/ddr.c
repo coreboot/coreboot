@@ -82,3 +82,8 @@ uint16_t get_max_memory_speed(uint32_t commonTck)
 	else
 		return 800;
 }
+
+__weak bool mainboard_dimm_slot_exists(uint8_t socket, uint8_t channel, uint8_t slot)
+{
+	return false;
+}

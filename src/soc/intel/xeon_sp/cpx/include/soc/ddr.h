@@ -3,7 +3,7 @@
 #ifndef _CPX_DDR_H_
 #define _CPX_DDR_H_
 
-#include <stdint.h>
+#include <types.h>
 
 /* DDR_*_TCK_MIN are in picoseconds */
 #define DDR_800_TCK_MIN                 2500
@@ -47,5 +47,7 @@
 
 uint16_t get_max_memory_speed(uint32_t commonTck);
 uint32_t get_ddr_voltage(uint8_t DdrVoltage);
+
+bool mainboard_dimm_slot_exists(uint8_t socket, uint8_t channel, uint8_t slot);
 
 #endif /* _CPX_DDR_H_ */

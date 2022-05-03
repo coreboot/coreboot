@@ -277,6 +277,26 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	return smbios_full_table_len(&t->header, t->eos);
 }
 
+static int create_smbios_type17_for_empty_slot(struct dimm_info *dimm,
+					       unsigned long *current, int *handle,
+					       int type16_handle)
+{
+	struct smbios_type17 *t = smbios_carve_table(*current, SMBIOS_MEMORY_DEVICE,
+						     sizeof(*t), *handle);
+	t->phys_memory_array_handle = type16_handle;
+	/* no handle for error information */
+	t->memory_error_information_handle = 0xfffe;
+	t->total_width = 0xffff; /* Unknown */
+	t->data_width = 0xffff; /* Unknown */
+	t->form_factor = 0x2; /* Unknown */
+	smbios_fill_dimm_locator(dimm, t); /* Device and Bank */
+	t->memory_type = 0x2; /* Unknown */
+	t->type_detail = 0x2; /* Unknown */
+
+	*handle += 1;
+	return smbios_full_table_len(&t->header, t->eos);
+}
+
 #define VERSION_VPD "firmware_version"
 static const char *vpd_get_bios_version(void)
 {
@@ -947,15 +967,19 @@ static int smbios_write_type17(unsigned long *current, int *handle, int type16)
 
 	printk(BIOS_INFO, "Create SMBIOS type 17\n");
 	for (i = 0; i < meminfo->dimm_cnt && i < ARRAY_SIZE(meminfo->dimm); i++) {
-		struct dimm_info *dimm;
-		dimm = &meminfo->dimm[i];
+		struct dimm_info *d = &meminfo->dimm[i];
 		/*
 		 * Windows 10 GetPhysicallyInstalledSystemMemory functions reads SMBIOS tables
 		 * type 16 and type 17. The type 17 tables need to point to a type 16 table.
 		 * Otherwise, the physical installed memory size is guessed from the system
 		 * memory map, which results in a slightly smaller value than the actual size.
 		 */
-		const int len = create_smbios_type17_for_dimm(dimm, current, handle, type16);
+		int len;
+		if (d->dimm_size > 0)
+			len = create_smbios_type17_for_dimm(d, current, handle, type16);
+		else
+			len = create_smbios_type17_for_empty_slot(d, current, handle, type16);
+
 		*current += len;
 		totallen += len;
 	}
@@ -1046,6 +1070,9 @@ static int smbios_write_type20(unsigned long *current, int *handle,
 	for (i = 0; i < meminfo->dimm_cnt && i < ARRAY_SIZE(meminfo->dimm); i++) {
 		struct dimm_info *dimm;
 		dimm = &meminfo->dimm[i];
+		if (dimm->dimm_size == 0)
+			continue;
+
 		u32 end_addr = start_addr + (dimm->dimm_size << 10) - 1;
 		totallen += smbios_write_type20_table(current, handle, start_addr, end_addr,
 				type17_handle, type19_handle);

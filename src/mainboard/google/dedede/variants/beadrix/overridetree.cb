@@ -1,3 +1,11 @@
+fw_config
+	field AUDIO_CODEC_SOURCE 41 43
+		option AUDIO_CODEC_UNPROVISIONED 0
+		option AUDIO_CODEC_ALC5682 1
+		option AUDIO_CODEC_ALC5682I_VS 2
+	end
+end
+
 chip soc/intel/jasperlake
 
 	# USB Port Configuration
@@ -140,7 +148,23 @@ chip soc/intel/jasperlake
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
-				device i2c 1a on end
+				device i2c 1a on
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_UNPROVISIONED
+				end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""RTL5682""
+				register "name" = ""RT58""
+				register "desc" = ""Realtek RT5682""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682I_VS
+				end
 			end
 		end # I2C 4
 		device pci 19.1 on

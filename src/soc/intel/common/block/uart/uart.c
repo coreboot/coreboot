@@ -308,24 +308,28 @@ static const char *uart_acpi_hid(const struct device *dev)
 static const char *uart_acpi_name(const struct device *dev)
 {
 	switch (dev->device) {
+	case PCI_DID_INTEL_ADP_P_UART0:
 	case PCI_DID_INTEL_APL_UART0:
 	case PCI_DID_INTEL_GLK_UART0:
 	case PCI_DID_INTEL_SPT_UART0:
 	case PCI_DID_INTEL_SPT_H_UART0:
 	case PCI_DID_INTEL_CNP_H_UART0:
 		return "UAR0";
+	case PCI_DID_INTEL_ADP_P_UART1:
 	case PCI_DID_INTEL_APL_UART1:
 	case PCI_DID_INTEL_GLK_UART1:
 	case PCI_DID_INTEL_SPT_UART1:
 	case PCI_DID_INTEL_SPT_H_UART1:
 	case PCI_DID_INTEL_CNP_H_UART1:
 		return "UAR1";
+	case PCI_DID_INTEL_ADP_P_UART2:
 	case PCI_DID_INTEL_APL_UART2:
 	case PCI_DID_INTEL_GLK_UART2:
 	case PCI_DID_INTEL_SPT_UART2:
 	case PCI_DID_INTEL_SPT_H_UART2:
 	case PCI_DID_INTEL_CNP_H_UART2:
 		return "UAR2";
+	case PCI_DID_INTEL_ADP_P_UART3:
 	case PCI_DID_INTEL_GLK_UART3:
 		return "UAR3";
 	default:

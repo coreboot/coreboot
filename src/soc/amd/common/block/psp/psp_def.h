@@ -26,9 +26,6 @@
 #define MBOX_BIOS_CMD_SMU_FW			0x19
 #define MBOX_BIOS_CMD_SMU_FW2			0x1a
 
-#define CORE_2_PSP_MSG_38_OFFSET		0x10998
-#define CORE_2_PSP_MSG_38_FUSE_SPL		BIT(12)
-
 /* command/response format, BIOS builds this in memory
  *   mbox_buffer_header: generic header
  *   mbox_buffer:        command-specific buffer format

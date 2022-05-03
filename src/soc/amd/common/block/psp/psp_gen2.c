@@ -13,6 +13,9 @@
 #define PSP_MAILBOX_COMMAND_OFFSET	0x10570 /* 4 bytes */
 #define PSP_MAILBOX_BUFFER_OFFSET	0x10574 /* 8 bytes */
 
+#define CORE_2_PSP_MSG_38_OFFSET	0x10998 /* 4 byte */
+#define   CORE_2_PSP_MSG_38_FUSE_SPL	BIT(12)
+
 union pspv2_mbox_command {
 	u32 val;
 	struct pspv2_mbox_cmd_fields {

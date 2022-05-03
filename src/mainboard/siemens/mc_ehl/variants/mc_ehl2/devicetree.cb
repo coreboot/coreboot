@@ -101,7 +101,7 @@ chip soc/intel/elkhartlake
 	}"
 
 	# TSN GBE related UPDs
-	register "PchTsnGbeLinkSpeed" = "Tsn_2_5_Gbps"
+	register "PchTsnGbeLinkSpeed" = "Tsn_1_Gbps"
 	register "PchTsnGbeSgmiiEnable" = "1"
 	register "PseTsnGbeSgmiiEnable[0]" = "1"
 	register "PseTsnGbeSgmiiEnable[1]" = "1"

@@ -83,7 +83,7 @@ chip soc/intel/tigerlake
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H10)"
 				register "dfp[1].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H10)"
-				use tcss_usb3_port3 as dfp[0].typec_port
+				use tcss_usb3_port1 as dfp[0].typec_port
 				use tcss_usb3_port2 as dfp[1].typec_port
 				device generic 0 on end
 			end

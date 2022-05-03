@@ -22,8 +22,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_B2, NONE),
 	/* B3  : PROC_GP2 ==> NC */
 	PAD_NC(GPP_B3, NONE),
-	/* B15 : TIME_SYNC0 ==> NC */
-	PAD_NC(GPP_B15, NONE),
+	/* B15  : PROC_GP3 ==> AUD_RST_L */
+	PAD_CFG_GPO(GPP_B15, 1, PWROK),
 
 	/* C3  : GPP_C3 ==> SML0_SMBCLK */
 	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),

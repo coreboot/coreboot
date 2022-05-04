@@ -26,6 +26,10 @@ config MAINBOARD_VENDOR
 	string
 	default "Micro-Star International Co., Ltd."
 
+config MAINBOARD_FAMILY
+	string
+	default "Default string"
+
 config DIMM_SPD_SIZE
 	default 512
 

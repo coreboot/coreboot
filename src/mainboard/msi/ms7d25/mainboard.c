@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <device/device.h>
 #include <soc/ramstage.h>
+#include <smbios.h>
 #include <string.h>
 
 void mainboard_fill_fadt(acpi_fadt_t *fadt)
@@ -16,9 +17,30 @@ static void mainboard_init(void *chip_info)
 
 }
 
-static void mainboard_enable(struct device *dev)
+u8 smbios_mainboard_feature_flags(void)
 {
+	return SMBIOS_FEATURE_FLAGS_HOSTING_BOARD | SMBIOS_FEATURE_FLAGS_REPLACEABLE;
+}
 
+smbios_wakeup_type smbios_system_wakeup_type(void)
+{
+	return SMBIOS_WAKEUP_TYPE_POWER_SWITCH;
+}
+
+const char *smbios_system_product_name(void)
+{
+	return "MS-7D25";
+}
+
+/* Only baseboard serial number is populated */
+const char *smbios_system_serial_number(void)
+{
+	return "Default string";
+}
+
+const char *smbios_system_sku(void)
+{
+	return "Default string";
 }
 
 void mainboard_silicon_init_params(FSP_S_CONFIG *params)
@@ -94,6 +116,361 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	params->SataPortsSolidStateDrive[6] = 1; // M2_3
 	params->SataPortsSolidStateDrive[7] = 1; // M2_4
 	params->SataLedEnable = 1;
+}
+
+#if CONFIG(GENERATE_SMBIOS_TABLES)
+static const struct port_information smbios_type8_info[] = {
+	{
+		.internal_reference_designator = "PS2_USB1",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "Keyboard",
+		.external_connector_type       = CONN_PS_2,
+		.port_type                     = TYPE_KEYBOARD_PORT
+	},
+	{
+		.internal_reference_designator = "PS2_USB1",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "PS2Mouse",
+		.external_connector_type       = CONN_PS_2,
+		.port_type                     = TYPE_MOUSE_PORT
+	},
+	{
+		.internal_reference_designator = "PS2_USB1",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "USB 2.0 Type-A",
+		.external_connector_type       = CONN_ACCESS_BUS_USB,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "PS2_USB1",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "USB 2.0 Type-A (Flash BIOS)",
+		.external_connector_type       = CONN_ACCESS_BUS_USB,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "JTPM1 - TPM HDR",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "LAN_USB1",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "Ethernet",
+		.external_connector_type       = CONN_RJ_45,
+		.port_type                     = TYPE_NETWORK_PORT
+	},
+	{
+		.internal_reference_designator = "LAN_USB1",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "USB 3.2 Gen2x2 Type-C",
+		.external_connector_type       = CONN_USB_TYPE_C,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "LAN_USB1",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "USB 3.2 Gen2 Type-A",
+		.external_connector_type       = CONN_ACCESS_BUS_USB,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "SATA1",
+		.internal_connector_type       = CONN_SAS_SATA,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_SATA
+	},
+	{
+		.internal_reference_designator = "SATA2",
+		.internal_connector_type       = CONN_SAS_SATA,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_SATA
+	},
+	{
+		.internal_reference_designator = "SATA3",
+		.internal_connector_type       = CONN_SAS_SATA,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_SATA
+	},
+	{
+		.internal_reference_designator = "SATA4",
+		.internal_connector_type       = CONN_SAS_SATA,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_SATA
+	},
+	{
+		.internal_reference_designator = "SATA5",
+		.internal_connector_type       = CONN_SAS_SATA,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_SATA
+	},
+	{
+		.internal_reference_designator = "SATA6",
+		.internal_connector_type       = CONN_SAS_SATA,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_SATA
+	},
+	{
+		.internal_reference_designator = "JTBT1",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_THUNDERBOLT
+	},
+	{
+		.internal_reference_designator = "JC1 - CHASSIS INTRUSION",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "JAUD1 - FRONT AUDIO",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_AUDIO_PORT
+	},
+	{
+		.internal_reference_designator = "AUDIO1 - REAR AUDIO",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "Audio",
+		.external_connector_type       = CONN_OTHER,
+		.port_type                     = TYPE_AUDIO_PORT
+	},
+	{
+		.internal_reference_designator = "JFP1 - FRONT PANEL",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "JFP2 - PC SPEAKER",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "JBAT1 - CLEAR CMOS",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "JDASH1 - TUNING CONTROLLER",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "JRGB1 - 5050 RGB LED",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "JRAINBOW1 - WS2812B RGB LED",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "JRAINBOW2 - WS2812B RGB LED",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "CPU_FAN1",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "PUMP_FAN1",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "SYS_FAN1",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "SYS_FAN2",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "SYS_FAN3",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "SYS_FAN4",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "SYS_FAN5",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "SYS_FAN6",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "DP_HDMI1",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "HDMI",
+		.external_connector_type       = CONN_OTHER,
+		.port_type                     = TYPE_VIDEO_PORT
+	},
+	{
+		.internal_reference_designator = "DP_HDMI1",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "Display Port",
+		.external_connector_type       = CONN_OTHER,
+		.port_type                     = TYPE_VIDEO_PORT
+	},
+	{
+		.internal_reference_designator = "USB2",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "USB 2.0 Type-A (Upper)",
+		.external_connector_type       = CONN_ACCESS_BUS_USB,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "USB2",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "USB 2.0 Type-A (Lower)",
+		.external_connector_type       = CONN_ACCESS_BUS_USB,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "USB2",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "USB 3.2 Gen1 Type-A (Upper)",
+		.external_connector_type       = CONN_ACCESS_BUS_USB,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "USB2",
+		.internal_connector_type       = CONN_NONE,
+		.external_reference_designator = "USB 3.2 Gen1 Type-A (Lower)",
+		.external_connector_type       = CONN_ACCESS_BUS_USB,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "JUSB1 - USB 2.0 ",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "JUSB2 - USB 2.0",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "JUSB3 - USB 3.2 GEN 1",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "JUSB4 - USB 3.2 GEN 1",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "JUSB5 - USB-C",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_USB
+	},
+	{
+		.internal_reference_designator = "ATX_PWR1",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "CPU_PWR1",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+	{
+		.internal_reference_designator = "CPU_PWR2",
+		.internal_connector_type       = CONN_OTHER,
+		.external_reference_designator = "",
+		.external_connector_type       = CONN_NONE,
+		.port_type                     = TYPE_OTHER_PORT
+	},
+};
+
+static int mainboard_smbios_data(struct device *dev, int *handle, unsigned long *current)
+{
+	int len = 0;
+
+	// add port information
+	len += smbios_write_type8(
+		current, handle,
+		smbios_type8_info,
+		ARRAY_SIZE(smbios_type8_info)
+		);
+
+	return len;
+}
+#endif
+
+static void mainboard_enable(struct device *dev)
+{
+#if CONFIG(GENERATE_SMBIOS_TABLES)
+	dev->ops->get_smbios_data = mainboard_smbios_data;
+#endif
 }
 
 struct chip_operations mainboard_ops = {

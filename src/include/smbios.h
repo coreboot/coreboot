@@ -35,6 +35,11 @@ int smbios_write_type41(unsigned long *current, int *handle,
 			const char *name, u8 instance, u16 segment,
 			u8 bus, u8 device, u8 function, u8 device_type);
 
+int smbios_write_type43(unsigned long *current, int *handle, const u32 vendor_id,
+			const u8 major_spec_ver, const u8 minor_spec_ver,
+			const u32 fw_ver1, const u32 fw_ver2, const char *description,
+			const u64 characteristics, const u32 oem_defined);
+
 struct device;
 int get_smbios_data(struct device *dev, int *handle, unsigned long *current);
 
@@ -253,6 +258,7 @@ typedef enum {
 	SMBIOS_SYSTEM_BOOT_INFORMATION = 32,
 	SMBIOS_IPMI_DEVICE_INFORMATION = 38,
 	SMBIOS_ONBOARD_DEVICES_EXTENDED_INFORMATION = 41,
+	SMBIOS_TPM_DEVICE = 43,
 	SMBIOS_END_OF_TABLE = 127,
 } smbios_struct_type_t;
 
@@ -973,6 +979,25 @@ struct smbios_type41 {
 	u8 bus_number;
 	u8 function_number: 3;
 	u8 device_number: 5;
+	u8 eos[2];
+} __packed;
+
+
+#define SMBIOS_TPM_DEVICE_CHARACTERISTICS_NOT_SUPPORTED (1ULL << 2)
+#define SMBIOS_TPM_DEVICE_FAMILY_CONFIGURABLE_VIA_FW_UPD (1ULL << 3)
+#define SMBIOS_TPM_DEVICE_FAMILY_CONFIGURABLE_VIA_PLATFORM_SW_SUPPORT (1ULL << 4)
+#define SMBIOS_TPM_DEVICE_FAMILY_CONFIGURABLE_VIA_OEM_PROPRIETARY (1ULL << 5)
+
+struct smbios_type43 {
+	struct smbios_header header;
+	u32 vendor_id;
+	u8 major_spec_ver;
+	u8 minor_spec_ver;
+	u32 fw_ver1;
+	u32 fw_ver2;
+	u8 description;
+	u64 characteristics;
+	u32 oem_defined;
 	u8 eos[2];
 } __packed;
 

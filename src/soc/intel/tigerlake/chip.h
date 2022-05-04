@@ -92,6 +92,12 @@ enum slew_rate {
 	SLEW_FAST_16
 };
 
+enum ddi_port_config {
+	DDI_PORT_CFG_NO_LFP	= 0,
+	DDI_PORT_CFG_EDP	= 1,
+	DDI_PORT_CFG_MIPI_DSI	= 2,
+};
+
 struct soc_intel_tigerlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -367,13 +373,9 @@ struct soc_intel_tigerlake_config {
 	 */
 	uint8_t gpio_pm[TOTAL_GPIO_COMM];
 
-	/* DP config */
-	/*
-	 * Port config
-	 * 0:Disabled, 1:eDP, 2:MIPI DSI
-	 */
-	uint8_t DdiPortAConfig;
-	uint8_t DdiPortBConfig;
+	/* DDI port config */
+	enum ddi_port_config DdiPortAConfig;
+	enum ddi_port_config DdiPortBConfig;
 
 	/* Enable(1)/Disable(0) HPD */
 	uint8_t DdiPortAHpd;

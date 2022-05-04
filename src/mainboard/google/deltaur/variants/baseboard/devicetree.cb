@@ -116,7 +116,7 @@ chip soc/intel/tigerlake
 	register "TcssXhciEn" = "1"
 
 	# DisplayPort
-	register "DdiPortAConfig" = "1"	# eDP
+	register "DdiPortAConfig" = "DDI_PORT_CFG_EDP"
 	register "DdiPortAHpd" = "1"
 
 	# Disable PM to allow for shorter irq pulses

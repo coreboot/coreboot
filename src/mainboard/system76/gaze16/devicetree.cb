@@ -87,12 +87,12 @@ chip soc/intel/tigerlake
 		device ref system_agent on end
 		device ref igpu on
 			# DDIA is eDP
-			register "DdiPortAConfig" = "1"
+			register "DdiPortAConfig" = "DDI_PORT_CFG_EDP"
 			register "DdiPortAHpd" = "1"
 			register "DdiPortADdc" = "0"
 
 			# DDIB is HDMI
-			register "DdiPortBConfig" = "0"
+			register "DdiPortBConfig" = "DDI_PORT_CFG_NO_LFP"
 			register "DdiPortBHpd" = "1"
 			register "DdiPortBDdc" = "1"
 		end

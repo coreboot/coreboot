@@ -68,7 +68,7 @@ chip soc/intel/tigerlake
 	register "SataPortsEnable[1]" = "1"
 
 	# enabling EDP in PortA
-	register "DdiPortAConfig" = "1"
+	register "DdiPortAConfig" = "DDI_PORT_CFG_EDP"
 
 	register "DdiPortBHpd" = "1"
 	register "DdiPort1Hpd" = "1"

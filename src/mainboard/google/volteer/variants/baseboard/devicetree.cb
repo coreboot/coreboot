@@ -239,8 +239,8 @@ chip soc/intel/tigerlake
 	register "TcssAuxOri" = "0"
 
 	# DP port
-	register "DdiPortAConfig" = "1"	# eDP
-	register "DdiPortBConfig" = "0"
+	register "DdiPortAConfig" = "DDI_PORT_CFG_EDP"
+	register "DdiPortBConfig" = "DDI_PORT_CFG_NO_LFP"
 
 	register "DdiPortAHpd" = "1"
 	register "DdiPortBHpd" = "1"

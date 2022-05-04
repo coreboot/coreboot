@@ -177,6 +177,11 @@ typedef TPM_HANDLE TPMI_RH_NV_INDEX;
 /* TPM Property capability constants. */
 typedef uint32_t TPM_PT;
 #define PT_GROUP                                   0x00000100
+#define PT_FIXED                               (PT_GROUP * 1)
+#define TPM_PT_FAMILY_INDICATOR      ((TPM_PT)(PT_FIXED + 0))
+#define TPM_PT_MANUFACTURER          ((TPM_PT)(PT_FIXED + 5))
+#define TPM_PT_FIRMWARE_VERSION_1   ((TPM_PT)(PT_FIXED + 11))
+#define TPM_PT_FIRMWARE_VERSION_2   ((TPM_PT)(PT_FIXED + 12))
 #define PT_VAR                                 (PT_GROUP * 2)
 #define TPM_PT_PERMANENT               ((TPM_PT)(PT_VAR + 0))
 

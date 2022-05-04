@@ -6,6 +6,10 @@
 #include <device/device.h>
 #include <drivers/intel/ptt/ptt.h>
 #include <drivers/tpm/tpm_ppi.h>
+#include <security/tpm/tss.h>
+#include <endian.h>
+#include <smbios.h>
+#include <string.h>
 
 #include "tpm.h"
 #include "chip.h"
@@ -126,6 +130,86 @@ static const char *crb_tpm_acpi_name(const struct device *dev)
 	return "TPM";
 }
 
+#if CONFIG(GENERATE_SMBIOS_TABLES) && CONFIG(TPM2)
+static int tpm_get_cap(uint32_t property, uint32_t *value)
+{
+	TPMS_CAPABILITY_DATA cap_data;
+	int i;
+	uint32_t status;
+
+	if (!value)
+		return -1;
+
+	status = tlcl_get_capability(TPM_CAP_TPM_PROPERTIES, property, 1, &cap_data);
+
+	if (status)
+		return -1;
+
+	for (i = 0 ; i < cap_data.data.tpmProperties.count; i++) {
+		if (cap_data.data.tpmProperties.tpmProperty[i].property == property) {
+			*value = cap_data.data.tpmProperties.tpmProperty[i].value;
+			return 0;
+		}
+	}
+
+	return -1;
+}
+
+static int smbios_write_type43_tpm(struct device *dev, int *handle, unsigned long *current)
+{
+	struct tpm2_info info;
+	uint32_t tpm_manuf, tpm_family;
+	uint32_t fw_ver1, fw_ver2;
+	uint8_t major_spec_ver, minor_spec_ver;
+
+	tpm2_get_info(&info);
+
+	/* If any of these have invalid values, assume TPM not present or disabled */
+	if (info.vendor_id == 0 || info.vendor_id == 0xFFFF ||
+	    info.device_id == 0 || info.device_id == 0xFFFF) {
+		printk(BIOS_DEBUG, "%s: Invalid Vendor ID/Device ID\n", __func__);
+		return 0;
+	}
+
+	/* Vendor ID is the value returned by TPM2_GetCapabiltiy TPM_PT_MANUFACTURER */
+	if (tpm_get_cap(TPM_PT_MANUFACTURER, &tpm_manuf)) {
+		printk(BIOS_DEBUG, "TPM2_GetCap TPM_PT_MANUFACTURER failed\n");
+		return 0;
+	}
+
+	tpm_manuf = be32toh(tpm_manuf);
+
+	if (tpm_get_cap(TPM_PT_FIRMWARE_VERSION_1, &fw_ver1)) {
+		printk(BIOS_DEBUG, "TPM2_GetCap TPM_PT_FIRMWARE_VERSION_1 failed\n");
+		return 0;
+	}
+
+	if (tpm_get_cap(TPM_PT_FIRMWARE_VERSION_2, &fw_ver2)) {
+		printk(BIOS_DEBUG, "TPM2_GetCap TPM_PT_FIRMWARE_VERSION_2 failed\n");
+		return 0;
+	}
+
+	if (tpm_get_cap(TPM_PT_FAMILY_INDICATOR, &tpm_family)) {
+		printk(BIOS_DEBUG, "TPM2_GetCap TPM_PT_FAMILY_INDICATOR failed\n");
+		return 0;
+	}
+
+	tpm_family = be32toh(tpm_family);
+
+	if (!strncmp((char *)&tpm_family, "2.0", 4)) {
+		major_spec_ver = 2;
+		minor_spec_ver = 0;
+	} else {
+		printk(BIOS_ERR, "%s: Invalid TPM family\n", __func__);
+		return 0;
+	}
+
+	return smbios_write_type43(current, handle, tpm_manuf, major_spec_ver, minor_spec_ver,
+				   fw_ver1, fw_ver2, tis_get_dev_name(&info),
+				   SMBIOS_TPM_DEVICE_CHARACTERISTICS_NOT_SUPPORTED, 0);
+}
+#endif
+
 static struct device_operations __maybe_unused crb_ops = {
 	.read_resources = noop_read_resources,
 	.set_resources = noop_set_resources,
@@ -133,7 +217,9 @@ static struct device_operations __maybe_unused crb_ops = {
 	.acpi_name = crb_tpm_acpi_name,
 	.acpi_fill_ssdt = crb_tpm_fill_ssdt,
 #endif
-
+#if CONFIG(GENERATE_SMBIOS_TABLES) && CONFIG(TPM2)
+	.get_smbios_data	= smbios_write_type43_tpm,
+#endif
 };
 
 static void enable_dev(struct device *dev)

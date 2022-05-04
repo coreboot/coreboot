@@ -8,7 +8,7 @@
 
 #define DIMM_INFO_SERIAL_SIZE		4
 #define DIMM_INFO_PART_NUMBER_SIZE	33
-#define DIMM_INFO_TOTAL			16
+#define DIMM_INFO_TOTAL			32
 
 /**
  * If this table is filled and put in CBMEM,

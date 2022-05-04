@@ -9,26 +9,10 @@
 #define ESPI_OFFSET_FROM_BAR			0x10000
 
 #define ESPI_DECODE				0x40
-#define  ESPI_DECODE_MMIO_RANGE_EN(range)	(1 << (((range) & 3) + 12))
-#define  ESPI_DECODE_IO_RANGE_EN(range)		(1 << (((range) & 3) + 8))
+/* more bits defined in soc/common/amd/blocks/lpc/espi_def.h */
 #define  ESPI_DECODE_IO_0x80_EN			(1 << 2)
 #define  ESPI_DECODE_IO_0X60_0X64_EN		(1 << 1)
 #define  ESPI_DECODE_IO_0X2E_0X2F_EN		(1 << 0)
-
-#define ESPI_IO_BASE_REG0			0x44
-#define ESPI_IO_BASE_REG1			0x48
-#define ESPI_IO_SIZE0				0x4c
-#define ESPI_MMIO_BASE_REG0			0x50
-#define ESPI_MMIO_BASE_REG1			0x54
-#define ESPI_MMIO_BASE_REG2			0x58
-#define ESPI_MMIO_BASE_REG3			0x5c
-#define ESPI_MMIO_SIZE_REG0			0x60
-#define ESPI_MMIO_SIZE_REG1			0x64
-
-#define ESPI_IO_RANGE_BASE_REG(base, range)	((base) + ((range) & 3) * 2)
-#define ESPI_IO_RANGE_SIZE_REG(base, range)	((base) + ((range) & 3))
-#define ESPI_MMIO_RANGE_BASE_REG(base, range)	((base) + ((range) & 3) * 4)
-#define ESPI_MMIO_RANGE_SIZE_REG(base, range)	((base) + ((range) & 3) * 2)
 
 #define ESPI_GENERIC_IO_WIN_COUNT		4
 #define ESPI_GENERIC_IO_MAX_WIN_SIZE		0x100

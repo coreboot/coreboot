@@ -807,8 +807,8 @@ static void wk_sleep_voltage_by_ddr(void)
 static void wk_power_down_seq(void)
 {
 	mt6366_protect_control(false);
-	/* Set VPROC12 sequence to VA12 */
-	pwrap_write_field(PMIC_CPSDSA4, 0xA, 0x1F, 0);
+	/* Set VPROC12 power-down time slot to 0xF to avoid 20ms delay */
+	pwrap_write_field(PMIC_CPSDSA4, 0xF, 0x1F, 0);
 	mt6366_protect_control(true);
 }
 

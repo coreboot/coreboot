@@ -25,10 +25,10 @@
 #define ESPI_MMIO_SIZE_REG0			0x60
 #define ESPI_MMIO_SIZE_REG1			0x64
 
-#define ESPI_IO_RANGE_BASE(range)		(ESPI_IO_BASE_REG0 + ((range) & 3) * 2)
-#define ESPI_IO_RANGE_SIZE(range)		(ESPI_IO_SIZE0 + ((range) & 3))
-#define ESPI_MMIO_RANGE_BASE(range)		(ESPI_MMIO_BASE_REG0 + ((range) & 3) * 4)
-#define ESPI_MMIO_RANGE_SIZE(range)		(ESPI_MMIO_SIZE_REG0 + ((range) & 3) * 2)
+#define ESPI_IO_RANGE_BASE_REG(base, range)	((base) + ((range) & 3) * 2)
+#define ESPI_IO_RANGE_SIZE_REG(base, range)	((base) + ((range) & 3))
+#define ESPI_MMIO_RANGE_BASE_REG(base, range)	((base) + ((range) & 3) * 4)
+#define ESPI_MMIO_RANGE_SIZE_REG(base, range)	((base) + ((range) & 3) * 2)
 
 #define ESPI_GENERIC_IO_WIN_COUNT		4
 #define ESPI_GENERIC_IO_MAX_WIN_SIZE		0x100

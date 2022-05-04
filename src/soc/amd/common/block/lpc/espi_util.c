@@ -72,22 +72,22 @@ static inline uint32_t espi_decode_mmio_range_en_bit(unsigned int idx)
 
 static inline unsigned int espi_io_range_base_reg(unsigned int idx)
 {
-	return ESPI_IO_RANGE_BASE(idx);
+	return ESPI_IO_RANGE_BASE_REG(ESPI_IO_BASE_REG0, idx);
 }
 
 static inline unsigned int espi_io_range_size_reg(unsigned int idx)
 {
-	return ESPI_IO_RANGE_SIZE(idx);
+	return ESPI_IO_RANGE_SIZE_REG(ESPI_IO_SIZE0, idx);
 }
 
 static inline unsigned int espi_mmio_range_base_reg(unsigned int idx)
 {
-	return ESPI_MMIO_RANGE_BASE(idx);
+	return ESPI_MMIO_RANGE_BASE_REG(ESPI_MMIO_BASE_REG0, idx);
 }
 
 static inline unsigned int espi_mmio_range_size_reg(unsigned int idx)
 {
-	return ESPI_MMIO_RANGE_SIZE(idx);
+	return ESPI_MMIO_RANGE_SIZE_REG(ESPI_MMIO_SIZE_REG0, idx);
 }
 
 static void espi_enable_decode(uint32_t decode_en)

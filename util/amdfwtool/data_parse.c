@@ -328,6 +328,9 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		} else {
 			fw_type = AMD_FW_SKIP;
 		}
+	} else if (strcmp(fw_name, "TA_IKEK_FILE") == 0) {
+		fw_type = AMD_TA_IKEK;
+		subprog = 0;
 	} else {
 		fw_type = AMD_FW_INVALID;
 		/* TODO: Add more */

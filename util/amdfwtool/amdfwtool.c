@@ -265,6 +265,7 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_SPIROM_CFG, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_RPMC_NVRAM, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_BOOTLOADER_AB, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_TA_IKEK, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_ABL0, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_ABL1, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_ABL2, .level = PSP_BOTH | PSP_LVL2_AB },

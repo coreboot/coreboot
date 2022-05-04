@@ -58,6 +58,7 @@ typedef enum _amd_fw_type {
 	AMD_FW_SPIROM_CFG = 0x5c,
 	AMD_FW_DMCUB = 0x71,
 	AMD_FW_PSP_BOOTLOADER_AB = 0x73,
+	AMD_TA_IKEK = 0x8d,
 	AMD_FW_IMC = 0x200,	/* Large enough to be larger than the top BHD entry type. */
 	AMD_FW_GEC,
 	AMD_FW_XHCI,

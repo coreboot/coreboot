@@ -84,6 +84,13 @@ chip soc/intel/alderlake
 	register "hybrid_storage_mode" = "1"
 	register "dmi_power_optimize_disable" = "1"
 
+	# FIVR configuration
+	register "fivr_rfi_frequency" = "1394"
+	register "fivr_spread_spectrum" = "FIVR_SS_1_5"
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+	}"
+
 	device domain 0 on
 		subsystemid 0x1462 0x7d25 inherit
 		device ref pcie5_0 on

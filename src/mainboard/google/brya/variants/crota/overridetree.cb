@@ -132,7 +132,7 @@ chip soc/intel/alderlake
 		device ref i2c0 on
 			chip drivers/i2c/cs42l42
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_A23_IRQ)"
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B13)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B15)"
 				register "ts_inv" = "true"
 				register "ts_dbnc_rise" = "RISE_DEB_1000_MS"
 				register "ts_dbnc_fall" = "FALL_DEB_0_MS"

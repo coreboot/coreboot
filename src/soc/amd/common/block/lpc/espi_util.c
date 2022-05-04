@@ -62,32 +62,80 @@ static void espi_write8(unsigned int reg, uint8_t val)
 
 static inline uint32_t espi_decode_io_range_en_bit(unsigned int idx)
 {
-	return ESPI_DECODE_IO_RANGE_EN(idx);
+	if (ESPI_DECODE_RANGE_TO_REG_GROUP(idx) == 0)
+		return ESPI_DECODE_IO_RANGE_EN(idx);
+	else
+		return ESPI_DECODE_IO_RANGE_EXT_EN(idx - ESPI_DECODE_RANGES_PER_REG_GROUP);
 }
 
 static inline uint32_t espi_decode_mmio_range_en_bit(unsigned int idx)
 {
-	return ESPI_DECODE_MMIO_RANGE_EN(idx);
+	if (ESPI_DECODE_RANGE_TO_REG_GROUP(idx) == 0)
+		return ESPI_DECODE_MMIO_RANGE_EN(idx);
+	else
+		return ESPI_DECODE_MMIO_RANGE_EXT_EN(idx - ESPI_DECODE_RANGES_PER_REG_GROUP);
 }
 
 static inline unsigned int espi_io_range_base_reg(unsigned int idx)
 {
-	return ESPI_IO_RANGE_BASE_REG(ESPI_IO_BASE_REG0, idx);
+	unsigned int reg_base;
+	switch (ESPI_DECODE_RANGE_TO_REG_GROUP(idx)) {
+	case 0:
+		reg_base = ESPI_IO_BASE_REG0;
+		break;
+	case 1:
+		reg_base = ESPI_IO_BASE_REG2;
+		break;
+	case 2:
+		reg_base = ESPI_IO_BASE_REG4;
+		break;
+	default: /* case 3 */
+		reg_base = ESPI_IO_BASE_REG6;
+		break;
+	}
+	return ESPI_IO_RANGE_BASE_REG(reg_base, ESPI_DECODE_RANGE_TO_REG_OFFSET(idx));
 }
 
 static inline unsigned int espi_io_range_size_reg(unsigned int idx)
 {
-	return ESPI_IO_RANGE_SIZE_REG(ESPI_IO_SIZE0, idx);
+	unsigned int reg_base;
+	switch (ESPI_DECODE_RANGE_TO_REG_GROUP(idx)) {
+	case 0:
+		reg_base = ESPI_IO_SIZE0;
+		break;
+	case 1:
+		reg_base = ESPI_IO_SIZE1;
+		break;
+	case 2:
+		reg_base = ESPI_IO_SIZE2;
+		break;
+	default: /* case 3 */
+		reg_base = ESPI_IO_SIZE3;
+		break;
+	}
+	return ESPI_IO_RANGE_SIZE_REG(reg_base, ESPI_DECODE_RANGE_TO_REG_OFFSET(idx));
 }
 
 static inline unsigned int espi_mmio_range_base_reg(unsigned int idx)
 {
-	return ESPI_MMIO_RANGE_BASE_REG(ESPI_MMIO_BASE_REG0, idx);
+	unsigned int reg_base;
+	if (ESPI_DECODE_RANGE_TO_REG_GROUP(idx) == 0)
+		reg_base = ESPI_MMIO_BASE_REG0;
+	else
+		reg_base = ESPI_MMIO_BASE_REG4;
+
+	return ESPI_MMIO_RANGE_BASE_REG(reg_base, ESPI_DECODE_RANGE_TO_REG_OFFSET(idx));
 }
 
 static inline unsigned int espi_mmio_range_size_reg(unsigned int idx)
 {
-	return ESPI_MMIO_RANGE_SIZE_REG(ESPI_MMIO_SIZE_REG0, idx);
+	unsigned int reg_base;
+	if (ESPI_DECODE_RANGE_TO_REG_GROUP(idx) == 0)
+		reg_base = ESPI_MMIO_SIZE_REG0;
+	else
+		reg_base = ESPI_MMIO_SIZE_REG2;
+
+	return ESPI_MMIO_RANGE_SIZE_REG(reg_base, ESPI_DECODE_RANGE_TO_REG_OFFSET(idx));
 }
 
 static void espi_enable_decode(uint32_t decode_en)

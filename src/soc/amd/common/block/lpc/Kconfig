@@ -36,6 +36,13 @@ config SOC_AMD_COMMON_BLOCK_HAS_ESPI
 	  Select this option if platform supports eSPI using D14F3 configuration
 	  registers.
 
+config SOC_AMD_COMMON_BLOCK_ESPI_EXTENDED_DECODE_RANGES
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_HAS_ESPI
+	help
+	  Select this if the platform supports 16 instead of 4 eSPI IO decode
+	  ranges and 5 instead of 4 eSPI MMIO decode ranges.
+
 config SOC_AMD_COMMON_BLOCK_HAS_ESPI_ALERT_ENABLE
 	bool
 	depends on SOC_AMD_COMMON_BLOCK_HAS_ESPI

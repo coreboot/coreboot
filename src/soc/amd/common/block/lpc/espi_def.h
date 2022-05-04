@@ -41,6 +41,8 @@
 #define  ESPI_SW_RST				(1 << 0)
 
 /* bits in ESPI_DECODE 0x40 */
+#define  ESPI_DECODE_MMIO_RANGE_EXT_EN(range)	(1 << (((range) & 3) + 28))
+#define  ESPI_DECODE_IO_RANGE_EXT_EN(range)	(1 << ((range) + 16))
 #define  ESPI_DECODE_MMIO_RANGE_EN(range)	(1 << (((range) & 3) + 12))
 #define  ESPI_DECODE_IO_RANGE_EN(range)		(1 << (((range) & 3) + 8))
 
@@ -64,11 +66,30 @@
 #define  ESPI_STATUS_WAIT_TIMEOUT		(1 << 1)
 #define  ESPI_STATUS_BUS_ERROR			(1 << 0)
 
+/* The extended IO/MMIO decode ranges are only available in SoCs that select
+   SOC_AMD_COMMON_BLOCK_ESPI_EXTENDED_DECODE_RANGES */
+#define ESPI_IO_BASE_REG2			0x80
+#define ESPI_IO_BASE_REG3			0x84
+#define ESPI_IO_SIZE1				0x88
+#define ESPI_IO_BASE_REG4			0x8c
+#define ESPI_IO_BASE_REG5			0x90
+#define ESPI_IO_SIZE2				0x94
+#define ESPI_IO_BASE_REG6			0xb0
+#define ESPI_IO_BASE_REG7			0xb4
+#define ESPI_IO_SIZE3				0xb8
+#define ESPI_MMIO_BASE_REG4			0xbc
+#define ESPI_MMIO_SIZE_REG2			0xc0
+
 #define ESPI_RXVW_POLARITY			0xac
 
-#define ESPI_IO_RANGE_BASE_REG(base, range)	((base) + ((range) & 3) * 2)
-#define ESPI_IO_RANGE_SIZE_REG(base, range)	((base) + ((range) & 3))
-#define ESPI_MMIO_RANGE_BASE_REG(base, range)	((base) + ((range) & 3) * 4)
-#define ESPI_MMIO_RANGE_SIZE_REG(base, range)	((base) + ((range) & 3) * 2)
+#define ESPI_DECODE_RANGES_PER_REG_GROUP	4
+#define ESPI_DECODE_RANGE_TO_REG_GROUP(range)	((range) / ESPI_DECODE_RANGES_PER_REG_GROUP)
+#define ESPI_DECODE_RANGE_TO_REG_OFFSET(range)	((range) % ESPI_DECODE_RANGES_PER_REG_GROUP)
+
+/* the range parameter needs to be < ESPI_DECODE_RANGES_PER_REG_GROUP */
+#define ESPI_IO_RANGE_BASE_REG(base, range)	((base) + (range) * 2)
+#define ESPI_IO_RANGE_SIZE_REG(base, range)	((base) + (range))
+#define ESPI_MMIO_RANGE_BASE_REG(base, range)	((base) + (range) * 4)
+#define ESPI_MMIO_RANGE_SIZE_REG(base, range)	((base) + (range) * 2)
 
 #endif /* AMD_BLOCK_ESPI_DEF_H */

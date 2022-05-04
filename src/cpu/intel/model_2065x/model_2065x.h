@@ -53,9 +53,6 @@
 /* Lock MSRs */
 void intel_model_2065x_finalize_smm(void);
 
-/* Configure power limits for turbo mode */
-void set_power_limits(u8 power_limit_1_time);
-
 /* Sanity check config options. */
 #if (CONFIG_SMM_TSEG_SIZE <= CONFIG_SMM_RESERVED_SIZE)
 # error "CONFIG_SMM_TSEG_SIZE <= CONFIG_SMM_RESERVED_SIZE"

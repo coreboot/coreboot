@@ -73,8 +73,6 @@
 - Ultima (Lenovo Yoga 11e G3)
 - Wizpig
 - Daisy (Samsung Chromebook (2012))
-- Deltan
-- Deltaur
 - Drallion
 - Eve (Google Pixelbook)
 - Fizz

@@ -1,7 +1,0 @@
-comment "Deltaur"
-
-config BOARD_GOOGLE_DELTAN
-	bool "->  Deltan"
-
-config BOARD_GOOGLE_DELTAUR
-	bool "->  Deltaur"

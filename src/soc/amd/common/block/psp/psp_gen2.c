@@ -111,10 +111,9 @@ int send_psp_command(u32 command, void *buffer)
 	return 0;
 }
 
-enum cb_err soc_read_c2p38(uint32_t *msg_38_value)
+uint32_t soc_read_c2p38(void)
 {
-	*msg_38_value = smn_read32(SMN_PSP_PUBLIC_BASE + CORE_2_PSP_MSG_38_OFFSET);
-	return CB_SUCCESS;
+	return smn_read32(SMN_PSP_PUBLIC_BASE + CORE_2_PSP_MSG_38_OFFSET);
 }
 
 static void psp_set_spl_fuse(void *unused)
@@ -122,7 +121,6 @@ static void psp_set_spl_fuse(void *unused)
 	if (!CONFIG(SOC_AMD_COMMON_BLOCK_PSP_FUSE_SPL))
 		return;
 
-	uint32_t msg_38_value = 0;
 	int cmd_status = 0;
 	struct mbox_cmd_late_spl_buffer buffer = {
 		.header = {
@@ -130,12 +128,7 @@ static void psp_set_spl_fuse(void *unused)
 		}
 	};
 
-	if (soc_read_c2p38(&msg_38_value) != CB_SUCCESS) {
-		printk(BIOS_ERR, "PSP: Failed to read psp base address.\n");
-		return;
-	}
-
-	if (msg_38_value & CORE_2_PSP_MSG_38_FUSE_SPL) {
+	if (soc_read_c2p38() & CORE_2_PSP_MSG_38_FUSE_SPL) {
 		printk(BIOS_DEBUG, "PSP: Fuse SPL requested\n");
 		cmd_status = send_psp_command(MBOX_BIOS_CMD_SET_SPL_FUSE, &buffer);
 		psp_print_cmd_status(cmd_status, NULL);

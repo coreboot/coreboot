@@ -58,8 +58,8 @@
 #define EC_ENABLE_LID_SWITCH
 #define EC_ENABLE_WAKE_PIN GEVENT_5 /* AGPIO 11 -> GPE 5 */
 
-/* Enable Tablet switch */
-#define EC_ENABLE_TBMC_DEVICE
+/* Enable MKBP for buttons and switches */
+#define EC_ENABLE_MKBP_DEVICE
 
 #define SIO_EC_MEMMAP_ENABLE /* EC Memory Map Resources */
 #define SIO_EC_HOST_ENABLE   /* EC Host Interface Resources */

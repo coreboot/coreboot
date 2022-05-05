@@ -49,3 +49,12 @@ config EXT_BIOS_WIN_SIZE
 	  Maximum size of the extended window reserved for mapping BIOS
 	  region greater than 16MiB. The actual mapped window might be
 	  smaller depending upon the size of the BIOS region.
+
+config FAST_SPI_GENERATE_SSDT
+	bool
+	default n
+	help
+	  Select this option if the Fast SPI controller is hidden from the OS.
+	  If this switch is selected, an entry in the SSDT will be generated
+	  for the controller to report the occupied resource which is not
+	  discoverable at OS runtime.

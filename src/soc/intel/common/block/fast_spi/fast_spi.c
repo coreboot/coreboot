@@ -2,6 +2,8 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
 #include <arch/romstage.h>
 #include <device/mmio.h>
 #include <assert.h>
@@ -456,10 +458,68 @@ void fast_spi_clear_outstanding_status(void)
 	write32(spibar + SPIBAR_HSFSTS_CTL, SPIBAR_HSFSTS_W1C_BITS);
 }
 
+
+/* As there is no official ACPI ID for this controller use the generic PNP ID for now. */
+static const char *fast_spi_acpi_hid(const struct device *dev)
+{
+	return "PNP0C02";
+}
+
+static const char *fast_spi_acpi_name(const struct device *dev)
+{
+	return "FSPI";
+}
+
+/*
+ * Generate an ACPI entry for the SPI controller. This way the allocated resources
+ * for the SPI controller can be communicated to the OS even if the device is
+ * not visible on PCI (because it is hidden) and therefore can not be probed by the OS.
+ */
+static void fast_spi_fill_ssdt(const struct device *dev)
+{
+	const char *scope = acpi_device_scope(dev);
+	const char *hid = fast_spi_acpi_hid(dev);
+	struct resource *res;
+
+	/* Do not add SSDT if the fast SPI device is hidden. */
+	if (dev->hidden || !CONFIG(FAST_SPI_GENERATE_SSDT))
+		return;
+	if (!scope || !hid)
+		return;
+
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
+	if (!res)
+		return;
+
+	/* Scope */
+	acpigen_write_scope(scope);
+
+	/* Device */
+	acpigen_write_device(acpi_device_name(dev));
+	acpigen_write_name_string("_HID", hid);
+	acpi_device_write_uid(dev);
+	acpigen_write_name_string("_DDN", "ACPI Fast SPI");
+	acpigen_write_STA(acpi_device_status(dev));
+
+	/* Resources */
+	acpigen_write_name("_CRS");
+	acpigen_write_resourcetemplate_header();
+
+	/* Add BAR0 resource. */
+	acpigen_write_mem32fixed(1, res->base, res->size);
+
+	acpigen_write_resourcetemplate_footer();
+
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+}
+
 static struct device_operations fast_spi_dev_ops = {
 	.read_resources			= pci_dev_read_resources,
 	.set_resources			= pci_dev_set_resources,
 	.enable_resources		= pci_dev_enable_resources,
+	.acpi_fill_ssdt			= fast_spi_fill_ssdt,
+	.acpi_name			= fast_spi_acpi_name,
 };
 
 static const unsigned short pci_device_ids[] = {

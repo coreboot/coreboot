@@ -5,7 +5,9 @@
 #include <arch/romstage.h>
 #include <device/mmio.h>
 #include <assert.h>
+#include <device/pci.h>
 #include <device/pci_def.h>
+#include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <commonlib/helpers.h>
@@ -453,3 +455,20 @@ void fast_spi_clear_outstanding_status(void)
 	/* Make sure all W1C status bits get cleared. */
 	write32(spibar + SPIBAR_HSFSTS_CTL, SPIBAR_HSFSTS_W1C_BITS);
 }
+
+static struct device_operations fast_spi_dev_ops = {
+	.read_resources			= pci_dev_read_resources,
+	.set_resources			= pci_dev_set_resources,
+	.enable_resources		= pci_dev_enable_resources,
+};
+
+static const unsigned short pci_device_ids[] = {
+	PCI_DID_INTEL_APL_HWSEQ_SPI,
+	0
+};
+
+static const struct pci_driver fast_spi __pci_driver = {
+	.ops				= &fast_spi_dev_ops,
+	.vendor				= PCI_VID_INTEL,
+	.devices			= pci_device_ids,
+};

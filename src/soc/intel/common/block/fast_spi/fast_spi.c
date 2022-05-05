@@ -22,6 +22,9 @@
 #include <spi_flash.h>
 #include <spi-generic.h>
 
+#define FLASH_MMIO_SIZE		(16 * MiB)
+#define FLASH_BASE_ADDR		((0xffffffff - FLASH_MMIO_SIZE) + 1)
+
 /*
  * Get the FAST_SPIBAR.
  */
@@ -514,8 +517,18 @@ static void fast_spi_fill_ssdt(const struct device *dev)
 	acpigen_pop_len(); /* Scope */
 }
 
+
+static void fast_spi_read_resources(struct device *dev)
+{
+	/* Read standard PCI resources. */
+	pci_dev_read_resources(dev);
+
+	/* Add SPI flash MMIO window as a reserved resource. */
+	mmio_resource(dev, 0, FLASH_BASE_ADDR / KiB, FLASH_MMIO_SIZE / KiB);
+}
+
 static struct device_operations fast_spi_dev_ops = {
-	.read_resources			= pci_dev_read_resources,
+	.read_resources			= fast_spi_read_resources,
 	.set_resources			= pci_dev_set_resources,
 	.enable_resources		= pci_dev_enable_resources,
 	.acpi_fill_ssdt			= fast_spi_fill_ssdt,

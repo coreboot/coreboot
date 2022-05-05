@@ -25,7 +25,7 @@ static const char *const sdram_configs[] = {
 	[0x0a] = "sdram-lpddr4x-H9HCNNNCPMMLXR-NEE-4GB",
 	[0x0b] = "sdram-lpddr4x-MT29VZZZAD9GQFSM-046-4GB",
 
-	/* Table shared by Burnet and its variants, Fennel and Cerise, offset = 0x10 */
+	/* Table shared by Fennel, Cerise, Stern, Makomo, Munna, offset = 0x10 */
 	[0x10] = "sdram-lpddr4x-K4UBE3D4AA-MGCR-4GB",
 	[0x11] = "sdram-lpddr4x-H9HCNNNCPMALHR-4GB",
 	[0x12] = "sdram-lpddr4x-MT53E1G32D4NQ-4GB",
@@ -72,6 +72,20 @@ static const char *const sdram_configs[] = {
 	[0x49] = "sdram-lpddr4x-MT53E2G32D4NQ-046-8GB",
 	[0x4a] = "sdram-lpddr4x-H9HCNNNCPMMLXR-NEE-4GB",
 	[0x4b] = "sdram-lpddr4x-MT29VZZZAD9GQFSM-046-4GB",
+
+	/* Table shared by Burnet and Esche, offset = 0x50 */
+	[0x50] = "sdram-lpddr4x-K4UBE3D4AA-MGCR-4GB",
+	[0x51] = "sdram-lpddr4x-MT53E2G32D4NQ-046-8GB",
+	[0x52] = "sdram-lpddr4x-MT53E1G32D4NQ-4GB",
+	[0x53] = "sdram-lpddr4x-K4UBE3D4AA-MGCL-4GB",
+	[0x54] = "sdram-lpddr4x-H9HCNNNCPMMLXR-NEE-4GB",
+	[0x55] = "sdram-lpddr4x-H9HCNNNFAMMLXR-NEE-8GB",
+	[0x56] = "sdram-lpddr4x-MT53E2G32D4NQ-046-8GB",
+	[0x57] = "sdram-lpddr4x-MT53E1G32D2NP-046-4GB",
+	[0x58] = "sdram-lpddr4x-MT53E1G32D4NQ-4GB",
+	[0x59] = "sdram-lpddr4x-H9HCNNNCPMALHR-4GB",
+	[0x5a] = "sdram-lpddr4x-K4UBE3D4AA-MGCL-4GB",
+	[0x5b] = "sdram-lpddr4x-H9HCNNNFAMMLXR-NEE-8GB",
 };
 
 static struct sdram_params params;

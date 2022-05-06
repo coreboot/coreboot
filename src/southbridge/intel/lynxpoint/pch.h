@@ -114,6 +114,7 @@ enum pch_platform_type {
 
 void pch_dmi_setup_physical_layer(void);
 void pch_dmi_tc_vc_mapping(u32 vc0, u32 vc1, u32 vcp, u32 vcm);
+void early_usb_init(void);
 
 void usb_ehci_sleep_prepare(pci_devfn_t dev, u8 slp_typ);
 void usb_ehci_disable(pci_devfn_t dev);
@@ -201,6 +202,8 @@ void mainboard_config_rcba(void);
 #define GEN_PMCON_1		0xa0
 #define  SMI_LOCK		(1 << 4)
 #define GEN_PMCON_2		0xa2
+#define  GEN_PMCON_2_DISB	(1 << 7)
+#define  GEN_PMCON_2_MEM_SR	(1 << 5)
 #define  SYSTEM_RESET_STS	(1 << 4)
 #define  THERMTRIP_STS		(1 << 3)
 #define  SYSPWR_FLR		(1 << 1)
@@ -214,6 +217,7 @@ void mainboard_config_rcba(void);
 #define PMIR			0xac
 #define  PMIR_CF9LOCK		(1 << 31)
 #define  PMIR_CF9GR		(1 << 20)
+#define  PMIR_XHCI_SMART_AUTO	(1 << 16) /* c.f. LPT BWG or WPT-LP BIOS spec */
 
 /* GEN_PMCON_3 bits */
 #define RTC_BATTERY_DEAD	(1 << 2)
@@ -281,6 +285,20 @@ void mainboard_config_rcba(void);
 #define SATA_DTLE_DATA_SHIFT	24
 #define SATA_DTLE_EDGE_SHIFT	16
 
+/*
+ * HCD_INDEX == 2 selects 0:1a.0 (PCH_EHCI2), any other index
+ * selects 0:1d.0 (PCH_EHCI1) for usbdebug use.
+ */
+#if CONFIG_USBDEBUG_HCD_INDEX != 2
+#define PCH_EHCI1_TEMP_BAR0 CONFIG_EHCI_BAR
+#define PCH_EHCI2_TEMP_BAR0 (PCH_EHCI1_TEMP_BAR0 + 0x400)
+#else
+#define PCH_EHCI2_TEMP_BAR0 CONFIG_EHCI_BAR
+#define PCH_EHCI1_TEMP_BAR0 (PCH_EHCI2_TEMP_BAR0 + 0x400)
+#endif
+
+#define PCH_XHCI_TEMP_BAR0	0xe8100000
+
 /* EHCI PCI Registers */
 #define EHCI_PWR_CTL_STS	0x54
 #define  PWR_CTL_SET_MASK	0x3
@@ -288,10 +306,15 @@ void mainboard_config_rcba(void);
 #define  PWR_CTL_SET_D3		0x3
 #define  PWR_CTL_ENABLE_PME	(1 << 8)
 #define  PWR_CTL_STATUS_PME	(1 << 15)
+#define EHCI_OCMAP		0x74
+#define EHCI_ACCESS_CNTL	0x80
+#define  ACCESS_CNTL_ENABLE	(1 << 0)
 
 /* EHCI Memory Registers */
+#define EHCI_HCS_PARAMS		0x04
 #define EHCI_USB_CMD		0x20
 #define  EHCI_USB_CMD_RUN	(1 << 0)
+#define  EHCI_USB_CMD_HCRESET	(1 << 1)
 #define  EHCI_USB_CMD_PSE	(1 << 4)
 #define  EHCI_USB_CMD_ASE	(1 << 5)
 #define EHCI_PORTSC(port)	(0x64 + (port) * 4)
@@ -300,6 +323,10 @@ void mainboard_config_rcba(void);
 
 /* XHCI PCI Registers */
 #define XHCI_PWR_CTL_STS	0x74
+#define XHCI_U2OCM1		0xc0
+#define XHCI_U2OCM2		0xc4
+#define XHCI_U3OCM1		0xc8
+#define XHCI_U3OCM2		0xcc
 #define XHCI_USB2PR		0xd0
 #define XHCI_USB2PRM		0xd4
 #define  XHCI_USB2PR_HCSEL	0x7fff
@@ -312,6 +339,27 @@ void mainboard_config_rcba(void);
 #define XHCI_USB3PDO		0xe8
 
 /* XHCI Memory Registers */
+#define XHCI_HCS_PARAMS_1	0x04
+#define XHCI_HCS_PARAMS_2	0x08
+#define XHCI_HCS_PARAMS_3	0x0c
+#define XHCI_HCC_PARAMS		0x10
+#define XHCI_USBCMD		0x80
+#define XHCI_USB2_PORTSC(port)	(0x480 + ((port) * 0x10))
+#define  XHCI_USB2_PORTSC_WPR	(1 << 31)	/* Warm Port Reset */
+#define  XHCI_USB2_PORTSC_CEC	(1 << 23)	/* Port Config Error Change */
+#define  XHCI_USB2_PORTSC_PLC	(1 << 22)	/* Port Link State Change */
+#define  XHCI_USB2_PORTSC_PRC	(1 << 21)	/* Port Reset Change */
+#define  XHCI_USB2_PORTSC_OCC	(1 << 20)	/* Over-current Change */
+#define  XHCI_USB2_PORTSC_WRC	(1 << 19)	/* Warm Port Reset Change */
+#define  XHCI_USB2_PORTSC_PEC	(1 << 18)	/* Port Enabled Disabled Change */
+#define  XHCI_USB2_PORTSC_CSC	(1 << 17)	/* Connect Status Change */
+#define  XHCI_USB2_PORTSC_CHST	(0x7f << 17)
+#define  XHCI_USB2_PORTSC_LWS	(1 << 16)	/* Port Link State Write Strobe */
+#define  XHCI_USB2_PORTSC_PP	(1 <<  9)
+#define  XHCI_USB2_PORTSC_PR	(1 <<  4)	/* Port Reset */
+#define  XHCI_USB2_PORTSC_PED	(1 <<  1)	/* Port Enable/Disabled */
+#define  XHCI_USB2_PORTSC_CCS	(1 <<  0)	/* Current Connect Status */
+
 #define XHCI_USB3_PORTSC(port)	((pch_is_lp() ? 0x510 : 0x570) + ((port) * 0x10))
 #define  XHCI_USB3_PORTSC_CHST	(0x7f << 17)
 #define  XHCI_USB3_PORTSC_WCE	(1 << 25)	/* Wake on Connect */
@@ -319,6 +367,7 @@ void mainboard_config_rcba(void);
 #define  XHCI_USB3_PORTSC_WOE	(1 << 27)	/* Wake on Overcurrent */
 #define  XHCI_USB3_PORTSC_WRC	(1 << 19)	/* Warm Reset Complete */
 #define  XHCI_USB3_PORTSC_LWS	(1 << 16)	/* Link Write Strobe */
+#define  XHCI_USB3_PORTSC_PR	(1 << 4)	/* Port Reset */
 #define  XHCI_USB3_PORTSC_PED	(1 << 1)	/* Port Enabled/Disabled */
 #define  XHCI_USB3_PORTSC_WPR	(1 << 31)	/* Warm Port Reset */
 #define  XHCI_USB3_PORTSC_PLS	(0xf << 5)	/* Port Link State */

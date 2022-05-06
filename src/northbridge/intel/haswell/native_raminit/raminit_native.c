@@ -5,6 +5,7 @@
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/me.h>
+#include <southbridge/intel/lynxpoint/pch.h>
 #include <types.h>
 
 static bool early_init_native(int s3resume)
@@ -14,6 +15,8 @@ static bool early_init_native(int s3resume)
 	intel_early_me_init();
 	/** TODO: CPU replacement check must be skipped in warm boots and S3 resumes **/
 	const bool cpu_replaced = !s3resume && intel_early_me_cpu_replacement_check();
+
+	early_usb_init();
 
 	if (!CONFIG(INTEL_LYNXPOINT_LP))
 		dmi_early_init();

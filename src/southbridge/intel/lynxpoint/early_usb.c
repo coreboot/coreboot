@@ -4,17 +4,6 @@
 #include <device/pci_def.h>
 #include "pch.h"
 
-/* HCD_INDEX == 2 selects 0:1a.0 (PCH_EHCI2), any other index
- * selects 0:1d.0 (PCH_EHCI1) for usbdebug use.
- */
-#if CONFIG_USBDEBUG_HCD_INDEX != 2
-#define PCH_EHCI1_TEMP_BAR0 CONFIG_EHCI_BAR
-#define PCH_EHCI2_TEMP_BAR0 (PCH_EHCI1_TEMP_BAR0 + 0x400)
-#else
-#define PCH_EHCI2_TEMP_BAR0 CONFIG_EHCI_BAR
-#define PCH_EHCI1_TEMP_BAR0 (PCH_EHCI2_TEMP_BAR0 + 0x400)
-#endif
-
 /*
  * Setup USB controller MMIO BAR to prevent the
  * reference code from resetting the controller.

@@ -1,18 +1,27 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
+#include <acpi/acpigen.h>
+#include <boot/tables.h>
 #include <cbmem.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
+#include <cpu/intel/smm_reloc.h>
+#include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
-#include <device/device.h>
-#include <boot/tables.h>
-#include <acpi/acpi.h>
-#include <cpu/intel/smm_reloc.h>
 
 #include "chip.h"
 #include "gm45.h"
+
+static uint64_t get_touud(void)
+{
+	uint64_t touud = pci_read_config16(__pci_0_00_0, D0F0_TOUUD);
+	touud <<= 20;
+	return touud;
+}
 
 static void mch_domain_read_resources(struct device *dev)
 {
@@ -43,8 +52,7 @@ static void mch_domain_read_resources(struct device *dev)
 	struct device *mch = pcidev_on_root(0, 0);
 
 	/* Top of Upper Usable DRAM, including remap */
-	touud = pci_read_config16(mch, D0F0_TOUUD);
-	touud <<= 20;
+	touud = get_touud();
 
 	/* Top of Lower Usable DRAM */
 	tolud = pci_read_config16(mch, D0F0_TOLUD) & 0xfff0;
@@ -176,13 +184,33 @@ void northbridge_write_smram(u8 smram)
 	pci_write_config8(dev, D0F0_SMRAM, smram);
 }
 
+static void set_above_4g_pci(const struct device *dev)
+{
+	const uint64_t touud = get_touud();
+	const uint64_t len = POWER_OF_2(cpu_phys_address_size()) - touud;
+
+	const char *scope = acpi_device_path(dev);
+	acpigen_write_scope(scope);
+	acpigen_write_name_qword("A4GB", touud);
+	acpigen_write_name_qword("A4GS", len);
+	acpigen_pop_len();
+
+	printk(BIOS_DEBUG, "PCI space above 4GB MMIO is at 0x%llx, len = 0x%llx\n", touud, len);
+}
+
+static void pci_domain_ssdt(const struct device *dev)
+{
+	generate_cpu_entries(dev);
+	set_above_4g_pci(dev);
+}
+
 static struct device_operations pci_domain_ops = {
 	.read_resources   = mch_domain_read_resources,
 	.set_resources    = mch_domain_set_resources,
 	.init             = mch_domain_init,
 	.scan_bus         = pci_domain_scan_bus,
 	.write_acpi_tables = northbridge_write_acpi_tables,
-	.acpi_fill_ssdt   = generate_cpu_entries,
+	.acpi_fill_ssdt   = pci_domain_ssdt,
 	.acpi_name        = northbridge_acpi_name,
 };
 

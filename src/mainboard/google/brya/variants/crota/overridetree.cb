@@ -156,7 +156,7 @@ chip soc/intel/alderlake
 		end
 		device ref i2c3 on
 			chip drivers/i2c/hid
-				register "generic.hid" = ""ELAN9050""
+				register "generic.hid" = ""ELAN900C""
 				register "generic.desc" = ""ELAN Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
 				register "generic.probed" = "1"
@@ -173,7 +173,7 @@ chip soc/intel/alderlake
 				register "generic.has_power_resource" = "1"
 				register "generic.disable_gpio_export_in_crs" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 0x10 on end
+				device i2c 0x16 on end
 			end
 		end
 		device ref i2c5 on

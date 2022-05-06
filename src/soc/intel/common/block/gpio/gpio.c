@@ -66,6 +66,10 @@
 				((group) * sizeof(uint32_t)))
 #define GPI_IE_OFFSET(comm, group) ((comm)->gpi_int_en_reg_0 +	\
 				((group) * sizeof(uint32_t)))
+#define GPI_GPE_STS_OFFSET(comm, group) ((comm)->gpi_gpe_sts_reg_0 +	\
+				((group) * sizeof(uint32_t)))
+#define GPI_GPE_EN_OFFSET(comm, group) ((comm)->gpi_gpe_en_reg_0 +	\
+				((group) * sizeof(uint32_t)))
 
 static inline size_t relative_pad_in_comm(const struct pad_community *comm,
 						gpio_t gpio)
@@ -163,6 +167,34 @@ static void gpio_configure_owner(const struct pad_config *cfg,
 		hostsw_own &= ~gpio_bitmask_within_group(comm, pin);
 
 	pcr_write32(comm->port, hostsw_own_offset, hostsw_own);
+}
+
+static void gpi_enable_gpe(const struct pad_config *cfg,
+				const struct pad_community *comm)
+{
+	uint16_t en_reg;
+	uint32_t en_value;
+	int group;
+	int pin;
+
+	/* Do not configure GPE_EN if PAD is not configured for SCI/wake */
+	if (((cfg->pad_config[0]) & PAD_CFG0_ROUTE_SCI) != PAD_CFG0_ROUTE_SCI)
+		return;
+
+	/* Get comm offset and bit mask to be set as per pin */
+	pin = relative_pad_in_comm(comm, cfg->pad);
+	group = gpio_group_index(comm, pin);
+	en_reg = GPI_GPE_EN_OFFSET(comm, group);
+	en_value = gpio_bitmask_within_group(comm, pin);
+
+	/* Set enable bits */
+	pcr_or32(comm->port, en_reg, en_value);
+
+	if (CONFIG(DEBUG_GPIO)) {
+		printk(BIOS_DEBUG, "GPE_EN[0x%02x, %02zd]: Reg: 0x%x, Value = 0x%x \n",\
+			comm->port, relative_pad_in_comm(comm, cfg->pad), en_reg,\
+			pcr_read32(comm->port, en_reg));
+	}
 }
 
 static void gpi_enable_smi(const struct pad_config *cfg,
@@ -346,6 +378,7 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 	gpio_configure_owner(cfg, comm);
 	gpi_enable_smi(cfg, comm);
 	gpi_enable_nmi(cfg, comm);
+	gpi_enable_gpe(cfg, comm);
 	if (cfg->lock_action)
 		gpio_lock_pad(cfg->pad, cfg->lock_action);
 }

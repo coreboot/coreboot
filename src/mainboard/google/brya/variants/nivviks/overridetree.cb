@@ -12,6 +12,10 @@ fw_config
 		option WFC_MIPI_OVTI5675	0
 		option WFC_ABSENT		1
 	end
+	field STYLUS 6
+		option STYLUS_PRESENT		0
+		option STYLUS_ABSENT		1
+	end
 end
 
 chip soc/intel/alderlake
@@ -75,7 +79,9 @@ chip soc/intel/alderlake
 				register "key.linux_code" = "SW_PEN_INSERTED"
 				register "key.linux_input_type" = "EV_SW"
 				register "key.label" = ""pen_eject""
-				device generic 0 on end
+				device generic 0 on
+					probe STYLUS STYLUS_PRESENT
+				end
 			end
 		end
 		device ref i2c2 on

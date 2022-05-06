@@ -20,6 +20,7 @@ romstage-y += report_platform.c
 postcar-y += memmap.c
 
 ifeq ($(CONFIG_USE_NATIVE_RAMINIT),y)
+romstage-y += early_dmi.c early_pcie.c vcu_mailbox.c
 subdirs-y  += native_raminit
 
 else

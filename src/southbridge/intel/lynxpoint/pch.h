@@ -112,6 +112,9 @@ enum pch_platform_type {
 	PCH_TYPE_ULT	 = 5,
 };
 
+void pch_dmi_setup_physical_layer(void);
+void pch_dmi_tc_vc_mapping(u32 vc0, u32 vc1, u32 vcp, u32 vcm);
+
 void usb_ehci_sleep_prepare(pci_devfn_t dev, u8 slp_typ);
 void usb_ehci_disable(pci_devfn_t dev);
 void usb_xhci_sleep_prepare(pci_devfn_t dev, u8 slp_typ);
@@ -405,9 +408,10 @@ void mainboard_config_rcba(void);
 
 /* Southbridge IO BARs */
 
+#define PMBASE			0x40
 #define GPIOBASE		0x48
 
-#define PMBASE		0x40
+#define CIR0050		0x0050	/* 32bit */
 
 #define RPC		0x0400	/* 32bit */
 #define RPFN		0x0404	/* 32bit */
@@ -429,6 +433,20 @@ void mainboard_config_rcba(void);
 #define IOTR1		0x1e88	/* 64bit */
 #define IOTR2		0x1e90	/* 64bit */
 #define IOTR3		0x1e98	/* 64bit */
+
+#define V0CTL		0x2014	/* 32bit */
+#define V0STS		0x201a	/* 16bit */
+
+#define V1CTL		0x2020	/* 32bit */
+#define V1STS		0x2026	/* 16bit */
+
+#define VPCTL		0x2030	/* 32bit */
+#define VPSTS		0x2038	/* 16bit */
+
+#define VMCTL		0x2040	/* 32bit */
+#define VMSTS		0x2048	/* 16bit */
+
+#define DLCTL2		0x21b0
 
 #define TCTL		0x3000	/*  8bit */
 

@@ -3,6 +3,9 @@
 
 #include <FspUpd.h>
 
+#define FSP_USB_STRUCT_MAJOR_VERSION	0xd
+#define FSP_USB_STRUCT_MINOR_VERSION	0x6
+
 #define USB2_PORT_COUNT 8
 #define USB3_PORT_COUNT 4
 #define USBC_COMBO_PHY_COUNT 2

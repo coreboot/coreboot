@@ -20,7 +20,7 @@
 #define ECRAM_KBL_TIMEOUT	0x1a
 #define ECRAM_FN_LOCK_STATE	0x2c
 #define ECRAM_FN_CTRL_REVERSE	0x2d
-#define ECRAM_MAX_CHARGE	0x46
+#define ECRAM_MAX_CHARGE	dead_code_t(uint8_t)
 #define ECRAM_FAN_MODE		dead_code_t(uint8_t)
 
 #endif

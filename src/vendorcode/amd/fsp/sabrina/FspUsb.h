@@ -4,29 +4,32 @@
 #include <FspUpd.h>
 
 #define FSP_USB_STRUCT_MAJOR_VERSION	0xd
-#define FSP_USB_STRUCT_MINOR_VERSION	0x6
+#define FSP_USB_STRUCT_MINOR_VERSION	0xe
 
-#define USB2_PORT_COUNT 8
-#define USB3_PORT_COUNT 4
+#define USB2_PORT_COUNT 6
+#define USB3_PORT_COUNT 3
 #define USBC_COMBO_PHY_COUNT 2
 
 struct fch_usb2_phy {
-	uint8_t			compdstune;                             ///< COMPDSTUNE
-	uint8_t			sqrxtune;                               ///< SQRXTUNE
-	uint8_t			txfslstune;                             ///< TXFSLSTUNE
-	uint8_t			txpreempamptune;                        ///< TXPREEMPAMPTUNE
-	uint8_t			txpreemppulsetune;                      ///< TXPREEMPPULSETUNE
-	uint8_t			txrisetune;                             ///< TXRISETUNE
-	uint8_t			txvreftune;                             ///< TXVREFTUNE
-	uint8_t			txhsxvtune;                             ///< TXHSXVTUNE
-	uint8_t			txrestune;                              ///< TXRESTUNE
+	uint8_t compdistune;		///< COMPDISTUNE
+	uint8_t pllbtune;		///< PLLBTUNE
+	uint8_t pllitune;		///< PLLITUNE
+	uint8_t pllptune;		///< PLLPTUNE
+	uint8_t sqrxtune;		///< SQRXTUNE
+	uint8_t txfslstune;		///< TXFSLSTUNE
+	uint8_t txpreempamptune;	///< TXPREEMPAMPTUNE
+	uint8_t txpreemppulsetune;	///< TXPREEMPPULSETUNE
+	uint8_t txrisetune;		///< TXRISETUNE
+	uint8_t txvreftune;		///< TXVREFTUNE
+	uint8_t txhsxvtune;		///< TXHSXVTUNE
+	uint8_t txrestune;		///< TXRESTUNE
 } __packed;
 
 struct fch_usb3_phy {
-	uint8_t			tx_term_ctrl;                           ///< tx_term_ctrl
-	uint8_t			rx_term_ctrl;                           ///< rx_term_ctrl
-	uint8_t			tx_vboost_lvl_en;                       ///< TX_VBOOST_LVL_EN
-	uint8_t			tx_vboost_lvl;                          ///< TX_VBOOST_LVL
+	uint8_t tx_term_ctrl;		///< tx_term_ctrl
+	uint8_t rx_term_ctrl;		///< rx_term_ctrl
+	uint8_t tx_vboost_lvl_en;	///< TX_VBOOST_LVL_EN
+	uint8_t tx_vboost_lvl;		///< TX_VBOOST_LVL
 } __packed;
 
 #define USB0_PORT0	0

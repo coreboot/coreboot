@@ -1,3 +1,11 @@
+fw_config
+	field STORAGE 30 31
+		option STORAGE_EMMC		0
+		option STORAGE_NVME		1
+		option STORAGE_UFS		2
+	end
+end
+
 chip soc/intel/alderlake
 
 	# GPE configuration

@@ -56,10 +56,48 @@ static const struct pad_config wfc_disable_pads[] = {
 	PAD_NC(GPP_R7, NONE),
 };
 
+static const struct pad_config emmc_disable_pads[] = {
+	/* I7  : EMMC_CMD */
+	PAD_NC(GPP_I7, NONE),
+	/* I8  : EMMC_D0 */
+	PAD_NC(GPP_I8, NONE),
+	/* I9  : EMMC_D1 */
+	PAD_NC(GPP_I9, NONE),
+	/* I10 : EMMC_D2 */
+	PAD_NC(GPP_I10, NONE),
+	/* I11 : EMMC_D3 */
+	PAD_NC(GPP_I11, NONE),
+	/* I12 : EMMC_D4 */
+	PAD_NC(GPP_I12, NONE),
+	/* I13 : EMMC_D5 */
+	PAD_NC(GPP_I13, NONE),
+	/* I14 : EMMC_D6 */
+	PAD_NC(GPP_I14, NONE),
+	/* I15 : EMMC_D7 */
+	PAD_NC(GPP_I15, NONE),
+	/* I16 : EMMC_RCLK */
+	PAD_NC(GPP_I16, NONE),
+	/* I17 : EMMC_CLK */
+	PAD_NC(GPP_I17, NONE),
+	/* I18 : EMMC_RST_L */
+	PAD_NC(GPP_I18, NONE),
+};
+
+static const struct pad_config nvme_disable_pads[] = {
+	/* B4  : SSD_PERST_L */
+	PAD_NC(GPP_B4, NONE),
+	/* D6  : SSD_CLKREQ_ODL */
+	PAD_NC(GPP_D6, NONE),
+	/* D11 : EN_PP3300_SSD */
+	PAD_NC(GPP_D11, NONE),
+	/* E17 : SSD_PLN_L */
+	PAD_NC(GPP_E17, NONE),
+};
+
 static void fw_config_handle(void *unused)
 {
 	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_1C_LTE))) {
-		if (board_id() == 2) {
+		if (board_id() >= 2) {
 			printk(BIOS_INFO, "Disable LTE-related GPIO pins on nirwen.\n");
 			gpio_configure_pads(
 				lte_disable_pads_nirwen,
@@ -82,6 +120,16 @@ static void fw_config_handle(void *unused)
 	if (fw_config_probe(FW_CONFIG(WFC, WFC_ABSENT))) {
 		printk(BIOS_INFO, "Disable MIPI WFC GPIO pins.\n");
 		gpio_configure_pads(wfc_disable_pads, ARRAY_SIZE(wfc_disable_pads));
+	}
+
+	if (!fw_config_probe(FW_CONFIG(STORAGE, STORAGE_EMMC))) {
+		printk(BIOS_INFO, "Disable eMMC SSD GPIO pins.\n");
+		gpio_configure_pads(emmc_disable_pads, ARRAY_SIZE(emmc_disable_pads));
+	}
+
+	if (board_id() >= 2 && !fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME))) {
+		printk(BIOS_INFO, "Disable NVMe SSD GPIO pins.\n");
+		gpio_configure_pads(nvme_disable_pads, ARRAY_SIZE(nvme_disable_pads));
 	}
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

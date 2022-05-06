@@ -32,10 +32,16 @@ static const struct pad_config board_id0_overrides[] = {
 
 /* Pad configuration in ramstage for nirwen */
 static const struct pad_config override_gpio_table_nirwen[] = {
+	/* B4  : SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 	/* D6  : SRCCLKREQ1# ==> SSD_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D6, NONE, DEEP, NF1),
+	/* D11 : EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_D11, 1, DEEP),
 	/* E13  : SRCCLKREQ1# ==> WWAN_EN */
 	PAD_CFG_GPO(GPP_E13, 1, DEEP),
+	/* E17 : SSD_PLN_L */
+	PAD_CFG_GPO(GPP_E17, 1, PLTRST),
 };
 
 /* Early pad configuration in bootblock for nivviks */
@@ -66,6 +72,8 @@ static const struct pad_config early_gpio_table[] = {
 
 /* Early pad configuration in bootblock for nirwen */
 static const struct pad_config early_gpio_table_nirwen[] = {
+	/* B4  : SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 0, DEEP),
 	/* F12 : GSXDOUT ==> WWAN_RST_L */
 	PAD_CFG_GPO(GPP_F12, 0, DEEP),
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
@@ -86,11 +94,15 @@ static const struct pad_config early_gpio_table_nirwen[] = {
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_SOC_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+	/* D11 : EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_D11, 1, DEEP),
 	/* H13 : UART0_CTS# ==> EN_PP3300_SD_X */
 	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {
+	/* B4  : SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_H12, 1, DEEP),
 };

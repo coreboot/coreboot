@@ -126,6 +126,8 @@ struct pad_community {
 	uint16_t	gpi_int_en_reg_0; /* offset to GPI Int Enable Reg 0 */
 	uint16_t	gpi_smi_sts_reg_0; /* offset to GPI SMI STS Reg 0 */
 	uint16_t	gpi_smi_en_reg_0; /* offset to GPI SMI EN Reg 0 */
+	uint16_t	gpi_gpe_sts_reg_0; /* offset to GPI GPE STS Reg 0 */
+	uint16_t	gpi_gpe_en_reg_0; /* offset to GPI GPE EN Reg 0 */
 	uint16_t	gpi_nmi_sts_reg_0; /* offset to GPI NMI STS Reg 0 */
 	uint16_t	gpi_nmi_en_reg_0; /* offset to GPI NMI EN Reg 0 */
 	uint16_t	pad_cfg_base; /* offset to first PAD_GFG_DW0 Reg */

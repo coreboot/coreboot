@@ -156,8 +156,15 @@ static void gma_func0_init(struct device *dev)
 		return;
 	mmio = res2mmio(gtt_res, 0, 0);
 
-	if (!CONFIG(NO_GFX_INIT))
-		pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
+	/*
+	 * GTT base is at a 2M offset and is 2M big. If GTT is smaller than 2M
+	 * cycles are simply not decoded which is fine.
+	 */
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
+	memset(mmio + 2 * MiB, 0, 2 * MiB);
+
+	if (CONFIG(NO_GFX_INIT))
+		pci_and_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MASTER);
 
 	if (!CONFIG(MAINBOARD_USE_LIBGFXINIT)) {
 		/* PCI Init, will run VBIOS */

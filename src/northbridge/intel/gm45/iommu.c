@@ -30,23 +30,6 @@ void init_iommu(void)
 	}
 	mchbar_write32(0x20, IOMMU_BASE4 | 1); /* all other DMA sources */
 
-	/* clear GTT */
-	u16 gtt = pci_read_config16(PCI_DEV(0, 0, 0), D0F0_GGC);
-	if (gtt & 0x400) { /* VT mode */
-		const pci_devfn_t igd = PCI_DEV(0, 2, 0);
-
-		/* setup somewhere */
-		pci_or_config16(igd, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-		void *bar = (void *)pci_read_config32(igd, PCI_BASE_ADDRESS_0);
-
-		/* clear GTT, 2MB is enough (and should be safe) */
-		memset(bar, 0, 2<<20);
-
-		/* and now disable again */
-		pci_and_config16(igd, PCI_COMMAND, ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY));
-		pci_write_config32(igd, PCI_BASE_ADDRESS_0, 0);
-	}
-
 	if (stepping == STEPPING_B3) {
 		mchbar_setbits8(0xffc, 1 << 4);
 		const pci_devfn_t peg = PCI_DEV(0, 1, 0);

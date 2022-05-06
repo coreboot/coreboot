@@ -115,6 +115,7 @@ enum pch_platform_type {
 void pch_dmi_setup_physical_layer(void);
 void pch_dmi_tc_vc_mapping(u32 vc0, u32 vc1, u32 vcp, u32 vcm);
 void early_usb_init(void);
+void early_thermal_init(void);
 
 void usb_ehci_sleep_prepare(pci_devfn_t dev, u8 slp_typ);
 void usb_ehci_disable(pci_devfn_t dev);

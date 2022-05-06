@@ -16,6 +16,7 @@ static bool early_init_native(int s3resume)
 	/** TODO: CPU replacement check must be skipped in warm boots and S3 resumes **/
 	const bool cpu_replaced = !s3resume && intel_early_me_cpu_replacement_check();
 
+	early_thermal_init();
 	early_usb_init();
 
 	if (!CONFIG(INTEL_LYNXPOINT_LP))

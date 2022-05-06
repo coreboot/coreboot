@@ -36,6 +36,7 @@ romstage-y += early_usb.c early_me.c me_status.c early_pch.c
 romstage-y += pmutil.c
 
 romstage-$(CONFIG_USE_NATIVE_RAMINIT) += early_pch_native.c early_usb_native.c iobp.c thermal.c
+subdirs-$(CONFIG_USE_NATIVE_RAMINIT) += hsio
 
 ifeq ($(CONFIG_INTEL_LYNXPOINT_LP),y)
 romstage-y += lp_gpio.c

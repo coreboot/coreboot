@@ -116,6 +116,7 @@ void pch_dmi_setup_physical_layer(void);
 void pch_dmi_tc_vc_mapping(u32 vc0, u32 vc1, u32 vcp, u32 vcm);
 void early_usb_init(void);
 void early_thermal_init(void);
+void early_pch_init_native(int s3resume);
 
 void usb_ehci_sleep_prepare(pci_devfn_t dev, u8 slp_typ);
 void usb_ehci_disable(pci_devfn_t dev);
@@ -195,6 +196,7 @@ void mainboard_config_rcba(void);
 #define PCH_XHCI_DEV		PCI_DEV(0, 0x14, 0)
 #define PCH_ME_DEV		PCI_DEV(0, 0x16, 0)
 #define PCH_PCIE_DEV_SLOT	28
+#define PCH_PCIE_DEV(_func)	PCI_DEV(0, PCH_PCIE_DEV_SLOT, _func)
 
 /* PCI Configuration Space (D31:F0): LPC */
 #define PCH_LPC_DEV		PCI_DEV(0, 0x1f, 0)
@@ -269,6 +271,10 @@ void mainboard_config_rcba(void);
 #define IDE_TIM_PRI		0x40	/* IDE timings, primary */
 #define   IDE_DECODE_ENABLE	(1 << 15)
 #define IDE_TIM_SEC		0x42	/* IDE timings, secondary */
+
+#define SATA_MAP		0x90
+#define SATA_PCS		0x92
+#define SATA_SCLKG		0x94
 
 #define SATA_SIRI		0xa0 /* SATA Indexed Register Index */
 #define SATA_SIRD		0xa4 /* SATA Indexed Register Data */
@@ -579,6 +585,7 @@ void mainboard_config_rcba(void);
 #define D19IR		0x3168	/* 16bit */
 #define ACPIIRQEN	0x31e0	/* 32bit */
 #define OIC		0x31fe	/* 16bit */
+#define PRSTS		0x3310	/* 32bit */
 #define PMSYNC_CONFIG	0x33c4	/* 32bit */
 #define PMSYNC_CONFIG2	0x33cc	/* 32bit */
 #define SOFT_RESET_CTRL 0x38f4

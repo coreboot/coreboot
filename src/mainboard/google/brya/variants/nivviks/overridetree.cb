@@ -4,6 +4,10 @@ fw_config
 		option DB_1C_1A		1
 		option DB_1C_LTE	2
 	end
+	field SD_CARD 4
+		option SD_GL9750S	0
+		option SD_ABSENT	1
+	end
 end
 
 chip soc/intel/alderlake
@@ -230,6 +234,21 @@ chip soc/intel/alderlake
 				register "sdmode_delay" = "5"
 				device generic 0 on end
 			end
+		end
+		device ref pcie_rp7 on
+			# Enable SD Card PCIe 7 using clk 3
+			register "pch_pcie_rp[PCH_RP(7)]" = "{
+				.clk_src = 3,
+				.clk_req = 3,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H13)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H12)"
+				register "srcclk_pin" = "3"
+				device generic 0 on end
+			end
+			probe SD_CARD SD_GL9750S
 		end
 		device ref pch_espi on
 			chip ec/google/chromeec

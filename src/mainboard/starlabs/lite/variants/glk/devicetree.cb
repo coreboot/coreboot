@@ -88,23 +88,23 @@ chip soc/intel/apollolake
 		device pci 15.0 on						# XHCI
 			### USB 2.0 Devices
 			# Motherboard USB Type C
-			register "usb2_port[0]"		= "PORT_EN(OC0)"
+			register "usb2_port[0]"		= "PORT_EN(OC_SKIP)"
 			# Motherboard USB 3.0
-			register "usb2_port[3]"		= "PORT_EN(OC0)"
+			register "usb2_port[3]"		= "PORT_EN(OC1)"
 			# Internal Webcam
-			register "usb2_port[4]"		= "PORT_EN(OC0)"
+			register "usb2_port[4]"		= "PORT_EN(OC_SKIP)"
 			# Daughterboard USB 3.0
-			register "usb2_port[5]"		= "PORT_EN(OC0)"
+			register "usb2_port[5]"		= "PORT_EN(OC_SKIP)"
 			# Daughterboard SD Card
-			register "usb2_port[6]"		= "PORT_EN(OC0)"
+			register "usb2_port[6]"		= "PORT_EN(OC_SKIP)"
 
 			### USB 3.0 Devices
 			# Motherboard USB 3.0
-			register "usb3_port[0]"		= "PORT_EN(OC0)"
+			register "usb3_port[0]"		= "PORT_EN(OC1)"
 			# Motherboard USB Type C
-			register "usb3_port[1]"		= "PORT_EN(OC0)"
+			register "usb3_port[1]"		= "PORT_EN(OC_SKIP)"
 			# Daughterboard USB 3.0
-			register "usb3_port[2]"		= "PORT_EN(OC0)"
+			register "usb3_port[2]"		= "PORT_EN(OC_SKIP)"
 		end
 		device pci 15.1 off end						# XDCI
 		device pci 16.0 off end						# I2C0

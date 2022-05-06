@@ -92,7 +92,7 @@ static void mch_domain_read_resources(struct device *dev)
 
 	/* cbmem_top can be shifted downwards due to alignment.
 	   Mark the region between cbmem_top and tomk as unusable */
-	delta_cbmem = tomk - ((uint32_t)cbmem_top() >> 10);
+	delta_cbmem = tomk - ((uintptr_t)cbmem_top() >> 10);
 	tomk -= delta_cbmem;
 	uma_sizek += delta_cbmem;
 

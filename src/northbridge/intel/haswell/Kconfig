@@ -9,6 +9,14 @@ config NORTHBRIDGE_INTEL_HASWELL
 
 if NORTHBRIDGE_INTEL_HASWELL
 
+config USE_NATIVE_RAMINIT
+	bool "[NOT WORKING] Use native raminit"
+	default n
+	select HAVE_DEBUG_RAM_SETUP
+	help
+	  Select if you want to use coreboot implementation of raminit rather than
+	  MRC.bin. Currently incomplete and does not boot.
+
 config HASWELL_VBOOT_IN_BOOTBLOCK
 	depends on VBOOT
 	bool "Start verstage in bootblock"
@@ -45,6 +53,7 @@ config DCACHE_RAM_BASE
 
 config DCACHE_RAM_SIZE
 	hex
+	default 0x40000 if USE_NATIVE_RAMINIT
 	default 0x10000
 	help
 	  The size of the cache-as-ram region required during bootblock
@@ -53,12 +62,14 @@ config DCACHE_RAM_SIZE
 
 config DCACHE_RAM_MRC_VAR_SIZE
 	hex
+	default 0x0 if USE_NATIVE_RAMINIT
 	default 0x30000
 	help
 	  The amount of cache-as-ram region required by the reference code.
 
 config DCACHE_BSP_STACK_SIZE
 	hex
+	default 0x20000 if USE_NATIVE_RAMINIT
 	default 0x2000
 	help
 	  The amount of anticipated stack usage in CAR by bootblock and
@@ -66,6 +77,7 @@ config DCACHE_BSP_STACK_SIZE
 
 config HAVE_MRC
 	bool "Add a System Agent binary"
+	depends on !USE_NATIVE_RAMINIT
 	help
 	  Select this option to add a System Agent binary to
 	  the resulting coreboot image.
@@ -82,6 +94,7 @@ config MRC_FILE
 
 config HASWELL_HIDE_PEG_FROM_MRC
 	bool "Hide PEG devices from MRC to work around hardcoded MRC behavior"
+	depends on !USE_NATIVE_RAMINIT
 	default y
 	help
 	  If set, hides all PEG devices from MRC. This allows the iGPU

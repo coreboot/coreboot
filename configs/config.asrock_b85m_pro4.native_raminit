@@ -1,0 +1,5 @@
+# Configuration used to build-test native raminit
+CONFIG_VENDOR_ASROCK=y
+CONFIG_BOARD_ASROCK_B85M_PRO4=y
+CONFIG_USE_NATIVE_RAMINIT=y
+CONFIG_DEBUG_RAM_SETUP=y

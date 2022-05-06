@@ -19,6 +19,11 @@ romstage-y += report_platform.c
 
 postcar-y += memmap.c
 
-subdirs-y += haswell_mrc
+ifeq ($(CONFIG_USE_NATIVE_RAMINIT),y)
+subdirs-y  += native_raminit
+
+else
+subdirs-y  += haswell_mrc
+endif
 
 endif

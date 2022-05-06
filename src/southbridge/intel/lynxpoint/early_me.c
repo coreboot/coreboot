@@ -1,11 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/io.h>
+#include <cf9_reset.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <delay.h>
 #include <halt.h>
-
+#include <timer.h>
 #include "me.h"
 #include "pch.h"
 
@@ -58,6 +59,33 @@ int intel_early_me_init(void)
 
 	printk(BIOS_INFO, "Intel ME firmware is ready\n");
 	return 0;
+}
+
+bool intel_early_me_cpu_replacement_check(void)
+{
+	printk(BIOS_DEBUG, "ME: Checking whether CPU was replaced... ");
+
+	struct stopwatch timer;
+	stopwatch_init_msecs_expire(&timer, 50);
+
+	union me_hfs2 hfs2;
+	do {
+		hfs2.raw = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS2);
+		if (stopwatch_expired(&timer)) {
+			/* Assume CPU was replaced just in case */
+			printk(BIOS_DEBUG, "timed out, assuming CPU was replaced\n");
+			return true;
+		}
+		udelay(ME_DELAY);
+	} while (!hfs2.cpu_replaced_valid);
+
+	if (hfs2.warm_reset_request) {
+		printk(BIOS_DEBUG, "warm reset needed for dynamic fusing\n");
+		system_reset();
+	}
+
+	printk(BIOS_DEBUG, "%sreplaced\n", hfs2.cpu_replaced_sts ? "" : "not ");
+	return hfs2.cpu_replaced_sts;
 }
 
 int intel_early_me_uma_size(void)

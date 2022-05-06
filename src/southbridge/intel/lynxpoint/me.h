@@ -177,14 +177,16 @@ union me_did {
 union me_hfs2 {
 	struct __packed {
 		u32 bist_in_progress: 1;
-		u32 reserved1: 2;
+		u32 icc_prog_sts: 2;
 		u32 invoke_mebx: 1;
 		u32 cpu_replaced_sts: 1;
 		u32 mbp_rdy: 1;
 		u32 mfs_failure: 1;
 		u32 warm_reset_request: 1;
 		u32 cpu_replaced_valid: 1;
-		u32 reserved2: 4;
+		u32 reserved: 2;
+		u32 fw_upd_ipu: 1;
+		u32 reserved2: 1;
 		u32 mbp_cleared: 1;
 		u32 reserved3: 2;
 		u32 current_state: 8;
@@ -338,6 +340,7 @@ void intel_me_status(union me_hfs hfs, union me_hfs2 hfs2);
 
 void intel_early_me_status(void);
 int intel_early_me_init(void);
+bool intel_early_me_cpu_replacement_check(void);
 int intel_early_me_uma_size(void);
 int intel_early_me_init_done(u8 status);
 

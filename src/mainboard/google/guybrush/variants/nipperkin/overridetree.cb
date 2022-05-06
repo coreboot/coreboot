@@ -154,8 +154,8 @@ chip soc/amd/cezanne
 			.tx_vboost_lvl_en=1,
 			.tx_vboost_lvl=5,
 		},
-		.ComboPhyStaticConfig[0] = 0,
-		.ComboPhyStaticConfig[1] = 0,
+		.ComboPhyStaticConfig[0] = USB_COMBO_PHY_MODE_USB_C,
+		.ComboPhyStaticConfig[1] = USB_COMBO_PHY_MODE_USB_C,
 		.BatteryChargerEnable = 0,
 		.PhyP3CpmP4Support = 0,
 	}"

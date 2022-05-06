@@ -13,6 +13,7 @@
 #include <soc/pci_devs.h>
 #include <string.h>
 #include <types.h>
+#include <vendorcode/amd/fsp/sabrina/FspUsb.h>
 #include "chip.h"
 
 __weak void mb_pre_fspm(void)
@@ -145,7 +146,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		mcfg->usb_phy = (struct usb_phy_config *)&config->usb_phy;
 		mcfg->usb_phy->Version_Major = 0xd;
 		mcfg->usb_phy->Version_Minor = 0x6;
-		mcfg->usb_phy->TableLength = 100;
+		mcfg->usb_phy->TableLength = sizeof(struct usb_phy_config);
 	} else {
 		mcfg->usb_phy = NULL;
 	}

@@ -234,6 +234,10 @@ chip soc/intel/alderlake
 			end
 		end
 
+		device ref tbt_pcie_rp0 off end
+		device ref tbt_pcie_rp1 off end
+		device ref tbt_pcie_rp2 off end
+
 		device ref tcss_dma0 off end
 		device ref tcss_dma1 off end
 

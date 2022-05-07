@@ -1,36 +1,86 @@
 config SOC_INTEL_METEORLAKE
 	bool
+	help
+	  Intel Meteorlake support
 
 if SOC_INTEL_METEORLAKE
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
+	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	select ARCH_X86
 	select BOOT_DEVICE_SUPPORTS_WRITES
-	select INTEL_DESCRIPTOR_MODE_CAPABLE
 	select CACHE_MRC_SETTINGS
 	select CPU_INTEL_COMMON
+	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+	select CPU_SUPPORTS_INTEL_TME
+	select CPU_SUPPORTS_PM_TIMER_EMULATION
+	select DRIVERS_INTEL_USB4_RETIMER
+	select FSP_COMPRESS_FSP_S_LZ4
+	select FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW
 	select FSP_M_XIP
+	select FSP_STATUS_GLOBAL_RESET_REQUIRED_3
+	select GENERIC_GPIO_LIB
+	select HAVE_FSP_GOP
+	select INTEL_DESCRIPTOR_MODE_CAPABLE
+	select HAVE_SMI_HANDLER
 	select IDT_IN_EVERY_STAGE
 	select INTEL_CAR_NEM
+	select INTEL_GMA_ACPI
 	select INTEL_GMA_ADD_VBT if RUN_FSP_GOP
 	select IOAPIC
-	select MICROCODE_BLOB_UNDISCLOSED
+	select INTEL_TME
+	select USE_INTEL_FSP_MP_INIT
 	select MRC_SETTINGS_PROTECT
+	select PARALLEL_MP_AP_WORK
+	select MICROCODE_BLOB_UNDISCLOSED
+	select PLATFORM_USES_FSP2_3
+	select PMC_GLOBAL_RESET_ENABLE_LOCK
 	select SOC_INTEL_COMMON
 	select SOC_INTEL_COMMON_BLOCK
 	select SOC_INTEL_COMMON_BLOCK_CAR
 	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
 	select SOC_INTEL_COMMON_BLOCK_CPU
+	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
+	select SOC_INTEL_COMMON_BLOCK_CPU_SMMRELOCATE
+	select SOC_INTEL_COMMON_BLOCK_DTT
+	select SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT
 	select SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2
+	select SOC_INTEL_COMMON_BLOCK_HDA
+	select SOC_INTEL_COMMON_BLOCK_HECI1_DISABLE_USING_PMC_IPC if DISABLE_HECI1_AT_PRE_BOOT
+	select SOC_INTEL_COMMON_BLOCK_IPU
+	select SOC_INTEL_COMMON_BLOCK_IOE_P2SB
 	select SOC_INTEL_COMMON_BLOCK_MEMINIT
+	select SOC_INTEL_COMMON_BLOCK_PCIE_RTD3
+	select SOC_INTEL_COMMON_BLOCK_PMC_EPOC
+	select SOC_INTEL_COMMON_BLOCK_POWER_LIMIT
 	select SOC_INTEL_COMMON_BLOCK_SA
+	select SOC_INTEL_COMMON_BLOCK_SMM
+	select SOC_INTEL_COMMON_BLOCK_SMM_IO_TRAP
+	select SOC_INTEL_COMMON_BLOCK_TCSS
+	select SOC_INTEL_COMMON_BLOCK_THERMAL_BEHIND_PMC
+	select SOC_INTEL_COMMON_BLOCK_USB4
+	select SOC_INTEL_COMMON_BLOCK_USB4_PCIE
+	select SOC_INTEL_COMMON_BLOCK_USB4_XHCI
+	select SOC_INTEL_COMMON_BLOCK_XHCI
+	select SOC_INTEL_COMMON_BLOCK_XHCI_ELOG
+	select SOC_INTEL_COMMON_BASECODE
+	select SOC_INTEL_COMMON_FSP_RESET
 	select SOC_INTEL_COMMON_PCH_BASE
 	select SOC_INTEL_COMMON_RESET
+	select SOC_INTEL_COMMON_BLOCK_IOC
+	select SOC_INTEL_CSE_SET_EOP
+	select SOC_INTEL_MEM_MAPPED_PM_CONFIGURATION
 	select SSE2
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select TSC_MONOTONIC_TIMER
 	select UDELAY_TSC
+	select UDK_202111_BINDING
+	select DISPLAY_FSP_VERSION_INFO
+
+config MAX_CPUS
+	int
+	default 22
 
 config DCACHE_RAM_BASE
 	default 0xfef00000
@@ -58,9 +108,19 @@ config FSP_TEMP_RAM_SIZE
 	  Refer to Platform FSP integration guide document to know
 	  the exact FSP requirement for Heap setup.
 
+config CHIPSET_DEVICETREE
+	string
+	default "soc/intel/meteorlake/chipset.cb"
+
+config EXT_BIOS_WIN_BASE
+	default 0xf8000000
+
+config EXT_BIOS_WIN_SIZE
+	default 0x2000000
+
 config IFD_CHIPSET
 	string
-	default "mtl"
+	default "ifd2"
 
 config IED_REGION_SIZE
 	hex
@@ -69,6 +129,47 @@ config IED_REGION_SIZE
 config HEAP_SIZE
 	hex
 	default 0x10000
+
+# Intel recommends reserving the following resources per PCIe TBT root port,
+# from ADL BIOS Spec (doc #627270) Revision 0.6.0 Section 7.2.5.1.5
+# - 42 buses
+# - 194 MiB Non-prefetchable memory
+# - 448 MiB Prefetchable memory
+if SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+
+config PCIEXP_HOTPLUG_BUSES
+	int
+	default 42
+
+config PCIEXP_HOTPLUG_MEM
+	hex
+	default 0xc200000
+
+config PCIEXP_HOTPLUG_PREFETCH_MEM
+	hex
+	default 0x1c000000
+
+endif # SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+
+config MAX_TBT_ROOT_PORTS
+	int
+	default 4
+
+config MAX_ROOT_PORTS
+	int
+	default 12
+
+config MAX_PCIE_CLOCK_SRC
+	int
+	default 9
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x800000
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x200000
 
 config PCR_BASE_ADDRESS
 	hex
@@ -106,10 +207,22 @@ config SOC_INTEL_UART_DEV_MAX
 	int
 	default 3
 
+config SOC_INTEL_USB2_DEV_MAX
+	int
+	default 10
+
+config SOC_INTEL_USB3_DEV_MAX
+	int
+	default 2
+
 config CONSOLE_UART_BASE_ADDRESS
 	hex
-	default 0xfe03e000
+	default 0xfe02c000
 	depends on INTEL_LPSS_UART_FOR_CONSOLE
+
+config VBT_DATA_SIZE_KB
+	int
+	default 9
 
 # Clock divider parameters for 115200 baud rate
 # Baudrate = (UART source clock * M) /(N *16)
@@ -123,6 +236,7 @@ config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
 	default 0x7fff
 
 config VBOOT
+	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_MUST_REQUEST_DISPLAY
 	select VBOOT_STARTS_IN_BOOTBLOCK
 	select VBOOT_VBNV_CMOS
@@ -141,7 +255,7 @@ config CBFS_SIZE
 
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
-	default 0x2000
+	default 0x1400
 
 config FSP_HEADER_PATH
 	string "Location of FSP headers"
@@ -156,7 +270,7 @@ config SOC_INTEL_METEORLAKE_DEBUG_CONSENT
 	int "Debug Consent for MTL"
 	# USB DBC is more common for developers so make this default to 3 if
 	# SOC_INTEL_DEBUG_CONSENT=y
-	default 3 if SOC_INTEL_DEBUG_CONSENT
+	default 5 if SOC_INTEL_DEBUG_CONSENT
 	default 0
 	help
 	  This is to control debug interface on SOC.
@@ -179,5 +293,9 @@ config DIMMS_PER_CHANNEL
 config MRC_CHANNEL_WIDTH
 	int
 	default 16
+
+config SOC_INTEL_GFX_FRAMEBUFFER_OFFSET
+	hex
+	default 0x800000
 
 endif

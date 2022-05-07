@@ -8,4 +8,6 @@
 
 #define PCH_P2SB_EPMASK0		0x220
 
+extern struct device_operations ioe_p2sb_ops;
+
 #endif

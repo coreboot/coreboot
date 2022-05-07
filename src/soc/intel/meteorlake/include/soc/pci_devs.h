@@ -8,7 +8,7 @@
 #define _PCI_DEVFN(slot, func)	PCI_DEVFN(PCI_DEV_SLOT_ ## slot, func)
 #if !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
-#define _PCI_DEV(slot, func)	pcidev_path_on_root(_PCI_DEVFN(slot, func), __func__)
+#define _PCI_DEV(slot, func)	pcidev_path_on_root_debug(_PCI_DEVFN(slot, func), __func__)
 #else
 #define _PCI_DEV(slot, func)	PCI_DEV(0, PCI_DEV_SLOT_ ## slot, func)
 #endif

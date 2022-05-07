@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <device/device.h>
 #include <intelblocks/p2sb.h>
+#include <soc/iomap.h>
 
 void p2sb_soc_get_sb_mask(uint32_t *ep_mask, size_t count)
 {
@@ -28,3 +30,15 @@ void p2sb_soc_get_sb_mask(uint32_t *ep_mask, size_t count)
 
 	ep_mask[P2SB_EP_MASK_7_REG] = mask;
 }
+
+static void ioe_p2sb_read_resources(struct device *dev)
+{
+	/* Add the fixed MMIO resource for IOM */
+	mmio_resource_kb(dev, 0, IOM_BASE_ADDR / KiB, IOM_BASE_SIZE / KiB);
+}
+
+struct device_operations ioe_p2sb_ops = {
+	.read_resources   = ioe_p2sb_read_resources,
+	.set_resources    = noop_set_resources,
+	.scan_bus         = scan_static_bus,
+};

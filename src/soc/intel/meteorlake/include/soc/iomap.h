@@ -61,6 +61,14 @@
 #define P2SB_BAR		CONFIG_PCR_BASE_ADDRESS
 #define P2SB_SIZE		(16 * MiB)
 
+#define IOE_PCR_ABOVE_4G_BASE_ADDR	0x3fff0000000
+#define IOE_P2SB_BAR		IOE_PCR_ABOVE_4G_BASE_ADDR
+#define IOE_P2SB_SIZE		(256 * MiB)
+
+#define IOM_BASE_ADDR		0x3fff0aa0000
+#define IOM_BASE_SIZE		0x1600
+#define IOM_BASE_ADDR_MAX	0x3fff0aa15ff
+
 /*
  * I/O port address space
  */

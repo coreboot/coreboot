@@ -118,6 +118,30 @@ enum test_stop {
 	ALSOE  = 3,	/* Stop on all lanes error */
 };
 
+enum rxt_subfield {
+	RXT_RCVEN	= 0,
+	RXT_RXDQS_P	= 1,
+	RXT_RX_EQ	= 2,
+	RXT_RXDQS_N	= 3,
+	RXT_RX_VREF	= 4,
+	RXT_RXDQS_BOTH	= 5,
+	RXT_RESTORE	= 255,
+};
+
+enum txt_subfield {
+	TXT_TX_DQ	= 0,
+	TXT_TXDQS	= 1,
+	TXT_TX_EQ	= 2,
+	TXT_DQDQS_OFF	= 3,
+	TXT_RESTORE	= 255,
+};
+
+enum regfile_mode {
+	REG_FILE_USE_RANK,	/* Used when changing parameters for each rank */
+	REG_FILE_USE_START,	/* Used when changing parameters before the test */
+	REG_FILE_USE_CURRENT,	/* Used when changing parameters after the test */
+};
+
 struct wdb_pat {
 	uint32_t start_ptr;	/* Starting pointer in WDB */
 	uint32_t stop_ptr;	/* Stopping pointer in WDB */
@@ -450,6 +474,32 @@ uint8_t select_reut_ranks(struct sysinfo *ctrl, uint8_t channel, uint8_t rankmas
 
 void run_mpr_io_test(bool clear_errors);
 uint8_t run_io_test(struct sysinfo *ctrl, uint8_t chanmask, uint8_t dq_pat, bool clear_errors);
+
+void update_rxt(
+	struct sysinfo *ctrl,
+	uint8_t channel,
+	uint8_t rank,
+	uint8_t byte,
+	enum rxt_subfield subfield,
+	int32_t value);
+
+void update_txt(
+	struct sysinfo *ctrl,
+	uint8_t channel,
+	uint8_t rank,
+	uint8_t byte,
+	enum txt_subfield subfield,
+	int32_t value);
+
+void download_regfile(
+	struct sysinfo *ctrl,
+	uint8_t channel,
+	bool multicast,
+	uint8_t rank,
+	enum regfile_mode regfile,
+	uint8_t byte,
+	bool read_rf_rd,
+	bool read_rf_wr);
 
 uint8_t get_rx_bias(const struct sysinfo *ctrl);
 

@@ -15,7 +15,11 @@
 /* Register definitions */
 
 /* DDR DATA per-channel per-bytelane */
+#define RX_TRAIN_ch_r_b(ch, rank, byte)		_DDRIO_C_R_B(0x0000, ch, rank, byte)
+#define TX_TRAIN_ch_r_b(ch, rank, byte)		_DDRIO_C_R_B(0x0020, ch, rank, byte)
+
 #define DQ_CONTROL_2(ch, byte)			_DDRIO_C_R_B(0x0064, ch, 0, byte)
+#define DQ_CONTROL_0(ch, byte)			_DDRIO_C_R_B(0x0074, ch, 0, byte)
 
 /* DDR CKE per-channel */
 #define DDR_CKE_ch_CMD_COMP_OFFSET(ch)		_DDRIO_C_R_B(0x1204, ch, 0, 0)
@@ -37,6 +41,9 @@
 /* DDR Scrambler */
 #define DDR_SCRAMBLE_ch(ch)			(0x2000 + 4 * (ch))
 #define DDR_SCRAM_MISC_CONTROL			0x2008
+
+/* DDR DATA per-channel multicast */
+#define DDR_DATA_ch_CONTROL_0(ch)		_DDRIO_C_R_B(0x3074, ch, 0, 0)
 
 /* DDR CMDN/CMDS per-channel (writes go to both CMDN and CMDS fubs) */
 #define DDR_CMD_ch_COMP_OFFSET(ch)		_DDRIO_C_R_B(0x3204, ch, 0, 0)
@@ -146,6 +153,8 @@
 #define REUT_ch_SEQ_ADDR_START(ch)		(0x48d8 + 8 * (ch))
 
 #define REUT_ch_SEQ_ADDR_WRAP(ch)		(0x48e8 + 8 * (ch))
+
+#define REUT_ch_SEQ_ADDR_CURRENT(ch)		(0x48f8 + 8 * (ch))
 
 #define REUT_ch_SEQ_MISC_CTL(ch)		(0x4908 + 4 * (ch))
 

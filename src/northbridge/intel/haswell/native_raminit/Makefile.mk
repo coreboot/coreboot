@@ -1,5 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-or-later
 
+romstage-y += change_margin.c
 romstage-y += configure_mc.c
 romstage-y += ddr3.c
 romstage-y += jedec_reset.c

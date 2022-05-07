@@ -18,6 +18,8 @@
 #define RX_TRAIN_ch_r_b(ch, rank, byte)		_DDRIO_C_R_B(0x0000, ch, rank, byte)
 #define TX_TRAIN_ch_r_b(ch, rank, byte)		_DDRIO_C_R_B(0x0020, ch, rank, byte)
 
+#define DDR_DATA_TRAIN_FEEDBACK(ch, byte)	_DDRIO_C_R_B(0x0054, ch, 0, byte)
+
 #define DQ_CONTROL_2(ch, byte)			_DDRIO_C_R_B(0x0064, ch, 0, byte)
 #define DQ_CONTROL_0(ch, byte)			_DDRIO_C_R_B(0x0074, ch, 0, byte)
 
@@ -100,6 +102,7 @@
 #define COMMAND_RATE_LIMIT_ch(ch)		_MCMAIN_C(0x4010, ch)
 #define TC_BANK_RANK_D_ch(ch)			_MCMAIN_C(0x4014, ch)
 #define SC_ROUNDT_LAT_ch(ch)			_MCMAIN_C(0x4024, ch)
+#define SC_IO_LATENCY_ch(ch)			_MCMAIN_C(0x4028, ch)
 
 #define REUT_ch_PAT_WDB_CL_MUX_CFG(ch)		_MCMAIN_C(0x4040, ch)
 

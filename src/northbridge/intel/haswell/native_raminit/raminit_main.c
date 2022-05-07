@@ -61,6 +61,7 @@ static const struct task_entry cold_boot[] = {
 	{ configure_memory_map,                                   true, "MEMMAP",     },
 	{ do_jedec_init,                                          true, "JEDECINIT",  },
 	{ pre_training,                                           true, "PRETRAIN",   },
+	{ train_receive_enable,                                   true, "RCVET",      },
 };
 
 /* Return a generic stepping value to make stepping checks simpler */

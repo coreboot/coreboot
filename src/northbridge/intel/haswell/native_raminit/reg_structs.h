@@ -297,6 +297,19 @@ union ddr_scram_misc_control_reg {
 	uint32_t raw;
 };
 
+union sc_io_latency_reg {
+	struct __packed {
+		uint32_t iolat_rank0     : 4; // Bits  3:0
+		uint32_t iolat_rank1     : 4; // Bits  7:4
+		uint32_t iolat_rank2     : 4; // Bits 11:8
+		uint32_t iolat_rank3     : 4; // Bits 15:12
+		uint32_t rt_iocomp       : 6; // Bits 21:16
+		uint32_t                 : 9; // Bits 30:22
+		uint32_t dis_rt_clk_gate : 1; // Bits 31:31
+	};
+	uint32_t raw;
+};
+
 union mcscheds_cbit_reg {
 	struct __packed {
 		uint32_t dis_opp_cas    : 1; // Bits  0:0

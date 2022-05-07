@@ -43,6 +43,9 @@
 #define NUM_WDB_CL_MUX_SEEDS	3
 #define NUM_CADB_MUX_SEEDS	3
 
+/* Specified in PI ticks. 64 PI ticks == 1 qclk */
+#define tDQSCK_DRIFT		64
+
 /* ZQ calibration types */
 enum {
 	ZQ_INIT,	/* DDR3: ZQCL with tZQinit, LPDDR3: ZQ Init  with tZQinit  */
@@ -189,6 +192,7 @@ enum raminit_status {
 	RAMINIT_STATUS_MPLL_INIT_FAILURE,
 	RAMINIT_STATUS_POLL_TIMEOUT,
 	RAMINIT_STATUS_REUT_ERROR,
+	RAMINIT_STATUS_RCVEN_FAILURE,
 	RAMINIT_STATUS_UNSPECIFIED_ERROR, /** TODO: Deprecated in favor of specific values **/
 };
 
@@ -271,6 +275,10 @@ struct sysinfo {
 
 	union ddr_data_vref_adjust_reg dimm_vref;
 
+	uint8_t io_latency[NUM_CHANNELS][NUM_SLOTRANKS];
+	uint8_t rt_latency[NUM_CHANNELS][NUM_SLOTRANKS];
+	uint32_t rt_io_comp[NUM_CHANNELS];
+
 	uint32_t data_offset_train[NUM_CHANNELS][NUM_LANES];
 	uint32_t data_offset_comp[NUM_CHANNELS][NUM_LANES];
 
@@ -345,6 +353,11 @@ static inline void clear_data_offset_train_all(struct sysinfo *ctrl)
 	memset(ctrl->data_offset_train, 0, sizeof(ctrl->data_offset_train));
 }
 
+static inline uint32_t get_data_train_feedback(const uint8_t channel, const uint8_t byte)
+{
+	return mchbar_read32(DDR_DATA_TRAIN_FEEDBACK(channel, byte));
+}
+
 /* Number of ticks to wait in units of 69.841279 ns (citation needed) */
 static inline void tick_delay(const uint32_t delay)
 {
@@ -400,6 +413,7 @@ enum raminit_status convert_timings(struct sysinfo *ctrl);
 enum raminit_status configure_mc(struct sysinfo *ctrl);
 enum raminit_status configure_memory_map(struct sysinfo *ctrl);
 enum raminit_status do_jedec_init(struct sysinfo *ctrl);
+enum raminit_status train_receive_enable(struct sysinfo *ctrl);
 
 void configure_timings(struct sysinfo *ctrl);
 void configure_refresh(struct sysinfo *ctrl);

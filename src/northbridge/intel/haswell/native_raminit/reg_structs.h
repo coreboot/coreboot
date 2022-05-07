@@ -347,6 +347,54 @@ union reut_pat_cl_mux_lmn_reg {
 	uint32_t raw;
 };
 
+union reut_err_ctl_reg {
+	struct __packed {
+		uint32_t stop_on_nth_error              : 6; // Bits  5:0
+		uint32_t                                : 6; // Bits 11:6
+		uint32_t stop_on_error_control          : 2; // Bits 13:12
+		uint32_t                                : 2; // Bits 15:14
+		uint32_t selective_err_enable_chunk     : 8; // Bits 23:16
+		uint32_t selective_err_enable_cacheline : 8; // Bits 31:24
+	};
+	uint32_t raw;
+};
+
+union reut_pat_cadb_mux_ctrl_reg {
+	struct __packed {
+		uint32_t mux_0_ctrl     : 2; // Bits  1:0
+		uint32_t                : 2; // Bits  3:2
+		uint32_t mux_1_ctrl     : 2; // Bits  5:4
+		uint32_t                : 2; // Bits  7:6
+		uint32_t mux_2_ctrl     : 2; // Bits  9:8
+		uint32_t                : 6; // Bits 15:10
+		uint32_t sel_mux_0_ctrl : 2; // Bits 17:16
+		uint32_t                : 2; // Bits 19:18
+		uint32_t sel_mux_1_ctrl : 2; // Bits 21:20
+		uint32_t                : 2; // Bits 23:22
+		uint32_t sel_mux_2_ctrl : 2; // Bits 25:24
+		uint32_t                : 6; // Bits 31:26
+	};
+	uint32_t raw;
+};
+
+union reut_pat_wdb_cl_mux_cfg_reg {
+	struct __packed {
+		uint32_t mux_0_control         : 2; // Bits  1:0
+		uint32_t                       : 1; // Bits  2:2
+		uint32_t mux_1_control         : 2; // Bits  4:3
+		uint32_t                       : 1; // Bits  5:5
+		uint32_t mux_2_control         : 2; // Bits  7:6
+		uint32_t                       : 6; // Bits 13:8
+		uint32_t ecc_replace_byte_ctl  : 1; // Bits 14:14
+		uint32_t ecc_data_source_sel   : 1; // Bits 15:15
+		uint32_t save_lfsr_seed_rate   : 6; // Bits 21:16
+		uint32_t                       : 2; // Bits 23:22
+		uint32_t reload_lfsr_seed_rate : 3; // Bits 26:24
+		uint32_t                       : 5; // Bits 31:27
+	};
+	uint32_t raw;
+};
+
 union reut_pat_cadb_prog_reg {
 	struct __packed {
 		uint32_t addr : 16; // Bits 15:0
@@ -364,6 +412,19 @@ union reut_pat_cadb_prog_reg {
 	};
 	uint64_t raw;
 	uint32_t raw32[2];
+};
+
+union reut_pat_wdb_cl_ctrl_reg {
+	struct __packed {
+		uint32_t inc_rate  :  5; // Bits 4:0
+		uint32_t inc_scale :  1; // Bits 5:5
+		uint32_t           :  2; // Bits 7:6
+		uint32_t start_ptr :  6; // Bits 13:8
+		uint32_t           :  2; // Bits 15:14
+		uint32_t end_ptr   :  6; // Bits 21:16
+		uint32_t           : 10; // Bits 31:22
+	};
+	uint32_t raw;
 };
 
 union reut_pat_cadb_mrs_reg {
@@ -401,6 +462,66 @@ union reut_seq_cfg_reg {
 		uint32_t                               :  1; // Bits 31:31
 		uint32_t start_test_delay              : 10; // Bits 41:32
 		uint32_t                               : 22; // Bits 63:42
+	};
+	uint64_t raw;
+	uint32_t raw32[2];
+};
+
+union reut_seq_base_addr_reg {
+	struct __packed {
+		uint32_t           :  3; // Bits  2:0
+		uint32_t col_addr  :  8; // Bits 10:3
+		uint32_t           : 13; // Bits 23:11
+		uint32_t row_addr  : 16; // Bits 39:24
+		uint32_t           :  8; // Bits 47:40
+		uint32_t bank_addr :  3; // Bits 50:48
+		uint32_t           :  5; // Bits 55:51
+		uint32_t rank_addr :  3; // Bits 58:56
+		uint32_t           :  5; // Bits 63:59
+	};
+	uint32_t raw32[2];
+	uint64_t raw;
+};
+
+union reut_seq_misc_ctl_reg {
+	struct __packed {
+		uint32_t col_addr_order       : 2; // Bits  1:0
+		uint32_t row_addr_order       : 2; // Bits  3:2
+		uint32_t bank_addr_order      : 2; // Bits  5:4
+		uint32_t rank_addr_order      : 2; // Bits  7:6
+		uint32_t                      : 5; // Bits 12:8
+		uint32_t addr_invert_rate     : 3; // Bits 15:13
+		uint32_t                      : 4; // Bits 19:16
+		uint32_t col_addr_invert_en   : 1; // Bits 20:20
+		uint32_t row_addr_invert_en   : 1; // Bits 21:21
+		uint32_t bank_addr_invert_en  : 1; // Bits 22:22
+		uint32_t rank_addr_invert_en  : 1; // Bits 23:23
+		uint32_t col_wrap_trigger_en  : 1; // Bits 24:24
+		uint32_t row_wrap_trigger_en  : 1; // Bits 25:25
+		uint32_t bank_wrap_trigger_en : 1; // Bits 26:26
+		uint32_t rank_wrap_trigger_en : 1; // Bits 27:27
+		uint32_t col_wrap_carry_en    : 1; // Bits 28:28
+		uint32_t row_wrap_carry_en    : 1; // Bits 29:29
+		uint32_t bank_wrap_carry_en   : 1; // Bits 30:30
+		uint32_t rank_wrap_carry_en   : 1; // Bits 31:31
+	};
+	uint32_t raw;
+};
+
+union reut_seq_addr_inc_ctl_reg {
+	struct __packed {
+		uint32_t                     :  3; // Bits  2:0
+		uint32_t col_addr_increment  :  8; // Bits 10:3
+		uint32_t                     :  1; // Bits 11:11
+		uint32_t col_addr_update     :  8; // Bits 19:12
+		uint32_t row_addr_increment  : 12; // Bits 31:20
+		uint32_t row_addr_update     :  6; // Bits 37:32
+		uint32_t bank_addr_increment :  3; // Bits 40:38
+		uint32_t                     :  3; // Bits 43:41
+		uint32_t bank_addr_update    :  8; // Bits 53:44
+		uint32_t rank_addr_increment :  3; // Bits 54:52
+		uint32_t                     :  1; // Bits 55:55
+		uint32_t rank_addr_update    :  8; // Bits 63:56
 	};
 	uint64_t raw;
 	uint32_t raw32[2];

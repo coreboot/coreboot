@@ -12,4 +12,5 @@ romstage-y += raminit_native.c
 romstage-y += reut.c
 romstage-y += setup_wdb.c
 romstage-y += spd_bitmunching.c
+romstage-y += testing_io.c
 romstage-y += timings_refresh.c

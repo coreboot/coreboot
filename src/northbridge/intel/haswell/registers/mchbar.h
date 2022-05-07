@@ -94,19 +94,34 @@
 #define TC_BANK_RANK_D_ch(ch)			_MCMAIN_C(0x4014, ch)
 #define SC_ROUNDT_LAT_ch(ch)			_MCMAIN_C(0x4024, ch)
 
+#define REUT_ch_PAT_WDB_CL_MUX_CFG(ch)		_MCMAIN_C(0x4040, ch)
+
 #define REUT_ch_PAT_WDB_CL_MUX_WR_x(ch, x)	_MCMAIN_C_X(0x4048, ch, x) /* x in 0 .. 2 */
 #define REUT_ch_PAT_WDB_CL_MUX_RD_x(ch, x)	_MCMAIN_C_X(0x4054, ch, x) /* x in 0 .. 2 */
 
 #define REUT_ch_PAT_WDB_CL_MUX_LMN(ch)		_MCMAIN_C(0x4078, ch)
 
+#define REUT_ch_PAT_WDB_INV(ch)			_MCMAIN_C(0x4084, ch)
+
+#define REUT_ch_ERR_CONTROL(ch)			_MCMAIN_C(0x4098, ch)
+#define REUT_ch_ERR_ECC_MASK(ch)		_MCMAIN_C(0x409c, ch)
+
 #define SC_WR_ADD_DELAY_ch(ch)			_MCMAIN_C(0x40d0, ch)
+
+#define REUT_ch_ERR_DATA_MASK(ch)		_MCMAIN_C(0x40d8, ch)
 
 #define REUT_ch_MISC_CKE_CTRL(ch)		_MCMAIN_C(0x4190, ch)
 
+#define REUT_ch_MISC_PAT_CADB_CTRL(ch)		_MCMAIN_C(0x4198, ch)
 #define REUT_ch_PAT_CADB_MRS(ch)		_MCMAIN_C(0x419c, ch)
+#define REUT_ch_PAT_CADB_MUX_CTRL(ch)		_MCMAIN_C(0x41a0, ch)
+#define REUT_ch_PAT_CADB_MUX_x(ch, x)		_MCMAIN_C_X(0x41a4, ch, x) /* x in 0 .. 2 */
 
+#define REUT_ch_PAT_CADB_CL_MUX_LMN(ch)		_MCMAIN_C(0x41b0, ch)
 #define REUT_ch_PAT_CADB_WRITE_PTR(ch)		_MCMAIN_C(0x41bc, ch)
 #define REUT_ch_PAT_CADB_PROG(ch)		_MCMAIN_C(0x41c0, ch)
+
+#define REUT_ch_WDB_CL_CTRL(ch)			_MCMAIN_C(0x4200, ch)
 
 #define TC_ZQCAL_ch(ch)				_MCMAIN_C(0x4290, ch)
 #define TC_RFP_ch(ch)				_MCMAIN_C(0x4294, ch)
@@ -119,11 +134,26 @@
 #define QCLK_ch_LDAT_SDAT(ch)			_MCMAIN_C(0x42d4, ch)
 #define QCLK_ch_LDAT_DATA_IN_x(ch, x)		_MCMAIN_C_X(0x42dc, ch, x) /* x in 0 .. 1 */
 
+#define REUT_GLOBAL_CTL				0x4800
 #define REUT_GLOBAL_ERR				0x4804
+
+#define REUT_ch_SUBSEQ_x_CTL(ch, x)		(0x4808 + 40 * (ch) + 4 * (x))
 
 #define REUT_ch_SEQ_CFG(ch)			(0x48a8 + 8 * (ch))
 
 #define REUT_ch_SEQ_CTL(ch)			(0x48b8 + 4 * (ch))
+
+#define REUT_ch_SEQ_ADDR_START(ch)		(0x48d8 + 8 * (ch))
+
+#define REUT_ch_SEQ_ADDR_WRAP(ch)		(0x48e8 + 8 * (ch))
+
+#define REUT_ch_SEQ_MISC_CTL(ch)		(0x4908 + 4 * (ch))
+
+#define REUT_ch_SEQ_ADDR_INC_CTL(ch)		(0x4910 + 8 * (ch))
+
+#define REUT_ch_RANK_LOG_TO_PHYS(ch)		(0x4930 + 4 * (ch)) /* 4 bits per rank */
+
+#define HSW_REUT_ch_SEQ_LOOP_COUNT(ch)		(0x4980 + 4 * (ch)) /* *** only on C0 *** */
 
 /* MCMAIN broadcast */
 #define MCSCHEDS_CBIT		0x4c20

@@ -59,6 +59,88 @@ enum {
 	REUT_MODE_NOP  = 3, /* Normal operation mode */
 };
 
+/* REUT error counter control */
+enum {
+	COUNT_ERRORS_PER_CHANNEL	= 0,
+	COUNT_ERRORS_PER_LANE		= 1,
+	COUNT_ERRORS_PER_BYTE_GROUP	= 2,
+	COUNT_ERRORS_PER_CHUNK		= 3,
+};
+
+enum wdb_dq_pattern {
+	BASIC_VA = 0,
+	SEGMENT_WDB,
+	CADB,
+	TURN_AROUND,
+	LMN_VA,
+	TURN_AROUND_WR,
+	TURN_AROUND_ODT,
+	RD_RD_TA,
+	RD_RD_TA_ALL,
+};
+
+enum reut_cmd_pat {
+	PAT_WR_RD,
+	PAT_WR,
+	PAT_RD,
+	PAT_RD_WR_TA,
+	PAT_WR_RD_TA,
+	PAT_ODT_TA,
+};
+
+/* REUT subsequence types (B = Base, O = Offset) */
+enum {
+	SUBSEQ_B_RD	= 0 << 22,
+	SUBSEQ_B_WR	= 1 << 22,
+	SUBSEQ_B_RD_WR	= 2 << 22,
+	SUBSEQ_B_WR_RD	= 3 << 22,
+	SUBSEQ_O_RD	= 4 << 22,
+	SUBSEQ_O_WR	= 5 << 22,
+};
+
+/* REUT mux control */
+enum {
+	REUT_MUX_LMN      = 0,
+	REUT_MUX_BTBUFFER = 1,
+	REUT_MUX_LFSR     = 2,
+};
+
+/* Increment scale */
+enum {
+	SCALE_LOGARITHM	= 0,
+	SCALE_LINEAR	= 1,
+};
+
+enum test_stop {
+	NSOE   = 0,	/* Never stop on error */
+	NTHSOE = 1,	/* Stop on the nth error (we use n = 1) */
+	ABGSOE = 2,	/* Stop on all byte groups error */
+	ALSOE  = 3,	/* Stop on all lanes error */
+};
+
+struct wdb_pat {
+	uint32_t start_ptr;	/* Starting pointer in WDB */
+	uint32_t stop_ptr;	/* Stopping pointer in WDB */
+	uint16_t inc_rate;	/* How quickly the WDB walks through cachelines */
+	uint8_t  dq_pattern;	/* DQ pattern to use (see enum wdb_dq_pattern above) */
+};
+
+struct reut_pole {
+	uint16_t start;
+	uint16_t stop;
+	uint16_t order;
+	uint32_t inc_rate;
+	uint16_t inc_val;
+	bool wrap_trigger;
+};
+
+struct reut_box {
+	struct reut_pole rank;
+	struct reut_pole bank;
+	struct reut_pole row;
+	struct reut_pole col;
+};
+
 enum command_training_iteration {
 	CT_ITERATION_CLOCK = 0,
 	CT_ITERATION_CMD_NORTH,
@@ -200,6 +282,10 @@ struct sysinfo {
 	uint16_t mr1[NUM_CHANNELS][NUM_SLOTS];
 	uint16_t mr2[NUM_CHANNELS][NUM_SLOTS];
 	uint16_t mr3[NUM_CHANNELS][NUM_SLOTS];
+
+	uint8_t dq_pat;
+
+	uint8_t dq_pat_lc;
 };
 
 static inline bool is_hsw_ult(void)
@@ -340,6 +426,30 @@ void write_wdb_va_pat(
 
 void program_wdb_lfsr(const struct sysinfo *ctrl, bool cleanup);
 void setup_wdb(const struct sysinfo *ctrl);
+
+void program_seq_addr(uint8_t channel, const struct reut_box *reut_addr, bool log_seq_addr);
+void program_loop_count(const struct sysinfo *ctrl, uint8_t channel, uint8_t lc_exp);
+
+void setup_io_test(
+	struct sysinfo *ctrl,
+	uint8_t chanmask,
+	enum reut_cmd_pat cmd_pat,
+	uint16_t num_cl,
+	uint8_t lc,
+	const struct reut_box *reut_addr,
+	enum test_stop soe,
+	const struct wdb_pat *pat,
+	uint8_t en_cadb,
+	uint8_t subseq_wait);
+
+void setup_io_test_cadb(struct sysinfo *ctrl, uint8_t chanmask, uint8_t lc, enum test_stop soe);
+void setup_io_test_basic_va(struct sysinfo *ctrl, uint8_t chm, uint8_t lc, enum test_stop soe);
+void setup_io_test_mpr(struct sysinfo *ctrl, uint8_t chanmask, uint8_t lc, enum test_stop soe);
+
+uint8_t select_reut_ranks(struct sysinfo *ctrl, uint8_t channel, uint8_t rankmask);
+
+void run_mpr_io_test(bool clear_errors);
+uint8_t run_io_test(struct sysinfo *ctrl, uint8_t chanmask, uint8_t dq_pat, bool clear_errors);
 
 uint8_t get_rx_bias(const struct sysinfo *ctrl);
 

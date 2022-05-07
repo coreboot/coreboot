@@ -34,10 +34,6 @@ const struct psys_config psys_config = {
 
 const char *mainboard_vbt_filename(void)
 {
-	if (fw_config_probe(FW_CONFIG(DB_OPT, OPT_HDMI)))
-		return "vbt-moli_HDMI.bin";
-	else if (fw_config_probe(FW_CONFIG(DB_OPT, OPT_DP)))
-		return "vbt-moli_DP.bin";
 	return "vbt-moli.bin";
 }
 

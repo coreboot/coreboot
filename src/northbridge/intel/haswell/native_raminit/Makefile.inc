@@ -2,3 +2,4 @@
 
 romstage-y += raminit_main.c
 romstage-y += raminit_native.c
+romstage-y += spd_bitmunching.c

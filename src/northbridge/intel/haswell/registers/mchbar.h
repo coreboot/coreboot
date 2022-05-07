@@ -7,9 +7,98 @@
 #define NUM_CHANNELS	2
 #define NUM_SLOTS	2
 
+/* Indexed register helper macros */
+#define _DDRIO_C_R_B(r, ch, rank, byte)	((r) + 0x100 * (ch) + 0x4 * (rank) + 0x200 * (byte))
+#define _MCMAIN_C_X(r, ch, x)		((r) + 0x400 * (ch) + 0x4 * (x))
+#define _MCMAIN_C(r, ch)		((r) + 0x400 * (ch))
+
 /* Register definitions */
+
+/* DDR DATA per-channel per-bytelane */
+#define DQ_CONTROL_2(ch, byte)			_DDRIO_C_R_B(0x0064, ch, 0, byte)
+
+/* DDR CKE per-channel */
+#define DDR_CKE_ch_CMD_COMP_OFFSET(ch)		_DDRIO_C_R_B(0x1204, ch, 0, 0)
+#define DDR_CKE_ch_CMD_PI_CODING(ch)		_DDRIO_C_R_B(0x1208, ch, 0, 0)
+
+#define DDR_CKE_ch_CTL_CONTROLS(ch)		_DDRIO_C_R_B(0x121c, ch, 0, 0)
+#define DDR_CKE_ch_CTL_RANKS_USED(ch)		_DDRIO_C_R_B(0x1220, ch, 0, 0)
+
+/* DDR CTL per-channel */
+#define DDR_CTL_ch_CTL_CONTROLS(ch)		_DDRIO_C_R_B(0x1c1c, ch, 0, 0)
+#define DDR_CTL_ch_CTL_RANKS_USED(ch)		_DDRIO_C_R_B(0x1c20, ch, 0, 0)
+
+/* DDR CLK per-channel */
+#define DDR_CLK_ch_RANKS_USED(ch)		_DDRIO_C_R_B(0x1800, ch, 0, 0)
+#define DDR_CLK_ch_COMP_OFFSET(ch)		_DDRIO_C_R_B(0x1808, ch, 0, 0)
+#define DDR_CLK_ch_PI_CODING(ch)		_DDRIO_C_R_B(0x180c, ch, 0, 0)
+#define DDR_CLK_ch_CONTROLS(ch)			_DDRIO_C_R_B(0x1810, ch, 0, 0)
+
+/* DDR Scrambler */
+#define DDR_SCRAMBLE_ch(ch)			(0x2000 + 4 * (ch))
+#define DDR_SCRAM_MISC_CONTROL			0x2008
+
+/* DDR CMDN/CMDS per-channel (writes go to both CMDN and CMDS fubs) */
+#define DDR_CMD_ch_COMP_OFFSET(ch)		_DDRIO_C_R_B(0x3204, ch, 0, 0)
+#define DDR_CMD_ch_PI_CODING(ch)		_DDRIO_C_R_B(0x3208, ch, 0, 0)
+#define DDR_CMD_ch_CONTROLS(ch)			_DDRIO_C_R_B(0x320c, ch, 0, 0)
+
+/* DDR CKE/CTL per-channel (writes go to both CKE and CTL fubs) */
+#define DDR_CKE_CTL_ch_CTL_COMP_OFFSET(ch)	_DDRIO_C_R_B(0x3414, ch, 0, 0)
+#define DDR_CKE_CTL_ch_CTL_PI_CODING(ch)	_DDRIO_C_R_B(0x3418, ch, 0, 0)
+
+/* DDR DATA broadcast */
+#define DDR_DATA_RX_TRAIN_RANK(rank)		_DDRIO_C_R_B(0x3600, 0, rank, 0)
+#define DDR_DATA_RX_PER_BIT_RANK(rank)		_DDRIO_C_R_B(0x3610, 0, rank, 0)
+#define DDR_DATA_TX_TRAIN_RANK(rank)		_DDRIO_C_R_B(0x3620, 0, rank, 0)
+#define DDR_DATA_TX_PER_BIT_RANK(rank)		_DDRIO_C_R_B(0x3630, 0, rank, 0)
+
+#define DDR_DATA_RCOMP_DATA_1			0x3644
+#define DDR_DATA_TX_XTALK			0x3648
+#define DDR_DATA_RX_OFFSET_VDQ			0x364c
+#define DDR_DATA_OFFSET_COMP			0x365c
+#define DDR_DATA_CONTROL_1			0x3660
+
+#define DDR_DATA_OFFSET_TRAIN			0x3670
+#define DDR_DATA_CONTROL_0			0x3674
+#define DDR_DATA_VREF_ADJUST			0x3678
+
+/* DDR CMD broadcast */
+#define DDR_CMD_COMP				0x3700
+
+/* DDR CKE/CTL broadcast */
+#define DDR_CKE_CTL_COMP			0x3810
+
+/* DDR CLK broadcast */
+#define DDR_CLK_COMP				0x3904
+#define DDR_CLK_CONTROLS			0x3910
+#define DDR_CLK_CB_STATUS			0x3918
+
+/* DDR COMP (global) */
+#define DDR_COMP_DATA_COMP_1			0x3a04
+#define DDR_COMP_CMD_COMP			0x3a08
+#define DDR_COMP_CTL_COMP			0x3a0c
+#define DDR_COMP_CLK_COMP			0x3a10
+#define DDR_COMP_CTL_0				0x3a14
+#define DDR_COMP_CTL_1				0x3a18
+#define DDR_COMP_VSSHI				0x3a1c
+#define DDR_COMP_OVERRIDE			0x3a20
+#define DDR_COMP_VSSHI_CONTROL			0x3a24
+
+/* MCMAIN per-channel */
+#define COMMAND_RATE_LIMIT_ch(ch)		_MCMAIN_C(0x4010, ch)
+
+#define MC_INIT_STATE_ch(ch)			_MCMAIN_C(0x42a0, ch)
+
+/* MCMAIN broadcast */
+#define MCSCHEDS_CBIT		0x4c20
+
+#define MCMNTS_SC_WDBWM		0x4f8c
+
+/* MCDECS */
 #define MAD_CHNL		0x5000 /* Address Decoder Channel Configuration */
 #define MAD_DIMM(ch)		(0x5004 + (ch) * 4)
+#define MAD_ZR			0x5014
 #define MC_INIT_STATE_G		0x5030
 #define MRC_REVISION		0x5034 /* MRC Revision */
 
@@ -27,6 +116,8 @@
 #define MMIO_PAVP_MSG		0x5500
 
 #define PCU_DDR_PTM_CTL		0x5880
+
+#define PCU_DDR_VOLTAGE		0x58a4
 
 /* Some power MSRs are also represented in MCHBAR */
 #define MCH_PKG_POWER_LIMIT_LO	0x59a0
@@ -48,6 +139,8 @@
 #define  MAILBOX_BIOS_CMD_FSM_MEASURE_INTVL	0x909
 #define  MAILBOX_BIOS_CMD_READ_PCH_POWER	0xa
 #define  MAILBOX_BIOS_CMD_READ_PCH_POWER_EXT	0xb
+#define  MAILBOX_BIOS_CMD_READ_DDR_2X_REFRESH	0x17
+#define  MAILBOX_BIOS_CMD_WRITE_DDR_2X_REFRESH	0x18
 #define  MAILBOX_BIOS_CMD_READ_C9C10_VOLTAGE	0x26
 #define  MAILBOX_BIOS_CMD_WRITE_C9C10_VOLTAGE	0x27
 
@@ -66,6 +159,7 @@
 #define MC_BIOS_REQ		0x5e00 /* Memory frequency request register */
 #define MC_BIOS_DATA		0x5e04 /* Miscellaneous information for BIOS */
 #define SAPMCTL			0x5f00
+#define M_COMP			0x5f08
 
 #define HDAUDRID		0x6008
 #define UMAGFXCTL		0x6020

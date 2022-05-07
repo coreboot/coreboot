@@ -79,6 +79,9 @@ struct sysinfo {
 	uint32_t tCWL;
 	uint32_t tCMD;
 
+	uint32_t tREFI;
+	uint32_t tXP;
+
 	uint8_t lanes;			/* 8 or 9 */
 	uint8_t chanmap;
 	uint8_t dpc[NUM_CHANNELS];	/* DIMMs per channel */
@@ -97,7 +100,12 @@ void raminit_main(enum raminit_boot_mode bootmode);
 
 enum raminit_status collect_spd_info(struct sysinfo *ctrl);
 enum raminit_status initialise_mpll(struct sysinfo *ctrl);
+enum raminit_status convert_timings(struct sysinfo *ctrl);
 
 enum raminit_status wait_for_first_rcomp(void);
+
+uint8_t get_tCWL(uint32_t mem_clock_mhz);
+uint32_t get_tREFI(uint32_t mem_clock_mhz);
+uint32_t get_tXP(uint32_t mem_clock_mhz);
 
 #endif

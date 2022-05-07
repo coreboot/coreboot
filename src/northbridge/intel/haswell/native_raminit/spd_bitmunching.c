@@ -207,3 +207,103 @@ enum raminit_status collect_spd_info(struct sysinfo *ctrl)
 	get_spd_data(ctrl);
 	return find_common_spd_parameters(ctrl);
 }
+
+#define MIN_CWL		5
+#define MAX_CWL		12
+
+/* Except for tCK, hardware expects all timing values in DCLKs, not nanoseconds */
+enum raminit_status convert_timings(struct sysinfo *ctrl)
+{
+	/*
+	 * Obtain all required timing values, in DCLKs.
+	 */
+
+	/* Convert primary timings from nanoseconds to DCLKs */
+	ctrl->tAA  = DIV_ROUND_UP(ctrl->tAA,  ctrl->tCK);
+	ctrl->tWR  = DIV_ROUND_UP(ctrl->tWR,  ctrl->tCK);
+	ctrl->tRCD = DIV_ROUND_UP(ctrl->tRCD, ctrl->tCK);
+	ctrl->tRRD = DIV_ROUND_UP(ctrl->tRRD, ctrl->tCK);
+	ctrl->tRP  = DIV_ROUND_UP(ctrl->tRP,  ctrl->tCK);
+	ctrl->tRAS = DIV_ROUND_UP(ctrl->tRAS, ctrl->tCK);
+	ctrl->tRC  = DIV_ROUND_UP(ctrl->tRC,  ctrl->tCK);
+	ctrl->tRFC = DIV_ROUND_UP(ctrl->tRFC, ctrl->tCK);
+	ctrl->tWTR = DIV_ROUND_UP(ctrl->tWTR, ctrl->tCK);
+	ctrl->tRTP = DIV_ROUND_UP(ctrl->tRTP, ctrl->tCK);
+	ctrl->tFAW = DIV_ROUND_UP(ctrl->tFAW, ctrl->tCK);
+	ctrl->tCWL = DIV_ROUND_UP(ctrl->tCWL, ctrl->tCK);
+	ctrl->tCMD = DIV_ROUND_UP(ctrl->tCMD, ctrl->tCK);
+
+	/* Constrain primary timings to hardware limits */
+	/** TODO: complain when clamping? **/
+	ctrl->tAA  = clamp_u32(4,  ctrl->tAA,  24);
+	ctrl->tWR  = clamp_u32(5,  ctrl->tWR,  16);
+	ctrl->tRCD = clamp_u32(4,  ctrl->tRCD, 20);
+	ctrl->tRRD = clamp_u32(4,  ctrl->tRRD, 65535);
+	ctrl->tRP  = clamp_u32(4,  ctrl->tRP,  15);
+	ctrl->tRAS = clamp_u32(10, ctrl->tRAS, 40);
+	ctrl->tRC  = clamp_u32(1,  ctrl->tRC,  4095);
+	ctrl->tRFC = clamp_u32(1,  ctrl->tRFC, 511);
+	ctrl->tWTR = clamp_u32(4,  ctrl->tWTR, 10);
+	ctrl->tRTP = clamp_u32(4,  ctrl->tRTP, 15);
+	ctrl->tFAW = clamp_u32(10, ctrl->tFAW, 54);
+
+	/** TODO: Honor tREFI from XMP **/
+	ctrl->tREFI = get_tREFI(ctrl->mem_clock_mhz);
+	ctrl->tXP   =   get_tXP(ctrl->mem_clock_mhz);
+
+	/*
+	 * Check some values, and adjust them if necessary.
+	 */
+
+	/* If tWR cannot be written into DDR3 MR0, adjust it */
+	switch (ctrl->tWR) {
+	case  9:
+	case 11:
+	case 13:
+	case 15:
+		ctrl->tWR++;
+	}
+
+	/* If tCWL is not supported or unspecified, look up a reasonable default */
+	if (ctrl->tCWL < MIN_CWL || ctrl->tCWL > MAX_CWL)
+		ctrl->tCWL = get_tCWL(ctrl->mem_clock_mhz);
+
+	/* This is needed to support ODT properly on 2DPC */
+	if (ctrl->tAA - ctrl->tCWL > 4)
+		ctrl->tCWL = ctrl->tAA - 4;
+
+	/* If tCMD is invalid, use a guesstimate default */
+	if (!ctrl->tCMD) {
+		ctrl->tCMD = MAX(ctrl->dpc[0], ctrl->dpc[1]);
+		printk(RAM_DEBUG, "tCMD was zero, picking a guesstimate value\n");
+	}
+	ctrl->tCMD = clamp_u32(1, ctrl->tCMD, 3);
+
+	/*
+	 * Print final timings.
+	 */
+
+	/* tCK is special */
+	printk(BIOS_DEBUG, "Selected tCK          : %u ps\n", ctrl->tCK * 1000 / 256);
+
+	/* Primary timings */
+	printk(BIOS_DEBUG, "Selected tAA          : %uT\n", ctrl->tAA);
+	printk(BIOS_DEBUG, "Selected tWR          : %uT\n", ctrl->tWR);
+	printk(BIOS_DEBUG, "Selected tRCD         : %uT\n", ctrl->tRCD);
+	printk(BIOS_DEBUG, "Selected tRRD         : %uT\n", ctrl->tRRD);
+	printk(BIOS_DEBUG, "Selected tRP          : %uT\n", ctrl->tRP);
+	printk(BIOS_DEBUG, "Selected tRAS         : %uT\n", ctrl->tRAS);
+	printk(BIOS_DEBUG, "Selected tRC          : %uT\n", ctrl->tRC);
+	printk(BIOS_DEBUG, "Selected tRFC         : %uT\n", ctrl->tRFC);
+	printk(BIOS_DEBUG, "Selected tWTR         : %uT\n", ctrl->tWTR);
+	printk(BIOS_DEBUG, "Selected tRTP         : %uT\n", ctrl->tRTP);
+	printk(BIOS_DEBUG, "Selected tFAW         : %uT\n", ctrl->tFAW);
+	printk(BIOS_DEBUG, "Selected tCWL         : %uT\n", ctrl->tCWL);
+	printk(BIOS_DEBUG, "Selected tCMD         : %uT\n", ctrl->tCMD);
+
+	/* Derived timings */
+	printk(BIOS_DEBUG, "Selected tREFI        : %uT\n", ctrl->tREFI);
+	printk(BIOS_DEBUG, "Selected tXP          : %uT\n", ctrl->tXP);
+
+	return RAMINIT_STATUS_SUCCESS;
+}

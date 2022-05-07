@@ -1,5 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-or-later
 
+romstage-y += lookup_timings.c
 romstage-y += init_mpll.c
 romstage-y += io_comp_control.c
 romstage-y += raminit_main.c

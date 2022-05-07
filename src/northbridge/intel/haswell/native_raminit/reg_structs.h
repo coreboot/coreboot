@@ -335,6 +335,99 @@ union mcscheds_cbit_reg {
 	uint32_t raw;
 };
 
+union tc_bank_reg {
+	struct __packed {
+		uint32_t tRCD      : 5; // Bits  4:0
+		uint32_t tRP       : 5; // Bits  9:5
+		uint32_t tRAS      : 6; // Bits 15:10
+		uint32_t tRDPRE    : 4; // Bits 19:16
+		uint32_t tWRPRE    : 6; // Bits 25:20
+		uint32_t tRRD      : 4; // Bits 29:26
+		uint32_t tRPab_ext : 2; // Bits 31:30
+	};
+	uint32_t raw;
+};
+
+union tc_bank_rank_a_reg {
+	struct __packed {
+		uint32_t tCKE        : 4; // Bits  3:0
+		uint32_t tFAW        : 8; // Bits 11:4
+		uint32_t tRDRD_sr    : 3; // Bits 14:12
+		uint32_t tRDRD_dr    : 4; // Bits 18:15
+		uint32_t tRDRD_dd    : 4; // Bits 22:19
+		uint32_t tRDPDEN     : 5; // Bits 27:23
+		uint32_t             : 1; // Bits 28:28
+		uint32_t cmd_3st_dis : 1; // Bits 29:29
+		uint32_t cmd_stretch : 2; // Bits 31:30
+	};
+	uint32_t raw;
+};
+
+union tc_bank_rank_b_reg {
+	struct __packed {
+		uint32_t tWRRD_sr : 6; // Bits  5:0
+		uint32_t tWRRD_dr : 4; // Bits  9:6
+		uint32_t tWRRD_dd : 4; // Bits 13:10
+		uint32_t tWRWR_sr : 3; // Bits 16:14
+		uint32_t tWRWR_dr : 4; // Bits 20:17
+		uint32_t tWRWR_dd : 4; // Bits 24:21
+		uint32_t tWRPDEN  : 6; // Bits 30:25
+		uint32_t dec_wrd  : 1; // Bits 31:31
+	};
+	uint32_t raw;
+};
+
+union tc_bank_rank_c_reg {
+	struct __packed {
+		uint32_t tXPDLL   : 6; // Bits  5:0
+		uint32_t tXP      : 4; // Bits  9:6
+		uint32_t tAONPD   : 4; // Bits 13:10
+		uint32_t tRDWR_sr : 5; // Bits 18:14
+		uint32_t tRDWR_dr : 5; // Bits 23:19
+		uint32_t tRDWR_dd : 5; // Bits 28:24
+		uint32_t          : 3; // Bits 31:29
+	};
+	uint32_t raw;
+};
+
+/* NOTE: Non-ULT only implements the lower 21 bits (odt_write_delay is 2 bits) */
+union tc_bank_rank_d_reg {
+	struct __packed {
+		uint32_t tAA                : 5; // Bits  4:0
+		uint32_t tCWL               : 5; // Bits  9:5
+		uint32_t tCPDED             : 2; // Bits 11:10
+		uint32_t tPRPDEN            : 2; // Bits 13:12
+		uint32_t odt_read_delay     : 3; // Bits 16:14
+		uint32_t odt_read_duration  : 2; // Bits 18:17
+		uint32_t odt_write_duration : 3; // Bits 21:19
+		uint32_t odt_write_delay    : 3; // Bits 24:22
+		uint32_t odt_always_rank_0  : 1; // Bits 25:25
+		uint32_t cmd_delay          : 2; // Bits 27:26
+		uint32_t                    : 4; // Bits 31:28
+	};
+	uint32_t raw;
+};
+
+union tc_rftp_reg {
+	struct __packed {
+		uint32_t tREFI   : 16; // Bits 15:0
+		uint32_t tRFC    :  9; // Bits 24:16
+		uint32_t tREFIx9 :  7; // Bits 31:25
+	};
+	uint32_t raw;
+};
+
+union tc_srftp_reg {
+	struct __packed {
+		uint32_t tXSDLL     : 12; // Bits 11:0
+		uint32_t tXS_offset :  4; // Bits 15:12
+		uint32_t tZQOPER    : 10; // Bits 25:16
+		uint32_t            :  2; // Bits 27:26
+		uint32_t tMOD       :  4; // Bits 31:28
+	};
+	uint32_t raw;
+};
+
 union mcmain_command_rate_limit_reg {
 	struct __packed {
 		uint32_t enable_cmd_limit :  1; // Bits  0:0

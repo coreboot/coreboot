@@ -156,6 +156,12 @@ struct sysinfo {
 	uint8_t cke_cmd_pi_code[NUM_CHANNELS][NUM_GROUPS];
 	uint8_t cmd_north_pi_code[NUM_CHANNELS][NUM_GROUPS];
 	uint8_t cmd_south_pi_code[NUM_CHANNELS][NUM_GROUPS];
+
+	union tc_bank_reg tc_bank[NUM_CHANNELS];
+	union tc_bank_rank_a_reg tc_bankrank_a[NUM_CHANNELS];
+	union tc_bank_rank_b_reg tc_bankrank_b[NUM_CHANNELS];
+	union tc_bank_rank_c_reg tc_bankrank_c[NUM_CHANNELS];
+	union tc_bank_rank_d_reg tc_bankrank_d[NUM_CHANNELS];
 };
 
 static inline bool is_hsw_ult(void)
@@ -200,6 +206,14 @@ enum raminit_status configure_mc(struct sysinfo *ctrl);
 
 void configure_timings(struct sysinfo *ctrl);
 void configure_refresh(struct sysinfo *ctrl);
+
+uint32_t get_tCKE(uint32_t mem_clock_mhz, bool lpddr);
+uint32_t get_tXPDLL(uint32_t mem_clock_mhz);
+uint32_t get_tAONPD(uint32_t mem_clock_mhz);
+uint32_t get_tMOD(uint32_t mem_clock_mhz);
+uint32_t get_tXS_offset(uint32_t mem_clock_mhz);
+uint32_t get_tZQOPER(uint32_t mem_clock_mhz, bool lpddr);
+uint32_t get_tZQCS(uint32_t mem_clock_mhz, bool lpddr);
 
 enum raminit_status wait_for_first_rcomp(void);
 

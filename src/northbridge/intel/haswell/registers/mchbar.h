@@ -86,9 +86,21 @@
 #define DDR_COMP_VSSHI_CONTROL			0x3a24
 
 /* MCMAIN per-channel */
+#define TC_BANK_ch(ch)				_MCMAIN_C(0x4000, ch)
+#define TC_BANK_RANK_A_ch(ch)			_MCMAIN_C(0x4004, ch)
+#define TC_BANK_RANK_B_ch(ch)			_MCMAIN_C(0x4008, ch)
+#define TC_BANK_RANK_C_ch(ch)			_MCMAIN_C(0x400c, ch)
 #define COMMAND_RATE_LIMIT_ch(ch)		_MCMAIN_C(0x4010, ch)
+#define TC_BANK_RANK_D_ch(ch)			_MCMAIN_C(0x4014, ch)
+#define SC_ROUNDT_LAT_ch(ch)			_MCMAIN_C(0x4024, ch)
 
+#define SC_WR_ADD_DELAY_ch(ch)			_MCMAIN_C(0x40d0, ch)
+
+#define TC_ZQCAL_ch(ch)				_MCMAIN_C(0x4290, ch)
+#define TC_RFP_ch(ch)				_MCMAIN_C(0x4294, ch)
+#define TC_RFTP_ch(ch)				_MCMAIN_C(0x4298, ch)
 #define MC_INIT_STATE_ch(ch)			_MCMAIN_C(0x42a0, ch)
+#define TC_SRFTP_ch(ch)				_MCMAIN_C(0x42a4, ch)
 
 /* MCMAIN broadcast */
 #define MCSCHEDS_CBIT		0x4c20

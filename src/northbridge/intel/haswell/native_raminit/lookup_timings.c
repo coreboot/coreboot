@@ -60,3 +60,105 @@ uint32_t get_tXP(const uint32_t mem_clock_mhz)
 	};
 	return lookup_timing(mem_clock_mhz, lut, ARRAY_SIZE(lut));
 }
+
+static uint32_t get_lpddr_tCKE(const uint32_t mem_clock_mhz)
+{
+	const struct timing_lookup lut[] = {
+		{  533,  4 },
+		{  666,  5 },
+		{ fmax,  6 },
+	};
+	return lookup_timing(mem_clock_mhz, lut, ARRAY_SIZE(lut));
+}
+
+static uint32_t get_ddr_tCKE(const uint32_t mem_clock_mhz)
+{
+	const struct timing_lookup lut[] = {
+		{  533,  3 },
+		{  800,  4 },
+		{  933,  5 },
+		{ 1200,  6 },
+		{ fmax,  7 },
+	};
+	return lookup_timing(mem_clock_mhz, lut, ARRAY_SIZE(lut));
+}
+
+uint32_t get_tCKE(const uint32_t mem_clock_mhz, const bool lpddr)
+{
+	return lpddr ? get_lpddr_tCKE(mem_clock_mhz) : get_ddr_tCKE(mem_clock_mhz);
+}
+
+uint32_t get_tXPDLL(const uint32_t mem_clock_mhz)
+{
+	const struct timing_lookup lut[] = {
+		{  400, 10 },
+		{  533, 13 },
+		{  666, 16 },
+		{  800, 20 },
+		{  933, 23 },
+		{ 1066, 26 },
+		{ 1200, 29 },
+		{ fmax, 32 },
+	};
+	return lookup_timing(mem_clock_mhz, lut, ARRAY_SIZE(lut));
+}
+
+uint32_t get_tAONPD(const uint32_t mem_clock_mhz)
+{
+	const struct timing_lookup lut[] = {
+		{  400,  4 },
+		{  533,  5 },
+		{  666,  6 },
+		{  800,  7 }, /* SNB had 8 */
+		{  933,  8 },
+		{ 1066, 10 },
+		{ 1200, 11 },
+		{ fmax, 12 },
+	};
+	return lookup_timing(mem_clock_mhz, lut, ARRAY_SIZE(lut));
+}
+
+uint32_t get_tMOD(const uint32_t mem_clock_mhz)
+{
+	const struct timing_lookup lut[] = {
+		{  800, 12 },
+		{  933, 14 },
+		{ 1066, 16 },
+		{ 1200, 18 },
+		{ fmax, 20 },
+	};
+	return lookup_timing(mem_clock_mhz, lut, ARRAY_SIZE(lut));
+}
+
+uint32_t get_tXS_offset(const uint32_t mem_clock_mhz)
+{
+	return DIV_ROUND_UP(mem_clock_mhz, 100);
+}
+
+static uint32_t get_lpddr_tZQOPER(const uint32_t mem_clock_mhz)
+{
+	return (mem_clock_mhz * 360) / 1000;
+}
+
+static uint32_t get_ddr_tZQOPER(const uint32_t mem_clock_mhz)
+{
+	const struct timing_lookup lut[] = {
+		{  800, 256 },
+		{  933, 299 },
+		{ 1066, 342 },
+		{ 1200, 384 },
+		{ fmax, 427 },
+	};
+	return lookup_timing(mem_clock_mhz, lut, ARRAY_SIZE(lut));
+}
+
+/* tZQOPER defines the period required for ZQCL after SR exit */
+uint32_t get_tZQOPER(const uint32_t mem_clock_mhz, const bool lpddr)
+{
+	return lpddr ? get_lpddr_tZQOPER(mem_clock_mhz) : get_ddr_tZQOPER(mem_clock_mhz);
+}
+
+uint32_t get_tZQCS(const uint32_t mem_clock_mhz, const bool lpddr)
+{
+	return DIV_ROUND_UP(get_tZQOPER(mem_clock_mhz, lpddr), 4);
+}

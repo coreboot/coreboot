@@ -32,8 +32,6 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPI(GPP_E1, NONE, DEEP),
 	/* E2  : THC0_SPI1_IO3 ==> B2B_DPCARD_DETN */
 	PAD_CFG_GPI(GPP_E2, NONE, DEEP),
-	/* E14 : DDSP_HPDA ==> HDMI2_HPD */
-	PAD_CFG_GPI(GPP_E14, NONE, DEEP),
 	/* E20 : DDP2_CTRLCLK ==> EN_PP3300_EMMC */
 	PAD_CFG_GPO(GPP_E20, 1, DEEP),
 	/* E21 : DDP2_CTRLDATA ==> NC */

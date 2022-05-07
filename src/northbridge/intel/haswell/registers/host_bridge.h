@@ -34,6 +34,8 @@
 
 #define MESEG_BASE	0x70	/* Management Engine Base */
 #define MESEG_LIMIT	0x78	/* Management Engine Limit */
+#define  MELCK		(1 << 10)	/* ME Range Lock */
+#define  ME_STLEN_EN	(1 << 11)	/* ME Stolen Memory Enable */
 
 #define PAM0		0x80
 #define PAM1		0x81

@@ -24,6 +24,7 @@ static const struct task_entry cold_boot[] = {
 	{ initialise_mpll,                                        true, "INITMPLL",   },
 	{ convert_timings,                                        true, "CONVTIM",    },
 	{ configure_mc,                                           true, "CONFMC",     },
+	{ configure_memory_map,                                   true, "MEMMAP",     },
 };
 
 /* Return a generic stepping value to make stepping checks simpler */

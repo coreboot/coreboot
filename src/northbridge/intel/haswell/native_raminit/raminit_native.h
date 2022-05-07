@@ -203,6 +203,7 @@ enum raminit_status collect_spd_info(struct sysinfo *ctrl);
 enum raminit_status initialise_mpll(struct sysinfo *ctrl);
 enum raminit_status convert_timings(struct sysinfo *ctrl);
 enum raminit_status configure_mc(struct sysinfo *ctrl);
+enum raminit_status configure_memory_map(struct sysinfo *ctrl);
 
 void configure_timings(struct sysinfo *ctrl);
 void configure_refresh(struct sysinfo *ctrl);

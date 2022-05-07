@@ -586,6 +586,8 @@ void mainboard_config_rcba(void);
 #define ACPIIRQEN	0x31e0	/* 32bit */
 #define OIC		0x31fe	/* 16bit */
 #define PRSTS		0x3310	/* 32bit */
+#define PM_CFG2		0x333c	/* 32bit */
+#define  PM_CFG2_DRAM_RESET_CTL	(1 << 26)	/* ULT only */
 #define PMSYNC_CONFIG	0x33c4	/* 32bit */
 #define PMSYNC_CONFIG2	0x33cc	/* 32bit */
 #define SOFT_RESET_CTRL 0x38f4

@@ -25,6 +25,7 @@ static const struct task_entry cold_boot[] = {
 	{ convert_timings,                                        true, "CONVTIM",    },
 	{ configure_mc,                                           true, "CONFMC",     },
 	{ configure_memory_map,                                   true, "MEMMAP",     },
+	{ do_jedec_init,                                          true, "JEDECINIT",  },
 };
 
 /* Return a generic stepping value to make stepping checks simpler */
@@ -58,6 +59,7 @@ static void initialize_ctrl(struct sysinfo *ctrl)
 	ctrl->stepping = get_stepping(ctrl->cpu);
 	ctrl->vdd_mv = is_hsw_ult() ? 1350 : 1500; /** FIXME: Hardcoded, does it matter? **/
 	ctrl->dq_pins_interleaved = cfg->dq_pins_interleaved;
+	ctrl->restore_mrs = false;
 	ctrl->bootmode = bootmode;
 }
 

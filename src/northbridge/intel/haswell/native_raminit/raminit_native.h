@@ -28,6 +28,30 @@
 /* Always use 12 legs for emphasis (not trained) */
 #define TXEQFULLDRV		(3 << 4)
 
+/* DDR3 mode register bits */
+#define MR0_DLL_RESET		BIT(8)
+
+#define MR1_WL_ENABLE		BIT(7)
+#define MR1_QOFF_ENABLE		BIT(12) /* If set, output buffers disabled */
+
+#define RTTNOM_MASK		(BIT(9) | BIT(6) | BIT(2))
+
+/* ZQ calibration types */
+enum {
+	ZQ_INIT,	/* DDR3: ZQCL with tZQinit, LPDDR3: ZQ Init  with tZQinit  */
+	ZQ_LONG,	/* DDR3: ZQCL with tZQoper, LPDDR3: ZQ Long  with tZQCL    */
+	ZQ_SHORT,	/* DDR3: ZQCS with tZQCS,   LPDDR3: ZQ Short with tZQCS    */
+	ZQ_RESET,	/* DDR3: not used,          LPDDR3: ZQ Reset with tZQreset */
+};
+
+/* REUT initialisation modes */
+enum {
+	REUT_MODE_IDLE = 0,
+	REUT_MODE_TEST = 1,
+	REUT_MODE_MRS  = 2,
+	REUT_MODE_NOP  = 3, /* Normal operation mode */
+};
+
 enum command_training_iteration {
 	CT_ITERATION_CLOCK = 0,
 	CT_ITERATION_CMD_NORTH,
@@ -51,6 +75,7 @@ enum raminit_status {
 	RAMINIT_STATUS_UNSUPPORTED_MEMORY,
 	RAMINIT_STATUS_MPLL_INIT_FAILURE,
 	RAMINIT_STATUS_POLL_TIMEOUT,
+	RAMINIT_STATUS_REUT_ERROR,
 	RAMINIT_STATUS_UNSPECIFIED_ERROR, /** TODO: Deprecated in favor of specific values **/
 };
 
@@ -73,6 +98,7 @@ struct sysinfo {
 	uint32_t cpu;		/* CPUID value */
 
 	bool dq_pins_interleaved;
+	bool restore_mrs;
 
 	/** TODO: ECC support untested **/
 	bool is_ecc;
@@ -162,6 +188,11 @@ struct sysinfo {
 	union tc_bank_rank_b_reg tc_bankrank_b[NUM_CHANNELS];
 	union tc_bank_rank_c_reg tc_bankrank_c[NUM_CHANNELS];
 	union tc_bank_rank_d_reg tc_bankrank_d[NUM_CHANNELS];
+
+	uint16_t mr0[NUM_CHANNELS][NUM_SLOTS];
+	uint16_t mr1[NUM_CHANNELS][NUM_SLOTS];
+	uint16_t mr2[NUM_CHANNELS][NUM_SLOTS];
+	uint16_t mr3[NUM_CHANNELS][NUM_SLOTS];
 };
 
 static inline bool is_hsw_ult(void)
@@ -197,6 +228,53 @@ static inline void clear_data_offset_train_all(struct sysinfo *ctrl)
 	memset(ctrl->data_offset_train, 0, sizeof(ctrl->data_offset_train));
 }
 
+/* Number of ticks to wait in units of 69.841279 ns (citation needed) */
+static inline void tick_delay(const uint32_t delay)
+{
+	/* Just perform reads to a random register */
+	for (uint32_t start = 0; start <= delay; start++)
+		mchbar_read32(REUT_ERR_DATA_STATUS);
+}
+
+/*
+ * 64-bit MCHBAR registers need to be accessed atomically. If one uses
+ * two 32-bit ops instead, there will be problems with the REUT's CADB
+ * (Command Address Data Buffer): hardware automatically advances the
+ * pointer into the register file after a write to the input register.
+ */
+static inline uint64_t mchbar_read64(const uintptr_t x)
+{
+	const uint64_t *offset = (uint64_t *)(CONFIG_FIXED_MCHBAR_MMIO_BASE + x);
+	uint64_t mmxsave, v;
+	asm volatile (
+		"\n\t movq %%mm0, %0"
+		"\n\t movq %2, %%mm0"
+		"\n\t movq %%mm0, %1"
+		"\n\t movq %3, %%mm0"
+		"\n\t emms"
+		: "=m"(mmxsave),
+		  "=m"(v)
+		: "m"(offset[0]),
+		  "m"(mmxsave));
+	return v;
+}
+
+static inline void mchbar_write64(const uintptr_t x, const uint64_t v)
+{
+	const uint64_t *offset = (uint64_t *)(CONFIG_FIXED_MCHBAR_MMIO_BASE + x);
+	uint64_t mmxsave;
+	asm volatile (
+		"\n\t movq %%mm0, %0"
+		"\n\t movq %2, %%mm0"
+		"\n\t movq %%mm0, %1"
+		"\n\t movq %3, %%mm0"
+		"\n\t emms"
+		: "=m"(mmxsave)
+		: "m"(offset[0]),
+		  "m"(v),
+		  "m"(mmxsave));
+}
+
 void raminit_main(enum raminit_boot_mode bootmode);
 
 enum raminit_status collect_spd_info(struct sysinfo *ctrl);
@@ -204,6 +282,7 @@ enum raminit_status initialise_mpll(struct sysinfo *ctrl);
 enum raminit_status convert_timings(struct sysinfo *ctrl);
 enum raminit_status configure_mc(struct sysinfo *ctrl);
 enum raminit_status configure_memory_map(struct sysinfo *ctrl);
+enum raminit_status do_jedec_init(struct sysinfo *ctrl);
 
 void configure_timings(struct sysinfo *ctrl);
 void configure_refresh(struct sysinfo *ctrl);
@@ -216,7 +295,27 @@ uint32_t get_tXS_offset(uint32_t mem_clock_mhz);
 uint32_t get_tZQOPER(uint32_t mem_clock_mhz, bool lpddr);
 uint32_t get_tZQCS(uint32_t mem_clock_mhz, bool lpddr);
 
+enum raminit_status io_reset(void);
 enum raminit_status wait_for_first_rcomp(void);
+
+uint16_t encode_ddr3_rttnom(uint32_t rttnom);
+void ddr3_program_mr1(struct sysinfo *ctrl, uint8_t wl_mode, uint8_t q_off);
+enum raminit_status ddr3_jedec_init(struct sysinfo *ctrl);
+
+void reut_issue_mrs(
+	struct sysinfo *ctrl,
+	uint8_t channel,
+	uint8_t rankmask,
+	uint8_t mr,
+	uint16_t val);
+
+void reut_issue_mrs_all(
+	struct sysinfo *ctrl,
+	uint8_t channel,
+	uint8_t mr,
+	const uint16_t val[NUM_SLOTS]);
+
+enum raminit_status reut_issue_zq(struct sysinfo *ctrl, uint8_t chanmask, uint8_t zq_type);
 
 uint8_t get_rx_bias(const struct sysinfo *ctrl);
 

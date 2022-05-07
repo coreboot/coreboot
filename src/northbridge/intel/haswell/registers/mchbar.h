@@ -96,14 +96,35 @@
 
 #define SC_WR_ADD_DELAY_ch(ch)			_MCMAIN_C(0x40d0, ch)
 
+#define REUT_ch_MISC_CKE_CTRL(ch)		_MCMAIN_C(0x4190, ch)
+
+#define REUT_ch_PAT_CADB_MRS(ch)		_MCMAIN_C(0x419c, ch)
+
+#define REUT_ch_PAT_CADB_WRITE_PTR(ch)		_MCMAIN_C(0x41bc, ch)
+#define REUT_ch_PAT_CADB_PROG(ch)		_MCMAIN_C(0x41c0, ch)
+
 #define TC_ZQCAL_ch(ch)				_MCMAIN_C(0x4290, ch)
 #define TC_RFP_ch(ch)				_MCMAIN_C(0x4294, ch)
 #define TC_RFTP_ch(ch)				_MCMAIN_C(0x4298, ch)
+#define TC_MR2_SHADOW_ch(ch)			_MCMAIN_C(0x429c, ch)
 #define MC_INIT_STATE_ch(ch)			_MCMAIN_C(0x42a0, ch)
 #define TC_SRFTP_ch(ch)				_MCMAIN_C(0x42a4, ch)
 
+#define REUT_GLOBAL_ERR				0x4804
+
+#define REUT_ch_SEQ_CFG(ch)			(0x48a8 + 8 * (ch))
+
+#define REUT_ch_SEQ_CTL(ch)			(0x48b8 + 4 * (ch))
+
 /* MCMAIN broadcast */
 #define MCSCHEDS_CBIT		0x4c20
+
+#define MCSCHEDS_DFT_MISC	0x4c30
+
+#define REUT_ERR_DATA_STATUS	0x4ce0
+
+#define REUT_MISC_CKE_CTRL	0x4d90
+#define REUT_MISC_ODT_CTRL	0x4d94
 
 #define MCMNTS_SC_WDBWM		0x4f8c
 

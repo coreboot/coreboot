@@ -335,6 +335,18 @@ union mcscheds_cbit_reg {
 	uint32_t raw;
 };
 
+union reut_pat_cl_mux_lmn_reg {
+	struct __packed {
+		uint32_t l_data_select : 1; // Bits  0:0
+		uint32_t en_sweep_freq : 1; // Bits  1:1
+		uint32_t               : 6; // Bits  7:2
+		uint32_t l_counter     : 8; // Bits 15:8
+		uint32_t m_counter     : 8; // Bits 23:16
+		uint32_t n_counter     : 8; // Bits 31:24
+	};
+	uint32_t raw;
+};
+
 union reut_pat_cadb_prog_reg {
 	struct __packed {
 		uint32_t addr : 16; // Bits 15:0
@@ -435,6 +447,39 @@ union reut_misc_odt_ctrl_reg {
 		uint32_t odt_on           :  4; // Bits 19:16
 		uint32_t                  : 11; // Bits 30:20
 		uint32_t mpr_train_ddr_on :  1; // Bits 31:31
+	};
+	uint32_t raw;
+};
+
+union ldat_pdat_reg {
+	struct __packed {
+		uint32_t fast_addr : 12; // Bits 11:0
+		uint32_t           :  4; // Bits 15:12
+		uint32_t addr_en   :  1; // Bits 16:16
+		uint32_t seq_en    :  1; // Bits 17:17
+		uint32_t pol_0     :  1; // Bits 18:18
+		uint32_t pol_1     :  1; // Bits 19:19
+		uint32_t cmd_a     :  4; // Bits 23:20
+		uint32_t cmd_b     :  4; // Bits 27:24
+		uint32_t cmd_c     :  4; // Bits 31:28
+	};
+	uint32_t raw;
+};
+
+union ldat_sdat_reg {
+	struct __packed {
+		uint32_t bank_sel   : 4; // Bits  3:0
+		uint32_t            : 1; // Bits  4:4
+		uint32_t array_sel  : 5; // Bits  9:5
+		uint32_t cmp        : 1; // Bits 10:10
+		uint32_t replicate  : 1; // Bits 11:11
+		uint32_t dword      : 4; // Bits 15:12
+		uint32_t mode       : 2; // Bits 17:16
+		uint32_t mpmap      : 6; // Bits 23:18
+		uint32_t mpb_offset : 4; // Bits 27:24
+		uint32_t stage_en   : 1; // Bits 28:28
+		uint32_t shadow     : 2; // Bits 30:29
+		uint32_t            : 1; // Bits 31:31
 	};
 	uint32_t raw;
 };

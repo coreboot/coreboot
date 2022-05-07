@@ -94,6 +94,11 @@
 #define TC_BANK_RANK_D_ch(ch)			_MCMAIN_C(0x4014, ch)
 #define SC_ROUNDT_LAT_ch(ch)			_MCMAIN_C(0x4024, ch)
 
+#define REUT_ch_PAT_WDB_CL_MUX_WR_x(ch, x)	_MCMAIN_C_X(0x4048, ch, x) /* x in 0 .. 2 */
+#define REUT_ch_PAT_WDB_CL_MUX_RD_x(ch, x)	_MCMAIN_C_X(0x4054, ch, x) /* x in 0 .. 2 */
+
+#define REUT_ch_PAT_WDB_CL_MUX_LMN(ch)		_MCMAIN_C(0x4078, ch)
+
 #define SC_WR_ADD_DELAY_ch(ch)			_MCMAIN_C(0x40d0, ch)
 
 #define REUT_ch_MISC_CKE_CTRL(ch)		_MCMAIN_C(0x4190, ch)
@@ -109,6 +114,10 @@
 #define TC_MR2_SHADOW_ch(ch)			_MCMAIN_C(0x429c, ch)
 #define MC_INIT_STATE_ch(ch)			_MCMAIN_C(0x42a0, ch)
 #define TC_SRFTP_ch(ch)				_MCMAIN_C(0x42a4, ch)
+
+#define QCLK_ch_LDAT_PDAT(ch)			_MCMAIN_C(0x42d0, ch)
+#define QCLK_ch_LDAT_SDAT(ch)			_MCMAIN_C(0x42d4, ch)
+#define QCLK_ch_LDAT_DATA_IN_x(ch, x)		_MCMAIN_C_X(0x42dc, ch, x) /* x in 0 .. 1 */
 
 #define REUT_GLOBAL_ERR				0x4804
 

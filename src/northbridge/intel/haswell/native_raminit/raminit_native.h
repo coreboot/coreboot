@@ -36,6 +36,13 @@
 
 #define RTTNOM_MASK		(BIT(9) | BIT(6) | BIT(2))
 
+#define BASIC_VA_PAT_SPREAD_8	0x01010101
+
+#define WDB_CACHE_LINE_SIZE	8
+
+#define NUM_WDB_CL_MUX_SEEDS	3
+#define NUM_CADB_MUX_SEEDS	3
+
 /* ZQ calibration types */
 enum {
 	ZQ_INIT,	/* DDR3: ZQCL with tZQinit, LPDDR3: ZQ Init  with tZQinit  */
@@ -316,6 +323,23 @@ void reut_issue_mrs_all(
 	const uint16_t val[NUM_SLOTS]);
 
 enum raminit_status reut_issue_zq(struct sysinfo *ctrl, uint8_t chanmask, uint8_t zq_type);
+
+void write_wdb_fixed_pat(
+	const struct sysinfo *ctrl,
+	const uint8_t patterns[],
+	const uint8_t pat_mask[],
+	uint8_t spread,
+	uint16_t start);
+
+void write_wdb_va_pat(
+	const struct sysinfo *ctrl,
+	uint32_t agg_mask,
+	uint32_t vic_mask,
+	uint8_t vic_rot,
+	uint16_t start);
+
+void program_wdb_lfsr(const struct sysinfo *ctrl, bool cleanup);
+void setup_wdb(const struct sysinfo *ctrl);
 
 uint8_t get_rx_bias(const struct sysinfo *ctrl);
 

@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <console/console.h>
 #include <cpu/intel/haswell/haswell.h>
+#include <delay.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/haswell/chip.h>
 #include <northbridge/intel/haswell/haswell.h>
@@ -12,6 +13,39 @@
 #include <types.h>
 
 #include "raminit_native.h"
+
+static enum raminit_status pre_training(struct sysinfo *ctrl)
+{
+	/* Skip on S3 resume */
+	if (ctrl->bootmode == BOOTMODE_S3)
+		return RAMINIT_STATUS_SUCCESS;
+
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+		for (uint8_t slot = 0; slot < NUM_SLOTS; slot++) {
+			if (!rank_in_ch(ctrl, slot + slot, channel))
+				continue;
+
+			printk(RAM_DEBUG, "C%uS%u:\n", channel, slot);
+			printk(RAM_DEBUG, "\tMR0: 0x%04x\n", ctrl->mr0[channel][slot]);
+			printk(RAM_DEBUG, "\tMR1: 0x%04x\n", ctrl->mr1[channel][slot]);
+			printk(RAM_DEBUG, "\tMR2: 0x%04x\n", ctrl->mr2[channel][slot]);
+			printk(RAM_DEBUG, "\tMR3: 0x%04x\n", ctrl->mr3[channel][slot]);
+			printk(RAM_DEBUG, "\n");
+		}
+		if (ctrl->is_ecc) {
+			union mad_dimm_reg mad_dimm = {
+				.raw = mchbar_read32(MAD_DIMM(channel)),
+			};
+			/* Enable ECC I/O */
+			mad_dimm.ecc_mode = 1;
+			mchbar_write32(MAD_DIMM(channel), mad_dimm.raw);
+			/* Wait 4 usec after enabling the ECC I/O, needed by HW */
+			udelay(4);
+		}
+	}
+	setup_wdb(ctrl);
+	return RAMINIT_STATUS_SUCCESS;
+}
 
 struct task_entry {
 	enum raminit_status (*task)(struct sysinfo *);
@@ -26,6 +60,7 @@ static const struct task_entry cold_boot[] = {
 	{ configure_mc,                                           true, "CONFMC",     },
 	{ configure_memory_map,                                   true, "MEMMAP",     },
 	{ do_jedec_init,                                          true, "JEDECINIT",  },
+	{ pre_training,                                           true, "PRETRAIN",   },
 };
 
 /* Return a generic stepping value to make stepping checks simpler */

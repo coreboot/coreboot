@@ -10,5 +10,6 @@ romstage-y += memory_map.c
 romstage-y += raminit_main.c
 romstage-y += raminit_native.c
 romstage-y += reut.c
+romstage-y += setup_wdb.c
 romstage-y += spd_bitmunching.c
 romstage-y += timings_refresh.c

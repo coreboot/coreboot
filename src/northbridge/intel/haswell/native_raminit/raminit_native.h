@@ -448,6 +448,8 @@ enum raminit_status do_jedec_init(struct sysinfo *ctrl);
 enum raminit_status train_receive_enable(struct sysinfo *ctrl);
 enum raminit_status train_read_mpr(struct sysinfo *ctrl);
 enum raminit_status train_jedec_write_leveling(struct sysinfo *ctrl);
+enum raminit_status activate_mc(struct sysinfo *ctrl);
+enum raminit_status raminit_done(struct sysinfo *ctrl);
 
 void configure_timings(struct sysinfo *ctrl);
 void configure_refresh(struct sysinfo *ctrl);

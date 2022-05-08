@@ -64,6 +64,8 @@ static const struct task_entry cold_boot[] = {
 	{ train_receive_enable,                                   true, "RCVET",      },
 	{ train_read_mpr,                                         true, "RDMPRT",     },
 	{ train_jedec_write_leveling,                             true, "JWRL",       },
+	{ activate_mc,                                            true, "ACTIVATE",   },
+	{ raminit_done,                                           true, "RAMINITEND", },
 };
 
 /* Return a generic stepping value to make stepping checks simpler */
@@ -144,7 +146,4 @@ void raminit_main(const enum raminit_boot_mode bootmode)
 
 	if (status != RAMINIT_STATUS_SUCCESS)
 		die("Memory initialization was met with utmost failure and misery\n");
-
-	/** TODO: Implement the required magic **/
-	die("NATIVE RAMINIT: More Magic (tm) required.\n");
 }

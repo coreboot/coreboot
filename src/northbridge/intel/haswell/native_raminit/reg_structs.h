@@ -294,6 +294,18 @@ union ddr_cke_ctl_controls_reg {
 	uint32_t raw;
 };
 
+union ddr_scramble_reg {
+	struct __packed {
+		uint32_t scram_en    :  1; // Bits  0:0
+		uint32_t scram_key   : 16; // Bits 16:1
+		uint32_t clk_gate_ab :  2; // Bits 18:17
+		uint32_t clk_gate_c  :  2; // Bits 20:19
+		uint32_t en_dbi_ab   :  1; // Bits 21:21
+		uint32_t             : 10; // Bits 31:17
+	};
+	uint32_t raw;
+};
+
 union ddr_scram_misc_control_reg {
 	struct __packed {
 		uint32_t wl_wake_cycles       :  2; // Bits  1:0

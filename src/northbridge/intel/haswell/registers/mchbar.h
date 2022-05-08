@@ -20,6 +20,7 @@
 
 #define DDR_DATA_TRAIN_FEEDBACK(ch, byte)	_DDRIO_C_R_B(0x0054, ch, 0, byte)
 
+#define DQ_CONTROL_1(ch, byte)			_DDRIO_C_R_B(0x0060, ch, 0, byte)
 #define DQ_CONTROL_2(ch, byte)			_DDRIO_C_R_B(0x0064, ch, 0, byte)
 #define DDR_DATA_OFFSET_TRAIN_ch_b(ch, byte)	_DDRIO_C_R_B(0x0070, ch, 0, byte)
 #define DQ_CONTROL_0(ch, byte)			_DDRIO_C_R_B(0x0074, ch, 0, byte)
@@ -147,6 +148,8 @@
 #define QCLK_ch_LDAT_SDAT(ch)			_MCMAIN_C(0x42d4, ch)
 #define QCLK_ch_LDAT_DATA_IN_x(ch, x)		_MCMAIN_C_X(0x42dc, ch, x) /* x in 0 .. 1 */
 
+#define PM_THRT_CKE_MIN_ch(ch)			_MCMAIN_C(0x4328, ch)
+
 #define REUT_GLOBAL_CTL				0x4800
 #define REUT_GLOBAL_ERR				0x4804
 
@@ -175,6 +178,8 @@
 
 #define MCSCHEDS_DFT_MISC	0x4c30
 
+#define PM_PDWN_CONFIG		0x4cb0
+
 #define REUT_ERR_DATA_STATUS	0x4ce0
 
 #define REUT_MISC_CKE_CTRL	0x4d90
@@ -186,8 +191,10 @@
 #define MAD_CHNL		0x5000 /* Address Decoder Channel Configuration */
 #define MAD_DIMM(ch)		(0x5004 + (ch) * 4)
 #define MAD_ZR			0x5014
+#define MCDECS_CBIT		0x501c
 #define MC_INIT_STATE_G		0x5030
 #define MRC_REVISION		0x5034 /* MRC Revision */
+#define PM_SREF_CONFIG		0x5060
 
 #define RCOMP_TIMER		0x5084
 

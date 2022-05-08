@@ -60,6 +60,9 @@
 /* Specified in PI ticks. 64 PI ticks == 1 qclk */
 #define tDQSCK_DRIFT		64
 
+/* Maximum additional latency */
+#define MAX_ADD_DELAY		2
+
 enum margin_parameter {
 	RcvEna,
 	RdT,
@@ -216,6 +219,7 @@ enum raminit_status {
 	RAMINIT_STATUS_REUT_ERROR,
 	RAMINIT_STATUS_RCVEN_FAILURE,
 	RAMINIT_STATUS_RMPR_FAILURE,
+	RAMINIT_STATUS_JWRL_FAILURE,
 	RAMINIT_STATUS_UNSPECIFIED_ERROR, /** TODO: Deprecated in favor of specific values **/
 };
 
@@ -381,6 +385,11 @@ static inline uint32_t get_data_train_feedback(const uint8_t channel, const uint
 	return mchbar_read32(DDR_DATA_TRAIN_FEEDBACK(channel, byte));
 }
 
+static inline uint16_t get_byte_group_errors(const uint8_t channel)
+{
+	return mchbar_read32(4 + REUT_ch_ERR_MISC_STATUS(channel)) & 0x1ff;
+}
+
 /* Number of ticks to wait in units of 69.841279 ns (citation needed) */
 static inline void tick_delay(const uint32_t delay)
 {
@@ -438,6 +447,7 @@ enum raminit_status configure_memory_map(struct sysinfo *ctrl);
 enum raminit_status do_jedec_init(struct sysinfo *ctrl);
 enum raminit_status train_receive_enable(struct sysinfo *ctrl);
 enum raminit_status train_read_mpr(struct sysinfo *ctrl);
+enum raminit_status train_jedec_write_leveling(struct sysinfo *ctrl);
 
 void configure_timings(struct sysinfo *ctrl);
 void configure_refresh(struct sysinfo *ctrl);

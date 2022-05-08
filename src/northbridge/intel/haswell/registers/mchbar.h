@@ -121,6 +121,8 @@
 
 #define REUT_ch_ERR_DATA_MASK(ch)		_MCMAIN_C(0x40d8, ch)
 
+#define REUT_ch_ERR_MISC_STATUS(ch)		_MCMAIN_C(0x40e8, ch)
+
 #define REUT_ch_MISC_CKE_CTRL(ch)		_MCMAIN_C(0x4190, ch)
 #define REUT_ch_MISC_ODT_CTRL(ch)		_MCMAIN_C(0x4194, ch)
 #define REUT_ch_MISC_PAT_CADB_CTRL(ch)		_MCMAIN_C(0x4198, ch)

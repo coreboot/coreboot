@@ -63,6 +63,7 @@ static const struct task_entry cold_boot[] = {
 	{ pre_training,                                           true, "PRETRAIN",   },
 	{ train_receive_enable,                                   true, "RCVET",      },
 	{ train_read_mpr,                                         true, "RDMPRT",     },
+	{ train_jedec_write_leveling,                             true, "JWRL",       },
 };
 
 /* Return a generic stepping value to make stepping checks simpler */

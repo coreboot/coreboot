@@ -10,6 +10,7 @@ all-y += i2c.c
 all-y += pmutil.c
 all-y += spi.c
 all-y += uart.c
+all-y += gpio.c
 
 bootblock-y += bootblock/bootblock.c
 bootblock-y += bootblock/ioe_die.c
@@ -44,7 +45,9 @@ ramstage-y += systemagent.c
 ramstage-y += tcss.c
 ramstage-y += xhci.c
 ramstage-y += soc_info.c
+
 smm-y += elog.c
+smm-y += gpio.c
 smm-y += p2sb.c
 smm-y += pmutil.c
 smm-y += smihandler.c

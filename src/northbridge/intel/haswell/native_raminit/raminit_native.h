@@ -28,6 +28,8 @@
 /* Always use 12 legs for emphasis (not trained) */
 #define TXEQFULLDRV		(3 << 4)
 
+#define LOOPCOUNT_INFINITE	0xff
+
 /* DDR3 mode register bits */
 #define MR0_DLL_RESET		BIT(8)
 
@@ -213,6 +215,7 @@ enum raminit_status {
 	RAMINIT_STATUS_POLL_TIMEOUT,
 	RAMINIT_STATUS_REUT_ERROR,
 	RAMINIT_STATUS_RCVEN_FAILURE,
+	RAMINIT_STATUS_RMPR_FAILURE,
 	RAMINIT_STATUS_UNSPECIFIED_ERROR, /** TODO: Deprecated in favor of specific values **/
 };
 
@@ -434,6 +437,7 @@ enum raminit_status configure_mc(struct sysinfo *ctrl);
 enum raminit_status configure_memory_map(struct sysinfo *ctrl);
 enum raminit_status do_jedec_init(struct sysinfo *ctrl);
 enum raminit_status train_receive_enable(struct sysinfo *ctrl);
+enum raminit_status train_read_mpr(struct sysinfo *ctrl);
 
 void configure_timings(struct sysinfo *ctrl);
 void configure_refresh(struct sysinfo *ctrl);

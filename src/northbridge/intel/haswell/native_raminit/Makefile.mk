@@ -16,4 +16,5 @@ romstage-y += setup_wdb.c
 romstage-y += spd_bitmunching.c
 romstage-y += testing_io.c
 romstage-y += timings_refresh.c
+romstage-y += train_read_mpr.c
 romstage-y += train_receive_enable.c

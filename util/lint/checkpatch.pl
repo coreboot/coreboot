@@ -398,18 +398,6 @@ if ($#ARGV < 0) {
 # skip TAB size 1 to avoid additional checks on $tabsize - 1
 die "$P: Invalid TAB size: $tabsize\n" if ($tabsize < 2);
 
-if ($color =~ /^[01]$/) {
-	$color = !$color;
-} elsif ($color =~ /^always$/i) {
-	$color = 1;
-} elsif ($color =~ /^never$/i) {
-	$color = 0;
-} elsif ($color =~ /^auto$/i) {
-	$color = (-t STDOUT);
-} else {
-	die "Invalid color mode: $color\n";
-}
-
 sub hash_save_array_words {
 	my ($hashRef, $arrayRef) = @_;
 

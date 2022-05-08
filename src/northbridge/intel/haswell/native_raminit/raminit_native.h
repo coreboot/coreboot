@@ -36,6 +36,18 @@
 
 #define RTTNOM_MASK		(BIT(9) | BIT(6) | BIT(2))
 
+/* Margin parameter limits */
+#define MAX_POSSIBLE_TIME	31
+#define MAX_POSSIBLE_VREF	54
+
+#define MAX_POSSIBLE_BOTH	MAX_POSSIBLE_VREF
+
+#define MIN_TIME		(-MAX_POSSIBLE_TIME)
+#define MAX_TIME		(MAX_POSSIBLE_TIME)
+
+#define MIN_VREF		(-MAX_POSSIBLE_VREF)
+#define MAX_VREF		(MAX_POSSIBLE_VREF)
+
 #define BASIC_VA_PAT_SPREAD_8	0x01010101
 
 #define WDB_CACHE_LINE_SIZE	8
@@ -45,6 +57,14 @@
 
 /* Specified in PI ticks. 64 PI ticks == 1 qclk */
 #define tDQSCK_DRIFT		64
+
+enum margin_parameter {
+	RcvEna,
+	RdT,
+	WrT,
+	WrDqsT,
+	RdV,
+};
 
 /* ZQ calibration types */
 enum {
@@ -514,6 +534,25 @@ void download_regfile(
 	uint8_t byte,
 	bool read_rf_rd,
 	bool read_rf_wr);
+
+void change_margin(
+	struct sysinfo *ctrl,
+	const enum margin_parameter param,
+	const int32_t value0,
+	const bool en_multicast,
+	const uint8_t channel,
+	const uint8_t rank,
+	const uint8_t byte,
+	const bool update_ctrl,
+	const enum regfile_mode regfile);
+
+void change_1d_margin_multicast(
+	struct sysinfo *ctrl,
+	const enum margin_parameter param,
+	const int32_t value0,
+	const uint8_t rank,
+	const bool update_ctrl,
+	const enum regfile_mode regfile);
 
 uint8_t get_rx_bias(const struct sysinfo *ctrl);
 

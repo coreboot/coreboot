@@ -21,6 +21,7 @@
 #define DDR_DATA_TRAIN_FEEDBACK(ch, byte)	_DDRIO_C_R_B(0x0054, ch, 0, byte)
 
 #define DQ_CONTROL_2(ch, byte)			_DDRIO_C_R_B(0x0064, ch, 0, byte)
+#define DDR_DATA_OFFSET_TRAIN_ch_b(ch, byte)	_DDRIO_C_R_B(0x0070, ch, 0, byte)
 #define DQ_CONTROL_0(ch, byte)			_DDRIO_C_R_B(0x0074, ch, 0, byte)
 
 /* DDR CKE per-channel */

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <assert.h>
 #include <commonlib/bsd/clamp.h>
 #include <console/console.h>
 #include <delay.h>
@@ -151,4 +152,139 @@ void download_regfile(
 	ddr_data_control_0.read_rf_wr   = read_rf_wr;
 	ddr_data_control_0.read_rf_rank = phys_rank;
 	mchbar_write32(reg, ddr_data_control_0.raw);
+}
+
+static void update_data_offset_train(
+	struct sysinfo *ctrl,
+	const uint8_t param,
+	const uint8_t en_multicast,
+	const uint8_t channel_in,
+	const uint8_t rank,
+	const uint8_t byte_in,
+	const bool update_ctrl,
+	const enum regfile_mode regfile,
+	const uint32_t value)
+{
+	bool is_rd = false;
+	bool is_wr = false;
+	switch (param) {
+	case RdT:
+	case RdV:
+	case RcvEna:
+		is_rd = true;
+		break;
+	case WrT:
+	case WrDqsT:
+		is_wr = true;
+		break;
+	default:
+		die("%s: Invalid margin parameter %u\n", __func__, param);
+	}
+	if (en_multicast) {
+		mchbar_write32(DDR_DATA_OFFSET_TRAIN, value);
+		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+			if (!does_ch_exist(ctrl, channel))
+				continue;
+
+			download_regfile(ctrl, channel, true, rank, regfile, 0, is_rd, is_wr);
+			if (update_ctrl) {
+				for (uint8_t byte = 0; byte < ctrl->lanes; byte++)
+					ctrl->data_offset_train[channel][byte] = value;
+			}
+		}
+	} else {
+		mchbar_write32(DDR_DATA_OFFSET_TRAIN_ch_b(channel_in, byte_in), value);
+		download_regfile(ctrl, channel_in, false, rank, regfile, byte_in, is_rd, is_wr);
+		if (update_ctrl)
+			ctrl->data_offset_train[channel_in][byte_in] = value;
+	}
+}
+
+static uint32_t get_max_margin(const enum margin_parameter param)
+{
+	switch (param) {
+	case RcvEna:
+	case RdT:
+	case WrT:
+	case WrDqsT:
+		return MAX_POSSIBLE_TIME;
+	case RdV:
+		return MAX_POSSIBLE_VREF;
+	default:
+		die("%s: Invalid margin parameter %u\n", __func__, param);
+	}
+}
+
+void change_margin(
+	struct sysinfo *ctrl,
+	const enum margin_parameter param,
+	const int32_t value0,
+	const bool en_multicast,
+	const uint8_t channel,
+	const uint8_t rank,
+	const uint8_t byte,
+	const bool update_ctrl,
+	const enum regfile_mode regfile)
+{
+	/** FIXME: Remove this **/
+	if (rank == 0xff)
+		die("%s: rank is 0xff\n", __func__);
+
+	if (!en_multicast && !does_ch_exist(ctrl, channel))
+		die("%s: Tried to change margin of empty channel %u\n", __func__, channel);
+
+	const uint32_t max_value = get_max_margin(param);
+	const int32_t v0 = clamp_s32(-max_value, value0, max_value);
+
+	union ddr_data_offset_train_reg ddr_data_offset_train = {
+		.raw = en_multicast ? 0 : ctrl->data_offset_train[channel][byte],
+	};
+	bool update_offset_train = false;
+	switch (param) {
+	case RcvEna:
+		ddr_data_offset_train.rcven = v0;
+		update_offset_train = true;
+		break;
+	case RdT:
+		ddr_data_offset_train.rx_dqs = v0;
+		update_offset_train = true;
+		break;
+	case WrT:
+		ddr_data_offset_train.tx_dq = v0;
+		update_offset_train = true;
+		break;
+	case WrDqsT:
+		ddr_data_offset_train.tx_dqs = v0;
+		update_offset_train = true;
+		break;
+	case RdV:
+		ddr_data_offset_train.vref = v0;
+		update_offset_train = true;
+		break;
+	default:
+		die("%s: Invalid margin parameter %u\n", __func__, param);
+	}
+	if (update_offset_train) {
+		update_data_offset_train(
+			ctrl,
+			param,
+			en_multicast,
+			channel,
+			rank,
+			byte,
+			update_ctrl,
+			regfile,
+			ddr_data_offset_train.raw);
+	}
+}
+
+void change_1d_margin_multicast(
+	struct sysinfo *ctrl,
+	const enum margin_parameter param,
+	const int32_t value0,
+	const uint8_t rank,
+	const bool update_ctrl,
+	const enum regfile_mode regfile)
+{
+	change_margin(ctrl, param, value0, true, 0, rank, 0, update_ctrl, regfile);
 }

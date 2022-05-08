@@ -25,6 +25,18 @@ union ddr_data_tx_train_rank_reg {
 	uint32_t raw;
 };
 
+union ddr_data_offset_train_reg {
+	struct __packed {
+		int32_t rcven  : 6; // Bits  5:0
+		int32_t rx_dqs : 6; // Bits 11:6
+		int32_t tx_dq  : 6; // Bits 17:12
+		int32_t tx_dqs : 6; // Bits 23:18
+		int32_t vref   : 7; // Bits 30:24
+		int32_t        : 1; // Bits 31:31
+	};
+	uint32_t raw;
+};
+
 union ddr_data_control_0_reg {
 	struct __packed {
 		uint32_t rx_training_mode      : 1; // Bits  0:0

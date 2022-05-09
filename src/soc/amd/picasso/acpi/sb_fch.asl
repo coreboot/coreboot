@@ -34,7 +34,7 @@ Device (GPIO)
 				ResourceConsumer,
 				Level,
 				ActiveLow,
-				Exclusive, , , IRQR)
+				Shared, , , IRQR)
 			{ 0 }
 			Memory32Fixed (ReadWrite, ACPIMMIO_GPIO0_BASE, 0x400)
 		}

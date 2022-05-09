@@ -31,6 +31,16 @@ chip soc/intel/alderlake
 	# eMMC HS400
 	register "emmc_enable_hs400_mode" = "1"
 
+	#eMMC DLL tuning parameters
+	#Adding the intermediate eMMC DLL tuning override values
+	#TODO SoC implementation with the finalized verified values from EV Team
+	register "common_soc_config.emmc_dll.emmc_tx_cmd_cntl" = "0x505"
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl1" = "0x909"
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl2" = "0x1C2A2828"
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl1" = "0x1C1B1D3C"
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x10049"
+	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x11515"
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C1
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# USB2_A0

@@ -130,7 +130,6 @@ chip soc/intel/jasperlake
 				device i2c 15 on end
 			end
 		end # I2C 0
-		device pci 17.0 off end # SATA. Baseboard/devicetree.cb is off
 		device pci 19.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
@@ -198,8 +197,6 @@ chip soc/intel/jasperlake
 				device i2c 28 on end
 			end
 		end # I2C 5
-		device pci 1c.6 off end # PCI Express Root Port 7 / SATA_0. Baseboard/devicetree.cb is off
-		device pci 1c.7 off end # PCI Express Root Port 8 / SATA_1
 		device pci 1f.3 on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98360A""

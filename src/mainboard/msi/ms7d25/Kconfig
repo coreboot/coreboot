@@ -49,4 +49,26 @@ config CBFS_SIZE
 	hex
 	default 0x1000000
 
+config VBOOT
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_FWMP
+	select GBB_FLAG_DISABLE_LID_SHUTDOWN
+	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
+	select VBOOT_ALWAYS_ENABLE_DISPLAY
+	select VBOOT_NO_BOARD_SUPPORT
+	select HAS_RECOVERY_MRC_CACHE
+
+config VBOOT_SLOTS_RW_AB
+	default y if VBOOT
+
+config FMDFILE
+	string
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab.fmd" if VBOOT && VBOOT_SLOTS_RW_AB
+
+# gen_test_hwid.sh script doesn't like parentheses in the MAINBOARD_PART_NUMBER
+# Override the GBB_HWID
+config GBB_HWID
+	string
+	default "MSI_MS7D25"
+
 endif

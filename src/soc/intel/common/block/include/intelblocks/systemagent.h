@@ -77,8 +77,6 @@ uintptr_t sa_get_gsm_base(void);
 uintptr_t sa_get_tseg_base(void);
 /* API to get TSEG size */
 size_t sa_get_tseg_size(void);
-/* Fill MMIO resource above 4GB into GNVS */
-void sa_fill_gnvs(struct global_nvs *gnvs);
 /* API to lock PAM registers */
 void sa_lock_pam(void);
 
@@ -103,5 +101,8 @@ int soc_get_uncore_prmmr_base_and_mask(uint64_t *base, uint64_t *mask);
 
 /* Returns the maximum supported capacity of a channel as encoded by DDRSZ in MiB */
 uint32_t soc_systemagent_max_chan_capacity_mib(u8 capid0_a_ddrsz);
+
+/* To be called in the acpi_fill_ssdt op of the domain */
+void ssdt_set_above_4g_pci(const struct device *dev);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_SA_H */

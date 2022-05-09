@@ -22,6 +22,7 @@
 #include <intelblocks/gpio.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/systemagent.h>
 #include <option.h>
 #include <soc/cpu.h>
 #include <soc/heci.h>
@@ -202,6 +203,7 @@ static struct device_operations pci_domain_ops = {
 	.set_resources = pci_domain_set_resources,
 	.scan_bus = pci_domain_scan_bus,
 	.acpi_name = &soc_acpi_name,
+	.acpi_fill_ssdt = ssdt_set_above_4g_pci,
 };
 
 static struct device_operations cpu_bus_ops = {

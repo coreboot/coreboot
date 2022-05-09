@@ -10,6 +10,7 @@
 #include <intelblocks/irq.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/pcie_rp.h>
+#include <intelblocks/systemagent.h>
 #include <intelblocks/xdci.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
@@ -176,6 +177,7 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus         = &pci_domain_scan_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name        = &soc_acpi_name,
+	.acpi_fill_ssdt   = ssdt_set_above_4g_pci,
 #endif
 };
 

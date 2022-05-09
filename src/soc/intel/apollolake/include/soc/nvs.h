@@ -28,8 +28,6 @@ struct __packed global_nvs {
 	uint8_t		scdo; /* 0x2A - GPIO pad offset relative to the community */
 	uint8_t		uior; /* 0x2B - UART debug controller init on S3
 					 resume */
-	uint64_t	a4gb; /* 0x2C - 0x33 Base of above 4GB MMIO Resource */
-	uint64_t	a4gs; /* 0x34 - 0x3B Length of above 4GB MMIO Resource */
 };
 
 #endif	/* _SOC_APOLLOLAKE_NVS_H_ */

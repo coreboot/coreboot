@@ -24,9 +24,7 @@ struct __packed global_nvs {
 	u16	u2we; /* 0x2b - 0x2c USB2 Wake Enable Bitmap */
 	u16	u3we; /* 0x2d - 0x2e USB3 Wake Enable Bitmap */
 	u8	uior; /* 0x2f - UART debug controller init on S3 resume */
-	u64	a4gb; /* 0x30 - 0x37 Base of above 4GB MMIO Resource */
-	u64	a4gs; /* 0x38 - 0x3f Length of above 4GB MMIO Resource */
-	u64	hest_log_addr; /* 0x40 - 47 err log addr (used in SMM, not ASL code) */
+	u64	hest_log_addr; /* 0x30 - 0x37 err log addr (used in SMM, not ASL code) */
 };
 
 #endif

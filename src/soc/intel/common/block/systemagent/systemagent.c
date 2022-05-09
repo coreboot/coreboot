@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpigen.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
@@ -119,7 +120,7 @@ static const struct sa_mem_map_descriptor sa_memory_map[MAX_MAP_ENTRIES] = {
 };
 
 /* Read DRAM memory map register value through PCI configuration space */
-static void sa_read_map_entry(struct device *dev,
+static void sa_read_map_entry(const struct device *dev,
 		const struct sa_mem_map_descriptor *entry, uint64_t *result)
 {
 	uint64_t value = 0;
@@ -134,17 +135,6 @@ static void sa_read_map_entry(struct device *dev,
 	value = ALIGN_DOWN(value, 1 * MiB);
 
 	*result = value;
-}
-
-/* Fill MMIO resource above 4GB into GNVS */
-void sa_fill_gnvs(struct global_nvs *gnvs)
-{
-	struct device *sa_dev = pcidev_path_on_root(SA_DEVFN_ROOT);
-
-	sa_read_map_entry(sa_dev, &sa_memory_map[SA_TOUUD_REG], &gnvs->a4gb);
-	gnvs->a4gs = POWER_OF_2(cpu_phys_address_size()) - gnvs->a4gb;
-	printk(BIOS_DEBUG, "PCI space above 4GB MMIO is at 0x%llx, len = 0x%llx\n",
-	       gnvs->a4gb, gnvs->a4gs);
 }
 
 static void sa_get_mem_map(struct device *dev, uint64_t *values)
@@ -313,6 +303,25 @@ void sa_lock_pam(void)
 		return;
 
 	pci_or_config8(dev, PAM0, PAM_LOCK);
+}
+
+void ssdt_set_above_4g_pci(const struct device *dev)
+{
+	if (dev->path.type != DEVICE_PATH_DOMAIN)
+		return;
+
+	uint64_t touud;
+	sa_read_map_entry(pcidev_path_on_root(SA_DEVFN_ROOT), &sa_memory_map[SA_TOUUD_REG],
+			  &touud);
+	const uint64_t len = POWER_OF_2(cpu_phys_address_size()) - touud;
+
+	const char *scope = acpi_device_path(dev);
+	acpigen_write_scope(scope);
+	acpigen_write_name_qword("A4GB", touud);
+	acpigen_write_name_qword("A4GS", len);
+	acpigen_pop_len();
+
+	printk(BIOS_DEBUG, "PCI space above 4GB MMIO is at 0x%llx, len = 0x%llx\n", touud, len);
 }
 
 static struct device_operations systemagent_ops = {

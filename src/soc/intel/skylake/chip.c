@@ -17,6 +17,7 @@
 #include <intelblocks/power_limit.h>
 #include <intelblocks/xdci.h>
 #include <intelblocks/p2sb.h>
+#include <intelblocks/systemagent.h>
 #include <intelpch/lockdown.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/interrupt.h>
@@ -190,7 +191,8 @@ static struct device_operations pci_domain_ops = {
 	.set_resources    = &pci_domain_set_resources,
 	.scan_bus         = &pci_domain_scan_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_name		= &soc_acpi_name,
+	.acpi_name        = &soc_acpi_name,
+	.acpi_fill_ssdt   = ssdt_set_above_4g_pci,
 #endif
 };
 

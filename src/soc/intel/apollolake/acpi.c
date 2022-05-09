@@ -86,9 +86,6 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 		gnvs->scdp = gpio_get_pad_portid(cfg->sdcard_cd_gpio);
 		gnvs->scdo = gpio_acpi_pin(cfg->sdcard_cd_gpio);
 	}
-
-	/* Fill in Above 4GB MMIO resource */
-	sa_fill_gnvs(gnvs);
 }
 
 int soc_madt_sci_irq_polarity(int sci)

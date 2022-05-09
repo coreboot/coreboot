@@ -22,6 +22,9 @@ Device (MCHC)
 	}
 }
 
+External (A4GS, IntObj)
+External (A4GB, IntObj)
+
 /* Current Resource Settings */
 Method (_CRS, 0, Serialized)
 {

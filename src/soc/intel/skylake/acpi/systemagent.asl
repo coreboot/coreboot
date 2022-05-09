@@ -48,6 +48,9 @@ Device (MCHC)
 	}
 }
 
+External (A4GS, IntObj)
+External (A4GB, IntObj)
+
 Method (_CRS, 0, Serialized)
 {
 	Name (MCRS, ResourceTemplate ()

@@ -22,7 +22,5 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	U2WE,	16,	// 0x2b - 0x2c USB2 Wake Enable Bitmap
 	U3WE,	16,	// 0x2d - 0x2e USB3 Wake Enable Bitmap
 	UIOR,	8,	// 0x2f - UART debug controller init on S3 resume
-	A4GB,	64,	// 0x30 - 0x37 Base of above 4GB MMIO Resource
-	A4GS,	64,	// 0x38 - 0x3f Length of above 4GB MMIO Resource
-	,	64,	// 0x40 - 0x47 Hest log buffer (used in SMM, not ASL code)
+	,	64,	// 0x30 - 0x37 Hest log buffer (used in SMM, not ASL code)
 }

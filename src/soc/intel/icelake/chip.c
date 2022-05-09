@@ -8,6 +8,7 @@
 #include <intelblocks/cfg.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/itss.h>
+#include <intelblocks/systemagent.h>
 #include <intelblocks/xdci.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/itss.h>
@@ -124,9 +125,10 @@ static struct device_operations pci_domain_ops = {
 	.read_resources   = &pci_domain_read_resources,
 	.set_resources    = &pci_domain_set_resources,
 	.scan_bus         = &pci_domain_scan_bus,
-	#if CONFIG(HAVE_ACPI_TABLES)
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name        = &soc_acpi_name,
-	#endif
+	.acpi_fill_ssdt   = ssdt_set_above_4g_pci,
+#endif
 };
 
 static struct device_operations cpu_bus_ops = {

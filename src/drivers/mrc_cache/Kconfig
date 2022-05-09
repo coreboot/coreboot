@@ -46,7 +46,7 @@ config MRC_STASH_TO_CBMEM
 
 config MRC_SAVE_HASH_IN_TPM
 	bool "Save a hash of the MRC_CACHE data in TPM NVRAM"
-	depends on VBOOT_STARTS_IN_BOOTBLOCK && TPM2 && !TPM1
+	depends on VBOOT_STARTS_IN_BOOTBLOCK && TPM2 && !TPM1 && !VBOOT_MOCK_SECDATA
 	default y
 	help
 	  Store a hash of the MRC_CACHE training data in a TPM NVRAM

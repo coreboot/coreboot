@@ -157,6 +157,12 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref pcie_rp3 on
+			# Enable PCIE 3 using clk 4
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.clk_src = 4,
+				.clk_req = 4,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
 			chip drivers/net
 				register "customized_leds" = "0x05af"
 				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D2)"

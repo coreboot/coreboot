@@ -171,4 +171,12 @@ Device (SUPERIO_ID(PN, SUPERIO_PNP_LDN)) {
 		  Store (One, PNP_DEVICE_ACTIVE)
 		EXIT_CONFIG_MODE ()
 	}
+
+	/* This is used for _SRS. Since _DIS only disables the device
+	 * without changing the resources this works.
+	 */
+	Method (_PRS, 0)
+	{
+		return (_CRS)
+	}
 }

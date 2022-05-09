@@ -27,6 +27,7 @@ verstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 romstage-y += cbmem.c
 romstage-y += watchdog.c
 romstage-y += ../common/qclib.c
+romstage-y += qclib.c
 romstage-y += ../common/mmu.c
 romstage-y += mmu.c
 romstage-y += ../common/usb/usb.c
@@ -95,6 +96,14 @@ $(DCB_CBFS)-file := $(DCB_FILE)
 $(DCB_CBFS)-type := raw
 $(DCB_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(DCB_CBFS)
+
+################################################################################
+DCB_LONGSYS1P8_FILE := $(SC7180_BLOB)/boot/dcb_slow.bin
+DCB_LONGSYS1P8_CBFS := $(CONFIG_CBFS_PREFIX)/dcb_longsys1p8
+$(DCB_LONGSYS1P8_CBFS)-file := $(DCB_LONGSYS1P8_FILE)
+$(DCB_LONGSYS1P8_CBFS)-type := raw
+$(DCB_LONGSYS1P8_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(DCB_LONGSYS1P8_CBFS)
 
 ################################################################################
 AOP_FILE := $(SC7180_BLOB)/aop/aop.mbn

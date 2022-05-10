@@ -20,8 +20,7 @@
  * DOCUMENTATION:
  * Please document any and all post codes using Doxygen style comments. We
  * want to be able to generate a verbose enough documentation that is useful
- * during debugging. Failure to do so will result in your patch being rejected
- * without any explanation or effort on part of the maintainers.
+ * during debugging.
  *
  */
 

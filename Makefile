@@ -64,9 +64,6 @@ HOSTCXXFLAGS := -g
 
 PREPROCESS_ONLY := -E -P -x assembler-with-cpp -undef -I .
 
-DOXYGEN := doxygen
-DOXYGEN_OUTPUT_DIR := doxygen
-
 export $(COREBOOT_EXPORTS)
 
 all: real-all
@@ -77,8 +74,6 @@ help_coreboot help::
 	@echo  '  all                   - Build coreboot'
 	@echo  '  clean                 - Remove coreboot build artifacts'
 	@echo  '  distclean             - Remove build artifacts and config files'
-	@echo  '  doxygen               - Build doxygen documentation for coreboot'
-	@echo  '  doxyplatform          - Build doxygen documentation for the current platform'
 	@echo  '  sphinx                - Build sphinx documentation for coreboot'
 	@echo  '  sphinx-lint           - Build sphinx documenttion for coreboot with warnings as errors'
 	@echo  '  filelist              - Show files used in current build'
@@ -450,27 +445,7 @@ sphinx:
 sphinx-lint:
 	$(MAKE) SPHINXOPTS=-W -C Documentation -f Makefile.sphinx html
 
-doxy: doxygen
-doxygen:
-	$(DOXYGEN) Documentation/Doxyfile.coreboot
-
-doxygen_simple:
-	$(DOXYGEN) Documentation/Doxyfile.coreboot_simple
-
-doxyplatform doxygen_platform: $(obj)/project_filelist.txt
-	echo
-	echo "Building doxygen documentation for $(CONFIG_MAINBOARD_PART_NUMBER)"
-	export DOXYGEN_OUTPUT_DIR="$$( echo $(DOXYGEN_OUTPUT_DIR)/$(call strip_quotes, $(CONFIG_MAINBOARD_VENDOR))_$(call strip_quotes, $(CONFIG_MAINBOARD_PART_NUMBER)) | sed 's|[^A-Za-z0-9/]|_|g' )"; \
-	mkdir -p "$$DOXYGEN_OUTPUT_DIR"; \
-	export DOXYFILES="$$(cat $(obj)/project_filelist.txt | grep -v '\.ld$$' | sed 's/\.aml/\.dsl/' | tr '\n' ' ')"; \
-	export DOXYGEN_PLATFORM="$(call strip_quotes, $(CONFIG_MAINBOARD_DIR)) \($(call strip_quotes, $(CONFIG_MAINBOARD_PART_NUMBER))\) version $(KERNELVERSION)"; \
-	$(DOXYGEN) Documentation/doxygen/Doxyfile.coreboot_platform
-
-doxyclean: doxygen-clean
-doxygen-clean:
-	rm -rf $(DOXYGEN_OUTPUT_DIR)
-
-clean-for-update: doxygen-clean
+clean-for-update:
 	rm -rf $(obj) .xcompile
 
 clean: clean-for-update clean-utils clean-payloads
@@ -496,5 +471,5 @@ distclean: clean clean-ctags clean-cscope distclean-payloads distclean-utils
 	rm -rf coreboot-builds coreboot-builds-chromeos
 	rm -f abuild*.xml junit.xml* util/lint/junit.xml
 
-.PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean doxygen doxy doxygen_simple sphinx sphinx-lint
+.PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean sphinx sphinx-lint
 .PHONY: ctags-project cscope-project clean-ctags

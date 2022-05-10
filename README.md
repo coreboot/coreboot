@@ -54,8 +54,7 @@ Build Requirements
 
 Optional:
 
- * doxygen (for generating/viewing documentation)
- * gdb (for better debugging facilities on some targets)
+  * gdb (for better debugging facilities on some targets)
  * ncurses (for `make menuconfig` and `make nconfig`)
  * flex and bison (for regenerating parsers)
 

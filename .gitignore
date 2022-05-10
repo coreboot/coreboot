@@ -40,5 +40,3 @@ tarballs/
 *~
 *.kate-swp
 *.kdev4
-
-doxygen/*

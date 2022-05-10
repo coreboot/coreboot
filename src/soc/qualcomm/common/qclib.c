@@ -62,6 +62,25 @@ struct qclib_cb_if_table qclib_cb_if_table = {
 	.reserved = 0,
 };
 
+const char *qclib_file_default(enum qclib_cbfs_file file)
+{
+	switch (file) {
+	case QCLIB_CBFS_PMICCFG:
+		return CONFIG_CBFS_PREFIX "/pmiccfg";
+	case QCLIB_CBFS_QCSDI:
+		return CONFIG_CBFS_PREFIX "/qcsdi";
+	case QCLIB_CBFS_QCLIB:
+		return CONFIG_CBFS_PREFIX "/qclib";
+	case QCLIB_CBFS_DCB:
+		return CONFIG_CBFS_PREFIX "/dcb";
+	default:
+		die("unknown QcLib file %d", file);
+	}
+}
+
+const char *qclib_file(enum qclib_cbfs_file file)
+	__attribute__((weak, alias("qclib_file_default")));
+
 void qclib_add_if_table_entry(const char *name, void *base,
 				uint32_t size, uint32_t attrs)
 {
@@ -181,7 +200,7 @@ void qclib_load_and_run(void)
 	qclib_add_if_table_entry(QCLIB_TE_MEM_CHIP_INFO, NULL, 0, 0);
 
 	/* Attempt to load PMICCFG Blob */
-	data_size = cbfs_load(CONFIG_CBFS_PREFIX "/pmiccfg",
+	data_size = cbfs_load(qclib_file(QCLIB_CBFS_PMICCFG),
 			_pmic, REGION_SIZE(pmic));
 	if (!data_size) {
 		printk(BIOS_ERR, "[%s] /pmiccfg failed\n", __func__);
@@ -190,7 +209,7 @@ void qclib_load_and_run(void)
 	qclib_add_if_table_entry(QCLIB_TE_PMIC_SETTINGS, _pmic, data_size, 0);
 
 	/* Attempt to load DCB Blob */
-	data_size = cbfs_load(CONFIG_CBFS_PREFIX "/dcb",
+	data_size = cbfs_load(qclib_file(QCLIB_CBFS_DCB),
 			_dcb, REGION_SIZE(dcb));
 	if (!data_size) {
 		printk(BIOS_ERR, "[%s] /dcb failed\n", __func__);
@@ -213,7 +232,7 @@ void qclib_load_and_run(void)
 		!vboot_is_gbb_flag_set(VB2_GBB_FLAG_RUNNING_FAFT))) {
 		struct prog qcsdi =
 			PROG_INIT(PROG_REFCODE,
-				CONFIG_CBFS_PREFIX "/qcsdi");
+				qclib_file(QCLIB_CBFS_QCSDI));
 
 		/* Attempt to load QCSDI elf */
 		if (cbfs_prog_stage_load(&qcsdi))
@@ -228,7 +247,7 @@ void qclib_load_and_run(void)
 
 	/* Attempt to load QCLib elf */
 	struct prog qclib =
-		PROG_INIT(PROG_REFCODE, CONFIG_CBFS_PREFIX "/qclib");
+		PROG_INIT(PROG_REFCODE, qclib_file(QCLIB_CBFS_QCLIB));
 
 	if (cbfs_prog_stage_load(&qclib))
 		goto fail;

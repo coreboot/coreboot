@@ -27,6 +27,14 @@
 /* BA_BMASK_VALUES (blob_attributes bit mask values) */
 #define QCLIB_BA_SAVE_TO_STORAGE 0x00000001
 
+enum qclib_cbfs_file {
+	QCLIB_CBFS_PMICCFG,
+	QCLIB_CBFS_QCSDI,
+	QCLIB_CBFS_QCLIB,
+	QCLIB_CBFS_DCB,
+	QCLIB_CBFS_MAX
+};
+
 struct qclib_cb_if_table_entry {
 	char       name[QCLIB_TE_NAME_LENGTH];  /* 0x00 TE_NAME */
 	uint64_t   blob_address;		/* 0x18 blob addr in SRAM */
@@ -59,5 +67,8 @@ void qclib_add_if_table_entry(const char *name, void *base,
 			      uint32_t size, uint32_t attrs);
 void qclib_load_and_run(void);
 int  qclib_soc_blob_load(void);
+
+const char *qclib_file_default(enum qclib_cbfs_file file);
+const char *qclib_file(enum qclib_cbfs_file file);
 
 #endif  // _SOC_QUALCOMM_QCLIB_COMMON_H_

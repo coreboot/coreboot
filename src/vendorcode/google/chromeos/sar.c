@@ -145,7 +145,7 @@ static int fill_wifi_sar_limits(union wifi_sar_limits *sar_limits, const uint8_t
 	expected_sar_bin_size += dsm_table_size(sar_limits->dsm);
 
 	if (sar_bin_size != expected_sar_bin_size) {
-		printk(BIOS_ERR, "Invalid SAR size, expected: %ld, obtained: %ld\n",
+		printk(BIOS_ERR, "Invalid SAR size, expected: %zu, obtained: %zu\n",
 		       expected_sar_bin_size, sar_bin_size);
 		return -1;
 	}

@@ -228,12 +228,10 @@ static void add_res_to_stack(struct stack_dev_resource **root,
 static void reserve_dev_resources(STACK_RES *stack, RES_TYPE res_type,
 	struct stack_dev_resource *res_root, struct resource *bridge)
 {
-	uint8_t align;
 	uint64_t orig_base, base;
 
 	orig_base = get_resource_base(stack, res_type);
 
-	align = 0;
 	base = orig_base;
 	int first = 1;
 	while (res_root) { /* loop through all devices grouped by alignment requirements */

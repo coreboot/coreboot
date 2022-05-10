@@ -60,7 +60,7 @@ void configure_descriptor(struct descriptor_byte *bytes, size_t num)
 	for (size_t i = 0; i < num; i++) {
 		size_t offset = bytes[i].offset;
 		uint8_t desired_value = bytes[i].desired_value;
-		printk(BIOS_DEBUG, "Current value of Descriptor byte 0x%lx: 0x%x\n",
+		printk(BIOS_DEBUG, "Current value of Descriptor byte 0x%zx: 0x%x\n",
 		       offset, si_desc_buf[offset]);
 		if (si_desc_buf[offset] != desired_value) {
 			update_required = true;

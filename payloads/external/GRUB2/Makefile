@@ -34,7 +34,7 @@ grub2/build/config.h: $(CONFIG_DEP) | checkout
 	cd grub2/build && ../configure CC="$(HOSTCC)" LD="$(LD)" \
 	FREETYPE="pkg-config freetype2" BUILD_FREETYPE="pkg-config freetype2" \
 	TARGET_CC="$(CC)" TARGET_OBJCOPY="$(OBJCOPY)" TARGET_STRIP="$(STRIP)" \
-	CFLAGS=-O2 TARGET_CFLAGS=-Os \
+	CFLAGS=-O2 TARGET_CFLAGS="-Os -fno-reorder-functions" \
 	--with-platform=coreboot --enable-boot-time --disable-werror
 
 config: grub2/build/config.h checkout

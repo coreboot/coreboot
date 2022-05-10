@@ -60,7 +60,7 @@ void soc_display_memmap_hob(void)
 	assert(hob != NULL && hob_size != 0);
 
 	printk(BIOS_DEBUG, "===================== MEMORY MAP HOB DATA =====================\n");
-	printk(BIOS_DEBUG, "hob: %p, hob_size: 0x%lx, SystemMemoryMapHob size: 0x%lx, "
+	printk(BIOS_DEBUG, "hob: %p, hob_size: 0x%zx, SystemMemoryMapHob size: 0x%zx, "
 		"MAX_SOCKET: %d, SAD_RULES: %d\n",
 		hob, hob_size, sizeof(struct SystemMemoryMapHob), MAX_SOCKET, SAD_RULES);
 	printk(BIOS_DEBUG, "\tlowMemBase: 0x%x, lowMemSize: 0x%x, highMemBase: 0x%x, "

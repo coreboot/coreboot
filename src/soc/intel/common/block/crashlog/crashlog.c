@@ -411,11 +411,8 @@ void cl_get_cpu_sram_data(void)
 	tmp_bar_addr = cl_get_cpu_bar_addr();
 	dest = (u32 *)(uintptr_t) cpu_crashlog_cbmem_addr;
 	bool pmc_sram = false;
-	cpu_crashlog_buffer_info_t buff_info;
 
 	for (int i = 0 ; i < cpu_cl_disc_tab.header.fields.count ; i++) {
-		buff_info = cpu_cl_disc_tab.buffers[i];
-
 		if (cl_copy_data_from_sram(tmp_bar_addr,
 					   cpu_cl_disc_tab.buffers[i].fields.offset,
 					   cpu_cl_disc_tab.buffers[i].fields.size,

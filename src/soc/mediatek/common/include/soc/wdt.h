@@ -16,7 +16,8 @@ struct mtk_wdt_regs {
 	u32 wdt_swsysrst;
 	u32 reserved0[5];
 	u32 wdt_req_mode;
-	u32 reserved1[3];
+	u32 wdt_req_irq_en;
+	u32 reserved1[2];
 	u32 wdt_debug_ctrl;
 };
 

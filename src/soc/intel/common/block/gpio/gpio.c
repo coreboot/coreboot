@@ -170,20 +170,16 @@ static void gpio_configure_owner(const struct pad_config *cfg,
 }
 
 static void gpi_enable_gpe(const struct pad_config *cfg,
-				const struct pad_community *comm)
+			const struct pad_community *comm, int group, int pin)
 {
 	uint16_t en_reg;
 	uint32_t en_value;
-	int group;
-	int pin;
 
 	/* Do not configure GPE_EN if PAD is not configured for SCI/wake */
 	if (((cfg->pad_config[0]) & PAD_CFG0_ROUTE_SCI) != PAD_CFG0_ROUTE_SCI)
 		return;
 
 	/* Get comm offset and bit mask to be set as per pin */
-	pin = relative_pad_in_comm(comm, cfg->pad);
-	group = gpio_group_index(comm, pin);
 	en_reg = GPI_GPE_EN_OFFSET(comm, group);
 	en_value = gpio_bitmask_within_group(comm, pin);
 
@@ -198,19 +194,15 @@ static void gpi_enable_gpe(const struct pad_config *cfg,
 }
 
 static void gpi_enable_smi(const struct pad_config *cfg,
-				const struct pad_community *comm)
+			const struct pad_community *comm, int group, int pin)
 {
 	uint16_t sts_reg;
 	uint16_t en_reg;
 	uint32_t en_value;
-	int group;
-	int pin;
 
 	if (((cfg->pad_config[0]) & PAD_CFG0_ROUTE_SMI) != PAD_CFG0_ROUTE_SMI)
 		return;
 
-	pin = relative_pad_in_comm(comm, cfg->pad);
-	group = gpio_group_index(comm, pin);
 	sts_reg = GPI_SMI_STS_OFFSET(comm, group);
 	en_reg = GPI_SMI_EN_OFFSET(comm, group);
 	en_value = gpio_bitmask_within_group(comm, pin);
@@ -223,13 +215,11 @@ static void gpi_enable_smi(const struct pad_config *cfg,
 }
 
 static void gpi_enable_nmi(const struct pad_config *cfg,
-				const struct pad_community *comm)
+			const struct pad_community *comm, int group, int pin)
 {
 	uint16_t sts_reg;
 	uint16_t en_reg;
 	uint32_t en_value;
-	int group;
-	int pin;
 
 	if (((cfg->pad_config[0]) & PAD_CFG0_ROUTE_NMI) != PAD_CFG0_ROUTE_NMI)
 		return;
@@ -238,8 +228,6 @@ static void gpi_enable_nmi(const struct pad_config *cfg,
 	if (!comm->gpi_nmi_sts_reg_0 || !comm->gpi_nmi_en_reg_0)
 		return;
 
-	pin = relative_pad_in_comm(comm, cfg->pad);
-	group = gpio_group_index(comm, pin);
 	sts_reg = GPI_NMI_STS_OFFSET(comm, group);
 	en_reg = GPI_NMI_EN_OFFSET(comm, group);
 	en_value = gpio_bitmask_within_group(comm, pin);
@@ -346,9 +334,12 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 	const struct pad_community *comm = gpio_get_community(cfg->pad);
 	uint16_t config_offset;
 	uint32_t pad_conf, soc_pad_conf;
-	int i;
+	int i, pin, group;
 
 	config_offset = pad_config_offset(comm, cfg->pad);
+	pin = relative_pad_in_comm(comm, cfg->pad);
+	group = gpio_group_index(comm, pin);
+
 	for (i = 0; i < GPIO_NUM_PAD_CFG_REGS; i++) {
 		pad_conf = pcr_read32(comm->port,
 			PAD_CFG_OFFSET(config_offset, i));
@@ -365,20 +356,21 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 
 		if (CONFIG(DEBUG_GPIO))
 			printk(BIOS_DEBUG,
-			"gpio_padcfg [0x%02x, %02zd] DW%d [0x%08x : 0x%08x"
+			"gpio_padcfg [0x%02x, %02d] DW%d [0x%08x : 0x%08x"
 			" : 0x%08x]\n",
-			comm->port, relative_pad_in_comm(comm, cfg->pad), i,
+			comm->port, pin, i,
 			pad_conf,/* old value */
 			cfg->pad_config[i],/* value passed from gpio table */
 			soc_pad_conf);/*new value*/
 		pcr_write32(comm->port, PAD_CFG_OFFSET(config_offset, i),
 			soc_pad_conf);
 	}
+
 	gpio_configure_itss(cfg, comm->port, config_offset);
 	gpio_configure_owner(cfg, comm);
-	gpi_enable_smi(cfg, comm);
-	gpi_enable_nmi(cfg, comm);
-	gpi_enable_gpe(cfg, comm);
+	gpi_enable_smi(cfg, comm, group, pin);
+	gpi_enable_nmi(cfg, comm, group, pin);
+	gpi_enable_gpe(cfg, comm, group, pin);
 	if (cfg->lock_action)
 		gpio_lock_pad(cfg->pad, cfg->lock_action);
 }

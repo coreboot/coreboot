@@ -100,7 +100,7 @@ chip soc/intel/tigerlake
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,CPU,87,5000),
-					[1] = DPTF_PASSIVE(CPU,TEMP_SENSOR_2,60.8,6000)}"
+					[1] = DPTF_PASSIVE(CPU,TEMP_SENSOR_2,60,6000)}"
 
 				## Critical Policy
 				register "policies.critical" = "{

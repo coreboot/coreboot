@@ -51,7 +51,7 @@ void variant_memory_init_params(FSPM_UPD *mupd, const int spd_index)
 	memcpy(mem_cfg->DqsMapCpu2DramCh0, dqs_map[0], sizeof(mem_cfg->DqsMapCpu2DramCh0));
 	memcpy(mem_cfg->DqsMapCpu2DramCh1, dqs_map[1], sizeof(mem_cfg->DqsMapCpu2DramCh1));
 	memcpy(mem_cfg->RcompResistor, RcompResistor, sizeof(mem_cfg->RcompResistor));
-	memcpy(mem_cfg->RcompTarget, RcompTarget, sizeof(mem_cfg->RcompTarget));
+	memcpy(mem_cfg->RcompTarget, targeted_rcomp, sizeof(mem_cfg->RcompTarget));
 }
 
 int is_dual_channel(const int spd_index)

@@ -575,6 +575,90 @@ void acpi_create_srat(acpi_srat_t *srat,
 	header->checksum = acpi_checksum((void *)srat, header->length);
 }
 
+int acpi_create_cedt_chbs(acpi_cedt_chbs_t *chbs, u32 uid, u32 cxl_ver, u64 base)
+{
+	memset((void *)chbs, 0, sizeof(acpi_cedt_chbs_t));
+
+	chbs->type = ACPI_CEDT_STRUCTURE_CHBS;
+	chbs->length = sizeof(acpi_cedt_chbs_t);
+	chbs->uid = uid;
+	chbs->cxl_ver = cxl_ver;
+	chbs->base = base;
+
+	/*
+	 * CXL spec 2.0 section 9.14.1.2 "CXL CHBS"
+	 * CXL 1.1 spec compliant host bridge: 8KB
+	 * CXL 2.0 spec compliant host bridge: 64KB
+	 */
+	if (cxl_ver == ACPI_CEDT_CHBS_CXL_VER_1_1)
+		chbs->len = 8 * KiB;
+	else if (cxl_ver == ACPI_CEDT_CHBS_CXL_VER_2_0)
+		chbs->len = 64 * KiB;
+	else
+		printk(BIOS_ERR, "ACPI(%s:%s): Incorrect CXL version:%d\n", __FILE__, __func__,
+		       cxl_ver);
+
+	return chbs->length;
+}
+
+int acpi_create_cedt_cfmws(acpi_cedt_cfmws_t *cfmws, u64 base_hpa, u64 window_size, u8 eniw,
+			   u32 hbig, u16 restriction, u16 qtg_id, const u32 *interleave_target)
+{
+	memset((void *)cfmws, 0, sizeof(acpi_cedt_cfmws_t));
+
+	cfmws->type = ACPI_CEDT_STRUCTURE_CFMWS;
+
+	u8 niw = 0;
+	if (eniw >= 8)
+		printk(BIOS_ERR, "ACPI(%s:%s): Incorrect eniw::%d\n", __FILE__, __func__, eniw);
+	else
+		/* NIW = 2 ** ENIW */
+		niw = 0x1 << eniw;
+	/* 36 + 4 * NIW */
+	cfmws->length = sizeof(acpi_cedt_cfmws_t) + 4 * niw;
+
+	cfmws->base_hpa = base_hpa;
+	cfmws->window_size = window_size;
+	cfmws->eniw = eniw;
+
+	// 0: Standard Modulo Arithmetic. Other values reserved.
+	cfmws->interleave_arithmetic = 0;
+
+	cfmws->hbig = hbig;
+	cfmws->restriction = restriction;
+	cfmws->qtg_id = qtg_id;
+	memcpy(&cfmws->interleave_target, interleave_target, 4 * niw);
+
+	return cfmws->length;
+}
+
+void acpi_create_cedt(acpi_cedt_t *cedt, unsigned long (*acpi_fill_cedt)(unsigned long current))
+{
+	acpi_header_t *header = &(cedt->header);
+	unsigned long current = (unsigned long)cedt + sizeof(acpi_cedt_t);
+
+	memset((void *)cedt, 0, sizeof(acpi_cedt_t));
+
+	if (!header)
+		return;
+
+	/* Fill out header fields. */
+	memcpy(header->signature, "CEDT", 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+
+	header->asl_compiler_revision = asl_revision;
+	header->length = sizeof(acpi_cedt_t);
+	header->revision = get_acpi_table_revision(CEDT);
+
+	current = acpi_fill_cedt(current);
+
+	/* (Re)calculate length and checksum. */
+	header->length = current - (unsigned long)cedt;
+	header->checksum = acpi_checksum((void *)cedt, header->length);
+}
+
 int acpi_create_hmat_mpda(acpi_hmat_mpda_t *mpda, u32 initiator, u32 memory)
 {
 	memset((void *)mpda, 0, sizeof(acpi_hmat_mpda_t));

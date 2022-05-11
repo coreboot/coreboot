@@ -72,8 +72,8 @@ enum coreboot_acpi_ids {
 
 enum acpi_tables {
 	/* Tables defined by ACPI and used by coreboot */
-	BERT, DBG2, DMAR, DSDT, EINJ, FACS, FADT, HEST, HMAT, HPET, IVRS, MADT,
-	MCFG, RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT, LPIT,
+	BERT, CEDT, DBG2, DMAR, DSDT, EINJ, FACS, FADT, HEST, HMAT, HPET, IVRS,
+	MADT, MCFG, RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT, LPIT,
 	/* Additional proprietary tables used by coreboot */
 	VFCT, NHLT, SPMI, CRAT
 };
@@ -220,6 +220,60 @@ typedef struct acpi_mcfg_mmconfig {
 	u8 end_bus_number;
 	u8 reserved[4];
 } __packed acpi_mcfg_mmconfig_t;
+
+/*
+ * CEDT (CXL Early Discovery Table)
+ * CXL spec 2.0 section 9.14.1
+ */
+typedef struct acpi_cedt {
+	acpi_header_t header;
+	/* Followed by CEDT structures[n] */
+} __packed acpi_cedt_t;
+
+#define ACPI_CEDT_STRUCTURE_CHBS 0
+#define ACPI_CEDT_STRUCTURE_CFMWS 1
+
+#define ACPI_CEDT_CHBS_CXL_VER_1_1 0x00
+#define ACPI_CEDT_CHBS_CXL_VER_2_0 0x01
+
+/* CHBS: CXL Host Bridge Structure */
+typedef struct acpi_cedt_chbs {
+	u8 type; /* Always 0, other values reserved */
+	u8 resv1;
+	u16 length; /* Length in bytes (32) */
+	u32 uid;    /* CXL Host Bridge Unique ID */
+	u32 cxl_ver;
+	u32 resv2;
+	/*
+	 * For CXL 1.1, the base is Downstream Port Root Complex Resource Block;
+	 * For CXL 2.0, the base is CXL Host Bridge Component Registers.
+	 */
+	u64 base;
+	u64 len;
+} __packed acpi_cedt_chbs_t;
+
+#define ACPI_CEDT_CFMWS_RESTRICTION_TYPE_2_MEM (1 << 0)
+#define ACPI_CEDT_CFMWS_RESTRICTION_TYPE_3_MEM (1 << 1)
+#define ACPI_CEDT_CFMWS_RESTRICTION_VOLATIL    (1 << 2)
+#define ACPI_CEDT_CFMWS_RESTRICTION_PERSISTENT (1 << 3)
+#define ACPI_CEDT_CFMWS_RESTRICTION_FIXED      (1 << 4)
+
+/* CFMWS: CXL Fixed Memory Window Structure */
+typedef struct acpi_cedt_cfmws {
+	u8 type; /* Type (0) */
+	u8 resv1;
+	u16 length; /* Length in bytes (32) */
+	u32 resv2;
+	u64 base_hpa;		  /* Base of the HPA range, 256MB aligned */
+	u64 window_size;	  /* Number of bytes this window represents */
+	u8 eniw;		  /* Encoded Number of Interleave Ways */
+	u8 interleave_arithmetic; /* Standard Modulo arithmetic (0) */
+	u16 resv3;
+	u32 hbig; /* Host Bridge Interleave Granularity */
+	u16 restriction;
+	u16 qtg_id;
+	u32 interleave_target[]; /* Interleave Target List */
+} __packed acpi_cedt_cfmws_t;
 
 /*
  * HMAT (Heterogeneous Memory Attribute Table)
@@ -1259,6 +1313,15 @@ unsigned long acpi_fill_lpit(unsigned long current);
 u8 acpi_checksum(u8 *table, u32 length);
 
 void acpi_add_table(acpi_rsdp_t *rsdp, void *table);
+
+/* Create CXL Early Discovery Table */
+void acpi_create_cedt(acpi_cedt_t *cedt,
+	unsigned long (*acpi_fill_cedt)(unsigned long current));
+/* Create a CXL Host Bridge Structure for CEDT */
+int acpi_create_cedt_chbs(acpi_cedt_chbs_t *chbs, u32 uid, u32 cxl_ver, u64 base);
+/* Create a CXL Fixed Memory Window Structure for CEDT */
+int acpi_create_cedt_cfmws(acpi_cedt_cfmws_t *cfmws, u64 base_hpa, u64 window_size,
+	u8 eniw, u32 hbig, u16 restriction, u16 qtg_id, const u32 *interleave_target);
 
 int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic);
 int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,

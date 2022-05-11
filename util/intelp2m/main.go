@@ -4,8 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"./parser"
-	"./config"
+
+	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/parser"
 )
 
 // generateOutputFile - generates include file

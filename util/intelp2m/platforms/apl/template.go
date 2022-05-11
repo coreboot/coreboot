@@ -1,6 +1,6 @@
 package apl
 
-import "../common"
+import "review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 
 // GroupNameExtract - This function extracts the group ID, if it exists in a row
 // line      : string from the configuration file

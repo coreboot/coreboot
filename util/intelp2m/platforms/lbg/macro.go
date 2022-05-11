@@ -2,10 +2,11 @@ package lbg
 
 import (
 	"fmt"
-	"../../config"
-	"../../fields"
-	"../common"
-	"../snr"
+
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/fields"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/snr"
 )
 
 const (

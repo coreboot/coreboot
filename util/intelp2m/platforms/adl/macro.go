@@ -3,11 +3,12 @@ package adl
 import (
 	"strings"
 	"fmt"
-	"../common"
-	"../../config"
-	"../../fields"
-	"../snr"
-	"../cnl"
+
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/snr"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/cnl"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/fields"
 )
 
 const (

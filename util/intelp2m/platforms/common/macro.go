@@ -3,7 +3,8 @@ package common
 import (
 	"strconv"
 	"sync"
-	"../../config"
+
+	"review.coreboot.org/coreboot.git/util/intelp2m/config"
 )
 
 type Fields interface {

@@ -1,11 +1,11 @@
 package fields
 
 import (
-	"../config"
-	"../platforms/common"
-	"./fsp"
-	"./cb"
-	"./raw"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
+	"review.coreboot.org/coreboot.git/util/intelp2m/fields/fsp"
+	"review.coreboot.org/coreboot.git/util/intelp2m/fields/cb"
+	"review.coreboot.org/coreboot.git/util/intelp2m/fields/raw"
 )
 
 // InterfaceSet - set the interface for decoding configuration

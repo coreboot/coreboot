@@ -5,7 +5,7 @@ PROJECT_NAME = intelp2m
 
 default:
 	go version
-	GO111MODULE=off go build -v -o $(PROJECT_NAME)
+	go build -v -o $(PROJECT_NAME)
 
 clean:
 	rm -Rf $(PROJECT_NAME) $(OUTPUT_DIR)

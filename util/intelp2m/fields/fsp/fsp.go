@@ -1,6 +1,6 @@
 package fsp
 
-import "../../platforms/common"
+import "review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 
 type FieldMacros struct {}
 

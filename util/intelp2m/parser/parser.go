@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"strings"
 	"strconv"
-	"../platforms/common"
-	"../platforms/snr"
-	"../platforms/lbg"
-	"../platforms/apl"
-	"../platforms/cnl"
-	"../platforms/adl"
-	"../config"
+
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/snr"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/lbg"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/apl"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/cnl"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/adl"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config"
 )
 
 // PlatformSpecific - platform-specific interface

@@ -2,7 +2,7 @@ package raw
 
 import (
 	"fmt"
-	"../../platforms/common"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 )
 
 type FieldMacros struct {}

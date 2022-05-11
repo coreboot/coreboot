@@ -83,9 +83,10 @@ Device (MCHC)
 
 Name (MCRS, ResourceTemplate()
 {
-	/* Bus Numbers */
+	/* Bus Numbers. Highest bus gets updated later */
 	WordBusNumber (ResourceProducer, MinFixed, MaxFixed, PosDecode,
-			0x0000, 0x0000, 0x00ff, 0x0000, 0x0100,,, PB00)
+			0x0000, 0x0000, 0x0000, 0x0000,
+			CONFIG_ECAM_MMCONF_BUS_NUMBER,,, PB00)
 
 	/* IO Region 0 */
 	DWordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
@@ -207,6 +208,11 @@ External (A4GB, IntObj)
 /* Current Resource Settings */
 Method (_CRS, 0, Serialized)
 {
+	/* Set highest PCI bus */
+	 CreateWordField(MCRS, ^PB00._MAX, BMAX)
+	 CreateWordField(MCRS, ^PB00._LEN, BLEN)
+	 BMAX = BLEN - 1
+
 	/* Find PCI resource area in MCRS */
 	CreateDwordField(MCRS, ^PM01._MIN, PMIN)
 	CreateDwordField(MCRS, ^PM01._MAX, PMAX)

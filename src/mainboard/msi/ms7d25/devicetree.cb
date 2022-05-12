@@ -13,32 +13,31 @@ chip soc/intel/alderlake
 	register "pmc_gpe0_dw2" = "GPD"
 
 	# USB Configuration
-	# TODO: Verify
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC2)"
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)"
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC0)"
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC3)"
-	register "usb2_ports[6]" = "USB2_PORT_MID(OC7)"
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC0)"
-	register "usb2_ports[8]" = "USB2_PORT_MID(OC2)"
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC7)"
-	register "usb2_ports[10]" = "USB2_PORT_MID(OC0)"
-	register "usb2_ports[11]" = "USB2_PORT_MID(OC0)"
-	register "usb2_ports[12]" = "USB2_PORT_MID(OC0)"
-	register "usb2_ports[13]" = "USB2_PORT_MID(OC6)"
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC2)" # USB-C LAN_USB1
+	register "usb2_ports[1]" = "USB2_PORT_MAX(OC1)" # MSI MYSTIC LIGHT
+	register "usb2_ports[2]" = "USB2_PORT_MAX(OC0)" # USB-A LAN_USB1
+	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC0)" # JUSB5
+	register "usb2_ports[4]" = "USB2_PORT_MAX(OC3)" # HUB to rear USB 2.0
+	register "usb2_ports[5]" = "USB2_PORT_LONG(OC3)" # empty?
+	register "usb2_ports[6]" = "USB2_PORT_LONG(OC7)" # JUSB4
+	register "usb2_ports[7]" = "USB2_PORT_LONG(OC0)" # JUSB4
+	register "usb2_ports[8]" = "USB2_PORT_LONG(OC2)" # JUSB3
+	register "usb2_ports[9]" = "USB2_PORT_LONG(OC7)" # JUSB3
+	register "usb2_ports[10]" = "USB2_PORT_MAX(OC0)" # PS2_USB1
+	register "usb2_ports[11]" = "USB2_PORT_MAX(OC0)" # PS2_USB1
+	register "usb2_ports[12]" = "USB2_PORT_MAX(OC0)" # HUB to USB 2.0 headers
+	register "usb2_ports[13]" = "USB2_PORT_MAX(OC6)" # CNVi BT
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)"
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)"
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)"
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC0)"
-	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC7)"
-	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC7)"
-	register "usb3_ports[6]" = "USB3_PORT_DEFAULT(OC2)"
-	register "usb3_ports[7]" = "USB3_PORT_DEFAULT(OC2)"
-	register "usb3_ports[8]" = "USB3_PORT_DEFAULT(OC0)"
-	register "usb3_ports[9]" = "USB3_PORT_DEFAULT(OC0)"
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)" # USB-C LAN_USB1
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)" # USB-A LAN_USB1
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC3)" # JUSB5
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC0)" # USB-A USB2
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC7)" # USB-A USB2
+	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC7)" # JUSB4
+	register "usb3_ports[6]" = "USB3_PORT_DEFAULT(OC2)" # JUSB4
+	register "usb3_ports[7]" = "USB3_PORT_DEFAULT(OC2)" # JUSB3
+	register "usb3_ports[8]" = "USB3_PORT_DEFAULT(OC0)" # JUSB3
+	register "usb3_ports[9]" = "USB3_PORT_EMPTY"
 
 	# LPC generic I/O ranges
 	register "gen1_dec" = "0x00fc0201"

@@ -50,6 +50,8 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	memset(params->CpuPcieClockGating, 0, sizeof(params->CpuPcieClockGating));
 	memset(params->CpuPciePowerGating, 0, sizeof(params->CpuPciePowerGating));
 
+	params->UsbPdoProgramming = 1;
+
 	params->CpuPcieFiaProgramming = 1;
 
 	params->PcieRpFunctionSwap = 0;

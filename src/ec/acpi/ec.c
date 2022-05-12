@@ -142,7 +142,7 @@ void ec_clr_bit(u8 addr, u8 bit)
 
 void ec_set_ports(u16 cmd_reg, u16 data_reg)
 {
-	if (!ENV_STAGE_HAS_DATA_SECTION)
+	if (!ENV_HAS_DATA_SECTION)
 		return;
 
 	ec_cmd_reg = cmd_reg;

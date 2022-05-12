@@ -72,7 +72,7 @@
 #endif
 
 /* Include data, bss, and heap in that order. Not defined for all stages. */
-#if ENV_STAGE_HAS_DATA_SECTION
+#if ENV_HAS_DATA_SECTION
 .data . : {
 	. = ALIGN(ARCH_CACHELINE_ALIGN_SIZE);
 	_data = .;
@@ -130,7 +130,7 @@
 }
 #endif
 
-#if ENV_STAGE_HAS_HEAP_SECTION
+#if ENV_HAS_HEAP_SECTION
 .heap . : {
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_heap = .;

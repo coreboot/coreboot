@@ -19,7 +19,7 @@
 #include <thread.h>
 #include <timestamp.h>
 
-#if ENV_STAGE_HAS_DATA_SECTION
+#if ENV_HAS_DATA_SECTION
 struct mem_pool cbfs_cache =
 	MEM_POOL_INIT(_cbfs_cache, REGION_SIZE(cbfs_cache), CONFIG_CBFS_CACHE_ALIGN);
 #else
@@ -363,7 +363,7 @@ static enum cb_err get_preload_rdev(struct region_device *rdev, const char *name
 	enum cb_err err;
 	struct cbfs_preload_context *context;
 
-	if (!CONFIG(CBFS_PRELOAD) || !ENV_STAGE_SUPPORTS_COOP)
+	if (!CONFIG(CBFS_PRELOAD) || !ENV_SUPPORTS_COOP)
 		return CB_ERR_ARG;
 
 	context = find_cbfs_preload_context(name);

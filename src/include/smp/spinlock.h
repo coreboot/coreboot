@@ -1,7 +1,7 @@
 #ifndef SMP_SPINLOCK_H
 #define SMP_SPINLOCK_H
 
-#if ENV_STAGE_SUPPORTS_SMP
+#if ENV_SUPPORTS_SMP
 #include <arch/smp/spinlock.h>
 #else /* !CONFIG_SMP */
 

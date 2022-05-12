@@ -268,15 +268,15 @@
 /* Indicates memory layout is determined with arch/x86/car.ld. */
 #define ENV_CACHE_AS_RAM		(ENV_ROMSTAGE_OR_BEFORE && !CONFIG(RESET_VECTOR_IN_RAM))
 /* No .data sections with execute-in-place from ROM.  */
-#define ENV_STAGE_HAS_DATA_SECTION	!ENV_CACHE_AS_RAM
+#define ENV_HAS_DATA_SECTION	!ENV_CACHE_AS_RAM
 #else
 /* Both .data and .bss, sometimes SRAM not DRAM. */
-#define ENV_STAGE_HAS_DATA_SECTION	1
+#define ENV_HAS_DATA_SECTION	1
 #define ENV_CACHE_AS_RAM		0
 #endif
 
 /* Currently rmodules, ramstage and smm have heap. */
-#define ENV_STAGE_HAS_HEAP_SECTION	(ENV_RMODULE || ENV_RAMSTAGE || ENV_SMM)
+#define ENV_HAS_HEAP_SECTION	(ENV_RMODULE || ENV_RAMSTAGE || ENV_SMM)
 
 /* Set USER_SPACE in the makefile for the rare code that runs in userspace */
 #if defined(__USER_SPACE__)
@@ -293,21 +293,21 @@
 #endif
 
 #if ENV_X86
-#define STAGE_HAS_SPINLOCKS		!ENV_ROMSTAGE_OR_BEFORE
+#define ENV_HAS_SPINLOCKS		!ENV_ROMSTAGE_OR_BEFORE
 #elif ENV_RISCV
-#define STAGE_HAS_SPINLOCKS		1
+#define ENV_HAS_SPINLOCKS		1
 #else
-#define STAGE_HAS_SPINLOCKS		0
+#define ENV_HAS_SPINLOCKS		0
 #endif
 
 /* When set <arch/smp/spinlock.h> is included for the spinlock implementation. */
-#define ENV_STAGE_SUPPORTS_SMP		(CONFIG(SMP) && STAGE_HAS_SPINLOCKS)
+#define ENV_SUPPORTS_SMP		(CONFIG(SMP) && ENV_HAS_SPINLOCKS)
 
 #if ENV_X86 && CONFIG(COOP_MULTITASKING) && (ENV_RAMSTAGE || ENV_ROMSTAGE)
 /* TODO: Enable in all x86 stages */
-#define ENV_STAGE_SUPPORTS_COOP         1
+#define ENV_SUPPORTS_COOP         1
 #else
-#define ENV_STAGE_SUPPORTS_COOP         0
+#define ENV_SUPPORTS_COOP         0
 #endif
 
 /**

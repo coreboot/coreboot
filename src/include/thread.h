@@ -37,7 +37,7 @@ int thread_run_until(struct thread_handle *handle, enum cb_err (*func)(void *), 
 /* Waits until the thread has terminated and returns the error code */
 enum cb_err thread_join(struct thread_handle *handle);
 
-#if ENV_STAGE_SUPPORTS_COOP
+#if ENV_SUPPORTS_COOP
 
 struct thread {
 	int id;

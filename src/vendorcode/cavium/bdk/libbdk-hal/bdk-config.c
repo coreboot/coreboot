@@ -47,7 +47,7 @@ static struct bdk_devicetree_key_value *bdk_config_duplicate(
  */
 int bdk_config_set_fdt(const struct bdk_devicetree_key_value *fdt)
 {
-    if (ENV_STAGE_HAS_HEAP_SECTION)
+    if (ENV_HAS_HEAP_SECTION)
         config_fdt = bdk_config_duplicate(fdt, 0);
     else
         config_fdt = (void *)fdt;
@@ -203,7 +203,7 @@ void bdk_config_set_int(int64_t value, bdk_config_t cfg_item, ...)
     /* Make sure the correct access function was called */
     assert(config_info[cfg_item].ctype == BDK_CONFIG_TYPE_INT);
 
-    if (!ENV_STAGE_HAS_HEAP_SECTION)
+    if (!ENV_HAS_HEAP_SECTION)
         return;
 
     if (!config_fdt)

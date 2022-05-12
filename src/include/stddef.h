@@ -32,7 +32,7 @@ typedef __WINT_TYPE__ wint_t;
 #define DEVTREE_CONST
 #endif
 
-#if ENV_STAGE_HAS_DATA_SECTION
+#if ENV_HAS_DATA_SECTION
 #define MAYBE_STATIC_NONZERO static
 #else
 #define MAYBE_STATIC_NONZERO

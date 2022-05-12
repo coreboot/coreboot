@@ -21,7 +21,7 @@ static const struct pad_config gpio_table[] = {
 	/* A7  : NC */
 	PAD_NC(GPP_A7, NONE),
 	/* A8  : GPP_A8 ==> WWAN_RF_DISABLE_ODL */
-	PAD_CFG_GPO(GPP_A8, 1, DEEP),
+	PAD_NC(GPP_A8, NONE),
 	/* A9  : ESPI_CLK ==> ESPI_SOC_CLK */
 	/* A10 : ESPI_RESET# ==> ESPI_SOC_RST_EC_L */
 	/* A11 : GPP_A11 ==> EN_SPK_PA */
@@ -130,7 +130,7 @@ static const struct pad_config gpio_table[] = {
 	/* D5  : NC */
 	PAD_NC(GPP_D5, NONE),
 	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
-	PAD_CFG_GPO(GPP_D6, 1, DEEP),
+	PAD_NC(GPP_D6, NONE),
 	/* D7  : SRCCLKREQ2# ==> WLAN_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1),
 	/* D8  : SRCCLKREQ3# ==> SD_CLKREQ_ODL */
@@ -232,7 +232,7 @@ static const struct pad_config gpio_table[] = {
 	/* F11 : NC */
 	PAD_NC_LOCK(GPP_F11, NONE, LOCK_CONFIG),
 	/* F12 : GSXDOUT ==> WWAN_RST_L */
-	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
+	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
 	/* F13 : GSXSLOAD ==> SOC_PEN_DETECT_R_ODL */
 	PAD_CFG_GPI_INT_LOCK(GPP_F13, NONE, EDGE_BOTH, LOCK_CONFIG),
 	/* F14 : GSXDIN ==> TCHPAD_INT_ODL */
@@ -295,7 +295,7 @@ static const struct pad_config gpio_table[] = {
 	/* H18 : PROC_C10_GATE# ==> CPU_C10_GATE_L */
 	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),
 	/* H19 : SRCCLKREQ4# ==> SOC_I2C_SUB_INT_ODL */
-	PAD_CFG_GPI_APIC(GPP_H19, NONE, PLTRST, LEVEL, NONE),
+	PAD_NC(GPP_H19, NONE),
 	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_H20, 1, DEEP),
 	/* H21 : NC */
@@ -303,7 +303,7 @@ static const struct pad_config gpio_table[] = {
 	/* H22 : IMGCLKOUT3 ==> WCAM_MCLK_R */
 	PAD_CFG_NF(GPP_H22, NONE, DEEP, NF1),
 	/* H23 : GPP_H23 ==> WWAN_SAR_DETECT_ODL */
-	PAD_CFG_GPO(GPP_H23, 1, DEEP),
+	PAD_NC(GPP_H23, NONE),
 
 	/* R0  : I2S0_SCLK ==> I2S_HP_BCLK_R */
 	PAD_CFG_NF(GPP_R0, NONE, DEEP, NF2),

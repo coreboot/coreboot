@@ -6,30 +6,27 @@
 #include <console/console.h>
 #include <fw_config.h>
 
-static const struct pad_config lte_disable_pads_nivviks[] = {
+static const struct pad_config lte_enable_pads[] = {
 	/* A8  : WWAN_RF_DISABLE_ODL */
-	PAD_NC(GPP_A8, NONE),
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
+	/* H19 : SOC_I2C_SUB_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_H19, NONE, PLTRST, LEVEL, NONE),
+	/* H23 : WWAN_SAR_DETECT_ODL */
+	PAD_CFG_GPO(GPP_H23, 1, DEEP),
+};
+
+static const struct pad_config lte_disable_pads_nivviks[] = {
 	/* D6  : WWAN_EN */
 	PAD_NC(GPP_D6, NONE),
 	/* F12 : WWAN_RST_L */
 	PAD_NC(GPP_F12, NONE),
-	/* H19 : SOC_I2C_SUB_INT_ODL */
-	PAD_NC(GPP_H19, NONE),
-	/* H23 : WWAN_SAR_DETECT_ODL */
-	PAD_NC(GPP_H23, NONE),
 };
 
 static const struct pad_config lte_disable_pads_nirwen[] = {
-	/* A8  : WWAN_RF_DISABLE_ODL */
-	PAD_NC(GPP_A8, NONE),
 	/* E13  : WWAN_EN */
 	PAD_NC(GPP_E13, NONE),
 	/* F12 : WWAN_RST_L */
 	PAD_NC(GPP_F12, NONE),
-	/* H19 : SOC_I2C_SUB_INT_ODL */
-	PAD_NC(GPP_H19, NONE),
-	/* H23 : WWAN_SAR_DETECT_ODL */
-	PAD_NC(GPP_H23, NONE),
 };
 
 static const struct pad_config sd_disable_pads[] = {
@@ -96,7 +93,10 @@ static const struct pad_config nvme_disable_pads[] = {
 
 static void fw_config_handle(void *unused)
 {
-	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_1C_LTE))) {
+	if (fw_config_probe(FW_CONFIG(DB_USB, DB_1C_LTE))) {
+		printk(BIOS_INFO, "Enable LTE-related GPIO pins.\n");
+		gpio_configure_pads(lte_enable_pads, ARRAY_SIZE(lte_enable_pads));
+	} else {
 		if (board_id() >= 2) {
 			printk(BIOS_INFO, "Disable LTE-related GPIO pins on nirwen.\n");
 			gpio_configure_pads(

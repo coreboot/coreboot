@@ -8,8 +8,12 @@
 
 /* Pad configuration in ramstage for nivviks board_id = 0 */
 static const struct pad_config board_id0_overrides[] = {
+	/* D6  : WWAN_EN */
+	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D7  : WLAN_CLKREQ_ODL */
 	PAD_NC(GPP_D7, NONE),
+	/* F12 : WWAN_RST_L */
+	PAD_CFG_GPO(GPP_F12, 1, DEEP),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
 	PAD_NC(GPP_H3, NONE),
 	/* R4 : I2S2_SCLK ==> I2S_SPK_BCLK_R */
@@ -36,8 +40,12 @@ static const struct pad_config board_id0_overrides[] = {
 
 /* Pad configuration in ramstage for nivviks board_id >= 1 */
 static const struct pad_config override_gpio_table[] = {
+	/* D6  : WWAN_EN */
+	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D7  : WLAN_CLKREQ_ODL */
 	PAD_NC(GPP_D7, NONE),
+	/* F12 : WWAN_RST_L */
+	PAD_CFG_GPO(GPP_F12, 1, DEEP),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
 	PAD_NC(GPP_H3, NONE),
 };
@@ -56,6 +64,8 @@ static const struct pad_config override_gpio_table_nirwen[] = {
 	PAD_CFG_GPO(GPP_E13, 1, DEEP),
 	/* E17 : SSD_PLN_L */
 	PAD_CFG_GPO(GPP_E17, 1, PLTRST),
+	/* F12 : WWAN_RST_L */
+	PAD_CFG_GPO(GPP_F12, 1, DEEP),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
 	PAD_NC(GPP_H3, NONE),
 };

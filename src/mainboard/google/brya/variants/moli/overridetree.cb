@@ -1,9 +1,4 @@
 fw_config
-	field  DB_OPT	2	3
-		option	OPT_ABSENT	0
-		option	OPT_HDMI	1
-		option	OPT_DP		2
-	end
 	field  STORAGE  4	5
 		option	STORAGE_UNKNOWN	0
 		option	STORAGE_NVME	1

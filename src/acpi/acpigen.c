@@ -532,7 +532,7 @@ static void acpigen_write_field_offset(uint32_t offset, uint32_t current_bit_pos
 	acpigen_write_field_length(diff_bits);
 }
 
-static void acpigen_write_field_name(const char *name, uint32_t size)
+void acpigen_write_field_name(const char *name, uint32_t size)
 {
 	acpigen_emit_simple_namestring(name);
 	acpigen_write_field_length(size);

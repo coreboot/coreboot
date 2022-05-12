@@ -28,6 +28,16 @@ static struct clock_freq_config qspi_core_cfg[] = {
 		.div = QCOM_CLOCK_DIV(3),
 	},
 	{
+		.hz = 240 * MHz,
+		.src = SRC_GPLL0_MAIN_600MHZ,
+		.div = QCOM_CLOCK_DIV(2.5),
+	},
+	{
+		.hz = 300 * MHz,
+		.src = SRC_GPLL0_MAIN_600MHZ,
+		.div = QCOM_CLOCK_DIV(2),
+	},
+	{
 		.hz = 400 * MHz,
 		.src = SRC_GPLL0_MAIN_600MHZ,
 		.div = QCOM_CLOCK_DIV(1.5),

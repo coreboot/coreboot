@@ -26,6 +26,7 @@ struct qcom_qspi_regs {
 	u32 current_mem_addr;
 	u32 hw_version;
 	u32 rd_fifo[16];
+	u32 sampling_clk_cfg;
 };
 
 check_member(qcom_qspi_regs, rd_fifo, 0x50);
@@ -97,7 +98,16 @@ static struct qcom_qspi_regs * const qcom_qspi = (void *) QSPI_BASE;
 
 #define QSPI_MAX_PACKET_COUNT 0xFFC0
 
-void quadspi_init(uint32_t hz);
+/*
+ * quadspi_init(): Configure SPI
+ *
+ * @param hz:      SPI frequency in Hz
+ * @param sdelay:  sampling delay in sdelay/8 cycle units example, if sdelay=1,
+ *                 then will delay sampling clock by 1/8 cycle.  Note that
+ *                 setting sdelay to 4-7 would result in a negative sampling
+ *                 delay compared to 0.
+ */
+void quadspi_init(uint32_t hz, uint32_t sdelay);
 int qspi_claim_bus(const struct spi_slave *slave);
 int qspi_setup_bus(const struct spi_slave *slave);
 void qspi_release_bus(const struct spi_slave *slave);

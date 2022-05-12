@@ -221,11 +221,26 @@ static void queue_data(uint8_t *data, uint32_t data_bytes,
 		queue_bounce_data(epilog_ptr, epilog_bytes, data_mode, write);
 }
 
-static void reg_init(void)
+/*
+ * The way to encode the sampling delay is:
+ *
+ * QSPI_SAMPLE_CLK_CONFIG	delay (cycle)
+ * ----------------------------------------
+ * 0xFFFh = 1111 1111 1111b	7/8
+ * 0xDB6h = 1101 1011 0110b	6/8
+ * 0xB6Dh = 1011 0110 1101b	5/8
+ * 0x924h = 1001 0010 0100b	4/8
+ * 0x6DBh = 0110 1101 1011b	3/8
+ * 0x492h = 0100 1001 0010b	2/8
+ * 0x249h = 0010 0100 1001b	1/8
+ * 0x000h = 0000 0000 0000b	None
+ */
+static void reg_init(uint32_t sdelay)
 {
 	uint32_t spi_mode;
 	uint32_t tx_data_oe_delay, tx_data_delay;
 	uint32_t mstr_config;
+	uint32_t sampling_delay;
 
 	spi_mode = 0;
 
@@ -236,7 +251,6 @@ static void reg_init(void)
 		(tx_data_delay << TX_DATA_DELAY_SHIFT) | (SBL_EN) |
 		(spi_mode << SPI_MODE_SHIFT) |
 		(PIN_HOLDN) |
-		(FB_CLK_EN) |
 		(DMA_ENABLE) |
 		(FULL_CYCLE_MODE);
 
@@ -246,14 +260,16 @@ static void reg_init(void)
 	write32(&qcom_qspi->mstr_int_sts, 0xFFFFFFFF);
 	write32(&qcom_qspi->rd_fifo_cfg, 0x0);
 	write32(&qcom_qspi->rd_fifo_rst, RESET_FIFO);
+	sampling_delay = sdelay << 9 | sdelay << 6 | sdelay << 3 | sdelay << 0;
+	write32(&qcom_qspi->sampling_clk_cfg, sampling_delay);
 }
 
-void quadspi_init(uint32_t hz)
+void quadspi_init(uint32_t hz, uint32_t sdelay)
 {
 	assert(dcache_line_bytes() == CACHE_LINE_SIZE);
 	clock_configure_qspi(hz * 4);
 	configure_gpios();
-	reg_init();
+	reg_init(sdelay);
 }
 
 int qspi_claim_bus(const struct spi_slave *slave)

@@ -8,6 +8,6 @@
 void bootblock_soc_init(void)
 {
 	clock_init();
-	quadspi_init(37500 * KHz);
+	quadspi_init(37500 * KHz, 0);
 	qupv3_fw_init();
 }

@@ -105,7 +105,7 @@ enum cb_err get_spd_sn(u8 addr, u32 *sn)
 	/* If dimm is not present, set sn to 0xff. */
 	smbus_ret = smbus_read_byte(addr, SPD_DRAM_TYPE);
 	if (smbus_ret < 0) {
-		printk(BIOS_INFO, "No memory dimm at address %02X\n", addr);
+		printk(BIOS_INFO, "No memory dimm at address %02X\n", addr << 1);
 		*sn = 0xffffffff;
 		return CB_SUCCESS;
 	}

@@ -1,9 +1,19 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <acpi/acpi.h>
-#include <arch/ebda.h>
+#include <bootstate.h>
 #include <commonlib/endian.h>
+#include <stdint.h>
+
+#define X86_BDA_SIZE		0x200
+#define X86_BDA_BASE		((void *)0x400)
+#define X86_EBDA_SEGMENT	((void *)0x40e)
+#define X86_EBDA_LOWMEM		((void *)0x413)
+
+#define DEFAULT_EBDA_LOWMEM	(1024 << 10)
+#define DEFAULT_EBDA_SEGMENT	0xF600
+#define DEFAULT_EBDA_SIZE	0x400
+
 
 static void *get_ebda_start(void)
 {
@@ -40,7 +50,7 @@ static void setup_ebda(u32 low_memory_size, u16 ebda_segment, u16 ebda_size)
 	write_le16(ebda, ebda_kb);
 }
 
-void setup_default_ebda(void)
+static void setup_default_ebda(void *unused)
 {
 	if (acpi_is_wakeup_s3())
 		return;
@@ -49,3 +59,6 @@ void setup_default_ebda(void)
 		   DEFAULT_EBDA_SEGMENT,
 		   DEFAULT_EBDA_SIZE);
 }
+
+/* Ensure EBDA is prepared before Option ROMs. */
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, setup_default_ebda, NULL);

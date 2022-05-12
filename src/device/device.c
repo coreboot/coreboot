@@ -12,9 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <smp/spinlock.h>
-#if ENV_X86
-#include <arch/ebda.h>
-#endif
 #include <timer.h>
 
 /** Pointer to the last device */
@@ -565,11 +562,6 @@ void dev_initialize(void)
 	struct bus *link;
 
 	printk(BIOS_INFO, "Initializing devices...\n");
-
-#if ENV_X86
-	/* Ensure EBDA is prepared before Option ROMs. */
-	setup_default_ebda();
-#endif
 
 	/* First call the mainboard init. */
 	init_dev(&dev_root);

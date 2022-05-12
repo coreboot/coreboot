@@ -104,7 +104,7 @@ struct __packed global_nvs {
 	u8	rsvd12[57];
 
 	u8	tpiq; /* 0xf5 - trackpad IRQ value */
-	u32     cbmc;
+	u32     unused_was_cbmc;
 };
 
 #endif /* SOUTHBRIDGE_INTEL_BD82X6X_NVS_H */

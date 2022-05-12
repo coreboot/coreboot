@@ -12,7 +12,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	TLVL,	8,	// 0x05 - Throttle Level Limit
 	LIDS,	8,	// 0x06 - LID State
 	,	8,	// 0x07 - AC Power State
-	CBMC,	32,	// 0x08 - 0x0b AC Power State
+	,	32,	// 0x08 - 0x0b AC Power State
 	PM1I,	64,	// 0x0c - 0x13 PM1 wake status bit
 	GPEI,	64,	// 0x14 - 0x17 GPE wake status bit
 	DPTE,	8,	// 0x1c - Enable DPTF

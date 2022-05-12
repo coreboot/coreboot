@@ -38,7 +38,7 @@ struct __packed global_nvs {
 	/* Base Addresses */
 	u32 obsolete_cmem; /* 0x30 - CBMEM TOC */
 	u32 tolm;	  /* 0x34 - Top of Low Memory */
-	u32 cbmc;	  /* 0x38 - coreboot memconsole */
+	u32 unused_was_cbmc;	  /* 0x38 - coreboot memconsole */
 	u32 mmiob;	 /* 0x3c - MMIO Base Low */
 	u32 mmiol;	 /* 0x40 - MMIO Base Limit */
 	u64 mmiohb;	/* 0x44 - MMIO Base High */

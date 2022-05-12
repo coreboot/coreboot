@@ -31,8 +31,6 @@ static void acpi_create_gnvs(void *unused)
 	if (dnvs_size)
 		dnvs = (char *)gnvs + gnvs_size;
 
-	if (CONFIG(CONSOLE_CBMEM))
-		gnvs->cbmc = (uintptr_t)cbmem_find(CBMEM_ID_CONSOLE);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, acpi_create_gnvs, NULL);

@@ -38,7 +38,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	Offset (0x30),
 	,	 32,	// 0x30 - CBMEM TOC
 	TOLM,	 32,	// 0x34 - Top of Low Memory
-	CBMC,	 32,	// 0x38 - coreboot mem console pointer
+	,	 32,	// 0x38 - coreboot mem console pointer
 	MMOB,	 32,	// 0x3c - MMIO Base Low Base
 	MMOL,	 32,	// 0x40 - MMIO Base Low Limit
 	MMHB,	 64,	// 0x44 - MMIO Base High Base

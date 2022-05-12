@@ -90,7 +90,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	S7B1,	32,	// 0x9c - D23:F0 Serial IO SDIO BAR1
 
 	Offset (0xa0),
-	CBMC, 32,	// 0xa0 - coreboot mem console pointer
+	,	32,	// 0xa0 - coreboot mem console pointer
 
 	PM1I,	32,	// System Wake Source - PM1 Index
 	GPEI,	32,	// GPE Wake Source

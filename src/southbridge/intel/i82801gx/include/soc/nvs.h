@@ -97,7 +97,7 @@ struct __packed global_nvs {
 	u8	dock; /* 0xf0 - Docking Status */
 	u8	bten;
 
-	u32     cbmc;
+	u32     unused_was_cbmc;
 
 	/* Required for future unified acpi_save_wake_source. */
 	u32	pm1i;

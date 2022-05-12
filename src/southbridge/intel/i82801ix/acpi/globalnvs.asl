@@ -100,7 +100,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	Offset (0xf0),
 	DOCK,	 8,	// 0xf0 - Docking Status
 	BTEN,	 8,	// 0xf1 - Bluetooth Enable
-	CBMC,	32,
+	,	32,
 	PM1I,	32,	// System Wake Source - PM1 Index
 	GPEI,	32,	// GPE Wake Source
 

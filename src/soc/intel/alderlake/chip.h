@@ -557,6 +557,13 @@ struct soc_intel_alderlake_config {
 	uint8_t fivr_spread_spectrum;
 	/* Enable or Disable Acoustic Noise Mitigation feature */
 	uint8_t acoustic_noise_mitigation;
+	/*
+	 * Acoustic Noise Mitigation Range. Defines the maximum Pre-Wake
+	 * randomization time in micro ticks. This can be programmed only
+	 * if AcousticNoiseMitigation is enabled.
+	 * Range 0-255
+	 */
+	uint8_t PreWake;
 	/* Disable Fast Slew Rate for Deep Package C States for VR domains */
 	uint8_t fast_pkg_c_ramp_disable[NUM_VR_DOMAINS];
 	/*

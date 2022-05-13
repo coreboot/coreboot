@@ -835,6 +835,7 @@ static void fill_fsps_acoustic_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->AcousticNoiseMitigation = config->acoustic_noise_mitigation;
 
 	if (s_cfg->AcousticNoiseMitigation) {
+		s_cfg->PreWake = config->PreWake;
 		for (int i = 0; i < NUM_VR_DOMAINS; i++) {
 			s_cfg->FastPkgCRampDisable[i] = config->fast_pkg_c_ramp_disable[i];
 			s_cfg->SlowSlewRate[i] = config->slow_slew_rate[i];

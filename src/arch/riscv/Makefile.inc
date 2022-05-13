@@ -47,31 +47,34 @@ COMPILER_RT_romstage  = $(shell  $(GCC_romstage) $(simple_riscv_flags) -print-li
 
 COMPILER_RT_ramstage  = $(shell  $(GCC_ramstage) $(simple_riscv_flags) -print-libgcc-file-name)
 
+## All stages
+
+all-y += trap_util.S
+all-y += trap_handler.c
+all-y += fp_asm.S
+all-y += misaligned.c
+all-y += sbi.c
+all-y += mcall.c
+all-y += virtual_memory.c
+all-y += boot.c
+all-y += smp.c
+all-y += misc.c
+all-$(ARCH_RISCV_PMP) += pmp.c
+all-y += \
+	$(top)/src/lib/memchr.c \
+	$(top)/src/lib/memcmp.c \
+	$(top)/src/lib/memcpy.c \
+	$(top)/src/lib/memmove.c \
+	$(top)/src/lib/memset.c
+all-$(CONFIG_RISCV_USE_ARCH_TIMER) += arch_timer.c
+
+
 ################################################################################
 ## bootblock
 ################################################################################
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_RISCV),y)
 
 bootblock-y = bootblock.S
-bootblock-y += trap_util.S
-bootblock-y += trap_handler.c
-bootblock-y += fp_asm.S
-bootblock-y += misaligned.c
-bootblock-y += sbi.c
-bootblock-y += mcall.c
-bootblock-y += virtual_memory.c
-bootblock-y += boot.c
-bootblock-y += smp.c
-bootblock-y += misc.c
-bootblock-$(ARCH_RISCV_PMP) += pmp.c
-bootblock-y += \
-	$(top)/src/lib/memchr.c \
-	$(top)/src/lib/memcmp.c \
-	$(top)/src/lib/memcpy.c \
-	$(top)/src/lib/memmove.c \
-	$(top)/src/lib/memset.c
-
-bootblock-$(CONFIG_RISCV_USE_ARCH_TIMER) += arch_timer.c
 
 $(objcbfs)/bootblock.debug: $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
@@ -93,19 +96,7 @@ endif #CONFIG_ARCH_BOOTBLOCK_RISCV
 ################################################################################
 ifeq ($(CONFIG_ARCH_ROMSTAGE_RISCV),y)
 
-romstage-y += boot.c
 romstage-y += romstage.c
-romstage-y += misc.c
-romstage-$(ARCH_RISCV_PMP) += pmp.c
-romstage-y += smp.c
-romstage-y += \
-	$(top)/src/lib/memchr.c \
-	$(top)/src/lib/memcmp.c \
-	$(top)/src/lib/memcpy.c \
-	$(top)/src/lib/memmove.c \
-	$(top)/src/lib/memset.c
-
-romstage-$(CONFIG_RISCV_USE_ARCH_TIMER) += arch_timer.c
 
 # Build the romstage
 
@@ -129,28 +120,9 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
 
 ramstage-y =
 ramstage-y += ramstage.S
-ramstage-y += mcall.c
-ramstage-y += trap_util.S
-ramstage-y += trap_handler.c
-ramstage-y += fp_asm.S
-ramstage-y += misaligned.c
-ramstage-y += sbi.c
-ramstage-y += virtual_memory.c
-ramstage-y += misc.c
-ramstage-y += smp.c
-ramstage-y += boot.c
 ramstage-y += tables.c
 ramstage-y += payload.c
-ramstage-$(ARCH_RISCV_PMP) += pmp.c
 ramstage-y += fit_payload.c
-ramstage-y += \
-	$(top)/src/lib/memchr.c \
-	$(top)/src/lib/memcmp.c \
-	$(top)/src/lib/memcpy.c \
-	$(top)/src/lib/memmove.c \
-	$(top)/src/lib/memset.c
-
-ramstage-$(CONFIG_RISCV_USE_ARCH_TIMER) += arch_timer.c
 
 $(eval $(call create_class_compiler,rmodules,riscv))
 

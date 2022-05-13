@@ -293,7 +293,7 @@ void soc_lpi_get_constraints(void *unused)
 				break;
 
 			case DEVICE_PATH_APIC:
-				char path[32];
+				char path[32] = {0};
 
 				/* Lookup CPU id */
 				for (size_t i = 0; i < CONFIG_MAX_CPUS; i++) {

@@ -369,18 +369,9 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 
 	info = cpu_info();
 	for (i = 1; i < max_cpus; i++) {
-		struct device_path cpu_path;
-		struct device *new;
-
-		/* Build the CPU device path */
-		cpu_path.type = DEVICE_PATH_APIC;
-
 		/* Assuming linear APIC space allocation. AP will set its own
 		   APIC id in the ap_init() path above. */
-		cpu_path.apic.apic_id = info->cpu->path.apic.apic_id + i;
-
-		/* Allocate the new CPU device structure */
-		new = alloc_find_dev(cpu_bus, &cpu_path);
+		struct device *new = add_cpu_device(cpu_bus, info->cpu->path.apic.apic_id + i, 1);
 		if (new == NULL) {
 			printk(BIOS_CRIT, "Could not allocate CPU device\n");
 			max_cpus--;
@@ -532,7 +523,6 @@ static enum cb_err bsp_do_flight_plan(struct mp_params *mp_params)
 
 static enum cb_err init_bsp(struct bus *cpu_bus)
 {
-	struct device_path cpu_path;
 	struct cpu_info *info;
 
 	/* Print processor name */
@@ -543,13 +533,15 @@ static enum cb_err init_bsp(struct bus *cpu_bus)
 	enable_lapic();
 	setup_lapic_interrupts();
 
-	/* Set the device path of the boot CPU. */
-	cpu_path.type = DEVICE_PATH_APIC;
-	cpu_path.apic.apic_id = lapicid();
+	struct device *bsp = add_cpu_device(cpu_bus, lapicid(), 1);
+	if (bsp == NULL) {
+		printk(BIOS_CRIT, "Failed to find or allocate BSP struct device\n");
+		return CB_ERR;
+	}
 
 	/* Find the device structure for the boot CPU. */
 	info = cpu_info();
-	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
+	info->cpu = bsp;
 	info->cpu->name = processor_name;
 
 	if (info->index != 0) {

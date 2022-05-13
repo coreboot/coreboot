@@ -1,4 +1,8 @@
 fw_config
+	field  USBC0_RETIMER	2	3
+		option	USBC0_RETIMER_ABSENT	0
+		option	USBC0_RETIMER_PRESENT	1
+	end
 	field  STORAGE  4	5
 		option	STORAGE_UNKNOWN	0
 		option	STORAGE_NVME	1

@@ -96,7 +96,7 @@ endif #CONFIG_ARCH_BOOTBLOCK_RISCV
 ################################################################################
 ifeq ($(CONFIG_ARCH_ROMSTAGE_RISCV),y)
 
-romstage-y += romstage.c
+romstage-y += romstage.S
 
 # Build the romstage
 

@@ -8,8 +8,4 @@ PHDRS
 	to_load PT_LOAD;
 }
 
-#if ENV_BOOTBLOCK || ENV_RAMSTAGE
 ENTRY(_start)
-#else
-ENTRY(stage_entry)
-#endif

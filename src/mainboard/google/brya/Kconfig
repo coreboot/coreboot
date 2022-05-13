@@ -122,6 +122,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x1 if BOARD_GOOGLE_CROTA
 	default 0x1 if BOARD_GOOGLE_MOLI
 	default 0x1 if BOARD_GOOGLE_OSIRIS
+	default 0x1 if BOARD_GOOGLE_MITHRAX
 
 config DRIVER_TPM_I2C_ADDR
 	hex

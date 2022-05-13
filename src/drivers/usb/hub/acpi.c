@@ -8,8 +8,11 @@
 
 static const char *usb_hub_acpi_name(const struct device *dev)
 {
-	char *name;
 	const char *pattern;
+	struct drivers_usb_hub_config *config = dev->chip_info;
+
+	if (config->acpi_name[0] != 0)
+		return config->acpi_name;
 
 	/* USB ACPI driver does not have acpi_name operation defined. Hence return
 	   the ACPI name for both the hub and any downstream facing ports. */
@@ -26,11 +29,10 @@ static const char *usb_hub_acpi_name(const struct device *dev)
 		return NULL;
 	}
 
-	name = malloc(ACPI_NAME_BUFFER_SIZE);
-	snprintf(name, ACPI_NAME_BUFFER_SIZE, pattern, dev->path.usb.port_id + 1);
-	name[4] = '\0';
+	snprintf(config->acpi_name, sizeof(config->acpi_name), pattern,
+		 dev->path.usb.port_id + 1);
 
-	return name;
+	return config->acpi_name;
 }
 
 static void usb_hub_add_ports(const struct device *dev)

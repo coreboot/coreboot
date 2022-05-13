@@ -107,7 +107,7 @@ struct saved_msr {
 /* The sipi vector rmodule is included in the ramstage using 'objdump -B'. */
 extern char _binary_sipi_vector_start[];
 
-/* The SIPI vector is loaded at the SMM_DEFAULT_BASE. The reason is at the
+/* The SIPI vector is loaded at the SMM_DEFAULT_BASE. The reason is that the
  * memory range is already reserved so the OS cannot use it. That region is
  * free to use for AP bringup before SMM is initialized. */
 static const uintptr_t sipi_vector_location = SMM_DEFAULT_BASE;
@@ -120,9 +120,6 @@ struct mp_flight_plan {
 
 static int global_num_aps;
 static struct mp_flight_plan mp_info;
-
-/* Keep track of device structure for each CPU. */
-static struct device *cpus_dev[CONFIG_MAX_CPUS];
 
 static inline void barrier_wait(atomic_t *b)
 {
@@ -175,6 +172,8 @@ static void park_this_cpu(void *unused)
 	stop_this_cpu();
 }
 
+static struct bus *g_cpu_bus;
+
 /* By the time APs call ap_init() caching has been setup, and microcode has
  * been loaded. */
 static void asmlinkage ap_init(void)
@@ -185,7 +184,11 @@ static void asmlinkage ap_init(void)
 	enable_lapic();
 	setup_lapic_interrupts();
 
-	info->cpu = cpus_dev[info->index];
+	struct device *dev = g_cpu_bus->children;
+	for (unsigned int i = info->index; i > 0; i--)
+		dev = dev->sibling;
+
+	info->cpu = dev;
 
 	cpu_add_map_entry(info->index);
 
@@ -384,7 +387,6 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 			continue;
 		}
 		new->name = processor_name;
-		cpus_dev[i] = new;
 	}
 
 	return max_cpus;
@@ -578,6 +580,8 @@ static enum cb_err mp_init(struct bus *cpu_bus, struct mp_params *p)
 {
 	int num_cpus;
 	atomic_t *ap_count;
+
+	g_cpu_bus = cpu_bus;
 
 	init_bsp(cpu_bus);
 

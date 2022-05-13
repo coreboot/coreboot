@@ -61,12 +61,12 @@ enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 	if (cpu_record_size) {
 		cl_data = new_cper_fw_error_crashlog(status, cpu_record_size);
 		if (!cl_data) {
-			printk(BIOS_ERR, "Crashlog CPU entry(size %lu) "
+			printk(BIOS_ERR, "Crashlog CPU entry(size %zu) "
 				"would exceed available region\n",
 				cpu_record_size);
 			return CB_ERR;
 		}
-		printk(BIOS_DEBUG, "cl_data %p, cpu_record_size %lu\n",
+		printk(BIOS_DEBUG, "cl_data %p, cpu_record_size %zu\n",
 			cl_data, cpu_record_size);
 		cl_fill_cpu_records(cl_data);
 	}
@@ -82,12 +82,12 @@ enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 
 		cl_data = new_cper_fw_error_crashlog(status, pmc_record_size);
 		if (!cl_data) {
-			printk(BIOS_ERR, "Crashlog PMC entry(size %lu) "
+			printk(BIOS_ERR, "Crashlog PMC entry(size %zu) "
 				"would exceed available region\n",
 				pmc_record_size);
 			return CB_ERR;
 		}
-		printk(BIOS_DEBUG, "cl_data %p, pmc_record_size %lu\n",
+		printk(BIOS_DEBUG, "cl_data %p, pmc_record_size %zu\n",
 			cl_data, pmc_record_size);
 		cl_fill_pmc_records(cl_data);
 	}

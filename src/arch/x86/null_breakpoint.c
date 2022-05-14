@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 #include <arch/breakpoint.h>
 #include <arch/null_breakpoint.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <stdint.h>
 
@@ -55,3 +56,12 @@ void null_breakpoint_init(void)
 	create_deref_breakpoint();
 	create_instruction_breakpoint();
 }
+
+static void null_breakpoint_disable(void *unused)
+{
+	breakpoint_remove(null_fetch_bp);
+	breakpoint_remove(null_deref_bp);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, null_breakpoint_disable, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, null_breakpoint_disable, NULL);

@@ -286,6 +286,7 @@ void soc_lpi_get_constraints(void *unused)
 
 		acpigen_write_package(3);
 		{
+			char path[32] = { 0 };
 			/* Emit the device path */
 			switch (dev->path.type) {
 			case DEVICE_PATH_PCI:
@@ -293,8 +294,6 @@ void soc_lpi_get_constraints(void *unused)
 				break;
 
 			case DEVICE_PATH_APIC:
-				char path[32] = {0};
-
 				/* Lookup CPU id */
 				for (size_t i = 0; i < CONFIG_MAX_CPUS; i++) {
 					if (cpu_get_apic_id(i) == dev->path.apic.apic_id) {

@@ -32,5 +32,6 @@ distclean: clean
 clean:
 	# Redefine RM because it's used like `$(RM) non-existent-file`
 	# Also ignore useless messages about removing test files
-	[ ! -d $(skiboot_dir) ] || $(MAKE) -C $(skiboot_dir) RM="rm -rf" clean > /dev/null
+	[ ! -d $(skiboot_dir) ] || \
+	        $(MAKE) -C $(skiboot_dir) RM="rm -rf" CROSS="$(skiboot_cross)" clean > /dev/null
 	rm -rf $(build_dir)

@@ -211,24 +211,6 @@ static void set_cpu_ops(struct device *cpu)
 	cpu->ops = driver ? driver->ops : NULL;
 }
 
-/* Keep track of default APIC ids for SMM. */
-static int cpus_default_apic_id[CONFIG_MAX_CPUS];
-
-/* Function to keep track of cpu default apic_id */
-void cpu_add_map_entry(unsigned int index)
-{
-	cpus_default_apic_id[index] = initial_lapicid();
-}
-
-/* Returns default APIC id based on logical_cpu number or < 0 on failure. */
-int cpu_get_apic_id(int logical_cpu)
-{
-	if (logical_cpu >= CONFIG_MAX_CPUS || logical_cpu < 0)
-		return -1;
-
-	return cpus_default_apic_id[logical_cpu];
-}
-
 void cpu_initialize(void)
 {
 	/* Because we busy wait at the printk spinlock.

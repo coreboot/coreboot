@@ -13,6 +13,7 @@ struct device *add_cpu_device(struct bus *cpu_bus, unsigned int apic_id,
 	/* Build the CPU device path */
 	cpu_path.type = DEVICE_PATH_APIC;
 	cpu_path.apic.apic_id = apic_id;
+	cpu_path.apic.initial_lapicid = apic_id;
 
 	/* Update CPU in devicetree. */
 	if (enabled)

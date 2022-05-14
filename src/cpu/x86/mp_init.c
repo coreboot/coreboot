@@ -195,18 +195,16 @@ static asmlinkage void ap_init(unsigned int index)
 
 	set_cpu_info(index, dev);
 
-	struct cpu_info *info = cpu_info();
-	cpu_add_map_entry(info->index);
-
 	/* Fix up APIC id with reality. */
-	info->cpu->path.apic.apic_id = lapicid();
+	dev->path.apic.apic_id = lapicid();
+	dev->path.apic.initial_lapicid = initial_lapicid();
 
 	if (cpu_is_intel())
-		printk(BIOS_INFO, "AP: slot %zu apic_id %x, MCU rev: 0x%08x\n", info->index,
-		       info->cpu->path.apic.apic_id, get_current_microcode_rev());
+		printk(BIOS_INFO, "AP: slot %u apic_id %x, MCU rev: 0x%08x\n", index,
+		       dev->path.apic.apic_id, get_current_microcode_rev());
 	else
-		printk(BIOS_INFO, "AP: slot %zu apic_id %x\n", info->index,
-		       info->cpu->path.apic.apic_id);
+		printk(BIOS_INFO, "AP: slot %u apic_id %x\n", index,
+		       dev->path.apic.apic_id);
 
 	/* Walk the flight plan */
 	ap_do_flight_plan();
@@ -547,6 +545,7 @@ static enum cb_err init_bsp(struct bus *cpu_bus)
 		printk(BIOS_CRIT, "Failed to find or allocate BSP struct device\n");
 		return CB_ERR;
 	}
+	bsp->path.apic.initial_lapicid = initial_lapicid();
 
 	/* Find the device structure for the boot CPU. */
 	set_cpu_info(0, bsp);
@@ -558,9 +557,6 @@ static enum cb_err init_bsp(struct bus *cpu_bus)
 		printk(BIOS_CRIT, "BSP index(%zd) != 0!\n", info->index);
 		return CB_ERR;
 	}
-
-	/* Track BSP in cpu_map structures. */
-	cpu_add_map_entry(info->index);
 	return CB_SUCCESS;
 }
 
@@ -748,11 +744,12 @@ static asmlinkage void smm_do_relocation(void *arg)
 
 static void adjust_smm_apic_id_map(struct smm_loader_params *smm_params)
 {
-	int i;
 	struct smm_stub_params *stub_params = smm_params->stub_params;
 
-	for (i = 0; i < CONFIG_MAX_CPUS; i++)
-		stub_params->apic_id_to_cpu[i] = cpu_get_apic_id(i);
+	int i = 0;
+	for (struct device *dev = g_cpu_bus->children; dev; dev = dev->sibling)
+		if (dev->enabled)
+			stub_params->apic_id_to_cpu[i++] = dev->path.apic.initial_lapicid;
 }
 
 static enum cb_err install_relocation_handler(int num_cpus, size_t save_state_size)

@@ -47,7 +47,7 @@ int send_ec_command_timeout(u8 command, int timeout_us)
 	if (!ec_ready_send(timeout_us)) {
 		printk(BIOS_DEBUG, "Timeout while sending command 0x%02x to EC!\n",
 				command);
-		// return -1;
+		return -1;
 	}
 
 	outb(command, ec_cmd_reg);
@@ -65,7 +65,7 @@ int send_ec_data_timeout(u8 data, int timeout_us)
 	if (!ec_ready_send(timeout_us)) {
 		printk(BIOS_DEBUG, "Timeout while sending data 0x%02x to EC!\n",
 				data);
-		// return -1;
+		return -1;
 	}
 
 	outb(data, ec_data_reg);
@@ -73,18 +73,18 @@ int send_ec_data_timeout(u8 data, int timeout_us)
 	return 0;
 }
 
-u8 recv_ec_data(void)
+int recv_ec_data(void)
 {
 	return recv_ec_data_timeout(EC_RECV_TIMEOUT_US);
 }
 
-u8 recv_ec_data_timeout(int timeout_us)
+int recv_ec_data_timeout(int timeout_us)
 {
 	u8 data;
 
 	if (!ec_ready_recv(timeout_us)) {
 		printk(BIOS_DEBUG, "Timeout while receiving data from EC!\n");
-		// return -1;
+		return -1;
 	}
 
 	data = inb(ec_data_reg);

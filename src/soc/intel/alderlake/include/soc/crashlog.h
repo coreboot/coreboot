@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #ifndef _SOC_COMMON_BLOCK_CRASHLOG_LIB_H_
-#define _SOC_COMMON_BLOCK_CRASHLIB_LIB_H_
+#define _SOC_COMMON_BLOCK_CRASHLOG_LIB_H_
 
 #include <types.h>
 

@@ -93,6 +93,8 @@ bootblock-$(CONFIG_BOOTBLOCK_NORMAL) += bootblock_normal.c
 bootblock-y += gdt_init.S
 bootblock-y += id.S
 bootblock-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
+bootblock-y += bootblock.ld
+bootblock-y += car.ld
 
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
@@ -142,6 +144,8 @@ verstage-$(CONFIG_VBOOT_SEPARATE_VERSTAGE) += verstage.c
 
 verstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 
+verstage-y += car.ld
+
 verstage-libs ?=
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32),y)
@@ -177,6 +181,7 @@ romstage-$(CONFIG_COLLECT_TIMESTAMPS_TSC) += timestamp.c
 romstage-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 romstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 romstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
+romstage-y += car.ld
 
 romstage-srcs += $(wildcard $(src)/mainboard/$(MAINBOARDDIR)/romstage.c)
 romstage-libs ?=

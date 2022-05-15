@@ -21,16 +21,16 @@ SECTIONS
 	 * Link at 32MiB address and rely on cbfstool to relocate to XIP. */
 	ROMSTAGE(CONFIG_ROMSTAGE_ADDR, 1M)
 
-	#include "car.ld"
+	INCLUDE "romstage/arch/x86/car.ld"
 #elif ENV_SEPARATE_VERSTAGE
 	/* The 1M size is not allocated. It's just for basic size checking.
 	 * Link at 32MiB address and rely on cbfstool to relocate to XIP. */
 	VERSTAGE(CONFIG_VERSTAGE_ADDR, 1M)
 
-	#include "car.ld"
+	INCLUDE "verstage/arch/x86/car.ld"
 #elif ENV_BOOTBLOCK
 
-	#include "car.ld"
+	INCLUDE "bootblock/arch/x86/car.ld"
 
 #elif ENV_POSTCAR
 	POSTCAR(32M, 1M)
@@ -38,5 +38,5 @@ SECTIONS
 }
 
 #if ENV_BOOTBLOCK
-#include <arch/x86/bootblock.ld>
+	INCLUDE "bootblock/arch/x86/bootblock.ld"
 #endif  /* ENV_BOOTBLOCK */

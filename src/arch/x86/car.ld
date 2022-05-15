@@ -2,6 +2,7 @@
 
 /* CACHE_ROM_SIZE defined here. */
 #include <cpu/x86/mtrr.h>
+#include <memlayout.h>
 
 /* This file is included inside a SECTIONS block */
 . = CONFIG_DCACHE_RAM_BASE;

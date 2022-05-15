@@ -1,5 +1,5 @@
 #ifndef __CB_BDK_REQUIRE_H__
-#define __CB_BDK_REQIORE_H__
+#define __CB_BDK_REQUIRE_H__
 /***********************license start***********************************
 * Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
 * reserved.

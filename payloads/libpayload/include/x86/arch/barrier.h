@@ -27,7 +27,7 @@
  *
  */
 
-#ifndef __ARCH_BARRIER_H_
+#ifndef __ARCH_BARRIER_H__
 #define __ARCH_BARRIER_H__
 
 #define mb()

@@ -2,7 +2,7 @@
 
 #include <device/device.h>
 
-#ifndef _IMPI_CHIP_H_
+#ifndef _IPMI_CHIP_H_
 #define _IPMI_CHIP_H_
 
 #include <stdint.h>

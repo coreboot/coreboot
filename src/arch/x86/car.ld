@@ -115,13 +115,8 @@ _rom_mtrr_base = _rom_mtrr_mask;
 
 . = 0xffffff00;
 .illegal_globals . : {
-#if CONFIG(AGESA_BROKEN_DATA_SECTION)
-	*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data)
-	*(EXCLUDE_FILE ("*/libagesa.*.a:" "*/romstage*/buildOpts.o" "*/romstage*/agesawrapper.o" "*/vendorcode/amd/agesa/*" "*/vendorcode/amd/cimx/*") .data.*)
-#else
 	*(.data)
 	*(.data.*)
-#endif
 }
 
 _bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");

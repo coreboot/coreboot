@@ -105,6 +105,22 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	EJ8A, 8,	// EJ898A Firmware Version
 
 	Offset(0xc0),
+	UCSV, 16,	// UCSI DS Version
+	UCSD, 16,	// UCSI DS Reserved
+	CCI0, 8,	// UCSI DS CCI 0
+	CCI1, 8,	// UCSI DS CCI 1
+	CCI2, 8,	// UCSI DS CCI 2
+	CCI3, 8,	// UCSI DS CCI 3
+	CTL0, 8,	// UCSI DS Control 0
+	CTL1, 8,	// UCSI DS Control 0
+	CTL2, 8,	// UCSI DS Control 0
+	CTL3, 8,	// UCSI DS Control 0
+	CTL4, 8,	// UCSI DS Control 0
+	CTL5, 8,	// UCSI DS Control 0
+	CTL6, 8,	// UCSI DS Control 0
+	CTL7, 8,	// UCSI DS Control 0
+
+	Offset(0xd0),
 	MGI0, 8,	// UCSI DS MGI 0
 	MGI1, 8,	// UCSI DS MGI 1
 	MGI2, 8,	// UCSI DS MGI 2
@@ -122,7 +138,7 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	MGIE, 8,	// UCSI DS MGI E
 	MGIF, 8,	// UCSI DS MGI F
 
-	Offset(0xd0),
+	Offset(0xe0),
 	MGO0, 8,	// UCSI DS MGO 0
 	MGO1, 8,	// UCSI DS MGO 1
 	MGO2, 8,	// UCSI DS MGO 2
@@ -139,22 +155,6 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	MGOD, 8,	// UCSI DS MGO D
 	MGOE, 8,	// UCSI DS MGO E
 	MGOF, 8,	// UCSI DS MGO F
-
-	Offset(0xe0),
-	UCSV, 16,	// UCSI DS Version
-	UCSD, 16,	// UCSI DS Reserved
-	CCI0, 8,	// UCSI DS CCI 0
-	CCI1, 8,	// UCSI DS CCI 1
-	CCI2, 8,	// UCSI DS CCI 2
-	CCI3, 8,	// UCSI DS CCI 3
-	CTL0, 8,	// UCSI DS Control 0
-	CTL1, 8,	// UCSI DS Control 0
-	CTL2, 8,	// UCSI DS Control 0
-	CTL3, 8,	// UCSI DS Control 0
-	CTL4, 8,	// UCSI DS Control 0
-	CTL5, 8,	// UCSI DS Control 0
-	CTL6, 8,	// UCSI DS Control 0
-	CTL7, 8,	// UCSI DS Control 0
 
 	Offset(0xf0),
 	P0SD, 8,	// PD Port Status DD

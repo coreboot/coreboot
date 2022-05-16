@@ -20,9 +20,9 @@ static void program_mac_address(struct device *dev, void *base)
 	printk(BIOS_DEBUG, "TSN GbE: Programming MAC Address...\n");
 
 	/* Write the upper 16 bits of the first 6-byte MAC address */
-	clrsetbits32((void *)(base + TSN_MAC_ADD0_HIGH), 0xffff, ((mac[5] << 8) | mac[4]));
+	clrsetbits32(base + TSN_MAC_ADD0_HIGH, 0xffff, ((mac[5] << 8) | mac[4]));
 	/* Write the lower 32 bits of the first 6-byte MAC address */
-	clrsetbits32((void *)(base + TSN_MAC_ADD0_LOW), 0xffffffff,
+	clrsetbits32(base + TSN_MAC_ADD0_LOW, 0xffffffff,
 			(mac[3] << 24) | (mac[2] << 16) | (mac[1] << 8) | mac[0]);
 }
 
@@ -30,10 +30,10 @@ static void gbe_tsn_init(struct device *dev)
 {
 	/* Get the base address of the I/O registers in memory space */
 	struct resource *gbe_tsn_res = find_resource(dev, PCI_BASE_ADDRESS_0);
-	uintptr_t io_mem_base = gbe_tsn_res->base;
+	void *io_mem_base = (void *)(uintptr_t)gbe_tsn_res->base;
 
 	/* Program MAC address */
-	program_mac_address(dev, (void *)io_mem_base);
+	program_mac_address(dev, io_mem_base);
 }
 
 static struct device_operations gbe_tsn_ops  = {

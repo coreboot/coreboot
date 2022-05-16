@@ -1,6 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#pragma pack(push)
 #include <AGESA.h>
+#pragma pack(pop)
+
 #include <amdlib.h>
 
 #include <cbmem.h>

@@ -17,6 +17,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_A21, NONE),
 	/* A22 : DDPC_CTRLDATA ==> NC */
 	PAD_NC(GPP_A22, NONE),
+	/* A23 : ESPI_CS1# ==> AUD_HP_INT_L */
+	PAD_CFG_GPI_APIC(GPP_A23, NONE, PLTRST, LEVEL, INVERT),
 
 	/* B2  : VRALERT# ==> NC */
 	PAD_NC(GPP_B2, NONE),

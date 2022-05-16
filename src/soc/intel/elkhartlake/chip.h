@@ -234,20 +234,12 @@ struct soc_intel_elkhartlake_config {
 	/* Enable if SD Card Power Enable Signal is Active High */
 	uint8_t SdCardPowerEnableActiveHigh;
 
-	/* Gfx related */
+	/* HECI related */
 	uint8_t Heci2Enable;
 	uint8_t Heci3Enable;
 
-	/* Gfx related */
-	uint8_t SkipExtGfxScan;
-
-	uint8_t Device4Enable;
-
 	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
 	uint8_t eist_enable;
-
-	/* Enable C6 DRAM */
-	uint8_t enable_c6dram;
 
 	/*
 	 * SerialIO device mode selection:
@@ -308,9 +300,6 @@ struct soc_intel_elkhartlake_config {
 	/* GPIO SD card detect pin */
 	unsigned int sdcard_cd_gpio;
 
-	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
-	bool CnviBtAudioOffload;
-
 	/*
 	 * Override GPIO PM configuration:
 	 * 0: Use FSP default GPIO PM program,
@@ -356,22 +345,6 @@ struct soc_intel_elkhartlake_config {
 	uint8_t DdiPort3Ddc;
 	uint8_t DdiPort4Ddc;
 
-	/* Hybrid storage mode enable (1) / disable (0)
-	 * This mode makes FSP detect Optane and NVME and set PCIe lane mode
-	 * accordingly */
-	uint8_t HybridStorageMode;
-
-	/*
-	 * Override CPU flex ratio value:
-	 * CPU ratio value controls the maximum processor non-turbo ratio.
-	 * Valid Range 0 to 63.
-	 * In general descriptor provides option to set default cpu flex ratio.
-	 * Default cpu flex ratio 0 ensures booting with non-turbo max frequency.
-	 * That's the reason FSP skips cpu_ratio override if cpu_ratio is 0.
-	 * Only override CPU flex ratio to not boot with non-turbo max.
-	 */
-	uint8_t cpu_ratio_override;
-
 	/* Skip CPU replacement check
 	 * 0: disable
 	 * 1: enable
@@ -403,59 +376,6 @@ struct soc_intel_elkhartlake_config {
 		/* RFI spread spectrum, in 0.1% increment. Range: 0.0% to 10.0% (0-100). */
 		unsigned int spread_spectrum;
 	} fivr;
-
-	/*
-	 * SLP_S3 Minimum Assertion Width Policy
-	 *  1 = 60us
-	 *  2 = 1ms
-	 *  3 = 50ms (default)
-	 *  4 = 2s
-	 */
-	uint8_t PchPmSlpS3MinAssert;
-
-	/*
-	 * SLP_S4 Minimum Assertion Width Policy
-	 *  1 = 1s (default)
-	 *  2 = 2s
-	 *  3 = 3s
-	 *  4 = 4s
-	 */
-	uint8_t PchPmSlpS4MinAssert;
-
-	/*
-	 * SLP_SUS Minimum Assertion Width Policy
-	 *  1 = 0ms
-	 *  2 = 500ms
-	 *  3 = 1s
-	 *  4 = 4s (default)
-	 */
-	uint8_t PchPmSlpSusMinAssert;
-
-	/*
-	 * SLP_A Minimum Assertion Width Policy
-	 *  1 = 0ms
-	 *  2 = 4s
-	 *  3 = 98ms
-	 *  4 = 2s (default)
-	 */
-	uint8_t PchPmSlpAMinAssert;
-
-	/*
-	 * PCH PM Reset Power Cycle Duration
-	 *  0 = 4s (default)
-	 *  1 = 1s
-	 *  2 = 2s
-	 *  3 = 3s
-	 *  4 = 4s
-	 *
-	 * NOTE: Duration programmed in the PchPmPwrCycDur should never be smaller than the
-	 * stretch duration programmed in the following registers:
-	 *  - GEN_PMCON_A.SLP_S3_MIN_ASST_WDTH (PchPmSlpS3MinAssert)
-	 *  - GEN_PMCON_A.S4MAW (PchPmSlpS4MinAssert)
-	 *  - PM_CFG.SLP_A_MIN_ASST_WDTH (PchPmSlpAMinAssert)
-	 *  - PM_CFG.SLP_LAN_MIN_ASST_WDTH
-	 */
-	uint8_t PchPmPwrCycDur;
 
 	/*
 	 * PCH power button override period.

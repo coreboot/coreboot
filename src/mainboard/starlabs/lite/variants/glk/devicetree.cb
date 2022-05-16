@@ -105,7 +105,8 @@ chip soc/intel/apollolake
 			register "usb3_port[1]"		= "PORT_EN(OC0)"
 			# Daughterboard USB 3.0
 			register "usb3_port[2]"		= "PORT_EN(OC0)"
-		end		device pci 15.1 off end						# XDCI
+		end
+		device pci 15.1 off end						# XDCI
 		device pci 16.0 off end						# I2C0
 		device pci 16.1 off end						# I2C1
 		device pci 16.2 off end						# I2C2
@@ -152,7 +153,7 @@ chip soc/intel/apollolake
 				device pnp 4e.19 off end			# Power Management Channel 5
 			end
 		end
-		device pci 1f.1 off  end						# SMBus
+		device pci 1f.1 off  end					# SMBus
 	end
 	chip drivers/crb
 		device mmio 0xfed40000 on end

@@ -102,7 +102,7 @@ RDATA_GROUP (G1_PEICC)
  * Sweep Table For Byte Training without insertion delay
  *
 */
-DQS_POS_SWEEP_TABLE SweepTableByte[] =
+CONST DQS_POS_SWEEP_TABLE SweepTableByte[] =
 {
   //     Begin  End   Inc/Dec  Step  EndResult Edge
   {      0x00,  0x1F, INC_DELAY,  4, 0xFFFF,   LEFT_EDGE},  /// For Left Edge, start from 0 and Increment to 0x1F by 4 until all PASS
@@ -114,7 +114,7 @@ DQS_POS_SWEEP_TABLE SweepTableByte[] =
  * Sweep Table For Byte Training with insertion delay
  *
 */
-DQS_POS_SWEEP_TABLE InsSweepTableByte[] =
+CONST DQS_POS_SWEEP_TABLE InsSweepTableByte[] =
 {
   //     Begin  End   Inc/Dec  Step  EndResult Edge
   {      0x00, -0x20, DEC_DELAY, -4, 0xFE00, LEFT_EDGE},  /// For Left Edge, start from 0 and Decrement to -0x20 by -4 until all FAIL
@@ -402,7 +402,7 @@ MemTTrainDQSEdgeDetect (
 {
   MEM_NB_BLOCK         *NBPtr;
   DIE_STRUCT           *MCTPtr;
-  DQS_POS_SWEEP_TABLE  *SweepTablePtr;
+  CONST DQS_POS_SWEEP_TABLE  *SweepTablePtr;
   UINT8                SweepTableSize;
   SWEEP_INFO           SweepData;
   BOOLEAN              Status;
@@ -893,4 +893,3 @@ MemTDataEyeSave (
     ChanPtr->WrDatDlys[Dimm] = EyeCenter + ChanPtr->WrDqsDlys[Dimm];
   }
 }
-

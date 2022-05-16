@@ -126,7 +126,7 @@ typedef BOOLEAN OPTION_MEM_FEATURE_MAIN (
 typedef BOOLEAN MEM_NB_CONSTRUCTOR (
   IN OUT   MEM_NB_BLOCK *NBPtr,
   IN OUT   MEM_DATA_STRUCT *MemPtr,
-  IN       MEM_FEAT_BLOCK_NB *FeatPtr,
+  CONST IN       MEM_FEAT_BLOCK_NB *FeatPtr,
   IN       MEM_SHARED_DATA *mmSharedPtr,     ///< Pointer to Memory scratchpad
   IN       UINT8 NodeID
   );
@@ -243,7 +243,7 @@ typedef struct _MEM_NB_SUPPORT {
   UINT16              MemNBSupportVersion; ///< Version of northbridge support.
   MEM_NB_CONSTRUCTOR  *MemConstructNBBlock; ///< NorthBridge block constructor.
   MEM_INITIALIZER     *MemNInitDefaults; ///< Default value initialization for MEM_DATA_STRUCT.
-  MEM_FEAT_BLOCK_NB      *MemFeatBlock; ///< Memory feature block.
+  CONST MEM_FEAT_BLOCK_NB      *MemFeatBlock; ///< Memory feature block.
   MEM_RESUME_CONSTRUCTOR *MemS3ResumeConstructNBBlock; ///< S3 memory initialization northbridge block constructor.
   MEM_IDENDIMM_CONSTRUCTOR *MemIdentifyDimmConstruct; ///< Constructor for address to dimm identification.
 } MEM_NB_SUPPORT;
@@ -263,7 +263,7 @@ typedef struct _MEM_FEAT_TRAIN_SEQ {
   UINT16              OptMemTrainingSequenceListVersion; ///< Version of main feature block.
   OPTION_MEM_FEATURE_NB *TrainingSequence; ///< Training Sequence function.
   OPTION_MEM_FEATURE_NB *TrainingSequenceEnabled; ///< Enable function.
-  MEM_TECH_FEAT_BLOCK      *MemTechFeatBlock; ///< Memory feature block.
+  CONST MEM_TECH_FEAT_BLOCK      *MemTechFeatBlock; ///< Memory feature block.
 } MEM_FEAT_TRAIN_SEQ;
 
 /**

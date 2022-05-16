@@ -465,7 +465,7 @@ typedef struct _MEM_NB_BLOCK {
   CH_DEF_STRUCT *ChannelPtr;       ///< point to current channel data
   SPD_DEF_STRUCT *SPDPtr; ///< Point to SPD data for current DCT.
   struct _MEM_TECH_BLOCK *TechPtr; ///< point to technology block.
-  struct _MEM_FEAT_BLOCK_NB *FeatPtr; ///< point to NB Specific feature block.
+  CONST struct _MEM_FEAT_BLOCK_NB *FeatPtr; ///< point to NB Specific feature block.
   struct _MEM_SHARED_DATA *SharedPtr;     ///< Pointer to Memory scratchpad area
   SPD_DEF_STRUCT *AllNodeSPDPtr; ///< Point to SPD data for the system.
   DIE_STRUCT *AllNodeMCTPtr;      ///< point to all Node's MCT structs
@@ -1384,6 +1384,3 @@ MemNBfAfExcludeDimmClientNb (
   );
 
 #endif  /* _MN_H_ */
-
-
-

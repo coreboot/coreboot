@@ -207,7 +207,7 @@ VOID
 NbSmuIndirectWriteEx (
   IN      UINT8               Address,
   IN      ACCESS_WIDTH        Width,
-  IN      VOID                *Value,
+  CONST IN      VOID                *Value,
   IN      AMD_CONFIG_PARAMS   *StdHeader
   )
 {
@@ -271,7 +271,7 @@ VOID
 NbSmuIndirectWrite (
   IN      UINT8               Address,
   IN      ACCESS_WIDTH        Width,
-  IN      VOID                *Value,
+  CONST IN      VOID                *Value,
   IN      AMD_CONFIG_PARAMS   *StdHeader
   )
 {
@@ -325,7 +325,7 @@ NbSmuIndirectWriteS3Script (
 VOID
 NbSmuRcuRegisterWrite (
   IN      UINT16              Address,
-  IN      UINT32              *Value,
+  CONST IN      UINT32              *Value,
   IN      UINT32              Count,
   IN      BOOLEAN             S3Save,
   IN      AMD_CONFIG_PARAMS   *StdHeader
@@ -599,7 +599,7 @@ NbSmuSrbmRegisterWrite (
 
 VOID
 NbSmuFirmwareDownload (
-  IN      SMU_FIRMWARE_HEADER *Firmware,
+  CONST      SMU_FIRMWARE_HEADER *Firmware,
   IN      AMD_CONFIG_PARAMS   *StdHeader
   )
 {

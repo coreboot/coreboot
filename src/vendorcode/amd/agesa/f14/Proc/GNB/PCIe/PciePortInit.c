@@ -79,7 +79,7 @@
  *----------------------------------------------------------------------------------------
  */
 
-PCIE_PORT_REGISTER_ENTRY PortInitTable [] = {
+CONST PCIE_PORT_REGISTER_ENTRY PortInitTable [] = {
   {
     DxF0xE4_x02_ADDRESS,
     DxF0xE4_x02_RegsLcAllowTxL1Control_MASK,

@@ -119,7 +119,7 @@
   #define CFG_GNB_PCIE_TRAINING_ALGORITHM               PcieTrainingStandard
 #endif
 
-GNB_BUILD_OPTIONS  GnbBuildOptions = {
+CONST GNB_BUILD_OPTIONS  GnbBuildOptions = {
   CFG_IGFX_AS_PCIE_EP,
   CFG_LCLK_DEEP_SLEEP_EN,
   CFG_LCLK_DPM_EN,
@@ -190,7 +190,7 @@ GNB_BUILD_OPTIONS  GnbBuildOptions = {
     #define  OPTION_PCIEINITATEARLY_ENTRY
   #endif
 //---------------------------------------------------------------------------------------------------
-  OPTION_GNB_CONFIGURATION  GnbEarlyFeatureTable[] = {
+  CONST OPTION_GNB_CONFIGURATION  GnbEarlyFeatureTable[] = {
     OPTION_NBINITATEARLY_ENTRY
     OPTION_F12NBSMUINITFEATURE_ENTRY
     OPTION_F14NBSMUINITFEATURE_ENTRY
@@ -254,14 +254,14 @@ GNB_BUILD_OPTIONS  GnbBuildOptions = {
     #define OPTION_PCIEINITATPOST_ENTRY
   #endif
 //---------------------------------------------------------------------------------------------------
-  OPTION_GNB_CONFIGURATION  GnbPostFeatureTable[] = {
+  CONST OPTION_GNB_CONFIGURATION  GnbPostFeatureTable[] = {
     OPTION_PCIEINITATPOSTEARLY_ENTRY
     OPTION_GFXCONFIGPOSTINTERFACE_ENTRY
     OPTION_GFXINITATPOST_ENTRY
     {0, NULL}
   };
 
-  OPTION_GNB_CONFIGURATION  GnbPostAfterDramFeatureTable[] = {
+  CONST OPTION_GNB_CONFIGURATION  GnbPostAfterDramFeatureTable[] = {
     OPTION_NBINITATPOST_ENTRY
     OPTION_PCIEINITATPOST_ENTRY
     {0, NULL}
@@ -344,7 +344,7 @@ GNB_BUILD_OPTIONS  GnbBuildOptions = {
   #endif
 //---------------------------------------------------------------------------------------------------
 
-  OPTION_GNB_CONFIGURATION  GnbEnvFeatureTable[] = {
+  CONST OPTION_GNB_CONFIGURATION  GnbEnvFeatureTable[] = {
     OPTION_NBFUSETABLEFEATURE_ENTRY
     OPTION_NBINITATENVT_ENTRY
     OPTION_PCIEINITATENV_ENTRY
@@ -445,7 +445,7 @@ GNB_BUILD_OPTIONS  GnbBuildOptions = {
     #define OPTION_NBINITATLATEPOST_ENTRY
   #endif
 //---------------------------------------------------------------------------------------------------
-  OPTION_GNB_CONFIGURATION  GnbMidFeatureTable[] = {
+  CONST OPTION_GNB_CONFIGURATION  GnbMidFeatureTable[] = {
     OPTION_GFXINITATMIDPOST_ENTRY
     OPTION_GFXINTEGRATEDINFOTABLE_ENTRY
     OPTION_GNBCABLESAFEENTRY_ENTRY
@@ -471,7 +471,7 @@ GNB_BUILD_OPTIONS  GnbBuildOptions = {
     #define OPTION_PCIEALIBFEATURE_ENTRY
   #endif
 //---------------------------------------------------------------------------------------------------
-  OPTION_GNB_CONFIGURATION  GnbLateFeatureTable[] = {
+  CONST OPTION_GNB_CONFIGURATION  GnbLateFeatureTable[] = {
     OPTION_PCIEALIBFEATURE_ENTRY
     {0, NULL}
   };

@@ -47,7 +47,7 @@
 #ifndef  _F14NBSMUFIRMWARE_H_
 #define  _F14NBSMUFIRMWARE_H_
 
-UINT32 DataBlock0[] = {
+CONST UINT32 DataBlock0[] = {
   0x01060100,
   0x68d699d6,
   0xbdff018e,
@@ -1410,7 +1410,7 @@ UINT32 DataBlock0[] = {
   0x0001c004
 };
 
-UINT32 DataBlock1[] = {
+CONST UINT32 DataBlock1[] = {
   0x3f903f90,
   0x3f903f90,
   0x3f903f90,
@@ -1429,7 +1429,7 @@ UINT32 DataBlock1[] = {
   0x08900890
 };
 
-SMU_FIRMWARE_BLOCK FmBlockArray[] = {
+CONST SMU_FIRMWARE_BLOCK FmBlockArray[] = {
   {
     0x9000,
     0x550,
@@ -1442,7 +1442,7 @@ SMU_FIRMWARE_BLOCK FmBlockArray[] = {
   }
 };
 
-SMU_FIRMWARE_HEADER Fm = {
+CONST SMU_FIRMWARE_HEADER Fm = {
   {
     0x1, 0x601
   },
@@ -1450,4 +1450,3 @@ SMU_FIRMWARE_HEADER Fm = {
   &FmBlockArray[0]
 };
 #endif
-

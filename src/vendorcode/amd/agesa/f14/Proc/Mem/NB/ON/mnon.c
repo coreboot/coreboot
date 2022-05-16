@@ -117,7 +117,7 @@ BOOLEAN
 MemConstructNBBlockON (
   IN OUT   MEM_NB_BLOCK *NBPtr,
   IN OUT   MEM_DATA_STRUCT *MemPtr,
-  IN       MEM_FEAT_BLOCK_NB *FeatPtr,
+  CONST IN       MEM_FEAT_BLOCK_NB *FeatPtr,
   IN       MEM_SHARED_DATA *SharedPtr,
   IN       UINT8 NodeID
   )
@@ -460,5 +460,3 @@ memNEnableTrainSequenceON (
   }
   return Retval;
 }
-
-

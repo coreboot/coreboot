@@ -80,7 +80,7 @@
 #endif
 
 /*  Declare the instance of the DMI option configuration structure  */
-OPTION_MULTISOCKET_CONFIGURATION  OptionMultiSocketConfiguration = {
+CONST OPTION_MULTISOCKET_CONFIGURATION  OptionMultiSocketConfiguration = {
   MULTISOCKET_STRUCT_VERSION,
   GET_NUM_PM_STEPS,
   CORE0_PM_TASK,

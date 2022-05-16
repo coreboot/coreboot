@@ -108,7 +108,7 @@ PcieOnGetGppConfigurationValue (
  *           T A B L E S
  *----------------------------------------------------------------------------------------
  */
-PCIE_HOST_REGISTER_ENTRY PcieInitTable [] = {
+CONST PCIE_HOST_REGISTER_ENTRY PcieInitTable [] = {
   {
     PHY_SPACE (0, 0, D0F0xE4_PHY_6440_ADDRESS),
     D0F0xE4_PHY_6440_RxInCalForce_MASK,

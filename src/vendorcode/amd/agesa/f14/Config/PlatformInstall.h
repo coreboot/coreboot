@@ -51,7 +51,7 @@
  *
  ****************************************************************************/
 
-VOLATILE  AMD_MODULE_HEADER mCpuModuleID = {
+CONST AMD_MODULE_HEADER mCpuModuleID = {
   //ModuleHeaderSignature
   // Remove 'DOM$' as temp solution before update BinUtil.exe ,
   Int32FromChar ('0', '0', '0', '0'),
@@ -1288,7 +1288,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
  *  Generate the output structures (defaults tables)
  *
  ****************************************************************************/
-BUILD_OPT_CFG UserOptions = {
+CONST BUILD_OPT_CFG UserOptions = {
   {                                             // AGESA version string
     AGESA_CODE_SIGNATURE,                       //    code header Signature
     AGESA_PACKAGE_STRING,                       //    8 character ID
@@ -1444,7 +1444,7 @@ CONST DISPATCH_TABLE ROMDATA ApDispatchTable[] =
   #if IDSOPT_IDS_ENABLED == TRUE
     #if IDSOPT_TRACING_ENABLED == TRUE
       #define MAKE_DBG_STR(x, y)  MAKE_AS_A_STRING(x : y)
-      CONST CHAR8 *BldOptDebugOutput[] = {
+      CONST CHAR8 * CONST BldOptDebugOutput[] = {
         #if IDS_TRACE_SHOW_BLD_OPT_CFG == TRUE
           //Build Option Area
           MAKE_DBG_STR (\nOptUDIMM,             OPTION_UDIMMS)

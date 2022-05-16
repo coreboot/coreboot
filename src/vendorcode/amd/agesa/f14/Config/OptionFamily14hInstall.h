@@ -93,7 +93,7 @@ extern F_IS_NB_PSTATE_ENABLED F14IsNbPstateEnabled;
     extern CONST REGISTER_TABLE ROMDATA F14OnPciRegisterTable;
 
     #if USES_REGISTER_TABLES == TRUE
-      CONST REGISTER_TABLE ROMDATA *F14OnRegisterTables[] =
+      CONST REGISTER_TABLE ROMDATA * CONST F14OnRegisterTables[] =
       {
         #if BASE_FAMILY_PCI == TRUE
           &F14PciRegisterTable,
@@ -351,7 +351,7 @@ extern F_IS_NB_PSTATE_ENABLED F14IsNbPstateEnabled;
         #define F14_ON_UCODE_119 &CpuF14MicrocodePatch05000119,
       #endif
 
-      CONST MICROCODE_PATCHES ROMDATA *CpuF14OnMicroCodePatchArray[] =
+      CONST MICROCODE_PATCHES ROMDATA * CONST CpuF14OnMicroCodePatchArray[] =
       {
         F14_ON_UCODE_119
         F14_ON_UCODE_29
@@ -416,7 +416,7 @@ extern F_IS_NB_PSTATE_ENABLED F14IsNbPstateEnabled;
  */
 
 #if USES_REGISTER_TABLES == TRUE
-  CONST REGISTER_TABLE ROMDATA *F14UnknownRegisterTables[] =
+  CONST REGISTER_TABLE ROMDATA * CONST F14UnknownRegisterTables[] =
   {
     #if BASE_FAMILY_PCI == TRUE
       &F14PciRegisterTable,
@@ -644,7 +644,7 @@ CONST CPU_SPECIFIC_SERVICES ROMDATA cpuF14UnknownServices =
 #endif
 
 #if BRAND_STRING1 == TRUE
-  CONST CPU_BRAND_TABLE ROMDATA *F14BrandIdString1Tables[] =
+  CONST CPU_BRAND_TABLE ROMDATA * CONST F14BrandIdString1Tables[] =
   {
     F14_FT1_BRANDSTRING1
   };
@@ -653,7 +653,7 @@ CONST CPU_SPECIFIC_SERVICES ROMDATA cpuF14UnknownServices =
 #endif
 
 #if BRAND_STRING2 == TRUE
-  CONST CPU_BRAND_TABLE ROMDATA *F14BrandIdString2Tables[] =
+  CONST CPU_BRAND_TABLE ROMDATA *CONST F14BrandIdString2Tables[] =
   {
     F14_FT1_BRANDSTRING2
   };

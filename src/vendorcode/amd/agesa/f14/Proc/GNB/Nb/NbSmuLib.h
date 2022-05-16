@@ -68,14 +68,14 @@ typedef struct {
 typedef struct {
   UINT16              Address;      ///< Block Address
   UINT16              Length;       ///< Block length in DWORD
-  UINT32              *Data;        ///< Pointer to data array
+  CONST UINT32              *Data;        ///< Pointer to data array
 } SMU_FIRMWARE_BLOCK;
 
 /// Firmware header
 typedef struct {
   SMU_FIRMWARE_REV    Revision;       ///< Revision info
   UINT16              NumberOfBlock;  ///< Number of blocks
-  SMU_FIRMWARE_BLOCK  *BlockArray;    ///< Pointer to block definition array
+  CONST SMU_FIRMWARE_BLOCK  *BlockArray;    ///< Pointer to block definition array
 } SMU_FIRMWARE_HEADER;
 
 /// SMU indirect register write data context
@@ -107,7 +107,7 @@ VOID
 NbSmuIndirectWriteEx (
   IN      UINT8               Address,
   IN      ACCESS_WIDTH        Width,
-  IN      VOID                *Value,
+  CONST IN      VOID                *Value,
   IN      AMD_CONFIG_PARAMS   *StdHeader
   );
 
@@ -115,7 +115,7 @@ VOID
 NbSmuIndirectWrite (
   IN      UINT8               Address,
   IN      ACCESS_WIDTH        Width,
-  IN      VOID                *Value,
+  CONST IN      VOID                *Value,
   IN      AMD_CONFIG_PARAMS   *StdHeader
   );
 
@@ -129,7 +129,7 @@ NbSmuIndirectWriteS3Script (
 VOID
 NbSmuRcuRegisterWrite (
   IN      UINT16              Address,
-  IN      UINT32              *Value,
+  CONST IN      UINT32              *Value,
   IN      UINT32              Count,
   IN      BOOLEAN             S3Save,
   IN      AMD_CONFIG_PARAMS   *StdHeader
@@ -195,7 +195,7 @@ NbSmuReadEfuseField (
 
 VOID
 NbSmuFirmwareDownload (
-  IN      SMU_FIRMWARE_HEADER *Firmware,
+  CONST IN      SMU_FIRMWARE_HEADER *Firmware,
   IN      AMD_CONFIG_PARAMS   *StdHeader
   );
 

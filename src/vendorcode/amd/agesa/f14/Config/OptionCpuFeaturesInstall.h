@@ -58,7 +58,7 @@
 #include "OptionLowPwrPstateInstall.h"
 #include "OptionPreserveMailboxInstall.h"
 
-CONST CPU_FEATURE_DESCRIPTOR* ROMDATA SupportedCpuFeatureList[] =
+CONST CPU_FEATURE_DESCRIPTOR* ROMDATA CONST SupportedCpuFeatureList[] =
 {
   OPTION_HW_C1E_FEAT
   OPTION_MSG_BASED_C1E_FEAT

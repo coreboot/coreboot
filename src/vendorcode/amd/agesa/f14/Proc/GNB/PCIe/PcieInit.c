@@ -135,7 +135,7 @@ PciePortsVisibilityControl (
 }
 
 
-PCIE_HOST_REGISTER_ENTRY CoreInitTable [] = {
+CONST PCIE_HOST_REGISTER_ENTRY CoreInitTable [] = {
   {
     D0F0xE4_CORE_0020_ADDRESS,
     D0F0xE4_CORE_0020_CiRcOrderingDis_MASK,
@@ -372,4 +372,3 @@ PciePostInit (
   IDS_HDT_CONSOLE (GNB_TRACE, "PciePostInit Exit [%x]\n", AgesaStatus);
   return  AgesaStatus;
 }
-

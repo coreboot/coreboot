@@ -14,7 +14,6 @@ chip soc/intel/elkhartlake
 
 	# FSP configuration
 	register "SaGv" = "SaGv_Enabled"
-	register "SmbusEnable" = "1"
 	register "Heci2Enable" = "1"
 
 	# Display related UPDs

@@ -227,9 +227,6 @@ struct soc_intel_elkhartlake_config {
 	/* PCIe RP L1 substate */
 	enum L1_substates_control PcieRpL1Substates[CONFIG_MAX_ROOT_PORTS];
 
-	/* SMBus */
-	uint8_t SmbusEnable;
-
 	/* eMMC and SD */
 	uint8_t ScsEmmcHs400Enabled;
 	uint8_t ScsEmmcDdr50Enabled;

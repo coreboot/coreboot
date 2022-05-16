@@ -64,8 +64,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->PchMasterClockGating = 1;
 	m_cfg->PchMasterPowerGating = 1;
 
-	/* Enable SMBus controller based on config */
-	m_cfg->SmbusEnable = config->SmbusEnable;
+	m_cfg->SmbusEnable = is_devfn_enabled(PCH_DEVFN_SMBUS);
 
 	/* Set debug probe type */
 	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_ELKHARTLAKE_DEBUG_CONSENT;

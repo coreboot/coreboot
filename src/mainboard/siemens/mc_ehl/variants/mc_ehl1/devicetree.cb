@@ -38,7 +38,7 @@ chip soc/intel/elkhartlake
 	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Port is not used
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Port is not used
 
-	# Skip the CPU repalcement check
+	# Skip the CPU replacement check
 	register "SkipCpuReplacementCheck" = "1"
 
 	# PCIe root ports related UPDs

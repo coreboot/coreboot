@@ -183,7 +183,7 @@ chip soc/intel/jasperlake
 	# For an offset = 12.580, use 12580
 	register "ImonOffset" = "0"
 
-	# Skip the CPU repalcement check
+	# Skip the CPU replacement check
 	register "SkipCpuReplacementCheck" = "1"
 
 	# Sagv Configuration

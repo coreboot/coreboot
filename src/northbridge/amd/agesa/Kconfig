@@ -27,6 +27,13 @@ config S3_VGA_ROM_RUN
 
 source "src/northbridge/amd/agesa/*/Kconfig"
 
+config AGESA_BROKEN_DATA_SECTION
+	bool
+	default y
+	help
+	  Select this on AGESA platforms that incorrectly use the .data
+	  section.
+
 # TODO: Reservation for heap seems excessive
 config HEAP_SIZE
 	hex

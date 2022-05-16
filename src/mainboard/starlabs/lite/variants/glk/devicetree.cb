@@ -20,8 +20,6 @@ chip soc/intel/apollolake
 						   LPC_IOE_EC_62_66 |
 						   LPC_IOE_KBC_60_64"
 
-	register "dptf_enable"			= "0"
-
 	# Enable Audio Clock and Power gating
 	register "hdaudio_clk_gate_enable"	= "1"
 	register "hdaudio_pwr_gate_enable"	= "1"

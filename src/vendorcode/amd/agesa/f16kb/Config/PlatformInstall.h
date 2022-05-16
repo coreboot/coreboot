@@ -48,7 +48,7 @@
  *
  ****************************************************************************/
 
-VOLATILE  AMD_MODULE_HEADER mCpuModuleID = {
+CONST  AMD_MODULE_HEADER mCpuModuleID = {
   //ModuleHeaderSignature
   // Remove 'DOM$' as temp solution before update BinUtil.exe ,
   Int32FromChar ('0', '0', '0', '0'),
@@ -1706,7 +1706,7 @@ CONST UINT32 ROMDATA AmdPlatformTypeCgf = CFG_AMD_PLATFORM_TYPE;
  *
  ****************************************************************************/
 
-FCH_PLATFORM_POLICY  FchUserOptions = {
+CONST FCH_PLATFORM_POLICY  FchUserOptions = {
   CFG_SMBUS0_BASE_ADDRESS,              // CfgSmbus0BaseAddress
   CFG_SMBUS1_BASE_ADDRESS,              // CfgSmbus1BaseAddress
   CFG_SIO_PME_BASE_ADDRESS,             // CfgSioPmeBaseAddress
@@ -1754,7 +1754,7 @@ FCH_PLATFORM_POLICY  FchUserOptions = {
   CFG_FCH_RTC_WORKAROUND                // CfgFchRtcWorkaround
 };
 
-BUILD_OPT_CFG UserOptions = {
+CONST BUILD_OPT_CFG UserOptions = {
   {                                             // AGESA version string
     AGESA_CODE_SIGNATURE,                       //    code header Signature
     AGESA_PACKAGE_STRING,                       //    16 character ID
@@ -2130,4 +2130,3 @@ CONST DISPATCH_TABLE ROMDATA ApDispatchTable[] =
 #if (OPTION_CPU_SCS == TRUE) || (CFG_GNB_BAPM_SUPPORT == TRUE)
   CONST INT32 _fltused = 0;
 #endif
-

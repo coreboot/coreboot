@@ -268,7 +268,7 @@ PciePhyIsolationKB (
   IDS_HDT_CONSOLE (GNB_TRACE, "PciePhyIsolationKB Exit\n");
 }
 
-UINT8 LaneMuxSelectorArrayKB[] = { 7, 6, 5, 4, 3, 2, 1, 0 };
+CONST UINT8 LaneMuxSelectorArrayKB[] = { 7, 6, 5, 4, 3, 2, 1, 0 };
 
 /*----------------------------------------------------------------------------------------*/
 /**
@@ -935,4 +935,3 @@ PcieEarlyInterfaceKB (
   IDS_HDT_CONSOLE (GNB_TRACE, "PcieEarlyInterfaceKB Exit [0x%x]\n", AgesaStatus);
   return  AgesaStatus;
 }
-

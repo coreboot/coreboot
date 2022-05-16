@@ -221,7 +221,7 @@ GnbSmuFirmwareLoadV7 (
   IDS_OPTION_HOOK (IDS_REPORT_SMU_FW_VERSION, &(Firmware->Version), StdHeader);
 
   GnbPciAddress = GnbGetHostPciAddress (GnbHandle);
-  Status = GnbLibLocateService (GnbRegisterAccessService, GnbGetSocketId (GnbHandle), (VOID **)&GnbRegisterAccessProtocol, StdHeader);
+  Status = GnbLibLocateService (GnbRegisterAccessService, GnbGetSocketId (GnbHandle), (CONST VOID **)&GnbRegisterAccessProtocol, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
 
   DevObject.GnbHandle = GnbHandle;
@@ -327,4 +327,3 @@ GnbSmuFirmwareLoadV7 (
   IDS_HDT_CONSOLE (GNB_TRACE, "GnbSmuFirmwareLoadV7 Exit\n");
   return AGESA_SUCCESS;
 }
-

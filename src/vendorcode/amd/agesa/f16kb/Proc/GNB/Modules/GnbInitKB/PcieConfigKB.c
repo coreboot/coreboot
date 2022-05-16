@@ -136,7 +136,7 @@ PcieGetSbConfigInfoKB (
 //
 // Default port dev map
 //
-UINT8 ROMDATA DefaultPortDevMap [] = {
+CONST UINT8 ROMDATA DefaultPortDevMap [] = {
   DEVFUNC (2, 1),
   DEVFUNC (2, 2),
   DEVFUNC (2, 3),
@@ -147,7 +147,7 @@ UINT8 ROMDATA DefaultPortDevMap [] = {
 //
 // Default apic config
 //
-APIC_DEVICE_INFO ROMDATA DefaultIoapicConfig [] = {
+CONST APIC_DEVICE_INFO ROMDATA DefaultIoapicConfig [] = {
   {0, 0, 0x18},
   {1, 0, 0x19},
   {2, 0, 0x1A},
@@ -622,5 +622,3 @@ PcieGetSbConfigInfoKB (
 {
   return AGESA_UNSUPPORTED;
 }
-
-

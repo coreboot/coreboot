@@ -45,7 +45,7 @@
 #ifndef _GNBSMUFIRMWAREKB_H_
 #define _GNBSMUFIRMWAREKB_H_
 
-UINT32  FirmwareKBHeader [] = {
+CONST UINT32  FirmwareKBHeader [] = {
   0x554D535F,
   0x554D535F,
   0x0001F984,
@@ -60,7 +60,7 @@ UINT32  FirmwareKBHeader [] = {
   0x00000000,
 };
 
-UINT32  FirmwareKB[] = {
+CONST UINT32  FirmwareKB[] = {
  0x74ca8b03,
  0x2636e501,
  0xc490b115,

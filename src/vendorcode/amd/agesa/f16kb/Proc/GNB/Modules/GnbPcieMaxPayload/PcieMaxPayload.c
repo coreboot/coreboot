@@ -334,7 +334,7 @@ PcieMaxPayloadInitCallback (
       (PcieConfigCheckPortStatus (Engine, INIT_STATUS_PCIE_TRAINING_SUCCESS))) {
     EngineMaxPayload =  MAX_PAYLOAD;
     Complex = (PCIe_COMPLEX_CONFIG *) PcieConfigGetParent (DESCRIPTOR_COMPLEX, &Engine->Header);
-    Status = GnbLibLocateService (GnbPcieMaxPayloadService, Complex->SocketId, (VOID **)&PcieMaxPayloadProtocol, GnbLibGetHeader (Pcie));
+    Status = GnbLibLocateService (GnbPcieMaxPayloadService, Complex->SocketId, (CONST VOID **)&PcieMaxPayloadProtocol, GnbLibGetHeader (Pcie));
     if (Status ==  AGESA_SUCCESS) {
       EngineMaxPayload = PcieMaxPayloadProtocol->SetMaxPayload (Engine);
     }
@@ -373,4 +373,3 @@ PcieMaxPayloadInterface (
   IDS_HDT_CONSOLE (GNB_TRACE, "PcieMaxPayloadInterface Exit [0x%x]\n", AgesaStatus);
   return  AgesaStatus;
 }
-

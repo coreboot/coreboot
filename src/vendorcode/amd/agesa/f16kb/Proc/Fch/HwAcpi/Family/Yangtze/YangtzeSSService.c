@@ -55,7 +55,7 @@
  *
  *
  */
-ACPI_REG_WRITE FchInitResetAcpiMmioTable[] =
+CONST ACPI_REG_WRITE FchInitResetAcpiMmioTable[] =
 {
   {00, 00, 0xB0, 0xAC},
   //
@@ -121,5 +121,3 @@ ProgramFchHwAcpiResetP (
   RwPmio (FCH_PMIOA_REGD3, AccessWidth8, (UINT32)~BIT4, BIT4, StdHeader);
   RwPci ((LPC_BUS_DEV_FUN << 16) + FCH_LPC_REGC8 + 3, AccessWidth8, 0x7F, BIT7, StdHeader);
 }
-
-

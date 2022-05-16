@@ -510,11 +510,11 @@ AGESA_STATUS
 GnbLibLocateService (
   IN       GNB_SERVICE_ID       ServiceId,
   IN       UINT8                SocketId,
-  IN       VOID                 **ServiceProtocol,
+  CONST IN       VOID                 **ServiceProtocol,
   IN       AMD_CONFIG_PARAMS    *StdHeader
   )
 {
-  GNB_SERVICE     *SeviceEntry;
+  CONST GNB_SERVICE     *SeviceEntry;
   CPU_LOGICAL_ID  LogicalId;
   SeviceEntry = ServiceTable;
   GetLogicalIdOfSocket (SocketId, &LogicalId, StdHeader);
@@ -527,4 +527,3 @@ GnbLibLocateService (
   }
   return AGESA_UNSUPPORTED;
 }
-

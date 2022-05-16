@@ -74,7 +74,7 @@ GnbUraLocateRegTblKB (
  *----------------------------------------------------------------------------------------
  */
 
-REG_FIELD_TABLE_STRUCT  UraTableKB = {
+CONST REG_FIELD_TABLE_STRUCT  UraTableKB = {
   {0xC2100000, 0x4, 0},
   {0, 1, FIELD_OFFSET(RxSmuIntReq ,BfxSmuIntToggle)},
   {1, 16, FIELD_OFFSET(RxSmuIntReq ,BfxSmuServiceIndex)},
@@ -118,5 +118,3 @@ GnbUraLocateRegTblKB (
   *UraTableAddress = (UINT32)((UINTN)(&UraTableKB));
   return;
 }
-
-

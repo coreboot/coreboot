@@ -59,7 +59,7 @@
 #include "OptionPrefetchModeInstall.h"
 #include "OptionPreserveMailboxInstall.h"
 
-CONST CPU_FEATURE_DESCRIPTOR* ROMDATA SupportedCpuFeatureList[] =
+CONST CPU_FEATURE_DESCRIPTOR* ROMDATA CONST SupportedCpuFeatureList[] =
 {
   OPTION_MSG_BASED_C1E_FEAT
   OPTION_L3_FEAT

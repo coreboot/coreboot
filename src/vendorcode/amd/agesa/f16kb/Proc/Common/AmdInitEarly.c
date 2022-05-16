@@ -74,7 +74,7 @@ RDATA_GROUP (G1_PEICC)
  *                  T Y P E D E F S     A N D     S T R U C T U R E S
  *----------------------------------------------------------------------------------------
  */
-EXECUTION_CACHE_REGION InitExeCacheMap[] =
+CONST EXECUTION_CACHE_REGION InitExeCacheMap[] =
 {
   {0x00000000, 0x00000000},
   {0x00000000, 0x00000000},

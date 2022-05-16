@@ -94,7 +94,7 @@ GnbFmCheckIommuPresent (
 {
   AGESA_STATUS              Status;
   GNB_FAM_IOMMU_SERVICES    *GnbIommuConfigService;
-  Status = GnbLibLocateService (GnbIommuService, GnbGetSocketId (GnbHandle), (VOID **)&GnbIommuConfigService, StdHeader);
+  Status = GnbLibLocateService (GnbIommuService, GnbGetSocketId (GnbHandle), (CONST VOID **)&GnbIommuConfigService, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return GnbIommuConfigService->GnbFmCheckIommuPresent (GnbHandle, StdHeader);
@@ -124,7 +124,7 @@ GnbFmCreateIvrsEntry (
 {
   AGESA_STATUS              Status;
   GNB_FAM_IOMMU_SERVICES    *GnbIommuConfigService;
-  Status = GnbLibLocateService (GnbIommuService, GnbGetSocketId (GnbHandle), (VOID **)&GnbIommuConfigService, StdHeader);
+  Status = GnbLibLocateService (GnbIommuService, GnbGetSocketId (GnbHandle), (CONST VOID **)&GnbIommuConfigService, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return GnbIommuConfigService->GnbFmCreateIvrsEntry (GnbHandle, Type, Ivrs, StdHeader);
@@ -155,7 +155,7 @@ GfxFmMapEngineToDisplayPath (
   GFX_FAM_SERVICES          *GfxFamilyService;
   GNB_HANDLE                *GnbHandle;
   GnbHandle = GnbGetHandle (GnbLibGetHeader (Gfx));
-  Status = GnbLibLocateService (GfxFamService, GnbGetSocketId (GnbHandle), (VOID **)&GfxFamilyService, GnbLibGetHeader (Gfx));
+  Status = GnbLibLocateService (GfxFamService, GnbGetSocketId (GnbHandle), (CONST VOID **)&GfxFamilyService, GnbLibGetHeader (Gfx));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return GfxFamilyService->GfxMapEngineToDisplayPath (Engine, DisplayPathList, Gfx);
@@ -184,7 +184,7 @@ GfxFmCalculateClock (
   GFX_FAM_SERVICES          *GfxFamilyService;
   GNB_HANDLE                *GnbHandle;
   GnbHandle = GnbGetHandle (StdHeader);
-  Status = GnbLibLocateService (GfxFamService, GnbGetSocketId (GnbHandle), (VOID **)&GfxFamilyService, StdHeader);
+  Status = GnbLibLocateService (GfxFamService, GnbGetSocketId (GnbHandle), (CONST VOID **)&GfxFamilyService, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return GfxFamilyService->GfxCalculateClock (Did, StdHeader);
@@ -210,7 +210,7 @@ GfxFmDisableController (
   GFX_FAM_SERVICES          *GfxFamilyService;
   GNB_HANDLE                *GnbHandle;
   GnbHandle = GnbGetHandle (StdHeader);
-  Status = GnbLibLocateService (GfxFamService, GnbGetSocketId (GnbHandle), (VOID **)&GfxFamilyService, StdHeader);
+  Status = GnbLibLocateService (GfxFamService, GnbGetSocketId (GnbHandle), (CONST VOID **)&GfxFamilyService, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     GfxFamilyService->GfxDisableController (StdHeader);
@@ -234,12 +234,10 @@ GfxFmIsVbiosPosted (
   GFX_FAM_SERVICES          *GfxFamilyService;
   GNB_HANDLE                *GnbHandle;
   GnbHandle = GnbGetHandle (GnbLibGetHeader (Gfx));
-  Status = GnbLibLocateService (GfxFamService, GnbGetSocketId (GnbHandle), (VOID **)&GfxFamilyService, GnbLibGetHeader (Gfx));
+  Status = GnbLibLocateService (GfxFamService, GnbGetSocketId (GnbHandle), (CONST VOID **)&GfxFamilyService, GnbLibGetHeader (Gfx));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return GfxFamilyService->GfxIsVbiosPosted (Gfx);
   }
   return TRUE;
 }
-
-

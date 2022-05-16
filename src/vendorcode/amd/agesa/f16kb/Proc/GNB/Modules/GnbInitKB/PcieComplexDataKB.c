@@ -95,7 +95,7 @@ PcieGetNativePhyLaneBitmapKB (
 // Complex configuration
 //
 
-KB_COMPLEX_CONFIG ComplexDataKB = {
+CONST KB_COMPLEX_CONFIG ComplexDataKB = {
   //Silicon
   {
     {
@@ -345,7 +345,7 @@ KB_COMPLEX_CONFIG ComplexDataKB = {
 //
 // PCIe lane allocation  GPP
 //
-UINT8 ROMDATA GppPortLaneConfigurationTableKB [] = {
+CONST UINT8 ROMDATA GppPortLaneConfigurationTableKB [] = {
   UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID, 4,              7,              0,            3,
   UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID, UNUSED_LANE_ID, 6,              7,              4,              5,              0,            3,
   UNUSED_LANE_ID, UNUSED_LANE_ID, 7,              7,              6,              6,              4,              5,              0,            3,
@@ -355,14 +355,14 @@ UINT8 ROMDATA GppPortLaneConfigurationTableKB [] = {
 //
 // DDI lane allocation  DDI
 //
-UINT8 ROMDATA DdiLaneConfigurationTableKB [] = {
+CONST UINT8 ROMDATA DdiLaneConfigurationTableKB [] = {
    0,            3,             4,             7,             8,             11
 };
 
 //
 // PCIe lane allocation  desfriptors
 //
-PCIe_LANE_ALLOC_DESCRIPTOR ROMDATA PcieLaneAllocConfigurationKB[] = {
+CONST PCIe_LANE_ALLOC_DESCRIPTOR ROMDATA PcieLaneAllocConfigurationKB[] = {
   {
     0,
     GPP_WRAP_ID,

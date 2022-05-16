@@ -63,7 +63,7 @@ VOID
 WritePci (
   IN       UINT32                  Address,
   IN       UINT8                   OpFlag,
-  IN       VOID                    *Value,
+  CONST IN       VOID                    *Value,
   IN       AMD_CONFIG_PARAMS       *StdHeader
   )
 {
@@ -90,5 +90,3 @@ RwPci (
   rMask = ~Mask;
   LibAmdPciRMW ((ACCESS_WIDTH) OpFlag, PciAddress, &Data, &rMask, StdHeader);
 }
-
-

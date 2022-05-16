@@ -146,12 +146,10 @@ GnbFmTimeStamp (
 
   GnbHandle = GnbGetHandle (StdHeader);
 
-  Status = GnbLibLocateService (GnbFamTsService, GnbGetSocketId (GnbHandle), (VOID **)&GnbFamTsFunc, StdHeader);
+  Status = GnbLibLocateService (GnbFamTsService, GnbGetSocketId (GnbHandle), (CONST VOID **)&GnbFamTsFunc, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return GnbFamTsFunc->GnbFmTimeStamp (StdHeader);
   }
   return 0;
 }
-
-

@@ -76,7 +76,7 @@
  *----------------------------------------------------------------------------------------
  */
 
-UINT8 RegisterDomainMap[] = {
+CONST UINT8 RegisterDomainMap[] = {
   0x0,          ///< Stub
   0x0,          ///< Stub
   0x64,         ///< 0x2
@@ -218,7 +218,7 @@ GnbUraGet (
   UINT32                    UraTableAddress;
 
   UraTable = NULL;
-  Status = GnbLibLocateService (GnbUraService, GnbGetSocketId (Device->GnbHandle), (VOID **)&GnbUraProtocol, Device->StdHeader);
+  Status = GnbLibLocateService (GnbUraService, GnbGetSocketId (Device->GnbHandle), (CONST VOID **)&GnbUraProtocol, Device->StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
 
   GnbUraProtocol->GnbUraLocateRegTbl (Device, &UraTableAddress);
@@ -253,7 +253,7 @@ GnbUraSet (
   URA_ENTRY                 *UraTable;
   UINT32                    UraTableAddress;
 
-  Status = GnbLibLocateService (GnbUraService, GnbGetSocketId (Device->GnbHandle), (VOID **)&GnbUraProtocol, Device->StdHeader);
+  Status = GnbLibLocateService (GnbUraService, GnbGetSocketId (Device->GnbHandle), (CONST VOID **)&GnbUraProtocol, Device->StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
 
   GnbUraProtocol->GnbUraLocateRegTbl (Device, &UraTableAddress);
@@ -295,7 +295,7 @@ GnbUraCombinedGet (
   URA_TOKEN               UraToken;
   UINT32                  Index;
 
-  Status = GnbLibLocateService (GnbUraService, GnbGetSocketId (Device->GnbHandle), (VOID **)&GnbUraProtocol, Device->StdHeader);
+  Status = GnbLibLocateService (GnbUraService, GnbGetSocketId (Device->GnbHandle), (CONST VOID **)&GnbUraProtocol, Device->StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
 
   GnbUraProtocol->GnbUraLocateRegTbl (Device, &UraTableAddress);
@@ -353,7 +353,7 @@ GnbUraCombinedSet (
   URA_TOKEN               UraToken;
   UINT32                  Index;
 
-  Status = GnbLibLocateService (GnbUraService, GnbGetSocketId (Device->GnbHandle), (VOID **)&GnbUraProtocol, Device->StdHeader);
+  Status = GnbLibLocateService (GnbUraService, GnbGetSocketId (Device->GnbHandle), (CONST VOID **)&GnbUraProtocol, Device->StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
 
   GnbUraProtocol->GnbUraLocateRegTbl (Device, &UraTableAddress);

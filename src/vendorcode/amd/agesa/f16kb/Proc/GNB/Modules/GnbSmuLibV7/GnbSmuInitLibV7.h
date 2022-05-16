@@ -109,7 +109,7 @@ GnbSmuFirmwareLoadV7 (
 AGESA_STATUS
 GnbSmuInitLibV7139_fun0(
   IN       GNB_HANDLE           *GnbHandle,
-  IN       UINT8                *ScsDataPtr,
+  CONST IN       UINT8                *ScsDataPtr,
   IN       AMD_CONFIG_PARAMS    *StdHeader
   );
 

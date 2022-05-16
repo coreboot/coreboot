@@ -148,7 +148,7 @@ BOOLEAN
 PcieUtilSearchArray (
   IN      UINT8                         *Buf1,
   IN      UINTN                         Buf1Length,
-  IN      UINT8                         *Buf2,
+  CONST IN      UINT8                         *Buf2,
   IN      UINTN                         Buf2Length
   )
 {
@@ -156,7 +156,7 @@ PcieUtilSearchArray (
   CurrentBuf1Ptr = Buf1;
   while (CurrentBuf1Ptr < (Buf1 + Buf1Length - Buf2Length)) {
     UINT8 *SourceBufPtr;
-    UINT8 *PatternBufPtr;
+    CONST UINT8 *PatternBufPtr;
     UINTN PatternBufLength;
     SourceBufPtr = CurrentBuf1Ptr;
     PatternBufPtr = Buf2;
@@ -522,7 +522,7 @@ PcieUtilGetWrapperLaneBitMap (
 
 VOID
 PciePortProgramRegisterTable (
-  IN      PCIE_PORT_REGISTER_ENTRY    *Table,
+  CONST IN      PCIE_PORT_REGISTER_ENTRY    *Table,
   IN      UINTN                       Length,
   IN      PCIe_ENGINE_CONFIG          *Engine,
   IN      BOOLEAN                     S3Save,

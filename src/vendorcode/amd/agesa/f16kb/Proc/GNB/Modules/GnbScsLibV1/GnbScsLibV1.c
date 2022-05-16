@@ -83,7 +83,7 @@ extern GNB_BUILD_OPTIONS GnbBuildOptions;
 AGESA_STATUS
 GnbSmuInitLibV7139_fun0 (
   IN       GNB_HANDLE           *GnbHandle,
-  IN       UINT8                *ScsDataPtr,
+  CONST IN       UINT8                *ScsDataPtr,
   IN       AMD_CONFIG_PARAMS    *StdHeader
   )
 {
@@ -146,7 +146,7 @@ GnbSmuInitLibV7139_fun1 (
   DevObject.StdHeader = StdHeader;
   DevObject.DevPciAddress = GnbGetHostPciAddress (GnbHandle);
 
-  Status = GnbLibLocateService (GnbRegisterAccessService, GnbGetSocketId (GnbHandle), (VOID **)&GnbRegisterAccessProtocol, StdHeader);
+  Status = GnbLibLocateService (GnbRegisterAccessService, GnbGetSocketId (GnbHandle), (CONST VOID **)&GnbRegisterAccessProtocol, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
   if (Status != AGESA_SUCCESS) {
     return Status;

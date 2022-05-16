@@ -87,7 +87,7 @@
 
 
     #if USES_REGISTER_TABLES == TRUE
-      CONST REGISTER_TABLE ROMDATA *F16KbRegisterTables[] =
+      CONST REGISTER_TABLE ROMDATA * CONST F16KbRegisterTables[] =
       {
         #if MODEL_SPECIFIC_PCI == TRUE
           &F16KbPciRegisterTableBeforeApLaunch,
@@ -223,7 +223,7 @@
         #define F16_KB_UCODE_7001 CpuF16KbId7001MicrocodePatch,
       #endif
 
-      CONST UINT8 ROMDATA *CpuF16KbMicroCodePatchArray[] =
+      CONST UINT8 ROMDATA * CONST CpuF16KbMicroCodePatchArray[] =
       {
         F16_KB_UCODE_7001
         F16_KB_UCODE_7000
@@ -253,7 +253,7 @@
 #if USES_REGISTER_TABLES == TRUE
   extern CONST REGISTER_TABLE ROMDATA F16PciUnknownRegisterTable;
   extern CONST REGISTER_TABLE ROMDATA F16MsrUnknownRegisterTable;
-  CONST REGISTER_TABLE ROMDATA *F16UnknownRegisterTables[] =
+  CONST REGISTER_TABLE ROMDATA * CONST F16UnknownRegisterTables[] =
   {
     &F16PciUnknownRegisterTable,
     &F16MsrUnknownRegisterTable

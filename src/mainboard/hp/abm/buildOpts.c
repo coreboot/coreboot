@@ -43,7 +43,7 @@
 #include "cpuLateInit.h"
 #include "GnbInterface.h"
 
-GPIO_CONTROL hp_abm_gpio[] = {
+CONST GPIO_CONTROL hp_abm_gpio[] = {
 	{ 45, Function2, GpioOutEnB | Sticky },                   // Signal input  APU_SD_LED
 	{ 49, Function2, PullUpB | PullDown | Sticky },           // Signal output APU_ABM_LED_UID
 	{ 50, Function2, PullUpB | PullDown | Sticky },           // Signal output APU_ABM_LED_HEALTH

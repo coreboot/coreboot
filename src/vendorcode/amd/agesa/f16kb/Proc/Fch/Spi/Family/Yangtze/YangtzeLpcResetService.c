@@ -47,13 +47,13 @@
 #define FILECODE PROC_FCH_SPI_FAMILY_YANGTZE_YANGTZELPCRESETSERVICE_FILECODE
 #define SPI_BASE UserOptions.FchBldCfg->CfgSpiRomBaseAddress
 
-SPI_CONTROLLER_PROFILE SpiControllerProfile[4] = {
+CONST SPI_CONTROLLER_PROFILE SpiControllerProfile[4] = {
   {128, 100, 100, 100, 100},
   {128,  66,  66,  66,  66},
   {128,  33,  33,  33,  33},
   {128,  16,  16,  16,  16},
   };
-SPI_DEVICE_PROFILE DefaultSpiDeviceTable[] = {
+CONST SPI_DEVICE_PROFILE DefaultSpiDeviceTable[] = {
   //JEDEC_ID,RomSize,SecSize;MaxNormal;MaxFast;MaxDual;MaxQuad;QeReadReg;QeWriteReg;QeRegSize;QeLocation;
   {0x001524C2, 2 << 20, 4096,  33, 108, 150, 300, 0x05, 0x01, 0x1, 0x0040}, //Macronix_MX25L1635D
   {0x001525C2, 2 << 20, 4096,  33, 108, 160, 432, 0x05, 0x01, 0x1, 0x0040}, //Macronix_MX25L1635E
@@ -86,7 +86,7 @@ SPI_DEVICE_PROFILE DefaultSpiDeviceTable[] = {
  *
  *
  */
-REG8_MASK FchInitYangtzeResetLpcPciTable[] =
+CONST REG8_MASK FchInitYangtzeResetLpcPciTable[] =
 {
   //
   // LPC Device (Bus 0, Dev 20, Func 3)
@@ -814,4 +814,3 @@ FchPlatformSpiQe (
   }
   return FALSE;
 }
-

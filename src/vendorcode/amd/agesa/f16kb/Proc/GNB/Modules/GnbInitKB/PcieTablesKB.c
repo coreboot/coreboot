@@ -74,7 +74,7 @@
  *----------------------------------------------------------------------------------------
  */
 
-STATIC PCIE_HOST_REGISTER_ENTRY PcieInitEarlyTable ROMDATA[] = {
+STATIC CONST PCIE_HOST_REGISTER_ENTRY PcieInitEarlyTable ROMDATA[] = {
   {
     PHY_SPACE (0, 0, D0F0xE4_PHY_4440_ADDRESS),
     D0F0xE4_PHY_4440_PllDbgRoIPFDResetCntrl_MASK,
@@ -98,7 +98,7 @@ CONST PCIE_HOST_REGISTER_TABLE_HEADER ROMDATA PcieInitEarlyTableKB  = {
   ARRAY_SIZE(PcieInitEarlyTable)
   };
 
-STATIC PCIE_HOST_REGISTER_ENTRY ROMDATA CoreInitTable [] = {
+STATIC CONST PCIE_HOST_REGISTER_ENTRY ROMDATA CoreInitTable [] = {
   {
     D0F0xE4_CORE_0020_ADDRESS,
     D0F0xE4_CORE_0020_CiRcOrderingDis_MASK |
@@ -150,7 +150,7 @@ CONST PCIE_HOST_REGISTER_TABLE_HEADER ROMDATA CoreInitTableKB  = {
   };
 
 
-STATIC PCIE_PORT_REGISTER_ENTRY ROMDATA PortInitEarlyTable [] = {
+STATIC CONST PCIE_PORT_REGISTER_ENTRY ROMDATA PortInitEarlyTable [] = {
   {
     DxFxxE4_x70_ADDRESS,
     DxFxxE4_x70_RxRcbCplTimeoutMode_MASK,

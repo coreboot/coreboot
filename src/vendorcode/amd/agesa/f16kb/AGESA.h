@@ -2892,7 +2892,7 @@ typedef struct {
   IN SD_CLOCK_CONTROL CfgFchSdClockControl;       ///< FCH SD Clock Control
   IN SCI_MAP_CONTROL  *CfgFchSciMapControl;       ///< FCH SCI Mapping Control
   IN SATA_PHY_CONTROL *CfgFchSataPhyControl;      ///< FCH SATA PHY Control
-  IN GPIO_CONTROL     *CfgFchGpioControl;         ///< FCH GPIO Control
+  CONST IN GPIO_CONTROL     *CfgFchGpioControl;         ///< FCH GPIO Control
   IN BOOLEAN           CfgFchRtcWorkAround;       ///< FCH RTC Workaround
 } FCH_PLATFORM_POLICY;
 
@@ -3032,7 +3032,7 @@ typedef struct {
                                                   ///< Build-time customizable only - @BldCfgItem{BLDCFG_GFX_LVDS_SPREAD_SPECTRUM}
   IN UINT16  CfgLvdsSpreadSpectrumRate;           ///< Lvds Spread Spectrum Rate
                                                   ///< Build-time customizable only - @BldCfgItem{BLDCFG_GFX_LVDS_SPREAD_SPECTRUM_RATE}
-  IN FCH_PLATFORM_POLICY  *FchBldCfg;             ///< FCH platform build configuration policy
+  CONST IN FCH_PLATFORM_POLICY  *FchBldCfg;             ///< FCH platform build configuration policy
 
   IN BOOLEAN    CfgIommuSupport;                  ///< IOMMU support
   IN UINT8      CfgLvdsPowerOnSeqDigonToDe;       ///< Panel initialization timing

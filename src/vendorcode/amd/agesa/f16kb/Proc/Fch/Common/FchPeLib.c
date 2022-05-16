@@ -137,7 +137,7 @@ ProgramFchAcpiMmioTbl (
  */
 VOID
 ProgramFchGpioTbl (
-  IN       GPIO_CONTROL  *pGpioTbl,
+  CONST IN       GPIO_CONTROL  *pGpioTbl,
   IN       FCH_RESET_DATA_BLOCK *FchResetDataBlock
   )
 {

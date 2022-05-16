@@ -80,7 +80,7 @@
  *----------------------------------------------------------------------------------------
  */
 
-GNB_TABLE ROMDATA GnbEarlierInitTableBeforeSmuKB [] = {
+CONST GNB_TABLE ROMDATA GnbEarlierInitTableBeforeSmuKB [] = {
   GNB_ENTRY_RMW (
     D0F0x98_x07_TYPE,
     D0F0x98_x07_ADDRESS,
@@ -96,7 +96,7 @@ GNB_TABLE ROMDATA GnbEarlierInitTableBeforeSmuKB [] = {
   GNB_ENTRY_TERMINATE
 };
 
-GNB_TABLE ROMDATA GnbEarlyInitTableKB [] = {
+CONST GNB_TABLE ROMDATA GnbEarlyInitTableKB [] = {
   // Set SVI2
   GNB_ENTRY_PROPERTY_RMW (
     TABLE_PROPERTY_SVI2,
@@ -196,7 +196,7 @@ GNB_TABLE ROMDATA GnbEarlyInitTableKB [] = {
   GNB_ENTRY_TERMINATE
 };
 
-GNB_TABLE ROMDATA GnbEnvInitTableKB [] = {
+CONST GNB_TABLE ROMDATA GnbEnvInitTableKB [] = {
   //---------------------------------------------------------------------------
 
   // SMU Enable Thermal Controller
@@ -364,7 +364,7 @@ GNB_TABLE ROMDATA GnbEnvInitTableKB [] = {
   GNB_ENTRY_TERMINATE
 };
 
-GNB_TABLE ROMDATA GnbMidInitTableKB [] = {
+CONST GNB_TABLE ROMDATA GnbMidInitTableKB [] = {
 //---------------------------------------------------------------------------
 // ORB clock gating
   GNB_ENTRY_PROPERTY_RMW (

@@ -145,8 +145,8 @@ typedef enum {
 typedef struct _GNB_SERVICE {
   GNB_SERVICE_ID        ServiceId;        ///< Service ID
   UINT64                Family;           ///< CPU family
-  VOID                  *ServiceProtocol; ///< Service protocol
-  struct  _GNB_SERVICE  *NextService;     ///< Pointer to next service
+  CONST VOID                  *ServiceProtocol; ///< Service protocol
+  CONST struct  _GNB_SERVICE  *NextService;     ///< Pointer to next service
 } GNB_SERVICE;
 
 /// GNB SMU Firmware Pointers

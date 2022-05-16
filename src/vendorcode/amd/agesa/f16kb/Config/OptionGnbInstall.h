@@ -91,7 +91,7 @@
   #if (GNB_TYPE_KB == TRUE)
     #include "GnbInitKBInstall.h"
   #endif
-  GNB_SERVICE   *ServiceTable = SERVICES_POINTER;
+  CONST GNB_SERVICE   * CONST ServiceTable = SERVICES_POINTER;
 
 //---------------------------------------------------------------------------------------------------
 // BUILD options
@@ -292,7 +292,7 @@
     #define CFG_UMA_STEERING             0
   #endif
 
-  GNB_BUILD_OPTIONS ROMDATA GnbBuildOptions = {
+  CONST GNB_BUILD_OPTIONS ROMDATA GnbBuildOptions = {
     CFG_IGFX_AS_PCIE_EP,
     CFG_LCLK_DEEP_SLEEP_EN,
     CFG_LCLK_DPM_EN,
@@ -389,7 +389,7 @@
       #define OPTION_PCIEEARLYINTERFACEKB_ENTRY
     #endif
   //---------------------------------------------------------------------------------------------------
-    OPTION_GNB_CONFIGURATION  GnbEarlyFeatureTable[] = {
+    CONST OPTION_GNB_CONFIGURATION  GnbEarlyFeatureTable[] = {
       OPTION_GNBEARLYINTERFACETN_ENTRY
       OPTION_GNBEARLYINTERFACEKB_ENTRY
       OPTION_PCIECONFIGURATIONMAP_ENTRY
@@ -433,7 +433,7 @@
     #endif
 
 
-    OPTION_GNB_CONFIGURATION  GnbEarlierFeatureTable[] = {
+    CONST OPTION_GNB_CONFIGURATION  GnbEarlierFeatureTable[] = {
       OPTION_PCIECONFIGURATIONINIT_ENTRY
       OPTION_GNBEARLIERINTERFACETN_ENTRY
       OPTION_GNBEARLIERINTERFACEKB_ENTRY
@@ -522,7 +522,7 @@
     #endif
 
   //---------------------------------------------------------------------------------------------------
-    OPTION_GNB_CONFIGURATION  GnbPostFeatureTable[] = {
+    CONST OPTION_GNB_CONFIGURATION  GnbPostFeatureTable[] = {
       OPTION_PCIEPOSTEARLYINTERFACETN_ENTRY
       OPTION_PCIEPOSTEARLYINTERFACEKB_ENTRY
       OPTION_GFXCONFIGPOSTINTERFACE_ENTRY
@@ -531,7 +531,7 @@
       {0, NULL, EndGnbTestPoints}
     };
 
-    OPTION_GNB_CONFIGURATION  GnbPostAfterDramFeatureTable[] = {
+    CONST OPTION_GNB_CONFIGURATION  GnbPostAfterDramFeatureTable[] = {
       OPTION_GNBPOSTINTERFACETN_ENTRY
       OPTION_GNBPOSTINTERFACEKB_ENTRY
       OPTION_PCIEPOSTINTERFACETN_ENTRY
@@ -605,7 +605,7 @@
 
   //---------------------------------------------------------------------------------------------------
 
-    OPTION_GNB_CONFIGURATION  GnbEnvFeatureTable[] = {
+    CONST OPTION_GNB_CONFIGURATION  GnbEnvFeatureTable[] = {
       OPTION_GNBENVINTERFACETN_ENTRY
       OPTION_GNBENVINTERFACEKB_ENTRY
       OPTION_PCIEENVINTERFACETN_ENTRY
@@ -747,7 +747,7 @@
       #define OPTION_GNBNBIOAPICINTERFACE_ENTRY
     #endif
   //---------------------------------------------------------------------------------------------------
-    OPTION_GNB_CONFIGURATION  GnbMidFeatureTable[] = {
+    CONST OPTION_GNB_CONFIGURATION  GnbMidFeatureTable[] = {
       OPTION_GFXCONFIGMIDINTERFACE_ENTRY
       OPTION_GFXMIDINTERFACETN_ENTRY
       OPTION_GFXMIDINTERFACEKB_ENTRY
@@ -797,7 +797,7 @@
 
       #if (GNB_TYPE_KB == TRUE)
         extern F_ALIB_GET PcieAlibGetBaseTableKB;
-        F_ALIB_GET  *AlibGetBaseTableV2 = PcieAlibGetBaseTableKB;
+        F_ALIB_GET  * CONST AlibGetBaseTableV2 = PcieAlibGetBaseTableKB;
         extern F_ALIB_UPDATE PcieAlibUpdateVoltageData;
         extern F_ALIB_UPDATE PcieAlibUpdatePcieData;
         #undef ALIB_CALL_TABLEV2
@@ -806,11 +806,11 @@
       #endif
 
 
-      F_ALIB_UPDATE* AlibDispatchTable [] = {
+      F_ALIB_UPDATE* CONST AlibDispatchTable [] = {
         ALIB_CALL_TABLE
         NULL
       };
-      F_ALIB_UPDATE* AlibDispatchTableV2 [] = {
+      F_ALIB_UPDATE* CONST AlibDispatchTableV2 [] = {
         ALIB_CALL_TABLEV2
         NULL
       };
@@ -823,12 +823,12 @@
         #define OPTION_PCIEALIBV2FEATURE_ENTRY              {AMD_FAMILY_KB, PcieAlibV2Feature, TpGnbPcieAlibFeature},
       #endif
     #else
-      F_ALIB_GET  *AlibGetBaseTable = NULL;
-      F_ALIB_GET  *AlibGetBaseTableV2 = NULL;
-      F_ALIB_UPDATE* AlibDispatchTable [] = {
+      F_ALIB_GET  * CONST AlibGetBaseTable = NULL;
+      F_ALIB_GET  * CONST AlibGetBaseTableV2 = NULL;
+      F_ALIB_UPDATE* CONST AlibDispatchTable [] = {
         NULL
       };
-      F_ALIB_UPDATE* AlibDispatchTableV2 [] = {
+      F_ALIB_UPDATE* CONST AlibDispatchTableV2 [] = {
         NULL
       };
       #define OPTION_PCIEALIBFEATURE_ENTRY
@@ -855,7 +855,7 @@
       #define OPTIONIOMMUSCRATCHMEMORYLATE_ENTRY
     #endif
   //---------------------------------------------------------------------------------------------------
-    OPTION_GNB_CONFIGURATION  GnbLateFeatureTable[] = {
+    CONST OPTION_GNB_CONFIGURATION  GnbLateFeatureTable[] = {
       #if (GNB_TYPE_TN == TRUE)
         OPTION_PCIEALIBFEATURE_ENTRY
       #endif
@@ -880,7 +880,7 @@
       #define OPTION_GFXINITSVIEW_ENTRY
     #endif
 
-    OPTION_GNB_CONFIGURATION  GnbS3SaveFeatureTable[] = {
+    CONST OPTION_GNB_CONFIGURATION  GnbS3SaveFeatureTable[] = {
       OPTION_GFXINITSVIEW_ENTRY
       {0, NULL, EndGnbTestPoints}
     };

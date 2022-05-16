@@ -832,7 +832,7 @@
       //
       // Define task list for InitReset phase
       //
-      FCH_TASK_ENTRY ROMDATA  *FchInitResetTaskTable[] = {
+      FCH_TASK_ENTRY ROMDATA  * CONST FchInitResetTaskTable[] = {
         InstallFchInitResetHwAcpiP,
         InstallFchInitResetAb,
         InstallFchInitResetSpi,
@@ -859,7 +859,7 @@
       //
       // Define task list for InitEnv phase
       //
-      FCH_TASK_ENTRY ROMDATA  *FchInitEnvTaskTable[] = {
+      FCH_TASK_ENTRY ROMDATA  * CONST FchInitEnvTaskTable[] = {
         InstallFchInitEnvHwAcpiP,
         InstallFchInitEnvPcib,
         InstallFchInitEnvPcie,
@@ -892,7 +892,7 @@
       //
       // Define task list for InitMid phase
       //
-      FCH_TASK_ENTRY ROMDATA  *FchInitMidTaskTable[] = {
+      FCH_TASK_ENTRY ROMDATA  * CONST FchInitMidTaskTable[] = {
         InstallFchInitMidImc,
         InstallFchInitMidUsb,
         InstallFchInitMidUsbEhci,
@@ -913,7 +913,7 @@
       //
       // Define task list for InitLate phase
       //
-      FCH_TASK_ENTRY ROMDATA  *FchInitLateTaskTable[] = {
+      FCH_TASK_ENTRY ROMDATA  * CONST FchInitLateTaskTable[] = {
         InstallFchInitLatePcie,
         InstallFchInitLatePcib,
         InstallFchInitLateSpi,
@@ -940,7 +940,7 @@
       //
       // Define task list for S3 resume before PCI phase
       //
-      FCH_TASK_ENTRY ROMDATA  *FchInitS3EarlyTaskTable[] = {
+      FCH_TASK_ENTRY ROMDATA  * CONST FchInitS3EarlyTaskTable[] = {
         InstallFchInitEnvPcie,
         InstallFchInitEnvPcib,
         InstallFchInitEnvGpp,
@@ -967,7 +967,7 @@
       //
       // Define task list for S3 resume after PCI phase
       //
-      FCH_TASK_ENTRY ROMDATA  *FchInitS3LateTaskTable[] = {
+      FCH_TASK_ENTRY ROMDATA  * CONST FchInitS3LateTaskTable[] = {
         InstallFchInitLatePcie,
         InstallFchInitLatePcib,
         InstallFchInitLateSpi,
@@ -991,7 +991,7 @@
       };
     #endif
   #endif
-  FCH_TASK_ENTRY   *FchGppHotplugSmiCallbackPtr = InstallHpSmiCallback;
+  FCH_TASK_ENTRY   * CONST FchGppHotplugSmiCallbackPtr = InstallHpSmiCallback;
 
 
 #else   // FCH_SUPPORT == FALSE

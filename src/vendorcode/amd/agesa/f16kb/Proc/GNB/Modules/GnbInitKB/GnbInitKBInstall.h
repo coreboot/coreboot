@@ -71,7 +71,7 @@
   extern F_PCIEFMCHECKPORTPCIELANECANBEMUXED      PcieCheckPortPcieLaneCanBeMuxedKB;
 
 
-  PCIe_FAM_CONFIG_SERVICES GnbPcieConfigProtocolKB = {
+  CONST PCIe_FAM_CONFIG_SERVICES GnbPcieConfigProtocolKB = {
     PcieGetComplexDataLengthKB,
     PcieBuildComplexConfigurationKB,
     PcieConfigureEnginesLaneAllocationKB,
@@ -81,7 +81,7 @@
     PcieGetSbConfigInfoKB
   };
 
-  GNB_SERVICE GnbPcieCongigServicesKB = {
+  CONST GNB_SERVICE GnbPcieCongigServicesKB = {
     GnbPcieFamConfigService,
     AMD_FAMILY_KB,
     &GnbPcieConfigProtocolKB,
@@ -97,14 +97,14 @@
   extern F_PCIEFMGETNATIVEPHYLANEBITMAP           PcieGetNativePhyLaneBitmapKB;
   extern F_PCIEFMSETLINKSPEEDCAP                  PcieSetLinkSpeedCapV4;
 
-  PCIe_FAM_INIT_SERVICES GnbPcieInitProtocolKB = {
+  CONST PCIe_FAM_INIT_SERVICES GnbPcieInitProtocolKB = {
     PcieGetCoreConfigurationValueKB,
     PcieGetLinkSpeedCapKB,
     PcieGetNativePhyLaneBitmapKB,
     PcieSetLinkSpeedCapV4
   };
 
-  GNB_SERVICE GnbPcieInitServicesKB = {
+  CONST GNB_SERVICE GnbPcieInitServicesKB = {
     GnbPcieFamInitService,
     AMD_FAMILY_KB,
     &GnbPcieInitProtocolKB,
@@ -121,13 +121,13 @@
       extern F_PCIEFMDEBUGGETWRAPPERNAMESTRING          PcieDebugGetWrapperNameStringKB;
       extern F_PCIEFMDEBUGGETCORECONFIGURATIONSTRING    PcieDebugGetCoreConfigurationStringKB;
 
-      PCIe_FAM_DEBUG_SERVICES GnbPcieDebugProtocolKB = {
+      CONST PCIe_FAM_DEBUG_SERVICES GnbPcieDebugProtocolKB = {
         PcieDebugGetHostRegAddressSpaceStringKB,
         PcieDebugGetWrapperNameStringKB,
         PcieDebugGetCoreConfigurationStringKB
       };
 
-      GNB_SERVICE GnbPcieDebugServicesKB = {
+      CONST GNB_SERVICE GnbPcieDebugServicesKB = {
         GnbPcieFamDebugService,
         AMD_FAMILY_KB,
         &GnbPcieDebugProtocolKB,
@@ -143,12 +143,12 @@
   extern F_GNB_REGISTER_ACCESS  GnbRegisterReadKB;
   extern F_GNB_REGISTER_ACCESS  GnbRegisterWriteKB;
 
-  GNB_REGISTER_SERVICE GnbRegisterAccessProtocolKB = {
+  CONST GNB_REGISTER_SERVICE GnbRegisterAccessProtocolKB = {
     GnbRegisterReadKB,
     GnbRegisterWriteKB
   };
 
-  GNB_SERVICE GnbRegisterAccessServicesKB = {
+  CONST GNB_SERVICE GnbRegisterAccessServicesKB = {
     GnbRegisterAccessService,
     AMD_FAMILY_KB,
     &GnbRegisterAccessProtocolKB,
@@ -162,14 +162,14 @@
   extern F_GNBURASERVICESET GnbUraSetKB;
   extern F_GNBURASERVICESTREAMSET GnbUraStreamSetKB;
 
-  GNB_URA_SERVICE GnbUraProtocolKB = {
+  CONST GNB_URA_SERVICE GnbUraProtocolKB = {
     GnbUraLocateRegTblKB,
     GnbUraGetKB,
     GnbUraSetKB,
     GnbUraStreamSetKB
   };
 
-  GNB_SERVICE GnbUraServicesKB = {
+  CONST GNB_SERVICE GnbUraServicesKB = {
     GnbUraService,
     AMD_FAMILY_KB,
     &GnbUraProtocolKB,
@@ -183,14 +183,14 @@
   extern F_GFXCALCULATECLOCK         GfxCalculateClockKB;
   extern F_GFXISVBIOSPOSTED          GfxIsVbiosPostedKB;
 
-  GFX_FAM_SERVICES GfxFamilyServiceProtocolKB = {
+  CONST GFX_FAM_SERVICES GfxFamilyServiceProtocolKB = {
     GfxMapEngineToDisplayPathKB,
     GfxDisableControllerKB,
     GfxCalculateClockKB,
     GfxIsVbiosPostedKB
   };
 
-  GNB_SERVICE GfxFamilyServicesKB = {
+  CONST GNB_SERVICE GfxFamilyServicesKB = {
     GfxFamService,
     AMD_FAMILY_KB,
     &GfxFamilyServiceProtocolKB,
@@ -201,11 +201,11 @@
 
   extern F_GNBTIMESTAMP GnbTimeStampKB;
 
-  GNB_FAM_TS_SERVICES GnbFamTsProtocolKB = {
+  CONST GNB_FAM_TS_SERVICES GnbFamTsProtocolKB = {
     GnbTimeStampKB,
   };
 
-  GNB_SERVICE GnbFamTsServicesKB = {
+  CONST GNB_SERVICE GnbFamTsServicesKB = {
     GnbFamTsService,
     AMD_FAMILY_KB,
     &GnbFamTsProtocolKB,
@@ -217,11 +217,11 @@
 
   extern F_PCIE_MAXPAYLOAD_SETTING  PcieMaxPayloadKB;
 
-  PCIE_MAXPAYLOAD_SERVICE PcieMaxPayloadProtocolKB = {
+  CONST PCIE_MAXPAYLOAD_SERVICE PcieMaxPayloadProtocolKB = {
     PcieMaxPayloadKB
   };
 
-  GNB_SERVICE PcieMaxPayloadServicesKB = {
+  CONST GNB_SERVICE PcieMaxPayloadServicesKB = {
     GnbPcieMaxPayloadService,
     AMD_FAMILY_KB,
     &PcieMaxPayloadProtocolKB,

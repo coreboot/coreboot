@@ -99,7 +99,7 @@ PcieFmConfigureEnginesLaneAllocation (
 
   Complex = (PCIe_COMPLEX_CONFIG *) PcieConfigGetParent (DESCRIPTOR_COMPLEX, &Wrapper->Header);
   Pcie = (PCIe_PLATFORM_CONFIG *) PcieConfigGetParent (DESCRIPTOR_PLATFORM, &Wrapper->Header);
-  Status = GnbLibLocateService (GnbPcieFamConfigService, Complex->SocketId, (VOID **)&PcieConfigService, GnbLibGetHeader (Pcie));
+  Status = GnbLibLocateService (GnbPcieFamConfigService, Complex->SocketId, (CONST VOID **)&PcieConfigService, GnbLibGetHeader (Pcie));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieConfigService->PcieFmConfigureEnginesLaneAllocation (Wrapper, EngineType, ConfigurationId);
@@ -135,7 +135,7 @@ PcieFmGetCoreConfigurationValue (
 
   Complex = (PCIe_COMPLEX_CONFIG *) PcieConfigGetParent (DESCRIPTOR_COMPLEX, &Wrapper->Header);
   Pcie = (PCIe_PLATFORM_CONFIG *) PcieConfigGetParent (DESCRIPTOR_PLATFORM, &Wrapper->Header);
-  Status = GnbLibLocateService (GnbPcieFamInitService, Complex->SocketId, (VOID **)&PcieInitService, GnbLibGetHeader (Pcie));
+  Status = GnbLibLocateService (GnbPcieFamInitService, Complex->SocketId, (CONST VOID **)&PcieInitService, GnbLibGetHeader (Pcie));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieInitService->PcieFmGetCoreConfigurationValue (Wrapper, CoreId, ConfigurationSignature,  ConfigurationValue);
@@ -170,7 +170,7 @@ PcieFmCheckPortPciDeviceMapping (
 
   Complex = (PCIe_COMPLEX_CONFIG *) PcieConfigGetParent (DESCRIPTOR_COMPLEX, &Engine->Header);
   Pcie = (PCIe_PLATFORM_CONFIG *) PcieConfigGetParent (DESCRIPTOR_PLATFORM, &Complex->Header);
-  Status = GnbLibLocateService (GnbPcieFamConfigService, Complex->SocketId, (VOID **)&PcieConfigService, GnbLibGetHeader (Pcie));
+  Status = GnbLibLocateService (GnbPcieFamConfigService, Complex->SocketId, (CONST VOID **)&PcieConfigService, GnbLibGetHeader (Pcie));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieConfigService->PcieFmCheckPortPciDeviceMapping (PortDescriptor, Engine);
@@ -203,7 +203,7 @@ PcieFmDebugGetCoreConfigurationString (
 
   Complex = (PCIe_COMPLEX_CONFIG *) PcieConfigGetParent (DESCRIPTOR_COMPLEX, &Wrapper->Header);
   Pcie = (PCIe_PLATFORM_CONFIG *) PcieConfigGetParent (DESCRIPTOR_PLATFORM, &Complex->Header);
-  Status = GnbLibLocateService (GnbPcieFamDebugService, Complex->SocketId,  (VOID **)&PcieDebugService, GnbLibGetHeader (Pcie));
+  Status = GnbLibLocateService (GnbPcieFamDebugService, Complex->SocketId,  (CONST VOID **)&PcieDebugService, GnbLibGetHeader (Pcie));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieDebugService->PcieFmDebugGetCoreConfigurationString (Wrapper, ConfigurationValue);
@@ -233,7 +233,7 @@ PcieFmDebugGetWrapperNameString (
 
   Complex = (PCIe_COMPLEX_CONFIG *) PcieConfigGetParent (DESCRIPTOR_COMPLEX, &Wrapper->Header);
   Pcie = (PCIe_PLATFORM_CONFIG *) PcieConfigGetParent (DESCRIPTOR_PLATFORM, &Complex->Header);
-  Status = GnbLibLocateService (GnbPcieFamDebugService, Complex->SocketId,  (VOID **)&PcieDebugService, GnbLibGetHeader (Pcie));
+  Status = GnbLibLocateService (GnbPcieFamDebugService, Complex->SocketId,  (CONST VOID **)&PcieDebugService, GnbLibGetHeader (Pcie));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieDebugService->PcieFmDebugGetWrapperNameString (Wrapper);
@@ -264,7 +264,7 @@ PcieFmDebugGetHostRegAddressSpaceString (
 
   Complex = (PCIe_COMPLEX_CONFIG *) PcieConfigGetParent (DESCRIPTOR_COMPLEX, &Silicon->Header);
   Pcie = (PCIe_PLATFORM_CONFIG *) PcieConfigGetParent (DESCRIPTOR_PLATFORM, &Complex->Header);
-  Status = GnbLibLocateService (GnbPcieFamDebugService, Complex->SocketId,  (VOID **)&PcieDebugService, GnbLibGetHeader (Pcie));
+  Status = GnbLibLocateService (GnbPcieFamDebugService, Complex->SocketId,  (CONST VOID **)&PcieDebugService, GnbLibGetHeader (Pcie));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieDebugService->PcieFmDebugGetHostRegAddressSpaceString (Silicon, AddressFrame);
@@ -299,7 +299,7 @@ PcieFmCheckPortPcieLaneCanBeMuxed (
 
   Complex = (PCIe_COMPLEX_CONFIG *) PcieConfigGetParent (DESCRIPTOR_COMPLEX, &Engine->Header);
   Pcie = (PCIe_PLATFORM_CONFIG *) PcieConfigGetParent (DESCRIPTOR_PLATFORM, &Complex->Header);
-  Status = GnbLibLocateService (GnbPcieFamConfigService, Complex->SocketId,  (VOID **)&PcieConfigService, GnbLibGetHeader (Pcie));
+  Status = GnbLibLocateService (GnbPcieFamConfigService, Complex->SocketId,  (CONST VOID **)&PcieConfigService, GnbLibGetHeader (Pcie));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieConfigService->PcieFmCheckPortPcieLaneCanBeMuxed (PortDescriptor, Engine);
@@ -330,7 +330,7 @@ PcieFmMapPortPciAddress (
 
   Complex = (PCIe_COMPLEX_CONFIG *) PcieConfigGetParent (DESCRIPTOR_COMPLEX, &Engine->Header);
   Pcie = (PCIe_PLATFORM_CONFIG *) PcieConfigGetParent (DESCRIPTOR_PLATFORM, &Complex->Header);
-  Status = GnbLibLocateService (GnbPcieFamConfigService, Complex->SocketId, (VOID **)&PcieConfigService, GnbLibGetHeader (Pcie));
+  Status = GnbLibLocateService (GnbPcieFamConfigService, Complex->SocketId, (CONST VOID **)&PcieConfigService, GnbLibGetHeader (Pcie));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieConfigService->PcieFmMapPortPciAddress (Engine);
@@ -358,7 +358,7 @@ PcieFmGetComplexDataLength (
 {
   AGESA_STATUS              Status;
   PCIe_FAM_CONFIG_SERVICES  *PcieConfigService;
-  Status = GnbLibLocateService (GnbPcieFamConfigService, SocketId,  (VOID **)&PcieConfigService, StdHeader);
+  Status = GnbLibLocateService (GnbPcieFamConfigService, SocketId,  (CONST VOID **)&PcieConfigService, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieConfigService->PcieFmGetComplexDataLength (SocketId, Length, StdHeader);
@@ -388,7 +388,7 @@ PcieFmBuildComplexConfiguration (
 {
   AGESA_STATUS              Status;
   PCIe_FAM_CONFIG_SERVICES  *PcieConfigService;
-  Status = GnbLibLocateService (GnbPcieFamConfigService, SocketId,  (VOID **)&PcieConfigService, StdHeader);
+  Status = GnbLibLocateService (GnbPcieFamConfigService, SocketId,  (CONST VOID **)&PcieConfigService, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieConfigService->PcieFmBuildComplexConfiguration (SocketId, Buffer, StdHeader);
@@ -419,7 +419,7 @@ PcieFmGetLinkSpeedCap (
 
   Complex = (PCIe_COMPLEX_CONFIG *) PcieConfigGetParent (DESCRIPTOR_COMPLEX, &Engine->Header);
   Pcie = (PCIe_PLATFORM_CONFIG *) PcieConfigGetParent (DESCRIPTOR_PLATFORM, &Complex->Header);
-  Status = GnbLibLocateService (GnbPcieFamInitService, Complex->SocketId, (VOID **)&PcieInitService, GnbLibGetHeader (Pcie));
+  Status = GnbLibLocateService (GnbPcieFamInitService, Complex->SocketId, (CONST VOID **)&PcieInitService, GnbLibGetHeader (Pcie));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieInitService->PcieFmGetLinkSpeedCap (Flags, Engine);
@@ -449,7 +449,7 @@ PcieFmGetNativePhyLaneBitmap (
 
   Complex = (PCIe_COMPLEX_CONFIG *) PcieConfigGetParent (DESCRIPTOR_COMPLEX, &Engine->Header);
   Pcie = (PCIe_PLATFORM_CONFIG *) PcieConfigGetParent (DESCRIPTOR_PLATFORM, &Complex->Header);
-  Status = GnbLibLocateService (GnbPcieFamInitService, Complex->SocketId, (VOID **)&PcieInitService, GnbLibGetHeader (Pcie));
+  Status = GnbLibLocateService (GnbPcieFamInitService, Complex->SocketId, (CONST VOID **)&PcieInitService, GnbLibGetHeader (Pcie));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieInitService->PcieFmGetNativePhyLaneBitmap (PhyLaneBitmap, Engine);
@@ -479,7 +479,7 @@ PcieFmSetLinkSpeedCap (
   PCIe_FAM_INIT_SERVICES  *PcieInitService;
 
   Complex = (PCIe_COMPLEX_CONFIG *) PcieConfigGetParent (DESCRIPTOR_COMPLEX, &Engine->Header);
-  Status = GnbLibLocateService (GnbPcieFamInitService, Complex->SocketId, (VOID **)&PcieInitService, GnbLibGetHeader (Pcie));
+  Status = GnbLibLocateService (GnbPcieFamInitService, Complex->SocketId, (CONST VOID **)&PcieInitService, GnbLibGetHeader (Pcie));
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     PcieInitService->PcieFmSetLinkSpeedCap (LinkSpeedCapability, Engine, Pcie);
@@ -505,11 +505,10 @@ PcieFmGetSbConfigInfo (
 {
   AGESA_STATUS              Status;
   PCIe_FAM_CONFIG_SERVICES  *PcieConfigService;
-  Status = GnbLibLocateService (GnbPcieFamConfigService, SocketId, (VOID **)&PcieConfigService, StdHeader);
+  Status = GnbLibLocateService (GnbPcieFamConfigService, SocketId, (CONST VOID **)&PcieConfigService, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return PcieConfigService->PcieFmGetSbConfigInfo (SocketId, SbPort, StdHeader);
   }
   return Status;
 }
-

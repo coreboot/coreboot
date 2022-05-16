@@ -86,7 +86,7 @@ VOID
 GnbLibPciWrite (
   IN      UINT32              Address,
   IN      ACCESS_WIDTH        Width,
-  IN      VOID                *Value,
+  CONST IN      VOID                *Value,
   IN      AMD_CONFIG_PARAMS   *StdHeader
   )
 {

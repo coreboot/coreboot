@@ -145,7 +145,7 @@ LibAmdMsrRead (
 VOID
 LibAmdMsrWrite (
   IN       UINT32 MsrAddress,
-  IN       UINT64 *Value,
+  CONST IN       UINT64 *Value,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   );
 

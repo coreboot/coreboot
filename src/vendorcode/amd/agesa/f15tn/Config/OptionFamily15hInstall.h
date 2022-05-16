@@ -552,7 +552,7 @@ extern F_IS_NB_PSTATE_ENABLED F15IsNbPstateEnabled;
 
 
     #if USES_REGISTER_TABLES == TRUE
-      CONST REGISTER_TABLE ROMDATA *F15TnRegisterTables[] =
+      CONST REGISTER_TABLE ROMDATA * CONST F15TnRegisterTables[] =
       {
         #if BASE_FAMILY_PCI == TRUE
           &F15PciRegisterTable,
@@ -757,7 +757,7 @@ extern F_IS_NB_PSTATE_ENABLED F15IsNbPstateEnabled;
         (PF_GET_NEXT_HT_LINK_FEATURES) CommonAssert,
       #endif
       #if USES_REGISTER_TABLES == TRUE
-        (REGISTER_TABLE **) F15TnRegisterTables,
+        (CONST REGISTER_TABLE **) F15TnRegisterTables,
       #else
         NULL,
       #endif
@@ -814,7 +814,7 @@ extern F_IS_NB_PSTATE_ENABLED F15IsNbPstateEnabled;
 
       #endif
 
-      CONST UINT8 ROMDATA *CpuF15TnMicroCodePatchArray[] =
+      CONST UINT8 ROMDATA * CONST CpuF15TnMicroCodePatchArray[] =
       {
         F15_TN_UCODE_10F
         F15_TN_UCODE_0E

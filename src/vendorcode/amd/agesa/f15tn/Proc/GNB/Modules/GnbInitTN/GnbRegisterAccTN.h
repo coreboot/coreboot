@@ -49,7 +49,7 @@ AGESA_STATUS
 GnbRegisterWriteTN (
   IN       UINT8               RegisterSpaceType,
   IN       UINT32              Address,
-  IN       VOID                *Value,
+  CONST IN       VOID                *Value,
   IN       UINT32              Flags,
   IN       AMD_CONFIG_PARAMS   *StdHeader
   );

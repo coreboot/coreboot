@@ -946,7 +946,7 @@ PcieGetNativePhyLaneBitmapTN (
   return PhyLaneBitmap;
 }
 
-STATIC PCIe_PORT_DESCRIPTOR DefaultSbPortTN = {
+STATIC CONST PCIe_PORT_DESCRIPTOR DefaultSbPortTN = {
   0,
   PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
   PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeLowLoss, 8, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmL0sL1, 0)
@@ -972,4 +972,3 @@ PcieGetSbConfigInfoTN (
   LibAmdMemCopy (SbPort, &DefaultSbPortTN, sizeof (DefaultSbPortTN), StdHeader);
   return AGESA_SUCCESS;
 }
-

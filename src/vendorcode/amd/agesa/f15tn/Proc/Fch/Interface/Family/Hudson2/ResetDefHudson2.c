@@ -75,7 +75,7 @@ CONST FCH_RESET_INTERFACE ROMDATA FchResetInterfaceDefault = {
  *  InitReset Phase Data Block Default (Failsafe)
  *----------------------------------------------------------------
  */
-FCH_RESET_DATA_BLOCK   InitResetCfgDefault = {
+CONST FCH_RESET_DATA_BLOCK   InitResetCfgDefault = {
   NULL,                  // StdHeader
   {0},                   // FchReset
 
@@ -154,5 +154,3 @@ FCH_RESET_DATA_BLOCK   InitResetCfgDefault = {
   },
   NULL                   // OemResetProgrammingTablePtr
 };
-
-

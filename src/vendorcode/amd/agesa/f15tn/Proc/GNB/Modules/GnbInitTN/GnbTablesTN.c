@@ -82,7 +82,7 @@
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
-GNB_TABLE ROMDATA GnbEarlierInitTableBeforeSmuTN [] = {
+CONST GNB_TABLE ROMDATA GnbEarlierInitTableBeforeSmuTN [] = {
   GNB_ENTRY_RMW (
     D0F0x98_x07_TYPE,
     D0F0x98_x07_ADDRESS,
@@ -99,7 +99,7 @@ GNB_TABLE ROMDATA GnbEarlierInitTableBeforeSmuTN [] = {
   GNB_ENTRY_TERMINATE
 };
 
-GNB_TABLE ROMDATA GnbEarlierInitTableAfterSmuTN [] = {
+CONST GNB_TABLE ROMDATA GnbEarlierInitTableAfterSmuTN [] = {
  // Config GFX to legacy mode initially
   GNB_ENTRY_RMW (
     D0F0x64_x1D_TYPE,
@@ -284,7 +284,7 @@ GNB_TABLE ROMDATA GnbEarlierInitTableAfterSmuTN [] = {
   GNB_ENTRY_TERMINATE
 };
 
-GNB_TABLE ROMDATA GnbEarlyInitTableTN [] = {
+CONST GNB_TABLE ROMDATA GnbEarlyInitTableTN [] = {
   GNB_ENTRY_WR (
     D0F0x04_TYPE,
     D0F0x04_ADDRESS,

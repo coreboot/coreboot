@@ -219,7 +219,7 @@
 #endif
 
 /*  Declare the instance of the PSTATE option configuration structure  */
-OPTION_PSTATE_POST_CONFIGURATION      OptionPstatePostConfiguration = {
+CONST OPTION_PSTATE_POST_CONFIGURATION      OptionPstatePostConfiguration = {
   PSTATE_STRUCT_VERSION,
   USER_PSTATE_OPTION_GATHER,
   USER_PSTATE_OPTION_LEVEL

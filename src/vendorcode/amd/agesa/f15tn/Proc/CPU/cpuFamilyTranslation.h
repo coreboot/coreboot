@@ -851,7 +851,7 @@ struct _CPU_SPECIFIC_SERVICES {                                         // See t
   PF_NEXT_LINK_HAS_HTFPY_FEATS NextLinkHasHtPhyFeats;                   ///< Method: Iterate over HT Links matching features, for HT PHY entries.
   PF_SET_HT_PHY_REGISTER SetHtPhyRegister;                              ///< Method: Set an Ht Phy register based on table entry.
   PF_GET_NEXT_HT_LINK_FEATURES GetNextHtLinkFeatures;                   ///< Method: Iterate over HT links, returning link features.
-  REGISTER_TABLE **RegisterTableList;                                   ///< Public Data: The available register tables.
+  CONST REGISTER_TABLE **RegisterTableList;                                   ///< Public Data: The available register tables.
   TABLE_ENTRY_TYPE_DESCRIPTOR *TableEntryTypeDescriptors;               ///< Public Data: implemented register table entry types.
   PACKAGE_HTLINK_MAP PackageLinkMap;                                    ///< Public Data: translate northbridge HT links to package level links, or NULL.
   CORE_PAIR_MAP *CorePairMap;                                           ///< Public Data: translate compute unit core pairing, or NULL.
@@ -1004,4 +1004,3 @@ GetEmptyArray (
   );
 
 #endif  // _CPU_FAMILY_TRANSLATION_H_
-

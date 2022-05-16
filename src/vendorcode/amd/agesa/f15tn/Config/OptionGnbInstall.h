@@ -90,7 +90,7 @@
   #if (GNB_TYPE_TN == TRUE)
     #include <Proc/GNB/Modules/GnbInitTN/GnbInitTNInstall.h>
   #endif
-  GNB_SERVICE   *ServiceTable = SERVICES_POINTER;
+  CONST GNB_SERVICE   * CONST ServiceTable = SERVICES_POINTER;
 
 //---------------------------------------------------------------------------------------------------
 // BUILD options
@@ -254,7 +254,7 @@
     #define CFG_LOADLINE_ENABLE                           TRUE
   #endif
 
-  GNB_BUILD_OPTIONS ROMDATA GnbBuildOptions = {
+  CONST GNB_BUILD_OPTIONS ROMDATA GnbBuildOptions = {
     CFG_IGFX_AS_PCIE_EP,
     CFG_LCLK_DEEP_SLEEP_EN,
     CFG_LCLK_DPM_EN,
@@ -352,7 +352,7 @@
     #endif
 
   //---------------------------------------------------------------------------------------------------
-    OPTION_GNB_CONFIGURATION  GnbEarlyFeatureTable[] = {
+    CONST OPTION_GNB_CONFIGURATION  GnbEarlyFeatureTable[] = {
       OPTION_NBINITATEARLY_ENTRY
       OPTION_GNBEARLYINTERFACETN_ENTRY
       OPTION_F12NBSMUINITFEATURE_ENTRY
@@ -384,7 +384,7 @@
       #define OPTION_GNBEARLIERINTERFACETN_ENTRY
     #endif
 
-    OPTION_GNB_CONFIGURATION  GnbEarlierFeatureTable[] = {
+    CONST OPTION_GNB_CONFIGURATION  GnbEarlierFeatureTable[] = {
       OPTION_PCIECONFIGURATIONINIT_ENTRY
       OPTION_GNBEARLIERINTERFACETN_ENTRY
       {0, NULL}
@@ -471,7 +471,7 @@
     #endif
 
   //---------------------------------------------------------------------------------------------------
-    OPTION_GNB_CONFIGURATION  GnbPostFeatureTable[] = {
+    CONST OPTION_GNB_CONFIGURATION  GnbPostFeatureTable[] = {
       OPTION_PCIEINITATPOSTEARLY_ENTRY
       OPTION_PCIEPOSTEARLYINTERFACETN_ENTRY
       OPTION_GFXCONFIGPOSTINTERFACE_ENTRY
@@ -480,7 +480,7 @@
       {0, NULL}
     };
 
-    OPTION_GNB_CONFIGURATION  GnbPostAfterDramFeatureTable[] = {
+    CONST OPTION_GNB_CONFIGURATION  GnbPostAfterDramFeatureTable[] = {
       OPTION_NBINITATPOST_ENTRY
       OPTION_GNBPOSTINTERFACETN_ENTRY
       OPTION_PCIEINITATPOST_ENTRY

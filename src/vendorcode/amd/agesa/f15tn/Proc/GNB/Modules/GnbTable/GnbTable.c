@@ -125,7 +125,7 @@ GnbProcessTable (
     WriteAccFlags |= GNB_REG_ACC_FLAG_S3SAVE;
   }
 
-  Status = GnbLibLocateService (GnbRegisterAccessService, GnbGetSocketId (GnbHandle), (VOID **)&GnbRegisterAccessProtocol, StdHeader);
+  Status = GnbLibLocateService (GnbRegisterAccessService, GnbGetSocketId (GnbHandle), (CONST VOID **)&GnbRegisterAccessProtocol, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
 
   while (*EntryPointer != GnbEntryTerminate) {

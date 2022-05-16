@@ -62,7 +62,7 @@ GnbLibPciIndirectWrite (
   IN      UINT32        Address,
   IN      UINT32        IndirectAddress,
   IN      ACCESS_WIDTH  Width,
-  IN      VOID          *Value,
+  CONST IN      VOID          *Value,
   IN      VOID          *Config
   );
 
@@ -159,7 +159,7 @@ AGESA_STATUS
 GnbLibLocateService (
   IN       GNB_SERVICE_ID       ServiceId,
   IN       UINT8                SocketId,
-  IN       VOID                 **ServiceProtocol,
+  CONST IN       VOID                 **ServiceProtocol,
   IN       AMD_CONFIG_PARAMS    *StdHeader
   );
 

@@ -45,7 +45,7 @@
 #ifndef _GNBSMUFIRMWARETN_H_
 #define _GNBSMUFIRMWARETN_H_
 
-UINT32  FirmwareTNHeader [] = {
+CONST UINT32  FirmwareTNHeader [] = {
   0x554D535F,
   0x554D535F,
   0x0000F030,
@@ -60,7 +60,7 @@ UINT32  FirmwareTNHeader [] = {
   0x00000000,
 };
 
-UINT32  FirmwareTN[] = {
+CONST UINT32  FirmwareTN[] = {
  0x000a000e,
  0x00000040,
  0x00003bc0,

@@ -118,12 +118,12 @@ STATIC
 *GetNextRegisterTable (
   IN       CPU_SPECIFIC_SERVICES  *FamilySpecificServices,
   IN       TABLE_CORE_SELECTOR     Selector,
-  IN OUT   REGISTER_TABLE       ***RegisterTableHandle,
+  CONST IN OUT   REGISTER_TABLE       ***RegisterTableHandle,
      OUT   UINTN                  *NumberOfEntries,
   IN       AMD_CONFIG_PARAMS      *StdHeader
   )
 {
-  REGISTER_TABLE **NextTable;
+  CONST REGISTER_TABLE **NextTable;
   TABLE_ENTRY_FIELDS *Entries;
 
   ASSERT ((FamilySpecificServices != NULL) && (StdHeader != NULL));
@@ -814,7 +814,7 @@ SetRegistersFromTables (
   TABLE_ENTRY_FIELDS    *Entries;
   TABLE_CORE_SELECTOR    Selector;
   TABLE_ENTRY_TYPE       EntryType;
-  REGISTER_TABLE       **TableHandle;
+  CONST REGISTER_TABLE       **TableHandle;
   UINTN                  NumberOfEntries;
   UINTN                  CurrentEntryCount;
   TABLE_ENTRY_TYPE_DESCRIPTOR *TypeImplementer;

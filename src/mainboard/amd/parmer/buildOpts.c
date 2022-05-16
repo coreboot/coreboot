@@ -47,7 +47,7 @@
 #include "cpuLateInit.h"
 #include "GnbInterface.h"
 
-GPIO_CONTROL parmer_gpio[] = {
+CONST GPIO_CONTROL parmer_gpio[] = {
 	{183, Function1, GpioIn | GpioOutEnB | PullUpB},
 	{-1}
 };

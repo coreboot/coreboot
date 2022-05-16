@@ -84,7 +84,7 @@ BOOLEAN
 STATIC
 MemMSetCSRNb (
   IN OUT   MEM_NB_BLOCK *NBPtr,
-  IN       PCI_SPECIAL_CASE *SpecialCases,
+  CONST IN       PCI_SPECIAL_CASE *SpecialCases,
   IN       PCI_ADDR PciAddr,
   IN       UINT32 Value
   );
@@ -532,7 +532,7 @@ BOOLEAN
 STATIC
 MemMSetCSRNb (
   IN OUT   MEM_NB_BLOCK *NBPtr,
-  IN       PCI_SPECIAL_CASE *SpecialCases,
+  CONST IN       PCI_SPECIAL_CASE *SpecialCases,
   IN       PCI_ADDR PciAddr,
   IN       UINT32 Value
   )

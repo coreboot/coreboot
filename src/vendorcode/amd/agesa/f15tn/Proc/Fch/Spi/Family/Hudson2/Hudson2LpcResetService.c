@@ -54,7 +54,7 @@
  *
  *
  */
-REG8_MASK FchInitHudson2ResetLpcPciTable[] =
+CONST REG8_MASK FchInitHudson2ResetLpcPciTable[] =
 {
   //
   // LPC Device (Bus 0, Dev 20, Func 3)

@@ -91,7 +91,7 @@ GnbFmCheckIommuPresent (
 {
   AGESA_STATUS              Status;
   GNB_FAM_IOMMU_SERVICES    *GnbIommuConfigService;
-  Status = GnbLibLocateService (GnbIommuService, GnbGetSocketId (GnbHandle), (VOID **)&GnbIommuConfigService, StdHeader);
+  Status = GnbLibLocateService (GnbIommuService, GnbGetSocketId (GnbHandle), (CONST VOID **)&GnbIommuConfigService, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return GnbIommuConfigService->GnbFmCheckIommuPresent (GnbHandle, StdHeader);
@@ -121,7 +121,7 @@ GnbFmCreateIvrsEntry (
 {
   AGESA_STATUS              Status;
   GNB_FAM_IOMMU_SERVICES    *GnbIommuConfigService;
-  Status = GnbLibLocateService (GnbIommuService, GnbGetSocketId (GnbHandle), (VOID **)&GnbIommuConfigService, StdHeader);
+  Status = GnbLibLocateService (GnbIommuService, GnbGetSocketId (GnbHandle), (CONST VOID **)&GnbIommuConfigService, StdHeader);
   ASSERT (Status == AGESA_SUCCESS);
   if (Status == AGESA_SUCCESS) {
     return GnbIommuConfigService->GnbFmCreateIvrsEntry (GnbHandle, Type, Ivrs, StdHeader);

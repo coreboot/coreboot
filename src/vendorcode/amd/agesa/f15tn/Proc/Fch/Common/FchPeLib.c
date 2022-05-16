@@ -137,7 +137,7 @@ ProgramFchAcpiMmioTbl (
  */
 VOID
 ProgramFchSciMapTbl (
-  IN       SCI_MAP_CONTROL  *pSciMapTbl,
+  CONST IN       SCI_MAP_CONTROL  *pSciMapTbl,
   IN       FCH_RESET_DATA_BLOCK *FchResetDataBlock
   )
 {
@@ -175,7 +175,7 @@ ProgramFchSciMapTbl (
  */
 VOID
 ProgramFchGpioTbl (
-  IN       GPIO_CONTROL  *pGpioTbl,
+  CONST IN       GPIO_CONTROL  *pGpioTbl,
   IN       FCH_RESET_DATA_BLOCK *FchResetDataBlock
   )
 {

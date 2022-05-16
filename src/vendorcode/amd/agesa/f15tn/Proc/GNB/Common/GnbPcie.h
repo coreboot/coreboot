@@ -191,7 +191,7 @@ typedef struct {
 
 /// Table Register Entry
 typedef struct {
-  PCIE_PORT_REGISTER_ENTRY  *Table;                     ///< Table
+  CONST PCIE_PORT_REGISTER_ENTRY  *Table;                     ///< Table
   UINT32                    Length;                     ///< Length
 } PCIE_PORT_REGISTER_TABLE_HEADER;
 
@@ -204,7 +204,7 @@ typedef struct {
 
 /// Table Register Entry
 typedef struct {
-  PCIE_HOST_REGISTER_ENTRY  *Table;                     ///< Table
+  CONST PCIE_HOST_REGISTER_ENTRY  *Table;                     ///< Table
   UINT32                    Length;                     ///< Length
 } PCIE_HOST_REGISTER_TABLE_HEADER;
 

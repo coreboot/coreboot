@@ -55,7 +55,7 @@
  *
  *
  */
-ACPI_REG_WRITE FchInitResetAcpiMmioTable[] =
+CONST ACPI_REG_WRITE FchInitResetAcpiMmioTable[] =
 {
   {00, 00, 0xB0, 0xAC},                                         /// Signature
   {MISC_BASE >> 8,  FCH_MISC_REG41, 0x1F, 0x40}, //keep Auxiliary_14Mclk_Sel [12]
@@ -138,4 +138,3 @@ ProgramFchHwAcpiResetP (
     LocalCfgPtr->SataClkMode = 0x0a;
   }
 }
-

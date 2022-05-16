@@ -354,9 +354,9 @@ PcieTrainingDetectPresence (
   }
 }
 
-UINT8 FailPattern1 [] = {0x2a, 0x6};
-UINT8 FailPattern2 [] = {0x2a, 0x9};
-UINT8 FailPattern3 [] = {0x2a, 0xb};
+CONST UINT8 FailPattern1 [] = {0x2a, 0x6};
+CONST UINT8 FailPattern2 [] = {0x2a, 0x9};
+CONST UINT8 FailPattern3 [] = {0x2a, 0xb};
 
 /*----------------------------------------------------------------------------------------*/
 /**

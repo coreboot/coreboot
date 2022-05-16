@@ -71,7 +71,7 @@
 #define PULL_DOWN	(PullDown | PullUpB)
 #define PULL_NONE	(PullUpB)
 
-GPIO_CONTROL lenovo_g505s_gpio[] = {
+CONST GPIO_CONTROL lenovo_g505s_gpio[] = {
 	{57, Function1, OUTPUT_HIGH | PULL_NONE},	/* WLAN enable */
 	{-1}
 };
@@ -87,7 +87,7 @@ GPIO_CONTROL lenovo_g505s_gpio[] = {
 #define SCI_MAP_XHCI_10_0	0x78
 #define SCI_MAP_PWRBTN		0x73
 
-SCI_MAP_CONTROL lenovo_g505s_sci_map[] = {
+CONST SCI_MAP_CONTROL lenovo_g505s_sci_map[] = {
 	{GEVENT_PIN(EC_SCI_GEVENT), EC_SCI_GPE},
 	{GEVENT_PIN(EC_LID_GEVENT), EC_LID_GPE},
 	{GEVENT_PIN(PCIE_GEVENT), PCIE_GPE},

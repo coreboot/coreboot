@@ -243,7 +243,7 @@ S3SaveStateSaveWriteOp (
   IN      ACCESS_WIDTH        Width,
   IN      UINT64              Address,
   IN      UINT32              Count,
-  IN      VOID                *Buffer
+  CONST IN      VOID                *Buffer
   )
 {
   S3_SAVE_TABLE_HEADER    *S3SaveTablePtr;
@@ -616,7 +616,7 @@ S3SaveDebugOpcodeString (
 VOID
 S3SaveDebugPrintHexArray (
   IN      AMD_CONFIG_PARAMS   *StdHeader,
-  IN      VOID                *Array,
+  CONST IN      VOID                *Array,
   IN      UINT32              Count,
   IN      ACCESS_WIDTH        Width
   )

@@ -45,7 +45,7 @@
 #ifndef _GNBCACWEIGHTSTABLETN_H_
 #define _GNBCACWEIGHTSTABLETN_H_
 
-UINT32 CacWeightsTN[] = {
+CONST UINT32 CacWeightsTN[] = {
   0xD65,
   0x289A,
   0x289A,

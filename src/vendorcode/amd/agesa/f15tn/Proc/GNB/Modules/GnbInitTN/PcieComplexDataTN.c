@@ -73,7 +73,7 @@
  */
 
 
-TN_COMPLEX_CONFIG ComplexDataTN = {
+CONST TN_COMPLEX_CONFIG ComplexDataTN = {
   //Silicon
   {
     {
@@ -461,4 +461,3 @@ TN_COMPLEX_CONFIG ComplexDataTN = {
     {0, 0, 0, 0, 0, 0}
   }
 };
-

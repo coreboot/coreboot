@@ -828,7 +828,7 @@
       //
       // Define task list for InitReset phase
       //
-      FCH_TASK_ENTRY ROMDATA  *FchInitResetTaskTable[] = {
+      FCH_TASK_ENTRY ROMDATA  * CONST FchInitResetTaskTable[] = {
         InstallFchInitResetHwAcpiP,
         InstallFchInitResetAb,
         InstallFchInitResetSpi,

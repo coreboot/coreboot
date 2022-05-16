@@ -49,7 +49,7 @@
 
 #define FCH_NO_XHCI_SUPPORT			TRUE
 
-GPIO_CONTROL thatcher_gpio[] = {
+CONST GPIO_CONTROL thatcher_gpio[] = {
 	{183, Function1, PullUpB},
 	{-1}
 };

@@ -98,7 +98,7 @@ typedef struct _S3_MEM_NB_BLOCK {
   UINT16 (*MemS3GetRegLstPtr) (MEM_NB_BLOCK *NBPtr, DESCRIPTOR_GROUP *DescriptPtr); ///< Get register list pointer for both PCI and MSR register
   BOOLEAN (*MemS3Resume) (struct _S3_MEM_NB_BLOCK *S3NBPtr, UINT8 NodeID);///< Exit Self Refresh
   VOID (*MemS3RestoreScrub) (MEM_NB_BLOCK *NBPtr, UINT8 NodeID);///< Restore scrubber base
-  AGESA_STATUS (*MemS3GetDeviceRegLst) (UINT32 ReigsterLstID, VOID **RegisterHeader); ///< Get register list for a device
+  AGESA_STATUS (*MemS3GetDeviceRegLst) (UINT32 ReigsterLstID, CONST VOID **RegisterHeader); ///< Get register list for a device
 } S3_MEM_NB_BLOCK;
 
 /// Header for heap space to store the special case register.

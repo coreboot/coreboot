@@ -54,7 +54,7 @@
 #define BLDCFG_FCH_GPP_PORT1_PRESENT		TRUE
 #define BLDCFG_FCH_GPP_PORT2_PRESENT		TRUE
 
-GPIO_CONTROL a88xm_e_gpio[] = {
+CONST GPIO_CONTROL a88xm_e_gpio[] = {
 	{-1}
 };
 #define BLDCFG_FCH_GPIO_CONTROL_LIST		(a88xm_e_gpio)

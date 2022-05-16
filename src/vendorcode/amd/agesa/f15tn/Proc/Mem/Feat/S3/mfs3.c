@@ -384,7 +384,7 @@ MemFS3GetPciDeviceRegisterList (
 {
   AGESA_STATUS RetVal;
   S3_MEM_NB_BLOCK *S3NBPtr;
-  VOID *RegisterHeader;
+  CONST VOID *RegisterHeader;
   LOCATE_HEAP_PTR LocHeap;
   AGESA_BUFFER_PARAMS LocBufferParams;
   LocHeap.BufferHandle = AMD_MEM_S3_NB_HANDLE;
@@ -434,7 +434,7 @@ MemFS3GetCPciDeviceRegisterList (
 {
   AGESA_STATUS RetVal;
   S3_MEM_NB_BLOCK *S3NBPtr;
-  VOID *RegisterHeader;
+  CONST VOID *RegisterHeader;
   LOCATE_HEAP_PTR LocHeap;
   AGESA_BUFFER_PARAMS LocBufferParams;
 
@@ -484,7 +484,7 @@ MemFS3GetMsrDeviceRegisterList (
 {
   AGESA_STATUS RetVal;
   S3_MEM_NB_BLOCK *S3NBPtr;
-  VOID *RegisterHeader;
+  CONST VOID *RegisterHeader;
   LOCATE_HEAP_PTR LocHeap;
   AGESA_BUFFER_PARAMS LocBufferParams;
 
@@ -534,7 +534,7 @@ MemFS3GetCMsrDeviceRegisterList (
 {
   AGESA_STATUS RetVal;
   S3_MEM_NB_BLOCK *S3NBPtr;
-  VOID *RegisterHeader;
+  CONST VOID *RegisterHeader;
   LOCATE_HEAP_PTR LocHeap;
   AGESA_BUFFER_PARAMS LocBufferParams;
 

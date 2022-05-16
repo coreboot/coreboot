@@ -260,23 +260,23 @@ typedef struct {
 typedef struct {
   UINT16                  Version;       ///< Version of header
   UINT16                  NumRegisters;  ///< Number of registers in the list
-  PCI_REG_DESCRIPTOR      *RegisterList; ///< Pointer to the first register descriptor
-  PCI_SPECIAL_CASE        *SpecialCases; ///< Pointer to array of special case handlers
+  CONST PCI_REG_DESCRIPTOR      *RegisterList; ///< Pointer to the first register descriptor
+  CONST PCI_SPECIAL_CASE        *SpecialCases; ///< Pointer to array of special case handlers
 } PCI_REGISTER_BLOCK_HEADER;
 
 /// S3 'conditional' PCI register list header.
 typedef struct {
   UINT16                          Version;       ///< Version of header
   UINT16                          NumRegisters;  ///< Number of registers in the list
-  CONDITIONAL_PCI_REG_DESCRIPTOR  *RegisterList; ///< Pointer to the first register descriptor
-  PCI_SPECIAL_CASE                *SpecialCases; ///< Pointer to array of special case handlers
+  CONST CONDITIONAL_PCI_REG_DESCRIPTOR  *RegisterList; ///< Pointer to the first register descriptor
+  CONST PCI_SPECIAL_CASE                *SpecialCases; ///< Pointer to array of special case handlers
 } CPCI_REGISTER_BLOCK_HEADER;
 
 /// S3 MSR register list header.
 typedef struct {
   UINT16                 Version;       ///< Version of header
   UINT16                 NumRegisters;  ///< Number of registers in the list
-  MSR_REG_DESCRIPTOR     *RegisterList; ///< Pointer to the first register descriptor
+  CONST MSR_REG_DESCRIPTOR     *RegisterList; ///< Pointer to the first register descriptor
   MSR_SPECIAL_CASE       *SpecialCases; ///< Pointer to array of special case handlers
 } MSR_REGISTER_BLOCK_HEADER;
 

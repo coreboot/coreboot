@@ -66,7 +66,7 @@
   extern F_PCIEFMMAPPORTPCIADDRESS                PcieMapPortPciAddressTN;
   extern F_PCIEFMCHECKPORTPCIELANECANBEMUXED      PcieCheckPortPcieLaneCanBeMuxedTN;
   extern F_PCIEFMGETSBCONFIGINFO                  PcieGetSbConfigInfoTN;
-  PCIe_FAM_CONFIG_SERVICES GnbPcieConfigProtocolTN = {
+CONST PCIe_FAM_CONFIG_SERVICES GnbPcieConfigProtocolTN = {
     PcieGetComplexDataLengthTN,
     PcieBuildComplexConfigurationTN,
     PcieConfigureEnginesLaneAllocationTN,
@@ -76,7 +76,7 @@
     PcieGetSbConfigInfoTN
   };
 
-  GNB_SERVICE GnbPcieCongigServicesTN = {
+  CONST GNB_SERVICE GnbPcieCongigServicesTN = {
     GnbPcieFamConfigService,
     AMD_FAMILY_TN,
     &GnbPcieConfigProtocolTN,
@@ -92,14 +92,14 @@
   extern F_PCIEFMGETNATIVEPHYLANEBITMAP           PcieGetNativePhyLaneBitmapTN;
   extern F_PCIEFMSETLINKSPEEDCAP                  PcieSetLinkSpeedCapV4;
 
-  PCIe_FAM_INIT_SERVICES GnbPcieInitProtocolTN = {
+  CONST PCIe_FAM_INIT_SERVICES GnbPcieInitProtocolTN = {
     PcieGetCoreConfigurationValueTN,
     PcieGetLinkSpeedCapTN,
     PcieGetNativePhyLaneBitmapTN,
     PcieSetLinkSpeedCapV4
   };
 
-  GNB_SERVICE GnbPcieInitServicesTN = {
+  CONST GNB_SERVICE GnbPcieInitServicesTN = {
     GnbPcieFamInitService,
     AMD_FAMILY_TN,
     &GnbPcieInitProtocolTN,
@@ -116,13 +116,13 @@
       extern F_PCIEFMDEBUGGETWRAPPERNAMESTRING          PcieDebugGetWrapperNameStringTN;
       extern F_PCIEFMDEBUGGETCORECONFIGURATIONSTRING    PcieDebugGetCoreConfigurationStringTN;
 
-      PCIe_FAM_DEBUG_SERVICES GnbPcieDebugProtocolTN = {
+      CONST PCIe_FAM_DEBUG_SERVICES GnbPcieDebugProtocolTN = {
         PcieDebugGetHostRegAddressSpaceStringTN,
         PcieDebugGetWrapperNameStringTN,
         PcieDebugGetCoreConfigurationStringTN
       };
 
-      GNB_SERVICE GnbPcieDebugServicesTN = {
+      CONST GNB_SERVICE GnbPcieDebugServicesTN = {
         GnbPcieFamDebugService,
         AMD_FAMILY_TN,
         &GnbPcieDebugProtocolTN,
@@ -138,12 +138,12 @@
   extern F_GNB_REGISTER_ACCESS  GnbRegisterReadServiceTN;
   extern F_GNB_REGISTER_ACCESS  GnbRegisterWriteServiceTN;
 
-  GNB_REGISTER_SERVICE GnbRegiterAccessProtocol = {
+  CONST GNB_REGISTER_SERVICE GnbRegiterAccessProtocol = {
     GnbRegisterReadServiceTN,
     GnbRegisterWriteServiceTN
   };
 
-  GNB_SERVICE GnbRegisterAccessServicesTN = {
+  CONST GNB_SERVICE GnbRegisterAccessServicesTN = {
     GnbRegisterAccessService,
     AMD_FAMILY_TN,
     &GnbRegiterAccessProtocol,
@@ -155,12 +155,12 @@
   extern F_GNBFMCREATEIVRSENTRY    GnbCreateIvrsEntryTN;
   extern F_GNBFMCHECKIOMMUPRESENT  GnbCheckIommuPresentTN;
 
-  GNB_FAM_IOMMU_SERVICES GnbIommuConfigProtocolTN = {
+  CONST GNB_FAM_IOMMU_SERVICES GnbIommuConfigProtocolTN = {
     GnbCheckIommuPresentTN,
     GnbCreateIvrsEntryTN
   };
 
-  GNB_SERVICE GnbIommuConfigServicesTN = {
+  CONST GNB_SERVICE GnbIommuConfigServicesTN = {
     GnbIommuService,
     AMD_FAMILY_TN,
     &GnbIommuConfigProtocolTN,

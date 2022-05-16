@@ -51,7 +51,7 @@
  *
  *
  */
-REG8_MASK FchInitResetPcibPciTable[] =
+CONST REG8_MASK FchInitResetPcibPciTable[] =
 {
   //
   // P2P Bridge (Bus 0, Dev 20, Func 4)
@@ -98,7 +98,7 @@ FchInitResetPcib (
  *
  *
  */
-REG8_MASK FchInitResetPcibPort80EnableTable[] =
+CONST REG8_MASK FchInitResetPcibPort80EnableTable[] =
 {
   //
   // P2P Bridge (Bus 0, Dev 20, Func 4)
@@ -133,4 +133,3 @@ FchInitResetPcibPort80Enable (
     StdHeader
     );
 }
-

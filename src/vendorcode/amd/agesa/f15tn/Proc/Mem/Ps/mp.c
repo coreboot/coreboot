@@ -93,7 +93,7 @@ BOOLEAN
 STATIC
 MemPPSCGen (
   IN OUT   MEM_NB_BLOCK *NBPtr,
-  IN       MEM_PSC_TABLE_BLOCK *EntryOfTables
+  CONST IN       MEM_PSC_TABLE_BLOCK *EntryOfTables
   );
 
 BOOLEAN
@@ -551,7 +551,7 @@ BOOLEAN
 STATIC
 MemPPSCGen (
   IN OUT   MEM_NB_BLOCK *NBPtr,
-  IN       MEM_PSC_TABLE_BLOCK *EntryOfTables
+  CONST IN       MEM_PSC_TABLE_BLOCK *EntryOfTables
   )
 {
   UINT8 i;
@@ -1216,4 +1216,3 @@ MemPCheckTblDrvOverrideConfigSpeedLimit (
 
   return FALSE;
 }
-

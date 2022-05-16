@@ -405,7 +405,7 @@ BOOLEAN MemFS3DefConstructorRet (
     #define MEM_MAIN_FLOW_CONTROL_PTR_TN MemMFlowDef,
   #endif
 
-  MEM_FLOW_CFG* memFlowControlInstalled[] = {
+  MEM_FLOW_CFG* CONST memFlowControlInstalled[] = {
     MEM_MAIN_FLOW_CONTROL_PTR_Dr
     MEM_MAIN_FLOW_CONTROL_PTR_DA
     MEM_MAIN_FLOW_CONTROL_PTR_RB
@@ -1209,7 +1209,7 @@ BOOLEAN MemFS3DefConstructorRet (
       #define MEM_MAIN_FEATURE_TRAINING  MemMStandardTraining
     #define MEM_FEATURE_TRAINING  MemFStandardTraining
 
-    MEM_FEAT_BLOCK_NB  MemFeatBlockTN = {
+    CONST MEM_FEAT_BLOCK_NB  MemFeatBlockTN = {
       MEM_FEAT_BLOCK_NB_STRUCT_VERSION,
       MEM_FEATURE_ONLINE_SPARE,
       MEM_FEATURE_BANK_INTERLEAVE,
@@ -1242,7 +1242,7 @@ BOOLEAN MemFS3DefConstructorRet (
    * MAIN FEATURE BLOCK
    *---------------------------------------------------------------------------------------------------
    */
-  MEM_FEAT_BLOCK_MAIN MemFeatMain = {
+  CONST MEM_FEAT_BLOCK_MAIN MemFeatMain = {
     MEM_FEAT_BLOCK_MAIN_STRUCT_VERSION,
     MEM_MAIN_FEATURE_TRAINING,
     MEM_MAIN_FEATURE_DIMM_EXCLUDE,
@@ -2665,7 +2665,7 @@ BOOLEAN MemFS3DefConstructorRet (
       #else
         #define TECH_TRAIN_MAX_RD_LAT_DDR3 MemTFeatDef
       #endif
-      MEM_TECH_FEAT_BLOCK  memTechTrainingFeatSequenceDDR3TN = {
+      CONST MEM_TECH_FEAT_BLOCK  memTechTrainingFeatSequenceDDR3TN = {
         MEM_TECH_FEAT_BLOCK_STRUCT_VERSION,
         TECH_TRAIN_ENTER_HW_TRN_DDR3,
         TECH_TRAIN_SW_WL_DDR3,
@@ -2725,7 +2725,7 @@ BOOLEAN MemFS3DefConstructorRet (
     MEM_TECH_ENABLE_TRAINING_SEQUENCE_END
   };
 
-  MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR3[] = {
+  CONST MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR3[] = {
     MEM_TECH_ENABLE_TRAINING_SEQUENCE_DDR3_DR
     MEM_TECH_ENABLE_TRAINING_SEQUENCE_DDR3_DA
     MEM_TECH_ENABLE_TRAINING_SEQUENCE_DDR3_HY
@@ -2745,7 +2745,7 @@ BOOLEAN MemFS3DefConstructorRet (
    *
    *---------------------------------------------------------------------------------------------------
    */
-  OPTION_MEM_FEATURE_NB* memNTrainFlowControl[] = {    // Training flow control
+  OPTION_MEM_FEATURE_NB* CONST memNTrainFlowControl[] = {    // Training flow control
     NB_TRAIN_FLOW_DDR2,
     NB_TRAIN_FLOW_DDR3,
   };
@@ -2755,7 +2755,7 @@ BOOLEAN MemFS3DefConstructorRet (
    *
    *---------------------------------------------------------------------------------------------------
    */
-  MEM_TECH_CONSTRUCTOR* memTechInstalled[] = {    // Types of technology installed
+  MEM_TECH_CONSTRUCTOR* CONST memTechInstalled[] = {    // Types of technology installed
     MEM_TECH_CONSTRUCTOR_DDR2
     MEM_TECH_CONSTRUCTOR_DDR3
     NULL
@@ -3665,7 +3665,7 @@ BOOLEAN MemFS3DefConstructorRet (
    */
   #define MEM_PSC_FLOW_BLOCK_END NULL
   #define PSC_TBL_END NULL
-  #define MEM_PSC_FLOW_DEFTRUE (BOOLEAN (*) (MEM_NB_BLOCK*, MEM_PSC_TABLE_BLOCK *)) memDefTrue
+  #define MEM_PSC_FLOW_DEFTRUE (BOOLEAN (*) (MEM_NB_BLOCK*, CONST MEM_PSC_TABLE_BLOCK *)) memDefTrue
 
   #if OPTION_MEMCTLR_OR
     #if OPTION_UDIMMS
@@ -4517,43 +4517,43 @@ BOOLEAN MemFS3DefConstructorRet (
       #define PSC_TBL_TN_CS_TRI_FP2
     #endif
 
-    PSC_TBL_ENTRY* memPSCTblMaxFreqArrayTN[] = {
+    PSC_TBL_ENTRY* CONST memPSCTblMaxFreqArrayTN[] = {
       PSC_TBL_TN_SODIMM3_MAX_FREQ
       PSC_TBL_TN_SODWN_SODIMM3_MAX_FREQ
       PSC_TBL_TN_UDIMM3_MAX_FREQ
       PSC_TBL_END
     };
 
-    PSC_TBL_ENTRY* memPSCTblDramTermArrayTN[] = {
+    PSC_TBL_ENTRY* CONST memPSCTblDramTermArrayTN[] = {
       PSC_TBL_TN_UDIMM3_DRAM_TERM
       PSC_TBL_TN_SODIMM3_DRAM_TERM
       PSC_TBL_TN_SODWN_SODIMM3_DRAM_TERM
       PSC_TBL_END
     };
 
-    PSC_TBL_ENTRY* memPSCTblODTPatArrayTN[] = {
+    PSC_TBL_ENTRY* CONST memPSCTblODTPatArrayTN[] = {
       &TNOdtPatTblEnt,
       PSC_TBL_END
     };
 
-    PSC_TBL_ENTRY* memPSCTblSAOArrayTN[] = {
+    PSC_TBL_ENTRY* CONST memPSCTblSAOArrayTN[] = {
       PSC_TBL_TN_SODIMM3_SAO
       PSC_TBL_TN_SODWN_SODIMM3_SAO
       PSC_TBL_TN_UDIMM3_SAO
       PSC_TBL_END
     };
 
-    PSC_TBL_ENTRY* memPSCTblMR0WRArrayTN[] = {
+    PSC_TBL_ENTRY* CONST memPSCTblMR0WRArrayTN[] = {
       &TNMR0WrTblEntry,
       PSC_TBL_END
     };
 
-    PSC_TBL_ENTRY* memPSCTblMR0CLArrayTN[] = {
+    PSC_TBL_ENTRY* CONST memPSCTblMR0CLArrayTN[] = {
       &TNMR0CLTblEntry,
       PSC_TBL_END
     };
 
-    PSC_TBL_ENTRY* memPSCTblGenArrayTN[] = {
+    PSC_TBL_ENTRY* CONST memPSCTblGenArrayTN[] = {
       &TNDdr3CKETriEnt,
       PSC_TBL_TN_CLK_DIS_FM2
       PSC_TBL_TN_ODT_TRI_FM2
@@ -4567,7 +4567,7 @@ BOOLEAN MemFS3DefConstructorRet (
       PSC_TBL_END
     };
 
-    PSC_TBL_ENTRY* memPSCTblS2DArrayTN[] = {
+    PSC_TBL_ENTRY* CONST memPSCTblS2DArrayTN[] = {
       PSC_TBL_TN_UDIMM3_S2D_FM2
       PSC_TBL_TN_SODIMM3_S2D_FS1
       PSC_TBL_TN_SODIMM3_S2D_FP2
@@ -4575,7 +4575,7 @@ BOOLEAN MemFS3DefConstructorRet (
       PSC_TBL_END
     };
 
-    MEM_PSC_TABLE_BLOCK memPSCTblBlockTN = {
+    CONST MEM_PSC_TABLE_BLOCK memPSCTblBlockTN = {
       (PSC_TBL_ENTRY **)&memPSCTblMaxFreqArrayTN,
       (PSC_TBL_ENTRY **)&memPSCTblDramTermArrayTN,
       (PSC_TBL_ENTRY **)&memPSCTblODTPatArrayTN,
@@ -4599,7 +4599,7 @@ BOOLEAN MemFS3DefConstructorRet (
     extern MEM_PSC_FLOW MemPGetSAO;
     extern MEM_PSC_FLOW MemPGetMR0WrCL;
 
-    MEM_PSC_FLOW_BLOCK memPlatSpecFlowTN = {
+    CONST MEM_PSC_FLOW_BLOCK memPlatSpecFlowTN = {
       &memPSCTblBlockTN,
       MemPGetMaxFreqSupported,
       MemPGetRttNomWr,
@@ -4620,7 +4620,7 @@ BOOLEAN MemFS3DefConstructorRet (
   #endif
 
 
-  MEM_PSC_FLOW_BLOCK* memPlatSpecFlowArray[] = {
+  CONST MEM_PSC_FLOW_BLOCK* CONST memPlatSpecFlowArray[] = {
     MEM_PSC_FLOW_BLOCK_OR
     MEM_PSC_FLOW_BLOCK_TN
     MEM_PSC_FLOW_BLOCK_END
@@ -4641,7 +4641,7 @@ BOOLEAN MemFS3DefConstructorRet (
   #else //#if (OPTION_LRDIMMS == FALSE)
     #define MEM_TECH_FEATURE_LRDIMM_INIT    MemTFeatDef
   #endif
-  MEM_TECH_LRDIMM memLrdimmSupported = {
+  CONST MEM_TECH_LRDIMM memLrdimmSupported = {
     MEM_TECH_LRDIMM_STRUCT_VERSION,
     MEM_TECH_FEATURE_LRDIMM_INIT
   };
@@ -4652,7 +4652,7 @@ BOOLEAN MemFS3DefConstructorRet (
    *
    *---------------------------------------------------------------------------------------------------
    */
-  MEM_FLOW_CFG* memFlowControlInstalled[] = {
+  MEM_FLOW_CFG* CONST  memFlowControlInstalled[] = {
     NULL
   };
   /*---------------------------------------------------------------------------------------------------
@@ -4661,7 +4661,7 @@ BOOLEAN MemFS3DefConstructorRet (
    *
    *---------------------------------------------------------------------------------------------------
    */
-  OPTION_MEM_FEATURE_NB* memNTrainFlowControl[] = {    // Training flow control
+  OPTION_MEM_FEATURE_NB* CONST memNTrainFlowControl[] = {    // Training flow control
     NULL,
     NULL,
   };
@@ -4671,7 +4671,7 @@ BOOLEAN MemFS3DefConstructorRet (
    *
    *---------------------------------------------------------------------------------------------------
    */
-  MEM_TECH_CONSTRUCTOR* memTechInstalled[] = {    // Types of technology installed
+  MEM_TECH_CONSTRUCTOR* CONST memTechInstalled[] = {    // Types of technology installed
     NULL
   };
 
@@ -4681,13 +4681,13 @@ BOOLEAN MemFS3DefConstructorRet (
    *
    *---------------------------------------------------------------------------------------------------
    */
-  UINT8 MemoryTechnologyMap[MAX_SOCKETS_SUPPORTED] = {0, 0, 0, 0, 0, 0, 0, 0};
+  CONST UINT8 MemoryTechnologyMap[MAX_SOCKETS_SUPPORTED] = {0, 0, 0, 0, 0, 0, 0, 0};
 
   /*---------------------------------------------------------------------------------------------------
    * DEFAULT MAIN FEATURE BLOCK
    *---------------------------------------------------------------------------------------------------
    */
-  MEM_FEAT_BLOCK_MAIN MemFeatMain = {
+  CONST MEM_FEAT_BLOCK_MAIN MemFeatMain = {
     0
   };
 
@@ -4744,18 +4744,18 @@ BOOLEAN MemFS3DefConstructorRet (
    *---------------------------------------------------------------------------------------------------
    */
   #if OPTION_DDR2
-    MEM_TECH_FEAT_BLOCK  memTechTrainingFeatDDR2 = {
+    CONST MEM_TECH_FEAT_BLOCK  memTechTrainingFeatDDR2 = {
       0
     };
-    MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR2[] = {
+    CONST MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR2[] = {
       { 0 }
     };
   #endif
   #if OPTION_DDR3
-    MEM_TECH_FEAT_BLOCK  memTechTrainingFeatDDR3 = {
+    CONST MEM_TECH_FEAT_BLOCK  memTechTrainingFeatDDR3 = {
       0
     };
-    MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR3[] = {
+    CONST MEM_FEAT_TRAIN_SEQ memTrainSequenceDDR3[] = {
       { 0 }
     };
   #endif
@@ -4766,52 +4766,52 @@ BOOLEAN MemFS3DefConstructorRet (
      *---------------------------------------------------------------------------------------------------
      */
   #if (OPTION_MEMCTLR_DR == TRUE)
-    MEM_PLAT_SPEC_CFG* memPlatSpecFFInstalledDr[MAX_FF_TYPES] = {
+    MEM_PLAT_SPEC_CFG* CONST memPlatSpecFFInstalledDr[MAX_FF_TYPES] = {
       NULL
     };
   #endif
   #if (OPTION_MEMCTLR_RB == TRUE)
-    MEM_PLAT_SPEC_CFG* memPlatSpecFFInstalledRb[MAX_FF_TYPES] = {
+    MEM_PLAT_SPEC_CFG* CONST memPlatSpecFFInstalledRb[MAX_FF_TYPES] = {
       NULL
     };
   #endif
   #if (OPTION_MEMCTLR_DA == TRUE)
-    MEM_PLAT_SPEC_CFG* memPlatSpecFFInstalledDA[MAX_FF_TYPES] = {
+    MEM_PLAT_SPEC_CFG* CONST memPlatSpecFFInstalledDA[MAX_FF_TYPES] = {
       NULL
     };
   #endif
   #if (OPTION_MEMCTLR_Ni == TRUE)
-    MEM_PLAT_SPEC_CFG* memPlatSpecFFInstalledNi[MAX_FF_TYPES] = {
+    MEM_PLAT_SPEC_CFG* CONST memPlatSpecFFInstalledNi[MAX_FF_TYPES] = {
       NULL
     };
   #endif
   #if (OPTION_MEMCTLR_PH == TRUE)
-    MEM_PLAT_SPEC_CFG* memPlatSpecFFInstalledPh[MAX_FF_TYPES] = {
+    MEM_PLAT_SPEC_CFG* CONST memPlatSpecFFInstalledPh[MAX_FF_TYPES] = {
       NULL
     };
   #endif
   #if (OPTION_MEMCTLR_LN == TRUE)
-    MEM_PLAT_SPEC_CFG* memPlatSpecFFInstalledLN[MAX_FF_TYPES] = {
+    MEM_PLAT_SPEC_CFG* CONST memPlatSpecFFInstalledLN[MAX_FF_TYPES] = {
       NULL
     };
   #endif
   #if (OPTION_MEMCTLR_HY == TRUE)
-    MEM_PLAT_SPEC_CFG* memPlatSpecFFInstalledHy[MAX_FF_TYPES] = {
+    MEM_PLAT_SPEC_CFG* CONST memPlatSpecFFInstalledHy[MAX_FF_TYPES] = {
       NULL
     };
   #endif
   #if (OPTION_MEMCTLR_OR == TRUE)
-    MEM_PLAT_SPEC_CFG* memPlatSpecFFInstalledOr[MAX_FF_TYPES] = {
+    MEM_PLAT_SPEC_CFG* CONST memPlatSpecFFInstalledOr[MAX_FF_TYPES] = {
       NULL
     };
   #endif
   #if (OPTION_MEMCTLR_C32 == TRUE)
-    MEM_PLAT_SPEC_CFG* memPlatSpecFFInstalledC32[MAX_FF_TYPES] = {
+    MEM_PLAT_SPEC_CFG* CONST memPlatSpecFFInstalledC32[MAX_FF_TYPES] = {
       NULL
     };
   #endif
   #if (OPTION_MEMCTLR_ON == TRUE)
-    MEM_PLAT_SPEC_CFG* memPlatSpecFFInstalledON[MAX_FF_TYPES] = {
+    MEM_PLAT_SPEC_CFG* CONST memPlatSpecFFInstalledON[MAX_FF_TYPES] = {
       NULL
     };
   #endif
@@ -4820,7 +4820,7 @@ BOOLEAN MemFS3DefConstructorRet (
    *
    *----------------------------------------------------------------------
    */
-  MEM_PLATFORM_CFG* memPlatformTypeInstalled[] = {
+  MEM_PLATFORM_CFG* CONST memPlatformTypeInstalled[] = {
     NULL
   };
 
@@ -4829,11 +4829,11 @@ BOOLEAN MemFS3DefConstructorRet (
    *
    *----------------------------------------------------------------------
    */
-  MEM_PSC_FLOW_BLOCK* memPlatSpecFlowArray[] = {
+  MEM_PSC_FLOW_BLOCK* CONST memPlatSpecFlowArray[] = {
     NULL
   };
 
-  MEM_TECH_LRDIMM memLrdimmSupported = {
+  CONST MEM_TECH_LRDIMM memLrdimmSupported = {
     MEM_TECH_LRDIMM_STRUCT_VERSION,
     NULL
   };
@@ -4845,7 +4845,7 @@ BOOLEAN MemFS3DefConstructorRet (
  *
  *---------------------------------------------------------------------------------------------------
  */
-MEM_NB_SUPPORT memNBInstalled[] = {
+CONST MEM_NB_SUPPORT memNBInstalled[] = {
   MEM_NB_SUPPORT_RB
   MEM_NB_SUPPORT_DA
   MEM_NB_SUPPORT_Ni

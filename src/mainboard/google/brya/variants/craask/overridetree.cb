@@ -1,8 +1,16 @@
 fw_config
 	field DB_USB 0 1
-		option DB_NONE		0
-		option DB_1C_1A		1
-		option DB_1C_LTE	2
+		option DB_NONE			0
+		option DB_1C_1A			1
+		option DB_1C_LTE		2
+	end
+	field WFC 2 3
+		option WFC_ABSENT		0
+		option WFC_MIPI_OVTI5675	1
+	end
+	field STYLUS 4
+		option STYLUS_ABSENT		0
+		option STYLUS_PRESENT		1
 	end
 end
 
@@ -36,6 +44,7 @@ chip soc/intel/alderlake
 				register "cio2_prt[0]" = "1"
 				device generic 0 on end
 			end
+			probe WFC WFC_MIPI_OVTI5675
 		end
 		device ref i2c1 on
 			chip drivers/i2c/hid
@@ -66,7 +75,9 @@ chip soc/intel/alderlake
 				register "key.linux_code" = "SW_PEN_INSERTED"
 				register "key.linux_input_type" = "EV_SW"
 				register "key.label" = ""pen_eject""
-				device generic 0 on end
+				device generic 0 on
+					probe STYLUS STYLUS_PRESENT
+				end
 			end
 		end
 		device ref i2c2 on
@@ -159,7 +170,9 @@ chip soc/intel/alderlake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 36 on end
+				device i2c 36 on
+					probe WFC WFC_MIPI_OVTI5675
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "3"
@@ -170,7 +183,9 @@ chip soc/intel/alderlake
 				register "pr0" = ""\\_SB.PCI0.I2C2.CAM0.PRIC""
 				register "vcm_compat" = ""dongwoon,dw9714""
 
-				device i2c 0C on end
+				device i2c 0C on
+					probe WFC WFC_MIPI_OVTI5675
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
@@ -187,7 +202,9 @@ chip soc/intel/alderlake
 				register "nvm_width" = "0x10"
 				register "nvm_compat" = ""atmel,24c08""
 
-				device i2c 50 on end
+				device i2c 50 on
+					probe WFC WFC_MIPI_OVTI5675
+				end
 			end
 		end
 		device ref i2c3 on

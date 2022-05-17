@@ -15,6 +15,7 @@
 #include <commonlib/endian.h>
 #include <console/console.h>
 #include <delay.h>
+#include <drivers/tpm/cr50.h>
 #include <endian.h>
 #include <security/tpm/tis.h>
 #include <string.h>
@@ -63,6 +64,9 @@ __weak int tis_plat_irq_status(void)
 {
 	static int warning_displayed;
 
+	if (!CONFIG(TPM_GOOGLE))
+		dead_code();
+
 	if (!warning_displayed) {
 		printk(BIOS_WARNING, "%s() not implemented, wasting 10ms to wait on"
 		       " Cr50!\n", __func__);
@@ -71,23 +75,6 @@ __weak int tis_plat_irq_status(void)
 	mdelay(10);
 
 	return 1;
-}
-
-/*
- * TPM may trigger a IRQ after finish processing previous transfer.
- * Waiting for this IRQ to sync TPM status.
- */
-static enum cb_err tpm_sync(void)
-{
-	struct stopwatch sw;
-
-	stopwatch_init_msecs_expire(&sw, 10);
-	while (!tis_plat_irq_status()) {
-		if (stopwatch_expired(&sw))
-			return CB_ERR;
-	}
-
-	return CB_SUCCESS;
 }
 
 /*
@@ -113,7 +100,7 @@ static enum cb_err start_transaction(int read_write, size_t bytes, unsigned int 
 
 		/* Wait for TPM to finish previous transaction if needed */
 		if (tpm_sync_needed) {
-			if (tpm_sync() != CB_SUCCESS)
+			if (cr50_wait_tpm_ready() != CB_SUCCESS)
 				printk(BIOS_ERR, "Timeout waiting for TPM IRQ!\n");
 
 			/*
@@ -431,8 +418,9 @@ int tpm2_init(struct spi_slave *spi_if)
 
 	memcpy(&spi_slave, spi_if, sizeof(*spi_if));
 
-	/* clear any pending IRQs */
-	tis_plat_irq_status();
+	/* Clear any pending IRQs. */
+	if (CONFIG(TPM_GOOGLE))
+		tis_plat_irq_status();
 
 	/*
 	 * 150 ms should be enough to synchronize with the TPM even under the

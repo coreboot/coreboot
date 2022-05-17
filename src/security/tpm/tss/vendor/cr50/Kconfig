@@ -40,4 +40,14 @@ config TI50_FIRMWARE_VERSION_NOT_SUPPORTED
 	  FW < 0.0.15. The config will be removed once all Ti50 stocks are updated to
 	  0.0.15 or higher.
 
+config GOOGLE_TPM_IRQ_TIMEOUT_MS
+	int
+	default 100 if TPM_GOOGLE_CR50 && I2C_TPM
+	default 10 if TPM_GOOGLE_CR50
+	default 750
+	help
+	  Timeout in milliseconds for waiting for TPM IRQ. Default to 100ms/10ms on platforms
+	  using Cr50 in order to support legacy pre-ready-IRQ cr50 factory images. Default to
+	  750ms otherwise.
+
 endif

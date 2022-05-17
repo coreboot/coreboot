@@ -34,7 +34,6 @@
 #define CR50_TIMEOUT_LONG_MS	2000	/* Long timeout while waiting for TPM */
 #define CR50_TIMEOUT_SHORT_MS	2	/* Short timeout during transactions */
 #define CR50_TIMEOUT_NOIRQ_MS	20	/* Timeout for TPM ready without IRQ */
-#define CR50_TIMEOUT_IRQ_MS	100	/* Timeout for TPM ready with IRQ */
 #define CR50_DID_VID		0x00281ae0L
 #define TI50_DID_VID		0x504a6666L
 
@@ -58,21 +57,6 @@ __weak int tis_plat_irq_status(void)
 	mdelay(CR50_TIMEOUT_NOIRQ_MS);
 
 	return 1;
-}
-
-/* Wait for interrupt to indicate the TPM is ready */
-static int cr50_i2c_wait_tpm_ready(void)
-{
-	struct stopwatch sw;
-
-	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_IRQ_MS);
-
-	while (!tis_plat_irq_status())
-		if (stopwatch_expired(&sw)) {
-			printk(BIOS_ERR, "Cr50 i2c TPM IRQ timeout!\n");
-			return -1;
-		}
-	return 0;
 }
 
 /*
@@ -103,7 +87,7 @@ static int cr50_i2c_read(uint8_t addr, uint8_t *buffer, size_t len)
 	}
 
 	/* Wait for TPM to be ready with response data */
-	if (cr50_i2c_wait_tpm_ready() < 0)
+	if (cr50_wait_tpm_ready() != CB_SUCCESS)
 		return -1;
 
 	/* Read response data from the TPM */
@@ -149,7 +133,7 @@ static int cr50_i2c_write(uint8_t addr, const uint8_t *buffer, size_t len)
 	}
 
 	/* Wait for TPM to be ready */
-	return cr50_i2c_wait_tpm_ready();
+	return cr50_wait_tpm_ready() == CB_SUCCESS ? 0 : -1;
 }
 
 /*

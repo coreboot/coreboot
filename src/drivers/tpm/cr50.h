@@ -21,4 +21,7 @@ enum cb_err cr50_get_firmware_version(struct cr50_firmware_version *version);
 /* Set the BOARD_CFG register depending on Cr50 Kconfigs */
 enum cb_err cr50_set_board_cfg(void);
 
+/* Wait for IRQ to indicate the TPM is ready */
+enum cb_err cr50_wait_tpm_ready(void);
+
 #endif /* __DRIVERS_TPM_CR50_H__ */

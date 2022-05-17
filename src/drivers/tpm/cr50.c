@@ -3,6 +3,7 @@
 #include <drivers/spi/tpm/tpm.h>
 #include <security/tpm/tis.h>
 #include <string.h>
+#include <timer.h>
 #include <types.h>
 
 #define CR50_DID_VID	0x00281ae0L
@@ -232,5 +233,20 @@ enum cb_err cr50_get_firmware_version(struct cr50_firmware_version *version)
 success:
 	if (version)
 		*version = cr50_firmware_version;
+	return CB_SUCCESS;
+}
+
+enum cb_err cr50_wait_tpm_ready(void)
+{
+	struct stopwatch sw;
+
+	stopwatch_init_msecs_expire(&sw, CONFIG_GOOGLE_TPM_IRQ_TIMEOUT_MS);
+
+	while (!tis_plat_irq_status())
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_ERR, "Cr50 TPM IRQ timeout!\n");
+			return CB_ERR;
+		}
+
 	return CB_SUCCESS;
 }

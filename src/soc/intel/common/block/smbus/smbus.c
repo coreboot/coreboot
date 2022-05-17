@@ -8,60 +8,8 @@
 #include <soc/smbus.h>
 #include <device/smbus_host.h>
 #include <intelblocks/tco.h>
+#include <southbridge/intel/common/smbus_ops.h>
 #include "smbuslib.h"
-
-static int lsmbus_read_byte(struct device *dev, u8 address)
-{
-	u16 device;
-	struct resource *res;
-	struct bus *pbus;
-	device = dev->path.i2c.device;
-	pbus = get_pbus_smbus(dev);
-	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
-	return do_smbus_read_byte(res->base, device, address);
-}
-
-static int lsmbus_write_byte(struct device *dev, u8 address, u8 data)
-{
-	u16 device;
-	struct resource *res;
-	struct bus *pbus;
-
-	device = dev->path.i2c.device;
-	pbus = get_pbus_smbus(dev);
-	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
-	return do_smbus_write_byte(res->base, device, address, data);
-}
-
-static int lsmbus_read_block(struct device *dev, u8 cmd, u8 bytes, u8 *buffer)
-{
-	u16 device;
-	struct resource *res;
-	struct bus *pbus;
-	device = dev->path.i2c.device;
-	pbus = get_pbus_smbus(dev);
-	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
-	return do_smbus_block_read(res->base, device, cmd, bytes, buffer);
-}
-
-static int lsmbus_write_block(struct device *dev, u8 cmd, u8 bytes, const u8 *buffer)
-{
-	u16 device;
-	struct resource *res;
-	struct bus *pbus;
-
-	device = dev->path.i2c.device;
-	pbus = get_pbus_smbus(dev);
-	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
-	return do_smbus_block_write(res->base, device, cmd, bytes, (u8 *)buffer);
-}
-
-static struct smbus_bus_operations lops_smbus_bus = {
-	.read_byte	= lsmbus_read_byte,
-	.write_byte	= lsmbus_write_byte,
-	.block_read	= lsmbus_read_block,
-	.block_write	= lsmbus_write_block,
-};
 
 static void pch_smbus_init(struct device *dev)
 {
@@ -75,18 +23,6 @@ static void pch_smbus_init(struct device *dev)
 	res = probe_resource(dev, PCI_BASE_ADDRESS_4);
 	if (res)
 		smbus_set_slave_addr(res->base, SMBUS_SLAVE_ADDR);
-}
-
-static void smbus_read_resources(struct device *dev)
-{
-	pci_dev_read_resources(dev);
-
-	struct resource *res = new_resource(dev, PCI_BASE_ADDRESS_4);
-	res->base = SMBUS_IO_BASE;
-	res->size = 32;
-	res->limit = res->base + res->size - 1;
-	res->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_RESERVE |
-		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
 /*

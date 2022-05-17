@@ -4,7 +4,7 @@
 #define SOC_INTEL_COMMON_BLOCK_SMBUS__LIB_H
 
 /* SMBus IO Base Address */
-#define SMBUS_IO_BASE	0xefa0
+#define SMBUS_IO_BASE	CONFIG_FIXED_SMBUS_IO_BASE
 
 /* PCI Configuration Space : SMBus */
 #define HOSTC	0x40

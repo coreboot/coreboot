@@ -1,7 +1,11 @@
 config SOC_INTEL_COMMON_BLOCK_SMBUS
 	bool
+	select SOUTHBRIDGE_INTEL_COMMON_SMBUS
 	help
 	  Intel Processor common SMBus support
+
+config FIXED_SMBUS_IO_BASE
+	default 0xefa0
 
 config SOC_INTEL_COMMON_BLOCK_SMBUS_ACPI_DRIVER
 	bool

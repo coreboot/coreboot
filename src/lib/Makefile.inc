@@ -400,7 +400,7 @@ cbfs_master_header-type := "cbfs header"
 cbfs_master_header-position := 0
 
 ifeq ($(CONFIG_ARCH_X86),y)
-$(call src-to-obj,bootblock,$(dir)/header_pointer.c): $(obj)/fmap_config.h
+$(call src-to-obj,bootblock,$(dir)/master_header_pointer.c): $(obj)/fmap_config.h
 bootblock-y += master_header_pointer.c
 else
 cbfs-files-y += header_pointer

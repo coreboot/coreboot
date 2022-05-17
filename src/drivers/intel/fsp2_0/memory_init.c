@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <security/vboot/antirollback.h>
+#include <arch/null_breakpoint.h>
 #include <arch/symbols.h>
 #include <assert.h>
 #include <cbfs.h>
@@ -11,17 +11,18 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <memrange.h>
+#include <mode_switch.h>
 #include <mrc_cache.h>
 #include <program_loading.h>
 #include <romstage_handoff.h>
+#include <security/tpm/tspi.h>
+#include <security/vboot/antirollback.h>
+#include <security/vboot/vboot_common.h>
 #include <string.h>
 #include <symbols.h>
 #include <timestamp.h>
-#include <security/vboot/vboot_common.h>
-#include <security/tpm/tspi.h>
-#include <vb2_api.h>
 #include <types.h>
-#include <mode_switch.h>
+#include <vb2_api.h>
 
 static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(sizeof(uint64_t));
 
@@ -293,6 +294,8 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	fsp_raminit = (void *)(uintptr_t)(hdr->image_base + hdr->fsp_memory_init_entry_offset);
 	fsp_debug_before_memory_init(fsp_raminit, upd, &fspm_upd);
 
+	/* FSP disables the interrupt handler so remove debug exceptions temporarily  */
+	null_breakpoint_disable();
 	post_code(POST_FSP_MEMORY_INIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
 	if (ENV_X86_64 && CONFIG(PLATFORM_USES_FSP2_X86_32))
@@ -301,6 +304,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 						  (uintptr_t)fsp_get_hob_list_ptr());
 	else
 		status = fsp_raminit(&fspm_upd, fsp_get_hob_list_ptr());
+	null_breakpoint_init();
 
 	post_code(POST_FSP_MEMORY_EXIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <arch/null_breakpoint.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
@@ -75,10 +76,13 @@ static void fsp_notify(enum fsp_notify_phase phase)
 	timestamp_add_now(data->timestamp_before);
 	post_code(data->post_code_before);
 
+	/* FSP disables the interrupt handler so remove debug exceptions temporarily  */
+	null_breakpoint_disable();
 	if (ENV_X86_64 && CONFIG(PLATFORM_USES_FSP2_X86_32))
 		ret = protected_mode_call_1arg(fspnotify, (uintptr_t)&notify_params);
 	else
 		ret = fspnotify(&notify_params);
+	null_breakpoint_init();
 
 	timestamp_add_now(data->timestamp_after);
 	post_code(data->post_code_after);

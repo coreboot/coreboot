@@ -57,11 +57,16 @@ void null_breakpoint_init(void)
 	create_instruction_breakpoint();
 }
 
-static void null_breakpoint_disable(void *unused)
+void null_breakpoint_disable(void)
 {
 	breakpoint_remove(null_fetch_bp);
 	breakpoint_remove(null_deref_bp);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, null_breakpoint_disable, NULL);
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, null_breakpoint_disable, NULL);
+static void null_breakpoint_disable_hook(void *unused)
+{
+	null_breakpoint_disable();
+}
+
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, null_breakpoint_disable_hook, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, null_breakpoint_disable_hook, NULL);

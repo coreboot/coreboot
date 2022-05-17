@@ -7,10 +7,15 @@
 
 /* Places data and instructions breakpoints at address zero. */
 void null_breakpoint_init(void);
+void null_breakpoint_disable(void);
 #else
 static inline void null_breakpoint_init(void)
 {
-    /* Not implemented */
+	/* Not implemented */
+}
+static inline void null_breakpoint_disable(void)
+{
+	/* Not implemented */
 }
 #endif
 #endif /* _NULL_BREAKPOINT_H_ */

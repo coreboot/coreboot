@@ -108,6 +108,8 @@ $(call add_intermediate, add_bootblock, $(objcbfs)/bootblock.bin)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	$(CBFSTOOL) $< add -f $(objcbfs)/bootblock.bin  -n bootblock -t bootblock $(TXTIBB) -b -$(call file-size,$(objcbfs)/bootblock.bin) \
 	$(cbfs-autogen-attributes) $(TS_OPTIONS) $(CBFSTOOL_ADD_CMD_OPTIONS)
+else # Make sure the bootblock gets build, if only for buildtesting
+$(call add_intermediate, gen_bootblock, $(objcbfs)/bootblock.bin)
 endif
 endif
 

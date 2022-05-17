@@ -322,23 +322,20 @@ chip soc/intel/alderlake
 				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
 
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_D15"  #EN_UCAM_LED_PWR
-				register "gpio_panel.gpio[1].gpio_num" = "GPP_D16" #EN_UCAM_PWR
-				register "gpio_panel.gpio[2].gpio_num" = "GPP_D3" #reset
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_D3" #reset
 
 				#_ON
-				register "on_seq.ops_cnt" = "5"
+				register "on_seq.ops_cnt" = "4"
 				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
 				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
-				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
-				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 5)"
-				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(2, 5)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 5)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
 
 				#_OFF
-				register "off_seq.ops_cnt" = "4"
+				register "off_seq.ops_cnt" = "3"
 				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
-				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
-				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
-				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 				device i2c 36 on
 					probe CAMERA_UFC CAMERA_NONE
 					probe CAMERA_UFC CAMERA_OV5675
@@ -364,23 +361,20 @@ chip soc/intel/alderlake
 				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
 
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_D15"  #EN_UCAM_LED_PWR
-				register "gpio_panel.gpio[1].gpio_num" = "GPP_D16" #EN_UCAM_PWR
-				register "gpio_panel.gpio[2].gpio_num" = "GPP_D3" #reset
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_D3" #reset
 
 				#_ON
-				register "on_seq.ops_cnt" = "5"
+				register "on_seq.ops_cnt" = "4"
 				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
 				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
-				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
-				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 5)"
-				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(2, 5)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 5)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
 
 				#_OFF
-				register "off_seq.ops_cnt" = "4"
+				register "off_seq.ops_cnt" = "3"
 				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
-				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
-				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
-				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 				device i2c 20 on
 					probe CAMERA_UFC CAMERA_HI556
 				end
@@ -392,18 +386,6 @@ chip soc/intel/alderlake
 				register "chip_name" = ""M24C64X""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
-
-				register "has_power_resource" = "1"
-				#Controls
-				register "gpio_panel.gpio[0].gpio_num" = "GPP_D16" #EN_UCAM_PWR
-
-				#_ON
-				register "on_seq.ops_cnt" = "1"
-				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
-
-				#_OFF
-				register "off_seq.ops_cnt" = "1"
-				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				register "nvm_size" = "0x2000"
 				register "nvm_pagesize" = "1"

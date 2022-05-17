@@ -60,7 +60,7 @@ static uint32_t tspi_init_crtm(void)
 				       TPM_CRTM_PCR,
 				       "FMAP: BOOTBLOCK"))
 			return VB2_ERROR_UNKNOWN;
-	} else {
+	} else if (CONFIG(BOOTBLOCK_IN_CBFS)){
 		/* Mapping measures the file. We know we can safely map here because
 		   bootblock-as-a-file is only used on x86, where we don't need cache to map. */
 		enum cbfs_type type = CBFS_TYPE_BOOTBLOCK;
@@ -71,7 +71,7 @@ static uint32_t tspi_init_crtm(void)
 			return VB2_ERROR_UNKNOWN;
 		}
 		cbfs_unmap(mapping);
-	}
+	} /* else: TODO: Add SoC specific measurement methods. */
 
 	return VB2_SUCCESS;
 }

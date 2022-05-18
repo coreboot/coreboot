@@ -1,21 +1,4 @@
 chip soc/intel/tigerlake
-	register "common_soc_config" = "{
-		// Touchpad I2C bus
-		.i2c[0] = {
-			.speed = I2C_SPEED_FAST,
-			.rise_time_ns = 80,
-			.fall_time_ns = 110,
-		},
-	}"
-
-# ACPI (soc/intel/tigerlake/acpi.c)
-	# Enable Enhanced Intel SpeedStep
-	register "eist_enable" = "1"
-
-	# Enable s0ix, required for TGL-U
-	register "s0ix_enable" = "1"
-
-# CPU (soc/intel/tigerlake/cpu.c)
 	# Power limits
 	register "power_limits_config[POWER_LIMITS_U_4_CORE]" = "{
 		.tdp_pl1_override = 28,
@@ -26,86 +9,14 @@ chip soc/intel/tigerlake
 		.tdp_pl2_override = 40,
 	}"
 
-# FSP Memory (soc/intel/tigerlake/romstage/fsp_params.c)
-	# Enable C6 DRAM
-	register "enable_c6dram" = "1"
-
-	# System Agent dynamic frequency support
-	register "SaGv" = "SaGv_Enabled"
-
-# FSP Silicon (soc/intel/tigerlake/fsp_params.c)
-	# Acoustic settings
-	register "AcousticNoiseMitigation" = "1"
-	register "SlowSlewRate" = "SLEW_FAST_8"
-	register "FastPkgCRampDisable" = "1"
-
-	# FIVR configuration
-	#   Read EXT_RAIL_CONFIG to determine bitmaps
-	#     sudo devmem2 0xfe0011b8
-	#     0x0
-	#   Read EXT_V1P05_VR_CONFIG
-	#     sudo devmem2 0xfe0011c0
-	#     0x1a42000
-	#   Read EXT_VNN_VR_CONFIG0
-	#     sudo devmem2 0xfe0011c4
-	#     0x1a42000
-	# TODO: v1p05 voltage and vnn icc max?
-	register "ext_fivr_settings" = "{
-		.configure_ext_fivr = 1,
-		.v1p05_enable_bitmap = 0,
-		.vnn_enable_bitmap = 0,
-		.v1p05_supported_voltage_bitmap = 0,
-		.vnn_supported_voltage_bitmap = 0,
-		.v1p05_icc_max_ma = 500,
-		.vnn_sx_voltage_mv = 1050,
-	}"
-
-	# Read LPM_EN, make sure to invert the bits
-	register "LpmStateDisableMask" = "
-		LPM_S0i2_1 |
-		LPM_S0i2_2 |
-		LPM_S0i3_1 |
-		LPM_S0i3_2 |
-		LPM_S0i3_3 |
-		LPM_S0i3_4
-	"
-
-	# Thermal
-	register "tcc_offset" = "12"
-
-	# Enable CNVi BT
-	register "CnviBtCore" = "true"
-
-# PM Util (soc/intel/tigerlake/pmutil.c)
 	# GPE configuration
 	register "pmc_gpe0_dw0" = "PMC_GPP_A"
 	register "pmc_gpe0_dw1" = "PMC_GPP_R"
 	register "pmc_gpe0_dw2" = "PMC_GPD"
 
-# Actual device tree
-	device cpu_cluster 0 on
-		device lapic 0 on end
-	end
-
 	device domain 0 on
 		subsystemid 0x1558 0x51a1 inherit
 
-		#From CPU EDS (575683)
-		device ref system_agent on end
-		device ref igpu on
-			# DDIA is eDP
-			register "DdiPortAConfig" = "DDI_PORT_CFG_EDP"
-			register "DdiPortAHpd" = "1"
-			register "DdiPortADdc" = "0"
-
-			# DDIB is HDMI
-			register "DdiPortBConfig" = "DDI_PORT_CFG_NO_LFP"
-			register "DdiPortBHpd" = "1"
-			register "DdiPortBDdc" = "1"
-
-			register "gfx" = "GMA_DEFAULT_PANEL(0)"
-		end
-		device ref dptf on end
 		device ref peg on
 			# PCIe PEG0 x4, Clock 0 (SSD1)
 			register "PcieClkSrcUsage[0]" = "0x40"
@@ -117,7 +28,6 @@ chip soc/intel/tigerlake
 				device generic 0 on end
 			end
 		end
-		device ref tbt_pcie_rp0 on end # J_TYPEC2
 		device ref north_xhci on # J_TYPEC2
 			register "UsbTcPortEn" = "1"
 			register "TcssXhciEn" = "1"
@@ -140,7 +50,6 @@ chip soc/intel/tigerlake
 			end
 		end
 
-		# From PCH EDS (576591)
 		device ref south_xhci on
 			# USB2
 			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # UJ_USB1
@@ -218,34 +127,6 @@ chip soc/intel/tigerlake
 				end
 			end
 		end
-		device ref shared_ram on end
-		device ref cnvi_wifi on
-			chip drivers/wifi/generic
-				register "wake" = "GPE0_PME_B0"
-				device generic 0 on end
-			end
-		end
-		device ref i2c0 on
-			# Touchpad I2C bus
-			register "SerialIoI2cMode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
-			chip drivers/i2c/hid
-				register "generic.hid" = ""FTCS1000""
-				register "generic.desc" = ""FocalTech Touchpad""
-				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_B3)"
-				register "generic.probed" = "1"
-				register "hid_desc_reg_offset" = "0x01"
-				device i2c 38 on end
-			end
-		end
-		device ref i2c1 on
-			# TODO: USB-PD?
-			register "SerialIoI2cMode[PchSerialIoIndexI2C1]" = "PchSerialIoPci"
-		end
-		device ref heci1 on end
-		device ref uart2 on
-			# Debug console
-			register "SerialIoUartMode[PchSerialIoIndexUART2]" = "PchSerialIoSkipInit"
-		end
 		device ref sata on
 			# SATA1 (SSD0)
 			register "SataPortsEnable[1]" = "1"
@@ -298,16 +179,6 @@ chip soc/intel/tigerlake
 				device generic 0 on end
 			end
 		end
-		device ref pch_espi on
-			register "gen1_dec" = "0x000c0081"
-			register "gen2_dec" = "0x00040069"
-			register "gen3_dec" = "0x00fc0E01"
-			register "gen4_dec" = "0x00fc0F01"
-			chip drivers/pc80/tpm
-				device pnp 0c31.0 on end
-			end
-		end
-		device ref p2sb on end
 		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the
 			# PMC.MUX device in the ACPI hierarchy.
@@ -323,10 +194,5 @@ chip soc/intel/tigerlake
 				end
 			end
 		end
-		device ref hda on
-			register "PchHdaAudioLinkHdaEnable" = "1"
-		end
-		device ref smbus on end
-		device ref fast_spi on end
 	end
 end

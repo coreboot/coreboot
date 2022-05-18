@@ -1,2 +1,5 @@
+config BOARD_SYSTEM76_DARP7
+	bool "darp7"
+
 config BOARD_SYSTEM76_LEMP10
 	bool "lemp10"

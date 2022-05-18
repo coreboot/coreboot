@@ -134,7 +134,7 @@ static void fill_fsps_tsn_params(FSP_S_CONFIG *params,
 			params->PseTsnGbeMultiVcEnable[i] = config->PseTsnGbeMultiVcEnable[i];
 			params->PseTsnGbeSgmiiEnable[i] = config->PseTsnGbeSgmiiEnable[i];
 			params->PseTsnGbePhyInterfaceType[i] =
-				!!config->PseTsnGbeSgmiiEnable[i] ?
+				!config->PseTsnGbeSgmiiEnable[i] ?
 				RGMII : config->PseTsnGbePhyType[i];
 			params->PseTsnGbeLinkSpeed[i] =
 				(params->PseTsnGbePhyInterfaceType[i] < SGMII_plus) ?

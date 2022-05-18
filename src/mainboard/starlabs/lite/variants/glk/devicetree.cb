@@ -71,9 +71,7 @@ chip soc/intel/apollolake
 		device pci 0d.1 on  end						# PMC
 		device pci 0d.2 on  end						# SPI
 		device pci 0d.3 off end						# Shared SRAM
-		device pci 0e.0 on						# Audio
-			subsystemid 0x10ec 0x111e
-		end
+		device pci 0e.0 on  end						# Audio
 		device pci 0f.0 on  end						# Heci1
 		device pci 0f.1 on  end						# Heci2
 		device pci 0f.2 on  end						# Heci3

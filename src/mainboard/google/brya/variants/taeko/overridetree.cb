@@ -50,6 +50,7 @@ chip soc/intel/alderlake
 	register "slow_slew_rate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
 	register "fast_pkg_c_ramp_disable[VR_DOMAIN_IA]" = "1"
 	register "fast_pkg_c_ramp_disable[VR_DOMAIN_GT]" = "1"
+	register "PreWake" = "100"
 	register "ext_fivr_settings" = "{
 		.configure_ext_fivr = 1,
 		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX,

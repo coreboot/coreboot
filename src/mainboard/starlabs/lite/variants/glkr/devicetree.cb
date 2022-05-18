@@ -51,7 +51,7 @@ chip soc/intel/apollolake
 	register "gpe0_dw2"			= "PMC_GPE_N_95_64"
 	register "gpe0_dw3"			= "PMC_GPE_NW_31_0"
 
-	register "slp_s3_assertion_width_usecs"	= "50000"
+	register "slp_s3_assertion_width_usecs"	= "28000"
 
 	device domain 0 on
 		device pci 00.0 on  end						# Host Bridge

@@ -16,6 +16,7 @@
 #define SYSTEM_POWER_MANAGEMENT_HID	"INT33A1"
 #define SYSTEM_POWER_MANAGEMENT_CID	"PNP0D80"
 #define EC_S0IX_HOOK			"\\_SB.PCI0.LPCB.EC0.S0IX"
+#define EC_DISPLAY_HOOK			"\\_SB.PCI0.LPCB.EC0.EDSX"
 #define MAINBOARD_HOOK			"\\_SB.MS0X"
 #define MAINBOARD_DISPLAY_HOOK		"\\_SB.MDSX"
 #define ENABLE_PM_BITS_HOOK		"\\_SB.PCI0.EGPM"
@@ -169,6 +170,12 @@ static void lpi_s0ix_exit(void *unused)
 
 static void lpi_display_on(void *unused)
 {
+	/* Inform the EC */
+	acpigen_write_if_cond_ref_of(EC_DISPLAY_HOOK);
+	acpigen_emit_namestring(EC_DISPLAY_HOOK);
+	acpigen_write_integer(1);
+	acpigen_write_if_end();
+
 	/* Provide a board level S0ix hook */
 	acpigen_write_if_cond_ref_of(MAINBOARD_DISPLAY_HOOK);
 	acpigen_emit_namestring(MAINBOARD_DISPLAY_HOOK);
@@ -178,6 +185,12 @@ static void lpi_display_on(void *unused)
 
 static void lpi_display_off(void *unused)
 {
+	/* Inform the EC */
+	acpigen_write_if_cond_ref_of(EC_DISPLAY_HOOK);
+	acpigen_emit_namestring(EC_DISPLAY_HOOK);
+	acpigen_write_integer(0);
+	acpigen_write_if_end();
+
 	/* Provide a board level S0ix hook */
 	acpigen_write_if_cond_ref_of(MAINBOARD_DISPLAY_HOOK);
 	acpigen_emit_namestring(MAINBOARD_DISPLAY_HOOK);

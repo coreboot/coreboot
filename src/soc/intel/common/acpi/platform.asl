@@ -6,6 +6,8 @@ External(\_SB.MPTS, MethodObj)
 External(\_SB.MWAK, MethodObj)
 External(\_SB.PCI0.EGPM, MethodObj)
 External(\_SB.PCI0.RGPM, MethodObj)
+External(\_SB.PCI0.LPCB.EC0.PTS, MethodObj)
+External(\_SB.PCI0.LPCB.EC0.WAK, MethodObj)
 
 #include <arch/x86/acpi/post.asl>
 
@@ -18,6 +20,10 @@ Method (_PTS, 1)
 {
 	DBG0 = POST_OS_ENTER_PTS
 
+	If (CondRefOf (\_SB.PCI0.LPCB.EC0.PTS))
+	{
+		\_SB.PCI0.LPCB.EC0.PTS (Arg0)
+	}
 	If (CondRefOf (\_SB.MPTS))
 	{
 		\_SB.MPTS (Arg0)
@@ -38,6 +44,10 @@ Method (_WAK, 1)
 {
 	DBG0 = POST_OS_ENTER_WAKE
 
+	If (CondRefOf (\_SB.PCI0.LPCB.EC0.WAK))
+	{
+		\_SB.PCI0.LPCB.EC0.WAK (Arg0)
+	}
 	If (CondRefOf (\_SB.MWAK))
 	{
 		\_SB.MWAK (Arg0)

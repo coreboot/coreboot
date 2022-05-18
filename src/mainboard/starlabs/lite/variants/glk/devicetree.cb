@@ -29,6 +29,8 @@ chip soc/intel/apollolake
 
 	register "ModPhyIfValue"		= "0x12"
 
+	register "prt0_gpio"			= "GPIO_PRT0_UDEF"
+
 	register "usb_config_override"		= "1"
 	register "DisableComplianceMode"	= "1"
 

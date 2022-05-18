@@ -30,11 +30,15 @@ enum soc_intel_alderlake_power_limits {
 	ADL_M_282_15W_CORE,
 	ADL_M_242_CORE,
 	ADL_P_442_45W_CORE,
+	ADL_N_081_15W_CORE,
+	ADL_N_041_6W_CORE,
+	ADL_N_021_6W_CORE,
 	ADL_POWER_LIMITS_COUNT
 };
 
 /* TDP values for different SKUs */
 enum soc_intel_alderlake_cpu_tdps {
+	TDP_6W  = 6,
 	TDP_9W  = 9,
 	TDP_12W = 12,
 	TDP_15W = 15,
@@ -61,6 +65,10 @@ static const struct {
 	{ PCI_DID_INTEL_ADL_M_ID_1, ADL_M_282_12W_CORE, TDP_12W },
 	{ PCI_DID_INTEL_ADL_M_ID_1, ADL_M_282_15W_CORE, TDP_15W },
 	{ PCI_DID_INTEL_ADL_M_ID_2, ADL_M_242_CORE, TDP_9W },
+	{ PCI_DID_INTEL_ADL_N_ID_1, ADL_N_081_15W_CORE, TDP_15W },
+	{ PCI_DID_INTEL_ADL_N_ID_2, ADL_N_041_6W_CORE, TDP_6W },
+	{ PCI_DID_INTEL_ADL_N_ID_3, ADL_N_041_6W_CORE, TDP_6W },
+	{ PCI_DID_INTEL_ADL_N_ID_4, ADL_N_021_6W_CORE, TDP_6W },
 };
 
 /* Types of display ports */

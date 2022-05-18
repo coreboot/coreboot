@@ -48,6 +48,24 @@ chip soc/intel/alderlake
 		.tdp_pl4 = 68,
 	}"
 
+	register "power_limits_config[ADL_N_081_15W_CORE]" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 35,
+		.tdp_pl4 = 83,
+	}"
+
+	register "power_limits_config[ADL_N_041_6W_CORE]" = "{
+		.tdp_pl1_override = 6,
+		.tdp_pl2_override = 25,
+		.tdp_pl4 = 78,
+	}"
+
+	register "power_limits_config[ADL_N_021_6W_CORE]" = "{
+		.tdp_pl1_override = 6,
+		.tdp_pl2_override = 25,
+		.tdp_pl4 = 78,
+	}"
+
 	# NOTE: if any variant wants to override this value, use the same format
 	# as register "common_soc_config.pch_thermal_trip" = "value", instead of
 	# putting it under register "common_soc_config" in overridetree.cb file.

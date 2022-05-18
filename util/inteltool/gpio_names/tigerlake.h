@@ -187,7 +187,7 @@ const char *const tigerlake_pch_lp_group_hvmos_names[] = {
 
 const struct gpio_group tigerlake_pch_lp_group_hvmos = {
 	.display	= "------- GPIO Group HVMOS -------",
-	.pad_count	= ARRAY_SIZE(tigerlake_pch_lp_group_hvmos_names),
+	.pad_count	= ARRAY_SIZE(tigerlake_pch_lp_group_hvmos_names) / 2,
 	.func_count	= 2,
 	.pad_names	= tigerlake_pch_lp_group_hvmos_names,
 };

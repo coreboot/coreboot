@@ -26,6 +26,10 @@ chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 	register "max_dram_speed_mts" = "3733"
 
+	# As per Intel Advisory doc#723158, the change is required to prevent possible
+	# display flickering issue.
+	register "usb2_phy_sus_pg_disable" = "1"
+
 	# Acoustic settings
 	register "acoustic_noise_mitigation" = "1"
 	register "slow_slew_rate[VR_DOMAIN_IA]" = "SLEW_FAST_8"

@@ -12,7 +12,7 @@ static const uint8_t fsp_string_type_guid[16] = {
 
 static efi_return_status_t print_fsp_string_data(const efi_status_code_data_t *data)
 {
-	printk(BIOS_SPEW, "%s", ((efi_status_code_string_data *) data)->String.Ascii);
+	printk(get_log_level(), "%s", ((efi_status_code_string_data *) data)->String.Ascii);
 
 	return FSP_SUCCESS;
 }

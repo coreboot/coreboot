@@ -18,7 +18,7 @@ fw_config
 end
 
 chip soc/intel/alderlake
-
+	register "sagv" = "SaGv_Enabled"
 	register "max_dram_speed_mts" = "4800"
 	register "cnvi_bt_audio_offload" = "1"
 

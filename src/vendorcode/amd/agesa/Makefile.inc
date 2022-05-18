@@ -9,7 +9,6 @@ subdirs-y += common
 classes-y += libagesa
 libagesa-y =
 libagesa-generic-ccopts += -D__LIBAGESA__
-libagesa-generic-ccopts += -fno-zero-initialized-in-bss
 libagesa-generic-ccopts += $(AGESA_INC) $(AGESA_AUTOINCLUDES)
 libagesa-generic-ccopts += -Wno-pragma-pack -Wno-unused-but-set-variable
 libagesa-generic-ccopts += -Wno-implicit-fallthrough

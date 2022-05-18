@@ -117,6 +117,9 @@ $(EDK2_PATH): $(WORKSPACE)
 	fi
 	cd $(EDK2_PATH); \
 		git checkout MdeModulePkg/Logo/Logo.bmp > /dev/null 2>&1 || true; \
+		if [ -e UefiPayloadPkg/ShimLayer/UniversalPayload.o ]; then \
+			rm UefiPayloadPkg/ShimLayer/UniversalPayload.o; \
+		fi; \
 		echo "    Fetching new commits from $(CONFIG_EDK2_REPOSITORY)"; \
 		git fetch origin 2>/dev/null; \
 		if ! git rev-parse --verify -q $(CONFIG_EDK2_TAG_OR_REV) >/dev/null; then \
@@ -209,6 +212,18 @@ $(WORKSPACE)/Build/UefiPayloadPkgX64/UniversalPayload.elf: \
 			exit 1; \
 		fi
 		echo "Success!"; \
+
+$(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/IA32/UefiPayloadPkg/ShimLayer/ShimLayer/DEBUG/ShimLayer.dll: \
+		$(WORKSPACE)/Build/UefiPayloadPkgX64/UniversalPayload.elf prep
+	cd $(WORKSPACE)/Build/UefiPayloadPkgX64 && \
+		$(OBJCOPY) -I binary UniversalPayload.elf -O elf32-i386 -B i386 \
+			$(EDK2_PATH)/UefiPayloadPkg/ShimLayer/UniversalPayload.o; \
+	cd $(WORKSPACE) && \
+		source $(EDK2_PATH)/edksetup.sh; \
+		build -p UefiPayloadPkg/UefiPayloadPkg.dsc -b $(RELEASE_STR) -a IA32 -a X64 \
+			-m UefiPayloadPkg/ShimLayer/ShimLayer.inf \
+			-t COREBOOT -D BOOTLOADER=COREBOOT -D SHIMLAYER=TRUE \
+			-y $(WORKSPACE)/Build/UefiPayloadPkgX64/ShimLayer.txt
 
 UefiPayloadPkg: $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd
 	mv $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd \

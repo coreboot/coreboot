@@ -73,6 +73,18 @@ Method (_Q54, 0, NotSerialized)			// Event: Power Button Press
 	Printf ("EC: PWRBTN")
 }
 
+Method (_Q60, 0, NotSerialized)			// Event: Trackpad Enable
+{
+	Printf ("EC: Trackpad Enable")
+	SPC0 (0xD0C80610, 0x40800102)
+}
+
+Method (_Q61, 0, NotSerialized)			// Event: Trackpad Disable
+{
+	Printf ("EC: Trackpad Disable")
+	SPC0 (0xD0C80610, 0x40800200)
+}
+
 Method (_QF0, 0, NotSerialized)			// Event: Temperature Report
 {
 	Printf ("EC: Temperature Report")

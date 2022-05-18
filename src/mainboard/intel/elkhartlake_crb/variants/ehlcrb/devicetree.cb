@@ -153,8 +153,11 @@ chip soc/intel/elkhartlake
 	}"
 
 	# TSN GBE related UPDs
-	register "PchTsnGbeLinkSpeed" = "Tsn_2_5_Gbps"
+	register "PchTsnGbeLinkSpeed" = "Tsn_1_Gbps"
 	register "PchTsnGbeSgmiiEnable" = "1"
+	register "PchTsnGbeMultiVcEnable"    =  "1"
+	register "PseTsnGbeMultiVcEnable[0]" =  "1"
+	register "PseTsnGbeMultiVcEnable[1]" =  "1"
 
 	# GPIO for SD card detect
 	register "sdcard_cd_gpio" = "GPP_G5"

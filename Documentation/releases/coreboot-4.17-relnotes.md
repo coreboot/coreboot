@@ -16,4 +16,16 @@ Update this document with changes that should be in the release notes.
 Significant changes
 -------------------
 
+### CBMEM init hooks changed
+
+Instead of having per stage x_CBMEM_INIT_HOOK, we now have only 2 hooks:
+* CBMEM_CREATION_HOOK: Used only in the first stage that creates cbmem,
+  typically romstage. For instance code that migrates data from cache
+  as ram to dram would use this hook.
+* CBMEM_READY_HOOK: Used in every stage that has cbmeme. An example would
+  initializing the cbmem console by appending to what previous stages
+  logged.
+This reason for this change is improved flexibility with regards to which
+stage initializes cbmem.
+
 ### Add significant changes here

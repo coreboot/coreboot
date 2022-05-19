@@ -54,12 +54,14 @@ static uint32_t tspi_init_crtm(void)
 	}
 
 	/* measure bootblock from RO */
-	struct region_device bootblock_fmap;
-	if (fmap_locate_area_as_rdev("BOOTBLOCK", &bootblock_fmap) == 0) {
-		if (tpm_measure_region(&bootblock_fmap,
-				       TPM_CRTM_PCR,
-				       "FMAP: BOOTBLOCK"))
-			return VB2_ERROR_UNKNOWN;
+	if (!CONFIG(ARCH_X86)) {
+		struct region_device bootblock_fmap;
+		if (fmap_locate_area_as_rdev("BOOTBLOCK", &bootblock_fmap) == 0) {
+			if (tpm_measure_region(&bootblock_fmap,
+					TPM_CRTM_PCR,
+					"FMAP: BOOTBLOCK"))
+				return VB2_ERROR_UNKNOWN;
+		}
 	} else if (CONFIG(BOOTBLOCK_IN_CBFS)){
 		/* Mapping measures the file. We know we can safely map here because
 		   bootblock-as-a-file is only used on x86, where we don't need cache to map. */

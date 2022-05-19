@@ -135,6 +135,10 @@ config CHROMEOS
 	select VBOOT_EARLY_EC_SYNC
 	select VBOOT_LID_SWITCH
 
+config VBOOT_GSCVD
+	bool
+	default n
+
 config CHROMEOS_WIFI_SAR
 	bool "Enable SAR options for Chrome OS build"
 	depends on CHROMEOS

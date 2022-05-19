@@ -78,6 +78,11 @@ config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_STARTS_IN_BOOTBLOCK
 
+# TODO: Remove once CBFS verification on AMD has been fixed.
+config VBOOT_GSCVD
+	bool
+	default n
+
 if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE
 	default 2          # Dual IO (1-1-2)

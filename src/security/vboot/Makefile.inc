@@ -294,6 +294,61 @@ build_complete::
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r SHARED_DATA -i 0 -f $(obj)/shared_data.region
 endif
 
+fmap-section-offset-cmd = $(FUTILITY) dump_fmap -p $(obj)/coreboot.rom | \
+					grep '^$(1) ' | cut '-d ' -f2
+
+ifeq ($(CONFIG_VBOOT_GSCVD),y)
+#
+# vboot-gscvd-ranges
+#
+# This variable expands to the list of ranges that will be verified by the GSC
+# before releasing the SoC from reset. It needs to cover all security-relevant
+# ranges of the flash that CBFS verification cannot cover itself. By default
+# this is the `GBB` FMAP section (not handled here but through the special `-G`
+# parameter to `futility gscvd` below) and the bootblock. Here we are
+# initializing the variable to expansions that produce ranges for both the
+# `BOOTBLOCK` FMAP section (filled up to the real size of
+# `$(objcbfs)/bootblock.bin`) and the `bootblock` file in the primary CBFS --
+# only one of those two should normally exist on a given platform.
+#
+# Platforms where the bootblock isn't the first and only thing loaded by the
+# hardware or which otherwise have special security-relevant flash areas that
+# cannot be covered normally by CBFS verification will need to manually add
+# ranges to this variable in their own Makefiles, in the format produced by
+# printf("%x:%x", start_offset, size). The variable is only expanded once in a
+# recipe of the `files_added` target, so $(shell) expansions that depend on
+# inspecting $(obj)/coreboot.rom (or any of its dependencies) are valid.
+#
+vboot-gscvd-ranges += $(shell ( \
+	offset=$$($(call fmap-section-offset-cmd,BOOTBLOCK)) ;\
+	if [ -n "$$offset" ]; then \
+		size=$$(wc -c < $(objcbfs)/bootblock.bin) ;\
+		printf "%x:%x" $$offset $$size ;\
+	fi ;\
+))
+vboot-gscvd-ranges += $(shell ( \
+	line=$$($(CBFSTOOL) $(obj)/coreboot.rom print -k | grep '^bootblock[[:space:]]') ;\
+	if [ -n "$$line" ]; then \
+		cbfs_start=$$($(call fmap-section-offset-cmd,COREBOOT)) ;\
+		offset=$$(printf "$$line" | cut -f2) ;\
+		size=$$(printf "$$line" | cut -f6) ;\
+		printf "%x:%x" $$((cbfs_start + offset)) $$size ;\
+	fi ;\
+))
+files_added:: $(FUTILITY)
+	@printf "    WRITE GSCVD\n"
+	gscvd_range_args="$(foreach range,$(vboot-gscvd-ranges),-R $(range))" ;\
+	if [ -z "$$gscvd_range_args" ]; then \
+		echo "ERROR: No valid GSCVD ranges detected in image!" ;\
+		exit 1 ;\
+	fi ;\
+	$(FUTILITY) gscvd -G $$gscvd_range_args -b $(CONFIG_VBOOT_GSC_BOARD_ID) \
+		-r "$(CONFIG_VBOOT_GSCVD_ROOT_PUBKEY)" \
+		-p "$(CONFIG_VBOOT_GSCVD_PLATFORM_PRIVKEY)" \
+		-k "$(CONFIG_VBOOT_GSCVD_PLATFORM_KEYBLOCK)" \
+		$(obj)/coreboot.rom
+endif
+
 # Extract FW_MAIN_? region and minimize it if the last file is empty, so it
 # doesn't contain this empty file (that can have a significant size),
 # improving a lot on hash times due to a smaller amount of data loaded from

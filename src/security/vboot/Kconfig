@@ -290,6 +290,37 @@ config VBOOT_DEFINE_WIDEVINE_COUNTERS
 	  config will only define the counter space. Counters need to be incremented
 	  separately before any read operation is performed on them.
 
+config VBOOT_HASH_BLOCK_SIZE
+	hex
+	default 0x400
+	help
+	  Set the default hash size.  Generally 1k is reasonable, but in some
+	  cases it may improve hashing speed to increase the size.
+
+	  Note that this buffer is allocated in the stack.  Although the
+	  build should fail if the stack size is exceeded, it's something to
+	  be aware of when changing the size.
+
+config VBOOT_GSCVD
+	bool "Generate GSC verification data"
+	depends on TPM_GOOGLE
+	select CBFS_VERIFICATION
+	default n if TPM_GOOGLE_CR50
+	default y
+	help
+	  Generate a Google Security Chip Verification Data (GSCVD) structure on the flash to
+	  allow the GSC to verify the CBFS verification anchor. Used by default with Ti50 GSCs.
+	  Requires an RO_GSCVD FMAP section.
+
+config VBOOT_GSC_BOARD_ID
+	string
+	depends on VBOOT_GSCVD
+	default "ZZCR"
+	help
+	  GSC board ID to be embedded in the GSCVD. Usually each specific mainboard variant
+	  has its own. Google engineers can find these in the go/cros-dlm database ("Products").
+	  (Note: This is a completely separate thing from coreboot's `board_id()` function.)
+
 menu "GBB configuration"
 
 config GBB_HWID
@@ -400,16 +431,21 @@ config VBOOT_KEYBLOCK_PREAMBLE_FLAGS
 	hex "Keyblock preamble flags"
 	default 0x0
 
-config VBOOT_HASH_BLOCK_SIZE
-	hex
-	default 0x400
-	help
-	  Set the default hash size.  Generally 1k is reasonable, but in some
-	  cases it may improve hashing speed to increase the size.
+if VBOOT_GSCVD
 
-	  Note that this buffer is allocated in the stack.  Although the
-	  build should fail if the stack size is exceeded, it's something to
-	  be aware of when changing the size.
+config VBOOT_GSCVD_ROOT_PUBKEY
+	string "GSCVD root key (public)"
+	default "\$(VBOOT_SOURCE)/tests/devkeys/arv_root.vbpubk"
+
+config VBOOT_GSCVD_PLATFORM_PRIVKEY
+	string "GSCVD platform key (private)"
+	default "\$(VBOOT_SOURCE)/tests/devkeys/arv_platform.vbprivk"
+
+config VBOOT_GSCVD_PLATFORM_KEYBLOCK
+	string "GSCVD platform keyblock (public)"
+	default "\$(VBOOT_SOURCE)/tests/devkeys/arv_platform.keyblock"
+
+endif # VBOOT_GSCVD
 
 endmenu # Keys
 endif # VBOOT

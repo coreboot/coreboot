@@ -244,6 +244,10 @@ config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA
 	select VBOOT_LID_SWITCH
 
+config VBOOT_GSC_BOARD_ID
+	string
+	default "LBTV" if BOARD_GOOGLE_JOXER
+
 config DIMM_SPD_SIZE
 	default 512
 

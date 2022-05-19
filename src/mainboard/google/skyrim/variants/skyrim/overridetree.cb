@@ -40,7 +40,7 @@ chip soc/amd/sabrina
 									register "port_count" = "4"
 									device usb 0.0 on # VL822 USB3 hub
 										chip drivers/usb/acpi
-											register "desc" = ""Left Type-A Port""
+											register "desc" = ""USB3 Type-A Port A0 (DB)""
 											register "type" = "UPC_TYPE_USB3_A"
 											register "group" = "ACPI_PLD_GROUP(2, 2)"
 											device usb 3.0 on end
@@ -68,7 +68,7 @@ chip soc/amd/sabrina
 									register "port_count" = "4"
 									device usb 0.0 on # VL822 USB2 hub
 										chip drivers/usb/acpi
-											register "desc" = ""Left Type-A Port""
+											register "desc" = ""USB2 Type-A Port A0 (DB)""
 											register "type" = "UPC_TYPE_USB3_A"
 											register "group" = "ACPI_PLD_GROUP(2, 2)"
 											device usb 2.0 on end

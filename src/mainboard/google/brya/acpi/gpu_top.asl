@@ -23,6 +23,7 @@ Scope (\_SB.PCI0.PEG0)
 		#include "nvop.asl"
 		#include "nvjt.asl"
 		#include "nbci.asl"
+		#include "nvpcf.asl"
 
 		Method (_DSM, 4, Serialized)
 		{
@@ -45,6 +46,13 @@ Scope (\_SB.PCI0.PEG0)
 				If (ToInteger (Arg1) >= REVISION_MIN_NBCI)
 				{
 					Return (NBCI (Arg2, Arg3))
+				}
+			}
+			ElseIf (Arg0 == ToUUID (UUID_NVPCF))
+			{
+				If (ToInteger (Arg1) >= REVISION_MIN_NVPCF)
+				{
+					Return (NPCF (Arg2, Arg3))
 				}
 			}
 

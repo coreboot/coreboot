@@ -31,6 +31,8 @@
 #define SRAM_SIZE_0			(8 * KiB)
 #define SRAM_BASE_2			0xfe902000
 #define SRAM_SIZE_2			(4 * KiB)
+#define SHARED_SRAM_BASE		0xfffe0000
+#define SHARED_SRAM_SIZE		(128 * KiB)
 
 #define HECI1_BASE_ADDRESS		0xfed1a000
 #define PSF3_BASE_ADDRESS		0x1e00

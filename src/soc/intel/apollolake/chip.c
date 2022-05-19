@@ -728,8 +728,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	silconfig->PavpEnable = CONFIG(PAVP);
 
 	/* SATA config */
-	if (is_devfn_enabled(PCH_DEVFN_SATA))
+	if (is_devfn_enabled(PCH_DEVFN_SATA)) {
 		silconfig->SataSalpSupport = !(cfg->DisableSataSalpSupport);
+		memcpy(silconfig->SataPortsEnable, cfg->SataPortsEnable,
+			sizeof(silconfig->SataPortsEnable));
+	}
 
 	/* 8254 Timer */
 	bool use_8254 = get_uint_option("legacy_8254_timer", CONFIG(USE_LEGACY_8254_TIMER));

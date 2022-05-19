@@ -99,6 +99,9 @@ struct soc_intel_apollolake_config {
 	/* Sata Ports Hot Plug */
 	uint8_t SataPortsHotPlug[2];
 
+	/* Sata Ports Enable */
+	uint8_t SataPortsEnable[2];
+
 	/* Specifies on which IRQ the SCI will internally appear. */
 	uint8_t sci_irq;
 

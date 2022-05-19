@@ -42,6 +42,8 @@ chip soc/intel/apollolake
 		device pci 0f.0 on  end	# - CSE
 		device pci 11.0 on  end	# - ISH
 		device pci 12.0 on	# - SATA
+			register "SataPortsEnable[0]" = "1"
+			register "SataPortsEnable[1]" = "1"
 			register "DisableSataSalpSupport" = "1"
 		end
 		device pci 13.0 on	# - RP 2 - PCIe A 0

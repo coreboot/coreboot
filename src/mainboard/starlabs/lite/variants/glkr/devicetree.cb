@@ -78,7 +78,10 @@ chip soc/intel/apollolake
 		device pci 0f.1 on  end						# Heci2
 		device pci 0f.2 on  end						# Heci3
 		device pci 11.0 off end						# ISH
-		device pci 12.0 on  end						# SATA
+		device pci 12.0 on						# SATA
+			register "SataPortsEnable[0]"	= "1"
+			register "SataPortsEnable[1]"	= "1"
+		end
 		device pci 13.0 off end						# PCIe-A 0 Slot 1
 		device pci 13.1 off end						# PCIe-A 1
 		device pci 13.2 off end						# PCIe-A 2 Onboard Lan

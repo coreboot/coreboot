@@ -721,6 +721,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	if (is_devfn_enabled(PCH_DEVFN_SATA))
 		silconfig->SataSalpSupport = !(cfg->DisableSataSalpSupport);
 
+	/* 8254 Timer */
+	bool use_8254 = get_uint_option("legacy_8254_timer", CONFIG(USE_LEGACY_8254_TIMER));
+	silconfig->Timer8254ClkSetting = use_8254;
+
 	mainboard_silicon_init_params(silconfig);
 }
 

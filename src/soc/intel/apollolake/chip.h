@@ -96,6 +96,9 @@ struct soc_intel_apollolake_config {
 	/* Select the eMMC max speed allowed. */
 	uint8_t emmc_host_max_speed;
 
+	/* Sata Ports Hot Plug */
+	uint8_t SataPortsHotPlug[2];
+
 	/* Specifies on which IRQ the SCI will internally appear. */
 	uint8_t sci_irq;
 

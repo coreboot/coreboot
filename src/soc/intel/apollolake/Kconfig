@@ -209,7 +209,8 @@ config VERSTAGE_ADDR
 	  The base address (in CAR) where verstage should be linked
 
 config FSP_HEADER_PATH
-	default "src/vendorcode/intel/fsp/fsp2_0/glk" if SOC_INTEL_GEMINILAKE
+	default "src/vendorcode/intel/fsp/fsp2_0/glk/2.2.0.0" if VENDOR_GOOGLE && SOC_INTEL_GEMINILAKE
+	default "src/vendorcode/intel/fsp/fsp2_0/glk/2.2.3.1" if SOC_INTEL_GEMINILAKE
 	default "3rdparty/fsp/ApolloLakeFspBinPkg/Include/"
 
 config FSP_FD_PATH

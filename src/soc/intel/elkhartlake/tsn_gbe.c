@@ -43,7 +43,12 @@ static struct device_operations gbe_tsn_ops  = {
 	.init             = gbe_tsn_init,
 };
 
-static const unsigned short gbe_tsn_device_ids[] = { 0x4b32, 0x4ba0, 0x4bb0, 0 };
+static const unsigned short gbe_tsn_device_ids[] = {
+	PCI_DID_INTEL_EHL_GBE_HOST,
+	PCI_DID_INTEL_EHL_GBE_PSE_0,
+	PCI_DID_INTEL_EHL_GBE_PSE_1,
+	0
+};
 
 static const struct pci_driver gbe_tsn_driver __pci_driver = {
 	.ops     = &gbe_tsn_ops,

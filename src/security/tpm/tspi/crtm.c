@@ -73,7 +73,16 @@ static uint32_t tspi_init_crtm(void)
 			return VB2_ERROR_UNKNOWN;
 		}
 		cbfs_unmap(mapping);
-	} /* else: TODO: Add SoC specific measurement methods. */
+	} else {
+		/* Since none of the above conditions are met let the SOC code measure the
+		 * bootblock. This accomplishes for cases where the bootblock is treated
+		 * in a special way (e.g. part of IFWI or located in a different CBFS). */
+		if (tspi_soc_measure_bootblock(TPM_CRTM_PCR)) {
+			printk(BIOS_INFO,
+			       "TSPI: Couldn't measure bootblock into CRTM on SoC level!\n");
+			return VB2_ERROR_UNKNOWN;
+		}
+	}
 
 	return VB2_SUCCESS;
 }

@@ -28,4 +28,10 @@ int tspi_measure_cache_to_pcr(void);
  */
 uint32_t tspi_cbfs_measurement(const char *name, uint32_t type, const struct vb2_hash *hash);
 
+/*
+ * Provide a function on SoC level to measure the bootblock for cases where bootblock is
+ * neither in FMAP nor in CBFS (e.g. in IFWI).
+ */
+int tspi_soc_measure_bootblock(int pcr_index);
+
 #endif /* __SECURITY_TSPI_CRTM_H__ */

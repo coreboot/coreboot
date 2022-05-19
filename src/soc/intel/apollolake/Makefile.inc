@@ -4,6 +4,7 @@ subdirs-y += ../../../cpu/intel/common
 subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
 
+bootblock-$(CONFIG_TPM_MEASURED_BOOT) += bootblock/bootblock_measure.c
 bootblock-y += bootblock/bootblock.c
 bootblock-y += ../common/block/cpu/pm_timer_emulation.c
 bootblock-y += car.c

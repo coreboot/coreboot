@@ -755,6 +755,9 @@ static void adjust_smm_apic_id_map(struct smm_loader_params *smm_params)
 
 static enum cb_err install_relocation_handler(int num_cpus, size_t save_state_size)
 {
+	if (CONFIG(X86_SMM_SKIP_RELOCATION_HANDLER))
+		return CB_SUCCESS;
+
 	struct smm_loader_params smm_params = {
 		.num_cpus = num_cpus,
 		.cpu_save_state_size = save_state_size,
@@ -1136,9 +1139,13 @@ static enum cb_err do_mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops 
 	}
 
 	/* Sanity check SMM state. */
-	if (mp_state.perm_smsize != 0 && mp_state.smm_save_state_size != 0 &&
-		mp_state.ops.relocation_handler != NULL)
-		smm_enable();
+	smm_enable();
+	if (mp_state.perm_smsize == 0)
+		smm_disable();
+	if (mp_state.smm_save_state_size == 0)
+		smm_disable();
+	if (!CONFIG(X86_SMM_SKIP_RELOCATION_HANDLER) && mp_state.ops.relocation_handler == NULL)
+		smm_disable();
 
 	if (is_smm_enabled())
 		printk(BIOS_INFO, "Will perform SMM setup.\n");
@@ -1151,12 +1158,14 @@ static enum cb_err do_mp_init_with_smm(struct bus *cpu_bus, const struct mp_ops 
 	mp_params.flight_plan = &mp_steps[0];
 	mp_params.num_records = ARRAY_SIZE(mp_steps);
 
-	/* Perform backup of default SMM area. */
-	default_smm_area = backup_default_smm_area();
+	/* Perform backup of default SMM area when using SMM relocation handler. */
+	if (!CONFIG(X86_SMM_SKIP_RELOCATION_HANDLER))
+		default_smm_area = backup_default_smm_area();
 
 	ret = mp_init(cpu_bus, &mp_params);
 
-	restore_default_smm_area(default_smm_area);
+	if (!CONFIG(X86_SMM_SKIP_RELOCATION_HANDLER))
+		restore_default_smm_area(default_smm_area);
 
 	/* Signal callback on success if it's provided. */
 	if (ret == CB_SUCCESS && mp_state.ops.post_mp_init != NULL)

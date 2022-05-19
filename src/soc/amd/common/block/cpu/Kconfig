@@ -57,6 +57,7 @@ config SOC_AMD_COMMON_BLOCK_MCAX
 
 config SOC_AMD_COMMON_BLOCK_SMM
 	bool
+	select X86_SMM_SKIP_RELOCATION_HANDLER if HAVE_SMI_HANDLER
 	help
 	  Add common SMM relocation, finalization and handler functionality to
 	  the build.

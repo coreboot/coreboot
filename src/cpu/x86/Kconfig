@@ -18,6 +18,15 @@ config PARALLEL_MP_AP_WORK
 	 Allow APs to do other work after initialization instead of going
 	 to sleep.
 
+config X86_SMM_SKIP_RELOCATION_HANDLER
+	bool
+	default n
+	depends on PARALLEL_MP && HAVE_SMI_HANDLER
+	help
+	  Skip SMM relocation using a relocation handler running in SMM
+	  with a stub at 0x30000. This is useful on platforms that have
+	  an alternative way to set SMBASE.
+
 config LEGACY_SMP_INIT
 	bool
 

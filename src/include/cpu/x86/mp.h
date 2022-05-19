@@ -57,6 +57,9 @@ struct mp_ops {
 	/*
 	 * Optional function to use to trigger SMM to perform relocation. If
 	 * not provided, smm_initiate_relocation() is used.
+	 * This function is called on each CPU.
+	 * On platforms that select CONFIG(X86_SMM_SKIP_RELOCATION_HANDLER) to
+	 * not relocate in SMM, this function can be used to relocate CPUs.
 	 */
 	void (*per_cpu_smm_trigger)(void);
 	/*
@@ -66,6 +69,7 @@ struct mp_ops {
 	 * running the relocation handler, current SMBASE of relocation handler,
 	 * and the pre-calculated staggered CPU SMBASE address of the permanent
 	 * SMM handler.
+	 * This function is only called with !CONFIG(X86_SMM_SKIP_RELOCATION_HANDLER) set.
 	 */
 	void (*relocation_handler)(int cpu, uintptr_t curr_smbase,
 		uintptr_t staggered_smbase);

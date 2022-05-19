@@ -57,10 +57,8 @@ static void tseg_valid(void)
 	wrmsr(SMM_MASK_MSR, mask);
 }
 
-static void smm_relocation_handler(int cpu, uintptr_t curr_smbase, uintptr_t staggered_smbase)
+static void smm_relocation_handler(void)
 {
-	amd64_smm_state_save_area_t *smm_state;
-
 	uintptr_t tseg_base;
 	size_t tseg_size;
 
@@ -76,8 +74,12 @@ static void smm_relocation_handler(int cpu, uintptr_t curr_smbase, uintptr_t sta
 	msr.hi = (1 << (cpu_phys_address_size() - 32)) - 1;
 	wrmsr(SMM_MASK_MSR, msr);
 
-	smm_state = (void *)(SMM_AMD64_SAVE_STATE_OFFSET + curr_smbase);
-	smm_state->smbase = staggered_smbase;
+	uintptr_t smbase = smm_get_cpu_smbase(cpu_index());
+	msr_t smm_base = {
+		.hi = 0,
+		.lo = smbase
+	};
+	wrmsr(SMM_BASE_MSR, smm_base);
 
 	tseg_valid();
 	lock_smm();
@@ -87,6 +89,6 @@ const struct mp_ops amd_mp_ops_with_smm = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = get_smm_info,
-	.relocation_handler = smm_relocation_handler,
+	.per_cpu_smm_trigger = smm_relocation_handler,
 	.post_mp_init = global_smi_enable,
 };

@@ -67,9 +67,9 @@ $(call src-to-obj,ramstage,$(obj)/cpu/x86/smm/smmstub.manual): $(obj)/smmstub/sm
 # C-based SMM handler.
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-$(eval $(call rmodule_link,$(obj)/smm/smm.elf, $(obj)/smm/smm.o, $(CONFIG_SMM_MODULE_HEAP_SIZE),x86_32))
+$(eval $(call rmodule_link,$(obj)/smm/smm.elf, $(obj)/smm/smm.o, 0,x86_32))
 else
-$(eval $(call rmodule_link,$(obj)/smm/smm.elf, $(obj)/smm/smm.o, $(CONFIG_SMM_MODULE_HEAP_SIZE),x86_64))
+$(eval $(call rmodule_link,$(obj)/smm/smm.elf, $(obj)/smm/smm.o, 0,x86_64))
 endif
 
 $(obj)/smm/smm: $(obj)/smm/smm.elf.rmod

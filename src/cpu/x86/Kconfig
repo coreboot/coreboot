@@ -124,13 +124,6 @@ config SMM_LEGACY_ASEG
 
 if HAVE_SMI_HANDLER && !SMM_LEGACY_ASEG
 
-config SMM_MODULE_HEAP_SIZE
-	hex
-	default 0x4000
-	help
-	  This option determines the size of the heap within the SMM handler
-	  modules.
-
 config SMM_MODULE_STACK_SIZE
 	hex
 	default 0x800 if ARCH_RAMSTAGE_X86_64

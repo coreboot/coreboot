@@ -215,7 +215,6 @@ romstage-y += boot_device.c
 ramstage-y += boot_device.c
 
 smm-y += boot_device.c
-smm-y += malloc.c
 smm-y += delay.c
 smm-y += fmap.c
 smm-y += cbfs.c memcmp.c

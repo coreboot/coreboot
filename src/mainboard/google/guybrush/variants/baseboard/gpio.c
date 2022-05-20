@@ -267,11 +267,6 @@ static const struct soc_amd_gpio bootblock_gpio_table[] = {
 	PAD_GPO(GPIO_130, LOW),
 };
 
-/* GPIO configuration for sleep */
-static const struct soc_amd_gpio sleep_gpio_table[] = {
-	/* TODO: Fill sleep gpio configuration */
-};
-
 /* PCIE_RST needs to be brought high before FSP-M runs */
 static const struct soc_amd_gpio pcie_gpio_table[] = {
 	/* Deassert all AUX_RESET lines & PCIE_RST */
@@ -337,12 +332,6 @@ const struct soc_amd_gpio *__weak variant_early_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
-}
-
-const __weak struct soc_amd_gpio *variant_sleep_gpio_table(size_t *size)
-{
-	*size = ARRAY_SIZE(sleep_gpio_table);
-	return sleep_gpio_table;
 }
 
 const __weak struct soc_amd_gpio *variant_espi_gpio_table(size_t *size)

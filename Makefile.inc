@@ -1100,13 +1100,19 @@ ifeq ($(CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK),y)
 TS_OPTIONS := -j $(CONFIG_INTEL_TOP_SWAP_BOOTBLOCK_SIZE)
 endif
 
+ifneq ($(CONFIG_ARCH_X86),y)
+add_bootblock = $(CBFSTOOL) $(1) write -u -r BOOTBLOCK -f $(2)
+endif
+
 # coreboot.pre doesn't follow the standard Make conventions. It gets modified
 # by multiple rules, and thus we can't compute the dependencies correctly.
 $(shell rm -f $(obj)/coreboot.pre)
 
 ifneq ($(CONFIG_UPDATE_IMAGE),y)
-$(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL) $(obj)/fmap.fmap $(obj)/fmap.desc
+$(obj)/coreboot.pre: $$(prebuilt-files) $(CBFSTOOL) $(obj)/fmap.fmap $(obj)/fmap.desc $(objcbfs)/bootblock.bin
 	$(CBFSTOOL) $@.tmp create -M $(obj)/fmap.fmap -r $(shell cat $(obj)/fmap.desc)
+	printf "    BOOTBLOCK\n"
+	$(call add_bootblock,$@.tmp,$(objcbfs)/bootblock.bin)
 	$(prebuild-files) true
 	mv $@.tmp $@
 else # ifneq ($(CONFIG_UPDATE_IMAGE),y)
@@ -1135,12 +1141,6 @@ endif
 add_intermediate = \
 	$(1): $(obj)/coreboot.pre $(2) | $(INTERMEDIATE) \
 	$(eval INTERMEDIATE+=$(1)) $(eval PHONY+=$(1))
-
-ifneq ($(CONFIG_ARCH_X86),y)
-$(call add_intermediate, add_bootblock, $(objcbfs)/bootblock.bin)
-	printf "    FMAP       writing BOOTBLOCK region\n"
-	$(CBFSTOOL) $< write -u -r BOOTBLOCK -f $(objcbfs)/bootblock.bin
-endif
 
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(CBFSTOOL) $(IFITTOOL) $$(INTERMEDIATE)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"

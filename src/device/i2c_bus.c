@@ -6,6 +6,12 @@
 #include <device/i2c_bus.h>
 #include <commonlib/endian.h>
 
+bool i2c_dev_detect(struct device *dev, unsigned int addr)
+{
+	struct i2c_msg seg = { .flags = 0, .slave = addr, .buf = NULL, .len = 0 };
+	return dev->ops->ops_i2c_bus->transfer(dev, &seg, 0) == 0;
+}
+
 struct bus *i2c_link(const struct device *const dev)
 {
 	if (!dev || !dev->bus)

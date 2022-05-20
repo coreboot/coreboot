@@ -13,6 +13,11 @@ struct i2c_bus_operations {
 	int (*transfer)(struct device *, const struct i2c_msg *, size_t count);
 };
 
+/**
+ * Determine device presence at a given slave address.
+ */
+bool i2c_dev_detect(struct device *dev, unsigned int addr);
+
 /*
  * Returns the first upstream facing link whose bus implements either
  * `i2c_bus_operations` *or* `smbus_bus_operations`.

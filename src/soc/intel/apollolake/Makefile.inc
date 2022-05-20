@@ -155,7 +155,7 @@ endif
 # table + pointer, but reserving the pointer is still needed. Otherwise the
 # IBBL loader thrashes code there. So include fit.c so that the linker
 # reserves that pointer.
-bootblock-y += ../../../cpu/intel/fit/fit.c
+bootblock-y += bootblock/fit.c
 
 # DSP firmware settings files.
 ifeq ($(CONFIG_SOC_INTEL_GEMINILAKE),y)

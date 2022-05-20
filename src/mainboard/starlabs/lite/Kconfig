@@ -75,4 +75,9 @@ config UART_FOR_CONSOLE
 config VARIANT_DIR
 	default "glk"  if BOARD_STARLABS_LITE_GLK
 	default "glkr" if BOARD_STARLABS_LITE_GLKR
+
+config WEBCAM_USB_PORT
+	int
+	default 4 if BOARD_STARLABS_LITE_GLK
+	default 7 if BOARD_STARLABS_LITE_GLKR
 endif

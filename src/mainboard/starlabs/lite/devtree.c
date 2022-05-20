@@ -47,6 +47,5 @@ void devtree_update(void)
 		nic_dev->enabled = 0;
 
 	/* Enable/Disable Webcam based on CMOS settings */
-	if (get_uint_option("webcam", 1) == 0)
-		cfg->usb2_port[4].enable = 0;
+	cfg->usb2_port[CONFIG_WEBCAM_USB_PORT].enable = get_uint_option("webcam", 1);
 }

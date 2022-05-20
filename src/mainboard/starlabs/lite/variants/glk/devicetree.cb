@@ -89,8 +89,6 @@ chip soc/intel/apollolake
 			register "usb2_port[0]"		= "PORT_EN(OC_SKIP)"
 			# Motherboard USB 3.0
 			register "usb2_port[3]"		= "PORT_EN(OC1)"
-			# Internal Webcam
-			register "usb2_port[4]"		= "PORT_EN(OC_SKIP)"
 			# Daughterboard USB 3.0
 			register "usb2_port[5]"		= "PORT_EN(OC_SKIP)"
 			# Daughterboard SD Card

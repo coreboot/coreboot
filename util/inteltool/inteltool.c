@@ -461,6 +461,8 @@ static const struct {
 	  "Intel(R) HD 4000 Graphics" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_4400,
 	  "Intel(R) HD 4400 Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_4400_1,
+	  "Intel(R) HD 4400 Graphics" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_4600,
 	  "Intel(R) HD 4600 Graphics" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_HD_4600_1,

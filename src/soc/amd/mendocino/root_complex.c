@@ -210,6 +210,18 @@ static void acipgen_dptci(void)
 		config->vrm_maximum_current_limit_mA,
 		config->vrm_soc_current_limit_mA);
 	acpigen_write_alib_dptc_default((uint8_t *)&default_input, sizeof(default_input));
+
+	/* Low/No Battery */
+	struct dptc_input no_battery_input = DPTC_INPUTS(
+		config->thermctl_limit_degreeC,
+		config->sustained_power_limit_mW,
+		config->fast_ppt_limit_mW,
+		config->slow_ppt_limit_mW,
+		config->vrm_current_limit_throttle_mA,
+		config->vrm_maximum_current_limit_throttle_mA,
+		config->vrm_soc_current_limit_throttle_mA);
+	acpigen_write_alib_dptc_no_battery((uint8_t *)&no_battery_input,
+		sizeof(no_battery_input));
 }
 
 static void root_complex_fill_ssdt(const struct device *device)

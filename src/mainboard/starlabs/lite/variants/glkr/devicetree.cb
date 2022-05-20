@@ -91,6 +91,8 @@ chip soc/intel/apollolake
 			register "usb2_port[3]"		= "PORT_EN(OC1)"
 			# Daughterboard SD Card
 			register "usb2_port[5]"		= "PORT_EN(OC_SKIP)"
+			# Bluetooth
+			register "usb2_port[6]"		= "PORT_EN(OC_SKIP)"
 
 			### USB 3.0 Devices
 			# Motherboard USB 3.0

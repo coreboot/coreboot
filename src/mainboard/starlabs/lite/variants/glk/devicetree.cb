@@ -87,6 +87,8 @@ chip soc/intel/apollolake
 			### USB 2.0 Devices
 			# Motherboard USB Type C
 			register "usb2_port[0]"		= "PORT_EN(OC_SKIP)"
+			# Bluetooth
+			register "usb2_port[2]"		= "PORT_EN(OC_SKIP)"
 			# Motherboard USB 3.0
 			register "usb2_port[3]"		= "PORT_EN(OC1)"
 			# Daughterboard USB 3.0

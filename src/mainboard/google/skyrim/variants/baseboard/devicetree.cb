@@ -72,6 +72,7 @@ chip soc/amd/sabrina
 
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
+			device ref crypto on end # Crypto Coprocessor
 			device ref xhci_0 on # USB 3.1 (USB0)
 				chip drivers/usb/acpi
 					device ref xhci_0_root_hub on

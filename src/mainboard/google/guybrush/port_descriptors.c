@@ -70,7 +70,7 @@ static fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 		.clk_req = CLK_REQ3,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
-	{ /* TODO: remove this temporary workaround */
+	{ /* Dummy Device */
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
 		.start_logical_lane = 8,
@@ -81,7 +81,7 @@ static fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 		.clk_req = CLK_REQ5,
 		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
 	},
-	{ /* TODO: remove this temporary workaround */
+	{ /* Dummy Device */
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
 		.start_logical_lane = 16,
@@ -94,7 +94,6 @@ static fsp_dxio_descriptor guybrush_czn_dxio_descriptors[] = {
 	}
 };
 
-/* TODO: verify the DDI table, since this is mostly an educated guess right now */
 static fsp_ddi_descriptor guybrush_czn_ddi_descriptors[] = {
 	{ /* DDI0 - eDP */
 		.connector_type = DDI_EDP,

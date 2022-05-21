@@ -161,6 +161,12 @@ Scope (\_SB)
 				CDW1 |= UNRECOGNIZED_REVISION
 			}
 			Return (Arg3)
+#if CONFIG(SOFTWARE_CONNECTION_MANAGER)
+		/*
+		 * Software Connection Manager doesn't work with Linux 5.13 or later and
+		 * results in TBT ports timing out. Not advertising this results in
+		 * Firmware Connection Manager being used and TBT works correctly.
+		 */
 		} ElseIf (Arg0 == ToUUID("23A0D13A-26AB-486C-9C5F-0FFA525A575A")) {
 			/*
 			 * Operating System Capabilities for USB4
@@ -192,6 +198,7 @@ Scope (\_SB)
 				INTER_DOMAIN_USB4_INTERNET_PROTOCOL
 			CDW3 = Local0
 			Return (Arg3)
+#endif
 		} Else {
 			CDW1 |= UNRECOGNIZED_UUID
 			Return (Arg3)

@@ -726,6 +726,30 @@ endif # PCIEXP_HOTPLUG
 
 endif # PCIEXP_PLUGIN_SUPPORT
 
+choice
+	prompt "Connection Manager"
+	default FIRMWARE_CONNECTION_MANAGER
+	help
+	  Software Connection Manager doesn't work with Linux 5.13 or later,
+	  resulting in TBT ports timing out. Firmware Connection Manager works
+	  correctly.
+
+	  Linux patch:
+	    torvalds/linux@c6da62a
+	    c6da62a219d028de10f2e22e93a34c7ee2b88d03
+
+config FIRMWARE_CONNECTION_MANAGER
+	bool "Firmware Connection Manager"
+	help
+	  Disable SCM so that FCM can be used
+
+config SOFTWARE_CONNECTION_MANAGER
+	bool "Software Connection Manager"
+	help
+	  Enable SCM so it's used instead of FCM.
+
+endchoice
+
 config EARLY_PCI_BRIDGE
 	bool "Early PCI bridge"
 	depends on PCI

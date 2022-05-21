@@ -325,6 +325,9 @@ config MRC_CHANNEL_WIDTH
 	int
 	default 16
 
+config SOFTWARE_CONNECTION_MANAGER
+	default y if CHROMEOS
+
 config SOC_INTEL_GFX_FRAMEBUFFER_OFFSET
 	hex
 	default 0x800000

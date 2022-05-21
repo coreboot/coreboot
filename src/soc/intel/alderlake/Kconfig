@@ -292,6 +292,12 @@ config SOC_INTEL_I2C_DEV_MAX
 	int
 	default 8
 
+config SOC_INTEL_ALDERLAKE_S3
+	bool
+	default n
+	help
+	  Select if using S3 instead of S0ix to disable D3Cold.
+
 config SOC_INTEL_UART_DEV_MAX
 	int
 	default 7

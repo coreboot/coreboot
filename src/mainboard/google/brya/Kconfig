@@ -123,6 +123,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x1 if BOARD_GOOGLE_MOLI
 	default 0x1 if BOARD_GOOGLE_OSIRIS
 	default 0x1 if BOARD_GOOGLE_MITHRAX
+	default 0x1 if BOARD_GOOGLE_KULDAX
 
 config DRIVER_TPM_I2C_ADDR
 	hex
@@ -178,6 +179,7 @@ config MAINBOARD_PART_NUMBER
 	default "Craask" if BOARD_GOOGLE_CRAASK
 	default "Osiris" if BOARD_GOOGLE_OSIRIS
 	default "Mithrax" if BOARD_GOOGLE_MITHRAX
+	default "Kuldax" if BOARD_GOOGLE_KULDAX
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -208,6 +210,7 @@ config VARIANT_DIR
 	default "craask" if BOARD_GOOGLE_CRAASK
 	default "osiris" if BOARD_GOOGLE_OSIRIS
 	default "mithrax" if BOARD_GOOGLE_MITHRAX
+	default "kuldax" if BOARD_GOOGLE_KULDAX
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

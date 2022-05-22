@@ -44,7 +44,7 @@ config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab.fmd" if VBOOT
 
 config MAINBOARD_DIR
-	default "lenovo/t440p"
+	default "lenovo/haswell"
 
 config MAINBOARD_PART_NUMBER
 	default "ThinkPad T440p"

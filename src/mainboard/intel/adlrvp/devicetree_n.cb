@@ -16,6 +16,9 @@ chip soc/intel/alderlake
 	# Sagv Configuration
 	register "sagv" = "SaGv_Enabled"
 
+	# Enable DPTF
+	register "dptf_enable" = "1"
+
 	# eMMC HS400
 	register "emmc_enable_hs400_mode" = "1"
 
@@ -153,6 +156,104 @@ chip soc/intel/alderlake
 
 	device domain 0 on
 		device ref igpu on end
+		device ref dtt on
+			chip drivers/intel/dptf
+
+				## sensor information
+				register "options.tsr[0].desc" = ""Ambient""
+				register "options.tsr[1].desc" = ""Battery""
+				register "options.tsr[2].desc" = ""DDR""
+				register "options.tsr[3].desc" = ""Skin""
+				register "options.tsr[4].desc" = ""VR""
+
+				## Active Policy
+				# TODO: below values are initial reference values only
+				register "policies.active" = "{
+					[0] = {
+							.target = DPTF_CPU,
+							.thresholds = {
+								TEMP_PCT(95, 90),
+								TEMP_PCT(90, 80),
+							}
+						},
+					[1] = {
+							.target = DPTF_TEMP_SENSOR_0,
+							.thresholds = {
+								TEMP_PCT(80, 90),
+								TEMP_PCT(70, 80),
+							}
+						}
+				}"
+
+				## Passive Policy
+				# TODO: below values are initial reference values only
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,		CPU,	       95, 10000),
+					[1] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_0, 85, 50000),
+					[2] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_1, 85, 50000),
+					[3] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_2, 85, 50000),
+					[4] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_3, 85, 50000),
+					[5] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_4, 85, 50000),
+				}"
+
+				## Critical Policy
+				# TODO: below values are initial reference values only
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,	  105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 95, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 95, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 95, SHUTDOWN),
+					[4] = DPTF_CRITICAL(TEMP_SENSOR_3, 95, SHUTDOWN),
+					[5] = DPTF_CRITICAL(TEMP_SENSOR_4, 95, SHUTDOWN),
+				}"
+
+				## Power Limits Control
+				register "controls.power_limits" = "{
+					.pl1 = {
+							.min_power = 3000,
+							.max_power = 15000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 200,
+					},
+					.pl2 = {
+							.min_power = 25000,
+							.max_power = 35000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 1000,
+					}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 3000 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{
+					[0] = {  90, 6700, 220, 2200, },
+					[1] = {  80, 5800, 180, 1800, },
+					[2] = {  70, 5000, 145, 1450, },
+					[3] = {  60, 4900, 115, 1150, },
+					[4] = {  50, 3838,  90,  900, },
+					[5] = {  40, 2904,  55,  550, },
+					[6] = {  30, 2337,  30,  300, },
+					[7] = {  20, 1608,  15,  150, },
+					[8] = {  10,  800,  10,  100, },
+					[9] = {   0,    0,   0,   50, }
+				}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 0 alias dptf_policy on end
+			end
+		end
 		device ref ipu on
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "0x50000"

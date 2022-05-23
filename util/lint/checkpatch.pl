@@ -601,6 +601,16 @@ our $logFunctions = qr{(?x:
 	seq_vprintf|seq_printf|seq_puts
 )};
 
+our $allocFunctions = qr{(?x:
+	(?:(?:devm_)?
+		(?:kv|k|v)[czm]alloc(?:_array)?(?:_node)? |
+		kstrdup(?:_const)? |
+		kmemdup(?:_nul)?) |
+	(?:\w+)?alloc_skb(?:_ip_align)? |
+				# dev_alloc_skb/netdev_alloc_skb, et al
+	dma_alloc_coherent
+)};
+
 our $signature_tags = qr{(?xi:
 	Signed-off-by:|
 	Acked-by:|
@@ -5774,7 +5784,8 @@ sub process {
 			my ($s, $c) = ctx_statement_block($linenr - 3, $realcnt, 0);
 #			print("line: <$line>\nprevline: <$prevline>\ns: <$s>\nc: <$c>\n\n\n");
 
-			if ($s =~ /(?:^|\n)[ \+]\s*(?:$Type\s*)?\Q$testval\E\s*=\s*(?:\([^\)]*\)\s*)?\s*(?:devm_)?(?:[kv][czm]alloc(?:_node|_array)?\b|kstrdup|kmemdup|(?:dev_)?alloc_skb)/) {
+			if ($s =~ /(?:^|\n)[ \+]\s*(?:$Type\s*)?\Q$testval\E\s*=\s*(?:\([^\)]*\)\s*)?\s*$allocFunctions\s*\(/ &&
+			    $s !~ /\b__GFP_NOWARN\b/ ) {
 				WARN("OOM_MESSAGE",
 				     "Possible unnecessary 'out of memory' message\n" . $hereprev);
 			}
@@ -6431,8 +6442,8 @@ sub process {
 			}
 		}
 
-# check for pointless casting of kmalloc return
-		if ($line =~ /\*\s*\)\s*[kv][czm]alloc(_node){0,1}\b/) {
+# check for pointless casting of alloc functions
+		if ($line =~ /\*\s*\)\s*$allocFunctions\b/) {
 			WARN("UNNECESSARY_CASTS",
 			     "unnecessary cast may hide bugs, see http://c-faq.com/malloc/mallocnocast.html\n" . $herecurr);
 		}

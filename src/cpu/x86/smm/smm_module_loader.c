@@ -45,10 +45,8 @@ extern unsigned char _binary_smmstub_start[];
 struct cpu_smm_info {
 	uint8_t active;
 	uintptr_t smbase;
-	uintptr_t ss_start;
-	uintptr_t ss_top;
-	uintptr_t code_start;
-	uintptr_t code_end;
+	struct region ss;
+	struct region stub_code;
 };
 struct cpu_smm_info cpus[CONFIG_MAX_CPUS] = { 0 };
 
@@ -120,21 +118,14 @@ static int smm_create_map(const uintptr_t smbase, const unsigned int num_cpus,
 	}
 
 	for (unsigned int i = 0; i < num_cpus; i++) {
-		if (i % cpus_per_segment == 0)
-			printk(BIOS_SPEW, "-------------NEW CODE SEGMENT --------------\n");
-		printk(BIOS_SPEW, "CPU 0x%x\n", i);
-		/* We copy the same stub for each CPU so they all need the same 'smbase'. */
 		const size_t segment_number = i / cpus_per_segment;
 		cpus[i].smbase = smbase - SMM_CODE_SEGMENT_SIZE * segment_number
 			- needed_ss_size * (i % cpus_per_segment);
-		cpus[i].code_start = cpus[i].smbase + SMM_ENTRY_OFFSET;
-		cpus[i].code_end = cpus[i].code_start + stub_size;
-		cpus[i].ss_top = cpus[i].smbase + SMM_CODE_SEGMENT_SIZE;
-		cpus[i].ss_start = cpus[i].ss_top - params->cpu_save_state_size;
-		printk(BIOS_SPEW, "  Stub       [0x%lx-0x%lx[\n", cpus[i].code_start,
-		       cpus[i].code_end);
-		printk(BIOS_SPEW, "  Save state [0x%lx-0x%lx[\n", cpus[i].ss_start,
-		       cpus[i].ss_top);
+		cpus[i].stub_code.offset = cpus[i].smbase + SMM_ENTRY_OFFSET;
+		cpus[i].stub_code.size = stub_size;
+		cpus[i].ss.offset = cpus[i].smbase + SMM_CODE_SEGMENT_SIZE
+			- params->cpu_save_state_size;
+		cpus[i].ss.size = params->cpu_save_state_size;
 		cpus[i].active = 1;
 	}
 
@@ -182,14 +173,16 @@ static void smm_place_entry_code(const unsigned int num_cpus)
 	unsigned int size;
 
 	/* start at 1, the first CPU stub code is already there */
-	size = cpus[0].code_end - cpus[0].code_start;
+	size = region_sz(&cpus[0].stub_code);
 	for (i = 1; i < num_cpus; i++) {
-		memcpy((int *)cpus[i].code_start, (int *)cpus[0].code_start, size);
 		printk(BIOS_DEBUG,
-			"SMM Module: placing smm entry code at %lx,  cpu # 0x%x\n",
-			cpus[i].code_start, i);
+		       "SMM Module: placing smm entry code at %lx,  cpu # 0x%x\n",
+		       region_offset(&cpus[i].stub_code), i);
+		memcpy((void *)region_offset(&cpus[i].stub_code),
+		       (void *)region_offset(&cpus[0].stub_code), size);
 		printk(BIOS_SPEW, "%s: copying from %lx to %lx 0x%x bytes\n",
-			__func__, cpus[0].code_start, cpus[i].code_start, size);
+		       __func__, region_offset(&cpus[0].stub_code),
+		       region_offset(&cpus[i].stub_code), size);
 	}
 }
 
@@ -348,7 +341,7 @@ static void setup_smihandler_params(struct smm_runtime *mod_params,
 	}
 
 	for (int i = 0; i < loader_params->num_cpus; i++)
-		mod_params->save_state_top[i] = cpus[i].ss_top;
+		mod_params->save_state_top[i] = region_end(&cpus[i].ss);
 }
 
 static void print_region(const char *name, const struct region region)
@@ -487,16 +480,12 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 	}
 	for (unsigned int i = 0; i < params->num_concurrent_save_states; i++) {
 		printk(BIOS_DEBUG, "\nCPU %u\n", i);
-		struct region ss = { .offset = cpus[i].ss_start,
-				     .size = cpus[i].ss_top - cpus[i].ss_start };
 		char string[13];
 		snprintf(string, sizeof(string), "  ss%d", i);
-		if (append_and_check_region(smram, ss, region_list, string))
+		if (append_and_check_region(smram, cpus[i].ss, region_list, string))
 			return -1;
-		struct region stub = {.offset = cpus[i].code_start,
-				       .size = cpus[i].code_end - cpus[i].code_start};
 		snprintf(string, sizeof(string), "  stub%d", i);
-		if (append_and_check_region(smram, stub, region_list, string))
+		if (append_and_check_region(smram, cpus[i].stub_code, region_list, string))
 			return -1;
 	}
 

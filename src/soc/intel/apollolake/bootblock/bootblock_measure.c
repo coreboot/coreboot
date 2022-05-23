@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <symbols.h>
 
+extern const uint64_t fit_ptr;
 /* This region device covers the shared SRAM that gets mapped at bootblock runtime. */
 static const struct mem_region_device sram_rdev =
 		MEM_REGION_DEV_RO_INIT(SHARED_SRAM_BASE, SHARED_SRAM_SIZE);
@@ -50,5 +51,11 @@ int tspi_soc_measure_bootblock(int pcr_index)
 		return 1;
 	if (tpm_measure_region(&ifwi_bootblock, pcr_index, "IFWI: bootblock"))
 		return 1;
+	printk(BIOS_DEBUG, "FIT pointer patched to 0x%llx by TXE.\n", fit_ptr);
+	/* Check if the patched FIT pointer address  matches the pre-defined one. */
+	if (fit_ptr != SHARED_SRAM_BASE) {
+		printk(BIOS_WARNING,
+			"Runtime FIT pointer does not match the pre-defined address!\n");
+	}
 	return 0;
 }

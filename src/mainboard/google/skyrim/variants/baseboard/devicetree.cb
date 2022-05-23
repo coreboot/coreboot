@@ -55,6 +55,8 @@ chip soc/amd/sabrina
 
 	register "pspp_policy" = "DXIO_PSPP_DISABLED" # TODO: reenable when PSPP works
 
+	register "s0ix_enable" = "true"
+
 	device domain 0 on
 		device ref lpc_bridge on
 			chip ec/google/chromeec

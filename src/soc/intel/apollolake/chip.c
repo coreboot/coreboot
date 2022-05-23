@@ -321,14 +321,10 @@ static void soc_init(void *data)
 	 */
 	p2sb_unhide();
 
-	if (CONFIG(SOC_INTEL_DISABLE_POWER_LIMITS)) {
-		printk(BIOS_INFO, "Skip setting RAPL per configuration\n");
-	} else {
-		config = config_of_soc();
-		/* Set RAPL MSR for Package power limits */
-		soc_config = &config->power_limits_config;
-		set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
-	}
+	config = config_of_soc();
+	/* Set RAPL MSR for Package power limits */
+	soc_config = &config->power_limits_config;
+	set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
 
 	/*
 	* FSP-S routes SCI to IRQ 9. With the help of this function you can

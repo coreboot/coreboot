@@ -77,6 +77,23 @@ void set_power_limits(u8 power_limit_1_time,
 	unsigned int power_unit;
 	unsigned int tdp, min_power, max_power, max_time, tdp_pl2, tdp_pl1;
 	u8 power_limit_1_val;
+	uint32_t value;
+
+	if (CONFIG(SOC_INTEL_DISABLE_POWER_LIMITS)) {
+		printk(BIOS_INFO, "Disabling RAPL\n");
+		if (CONFIG(SOC_INTEL_RAPL_DISABLE_VIA_MCHBAR)) {
+			value = MCHBAR32(MCH_PKG_POWER_LIMIT_LO);
+			MCHBAR32(MCH_PKG_POWER_LIMIT_LO) = value & ~(PKG_POWER_LIMIT_EN);
+			value = MCHBAR32(MCH_PKG_POWER_LIMIT_HI);
+			MCHBAR32(MCH_PKG_POWER_LIMIT_HI) = value & ~(PKG_POWER_LIMIT_EN);
+		} else {
+			msr = rdmsr(MSR_PKG_POWER_LIMIT);
+			msr.lo &= ~PKG_POWER_LIMIT_EN;
+			msr.hi &= ~PKG_POWER_LIMIT_EN;
+			wrmsr(MSR_PKG_POWER_LIMIT, msr);
+		}
+		return;
+	}
 
 	if (power_limit_1_time >= ARRAY_SIZE(power_limit_time_sec_to_msr))
 		power_limit_1_time =

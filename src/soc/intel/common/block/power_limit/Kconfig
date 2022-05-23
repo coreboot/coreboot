@@ -3,3 +3,9 @@ config SOC_INTEL_COMMON_BLOCK_POWER_LIMIT
 	default n
 	help
 	  This option allows to configure processor power limit values.
+
+config SOC_INTEL_RAPL_DISABLE_VIA_MCHBAR
+	bool
+	default n
+	help
+	  Select if disabling Running Average Power Limit (RAPL) has to be done via MCHBAR.

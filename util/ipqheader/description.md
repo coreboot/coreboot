@@ -1,5 +1,5 @@
 __ipqheader__
-  * _createxbl.py_ - Concatentates XBL segments into one ELF image
+  * _createxbl.py_ - Concatenates XBL segments into one ELF image
                     `Python`
   * _ipqheader.py_ - Returns a packed MBN header image with the
                      specified base and size `Python`

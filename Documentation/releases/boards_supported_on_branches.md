@@ -22,25 +22,25 @@ branches as needed. The coreboot project will take care of backporting
 critical security fixes, but other patches will need to handled by
 anyone using that release.
 
-## [4.16 Release](releases/coreboot-4.16-relnotes.md)
+## [4.16 Release](coreboot-4.16-relnotes.md)
 Branch created, builder configured
 
 * No platforms maintained on this release
 
 
-## [4.15 Release](releases/coreboot-4.15-relnotes.md)
+## [4.15 Release](coreboot-4.15-relnotes.md)
 Branch created, builder configured
 
 * No platforms maintained on this release
 
 
-## [4.14 Release](releases/coreboot-4.14-relnotes.md)
+## [4.14 Release](coreboot-4.14-relnotes.md)
 Branch created, builder configured
 
 * No platforms maintained on this release
 
 
-## [4.13 Release](releases/coreboot-4.13-relnotes.md)
+## [4.13 Release](coreboot-4.13-relnotes.md)
 Tag only
 
 | Vendor/Board                | Processor              | Date added | Brd type |
@@ -48,7 +48,7 @@ Tag only
 | intel/cannonlake_rvp        | INTEL_CANNONLAKE       | 2017-07-19 | eval     |
 
 
-## [4.12 Release](releases/coreboot-4.12-relnotes.md)
+## [4.12 Release](coreboot-4.12-relnotes.md)
 
 Branch created, builder configured
 
@@ -59,7 +59,7 @@ Branch created, builder configured
 | ocp/sonorapass              | INTEL_COOPERLAKE_SP    | 2020-05-01 | server   |
 
 
-## [4.11 Release](releases/coreboot-4.11-relnotes.md)
+## [4.11 Release](coreboot-4.11-relnotes.md)
 
 Branch created, builder configured
 
@@ -114,7 +114,7 @@ Branch created, builder configured
 | via/epia-m850               | VIA_VX900              | 2013-06-10 | mini     |
 
 
-## [4.10 Release](releases/coreboot-4.10-relnotes.md)
+## [4.10 Release](coreboot-4.10-relnotes.md)
 Branch created
 
 | Vendor/Board                | Processor              | Date added | Brd type |
@@ -122,7 +122,7 @@ Branch created
 | cubietech/cubieboard        | ALLWINNER_A10          | 2014-01-08 | sbc      |
 
 
-## [4.9 Release](releases/coreboot-4.9-relnotes.md)
+## [4.9 Release](coreboot-4.9-relnotes.md)
 Tag only
 
 | Vendor/Board                | Processor              | Date added | Brd type |
@@ -133,7 +133,7 @@ Tag only
 | pcengines/alix2d            | AMD_LX                 | 2010-08-31 | half     |
 
 
-## [4.8.1 Release](releases/coreboot-4.8.1-relnotes.md)
+## [4.8.1 Release](coreboot-4.8.1-relnotes.md)
 Branch created
 
 | Vendor/Board                | Processor              | Date added | Brd type |
@@ -203,7 +203,7 @@ Branch created
 | winnet/g170                 | VIA_C7                 | 2017-08-28 | mini     |
 
 
-## [4.7 Release](releases/coreboot-4.7-relnotes.md)
+## [4.7 Release](coreboot-4.7-relnotes.md)
 Tag only
 
 | Vendor/Board                | Processor              | Date added | Brd type |
@@ -249,7 +249,7 @@ Tag only
 | wyse/s50                    | AMD_GEODE_GX2          | 2010-05-08 | settop   |
 
 
-## [4.6](releases/coreboot-4.6-relnotes.md)
+## [4.6](coreboot-4.6-relnotes.md)
 Tag only
 
 | Vendor/Board                | Processor              | Date added | Brd type |
@@ -259,7 +259,7 @@ Tag only
 | intel/bakersport_fsp        | INTEL_FSP_BAYTRAIL     | 2014-08-11 | eval     |
 
 
-## [4.5](releases/coreboot-4.5-relnotes.md)
+## [4.5](coreboot-4.5-relnotes.md)
 Tag only
 
 | Vendor/Board                | Processor              | Date added | Brd type |
@@ -275,7 +275,7 @@ Tag only
 | google/tidus                | INTEL_BROADWELL        | 2016-01-21 | half     |
 
 
-## [4.4](releases/coreboot-4.4-relnotes.md)
+## [4.4](coreboot-4.4-relnotes.md)
 Branch created
 
 | Vendor/Board                | Processor              | Date added | Brd type |
@@ -287,13 +287,13 @@ Branch created
 | intel/amenia                | INTEL_APOLLOLAKE       | 2016-04-20 | eval     |
 
 
-## [4.3](releases/coreboot-4.3-relnotes.md)
+## [4.3](coreboot-4.3-relnotes.md)
 Branch created
 
 * No platforms maintained on this release
 
 
-## [4.2](releases/coreboot-4.2-relnotes.md)
+## [4.2](coreboot-4.2-relnotes.md)
 Branch created
 
 | Vendor/Board                | Processor              | Date added | Brd type |
@@ -320,7 +320,7 @@ Branch created
 | tyan/s4882                  | AMD_AMDK8              | 2009-10-08 | server   |
 
 
-## [4.1](releases/coreboot-4.1-relnotes.md)
+## [4.1](coreboot-4.1-relnotes.md)
 Branch Created
 
 * No platforms maintained on this release

@@ -30,6 +30,7 @@ This section contains documentation about coreboot on specific mainboards.
 - [P8H77-V](asus/p8h77-v.md)
 - [P8Z77-M Pro](asus/p8z77-m_pro.md)
 - [P8Z77-V](asus/p8z77-v.md)
+- [wifigo_v1](asus/wifigo_v1.md)
 
 ## Cavium
 
@@ -185,6 +186,7 @@ The boards in this section are not real mainboards, but emulators.
 - [StarLite Mk III](starlabs/lite_glk.md)
 - [StarLite Mk IV](starlabs/lite_glkr.md)
 - [StarBook Mk V](starlabs/starbook_tgl.md)
+- [Flashing devices](starlabs/common/flashing.md)
 
 ## Supermicro
 

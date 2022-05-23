@@ -16,7 +16,7 @@ fwupdmgr --version
 ```
 
 This will show the version number. **1.5.6** or greater will work.
-![fwupd version](fwupdVersion.png)
+![fwupd version](../fwupdVersion.png)
 On Ubuntu 20.04, Ubuntu 20.10, Linux Mint 20.1 and elementaryOS 6, fwupd 1.5.6 can be installed from our PPA with the below terminal commands:
 
 ```
@@ -40,7 +40,7 @@ BIOS Lock must be disabled when switching from the standard AMI (American Megatr
 2\. When the BIOS settings load, use the arrow keys to navigate to the **Advanced** tab\. Here you will see **BIOS Lock**\.
 3\. Press `Enter` to change this setting from **Enabled** to **Disabled**
 
-![Disable BIOS Lock](BiosLock.jpg)
+![Disable BIOS Lock](../BiosLock.jpg)
 
 4\. Next, press the `F10` key to **Save & Exit** and then `Enter` to confirm.
 
@@ -61,7 +61,7 @@ fwupdmgr switch-branch
 ```
 
 You can then select which branch you would like to use, by typing in the corresponding number:
-![Switch Branch](SwitchBranch.png)
+![Switch Branch](../SwitchBranch.png)
 You will be prompted to confirm, press `y` to continue or `n` to cancel.
 
 Once the switch has been completed, you will be prompted to restart.

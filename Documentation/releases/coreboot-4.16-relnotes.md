@@ -132,7 +132,7 @@ HECI based on Intel Core processors from Skylake to Alder Lake. State is
 set based on a CMOS value of `me_state`. A value of `0` will result in a
 (CS)ME state of `0` (working) and value of `1` will result in a (CS)ME
 state of `3` (disabled). For an example CMOS layout and more info, see
-[cse.c](../../src/soc/intel/common/block/cse/cse.c).
+[cse.c](https://review.coreboot.org/plugins/gitiles/coreboot/+/refs/heads/master/src/soc/intel/common/block/cse/cse.c).
 
 
 ### Add [AMD] apcb_v3_edit tool

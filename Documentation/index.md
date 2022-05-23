@@ -189,5 +189,6 @@ Contents:
 * [Vendorcode](vendorcode/index.md)
 * [Utilities](util.md)
 * [Project infrastructure & services](infrastructure/index.md)
+* [Boards supported in each release directory](releases/boards_supported_on_branches.md)
 * [Release notes](releases/index.md)
 * [Documentation License](documentation_license.md)

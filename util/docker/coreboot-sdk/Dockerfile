@@ -13,7 +13,6 @@
 #  DOCKER_COMMIT is the coreboot Commit-ID to build the toolchain from.
 
 FROM debian:sid AS coreboot-sdk
-MAINTAINER Martin Roth <martin@coreboot.org>
 
 RUN \
 	useradd -p locked -m coreboot && \

@@ -7,12 +7,14 @@ ADD https://sourceforge.net/projects/ditaa/files/ditaa/0.9/ditaa0_9.zip/download
 RUN apk add --no-cache python3 make bash git openjdk8-jre ttf-dejavu fontconfig \
  && pip3 install --upgrade --no-cache-dir pip \
  && pip3 install --no-cache-dir  \
-    sphinx===1.8.3 \
-    sphinx_rtd_theme===0.4.2 \
-    recommonmark===0.5.0 \
-    sphinx_autobuild===0.7.1 \
-    sphinxcontrib-ditaa===0.6 \
+  jinja2==3.0.3 \
+  recommonmark===0.5.0 \
+  sphinx===1.8.3 \
+  sphinxcontrib-ditaa===0.6 \
+  sphinx_autobuild===0.7.1 \
+  sphinx_rtd_theme===0.4.2 \
  && chmod 755 /makeSphinx.sh
+
 RUN cd /tmp \
  && unzip ditaa.zip \
  && mv ditaa0_9.jar /usr/lib

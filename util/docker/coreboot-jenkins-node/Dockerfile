@@ -20,7 +20,6 @@ RUN chmod +x ./zephyr.run
 RUN ./zephyr.run -- -d /opt/zephyr-sdk
 
 FROM coreboot/coreboot-sdk:{{SDK_VERSION}}
-MAINTAINER Martin Roth <martin@coreboot.org>
 USER root
 
 RUN apt-get -y update && \
@@ -33,6 +32,7 @@ RUN apt-get -y update && \
 		ninja-build \
 		openssh-server \
 		parallel \
+		ruby-full \
 		sdcc \
 	&& apt-get clean
 
@@ -77,7 +77,16 @@ RUN apt-get update && \
 		python3-pyrsistent \
 		python3-setuptools \
 		swig \
-	&& apt-get clean
+	&& apt-get clean \
+	&& pip3 install --upgrade --no-cache-dir pip \
+	&& pip3 install --no-cache-dir  \
+		jinja2==3.0.3 \
+		recommonmark===0.5.0 \
+		sphinx===1.8.3 \
+		sphinxcontrib-ditaa===0.6 \
+		sphinx_autobuild===0.7.1 \
+		sphinx_rtd_theme===0.4.2 \
+	&& gem install mdl
 
 RUN mkdir /tmp/b && cd /tmp/b && \
 	git clone https://git.kernel.org/pub/scm/utils/dtc/dtc.git dtc && \

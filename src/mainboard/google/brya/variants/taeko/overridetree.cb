@@ -590,7 +590,7 @@ chip soc/intel/alderlake
 						register "desc" = ""USB3 Type-C Port C1 (DB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(3, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(3, 1))"
 						device ref tcss_usb3_port3 on
 							probe DB_USB DB_USB3_NO_A
 							probe DB_USB DB_USB3_1C_1A
@@ -613,7 +613,7 @@ chip soc/intel/alderlake
 						register "desc" = ""USB2 Type-C Port C1 (DB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(3, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(3, 1))"
 						device ref usb2_port3 on
 							probe DB_USB DB_USB3_NO_A
 							probe DB_USB DB_USB3_1C_1A
@@ -629,7 +629,7 @@ chip soc/intel/alderlake
 						register "desc" = ""USB2 Type-A Port (DB)""
 						register "type" = "UPC_TYPE_A"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(3, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(3, 1))"
 						register "group" = "ACPI_PLD_GROUP(3, 1)"
 						device ref usb2_port7 on
 							probe DB_USB DB_USB3_1C_1A
@@ -660,7 +660,7 @@ chip soc/intel/alderlake
 						register "desc" = ""USB3 Type-A Port (DB)""
 						register "type" = "UPC_TYPE_USB3_A"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(3, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(3, 1))"
 						device ref usb3_port3 on
 							probe DB_USB DB_USB3_1C_1A
 						end

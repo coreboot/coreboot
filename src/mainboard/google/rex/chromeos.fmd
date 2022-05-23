@@ -1,0 +1,54 @@
+FLASH 32M {
+	SI_ALL 9M {
+		SI_DESC 16K
+		SI_ME
+	}
+	SI_BIOS 23M {
+		RW_SECTION_A 6M {
+			VBLOCK_A 64K
+			FW_MAIN_A(CBFS)
+			RW_FWID_A 64
+			ME_RW_A(CBFS) 3008K
+		}
+		RW_LEGACY(CBFS) 2M
+		RW_MISC 1M {
+			UNIFIED_MRC_CACHE(PRESERVE) 128K {
+				RECOVERY_MRC_CACHE 64K
+				RW_MRC_CACHE 64K
+			}
+			RW_ELOG(PRESERVE) 16K
+			RW_SHARED 16K {
+				SHARED_DATA 8K
+				VBLOCK_DEV 8K
+			}
+			# The RW_SPD_CACHE region is only used for rex variants that use DDRx memory.
+			# It is placed in the common `chromeos.fmd` file because it is only 4K and there
+			# is free space in the RW_MISC region that cannot be easily reclaimed because
+			# the RW_SECTION_B must start on the 16M boundary.
+			RW_SPD_CACHE(PRESERVE) 4K
+			RW_VPD(PRESERVE) 8K
+			RW_NVRAM(PRESERVE) 24K
+		}
+		# This section starts at the 16M boundary in SPI flash.
+		# MTL does not support a region crossing this boundary,
+		# because the SPI flash is memory-mapped into two non-
+		# contiguous windows.
+		RW_SECTION_B 6M {
+			VBLOCK_B 64K
+			FW_MAIN_B(CBFS)
+			RW_FWID_B 64
+			ME_RW_B(CBFS) 3008K
+		}
+		# Make WP_RO region align with SPI vendor
+		# memory protected range specification.
+		WP_RO 8M {
+			RO_VPD(PRESERVE) 16K
+			RO_SECTION {
+				FMAP 2K
+				RO_FRID 64
+				GBB@4K 12K
+				COREBOOT(CBFS)
+			}
+		}
+	}
+}

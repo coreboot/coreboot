@@ -176,6 +176,15 @@ const u32 cim_verb_data[] = {
 	0x02040000,
 	0x0205000F,
 	0x02040000,
+
+	0x8086280b,	/* Codec Vendor/Device ID: Intel CometPoint HDMI */
+	0x80860101,	/* Subsystem ID */
+	4,		/* Number of entries */
+
+	AZALIA_SUBVENDOR(2, 0x80860101),
+	AZALIA_PIN_CFG(2, 0x05, 0x18560010),
+	AZALIA_PIN_CFG(2, 0x06, 0x18560010),
+	AZALIA_PIN_CFG(2, 0x07, 0x18560010),
 };
 
 const u32 pc_beep_verbs[] = {

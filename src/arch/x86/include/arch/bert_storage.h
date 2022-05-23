@@ -44,9 +44,6 @@
 #define CRASHLOG_RECORD_TYPE	0x2
 #define CRASHLOG_FW_ERR_REV	0x2
 
-/* Get implementation-specific reserved area for generating BERT info */
-void bert_reserved_region(void **start, size_t *size);
-
 /* Get the region where BERT error structures have been constructed for
  * generating the ACPI table
  */

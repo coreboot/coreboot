@@ -2,7 +2,6 @@
 
 #include <amdblocks/memmap.h>
 #include <amdblocks/smm.h>
-#include <arch/bert_storage.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/amd/msr.h>
@@ -58,11 +57,4 @@ void smm_region(uintptr_t *start, size_t *size)
 		clear_tvalid();
 		once = 1;
 	}
-}
-
-void bert_reserved_region(void **start, size_t *size)
-{
-	*start = cbmem_add(CBMEM_ID_ACPI_BERT, CONFIG_ACPI_BERT_SIZE);
-	*size = CONFIG_ACPI_BERT_SIZE;
-	printk(BIOS_INFO, "Reserved BERT region base: %p, size: 0x%zx\n", *start, *size);
 }

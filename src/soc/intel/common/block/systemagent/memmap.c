@@ -7,7 +7,6 @@
 #include <cpu/x86/smm.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/systemagent.h>
-#include <arch/bert_storage.h>
 #include <types.h>
 
 /*
@@ -50,20 +49,10 @@
  * +---------------------------+ 0
  */
 
-#define BERT_REGION_MAX_SIZE 0x10000
-
 void smm_region(uintptr_t *start, size_t *size)
 {
 	*start = sa_get_tseg_base();
 	*size = sa_get_tseg_size();
-}
-
-void bert_reserved_region(void **start, size_t *size)
-{
-	*start = cbmem_add(CBMEM_ID_ACPI_BERT, BERT_REGION_MAX_SIZE);
-	*size = BERT_REGION_MAX_SIZE;
-
-	printk(BIOS_DEBUG, "Reserving BERT start %lx, size %zx\n", (uintptr_t)*start, *size);
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)

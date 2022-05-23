@@ -567,15 +567,16 @@ cper_ia32x64_context_t *cper_new_ia32x64_context_msr(
 	return ctx;
 }
 
-/* The region must be in memory marked as reserved.  If not implemented,
- * skip generating the information in the region.
- */
-__weak void bert_reserved_region(void **start, size_t *size)
+static void bert_reserved_region(void **start, size_t *size)
 {
-	printk(BIOS_ERR, "%s not implemented.  BERT region generation disabled\n",
-			__func__);
-	*start = NULL;
-	*size = 0;
+	if (!CONFIG(ACPI_BERT)) {
+		*start = NULL;
+		*size = 0;
+	} else {
+		*start = cbmem_add(CBMEM_ID_ACPI_BERT, CONFIG_ACPI_BERT_SIZE);
+		*size = CONFIG_ACPI_BERT_SIZE;
+	}
+	printk(BIOS_INFO, "Reserved BERT region base: %p, size: 0x%zx\n", *start, *size);
 }
 
 static void bert_storage_setup(void *unused)

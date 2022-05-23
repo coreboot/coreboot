@@ -36,7 +36,10 @@ Device (SIO)
 			EndDependentFn ()
 		})
 	}
+}
 
+Scope (\_SB.PCI0)
+{
 	Device (PS2K)
 	{
 		Name (_HID, EisaId ("PNP0303"))

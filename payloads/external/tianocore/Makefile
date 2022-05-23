@@ -100,7 +100,7 @@ update: $(project_dir)
 			echo "    $(CONFIG_TIANOCORE_TAG_OR_REV) is not a valid git reference"; \
 			exit 1; \
 		fi; \
-		if git status --ignore-submodules=dirty | grep -qv clean; then \
+		if git status --ignore-submodules=dirty | grep -q clean; then \
 			echo "    Checking out $(project_name) revision $(CONFIG_TIANOCORE_TAG_OR_REV)"; \
 			git checkout --detach $(CONFIG_TIANOCORE_TAG_OR_REV) -f; \
 		else \

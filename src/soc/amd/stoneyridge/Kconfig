@@ -373,4 +373,12 @@ config DISABLE_KEYBOARD_RESET_PIN
 	  functionality isn't disabled, configuring it as an output and driving
 	  it as 0 will cause a reset.
 
+config ACPI_BERT_SIZE
+	hex
+	default 0x100000 if ACPI_BERT
+	default 0x0
+	help
+	  Specify the amount of DRAM reserved for gathering the data used to
+	  generate the ACPI table.
+
 endif # SOC_AMD_STONEYRIDGE

@@ -221,8 +221,6 @@ chip soc/intel/alderlake
 			}"
 		end
 
-		device ref tbt_pcie_rp2 off end # Disable TCP Port 2
-
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
@@ -277,7 +275,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
 						register "custom_pld" =
-							"ACPI_PLD_TYPE_C(BACK, RIGHT, ACPI_PLD_GROUP(1, 1))"
+							"ACPI_PLD_TYPE_C(FRONT, RIGHT, ACPI_PLD_GROUP(1, 1))"
 						device ref tcss_usb3_port1 on end
 					end
 				end
@@ -291,7 +289,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
 						register "custom_pld" =
-							"ACPI_PLD_TYPE_C(BACK, RIGHT, ACPI_PLD_GROUP(1, 1))"
+							"ACPI_PLD_TYPE_C(FRONT, RIGHT, ACPI_PLD_GROUP(1, 1))"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
@@ -299,7 +297,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_A"
 						register "use_custom_pld" = "true"
 						register "custom_pld" =
-							"ACPI_PLD_TYPE_A(UNKNOWN, CENTER, ACPI_PLD_GROUP(5, 1))"
+							"ACPI_PLD_TYPE_A(BACK, RIGHT, ACPI_PLD_GROUP(5, 1))"
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
@@ -307,7 +305,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_A"
 						register "use_custom_pld" = "true"
 						register "custom_pld" =
-							"ACPI_PLD_TYPE_A(UNKNOWN, CENTER, ACPI_PLD_GROUP(6, 1))"
+							"ACPI_PLD_TYPE_A(BACK, LEFT, ACPI_PLD_GROUP(6, 1))"
 						device ref usb2_port7 on end
 					end
 					chip drivers/usb/acpi
@@ -315,7 +313,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_A"
 						register "use_custom_pld" = "true"
 						register "custom_pld" =
-							"ACPI_PLD_TYPE_A(UNKNOWN, CENTER, ACPI_PLD_GROUP(4, 1))"
+							"ACPI_PLD_TYPE_A(FRONT, RIGHT, ACPI_PLD_GROUP(4, 1))"
 						device ref usb2_port8 on end
 					end
 					chip drivers/usb/acpi
@@ -323,7 +321,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_A"
 						register "use_custom_pld" = "true"
 						register "custom_pld" =
-							"ACPI_PLD_TYPE_A(UNKNOWN, CENTER, ACPI_PLD_GROUP(1, 2))"
+							"ACPI_PLD_TYPE_A(FRONT, RIGHT, ACPI_PLD_GROUP(1, 2))"
 						device ref usb2_port9 on end
 					end
 					chip drivers/usb/acpi
@@ -338,7 +336,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_USB3_A"
 						register "use_custom_pld" = "true"
 						register "custom_pld" =
-							"ACPI_PLD_TYPE_A(UNKNOWN, CENTER, ACPI_PLD_GROUP(1, 2))"
+							"ACPI_PLD_TYPE_A(FRONT, RIGHT, ACPI_PLD_GROUP(1, 2))"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
@@ -346,7 +344,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_USB3_A"
 						register "use_custom_pld" = "true"
 						register "custom_pld" =
-							"ACPI_PLD_TYPE_A(UNKNOWN, CENTER, ACPI_PLD_GROUP(4, 1))"
+							"ACPI_PLD_TYPE_A(FRONT, RIGHT, ACPI_PLD_GROUP(4, 1))"
 						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi
@@ -354,7 +352,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_USB3_A"
 						register "use_custom_pld" = "true"
 						register "custom_pld" =
-							"ACPI_PLD_TYPE_A(UNKNOWN, CENTER, ACPI_PLD_GROUP(6, 1))"
+							"ACPI_PLD_TYPE_A(BACK, LEFT, ACPI_PLD_GROUP(6, 1))"
 						device ref usb3_port3 on end
 					end
 					chip drivers/usb/acpi
@@ -362,7 +360,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_USB3_A"
 						register "use_custom_pld" = "true"
 						register "custom_pld" =
-							"ACPI_PLD_TYPE_A(UNKNOWN, CENTER, ACPI_PLD_GROUP(5, 1))"
+							"ACPI_PLD_TYPE_A(BACK, RIGHT, ACPI_PLD_GROUP(5, 1))"
 						device ref usb3_port4 on end
 					end
 				end

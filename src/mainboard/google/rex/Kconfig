@@ -31,4 +31,8 @@ config MAINBOARD_FAMILY
 config MAINBOARD_PART_NUMBER
 	default "Rex" if BOARD_GOOGLE_REX0
 
+config VARIANT_DIR
+	string
+	default "rex0" if BOARD_GOOGLE_REX0
+
 endif # BOARD_GOOGLE_REX_COMMON

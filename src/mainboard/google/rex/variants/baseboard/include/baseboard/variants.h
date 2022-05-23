@@ -6,4 +6,12 @@
 #include <soc/gpio.h>
 #include <stdint.h>
 
+/* The next set of functions return the gpio table and fill in the number of entries for
+ * each table.
+ */
+
+const struct pad_config *variant_gpio_table(size_t *num);
+const struct pad_config *variant_early_gpio_table(size_t *num);
+const struct pad_config *variant_romstage_gpio_table(size_t *num);
+
 #endif /*__BASEBOARD_VARIANTS_H__ */

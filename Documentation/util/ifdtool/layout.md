@@ -2,7 +2,7 @@
 
 A coreboot image for an Intel SoC contains two separate definitions of the
 layout of the flash. The Intel Flash Descriptor (IFD) which defines offsets and
-sizes of various regions of flash and the [coreboot FMAP](../lib/flashmap.md).
+sizes of various regions of flash and the [coreboot FMAP](../../lib/flashmap.md).
 
 The FMAP should define all of the of the regions defined by the IFD to ensure
 that those regions are accounted for by coreboot and will not be accidentally

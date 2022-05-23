@@ -25,7 +25,7 @@ status repository `Bash` `Go`
 * __cavium__ - Devicetree_convert Tool to convert a DTB to a static C
 file `Python`
 * __cbfstool__
-	* [_cbfstool_](cbfstool/index.md) - For manipulating CBFS file
+	* [_cbfstool_](util/cbfstool/index.md) - For manipulating CBFS file
 `C`
 	* _fmaptool_ - Converts plaintext fmd files into fmap blobs `C`
 	* _rmodtool_ - Creates rmodules `C`
@@ -50,7 +50,7 @@ Controller (EC). `C`
 * __genbuild_h__ - Generate build system definitions `Shell`
 * __gitconfig__ - Initialize git repository submodules install git
 hooks `Bash`
-* [__ifdtool__](ifdtool/index.md) - Extract and dump Intel Firmware
+* [__ifdtool__](util/ifdtool/index.md) - Extract and dump Intel Firmware
 Descriptor information `C`
 * __intelmetool__ - Dump interesting things about Management Engine
 even if hidden `C`
@@ -155,7 +155,8 @@ the documentation `Bash`
 
  ## In depth documentation
 
-* [ifdtool](ifdtool/index.md)
+* [cbfstool](util/cbfstool/index.md)
+* [ifdtool](util/ifdtool/index.md)
 
 ## Generated documentation
 

@@ -635,7 +635,7 @@ config HEAP_SIZE
 
 config STACK_SIZE
 	hex
-	default 0x1000 if ARCH_X86
+	default 0x2000 if ARCH_X86
 	default 0x0
 
 config MAX_CPUS

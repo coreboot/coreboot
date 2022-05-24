@@ -229,6 +229,15 @@ static const struct spi_flash_part_id flash_table[] = {
 		.protection_granularity_shift	= 16,
 		.bp_bits			= 4,
 	},
+	{
+		/* W25Q256JW */
+		.id[0]				= 0x6019,
+		.nr_sectors_shift		= 13,
+		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
+		.protection_granularity_shift	= 16,
+		.bp_bits			= 4,
+	},
 };
 
 /*

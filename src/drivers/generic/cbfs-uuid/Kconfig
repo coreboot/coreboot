@@ -1,0 +1,6 @@
+config DRIVERS_GENERIC_CBFS_UUID
+	bool "System UUID in CBFS"
+	default n
+	help
+	  Enable this option to read the SMBIOS system UUID from a
+	  text file located in CBFS.

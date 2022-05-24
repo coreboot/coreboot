@@ -14,3 +14,4 @@ Some of the drivers currently available include:
 * [SMMSTOREv2](smmstorev2.md)
 * [SoundWire](soundwire.md)
 * [USB4 Retimer](retimer.md)
+* [CBFS SMBIOS hooks](cbfs_smbios.md)

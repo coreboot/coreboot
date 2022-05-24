@@ -57,6 +57,15 @@ chip soc/intel/alderlake
 			.fall_time_ns = 400,
 			.data_hold_time_ns = 50,
 		},
+		.i2c[7] = {
+			.speed = I2C_SPEED_FAST_PLUS,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST_PLUS,
+				.scl_lcnt = 45,
+				.scl_hcnt = 30,
+				.sda_hold = 20,
+			},
+		},
 	}"
 	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC3)"  # USB2_C3
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"
@@ -78,7 +87,7 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C3] = PchSerialIoPci,
 		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
-		[PchSerialIoIndexI2C7] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C7] = PchSerialIoPci,
 	}"
 	device domain 0 on
 		device ref igpu on
@@ -353,6 +362,7 @@ chip soc/intel/alderlake
 				device i2c 15 on end
 			end
 		end
+		device ref i2c7 on end
 		device ref gspi1 on
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""

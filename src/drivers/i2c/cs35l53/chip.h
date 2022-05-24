@@ -48,6 +48,12 @@ struct drivers_i2c_cs35l53_config {
 
 	const char *sub; /* SUB ID to uniquely identify system */
 
+	/* Device Description */
+	const char *desc;
+
+	/* Identifier for chips */
+	uint32_t uid;
+
 	/* Interrupt configuration */
 	struct acpi_irq irq;
 

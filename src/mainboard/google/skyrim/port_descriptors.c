@@ -53,8 +53,8 @@ static const fsp_ddi_descriptor skyrim_sbna_ddi_descriptors[] = {
 		.aux_index = DDI_AUX1,
 		.hdp_index = DDI_HDP1
 	},
-	{ /* DDI1 -  DP (type C) */
-		.connector_type = DDI_DP,
+	{ /* DDI1 - HDMI/DP */
+		.connector_type = DDI_HDMI,
 		.aux_index = DDI_AUX2,
 		.hdp_index = DDI_HDP2
 	},

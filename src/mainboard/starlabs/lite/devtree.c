@@ -26,16 +26,19 @@ void devtree_update(void)
 	/* Update PL1 & PL2 based on CMOS settings */
 	switch (get_power_profile(PP_POWER_SAVER)) {
 	case PP_POWER_SAVER:
-		soc_conf->tdp_pl1_override = 6;
-		soc_conf->tdp_pl2_override = 10;
+		soc_conf->tdp_pl1_override	= 6;
+		soc_conf->tdp_pl2_override	= 10;
+		cfg->tcc_offset			= 15;
 		break;
 	case PP_BALANCED:
-		soc_conf->tdp_pl1_override = 10;
-		soc_conf->tdp_pl2_override = 15;
+		soc_conf->tdp_pl1_override	= 10;
+		soc_conf->tdp_pl2_override	= 15;
+		cfg->tcc_offset			= 10;
 		break;
 	case PP_PERFORMANCE:
-		soc_conf->tdp_pl1_override = 10;
-		soc_conf->tdp_pl2_override = 20;
+		soc_conf->tdp_pl1_override	= 10;
+		soc_conf->tdp_pl2_override	= 20;
+		cfg->tcc_offset			= 5;
 		break;
 	}
 

@@ -18,3 +18,6 @@ config BOARD_INTEL_ADLRVP_N
 
 config BOARD_INTEL_ADLRVP_N_EXT_EC
 	bool "Alderlake-N RVP with Chrome EC"
+
+config BOARD_INTEL_ADLRVP_RPL_EXT_EC
+	bool "Raptorlake silicon with Alderlake-P RVP and Chrome EC"

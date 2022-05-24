@@ -28,7 +28,7 @@ void ioe_p2sb_enable_bar(void)
 
 static void read_resources(struct device *dev)
 {
-	mmio_resource(dev, 0, IOE_P2SB_BAR / KiB, IOE_P2SB_SIZE / KiB);
+	mmio_resource_kb(dev, 0, IOE_P2SB_BAR / KiB, IOE_P2SB_SIZE / KiB);
 }
 
 struct device_operations device_ops = {

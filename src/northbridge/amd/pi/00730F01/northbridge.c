@@ -139,8 +139,8 @@ static void add_fixed_resources(struct device *dev, int index)
 	 * 0xa0000 - 0xbffff: legacy VGA
 	 * 0xc0000 - 0xfffff: option ROMs and SeaBIOS (if used)
 	 */
-	mmio_resource(dev, index++, 0xa0000 >> 10, (0xc0000 - 0xa0000) >> 10);
-	reserved_ram_resource(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
+	mmio_resource_kb(dev, index++, 0xa0000 >> 10, (0xc0000 - 0xa0000) >> 10);
+	reserved_ram_resource_kb(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
 
 	if (fx_devs == 0)
 		get_fx_devs();
@@ -151,7 +151,7 @@ static void add_fixed_resources(struct device *dev, int index)
 		resource_t basek, limitk;
 		if (!get_dram_base_limit(0, &basek, &limitk))
 			return;
-		mmio_resource(dev, index++, limitk, 16*1024);
+		mmio_resource_kb(dev, index++, limitk, 16*1024);
 	}
 }
 
@@ -812,7 +812,7 @@ static void domain_read_resources(struct device *dev)
 
 		/* See if we need a hole from 0xa0000 (640K) to 0xfffff (1024K) */
 		if (basek < 640 && sizek > 1024) {
-			ram_resource(dev, (idx | i), basek, 640 - basek);
+			ram_resource_kb(dev, (idx | i), basek, 640 - basek);
 			idx += 0x10;
 			basek = 1024;
 			sizek = limitk - basek;
@@ -827,7 +827,7 @@ static void domain_read_resources(struct device *dev)
 				unsigned int pre_sizek;
 				pre_sizek = mmio_basek - basek;
 				if (pre_sizek > 0) {
-					ram_resource(dev, (idx | i), basek, pre_sizek);
+					ram_resource_kb(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
 				}
@@ -843,7 +843,7 @@ static void domain_read_resources(struct device *dev)
 			}
 		}
 
-		ram_resource(dev, (idx | i), basek, sizek);
+		ram_resource_kb(dev, (idx | i), basek, sizek);
 		idx += 0x10;
 		printk(BIOS_DEBUG, "node %d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 				i, mmio_basek, basek, limitk);

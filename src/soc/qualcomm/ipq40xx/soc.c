@@ -33,12 +33,12 @@ static void soc_read_resources(struct device *dev)
 {
 	ipq_mem_map_t *ipq_mem_map = ((ipq_mem_map_t *)_dram);
 
-	ram_resource(dev, 0, LINUX_REGION1_START_KB, LINUX_REGION1_SIZE_KB);
+	ram_resource_kb(dev, 0, LINUX_REGION1_START_KB, LINUX_REGION1_SIZE_KB);
 
-	reserved_ram_resource(dev, 1, RESERVED_START_KB, RESERVED_SIZE_KB);
+	reserved_ram_resource_kb(dev, 1, RESERVED_START_KB, RESERVED_SIZE_KB);
 
 	/* 0x88000000 to end, is the second region for Linux */
-	ram_resource(dev, 2, LINUX_REGION2_START_KB,
+	ram_resource_kb(dev, 2, LINUX_REGION2_START_KB,
 		     (CONFIG_DRAM_SIZE_MB * KiB) -
 			LINUX_REGION1_SIZE_KB - RESERVED_SIZE_KB);
 }

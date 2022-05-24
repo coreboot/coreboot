@@ -81,12 +81,12 @@ static void mch_domain_read_resources(struct device *dev)
 	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", tomk >> 10);
 
 	/* Report the memory regions */
-	ram_resource(dev, index++, 0, legacy_hole_base_k);
-	mmio_resource(dev, index++, legacy_hole_base_k,
+	ram_resource_kb(dev, index++, 0, legacy_hole_base_k);
+	mmio_resource_kb(dev, index++, legacy_hole_base_k,
 			(0xc0000 >> 10) - legacy_hole_base_k);
-	reserved_ram_resource(dev, index++, 0xc0000 >> 10,
+	reserved_ram_resource_kb(dev, index++, 0xc0000 >> 10,
 			(0x100000 - 0xc0000) >> 10);
-	ram_resource(dev, index++, 0x100000 >> 10, (tomk - (0x100000 >> 10)));
+	ram_resource_kb(dev, index++, 0x100000 >> 10, (tomk - (0x100000 >> 10)));
 
 	/*
 	 * If >= 4GB installed then memory from TOLUD to 4GB
@@ -94,17 +94,17 @@ static void mch_domain_read_resources(struct device *dev)
 	 */
 	touud >>= 10; /* Convert to KB */
 	if (touud > top32memk) {
-		ram_resource(dev, index++, top32memk, touud - top32memk);
+		ram_resource_kb(dev, index++, top32memk, touud - top32memk);
 		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
 		       (touud - top32memk) >> 10);
 	}
 
 	printk(BIOS_DEBUG, "Adding UMA memory area base=0x%08x size=0x%08x\n",
 	       tomk << 10, uma_sizek << 10);
-	uma_resource(dev, index++, tomk, uma_sizek);
+	uma_resource_kb(dev, index++, tomk, uma_sizek);
 
 	/* Reserve high memory where the NB BARs are up to 4GiB */
-	fixed_mem_resource(dev, index++, DEFAULT_HECIBAR >> 10,
+	fixed_mem_resource_kb(dev, index++, DEFAULT_HECIBAR >> 10,
 				top32memk - (DEFAULT_HECIBAR >> 10),
 				IORESOURCE_RESERVE);
 

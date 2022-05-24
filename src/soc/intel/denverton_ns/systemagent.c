@@ -238,12 +238,12 @@ static void mc_add_dram_resources(struct device *dev)
 	/* 0 - > 0xa0000 */
 	base_k = 0;
 	size_k = (0xa0000 >> 10) - base_k;
-	ram_resource(dev, index++, base_k, size_k);
+	ram_resource_kb(dev, index++, base_k, size_k);
 
 	/* 0x100000 -> top_of_ram */
 	base_k = 0x100000 >> 10;
 	size_k = (top_of_ram >> 10) - base_k;
-	ram_resource(dev, index++, base_k, size_k);
+	ram_resource_kb(dev, index++, base_k, size_k);
 
 	/* top_of_ram -> TSEG */
 	resource = new_resource(dev, index++);
@@ -269,7 +269,7 @@ static void mc_add_dram_resources(struct device *dev)
 	touud_k = mc_values[TOUUD_REG] >> 10;
 	size_k = touud_k - base_k;
 	if (touud_k > base_k)
-		ram_resource(dev, index++, base_k, size_k);
+		ram_resource_kb(dev, index++, base_k, size_k);
 
 	/*
 	 * Reserve everything between A segment and 1MB:
@@ -277,8 +277,8 @@ static void mc_add_dram_resources(struct device *dev)
 	 * 0xa0000 - 0xbffff: legacy VGA
 	 * 0xc0000 - 0xfffff: reserved RAM
 	 */
-	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
-	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
+	mmio_resource_kb(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
+	reserved_ram_resource_kb(dev, index++, (0xc0000 >> 10),
 			      (0x100000 - 0xc0000) >> 10);
 }
 

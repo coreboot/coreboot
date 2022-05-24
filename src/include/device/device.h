@@ -310,29 +310,29 @@ void pci_domain_scan_bus(struct device *dev);
 void fixed_io_resource(struct device *dev, unsigned long index,
 		unsigned long base, unsigned long size);
 
-void fixed_mem_resource(struct device *dev, unsigned long index,
+void fixed_mem_resource_kb(struct device *dev, unsigned long index,
 		  unsigned long basek, unsigned long sizek, unsigned long type);
 
 void mmconf_resource(struct device *dev, unsigned long index);
 
-/* It is the caller's responsibility to adjust regions such that ram_resource()
- * and mmio_resource() do not overlap.
+/* It is the caller's responsibility to adjust regions such that ram_resource_kb()
+ * and mmio_resource_kb() do not overlap.
  */
-#define ram_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE)
+#define ram_resource_kb(dev, idx, basek, sizek) \
+	fixed_mem_resource_kb(dev, idx, basek, sizek, IORESOURCE_CACHEABLE)
 
-#define reserved_ram_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE \
+#define reserved_ram_resource_kb(dev, idx, basek, sizek) \
+	fixed_mem_resource_kb(dev, idx, basek, sizek, IORESOURCE_CACHEABLE \
 		| IORESOURCE_RESERVE)
 
-#define bad_ram_resource(dev, idx, basek, sizek) \
-	reserved_ram_resource((dev), (idx), (basek), (sizek))
+#define bad_ram_resource_kb(dev, idx, basek, sizek) \
+	reserved_ram_resource_kb((dev), (idx), (basek), (sizek))
 
-#define uma_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE)
+#define uma_resource_kb(dev, idx, basek, sizek) \
+	fixed_mem_resource_kb(dev, idx, basek, sizek, IORESOURCE_RESERVE)
 
-#define mmio_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE)
+#define mmio_resource_kb(dev, idx, basek, sizek) \
+	fixed_mem_resource_kb(dev, idx, basek, sizek, IORESOURCE_RESERVE)
 
 #define io_resource(dev, idx, base, size) \
 	fixed_io_resource(dev, idx, base, size)

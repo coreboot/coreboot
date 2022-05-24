@@ -14,7 +14,7 @@
 static void aspeed_ast2050_read_resources(struct device *dev)
 {
 	/* Reserve VGA regions */
-	mmio_resource(dev, 3, 0xa0000 >> 10, 0x1ffff >> 10);
+	mmio_resource_kb(dev, 3, 0xa0000 >> 10, 0x1ffff >> 10);
 
 	/* Run standard resource read routine */
 	pci_dev_read_resources(dev);

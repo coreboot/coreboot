@@ -10,8 +10,8 @@
 static void soc_read_resources(struct device *dev)
 {
 	/* Reserve bottom 0x150_0000 bytes for NSS, SMEM, etc. */
-	reserved_ram_resource(dev, 0, (uintptr_t)_dram / KiB, RESERVED_SIZE_KB);
-	ram_resource(dev, 0, (uintptr_t)_dram / KiB + RESERVED_SIZE_KB,
+	reserved_ram_resource_kb(dev, 0, (uintptr_t)_dram / KiB, RESERVED_SIZE_KB);
+	ram_resource_kb(dev, 0, (uintptr_t)_dram / KiB + RESERVED_SIZE_KB,
 		     (CONFIG_DRAM_SIZE_MB * KiB) - RESERVED_SIZE_KB);
 }
 

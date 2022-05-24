@@ -6,7 +6,7 @@
 
 static void soc_enable(struct device *dev)
 {
-	ram_resource(dev, 0, (uintptr_t)_dram / KiB, CONFIG_DRAM_SIZE_MB * MiB / KiB);
+	ram_resource_kb(dev, 0, (uintptr_t)_dram / KiB, CONFIG_DRAM_SIZE_MB * MiB / KiB);
 }
 
 struct chip_operations soc_ti_am335x_ops = {

@@ -87,7 +87,7 @@ static void uart_enable(struct device *dev)
 
 static void uart_read_resources(struct device *dev)
 {
-	mmio_resource(dev, 0, dev->path.mmio.addr / KiB, 4);
+	mmio_resource_kb(dev, 0, dev->path.mmio.addr / KiB, 4);
 }
 
 struct device_operations cezanne_uart_mmio_ops = {

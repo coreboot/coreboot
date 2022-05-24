@@ -20,7 +20,7 @@ static void nc_read_resources(struct device *dev)
 	/* 0 -> 0xa0000 */
 	base_k = 0;
 	size_k = 0xa0000 - base_k;
-	ram_resource(dev, index++, RES_IN_KIB(base_k), RES_IN_KIB(size_k));
+	ram_resource_kb(dev, index++, RES_IN_KIB(base_k), RES_IN_KIB(size_k));
 
 	/*
 	 * Reserve everything between A segment and 1MB:
@@ -31,28 +31,28 @@ static void nc_read_resources(struct device *dev)
 	 */
 	base_k += size_k;
 	size_k = 0xc0000 - base_k;
-	mmio_resource(dev, index++, RES_IN_KIB(base_k), RES_IN_KIB(size_k));
+	mmio_resource_kb(dev, index++, RES_IN_KIB(base_k), RES_IN_KIB(size_k));
 
 	base_k += size_k;
 	size_k = 0x100000 - base_k;
-	reserved_ram_resource(dev, index++, RES_IN_KIB(base_k),
+	reserved_ram_resource_kb(dev, index++, RES_IN_KIB(base_k),
 		RES_IN_KIB(size_k));
 
 	/* 0x100000 -> cbmem_top - cacheable and usable */
 	base_k += size_k;
 	size_k = (unsigned long)cbmem_top() - base_k;
-	ram_resource(dev, index++, RES_IN_KIB(base_k), RES_IN_KIB(size_k));
+	ram_resource_kb(dev, index++, RES_IN_KIB(base_k), RES_IN_KIB(size_k));
 
 	/* cbmem_top -> 0xc0000000 - reserved */
 	base_k += size_k;
 	size_k = 0xc0000000 - base_k;
-	reserved_ram_resource(dev, index++, RES_IN_KIB(base_k),
+	reserved_ram_resource_kb(dev, index++, RES_IN_KIB(base_k),
 		RES_IN_KIB(size_k));
 
 	/* 0xc0000000 -> 4GiB is mmio. */
 	base_k += size_k;
 	size_k = 0x100000000ull - base_k;
-	mmio_resource(dev, index++, RES_IN_KIB(base_k), RES_IN_KIB(size_k));
+	mmio_resource_kb(dev, index++, RES_IN_KIB(base_k), RES_IN_KIB(size_k));
 }
 
 static struct device_operations nc_ops = {

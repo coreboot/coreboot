@@ -317,13 +317,13 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	/* 0 - > 0xa0000 */
 	base_k = 0;
 	size_k = (0xa0000 >> 10) - base_k;
-	ram_resource(dev, index++, base_k, size_k);
+	ram_resource_kb(dev, index++, base_k, size_k);
 
 	/* 0xc0000 -> TSEG - DPR */
 	base_k = 0xc0000 >> 10;
 	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - base_k;
 	size_k -= dpr_size >> 10;
-	ram_resource(dev, index++, base_k, size_k);
+	ram_resource_kb(dev, index++, base_k, size_k);
 
 	/* TSEG - DPR -> BGSM */
 	resource = new_resource(dev, index++);
@@ -346,15 +346,15 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	touud_k = mc_values[TOUUD_REG] >> 10;
 	size_k = touud_k - base_k;
 	if (touud_k > base_k)
-		ram_resource(dev, index++, base_k, size_k);
+		ram_resource_kb(dev, index++, base_k, size_k);
 
 	/* Reserve everything between A segment and 1MB:
 	 *
 	 * 0xa0000 - 0xbffff: legacy VGA
 	 * 0xc0000 - 0xfffff: RAM
 	 */
-	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
-	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
+	mmio_resource_kb(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
+	reserved_ram_resource_kb(dev, index++, (0xc0000 >> 10),
 				(0x100000 - 0xc0000) >> 10);
 
 	*resource_cnt = index;
@@ -374,9 +374,9 @@ static void systemagent_read_resources(struct device *dev)
 
 	/* Add VT-d MMIO resources if capable */
 	if (vtd_capable) {
-		mmio_resource(dev, index++, GFXVT_BASE_ADDRESS / KiB,
+		mmio_resource_kb(dev, index++, GFXVT_BASE_ADDRESS / KiB,
 			GFXVT_BASE_SIZE / KiB);
-		mmio_resource(dev, index++, VTVC0_BASE_ADDRESS / KiB,
+		mmio_resource_kb(dev, index++, VTVC0_BASE_ADDRESS / KiB,
 			VTVC0_BASE_SIZE / KiB);
 	}
 

@@ -147,7 +147,7 @@ static void lpe_read_resources(struct device *dev)
 {
 	pci_dev_read_resources(dev);
 
-	reserved_ram_resource(dev, FIRMWARE_PCI_REG_BASE,
+	reserved_ram_resource_kb(dev, FIRMWARE_PCI_REG_BASE,
 			      FIRMWARE_PHYS_BASE >> 10,
 			      FIRMWARE_PHYS_LENGTH >> 10);
 }

@@ -723,7 +723,7 @@ static void domain_set_resources(struct device *dev)
 
 		/* See if we need a hole from 0xa0000 (640K) to 0xbffff (768K) */
 		if (basek < 640 && sizek > 768) {
-			ram_resource(dev, (idx | i), basek, 640 - basek);
+			ram_resource_kb(dev, (idx | i), basek, 640 - basek);
 			idx += 0x10;
 			basek = 768;
 			sizek = limitk - basek;
@@ -737,7 +737,7 @@ static void domain_set_resources(struct device *dev)
 				unsigned int pre_sizek;
 				pre_sizek = mmio_basek - basek;
 				if (pre_sizek > 0) {
-					ram_resource(dev, (idx | i), basek, pre_sizek);
+					ram_resource_kb(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
 				}
@@ -753,7 +753,7 @@ static void domain_set_resources(struct device *dev)
 			}
 		}
 
-		ram_resource(dev, (idx | i), basek, sizek);
+		ram_resource_kb(dev, (idx | i), basek, sizek);
 		idx += 0x10;
 		printk(BIOS_DEBUG, "node %d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 				i, mmio_basek, basek, limitk);

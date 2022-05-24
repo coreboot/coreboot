@@ -118,27 +118,27 @@ static void read_resources(struct device *dev)
 	   pci_dev_read_resources for it */
 
 	/* 0x0 - 0x9ffff */
-	ram_resource(dev, idx++, 0, 0xa0000 / KiB);
+	ram_resource_kb(dev, idx++, 0, 0xa0000 / KiB);
 
 	/* 0xa0000 - 0xbffff: legacy VGA */
-	mmio_resource(dev, idx++, 0xa0000 / KiB, 0x20000 / KiB);
+	mmio_resource_kb(dev, idx++, 0xa0000 / KiB, 0x20000 / KiB);
 
 	/* 0xc0000 - 0xfffff: Option ROM */
-	reserved_ram_resource(dev, idx++, 0xc0000 / KiB, 0x40000 / KiB);
+	reserved_ram_resource_kb(dev, idx++, 0xc0000 / KiB, 0x40000 / KiB);
 
 	/* 1MiB - bottom of DRAM reserved for early coreboot usage */
-	ram_resource(dev, idx++, (1 * MiB) / KiB,
+	ram_resource_kb(dev, idx++, (1 * MiB) / KiB,
 		     (early_reserved_dram_start - (1 * MiB)) / KiB);
 
 	/* DRAM reserved for early coreboot usage */
-	reserved_ram_resource(dev, idx++, early_reserved_dram_start / KiB,
+	reserved_ram_resource_kb(dev, idx++, early_reserved_dram_start / KiB,
 		(early_reserved_dram_end - early_reserved_dram_start) / KiB);
 
 	/*
 	 * top of DRAM consumed early - low top usable RAM
 	 * cbmem_top() accounts for low UMA and TSEG if they are used.
 	 */
-	ram_resource(dev, idx++, early_reserved_dram_end / KiB,
+	ram_resource_kb(dev, idx++, early_reserved_dram_end / KiB,
 		     (mem_usable - early_reserved_dram_end) / KiB);
 
 	mmconf_resource(dev, idx++);
@@ -162,9 +162,9 @@ static void read_resources(struct device *dev)
 			continue; /* Done separately */
 
 		if (res->type == EFI_RESOURCE_SYSTEM_MEMORY)
-			ram_resource(dev, idx++, res->addr / KiB, res->length / KiB);
+			ram_resource_kb(dev, idx++, res->addr / KiB, res->length / KiB);
 		else if (res->type == EFI_RESOURCE_MEMORY_RESERVED)
-			reserved_ram_resource(dev, idx++, res->addr / KiB, res->length / KiB);
+			reserved_ram_resource_kb(dev, idx++, res->addr / KiB, res->length / KiB);
 		else
 			printk(BIOS_ERR, "failed to set resources for type %d\n",
 					res->type);

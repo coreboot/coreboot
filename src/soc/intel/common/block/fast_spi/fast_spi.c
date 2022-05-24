@@ -529,7 +529,7 @@ static void fast_spi_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 
 	/* Add SPI flash MMIO window as a reserved resource. */
-	mmio_resource(dev, 0, FLASH_BASE_ADDR / KiB, FLASH_MMIO_SIZE / KiB);
+	mmio_resource_kb(dev, 0, FLASH_BASE_ADDR / KiB, FLASH_MMIO_SIZE / KiB);
 }
 
 static struct device_operations fast_spi_dev_ops = {

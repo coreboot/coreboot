@@ -36,16 +36,16 @@ static void soc_read_resources(struct device *dev)
 		carveout_range(i, &begin, &size);
 		if (size == 0)
 			continue;
-		reserved_ram_resource(dev, index++, begin * KiB, size * KiB);
+		reserved_ram_resource_kb(dev, index++, begin * KiB, size * KiB);
 	}
 
 	memory_in_range_below_4gb(&begin, &end);
 	size = end - begin;
-	ram_resource(dev, index++, begin * KiB, size * KiB);
+	ram_resource_kb(dev, index++, begin * KiB, size * KiB);
 
 	memory_in_range_above_4gb(&begin, &end);
 	size = end - begin;
-	ram_resource(dev, index++, begin * KiB, size * KiB);
+	ram_resource_kb(dev, index++, begin * KiB, size * KiB);
 }
 
 static struct device_operations soc_ops = {

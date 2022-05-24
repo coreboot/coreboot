@@ -133,8 +133,8 @@ static void cpu_read_resources(struct device *dev)
 	unsigned long fb_size = FB_SIZE_KB * KiB;
 	u32 lcdbase = get_fb_base_kb() * KiB;
 
-	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB - FB_SIZE_KB);
-	mmio_resource(dev, 1, lcdbase / KiB, DIV_ROUND_UP(fb_size, KiB));
+	ram_resource_kb(dev, 0, RAM_BASE_KB, RAM_SIZE_KB - FB_SIZE_KB);
+	mmio_resource_kb(dev, 1, lcdbase / KiB, DIV_ROUND_UP(fb_size, KiB));
 }
 
 static void cpu_init(struct device *dev)

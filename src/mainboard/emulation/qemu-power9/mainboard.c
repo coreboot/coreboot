@@ -8,7 +8,7 @@ static void mainboard_enable(struct device *dev)
 {
 	if (!dev)
 		die("No dev0; die\n");
-	ram_resource(dev, 0, 0, (unsigned long)cbmem_top() / KiB);
+	ram_resource_kb(dev, 0, 0, (unsigned long)cbmem_top() / KiB);
 }
 
 struct chip_operations mainboard_ops = {

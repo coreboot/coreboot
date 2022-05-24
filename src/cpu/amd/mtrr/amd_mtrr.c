@@ -19,5 +19,5 @@ void add_uma_resource_below_tolm(struct device *nb, int idx)
 	printk(BIOS_INFO, "%s: uma size 0x%08x, memory start 0x%08x\n",
 			__func__, uma_size, uma_base);
 
-	uma_resource(nb, idx, uma_base / KiB, uma_size / KiB);
+	uma_resource_kb(nb, idx, uma_base / KiB, uma_size / KiB);
 }

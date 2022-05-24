@@ -39,7 +39,7 @@ static void mainboard_enable(struct device *dev)
 
 	discovered = probe_ramsize((uintptr_t)_dram, CONFIG_DRAM_SIZE_MB);
 	printk(BIOS_DEBUG, "%d MiB of RAM discovered\n", discovered);
-	ram_resource(dev, 0, 0x60000000 >> 10, discovered << 10);
+	ram_resource_kb(dev, 0, 0x60000000 >> 10, discovered << 10);
 	init_gfx();
 }
 

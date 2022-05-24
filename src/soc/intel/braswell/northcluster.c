@@ -99,26 +99,26 @@ static void nc_read_resources(struct device *dev)
 
 	/* PCIe memory-mapped config space access - 256 MiB. */
 	mmconf = iosf_bunit_read(BUNIT_MMCONF_REG) & ~((1 << 28) - 1);
-	mmio_resource(dev, BUNIT_MMCONF_REG, RES_IN_KiB(mmconf), 256 * 1024);
+	mmio_resource_kb(dev, BUNIT_MMCONF_REG, RES_IN_KiB(mmconf), 256 * 1024);
 
 	/* 0 -> 0xa0000 */
 	base_k = RES_IN_KiB(0);
 	size_k = RES_IN_KiB(0xa0000) - base_k;
-	ram_resource(dev, index++, base_k, size_k);
+	ram_resource_kb(dev, index++, base_k, size_k);
 
 	/* High memory -> fsp_res_base - cacheable and usable */
 	base_k = RES_IN_KiB(0x100000);
 	size_k = fsp_res_base_k - base_k;
-	ram_resource(dev, index++, base_k, size_k);
+	ram_resource_kb(dev, index++, base_k, size_k);
 
 	/* fsp_res_base -> tseg_top - Reserved */
 	base_k = fsp_res_base_k;
 	size_k = tseg_top_k - base_k;
-	reserved_ram_resource(dev, index++, base_k, size_k);
+	reserved_ram_resource_kb(dev, index++, base_k, size_k);
 
 	/* TSEG TOP -> bmbound is memory backed mmio. */
 	bmbound_k = RES_IN_KiB(nc_read_top_of_low_memory());
-	mmio_resource(dev, index++, tseg_top_k, bmbound_k - tseg_top_k);
+	mmio_resource_kb(dev, index++, tseg_top_k, bmbound_k - tseg_top_k);
 
 	/*
 	 * The BMBOUND_HI register matches register bits of 31:24 with address
@@ -127,7 +127,7 @@ static void nc_read_resources(struct device *dev)
 	bmbound_hi = iosf_bunit_read(BUNIT_BMBOUND_HI) & ~((1 << 24) - 1);
 	bmbound_hi = RES_IN_KiB(bmbound_hi) << 4;
 	if (bmbound_hi > four_gig_kib)
-		ram_resource(dev, index++, four_gig_kib, bmbound_hi - four_gig_kib);
+		ram_resource_kb(dev, index++, four_gig_kib, bmbound_hi - four_gig_kib);
 
 	/*
 	 * Reserve everything between A segment and 1MB:
@@ -135,15 +135,15 @@ static void nc_read_resources(struct device *dev)
 	 * 0xa0000 - 0xbffff: legacy VGA
 	 * 0xc0000 - 0xfffff: RAM
 	 */
-	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
-	reserved_ram_resource(dev, index++, (0xc0000 >> 10), (0x100000 - 0xc0000) >> 10);
+	mmio_resource_kb(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
+	reserved_ram_resource_kb(dev, index++, (0xc0000 >> 10), (0x100000 - 0xc0000) >> 10);
 
 	/*
 	 * Reserve local APIC
 	 */
 	base_k = RES_IN_KiB(LAPIC_DEFAULT_BASE);
 	size_k = RES_IN_KiB(0x00100000);
-	mmio_resource(dev, index++, base_k, size_k);
+	mmio_resource_kb(dev, index++, base_k, size_k);
 }
 
 static void nc_generate_ssdt(const struct device *dev)

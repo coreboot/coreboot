@@ -13,7 +13,7 @@ void bootmem_platform_add_ranges(void)
 static void mainboard_enable(struct device *dev)
 {
 	int ram_size_mb = probe_ramsize((uintptr_t)_dram, CONFIG_DRAM_SIZE_MB);
-	ram_resource(dev, 0, (uintptr_t)_dram / KiB, ram_size_mb * KiB);
+	ram_resource_kb(dev, 0, (uintptr_t)_dram / KiB, ram_size_mb * KiB);
 }
 
 struct chip_operations mainboard_ops = {

@@ -822,7 +822,7 @@ void show_all_devs_resources(int debug_level, const char *msg)
 	}
 }
 
-void fixed_mem_resource(struct device *dev, unsigned long index,
+void fixed_mem_resource_kb(struct device *dev, unsigned long index,
 			unsigned long basek, unsigned long sizek,
 			unsigned long type)
 {

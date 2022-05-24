@@ -108,7 +108,7 @@ void sa_add_fixed_mmio_resources(struct device *dev, int *resource_cnt,
 			sa_fixed_resources[i].description, sa_fixed_resources[i].base,
 			sa_fixed_resources[i].size);
 
-		mmio_resource(dev, index++, base / KiB, size / KiB);
+		mmio_resource_kb(dev, index++, base / KiB, size / KiB);
 	}
 
 	*resource_cnt = index;
@@ -197,26 +197,26 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 	/* 0 - > 0xa0000 */
 	base_k = 0;
 	size_k = (0xa0000 / KiB) - base_k;
-	ram_resource(dev, index++, base_k, size_k);
+	ram_resource_kb(dev, index++, base_k, size_k);
 
 	/* 0xc0000 -> top_of_ram */
 	base_k = 0xc0000 / KiB;
 	size_k = (top_of_ram / KiB) - base_k;
-	ram_resource(dev, index++, base_k, size_k);
+	ram_resource_kb(dev, index++, base_k, size_k);
 
 	sa_get_mem_map(dev, &sa_map_values[0]);
 
 	/* top_of_ram -> TOLUD */
 	base_k = top_of_ram;
 	size_k = sa_map_values[SA_TOLUD_REG] - base_k;
-	mmio_resource(dev, index++, base_k / KiB, size_k / KiB);
+	mmio_resource_kb(dev, index++, base_k / KiB, size_k / KiB);
 
 	/* 4GiB -> TOUUD */
 	base_k = 4 * (GiB / KiB); /* 4GiB */
 	touud_k = sa_map_values[SA_TOUUD_REG] / KiB;
 	size_k = touud_k - base_k;
 	if (touud_k > base_k)
-		ram_resource(dev, index++, base_k, size_k);
+		ram_resource_kb(dev, index++, base_k, size_k);
 
 	/*
 	 * Reserve everything between A segment and 1MB:
@@ -224,8 +224,8 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 	 * 0xa0000 - 0xbffff: legacy VGA
 	 * 0xc0000 - 0xfffff: RAM
 	 */
-	mmio_resource(dev, index++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
-	reserved_ram_resource(dev, index++, 0xc0000 / KiB,
+	mmio_resource_kb(dev, index++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
+	reserved_ram_resource_kb(dev, index++, 0xc0000 / KiB,
 			(1*MiB - 0xc0000) / KiB);
 
 	*resource_count = index;
@@ -249,7 +249,7 @@ static void imr_resource(struct device *dev, int idx, uint32_t base,
 	 * out of MTRRs. Memory reserved by IMRs is not usable for host
 	 * so mark it reserved.
 	 */
-	reserved_ram_resource(dev, idx, base_k, size_k);
+	reserved_ram_resource_kb(dev, idx, base_k, size_k);
 }
 
 /*
@@ -295,7 +295,7 @@ static void systemagent_read_resources(struct device *dev)
 
 	/* Reserve the window used for extended BIOS decoding. */
 	if (CONFIG(FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW))
-		mmio_resource(dev, index++, CONFIG_EXT_BIOS_WIN_BASE / KiB,
+		mmio_resource_kb(dev, index++, CONFIG_EXT_BIOS_WIN_BASE / KiB,
 			      CONFIG_EXT_BIOS_WIN_SIZE / KiB);
 }
 

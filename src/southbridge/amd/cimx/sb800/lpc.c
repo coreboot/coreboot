@@ -29,7 +29,7 @@ void lpc_read_resources(struct device *dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	/* Add a memory resource for the SPI BAR. */
-	fixed_mem_resource(dev, 2, SPI_BASE_ADDRESS / 1024, 1, IORESOURCE_SUBTRACTIVE);
+	fixed_mem_resource_kb(dev, 2, SPI_BASE_ADDRESS / 1024, 1, IORESOURCE_SUBTRACTIVE);
 
 	res = new_resource(dev, 3);
 	res->base = IO_APIC_ADDR;

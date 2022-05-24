@@ -184,19 +184,19 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	base_kb = 0;
 	size_kb = (0xa0000 >> 10);
 	LOG_MEM_RESOURCE("legacy_ram", dev, index, base_kb, size_kb);
-	ram_resource(dev, index++, base_kb, size_kb);
+	ram_resource_kb(dev, index++, base_kb, size_kb);
 
 	/* 1MB -> top_of_ram i.e., cbmem_top */
 	base_kb = (0x100000 >> 10);
 	size_kb = ((uintptr_t)cbmem_top() - 1 * MiB) >> 10;
 	LOG_MEM_RESOURCE("low_ram", dev, index, base_kb, size_kb);
-	ram_resource(dev, index++, base_kb, size_kb);
+	ram_resource_kb(dev, index++, base_kb, size_kb);
 
 	/* Mark TSEG/SMM region as reserved */
 	base_kb = (mc_values[TSEG_BASE_REG] >> 10);
 	size_kb = (mc_values[TSEG_LIMIT_REG] - mc_values[TSEG_BASE_REG] + 1) >> 10;
 	LOG_MEM_RESOURCE("mmio_tseg", dev, index, base_kb, size_kb);
-	reserved_ram_resource(dev, index++, base_kb, size_kb);
+	reserved_ram_resource_kb(dev, index++, base_kb, size_kb);
 
 	/* Reserve and set up DPR */
 	configure_dpr(dev);
@@ -204,7 +204,7 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	if (dpr.size) {
 		uint64_t dpr_base_k = (dpr.top - dpr.size) << 10;
 		uint64_t dpr_size_k = dpr.size << 10;
-		reserved_ram_resource(dev, index++, dpr_base_k, dpr_size_k);
+		reserved_ram_resource_kb(dev, index++, dpr_base_k, dpr_size_k);
 		LOG_MEM_RESOURCE("dpr", dev, index, dpr_base_k, dpr_size_k);
 	}
 
@@ -213,7 +213,7 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 		base_kb = ((mc_values[TSEG_LIMIT_REG] + 1) >> 10);
 		size_kb = (mc_values[TOLM_REG] - mc_values[TSEG_LIMIT_REG]) >> 10;
 		LOG_MEM_RESOURCE("mmio_tolm", dev, index, base_kb, size_kb);
-		reserved_ram_resource(dev, index++, base_kb, size_kb);
+		reserved_ram_resource_kb(dev, index++, base_kb, size_kb);
 	}
 
 	/* 4GiB -> TOHM */
@@ -221,7 +221,7 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 		base_kb = (0x100000000 >> 10);
 		size_kb = (mc_values[TOHM_REG] - 0x100000000 + 1) >> 10;
 		LOG_MEM_RESOURCE("high_ram", dev, index, base_kb, size_kb);
-		ram_resource(dev, index++, base_kb, size_kb);
+		ram_resource_kb(dev, index++, base_kb, size_kb);
 	}
 
 	/* add MMIO CFG resource */
@@ -253,12 +253,12 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	base_kb = VGA_BASE_ADDRESS >> 10;
 	size_kb = VGA_BASE_SIZE >> 10;
 	LOG_MEM_RESOURCE("legacy_mmio", dev, index, base_kb, size_kb);
-	mmio_resource(dev, index++, base_kb, size_kb);
+	mmio_resource_kb(dev, index++, base_kb, size_kb);
 
 	base_kb = (0xc0000 >> 10);
 	size_kb = (0x100000 - 0xc0000) >> 10;
 	LOG_MEM_RESOURCE("legacy_write_protect", dev, index, base_kb, size_kb);
-	reserved_ram_resource(dev, index++, base_kb, size_kb);
+	reserved_ram_resource_kb(dev, index++, base_kb, size_kb);
 
 	*res_count = index;
 }

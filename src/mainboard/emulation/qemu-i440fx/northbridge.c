@@ -65,10 +65,10 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 				       list[i].address, list[i].length);
 				if (list[i].address == 0) {
 					tomk = list[i].length / 1024;
-					ram_resource(dev, idx++, 0, 640);
-					ram_resource(dev, idx++, 768, tomk - 768);
+					ram_resource_kb(dev, idx++, 0, 640);
+					ram_resource_kb(dev, idx++, 768, tomk - 768);
 				} else {
-					ram_resource(dev, idx++,
+					ram_resource_kb(dev, idx++,
 						     list[i].address / 1024,
 						     list[i].length / 1024);
 				}
@@ -99,10 +99,10 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 		printk(BIOS_DEBUG, "QEMU: cmos: %lu MiB RAM above 4G.\n", high / 1024);
 
 		/* Report the memory regions. */
-		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 768, tomk - 768);
+		ram_resource_kb(dev, idx++, 0, 640);
+		ram_resource_kb(dev, idx++, 768, tomk - 768);
 		if (high)
-			ram_resource(dev, idx++, 4 * 1024 * 1024, high);
+			ram_resource_kb(dev, idx++, 4 * 1024 * 1024, high);
 	}
 
 	/* Reserve I/O ports used by QEMU */
@@ -119,10 +119,10 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 	}
 
 	/* A segment is legacy VGA region */
-	mmio_resource(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
+	mmio_resource_kb(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
 
 	/* C segment to 1MB is reserved RAM (low tables) */
-	reserved_ram_resource(dev, idx++, 0xc0000 / KiB, (1 * MiB - 0xc0000) / KiB);
+	reserved_ram_resource_kb(dev, idx++, 0xc0000 / KiB, (1 * MiB - 0xc0000) / KiB);
 
 	if (q35 && ((tomk * 1024) < 0xb0000000)) {
 		/*

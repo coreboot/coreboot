@@ -323,7 +323,7 @@ void bootmem_platform_add_ranges(void)
 static void soc_read_resources(struct device *dev)
 {
 	// HACK: Don't advertise bootblock romstage CAR region, it's broken...
-	ram_resource(dev, 0, 2 * KiB, sdram_size_mb() * KiB - 2 * KiB);
+	ram_resource_kb(dev, 0, 2 * KiB, sdram_size_mb() * KiB - 2 * KiB);
 }
 
 static void soc_init_atf(void)

@@ -17,7 +17,7 @@ static void mainboard_enable(struct device *dev)
 		die("No dev0; die\n");
 	}
 
-	ram_resource(dev, 0, 0x80000000/KiB, ram_size/KiB);
+	ram_resource_kb(dev, 0, 0x80000000/KiB, ram_size/KiB);
 }
 
 struct chip_operations mainboard_ops = {

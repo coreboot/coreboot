@@ -26,7 +26,7 @@
 static inline void add_mmio_resource(struct device *dev, int i, unsigned long addr,
 				     unsigned long size)
 {
-	mmio_resource(dev, i, addr >> 10, size >> 10);
+	mmio_resource_kb(dev, i, addr >> 10, size >> 10);
 }
 
 static void sc_add_mmio_resources(struct device *dev)

@@ -117,7 +117,7 @@ void i2c_soc_init(void)
 
 static void i2c_read_resources(struct device *dev)
 {
-	mmio_resource(dev, 0, dev->path.mmio.addr / KiB, 4);
+	mmio_resource_kb(dev, 0, dev->path.mmio.addr / KiB, 4);
 }
 
 struct device_operations soc_amd_i2c_mmio_ops = {

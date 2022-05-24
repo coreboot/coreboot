@@ -64,23 +64,23 @@ static struct device_operations pci_domain_ops = {
 
 static void add_fixed_resources(struct device *dev, int index)
 {
-	mmio_resource(dev, index++, uma_memory_base >> 10, uma_memory_size >> 10);
+	mmio_resource_kb(dev, index++, uma_memory_base >> 10, uma_memory_size >> 10);
 
-	mmio_resource(dev, index++, legacy_hole_base_k, (0xc0000 >> 10) - legacy_hole_base_k);
+	mmio_resource_kb(dev, index++, legacy_hole_base_k, (0xc0000 >> 10) - legacy_hole_base_k);
 
-	reserved_ram_resource(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
+	reserved_ram_resource_kb(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
 
 	if (is_sandybridge()) {
 		/* Required for SandyBridge sighting 3715511 */
-		bad_ram_resource(dev, index++, 0x20000000 >> 10, 0x00200000 >> 10);
-		bad_ram_resource(dev, index++, 0x40000000 >> 10, 0x00200000 >> 10);
+		bad_ram_resource_kb(dev, index++, 0x20000000 >> 10, 0x00200000 >> 10);
+		bad_ram_resource_kb(dev, index++, 0x40000000 >> 10, 0x00200000 >> 10);
 	}
 
 	/* Reserve IOMMU BARs */
 	const u32 capid0_a = pci_read_config32(dev, CAPID0_A);
 	if (!(capid0_a & (1 << 23))) {
-		mmio_resource(dev, index++, GFXVT_BASE >> 10, 4);
-		mmio_resource(dev, index++, VTVC0_BASE >> 10, 4);
+		mmio_resource_kb(dev, index++, GFXVT_BASE >> 10, 4);
+		mmio_resource_kb(dev, index++, VTVC0_BASE >> 10, 4);
 	}
 }
 
@@ -200,15 +200,15 @@ static void mc_read_resources(struct device *dev)
 		dpr_size_k = dpr.size * MiB / KiB;
 		tomk -= dpr_size_k;
 		dpr_base_k = (tseg_base - dpr.size * MiB) / KiB;
-		reserved_ram_resource(dev, index++, dpr_base_k, dpr_size_k);
+		reserved_ram_resource_kb(dev, index++, dpr_base_k, dpr_size_k);
 		printk(BIOS_DEBUG, "DPR base 0x%08x size %uM\n", dpr_base_k * KiB, dpr.size);
 	}
 
 	printk(BIOS_INFO, "Available memory below 4GB: %lluM\n", tomk >> 10);
 
 	/* Report the memory regions */
-	ram_resource(dev, index++, 0, legacy_hole_base_k);
-	ram_resource(dev, index++, legacy_hole_base_k + legacy_hole_size_k,
+	ram_resource_kb(dev, index++, 0, legacy_hole_base_k);
+	ram_resource_kb(dev, index++, legacy_hole_base_k + legacy_hole_size_k,
 			  (tomk - (legacy_hole_base_k + legacy_hole_size_k)));
 
 	/*
@@ -217,7 +217,7 @@ static void mc_read_resources(struct device *dev)
 	 */
 	touud >>= 10; /* Convert to KB */
 	if (touud > 4096 * 1024) {
-		ram_resource(dev, index++, 4096 * 1024, touud - (4096 * 1024));
+		ram_resource_kb(dev, index++, 4096 * 1024, touud - (4096 * 1024));
 		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n", (touud >> 10) - 4096);
 	}
 

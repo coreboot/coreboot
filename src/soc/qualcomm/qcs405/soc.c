@@ -7,8 +7,8 @@
 
 static void soc_read_resources(struct device *dev)
 {
-	ram_resource(dev, 0, (uintptr_t)_dram / KiB, (1 * GiB) / KiB);
-	reserved_ram_resource(dev, 1, (uintptr_t)_dram_reserved / KiB,
+	ram_resource_kb(dev, 0, (uintptr_t)_dram / KiB, (1 * GiB) / KiB);
+	reserved_ram_resource_kb(dev, 1, (uintptr_t)_dram_reserved / KiB,
 			      REGION_SIZE(dram_reserved) / KiB);
 }
 

@@ -14,7 +14,7 @@ static void mainboard_enable(struct device *dev)
 	}
 
 	dram_mb_detected = probe_ramsize((uintptr_t)_dram, CONFIG_DRAM_SIZE_MB);
-	ram_resource(dev, 0, (uintptr_t)_dram / KiB, dram_mb_detected * MiB / KiB);
+	ram_resource_kb(dev, 0, (uintptr_t)_dram / KiB, dram_mb_detected * MiB / KiB);
 }
 
 struct chip_operations mainboard_ops = {

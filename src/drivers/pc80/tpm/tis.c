@@ -749,7 +749,7 @@ static int tis_setup_interrupt(int vector, int polarity)
 static void lpc_tpm_read_resources(struct device *dev)
 {
 	/* Static 5K memory region specified in Kconfig */
-	mmio_resource(dev, 0, CONFIG_TPM_TIS_BASE_ADDRESS >> 10, 0x5000 >> 10);
+	mmio_resource_kb(dev, 0, CONFIG_TPM_TIS_BASE_ADDRESS >> 10, 0x5000 >> 10);
 }
 
 static void lpc_tpm_set_resources(struct device *dev)

@@ -35,8 +35,8 @@ static void add_fixed_resources(struct device *dev, int index)
 			| IORESOURCE_STORED
 			| IORESOURCE_ASSIGNED;
 
-	mmio_resource(dev, index++, legacy_hole_base_k, (0xc0000 / KiB) - legacy_hole_base_k);
-	reserved_ram_resource(dev, index++, 0xc0000 / KiB, (0x100000 - 0xc0000) / KiB);
+	mmio_resource_kb(dev, index++, legacy_hole_base_k, (0xc0000 / KiB) - legacy_hole_base_k);
+	reserved_ram_resource_kb(dev, index++, 0xc0000 / KiB, (0x100000 - 0xc0000) / KiB);
 }
 
 static void mch_domain_read_resources(struct device *dev)
@@ -98,12 +98,12 @@ static void mch_domain_read_resources(struct device *dev)
 	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOMK: 0x%xK\n", delta_cbmem);
 
 	/* Report the memory regions */
-	ram_resource(dev, index++, 0, 0xa0000 / KiB);
-	ram_resource(dev, index++, 1 * MiB / KiB, tomk - 1 * MiB / KiB);
-	mmio_resource(dev, index++, tseg_basek, tseg_sizek);
-	mmio_resource(dev, index++, gtt_basek,  gsm_sizek);
-	mmio_resource(dev, index++, igd_basek,  gms_sizek);
-	reserved_ram_resource(dev, index++, cbmem_topk, delta_cbmem);
+	ram_resource_kb(dev, index++, 0, 0xa0000 / KiB);
+	ram_resource_kb(dev, index++, 1 * MiB / KiB, tomk - 1 * MiB / KiB);
+	mmio_resource_kb(dev, index++, tseg_basek, tseg_sizek);
+	mmio_resource_kb(dev, index++, gtt_basek,  gsm_sizek);
+	mmio_resource_kb(dev, index++, igd_basek,  gms_sizek);
+	reserved_ram_resource_kb(dev, index++, cbmem_topk, delta_cbmem);
 
 	/*
 	 * If > 4GB installed then memory from TOLUD to 4GB
@@ -111,7 +111,7 @@ static void mch_domain_read_resources(struct device *dev)
 	 */
 	touud >>= 10; /* Convert to KB */
 	if (touud > top32memk) {
-		ram_resource(dev, index++, top32memk, touud - top32memk);
+		ram_resource_kb(dev, index++, top32memk, touud - top32memk);
 		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
 			(touud - top32memk) / KiB);
 	}

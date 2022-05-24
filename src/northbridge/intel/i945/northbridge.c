@@ -75,15 +75,15 @@ static void mch_domain_read_resources(struct device *dev)
 	printk(BIOS_INFO, " (%dM)\n", (uint32_t)(tomk_stolen / KiB));
 
 	/* Report the memory regions */
-	ram_resource(dev, idx++, 0, 0xa0000 / KiB);
-	ram_resource(dev, idx++, 1 * MiB / KiB, (tomk - 1 * MiB / KiB));
-	uma_resource(dev, idx++, uma_memory_base / KiB, uma_memory_size / KiB);
-	mmio_resource(dev, idx++, tseg_memory_base / KiB, tseg_memory_size / KiB);
-	uma_resource(dev, idx++, cbmem_topk, delta_cbmem);
+	ram_resource_kb(dev, idx++, 0, 0xa0000 / KiB);
+	ram_resource_kb(dev, idx++, 1 * MiB / KiB, (tomk - 1 * MiB / KiB));
+	uma_resource_kb(dev, idx++, uma_memory_base / KiB, uma_memory_size / KiB);
+	mmio_resource_kb(dev, idx++, tseg_memory_base / KiB, tseg_memory_size / KiB);
+	uma_resource_kb(dev, idx++, cbmem_topk, delta_cbmem);
 	/* legacy VGA memory */
-	mmio_resource(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
+	mmio_resource_kb(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
 	/* RAM to be used for option roms and BIOS */
-	reserved_ram_resource(dev, idx++, 0xc0000 / KiB, (1 * MiB - 0xc0000) / KiB);
+	reserved_ram_resource_kb(dev, idx++, 0xc0000 / KiB, (1 * MiB - 0xc0000) / KiB);
 }
 
 static void mch_domain_set_resources(struct device *dev)

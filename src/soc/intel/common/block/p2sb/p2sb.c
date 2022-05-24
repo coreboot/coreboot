@@ -128,7 +128,7 @@ static void read_resources(struct device *dev)
 	 * The following code makes sure that it doesn't change if the device
 	 * is visible and the resource allocator is being run.
 	 */
-	mmio_resource(dev, PCI_BASE_ADDRESS_0, P2SB_BAR / KiB, P2SB_SIZE / KiB);
+	mmio_resource_kb(dev, PCI_BASE_ADDRESS_0, P2SB_BAR / KiB, P2SB_SIZE / KiB);
 }
 
 static const struct device_operations device_ops = {

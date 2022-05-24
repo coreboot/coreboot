@@ -60,6 +60,10 @@ chip soc/intel/alderlake
 	}"
 	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC3)"  # USB2_C3
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
+
+	register "usb3_ports[0]" = "USB3_PORT_EMPTY"
+
 	register "tcss_ports[3]" = "TCSS_PORT_DEFAULT(OC3)"
 	register "sagv" = "SaGv_Enabled"
 

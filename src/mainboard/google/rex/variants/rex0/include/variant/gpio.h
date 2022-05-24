@@ -5,4 +5,6 @@
 
 #include <baseboard/gpio.h>
 
+/* TODO: Add GPIO as per rex board */
+
 #endif /* __MAINBOARD_GPIO_H__ */

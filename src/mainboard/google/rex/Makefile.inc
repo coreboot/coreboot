@@ -3,6 +3,7 @@ bootblock-y += bootblock.c
 romstage-y += romstage.c
 
 ramstage-y += mainboard.c
+ramstage-y += ec.c
 
 VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))
 BASEBOARD_DIR:=$(call strip_quotes,$(CONFIG_BASEBOARD_DIR))

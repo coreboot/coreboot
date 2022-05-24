@@ -2,6 +2,7 @@
 
 #include <baseboard/variants.h>
 #include <device/device.h>
+#include <ec/ec.h>
 
 static void mainboard_init(void *chip_info)
 {
@@ -10,10 +11,14 @@ static void mainboard_init(void *chip_info)
 	pads = variant_gpio_table(&num);
 	gpio_configure_pads(pads, num);
 }
+static void mainboard_dev_init(struct device *dev)
+{
+	mainboard_ec_init();
+}
 
 static void mainboard_enable(struct device *dev)
 {
-	/* TODO: Enable mainboard */
+	dev->ops->init = mainboard_dev_init;
 }
 
 struct chip_operations mainboard_ops = {

@@ -107,8 +107,6 @@ struct smm_stub_params {
 	 * contiguous like the 1:1 mapping it is up to the caller of the stub
 	 * loader to adjust this mapping. */
 	u16 apic_id_to_cpu[CONFIG_MAX_CPUS];
-	/* STM's 32bit entry into SMI handler */
-	u32 start32_offset;
 } __packed;
 
 /* smm_handler_t is called with arg of smm_module_params pointer. */

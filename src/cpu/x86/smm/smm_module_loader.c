@@ -277,8 +277,6 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 	printk(BIOS_DEBUG, "%s: stack_top = 0x%x\n", __func__, stub_params->stack_top);
 	printk(BIOS_DEBUG, "%s: per cpu stack_size = 0x%x\n", __func__,
 	       stub_params->stack_size);
-	printk(BIOS_DEBUG, "%s: runtime.start32_offset = 0x%x\n", __func__,
-	       stub_params->start32_offset);
 	printk(BIOS_DEBUG, "%s: runtime.smm_size = 0x%zx\n", __func__, smm_size);
 
 	smm_stub_place_staggered_entry_points(params);

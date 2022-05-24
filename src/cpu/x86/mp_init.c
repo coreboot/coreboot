@@ -24,6 +24,9 @@
 #include <thread.h>
 #include <types.h>
 
+/* Generated header */
+#include <ramstage/cpu/x86/smm_start32_offset.h>
+
 #include <security/intel/stm/SmmStm.h>
 
 struct mp_callback {
@@ -672,7 +675,6 @@ struct mp_state {
 	uintptr_t perm_smbase;
 	size_t perm_smsize;
 	size_t smm_save_state_size;
-	uintptr_t reloc_start32_offset;
 	bool do_smm;
 } mp_state;
 
@@ -738,7 +740,7 @@ static asmlinkage void smm_do_relocation(void *arg)
 		stm_setup(mseg, p->cpu,
 				perm_smbase,
 				mp_state.perm_smbase,
-				mp_state.reloc_start32_offset);
+				SMM_START32_OFFSET);
 	}
 }
 
@@ -769,8 +771,6 @@ static enum cb_err install_relocation_handler(int num_cpus, size_t save_state_si
 		return CB_ERR;
 	}
 	adjust_smm_apic_id_map(&smm_params);
-
-	mp_state.reloc_start32_offset = smm_params.stub_params->start32_offset;
 
 	return CB_SUCCESS;
 }

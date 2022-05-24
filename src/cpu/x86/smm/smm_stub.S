@@ -31,9 +31,6 @@ fxsave_area_size:
  * into the table. */
 apic_to_cpu_num:
 .fill CONFIG_MAX_CPUS,2,0xffff
-/* allows the STM to bring up SMM in 32-bit mode */
-start32_offset:
-.long smm_trampoline32 - _start
 
 .data
 /* Provide fallback stack to use when a valid CPU number cannot be found. */

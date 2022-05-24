@@ -32,3 +32,8 @@ const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
 	*num = 0;
 	return NULL;
 }
+
+static const struct cros_gpio cros_gpios[] = {
+};
+
+DECLARE_WEAK_CROS_GPIOS(cros_gpios);

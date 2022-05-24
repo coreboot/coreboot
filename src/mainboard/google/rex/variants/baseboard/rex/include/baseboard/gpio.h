@@ -6,6 +6,11 @@
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 
+/* Fixme: Update proper GPIO number based on schematics */
+/* WP signal to PCH */
+#define GPIO_PCH_WP	0
+/* EC in RW or RO */
+#define GPIO_EC_IN_RW	0
 /* GPIO IRQ for tight timestamps / wake support */
 #define EC_SYNC_IRQ	0
 /* eSPI virtual wire reporting */

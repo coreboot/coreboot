@@ -1,8 +1,12 @@
 bootblock-y += bootblock.c
 
+verstage-$(CONFIG_CHROMEOS) += chromeos.c
+
 romstage-y += romstage.c
+romstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 ramstage-y += mainboard.c
+ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ec.c
 
 VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))

@@ -5,12 +5,7 @@
 
 /* Device 0:0.0 PCI configuration space */
 
-/* GMCH Graphics Control Register */
-#define GGC		0x50
-#define  G_GMS_OFFSET	0x8
-#define  G_GMS_MASK	0xff00
-#define  G_GGMS_OFFSET	0x6
-#define  G_GGMS_MASK	0xc0
+
 /* DPR register in case CONFIG_SA_ENABLE_DPR is selected by SoC */
 #define DPR		0x5c
 #define  DPR_EPM	(1 << 2)
@@ -21,11 +16,6 @@
 #define  CAPID_DDPCD	(1 << 14)
 #define  CAPID_PDCD	(1 << 12)
 #define  CAPID_DDRSZ(x)	(((x) >> 19) & 0x3)
-
-#define  PCIEXBAR_LENGTH_64MB	2
-#define  PCIEXBAR_LENGTH_128MB	1
-#define  PCIEXBAR_LENGTH_256MB	0
-#define  PCIEXBAR_PCIEXBAREN	(1 << 0)
 
 #define PAM0	0x80
 #define PAM1	0x81

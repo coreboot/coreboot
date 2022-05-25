@@ -17,6 +17,23 @@
 #define TSEG	0xb8 /* TSEG base */
 #define TOLUD	0xbc /* Top of Low Used Memory */
 
+/* PCIEXBAR register fields */
+#define PCIEXBAR_LENGTH_4096MB	6
+#define PCIEXBAR_LENGTH_2048MB	5
+#define PCIEXBAR_LENGTH_1024MB	4
+#define PCIEXBAR_LENGTH_512MB	3
+#define PCIEXBAR_LENGTH_64MB	2
+#define PCIEXBAR_LENGTH_128MB	1
+#define PCIEXBAR_LENGTH_256MB	0
+#define  PCIEXBAR_PCIEXBAREN	(1 << 0)
+
+/* GMCH Graphics Control Register */
+#define GGC		0x50
+#define  G_GMS_OFFSET	0x8
+#define  G_GMS_MASK	0xff00
+#define  G_GGMS_OFFSET	0x6
+#define  G_GGMS_MASK	0xc0
+
 /* MCHBAR */
 #define MCHBAR8(x)	(*(volatile u8 *)(uintptr_t)(MCH_BASE_ADDRESS + x))
 #define MCHBAR16(x)	(*(volatile u16 *)(uintptr_t)(MCH_BASE_ADDRESS + x))
@@ -94,6 +111,13 @@ void soc_systemagent_init(struct device *dev);
  * struct sa_mmio_descriptor along with resource count.
  */
 void soc_add_fixed_mmio_resources(struct device *dev, int *resource_cnt);
+
+/*
+ * SoC call to provide all known configurable memory ranges for Device 0:0.0.
+ * SoC function should provide configurable resource ranges in form of
+ * struct sa_mmio_descriptor along with resource count.
+ */
+void soc_add_configurable_mmio_resources(struct device *dev, int *resource_cnt);
 
 /* SoC specific APIs to get UNCORE PRMRR base and mask values
  * returns 0, if able to get base and mask values; otherwise returns -1 */

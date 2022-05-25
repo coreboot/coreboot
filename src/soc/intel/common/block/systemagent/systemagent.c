@@ -30,6 +30,12 @@ __weak void soc_add_fixed_mmio_resources(struct device *dev,
 	/* no-op */
 }
 
+__weak void soc_add_configurable_mmio_resources(struct device *dev,
+		int *resource_cnt)
+{
+	/* no-op */
+}
+
 __weak int soc_get_uncore_prmmr_base_and_mask(uint64_t *base,
 		uint64_t *mask)
 {
@@ -97,6 +103,10 @@ void sa_add_fixed_mmio_resources(struct device *dev, int *resource_cnt,
 
 		size = sa_fixed_resources[i].size;
 		base = sa_fixed_resources[i].base;
+
+		printk(BIOS_DEBUG, "SA MMIO resource: %s ->  base = 0x%llx, size = 0x%llx\n",
+			sa_fixed_resources[i].description, sa_fixed_resources[i].base,
+			sa_fixed_resources[i].size);
 
 		mmio_resource(dev, index++, base / KiB, size / KiB);
 	}
@@ -273,6 +283,10 @@ static void systemagent_read_resources(struct device *dev)
 
 	/* Add all fixed MMIO resources. */
 	soc_add_fixed_mmio_resources(dev, &index);
+
+	/* Add all configurable MMIO resources. */
+	soc_add_configurable_mmio_resources(dev, &index);
+
 	/* Calculate and add DRAM resources. */
 	sa_add_dram_resources(dev, &index);
 	if (CONFIG(SA_ENABLE_IMR))

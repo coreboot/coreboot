@@ -2858,9 +2858,9 @@ sub process {
 		    $line =~ /^Subject: /) {
 			$line = $line.$rawlines[$linenr];
 			$line =~ s/^Subject: \[PATCH\] //;
-			if (length($line) > 65) {
-			WARN("COMMIT_LOG_LONG_LINE",
-			     "Possible long commit subject (prefer a maximum 65 characters)\n" . $herecurr);
+			if (length($line) - length("Subject: [PATCH] ") > 65) {
+				WARN("COMMIT_LOG_LONG_LINE",
+				     "Possible long commit subject (prefer a maximum 65 characters)\n" . $herecurr);
 			}
 		}
 

@@ -34,6 +34,13 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
+		device ref tcss_dma1 on
+			chip drivers/intel/usb4/retimer
+				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E4)"
+				use tcss_usb3_port3 as dfp[0].typec_port
+				device generic 0 on end
+			end
+		end # USB4 Port
 		device ref pcie4_0 on
 		# Enable CPU PCIE RP 1 using CLK 0
 			register "cpu_pcie_rp[CPU_RP(1)]" = "{

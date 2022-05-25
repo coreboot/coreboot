@@ -1499,6 +1499,23 @@ static int cbfs_layout(void)
 	return 0;
 }
 
+static enum cb_err verify_walker(__unused cbfs_dev_t dev, size_t offset,
+				 const union cbfs_mdata *mdata, size_t already_read, void *arg)
+{
+	uint32_t type = be32toh(mdata->h.type);
+	uint32_t data_offset = be32toh(mdata->h.offset);
+	if (verification_exclude(type))
+		return CB_CBFS_NOT_FOUND;
+	assert(already_read == data_offset);
+	const struct vb2_hash *hash = cbfs_file_hash(mdata);
+	if (!hash)
+		return CB_ERR;
+	void *file_data = arg + offset + data_offset;
+	if (vb2_hash_verify(file_data, be32toh(mdata->h.len), hash) != VB2_SUCCESS)
+		return CB_CBFS_HASH_MISMATCH;
+	return CB_CBFS_NOT_FOUND;
+}
+
 static int cbfs_print(void)
 {
 	struct cbfs_image image;
@@ -1515,29 +1532,33 @@ static int cbfs_print(void)
 	}
 
 	if (verbose) {
+		const char *verification_state = "fully valid";
 		struct mh_cache *mhc = get_mh_cache();
 		if (mhc->cbfs_hash.algo == VB2_HASH_INVALID)
 			return 0;
 
 		struct vb2_hash real_hash = { .algo = mhc->cbfs_hash.algo };
-		enum cb_err err = cbfs_walk(&image, NULL, NULL, &real_hash,
-					    CBFS_WALK_WRITEBACK_HASH);
-		if (err != CB_CBFS_NOT_FOUND) {
-			ERROR("Unexpected cbfs_walk() error %d\n", err);
-			return 1;
-		}
+		enum cb_err err = cbfs_walk(&image, verify_walker, buffer_get(&image.buffer),
+					    &real_hash, CBFS_WALK_WRITEBACK_HASH);
+		if (err == CB_CBFS_HASH_MISMATCH)
+			verification_state = "invalid file hashes";
+		else if (err != CB_CBFS_NOT_FOUND)
+			verification_state = "missing file hashes";
 		char *hash_str = bintohex(real_hash.raw,
 				vb2_digest_size(real_hash.algo));
 		printf("[METADATA HASH]\t%s:%s",
 		       vb2_get_hash_algorithm_name(real_hash.algo), hash_str);
 		if (!strcmp(param.region_name, SECTION_NAME_PRIMARY_CBFS)) {
 			if (!memcmp(mhc->cbfs_hash.raw, real_hash.raw,
-				    vb2_digest_size(real_hash.algo)))
+				    vb2_digest_size(real_hash.algo))) {
 				printf(":valid");
-			else
+			} else {
 				printf(":invalid");
+				verification_state = "invalid metadata hash";
+			}
 		}
 		printf("\n");
+		printf("[CBFS VERIFICATION (%s)]\t%s\n", param.region_name, verification_state);
 		free(hash_str);
 	}
 

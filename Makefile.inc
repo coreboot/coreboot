@@ -1162,6 +1162,13 @@ endif # CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	$(CBFSTOOL) $@ layout
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ print -r $(subst $(spc),$(comma),$(all-regions))
+ifeq ($(CONFIG_CBFS_VERIFICATION),y)
+	line=$$($(CBFSTOOL) $@ print -kv 2>/dev/null | grep -F '[CBFS VERIFICATION (COREBOOT)]') ;\
+	if ! printf "$$line" | grep -q 'fully valid'; then \
+		echo "CBFS verification error: $$line" ;\
+		exit 1 ;\
+	fi
+endif # CONFIG_CBFS_VERIFICATION
 
 cbfs-files-y += $(CONFIG_CBFS_PREFIX)/romstage
 $(CONFIG_CBFS_PREFIX)/romstage-file := $(objcbfs)/romstage.elf

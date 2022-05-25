@@ -25,6 +25,8 @@ chip soc/intel/alderlake
 	# DPTF enable
 	register "dptf_enable" = "1"
 
+	register "tcc_offset" = "10"     # TCC of 90
+
 	# Enable CNVi BT
 	register "cnvi_bt_core" = "true"
 

@@ -3,3 +3,4 @@ config CPU_INTEL_MODEL_F3X
 	select ARCH_X86
 	select SUPPORT_CPU_UCODE_IN_CBFS
 	select CPU_INTEL_COMMON
+	select SSE2

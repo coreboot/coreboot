@@ -94,6 +94,14 @@ static void parse_devicetree(FSP_S_CONFIG *params)
  */
 static const struct slot_irq_constraints irq_constraints[] = {
 	{
+		.slot = SA_DEV_SLOT_PEG,
+		.fns = {
+			FIXED_INT_PIRQ(SA_DEVFN_PEG1, PCI_INT_A, PIRQ_A),
+			FIXED_INT_PIRQ(SA_DEVFN_PEG2, PCI_INT_B, PIRQ_B),
+			FIXED_INT_PIRQ(SA_DEVFN_PEG3, PCI_INT_C, PIRQ_C),
+		},
+	},
+	{
 		.slot = SA_DEV_SLOT_IGD,
 		.fns = {
 			ANY_PIRQ(SA_DEVFN_IGD),

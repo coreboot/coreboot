@@ -10,6 +10,8 @@
 Device (S76D) {
 	Name (_HID, "17761776")
 	Name (_UID, 0)
+	// Hide the device so that Windows does not warn about a missing driver.
+	Name (_STA, 0xB)
 
 	Method (RSET, 0, Serialized) {
 		Debug = "S76D: RSET"

@@ -79,8 +79,8 @@ chip soc/intel/cannonlake
 			register "usb2_ports[5]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Internal Webcam
-			register "usb2_ports[6]"		= "USB2_PORT_MID(OC_SKIP)"
+			# Webcam
+			register "usb2_ports[CONFIG_CCD_PORT]"	= "USB2_PORT_MID(OC_SKIP)"
 
 			# Internal Bluetooth
 			register "usb2_ports[9]"		= "USB2_PORT_MID(OC_SKIP)"

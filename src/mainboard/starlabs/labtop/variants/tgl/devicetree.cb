@@ -113,11 +113,11 @@ chip soc/intel/tigerlake
 			register "usb2_ports[2]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Internal Webcam
-			register "usb2_ports[3]"		= "USB2_PORT_MID(OC_SKIP)"
-
 			# Daughterboard SD Card
 			register "usb2_ports[5]"		= "USB2_PORT_MID(OC_SKIP)"
+
+			# Webcam
+			register "usb2_ports[CONFIG_CCD_PORT]"	= "USB2_PORT_MID(OC_SKIP)"
 
 			# Internal Bluetooth
 			register "usb2_ports[9]"		= "USB2_PORT_MID(OC_SKIP)"

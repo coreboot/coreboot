@@ -25,6 +25,8 @@ chip soc/intel/apollolake
 	register "hdaudio_pwr_gate_enable"	= "1"
 	register "hdaudio_bios_config_lockdown"	= "1"
 
+	register "enhanced_cstates"		= "1"
+
 	register "pnp_settings"			= "PNP_PERF_POWER"
 
 	register "ModPhyIfValue"		= "0x12"

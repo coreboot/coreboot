@@ -12,7 +12,7 @@ bootblock-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 bootblock-y += ../common/timer.c
 bootblock-y += ../common/tracker.c ../common/tracker_v2.c
 bootblock-y += ../common/uart.c
-bootblock-y += ../common/wdt.c
+bootblock-y += ../common/wdt.c wdt.c
 
 verstage-y += ../common/auxadc.c
 verstage-y += ../common/flash_controller.c

@@ -117,8 +117,7 @@ static void lpc_read_resources(struct device *dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	/* Add a memory resource for the SPI BAR. */
-	fixed_mem_resource_kb(dev, 2, SPI_BASE_ADDRESS / KiB, 1,
-			IORESOURCE_SUBTRACTIVE);
+	mmio_range(dev, 2, SPI_BASE_ADDRESS, 1 * KiB);
 
 	res = new_resource(dev, 3); /* IOAPIC */
 	res->base = IO_APIC_ADDR;

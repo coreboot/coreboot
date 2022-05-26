@@ -12,12 +12,9 @@ static void kempld_uart_read_resources(struct device *dev)
 	static const unsigned int io_addr[] = { 0x3f8, 0x2f8, 0x3e8, 0x2e8 };
 
 	const struct ec_kontron_kempld_config *const config = dev->chip_info;
-
-	struct resource *const res_io = new_resource(dev, 0);
-	struct resource *const res_irq = new_resource(dev, 1);
 	const unsigned int uart = dev->path.generic.subid;
 
-	if (!config || !res_io || !res_irq || uart >= KEMPLD_NUM_UARTS)
+	if (!config || uart >= KEMPLD_NUM_UARTS)
 		return;
 
 	const enum kempld_uart_io io = config->uart[uart].io;
@@ -34,13 +31,16 @@ static void kempld_uart_read_resources(struct device *dev)
 		return;
 	}
 
+	struct resource *res_io = new_resource(dev, 0);
 	res_io->base = io_addr[io];
 	res_io->size = 8;
 	res_io->flags = IORESOURCE_IO | IORESOURCE_FIXED |
 			IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+
+	struct resource *res_irq = new_resource(dev, 1);
 	res_irq->base = irq;
 	res_irq->size = 1;
-	res_irq->flags = IORESOURCE_IO | IORESOURCE_FIXED |
+	res_irq->flags = IORESOURCE_IRQ | IORESOURCE_FIXED |
 			 IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
 	if (kempld_get_mutex(100) < 0)

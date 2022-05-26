@@ -17,4 +17,6 @@ void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 		config->typec_aux_bias_pads[2].pad_auxn_dc = GPP_A20;
 		config->tcss_aux_ori = 0x10;
 	}
+	config->cnvi_bt_audio_offload = fw_config_probe(FW_CONFIG(AUDIO_AMP,
+						MAX98360_ALC5682VS_I2S_2WAY));
 }

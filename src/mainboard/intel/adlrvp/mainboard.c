@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/cpu.h>
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
+#include <cpu/intel/cpu_ids.h>
 #include <device/device.h>
 #include <drivers/intel/gma/opregion.h>
 #include <ec/ec.h>
@@ -71,10 +73,13 @@ const char *mainboard_vbt_filename(void)
 	if (!CONFIG(CHROMEOS))
 		return "vbt.bin";
 
+	uint32_t cpu_id = cpu_get_cpuid();
 	uint8_t sku_id = get_board_id();
 	switch (sku_id) {
 	case ADL_P_LP5_1:
 	case ADL_P_LP5_2:
+		if (cpu_id == CPUID_RAPTORLAKE_P_J0)
+			return "vbt_adlrvp_rpl_lp5.bin";
 		return "vbt_adlrvp_lp5.bin";
 	case ADL_M_LP5:
 		return "vbt_adlrvp_m_lp5.bin";

@@ -32,9 +32,6 @@ chip soc/intel/cannonlake
 	register "PchPmSlpSusMinAssert"		= "3"				# 500ms
 	register "PchPmSlpAMinAssert"		= "3"				# 2s
 
-	# Thermal
-	register "tcc_offset"			= "10"
-
 	# PM Util
 	# GPE configuration
 	# Note that GPE events called out in ASL code rely on this

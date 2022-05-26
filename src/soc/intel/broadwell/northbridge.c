@@ -129,11 +129,11 @@ static void mc_add_fixed_mmio_resources(struct device *dev)
 			continue;
 
 		resource = new_resource(dev, mc_fixed_resources[i].index);
+		resource->base = base;
+		resource->size = size;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
 				  IORESOURCE_STORED | IORESOURCE_RESERVE |
 				  IORESOURCE_ASSIGNED;
-		resource->base = base;
-		resource->size = size;
 		printk(BIOS_DEBUG, "%s: Adding %s @ %x 0x%08lx-0x%08lx.\n",
 		       __func__, mc_fixed_resources[i].description, index,
 		       (unsigned long)base, (unsigned long)(base + size - 1));
@@ -328,7 +328,7 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	/* TSEG - DPR -> BGSM */
 	resource = new_resource(dev, index++);
 	resource->base = mc_values[TSEG_REG] - dpr_size;
-	resource->size = mc_values[BGSM_REG] - resource->base;
+	resource->size = mc_values[BGSM_REG] - (mc_values[TSEG_REG] - dpr_size);
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
 			  IORESOURCE_STORED | IORESOURCE_RESERVE |
 			  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
@@ -336,7 +336,7 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	/* BGSM -> TOLUD */
 	resource = new_resource(dev, index++);
 	resource->base = mc_values[BGSM_REG];
-	resource->size = mc_values[TOLUD_REG] - resource->base;
+	resource->size = mc_values[TOLUD_REG] - mc_values[BGSM_REG];
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
 			  IORESOURCE_STORED | IORESOURCE_RESERVE |
 			  IORESOURCE_ASSIGNED;

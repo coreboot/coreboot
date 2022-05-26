@@ -405,10 +405,6 @@ static void pci_p2sb_read_resources(struct device *dev)
 	res->size = 16 * 1024 * 1024; /* 16MB PCR config space */
 	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
 		     IORESOURCE_ASSIGNED;
-	printk(BIOS_DEBUG,
-	       "Adding P2SB PCR config space BAR 0x%08lx-0x%08lx.\n",
-	       (unsigned long)(res->base),
-	       (unsigned long)(res->base + res->size));
 
 	/* Add MMIO resource
 	 * Use 0xdb as an unused index for IOAPIC.

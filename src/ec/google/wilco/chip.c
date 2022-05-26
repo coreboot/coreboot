@@ -161,9 +161,9 @@ static void wilco_ec_resource(struct device *dev, int index,
 			      size_t base, size_t size)
 {
 	struct resource *res = new_resource(dev, index);
-	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 	res->base = base;
 	res->size = size;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
 static void wilco_ec_read_resources(struct device *dev)

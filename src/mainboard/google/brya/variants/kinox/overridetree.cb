@@ -206,6 +206,8 @@ chip soc/intel/alderlake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H13)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D18)"
 				register "srcclk_pin" = "1"
+				register "reset_delay_ms" = "50"
+				register "enable_delay_ms" = "20"
 				device generic 0 alias emmc_rtd3 on end
 			end
 		end # BH799BBLN

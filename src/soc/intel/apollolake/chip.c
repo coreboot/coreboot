@@ -717,6 +717,9 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 
 	silconfig->VmxEnable = CONFIG(ENABLE_VMX);
 
+	/* Enable enhanced C-states */
+	silconfig->C1e = cfg->enhanced_cstates;
+
 	/* Set VTD feature according to devicetree */
 	silconfig->VtdEnable = get_uint_option("vtd", cfg->enable_vtd);
 

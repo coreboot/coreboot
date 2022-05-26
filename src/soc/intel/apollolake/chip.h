@@ -135,6 +135,9 @@ struct soc_intel_apollolake_config {
 	uint8_t hdaudio_pwr_gate_enable;
 	uint8_t hdaudio_bios_config_lockdown;
 
+	/* Enhanced C-states */
+	int enhanced_cstates;
+
 	/* SLP S3 minimum assertion width. */
 	int slp_s3_assertion_width_usecs;
 

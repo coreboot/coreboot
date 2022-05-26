@@ -107,11 +107,11 @@ static void enable_dev(struct device *dev)
 	struct resource *resource;
 
 	resource = new_resource(dev, EC_LENOVO_PMH7_INDEX);
-	resource->flags = IORESOURCE_IO | IORESOURCE_FIXED;
 	resource->base = EC_LENOVO_PMH7_BASE;
 	resource->size = 16;
 	resource->align = 5;
 	resource->gran = 5;
+	resource->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
 
 	pmh7_backlight_enable(conf->backlight_enable);
 	pmh7_dock_event_enable(conf->dock_event_enable);

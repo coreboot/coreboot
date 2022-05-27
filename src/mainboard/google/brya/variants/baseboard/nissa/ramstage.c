@@ -18,6 +18,7 @@ void variant_configure_pads(void)
 	gpio_padbased_override(padbased_table, base_pads, base_num);
 	override_pads = variant_gpio_override_table(&override_num);
 	gpio_padbased_override(padbased_table, override_pads, override_num);
+	fw_config_gpio_padbased_override(padbased_table);
 	gpio_configure_pads_with_padbased(padbased_table);
 	free(padbased_table);
 }

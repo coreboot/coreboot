@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/gpio.h>
+#include <baseboard/variants.h>
 #include <boardid.h>
 #include <bootstate.h>
 #include <console/console.h>
@@ -91,45 +92,47 @@ static const struct pad_config nvme_disable_pads[] = {
 	PAD_NC(GPP_E17, NONE),
 };
 
-static void fw_config_handle(void *unused)
+void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (fw_config_probe(FW_CONFIG(DB_USB, DB_1C_LTE))) {
 		printk(BIOS_INFO, "Enable LTE-related GPIO pins.\n");
-		gpio_configure_pads(lte_enable_pads, ARRAY_SIZE(lte_enable_pads));
+		gpio_padbased_override(padbased_table, lte_enable_pads,
+						ARRAY_SIZE(lte_enable_pads));
 	} else {
 		if (board_id() >= 2) {
 			printk(BIOS_INFO, "Disable LTE-related GPIO pins on nirwen.\n");
-			gpio_configure_pads(
-				lte_disable_pads_nirwen,
-				ARRAY_SIZE(lte_disable_pads_nirwen)
+			gpio_padbased_override(padbased_table, lte_disable_pads_nirwen,
+							ARRAY_SIZE(lte_disable_pads_nirwen)
 			);
 		} else {
 			printk(BIOS_INFO, "Disable LTE-related GPIO pins on nivviks.\n");
-			gpio_configure_pads(
-				lte_disable_pads_nivviks,
-				ARRAY_SIZE(lte_disable_pads_nivviks)
+			gpio_padbased_override(padbased_table, lte_disable_pads_nivviks,
+							ARRAY_SIZE(lte_disable_pads_nivviks)
 			);
 		}
 	}
 
 	if (fw_config_probe(FW_CONFIG(SD_CARD, SD_ABSENT))) {
 		printk(BIOS_INFO, "Disable SD card GPIO pins.\n");
-		gpio_configure_pads(sd_disable_pads, ARRAY_SIZE(sd_disable_pads));
+		gpio_padbased_override(padbased_table, sd_disable_pads,
+						ARRAY_SIZE(sd_disable_pads));
 	}
 
 	if (fw_config_probe(FW_CONFIG(WFC, WFC_ABSENT))) {
 		printk(BIOS_INFO, "Disable MIPI WFC GPIO pins.\n");
-		gpio_configure_pads(wfc_disable_pads, ARRAY_SIZE(wfc_disable_pads));
+		gpio_padbased_override(padbased_table, wfc_disable_pads,
+						ARRAY_SIZE(wfc_disable_pads));
 	}
 
 	if (!fw_config_probe(FW_CONFIG(STORAGE, STORAGE_EMMC))) {
 		printk(BIOS_INFO, "Disable eMMC SSD GPIO pins.\n");
-		gpio_configure_pads(emmc_disable_pads, ARRAY_SIZE(emmc_disable_pads));
+		gpio_padbased_override(padbased_table, emmc_disable_pads,
+						ARRAY_SIZE(emmc_disable_pads));
 	}
 
 	if (board_id() >= 2 && !fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME))) {
 		printk(BIOS_INFO, "Disable NVMe SSD GPIO pins.\n");
-		gpio_configure_pads(nvme_disable_pads, ARRAY_SIZE(nvme_disable_pads));
+		gpio_padbased_override(padbased_table, nvme_disable_pads,
+						ARRAY_SIZE(nvme_disable_pads));
 	}
 }
-BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

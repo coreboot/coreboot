@@ -4,6 +4,7 @@
 #include <acpi/acpigen.h>
 #include <baseboard/variants.h>
 #include <delay.h>
+#include <device/pci_ops.h>
 #include <gpio.h>
 #include <timer.h>
 #include <types.h>
@@ -16,7 +17,7 @@
 #define NVVDD_PG		GPP_E16
 #define PEXVDD_PWR_EN		GPP_E10
 #define PEXVDD_PG		GPP_E17
-#define FBVDD_PWR_EN		GPP_A17
+#define FBVDD_PWR_EN		GPP_A19
 #define FBVDD_PG		GPP_E4
 #define GPU_PERST_L		GPP_B3
 #define GPU_ALLRAILS_PG		GPP_E5
@@ -45,9 +46,9 @@ struct power_rail_sequence {
 static const struct power_rail_sequence gpu_rails[] = {
 	{ "GPU 1.8V",		GPU_1V8_PWR_EN,	false, GPU_1V8_PG, },
 	{ "NV3_3",		NV33_PWR_EN,	false, NV33_PG, },
-	{ "NVVDD+MSVDD",	NVVDD_PWR_EN,	true,  NVVDD_PG, },
+	{ "NVVDD+MSVDD",	NVVDD_PWR_EN,	false, NVVDD_PG, },
 	{ "PEXVDD",		PEXVDD_PWR_EN,	false, PEXVDD_PG, },
-	{ "FBVDD",		FBVDD_PWR_EN,	false, FBVDD_PG, },
+	{ "FBVDD",		FBVDD_PWR_EN,	true,  FBVDD_PG, },
 };
 
 enum rail_state {
@@ -58,10 +59,12 @@ enum rail_state {
 /* Assert the VR's enable pin, and wait until the VR's power-good is asserted. */
 static bool sequence_rail(const struct power_rail_sequence *seq, enum rail_state state)
 {
-	if (seq->pwr_en_active_low)
-		state = !state;
+	enum rail_state pwr_en_state = state;
 
-	gpio_output(seq->pwr_en_gpio, state);
+	if (seq->pwr_en_active_low)
+		pwr_en_state = !pwr_en_state;
+
+	gpio_output(seq->pwr_en_gpio, pwr_en_state);
 	return wait_us(DEFAULT_PG_TIMEOUT_US, gpio_get(seq->pg_gpio) == state) > 0;
 }
 
@@ -105,6 +108,8 @@ static void dgpu_power_sequence_on(void)
 	gpio_output(GPU_PERST_L, 1);
 
 	printk(BIOS_INFO, "Sequenced GPU successfully\n");
+	mdelay(1);
+
 	gpu_powered_on = true;
 }
 
@@ -155,19 +160,35 @@ void variant_fill_ssdt(const struct device *unused)
 		 * BAR1 = bases[1]
 		 * ...
 		 */
-		for (unsigned int idx = PCI_BASE_ADDRESS_0, i = 0; idx <= PCI_BASE_ADDRESS_5;
-		     idx += sizeof(uint32_t), ++i) {
+		unsigned int idx, i = 0;
+		for (idx = PCI_BASE_ADDRESS_0; idx <= PCI_BASE_ADDRESS_5; idx += 4, ++i) {
 			char name[ACPI_NAME_BUFFER_SIZE];
 			const struct resource *res;
 
 			res = probe_resource(dgpu, idx);
-			if (!res)
+			if (!res || !(res->flags & IORESOURCE_STORED))
 				continue;
 
 			snprintf(name, sizeof(name), "BAR%1d", i);
 			acpigen_write_create_dword_field(LOCAL0_OP, idx - VGAR_BYTE_OFFSET,
 							 name);
 			acpigen_write_store_int_to_namestr(res->base & 0xffffffff, name);
+			printk(BIOS_INFO, "GPU: saving %s as 0x%x\n", name,
+			       (uint32_t)(res->base & 0xffffffff));
+
+			/* Also save the upper 32 bits of the BAR if applicable */
+			if (!(res->flags & IORESOURCE_PCI64))
+				continue;
+
+			idx += sizeof(uint32_t);
+			i++;
+			snprintf(name, sizeof(name), "BAR%1d", i);
+			acpigen_write_create_dword_field(LOCAL0_OP, idx - VGAR_BYTE_OFFSET,
+							 name);
+			acpigen_write_store_int_to_namestr((res->base >> 32) & 0xffffffff,
+							   name);
+			printk(BIOS_INFO, "GPU: saving %s as 0x%x\n", name,
+			       (uint32_t)((res->base >> 32) & 0xffffffff));
 		}
 
 		/* VGAR = Local0 */

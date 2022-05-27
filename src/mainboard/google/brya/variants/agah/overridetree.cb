@@ -205,12 +205,12 @@ chip soc/intel/alderlake
 				device generic 0 on
 					chip drivers/intel/pmc_mux/conn
 						use usb2_port1 as usb2_port
-						use tcss_usb3_port1 as usb3_port
+						use tcss_usb3_port3 as usb3_port
 						device generic 0 alias conn0 on end
 					end
 					chip drivers/intel/pmc_mux/conn
 						use usb2_port3 as usb2_port
-						use tcss_usb3_port3 as usb3_port
+						use tcss_usb3_port1 as usb3_port
 						device generic 1 alias conn1 on end
 					end
 				end

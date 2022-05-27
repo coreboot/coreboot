@@ -24,15 +24,15 @@ typedef uint8_t u8;
     Users are welcome to use any other value for their
     components */
 
-#define CBFS_TYPE_STAGE      0x10
-#define CBFS_TYPE_SELF       0x20
-#define CBFS_TYPE_FIT        0x21
-#define CBFS_TYPE_OPTIONROM  0x30
-#define CBFS_TYPE_BOOTSPLASH 0x40
-#define CBFS_TYPE_RAW        0x50
-#define CBFS_TYPE_VSA        0x51
-#define CBFS_TYPE_MBI        0x52
-#define CBFS_TYPE_MICROCODE  0x53
+#define CBFS_TYPE_STAGE		0x10
+#define CBFS_TYPE_SELF		0x20
+#define CBFS_TYPE_FIT_PAYLOAD	0x21
+#define CBFS_TYPE_OPTIONROM	0x30
+#define CBFS_TYPE_BOOTSPLASH	0x40
+#define CBFS_TYPE_RAW		0x50
+#define CBFS_TYPE_VSA		0x51
+#define CBFS_TYPE_MBI		0x52
+#define CBFS_TYPE_MICROCODE	0x53
 #define CBFS_COMPONENT_CMOS_DEFAULT 0xaa
 #define CBFS_COMPONENT_CMOS_LAYOUT 0x01aa
 

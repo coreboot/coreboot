@@ -160,7 +160,7 @@ void payload_load(void)
 	case CBFS_TYPE_SELF: /* Simple ELF */
 		selfload_mapped(payload, mapping, BM_MEM_RAM);
 		break;
-	case CBFS_TYPE_FIT: /* Flattened image tree */
+	case CBFS_TYPE_FIT_PAYLOAD: /* Flattened image tree */
 		if (CONFIG(PAYLOAD_FIT_SUPPORT)) {
 			fit_payload(payload, mapping);
 			break;

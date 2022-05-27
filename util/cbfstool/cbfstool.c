@@ -1196,7 +1196,7 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer,
 	if (ret != 0) {
 		ret = parse_fit_to_payload(buffer, &output, param.compression);
 		if (ret == 0)
-			header->type = htobe32(CBFS_TYPE_FIT);
+			header->type = htobe32(CBFS_TYPE_FIT_PAYLOAD);
 	}
 
 	/* If it's not an FIT, see if it's a UEFI FV */

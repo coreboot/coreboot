@@ -13,7 +13,7 @@ void arch_prog_run(struct prog *prog)
 	cache_sync_instructions();
 
 	switch (prog_cbfs_type(prog)) {
-	case CBFS_TYPE_FIT:
+	case CBFS_TYPE_FIT_PAYLOAD:
 		/*
 		 * We only load Linux payloads from the ramstage, so provide a hint to
 		 * the linker that the below functions do not need to be included in

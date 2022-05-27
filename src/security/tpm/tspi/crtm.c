@@ -131,7 +131,7 @@ uint32_t tspi_cbfs_measurement(const char *name, uint32_t type, const struct vb2
 	case CBFS_TYPE_MRC:
 	case CBFS_TYPE_STAGE:
 	case CBFS_TYPE_SELF:
-	case CBFS_TYPE_FIT:
+	case CBFS_TYPE_FIT_PAYLOAD:
 		pcr_index = TPM_CRTM_PCR;
 		break;
 	default:

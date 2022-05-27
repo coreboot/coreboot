@@ -27,7 +27,7 @@ static void do_arch_prog_run(struct arch_prog_run_args *args)
 	struct prog *prog = args->prog;
 	void *fdt = HLS()->fdt;
 
-	if (prog_cbfs_type(prog) == CBFS_TYPE_FIT)
+	if (prog_cbfs_type(prog) == CBFS_TYPE_FIT_PAYLOAD)
 		fdt = prog_entry_arg(prog);
 
 	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {

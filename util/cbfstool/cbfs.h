@@ -33,7 +33,7 @@ static struct typedesc_t filetypes[] unused = {
 	{CBFS_TYPE_CBFSHEADER, "cbfs header"},
 	{CBFS_TYPE_STAGE, "stage"},
 	{CBFS_TYPE_SELF, "simple elf"},
-	{CBFS_TYPE_FIT, "fit"},
+	{CBFS_TYPE_FIT_PAYLOAD, "fit_payload"},
 	{CBFS_TYPE_OPTIONROM, "optionrom"},
 	{CBFS_TYPE_BOOTSPLASH, "bootsplash"},
 	{CBFS_TYPE_RAW, "raw"},

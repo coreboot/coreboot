@@ -69,7 +69,7 @@ void __weak variant_init(void)
 	/* default implementation does nothing */
 }
 
-static void mainboard_init(void *chip_info)
+void __weak variant_configure_pads(void)
 {
 	const struct pad_config *base_pads;
 	const struct pad_config *override_pads;
@@ -78,7 +78,11 @@ static void mainboard_init(void *chip_info)
 	base_pads = variant_gpio_table(&base_num);
 	override_pads = variant_gpio_override_table(&override_num);
 	gpio_configure_pads_with_override(base_pads, base_num, override_pads, override_num);
+}
 
+static void mainboard_init(void *chip_info)
+{
+	variant_configure_pads();
 	variant_init();
 	variant_devtree_update();
 }

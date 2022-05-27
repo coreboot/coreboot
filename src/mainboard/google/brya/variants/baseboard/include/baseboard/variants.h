@@ -23,6 +23,7 @@ int variant_memory_sku(void);
 bool variant_is_half_populated(void);
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config);
 void variant_fill_ssdt(const struct device *dev);
+void variant_configure_pads(void);
 
 enum s0ix_entry {
 	S0IX_EXIT,

@@ -324,5 +324,19 @@ bool gpio_get_vw_info(gpio_t pad, unsigned int *vw_index, unsigned int *vw_bit);
 /* Returns PCR port ID for this pad for the CPU; will be 0 if not available */
 unsigned int gpio_get_pad_cpu_portid(gpio_t pad);
 
+/* Return the gpio pad number based table */
+struct pad_config *new_padbased_table(void);
+
+/* Must pass the table with pad number based */
+void gpio_padbased_override(struct pad_config *padbased_table,
+					const struct pad_config *override_cfg,
+					size_t override_num_pads);
+
+/*
+ * Must pass the table with pad number based, will skip configures the unmapped
+ * pins by check pad and DW0 are 0.
+ */
+void gpio_configure_pads_with_padbased(struct pad_config *padbased_table);
+
 #endif
 #endif /* _SOC_INTELBLOCKS_GPIO_H_ */

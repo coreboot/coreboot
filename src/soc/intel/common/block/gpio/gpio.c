@@ -432,6 +432,38 @@ void gpio_configure_pads_with_override(const struct pad_config *base_cfg,
 	}
 }
 
+struct pad_config *new_padbased_table(void)
+{
+	struct pad_config *padbased_table;
+	padbased_table = malloc(sizeof(struct pad_config) * TOTAL_PADS);
+	memset(padbased_table, 0, sizeof(struct pad_config) * TOTAL_PADS);
+
+	return padbased_table;
+}
+
+void gpio_padbased_override(struct pad_config *padbased_table,
+				const struct pad_config *override_cfg,
+				size_t override_num_pads)
+{
+	for (size_t i = 0; i < override_num_pads; i++) {
+		/* Prevent overflow hack */
+		ASSERT(override_cfg[i].pad < TOTAL_PADS);
+		padbased_table[override_cfg[i].pad] = override_cfg[i];
+	}
+}
+
+void gpio_configure_pads_with_padbased(struct pad_config *padbased_table)
+{
+	size_t i;
+	const struct pad_config *cfg = padbased_table;
+	for (i = 0; i < TOTAL_PADS; i++) {
+		/* Consider unmapped pin as default setting, skip */
+		if (cfg[i].pad == 0 && cfg[i].pad_config[0] == 0)
+			continue;
+		gpio_configure_pad(&cfg[i]);
+	}
+}
+
 void *gpio_dwx_address(const gpio_t pad)
 {
 	/* Calculate Address of DW0 register for given GPIO

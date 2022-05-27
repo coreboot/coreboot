@@ -71,7 +71,7 @@ chip soc/intel/alderlake
 						}
 					},
 					[1] = {
-						.target = DPTF_TEMP_SENSOR_1,
+						.target = DPTF_TEMP_SENSOR_0,
 						.thresholds = {
 								TEMP_PCT(75, 97),
 								TEMP_PCT(70, 93),
@@ -84,7 +84,7 @@ chip soc/intel/alderlake
 						}
 					},
 					[2] = {
-						.target = DPTF_TEMP_SENSOR_2,
+						.target = DPTF_TEMP_SENSOR_1,
 						.thresholds = {
 								TEMP_PCT(75, 97),
 								TEMP_PCT(70, 93),
@@ -97,7 +97,7 @@ chip soc/intel/alderlake
 						}
 					},
 					[3] = {
-						.target = DPTF_TEMP_SENSOR_3,
+						.target = DPTF_TEMP_SENSOR_2,
 						.thresholds = {
 								TEMP_PCT(75, 97),
 								TEMP_PCT(70, 93),
@@ -110,7 +110,7 @@ chip soc/intel/alderlake
 						}
 					},
 					[4] = {
-						.target = DPTF_TEMP_SENSOR_4,
+						.target = DPTF_TEMP_SENSOR_3,
 						.thresholds = {
 								TEMP_PCT(75, 97),
 								TEMP_PCT(70, 93),

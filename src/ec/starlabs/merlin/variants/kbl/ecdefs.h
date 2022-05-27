@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
+#include <stdint.h>
+
 /*
  * EC communication interface for ITE Embedded Controller
  */

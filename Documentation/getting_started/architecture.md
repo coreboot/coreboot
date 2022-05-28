@@ -3,7 +3,7 @@
 ## Overview
 ![][architecture]
 
-[architecture]: comparision_coreboot_uefi.svg
+[architecture]: comparison_coreboot_uefi.svg
 
 ## Stages
 coreboot consists of multiple stages that are compiled as separate binaries and

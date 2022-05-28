@@ -134,7 +134,7 @@ SPI_ROM1 header while the board is off and disconnected from power. There
 seems to be a diode that prevents the external programmer from powering the
 whole board.
 
-The signal assigment on the header is identical to the pinout of the flash
+The signal assignment on the header is identical to the pinout of the flash
 chip. The pinout diagram below is valid when the PCI slots are on the left
 and the CPU is on the right. Note that HOLD# and WP# must be pulled high
 (to VCC) to be able to flash the chip.

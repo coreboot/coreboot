@@ -1899,7 +1899,7 @@ Please handle with care!
 +===========+==================================================================+
 |        0:7|  PDWN_idle_counter, This defines the rank indle period in DCLK   |
 |           |  cycles that causes power-down entrance. The minimum value       |
-|           |  should be greater then or equal to the worst roundtrip time     |
+|           |  should be greater than or equal to the worst roundtrip time     |
 |           |  plus burst length.                                              |
 +-----------+------------------------------------------------------------------+
 |       8:10|  PDWN_mode, selects the mode of power-down:                      |

@@ -100,7 +100,7 @@ config ANY_TOOLCHAIN
 	default n
 	help
 	  Many toolchains break when building coreboot since it uses quite
-	  unusual linker features. Unless developers explicitely request it,
+	  unusual linker features. Unless developers explicitly request it,
 	  we'll have to assume that they use their distro compiler by mistake.
 	  Make sure that using patched compilers is a conscious decision.
 

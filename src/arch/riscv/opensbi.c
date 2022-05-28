@@ -1,5 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+/* OpenSBI wants to make its own definitions for some of our compiler.h macros. */
+#undef __packed
+#undef __noreturn
+
 #include <sbi/fw_dynamic.h>
 #include <arch/boot.h>
 /* DO NOT INCLUDE COREBOOT HEADERS HERE */

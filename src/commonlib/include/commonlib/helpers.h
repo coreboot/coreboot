@@ -34,10 +34,6 @@
 	const __typeof__(((type *)0)->member) *__mptr = (ptr);	\
 	(type *)((char *)__mptr - offsetof(type, member)); })
 
-#ifndef __unused
-#define __unused __attribute__((unused))
-#endif
-
 #ifndef alloca
 #define alloca(x) __builtin_alloca(x)
 #endif

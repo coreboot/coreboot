@@ -168,9 +168,11 @@ if [ $_LIBDIR = $_OBJ ]; then
 	_CFLAGS="$_CFLAGS -I$BASE/../curses"
     fi
 
+    _CFLAGS="$_CFLAGS -include $BASE/../../../src/commonlib/bsd/include/commonlib/bsd/compiler.h"
     _CFLAGS="$_CFLAGS -I$BASE/../../../src/commonlib/bsd/include"
     _CFLAGS="$_CFLAGS -I$BASE/../../../3rdparty/vboot/firmware/include"
 else
+    _CFLAGS="$_CFLAGS -include $BASE/../include/commonlib/bsd/compiler.h"
     _CFLAGS="$_CFLAGS -I$_VBOOTINCDIR"
 fi
 
@@ -179,7 +181,7 @@ fi
 trygccoption -fno-stack-protector
 [ $? -eq 0 ] && _CFLAGS="$_CFLAGS -fno-stack-protector"
 
-_CFLAGS="$_CFLAGS -include $BASE/../include/kconfig.h -include $BASE/../include/compiler.h"
+_CFLAGS="$_CFLAGS -include $BASE/../include/kconfig.h"
 _CFLAGS="$_CFLAGS -I`$DEFAULT_CC $_ARCHEXTRA -print-search-dirs | head -n 1 | cut -d' ' -f2`include"
 
 if [ "$CONFIG_LP_VBOOT_LIB" = y ]; then

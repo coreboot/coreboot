@@ -5,34 +5,34 @@
 
 #ifndef __packed
 #if defined(__WIN32) || defined(__WIN64)
-#define __packed __attribute__((gcc_struct, packed))
+#define __packed __attribute__((__gcc_struct__, __packed__))
 #else
-#define __packed __attribute__((packed))
+#define __packed __attribute__((__packed__))
 #endif
 #endif
 
 #ifndef __aligned
-#define __aligned(x) __attribute__((aligned(x)))
+#define __aligned(x) __attribute__((__aligned__(x)))
 #endif
 
-#ifndef __always_unused
-#define __always_unused __attribute__((unused))
+#ifndef __unused
+#define __unused __attribute__((__unused__))
 #endif
 
 #ifndef __must_check
-#define __must_check __attribute__((warn_unused_result))
+#define __must_check __attribute__((__warn_unused_result__))
 #endif
 
 #ifndef __weak
-#define __weak __attribute__((weak))
+#define __weak __attribute__((__weak__))
 #endif
 
 #ifndef __noreturn
-#define __noreturn __attribute__((noreturn))
+#define __noreturn __attribute__((__noreturn__))
 #endif
 
 #ifndef __always_inline
-#define __always_inline inline __attribute__((always_inline))
+#define __always_inline inline __attribute__((__always_inline__))
 #endif
 
 #ifndef __fallthrough

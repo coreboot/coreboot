@@ -60,7 +60,8 @@ subdirs-$(CONFIG_LP_LZ4) += liblz4
 subdirs-$(CONFIG_LP_VBOOT_LIB) += vboot
 
 INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
-INCLUDES += -include include/kconfig.h -include include/compiler.h
+INCLUDES += -include include/kconfig.h
+INCLUDES += -include $(coreboottop)/src/commonlib/bsd/include/commonlib/bsd/compiler.h
 INCLUDES += -I$(coreboottop)/src/commonlib/bsd/include
 INCLUDES += -I$(VBOOT_SOURCE)/firmware/include
 

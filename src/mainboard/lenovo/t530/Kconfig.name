@@ -1,7 +1,5 @@
 config BOARD_LENOVO_T530
 	bool "ThinkPad T530"
-	select BOARD_LENOVO_BASEBOARD_T530
 
 config BOARD_LENOVO_W530
 	bool "ThinkPad W530"
-	select BOARD_LENOVO_BASEBOARD_T530

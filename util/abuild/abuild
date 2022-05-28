@@ -61,10 +61,10 @@ configdir="$TOP/configs"
 TIMELESS=0
 
 # One might want to adjust these in case of cross compiling
-for i in make gmake gnumake nonexistant_make; do
+for i in make gmake gnumake nonexistent_make; do
 	$i --version 2>/dev/null |grep "GNU Make" >/dev/null && break
 done
-if [ "$i" = "nonexistant_make" ]; then
+if [ "$i" = "nonexistent_make" ]; then
 	echo No GNU Make found.
 	exit 1
 fi

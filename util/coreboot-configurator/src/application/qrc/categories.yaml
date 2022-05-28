@@ -85,7 +85,7 @@
     kbl_timeout:
       displayName: Keyboard Backlight Timeout
       type: enum
-      help: Adjust the amout of time before the keyboard backlight turns off when un-used
+      help: Adjust the amount of time before the keyboard backlight turns off when un-used
     fn_ctrl_swap:
       displayName: Fn Ctrl Reverse
       type: bool

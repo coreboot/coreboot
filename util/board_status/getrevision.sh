@@ -208,7 +208,7 @@ main() {
 				fi
 				query_path=$1
 			else
-				echo "Warning: Ignoring over-abundant paramter: \"${1}\"">&2
+				echo "Warning: Ignoring over-abundant parameter: \"${1}\"">&2
 			fi
 			shift;;
 		esac;

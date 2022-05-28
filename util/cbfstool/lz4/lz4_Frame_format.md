@@ -343,7 +343,7 @@ __EndMark__
 
 End of legacy frame is implicit only.
 It must be followed by a standard EOF (End Of File) signal,
-wether it is a file or a stream.
+whether it is a file or a stream.
 
 Alternatively, if the frame is followed by a valid Frame Magic Number,
 it is considered completed.

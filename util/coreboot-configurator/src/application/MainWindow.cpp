@@ -14,7 +14,7 @@
 #include "ToggleSwitch.h"
 #include "ui_MainWindow.h"
 
-static auto s_errorWindowTitle = MainWindow::tr("Error Occured");
+static auto s_errorWindowTitle = MainWindow::tr("Error Occurred");
 static auto s_nvramErrorMessage = MainWindow::tr("Nvramtool was not able to access cmos settings. Look at documentation for possible causes of errors.");
 
 QString makeNvramErrorMessage(const QString& error){
@@ -347,7 +347,7 @@ void MainWindow::writeSettings(const QString &fileName)
 		return;
 	}
 	if(!Configuration::toFile(fileName, m_parameters)){
-		QMessageBox::critical(this, tr("Error Occured"), tr("Can't open file to write"));
+		QMessageBox::critical(this, tr("Error Occurred"), tr("Can't open file to write"));
 		this->close();
 	}
 }

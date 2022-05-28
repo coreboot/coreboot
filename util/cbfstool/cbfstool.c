@@ -279,6 +279,18 @@ static int maybe_update_fmap_hash(void)
 	return update_anchor(mhc, fmap_hash);
 }
 
+static bool verification_exclude(enum cbfs_type type)
+{
+	switch (type) {
+	case CBFS_TYPE_BOOTBLOCK:
+	case CBFS_TYPE_CBFSHEADER:
+	case CBFS_TYPE_INTEL_FIT:
+		return true;
+	default:
+		return false;
+	}
+}
+
 static bool region_is_flashmap(const char *region)
 {
 	return partitioned_file_region_check_magic(param.image_file, region,
@@ -872,7 +884,7 @@ static int cbfs_add_component(const char *filename,
 	/* Bootblock and CBFS header should never have file hashes. When adding
 	   the bootblock it is important that we *don't* look up the metadata
 	   hash yet (before it is added) or we'll cache an outdated result. */
-	if (param.type != CBFS_TYPE_BOOTBLOCK && param.type != CBFS_TYPE_CBFSHEADER) {
+	if (!verification_exclude(param.type)) {
 		enum vb2_hash_algorithm mh_algo = get_mh_cache()->cbfs_hash.algo;
 		if (mh_algo != VB2_HASH_INVALID && param.hash != mh_algo) {
 			if (param.hash == VB2_HASH_INVALID) {

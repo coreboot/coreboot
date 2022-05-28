@@ -8,7 +8,7 @@ bootblock-y += fit.c
 
 cbfs-files-y += intel_fit
 intel_fit-file := fit_table.c:struct
-intel_fit-type := raw
+intel_fit-type := intel_fit
 intel_fit-align := 16
 
 $(call add_intermediate, set_fit_ptr, $(IFITTOOL))
@@ -41,7 +41,7 @@ endif # FIT_ENTRY
 
 cbfs-files-y += intel_fit_ts
 intel_fit_ts-file := fit_table.c:struct
-intel_fit_ts-type := raw
+intel_fit_ts-type := intel_fit
 intel_fit_ts-align := 16
 
 endif # CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK

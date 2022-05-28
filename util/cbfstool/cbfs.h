@@ -40,6 +40,7 @@ static struct typedesc_t filetypes[] unused = {
 	{CBFS_TYPE_VSA, "vsa"},
 	{CBFS_TYPE_MBI, "mbi"},
 	{CBFS_TYPE_MICROCODE, "microcode"},
+	{CBFS_TYPE_INTEL_FIT, "intel_fit"},
 	{CBFS_TYPE_FSP, "fsp"},
 	{CBFS_TYPE_MRC, "mrc"},
 	{CBFS_TYPE_CMOS_DEFAULT, "cmos_default"},

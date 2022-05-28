@@ -21,6 +21,9 @@ romstage-$(CONFIG_CHROMEOS) += chromeos.c
 romstage-y += romstage_fsp_params.c
 romstage-y += board_id.c
 romstage-y += memory.c
+ifeq ($(CONFIG_BOARD_INTEL_ADLRVP_RPL_EXT_EC),y)
+romstage-y += memory_rpl.c
+endif
 
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ec.c

@@ -33,6 +33,7 @@ void variant_configure_early_gpio_pads(void);
 
 size_t variant_memory_sku(void);
 const struct mb_cfg *variant_memory_params(void);
+void rpl_memory_params(FSPM_UPD *memupd);
 
 /* Modify devictree settings during ramstage */
 void variant_devtree_update(void);

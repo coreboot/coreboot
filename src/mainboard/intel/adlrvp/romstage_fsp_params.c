@@ -42,11 +42,21 @@ static void configure_external_clksrc(FSP_M_CONFIG *m_cfg)
 		m_cfg->PcieClkSrcUsage[i] = CONFIG_CLKSRC_FOR_EXTERNAL_BUFFER;
 }
 
+__weak void rpl_memory_params(FSPM_UPD *memupd)
+{
+}
+
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
 	FSP_M_CONFIG *m_cfg = &memupd->FspmConfig;
 	const struct mb_cfg *mem_config = variant_memory_params();
 	int board_id = get_board_id();
+
+	/*
+	 * Set Raptor Lake specific new upds that Alder Lake doesn't have.
+	 * This can be removed when Alder Lake and Raptor Lake FSP headers align.
+	 */
+	rpl_memory_params(memupd);
 
 	/*
 	 * Alder Lake common meminit block driver considers bus width to be 128-bit and

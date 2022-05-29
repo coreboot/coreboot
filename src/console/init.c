@@ -64,6 +64,5 @@ void console_init(void)
 		cbmem_dump_console();
 
 	printk(BIOS_NOTICE, "\n\ncoreboot-%s%s %s " ENV_STRING " starting (log level: %i)...\n",
-	       coreboot_version, coreboot_extra_version, coreboot_build,
-	       get_log_level());
+	       coreboot_version, coreboot_extra_version, coreboot_build, get_log_level());
 }

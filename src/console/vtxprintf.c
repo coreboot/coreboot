@@ -19,9 +19,8 @@
 #define SPECIAL	32		/* 0x */
 #define LARGE	64		/* use 'ABCDEF' instead of 'abcdef' */
 
-static int number(void (*tx_byte)(unsigned char byte, void *data),
-	unsigned long long inum, int base, int size, int precision, int type,
-	void *data)
+static int number(void (*tx_byte)(unsigned char byte, void *data), unsigned long long inum,
+		  int base, int size, int precision, int type, void *data)
 {
 	char c, sign, tmp[66];
 	const char *digits = "0123456789abcdef";
@@ -68,7 +67,7 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 		precision = i;
 	}
 	size -= precision;
-	if (!(type&(ZEROPAD+LEFT))) {
+	if (!(type & (ZEROPAD + LEFT))) {
 		while (size-- > 0)
 			call_tx(' '), count++;
 	}
@@ -99,8 +98,8 @@ static int number(void (*tx_byte)(unsigned char byte, void *data),
 	return count;
 }
 
-int vtxprintf(void (*tx_byte)(unsigned char byte, void *data),
-	       const char *fmt, va_list args, void *data)
+int vtxprintf(void (*tx_byte)(unsigned char byte, void *data), const char *fmt, va_list args,
+	      void *data)
 {
 	int len;
 	unsigned long long num;
@@ -116,7 +115,7 @@ int vtxprintf(void (*tx_byte)(unsigned char byte, void *data),
 
 	int count;
 
-	for (count = 0; *fmt ; ++fmt) {
+	for (count = 0; *fmt; ++fmt) {
 		if (*fmt != '%') {
 			call_tx(*fmt), count++;
 			continue;
@@ -125,14 +124,14 @@ int vtxprintf(void (*tx_byte)(unsigned char byte, void *data),
 		/* process flags */
 		flags = 0;
 repeat:
-			++fmt;		/* this also skips first '%' */
-			switch (*fmt) {
-				case '-': flags |= LEFT; goto repeat;
-				case '+': flags |= PLUS; goto repeat;
-				case ' ': flags |= SPACE; goto repeat;
-				case '#': flags |= SPECIAL; goto repeat;
-				case '0': flags |= ZEROPAD; goto repeat;
-				}
+		++fmt;		/* this also skips first '%' */
+		switch (*fmt) {
+		case '-': flags |= LEFT; goto repeat;
+		case '+': flags |= PLUS; goto repeat;
+		case ' ': flags |= SPACE; goto repeat;
+		case '#': flags |= SPECIAL; goto repeat;
+		case '0': flags |= ZEROPAD; goto repeat;
+		}
 
 		/* get field width */
 		field_width = -1;
@@ -187,7 +186,7 @@ repeat:
 			if (!(flags & LEFT))
 				while (--field_width > 0)
 					call_tx(' '), count++;
-			call_tx((unsigned char) va_arg(args, int)), count++;
+			call_tx((unsigned char)va_arg(args, int)), count++;
 			while (--field_width > 0)
 				call_tx(' '), count++;
 			continue;
@@ -213,11 +212,10 @@ repeat:
 			/* even on 64-bit systems, coreboot only resides in the
 			   low 4GB so pad pointers to 32-bit for readability. */
 			if (field_width == -1 && precision == -1)
-				precision = 2*sizeof(uint32_t);
+				precision = 2 * sizeof(uint32_t);
 			flags |= SPECIAL;
-			count += number(tx_byte,
-				(unsigned long) va_arg(args, void *), 16,
-				field_width, precision, flags, data);
+			count += number(tx_byte, (unsigned long)va_arg(args, void *), 16,
+					field_width, precision, flags, data);
 			continue;
 
 		case 'n':
@@ -273,13 +271,13 @@ repeat:
 		} else if (qualifier == 'j') {
 			num = va_arg(args, uintmax_t);
 		} else if (qualifier == 'h') {
-			num = (unsigned short) va_arg(args, int);
+			num = (unsigned short)va_arg(args, int);
 			if (flags & SIGN)
-				num = (short) num;
+				num = (short)num;
 		} else if (qualifier == 'H') {
-			num = (unsigned char) va_arg(args, int);
+			num = (unsigned char)va_arg(args, int);
 			if (flags & SIGN)
-				num = (signed char) num;
+				num = (signed char)num;
 		} else if (flags & SIGN) {
 			num = va_arg(args, int);
 		} else {

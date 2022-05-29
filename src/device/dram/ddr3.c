@@ -29,9 +29,8 @@
  */
 int spd_dimm_is_registered_ddr3(enum spd_dimm_type_ddr3 type)
 {
-	if ((type == SPD_DDR3_DIMM_TYPE_RDIMM)
-	    | (type == SPD_DDR3_DIMM_TYPE_MINI_RDIMM)
-	    | (type == SPD_DDR3_DIMM_TYPE_72B_SO_RDIMM))
+	if ((type == SPD_DDR3_DIMM_TYPE_RDIMM) | (type == SPD_DDR3_DIMM_TYPE_MINI_RDIMM) |
+			(type == SPD_DDR3_DIMM_TYPE_72B_SO_RDIMM))
 		return 1;
 
 	return 0;
@@ -104,8 +103,8 @@ int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd)
 	u16 crc, spd_crc;
 	u8 capacity_shift, bus_width;
 	u8 reg8;
-	u32 mtb;		/* medium time base */
-	u32 ftb;		/* fine time base */
+	u32 mtb; /* medium time base */
+	u32 ftb; /* fine time base */
 	unsigned int val;
 
 	ret = SPD_STATUS_OK;
@@ -233,13 +232,13 @@ int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd)
 	/* Capacity is 256Mbit multiplied by the power of 2 specified in
 	 * capacity_shift
 	 * The rest is the JEDEC formula */
-	dimm->size_mb = ((1 << (capacity_shift + (25 - 20))) * bus_width
-			 * dimm->ranks) / dimm->width;
+	dimm->size_mb =
+		((1 << (capacity_shift + (25 - 20))) * bus_width * dimm->ranks) / dimm->width;
 
 	/* Medium Timebase =
 	 *   Medium Timebase (MTB) Dividend /
 	 *   Medium Timebase (MTB) Divisor */
-	mtb = (((u32) spd[10]) << 8) / spd[11];
+	mtb = (((u32)spd[10]) << 8) / spd[11];
 
 	/* SDRAM Minimum Cycle Time (tCKmin) */
 	dimm->tCK = spd[12] * mtb;
@@ -281,23 +280,22 @@ int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd)
 		/* Fine timebase (1/256 ps) =
 		 *   Fine Timebase (FTB) Dividend /
 		 *   Fine Timebase (FTB) Divisor */
-		ftb = (((u16) spd[9] & 0xf0) << 4) / (spd[9] & 0x0f);
+		ftb = (((u16)spd[9] & 0xf0) << 4) / (spd[9] & 0x0f);
 
 		/* SPD recommends to round up the MTB part and use a negative
 		 * FTB, so a negative rounding should be always safe */
 
 		/* SDRAM Minimum Cycle Time (tCKmin) correction */
-		dimm->tCK += (s32)((s8) spd[34] * ftb - 500) / 1000;
+		dimm->tCK += (s32)((s8)spd[34] * ftb - 500) / 1000;
 		/* Minimum CAS Latency Time (tAAmin) correction */
-		dimm->tAA += (s32)((s8) spd[35] * ftb - 500) / 1000;
+		dimm->tAA += (s32)((s8)spd[35] * ftb - 500) / 1000;
 		/* Minimum RAS# to CAS# Delay Time (tRCDmin) correction */
-		dimm->tRCD += (s32)((s8) spd[36] * ftb - 500) / 1000;
+		dimm->tRCD += (s32)((s8)spd[36] * ftb - 500) / 1000;
 		/* Minimum Row Precharge Delay Time (tRPmin) correction */
-		dimm->tRP += (s32)((s8) spd[37] * ftb - 500) / 1000;
+		dimm->tRP += (s32)((s8)spd[37] * ftb - 500) / 1000;
 		/* Minimum Active to Active/Refresh Delay Time (tRCmin) corr. */
-		dimm->tRC += (s32)((s8) spd[38] * ftb - 500) / 1000;
-	}
-	else {
+		dimm->tRC += (s32)((s8)spd[38] * ftb - 500) / 1000;
+	} else {
 		printram(" no\n");
 	}
 
@@ -347,8 +345,7 @@ int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd)
 	reg8 = spd[32];
 	if (reg8 & 0x80)
 		dimm->flags.therm_sensor = 1;
-	printram("  Thermal sensor     : %s\n",
-		 dimm->flags.therm_sensor ? "yes" : "no");
+	printram("  Thermal sensor     : %s\n", dimm->flags.therm_sensor ? "yes" : "no");
 
 	/*  SDRAM Device Type */
 	printram("  Standard SDRAM     : %s\n", (spd[33] & 0x80) ? "no" : "yes");
@@ -356,8 +353,7 @@ int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd)
 	if (spd[63] & 0x01) {
 		dimm->flags.pins_mirrored = 1;
 	}
-	printram("  Rank1 Address bits : %s\n",
-			(spd[63] & 0x01) ? "mirrored" : "normal");
+	printram("  Rank1 Address bits : %s\n", (spd[63] & 0x01) ? "mirrored" : "normal");
 
 	dimm->reference_card = spd[62] & 0x1f;
 	printram("  DIMM Reference card: %c\n", 'A' + dimm->reference_card);
@@ -394,13 +390,12 @@ int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd)
  *		SPD_STATUS_INVALID_FIELD -- A field with an invalid value was
  *					    detected.
  */
-int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm,
-		       spd_raw_data spd,
-		       enum ddr3_xmp_profile profile)
+int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd,
+			enum ddr3_xmp_profile profile)
 {
 	int ret;
-	u32 mtb;		/* medium time base */
-	u8 *xmp;		/* pointer to XMP profile data */
+	u32 mtb; /* medium time base */
+	u8 *xmp; /* pointer to XMP profile data */
 
 	/* need a valid SPD */
 	ret = spd_decode_ddr3(dimm, spd);
@@ -427,7 +422,7 @@ int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm,
 		/* Medium Timebase =
 		 *   Medium Timebase (MTB) Dividend /
 		 *   Medium Timebase (MTB) Divisor */
-		mtb = (((u32) spd[180]) << 8) / spd[181];
+		mtb = (((u32)spd[180]) << 8) / spd[181];
 
 		dimm->dimms_per_channel = ((spd[178] >> 2) & 0x3) + 1;
 	} else {
@@ -442,13 +437,12 @@ int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm,
 		/* Medium Timebase =
 		 *   Medium Timebase (MTB) Dividend /
 		 *   Medium Timebase (MTB) Divisor */
-		mtb = (((u32) spd[182]) << 8) / spd[183];
+		mtb = (((u32)spd[182]) << 8) / spd[183];
 
 		dimm->dimms_per_channel = ((spd[178] >> 4) & 0x3) + 1;
 	}
 
-	printram("  Max DIMMs/channel  : %u\n",
-			dimm->dimms_per_channel);
+	printram("  Max DIMMs/channel  : %u\n", dimm->dimms_per_channel);
 
 	printram("  XMP Revision       : %u.%u\n", spd[179] >> 4, spd[179] & 0xf);
 
@@ -503,8 +497,7 @@ int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm,
  *
  * @return CB_SUCCESS if DIMM info was written
  */
-enum cb_err spd_add_smbios17(const u8 channel, const u8 slot,
-			     const u16 selected_freq,
+enum cb_err spd_add_smbios17(const u8 channel, const u8 slot, const u16 selected_freq,
 			     const struct dimm_attr_ddr3_st *info)
 {
 	struct memory_info *mem_info;
@@ -518,8 +511,7 @@ enum cb_err spd_add_smbios17(const u8 channel, const u8 slot,
 	if (!mem_info) {
 		mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
 
-		printk(BIOS_DEBUG, "CBMEM entry for DIMM info: %p\n",
-				mem_info);
+		printk(BIOS_DEBUG, "CBMEM entry for DIMM info: %p\n", mem_info);
 		if (!mem_info)
 			return CB_ERR;
 
@@ -527,8 +519,7 @@ enum cb_err spd_add_smbios17(const u8 channel, const u8 slot,
 	}
 
 	if (mem_info->dimm_cnt >= ARRAY_SIZE(mem_info->dimm)) {
-		printk(BIOS_WARNING, "BUG: Too many DIMM infos for %s.\n",
-			__func__);
+		printk(BIOS_WARNING, "BUG: Too many DIMM infos for %s.\n", __func__);
 		return CB_ERR;
 	}
 
@@ -635,6 +626,5 @@ void dram_print_spd_ddr3(const struct dimm_attr_ddr3_st *dimm)
 	if (dimm->tCWL)
 		print_ns("  tCWLmin           : ", dimm->tCWL);
 	if (dimm->tCMD)
-		printk(BIOS_INFO, "  tCMDmin           : %3u\n",
-		       DIV_ROUND_UP(dimm->tCMD, 256));
+		printk(BIOS_INFO, "  tCMDmin           : %3u\n", DIV_ROUND_UP(dimm->tCMD, 256));
 }

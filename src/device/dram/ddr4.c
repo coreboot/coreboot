@@ -35,41 +35,13 @@ struct ddr4_speed_attr {
  *                 May be 1 less than the actual max MT/s
  */
 static const struct ddr4_speed_attr ddr4_speeds[] = {
-	[DDR4_1600] = {
-		.min_clock_mhz = 668,
-		.max_clock_mhz = 800,
-		.reported_mts = 1600
-	},
-	[DDR4_1866] = {
-		.min_clock_mhz = 801,
-		.max_clock_mhz = 934,
-		.reported_mts = 1866
-	},
-	[DDR4_2133] = {
-		.min_clock_mhz = 935,
-		.max_clock_mhz = 1067,
-		.reported_mts = 2133
-	},
-	[DDR4_2400] = {
-		.min_clock_mhz = 1068,
-		.max_clock_mhz = 1200,
-		.reported_mts = 2400
-	},
-	[DDR4_2666] = {
-		.min_clock_mhz = 1201,
-		.max_clock_mhz = 1333,
-		.reported_mts = 2666
-	},
-	[DDR4_2933] = {
-		.min_clock_mhz = 1334,
-		.max_clock_mhz = 1466,
-		.reported_mts = 2933
-	},
-	[DDR4_3200] = {
-		.min_clock_mhz = 1467,
-		.max_clock_mhz = 1600,
-		.reported_mts = 3200
-	}
+	[DDR4_1600] = {.min_clock_mhz =  668, .max_clock_mhz =  800, .reported_mts = 1600},
+	[DDR4_1866] = {.min_clock_mhz =  801, .max_clock_mhz =  934, .reported_mts = 1866},
+	[DDR4_2133] = {.min_clock_mhz =  935, .max_clock_mhz = 1067, .reported_mts = 2133},
+	[DDR4_2400] = {.min_clock_mhz = 1068, .max_clock_mhz = 1200, .reported_mts = 2400},
+	[DDR4_2666] = {.min_clock_mhz = 1201, .max_clock_mhz = 1333, .reported_mts = 2666},
+	[DDR4_2933] = {.min_clock_mhz = 1334, .max_clock_mhz = 1466, .reported_mts = 2933},
+	[DDR4_3200] = {.min_clock_mhz = 1467, .max_clock_mhz = 1600, .reported_mts = 3200}
 };
 
 typedef enum {
@@ -95,14 +67,15 @@ const spd_block spd_blocks[] = {
 	{.type = BLOCK_0, 0, 128, 126},   {.type = BLOCK_1, 128, 128, 126},
 	{.type = BLOCK_1_L, 128, 64, 0},  {.type = BLOCK_1_H, 192, 64, 0},
 	{.type = BLOCK_2_L, 256, 64, 62}, {.type = BLOCK_2_H, 320, 64, 0},
-	{.type = BLOCK_3, 384, 128, 0} };
+	{.type = BLOCK_3, 384, 128, 0}
+};
 
 static bool verify_block(const spd_block *block, spd_raw_data spd)
 {
 	uint16_t crc, spd_crc;
 
-	spd_crc = (spd[block->start + block->crc_start + 1] << 8)
-		  | spd[block->start + block->crc_start];
+	spd_crc = (spd[block->start + block->crc_start + 1] << 8) |
+		  spd[block->start + block->crc_start];
 	crc = ddr_crc16(&spd[block->start], block->len - 2);
 
 	return spd_crc == crc;

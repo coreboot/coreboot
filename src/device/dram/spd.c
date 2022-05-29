@@ -47,7 +47,7 @@ static void convert_default_module_type_to_spd_info(struct spd_info *info)
 }
 
 static void convert_ddr2_module_type_to_spd_info(enum ddr2_module_type module_type,
-		struct spd_info *info)
+						 struct spd_info *info)
 {
 	switch (module_type) {
 	case DDR2_SPD_RDIMM:
@@ -75,7 +75,7 @@ static void convert_ddr2_module_type_to_spd_info(enum ddr2_module_type module_ty
 }
 
 static void convert_ddr3_module_type_to_spd_info(enum ddr3_module_type module_type,
-		struct spd_info *info)
+						 struct spd_info *info)
 {
 	switch (module_type) {
 	case DDR3_SPD_RDIMM:
@@ -104,7 +104,7 @@ static void convert_ddr3_module_type_to_spd_info(enum ddr3_module_type module_ty
 }
 
 static void convert_ddr4_module_type_to_spd_info(enum ddr4_module_type module_type,
-		struct spd_info *info)
+						 struct spd_info *info)
 {
 	switch (module_type) {
 	case DDR4_SPD_RDIMM:
@@ -129,7 +129,7 @@ static void convert_ddr4_module_type_to_spd_info(enum ddr4_module_type module_ty
 }
 
 static void convert_ddr5_module_type_to_spd_info(enum ddr5_module_type module_type,
-		struct spd_info *info)
+						 struct spd_info *info)
 {
 	switch (module_type) {
 	case DDR5_SPD_RDIMM:
@@ -158,7 +158,7 @@ static void convert_ddr5_module_type_to_spd_info(enum ddr5_module_type module_ty
 }
 
 static void convert_lpx_module_type_to_spd_info(enum lpx_module_type module_type,
-		struct spd_info *info)
+						struct spd_info *info)
 {
 	switch (module_type) {
 	case LPX_SPD_NONDIMM:
@@ -203,7 +203,7 @@ static uint8_t convert_default_form_factor_to_module_type(void)
 }
 
 static uint8_t convert_ddrx_form_factor_to_module_type(smbios_memory_type memory_type,
-		smbios_memory_form_factor form_factor)
+						       smbios_memory_form_factor form_factor)
 {
 	uint8_t module_type;
 
@@ -213,8 +213,8 @@ static uint8_t convert_ddrx_form_factor_to_module_type(smbios_memory_type memory
 	case MEMORY_FORMFACTOR_RIMM:
 		return DDR2_SPD_RDIMM;
 	case MEMORY_FORMFACTOR_SODIMM:
-		module_type = (memory_type == MEMORY_TYPE_DDR2) ? DDR2_SPD_SODIMM
-				: DDR3_SPD_SODIMM;
+		module_type = (memory_type == MEMORY_TYPE_DDR2) ? DDR2_SPD_SODIMM :
+									DDR3_SPD_SODIMM;
 		return module_type;
 	default:
 		return convert_default_form_factor_to_module_type();
@@ -232,7 +232,7 @@ static uint8_t convert_lpx_form_factor_to_module_type(smbios_memory_form_factor 
 }
 
 uint8_t convert_form_factor_to_module_type(smbios_memory_type memory_type,
-		smbios_memory_form_factor form_factor)
+					   smbios_memory_form_factor form_factor)
 {
 	uint8_t module_type;
 

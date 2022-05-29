@@ -26,9 +26,8 @@
  */
 int spd_dimm_is_registered_ddr2(enum spd_dimm_type_ddr2 type)
 {
-	if ((type == SPD_DDR2_DIMM_TYPE_RDIMM)
-			|| (type == SPD_DDR2_DIMM_TYPE_72B_SO_RDIMM)
-			|| (type == SPD_DDR2_DIMM_TYPE_MINI_RDIMM))
+	if ((type == SPD_DDR2_DIMM_TYPE_RDIMM) || (type == SPD_DDR2_DIMM_TYPE_72B_SO_RDIMM) ||
+			(type == SPD_DDR2_DIMM_TYPE_MINI_RDIMM))
 		return 1;
 
 	return 0;
@@ -144,8 +143,7 @@ static int spd_decode_tck_time(u32 *tck, u8 c)
 		break;
 	case 0xe:
 	case 0xf:
-		printk(BIOS_WARNING, "Invalid tck setting. "
-			"lower nibble is 0x%x\n", c & 0xf);
+		printk(BIOS_WARNING, "Invalid tck setting. lower nibble is 0x%x\n", c & 0xf);
 		return CB_ERR;
 	default:
 		low = (c & 0xf) * 10;
@@ -336,8 +334,7 @@ int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 
 	reg8 = spd[62];
 	if ((reg8 & 0xf0) != 0x10) {
-		printk(BIOS_ERR, "Unsupported SPD revision %01x.%01x\n",
-			reg8 >> 4, reg8 & 0xf);
+		printk(BIOS_ERR, "Unsupported SPD revision %01x.%01x\n", reg8 >> 4, reg8 & 0xf);
 		dimm->dram_type = SPD_MEMORY_TYPE_UNDEFINED;
 		return SPD_STATUS_INVALID;
 	}
@@ -355,18 +352,15 @@ int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 
 	dimm->row_bits = spd[3];
 	printram("  Rows               : %u\n", dimm->row_bits);
-	if ((dimm->row_bits > 31) ||
-	    ((dimm->row_bits > 15) && (dimm->rev < 0x13))) {
-		printk(BIOS_WARNING,
-			"SPD decode: invalid number of memory rows\n");
+	if ((dimm->row_bits > 31) || ((dimm->row_bits > 15) && (dimm->rev < 0x13))) {
+		printk(BIOS_WARNING, "SPD decode: invalid number of memory rows\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
 	dimm->col_bits = spd[4];
 	printram("  Columns            : %u\n", dimm->col_bits);
 	if (dimm->col_bits > 15) {
-		printk(BIOS_WARNING,
-			"SPD decode: invalid number of memory columns\n");
+		printk(BIOS_WARNING, "SPD decode: invalid number of memory columns\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
@@ -390,8 +384,7 @@ int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	dimm->banks = spd[17];
 	printram("  Banks              : %u\n", dimm->banks);
 	if (!dimm->banks) {
-		printk(BIOS_WARNING,
-			"SPD decode: invalid module banks count\n");
+		printk(BIOS_WARNING, "SPD decode: invalid module banks count\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
@@ -427,20 +420,17 @@ int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 
 	dimm->cas_supported = spd[18];
 	if ((dimm->cas_supported & 0x3) || !dimm->cas_supported) {
-		printk(BIOS_WARNING,
-			"SPD decode: invalid CAS support advertised.\n");
+		printk(BIOS_WARNING, "SPD decode: invalid CAS support advertised.\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 	printram("  Supported CAS mask : 0x%x\n", dimm->cas_supported);
 
 	if ((dimm->rev < 0x13) && (dimm->cas_supported & 0x80)) {
-		printk(BIOS_WARNING,
-			"SPD decode: invalid CAS support advertised.\n");
+		printk(BIOS_WARNING, "SPD decode: invalid CAS support advertised.\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 	if ((dimm->rev < 0x12) && (dimm->cas_supported & 0x40)) {
-		printk(BIOS_WARNING,
-			"SPD decode: invalid CAS support advertised.\n");
+		printk(BIOS_WARNING, "SPD decode: invalid CAS support advertised.\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
@@ -449,59 +439,43 @@ int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 
 	/* SDRAM Cycle time at Maximum Supported CAS Latency (CL), CL=X */
 	if (spd_decode_tck_time(&dimm->cycle_time[cl], spd[9]) != CB_SUCCESS) {
-		printk(BIOS_WARNING,
-			"SPD decode: invalid min tCL for CAS%d\n", cl);
+		printk(BIOS_WARNING, "SPD decode: invalid min tCL for CAS%d\n", cl);
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 	/* SDRAM Access from Clock */
-	if (spd_decode_bcd_time(&dimm->access_time[cl], spd[10])
-			!= CB_SUCCESS) {
-		printk(BIOS_WARNING,
-			"SPD decode: invalid min tAC for CAS%d\n", cl);
+	if (spd_decode_bcd_time(&dimm->access_time[cl], spd[10]) != CB_SUCCESS) {
+		printk(BIOS_WARNING, "SPD decode: invalid min tAC for CAS%d\n", cl);
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
 	if (dimm->cas_supported & (1 << (cl - 1))) {
 		/* Minimum Clock Cycle at CLX-1 */
-		if (spd_decode_tck_time(&dimm->cycle_time[cl - 1], spd[23])
-				!= CB_SUCCESS) {
-			printk(BIOS_WARNING,
-				"SPD decode: invalid min tCL for CAS%d\n",
-				cl - 1);
+		if (spd_decode_tck_time(&dimm->cycle_time[cl - 1], spd[23]) != CB_SUCCESS) {
+			printk(BIOS_WARNING, "SPD decode: invalid min tCL for CAS%d\n", cl - 1);
 			ret = SPD_STATUS_INVALID_FIELD;
 		}
 		/* Maximum Data Access Time (tAC) from Clock at CLX-1 */
-		if (spd_decode_bcd_time(&dimm->access_time[cl - 1], spd[24])
-				!= CB_SUCCESS) {
-			printk(BIOS_WARNING,
-				"SPD decode: invalid min tAC for CAS%d\n",
-				cl - 1);
+		if (spd_decode_bcd_time(&dimm->access_time[cl - 1], spd[24]) != CB_SUCCESS) {
+			printk(BIOS_WARNING, "SPD decode: invalid min tAC for CAS%d\n", cl - 1);
 			ret = SPD_STATUS_INVALID_FIELD;
 		}
 	}
 	if (dimm->cas_supported & (1 << (cl - 2))) {
 		/* Minimum Clock Cycle at CLX-2 */
-		if (spd_decode_tck_time(&dimm->cycle_time[cl - 2], spd[25])
-				!= CB_SUCCESS) {
-			printk(BIOS_WARNING,
-				"SPD decode: invalid min tCL for CAS%d\n",
-				cl - 2);
+		if (spd_decode_tck_time(&dimm->cycle_time[cl - 2], spd[25]) != CB_SUCCESS) {
+			printk(BIOS_WARNING, "SPD decode: invalid min tCL for CAS%d\n", cl - 2);
 			ret = SPD_STATUS_INVALID_FIELD;
 		}
 		/* Maximum Data Access Time (tAC) from Clock at CLX-2 */
-		if (spd_decode_bcd_time(&dimm->access_time[cl - 2], spd[26])
-				!= CB_SUCCESS) {
-			printk(BIOS_WARNING,
-				"SPD decode: invalid min tAC for CAS%d\n",
-				cl - 2);
+		if (spd_decode_bcd_time(&dimm->access_time[cl - 2], spd[26]) != CB_SUCCESS) {
+			printk(BIOS_WARNING, "SPD decode: invalid min tAC for CAS%d\n", cl - 2);
 			ret = SPD_STATUS_INVALID_FIELD;
 		}
 	}
 
 	reg8 = (spd[31] >> 5) | (spd[31] << 3);
 	if (!reg8) {
-		printk(BIOS_WARNING,
-			"SPD decode: invalid rank density.\n");
+		printk(BIOS_WARNING, "SPD decode: invalid rank density.\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 
@@ -557,7 +531,7 @@ int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 		ret = SPD_STATUS_INVALID_FIELD;
 	dimm->flags.self_refresh = (spd[12] >> 7) & 1;
 	printram("The assembly supports self refresh: %s\n",
-		 dimm->flags.self_refresh ? "true" : "false");
+			dimm->flags.self_refresh ? "true" : "false");
 
 	/* Number of PLLs on DIMM */
 	if (dimm->rev >= 0x11)
@@ -598,8 +572,7 @@ int spd_decode_ddr2(struct dimm_attr_ddr2_st *dimm, u8 spd[SPD_SIZE_MAX_DDR2])
 	printram("  ECC support        : %x\n", dimm->flags.is_ecc);
 
 	dimm->flags.stacked = !!(spd[5] & 0x10);
-	printram("  Package            : %s\n",
-	    dimm->flags.stacked ? "stack" : "planar");
+	printram("  Package            : %s\n", dimm->flags.stacked ? "stack" : "planar");
 
 	if (spd_size > 71) {
 		memcpy(&dimm->manufacturer_id, &spd[64], 4);

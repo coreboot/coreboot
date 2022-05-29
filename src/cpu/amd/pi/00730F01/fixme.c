@@ -11,10 +11,10 @@
 
 void amd_initcpuio(void)
 {
-	UINT64                        MsrReg;
-	UINT32                        PciData;
-	PCI_ADDR                      PciAddress;
-	AMD_CONFIG_PARAMS             StdHeader;
+	UINT64 MsrReg;
+	UINT32 PciData;
+	PCI_ADDR PciAddress;
+	AMD_CONFIG_PARAMS StdHeader;
 
 	/* Enable legacy video routing: D18F1xF4 VGA Enable */
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0xF4);

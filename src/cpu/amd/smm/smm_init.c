@@ -43,8 +43,7 @@ void smm_init(void)
 
 	enable_cache();
 	/* copy the real SMM handler */
-	memcpy((void *)SMM_BASE, _binary_smm_start,
-		_binary_smm_end - _binary_smm_start);
+	memcpy((void *)SMM_BASE, _binary_smm_start, _binary_smm_end - _binary_smm_start);
 	wbinvd();
 	disable_cache();
 

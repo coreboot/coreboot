@@ -39,7 +39,7 @@ void amd_initcpuio(void)
 	LibAmdMsrRead(TOP_MEM, &MsrReg, &StdHeader);
 	MsrReg = (MsrReg >> 8) | 3;
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 1, 0x88);
-	PciData = (UINT32) MsrReg;
+	PciData = (UINT32)MsrReg;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
 	/* Send all IO (0000-FFFF) to southbridge. */

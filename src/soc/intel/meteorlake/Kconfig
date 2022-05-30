@@ -129,6 +129,12 @@ config VBOOT
 	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
 	select VBOOT_X86_SHA256_ACCELERATION
 
+# Default hash block size is 1KiB. Increasing it to 4KiB to improve
+# hashing time as well as read time.
+config VBOOT_HASH_BLOCK_SIZE
+	hex
+	default 0x1000
+
 config CBFS_SIZE
 	hex
 	default 0x200000

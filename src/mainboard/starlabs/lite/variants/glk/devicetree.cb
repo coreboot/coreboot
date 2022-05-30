@@ -86,25 +86,23 @@ chip soc/intel/apollolake
 		device pci 14.0 off end						# PCIe-B 0 Slot2
 		device pci 14.1 off end						# PCIe-B 1 Onboard M2 Slot(Wifi/BT)
 		device pci 15.0 on						# XHCI
-			### USB 2.0 Devices
 			# Motherboard USB Type C
 			register "usb2_port[0]"		= "PORT_EN(OC_SKIP)"
+			register "usb3_port[1]"		= "PORT_EN(OC_SKIP)"
+
 			# Bluetooth
 			register "usb2_port[2]"		= "PORT_EN(OC_SKIP)"
+
 			# Motherboard USB 3.0
 			register "usb2_port[3]"		= "PORT_EN(OC1)"
+			register "usb3_port[0]"		= "PORT_EN(OC1)"
+
 			# Daughterboard USB 3.0
 			register "usb2_port[5]"		= "PORT_EN(OC_SKIP)"
+			register "usb3_port[4]"		= "PORT_EN(OC_SKIP)"
+
 			# Daughterboard SD Card
 			register "usb2_port[6]"		= "PORT_EN(OC_SKIP)"
-
-			### USB 3.0 Devices
-			# Motherboard USB 3.0
-			register "usb3_port[0]"		= "PORT_EN(OC1)"
-			# Motherboard USB Type C
-			register "usb3_port[1]"		= "PORT_EN(OC_SKIP)"
-			# Daughterboard USB 3.0
-			register "usb3_port[2]"		= "PORT_EN(OC_SKIP)"
 		end
 		device pci 15.1 off end						# XDCI
 		device pci 16.0 off end						# I2C0

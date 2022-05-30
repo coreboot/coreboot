@@ -10,12 +10,12 @@
 static const struct pad_config override_gpio_table[] = {
 	/* A14 : USB_OC1# ==> NC */
 	PAD_NC(GPP_A14, NONE),
-	/* A15 : USB_OC2# ==> TCP_DP1_HPD */
-	PAD_CFG_NF(GPP_A15, NONE, DEEP, NF2),
+	/* A15 : USB_OC2# ==> NC */
+	PAD_NC(GPP_A15, NONE),
 	/* A19 : DDSP_HPD1 ==> NC */
 	PAD_NC(GPP_A19, NONE),
-	/* A20 : DDSP_HPD2 ==> NC */
-	PAD_NC(GPP_A20, NONE),
+	/* A20 : DDSP_HPD2 ==> TCP_DP1_HPD */
+	PAD_CFG_NF(GPP_A20, NONE, DEEP, NF1),
 	/* A21 : DDPC_CTRCLK ==> TCP_DP1_CTRLCLK */
 	PAD_CFG_NF(GPP_A21, NONE, DEEP, NF1),
 	/* A22 : DDPC_CTRLDATA ==> TCP_DP1_CTRLDATA */

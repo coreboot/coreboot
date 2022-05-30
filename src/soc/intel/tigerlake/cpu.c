@@ -30,6 +30,15 @@ bool cpu_soc_is_in_untrusted_mode(void)
 	return !!(msr.lo & ENABLE_IA_UNTRUSTED);
 }
 
+void cpu_soc_bios_done(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_BIOS_DONE);
+	msr.lo |= ENABLE_IA_UNTRUSTED;
+	wrmsr(MSR_BIOS_DONE, msr);
+}
+
 static void soc_fsp_load(void)
 {
 	fsps_load();

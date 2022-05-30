@@ -54,6 +54,15 @@ bool cpu_soc_is_in_untrusted_mode(void)
 	return !!(msr.lo & ENABLE_IA_UNTRUSTED);
 }
 
+void cpu_soc_bios_done(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_POWER_MISC);
+	msr.lo |= ENABLE_IA_UNTRUSTED;
+	wrmsr(MSR_POWER_MISC, msr);
+}
+
 void soc_core_init(struct device *cpu)
 {
 	/* Configure Core PRMRR for SGX. */

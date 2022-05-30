@@ -120,6 +120,9 @@ void cpu_set_eist(bool eist_status);
  */
 bool cpu_soc_is_in_untrusted_mode(void);
 
+/* SoC function to set the BIOS DONE MSR. */
+void cpu_soc_bios_done(void);
+
 /*
  * This function fills in the number of Cores(physical) and Threads(virtual)
  * of the CPU in the function arguments. It also returns if the number of cores

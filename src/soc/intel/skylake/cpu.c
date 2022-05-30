@@ -27,12 +27,28 @@
 
 bool cpu_soc_is_in_untrusted_mode(void)
 {
+	/*
+	 * TODO: Add dynamic detection to identify if skylake SoC
+	 * is in coffeelake board.
+	 */
 	if (!CONFIG(MAINBOARD_SUPPORTS_COFFEELAKE_CPU))
 		return false;
 
 	/* IA_UNTRUSTED_MODE is not supported in Sky Lake */
 	msr_t msr = rdmsr(MSR_BIOS_DONE);
 	return !!(msr.lo & ENABLE_IA_UNTRUSTED);
+}
+
+void cpu_soc_bios_done(void)
+{
+	if (!CONFIG(MAINBOARD_SUPPORTS_COFFEELAKE_CPU))
+		return;
+
+	msr_t msr;
+
+	msr = rdmsr(MSR_BIOS_DONE);
+	msr.lo |= ENABLE_IA_UNTRUSTED;
+	wrmsr(MSR_BIOS_DONE, msr);
 }
 
 static void configure_misc(void)

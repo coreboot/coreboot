@@ -26,6 +26,11 @@ bool cpu_soc_is_in_untrusted_mode(void)
 	return false;
 }
 
+void cpu_soc_bios_done(void)
+{
+	/* IA_UNTRUSTED_MODE is not supported in Skylake */
+}
+
 static void xeon_configure_mca(void)
 {
 	msr_t msr;

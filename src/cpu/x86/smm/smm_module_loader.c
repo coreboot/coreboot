@@ -5,7 +5,9 @@
 #include <commonlib/helpers.h>
 #include <commonlib/region.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
+#include <device/device.h>
 #include <rmodule.h>
 #include <stdio.h>
 #include <string.h>
@@ -267,12 +269,21 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 	stub_params->fxsave_area = (uintptr_t)fxsave_area;
 	stub_params->fxsave_area_size = FXSAVE_SIZE;
 
-	/* Initialize the APIC id to CPU number table to be 1:1 */
-	for (int i = 0; i < params->num_cpus; i++)
-		stub_params->apic_id_to_cpu[i] = i;
+	/* This runs on the BSP. All the APs are its siblings */
+	struct cpu_info *info = cpu_info();
+	if (!info || !info->cpu) {
+		printk(BIOS_ERR, "%s: Failed to find BSP struct device\n", __func__);
+		return -1;
+	}
+	int i = 0;
+	for (struct device *dev = info->cpu; dev; dev = dev->sibling)
+		if (dev->enabled)
+			stub_params->apic_id_to_cpu[i++] = dev->path.apic.initial_lapicid;
 
-	/* Allow the initiator to manipulate SMM stub parameters. */
-	params->stub_params = stub_params;
+	if (i != params->num_cpus) {
+		printk(BIOS_ERR, "%s: Failed to set up apic map correctly\n", __func__);
+		return -1;
+	}
 
 	printk(BIOS_DEBUG, "%s: stack_top = 0x%x\n", __func__, stub_params->stack_top);
 	printk(BIOS_DEBUG, "%s: per cpu stack_size = 0x%x\n", __func__,

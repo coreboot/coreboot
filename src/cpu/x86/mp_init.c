@@ -744,16 +744,6 @@ static asmlinkage void smm_do_relocation(void *arg)
 	}
 }
 
-static void adjust_smm_apic_id_map(struct smm_loader_params *smm_params)
-{
-	struct smm_stub_params *stub_params = smm_params->stub_params;
-
-	int i = 0;
-	for (struct device *dev = g_cpu_bus->children; dev; dev = dev->sibling)
-		if (dev->enabled)
-			stub_params->apic_id_to_cpu[i++] = dev->path.apic.initial_lapicid;
-}
-
 static enum cb_err install_relocation_handler(int num_cpus, size_t save_state_size)
 {
 	if (CONFIG(X86_SMM_SKIP_RELOCATION_HANDLER))
@@ -770,7 +760,6 @@ static enum cb_err install_relocation_handler(int num_cpus, size_t save_state_si
 		printk(BIOS_ERR, "%s: smm setup failed\n", __func__);
 		return CB_ERR;
 	}
-	adjust_smm_apic_id_map(&smm_params);
 
 	return CB_SUCCESS;
 }
@@ -795,8 +784,6 @@ static enum cb_err install_permanent_handler(int num_cpus, uintptr_t smbase,
 
 	if (smm_load_module(smbase, smsize, &smm_params))
 		return CB_ERR;
-
-	adjust_smm_apic_id_map(&smm_params);
 
 	return CB_SUCCESS;
 }

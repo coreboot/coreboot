@@ -156,8 +156,6 @@ struct smm_loader_params {
 	size_t num_concurrent_save_states;
 
 	smm_handler_t handler;
-
-	struct smm_stub_params *stub_params;
 };
 
 /* All of these return 0 on success, < 0 on failure. */

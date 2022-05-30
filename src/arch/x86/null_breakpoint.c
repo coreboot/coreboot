@@ -17,9 +17,9 @@ static int handle_fetch_breakpoint(struct breakpoint_handle handle, struct eregs
 static int handle_deref_breakpoint(struct breakpoint_handle handle, struct eregs *regs)
 {
 #if ENV_X86_64
-	printk(BIOS_ERR, "Null dereference at rip: 0x%llx \n", regs->rip);
+	printk(BIOS_ERR, "Null dereference at rip: 0x%llx\n", regs->rip);
 #else
-	printk(BIOS_ERR, "Null dereference at eip: 0x%x \n", regs->eip);
+	printk(BIOS_ERR, "Null dereference at eip: 0x%x\n", regs->eip);
 #endif
 	return CONFIG(DEBUG_NULL_DEREF_HALT);
 }

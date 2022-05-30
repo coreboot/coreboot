@@ -861,11 +861,6 @@ void x86_mtrr_check(void)
 
 static bool put_back_original_solution;
 
-void need_restore_mtrr(void)
-{
-	put_back_original_solution = true;
-}
-
 void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 {
 	const struct range_entry *r;
@@ -935,7 +930,7 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 			(long long)begin, (long long)begin + size - 1,
 			(long long)size, type);
 	else
-		need_restore_mtrr();
+		put_back_original_solution = true;
 
 	memranges_teardown(&addr_space);
 }

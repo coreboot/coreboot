@@ -41,11 +41,12 @@ can run into "out of storage space" errors.
 #### Current Build Machines
 
 To give an idea of what a suitable build machine might be, currently the
-coreboot project has 4 active jenkins build machines.
+coreboot project has 6 active jenkins build machines.
 
 These times are taken from the week of Feb 21 - Feb 28, 2022
 
 * Congenialbuilder - 128 threads, 256GiB RAM
+  * Coverity Builds, Toolchain builds, Scanbuild-builds
   * Fastest Passing coreboot gerrit build: 6 min, 47 sec
   * Slowest Passing coreboot gerrit build: 14 min
 
@@ -58,8 +59,15 @@ These times are taken from the week of Feb 21 - Feb 28, 2022
   * Slowest Passing coreboot gerrit build: 56 min (No ccache)
 
 * Ultron (9elements) - 48 threads, 128GiB RAM
-  * Fastest Passing coreboot gerrit build: 12
+  * Fastest Passing coreboot gerrit build: 12 min
   * Slowest Passing coreboot gerrit build: 58 min
+
+* Bob - 64 threads, 128GiB RAM
+  * Fastest Passing coreboot gerrit build: 7 min
+  * Slowest Passing coreboot gerrit build: 34 min
+
+* Pokeybuilder - 32 Threads, 96GiB RAM
+  * Runs coreboot-checkpatch and other lighter builds
 
 
 ### Jenkins Builds
@@ -69,17 +77,28 @@ for a number of different projects - coreboot, flashrom, memtest86+,
 em100, etc.  Many of these have builders for their current master branch
 as well as Gerrit and [Coverity](coverity.md) builds.
 
-You can see all the builds here:
+
+#### Long builds - over 90 minutes on congenialbuilder
+There are a few builds that take a long time even on the fastest
+machines.  These tasks run overnight in the US timezones.
+* coreboot_coverity - 9 to 12 hours
+* coreboot_scanbuild - ~3 hours
+* coreboot_toolchain - ~1 hour 45 minutes
+
+
+#### All builds
+
+You can see all the builds in the main jenkins interface:
 [https://qa.coreboot.org/](https://qa.coreboot.org/)
 
 Most of the time on the builders is taken up by the coreboot master and
 coreboot gerrit builds.
 
-*[coreboot gerrit build](https://qa.coreboot.org/job/coreboot-gerrit/)
+* [coreboot gerrit build](https://qa.coreboot.org/job/coreboot-gerrit/)
 ([Time trend](https://qa.coreboot.org/job/coreboot-gerrit/buildTimeTrend))
 
 
-*[coreboot master build](https://qa.coreboot.org/job/coreboot/)
+* [coreboot master build](https://qa.coreboot.org/job/coreboot/)
  ([Time trend](https://qa.coreboot.org/job/coreboot/buildTimeTrend))
 
 

@@ -294,7 +294,7 @@ config CBFS_SIZE
 
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
-	default 0x1400
+	default 0x2000
 
 config FSP_HEADER_PATH
 	string "Location of FSP headers"

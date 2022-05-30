@@ -4,6 +4,10 @@ config BOARD_GOOGLE_KINGLER
 	bool "->  Kingler"
 	select BOARD_GOOGLE_KINGLER_COMMON
 
+config BOARD_GOOGLE_STEELIX
+	bool "->  Steelix"
+	select BOARD_GOOGLE_KINGLER_COMMON
+
 comment "Krabby"
 
 config BOARD_GOOGLE_KRABBY

@@ -50,6 +50,7 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Kingler" if BOARD_GOOGLE_KINGLER
 	default "Krabby" if BOARD_GOOGLE_KRABBY
+	default "Steelix" if BOARD_GOOGLE_STEELIX
 
 config BOOT_DEVICE_SPI_FLASH_BUS
 	int

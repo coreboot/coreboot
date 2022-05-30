@@ -58,27 +58,26 @@ chip soc/intel/skylake
 		device pci 02.0 on  end						# Integrated Graphics Device
 		device pci 04.0 on  end						# SA Thermal Device
 		device pci 14.0 on						# USB xHCI
-			### USB 2.0 Devices
 			# Motherboard USB Type C
 			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC_SKIP)"
+			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+
 			# Motherboard USB 3.0
 			register "usb2_ports[1]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+
 			# Daughterboard USB 3.0
 			register "usb2_ports[2]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+
 			# Internal Webcam
 			register "usb2_ports[3]"		= "USB2_PORT_MID(OC_SKIP)"
-			# Internal Bluetooth
-			register "usb2_ports[5]"		= "USB2_PORT_MID(OC_SKIP)"
+
 			# Daughterboard SD Card
 			register "usb2_ports[6]"		= "USB2_PORT_MID(OC_SKIP)"
 
-			### USB 3.0 Devices
-			# Motherboard USB Type C
-			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
-			# Motherboard USB 3.0
-			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
-			# Daughterboard USB 3.0
-			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+			# Internal Bluetooth
+			register "usb2_ports[9]"		= "USB2_PORT_MID(OC_SKIP)"
 		end
 		device pci 14.1 off end						# USB xDCI (OTG)
 		device pci 14.2 on  end						# Thermal Subsystem

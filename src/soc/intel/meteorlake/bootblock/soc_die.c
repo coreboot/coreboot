@@ -69,22 +69,8 @@ static void soc_die_early_iorange_init(void)
 	pch_enable_lpc();
 }
 
-void bootblock_soc_die_early_init(void)
+static void soc_die_early_ip_init(void)
 {
-	const struct sa_mmio_descriptor soc_fixed_pci_resources[] = {
-		{ MCHBAR, MCH_BASE_ADDRESS, MCH_BASE_SIZE, "MCHBAR" },
-	};
-
-	bootblock_systemagent_early_init();
-
-	/* Enable MCHBAR early, needed by IOC driver */
-	sa_set_pci_bar(soc_fixed_pci_resources, ARRAY_SIZE(soc_fixed_pci_resources));
-
-	fast_spi_cache_bios_region();
-	soc_die_early_iorange_init();
-	if (CONFIG(INTEL_LPSS_UART_FOR_CONSOLE))
-		uart_bootblock_init();
-
 	/*
 	 * Perform P2SB configuration before any another controller initialization as the
 	 * controller might want to perform PCR settings.
@@ -100,6 +86,24 @@ void bootblock_soc_die_early_init(void)
 	 * Global Reset Cause Register.
 	 */
 	soc_die_config_pwrmbase();
+}
+
+void bootblock_soc_die_early_init(void)
+{
+	const struct sa_mmio_descriptor soc_fixed_pci_resources[] = {
+		{ MCHBAR, MCH_BASE_ADDRESS, MCH_BASE_SIZE, "MCHBAR" },
+	};
+
+	bootblock_systemagent_early_init();
+	soc_die_early_ip_init();
+
+	/* Enable MCHBAR early, needed by IOC driver */
+	sa_set_pci_bar(soc_fixed_pci_resources, ARRAY_SIZE(soc_fixed_pci_resources));
+
+	fast_spi_cache_bios_region();
+	soc_die_early_iorange_init();
+	if (CONFIG(INTEL_LPSS_UART_FOR_CONSOLE))
+		uart_bootblock_init();
 }
 
 static void soc_die_config_acpibase(void)

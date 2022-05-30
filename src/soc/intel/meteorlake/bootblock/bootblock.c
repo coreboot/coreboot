@@ -11,8 +11,8 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 
 void bootblock_soc_early_init(void)
 {
-	bootblock_ioe_die_early_init();
 	bootblock_soc_die_early_init();
+	bootblock_ioe_die_early_init();
 }
 
 void bootblock_soc_init(void)

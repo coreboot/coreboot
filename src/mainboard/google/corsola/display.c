@@ -122,8 +122,8 @@ static const struct edp_bridge ps8640_bridge = {
 	.post_power_on = bridge_ps8640_post_power_on,
 };
 
-_Static_assert(CONFIG(BOARD_GOOGLE_KINGLER_COMMON) + CONFIG(BOARD_GOOGLE_KRABBY_COMMON) == 1,
-	       "Exactly one of KINGLER and KRABBY must be set");
+_Static_assert(CONFIG(DRIVER_ANALOGIX_ANX7625) + CONFIG(DRIVER_PARADE_PS8640) == 1,
+	       "Exactly one of ANX7625 and PS8640 must be set");
 
 int configure_display(void)
 {
@@ -131,9 +131,9 @@ int configure_display(void)
 	const u8 i2c_bus = I2C0;
 	const struct edp_bridge *bridge;
 
-	if (CONFIG(BOARD_GOOGLE_KINGLER_COMMON))
+	if (CONFIG(DRIVER_ANALOGIX_ANX7625))
 		bridge = &anx7625_bridge;
-	else /* BOARD_GOOGLE_KRABBY_COMMON */
+	else if (CONFIG(DRIVER_PARADE_PS8640))
 		bridge = &ps8640_bridge;
 
 	printk(BIOS_INFO, "%s: Starting display init\n", __func__);

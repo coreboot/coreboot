@@ -318,6 +318,8 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 	for (int i = 0; i < params->num_cpus; i++)
 		stub_params->apic_id_to_cpu[i] = i;
 
+	/* Allow the initiator to manipulate SMM stub parameters. */
+	params->stub_params = stub_params;
 
 	printk(BIOS_DEBUG, "%s: stack_top = 0x%x\n", __func__, stub_params->stack_top);
 	printk(BIOS_DEBUG, "%s: per cpu stack_size = 0x%x\n", __func__,

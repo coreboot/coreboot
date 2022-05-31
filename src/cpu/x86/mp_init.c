@@ -1041,9 +1041,9 @@ enum cb_err mp_run_on_all_cpus_synchronously(void (*func)(void *), void *arg)
 	/* Run on BSP first. */
 	func(arg);
 
-	/* For up to 1 second for AP to finish previous work. */
+	/* For up to 1 second per AP (console can be slow) to finish previous work. */
 	return mp_run_on_aps_and_wait_for_complete(func, arg, MP_RUN_ON_ALL_CPUS,
-						1000 * USECS_PER_MSEC);
+						   1000 * USECS_PER_MSEC * global_num_aps);
 }
 
 enum cb_err mp_park_aps(void)

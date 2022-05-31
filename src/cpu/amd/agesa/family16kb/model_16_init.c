@@ -1,14 +1,15 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
+#include <amdblocks/smm.h>
 #include <console/console.h>
-#include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
-#include <device/device.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
-#include <acpi/acpi.h>
+#include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
+#include <device/device.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
 static void model_16_init(struct device *dev)
@@ -76,9 +77,7 @@ static void model_16_init(struct device *dev)
 	wrmsr(NB_CFG_MSR, msr);
 
 	/* Write protect SMM space with SMMLOCK. */
-	msr = rdmsr(HWCR_MSR);
-	msr.lo |= (1 << 0);
-	wrmsr(HWCR_MSR, msr);
+	lock_smm();
 }
 
 static struct device_operations cpu_dev_ops = {

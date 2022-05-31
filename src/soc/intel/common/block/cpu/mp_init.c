@@ -180,6 +180,9 @@ void before_post_cpus_init(void)
 {
 	if (mp_run_on_all_cpus(&wrapper_set_bios_done, NULL) != CB_SUCCESS)
 		printk(BIOS_ERR, "Set BIOS Done failure\n");
+
+	initialize_microcode();
+	printk(BIOS_INFO, "%s: second patch load done\n", __func__);
 }
 
 /* Ensure to re-program all MTRRs based on DRAM resource settings */

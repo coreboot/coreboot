@@ -2,7 +2,9 @@
 
 #include <device/mmio.h>
 #include <console/console.h>
+#include <delay.h>
 #include <edid.h>
+#include <soc/clock.h>
 #include <soc/display/mdssreg.h>
 
 #define MDSS_MDP_MAX_PREFILL_FETCH 24
@@ -41,7 +43,7 @@ static void mdss_source_pipe_config(struct edid *edid)
 	write32(&mdp_sspp->sspp_src_format, 0x000236ff);
 	write32(&mdp_sspp->sspp_src_unpack_pattern, 0x03020001);
 
-	flip_bits |= BIT(31);
+	flip_bits |= SW_PIX_EXT_OVERRIDE;
 	write32(&mdp_sspp->sspp_sw_pic_ext_c0_req_pixels, out_size);
 	write32(&mdp_sspp->sspp_sw_pic_ext_c1c2_req_pixels, out_size);
 	write32(&mdp_sspp->sspp_sw_pic_ext_c3_req_pixels, out_size);
@@ -54,38 +56,11 @@ static void mdss_vbif_setup(void)
 	write32(&vbif_rt->vbif_out_axi_amemtype_conf1, 0x00333333);
 }
 
-static void mdss_intf_tg_setup(struct edid *edid)
-{
-	uint32_t hsync_period, vsync_period;
-	uint32_t hsync_start_x, hsync_end_x;
-	uint32_t display_hctl, hsync_ctl, display_vstart, display_vend;
-
-	hsync_period = edid->mode.ha + edid->mode.hbl;
-	vsync_period = edid->mode.va + edid->mode.vbl;
-	hsync_start_x = edid->mode.hbl - edid->mode.hso;
-	hsync_end_x = hsync_period - edid->mode.hso - 1;
-	display_vstart = (edid->mode.vbl - edid->mode.vso) * hsync_period;
-	display_vend = ((vsync_period - edid->mode.vso) * hsync_period) - 1;
-	hsync_ctl = (hsync_period << 16) | edid->mode.hspw;
-	display_hctl = (hsync_end_x << 16) | hsync_start_x;
-
-	write32(&mdp_intf->intf_hsync_ctl, hsync_ctl);
-	write32(&mdp_intf->intf_vysnc_period_f0,
-			vsync_period * hsync_period);
-	write32(&mdp_intf->intf_vysnc_pulse_width_f0,
-			edid->mode.vspw * hsync_period);
-	write32(&mdp_intf->intf_disp_hctl, display_hctl);
-	write32(&mdp_intf->intf_disp_v_start_f0, display_vstart);
-	write32(&mdp_intf->intf_disp_v_end_f0, display_vend);
-	write32(&mdp_intf->intf_underflow_color, 0x00);
-	write32(&mdp_intf->intf_panel_format, 0x2100);
-}
-
 static void mdss_intf_fetch_start_config(struct edid *edid)
 {
 	uint32_t v_total, h_total, fetch_start, vfp_start;
 	uint32_t prefetch_avail, prefetch_needed;
-	uint32_t fetch_enable = BIT(31);
+	uint32_t fetch_enable = PROG_FETCH_START_EN;
 
 	/*
 	 * MDP programmable fetch is for MDP with rev >= 1.05.
@@ -135,8 +110,8 @@ static void mdss_layer_mixer_setup(struct edid *edid)
 	}
 
 	/* Enable border fill */
-	left_staging_level = BIT(24);
-	left_staging_level |= BIT(1);
+	left_staging_level = BORDER_OUT;
+	left_staging_level |= VIG_0_OUT;
 
 	/* Base layer for layer mixer 0 */
 	write32(&mdp_ctl->ctl_layer0, left_staging_level);
@@ -172,12 +147,7 @@ void mdp_dsi_video_config(struct edid *edid)
 	mdss_vbif_qos_remapper_setup();
 	mdss_source_pipe_config(edid);
 	mdss_layer_mixer_setup(edid);
-
-	/* Select Video Mode Interface */
-	write32(&mdp_ctl->ctl_top, 0x0);
-
-	/* PPB0 to INTF1 */
-	write32(&mdp_ctl->ctl_intf_active, BIT(1));
+	mdss_ctrl_config();
 	write32(&mdp_intf->intf_mux, 0x0F0000);
 }
 
@@ -186,6 +156,6 @@ void mdp_dsi_video_on(void)
 	uint32_t ctl0_reg_val;
 
 	ctl0_reg_val = VIG_0 | LAYER_MIXER_0 | CTL | INTF;
-	write32(&mdp_ctl->ctl_intf_flush, 0x2);
+	write32(&mdp_ctl->ctl_intf_flush, INTF_FLUSH);
 	write32(&mdp_ctl->ctl_flush, ctl0_reg_val);
 }

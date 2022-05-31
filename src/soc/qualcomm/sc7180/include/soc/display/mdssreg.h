@@ -4,6 +4,9 @@
 #define _SOC_DISPLAY_MDSS_REG_H_
 
 #include <types.h>
+#include <edid.h>
+
+#define INTF_FLUSH	INTF_FLUSH_1
 
 struct dsi_regs {
 	uint32_t hw_version;
@@ -235,7 +238,14 @@ struct mdp_intf_regs {
 		uint32_t intf_active_hctl;
 		uint32_t intf_border_color;
 		uint32_t intf_underflow_color;
-		uint32_t reserved0[17];
+		uint32_t hsync_skew;
+		uint32_t polarity_ctl;
+		uint32_t test_ctl;
+		uint32_t tp_color0;
+		uint32_t tp_color1;
+		uint32_t intf_config2;
+		uint32_t display_data_hctl;
+		uint32_t reserved0[10];
 		uint32_t intf_panel_format;
 		uint32_t reserved1[55];
 		uint32_t intf_prof_fetch_start;
@@ -256,7 +266,9 @@ struct mdp_ctl_regs {
 	uint32_t ctl_start;
 	uint32_t reserved1[53];
 	uint32_t ctl_intf_active;
-	uint32_t reserved2[6];
+	uint32_t ctl_cdm_active;
+	uint32_t ctl_fetch_pipe_active; /* reserved for sc7180 */
+	uint32_t reserved2[4];
 	uint32_t ctl_intf_flush;
 };
 
@@ -307,6 +319,10 @@ struct mdp_sspp_regs {
 check_member(mdp_sspp_regs, sspp_sw_pic_ext_c0_req_pixels, 0x108);
 check_member(mdp_sspp_regs, sspp_sw_pic_ext_c1c2_req_pixels, 0x118);
 check_member(mdp_sspp_regs, sspp_sw_pic_ext_c3_req_pixels, 0x128);
+
+struct mdss_hw_regs {
+	uint32_t hw_version;
+};
 
 struct vbif_rt_regs {
 	uint32_t reserved0[88];
@@ -448,9 +464,57 @@ enum {
 	BROADCAST_EN	 = BIT(31),
 };
 
+/* MDP_VP_0_VIG_0_SSPP_SRC_OP_MODE */
+enum {
+	BWC_DEC_EN		= BIT(0),
+	SW_PIX_EXT_OVERRIDE	= BIT(31),
+
+};
+
+/* MDP_INTF_x_INTF_CONFIG */
+enum {
+	INTERLACE_MODE		= BIT(0),
+	REPEAT_PIXEL		= BIT(1),
+	INTERLACE_INIT_SEL	= BIT(2),
+	BORDER_ENABLE		= BIT(3),
+	EDP_PSR_OVERRIDE_EN	= BIT(7),
+	PACK_ALIGN		= BIT(10),
+	DSI_VIDEO_STOP_MODE	= BIT(23),
+	ACTIVE_H_EN		= BIT(29),
+	ACTIVE_V_EN		= BIT(30),
+	PROG_FETCH_START_EN	= BIT(31),
+};
+
+/* MDP_CTL_0_LAYER_0 */
+enum {
+	VIG_0_OUT	= BIT(0),
+	BORDER_OUT	= BIT(24),
+};
+
+/* MDP_CTL_0_FETCH_PIPE_ACTIVE */
+enum {
+	FETCH_PIPE_VIG0_ACTIVE	= BIT(16),
+	FETCH_PIPE_VIG1_ACTIVE	= BIT(17),
+};
+
+/* MDP_CTL_0_INTF_ACTIVE*/
+enum {
+	INTF_ACTIVE_0	= BIT(0),
+	INTF_ACTIVE_1	= BIT(1),
+	INTF_ACTIVE_5	= BIT(5),
+};
+
+/* MDP_CTL_0_INTF_FLUSH */
+enum {
+	INTF_FLUSH_0	= BIT(0),
+	INTF_FLUSH_1	= BIT(1),
+	INTF_FLUSH_5	= BIT(5),
+};
+
 static struct dsi_regs *const dsi0 = (void *)DSI0_CTL_BASE;
 static struct dsi_phy_regs *const dsi0_phy = (void *)DSI0_PHY_BASE;
 static struct dsi_phy_pll_qlink_regs *const phy_pll_qlink = (void *)DSI0_PHY_PLL_QLINK_COM;
+static struct mdss_hw_regs *const mdss_hw = (void *)MDSS_BASE;
 static struct mdp_intf_regs *const mdp_intf = (void *)MDP_1_INTF_BASE;
 static struct mdp_ctl_regs *const mdp_ctl = (void *)MDP_0_CTL_BASE;
 static struct mdp_layer_mixer_regs *const mdp_layer_mixer = (void *)MDP_VP_0_LAYER_MIXER_BASE;
@@ -458,6 +522,8 @@ static struct mdp_sspp_regs *const mdp_sspp = (void *)MDP_VP_0_SSPP_BASE;
 static struct vbif_rt_regs *const vbif_rt = (void *)MDP_VBIF_RT_BASE;
 
 void mdp_dsi_video_config(struct edid *edid);
+void mdss_intf_tg_setup(struct edid *edid);
 void mdp_dsi_video_on(void);
+void mdss_ctrl_config(void);
 
 #endif

@@ -15,12 +15,17 @@
 #include <intelblocks/msr.h>
 #include <soc/cpu.h>
 
+static void initialize_microcode(void)
+{
+	const void *microcode_patch = intel_microcode_find();
+	intel_microcode_load_unlocked(microcode_patch);
+}
+
 static void init_one_cpu(struct device *dev)
 {
 	soc_core_init(dev);
 
-	const void *microcode_patch = intel_microcode_find();
-	intel_microcode_load_unlocked(microcode_patch);
+	initialize_microcode();
 }
 
 static struct device_operations cpu_dev_ops = {
@@ -148,8 +153,7 @@ static void coreboot_init_cpus(void *unused)
 	if (CONFIG(USE_INTEL_FSP_MP_INIT))
 		return;
 
-	const void *microcode_patch = intel_microcode_find();
-	intel_microcode_load_unlocked(microcode_patch);
+	initialize_microcode();
 
 	init_cpus();
 }

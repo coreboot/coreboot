@@ -3,7 +3,7 @@
 ## Upcoming release
 
 Please add to the release notes as changes are added:
-* [4.17 - May 2022](coreboot-4.17-relnotes.md)
+* [4.18 - Aug 2022](coreboot-4.18-relnotes.md)
 
 The [checklist] contains instructions to ensure that a release covers all
 important things and provides a reliable format for tarballs, branch
@@ -15,6 +15,7 @@ important is taken care of.
 
 ## Previous releases
 
+* [4.17 - May 2022](coreboot-4.17-relnotes.md)
 * [4.16 - Feb 2022](coreboot-4.16-relnotes.md)
 * [4.15 - November 2021](coreboot-4.15-relnotes.md)
 * [4.14 - May 2021](coreboot-4.14-relnotes.md)

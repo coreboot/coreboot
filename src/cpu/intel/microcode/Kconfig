@@ -5,3 +5,13 @@ config MICROCODE_UPDATE_PRE_RAM
 	help
 	  Select this option if you want to update the microcode
 	  during the cache as RAM setup.
+
+config RELOAD_MICROCODE_PATCH
+	bool
+	default n
+	help
+	  Select this option if SoC recommends to re-load microcode
+	  patch as part of CPU multiprocessor initialization process.
+	  This feature is mostly required with Intel latest generation
+	  processors starting with Alder Lake (with modified MCHECK init
+	  flow).

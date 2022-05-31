@@ -34,6 +34,13 @@ void get_microcode_info(const void **microcode, int *parallel);
 void init_cpus(void);
 
 /*
+ * This function will perform any recommended CPU (BSP and AP) initialization
+ * after coreboot has done the multiprocessor initialization (before FSP-S)
+ * and prior to coreboot perform post_cpus_init (after DRAM resources are set).
+ */
+void before_post_cpus_init(void);
+
+/*
  * SoC Overrides
  *
  * All new SoC must implement below functionality for ramstage.

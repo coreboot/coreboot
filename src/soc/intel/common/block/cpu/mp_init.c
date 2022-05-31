@@ -167,6 +167,17 @@ static void wrapper_x86_setup_mtrrs(void *unused)
 	x86_setup_mtrrs_with_detect();
 }
 
+static void wrapper_set_bios_done(void *unused)
+{
+	cpu_soc_bios_done();
+}
+
+void before_post_cpus_init(void)
+{
+	if (mp_run_on_all_cpus(&wrapper_set_bios_done, NULL) != CB_SUCCESS)
+		printk(BIOS_ERR, "Set BIOS Done failure\n");
+}
+
 /* Ensure to re-program all MTRRs based on DRAM resource settings */
 static void post_cpus_init(void *unused)
 {

@@ -62,11 +62,6 @@ void soc_systemagent_init(struct device *dev)
 	/* Enable Power Aware Interrupt Routing */
 	enable_power_aware_intr();
 
-	/* Enable BIOS Reset CPL */
-	enable_bios_reset_cpl();
-
-	/* Configure turbo power limits 1ms after reset complete bit */
-	mdelay(1);
 	config = config_of_soc();
 
 	/* Get System Agent PCI ID */

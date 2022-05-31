@@ -3,10 +3,6 @@ fw_config
 		option KB_BL_ABSENT		0
 		option KB_BL_PRESENT		1
 	end
-	field KB_MT 1 1
-		option KB_MT_CROS		0
-		option KB_MT_RGB		1
-	end
 	field AUDIO 2 3
 		option AUDIO_UNKNOWN		0
 		option MAX98360_NAU88L25B_I2S	1

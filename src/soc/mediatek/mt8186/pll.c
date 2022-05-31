@@ -542,7 +542,7 @@ u32 mt_fmeter_get_freq_khz(enum fmeter_type type, u32 id)
 		SET32_BITFIELDS(&mtk_topckgen->clk_misc_cfg_0,
 				CLK_MISC_CFG_0_METER_DIV, 0);
 	} else {
-		die("unsupport fmeter type\n");
+		die("unsupported fmeter type\n");
 	}
 
 	/* enable frequency meter */

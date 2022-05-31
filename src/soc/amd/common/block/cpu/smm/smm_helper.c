@@ -30,20 +30,6 @@ void clear_tvalid(void)
 	wrmsr(SMM_MASK_MSR, mask);
 }
 
-void tseg_valid(void)
-{
-	msr_t mask = rdmsr(SMM_MASK_MSR);
-	mask.lo |= SMM_TSEG_VALID;
-
-	wrmsr(SMM_MASK_MSR, mask);
-}
-
-bool is_smm_locked(void)
-{
-	msr_t hwcr = rdmsr(HWCR_MSR);
-	return hwcr.lo & SMM_LOCK ? true : false;
-}
-
 void lock_smm(void)
 {
 	msr_t hwcr = rdmsr(HWCR_MSR);

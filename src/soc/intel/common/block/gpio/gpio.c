@@ -331,10 +331,22 @@ static const int mask[4] = {
 
 static void gpio_configure_pad(const struct pad_config *cfg)
 {
-	const struct pad_community *comm = gpio_get_community(cfg->pad);
+	const struct pad_community *comm;
 	uint16_t config_offset;
 	uint32_t pad_conf, soc_pad_conf;
 	int i, pin, group;
+
+	if (!cfg) {
+		printk(BIOS_ERR, "%s: cfg value is NULL\n", __func__);
+		return;
+	}
+
+	comm = gpio_get_community(cfg->pad);
+	if (!comm) {
+		printk(BIOS_ERR, "%s: Could not find community for pad: 0x%x\n",
+				__func__, cfg->pad);
+		return;
+	}
 
 	config_offset = pad_config_offset(comm, cfg->pad);
 	pin = relative_pad_in_comm(comm, cfg->pad);

@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <console/console.h>
 #include <cpu/amd/microcode.h>
+#include <cpu/amd/mtrr.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
@@ -31,7 +32,11 @@ _Static_assert(CONFIG_MAX_CPUS == 16, "Do not override MAX_CPUS. To reduce the n
  */
 static void pre_mp_init(void)
 {
-	x86_setup_mtrrs_with_detect_no_above_4gb();
+	const msr_t syscfg = rdmsr(SYSCFG_MSR);
+	if (syscfg.lo & SYSCFG_MSR_TOM2WB)
+		x86_setup_mtrrs_with_detect_no_above_4gb();
+	else
+		x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
 }
 

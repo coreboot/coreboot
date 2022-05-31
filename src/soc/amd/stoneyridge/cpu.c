@@ -3,20 +3,21 @@
 #include <amdblocks/mca.h>
 #include <amdblocks/reset.h>
 #include <amdblocks/smm.h>
+#include <console/console.h>
 #include <cpu/amd/msr.h>
+#include <cpu/amd/mtrr.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mp.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
-#include <soc/pci_devs.h>
 #include <soc/cpu.h>
-#include <soc/northbridge.h>
-#include <soc/smi.h>
 #include <soc/iomap.h>
-#include <console/console.h>
+#include <soc/northbridge.h>
+#include <soc/pci_devs.h>
+#include <soc/smi.h>
 #include <types.h>
 
 /*
@@ -32,7 +33,11 @@
  */
 static void pre_mp_init(void)
 {
-	x86_setup_mtrrs_with_detect();
+	const msr_t syscfg = rdmsr(SYSCFG_MSR);
+	if (syscfg.lo & SYSCFG_MSR_TOM2WB)
+		x86_setup_mtrrs_with_detect_no_above_4gb();
+	else
+		x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
 }
 

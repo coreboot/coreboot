@@ -47,10 +47,6 @@ extern EFI_GUID gSiMemoryPlatformDataGuid;
 #define MAX_NODE        2
 #define MAX_CH          4
 #define MAX_DIMM        2
-// SA:RestrictedBegin
-//   This should move to a public interface to share the same constant \ struct
-//   defintion between MRC and wrapper platform code.
-// SA:RestrictedEnd
 #define HOB_MAX_SAGV_POINTS 4
 
 ///
@@ -325,13 +321,6 @@ typedef struct {
   UINT32            GttBase;
   UINT32            MmioSize;
   UINT32            PciEBaseAddress;
-//
-// CPU:RestrictedBegin
-//
-  UINT32            SharedMailboxBase;
-//
-// CPU:RestrictedEnd
-//
   PSMI_MEM_INFO     PsmiInfo[MAX_TRACE_CACHE_TYPE];
   PSMI_MEM_INFO     PsmiRegionInfo[MAX_TRACE_REGION];
   BOOLEAN           MrcBasicMemoryTestPass;

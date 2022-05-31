@@ -2,6 +2,7 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
+#include <boardid.h>
 #include <gpio.h>
 #include <soc/romstage.h>
 
@@ -32,7 +33,14 @@ const struct mb_cfg *variant_memory_params(void)
 
 void variant_get_spd_info(struct mem_spd *spd_info)
 {
+	const uint32_t id = board_id();
 	spd_info->topo = MEM_TOPO_DIMM_MODULE;
-	spd_info->smbus[0].addr_dimm[0] = 0x52;
-	spd_info->smbus[1].addr_dimm[0] = 0x50;
+
+	if (id >= 2) {
+		spd_info->smbus[0].addr_dimm[0] = 0x50;
+		spd_info->smbus[1].addr_dimm[0] = 0x52;
+	} else {
+		spd_info->smbus[0].addr_dimm[0] = 0x52;
+		spd_info->smbus[1].addr_dimm[0] = 0x50;
+	}
 }

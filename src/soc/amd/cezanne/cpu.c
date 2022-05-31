@@ -40,21 +40,12 @@ static void pre_mp_init(void)
 	x86_mtrr_check();
 }
 
-static void post_mp_init(void)
-{
-	global_smi_enable();
-
-	/* SMMINFO only needs to be set up when booting from S5 */
-	if (!acpi_is_wakeup_s3())
-		apm_control(APM_CNT_SMMINFO);
-}
-
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = get_smm_info,
 	.relocation_handler = smm_relocation_handler,
-	.post_mp_init = post_mp_init,
+	.post_mp_init = global_smi_enable,
 };
 
 void mp_init_cpus(struct bus *cpu_bus)
@@ -65,6 +56,10 @@ void mp_init_cpus(struct bus *cpu_bus)
 
 	/* pre_mp_init made the flash not cacheable. Reset to WP for performance. */
 	mtrr_use_temp_range(FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
+
+	/* SMMINFO only needs to be set up when booting from S5 */
+	if (!acpi_is_wakeup_s3())
+		apm_control(APM_CNT_SMMINFO);
 }
 
 static void zen_2_3_init(struct device *dev)

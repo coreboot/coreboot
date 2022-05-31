@@ -343,6 +343,9 @@ chip soc/intel/alderlake
 		device ref emmc on
 			probe STORAGE STORAGE_EMMC
 		end
+		device ref ish on
+			probe STORAGE STORAGE_UFS
+		end
 		device ref ufs on
 			probe STORAGE STORAGE_UFS
 		end

@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef _AMDBLOCKS_SMM_H_
+#define _AMDBLOCKS_SMM_H_
+
 #include <cpu/x86/msr.h>
 #include <types.h>
 
@@ -16,3 +19,5 @@ void handle_smi_store(void);
 void clear_tvalid(void);
 /* See SMITYPE_* for list possible of events. GEVENTS are handled with mainboard_smi_gpi. */
 void mainboard_handle_smi(int event);
+
+#endif

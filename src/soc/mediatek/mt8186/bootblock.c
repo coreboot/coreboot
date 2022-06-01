@@ -12,7 +12,6 @@ void bootblock_soc_init(void)
 {
 	mtk_mmu_init();
 	bustracker_init();
-	mtk_wdt_preinit();
 	mtk_wdt_init();
 	mt_pll_init();
 	unmask_eint_event_mask();

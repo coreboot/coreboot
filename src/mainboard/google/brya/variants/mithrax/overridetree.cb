@@ -99,11 +99,11 @@ chip soc/intel/alderlake
 						.target = DPTF_TEMP_SENSOR_1,
 						.thresholds = {
 								TEMP_PCT(48, 76),
-								TEMP_PCT(45, 65),
-								TEMP_PCT(42, 53),
-								TEMP_PCT(39, 45),
-								TEMP_PCT(36, 39),
-								TEMP_PCT(33, 34),
+								TEMP_PCT(40, 66),
+								TEMP_PCT(38, 53),
+								TEMP_PCT(36, 43),
+								TEMP_PCT(34, 39),
+								TEMP_PCT(32, 33),
 						}
 					}
 				}"

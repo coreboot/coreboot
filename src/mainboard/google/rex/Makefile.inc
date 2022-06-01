@@ -16,6 +16,8 @@ BASEBOARD_DIR:=$(call strip_quotes,$(CONFIG_BASEBOARD_DIR))
 
 subdirs-y += variants/baseboard/$(BASEBOARD_DIR)
 subdirs-y += variants/$(VARIANT_DIR)
+subdirs-y += variants/$(VARIANT_DIR)/memory
+subdirs-$(CONFIG_HAVE_SPD_IN_CBFS) += spd
 
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/$(BASEBOARD_DIR)/include

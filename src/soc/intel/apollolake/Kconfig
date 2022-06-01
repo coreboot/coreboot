@@ -134,7 +134,7 @@ config DISABLE_HECI1_AT_PRE_BOOT
 
 config MAX_HECI_DEVICES
 	int
-	default 1
+	default 3
 
 config MAX_CPUS
 	int

@@ -133,7 +133,7 @@ void mainboard_romstage_entry(void)
 	/* Program SMBus base address and enable it */
 	smbus_common_init();
 	/* Initialize HECI interface */
-	heci_init(HECI1_BASE_ADDRESS);
+	cse_init(HECI1_BASE_ADDRESS);
 
 	if (CONFIG(SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE))
 		pre_mem_debug_init();

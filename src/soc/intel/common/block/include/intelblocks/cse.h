@@ -326,8 +326,12 @@ struct cse_boot_perf_rsp {
 	uint32_t timestamp[NUM_CSE_BOOT_PERF_DATA];
 } __packed;
 
-/* set up device for use in early boot enviroument with temp bar */
-void heci_init(uintptr_t bar);
+/*
+ * Initialize the CSE device.
+ *
+ * Set up CSE device for use in early boot environment with temp bar.
+ */
+void cse_init(uintptr_t bar);
 
 /*
  * Send message from BIOS_HOST_ADDR to cse_addr.

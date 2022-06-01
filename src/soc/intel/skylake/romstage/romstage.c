@@ -129,7 +129,7 @@ void mainboard_romstage_entry(void)
 	/* Program SMBus base address and enable it */
 	smbus_common_init();
 	/* initialize Heci interface */
-	heci_init(HECI1_BASE_ADDRESS);
+	cse_init(HECI1_BASE_ADDRESS);
 	ps = pmc_get_power_state();
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	fsp_memory_init(s3wake);

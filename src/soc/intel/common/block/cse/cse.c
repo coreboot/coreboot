@@ -85,11 +85,11 @@ static uintptr_t get_cse_bar(pci_devfn_t dev)
 }
 
 /*
- * Initialize the device with provided temporary BAR. If BAR is 0 use a
+ * Initialize the CSE device with provided temporary BAR. If BAR is 0 use a
  * default. This is intended for pre-mem usage only where BARs haven't been
  * assigned yet and devices are not enabled.
  */
-void heci_init(uintptr_t tempbar)
+void cse_init(uintptr_t tempbar)
 {
 	pci_devfn_t dev = PCH_DEV_CSE;
 

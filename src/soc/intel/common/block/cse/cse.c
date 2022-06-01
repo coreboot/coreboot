@@ -23,6 +23,8 @@
 #include <timer.h>
 #include <types.h>
 
+#define HECI_BASE_SIZE (4 * KiB)
+
 #define MAX_HECI_MESSAGE_RETRY_COUNT 5
 
 /* Wait up to 15 sec for HECI to get ready */
@@ -84,6 +86,24 @@ static uintptr_t get_cse_bar(pci_devfn_t dev)
 	return bar & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 }
 
+static void heci_assign_resource(pci_devfn_t dev, uintptr_t tempbar)
+{
+	u16 pcireg;
+
+	/* Assign Resources */
+	/* Clear BIT 1-2 of Command Register */
+	pcireg = pci_read_config16(dev, PCI_COMMAND);
+	pcireg &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+	pci_write_config16(dev, PCI_COMMAND, pcireg);
+
+	/* Program Temporary BAR for HECI device */
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0, tempbar);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0x0);
+
+	/* Enable Bus Master and MMIO Space */
+	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+}
+
 /*
  * Initialize the CSE device with provided temporary BAR. If BAR is 0 use a
  * default. This is intended for pre-mem usage only where BARs haven't been
@@ -92,8 +112,6 @@ static uintptr_t get_cse_bar(pci_devfn_t dev)
 void cse_init(uintptr_t tempbar)
 {
 	pci_devfn_t dev = PCH_DEV_CSE;
-
-	u16 pcireg;
 
 	/* Check if device enabled */
 	if (!is_cse_enabled())
@@ -107,18 +125,8 @@ void cse_init(uintptr_t tempbar)
 	if (!tempbar)
 		tempbar = HECI1_BASE_ADDRESS;
 
-	/* Assign Resources to HECI1 */
-	/* Clear BIT 1-2 of Command Register */
-	pcireg = pci_read_config16(dev, PCI_COMMAND);
-	pcireg &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-	pci_write_config16(dev, PCI_COMMAND, pcireg);
-
-	/* Program Temporary BAR for HECI1 */
-	pci_write_config32(dev, PCI_BASE_ADDRESS_0, tempbar);
-	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0x0);
-
-	/* Enable Bus Master and MMIO Space */
-	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+	/* Assign HECI resource and enable the resource */
+	heci_assign_resource(dev, tempbar);
 
 	/* Trigger HECI Reset and make Host ready for communication with CSE */
 	heci_reset();
@@ -1018,6 +1026,28 @@ void heci_set_to_d0i3(void)
 
 		set_cse_device_state(devfn, DEV_IDLE);
 	}
+}
+
+/* Initialize the HECI devices. */
+void heci_init(void)
+{
+	for (int i = 0; i < CONFIG_MAX_HECI_DEVICES; i++) {
+		unsigned int devfn = PCI_DEVFN(PCH_DEV_SLOT_CSE, i);
+		pci_devfn_t dev = PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
+
+		if (!is_cse_devfn_visible(devfn))
+			continue;
+
+		/* Assume it is already initialized, nothing else to do */
+		if (get_cse_bar(dev))
+			return;
+
+		heci_assign_resource(dev, HECI1_BASE_ADDRESS + (i * HECI_BASE_SIZE));
+
+		ensure_cse_active(dev);
+	}
+	/* Trigger HECI Reset and make Host ready for communication with CSE */
+	heci_reset();
 }
 
 void cse_control_global_reset_lock(void)

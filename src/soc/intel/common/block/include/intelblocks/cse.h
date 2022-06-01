@@ -333,6 +333,9 @@ struct cse_boot_perf_rsp {
  */
 void cse_init(uintptr_t bar);
 
+/* Initialize the HECI devices. */
+void heci_init(void);
+
 /*
  * Send message from BIOS_HOST_ADDR to cse_addr.
  * Sends snd_msg of size snd_sz, and reads message into buffer pointed by

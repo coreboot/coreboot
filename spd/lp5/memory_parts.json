@@ -69,6 +69,16 @@
                 "ranksPerChannel": 1,
                 "speedMbps": 5500
             }
+        },
+        {
+            "name": "H58G56AK6BX069",
+            "attribs": {
+                "densityPerDieGb": 16,
+                "diesPerPackage": 2,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 1,
+                "speedMbps": 6400
+            }
         }
     ]
 }

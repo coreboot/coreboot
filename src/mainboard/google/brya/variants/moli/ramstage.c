@@ -32,11 +32,6 @@ const struct psys_config psys_config = {
 	.bj_volts_mv = 19500
 };
 
-const char *mainboard_vbt_filename(void)
-{
-	return "vbt-moli.bin";
-}
-
 void variant_devtree_update(void)
 {
 	size_t total_entries = ARRAY_SIZE(limits);

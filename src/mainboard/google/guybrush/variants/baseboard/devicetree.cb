@@ -252,25 +252,29 @@ chip soc/amd/cezanne
 						chip drivers/usb/acpi
 							register "desc" = ""Left Type-C Port""
 							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-							register "group" = "ACPI_PLD_GROUP(1, 1)"
+							register "use_custom_pld" = "true"
+							register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
 							device ref usb3_port0 on end
 						end
 						chip drivers/usb/acpi
 							register "desc" = ""Left Type-A Port""
 							register "type" = "UPC_TYPE_USB3_A"
-							register "group" = "ACPI_PLD_GROUP(1, 2)"
+                                                        register "use_custom_pld" = "true"
+                                                        register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(1, 2))"
 							device ref usb3_port1 on end
 						end
 						chip drivers/usb/acpi
 							register "desc" = ""Left Type-C Port""
 							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-							register "group" = "ACPI_PLD_GROUP(1, 1)"
+                                                        register "use_custom_pld" = "true"
+                                                        register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
 							device ref usb2_port0 on end
 						end
 						chip drivers/usb/acpi
 							register "desc" = ""Left Type-A Port""
 							register "type" = "UPC_TYPE_USB3_A"
-							register "group" = "ACPI_PLD_GROUP(1, 2)"
+                                                        register "use_custom_pld" = "true"
+                                                        register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(1, 2))"
 							device ref usb2_port1 on end
 						end
 						chip drivers/usb/acpi
@@ -292,25 +296,29 @@ chip soc/amd/cezanne
 						chip drivers/usb/acpi
 							register "desc" = ""Right Type-C Port""
 							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-							register "group" = "ACPI_PLD_GROUP(2, 2)"
+                                                        register "use_custom_pld" = "true"
+                                                        register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 2))"
 							device ref usb3_port4 on end
 						end
 						chip drivers/usb/acpi
 							register "desc" = ""Right Type-A Port""
 							register "type" = "UPC_TYPE_USB3_A"
-							register "group" = "ACPI_PLD_GROUP(2, 1)"
+                                                        register "use_custom_pld" = "true"
+                                                        register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
 							device ref usb3_port5 on end
 						end
 						chip drivers/usb/acpi
 							register "desc" = ""Right Type-C Port""
 							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-							register "group" = "ACPI_PLD_GROUP(2, 2)"
+                                                        register "use_custom_pld" = "true"
+                                                        register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 2))"
 							device ref usb2_port4 on end
 						end
 						chip drivers/usb/acpi
 							register "desc" = ""Right Type-A Port""
 							register "type" = "UPC_TYPE_USB3_A"
-							register "group" = "ACPI_PLD_GROUP(2, 1)"
+                                                        register "use_custom_pld" = "true"
+                                                        register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
 							device ref usb2_port5 on end
 						end
 						chip drivers/usb/acpi

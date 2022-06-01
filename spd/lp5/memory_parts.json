@@ -79,6 +79,16 @@
                 "ranksPerChannel": 1,
                 "speedMbps": 6400
             }
+        },
+        {
+            "name":  "MT62F1G32D4DS-031 WT:B",
+            "attribs": {
+                "densityPerDieGb": 8,
+                "diesPerPackage": 4,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 2,
+                "speedMbps": 6400
+            }
         }
     ]
 }

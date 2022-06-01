@@ -42,7 +42,8 @@ chip soc/amd/sabrina
 										chip drivers/usb/acpi
 											register "desc" = ""USB3 Type-A Port A0 (DB)""
 											register "type" = "UPC_TYPE_USB3_A"
-											register "group" = "ACPI_PLD_GROUP(2, 2)"
+											register "use_custom_pld" = "true"
+											register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(2, 2))"
 											device usb 3.0 on end
 										end
 										chip drivers/usb/acpi
@@ -70,7 +71,8 @@ chip soc/amd/sabrina
 										chip drivers/usb/acpi
 											register "desc" = ""USB2 Type-A Port A0 (DB)""
 											register "type" = "UPC_TYPE_USB3_A"
-											register "group" = "ACPI_PLD_GROUP(2, 2)"
+											register "use_custom_pld" = "true"
+											register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(2, 2))"
 											device usb 2.0 on end
 										end
 										chip drivers/usb/acpi

@@ -100,6 +100,7 @@ chip soc/intel/alderlake
 		device ref crashlog off end
 		device ref ish on end
 		device ref ufs on end
+		device ref tcss_xhci on end
 		device ref xhci on end
 		device ref heci1 on end
 		device ref sata on end

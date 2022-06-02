@@ -849,21 +849,11 @@ static struct device_operations pci_domain_ops = {
 	.acpi_name        = domain_acpi_name,
 };
 
-static void pre_mp_init(void)
-{
-	x86_setup_mtrrs_with_detect();
-	x86_mtrr_check();
-}
-
-static const struct mp_ops mp_ops = {
-	.pre_mp_init = pre_mp_init,
-	.get_cpu_count = get_cpu_count,
-};
-
 void mp_init_cpus(struct bus *cpu_bus)
 {
+	extern const struct mp_ops amd_mp_ops_no_smm;
 	/* TODO: Handle mp_init_with_smm failure? */
-	mp_init_with_smm(cpu_bus, &mp_ops);
+	mp_init_with_smm(cpu_bus, &amd_mp_ops_no_smm);
 
 	/* The flash is now no longer cacheable. Reset to WP for performance. */
 	mtrr_use_temp_range(OPTIMAL_CACHE_ROM_BASE, OPTIMAL_CACHE_ROM_SIZE,

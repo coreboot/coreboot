@@ -100,3 +100,8 @@ const struct mp_ops amd_mp_ops_with_smm = {
 	.per_cpu_smm_trigger = smm_relocation_handler,
 	.post_mp_init = post_mp_init,
 };
+
+const struct mp_ops amd_mp_ops_no_smm = {
+	.pre_mp_init = pre_mp_init,
+	.get_cpu_count = get_cpu_count,
+};

@@ -5,7 +5,7 @@
  
  # Extra flags to pass to recursive makes.
 -COMMON_ADAFLAGS= -gnatpg
-+COMMON_ADAFLAGS= -gnatpg -gnatwGUR
++COMMON_ADAFLAGS= -gnatpg -gnatwn
  ifeq ($(TREECHECKING),)
  CHECKING_ADAFLAGS=
  else

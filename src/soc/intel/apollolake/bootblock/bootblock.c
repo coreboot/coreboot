@@ -102,6 +102,9 @@ void bootblock_soc_early_init(void)
 	/* IO Decode Enable */
 	lpc_enable_fixed_io_ranges(io_enables);
 
+	/* Program generic IO Decode Range */
+	pch_enable_lpc();
+
 	if (CONFIG(TPM_ON_FAST_SPI))
 		tpm_enable();
 

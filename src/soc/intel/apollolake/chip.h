@@ -113,6 +113,12 @@ struct soc_intel_apollolake_config {
 	uint16_t lpc_iod;
 	uint16_t lpc_ioe;
 
+	/* Generic IO decode ranges */
+	uint32_t gen1_dec;
+	uint32_t gen2_dec;
+	uint32_t gen3_dec;
+	uint32_t gen4_dec;
+
 	/* Configure LPSS S0ix Enable */
 	uint8_t lpss_s0ix_enable;
 

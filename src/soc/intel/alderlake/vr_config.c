@@ -254,6 +254,16 @@ static const struct vr_lookup vr_config_tdc_currentlimit[] = {
 	{ PCI_DID_INTEL_ADL_S_ID_12, 35,  VR_CFG_ALL_DOMAINS_TDC_CURRENT(30, 30) },
 };
 
+static void fill_vr_fast_vmode(FSP_S_CONFIG *s_cfg,
+		int domain, const struct vr_config *chip_cfg)
+{
+#if CONFIG(SOC_INTEL_RAPTORLAKE)
+	s_cfg->EnableFastVmode[domain] = chip_cfg->enable_fast_vmode;
+	if (s_cfg->EnableFastVmode[domain])
+		s_cfg->IccLimit[domain] = chip_cfg->fast_vmode_i_trip;
+#endif
+}
+
 void fill_vr_domain_config(FSP_S_CONFIG *s_cfg,
 		int domain, const struct vr_config *chip_cfg)
 {
@@ -298,6 +308,8 @@ void fill_vr_domain_config(FSP_S_CONFIG *s_cfg,
 							ARRAY_SIZE(vr_config_tdc_currentlimit),
 							domain, mch_id, tdp);
 	}
+
+	fill_vr_fast_vmode(s_cfg, domain, chip_cfg);
 
 	/* Check TdcTimeWindow and TdcCurrentLimit,
 	   Set TdcEnable and Set VR TDC Input current to root mean square */

@@ -8,6 +8,25 @@
 #include <fsp/api.h>
 
 struct vr_config {
+#if CONFIG(SOC_INTEL_RAPTORLAKE)
+	/*
+	 * When enabled, this feature makes the SoC throttle when the power
+	 * consumption exceeds the I_TRIP threshold.
+	 *
+	 * FSPs sets a by default I_TRIP threshold adapted to the current SoC
+	 * and assuming a Voltage Regulator error accuracy of 6.5%.
+	 */
+	bool enable_fast_vmode;
+
+	/*
+	 * VR Fast Vmode I_TRIP threshold.
+	 * 0-255A in 1/4 A units. Example: 400 = 100A
+
+	 * This setting overrides the default value set by FSPs when Fast VMode
+	 * is enabled.
+	 */
+	uint16_t fast_vmode_i_trip;
+#endif
 
 	/* The below settings will take effect when this is set to 1 for that domain. */
 	bool vr_config_enable;

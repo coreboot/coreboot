@@ -55,7 +55,7 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
-	# Enable PCH PCIE RP 5, 6, 7, 8, 9, 10 using free running CLK (0x80)
+	# Enable PCH PCIE RP 5, 6, 7, 8, 9 using free running CLK (0x80)
 	# Clock source is shared hence marked as free running.
 	register "pch_pcie_rp[PCH_RP(5)]" = "{
 		.flags = PCIE_RP_CLK_SRC_UNUSED,
@@ -72,12 +72,13 @@ chip soc/intel/alderlake
 	register "pch_pcie_rp[PCH_RP(9)]" = "{
 		.flags = PCIE_RP_CLK_SRC_UNUSED,
 	}"
+	# Enable PCIe-to-i225 bridge using clk 1
 	register "pch_pcie_rp[PCH_RP(10)]" = "{
-		.flags = PCIE_RP_CLK_SRC_UNUSED,
+		.clk_src = 1,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER,
 		.pcie_rp_aspm = ASPM_DISABLE,
 	}"
 	register "pcie_clk_config_flag[0]" = "PCIE_CLK_FREE_RUNNING"
-	register "pcie_clk_config_flag[1]" = "PCIE_CLK_FREE_RUNNING"
 
 	# Enable CPU PCIE RP 1, 2, 3 using using free running CLK (0x80)
 	# Clock source is shared hence marked as free running.

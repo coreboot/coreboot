@@ -14,6 +14,14 @@ chip soc/intel/alderlake
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"
 
+	# Display configuration (4 DPs)
+	register "ddi_ports_config" = "{
+		[DDI_PORT_A] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+		[DDI_PORT_1] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+		[DDI_PORT_2] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+	}"
+
 	# USB configuration
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"

@@ -10,8 +10,17 @@
 #define PSP_SHAREDMEM_DRAM_START(addr)		REGION_START(psp_sharedmem_dram, addr)
 #define PSP_SHAREDMEM_DRAM_END(addr)		REGION_END(psp_sharedmem_dram, addr)
 
+/*
+ * Use the memory that would typically be used by romstage in the
+ * bootblock in case that there is no separate romstage.
+ */
+#if CONFIG(SEPARATE_ROMSTAGE)
 BOOTBLOCK_END = CONFIG_ROMSTAGE_ADDR;
 BOOTBLOCK_ADDR = BOOTBLOCK_END - CONFIG_C_ENV_BOOTBLOCK_SIZE;
+#else
+BOOTBLOCK_ADDR = CONFIG_ROMSTAGE_ADDR - CONFIG_C_ENV_BOOTBLOCK_SIZE;
+BOOTBLOCK_END = CONFIG_ROMSTAGE_ADDR + CONFIG_ROMSTAGE_SIZE;
+#endif
 
 /*
  *
@@ -96,8 +105,9 @@ SECTIONS
 #endif
 	_ = ASSERT(BOOTBLOCK_END == ((BOOTBLOCK_END + 0xFFFF) & 0xFFFF0000), "Bootblock end must be 16 bit aligned");
 	REGION(bootblock_overlap_detection, BOOTBLOCK_ADDR, CONFIG_C_ENV_BOOTBLOCK_SIZE, 1)
+#if CONFIG(SEPARATE_ROMSTAGE)
 	ROMSTAGE(CONFIG_ROMSTAGE_ADDR, CONFIG_ROMSTAGE_SIZE)
-
+#endif
 #if CONFIG(PLATFORM_USES_FSP2_0)
 	REGION(fspm, CONFIG_FSP_M_ADDR, CONFIG_FSP_M_SIZE, 1)
 #endif

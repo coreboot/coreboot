@@ -6,14 +6,22 @@
 # Because site-local is intended for local use only, it should never be
 # pushed to coreboot.org.  Even for committing it for local use, it's
 # recommended that it be kept in a separate repository, and pulled in
-# as a git submodule.
+# as a submodule.
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
 
-if [ -n "$(command -v git)" ] && \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
-then
-	if [ -n "$(git ls-files site-local/*)" ]; then
-		echo "Error: site-local must be kept separate from the coreboot repository."
-	fi
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
+# Exit if the code isn't in a git repo
+if [ "${IN_GIT_TREE}" -eq 0 ]; then
+	exit 0
+fi
+
+
+if [ -n "$(${FIND_FILES} site-local/*)" ]; then
+	echo "Error: site-local must be kept separate from the coreboot repository."
 fi

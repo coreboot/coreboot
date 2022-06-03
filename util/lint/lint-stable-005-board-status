@@ -3,8 +3,16 @@
 #
 # DESCR: Check that every board has a meaningful board_info.txt
 
-LC_ALL=C export LC_ALL
-for mobodir in $(git ls-files src/mainboard | sed -n 's,^\(src/mainboard/[^/]*/[^/]*\)/.*$,\1,p'|sort|uniq); do
+
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
+for mobodir in $(${FIND_FILES} src/mainboard | sed -n 's,^\(src/mainboard/[^/]*/[^/]*\)/.*$,\1,p'|sort|uniq); do
     board_info="$mobodir/board_info.txt"
     if ! [ -f "$board_info" ]; then
        echo "No $board_info found"

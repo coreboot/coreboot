@@ -3,6 +3,18 @@
 #
 # DESCR: Check that source files are not executable
 
-LC_ALL=C export LC_ALL
-git ls-tree --full-tree -r HEAD src tests |grep "^100[7531][7531][7531] blob " |cut -f2- |grep -v "\.sh$" | \
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
+# Exit if the code isn't in a git repo
+if [ "${IN_GIT_TREE}" -eq 0 ]; then
+	exit 0
+fi
+
+${GIT} ls-tree --full-tree -r HEAD src tests |grep "^100[7531][7531][7531] blob " | cut -f2- | grep -v "\.sh$" | \
 	sed -e "s,^.*$,File & has one or more executable bits set in the file permissions.,"

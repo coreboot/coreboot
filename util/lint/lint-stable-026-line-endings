@@ -4,17 +4,14 @@
 
 # DESCR: Verify that files don't contain windows line endings
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
 
-EXCLUDE='^3rdparty/\|^payloads/external\|^.git'
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
 
-# Use git grep if the code is in a git repo, otherwise use grep.
-if [ -n "$(command -v git)" ] && \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
-then
-	GREP_FILES="git grep -IlP"
-else
-	GREP_FILES="grep -rIlP"
-fi
+EXCLUDE='^3rdparty/\|^payloads/external\|^.git\|build\|util/crossgcc/xgcc'
 
-${GREP_FILES} "\r$" | grep -v "$EXCLUDE"
+${GREP_FILES} -IlP "\r$" | grep -v "$EXCLUDE"

@@ -4,11 +4,17 @@
 
 # DESCR: Check for illegal characters in filename
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
 
-# Skip check if git isn't available
-if [ -n "$(command -v git)" ] && \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
-then
-	git ls-files | grep "[^A-Za-z0-9/_\.-]"
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
+# Exit if the code isn't in a git repo
+if [ "${IN_GIT_TREE}" -eq 0 ]; then
+	exit 0
 fi
+
+${FIND_FILES} | grep "[^A-Za-z0-9/_\.-]"

@@ -4,7 +4,13 @@
 
 # DESCR: Checkpatch on .c, .h, & Kconfig files in the tree
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
 
 # GNU BRE syntax list of files to examine
 INCLUDED_FILES='.*\.[ch]\|Kconfig.*$'
@@ -36,7 +42,7 @@ fi
 
 # We want word splitting here, so disable the shellcheck warnings
 # shellcheck disable=SC2046,SC2086
-FILELIST=$( git ls-files $INCLUDED_DIRS | \
+FILELIST=$( ${FIND_FILES} $INCLUDED_DIRS | \
 		grep $INCLUDED_FILES | \
 		grep -v $EXCLUDED_DIRS )
 

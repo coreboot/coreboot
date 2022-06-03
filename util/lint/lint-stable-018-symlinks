@@ -4,21 +4,23 @@
 
 # DESCR: Report any symbolic links
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
 
 EXCLUDED_DIRS='^3rdparty\|^site-local'
 
-# If the code is in a git repo, only print files that are checked in
-if [ -n "$(command -v git)" ] && \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
-then
-	git ls-tree -r HEAD | \
-		grep ^120000 | \
-		cut -f2 | \
-		grep -v "$EXCLUDED_DIRS"
-else
-	# If the code isn't in a git repo, print everything
-	find . -type l | \
-		sed 's|\.\/||' | \
-		grep -v "$EXCLUDED_DIRS"
+# Exit if the code isn't in a git repo
+if [ "${IN_GIT_TREE}" -eq 0 ]; then
+	exit 0
 fi
+
+
+${GIT} ls-tree -r HEAD | \
+	grep ^120000 | \
+	cut -f2 | \
+	grep -v "$EXCLUDED_DIRS"

@@ -4,22 +4,19 @@
 
 # DESCR: Check that variables have fully qualified types
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
 
 INCLUDED_DIRS='^src/\|^util/\|payloads/libpayload\|payloads/coreinfo'
 EXCLUDED_DIRS='^src/vendorcode\|cbfstool/lzma\|cbfstool/lz4'
 INCLUDED_FILES='\.[ch]:'
 
-# Use git grep if the code is in a git repo, otherwise use grep.
-if [ -n "$(command -v git)" ] && \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
-then
-	GREP_FILES="git grep -n"
-else
-	GREP_FILES="grep -rn"
-fi
-
-${GREP_FILES} 'unsigned[[:space:]]' | \
+${GREP_FILES} -n 'unsigned[[:space:]]' | \
 	grep "$INCLUDED_DIRS" | \
 	grep -v "$EXCLUDED_DIRS" | \
 	grep "$INCLUDED_FILES" | \

@@ -4,16 +4,13 @@
 
 # DESCR: Check that C labels begin at start-of-line
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
 
-# Use git ls-files if the code is in a git repo, otherwise use find.
-if [ -n "$(command -v git)" ] && \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
-then
-	FIND_FILES="git ls-files"
-else
-	FIND_FILES="find src"
-fi
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
 
 ${FIND_FILES} | \
 	grep "^src/.*\.[csS]$" | \

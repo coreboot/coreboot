@@ -1,13 +1,22 @@
 #!/usr/bin/env sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 #
-# DESCR: Check for a signed-off-by line on the latest git commit
+# DESCR: Check for a signed-off-by line on the latest commit
+
+
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
+if [ "${IN_GIT_TREE}" -eq 0 ]; then
+	exit 0
+fi
 
 # This test is mainly for the jenkins server
-if [ -n "$(command -v git)" ] && \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
-then
-	if [ -z "$(git log -n 1 | grep '[[:space:]]\+Signed-off-by: ')" ]; then
-		echo "No Signed-off-by line in commit message"
-	fi
+if ! ${GIT} log -n 1 | grep -q '[[:space:]]\+Signed-off-by: '; then
+	echo "No Signed-off-by line in commit message"
 fi

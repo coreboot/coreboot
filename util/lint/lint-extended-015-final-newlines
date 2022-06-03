@@ -4,21 +4,18 @@
 
 # DESCR: Check that files end with a single newline
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
 
 PIDS=""
 INCLUDED_DIRS_AND_FILES='util/* src/* payloads/* configs/* Makefile *.inc'
 EXCLUDED_DIRS='src/vendorcode/\|cbfstool/lzma/\|cbfstool/lz4/\|Documentation/\|build/\|3rdparty/\|\.git/\|coreboot-builds/\|util/nvidia/cbootimage/'
 EXCLUDED_FILES='\.gif$\|\.jpg$\|\.cksum$\|\.bin$\|\.vbt$\|\.hex$\|\.ico$\|\.o$\|\.bz2$\|\.xz$\|^.tmpconfig\|\.pyc$\|_shipped$\|sha256$\|\.png$\|\.patch$'
-
-# Use git ls-files if the code is in a git repo, otherwise use find.
-if [ -n "$(command -v git)" ] && \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
-then
-	FIND_FILES="git ls-files"
-else
-	FIND_FILES="find"
-fi
 
 HAVE_FILE=$(command -v file 1>/dev/null 2>&1; echo $?)
 
@@ -57,7 +54,7 @@ test_for_final_newline() {
 }
 
 for directory in $INCLUDED_DIRS_AND_FILES ; do
-	${FIND_FILES} ${directory} | sed 's|^\./||' | sort | \
+	${FIND_FILES} "${directory}" | sed 's|^\./||' | sort | \
 		grep -v "$EXCLUDED_DIRS" | \
 		grep -v "$EXCLUDED_FILES" | \
 		test_for_final_newline &

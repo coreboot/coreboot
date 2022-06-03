@@ -5,6 +5,15 @@
 # DESCR: Check that files in have valid license headers
 # $1 is an optional command line parameter containing directories to check
 
+
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
 # regex list of files and directories to exclude from the search
 HEADER_EXCLUDED="\
 ^src/commonlib/bsd/lz4.c.inc\$|\
@@ -69,11 +78,10 @@ else
 	HEADER_DIRS="$1"
 fi
 
-LC_ALL=C export LC_ALL
 
 #get initial list from git, removing HEADER_EXCLUDED files.
 #make a copy to check for the old style header later.
-headerlist=$(git ls-files $HEADER_DIRS | egrep -v "($HEADER_EXCLUDED)")
+headerlist=$(${FIND_FILES} $HEADER_DIRS | egrep -v "($HEADER_EXCLUDED)")
 
 #update headerlist by removing files that match the license string
 check_for_license() {

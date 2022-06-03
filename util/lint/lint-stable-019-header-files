@@ -4,7 +4,13 @@
 
 # DESCR: Check for auto-included headers
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
 
 INCLUDED_DIRS='^src/'
 EXCLUDED_FILES='src/include/kconfig.h'
@@ -33,17 +39,8 @@ elif [ "$1" = "--reset" ]; then
 	exit 0
 fi
 
-# Use git grep if the code is in a git repo, otherwise use grep.
-if [ -n "$(command -v git)" ] && \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
-then
-	GREP_FILES="git grep -n"
-else
-	GREP_FILES="grep -rn"
-fi
-
 for header in $HEADER_FILES; do
-	${GREP_FILES} "#[[:blank:]]*include[[:blank:]]\+[\"<][[:blank:]]*${header}\.h[[:blank:]]*[\">]" | \
+	${GREP_FILES} -n "#[[:blank:]]*include[[:blank:]]\+[\"<][[:blank:]]*${header}\.h[[:blank:]]*[\">]" | \
 		grep "$INCLUDED_DIRS" | \
 		grep -v "$EXCLUDED_FILES"; \
 done

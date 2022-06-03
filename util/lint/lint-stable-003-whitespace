@@ -4,20 +4,26 @@
 
 # DESCR: Check for superfluous whitespace in the tree
 
-LC_ALL=C export LC_ALL
+INTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
 EXCLUDELIST='^src/vendorcode/|^util/kconfig/|^util/nvidia/cbootimage$|^util/goswid$|COPYING|LICENSE|README|_shipped$|\.patch$|\.bin$|\.hex$|\.jpg$|\.gif$|\.ttf$|\.woff$|\.png$|\.eot$|\.vbt$|\.ico$|\.md$'
 INCLUDELIST="src util payloads Makefile* toolchain.inc tests"
 
 # shellcheck disable=SC2086,SC2046
 if uname | grep -qi "linux"; then
 	grep -n -H "[[:space:]][[:space:]]*$" \
-		$(git ls-files $INCLUDELIST | \
+		$(${FIND_FILES} $INCLUDELIST | \
 			grep -Ev "($EXCLUDELIST)" ) | \
 		sed -e "s,^.*$,File & has lines ending with whitespace.,"
 else
 	# The above form is much (100x) faster, but doesn't work
 	# on all systems. A for loop also works but takes 30% longer
-	git ls-files $INCLUDELIST | \
+	${FIND_FILES} $INCLUDELIST | \
 		grep -Ev "($EXCLUDELIST)" | \
 		xargs -I % \
 			grep -l "[[:space:]][[:space:]]*$" % | \

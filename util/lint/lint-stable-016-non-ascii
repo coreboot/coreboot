@@ -4,18 +4,22 @@
 
 # DESCR: Check for non-ASCII and unprintable characters
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
 
 INCLUDED_FILES='\.[chsS]$\|\.asl$\|\.cb$\|\.inc$\|Kconfig\|\.ld$|\.txt\|\.hex'
 EXCLUDED_DIRS='^payloads/external/\|^src/vendorcode/\|^Documentation/'
 EXCLUDED_FILES='to-wiki/towiki\.sh$\|vga/vga_font\|video/font\|PDCurses.*x11'
 EXCLUDED_PHRASES='Copyright\|Ported to\|Intel®\|°C\|°F\|Athlon™\|Copyright.*©'
 
-# Exit if git isn't present or the code isn't in a git repo
-if [ -z "$(command -v git)" ] || \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" != "true" ]
-then
-	exit
+# Exit if the code isn't in a git repo
+if [ "${IN_GIT_TREE}" -eq 0 ]; then
+	exit 0
 fi
 
 # 1. Get the list of files to parse and send them through grep
@@ -25,7 +29,7 @@ fi
 # 4. Run the result through grep again to highlight the issues that were
 #    found.  Without this step, the characters can be difficult to see.
 # shellcheck disable=SC2046
-git grep -lP "[^\t-~]" | \
+${GREP_FILES} -lP "[^\t-~]" | \
 	grep "$INCLUDED_FILES" | \
 	grep -v "$EXCLUDED_DIRS" | \
 	grep -v "$EXCLUDED_FILES" | \

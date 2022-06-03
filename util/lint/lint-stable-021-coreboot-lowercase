@@ -4,22 +4,21 @@
 
 # DESCR: Verify that the word 'coreboot' is lowercase
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
 
 EXCLUDE='^3rdparty/\|util/crossgcc/xgcc\|Binary file\|coreboot\|COREBOOT\|CorebootPayload\|CorebootModule\|minnowboard.org/Coreboot\|.*\.patch$\|CorebootBdsLib\|^payloads/external'
 
-# Use git grep if the code is in a git repo, otherwise use grep.
-if [ -n "$(command -v git)" ] && \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
-then
-	GREP_FILES="git grep -in"
-
-	# Check last commit message
-	if [ -n "$(git log -n 1 | grep -i 'coreboot' | grep -v "$EXCLUDE" )" ]; then
+# # Check last commit message if the code is in a git repo
+if [ "${IN_GIT_TREE}" -eq 1 ]; then
+	if [ -n "$(${GIT} log -n 1 | grep -i 'coreboot' | grep -v "$EXCLUDE" )" ]; then
 		echo "'coreboot' should be lowercase in commit message"
 	fi
-else
-	GREP_FILES="grep -rin"
 fi
 
-${GREP_FILES} "coreboot" | grep -v "$EXCLUDE";
+${GREP_FILES} -in "coreboot" | grep -v "$EXCLUDE";

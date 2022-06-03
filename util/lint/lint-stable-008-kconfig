@@ -4,18 +4,21 @@
 
 # DESCR: Check Kconfig files for errors
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
 
 # Verify that the test can run, tell users the issue
 if [ -z "$(command -v perl)" ]; then
 	echo "The kconfig lint tool uses perl.  Please install it to run this test."
 fi
 
-# If coreboot is in a git repo, use git grep to check as it will ignore any
-# files in the tree that aren't checked into git
-if [ -n "$(command -v git)" ] && \
-	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]
-then
+# Check whether coreboot is in a repo
+if [ "${IN_GIT_TREE}" -eq 1 ]; then
 	env perl util/lint/kconfig_lint --warnings_off 2>&1
 else
 	env perl util/lint/kconfig_lint --no_git_grep --warnings_off 2>&1

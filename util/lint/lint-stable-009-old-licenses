@@ -5,6 +5,15 @@
 # DESCR: Verify that files don't have the old style header
 
 # regex list of files and directories to exclude from the search
+
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
 HEADER_EXCLUDED="\
 ^src/lib/gnat/|\
 ^src/vendorcode/|\
@@ -26,9 +35,7 @@ if [ -z "$HEADER_DIRS" ]; then
 	HEADER_DIRS="src util tests"
 fi
 
-LC_ALL=C export LC_ALL
-
-headerlist=$(git ls-files $HEADER_DIRS | egrep -v "($HEADER_EXCLUDED)")
+headerlist=$(${FIND_FILES} $HEADER_DIRS | egrep -v "($HEADER_EXCLUDED)")
 
 #check for the old style header
 headerlist=$(grep -il "You should have received a copy of the GNU" \

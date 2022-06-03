@@ -4,14 +4,21 @@
 
 # DESCR: Run clang-format on white-listed directories
 
-LC_ALL=C export LC_ALL
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
 
-# until we require this by default, we need a list of opted-in directories
-if [ ! -f .clang-format-scope ]; then
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
+# Until we require this by default, we need a list of opted-in directories
+# If the script isn't looking at a git repository, just exit
+if [ ! -f .clang-format-scope ] || [ "${IN_GIT_TREE}" -eq 0 ]; then
 	exit 0
 fi
 
-files_to_check=$(git log HEAD~..HEAD --format= --name-only $(cat .clang-format-scope) |grep "\.[ch]$")
+files_to_check=$(${GIT} log HEAD~..HEAD --format= --name-only $(cat .clang-format-scope) | grep "\.[ch]$")
 
 # nothing to do
 if [ -z "$files_to_check" ]; then
@@ -19,9 +26,9 @@ if [ -z "$files_to_check" ]; then
 fi
 
 if [ $(clang-format $files_to_check | wc -l) -gt 0 ]; then
-	if [ "$(git diff --no-prefix HEAD~..HEAD -- $files_to_check | clang-format-diff)" != "" ]; then
+	if [ "$(${GIT} diff --no-prefix HEAD~..HEAD -- $files_to_check | clang-format-diff)" != "" ]; then
 		echo "Coding style mismatch. The following patch fixes it:"
-		git diff --no-prefix HEAD~..HEAD -- $files_to_check | clang-format-diff
+		${GIT} diff --no-prefix HEAD~..HEAD -- $files_to_check | clang-format-diff
 		exit 0
 	fi
 fi

@@ -1,10 +1,9 @@
 coreboot 4.17
 ========================================================================
 
+The coreboot 4.17 release was done on June 3, 2022.
 
-The coreboot 4.17 release is being done on June 1, 2022.
-
-Since the 4.16 release, we've had over 1260 new commits by around 150
+Since the 4.16 release, we've had over 1300 new commits by around 150
 contributors.  Of those people, roughly 15 were first-time contributors.
 
 As always, we appreciate everyone who has contributed and done the hard
@@ -333,14 +332,14 @@ migrating to PARALLEL_MP / a simple !CONFIG_SMP codebase.
 Statistics
 ----------
 
-- Total Commits: 1261
-- Average Commits per day: 13.26
-- Total lines added: 42535
-- Average lines added per commit: 33.73
-- Number of patches adding more than 100 lines: 51
-- Average lines added per small commit: 21.00
-- Total lines removed: 65961
-- Average lines removed per commit: 52.31
-- Total difference between added and removed: -23426
+- Total Commits: 1305
+- Average Commits per day: 13.42
+- Total lines added: 51422
+- Average lines added per commit: 39.40
+- Number of patches adding more than 100 lines: 59
+- Average lines added per small commit: 24.73
+- Total lines removed: 66206
+- Average lines removed per commit: 50.73
+- Total difference between added and removed: -14784
 - Total authors: 146
 - New authors: 17

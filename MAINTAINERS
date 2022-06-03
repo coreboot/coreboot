@@ -685,6 +685,12 @@ M:	Mariusz Szafranski <mariuszx.szafranski@intel.com>
 S:	Maintained
 F:	src/soc/intel/denverton_ns/
 
+INTEL ELKHARTLAKE SOC
+M:	Lean Sheng Tan <sheng.tan@9elements.com>
+M:	Werner Zeh <werner.zeh@siemens.com>
+S:	Maintained
+F:	src/soc/intel/elkhartlake/
+
 INTEL TIGERLAKE SOC
 M:	Tim Wawrzynczak <twawrzynczak@chromium.org>
 S:	Maintained

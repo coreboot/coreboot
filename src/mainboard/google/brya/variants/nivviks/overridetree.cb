@@ -50,6 +50,67 @@ chip soc/intel/alderlake
 		.vnn_icc_max_ma = 500,
 	}"
 
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| I2C0              | TPM. Early init is        |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#| I2C1              | Touchscreen               |
+	#| I2C2              | Sub-board(PSensor)/WCAM   |
+	#| I2C3              | Audio                     |
+	#| I2C5              | Trackpad                  |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 160,
+				.scl_hcnt = 79,
+				.sda_hold = 7,
+			}
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 157,
+				.scl_hcnt = 79,
+				.sda_hold = 7,
+			}
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 157,
+				.scl_hcnt = 79,
+				.sda_hold = 7,
+			}
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 158,
+				.scl_hcnt = 79,
+				.sda_hold = 7,
+			}
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 158,
+				.scl_hcnt = 79,
+				.sda_hold = 7,
+			}
+		},
+	}"
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf

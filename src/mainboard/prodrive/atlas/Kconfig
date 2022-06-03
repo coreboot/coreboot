@@ -34,4 +34,7 @@ config UART_FOR_CONSOLE
 	int
 	default 0
 
+config CBFS_SIZE
+	default 0x800000
+
 endif #BOARD_PRODRIVE_ATLAS_BASEBOARD

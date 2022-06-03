@@ -66,7 +66,7 @@ else
 	git tag -a --force "$VERSION_NAME" -m "coreboot version $VERSION_NAME"
 fi
 
-printf "%s-%s\n" "$VERSION_NAME"  "$(git log --pretty=%H|head -1)" > .coreboot-version
+printf "%s-%s\n" "$VERSION_NAME"  "$(git log --pretty=%h|head -1)" > .coreboot-version
 tstamp=$(git log --pretty=format:%ci -1)
 cd ..
 
@@ -75,6 +75,7 @@ exclude_paths+="3rdparty/fsp "
 exclude_paths+="3rdparty/intel-microcode "
 exclude_paths+="3rdparty/amd_blobs "
 exclude_paths+="3rdparty/qc_blobs "
+
 for i in ${exclude_paths}; do
 	blobs_paths+="coreboot-${VERSION_NAME}/${i} "
 	exclude_opts+="--exclude=coreboot-${VERSION_NAME}/${i} "

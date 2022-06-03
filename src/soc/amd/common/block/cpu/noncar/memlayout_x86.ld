@@ -147,6 +147,7 @@ SECTIONS {
 
 	. = BOOTBLOCK_END - 0x10;
 	_X86_RESET_VECTOR = .;
+	_bogus = ASSERT((_X86_RESET_VECTOR & 0xffff) == 0xfff0, "IP needs to be 0xfff0");
 	.reset . : {
 		*(.reset);
 		. = 15;

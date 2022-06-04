@@ -11,11 +11,11 @@ payload or can be made to work as one.
 
 [SeaBIOS](https://www.seabios.org) is an open source implementation of
 the PCBIOS API that exists since the original IBM PC and was extended
-since. While originally written for emulators such as QEMU, it can be made
-to work as a coreboot payload and all the necessary code is in SeaBIOS'
-mainline code, or as a secondary payload load by another payload, e.g. it
-can be loaded from GRUB2 with the following menuentry in the run time
-config of GRUB2:
+since. While originally written for emulators such as QEMU, it can be built
+as a coreboot payload. It supports executing Option ROMs in a more complete
+fashion than coreboot. It also supports Multiboot.
+
+When chainloaded from GRUB2, the following menuentry could be used:
 
     menuentry "SeaBIOS" --unrestricted {
         root=(cbfsdisk)

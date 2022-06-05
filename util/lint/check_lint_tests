@@ -1,48 +1,157 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+
+rootdir=${PWD}
 
 # test to make sure the lint tests fail
 SPACE=' '
 UNDERSCORE='_'
 
-#lint-stable-000-license-headers
-TESTFILE000a=src/arch/x86/thread.c
-TESTFILE000b=src/arch/riscv/misc.c
-sed -i.bak 's/^[[:space:]]\*[[:space:]].*//' ${TESTFILE000a}
-sed -i.bak 's/^[[:space:]]\*[[:space:]]but WITHOUT ANY WARRANTY;//' ${TESTFILE000b}
+# lint-stable-000-license-headers
+TESTFILE000a="${rootdir}/src/arch/x86/thread.c"
+TESTFILE000b="${rootdir}/src/arch/riscv/misc.c"
+TESTFILE000c="${rootdir}/src/lib/hardwaremain.c"
 
-#lint-stable-003-whitespace
-TESTFILE003=src/acpi/sata.c
-sed -i.bak 's/^$/ /' ${TESTFILE003}
+# lint-stable-003-whitespace
+TESTFILE003="${rootdir}/src/acpi/sata.c"
+# lint-stable-004-style-labels
+TESTFILE004="${rootdir}/src/soc/nvidia/tegra124/spi.c"
+# lint-stable-005-board-status
+TESTFILE005a="${rootdir}/src/mainboard/google/storm/board_info.txt"
+# lint-stable-006-board-name
+TESTFILE006="${rootdir}/src/mainboard/ibase/mb899/Kconfig.name"
+# lint-stable-008-kconfig
+TESTFILE008="${rootdir}/src/lib/Kconfig"
+# lint-stable-009-old-licenses
+TESTFILE009="${rootdir}/src/superio/common/conf_mode.c"
+# lint-stable-010-asm-syntax
+TESTFILE010="${rootdir}/src/arch/x86/assembly_entry.S"
+# lint-stable-012-executable-bit
+TESTFILE012="${rootdir}/src/lib/libgcc.c"
+# lint-stable-013-site-local
+TESTFILE013="$(mktemp --tmpdir=site-local)"
+# lint-stable-016-non-ascii
+TESTFILE016="${rootdir}/src/lib/halt.c"
+# lint-stable-017-configs
+TESTFILE017="${rootdir}/configs/testconfig"
+# lint-stable-018-symlinks
+TESTFILE018="${rootdir}/src/testKconfig"
+# lint-stable-019-header-files
+TESTFILE019=${rootdir}/test
+# lint-stable-021-coreboot-lowercase
+TESTFILE021=${rootdir}/test
+# lint-stable-022-clang-format
+TESTFILE022=${rootdir}/test
+# lint-stable-023-filenames
+TESTFILE023=${rootdir}/test
+# lint-stable-024-kconfig-no-subsystem
+TESTFILE024=${rootdir}/test
+# lint-stable-026-line-endings
+TESTFILE026=${rootdir}/test
+# lint-stable-027-maintainers-syntax
+TESTFILE027="${rootdir}/MAINTAINERS"
 
-#lint-stable-004-style-labels
-TESTFILE004=src/soc/nvidia/tegra124/spi.c
-sed -i.bak 's/^done:/ done:/' ${TESTFILE004}
+if [ "$1" = "--reset" ]; then
+	echo "Resetting testfiles"
+	echo "lint-stable-000-license-headers"
+	git checkout "${TESTFILE000a}" "${TESTFILE000b}" "${TESTFILE000c}"
+	echo "lint-stable-003-whitespace"
+	git checkout "${TESTFILE003}"
+	echo "lint-stable-004-style-labels"
+	git checkout "${TESTFILE004}"
+	echo "lint-stable-005-board-status"
+	git checkout "${TESTFILE005a}"
+	echo "lint-stable-006-board-name"
+	git checkout "${TESTFILE006}"
+	echo "lint-stable-008-kconfig"
+	git checkout "${TESTFILE008}"
+	echo "lint-stable-009-old-licenses"
+	git checkout "${TESTFILE009}"
+	echo "lint-stable-010-asm-syntax"
+	git checkout "${TESTFILE010}"
+	echo "lint-stable-012-executable-bit"
+	git checkout "${TESTFILE012}"
+	echo "lint-stable-013-site-local"
+	git reset "${TESTFILE013}"; rm -vf "${TESTFILE013}"
+	echo "lint-stable-016-non-ascii"
+	git checkout "${TESTFILE016}"
+	echo "lint-stable-017-configs"
+	rm -vf "${TESTFILE017}"
+	echo "lint-stable-018-symlinks"
+	rm -vf "${TESTFILE018}"
+	echo "lint-stable-019-header-files"
+	git checkout "${TESTFILE019}"
+	echo "lint-stable-021-coreboot-lowercase"
+	git checkout "${TESTFILE021}"
+	echo "lint-stable-022-clang-format"
+	git checkout "${TESTFILE022}"
+	echo "lint-stable-023-filenames"
+	git checkout "${TESTFILE023}"
+	echo "lint-stable-024-kconfig-no-subsystem"
+	git checkout "${TESTFILE024}"
+	echo "lint-stable-026-line-endings"
+	git checkout "${TESTFILE026}"
 
-#lint-stable-005-board-status
-TESTFILE005a=src/mainboard/google/storm/board_info.txt
-sed -i.bak 's/^Category:.*/Category: lint/' ${TESTFILE005a}
+	echo "lint-stable-027-maintainers-syntax"
+	git checkout "${TESTFILE027}"
 
-#lint-stable-006-board-name
-TESTFILE006=src/mainboard/ibase/mb899/Kconfig.name
-rm -f ${TESTFILE006}
 
-#lint-stable-008-kconfig
+else
+	echo "Modifying files for linter testing"
 
-#lint-stable-009-old-licenses
-TESTFILE009=src/superio/common/conf_mode.c
-sed -i "s/for more details./for more details.\n \* You${SPACE}should${SPACE}have received a copy of the GNU General Public License\n \* along with this program; if not, write to the Free Software\n \* Foundation, Inc./" ${TESTFILE009}
-git add ${TESTFILE009}
+	echo "lint-stable-000-license-headers"
+	sed -i.bak 's|^/\*.*||' "${TESTFILE000a}"
+	#sed -i.bak 's|^.*]SPDX-License-Identifier.*||' "${TESTFILE000b}"
+	#sed -i.bak 's|^.*]GPL-2.0-only|GPL-2.0|' "${TESTFILE000c}"
 
-#lint-stable-010-asm-syntax
-TESTFILE010=src/arch/x86/bootblock_crt0.S
-sed -i "1s/^/.att${UNDERSCORE}syntax noprefix\n/" ${TESTFILE010}
-git add ${TESTFILE010}
+	echo "lint-stable-003-whitespace"
+	sed -i.bak 's/^$/ /' "${TESTFILE003}"
 
-#lint-stable-012-executable-bit
-TESTFILE012=src/lib/libgcc.c
-chmod +x ${TESTFILE012}
+	echo "lint-stable-004-style-labels"
+	sed -i.bak 's/^done:/ done:/' "${TESTFILE004}"
 
-#lint-stable-013-site-local
-mkdir -p site-local
-TESTFILE013=$(mktemp --tmpdir=site-local)
-git add -f ${TESTFILE013}
+	echo "lint-stable-005-board-status"
+	sed -i.bak 's/^Category:.*/Category: lint/' "${TESTFILE005a}"
+
+	echo "lint-stable-006-board-name"
+	rm -f "${TESTFILE006}"
+
+	echo "lint-stable-008-kconfig"
+	sed -i.bak 's|config MISSING_BOARD_RESET|config MISSINGBOARDRESET|' "${TESTFILE008}"
+
+	echo "lint-stable-009-old-licenses"
+	sed -i "s|^.*]SPDX-License-Identifier.*|\* for more details.\n \* You${SPACE}should${SPACE}have received a copy of the GNU General Public License\n \* along with this program; if not, write to the Free Software\n \* Foundation, Inc.|" "${TESTFILE009}"
+	git add "${TESTFILE009}"
+
+	echo "lint-stable-010-asm-syntax"
+	sed -i "1s/^/.att${UNDERSCORE}syntax noprefix\n/" "${TESTFILE010}"
+	git add "${TESTFILE010}"
+
+	echo "lint-stable-012-executable-bit"
+	chmod +x "${TESTFILE012}"
+
+	echo "lint-stable-013-site-local"
+	mkdir -p site-local
+	git add -f "${TESTFILE013}"
+
+	echo "lint-stable-016-non-ascii"
+	sed -i.bak 's|halt(|halt'"$(echo "\007")"'(|' "${TESTFILE016}"
+
+	echo "lint-stable-017-configs"
+	make olddefconfig
+	cp .config "${TESTFILE017}"
+
+	echo "lint-stable-018-symlinks"
+	rm -f "${TESTFILE018}"
+	ln -s src/Kconfig "${TESTFILE018}"
+	git add -f "${TESTFILE018}"
+
+	# lint-stable-019-header-files
+	# lint-stable-021-coreboot-lowercase
+	# lint-stable-022-clang-format
+	# lint-stable-023-filenames
+	# lint-stable-024-kconfig-no-subsystem
+	# lint-stable-026-line-endings
+	echo "lint-stable-027-maintainers-syntax"
+	sed -i.bak 's|src/cpu/x86/$|src/cpu/x86|' "${TESTFILE027}"
+
+fi

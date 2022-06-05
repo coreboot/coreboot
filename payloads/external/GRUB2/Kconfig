@@ -92,7 +92,8 @@ config SEAGRUB_ALLOW_SEABIOS_BOOTMENU
 	bool "Allow to access SeaBIOS boot menu before launching GRUB"
 	help
 	  Enable this to allow the access to the boot menu of SeaBIOS. It
-	  increases the flexibility but allows to bypass the secure mechanism
-	  implemented in the GRUB runtime config. Please use this with caution.
+	  increases the flexibility but allows to entirely bypass GRUB, along
+	  with all secure mechanism implemented in its runtime config.
+	  Please use this with caution.
 
 endif

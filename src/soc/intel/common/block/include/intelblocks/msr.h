@@ -48,6 +48,7 @@
 #define MSR_PRMRR_VALID_CONFIG		0x1fb
 #define MSR_POWER_CTL			0x1fc
 #define  POWER_CTL_C1E_MASK		(1 << 1)
+#define MSR_PRMRR_BASE_0		0x2a0
 #define MSR_EVICT_CTL			0x2e0
 #define MSR_LT_CONTROL			0x2e7
 #define  LT_CONTROL_LOCK		(1 << 0)

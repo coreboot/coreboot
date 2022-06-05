@@ -187,4 +187,11 @@ void enable_pm_timer_emulation(void);
 void get_cpu_topology_from_apicid(uint32_t apicid, uint8_t *package,
 		uint8_t *core, uint8_t *thread);
 
+/*
+ * Initialize core PRMRR
+ *
+ * Read the BSP PRMRR snapshot and apply on the rest of the core threads
+ */
+void init_core_prmrr(void);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_CPULIB_H */

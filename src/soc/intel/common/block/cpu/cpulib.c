@@ -3,12 +3,15 @@
 #include <assert.h>
 #include <acpi/acpigen.h>
 #include <console/console.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
 #include <arch/cpu.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/msr.h>
+#include <smp/node.h>
 #include <soc/soc_chip.h>
 #include <types.h>
 
@@ -476,4 +479,25 @@ void get_cpu_topology_from_apicid(uint32_t apicid, uint8_t *package,
 		*core = (apicid  >> thread_bits) & ((1 << core_bits) - 1);
 	if (thread)
 		*thread = apicid  & ((1 << thread_bits) - 1);
+}
+
+static void sync_core_prmrr(void)
+{
+	static msr_t msr_base, msr_mask;
+
+	if (boot_cpu()) {
+		msr_base = rdmsr(MSR_PRMRR_BASE_0);
+		msr_mask = rdmsr(MSR_PRMRR_PHYS_MASK);
+	} else if (!intel_ht_sibling()) {
+		wrmsr(MSR_PRMRR_BASE_0, msr_base);
+		wrmsr(MSR_PRMRR_PHYS_MASK, msr_mask);
+	}
+}
+
+void init_core_prmrr(void)
+{
+	msr_t msr = rdmsr(MTRR_CAP_MSR);
+
+	if (msr.lo & MTRR_CAP_PRMRR)
+		sync_core_prmrr();
 }

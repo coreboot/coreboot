@@ -404,9 +404,17 @@ static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
 		}
 	}
 
-	/* Use coreboot MP PPI services if Kconfig is enabled */
-	if (CONFIG(USE_INTEL_FSP_TO_CALL_COREBOOT_PUBLISH_MP_PPI))
+	if (CONFIG(USE_FSP_MP_INIT)) {
+		/*
+		 * Use FSP running MP PPI services to perform CPU feature programming
+		 * if Kconfig is enabled
+		 */
 		s_cfg->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
+	} else {
+		/* Use coreboot native driver to perform MP init by default */
+		s_cfg->CpuMpPpi = (uintptr_t)NULL;
+		s_cfg->SkipMpInit = !CONFIG(USE_INTEL_FSP_MP_INIT);
+	}
 }
 
 static void fill_fsps_igd_params(FSP_S_CONFIG *s_cfg,

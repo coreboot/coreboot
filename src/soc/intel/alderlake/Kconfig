@@ -67,7 +67,6 @@ config CPU_SPECIFIC_OPTIONS
 	select INTEL_GMA_ADD_VBT if RUN_FSP_GOP
 	select INTEL_GMA_OPREGION_2_1
 	select INTEL_TME
-	select MP_SERVICES_PPI_V2
 	select MRC_SETTINGS_PROTECT
 	select PARALLEL_MP_AP_WORK
 	select MICROCODE_BLOB_UNDISCLOSED
@@ -396,6 +395,24 @@ config ACPI_ADL_IPU_ES_SUPPORT
 	def_bool n
 	help
 	  Enables ACPI entry to provide silicon type information to IPU kernel driver.
+
+choice
+	prompt "Multiprocessor (MP) Initialization configuration to use"
+	default USE_FSP_MP_INIT
+
+config USE_FSP_MP_INIT
+	bool "Use FSP MP init"
+	select MP_SERVICES_PPI_V2
+	help
+	  Upon selection, coreboot brings APs from reset and the FSP runs feature programming.
+
+config USE_COREBOOT_MP_INIT
+	bool "Use coreboot MP init"
+	select RELOAD_MICROCODE_PATCH
+	help
+	  Upon selection, coreboot performs MP Init.
+
+endchoice
 
 if STITCH_ME_BIN
 

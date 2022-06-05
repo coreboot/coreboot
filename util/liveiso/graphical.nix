@@ -10,7 +10,6 @@
 	hardware.pulseaudio = {
 		enable = true;
 		package = pkgs.pulseaudioFull;
-		extraModules = with pkgs; [ pulseaudio-modules-bt ];
 	};
 
 	security.polkit = {

@@ -95,6 +95,7 @@ elogobj += eventlog.o
 elogobj += valstr.o
 elogobj += elog.o
 elogobj += common.o
+elogobj += flashrom.o
 
 include $(top)/util/cbfstool/fpt_formats/Makefile.inc
 cse_fpt_obj :=

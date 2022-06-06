@@ -79,15 +79,10 @@ static void usage(char *invoked_as)
 static int elog_read(struct buffer *buffer, const char *filename)
 {
 	if (filename == NULL) {
-		uint8_t *buf;
-		uint32_t buf_size;
-
-		if (flashrom_read(FLASHROM_PROGRAMMER_INTERNAL_AP, ELOG_RW_REGION_NAME,
-				  &buf, &buf_size) != VB2_SUCCESS) {
+		if (flashrom_host_read(buffer, ELOG_RW_REGION_NAME) != 0) {
 			fprintf(stderr, "Could not read RW_ELOG region using flashrom\n");
 			return ELOGTOOL_EXIT_READ_ERROR;
 		}
-		buffer_init(buffer, NULL, buf, buf_size);
 	} else if (buffer_from_file(buffer, filename) != 0) {
 		fprintf(stderr, "Could not read input file: %s\n", filename);
 		return ELOGTOOL_EXIT_READ_ERROR;
@@ -106,11 +101,10 @@ static int elog_read(struct buffer *buffer, const char *filename)
  * If filename is NULL, it saves the buffer using flashrom.
  * Otherwise, it saves the buffer in the given filename.
  */
-static int elog_write(struct buffer *buf, const char *filename)
+static int elog_write(struct buffer *buffer, const char *filename)
 {
 	if (filename == NULL) {
-		if (flashrom_write(FLASHROM_PROGRAMMER_INTERNAL_AP, ELOG_RW_REGION_NAME,
-				   buffer_get(buf), buffer_size(buf)) != VB2_SUCCESS) {
+		if (flashrom_host_write(buffer, ELOG_RW_REGION_NAME) != 0) {
 			fprintf(stderr,
 				"Failed to write to RW_ELOG region using flashrom\n");
 			return ELOGTOOL_EXIT_WRITE_ERROR;
@@ -118,7 +112,7 @@ static int elog_write(struct buffer *buf, const char *filename)
 		return ELOGTOOL_EXIT_SUCCESS;
 	}
 
-	if (buffer_write_file(buf, filename) != 0) {
+	if (buffer_write_file(buffer, filename) != 0) {
 		fprintf(stderr, "Failed to write to file %s\n", filename);
 		return ELOGTOOL_EXIT_WRITE_ERROR;
 	}

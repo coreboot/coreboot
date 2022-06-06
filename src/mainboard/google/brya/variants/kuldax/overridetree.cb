@@ -1,3 +1,10 @@
+fw_config
+	field AUDIO 0 2
+		option AUDIO_UNKNOWN	0
+		option NAU88L25B_I2S	1
+	end
+end
+
 chip soc/intel/alderlake
 	register "serial_io_gspi_mode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
@@ -126,7 +133,9 @@ chip soc/intel/alderlake
 				register "short_key_debounce" = "2"   # 100ms
 				register "jack_insert_debounce" = "7" # 512ms
 				register "jack_eject_debounce" = "7"  # 512ms
-				device i2c 1a on end
+				device i2c 1a on
+					probe AUDIO NAU88L25B_I2S
+				end
 			end
 		end
 		device ref pcie_rp7 on

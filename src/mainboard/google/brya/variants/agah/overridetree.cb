@@ -35,6 +35,7 @@ chip soc/intel/alderlake
 	register "typec_aux_bias_pads[2]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"		# Disable USB2_C1
+	register "usb2_ports[2]" = "USB2_PORT_MAX_TYPE_C(OC2)"  # set to Max for USB2_C2
 	register "usb2_ports[3]" = "USB2_PORT_EMPTY"		# Disable M.2 WWAN
 	register "usb2_ports[4]" = "USB2_PORT_EMPTY"		#
 	register "usb2_ports[6]" = "USB2_PORT_EMPTY"		#

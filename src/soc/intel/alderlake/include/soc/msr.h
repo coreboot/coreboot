@@ -7,6 +7,5 @@
 
 #define MSR_BIOS_DONE		0x151
 #define  ENABLE_IA_UNTRUSTED	(1 << 0)
-#define MSR_VR_MISC_CONFIG2	0x636
 
 #endif

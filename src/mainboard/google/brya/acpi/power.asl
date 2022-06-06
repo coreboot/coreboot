@@ -10,7 +10,7 @@
 #define GPIO_NVVDD_PG		GPP_E16
 #define GPIO_PEXVDD_PWR_EN	GPP_E10
 #define GPIO_PEXVDD_PG		GPP_E17
-#define GPIO_FBVDD_PWR_EN	GPP_A17
+#define GPIO_FBVDD_PWR_EN	GPP_A19
 #define GPIO_FBVDD_PG		GPP_E4
 
 #define GPIO_GPU_PERST_L	GPP_B3
@@ -50,7 +50,7 @@ Method (GC6I, 0, Serialized)
 	\_SB.PCI0.PEG0.DL23 ()
 
 	/* Assert GPU_PERST_L */
-	\_SB.PCI0.STXS (GPIO_GPU_PERST_L)
+	\_SB.PCI0.CTXS (GPIO_GPU_PERST_L)
 
 	/* Deassert PG_GPU_ALLRAILS */
 	\_SB.PCI0.CTXS (GPIO_GPU_ALLRAILS_PG)
@@ -61,14 +61,17 @@ Method (GC6I, 0, Serialized)
 	/* Wait for de-assertion of PG_PP0950_GPU */
 	GPPL (GPIO_PEXVDD_PG, 0, 20)
 
+	/* Wait for GPU to deassert GPU_NVVDD_EN */
+	GPPL (GPIO_GPU_NVVDD_EN, 0, 20)
+
 	/* Deassert EN_PPVAR_GPU_NVVDD */
 	\_SB.PCI0.CTXS (GPIO_NVVDD_PWR_EN)
 
 	/* Wait for de-assertion of PG_PPVAR_GPU_NVVDD */
 	GPPL (GPIO_NVVDD_PG, 0, 20)
 
-	/* Deassert EN_PCH_PPVAR_GPU_FBVDDQ */
-	\_SB.PCI0.CTXS (GPIO_FBVDD_PWR_EN)
+	/* Deassert EN_PCH_PPVAR_GPU_FBVDDQ (active-low) */
+	\_SB.PCI0.STXS (GPIO_FBVDD_PWR_EN)
 
 	/* Deassert EN_PP3300_GPU */
 	\_SB.PCI0.CTXS (GPIO_NV33_PWR_EN)
@@ -105,7 +108,7 @@ Method (GC6O, 0, Serialized)
 	 * 1. Enable GPU_NVVDD
 	 * 2. Enable GPU_PEX
 	 * 3. Wait for all PG
-	 * 4. Assert FBVDD
+	 * 4. Assert FBVDD (active-low)
 	 * At the end of the 4ms window, the GPU will deassert its
 	 * GPIO1_GC6_FB_EN signal that is used to keep the FBVDD
 	 * rail up during GC6.
@@ -115,7 +118,7 @@ Method (GC6O, 0, Serialized)
 	 \_SB.PCI0.STXS (GPIO_PEXVDD_PWR_EN)
 	 GPPL (GPIO_NVVDD_PG, 1, 4)
 	 GPPL (GPIO_PEXVDD_PG, 1, 4)
-	 \_SB.PCI0.STXS (GPIO_FBVDD_PWR_EN)
+	 \_SB.PCI0.CTXS (GPIO_FBVDD_PWR_EN)
 
 	/* Assert PG_GPU_ALLRAILS */
 	\_SB.PCI0.STXS (GPIO_GPU_ALLRAILS_PG)
@@ -145,8 +148,8 @@ Method (PGON, 0, Serialized)
 	\_SB.PCI0.STXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 1, 5)
 
-	/* Ramp up FBVDD rail */
-	\_SB.PCI0.STXS (GPIO_FBVDD_PWR_EN)
+	/* Ramp up FBVDD rail (active low) */
+	\_SB.PCI0.CTXS (GPIO_FBVDD_PWR_EN)
 	GPPL (GPIO_FBVDD_PG, 1, 5)
 
 	/* All rails are good */
@@ -167,21 +170,25 @@ Method (PGOF, 0, Serialized)
 	/* All rails are about to go down */
 	\_SB.PCI0.CTXS (GPIO_GPU_ALLRAILS_PG)
 
-	/* Ramp down FBVDD */
-	\_SB.PCI0.CTXS (GPIO_FBVDD_PWR_EN)
-	GPPL (GPIO_FBVDD_PG, 0, 20)
-
-	/* Ramp down PEXVDD */
-	\_SB.PCI0.CTXS (GPIO_PEXVDD_PWR_EN)
-	GPPL (GPIO_PEXVDD_PG, 0, 20)
-
-	/* Ramp down NVVDD */
-	\_SB.PCI0.CTXS (GPIO_NVVDD_PWR_EN)
-	GPPL (GPIO_NVVDD_PG, 0, 20)
-
-	/* Ramp down NV33 */
+	/* Ramp down NV33 and let rail discharge to <10% */
 	\_SB.PCI0.CTXS (GPIO_NV33_PWR_EN)
 	GPPL (GPIO_NV33_PG, 0, 20)
+	Sleep (15)
+
+	/* Ramp down PEXVDD and let rail discharge to <10% */
+	\_SB.PCI0.CTXS (GPIO_PEXVDD_PWR_EN)
+	GPPL (GPIO_PEXVDD_PG, 0, 20)
+	Sleep (2)
+
+	/* Ramp down NVVDD and let rail discharge to <10% */
+	\_SB.PCI0.CTXS (GPIO_NVVDD_PWR_EN)
+	GPPL (GPIO_NVVDD_PG, 0, 20)
+	Sleep (2)
+
+	/* Ramp down FBVDD (active-low) and let rail discharge to <10% */
+	\_SB.PCI0.STXS (GPIO_FBVDD_PWR_EN)
+	GPPL (GPIO_FBVDD_PG, 0, 20)
+	Sleep (150)
 
 	/* Ramp down 1.8V */
 	\_SB.PCI0.CTXS (GPIO_1V8_PWR_EN)

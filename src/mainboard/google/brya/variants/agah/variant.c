@@ -40,15 +40,27 @@ struct power_rail_sequence {
 
 	/* This is the GPIO (input) connected to the VR's power-good pin. */
 	gpio_t pg_gpio;
+
+	/* Delay after sequencing this rail. */
+	unsigned int delay_ms;
 };
 
 /* In GCOFF exit order (i.e., power-on order) */
-static const struct power_rail_sequence gpu_rails[] = {
+static const struct power_rail_sequence gpu_on_seq[] = {
 	{ "GPU 1.8V",		GPU_1V8_PWR_EN,	false, GPU_1V8_PG, },
 	{ "NV3_3",		NV33_PWR_EN,	false, NV33_PG, },
 	{ "NVVDD+MSVDD",	NVVDD_PWR_EN,	false, NVVDD_PG, },
 	{ "PEXVDD",		PEXVDD_PWR_EN,	false, PEXVDD_PG, },
 	{ "FBVDD",		FBVDD_PWR_EN,	true,  FBVDD_PG, },
+};
+
+/* In GCOFF entry order (i.e., power-off order) */
+static const struct power_rail_sequence gpu_off_seq[] = {
+	{ "NV3_3",		NV33_PWR_EN,	false, NV33_PG,		15,},
+	{ "PEXVDD",		PEXVDD_PWR_EN,	false, PEXVDD_PG,	2,},
+	{ "NVVDD+MSVDD",	NVVDD_PWR_EN,	false, NVVDD_PG,	2,},
+	{ "FBVDD",		FBVDD_PWR_EN,	true,  FBVDD_PG,	150,},
+	{ "GPU 1.8V",		GPU_1V8_PWR_EN,	false, GPU_1V8_PG,	0,},
 };
 
 enum rail_state {
@@ -60,12 +72,17 @@ enum rail_state {
 static bool sequence_rail(const struct power_rail_sequence *seq, enum rail_state state)
 {
 	enum rail_state pwr_en_state = state;
+	bool result;
 
 	if (seq->pwr_en_active_low)
 		pwr_en_state = !pwr_en_state;
 
 	gpio_output(seq->pwr_en_gpio, pwr_en_state);
-	return wait_us(DEFAULT_PG_TIMEOUT_US, gpio_get(seq->pg_gpio) == state) > 0;
+	result = wait_us(DEFAULT_PG_TIMEOUT_US, gpio_get(seq->pg_gpio) == state) >= 0;
+	if (seq->delay_ms)
+		mdelay(seq->delay_ms);
+
+	return result;
 }
 
 static void dgpu_power_sequence_off(void)
@@ -77,10 +94,10 @@ static void dgpu_power_sequence_off(void)
 	/* Inform the GPU that the power is no longer good. */
 	gpio_output(GPU_ALLRAILS_PG, 0);
 
-	for (int i = (int)ARRAY_SIZE(gpu_rails) - 1; i >= 0; i--) {
-		if (!sequence_rail(&gpu_rails[i], RAIL_OFF)) {
+	for (size_t i = 0; i < ARRAY_SIZE(gpu_off_seq); i++) {
+		if (!sequence_rail(&gpu_off_seq[i], RAIL_OFF)) {
 			printk(BIOS_ERR, "Failed to disable %s rail, continuing!\n",
-			       gpu_rails[i].name);
+			       gpu_off_seq[i].name);
 		}
 	}
 }
@@ -90,10 +107,10 @@ static void dgpu_power_sequence_on(void)
 	/* Assert PERST# */
 	gpio_output(GPU_PERST_L, 0);
 
-	for (size_t i = 0; i < ARRAY_SIZE(gpu_rails); i++) {
-		if (!sequence_rail(&gpu_rails[i], RAIL_ON)) {
+	for (size_t i = 0; i < ARRAY_SIZE(gpu_on_seq); i++) {
+		if (!sequence_rail(&gpu_on_seq[i], RAIL_ON)) {
 			printk(BIOS_ERR, "Failed to enable %s rail, sequencing back down!\n",
-			       gpu_rails[i].name);
+			       gpu_on_seq[i].name);
 
 			/* If an error occurred, then perform the power-off sequence and
 			   return early to avoid setting GPU_ALLRAILS_PG and PERST_L. */

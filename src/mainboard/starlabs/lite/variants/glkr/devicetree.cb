@@ -127,6 +127,9 @@ chip soc/intel/apollolake
 		device pci 1c.0 off end						# eMMC
 		device pci 1e.0 off end						# SDIO
 		device pci 1f.0 on						# LPC Interface
+			register "gen1_dec"			= "0x000c06a1"
+			register "gen2_dec"			= "0x000c0081"
+
 			chip ec/starlabs/merlin
 				# Port pair 4Eh/4Fh
 				device pnp 4e.00 on  end			# IO Interface

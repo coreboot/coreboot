@@ -83,7 +83,7 @@ VOID
 GnbRegisterWriteTNDump (
   IN       UINT8               RegisterSpaceType,
   IN       UINT32              Address,
-  IN       VOID                *Value
+  CONST IN VOID                *Value
   );
 AGESA_STATUS
 GnbRegisterReadServiceTN (
@@ -1265,7 +1265,7 @@ VOID
 GnbRegisterWriteTNDump (
   IN       UINT8               RegisterSpaceType,
   IN       UINT32              Address,
-  IN       VOID                *Value
+  CONST IN VOID                *Value
   )
 {
   IDS_HDT_CONSOLE (NB_MISC, "  R WRITE Space %s  Address 0x%04x, Value 0x%04x\n",

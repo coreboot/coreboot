@@ -24,6 +24,7 @@ Scope (\_SB.PCI0.PEG0)
 		#include "nvjt.asl"
 		#include "nbci.asl"
 		#include "nvpcf.asl"
+		#include "gps.asl"
 
 		Method (_DSM, 4, Serialized)
 		{
@@ -53,6 +54,13 @@ Scope (\_SB.PCI0.PEG0)
 				If (ToInteger (Arg1) >= REVISION_MIN_NVPCF)
 				{
 					Return (NPCF (Arg2, Arg3))
+				}
+			}
+			ElseIf (Arg0 == ToUUID (UUID_GPS))
+			{
+				If (ToInteger (Arg1) != REVISION_MIN_GPS)
+				{
+					Return (GPS (Arg2, Arg3))
 				}
 			}
 

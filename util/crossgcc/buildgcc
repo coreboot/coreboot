@@ -39,7 +39,7 @@ GCC_VERSION=11.2.0
 BINUTILS_VERSION=2.37
 IASL_VERSION=20220331
 # CLANG version number
-CLANG_VERSION=13.0.1
+CLANG_VERSION=14.0.6
 CMAKE_VERSION=3.23.2
 NASM_VERSION=2.15.05
 
@@ -809,7 +809,7 @@ build_LLVM() {
 	$CMAKE -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$DESTDIR$TARGETDIR" \
 		-DCLANG_VENDOR="coreboot toolchain v$CROSSGCC_VERSION - " \
 		-DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt" \
-		-DCMAKE_BUILD_TYPE=Release ../llvm || touch .failed
+		-DLLVM_INCLUDE_BENCHMARKS="OFF" -DCMAKE_BUILD_TYPE=Release ../llvm || touch .failed
 	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install || touch .failed

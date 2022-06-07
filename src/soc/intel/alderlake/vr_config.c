@@ -181,13 +181,9 @@ void fill_vr_domain_config(FSP_S_CONFIG *s_cfg,
 		s_cfg->TdcTimeWindow[domain] = cfg->tdc_timewindow;
 		s_cfg->TdcCurrentLimit[domain] = cfg->tdc_currentlimit;
 	} else {
-		uint16_t mch_id = 0;
 		uint8_t tdp = get_cpu_tdp();
-
-		if (!mch_id) {
-			struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
-			mch_id = dev ? pci_read_config16(dev, PCI_DEVICE_ID) : 0xffff;
-		}
+		struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+		uint16_t mch_id = dev ? pci_read_config16(dev, PCI_DEVICE_ID) : 0xffff;
 
 		s_cfg->AcLoadline[domain] = load_table(vr_config_ll, ARRAY_SIZE(vr_config_ll),
 							domain, mch_id, tdp);

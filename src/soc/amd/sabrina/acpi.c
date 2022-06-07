@@ -187,12 +187,12 @@ static uint32_t get_pstate_core_power(msr_t pstate_def)
 		(pstate_def.lo & PSTATE_DEF_LO_CUR_DIV_MASK) >> PSTATE_DEF_LO_CUR_DIV_SHIFT;
 
 	/* Voltage */
-	if ((core_vid >= 0xF8) && (core_vid <= 0xFF)) {
-		/* Voltage off for VID codes 0xF8 to 0xFF */
+	if (core_vid == 0x00) {
+		/* Voltage off for VID code 0x00 */
 		voltage_in_uvolts = 0;
 	} else {
 		voltage_in_uvolts =
-			SERIAL_VID_MAX_MICROVOLTS - (SERIAL_VID_DECODE_MICROVOLTS * core_vid);
+			SERIAL_VID_BASE_MICROVOLTS + (SERIAL_VID_DECODE_MICROVOLTS * core_vid);
 	}
 
 	/* Power in mW */

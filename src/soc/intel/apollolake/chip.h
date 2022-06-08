@@ -212,6 +212,9 @@ struct soc_intel_apollolake_config {
 
 	/* SATA Aggressive Link Power Management */
 	uint8_t DisableSataSalpSupport;
+
+	/* Sata Power Optimisation */
+	uint8_t SataPwrOptimizeDisable;
 };
 
 typedef struct soc_intel_apollolake_config config_t;

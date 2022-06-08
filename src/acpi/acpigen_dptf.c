@@ -62,6 +62,8 @@ static const char *namestring_of(enum dptf_participant participant)
 		return "TCHG";
 	case DPTF_FAN:
 		return "TFN1";
+	case DPTF_FAN_2:
+		return "TFN2";
 	case DPTF_TEMP_SENSOR_0:
 		return "TSR0";
 	case DPTF_TEMP_SENSOR_1:
@@ -123,7 +125,7 @@ void dptf_write_scope(enum dptf_participant participant)
  * are used to increase the speed of the fan in order to speed up cooling.
  */
 static void write_active_relationship_table(const struct dptf_active_policy *policies,
-					    int max_count)
+					    int max_count, bool dptf_multifan_support)
 {
 	char *pkg_count;
 	int i, j;
@@ -154,7 +156,11 @@ static void write_active_relationship_table(const struct dptf_active_policy *pol
 
 		/* Source, Target, Percent, Fan % for each of _AC0 ... _AC9 */
 		acpigen_write_package(13);
-		acpigen_emit_namestring(path_of(DPTF_FAN));
+		if (dptf_multifan_support)
+			acpigen_emit_namestring(path_of(policies[i].source));
+		else
+			acpigen_emit_namestring(path_of(DPTF_FAN));
+
 		acpigen_emit_namestring(path_of(policies[i].target));
 		acpigen_write_integer(DEFAULT_IF_0(policies[i].weight, DEFAULT_WEIGHT));
 
@@ -205,9 +211,10 @@ static void write_active_cooling_methods(const struct dptf_active_policy *polici
 	}
 }
 
-void dptf_write_active_policies(const struct dptf_active_policy *policies, int max_count)
+void dptf_write_active_policies(const struct dptf_active_policy *policies,
+		int max_count, bool dptf_multifan_support)
 {
-	write_active_relationship_table(policies, max_count);
+	write_active_relationship_table(policies, max_count, dptf_multifan_support);
 	write_active_cooling_methods(policies, max_count);
 }
 
@@ -352,7 +359,29 @@ void dptf_write_charger_perf(const struct dptf_charger_perf *states, int max_cou
 	acpigen_pop_len(); /* Scope */
 }
 
-void dptf_write_fan_perf(const struct dptf_fan_perf *states, int max_count)
+int dptf_write_fan_perf_fps(uint8_t percent, uint16_t power, uint16_t speed,
+		uint16_t noise_level)
+{
+	/*
+	 * Some _FPS tables do include a last entry where Percent is 0, but Power is
+	 * called out, so this table is finished when both are zero.
+	 */
+	if (!percent && !power)
+		return 1;
+
+	acpigen_write_package(5);
+	acpigen_write_integer(percent);
+	acpigen_write_integer(DEFAULT_TRIP_POINT);
+	acpigen_write_integer(speed);
+	acpigen_write_integer(noise_level);
+	acpigen_write_integer(power);
+	acpigen_pop_len(); /* inner Package */
+
+	return 0;
+}
+
+void dptf_write_fan_perf(const struct dptf_fan_perf *states, int max_count,
+						enum dptf_participant participant)
 {
 	char *pkg_count;
 	int i;
@@ -360,29 +389,48 @@ void dptf_write_fan_perf(const struct dptf_fan_perf *states, int max_count)
 	if (!max_count || !states[0].percent)
 		return;
 
-	dptf_write_scope(DPTF_FAN);
+	dptf_write_scope(participant);
 
 	/* _FPS - Fan Performance States */
 	acpigen_write_name("_FPS");
+
 	pkg_count = acpigen_write_package(1); /* 1 for Revision */
 	acpigen_write_integer(FPS_REVISION); /* revision */
 
 	for (i = 0; i < max_count; ++i) {
-		/*
-		 * Some _FPS tables do include a last entry where Percent is 0, but Power is
-		 * called out, so this table is finished when both are zero.
-		 */
-		if (!states[i].percent && !states[i].power)
-			break;
-
 		(*pkg_count)++;
-		acpigen_write_package(5);
-		acpigen_write_integer(states[i].percent);
-		acpigen_write_integer(DEFAULT_TRIP_POINT);
-		acpigen_write_integer(states[i].speed);
-		acpigen_write_integer(states[i].noise_level);
-		acpigen_write_integer(states[i].power);
-		acpigen_pop_len(); /* inner Package */
+		if (dptf_write_fan_perf_fps(states[i].percent, states[i].power,
+			states[i].speed, states[i].noise_level))
+			break;
+	}
+
+	acpigen_pop_len(); /* Package */
+	acpigen_pop_len(); /* Scope */
+}
+
+void dptf_write_multifan_perf(
+		const struct dptf_multifan_perf (*states)[DPTF_MAX_FAN_PERF_STATES],
+		int max_count, enum dptf_participant participant, int fan_num)
+{
+	char *pkg_count;
+	int i;
+
+	if (!max_count || !states[fan_num][0].percent)
+		return;
+
+	dptf_write_scope(participant);
+
+	/* _FPS - Fan Performance States */
+	acpigen_write_name("_FPS");
+
+	pkg_count = acpigen_write_package(1); /* 1 for Revision */
+	acpigen_write_integer(FPS_REVISION); /* revision */
+
+	for (i = 0; i < max_count; ++i) {
+		(*pkg_count)++;
+		if (dptf_write_fan_perf_fps(states[fan_num][i].percent, states[fan_num][i].power,
+				states[fan_num][i].speed, states[fan_num][i].noise_level))
+			break;
 	}
 
 	acpigen_pop_len(); /* Package */

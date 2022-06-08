@@ -12,6 +12,7 @@
 /* Generic DPTF participants have a PTYP field to distinguish them */
 enum dptf_generic_participant_type {
 	DPTF_GENERIC_PARTICIPANT_TYPE_TSR	= 0x3,
+	DPTF_GENERIC_PARTICIPANT_TYPE_FAN	= 0x4,
 	DPTF_GENERIC_PARTICIPANT_TYPE_TPCH	= 0x5,
 	DPTF_GENERIC_PARTICIPANT_TYPE_CHARGER	= 0xB,
 	DPTF_GENERIC_PARTICIPANT_TYPE_BATTERY	= 0xC,
@@ -22,6 +23,7 @@ enum dptf_generic_participant_type {
 #define DEFAULT_TPCH_STR		"Intel PCH FIVR Participant"
 #define DEFAULT_POWER_STR		"Power Participant"
 #define DEFAULT_BATTERY_STR		"Battery Participant"
+#define DEFAULT_FAN_STR			"Fan Participant"
 
 #define PMC_IPC_COMMAND_FIVR_SIZE	0x8
 
@@ -51,10 +53,24 @@ static bool is_participant_used(const struct drivers_intel_dptf_config *config,
 			return true;
 
 	/* Check fan as well (its use is implicit in the Active policy) */
-	if (participant == DPTF_FAN && config->policies.active[0].target != DPTF_NONE)
+	if ((participant == DPTF_FAN || participant == DPTF_FAN_2) &&
+		config->policies.active[0].target != DPTF_NONE)
 		return true;
 
 	return false;
+}
+
+/* Return the assigned namestring of the FAN participant */
+static const char *fan_namestring_of(enum dptf_participant participant)
+{
+	switch (participant) {
+	case DPTF_FAN:
+		return "TFN1";
+	case DPTF_FAN_2:
+		return "TFN2";
+	default:
+		return "";
+	}
 }
 
 static const char *dptf_acpi_name(const struct device *dev)
@@ -115,15 +131,20 @@ static void write_tcpu(const struct device *pci_dev,
 	acpigen_pop_len(); /* TCPU Scope */
 }
 
-/* \_SB.DPTF.TFN1 */
+/* \_SB.DPTF.TFNx */
 static void write_fan(const struct drivers_intel_dptf_config *config,
-		      const struct dptf_platform_info *platform_info)
+			const struct dptf_platform_info *platform_info,
+			enum dptf_participant participant)
 {
-	acpigen_write_device("TFN1");
+	static int fan_uid = 0;
+
+	acpigen_write_device(fan_namestring_of(participant));
 	acpigen_write_name("_HID");
 	dptf_write_hid(platform_info->use_eisa_hids, platform_info->fan_hid);
-	acpigen_write_name_integer("_UID", 0);
-	acpigen_write_STA(get_STA_value(config, DPTF_FAN));
+	acpigen_write_name_integer("_UID", fan_uid++);
+	acpigen_write_name_string("_STR", DEFAULT_FAN_STR);
+	acpigen_write_name_integer("PTYP", DPTF_GENERIC_PARTICIPANT_TYPE_FAN);
+	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 	acpigen_pop_len(); /* Device */
 }
 
@@ -438,6 +459,7 @@ static void write_device_definitions(const struct device *dev)
 	const struct dptf_platform_info *platform_info = get_dptf_platform_info();
 	const struct drivers_intel_dptf_config *config;
 	struct device *parent;
+	enum dptf_participant p;
 
 	/* The CPU device gets an _ADR that matches the ACPI PCI address for 00:04.00 */
 	parent = dev && dev->bus ? dev->bus->dev : NULL;
@@ -450,7 +472,13 @@ static void write_device_definitions(const struct device *dev)
 	config = config_of(dev);
 	write_tcpu(parent, config);
 	write_open_dptf_device(dev, platform_info);
-	write_fan(config, platform_info);
+
+	if (config->dptf_multifan_support) {
+		for (p = DPTF_FAN; p <= DPTF_FAN_2; ++p)
+			write_fan(config, platform_info, p);
+	} else
+		write_fan(config, platform_info, DPTF_FAN);
+
 	write_oem_variables(config);
 	write_imok();
 	write_generic_devices(config, platform_info);
@@ -476,7 +504,7 @@ static void write_policies(const struct drivers_intel_dptf_config *config)
 				    config->policies.critical, DPTF_MAX_CRITICAL_POLICIES);
 
 	dptf_write_active_policies(config->policies.active,
-				   DPTF_MAX_ACTIVE_POLICIES);
+				   DPTF_MAX_ACTIVE_POLICIES, config->dptf_multifan_support);
 
 	dptf_write_passive_policies(config->policies.passive,
 				    DPTF_MAX_PASSIVE_POLICIES);
@@ -488,8 +516,20 @@ static void write_policies(const struct drivers_intel_dptf_config *config)
 /* Writes other static tables that are used by DPTF */
 static void write_controls(const struct drivers_intel_dptf_config *config)
 {
+	enum dptf_participant p;
+	int fan_num;
+
 	dptf_write_charger_perf(config->controls.charger_perf, DPTF_MAX_CHARGER_PERF_STATES);
-	dptf_write_fan_perf(config->controls.fan_perf, DPTF_MAX_FAN_PERF_STATES);
+
+	/* Write TFN perf states based on the number of fans on the platform */
+	if (config->dptf_multifan_support) {
+		for (p = DPTF_FAN, fan_num = 0; p <= DPTF_FAN_2; ++p, ++fan_num)
+			dptf_write_multifan_perf(config->controls.multifan_perf,
+					DPTF_MAX_FAN_PERF_STATES, p, fan_num);
+	} else
+		dptf_write_fan_perf(config->controls.fan_perf, DPTF_MAX_FAN_PERF_STATES,
+			DPTF_FAN);
+
 	dptf_write_power_limits(&config->controls.power_limits);
 }
 
@@ -497,14 +537,25 @@ static void write_controls(const struct drivers_intel_dptf_config *config)
 static void write_options(const struct drivers_intel_dptf_config *config)
 {
 	enum dptf_participant p;
-	int i;
+	int i, fan_num;
 
-	/* Fan options */
-	dptf_write_scope(DPTF_FAN);
-	dptf_write_fan_options(config->options.fan.fine_grained_control,
-			       config->options.fan.step_size,
-			       config->options.fan.low_speed_notify);
-	acpigen_pop_len(); /* Scope */
+	/* Configure Fan options based on the number of fans on the platform */
+	if (config->dptf_multifan_support) {
+		for (p = DPTF_FAN, fan_num = 0; p <= DPTF_FAN_2; ++p, ++fan_num) {
+			dptf_write_scope(p);
+			dptf_write_fan_options(
+				config->options.multifan_options[fan_num].fine_grained_control,
+				config->options.multifan_options[fan_num].step_size,
+				config->options.multifan_options[fan_num].low_speed_notify);
+			acpigen_pop_len(); /* Scope */
+		}
+	} else {
+		dptf_write_scope(DPTF_FAN);
+		dptf_write_fan_options(config->options.fan.fine_grained_control,
+			config->options.fan.step_size,
+			config->options.fan.low_speed_notify);
+		acpigen_pop_len(); /* Scope */
+	}
 
 	/* TSR options */
 	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_4; ++p, ++i) {

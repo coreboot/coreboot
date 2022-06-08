@@ -14,12 +14,15 @@
 #define DPTF_DEVICE_PATH	"\\_SB.DPTF"
 #define TCPU_SCOPE		"\\_SB.PCI0"
 
+#define DPTF_MAX_FAN_PARTICIPANTS	2
+
 /* List of available participants (i.e., they can participate in policies) */
 enum dptf_participant {
 	DPTF_NONE,
 	DPTF_CPU,
 	DPTF_CHARGER,
 	DPTF_FAN,
+	DPTF_FAN_2,
 	DPTF_TEMP_SENSOR_0,
 	DPTF_TEMP_SENSOR_1,
 	DPTF_TEMP_SENSOR_2,
@@ -52,6 +55,8 @@ enum {
 
 /* Active Policy */
 struct dptf_active_policy {
+	/* The device that can be throttled */
+	enum dptf_participant source;
 	/* Device capable of being affected by the fan */
 	enum dptf_participant target;
 	/* Source's contribution to the Target's cooling capability as a percentage */
@@ -115,6 +120,18 @@ struct dptf_fan_perf {
 	uint16_t power;
 };
 
+/* Different levels of fan activity, chosen by active policies */
+struct dptf_multifan_perf {
+	/* Fan percentage level */
+	uint8_t percent;
+	/* Fan speed, in RPM */
+	uint16_t speed;
+	/* Noise level, in 0.1 dBs */
+	uint16_t noise_level;
+	/* Power in mA */
+	uint16_t power;
+};
+
 /* Running Average Power Limits (RAPL) */
 struct dptf_power_limit_config {
 	/* Minimum level of power limit, in mW */
@@ -151,7 +168,8 @@ void dptf_write_enabled_policies(const struct dptf_active_policy *active_policie
  * temperature thresholds are met (_AC0 - _AC9), the fan is driven to corresponding percentage
  * of full speed.
  */
-void dptf_write_active_policies(const struct dptf_active_policy *policies, int max_count);
+void dptf_write_active_policies(const struct dptf_active_policy *policies, int max_count,
+		bool dptf_multifan_support);
 
 /*
  * This function uses the definition of the passive policies to write out _PSV Methods on all
@@ -183,7 +201,15 @@ void dptf_write_charger_perf(const struct dptf_charger_perf *perf, int max_count
  *  4) The corresponding active cooling trip point (from _ART) (typically left as
  *     DPTF_FIELD_UNUSED).
  */
-void dptf_write_fan_perf(const struct dptf_fan_perf *perf, int max_count);
+void dptf_write_fan_perf(const struct dptf_fan_perf *perf, int max_count,
+				enum dptf_participant participant);
+
+void dptf_write_multifan_perf(
+			const struct dptf_multifan_perf (*states)[DPTF_MAX_FAN_PERF_STATES],
+			int max_count, enum dptf_participant participant, int fan_num);
+
+int dptf_write_fan_perf_fps(uint8_t percent, uint16_t power, uint16_t speed,
+		uint16_t noise_level);
 
 /*
  * This function writes out a PPCC table, which indicates power ranges that different Intel

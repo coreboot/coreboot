@@ -30,7 +30,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_TPM1
 
 config VBOOT
-	select VBOOT_VBNV_EC
+	select VBOOT_VBNV_FLASH
 
 config MAINBOARD_DIR
 	default "google/veyron"

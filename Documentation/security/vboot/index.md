@@ -176,7 +176,6 @@ CMOS, the EC, or in a read/write area of the SPI flash device.
 Select one of the following:
 
 * `VBOOT_VBNV_CMOS`
-* `VBOOT_VBNV_EC`
 * `VBOOT_VBNV_FLASH`
 
 More non-volatile storage features may be found in `security/vboot/Kconfig`.

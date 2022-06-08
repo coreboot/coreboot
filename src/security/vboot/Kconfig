@@ -58,12 +58,6 @@ config VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
 	  Vboot non-volatile storage data will be backed up from CMOS to flash
 	  and restored from flash if the CMOS is invalid due to power loss.
 
-config VBOOT_VBNV_EC
-	bool
-	default n
-	help
-	  VBNV is stored in EC
-
 config VBOOT_VBNV_FLASH
 	bool
 	default n

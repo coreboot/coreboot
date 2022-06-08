@@ -72,11 +72,6 @@ verstage-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
 romstage-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
 ramstage-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
 
-bootblock-$(CONFIG_VBOOT_VBNV_EC) += vbnv_ec.c
-verstage-$(CONFIG_VBOOT_VBNV_EC) += vbnv_ec.c
-romstage-$(CONFIG_VBOOT_VBNV_EC) += vbnv_ec.c
-ramstage-$(CONFIG_VBOOT_VBNV_EC) += vbnv_ec.c
-
 bootblock-$(CONFIG_VBOOT_VBNV_FLASH) += vbnv_flash.c
 verstage-$(CONFIG_VBOOT_VBNV_FLASH) += vbnv_flash.c
 romstage-$(CONFIG_VBOOT_VBNV_FLASH) += vbnv_flash.c

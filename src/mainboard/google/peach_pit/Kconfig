@@ -17,9 +17,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_TPM1
 	select MISSING_BOARD_RESET
 
-config VBOOT
-	select VBOOT_VBNV_EC
-
 config MAINBOARD_DIR
 	default "google/peach_pit"
 

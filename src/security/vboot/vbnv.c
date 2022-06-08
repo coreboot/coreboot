@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <string.h>
 #include <types.h>
 #include <security/vboot/vbnv.h>
@@ -61,10 +62,10 @@ void read_vbnv(uint8_t *vbnv_copy)
 {
 	if (CONFIG(VBOOT_VBNV_CMOS))
 		read_vbnv_cmos(vbnv_copy);
-	else if (CONFIG(VBOOT_VBNV_EC))
-		read_vbnv_ec(vbnv_copy);
 	else if (CONFIG(VBOOT_VBNV_FLASH))
 		read_vbnv_flash(vbnv_copy);
+	else
+		dead_code();
 
 	/* Check data for consistency */
 	if (!verify_vbnv(vbnv_copy))
@@ -79,10 +80,10 @@ void save_vbnv(const uint8_t *vbnv_copy)
 {
 	if (CONFIG(VBOOT_VBNV_CMOS))
 		save_vbnv_cmos(vbnv_copy);
-	else if (CONFIG(VBOOT_VBNV_EC))
-		save_vbnv_ec(vbnv_copy);
 	else if (CONFIG(VBOOT_VBNV_FLASH))
 		save_vbnv_flash(vbnv_copy);
+	else
+		dead_code();
 
 	/* Clear initialized flag to force cached data to be updated */
 	vbnv_initialized = 0;

@@ -276,7 +276,7 @@ void google_chromeec_fill_ssdt_generator(const struct device *dev)
 	ec->ops = &ec_ops;
 
 	if (CONFIG(DRIVERS_INTEL_DPTF))
-		ec_fill_dptf_helpers(ec);
+		ec_fill_dptf_helpers(ec, dev);
 
 	fill_ssdt_typec_device(dev);
 	fill_ssdt_ps2_keyboard(dev);

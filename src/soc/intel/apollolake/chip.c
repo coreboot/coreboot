@@ -615,6 +615,11 @@ static void glk_fsp_silicon_init_params_cb(
 	 * Options to adjust PMIC Vdd2 voltage.
 	 */
 	silconfig->PmicVdd2Voltage = cfg->PmicVdd2Voltage;
+
+	/* FSP should let coreboot set subsystem IDs, which are read/write-once */
+	silconfig->SiSVID = 0;
+	silconfig->SiSSID = 0;
+	silconfig->HgSubSystemId = 0;
 #endif
 }
 
@@ -723,6 +728,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	/* 8254 Timer */
 	bool use_8254 = get_uint_option("legacy_8254_timer", CONFIG(USE_LEGACY_8254_TIMER));
 	silconfig->Timer8254ClkSetting = use_8254;
+
+	/* FSP should let coreboot set subsystem IDs, which are read/write-once */
+	silconfig->SubSystemVendorId = 0;
+	silconfig->SubSystemId = 0;
 
 	mainboard_silicon_init_params(silconfig);
 }

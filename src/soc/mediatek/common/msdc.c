@@ -474,12 +474,16 @@ int mtk_emmc_early_init(void *base, void *top_base)
 
 	/* Send CMD1 */
 	err = mmc_send_op_cond(&media);
-	if (err == 0)
-		set_early_mmc_wake_status(MMC_STATUS_CMD1_READY);
-	else if (err == CARD_IN_PROGRESS)
+	if (err == 0) {
+		if (media.op_cond_response & OCR_HCS)
+			set_early_mmc_wake_status(MMC_STATUS_CMD1_READY_HCS);
+		else
+			set_early_mmc_wake_status(MMC_STATUS_CMD1_READY);
+	} else if (err == CARD_IN_PROGRESS) {
 		set_early_mmc_wake_status(MMC_STATUS_CMD1_IN_PROGRESS);
-	else
+	} else {
 		goto out_err;
+	}
 
 	return 0;
 

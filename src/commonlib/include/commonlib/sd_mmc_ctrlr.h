@@ -17,8 +17,9 @@
 enum {
 	MMC_STATUS_NEED_RESET = 0,
 	MMC_STATUS_CMD1_READY_OR_IN_PROGRESS,
-	MMC_STATUS_CMD1_READY,
+	MMC_STATUS_CMD1_READY,		/* Byte mode */
 	MMC_STATUS_CMD1_IN_PROGRESS,
+	MMC_STATUS_CMD1_READY_HCS,	/* Sector mode (High capacity support) */
 };
 
 struct mmc_command {

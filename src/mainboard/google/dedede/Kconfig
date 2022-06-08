@@ -114,6 +114,7 @@ config MAINBOARD_PART_NUMBER
 	default "Driblee" if BOARD_GOOGLE_DRIBLEE
 	default "Gooey" if BOARD_GOOGLE_GOOEY
 	default "Beadrix" if BOARD_GOOGLE_BEADRIX
+	default "Shotzo" if BOARD_GOOGLE_SHOTZO
 
 config MAX_CPUS
 	int
@@ -152,6 +153,7 @@ config VARIANT_DIR
 	default "driblee" if BOARD_GOOGLE_DRIBLEE
 	default "gooey" if BOARD_GOOGLE_GOOEY
 	default "beadrix" if BOARD_GOOGLE_BEADRIX
+	default "shotzo" if BOARD_GOOGLE_SHOTZO
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 

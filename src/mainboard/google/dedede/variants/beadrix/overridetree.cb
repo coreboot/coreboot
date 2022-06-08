@@ -121,7 +121,7 @@ chip soc/intel/jasperlake
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
 						register "enable_delay_ms" = "20"
 						device usb 3.3 on
-							probe LTE LTE_PRESENT
+							probe DB_PORTS DB_PORTS_1C_LTE
 						end
 					end
 				end
@@ -218,7 +218,9 @@ chip soc/intel/jasperlake
 				register "reg_irq_cfg0" = "0x00"
 				register "reg_irq_cfg1" = "0x80"
 				register "reg_irq_cfg2" = "0x00"
-				device i2c 28 on end
+				device i2c 28 on
+					probe DB_PORTS DB_PORTS_1C_LTE
+				end
 			end
 		end # I2C 5
 		device pci 1f.3 on

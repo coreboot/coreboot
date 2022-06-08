@@ -148,6 +148,10 @@
 #define  PCH_DEVFN_EMMC		_PCH_DEVFN(EMMC, 0)
 #define  PCH_DEV_EMMC		_PCH_DEV(EMMC, 0)
 
+#define PCH_DEV_SLOT_UFS	0x1d
+#define  PCH_DEVFN_UFS		_PCH_DEVFN(UFS, 0)
+#define  PCH_DEV_UFS		_PCH_DEV(UFS, 0)
+
 #define PCH_DEV_SLOT_SDIO	0x1e
 #define  PCH_DEVFN_SDIO		_PCH_DEVFN(SDIO, 0)
 #define  PCH_DEV_SDIO		_PCH_DEV(SDIO, 0)

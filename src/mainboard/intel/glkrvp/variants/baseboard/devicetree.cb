@@ -177,6 +177,7 @@ chip soc/intel/apollolake
 		device pci 1a.0 on  end	# - PWM
 		device pci 1b.0 on  end	# - SDCARD
 		device pci 1c.0 on  end	# - eMMC
+		device pci 1d.0 on  end # - UFS
 		device pci 1e.0 off end	# - SDIO
 		device pci 1f.0 on	# - LPC
 			chip drivers/pc80/tpm

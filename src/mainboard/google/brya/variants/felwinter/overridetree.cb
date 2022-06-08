@@ -181,7 +181,7 @@ chip soc/intel/alderlake
 				device generic 0 alias dptf_policy on end
 			end
 		end
-		device ref tbt_pcie_rp0 off end
+		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp1 on
 			probe DB_USB USB4_KB8001
 		end

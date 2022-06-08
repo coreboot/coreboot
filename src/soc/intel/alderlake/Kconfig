@@ -5,6 +5,12 @@ config SOC_INTEL_ALDERLAKE
 	  type using the `SOC_INTEL_ALDERLAKE_PCH_*` options instead
 	  of selecting this option directly.
 
+config SOC_INTEL_RAPTORLAKE
+	bool
+	help
+	 Intel Raptorlake support. Mainboards using RPL should select
+	 SOC_INTEL_RAPTORLAKE and SOC_INTEL_ALDERLAKE_PCH_* together.
+
 config SOC_INTEL_ALDERLAKE_PCH_M
 	bool
 	select SOC_INTEL_ALDERLAKE
@@ -346,6 +352,7 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 config FSP_HEADER_PATH
 	string "Location of FSP headers"
 	default "src/vendorcode/intel/fsp/fsp2_0/alderlake_n/" if SOC_INTEL_ALDERLAKE_PCH_N
+	default "src/vendorcode/intel/fsp/fsp2_0/raptorlake/" if SOC_INTEL_RAPTORLAKE
 	default "src/vendorcode/intel/fsp/fsp2_0/alderlake/"
 
 config FSP_FD_PATH

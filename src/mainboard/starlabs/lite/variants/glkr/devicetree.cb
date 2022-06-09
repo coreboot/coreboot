@@ -99,13 +99,10 @@ chip soc/intel/apollolake
 
 			# Daughterboard USB 3.0
 			register "usb2_port[3]"		= "PORT_EN(OC1)"
+			register "usb3_port[4]"		= "PORT_EN(OC1)"
 
 			# Daughterboard SD Card
 			register "usb2_port[5]"		= "PORT_EN(OC_SKIP)"
-			register "usb3_port[4]"		= "PORT_EN(OC1)"
-
-			# Bluetooth
-			register "usb2_port[6]"		= "PORT_EN(OC_SKIP)"
 		end
 		device pci 15.1 off end						# XDCI
 		device pci 16.0 off end						# I2C0

@@ -55,4 +55,30 @@ static const struct sa_mmio_descriptor soc_vtd_resources[] = {
 #define V_P2SB_CFG_HBDF_DEV	30
 #define V_P2SB_CFG_HBDF_FUNC	6
 
+#define CRAB_ABORT_BASE_ADDR	0xFEB00000
+#define CRAB_ABORT_SIZE		(512 * KiB)
+#define TPM_BASE_ADDRESS	0xFED40000
+#define TPM_SIZE		(64 * KiB)
+
+#define LT_SECURITY_BASE_ADDR	0xFED50000
+#define LT_SECURITY_SIZE	(128 * KiB)
+#define APIC_SIZE		(1 * MiB)
+
+#define MASK_PCIEXBAR_LENGTH	0x0000000E // bits [3:1]
+#define PCIEXBAR_LENGTH_LSB	1 // used to shift right
+
+#define DSM_BASE_ADDR_REG	0xB0
+#define  MASK_DSM_LENGTH	0xFF00 // [15:8]
+#define  MASK_DSM_LENGTH_LSB	8 // used to shift right
+#define  MASK_GSM_LENGTH	0xC0 // [7:6]
+#define  MASK_GSM_LENGTH_LSB	6 // used to shift right
+#define DPR_REG			0x5C
+#define  MASK_DPR_LENGTH	0xFF0 // [11:4]
+#define  MASK_DPR_LENGTH_LSB	4 // used to shift right
+
+uint64_t get_mmcfg_size(struct device *dev);
+uint64_t get_dsm_size(struct device *dev);
+uint64_t get_gsm_size(struct device *dev);
+uint64_t get_dpr_size(struct device *dev);
+
 #endif

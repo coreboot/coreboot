@@ -26,6 +26,9 @@
 #define EC_GPIO_MP2_SEL		(1 << 2)
 #define EC_GPIO_WWAN_N_LOM_SW	(1 << 3)
 
+#define EC_SW02_ADDR		0xB7
+#define EC_SW02_MS		(1 << 7)
+
 static void configure_ec_gpio(void)
 {
 	uint8_t tmp;
@@ -49,6 +52,10 @@ static void configure_ec_gpio(void)
 	tmp = ec_read(EC_GPIO_C_ADDR);
 	tmp |= EC_GPIO_WWAN_N_LOM_SW | EC_GPIO_MP2_SEL | EC_GPIO_DT_N_WLAN_SW;
 	ec_write(EC_GPIO_C_ADDR, tmp);
+
+	tmp = ec_read(EC_SW02_ADDR);
+	tmp |= EC_SW02_MS;
+	ec_write(EC_SW02_ADDR, tmp);
 }
 
 void chausie_ec_init(void)

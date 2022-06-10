@@ -90,7 +90,7 @@ struct soc_amd_sabrina_config {
 		GPP_CLK_ON,	/* GPP clock always on; default */
 		GPP_CLK_REQ,	/* GPP clock controlled by corresponding #CLK_REQx pin */
 		GPP_CLK_OFF,	/* GPP clk off */
-	} gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
+	} gpp_clk_config[GPP_CLK_OUTPUT_AVAILABLE];
 
 	/* performance policy for the PCIe links: power consumption vs. link speed */
 	enum {

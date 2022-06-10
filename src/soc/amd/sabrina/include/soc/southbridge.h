@@ -96,6 +96,7 @@
 #define   GPP_CLK5_REQ_SHIFT		10
 #define   GPP_CLK6_REQ_SHIFT		12
 #define     GPP_CLK_OUTPUT_COUNT	7
+#define     GPP_CLK_OUTPUT_AVAILABLE	4
 #define   GPP_CLK_REQ_MASK(clk_shift)	(0x3 << (clk_shift))
 #define   GPP_CLK_REQ_ON(clk_shift)	(0x3 << (clk_shift))
 #define   GPP_CLK_REQ_EXT(clk_shift)	(0x1 << (clk_shift))

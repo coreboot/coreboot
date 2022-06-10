@@ -151,9 +151,11 @@ static void gpp_clk_setup(void)
 		 * The remapping of values is done so that the default of the enum used for the
 		 * devicetree settings is the clock being enabled, so that a missing devicetree
 		 * configuration for this will result in an always active clock and not an
-		 * inactive PCIe clock output.
+		 * inactive PCIe clock output. Only the configuration for the clock outputs
+		 * available on the package is provided via the devicetree; the rest is
+		 * switched off unconditionally.
 		 */
-		switch (cfg->gpp_clk_config[i]) {
+		switch (i < GPP_CLK_OUTPUT_AVAILABLE ? cfg->gpp_clk_config[i] : GPP_CLK_OFF) {
 		case GPP_CLK_REQ:
 			gpp_clk_ctl |= GPP_CLK_REQ_EXT(gpp_clk_shift_lut[i]);
 			break;

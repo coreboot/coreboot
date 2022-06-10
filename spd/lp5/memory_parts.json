@@ -89,6 +89,16 @@
                 "ranksPerChannel": 2,
                 "speedMbps": 6400
             }
+        },
+        {
+            "name":  "K3LKCKC0BM-MGCP",
+            "attribs": {
+                "densityPerDieGb": 16,
+                "diesPerPackage": 4,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 2,
+                "speedMbps": 6400
+            }
         }
     ]
 }

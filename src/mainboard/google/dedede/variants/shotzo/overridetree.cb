@@ -8,10 +8,8 @@ chip soc/intel/jasperlake
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
 	#|                   | before memory is up       |
-	#| I2C0              | Trackpad                  |
-	#| I2C1              | Digitizer                 |
+	#| I2C1              | LVDS                      |
 	#| I2C2              | Touchscreen               |
-	#| I2C3              | Camera                    |
 	#| I2C4              | Audio                     |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
@@ -19,16 +17,10 @@ chip soc/intel/jasperlake
 			.speed_mhz = 1,
 			.early_init = 1,
 		},
-		.i2c[0] = {
-			.speed = I2C_SPEED_FAST,
-		},
 		.i2c[1] = {
 			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[2] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[3] = {
 			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[4] = {
@@ -36,7 +28,132 @@ chip soc/intel/jasperlake
 		},
 	}"
 
+	register "disable_external_bypass_vr" = "1"    # Does not support external vnn power rail
+
+	# USB Port Configuration
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"     # Camera
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"     # Lan
+
 	device domain 0 on
-		device pci 15.0 on end
+		device pci 14.0 on
+			chip drivers/usb/acpi
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C0""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device usb 2.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A2""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device usb 2.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A0""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device usb 2.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A1""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 3)"
+						device usb 2.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A3""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 4)"
+						device usb 2.4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""LAN""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H19)"
+						device usb 2.7 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device usb 3.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""LAN""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 3.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A0""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device usb 3.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A1""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device usb 3.3 on end
+					end
+				end
+			end
+		end # USB xHCI
+		device pci 15.0 off end # I2C 0
+		device pci 15.2 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ILTK0001""
+				register "generic.desc" = ""ILITEK Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_EDGE_LOW(GPP_D4_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D5)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
+				register "generic.enable_delay_ms" = "12"
+				register "generic.wake" = "GPE0_DW2_04"
+				register "generic.has_power_resource" = "1"
+				register "generic.disable_gpio_export_in_crs" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 41 on end
+			end
+		end # I2C 2
+		device pci 15.3 off  end #I2C 3
+		device pci 1c.7 on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_DW2_03"
+				device pci 00.0 on  end
+			end
+		end # PCI Express Root Port 8 - WLAN
+		device pci 19.0 on
+			chip drivers/i2c/generic
+				register "hid" = ""RTL5682""
+				register "name" = ""RT58""
+				register "desc" = ""Realtek RT5682""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on end
+			end
+		end #I2C 4
+		device pci 1f.3 on
+			chip drivers/generic/alc1015
+				register "hid" = ""RTL1019""
+				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"
+				device generic 0 on end
+			end
+		end # Intel HDA
 	end
 end

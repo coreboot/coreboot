@@ -22,6 +22,7 @@ static void bridge_ps8640_power_on(void)
 	/*
 	 * PS8640 power-on sequence is described in chapter 14, PS8640_DS_V1.4_20200210.docx
 	 * - set VDD12 to be 1.2V
+	 * - delay 100us
 	 * - set VDD33 to be 3.3V
 	 * - pull hign PD#
 	 * - pull down RST#
@@ -35,6 +36,7 @@ static void bridge_ps8640_power_on(void)
 
 	/* Set VRF12 to 1.2V and VCN33 to 3.3V */
 	mainboard_set_regulator_vol(MTK_REGULATOR_VRF12, 1200000);
+	udelay(100);
 	mainboard_set_regulator_vol(MTK_REGULATOR_VCN33, 3300000);
 	udelay(200);
 

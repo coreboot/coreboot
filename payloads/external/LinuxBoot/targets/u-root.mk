@@ -40,11 +40,11 @@ endif
 get: version
 	if [ -d "$(go_path_dir)/src/$(uroot_package)" ]; then \
 	git -C $(go_path_dir)/src/$(uroot_package) checkout --quiet main; \
-	GOPATH=$(go_path_dir) go get -d -u -v $(uroot_package) || \
-	echo -e "\n<<u-root package update failed>>\n"; \
+	git -C $(go_path_dir)/src/$(uroot_package) pull || \
+	echo -e "\n<<Pulling u-root package from GitHub failed>>\n"; \
 	else \
-	GOPATH=$(go_path_dir) go get -d -u -v $(uroot_package) || \
-	(echo -e "\n<<failed to get u-root package. Please check your internet access>>\n" && \
+	git clone https://${uroot_package} ${go_path_dir}/src/${uroot_package} || \
+	(echo -e "\n<<Failed to clone u-root package. Please check your internet access>>\n" && \
 	exit 1); \
 	fi
 
@@ -52,10 +52,12 @@ checkout: get
 	git -C $(go_path_dir)/src/$(uroot_package) checkout --quiet $(CONFIG_LINUXBOOT_UROOT_VERSION)
 
 build: checkout
-	GOPATH=$(go_path_dir) go build -o $(uroot_bin) $(uroot_package)
+	cd ${go_path_dir}/src/${uroot_package}; \
+	go build -o ${uroot_bin} .
 
 u-root: build
-	GOARCH=$(ARCH-y) GOPATH=$(go_path_dir) $(uroot_bin) \
+	GOARCH=$(ARCH-y) $(uroot_bin) \
+	-uroot-source ${go_path_dir}/src/${uroot_package} \
 	$(uroot_args) -o $(project_dir)/initramfs_u-root.cpio $(uroot_cmds)
 
 .PHONY: all u-root build checkout get version

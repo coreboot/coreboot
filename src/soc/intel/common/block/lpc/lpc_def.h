@@ -7,6 +7,10 @@
 #define  LPC_SCNT_EN			(1 << 7)
 #define  LPC_SCNT_MODE			(1 << 6)
 #define LPC_IO_DECODE			0x80
+#define  LPC_IOD_FDD_RANGE		(0 << 12)
+#define  LPC_IOD_FDD_RANGE_MASK		(1 << 12)
+#define  LPC_IOD_LPT_RANGE		(0 << 8)
+#define  LPC_IOD_LPT_RANGE_MASK		(3 << 8)
 #define  LPC_IOD_COMA_RANGE_MASK	(7 << 0)
 #define  LPC_IOD_COMB_RANGE_MASK	(7 << 4)
 #define  LPC_IOD_COMA_RANGE		(0 << 0) /* 0x3F8 - 0x3FF COMA */

@@ -74,6 +74,84 @@ void lpc_open_pmio_window(uint16_t base, uint16_t size)
 	uint32_t lgir_reg_offset, lgir, window_size, alignment;
 	resource_t bridged_size, bridge_base;
 
+	switch (base) {
+	case 0:
+		printk(BIOS_ERR, "LPC IO decode base 0!\n");
+		return;
+	case 0x2e:
+	case 0x2f:
+		if (size > 2)
+			break;
+		printk(BIOS_DEBUG, "LPC: enabling default decode range LPC_IOE_SUPERIO_2E_2F\n");
+		pci_or_config16(PCH_DEV_LPC, LPC_IO_ENABLES, LPC_IOE_SUPERIO_2E_2F);
+		return;
+	case 0x4e:
+	case 0x4f:
+		if (size > 2)
+			break;
+		printk(BIOS_DEBUG, "LPC: enabling default decode range LPC_IOE_EC_4E_4F\n");
+		pci_or_config16(PCH_DEV_LPC, LPC_IO_ENABLES, LPC_IOE_EC_4E_4F);
+		return;
+	case 0x60:
+	case 0x64:
+		if (size > 1)
+			break;
+		printk(BIOS_DEBUG, "LPC: enabling default decode range LPC_IOE_KBC_60_64\n");
+		pci_or_config16(PCH_DEV_LPC, LPC_IO_ENABLES, LPC_IOE_KBC_60_64);
+		return;
+	case 0x62:
+	case 0x66:
+		if (size > 1)
+			break;
+		printk(BIOS_DEBUG, "LPC: enabling default decode range LPC_IOE_EC_62_66\n");
+		pci_or_config16(PCH_DEV_LPC, LPC_IO_ENABLES, LPC_IOE_EC_62_66);
+		return;
+	case 0x200:
+		if (size > 8)
+			break;
+		printk(BIOS_DEBUG, "LPC: enabling default decode range LPC_IOE_LGE_200\n");
+		pci_or_config16(PCH_DEV_LPC, LPC_IO_ENABLES, LPC_IOE_LGE_200);
+		return;
+	case 0x208:
+		if (size > 8)
+			break;
+		printk(BIOS_DEBUG, "LPC: enabling default decode range LPC_IOE_HGE_208\n");
+		pci_or_config16(PCH_DEV_LPC, LPC_IO_ENABLES, LPC_IOE_HGE_208);
+		return;
+	case 0x2f8: /* Don't support secondary ranges */
+		if (size > 8)
+			break;
+		printk(BIOS_DEBUG, "LPC: enabling default decode range LPC_IOE_COMB_EN\n");
+		pci_or_config16(PCH_DEV_LPC, LPC_IO_ENABLES, LPC_IOE_COMB_EN);
+		pci_update_config16(PCH_DEV_LPC, LPC_IO_DECODE, ~LPC_IOD_COMB_RANGE_MASK,
+				    LPC_IOD_COMB_RANGE);
+		return;
+	case 0x378: /* Don't support secondary ranges */
+		if (size > 8)
+			break;
+		printk(BIOS_DEBUG, "LPC: enabling default decode range LPC_IOE_LPT_EN\n");
+		pci_or_config16(PCH_DEV_LPC, LPC_IO_ENABLES, LPC_IOE_HGE_208);
+		pci_update_config16(PCH_DEV_LPC, LPC_IO_DECODE, ~LPC_IOD_LPT_RANGE_MASK,
+				    LPC_IOD_LPT_RANGE);
+		return;
+	case 0x3f0: /* Don't support secondary ranges */
+		if (size > 8)
+			break;
+		printk(BIOS_DEBUG, "LPC: enabling default decode range LPC_IOE_FDD_EN\n");
+		pci_or_config16(PCH_DEV_LPC, LPC_IO_ENABLES, LPC_IOE_FDD_EN);
+		pci_update_config16(PCH_DEV_LPC, LPC_IO_DECODE, ~LPC_IOD_FDD_RANGE_MASK,
+				 LPC_IOD_FDD_RANGE);
+		return;
+	case 0x3f8: /* Don't support secondary ranges */
+		if (size > 8)
+			break;
+		printk(BIOS_DEBUG, "LPC: enabling default decode range LPC_IOE_COMA_EN\n");
+		pci_or_config16(PCH_DEV_LPC, LPC_IO_ENABLES, LPC_IOE_COMA_EN);
+		pci_update_config16(PCH_DEV_LPC, LPC_IO_DECODE, ~LPC_IOD_COMA_RANGE_MASK,
+				    LPC_IOD_COMA_RANGE);
+		return;
+	}
+
 	printk(BIOS_SPEW, "LPC: Trying to open IO window from %x size %x\n",
 				base, size);
 

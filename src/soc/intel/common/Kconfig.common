@@ -113,6 +113,24 @@ config SOC_INTEL_DEBUG_CONSENT
 	  Set this option to enable default debug interface of SoC such as DBC
 	  or DCI.
 
+config HAVE_INTEL_COMPLIANCE_TEST_MODE
+	def_bool n
+
+config SOC_INTEL_COMPLIANCE_TEST_MODE
+	bool "Enable SoC hardware compliance test mode"
+	depends on HAVE_INTEL_COMPLIANCE_TEST_MODE
+	default n
+	help
+	  Set this option to configure hardware components in a way
+	  that supports compliance testing activities for various
+	  components such PCIe or USB. For example, PCI express
+	  implementation must comply with the hardware PCIe
+	  specification requirements: Electrical, Configuration, Link
+	  Protocol and Transaction Protocol. The hardware must be
+	  configured in a particular state to run the compliance
+	  tests: some feature related to power management needs to be
+	  turned off, hot plug should be enabled...
+
 config SMM_MODULE_STACK_SIZE
 	hex
 	default 0x800

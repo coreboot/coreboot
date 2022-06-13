@@ -149,6 +149,11 @@ chip soc/amd/sabrina
 		.PhyP3CpmP4Support = 0,
 	}"
 
+	register "gpp_clk_config[0]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[1]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[2]" = "GPP_CLK_OFF"
+	register "gpp_clk_config[3]" = "GPP_CLK_REQ"
+
 	device domain 0 on
 		device ref iommu on end
 		device ref gpp_bridge_0 on end # GBE

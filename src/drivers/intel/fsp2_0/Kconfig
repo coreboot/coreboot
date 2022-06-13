@@ -381,4 +381,12 @@ config FSP_ENABLE_SERIAL_DEBUG
 	  coreboot native debug driver when coreboot has integrated the debug FSP
 	  binaries. coreboot disables serial messages when this config is not enabled.
 
+config SAVE_MRC_AFTER_FSPS
+	bool
+	default n
+	depends on XEON_SP_COMMON_BASE
+	help
+	  Save MRC training data after FSP-S. Select this on platforms that generate MRC
+	  cache HOB data as part of FSP-S rather than FSP-M.
+
 endif

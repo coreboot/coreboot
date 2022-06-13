@@ -10,6 +10,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_USE_ESPI
 	select AMD_SOC_CONSOLE_UART
 	select MAINBOARD_HAS_CHROMEOS
+	select PCIEXP_ASPM
+	select PCIEXP_CLK_PM
+	select PCIEXP_COMMON_CLOCK
+	select PCIEXP_L1_SUB_STATE
 
 config FMDFILE
 	default "src/mainboard/amd/chausie/chromeos.fmd" if CHROMEOS

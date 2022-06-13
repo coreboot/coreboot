@@ -2,6 +2,8 @@
 
 #include <acpi/acpigen.h>
 
+#include "chip.h"
+
 static const char *conn_acpi_name(const struct device *dev)
 {
 	static char name[5];
@@ -11,6 +13,7 @@ static const char *conn_acpi_name(const struct device *dev)
 
 static void conn_fill_ssdt(const struct device *dev)
 {
+	const struct ec_google_chromeec_mux_conn_config *config = dev->chip_info;
 	const char *name;
 	name = acpi_device_name(dev);
 	if (!name)
@@ -20,6 +23,12 @@ static void conn_fill_ssdt(const struct device *dev)
 	acpigen_write_device(name);
 
 	acpigen_write_name_integer("_ADR", dev->path.generic.id);
+
+	if (config && config->mode_switch) {
+		struct acpi_dp *dsd = acpi_dp_new_table("_DSD");
+		acpi_dp_add_integer(dsd, "mode-switch", 1);
+		acpi_dp_write(dsd);
+	}
 
 	acpigen_write_device_end();
 	acpigen_write_scope_end();

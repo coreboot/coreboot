@@ -2,8 +2,9 @@
 
 #include <bootblock_common.h>
 #include <device/mmio.h>
+#include <soc/spi.h>
 
 void bootblock_mainboard_init(void)
 {
-	/* TODO: add mainboard init for bootblock */
+	mtk_snfc_init();
 }

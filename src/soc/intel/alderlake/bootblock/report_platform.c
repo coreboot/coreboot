@@ -35,6 +35,7 @@ static struct {
 	{ CPUID_ALDERLAKE_S_G0, "Alderlake-S G0 Platform" },
 	{ CPUID_ALDERLAKE_S_H0, "Alderlake-S H0 Platform" },
 	{ CPUID_RAPTORLAKE_P_J0, "Raptorlake-P J0 Platform" },
+	{ CPUID_RAPTORLAKE_P_Q0, "Raptorlake-P Q0 Platform" },
 };
 
 static struct {
@@ -72,6 +73,8 @@ static struct {
 	{ PCI_DID_INTEL_ADL_S_ID_14, "Alderlake-S" },
 	{ PCI_DID_INTEL_RPL_P_ID_1, "Raptorlake-P" },
 	{ PCI_DID_INTEL_RPL_P_ID_2, "Raptorlake-P" },
+	{ PCI_DID_INTEL_RPL_P_ID_3, "Raptorlake-P" },
+
 };
 
 static struct {
@@ -196,6 +199,9 @@ static struct {
 	{ PCI_DID_INTEL_RPL_P_GT1, "Raptorlake P GT1" },
 	{ PCI_DID_INTEL_RPL_P_GT2, "Raptorlake P GT2" },
 	{ PCI_DID_INTEL_RPL_P_GT3, "Raptorlake P GT3" },
+	{ PCI_DID_INTEL_RPL_P_GT4, "Raptorlake P GT4" },
+	{ PCI_DID_INTEL_RPL_P_GT5, "Raptorlake P GT5" },
+	{ PCI_DID_INTEL_RPL_P_GT6, "Raptorlake P GT6" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

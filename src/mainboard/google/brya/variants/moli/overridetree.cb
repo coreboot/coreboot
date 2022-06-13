@@ -83,10 +83,10 @@ chip soc/intel/alderlake
 			end
 		end # Audio Nau8825
 		device ref pcie_rp6 on
-			# Enable PCIe-to-i225 bridge PCIe 6 using clk 5
+			# Enable PCIe-to-i225 bridge PCIe 6 using clk 4
 			register "pch_pcie_rp[PCH_RP(6)]" = "{
-				.clk_src = 5,
-				.clk_req = 5,
+				.clk_src = 4,
+				.clk_req = 4,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 				.pcie_rp_aspm = ASPM_DISABLE,
 			}"

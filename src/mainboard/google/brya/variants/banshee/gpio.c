@@ -43,7 +43,8 @@ static const struct pad_config override_gpio_table[] = {
 
 	/* B0  : SOC_VID0 */
 	/* B1  : SOC_VID1 */
-	/* B2  : VRALERT# ==> M2_SSD_PLA_L */
+	/* B2  : VRALERT# ==> NC */
+	PAD_NC_LOCK(GPP_B2, NONE, LOCK_CONFIG),
 	/* B3  : PROC_GP2 ==> NC */
 	PAD_NC_LOCK(GPP_B3, NONE, LOCK_CONFIG),
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
@@ -51,6 +52,10 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_B5, NONE, LOCK_CONFIG),
 	/* B6  : ISH_I2C0_SCL ==> NC */
 	PAD_NC_LOCK(GPP_B6, NONE, LOCK_CONFIG),
+	/* B7  : ISH_12C1_SDA ==> NC */
+	PAD_NC_LOCK(GPP_B7, NONE, LOCK_CONFIG),
+	/* B8  : ISH_I2C1_SCL ==> NC */
+	PAD_NC_LOCK(GPP_B8, NONE, LOCK_CONFIG),
 	/* B9  : NC */
 	/* B10 : NC */
 	/* B11 : PMCALERT# ==> EN_PP3300_WLAN */
@@ -78,8 +83,10 @@ static const struct pad_config override_gpio_table[] = {
 	/* C4 : SML0DATA ==> NC */
 	PAD_NC(GPP_C4, NONE),
 	/* C5  : SML0ALERT# ==> GPP_C5_BOOT_STRAP0 */
-	/* C6  : SML1CLK ==> USI_REPORT_EN */
-	/* C7  : SML1DATA ==> USI_INT */
+	/* C6  : SML1CLK ==> NC */
+	PAD_NC(GPP_C6, NONE),
+	/* C7  : SML1DATA ==> NC */
+	PAD_NC(GPP_C7, NONE),
 
 	/* D0  : ISH_GP0 ==> NC */
 	PAD_NC_LOCK(GPP_D0, NONE, LOCK_CONFIG),
@@ -189,7 +196,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_F21, NONE),
 	/* F22 : NC ==> MIC_SW */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_F22, NONE, DEEP),
-	/* F23 : NC */
+	/* F23 : V1P05_CTRL ==> V1P05EXT_CTRL */
+	PAD_CFG_NF(GPP_F23, NONE, DEEP, NF1),
 
 	/* H0  : GPPH0_BOOT_STRAP1 */
 	/* H1  : GPPH1_BOOT_STRAP2 */
@@ -208,8 +216,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
 	/* H12 : I2C7_SDA ==> NC */
 	PAD_NC_LOCK(GPP_H12, NONE, LOCK_CONFIG),
-	/* H13 : I2C7_SCL ==> EN_PP3300_TCHSCR */
-	PAD_CFG_GPO_LOCK(GPP_H13, 1, LOCK_CONFIG),
+	/* H13 : I2C7_SCL ==> NC */
+	PAD_NC_LOCK(GPP_H13, NONE, LOCK_CONFIG),
 	/* H14 : NC */
 	/* H15 : DDPB_CTRLCLK ==> NC */
 	PAD_NC(GPP_H15, NONE),
@@ -254,6 +262,9 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_S5, NONE),
 	/* S6 : SNDW3_CLK ==> DMIC_CLK0_R */
 	/* S7 : SNDW3_DATA ==> DMIC_DATA0_R */
+
+	/* GPD11: LANPHYC ==> NC */
+	PAD_NC(GPD11, NONE),
 };
 
 /* Early pad configuration in bootblock */

@@ -142,7 +142,7 @@ static int nor_read(const struct spi_flash *flash, u32 addr, size_t len,
 		}
 	}
 
-	if (CONFIG(FLASH_DUAL_READ)) {
+	if (CONFIG(FLASH_DUAL_IO_READ)) {
 		setbits8(&mtk_nor->read_dual, SFLASH_READ_DUAL_EN);
 		write8(&mtk_nor->prgdata[3], SFLASH_1_1_2_READ);
 	}

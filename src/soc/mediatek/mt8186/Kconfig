@@ -11,6 +11,7 @@ config SOC_MEDIATEK_MT8186
 	select SOC_MEDIATEK_COMMON
 	select MEDIATEK_BLOB_FAST_INIT
 	select USE_CBMEM_DRAM_INFO
+	select FLASH_DUAL_IO_READ
 
 if SOC_MEDIATEK_MT8186
 
@@ -31,12 +32,5 @@ config SSPM_FIRMWARE
 	default "sspm.bin"
 	help
 	  The file name of the MediaTek SSPM firmware.
-
-config FLASH_DUAL_READ
-	bool
-	default y
-	help
-	  When this option is enabled, the flash controller provides the ability
-	  to dual IO read mode.
 
 endif

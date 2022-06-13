@@ -56,4 +56,11 @@ config USE_CBMEM_DRAM_INFO
 	  The DRAM initialization will keep and return DRAM information (size,
 	  geometry and other DDR info) so we can fill that into the CBMEM.
 
+config FLASH_DUAL_IO_READ
+	bool
+	default n
+	help
+	  When this option is enabled, the flash controller provides the ability
+	  to dual IO read mode.
+
 endif

@@ -11,6 +11,7 @@ config SOC_MEDIATEK_MT8192
 	select HAVE_UART_SPECIAL
 	select SOC_MEDIATEK_COMMON
 	select MEDIATEK_DRAM_DVFS
+	select FLASH_DUAL_IO_READ
 
 if SOC_MEDIATEK_MT8192
 
@@ -49,13 +50,6 @@ config SSPM_FIRMWARE
 	default "sspm.bin"
 	help
 	  The file name of the MediaTek SSPM firmware.
-
-config FLASH_DUAL_READ
-	bool
-	default y
-	help
-	  When this option is enabled, the flash controller provides the ability
-	  to dual IO read mode.
 
 config SRCLKEN_RC_SUPPORT
 	bool

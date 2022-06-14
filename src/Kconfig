@@ -891,6 +891,13 @@ config SMBIOS_PROVIDED_BY_MOBO
 
 if GENERATE_SMBIOS_TABLES
 
+config BIOS_VENDOR
+	prompt "SMBIOS BIOS Vendor name"
+	string
+	default "coreboot"
+	help
+	  The BIOS Vendor name to store in the SMBIOS Type0 table.
+
 config MAINBOARD_SERIAL_NUMBER
 	prompt "SMBIOS Serial Number" if !SMBIOS_PROVIDED_BY_MOBO
 	string

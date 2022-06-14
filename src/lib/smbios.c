@@ -371,7 +371,7 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	struct smbios_type0 *t = smbios_carve_table(*current, SMBIOS_BIOS_INFORMATION,
 						    sizeof(*t), handle);
 
-	t->vendor = smbios_add_string(t->eos, "coreboot");
+	t->vendor = smbios_add_string(t->eos, CONFIG_BIOS_VENDOR);
 	t->bios_release_date = smbios_add_string(t->eos, coreboot_dmi_date);
 
 	if (CONFIG(CHROMEOS_NVS)) {

@@ -58,8 +58,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_D0, NONE, LOCK_CONFIG),
 	/* D1  : ISH_GP1 ==> NC */
 	PAD_NC_LOCK(GPP_D1, NONE, LOCK_CONFIG),
-	/* D2  : ISH_GP2 ==> LAN_PR_ISOLATE_ODL */
-	PAD_CFG_GPO_LOCK(GPP_D2, 1, LOCK_CONFIG),
+	/* D2  : ISH_GP2 ==> LAN_PE_ISOLATE_ODL */
+	PAD_CFG_GPO(GPP_D2, 1, DEEP),
 	/* D3 : ISH_GP3 ==> NC */
 	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D5  : SRCCLKREQ0# ==> GPU_CLKREQ_ODL */

@@ -53,12 +53,13 @@ struct __packed eeprom_board_settings {
 			uint8_t pxe_boot_capability;
 			uint8_t pink_rear_vref;
 			uint8_t vtx_disabled;
+			uint8_t boot_menu_disabled;
 		};
-		uint8_t raw_settings[11];
+		uint8_t raw_settings[12];
 	};
 };
 
-_Static_assert(sizeof(struct eeprom_board_settings) == (11 + sizeof(uint32_t)),
+_Static_assert(sizeof(struct eeprom_board_settings) == (12 + sizeof(uint32_t)),
 		"struct eeprom_board_settings has invalid size!");
 
 struct __packed eeprom_bmc_settings {

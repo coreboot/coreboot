@@ -226,6 +226,34 @@ chip soc/intel/alderlake
 		end
 		device ref i2c0 on
 			chip drivers/i2c/cs35l53
+				register "name" = ""SPK0""
+				register "sub" = ""103CA221""
+				register "desc" = ""Cirrus Logic CS35L53 Tweeter Left Audio Codec""
+				register "uid" = "2"
+				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_D14)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
+				register "boost_type" = "EXTERNAL_BOOST"
+				register "asp_sdout_hiz" = "ASP_SDOUT_LOGIC0_UNUSED_LOGIC0_DISABLED"
+				register "gpio1_output_enable" = "true"
+				register "gpio1_src_select" = "GPIO1_SRC_GPIO"
+				register "gpio2_src_select" = "GPIO2_SRC_HIGH_IMPEDANCE"
+				device i2c 0x40 alias i2c0_cs35l53_0 on end
+			end
+			chip drivers/i2c/cs35l53
+				register "name" = ""SPK1""
+				register "sub" = ""103CA221""
+				register "desc" = ""Cirrus Logic CS35L53 Woofer Left Audio Codec""
+				register "uid" = "0"
+				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_D14)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
+				register "boost_type" = "EXTERNAL_BOOST"
+				register "asp_sdout_hiz" = "ASP_SDOUT_LOGIC0_UNUSED_LOGIC0_DISABLED"
+				register "gpio1_output_enable" = "true"
+				register "gpio1_src_select" = "GPIO1_SRC_GPIO"
+				register "gpio2_src_select" = "GPIO2_SRC_HIGH_IMPEDANCE"
+				device i2c 0x41 alias i2c0_cs35l53_1 on end
+			end
+			chip drivers/i2c/cs35l53
 				register "name" = ""SPK2""
 				register "sub" = ""103CA221""
 				register "desc" = ""Cirrus Logic CS35L53 Tweeter Right Audio Codec""
@@ -363,7 +391,7 @@ chip soc/intel/alderlake
 				register "gpio1_output_enable" = "true"
 				register "gpio1_src_select" = "GPIO1_SRC_GPIO"
 				register "gpio2_src_select" = "GPIO2_SRC_HIGH_IMPEDANCE"
-				device i2c 0x40 on end
+				device i2c 0x40 alias i2c7_cs35l53_0 on end
 			end
 			chip drivers/i2c/cs35l53
 				register "name" = ""SPK1""
@@ -377,7 +405,7 @@ chip soc/intel/alderlake
 				register "gpio1_output_enable" = "true"
 				register "gpio1_src_select" = "GPIO1_SRC_GPIO"
 				register "gpio2_src_select" = "GPIO2_SRC_HIGH_IMPEDANCE"
-				device i2c 0x41 on end
+				device i2c 0x41 alias i2c7_cs35l53_1 on end
 			end
 		end
 		device ref gspi1 on

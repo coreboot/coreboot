@@ -1,7 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 project_dir=linuxboot
-kernel_names=$(shell ls $(project_dir) | grep kernel)
 
 unexport $(COREBOOT_EXPORTS)
 
@@ -52,9 +51,7 @@ endif
 linuxboot: kernel initramfs_compressed
 
 clean:
-	if [ ! -z "$(kernel_names)" ]; then \
-	       	rm -rf $(project_dir)/kernel*; \
-	fi
+	rm -rf $(project_dir)/kernel*
 	rm -f $(project_dir)/u-root
 	rm -f $(project_dir)/initramfs*
 	rm -f $(project_dir)/bzImage

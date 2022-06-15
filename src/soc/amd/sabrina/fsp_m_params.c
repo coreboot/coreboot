@@ -16,7 +16,7 @@
 #include <vendorcode/amd/fsp/sabrina/FspUsb.h>
 #include "chip.h"
 
-__weak void mb_pre_fspm(void)
+__weak void mb_pre_fspm(FSP_M_CONFIG *mcfg)
 {
 }
 
@@ -156,5 +156,5 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	fsp_fill_pcie_ddi_descriptors(mcfg);
 	fsp_assign_ioapic_upds(mcfg);
-	mb_pre_fspm();
+	mb_pre_fspm(mcfg);
 }

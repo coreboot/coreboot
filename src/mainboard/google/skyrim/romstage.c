@@ -3,7 +3,7 @@
 #include <baseboard/variants.h>
 #include <soc/platform_descriptors.h>
 
-void mb_pre_fspm(void)
+void mb_pre_fspm(FSP_M_CONFIG *mcfg)
 {
 	size_t base_num_gpios;
 	const struct soc_amd_gpio *base_gpios;

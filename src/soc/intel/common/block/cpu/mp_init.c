@@ -176,8 +176,16 @@ static void wrapper_set_bios_done(void *unused)
 	cpu_soc_bios_done();
 }
 
+static void wrapper_init_core_prmrr(void *unused)
+{
+	init_core_prmrr();
+}
+
 void before_post_cpus_init(void)
 {
+	if (mp_run_on_all_cpus(&wrapper_init_core_prmrr, NULL) != CB_SUCCESS)
+		printk(BIOS_ERR, "core PRMRR sync failure\n");
+
 	if (mp_run_on_all_cpus(&wrapper_set_bios_done, NULL) != CB_SUCCESS)
 		printk(BIOS_ERR, "Set BIOS Done failure\n");
 

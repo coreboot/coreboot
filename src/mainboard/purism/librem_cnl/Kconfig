@@ -32,8 +32,8 @@ config VARIANT_DIR
 	default "librem_mini" if BOARD_PURISM_LIBREM_MINI || BOARD_PURISM_LIBREM_MINI_V2
 	default "librem_14" if BOARD_PURISM_LIBREM_14
 
-config DEVICETREE
-	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config CBFS_SIZE
 	default 0x800000 if BOARD_PURISM_LIBREM_MINI

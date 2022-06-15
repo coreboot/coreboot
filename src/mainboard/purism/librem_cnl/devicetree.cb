@@ -1,0 +1,103 @@
+chip soc/intel/cannonlake
+
+	# Enable Enhanced Intel SpeedStep
+	register "eist_enable" = "1"
+
+# FSP Memory (soc/intel/cannonlake/romstage/fsp_params.c)
+	register "SaGv" = "SaGv_Enabled"
+
+# FSP Silicon (soc/intel/cannonlake/fsp_params.c)
+
+	# Acoustic Noise
+	register "AcousticNoiseMitigation" = "1"
+
+	register "FastPkgCRampDisableIa" = "1"
+	register "FastPkgCRampDisableGt" = "1"
+	register "FastPkgCRampDisableSa" = "1"
+	register "FastPkgCRampDisableFivr" = "1"
+
+	register "SlowSlewRateForIa" = "3"	# fast/16
+	register "SlowSlewRateForGt" = "3"	# fast/16
+	register "SlowSlewRateForSa" = "3"	# fast/16
+	register "SlowSlewRateForFivr" = "3"	# fast/16
+
+	# Power
+	register "PchPmSlpS3MinAssert" = "3"	# 50ms
+	register "PchPmSlpS4MinAssert" = "1"	# 1s
+	register "PchPmSlpSusMinAssert" = "2"	# 500ms
+	register "PchPmSlpAMinAssert" = "4"	# 2s
+
+	# Thermal
+	register "tcc_offset" = "10"
+
+# PM Util (soc/intel/cannonlake/pmutil.c)
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	# sudo devmem2 0xfe001920 (pmc_bar + GPIO_GPE_CFG)
+	register "gpe0_dw0" = "PMC_GPP_C"
+	register "gpe0_dw1" = "PMC_GPP_D"
+	register "gpe0_dw2" = "PMC_GPP_E"
+
+# Actual device tree
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	device domain 0 on
+		device pci 00.0 on  end # Host Bridge
+		device pci 02.0 on  end # Integrated Graphics Device
+		device pci 04.0 on	# SA Thermal device
+			register "Device4Enable" = "1"
+		end
+		device pci 12.0 on  end # Thermal Subsystem
+		device pci 13.0 off end # Integrated Sensor Hub
+		device pci 14.0 on  end	# USB xHC
+		device pci 14.1 off end # USB xDCI (OTG)
+		device pci 15.0 off end # I2C #0
+		device pci 15.1 off end # I2C #1
+		device pci 15.2 off end # I2C #2
+		device pci 15.3 off end # I2C #3
+		device pci 16.0 off end # Management Engine Interface 1
+		device pci 16.1 off end # Management Engine Interface 2
+		device pci 16.2 off end # Management Engine IDE-R
+		device pci 16.3 off end # Management Engine KT Redirection
+		device pci 16.4 off end # Management Engine Interface 3
+		device pci 16.5 off end # Management Engine Interface 4
+		device pci 17.0 on  end	# SATA
+		device pci 19.0 off end # I2C #4
+		device pci 19.1 off end # I2C #5
+		device pci 19.2 off end # UART #2
+		device pci 1a.0 off end # eMMC
+		device pci 1c.0 off end # PCI Express Port 1
+		device pci 1c.1 off end # PCI Express Port 2
+		device pci 1c.2 off end # PCI Express Port 3
+		device pci 1c.3 off end # PCI Express Port 4
+		device pci 1c.4 off end # PCI Express Port 5
+		device pci 1c.5 off end # PCI Express Port 6
+		device pci 1c.6 off end # PCI Express Port 7
+		device pci 1c.7 off end # PCI Express Port 8
+		device pci 1d.0 off end	# PCI Express Port 9
+		device pci 1d.1 off end # PCI Express Port 10
+		device pci 1d.2 off end # PCI Express Port 11
+		device pci 1d.3 off end # PCI Express Port 12
+		device pci 1d.4 off end # PCI Express Port 13
+		device pci 1d.5 off end # PCI Express Port 14
+		device pci 1d.6 off end # PCI Express Port 15
+		device pci 1d.7 off end # PCI Express Port 16
+		device pci 1e.0 off end # UART #0
+		device pci 1e.1 off end # UART #1
+		device pci 1e.2 off end # GSPI #0
+		device pci 1e.3 off end # GSPI #1
+		device pci 1f.0 on  end # LPC Bridge
+		device pci 1f.1 off end # P2SB
+		device pci 1f.2 hidden end # Power Management Controller
+		device pci 1f.3 on	# Intel HDA
+			register "PchHdaAudioLinkHda" = "1"
+		end
+		device pci 1f.4 on  end # SMBus
+		device pci 1f.5 on  end # PCH SPI
+		device pci 1f.6 off end # GbE
+	end
+end

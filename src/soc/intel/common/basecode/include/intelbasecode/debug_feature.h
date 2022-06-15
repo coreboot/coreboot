@@ -10,8 +10,8 @@ bool is_debug_cse_fw_update_disable(void);
 
 /*
  * Reads OEM Section area in the Descriptor Region and
- * populates pre_mem_debug structure.
+ * populates debug_feature_cntrl structure.
  */
-enum cb_err pre_mem_debug_init(void);
+enum cb_err dbg_feature_cntrl_init(void);
 
 #endif

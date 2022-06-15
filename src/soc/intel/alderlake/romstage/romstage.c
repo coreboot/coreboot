@@ -136,7 +136,7 @@ void mainboard_romstage_entry(void)
 	cse_init(HECI1_BASE_ADDRESS);
 
 	if (CONFIG(SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE))
-		pre_mem_debug_init();
+		dbg_feature_cntrl_init();
 
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 

@@ -37,7 +37,7 @@ endif
 # updates are wrapped in a container, like AMD's microcode update container. If
 # there is only one microcode binary (i.e. one container), then we don't have
 # this issue, and this rule will continue to work.
-$(obj)/cpu_microcode_blob.bin: $$(wildcard $$(cpu_microcode_bins))
+$(obj)/cpu_microcode_blob.bin: $$(wildcard $$(cpu_microcode_bins)) $(DOTCONFIG)
 	for bin in $(cpu_microcode_bins); do \
 		if [ ! -f "$$bin" ]; then \
 			echo "Microcode error: $$bin does not exist"; \
@@ -50,10 +50,10 @@ $(obj)/cpu_microcode_blob.bin: $$(wildcard $$(cpu_microcode_bins))
 		fi; \
 		false; \
 	fi
-	$(if $^,,false) # fail if no file is given at all
+	$(if $(cpu_microcode_bins),,false) # fail if no file is given at all
 	@printf "    MICROCODE  $(subst $(obj)/,,$(@))\n"
 	@echo $(cpu_microcode_bins)
-	cat $^ > $@
+	cat $(cpu_microcode_bins) > $@
 
 cpu_microcode_blob.bin-file ?= $(obj)/cpu_microcode_blob.bin
 cpu_microcode_blob.bin-type := microcode

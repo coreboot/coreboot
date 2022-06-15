@@ -120,7 +120,7 @@ static size_t cbfs_load_and_decompress(size_t offset, size_t in_size, void *buff
 		goto out;
 	}
 
-	if (cbfs_file_hash_mismatch(buffer, in_size, mdata, skip_verification))
+	if (cbfs_file_hash_mismatch(load, in_size, mdata, skip_verification))
 		goto out;
 
 	switch (compression) {

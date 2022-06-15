@@ -43,14 +43,18 @@ vb2_error_t vb2_hash_verify(const void *buf, uint32_t size, const struct vb2_has
 unsigned long ulzman(const unsigned char *src, unsigned long srcn, unsigned char *dst,
 		     unsigned long dstn)
 {
-	fail_msg("Unexpected call to %s", __func__);
-	return 0;
+	size_t copy_size = MIN(srcn, dstn);
+	function_called();
+	memcpy(dst, src, copy_size);
+	return copy_size;
 }
 
 size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 {
-	fail_msg("Unexpected call to %s", __func__);
-	return 0;
+	size_t copy_size = MIN(srcn, dstn);
+	function_called();
+	memcpy(dst, src, copy_size);
+	return copy_size;
 }
 
 enum cb_err cbfs_mcache_lookup(const void *mcache, size_t mcache_size, const char *name,
@@ -167,7 +171,7 @@ static void test_cbfs_map_no_hash(void **state)
 	}
 }
 
-static void test_cbfs_map_valid_hash(void **state)
+static void test_cbfs_map_valid_hash_impl(void **state, bool lz4_compressed)
 {
 	void *mapping = NULL;
 	size_t size = 0;
@@ -181,8 +185,17 @@ static void test_cbfs_map_valid_hash(void **state)
 	expect_cbfs_lookup(TEST_DATA_1_FILENAME, CB_SUCCESS,
 			   (const union cbfs_mdata *)&file_valid_hash,
 			   be32toh(file_valid_hash.header.offset));
-	will_return(cbfs_find_attr, NULL);
 
+	if (lz4_compressed) {
+		struct cbfs_file_attr_compression cattr = {
+			.compression = htobe32(CBFS_COMPRESS_LZ4),
+			.decompressed_size = htobe32(TEST_DATA_1_SIZE),
+		};
+		will_return(cbfs_find_attr, &cattr);
+		expect_function_call(ulz4fn);
+	} else {
+		will_return(cbfs_find_attr, NULL);
+	}
 
 	if (CONFIG(LP_CBFS_VERIFICATION)) {
 		will_return(cbfs_file_hash, &hash);
@@ -201,6 +214,16 @@ static void test_cbfs_map_valid_hash(void **state)
 		assert_memory_equal(test_data_1, mapping, size);
 		cbfs_unmap(mapping);
 	}
+}
+
+static void test_cbfs_map_valid_hash(void **state)
+{
+	test_cbfs_map_valid_hash_impl(state, false);
+}
+
+static void test_cbfs_map_valid_hash_with_lz4(void **state)
+{
+	test_cbfs_map_valid_hash_impl(state, true);
 }
 
 static void test_cbfs_map_invalid_hash(void **state)
@@ -240,6 +263,7 @@ int main(void)
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test_setup(test_cbfs_map_no_hash, setup_test_cbfs),
 		cmocka_unit_test_setup(test_cbfs_map_valid_hash, setup_test_cbfs),
+		cmocka_unit_test_setup(test_cbfs_map_valid_hash_with_lz4, setup_test_cbfs),
 		cmocka_unit_test_setup(test_cbfs_map_invalid_hash, setup_test_cbfs),
 	};
 

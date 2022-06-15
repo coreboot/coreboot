@@ -79,15 +79,10 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 
 	current_rev = read_microcode_rev();
 
-	/*
-	 * No use loading the same revision unless RELOAD_MICROCODE_PATCH
-	 * config is selected.
-	 */
-	if (!CONFIG(RELOAD_MICROCODE_PATCH) && (current_rev == m->rev)) {
+	/* No use loading the same revision. */
+	if (current_rev == m->rev) {
 		printk(BIOS_INFO, "microcode: Update skipped, already up-to-date\n");
 		return;
-	} else {
-		printk(BIOS_INFO, "microcode: Re-load microcode patch\n");
 	}
 
 #if ENV_RAMSTAGE

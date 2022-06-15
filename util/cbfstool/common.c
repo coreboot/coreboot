@@ -46,17 +46,17 @@ int buffer_from_file_aligned_size(struct buffer *buffer, const char *filename,
 		perror(filename);
 		return -1;
 	}
-	buffer->offset = 0;
 	off_t file_size = get_file_size(fp);
 	if (file_size < 0) {
 		fprintf(stderr, "could not determine size of %s\n", filename);
 		fclose(fp);
 		return -1;
 	}
-	buffer->size = ALIGN_UP(file_size, size_granularity);
-	buffer->name = strdup(filename);
-	buffer->data = (char *)malloc(buffer->size);
-	assert(buffer->data);
+	if (buffer_create(buffer, ALIGN_UP(file_size, size_granularity), filename)) {
+		fprintf(stderr, "could not allocate buffer\n");
+		fclose(fp);
+		return -1;
+	}
 	if (fread(buffer->data, 1, file_size, fp) != (size_t)file_size) {
 		fprintf(stderr, "incomplete read: %s\n", filename);
 		fclose(fp);

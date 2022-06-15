@@ -250,6 +250,38 @@ void intel_update_microcode_from_cbfs(void)
 	spin_unlock(&microcode_lock);
 }
 
+void intel_reload_microcode(void)
+{
+	if (!CONFIG(RELOAD_MICROCODE_PATCH))
+		return;
+
+	u32 current_rev;
+	msr_t msr;
+	const struct microcode *m = intel_microcode_find();
+
+	if (!m) {
+		printk(BIOS_ERR, "microcode: failed because no ucode was found\n");
+		return;
+	}
+
+	printk(BIOS_INFO, "microcode: Re-load microcode patch\n");
+
+	msr.lo = (unsigned long)m + sizeof(struct microcode);
+	msr.hi = 0;
+	wrmsr(IA32_BIOS_UPDT_TRIG, msr);
+
+	current_rev = read_microcode_rev();
+	if (current_rev == m->rev) {
+		printk(BIOS_INFO, "microcode: updated to revision "
+		    "0x%x date=%04x-%02x-%02x\n", read_microcode_rev(),
+		    m->date & 0xffff, (m->date >> 24) & 0xff,
+		    (m->date >> 16) & 0xff);
+		return;
+	}
+
+	printk(BIOS_ERR, "microcode: Re-load failed\n");
+}
+
 #if ENV_RAMSTAGE
 __weak int soc_skip_ucode_update(u32 current_patch_id,
 	u32 new_patch_id)

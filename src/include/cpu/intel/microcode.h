@@ -4,6 +4,10 @@
 
 #include <stdint.h>
 
+/* Find the microcode and reload the microcode if SoC has RELOAD_MICROCODE_PATCH
+ * config selected. */
+void intel_reload_microcode(void);
+
 void intel_update_microcode_from_cbfs(void);
 /* Find a microcode that matches the revision and platform family returning
  * NULL if none found. The found microcode is cached for faster access on

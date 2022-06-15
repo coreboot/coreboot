@@ -14,8 +14,10 @@ bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c
 romstage-y += emi.c
+romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 
 ramstage-y += emi.c
+ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-y += soc.c
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8188/include

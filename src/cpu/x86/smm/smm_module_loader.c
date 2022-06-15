@@ -170,17 +170,17 @@ u32 smm_get_cpu_smbase(unsigned int cpu_num)
 static void smm_place_entry_code(const unsigned int num_cpus)
 {
 	unsigned int i;
-	unsigned int size;
+	size_t size;
 
 	/* start at 1, the first CPU stub code is already there */
 	size = region_sz(&cpus[0].stub_code);
 	for (i = 1; i < num_cpus; i++) {
 		printk(BIOS_DEBUG,
-		       "SMM Module: placing smm entry code at %lx,  cpu # 0x%x\n",
+		       "SMM Module: placing smm entry code at %zx,  cpu # 0x%x\n",
 		       region_offset(&cpus[i].stub_code), i);
 		memcpy((void *)region_offset(&cpus[i].stub_code),
 		       (void *)region_offset(&cpus[0].stub_code), size);
-		printk(BIOS_SPEW, "%s: copying from %lx to %lx 0x%x bytes\n",
+		printk(BIOS_SPEW, "%s: copying from %zx to %zx 0x%zx bytes\n",
 		       __func__, region_offset(&cpus[0].stub_code),
 		       region_offset(&cpus[i].stub_code), size);
 	}
@@ -346,7 +346,7 @@ static void setup_smihandler_params(struct smm_runtime *mod_params,
 
 static void print_region(const char *name, const struct region region)
 {
-	printk(BIOS_DEBUG, "%-12s [0x%lx-0x%lx]\n", name, region_offset(&region),
+	printk(BIOS_DEBUG, "%-12s [0x%zx-0x%zx]\n", name, region_offset(&region),
 	       region_end(&region));
 }
 

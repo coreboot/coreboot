@@ -126,8 +126,18 @@ checktools:
 		( echo " Not found."; echo "Error: Please install nasm."; exit 1 )
 
 build: update checktools
+	echo "   ##### $(project_name) Build Summary #####"
+	echo "   Repository:     $(CONFIG_TIANOCORE_REPOSITORY)"
+	echo "   Branch:         $(CONFIG_TIANOCORE_TAG_OR_REV)"
+	echo " $(BUILD_STR)" | \
+		sed 's/-/\n   /g' | sort | sed \
+		-e 's/a /Architecture:   /g' \
+		-e 's/b /Release:        /g' \
+		-e 's/D /Option:         /g' \
+		-e 's/p /Payload:        /g' \
+		-e 's/q /Build:          Quiet/' \
+		-e 's/t /Toolchain:      /'
 	unset CC; $(MAKE) -C $(project_dir)/BaseTools 2>&1
-	echo " build $(project_name) $(CONFIG_TIANOCORE_TAG_OR_REV)"
 	if [ -n "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" ]; then \
 		echo "    Copying custom bootsplash image"; \
 		case "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" in \

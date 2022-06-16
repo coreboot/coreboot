@@ -1771,9 +1771,20 @@ static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 
 	mchbar_write32(CLKCFG, clkcfg);
 
-	/* Make sure the following code is in the cache before we execute it. */
-	goto cache_code;
-vco_update:
+	/*
+	 * Make sure the following code is in the cache before we execute it.
+	 * TODO: Experiments (i945GM) without any cache_code/delay_update
+	 * _seem_ to work even when XIP is disabled. Also on Pentium 4
+	 * the code is not cached at all by default.
+	 */
+	asm volatile (
+		"	jmp cache_code\n"
+		"vco_update:\n"
+		: /* No outputs */
+		: /* No inputs */
+		: "memory"
+	);
+
 	pci_and_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, (u8)~(1 << 7));
 
 	clkcfg &= ~(1 << 10);
@@ -1797,10 +1808,15 @@ vco_update:
 	clkcfg &= ~(1 << 10);
 	mchbar_write32(CLKCFG, clkcfg);
 
-	goto out;
-cache_code:
-	goto vco_update;
-out:
+	asm volatile (
+		"	jmp out\n"
+		"cache_code:\n"
+		"	jmp vco_update\n"
+		"out:\n"
+		: /* No outputs */
+		: /* No inputs */
+		: "memory"
+	);
 
 	printk(BIOS_DEBUG, "CLKCFG = 0x%08x, ", mchbar_read32(CLKCFG));
 	printk(BIOS_DEBUG, "ok\n");

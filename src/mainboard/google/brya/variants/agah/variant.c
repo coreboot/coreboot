@@ -56,10 +56,10 @@ static const struct power_rail_sequence gpu_on_seq[] = {
 
 /* In GCOFF entry order (i.e., power-off order) */
 static const struct power_rail_sequence gpu_off_seq[] = {
-	{ "NV3_3",		NV33_PWR_EN,	false, NV33_PG,		15,},
-	{ "PEXVDD",		PEXVDD_PWR_EN,	false, PEXVDD_PG,	2,},
-	{ "NVVDD+MSVDD",	NVVDD_PWR_EN,	false, NVVDD_PG,	2,},
 	{ "FBVDD",		FBVDD_PWR_EN,	true,  FBVDD_PG,	150,},
+	{ "PEXVDD",		PEXVDD_PWR_EN,	false, PEXVDD_PG,	10,},
+	{ "NVVDD+MSVDD",	NVVDD_PWR_EN,	false, NVVDD_PG,	2,},
+	{ "NV3_3",		NV33_PWR_EN,	false, NV33_PG,		4,},
 	{ "GPU 1.8V",		GPU_1V8_PWR_EN,	false, GPU_1V8_PG,	0,},
 };
 

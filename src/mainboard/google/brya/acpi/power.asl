@@ -170,25 +170,25 @@ Method (PGOF, 0, Serialized)
 	/* All rails are about to go down */
 	\_SB.PCI0.CTXS (GPIO_GPU_ALLRAILS_PG)
 
-	/* Ramp down NV33 and let rail discharge to <10% */
-	\_SB.PCI0.CTXS (GPIO_NV33_PWR_EN)
-	GPPL (GPIO_NV33_PG, 0, 20)
-	Sleep (15)
+	/* Ramp down FBVDD (active-low) and let rail discharge to <10% */
+	\_SB.PCI0.STXS (GPIO_FBVDD_PWR_EN)
+	GPPL (GPIO_FBVDD_PG, 0, 20)
+	Sleep (150)
 
 	/* Ramp down PEXVDD and let rail discharge to <10% */
 	\_SB.PCI0.CTXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 0, 20)
-	Sleep (2)
+	Sleep (10)
 
 	/* Ramp down NVVDD and let rail discharge to <10% */
 	\_SB.PCI0.CTXS (GPIO_NVVDD_PWR_EN)
 	GPPL (GPIO_NVVDD_PG, 0, 20)
 	Sleep (2)
 
-	/* Ramp down FBVDD (active-low) and let rail discharge to <10% */
-	\_SB.PCI0.STXS (GPIO_FBVDD_PWR_EN)
-	GPPL (GPIO_FBVDD_PG, 0, 20)
-	Sleep (150)
+	/* Ramp down NV33 and let rail discharge to <10% */
+	\_SB.PCI0.CTXS (GPIO_NV33_PWR_EN)
+	GPPL (GPIO_NV33_PG, 0, 20)
+	Sleep (4)
 
 	/* Ramp down 1.8V */
 	\_SB.PCI0.CTXS (GPIO_1V8_PWR_EN)

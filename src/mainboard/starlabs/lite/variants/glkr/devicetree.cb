@@ -89,11 +89,11 @@ chip soc/intel/apollolake
 			### USB 2.0 Devices
 			# Motherboard USB Type C
 			register "usb2_port[0]"		= "PORT_EN(OC1)"
-			register "usb3_port[1]"		= "PORT_EN(OC1)"
+			register "usb3_port[0]"		= "PORT_EN(OC1)"
 
 			# Motherboard USB 3.0
 			register "usb2_port[1]"		= "PORT_EN(OC0)"
-			register "usb3_port[0]"		= "PORT_EN(OC0)"
+			register "usb3_port[1]"		= "PORT_EN(OC0)"
 
 			# Daughterboard USB 3.0
 			register "usb2_port[3]"		= "PORT_EN(OC1)"

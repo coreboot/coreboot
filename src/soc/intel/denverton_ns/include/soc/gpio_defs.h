@@ -16,6 +16,9 @@
 #define V_PCH_GPIO_SC1_PAD_MAX 42
 #define V_PCH_GPIO_GROUP_MAX 4
 
+#define TOTAL_PADS	(V_PCH_GPIO_NC_PAD_MAX + V_PCH_GPIO_SC_DFX_PAD_MAX\
+			 + V_PCH_GPIO_SC0_PAD_MAX + V_PCH_GPIO_SC1_PAD_MAX)
+
 //
 // GPIO Community 0 Private Configuration Registers
 //

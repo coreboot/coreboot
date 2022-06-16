@@ -70,6 +70,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* F16 : GSXCLK ==> NC */
 	PAD_NC_LOCK(GPP_F16, NONE, LOCK_CONFIG),
 
+	/* H3  : SX_EXIT_HOLDOFF# ==> WLAN_PCIE_WAKE_ODL */
+	PAD_CFG_GPI_SCI_LOW_LOCK(GPP_H3, NONE, EDGE_SINGLE, LOCK_CONFIG),
 	/* H12 : I2C7_SDA ==> NC */
 	PAD_NC_LOCK(GPP_H12, NONE, LOCK_CONFIG),
 	/* H23 : SRCCLKREQ5# ==> NC */

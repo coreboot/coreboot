@@ -7,6 +7,9 @@ fw_config
 end
 
 chip soc/intel/alderlake
+	# GPE configuration
+	register "pmc_gpe0_dw1" = "GPP_H"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -193,6 +196,24 @@ chip soc/intel/alderlake
 				register "options.fan.step_size" = "2"
 
 				device generic 0 alias dptf_policy on end
+			end
+		end
+		device ref pcie_rp5 on
+			# Enable WLAN PCIE 5 using clk 2
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_DW1_03"
+				device pci 00.0 on end
+			end
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B11)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H20)"
+				register "srcclk_pin" = "2"
+				device generic 0 on end
 			end
 		end
 		device ref pcie_rp6 on

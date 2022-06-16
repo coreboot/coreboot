@@ -196,7 +196,7 @@ static void intel_gma_init(const struct northbridge_intel_pineview_config *info,
 
 	for (i = 0; i < (8192 - 512) / 4; i++) {
 		outl((i << 2) | 1, piobase);
-		outl(physbase + (i << 12) + 1, piobase + 4);
+		outl((physbase + (i << 12)) | 1, piobase + 4);
 	}
 
 	temp = read32(mmio + PGETBL_CTL);

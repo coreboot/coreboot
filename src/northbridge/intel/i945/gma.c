@@ -343,7 +343,7 @@ static int intel_gma_init_lvds(struct northbridge_intel_i945_config *conf,
 
 	for (i = 0; i < (uma_size - 256) / 4; i++) {
 		outl((i << 2) | 1, piobase);
-		outl(pphysbase + (i << 12) + 1, piobase + 4);
+		outl((pphysbase + (i << 12)) | 1, piobase + 4);
 	}
 
 	temp = read32(mmiobase + PGETBL_CTL);
@@ -521,7 +521,7 @@ static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
 
 	for (i = 0; i < (uma_size - 256) / 4; i++) {
 		outl((i << 2) | 1, piobase);
-		outl(pphysbase + (i << 12) + 1, piobase + 4);
+		outl((pphysbase + (i << 12)) | 1, piobase + 4);
 	}
 
 	/* Clear interrupts. */

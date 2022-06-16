@@ -100,7 +100,7 @@ chip soc/intel/apollolake
 
 			# Daughterboard SD Card
 			register "usb2_port[5]"		= "PORT_EN(OC_SKIP)"
-			register "usb3_port[3]"		= "PORT_EN(OC1)"
+			register "usb3_port[4]"		= "PORT_EN(OC1)"
 
 			# Bluetooth
 			register "usb2_port[6]"		= "PORT_EN(OC_SKIP)"

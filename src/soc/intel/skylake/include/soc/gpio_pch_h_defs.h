@@ -252,4 +252,6 @@
 
 #define NUM_GPIO_COM2_PADS	(GPD11 - GPD0 + 1)
 
+#define TOTAL_PADS		(GPD11 + 1)
+
 #endif /* _SOC_GPIO_PCH_H_DEFS_H_ */

@@ -138,23 +138,6 @@ void variant_init(void)
 	dgpu_power_sequence_on();
 }
 
-void variant_finalize(void)
-{
-	if (acpi_is_wakeup_s3() || !gpu_powered_on)
-		return;
-
-	/*
-	 * Because the dGPU is used here in a way similar to "hybrid graphics"
-	 * modes, it is powered down here. The DRIVERS_GFX_NVIDIA_SAVE_BARS
-	 * option is selected for agah, so the BARs will be saved to ACPI memory
-	 * during its finalize routine. Thus, it is powered down here, as the
-	 * proper resources have already been allocated.
-	 */
-	dgpu_power_sequence_off();
-
-	printk(BIOS_INFO, "GPU power sequenced off.\n");
-}
-
 /* Save PCI BARs to the ACPI copy of the "saved PCI config space" */
 void variant_fill_ssdt(const struct device *unused)
 {

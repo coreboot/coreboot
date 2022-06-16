@@ -337,6 +337,8 @@
 
 #define NUM_GPIO_COM2_PADS	(GPD11 - GPD0 + 1)
 
+#define TOTAL_PADS		(GPD11 + 1)
+
 #define GPIO_NUM_PAD_CFG_REGS   2 /* DW0, DW1 */
 
 #define NUM_GPIO_COMx_GPI_REGS(n)	\

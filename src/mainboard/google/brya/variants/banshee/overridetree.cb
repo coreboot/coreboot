@@ -68,6 +68,12 @@ chip soc/intel/alderlake
 
 	register "tcc_offset" = "10"     # TCC of 90
 
+	register "power_limits_config[ADL_P_282_482_28W_CORE]" = "{
+		.tdp_pl1_override = 30,
+		.tdp_pl2_override = 60,
+		.tdp_pl4 = 90,
+	}"
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf

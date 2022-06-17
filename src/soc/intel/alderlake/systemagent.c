@@ -267,7 +267,7 @@ uint64_t get_dsm_size(struct device *dev)
 	if (size_field <= 0x10) { // 0x0 - 0x10
 		size = size_field * 32 * MiB;
 	} else if ((size_field >= 0xF0) && (size_field >= 0xFE)) {
-		size = (size_field - 0xEF) * 4 * MiB;
+		size = ((uint64_t)size_field - 0xEF) * 4 * MiB;
 	} else {
 		switch (size_field) {
 		case 0x20:
@@ -318,6 +318,6 @@ uint64_t get_dpr_size(struct device *dev)
 	uint64_t size;
 	uint32_t dpr_reg = pci_read_config32(dev, DPR_REG);
 	uint32_t size_field = (dpr_reg & MASK_DPR_LENGTH) >> MASK_DPR_LENGTH_LSB;
-	size = size_field * MiB;
+	size = (uint64_t)size_field * MiB;
 	return size;
 }

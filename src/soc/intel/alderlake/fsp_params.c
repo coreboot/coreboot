@@ -490,7 +490,8 @@ static unsigned int get_aspm_control(enum ASPM_control ctl)
 	return ctl - 1;
 }
 
-/* This function returns the VccIn Aux Imon IccMax values for ADL-P and ADL-S SKU's */
+/* This function returns the VccIn Aux Imon IccMax values for ADL and RPL
+   SKU's */
 static uint16_t get_vccin_aux_imon_iccmax(void)
 {
 	struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
@@ -507,6 +508,9 @@ static uint16_t get_vccin_aux_imon_iccmax(void)
 	case PCI_DID_INTEL_ADL_P_ID_8:
 	case PCI_DID_INTEL_ADL_P_ID_9:
 	case PCI_DID_INTEL_ADL_P_ID_10:
+	case PCI_DID_INTEL_RPL_P_ID_1:
+	case PCI_DID_INTEL_RPL_P_ID_2:
+	case PCI_DID_INTEL_RPL_P_ID_3:
 		tdp = get_cpu_tdp();
 		if (tdp == TDP_45W)
 			return ICC_MAX_TDP_45W;

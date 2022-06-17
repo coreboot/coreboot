@@ -93,6 +93,20 @@ chip soc/intel/alderlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 15 on end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GTCH7503""
+				register "generic.desc" = ""G2 Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "120"
+				register "generic.reset_off_delay_ms" = "3"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "12"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 0x40 on end
+			end
 			chip drivers/generic/gpio_keys
 				register "name" = ""PENH""
 				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_F13)"

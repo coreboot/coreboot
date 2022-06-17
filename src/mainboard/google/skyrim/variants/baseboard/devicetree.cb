@@ -69,6 +69,7 @@ chip soc/amd/sabrina
 				device pci 00.0 on end
 			end
 		end
+		device ref iommu on end
 		device ref gpp_bridge_1 on end # SD
 		device ref gpp_bridge_2 on end # NVMe
 

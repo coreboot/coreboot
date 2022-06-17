@@ -13,3 +13,7 @@ comment "Krabby"
 config BOARD_GOOGLE_KRABBY
 	bool "->  Krabby"
 	select BOARD_GOOGLE_KRABBY_COMMON
+
+config BOARD_GOOGLE_TENTACRUEL
+	bool "->  Tentacruel"
+	select BOARD_GOOGLE_KRABBY_COMMON

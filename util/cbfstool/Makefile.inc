@@ -155,6 +155,7 @@ $(VBOOT_HOSTLIB):
 		BUILD=$(VBOOT_HOST_BUILD) \
 		CC="$(HOSTCC)" \
 		PKG_CONFIG="true" \
+		USE_FLASHROM=0 \
 		V=$(V) \
 		DEBUG= \
 		hostlib

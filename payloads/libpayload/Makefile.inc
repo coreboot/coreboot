@@ -28,6 +28,13 @@
 ## SUCH DAMAGE.
 ##
 
+ifneq ($(NOCOMPILE),1)
+GIT:=$(shell git -C "$(top)" rev-parse --git-dir 1>/dev/null 2>&1 \
+	&& command -v git)
+else
+GIT:=
+endif
+
 export KERNELVERSION      := 0.2.0
 
 ARCHDIR-$(CONFIG_LP_ARCH_ARM)     := arm
@@ -75,6 +82,10 @@ CFLAGS += -Wstrict-aliasing -Wshadow -Werror
 ifeq ($(CONFIG_LP_LTO),y)
 CFLAGS += -flto
 endif
+
+# Some of the commonlib cbfs headers include vboot headers, so initialize the
+# submodule in case we are building a payload outside the main coreboot build
+forgetthis:=$(if $(GIT),$(shell git submodule update --init ../../3rdparty/vboot $(quiet_errors)))
 
 $(obj)/libpayload.config: $(DOTCONFIG)
 	cp $< $@

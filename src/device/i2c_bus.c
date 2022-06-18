@@ -32,7 +32,8 @@ struct bus *i2c_link(const struct device *const dev)
 	}
 
 	if (!link)
-		printk(BIOS_ALERT, "%s Cannot find I2C or SMBus bus operations", dev_path(dev));
+		printk(BIOS_ALERT, "%s Cannot find I2C or SMBus bus operations\n",
+				dev_path(dev));
 
 	return link;
 }

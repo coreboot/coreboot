@@ -25,7 +25,7 @@ struct bus *i2c_link(const struct device *const dev)
 		    (parent->ops->ops_i2c_bus || parent->ops->ops_smbus_bus))
 			break;
 
-		if (parent && parent->bus)
+		if (parent && parent->bus && link != parent->bus)
 			link = parent->bus;
 		else
 			link = NULL;

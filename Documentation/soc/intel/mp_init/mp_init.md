@@ -51,6 +51,6 @@ option in order to perform SGX and C6DRAM enabling.
 Typically all platforms supported by FSP 2.1 specification will have
 external PPI service feature implemented.
 
-[References]
+## References
 - [PPI](../fsp/ppi/ppi.md)
 - [MP Service PPI](../fsp/ppi/mp_service_ppi.md)

@@ -6,7 +6,6 @@ chip soc/intel/skylake
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
-	#| chipset_lockdown  | CHIPSET_LOCKDOWN_COREBOOT |
 	#| I2C0              | Touchscreen               |
 	#| I2C1              | Touchpad                  |
 	#+-------------------+---------------------------+

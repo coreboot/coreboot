@@ -165,20 +165,15 @@ static const SI_PCH_DEVICE_INTERRUPT_CONFIG devintconfig[] = {
 
 void soc_irq_settings(FSP_SIL_UPD *params)
 {
-
-	uint32_t i, intdeventry;
+	uint32_t i;
 	u8 irq_config[PCH_MAX_IRQ_CONFIG];
 	const struct device *dev = pcidev_path_on_root(PCH_DEVFN_LPC);
 	const struct soc_intel_skylake_config *config = config_of(dev);
 
-	/* Get Device Int Count */
-	intdeventry = ARRAY_SIZE(devintconfig);
 	/* update irq table */
-	memcpy((SI_PCH_DEVICE_INTERRUPT_CONFIG *)
-		(uintptr_t)(params->DevIntConfigPtr), devintconfig, intdeventry *
-		sizeof(SI_PCH_DEVICE_INTERRUPT_CONFIG));
+	params->DevIntConfigPtr = (UINT32)(uintptr_t)devintconfig;
+	params->NumOfDevIntConfig = ARRAY_SIZE(devintconfig);
 
-	params->NumOfDevIntConfig = intdeventry;
 	/* PxRC to IRQ programming */
 	for (i = 0; i < PCH_MAX_IRQ_CONFIG; i++) {
 		switch (i) {

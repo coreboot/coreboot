@@ -1,5 +1,6 @@
 config SOC_AMD_COMMON_BLOCK_I2C
 	bool
+	select DRIVERS_I2C_DESIGNWARE
 	help
 	  Select this option to add FCH I2C controller functions to the build.
 

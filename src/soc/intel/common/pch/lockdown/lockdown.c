@@ -29,6 +29,9 @@ int get_lockdown_config(void)
 
 static void gpmr_lockdown_cfg(void)
 {
+	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_GPMR))
+		return;
+
 	/*
 	 * GCS reg
 	 *

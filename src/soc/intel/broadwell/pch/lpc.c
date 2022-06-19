@@ -470,7 +470,7 @@ static void pch_lpc_add_mmio_resources(struct device *dev)
 	 */
 	res = new_resource(dev, OIC);
 	res->base = default_decode_base;
-	res->size = 0 - default_decode_base;
+	res->size = 4ull * GiB - default_decode_base;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	/* RCBA */

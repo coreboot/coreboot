@@ -68,10 +68,30 @@ static inline u32 read_microcode_rev(void)
 
 #define MICROCODE_CBFS_FILE "cpu_microcode_blob.bin"
 
-void intel_microcode_load_unlocked(const void *microcode_patch)
+static int load_microcode(const struct microcode *ucode_patch)
 {
 	u32 current_rev;
 	msr_t msr;
+
+	msr.lo = (unsigned long)ucode_patch + sizeof(struct microcode);
+	msr.hi = 0;
+	wrmsr(IA32_BIOS_UPDT_TRIG, msr);
+
+	current_rev = read_microcode_rev();
+	if (current_rev == ucode_patch->rev) {
+		printk(BIOS_INFO, "microcode: updated to revision "
+		    "0x%x date=%04x-%02x-%02x\n", read_microcode_rev(),
+		    ucode_patch->date & 0xffff, (ucode_patch->date >> 24) & 0xff,
+		    (ucode_patch->date >> 16) & 0xff);
+		return 0;
+	}
+
+	return -1;
+}
+
+void intel_microcode_load_unlocked(const void *microcode_patch)
+{
+	u32 current_rev;
 	const struct microcode *m = microcode_patch;
 
 	if (!m)
@@ -93,20 +113,9 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 	}
 #endif
 
-	msr.lo = (unsigned long)m + sizeof(struct microcode);
-	msr.hi = 0;
-	wrmsr(IA32_BIOS_UPDT_TRIG, msr);
-
-	current_rev = read_microcode_rev();
-	if (current_rev == m->rev) {
-		printk(BIOS_INFO, "microcode: updated to revision "
-		    "0x%x date=%04x-%02x-%02x\n", read_microcode_rev(),
-		    m->date & 0xffff, (m->date >> 24) & 0xff,
-		    (m->date >> 16) & 0xff);
-		return;
-	}
-
-	printk(BIOS_INFO, "microcode: Update failed\n");
+	printk(BIOS_INFO, "microcode: load microcode patch\n");
+	if (load_microcode(m) < 0)
+		printk(BIOS_ERR, "microcode: Update failed\n");
 }
 
 uint32_t get_current_microcode_rev(void)
@@ -255,8 +264,6 @@ void intel_reload_microcode(void)
 	if (!CONFIG(RELOAD_MICROCODE_PATCH))
 		return;
 
-	u32 current_rev;
-	msr_t msr;
 	const struct microcode *m = intel_microcode_find();
 
 	if (!m) {
@@ -266,20 +273,8 @@ void intel_reload_microcode(void)
 
 	printk(BIOS_INFO, "microcode: Re-load microcode patch\n");
 
-	msr.lo = (unsigned long)m + sizeof(struct microcode);
-	msr.hi = 0;
-	wrmsr(IA32_BIOS_UPDT_TRIG, msr);
-
-	current_rev = read_microcode_rev();
-	if (current_rev == m->rev) {
-		printk(BIOS_INFO, "microcode: updated to revision "
-		    "0x%x date=%04x-%02x-%02x\n", read_microcode_rev(),
-		    m->date & 0xffff, (m->date >> 24) & 0xff,
-		    (m->date >> 16) & 0xff);
-		return;
-	}
-
-	printk(BIOS_ERR, "microcode: Re-load failed\n");
+	if (load_microcode(m) < 0)
+		printk(BIOS_ERR, "microcode: Re-load failed\n");
 }
 
 #if ENV_RAMSTAGE

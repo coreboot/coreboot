@@ -75,9 +75,3 @@ config SOC_AMD_COMMON_BLOCK_UCODE
 	bool
 	help
 	  Builds in support for loading uCode.
-
-config SOC_AMD_COMMON_BLOCK_UCODE_SIZE
-	int
-	depends on SOC_AMD_COMMON_BLOCK_UCODE
-	help
-	  Defines the size of the uCode binary in bytes.

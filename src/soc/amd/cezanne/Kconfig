@@ -81,9 +81,6 @@ config SOC_SPECIFIC_OPTIONS
 config ARCH_ALL_STAGES_X86
 	default n
 
-config SOC_AMD_COMMON_BLOCK_UCODE_SIZE
-	default 5568
-
 config CHIPSET_DEVICETREE
 	string
 	default "soc/amd/cezanne/chipset.cb"

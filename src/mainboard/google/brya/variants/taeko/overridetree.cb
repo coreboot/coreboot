@@ -536,6 +536,7 @@ chip soc/intel/alderlake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D11)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B4)"
 				register "srcclk_pin" = "0"
+				register "ext_pm_support" = "ACPI_PCIE_RP_EMIT_ALL"
 				device generic 0 on
 					probe BOOT_EMMC_MASK BOOT_EMMC_ENABLED
 				end

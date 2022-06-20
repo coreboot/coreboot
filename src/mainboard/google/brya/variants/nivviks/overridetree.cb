@@ -175,6 +175,12 @@ chip soc/intel/alderlake
 			end
 			probe WFC WFC_MIPI_OVTI5675
 		end
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "enable_cnvi_ddr_rfim" = "true"
+				device generic 0 on end
+			end
+		end
 		device ref i2c1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN6915""

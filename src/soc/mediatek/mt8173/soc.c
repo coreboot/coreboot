@@ -12,7 +12,7 @@ void bootmem_platform_add_ranges(void)
 
 static void soc_read_resources(struct device *dev)
 {
-	ram_resource_kb(dev, 0, (uintptr_t)_dram / KiB, sdram_size() / KiB);
+	ram_range(dev, 0, (uintptr_t)_dram, sdram_size());
 }
 
 static void soc_init(struct device *dev)

@@ -1,0 +1,115 @@
+chip soc/intel/apollolake
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	register "sci_irq" = "SCIS_IRQ10"
+
+	# EMMC TX DATA Delay 1
+	# Refer to EDS-Vol2-22.3.
+	# [14:8] steps of delay for HS400, each 125ps.
+	# [6:0] steps of delay for SDR104/HS200, each 125ps.
+	register "emmc_tx_data_cntl1" = "0x0C16"
+
+	# EMMC TX DATA Delay 2
+	# Refer to EDS-Vol2-22.3.
+	# [30:24] steps of delay for SDR50, each 125ps.
+	# [22:16] steps of delay for DDR50, each 125ps.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps.
+	# [6:0] steps of delay for SDR12, each 125ps.
+	register "emmc_tx_data_cntl2" = "0x28162828"
+
+	# EMMC RX CMD/DATA Delay 1
+	# Refer to EDS-Vol2-22.3.
+	# [30:24] steps of delay for SDR50, each 125ps.
+	# [22:16] steps of delay for DDR50, each 125ps.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps.
+	# [6:0] steps of delay for SDR12, each 125ps.
+	register "emmc_rx_cmd_data_cntl1" = "0x00181717"
+
+	# EMMC RX CMD/DATA Delay 2
+	# Refer to EDS-Vol2-22.3.
+	# [17:16] stands for Rx Clock before Output Buffer
+	# [14:8] steps of delay for Auto Tuning Mode, each 125ps.
+	# [6:0] steps of delay for HS200, each 125ps.
+	register "emmc_rx_cmd_data_cntl2" = "0x10008"
+
+	# 0:HS400(Default), 1:HS200, 2:DDR50
+	register "emmc_host_max_speed" = "1"
+
+	device domain 0 on
+		device pci 00.0 on  end	# - Host Bridge
+		device pci 00.1 off end	# - DPTF
+		device pci 00.2 off end	# - NPK
+		device pci 02.0 on  end	# - Gen - Display
+		device pci 03.0 off end	# - Iunit
+		device pci 0d.0 on  end	# - P2SB
+		device pci 0d.1 off end	# - PMC
+		device pci 0d.2 on  end	# - SPI
+		device pci 0d.3 off end	# - Shared SRAM
+		device pci 0e.0 on  end	# - Audio
+		device pci 0f.0 on  end	# - CSE
+		device pci 11.0 on  end	# - ISH
+		device pci 12.0 on	# - SATA
+			register "DisableSataSalpSupport" = "1"
+		end
+		device pci 13.0 on	# - RP 2 - PCIe A 0
+			register "pcie_rp_clkreq_pin[2]" = "CLKREQ_DISABLED"
+			register "pcie_rp_hotplug_enable[2]" = "0"
+		end
+		device pci 13.1 on	# - RP 3 - PCIe A 1
+			register "pcie_rp_clkreq_pin[3]" = "CLKREQ_DISABLED"
+			register "pcie_rp_hotplug_enable[3]" = "0"
+		end
+		device pci 13.2 on	# - RP 4 - PCIe-A 2
+			register "pcie_rp_clkreq_pin[4]" = "CLKREQ_DISABLED"
+			register "pcie_rp_hotplug_enable[4]" = "0"
+		end
+		device pci 13.3 on	# - RP 5 - PCIe-A 3
+			register "pcie_rp_clkreq_pin[5]" = "CLKREQ_DISABLED"
+			register "pcie_rp_hotplug_enable[5]" = "0"
+		end
+		device pci 14.0 on	# - RP 0 - PCIe-B 0
+			register "pcie_rp_clkreq_pin[0]" = "CLKREQ_DISABLED"
+			register "pcie_rp_hotplug_enable[0]" = "0"
+		end
+		device pci 14.1 on	# - RP 1 - PCIe-B 1
+			register "pcie_rp_clkreq_pin[1]" = "CLKREQ_DISABLED"
+			register "pcie_rp_hotplug_enable[1]" = "0"
+		end
+		device pci 15.0 on  end	# - XHCI
+		device pci 15.1 off end	# - XDCI
+		device pci 16.0 on  end	# - I2C 0
+		device pci 16.1 on  end	# - I2C 1
+		device pci 16.2 on  end	# - I2C 2
+		device pci 16.3 on  end	# - I2C 3
+		device pci 17.0 on  end	# - I2C 4
+		device pci 17.1 on  end	# - I2C 5
+		device pci 17.2 on  end	# - I2C 6
+		device pci 17.3 on	# - I2C 7
+			# Enable external display bridge (eDP to LVDS)
+			chip drivers/i2c/ptn3460
+				device i2c 0x60 on end  # PTN3460 DP2LVDS Bridge
+			end
+		end
+		device pci 18.0 on  end	# - UART 0
+		device pci 18.1 on  end	# - UART 1
+		device pci 18.2 on  end	# - UART 2
+		device pci 18.3 on  end	# - UART 3
+		device pci 19.0 off end	# - SPI 0
+		device pci 19.1 off end	# - SPI 1
+		device pci 19.2 off end	# - SPI 2
+		device pci 1a.0 off end	# - PWM
+		device pci 1b.0 on  end	# - SDCARD
+		device pci 1c.0 on  end	# - eMMC
+		device pci 1d.0 off end	# - UFS
+		device pci 1e.0 off end	# - SDIO
+		device pci 1f.0 on	# - LPC
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end
+		device pci 1f.1 on  end	# - SMBUS
+	end
+end

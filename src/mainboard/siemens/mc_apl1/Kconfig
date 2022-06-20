@@ -21,6 +21,7 @@ config VARIANT_DIR
 	default "mc_apl4" if BOARD_SIEMENS_MC_APL4
 	default "mc_apl5" if BOARD_SIEMENS_MC_APL5
 	default "mc_apl6" if BOARD_SIEMENS_MC_APL6
+	default "mc_apl7" if BOARD_SIEMENS_MC_APL7
 
 config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
@@ -32,6 +33,7 @@ config MAINBOARD_PART_NUMBER
 	default "MC APL4" if BOARD_SIEMENS_MC_APL4
 	default "MC APL5" if BOARD_SIEMENS_MC_APL5
 	default "MC APL6" if BOARD_SIEMENS_MC_APL6
+	default "MC APL7" if BOARD_SIEMENS_MC_APL7
 
 config UART_FOR_CONSOLE
 	default 2

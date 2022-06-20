@@ -6,8 +6,11 @@
 #include <device/device.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <drivers/intel/dptf/chip.h>
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/power_limit.h>
+
+WEAK_DEV_PTR(dptf_policy);
 
 const struct cpu_power_limits baseline_limits[] = {
 	/* SKU_ID, TDP (Watts), pl1_min, pl1_max, pl2_min, pl2_max, pl4 */
@@ -79,6 +82,20 @@ const struct psys_config psys_config = {
 	.bj_volts_mv = 20000
 };
 
+static void update_oem_variables_perf(void)
+{
+	const struct device *policy_dev;
+	struct drivers_intel_dptf_config *config;
+
+	policy_dev = DEV_PTR(dptf_policy);
+	if (!policy_dev)
+		return;
+
+	config = policy_dev->chip_info;
+	config->oem_data.oem_variables[0] = 1;
+	printk(BIOS_INFO, "PL124: Update oem_variables to Performance value.\n");
+}
+
 static const struct cpu_power_limits *get_power_limit(size_t *total_entries)
 {
 	enum usb_chg_type type;
@@ -94,6 +111,7 @@ static const struct cpu_power_limits *get_power_limit(size_t *total_entries)
 	if (type == USB_CHG_TYPE_PROPRIETARY) {
 		if (watts == CHARGER_170W) {
 			printk(BIOS_INFO, "PL124: Performance.\n");
+			update_oem_variables_perf();
 			*total_entries = ARRAY_SIZE(perf_limits);
 			return perf_limits;
 		} else {
@@ -104,6 +122,7 @@ static const struct cpu_power_limits *get_power_limit(size_t *total_entries)
 	} else {
 		if (watts >= CHARGER_90W) {
 			printk(BIOS_INFO, "PL124: Performance.\n");
+			update_oem_variables_perf();
 			*total_entries = ARRAY_SIZE(perf_limits);
 			return perf_limits;
 		} else {

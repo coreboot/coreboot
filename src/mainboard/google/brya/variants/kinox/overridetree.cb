@@ -177,6 +177,10 @@ chip soc/intel/alderlake
 						}
 				}"
 
+				register "oem_data.oem_variables" = "{
+						[0] = 0x0
+				}"
+
 				## Charger Performance Control (Control, mA)
 				register "controls.charger_perf" = "{
 					[0] = { 255, 1700 },

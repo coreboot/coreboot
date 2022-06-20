@@ -26,6 +26,21 @@
 #define clrbits32(addr, clear)		clrsetbits32(addr, clear, 0)
 #define clrbits64(addr, clear)		clrsetbits64(addr, clear, 0)
 
+#define clrsetbits8p(addr, clear, set)	clrsetbits8((void *)((uintptr_t)addr), clear, set)
+#define clrsetbits16p(addr, clear, set)	clrsetbits16((void *)((uintptr_t)addr), clear, set)
+#define clrsetbits32p(addr, clear, set)	clrsetbits32((void *)((uintptr_t)addr), clear, set)
+#define clrsetbits64p(addr, clear, set)	clrsetbits64((void *)((uintptr_t)addr), clear, set)
+
+#define setbits8p(addr, set)		clrsetbits8((void *)((uintptr_t)addr), 0, set)
+#define setbits16p(addr, set)		clrsetbits16((void *)((uintptr_t)addr), 0, set)
+#define setbits32p(addr, set)		clrsetbits32((void *)((uintptr_t)addr), 0, set)
+#define setbits64p(addr, set)		clrsetbits64((void *)((uintptr_t)addr), 0, set)
+
+#define clrbits8p(addr, clear)		clrsetbits8((void *)((uintptr_t)addr), clear, 0)
+#define clrbits16p(addr, clear)		clrsetbits16((void *)((uintptr_t)addr), clear, 0)
+#define clrbits32p(addr, clear)		clrsetbits32((void *)((uintptr_t)addr), clear, 0)
+#define clrbits64p(addr, clear)		clrsetbits64((void *)((uintptr_t)addr), clear, 0)
+
 /*
  * Reads a transfer buffer from 32-bit FIFO registers. fifo_stride is the
  * distance in bytes between registers (e.g. pass 4 for a normal array of 32-bit

@@ -233,6 +233,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H21, NONE),
 	PAD_NC(GPP_H22, UP_20K),
 	PAD_NC(GPP_H23, UP_20K),
+
+	/* ------- GPIO Group CPU ------- */
+	PAD_CFG_NF(PECI_IO, DN_20K, DEEP, NF1),		/* PECI */
 };
 
 void variant_configure_gpios(void)

@@ -249,3 +249,7 @@ config BOARD_GOOGLE_JOXER
 config BOARD_GOOGLE_PUJJO
 	bool "->  Pujjo"
 	select BOARD_GOOGLE_BASEBOARD_NISSA
+
+config BOARD_GOOGLE_XIVU
+	bool "->  Xivu"
+	select BOARD_GOOGLE_BASEBOARD_NISSA

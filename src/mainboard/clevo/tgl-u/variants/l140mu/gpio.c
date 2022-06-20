@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <intelblocks/pcr.h>
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 #include <variant/gpio.h>
@@ -232,4 +233,7 @@ static const struct pad_config gpio_table[] = {
 void variant_configure_gpios(void)
 {
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+
+	/* PECI idle workaround */
+	pcr_rmw32(0x6b, 0x744, ~PAD_CFG1_PULL_MASK, PAD_CFG1_PULL_DN_20K);
 }

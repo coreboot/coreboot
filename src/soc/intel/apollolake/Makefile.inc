@@ -53,6 +53,7 @@ ramstage-y += graphics.c
 ramstage-y += gspi.c
 ramstage-y += heci.c
 ramstage-y += i2c.c
+ramstage-y += lockdown.c
 ramstage-y += lpc.c
 ramstage-y += mmap_boot.c
 ramstage-y += uart.c

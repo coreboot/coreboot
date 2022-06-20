@@ -7,6 +7,7 @@ subdirs-y += ../../../cpu/intel/turbo
 
 bootblock-$(CONFIG_TPM_MEASURED_BOOT) += bootblock/bootblock_measure.c
 bootblock-y += bootblock/bootblock.c
+bootblock-$(CONFIG_IFWI_MEASURED_BOOT) += measured_boot.c
 bootblock-y += ../common/block/cpu/pm_timer_emulation.c
 bootblock-y += car.c
 bootblock-y += heci.c

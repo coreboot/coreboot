@@ -304,6 +304,7 @@ chip soc/intel/alderlake
 			chip soc/intel/common/block/pcie/rtd3
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B4)"
 				register "srcclk_pin" = "4"
+				register "ext_pm_support" = "ACPI_PCIE_RP_EMIT_ALL"
 				device generic 0 alias emmc_rtd3 on end
 			end
 			# Enable PCIe-to-eMMC bridge PCIE 3 using clk 4

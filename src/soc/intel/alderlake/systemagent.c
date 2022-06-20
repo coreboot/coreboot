@@ -8,6 +8,7 @@
 
 #include <arch/ioapic.h>
 #include <console/console.h>
+#include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <delay.h>
@@ -78,6 +79,17 @@ static void set_mmio_resource(
 	resource->description = description;
 }
 
+int soc_get_uncore_prmmr_base_and_mask(uint64_t *prmrr_base,
+	uint64_t *prmrr_mask)
+{
+	msr_t msr;
+	msr = rdmsr(MSR_PRMRR_BASE_0);
+	*prmrr_base = (uint64_t) msr.hi << 32 | msr.lo;
+	msr = rdmsr(MSR_PRMRR_PHYS_MASK);
+	*prmrr_mask = (uint64_t) msr.hi << 32 | msr.lo;
+	return 0;
+}
+
 /*
  * SoC implementation
  *
@@ -112,9 +124,13 @@ void soc_add_configurable_mmio_resources(struct device *dev, int *resource_cnt)
 	/* PMRR */
 	size = get_valid_prmrr_size();
 	if (size > 0) {
-		uint64_t mask = pci_read_config32(dev, MSR_PRMRR_PHYS_MASK);
-		base = pci_read_config32(dev, MSR_PRMRR_PHYS_BASE) & mask;
-		set_mmio_resource(&(cfg_rsrc[count++]), base, size, "PMRR");
+		uint64_t mask;
+		if (soc_get_uncore_prmmr_base_and_mask(&base, &mask) == 0) {
+			base &= mask;
+			set_mmio_resource(&(cfg_rsrc[count++]), base, size, "PMRR");
+		} else {
+			printk(BIOS_ERR, "SA: Failed to get PRMRR base and mask\n");
+		}
 	}
 
 	/* GSM */

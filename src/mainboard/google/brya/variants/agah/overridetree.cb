@@ -30,7 +30,7 @@ chip soc/intel/alderlake
 		},
 	}"
 
-	register "sagv" = "SaGv_Enabled"
+	register "sagv" = "SaGv_Disabled"
 	register "tcss_aux_ori" = "0x10"
 	register "typec_aux_bias_pads[2]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 

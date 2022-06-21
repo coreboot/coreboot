@@ -16,7 +16,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* SOC_PEN_DETECT_ODL */
 	PAD_WAKE(GPIO_3, PULL_NONE, EDGE_LOW, S0i3),
 	/* EN_PWR_FP */
-	PAD_GPO(GPIO_4, HIGH),
+	PAD_GPO(GPIO_4, LOW),
 	/* EN_PP3300_TCHPAD */
 	PAD_GPO(GPIO_5, HIGH),
 	/* SSD_AUX_RESET_L */

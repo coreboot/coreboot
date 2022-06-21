@@ -259,41 +259,41 @@ chip soc/intel/alderlake
 					[0] = {
 						.target = DPTF_CPU,
 						.thresholds = {
-								TEMP_PCT(85, 90),
-								TEMP_PCT(80, 74),
-								TEMP_PCT(75, 74),
-								TEMP_PCT(70, 74),
-								TEMP_PCT(65, 74),
+								TEMP_PCT(60, 68),
+								TEMP_PCT(56, 50),
+								TEMP_PCT(52, 50),
+								TEMP_PCT(46, 40),
+								TEMP_PCT(42, 40),
 						}
 					},
 					[1] = {
 						.target = DPTF_TEMP_SENSOR_1,
 						.thresholds = {
-								TEMP_PCT(57, 70),
-								TEMP_PCT(54, 60),
-								TEMP_PCT(48, 60),
-								TEMP_PCT(45, 45),
-								TEMP_PCT(42, 39),
+								TEMP_PCT(60, 68),
+								TEMP_PCT(56, 50),
+								TEMP_PCT(52, 50),
+								TEMP_PCT(46, 40),
+								TEMP_PCT(42, 40),
 						}
 					},
 					[2] = {
 						.target = DPTF_TEMP_SENSOR_2,
 						.thresholds = {
-								TEMP_PCT(57, 70),
-								TEMP_PCT(54, 50),
-								TEMP_PCT(48, 60),
-								TEMP_PCT(45, 45),
-								TEMP_PCT(42, 39),
+								TEMP_PCT(60, 68),
+								TEMP_PCT(56, 50),
+								TEMP_PCT(52, 50),
+								TEMP_PCT(46, 40),
+								TEMP_PCT(42, 40),
 						}
 					},
 					[3] = {
 						.target = DPTF_TEMP_SENSOR_3,
 						.thresholds = {
-								TEMP_PCT(57, 70),
-								TEMP_PCT(54, 60),
-								TEMP_PCT(48, 60),
-								TEMP_PCT(45, 45),
-								TEMP_PCT(42, 39),
+								TEMP_PCT(60, 68),
+								TEMP_PCT(56, 50),
+								TEMP_PCT(52, 50),
+								TEMP_PCT(46, 40),
+								TEMP_PCT(42, 40),
 						}
 					}
 				}"
@@ -345,13 +345,13 @@ chip soc/intel/alderlake
 				register "controls.fan_perf" = "{
 					[0] = { 100, 6000, 220, 2200, },
 					[1] = {  92, 5500, 180, 1800, },
-					[2] = {  85, 5000, 145, 1450, },
-					[3] = {  70, 4400, 115, 1150, },
-					[4] = {  56, 3900,  90,  900, },
-					[5] = {  45, 3300,  55,  550, },
-					[6] = {  38, 3000,  30,  300, },
-					[7] = {  33, 2900,  15,  150, },
-					[8] = {  10,  800,  10,  100, },
+					[2] = {  78, 4500, 145, 1450, },
+					[3] = {  68, 3900, 115, 1150, },
+					[4] = {  60, 3600,  90,  900, },
+					[5] = {  50, 3200,  55,  550, },
+					[6] = {  40, 2800,  30,  300, },
+					[7] = {  33, 2500,  15,  150, },
+					[8] = {  12,  800,  10,  100, },
 					[9] = {   0,    0,   0,   50, }
 				}"
 

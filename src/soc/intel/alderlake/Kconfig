@@ -242,7 +242,6 @@ config MAX_ROOT_PORTS
 	default MAX_PCH_ROOT_PORTS
 
 config MAX_PCIE_CLOCK_SRC
-	prompt "Number of Source Clock supported from SOC"
 	int
 	default 6 if SOC_INTEL_ALDERLAKE_PCH_M
 	default 5 if SOC_INTEL_ALDERLAKE_PCH_N

@@ -105,9 +105,9 @@ else ifeq ($(CONFIG_SOC_INTEL_COMETLAKE),y)
 ifeq ($(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H),y)
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-a5-02
 else
-# Missing 06-a6-01
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8e-0c
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-a6-00
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-a6-01
 endif
 endif
 

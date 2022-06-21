@@ -94,8 +94,10 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 	u32 current_rev;
 	const struct microcode *m = microcode_patch;
 
-	if (!m)
+	if (!m) {
+		printk(BIOS_ERR, "microcode: failed because no ucode was found\n");
 		return;
+	}
 
 	current_rev = read_microcode_rev();
 

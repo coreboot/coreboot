@@ -71,7 +71,7 @@ config SOC_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_SPI		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_UART
-	select SOC_AMD_COMMON_BLOCK_UCODE	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_UCODE
 	select SOC_AMD_COMMON_FSP_DMI_TABLES	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_FSP_PCI		# TODO: Check if this is still correct
 	select SSE2

@@ -22,10 +22,10 @@ chip soc/amd/cezanne
 	register "thermctl_limit_degreeC"    = "100"
 
 	#Update values based on final stardust SDLE test report.
-	register "telemetry_vddcrvddfull_scale_current_mA" = "91288" #mA
-	register "telemetry_vddcrvddoffset" =  "279"
-	register "telemetry_vddcrsocfull_scale_current_mA" = "29785" #mA
-	register "telemetry_vddcrsocoffset" =  "461"
+	register "telemetry_vddcrvddfull_scale_current_mA" = "91573" #mA
+	register "telemetry_vddcrvddoffset" =  "620"
+	register "telemetry_vddcrsocfull_scale_current_mA" = "30829" #mA
+	register "telemetry_vddcrsocoffset" =  "235"
 
 	# Enable STT support
 	register "stt_control" = "1"

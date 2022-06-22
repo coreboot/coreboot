@@ -8,5 +8,8 @@ default:
 	go version
 	go build -v -o $(PROJECT_NAME)
 
+test:
+	go test ./... -v -count=1
+
 clean:
 	rm -Rf $(PROJECT_NAME) $(OUTPUT_DIR)

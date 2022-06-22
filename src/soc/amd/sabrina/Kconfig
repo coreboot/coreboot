@@ -403,7 +403,7 @@ config SPL_TABLE_FILE
 
 config PSP_SOFTFUSE_BITS
 	string "PSP Soft Fuse bits to enable"
-	default "28 6"
+	default "34 28 6"
 	help
 	  Space separated list of Soft Fuse bits to enable.
 	  Bit 0:  Enable secure debug (Set by PSP_UNLOCK_SECURE_DEBUG)

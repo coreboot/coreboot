@@ -95,7 +95,7 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 	const struct microcode *m = microcode_patch;
 
 	if (!m) {
-		printk(BIOS_ERR, "microcode: failed because no ucode was found\n");
+		printk(BIOS_WARNING, "microcode: failed because no ucode was found\n");
 		return;
 	}
 
@@ -269,7 +269,7 @@ void intel_reload_microcode(void)
 	const struct microcode *m = intel_microcode_find();
 
 	if (!m) {
-		printk(BIOS_ERR, "microcode: failed because no ucode was found\n");
+		printk(BIOS_WARNING, "microcode: failed because no ucode was found\n");
 		return;
 	}
 

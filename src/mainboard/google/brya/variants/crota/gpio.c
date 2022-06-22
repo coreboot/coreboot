@@ -20,8 +20,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* A23 : ESPI_CS1# ==> AUD_HP_INT_L */
 	PAD_CFG_GPI_APIC(GPP_A23, NONE, PLTRST, LEVEL, INVERT),
 
-	/* B2  : VRALERT# ==> NC */
-	PAD_NC(GPP_B2, NONE),
+	/* B2  : VRALERT# ==> BYPASS_DET */
+	PAD_CFG_GPI(GPP_B2, NONE, DEEP),
 	/* B3  : PROC_GP2 ==> NC */
 	PAD_NC(GPP_B3, NONE),
 	/* B15  : PROC_GP3 ==> AUD_RST_L */
@@ -62,8 +62,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* E23 : DDPA_CTRLDATA ==> NC */
 	PAD_NC(GPP_E23, NONE),
 
-	/* F19 : SRCCLKREQ6# ==> NC */
-	PAD_NC(GPP_F19, NONE),
+	/* F19 : SRCCLKREQ6# ==> FP_USER_PRES_FP_L */
+	PAD_CFG_GPI(GPP_F19, NONE, DEEP),
 	/* F20 : EXT_PWR_GATE# ==> NC */
 	PAD_NC(GPP_F20, NONE),
 

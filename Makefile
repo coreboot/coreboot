@@ -136,9 +136,11 @@ include $(TOPLEVEL)/util/testing/Makefile.inc
 -include $(TOPLEVEL)/site-local/Makefile.inc
 include $(TOPLEVEL)/tests/Makefile.inc
 real-all:
-	@echo "Error: Expected config file ($(DOTCONFIG)) not present." >&2
-	@echo "Please specify a config file or run 'make menuconfig' to" >&2
-	@echo "generate a new config file." >&2
+	@echo "Error: Trying to build, but NOCOMPILE is set." >&2
+	@echo "  Please file a bug with the following information:"
+	@echo "- MAKECMDGOALS: $(MAKECMDGOALS)" >&2
+	@echo "- HAVE_DOTCONFIG: $(HAVE_DOTCONFIG)" >&2
+	@echo "- HAVE_KCONFIG_MAKEFILE_REAL: $(HAVE_KCONFIG_MAKEFILE_REAL)" >&2
 	@exit 1
 else
 

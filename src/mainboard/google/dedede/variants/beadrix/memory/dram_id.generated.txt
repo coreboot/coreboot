@@ -6,3 +6,4 @@
 DRAM Part Name                 ID to assign
 MT53E512M32D1NP-046 WT:B       0 (0000)
 K4U6E3S4AA-MGCR                0 (0000)
+H54G46CYRBX267                 0 (0000)

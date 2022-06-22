@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Check if this is still correct */
-
 #include <amdblocks/mca.h>
 #include <cpu/x86/msr.h>
 #include <types.h>

@@ -56,7 +56,7 @@ config SOC_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_I23C_PAD_CTRL
 	select SOC_AMD_COMMON_BLOCK_IOMMU
 	select SOC_AMD_COMMON_BLOCK_LPC		# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_MCAX	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_MCAX
 	select SOC_AMD_COMMON_BLOCK_NONCAR	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_PCI		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_PCI_MMCONF

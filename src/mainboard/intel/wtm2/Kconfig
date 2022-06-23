@@ -7,12 +7,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ACPI_TABLES
 	select HAVE_OPTION_TABLE
 	select HAVE_ACPI_RESUME
-	select MAINBOARD_HAS_CHROMEOS
 	select MEMORY_MAPPED_TPM
 	select INTEL_INT15
-
-config VBOOT
-	select VBOOT_VBNV_CMOS
 
 config MAINBOARD_DIR
 	default "intel/wtm2"

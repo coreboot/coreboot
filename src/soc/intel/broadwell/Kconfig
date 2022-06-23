@@ -13,25 +13,6 @@ config SOC_SPECIFIC_OPTIONS
 	select MRC_SETTINGS_PROTECT
 	select REG_SCRIPT
 
-config BROADWELL_VBOOT_IN_BOOTBLOCK
-	depends on VBOOT
-	bool "Start verstage in bootblock"
-	default y
-	select VBOOT_STARTS_IN_BOOTBLOCK
-	help
-	  Broadwell can either start verstage in a separate stage
-	  right after the bootblock has run or it can start it
-	  after romstage for compatibility reasons.
-	  Broadwell however uses a mrc.bin to initialize memory which
-	  needs to be located at a fixed offset. Therefore even with
-	  a separate verstage starting after the bootblock that same
-	  binary is used meaning a jump is made from RW to the RO region
-	  and back to the RW region after the binary is done.
-
-config VBOOT
-	select VBOOT_MUST_REQUEST_DISPLAY
-	select VBOOT_STARTS_IN_ROMSTAGE if !BROADWELL_VBOOT_IN_BOOTBLOCK
-
 config ECAM_MMCONF_BASE_ADDRESS
 	default 0xf0000000
 
@@ -96,13 +77,6 @@ config MRC_FILE
 config MRC_BIN_ADDRESS
 	hex
 	default 0xfffa0000
-
-# The UEFI System Agent binary needs to be at a fixed offset in the flash
-# and can therefore only reside in the COREBOOT fmap region
-config RO_REGION_ONLY
-	string
-	depends on VBOOT
-	default "mrc.bin"
 
 endif # HAVE_MRC
 

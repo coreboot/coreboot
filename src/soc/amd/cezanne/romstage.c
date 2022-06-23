@@ -25,5 +25,4 @@ void __noreturn romstage_main(void)
 	memmap_stash_early_dram_usage();
 
 	run_ramstage();
-	die("failed to load ramstage\n");
 }

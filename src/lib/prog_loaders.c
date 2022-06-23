@@ -82,7 +82,7 @@ void preload_ramstage(void)
 
 	cbfs_preload(CONFIG_CBFS_PREFIX "/ramstage");
 }
-void run_ramstage(void)
+void __noreturn run_ramstage(void)
 {
 	struct prog ramstage =
 		PROG_INIT(PROG_RAMSTAGE, CONFIG_CBFS_PREFIX "/ramstage");

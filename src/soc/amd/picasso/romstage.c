@@ -25,7 +25,4 @@ void __noreturn romstage_main(void)
 
 	post_code(0x44);
 	run_ramstage();
-
-	post_code(0x50); /* Should never see this post code. */
-	die("failed to load ramstage\n");
 }

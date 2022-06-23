@@ -152,7 +152,7 @@ enum cb_err legacy_romstage_select_and_load(struct prog *romstage);
  */
 void preload_ramstage(void);
 /* Run ramstage from romstage. */
-void run_ramstage(void);
+void __noreturn run_ramstage(void);
 
 /***********************
  *   PAYLOAD LOADING   *

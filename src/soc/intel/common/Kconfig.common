@@ -1,3 +1,41 @@
+config INTEL_HAS_TOP_SWAP
+	bool
+	help
+	  Set this config if the Intel SoC supports top swap feature
+
+if INTEL_HAS_TOP_SWAP
+
+config INTEL_ADD_TOP_SWAP_BOOTBLOCK
+	bool "Include a Top swap bootblock"
+	default n
+	help
+	  Intel PCH/Southbridges have feature that it is possible to have
+	  the southbridge/PCH look for the bootblock at a 64K or
+	  128K/256K/512K/1MB (in case of newer SoCs) offset
+	  instead of the usual top of flash.
+	  Select this to put a 'second' bootblock.
+
+config INTEL_TOP_SWAP_BOOTBLOCK_SIZE
+	hex "Size of top swap boot block"
+	depends on INTEL_ADD_TOP_SWAP_BOOTBLOCK
+	default 0x10000
+	help
+	  Set this config to a supported topswap size.
+	  Valid sizes: 0x10000 0x20000 0x40000 0x80000 0x100000
+
+config INTEL_TOP_SWAP_FIT_ENTRY_FMAP_REG
+	string
+	depends on INTEL_ADD_TOP_SWAP_BOOTBLOCK
+	help
+	  Use this config to specify the name of a FMAP region (which should
+	  hold a microcode) whose address as the first entry in the topswap FIT.
+	  This is useful in creating a asymmetric FIT in top swap bootblock
+	  than the one in non-topswap bootblock. This string will be passed
+	  onto ifittool (-A -n option). ifittool will not parse the region for MCU
+	  entries, and only locate the region and insert its address into FIT.
+
+endif
+
 config SOC_INTEL_COMMON
 	bool
 	select AZALIA_PLUGIN_SUPPORT

@@ -31,6 +31,8 @@ site-local
 # Development friendly files
 tags
 .clang_complete
+.cache
+compile_commands.json
 
 # Cross-compile toolkits
 xgcc/

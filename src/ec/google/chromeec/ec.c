@@ -949,45 +949,6 @@ uint32_t google_chromeec_get_sku_id(void)
 	return resp.sku_id;
 }
 
-int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len)
-{
-	struct ec_params_vbnvcontext params = {
-		.op = is_read ? EC_VBNV_CONTEXT_OP_READ :
-				EC_VBNV_CONTEXT_OP_WRITE,
-	};
-	struct ec_response_vbnvcontext resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_VBNV_CONTEXT,
-		.cmd_version = EC_VER_VBNV_CONTEXT,
-		.cmd_data_in = &params,
-		.cmd_data_out = &resp,
-		.cmd_size_in = sizeof(params),
-		.cmd_size_out = is_read ? sizeof(resp) : 0,
-		.cmd_dev_index = 0,
-	};
-	int retries = 3;
-
-	if (len != EC_VBNV_BLOCK_SIZE)
-		return -1;
-
-	if (!is_read)
-		memcpy(&params.block, data, EC_VBNV_BLOCK_SIZE);
-retry:
-
-	if (google_chromeec_command(&cmd)) {
-		printk(BIOS_ERR, "failed to %s vbnv_ec context: %d\n",
-			is_read ? "read" : "write", (int)cmd.cmd_code);
-		mdelay(10);	/* just in case */
-		if (--retries)
-			goto retry;
-	}
-
-	if (is_read)
-		memcpy(data, &resp.block, EC_VBNV_BLOCK_SIZE);
-
-	return cmd.cmd_code;
-}
-
 static uint16_t google_chromeec_get_uptime_info(
 	struct ec_response_uptime_info *resp)
 {

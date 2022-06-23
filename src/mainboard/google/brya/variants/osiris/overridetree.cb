@@ -11,6 +11,10 @@ end
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
+	# As per Intel Advisory doc#723158, the change is required to prevent possible
+	# display flickering issue.
+	register "usb2_phy_sus_pg_disable" = "1"
+
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"		# Disable USB2_C1
 	register "usb2_ports[3]" = "USB2_PORT_EMPTY"		# Disable M.2 WWAN
 

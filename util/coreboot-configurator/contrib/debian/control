@@ -6,6 +6,6 @@ Build-Depends: build-essential, cmake, debhelper (>= 7), inkscape, libqt5gui5, l
 Standards-Version: 4.1.1
 
 Package: coreboot-configurator
-Depends: nvramtool, ${shlibs:Depends}, ${misc:Depends}, libqt5gui5, qt5-style-plugins, libyaml-cpp0.6
+Depends: nvramtool, ${shlibs:Depends}, ${misc:Depends}, libqt5gui5, qt5-style-plugins, libyaml-cpp0.6 | libyaml-cpp0.7
 Architecture: all
 Description: Graphical interface to change settings available in coreboot CBFS

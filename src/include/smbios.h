@@ -210,6 +210,7 @@ typedef enum {
 	MEMORY_TYPE_HBM2 = 0x21,
 	MEMORY_TYPE_DDR5 = 0x22,
 	MEMORY_TYPE_LPDDR5 = 0x23,
+	MEMORY_TYPE_HBM3 = 0x24,
 } smbios_memory_type;
 
 typedef enum {

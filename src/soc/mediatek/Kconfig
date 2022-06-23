@@ -1,2 +1,0 @@
-# Load all chipsets
-source "src/soc/mediatek/*/Kconfig"

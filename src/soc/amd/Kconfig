@@ -1,5 +1,0 @@
-# Load all chipsets before common
-source "src/soc/amd/*/Kconfig"
-
-# Load common defaults last
-source "src/soc/amd/common/Kconfig.common"

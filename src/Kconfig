@@ -560,6 +560,8 @@ menu "Chipset"
 
 comment "SoC"
 source "src/soc/*/Kconfig"
+source "src/soc/*/*/Kconfig"
+source "src/soc/*/*/Kconfig.common"
 comment "CPU"
 source "src/cpu/Kconfig"
 comment "Northbridge"

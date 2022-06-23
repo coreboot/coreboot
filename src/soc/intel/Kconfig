@@ -1,8 +1,4 @@
-# Load all chipsets
-source "src/soc/intel/*/Kconfig"
-
-# Load common config
-source "src/soc/intel/common/Kconfig.common"
+# should all probably be moved to soc/intel/common/Kconfig
 
 config INTEL_HAS_TOP_SWAP
 	bool

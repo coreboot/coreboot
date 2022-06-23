@@ -29,6 +29,7 @@ static void soc_init(struct device *dev)
 
 static struct device_operations soc_ops = {
 	.read_resources = soc_read_resources,
+	.set_resources = noop_set_resources,
 	.init = soc_init,
 };
 

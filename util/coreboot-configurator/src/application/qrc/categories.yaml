@@ -56,9 +56,9 @@
       type: bool
       help: Enable or disable the built-in microphone
     legacy_8254_timer:
-      displayName: Clock Gating
+      displayName: Legacy 8254 Timer
       type: bool
-      help: Enable or disable the legacy 8254 timer. Reduces power consumption when enabled but must be disabled for certain distributions such as Qubes
+      help: Enable or disable the legacy 8254 timer. Enabling it increases power consumption by disabling clock gating, but increases compatibility with older Operating Systems
     usb_always_on:
       displayName: USB Always On
       type: bool

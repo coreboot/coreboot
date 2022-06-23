@@ -5,11 +5,17 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
+#include <smbios.h>
 #include <soc/iomap.h>
 
 int get_cpu_count(void)
 {
 	return 1 + (cpuid_ecx(0x80000008) & 0xff);
+}
+
+unsigned int smbios_processor_family(struct cpuid_result res)
+{
+	return 0x6b; /* Zen */
 }
 
 unsigned int get_threads_per_core(void)

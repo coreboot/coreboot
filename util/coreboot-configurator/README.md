@@ -16,13 +16,14 @@ sudo apt install coreboot-configurator
 sudo apt purge coreboot-configurator
 ```
 
-## Debian 11
+## Debian 11 / MX Linux 19
 ##### Install
 ```
-echo "deb http://ppa.launchpad.net/starlabs/ppa/ubuntu focal main" | sudo tee -a /etc/apt/sources.list.d/starlabs-ubuntu-ppa-focal.list
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 17A20BAF70BEC3904545ACFF8F21C26C794386E3
-sudo apt update
-sudo apt install coreboot-configurator
+cd /tmp
+wget https://github.com/StarLabsLtd/packages/raw/main/Debian/11/coreboot-configurator_9%2Bf_all.deb \
+	https://github.com/StarLabsLtd/packages/raw/main/Debian/11/nvramtool_1_all.deb
+sudo dpkg -i *.deb
+sudo apt -f install
 ```
 
 ##### Uninstall

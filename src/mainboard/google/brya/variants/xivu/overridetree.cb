@@ -23,11 +23,24 @@ chip soc/intel/alderlake
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
 	#| I2C1              | Touchscreen               |
-	#| I2C2              |                           |
+	#| I2C2              | WCAM                      |
 	#| I2C3              | Audio                     |
 	#| I2C5              | Trackpad                  |
 	#+-------------------+---------------------------+
         device domain 0 on
+        	device ref ipu on
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "0x50000"
+				register "acpi_name" = ""IPU0""
+				register "device_type" = "INTEL_ACPI_CAMERA_CIO2"
+
+				register "cio2_num_ports" = "1"
+				register "cio2_lanes_used" = "{4}" # 4 CSI Camera lanes are used
+				register "cio2_lane_endpoint[0]" = ""^I2C2.CAM0""
+				register "cio2_prt[0]" = "2"
+				device generic 0 on end
+			end
+		end
 		device ref i2c1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN9008""
@@ -61,6 +74,78 @@ chip soc/intel/alderlake
 				register "key.label" = ""pen_eject""
 				device generic 0 on
 				end
+			end
+		end
+		device ref i2c2 on
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""OVTI8856""
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CAM0""
+				register "chip_name" = ""Ov 8856 Camera""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+
+				register "ssdb.lanes_used" = "4"
+				register "ssdb.link_used" = "1"
+				register "ssdb.vcm_type" = "0x0C"
+				register "vcm_name" = ""VCM0""
+				register "num_freq_entries" = "2"
+				register "link_freq[0]" = "360000000"
+				register "link_freq[1]" = "180000000"
+				register "remote_name" = ""IPU0""
+
+				register "has_power_resource" = "1"
+				#Controls
+				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_3"
+				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
+
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_D15"  # EN_PP2800_WCAM_X
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_D16"  # EN_PP1800_PP1200_WCAM_X
+				register "gpio_panel.gpio[2].gpio_num" = "GPP_D3"   # WCAM_RST_L
+
+				#_ON
+				register "on_seq.ops_cnt" = "5"
+				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 5)"
+				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(2, 5)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "4"
+				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+
+				device i2c 36 on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "3"
+				register "acpi_name" = ""VCM0""
+				register "chip_name" = ""DW AF DAC""
+				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
+
+				register "pr0" = ""\\_SB.PCI0.I2C2.CAM0.PRIC""
+				register "vcm_compat" = ""dongwoon,dw9714""
+
+				device i2c 0C on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
+				register "acpi_uid" = "1"
+				register "acpi_name" = ""NVM0""
+				register "chip_name" = ""GT24C08""
+				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
+
+				register "pr0" = ""\\_SB.PCI0.I2C2.CAM0.PRIC""
+
+				register "nvm_size" = "0x2000"
+				register "nvm_pagesize" = "1"
+				register "nvm_readonly" = "1"
+				register "nvm_width" = "0x10"
+				register "nvm_compat" = ""atmel,24c08""
+
+				device i2c 50 on end
 			end
 		end
 		device ref i2c3 on

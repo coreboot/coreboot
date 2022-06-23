@@ -559,7 +559,6 @@ config CBFS_AUTOGEN_ATTRIBUTES
 menu "Chipset"
 
 comment "SoC"
-source "src/soc/*/Kconfig"
 source "src/soc/*/*/Kconfig"
 source "src/soc/*/*/Kconfig.common"
 comment "CPU"

@@ -173,6 +173,20 @@ config SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY
 	  Mainboard user to select this Kconfig in order to capture pre-cpu
 	  reset boot performance telemetry data.
 
+config SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE
+	bool
+	default y
+	depends on SOC_INTEL_CSE_LITE_SKU && !SOC_INTEL_CSE_LITE_COMPRESS_ME_RW
+	help
+	 Use default flow of CSE FW Update in romstage when uncompressed ME_RW blobs are used.
+
+config SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE
+	bool
+	default n
+	depends on SOC_INTEL_CSE_LITE_COMPRESS_ME_RW
+	help
+	 Use this option for CSE FW Update when compressed blobs are used.
+
 if STITCH_ME_BIN
 
 config CSE_COMPONENTS_PATH

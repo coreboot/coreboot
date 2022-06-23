@@ -25,8 +25,8 @@ verstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
 romstage-y += cbmem.c
-romstage-y += watchdog.c
 romstage-y += ../common/qclib.c
+romstage-y += ../common/watchdog.c
 romstage-y += qclib.c
 romstage-y += ../common/mmu.c
 romstage-y += mmu.c

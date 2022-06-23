@@ -353,15 +353,6 @@ struct soc_intel_alderlake_config {
 	 */
 	uint8_t serial_io_gspi_cs_state[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 
-	/* Debug interface selection */
-	enum {
-		DEBUG_INTERFACE_RAM = (1 << 0),
-		DEBUG_INTERFACE_UART_8250IO = (1 << 1),
-		DEBUG_INTERFACE_USB3 = (1 << 3),
-		DEBUG_INTERFACE_LPSS_SERIAL_IO = (1 << 4),
-		DEBUG_INTERFACE_TRACEHUB = (1 << 5),
-	} debug_interface_flag;
-
 	/* Enable Pch iSCLK */
 	uint8_t pch_isclk;
 

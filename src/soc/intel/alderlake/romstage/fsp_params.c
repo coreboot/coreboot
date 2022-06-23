@@ -177,9 +177,6 @@ static void fill_fspm_security_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_uart_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
-	/* UART Debug Log */
-	m_cfg->PcdDebugInterfaceFlags = CONFIG(DRIVERS_UART_8250IO) ?
-			DEBUG_INTERFACE_UART_8250IO : DEBUG_INTERFACE_LPSS_SERIAL_IO;
 	if (CONFIG(DRIVERS_UART_8250IO))
 		m_cfg->PcdIsaSerialUartBase = ISA_SERIAL_BASE_ADDR_3F8;
 	m_cfg->SerialIoUartDebugMode = PchSerialIoSkipInit;

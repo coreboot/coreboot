@@ -199,7 +199,7 @@ chip soc/intel/alderlake
 				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_F13)"
 				register "key.wake_gpe" = "GPE0_DW2_15"
 				register "key.wakeup_route" = "WAKEUP_ROUTE_SCI"
-				register "key.wakeup_event_action" = "EV_ACT_ANY"
+				register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"
 				register "key.dev_name" = ""EJCT""
 				register "key.linux_code" = "SW_PEN_INSERTED"
 				register "key.linux_input_type" = "EV_SW"

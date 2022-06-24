@@ -648,9 +648,6 @@ static void allocate_domain_resources(const struct device *domain)
  *
  * Some rules that are followed by the resource allocator:
  *  - Allocate resource locations for every device as long as the requirements can be satisfied.
- *  - If a resource cannot be allocated any address space, then that resource needs to be
- * properly updated to ensure that it does not incorrectly overlap some address space reserved
- * for a different purpose.
  *  - Don't overlap with resources in fixed locations.
  *  - Don't overlap and follow the rules of bridges -- downstream devices of bridges should use
  * parts of the address space allocated to the bridge.

@@ -17,7 +17,7 @@
  * outside of the core timer code is not supported. */
 
 struct mono_time {
-	long microseconds;
+	uint64_t microseconds;
 };
 
 /* A timeout_callback structure is used for the book keeping for scheduling

@@ -47,6 +47,11 @@ static void fch_apmc_smi_handler(void)
 	mainboard_smi_apmc(cmd);
 }
 
+/*
+ * Both the psp_notify_sx_info and the smu_sx_entry call will clobber the SMN index register
+ * during the SMN accesses. Since the SMI handler is the last thing that gets called before
+ * entering S3, this won't interfere with any indirect SMN accesses via the same register pair.
+ */
 static void fch_slp_typ_handler(void)
 {
 	uint32_t pci_ctrl, reg32;

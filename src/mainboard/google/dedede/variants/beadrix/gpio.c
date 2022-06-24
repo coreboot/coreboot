@@ -83,6 +83,11 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H7, NONE),
 	/* H17 : WWAN_RST_L */
 	PAD_CFG_GPO(GPP_H17, 0, PLTRST),
+
+	/* S2  : DMIC1_CLK ==> NC */
+	PAD_NC(GPP_S2, NONE),
+	/* S3  : DMIC1_DATA ==> NC */
+	PAD_NC(GPP_S3, NONE),
 };
 
 static const struct pad_config lte_disable_pads[] = {

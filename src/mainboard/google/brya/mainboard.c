@@ -14,6 +14,7 @@
 #include <stdio.h>
 
 WEAK_DEV_PTR(rp6_wwan);
+WEAK_DEV_PTR(dgpu);
 
 static void add_fw_config_oem_string(const struct fw_config *config, void *arg)
 {
@@ -102,7 +103,7 @@ static void mainboard_dev_init(struct device *dev)
 	mainboard_ec_init();
 }
 
-static void mainboard_generate_shutdown(const struct device *dev)
+static void mainboard_generate_wwan_shutdown(const struct device *dev)
 {
 	const struct drivers_wwan_fm_config *config = config_of(dev);
 	const struct device *parent = dev->bus->dev;
@@ -119,10 +120,16 @@ static void mainboard_generate_shutdown(const struct device *dev)
 			acpigen_emit_byte(ARG0_OP);
 		}
 		acpigen_write_if_end();
-	} else {
-		acpigen_emit_namestring(acpi_device_path_join(dev, "DPTS"));
-		acpigen_emit_byte(ARG0_OP);
 	}
+}
+
+static void mainboard_generate_dgpu_shutdown(const struct device *dev)
+{
+	/* Call `_OFF` from the Power Resource associated with the dGPU's PEG port. */
+	const struct device *parent = dev->bus->dev;
+
+	if (parent)
+		acpigen_emit_namestring(acpi_device_path_join(parent, "PGPR._OFF"));
 }
 
 static void mainboard_generate_s0ix_hook(void)
@@ -145,14 +152,18 @@ static void mainboard_generate_s0ix_hook(void)
 static void mainboard_fill_ssdt(const struct device *dev)
 {
 	const struct device *wwan = DEV_PTR(rp6_wwan);
+	const struct device *dgpu = DEV_PTR(dgpu);
 
-	if (wwan) {
-		acpigen_write_scope("\\_SB");
-		acpigen_write_method_serialized("MPTS", 1);
-		mainboard_generate_shutdown(wwan);
-		acpigen_write_method_end(); /* Method */
-		acpigen_write_scope_end(); /* Scope */
-	}
+	acpigen_write_scope("\\_SB");
+	acpigen_write_method_serialized("MPTS", 1);
+	if (wwan)
+		mainboard_generate_wwan_shutdown(wwan);
+	if (dgpu)
+		mainboard_generate_dgpu_shutdown(dgpu);
+
+	acpigen_write_method_end(); /* Method */
+	acpigen_write_scope_end(); /* Scope */
+
 	/* for variant to fill additional SSDT */
 	variant_fill_ssdt(dev);
 

@@ -30,7 +30,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * ADC - [**Analog-to-Digital Converter**](https://en.wikipedia.org/wiki/Analog-to-digital_converter)
 * ADL - Intel: [**Alder Lake**](https://en.wikichip.org/wiki/intel/microarchitectures/alder_lake)
 * AES - [**Advanced Encryption Standard**](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard)
-* AGESA - [**AMD Generic Encapsulated Software Architecture**](https://en.wikipedia.org/wiki/AGESA_
+* AGESA - [**AMD Generic Encapsulated Software Architecture**](https://en.wikipedia.org/wiki/AGESA_)
 * AGP - The [**Accelerated Graphics
   Port**](http://en.wikipedia.org/wiki/Accelerated_Graphics_Port) is an
   older (1997-2004) point-to-point bus for video cards to communicate
@@ -235,7 +235,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   Graphics Card, Sound Card. DMA is an essential feature of all modern
   computers, as it allows devices of different speeds to communicate
   without subjecting the CPU to a massive interrupt load.
-* DMI - [**Desktop Management Interface**}(Desktop_Management_Interface)
+* DMI - [**Desktop Management Interface**](Desktop_Management_Interface)
 * DMIC - Digital Microphone
 * DMTF - [**Distributed Management Task Force**](https://en.wikipedia.org/wiki/Distributed_Management_Task_Force)
 * DMZ - Demilitarized Zone
@@ -268,7 +268,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * DVI - [**Digital Video Interface**](https://en.wikipedia.org/wiki/Digital_Visual_Interface)
 * DVT - Production Timeline: Design Validation Test
 * DW - DesignWare
-* DXE - UEFI:  [**Driver Execution Environment**](https://en.wikipedia.org/wiki/Unified_Extensible_Firmware_Interface#DXE_%E2%80%93_Driver_Execution_Environment_
+* DXE - UEFI:  [**Driver Execution Environment**](https://en.wikipedia.org/wiki/Unified_Extensible_Firmware_Interface#DXE_%E2%80%93_Driver_Execution_Environment_)
 * DXIO - AMD: Distributed CrossBar I/O
 
 
@@ -696,7 +696,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   each PCI slot was wired to the interrupt router.
 * PIRQ - PCI IRQ
 * PIT - Generally refers to the 8253/8254 [**Programmable Interval
-  Timer](https://en.wikipedia.org/wiki/Programmable_interval_timer).
+  Timer**](https://en.wikipedia.org/wiki/Programmable_interval_timer).
 * PLCC - [**Plastic leaded chip
   carrier**](http://en.wikipedia.org/wiki/Plastic_leaded_chip_carrier)
 * PLL - [**Phase-Locked
@@ -853,7 +853,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   BIOS**](https://en.wikipedia.org/wiki/System_Management_BIOS)
 * SMBus -  [**System Management
   Bus**](https://en.wikipedia.org/wiki/System_Management_Bus)
-  * [http://www.smbus.org/](http://www.smbus.org/
+  * [http://www.smbus.org/](http://www.smbus.org/)
 * SMI - System management interrupt
 * SMM - [**System management
   mode**](https://en.wikipedia.org/wiki/System_Management_Mode)

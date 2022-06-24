@@ -9,6 +9,7 @@ end
 chip soc/intel/jasperlake
 
 	# USB Port Configuration
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)"		# USB3 Type A port
 	register "usb2_ports[4]" = "USB2_PORT_EMPTY" # Disable unused USB2P_5 and USB2N_5
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# Camera
 	register "usb2_ports[6]" = "USB2_PORT_EMPTY" # Disable unused USB2P_7 and USB2N_7

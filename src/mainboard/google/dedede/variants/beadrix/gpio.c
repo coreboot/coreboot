@@ -11,6 +11,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_A10, 1, PWROK),
 	/* A11 : TOUCH_RPT_EN ==> NC */
 	PAD_NC(GPP_A11, NONE),
+	/* A18 : USB_OC0_N */
+	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
 
 	/* B7  : PCIE_CLKREQ2_N ==> WWAN_SAR_DETECT_ODL */
 	PAD_CFG_GPO(GPP_B7, 1, DEEP),

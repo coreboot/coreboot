@@ -88,7 +88,6 @@ chip soc/intel/alderlake
 				.clk_src = 4,
 				.clk_req = 4,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-				.pcie_rp_aspm = ASPM_DISABLE,
 			}"
 			device pci 00.0 on end
 		end # IntelI225V Ethernet NIC

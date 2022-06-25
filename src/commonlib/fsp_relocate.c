@@ -170,7 +170,8 @@ static int te_relocate(uintptr_t new_addr, void *te)
 			printk(FSP_DBG_LVL, "reloc type %x offset %zx\n",
 				type, offset);
 
-			if (type == EFI_IMAGE_REL_BASED_HIGHLOW) {
+			if (type == EFI_IMAGE_REL_BASED_HIGHLOW ||
+					type == EFI_IMAGE_REL_BASED_DIR64) {
 				uint32_t *reloc_addr;
 				uint32_t val;
 

@@ -15,9 +15,11 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/uart.h>
+#include <soc/iomap.h>
 #include <soc/cpu.h>
 #include <soc/loader.h>
 #include <soc/gpio.h>
+#include <soc/measured_boot.h>
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
@@ -42,6 +44,8 @@ static void tpm_enable(void)
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
 	pci_devfn_t dev;
+	bool ibb_exists;
+	struct boot_policy_manifest bpm_info;
 
 	bootblock_systemagent_early_init();
 
@@ -54,12 +58,26 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	pci_write_config16(dev, PCI_COMMAND,
 				PCI_COMMAND_IO | PCI_COMMAND_MASTER);
 
+	/*
+	 * Check the status of the BPM, and measured the IBB and OBB
+	 * if required. Returns 1 if IBB exists.
+	 */
+	if (CONFIG(IFWI_MEASURED_BOOT))
+		ibb_exists = fetch_pre_rbp_data(&bpm_info);
+
 	enable_rtc_upper_bank();
 
 	if (CONFIG(IFWI_IBBM_LOAD)) {
 		load_ibb(CONFIG_IBBM_ROM_ADDR, CONFIG_IBBM_ROM_SIZE);
 		flush_l1d_to_l2();
 	}
+
+	/*
+	 * If the IBB exists, measure it after it has been loaded via
+	 * the CSEs RBP.
+	 */
+	if (CONFIG(IFWI_MEASURED_BOOT) && ibb_exists)
+		fetch_post_rbp_data(&bpm_info);
 
 	/* Call lib/bootblock.c main */
 	bootblock_main_with_basetime(base_timestamp);

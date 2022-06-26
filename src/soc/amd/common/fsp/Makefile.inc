@@ -14,7 +14,7 @@ ifeq ($(call int-gt,\
 	$(call file-size,$(CONFIG_FSP_M_FILE))\
 	$(shell printf "%d" $(CONFIG_FSP_M_SIZE))),\
 	1)
-$(error FSP-M binary larger than FSP_M_FILE.)
+$(error FSP-M binary larger than FSP_M_SIZE.)
 endif
 endif # CONFIG_ADD_FSP_BINARIES
 

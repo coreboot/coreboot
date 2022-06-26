@@ -321,7 +321,7 @@ config VBT_DATA_SIZE_KB
 	default 9
 
 # Clock divider parameters for 115200 baud rate
-# Baudrate = (UART source clcok * M) /(N *16)
+# Baudrate = (UART source clock * M) /(N *16)
 # ADL UART source clock: 120MHz
 config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
 	hex

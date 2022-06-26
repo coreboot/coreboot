@@ -112,7 +112,7 @@ more can be found on the coreboot website:
 
 You can contact us directly on the coreboot mailing list:
 
-  <https://www.coreboot.org/Mailinglist>
+  <https://doc.coreboot.org/community/forums.html>
 
 
 

@@ -40,15 +40,14 @@ static enum raminit_boot_mode get_boot_mode(void)
 	return (pmcon_2 & bitmask) == bitmask ? BOOTMODE_WARM : BOOTMODE_COLD;
 }
 
-static bool early_init_native(int s3resume)
+static bool early_init_native(enum raminit_boot_mode bootmode)
 {
 	printk(BIOS_DEBUG, "Starting native platform initialisation\n");
 
 	intel_early_me_init();
-	/** TODO: CPU replacement check must be skipped in warm boots and S3 resumes **/
-	const bool cpu_replaced = !s3resume && intel_early_me_cpu_replacement_check();
+	bool cpu_replaced = bootmode == BOOTMODE_COLD && intel_early_me_cpu_replacement_check();
 
-	early_pch_init_native(s3resume);
+	early_pch_init_native(bootmode == BOOTMODE_S3);
 
 	if (!CONFIG(INTEL_LYNXPOINT_LP))
 		dmi_early_init();
@@ -176,12 +175,12 @@ void perform_raminit(const int s3resume)
 	 * See, this function's name is a lie. There are more things to
 	 * do that memory initialisation, but they are relatively easy.
 	 */
-	const bool cpu_replaced = early_init_native(s3resume);
+	const enum raminit_boot_mode orig_bootmode = get_boot_mode();
+
+	const bool cpu_replaced = early_init_native(s3resume ? BOOTMODE_S3 : orig_bootmode);
 
 	wait_txt_clear();
 	wrmsr(0x2e6, (msr_t) {.lo = 0, .hi = 0});
-
-	const enum raminit_boot_mode orig_bootmode = get_boot_mode();
 
 	struct mrc_data md = prepare_mrc_cache();
 

@@ -157,4 +157,58 @@ chip soc/amd/sabrina
 			device i2c 50 on end
 		end
 	end
+
+	# EC is configured to power off the system at 105C, so add a two degree
+	# buffer so the OS can gracefully shutdown.
+	#
+	# EC is configured to assert PROCHOT at 100C. That drastically lowers
+	# performance. Instead we will tell the OS to start throttling the CPUs
+	# at 95C in hopes that we don't hit the PROCHOT limit.
+	#
+	# We set use_acpi1_thermal_zone_scope because the Chrome ec.asl
+	# performs a `Notify` to the `_\TZ` scope.
+	chip drivers/acpi/thermal_zone
+		register "description" = ""Charger""
+		use chrome_ec as temperature_controller
+		register "sensor_id" = "0"
+		register "polling_period" = "10"
+		register "critical_temperature" = "103"
+		register "passive_config.temperature" = "95"
+		register "use_acpi1_thermal_zone_scope" = "true"
+
+		device generic 0 on end
+	end
+	chip drivers/acpi/thermal_zone
+		register "description" = ""Memory""
+		use chrome_ec as temperature_controller
+		register "sensor_id" = "1"
+		register "polling_period" = "10"
+		register "critical_temperature" = "103"
+		register "passive_config.temperature" = "95"
+		register "use_acpi1_thermal_zone_scope" = "true"
+
+		device generic 1 on end
+	end
+	chip drivers/acpi/thermal_zone
+		register "description" = ""CPU""
+		use chrome_ec as temperature_controller
+		register "sensor_id" = "2"
+		register "polling_period" = "10"
+		register "critical_temperature" = "103"
+		register "passive_config.temperature" = "95"
+		register "use_acpi1_thermal_zone_scope" = "true"
+
+		device generic 2 on end
+	end
+	chip drivers/acpi/thermal_zone
+		register "description" = ""SOC""
+		use chrome_ec as temperature_controller
+		register "sensor_id" = "3"
+		register "polling_period" = "10"
+		register "critical_temperature" = "103"
+		register "passive_config.temperature" = "95"
+		register "use_acpi1_thermal_zone_scope" = "true"
+
+		device generic 3 on end
+	end
 end	# chip soc/amd/sabrina

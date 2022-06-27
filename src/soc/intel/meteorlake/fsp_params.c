@@ -7,6 +7,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>
+#include <fsp/fsp_debug_event.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
 #include <intelblocks/cse.h>
@@ -241,6 +242,17 @@ static void fill_fsps_xdci_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->XdciEnable = xdci_can_enable(PCI_DEVFN_USBOTG);
 }
 
+static void fill_fsps_uart_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_meteorlake_config *config)
+{
+	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER) && CONFIG(CONSOLE_SERIAL) &&
+			 CONFIG(FSP_ENABLE_SERIAL_DEBUG))
+		s_cfg->FspEventHandler = (UINT32)((FSP_EVENT_HANDLER *)
+				fsp_debug_event_handler);
+	ASSERT(ARRAY_SIZE(s_cfg->SerialIoUartAutoFlow) > CONFIG_UART_FOR_CONSOLE);
+	s_cfg->SerialIoUartAutoFlow[CONFIG_UART_FOR_CONSOLE] = 0;
+}
+
 static void fill_fsps_sata_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
@@ -423,6 +435,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_chipset_lockdown_params,
 		fill_fsps_xhci_params,
 		fill_fsps_xdci_params,
+		fill_fsps_uart_params,
 		fill_fsps_sata_params,
 		fill_fsps_thermal_params,
 		fill_fsps_lan_params,

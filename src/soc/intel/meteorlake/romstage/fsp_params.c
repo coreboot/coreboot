@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
+#include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pcie_rp.h>
@@ -284,7 +285,24 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	const struct soc_intel_meteorlake_config *config;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
+	FSPM_ARCH_UPD *arch_upd = &mupd->FspmArchUpd;
 
+	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER)) {
+		if (CONFIG(CONSOLE_SERIAL) && CONFIG(FSP_ENABLE_SERIAL_DEBUG)) {
+			enum fsp_log_level log_level = fsp_map_console_log_level();
+			arch_upd->FspEventHandler = (UINT32)((FSP_EVENT_HANDLER *)
+					fsp_debug_event_handler);
+			/* Set Serial debug message level */
+			m_cfg->PcdSerialDebugLevel = log_level;
+			/* Set MRC debug level */
+			m_cfg->SerialDebugMrcLevel = log_level;
+		} else {
+			/* Disable Serial debug message */
+			m_cfg->PcdSerialDebugLevel = 0;
+			/* Disable MRC debug message */
+			m_cfg->SerialDebugMrcLevel = 0;
+		}
+	}
 	config = config_of_soc();
 
 	soc_memory_init_params(m_cfg, config);

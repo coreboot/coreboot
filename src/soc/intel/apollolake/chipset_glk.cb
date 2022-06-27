@@ -1,0 +1,49 @@
+chip soc/intel/apollolake
+	device domain 0 on
+		device pci 00.0 alias system_agent	on	end # Host Bridge
+		device pci 00.1 alias dptf		off	end # DPTF
+		device pci 00.2 alias npk		off	end # NorthPeak
+		device pci 02.0 alias igd		off	end # Integrated Graphics Device
+		device pci 03.0 alias gmm		off	end # GMM
+		device pci 0c.0 alias cnvi		off	end # CNVi
+		device pci 0d.0 alias p2sb		off	end # P2SB
+		device pci 0d.1 alias pmc		off	end # PMC
+		device pci 0d.2 alias fast_spi		off	end # SPI
+		device pci 0d.3 alias sram		off	end # Shared SRAM
+		device pci 0e.0 alias hda		off	end # HDA
+		device pci 0f.0 alias heci1		off	end # HECI1
+		device pci 0f.1 alias heci2		off	end # HECI2
+		device pci 0f.2 alias heci3		off	end # HECI3
+		device pci 11.0 alias ish		off	end # SensorHub
+		device pci 12.0 alias sata		off	end # SATA
+		device pci 13.0 alias pcie_rp01		off	end # PCIE Express Root Port 1
+		device pci 13.1 alias pcie_rp02		off	end # PCIE Express Root Port 2
+		device pci 13.2 alias pcie_rp03		off	end # PCIE Express Root Port 3
+		device pci 13.3 alias pcie_rp04		off	end # PCIE Express Root Port 4
+		device pci 14.0 alias pcie_rp05		off	end # PCIE Express Root Port 5
+		device pci 14.1 alias pcie_rp06		off	end # PCIE Express Root Port 6
+		device pci 15.0 alias xhci		off	end # XHCI
+		device pci 15.1 alias xdci		off	end # XDCI
+		device pci 16.0 alias i2c0		off	end # I2C0
+		device pci 16.1 alias i2c1		off	end # I2C1
+		device pci 16.2 alias i2c2		off	end # I2C2
+		device pci 16.3 alias i2c3		off	end # I2C3
+		device pci 17.0 alias i2c4		off	end # I2C4
+		device pci 17.1 alias i2c5		off	end # I2C5
+		device pci 17.2 alias i2c6		off	end # I2C6
+		device pci 17.3 alias i2c7		off	end # I2C7
+		device pci 18.0 alias uart0		off	end # UART0
+		device pci 18.1 alias uart1		off	end # UART1
+		device pci 18.2 alias uart2		off	end # UART2
+		device pci 18.3 alias uart3		off	end # UART3
+		device pci 19.0 alias spi0		off	end # SPI0
+		device pci 19.1 alias spi1		off	end # SPI1
+		device pci 19.2 alias spi2		off	end # SPI3
+		device pci 1a.0 alias pwm		off	end # PWM
+		device pci 1c.0 alias emmc		off	end # eMMC
+		device pci 1d.0 alias ufs		off	end # UFS
+		device pci 1e.0 alias sdio		off	end # SDIO
+		device pci 1f.0 alias lpc_espi		on	end # LPC
+		device pci 1f.1 alias smbus		off	end # SMBUS
+	end
+end

@@ -76,7 +76,7 @@ static void soc_pmc_read_resources(struct device *dev)
 	res = new_resource(dev, 1);
 	res->base = (resource_t)ACPI_BASE_ADDRESS;
 	res->size = (resource_t)ACPI_BASE_SIZE;
-	res->limit = res->base + res->size + 1;
+	res->limit = res->base + res->size - 1;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 

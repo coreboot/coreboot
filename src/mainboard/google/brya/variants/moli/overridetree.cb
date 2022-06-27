@@ -27,6 +27,7 @@ chip soc/intel/alderlake
 	register "usb2_ports[3]" = "USB2_PORT_SHORT(OC_SKIP)"	# Enable USB2 Port4
 	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# Disable USB2 Port9
 	register "tcss_ports[3]" = "TCSS_PORT_EMPTY"		# Disable TCP3
+	register "tcc_offset" = "0"	# TCC of 100C
 	device domain 0 on
 		device ref tcss_dma0 on
 			chip drivers/intel/usb4/retimer

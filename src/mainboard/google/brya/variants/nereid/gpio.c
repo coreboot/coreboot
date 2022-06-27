@@ -30,8 +30,6 @@ static const struct pad_config override_gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-	/* B11 : PMCALERT# ==> EN_PP3300_WLAN_X */
-	PAD_CFG_GPO(GPP_B11, 0, DEEP),
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_H12, 0, DEEP),
 	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */
@@ -50,15 +48,17 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_SOC_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+	/* B11 : PMCALERT# ==> EN_PP3300_WLAN_X */
+	PAD_CFG_GPO(GPP_B11, 1, DEEP),
 	/* H13 : UART0_CTS# ==> EN_PP3300_SD_X */
 	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {
-	/* B11 : PMCALERT# ==> EN_PP3300_WLAN_X */
-	PAD_CFG_GPO(GPP_B11, 1, DEEP),
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_H12, 1, DEEP),
+	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */
+	PAD_CFG_GPO(GPP_H20, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)

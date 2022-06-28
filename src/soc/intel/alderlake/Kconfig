@@ -433,4 +433,10 @@ config SI_DESC_REGION_SZ
 	help
 	  Size of Descriptor Region in the FMAP
 
+config BUILDING_WITH_DEBUG_FSP
+	bool "Debug FSP is used for the build"
+	default n
+	help
+	  Set this option if debug build of FSP is used.
+
 endif

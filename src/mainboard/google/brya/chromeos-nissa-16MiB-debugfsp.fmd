@@ -1,0 +1,50 @@
+FLASH 16M {
+	SI_ALL 3776K {
+		SI_DESC 4K
+		SI_ME {
+			CSE_LAYOUT 8K
+			CSE_RO 1360K
+			CSE_DATA 420K
+			# 64-KiB aligned to optimize RW erases during CSE update.
+			CSE_RW 1984K
+		}
+	}
+	SI_BIOS 12608K {
+		RW_SECTION_A 4180K {
+			VBLOCK_A 8K
+			FW_MAIN_A(CBFS)
+			RW_FWID_A 64
+			ME_RW_A(CBFS) 1434K
+		}
+		RW_MISC 152K {
+			UNIFIED_MRC_CACHE(PRESERVE) 128K {
+				RECOVERY_MRC_CACHE 64K
+				RW_MRC_CACHE 64K
+			}
+			RW_ELOG(PRESERVE) 4K
+			RW_SHARED 4K {
+				SHARED_DATA 4K
+			}
+			RW_VPD(PRESERVE) 8K
+			RW_NVRAM(PRESERVE) 8K
+		}
+		RW_SECTION_B 4180K {
+			VBLOCK_B 8K
+			FW_MAIN_B(CBFS)
+			RW_FWID_B 64
+			ME_RW_B(CBFS) 1434K
+		}
+		# Make WP_RO region align with SPI vendor
+		# memory protected range specification.
+		WP_RO 4M {
+			RO_VPD(PRESERVE) 16K
+			RO_GSCVD 8K
+			RO_SECTION {
+				FMAP 2K
+				RO_FRID 64
+				GBB@4K 12K
+				COREBOOT(CBFS)
+			}
+		}
+	}
+}

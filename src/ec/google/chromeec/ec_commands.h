@@ -103,10 +103,14 @@ extern "C" {
 /*
  * The actual block is 0x800-0x8ff, but some BIOSes think it's 0x880-0x8ff
  * and they tell the kernel that so we have to think of it as two parts.
+ *
+ * Other BIOSes report only the I/O port region spanned by the Microchip
+ * MEC series EC; an attempt to address a larger region may fail.
  */
-#define EC_HOST_CMD_REGION0    0x800
-#define EC_HOST_CMD_REGION1    0x880
-#define EC_HOST_CMD_REGION_SIZE 0x80
+#define EC_HOST_CMD_REGION0       0x800
+#define EC_HOST_CMD_REGION1       0x880
+#define EC_HOST_CMD_REGION_SIZE    0x80
+#define EC_HOST_CMD_MEC_REGION_SIZE 0x8
 
 /* EC command register bit functions */
 #define EC_LPC_CMDR_DATA	BIT(0)  /* Data ready for host to read */
@@ -822,11 +826,15 @@ struct ec_lpc_host_args {
 #define EC_SPI_PAST_END       0xed
 
 /*
- * EC is ready to receive, and has ignored the byte sent by the AP.  EC expects
+ * EC is ready to receive, and has ignored the byte sent by the AP. EC expects
  * that the AP will send a valid packet header (starting with
  * EC_COMMAND_PROTOCOL_3) in the next 32 bytes.
+ *
+ * NOTE: Some SPI configurations place the Most Significant Bit on SDO when
+ *	 CS goes low. This macro has the Most Significant Bit set to zero,
+ *	 so SDO will not be driven high when CS goes low.
  */
-#define EC_SPI_RX_READY       0xf8
+#define EC_SPI_RX_READY       0x78
 
 /*
  * EC has started receiving the request from the AP, but hasn't started
@@ -1507,6 +1515,10 @@ enum ec_feature_code {
 	 * The EC supports entering and residing in S4.
 	 */
 	EC_FEATURE_S4_RESIDENCY = 44,
+	/*
+	 * The EC supports the AP directing mux sets for the board.
+	 */
+	EC_FEATURE_TYPEC_AP_MUX_SET = 45,
 };
 
 #define EC_FEATURE_MASK_0(event_code) BIT(event_code % 32)
@@ -1853,34 +1865,6 @@ struct ec_response_flash_region_info {
 	uint32_t offset;
 	uint32_t size;
 } __ec_align4;
-
-/*
- * Read/write VbNvContext
- *
- * Deprecated as of February 2021.  No current devices use VBNV in EC
- * BBRAM anymore, so this is guaranteed to fail.
- *
- * TODO(b/178689388): remove from this header once no external
- * dependencies reference these constants.
- */
-#define EC_CMD_VBNV_CONTEXT 0x0017
-#define EC_VER_VBNV_CONTEXT 1
-#define EC_VBNV_BLOCK_SIZE 16
-
-enum ec_vbnvcontext_op {
-	EC_VBNV_CONTEXT_OP_READ,
-	EC_VBNV_CONTEXT_OP_WRITE,
-};
-
-struct ec_params_vbnvcontext {
-	uint32_t op;
-	uint8_t block[EC_VBNV_BLOCK_SIZE];
-} __ec_align4;
-
-struct ec_response_vbnvcontext {
-	uint8_t block[EC_VBNV_BLOCK_SIZE];
-} __ec_align4;
-
 
 /* Get SPI flash information */
 #define EC_CMD_FLASH_SPI_INFO 0x0018
@@ -4713,6 +4697,39 @@ struct ec_params_dedicated_charger_limit {
 	uint16_t voltage_lim; /* in mV */
 } __ec_align2;
 
+/*
+ * Get and set charging splashscreen variables
+ */
+#define EC_CMD_CHARGESPLASH 0x00A5
+
+enum ec_chargesplash_cmd {
+	/* Get the current state variables */
+	EC_CHARGESPLASH_GET_STATE = 0,
+
+	/* Indicate initialization of the display loop */
+	EC_CHARGESPLASH_DISPLAY_READY,
+
+	/* Manually put the EC into the requested state */
+	EC_CHARGESPLASH_REQUEST,
+
+	/* Reset all state variables */
+	EC_CHARGESPLASH_RESET,
+
+	/* Manually trigger a lockout */
+	EC_CHARGESPLASH_LOCKOUT,
+};
+
+struct __ec_align1 ec_params_chargesplash {
+	/* enum ec_chargesplash_cmd */
+	uint8_t cmd;
+};
+
+struct __ec_align1 ec_response_chargesplash {
+	uint8_t requested;
+	uint8_t display_initialized;
+	uint8_t locked_out;
+};
+
 /*****************************************************************************/
 /* Hibernate/Deep Sleep Commands */
 
@@ -5662,6 +5679,15 @@ struct ec_response_usb_pd_power_info {
 #define EC_CMD_CHARGE_PORT_COUNT 0x0105
 struct ec_response_charge_port_count {
 	uint8_t port_count;
+} __ec_align1;
+
+/*
+ * This command enable/disable dynamic PDO selection.
+ */
+#define EC_CMD_USB_PD_DPS_CONTROL 0x0106
+
+struct ec_params_usb_pd_dps_control {
+	uint8_t enable;
 } __ec_align1;
 
 /* Write USB-PD device FW */
@@ -6634,6 +6660,7 @@ enum typec_control_command {
 	TYPEC_CONTROL_COMMAND_CLEAR_EVENTS,
 	TYPEC_CONTROL_COMMAND_ENTER_MODE,
 	TYPEC_CONTROL_COMMAND_TBT_UFP_REPLY,
+	TYPEC_CONTROL_COMMAND_USB_MUX_SET,
 };
 
 /* Modes (USB or alternate) that a type-C port may enter. */
@@ -6648,6 +6675,11 @@ enum typec_tbt_ufp_reply {
 	TYPEC_TBT_UFP_REPLY_NAK,
 	TYPEC_TBT_UFP_REPLY_ACK,
 };
+
+struct typec_usb_mux_set {
+	uint8_t mux_index;	/* Index of the mux to set in the chain */
+	uint8_t mux_flags;	/* USB_PD_MUX_*-encoded USB mux state to set */
+} __ec_align1;
 
 struct ec_params_typec_control {
 	uint8_t port;
@@ -6666,6 +6698,8 @@ struct ec_params_typec_control {
 		uint8_t mode_to_enter;
 		/* Used for TBT_UFP_REPLY - enum typec_tbt_ufp_reply */
 		uint8_t tbt_ufp_reply;
+		/* Used for USB_MUX_SET */
+		struct typec_usb_mux_set mux_params;
 		uint8_t placeholder[128];
 	};
 } __ec_align1;
@@ -6753,6 +6787,8 @@ enum tcpc_cc_polarity {
 #define PD_STATUS_EVENT_SOP_PRIME_DISC_DONE	BIT(1)
 #define PD_STATUS_EVENT_HARD_RESET		BIT(2)
 #define PD_STATUS_EVENT_DISCONNECTED		BIT(3)
+#define PD_STATUS_EVENT_MUX_0_SET_DONE		BIT(4)
+#define PD_STATUS_EVENT_MUX_1_SET_DONE		BIT(5)
 
 /*
  * Encode and decode for BCD revision response
@@ -6913,7 +6949,20 @@ struct ec_response_pchg {
 	/* Fields added in version 1 */
 	uint32_t fw_version;
 	uint32_t dropped_event_count;
-} __ec_align2;
+} __ec_align4;
+
+struct ec_response_pchg_v2 {
+	uint32_t error;			/* enum pchg_error */
+	uint8_t state;			/* enum pchg_state state */
+	uint8_t battery_percentage;
+	uint8_t unused0;
+	uint8_t unused1;
+	/* Fields added in version 1 */
+	uint32_t fw_version;
+	uint32_t dropped_event_count;
+	/* Fields added in version 2 */
+	uint32_t dropped_host_event_count;
+} __ec_align4;
 
 enum pchg_state {
 	/* Charger is reset and not initialized. */
@@ -6959,7 +7008,7 @@ enum pchg_state {
 #define EC_MKBP_PCHG_PORT_SHIFT		28
 /* Utility macros for converting MKBP event <-> port number. */
 #define EC_MKBP_PCHG_EVENT_TO_PORT(e)	(((e) >> EC_MKBP_PCHG_PORT_SHIFT) & 0xf)
-#define EC_MKBP_PCHG_PORT_TO_EVENT(p)	(BIT((p) + EC_MKBP_PCHG_PORT_SHIFT))
+#define EC_MKBP_PCHG_PORT_TO_EVENT(p)	((p) << EC_MKBP_PCHG_PORT_SHIFT)
 /* Utility macro for extracting event bits. */
 #define EC_MKBP_PCHG_EVENT_MASK(e)	((e) \
 					& GENMASK(EC_MKBP_PCHG_PORT_SHIFT-1, 0))
@@ -7058,6 +7107,66 @@ struct ec_response_i2c_control {
 	} cmd_response;
 } __ec_align_size1;
 
+#define EC_CMD_RGBKBD_SET_COLOR	0x013A
+#define EC_CMD_RGBKBD		0x013B
+
+#define EC_RGBKBD_MAX_KEY_COUNT		128
+#define EC_RGBKBD_MAX_RGB_COLOR		0xFFFFFF
+#define EC_RGBKBD_MAX_SCALE		0xFF
+
+enum rgbkbd_state {
+	/* RGB keyboard is reset and not initialized. */
+	RGBKBD_STATE_RESET = 0,
+	/* RGB keyboard is initialized but not enabled. */
+	RGBKBD_STATE_INITIALIZED,
+	/* RGB keyboard is disabled. */
+	RGBKBD_STATE_DISABLED,
+	/* RGB keyboard is enabled and ready to receive a command. */
+	RGBKBD_STATE_ENABLED,
+
+	/* Put no more entry below */
+	RGBKBD_STATE_COUNT,
+};
+
+enum ec_rgbkbd_subcmd {
+	EC_RGBKBD_SUBCMD_CLEAR = 1,
+	EC_RGBKBD_SUBCMD_DEMO = 2,
+	EC_RGBKBD_SUBCMD_SET_SCALE = 3,
+	EC_RGBKBD_SUBCMD_COUNT
+};
+
+enum ec_rgbkbd_demo {
+	EC_RGBKBD_DEMO_OFF = 0,
+	EC_RGBKBD_DEMO_FLOW = 1,
+	EC_RGBKBD_DEMO_DOT = 2,
+	EC_RGBKBD_DEMO_COUNT,
+};
+
+BUILD_ASSERT(EC_RGBKBD_DEMO_COUNT <= 255);
+
+struct ec_rgbkbd_set_scale {
+	uint8_t key;
+	struct rgb_s scale;
+};
+
+struct ec_params_rgbkbd {
+	uint8_t subcmd;         /* Sub-command (enum ec_rgbkbd_subcmd) */
+	union {
+		struct rgb_s color;	/* EC_RGBKBD_SUBCMD_CLEAR */
+		uint8_t demo;		/* EC_RGBKBD_SUBCMD_DEMO */
+		struct ec_rgbkbd_set_scale set_scale;
+	};
+} __ec_align1;
+
+struct ec_params_rgbkbd_set_color {
+	/* Specifies the starting key ID whose color is being changed. */
+	uint8_t start_key;
+	/* Specifies # of elements in <color>. */
+	uint8_t length;
+	/* RGB color data array of length up to MAX_KEY_COUNT. */
+	struct rgb_s color[];
+} __ec_align1;
+
 /*****************************************************************************/
 /* The command range 0x200-0x2FF is reserved for Rotor. */
 
@@ -7120,22 +7229,28 @@ struct ec_params_fp_passthru {
 /* Capture types defined in bits [30..28] */
 #define FP_MODE_CAPTURE_TYPE_SHIFT 28
 #define FP_MODE_CAPTURE_TYPE_MASK  (0x7 << FP_MODE_CAPTURE_TYPE_SHIFT)
-/*
- * This enum must remain ordered, if you add new values you must ensure that
- * FP_CAPTURE_TYPE_MAX is still the last one.
+/**
+ * enum fp_capture_type - Specifies the "mode" when capturing images.
+ *
+ * @FP_CAPTURE_VENDOR_FORMAT: Capture 1-3 images and choose the best quality
+ * image (produces 'frame_size' bytes)
+ * @FP_CAPTURE_SIMPLE_IMAGE: Simple raw image capture (produces width x height x
+ * bpp bits)
+ * @FP_CAPTURE_PATTERN0: Self test pattern (e.g. checkerboard)
+ * @FP_CAPTURE_PATTERN1: Self test pattern (e.g. inverted checkerboard)
+ * @FP_CAPTURE_QUALITY_TEST: Capture for Quality test with fixed contrast
+ * @FP_CAPTURE_RESET_TEST: Capture for pixel reset value test
+ * @FP_CAPTURE_TYPE_MAX: End of enum
+ *
+ * @note This enum must remain ordered, if you add new values you must ensure
+ * that FP_CAPTURE_TYPE_MAX is still the last one.
  */
 enum fp_capture_type {
-	/* Full blown vendor-defined capture (produces 'frame_size' bytes) */
 	FP_CAPTURE_VENDOR_FORMAT = 0,
-	/* Simple raw image capture (produces width x height x bpp bits) */
 	FP_CAPTURE_SIMPLE_IMAGE = 1,
-	/* Self test pattern (e.g. checkerboard) */
 	FP_CAPTURE_PATTERN0 = 2,
-	/* Self test pattern (e.g. inverted checkerboard) */
 	FP_CAPTURE_PATTERN1 = 3,
-	/* Capture for Quality test with fixed contrast */
 	FP_CAPTURE_QUALITY_TEST = 4,
-	/* Capture for pixel reset value test */
 	FP_CAPTURE_RESET_TEST = 5,
 	FP_CAPTURE_TYPE_MAX,
 };

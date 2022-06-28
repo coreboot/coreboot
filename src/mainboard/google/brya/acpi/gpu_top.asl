@@ -25,6 +25,33 @@ Scope (\_SB.PCI0.PEG0)
 		#include "nbci.asl"
 		#include "nvpcf.asl"
 		#include "gps.asl"
+		#include "gpu_ec.asl"
+
+		/* Convert D Notify from EC to GPU */
+		Method (CNVD, 1, NotSerialized)
+		{
+			Switch (ToInteger(Arg0)) {
+				Case (D1_EC) { Return (D1_GPU) }
+				Case (D2_EC) { Return (D2_GPU) }
+				Case (D3_EC) { Return (D3_GPU) }
+				Case (D4_EC) { Return (D4_GPU) }
+				Case (D5_EC) { Return (D5_GPU) }
+				Default { Return (D5_GPU) }
+			}
+		}
+
+		/* Current D Notify Value, defaults to D1 */
+		Name (CDNV, D1_EC)
+		Method (DNOT, 1, Serialized)
+		{
+			Printf ("EC: GPU D-Notify, %o", Arg0)
+			If (Arg0 != CDNV)
+			{
+				CDNV = Arg0
+				Local0 = CNVD (Arg0)
+				Notify (\_SB.PCI0.PEG0.PEGP, Local0)
+			}
+		}
 
 		Method (_DSM, 4, Serialized)
 		{

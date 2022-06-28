@@ -46,3 +46,15 @@
 #define REVISION_MIN_NBCI	0x102
 #define REVISION_MIN_NVPCF	0x200
 #define REVISION_MIN_GPS	0x200
+
+#define D1_EC	0
+#define D2_EC	1
+#define D3_EC	2
+#define D4_EC	3
+#define D5_EC	4
+
+#define D1_GPU	0xD1
+#define D2_GPU	0xD2
+#define D3_GPU	0xD3
+#define D4_GPU	0xD4
+#define D5_GPU	0xD5

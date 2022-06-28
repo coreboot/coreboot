@@ -328,7 +328,7 @@ Google's Chromebooks have some special features:
 ### Developer Mode
 
 Developer mode allows the user to use coreboot to boot another operating system.
-This may be a another (beta) version of Chrome OS, or another flavor of
+This may be a another (beta) version of ChromeOS, or another flavor of
 GNU/Linux. Use of developer mode does not void the system warranty. Upon entry
 into developer mode, all locally saved data on the system is lost.
 This prevents someone from entering developer mode to subvert the system

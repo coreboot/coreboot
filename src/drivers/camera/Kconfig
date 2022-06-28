@@ -2,6 +2,6 @@ config CHROMEOS_CAMERA
 	bool
 	default n
 	help
-	  Camera with identifiers following Chrome OS Camera Info. The info is
+	  Camera with identifiers following ChromeOS Camera Info. The info is
 	  usually available on MIPI camera EEPROM for identifying correct
 	  drivers and config.

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2012 The Chromium OS Authors.
+ * Copyright (c) 2012 The ChromiumOS Authors.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions

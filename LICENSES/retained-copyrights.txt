@@ -7,17 +7,17 @@ Copyright © 2012 Intel Corporation
 Copyright 2012 Red Hat Inc.
 Copyright 2013 Google Inc.
 Copyright 2014 Google Inc.
-Copyright 2014 The Chromium OS Authors. All rights reserved.
+Copyright 2014 The ChromiumOS Authors. All rights reserved.
 Copyright 2015 Google Inc.
 Copyright 2015, Google Inc.
 Copyright 2016 Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Copyright 2016 The Chromium OS Authors. All rights reserved.
+Copyright 2016 The ChromiumOS Authors. All rights reserved.
 Copyright 2017-2019 Eltan B.V.
 Copyright 2017 Google Inc.
 Copyright 2018 Generated Code
 Copyright 2018-present Facebook, Inc.
 Copyright 2019 9Elements Agency GmbH <patrick.rudolph@9elements.com>
-Copyright 2019 The Chromium OS Authors. All rights reserved.
+Copyright 2019 The ChromiumOS Authors. All rights reserved.
 Copyright (C) 2002 David S. Peterson.  All rights reserved.
 Copyright (c) 2003-2016  Cavium Inc. (support@cavium.com). All rights
 Copyright (c) 2003-2017  Cavium Inc. (support@cavium.com). All rights
@@ -35,7 +35,7 @@ Copyright (c) 2010-2017, The Regents of the University of California
 Copyright (c) 2010, Code Aurora Forum. All rights reserved.
 Copyright (C) 2010 coresystems GmbH
 Copyright (c) 2010 Per Odlund <per.odlund@armagedon.se>
-Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+Copyright (c) 2010 The ChromiumOS Authors. All rights reserved.
 Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
 Copyright (c) 2011-2012 The Linux Foundation. All rights reserved.
 Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
@@ -52,14 +52,14 @@ Copyright (c) 2012, 2016-2019 Advanced Micro Devices, Inc.
 Copyright (c) 2012-2019 The Linux Foundation. All rights reserved.
 Copyright (c) 2012-2019 The Linux Foundation. All rights reserved.*
 Copyright (c) 2012, Code Aurora Forum. All rights reserved.
-Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+Copyright (c) 2012 The ChromiumOS Authors. All rights reserved.
 Copyright (c) 2012 The Linux Foundation. All rights reserved.
 Copyright (c) 2012 The Linux Foundation. All rights reserved.*
 Copyright (c) 2013-2014, ARM Limited and Contributors. All rights reserved.
 Copyright (c) 2013-2015 Intel Corporation.
 Copyright (c) 2013-2017 Intel Corporation.
 Copyright (C) 2013 Google Inc.
-Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+Copyright (c) 2013 The ChromiumOS Authors. All rights reserved.
 Copyright (c) 2013 The Linux Foundation. All rights reserved.
 Copyright (c) 2013, The Regents of the University of California (Regents).
 Copyright (C) 2014 - 2015, 2019 The Linux Foundation. All rights reserved.
@@ -69,14 +69,14 @@ Copyright (C) 2014 - 2016 The Linux Foundation. All rights reserved.
 Copyright (c) 2014 Google Inc.
 Copyright (C) 2014 Google Inc.
 Copyright (c) 2014 Google Inc. All rights reserved.
-Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
+Copyright (c) 2014 The ChromiumOS Authors. All rights reserved.
 Copyright (C) 2014 The Linux Foundation. All rights reserved.
 Copyright (C) 2015-2016 Intel Corporation.
 Copyright (C) 2015-2016, Intel Corporation
 Copyright (c) 2015 - 2016, Intel Corporation. All rights reserved.
 Copyright (C) 2015 Google Inc.
 Copyright (c) 2015, Intel Corporation. All rights reserved.
-Copyright (c) 2015 The Chromium OS Authors. All rights reserved.
+Copyright (c) 2015 The ChromiumOS Authors. All rights reserved.
 Copyright (C) 2015 The Linux Foundation. All rights reserved.
 Copyright (c) 2015, The Linux Foundation. All rights reserved.
 Copyright (C) 2015 Timothy Pearson <tpearson@raptorengineeringinc.com>, Raptor Engineering

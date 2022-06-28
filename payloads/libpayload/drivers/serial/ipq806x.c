@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Chromium OS authors
+ * Copyright (c) 2014 ChromiumOS authors
  */
 
 #include <libpayload.h>

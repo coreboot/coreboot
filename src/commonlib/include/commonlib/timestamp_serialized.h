@@ -165,7 +165,7 @@ enum timestamp_id {
 	TS_KERNEL_START = 1101,
 	TS_KERNEL_DECOMPRESSION = 1102,
 
-	/* 1200-1300: Chrome OS Hypervisor */
+	/* 1200-1300: ChromeOS Hypervisor */
 	TS_CRHV_BOOT = 1200,
 	TS_CRHV_PLATFORM_INIT = 1201,
 	TS_CRHV_SERVICES_STARTED = 1202,
@@ -247,10 +247,10 @@ static const struct timestamp_id_to_name {
 	TS_NAME_DEF(TS_EC_HASH_READY, 0, "EC vboot hash ready"),
 	TS_NAME_DEF(TS_EC_POWER_LIMIT_WAIT, 0, "waiting for EC to allow higher power draw"),
 	TS_NAME_DEF(TS_EC_SYNC_END, 0, "finished EC software sync"),
-	TS_NAME_DEF(TS_COPYVPD_START, TS_COPYVPD_RW_END, "starting to load Chrome OS VPD"),
+	TS_NAME_DEF(TS_COPYVPD_START, TS_COPYVPD_RW_END, "starting to load ChromeOS VPD"),
 	TS_NAME_DEF(TS_COPYVPD_RO_END, TS_COPYVPD_RW_END,
-		    "finished loading Chrome OS VPD (RO)"),
-	TS_NAME_DEF(TS_COPYVPD_RW_END, 0, "finished loading Chrome OS VPD (RW)"),
+		    "finished loading ChromeOS VPD (RO)"),
+	TS_NAME_DEF(TS_COPYVPD_RW_END, 0, "finished loading ChromeOS VPD (RW)"),
 	TS_NAME_DEF(TS_TPM_ENABLE_UPDATE_START, TS_TPM_ENABLE_UPDATE_END,
 		    "started TPM enable update"),
 	TS_NAME_DEF(TS_TPM_ENABLE_UPDATE_END, 0, "finished TPM enable update"),
@@ -344,7 +344,7 @@ static const struct timestamp_id_to_name {
 	TS_NAME_DEF(TS_KERNEL_START, 0, "jumping to kernel"),
 	TS_NAME_DEF(TS_KERNEL_DECOMPRESSION, 0, "starting kernel decompression/relocation"),
 
-	/* Chrome OS hypervisor */
+	/* ChromeOS hypervisor */
 	TS_NAME_DEF(TS_CRHV_BOOT, 0, "hypervisor boot finished"),
 	TS_NAME_DEF(TS_CRHV_PLATFORM_INIT, 0, "hypervisor platform initialized"),
 	TS_NAME_DEF(TS_CRHV_SERVICES_STARTED, 0, "hypervisor services started"),

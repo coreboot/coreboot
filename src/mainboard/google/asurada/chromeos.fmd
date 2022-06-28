@@ -1,4 +1,4 @@
-# Firmware Layout Description for Chrome OS.
+# Firmware Layout Description for ChromeOS.
 #
 # The size and address of every section must be aligned to at least 4K, except:
 # RO_FRID, RW_FWID*, GBB, or any unused / padding / CBFS type sections.

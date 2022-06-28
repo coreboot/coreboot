@@ -8,8 +8,8 @@ BIOS image to be used across a wide variety of devices which may have key differ
 otherwise similar enough to use the same coreboot build target.
 
 The initial implementation is designed to take advantage of a bitmask returned by the Embedded
-Controller on Google Chrome OS devices which allows the manufacturer to use the same firmware
-image across multiple devices by selecting various options at runtime.  See the Chromium OS
+Controller on Google ChromeOS devices which allows the manufacturer to use the same firmware
+image across multiple devices by selecting various options at runtime.  See the ChromiumOS
 [Firmware Config][1] documentation for more information.
 
 This firmware configuration interface differs from the CMOS option interface in that this
@@ -91,7 +91,7 @@ file in CBFS use the value it contains when matching fields and options.
 
 ### Embedded Controller
 
-Google Chrome OS devices support an Embedded Controller interface for reading and writing the
+Google ChromeOS devices support an Embedded Controller interface for reading and writing the
 firmware configuration value, along with other board-specific information.  It is possible for
 coreboot to read this value at boot on systems that support this feature.
 
@@ -101,9 +101,9 @@ possible by enabling the CBFS source and coreboot will look in CBFS first for a 
 before asking the embedded controller.
 
 It is also possible to adjust the value in the embedded controller *(after disabling write
-protection)* with the `ectool` command in a Chrome OS environment.
+protection)* with the `ectool` command in a ChromeOS environment.
 
-For more information on the firmware configuration field on Chrome OS devices see the Chromium
+For more information on the firmware configuration field on ChromeOS devices see the Chromium
 documentation for [Firmware Config][1] and [Board Info][2].
 
 [1]: http://chromium.googlesource.com/chromiumos/docs/+/master/design_docs/firmware_config.md

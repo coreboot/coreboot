@@ -30,7 +30,7 @@ DefinitionBlock(
 		}
 	}
 
-	/* Chrome OS Embedded Controller */
+	/* ChromeOS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)
 	{
 		// ACPI code for EC SuperIO functions

@@ -56,10 +56,10 @@ config DEVELOPER
 	  libpayload developers.
 
 config CHROMEOS
-	bool "Chrome OS Options"
+	bool "ChromeOS Options"
 	default n
 	help
-	  Select configuration defaults appropriate for Chrome OS boards.
+	  Select configuration defaults appropriate for ChromeOS boards.
 
 choice
 	prompt "Compiler to use"

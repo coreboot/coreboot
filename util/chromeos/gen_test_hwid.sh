@@ -8,7 +8,7 @@ main() {
     exit 1
   fi
 
-  # Generate a test-only Chrome OS HWID v2 string
+  # Generate a test-only ChromeOS HWID v2 string
   local board="$1"
   local prefix="$(echo "${board}" | tr a-z A-Z) TEST"
   # gzip has second-to-last 4 bytes in CRC32.

@@ -42,7 +42,7 @@ static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
 
 	/*
 	 * Save MRC Data to CBMEM. By always saving the data this forces
-	 * a retrain after a trip through Chrome OS recovery path. The
+	 * a retrain after a trip through ChromeOS recovery path. The
 	 * code which saves the data to flash doesn't write if the latest
 	 * training data matches this one.
 	 */

@@ -426,7 +426,7 @@ function build_config
 	export HOSTCC='gcc'
 
 	if [ "$chromeos" = true ] && [ "$(grep -c "^[[:space:]]*select[[:space:]]*MAINBOARD_HAS_CHROMEOS\>" "${ROOT}/src/mainboard/${board_srcdir}/Kconfig")" -eq 0 ]; then
-		echo "${BUILD_NAME} doesn't support Chrome OS, skipping."
+		echo "${BUILD_NAME} doesn't support ChromeOS, skipping."
 		return
 	fi
 
@@ -450,7 +450,7 @@ function build_config
 		# Skip this rule for configs created from templates that already
 		# come with CHROMEOS enabled.
 		grep -q "^CONFIG_CHROMEOS=y" ${config_file:-/dev/null} || \
-		check_config "$build_dir" "Chrome OS" "CONFIG_CHROMEOS=y" negate
+		check_config "$build_dir" "ChromeOS" "CONFIG_CHROMEOS=y" negate
 		local FORCE_ENABLED_CROS=$?
 	else
 		local FORCE_ENABLED_CROS=0
@@ -611,7 +611,7 @@ Options:\n"
     [-u|--update]                 Update existing image
     [-v|--verbose]                Print more messages
     [-x|--chromeos]               Build with CHROMEOS enabled
-                                  Skip boards without Chrome OS support
+                                  Skip boards without ChromeOS support
     [-X|--xmlfile <name>]         Set JUnit XML log file filename
                                   (defaults to $XMLFILE)
     [-y|--ccache]                 Use ccache
@@ -765,7 +765,7 @@ while true ; do
 		-x|--chromeos)	shift
 			chromeos=true
 			testclass=chromeos
-			customizing="${customizing}, chrome os"
+			customizing="${customizing}, chromeos"
 			configoptions="${configoptions}CONFIG_CHROMEOS=y\nCONFIG_VBOOT_MEASURED_BOOT=y\n"
 			;;
 		-X|--xmlfile)	shift; XMLFILE=$1; REAL_XMLFILE=$1; shift;;

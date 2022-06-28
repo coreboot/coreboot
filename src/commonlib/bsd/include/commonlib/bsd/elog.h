@@ -203,7 +203,7 @@ struct elog_event_data_wake {
 	uint32_t instance;
 } __packed;
 
-/* Chrome OS related events */
+/* ChromeOS related events */
 #define ELOG_TYPE_CROS_DEVELOPER_MODE     0xa0
 #define ELOG_TYPE_CROS_RECOVERY_MODE      0xa1
 #define  ELOG_CROS_RECOVERY_MODE_BUTTON    0x02
@@ -305,7 +305,7 @@ struct elog_event_mem_cache_update {
 #define ELOG_TYPE_MI_HRPC                 0xb4
 #define ELOG_TYPE_MI_HR                   0xb5
 
-/* Chrome OS diagnostics-related events */
+/* ChromeOS diagnostics-related events */
 #define ELOG_TYPE_CROS_DIAGNOSTICS        0xb6
 #define  ELOG_CROS_LAUNCH_DIAGNOSTICS      0x01
 

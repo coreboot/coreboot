@@ -46,7 +46,7 @@ static void set_cs(const struct spi_bitbang_ops *ops, int value)
 	gpio_set(slave->cs, value);
 }
 
-/* Can't use GPIO() here because of bug in GCC version used by Chromium OS. */
+/* Can't use GPIO() here because of bug in GCC version used by ChromiumOS. */
 static const struct rockchip_bitbang_slave slaves[] = {
 	[0] = {
 		.ops = { get_miso, set_mosi, set_clk, set_cs },

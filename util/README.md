@@ -36,9 +36,9 @@ file `Python`
 	* _rmodtool_ - Creates rmodules `C`
 	* _ifwitool_ - For manipulating IFWI `C`
 * __cbmem__ - CBMEM parser to read e.g. timestamps and console log `C`
-* __chromeos__ - These scripts can be used to access Chrome OS
+* __chromeos__ - These scripts can be used to access ChromeOS
 resources, for example to extract System Agent reference code and other
-blobs (e.g. mrc.bin, refcode, VGA option roms) from a Chrome OS
+blobs (e.g. mrc.bin, refcode, VGA option roms) from a ChromeOS
 recovery image. `C`
 * __crossgcc__ - A cross toolchain builder for -elf toolchains (ie. no
 libc support) `Bash`

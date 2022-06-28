@@ -44,7 +44,7 @@ DefinitionBlock (
 	/* Thermal handler */
 	#include <variant/acpi/thermal.asl>
 
-	/* Chrome OS Embedded Controller */
+	/* ChromeOS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)
 	{
 		/* ACPI code for EC SuperIO functions */

@@ -140,7 +140,7 @@ config VBOOT_GSCVD
 	default n
 
 config CHROMEOS_WIFI_SAR
-	bool "Enable SAR options for Chrome OS build"
+	bool "Enable SAR options for ChromeOS build"
 	depends on CHROMEOS
 	select DSAR_ENABLE
 	select GEO_SAR_ENABLE

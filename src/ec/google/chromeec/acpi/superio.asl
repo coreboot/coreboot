@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /*
- * Chrome OS Embedded Controller interface
+ * ChromeOS Embedded Controller interface
  *
  * Constants that should be defined:
  *

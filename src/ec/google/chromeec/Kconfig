@@ -125,9 +125,9 @@ config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
 
 config EC_GOOGLE_CHROMEEC_RTC
 	depends on EC_GOOGLE_CHROMEEC
-	bool "Enable Chrome OS EC RTC"
+	bool "Enable ChromeOS EC RTC"
 	help
-	  Enable support for the real-time clock on the Chrome OS EC. This
+	  Enable support for the real-time clock on the ChromeOS EC. This
 	  uses the EC_CMD_RTC_GET_VALUE command to read the current time.
 
 choice
@@ -194,7 +194,7 @@ config EC_GOOGLE_CHROMEEC_SWITCHES
 	depends on EC_GOOGLE_CHROMEEC && VBOOT
 	bool
 	help
-	  Enable support for Chrome OS mode switches provided by the Chrome OS
+	  Enable support for ChromeOS mode switches provided by the ChromeOS
 	  EC.
 
 config EC_GOOGLE_CHROMEEC_INCLUDE_SSFC_IN_FW_CONFIG

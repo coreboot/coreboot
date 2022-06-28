@@ -1,5 +1,5 @@
 /*
- * Chromium OS Matrix Keyboard Message Protocol definitions
+ * ChromiumOS Matrix Keyboard Message Protocol definitions
  */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
@@ -9,7 +9,7 @@
 /*
  * Command interface between EC and AP, for LPC, I2C and SPI interfaces.
  *
- * This is copied from the Chromium OS Open Source Embedded Controller code.
+ * This is copied from the ChromiumOS Open Source Embedded Controller code.
  */
 enum {
 	/* The header byte, which follows the preamble */

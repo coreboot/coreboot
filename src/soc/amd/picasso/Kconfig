@@ -466,7 +466,7 @@ config VBOOT_STARTS_BEFORE_BOOTBLOCK
 	select ARCH_VERSTAGE_ARMV7
 	help
 	  Runs verstage on the PSP.  Only available on
-	  certain Chrome OS branded parts from AMD.
+	  certain ChromeOS branded parts from AMD.
 
 config VBOOT_HASH_BLOCK_SIZE
 	hex

@@ -65,7 +65,7 @@ config CHROMEOS
 	select VBOOT_LID_SWITCH
 
 config CHROMEOS_WIFI_SAR
-	bool "Enable SAR options for Chrome OS build"
+	bool "Enable SAR options for ChromeOS build"
 	depends on CHROMEOS
 	select DSAR_ENABLE
 	select SAR_ENABLE

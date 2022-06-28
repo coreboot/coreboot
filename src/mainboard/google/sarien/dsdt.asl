@@ -34,7 +34,7 @@ DefinitionBlock(
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
 #if CONFIG(EC_GOOGLE_WILCO)
-	/* Chrome OS Embedded Controller */
+	/* ChromeOS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)
 	{
 		/* ACPI code for EC SuperIO functions */

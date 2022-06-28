@@ -3,7 +3,7 @@
 #include <acpi/acpigen_extern.asl>
 
 #if CONFIG(CHROMEOS_NVS)
-/* Chrome OS specific */
+/* ChromeOS specific */
 #include <vendorcode/google/chromeos/acpi/chromeos.asl>
 #endif
 

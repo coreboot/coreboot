@@ -11,7 +11,7 @@
  * The Linux kernel implementation can be found at
  * drivers/net/usb/r8152.c:vendor_mac_passthru_addr_read()
  *
- * For Chrome OS, the policy which controls where the dock MAC address
+ * For ChromeOS, the policy which controls where the dock MAC address
  * comes from is written into RW_VPD property "dock_passthrough":
  *
  *   "dock_mac" or empty: Use MAC address from RO_VPD value "dock_mac"

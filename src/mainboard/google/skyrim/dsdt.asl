@@ -15,7 +15,7 @@ DefinitionBlock (
 	#include <acpi/dsdt_top.asl>
 	#include <soc.asl>
 
-	/* Chrome OS Embedded Controller */
+	/* ChromeOS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)
 	{
 		/* ACPI code for EC SuperIO functions */

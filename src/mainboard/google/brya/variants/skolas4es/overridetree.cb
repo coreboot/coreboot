@@ -570,7 +570,7 @@ chip soc/intel/alderlake
 			end
 			chip drivers/i2c/generic
 				register "hid" = ""GOOG0020""
-				register "desc" = ""Chrome OS HPS""
+				register "desc" = ""ChromeOS HPS""
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E7)"  # EN_HPS_PWR
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E3_IRQ)"  # HPS_INT_ODL
 				# HPS uses I2C addresses 0x30 and 0x51.

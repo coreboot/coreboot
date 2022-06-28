@@ -103,7 +103,7 @@ config VBOOT_DISABLE_DEV_ON_RECOVERY
 	bool
 	default n
 	help
-	  When this option is enabled, the Chrome OS device leaves the
+	  When this option is enabled, the ChromeOS device leaves the
 	  developer mode as soon as recovery request is detected. This is
 	  handy on embedded devices with limited input capabilities.
 
@@ -321,10 +321,10 @@ config GBB_HWID
 	string "Hardware ID"
 	default ""
 	help
-	  A hardware identifier for device. On Chrome OS this is used for auto
+	  A hardware identifier for device. On ChromeOS this is used for auto
 	  update and recovery, and will be generated when manufacturing by the
 	  factory software, in a strictly defined format.
-	  Leave empty to get a test-only Chrome OS HWID v2 string generated.
+	  Leave empty to get a test-only ChromeOS HWID v2 string generated.
 
 config GBB_BMPFV_FILE
 	string "Path to bmpfv image"
@@ -339,7 +339,7 @@ config GBB_FLAG_LOAD_OPTION_ROMS
 	default n
 
 config GBB_FLAG_ENABLE_ALTERNATE_OS
-	bool "Allow booting a non-Chrome OS kernel if dev switch is on"
+	bool "Allow booting a non-ChromeOS kernel if dev switch is on"
 	default n
 
 config GBB_FLAG_FORCE_DEV_SWITCH_ON

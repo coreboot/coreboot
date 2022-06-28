@@ -85,7 +85,7 @@ chip soc/intel/alderlake
 			chip drivers/gfx/generic
 				register "device_count" = "1"
 				register "device[0].name" = ""LCD""
-				# Use Chrome OS privacy screen _HID
+				# Use ChromeOS privacy screen _HID
 				register "device[0].hid" = ""GOOG0010""
 				# Internal panel on the first port of the graphics chip
 				register "device[0].addr" = "0x80010400"

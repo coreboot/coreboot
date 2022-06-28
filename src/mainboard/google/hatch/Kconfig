@@ -166,7 +166,7 @@ config CHROMEOS
 	select CHROMEOS_CSE_BOARD_RESET_OVERRIDE if SOC_INTEL_CSE_LITE_SKU
 
 config CHROMEOS_WIFI_SAR
-	bool "Enable SAR options for Chrome OS build"
+	bool "Enable SAR options for ChromeOS build"
 	depends on CHROMEOS
 	select DSAR_ENABLE
 	select GEO_SAR_ENABLE

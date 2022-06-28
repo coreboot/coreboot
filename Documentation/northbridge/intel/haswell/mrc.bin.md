@@ -3,7 +3,7 @@
 All Haswell boards supported by coreboot currently require a proprietary
 blob in order to initialise the DRAM and a few other components. The
 blob, named `mrc.bin`, largely consists of Intel's memory reference code
-(MRC), but it has been tailored specifically for Chrome OS. It is just
+(MRC), but it has been tailored specifically for ChromeOS. It is just
 under 200 KiB in size. Another name for `mrc.bin` is the system agent
 binary.
 

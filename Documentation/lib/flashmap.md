@@ -4,7 +4,7 @@
 
 [Flashmap](https://code.google.com/p/flashmap) (FMAP) is a binary format to
 describe partitions in a flash chip. It was added to coreboot to support the
-requirements of Chromium OS firmware but then was also used in other scenarios
+requirements of ChromiumOS firmware but then was also used in other scenarios
 where precise placement of data in flash was necessary, or for data that is
 written to at runtime, as CBFS is considered too fragile for such situations.
 The Flashmap implementation inside coreboot is the de facto standard today.

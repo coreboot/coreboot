@@ -8,7 +8,7 @@ power transition flows.
 
 ## Problem Statement
 
-Currently, on Chromium OS Systems, CSE region is not updatable. So, new CSE FW
+Currently, on ChromiumOS Systems, CSE region is not updatable. So, new CSE FW
 versions that are released by Intel to address important functional and security
 bugs post-product launch will not be available to the end-user. Hence, the proposed
 solution allows in-field CSE FW update to propagate those bug fixes

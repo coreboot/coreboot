@@ -490,7 +490,7 @@ uint8_t cse_wait_com_soft_temp_disable(void);
 
 /*
  * The CSE Lite SKU supports notion of RO and RW boot partitions. The function will set
- * CSE's boot partition as per Chrome OS boot modes. In normal mode, the function allows CSE to
+ * CSE's boot partition as per ChromeOS boot modes. In normal mode, the function allows CSE to
  * boot from RW and triggers recovery mode if CSE fails to jump to RW.
  * In software triggered recovery mode, the function allows CSE to boot from whatever is
  * currently selected partition.

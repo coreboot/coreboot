@@ -185,7 +185,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   Unit**](http://en.wikipedia.org/wiki/Central_processing_unit)
 * CPUID - x86: [**CPU Identification**](https://en.wikipedia.org/wiki/CPUID) opcode
 * Cr50 - Google: The first generation Google Security Chip (GSC) used on
-  Chrome OS devices.
+  ChromeOS devices.
 * CRB - Customer Reference Board
 * CRLF - Carriage Return, Line Feed - \\r\\n - The standard window EOL
   (End-of-Line) marker.
@@ -914,7 +914,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * TGL - Intel: Tigerlake
 * THC - Touch Host Controller
 * Ti50 - Google: The next generation GSC (Google Security chip) on
-  Chrome OS devices after Cr50
+  ChromeOS devices after Cr50
 * TLA - Techtronics Logic Analyzer
 * TLA - Three Letter Acronym
 * TLB - [**Translation Lookside

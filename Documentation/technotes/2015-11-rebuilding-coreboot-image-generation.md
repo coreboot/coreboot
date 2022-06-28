@@ -3,7 +3,7 @@ Rebuilding coreboot image generation
 
 Current situation
 -----------------
-Chrome OS (CrOS) probably has the most complex image bundling process in the
+ChromeOS (CrOS) probably has the most complex image bundling process in the
 coreboot ecosystem. To make CrOS features more accessible to the wider
 coreboot community, we want to move these capabilities into upstream
 coreboot’s build system.
@@ -21,7 +21,7 @@ putting more data (eg. the bitmap data, keys) as raw data into other fmap
 regions.
 
 With the recent addition of more files to CBFS, both on the coreboot side
-(dsdt, FSP, and so on) and with Chrome OS specifics (eg. more files describing
+(dsdt, FSP, and so on) and with ChromeOS specifics (eg. more files describing
 boot screens) we either need to expand the scope of bundle\_firmware or move
 the capability to build complex images to upstream coreboot’s build system.
 This document proposes to do the latter and outlines how this could be
@@ -41,14 +41,14 @@ images:
   variable to guarantee success if there’s enough room for the files. While that
   could be added, that becomes more make macro work indistinguishable from magic
   that people fail to understand, break and with good reason complain about
-  to work around such issues, Chrome OS firmware uses a custom tool with even
+  to work around such issues, ChromeOS firmware uses a custom tool with even
   more special cases to finally build the image it needs. If coreboot upstream
   is to support vboot, it should also be powerful enough not to need magic tools
   that only live within downstream projects.
 
 Requirements
 ------------
-A complete Chrome OS coreboot image consists of (depending on the device)
+A complete ChromeOS coreboot image consists of (depending on the device)
 * platform specific data in raw fmap regions (eg IFD, ME firmware),
 * the bootblock (coming from the bootblock),
 * three copies of coreboot, consisting of the stages (verstage, romstage,
@@ -68,7 +68,7 @@ using a yet to be implemented switching scheme based on fmaps) consists of
 * payload plus data (with each of the coreboot copies),
 
 Since a single platform is potentially built with different payload
-configurations (eg. modding a Chromebook to not use the verified Chrome OS
+configurations (eg. modding a Chromebook to not use the verified ChromeOS
 boot scheme), some concerns need to be kept separate:
 * Platform requirements that have nothing to do with the payload or boot schemes
  * IFD, ME, … need to copied to the right place
@@ -111,11 +111,11 @@ Boot method manifest
 --------------------
 The boot method manifest can subdivide the BIOS region, eg. using it directly
 (for coreboot’s “simple” bootblock), splitting it in two (for coreboot’s
-fallback/normal) or in many parts (for Chrome OS, which requires two CBFS
+fallback/normal) or in many parts (for ChromeOS, which requires two CBFS
 regions, one for GBB, several for VPD, …).
 It also specifies which of the file lists specified earlier belong in which
 region (eg. with verstage verifying romstage, verstage needs to be only in
-Chrome OS’ RO region, while romstage belongs in RO and both RW regions).
+ChromeOS’ RO region, while romstage belongs in RO and both RW regions).
 It can also specify a post processing step that is executed before the
 chipset’s.
 
@@ -148,7 +148,7 @@ It specifies an IFD region, an ME, and the BIOS region. After the image is
 built, the entire image needs to be processed (although the tool likely works
 only on a small part of it)
 
-It’s built in a Chrome OS-like configuration (simplified at places to avoid
+It’s built in a ChromeOS-like configuration (simplified at places to avoid
 distracting from the important parts), so it has three CBFS regions, and
 several data regions for its own purpose (similar to GBB, FWID, VPD, …). After
 the regions are filled, one data region must be post-processed to contain

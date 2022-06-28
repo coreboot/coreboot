@@ -2,8 +2,10 @@
 
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
+#include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <security/tpm/tis.h>
+#include <stdbool.h>
 
 #include "gpio.h"
 
@@ -45,8 +47,21 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_ec_is_trusted(void)
 {
+	uint32_t rev;
+	bool has_cr50 = false;
+
+	/*
+	 * Kingler and Krabby's rev 0 boards both use Cr50 instead of Ti50. In order to share
+	 * the same firmware with newer rev, get the board rev from CBI, and ignore
+	 * TPM_GOOGLE_TI50 when rev is 0.
+	 */
+	if (CONFIG(BOARD_GOOGLE_KINGLER) || CONFIG(BOARD_GOOGLE_KRABBY)) {
+		if (google_chromeec_cbi_get_board_version(&rev) == 0 && rev == 0)
+			has_cr50 = true;
+	}
+
 	/* With Ti50, VB2_CONTEXT_EC_TRUSTED should be set according to the boot mode. */
-	if (CONFIG(TPM_GOOGLE_TI50))
+	if (CONFIG(TPM_GOOGLE_TI50) && !has_cr50)
 		return 0;
 
 	/* EC is trusted if not in RW. This is active low. */

@@ -47,3 +47,5 @@ BSER, 64,	// Battery Serial String
 BTYP, 64,	// Battery Type String
 Offset (0x80),
 ALS0, 16,	// ALS reading 0 in lux
+Offset (0xa6),
+GPUD, 8,	// GPU Data

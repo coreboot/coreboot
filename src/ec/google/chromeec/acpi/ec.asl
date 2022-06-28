@@ -169,7 +169,6 @@ Device (EC0)
 			\_SB.DPTC()
 		}
 #endif
-
 	}
 
 	/* Read requested temperature and check against EC error values */
@@ -299,12 +298,6 @@ Device (EC0)
 	{
 		Printf ("EC: THERMAL")
 		Notify (\_TZ, 0x80)
-	}
-
-	// USB Charger
-	Method (_Q0C, 0, NotSerialized)
-	{
-		Printf ("EC: USB CHARGER")
 	}
 
 	// Key Pressed

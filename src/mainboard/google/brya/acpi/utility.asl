@@ -8,14 +8,22 @@
  */
 Method (GPPL, 3, Serialized)
 {
-	Local0 = GRXS (Arg0)
-	Local7 = Arg2 * 10000
-	Local7 = Timer + Local7
-	While (Local0 != Arg1 && Timer < Local7)
+	Local0 = 0
+	While (Local0 < Arg2)
 	{
-		Stall (10)
-		Local0 = \_SB.PCI0.GRXS (Arg0)
+		If (\_SB.PCI0.GRXS (Arg0) == Arg1) {
+			Return (0)
+		} Else {
+			Local0++
+		}
+		Sleep (1)
 	}
+
+	If (Local0 == Arg2) {
+		Printf("[ERROR] GPPL for %o timed out", Arg0)
+	}
+
+	Return (0xFF)
 }
 
 /* Convert from 32-bit integer to 4-byte buffer (little-endian) */

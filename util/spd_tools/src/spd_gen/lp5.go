@@ -172,7 +172,7 @@ const (
 /* ------------------------------------------------------------------------------------------ */
 
 var LP5PlatformSetMap = map[int][]int{
-	0: {PlatformADL},
+	0: {PlatformMTL, PlatformADL},
 	1: {PlatformSBR},
 }
 

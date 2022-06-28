@@ -2,4 +2,5 @@
 # util/spd_tools/bin/spd_gen spd/lp5/memory_parts.json lp5
 
 ADL,set-0
+MTL,set-0
 SBR,set-1

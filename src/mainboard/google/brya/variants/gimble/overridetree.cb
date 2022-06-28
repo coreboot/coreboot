@@ -31,6 +31,10 @@ chip soc/intel/alderlake
 	register "fast_pkg_c_ramp_disable[VR_DOMAIN_IA]" = "1"
 	register "fast_pkg_c_ramp_disable[VR_DOMAIN_GT]" = "1"
 
+	# As per Intel Advisory doc#723158, the change is required to prevent possible
+	# display flickering issue.
+	register "usb2_phy_sus_pg_disable" = "1"
+
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 	register "usb2_ports[1]" = "USB2_PORT_MAX_TYPE_C(OC1)" # set MAX to USB2_C1 for eye diagram
 	register "usb2_ports[2]" = "USB2_PORT_EMPTY" # Disable USB2_C2

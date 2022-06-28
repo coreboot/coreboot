@@ -1,8 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-External (\_SB.PCI0.DGPU, DeviceObj)
-External (\_SB.PCI0.PEG0.PEGP._OFF, MethodObj)
-External (\_SB.PCI0.PEG0.PEGP._ON, MethodObj)
+External (\_SB.PCI0.PEG0.PEGP.NPON, MethodObj)
+External (\_SB.PCI0.PEG0.PEGP.NPOF, MethodObj)
 
 OperationRegion (PCIC, PCI_Config, 0x00, 0x100)
 Field (PCIC, AnyAcc, NoLock, Preserve)
@@ -78,14 +77,14 @@ PowerResource (PGPR, 0, 0)
 	Method (_ON, 0, Serialized)
 	{
 		/* Power up GPU from GCOFF (or GC6 exit if deferred) */
-		\_SB.PCI0.PEG0.PEGP._ON ()
+		\_SB.PCI0.PEG0.PEGP.NPON ()
 		_STA = 1
 	}
 	Method (_OFF, 0, Serialized)
 	{
 		/* Power down GPU to GCOFF (or GC6 entry if deferred) */
 		_STA = 0
-		\_SB.PCI0.PEG0.PEGP._OFF ()
+		\_SB.PCI0.PEG0.PEGP.NPOF ()
 	}
 	Name (_STA, 0)
 }

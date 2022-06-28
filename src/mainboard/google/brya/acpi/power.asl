@@ -23,7 +23,7 @@
 Name (OPCS, OPTIMUS_POWER_CONTROL_DISABLE)
 
 /* PCI configuration space Owner */
-Name (PCIO, PCI_OWNER_SBIOS)
+Name (PCIO, PCI_OWNER_DRIVER)
 
 /* Saved PCI configuration space memory (VGA Buffer) */
 Name (VGAB, Buffer (0xfb) { 0x00 })
@@ -33,6 +33,11 @@ Name (OPS0, OPTIMUS_CONTROL_NO_RUN_PS0)
 
 /* GC6 Entry/Exit state */
 Name (GC6E, GC6_STATE_EXITED)
+
+/* Power State, GCOFF, GCON */
+#define GPU_POWER_STATE_OFF	0
+#define GPU_POWER_STATE_ON	1
+Name (GPPS, GPU_POWER_STATE_ON)
 
 /* Defer GC6 entry / exit until D3-cold request */
 Name (DFEN, 0)
@@ -129,6 +134,12 @@ Method (GC6O, 0, Serialized)
 /* GCOFF exit sequence */
 Method (PGON, 0, Serialized)
 {
+	If (GPPS == GPU_POWER_STATE_ON)
+	{
+		Printf ("PGON: GPU already on")
+		Return
+	}
+
 	/* Assert PERST# */
 	\_SB.PCI0.CTXS (GPIO_GPU_PERST_L)
 
@@ -158,17 +169,28 @@ Method (PGON, 0, Serialized)
 
 	/* Deassert PERST# */
 	\_SB.PCI0.STXS (GPIO_GPU_PERST_L)
+
+	GC6E = GC6_STATE_EXITED
+	GPPS = GPU_POWER_STATE_ON
+	Printf ("GPU Sequenced on")
 }
 
 /* GCOFF entry sequence */
 Method (PGOF, 0, Serialized)
 {
+	If (GPPS == GPU_POWER_STATE_OFF)
+	{
+		Printf ("GPU already off")
+		Return
+	}
+
 	/* Assert PERST# */
 	\_SB.PCI0.CTXS (GPIO_GPU_PERST_L)
 	Sleep (5)
 
 	/* All rails are about to go down */
 	\_SB.PCI0.CTXS (GPIO_GPU_ALLRAILS_PG)
+	Sleep (1)
 
 	/* Ramp down FBVDD (active-low) and let rail discharge to <10% */
 	\_SB.PCI0.STXS (GPIO_FBVDD_PWR_EN)
@@ -193,6 +215,9 @@ Method (PGOF, 0, Serialized)
 	/* Ramp down 1.8V */
 	\_SB.PCI0.CTXS (GPIO_1V8_PWR_EN)
 	GPPL (GPIO_1V8_PG, 0, 20)
+
+	GPPS = GPU_POWER_STATE_OFF
+	Printf ("GPU sequenced off")
 }
 
 /* Handle deferred GC6 vs. poweron request */

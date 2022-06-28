@@ -29,14 +29,6 @@ config SOC_AMD_PSP_SELECTABLE_SMU_FW
 	  fanned set of blobs.  Ask your AMD representative whether your APU
 	  is considered fanless.
 
-config AMD_SOC_SEPARATE_EFS_SECTION
-	bool
-	help
-	  Use separate EFS FMAP section instead of putting EFS into CBFS. The
-	  FMAP section must begin exactly at the location the EFS needs to be
-	  placed in the flash. This option can be used to place the EFS right
-	  after the 128kByte EC firmware at the beginning of the flash.
-
 config SOC_AMD_COMMON_BLOCK_PSP_FUSE_SPL
 	bool
 	default n

@@ -8,11 +8,6 @@ smm-y += psp_smm.c
 bootblock-y += psp_efs.c
 verstage-y += psp_efs.c
 
-ifeq ($(CONFIG_AMD_SOC_SEPARATE_EFS_SECTION),y)
-bootblock-y += efs_fmap_check.c
-$(call src-to-obj,bootblock,$(dir)/efs_fmap_check.c) : $(obj)/fmap_config.h
-endif # CONFIG_AMD_SOC_SEPARATE_EFS_SECTION
-
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_PSP
 
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN1),y)

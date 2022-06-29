@@ -98,16 +98,16 @@ static void print_madt_ioapic(int socket, int stack,
 const struct madt_ioapic_info *soc_get_ioapic_info(size_t *entries)
 {
 	int cur_index;
+	int gsi_per_iiostack = 0;
+
 	const IIO_UDS *hob = get_iio_uds();
 
-	/* With XEON-SP FSP, PCH IOAPIC is allocated with first 120 GSIs. */
-#if (CONFIG(SOC_INTEL_COOPERLAKE_SP))
-	const int gsi_bases[] = { 0, 0x78, 0x80, 0x88, 0x90, 0x98, 0xA0, 0xA8, 0xB0 };
-#endif
+	uint8_t gsi_bases[CONFIG(XEON_SP_HAVE_IIO_IOAPIC) * 8 + 1] = { 0 };
 
-#if (CONFIG(SOC_INTEL_SKYLAKE_SP))
-	const int gsi_bases[] = { 0, 0x18, 0x20, 0x28, 0x30, 0x48, 0x50, 0x58, 0x60 };
-#endif
+	for (uint8_t i = 1; i < sizeof(gsi_bases); i++) {
+		int gsi_base = CONFIG_XEON_SP_PCH_IOAPIC_GSI_BASES;
+		gsi_bases[i] = gsi_base + (i * gsi_per_iiostack);
+	}
 
 	static struct madt_ioapic_info madt_tbl[ARRAY_SIZE(gsi_bases)];
 
@@ -118,6 +118,11 @@ const struct madt_ioapic_info *soc_get_ioapic_info(size_t *entries)
 	print_madt_ioapic(0, 0,  madt_tbl[cur_index].id,
 			  madt_tbl[cur_index].addr, madt_tbl[cur_index].gsi_base);
 	++cur_index;
+
+	if (!CONFIG(XEON_SP_HAVE_IIO_IOAPIC)) {
+		*entries = cur_index;
+		return madt_tbl;
+	}
 
 	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
 		for (int stack = 0; stack < MAX_IIO_STACK; ++stack) {

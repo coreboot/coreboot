@@ -26,12 +26,16 @@ config SOC_INTEL_ALDERLAKE_PCH_N
 config SOC_INTEL_ALDERLAKE_PCH_P
 	bool
 	select SOC_INTEL_ALDERLAKE
+	select HAVE_INTEL_FSP_REPO
+	select PLATFORM_USES_FSP2_3
 	help
 	  Choose this option if your mainboard has a PCH-P chipset.
 
 config SOC_INTEL_ALDERLAKE_PCH_S
 	bool
 	select SOC_INTEL_ALDERLAKE
+	select HAVE_INTEL_FSP_REPO
+	select PLATFORM_USES_FSP2_3
 	help
 	  Choose this option if your mainboard has a PCH-S chipset.
 
@@ -70,8 +74,7 @@ config CPU_SPECIFIC_OPTIONS
 	select MRC_SETTINGS_PROTECT
 	select PARALLEL_MP_AP_WORK
 	select MICROCODE_BLOB_UNDISCLOSED
-	select PLATFORM_USES_FSP2_2 if !SOC_INTEL_ALDERLAKE_PCH_S
-	select PLATFORM_USES_FSP2_3 if SOC_INTEL_ALDERLAKE_PCH_S
+	select PLATFORM_USES_FSP2_2
 	select PMC_GLOBAL_RESET_ENABLE_LOCK
 	select SOC_INTEL_COMMON
 	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
@@ -357,12 +360,15 @@ config FSP_HEADER_PATH
 	string "Location of FSP headers"
 	default "src/vendorcode/intel/fsp/fsp2_0/alderlake_n/" if SOC_INTEL_ALDERLAKE_PCH_N
 	default "src/vendorcode/intel/fsp/fsp2_0/raptorlake/" if SOC_INTEL_RAPTORLAKE
+	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeP/Include/" if SOC_INTEL_ALDERLAKE_PCH_P
+	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeS/Include/" if SOC_INTEL_ALDERLAKE_PCH_S
 	default "src/vendorcode/intel/fsp/fsp2_0/alderlake/"
 
 config FSP_FD_PATH
 	string
 	depends on FSP_USE_REPO
-	default "3rdparty/fsp/AlderLakeFspBinPkg/Fsp.fd"
+	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeP/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_P
+	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeS/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_S
 
 config SOC_INTEL_ALDERLAKE_DEBUG_CONSENT
 	int "Debug Consent for ADL"

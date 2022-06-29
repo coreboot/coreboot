@@ -343,6 +343,49 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_T3, NONE),
 };
 
+/* Early pad configuration in bootblock */
+static const struct pad_config early_gpio_table[] = {
+	/* A13 : PMC_I2C_SCL ==> GSC_PCH_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
+	/* B4  : PROC_GP3 ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 0, DEEP),
+	/*
+	 * D1  : ISH_GP1 ==> FP_RST_ODL
+	 * FP_RST_ODL comes out of reset as hi-z and does not have an external pull-down.
+	 * To ensure proper power sequencing for the FPMCU device, reset signal is driven low
+	 * early on in bootblock, followed by enabling of power. Reset signal is deasserted
+	 * later on in ramstage. Since reset signal is asserted in bootblock, it results in
+	 * FPMCU not working after a S3 resume. This is a known issue.
+	 */
+	PAD_CFG_GPO(GPP_D1, 0, DEEP),
+	/* D2  : ISH_GP2 ==> EN_FP_PWR */
+	PAD_CFG_GPO(GPP_D2, 1, DEEP),
+	/* E15 : RSVD_TP ==> PCH_WP_OD */
+	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_E15, NONE, LOCK_CONFIG),
+	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
+	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
+	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
+	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+
+	/* TPM is on I2C port 1 */
+	/* H6  : [NF1: I2C1_SDA NF6: USB_C_GPP_H6] ==> PCH_I2C_TPM_R_SDA */
+	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
+	/* H7  : [NF1: I2C1_SCL NF6: USB_C_GPP_H7] ==> PCH_I2C_TPM_R_SCL */
+	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
+
+	/* Mem straps */
+	/* B3  : PROC_GP2 ==> MEM_CH_SEL */
+	PAD_CFG_GPI(GPP_B3, NONE, DEEP),
+	/* E3  : PROC_GP0 ==> MEM_STRAP_0 */
+	PAD_CFG_GPI(GPP_E3, NONE, DEEP),
+	/* E2  : THC0_SPI1_IO3 ==> MEM_STRAP_1 */
+	PAD_CFG_GPI(GPP_E2, NONE, DEEP),
+	/* E1  : THC0_SPI1_IO2 ==> MEM_STRAP_2 */
+	PAD_CFG_GPI(GPP_E1, NONE, DEEP),
+	/* E7  : PROC_GP1 ==> MEM_STRAP_3 */
+	PAD_CFG_GPI(GPP_E7, NONE, DEEP),
+};
+
 const struct pad_config *__weak variant_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
@@ -353,4 +396,10 @@ const struct pad_config *__weak variant_gpio_override_table(size_t *num)
 {
 	*num = 0;
 	return NULL;
+}
+
+const struct pad_config *__weak variant_early_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(early_gpio_table);
+	return early_gpio_table;
 }

@@ -1,11 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/stages.h>
-#include <soc/usb/usb_common.h>
-#include <soc/qclib_common.h>
-#include "board.h"
-#include <soc/shrm.h>
 #include <soc/cpucp.h>
+#include <soc/qclib_common.h>
+#include <soc/shrm.h>
+#include <soc/usb/usb_common.h>
+#include <soc/watchdog.h>
+#include "board.h"
 
 static void prepare_usb(void)
 {
@@ -18,6 +19,8 @@ static void prepare_usb(void)
 
 void platform_romstage_main(void)
 {
+	/* Watchdog must be checked first to avoid erasing watchdog info later. */
+	check_wdog();
 	shrm_fw_load_reset();
 	cpucp_prepare();
 	/* QCLib: DDR init & train */

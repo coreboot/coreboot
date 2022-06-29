@@ -38,6 +38,25 @@ chip soc/intel/alderlake
 		.vnn_sx_voltage_mv = 1250,
 	}"
 
+	# VR Settings
+	register "domain_vr_config[VR_DOMAIN_IA]" = "{
+		.vr_config_enable = 1,
+		.icc_max = 340,
+		.tdc_timewindow = 28000,
+		.tdc_currentlimit = 256,
+		.ac_loadline = 240,
+		.dc_loadline = 228,
+	}"
+
+	register "domain_vr_config[VR_DOMAIN_GT]" = "{
+		.vr_config_enable = 1,
+		.icc_max = 220,
+		.tdc_timewindow = 28000,
+		.tdc_currentlimit = 256,
+		.ac_loadline = 313,
+		.dc_loadline = 294,
+	}"
+
 	register "usb2_ports[3]" = "USB2_PORT_EMPTY"    # Disable Port 3
 	register "usb2_ports[4]" = "USB2_PORT_EMPTY"    # Disable Port 4
 	register "usb2_ports[6]" = "USB2_PORT_EMPTY"    # Disable Port 6

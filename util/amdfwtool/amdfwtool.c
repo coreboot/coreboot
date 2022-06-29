@@ -1522,20 +1522,9 @@ int main(int argc, char **argv)
 	uint8_t efs_spi_speed = 0xff;
 	uint8_t efs_spi_micron_flag = 0xff;
 
-	amd_cb_config cb_config;
+	amd_cb_config cb_config = { 0 };
 	int debug = 0;
 	int list_deps = 0;
-
-	cb_config.have_whitelist = false;
-	cb_config.unlock_secure = false;
-	cb_config.use_secureos = false;
-	cb_config.load_mp2_fw = false;
-	cb_config.s0i3 = false;
-	cb_config.multi_level = false;
-	cb_config.recovery_ab = false;
-	cb_config.need_ish = false;
-	cb_config.recovery_ab_single_copy = false;
-	cb_config.use_combo = false;
 
 	while (1) {
 		int optindex = 0;

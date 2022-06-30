@@ -16,6 +16,9 @@ Device (GPIO)
 	{
 		Memory32Fixed (ReadWrite, 0, 0, COM0)
 		Memory32Fixed (ReadWrite, 0, 0, COM1)
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_S)
+		Memory32Fixed (ReadWrite, 0, 0, COM3)
+#endif
 		Memory32Fixed (ReadWrite, 0, 0, COM4)
 		Memory32Fixed (ReadWrite, 0, 0, COM5)
 		Interrupt (ResourceConsumer, Level, ActiveLow, Shared,,, GIRQ)
@@ -34,6 +37,14 @@ Device (GPIO)
 		CreateDWordField (^RBUF, ^COM1._LEN, LEN1)
 		BAS1 = ^^PCRB (PID_GPIOCOM1)
 		LEN1 = GPIO_BASE_SIZE
+
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_S)
+		/* GPIO Community 3 */
+		CreateDWordField (^RBUF, ^COM3._BAS, BAS3)
+		CreateDWordField (^RBUF, ^COM3._LEN, LEN3)
+		BAS3 = ^^PCRB (PID_GPIOCOM3)
+		LEN3 = GPIO_BASE_SIZE
+#endif
 
 		/* GPIO Community 4 */
 		CreateDWordField (^RBUF, ^COM4._BAS, BAS4)

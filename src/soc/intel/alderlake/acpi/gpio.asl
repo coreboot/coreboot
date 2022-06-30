@@ -121,7 +121,7 @@ Method (GPID, 1, Serialized)
 		Case (COMM_2) {
 			Local0 = PID_GPIOCOM2
 		}
-		case (COMM_3) {
+		Case (COMM_3) {
 			Local0 = PID_GPIOCOM3
 		}
 		Case (COMM_4) {

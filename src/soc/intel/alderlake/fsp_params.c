@@ -493,13 +493,9 @@ static unsigned int get_aspm_control(enum ASPM_control ctl)
 /* This function returns the VccIn Aux Imon IccMax values for ADL-P and ADL-S SKU's */
 static uint16_t get_vccin_aux_imon_iccmax(void)
 {
-	uint16_t mch_id = 0;
+	struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
+	uint16_t mch_id = dev ? pci_read_config16(dev, PCI_DEVICE_ID) : 0xffff;
 	uint8_t tdp;
-
-	if (!mch_id) {
-		struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
-		mch_id = dev ? pci_read_config16(dev, PCI_DEVICE_ID) : 0xffff;
-	}
 
 	switch (mch_id) {
 	case PCI_DID_INTEL_ADL_P_ID_1:

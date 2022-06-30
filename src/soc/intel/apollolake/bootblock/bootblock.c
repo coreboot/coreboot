@@ -15,8 +15,9 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/uart.h>
-#include <soc/iomap.h>
 #include <soc/cpu.h>
+#include <soc/loader.h>
+#include <soc/gpio.h>
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>
@@ -54,6 +55,11 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 				PCI_COMMAND_IO | PCI_COMMAND_MASTER);
 
 	enable_rtc_upper_bank();
+
+	if (CONFIG(IFWI_IBBM_LOAD)) {
+		load_ibb(CONFIG_IBBM_ROM_ADDR, CONFIG_IBBM_ROM_SIZE);
+		flush_l1d_to_l2();
+	}
 
 	/* Call lib/bootblock.c main */
 	bootblock_main_with_basetime(base_timestamp);

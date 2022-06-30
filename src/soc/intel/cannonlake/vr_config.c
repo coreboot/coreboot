@@ -205,55 +205,71 @@ VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_H) {
 VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_H_4) {
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 86, 0, 0) },
 };
+VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S) {
+	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 138, 45, 45) },
+	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 133, 45, 45) },
+	{ 35, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 35, 35) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 35, 35) },
+};
 VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_DT_2) {
 	{ 58, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 79, 35, 35) },
 	{ 54, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 58, 45, 45) },
+	{ 35, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 40, 35, 35) },
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 40, 35, 35) },
 };
-VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_DT_4) {
+VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_S_4) {
+	{ 83, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 100, 45, 45) },
 	{ 71, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 100, 45, 45) },
+	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 79, 45, 45) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 66, 35, 35) },
+};
+VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_WS_4) {
+	{ 83, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 100, 45, 45) },
+	{ 71, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 100, 45, 45) },
+	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 79, 45, 45) },
+	{ 35, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 66, 35, 35) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 66, 35, 35) },
+};
+VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_DT_4) {
+	{ 91, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 100, 45, 45) },
+	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 79, 45, 45) },
 	{ 62, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 79, 45, 45) },
 	{ 35, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 66, 35, 35) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 66, 35, 35) },
 };
-VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_DT_8) {
-	{ 80, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 193, 45, 45) },
-	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 186, 45, 45) },
+VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_WS_6) {
+	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 138, 45, 45) },
+	{ 80, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 133, 45, 45) },
+	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 133, 45, 45) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 35, 35) },
+};
+VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_S_6) {
+	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 138, 45, 45) },
+	{ 80, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 133, 45, 45) },
+	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 133, 45, 45) },
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 35, 35) },
 };
 VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_S_8) {
+	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 193, 45, 45) },
 	{ 80, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 193, 45, 45) },
 	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 186, 45, 45) },
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 35, 35) },
 };
 VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_WS_8) {
+	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 193, 45, 45) },
 	{ 80, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 193, 45, 45) },
 	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 186, 45, 45) },
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 35, 35) },
 };
-VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S) {
-	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 138, 45, 45) },
-	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 133, 45, 45) },
-	{ 54, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 45, 45) },
+VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_DT_8) {
+	{ 127, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 193, 45, 45) },
+	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 193, 45, 45) },
+	{ 80, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 193, 45, 45) },
+	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 186, 45, 45) },
+	{ 35, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 35, 35) },
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 35, 35) },
 };
-VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_WS_6) {
-	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 138, 45, 45) },
-	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 133, 45, 45) },
-	{ 54, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 45, 45) },
-	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 35, 35) },
-};
-VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_S_6) {
-	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 138, 45, 45) },
-	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 133, 45, 45) },
-	{ 54, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 45, 45) },
-	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 104, 35, 35) },
-};
-VR_CONFIG_ICC(PCI_DID_INTEL_CFL_ID_S_S_4) {
-	{ 71, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 100, 45, 45) },
-	{ 62, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 79, 45, 45) },
-	{ 54, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 66, 45, 45) },
-	{  0, value_not_set, VR_CFG_ALL_DOMAINS_ICC(11.1, 66, 35, 35) },
-};
+
 VR_CONFIG_ICC(PCI_DID_INTEL_CML_ULT) {
 	{  0, performance,  VR_CFG_ALL_DOMAINS_ICC(6, 85, 31, 31) },
 	{  0, baseline,     VR_CFG_ALL_DOMAINS_ICC(6, 70, 31, 31) },
@@ -327,6 +343,7 @@ static const struct vr_lookup vr_config_icc[] = {
 	VR_REFITEM_ICC(PCI_DID_INTEL_CFL_ID_S_WS_8),
 	VR_REFITEM_ICC(PCI_DID_INTEL_CFL_ID_S),
 	VR_REFITEM_ICC(PCI_DID_INTEL_CFL_ID_S_WS_6),
+	VR_REFITEM_ICC(PCI_DID_INTEL_CFL_ID_S_WS_4),
 	VR_REFITEM_ICC(PCI_DID_INTEL_CFL_ID_S_S_6),
 	VR_REFITEM_ICC(PCI_DID_INTEL_CFL_ID_S_S_4),
 	VR_REFITEM_ICC(PCI_DID_INTEL_CML_ULT),
@@ -474,29 +491,36 @@ VR_CONFIG_TDC(PCI_DID_INTEL_CFL_ID_H) {
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 80, 25, 25) },
 };
 VR_CONFIG_TDC(PCI_DID_INTEL_CFL_ID_S) {
-	{ 58, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 33, 30, 30) },
-	{ 54, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 31, 30, 30) },
-	{  0, value_not_set,  VR_CFG_ALL_DOMAINS_TDC(10, 29, 25, 25) },
+	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 100, 30, 30) },
+	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 91, 30, 30) },
+	{ 35, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 74, 25, 25) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 74, 25, 25) },
 };
 VR_CONFIG_TDC(PCI_DID_INTEL_CFL_ID_S_DT_2) {
 	{ 58, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 33, 30, 30) },
 	{ 54, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 31, 30, 30) },
-	{  0, value_not_set,  VR_CFG_ALL_DOMAINS_TDC(10, 29, 25, 25) },
+	{ 35, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 29, 25, 25) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 29, 25, 25) },
 };
 VR_CONFIG_TDC(PCI_DID_INTEL_CFL_ID_S_S_4) {
+	{ 83, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 70, 30, 30) },
 	{ 71, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 70, 30, 30) },
-	{ 62, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 62, 30, 30) },
-	{  0, value_not_set,  VR_CFG_ALL_DOMAINS_TDC(10, 45, 25, 25) },
+	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 62, 30, 30) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 45, 25, 25) },
 };
 VR_CONFIG_TDC(PCI_DID_INTEL_CFL_ID_S_WS_4) {
+	{ 83, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 70, 30, 30) },
 	{ 71, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 70, 30, 30) },
-	{ 62, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 62, 30, 30) },
-	{  0, value_not_set,  VR_CFG_ALL_DOMAINS_TDC(10, 45, 25, 25) },
+	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 62, 30, 30) },
+	{ 35, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 45, 25, 25) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 45, 25, 25) },
 };
 VR_CONFIG_TDC(PCI_DID_INTEL_CFL_ID_S_DT_4) {
-	{ 71, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 70, 30, 30) },
+	{ 91, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 70, 30, 30) },
+	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 62, 30, 30) },
 	{ 62, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 62, 30, 30) },
-	{  0, value_not_set,  VR_CFG_ALL_DOMAINS_TDC(10, 45, 25, 25) },
+	{ 35, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 45, 25, 25) },
+	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 45, 25, 25) },
 };
 VR_CONFIG_TDC(PCI_DID_INTEL_CFL_ID_S_WS_6) {
 	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 100, 30, 30) },
@@ -511,18 +535,23 @@ VR_CONFIG_TDC(PCI_DID_INTEL_CFL_ID_S_S_6) {
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 74, 25, 25) },
 };
 VR_CONFIG_TDC(PCI_DID_INTEL_CFL_ID_S_S_8) {
+	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 150, 30, 30) },
 	{ 80, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 150, 30, 30) },
 	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 146, 30, 30) },
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 74, 25, 25) },
 };
 VR_CONFIG_TDC(PCI_DID_INTEL_CFL_ID_S_WS_8) {
+	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 150, 30, 30) },
 	{ 80, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 150, 30, 30) },
 	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 146, 30, 30) },
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 74, 25, 25) },
 };
 VR_CONFIG_TDC(PCI_DID_INTEL_CFL_ID_S_DT_8) {
+	{ 127, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 150, 30, 30) },
+	{ 95, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 150, 30, 30) },
 	{ 80, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 150, 30, 30) },
 	{ 65, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 146, 30, 30) },
+	{ 35, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 74, 25, 25) },
 	{  0, value_not_set, VR_CFG_ALL_DOMAINS_TDC(10, 74, 25, 25) },
 };
 VR_CONFIG_TDC(PCI_DID_INTEL_CML_ULT) {

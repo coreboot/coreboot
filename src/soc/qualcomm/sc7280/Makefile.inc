@@ -30,6 +30,7 @@ romstage-y += shrm_load_reset.c
 romstage-y += cpucp_load_reset.c
 romstage-y += ../common/qclib.c
 romstage-y += ../common/mmu.c
+romstage-y += ../common/watchdog.c
 romstage-y += mmu.c
 romstage-y += ../common/usb/usb.c
 romstage-y += carve_out.c

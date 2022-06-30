@@ -774,6 +774,12 @@ static void fill_fsps_cnvi_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
 	/* CNVi */
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_P) || CONFIG(SOC_INTEL_ALDERLAKE_PCH_S)
+#if !CONFIG(SOC_INTEL_RAPTORLAKE)
+	/* This option is only available in public FSP headers of ADL-P and ADL-S */
+	s_cfg->CnviWifiCore = is_devfn_enabled(PCH_DEVFN_CNVI_WIFI);
+#endif
+#endif
 	s_cfg->CnviMode = is_devfn_enabled(PCH_DEVFN_CNVI_WIFI);
 	s_cfg->CnviBtCore = config->cnvi_bt_core;
 	s_cfg->CnviBtAudioOffload = config->cnvi_bt_audio_offload;

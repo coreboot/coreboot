@@ -20,6 +20,7 @@ config SOC_INTEL_ALDERLAKE_PCH_M
 config SOC_INTEL_ALDERLAKE_PCH_N
 	bool
 	select SOC_INTEL_ALDERLAKE
+	select MICROCODE_BLOB_UNDISCLOSED
 	help
 	  Choose this option if your mainboard has a PCH-N chipset.
 
@@ -73,7 +74,6 @@ config CPU_SPECIFIC_OPTIONS
 	select INTEL_TME
 	select MRC_SETTINGS_PROTECT
 	select PARALLEL_MP_AP_WORK
-	select MICROCODE_BLOB_UNDISCLOSED
 	select PLATFORM_USES_FSP2_2
 	select PMC_GLOBAL_RESET_ENABLE_LOCK
 	select SOC_INTEL_COMMON

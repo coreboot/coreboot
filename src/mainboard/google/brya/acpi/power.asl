@@ -78,12 +78,6 @@ Method (GC6I, 0, Serialized)
 	/* Deassert EN_PCH_PPVAR_GPU_FBVDDQ (active-low) */
 	\_SB.PCI0.STXS (GPIO_FBVDD_PWR_EN)
 
-	/* Deassert EN_PP3300_GPU */
-	\_SB.PCI0.CTXS (GPIO_NV33_PWR_EN)
-
-	/* Wait for de-assertion of PG_PP3300_GPU */
-	GPPL (GPIO_NV33_PG, 0, 20)
-
 	GC6E = GC6_STATE_ENTERED
 }
 
@@ -91,12 +85,6 @@ Method (GC6I, 0, Serialized)
 Method (GC6O, 0, Serialized)
 {
 	GC6E = GC6_STATE_TRANSITION
-
-	/* Assert EN_PP3300_GPU */
-	\_SB.PCI0.STXS (GPIO_NV33_PWR_EN)
-
-	/* Wait for assertion of PG_PP3300_GPU */
-	GPPL (GPIO_NV33_PG, 1, 20)
 
 	/* Deassert GPU_PERST_L */
 	\_SB.PCI0.CTXS (GPIO_GPU_PERST_L)

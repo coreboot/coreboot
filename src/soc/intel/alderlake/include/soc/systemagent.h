@@ -76,9 +76,9 @@ static const struct sa_mmio_descriptor soc_vtd_resources[] = {
 #define  MASK_DPR_LENGTH	0xFF0 // [11:4]
 #define  MASK_DPR_LENGTH_LSB	4 // used to shift right
 
-uint64_t get_mmcfg_size(struct device *dev);
-uint64_t get_dsm_size(struct device *dev);
-uint64_t get_gsm_size(struct device *dev);
-uint64_t get_dpr_size(struct device *dev);
+uint64_t get_mmcfg_size(const struct device *dev);
+uint64_t get_dsm_size(const struct device *dev);
+uint64_t get_gsm_size(const struct device *dev);
+uint64_t get_dpr_size(const struct device *dev);
 
 #endif

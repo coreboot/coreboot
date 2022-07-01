@@ -209,7 +209,7 @@ uint32_t soc_systemagent_max_chan_capacity_mib(u8 capid0_a_ddrsz)
 	}
 }
 
-uint64_t get_mmcfg_size(struct device *dev)
+uint64_t get_mmcfg_size(const struct device *dev)
 {
 	uint32_t pciexbar_reg;
 	uint64_t mmcfg_length;
@@ -258,7 +258,7 @@ uint64_t get_mmcfg_size(struct device *dev)
 	return mmcfg_length;
 }
 
-uint64_t get_dsm_size(struct device *dev)
+uint64_t get_dsm_size(const struct device *dev)
 {
 	// - size : B0/D0/F0:R 50h [15:8]
 	uint32_t reg32 = pci_read_config32(dev, GGC);
@@ -289,7 +289,7 @@ uint64_t get_dsm_size(struct device *dev)
 	return size;
 }
 
-uint64_t get_gsm_size(struct device *dev)
+uint64_t get_gsm_size(const struct device *dev)
 {
 	const u32 gsm_size = pci_read_config32(dev, GGC);
 	uint64_t size;
@@ -313,7 +313,7 @@ uint64_t get_gsm_size(struct device *dev)
 	}
 	return size;
 }
-uint64_t get_dpr_size(struct device *dev)
+uint64_t get_dpr_size(const struct device *dev)
 {
 	uint64_t size;
 	uint32_t dpr_reg = pci_read_config32(dev, DPR_REG);

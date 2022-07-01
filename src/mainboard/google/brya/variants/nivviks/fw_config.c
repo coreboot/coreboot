@@ -20,32 +20,32 @@ static const struct pad_config lte_disable_pads_nivviks[] = {
 	/* D6  : WWAN_EN */
 	PAD_NC(GPP_D6, NONE),
 	/* F12 : WWAN_RST_L */
-	PAD_NC(GPP_F12, NONE),
+	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
 };
 
 static const struct pad_config lte_disable_pads_nirwen[] = {
 	/* E13  : WWAN_EN */
-	PAD_NC(GPP_E13, NONE),
+	PAD_NC_LOCK(GPP_E13, NONE, LOCK_CONFIG),
 	/* F12 : WWAN_RST_L */
-	PAD_NC(GPP_F12, NONE),
+	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
 };
 
 static const struct pad_config sd_disable_pads[] = {
 	/* D8  : SD_CLKREQ_ODL */
 	PAD_NC(GPP_D8, NONE),
 	/* H12 : SD_PERST_L */
-	PAD_NC(GPP_H12, NONE),
+	PAD_NC_LOCK(GPP_H12, NONE, LOCK_CONFIG),
 	/* H13 : EN_PP3300_SD_X */
-	PAD_NC(GPP_H13, NONE),
+	PAD_NC_LOCK(GPP_H13, NONE, LOCK_CONFIG),
 };
 
 static const struct pad_config wfc_disable_pads[] = {
 	/* D3  : WCAM_RST_L */
-	PAD_NC(GPP_D3, NONE),
+	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D15 : EN_PP2800_WCAM_X */
-	PAD_NC(GPP_D15, NONE),
+	PAD_NC_LOCK(GPP_D15, NONE, LOCK_CONFIG),
 	/* D16 : EN_PP1800_PP1200_WCAM_X */
-	PAD_NC(GPP_D16, NONE),
+	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
 	/* H22 : WCAM_MCLK_R */
 	PAD_NC(GPP_H22, NONE),
 	/* R6 : DMIC_WCAM_CLK_R */
@@ -83,13 +83,13 @@ static const struct pad_config emmc_disable_pads[] = {
 
 static const struct pad_config nvme_disable_pads[] = {
 	/* B4  : SSD_PERST_L */
-	PAD_NC(GPP_B4, NONE),
+	PAD_NC_LOCK(GPP_B4, NONE, LOCK_CONFIG),
 	/* D6  : SSD_CLKREQ_ODL */
 	PAD_NC(GPP_D6, NONE),
 	/* D11 : EN_PP3300_SSD */
-	PAD_NC(GPP_D11, NONE),
+	PAD_NC_LOCK(GPP_D11, NONE, LOCK_CONFIG),
 	/* E17 : SSD_PLN_L */
-	PAD_NC(GPP_E17, NONE),
+	PAD_NC_LOCK(GPP_E17, NONE, LOCK_CONFIG),
 };
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)

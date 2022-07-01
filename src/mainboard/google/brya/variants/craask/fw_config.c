@@ -19,16 +19,16 @@ static const struct pad_config lte_disable_pads[] = {
 	/* D6  : WWAN_EN */
 	PAD_NC(GPP_D6, NONE),
 	/* F12 : WWAN_RST_L */
-	PAD_NC(GPP_F12, NONE),
+	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
 };
 
 static const struct pad_config wfc_disable_pads[] = {
 	/* D3  : WCAM_RST_L */
-	PAD_NC(GPP_D3, NONE),
+	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D15 : EN_PP2800_WCAM_X */
-	PAD_NC(GPP_D15, NONE),
+	PAD_NC_LOCK(GPP_D15, NONE, LOCK_CONFIG),
 	/* D16 : EN_PP1800_PP1200_WCAM_X */
-	PAD_NC(GPP_D16, NONE),
+	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
 	/* H22 : WCAM_MCLK_R */
 	PAD_NC(GPP_H22, NONE),
 	/* R6 : DMIC_WCAM_CLK_R */
@@ -41,9 +41,9 @@ static const struct pad_config sd_disable_pads[] = {
 	/* D8  : SD_CLKREQ_ODL */
 	PAD_NC(GPP_D8, NONE),
 	/* H12 : SD_PERST_L */
-	PAD_NC(GPP_H12, NONE),
+	PAD_NC_LOCK(GPP_H12, NONE, LOCK_CONFIG),
 	/* H13 : EN_PP3300_SD_X */
-	PAD_NC(GPP_H13, NONE),
+	PAD_NC_LOCK(GPP_H13, NONE, LOCK_CONFIG),
 };
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)

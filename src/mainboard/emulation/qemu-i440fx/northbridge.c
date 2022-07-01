@@ -47,7 +47,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 	int i440fx = (nbid == 0x1237);
 	int q35    = (nbid == 0x29c0);
 	struct resource *res;
-	unsigned long tomk = 0;
+	uint64_t tomk = 0;
 	int idx = 10;
 	FWCfgFile f;
 
@@ -93,7 +93,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 		/* qemu older than 1.7, or reading etc/e820 failed. Fallback to cmos. */
 		tomk = qemu_get_memory_size();
 		uint64_t high = qemu_get_high_memory_size();
-		printk(BIOS_DEBUG, "QEMU: cmos: %lu MiB RAM below 4G.\n", tomk / 1024);
+		printk(BIOS_DEBUG, "QEMU: cmos: %llu MiB RAM below 4G.\n", tomk / 1024);
 		printk(BIOS_DEBUG, "QEMU: cmos: %llu MiB RAM above 4G.\n", high / 1024);
 
 		/* Report the memory regions. */

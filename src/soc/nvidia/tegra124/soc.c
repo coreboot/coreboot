@@ -16,13 +16,13 @@
  */
 static void soc_read_resources(struct device *dev)
 {
-	u32 lcdbase = fb_base_mb();
-	unsigned long fb_size = FB_SIZE_MB;
+	uint64_t lcdbase = fb_base_mb();
+	uint64_t fb_size = FB_SIZE_MB;
 
 	ram_from_to(dev, 0, (uintptr_t)_dram, (sdram_max_addressable_mb() - fb_size) * MiB);
 	mmio_range(dev, 1, lcdbase * MiB, fb_size * MiB);
 
-	ram_from_to(dev, 2, sdram_max_addressable_mb() * MiB,
+	ram_from_to(dev, 2, sdram_max_addressable_mb() * (uint64_t)MiB,
 		    (uintptr_t)_dram + sdram_size_mb() * (uint64_t)MiB);
 }
 

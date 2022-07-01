@@ -78,7 +78,7 @@ static const struct pad_config gpio_table[] = {
 	/* B12 : SLP_S0# ==> SLP_S0_L */
 	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
 	/* B13 : PLTRST# ==> PLT_RST_L */
-	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
+	PAD_CFG_NF_LOCK(GPP_B13, NONE, NF1, LOCK_CONFIG),
 	/* B14 : SPKR ==> GPP_B14_STRAP */
 	PAD_NC_LOCK(GPP_B14, NONE, LOCK_CONFIG),
 	/* B15 : NC */

@@ -29,6 +29,10 @@ chip soc/intel/alderlake
 	register "fast_pkg_c_ramp_disable[VR_DOMAIN_IA]" = "1"
 	register "fast_pkg_c_ramp_disable[VR_DOMAIN_GT]" = "1"
 
+	# As per Intel Advisory doc#723158, the change is required to prevent possible
+	# display flickering issue.
+	register "usb2_phy_sus_pg_disable" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

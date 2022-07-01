@@ -38,6 +38,11 @@ COREBOOT_EXPORTS += KCONFIG_DEPENDENCIES KCONFIG_SPLITCONFIG KCONFIG_TRISTATE
 COREBOOT_EXPORTS += KCONFIG_NEGATIVES KCONFIG_STRICT
 COREBOOT_EXPORTS += KCONFIG_AUTOADS KCONFIG_PACKAGE
 
+# Make does not offer a recursive wildcard function, so here's one:
+rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
+SYMLINK_LIST = $(call rwildcard,site-local/,symlink.txt)
+
+
 # directory containing the toplevel Makefile.inc
 TOPLEVEL := .
 
@@ -455,6 +460,29 @@ sphinx:
 sphinx-lint:
 	$(MAKE) SPHINXOPTS=-W -C Documentation -f Makefile.sphinx html
 
+symlink:
+	@echo "Creating Symbolic Links.."; \
+	for link in $(SYMLINK_LIST); do \
+		SYMLINK=`cat $$link`; \
+		REALPATH=`realpath $$link`; \
+		if [ -L "$$SYMLINK" ]; then \
+			continue; \
+		elif [ ! -e "$$SYMLINK" ]; then \
+			echo -e "\tLINK $$SYMLINK -> $$(dirname $$REALPATH)"; \
+			ln -s $$(dirname $$REALPATH) $$SYMLINK; \
+		else \
+			echo -e "\tFAILED: $$SYMLINK exists"; \
+		fi \
+	done
+
+clean-symlink:
+	@echo "Deleting symbolic link";\
+	EXISTING_SYMLINKS=`find -L ./src -xtype l | grep -v 3rdparty`; \
+	for link in $$EXISTING_SYMLINKS; do \
+		echo -e "\tUNLINK $$link"; \
+		rm "$$link"; \
+	done
+
 clean-for-update:
 	rm -rf $(obj) .xcompile
 
@@ -482,4 +510,4 @@ distclean: clean clean-ctags clean-cscope distclean-payloads distclean-utils
 	rm -f abuild*.xml junit.xml* util/lint/junit.xml
 
 .PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean sphinx sphinx-lint
-.PHONY: ctags-project cscope-project clean-ctags
+.PHONY: ctags-project cscope-project clean-ctags symlink clean-symlink

@@ -406,7 +406,7 @@ static void write_create_tbat(const struct dptf_platform_info *platform_info)
 	acpigen_write_name("_HID");
 	if (platform_info->tbat_device_hid != NULL)
 		dptf_write_hid(platform_info->use_eisa_hids, platform_info->tbat_device_hid);
-	acpigen_write_name_string("_UID", "TBAT");
+	acpigen_write_name_string("_UID", "1");
 	acpigen_write_name_string("_STR", DEFAULT_BATTERY_STR);
 	acpigen_write_name_integer("PTYP", DPTF_GENERIC_PARTICIPANT_TYPE_BATTERY);
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);

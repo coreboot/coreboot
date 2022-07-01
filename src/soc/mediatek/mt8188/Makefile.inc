@@ -1,7 +1,7 @@
 ifeq ($(CONFIG_SOC_MEDIATEK_MT8188),y)
 
 all-$(CONFIG_SPI_FLASH) += spi.c
-all-y += ../common/timer.c
+all-y += ../common/timer.c ../common/timer_prepare.c
 all-y += ../common/uart.c
 
 bootblock-y += bootblock.c

@@ -287,35 +287,12 @@ struct mem_map {
 static bool walk_memory_table(const struct range_entry *r, void *arg)
 {
 	struct mem_map *arg_map = arg;
+	struct memranges *ranges;
+	enum bootmem_type tag;
 
-	/*
-	 * Kernel likes its available memory areas at least 1MB
-	 * aligned, let's trim the regions such that unaligned padding
-	 * is added to reserved memory.
-	 */
-	if (range_entry_tag(r) == BM_MEM_RAM) {
-		uint64_t new_start = ALIGN_UP(range_entry_base(r), 1 * MiB);
-		uint64_t new_end = ALIGN_DOWN(range_entry_end(r), 1 * MiB);
-
-		if (new_start != range_entry_base(r))
-			memranges_insert(&arg_map->reserved,
-					 range_entry_base(r),
-					 new_start - range_entry_base(r),
-					 BM_MEM_RESERVED);
-
-		if (new_start != new_end)
-			memranges_insert(&arg_map->mem, new_start,
-					 new_end - new_start, BM_MEM_RAM);
-
-		if (new_end != range_entry_end(r))
-			memranges_insert(&arg_map->reserved, new_end,
-					 range_entry_end(r) - new_end,
-					 BM_MEM_RESERVED);
-	} else
-		memranges_insert(&arg_map->reserved, range_entry_base(r),
-				 range_entry_size(r),
-				 BM_MEM_RESERVED);
-
+	ranges = range_entry_tag(r) == BM_MEM_RAM ? &arg_map->mem : &arg_map->reserved;
+	tag = range_entry_tag(r) == BM_MEM_RAM ? BM_MEM_RAM : BM_MEM_RESERVED;
+	memranges_insert(ranges, range_entry_base(r), range_entry_size(r), tag);
 	return true;
 }
 

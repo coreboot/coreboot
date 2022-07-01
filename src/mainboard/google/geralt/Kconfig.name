@@ -1,0 +1,5 @@
+comment "Geralt"
+
+config BOARD_GOOGLE_GERALT
+	bool "->  Geralt"
+	select BOARD_GOOGLE_GERALT_COMMON

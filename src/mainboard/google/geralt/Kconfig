@@ -1,0 +1,28 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+# Umbrella option to be selected by variant boards.
+config BOARD_GOOGLE_GERALT_COMMON
+	def_bool n
+
+if BOARD_GOOGLE_GERALT_COMMON
+
+config VBOOT
+	select VBOOT_VBNV_FLASH
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_MEDIATEK_MT8188
+	select BOARD_ROMSIZE_KB_8192
+	select MAINBOARD_HAS_CHROMEOS
+	select COMMON_CBFS_SPI_WRAPPER
+	select SPI_FLASH
+	select SPI_FLASH_INCLUDE_ALL_DRIVERS
+
+config MAINBOARD_DIR
+	string
+	default "google/geralt"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Geralt" if BOARD_GOOGLE_GERALT
+endif

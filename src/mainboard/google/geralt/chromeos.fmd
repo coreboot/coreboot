@@ -1,0 +1,46 @@
+# Firmware Layout Description for Chrome OS.
+#
+# The size and address of every section must be aligned to at least 4K, except:
+# RO_FRID, RW_FWID*, GBB, or any unused / padding / CBFS type sections.
+#
+# 'FMAP' may be found by binary search so its starting address should be better
+# aligned to larger values.
+#
+# For sections to be preserved on update, add (PRESERVE) to individual sections
+# instead of a group section; otherwise the preserved data may be wrong if you
+# resize or reorder sections inside a group.
+
+FLASH@0x0 8M {
+	WP_RO@0x0 4M {
+		RO_SECTION {
+			BOOTBLOCK 128K
+			FMAP 4K
+			COREBOOT(CBFS)
+			GBB 0x2f00
+			RO_FRID 0x100
+		}
+		RO_GSCVD 8K
+		RO_VPD(PRESERVE) 32K  # At least 16K.
+	}
+	RW_SECTION_A 1500K {
+		VBLOCK_A 8K
+		FW_MAIN_A(CBFS)
+		RW_FWID_A 0x100
+	}
+	RW_MISC 36K {
+		RW_VPD(PRESERVE) 16K  # At least 8K.
+		RW_NVRAM(PRESERVE) 8K
+		RW_MRC_CACHE(PRESERVE) 8K
+		RW_ELOG(PRESERVE) 4K  # ELOG driver hard-coded size in 4K.
+	}
+	RW_SECTION_B 1500K {
+		VBLOCK_B 8K
+		FW_MAIN_B(CBFS)
+		RW_FWID_B 0x100
+	}
+	RW_SHARED 36K {  # Will be force updated on recovery.
+		SHARED_DATA 4K  # 4K or less for netboot params.
+		RW_UNUSED
+	}
+	RW_LEGACY(CBFS) 1M  # Minimal 1M.
+}

@@ -1,0 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/mediatek/mt8188
+	device cpu_cluster 0 on end
+end

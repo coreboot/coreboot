@@ -1,0 +1,6 @@
+Vendor name: Google
+Board name: Geralt MediaTek MT8188 reference board
+Category: eval
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

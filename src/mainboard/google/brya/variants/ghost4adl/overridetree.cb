@@ -59,16 +59,24 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 		[PchSerialIoIndexI2C7] = PchSerialIoDisabled,
 	}"
+
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C0
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"	# USB2_C1
+	register "usb2_ports[2]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# DCI port
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
+
+	register "usb3_ports[0]" = "USB3_PORT_EMPTY"
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# DCI port
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"
+
+	register "tcss_ports[0]" = "TCSS_PORT_EMPTY"
+	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC1)"	# TypeC C1
+	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC0)"	# TypeC C0
+
 	device domain 0 on
-		device ref pcie4_0 on
-			# Enable CPU PCIE RP 1 using CLK 1
-			register "cpu_pcie_rp[CPU_RP(1)]" = "{
-				.clk_req = 1,
-				.clk_src = 1,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-			}"
-		end
-		device ref tbt_pcie_rp3 on end
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
@@ -78,18 +86,10 @@ chip soc/intel/alderlake
 		device ref pcie_rp6 off end
 		device ref pcie_rp7 off end
 		device ref pcie_rp8 off end
-		device ref pcie_rp9 on
-			# Enable NVMe on PCIE 9-12 using clk 1
-			register "pch_pcie_rp[PCH_RP(9)]" = "{
-				.clk_src = 1,
-				.clk_req = 0,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-			}"
-		end
 		device ref tcss_dma0 on
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E4)"
-				use tcss_usb3_port1 as dfp[0].typec_port
+				use tcss_usb3_port2 as dfp[0].typec_port
 				device generic 0 on end
 			end
 		end

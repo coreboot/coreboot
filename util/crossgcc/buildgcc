@@ -685,8 +685,7 @@ build_BINUTILS() {
 	../binutils-${BINUTILS_VERSION}/configure --prefix="$TARGETDIR" \
 		--target=${TARGETARCH} --enable-targets=${TARGETARCH}${ADDITIONALTARGET} \
 		--disable-werror --disable-nls --enable-lto --enable-gold \
-		--enable-interwork --enable-multilib \
-		--enable-plugins \
+		--enable-multilib --enable-plugins \
 		CFLAGS="$HOSTCFLAGS" \
 		CXXFLAGS="$HOSTCFLAGS" \
 		|| touch .failed

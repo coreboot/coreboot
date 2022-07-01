@@ -13,9 +13,9 @@ static const struct pad_config board_id0_overrides[] = {
 	/* D7  : WLAN_CLKREQ_ODL */
 	PAD_NC(GPP_D7, NONE),
 	/* F12 : WWAN_RST_L */
-	PAD_CFG_GPO(GPP_F12, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
-	PAD_NC(GPP_H3, NONE),
+	PAD_NC_LOCK(GPP_H3, NONE, LOCK_CONFIG),
 	/* R4 : I2S2_SCLK ==> I2S_SPK_BCLK_R */
 	PAD_CFG_NF(GPP_R4, NONE, DEEP, NF2),
 	/* R5 : I2S2_SFRM ==> I2S_SPK_LRCK_R */
@@ -45,29 +45,29 @@ static const struct pad_config override_gpio_table[] = {
 	/* D7  : WLAN_CLKREQ_ODL */
 	PAD_NC(GPP_D7, NONE),
 	/* F12 : WWAN_RST_L */
-	PAD_CFG_GPO(GPP_F12, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
-	PAD_NC(GPP_H3, NONE),
+	PAD_NC_LOCK(GPP_H3, NONE, LOCK_CONFIG),
 };
 
 /* Pad configuration in ramstage for nirwen */
 static const struct pad_config override_gpio_table_nirwen[] = {
 	/* B4  : SSD_PERST_L */
-	PAD_CFG_GPO(GPP_B4, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_B4, 1, LOCK_CONFIG),
 	/* D6  : SRCCLKREQ1# ==> SSD_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D6, NONE, DEEP, NF1),
 	/* D7  : WLAN_CLKREQ_ODL */
 	PAD_NC(GPP_D7, NONE),
 	/* D11 : EN_PP3300_SSD */
-	PAD_CFG_GPO(GPP_D11, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_D11, 1, LOCK_CONFIG),
 	/* E13  : SRCCLKREQ1# ==> WWAN_EN */
-	PAD_CFG_GPO(GPP_E13, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_E13, 1, LOCK_CONFIG),
 	/* E17 : SSD_PLN_L */
-	PAD_CFG_GPO(GPP_E17, 1, PLTRST),
+	PAD_CFG_GPO_LOCK(GPP_E17, 1, LOCK_CONFIG),
 	/* F12 : WWAN_RST_L */
-	PAD_CFG_GPO(GPP_F12, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
-	PAD_NC(GPP_H3, NONE),
+	PAD_NC_LOCK(GPP_H3, NONE, LOCK_CONFIG),
 };
 
 /* Early pad configuration in bootblock for nivviks */

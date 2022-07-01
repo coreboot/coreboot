@@ -12,9 +12,9 @@ static const struct pad_config override_gpio_table[] = {
 	/* D7  : WLAN_CLKREQ_ODL */
 	PAD_NC(GPP_D7, NONE),
 	/* F12 : WWAN_RST_L */
-	PAD_CFG_GPO(GPP_F12, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
-	PAD_NC(GPP_H3, NONE),
+	PAD_NC_LOCK(GPP_H3, NONE, LOCK_CONFIG),
 };
 
 /* Early pad configuration in bootblock */

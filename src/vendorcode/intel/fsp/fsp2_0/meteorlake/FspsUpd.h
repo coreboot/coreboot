@@ -87,19 +87,7 @@ typedef struct {
 
 /** Offset 0x0040 - Reserved
 **/
-  UINT32                      Reserved0;
-
-/** Offset 0x0044 - Reserved
-**/
-  UINT32                      Reserved1;
-
-/** Offset 0x0048 - Reserved
-**/
-  UINT32                      Reserved2;
-
-/** Offset 0x004C - Reserved
-**/
-  UINT32                      Reserved3;
+  UINT8                      Reserved0[16];
 
 /** Offset 0x0050 - Graphics Configuration Ptr
   Points to VBT
@@ -114,11 +102,7 @@ typedef struct {
 
 /** Offset 0x0055 - Reserved
 **/
-  UINT8                       Reserved4;
-
-/** Offset 0x0056 - Reserved
-**/
-  UINT8                       Reserved5[2];
+  UINT8                       Reserved1[3];
 
 /** Offset 0x0058 - MicrocodeRegionBase
   Memory Base of Microcode Updates
@@ -132,7 +116,7 @@ typedef struct {
 
 /** Offset 0x0060 - Reserved
 **/
-  UINT8                       Reserved6;
+  UINT8                       Reserved2;
 
 /** Offset 0x0061 - Enable SATA SALP Support
   Enable/disable SATA Aggressive Link Power Management.
@@ -154,11 +138,7 @@ typedef struct {
 
 /** Offset 0x0072 - Reserved
 **/
-  UINT8                       Reserved7[2];
-
-/** Offset 0x0074 - Reserved
-**/
-  UINT32                      Reserved8[8];
+  UINT8                       Reserved3[34];
 
 /** Offset 0x0094 - Enable USB2 ports
   Enable/disable per USB2 ports. One byte for each port, byte0 for port0, byte1 for
@@ -180,51 +160,7 @@ typedef struct {
 
 /** Offset 0x00AF - Reserved
 **/
-  UINT8                       Reserved9;
-
-/** Offset 0x00B0 - Reserved
-**/
-  UINT32                      Reserved10;
-
-/** Offset 0x00B4 - Reserved
-**/
-  UINT8                       Reserved11;
-
-/** Offset 0x00B5 - Reserved
-**/
-  UINT8                       Reserved12[8];
-
-/** Offset 0x00BD - Reserved
-**/
-  UINT8                       Reserved13;
-
-/** Offset 0x00BE - Reserved
-**/
-  UINT8                       Reserved14;
-
-/** Offset 0x00BF - Reserved
-**/
-  UINT8                       Reserved15;
-
-/** Offset 0x00C0 - Reserved
-**/
-  UINT8                       Reserved16;
-
-/** Offset 0x00C1 - Reserved
-**/
-  UINT8                       Reserved17;
-
-/** Offset 0x00C2 - Reserved
-**/
-  UINT8                       Reserved18[2];
-
-/** Offset 0x00C4 - Reserved
-**/
-  UINT32                      Reserved19;
-
-/** Offset 0x00C8 - Reserved
-**/
-  UINT8                       Reserved20;
+  UINT8                       Reserved4[26];
 
 /** Offset 0x00C9 - Enable SATA
   Enable/disable SATA controller.
@@ -246,15 +182,7 @@ typedef struct {
 
 /** Offset 0x00D2 - Reserved
 **/
-  UINT8                       Reserved21[14];
-
-/** Offset 0x00E0 - Reserved
-**/
-  UINT8                       Reserved22[14];
-
-/** Offset 0x00EE - Reserved
-**/
-  UINT8                       Reserved23[7];
+  UINT8                       Reserved5[35];
 
 /** Offset 0x00F5 - SPIn Default Chip Select Mode HW/SW
   Sets Default CS Mode Hardware or Software. N represents controller index: SPI0,
@@ -270,23 +198,7 @@ typedef struct {
 
 /** Offset 0x0103 - Reserved
 **/
-  UINT8                       Reserved24[1];
-
-/** Offset 0x0104 - Reserved
-**/
-  UINT32                      Reserved25[14];
-
-/** Offset 0x013C - Reserved
-**/
-  UINT32                      Reserved26[7];
-
-/** Offset 0x0158 - Reserved
-**/
-  UINT32                      Reserved27[7];
-
-/** Offset 0x0174 - Reserved
-**/
-  UINT32                      Reserved28[7];
+  UINT8                       Reserved6[141];
 
 /** Offset 0x0190 - UARTn Device Mode
   Selects Uart operation mode. N represents controller index: Uart0, Uart1, ... Available
@@ -297,39 +209,16 @@ typedef struct {
 
 /** Offset 0x0197 - Reserved
 **/
-  UINT8                       Reserved29[1];
+  UINT8                       Reserved7[64];
 
-/** Offset 0x0198 - Reserved
+/** Offset 0x01D7 - Enables UART hardware flow control, CTS and RTS lines
+  Enables UART hardware flow control, CTS and RTS lines.
 **/
-  UINT32                      Reserved30[7];
-
-/** Offset 0x01B4 - Reserved
-**/
-  UINT8                       Reserved31[7];
-
-/** Offset 0x01BB - Reserved
-**/
-  UINT8                       Reserved32[7];
-
-/** Offset 0x01C2 - Reserved
-**/
-  UINT8                       Reserved33[7];
-
-/** Offset 0x01C9 - Reserved
-**/
-  UINT8                       Reserved34[7];
-
-/** Offset 0x01D0 - Reserved
-**/
-  UINT8                       Reserved35[7];
-
-/** Offset 0x01D7 - Reserved
-**/
-  UINT8                       Reserved36[7];
+  UINT8                       SerialIoUartAutoFlow[7];
 
 /** Offset 0x01DE - Reserved
 **/
-  UINT8                       Reserved37[2];
+  UINT8                       Reserved8[2];
 
 /** Offset 0x01E0 - SerialIoUartRtsPinMuxPolicy
   Select SerialIo Uart Rts pin muxing. Refer to GPIO_*_MUXING_SERIALIO_UARTx_RTS*
@@ -357,7 +246,7 @@ typedef struct {
 
 /** Offset 0x0250 - Reserved
 **/
-  UINT8                       Reserved38[7];
+  UINT8                       Reserved9[7];
 
 /** Offset 0x0257 - I2Cn Device Mode
   Selects I2c operation mode. N represents controller index: I2c0, I2c1, ... Available
@@ -367,7 +256,7 @@ typedef struct {
 
 /** Offset 0x025F - Reserved
 **/
-  UINT8                       Reserved39[1];
+  UINT8                       Reserved10;
 
 /** Offset 0x0260 - Serial IO I2C SDA Pin Muxing
   Select SerialIo I2c Sda pin muxing. Refer to GPIO_*_MUXING_SERIALIO_I2Cx_SDA* for
@@ -383,159 +272,7 @@ typedef struct {
 
 /** Offset 0x02A0 - Reserved
 **/
-  UINT8                       Reserved40[8];
-
-/** Offset 0x02A8 - Reserved
-**/
-  UINT8                       Reserved41[2];
-
-/** Offset 0x02AA - Reserved
-**/
-  UINT8                       Reserved42[2];
-
-/** Offset 0x02AC - Reserved
-**/
-  UINT32                      Reserved43[2];
-
-/** Offset 0x02B4 - Reserved
-**/
-  UINT8                       Reserved44[2];
-
-/** Offset 0x02B6 - Reserved
-**/
-  UINT8                       Reserved45[2];
-
-/** Offset 0x02B8 - Reserved
-**/
-  UINT32                      Reserved46[2];
-
-/** Offset 0x02C0 - Reserved
-**/
-  UINT8                       Reserved47[2];
-
-/** Offset 0x02C2 - Reserved
-**/
-  UINT8                       Reserved48[2];
-
-/** Offset 0x02C4 - Reserved
-**/
-  UINT32                      Reserved49[2];
-
-/** Offset 0x02CC - Reserved
-**/
-  UINT8                       Reserved50[2];
-
-/** Offset 0x02CE - Reserved
-**/
-  UINT8                       Reserved51[2];
-
-/** Offset 0x02D0 - Reserved
-**/
-  UINT32                      Reserved52[12];
-
-/** Offset 0x0300 - Reserved
-**/
-  UINT32                      Reserved53[3];
-
-/** Offset 0x030C - Reserved
-**/
-  UINT32                      Reserved54[3];
-
-/** Offset 0x0318 - Reserved
-**/
-  UINT32                      Reserved55[3];
-
-/** Offset 0x0324 - Reserved
-**/
-  UINT32                      Reserved56[3];
-
-/** Offset 0x0330 - Reserved
-**/
-  UINT32                      Reserved57[3];
-
-/** Offset 0x033C - Reserved
-**/
-  UINT32                      Reserved58[3];
-
-/** Offset 0x0348 - Reserved
-**/
-  UINT32                      Reserved59;
-
-/** Offset 0x034C - Reserved
-**/
-  UINT32                      Reserved60;
-
-/** Offset 0x0350 - Reserved
-**/
-  UINT32                      Reserved61[2];
-
-/** Offset 0x0358 - Reserved
-**/
-  UINT32                      Reserved62[2];
-
-/** Offset 0x0360 - Reserved
-**/
-  UINT32                      Reserved63[2];
-
-/** Offset 0x0368 - Reserved
-**/
-  UINT32                      Reserved64[4];
-
-/** Offset 0x0378 - Reserved
-**/
-  UINT8                       Reserved65[12];
-
-/** Offset 0x0384 - Reserved
-**/
-  UINT8                       Reserved66[3];
-
-/** Offset 0x0387 - Reserved
-**/
-  UINT8                       Reserved67[3];
-
-/** Offset 0x038A - Reserved
-**/
-  UINT8                       Reserved68[3];
-
-/** Offset 0x038D - Reserved
-**/
-  UINT8                       Reserved69[3];
-
-/** Offset 0x0390 - Reserved
-**/
-  UINT8                       Reserved70[3];
-
-/** Offset 0x0393 - Reserved
-**/
-  UINT8                       Reserved71;
-
-/** Offset 0x0394 - Reserved
-**/
-  UINT8                       Reserved72[3];
-
-/** Offset 0x0397 - Reserved
-**/
-  UINT8                       Reserved73;
-
-/** Offset 0x0398 - Reserved
-**/
-  UINT8                       Reserved74[2];
-
-/** Offset 0x039A - Reserved
-**/
-  UINT8                       Reserved75[2];
-
-/** Offset 0x039C - Reserved
-**/
-  UINT8                       Reserved76[2];
-
-/** Offset 0x039E - Reserved
-**/
-  UINT8                       Reserved77[4];
-
-/** Offset 0x03A2 - Reserved
-**/
-  UINT8                       Reserved78[4];
+  UINT8                       Reserved11[262];
 
 /** Offset 0x03A6 - USB Per Port HS Preemphasis Bias
   USB Per Port HS Preemphasis Bias. 000b-0mV, 001b-11.25mV, 010b-16.9mV, 011b-28.15mV,
@@ -587,35 +324,7 @@ typedef struct {
 
 /** Offset 0x040E - Reserved
 **/
-  UINT8                       Reserved79[10];
-
-/** Offset 0x0418 - Reserved
-**/
-  UINT8                       Reserved80[10];
-
-/** Offset 0x0422 - Reserved
-**/
-  UINT8                       Reserved81[10];
-
-/** Offset 0x042C - Reserved
-**/
-  UINT8                       Reserved82[10];
-
-/** Offset 0x0436 - Reserved
-**/
-  UINT8                       Reserved83[10];
-
-/** Offset 0x0440 - Reserved
-**/
-  UINT8                       Reserved84[10];
-
-/** Offset 0x044A - Reserved
-**/
-  UINT8                       Reserved85[10];
-
-/** Offset 0x0454 - Reserved
-**/
-  UINT8                       Reserved86[10];
+  UINT8                       Reserved12[80];
 
 /** Offset 0x045E - Enable LAN
   Enable/disable LAN controller.
@@ -625,31 +334,7 @@ typedef struct {
 
 /** Offset 0x045F - Reserved
 **/
-  UINT8                       Reserved87;
-
-/** Offset 0x0460 - Reserved
-**/
-  UINT8                       Reserved88;
-
-/** Offset 0x0461 - Reserved
-**/
-  UINT8                       Reserved89[3];
-
-/** Offset 0x0464 - Reserved
-**/
-  UINT32                      Reserved90;
-
-/** Offset 0x0468 - Reserved
-**/
-  UINT32                      Reserved91;
-
-/** Offset 0x046C - Reserved
-**/
-  UINT32                      Reserved92;
-
-/** Offset 0x0470 - Reserved
-**/
-  UINT32                      Reserved93;
+  UINT8                       Reserved13[21];
 
 /** Offset 0x0474 - PCIe PTM enable/disable
   Enable/disable Precision Time Measurement for PCIE Root Ports.
@@ -658,79 +343,7 @@ typedef struct {
 
 /** Offset 0x0490 - Reserved
 **/
-  UINT8                       Reserved94[28];
-
-/** Offset 0x04AC - Reserved
-**/
-  UINT8                       Reserved95[28];
-
-/** Offset 0x04C8 - Reserved
-**/
-  UINT8                       Reserved96;
-
-/** Offset 0x04C9 - Reserved
-**/
-  UINT8                       Reserved97[3];
-
-/** Offset 0x04CC - Reserved
-**/
-  UINT32                      Reserved98;
-
-/** Offset 0x04D0 - Reserved
-**/
-  UINT8                       Reserved99;
-
-/** Offset 0x04D1 - Reserved
-**/
-  UINT8                       Reserved100;
-
-/** Offset 0x04D2 - Reserved
-**/
-  UINT8                       Reserved101;
-
-/** Offset 0x04D3 - Reserved
-**/
-  UINT8                       Reserved102;
-
-/** Offset 0x04D4 - Reserved
-**/
-  UINT16                      Reserved103;
-
-/** Offset 0x04D6 - Reserved
-**/
-  UINT8                       Reserved104;
-
-/** Offset 0x04D7 - Reserved
-**/
-  UINT8                       Reserved105;
-
-/** Offset 0x04D8 - Reserved
-**/
-  UINT8                       Reserved106;
-
-/** Offset 0x04D9 - Reserved
-**/
-  UINT8                       Reserved107;
-
-/** Offset 0x04DA - Reserved
-**/
-  UINT16                      Reserved108;
-
-/** Offset 0x04DC - Reserved
-**/
-  UINT8                       Reserved109;
-
-/** Offset 0x04DD - Reserved
-**/
-  UINT8                       Reserved110;
-
-/** Offset 0x04DE - Reserved
-**/
-  UINT16                      Reserved111;
-
-/** Offset 0x04E0 - Reserved
-**/
-  UINT8                       Reserved112;
+  UINT8                       Reserved14[81];
 
 /** Offset 0x04E1 - Transition time in microseconds from Low Current Mode Voltage to High Current Mode Voltage
   This field has 1us resolution. When value is 0 PCH will not transition VCCIN_AUX
@@ -746,7 +359,7 @@ typedef struct {
 
 /** Offset 0x04E3 - Reserved
 **/
-  UINT8                       Reserved113;
+  UINT8                       Reserved15;
 
 /** Offset 0x04E4 - Transition time in microseconds from Off (0V) to High Current Mode Voltage
   This field has 1us resolution. When value is 0 Transition to 0V is disabled.
@@ -755,51 +368,7 @@ typedef struct {
 
 /** Offset 0x04E6 - Reserved
 **/
-  UINT8                       Reserved114;
-
-/** Offset 0x04E7 - Reserved
-**/
-  UINT8                       Reserved115;
-
-/** Offset 0x04E8 - Reserved
-**/
-  UINT32                      Reserved116;
-
-/** Offset 0x04EC - Reserved
-**/
-  UINT32                      Reserved117;
-
-/** Offset 0x04F0 - Reserved
-**/
-  UINT8                       Reserved118;
-
-/** Offset 0x04F1 - Reserved
-**/
-  UINT8                       Reserved119;
-
-/** Offset 0x04F2 - Reserved
-**/
-  UINT16                      Reserved120;
-
-/** Offset 0x04F4 - Reserved
-**/
-  UINT16                      Reserved121;
-
-/** Offset 0x04F6 - Reserved
-**/
-  UINT16                      Reserved122;
-
-/** Offset 0x04F8 - Reserved
-**/
-  UINT8                       Reserved123;
-
-/** Offset 0x04F9 - Reserved
-**/
-  UINT8                       Reserved124;
-
-/** Offset 0x04FA - Reserved
-**/
-  UINT8                       Reserved125[12];
+  UINT8                       Reserved16[32];
 
 /** Offset 0x0506 - CNVi Configuration
   This option allows for automatic detection of Connectivity Solution. [Auto Detection]
@@ -810,7 +379,7 @@ typedef struct {
 
 /** Offset 0x0507 - Reserved
 **/
-  UINT8                       Reserved126;
+  UINT8                       Reserved17;
 
 /** Offset 0x0508 - CNVi BT Core
   Enable/Disable CNVi BT Core, Default is ENABLE. 0: DISABLE, 1: ENABLE
@@ -826,7 +395,7 @@ typedef struct {
 
 /** Offset 0x050A - Reserved
 **/
-  UINT8                       Reserved127[2];
+  UINT8                       Reserved18[2];
 
 /** Offset 0x050C - CNVi RF_RESET pin muxing
   Select CNVi RF_RESET# pin depending on board routing. LP/P/M: GPP_A8 = 0x2942E408(default)
@@ -843,111 +412,7 @@ typedef struct {
 
 /** Offset 0x0514 - Reserved
 **/
-  UINT8                       Reserved128;
-
-/** Offset 0x0515 - Reserved
-**/
-  UINT8                       Reserved129;
-
-/** Offset 0x0516 - Reserved
-**/
-  UINT8                       Reserved130;
-
-/** Offset 0x0517 - Reserved
-**/
-  UINT8                       Reserved131;
-
-/** Offset 0x0518 - Reserved
-**/
-  UINT8                       Reserved132;
-
-/** Offset 0x0519 - Reserved
-**/
-  UINT8                       Reserved133;
-
-/** Offset 0x051A - Reserved
-**/
-  UINT8                       Reserved134[8];
-
-/** Offset 0x0522 - Reserved
-**/
-  UINT8                       Reserved135;
-
-/** Offset 0x0523 - Reserved
-**/
-  UINT8                       Reserved136;
-
-/** Offset 0x0524 - Reserved
-**/
-  UINT8                       Reserved137;
-
-/** Offset 0x0525 - Reserved
-**/
-  UINT8                       Reserved138;
-
-/** Offset 0x0526 - Reserved
-**/
-  UINT8                       Reserved139;
-
-/** Offset 0x0527 - Reserved
-**/
-  UINT8                       Reserved140;
-
-/** Offset 0x0528 - Reserved
-**/
-  UINT8                       Reserved141;
-
-/** Offset 0x0529 - Reserved
-**/
-  UINT8                       Reserved142;
-
-/** Offset 0x052A - Reserved
-**/
-  UINT16                      Reserved143;
-
-/** Offset 0x052C - Reserved
-**/
-  UINT16                      Reserved144;
-
-/** Offset 0x052E - Reserved
-**/
-  UINT8                       Reserved145;
-
-/** Offset 0x052F - Reserved
-**/
-  UINT8                       Reserved146[28];
-
-/** Offset 0x054B - Reserved
-**/
-  UINT8                       Reserved147[28];
-
-/** Offset 0x0567 - Reserved
-**/
-  UINT8                       Reserved148[28];
-
-/** Offset 0x0583 - Reserved
-**/
-  UINT8                       Reserved149[1];
-
-/** Offset 0x0584 - Reserved
-**/
-  UINT16                      Reserved150[24];
-
-/** Offset 0x05B4 - Reserved
-**/
-  UINT8                       Reserved151;
-
-/** Offset 0x05B5 - Reserved
-**/
-  UINT8                       Reserved152;
-
-/** Offset 0x05B6 - Reserved
-**/
-  UINT8                       Reserved153;
-
-/** Offset 0x05B7 - Reserved
-**/
-  UINT8                       Reserved154;
+  UINT8                       Reserved19[164];
 
 /** Offset 0x05B8 - Enable/Disable PeiGraphicsPeimInit
   <b>Enable(Default):</b> FSP will initialize the framebuffer and provide it via EFI_PEI_GRAPHICS_INFO_HOB.
@@ -970,7 +435,7 @@ typedef struct {
 
 /** Offset 0x05BB - Reserved
 **/
-  UINT8                       Reserved155[1];
+  UINT8                       Reserved20;
 
 /** Offset 0x05BC - TypeC port GPIO setting
   GPIO Ping number for Type C Aux Oritation setting, use the GpioPad that is defined
@@ -992,27 +457,7 @@ typedef struct {
 
 /** Offset 0x05E5 - Reserved
 **/
-  UINT8                       Reserved156;
-
-/** Offset 0x05E6 - Reserved
-**/
-  UINT8                       Reserved157;
-
-/** Offset 0x05E7 - Reserved
-**/
-  UINT8                       Reserved158;
-
-/** Offset 0x05E8 - Reserved
-**/
-  UINT8                       Reserved159;
-
-/** Offset 0x05E9 - Reserved
-**/
-  UINT8                       Reserved160[3];
-
-/** Offset 0x05EC - Reserved
-**/
-  UINT32                      Reserved161;
+  UINT8                       Reserved21[11];
 
 /** Offset 0x05F0 - Platform LID Status for LFP Displays.
   LFP Display Lid Status (LID_STATUS enum): 0 (Default): LidClosed, 1: LidOpen.
@@ -1022,7 +467,7 @@ typedef struct {
 
 /** Offset 0x05F1 - Reserved
 **/
-  UINT8                       Reserved162[8];
+  UINT8                       Reserved22[8];
 
 /** Offset 0x05F9 - Enable VMD controller
   Enable/disable to VMD controller.0: Disable(Default); 1: Enable
@@ -1032,51 +477,7 @@ typedef struct {
 
 /** Offset 0x05FA - Reserved
 **/
-  UINT8                       Reserved163;
-
-/** Offset 0x05FB - Reserved
-**/
-  UINT8                       Reserved164[31];
-
-/** Offset 0x061A - Reserved
-**/
-  UINT8                       Reserved165[31];
-
-/** Offset 0x0639 - Reserved
-**/
-  UINT8                       Reserved166[31];
-
-/** Offset 0x0658 - Reserved
-**/
-  UINT8                       Reserved167[31];
-
-/** Offset 0x0677 - Reserved
-**/
-  UINT8                       Reserved168;
-
-/** Offset 0x0678 - Reserved
-**/
-  UINT32                      Reserved169;
-
-/** Offset 0x067C - Reserved
-**/
-  UINT32                      Reserved170;
-
-/** Offset 0x0680 - Reserved
-**/
-  UINT32                      Reserved171;
-
-/** Offset 0x0684 - Reserved
-**/
-  UINT32                      Reserved172;
-
-/** Offset 0x0688 - Reserved
-**/
-  UINT8                       Reserved173;
-
-/** Offset 0x0689 - Reserved
-**/
-  UINT8                       Reserved174;
+  UINT8                       Reserved23[144];
 
 /** Offset 0x068A - TCSS Aux Orientation Override Enable
   Bits 0, 2, ... 10 control override enables, bits 1, 3, ... 11 control overrides
@@ -1090,7 +491,7 @@ typedef struct {
 
 /** Offset 0x068E - Reserved
 **/
-  UINT8                       Reserved175;
+  UINT8                       Reserved24;
 
 /** Offset 0x068F - ITBT Root Port Enable
   ITBT Root Port Enable, 0:Disable, 1:Enable
@@ -1105,7 +506,7 @@ typedef struct {
 
 /** Offset 0x0694 - Reserved
 **/
-  UINT16                      Reserved176;
+  UINT8                      Reserved25[2];
 
 /** Offset 0x0696 - ITbtConnectTopology Timeout value
   ITbtConnectTopologyTimeout value. Specified increment values in miliseconds. Range
@@ -1115,19 +516,7 @@ typedef struct {
 
 /** Offset 0x0698 - Reserved
 **/
-  UINT8                       Reserved177;
-
-/** Offset 0x0699 - Reserved
-**/
-  UINT8                       Reserved178[1];
-
-/** Offset 0x069A - Reserved
-**/
-  UINT16                      Reserved179[2];
-
-/** Offset 0x069E - Reserved
-**/
-  UINT8                       Reserved180;
+  UINT8                       Reserved26[7];
 
 /** Offset 0x069F - Enable/Disable PTM
   This policy will enable/disable Precision Time Measurement for TCSS PCIe Root Ports
@@ -1137,55 +526,7 @@ typedef struct {
 
 /** Offset 0x06A3 - Reserved
 **/
-  UINT8                       Reserved181[4];
-
-/** Offset 0x06A7 - Reserved
-**/
-  UINT8                       Reserved182[4];
-
-/** Offset 0x06AB - Reserved
-**/
-  UINT8                       Reserved183[4];
-
-/** Offset 0x06AF - Reserved
-**/
-  UINT8                       Reserved184[1];
-
-/** Offset 0x06B0 - Reserved
-**/
-  UINT16                      Reserved185[4];
-
-/** Offset 0x06B8 - Reserved
-**/
-  UINT8                       Reserved186[4];
-
-/** Offset 0x06BC - Reserved
-**/
-  UINT8                       Reserved187[4];
-
-/** Offset 0x06C0 - Reserved
-**/
-  UINT16                      Reserved188[4];
-
-/** Offset 0x06C8 - Reserved
-**/
-  UINT8                       Reserved189[4];
-
-/** Offset 0x06CC - Reserved
-**/
-  UINT8                       Reserved190[4];
-
-/** Offset 0x06D0 - Reserved
-**/
-  UINT8                       Reserved191;
-
-/** Offset 0x06D1 - Reserved
-**/
-  UINT8                       Reserved192[3];
-
-/** Offset 0x06D4 - Reserved
-**/
-  UINT32                      Reserved193;
+  UINT8                       Reserved27[53];
 
 /** Offset 0x06D8 - CpuMpPpi
   <b>Optional</b> pointer to the boot loader's implementation of EFI_PEI_MP_SERVICES_PPI.
@@ -1196,75 +537,7 @@ typedef struct {
 
 /** Offset 0x06DC - Reserved
 **/
-  UINT8                       Reserved194;
-
-/** Offset 0x06DD - Reserved
-**/
-  UINT8                       Reserved195[2];
-
-/** Offset 0x06DF - Reserved
-**/
-  UINT8                       Reserved196[1];
-
-/** Offset 0x06E0 - Reserved
-**/
-  UINT16                      Reserved197[5];
-
-/** Offset 0x06EA - Reserved
-**/
-  UINT8                       Reserved198;
-
-/** Offset 0x06EB - Reserved
-**/
-  UINT8                       Reserved199;
-
-/** Offset 0x06EC - Reserved
-**/
-  UINT16                      Reserved200;
-
-/** Offset 0x06EE - Reserved
-**/
-  UINT8                       Reserved201;
-
-/** Offset 0x06EF - Reserved
-**/
-  UINT8                       Reserved202;
-
-/** Offset 0x06F0 - Reserved
-**/
-  UINT8                       Reserved203;
-
-/** Offset 0x06F1 - Reserved
-**/
-  UINT8                       Reserved204;
-
-/** Offset 0x06F2 - Reserved
-**/
-  UINT16                      Reserved205;
-
-/** Offset 0x06F4 - Reserved
-**/
-  UINT8                       Reserved206;
-
-/** Offset 0x06F5 - Reserved
-**/
-  UINT8                       Reserved207;
-
-/** Offset 0x06F6 - Reserved
-**/
-  UINT8                       Reserved208[5];
-
-/** Offset 0x06FB - Reserved
-**/
-  UINT8                       Reserved209[5];
-
-/** Offset 0x0700 - Reserved
-**/
-  UINT8                       Reserved210[5];
-
-/** Offset 0x0705 - Reserved
-**/
-  UINT8                       Reserved211[28];
+  UINT8                       Reserved28[69];
 
 /** Offset 0x0721 - Enable Power Optimizer
   Enable DMI Power Optimizer on PCH side.
@@ -1274,27 +547,7 @@ typedef struct {
 
 /** Offset 0x0722 - Reserved
 **/
-  UINT8                       Reserved212[5];
-
-/** Offset 0x0727 - Reserved
-**/
-  UINT8                       Reserved213[5];
-
-/** Offset 0x072C - Reserved
-**/
-  UINT16                      Reserved214[5];
-
-/** Offset 0x0736 - Reserved
-**/
-  UINT16                      Reserved215[5];
-
-/** Offset 0x0740 - Reserved
-**/
-  UINT8                       Reserved216;
-
-/** Offset 0x0741 - Reserved
-**/
-  UINT8                       Reserved217;
+  UINT8                       Reserved29[32];
 
 /** Offset 0x0742 - Enable PCH ISH SPI Cs0 pins assigned
   Set if ISH SPI Cs0 pins are to be enabled by BIOS. 0: Disable; 1: Enable.
@@ -1303,11 +556,7 @@ typedef struct {
 
 /** Offset 0x0743 - Reserved
 **/
-  UINT8                       Reserved218;
-
-/** Offset 0x0744 - Reserved
-**/
-  UINT8                       Reserved219;
+  UINT8                       Reserved30[2];
 
 /** Offset 0x0745 - Enable PCH ISH SPI pins assigned
   Set if ISH SPI native pins are to be enabled by BIOS. 0: Disable; 1: Enable.
@@ -1326,7 +575,7 @@ typedef struct {
 
 /** Offset 0x074B - Reserved
 **/
-  UINT8                       Reserved220;
+  UINT8                       Reserved31;
 
 /** Offset 0x074C - Enable PCH ISH GP pins assigned
   Set if ISH GP native pins are to be enabled by BIOS. 0: Disable; 1: Enable.
@@ -1335,15 +584,7 @@ typedef struct {
 
 /** Offset 0x0758 - Reserved
 **/
-  UINT8                       Reserved221;
-
-/** Offset 0x0759 - Reserved
-**/
-  UINT8                       Reserved222;
-
-/** Offset 0x075A - Reserved
-**/
-  UINT8                       Reserved223;
+  UINT8                       Reserved32[3];
 
 /** Offset 0x075B - Enable LOCKDOWN BIOS LOCK
   Enable the BIOS Lock feature and set EISS bit (D31:F5:RegDCh[5]) for the BIOS region
@@ -1354,11 +595,7 @@ typedef struct {
 
 /** Offset 0x075C - Reserved
 **/
-  UINT8                       Reserved224;
-
-/** Offset 0x075D - Reserved
-**/
-  UINT8                       Reserved225;
+  UINT8                       Reserved33[2];
 
 /** Offset 0x075E - RTC Cmos Memory Lock
   Enable RTC lower and upper 128 byte Lock bits to lock Bytes 38h-3Fh in the upper
@@ -1374,11 +611,7 @@ typedef struct {
 
 /** Offset 0x077B - Reserved
 **/
-  UINT8                       Reserved226[28];
-
-/** Offset 0x0797 - Reserved
-**/
-  UINT8                       Reserved227[28];
+  UINT8                       Reserved34[56];
 
 /** Offset 0x07B3 - Enable PCIE RP Clk Req Detect
   Probe CLKREQ# signal before enabling CLKREQ# based power management.
@@ -1392,31 +625,7 @@ typedef struct {
 
 /** Offset 0x07EB - Reserved
 **/
-  UINT8                       Reserved228[28];
-
-/** Offset 0x0807 - Reserved
-**/
-  UINT8                       Reserved229[28];
-
-/** Offset 0x0823 - Reserved
-**/
-  UINT8                       Reserved230[28];
-
-/** Offset 0x083F - Reserved
-**/
-  UINT8                       Reserved231[28];
-
-/** Offset 0x085B - Reserved
-**/
-  UINT8                       Reserved232[28];
-
-/** Offset 0x0877 - Reserved
-**/
-  UINT8                       Reserved233[28];
-
-/** Offset 0x0893 - Reserved
-**/
-  UINT8                       Reserved234[28];
+  UINT8                       Reserved35[196];
 
 /** Offset 0x08AF - PCIE RP Max Payload
   Max Payload Size supported, Default 64B, see enum PCH_PCIE_MAX_PAYLOAD.
@@ -1425,87 +634,7 @@ typedef struct {
 
 /** Offset 0x08CB - Reserved
 **/
-  UINT8                       Reserved235[2];
-
-/** Offset 0x08CD - Reserved
-**/
-  UINT8                       Reserved236[8];
-
-/** Offset 0x08D5 - Reserved
-**/
-  UINT8                       Reserved237[2];
-
-/** Offset 0x08D7 - Reserved
-**/
-  UINT8                       Reserved238[2];
-
-/** Offset 0x08D9 - Reserved
-**/
-  UINT8                       Reserved239[3];
-
-/** Offset 0x08DC - Reserved
-**/
-  UINT32                      Reserved240[2];
-
-/** Offset 0x08E4 - Reserved
-**/
-  UINT32                      Reserved241[2];
-
-/** Offset 0x08EC - Reserved
-**/
-  UINT32                      Reserved242[2];
-
-/** Offset 0x08F4 - Reserved
-**/
-  UINT32                      Reserved243[2];
-
-/** Offset 0x08FC - Reserved
-**/
-  UINT32                      Reserved244[2];
-
-/** Offset 0x0904 - Reserved
-**/
-  UINT32                      Reserved245[2];
-
-/** Offset 0x090C - Reserved
-**/
-  UINT32                      Reserved246[2];
-
-/** Offset 0x0914 - Reserved
-**/
-  UINT32                      Reserved247[2];
-
-/** Offset 0x091C - Reserved
-**/
-  UINT32                      Reserved248[2];
-
-/** Offset 0x0924 - Reserved
-**/
-  UINT32                      Reserved249[2];
-
-/** Offset 0x092C - Reserved
-**/
-  UINT32                      Reserved250[2];
-
-/** Offset 0x0934 - Reserved
-**/
-  UINT32                      Reserved251[2];
-
-/** Offset 0x093C - Reserved
-**/
-  UINT32                      Reserved252[2];
-
-/** Offset 0x0944 - Reserved
-**/
-  UINT8                       Reserved253[28];
-
-/** Offset 0x0960 - Reserved
-**/
-  UINT8                       Reserved254[28];
-
-/** Offset 0x097C - Reserved
-**/
-  UINT8                       Reserved255[28];
+  UINT8                       Reserved36[205];
 
 /** Offset 0x0998 - PCIE RP Aspm
   The ASPM configuration of the root port (see: PCH_PCIE_ASPM_CONTROL). Default is
@@ -1526,635 +655,7 @@ typedef struct {
 
 /** Offset 0x09EC - Reserved
 **/
-  UINT8                       Reserved256[28];
-
-/** Offset 0x0A08 - Reserved
-**/
-  UINT8                       Reserved257[12];
-
-/** Offset 0x0A14 - Reserved
-**/
-  UINT8                       Reserved258[12];
-
-/** Offset 0x0A20 - Reserved
-**/
-  UINT8                       Reserved259[12];
-
-/** Offset 0x0A2C - Reserved
-**/
-  UINT8                       Reserved260[12];
-
-/** Offset 0x0A38 - Reserved
-**/
-  UINT8                       Reserved261[12];
-
-/** Offset 0x0A44 - Reserved
-**/
-  UINT8                       Reserved262[12];
-
-/** Offset 0x0A50 - Reserved
-**/
-  UINT8                       Reserved263[12];
-
-/** Offset 0x0A5C - Reserved
-**/
-  UINT8                       Reserved264[12];
-
-/** Offset 0x0A68 - Reserved
-**/
-  UINT8                       Reserved265[12];
-
-/** Offset 0x0A74 - Reserved
-**/
-  UINT8                       Reserved266[12];
-
-/** Offset 0x0A80 - Reserved
-**/
-  UINT8                       Reserved267[12];
-
-/** Offset 0x0A8C - Reserved
-**/
-  UINT8                       Reserved268[12];
-
-/** Offset 0x0A98 - Reserved
-**/
-  UINT8                       Reserved269[12];
-
-/** Offset 0x0AA4 - Reserved
-**/
-  UINT8                       Reserved270[12];
-
-/** Offset 0x0AB0 - Reserved
-**/
-  UINT8                       Reserved271[12];
-
-/** Offset 0x0ABC - Reserved
-**/
-  UINT8                       Reserved272[12];
-
-/** Offset 0x0AC8 - Reserved
-**/
-  UINT8                       Reserved273[12];
-
-/** Offset 0x0AD4 - Reserved
-**/
-  UINT8                       Reserved274[12];
-
-/** Offset 0x0AE0 - Reserved
-**/
-  UINT8                       Reserved275[12];
-
-/** Offset 0x0AEC - Reserved
-**/
-  UINT8                       Reserved276[12];
-
-/** Offset 0x0AF8 - Reserved
-**/
-  UINT8                       Reserved277[12];
-
-/** Offset 0x0B04 - Reserved
-**/
-  UINT8                       Reserved278[12];
-
-/** Offset 0x0B10 - Reserved
-**/
-  UINT8                       Reserved279[12];
-
-/** Offset 0x0B1C - Reserved
-**/
-  UINT8                       Reserved280[12];
-
-/** Offset 0x0B28 - Reserved
-**/
-  UINT8                       Reserved281[12];
-
-/** Offset 0x0B34 - Reserved
-**/
-  UINT8                       Reserved282[12];
-
-/** Offset 0x0B40 - Reserved
-**/
-  UINT8                       Reserved283[12];
-
-/** Offset 0x0B4C - Reserved
-**/
-  UINT8                       Reserved284[12];
-
-/** Offset 0x0B58 - Reserved
-**/
-  UINT8                       Reserved285[12];
-
-/** Offset 0x0B64 - Reserved
-**/
-  UINT8                       Reserved286[12];
-
-/** Offset 0x0B70 - Reserved
-**/
-  UINT8                       Reserved287[12];
-
-/** Offset 0x0B7C - Reserved
-**/
-  UINT8                       Reserved288[12];
-
-/** Offset 0x0B88 - Reserved
-**/
-  UINT8                       Reserved289[12];
-
-/** Offset 0x0B94 - Reserved
-**/
-  UINT8                       Reserved290[12];
-
-/** Offset 0x0BA0 - Reserved
-**/
-  UINT8                       Reserved291[12];
-
-/** Offset 0x0BAC - Reserved
-**/
-  UINT8                       Reserved292[12];
-
-/** Offset 0x0BB8 - Reserved
-**/
-  UINT8                       Reserved293[12];
-
-/** Offset 0x0BC4 - Reserved
-**/
-  UINT8                       Reserved294[12];
-
-/** Offset 0x0BD0 - Reserved
-**/
-  UINT8                       Reserved295[12];
-
-/** Offset 0x0BDC - Reserved
-**/
-  UINT8                       Reserved296[12];
-
-/** Offset 0x0BE8 - Reserved
-**/
-  UINT8                       Reserved297[12];
-
-/** Offset 0x0BF4 - Reserved
-**/
-  UINT8                       Reserved298[12];
-
-/** Offset 0x0C00 - Reserved
-**/
-  UINT8                       Reserved299[12];
-
-/** Offset 0x0C0C - Reserved
-**/
-  UINT8                       Reserved300[12];
-
-/** Offset 0x0C18 - Reserved
-**/
-  UINT8                       Reserved301[12];
-
-/** Offset 0x0C24 - Reserved
-**/
-  UINT8                       Reserved302[12];
-
-/** Offset 0x0C30 - Reserved
-**/
-  UINT8                       Reserved303[12];
-
-/** Offset 0x0C3C - Reserved
-**/
-  UINT8                       Reserved304[12];
-
-/** Offset 0x0C48 - Reserved
-**/
-  UINT8                       Reserved305[12];
-
-/** Offset 0x0C54 - Reserved
-**/
-  UINT8                       Reserved306[12];
-
-/** Offset 0x0C60 - Reserved
-**/
-  UINT8                       Reserved307[12];
-
-/** Offset 0x0C6C - Reserved
-**/
-  UINT8                       Reserved308[12];
-
-/** Offset 0x0C78 - Reserved
-**/
-  UINT8                       Reserved309[12];
-
-/** Offset 0x0C84 - Reserved
-**/
-  UINT8                       Reserved310[12];
-
-/** Offset 0x0C90 - Reserved
-**/
-  UINT8                       Reserved311[12];
-
-/** Offset 0x0C9C - Reserved
-**/
-  UINT8                       Reserved312[12];
-
-/** Offset 0x0CA8 - Reserved
-**/
-  UINT8                       Reserved313[12];
-
-/** Offset 0x0CB4 - Reserved
-**/
-  UINT8                       Reserved314[12];
-
-/** Offset 0x0CC0 - Reserved
-**/
-  UINT8                       Reserved315[12];
-
-/** Offset 0x0CCC - Reserved
-**/
-  UINT8                       Reserved316[12];
-
-/** Offset 0x0CD8 - Reserved
-**/
-  UINT8                       Reserved317[12];
-
-/** Offset 0x0CE4 - Reserved
-**/
-  UINT8                       Reserved318[12];
-
-/** Offset 0x0CF0 - Reserved
-**/
-  UINT8                       Reserved319[12];
-
-/** Offset 0x0CFC - Reserved
-**/
-  UINT8                       Reserved320[12];
-
-/** Offset 0x0D08 - Reserved
-**/
-  UINT8                       Reserved321[12];
-
-/** Offset 0x0D14 - Reserved
-**/
-  UINT8                       Reserved322[12];
-
-/** Offset 0x0D20 - Reserved
-**/
-  UINT8                       Reserved323[12];
-
-/** Offset 0x0D2C - Reserved
-**/
-  UINT8                       Reserved324[12];
-
-/** Offset 0x0D38 - Reserved
-**/
-  UINT8                       Reserved325[12];
-
-/** Offset 0x0D44 - Reserved
-**/
-  UINT8                       Reserved326[12];
-
-/** Offset 0x0D50 - Reserved
-**/
-  UINT8                       Reserved327[12];
-
-/** Offset 0x0D5C - Reserved
-**/
-  UINT8                       Reserved328[12];
-
-/** Offset 0x0D68 - Reserved
-**/
-  UINT8                       Reserved329[12];
-
-/** Offset 0x0D74 - Reserved
-**/
-  UINT8                       Reserved330[12];
-
-/** Offset 0x0D80 - Reserved
-**/
-  UINT8                       Reserved331[12];
-
-/** Offset 0x0D8C - Reserved
-**/
-  UINT8                       Reserved332[12];
-
-/** Offset 0x0D98 - Reserved
-**/
-  UINT8                       Reserved333[12];
-
-/** Offset 0x0DA4 - Reserved
-**/
-  UINT8                       Reserved334[12];
-
-/** Offset 0x0DB0 - Reserved
-**/
-  UINT8                       Reserved335[12];
-
-/** Offset 0x0DBC - Reserved
-**/
-  UINT8                       Reserved336[12];
-
-/** Offset 0x0DC8 - Reserved
-**/
-  UINT8                       Reserved337[12];
-
-/** Offset 0x0DD4 - Reserved
-**/
-  UINT8                       Reserved338[12];
-
-/** Offset 0x0DE0 - Reserved
-**/
-  UINT8                       Reserved339[12];
-
-/** Offset 0x0DEC - Reserved
-**/
-  UINT8                       Reserved340[12];
-
-/** Offset 0x0DF8 - Reserved
-**/
-  UINT8                       Reserved341[12];
-
-/** Offset 0x0E04 - Reserved
-**/
-  UINT8                       Reserved342[12];
-
-/** Offset 0x0E10 - Reserved
-**/
-  UINT8                       Reserved343[12];
-
-/** Offset 0x0E1C - Reserved
-**/
-  UINT8                       Reserved344[12];
-
-/** Offset 0x0E28 - Reserved
-**/
-  UINT8                       Reserved345[12];
-
-/** Offset 0x0E34 - Reserved
-**/
-  UINT8                       Reserved346[12];
-
-/** Offset 0x0E40 - Reserved
-**/
-  UINT8                       Reserved347[12];
-
-/** Offset 0x0E4C - Reserved
-**/
-  UINT8                       Reserved348[12];
-
-/** Offset 0x0E58 - Reserved
-**/
-  UINT8                       Reserved349[12];
-
-/** Offset 0x0E64 - Reserved
-**/
-  UINT8                       Reserved350[12];
-
-/** Offset 0x0E70 - Reserved
-**/
-  UINT8                       Reserved351[12];
-
-/** Offset 0x0E7C - Reserved
-**/
-  UINT8                       Reserved352[12];
-
-/** Offset 0x0E88 - Reserved
-**/
-  UINT8                       Reserved353[12];
-
-/** Offset 0x0E94 - Reserved
-**/
-  UINT8                       Reserved354[12];
-
-/** Offset 0x0EA0 - Reserved
-**/
-  UINT8                       Reserved355[12];
-
-/** Offset 0x0EAC - Reserved
-**/
-  UINT8                       Reserved356[12];
-
-/** Offset 0x0EB8 - Reserved
-**/
-  UINT8                       Reserved357[12];
-
-/** Offset 0x0EC4 - Reserved
-**/
-  UINT8                       Reserved358[12];
-
-/** Offset 0x0ED0 - Reserved
-**/
-  UINT8                       Reserved359[12];
-
-/** Offset 0x0EDC - Reserved
-**/
-  UINT8                       Reserved360[12];
-
-/** Offset 0x0EE8 - Reserved
-**/
-  UINT8                       Reserved361[12];
-
-/** Offset 0x0EF4 - Reserved
-**/
-  UINT8                       Reserved362[12];
-
-/** Offset 0x0F00 - Reserved
-**/
-  UINT8                       Reserved363[12];
-
-/** Offset 0x0F0C - Reserved
-**/
-  UINT8                       Reserved364[12];
-
-/** Offset 0x0F18 - Reserved
-**/
-  UINT8                       Reserved365[12];
-
-/** Offset 0x0F24 - Reserved
-**/
-  UINT8                       Reserved366[12];
-
-/** Offset 0x0F30 - Reserved
-**/
-  UINT8                       Reserved367[12];
-
-/** Offset 0x0F3C - Reserved
-**/
-  UINT8                       Reserved368[12];
-
-/** Offset 0x0F48 - Reserved
-**/
-  UINT8                       Reserved369[12];
-
-/** Offset 0x0F54 - Reserved
-**/
-  UINT8                       Reserved370[12];
-
-/** Offset 0x0F60 - Reserved
-**/
-  UINT8                       Reserved371[12];
-
-/** Offset 0x0F6C - Reserved
-**/
-  UINT8                       Reserved372[12];
-
-/** Offset 0x0F78 - Reserved
-**/
-  UINT8                       Reserved373[12];
-
-/** Offset 0x0F84 - Reserved
-**/
-  UINT8                       Reserved374[12];
-
-/** Offset 0x0F90 - Reserved
-**/
-  UINT8                       Reserved375[12];
-
-/** Offset 0x0F9C - Reserved
-**/
-  UINT8                       Reserved376[12];
-
-/** Offset 0x0FA8 - Reserved
-**/
-  UINT8                       Reserved377[12];
-
-/** Offset 0x0FB4 - Reserved
-**/
-  UINT8                       Reserved378[12];
-
-/** Offset 0x0FC0 - Reserved
-**/
-  UINT8                       Reserved379[12];
-
-/** Offset 0x0FCC - Reserved
-**/
-  UINT8                       Reserved380[12];
-
-/** Offset 0x0FD8 - Reserved
-**/
-  UINT8                       Reserved381[12];
-
-/** Offset 0x0FE4 - Reserved
-**/
-  UINT8                       Reserved382[12];
-
-/** Offset 0x0FF0 - Reserved
-**/
-  UINT8                       Reserved383[12];
-
-/** Offset 0x0FFC - Reserved
-**/
-  UINT8                       Reserved384[12];
-
-/** Offset 0x1008 - Reserved
-**/
-  UINT8                       Reserved385[12];
-
-/** Offset 0x1014 - Reserved
-**/
-  UINT8                       Reserved386[12];
-
-/** Offset 0x1020 - Reserved
-**/
-  UINT8                       Reserved387;
-
-/** Offset 0x1021 - Reserved
-**/
-  UINT8                       Reserved388;
-
-/** Offset 0x1022 - Reserved
-**/
-  UINT8                       Reserved389[12];
-
-/** Offset 0x102E - Reserved
-**/
-  UINT8                       Reserved390[12];
-
-/** Offset 0x103A - Reserved
-**/
-  UINT8                       Reserved391[12];
-
-/** Offset 0x1046 - Reserved
-**/
-  UINT8                       Reserved392;
-
-/** Offset 0x1047 - Reserved
-**/
-  UINT8                       Reserved393;
-
-/** Offset 0x1048 - Reserved
-**/
-  UINT8                       Reserved394;
-
-/** Offset 0x1049 - Reserved
-**/
-  UINT8                       Reserved395;
-
-/** Offset 0x104A - Reserved
-**/
-  UINT8                       Reserved396;
-
-/** Offset 0x104B - Reserved
-**/
-  UINT8                       Reserved397;
-
-/** Offset 0x104C - Reserved
-**/
-  UINT8                       Reserved398;
-
-/** Offset 0x104D - Reserved
-**/
-  UINT8                       Reserved399;
-
-/** Offset 0x104E - Reserved
-**/
-  UINT8                       Reserved400;
-
-/** Offset 0x104F - Reserved
-**/
-  UINT8                       Reserved401;
-
-/** Offset 0x1050 - Reserved
-**/
-  UINT8                       Reserved402;
-
-/** Offset 0x1051 - Reserved
-**/
-  UINT8                       Reserved403;
-
-/** Offset 0x1052 - Reserved
-**/
-  UINT8                       Reserved404;
-
-/** Offset 0x1053 - Reserved
-**/
-  UINT8                       Reserved405;
-
-/** Offset 0x1054 - Reserved
-**/
-  UINT8                       Reserved406;
-
-/** Offset 0x1055 - Reserved
-**/
-  UINT8                       Reserved407;
-
-/** Offset 0x1056 - Reserved
-**/
-  UINT8                       Reserved408;
-
-/** Offset 0x1057 - Reserved
-**/
-  UINT8                       Reserved409;
-
-/** Offset 0x1058 - Reserved
-**/
-  UINT8                       Reserved410;
-
-/** Offset 0x1059 - Reserved
-**/
-  UINT8                       Reserved411;
-
-/** Offset 0x105A - Reserved
-**/
-  UINT8                       Reserved412;
-
-/** Offset 0x105B - Reserved
-**/
-  UINT8                       Reserved413;
+  UINT8                       Reserved37[1648];
 
 /** Offset 0x105C - PCH Sata Pwr Opt Enable
   SATA Power Optimizer on PCH side.
@@ -2164,35 +665,7 @@ typedef struct {
 
 /** Offset 0x105D - Reserved
 **/
-  UINT8                       Reserved414;
-
-/** Offset 0x105E - Reserved
-**/
-  UINT8                       Reserved415;
-
-/** Offset 0x105F - Reserved
-**/
-  UINT8                       Reserved416[8];
-
-/** Offset 0x1067 - Reserved
-**/
-  UINT8                       Reserved417[8];
-
-/** Offset 0x106F - Reserved
-**/
-  UINT8                       Reserved418[8];
-
-/** Offset 0x1077 - Reserved
-**/
-  UINT8                       Reserved419[8];
-
-/** Offset 0x107F - Reserved
-**/
-  UINT8                       Reserved420[8];
-
-/** Offset 0x1087 - Reserved
-**/
-  UINT8                       Reserved421[8];
+  UINT8                       Reserved38[50];
 
 /** Offset 0x108F - Enable SATA Port DmVal
   DITO multiplier. Default is 15.
@@ -2201,7 +674,7 @@ typedef struct {
 
 /** Offset 0x1097 - Reserved
 **/
-  UINT8                       Reserved422[1];
+  UINT8                       Reserved39;
 
 /** Offset 0x1098 - Enable SATA Port DmVal
   DEVSLP Idle Timeout (DITO), Default is 625.
@@ -2210,23 +683,7 @@ typedef struct {
 
 /** Offset 0x10A8 - Reserved
 **/
-  UINT8                       Reserved423[8];
-
-/** Offset 0x10B0 - Reserved
-**/
-  UINT8                       Reserved424;
-
-/** Offset 0x10B1 - Reserved
-**/
-  UINT8                       Reserved425[3];
-
-/** Offset 0x10B4 - Reserved
-**/
-  UINT8                       Reserved426[3];
-
-/** Offset 0x10B7 - Reserved
-**/
-  UINT8                       Reserved427[3];
+  UINT8                       Reserved40[18];
 
 /** Offset 0x10BA - UFS enable/disable
   PCIe Storage Device Reset Delay in milliseconds. Default value is 100ms
@@ -2236,155 +693,7 @@ typedef struct {
 
 /** Offset 0x10BC - Reserved
 **/
-  UINT8                       Reserved428[2];
-
-/** Offset 0x10BE - Reserved
-**/
-  UINT8                       Reserved429;
-
-/** Offset 0x10BF - Reserved
-**/
-  UINT8                       Reserved430;
-
-/** Offset 0x10C0 - Reserved
-**/
-  UINT16                      Reserved431;
-
-/** Offset 0x10C2 - Reserved
-**/
-  UINT16                      Reserved432;
-
-/** Offset 0x10C4 - Reserved
-**/
-  UINT16                      Reserved433;
-
-/** Offset 0x10C6 - Reserved
-**/
-  UINT8                       Reserved434;
-
-/** Offset 0x10C7 - Reserved
-**/
-  UINT8                       Reserved435;
-
-/** Offset 0x10C8 - Reserved
-**/
-  UINT8                       Reserved436;
-
-/** Offset 0x10C9 - Reserved
-**/
-  UINT8                       Reserved437;
-
-/** Offset 0x10CA - Reserved
-**/
-  UINT8                       Reserved438;
-
-/** Offset 0x10CB - Reserved
-**/
-  UINT8                       Reserved439;
-
-/** Offset 0x10CC - Reserved
-**/
-  UINT16                      Reserved440;
-
-/** Offset 0x10CE - Reserved
-**/
-  UINT16                      Reserved441;
-
-/** Offset 0x10D0 - Reserved
-**/
-  UINT16                      Reserved442;
-
-/** Offset 0x10D2 - Reserved
-**/
-  UINT8                       Reserved443;
-
-/** Offset 0x10D3 - Reserved
-**/
-  UINT8                       Reserved444;
-
-/** Offset 0x10D4 - Reserved
-**/
-  UINT8                       Reserved445;
-
-/** Offset 0x10D5 - Reserved
-**/
-  UINT8                       Reserved446;
-
-/** Offset 0x10D6 - Reserved
-**/
-  UINT8                       Reserved447;
-
-/** Offset 0x10D7 - Reserved
-**/
-  UINT8                       Reserved448;
-
-/** Offset 0x10D8 - Reserved
-**/
-  UINT8                       Reserved449;
-
-/** Offset 0x10D9 - Reserved
-**/
-  UINT8                       Reserved450;
-
-/** Offset 0x10DA - Reserved
-**/
-  UINT8                       Reserved451;
-
-/** Offset 0x10DB - Reserved
-**/
-  UINT8                       Reserved452;
-
-/** Offset 0x10DC - Reserved
-**/
-  UINT8                       Reserved453;
-
-/** Offset 0x10DD - Reserved
-**/
-  UINT8                       Reserved454;
-
-/** Offset 0x10DE - Reserved
-**/
-  UINT8                       Reserved455;
-
-/** Offset 0x10DF - Reserved
-**/
-  UINT8                       Reserved456;
-
-/** Offset 0x10E0 - Reserved
-**/
-  UINT8                       Reserved457;
-
-/** Offset 0x10E1 - Reserved
-**/
-  UINT8                       Reserved458;
-
-/** Offset 0x10E2 - Reserved
-**/
-  UINT8                       Reserved459;
-
-/** Offset 0x10E3 - Reserved
-**/
-  UINT8                       Reserved460;
-
-/** Offset 0x10E4 - Reserved
-**/
-  UINT8                       Reserved461;
-
-/** Offset 0x10E5 - Reserved
-**/
-  UINT8                       Reserved462;
-
-/** Offset 0x10E6 - Reserved
-**/
-  UINT8                       Reserved463;
-
-/** Offset 0x10E7 - Reserved
-**/
-  UINT8                       Reserved464;
-
-/** Offset 0x10E8 - Reserved
-**/
-  UINT16                      Reserved465;
+  UINT8                       Reserved41[46];
 
 /** Offset 0x10EA - USB2 Port Over Current Pin
   Describe the specific over current pin number of USB 2.0 Port N.
@@ -2398,23 +707,7 @@ typedef struct {
 
 /** Offset 0x1104 - Reserved
 **/
-  UINT8                       Reserved466;
-
-/** Offset 0x1105 - Reserved
-**/
-  UINT8                       Reserved467[3];
-
-/** Offset 0x1108 - Reserved
-**/
-  UINT32                      Reserved468;
-
-/** Offset 0x110C - Reserved
-**/
-  UINT32                      Reserved469;
-
-/** Offset 0x1110 - Reserved
-**/
-  UINT32                      Reserved470;
+  UINT8                       Reserved42[16];
 
 /** Offset 0x1114 - Enable 8254 Static Clock Gating
   Set 8254CGE=1 is required for SLP_S0 support. However, set 8254CGE=1 in POST time
@@ -2434,7 +727,7 @@ typedef struct {
 
 /** Offset 0x1116 - Reserved
 **/
-  UINT8                       Reserved471;
+  UINT8                       Reserved43;
 
 /** Offset 0x1117 - Hybrid Storage Detection and Configuration Mode
   Enables support for Hybrid storage devices. 0: Disabled; 1: Dynamic Configuration.
@@ -2445,79 +738,7 @@ typedef struct {
 
 /** Offset 0x1118 - Reserved
 **/
-  UINT64                      Reserved472[4];
-
-/** Offset 0x1138 - Reserved
-**/
-  UINT32                      Reserved473;
-
-/** Offset 0x113C - Reserved
-**/
-  UINT8                       Reserved474[4];
-
-/** Offset 0x1140 - Reserved
-**/
-  UINT64                      Reserved475;
-
-/** Offset 0x1148 - Reserved
-**/
-  UINT64                      Reserved476;
-
-/** Offset 0x1150 - Reserved
-**/
-  UINT8                       Reserved477;
-
-/** Offset 0x1151 - Reserved
-**/
-  UINT8                       Reserved478;
-
-/** Offset 0x1152 - Reserved
-**/
-  UINT8                       Reserved479[6];
-
-/** Offset 0x1158 - Reserved
-**/
-  UINT64                      Reserved480;
-
-/** Offset 0x1160 - Reserved
-**/
-  UINT64                      Reserved481;
-
-/** Offset 0x1168 - Reserved
-**/
-  UINT8                       Reserved482;
-
-/** Offset 0x1169 - Reserved
-**/
-  UINT8                       Reserved483;
-
-/** Offset 0x116A - Reserved
-**/
-  UINT16                      Reserved484;
-
-/** Offset 0x116C - Reserved
-**/
-  UINT16                      Reserved485;
-
-/** Offset 0x116E - Reserved
-**/
-  UINT8                       Reserved486[2];
-
-/** Offset 0x1170 - Reserved
-**/
-  UINT32                      Reserved487;
-
-/** Offset 0x1174 - Reserved
-**/
-  UINT16                      Reserved488;
-
-/** Offset 0x1176 - Reserved
-**/
-  UINT8                       Reserved489[16];
-
-/** Offset 0x1186 - Reserved
-**/
-  UINT8                       Reserved490;
+  UINT8                      Reserved44[111];
 
 /** Offset 0x1187 - Enable PS_ON.
   PS_ON is a new C10 state from the CPU on desktop SKUs that enables a lower power
@@ -2529,107 +750,7 @@ typedef struct {
 
 /** Offset 0x1188 - Reserved
 **/
-  UINT8                       Reserved491;
-
-/** Offset 0x1189 - Reserved
-**/
-  UINT8                       Reserved492;
-
-/** Offset 0x118A - Reserved
-**/
-  UINT8                       Reserved493;
-
-/** Offset 0x118B - Reserved
-**/
-  UINT8                       Reserved494;
-
-/** Offset 0x118C - Reserved
-**/
-  UINT8                       Reserved495;
-
-/** Offset 0x118D - Reserved
-**/
-  UINT8                       Reserved496;
-
-/** Offset 0x118E - Reserved
-**/
-  UINT8                       Reserved497;
-
-/** Offset 0x118F - Reserved
-**/
-  UINT8                       Reserved498;
-
-/** Offset 0x1190 - Reserved
-**/
-  UINT8                       Reserved499;
-
-/** Offset 0x1191 - Reserved
-**/
-  UINT8                       Reserved500;
-
-/** Offset 0x1192 - Reserved
-**/
-  UINT8                       Reserved501;
-
-/** Offset 0x1193 - Reserved
-**/
-  UINT8                       Reserved502;
-
-/** Offset 0x1194 - Reserved
-**/
-  UINT32                      Reserved503;
-
-/** Offset 0x1198 - Reserved
-**/
-  UINT8                       Reserved504;
-
-/** Offset 0x1199 - Reserved
-**/
-  UINT8                       Reserved505;
-
-/** Offset 0x119A - Reserved
-**/
-  UINT8                       Reserved506[12];
-
-/** Offset 0x11A6 - Reserved
-**/
-  UINT8                       Reserved507[12];
-
-/** Offset 0x11B2 - Reserved
-**/
-  UINT8                       Reserved508[12];
-
-/** Offset 0x11BE - Reserved
-**/
-  UINT8                       Reserved509[10];
-
-/** Offset 0x11C8 - Reserved
-**/
-  UINT8                       Reserved510[10];
-
-/** Offset 0x11D2 - Reserved
-**/
-  UINT8                       Reserved511[10];
-
-/** Offset 0x11DC - Reserved
-**/
-  UINT8                       Reserved512[10];
-
-/** Offset 0x11E6 - Reserved
-**/
-  UINT8                       Reserved513[10];
-
-/** Offset 0x11F0 - Reserved
-**/
-  UINT8                       Reserved514[10];
-
-/** Offset 0x11FA - Reserved
-**/
-  UINT8                       Reserved515[10];
-
-/** Offset 0x1204 - Reserved
-**/
-  UINT8                       Reserved516[10];
+  UINT8                       Reserved45[134];
 
 /** Offset 0x120E - Skip PAM regsiter lock
   Enable: PAM register will not be locked by RC, platform code should lock it, Disable(Default):
@@ -2640,11 +761,7 @@ typedef struct {
 
 /** Offset 0x120F - Reserved
 **/
-  UINT8                       Reserved517;
-
-/** Offset 0x1210 - Reserved
-**/
-  UINT8                       Reserved518;
+  UINT8                       Reserved46[2];
 
 /** Offset 0x1211 - GT Frequency Limit
   0xFF: Auto(Default), 2: 100 Mhz, 3: 150 Mhz, 4: 200 Mhz, 5: 250 Mhz, 6: 300 Mhz,
@@ -2662,63 +779,7 @@ typedef struct {
 
 /** Offset 0x1212 - Reserved
 **/
-  UINT8                       Reserved519;
-
-/** Offset 0x1213 - Reserved
-**/
-  UINT8                       Reserved520;
-
-/** Offset 0x1214 - Reserved
-**/
-  UINT8                       Reserved521;
-
-/** Offset 0x1215 - Reserved
-**/
-  UINT8                       Reserved522;
-
-/** Offset 0x1216 - Reserved
-**/
-  UINT8                       Reserved523[2];
-
-/** Offset 0x1218 - Reserved
-**/
-  UINT32                      Reserved524;
-
-/** Offset 0x121C - Reserved
-**/
-  UINT32                      Reserved525;
-
-/** Offset 0x1220 - Reserved
-**/
-  UINT8                       Reserved526;
-
-/** Offset 0x1221 - Reserved
-**/
-  UINT8                       Reserved527;
-
-/** Offset 0x1222 - Reserved
-**/
-  UINT8                       Reserved528[2];
-
-/** Offset 0x1224 - Reserved
-**/
-  UINT32                      Reserved529;
-
-/** Offset 0x1228 - Reserved
-**/
-  UINT32                      Reserved530;
-
-/** Offset 0x122C - Reserved
-**/
-  UINT8                       Reserved531[32];
-
-/** Offset 0x124C - Reserved
-**/
-  UINT8                       Reserved532;
-
-/** Offset 0x124D - Reserved
-**/
-  UINT8                       Reserved533[4];
+  UINT8                       Reserved47[63];
 
 /** Offset 0x1251 - Enable or Disable HWP
   Enable/Disable Intel(R) Speed Shift Technology support. Enabling will expose the
@@ -2730,31 +791,7 @@ typedef struct {
 
 /** Offset 0x1252 - Reserved
 **/
-  UINT8                       Reserved534;
-
-/** Offset 0x1253 - Reserved
-**/
-  UINT8                       Reserved535;
-
-/** Offset 0x1254 - Reserved
-**/
-  UINT8                       Reserved536;
-
-/** Offset 0x1255 - Reserved
-**/
-  UINT8                       Reserved537;
-
-/** Offset 0x1256 - Reserved
-**/
-  UINT8                       Reserved538;
-
-/** Offset 0x1257 - Reserved
-**/
-  UINT8                       Reserved539;
-
-/** Offset 0x1258 - Reserved
-**/
-  UINT8                       Reserved540;
+  UINT8                       Reserved48[7];
 
 /** Offset 0x1259 - TCC Activation Offset
   TCC Activation Offset. Offset from factory set TCC activation temperature at which
@@ -2766,107 +803,7 @@ typedef struct {
 
 /** Offset 0x125A - Reserved
 **/
-  UINT8                       Reserved541;
-
-/** Offset 0x125B - Reserved
-**/
-  UINT8                       Reserved542;
-
-/** Offset 0x125C - Reserved
-**/
-  UINT8                       Reserved543;
-
-/** Offset 0x125D - Reserved
-**/
-  UINT8                       Reserved544;
-
-/** Offset 0x125E - Reserved
-**/
-  UINT8                       Reserved545;
-
-/** Offset 0x125F - Reserved
-**/
-  UINT8                       Reserved546;
-
-/** Offset 0x1260 - Reserved
-**/
-  UINT8                       Reserved547;
-
-/** Offset 0x1261 - Reserved
-**/
-  UINT8                       Reserved548;
-
-/** Offset 0x1262 - Reserved
-**/
-  UINT8                       Reserved549;
-
-/** Offset 0x1263 - Reserved
-**/
-  UINT8                       Reserved550;
-
-/** Offset 0x1264 - Reserved
-**/
-  UINT8                       Reserved551;
-
-/** Offset 0x1265 - Reserved
-**/
-  UINT8                       Reserved552;
-
-/** Offset 0x1266 - Reserved
-**/
-  UINT8                       Reserved553;
-
-/** Offset 0x1267 - Reserved
-**/
-  UINT8                       Reserved554;
-
-/** Offset 0x1268 - Reserved
-**/
-  UINT8                       Reserved555;
-
-/** Offset 0x1269 - Reserved
-**/
-  UINT8                       Reserved556;
-
-/** Offset 0x126A - Reserved
-**/
-  UINT8                       Reserved557;
-
-/** Offset 0x126B - Reserved
-**/
-  UINT8                       Reserved558;
-
-/** Offset 0x126C - Reserved
-**/
-  UINT8                       Reserved559;
-
-/** Offset 0x126D - Reserved
-**/
-  UINT8                       Reserved560;
-
-/** Offset 0x126E - Reserved
-**/
-  UINT8                       Reserved561;
-
-/** Offset 0x126F - Reserved
-**/
-  UINT8                       Reserved562;
-
-/** Offset 0x1270 - Reserved
-**/
-  UINT8                       Reserved563;
-
-/** Offset 0x1271 - Reserved
-**/
-  UINT8                       Reserved564;
-
-/** Offset 0x1272 - Reserved
-**/
-  UINT8                       Reserved565;
-
-/** Offset 0x1273 - Reserved
-**/
-  UINT8                       Reserved566;
+  UINT8                       Reserved49[26];
 
 /** Offset 0x1274 - Enable or Disable Energy Efficient Turbo
   Enable/Disable Energy Efficient Turbo Feature. This feature will opportunistically
@@ -2879,31 +816,7 @@ typedef struct {
 
 /** Offset 0x1275 - Reserved
 **/
-  UINT8                       Reserved567;
-
-/** Offset 0x1276 - Reserved
-**/
-  UINT8                       Reserved568;
-
-/** Offset 0x1277 - Reserved
-**/
-  UINT8                       Reserved569;
-
-/** Offset 0x1278 - Reserved
-**/
-  UINT8                       Reserved570;
-
-/** Offset 0x1279 - Reserved
-**/
-  UINT8                       Reserved571;
-
-/** Offset 0x127A - Reserved
-**/
-  UINT8                       Reserved572;
-
-/** Offset 0x127B - Reserved
-**/
-  UINT8                       Reserved573;
+  UINT8                       Reserved50[7];
 
 /** Offset 0x127C - Enable or Disable CPU power states (C-states)
   Enable/Disable CPU Power Management. Allows CPU to go to C states when it's not
@@ -2914,215 +827,7 @@ typedef struct {
 
 /** Offset 0x127D - Reserved
 **/
-  UINT8                       Reserved574;
-
-/** Offset 0x127E - Reserved
-**/
-  UINT8                       Reserved575;
-
-/** Offset 0x127F - Reserved
-**/
-  UINT8                       Reserved576;
-
-/** Offset 0x1280 - Reserved
-**/
-  UINT8                       Reserved577;
-
-/** Offset 0x1281 - Reserved
-**/
-  UINT8                       Reserved578;
-
-/** Offset 0x1282 - Reserved
-**/
-  UINT8                       Reserved579;
-
-/** Offset 0x1283 - Reserved
-**/
-  UINT8                       Reserved580;
-
-/** Offset 0x1284 - Reserved
-**/
-  UINT8                       Reserved581;
-
-/** Offset 0x1285 - Reserved
-**/
-  UINT8                       Reserved582;
-
-/** Offset 0x1286 - Reserved
-**/
-  UINT8                       Reserved583;
-
-/** Offset 0x1287 - Reserved
-**/
-  UINT8                       Reserved584;
-
-/** Offset 0x1288 - Reserved
-**/
-  UINT8                       Reserved585;
-
-/** Offset 0x1289 - Reserved
-**/
-  UINT8                       Reserved586;
-
-/** Offset 0x128A - Reserved
-**/
-  UINT8                       Reserved587;
-
-/** Offset 0x128B - Reserved
-**/
-  UINT8                       Reserved588;
-
-/** Offset 0x128C - Reserved
-**/
-  UINT8                       Reserved589;
-
-/** Offset 0x128D - Reserved
-**/
-  UINT8                       Reserved590;
-
-/** Offset 0x128E - Reserved
-**/
-  UINT8                       Reserved591;
-
-/** Offset 0x128F - Reserved
-**/
-  UINT8                       Reserved592[40];
-
-/** Offset 0x12B7 - Reserved
-**/
-  UINT8                       Reserved593[16];
-
-/** Offset 0x12C7 - Reserved
-**/
-  UINT8                       Reserved594;
-
-/** Offset 0x12C8 - Reserved
-**/
-  UINT32                      Reserved595;
-
-/** Offset 0x12CC - Reserved
-**/
-  UINT32                      Reserved596;
-
-/** Offset 0x12D0 - Reserved
-**/
-  UINT32                      Reserved597;
-
-/** Offset 0x12D4 - Reserved
-**/
-  UINT32                      Reserved598;
-
-/** Offset 0x12D8 - Reserved
-**/
-  UINT16                      Reserved599;
-
-/** Offset 0x12DA - Reserved
-**/
-  UINT8                       Reserved600[2];
-
-/** Offset 0x12DC - Reserved
-**/
-  UINT32                      Reserved601;
-
-/** Offset 0x12E0 - Reserved
-**/
-  UINT32                      Reserved602;
-
-/** Offset 0x12E4 - Reserved
-**/
-  UINT32                      Reserved603;
-
-/** Offset 0x12E8 - Reserved
-**/
-  UINT32                      Reserved604;
-
-/** Offset 0x12EC - Reserved
-**/
-  UINT32                      Reserved605;
-
-/** Offset 0x12F0 - Reserved
-**/
-  UINT32                      Reserved606;
-
-/** Offset 0x12F4 - Reserved
-**/
-  UINT32                      Reserved607;
-
-/** Offset 0x12F8 - Reserved
-**/
-  UINT32                      Reserved608;
-
-/** Offset 0x12FC - Reserved
-**/
-  UINT32                      Reserved609;
-
-/** Offset 0x1300 - Reserved
-**/
-  UINT8                       Reserved610;
-
-/** Offset 0x1301 - Reserved
-**/
-  UINT8                       Reserved611;
-
-/** Offset 0x1302 - Reserved
-**/
-  UINT8                       Reserved612;
-
-/** Offset 0x1303 - Reserved
-**/
-  UINT8                       Reserved613[4];
-
-/** Offset 0x1307 - Reserved
-**/
-  UINT8                       Reserved614;
-
-/** Offset 0x1308 - Reserved
-**/
-  UINT8                       Reserved615;
-
-/** Offset 0x1309 - Reserved
-**/
-  UINT8                       Reserved616;
-
-/** Offset 0x130A - Reserved
-**/
-  UINT8                       Reserved617;
-
-/** Offset 0x130B - Reserved
-**/
-  UINT8                       Reserved618;
-
-/** Offset 0x130C - Reserved
-**/
-  UINT8                       Reserved619;
-
-/** Offset 0x130D - Reserved
-**/
-  UINT8                       Reserved620;
-
-/** Offset 0x130E - Reserved
-**/
-  UINT8                       Reserved621;
-
-/** Offset 0x130F - Reserved
-**/
-  UINT8                       Reserved622;
-
-/** Offset 0x1310 - Reserved
-**/
-  UINT8                       Reserved623;
-
-/** Offset 0x1311 - Reserved
-**/
-  UINT8                       Reserved624;
-
-/** Offset 0x1312 - Reserved
-**/
-  UINT8                       Reserved625[16];
-
-/** Offset 0x1322 - Reserved
-**/
-  UINT8                       Reserved626[16];
+  UINT8                       Reserved51[181];
 
 /** Offset 0x1332 - End of Post message
   Test, Send End of Post message. Disable(0x0): Disable EOP message, Send in PEI(0x1):
@@ -3133,27 +838,7 @@ typedef struct {
 
 /** Offset 0x1333 - Reserved
 **/
-  UINT8                       Reserved627;
-
-/** Offset 0x1334 - Reserved
-**/
-  UINT8                       Reserved628;
-
-/** Offset 0x1335 - Reserved
-**/
-  UINT8                       Reserved629;
-
-/** Offset 0x1336 - Reserved
-**/
-  UINT8                       Reserved630;
-
-/** Offset 0x1337 - Reserved
-**/
-  UINT8                       Reserved631;
-
-/** Offset 0x1338 - Reserved
-**/
-  UINT8                       Reserved632[16];
+  UINT8                       Reserved52[21];
 
 /** Offset 0x1348 - Enable LOCKDOWN SMI
   Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.
@@ -3175,7 +860,7 @@ typedef struct {
 
 /** Offset 0x134B - Reserved
 **/
-  UINT8                       Reserved633;
+  UINT8                       Reserved53;
 
 /** Offset 0x134C - PCIE RP Ltr Max Snoop Latency
   Latency Tolerance Reporting, Max Snoop Latency.
@@ -3189,43 +874,7 @@ typedef struct {
 
 /** Offset 0x13AC - Reserved
 **/
-  UINT8                       Reserved634[28];
-
-/** Offset 0x13C8 - Reserved
-**/
-  UINT8                       Reserved635[28];
-
-/** Offset 0x13E4 - Reserved
-**/
-  UINT16                      Reserved636[24];
-
-/** Offset 0x1414 - Reserved
-**/
-  UINT8                       Reserved637[28];
-
-/** Offset 0x1430 - Reserved
-**/
-  UINT8                       Reserved638[28];
-
-/** Offset 0x144C - Reserved
-**/
-  UINT16                      Reserved639[24];
-
-/** Offset 0x147C - Reserved
-**/
-  UINT8                       Reserved640[28];
-
-/** Offset 0x1498 - Reserved
-**/
-  UINT16                      Reserved641[24];
-
-/** Offset 0x14C8 - Reserved
-**/
-  UINT8                       Reserved642;
-
-/** Offset 0x14C9 - Reserved
-**/
-  UINT8                       Reserved643;
+  UINT8                       Reserved54[286];
 
 /** Offset 0x14CA - PCH Energy Reporting
   Disable/Enable PCH to CPU energy report feature.
@@ -3235,11 +884,7 @@ typedef struct {
 
 /** Offset 0x14CB - Reserved
 **/
-  UINT8                       Reserved644;
-
-/** Offset 0x14CC - Reserved
-**/
-  UINT8                       Reserved645;
+  UINT8                       Reserved55[2];
 
 /** Offset 0x14CD - Low Power Mode Enable/Disable config mask
   Configure if respective S0i2/3 sub-states are to be supported. Each bit corresponds
@@ -3250,51 +895,16 @@ typedef struct {
 
 /** Offset 0x14CE - Reserved
 **/
-  UINT8                       Reserved646;
+  UINT8                       Reserved56[34];
 
-/** Offset 0x14CF - Reserved
+/** Offset 0x14F0 - FspEventHandler
+  <b>Optional</b> pointer to the boot loader's implementation of FSP_EVENT_HANDLER.
 **/
-  UINT8                       Reserved647;
-
-/** Offset 0x14D0 - Reserved
-**/
-  UINT8                       Reserved648[8];
-
-/** Offset 0x14D8 - Reserved
-**/
-  UINT8                       Reserved649[8];
-
-/** Offset 0x14E0 - Reserved
-**/
-  UINT8                       Reserved650[8];
-
-/** Offset 0x14E8 - Reserved
-**/
-  UINT8                       Reserved651[8];
-
-/** Offset 0x14F0 - Reserved
-**/
-  UINT32                      Reserved652;
+  UINT32                      FspEventHandler;
 
 /** Offset 0x14F4 - Reserved
 **/
-  UINT8                       Reserved653[4];
-
-/** Offset 0x14F8 - Reserved
-**/
-  UINT8                       Reserved654[4];
-
-/** Offset 0x14FC - Reserved
-**/
-  UINT8                       Reserved655[4];
-
-/** Offset 0x1500 - Reserved
-**/
-  UINT8                       Reserved656[5];
-
-/** Offset 0x1505 - Reserved
-**/
-  UINT8                       Reserved657[3];
+  UINT8                       Reserved57[20];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration

@@ -6,8 +6,9 @@
 #include <elog.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
+#include <vb2_api.h>
 
-static void elog_add_boot_reason(void *unused)
+static void elog_add_boot_reason(void)
 {
 	const int rec = vboot_recovery_mode_enabled();
 	const int dev = vboot_developer_mode_enabled();
@@ -33,4 +34,28 @@ static void elog_add_boot_reason(void *unused)
 	}
 }
 
-BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY, elog_add_boot_reason, NULL);
+static void elog_add_vboot_info(void)
+{
+	/* Skip logging boot info in ACPI resume path */
+	if (acpi_is_wakeup_s3())
+		return;
+
+	struct vb2_context *ctx = vboot_get_context();
+	union vb2_fw_boot_info data = vb2api_get_fw_boot_info(ctx);
+	uint8_t width = offsetof(union vb2_fw_boot_info, recovery_reason);
+
+	if (vboot_recovery_mode_enabled())
+		width = sizeof(union vb2_fw_boot_info);
+
+	elog_add_event_raw(ELOG_TYPE_FW_VBOOT_INFO, &data, width);
+}
+
+static void elog_add_boot_records(void *unused)
+{
+	/* Log boot reason into the eventlog */
+	elog_add_boot_reason();
+	/* Log fw vboot info into the eventlog */
+	elog_add_vboot_info();
+}
+
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY, elog_add_boot_records, NULL);

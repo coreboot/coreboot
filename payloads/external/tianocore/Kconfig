@@ -175,6 +175,14 @@ config TIANOCORE_SD_MMC_TIMEOUT
 	  The amount of time allowed to initialize the SD Card reader and/or eMMC drive.
 	  Most only require 1000μs, but certain readers can take 1000000μs.
 
+config TIANOCORE_SERIAL_SUPPORT
+	bool "Support serial output"
+	default y if TIANOCORE_DEBUG
+	default n
+	help
+	  Enable serial port output in edk2. Serial output limits the performance of edk2's
+	  FrontPage.
+
 endif
 
 if TIANOCORE_COREBOOTPAYLOAD

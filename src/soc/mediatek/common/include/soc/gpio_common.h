@@ -42,6 +42,7 @@ struct gpio_drv_info {
 void gpio_set_pull(gpio_t gpio, enum pull_enable enable,
 		   enum pull_select select);
 void gpio_set_mode(gpio_t gpio, int mode);
+void *gpio_find_reg_addr(gpio_t gpio);
 
 /* Normal driving function */
 int gpio_set_driving(gpio_t gpio, uint8_t drv);

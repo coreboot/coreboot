@@ -3,7 +3,7 @@
 #include <device/mmio.h>
 #include <gpio.h>
 
-static void *gpio_find_reg_addr(gpio_t gpio)
+void *gpio_find_reg_addr(gpio_t gpio)
 {
 	void *reg_addr;
 	switch (gpio.base & 0x0f) {
@@ -31,62 +31,4 @@ static void *gpio_find_reg_addr(gpio_t gpio)
 	}
 
 	return reg_addr;
-}
-
-static void gpio_set_spec_pull_pupd(gpio_t gpio, enum pull_enable enable,
-				    enum pull_select select)
-{
-	void *reg1;
-	void *reg2;
-	int bit = gpio.bit;
-
-	reg1 = gpio_find_reg_addr(gpio) + gpio.offset;
-	reg2 = reg1 + (gpio.base & 0xf0);
-
-	if (enable == GPIO_PULL_ENABLE) {
-		if (select == GPIO_PULL_DOWN)
-			setbits32(reg1, 1 << bit);
-		else
-			clrbits32(reg1, 1 << bit);
-	}
-
-	if (enable == GPIO_PULL_ENABLE) {
-		setbits32(reg2, 1 << bit);
-	} else {
-		clrbits32(reg2, 1 << bit);
-		clrbits32(reg2 + 0x010, 1 << bit);
-	}
-}
-
-static void gpio_set_pull_pu_pd(gpio_t gpio, enum pull_enable enable,
-				enum pull_select select)
-{
-	void *reg1;
-	void *reg2;
-	int bit = gpio.bit;
-
-	reg1 = gpio_find_reg_addr(gpio) + gpio.offset;
-	reg2 = reg1 - (gpio.base & 0xf0);
-
-	if (enable == GPIO_PULL_ENABLE) {
-		if (select == GPIO_PULL_DOWN) {
-			clrbits32(reg1, 1 << bit);
-			setbits32(reg2, 1 << bit);
-		} else {
-			clrbits32(reg2, 1 << bit);
-			setbits32(reg1, 1 << bit);
-		}
-	} else {
-		clrbits32(reg1, 1 << bit);
-		clrbits32(reg2, 1 << bit);
-	}
-}
-
-void gpio_set_pull(gpio_t gpio, enum pull_enable enable,
-		   enum pull_select select)
-{
-	if (gpio.flag)
-		gpio_set_spec_pull_pupd(gpio, enable, select);
-	else
-		gpio_set_pull_pu_pd(gpio, enable, select);
 }

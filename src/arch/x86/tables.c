@@ -192,7 +192,12 @@ static uintptr_t forwarding_table = FORWARDING_TABLE_ADDR;
 void arch_write_tables(uintptr_t coreboot_table)
 {
 	size_t sz;
-	unsigned long rom_table_end = 0xf0000;
+	unsigned long rom_table_end;
+
+	if (CONFIG(SHADOW_ROM_TABLE_TO_EBDA))
+		rom_table_end = CONFIG_DEFAULT_EBDA_SEGMENT << 4;
+	else
+		rom_table_end = 0xf0000;
 
 	/* This table must be between 0x0f0000 and 0x100000 */
 	if (CONFIG(GENERATE_PIRQ_TABLE))
@@ -224,4 +229,8 @@ void bootmem_arch_add_ranges(void)
 	const uintptr_t base = 0;
 
 	bootmem_add_range(base, forwarding_table - base, BM_MEM_TABLE);
+
+	/* Reserve Extend BIOS Data Area (EBDA) region explicitly */
+	bootmem_add_range((uintptr_t)CONFIG_DEFAULT_EBDA_SEGMENT << 4,
+			CONFIG_DEFAULT_EBDA_SIZE, BM_MEM_TABLE);
 }

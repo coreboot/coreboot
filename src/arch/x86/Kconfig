@@ -439,4 +439,11 @@ config DEFAULT_EBDA_SIZE
 	default 0x400
 	help
 	  The default value of EBDA size is 0x400.
+
+config SHADOW_ROM_TABLE_TO_EBDA
+	bool
+	default n
+	help
+	  For platforms without writable PAM-F segment support. Put ROM table
+	  pointers (e.g. ACPI/SMBIOS low pointers) into EBDA.
 endif

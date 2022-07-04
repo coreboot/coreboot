@@ -1,8 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef SOC_MEDIATEK_COMMON_WDT_H
-#define SOC_MEDIATEK_COMMON_WDT_H
+#ifndef SOC_MEDIATEK_WDT_COMMON_H
+#define SOC_MEDIATEK_WDT_COMMON_H
 
+#include <device/mmio.h>
 #include <stdint.h>
 #include <soc/addressmap.h>
 
@@ -39,10 +40,17 @@ enum {
 	MTK_WDT_STA_HW_RST	= 1 << 31
 };
 
+/* WDT_REQ */
+#define MTK_WDT_REQ_MOD_KEY_VAL 0x33
+#define MTK_WDT_REQ_IRQ_KEY_VAL 0x44
+
+DEFINE_BITFIELD(MTK_WDT_REQ_MOD_KEY, 31, 24)
+DEFINE_BITFIELD(MTK_WDT_REQ_IRQ_KEY, 31, 24)
+
 static struct mtk_wdt_regs *const mtk_wdt = (void *)RGU_BASE;
 
 int mtk_wdt_init(void);
 void mtk_wdt_clr_status(void);
 void mtk_wdt_set_req(void);
 
-#endif /* SOC_MEDIATEK_COMMON_WDT_H */
+#endif /* SOC_MEDIATEK_WDT_COMMON_H */

@@ -14,7 +14,7 @@ bootblock-y += gic.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-y += ../common/pll.c pll.c
 bootblock-y += ../common/tracker.c ../common/tracker_v1.c
-bootblock-y += ../common/wdt.c wdt.c
+bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c
 romstage-y += ../common/dram_init.c

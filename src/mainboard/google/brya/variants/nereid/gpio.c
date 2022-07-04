@@ -48,8 +48,6 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_SOC_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
-	/* B11 : PMCALERT# ==> EN_PP3300_WLAN_X */
-	PAD_CFG_GPO(GPP_B11, 1, DEEP),
 	/* H13 : UART0_CTS# ==> EN_PP3300_SD_X */
 	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 };

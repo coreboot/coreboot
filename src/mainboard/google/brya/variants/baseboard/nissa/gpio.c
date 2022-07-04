@@ -73,8 +73,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B9, NONE),
 	/* B10 : Not available */
 	PAD_NC(GPP_B10, NONE),
-	/* B11 : PMCALERT# ==> EN_PP3300_WLAN_X */
-	PAD_CFG_GPO(GPP_B11, 1, DEEP),
+	/* B11 : NC */
+	PAD_NC(GPP_B11, NONE),
 	/* B12 : SLP_S0# ==> SLP_S0_L */
 	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
 	/* B13 : PLTRST# ==> PLT_RST_L */

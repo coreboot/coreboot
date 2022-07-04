@@ -1,4 +1,4 @@
-comment "Star Labs LabTop Series"
+comment "Star Labs StarBook Series"
 
 config BOARD_STARLABS_LABTOP_KBL
 	bool "Star Labs LabTop Mk III (i7-8550u)"

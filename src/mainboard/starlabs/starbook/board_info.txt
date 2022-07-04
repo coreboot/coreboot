@@ -1,5 +1,5 @@
 Vendor name: Star Labs
-Board name: LabTop
+Board name: StarBook
 Category: laptop
 ROM protocol: SPI
 ROM socketed: n

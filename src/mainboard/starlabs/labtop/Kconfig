@@ -77,7 +77,7 @@ config EC_STARLABS_ADD_ITE_BIN
 config EC_STARLABS_ITE_BIN_PATH
 	string
 	depends on EC_STARLABS_NEED_ITE_BIN
-	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin"
+	default "3rdparty/blobs/mainboard/starlabs/starbook/\$(CONFIG_VARIANT_DIR)/ec.bin"
 
 config EC_VARIANT_DIR
 	default "kbl" if !EC_STARLABS_MERLIN && BOARD_STARLABS_LABTOP_KBL

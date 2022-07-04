@@ -53,7 +53,7 @@ Device (CREC)
 #endif
 	Method(_STA, 0)
 	{
-		Return (0xB)
+		Return (0xF)
 	}
 
 #if CONFIG(DRIVERS_ACPI_THERMAL_ZONE)

@@ -6,6 +6,7 @@ all-y += ../common/uart.c
 
 bootblock-y += bootblock.c
 bootblock-y += ../common/mmu_operations.c
+bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c
 romstage-y += emi.c

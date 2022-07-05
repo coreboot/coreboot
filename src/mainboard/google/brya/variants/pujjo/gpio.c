@@ -8,15 +8,15 @@
 /* Pad configuration in ramstage for Pujjo */
 static const struct pad_config override_gpio_table[] = {
 	/* D3  : WCAM_RST_L ==> NC */
-	PAD_NC(GPP_D3, NONE),
+	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
 	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D15  : EN_PP2800_WCAM_X ==> NC */
-	PAD_NC(GPP_D15, NONE),
+	PAD_NC_LOCK(GPP_D15, NONE, LOCK_CONFIG),
 	/* D16  : EN_PP1800_PP1200_WCAM_X ==> NC */
-	PAD_NC(GPP_D16, NONE),
+	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
 	/* F12 : WWAN_RST_L */
-	PAD_CFG_GPO(GPP_F12, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H22  : WCAM_MCLK_R ==> NC */
 	PAD_NC(GPP_H22, NONE),
 };

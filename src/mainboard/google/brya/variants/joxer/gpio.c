@@ -7,6 +7,11 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config override_gpio_table[] = {
+	/* A21 : GPP_A21 ==> USB_C1_AUX_DC_P */
+	PAD_CFG_GPO(GPP_A21, 0, DEEP),
+	/* A22 : GPP_A22 ==> USB_C1_AUX_DC_N */
+	PAD_CFG_GPO(GPP_A22, 1, DEEP),
+
 	/* B5  : SOC_I2C_SUB_SDA ==> NC */
 	PAD_NC_LOCK(GPP_B5, NONE, LOCK_CONFIG),
 	/* B6  : SOC_I2C_SUB_SCL ==> NC */

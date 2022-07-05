@@ -8,16 +8,16 @@
 /* Pad configuration in ramstage */
 static const struct pad_config override_gpio_table[] = {
 	/* B5  : SOC_I2C_SUB_SDA ==> NC */
-	PAD_NC(GPP_B5, NONE),
+	PAD_NC_LOCK(GPP_B5, NONE, LOCK_CONFIG),
 	/* B6  : SOC_I2C_SUB_SCL ==> NC */
-	PAD_NC(GPP_B6, NONE),
+	PAD_NC_LOCK(GPP_B6, NONE, LOCK_CONFIG),
 
 	/* D3  : WCAM_RST_L ==> NC */
-	PAD_NC(GPP_D3, NONE),
+	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D15 : EN_PP2800_WCAM_X ==> NC */
-	PAD_NC(GPP_D15, NONE),
+	PAD_NC_LOCK(GPP_D15, NONE, LOCK_CONFIG),
 	/* D16 : EN_PP1800_PP1200_WCAM_X ==> NC */
-	PAD_NC(GPP_D16, NONE),
+	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
 
 	/* E20 : DDP2_CTRLCLK ==> NC  */
 	PAD_NC(GPP_E20, NONE),
@@ -25,11 +25,11 @@ static const struct pad_config override_gpio_table[] = {
 	/* F6  : CNV_PA_BLANKING ==> NC */
 	PAD_NC(GPP_F6, NONE),
 	/* F12 : GSXDOUT ==> NC */
-	PAD_NC(GPP_F12, NONE),
+	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
 	/* F13 : GSXSLOAD ==> NC */
 	PAD_NC(GPP_F13, NONE),
 	/* F15 : GSXSRESET# ==> NC */
-	PAD_NC(GPP_F15, NONE),
+	PAD_NC_LOCK(GPP_F15, NONE, LOCK_CONFIG),
 
 	/* H8  : CNV_MFUART2_RXD ==> NC */
 	PAD_NC(GPP_H8, NONE),

@@ -25,19 +25,6 @@ DEFINE_BIT(SPI_EINT_MODE_GATING_EN, 13)
 DEFINE_BITFIELD(SPM_SLEEP_REQ_SEL, 1, 0)
 DEFINE_BITFIELD(SCP_SLEEP_REQ_SEL, 10, 9)
 
-static const struct spmi_device spmi_dev[] = {
-	{
-		.slvid = SPMI_SLAVE_6,
-		.type = BUCK_CPU,
-		.type_id = BUCK_CPU_ID,
-	},
-	{
-		.slvid = SPMI_SLAVE_7,
-		.type = BUCK_GPU,
-		.type_id = BUCK_GPU_ID,
-	},
-};
-
 static int spmi_read_check(struct pmif *pmif_arb, int slvid)
 {
 	u32 rdata = 0;
@@ -88,7 +75,7 @@ static int spmi_cali_rd_clock_polarity(struct pmif *pmif_arb, const struct spmi_
 
 static int spmi_mst_init(struct pmif *pmif_arb)
 {
-	int i;
+	size_t i;
 
 	if (!pmif_arb) {
 		printk(BIOS_ERR, "%s: null pointer for pmif dev.\n", __func__);
@@ -98,7 +85,7 @@ static int spmi_mst_init(struct pmif *pmif_arb)
 	pmif_spmi_iocfg();
 	spmi_config_master();
 
-	for (i = 0; i < ARRAY_SIZE(spmi_dev); i++)
+	for (i = 0; i < spmi_dev_cnt; i++)
 		spmi_cali_rd_clock_polarity(pmif_arb, &spmi_dev[i]);
 
 	return 0;

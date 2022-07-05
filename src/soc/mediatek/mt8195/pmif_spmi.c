@@ -30,6 +30,21 @@ DEFINE_BIT(PDN_SPMI_MST, 15)
 /* TOPCKGEN, CLK_CFG_UPDATE2 */
 DEFINE_BIT(SPMI_MST_CK_UPDATE, 5)
 
+const struct spmi_device spmi_dev[] = {
+	{
+		.slvid = SPMI_SLAVE_6,
+		.type = BUCK_CPU,
+		.type_id = BUCK_CPU_ID,
+	},
+	{
+		.slvid = SPMI_SLAVE_7,
+		.type = BUCK_GPU,
+		.type_id = BUCK_GPU_ID,
+	},
+};
+
+const size_t spmi_dev_cnt = ARRAY_SIZE(spmi_dev);
+
 int spmi_config_master(void)
 {
 	/* Software reset */

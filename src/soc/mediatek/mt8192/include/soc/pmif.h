@@ -7,6 +7,10 @@
 #include <soc/pmif_common.h>
 #include <types.h>
 
+/* indicate which number SW channel start, by project */
+#define PMIF_SPMI_SW_CHAN	BIT(6)
+#define PMIF_SPMI_INF		0x2F7
+
 struct mtk_pmif_regs {
 	u32 init_done;
 	u32 reserved1[5];

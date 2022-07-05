@@ -4,6 +4,7 @@
 #include <delay.h>
 #include <soc/mt6315.h>
 #include <soc/pmif.h>
+#include <soc/pmif_spmi.h>
 
 static struct pmif *pmif_arb = NULL;
 
@@ -95,8 +96,12 @@ static void init_pmif_arb(void)
 
 void mt6315_init(void)
 {
+	size_t i;
+
 	init_pmif_arb();
-	mt6315_wdt_enable(MT6315_CPU);
-	mt6315_wdt_enable(MT6315_GPU);
+
+	for (i = 0; i < spmi_dev_cnt; i++)
+		mt6315_wdt_enable(spmi_dev[i].slvid);
+
 	mt6315_init_setting();
 }

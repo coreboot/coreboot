@@ -40,11 +40,7 @@ are permitted provided that the following conditions are met:
 	}
 
 #define MAX_IMC_PER_SOCKET                MAX_IMC
-#define MAX_SRAT_MEM_ENTRIES_PER_IMC      8
 #define MAX_SMB_INSTANCE                  2
-#define MAX_ACPI_MEMORY_AFFINITY_COUNT ( \
-	MAX_SOCKET * MAX_IMC_PER_SOCKET * MAX_SRAT_MEM_ENTRIES_PER_IMC \
-	)
 #define AMT_MAX_NODE        ((MAX_AMT)*(MAX_SOCKET))   // Max abstract memory target for all sockets
 
 #endif // _HOB_MEMMAP_H_

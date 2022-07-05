@@ -51,6 +51,7 @@ static struct {
 	{ PCI_DID_INTEL_MTL_M_GT2, "MeteorLake-M GT2" },
 	{ PCI_DID_INTEL_MTL_P_GT2_1, "MeteorLake-P GT2" },
 	{ PCI_DID_INTEL_MTL_P_GT2_2, "MeteorLake-P GT2" },
+	{ PCI_DID_INTEL_MTL_P_GT2_3, "MeteorLake-P GT2" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

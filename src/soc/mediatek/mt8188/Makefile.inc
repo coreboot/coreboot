@@ -15,6 +15,11 @@ bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 romstage-y += ../common/cbmem.c
 romstage-y += emi.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
+romstage-y += ../common/mt6315.c mt6315.c
+romstage-y += ../common/mt6359p.c mt6359p.c
+romstage-y += ../common/pmif.c ../common/pmif_clk.c pmif_clk.c
+romstage-y += ../common/pmif_spi.c pmif_spi.c
+romstage-y += ../common/pmif_spmi.c pmif_spmi.c
 
 ramstage-y += emi.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c

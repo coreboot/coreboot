@@ -581,7 +581,7 @@ void pmc_gpe_init(void)
 {
 	uint32_t gpio_cfg = 0;
 	uint32_t gpio_cfg_reg;
-	uint8_t dw0, dw1, dw2;
+	uint8_t dw0 = 0, dw1 = 0, dw2 = 0;
 
 	/* Read PMC base address from soc. This is implemented in soc */
 	uintptr_t pmc_bar = soc_read_pmc_base();

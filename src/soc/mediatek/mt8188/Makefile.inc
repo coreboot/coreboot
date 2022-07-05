@@ -19,6 +19,7 @@ romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-y += emi.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-y += soc.c
+ramstage-y += ../common/usb.c usb.c
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8188/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include

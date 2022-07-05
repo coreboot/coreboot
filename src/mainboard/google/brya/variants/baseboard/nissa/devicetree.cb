@@ -81,6 +81,10 @@ chip soc/intel/alderlake
 	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
 	register "pch_hda_idisp_codec_enable" = "1"
 
+	# FIXME: To be enabled in future based on PNP impact data.
+	# Disable Package C-state demotion for nissa baseboard.
+	register "disable_package_c_state_demotion" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

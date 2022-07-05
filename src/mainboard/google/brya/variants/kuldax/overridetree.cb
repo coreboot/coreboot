@@ -11,6 +11,13 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 	}"
 
+	register "ddi_ports_config" = "{
+		[DDI_PORT_A] = DDI_ENABLE_HPD,
+		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+		[DDI_PORT_1] = DDI_ENABLE_HPD,
+		[DDI_PORT_3] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+	}"
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf

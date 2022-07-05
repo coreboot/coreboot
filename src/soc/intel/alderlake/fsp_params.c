@@ -965,6 +965,8 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->C1StateAutoDemotion = !config->disable_c1_state_auto_demotion;
 
 	s_cfg->VrPowerDeliveryDesign = config->vr_power_delivery_design;
+
+	s_cfg->PkgCStateDemotion = !config->disable_package_c_state_demotion;
 }
 
 static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,

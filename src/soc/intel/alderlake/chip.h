@@ -614,6 +614,13 @@ struct soc_intel_alderlake_config {
 	 * Workaround for Intel TA# 723158 to prevent possible display flicker.
 	 */
 	bool usb2_phy_sus_pg_disable;
+
+	/*
+	 * Enable or Disable Package C-state Demotion.
+	 * Default is set to 0.
+	 * Set this to 1 in order to disable Package C-state demotion.
+	 */
+	bool disable_package_c_state_demotion;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

@@ -132,9 +132,9 @@ static unsigned int get_srat_memory_entries(acpi_srat_mem_t *srat_mem)
 		srat_mem[mmap_index].length_low = (uint32_t)(size & 0xffffffff);
 		srat_mem[mmap_index].length_high = (uint32_t)(size >> 32);
 		srat_mem[mmap_index].proximity_domain = mem_element->SocketId;
-		srat_mem[mmap_index].flags = SRAT_ACPI_MEMORY_ENABLED;
+		srat_mem[mmap_index].flags = ACPI_SRAT_MEMORY_ENABLED;
 		if ((mem_element->Type & MEMTYPE_VOLATILE_MASK) == 0)
-			srat_mem[mmap_index].flags |= SRAT_ACPI_MEMORY_NONVOLATILE;
+			srat_mem[mmap_index].flags |= ACPI_SRAT_MEMORY_NONVOLATILE;
 		++mmap_index;
 	}
 

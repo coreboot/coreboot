@@ -409,6 +409,10 @@ typedef struct acpi_srat_lapic {
 	u32 clock_domain;		/* _CDM Clock Domain */
 } __packed acpi_srat_lapic_t;
 
+#define ACPI_SRAT_MEMORY_ENABLED	(1 << 0)
+#define ACPI_SRAT_MEMORY_HOT_PLUGGABLE	(1 << 1)
+#define ACPI_SRAT_MEMORY_NONVOLATILE	(1 << 2)
+
 /* SRAT: Memory Affinity Structure */
 typedef struct acpi_srat_mem {
 	u8 type;			/* Type (1) */

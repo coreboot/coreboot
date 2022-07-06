@@ -132,7 +132,7 @@ config EXT_BIOS_WIN_SIZE
 
 config IFD_CHIPSET
 	string
-	default "ifd2"
+	default "mtl"
 
 config IED_REGION_SIZE
 	hex

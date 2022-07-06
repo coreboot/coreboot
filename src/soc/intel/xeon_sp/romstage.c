@@ -3,7 +3,6 @@
 #include <arch/romstage.h>
 #include <intelblocks/rtc.h>
 #include <console/console.h>
-#include <cpu/x86/mtrr.h>
 #include <fsp/util.h>
 #include <soc/romstage.h>
 #include <soc/util.h>

@@ -12,6 +12,7 @@ bootblock-y += car.c
 bootblock-y += heci.c
 bootblock-y += gspi.c
 bootblock-y += i2c.c
+bootblock-$(CONFIG_IFWI_IBBM_LOAD) += loader.c
 bootblock-y += lpc.c
 bootblock-y += mmap_boot.c
 bootblock-y += pmutil.c

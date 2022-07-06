@@ -205,4 +205,30 @@ else
 cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-5c-*)
 endif
 
+$(objcbfs)/ibbl.rom: $(objcbfs)/bootblock.bin
+	cp $(objcbfs)/bootblock.bin $@
+
+$(objcbfs)/ibbm.rom: $(objcbfs)/$(call strip_quotes,$(CONFIG_IBBM_ROM_COMPONENT))
+	dd if=$(objcbfs)/$(call strip_quotes,$(CONFIG_IBBM_ROM_COMPONENT)) \
+		of=$@ skip=96 bs=1 count=$(call _toint,$(CONFIG_IBBM_ROM_SIZE))
+
+obb-deps-$(CONFIG_VBOOT) := $(obj)/gbb.region $(obj)/fwid.region
+$(objcbfs)/obb.rom: $(CBFSTOOL) $(obj)/coreboot.rom $(obb-deps-y)
+ifeq ($(CONFIG_VBOOT),y)
+	@printf "    WRITE GBB\n"
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r GBB -i 0 -f $(obj)/gbb.region
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r RO_FRID -i 0 -f $(obj)/fwid.region
+ifeq ($(CONFIG_VBOOT_SLOTS_RW_A),y)
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r RW_FWID_A -i 0 -f $(obj)/fwid.region
+endif
+ifeq ($(CONFIG_VBOOT_SLOTS_RW_AB),y)
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r RW_FWID_B -i 0 -f $(obj)/fwid.region
+endif
+endif # CONFIG_VBOOT
+	$(CBFSTOOL) $(obj)/coreboot.rom read -r OBB -f $@
+
+ifeq ($(CONFIG_IFWI_IBBM_LOAD),y)
+coreboot: $(objcbfs)/ibbl.rom $(objcbfs)/ibbm.rom $(objcbfs)/obb.rom
+endif
+
 endif # if CONFIG_SOC_INTEL_APOLLOLAKE

@@ -63,6 +63,11 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H6, NONE),
 	/* H7  : I2C3_SCL */
 	PAD_NC(GPP_H7, NONE),
+
+	/* S2  : DMIC1_CLK */
+	PAD_NC(GPP_S2, NONE),
+	/* S3  : DMIC1_DATA */
+	PAD_NC(GPP_S3, NONE),
 };
 
 const struct pad_config *variant_override_gpio_table(size_t *num)

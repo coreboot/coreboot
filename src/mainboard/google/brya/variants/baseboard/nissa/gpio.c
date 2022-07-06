@@ -390,6 +390,27 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPD10, NONE),
 	/* GPD11 : NC */
 	PAD_NC(GPD11, NONE),
+
+	/* Configure the unused virtual CNVi Bluetooth UART pads to NC mode. */
+	/* vCNV_BT_UART_TXD */
+	PAD_NC(GPP_VGPIO_6, NONE),
+	/* vCNV_BT_UART_RXD */
+	PAD_NC(GPP_VGPIO_7, NONE),
+	/* vCNV_BT_UART_CTS_B */
+	PAD_NC(GPP_VGPIO_8, NONE),
+	/* vCNV_BT_UART_RTS_B */
+	PAD_NC(GPP_VGPIO_9, NONE),
+
+	/* Configure the unused vUART for Bluetooth pads to NC mode. */
+	/* vUART0_TXD */
+	PAD_NC(GPP_VGPIO_18, NONE),
+	/* vUART0_RXD */
+	PAD_NC(GPP_VGPIO_19, NONE),
+	/* vUART0_CTS_B */
+	PAD_NC(GPP_VGPIO_20, NONE),
+	/* vUART0_RTS_B */
+	PAD_NC(GPP_VGPIO_21, NONE),
+
 };
 
 /* Early pad configuration in bootblock */

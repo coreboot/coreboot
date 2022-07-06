@@ -227,6 +227,80 @@ Device (FUR3) {
 	AOAC_DEVICE(FCH_AOAC_DEV_UART3, 0)
 }
 
+#if CONFIG(PSP_LOAD_MP2_FW)
+Device (I2C0) {
+	Name (_HID, "AMDI0011")
+	Name (_UID, 0x0)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_I2C0_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = II20
+		} Else {
+			IRQN = PI20
+		}
+		If (IRQN == 0x1f) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_I2C0_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (0x0F)
+	}
+
+	AOAC_DEVICE(5, 0)
+}
+
+Device (I2C1) {
+	Name (_HID, "AMDI0011")
+	Name (_UID, 0x1)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_I2C1_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = II21
+		} Else {
+			IRQN = PI21
+		}
+		If (IRQN == 0x1f) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_I2C1_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (0x0F)
+	}
+
+	AOAC_DEVICE(6, 0)
+}
+#endif /* CONFIG(PSP_LOAD_MP2_FW) */
+
 Device (I2C2) {
 	Name (_HID, "AMDI0010")
 	Name (_UID, 0x2)

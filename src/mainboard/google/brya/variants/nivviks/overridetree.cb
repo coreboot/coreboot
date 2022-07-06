@@ -50,6 +50,9 @@ chip soc/intel/alderlake
 		.vnn_icc_max_ma = 500,
 	}"
 
+	# Enable the Cnvi BT Audio Offload
+	register "cnvi_bt_audio_offload" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

@@ -10,4 +10,4 @@
 #define IRQS_PER_IPC	32
 #define NUM_IPC_REGS	((ITSS_MAX_IRQ + IRQS_PER_IPC - 1)/IRQS_PER_IPC)
 
-#endif	/* SOC_INTEL_ADL_ITSS_H */
+#endif	/* SOC_INTEL_MTL_ITSS_H */

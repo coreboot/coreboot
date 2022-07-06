@@ -142,8 +142,7 @@ config HEAP_SIZE
 	hex
 	default 0x10000
 
-# Intel recommends reserving the following resources per PCIe TBT root port,
-# from ADL BIOS Spec (doc #627270) Revision 0.6.0 Section 7.2.5.1.5
+# Intel recommends reserving the PCIe TBT root port resources as below:
 # - 42 buses
 # - 194 MiB Non-prefetchable memory
 # - 448 MiB Prefetchable memory

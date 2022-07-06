@@ -208,7 +208,7 @@ config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 
 config SOC_INTEL_COMMON_BLOCK_GSPI_MAX
 	int
-	default 2
+	default 3
 
 config SOC_INTEL_I2C_DEV_MAX
 	int

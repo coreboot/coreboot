@@ -81,8 +81,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),
 	/* GPP_B2 : [NF1: VRALERT# NF6: USB_C_GPP_B2] ==> GPP_B2 */
 	PAD_CFG_NF(GPP_B2, NONE, DEEP, NF6),
-	/* GPP_B3 : No heuristic was found useful */
-	PAD_NC(GPP_B3, NONE),
+	/* GPP_B3 : MEM_CH_SEL */
+	PAD_CFG_GPI(GPP_B3, NONE, DEEP),
 	/* GPP_B4 : [NF1: PROC_GP3 NF4: ISH_GP5B NF6: USB_C_GPP_B4] ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 1, PLTRST),
 	/* GPP_B5 : [NF1: ISH_I2C0_SDA NF2: I2C2_SDA NF6: USB_C_GPP_B5] ==> PCH_I2C_MISC_R_SDA */
@@ -169,20 +169,20 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D19, NONE),
 	/* GPP_E0 : net NC is not present in the given design */
 	PAD_NC(GPP_E0, NONE),
-	/* GPP_E1 : MEM_STRAP_2 ==> Component NC */
-	PAD_NC(GPP_E1, NONE),
-	/* GPP_E2 : MEM_STRAP_1 ==> Component NC */
-	PAD_NC(GPP_E2, NONE),
-	/* GPP_E3 : MEM_STRAP_0 ==> Component NC */
-	PAD_NC(GPP_E3, NONE),
+	/* GPP_E1 : MEM_STRAP_2 */
+	PAD_CFG_GPI(GPP_E1, NONE, DEEP),
+	/* GPP_E2 : MEM_STRAP_1 */
+	PAD_CFG_GPI(GPP_E2, NONE, DEEP),
+	/* GPP_E3 : MEM_STRAP_0 */
+	PAD_CFG_GPI(GPP_E3, NONE, DEEP),
 	/* GPP_E4 : [NF1: DEVSLP0 NF6: USB_C_GPP_E4 NF7: SRCCLK_OE9#] ==> USB4_BB_RT_FORCE_PWR */
 	PAD_CFG_GPO(GPP_E4, 1, DEEP),
 	/* GPP_E5 : net NC is not present in the given design */
 	PAD_NC(GPP_E5, NONE),
 	/* GPP_E6 : GPP_E6_STRAP ==> Component NC */
 	PAD_NC(GPP_E6, NONE),
-	/* GPP_E7 : MEM_STRAP_3 ==> Component NC */
-	PAD_NC(GPP_E7, NONE),
+	/* GPP_E7 : MEM_STRAP_3 */
+	PAD_CFG_GPI(GPP_E7, NONE, DEEP),
 	/* GPP_E8 : [NF6: USB_C_GPP_E8] ==> WIFI_DISABLE_L */
 	PAD_CFG_GPO(GPP_E8, 1, DEEP),
 	/* GPP_E9 : [NF1: USB_OC0# NF2: ISH_GP4 NF6: USB_C_GPP_E9] ==> USB_C0_OC_ODL */
@@ -197,8 +197,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF7),
 	/* GPP_E14 : [NF1: DDSP_HPDA NF2: DISP_MISCA NF6: USB_C_GPP_E14] ==> SOC_EDP_HPD */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
-	/* GPP_E15 : No heuristic was found useful */
-	PAD_NC(GPP_E15, NONE),
+	/* GPP_E15 : RSVD_TP ==> PCH_WP_OD */
+	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_E15, NONE, LOCK_CONFIG),
 	/* GPP_E16 : net NC is not present in the given design */
 	PAD_NC(GPP_E16, NONE),
 	/* GPP_E17 : net NC is not present in the given design */

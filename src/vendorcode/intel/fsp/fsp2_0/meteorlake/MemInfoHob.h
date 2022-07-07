@@ -28,7 +28,10 @@ extern EFI_GUID gSiMemoryPlatformDataGuid;
 
 #define MAX_NODE        2
 #define MAX_CH          4
+#define MAX_DDR5_CH     2
 #define MAX_DIMM        2
+// Must match definitions in
+// Intel\ClientOneSiliconPkg\IpBlock\MemoryInit\Mtl\Include\MrcInterface.h
 #define HOB_MAX_SAGV_POINTS 4
 
 ///
@@ -145,11 +148,23 @@ typedef enum {
 #define MRC_DDR_TYPE_UNKNOWN  4
 #endif
 
-#define MAX_PROFILE_NUM     7 // number of memory profiles supported
-#define MAX_XMP_PROFILE_NUM 5 // number of XMP profiles supported
+#define MAX_PROFILE_NUM       7 // number of memory profiles supported
+#define MAX_XMP_PROFILE_NUM   5 // number of XMP profiles supported
 
-#define MAX_TRACE_REGION             5
-#define MAX_TRACE_CACHE_TYPE         2
+#ifndef MAX_RCOMP_TARGETS
+#define MAX_RCOMP_TARGETS     5
+#endif
+
+#ifndef MAX_ODT_ENTRIES
+#define MAX_ODT_ENTRIES       11
+#endif
+
+#ifndef MAX_COPY_DIMM_DFE_TAPS
+#define MAX_COPY_DIMM_DFE_TAPS      2
+#endif
+
+#define MAX_TRACE_REGION              5
+#define MAX_TRACE_CACHE_TYPE          2
 
 //
 // DIMM timings
@@ -261,13 +276,15 @@ typedef struct {
   UINT8             XmpProfileEnable;                  ///< If XMP capable DIMMs are detected, this will indicate which XMP Profiles are common among all DIMMs.
   UINT8             XmpConfigWarning;                  ///< If XMP capable DIMMs config support only 1DPC, but 2DPC is installed
   BOOLEAN           DynamicMemoryBoostTrainingFailed;  ///< TRUE if Dynamic Memory Boost failed to train and was force disabled on the last full training boot. FALSE otherwise.
-  UINT8             Ratio;                             ///< DDR Frequency Ratio, Max Value 255
+  UINT16            Ratio;                             ///< DDR Frequency Ratio, used for programs that require ratios higher then 255
   UINT8             RefClk;
   UINT32            VddVoltage[MAX_PROFILE_NUM];
   UINT32            VddqVoltage[MAX_PROFILE_NUM];
   UINT32            VppVoltage[MAX_PROFILE_NUM];
+  UINT16            RcompTarget[MAX_PROFILE_NUM][MAX_RCOMP_TARGETS];
+  UINT16            DimmOdt[MAX_PROFILE_NUM][MAX_DIMM][MAX_ODT_ENTRIES];
+  INT8              DimmDFE[MAX_PROFILE_NUM][MAX_DDR5_CH][MAX_DIMM][MAX_COPY_DIMM_DFE_TAPS];
   CONTROLLER_INFO   Controller[MAX_NODE];
-  UINT16            Ratio_UINT16;                      ///< DDR Frequency Ratio, used for programs that require ratios higher then 255
   UINT32            NumPopulatedChannels;              ///< Total number of memory channels populated
   HOB_SAGV_INFO     SagvConfigInfo;                    ///< This data structure contains SAGV config values that are considered output by the MRC.
   BOOLEAN           IsIbeccEnabled;

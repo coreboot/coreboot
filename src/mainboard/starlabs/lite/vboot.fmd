@@ -1,0 +1,28 @@
+FLASH 8M {
+	# OBBP must be defined to leave space for the partition header
+	OBBP@0x382000 {
+		# The maximum size for the OBB partition is 0x36e000 because
+		# unicorn + fish = cow
+		OBB@0x0			0x36e000 {
+			RO_SECTION@0xe000		0x261800 {
+				FMAP@0x0000			0x10000
+				COREBOOT(CBFS)@0x10000		0x210000
+				GBB@0x220000			0x40000
+				RO_FRID@0x260000		0x40
+				RO_VPD(PRESERVE)@0x260800	0x1000
+			}
+			MISC_RW@0x27e000		0x40000 {
+				FPF_STATUS@0x0			0x10000
+				UNIFIED_MRC_CACHE@0x10000	0x30000 {
+					RECOVERY_MRC_CACHE@0x0		0x10000
+					RW_MRC_CACHE@0x10000		0x10000
+					RW_VAR_MRC_CACHE@0x20000	0x10000
+				}
+			}
+			RW_NVRAM(PRESERVE)@0x2be000	0x6000
+			RW_VPD(PRESERVE)@0x2c4000	0x2000
+			RW_LEGACY(CBFS)@0x2c6000	0x60000
+			SMMSTORE@0x32e000		0x40000
+		}
+	}
+}

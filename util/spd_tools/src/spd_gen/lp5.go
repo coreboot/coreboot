@@ -70,6 +70,7 @@ type LP5Set struct {
 	otherOptionalFeatures  byte
 	busWidthEncoding  byte
 	speedToTCKMinPs map[int]int
+	maxSpeedMbps int
 }
 
 /* ------------------------------------------------------------------------------------------ */
@@ -194,7 +195,7 @@ var LP5SetInfo = map[int]LP5Set{
 		 * 2:0 (Bus width) = 001 (x16 always)
 		 * Set to 0x01.
 		 */
-		 busWidthEncoding: 0x01,
+		busWidthEncoding: 0x01,
 		/*
 		 * TCKMinPs:
 		 * LPDDR5 has two clocks: the command/address clock (CK) and the data clock (WCK). They are
@@ -208,7 +209,7 @@ var LP5SetInfo = map[int]LP5Set{
 			 7500 : 1066, /* 1 / (7500 / 2 / 4) */
 			 6400 : 1250, /* 1 / (6400 / 2 / 4) */
 			 5500 : 1455, /* 1 / (5500 / 2 / 4) */
-		 },
+		},
 	},
 	1: {
 		SPDRevision: LP5SPDValueRevision1_1,
@@ -219,13 +220,13 @@ var LP5SetInfo = map[int]LP5Set{
 		 * 3:0 (Maximum Activate Count) = 1000 (Unlimited MAC)
 		 * Set to 0x18.
 		 */
-		 optionalFeatures: 0x18,
+		optionalFeatures: 0x18,
 		/*
 		 * For Sabrina (as per advisory b/211510456):
 		 * 7:6 (PPR) = 1 (Post Package Repair is supported)
 		 * Set to 0x40.
 		 */
-		 otherOptionalFeatures: 0x40,
+		otherOptionalFeatures: 0x40,
 		/*
 		 * For Sabrina (as per advisory b/211510456):
 		 * 7:5 (Number of system channels) = 000 (1 channel always)
@@ -233,7 +234,9 @@ var LP5SetInfo = map[int]LP5Set{
 		 * 2:0 (Bus width) = 010 (x32 always)
 		 * Set to 0x02.
 		 */
-		 busWidthEncoding: 0x02,
+		busWidthEncoding: 0x02,
+		/* Sabrina supports max speed of 5500 MT/s */
+		maxSpeedMbps: 5500,
 	},
 }
 
@@ -637,6 +640,14 @@ func LP5EncodeTRFCPBMinLsb(memAttribs *LP5MemAttributes) byte {
 	return byte(convNsToMtb(memAttribs.TRFCPBNs) & 0xff)
 }
 
+func LP5UpdateSpeedMbps(memAttribs *LP5MemAttributes) {
+	f, ok := LP5SetInfo[LP5CurrSet]
+
+	if ok && f.maxSpeedMbps != 0 && memAttribs.SpeedMbps > f.maxSpeedMbps {
+		memAttribs.SpeedMbps = f.maxSpeedMbps
+	}
+}
+
 func LP5UpdateTCKMin(memAttribs *LP5MemAttributes) {
 	if memAttribs.TCKMinPs == 0 {
 		memAttribs.TCKMinPs = LP5GetTCKMinPs(memAttribs)
@@ -684,6 +695,7 @@ func LP5UpdateTRPPB(memAttribs *LP5MemAttributes) {
 }
 
 func lp5UpdateMemoryAttributes(memAttribs *LP5MemAttributes) {
+	LP5UpdateSpeedMbps(memAttribs)
 	LP5UpdateTCKMin(memAttribs)
 	LP5UpdateTAAMin(memAttribs)
 	LP5UpdateTRFCAB(memAttribs)

@@ -3,6 +3,7 @@
 chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x103c 0x1791 inherit
+		device pci 06.0 on  end	# Extra x4 port on north bridge
 		chip southbridge/intel/bd82x6x
 			register "sata_port_map" = "0x3f"
 
@@ -10,6 +11,8 @@ chip northbridge/intel/sandybridge
 			device pci 1c.2 on  end	# PCIe Port #3
 			device pci 1c.3 on  end	# PCIe Port #4
 			device pci 1c.5 on  end	# PCIe Port #6
+			device pci 1c.6 on  end	# PCIe Port #7
+			device pci 1c.7 on  end	# PCIe Port #8
 		end
 	end
 end

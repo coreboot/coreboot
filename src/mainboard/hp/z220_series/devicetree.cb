@@ -22,6 +22,7 @@ chip northbridge/intel/sandybridge
 		device pci 00.0 on  end	# Host bridge Host bridge
 		device pci 01.0 on  end	# PCIe Bridge for discrete graphics
 		device pci 02.0 on  end	# Internal graphics VGA controller
+		device pci 06.0 off end	# Extra x4 port on north bridge
 
 		chip southbridge/intel/bd82x6x # Intel Series 7 PCH
 			register "docking_supported" = "0"
@@ -47,8 +48,8 @@ chip northbridge/intel/sandybridge
 			device pci 1c.3 off end	# PCIe Port #4
 			device pci 1c.4 on  end	# PCIe Port #5
 			device pci 1c.5 off end	# PCIe Port #6
-			device pci 1c.6 on  end	# PCIe Port #7
-			device pci 1c.7 on  end	# PCIe Port #8
+			device pci 1c.6 off end	# PCIe Port #7
+			device pci 1c.7 off end	# PCIe Port #8
 			device pci 1d.0 on  end	# USB2 EHCI #1
 			device pci 1e.0 on  end	# PCI bridge
 			device pci 1f.0 on	# LPC bridge PCI-LPC bridge

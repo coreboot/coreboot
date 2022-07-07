@@ -4,7 +4,6 @@
 #include <baseboard/variants.h>
 #include <gpio.h>
 #include <soc/gpio.h>
-#include <baseboard/variants.h>
 
 /* This table is used by guybrush variant */
 static const struct soc_amd_gpio override_ramstage_gpio_table[] = {

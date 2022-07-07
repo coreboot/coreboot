@@ -47,6 +47,8 @@ ramstage-y += ../common/spm.c spm.c
 ramstage-y += ../common/sspm.c
 ramstage-y += ../common/usb.c usb.c
 
+BL31_MAKEARGS += PLAT=mt8188
+
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8188/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 

@@ -40,7 +40,7 @@
 #define GPE0_DW1_00		32
 #define GPE0_DW1_01		33
 #define GPE0_DW1_02		34
-#define GPE0_DW1_03		36
+#define GPE0_DW1_03		35
 #define GPE0_DW1_04		36
 #define GPE0_DW1_05		37
 #define GPE0_DW1_06		38

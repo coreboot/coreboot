@@ -17,12 +17,12 @@ fw_config
 		option SD_GL9750S		0
 		option SD_ABSENT		1
 	end
-	field CODEC 6 7
-		option CODEC_NAU8825		0
-		option CODEC_ALC5682I_VS	1
-	end
-	field AMP 8 9
+	field AMP 6 7
 		option AMP_MX98360A		0
+	end
+	field CODEC 32 33
+		option CODEC_ALC5682I_VS	0
+		option CODEC_NAU8825		1
 	end
 end
 

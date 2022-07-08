@@ -60,17 +60,17 @@
  * | Pad End Number   |    28   |
  * +------------------+---------+
  */
-#define GPP_V0			INC(GPP_VIDALERT_B)
-#define GPP_V1			INC(GPP_V0)
-#define GPP_V2			INC(GPP_V1)
-#define GPP_V3			INC(GPP_V2)
-#define GPP_V4			INC(GPP_V3)
-#define GPP_V5			INC(GPP_V4)
-#define GPP_V6			INC(GPP_V5)
-#define GPP_V7			INC(GPP_V6)
-#define GPP_V8			INC(GPP_V7)
-#define GPP_V9			INC(GPP_V8)
-#define GPP_V10			INC(GPP_V9)
+#define GPP_V00			INC(GPP_VIDALERT_B)
+#define GPP_V01			INC(GPP_V00)
+#define GPP_V02			INC(GPP_V01)
+#define GPP_V03			INC(GPP_V02)
+#define GPP_V04			INC(GPP_V03)
+#define GPP_V05			INC(GPP_V04)
+#define GPP_V06			INC(GPP_V05)
+#define GPP_V07			INC(GPP_V06)
+#define GPP_V08			INC(GPP_V07)
+#define GPP_V09			INC(GPP_V08)
+#define GPP_V10			INC(GPP_V09)
 #define GPP_V11			INC(GPP_V10)
 #define GPP_V12			INC(GPP_V11)
 #define GPP_V13			INC(GPP_V12)
@@ -96,17 +96,17 @@
  * | Pad End Number   |    52   |
  * +------------------+---------+
  */
-#define GPP_C0			INC(GPP_V23)
-#define GPP_C1			INC(GPP_C0)
-#define GPP_C2			INC(GPP_C1)
-#define GPP_C3			INC(GPP_C2)
-#define GPP_C4			INC(GPP_C3)
-#define GPP_C5			INC(GPP_C4)
-#define GPP_C6			INC(GPP_C5)
-#define GPP_C7			INC(GPP_C6)
-#define GPP_C8			INC(GPP_C7)
-#define GPP_C9			INC(GPP_C8)
-#define GPP_C10			INC(GPP_C9)
+#define GPP_C00			INC(GPP_V23)
+#define GPP_C01			INC(GPP_C00)
+#define GPP_C02			INC(GPP_C01)
+#define GPP_C03			INC(GPP_C02)
+#define GPP_C04			INC(GPP_C03)
+#define GPP_C05			INC(GPP_C04)
+#define GPP_C06			INC(GPP_C05)
+#define GPP_C07			INC(GPP_C06)
+#define GPP_C08			INC(GPP_C07)
+#define GPP_C09			INC(GPP_C08)
+#define GPP_C10			INC(GPP_C09)
 #define GPP_C11			INC(GPP_C10)
 #define GPP_C12			INC(GPP_C11)
 #define GPP_C13			INC(GPP_C12)
@@ -136,17 +136,17 @@
  * | Pad End Number   |    77   |
  * +------------------+---------+
  */
-#define GPP_A0			INC(GPP_C23)
-#define GPP_A1			INC(GPP_A0)
-#define GPP_A2			INC(GPP_A1)
-#define GPP_A3			INC(GPP_A2)
-#define GPP_A4			INC(GPP_A3)
-#define GPP_A5			INC(GPP_A4)
-#define GPP_A6			INC(GPP_A5)
-#define GPP_A7			INC(GPP_A6)
-#define GPP_A8			INC(GPP_A7)
-#define GPP_A9			INC(GPP_A8)
-#define GPP_A10			INC(GPP_A9)
+#define GPP_A00			INC(GPP_C23)
+#define GPP_A01			INC(GPP_A00)
+#define GPP_A02			INC(GPP_A01)
+#define GPP_A03			INC(GPP_A02)
+#define GPP_A04			INC(GPP_A03)
+#define GPP_A05			INC(GPP_A04)
+#define GPP_A06			INC(GPP_A05)
+#define GPP_A07			INC(GPP_A06)
+#define GPP_A08			INC(GPP_A07)
+#define GPP_A09			INC(GPP_A08)
+#define GPP_A10			INC(GPP_A09)
 #define GPP_A11			INC(GPP_A10)
 #define GPP_A12			INC(GPP_A11)
 #define GPP_A13			INC(GPP_A12)
@@ -173,17 +173,17 @@
  * | Pad End Number   |    102  |
  * +------------------+---------+
  */
-#define GPP_E0			INC(GPP_ESPI_CLK_LPBK)
-#define GPP_E1			INC(GPP_E0)
-#define GPP_E2			INC(GPP_E1)
-#define GPP_E3			INC(GPP_E2)
-#define GPP_E4			INC(GPP_E3)
-#define GPP_E5			INC(GPP_E4)
-#define GPP_E6			INC(GPP_E5)
-#define GPP_E7			INC(GPP_E6)
-#define GPP_E8			INC(GPP_E7)
-#define GPP_E9			INC(GPP_E8)
-#define GPP_E10			INC(GPP_E9)
+#define GPP_E00			INC(GPP_ESPI_CLK_LPBK)
+#define GPP_E01			INC(GPP_E00)
+#define GPP_E02			INC(GPP_E01)
+#define GPP_E03			INC(GPP_E02)
+#define GPP_E04			INC(GPP_E03)
+#define GPP_E05			INC(GPP_E04)
+#define GPP_E06			INC(GPP_E05)
+#define GPP_E07			INC(GPP_E06)
+#define GPP_E08			INC(GPP_E07)
+#define GPP_E09			INC(GPP_E08)
+#define GPP_E10			INC(GPP_E09)
 #define GPP_E11			INC(GPP_E10)
 #define GPP_E12			INC(GPP_E11)
 #define GPP_E13			INC(GPP_E12)
@@ -199,9 +199,9 @@
 #define GPP_E23			INC(GPP_E22)
 #define GPP_THC0_GSPI_CLK_LPBK	INC(GPP_E23)
 
-#define GPIO_COM1_START		GPP_A0
+#define GPIO_COM1_START		GPP_A00
 #define GPIO_COM1_END		GPP_THC0_GSPI_CLK_LPBK
-#define NUM_GPIO_COM1_PADS	(GPP_THC0_GSPI_CLK_LPBK - GPP_A0 + 1)
+#define NUM_GPIO_COM1_PADS	(GPP_THC0_GSPI_CLK_LPBK - GPP_A00 + 1)
 
 /*
  * +----------------------------+
@@ -214,17 +214,17 @@
  * | Pad End Number   |    128  |
  * +------------------+---------+
  */
-#define GPP_H0			INC(GPP_THC0_GSPI_CLK_LPBK)
-#define GPP_H1			INC(GPP_H0)
-#define GPP_H2			INC(GPP_H1)
-#define GPP_H3			INC(GPP_H2)
-#define GPP_H4			INC(GPP_H3)
-#define GPP_H5			INC(GPP_H4)
-#define GPP_H6			INC(GPP_H5)
-#define GPP_H7			INC(GPP_H6)
-#define GPP_H8			INC(GPP_H7)
-#define GPP_H9			INC(GPP_H8)
-#define GPP_H10			INC(GPP_H9)
+#define GPP_H00			INC(GPP_THC0_GSPI_CLK_LPBK)
+#define GPP_H01			INC(GPP_H00)
+#define GPP_H02			INC(GPP_H01)
+#define GPP_H03			INC(GPP_H02)
+#define GPP_H04			INC(GPP_H03)
+#define GPP_H05			INC(GPP_H04)
+#define GPP_H06			INC(GPP_H05)
+#define GPP_H07			INC(GPP_H06)
+#define GPP_H08			INC(GPP_H07)
+#define GPP_H09			INC(GPP_H08)
+#define GPP_H10			INC(GPP_H09)
 #define GPP_H11			INC(GPP_H10)
 #define GPP_H12			INC(GPP_H11)
 #define GPP_H13			INC(GPP_H12)
@@ -252,17 +252,17 @@
  * | Pad End Number   |    154  |
  * +------------------+---------+
  */
-#define GPP_F0			INC(GPP_LPI3C0_CLK_LPBK)
-#define GPP_F1			INC(GPP_F0)
-#define GPP_F2			INC(GPP_F1)
-#define GPP_F3			INC(GPP_F2)
-#define GPP_F4			INC(GPP_F3)
-#define GPP_F5			INC(GPP_F4)
-#define GPP_F6			INC(GPP_F5)
-#define GPP_F7			INC(GPP_F6)
-#define GPP_F8			INC(GPP_F7)
-#define GPP_F9			INC(GPP_F8)
-#define GPP_F10			INC(GPP_F9)
+#define GPP_F00			INC(GPP_LPI3C0_CLK_LPBK)
+#define GPP_F01			INC(GPP_F00)
+#define GPP_F02			INC(GPP_F01)
+#define GPP_F03			INC(GPP_F02)
+#define GPP_F04			INC(GPP_F03)
+#define GPP_F05			INC(GPP_F04)
+#define GPP_F06			INC(GPP_F05)
+#define GPP_F07			INC(GPP_F06)
+#define GPP_F08			INC(GPP_F07)
+#define GPP_F09			INC(GPP_F08)
+#define GPP_F10			INC(GPP_F09)
 #define GPP_F11			INC(GPP_F10)
 #define GPP_F12			INC(GPP_F11)
 #define GPP_F13			INC(GPP_F12)
@@ -332,9 +332,9 @@
 #define GPP_VGPIO3_THC2		INC(GPP_VGPIO3_THC1)
 #define GPP_VGPIO3_THC3		INC(GPP_VGPIO3_THC2)
 
-#define GPIO_COM3_START		GPP_H0
+#define GPIO_COM3_START		GPP_H00
 #define GPIO_COM3_END		GPP_VGPIO3_THC3
-#define NUM_GPIO_COM3_PADS	(GPP_VGPIO3_THC3 - GPP_H0 + 1)
+#define NUM_GPIO_COM3_PADS	(GPP_VGPIO3_THC3 - GPP_H00 + 1)
 
 /*
  * +----------------------------+
@@ -347,14 +347,14 @@
  * | Pad End Number   |    191  |
  * +------------------+---------+
  */
-#define GPP_S0			INC(GPP_VGPIO3_THC3)
-#define GPP_S1			INC(GPP_S0)
-#define GPP_S2			INC(GPP_S1)
-#define GPP_S3			INC(GPP_S2)
-#define GPP_S4			INC(GPP_S3)
-#define GPP_S5			INC(GPP_S4)
-#define GPP_S6			INC(GPP_S5)
-#define GPP_S7			INC(GPP_S6)
+#define GPP_S00			INC(GPP_VGPIO3_THC3)
+#define GPP_S01			INC(GPP_S00)
+#define GPP_S02			INC(GPP_S01)
+#define GPP_S03			INC(GPP_S02)
+#define GPP_S04			INC(GPP_S03)
+#define GPP_S05			INC(GPP_S04)
+#define GPP_S06			INC(GPP_S05)
+#define GPP_S07			INC(GPP_S06)
 
 /*
  * +----------------------------+
@@ -367,7 +367,7 @@
  * | Pad End Number   |    203  |
  * +------------------+---------+
  */
-#define GPP_JTAG_MBPB0		INC(GPP_S7)
+#define GPP_JTAG_MBPB0		INC(GPP_S07)
 #define GPP_JTAG_MBPB1		INC(GPP_JTAG_MBPB0)
 #define GPP_JTAG_MBPB2		INC(GPP_JTAG_MBPB1)
 #define GPP_JTAG_MBPB3		INC(GPP_JTAG_MBPB2)
@@ -380,9 +380,9 @@
 #define GPP_DBG_PMODE		INC(GPP_JTAG_TCK)
 #define GPP_JTAG_TRST_B		INC(GPP_DBG_PMODE)
 
-#define GPIO_COM4_START		GPP_S0
+#define GPIO_COM4_START		GPP_S00
 #define GPIO_COM4_END		GPP_JTAG_TRST_B
-#define NUM_GPIO_COM4_PADS	(GPP_JTAG_TRST_B - GPP_S0 + 1)
+#define NUM_GPIO_COM4_PADS	(GPP_JTAG_TRST_B - GPP_S00 + 1)
 
 /*
  * +----------------------------+
@@ -395,17 +395,17 @@
  * | Pad End Number   |    228  |
  * +------------------+---------+
  */
-#define GPP_B0			INC(GPP_JTAG_TRST_B)
-#define GPP_B1			INC(GPP_B0)
-#define GPP_B2			INC(GPP_B1)
-#define GPP_B3			INC(GPP_B2)
-#define GPP_B4			INC(GPP_B3)
-#define GPP_B5			INC(GPP_B4)
-#define GPP_B6			INC(GPP_B5)
-#define GPP_B7			INC(GPP_B6)
-#define GPP_B8			INC(GPP_B7)
-#define GPP_B9			INC(GPP_B8)
-#define GPP_B10			INC(GPP_B9)
+#define GPP_B00			INC(GPP_JTAG_TRST_B)
+#define GPP_B01			INC(GPP_B00)
+#define GPP_B02			INC(GPP_B01)
+#define GPP_B03			INC(GPP_B02)
+#define GPP_B04			INC(GPP_B03)
+#define GPP_B05			INC(GPP_B04)
+#define GPP_B06			INC(GPP_B05)
+#define GPP_B07			INC(GPP_B06)
+#define GPP_B08			INC(GPP_B07)
+#define GPP_B09			INC(GPP_B08)
+#define GPP_B10			INC(GPP_B09)
 #define GPP_B11			INC(GPP_B10)
 #define GPP_B12			INC(GPP_B11)
 #define GPP_B13			INC(GPP_B12)
@@ -432,17 +432,17 @@
  * | Pad End Number   |    253  |
  * +------------------+---------+
  */
-#define GPP_D0			INC(GPP_ACI3C0_CLK_LPBK)
-#define GPP_D1			INC(GPP_D0)
-#define GPP_D2			INC(GPP_D1)
-#define GPP_D3			INC(GPP_D2)
-#define GPP_D4			INC(GPP_D3)
-#define GPP_D5			INC(GPP_D4)
-#define GPP_D6			INC(GPP_D5)
-#define GPP_D7			INC(GPP_D6)
-#define GPP_D8			INC(GPP_D7)
-#define GPP_D9			INC(GPP_D8)
-#define GPP_D10			INC(GPP_D9)
+#define GPP_D00			INC(GPP_ACI3C0_CLK_LPBK)
+#define GPP_D01			INC(GPP_D00)
+#define GPP_D02			INC(GPP_D01)
+#define GPP_D03			INC(GPP_D02)
+#define GPP_D04			INC(GPP_D03)
+#define GPP_D05			INC(GPP_D04)
+#define GPP_D06			INC(GPP_D05)
+#define GPP_D07			INC(GPP_D06)
+#define GPP_D08			INC(GPP_D07)
+#define GPP_D09			INC(GPP_D08)
+#define GPP_D10			INC(GPP_D09)
 #define GPP_D11			INC(GPP_D10)
 #define GPP_D12			INC(GPP_D11)
 #define GPP_D13			INC(GPP_D12)
@@ -469,14 +469,14 @@
  * | Pad End Number   |    288  |
  * +------------------+---------+
  */
-#define GPP_VGPIO0		INC(GPP_BOOTHALT_B)
-#define GPP_VGPIO4		INC(GPP_VGPIO0)
-#define GPP_VGPIO5		INC(GPP_VGPIO4)
-#define GPP_VGPIO6		INC(GPP_VGPIO5)
-#define GPP_VGPIO7		INC(GPP_VGPIO6)
-#define GPP_VGPIO8		INC(GPP_VGPIO7)
-#define GPP_VGPIO9		INC(GPP_VGPIO8)
-#define GPP_VGPIO10		INC(GPP_VGPIO9)
+#define GPP_VGPIO00		INC(GPP_BOOTHALT_B)
+#define GPP_VGPIO04		INC(GPP_VGPIO00)
+#define GPP_VGPIO05		INC(GPP_VGPIO04)
+#define GPP_VGPIO06		INC(GPP_VGPIO05)
+#define GPP_VGPIO07		INC(GPP_VGPIO06)
+#define GPP_VGPIO08		INC(GPP_VGPIO07)
+#define GPP_VGPIO09		INC(GPP_VGPIO08)
+#define GPP_VGPIO10		INC(GPP_VGPIO09)
 #define GPP_VGPIO11		INC(GPP_VGPIO10)
 #define GPP_VGPIO12		INC(GPP_VGPIO11)
 #define GPP_VGPIO13		INC(GPP_VGPIO12)
@@ -505,9 +505,9 @@
 #define GPP_VGPIO46		INC(GPP_VGPIO45)
 #define GPP_VGPIO47		INC(GPP_VGPIO46)
 
-#define GPIO_COM5_START		GPP_B0
+#define GPIO_COM5_START		GPP_B00
 #define GPIO_COM5_END		GPP_VGPIO47
-#define NUM_GPIO_COM5_PADS	(GPP_VGPIO47 - GPP_B0 + 1)
+#define NUM_GPIO_COM5_PADS	(GPP_VGPIO47 - GPP_B00 + 1)
 
 #define TOTAL_GPIO_COMM		(COMM_5 + 1)
 #define TOTAL_PADS		(GPIO_COM5_END + 1)

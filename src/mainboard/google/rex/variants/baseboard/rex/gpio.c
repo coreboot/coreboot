@@ -7,19 +7,19 @@
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
 	/* ToDo: Fill gpio configuration */
-	/* H8 : UART0_RXD ==> UART_DBG_TX_SOC_RX */
-	PAD_CFG_NF(GPP_H8, NONE, DEEP, NF1),
-	/* H9 : UART0_TXD ==> UART_DBG_RX_SOC_TX */
-	PAD_CFG_NF(GPP_H9, NONE, DEEP, NF1),
+	/* H08 : UART0_RXD ==> UART_DBG_TX_SOC_RX */
+	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
+	/* H09 : UART0_TXD ==> UART_DBG_RX_SOC_TX */
+	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),
 };
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
 	/* ToDo: Fill early gpio configuration */
-	/* H8 : UART0_RXD ==> UART_DBG_TX_SOC_RX */
-	PAD_CFG_NF(GPP_H8, NONE, DEEP, NF1),
-	/* H9 : UART0_TXD ==> UART_DBG_RX_SOC_TX */
-	PAD_CFG_NF(GPP_H9, NONE, DEEP, NF1),
+	/* H08 : UART0_RXD ==> UART_DBG_TX_SOC_RX */
+	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
+	/* H09 : UART0_TXD ==> UART_DBG_RX_SOC_TX */
+	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),
 };
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)

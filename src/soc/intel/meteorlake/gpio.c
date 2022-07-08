@@ -31,50 +31,50 @@ static const struct reset_mapping rst_map_com3[] = {
  */
 static const struct pad_group mtl_community0_groups[] = {
 	INTEL_GPP(GPP_PECI, GPP_PECI, GPP_VIDALERT_B),			/* GPP_CPU */
-	INTEL_GPP_BASE(GPP_PECI, GPP_V0, GPP_V23, 0),			/* GPP_V */
-	INTEL_GPP_BASE(GPP_PECI, GPP_C0, GPP_C23, 32),			/* GPP_C */
+	INTEL_GPP_BASE(GPP_PECI, GPP_V00, GPP_V23, 0),			/* GPP_V */
+	INTEL_GPP_BASE(GPP_PECI, GPP_C00, GPP_C23, 32),			/* GPP_C */
 };
 
 static const struct vw_entries mtl_community0_vw[] = {
-	{GPP_C0, GPP_C23},
+	{GPP_C00, GPP_C23},
 };
 
 static const struct pad_group mtl_community1_groups[] = {
-	INTEL_GPP_BASE(GPP_A0, GPP_A0, GPP_ESPI_CLK_LPBK, 64),		/* GPP_A */
-	INTEL_GPP_BASE(GPP_A0, GPP_E0, GPP_THC0_GSPI_CLK_LPBK, 96),	/* GPP_E */
+	INTEL_GPP_BASE(GPP_A00, GPP_A00, GPP_ESPI_CLK_LPBK, 64),		/* GPP_A */
+	INTEL_GPP_BASE(GPP_A00, GPP_E00, GPP_THC0_GSPI_CLK_LPBK, 96),	/* GPP_E */
 };
 
 static const struct vw_entries mtl_community1_vw[] = {
-	{GPP_A0, GPP_A20},
-	{GPP_E0, GPP_E23},
+	{GPP_A00, GPP_A20},
+	{GPP_E00, GPP_E23},
 };
 
 static const struct pad_group mtl_community3_groups[] = {
-	INTEL_GPP_BASE(GPP_H0, GPP_H0, GPP_LPI3C0_CLK_LPBK, 128),	/* GPP_H */
-	INTEL_GPP_BASE(GPP_H0, GPP_F0, GPP_GSPI0A_CLK_LOOPBK, 160),	/* GPP_F */
-	INTEL_GPP(GPP_H0, GPP_SPI0_IO_2, GPP_SPI0_CLK_LOOPBK),		/* GPP_SPI0 */
-	INTEL_GPP(GPP_H0, GPP_VGPIO3_USB0, GPP_VGPIO3_THC3),		/* GPP_VGPIO3 */
+	INTEL_GPP_BASE(GPP_H00, GPP_H00, GPP_LPI3C0_CLK_LPBK, 128),	/* GPP_H */
+	INTEL_GPP_BASE(GPP_H00, GPP_F00, GPP_GSPI0A_CLK_LOOPBK, 160),	/* GPP_F */
+	INTEL_GPP(GPP_H00, GPP_SPI0_IO_2, GPP_SPI0_CLK_LOOPBK),		/* GPP_SPI0 */
+	INTEL_GPP(GPP_H00, GPP_VGPIO3_USB0, GPP_VGPIO3_THC3),		/* GPP_VGPIO3 */
 };
 
 static const struct vw_entries mtl_community3_vw[] = {
-	{GPP_H0, GPP_H23},
-	{GPP_F0, GPP_F23},
+	{GPP_H00, GPP_H23},
+	{GPP_F00, GPP_F23},
 };
 
 static const struct pad_group mtl_community4_groups[] = {
-	INTEL_GPP_BASE(GPP_S0, GPP_S0, GPP_S7, 192),			/* GPP_S */
-	INTEL_GPP(GPP_S0, GPP_JTAG_MBPB0, GPP_JTAG_TRST_B),		/* GPP_JTAG */
+	INTEL_GPP_BASE(GPP_S00, GPP_S00, GPP_S07, 192),			/* GPP_S */
+	INTEL_GPP(GPP_S00, GPP_JTAG_MBPB0, GPP_JTAG_TRST_B),		/* GPP_JTAG */
 };
 
 static const struct pad_group mtl_community5_groups[] = {
-	INTEL_GPP_BASE(GPP_B0, GPP_B0, GPP_ACI3C0_CLK_LPBK, 224),	/* GPP_B */
-	INTEL_GPP_BASE(GPP_B0, GPP_D0, GPP_BOOTHALT_B, 256),		/* GPP_D */
-	INTEL_GPP(GPP_B0, GPP_VGPIO0, GPP_VGPIO47),			/* GPP_VGPIO */
+	INTEL_GPP_BASE(GPP_B00, GPP_B00, GPP_ACI3C0_CLK_LPBK, 224),	/* GPP_B */
+	INTEL_GPP_BASE(GPP_B00, GPP_D00, GPP_BOOTHALT_B, 256),		/* GPP_D */
+	INTEL_GPP(GPP_B00, GPP_VGPIO00, GPP_VGPIO47),			/* GPP_VGPIO */
 };
 
 static const struct vw_entries mtl_community5_vw[] = {
-	{GPP_B0, GPP_B23},
-	{GPP_D0, GPP_D23},
+	{GPP_B00, GPP_B23},
+	{GPP_D00, GPP_D23},
 };
 
 static const struct pad_community mtl_communities[] = {

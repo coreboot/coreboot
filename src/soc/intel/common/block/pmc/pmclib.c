@@ -244,9 +244,9 @@ static uint16_t print_pm1_status(uint16_t pm1_sts)
 	if (!pm1_sts)
 		return 0;
 
-	printk(BIOS_SPEW, "PM1_STS: ");
+	printk(BIOS_DEBUG, "PM1_STS: ");
 	print_num_status_bits(ARRAY_SIZE(pm1_sts_bits), pm1_sts, pm1_sts_bits);
-	printk(BIOS_SPEW, "\n");
+	printk(BIOS_DEBUG, "\n");
 
 	return pm1_sts;
 }

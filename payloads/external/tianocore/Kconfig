@@ -14,9 +14,6 @@ choice
 	  UefiPayload: MrChromebox's customized fork of Tianocore which works on most
 	  x86_64 devices
 	  Upstream: Use upstream Tianocore payload from https://github.com/tianocore/edk2
-	  CorebootPayload: MrChromebox's customized fork of the deprecated CorebootPayloadPkg
-	  Tianocore build target. It may work better on some older hardware (eg, x230)
-	  which does not work properly with the UefiPayloadPkg options.
 
 config TIANOCORE_UEFIPAYLOAD
 	bool "UEFIPayload"
@@ -29,12 +26,6 @@ config TIANOCORE_UPSTREAM
 	help
 	  Select this option if you want to use upstream EDK2 to build Tianocore.
 
-config TIANOCORE_COREBOOTPAYLOAD
-	bool "CorebootPayload"
-	help
-	  Select this option to build using MrChromebox's older (now deprecated)
-	  CorebootPayloadPkg-based Tianocore branch
-
 config TIANOCORE_CUSTOM
 	bool "Custom"
 	help
@@ -45,7 +36,7 @@ endchoice
 config TIANOCORE_REPOSITORY
 	string "URL to git repository for edk2"
 	default "https://github.com/tianocore/edk2" if TIANOCORE_UPSTREAM
-	default "https://github.com/mrchromebox/edk2" if TIANOCORE_UEFIPAYLOAD || TIANOCORE_COREBOOTPAYLOAD
+	default "https://github.com/mrchromebox/edk2" if TIANOCORE_UEFIPAYLOAD
 	help
 	  coreboot supports an array of build options which can be found below. These options
 	  will only have an effect if the relevant options exist in the target repository.
@@ -54,7 +45,6 @@ config TIANOCORE_TAG_OR_REV
 	string "Insert a commit's SHA-1 or a branch name"
 	default "origin/uefipayload_202207" if TIANOCORE_UEFIPAYLOAD
 	default "origin/master" if TIANOCORE_UPSTREAM
-	default "origin/coreboot_fb" if TIANOCORE_COREBOOTPAYLOAD
 	help
 	  The commit's SHA-1 or branch name of the revision to use. This must exist in
 	  TIANOCORE_REPOSITORY, and in the case of a branch name, prefixed with origin i.e.
@@ -198,15 +188,6 @@ config TIANOCORE_SERIAL_SUPPORT
 	help
 	  Enable serial port output in edk2. Serial output limits the performance of edk2's
 	  FrontPage.
-
-endif
-
-if TIANOCORE_COREBOOTPAYLOAD
-
-config TIANOCORE_USE_8254_TIMER
-	bool "TianoCore 8254 Timer"
-	help
-	  Use 8254 Timer for legacy support.
 
 endif
 

@@ -9,7 +9,7 @@ config SMMSTORE
 config SMMSTORE_V2
 	bool "Use version 2 of SMMSTORE API"
 	depends on SMMSTORE
-	default y if TIANOCORE_UEFIPAYLOAD
+	default y if PAYLOAD_TIANOCORE
 	default n
 	help
 	  Version 2 of SMMSTORE allows secure communication with SMM and

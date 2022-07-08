@@ -7,11 +7,7 @@ project_name = Tianocore
 project_dir = $(CURDIR)/$(word 3,$(subst /, ,$(CONFIG_TIANOCORE_REPOSITORY)))
 
 BUILD_STR = -a IA32 -a X64 -t COREBOOT
-ifeq ($(CONFIG_TIANOCORE_COREBOOTPAYLOAD),y)
-BUILD_STR += -p CorebootPayloadPkg/CorebootPayloadPkgIa32X64.dsc
-else
 BUILD_STR += -p UefiPayloadPkg/UefiPayloadPkg.dsc
-endif
 BUILD_STR += -D BOOTLOADER=COREBOOT -q
 
 #
@@ -80,6 +76,7 @@ endif
 ifneq ($(CONFIG_TIANOCORE_SD_MMC_TIMEOUT),)
 BUILD_STR += -D SD_MMC_TIMEOUT=$(shell echo $$(( $(CONFIG_TIANOCORE_SD_MMC_TIMEOUT) * 1000)) )
 endif
+
 #
 # EDKII has the below PCDs that are relevant to coreboot:
 #
@@ -90,19 +87,6 @@ BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdConOutColumn=0
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutRow=0
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutColumn=0
 endif
-#
-# The below are legacy options only available in CorebootPayloadPkg:
-#
-# PCIE_BASE			= 0
-ifeq ($(CONFIG_TIANOCORE_COREBOOTPAYLOAD),y)
-ifneq ($(CONFIG_ECAM_MMCONF_BASE_ADDRESS),)
-BUILD_STR += -D PCIE_BASE=$(CONFIG_ECAM_MMCONF_BASE_ADDRESS)
-endif
-# USE_HPET_TIMER		= FALSE
-ifeq ($(CONFIG_TIANOCORE_USE_8254_TIMER),y)
-BUILD_STR += -D USE_HPET_TIMER=TRUE
-endif
-endif # CONFIG_TIANOCORE_COREBOOTPAYLOAD
 
 bootloader = $(word 8,$(subst /, ,$(BUILD_STR)))
 

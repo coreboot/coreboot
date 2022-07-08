@@ -26,7 +26,8 @@ struct spi_dma_transaction {
 	size_t remaining;
 };
 
-static void *spi_dma_mmap(const struct region_device *rd, size_t offset, size_t size __unused)
+static void *spi_dma_mmap(const struct region_device *rd, size_t offset,
+			  size_t size __always_unused)
 {
 	const struct mem_region_device *mdev;
 
@@ -35,7 +36,8 @@ static void *spi_dma_mmap(const struct region_device *rd, size_t offset, size_t 
 	return &mdev->base[offset];
 }
 
-static int spi_dma_munmap(const struct region_device *rd __unused, void *mapping __unused)
+static int spi_dma_munmap(const struct region_device *rd __always_unused,
+			  void *mapping __always_unused)
 {
 	return 0;
 }

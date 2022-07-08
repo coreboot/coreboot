@@ -15,8 +15,21 @@
 #define __aligned(x) __attribute__((__aligned__(x)))
 #endif
 
-#ifndef __unused
-#define __unused __attribute__((__unused__))
+/* Because there may be variables/parameters whose name contains "__unused" in
+   header files of libc, namely musl, these names consistent with ones in the
+   Linux kernel may be a better choice. */
+
+/* This is used to mark identifiers unused in all conditions, e.g. a parameter
+   completely unused in all code branch, only present to fit an API. */
+#ifndef __always_unused
+#define __always_unused __attribute__((__unused__))
+#endif
+
+/* This is used to mark identifiers unused in some conditions, e.g. a parameter
+   only unused in some code branches, a global variable only accessed with code
+   being conditionally preprocessed, etc. */
+#ifndef __maybe_unused
+#define __maybe_unused __attribute__((__unused__))
 #endif
 
 #ifndef __must_check

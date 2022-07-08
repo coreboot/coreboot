@@ -219,7 +219,7 @@ static int google_chromeec_clear_mask(uint8_t type, uint64_t mask)
 						EC_HOST_EVENT_CLEAR, &mask);
 }
 
-static int __unused google_chromeec_set_mask(uint8_t type, uint64_t mask)
+static int google_chromeec_set_mask(uint8_t type, uint64_t mask)
 {
 	if (google_chromeec_is_uhepi_supported())
 		return google_chromeec_uhepi_cmd(type,

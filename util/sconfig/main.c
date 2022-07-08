@@ -1970,7 +1970,7 @@ static void generate_outputc(FILE *f, const char *static_header)
 	fprintf(f, "#include <fw_config.h>\n");
 	fprintf(f, "#include <%s>\n", static_header);
 	emit_chip_headers(f, chip_header.next);
-	fprintf(f, "\n#define STORAGE static __unused DEVTREE_CONST\n\n");
+	fprintf(f, "\n#define STORAGE static __maybe_unused DEVTREE_CONST\n\n");
 
 	walk_device_tree(NULL, NULL, &base_root_dev, inherit_subsystem_ids);
 	fprintf(f, "\n/* pass 0 */\n");

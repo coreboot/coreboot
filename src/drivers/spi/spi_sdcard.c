@@ -210,7 +210,7 @@ static int lookup_response_length(int response_type)
 static int response_resolve(int response_type, uint8_t *response,
 	uint32_t *out_register)
 {
-	__unused static const char * const sd_err[] = {
+	__maybe_unused static const char * const sd_err[] = {
 		"Card is locked",
 		"wp erase skip | lock/unlok cmd failed",
 		"error",

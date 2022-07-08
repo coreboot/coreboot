@@ -127,7 +127,7 @@ static const char *crb_tpm_acpi_name(const struct device *dev)
 	return "TPM";
 }
 
-static struct device_operations __unused crb_ops = {
+static struct device_operations __maybe_unused crb_ops = {
 	.read_resources = noop_read_resources,
 	.set_resources = noop_set_resources,
 #if CONFIG(HAVE_ACPI_TABLES)

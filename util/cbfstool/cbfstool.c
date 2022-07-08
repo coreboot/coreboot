@@ -1499,7 +1499,7 @@ static int cbfs_layout(void)
 	return 0;
 }
 
-static enum cb_err verify_walker(__unused cbfs_dev_t dev, size_t offset,
+static enum cb_err verify_walker(__always_unused cbfs_dev_t dev, size_t offset,
 				 const union cbfs_mdata *mdata, size_t already_read, void *arg)
 {
 	uint32_t type = be32toh(mdata->h.type);

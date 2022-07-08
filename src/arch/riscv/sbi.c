@@ -59,7 +59,7 @@ void handle_sbi(trapframe *tf)
 {
 	uintptr_t ret = 0;
 	uintptr_t arg0 = tf->gpr[10];
-	__unused uintptr_t arg1 = tf->gpr[11];
+	__maybe_unused uintptr_t arg1 = tf->gpr[11];
 	uintptr_t which = tf->gpr[17];
 
 	switch (which) {

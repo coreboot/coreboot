@@ -11,7 +11,8 @@
 
 #define DEST_BUF_ALIGNMENT 16
 
-static void *boot_dev_mmap(const struct region_device *rd, size_t offset, size_t size __unused)
+static void *boot_dev_mmap(const struct region_device *rd, size_t offset,
+			   size_t size __always_unused)
 {
 	const struct mem_region_device *mdev;
 
@@ -20,7 +21,8 @@ static void *boot_dev_mmap(const struct region_device *rd, size_t offset, size_t
 	return &(mdev->base[offset]);
 }
 
-static int boot_dev_munmap(const struct region_device *rd __unused, void *mapping __unused)
+static int boot_dev_munmap(const struct region_device *rd __always_unused,
+			   void *mapping __always_unused)
 {
 	return 0;
 }

@@ -26,9 +26,10 @@ TEST_KCONFIG_DEPENDENCIES := $(testobj)/auto.conf.cmd
 TEST_KCONFIG_SPLITCONFIG := $(testobj)/config/
 TEST_KCONFIG_TRISTATE := $(testobj)/tristate.conf
 
+# Include order should be same as in real build
 TEST_CFLAGS := -include $(src)/include/kconfig.h \
-	-include $(src)/commonlib/bsd/include/commonlib/bsd/compiler.h \
-	-include $(src)/include/rules.h
+	-include $(src)/include/rules.h \
+	-include $(src)/commonlib/bsd/include/commonlib/bsd/compiler.h
 
 # Include generic test mock headers, before original ones
 TEST_CFLAGS += -I$(testsrc)/include/mocks -I$(testsrc)/include

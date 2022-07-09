@@ -8,6 +8,7 @@ const u32 cim_verb_data[] = {
 	0x155896e1, /* Subsystem ID */
 	12, /* Number of entries */
 	AZALIA_SUBVENDOR(0, 0x155896e1),
+	AZALIA_RESET(1),
 	AZALIA_PIN_CFG(0, 0x12, 0x90a60140), // DMIC
 	AZALIA_PIN_CFG(0, 0x14, 0x0421101f), // FRONT (Port-D)
 	AZALIA_PIN_CFG(0, 0x15, 0x40000000), // SURR (Port-A)

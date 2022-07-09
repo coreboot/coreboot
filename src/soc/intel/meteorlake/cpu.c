@@ -89,6 +89,14 @@ bool soc_is_nominal_freq_supported(void)
 	return true;
 }
 
+static void enable_x2apic(void)
+{
+	if (!CONFIG(X2APIC_LATE_WORKAROUND))
+		return;
+
+	enable_lapic_mode(true);
+}
+
 /* All CPUs including BSP will run the following function. */
 void soc_core_init(struct device *cpu)
 {
@@ -97,6 +105,8 @@ void soc_core_init(struct device *cpu)
 	 * of these banks are core vs package scope. For now every CPU clears
 	 * every bank. */
 	mca_configure();
+
+	enable_x2apic();
 
 	enable_lapic_tpr();
 

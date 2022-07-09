@@ -38,7 +38,6 @@ config CPU_SPECIFIC_OPTIONS
 	select IOAPIC
 	select MICROCODE_BLOB_UNDISCLOSED
 	select MRC_SETTINGS_PROTECT
-	select MP_SERVICES_PPI_V2
 	select PARALLEL_MP_AP_WORK
 	select PLATFORM_USES_FSP2_3
 	select PMC_GLOBAL_RESET_ENABLE_LOCK
@@ -307,5 +306,23 @@ config MRC_CHANNEL_WIDTH
 config SOC_INTEL_GFX_FRAMEBUFFER_OFFSET
 	hex
 	default 0x800000
+
+choice
+	prompt "Multiprocessor (MP) Initialization configuration to use"
+	default MTL_USE_FSP_MP_INIT
+
+config MTL_USE_FSP_MP_INIT
+	bool "Use FSP MP init"
+	select MP_SERVICES_PPI_V2
+	help
+	  Upon selection, coreboot brings APs from reset and the FSP runs feature programming.
+
+config MTL_USE_COREBOOT_MP_INIT
+	bool "Use coreboot MP init"
+	select RELOAD_MICROCODE_PATCH
+	help
+	  Upon selection, coreboot performs MP Init.
+
+endchoice
 
 endif

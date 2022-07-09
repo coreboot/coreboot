@@ -1220,11 +1220,11 @@ struct edp_device_info {
 	struct edp_link_train_info lt_info;
 	struct edp_video_info video_info;
 
-	/*below info get from panel during training*/
+	/* below info get from panel during training */
 	u8 lane_bw;
 	u8 lane_cnt;
 	u8 dpcd_rev;
-	/*support enhanced frame cap */
+	/* support enhanced frame cap */
 	u8 dpcd_efc;
 	u8 *raw_edid;
 };

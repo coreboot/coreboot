@@ -1,9 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/ram_segs.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/cr.h>
-
 
 #if ENV_X86_64
 

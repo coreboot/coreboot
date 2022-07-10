@@ -7,7 +7,6 @@
 #include <arch/io.h>
 #include <device/mmio.h>
 #include <console/console.h>
-#include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>

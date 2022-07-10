@@ -10,7 +10,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <types.h>
-#include <cpu/x86/msr.h>
 #include <cpu/intel/turbo.h>
 #include <soc/acpi.h>
 #include <soc/device_nvs.h>

@@ -7,7 +7,6 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <cpu/intel/common/common.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/smm.h>
 #include <device/pci_ops.h>
 #include <security/intel/cbnt/cbnt.h>

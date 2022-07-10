@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/mp.h>
 #include <cpu/intel/microcode.h>
 #include <intelblocks/cfg.h>

@@ -5,6 +5,11 @@ It is built from Markdown files in the
 [Documentation](https://review.coreboot.org/cgit/coreboot.git/tree/Documentation)
 directory in the source code.
 
+## Spelling of coreboot
+
+The correct spelling of coreboot is completely in lower case characters and in
+one word without a space between the two parts.
+
 ## Purpose of coreboot
 
 coreboot is a project to develop open source boot firmware for various

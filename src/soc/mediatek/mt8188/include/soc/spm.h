@@ -953,6 +953,54 @@ struct dyna_load_pcm {
 	struct pcm_desc desc;
 };
 
+static const struct power_domain_data disp[] = {
+	{
+		.pwr_con = &mtk_spm->vppsys0_pwr_con,
+		.pwr_sta_mask = BIT(11),
+		.sram_pdn_mask = BIT(8),
+		.sram_ack_mask = BIT(12),
+	},
+	{
+		.pwr_con = &mtk_spm->vdosys0_pwr_con,
+		.pwr_sta_mask = BIT(13),
+		.sram_pdn_mask = BIT(8),
+		.sram_ack_mask = BIT(12),
+	},
+	{
+		.pwr_con = &mtk_spm->vppsys1_pwr_con,
+		.pwr_sta_mask = BIT(12),
+		.sram_pdn_mask = BIT(8),
+		.sram_ack_mask = BIT(12),
+	},
+	{
+		.pwr_con = &mtk_spm->vdosys1_pwr_con,
+		.pwr_sta_mask = BIT(14),
+		.sram_pdn_mask = BIT(8),
+		.sram_ack_mask = BIT(12),
+	},
+	{
+		.pwr_con = &mtk_spm->edp_tx_pwr_con,
+		.pwr_sta_mask = BIT(17),
+		.sram_pdn_mask = BIT(8),
+		.sram_ack_mask = BIT(12),
+	},
+};
+
+static const struct power_domain_data audio[] = {
+	{
+		.pwr_con = &mtk_spm->adsp_pwr_con,
+		.pwr_sta_mask = BIT(10),
+		.sram_pdn_mask = BIT(8),
+		.sram_ack_mask = BIT(12),
+	},
+	{
+		.pwr_con = &mtk_spm->audio_pwr_con,
+		.pwr_sta_mask = BIT(8),
+		.sram_pdn_mask = BIT(8),
+		.sram_ack_mask = BIT(12),
+	},
+};
+
 int spm_init(void);
 
 #endif  /* SOC_MEDIATEK_MT8188_SPM_H */

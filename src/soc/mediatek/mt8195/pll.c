@@ -893,3 +893,9 @@ u32 mt_fmeter_get_freq_khz(enum fmeter_type type, u32 id)
 
 	return 0;
 }
+
+void mt_pll_set_usb_clock(void)
+{
+	setbits32(&mtk_topckgen->clk_cfg_11_clr, BIT(7) | BIT(15));
+	setbits32(&mt8195_infracfg_ao->module_sw_cg_2_clr, BIT(1) | BIT(31));
+}

@@ -7,8 +7,7 @@
 
 void mtk_usb_prepare(void)
 {
-	setbits32(&mtk_topckgen->clk_cfg_11_clr, BIT(7) | BIT(15));
-	setbits32(&mt8195_infracfg_ao->module_sw_cg_2_clr, BIT(1) | BIT(31));
+	mt_pll_set_usb_clock();
 }
 
 void mtk_usb_adjust_phy_shift(void)

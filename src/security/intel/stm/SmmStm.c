@@ -72,7 +72,7 @@ extern struct mp_state {
 	uintptr_t perm_smbase;
 	size_t perm_smsize;
 	size_t smm_save_state_size;
-	int do_smm;
+	bool do_smm;
 } mp_state;
 
 typedef union {

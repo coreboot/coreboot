@@ -675,23 +675,23 @@ struct mp_state {
 	size_t perm_smsize;
 	size_t smm_save_state_size;
 	uintptr_t reloc_start32_offset;
-	int do_smm;
+	bool do_smm;
 } mp_state;
 
-static int is_smm_enabled(void)
+static bool is_smm_enabled(void)
 {
 	return CONFIG(HAVE_SMI_HANDLER) && mp_state.do_smm;
 }
 
 static void smm_disable(void)
 {
-	mp_state.do_smm = 0;
+	mp_state.do_smm = false;
 }
 
 static void smm_enable(void)
 {
 	if (CONFIG(HAVE_SMI_HANDLER))
-		mp_state.do_smm = 1;
+		mp_state.do_smm = true;
 }
 
 /*

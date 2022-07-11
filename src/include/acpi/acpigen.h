@@ -210,6 +210,72 @@ enum region_space {
 	REGION_SPACE_MAX,
 };
 
+enum acpi_resource_type {
+	RSRC_TYPE_MEM = 0,
+	RSRC_TYPE_IO = 1,
+	RSRC_TYPE_BUS = 2
+};
+
+enum acpi_decode_type {
+	DECODE_10,
+	DECODE_16
+};
+
+enum acpi_read_write_type {
+	READ_ONLY,
+	READ_WRITE
+};
+
+enum acpi_cacheable_type {
+	NON_CACHEABLE,
+	CACHEABLE
+};
+
+enum acpi_resource_subtype {
+	DWORD_IO,
+	DWORD_MEMORY,
+	IO,
+	MEMORY_32_FIXED,
+	QWORD_MEMORY,
+	WORD_BUS_NUMBER
+};
+
+/* macros for ACPI Table 6.49 Memory Resource Flag (Resource Type = 0) */
+#define MEM_RSRC_FLAG_TRNSL_TYPE_STATIC		0x0
+#define MEM_RSRC_FLAG_TRNSL_TYPE_TRANSLATION	(0x1 << 5)
+#define MEM_RSRC_FLAG_ADDR_RNG_MEM		0x0
+#define MEM_RSRC_FLAG_ADDR_RNG_RSV		(0x1 << 3)
+#define MEM_RSRC_FLAG_ADDR_RNG_ACPI		(0x2 << 3)
+#define MEM_RSRC_FLAG_ADDR_RNG_NVA		(0x3 << 3)
+#define MEM_RSRC_FLAG_MEM_ATTR_NON_CACHE	0x0
+#define MEM_RSRC_FLAG_MEM_ATTR_CACHE		(0x1 << 1)
+#define MEM_RSRC_FLAG_MEM_ATTR_CACHE_WRT	(0x2 << 1)
+#define MEM_RSRC_FLAG_MEM_ATTR_CACHE_PREFETCH	(0x3 << 1)
+#define MEM_RSRC_FLAG_MEM_READ_ONLY		0x0
+#define MEM_RSRC_FLAG_MEM_READ_WRITE		0x1
+
+/* macros for ACPI Table 6.50 I/O Resource Flag (Resource Type = 1) */
+#define IO_RSRC_FLAG_ENTIRE_RANGE		0x3
+#define IO_RSRC_FLAG_ISA_ONLY			0x2
+#define IO_RSRC_FLAG_NON_ISA_ONLY		0x1
+#define IO_RSRC_FLAG_TRASL_TYPE_STATIC		0x0
+#define IO_RSRC_FLAG_TRNSL_TYPE_TRANSLATION	(0x1 << 4)
+#define IO_RSRC_FLAG_SPRS_TRASL_DENSE		0x0
+#define IO_RSRC_FLAG_SPRS_TRNSL_SPARSE		(0x1 << 5)
+
+/* macro for ACPI Table 6.51 Bus Number Range Resource Flag (Resource Type = 2) */
+#define BUS_NUM_RANGE_RESOURCE_FLAG		0x0 // reserved
+
+/* General Flags for WORD Address Space Descriptor Definition  (ACPI Table 6.47, byte 4)*/
+#define ADDR_SPACE_GENERAL_FLAG_MAX_FIXED	(0x1 << 3)
+#define ADDR_SPACE_GENERAL_FLAG_MAX_NOT_FIXED	0x0
+#define ADDR_SPACE_GENERAL_FLAG_MIN_FIXED	(0x1 << 2)
+#define ADDR_SPACE_GENERAL_FLAG_MIN_NOT_FIXED	0x0
+#define ADDR_SPACE_GENERAL_FLAG_DEC_SUB		(0x1 << 1)
+#define ADDR_SPACE_GENERAL_FLAG_DEC_POS		0x0
+#define ADDR_SPACE_GENERAL_FLAG_CONSUMER	0x10
+#define ADDR_SPACE_GENERAL_FLAG_PRODUCER	0x0
+
 struct opregion {
 	const char *name;
 	enum region_space regionspace;

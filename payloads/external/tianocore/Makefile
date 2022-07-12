@@ -92,6 +92,7 @@ BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutColumn=0
 # The below are legacy options only available in CorebootPayloadPkg:
 #
 # PCIE_BASE			= 0
+ifeq ($(CONFIG_TIANOCORE_COREBOOTPAYLOAD),y)
 ifneq ($(CONFIG_ECAM_MMCONF_BASE_ADDRESS),)
 BUILD_STR += -D PCIE_BASE=$(CONFIG_ECAM_MMCONF_BASE_ADDRESS)
 endif
@@ -99,6 +100,7 @@ endif
 ifeq ($(CONFIG_TIANOCORE_USE_8254_TIMER),y)
 BUILD_STR += -D USE_HPET_TIMER=TRUE
 endif
+endif # CONFIG_TIANOCORE_COREBOOTPAYLOAD
 
 bootloader = $(word 8,$(subst /, ,$(BUILD_STR)))
 

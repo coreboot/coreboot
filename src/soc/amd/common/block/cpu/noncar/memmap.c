@@ -37,12 +37,16 @@ const struct memmap_early_dram *memmap_get_early_dram_usage(void)
 void smm_region(uintptr_t *start, size_t *size)
 {
 	static int once;
-	struct range_entry tseg;
+	static uintptr_t smm_start;
+	static size_t smm_size;
 	int status;
 
-	*start = 0;
-	*size = 0;
+	*start = smm_start;
+	*size = smm_size;
+	if (*size && *start)
+		return;
 
+	struct range_entry tseg;
 	status = fsp_find_range_hob(&tseg, AMD_FSP_TSEG_HOB_GUID.b);
 
 	if (status < 0) {
@@ -50,8 +54,10 @@ void smm_region(uintptr_t *start, size_t *size)
 		return;
 	}
 
-	*start = (uintptr_t)range_entry_base(&tseg);
-	*size = range_entry_size(&tseg);
+	smm_start = (uintptr_t)range_entry_base(&tseg);
+	smm_size =  range_entry_size(&tseg);
+	*start = smm_start;
+	*size = smm_size;
 
 	if (!once) {
 		clear_tvalid();

@@ -1,4 +1,11 @@
 chip soc/intel/meteorlake
+
+	register "serial_io_uart_mode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoPci,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
 	device domain 0 on
 		device ref igpu on end
 		device ref dtt on end

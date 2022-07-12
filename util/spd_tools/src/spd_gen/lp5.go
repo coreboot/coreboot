@@ -205,6 +205,7 @@ var LP5SetInfo = map[int]LP5Set{
 		 *            = 1 / (speed grade / 2 / WCK:CK)      // "double data rate"
 		 */
 		 speedToTCKMinPs: map[int]int{
+			 7500 : 1066, /* 1 / (7500 / 2 / 4) */
 			 6400 : 1250, /* 1 / (6400 / 2 / 4) */
 			 5500 : 1455, /* 1 / (5500 / 2 / 4) */
 		 },
@@ -368,6 +369,10 @@ var LP5BankArchToSPDEncoding = map[int]LP5BankArchParams{
  * From Table 220 of JESD209-5B, using a 4:1 WCK:CK ratio and Set 0.
  */
 var LP5SpeedMbpsToSPDEncoding = map[int]LP5SpeedParams{
+	7500: {
+		defaultTCKMinPs : 266, /* 1 / (7500 / 2) */
+		MaxCASLatency: 20,
+	},
 	6400: {
 		defaultTCKMinPs : 312, /* 1 / (6400 / 2) */
 		MaxCASLatency: 17,

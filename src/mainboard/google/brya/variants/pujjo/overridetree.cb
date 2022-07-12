@@ -12,6 +12,7 @@ chip soc/intel/alderlake
 
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# WFC Camera
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
 
 	# Configure external V1P05/Vnn/VnnSx Rails

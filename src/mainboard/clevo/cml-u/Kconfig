@@ -76,4 +76,7 @@ config SEABIOS_PS2_TIMEOUT
 	depends on PAYLOAD_SEABIOS
 	default 500
 
+config EC_SYSTEM76_EC_BAT_THRESHOLDS
+	default n if BOARD_CLEVO_L140CU_BASE
+
 endif

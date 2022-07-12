@@ -1,0 +1,176 @@
+chip soc/intel/alderlake
+	# Graphics
+	# TODO:
+	# register "panel_cfg" = "{
+	#	.up_delay_ms			= 200,				// T3
+	#	.backlight_on_delay_ms		= 0,				// T7
+	#	.backlight_off_delay_ms		= 50,				// T9
+	#	.down_delay_ms			= 0,				// T10
+	#	.cycle_delay_ms			= 500,				// T12
+	#	.backlight_pwm_hz		= 200,				// PWM
+	# }"
+
+	# FSP Memory
+	register "enable_c6dram"		= "1"
+	register "sagv"				= "SaGv_Enabled"
+
+	# FSP Silicon
+	register "eist_enable"			= "1"
+
+	# Serial I/O
+	register "serial_io_i2c_mode" = "{
+		[PchSerialIoIndexI2C0]		= PchSerialIoPci,
+	}"
+
+	register "serial_io_uart_mode" = "{
+		[PchSerialIoIndexUART0]		= PchSerialIoSkipInit,
+	}"
+
+	# Power
+	register "pch_slp_s3_min_assertion_width"	= "2"			# 50ms
+	register "pch_slp_s4_min_assertion_width"	= "3"			# 1s
+	register "pch_slp_sus_min_assertion_width"	= "3"			# 500ms
+	register "pch_slp_a_min_assertion_width"	= "3"			# 2s
+
+	# PM Util
+	register "pmc_gpe0_dw0"			= "GPP_B"
+	register "pmc_gpe0_dw1"			= "GPP_C"
+	register "pmc_gpe0_dw2"			= "GPP_E"
+
+	# Device Tree
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	device domain 0 on
+		device ref igpu		on
+			register "ddi_portA_config"		= "1"
+			register "ddi_ports_config" = "{
+				[DDI_PORT_A]			= DDI_ENABLE_HPD,
+				[DDI_PORT_B]			= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+			}"
+		end
+		device ref gna		on  end
+		device ref crashlog	off end
+		device ref xhci		on
+			# Motherboard USB Type C
+			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC3)"
+			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC3)"
+
+			# Motherboard USB 3.0
+			register "usb2_ports[2]"		= "USB2_PORT_MID(OC0)"
+			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC0)"
+
+			# Daughterboard USB 3.0
+			register "usb2_ports[6]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+
+			# Internal Webcam
+			register "usb2_ports[CONFIG_CCD_PORT]"	= "USB2_PORT_MID(OC_SKIP)"
+
+			# Fingerprint Reader
+			register "usb2_ports[5]"		= "USB2_PORT_MID(OC_SKIP)"
+
+			# Daughterboard SD Card
+			register "usb2_ports[3]"		= "USB2_PORT_MID(OC_SKIP)"
+
+			# Internal Bluetooth
+			register "usb2_ports[9]"		= "USB2_PORT_MID(OC_SKIP)"
+		end
+		device ref i2c0		on
+			chip drivers/i2c/hid
+				register "generic.hid"		= ""STAR0001""
+				register "generic.desc"		= ""Touchpad""
+				register "generic.irq"		= "ACPI_IRQ_LEVEL_LOW(GPP_E12_IRQ)"
+				register "hid_desc_reg_offset"	= "0x20"
+				device i2c 2c on end
+			end
+		end
+		device ref shared_sram	on  end
+		device ref heci1	on  end
+		device ref sata		on
+			register "sata_salp_support"		= "1"
+			register "sata_ports_enable[1]"		= "1"
+			register "sata_ports_dev_slp[1]"	= "1"
+		end
+		device ref pcie_rp5	on				# WiFi
+			chip drivers/wifi/generic
+				register "wake"			= "GPE0_PME_B0"
+				device generic 0 on end
+			end
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src			= 2,
+				.clk_req			= 2,
+				.flags				= PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc			"SlotTypePciExpressGen3X1"
+								"SlotLengthShort"
+								"M.2/M 2230"
+								"SlotDataBusWidth1X"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D13)"
+				register "reset_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H2)"
+				register "srcclk_pin"		= "2"
+				device generic 0 on end
+			end
+		end
+		device ref pcie_rp9	on				# SSD x4
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src			= 1,
+				.clk_req			= 1,
+				.flags				= PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc			"SlotTypeM2Socket3"
+								"SlotLengthLong"
+								"M.2/M 2280"
+								"SlotDataBusWidth4X"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
+				register "reset_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H0)"
+				register "srcclk_pin"		= "1"
+				device generic 0 on end
+			end
+		end
+		device ref uart0	on  end
+		device ref pch_espi	on
+			register "gen1_dec"			= "0x00fc0201"
+			register "gen2_dec"			= "0x00000381"
+			register "gen3_dec"			= "0x00000511"
+
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+
+			chip ec/starlabs/merlin
+				# Port pair 4Eh/4Fh
+				device pnp 4e.00 on  end			# IO Interface
+				device pnp 4e.01 off end			# Com 1
+				device pnp 4e.02 off end			# Com 2
+				device pnp 4e.04 off end			# System Wake-Up
+				device pnp 4e.05 off end			# PS/2 Mouse
+				device pnp 4e.06 on				# PS/2 Keyboard
+					io 0x60			= 0x0060
+					io 0x62			= 0x0064
+					irq 0x70		= 1
+				end
+				device pnp 4e.0a off end			# Consumer IR
+				device pnp 4e.0f off end			# Shared Memory/Flash Interface
+				device pnp 4e.10 off end			# RTC-like Timer
+				device pnp 4e.11 off end			# Power Management Channel 1
+				device pnp 4e.12 off end			# Power Management Channel 2
+				device pnp 4e.13 off end			# Serial Peripheral Interface
+				device pnp 4e.14 off end			# Platform EC Interface
+				device pnp 4e.17 off end			# Power Management Channel 3
+				device pnp 4e.18 off end			# Power Management Channel 4
+				device pnp 4e.19 off end			# Power Management Channel 5
+			end
+		end
+		device ref p2sb		on  end
+		device ref hda		on
+			register "pch_hda_idisp_codec_enable"	= "1"
+			register "pch_hda_idisp_link_frequency"	= "HDA_LINKFREQ_96MHZ"
+			register "pch_hda_idisp_link_tmode"	= "HDA_TMODE_8T"
+		end
+		device ref smbus	on  end
+	end
+end

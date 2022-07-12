@@ -7,7 +7,7 @@ DefinitionBlock(
 	ACPI_DSDT_REV_2,
 	OEM_ID,
 	ACPI_TABLE_CREATOR,
-	0x20110725
+	0x20220930
 )
 {
 	#include <acpi/dsdt_top.asl>
@@ -30,6 +30,9 @@ DefinitionBlock(
 		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 		#include <soc/intel/tigerlake/acpi/southbridge.asl>
 		#include <soc/intel/tigerlake/acpi/tcss.asl>
+#elif CONFIG(SOC_INTEL_ALDERLAKE)
+		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
+		#include <soc/intel/alderlake/acpi/southbridge.asl>
 #endif
 
 		/* PS/2 Keyboard */

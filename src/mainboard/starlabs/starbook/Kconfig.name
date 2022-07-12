@@ -8,3 +8,6 @@ config BOARD_STARLABS_LABTOP_CML
 
 config BOARD_STARLABS_STARBOOK_TGL
 	bool "Star Labs StarBook Mk V (i3-1115G4 and i7-1165G7)"
+
+config BOARD_STARLABS_STARBOOK_ADL
+	bool "Star Labs StarBook Mk VI (i3-1220P and i7-1260P)"

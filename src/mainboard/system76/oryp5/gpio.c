@@ -164,8 +164,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF1), // NB_ENAVDD
 	PAD_CFG_NF(GPP_F20, NONE, DEEP, NF1), // BLON
 	PAD_CFG_NF(GPP_F21, NONE, DEEP, NF1), // EDP_BRIGHTNESS
-	PAD_CFG_GPO(GPP_F22, 0, DEEP), // DGPU_RST#_PCH
-	PAD_CFG_GPO(GPP_F23, 0, DEEP), // DGPU_PWR_EN
+	// GPP_F22 (DGPU_RST#_PCH) configured in bootblock
+	// GPP_F23 (DGPU_PWR_EN) configured in bootblock
 
 	/* ------- GPIO Group GPP_G ------- */
 	PAD_NC(GPP_G0, NONE),

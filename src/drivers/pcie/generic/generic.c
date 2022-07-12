@@ -40,6 +40,9 @@ static void pcie_generic_fill_ssdt(const struct device *dev)
 	acpigen_write_device(name);
 	acpigen_write_ADR_pci_device(dev);
 
+	if (config->wake_gpe)
+		acpigen_write_PRW(config->wake_gpe, config->wake_deepest);
+
 	acpigen_write_device_end();
 	acpigen_write_scope_end();
 

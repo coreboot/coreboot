@@ -7,6 +7,8 @@
 
 struct drivers_pcie_generic_config {
 	const char *name;
+	unsigned int wake_gpe;
+	unsigned int wake_deepest;
 };
 
 #endif /* _PCIE_GENERIC_H_ */

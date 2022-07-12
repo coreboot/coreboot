@@ -1,0 +1,62 @@
+chip soc/intel/meteorlake
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+	device domain 0 on
+		device ref pcie_rp9 on
+			# Enable SSD Card PCIE 9 using clk 4
+			register "pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 4,
+				.clk_req = 4,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE9 SSD card
+		device ref pcie_rp11 on
+			# Enable SD Card PCIE 11 using clk 2
+			register "pcie_rp[PCH_RP(11)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE11 SD card
+		device ref tbt_pcie_rp0 on end
+		device ref tbt_pcie_rp1 on end
+		device ref tbt_pcie_rp2 on end
+		device ref tbt_pcie_rp3 on end
+		device ref tcss_xhci on end
+		device ref tcss_dma0 on end
+		device ref tcss_dma1 on end
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "is_untrusted" = "true"
+				device generic 0 on end
+			end
+		end
+		device ref i2c0 on end
+		device ref i2c1 on end
+		device ref i2c2 on end
+		device ref i2c3 on end
+		device ref sata on end
+		device ref i2c4 on end
+		device ref i2c5 on end
+		device ref pcie_rp5 on
+			# Enable WLAN Card PCIE 5 using clk 5
+			register "pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 5,
+				.clk_req = 5,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE5 WLAN card
+		device ref pcie_rp6 on
+			# Enable WWAN Card PCIE 6 using clk 3
+			register "pcie_rp[PCH_RP(6)]" = "{
+				.clk_src = 3,
+				.clk_req = 3,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE6 WWAN card
+		device ref gspi1 on end
+		device ref hda on end
+	end
+end

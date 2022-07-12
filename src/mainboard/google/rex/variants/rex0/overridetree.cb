@@ -1,7 +1,4 @@
 chip soc/intel/meteorlake
-	device cpu_cluster 0 on
-		device lapic 0 on end
-	end
 	device domain 0 on
 		device ref pcie_rp9 on
 			# Enable SSD Card PCIE 9 using clk 4

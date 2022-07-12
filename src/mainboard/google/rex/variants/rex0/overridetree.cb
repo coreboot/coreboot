@@ -1,5 +1,18 @@
 chip soc/intel/meteorlake
 
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C0
+	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C1
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 WWAN
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Camera
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC3)"		# Type-A Port A0
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Bluetooth
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port A0
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# DCI
+
+	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC0)"
+	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+
 	register "serial_io_gspi_mode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI1] = PchSerialIoPci,

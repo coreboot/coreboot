@@ -9,7 +9,12 @@
 
 static const char *pcie_generic_acpi_name(const struct device *dev)
 {
-	return "DEV0";
+	struct drivers_pcie_generic_config *config = dev->chip_info;
+
+	if (!config || !config->name)
+		return "DEV0";
+
+	return config->name;
 }
 
 static void pcie_generic_fill_ssdt(const struct device *dev)

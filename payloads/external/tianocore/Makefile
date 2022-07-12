@@ -81,6 +81,14 @@ ifneq ($(CONFIG_TIANOCORE_SD_MMC_TIMEOUT),)
 BUILD_STR += -D SD_MMC_TIMEOUT=$(CONFIG_TIANOCORE_SD_MMC_TIMEOUT)
 endif
 #
+# EDKII has the below PCDs that are revalant to coreboot:
+#
+# Allows EDKII to use the full framebuffer
+BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdConOutRow=0
+BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdConOutColumn=0
+BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutRow=0
+BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutColumn=0
+#
 # The below are legacy options only available in CorebootPayloadPkg:
 #
 # PCIE_BASE			= 0

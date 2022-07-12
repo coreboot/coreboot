@@ -9,10 +9,10 @@
 #include <smp/node.h>
 #include <stdint.h>
 
-void enable_lapic(void)
+void enable_lapic_mode(bool try_set_x2apic)
 {
 	uintptr_t apic_base;
-	bool use_x2apic;
+	bool use_x2apic = false;
 	msr_t msr;
 
 	msr = rdmsr(LAPIC_BASE_MSR);
@@ -30,12 +30,8 @@ void enable_lapic(void)
 	apic_base = msr.lo & LAPIC_BASE_MSR_ADDR_MASK;
 	ASSERT(apic_base == LAPIC_DEFAULT_BASE);
 
-	if (CONFIG(XAPIC_ONLY)) {
-		use_x2apic = false;
-	} else {
+	if (try_set_x2apic)
 		use_x2apic = !!(cpu_get_feature_flags_ecx() & CPUID_X2APIC);
-		ASSERT(CONFIG(X2APIC_RUNTIME) || use_x2apic);
-	}
 
 	if (use_x2apic == !!(msr.lo & LAPIC_BASE_MSR_X2APIC_MODE)) {
 		printk(BIOS_INFO, "LAPIC 0x%x in %s mode.\n", lapicid(),
@@ -50,6 +46,16 @@ void enable_lapic(void)
 		die("Switching from X2APIC to XAPIC mode is not implemented.");
 	}
 
+}
+
+void enable_lapic(void)
+{
+	bool try_set_x2apic = true;
+
+	if (CONFIG(XAPIC_ONLY) || CONFIG(X2APIC_LATE_WORKAROUND))
+		try_set_x2apic = false;
+
+	enable_lapic_mode(try_set_x2apic);
 }
 
 void disable_lapic(void)

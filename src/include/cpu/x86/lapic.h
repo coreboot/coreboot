@@ -176,6 +176,7 @@ void stop_this_cpu(void);
 #endif
 
 void enable_lapic(void);
+void enable_lapic_mode(bool try_set_x2apic);
 void disable_lapic(void);
 void setup_lapic_interrupts(void);
 

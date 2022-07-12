@@ -51,6 +51,17 @@ config X2APIC_RUNTIME
 	bool
 	depends on PARALLEL_MP
 
+config X2APIC_LATE_WORKAROUND
+	prompt "Use XAPIC for AP bringup, then change to X2APIC"
+	bool
+	depends on PARALLEL_MP && MAX_CPUS < 255
+	help
+	  Choose this option if the platform supports dynamic switching between
+	  XAPIC to X2APIC. The initial Application Processors (APs) are configured
+	  in XAPIC mode at reset and later enable X2APIC as a CPU feature.
+	  All access mechanisms between XAPIC (mmio) and X2APIC (msr) switches
+	  at runtime when this option is enabled.
+
 endchoice
 
 config UDELAY_LAPIC

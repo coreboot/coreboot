@@ -360,6 +360,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D1, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
+	/* GPP_D3 : [NF1: ISH_GP3 NF2: BK3 NF5: SBK3 NF6: USB_C_GPP_D3] ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_D3, 1, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_E15, NONE, LOCK_CONFIG),
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
@@ -386,20 +388,31 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPP_E7, NONE, DEEP),
 };
 
-const struct pad_config *__weak variant_gpio_table(size_t *num)
+static const struct pad_config romstage_gpio_table[] = {
+	/* B4  : PROC_GP3 ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
+};
+
+const struct pad_config *variant_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
 }
 
-const struct pad_config *__weak variant_gpio_override_table(size_t *num)
+const struct pad_config *variant_gpio_override_table(size_t *num)
 {
 	*num = 0;
 	return NULL;
 }
 
-const struct pad_config *__weak variant_early_gpio_table(size_t *num)
+const struct pad_config *variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
+}
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

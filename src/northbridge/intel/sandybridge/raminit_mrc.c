@@ -332,7 +332,7 @@ void perform_raminit(int s3resume)
 		enable_usb_bar();
 
 	memset(&pei_data, 0, sizeof(pei_data));
-	pei_data.pei_version = PEI_VERSION,
+	pei_data.pei_version = PEI_VERSION;
 
 	northbridge_fill_pei_data(&pei_data);
 	southbridge_fill_pei_data(&pei_data);

@@ -119,7 +119,6 @@ void __noreturn romstage_main(void)
 
 	post_code(0x44);
 	prepare_and_run_postcar();
-	die("failed to load postcar\n");
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)

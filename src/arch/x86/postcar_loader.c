@@ -63,7 +63,7 @@ static void run_postcar_phase(struct postcar_frame *pcf);
 
 /* prepare_and_run_postcar() determines the stack to use after
  * cache-as-ram is torn down as well as the MTRR settings to use. */
-void prepare_and_run_postcar(void)
+void __noreturn prepare_and_run_postcar(void)
 {
 	struct postcar_frame pcf;
 
@@ -76,6 +76,7 @@ void prepare_and_run_postcar(void)
 
 	run_postcar_phase(&pcf);
 	/* We do not return here. */
+	die("Failed to load postcar\n!");
 }
 
 static void finalize_load(uintptr_t *reloc_params, uintptr_t mtrr_frame_ptr)

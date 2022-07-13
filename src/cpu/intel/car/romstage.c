@@ -54,5 +54,4 @@ void __noreturn romstage_main(void)
 
 	prepare_and_run_postcar();
 	/* We do not return here. */
-	die("failed to load postcar\n");
 }

@@ -249,8 +249,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF4),
 	/* GPP_F17 : [NF3: THC1_SPI2_RST# NF6: USB_C_GPP_F17] ==> EC_PCH_INT_ODL */
 	PAD_CFG_GPI_IRQ_WAKE(GPP_F17, NONE, PLTRST, LEVEL, INVERT),
-	/* GPP_F18 : No heuristic was found useful */
-	PAD_NC(GPP_F18, NONE),
+	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
 	/* GPP_F19 : [NF1: SRCCLKREQ6# NF6: USB_C_GPP_F19] ==> GPP_F19 */
 	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF6),
 	/* GPP_F20 : [] ==> UCAM_RST_L */
@@ -364,6 +364,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D3, 1, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_E15, NONE, LOCK_CONFIG),
+	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */

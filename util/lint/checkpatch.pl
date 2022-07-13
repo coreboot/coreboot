@@ -2454,6 +2454,7 @@ sub process {
 	my $in_commit_log = 0;		#Scanning lines before patch
 	my $has_patch_separator = 0;	#Found a --- line
 	my $has_commit_log = 0;		#Encountered lines before patch
+	my $commit_log_lines = 0;	#Number of commit log lines
 	my $commit_log_possible_stack_dump = 0;
 	my $commit_log_long_line = 0;
 	my $commit_log_has_diff = 0;
@@ -2722,6 +2723,18 @@ sub process {
 		my $hereprev = "$here\n$prevrawline\n$rawline\n";
 
 		$cnt_lines++ if ($realcnt != 0);
+
+# Verify the existence of a commit log if appropriate
+# 2 is used because a $signature is counted in $commit_log_lines
+		if ($in_commit_log) {
+			if ($line !~ /^\s*$/) {
+				$commit_log_lines++;	#could be a $signature
+			}
+		} elsif ($has_commit_log && $commit_log_lines < 2) {
+			WARN("COMMIT_MESSAGE",
+			     "Missing commit description - Add an appropriate one\n");
+			$commit_log_lines = 2;	#warn only once
+		}
 
 # Check if the commit log has what seems like a diff which can confuse patch
 		if ($in_commit_log && !$commit_log_has_diff &&

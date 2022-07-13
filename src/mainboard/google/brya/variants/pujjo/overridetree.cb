@@ -228,14 +228,6 @@ chip soc/intel/alderlake
 				device i2c 0x2c on end
 			end
 		end
-		device ref hda on
-			chip drivers/generic/max98357a
-				register "hid" = ""MX98360A""
-				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
-				register "sdmode_delay" = "5"
-				device generic 0 on end
-			end
-		end
 		device ref pcie_rp7 on
 			# Enable SD Card PCIe 7 using clk 3
 			register "pch_pcie_rp[PCH_RP(7)]" = "{

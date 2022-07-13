@@ -5720,9 +5720,15 @@ sub process {
 		}
 
 # uncoalesced string fragments
-		if ($line =~ /$String\s*"/) {
-			WARN("STRING_FRAGMENTS",
-			     "Consecutive strings are generally better as a single string\n" . $herecurr);
+		if ($line =~ /$String\s*[Lu]?"/) {
+			if (WARN("STRING_FRAGMENTS",
+				 "Consecutive strings are generally better as a single string\n" . $herecurr) &&
+			    $fix) {
+				while ($line =~ /($String)(?=\s*")/g) {
+					my $extracted_string = substr($rawline, $-[0], $+[0] - $-[0]);
+					$fixed[$fixlinenr] =~ s/\Q$extracted_string\E\s*"/substr($extracted_string, 0, -1)/e;
+				}
+			}
 		}
 
 # check for non-standard and hex prefixed decimal printf formats

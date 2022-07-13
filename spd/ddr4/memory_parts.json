@@ -204,6 +204,18 @@
                 "ranksPerPackage": 1
             }
         },
+	{
+            // Datasheet Revision: Rev. 1.0 Dec. 2021
+            "name": "H5AG36EXNDX019",
+            "attribs": {
+                "speedMTps": 3200,
+                "CL_nRCD_nRP": 22,
+                "capacityPerDieGb": 8,
+                "diesPerPackage": 1,
+                "packageBusWidth": 16,
+                "ranksPerPackage": 1
+            }
+        },
         {
             // Datasheet Revision: Rev. 0.0, Apr. 2020
             "name": "K4AAG165WB-BCWE",

@@ -420,7 +420,7 @@ endif # FRAMEBUFFER_SET_VESA_MODE
 config WANT_LINEAR_FRAMEBUFFER
 	bool
 	default y if CHROMEOS
-	default y if PAYLOAD_TIANOCORE
+	default y if PAYLOAD_EDK2
 	default y if COREDOOM_SECONDARY_PAYLOAD
 
 choice

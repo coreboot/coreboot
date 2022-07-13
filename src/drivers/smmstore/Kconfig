@@ -3,13 +3,13 @@
 config SMMSTORE
 	bool "Support for flash based, SMM mediated data store"
 	depends on BOOT_DEVICE_SUPPORTS_WRITES && HAVE_SMI_HANDLER
-	default y if PAYLOAD_TIANOCORE
+	default y if PAYLOAD_EDK2
 	select SPI_FLASH_SMM if BOOT_DEVICE_SPI_FLASH_RW_NOMMAP
 
 config SMMSTORE_V2
 	bool "Use version 2 of SMMSTORE API"
 	depends on SMMSTORE
-	default y if PAYLOAD_TIANOCORE
+	default y if PAYLOAD_EDK2
 	default n
 	help
 	  Version 2 of SMMSTORE allows secure communication with SMM and

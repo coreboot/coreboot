@@ -58,7 +58,7 @@ static efi_return_status_t mps1_identify_processor(const
 	return mp_identify_processor(processor_number);
 }
 
-/* EDK2 UEFIPKG Open Source MP Service PPI to be installed */
+/* edk2 UEFIPKG Open Source MP Service PPI to be installed */
 
 static efi_pei_mp_services_ppi mp_service1_ppi = {
 	mps1_get_number_of_processors,

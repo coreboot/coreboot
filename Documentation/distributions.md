@@ -37,15 +37,15 @@ firmware binaries on [GitHub](https://pcengines.github.io).
 
 [Star Labs](https://starlabs.systems/) offers a range of laptops designed and
 built specifically for Linux that are available with coreboot firmware. They
-use Tianocore as the payload and include an NVRAM option to disable the
-Intel Management Engine.
+use edk2 as the payload and include an NVRAM option to disable the Intel
+Management Engine.
 
 ### System76
 
 [System76](https://system76.com/) manufactures Linux laptops, desktops, and
 servers. Some models are sold with [System76 Open
 Firmware](https://github.com/system76/firmware-open), an open source
-distribution of coreboot, EDK2, and System76 firmware applications.
+distribution of coreboot, edk2, and System76 firmware applications.
 
 ### Purism
 
@@ -76,7 +76,7 @@ trustworthiness for all.
 
 [MrChromebox](https://mrchromebox.tech/) provides upstream coreboot firmware
 images for the vast majority of x86-based Chromebooks and Chromeboxes, using
-Tianocore as the payload to provide a modern UEFI bootloader. Why replace
+edk2 as the payload to provide a modern UEFI bootloader. Why replace
 coreboot with coreboot? Mr Chromebox's images are built using upstream
 coreboot (vs Google's older, static tree/branch), include many features and
 fixes not found in the stock firmware, and offer much broader OS compatibility

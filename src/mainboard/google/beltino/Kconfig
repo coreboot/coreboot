@@ -70,7 +70,7 @@ config ENABLE_DDR_2X_REFRESH
 config PCIEXP_AER
 	def_bool n
 
-config TIANOCORE_BOOT_TIMEOUT
+config EDK2_BOOT_TIMEOUT
 	int
 	default 5
 

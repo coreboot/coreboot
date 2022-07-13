@@ -1,77 +1,77 @@
-if PAYLOAD_TIANOCORE
+if PAYLOAD_EDK2
 
 config PAYLOAD_FILE
-	string "Tianocore binary"
+	string "edk2 binary"
 	default "$(obj)/UEFIPAYLOAD.fd"
 	help
 	  The result of a UefiPayloadPkg build
 
 choice
-	prompt "Tianocore payload"
-	default TIANOCORE_UEFIPAYLOAD
+	prompt "Tianocore's EDK II payload"
+	default EDK2_UEFIPAYLOAD
 	help
-	  Select which type of payload Tianocore will build (default is UefiPayload)
-	  UefiPayload: MrChromebox's customized fork of Tianocore which works on most
+	  Select which type of payload edk2 will build (default is UefiPayload)
+	  UefiPayload: MrChromebox's customized fork of edk2 which works on most
 	  x86_64 devices
-	  Upstream: Use upstream Tianocore payload from https://github.com/tianocore/edk2
+	  Upstream: Use upstream edk2 payload from https://github.com/tianocore/edk2
 
-config TIANOCORE_UEFIPAYLOAD
+config EDK2_UEFIPAYLOAD
 	bool "UEFIPayload"
 	help
-	  Select this option to build using MrChromebox's custom Tianocore fork,
+	  Select this option to build using MrChromebox's custom edk2 fork,
 	  which incorporates fixes/improvements from System 76's and 9elements' trees.
 
-config TIANOCORE_UPSTREAM
+config EDK2_UPSTREAM
 	bool "Upstream"
 	help
-	  Select this option if you want to use upstream EDK2 to build Tianocore.
+	  Select this option if you want to use upstream edk2 to build edk2.
 
-config TIANOCORE_CUSTOM
+config EDK2_CUSTOM
 	bool "Custom"
 	help
 	  Specify your own edk2 repository and branch to use.
 
 endchoice
 
-config TIANOCORE_REPOSITORY
+config EDK2_REPOSITORY
 	string "URL to git repository for edk2"
-	default "https://github.com/tianocore/edk2" if TIANOCORE_UPSTREAM
-	default "https://github.com/mrchromebox/edk2" if TIANOCORE_UEFIPAYLOAD
+	default "https://github.com/tianocore/edk2" if EDK2_UPSTREAM
+	default "https://github.com/mrchromebox/edk2" if EDK2_UEFIPAYLOAD
 	help
 	  coreboot supports an array of build options which can be found below. These options
 	  will only have an effect if the relevant options exist in the target repository.
 
-config TIANOCORE_TAG_OR_REV
+config EDK2_TAG_OR_REV
 	string "Insert a commit's SHA-1 or a branch name"
-	default "origin/uefipayload_202207" if TIANOCORE_UEFIPAYLOAD
-	default "origin/master" if TIANOCORE_UPSTREAM
+	default "origin/uefipayload_202207" if EDK2_UEFIPAYLOAD
+	default "origin/master" if EDK2_UPSTREAM
 	help
 	  The commit's SHA-1 or branch name of the revision to use. This must exist in
-	  TIANOCORE_REPOSITORY, and in the case of a branch name, prefixed with origin i.e.
+	  EDK2_REPOSITORY, and in the case of a branch name, prefixed with origin i.e.
 	  "origin/uefipayload_202202"
 
 choice
-	prompt "Tianocore build"
-	default TIANOCORE_RELEASE
+	prompt "edk2 build"
+	default EDK2_RELEASE
 	help
 	  Select whether to generate a debug or release build for
-	  Tianocore; default is to generate a release build.
+	  edk2; default is to generate a release build.
 
-config TIANOCORE_DEBUG
-	bool "Generate Tianocore debug build"
+config EDK2_DEBUG
+	bool "Generate edk2 debug build"
 	help
 	  Generate a debug build.
 
-config TIANOCORE_RELEASE
-	bool "Generate Tianocore release build"
+config EDK2_RELEASE
+	bool "Generate edk2 release build"
 	help
 	  Generate a release build.
 
 endchoice
 
-if TIANOCORE_UEFIPAYLOAD || TIANOCORE_CUSTOM || TIANOCORE_UPSTREAM
+if EDK2_UEFIPAYLOAD || EDK2_CUSTOM || EDK2_UPSTREAM
 
-config TIANOCORE_ABOVE_4G_MEMORY
+config EDK2_ABOVE_4G_MEMORY
 	bool "Enable above 4G memory"
 	default n
 	help
@@ -81,9 +81,8 @@ config TIANOCORE_ABOVE_4G_MEMORY
 	  Disabling memory above 4G is useful for bootloaders that are not
 	  fully 64-bit aware such as Qubes R4.0.4 bootloader.
 
-
-config TIANOCORE_BOOTSPLASH_FILE
-	string "Tianocore Bootsplash path and filename"
+config EDK2_BOOTSPLASH_FILE
+	string "edk2 Bootsplash path and filename"
 	default "Documentation/coreboot_logo.bmp"
 	help
 	  The path and filename of the file to use as graphical bootsplash
@@ -94,7 +93,7 @@ config TIANOCORE_BOOTSPLASH_FILE
 	  can be found [here](https://imagemagick.org/script/formats.php).
 
 	  The build process will automatically convert this to the format that
-	  EDK2 requires, which is an uncompressed BMP, in BMP3 format. It does
+	  edk2 requires, which is an uncompressed BMP, in BMP3 format. It does
 	  this using imagemagick (`convert splosh.bmp BMP3:splash.bmp`).
 
 	  The newly formatted file will be the dimensions size as the original
@@ -117,14 +116,14 @@ config TIANOCORE_BOOTSPLASH_FILE
 	  If an absolute path is not given, the path will assumed to be
 	  relative to the coreboot root directory.
 
-config TIANOCORE_BOOT_MANAGER_ESCAPE
+config EDK2_BOOT_MANAGER_ESCAPE
 	bool "Use Escape key for Boot Manager"
 	default n
 	help
 	  Use Escape as the hot-key to access the Boot Manager. This replaces
 	  the default key of F2.
 
-config TIANOCORE_BOOT_TIMEOUT
+config EDK2_BOOT_TIMEOUT
 	int "Set the timeout for boot menu prompt"
 	default 2
 	help
@@ -132,15 +131,15 @@ config TIANOCORE_BOOT_TIMEOUT
 	  For boards with an internal display, the default value of 2s is generally sufficient.
 	  For boards with an external display, a value of 5s is generally sufficient.
 
-config TIANOCORE_CBMEM_LOGGING
-	bool "Enable Tianocore logging to CBMEM"
+config EDK2_CBMEM_LOGGING
+	bool "Enable edk2 logging to CBMEM"
 	help
-	  Select this option if you want to enable Tianocore logging to CBMEM.
+	  Select this option if you want to enable edk2 logging to CBMEM.
 	  You may want to increase the default cbmem buffer size when selecting
 	  this option, especially if using a debug (vs release) build.
 	  Selecting this option will increase the payload size in CBFS by 0x10000.
 
-config TIANOCORE_FOLLOW_BGRT_SPEC
+config EDK2_FOLLOW_BGRT_SPEC
 	bool "Center logo 38.2% from the top of screen"
 	default n
 	help
@@ -148,7 +147,7 @@ config TIANOCORE_FOLLOW_BGRT_SPEC
 	  the Boot Logo 38.2% will be vertically centered 38.2% from
 	  the top of the display.
 
-config TIANOCORE_FULL_SCREEN_SETUP
+config EDK2_FULL_SCREEN_SETUP
 	bool "Use the full screen for the edk2 frontpage"
 	default y
 	help
@@ -156,34 +155,34 @@ config TIANOCORE_FULL_SCREEN_SETUP
 	  (aka "Boot Menu"). With this option disable, it will be
 	  limited to 640x480.
 
-config TIANOCORE_HAVE_EFI_SHELL
+config EDK2_HAVE_EFI_SHELL
 	bool "Include EFI Shell"
 	default y
 	help
 	  Include the EFI shell Binary
 
-config TIANOCORE_PRIORITIZE_INTERNAL
+config EDK2_PRIORITIZE_INTERNAL
 	bool "Prioritize internal boot devices"
 	default y
 	help
 	  Prioritize internal boot devices over external devices
 
-config TIANOCORE_PS2_SUPPORT
+config EDK2_PS2_SUPPORT
 	bool "Support PS/2 Keyboards"
 	default y
 	help
 	  Include support for PS/2 keyboards
 
-config TIANOCORE_SD_MMC_TIMEOUT
+config EDK2_SD_MMC_TIMEOUT
 	int "Timeout in ms for initializing SD and eMMC devices"
 	default 10
 	help
 	  The amount of time allowed to initialize the SD Card reader and/or eMMC drive.
 	  Most only require 10ms, but certain readers can take 1s.
 
-config TIANOCORE_SERIAL_SUPPORT
+config EDK2_SERIAL_SUPPORT
 	bool "Support serial output"
-	default y if TIANOCORE_DEBUG
+	default y if EDK2_DEBUG
 	default n
 	help
 	  Enable serial port output in edk2. Serial output limits the performance of edk2's
@@ -191,9 +190,9 @@ config TIANOCORE_SERIAL_SUPPORT
 
 endif
 
-config TIANOCORE_CUSTOM_BUILD_PARAMS
-	string "TianoCore additional custom build parameters"
-	default "-D VARIABLE_SUPPORT=SMMSTORE" if TIANOCORE_UEFIPAYLOAD && SMMSTORE_V2
+config EDK2_CUSTOM_BUILD_PARAMS
+	string "edk2 additional custom build parameters"
+	default "-D VARIABLE_SUPPORT=SMMSTORE" if EDK2_UEFIPAYLOAD && SMMSTORE_V2
 	help
 	  edk2 has build options that are not modified by coreboot, and these can be
 	  found in `UefiPayloadPkg/UefiPayloadPkg.dsc`. Forks may also support

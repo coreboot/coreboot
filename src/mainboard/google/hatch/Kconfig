@@ -285,7 +285,7 @@ config VBOOT
 config USE_PM_ACPI_TIMER
 	default n
 
-config TIANOCORE_BOOT_TIMEOUT
+config EDK2_BOOT_TIMEOUT
 	int
 	default 5 if BOARD_GOOGLE_BASEBOARD_PUFF
 

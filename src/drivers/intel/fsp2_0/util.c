@@ -33,7 +33,7 @@ static bool looks_like_fsp_header(struct fsp_header *hdr)
 		return false;
 	}
 
-	/* It is possible to build FSP with any version of EDK2 which could have introduced new
+	/* It is possible to build FSP with any version of edk2 which could have introduced new
 	   fields in FSP_INFO_HEADER. The new fields will be ignored based on the reported FSP
 	   version. This check ensures that the reported header length is at least what the
 	   reported FSP version requires so that we do not access any out-of-bound bytes. */

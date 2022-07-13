@@ -96,7 +96,7 @@ efi_return_status_t mp_startup_all_cpus(efi_ap_procedure procedure,
 	/*
 	 * Run on APs Serially
 	 *
-	 * FIXME: As per MP service specification, EDK2 is allowed to specify the mode
+	 * FIXME: As per MP service specification, edk2 is allowed to specify the mode
 	 * in which a 'func' routine should be executed on APs (i.e. execute serially
 	 * or concurrently).
 	 *

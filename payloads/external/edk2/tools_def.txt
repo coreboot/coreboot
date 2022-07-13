@@ -15,7 +15,7 @@
 #
 
 #The following has been adapted from the BaseTools/Conf/tools_def.template file
-#and is used to direct the Tianocore build to use coreboot's crossgcc toolchain
+#and is used to direct the edk2 build to use coreboot's crossgcc toolchain
 #rather than the host machine's toolchain
 
 DEFINE COREBOOT_IA32_PREFIX    = ENV(GCC_CC_x86_32)

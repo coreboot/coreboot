@@ -23,13 +23,11 @@ When chainloaded from GRUB2, the following menuentry could be used:
         module /vgaroms/seavgabios.bin
     }
 
-## Tianocore
+## edk2
 
-[Tianocore](https://www.tianocore.org) is the open source reference
-implementation of the UEFI Specifications that modern firmware for PCs is
-based on. There were various projects in the past to make it suitable as a
-coreboot payload, but these days this function is available directly in the
-UefiPayloadPkg part of its source tree.
+[edk2](https://github.com/tianocore/tianocore.github.io/wiki/Getting-Started-with-EDK-II) is an open-source modern, feature-rich,
+cross-platform firmware development environment for the UEFI and UEFI
+Platform Initialization (PI) specifications. 
 
 ## GRUB2
 

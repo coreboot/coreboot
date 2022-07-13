@@ -87,7 +87,7 @@ across architectures.
 ## Port payloads to ARM, AArch64 or RISC-V
 While we have a rather big set of payloads for x86 based platforms, all other
 architectures are rather limited. Improve the situation by porting a payload
-to one of the platforms, for example GRUB2, U-Boot (the UI part), Tianocore,
+to one of the platforms, for example GRUB2, U-Boot (the UI part), edk2,
 yabits, FILO, or Linux-as-Payload.
 
 Since this is a bit of a catch-all idea, an application to GSoC should pick a

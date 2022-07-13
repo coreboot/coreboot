@@ -53,7 +53,7 @@ config MAINBOARD_SMBIOS_MANUFACTURER
 config PCIEXP_AER
 	def_bool n
 
-config TIANOCORE_BOOT_TIMEOUT
+config EDK2_BOOT_TIMEOUT
 	int
 	default 5
 

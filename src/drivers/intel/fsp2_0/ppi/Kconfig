@@ -14,7 +14,7 @@ config MP_SERVICES_PPI_V1
 	select MP_SERVICES_PPI
 	help
 	  This option provides EFI_PEI_MP_SERVICES_PPI structure definitions
-	  along with all APIs as per EDK2 specification.
+	  along with all APIs as per edk2 specification.
 
 config MP_SERVICES_PPI_V2
 	bool
@@ -22,7 +22,7 @@ config MP_SERVICES_PPI_V2
 	select MP_SERVICES_PPI
 	help
 	  This option provides EDKII_PEI_MP_SERVICES2_PPI structure definitions
-	  along with all APIs as per EDK2 specification. MP services2 PPI is slight
+	  along with all APIs as per edk2 specification. MP services2 PPI is slight
 	  modification over MP services1 PPIs. A new API StartupAllCPUs have been
 	  added to allow running a task on BSP and all APs. Also the EFI_PEI_SERVICES
 	  parameter has been removed from all MP PPI APIs.

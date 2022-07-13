@@ -107,7 +107,7 @@ desoldering it from the mainboard.
 
  * External displays via HDMI/DisplayPort with VGA option ROM or FSP/GOP init
    (no libgfxinit support yet)
- * SeaBIOS (1.14), Tianocore (CorebootPayloadPkg), Heads (Purism downstream) payloads
+ * SeaBIOS (1.14), edk2 (CorebootPayloadPkg), Heads (Purism downstream) payloads
  * Ethernet, m.2 2230 Wi-Fi
  * System firmware updates via flashrom
  * PCIe NVMe

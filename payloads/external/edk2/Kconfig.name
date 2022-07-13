@@ -1,9 +1,9 @@
-config PAYLOAD_TIANOCORE
-	bool "Tianocore payload"
+config PAYLOAD_EDK2
+	bool "edk2 payload"
 	depends on ARCH_X86 || ARCH_ARM64
 	help
 	  Select this option if you want to build a coreboot image
-	  with a Tianocore payload. If you don't know what this is
+	  with a edk2 payload. If you don't know what this is
 	  about, just leave it enabled.
 
 	  See https://coreboot.org/Payloads for more information.

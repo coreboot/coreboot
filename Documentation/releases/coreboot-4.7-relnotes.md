@@ -84,7 +84,7 @@ General changes
 
 * Integrate me_cleaner
 * Add flashconsole implementation
-* Build Tianocore UEFI payload from upstream source
+* Build edk2 UEFI payload from upstream source
 * Remove CMOS NVRAM configurable baud rates
 * A common mrc_cache driver to store romstage settings in SPI flash
 

@@ -92,7 +92,7 @@ located underneath the Wi-Fi module, below the left cooling fan.
 
  * Internal display with libgfxinit, VGA option ROM, or FSP/GOP init
  * External displays via HDMI, USB-C Alt-Mode
- * SeaBIOS (1.14), Tianocore (CorebootPayloadPkg), and Heads payloads
+ * SeaBIOS (1.14), edk2 (CorebootPayloadPkg), and Heads payloads
  * Ethernet, m.2 2230 Wi-Fi
  * System firmware updates via flashrom
  * M.2 storage (NVMe, SATA III)

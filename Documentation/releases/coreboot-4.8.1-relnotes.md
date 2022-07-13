@@ -71,7 +71,7 @@ detection
 Payloads
 --------
 * Bumped SeaBIOS to 1.11.1
-* Improved TianoCore integration
+* Improved edk2 integration
 
 Security
 --------

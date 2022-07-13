@@ -45,7 +45,7 @@ make
 ```
 ## Payloads
 - SeaBIOS
-- Tianocore
+- edk2
 - Linux as payload
 
 ## Flashing coreboot

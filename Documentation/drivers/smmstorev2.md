@@ -21,7 +21,7 @@ operations is desired, as it reduces complexity and potential for bugs.
 
 This can be used by a FTW (FaultTolerantWrite) implementation that uses
 at least two regions in an A/B update scheme. The FTW implementation in
-EDK2 uses three different regions in the store:
+edk2 uses three different regions in the store:
 
 - The variable store
 - The FTW spare block
@@ -35,7 +35,7 @@ With 64 KiB as block size, the minimum size of the FTW-enabled store is:
 - The FTW spare block: 2 blocks = 2 * 64 KiB
 - The FTW working block: 1 block = 64 KiB
 
-Therefore, the minimum size for EDK2 FTW is 4 blocks, or 256 KiB.
+Therefore, the minimum size for edk2 FTW is 4 blocks, or 256 KiB.
 
 ## API
 

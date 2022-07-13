@@ -26,7 +26,7 @@ initialization routines across many different use cases, no matter if
 they provide standard interfaces or entirely custom boot flows.
 
 Popular [payloads](payloads.md) in use with coreboot are SeaBIOS,
-which provides PCBIOS services, Tianocore, which provides UEFI services,
+which provides PCBIOS services, edk2, which provides UEFI services,
 GRUB2, the bootloader used by many Linux distributions, or depthcharge,
 a custom boot loader used on Chromebooks.
 

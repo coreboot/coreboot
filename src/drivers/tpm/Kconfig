@@ -12,7 +12,7 @@ config TPM_PPI
 	depends on TPM
 	depends on HAVE_ACPI_TABLES
 	depends on !CHROMEOS
-	default y if PAYLOAD_TIANOCORE
+	default y if PAYLOAD_EDK2
 	help
 	  This driver automatically generates ACPI tables for the Physical
 	  Presence Interface defined by the TCG. If not activated only a stub

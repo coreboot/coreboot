@@ -311,7 +311,7 @@ int smmstore_get_info(struct smmstore_params_info *out)
 	out->block_size = SMM_BLOCK_SIZE;
 	out->num_blocks = region_device_sz(&store) / SMM_BLOCK_SIZE;
 
-	/* FIXME: Broken EDK2 always assumes memory mapped Firmware Block Volumes */
+	/* FIXME: Broken edk2 always assumes memory mapped Firmware Block Volumes */
 	out->mmap_addr = (uintptr_t)rdev_mmap_full(&store);
 
 	printk(BIOS_DEBUG, "smm store: %d # blocks with size 0x%x\n",

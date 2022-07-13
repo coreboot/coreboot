@@ -278,7 +278,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * ECC - [**Error Correction Code**](https://en.wikipedia.org/wiki/Error_correction_code) - Typically used to refer to a type of
   memory that can detect and correct memory errors.
 * EDID - [**Extended Display Identification Data**](https://en.wikipedia.org/wiki/Extended_Display_Identification_Data)
-* EDK2 - EFI Development Kit 2
+* edk2 - EFI Development Kit 2
 * EDO - Memory: [**Extended Data
   Out**](https://en.wikipedia.org/wiki/Dynamic_random-access_memory#Extended_data_out_DRAM)
   - A DRAM standard introduced in 1994 that improved upon, but was

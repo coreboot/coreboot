@@ -130,7 +130,7 @@ The board can be debugged with EHCI debug. The EHCI debug port is the USB port o
 - Arch Linux with Linux 5.8.9
 - Memory initialization with mrc.bin version 1.6.1 Build 2
 - Graphics initialization with libgfxinit
-- Payload: SeaBIOS, Tianocore
+- Payload: SeaBIOS, edk2
 - EC firmware
   - KBC Revision 92.15 from OEM firmware version 01.33
   - KBC Revision 92.17 from OEM firmware version 01.50

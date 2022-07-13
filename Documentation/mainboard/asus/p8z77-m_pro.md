@@ -37,7 +37,7 @@ easy to remove and reflash.
 
 ## Working
 
-- PS/2 keyboard with SeaBIOS & Tianocore (in Mint 18.3/19.1)
+- PS/2 keyboard with SeaBIOS & edk2 (in Mint 18.3/19.1)
 
 - Rear/front headphones connector audio & mic
 
@@ -57,7 +57,7 @@ easy to remove and reflash.
        port 3        port 5         port 1             port 8
        port 4        port 6         port 2             port 7
 
-- NVME SSD boot on PCIe-x16/x8/4x slot using Tianocore
+- NVME SSD boot on PCIe-x16/x8/4x slot using edk2
   (tested with M.2-to-PCIe adapter and a M.2 Samsung EVO 970 SSD)
 
 - CPU Temp sensors (tested PSensor on linux + HWINFO64 on Win10)
@@ -89,7 +89,7 @@ easy to remove and reflash.
 - If you use the MRC.bin, the NVRAM variable gfx_uma_size may be ignored
   as IGP's UMA could be reconfigured by the blob
 
-- Using TianoCore + a PCIe GPU under Windows crashes with an
+- Using edk2 + a PCIe GPU under Windows crashes with an
   ACPI_BIOS_ERROR fatal code, not sure why. Using just the IGP
   works perfectly
 
@@ -105,9 +105,9 @@ easy to remove and reflash.
 
 ## Not working
 
-- PS/2 keyboard in Win10 using Tianocore (please see [Known issues])
-- PS/2 mouse using Tianocore
-- PCIe graphics card on Windows and Tianocore (throws critical ACPI_BIOS_ERROR)
+- PS/2 keyboard in Win10 using edk2 (please see [Known issues])
+- PS/2 mouse using edk2
+- PCIe graphics card on Windows and edk2 (throws critical ACPI_BIOS_ERROR)
 
 ## Native raminit compatibility
 

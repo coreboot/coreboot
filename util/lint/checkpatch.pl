@@ -3636,9 +3636,12 @@ sub process {
 # and is indented the same # of tabs
 		if ($sline =~ /^\+([\t]+)break\s*;\s*$/) {
 			my $tabs = $1;
-			if ($prevline =~ /^\+$tabs(?:goto|return|break)\b/) {
-				WARN("UNNECESSARY_BREAK",
-				     "break is not useful after a $1\n" . $hereprev);
+			if ($prevline =~ /^\+$tabs(goto|return|break)\b/) {
+				if (WARN("UNNECESSARY_BREAK",
+					 "break is not useful after a $1\n" . $hereprev) &&
+				    $fix) {
+					fix_delete_line($fixlinenr, $rawline);
+				}
 			}
 		}
 

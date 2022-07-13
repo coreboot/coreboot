@@ -75,6 +75,10 @@ chip soc/intel/alderlake
 	# Disable C state auto-demotion for all brya baseboards
 	register "disable_c1_state_auto_demotion" = "1"
 
+	# FIXME: To be enabled in future based on PNP impact data.
+	# Disable Package C-state demotion for brya baseboard.
+	register "disable_package_c_state_demotion" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

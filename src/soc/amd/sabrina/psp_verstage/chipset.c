@@ -18,7 +18,7 @@ uint32_t save_uapp_data(void *address, uint32_t size)
 
 uint32_t get_bios_dir_addr(struct embedded_firmware *ef_table)
 {
-	return ef_table->bios3_entry;
+	return 0;
 }
 
 int platform_set_sha_op(enum vb2_hash_algorithm hash_alg,

@@ -212,6 +212,7 @@ endif
 
 config TIANOCORE_CUSTOM_BUILD_PARAMS
 	string "TianoCore additional custom build parameters"
+	default "-D VARIABLE_SUPPORT=SMMSTORE" if TIANOCORE_UEFIPAYLOAD && SMMSTORE_V2
 	help
 	  edk2 has build options that are not modified by coreboot, and these can be
 	  found in `UefiPayloadPkg/UefiPayloadPkg.dsc`. Forks may also support

@@ -6,6 +6,7 @@
 #include <baseboard/variants.h>
 #include <psp_verstage.h>
 #include <security/vboot/vboot_common.h>
+#include <soc/espi.h>
 #include <soc/southbridge.h>
 
 void verstage_mainboard_early_init(void)
@@ -25,6 +26,8 @@ void verstage_mainboard_espi_init(void)
 
 	variant_espi_gpio_table(&gpios, &num_gpios);
 	gpio_configure_pads(gpios, num_gpios);
+
+	espi_switch_to_spi1_pads();
 }
 
 void verstage_mainboard_tpm_init(void)

@@ -19,6 +19,7 @@ bootblock-y	+= reset.c
 bootblock-y	+= uart.c
 
 verstage-y	+= i2c.c
+verstage-y	+= espi_util.c
 verstage_x86-y	+= gpio.c
 verstage_x86-y	+= reset.c
 verstage_x86-y	+= uart.c

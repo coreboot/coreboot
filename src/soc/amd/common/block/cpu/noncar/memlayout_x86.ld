@@ -62,7 +62,7 @@ BOOTBLOCK_ADDR = BOOTBLOCK_END - CONFIG_C_ENV_BOOTBLOCK_SIZE;
  *                     +--------------------------------+ PSP_SHAREDMEM_BASE + 0x40
  *                     |     Transfer Info Structure    |
  *                     +--------------------------------+ PSP_SHAREDMEM_BASE
- *                     |          APOB (64KiB)          |
+ *                     |    APOB (PSP_APOB_DRAM_SIZE)   |
  *                     +--------------------------------+ PSP_APOB_DRAM_ADDRESS
  *                     |        Early BSP stack         |
  *                     |   (EARLYRAM_BSP_STACK_SIZE)    |
@@ -83,7 +83,7 @@ SECTIONS
 	EARLY_RESERVED_DRAM_START(CONFIG_EARLY_RESERVED_DRAM_BASE)
 
 	EARLYRAM_STACK(., CONFIG_EARLYRAM_BSP_STACK_SIZE)
-	REGION(apob, CONFIG_PSP_APOB_DRAM_ADDRESS, 64K, 1)
+	REGION(apob, CONFIG_PSP_APOB_DRAM_ADDRESS, CONFIG_PSP_APOB_DRAM_SIZE, 1)
 
 #if CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK)
 	PSP_SHAREDMEM_DRAM_START(CONFIG_PSP_SHAREDMEM_BASE)

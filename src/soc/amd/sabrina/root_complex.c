@@ -88,7 +88,7 @@ struct dptc_input {
  *                     |   PSP shared (vboot workbuf)   |
  *                     |      (PSP_SHAREDMEM_SIZE)      |
  *                     +--------------------------------+ PSP_SHAREDMEM_BASE
- *                     |          APOB (64KiB)          |
+ *                     |          APOB (128KiB)         |
  *                     +--------------------------------+ PSP_APOB_DRAM_ADDRESS
  *                     |        Early BSP stack         |
  *                     |   (EARLYRAM_BSP_STACK_SIZE)    |

@@ -106,6 +106,10 @@ config PSP_APOB_DRAM_ADDRESS
 	  Location in DRAM where the PSP will copy the AGESA PSP Output
 	  Block.
 
+config PSP_APOB_DRAM_SIZE
+	hex
+	default 0x10000
+
 config PSP_SHAREDMEM_BASE
 	hex
 	default 0x2011000 if VBOOT

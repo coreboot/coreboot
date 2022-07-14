@@ -21,3 +21,11 @@ config PSP_INIT_TPM_ON_S0I3_RESUME
 	  If the TPM is reset while in S0i3, it must be reinitialized
 	  during s0i3 resume. This must be performed in PSP verstage since
 	  coreboot is otherwise not involved with s0i3 resume.
+
+config PSP_SUPPORTS_EFS2_RELATIVE_ADDR
+	bool
+	default n
+	help
+	  On SoCs where PSP uses A/B recovery layout, PSP support relative addressing
+	  from the start of the SPI ROM. Enable this config on SoCs where PSP supports
+	  relative addressing so that PSP verstage can pass the offset.

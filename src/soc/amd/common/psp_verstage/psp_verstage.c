@@ -104,19 +104,23 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	bios_dir_addr = get_bios_dir_addr(ef_table);
 	psp_dir_in_spi = (uint32_t *)((psp_dir_addr & SPI_ADDR_MASK) +
 			(uint32_t)boot_dev_base);
-	bios_dir_in_spi = (uint32_t *)((bios_dir_addr & SPI_ADDR_MASK) +
-			(uint32_t)boot_dev_base);
 	if (*psp_dir_in_spi != PSP_COOKIE) {
 		printk(BIOS_ERR, "PSP Directory address is not correct.\n");
 		return POSTCODE_PSP_COOKIE_MISMATCH_ERROR;
 	}
-	if (*bios_dir_in_spi != BHD_COOKIE) {
-		printk(BIOS_ERR, "BIOS Directory address is not correct.\n");
-		return POSTCODE_BHD_COOKIE_MISMATCH_ERROR;
+
+	if (bios_dir_addr) {
+		bios_dir_in_spi = (uint32_t *)((bios_dir_addr & SPI_ADDR_MASK) +
+				(uint32_t)boot_dev_base);
+		if (*bios_dir_in_spi != BHD_COOKIE) {
+			printk(BIOS_ERR, "BIOS Directory address is not correct.\n");
+			return POSTCODE_BHD_COOKIE_MISMATCH_ERROR;
+		}
 	}
 
 	/* EFS2 uses relative address and PSP isn't happy with that */
-	if (ef_table->efs_gen.gen == EFS_SECOND_GEN) {
+	if (ef_table->efs_gen.gen == EFS_SECOND_GEN &&
+			!CONFIG(PSP_SUPPORTS_EFS2_RELATIVE_ADDR)) {
 		psp_dir_addr = FLASH_BASE_ADDR + (psp_dir_addr & SPI_ADDR_MASK);
 		bios_dir_addr = FLASH_BASE_ADDR + (bios_dir_addr & SPI_ADDR_MASK);
 	}

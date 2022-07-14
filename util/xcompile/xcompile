@@ -285,6 +285,7 @@ cat <<EOF
 CPP_${TARCH}:=${GCCPREFIX}cpp
 AS_${TARCH}:=${GCCPREFIX}as ${ASFLAGS}
 LD_${TARCH}:=${GCCPREFIX}ld${LINKER_SUFFIX} ${LDFLAGS}
+GCOV_${TARCH}:=${GCCPREFIX}gcov
 EOF
 
 	if [ "${TARCH}" = "arm64" ] && \

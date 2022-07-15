@@ -42,14 +42,6 @@ __weak int get_wifi_sar_limits(union wifi_sar_limits *sar_limits)
 }
 
 /*
- * Generate ACPI AML code for _DSM method.
- * This function takes as input uuid for the device, set of callbacks and
- * argument to pass into the callbacks. Callbacks should ensure that Local0 and
- * Local1 are left untouched. Use of Local2-Local7 is permitted in callbacks.
- */
-void wifi_emit_dsm(struct dsm_profile *dsm);
-
-/*
  * Function 1: Allow PC OEMs to set ETSI 5.8GHz SRD in Passive/Disabled ESTI SRD
  * Channels: 149, 153, 157, 161, 165
  * 0 - ETSI 5.8GHz SRD active scan
@@ -179,21 +171,6 @@ static void (*wifi_dsm2_callbacks[])(void *) = {
 	NULL,				/* Function 2 */
 	wifi_dsm_ddrrfim_func3_cb,	/* Function 3 */
 };
-
-void wifi_emit_dsm(struct dsm_profile *dsm)
-{
-	int i;
-	size_t count = ARRAY_SIZE(wifi_dsm_callbacks);
-
-	if (dsm == NULL)
-		return;
-
-	for (i = 1; i < count; i++)
-		if (!(dsm->supported_functions & (1 << i)))
-			wifi_dsm_callbacks[i] = NULL;
-
-	acpigen_write_dsm(ACPI_DSM_OEM_WIFI_UUID, wifi_dsm_callbacks, count, dsm);
-}
 
 static const uint8_t *sar_fetch_set(const struct sar_profile *sar, size_t set_num)
 {

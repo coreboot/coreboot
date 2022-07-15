@@ -125,11 +125,11 @@ config PSP_APOB_DRAM_ADDRESS
 
 config PSP_APOB_DRAM_SIZE
 	hex
-	default 0x20000
+	default 0x1E000
 
 config PSP_SHAREDMEM_BASE
 	hex
-	default 0x2021000 if VBOOT
+	default 0x201F000 if VBOOT
 	default 0x0
 	help
 	  This variable defines the base address in DRAM memory where PSP copies

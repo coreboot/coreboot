@@ -23,6 +23,9 @@
 #error Incorrect APOB configuration setting(s)
 #endif
 
+_Static_assert(CONFIG_PSP_APOB_DRAM_SIZE == DEFAULT_MRC_CACHE_SIZE,
+	"APOB DRAM reserved space != to MRC CACHE size - check your config");
+
 #define APOB_SIGNATURE 0x424F5041	/* 'APOB' */
 
 /* APOB_BASE_HEADER from AGESA */

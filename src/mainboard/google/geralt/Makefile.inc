@@ -13,4 +13,5 @@ romstage-y += romstage.c
 ramstage-y += memlayout.ld
 ramstage-y += chromeos.c
 ramstage-y += mainboard.c
+ramstage-y += regulator.c
 ramstage-y += reset.c

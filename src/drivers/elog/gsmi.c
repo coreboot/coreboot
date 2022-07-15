@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <elog.h>
+#include <stdint.h>
 
 #define GSMI_RET_SUCCESS		0x00
 #define GSMI_RET_INVALID_PARAMETER	0x82
@@ -59,7 +60,7 @@ u32 gsmi_exec(u8 command, u32 *param)
 
 	case GSMI_CMD_SET_EVENT_LOG:
 		/* Look for a type1 event */
-		sel = (struct gsmi_set_eventlog_param *)(*param);
+		sel = (struct gsmi_set_eventlog_param *)(uintptr_t)(*param);
 		if (!sel)
 			break;
 
@@ -69,7 +70,7 @@ u32 gsmi_exec(u8 command, u32 *param)
 			break;
 
 		/* Event structure within the data buffer */
-		type1 = (struct gsmi_set_eventlog_type1 *)(sel->data_ptr);
+		type1 = (struct gsmi_set_eventlog_type1 *)(uintptr_t)(sel->data_ptr);
 		if (!type1)
 			break;
 
@@ -90,7 +91,7 @@ u32 gsmi_exec(u8 command, u32 *param)
 
 	case GSMI_CMD_CLEAR_EVENT_LOG:
 		/* Get parameter buffer even though we don't use it */
-		cel = (struct gsmi_clear_eventlog_param *)(*param);
+		cel = (struct gsmi_clear_eventlog_param *)(uintptr_t)(*param);
 		if (!cel)
 			break;
 

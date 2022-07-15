@@ -1,10 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
+#include <soc/msdc.h>
 #include <soc/usb.h>
 
 static void mainboard_init(struct device *dev)
 {
+	mtk_msdc_configure_emmc(true);
+	mtk_msdc_configure_sdcard();
 	setup_usb_host();
 }
 

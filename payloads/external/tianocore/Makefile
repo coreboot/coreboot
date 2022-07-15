@@ -136,18 +136,36 @@ update: $(project_dir)
 		fi; \
 		git submodule update --init --checkout
 
+logo: $(project_dir)/edk2
+	case "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" in \
+		/*) convert -background None $(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
+			BMP3:$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
+		*) convert -background None $(top)/$(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
+			BMP3:$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
+	esac \
+
 checktools:
-	echo "Checking uuid-dev..."
+	echo -n "EDK2: Checking uuid-dev:"
 	echo "#include <uuid/uuid.h>" > libtest.c
 	echo "int main(int argc, char **argv) { (void) argc; (void) argv; return 0; }" >> libtest.c
-	$(HOSTCC) $(HOSTCCFLAGS) libtest.c -o libtest >/dev/null 2>&1 && echo " found uuid-dev." || \
-		( echo " Not found."; echo "ERROR: please_install uuid-dev (libuuid-devel)"; exit 1 )
+	$(HOSTCC) $(HOSTCCFLAGS) libtest.c -o libtest >/dev/null 2>&1 && echo "    Found!" || \
+		( echo "    Not found!"; \
+			echo "ERROR: please_install uuid-dev (libuuid-devel)"; exit 1 )
 	rm -rf libtest.c libtest
-	echo "Checking nasm..."
-	type nasm > /dev/null 2>&1 && echo " found nasm." || \
-		( echo " Not found."; echo "Error: Please install nasm."; exit 1 )
+	echo -n "EDK2: Checking nasm:"
+	type nasm > /dev/null 2>&1 && echo "        Found!" || \
+		( echo "        Not found!"; echo "ERROR: Please install nasm."; exit 1 )
+	echo -n "EDK2: Checking imagemagick:"
+	-convert -size 1x1 xc: test.png &> /dev/null;
+	if [ -f test.png ]; then \
+		rm test.png && echo " Found!"; \
+	else \
+		echo " Not found!"; \
+		echo "ERROR: Please install imagemagick"; \
+		exit 1; \
+	fi
 
-build: update checktools
+build: update logo checktools
 	echo "   ##### $(project_name) Build Summary #####"
 	echo "   Repository:     $(CONFIG_TIANOCORE_REPOSITORY)"
 	echo "   Branch:         $(CONFIG_TIANOCORE_TAG_OR_REV)"
@@ -160,15 +178,6 @@ build: update checktools
 		-e 's/q /Build:          Quiet/' \
 		-e 's/t /Toolchain:      /'
 	unset CC; $(MAKE) -C $(project_dir)/BaseTools 2>&1
-	if [ -n "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" ]; then \
-		echo "    Copying custom bootsplash image"; \
-		case "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" in \
-			/*) convert $(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
-				BMP3:$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
-			*) convert $(top)/$(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
-				BMP3:$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
-		esac \
-	fi; \
 	cd $(project_dir); \
 		export EDK_TOOLS_PATH=$(project_dir)/BaseTools; \
 		export WORKSPACE=$(project_dir); \
@@ -188,4 +197,4 @@ clean:
 distclean:
 	rm -rf */
 
-.PHONY: all update checktools config build clean distclean
+.PHONY: all update checktools config build clean distclean logo

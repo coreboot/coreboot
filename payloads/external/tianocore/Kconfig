@@ -94,17 +94,25 @@ config TIANOCORE_ABOVE_4G_MEMORY
 
 config TIANOCORE_BOOTSPLASH_FILE
 	string "Tianocore Bootsplash path and filename"
-	default "bootsplash.bmp"
+	default "Documentation/coreboot_logo.svg"
 	help
-	  Select this option if you have a bootsplash image that you would
-	  like to be used. If this option is not selected, the default
+	  The path and filename of the file to use as graphical bootsplash
+	  image. If this option is not configured, the default
 	  coreboot logo (European Brown Hare) will used.
 
-	  The path and filename of the file to use as graphical bootsplash
-	  image. The file must be an uncompressed BMP, in BMP 3 format.
+	  You can use any image format supported by imagemagick, a list of which
+	  can be found [here](https://imagemagick.org/script/formats.php).
 
-	  Linux can create these with the below command:
-	      `convert splosh.bmp BMP3:splash.bmp`
+	  The build process will automatically convert this to the format that
+	  EDK2 requires, which is an uncompressed BMP, in BMP3 format. It does
+	  this using imagemagick (`convert splosh.bmp BMP3:splash.bmp`).
+
+	  The newly formatted file will be the dimensions size as the original
+	  one.
+
+	  The build process will automatically do this conversion, so it can
+	  be supplied with any format that imagemagick can process (which is
+	  pretty much any!).
 
 	  This image will also be used as the BGRT boot image, which may
 	  persist through your OS boot process.

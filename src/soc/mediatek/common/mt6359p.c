@@ -159,7 +159,7 @@ static void pmic_wk_vs2_voter_setting(void)
 
 void mt6359p_buck_set_voltage(u32 buck_id, u32 buck_uv)
 {
-	u32 vol_offset, vol_reg, vol;
+	u32 vol_offset, vol_reg, vol, vol_step;
 
 	if (!pmif_arb)
 		die("ERROR: pmif_arb not initialized");
@@ -168,31 +168,40 @@ void mt6359p_buck_set_voltage(u32 buck_id, u32 buck_uv)
 	case MT6359P_GPU11:
 		vol_offset = 400000;
 		vol_reg = PMIC_VGPU11_ELR0;
+		vol_step = 6250;
 		break;
 	case MT6359P_SRAM_PROC1:
 		vol_offset = 500000;
 		vol_reg = PMIC_VSRAM_PROC1_ELR;
+		vol_step = 6250;
 		break;
 	case MT6359P_SRAM_PROC2:
 		vol_offset = 500000;
 		vol_reg = PMIC_VSRAM_PROC2_ELR;
+		vol_step = 6250;
 		break;
 	case MT6359P_CORE:
 		vol_offset = 506250;
 		vol_reg = PMIC_VCORE_ELR0;
+		vol_step = 6250;
+		break;
+	case MT6359P_PA:
+		vol_offset = 500000;
+		vol_reg = PMIC_VPA_CON1;
+		vol_step = 50000;
 		break;
 	default:
 		die("ERROR: Unknown buck_id %u", buck_id);
 		return;
 	};
 
-	vol = (buck_uv - vol_offset) / 6250;
+	vol = (buck_uv - vol_offset) / vol_step;
 	mt6359p_write_field(vol_reg, vol, 0x7F, 0);
 }
 
 u32 mt6359p_buck_get_voltage(u32 buck_id)
 {
-	u32 vol_shift, vol_offset, vol_reg, vol;
+	u32 vol_shift, vol_offset, vol_reg, vol, vol_step;
 
 	if (!pmif_arb)
 		die("ERROR: pmif_arb not initialized");
@@ -202,21 +211,31 @@ u32 mt6359p_buck_get_voltage(u32 buck_id)
 		vol_shift = 0;
 		vol_offset = 400000;
 		vol_reg = PMIC_VGPU11_DBG0;
+		vol_step = 6250;
 		break;
 	case MT6359P_SRAM_PROC1:
 		vol_shift = 8;
 		vol_offset = 500000;
 		vol_reg = PMIC_VSRAM_PROC1_VOSEL1;
+		vol_step = 6250;
 		break;
 	case MT6359P_SRAM_PROC2:
 		vol_shift = 8;
 		vol_offset = 500000;
 		vol_reg = PMIC_VSRAM_PROC2_VOSEL1;
+		vol_step = 6250;
 		break;
 	case MT6359P_CORE:
 		vol_shift = 0;
 		vol_offset = 506250;
 		vol_reg = PMIC_VCORE_DBG0;
+		vol_step = 6250;
+		break;
+	case MT6359P_PA:
+		vol_shift = 0;
+		vol_offset = 500000;
+		vol_reg = PMIC_VPA_DBG0;
+		vol_step = 50000;
 		break;
 	default:
 		die("ERROR: Unknown buck_id %u", buck_id);
@@ -224,7 +243,7 @@ u32 mt6359p_buck_get_voltage(u32 buck_id)
 	};
 
 	vol = mt6359p_read_field(vol_reg, 0x7F, vol_shift);
-	return vol_offset + vol * 6250;
+	return vol_offset + vol * vol_step;
 }
 
 void mt6359p_set_vm18_voltage(u32 vm18_uv)
@@ -252,6 +271,57 @@ u32 mt6359p_get_vm18_voltage(void)
 	reg_vol = 100 * mt6359p_read_field(PMIC_VM18_ANA_CON0, 0xF, VM18_VOL_REG_SHIFT);
 	reg_cali = 10 * mt6359p_read_field(PMIC_VM18_ANA_CON0, 0xF, 0);
 	return 1000 * (VM18_VOL_OFFSET + reg_vol + reg_cali);
+}
+
+void mt6359p_set_vsim1_voltage(u32 vsim1_uv)
+{
+	u32 reg_vol, reg_cali;
+
+	if (!pmif_arb)
+		die("ERROR: pmif_arb not initialized");
+
+	if ((vsim1_uv >= 1700000) && (vsim1_uv <= 1900000))
+		reg_vol = (vsim1_uv / 1000 - VSIM1_VOL_OFFSET_1) / 100;
+	else if ((vsim1_uv >= 2700000) && (vsim1_uv <= 2800000))
+		reg_vol = (vsim1_uv / 1000 - VSIM1_VOL_OFFSET_2) / 100;
+	else if ((vsim1_uv >= 3000000) && (vsim1_uv <= 3200000))
+		reg_vol = (vsim1_uv / 1000 - VSIM1_VOL_OFFSET_2) / 100;
+	else
+		die("ERROR: Unknown vsim1 voltage %u", vsim1_uv);
+
+	reg_cali = ((vsim1_uv / 1000) % 100) / 10;
+	mt6359p_write(PMIC_VSIM1_ANA_CON0, (reg_vol << VSIM1_VOL_REG_SHIFT) | reg_cali);
+}
+
+u32 mt6359p_get_vsim1_voltage(void)
+{
+	u32 reg_vol, reg_cali, reg_offset;
+
+	if (!pmif_arb)
+		die("ERROR: pmif_arb not initialized");
+
+	reg_vol = 100 * mt6359p_read_field(PMIC_VSIM1_ANA_CON0, 0xF,
+					   VSIM1_VOL_REG_SHIFT);
+	reg_cali = 10 * mt6359p_read_field(PMIC_VSIM1_ANA_CON0, 0xF, 0);
+
+	if ((reg_vol == 300) || (reg_vol == 400))
+		reg_offset = VSIM1_VOL_OFFSET_1;
+	else if ((reg_vol == 800) || (reg_vol == 1100) || (reg_vol == 1200))
+		reg_offset = VSIM1_VOL_OFFSET_2;
+	else
+		die("ERROR: Unknown vsim1 reg_vol %x", reg_vol);
+
+	return 1000 * (reg_offset + reg_vol + reg_cali);
+}
+
+void mt6359p_enable_vpa(bool enable)
+{
+	mt6359p_write_field(PMIC_VPA_CON0, !!enable, 0x1, 0);
+}
+
+void mt6359p_enable_vsim1(bool enable)
+{
+	mt6359p_write_field(PMIC_VSIM1_CON0, !!enable, 0x1, 0);
 }
 
 static void init_pmif_arb(void)

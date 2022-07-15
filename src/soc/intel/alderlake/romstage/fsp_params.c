@@ -150,8 +150,10 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 {
 	m_cfg->SaGv = config->sagv;
 	m_cfg->RMT = config->RMT;
-	if (config->max_dram_speed_mts)
+	if (config->max_dram_speed_mts) {
 		m_cfg->DdrFreqLimit = config->max_dram_speed_mts;
+		m_cfg->DdrSpeedControl = 1;
+	}
 }
 
 static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,

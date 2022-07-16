@@ -25,13 +25,13 @@
 #define OUT
 
 #ifndef Int16FromChar
-#define Int16FromChar(a,b) ((a) << 0 | (b) << 8)
+#define Int16FromChar(a, b) ((a) << 0 | (b) << 8)
 #endif
 #ifndef Int32FromChar
-#define Int32FromChar(a,b,c,d) ((a) << 0 | (b) << 8 | (c) << 16 | (d) << 24)
+#define Int32FromChar(a, b, c, d) ((a) << 0 | (b) << 8 | (c) << 16 | (d) << 24)
 #endif
 
-#define IMAGE_SIGNATURE     Int32FromChar ('$', 'A', 'M', 'D')
+#define IMAGE_SIGNATURE     Int32FromChar('$', 'A', 'M', 'D')
 
 typedef unsigned int AGESA_STATUS;
 

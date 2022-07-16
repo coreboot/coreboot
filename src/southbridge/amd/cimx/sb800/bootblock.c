@@ -55,7 +55,7 @@ static void enable_spi_fast_mode(void)
 	// set temp MMIO base
 	volatile u32 *spi_base = (void *)0xa0000000;
 	u32 save = pci_s_read_config32(dev, 0xa0);
-	pci_s_write_config32(dev, 0xa0, (u32) spi_base | 2);
+	pci_s_write_config32(dev, 0xa0, (u32)spi_base | 2);
 
 	// early enable of SPI 33 MHz fast mode read
 	dword = spi_base[3];

@@ -71,16 +71,16 @@ void init_sb800_MANUAL_fans(struct device *dev);
 #define FREQ_11HZ			0xFF
 
 /* IMC Fan Control Definitions */
-#define IMC_MODE1_FAN_ENABLED					( 1 << 0 )
-#define IMC_MODE1_FAN_IMC_CONTROLLED			( 1 << 2 )
-#define IMC_MODE1_FAN_LINEAR_MODE				( 1 << 4 )
+#define IMC_MODE1_FAN_ENABLED					(1 << 0)
+#define IMC_MODE1_FAN_IMC_CONTROLLED			(1 << 2)
+#define IMC_MODE1_FAN_LINEAR_MODE				(1 << 4)
 #define IMC_MODE1_FAN_STEP_MODE					0 /* ~( 1 << 4 ) */
 #define IMC_MODE1_NO_FANOUT						0 /* ~( 7 << 5 ) */
-#define IMC_MODE1_FANOUT0						( 1 << 5 )
-#define IMC_MODE1_FANOUT1						( 2 << 5 )
-#define IMC_MODE1_FANOUT2						( 3 << 5 )
-#define IMC_MODE1_FANOUT3						( 4 << 5 )
-#define IMC_MODE1_FANOUT4						( 5 << 5 )
+#define IMC_MODE1_FANOUT0						(1 << 5)
+#define IMC_MODE1_FANOUT1						(2 << 5)
+#define IMC_MODE1_FANOUT2						(3 << 5)
+#define IMC_MODE1_FANOUT3						(4 << 5)
+#define IMC_MODE1_FANOUT4						(5 << 5)
 
 #define IMC_MODE2_TEMPIN_NONE					0 /* ~( 7 << 0) */
 #define IMC_MODE2_TEMPIN_0						1
@@ -91,12 +91,12 @@ void init_sb800_MANUAL_fans(struct device *dev);
 #define IMC_MODE2_TEMPIN_SB_TSI					6
 #define IMC_MODE2_TEMPIN_OTHER					7
 #define IMC_MODE2_FANIN_NONE					0 /* ~ (7 << 3) */
-#define IMC_MODE2_FANIN0						( 1 << 3 )
-#define IMC_MODE2_FANIN1						( 2 << 3 )
-#define IMC_MODE2_FANIN2						( 3 << 3 )
-#define IMC_MODE2_FANIN3						( 4 << 3 )
-#define IMC_MODE2_FANIN4						( 5 << 3 )
-#define IMC_MODE2_TEMP_AVERAGING_ENABLED		( 1 << 6 )
+#define IMC_MODE2_FANIN0						(1 << 3)
+#define IMC_MODE2_FANIN1						(2 << 3)
+#define IMC_MODE2_FANIN2						(3 << 3)
+#define IMC_MODE2_FANIN3						(4 << 3)
+#define IMC_MODE2_FANIN4						(5 << 3)
+#define IMC_MODE2_TEMP_AVERAGING_ENABLED		(1 << 6)
 #define IMC_MODE2_TEMP_AVERAGING_DISABLED		0 /* ~( 1 << 6 ) */
 
 #define IMC_TEMP_SENSOR_ON_SMBUS_0				0
@@ -113,17 +113,17 @@ void init_sb800_MANUAL_fans(struct device *dev);
 #define IMC_TEMPIN_TUNING_DEFAULT_MODE			0
 #define IMC_TEMPIN_TUNING_HIGH_CURRENT_RATIO	1
 #define IMC_TEMPIN_TUNING_HIGH_CURRENT			2
-#define IMC_TEMPIN_TUNING_DISABLE_FILTERING		( 1 << 2 )
+#define IMC_TEMPIN_TUNING_DISABLE_FILTERING		(1 << 2)
 
 /* IMCFUNSupportBitMap - Zone enable values */
 #define IMC_ENABLE_ZONE0						0x111
 #define IMC_ENABLE_ZONE1						0x222
 #define IMC_ENABLE_ZONE2						0x333
 #define IMC_ENABLE_ZONE3						0x444
-#define IMC_ENABLE_TEMPIN0						( 1 << 12 )
-#define IMC_ENABLE_TEMPIN1						( 1 << 13 )
-#define IMC_ENABLE_TEMPIN2						( 1 << 14 )
-#define IMC_ENABLE_TEMPIN3						( 1 << 15 )
+#define IMC_ENABLE_TEMPIN0						(1 << 12)
+#define IMC_ENABLE_TEMPIN1						(1 << 13)
+#define IMC_ENABLE_TEMPIN2						(1 << 14)
+#define IMC_ENABLE_TEMPIN3						(1 << 15)
 
 /* Array size settings */
 #define IMC_FAN_THRESHOLD_COUNT					9

@@ -5,9 +5,9 @@
 
 #include <console/vtxprintf.h>
 
-#pragma pack (push, 1)
+#pragma pack(push, 1)
 
-#define IMAGE_ALIGN          32*1024
+#define IMAGE_ALIGN          32 * 1024
 #define NUM_IMAGE_LOCATION   32
 
 //Entry Point Call
@@ -104,7 +104,7 @@ typedef struct _CIMFILEHEADER
 #ifndef BIT23
   #define BIT23 (1 << 23)
 #endif
-#ifndef  BIT24
+#ifndef BIT24
   #define BIT24 (1 << 24)
 #endif
 #ifndef BIT25
@@ -129,7 +129,7 @@ typedef struct _CIMFILEHEADER
   #define BIT31 (1 << 31)
 #endif
 
-#pragma pack (pop)
+#pragma pack(pop)
 
 typedef enum
 {

@@ -8,10 +8,10 @@
 #include <reset.h>
 
 #define HT_INIT_CONTROL		0x6c
-#define HTIC_BIOSR_Detect	(1<<5)
+#define HTIC_BIOSR_Detect	(1 << 5)
 
 #define DEV_CDB 0x18
-#define NODE_PCI(x, fn)	(((DEV_CDB+x)<32)?(PCI_DEV(0,(DEV_CDB+x),fn)):(PCI_DEV((0-1),(DEV_CDB+x-32),fn)))
+#define NODE_PCI(x, fn)	(((DEV_CDB + x) < 32) ? (PCI_DEV(0, (DEV_CDB + x), fn)) : (PCI_DEV((0 - 1), (DEV_CDB + x - 32), fn)))
 
 void cf9_reset_prepare(void)
 {

@@ -88,7 +88,7 @@ static void ahci_raid_init(struct device *dev)
 
 	caps = read32(bar5 + HOST_CAP);
 	caps = (caps & 0x1F) + 1;
-	ports= read32(bar5 + HOST_PORTS_IMPL);
+	ports = read32(bar5 + HOST_PORTS_IMPL);
 	printk(BIOS_DEBUG, "Number of Ports: 0x%x, Port implemented(bit map): 0x%x\n", caps, ports);
 
 	/* make sure ahci is enabled */
@@ -382,7 +382,7 @@ static void sb800_enable(struct device *dev)
 		{
 			struct device *device;
 			for (device = dev; device; device = device->sibling) {
-				if ((device->path.pci.devfn & ~3) != PCI_DEVFN(0x15,0)) break;
+				if ((device->path.pci.devfn & ~3) != PCI_DEVFN(0x15, 0)) break;
 				sb_config->PORTCONFIG[device->path.pci.devfn & 3].PortCfg.PortPresent = device->enabled;
 			}
 

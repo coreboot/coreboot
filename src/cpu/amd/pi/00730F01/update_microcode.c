@@ -63,7 +63,7 @@ struct microcode {
 
 	uint8_t reserved2[4];
 
-	uint8_t m_patch_data[F16H_MPB_MAX_SIZE-F16H_MPB_DATA_OFFSET];
+	uint8_t m_patch_data[F16H_MPB_MAX_SIZE - F16H_MPB_DATA_OFFSET];
 } __packed;
 
 static void apply_microcode_patch(const struct microcode *m)

@@ -187,7 +187,7 @@ void hudson_clk_output_48Mhz(void)
 	ctrl = misc_read32(FCH_MISC_REG40);
 
 	/* clear the OSCOUT1_ClkOutputEnb to enable the 48 Mhz clock */
-	ctrl &= (u32)~(1<<2);
+	ctrl &= (u32)~(1 << 2);
 	misc_write32(FCH_MISC_REG40, ctrl);
 }
 
@@ -198,7 +198,7 @@ static uintptr_t hudson_spibase(void)
 
 	u32 base = pci_read_config32(dev, SPIROM_BASE_ADDRESS_REGISTER)
 							& 0xfffffff0;
-	if (!base){
+	if (!base) {
 		base = SPI_BASE_ADDRESS;
 		pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER, base
 							| SPI_ROM_ENABLE);

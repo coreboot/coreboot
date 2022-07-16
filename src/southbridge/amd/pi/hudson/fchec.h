@@ -8,7 +8,7 @@
 #include <AGESA.h>
 #include "FchCommonCfg.h"
 
-extern VOID FchECfancontrolservice (IN VOID *FchDataPtr);
+extern VOID FchECfancontrolservice(IN VOID *FchDataPtr);
 void agesawrapper_fchecfancontrolservice(void);
 
 #endif

@@ -69,10 +69,10 @@ static void lpc_init(struct device *dev)
 	cmos_init(0);
 
 	/* Initialize i8259 pic */
-	setup_i8259 ();
+	setup_i8259();
 
 	/* Initialize i8254 timers */
-	setup_i8254 ();
+	setup_i8254();
 
 	/* Set up SERIRQ, enable continuous mode */
 	byte = (BIT(4) | BIT(7));
@@ -255,7 +255,7 @@ static void hudson_lpc_enable_childrens_resources(struct device *dev)
 					default:
 						rsize = 0;
 						/* try AGESA allocated region in region 0 */
-						if ((var_num > 0) && ((base >=reg_var[0]) &&
+						if ((var_num > 0) && ((base >= reg_var[0]) &&
 								((base + res->size) <= (reg_var[0] + reg_size[0]))))
 							rsize = reg_size[0];
 					}

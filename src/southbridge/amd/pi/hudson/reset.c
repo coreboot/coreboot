@@ -8,9 +8,9 @@
 #include <reset.h>
 
 #define HT_INIT_CONTROL		0x6c
-#define HTIC_ColdR_Detect	(1<<4)
-#define HTIC_BIOSR_Detect	(1<<5)
-#define HTIC_INIT_Detect	(1<<6)
+#define HTIC_ColdR_Detect	(1 << 4)
+#define HTIC_BIOSR_Detect	(1 << 5)
+#define HTIC_INIT_Detect	(1 << 6)
 
 void cf9_reset_prepare(void)
 {

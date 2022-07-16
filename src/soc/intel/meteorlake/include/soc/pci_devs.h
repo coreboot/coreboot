@@ -84,8 +84,10 @@
 
 #define PCI_DEV_SLOT_ISH	0x12
 #define  PCI_DEVFN_ISH		_PCI_DEVFN(ISH, 0)
+#define  PCI_DEVFN_GSPI2	_PCI_DEVFN(ISH, 6)
 #define  PCI_DEVFN_UFS		_PCI_DEVFN(ISH, 7)
 #define  PCI_DEV_ISH		_PCI_DEV(ISH, 0)
+#define  PCI_DEV_GSPI2		_PCI_DEV(ISH, 6)
 #define  PCI_DEV_UFS		_PCI_DEV(ISH, 7)
 
 #define PCI_DEV_SLOT_IOE	0x13

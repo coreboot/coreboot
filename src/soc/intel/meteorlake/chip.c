@@ -101,6 +101,7 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCI_DEVFN_UART2:	return "UAR2";
 	case PCI_DEVFN_GSPI0:	return "SPI0";
 	case PCI_DEVFN_GSPI1:	return "SPI1";
+	case PCI_DEVFN_GSPI2:	return "SPI2";
 	/* Keeping ACPI device name coherent with ec.asl */
 	case PCI_DEVFN_ESPI:	return "LPCB";
 	case PCI_DEVFN_HDA:	return "HDAS";

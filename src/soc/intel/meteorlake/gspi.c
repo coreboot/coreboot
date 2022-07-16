@@ -10,6 +10,8 @@ int gspi_soc_bus_to_devfn(unsigned int gspi_bus)
 		return PCI_DEVFN_GSPI0;
 	case 1:
 		return PCI_DEVFN_GSPI1;
+	case 2:
+		return PCI_DEVFN_GSPI2;
 	}
 	return -1;
 }

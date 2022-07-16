@@ -59,6 +59,7 @@ static const pci_devfn_t i2c_dev[] = {
 static const pci_devfn_t gspi_dev[] = {
 	PCI_DEVFN_GSPI0,
 	PCI_DEVFN_GSPI1,
+	PCI_DEVFN_GSPI2,
 };
 
 static const pci_devfn_t uart_dev[] = {

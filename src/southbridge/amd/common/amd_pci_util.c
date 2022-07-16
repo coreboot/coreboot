@@ -39,11 +39,11 @@ void write_pci_int_idx(u8 index, int mode, u8 data)
  * given in global variables intr_data and picr_data.
  * These variables are defined in mainboard.c
  */
-void write_pci_int_table (void)
+void write_pci_int_table(void)
 {
 	u8 byte;
 
-	if (picr_data_ptr == NULL || intr_data_ptr == NULL){
+	if (picr_data_ptr == NULL || intr_data_ptr == NULL) {
 		printk(BIOS_ERR, "Warning: Can't write PCI_INTR 0xC00/0xC01 registers because\n"
 				"'mainboard_picr_data' or 'mainboard_intr_data' tables are NULL\n");
 		return;
@@ -54,7 +54,7 @@ void write_pci_int_table (void)
 			"\tPCI_INTR_INDEX\t\tPCI_INTR_DATA\n");
 	for (byte = 0; byte < FCH_INT_TABLE_SIZE; byte++) {
 		if (intr_types[byte]) {
-			write_pci_int_idx(byte, 0, (u8) picr_data_ptr[byte]);
+			write_pci_int_idx(byte, 0, (u8)picr_data_ptr[byte]);
 			printk(BIOS_DEBUG, "\t0x%02X %s\t: 0x%02X\n",
 					byte, intr_types[byte], read_pci_int_idx(byte, 0));
 		}
@@ -65,7 +65,7 @@ void write_pci_int_table (void)
 			"\tPCI_INTR_INDEX\t\tPCI_INTR_DATA\n");
 	for (byte = 0; byte < FCH_INT_TABLE_SIZE; byte++) {
 		if (intr_types[byte]) {
-			write_pci_int_idx(byte, 1, (u8) intr_data_ptr[byte]);
+			write_pci_int_idx(byte, 1, (u8)intr_data_ptr[byte]);
 			printk(BIOS_DEBUG, "\t0x%02X %s\t: 0x%02X\n",
 					byte, intr_types[byte], read_pci_int_idx(byte, 1));
 		}

@@ -23,6 +23,6 @@ extern const u8 *picr_data_ptr;
 u8 read_pci_int_idx(u8 index, int mode);
 void write_pci_int_idx(u8 index, int mode, u8 data);
 void write_pci_cfg_irqs(void);
-void write_pci_int_table (void);
+void write_pci_int_table(void);
 
 #endif /* AMD_PCI_UTIL_H */

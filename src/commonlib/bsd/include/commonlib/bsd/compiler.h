@@ -16,7 +16,7 @@
 #endif
 
 /* Because there may be variables/parameters whose name contains "__unused" in
-   header files of libc, namely musl, these names consistent with ones in the
+   header files of libc, namely musl, names consistent with the ones in the
    Linux kernel may be a better choice. */
 
 /* This is used to mark identifiers unused in all conditions, e.g. a parameter

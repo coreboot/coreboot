@@ -37,7 +37,7 @@ AGESA_STATUS OemS3LateRestore(AMD_S3_PARAMS *dataBlock)
 		return AGESA_FATAL;
 
 	printk(BIOS_DEBUG, "Using resume HEAP at %08x\n",
-		(unsigned int)(uintptr_t) heap);
+		(unsigned int)(uintptr_t)heap);
 
 	/* Return allocated CBMEM size, we do not keep track of
 	 * how much was actually used.

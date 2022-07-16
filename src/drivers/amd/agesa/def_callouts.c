@@ -42,20 +42,20 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	if (i >= BiosCalloutsLen)
 		return AGESA_UNSUPPORTED;
 
-	return BiosCallouts[i].CalloutPtr (Func, Data, ConfigPtr);
+	return BiosCallouts[i].CalloutPtr(Func, Data, ConfigPtr);
 }
 
-AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_NoopUnsupported(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	return AGESA_UNSUPPORTED;
 }
 
-AGESA_STATUS agesa_NoopSuccess (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_NoopSuccess(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_EmptyIdsInitData(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	IDS_NV_ITEM *IdsPtr = ((IDS_CALLOUT_STRUCT *) ConfigPtr)->IdsNvPtr;
 	if (Data == IDS_CALLOUT_INIT)
@@ -63,7 +63,7 @@ AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS agesa_Reset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_Reset(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS        Status;
 	UINT8                 Value;
@@ -88,7 +88,7 @@ AGESA_STATUS agesa_Reset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	case WARM_RESET_IMMEDIATELY:
 	case COLD_RESET_IMMEDIATELY:
 		Value = 0x06;
-		LibAmdIoWrite (AccessWidth8, 0xCf9, &Value, StdHeader);
+		LibAmdIoWrite(AccessWidth8, 0xCf9, &Value, StdHeader);
 		break;
 
 	default:
@@ -99,7 +99,7 @@ AGESA_STATUS agesa_Reset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_RunFuncOnAp(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
 	AGESA_STATUS status;
@@ -127,12 +127,12 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINTN FchData, VOID *ConfigPrt)
 }
 #endif
 
-AGESA_STATUS agesa_ReadSpd (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS agesa_ReadSpd(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	if (!ENV_RAMINIT)
 		return AGESA_UNSUPPORTED;
 
-	return AmdMemoryReadSPD (Func, Data, ConfigPtr);
+	return AmdMemoryReadSPD(Func, Data, ConfigPtr);
 }
 
 AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINTN Data, VOID *ConfigPtr)

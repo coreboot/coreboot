@@ -151,13 +151,13 @@ static const char *decodeAGESA_STATUS(AGESA_STATUS sret)
 
 static void show_event(EVENT_PARAMS *Event)
 {
-	printk(BIOS_DEBUG,"\nEventLog:  EventClass = %x, EventInfo = %x.\n",
+	printk(BIOS_DEBUG, "\nEventLog:  EventClass = %x, EventInfo = %x.\n",
 			(unsigned int)Event->EventClass,
 			(unsigned int)Event->EventInfo);
-	printk(BIOS_DEBUG,"  Param1 = %x, Param2 = %x.\n",
+	printk(BIOS_DEBUG, "  Param1 = %x, Param2 = %x.\n",
 			(unsigned int)Event->DataParam1,
 			(unsigned int)Event->DataParam2);
-	printk(BIOS_DEBUG,"  Param3 = %x, Param4 = %x.\n",
+	printk(BIOS_DEBUG, "  Param3 = %x, Param4 = %x.\n",
 			(unsigned int)Event->DataParam3,
 			(unsigned int)Event->DataParam4);
 }
@@ -194,7 +194,7 @@ void agesawrapper_trace(AGESA_STATUS ret, AMD_CONFIG_PARAMS *StdHeader,
 	amd_flush_eventlog(&AmdEventParams);
 }
 
-AGESA_STATUS agesawrapper_amdreadeventlog (UINT8 HeapStatus)
+AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus)
 {
 	EVENT_PARAMS AmdEventParams;
 

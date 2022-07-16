@@ -36,7 +36,7 @@ static void agesa_locate_image(AMD_CONFIG_PARAMS *StdHeader)
 
 	image = LibAmdLocateImage(agesa, agesa + file_size, 4096,
 		ModuleIdentifier);
-	StdHeader->ImageBasePtr = (void *) image;
+	StdHeader->ImageBasePtr = (void *)image;
 #endif
 }
 
@@ -245,7 +245,7 @@ int agesa_execute_state(struct sysinfo *cb, AGESA_STRUCT_NAME func)
 
 	/* For these calls, heap is not available. */
 	if (func == AMD_INIT_RESET || func == AMD_S3LATE_RESTORE) {
-		buf = (void *) &agesa_params;
+		buf = (void *)&agesa_params;
 		len = sizeof(agesa_params);
 		memcpy(buf, &cb->StdHeader, sizeof(cb->StdHeader));
 	}

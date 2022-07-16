@@ -45,7 +45,7 @@ void fixup_cbmem_to_UC(int s3resume)
 	 * writeback possible.
 	 */
 
-	uintptr_t top_of_ram = (uintptr_t) cbmem_top();
+	uintptr_t top_of_ram = (uintptr_t)cbmem_top();
 	top_of_ram = ALIGN_UP(top_of_ram, 4 * MiB);
 
 	set_range_uc(top_of_ram - 4 * MiB, 4 * MiB);
@@ -79,12 +79,12 @@ static void recover_postcar_frame(struct postcar_frame *pcf)
 	 * speed make them WB after CAR teardown.
 	 */
 	if (s3resume) {
-		uintptr_t top_of_ram = (uintptr_t) cbmem_top();
-		top_of_ram = ALIGN_DOWN(top_of_ram, 4*MiB);
+		uintptr_t top_of_ram = (uintptr_t)cbmem_top();
+		top_of_ram = ALIGN_DOWN(top_of_ram, 4 * MiB);
 
-		postcar_frame_add_mtrr(pcf, top_of_ram - 4*MiB, 4*MiB,
+		postcar_frame_add_mtrr(pcf, top_of_ram - 4 * MiB, 4 * MiB,
 			MTRR_TYPE_WRBACK);
-		postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 4*MiB,
+		postcar_frame_add_mtrr(pcf, top_of_ram - 8 * MiB, 4 * MiB,
 			MTRR_TYPE_WRBACK);
 	}
 }

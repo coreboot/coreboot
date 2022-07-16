@@ -101,6 +101,6 @@ static UINT8 readspd(UINT16 iobase, UINT8 SmbusSlaveAddress, char *buffer,
 int smbus_readSpd(int spdAddress, char *buf, size_t len)
 {
 	int ioBase = SMBUS0_BASE_ADDRESS;
-	setupFch (ioBase);
-	return readspd (ioBase, spdAddress, buf, len);
+	setupFch(ioBase);
+	return readspd(ioBase, spdAddress, buf, len);
 }

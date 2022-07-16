@@ -15,7 +15,7 @@
  * Gets the SMBus address for an SPD from the array in devicetree.cb
  * then read the SPD into the supplied buffer.
  */
-AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PARAMS *info)
+AGESA_STATUS AmdMemoryReadSPD(UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PARAMS *info)
 {
 	UINT8 spdAddress;
 
@@ -40,7 +40,7 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PAR
 	if (spdAddress == 0)
 		return AGESA_ERROR;
 
-	int err = smbus_readSpd(spdAddress, (void *) info->Buffer, DDR3_SPD_SIZE);
+	int err = smbus_readSpd(spdAddress, (void *)info->Buffer, DDR3_SPD_SIZE);
 	if (err)
 		return AGESA_ERROR;
 	return AGESA_SUCCESS;

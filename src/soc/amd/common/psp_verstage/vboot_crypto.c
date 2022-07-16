@@ -47,7 +47,7 @@ vb2_error_t vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg, uint32_
 vb2_error_t vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
 {
 	uint32_t retval;
-	sha_op.Data = (uint8_t *) buf;
+	sha_op.Data = (uint8_t *)buf;
 
 	if (!sha_op_size_remaining) {
 		printk(BIOS_ERR, "got more data than expected.\n");

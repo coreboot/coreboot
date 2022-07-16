@@ -16,7 +16,7 @@ void soc_validate_fspm_header(const struct fsp_header *hdr)
 {
 	struct amd_image_revision *rev;
 
-	rev = (struct amd_image_revision *) &(hdr->image_revision);
+	rev = (struct amd_image_revision *)&(hdr->image_revision);
 
 	/* Check if the image fits into the reserved memory region */
 	if (hdr->image_size > CONFIG_FSP_M_SIZE)

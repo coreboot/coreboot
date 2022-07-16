@@ -62,7 +62,7 @@ static unsigned long ivhd_describe_hpet(unsigned long current)
 static unsigned long ivhd_describe_f0_device(unsigned long current,
 						uint16_t dev_id, uint8_t datasetting)
 {
-	ivrs_ivhd_f0_entry_t *ivhd_f0 = (ivrs_ivhd_f0_entry_t *) current;
+	ivrs_ivhd_f0_entry_t *ivhd_f0 = (ivrs_ivhd_f0_entry_t *)current;
 
 	ivhd_f0->type = IVHD_DEV_VARIABLE;
 	ivhd_f0->dev_id = dev_id;
@@ -287,7 +287,7 @@ static unsigned long acpi_fill_ivrs11(unsigned long current, acpi_ivrs_t *ivrs)
 	ivhd_11->iommu_base_high = ivrs->ivhd.iommu_base_high;
 	ivhd_11->pci_segment_group = 0x0000;
 	ivhd_11->iommu_info = ivrs->ivhd.iommu_info;
-	ivhd11_attr_ptr = (ivhd11_iommu_attr_t *) &ivrs->ivhd.iommu_feature_info;
+	ivhd11_attr_ptr = (ivhd11_iommu_attr_t *)&ivrs->ivhd.iommu_feature_info;
 	ivhd_11->iommu_attributes.perf_counters = ivhd11_attr_ptr->perf_counters;
 	ivhd_11->iommu_attributes.perf_counter_banks = ivhd11_attr_ptr->perf_counter_banks;
 	ivhd_11->iommu_attributes.msi_num_ppr = ivhd11_attr_ptr->msi_num_ppr;

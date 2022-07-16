@@ -60,7 +60,7 @@ void early_cache_setup(void)
 
 	wrmsr(SYSCFG_MSR, sys_cfg);
 
-	var_mtrr_set(&mtrr_ctx.ctx, 0, ALIGN_DOWN(top_mem.lo, 8*MiB), MTRR_TYPE_WRBACK);
+	var_mtrr_set(&mtrr_ctx.ctx, 0, ALIGN_DOWN(top_mem.lo, 8 * MiB), MTRR_TYPE_WRBACK);
 	/* TODO: check if we should always mark 16 MByte below 4 GByte as WRPROT */
 	var_mtrr_set(&mtrr_ctx.ctx, FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
 

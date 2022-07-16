@@ -75,8 +75,8 @@ void save_uma_size(uint32_t size)
 
 void save_uma_base(uint64_t base)
 {
-	biosram_write32(BIOSRAM_UMA_BASE, (uint32_t) base);
-	biosram_write32(BIOSRAM_UMA_BASE + 4, (uint32_t) (base >> 32));
+	biosram_write32(BIOSRAM_UMA_BASE, (uint32_t)base);
+	biosram_write32(BIOSRAM_UMA_BASE + 4, (uint32_t)(base >> 32));
 }
 
 uint32_t get_uma_size(void)

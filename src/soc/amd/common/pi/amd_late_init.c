@@ -81,8 +81,8 @@ static void print_dimm_info(const struct dimm_info *dimm)
 	       dimm->serial[1],
 	       dimm->serial[2],
 	       dimm->serial[3],
-	       strlen((char *) dimm->module_part_number),
-	       (char *) dimm->module_part_number
+	       strlen((char *)dimm->module_part_number),
+	       (char *)dimm->module_part_number
 	);
 }
 
@@ -120,9 +120,9 @@ static void print_dmi_info(const TYPE17_DMI_INFO *dmi17)
 	       dmi17->FormFactor,
 	       dmi17->DeviceLocator,
 	       dmi17->BankLocator,
-	       strlen((char *) dmi17->SerialNumber),
+	       strlen((char *)dmi17->SerialNumber),
 	       dmi17->SerialNumber,
-	       strlen((char *) dmi17->PartNumber),
+	       strlen((char *)dmi17->PartNumber),
 	       dmi17->PartNumber
 	);
 }

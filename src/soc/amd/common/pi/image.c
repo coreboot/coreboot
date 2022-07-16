@@ -35,7 +35,7 @@ void *amd_find_image(const void *start_address, const void *end_address,
 
 	while ((current_ptr >= start) && (current_ptr < end)) {
 		if (IMAGE_SIGNATURE == *((uint32_t *)current_ptr)) {
-			image_ptr = (AMD_IMAGE_HEADER *) current_ptr;
+			image_ptr = (AMD_IMAGE_HEADER *)current_ptr;
 
 			/* Check if the image has the desired module */
 			if (validate_image((void *)image_ptr->ModuleInfoOffset,

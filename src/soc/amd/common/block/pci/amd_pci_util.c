@@ -67,11 +67,11 @@ void write_pci_int_table(void)
 	 */
 	for (i = 0 ; i < limit; i++) {
 		byte = idx_name[i].index;
-		write_pci_int_idx(byte, 0, (u8) picr_data_ptr[byte]);
+		write_pci_int_idx(byte, 0, (u8)picr_data_ptr[byte]);
 		printk(BIOS_DEBUG, "0x%02X\t\t%-20s 0x%02X\t",
 				byte, idx_name[i].name,
 				read_pci_int_idx(byte, 0));
-		write_pci_int_idx(byte, 1, (u8) intr_data_ptr[byte]);
+		write_pci_int_idx(byte, 1, (u8)intr_data_ptr[byte]);
 		printk(BIOS_DEBUG, "0x%02X\n", read_pci_int_idx(byte, 1));
 	}
 }

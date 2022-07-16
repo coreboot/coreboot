@@ -259,7 +259,7 @@ AGESA_STATUS agesa_AllocateBuffer(uint32_t Func, uintptr_t Data,
 
 		BestFitNodePtr = (BIOS_BUFFER_NODE *)(BiosHeapBaseAddr
 					+ BestFitNodeOffset);
-		BestFitPrevNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr +
+		BestFitPrevNodePtr = (BIOS_BUFFER_NODE *)(BiosHeapBaseAddr +
 							BestFitPrevNodeOffset);
 
 		/*
@@ -268,7 +268,7 @@ AGESA_STATUS agesa_AllocateBuffer(uint32_t Func, uintptr_t Data,
 		 */
 		if (BestFitNodePtr->BufferSize > MinimumSize) {
 			NextFreeOffset = BestFitNodeOffset + MinimumSize;
-			NextFreePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr +
+			NextFreePtr = (BIOS_BUFFER_NODE *)(BiosHeapBaseAddr +
 				       NextFreeOffset);
 			NextFreePtr->BufferSize = BestFitNodeSize - MinimumSize;
 

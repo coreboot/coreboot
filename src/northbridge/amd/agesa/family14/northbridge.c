@@ -44,7 +44,7 @@ static void set_io_addr_reg(struct device *dev, u32 nodeid, u32 linkn, u32 reg,
 	/* io range allocation */
 	tempreg = (nodeid & 0xf) | ((nodeid & 0x30) << (8 - 4)) | (linkn << 4) |
 		  ((io_max & 0xf0) << (12 - 4)); //limit
-	pci_write_config32(__f1_dev[0], reg+4, tempreg);
+	pci_write_config32(__f1_dev[0], reg + 4, tempreg);
 
 	tempreg = 3 | ((io_min & 0xf0) << (12 - 4)); //base :ISA and VGA ?
 	pci_write_config32(__f1_dev[0], reg, tempreg);
@@ -553,7 +553,7 @@ static void domain_set_resources(struct device *dev)
 
 		/* See if we need a hole from 0xa0000 (640K) to 0xbffff (768K) */
 		if (basek < 640 && sizek > 768) {
-			printk(BIOS_DEBUG,"adsr - 0xa0000 to 0xbffff resource.\n");
+			printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
 			ram_resource_kb(dev, (idx | 0), basek, 640 - basek);
 			idx += 0x10;
 			basek = 768;
@@ -718,10 +718,10 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	/* SRAT */
 	current = ALIGN(current, 8);
 	printk(BIOS_DEBUG, "ACPI:  * SRAT at %lx\n", current);
-	srat = (acpi_srat_t *) agesawrapper_getlateinitptr (PICK_SRAT);
+	srat = (acpi_srat_t *)agesawrapper_getlateinitptr(PICK_SRAT);
 	if (srat != NULL) {
 		memcpy((void *)current, srat, srat->header.length);
-		srat = (acpi_srat_t *) current;
+		srat = (acpi_srat_t *)current;
 		current += srat->header.length;
 		acpi_add_table(rsdp, srat);
 	}
@@ -732,10 +732,10 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	/* SLIT */
 	current = ALIGN(current, 8);
 	printk(BIOS_DEBUG, "ACPI:  * SLIT at %lx\n", current);
-	slit = (acpi_slit_t *) agesawrapper_getlateinitptr (PICK_SLIT);
+	slit = (acpi_slit_t *)agesawrapper_getlateinitptr(PICK_SLIT);
 	if (slit != NULL) {
 		memcpy((void *)current, slit, slit->header.length);
-		slit = (acpi_slit_t *) current;
+		slit = (acpi_slit_t *)current;
 		current += slit->header.length;
 		acpi_add_table(rsdp, slit);
 	}
@@ -746,10 +746,10 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	/* SSDT */
 	current = ALIGN(current, 16);
 	printk(BIOS_DEBUG, "ACPI:  * AGESA ALIB SSDT at %lx\n", current);
-	alib = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_ALIB);
+	alib = (acpi_header_t *)agesawrapper_getlateinitptr(PICK_ALIB);
 	if (alib != NULL) {
 		memcpy((void *)current, alib, alib->length);
-		alib = (acpi_header_t *) current;
+		alib = (acpi_header_t *)current;
 		current += alib->length;
 		acpi_add_table(rsdp, (void *)alib);
 	} else {
@@ -760,15 +760,15 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	/* Keep the comment for a while. */
 	current = ALIGN(current, 16);
 	printk(BIOS_DEBUG, "ACPI:  * AGESA SSDT Pstate at %lx\n", current);
-	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_PSTATE);
+	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr(PICK_PSTATE);
 	if (ssdt != NULL) {
 		hexdump(ssdt, ssdt->length);
 		patch_ssdt_processor_scope(ssdt);
 		hexdump(ssdt, ssdt->length);
 		memcpy((void *)current, ssdt, ssdt->length);
-		ssdt = (acpi_header_t *) current;
+		ssdt = (acpi_header_t *)current;
 		current += ssdt->length;
-		acpi_add_table(rsdp,ssdt);
+		acpi_add_table(rsdp, ssdt);
 	} else {
 		printk(BIOS_DEBUG, "  AGESA SSDT Pstate table NULL. Skipping.\n");
 	}
@@ -783,7 +783,7 @@ static struct device_operations northbridge_operations = {
 	.acpi_fill_ssdt = northbridge_fill_ssdt_generator,
 	.write_acpi_tables = agesa_write_acpi_tables,
 	.init = northbridge_init,
-	.enable = 0,.ops_pci = 0,
+	.enable = 0, .ops_pci = 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {

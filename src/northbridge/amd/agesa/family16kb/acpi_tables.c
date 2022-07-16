@@ -9,11 +9,11 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = acpi_create_madt_lapics(current);
 
 	/* Write SB800 IOAPIC, only one */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, CONFIG_MAX_CPUS,
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, CONFIG_MAX_CPUS,
 					   IO_APIC_ADDR, 0);
 
 	/* TODO: Remove the hardcode */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, CONFIG_MAX_CPUS+1,
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, CONFIG_MAX_CPUS + 1,
 					   0xFEC20000, 24);
 
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)

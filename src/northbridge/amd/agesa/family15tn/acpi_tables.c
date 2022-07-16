@@ -9,7 +9,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = acpi_create_madt_lapics(current);
 
 	/* Write Hudson IOAPIC, only one */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, CONFIG_MAX_CPUS,
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, CONFIG_MAX_CPUS,
 					   IO_APIC_ADDR, 0);
 
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)

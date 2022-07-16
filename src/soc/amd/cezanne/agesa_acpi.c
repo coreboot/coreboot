@@ -17,7 +17,7 @@ uintptr_t agesa_write_acpi_tables(const struct device *device, uintptr_t current
 
 	/* IVRS */
 	current = ALIGN(current, 8);
-	ivrs = (acpi_ivrs_t *) current;
+	ivrs = (acpi_ivrs_t *)current;
 	acpi_create_ivrs(ivrs, acpi_fill_ivrs);
 	current += ivrs->header.length;
 	acpi_add_table(rsdp, ivrs);

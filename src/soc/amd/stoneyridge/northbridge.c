@@ -110,7 +110,7 @@ static void set_resource(struct device *dev, struct resource *res, u32 nodeid)
 	link_num = IOINDEX_LINK(res->index);
 
 	if (res->flags & IORESOURCE_IO)
-		set_io_addr_reg(dev, nodeid, link_num, reg, rbase>>8, rend>>8);
+		set_io_addr_reg(dev, nodeid, link_num, reg, rbase >> 8, rend >> 8);
 	else if (res->flags & IORESOURCE_MEM)
 		set_mmio_addr_reg(nodeid, link_num, reg,
 				(res->index >> 24), rbase >> 8, rend >> 8);

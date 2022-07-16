@@ -39,7 +39,7 @@ static int readspd(uint8_t SmbusSlaveAddress, char *buffer, size_t count)
 		printk(BIOS_ERR, "-------------SPD READ ERROR-----------\n");
 		return error;
 	}
-	*pbuf = (char) error;
+	*pbuf = (char)error;
 	pbuf++;
 
 	/* Read the remaining SPD bytes using do_smbus_recv_byte for speed */
@@ -49,7 +49,7 @@ static int readspd(uint8_t SmbusSlaveAddress, char *buffer, size_t count)
 			printk(BIOS_ERR, "-------------SPD READ ERROR-----------\n");
 			return error;
 		}
-		*pbuf = (char) error;
+		*pbuf = (char)error;
 		pbuf++;
 	}
 	printk(BIOS_SPEW, "\n");

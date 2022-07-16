@@ -21,7 +21,7 @@ void *cbmem_top_chipset(void)
 
 	/* 8MB alignment to keep MTRR usage low */
 	return (void *)ALIGN_DOWN(restore_top_of_low_cacheable()
-				  - CONFIG_SMM_TSEG_SIZE, 8*MiB);
+				  - CONFIG_SMM_TSEG_SIZE, 8 * MiB);
 }
 
 static uintptr_t smm_region_start(void)

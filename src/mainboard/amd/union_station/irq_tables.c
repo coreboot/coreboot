@@ -43,7 +43,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
 
 	pirq = (void *)(addr);
-	v = (u8 *) (addr);
+	v = (u8 *)(addr);
 
 	pirq->signature = PIRQ_SIGNATURE;
 	pirq->version = PIRQ_VERSION;

@@ -244,7 +244,7 @@ static void hudson_lpc_enable_childrens_resources(struct device *dev)
 					default:
 						rsize = 0;
 						/* try AGESA allocated region in region 0 */
-						if ((var_num > 0) && ((base >=reg_var[0]) &&
+						if ((var_num > 0) && ((base >= reg_var[0]) &&
 								((base + res->size) <= (reg_var[0] + reg_size[0]))))
 							rsize = reg_size[0];
 					}

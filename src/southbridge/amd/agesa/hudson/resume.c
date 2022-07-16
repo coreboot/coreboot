@@ -98,7 +98,7 @@ static void s3_resume_init_data(FCH_DATA_BLOCK *FchParams)
 	int i;
 
 	for (i = 0; i < sizeof(FchParams); i++) {
-		printk(BIOS_DEBUG, " %02x", ((u8 *) FchParams)[i]);
+		printk(BIOS_DEBUG, " %02x", ((u8 *)FchParams)[i]);
 		if ((i % 16) == 15)
 			printk(BIOS_DEBUG, "\n");
 	}

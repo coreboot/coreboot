@@ -32,7 +32,7 @@ void imc_reg_init(void)
 	UINT8 PciData;
 	PCI_ADDR PciAddress;
 	AMD_CONFIG_PARAMS StdHeader;
-	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 0x3, 0x1E4);
+	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 0x3, 0x1E4);
 	LibAmdPciRead(AccessWidth8, PciAddress, &PciData, &StdHeader);
 	PciData &= (UINT8)0x8F;
 	PciData |= 0x10;

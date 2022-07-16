@@ -11,7 +11,7 @@
 
 #include <northbridge/amd/pi/dimmSpd.h>
 
-AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PARAMS *info)
+AGESA_STATUS AmdMemoryReadSPD(UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PARAMS *info)
 {
 	int spdAddress;
 	DEVTREE_CONST struct device *dev = pcidev_on_root(0x18, 2);
@@ -37,7 +37,7 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINTN unused2, AGESA_READ_SPD_PAR
 	if (spdAddress == 0)
 		return AGESA_ERROR;
 
-	int err = hudson_readSpd(spdAddress, (void *) info->Buffer, 128);
+	int err = hudson_readSpd(spdAddress, (void *)info->Buffer, 128);
 	if (err)
 		return AGESA_ERROR;
 	return AGESA_SUCCESS;

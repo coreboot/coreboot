@@ -34,7 +34,7 @@ void platform_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 	struct device *dev = pcidev_on_root(0x18, 2);
 #endif
 	u32 mct_cfg_lo = pci_read_config32(dev, 0x118);
-	if (mct_cfg_lo & (1<<19)) {
+	if (mct_cfg_lo & (1 << 19)) {
 		printk(BIOS_CRIT, "C6DramLock is set, resetting\n");
 		system_reset();
 	}

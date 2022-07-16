@@ -19,8 +19,8 @@ enum {
 	PICK_CDIT,      /* Component Locality Distance Information table */
 };
 
-void agesawrapper_setlateinitptr (void *Late);
-void *agesawrapper_getlateinitptr (int pick);
+void agesawrapper_setlateinitptr(void *Late);
+void *agesawrapper_getlateinitptr(int pick);
 
 void amd_initcpuio(void);
 void amd_initenv(void);

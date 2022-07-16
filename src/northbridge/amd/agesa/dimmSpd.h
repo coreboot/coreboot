@@ -4,7 +4,7 @@
 #define _DIMMSPD_H_
 
 AGESA_STATUS
-AmdMemoryReadSPD (IN UINT32 Func, IN UINTN Data, IN OUT AGESA_READ_SPD_PARAMS *SpdData);
+AmdMemoryReadSPD(IN UINT32 Func, IN UINTN Data, IN OUT AGESA_READ_SPD_PARAMS *SpdData);
 
 int hudson_readSpd(int spdAddress, char *buf, size_t len);
 

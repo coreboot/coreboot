@@ -15,19 +15,25 @@
 #define __aligned(x) __attribute__((__aligned__(x)))
 #endif
 
-/* Because there may be variables/parameters whose name contains "__unused" in
-   header files of libc, namely musl, names consistent with the ones in the
-   Linux kernel may be a better choice. */
+/*
+ * Because there may be variables/parameters whose name contains "__unused" in
+ * header files of libc, namely musl, names consistent with the ones in the
+ * Linux kernel may be a better choice.
+ */
 
-/* This is used to mark identifiers unused in all conditions, e.g. a parameter
-   completely unused in all code branch, only present to fit an API. */
+/*
+ * This is used to mark identifiers unused in all conditions, e.g. a parameter
+ * completely unused in all code branch, only present to fit an API.
+ */
 #ifndef __always_unused
 #define __always_unused __attribute__((__unused__))
 #endif
 
-/* This is used to mark identifiers unused in some conditions, e.g. a parameter
-   only unused in some code branches, a global variable only accessed with code
-   being conditionally preprocessed, etc. */
+/*
+ * This is used to mark identifiers unused in some conditions, e.g. a parameter
+ * only unused in some code branches, a global variable only accessed with code
+ * being conditionally preprocessed, etc.
+ */
 #ifndef __maybe_unused
 #define __maybe_unused __attribute__((__unused__))
 #endif
@@ -52,13 +58,15 @@
 #define __fallthrough __attribute__((__fallthrough__))
 #endif
 
-/* This evaluates to the type of the first expression, unless that is constant
-   in which case it evaluates to the type of the second. This is useful when
-   assigning macro parameters to temporary variables, because that would
-   normally circumvent the special loosened type promotion rules for integer
-   literals. By using this macro, the promotion can happen at the time the
-   literal is assigned to the temporary variable. If the literal doesn't fit in
-   the chosen type, -Werror=overflow will catch it, so this should be safe. */
+/*
+ * This evaluates to the type of the first expression, unless that is constant
+ * in which case it evaluates to the type of the second. This is useful when
+ * assigning macro parameters to temporary variables, because that would
+ * normally circumvent the special loosened type promotion rules for integer
+ * literals. By using this macro, the promotion can happen at the time the
+ * literal is assigned to the temporary variable. If the literal doesn't fit in
+ * the chosen type, -Werror=overflow will catch it, so this should be safe.
+ */
 #define __TYPEOF_UNLESS_CONST(expr, fallback_expr) __typeof__( \
 	__builtin_choose_expr(__builtin_constant_p(expr), fallback_expr, expr))
 

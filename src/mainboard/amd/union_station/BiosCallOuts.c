@@ -7,8 +7,8 @@
 #include <SB800.h>
 #include <southbridge/amd/cimx/sb800/gpio_oem.h>
 
-static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr);
-static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *ConfigPtr);
+static AGESA_STATUS board_BeforeDramInit(UINT32 Func, UINTN Data, VOID *ConfigPtr);
+static AGESA_STATUS board_GnbPcieSlotReset(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -25,7 +25,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
 /* Call the host environment interface to provide a user hook opportunity. */
-static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+static AGESA_STATUS board_BeforeDramInit(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS       Status;
 	MEM_DATA_STRUCT    *MemData;
@@ -38,65 +38,65 @@ static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigP
 	Status = AGESA_SUCCESS;
 	GpioMmioAddr = (uintptr_t)acpimmio_gpio_100;
 
-	Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG178);
+	Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG178);
 	Data8 &= ~BIT5;
-	TempData8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG178);
+	TempData8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG178);
 	TempData8 &= 0x03;
 	TempData8 |= Data8;
-	Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, TempData8);
+	Write64Mem8(GpioMmioAddr + SB_GPIO_REG178, TempData8);
 
-	Data8 |= BIT2+BIT3;
+	Data8 |= BIT2 + BIT3;
 	Data8 &= ~BIT4;
-	TempData8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG178);
+	TempData8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG178);
 	TempData8 &= 0x23;
 	TempData8 |= Data8;
-	Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, TempData8);
+	Write64Mem8(GpioMmioAddr + SB_GPIO_REG178, TempData8);
 
-	Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG179);
+	Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG179);
 	Data8 &= ~BIT5;
-	TempData8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG179);
+	TempData8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG179);
 	TempData8 &= 0x03;
 	TempData8 |= Data8;
-	Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, TempData8);
+	Write64Mem8(GpioMmioAddr + SB_GPIO_REG179, TempData8);
 
-	Data8 |= BIT2+BIT3;
+	Data8 |= BIT2 + BIT3;
 	Data8 &= ~BIT4;
-	TempData8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG179);
+	TempData8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG179);
 	TempData8 &= 0x23;
 	TempData8 |= Data8;
-	Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, TempData8);
+	Write64Mem8(GpioMmioAddr + SB_GPIO_REG179, TempData8);
 
 	switch (MemData->ParameterListPtr->DDR3Voltage) {
 	case VOLT1_35:
-		Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG178);
+		Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG178);
 		Data8 &= ~(UINT8)BIT6;
-		Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, Data8);
-		Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG179);
+		Write64Mem8(GpioMmioAddr + SB_GPIO_REG178, Data8);
+		Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG179);
 		Data8 |= (UINT8)BIT6;
-		Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, Data8);
+		Write64Mem8(GpioMmioAddr + SB_GPIO_REG179, Data8);
 		break;
 	case VOLT1_25:
-		Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG178);
+		Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG178);
 		Data8 &= ~(UINT8)BIT6;
-		Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, Data8);
-		Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG179);
+		Write64Mem8(GpioMmioAddr + SB_GPIO_REG178, Data8);
+		Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG179);
 		Data8 &= ~(UINT8)BIT6;
-		Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, Data8);
+		Write64Mem8(GpioMmioAddr + SB_GPIO_REG179, Data8);
 		break;
 	case VOLT1_5:
 	default:
-		Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG178);
+		Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG178);
 		Data8 |= (UINT8)BIT6;
-		Write64Mem8(GpioMmioAddr+SB_GPIO_REG178, Data8);
-		Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG179);
+		Write64Mem8(GpioMmioAddr + SB_GPIO_REG178, Data8);
+		Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG179);
 		Data8 &= ~(UINT8)BIT6;
-		Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, Data8);
+		Write64Mem8(GpioMmioAddr + SB_GPIO_REG179, Data8);
 	}
 	return Status;
 }
 
 /* PCIE slot reset control */
-static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+static AGESA_STATUS board_GnbPcieSlotReset(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS            Status;
 	PCIe_SLOT_RESET_INFO    *ResetInfo;
@@ -111,17 +111,17 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 	case 4:
 		switch (ResetInfo->ResetControl) {
 		case AssertSlotReset:
-			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG21);
+			Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG21);
 			Data8 &= ~(UINT8)BIT6;
 			/* MXM_GPIO0. GPIO21 */
-			Write64Mem8(GpioMmioAddr+SB_GPIO_REG21, Data8);
+			Write64Mem8(GpioMmioAddr + SB_GPIO_REG21, Data8);
 			Status = AGESA_SUCCESS;
 			break;
 		case DeassertSlotReset:
-			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG21);
+			Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG21);
 			Data8 |= BIT6;
 			/* MXM_GPIO0. GPIO21 */
-			Write64Mem8(GpioMmioAddr+SB_GPIO_REG21, Data8);
+			Write64Mem8(GpioMmioAddr + SB_GPIO_REG21, Data8);
 			Status = AGESA_SUCCESS;
 			break;
 		}
@@ -129,17 +129,17 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 	case 6:
 		switch (ResetInfo->ResetControl) {
 		case AssertSlotReset:
-			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG25);
+			Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG25);
 			Data8 &= ~(UINT8)BIT6;
 			/* PCIE_RST#_LAN, GPIO25 */
-			Write64Mem8(GpioMmioAddr+SB_GPIO_REG25, Data8);
+			Write64Mem8(GpioMmioAddr + SB_GPIO_REG25, Data8);
 			Status = AGESA_SUCCESS;
 			break;
 		case DeassertSlotReset:
-			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG25);
+			Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG25);
 			Data8 |= BIT6;
 			/* PCIE_RST#_LAN, GPIO25 */
-			Write64Mem8(GpioMmioAddr+SB_GPIO_REG25, Data8);
+			Write64Mem8(GpioMmioAddr + SB_GPIO_REG25, Data8);
 			Status = AGESA_SUCCESS;
 			break;
 		}
@@ -147,17 +147,17 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 	case 7:
 		switch (ResetInfo->ResetControl) {
 		case AssertSlotReset:
-			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG02);
+			Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG02);
 			Data8 &= ~(UINT8)BIT6;
 			/* MPCIE_RST0, GPIO02 */
-			Write64Mem8(GpioMmioAddr+SB_GPIO_REG02, Data8);
+			Write64Mem8(GpioMmioAddr + SB_GPIO_REG02, Data8);
 			Status = AGESA_SUCCESS;
 			break;
 		case DeassertSlotReset:
-			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG02);
+			Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG02);
 			Data8 |= BIT6;
 			/* MPCIE_RST0, GPIO02 */
-			Write64Mem8(GpioMmioAddr+SB_GPIO_REG02, Data8);
+			Write64Mem8(GpioMmioAddr + SB_GPIO_REG02, Data8);
 			Status = AGESA_SUCCESS;
 			break;
 		}

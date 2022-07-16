@@ -6,8 +6,8 @@
 #include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <SB800.h>
 
-static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr);
-static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *ConfigPtr);
+static AGESA_STATUS board_BeforeDramInit(UINT32 Func, UINTN Data, VOID *ConfigPtr);
+static AGESA_STATUS board_GnbPcieSlotReset(UINT32 Func, UINTN Data, VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -24,7 +24,7 @@ const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
 /*	Call the host environment interface to provide a user hook opportunity. */
-static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+static AGESA_STATUS board_BeforeDramInit(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	// Unlike e.g. AMD Inagua, Persimmon is unable to vary the RAM voltage.
 	// Make sure the right speed settings are selected.
@@ -33,7 +33,7 @@ static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINTN Data, VOID *ConfigP
 }
 
 /* PCIE slot reset control */
-static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+static AGESA_STATUS board_GnbPcieSlotReset(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
 	PCIe_SLOT_RESET_INFO	*ResetInfo;
@@ -49,15 +49,15 @@ static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINTN Data, VOID *Confi
 	case 46:	// GPIO50 = SBGPIO_PCIE_RST# affects LAN0, LAN1, PCIe slot
 		switch (ResetInfo->ResetControl) {
 		case AssertSlotReset:
-			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG50);
+			Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG50);
 			Data8 &= ~(UINT8)BIT6;
-			Write64Mem8(GpioMmioAddr+SB_GPIO_REG50, Data8);
+			Write64Mem8(GpioMmioAddr + SB_GPIO_REG50, Data8);
 			Status = AGESA_SUCCESS;
 			break;
 		case DeassertSlotReset:
-			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG50);
+			Data8 = Read64Mem8(GpioMmioAddr + SB_GPIO_REG50);
 			Data8 |= BIT6;
-			Write64Mem8 (GpioMmioAddr+SB_GPIO_REG50, Data8);
+			Write64Mem8(GpioMmioAddr + SB_GPIO_REG50, Data8);
 			Status = AGESA_SUCCESS;
 			break;
 		}

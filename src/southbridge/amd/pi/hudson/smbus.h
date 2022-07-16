@@ -32,7 +32,7 @@
 /* Between 1-10 seconds, We should never timeout normally
  * Longer than this is just painful when a timeout condition occurs.
  */
-#define SMBUS_TIMEOUT (100*1000*10)
+#define SMBUS_TIMEOUT (100 * 1000 * 10)
 
 #define abcfg_reg(reg, mask, val)	\
 	alink_ab_indx((ABCFG), (reg), (mask), (val))
@@ -53,6 +53,6 @@ int do_smbus_recv_byte(u32 smbus_io_base, u32 device);
 int do_smbus_send_byte(u32 smbus_io_base, u32 device, u8 val);
 void alink_rc_indx(u32 reg_space, u32 reg_addr, u32 port, u32 mask, u32 val);
 void alink_ab_indx(u32 reg_space, u32 reg_addr, u32 mask, u32 val);
-void alink_ax_indx(u32 space /*c or p? */ , u32 axindc, u32 mask, u32 val);
+void alink_ax_indx(u32 space /*c or p? */, u32 axindc, u32 mask, u32 val);
 
 #endif

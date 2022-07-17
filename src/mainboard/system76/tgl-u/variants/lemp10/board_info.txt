@@ -1,0 +1,2 @@
+Board name: lemp10
+Release year: 2020

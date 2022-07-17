@@ -158,6 +158,7 @@ static void eventlog_print_type(const struct event_header *event)
 		{ELOG_TYPE_EC_DEVICE_EVENT, "EC Device"},
 		{ELOG_TYPE_EXTENDED_EVENT, "Extended Event"},
 		{ELOG_TYPE_CROS_DIAGNOSTICS, "Diagnostics Mode"},
+		{ELOG_TYPE_FW_VBOOT_INFO, "Firmware vboot info"},
 
 		{ELOG_TYPE_EOL, "End of log"},
 	};
@@ -623,6 +624,24 @@ static int eventlog_print_data(const struct event_header *event)
 	case ELOG_TYPE_CROS_DIAGNOSTICS: {
 		const uint8_t *type = event_get_data(event);
 		eventlog_printf("%s", val2str(*type, cros_diagnostics_types));
+		break;
+	}
+	case ELOG_TYPE_FW_VBOOT_INFO: {
+		const union vb2_fw_boot_info *info = event_get_data(event);
+
+		eventlog_printf("boot_mode=%s", vb2_boot_mode_string(info->boot_mode));
+
+		if (info->boot_mode == VB2_BOOT_MODE_BROKEN_SCREEN ||
+		    info->boot_mode == VB2_BOOT_MODE_MANUAL_RECOVERY)
+			eventlog_printf("recovery_reason=%#x/%#x (%s)",
+				  info->recovery_reason, info->recovery_subcode,
+				  vb2_get_recovery_reason_string(info->recovery_reason));
+
+		eventlog_printf("fw_tried=%s", vb2_slot_string(info->slot));
+		eventlog_printf("fw_try_count=%d", info->tries);
+		eventlog_printf("fw_prev_tried=%s", vb2_slot_string(info->prev_slot));
+		eventlog_printf("fw_prev_result=%s", vb2_result_string(info->prev_result));
+		break;
 	}
 	default:
 		break;

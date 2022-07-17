@@ -3,14 +3,41 @@ if PAYLOAD_EDK2
 config PAYLOAD_FILE
 	string "edk2 binary"
 	default "$(obj)/UEFIPAYLOAD.fd" if EDK2_UEFIPAYLOAD
+	default "$(obj)/ShimmedUniversalPayload.elf" if EDK2_UNIVERSAL_PAYLOAD
 	help
 	  The result of a UefiPayloadPkg build
 
+choice
+	prompt "EDK II build type"
+	default EDK2_UEFIPAYLOAD
+	help
+	  Select the build type for edk2. UniversalPayload is recommended, as it is
+	  replacing UefiPayloadPkg. Whilst in the transition phase between the two,
+	  both options exist.
+
 config EDK2_UEFIPAYLOAD
 	bool "Build UefiPayloadPkg"
-	default y
 	help
 	  Build the standard UefiPayloadPkg
+
+config EDK2_UNIVERSAL_PAYLOAD
+	bool "Build Universal Payload"
+	help
+	  Select this option if you want to build a coreboot image
+	  with EDK2s Universal Payload. If you don't know what this is
+	  about, just leave it enabled.
+
+	  Universal Payload should ideally only be built from upstream EDK2,
+	  https://github.com/tianocore/edk2, as this is regularly build tested
+	  and it encourages patches to be merged upstream.
+
+	  Whilst the required patches are being merged, this is pointed to
+	  Star Labs GitHub repository which contains these patches and is based
+	  on a known working commit.
+
+	  See https://universalscalablefirmware.github.io/documentation/ for more information.
+
+endchoice
 
 choice
 	prompt "Tianocore's EDK II payload"
@@ -44,6 +71,7 @@ endchoice
 
 config EDK2_REPOSITORY
 	string "URL to git repository for edk2"
+	default "https://github.com/starlabsltd/edk2" if EDK2_UNIVERSAL_PAYLOAD
 	default "https://github.com/mrchromebox/edk2" if EDK2_REPO_MRCHROMEBOX
 	default "https://github.com/tianocore/edk2" if EDK2_REPO_OFFICIAL
 	default "" if EDK2_REPO_CUSTOM
@@ -54,6 +82,7 @@ config EDK2_REPOSITORY
 config EDK2_TAG_OR_REV
 	string "Insert a commit's SHA-1 or a branch name"
 	default "origin/uefipayload_202304" if EDK2_REPO_MRCHROMEBOX
+	default "origin/universalpayload" if EDK2_UNIVERSAL_PAYLOAD
 	default "origin/master" if EDK2_REPO_OFFICIAL
 	default "" if EDK2_REPO_CUSTOM
 	help

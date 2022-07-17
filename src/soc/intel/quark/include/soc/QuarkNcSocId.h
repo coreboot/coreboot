@@ -807,7 +807,7 @@
 #define   B_QNC_RCRB_SPIOPTYPE_NOADD_READ             0
 #define   B_QNC_RCRB_SPIOPTYPE_NOADD_WRITE            (BIT0)
 #define   B_QNC_RCRB_SPIOPTYPE_ADD_READ               (BIT1)
-#define   B_QNC_RCRB_SPIOPTYPE_ADD_WRITE              (BIT0 + BIT1)
+#define   B_QNC_RCRB_SPIOPTYPE_ADD_WRITE              (BIT0 | BIT1)
 // Opcode Menu Configuration //R_OPMENU
 #define R_QNC_RCRB_SPIOPMENU                        (R_QNC_RCRB_SPIBASE + 0x58)
 

@@ -45,7 +45,7 @@ static AGESA_STATUS board_BeforeDramInit(UINT32 Func, UINTN Data, VOID *ConfigPt
 	TempData8 |= Data8;
 	Write64Mem8(GpioMmioAddr + SB_GPIO_REG178, TempData8);
 
-	Data8 |= BIT2 + BIT3;
+	Data8 |= BIT2 | BIT3;
 	Data8 &= ~BIT4;
 	TempData8  = Read64Mem8(GpioMmioAddr + SB_GPIO_REG178);
 	TempData8 &= 0x23;
@@ -59,7 +59,7 @@ static AGESA_STATUS board_BeforeDramInit(UINT32 Func, UINTN Data, VOID *ConfigPt
 	TempData8 |= Data8;
 	Write64Mem8(GpioMmioAddr + SB_GPIO_REG179, TempData8);
 
-	Data8 |= BIT2 + BIT3;
+	Data8 |= BIT2 | BIT3;
 	Data8 &= ~BIT4;
 	TempData8  = Read64Mem8(GpioMmioAddr + SB_GPIO_REG179);
 	TempData8 &= 0x23;

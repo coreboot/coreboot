@@ -1,16 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef MAINBOARD_GPIO_H
-#define MAINBOARD_GPIO_H
-
+#include <mainboard/gpio.h>
 #include <soc/gpio.h>
-
-static const struct pad_config early_gpio_table[] = {
-	PAD_CFG_NF(GPP_C20, UP_20K, DEEP, NF1), // UART2_RXD
-	PAD_CFG_NF(GPP_C21, UP_20K, DEEP, NF1), // UART2_TXD
-	PAD_CFG_GPO(GPP_U4, 0, DEEP), // DGPU_RST#_PCH
-	PAD_CFG_GPO(GPP_U5, 0, DEEP), // DGPU_PWR_EN
-};
 
 static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPD0, UP_20K, PWROK, NF1), // PM_BATLOW#
@@ -222,4 +213,7 @@ static const struct pad_config gpio_table[] = {
 	//PAD_CFG_GPO(GPP_U5, 0, DEEP), // DGPU_PWR_EN
 };
 
-#endif /* MAINBOARD_GPIO_H */
+void mainboard_configure_gpios(void)
+{
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+}

@@ -1,2 +1,0 @@
-config BOARD_SYSTEM76_GALP5
-	bool "galp5"

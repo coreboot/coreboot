@@ -7,7 +7,6 @@
 
 #pragma pack(push, 1)
 
-#define IMAGE_ALIGN          32 * 1024
 #define NUM_IMAGE_LOCATION   32
 
 //Entry Point Call

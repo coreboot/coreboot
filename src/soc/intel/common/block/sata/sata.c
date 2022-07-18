@@ -67,6 +67,8 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_ADP_M_SATA_1,
 	PCI_DID_INTEL_ADP_M_SATA_2,
 	PCI_DID_INTEL_ADP_M_SATA_3,
+	PCI_DID_INTEL_APL_SATA,
+	PCI_DID_INTEL_GLK_SATA,
 	0
 };
 

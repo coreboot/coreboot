@@ -155,6 +155,20 @@ config EDK2_CBMEM_LOGGING
 	  this option, especially if using a debug (vs release) build.
 	  Selecting this option will increase the payload size in CBFS by 0x10000.
 
+config EDK2_CPU_TIMER_LIB
+	bool
+	default n
+	help
+	  For recent Intel and AMD CPUs, the 0x15 CPUID instruction will return Time
+	  Stamp Counter Frequence. For CPUs that do not support this instruction,
+	  EDK2 must include a different library which is the reason why this must be
+	  configured at build time.
+
+	  If this is enabled, and the CPU doesn't support 0x15, it will fail to
+	  boot. If it is not enabled, and the CPU does support 0x15, it will still
+	  boot but without support for the leaf. Consequently, it is disabled by
+	  default.
+
 config EDK2_FOLLOW_BGRT_SPEC
 	bool "Center logo 38.2% from the top of screen"
 	default n

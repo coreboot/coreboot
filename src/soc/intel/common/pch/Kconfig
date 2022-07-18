@@ -1,28 +1,32 @@
+config SOC_INTEL_COMMON_PCH_CLIENT
+	bool
+	select SOC_INTEL_COMMON_PCH_BASE
+	help
+	  Selected by "Client" platforms, i.e. desktops, workstations,
+	  laptops, tablets... This also includes uniprocessor servers
+	  based on the same silicon as desktops and workstations. The
+	  "Client" platforms include additional IP blocks that are of
+	  little to no use on servers.
+
+config SOC_INTEL_COMMON_PCH_SERVER
+	bool
+	select SOC_INTEL_COMMON_PCH_BASE
+	help
+	  Selected by "Server" platforms, i.e. multi-socket capable
+	  platforms used in large servers and workstations, such as
+	  those using the Lewisburg (C620) PCH.
+
 config SOC_INTEL_COMMON_PCH_BASE
 	bool
 	depends on SOC_INTEL_COMMON_BLOCK
 	help
-	  All common PCH code blocks between Gen-6 till latest-PCH should be
-	  part of this directory. A SoC Kconfig might select this option to include
-	  base PCH package while building new SOC block. Currently majority of
-	  common IP code blocks are part of soc/intel/common/block/ and
-	  SoC Kconfig just select those Kconfig option. Addition to that SoC
-	  code now having option to select required base PCH block to include
-	  common IP block.
-
-config SOC_INTEL_COMMON_PCH_SERVER
-	def_bool n
-	depends on SOC_INTEL_COMMON_PCH_BASE
-	help
-	  SERVER is a subset of the COMMON_PCH_BASE and limits support to
-	  server PCH devices (ex:, Intel C620 - Lewisburg).
+	  This option is meant to be selected by the specific options above.
 
 if SOC_INTEL_COMMON_PCH_BASE
 
 source "src/soc/intel/common/pch/*/Kconfig"
 
 config PCH_SPECIFIC_BASE_OPTIONS
-	# Always include the BASE (SERVER) subset of devices
 	def_bool y
 	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
 	select SOC_INTEL_COMMON_BLOCK_CSE
@@ -48,9 +52,7 @@ config PCH_SPECIFIC_BASE_OPTIONS
 	select SOUTHBRIDGE_INTEL_COMMON_SMBUS
 
 config PCH_SPECIFIC_CLIENT_OPTIONS
-	# Include the CLIENT devices if this is not a SERVER
-	def_bool n if SOC_INTEL_COMMON_PCH_SERVER
-	def_bool y if !SOC_INTEL_COMMON_PCH_SERVER
+	def_bool SOC_INTEL_COMMON_PCH_CLIENT
 	select SOC_INTEL_COMMON_BLOCK_DSP
 	select SOC_INTEL_COMMON_BLOCK_GRAPHICS
 	select SOC_INTEL_COMMON_BLOCK_I2C

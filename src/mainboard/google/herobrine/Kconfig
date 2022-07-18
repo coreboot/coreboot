@@ -56,6 +56,7 @@ config MAINBOARD_PART_NUMBER
 	default "Piglin" if BOARD_GOOGLE_PIGLIN
 	default "Hoglin" if BOARD_GOOGLE_HOGLIN
 	default "Villager" if BOARD_GOOGLE_VILLAGER
+	default "Evoker" if BOARD_GOOGLE_EVOKER
 
 config DRIVER_TPM_I2C_BUS
 	depends on I2C_TPM

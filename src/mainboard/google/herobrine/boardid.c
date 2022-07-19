@@ -6,6 +6,7 @@
 #include <commonlib/bsd/cb_err.h>
 #include <console/console.h>
 #include <gpio.h>
+#include <soc/socinfo.h>
 
 uint32_t board_id(void)
 {
@@ -41,5 +42,10 @@ uint32_t ram_code(void)
 
 uint32_t sku_id(void)
 {
-	return google_chromeec_get_board_sku();
+	static uint32_t id = UNDEFINED_STRAPPING_ID;
+	/*Update modem status in 9th bit of sku id*/
+	uint32_t mask = 1 << 9;
+	id = google_chromeec_get_board_sku();
+	id = ((id & ~mask) | (socinfo_modem_supported() << 9));
+	return id;
 }

@@ -12,32 +12,6 @@ chip soc/intel/alderlake
 	# GPE configuration
 	register "pmc_gpe0_dw1" = "GPP_H"
 
-	# +-----------+-------+-------+---------+-------------+----------+
-	# | Setting   | AC LL | DC LL | ICC MAX | TDC Current | TDC Time |
-	# |           |(mOhms)|(mOhms)|   (A)   |     (A)     |   (msec) |
-	# +-----------+-------+-------+---------+-------------+----------+
-	# |    IA     |  2.8  |  2.8  |    80   |      43     |  28000   |
-	# +-----------+-------+-------+---------+-------------+----------+
-	# |    GT     |  3.2  |  3.2  |    40   |      23     |  28000   |
-	# +-----------+-------+-------+---------+-------------+----------+
-	register "domain_vr_config[VR_DOMAIN_IA]" = "{
-		.vr_config_enable = 1,
-		.ac_loadline = 280,
-		.dc_loadline = 280,
-		.icc_max = VR_CFG_AMP(80),
-		.tdc_timewindow = 28000,
-		.tdc_currentlimit = VR_CFG_TDC_AMP(43),
-	}"
-
-	register "domain_vr_config[VR_DOMAIN_GT]" = "{
-		.vr_config_enable = 1,
-		.ac_loadline = 320,
-		.dc_loadline = 320,
-		.icc_max = VR_CFG_AMP(40),
-		.tdc_timewindow = 28000,
-		.tdc_currentlimit = VR_CFG_TDC_AMP(23),
-	}"
-
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

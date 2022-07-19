@@ -45,8 +45,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_E17, NONE, PLTRST),
 	/* EC_SLP_S0_CS_N */
 	PAD_CFG_GPO(GPP_F9, 1, PLTRST),
-	/* WIFI RF KILL */
-	PAD_CFG_GPO(GPP_E3, 1, PLTRST),
 	/* DISP_AUX_N_BIAS_GPIO */
 	PAD_CFG_GPO(GPP_E23, 1, PLTRST),
 	/* WWAN WAKE N*/
@@ -264,6 +262,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A21, NONE, DEEP, NF1),
 	/* A22 : HDMI CRLS CTRLDATA */
 	PAD_CFG_NF(GPP_A22, NONE, DEEP, NF1),
+	/* H1_PCH_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_E3, NONE, PLTRST, LEVEL, INVERT)
 };
 
 void variant_configure_gpio_pads(void)

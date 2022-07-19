@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootmem.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/apusys.h>
@@ -58,8 +59,12 @@ static void enable_soc_dev(struct device *dev)
 {
 	if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &soc_ops;
-	else if (dev->path.type == DEVICE_PATH_DOMAIN)
-		dev->ops = &pci_domain_ops;
+	else if (dev->path.type == DEVICE_PATH_DOMAIN) {
+		if (mainboard_needs_pcie_init())
+			dev->ops = &pci_domain_ops;
+		else
+			printk(BIOS_DEBUG, "Skip setting PCIe ops\n");
+	}
 }
 
 struct chip_operations soc_mediatek_mt8195_ops = {

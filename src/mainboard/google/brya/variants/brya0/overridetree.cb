@@ -28,7 +28,11 @@ fw_config
 		option UFC_USB			0
 		option UFC_MIPI_IMX208		1
 	end
-	# Bits 15 and 16 were intended for WFC but never declared here
+	field WFC 15 16
+		option WFC_ABSENT		0
+		option WFC_MIPI_OVTI5675	1
+		option WFC_MIPI_OVTI8856	2
+	end
 	field HPS 17 17
 		option HPS_ABSENT               0
 		option HPS_PRESENT              1

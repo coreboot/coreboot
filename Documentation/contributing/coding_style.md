@@ -3,7 +3,7 @@
 This document describes the preferred C coding style for the
 coreboot project. It is in many ways exactly the same as the Linux
 kernel coding style. In fact, most of this document has been copied from
-the [Linux kernel coding style](http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/plain/Documentation/CodingStyle?id=HEAD)
+the [Linux kernel coding style](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/Documentation/process/4.Coding.rst)
 
 The guidelines in this file should be seen as a strong suggestion, and
 should overrule personal preference. But they may be ignored in

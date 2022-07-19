@@ -8,6 +8,7 @@
 #include <intelblocks/cse.h>
 #include <intelblocks/p2sb.h>
 #include <intelblocks/pcr.h>
+#include <soc/cse.h>
 #include <soc/heci.h>
 #include <soc/iomap.h>
 #include <soc/pcr_ids.h>
@@ -156,25 +157,32 @@ static uint32_t dump_status(int index, int reg_addr)
 
 static void dump_cse_state(void)
 {
-	uint32_t fwsts1;
+	union cse_fwsts1 fwsts1;
 
 	if (!is_cse_enabled())
 		return;
 
-	fwsts1 = dump_status(1, PCI_ME_HFSTS1);
+	fwsts1.data = dump_status(1, PCI_ME_HFSTS1);
 	dump_status(2, PCI_ME_HFSTS2);
 	dump_status(3, PCI_ME_HFSTS3);
 	dump_status(4, PCI_ME_HFSTS4);
 	dump_status(5, PCI_ME_HFSTS5);
 	dump_status(6, PCI_ME_HFSTS6);
 
-	/* Minimal decoding is done here in order to call out most important
-	   pieces. Manufacturing mode needs to be locked down prior to shipping
-	   the product so it's called out explicitly. */
-	printk(BIOS_DEBUG, "ME: Manufacturing Mode      : %s\n",
-		(fwsts1 & (1 << 0x4)) ? "YES" : "NO");
+	printk(BIOS_DEBUG, "CSE: Working State          : %u\n",
+		fwsts1.fields.working_state);
+	printk(BIOS_DEBUG, "CSE: Manufacturing Mode     : %s\n",
+		fwsts1.fields.mfg_mode ? "YES" : "NO");
+	printk(BIOS_DEBUG, "CSE: Operation State        : %u\n",
+		fwsts1.fields.operation_state);
+	printk(BIOS_DEBUG, "CSE: FW Init Complete       : %s\n",
+		fwsts1.fields.fw_init_complete ? "YES" : "NO");
+	printk(BIOS_DEBUG, "CSE: Error Code             : %u\n",
+		fwsts1.fields.error_code);
+	printk(BIOS_DEBUG, "CSE: Operation Mode         : %u\n",
+		fwsts1.fields.operation_mode);
 
-	printk(BIOS_DEBUG, "ME: FPF status              : ");
+	printk(BIOS_DEBUG, "CSE: FPF status             : ");
 	switch (g_fuse_state) {
 	case FUSE_FLASH_UNFUSED:
 		printk(BIOS_DEBUG, "unfused");

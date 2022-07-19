@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bl31.h>
+#include <boardid.h>
 #include <bootmode.h>
 #include <console/console.h>
 #include <delay.h>
@@ -16,6 +17,7 @@
 #include <soc/i2c.h>
 #include <soc/msdc.h>
 #include <soc/mtcmos.h>
+#include <soc/pcie.h>
 #include <soc/spm.h>
 #include <soc/usb.h>
 
@@ -28,6 +30,32 @@
 #define GPIO_BL_PWM_1V8 GPIO(DISP_PWM0)
 #define GPIO_EDP_HPD_1V8 GPIO(GPIO_07)
 #define GPIO_EN_PP3300_DISP_X GPIO(I2SO1_D2)
+
+bool mainboard_needs_pcie_init(void)
+{
+	uint32_t sku;
+
+	if (!CONFIG(BOARD_GOOGLE_DOJO))
+		return false;
+
+	sku = sku_id();
+	switch (sku) {
+	case 0:
+	case 1:
+	case 4:
+	case 5:
+		return false;
+	case 2:
+	case 3:
+	case 6:
+	case 7:
+		return true;
+	default:
+		/* For example CROS_SKU_UNPROVISIONED */
+		printk(BIOS_WARNING, "Unexpected sku %#x; assuming PCIe", sku);
+		return true;
+	}
+}
 
 static void register_reset_to_bl31(void)
 {

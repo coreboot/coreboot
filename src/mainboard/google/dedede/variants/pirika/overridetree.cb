@@ -9,6 +9,7 @@ chip soc/intel/jasperlake
 	#|                   | for TPM communication     |
 	#|                   | before memory is up       |
 	#| I2C0              | Trackpad                  |
+	#| I2C2              | Touchscreen               |
 	#| I2C4              | Audio                     |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
@@ -21,6 +22,11 @@ chip soc/intel/jasperlake
 			.rise_time_ns = 260,
 			.fall_time_ns = 50,
 		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 175,
+			.fall_time_ns = 20,
+		},
 		.i2c[4] = {
 			.speed = I2C_SPEED_FAST,
 			.rise_time_ns = 260,
@@ -31,7 +37,7 @@ chip soc/intel/jasperlake
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
 	}"
@@ -127,6 +133,20 @@ chip soc/intel/jasperlake
 				device i2c 0x2c on end
 			end
 		end
+		device pci 15.2 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0001""
+				register "desc" = ""ELAN Touchscreen""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_D4_IRQ)"
+				register "probed" = "1"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"
+				register "reset_delay_ms" = "20"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
+				register "enable_delay_ms" = "1"
+				register "has_power_resource" = "1"
+				device i2c 10 on end
+			end
+		end # I2C 2
 		device pci 19.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

@@ -21,6 +21,9 @@ ramstage-y += region.c
 smm-y += region.c
 postcar-y += region.c
 
+romstage-y += rational.c
+ramstage-y += rational.c
+
 ramstage-$(CONFIG_PLATFORM_USES_FSP1_1) += fsp_relocate.c
 ifeq ($(CONFIG_FSP_M_XIP),)
 romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += fsp_relocate.c

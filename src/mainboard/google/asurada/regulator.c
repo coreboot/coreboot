@@ -94,7 +94,7 @@ uint32_t mainboard_get_regulator_voltage(enum mtk_regulator regulator)
 	return 0;
 }
 
-int mainboard_enable_regulator(enum mtk_regulator regulator, uint8_t enable)
+int mainboard_enable_regulator(enum mtk_regulator regulator, bool enable)
 {
 	/* Return 0 if the regulator is already enabled or disabled. */
 	if (mainboard_regulator_is_enabled(regulator) == enable)
@@ -111,7 +111,7 @@ int mainboard_enable_regulator(enum mtk_regulator regulator, uint8_t enable)
 	return google_chromeec_regulator_enable(id, enable);
 }
 
-uint8_t mainboard_regulator_is_enabled(enum mtk_regulator regulator)
+bool mainboard_regulator_is_enabled(enum mtk_regulator regulator)
 {
 	int id;
 
@@ -119,7 +119,7 @@ uint8_t mainboard_regulator_is_enabled(enum mtk_regulator regulator)
 	if (id < 0) {
 		printk(BIOS_WARNING, "Invalid regulator ID: %d\n; assuming disabled",
 		       regulator);
-		return 0;
+		return false;
 	}
 
 	uint8_t enabled;
@@ -127,8 +127,8 @@ uint8_t mainboard_regulator_is_enabled(enum mtk_regulator regulator)
 		printk(BIOS_WARNING,
 		       "Failed to query regulator ID: %d\n; assuming disabled",
 		       regulator);
-		return 0;
+		return false;
 	}
 
-	return enabled;
+	return !!enabled;
 }

@@ -57,7 +57,6 @@ void mtk_msdc_configure_sdcard(void)
 	void *gpio_base = (void *)IOCFG_RM_BASE;
 	void *gpio_mode0_base = (void *)MSDC1_GPIO_MODE0_BASE;
 	void *gpio_mode1_base = (void *)MSDC1_GPIO_MODE1_BASE;
-	uint8_t enable = 1;
 	int i;
 
 	const gpio_t sdcard_pu_pin[] = {
@@ -85,6 +84,6 @@ void mtk_msdc_configure_sdcard(void)
 	/* set sdcard dat1 pin to msdc1 mode */
 	clrsetbits32(gpio_mode1_base, MSDC1_GPIO_MODE1_MASK, MSDC1_GPIO_MODE1_VALUE);
 
-	mainboard_enable_regulator(MTK_REGULATOR_VCC, enable);
-	mainboard_enable_regulator(MTK_REGULATOR_VCCQ, enable);
+	mainboard_enable_regulator(MTK_REGULATOR_VCC, true);
+	mainboard_enable_regulator(MTK_REGULATOR_VCCQ, true);
 }

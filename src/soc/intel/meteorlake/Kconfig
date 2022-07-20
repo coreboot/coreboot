@@ -279,7 +279,7 @@ config SOC_INTEL_METEORLAKE_DEBUG_CONSENT
 	int "Debug Consent for MTL"
 	# USB DBC is more common for developers so make this default to 3 if
 	# SOC_INTEL_DEBUG_CONSENT=y
-	default 5 if SOC_INTEL_DEBUG_CONSENT
+	default 3 if SOC_INTEL_DEBUG_CONSENT
 	default 0
 	help
 	  This is to control debug interface on SOC.

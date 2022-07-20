@@ -102,6 +102,6 @@ void mtk_msdc_configure_sdcard(void)
 			MSDC1_GPIO_MODE1_1, MSDC1_GPIO_MODE1_VALUE);
 
 	/* enable SDCard power */
-	mainboard_set_regulator_vol(MTK_REGULATOR_VMCH, 3300000);
-	mainboard_set_regulator_vol(MTK_REGULATOR_VMC, 3300000);
+	mainboard_set_regulator_voltage(MTK_REGULATOR_VMCH, 3300000);
+	mainboard_set_regulator_voltage(MTK_REGULATOR_VMC, 3300000);
 }

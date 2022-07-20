@@ -35,9 +35,9 @@ static void bridge_ps8640_power_on(void)
 	 */
 
 	/* Set VRF12 to 1.2V and VCN33 to 3.3V */
-	mainboard_set_regulator_vol(MTK_REGULATOR_VRF12, 1200000);
+	mainboard_set_regulator_voltage(MTK_REGULATOR_VRF12, 1200000);
 	udelay(100);
-	mainboard_set_regulator_vol(MTK_REGULATOR_VCN33, 3300000);
+	mainboard_set_regulator_voltage(MTK_REGULATOR_VCN33, 3300000);
 	udelay(200);
 
 	/* Turn on bridge */

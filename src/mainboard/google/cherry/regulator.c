@@ -51,8 +51,7 @@ static int check_regulator_control(enum mtk_regulator regulator)
 	return 0;
 }
 
-void mainboard_set_regulator_vol(enum mtk_regulator regulator,
-				 uint32_t voltage_uv)
+void mainboard_set_regulator_voltage(enum mtk_regulator regulator, uint32_t voltage_uv)
 {
 	if (check_regulator_control(regulator) < 0)
 		return;
@@ -89,7 +88,7 @@ void mainboard_set_regulator_vol(enum mtk_regulator regulator,
 	printk(BIOS_ERR, "Invalid regulator ID: %d\n", regulator);
 }
 
-uint32_t mainboard_get_regulator_vol(enum mtk_regulator regulator)
+uint32_t mainboard_get_regulator_voltage(enum mtk_regulator regulator)
 {
 	if (check_regulator_control(regulator) < 0)
 		return 0;

@@ -11,8 +11,8 @@
 
 static void raise_little_cpu_freq(void)
 {
-	mainboard_set_regulator_vol(MTK_REGULATOR_VPROC12, 1031250);
-	mainboard_set_regulator_vol(MTK_REGULATOR_VSRAM_PROC12, 1118750);
+	mainboard_set_regulator_voltage(MTK_REGULATOR_VPROC12, 1031250);
+	mainboard_set_regulator_voltage(MTK_REGULATOR_VSRAM_PROC12, 1118750);
 	udelay(200);
 	mt_pll_raise_little_cpu_freq(2000 * MHz);
 	mt_pll_raise_cci_freq(1385 * MHz);

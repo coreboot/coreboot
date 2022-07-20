@@ -26,8 +26,7 @@ static const int regulator_id[] = {
 
 _Static_assert(ARRAY_SIZE(regulator_id) == MTK_REGULATOR_NUM, "regulator_id size error");
 
-void mainboard_set_regulator_vol(enum mtk_regulator regulator,
-				 uint32_t voltage_uv)
+void mainboard_set_regulator_voltage(enum mtk_regulator regulator, uint32_t voltage_uv)
 {
 	assert(regulator < MTK_REGULATOR_NUM);
 
@@ -38,7 +37,7 @@ void mainboard_set_regulator_vol(enum mtk_regulator regulator,
 	mt6366_set_voltage(regulator_id[regulator], voltage_uv);
 }
 
-uint32_t mainboard_get_regulator_vol(enum mtk_regulator regulator)
+uint32_t mainboard_get_regulator_voltage(enum mtk_regulator regulator)
 {
 	assert(regulator < MTK_REGULATOR_NUM);
 

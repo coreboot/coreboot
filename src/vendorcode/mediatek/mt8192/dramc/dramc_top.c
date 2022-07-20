@@ -176,7 +176,7 @@ unsigned int dramc_set_vcore_voltage(unsigned int vcore)
 	dramc_debug("%s set vcore to %d\n", __func__, vcore);
 	//mt6359p_buck_set_voltage(MT6359P_GPU11, vcore);
 
-	mainboard_set_regulator_vol(MTK_REGULATOR_VCORE, vcore);
+	mainboard_set_regulator_voltage(MTK_REGULATOR_VCORE, vcore);
 
 	return 0;
 }
@@ -186,7 +186,7 @@ unsigned int dramc_get_vcore_voltage(void)
 #ifdef MTK_PMIC_MT6359
 	return mtk_regulator_get_voltage(&reg_vcore);
 #else
-	return mainboard_get_regulator_vol(MTK_REGULATOR_VCORE);
+	return mainboard_get_regulator_voltage(MTK_REGULATOR_VCORE);
 #endif
 }
 
@@ -195,7 +195,7 @@ unsigned int dramc_set_vdram_voltage(unsigned int ddr_type, unsigned int vdram)
 #ifdef MTK_PMIC_MT6359
 	mtk_regulator_set_voltage(&reg_vdram, vdram, MAX_VDRAM);
 #endif
-	mainboard_set_regulator_vol(MTK_REGULATOR_VDD2, vdram);
+	mainboard_set_regulator_voltage(MTK_REGULATOR_VDD2, vdram);
 	return 0;
 }
 
@@ -204,7 +204,7 @@ unsigned int dramc_get_vdram_voltage(unsigned int ddr_type)
 #ifdef MTK_PMIC_MT6359
 	return mtk_regulator_get_voltage(&reg_vdram);
 #else
-	return mainboard_get_regulator_vol(MTK_REGULATOR_VDD2);
+	return mainboard_get_regulator_voltage(MTK_REGULATOR_VDD2);
 #endif
 }
 
@@ -213,7 +213,7 @@ unsigned int dramc_set_vddq_voltage(unsigned int ddr_type, unsigned int vddq)
 #ifdef MTK_PMIC_MT6359
 	mtk_regulator_set_voltage(&reg_vddq, vddq, MAX_VDDQ);
 #endif
-	mainboard_set_regulator_vol(MTK_REGULATOR_VDDQ, vddq);
+	mainboard_set_regulator_voltage(MTK_REGULATOR_VDDQ, vddq);
 	return 0;
 }
 
@@ -222,7 +222,7 @@ unsigned int dramc_get_vddq_voltage(unsigned int ddr_type)
 #ifdef MTK_PMIC_MT6359
 	return mtk_regulator_get_voltage(&reg_vddq);
 #else
-	return mainboard_get_regulator_vol(MTK_REGULATOR_VDDQ);
+	return mainboard_get_regulator_voltage(MTK_REGULATOR_VDDQ);
 #endif
 }
 
@@ -231,7 +231,7 @@ unsigned int dramc_set_vmddr_voltage(unsigned int vmddr)
 #ifdef MTK_PMIC_MT6359
 	return mtk_regulator_set_voltage(&reg_vmddr, vmddr, MAX_VMDDR);
 #endif
-	mainboard_set_regulator_vol(MTK_REGULATOR_VMDDR, vmddr);
+	mainboard_set_regulator_voltage(MTK_REGULATOR_VMDDR, vmddr);
 	return 0;
 }
 
@@ -240,7 +240,7 @@ unsigned int dramc_get_vmddr_voltage(void)
 #ifdef MTK_PMIC_MT6359
 	return mtk_regulator_get_voltage(&reg_vmddr);
 #else
-	return mainboard_get_regulator_vol(MTK_REGULATOR_VMDDR);
+	return mainboard_get_regulator_voltage(MTK_REGULATOR_VMDDR);
 #endif
 }
 
@@ -252,7 +252,7 @@ unsigned int dramc_set_vio18_voltage(unsigned int vio18)
 	pmic_config_interface(PMIC_RG_VM18_VOCAL_ADDR, twist, PMIC_RG_VM18_VOCAL_MASK, PMIC_RG_VM18_VOCAL_SHIFT);
 	return mtk_regulator_set_voltage(&reg_vio18, vio18, MAX_VIO18);
 #else
-	mainboard_set_regulator_vol(MTK_REGULATOR_VDD1, vio18);
+	mainboard_set_regulator_voltage(MTK_REGULATOR_VDD1, vio18);
 	return 0;
 #endif
 }
@@ -265,7 +265,7 @@ unsigned int dramc_get_vio18_voltage(void)
 	pmic_read_interface(PMIC_RG_VM18_VOCAL_ADDR, &twist, PMIC_RG_VM18_VOCAL_MASK, PMIC_RG_VM18_VOCAL_SHIFT);
 	return mtk_regulator_get_voltage(&reg_vio18) + twist * UNIT_VIO18;
 #else
-	return mainboard_get_regulator_vol(MTK_REGULATOR_VDD1);
+	return mainboard_get_regulator_voltage(MTK_REGULATOR_VDD1);
 #endif
 }
 

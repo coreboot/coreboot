@@ -38,8 +38,7 @@ static int get_mt6359p_regulator_id(enum mtk_regulator regulator)
 	return -1;
 }
 
-void mainboard_set_regulator_vol(enum mtk_regulator regulator,
-				 uint32_t voltage_uv)
+void mainboard_set_regulator_voltage(enum mtk_regulator regulator, uint32_t voltage_uv)
 {
 	/*
 	 * Handle the regulator that does not have a regulator ID
@@ -68,7 +67,7 @@ void mainboard_set_regulator_vol(enum mtk_regulator regulator,
 	printk(BIOS_WARNING, "Invalid regulator ID: %d\n", regulator);
 }
 
-uint32_t mainboard_get_regulator_vol(enum mtk_regulator regulator)
+uint32_t mainboard_get_regulator_voltage(enum mtk_regulator regulator)
 {
 	/*
 	 * Handle the regulator that does not have a regulator ID

@@ -110,7 +110,13 @@ chip soc/intel/meteorlake
 		device ref i2c2 on end
 		device ref i2c3 on end
 		device ref sata on end
-		device ref i2c4 on end
+		device ref i2c4 on
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E03_IRQ)"
+				device i2c 50 on end
+			end
+		end
 		device ref i2c5 on end
 		device ref pcie_rp5 on
 			# Enable WLAN Card PCIE 5 using clk 5

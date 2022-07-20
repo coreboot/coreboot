@@ -43,6 +43,7 @@ FLASH 32M {
 		# memory protected range specification.
 		WP_RO 8M {
 			RO_VPD(PRESERVE) 16K
+			RO_GSCVD 8K
 			RO_SECTION {
 				FMAP 2K
 				RO_FRID 64

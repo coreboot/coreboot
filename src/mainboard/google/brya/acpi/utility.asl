@@ -9,14 +9,15 @@
 Method (GPPL, 3, Serialized)
 {
 	Local0 = 0
-	While (Local0 < Arg2)
+	Local1 = Arg2 * 10
+	While (Local0 < Local1)
 	{
 		If (\_SB.PCI0.GRXS (Arg0) == Arg1) {
 			Return (0)
 		} Else {
 			Local0++
 		}
-		Sleep (1)
+		Stall (100)
 	}
 
 	If (Local0 == Arg2) {

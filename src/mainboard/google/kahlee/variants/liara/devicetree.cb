@@ -7,7 +7,7 @@ chip soc/amd/stoneyridge
 	}"
 	register "dram_clear_on_reset" = "DRAM_CONTENTS_KEEP"
 	register "uma_mode" = "UMAMODE_SPECIFIED_SIZE"
-	register "uma_size" = "16 * MiB"
+	register "uma_size" = "32 * MiB"
 	register "lvds_poseq_varybl_to_blon" = "0x5" # in 4ms
 	register "lvds_poseq_blon_to_varybl" = "0x5" # in 4ms
 

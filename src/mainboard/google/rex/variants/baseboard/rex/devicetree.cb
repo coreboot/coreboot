@@ -1,5 +1,10 @@
 chip soc/intel/meteorlake
 
+	# GPE configuration
+	register "pmc_gpe0_dw0" = "GPP_A"
+	register "pmc_gpe0_dw1" = "GPP_E"
+	register "pmc_gpe0_dw2" = "GPP_F"
+
 	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
 	register "gen1_dec" = "0x00fc0801"
 	register "gen2_dec" = "0x000c0201"

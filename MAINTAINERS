@@ -620,6 +620,7 @@ M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Raul E Rangel <rrangel@chromium.org>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
+M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
 S:	Maintained
 F:	src/soc/amd/cezanne/
 F:	src/vendorcode/amd/fsp/cezanne/
@@ -630,6 +631,7 @@ M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Raul E Rangel <rrangel@chromium.org>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
+M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
 S:	Maintained
 F:	src/soc/amd/common/
 
@@ -639,6 +641,7 @@ M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Raul E Rangel <rrangel@chromium.org>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
+M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
 S:	Maintained
 F:	src/soc/amd/picasso/
 F:	src/vendorcode/amd/fsp/picasso/
@@ -649,6 +652,7 @@ M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Raul E Rangel <rrangel@chromium.org>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
+M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
 S:	Maintained
 F:	src/soc/amd/sabrina/
 F:	src/vendorcode/amd/fsp/sabrina/
@@ -656,6 +660,7 @@ F:	src/vendorcode/amd/fsp/sabrina/
 AMD Stoneyridge
 M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
+M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
 S:	Odd Fixes
 F:	src/soc/amd/stoneyridge/
 

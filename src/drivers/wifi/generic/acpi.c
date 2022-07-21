@@ -517,21 +517,19 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 	/* Scope */
 	acpigen_write_scope(scope);
 
-	if (dev->path.type == DEVICE_PATH_GENERIC) {
-		if (config) {
-			/* Wake capabilities */
-			acpigen_write_PRW(config->wake, ACPI_S3);
+	if (config) {
+		/* Wake capabilities */
+		acpigen_write_PRW(config->wake, ACPI_S3);
 
-			/* Add _DSD for DmaProperty property. */
-			if (config->is_untrusted) {
-				struct acpi_dp *dsd, *pkg;
+		/* Add _DSD for DmaProperty property. */
+		if (config->is_untrusted) {
+			struct acpi_dp *dsd, *pkg;
 
-				dsd = acpi_dp_new_table("_DSD");
-				pkg = acpi_dp_new_table(ACPI_DSD_DMA_PROPERTY_UUID);
-				acpi_dp_add_integer(pkg, "DmaProperty", 1);
-				acpi_dp_add_package(dsd, pkg);
-				acpi_dp_write(dsd);
-			}
+			dsd = acpi_dp_new_table("_DSD");
+			pkg = acpi_dp_new_table(ACPI_DSD_DMA_PROPERTY_UUID);
+			acpi_dp_add_integer(pkg, "DmaProperty", 1);
+			acpi_dp_add_package(dsd, pkg);
+			acpi_dp_write(dsd);
 		}
 	}
 
@@ -603,9 +601,7 @@ void wifi_pcie_fill_ssdt(const struct device *dev)
 		return;
 
 	wifi_ssdt_write_device(dev, path);
-	const struct device *child = dev->link_list->children;
-	if (child && child->path.type == DEVICE_PATH_GENERIC)
-		wifi_ssdt_write_properties(child, path);
+	wifi_ssdt_write_properties(dev, path);
 }
 
 const char *wifi_pcie_acpi_name(const struct device *dev)

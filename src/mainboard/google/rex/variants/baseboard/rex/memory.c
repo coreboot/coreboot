@@ -17,12 +17,19 @@ const struct mb_cfg *__weak variant_memory_params(void)
 
 int __weak variant_memory_sku(void)
 {
-	return 0;
+	gpio_t spd_gpios[] = {
+		GPIO_MEM_CONFIG_0,
+		GPIO_MEM_CONFIG_1,
+		GPIO_MEM_CONFIG_2,
+		GPIO_MEM_CONFIG_3,
+	};
+
+	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
 }
 
 bool __weak variant_is_half_populated(void)
 {
-	return 0;
+	return gpio_get(GPIO_MEM_CH_SEL);
 }
 
 void __weak variant_get_spd_info(struct mem_spd *spd_info)

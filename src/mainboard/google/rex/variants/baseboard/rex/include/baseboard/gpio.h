@@ -17,5 +17,11 @@
 #define EC_SCI_GPI	GPE0_ESPI
 /* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
 #define GPE_EC_WAKE	GPE0_LAN_WAK
+/* Memory configuration board straps */
+#define GPIO_MEM_CONFIG_0	GPP_E11
+#define GPIO_MEM_CONFIG_1	GPP_E02
+#define GPIO_MEM_CONFIG_2	GPP_E01
+#define GPIO_MEM_CONFIG_3	GPP_E12
+#define GPIO_MEM_CH_SEL		GPP_E13
 
 #endif /* __BASEBOARD_GPIO_H__ */

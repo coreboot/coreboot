@@ -19,3 +19,10 @@ config SOC_INTEL_COMMON_MMC_OVERRIDE
 	help
 	  Override the MMC settings after FSP-S.
 	  It should be used only when there is no FSP UPDs for certain setting.
+
+config SOC_INTEL_COMMON_UFS_SUPPORT
+	bool
+	default n
+	help
+	  Enable UFS support. Should be enabled when a particular SoC supports
+	  boot from UFS.

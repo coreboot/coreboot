@@ -2,4 +2,5 @@ ifneq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_N),y)
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_SCS) += sd.c
 endif
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_SCS) += mmc.c
+ramstage-$(CONFIG_SOC_INTEL_COMMON_UFS_SUPPORT) += ufs.c
 romstage-$(CONFIG_SOC_INTEL_COMMON_EARLY_MMC_WAKE) += early_mmc.c

@@ -6,7 +6,9 @@
 
 static const struct mb_cfg baseboard_memcfg = {
 	.type = MEM_TYPE_LP5X,
-	/* TODO: Add Memory configuration */
+	.lp5x_config = {
+		.ccc_config = 0x66,
+	},
 	.ect = 1, /* Enable Early Command Training */
 };
 

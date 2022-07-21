@@ -1,3 +1,14 @@
+fw_config
+	field WFC 0
+		option WFC_PRESENT		0
+		option WFC_ABSENT		1
+	end
+	field STYLUS 1
+		option STYLUS_PRESENT		0
+		option STYLUS_ABSENT		1
+	end
+end
+
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
@@ -40,6 +51,7 @@ chip soc/intel/alderlake
 				register "cio2_prt[0]" = "2"
 				device generic 0 on end
 			end
+			probe WFC WFC_PRESENT
 		end
 		device ref i2c1 on
 			chip drivers/i2c/hid
@@ -73,6 +85,7 @@ chip soc/intel/alderlake
 				register "key.linux_input_type" = "EV_SW"
 				register "key.label" = ""pen_eject""
 				device generic 0 on
+					probe STYLUS STYLUS_PRESENT
 				end
 			end
 		end
@@ -117,7 +130,9 @@ chip soc/intel/alderlake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 36 on end
+				device i2c 36 on
+					probe WFC WFC_PRESENT
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "3"
@@ -128,7 +143,9 @@ chip soc/intel/alderlake
 				register "pr0" = ""\\_SB.PCI0.I2C2.CAM0.PRIC""
 				register "vcm_compat" = ""dongwoon,dw9714""
 
-				device i2c 0C on end
+				device i2c 0C on
+					probe WFC WFC_PRESENT
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
@@ -145,7 +162,9 @@ chip soc/intel/alderlake
 				register "nvm_width" = "0x10"
 				register "nvm_compat" = ""atmel,24c08""
 
-				device i2c 50 on end
+				device i2c 50 on
+					probe WFC WFC_PRESENT
+				end
 			end
 		end
 		device ref i2c3 on

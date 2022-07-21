@@ -20,6 +20,12 @@ chip soc/intel/alderlake
 		.tdp_pl4 = 359,
 	}"
 
+	register "power_limits_config[ADL_S_882_150W_CORE]" = "{
+		.tdp_pl1_override = 150,
+		.tdp_pl2_override = 241,
+		.tdp_pl4 = 359,
+	}"
+
 	register "power_limits_config[ADL_S_842_35W_CORE]" = "{
 		.tdp_pl1_override = 35,
 		.tdp_pl2_override = 99,
@@ -54,6 +60,36 @@ chip soc/intel/alderlake
 		.tdp_pl1_override = 65,
 		.tdp_pl2_override = 117,
 		.tdp_pl4 = 176,
+	}"
+
+	register "power_limits_config[ADL_S_402_60W_CORE]" = "{
+		.tdp_pl1_override = 60,
+		.tdp_pl2_override = 89,
+		.tdp_pl4 = 125,
+	}"
+
+	register "power_limits_config[ADL_S_402_58W_CORE]" = "{
+		.tdp_pl1_override = 58,
+		.tdp_pl2_override = 89,
+		.tdp_pl4 = 125,
+	}"
+
+	register "power_limits_config[ADL_S_402_35W_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 69,
+		.tdp_pl4 = 98,
+	}"
+
+	register "power_limits_config[ADL_S_202_46W_CORE]" = "{
+		.tdp_pl1_override = 46,
+		.tdp_pl2_override = 46,
+		.tdp_pl4 = 57,
+	}"
+
+	register "power_limits_config[ADL_S_202_35W_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 35,
+		.tdp_pl4 = 44,
 	}"
 
 	# NOTE: if any variant wants to override this value, use the same format

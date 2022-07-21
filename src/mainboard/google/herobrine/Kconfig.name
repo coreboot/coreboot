@@ -29,6 +29,11 @@ config BOARD_GOOGLE_VILLAGER
 config BOARD_GOOGLE_EVOKER
 	bool "-> Evoker"
 	select BOARD_GOOGLE_HEROBRINE_COMMON
+
+config BOARD_GOOGLE_ZOGLIN
+	bool "-> Zoglin"
+	select BOARD_GOOGLE_HEROBRINE_COMMON
+
 endif
 
 comment "(Herobrine requires 'Allow QC blobs repository')"

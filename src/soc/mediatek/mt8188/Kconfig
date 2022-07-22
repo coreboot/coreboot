@@ -17,4 +17,10 @@ config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_RETURN_FROM_VERSTAGE
 
+config MCUPM_FIRMWARE
+	string
+	default "mcupm.bin"
+	help
+	  The file name of the MediaTek MCUPM firmware.
+
 endif

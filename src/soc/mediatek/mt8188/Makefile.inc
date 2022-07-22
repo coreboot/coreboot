@@ -22,6 +22,8 @@ romstage-y += ../common/pmif_spi.c pmif_spi.c
 romstage-y += ../common/pmif_spmi.c pmif_spmi.c
 
 ramstage-y += emi.c
+ramstage-y += ../common/mcu.c
+ramstage-y += ../common/mcupm.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-$(CONFIG_COMMONLIB_STORAGE_MMC) += ../common/msdc.c msdc.c
 ramstage-y += ../common/mt6359p.c mt6359p.c
@@ -32,6 +34,18 @@ ramstage-y += ../common/usb.c usb.c
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8188/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
+
+MT8188_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8188
+
+mcu-firmware-files := \
+	$(CONFIG_MCUPM_FIRMWARE)
+
+$(foreach fw, $(call strip_quotes,$(mcu-firmware-files)), \
+	$(eval $(fw)-file := $(MT8188_BLOB_DIR)/$(fw)) \
+	$(eval $(fw)-type := raw) \
+	$(eval $(fw)-compression := LZ4) \
+	$(if $(wildcard $($(fw)-file)), $(eval cbfs-files-y += $(fw)), ) \
+)
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	./util/mtkheader/gen-bl-img.py mt8183 sf $< $@

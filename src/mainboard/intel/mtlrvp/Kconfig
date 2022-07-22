@@ -44,4 +44,27 @@ config OVERRIDE_DEVICETREE
 	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
+choice
+	prompt "ON BOARD EC"
+	default MTL_INTEL_EC if BOARD_INTEL_MTLRVP_P
+	default MTL_CHROME_EC if BOARD_INTEL_MTLRVP_P_EXT_EC
+	help
+	  This option allows you to select the on board EC to use.
+	  Select whether the board has Intel EC or/and Chrome EC
+
+config MTL_CHROME_EC
+	bool "Chrome EC"
+	select EC_ACPI
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_ESPI
+	select EC_GOOGLE_CHROMEEC_BOARDID
+
+config MTL_INTEL_EC
+	bool "Intel EC"
+	select EC_ACPI
+endchoice
+
+config VBOOT
+	select VBOOT_LID_SWITCH
+
 endif # BOARD_INTEL_MTLRVP_COMMON

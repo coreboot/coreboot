@@ -1,5 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-or-later
 
+ramstage-y += ec.c
+
 VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))
 BASEBOARD_DIR:=$(call strip_quotes,$(CONFIG_BASEBOARD_DIR))
 

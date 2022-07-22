@@ -6,4 +6,10 @@
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 
+/* eSPI virtual wire reporting */
+#define EC_SCI_GPI	GPE0_ESPI
+
+/* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
+#define GPE_EC_WAKE	GPE0_LAN_WAK
+
 #endif /* __BASEBOARD_GPIO_H__ */

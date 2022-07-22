@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpi.h>
+#include <baseboard/ec.h>
 
 DefinitionBlock(
 	"dsdt.aml",
@@ -23,6 +24,18 @@ DefinitionBlock(
 			#include <soc/intel/meteorlake/acpi/southbridge.asl>
 		}
 	}
+
+
+#if CONFIG(EC_GOOGLE_CHROMEEC)
+	/* Chrome OS Embedded Controller */
+	Scope (\_SB.PCI0.LPCB)
+	{
+		/* ACPI code for EC SuperIO functions */
+		#include <ec/google/chromeec/acpi/superio.asl>
+		/* ACPI code for EC functions */
+		#include <ec/google/chromeec/acpi/ec.asl>
+	}
+#endif
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 }

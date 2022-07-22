@@ -1,5 +1,11 @@
 chip soc/intel/meteorlake
 
+	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
+	register "gen1_dec" = "0x00fc0801"
+	register "gen2_dec" = "0x000c0201"
+	# EC memory map range is 0x900-0x9ff
+	register "gen3_dec" = "0x00fc0901"
+
 	device domain 0 on
 		device ref igpu on end
 	end

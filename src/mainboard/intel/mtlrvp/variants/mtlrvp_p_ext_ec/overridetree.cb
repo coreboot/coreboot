@@ -1,4 +1,10 @@
 chip soc/intel/meteorlake
 
-	device domain 0 on end
+	device domain 0 on
+		device ref soc_espi on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
+		end
+	end
 end

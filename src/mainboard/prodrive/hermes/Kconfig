@@ -45,10 +45,6 @@ config PCIEXP_CLK_PM
 	bool
 	default n
 
-config MAX_CPUS
-	int
-	default 16
-
 config CONSOLE_POST
 	bool
 	default y

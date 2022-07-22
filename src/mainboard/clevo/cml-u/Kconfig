@@ -49,10 +49,6 @@ config UART_FOR_CONSOLE
 	int
 	default 2
 
-config MAX_CPUS
-	int
-	default 8 if BOARD_CLEVO_L140CU_BASE
-
 config DIMM_MAX
 	default 2 if BOARD_CLEVO_L140CU_BASE
 

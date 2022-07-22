@@ -45,9 +45,6 @@ config CONSOLE_POST
 config UART_FOR_CONSOLE
 	default 2
 
-config MAX_CPUS
-	default 20
-
 config DIMM_MAX
 	default 4
 

@@ -58,9 +58,6 @@ config ONBOARD_VGA_IS_PRIMARY
 config UART_FOR_CONSOLE
 	default 2
 
-config MAX_CPUS
-	default 16
-
 config DIMM_MAX
 	default 2
 

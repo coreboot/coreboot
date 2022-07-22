@@ -56,9 +56,6 @@ config CONSOLE_POST
 config ONBOARD_VGA_IS_PRIMARY
 	default y
 
-config MAX_CPUS
-	default 16
-
 config DIMM_MAX
 	default 2
 

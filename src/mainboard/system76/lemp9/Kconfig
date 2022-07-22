@@ -48,10 +48,6 @@ config UART_FOR_CONSOLE
 	int
 	default 2
 
-config MAX_CPUS
-	int
-	default 8
-
 config DIMM_MAX
 	default 2
 

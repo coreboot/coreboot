@@ -351,6 +351,18 @@
                 "ranksPerChannel": 2,
                 "speedMbps": 4267
             }
+        },
+        {
+            "name": "H54G68CYRBX248",
+            "attribs": {
+                "densityPerChannelGb": 8,
+                "banks": 8,
+                "channelsPerDie": 4,
+                "diesPerPackage": 2,
+                "bitWidthPerChannel": 8,
+                "ranksPerChannel": 2,
+                "speedMbps": 4267
+            }
         }
     ]
 }

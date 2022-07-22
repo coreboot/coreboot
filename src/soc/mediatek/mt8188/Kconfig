@@ -23,4 +23,10 @@ config MCUPM_FIRMWARE
 	help
 	  The file name of the MediaTek MCUPM firmware.
 
+config SSPM_FIRMWARE
+	string
+	default "sspm.bin"
+	help
+	  The file name of the MediaTek SSPM firmware.
+
 endif

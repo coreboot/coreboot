@@ -146,7 +146,6 @@ The boards in this section are not real mainboards, but emulators.
 ## Open Cellular
 
 - [Elgon](opencellular/elgon.md)
-- [Rotundu](opencellular/rotundu.md)
 
 ## PC Engines
 

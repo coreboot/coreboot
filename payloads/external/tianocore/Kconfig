@@ -52,7 +52,7 @@ config TIANOCORE_REPOSITORY
 
 config TIANOCORE_TAG_OR_REV
 	string "Insert a commit's SHA-1 or a branch name"
-	default "origin/uefipayload_202107" if TIANOCORE_UEFIPAYLOAD
+	default "origin/uefipayload_202207" if TIANOCORE_UEFIPAYLOAD
 	default "origin/master" if TIANOCORE_UPSTREAM
 	default "origin/coreboot_fb" if TIANOCORE_COREBOOTPAYLOAD
 	help

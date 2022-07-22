@@ -1,0 +1,2 @@
+config BOARD_INTEL_MTLRVP_P
+	bool "Meteorlake-P RVP"

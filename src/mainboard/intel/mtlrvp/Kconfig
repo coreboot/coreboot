@@ -1,0 +1,34 @@
+config BOARD_INTEL_MTLRVP_COMMON
+	def_bool n
+	select BOARD_ROMSIZE_KB_32768
+	select HAVE_ACPI_TABLES
+	select SOC_INTEL_METEORLAKE
+
+config BOARD_INTEL_MTLRVP_P
+	select BOARD_INTEL_MTLRVP_COMMON
+
+if BOARD_INTEL_MTLRVP_COMMON
+
+config MAINBOARD_DIR
+	default "intel/mtlrvp"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "mtlrvp"
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
+
+config MAINBOARD_FAMILY
+	string
+	default "Intel_mtlrvp"
+
+config VARIANT_DIR
+	string
+	default "mtlrvp_p" if BOARD_INTEL_MTLRVP_P
+
+config DEVICETREE
+	string
+	default "devicetree.cb"
+
+endif # BOARD_INTEL_MTLRVP_COMMON

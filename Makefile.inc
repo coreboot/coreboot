@@ -442,7 +442,7 @@ ifeq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
 CFLAGS_common += -Wno-packed-not-aligned
 CFLAGS_common += -fconserve-stack
 CFLAGS_common += -Wnull-dereference -Wreturn-type
-CFLAGS_common += -Wlogical-op -Wduplicated-cond
+CFLAGS_common += -Wlogical-op -Wduplicated-cond -Wno-array-compare
 # cf. commit f69a99db (coreboot: x86: enable gc-sections)
 CFLAGS_common += -Wno-unused-but-set-variable
 endif

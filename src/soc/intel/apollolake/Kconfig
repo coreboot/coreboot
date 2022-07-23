@@ -109,7 +109,7 @@ config USE_LEGACY_8254_TIMER
 
 config SKIP_CSE_RBP
 	bool
-	default y if BOOT_DEVICE_MEMORY_MAPPED
+	default y if BOOT_DEVICE_MEMORY_MAPPED && !IFWI_IBBM_LOAD
 	help
 	  Tell CSE we do not need to use Ring Buffer Protocol (RBP) to fetch
 	  firmware for us if we are using memory-mapped SPI. This lets CSE
@@ -398,5 +398,91 @@ config HAVE_PAM0_REGISTER
 
 config DOMAIN_RESOURCE_32BIT_LIMIT
 	default PCR_BASE_ADDRESS
+
+choice
+	prompt "Boot Profile"
+	default NO_BOOT_PROFILE
+	help
+	  The Boot Profile that is used for the IFWI Boot Flow. This should
+	  be equal to, or higher than the one configured in IFWI.
+
+config NO_BOOT_PROFILE
+	bool "No Profile"
+	help
+	  Since its inception, coreboot has ignored the Boot Flow designed
+	  by Intel; this only uses an IBB and OBB. Neither are measured or
+	  verified and mapped without assistance.
+
+config BOOT_PROFILE_0
+	bool "Legacy"
+	help
+	  Profile 0 is for platforms that do not wish to enable Boot Guard
+	  boot block verification or measurement enforcement.
+
+config BOOT_PROFILE_1
+	bool "Verified"
+	depends on !VBOOT
+	help
+	  Profile 1 is strict Verification enforcement. It prevents unverified
+	  BIOS components from running.
+
+config BOOT_PROFILE_2
+	bool "Verified and Measured"
+	depends on !VBOOT
+	help
+	  Boot Guard Profile 2 is strict Verification and Measurement enforcement;
+	  this prevents unverified BIOS components from running. Upon manufacturing
+	  completion, this value is burned into an FPF and is permanent. This
+	  setting is only configurable when OEM signing is enabled.
+
+endchoice
+
+config IFWI_IBBM_LOAD
+	bool
+	default y if BOOT_PROFILE_0 || BOOT_PROFILE_1 || BOOT_PROFILE_2
+	help
+	  Create IBBL, IBBM and OBB that are required for Apollo Lake's secure boot flow. The IBBM
+	  will be loaded and measured with the assistance of the CSEs Ring Buffer Protocol.
+
+config IBBM_ROM_SIZE
+	hex
+	default 0x16000
+	depends on IFWI_IBBM_LOAD
+	help
+	  The size of the IBBM ($(objcbfs/ibbm.rom). This is the size of the
+	  ELF, with the ELF header removed, rounded down to the nearest 0x100.
+
+config IBBM_ROM_COMPONENT
+	string
+	depends on IFWI_IBBM_LOAD
+	default "verstage.elf" if VBOOT
+	default "romstage.elf"
+	help
+	  The component to use as the IBB. This must be the component that runs
+	  straight after the bootblock.
+
+config IBBM_ROM_ADDR
+	hex
+	depends on IFWI_IBBM_LOAD
+	default VERSTAGE_ADDR if VBOOT
+	default ROMSTAGE_ADDR
+	help
+	  The base address (in CAR) where the IBBM should be copied to.
+
+config IFWI_VERIFIED_BOOT
+	bool
+	default y if BOOT_PROFILE_1 || BOOT_PROFILE_2
+	depends on TPM && IFWI_IBBM_LOAD
+	help
+	  Verify the individual states of coreboot against SHA256 hashes that are created
+	  at build time.
+
+config IFWI_MEASURED_BOOT
+	bool
+	default y if BOOT_PROFILE_2
+	depends on TPM && IFWI_IBBM_LOAD
+	help
+	  Measuring the IBBL, IBB and TXE using either PTT or a TPM. The IBB is measured
+	  only after it has been loaded into the CSE.
 
 endif

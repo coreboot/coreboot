@@ -1,2 +1,5 @@
 config BOARD_LENOVO_THINKPAD_T440P
 	bool "ThinkPad T440p"
+
+config BOARD_LENOVO_THINKPAD_W541
+	bool "ThinkPad W541"

@@ -60,7 +60,7 @@ config X2APIC_RUNTIME
 config X2APIC_LATE_WORKAROUND
 	prompt "Use XAPIC for AP bringup, then change to X2APIC"
 	bool
-	depends on PARALLEL_MP && MAX_CPUS < 255
+	depends on PARALLEL_MP && MAX_CPUS < 256
 	help
 	  Choose this option if the platform supports dynamic switching between
 	  XAPIC to X2APIC. The initial Application Processors (APs) are configured

@@ -40,7 +40,7 @@ config SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_SBI
 	bool
 	default n
 	help
-	  From TGL PCH onwards,`Pad Configuration Lock` can only be set or cleared
+	  Till ADL PCH,`Pad Configuration Lock` can only be set or cleared
 	  using non-posted sideband write.
 
 config SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_PCR
@@ -50,5 +50,7 @@ config SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_PCR
 	help
 	  SoC user to select this config if `Pad Configuration Lock` can only be set or
 	  cleared using private configuration register (PCR) write.
+	  Starting with MTL SoC, the recommendation is to use PCR for locking down the
+	  GPIO configuration.
 
 endif

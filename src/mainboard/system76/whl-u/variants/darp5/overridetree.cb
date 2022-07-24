@@ -6,7 +6,7 @@ chip soc/intel/cannonlake
 				register "generic.hid" = ""SYNA1202""
 				register "generic.desc" = ""Synaptics Touchpad""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C23_IRQ)"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 2c on end
 			end

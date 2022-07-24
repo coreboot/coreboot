@@ -118,7 +118,7 @@ chip soc/intel/tigerlake
 				register "generic.hid" = ""ELAN0412""
 				register "generic.desc" = ""ELAN Touchpad""
 				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_R12)"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 15 on end
 			end

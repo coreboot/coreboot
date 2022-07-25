@@ -475,6 +475,11 @@ void pmc_global_reset_enable(bool enable)
 
 int platform_is_resuming(void)
 {
+	/* Read power state from PMC data structure */
+	if (ENV_RAMSTAGE)
+		return acpi_get_sleep_type() == ACPI_S3;
+
+	/* Read power state from PMC ABASE */
 	if (!(inw(ACPI_BASE_ADDRESS + PM1_STS) & WAK_STS))
 		return 0;
 

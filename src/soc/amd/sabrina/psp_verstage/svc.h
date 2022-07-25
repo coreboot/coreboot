@@ -61,7 +61,6 @@
 
 struct cmd_param_sha {
 	struct sha_generic_data *ptr_sha_op;
-	enum sha_operation_mode sha_mode;
 };
 
 struct cmd_param_debug {

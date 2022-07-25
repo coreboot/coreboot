@@ -166,8 +166,8 @@ uint32_t svc_crypto_sha(struct sha_generic_data *sha_op, enum sha_operation_mode
 	uint32_t retval = 0;
 	struct cmd_param_sha param = {
 		.ptr_sha_op = sha_op,
-		.sha_mode = sha_mode,
 	};
+	assert(sha_mode == SHA_GENERIC);
 	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_SHA, (void *)&param, retval);
 	return retval;
 }

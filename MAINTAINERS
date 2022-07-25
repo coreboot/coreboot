@@ -362,7 +362,11 @@ M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
 F:	src/mainboard/msi/h81m-p33/
 
-
+MSI MS-7D25 MAINBOARDS
+M:	Michał Żygowski <michal.zygowski@3mdeb.com>
+M:	Michał Kopeć <michal.kopec@3mdeb.com>
+S:	Maintained
+F:	src/mainboard/msi/ms7d25/
 
 OCP DELTALAKE MAINBOARD
 M:	Arthur Heymans <arthur@aheymans.xyz>

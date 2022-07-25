@@ -6,6 +6,7 @@
 #include <soc/gpio.h>
 
 #define GPIO_AP_EC_WARM_RST_REQ	GPIO(DPI_HSYNC)
+#define GPIO_GSC_AP_INT_ODL	GPIO(GPIO00)
 
 void setup_chromeos_gpios(void);
 

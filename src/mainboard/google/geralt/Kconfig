@@ -24,6 +24,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_BOARDID
 	select EC_GOOGLE_CHROMEEC_SPI
+	select I2C_TPM if VBOOT
+	select MAINBOARD_HAS_TPM2 if VBOOT
+	select TPM_GOOGLE_TI50 if VBOOT
 
 config MAINBOARD_DIR
 	string
@@ -40,4 +43,12 @@ config BOOT_DEVICE_SPI_FLASH_BUS
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 0x0
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0x1
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x50
 endif

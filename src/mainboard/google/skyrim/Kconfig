@@ -78,7 +78,14 @@ config VARIANT_DIR
 config VBOOT
 	select VBOOT_LID_SWITCH
 	select VBOOT_SEPARATE_VERSTAGE
-	select VBOOT_STARTS_IN_BOOTBLOCK
+
+config VBOOT_STARTS_BEFORE_BOOTBLOCK
+	bool "Enable PSP_verstage"
+	default y if VBOOT
+
+config VBOOT_STARTS_IN_BOOTBLOCK
+	bool
+	default y if VBOOT && !VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 # TODO: Remove once CBFS verification on AMD has been fixed.
 config VBOOT_GSCVD

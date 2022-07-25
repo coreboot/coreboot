@@ -13,6 +13,7 @@ bootblock-y += ../common/mmu_operations.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c
+romstage-y += ../common/clkbuf.c
 romstage-y += emi.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 romstage-y += ../common/mt6315.c mt6315.c

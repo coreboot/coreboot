@@ -21,6 +21,7 @@ romstage-y += ../common/pmif.c ../common/pmif_clk.c pmif_clk.c
 romstage-y += ../common/pmif_spi.c pmif_spi.c
 romstage-y += ../common/pmif_spmi.c pmif_spmi.c
 
+ramstage-y += ../common/auxadc.c
 ramstage-y += emi.c
 ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mcupm.c

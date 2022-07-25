@@ -277,8 +277,8 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE2, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_WHITELIST, .level = PSP_LVL2 },
-	{ .type = AMD_FW_PSP_VERSTAGE, .level = PSP_BOTH | PSP_BOTH_AB },
-	{ .type = AMD_FW_VERSTAGE_SIG, .level = PSP_BOTH | PSP_BOTH_AB },
+	{ .type = AMD_FW_PSP_VERSTAGE, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_VERSTAGE_SIG, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_INVALID },
 };
 

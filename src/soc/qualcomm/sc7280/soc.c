@@ -6,6 +6,14 @@
 #include <soc/symbols_common.h>
 #include <soc/aop_common.h>
 #include <soc/cpucp.h>
+#include <soc/pcie.h>
+
+static struct device_operations pci_domain_ops = {
+	.read_resources = &qcom_pci_domain_read_resources,
+	.set_resources = &pci_domain_set_resources,
+	.scan_bus = &pci_domain_scan_bus,
+	.enable = &qcom_setup_pcie_host,
+};
 
 static void soc_read_resources(struct device *dev)
 {
@@ -36,7 +44,11 @@ static struct device_operations soc_ops = {
 
 static void enable_soc_dev(struct device *dev)
 {
-	dev->ops = &soc_ops;
+	/* Set the operations if it is a special bus type */
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		dev->ops = &pci_domain_ops;
+	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
+		dev->ops = &soc_ops;
 }
 
 struct chip_operations soc_qualcomm_sc7280_ops = {

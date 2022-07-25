@@ -174,12 +174,8 @@ uint32_t svc_crypto_sha(struct sha_generic_data *sha_op, enum sha_operation_mode
 
 uint32_t svc_modexp(struct mod_exp_params *mod_exp_param)
 {
-	uint32_t retval = 0;
-	struct cmd_param_modexp param = {
-		.ptr_modexp = mod_exp_param,
-	};
-	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_MODEXP, (void *)&param, retval);
-	return retval;
+	/* TODO: b/240175446 Re-enable CCP DMA and svc_modexp later. */
+	return 1;
 }
 
 uint32_t svc_ccp_dma(uint32_t spi_rom_offset, void *dest, uint32_t size)

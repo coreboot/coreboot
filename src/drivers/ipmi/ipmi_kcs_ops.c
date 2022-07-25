@@ -28,6 +28,8 @@
 #include "ipmi_supermicro_oem.h"
 #include "chip.h"
 
+#define IPMI_GET_DID_RETRY_MS 10000
+
 /* 4 bit encoding */
 static u8 ipmi_revision_major = 0x1;
 static u8 ipmi_revision_minor = 0x0;
@@ -112,35 +114,34 @@ static void ipmi_kcs_init(struct device *dev)
 		}
 	}
 
-	if (ipmi_process_self_test_result(dev))
+	if (ipmi_process_self_test_result(dev)) {
 		/* Don't write tables if communication failed */
 		dev->enabled = 0;
-
-	if (!ipmi_get_device_id(dev, &rsp)) {
-		/* Queried the IPMI revision from BMC */
-		ipmi_revision_minor = IPMI_IPMI_VERSION_MINOR(rsp.ipmi_version);
-		ipmi_revision_major = IPMI_IPMI_VERSION_MAJOR(rsp.ipmi_version);
-
-		bmc_revision_major = rsp.fw_rev1;
-		bmc_revision_minor = rsp.fw_rev2;
-
-		memcpy(&man_id, rsp.manufacturer_id,
-		       sizeof(rsp.manufacturer_id));
-
-		memcpy(&prod_id, rsp.product_id, sizeof(rsp.product_id));
-
-		printk(BIOS_INFO, "IPMI: Found man_id 0x%06x, prod_id 0x%04x\n",
-		       man_id, prod_id);
-
-		printk(BIOS_INFO, "IPMI: Version %01x.%01x\n",
-		       ipmi_revision_major, ipmi_revision_minor);
-	} else {
-		/* Don't write tables if communication failed */
-		dev->enabled = 0;
+		return;
 	}
 
-	if (!dev->enabled)
+	if (!wait_ms(IPMI_GET_DID_RETRY_MS, !ipmi_get_device_id(dev, &rsp))) {
+		printk(BIOS_ERR, "IPMI: BMC does not respond to get device id even "
+			"after %d ms.\n", IPMI_GET_DID_RETRY_MS);
+		dev->enabled = 0;
 		return;
+	}
+
+	/* Queried the IPMI revision from BMC */
+	ipmi_revision_minor = IPMI_IPMI_VERSION_MINOR(rsp.ipmi_version);
+	ipmi_revision_major = IPMI_IPMI_VERSION_MAJOR(rsp.ipmi_version);
+
+	bmc_revision_major = rsp.fw_rev1;
+	bmc_revision_minor = rsp.fw_rev2;
+
+	memcpy(&man_id, rsp.manufacturer_id, sizeof(rsp.manufacturer_id));
+
+	memcpy(&prod_id, rsp.product_id, sizeof(rsp.product_id));
+
+	printk(BIOS_INFO, "IPMI: Found man_id 0x%06x, prod_id 0x%04x\n", man_id, prod_id);
+
+	printk(BIOS_INFO, "IPMI: Version %01x.%01x\n", ipmi_revision_major,
+	       ipmi_revision_minor);
 
 	if (CONFIG(DRIVERS_IPMI_SUPERMICRO_OEM))
 		supermicro_ipmi_oem(dev->path.pnp.port);

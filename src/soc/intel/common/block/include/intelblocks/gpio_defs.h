@@ -45,6 +45,11 @@
 #define  PAD_CFG0_LOGICAL_RESET_DEEP		(1U << 30)
 #define  PAD_CFG0_LOGICAL_RESET_PLTRST		(2U << 30)
 #define  PAD_CFG0_LOGICAL_RESET_RSMRST		(3U << 30)
+/*
+ * Alder Lake PCH onwards a newer bit field has added
+ * for GPP as `Global Reset`
+ */
+#define  PAD_CFG0_LOGICAL_RESET_GLBRST		(3U << 30)
 
 /*
  * Use the fourth bit in IntSel field to indicate gpio

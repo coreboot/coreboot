@@ -8,15 +8,10 @@
 #define DEFAULT_VW_BASE		0x10
 
 static const struct reset_mapping rst_map[] = {
-	{ .logical = PAD_RESET(RSMRST), .chipset = 0U << 30 },
-	{ .logical = PAD_RESET(DEEP), .chipset = 1U << 30 },
-	{ .logical = PAD_RESET(PLTRST), .chipset = 2U << 30 },
-};
-static const struct reset_mapping rst_map_com3[] = {
 	{ .logical = PAD_RESET(PWROK), .chipset = 0U << 30 },
 	{ .logical = PAD_RESET(DEEP), .chipset = 1U << 30 },
 	{ .logical = PAD_RESET(PLTRST), .chipset = 2U << 30 },
-	{ .logical = PAD_RESET(RSMRST), .chipset = 3U << 30 },
+	{ .logical = PAD_RESET(GLBRST), .chipset = 3U << 30 },
 };
 
 /*
@@ -147,8 +142,8 @@ static const struct pad_community mtl_communities[] = {
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
 		.name = "GPP_HFSPI0VG3",
 		.acpi_path = "\\_SB.PCI0.GPIO",
-		.reset_map = rst_map_com3,
-		.num_reset_vals = ARRAY_SIZE(rst_map_com3),
+		.reset_map = rst_map,
+		.num_reset_vals = ARRAY_SIZE(rst_map),
 		.groups = mtl_community3_groups,
 		.num_groups = ARRAY_SIZE(mtl_community3_groups),
 		.vw_base = DEFAULT_VW_BASE,

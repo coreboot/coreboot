@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include "../../variant.h"
+#include <soc/ramstage.h>
 
-void variant_silicon_init_params(FSP_S_CONFIG *params)
+void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
+	params->PchLegacyIoLowLatency = 1;
+
 	// PEG0 Config
 	params->CpuPcieRpAdvancedErrorReporting[0] = 0;
 	params->CpuPcieRpLtrEnable[0] = 1;

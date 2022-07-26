@@ -2,13 +2,12 @@
 
 #include <soc/ramstage.h>
 #include <variant/gpio.h>
-#include "variant.h"
 
-void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+static void mainboard_init(void *chip_info)
 {
-	variant_silicon_init_params(params);
-
-	params->PchLegacyIoLowLatency = 1;
-
 	variant_configure_gpios();
 }
+
+struct chip_operations mainboard_ops = {
+	.init = mainboard_init,
+};

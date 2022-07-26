@@ -7,12 +7,14 @@
 #include "ite.h"
 
 /* Global configuration registers. */
-#define ITE_CONFIG_REG_CC	0x02 /* Configure Control (write-only). */
-#define ITE_CONFIG_REG_LDN	0x07 /* Logical Device Number. */
-#define ITE_CONFIG_REG_CLOCKSEL	0x23 /* Clock Selection. */
-#define ITE_CONFIG_REG_SWSUSP	0x24 /* Software Suspend, Flash I/F. */
-#define ITE_CONFIG_REG_MFC	0x2a /* multi function pin */
-#define ITE_CONFIG_REG_WATCHDOG	0x72 /* watchdog config */
+#define ITE_CONFIG_REG_CC		0x02 /* Configure Control (write-only). */
+#define ITE_CONFIG_REG_LDN		0x07 /* Logical Device Number. */
+#define ITE_CONFIG_REG_CLOCKSEL		0x23 /* Clock Selection. */
+#define ITE_CONFIG_REG_SWSUSP		0x24 /* Software Suspend, Flash I/F. */
+#define ITE_CONFIG_REG_MFC		0x2a /* multi function pin */
+#define ITE_CONFIG_REG_WATCHDOG		0x72 /* watchdog config */
+#define ITE_CONFIG_REG_WDT_TIMEOUT_LSB	0x73 /* watchdog timeout (LSB) */
+#define ITE_CONFIG_REG_WDT_TIMEOUT_MSB	0x74 /* watchdog timeout (MSB) */
 
 /* Helper procedure */
 static void ite_sio_write(pnp_devfn_t dev, u8 reg, u8 value)
@@ -130,5 +132,7 @@ void ite_kill_watchdog(pnp_devfn_t dev)
 {
 	pnp_enter_conf_state(dev);
 	ite_sio_write(dev, ITE_CONFIG_REG_WATCHDOG, 0x00);
+	ite_sio_write(dev, ITE_CONFIG_REG_WDT_TIMEOUT_LSB, 0x00);
+	ite_sio_write(dev, ITE_CONFIG_REG_WDT_TIMEOUT_MSB, 0x00);
 	pnp_exit_conf_state(dev);
 }

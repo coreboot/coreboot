@@ -258,10 +258,6 @@ static void fill_fsps_xdci_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_uart_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
-	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER) && CONFIG(CONSOLE_SERIAL) &&
-			 CONFIG(FSP_ENABLE_SERIAL_DEBUG))
-		s_cfg->FspEventHandler = (UINT32)((FSP_EVENT_HANDLER *)
-				fsp_debug_event_handler);
 	ASSERT(ARRAY_SIZE(s_cfg->SerialIoUartAutoFlow) > CONFIG_UART_FOR_CONSOLE);
 	s_cfg->SerialIoUartAutoFlow[CONFIG_UART_FOR_CONSOLE] = 0;
 }
@@ -431,6 +427,12 @@ static void arch_silicon_init_params(FSPS_ARCH_UPD *s_arch_cfg)
 	 * EnableMultiPhaseSiliconInit for running MultiPhaseSiInit
 	 */
 	s_arch_cfg->EnableMultiPhaseSiliconInit = 0;
+
+	/* Assign FspEventHandler arch Upd to use coreboot debug event handler */
+	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER) && CONFIG(CONSOLE_SERIAL) &&
+			 CONFIG(FSP_ENABLE_SERIAL_DEBUG))
+		s_arch_cfg->FspEventHandler = (FSP_EVENT_HANDLER)
+				fsp_debug_event_handler;
 }
 
 static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,

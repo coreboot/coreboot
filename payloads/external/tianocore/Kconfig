@@ -94,7 +94,7 @@ config TIANOCORE_ABOVE_4G_MEMORY
 
 config TIANOCORE_BOOTSPLASH_FILE
 	string "Tianocore Bootsplash path and filename"
-	default "Documentation/coreboot_logo.svg"
+	default "Documentation/coreboot_logo.bmp"
 	help
 	  The path and filename of the file to use as graphical bootsplash
 	  image. If this option is not configured, the default

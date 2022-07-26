@@ -211,6 +211,7 @@
 - Marzipan
 - Mrbland
 - Pazquel
+- Pazquel360
 - Pompom
 - Quackingstick
 - Wormdingler

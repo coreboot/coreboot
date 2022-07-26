@@ -81,6 +81,7 @@ config MAINBOARD_PART_NUMBER
 	default "Marzipan" if BOARD_GOOGLE_MARZIPAN
 	default "Mrbland" if BOARD_GOOGLE_MRBLAND
 	default "Pazquel" if BOARD_GOOGLE_PAZQUEL
+	default "Pazquel360" if BOARD_GOOGLE_PAZQUEL360
 	default "Pompom" if BOARD_GOOGLE_POMPOM
 	default "Quackingstick" if BOARD_GOOGLE_QUACKINGSTICK
 	default "Trogdor" if BOARD_GOOGLE_TROGDOR

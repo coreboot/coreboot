@@ -33,7 +33,8 @@ static struct {
 	{ CPUID_COMETLAKE_H_S_6_2_G0, "Cometlake-H/S G0 (6+2)" },
 	{ CPUID_COMETLAKE_H_S_6_2_G1, "Cometlake-H/S G1 (6+2)" },
 	{ CPUID_COMETLAKE_H_S_10_2_P0, "Cometlake-H/S P0 (10+2)" },
-	{ CPUID_COMETLAKE_H_S_10_2_Q0_P1, "Cometlake-H/S Q0/P1 (10+2)" },
+	{ CPUID_COMETLAKE_H_S_10_2_P1, "Cometlake-H/S P1 (10+2)" },
+	{ CPUID_COMETLAKE_H_S_10_2_Q0, "Cometlake-H/S Q0 (10+2)" },
 };
 
 static struct {

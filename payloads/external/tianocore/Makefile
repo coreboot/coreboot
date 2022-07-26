@@ -84,10 +84,12 @@ endif
 # EDKII has the below PCDs that are relevant to coreboot:
 #
 # Allows EDKII to use the full framebuffer
+ifeq ($(CONFIG_TIANOCORE_FULL_SCREEN_SETUP),y)
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdConOutRow=0
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdConOutColumn=0
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutRow=0
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutColumn=0
+endif
 #
 # The below are legacy options only available in CorebootPayloadPkg:
 #

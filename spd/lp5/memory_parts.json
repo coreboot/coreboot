@@ -109,6 +109,16 @@
                 "ranksPerChannel": 1,
                 "speedMbps": 7500
             }
+        },
+        {
+            "name":  "MT62F2G32D4DS-026 WT:B",
+            "attribs": {
+                "densityPerDieGb": 16,
+                "diesPerPackage": 4,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 2,
+                "speedMbps": 7500
+            }
         }
     ]
 }

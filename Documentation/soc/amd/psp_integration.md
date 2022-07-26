@@ -117,14 +117,23 @@ implementations currently use combo tables.
 +--------------+---------------+------------------+----------------------------+
 | Size         | 0x04          | 32               | Size of PSP entry in bytes |
 +--------------+---------------+------------------+----------------------------+
-| Location /   | 0x08          | 64               | Location: Physical Address |
+| Location /   | 0x08          | 62               | Location: Physical Address |
 | Value        |               |                  | of SPIROM location where   |
 |              |               |                  | corresponding PSP entry    |
 |              |               |                  | located.                   |
 |              |               |                  |                            |
-|              |               |                  | Value: 64-bit value for the|
+|              |               |                  | Value: 62-bit value for the|
 |              |               |                  | PSP Entry                  |
 +--------------+---------------+------------------+----------------------------+
+| Address Mode | 0x0F[7:6]     | 2                | 00: x86 Physical address   |
+|              |               |                  | 01: offset from start of   |
+|              |               |                  |     BIOS (flash offset)    |
+|              |               |                  | 02: offset from start of   |
+|              |               |                  |     directory header       |
+|              |               |                  | 03: offset from start of   |
+|              |               |                  |     partition              |
++--------------+---------------+------------------+----------------------------+
+
 ```
 ### PSP Directory Table Types
 
@@ -172,6 +181,10 @@ implementations currently use combo tables.
 *   Intermediate Key Encryption Key, used to decrypt encrypted firmware images.
     This is mandatory in order to support encrypted firmware.
 
+**0x22**: PSP Token Unlock data
+*   Used to support time-bound Secure Debug unlock during boot.  This entry may
+    be omitted if the Token Unlock debug feature is not required.
+
 **0x24**: Security policy binary
 *   A security policy is applied to restrict the untrusted access to security
     sensitive regions.
@@ -199,10 +212,6 @@ implementations currently use combo tables.
 
 **0x52**: PSP boot loader usermode OEM application
 *   Supported only in certain SKUs.
-
-**0x22**: PSP Token Unlock data
-*   Used to support time-bound Secure Debug unlock during boot.  This entry may
-    be omitted if the Token Unlock debug feature is not required.
 
 ### Firmware Version of Binaries
 
@@ -302,14 +311,24 @@ The BIOS Directory table structure is slightly different from the PSP Directory:
 +--------------+---------------+------------------+----------------------------+
 | SubProgram   | 0x03[2:0]     | 3                | Specify the SubProgram     |
 +--------------+---------------+------------------+----------------------------+
-| Reserved     | 0x03[7:3]     | 5                | Reserved - Set to zero     |
+| RomId        | 0x03[4:3]     | 2                | Which SPI device the       |
+|              |               |                  | content is placed in       |
++--------------+---------------+------------------+----------------------------+
+| Writeable    | 0x03[5]       | 1                | Region is writable or read |
+|              |               |                  | only                       |
++--------------+---------------+------------------+----------------------------+
+| Reserved     | 0x03[7:6]     | 2                | Reserved - Set to zero     |
 +--------------+---------------+------------------+----------------------------+
 | Size         | 0x04          | 32               | Memory Region Size         |
 +--------------+---------------+------------------+----------------------------+
-| Source       | 0x08          | 64               | Physical Address of SPIROM |
+| Source       | 0x08          | 62               | Physical Address of SPIROM |
 | Address      |               |                  | location where the data for|
 |              |               |                  | the corresponding entry is |
 |              |               |                  | located                    |
++--------------+---------------+------------------+----------------------------+
+| Entry Address| 0x0F[7:6]     | 2                | Same as Entry Address Mode |
+| Mode         |               |                  | in PSP directory table     |
+|              |               |                  | entry fields               |
 +--------------+---------------+------------------+----------------------------+
 | Destination  | 0x10          | 64               | Destination Address of     |
 | Address      |               |                  | memory location where the  |

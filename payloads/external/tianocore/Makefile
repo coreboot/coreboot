@@ -81,7 +81,7 @@ ifneq ($(CONFIG_TIANOCORE_SD_MMC_TIMEOUT),)
 BUILD_STR += -D SD_MMC_TIMEOUT=$(call int-multiply, $(CONFIG_TIANOCORE_SD_MMC_TIMEOUT) 1000)
 endif
 #
-# EDKII has the below PCDs that are revalant to coreboot:
+# EDKII has the below PCDs that are relevant to coreboot:
 #
 # Allows EDKII to use the full framebuffer
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdConOutRow=0

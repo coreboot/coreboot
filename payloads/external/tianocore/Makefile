@@ -136,8 +136,9 @@ update: $(project_dir)
 		fi; \
 		git submodule update --init --checkout
 
-logo: $(project_dir)/edk2
+logo: $(project_dir)
 	case "$(CONFIG_TIANOCORE_BOOTSPLASH_FILE)" in \
+		"") ;; \
 		/*) convert -background None $(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \
 			BMP3:$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
 		*) convert -background None $(top)/$(CONFIG_TIANOCORE_BOOTSPLASH_FILE) \

@@ -437,6 +437,7 @@ extern int debug;
 #define PCI_DEVICE_ID_INTEL_LEWISBURG_IE2 0xA1F9 /* IE Lewisburg #2 */
 #define PCI_DEVICE_ID_INTEL_LEWISBURG_IE3 0xA1FC /* IE Lewisburg #3 */
 #define PCI_DEVICE_ID_INTEL_CANNONLAKE 0xA360 /* Cannon Lake */
+#define PCI_DEVICE_ID_INTEL_BAYTRAIL 0x0F18 /* Bay Trail */
 
 #define PCI_DEV_HAS_SUPPORTED_ME(x) ( \
 	((x) ==  PCI_DEVICE_ID_INTEL_COUGARPOINT_1) || \
@@ -491,4 +492,5 @@ extern int debug;
 	((x) ==  PCI_DEVICE_ID_INTEL_LEWISBURG_IE2) || \
 	((x) ==  PCI_DEVICE_ID_INTEL_LEWISBURG_IE3) || \
 	((x) ==  PCI_DEVICE_ID_INTEL_CANNONLAKE) || \
+	((x) ==  PCI_DEVICE_ID_INTEL_BAYTRAIL) || \
 	0)

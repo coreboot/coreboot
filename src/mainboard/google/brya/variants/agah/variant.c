@@ -56,7 +56,7 @@ static const struct power_rail_sequence gpu_on_seq[] = {
 
 /* In GCOFF entry order (i.e., power-off order) */
 static const struct power_rail_sequence gpu_off_seq[] = {
-	{ "FBVDD",		FBVDD_PWR_EN,	true,  FBVDD_PG,	40,},
+	{ "FBVDD",		FBVDD_PWR_EN,	true,  FBVDD_PG,	0,},
 	{ "PEXVDD",		PEXVDD_PWR_EN,	false, PEXVDD_PG,	10,},
 	{ "NVVDD+MSVDD",	NVVDD_PWR_EN,	false, NVVDD_PG,	2,},
 	{ "NV3_3",		NV33_PWR_EN,	false, NV33_PG,		4,},
@@ -89,7 +89,6 @@ static void dgpu_power_sequence_off(void)
 {
 	/* Assert reset and clear power-good */
 	gpio_output(GPU_PERST_L, 0);
-	mdelay(5);
 
 	/* Inform the GPU that the power is no longer good. */
 	gpio_output(GPU_ALLRAILS_PG, 0);

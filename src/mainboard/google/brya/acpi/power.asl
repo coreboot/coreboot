@@ -174,7 +174,6 @@ Method (PGOF, 0, Serialized)
 
 	/* Assert PERST# */
 	\_SB.PCI0.CTXS (GPIO_GPU_PERST_L)
-	Sleep (5)
 
 	/* All rails are about to go down */
 	\_SB.PCI0.CTXS (GPIO_GPU_ALLRAILS_PG)
@@ -183,7 +182,6 @@ Method (PGOF, 0, Serialized)
 	/* Ramp down FBVDD (active-low) and let rail discharge to <10% */
 	\_SB.PCI0.STXS (GPIO_FBVDD_PWR_EN)
 	GPPL (GPIO_FBVDD_PG, 0, 20)
-	Sleep (40)
 
 	/* Ramp down PEXVDD and let rail discharge to <10% */
 	\_SB.PCI0.CTXS (GPIO_PEXVDD_PWR_EN)

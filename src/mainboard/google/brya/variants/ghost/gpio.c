@@ -215,18 +215,18 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E22, NONE),
 	/* GPP_E23 : net NC is not present in the given design */
 	PAD_NC(GPP_E23, NONE),
-	/* GPP_F0 : CNV_BRI_DT_STRAP ==> Component NC */
-	PAD_NC(GPP_F0, NONE),
-	/* GPP_F1 : No heuristic was found useful */
-	PAD_NC(GPP_F1, NONE),
-	/* GPP_F2 : CNV_RGI_DT_STRAP ==> Component NC */
-	PAD_NC(GPP_F2, NONE),
-	/* GPP_F3 : No heuristic was found useful */
-	PAD_NC(GPP_F3, NONE),
-	/* GPP_F4 : No heuristic was found useful */
-	PAD_NC(GPP_F4, NONE),
+	/* F0  : CNV_BRI_DT ==> CNV_BRI_DT_STRAP */
+	PAD_CFG_NF(GPP_F0, NONE, DEEP, NF1),
+	/* F1  : CNV_BRI_RSP ==> CNV_BRI_RSP */
+	PAD_CFG_NF(GPP_F1, UP_20K, DEEP, NF1),
+	/* F2  : CNV_RGI_DT ==> CNV_RGI_DT_STRAP */
+	PAD_CFG_NF(GPP_F2, NONE, DEEP, NF1),
+	/* F3  : CNV_RGI_RSP ==> CNV_RGI_RSP */
+	PAD_CFG_NF(GPP_F3, UP_20K, DEEP, NF1),
+	/* F4  : CNV_RF_RESET# ==> CNV_RF_RST_L */
+	PAD_CFG_NF(GPP_F4, NONE, DEEP, NF1),
 	/* GPP_F5 : [NF2: MODEM_CLKREQ NF3: CRF_XTAL_CLKREQ NF6: USB_C_GPP_F5] ==> CNV_CLKREQ0 */
-	PAD_CFG_NF(GPP_F5, NONE, DEEP, NF2),
+	PAD_CFG_NF(GPP_F5, NONE, DEEP, NF3),
 	/* GPP_F6 : net NC is not present in the given design */
 	PAD_NC(GPP_F6, NONE),
 	/* GPP_F7 : GPP_F7_STRAP ==> Component NC */

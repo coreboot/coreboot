@@ -43,8 +43,9 @@ void mtk_spi_set_timing(struct mtk_spi_regs *regs, u32 sck_ticks,
 	SET32_BITFIELDS(&GET_SCK_REG(regs), SPI_CFG_SCK_LOW, sck_ticks - 1,
 			SPI_CFG_SCK_HIGH, sck_ticks - 1);
 
-	SET32_BITFIELDS(&regs->spi_cfg1_reg, SPI_CFG1_TICK_DLY, tick_dly,
-			SPI_CFG1_CS_IDLE, cs_ticks - 1);
+	SET32_BITFIELDS(&regs->spi_cfg1_reg, SPI_CFG1_CS_IDLE, cs_ticks - 1);
+
+	SET32_BITFIELDS(&GET_TICK_DLY_REG(regs), SPI_TICK_DLY, tick_dly);
 }
 
 static void spi_sw_reset(struct mtk_spi_regs *regs)

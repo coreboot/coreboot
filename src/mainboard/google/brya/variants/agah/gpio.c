@@ -10,7 +10,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* A7  : SRCCLK_OE7# ==> LAN_WAKE_ODL */
 	PAD_CFG_GPI_SCI_LOW(GPP_A7, NONE, DEEP, EDGE_SINGLE),
 	/* A8  : SRCCLKREQ7# ==> USB2_A2_RT_RST_ODL */
-	PAD_CFG_GPO(GPP_A8, 1, DEEP),
+	PAD_NC(GPP_A8, NONE),
 	/* A12 : SATAXPCIE1 ==> EN_PP3300_LAN_X */
 	PAD_CFG_GPO(GPP_A12, 1, DEEP),
 	/* A14 : USB_OC1# ==> USB_C0_OC_ODL */

@@ -74,7 +74,6 @@ chip soc/intel/apollolake
 			register "SataPortsEnable[0]"	= "1"
 		end
 		device ref xhci		on
-			### USB 2.0 Devices
 			# Motherboard USB Type C
 			register "usb2_port[0]"		= "PORT_EN(OC1)"
 			register "usb3_port[0]"		= "PORT_EN(OC1)"

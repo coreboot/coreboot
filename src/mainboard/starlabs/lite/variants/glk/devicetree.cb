@@ -58,36 +58,22 @@ chip soc/intel/apollolake
 	register "slp_s3_assertion_width_usecs"	= "28000"
 
 	device domain 0 on
-		device pci 00.0 on  end						# Host Bridge
-		device pci 00.1 off end						# DPTF
-		device pci 00.2 off end						# NPK
-		device pci 02.0 on  end						# Gen
-		device pci 03.0 off end						# Iunit
-		device pci 0c.0 on						# CNVi
+		device ref igd		on  end
+		device ref cnvi		on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0A_CNVI_PME_STS"
 				device generic 0 on end
 			end
 		end
-		device pci 0d.0 off end						# P2SB
-		device pci 0d.1 off end						# PMC
-		device pci 0d.2 on  end						# SPI
-		device pci 0d.3 off end						# Shared SRAM
-		device pci 0e.0 on  end						# Audio
-		device pci 0f.0 on  end						# Heci1
-		device pci 0f.1 on  end						# Heci2
-		device pci 0f.2 on  end						# Heci3
-		device pci 11.0 off end						# ISH
-		device pci 12.0 on						# SATA
+		device ref fast_spi	on  end
+		device ref hda		on  end
+		device ref heci1	on  end
+		device ref heci2	on  end
+		device ref heci3	on  end
+		device ref sata		on
 			register "SataPortsEnable[0]"	= "1"
 		end
-		device pci 13.0 off end						# PCIe-A 0 Slot 1
-		device pci 13.1 off end						# PCIe-A 1
-		device pci 13.2 off end						# PCIe-A 2 Onboard Lan
-		device pci 13.3 off end						# PCIe-A 3
-		device pci 14.0 off end						# PCIe-B 0 Slot2
-		device pci 14.1 off end						# PCIe-B 1 Onboard M2 Slot(Wifi/BT)
-		device pci 15.0 on						# XHCI
+		device ref xhci		on
 			# Motherboard USB Type C
 			register "usb2_port[0]"		= "PORT_EN(OC_SKIP)"
 			register "usb3_port[1]"		= "PORT_EN(OC_SKIP)"
@@ -103,30 +89,14 @@ chip soc/intel/apollolake
 			# Daughterboard SD Card
 			register "usb2_port[6]"		= "PORT_EN(OC_SKIP)"
 		end
-		device pci 15.1 off end						# XDCI
-		device pci 16.0 off end						# I2C0
-		device pci 16.1 off end						# I2C1
-		device pci 16.2 off end						# I2C2
-		device pci 16.3 off end						# I2C3
-		device pci 17.0 on  end						# I2C4
-		device pci 17.1 off end						# I2C5
-		device pci 17.2 off end						# I2C6
-		device pci 17.3 on						# I2C7
+		device ref i2c4		on  end
+		device ref i2c7		on
 			# Handled by touchpad.asl
 		end
-		device pci 18.0 on  end						# UART #0
-		device pci 18.1 off end						# UART #1
-		device pci 18.2 on  end						# UART #2
-		device pci 18.3 off end						# UART #3
-		device pci 19.0 off end						# SPI #0
-		device pci 19.1 off end						# SPI #1
-		device pci 19.2 on  end						# SPI #2
-		device pci 1a.0 off end						# PWM
-		device pci 1b.0 off end						# SDCard
-		device pci 1c.0 off end						# eMMC
-		device pci 1d.0 off end						# UFS
-		device pci 1e.0 off end						# SDIO
-		device pci 1f.0 on						# LPC Interface
+		device ref uart0	on  end
+		device ref uart2	on  end
+		device ref spi2		on  end
+		device ref lpc_espi	on
 			register "gen1_dec"			= "0x000c06a1"
 			register "gen2_dec"			= "0x000c0081"
 
@@ -154,7 +124,6 @@ chip soc/intel/apollolake
 				device pnp 4e.19 off end			# Power Management Channel 5
 			end
 		end
-		device pci 1f.1 off  end					# SMBus
 	end
 	chip drivers/crb
 		device mmio 0xfed40000 on end

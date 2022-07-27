@@ -1,7 +1,7 @@
 chip soc/intel/apollolake
 	device domain 0 on
 		device pci 00.0 alias system_agent	on	end # Host Bridge
-		device pci 00.1 alias dptf		off	end # DPTF
+		device pci 00.1 alias dptf		on	end # DPTF
 		device pci 00.2 alias npk		off	end # NorthPeak
 		device pci 02.0 alias igd		off	end # Integrated Graphics Device
 		device pci 03.0 alias gmm		off	end # GMM
@@ -44,6 +44,6 @@ chip soc/intel/apollolake
 		device pci 1d.0 alias ufs		off	end # UFS
 		device pci 1e.0 alias sdio		off	end # SDIO
 		device pci 1f.0 alias lpc_espi		on	end # LPC
-		device pci 1f.1 alias smbus		off	end # SMBUS
+		device pci 1f.1 alias smbus		on	end # SMBUS
 	end
 end

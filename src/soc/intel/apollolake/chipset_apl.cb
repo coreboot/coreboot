@@ -1,7 +1,7 @@
 chip soc/intel/apollolake
 	device domain 0 on
 		device pci 00.0 alias system_agent	on	end # Host Bridge
-		device pci 00.1 alias dptf		off	end # DPTF
+		device pci 00.1 alias dptf		on	end # DPTF
 		device pci 00.2 alias npk		off	end # NorthPeak
 		device pci 02.0 alias igd		off	end # Integrated Graphics Device
 		device pci 03.0 alias iunit		off	end # iUnit

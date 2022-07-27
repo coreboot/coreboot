@@ -110,6 +110,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
 	/* F13 : GSXDOUT ==> NC */
 	PAD_NC_LOCK(GPP_F13, NONE, LOCK_CONFIG),
+	/* F14 : GSXDIN ==> TCHPAD_INT_ODL */
+	PAD_CFG_GPI_IRQ_WAKE(GPP_F14, NONE, DEEP, LEVEL, INVERT),
 	/* F15 : GSXSRESET# ==> NC */
 	PAD_NC_LOCK(GPP_F15, NONE, LOCK_CONFIG),
 	/* F16 : GSXCLK ==> NC */

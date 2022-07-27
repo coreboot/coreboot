@@ -13,6 +13,17 @@ chip soc/intel/meteorlake
 	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC0)"
 	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
 
+	# Enable eDP in Port A
+	register "ddi_port_A_config" = "1"
+	# Enable HDMI in Port B
+	register "ddi_port_B_config" = "0"
+
+	# Enable Display Port Configuration
+	register "ddi_ports_config" = "{
+		[DDI_PORT_A] = DDI_ENABLE_HPD,
+		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+	}"
+
 	register "serial_io_gspi_mode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI1] = PchSerialIoPci,

@@ -7,11 +7,24 @@
 #include <fw_config.h>
 #include <gpio.h>
 #include <sar.h>
+#include <ec/google/chromeec/ec.h>
+
+enum {
+	OSCINO_SKU_START   = 0x40004,
+	OSCINO_SKU_END     = 0x40005,
+};
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	if (fw_config_probe(FW_CONFIG(TABLETMODE, TABLETMODE_ENABLED)))
-		return "wifi_sar-drawcia.hex";
+	uint32_t sku_id = google_chromeec_get_board_sku();
+
+	if (fw_config_probe(FW_CONFIG(TABLETMODE, TABLETMODE_ENABLED))) {
+
+		if (sku_id >= OSCINO_SKU_START && sku_id <= OSCINO_SKU_END)
+			return "wifi_sar-oscino.hex";
+		else
+			return "wifi_sar-drawcia.hex";
+	}
 
 	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }

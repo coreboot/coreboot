@@ -111,6 +111,7 @@
 		cryptsetup
 		curl
 		ddrescue
+		devmem2
 		dmidecode
 		dosfstools
 		e2fsprogs
@@ -148,6 +149,7 @@
 		p7zip
 		pacman
 		parted
+		pcimem
 		pciutils
 		phoronix-test-suite
 		powertop

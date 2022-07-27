@@ -216,6 +216,7 @@ config MAINBOARD_PART_NUMBER
 	default "Joxer" if BOARD_GOOGLE_JOXER
 	default "Pujjo" if BOARD_GOOGLE_PUJJO
 	default "Xivu" if BOARD_GOOGLE_XIVU
+	default "Gaelin4ADL" if BOARD_GOOGLE_GAELIN4ADL
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -252,6 +253,7 @@ config VARIANT_DIR
 	default "joxer" if BOARD_GOOGLE_JOXER
 	default "pujjo" if BOARD_GOOGLE_PUJJO
 	default "xivu" if BOARD_GOOGLE_XIVU
+	default "gaelin" if BOARD_GOOGLE_GAELIN4ADL
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

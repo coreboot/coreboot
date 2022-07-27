@@ -895,7 +895,13 @@ static void fill_fsps_cpu_pcie_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->CpuPcieRpAdvancedErrorReporting[i] = !!(rp_cfg->flags & PCIE_RP_AER);
 		s_cfg->CpuPcieRpHotPlug[i] = !!(rp_cfg->flags & PCIE_RP_HOTPLUG)
 				|| CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
+		s_cfg->CpuPcieRpDetectTimeoutMs[i] = rp_cfg->pcie_rp_detect_timeout_ms;
 		s_cfg->PtmEnabled[i] = 0;
+		if (rp_cfg->pcie_rp_aspm)
+			s_cfg->CpuPcieRpAspm[i] = get_aspm_control(rp_cfg->pcie_rp_aspm);
+
+		if (!!(rp_cfg->flags & PCIE_RP_BUILT_IN))
+			s_cfg->CpuPcieRpSlotImplemented[i] = 0;
 	}
 	s_cfg->CpuPcieComplianceTestMode = CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 }

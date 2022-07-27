@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef _IMD_PRIVATE_H_
 #define _IMD_PRIVATE_H_
 

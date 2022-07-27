@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef PCI_ROM_H
 #define PCI_ROM_H
 

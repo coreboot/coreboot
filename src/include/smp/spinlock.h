@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef SMP_SPINLOCK_H
 #define SMP_SPINLOCK_H
 

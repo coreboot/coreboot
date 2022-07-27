@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef _QEMU_DEBUGCON_H_
 #define _QEMU_DEBUGCON_H_
 

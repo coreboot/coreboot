@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef PCI_DEF_H
 #define PCI_DEF_H
 

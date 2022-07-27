@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef CPU_AMD_MTRR_H
 #define CPU_AMD_MTRR_H
 

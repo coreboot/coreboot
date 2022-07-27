@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef SMP_ATOMIC_H
 #define SMP_ATOMIC_H
 

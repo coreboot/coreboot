@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef DEVICE_SMBUS_H
 #define DEVICE_SMBUS_H
 

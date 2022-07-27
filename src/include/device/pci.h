@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 /*
  *	PCI defines and function prototypes
  *	Copyright 1994, Drew Eckhardt

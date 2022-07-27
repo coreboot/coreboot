@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 /*
  * linux/byteorder/swab.h
  * Byte-swapping, independently from CPU endianness

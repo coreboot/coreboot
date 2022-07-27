@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef CPU_PPC64_SPR_H
 #define CPU_PPC64_SPR_H
 

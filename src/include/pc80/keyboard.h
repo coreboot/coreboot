@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef PC80_KEYBOARD_H
 #define PC80_KEYBOARD_H
 

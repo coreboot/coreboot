@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef __X86_POST_CODE_H__
 #define __X86_POST_CODE_H__
 

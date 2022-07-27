@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef SPKMODEM_H
 #define SPKMODEM_H 1
 

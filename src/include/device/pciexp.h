@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef DEVICE_PCIEXP_H
 #define DEVICE_PCIEXP_H
 /* (c) 2005 Linux Networx GPL see COPYING for details */

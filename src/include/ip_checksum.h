@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef IP_CHECKSUM_H
 #define IP_CHECKSUM_H
 unsigned long compute_ip_checksum(const void *addr, unsigned long length);

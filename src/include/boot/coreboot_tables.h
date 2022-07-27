@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef COREBOOT_TABLES_H
 #define COREBOOT_TABLES_H
 

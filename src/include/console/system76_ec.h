@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef CONSOLE_SYSTEM76_EC_H
 #define CONSOLE_SYSTEM76_EC_H 1
 

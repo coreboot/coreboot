@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef _SMP_NODE_H_
 #define _SMP_NODE_H_
 

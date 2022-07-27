@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef BOOT_TABLES_H
 #define BOOT_TABLES_H
 

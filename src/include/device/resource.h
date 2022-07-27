@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef DEVICE_RESOURCE_H
 #define DEVICE_RESOURCE_H
 

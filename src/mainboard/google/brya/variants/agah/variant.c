@@ -132,10 +132,6 @@ static void dgpu_power_sequence_on(void)
 
 void variant_init(void)
 {
-	/* Disable ASPM for the GPU until it is verified working. */
-	struct device *dgpu = DEV_PTR(dgpu);
-	dgpu->disable_pcie_aspm = 1;
-
 	if (acpi_is_wakeup_s3())
 		return;
 

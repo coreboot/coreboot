@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-libgcc_files = ashldi3.S lib1funcs.S lshrdi3.S muldi3.S ucmpdi2.S uldivmod.S
+libgcc_files = ashldi3.S lib1funcs.S lshrdi3.S muldi3.S ucmpdi2.S uldivmod.S ldivmod.S
 libgcc_files += udivmoddi4.c umoddi3.c
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARM),y)

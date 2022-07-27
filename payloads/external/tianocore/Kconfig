@@ -210,15 +210,13 @@ config TIANOCORE_USE_8254_TIMER
 
 endif
 
-if TIANOCORE_CUSTOM
-
 config TIANOCORE_CUSTOM_BUILD_PARAMS
 	string "TianoCore additional custom build parameters"
 	help
-	  Custom TianoCore forks may have different sets of parameters passed
-	  to build command. You may specify additional parameters to the custom
-	  TianoCore build
+	  edk2 has build options that are not modified by coreboot, and these can be
+	  found in `UefiPayloadPkg/UefiPayloadPkg.dsc`. Forks may also support
+	  additional build options that should have been upstreamed but have not.
 
-endif
+	  This option can support both macros `-D` and Pcds `--pcd`.
 
 endif

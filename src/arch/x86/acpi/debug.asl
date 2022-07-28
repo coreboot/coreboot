@@ -77,9 +77,9 @@ Method(DBGN, 1)
 {
 	and(Arg0, 0x0f, Local0)
 	if (LLess(Local0, 10)) {
-		add(Local0, 0x30, Local0)
+		Local0 += 0x30
 	} else {
-		add(Local0, 0x37, Local0)
+		Local0 += 0x37
 	}
 	OUTC(Local0)
 }

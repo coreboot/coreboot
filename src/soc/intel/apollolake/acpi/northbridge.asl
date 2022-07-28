@@ -17,8 +17,6 @@ Device (MCHC)
 		    ,	25,
 		PXBR,	11,	/* PCI Express Base Address */
 
-		Offset (0xA8),
-		TUUD, 64,	/* Top of Upper Used Memory */
 		Offset(0xB4),
 		BGSM,   32,	/* Base of Graphics Stolen Memory */
 		Offset(0xBC),

@@ -11,8 +11,12 @@ Device (MCHC)
 	OperationRegion (MCHP, PCI_Config, 0x00, 0x100)
 	Field (MCHP, DWordAcc, NoLock, Preserve)
 	{
-		Offset(0x60),
-		MCNF,	32,	/* PCI MMCONF base */
+		Offset (0x60),	/* PCIEXBAR (0:0:0:60)
+		PXEN,	1,	/* Enable */
+		PXSZ,	2,	/* PCI Express Size */
+		    ,	25,
+		PXBR,	11,	/* PCI Express Base Address */
+
 		Offset (0xA8),
 		TUUD, 64,	/* Top of Upper Used Memory */
 		Offset(0xB4),

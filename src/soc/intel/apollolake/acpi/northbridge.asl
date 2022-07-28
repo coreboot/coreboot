@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 
-Name(_HID, EISAID("PNP0A08"))	/* PCIe */
-Name(_CID, EISAID("PNP0A03"))	/* PCI */
+Name (_HID, EisaId("PNP0A08"))	/* PCI Express Bus */
+Name (_CID, EisaId("PNP0A03"))	/* PCI Bus */
 
 Device (MCHC)
 {
-	Name (_ADR, 0x00000000)		/*Dev0 Func0 */
+	Name (_ADR, 0x00000000)		/* Device 0 Function 0 */
 
 	OperationRegion (MCHP, PCI_Config, 0x00, 0x100)
 	Field (MCHP, DWordAcc, NoLock, Preserve)
@@ -32,22 +32,22 @@ External (A4GB, IntObj)
 /* Current Resource Settings */
 Method (_CRS, 0, Serialized)
 {
-	Name (MCRS, ResourceTemplate()
+	Name (MCRS, ResourceTemplate ()
 	{
 		/* Bus Numbers */
 		WordBusNumber (ResourceProducer, MinFixed, MaxFixed, PosDecode,
-				0x0000, 0x0000, 0x00ff, 0x0000, 0x0100,,,)
+				0x0000, 0x0000, 0x00ff, 0x0000, 0x0100)
 
-		/* IO Region 0 */
+		/* IO Region 0: 0x0000 - 0x0cf7 */
 		DWordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
-				0x0000, 0x0000, 0x0cf7, 0x0000, 0x0cf8,,,)
+				0x0000, 0x0000, 0x0cf7, 0x0000, 0x0cf8)
 
 		/* PCI Config Space */
 		Io (Decode16, 0x0cf8, 0x0cf8, 0x0001, 0x0008)
 
-		/* IO Region 1 */
+		/* IO Region 1: 0x1000 - 0xffff */
 		DWordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
-				0x0000, 0x01000, 0xffff, 0x0000, 0xf000,,,)
+				0x0000, 0x01000, 0xffff, 0x0000, 0xf000)
 
 		/*
 		 * Descriptor:	Legacy VGA video RAM

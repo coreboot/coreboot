@@ -91,14 +91,7 @@ enum fch_io_device {
 	FCH_IO_DEVICE_MISC,
 	FCH_IO_DEVICE_AOAC,
 	FCH_IO_DEVICE_IOPORT,
-	FCH_IO_DEVICE_UART,
 	FCH_IO_DEVICE_END,
-};
-
-enum fch_uart_id {
-	FCH_UART_ID_0 = 0,
-	FCH_UART_ID_1 = 1,
-	FCH_UART_ID_MAX,
 };
 
 enum fch_i2c_controller_id {

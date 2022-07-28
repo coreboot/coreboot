@@ -14,38 +14,20 @@ chip soc/intel/alderlake
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
 		.i2c[0] = {
-			.speed = I2C_SPEED_STANDARD,
-			.speed_config[0] = {
-				.speed = I2C_SPEED_STANDARD,
-				.scl_lcnt = 45,
-				.scl_hcnt = 33,
-				.sda_hold = 20,
-			},
+			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[1] = {
 			.early_init = 1,
-			.speed = I2C_SPEED_STANDARD,
-			.rise_time_ns = 600,
-			.fall_time_ns = 400,
-			.data_hold_time_ns = 50,
+			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[2] = {
-			.speed = I2C_SPEED_STANDARD,
-			.rise_time_ns = 650,
-			.fall_time_ns = 400,
-			.data_hold_time_ns = 50,
+			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[3] = {
-			.speed = I2C_SPEED_STANDARD,
-			.rise_time_ns = 650,
-			.fall_time_ns = 400,
-			.data_hold_time_ns = 50,
+			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[5] = {
-			.speed = I2C_SPEED_STANDARD,
-			.rise_time_ns = 650,
-			.fall_time_ns = 400,
-			.data_hold_time_ns = 50,
+			.speed = I2C_SPEED_FAST,
 		},
 	}"
 

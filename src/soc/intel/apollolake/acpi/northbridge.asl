@@ -19,8 +19,10 @@ Device (MCHC)
 
 		Offset(0xB4),
 		BGSM,   32,	/* Base of Graphics Stolen Memory */
-		Offset(0xBC),
-		TLUD,   32,	/* Top of Low Usable DRAM */
+
+		Offset (0xbc),	/* TOLUD (0:0:0:bc) */
+		    ,	20,
+		TLUD,   12,	/* Top of Lower Usable DRAM */
 	}
 }
 
@@ -83,7 +85,7 @@ Method (_CRS, 0, Serialized)
 	CreateDwordField (MCRS, PM01._LEN, PLEN)
 
 	/* Read C-Unit PCI CFG Reg. 0xBC for TOLUD (shadow from B-Unit) */
-	PMIN = \_SB.PCI0.MCHC.TLUD & 0xFFF00000
+	PMIN = ^MCHC.TLUD << 20
 	/* Use PCR base to ensure PMAX below GPIO controllers attached to _SB */
 	PMAX = CONFIG_PCR_BASE_ADDRESS & 0xF0000000
 
@@ -99,7 +101,7 @@ Method (_CRS, 0, Serialized)
 	GMIN = \_SB.PCI0.MCHC.BGSM & 0xFFF00000
 
 	/* Read TOLUD */
-	GMAX = \_SB.PCI0.MCHC.TLUD & 0xFFF00000
+	GMAX = ^MCHC.TLUD << 20
 	GMAX--
 	GLEN = GMAX - GMIN + 1
 

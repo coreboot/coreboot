@@ -122,5 +122,27 @@ Method (_CRS, 0, Serialized)
 	Return (MCRS)
 }
 
+Device (PDRC)	/* PCI Device Resource Consumption */
+{
+	Name (_HID, EisaId("PNP0C02"))
+	Name (_UID, 1)
+
+	Method (_CRS, 0, Serialized)
+	{
+		Name (BUF0, ResourceTemplate ()
+		{
+			/* PCI Express BAR */
+			Memory32Fixed (ReadWrite,
+					CONFIG_ECAM_MMCONF_BASE_ADDRESS,
+					CONFIG_ECAM_MMCONF_LENGTH, PCIX)
+
+			/* Local APIC range (0xfee0_0000 to 0xfeef_ffff) */
+			Memory32Fixed (ReadOnly, 0x0fee00000, 0x00010000, LIOH)
+		})
+
+		Return (BUF0)
+	}
+}
+
 /* GFX 00:02.0 */
 #include <drivers/intel/gma/acpi/gfx.asl>

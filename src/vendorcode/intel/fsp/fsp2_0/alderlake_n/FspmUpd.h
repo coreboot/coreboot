@@ -3201,7 +3201,17 @@ typedef struct {
 
 /** Offset 0x0AA8 - Reserved
 **/
-  UINT8                       Reserved45[144];
+  UINT8                       Reserved45[130];
+
+/** Offset 0x0B2A -  LP5 Bank Mode
+  LP5 Bank Mode. 0: Auto, 1: 8 Bank Mode, 2: 16 Bank Mode, 3: BG Mode, default is 0
+  0:Auto, 1:8 Bank Mode, 2:16 Bank Mode, 3:BG Mode
+**/
+  UINT8                       Lp5BankMode;
+
+/** Offset 0x0B2B - Reserved
+**/
+  UINT8                       Reserved46[13];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -3222,7 +3232,7 @@ typedef struct {
 
 /** Offset 0x0B38
 **/
-  UINT8                       UnusedUpdSpace34[6];
+  UINT8                       UnusedUpdSpace33[6];
 
 /** Offset 0x0B3E
 **/

@@ -45,8 +45,8 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_A6 : GPP_A6 ==> ESPI_ALERT1 configured on reset, do not touch */
 	/* GPP_A7 : No heuristic was found useful */
 	PAD_NC(GPP_A7, NONE),
-	/* GPP_A8 : No heuristic was found useful */
-	PAD_NC(GPP_A8, NONE),
+	/* GPP_A8 : HP_RST_ODL */
+	PAD_CFG_GPO(GPP_A8, 1, PLTRST),
 	/* GPP_A9 : GPP_A9 ==> ESPI_PCH_CLK_R configured on reset, do not touch */
 	/* GPP_A10 : GPP_A10 ==> ESPI_PCH_RST_EC_L configured on reset, do not touch */
 	/* GPP_A11 : [NF6: USB_C_GPP_A11] ==> EN_SPKR_PA */

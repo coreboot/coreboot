@@ -9,6 +9,7 @@ verstage-y += reset.c
 romstage-y += memlayout.ld
 romstage-y += chromeos.c
 romstage-y += romstage.c
+romstage-y += sdram_configs.c
 
 ramstage-y += memlayout.ld
 ramstage-y += boardid.c

@@ -49,7 +49,11 @@ Method (_CRS, 0, Serialized)
 		DWordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
 				0x0000, 0x01000, 0xffff, 0x0000, 0xf000,,,)
 
-		/* VGA memory (0xa0000-0xbffff) */
+		/*
+		 * Descriptor:	Legacy VGA video RAM
+		 * Start:	0xa0000
+		 * End:		0xbffff
+		 */
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				Cacheable, ReadWrite,
 				0x00000000, 0x000a0000, 0x000bffff, 0x00000000,

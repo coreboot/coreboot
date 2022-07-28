@@ -15,7 +15,11 @@ bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c
 romstage-y += ../common/clkbuf.c
+romstage-y += ../common/dram_init.c
+romstage-y += ../common/dramc_param.c
 romstage-y += emi.c
+romstage-y += ../common/memory.c
+romstage-y += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 romstage-y += ../common/mt6315.c mt6315.c
 romstage-y += ../common/mt6359p.c mt6359p.c
@@ -53,6 +57,14 @@ $(foreach fw, $(call strip_quotes,$(mcu-firmware-files)), \
 	$(eval $(fw)-compression := LZ4) \
 	$(if $(wildcard $($(fw)-file)), $(eval cbfs-files-y += $(fw)), ) \
 )
+
+DRAM_CBFS := $(CONFIG_CBFS_PREFIX)/dram
+$(DRAM_CBFS)-file := $(MT8188_BLOB_DIR)/dram.elf
+$(DRAM_CBFS)-type := stage
+$(DRAM_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+ifneq ($(wildcard $($(DRAM_CBFS)-file)),)
+	cbfs-files-y += $(DRAM_CBFS)
+endif
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	./util/mtkheader/gen-bl-img.py mt8183 sf $< $@

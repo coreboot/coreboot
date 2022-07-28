@@ -11,3 +11,8 @@ size_t sdram_size(void)
 {
 	return (size_t)4 * GiB;
 }
+
+void mt_set_emi(struct dramc_param *dparam)
+{
+	/* Do nothing */
+}

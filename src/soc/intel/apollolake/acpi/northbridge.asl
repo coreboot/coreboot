@@ -72,11 +72,14 @@ Method (_CRS, 0, Serialized)
 				0x00000000, 0x00000000, 0x00000000, 0x00000000,
 				0x00000000,,, PM01)
 
-		/* PCI Memory Region (TOUUD - (TOUUD + ABOVE_4G_MMIO_SIZE)) */
+		/*
+		 * PCI Memory Region above 4 GiB
+		 * (TOUUD - (TOUUD + ABOVE_4G_MMIO_SIZE))
+		 */
 		QWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				NonCacheable, ReadWrite,
-				0x00000000, 0x10000, 0x1ffff, 0x00000000,
-				0x10000,,, PM02)
+				0x00000000, 0x00010000, 0x0001ffff, 0x00000000,
+				0x00010000,,, PM02)
 	})
 
 	/* Find PCI resource area in MCRS */

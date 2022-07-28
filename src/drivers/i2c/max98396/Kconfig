@@ -1,0 +1,3 @@
+config DRIVERS_I2C_MAX98396
+	bool "Enable AMP MAX98396"
+	depends on HAVE_ACPI_TABLES

@@ -26,14 +26,14 @@ static void nct6687d_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 
+	uint8_t byte;
+	uint8_t power_status;
 	switch (dev->path.pnp.device) {
 	/* TODO: Might potentially need code for EC, GPIOs, etc. */
 	case NCT6687D_KBC:
 		pc_keyboard_init(PROBE_AUX_DEVICE);
 		break;
 	case NCT6687D_ACPI:
-		uint8_t byte;
-		uint8_t power_status;
 		/* Set power state after power fail */
 		power_status = get_uint_option("power_on_after_fail",
 				CONFIG_MAINBOARD_POWER_FAILURE_STATE);

@@ -83,6 +83,8 @@ void soc_systemagent_init(struct device *dev)
 		return;
 	}
 
+	/* Remove once commented line below is enabled */
+	(void)soc_config;
 	/* UPDATEME: Need to enable later */
 	//set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
 }

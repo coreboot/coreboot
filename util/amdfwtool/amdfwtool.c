@@ -291,6 +291,7 @@ amd_fw_entry amd_fw_table[] = {
 
 amd_bios_entry amd_bios_table[] = {
 	{ .type = AMD_BIOS_RTM_PUBKEY, .inst = 0, .level = BDT_BOTH },
+	{ .type = AMD_BIOS_SIG, .inst = 0, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB, .inst = 0, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB, .inst = 1, .level = BDT_BOTH },
 	{ .type = AMD_BIOS_APCB, .inst = 2, .level = BDT_BOTH },
@@ -1007,6 +1008,7 @@ static void integrate_bios_firmwares(context *ctx,
 		if (!(fw_table[i].level & level))
 			continue;
 		if (fw_table[i].filename == NULL && (
+				fw_table[i].type != AMD_BIOS_SIG &&
 				fw_table[i].type != AMD_BIOS_APOB &&
 				fw_table[i].type != AMD_BIOS_APOB_NV &&
 				fw_table[i].type != AMD_BIOS_L2_PTR &&
@@ -1015,6 +1017,10 @@ static void integrate_bios_firmwares(context *ctx,
 			continue;
 
 		/* BIOS Directory items may have additional requirements */
+
+		/* SIG needs a size, else no choice but to skip */
+		if (fw_table[i].type == AMD_BIOS_SIG && !fw_table[i].size)
+			continue;
 
 		/* Check APOB_NV requirements */
 		if (fw_table[i].type == AMD_BIOS_APOB_NV) {
@@ -1072,6 +1078,17 @@ static void integrate_bios_firmwares(context *ctx,
 		biosdir->entries[count].subprog = fw_table[i].subpr;
 
 		switch (fw_table[i].type) {
+		case AMD_BIOS_SIG:
+			/* Reserve size bytes within amdfw.rom */
+			biosdir->entries[count].size = fw_table[i].size;
+			biosdir->entries[count].source = RUN_CURRENT(*ctx);
+			biosdir->entries[count].address_mode =
+					SET_ADDR_MODE_BY_TABLE(biosdir);
+			memset(BUFF_CURRENT(*ctx), 0xff,
+							biosdir->entries[count].size);
+			ctx->current = ALIGN(ctx->current
+							+ biosdir->entries[count].size, 0x100U);
+			break;
 		case AMD_BIOS_APOB:
 			biosdir->entries[count].size = fw_table[i].size;
 			biosdir->entries[count].source = fw_table[i].src;
@@ -1232,6 +1249,7 @@ enum {
 	LONGOPT_SPI_READ_MODE	= 256,
 	LONGOPT_SPI_SPEED	= 257,
 	LONGOPT_SPI_MICRON_FLAG	= 258,
+	LONGOPT_BIOS_SIG	= 259,
 };
 
 static char const optstring[] = {AMDFW_OPT_CONFIG, ':',
@@ -1266,6 +1284,7 @@ static struct option long_options[] = {
 	{"bios-bin-src",     required_argument, 0, AMDFW_OPT_BIOSBIN_SOURCE },
 	{"bios-bin-dest",    required_argument, 0, AMDFW_OPT_BIOSBIN_DEST },
 	{"bios-uncomp-size", required_argument, 0, AMDFW_OPT_BIOS_UNCOMP_SIZE },
+	{"bios-sig-size",    required_argument, 0, LONGOPT_BIOS_SIG },
 	{"ucode",            required_argument, 0, AMDFW_OPT_UCODE },
 	{"apob-nv-base",     required_argument, 0, AMDFW_OPT_APOB_NVBASE },
 	{"apob-nv-size",     required_argument, 0, AMDFW_OPT_APOB_NVSIZE },
@@ -1618,6 +1637,11 @@ int main(int argc, char **argv)
 		case AMDFW_OPT_BIOS_UNCOMP_SIZE:
 			/* BIOS destination size */
 			register_fw_addr(AMD_BIOS_BIN, 0, 0, optarg);
+			sub = instance = 0;
+			break;
+		case LONGOPT_BIOS_SIG:
+			/* BIOS signature size */
+			register_fw_addr(AMD_BIOS_SIG, 0, 0, optarg);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_UCODE:

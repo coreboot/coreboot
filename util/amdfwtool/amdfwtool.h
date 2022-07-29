@@ -67,7 +67,8 @@ typedef enum _amd_fw_type {
 } amd_fw_type;
 
 typedef enum _amd_bios_type {
-	AMD_BIOS_RTM_PUBKEY = 5,
+	AMD_BIOS_RTM_PUBKEY = 0x05,
+	AMD_BIOS_SIG = 0x07,
 	AMD_BIOS_APCB = 0x60,
 	AMD_BIOS_APOB = 0x61,
 	AMD_BIOS_BIN = 0x62,

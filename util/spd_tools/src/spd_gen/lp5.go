@@ -70,7 +70,6 @@ type LP5Set struct {
 	otherOptionalFeatures  byte
 	busWidthEncoding  byte
 	speedToTCKMinPs map[int]int
-	maxSpeedMbps int
 }
 
 /* ------------------------------------------------------------------------------------------ */
@@ -235,8 +234,6 @@ var LP5SetInfo = map[int]LP5Set{
 		 * Set to 0x02.
 		 */
 		busWidthEncoding: 0x02,
-		/* Sabrina supports max speed of 5500 MT/s */
-		maxSpeedMbps: 5500,
 	},
 }
 
@@ -640,14 +637,6 @@ func LP5EncodeTRFCPBMinLsb(memAttribs *LP5MemAttributes) byte {
 	return byte(convNsToMtb(memAttribs.TRFCPBNs) & 0xff)
 }
 
-func LP5UpdateSpeedMbps(memAttribs *LP5MemAttributes) {
-	f, ok := LP5SetInfo[LP5CurrSet]
-
-	if ok && f.maxSpeedMbps != 0 && memAttribs.SpeedMbps > f.maxSpeedMbps {
-		memAttribs.SpeedMbps = f.maxSpeedMbps
-	}
-}
-
 func LP5UpdateTCKMin(memAttribs *LP5MemAttributes) {
 	if memAttribs.TCKMinPs == 0 {
 		memAttribs.TCKMinPs = LP5GetTCKMinPs(memAttribs)
@@ -695,7 +684,6 @@ func LP5UpdateTRPPB(memAttribs *LP5MemAttributes) {
 }
 
 func lp5UpdateMemoryAttributes(memAttribs *LP5MemAttributes) {
-	LP5UpdateSpeedMbps(memAttribs)
 	LP5UpdateTCKMin(memAttribs)
 	LP5UpdateTAAMin(memAttribs)
 	LP5UpdateTRFCAB(memAttribs)

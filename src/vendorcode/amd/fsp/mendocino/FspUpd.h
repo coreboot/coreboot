@@ -14,9 +14,9 @@
 # include <fsp_h_c99.h>
 #endif
 
-#define FSPM_UPD_SIGNATURE               0x4d5f454e415a4543        /* 'CEZANE_M' */
+#define FSPM_UPD_SIGNATURE               0x4d5f4f4e43444e4d       /* 'MNDCNO_M' */
 
-#define FSPS_UPD_SIGNATURE               0x535f454e415a4543        /* 'CEZANE_S' */
+#define FSPS_UPD_SIGNATURE               0x535f4f4e43444e4d        /* 'MNDCNO_S' */
 
 
 #endif

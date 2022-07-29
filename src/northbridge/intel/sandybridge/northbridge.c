@@ -85,7 +85,7 @@ static uint64_t get_touud(const struct device *dev)
 {
 	uint64_t touud = pci_read_config32(dev, TOUUD + 4);
 	touud <<= 32;
-	touud |= pci_read_config32(dev, TOUUD);
+	touud |= pci_read_config32(dev, TOUUD) & 0xfff00000;
 	return touud;
 }
 

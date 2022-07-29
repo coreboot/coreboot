@@ -168,7 +168,7 @@ static void elog_debug_dump_buffer(const char *msg)
 	if (!CONFIG(ELOG_DEBUG))
 		return;
 
-	elog_debug(msg);
+	elog_debug("%s", msg);
 
 	rdev = mirror_dev_get();
 

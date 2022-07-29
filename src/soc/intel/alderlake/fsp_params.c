@@ -61,6 +61,12 @@ enum fsp_end_of_post {
 
 static const struct slot_irq_constraints irq_constraints[] = {
 	{
+		.slot = SA_DEV_SLOT_CPU_1,
+		.fns = {
+			FIXED_INT_PIRQ(SA_DEVFN_CPU_PCIE1_0, PCI_INT_A, PIRQ_A),
+		},
+	},
+	{
 		.slot = SA_DEV_SLOT_IGD,
 		.fns = {
 			/* INTERRUPT_PIN is RO/0x01 */

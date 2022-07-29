@@ -17,9 +17,6 @@ Device (MCHC)
 		    ,	25,
 		PXBR,	11,	/* PCI Express Base Address */
 
-		Offset(0xB4),
-		BGSM,   32,	/* Base of Graphics Stolen Memory */
-
 		Offset (0xbc),	/* TOLUD (0:0:0:bc) */
 		    ,	20,
 		TLUD,   12,	/* Top of Lower Usable DRAM */
@@ -59,12 +56,6 @@ Method (_CRS, 0, Serialized)
 				0x00000000, 0x000a0000, 0x000bffff, 0x00000000,
 				0x00020000,,,)
 
-		/* Data and GFX stolen memory */
-		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
-				Cacheable, ReadWrite,
-				0x00000000, 0x3be00000, 0x3fffffff, 0x00000000,
-				0x04200000,,, STOM)
-
 		/*
 		 * PCI MMIO Region (TOLUD - PCI extended base MMCONF)
 		 * This assumes that MMCONF is placed after PCI config space,
@@ -98,19 +89,6 @@ Method (_CRS, 0, Serialized)
 
 	/* Calculate PCI MMIO Length */
 	PLEN = PMAX - PMIN + 1
-
-	/* Find GFX resource area in GCRS */
-	CreateDwordField(MCRS, STOM._MIN, GMIN)
-	CreateDwordField(MCRS, STOM._MAX, GMAX)
-	CreateDwordField(MCRS, STOM._LEN, GLEN)
-
-	/* Read BGSM */
-	GMIN = \_SB.PCI0.MCHC.BGSM & 0xFFF00000
-
-	/* Read TOLUD */
-	GMAX = ^MCHC.TLUD << 20
-	GMAX--
-	GLEN = GMAX - GMIN + 1
 
 	/* Patch PM02 range based on Memory Size */
 	If (A4GS == 0) {

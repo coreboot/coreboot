@@ -4,6 +4,7 @@
 
 /* Enable PS/2 Mouse */
 #define SIO_EC_ENABLE_PS2M
+#define SIO_EC_PS2M_IRQ Interrupt (ResourceConsumer, Level, ActiveLow, Shared) {12}
 
 /* Enable DPTC support */
 #define EC_ENABLE_AMD_DPTC_SUPPORT

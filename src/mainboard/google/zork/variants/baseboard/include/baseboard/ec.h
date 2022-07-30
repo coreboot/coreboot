@@ -63,6 +63,7 @@
 #define SIO_EC_MEMMAP_ENABLE	/* EC Memory Map Resources */
 #define SIO_EC_HOST_ENABLE	/* EC Host Interface Resources */
 #define SIO_EC_ENABLE_PS2K	/* Enable PS/2 Keyboard */
+#define SIO_EC_PS2K_IRQ Interrupt (ResourceConsumer, Level, ActiveLow, Shared) {1}
 
 /*
  * Enable EC sync interrupt via GPIO controller, EC_SYNC_IRQ is defined in

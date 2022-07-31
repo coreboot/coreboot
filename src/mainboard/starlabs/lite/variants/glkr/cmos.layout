@@ -28,6 +28,7 @@ entries
 # coreboot config options: EC
 600	3	e	4	kbl_timeout
 608	1	e	1	fn_ctrl_swap
+616	1	e	11	fast_charge
 
 # coreboot config options: southbridge
 800	2	e	6	power_on_after_fail
@@ -92,6 +93,9 @@ enumerations
 10	1	Low
 10	2	High
 10	3	On
+
+11	0	Normal
+11	1	Fast
 
 # -----------------------------------------------------------------
 checksums

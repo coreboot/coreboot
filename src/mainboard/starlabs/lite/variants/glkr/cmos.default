@@ -12,6 +12,7 @@ legacy_8254_timer=Disable
 # EC
 kbl_timeout=30 seconds
 fn_ctrl_swap=Disable
+fast_charge=Normal
 # southbridge
 power_on_after_fail=Disable
 # Functions

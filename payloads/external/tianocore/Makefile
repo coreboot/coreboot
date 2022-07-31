@@ -188,7 +188,7 @@ build: update logo checktools
 			cat ../tools_def.txt >> $(project_dir)/Conf/tools_def.txt; \
 		fi; \
 		build $(BUILD_STR); \
-		mkdir -p $(project_dir)/../output
+		mkdir -p $(project_dir)/../output; \
 		mv $(project_dir)/Build/$(bootloader)*/*/FV/UEFIPAYLOAD.fd $(project_dir)/../output/UEFIPAYLOAD.fd; \
 		git checkout MdeModulePkg/Logo/Logo.bmp > /dev/null 2>&1 || true
 

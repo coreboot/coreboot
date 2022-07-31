@@ -30,6 +30,12 @@ config BOARD_STARLABS_LITE_GLKR
 
 if BOARD_STARLABS_LITE_SERIES
 
+config CMOS_DEFAULT_FILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/cmos.default" if BOARD_STARLABS_LITE_GLKR
+
+config CMOS_LAYOUT_FILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/cmos.layout" if BOARD_STARLABS_LITE_GLKR
+
 config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
 

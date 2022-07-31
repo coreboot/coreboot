@@ -1,0 +1,21 @@
+# hardcoded
+boot_option=Fallback
+# console
+debug_level=Debug
+# cpu
+vtd=Enable
+power_profile=Balanced
+# Devices
+wireless=Enable
+webcam=Enable
+legacy_8254_timer=Disable
+# EC
+kbl_timeout=30 seconds
+fn_ctrl_swap=Disable
+# southbridge
+power_on_after_fail=Disable
+# Functions
+fn_lock_state=0x1
+trackpad_state=0x1
+kbl_brightness=0x0
+kbl_state=0x1

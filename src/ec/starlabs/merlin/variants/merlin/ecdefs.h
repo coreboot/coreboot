@@ -19,5 +19,6 @@
 #define ECRAM_KBL_TIMEOUT	0x35
 #define ECRAM_FAN_MODE		0x50
 #define ECRAM_MAX_CHARGE	0x51
+#define ECRAM_FAST_CHARGE       0x52
 
 #endif

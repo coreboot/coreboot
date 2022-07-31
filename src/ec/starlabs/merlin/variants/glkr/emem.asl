@@ -26,6 +26,7 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	FLKE, 8,	// Function Lock State
 	KLSE, 8,	// Keyboard Backlight State
 	KLBE, 8,	// Keyboard Backlight Brightness
+	FSCH, 8,	// Fast Charge
 
 	Offset(0x20),
 	RCMD, 8,	// Send EC command

@@ -137,6 +137,27 @@ static void merlin_init(struct device *dev)
 						 ARRAY_SIZE(max_charge)));
 
 	/*
+	 * Fast Charge
+	 *
+	 * Setting:	fast_charge
+	 *
+	 * Values:	Normal, Fast
+	 * Default:	Normal
+	 *
+	 */
+	const uint8_t fast_charge[] = {
+		CHARGE_RATE_NORMAL,
+		CHARGE_RATE_FAST
+	};
+
+	if (CONFIG(EC_STARLABS_FAST_CHARGE))
+		ec_write(ECRAM_FAST_CHARGE,
+			get_ec_value_from_option("fast_charge",
+						 0,
+						 fast_charge,
+						 ARRAY_SIZE(fast_charge)));
+
+	/*
 	 * Fan Mode
 	 *
 	 * Setting:	fan_mode

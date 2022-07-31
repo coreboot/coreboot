@@ -50,6 +50,13 @@ config EC_STARLABS_FAN
 	help
 	  Select if the mainboard has a fan.
 
+config EC_STARLABS_FAST_CHARGE
+	bool
+	default n
+	depends on EC_STARLABS_NUVOTON
+	help
+	  Select if the mainboard supports fast charging.
+
 config EC_STARLABS_MAX_CHARGE
 	bool
 	default n

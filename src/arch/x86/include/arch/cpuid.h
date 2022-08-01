@@ -15,96 +15,80 @@ struct cpuid_result {
 /*
  * Generic CPUID function
  */
-static inline struct cpuid_result cpuid(int op)
+static inline struct cpuid_result cpuid(const uint32_t eax)
 {
 	struct cpuid_result result;
 	asm volatile(
-		"mov %%ebx, %%edi;"
 		"cpuid;"
-		"mov %%ebx, %%esi;"
-		"mov %%edi, %%ebx;"
 		: "=a" (result.eax),
-		  "=S" (result.ebx),
+		  "=b" (result.ebx),
 		  "=c" (result.ecx),
 		  "=d" (result.edx)
-		: "0" (op)
-		: "edi");
+		: "a" (eax));
 	return result;
 }
 
 /*
  * Generic Extended CPUID function
  */
-static inline struct cpuid_result cpuid_ext(int op, unsigned int ecx)
+static inline struct cpuid_result cpuid_ext(const uint32_t eax, const uint32_t ecx)
 {
 	struct cpuid_result result;
 	asm volatile(
-		"mov %%ebx, %%edi;"
 		"cpuid;"
-		"mov %%ebx, %%esi;"
-		"mov %%edi, %%ebx;"
 		: "=a" (result.eax),
-		  "=S" (result.ebx),
+		  "=b" (result.ebx),
 		  "=c" (result.ecx),
 		  "=d" (result.edx)
-		: "0" (op), "2" (ecx)
-		: "edi");
+		: "a" (eax), "c" (ecx));
 	return result;
 }
 
 /*
  * CPUID functions returning a single datum
  */
-static inline unsigned int cpuid_eax(unsigned int op)
+static inline uint32_t cpuid_eax(uint32_t eax)
 {
-	unsigned int eax;
-
-	__asm__("mov %%ebx, %%edi;"
+	asm volatile(
 		"cpuid;"
-		"mov %%edi, %%ebx;"
-		: "=a" (eax)
-		: "0" (op)
-		: "ecx", "edx", "edi");
+		: "+a" (eax)
+		:: "ebx", "ecx", "edx");
 	return eax;
 }
 
-static inline unsigned int cpuid_ebx(unsigned int op)
+static inline uint32_t cpuid_ebx(const uint32_t eax)
 {
-	unsigned int eax, ebx;
+	uint32_t ebx;
 
-	__asm__("mov %%ebx, %%edi;"
+	asm volatile(
 		"cpuid;"
-		"mov %%ebx, %%esi;"
-		"mov %%edi, %%ebx;"
-		: "=a" (eax), "=S" (ebx)
-		: "0" (op)
-		: "ecx", "edx", "edi");
+		: "=b" (ebx)
+		: "a" (eax)
+		: "ecx", "edx");
 	return ebx;
 }
 
-static inline unsigned int cpuid_ecx(unsigned int op)
+static inline uint32_t cpuid_ecx(const uint32_t eax)
 {
-	unsigned int eax, ecx;
+	uint32_t ecx;
 
-	__asm__("mov %%ebx, %%edi;"
+	asm volatile(
 		"cpuid;"
-		"mov %%edi, %%ebx;"
-		: "=a" (eax), "=c" (ecx)
-		: "0" (op)
-		: "edx", "edi");
+		: "=c" (ecx)
+		: "a" (eax)
+		: "ebx", "edx");
 	return ecx;
 }
 
-static inline unsigned int cpuid_edx(unsigned int op)
+static inline uint32_t cpuid_edx(const uint32_t eax)
 {
-	unsigned int eax, edx;
+	uint32_t edx;
 
-	__asm__("mov %%ebx, %%edi;"
+	asm volatile(
 		"cpuid;"
-		"mov %%edi, %%ebx;"
-		: "=a" (eax), "=d" (edx)
-		: "0" (op)
-		: "ecx", "edi");
+		: "=d" (edx)
+		: "a" (eax)
+		: "ebx", "ecx");
 	return edx;
 }
 

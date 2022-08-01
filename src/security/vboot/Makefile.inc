@@ -292,6 +292,8 @@ endif
 
 fmap-section-offset-cmd = $(FUTILITY) dump_fmap -p $(obj)/coreboot.rom | \
 					grep '^$(1) ' | cut '-d ' -f2
+fmap-section-size-cmd =   $(FUTILITY) dump_fmap -p $(obj)/coreboot.rom | \
+					grep '^$(1) ' | cut '-d ' -f3
 
 ifeq ($(CONFIG_VBOOT_GSCVD),y)
 #

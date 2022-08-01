@@ -586,6 +586,10 @@ void search_global_resources(unsigned long type_mask, unsigned long type,
 			if (res->flags & IORESOURCE_SUBTRACTIVE)
 				continue;
 
+			/* If the resource is not assigned ignore it. */
+			if (!(res->flags & IORESOURCE_ASSIGNED))
+				continue;
+
 			search(gp, curdev, res);
 		}
 	}

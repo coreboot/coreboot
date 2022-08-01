@@ -467,7 +467,7 @@ static enum cb_err dw_i2c_transfer(unsigned int bus, const struct i2c_msg *msg, 
 	size_t start;
 	uint16_t addr;
 
-	if (!msg)
+	if (count == 0 || !msg)
 		return -1;
 
 	/* Break up the transfers at the differing slave address boundary. */

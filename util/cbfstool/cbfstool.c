@@ -113,7 +113,7 @@ static struct param {
 	.arch = CBFS_ARCHITECTURE_UNKNOWN,
 	.compression = CBFS_COMPRESS_NONE,
 	.hash = VB2_HASH_INVALID,
-	.headeroffset = ~0,
+	.headeroffset = HEADER_OFFSET_UNKNOWN,
 	.region_name = SECTION_NAME_PRIMARY_CBFS,
 	.u64val = -1,
 };
@@ -1738,7 +1738,8 @@ static int cbfs_truncate(void)
 
 	uint32_t size;
 	int result = cbfs_truncate_space(param.image_region, &size);
-	printf("0x%x\n", size);
+	if (!result)
+		printf("0x%x\n", size);
 	return result;
 }
 

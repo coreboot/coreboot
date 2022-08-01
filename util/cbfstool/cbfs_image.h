@@ -6,6 +6,9 @@
 #include "common.h"
 #include "cbfs.h"
 
+
+#define HEADER_OFFSET_UNKNOWN (~0u)
+
 /* CBFS image processing */
 
 struct cbfs_image {

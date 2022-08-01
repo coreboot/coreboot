@@ -346,9 +346,8 @@ int cbfs_image_from_buffer(struct cbfs_image *out, struct buffer *in,
 		out->has_header = true;
 		cbfs_fix_legacy_size(out, header_loc);
 		return 0;
-	} else if (offset != ~0u) {
+	} else if (offset != HEADER_OFFSET_UNKNOWN) {
 		ERROR("The -H switch is only valid on legacy images having CBFS master headers.\n");
-		return 1;
 	}
 	ERROR("Selected image region is not a valid CBFS.\n");
 	return 1;
@@ -415,7 +414,7 @@ int cbfs_expand_to_region(struct buffer *region)
 
 	struct cbfs_image image;
 	memset(&image, 0, sizeof(image));
-	if (cbfs_image_from_buffer(&image, region, 0)) {
+	if (cbfs_image_from_buffer(&image, region, HEADER_OFFSET_UNKNOWN)) {
 		ERROR("reading CBFS failed!\n");
 		return 1;
 	}
@@ -454,7 +453,7 @@ int cbfs_truncate_space(struct buffer *region, uint32_t *size)
 
 	struct cbfs_image image;
 	memset(&image, 0, sizeof(image));
-	if (cbfs_image_from_buffer(&image, region, 0)) {
+	if (cbfs_image_from_buffer(&image, region, HEADER_OFFSET_UNKNOWN)) {
 		ERROR("reading CBFS failed!\n");
 		return 1;
 	}

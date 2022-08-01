@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
 	uint32_t addr = 0;
 	size_t topswap_size = 0;
 	enum fit_type fit_type = 0;
-	uint32_t headeroffset = ~0u;
+	uint32_t headeroffset = HEADER_OFFSET_UNKNOWN;
 
 	verbose = 0;
 

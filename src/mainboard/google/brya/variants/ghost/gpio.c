@@ -61,8 +61,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A15, NONE),
 	/* GPP_A16 : net NC is not present in the given design */
 	PAD_NC(GPP_A16, NONE),
-	/* GPP_A17 : No heuristic was found useful */
-	PAD_NC(GPP_A17, NONE),
+	/* GPP_A17 : EN_PP16000H */
+	PAD_CFG_GPO(GPP_A17, 1, DEEP),
 	/* GPP_A18 : net NC is not present in the given design */
 	PAD_NC(GPP_A18, NONE),
 	/* GPP_A19 : No heuristic was found useful */

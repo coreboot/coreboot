@@ -178,6 +178,7 @@ static void cgpll_clock_gate_init(void)
 	t = misc_read32(MISC_CLKGATEDCNTL);
 	t |= ALINKCLK_GATEOFFEN;
 	t |= BLINKCLK_GATEOFFEN;
+	t |= XTAL_PAD_S0I3_TURNOFF_EN;
 	t |= XTAL_PAD_S3_TURNOFF_EN;
 	t |= XTAL_PAD_S5_TURNOFF_EN;
 	misc_write32(MISC_CLKGATEDCNTL, t);

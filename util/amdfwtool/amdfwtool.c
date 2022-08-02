@@ -852,7 +852,7 @@ static void integrate_psp_firmwares(context *ctx,
 			integrate_psp_ab(ctx, pspdir, pspdir2_b, ish_b_dir,
 				AMD_FW_RECOVERYAB_B, soc_id);
 		else
-			integrate_psp_ab(ctx, pspdir, pspdir2, ish_b_dir,
+			integrate_psp_ab(ctx, pspdir, pspdir2, ish_a_dir,
 				AMD_FW_RECOVERYAB_B, soc_id);
 
 		count = pspdir->header.num_entries;

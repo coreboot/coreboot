@@ -6,6 +6,7 @@
  */
 
 #include <acpi/acpi.h>
+#include <assert.h>
 #include <device/pci_ops.h>
 #include <bootmode.h>
 #include <console/console.h>
@@ -1296,6 +1297,29 @@ unsigned int pci_match_simple_dev(struct device *dev, pci_devfn_t sdev)
 {
 	return dev->bus->secondary == PCI_DEV2SEGBUS(sdev) &&
 			dev->path.pci.devfn == PCI_DEV2DEVFN(sdev);
+}
+
+/**
+ * Test whether a capability is available along the whole path from the given
+ * device to the host bridge.
+ *
+ * @param dev Pointer to the device structure.
+ * @param cap PCI_CAP_LIST_ID of the PCI capability we're looking for.
+ * @return The next matching capability of the given device, if it is available
+ * along the whole path, or zero if not.
+ */
+uint16_t pci_find_cap_recursive(const struct device *dev, uint16_t cap)
+{
+	assert(dev->bus);
+	uint16_t pos = pci_find_capability(dev, cap);
+	const struct device *bridge = dev->bus->dev;
+	while (bridge && (bridge->path.type == DEVICE_PATH_PCI)) {
+		assert(bridge->bus);
+		if (!pci_find_capability(bridge, cap))
+			return 0;
+		bridge = bridge->bus->dev;
+	}
+	return pos;
 }
 
 /**

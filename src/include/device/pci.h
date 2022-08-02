@@ -97,6 +97,7 @@ void pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
 	unsigned int device);
 void pci_dev_init(struct device *dev);
 unsigned int pci_match_simple_dev(struct device *dev, pci_devfn_t sdev);
+uint16_t pci_find_cap_recursive(const struct device *dev, uint16_t cap);
 
 const char *pin_to_str(int pin);
 int get_pci_irq_pins(struct device *dev, struct device **parent_bdg);

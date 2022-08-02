@@ -91,7 +91,7 @@ Device (HKEY)
 			}
 			Else
 			{
-				DHKN = DHKN & !Local0
+				DHKN = DHKN & ~Local0
 			}
 			If (EN)
 			{

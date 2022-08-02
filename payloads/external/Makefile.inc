@@ -154,8 +154,8 @@ payloads/external/depthcharge/depthcharge/build/depthcharge.elf depthcharge: $(D
 
 # edk2
 
-$(obj)/UEFIPAYLOAD.fd edk2: $(DOTCONFIG)
-	$(MAKE) -C payloads/external/edk2 all \
+$(obj)/UEFIPAYLOAD.fd: $(DOTCONFIG)
+	$(MAKE) -C payloads/external/edk2 UefiPayloadPkg \
 		HOSTCC="$(HOSTCC)" \
 		CC="$(HOSTCC)" \
 		CONFIG_EDK2_REPOSITORY=$(CONFIG_EDK2_REPOSITORY) \
@@ -190,7 +190,6 @@ $(obj)/UEFIPAYLOAD.fd edk2: $(DOTCONFIG)
 		OBJCOPY_arm=$(OBJCOPY_arm) \
 		OBJCOPY_arm64=$(OBJCOPY_arm64) \
 		MFLAGS= MAKEFLAGS=
-	mv payloads/external/edk2/workspace/output/UEFIPAYLOAD.fd $@
 
 # FILO
 

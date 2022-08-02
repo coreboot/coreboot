@@ -98,7 +98,7 @@ ifneq ($(CONFIG_EDK2_CUSTOM_BUILD_PARAMS),)
 BUILD_STR += $(CONFIG_EDK2_CUSTOM_BUILD_PARAMS)
 endif
 
-all: clean build
+all: UefiPayloadPkg
 
 $(WORKSPACE):
 	mkdir -p $(WORKSPACE)
@@ -179,12 +179,22 @@ prep: clean checktools logo update
 			cat ../tools_def.txt >> $(EDK2_PATH)/Conf/tools_def.txt; \
 		fi; \
 
-build: prep print
+$(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd: \
+	prep print
 	cd $(WORKSPACE); \
 		source $(EDK2_PATH)/edksetup.sh; \
-		build -b $(RELEASE_STR) $(BUILD_STR); \
-		mkdir -p $(WORKSPACE)/output; \
-		mv $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd $(WORKSPACE)/output
+		echo -n "EDK2: Building... "; \
+		build -b $(RELEASE_STR) $(BUILD_STR) \
+			-y $(WORKSPACE)/Build/UefiPayloadPkgX64/UEFIPAYLOAD.txt; \
+		if [ ! -f $@ ]; then \
+			echo "Failed!"; \
+			exit 1; \
+		fi
+		echo "Success!"; \
+
+UefiPayloadPkg: $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd
+	mv $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd \
+		../../../build/UEFIPAYLOAD.fd
 
 clean:
 	test -d $(WORKSPACE) && (cd $(WORKSPACE); rm -rf Build; rm -f Conf/tools_def.txt) || exit 0
@@ -192,4 +202,4 @@ clean:
 distclean:
 	rm -rf $(WORKSPACE)
 
-.PHONY: all update checktools config build clean distclean logo
+.PHONY: update logo checktools UefiPayloadPkg clean distclean

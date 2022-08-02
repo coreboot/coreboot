@@ -101,9 +101,7 @@ endif
 all: UefiPayloadPkg
 
 $(WORKSPACE):
-	mkdir -p $(WORKSPACE)
-	echo "    Cloning $(project_name) from $(CONFIG_EDK2_REPOSITORY)"
-	git clone $(CONFIG_EDK2_REPOSITORY) $(EDK2_PATH)
+	mkdir $(WORKSPACE)
 
 update: $(WORKSPACE)
 	if [ ! -d "$(EDK2_PATH)" ]; then \

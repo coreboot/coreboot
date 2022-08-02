@@ -183,7 +183,7 @@ static void pciexp_enable_ltr(struct device *dev)
 	unsigned int parent_cap = 0;
 	if (!dev->ops->ops_pci || !dev->ops->ops_pci->get_ltr_max_latencies) {
 		parent = dev->bus->dev;
-		parent_cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+		parent_cap = pci_find_capability(parent, PCI_CAP_ID_PCIE);
 		if (!parent_cap)
 			return;
 	}

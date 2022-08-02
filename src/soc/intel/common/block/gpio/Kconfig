@@ -53,4 +53,12 @@ config SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_PCR
 	  Starting with MTL SoC, the recommendation is to use PCR for locking down the
 	  GPIO configuration.
 
+# Indicate if SoC supports 4 bits Pad Mode with PAD_CFG_DW0 registers
+config SOC_INTEL_COMMON_BLOCK_GPIO_PMODE_4BITS
+	bool
+	default n
+	help
+	 SoC user to select this config if Pad Mode (PMODE) width of PAD_CFG_DW0 regiser
+	 is 4 bits to support Native Function 1 to 15.
+
 endif

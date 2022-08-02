@@ -2,8 +2,8 @@
 
 #define JT_FUNC_SUPPORT		0
 #define JT_FUNC_CAPS		1
-#define JT_FUNC_POWERCONTROL	2
-#define JT_FUNC_PLATPOLICY	3
+#define JT_FUNC_POWERCONTROL	3
+#define JT_FUNC_PLATPOLICY	4
 
 Method (NVJT, 2, Serialized)
 {

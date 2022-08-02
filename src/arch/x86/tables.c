@@ -149,6 +149,13 @@ static unsigned long write_smbios_table(unsigned long rom_table_end)
 	if (high_table_pointer) {
 		unsigned long new_high_table_pointer;
 
+		/*
+		 * Clear the entire region to ensure the unused space doesn't
+		 * contain garbage from a previous boot, like stale table
+		 * signatures that could be found by the OS.
+		 */
+		memset((void *)high_table_pointer, 0, MAX_SMBIOS_SIZE);
+
 		new_high_table_pointer =
 			smbios_write_tables(high_table_pointer);
 		rom_table_end = ALIGN_UP(rom_table_end, 16);

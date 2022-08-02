@@ -437,7 +437,7 @@ F:	src/mainboard/prodrive/hermes/
 
 
 PURISM MAINBOARDS
-M:	Matt DeVillier <matt.devillier@puri.sm>
+M:	Jonathon Hall <jonathon.hall@puri.sm>
 S:	Supported
 F:	src/mainboard/purism/
 

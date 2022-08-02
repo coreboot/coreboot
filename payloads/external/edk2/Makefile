@@ -106,6 +106,7 @@ update: $(project_dir)
 		git clone $(CONFIG_EDK2_REPOSITORY) $(project_dir); \
 	fi
 	cd  $(project_dir); \
+		git checkout MdeModulePkg/Logo/Logo.bmp > /dev/null 2>&1 || true; \
 		echo "    Fetching new commits from $(CONFIG_EDK2_REPOSITORY)"; \
 		git fetch origin 2>/dev/null; \
 		if ! git rev-parse --verify -q $(CONFIG_EDK2_TAG_OR_REV) >/dev/null; then \
@@ -178,7 +179,6 @@ build: update print logo checktools
 		build $(BUILD_STR); \
 		mkdir -p $(project_dir)/../output; \
 		mv $(project_dir)/Build/$(bootloader)*/*/FV/UEFIPAYLOAD.fd $(project_dir)/../output/UEFIPAYLOAD.fd; \
-		git checkout MdeModulePkg/Logo/Logo.bmp > /dev/null 2>&1 || true
 
 clean:
 	test -d $(project_dir) && (cd $(project_dir); rm -rf Build; rm -f Conf/tools_def.txt) || exit 0

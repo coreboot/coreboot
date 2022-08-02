@@ -103,7 +103,7 @@ all: UefiPayloadPkg
 $(WORKSPACE):
 	mkdir $(WORKSPACE)
 
-update: $(WORKSPACE)
+$(EDK2_PATH): $(WORKSPACE)
 	if [ ! -d "$(EDK2_PATH)" ]; then \
 		git clone --recurse-submodules $(CONFIG_EDK2_REPOSITORY) $(EDK2_PATH) -j5; \
 	fi
@@ -123,7 +123,7 @@ update: $(WORKSPACE)
 		fi; \
 		git submodule update --init --checkout
 
-logo: update
+logo: $(EDK2_PATH)
 	case "$(CONFIG_EDK2_BOOTSPLASH_FILE)" in \
 		"") ;; \
 		/*) convert -background None $(CONFIG_EDK2_BOOTSPLASH_FILE) \
@@ -168,7 +168,7 @@ print:
 		-e 's/s /Build:          Silent/' \
 		-e 's/t /Toolchain:      /'
 
-prep: clean checktools logo update
+prep: $(EDK2_PATH) clean checktools logo
 	cd $(WORKSPACE); \
 		source $(EDK2_PATH)/edksetup.sh; \
 		unset CC; $(MAKE) -C $(EDK2_PATH)/BaseTools 2>&1; \
@@ -200,4 +200,4 @@ clean:
 distclean:
 	rm -rf $(WORKSPACE)
 
-.PHONY: update logo checktools UefiPayloadPkg clean distclean
+.PHONY: $(EDK2_PATH) checktools logo UefiPayloadPkg clean distclean

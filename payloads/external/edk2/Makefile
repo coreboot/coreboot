@@ -150,18 +150,22 @@ checktools:
 		exit 1; \
 	fi
 
-build: update logo checktools
+print:
 	echo "   ##### $(project_name) Build Summary #####"
 	echo "   Repository:     $(CONFIG_EDK2_REPOSITORY)"
 	echo "   Branch:         $(CONFIG_EDK2_TAG_OR_REV)"
 	echo " $(BUILD_STR)" | \
-		sed 's/-/\n   /g' | sort | sed \
+		sed -e 's/--/-/g' -e 's/-/\n   /g' | sort | sed \
 		-e 's/a /Architecture:   /g' \
 		-e 's/b /Release:        /g' \
 		-e 's/D /Option:         /g' \
+		-e 's/pcd /Pcd:            /g' \
 		-e 's/p /Payload:        /g' \
 		-e 's/q /Build:          Quiet/' \
+		-e 's/s /Build:          Silent/' \
 		-e 's/t /Toolchain:      /'
+
+build: update print logo checktools
 	unset CC; $(MAKE) -C $(project_dir)/BaseTools 2>&1
 	cd $(project_dir); \
 		export EDK_TOOLS_PATH=$(project_dir)/BaseTools; \

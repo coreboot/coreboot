@@ -8,9 +8,10 @@ export WORKSPACE := $(CURDIR)/workspace
 export EDK2_PATH := $(WORKSPACE)/$(word 3,$(subst /, ,$(CONFIG_EDK2_REPOSITORY)))
 export PACKAGES_PATH := $(EDK2_PATH)
 
-BUILD_STR = -a IA32 -a X64 -t COREBOOT
-BUILD_STR += -p UefiPayloadPkg/UefiPayloadPkg.dsc
-BUILD_STR += -D BOOTLOADER=COREBOOT -q
+BUILD_STR = -p UefiPayloadPkg/UefiPayloadPkg.dsc
+BUILD_STR += -t COREBOOT
+BUILD_STR += -D BOOTLOADER=COREBOOT
+BUILD_STR += -q -s
 
 #
 # EDK II has the following build options relevant to coreboot:
@@ -182,7 +183,7 @@ $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd: 
 	cd $(WORKSPACE); \
 		source $(EDK2_PATH)/edksetup.sh; \
 		echo -n "EDK2: Building... "; \
-		build -b $(RELEASE_STR) $(BUILD_STR) \
+		build -a IA32 -a X64 -b $(RELEASE_STR) $(BUILD_STR) \
 			-y $(WORKSPACE)/Build/UefiPayloadPkgX64/UEFIPAYLOAD.txt; \
 		if [ ! -f $@ ]; then \
 			echo "Failed!"; \

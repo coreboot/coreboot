@@ -89,25 +89,45 @@ chip soc/intel/alderlake
 			chip drivers/intel/dptf
 				## sensor information
 				register "options.tsr[0].desc" = ""DRAM""
-				register "options.tsr[1].desc" = ""Soc""
+				register "options.tsr[1].desc" = ""GPU""
 				register "options.tsr[2].desc" = ""Charger""
-				register "options.tsr[3].desc" = ""Regulator""
 				# TODO: below values are initial reference values only
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {
+						.target = DPTF_CPU,
+						.thresholds = {
+								TEMP_PCT(85, 90),
+								TEMP_PCT(80, 80),
+								TEMP_PCT(75, 70),
+								TEMP_PCT(70, 50),
+								TEMP_PCT(65, 30),
+						}
+					},
+					[1] = {
+						.target = DPTF_TEMP_SENSOR_1,
+						.thresholds = {
+								TEMP_PCT(50, 90),
+								TEMP_PCT(48, 70),
+								TEMP_PCT(46, 60),
+								TEMP_PCT(43, 40),
+								TEMP_PCT(40, 30),
+						}
+					}
+				}"
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
 					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 75, 5000),
 					[2] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_1, 75, 5000),
 					[3] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_2, 75, 5000),
-					[4] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_3, 75, 5000),
 				}"
 				## Critical Policy
 				register "policies.critical" = "{
 					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      85, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      85, SHUTDOWN),
-					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,	85, SHUTDOWN),
-					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,	85, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     105, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     105, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     105, SHUTDOWN),
 				}"
 				register "controls.power_limits" = "{
 					.pl1 = {
@@ -132,7 +152,25 @@ chip soc/intel/alderlake
 					[2] = {  16, 1000 },
 					[3] = {   8,  500 }
 				}"
-				device generic 0 on end
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{
+					[0] = {  90, 4700, 220, 2200, },
+					[1] = {  80, 4500, 180, 1800, },
+					[2] = {  70, 4300, 145, 1450, },
+					[3] = {  60, 3700, 115, 1150, },
+					[4] = {  50, 3300,  90,  900, },
+					[5] = {  40, 3100,  55,  550, },
+					[6] = {  30, 2800,  30,  300, },
+					[7] = {  20, 2500,  15,  150, },
+					[8] = {  10, 2300,  10,  100, },
+					[9] = {   0,    0,   0,   50, }
+				}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 0 alias dptf_policy on end
 			end
 		end
 		device ref cnvi_wifi on

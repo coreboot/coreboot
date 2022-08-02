@@ -31,8 +31,10 @@ ifeq ($(CONFIG_EDK2_BOOT_MANAGER_ESCAPE),y)
 BUILD_STR += -D BOOT_MANAGER_ESCAPE=TRUE
 endif
 # BUILD_TARGETS			= DEBUG
-ifeq ($(CONFIG_EDK2_RELEASE),y)
-BUILD_STR += -b RELEASE
+ifeq ($(CONFIG_EDK2_DEBUG),y)
+RELEASE_STR = DEBUG
+else
+RELEASE_STR = RELEASE
 endif
 # DISABLE_SERIAL_TERMINAL	= FALSE
 ifneq ($(CONFIG_EDK2_SERIAL_SUPPORT),y)
@@ -176,9 +178,9 @@ build: update print logo checktools
 		if [ $$? -ne 0 ]; then \
 			cat ../tools_def.txt >> $(EDK2_PATH)/Conf/tools_def.txt; \
 		fi; \
-		build $(BUILD_STR); \
+		build -b $(RELEASE_STR) $(BUILD_STR); \
 		mkdir -p $(WORKSPACE)/output; \
-		mv $(WORKSPACE)/Build/UefiPayloadPkgX64/*_COREBOOT/FV/UEFIPAYLOAD.fd $(WORKSPACE)/output
+		mv $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd $(WORKSPACE)/output
 
 clean:
 	test -d $(WORKSPACE) && (cd $(WORKSPACE); rm -rf Build; rm -f Conf/tools_def.txt) || exit 0

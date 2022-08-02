@@ -204,9 +204,9 @@ struct elog_event_data_wake {
 } __packed;
 
 /* ChromeOS related events */
-#define ELOG_TYPE_CROS_DEVELOPER_MODE     0xa0
-#define ELOG_TYPE_CROS_RECOVERY_MODE      0xa1
-#define  ELOG_CROS_RECOVERY_MODE_BUTTON    0x02
+#define ELOG_DEPRECATED_TYPE_CROS_DEVELOPER_MODE     0xa0
+#define ELOG_DEPRECATED_TYPE_CROS_RECOVERY_MODE      0xa1
+#define  ELOG_DEPRECATED_CROS_RECOVERY_MODE_BUTTON    0x02
 
 /* Management Engine Events */
 #define ELOG_TYPE_MANAGEMENT_ENGINE      0xa2
@@ -306,8 +306,8 @@ struct elog_event_mem_cache_update {
 #define ELOG_TYPE_MI_HR                   0xb5
 
 /* ChromeOS diagnostics-related events */
-#define ELOG_TYPE_CROS_DIAGNOSTICS        0xb6
-#define  ELOG_CROS_LAUNCH_DIAGNOSTICS      0x01
+#define ELOG_DEPRECATED_TYPE_CROS_DIAGNOSTICS        0xb6
+#define  ELOG_DEPRECATED_CROS_LAUNCH_DIAGNOSTICS      0x01
 
 struct elog_event_extended_event {
 	uint8_t event_type;

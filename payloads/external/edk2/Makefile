@@ -170,14 +170,18 @@ print:
 		-e 's/s /Build:          Silent/' \
 		-e 's/t /Toolchain:      /'
 
-build: update print logo checktools
-	unset CC; $(MAKE) -C $(EDK2_PATH)/BaseTools 2>&1
+prep: clean checktools logo update
 	cd $(WORKSPACE); \
-		source $(EDK2_PATH)/edksetup.sh BaseTools; \
+		source $(EDK2_PATH)/edksetup.sh; \
+		unset CC; $(MAKE) -C $(EDK2_PATH)/BaseTools 2>&1; \
 		grep -q "COREBOOT" $(EDK2_PATH)/Conf/tools_def.txt; \
 		if [ $$? -ne 0 ]; then \
 			cat ../tools_def.txt >> $(EDK2_PATH)/Conf/tools_def.txt; \
 		fi; \
+
+build: prep print
+	cd $(WORKSPACE); \
+		source $(EDK2_PATH)/edksetup.sh; \
 		build -b $(RELEASE_STR) $(BUILD_STR); \
 		mkdir -p $(WORKSPACE)/output; \
 		mv $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd $(WORKSPACE)/output

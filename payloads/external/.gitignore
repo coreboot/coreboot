@@ -3,7 +3,7 @@ FILO/filo/
 GRUB2/grub2/
 LinuxBoot/linuxboot/
 SeaBIOS/seabios/
-edk2/edk2/
+edk2/workspace
 tint/tint/
 U-Boot/u-boot/
 Memtest86Plus/memtest86plus/

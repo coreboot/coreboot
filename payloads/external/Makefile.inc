@@ -190,7 +190,7 @@ $(obj)/UEFIPAYLOAD.fd edk2: $(DOTCONFIG)
 		OBJCOPY_arm=$(OBJCOPY_arm) \
 		OBJCOPY_arm64=$(OBJCOPY_arm64) \
 		MFLAGS= MAKEFLAGS=
-	mv payloads/external/edk2/output/UEFIPAYLOAD.fd $@
+	mv payloads/external/edk2/workspace/output/UEFIPAYLOAD.fd $@
 
 # FILO
 

@@ -4,7 +4,9 @@
 export SHELL := env bash
 
 project_name = edk2
-project_dir = $(CURDIR)/$(word 3,$(subst /, ,$(CONFIG_EDK2_REPOSITORY)))
+export WORKSPACE := $(CURDIR)/workspace
+export EDK2_PATH := $(WORKSPACE)/$(word 3,$(subst /, ,$(CONFIG_EDK2_REPOSITORY)))
+export PACKAGES_PATH := $(EDK2_PATH)
 
 BUILD_STR = -a IA32 -a X64 -t COREBOOT
 BUILD_STR += -p UefiPayloadPkg/UefiPayloadPkg.dsc
@@ -96,16 +98,16 @@ endif
 
 all: clean build
 
-$(project_dir):
+$(WORKSPACE):
+	mkdir -p $(WORKSPACE)
 	echo "    Cloning $(project_name) from $(CONFIG_EDK2_REPOSITORY)"
-	git clone $(CONFIG_EDK2_REPOSITORY) $(project_dir); \
-		cd $(project_dir);
+	git clone $(CONFIG_EDK2_REPOSITORY) $(EDK2_PATH)
 
-update: $(project_dir)
-	if [ ! -d "$(project_dir)" ]; then \
-		git clone $(CONFIG_EDK2_REPOSITORY) $(project_dir); \
+update: $(WORKSPACE)
+	if [ ! -d "$(EDK2_PATH)" ]; then \
+		git clone $(CONFIG_EDK2_REPOSITORY) $(EDK2_PATH); \
 	fi
-	cd  $(project_dir); \
+	cd $(EDK2_PATH); \
 		git checkout MdeModulePkg/Logo/Logo.bmp > /dev/null 2>&1 || true; \
 		echo "    Fetching new commits from $(CONFIG_EDK2_REPOSITORY)"; \
 		git fetch origin 2>/dev/null; \
@@ -121,13 +123,13 @@ update: $(project_dir)
 		fi; \
 		git submodule update --init --checkout
 
-logo: $(project_dir)
+logo: update
 	case "$(CONFIG_EDK2_BOOTSPLASH_FILE)" in \
 		"") ;; \
 		/*) convert -background None $(CONFIG_EDK2_BOOTSPLASH_FILE) \
-			BMP3:$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
+			BMP3:$(EDK2_PATH)/MdeModulePkg/Logo/Logo.bmp;; \
 		*) convert -background None $(top)/$(CONFIG_EDK2_BOOTSPLASH_FILE) \
-			BMP3:$(project_dir)/MdeModulePkg/Logo/Logo.bmp;; \
+			BMP3:$(EDK2_PATH)/MdeModulePkg/Logo/Logo.bmp;; \
 	esac \
 
 checktools:
@@ -167,23 +169,21 @@ print:
 		-e 's/t /Toolchain:      /'
 
 build: update print logo checktools
-	unset CC; $(MAKE) -C $(project_dir)/BaseTools 2>&1
-	cd $(project_dir); \
-		export EDK_TOOLS_PATH=$(project_dir)/BaseTools; \
-		export WORKSPACE=$(project_dir); \
-		. ./edksetup.sh BaseTools; \
-		grep -q "COREBOOT" $(project_dir)/Conf/tools_def.txt; \
+	unset CC; $(MAKE) -C $(EDK2_PATH)/BaseTools 2>&1
+	cd $(WORKSPACE); \
+		source $(EDK2_PATH)/edksetup.sh BaseTools; \
+		grep -q "COREBOOT" $(EDK2_PATH)/Conf/tools_def.txt; \
 		if [ $$? -ne 0 ]; then \
-			cat ../tools_def.txt >> $(project_dir)/Conf/tools_def.txt; \
+			cat ../tools_def.txt >> $(EDK2_PATH)/Conf/tools_def.txt; \
 		fi; \
 		build $(BUILD_STR); \
-		mkdir -p $(project_dir)/../output; \
-		mv $(project_dir)/Build/$(bootloader)*/*/FV/UEFIPAYLOAD.fd $(project_dir)/../output/UEFIPAYLOAD.fd; \
+		mkdir -p $(WORKSPACE)/output; \
+		mv $(WORKSPACE)/Build/UefiPayloadPkgX64/*_COREBOOT/FV/UEFIPAYLOAD.fd $(WORKSPACE)/output
 
 clean:
-	test -d $(project_dir) && (cd $(project_dir); rm -rf Build; rm -f Conf/tools_def.txt) || exit 0
+	test -d $(WORKSPACE) && (cd $(WORKSPACE); rm -rf Build; rm -f Conf/tools_def.txt) || exit 0
 
 distclean:
-	rm -rf */
+	rm -rf $(WORKSPACE)
 
 .PHONY: all update checktools config build clean distclean logo

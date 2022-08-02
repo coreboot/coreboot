@@ -250,7 +250,6 @@ static void fill_fspm_trace_params(FSP_M_CONFIG *m_cfg,
 
 	/* CrashLog config */
 	if (CONFIG(SOC_INTEL_CRASHLOG)) {
-		m_cfg->CpuCrashLogDevice = 1;
 		m_cfg->CpuCrashLogEnable = 1;
 	}
 }

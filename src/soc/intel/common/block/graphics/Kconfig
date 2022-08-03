@@ -29,4 +29,11 @@ config SOC_INTEL_GFX_FRAMEBUFFER_OFFSET
 	  with GTT_SIZE value. On SoC platform where PCI config offset 0x18 points
 	  to the GMADR directly can use the default value 0x0 without any override.
 
+config SOC_INTEL_GFX_NON_PREFETCHABLE_MMIO
+	bool
+	default n
+	help
+	  Ignore BAR0(offset 0x10)'s pre-fetchable attribute to use non-prefetchable
+	  MMIO to fix OS display driver failure.
+
 endif

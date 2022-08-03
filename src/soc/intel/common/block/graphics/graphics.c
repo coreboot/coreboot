@@ -164,8 +164,19 @@ void graphics_gtt_rmw(unsigned long reg, uint32_t andmask, uint32_t ormask)
 	graphics_gtt_write(reg, val);
 }
 
+static void graphics_dev_read_resources(struct device *dev)
+{
+	pci_dev_read_resources(dev);
+
+	if (CONFIG(SOC_INTEL_GFX_NON_PREFETCHABLE_MMIO)) {
+		struct resource *res_bar0 = find_resource(dev, PCI_BASE_ADDRESS_0);
+		if (res_bar0->flags & IORESOURCE_PREFETCH)
+			res_bar0->flags &= ~IORESOURCE_PREFETCH;
+	}
+}
+
 static const struct device_operations graphics_ops = {
-	.read_resources		= pci_dev_read_resources,
+	.read_resources		= graphics_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= gma_init,

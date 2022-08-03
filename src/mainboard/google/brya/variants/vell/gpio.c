@@ -11,7 +11,7 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_A11, NONE),
 
 	/* B2  : VRALERT# ==> RGB_RST_ODL */
-	PAD_CFG_GPO_LOCK(GPP_B2, 1, LOCK_CONFIG),
+	PAD_NC(GPP_B2, NONE),
 	/* B15  : TIME_SYNC0 ==> NC */
 	PAD_NC_LOCK(GPP_B15, NONE, LOCK_CONFIG),
 

@@ -53,6 +53,7 @@ config SOC_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_ACPI	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPIMMIO
 	select SOC_AMD_COMMON_BLOCK_ACPI_ALIB	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_ACPI_CPPC
 	select SOC_AMD_COMMON_BLOCK_ACPI_GPIO
 	select SOC_AMD_COMMON_BLOCK_ACPI_IVRS	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_AOAC
@@ -82,6 +83,7 @@ config SOC_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_UART
 	select SOC_AMD_COMMON_BLOCK_UCODE
+	select SOC_AMD_COMMON_FSP_CCX_CPPC_HOB
 	select SOC_AMD_COMMON_FSP_DMI_TABLES	# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_FSP_PCI		# TODO: Check if this is still correct
 	select SSE2

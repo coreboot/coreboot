@@ -69,6 +69,13 @@ struct soc_amd_mendocino_config {
 
 	uint8_t system_configuration;
 
+	uint8_t cppc_ctrl;
+	uint8_t cppc_perf_limit_max_range;
+	uint8_t cppc_perf_limit_min_range;
+	uint8_t cppc_epp_max_range;
+	uint8_t cppc_epp_min_range;
+	uint8_t cppc_preferred_cores;
+
 	/* telemetry settings */
 	uint32_t telemetry_vddcrvddfull_scale_current_mA;
 	uint32_t telemetry_vddcrvddoffset;

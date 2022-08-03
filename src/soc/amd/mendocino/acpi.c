@@ -7,6 +7,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/cppc.h>
 #include <amdblocks/cpu.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/ioapic.h>
@@ -357,6 +358,8 @@ void generate_cpu_entries(const struct device *device)
 
 		acpigen_write_CSD_package(cpu / threads_per_core, threads_per_core,
 					  CSD_HW_ALL, 0);
+
+		generate_cppc_entries(cpu);
 
 		acpigen_pop_len();
 	}

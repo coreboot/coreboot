@@ -212,6 +212,22 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	/* crashLog config */
 	m_cfg->CpuCrashLogDevice = CONFIG(SOC_INTEL_CRASHLOG) && is_devfn_enabled(SA_DEVFN_TMT);
 	m_cfg->CpuCrashLogEnable = m_cfg->CpuCrashLogDevice;
+
+	/* In-Band ECC configuration */
+	if (config->ibecc.enable) {
+		m_cfg->Ibecc = !!config->ibecc.enable;
+		m_cfg->IbeccParity = !!config->ibecc.parity_en;
+		m_cfg->IbeccOperationMode = config->ibecc.mode;
+		if (m_cfg->IbeccOperationMode == IBECC_PER_REGION) {
+			FSP_ARRAY_LOAD(m_cfg->IbeccProtectedRegionEnable,
+				       config->ibecc.region_enable);
+			FSP_ARRAY_LOAD(m_cfg->IbeccProtectedRegionBase,
+				       config->ibecc.region_base);
+			FSP_ARRAY_LOAD(m_cfg->IbeccProtectedRegionMask,
+				       config->ibecc.region_mask);
+		}
+	}
+
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)

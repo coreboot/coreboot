@@ -112,7 +112,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B23 : PCHHOT_ODL_STRAP ==> Component NC */
 	PAD_NC(GPP_B23, NONE),
 	/* GPP_C0 : [NF1: SMBCLK NF6: USB_C_GPP_C0] ==> EN_PP3300_TCHSCR */
-	PAD_CFG_GPO(GPP_C0, 0, DEEP),
+	PAD_CFG_GPO(GPP_C0, 1, DEEP),
 	/* GPP_C1 : [NF1: SMBDATA NF6: USB_C_GPP_C1] ==> EN_TCHSCR */
 	PAD_CFG_GPO(GPP_C1, 0, DEEP),
 	/* GPP_C2 : GPP_C2_STRAP ==> Component NC */

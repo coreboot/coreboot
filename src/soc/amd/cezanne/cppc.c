@@ -11,7 +11,7 @@
  * For now this function 'punts' on version 3 and just
  * populates the additional fields with 'unsupported'.
  */
-void cpu_init_cppc_config(struct cppc_config *config, u32 version)
+static void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 {
 	config->version = version;
 

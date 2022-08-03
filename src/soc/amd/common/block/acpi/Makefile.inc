@@ -11,6 +11,7 @@ ramstage-y += pm_state.c
 ramstage-y += tables.c
 ramstage-$(CONFIG_ACPI_BERT) += bert.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_ALIB) += alib.c
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_CPPC) += cppc.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_GPIO) += gpio.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_IVRS) += ivrs.c
 

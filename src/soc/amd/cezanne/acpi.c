@@ -5,6 +5,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/cppc.h>
 #include <amdblocks/cpu.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/ioapic.h>
@@ -19,7 +20,6 @@
 #include <soc/msr.h>
 #include <types.h>
 #include "chip.h"
-#include <soc/cppc.h>
 
 unsigned long acpi_fill_madt(unsigned long current)
 {

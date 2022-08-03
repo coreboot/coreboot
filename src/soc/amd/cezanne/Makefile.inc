@@ -31,7 +31,6 @@ romstage-y	+= uart.c
 ramstage-y	+= acpi.c
 ramstage-y	+= agesa_acpi.c
 ramstage-y	+= chip.c
-ramstage-y	+= cppc.c
 ramstage-y	+= cpu.c
 ramstage-y	+= data_fabric.c
 ramstage-y	+= fch.c

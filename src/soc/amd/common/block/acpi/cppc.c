@@ -2,8 +2,8 @@
 
 #include <acpi/acpi_pm.h>
 #include <acpi/acpigen.h>
+#include <amdblocks/cppc.h>
 #include <arch/cpu.h>
-#include <soc/cppc.h>
 #include <soc/msr.h>
 
 /*

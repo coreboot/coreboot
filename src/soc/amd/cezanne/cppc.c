@@ -46,7 +46,6 @@ static void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 	config->entries[CPPC_NOMINAL_FREQ]		= CPPC_UNSUPPORTED;
 }
 
-
 void generate_cppc_entries(unsigned int core_id)
 {
 	/* Generate GCPC package in first logical core */

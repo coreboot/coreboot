@@ -87,7 +87,7 @@ Method (GC6O, 0, Serialized)
 	GC6E = GC6_STATE_TRANSITION
 
 	/* Deassert GPU_PERST_L */
-	\_SB.PCI0.CTXS (GPIO_GPU_PERST_L)
+	\_SB.PCI0.STXS (GPIO_GPU_PERST_L)
 
 	/* Put PCIe link into L0 state */
 	\_SB.PCI0.PEG0.LD23 ()

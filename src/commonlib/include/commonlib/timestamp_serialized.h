@@ -199,6 +199,14 @@ static const struct timestamp_id_to_name {
 	TS_NAME_DEF(TS_BOOTBLOCK_END, 0, "end of bootblock"),
 	TS_NAME_DEF(TS_COPYROM_START, TS_COPYROM_END, "starting to load romstage"),
 	TS_NAME_DEF(TS_COPYROM_END, 0, "finished loading romstage"),
+	/*
+	 * "ignore for x86": On platforms with memory-mapped flash, it's
+	 * impossible to separate loading times from decompression times because
+	 * the flash accesses happen in the background as the decompression is
+	 * running. So it makes more sense to consider the total loading +
+	 * decompression time by looking at the timestamps before and after the
+	 * decompression timestamps.
+	 */
 	TS_NAME_DEF(TS_ULZMA_START, TS_ULZMA_END, "starting LZMA decompress (ignore for x86)"),
 	TS_NAME_DEF(TS_ULZMA_END, 0, "finished LZMA decompress (ignore for x86)"),
 	TS_NAME_DEF(TS_ULZ4F_START, TS_ULZ4F_END, "starting LZ4 decompress (ignore for x86)"),

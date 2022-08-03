@@ -86,7 +86,7 @@
  * +----------------+-----------+-------+-------+---------+-------------+----------+
  * | RPL-P 282(15W) |    IA     |  2.8  |  2.8  |    80   |      41     |  28000   |
  * +                +-----------+-------+-------+---------+-------------+----------+
- * |                |    GT     |  3.2  |  3.2  |    55   |      41     |  28000   |
+ * |                |    GT     |  3.2  |  3.2  |    40   |      41     |  28000   |
  * +----------------+-----------+-------+-------+---------+-------------+----------+
  */
 
@@ -164,7 +164,7 @@ static const struct vr_lookup vr_config_icc[] = {
 	{ PCI_DID_INTEL_ADL_N_ID_4, 6, VR_CFG_ALL_DOMAINS_ICC(27, 23) },
 	{ PCI_DID_INTEL_RPL_P_ID_1, 45, VR_CFG_ALL_DOMAINS_ICC(160, 55) },
 	{ PCI_DID_INTEL_RPL_P_ID_2, 28, VR_CFG_ALL_DOMAINS_ICC(102, 55) },
-	{ PCI_DID_INTEL_RPL_P_ID_3, 15, VR_CFG_ALL_DOMAINS_ICC(80, 55) },
+	{ PCI_DID_INTEL_RPL_P_ID_3, 15, VR_CFG_ALL_DOMAINS_ICC(80, 40) },
 	{ PCI_DID_INTEL_ADL_S_ID_1,  150, VR_CFG_ALL_DOMAINS_ICC(280, 30) },
 	{ PCI_DID_INTEL_ADL_S_ID_1,  125, VR_CFG_ALL_DOMAINS_ICC(280, 30) },
 	{ PCI_DID_INTEL_ADL_S_ID_1,  65,  VR_CFG_ALL_DOMAINS_ICC(240, 30) },

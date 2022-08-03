@@ -114,3 +114,10 @@ config CBFS_PRELOAD
 	  in the background before they are actually required. This feature
 	  depends on the read-only boot_device having a DMA controller to
 	  perform the background transfer.
+
+config DECOMPRESS_OFAST
+	bool
+	depends on COMPILER_GCC
+	default y
+	help
+	  Compile the decompressing function in -Ofast instead of standard -Os

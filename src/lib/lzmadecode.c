@@ -19,6 +19,12 @@
   to this file, however, are subject to the LGPL or CPL terms.
 */
 
+#if CONFIG(DECOMPRESS_OFAST)
+  #define __lzma_attribute_Ofast__  __attribute__((optimize("Ofast")))
+#else
+  #define __lzma_attribute_Ofast__
+#endif
+
 #include "lzmadecode.h"
 #include <types.h>
 
@@ -183,6 +189,7 @@ int LzmaDecodeProperties(CLzmaProperties *propsRes,
 
 #define kLzmaStreamWasFinishedId (-1)
 
+__lzma_attribute_Ofast__
 int LzmaDecode(CLzmaDecoderState *vs,
 	const unsigned char *inStream, SizeT inSize, SizeT *inSizeProcessed,
 	unsigned char *outStream, SizeT outSize, SizeT *outSizeProcessed)

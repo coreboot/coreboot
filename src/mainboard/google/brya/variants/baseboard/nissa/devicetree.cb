@@ -85,6 +85,8 @@ chip soc/intel/alderlake
 	# Disable Package C-state demotion for nissa baseboard.
 	register "disable_package_c_state_demotion" = "1"
 
+	register "skip_mbp_hob" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

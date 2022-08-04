@@ -439,8 +439,3 @@ bool tcss_valid_tbt_auth(void)
 {
 	return REGBAR32(PID_IOM, IOM_CSME_IMR_TBT_STATUS) & TBT_VALID_AUTHENTICATION;
 }
-
-bool ioe_tcss_valid_tbt_auth(void)
-{
-	return ioe_p2sb_sbi_read(PID_IOM, IOM_CSME_IMR_TBT_STATUS) & TBT_VALID_AUTHENTICATION;
-}

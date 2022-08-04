@@ -36,7 +36,7 @@ config CHAUSIE_HAVE_MCHP_FW
 	default n
 
 config CHAUSIE_MCHP_SIG_FILE
-	string
+	string "Microchip EC signature file"
 	depends on CHAUSIE_HAVE_MCHP_FW
 	default "3rdparty/blobs/mainboard/amd/chausie/EC_chausie_sig.bin"
 	help
@@ -45,7 +45,7 @@ config CHAUSIE_MCHP_SIG_FILE
 	  is located
 
 config CHAUSIE_MCHP_FW_FILE
-	string
+	string "Microchip EC firmware file"
 	depends on CHAUSIE_HAVE_MCHP_FW
 	default "3rdparty/blobs/mainboard/amd/chausie/EC_chausie.bin"
 	help

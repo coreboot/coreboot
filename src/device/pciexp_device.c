@@ -15,6 +15,9 @@ static unsigned int pciexp_get_ext_cap_offset(const struct device *dev, unsigned
 	unsigned int next_cap_offset, this_cap, cafe;
 	do {
 		this_cap = pci_read_config32(dev, this_cap_offset);
+		/* Bail out when this request is unsupported */
+		if (this_cap == 0xffffffff)
+			break;
 		cafe = pci_read_config32(dev, this_cap_offset + 4);
 		if ((this_cap & 0xffff) == cap) {
 			return this_cap_offset;

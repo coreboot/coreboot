@@ -25,6 +25,7 @@ romstage-y += ../common/pmif_spmi.c pmif_spmi.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-y += ../common/auxadc.c
+ramstage-y += ../common/dfd.c
 ramstage-y += emi.c
 ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mcupm.c

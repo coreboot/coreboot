@@ -362,8 +362,6 @@ static const struct pad_config gpio_table_id0[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table_id0[] = {
-	/* TODO: Verify all early config in place */
-
 	/* GPP_B18 : [] ==> SOC_I2C_TPM_SDA */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF2),
 	/* GPP_B19 : [] ==> SOC_I2C_TPM_SCL */
@@ -388,6 +386,19 @@ static const struct pad_config early_gpio_table_id0[] = {
 
 	/* GPP_H10 : [] ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_H10, NONE, LOCK_CONFIG),
+};
+
+/* Default/Minimal early pad configuration if we can't find board_id */
+static const struct pad_config default_early_gpio_table[] = {
+	/* GPP_B18 : [] ==> SOC_I2C_TPM_SDA */
+	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF2),
+	/* GPP_B19 : [] ==> SOC_I2C_TPM_SCL */
+	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF2),
+
+	/* GPP_H08 : [] ==> UART_DBG_TX_SOC_RX_R */
+	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
+	/* GPP_H09 : [] ==> UART_SOC_TX_DBG_RX_R */
+	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),
 };
 
 static const struct pad_config romstage_gpio_table_id0[] = {
@@ -421,9 +432,9 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 
 	case BOARD_ID_UNKNOWN:
 	default:
-		printk(BIOS_ERR, "board_id() not found.  Unable to load early gpio table.\n");
-		*num = 0;
-		return NULL;
+		printk(BIOS_ERR, "board_id() not found.  Loading default early gpio table.\n");
+		*num = ARRAY_SIZE(default_early_gpio_table);
+		return default_early_gpio_table;
 	}
 }
 

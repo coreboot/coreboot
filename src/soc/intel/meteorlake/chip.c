@@ -8,16 +8,20 @@
 #include <intelblocks/cfg.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/itss.h>
+#include <intelblocks/p2sb.h>
 #include <intelblocks/pcie_rp.h>
 #include <intelblocks/systemagent.h>
+#include <intelblocks/tcss.h>
 #include <intelblocks/xdci.h>
 #include <soc/intel/common/vbt.h>
+#include <soc/iomap.h>
 #include <soc/itss.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/pcie.h>
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>
+#include <soc/tcss.h>
 
 #if CONFIG(HAVE_ACPI_TABLES)
 const char *soc_acpi_name(const struct device *dev)
@@ -129,6 +133,12 @@ static void soc_fill_gpio_pm_configuration(void)
 
 void soc_init_pre_device(void *chip_info)
 {
+	config_t *config = config_of_soc();
+
+	/* Validate TBT image authentication */
+	config->tbt_authentication = ioe_p2sb_sbi_read(PID_IOM,
+					IOM_CSME_IMR_TBT_STATUS) & TBT_VALID_AUTHENTICATION;
+
 	/* Perform silicon specific init. */
 	fsp_silicon_init();
 

@@ -1,0 +1,30 @@
+config DRIVERS_NXP_UWB_SR1XX
+	bool "NXP UWB SR1xx driver"
+	help
+	  Enable support for a NXP UWB SR1xx (e.g., SR150) chip.
+
+	  A configuration should be added to device tree like below:
+	  device ref gspi0 on
+	          chip drivers/nxp/uwb
+	                  # The ACPI name of the device.  Note it will be
+	                  # truncated to 4 characters if a longer name is given.
+	                  register "name" = ""UWB0""
+
+	                  # Description of the module.
+	                  register "desc" = ""NXP UWB Module""
+
+	                  # SPI bus speed (in Hz).
+	                  register "speed" = "1000000"
+
+	                  # The GPIO connected to SENSORINT.
+	                  register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_HIGH(GPP_F21)"
+
+	                  # The GPIO connected to CHIP_EN.
+	                  register "ce_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A12)"
+
+	                  # The GPIO connected to WAKEUP.
+	                  register "ri_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A7)"
+
+	                  device spi 0 on end
+	          end
+	  end

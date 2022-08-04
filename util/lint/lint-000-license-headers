@@ -116,6 +116,12 @@ check_for_license 'SPDX-License-Identifier: X11'
 # differentiate between this license with or without advertising.
 check_for_license 'SPDX-License-Identifier: BSD-4-Clause-UC'
 
+# This is the Creative Commons Public Domain Dedication and Certification
+# for files that are already in the public domain.  This includes files
+# that cannot be licensed such as blank files or files with no "creative"
+# content.
+check_for_license 'SPDX-License-Identifier: CC-PDDC'
+
 for file in $headerlist; do
 	# Verify the file exists, and has content that requires a header
 	# This assumes that a file that has 4 lines or fewer is not notable

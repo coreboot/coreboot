@@ -14,16 +14,25 @@ Significant changes
 -------------------
 
 ### Add significant changes here
+### edk2 (Tianocore)
+coreboot uses TianoCore interchangeably with EDK II, and whilst the
+meaning is generally clear, it's not the payload it uses. Consequentially,
+Tianocore has been renamed to EDK II (2).
 
+The option to use the already depreciated CorebootPayloadPkg has been
+removed.
 
+Recent changes to both coreboot and edk2 means that UefiPayloadPkg
+seems to work on all hardware. It has been tested on:
+* Intel Core 2nd, 3rd, 4th, 5th, 6th, 7th, 8th, 8th, 9th, 10th,
+  11th and 12th generation processors
+* Intel Small Core BYT, BSW, APL, GLK and GLK-R processors
+* AMD Stoney Ridge and Picasso
 
+CorebootPayloadPkg can still be found [here](https://github.com/MrChromebox/edk2/tree/coreboot_fb).
 
-
-
-
-
-
-
+The recommended option to use is `EDK2_UEFIPAYLOAD_MRCHROMEBOX` as 
+`EDK2_UEFIPAYLOAD_OFFICIAL` will no longer work on any SOC.
 
 Plans for Code Deprecation
 --------------------------

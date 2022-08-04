@@ -224,6 +224,9 @@ static void fill_fspm_misc_params(FSP_M_CONFIG *m_cfg,
 							ARRAY_SIZE(path));
 	if (is_dev_enabled(dev))
 		m_cfg->CnviDdrRfim = wifi_generic_cnvi_ddr_rfim_enabled(dev);
+
+	/* Skip MBP HOB */
+	m_cfg->SkipMbpHob = config->skip_mbp_hob;
 }
 
 static void fill_fspm_audio_params(FSP_M_CONFIG *m_cfg,

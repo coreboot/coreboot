@@ -399,7 +399,7 @@ config HAVE_PSP_WHITELIST_FILE
 config PSP_WHITELIST_FILE
 	string "Debug whitelist file path"
 	depends on HAVE_PSP_WHITELIST_FILE
-	default "3rdparty/amd_blobs/cezanne/PSP/wtl-czn.sbin"
+	default "site-local/3rdparty/amd_blobs/mendocino/PSP/wtl-mdn.sbin"
 
 config HAVE_SPL_FILE
 	bool "Have a mainboard specific SPL table file"

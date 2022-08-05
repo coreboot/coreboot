@@ -5,6 +5,7 @@
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/pciexp.h>
 
@@ -387,7 +388,10 @@ static void pciexp_config_L1_sub_state(struct device *root, struct device *dev)
 
 	end_cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_L1SS_ID, 0);
 	if (!end_cap) {
-		end_cap = pciexp_find_extended_cap(dev, 0xcafe, 0);
+		if (dev->vendor != PCI_VID_INTEL)
+			return;
+
+		end_cap = pciexp_find_ext_vendor_cap(dev, 0xcafe, 0);
 		if (!end_cap)
 			return;
 	}

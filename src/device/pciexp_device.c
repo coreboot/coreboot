@@ -16,7 +16,7 @@ static unsigned int ext_cap_id(unsigned int cap)
 
 static unsigned int ext_cap_next_offset(unsigned int cap)
 {
-	return cap >> 20;
+	return cap >> 20 & 0xffc;
 }
 
 static unsigned int find_ext_cap_offset(const struct device *dev, unsigned int cap_id,
@@ -24,7 +24,7 @@ static unsigned int find_ext_cap_offset(const struct device *dev, unsigned int c
 {
 	unsigned int this_cap_offset = offset;
 
-	while (this_cap_offset != 0) {
+	while (this_cap_offset >= PCIE_EXT_CAP_OFFSET) {
 		const unsigned int this_cap = pci_read_config32(dev, this_cap_offset);
 
 		/* Bail out when this request is unsupported */

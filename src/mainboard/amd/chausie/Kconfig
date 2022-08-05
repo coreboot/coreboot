@@ -6,7 +6,7 @@ config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select BOARD_ROMSIZE_KB_16384
 	select EC_ACPI
-	select SOC_AMD_SABRINA
+	select SOC_AMD_MENDOCINO
 	select SOC_AMD_COMMON_BLOCK_USE_ESPI
 	select AMD_SOC_CONSOLE_UART
 	select MAINBOARD_HAS_CHROMEOS
@@ -74,7 +74,7 @@ config RO_REGION_ONLY
 	string
 	depends on VBOOT_SLOTS_RW_AB || VBOOT_SLOTS_RW_A
 	# Add the EFS and EC to the RO region only
-	# This is a chausie-specific override of soc/amd/sabrina/Kconfig
+	# This is a chausie-specific override of soc/amd/mendocino/Kconfig
 	default "apu/amdfw apu/ecfw"
 
 config CHROMEOS

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-chip soc/amd/sabrina
+chip soc/amd/mendocino
 
 	# eSPI Configuration
 	register "common_config.espi_config" = "{
@@ -213,4 +213,4 @@ chip soc/amd/sabrina
 
 		device generic 3 on end
 	end
-end	# chip soc/amd/sabrina
+end	# chip soc/amd/mendocino

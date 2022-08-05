@@ -8,4 +8,4 @@ config SOC_AMD_COMMON_BLOCK_ACP_GEN2
 	bool
 	help
 	  Select this option to perform Audio Co-Processor(ACP) configuration.
-	  Used by the ACP in AMD sabrina (family 17h) and possibly newer CPUs.
+	  Used by the ACP in AMD mendocino (family 17h) and possibly newer CPUs.

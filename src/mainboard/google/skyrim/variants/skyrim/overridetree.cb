@@ -26,7 +26,7 @@ fw_config
 	end
 end
 
-chip soc/amd/sabrina
+chip soc/amd/mendocino
 	device domain 0 on
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref xhci_1 on # XHCI1 controller
@@ -241,4 +241,4 @@ chip soc/amd/sabrina
 		end
 	end # UART1
 
-end	# chip soc/amd/sabrina
+end	# chip soc/amd/mendocino

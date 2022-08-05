@@ -1,1 +1,1 @@
-ramstage-$(CONFIG_DRIVER_NXP_UWB_SR1XX) += uwb.c
+ramstage-$(CONFIG_DRIVERS_NXP_UWB_SR1XX) += uwb.c

@@ -42,6 +42,12 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C7] = PchSerialIoDisabled,
 	}"
 
+	# GSPI config
+	register "serial_io_gspi_mode" = "{
+		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
+		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
+	}"
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"	# USB2_C1
 	register "usb2_ports[2]" = "USB2_PORT_EMPTY"
@@ -190,6 +196,17 @@ chip soc/intel/alderlake
 				register "cio2_lane_endpoint[0]" = ""^I2C2.CAM0""
 				register "cio2_prt[0]" = "1"
 				device generic 0 on end
+			end
+		end
+		device ref gspi0 on
+			chip drivers/nxp/uwb
+				register "name" = ""UWB0""
+				register "desc" = ""NXP UWB Module""
+				register "speed" = "1000000"
+				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_HIGH(GPP_F21)"
+				register "ce_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A12)"
+				register "ri_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A7)"
+				device spi 0 on end
 			end
 		end
 		device ref gspi1 on

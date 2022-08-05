@@ -46,16 +46,16 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_A4 : GPP_A4 ==> ESPI_PCH_CS_EC_R_L configured on reset, do not touch */
 	/* GPP_A5 : GPP_A5 ==> ESPI_ALERT0 configured on reset, do not touch */
 	/* GPP_A6 : GPP_A6 ==> ESPI_ALERT1 configured on reset, do not touch */
-	/* GPP_A7 : No heuristic was found useful */
-	PAD_NC(GPP_A7, NONE),
+	/* GPP_A7 : PCH_UWB_WAKE */
+	PAD_CFG_GPO(GPP_A7, 0, DEEP),
 	/* GPP_A8 : HP_RST_ODL */
 	PAD_CFG_GPO(GPP_A8, 1, PLTRST),
 	/* GPP_A9 : GPP_A9 ==> ESPI_PCH_CLK_R configured on reset, do not touch */
 	/* GPP_A10 : GPP_A10 ==> ESPI_PCH_RST_EC_L configured on reset, do not touch */
 	/* GPP_A11 : [NF6: USB_C_GPP_A11] ==> EN_SPKR_PA */
 	PAD_CFG_GPO(GPP_A11, 1, DEEP),
-	/* GPP_A12 : No heuristic was found useful */
-	PAD_NC(GPP_A12, NONE),
+	/* GPP_A12 : EN_PP1800_UWB */
+	PAD_CFG_GPO(GPP_A12, 0, DEEP),
 	/* GPP_A13 : [NF6: USB_C_GPP_A13] ==> GSC_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_A14 : [NF1: USB_OC1# NF2: DDSP_HPD3 NF4: DISP_MISC3 NF6: USB_C_GPP_A14] ==> USB_C1_OC_ODL */
@@ -258,8 +258,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF6),
 	/* GPP_F20 : [] ==> UCAM_RST_L */
 	PAD_CFG_GPO(GPP_F20, 0, DEEP),
-	/* GPP_F21 : No heuristic was found useful */
-	PAD_NC(GPP_F21, NONE),
+	/* GPP_F21 : UWB_PCH_INT */
+	PAD_CFG_GPI_INT(GPP_F21, NONE, PLTRST, LEVEL),
 	/* GPP_F22 : No heuristic was found useful */
 	PAD_NC(GPP_F22, NONE),
 	/* GPP_F23 : No heuristic was found useful */

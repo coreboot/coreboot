@@ -17,11 +17,16 @@ enum mem_types {
 	READONLY_TAG,
 	INSERTED_TAG,
 	HOLE_TAG,
+	UNASSIGNED_TAG,
 	END_OF_RESOURCES
 };
 
 /* Indices of entries matters, since it must reflect mem_types enum */
 struct resource res_mock_1[] = {
+	[UNASSIGNED_TAG] = {.base = 0x0,
+			    .size = 0x8000,
+			    .next = &res_mock_1[CACHEABLE_TAG],
+			    .flags = IORESOURCE_MEM | IORESOURCE_PREFETCH},
 	[CACHEABLE_TAG] = {.base = 0xE000,
 			   .size = 0xF2000,
 			   .next = &res_mock_1[RESERVED_TAG],
@@ -86,7 +91,7 @@ struct device *all_devices = &mock_device;
 int setup_test_1(void **state)
 {
 	*state = res_mock_1;
-	mock_device.resource_list = &res_mock_1[CACHEABLE_TAG];
+	mock_device.resource_list = &res_mock_1[UNASSIGNED_TAG];
 
 	return 0;
 }
@@ -128,6 +133,12 @@ resource_t get_aligned_end(struct resource *res, struct range_entry *entry)
  * Example memory ranges (res_mock1) for test_memrange_basic.
  * Ranges marked with asterisks (***) are not added to the test_memrange.
  *
+ *     +-------UNASSIGNED_TAG--------+ <-0x0
+ *     |                             |
+ *     +-----------------------------+ <-0x8000
+ *
+ *
+ *
  *     +--------CACHEABLE_TAG--------+ <-0xE000
  *     |                             |
  *     |                             |
@@ -152,16 +163,22 @@ static void test_memrange_basic(void **state)
 	int counter = 0;
 	const unsigned long cacheable = IORESOURCE_CACHEABLE;
 	const unsigned long reserved = IORESOURCE_RESERVE;
+	const unsigned long prefetchable = IORESOURCE_PREFETCH;
 	struct range_entry *ptr;
 	struct memranges test_memrange;
 	struct resource *res_mock = *state;
 	resource_t prev_base = 0;
 
-	memranges_init(&test_memrange, cacheable, cacheable, CACHEABLE_TAG);
+	memranges_init_empty(&test_memrange, NULL, 0);
+	memranges_add_resources(&test_memrange, prefetchable, prefetchable, UNASSIGNED_TAG);
+	memranges_add_resources(&test_memrange, cacheable, cacheable, CACHEABLE_TAG);
 	memranges_add_resources(&test_memrange, reserved, reserved, RESERVED_TAG);
 
-	/* There should be two entries, since cacheable and
-	   reserved regions are not neighbors */
+	/* There should be two entries, since cacheable and reserved regions are not neighbors.
+	   Besides these two, a region with an unassigned tag is defined, to emulate an unmapped
+	   PCI BAR resource. This resource is not mapped into host physical address and hence
+	   should not be picked up by memranges_add_resources().*/
+
 	memranges_each_entry(ptr, &test_memrange)
 	{
 		assert_in_range(range_entry_tag(ptr), CACHEABLE_TAG, RESERVED_TAG);

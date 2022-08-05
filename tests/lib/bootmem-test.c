@@ -116,11 +116,11 @@ struct bootmem_ranges_t *ranges = ranges_mock;
 /* Note that second region overlaps first */
 struct resource res_mock[] = {
 	{ .base = ZERO_REGION_START, .size = ZERO_REGION_SIZE, .next = &res_mock[1],
-	  .flags = IORESOURCE_CACHEABLE | IORESOURCE_MEM },
+	  .flags = IORESOURCE_CACHEABLE | IORESOURCE_MEM | IORESOURCE_ASSIGNED },
 	{ .base = CACHEABLE_START, .size = CACHEABLE_SIZE, .next = &res_mock[2],
-	  .flags = IORESOURCE_CACHEABLE | IORESOURCE_MEM },
+	  .flags = IORESOURCE_CACHEABLE | IORESOURCE_MEM | IORESOURCE_ASSIGNED },
 	{ .base = RESERVED_START, .size = RESERVED_SIZE, .next = NULL,
-	  .flags = IORESOURCE_RESERVE | IORESOURCE_MEM }
+	  .flags = IORESOURCE_RESERVE | IORESOURCE_MEM | IORESOURCE_ASSIGNED }
 };
 
 /* Device simulating RAM */

@@ -25,15 +25,18 @@ struct resource res_mock_1[] = {
 	[CACHEABLE_TAG] = {.base = 0xE000,
 			   .size = 0xF2000,
 			   .next = &res_mock_1[RESERVED_TAG],
-			   .flags = IORESOURCE_CACHEABLE | IORESOURCE_MEM},
+			   .flags = IORESOURCE_CACHEABLE | IORESOURCE_MEM |
+				   IORESOURCE_ASSIGNED },
 	[RESERVED_TAG] = {.base = 4ULL * GiB,
 			  .size = 4ULL * KiB,
 			  .next = &res_mock_1[READONLY_TAG],
-			  .flags = IORESOURCE_RESERVE | IORESOURCE_MEM},
+			  .flags = IORESOURCE_RESERVE | IORESOURCE_MEM |
+				  IORESOURCE_ASSIGNED },
 	[READONLY_TAG] = {.base = 0xFF0000,
 			  .size = 0x10000,
 			  .next = NULL,
-			  .flags = IORESOURCE_READONLY | IORESOURCE_MEM}
+			  .flags = IORESOURCE_READONLY | IORESOURCE_MEM |
+				  IORESOURCE_ASSIGNED }
 };
 
 /* Boundary 1 byte below 4GiB and 1 byte above 4GiB. */
@@ -41,15 +44,18 @@ struct resource res_mock_2[] = {
 	[CACHEABLE_TAG] = {.base = 0x1000000,
 			   .size = 4ULL * GiB - 0x1000001ULL,
 			   .next = &res_mock_2[RESERVED_TAG],
-			   .flags = IORESOURCE_CACHEABLE | IORESOURCE_MEM},
+			   .flags = IORESOURCE_CACHEABLE | IORESOURCE_MEM |
+				   IORESOURCE_ASSIGNED },
 	[RESERVED_TAG] = {.base = 4ULL * GiB + 1ULL,
 			  .size = 4ULL * GiB,
 			  .next = &res_mock_2[READONLY_TAG],
-			  .flags = IORESOURCE_RESERVE | IORESOURCE_MEM},
+			  .flags = IORESOURCE_RESERVE | IORESOURCE_MEM |
+				  IORESOURCE_ASSIGNED },
 	[READONLY_TAG] = {.base = 0,
 			  .size = 0x10000,
 			  .next = NULL,
-			  .flags = IORESOURCE_READONLY | IORESOURCE_MEM}
+			  .flags = IORESOURCE_READONLY | IORESOURCE_MEM |
+				  IORESOURCE_ASSIGNED }
 };
 
 /* Boundary crossing 4GiB. */
@@ -57,15 +63,18 @@ struct resource res_mock_3[] = {
 	[CACHEABLE_TAG] = {.base = 0xD000,
 			   .size = 0xF3000,
 			   .next = &res_mock_3[RESERVED_TAG],
-			   .flags = IORESOURCE_CACHEABLE | IORESOURCE_MEM},
+			   .flags = IORESOURCE_CACHEABLE | IORESOURCE_MEM |
+				   IORESOURCE_ASSIGNED },
 	[RESERVED_TAG] = {.base = 1ULL * GiB,
 			  .size = 4ULL * GiB,
 			  .next = &res_mock_3[READONLY_TAG],
-			  .flags = IORESOURCE_RESERVE | IORESOURCE_MEM},
+			  .flags = IORESOURCE_RESERVE | IORESOURCE_MEM |
+				  IORESOURCE_ASSIGNED },
 	[READONLY_TAG] = {.base = 0xFF0000,
 			  .size = 0x10000,
 			  .next = NULL,
-			  .flags = IORESOURCE_READONLY | IORESOURCE_MEM}
+			  .flags = IORESOURCE_READONLY | IORESOURCE_MEM |
+				  IORESOURCE_ASSIGNED}
 };
 
 

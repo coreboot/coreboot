@@ -32,17 +32,29 @@ static unsigned int pciexp_get_ext_cap_offset(const struct device *dev, unsigned
 	return 0;
 }
 
-unsigned int pciexp_find_next_extended_cap(const struct device *dev, unsigned int cap,
-					   unsigned int pos)
+/*
+ * Search for an extended capability with the ID `cap`.
+ *
+ * Returns the offset of the first matching extended
+ * capability if found, or 0 otherwise.
+ *
+ * A new search is started with `offset == 0`.
+ * To continue a search, the prior return value
+ * should be passed as `offset`.
+ */
+unsigned int pciexp_find_extended_cap(const struct device *dev, unsigned int cap,
+				      unsigned int offset)
 {
-	const unsigned int next_cap_offset = pci_read_config32(dev, pos) >> 20;
+	unsigned int next_cap_offset;
+
+	if (offset)
+		next_cap_offset = pci_read_config32(dev, offset) >> 20;
+	else
+		next_cap_offset = PCIE_EXT_CAP_OFFSET;
+
 	return pciexp_get_ext_cap_offset(dev, cap, next_cap_offset);
 }
 
-unsigned int pciexp_find_extended_cap(const struct device *dev, unsigned int cap)
-{
-	return pciexp_get_ext_cap_offset(dev, cap, PCIE_EXT_CAP_OFFSET);
-}
 
 /*
  * Re-train a PCIe link
@@ -215,7 +227,7 @@ static void pciexp_configure_ltr(struct device *parent, unsigned int parent_cap,
 	if (!_pciexp_enable_ltr(parent, parent_cap, dev, cap))
 		return;
 
-	const unsigned int ltr_cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_LTR_ID);
+	const unsigned int ltr_cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_LTR_ID, 0);
 	if (!ltr_cap)
 		return;
 
@@ -340,13 +352,13 @@ static void pciexp_config_L1_sub_state(struct device *root, struct device *dev)
 	if (dev->path.pci.devfn & 0x7)
 		return;
 
-	root_cap = pciexp_find_extended_cap(root, PCIE_EXT_CAP_L1SS_ID);
+	root_cap = pciexp_find_extended_cap(root, PCIE_EXT_CAP_L1SS_ID, 0);
 	if (!root_cap)
 		return;
 
-	end_cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_L1SS_ID);
+	end_cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_L1SS_ID, 0);
 	if (!end_cap) {
-		end_cap = pciexp_find_extended_cap(dev, 0xcafe);
+		end_cap = pciexp_find_extended_cap(dev, 0xcafe, 0);
 		if (!end_cap)
 			return;
 	}

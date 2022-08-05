@@ -23,7 +23,7 @@ static void lv2_enable_ltr(struct device *dev)
 	if (!pciexp_get_ltr_max_latencies(dev, &max_snoop, &max_nosnoop))
 		return;
 
-	const unsigned int ltr_cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_LTR_ID);
+	const unsigned int ltr_cap = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_LTR_ID, 0);
 	if (!ltr_cap)
 		return;
 

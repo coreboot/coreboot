@@ -313,7 +313,7 @@ struct msix_entry *pci_msix_get_table(struct device *dev)
 
 static unsigned int get_rebar_offset(const struct device *dev, unsigned long index)
 {
-	uint32_t offset = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_RESIZABLE_BAR);
+	uint32_t offset = pciexp_find_extended_cap(dev, PCIE_EXT_CAP_RESIZABLE_BAR, 0);
 	if (!offset)
 		return 0;
 

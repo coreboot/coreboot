@@ -78,8 +78,10 @@ usb_msc_create_disk (usbdev_t *dev)
 static void
 usb_msc_remove_disk (usbdev_t *dev)
 {
-	if (MSC_INST (dev)->usbdisk_created && usbdisk_remove)
+	if (MSC_INST (dev)->usbdisk_created && usbdisk_remove) {
 		usbdisk_remove (dev);
+		MSC_INST (dev)->usbdisk_created = 0;
+	}
 }
 
 static void

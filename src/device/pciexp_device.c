@@ -55,6 +55,35 @@ unsigned int pciexp_find_extended_cap(const struct device *dev, unsigned int cap
 	return pciexp_get_ext_cap_offset(dev, cap, next_cap_offset);
 }
 
+/*
+ * Search for a vendor-specific extended capability,
+ * with the vendor-specific ID `cap`.
+ *
+ * Returns the offset of the vendor-specific header,
+ * i.e. the offset of the extended capability + 4,
+ * or 0 if none is found.
+ *
+ * A new search is started with `offset == 0`.
+ * To continue a search, the prior return value
+ * should be passed as `offset`.
+ */
+unsigned int pciexp_find_ext_vendor_cap(const struct device *dev, unsigned int cap,
+					unsigned int offset)
+{
+	/* Reconstruct capability offset from vendor-specific header offset. */
+	if (offset >= 4)
+		offset -= 4;
+
+	for (;;) {
+		offset = pciexp_find_extended_cap(dev, PCI_EXT_CAP_ID_VNDR, offset);
+		if (!offset)
+			return 0;
+
+		const unsigned int vndr_cap = pci_read_config32(dev, offset + 4);
+		if ((vndr_cap & 0xffff) == cap)
+			return offset + 4;
+	}
+}
 
 /*
  * Re-train a PCIe link

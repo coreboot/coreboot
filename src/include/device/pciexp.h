@@ -34,6 +34,8 @@ extern struct device_operations default_pciexp_hotplug_ops_bus;
 
 unsigned int pciexp_find_extended_cap(const struct device *dev, unsigned int cap,
 				      unsigned int offset);
+unsigned int pciexp_find_ext_vendor_cap(const struct device *dev, unsigned int cap,
+					unsigned int offset);
 
 static inline bool pciexp_is_downstream_port(int type)
 {

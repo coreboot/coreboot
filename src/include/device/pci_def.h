@@ -460,6 +460,7 @@
 #define PCI_EXT_CAP_ID_VC	2
 #define PCI_EXT_CAP_ID_DSN	3
 #define PCI_EXT_CAP_ID_PWR	4
+#define PCI_EXT_CAP_ID_VNDR	0x0b
 
 /* Extended Capability lists*/
 #define PCIE_EXT_CAP_OFFSET		0x100

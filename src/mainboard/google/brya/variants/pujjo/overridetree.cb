@@ -16,6 +16,8 @@ chip soc/intel/alderlake
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for PCIe WLAN
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
 
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 port for WWAN
+
 	# Configure external V1P05/Vnn/VnnSx Rails
 	register "ext_fivr_settings" = "{
 		.configure_ext_fivr = 1,

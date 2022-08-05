@@ -103,6 +103,9 @@ chip soc/intel/alderlake
 		.vnn_icc_max_ma = 500,
 	}"
 
+	# Enable the Cnvi BT Audio Offload
+	register "cnvi_bt_audio_offload" = "1"
+
 	register "power_limits_config[ADL_N_041_6W_CORE]" = "{
 		.tdp_pl1_override = 6,
 		.tdp_pl2_override = 12,

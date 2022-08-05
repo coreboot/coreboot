@@ -107,6 +107,74 @@ chip soc/intel/alderlake
 				device i2c 50 on end
 			end
 		end
+		device ref i2c2 on
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""OVTI5675""
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CAM0""
+				register "chip_name" = ""Ov 5675 Camera""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+
+				register "ssdb.lanes_used" = "2"
+				register "ssdb.link_used" = "1"
+				register "num_freq_entries" = "1"
+				register "link_freq[0]" = "DEFAULT_LINK_FREQ"
+				register "remote_name" = ""IPU0""
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
+
+				register "has_power_resource" = "1"
+
+				# Controls
+				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_2"
+				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
+
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_C4"   # EN_UCAM_PWR
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_F20"  # UCAM_RST_L
+
+				# ON
+				register "on_seq.ops_cnt" = "4"
+				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 5)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
+
+				# OFF
+				register "off_seq.ops_cnt" = "3"
+				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+
+				device i2c 36 on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
+				register "acpi_uid" = "1"
+				register "acpi_name" = ""NVM0""
+				register "chip_name" = ""M24C64X""
+				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
+
+				register "nvm_size" = "0x2000"
+				register "nvm_pagesize" = "1"
+				register "nvm_readonly" = "1"
+				register "nvm_width" = "0x10"
+				register "nvm_compat" = ""atmel,24c64""
+				device i2c 50 on end
+			end
+		end
+		device ref ipu on
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "0x50000"
+				register "acpi_name" = ""IPU0""
+				register "device_type" = "INTEL_ACPI_CAMERA_CIO2"
+
+				register "cio2_num_ports" = "1"
+				register "cio2_lanes_used" = "{2}" # 2 CSI Camera lanes are used
+				register "cio2_lane_endpoint[0]" = ""^I2C2.CAM0""
+				register "cio2_prt[0]" = "1"
+				device generic 0 on end
+			end
+		end
 		device ref gspi1 on
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""

@@ -122,7 +122,7 @@ const (
 	 */
 	LP5SPDValueRevision1_0 = 0x10
 	/*
-	 * Revision 1.1. Expected by Sabrina
+	 * Revision 1.1. Expected by Mendocino
 	 */
 	LP5SPDValueRevision1_1 = 0x11
 
@@ -173,7 +173,7 @@ const (
 
 var LP5PlatformSetMap = map[int][]int{
 	0: {PlatformMTL, PlatformADL},
-	1: {PlatformSBR},
+	1: {PlatformMDN},
 }
 
 var LP5SetInfo = map[int]LP5Set{
@@ -214,20 +214,20 @@ var LP5SetInfo = map[int]LP5Set{
 		SPDRevision: LP5SPDValueRevision1_1,
 		getBankArch: LP5GetBankArchSet1,
 		/*
-		 * For Sabrina (as per advisory b/211510456):
+		 * For Mendocino (as per advisory b/211510456):
 		 * 5:4 (Maximum Activate Window) = 01 (4096 * tREFI)
 		 * 3:0 (Maximum Activate Count) = 1000 (Unlimited MAC)
 		 * Set to 0x18.
 		 */
 		optionalFeatures: 0x18,
 		/*
-		 * For Sabrina (as per advisory b/211510456):
+		 * For Mendocino (as per advisory b/211510456):
 		 * 7:6 (PPR) = 1 (Post Package Repair is supported)
 		 * Set to 0x40.
 		 */
 		otherOptionalFeatures: 0x40,
 		/*
-		 * For Sabrina (as per advisory b/211510456):
+		 * For Mendocino (as per advisory b/211510456):
 		 * 7:5 (Number of system channels) = 000 (1 channel always)
 		 * 4:3 (Bus width extension) = 00 (no ECC)
 		 * 2:0 (Bus width) = 010 (x32 always)
@@ -432,7 +432,7 @@ func LP5GetBankArchSet0(memAttribs *LP5MemAttributes) int {
 
 func LP5GetBankArchSet1(memAttribs *LP5MemAttributes) int {
 	/*
-	 * Sabrina does not support 8B. It uses 16B Bank Architecture for speed <= 3200 Mbps.
+	 * Mendocino does not support 8B. It uses 16B Bank Architecture for speed <= 3200 Mbps.
 	 * It uses BG Bank Architecture for speed > 3200 Mbps.
 	 */
 	 if memAttribs.SpeedMbps <= 3200 {

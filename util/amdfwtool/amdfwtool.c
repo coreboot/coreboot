@@ -552,7 +552,6 @@ enum platform {
 	PLATFORM_CEZANNE,
 	PLATFORM_MENDOCINO,
 	PLATFORM_LUCIENNE,
-	PLATFORM_SABRINA,
 };
 
 static uint32_t get_psp_id(enum platform soc_id)
@@ -571,7 +570,6 @@ static uint32_t get_psp_id(enum platform soc_id)
 		psp_id = 0xBC0C0140;
 		break;
 	case PLATFORM_MENDOCINO:
-	case PLATFORM_SABRINA:
 		psp_id = 0xBC0D0900;
 		break;
 	case PLATFORM_STONEYRIDGE:
@@ -1419,7 +1417,6 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 	case PLATFORM_LUCIENNE:
 	case PLATFORM_CEZANNE:
 	case PLATFORM_MENDOCINO:
-	case PLATFORM_SABRINA:
 		amd_romsig->spi_readmode_f17_mod_30_3f = efs_spi_readmode;
 		amd_romsig->spi_fastspeed_f17_mod_30_3f = efs_spi_speed;
 		switch (efs_spi_micron_flag) {
@@ -1461,8 +1458,6 @@ static int identify_platform(char *soc_name)
 		return PLATFORM_RENOIR;
 	else if (!strcasecmp(soc_name, "Lucienne"))
 		return PLATFORM_LUCIENNE;
-	else if (!strcasecmp(soc_name, "Sabrina"))
-		return PLATFORM_SABRINA;
 	else
 		return PLATFORM_UNKNOWN;
 
@@ -1470,7 +1465,7 @@ static int identify_platform(char *soc_name)
 
 static bool needs_ish(enum platform platform_type)
 {
-	if (platform_type == PLATFORM_SABRINA)
+	if (platform_type == PLATFORM_MENDOCINO)
 		return true;
 	else
 		return false;
@@ -1486,7 +1481,7 @@ static bool is_second_gen(enum platform platform_type)
 	case PLATFORM_RENOIR:
 	case PLATFORM_LUCIENNE:
 	case PLATFORM_CEZANNE:
-	case PLATFORM_SABRINA:
+	case PLATFORM_MENDOCINO:
 		return true;
 	case PLATFORM_UNKNOWN:
 	default:
@@ -1946,7 +1941,6 @@ int main(int argc, char **argv)
 				amd_romsig->bios3_entry = BUFF_TO_RUN(ctx, biosdir);
 			break;
 		case PLATFORM_MENDOCINO:
-		case PLATFORM_SABRINA:
 			break;
 		case PLATFORM_STONEYRIDGE:
 		case PLATFORM_RAVEN:

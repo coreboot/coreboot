@@ -57,6 +57,11 @@ struct fw_config_probe {
 	struct fw_config_probe *next;
 };
 
+struct identifier {
+	const char *id;
+	struct identifier *next;
+};
+
 struct chip;
 struct chip_instance {
 	/* Monotonically increasing ID for each chip instance. */
@@ -165,6 +170,9 @@ struct device {
 	/* Pointer to last bus under this device. */
 	struct bus *last_bus;
 
+	/* Global identifier of the ops for this device. */
+	char *ops_id;
+
 	/* SMBIOS slot type */
 	char *smbios_slot_type;
 
@@ -236,3 +244,5 @@ void add_fw_config_probe(struct bus *bus, const char *field, const char *option)
 
 void append_fw_config_bits(struct fw_config_field_bits **bits,
 			   unsigned int start_bit, unsigned int end_bit);
+
+void add_device_ops(struct bus *, char *ops_id);

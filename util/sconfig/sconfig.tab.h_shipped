@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.8.1.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_HOME_USUARIO_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
-# define YY_YY_HOME_USUARIO_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
+#ifndef YY_YY_HOME_ICON_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
+# define YY_YY_HOME_ICON_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -96,7 +96,8 @@ extern int yydebug;
     FW_CONFIG_FIELD = 297,         /* FW_CONFIG_FIELD  */
     FW_CONFIG_OPTION = 298,        /* FW_CONFIG_OPTION  */
     FW_CONFIG_PROBE = 299,         /* FW_CONFIG_PROBE  */
-    PIPE = 300                     /* PIPE  */
+    PIPE = 300,                    /* PIPE  */
+    OPS = 301                      /* OPS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -125,4 +126,4 @@ extern YYSTYPE yylval;
 int yyparse (void);
 
 
-#endif /* !YY_YY_HOME_USUARIO_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED  */
+#endif /* !YY_YY_HOME_ICON_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED  */

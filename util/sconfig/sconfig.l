@@ -14,6 +14,7 @@ int linenum = 0;
 chip			{return(CHIP);}
 device			{return(DEVICE);}
 alias			{return(ALIAS);}
+ops			{return(OPS);}
 use			{return(REFERENCE);}
 ref			{return(REFERENCE);}
 as			{return(ASSOCIATION);}

@@ -148,6 +148,9 @@ struct queue_entry {
 	struct queue_entry *prev;
 };
 
+/* Global list of all `struct device_operations` identifiers to declare. */
+static struct identifier *device_operations;
+
 #define S_ALLOC(_s)	s_alloc(__func__, _s)
 
 static void *s_alloc(const char *f, size_t s)
@@ -694,6 +697,30 @@ static int emit_fw_config_probe(FILE *fil, struct device *dev)
 	/* Add empty entry to mark end of list. */
 	fprintf(fil, "\t{ }\n};\n");
 	return 0;
+}
+
+/* Enqueue identifier to list with head `*it`, if not already present. */
+void add_identifier(struct identifier **it, const char *id)
+{
+	for (; *it != NULL; it = &(*it)->next) {
+		if (!strcmp((*it)->id, id))
+			return;
+	}
+
+	*it = S_ALLOC(sizeof(**it));
+	(*it)->id = id;
+}
+
+void add_device_ops(struct bus *bus, char *ops_id)
+{
+	if (bus->dev->ops_id) {
+		printf("ERROR: Device operations may only be specified once,\n"
+		       "       found '%s', '%s'.\n", bus->dev->ops_id, ops_id);
+		exit(1);
+	}
+
+	add_identifier(&device_operations, ops_id);
+	bus->dev->ops_id = ops_id;
 }
 
 /*
@@ -1262,10 +1289,13 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 	fprintf(fil, "#if !DEVTREE_EARLY\n");
 
 	/*
-	 * ops field is set to default_dev_ops_root only for the root
-	 * device. For all other devices, it is set by the driver at runtime.
+	 * ops field can be set in the devicetree. If unspecified, it is set
+	 * to default_dev_ops_root only for the root device, other devices
+	 * get it set by the driver at runtime.
 	 */
-	if (ptr == &base_root_dev)
+	if (ptr->ops_id)
+		fprintf(fil, "\t.ops = &%s,\n", ptr->ops_id);
+	else if (ptr == &base_root_dev)
 		fprintf(fil, "\t.ops = &default_dev_ops_root,\n");
 	else
 		fprintf(fil, "\t.ops = NULL,\n");
@@ -1475,6 +1505,12 @@ static void emit_chip_configs(FILE *fil)
 			instance = instance->next;
 		}
 	}
+}
+
+static void emit_identifiers(FILE *fil, const char *decl, const struct identifier *it)
+{
+	for (; it != NULL; it = it->next)
+		fprintf(fil, "extern %s %s;\n", decl, it->id);
 }
 
 static void inherit_subsystem_ids(FILE *file, FILE *head, struct device *dev,
@@ -1854,6 +1890,10 @@ static void update_device(struct device *base_dev, struct device *override_dev)
 	 */
 	override_dev->chip_instance->base_chip_instance = get_chip_instance(base_dev);
 
+	/* Allow to override the ops of a device */
+	if (override_dev->ops_id)
+		base_dev->ops_id = override_dev->ops_id;
+
 	/*
 	 * Now that the device properties are all copied over, look at each bus
 	 * of the override device and run override_devicetree in a recursive
@@ -1970,6 +2010,7 @@ static void generate_outputc(FILE *f, const char *static_header)
 	fprintf(f, "#include <fw_config.h>\n");
 	fprintf(f, "#include <%s>\n", static_header);
 	emit_chip_headers(f, chip_header.next);
+	emit_identifiers(f, "struct device_operations", device_operations);
 	fprintf(f, "\n#define STORAGE static __maybe_unused DEVTREE_CONST\n\n");
 
 	walk_device_tree(NULL, NULL, &base_root_dev, inherit_subsystem_ids);

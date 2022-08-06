@@ -21,7 +21,7 @@ static struct fw_config_field_bits *cur_bits;
 	uint64_t number;
 }
 
-%token CHIP DEVICE REGISTER ALIAS REFERENCE ASSOCIATION BOOL STATUS MANDATORY BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC CPU_CLUSTER CPU DOMAIN IRQ DRQ SLOT_DESC SMBIOS_DEV_INFO IO NUMBER SUBSYSTEMID INHERIT IOAPIC_IRQ IOAPIC PCIINT GENERIC SPI USB MMIO GPIO FW_CONFIG_TABLE FW_CONFIG_FIELD FW_CONFIG_OPTION FW_CONFIG_PROBE PIPE
+%token CHIP DEVICE REGISTER ALIAS REFERENCE ASSOCIATION BOOL STATUS MANDATORY BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C APIC CPU_CLUSTER CPU DOMAIN IRQ DRQ SLOT_DESC SMBIOS_DEV_INFO IO NUMBER SUBSYSTEMID INHERIT IOAPIC_IRQ IOAPIC PCIINT GENERIC SPI USB MMIO GPIO FW_CONFIG_TABLE FW_CONFIG_FIELD FW_CONFIG_OPTION FW_CONFIG_PROBE PIPE OPS
 %%
 devtree: { cur_parent = root_parent; } | devtree chip | devtree fw_config_table;
 
@@ -31,7 +31,7 @@ chipchild: device | chipchild_nondev;
 chipchildren: chipchildren chipchild | /* empty */ ;
 chipchildren_dev: device chipchildren | chipchild_nondev chipchildren_dev;
 
-devicechildren: devicechildren device | devicechildren chip | devicechildren resource | devicechildren subsystemid | devicechildren ioapic_irq | devicechildren smbios_slot_desc | devicechildren smbios_dev_info | devicechildren registers | devicechildren fw_config_probe | /* empty */ ;
+devicechildren: devicechildren device | devicechildren chip | devicechildren resource | devicechildren subsystemid | devicechildren ioapic_irq | devicechildren smbios_slot_desc | devicechildren smbios_dev_info | devicechildren registers | devicechildren fw_config_probe | devicechildren ops | /* empty */ ;
 
 chip: CHIP STRING /* == path */ {
 	$<chip_instance>$ = new_chip_instance($<string>2);
@@ -142,4 +142,8 @@ fw_config_option: FW_CONFIG_OPTION STRING NUMBER /* == field value */
 /* probe <field> <option> */
 fw_config_probe: FW_CONFIG_PROBE STRING /* == field */ STRING /* == option */
 	{ add_fw_config_probe(cur_parent, $<string>2, $<string>3); }
+
+ops: OPS STRING /* == global identifier */
+	{ add_device_ops(cur_parent, $<string>2); }
+
 %%

@@ -11,7 +11,7 @@ static void hda_init(struct device *dev)
 		azalia_audio_init(dev);
 }
 
-static struct device_operations hda_ops = {
+struct device_operations hda_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -32,11 +32,8 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_RPP_P_AUDIO,
 	PCI_DID_INTEL_APL_AUDIO,
 	PCI_DID_INTEL_GLK_AUDIO,
-	PCI_DID_INTEL_SKL_AUDIO,
-	PCI_DID_INTEL_SKL_H_AUDIO,
 	PCI_DID_INTEL_LWB_AUDIO,
 	PCI_DID_INTEL_LWB_AUDIO_SUPER,
-	PCI_DID_INTEL_KBL_AUDIO,
 	PCI_DID_INTEL_CNL_AUDIO,
 	PCI_DID_INTEL_CNP_H_AUDIO,
 	PCI_DID_INTEL_ICL_AUDIO,

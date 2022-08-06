@@ -97,7 +97,7 @@ static void pmc_final(struct device *dev)
 	pmc_clear_pmcon_sts();
 }
 
-static struct device_operations device_ops = {
+struct device_operations pmc_ops = {
 	.read_resources		= pch_pmc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -116,11 +116,8 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_MTL_IOE_P_PMC,
 	PCI_DID_INTEL_RPP_P_PMC,
 	PCI_DID_INTEL_DNV_PMC,
-	PCI_DID_INTEL_SPT_LP_PMC,
-	PCI_DID_INTEL_SPT_H_PMC,
 	PCI_DID_INTEL_LWB_PMC,
 	PCI_DID_INTEL_LWB_PMC_SUPER,
-	PCI_DID_INTEL_UPT_H_PMC,
 	PCI_DID_INTEL_APL_PMC,
 	PCI_DID_INTEL_GLK_PMC,
 	PCI_DID_INTEL_CNP_H_PMC,
@@ -138,7 +135,7 @@ static const unsigned short pci_device_ids[] = {
 };
 
 static const struct pci_driver pch_pmc __pci_driver = {
-	.ops	 = &device_ops,
+	.ops	 = &pmc_ops,
 	.vendor	 = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

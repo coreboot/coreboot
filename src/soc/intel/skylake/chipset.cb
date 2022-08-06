@@ -1,71 +1,72 @@
 chip soc/intel/skylake
 	device domain 0 on
-		device gpio 0 alias pch_gpio       on  end # GPIO
-		device pci 00.0 alias system_agent on  end # Host Bridge
-		device pci 01.0 alias peg0         off end # PEG0
-		device pci 01.1 alias peg1         off end # PEG1
-		device pci 01.2 alias peg2         off end # PEG2
-		device pci 02.0 alias igpu         off end # Integrated Graphics Device
-		device pci 04.0 alias sa_thermal   off end # SA thermal subsystem
-		device pci 05.0 alias imgu         off end # Imaging Unit
-		device pci 07.0 alias chap         off end # CHAP
-		device pci 08.0 alias gmm          off end # Gaussian Mixture Model
-		device pci 13.0 alias ish          off end # SensorHub
-		device pci 14.0 alias south_xhci   off end # USB xHCI
-		device pci 14.1 alias south_xdci   off end # USB xDCI (OTG)
-		device pci 14.2 alias thermal      off end # Thermal Subsystem
-		device pci 14.3 alias cio          off end # CIO
-		device pci 15.0 alias i2c0         off end # I2C0
-		device pci 15.1 alias i2c1         off end # I2C1
-		device pci 15.2 alias i2c2         off end # I2C2
-		device pci 15.3 alias i2c3         off end # I2C3
-		device pci 16.0 alias heci1        off end # Management Engine Interface 1
-		device pci 16.1 alias heci2        off end # Management Engine Interface 2
-		device pci 16.2 alias csme_ider    off end # Management Engine IDE-R
-		device pci 16.3 alias csme_ktr     off end # Management Engine KT Redirection
-		device pci 16.4 alias heci3        off end # Management Engine Interface 3
-		device pci 17.0 alias sata         off end # SATA
-		device pci 19.0 alias uart2        off end # UART2
-		device pci 19.1 alias i2c5         off end # I2C5
-		device pci 19.2 alias i2c4         off end # I2C4
-		device pci 1b.0 alias pcie_rp17    off end # PCI Express Port 17
-		device pci 1b.1 alias pcie_rp18    off end # PCI Express Port 18
-		device pci 1b.2 alias pcie_rp19    off end # PCI Express Port 19
-		device pci 1b.3 alias pcie_rp20    off end # PCI Express Port 20
-		device pci 1b.4 alias pcie_rp21    off end # PCI Express Port 21
-		device pci 1b.5 alias pcie_rp22    off end # PCI Express Port 22
-		device pci 1b.6 alias pcie_rp23    off end # PCI Express Port 23
-		device pci 1b.7 alias pcie_rp24    off end # PCI Express Port 24
-		device pci 1c.0 alias pcie_rp1     off end # PCI Express Port 1
-		device pci 1c.1 alias pcie_rp2     off end # PCI Express Port 2
-		device pci 1c.2 alias pcie_rp3     off end # PCI Express Port 3
-		device pci 1c.3 alias pcie_rp4     off end # PCI Express Port 4
-		device pci 1c.4 alias pcie_rp5     off end # PCI Express Port 5
-		device pci 1c.5 alias pcie_rp6     off end # PCI Express Port 6
-		device pci 1c.6 alias pcie_rp7     off end # PCI Express Port 7
-		device pci 1c.7 alias pcie_rp8     off end # PCI Express Port 8
-		device pci 1d.0 alias pcie_rp9     off end # PCI Express Port 9
-		device pci 1d.1 alias pcie_rp10    off end # PCI Express Port 10
-		device pci 1d.2 alias pcie_rp11    off end # PCI Express Port 11
-		device pci 1d.3 alias pcie_rp12    off end # PCI Express Port 12
-		device pci 1d.4 alias pcie_rp13    off end # PCI Express Port 13
-		device pci 1d.5 alias pcie_rp14    off end # PCI Express Port 14
-		device pci 1d.6 alias pcie_rp15    off end # PCI Express Port 15
-		device pci 1d.7 alias pcie_rp16    off end # PCI Express Port 16
-		device pci 1e.0 alias uart0        off end # UART0
-		device pci 1e.1 alias uart1        off end # UART1
-		device pci 1e.2 alias gspi0        off end # GSPI0
-		device pci 1e.3 alias gspi1        off end # GSPI1
-		device pci 1e.4 alias emmc         off end # EMMC
-		device pci 1e.5 alias sdio         off end # SDIO
-		device pci 1e.6 alias sdxc         off end # SDXC
-		device pci 1f.0 alias lpc_espi     on  end # LPC Interface
-		device pci 1f.1 alias p2sb         on  end # P2SB
-		device pci 1f.2 alias pmc          on  end # Power Management Controller
-		device pci 1f.3 alias hda          off end # Intel HDA
-		device pci 1f.4 alias smbus        off end # SMBus
-		device pci 1f.5 alias fast_spi     off end # PCH SPI
-		device pci 1f.6 alias gbe          off end # GbE
-		device pci 1f.7 alias tracehub     off end # TraceHub
+		ops pci_domain_ops
+		device gpio 0 alias pch_gpio       on  ops block_gpio_ops  end
+		device pci 00.0 alias system_agent on  ops systemagent_ops end
+		device pci 01.0 alias peg0         off                     end
+		device pci 01.1 alias peg1         off                     end
+		device pci 01.2 alias peg2         off                     end
+		device pci 02.0 alias igpu         off ops graphics_ops    end
+		device pci 04.0 alias sa_thermal   off                     end
+		device pci 05.0 alias imgu         off                     end # Imaging Unit
+		device pci 07.0 alias chap         off                     end
+		device pci 08.0 alias gmm          off                     end # Gaussian Mixture Model
+		device pci 13.0 alias ish          off                     end # SensorHub
+		device pci 14.0 alias south_xhci   off ops usb_xhci_ops    end
+		device pci 14.1 alias south_xdci   off ops usb_xdci_ops    end
+		device pci 14.2 alias thermal      off                     end
+		device pci 14.3 alias cio          off                     end
+		device pci 15.0 alias i2c0         off ops i2c_dev_ops     end
+		device pci 15.1 alias i2c1         off ops i2c_dev_ops     end
+		device pci 15.2 alias i2c2         off ops i2c_dev_ops     end
+		device pci 15.3 alias i2c3         off ops i2c_dev_ops     end
+		device pci 16.0 alias heci1        off ops cse_ops         end
+		device pci 16.1 alias heci2        off                     end
+		device pci 16.2 alias csme_ider    off                     end # IDE Redirection
+		device pci 16.3 alias csme_ktr     off                     end # KT Redirection
+		device pci 16.4 alias heci3        off                     end
+		device pci 17.0 alias sata         off ops sata_ops        end
+		device pci 19.0 alias uart2        off ops uart_ops        end
+		device pci 19.1 alias i2c5         off ops i2c_dev_ops     end
+		device pci 19.2 alias i2c4         off ops i2c_dev_ops     end
+		device pci 1b.0 alias pcie_rp17    off ops pcie_rp_ops     end
+		device pci 1b.1 alias pcie_rp18    off ops pcie_rp_ops     end
+		device pci 1b.2 alias pcie_rp19    off ops pcie_rp_ops     end
+		device pci 1b.3 alias pcie_rp20    off ops pcie_rp_ops     end
+		device pci 1b.4 alias pcie_rp21    off ops pcie_rp_ops     end
+		device pci 1b.5 alias pcie_rp22    off ops pcie_rp_ops     end
+		device pci 1b.6 alias pcie_rp23    off ops pcie_rp_ops     end
+		device pci 1b.7 alias pcie_rp24    off ops pcie_rp_ops     end
+		device pci 1c.0 alias pcie_rp1     off ops pcie_rp_ops     end
+		device pci 1c.1 alias pcie_rp2     off ops pcie_rp_ops     end
+		device pci 1c.2 alias pcie_rp3     off ops pcie_rp_ops     end
+		device pci 1c.3 alias pcie_rp4     off ops pcie_rp_ops     end
+		device pci 1c.4 alias pcie_rp5     off ops pcie_rp_ops     end
+		device pci 1c.5 alias pcie_rp6     off ops pcie_rp_ops     end
+		device pci 1c.6 alias pcie_rp7     off ops pcie_rp_ops     end
+		device pci 1c.7 alias pcie_rp8     off ops pcie_rp_ops     end
+		device pci 1d.0 alias pcie_rp9     off ops pcie_rp_ops     end
+		device pci 1d.1 alias pcie_rp10    off ops pcie_rp_ops     end
+		device pci 1d.2 alias pcie_rp11    off ops pcie_rp_ops     end
+		device pci 1d.3 alias pcie_rp12    off ops pcie_rp_ops     end
+		device pci 1d.4 alias pcie_rp13    off ops pcie_rp_ops     end
+		device pci 1d.5 alias pcie_rp14    off ops pcie_rp_ops     end
+		device pci 1d.6 alias pcie_rp15    off ops pcie_rp_ops     end
+		device pci 1d.7 alias pcie_rp16    off ops pcie_rp_ops     end
+		device pci 1e.0 alias uart0        off ops uart_ops        end
+		device pci 1e.1 alias uart1        off ops uart_ops        end
+		device pci 1e.2 alias gspi0        off ops spi_dev_ops     end
+		device pci 1e.3 alias gspi1        off ops spi_dev_ops     end
+		device pci 1e.4 alias emmc         off                     end
+		device pci 1e.5 alias sdio         off                     end
+		device pci 1e.6 alias sdxc         off ops sd_ops          end
+		device pci 1f.0 alias lpc_espi     on  ops lpc_ops         end
+		device pci 1f.1 alias p2sb         on  ops p2sb_ops        end
+		device pci 1f.2 alias pmc          on  ops pmc_ops         end
+		device pci 1f.3 alias hda          off ops hda_ops         end
+		device pci 1f.4 alias smbus        off ops smbus_ops       end
+		device pci 1f.5 alias fast_spi     off                     end
+		device pci 1f.6 alias gbe          off                     end
+		device pci 1f.7 alias tracehub     off                     end
 	end
 end

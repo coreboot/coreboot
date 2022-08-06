@@ -4,7 +4,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 
-static struct device_operations sata_ops = {
+struct device_operations sata_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -16,9 +16,6 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_MTL_SATA,
 	PCI_DID_INTEL_RPP_P_SATA_1,
 	PCI_DID_INTEL_RPP_P_SATA_2,
-	PCI_DID_INTEL_SPT_U_SATA,
-	PCI_DID_INTEL_SPT_U_Y_PREMIUM_SATA,
-	PCI_DID_INTEL_SPT_KBL_SATA,
 	PCI_DID_INTEL_LWB_SATA_AHCI,
 	PCI_DID_INTEL_LWB_SSATA_AHCI,
 	PCI_DID_INTEL_LWB_SATA_RAID,

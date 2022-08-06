@@ -110,7 +110,7 @@ static struct spi_bus_operations spi_bus_ops = {
 	.dev_to_bus			= &spi_dev_to_bus,
 };
 
-static struct device_operations spi_dev_ops = {
+struct device_operations spi_dev_ops = {
 	.read_resources			= pci_dev_read_resources,
 	.set_resources			= pci_dev_set_resources,
 	.enable_resources		= pci_dev_enable_resources,
@@ -124,9 +124,6 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_MTL_GSPI0,
 	PCI_DID_INTEL_MTL_GSPI1,
 	PCI_DID_INTEL_MTL_GSPI2,
-	PCI_DID_INTEL_SPT_SPI1,
-	PCI_DID_INTEL_SPT_SPI2,
-	PCI_DID_INTEL_SPT_SPI3,
 	PCI_DID_INTEL_APL_SPI0,
 	PCI_DID_INTEL_APL_SPI1,
 	PCI_DID_INTEL_APL_SPI2,

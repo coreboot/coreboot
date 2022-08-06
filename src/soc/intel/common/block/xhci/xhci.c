@@ -117,7 +117,7 @@ void usb_xhci_disable_unused(bool (*ext_usb_xhci_en_cb)(unsigned int port_type,
 
 __weak void soc_xhci_init(struct device *dev) { /* no-op */ }
 
-static struct device_operations usb_xhci_ops = {
+struct device_operations usb_xhci_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -134,11 +134,8 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_APL_XHCI,
 	PCI_DID_INTEL_CNL_LP_XHCI,
 	PCI_DID_INTEL_GLK_XHCI,
-	PCI_DID_INTEL_SPT_LP_XHCI,
-	PCI_DID_INTEL_SPT_H_XHCI,
 	PCI_DID_INTEL_LWB_XHCI,
 	PCI_DID_INTEL_LWB_XHCI_SUPER,
-	PCI_DID_INTEL_UPT_H_XHCI,
 	PCI_DID_INTEL_CNP_H_XHCI,
 	PCI_DID_INTEL_ICP_LP_XHCI,
 	PCI_DID_INTEL_CMP_LP_XHCI,

@@ -335,7 +335,7 @@ void ssdt_set_above_4g_pci(const struct device *dev)
 	printk(BIOS_DEBUG, "PCI space above 4GB MMIO is at 0x%llx, len = 0x%llx\n", touud, len);
 }
 
-static struct device_operations systemagent_ops = {
+struct device_operations systemagent_ops = {
 	.read_resources   = systemagent_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
@@ -355,23 +355,8 @@ static const unsigned short systemagent_ids[] = {
 	PCI_DID_INTEL_APL_NB,
 	PCI_DID_INTEL_CNL_ID_U,
 	PCI_DID_INTEL_CNL_ID_Y,
-	PCI_DID_INTEL_SKL_ID_U,
-	PCI_DID_INTEL_SKL_ID_Y,
-	PCI_DID_INTEL_SKL_ID_ULX,
-	PCI_DID_INTEL_SKL_ID_H_4,
-	PCI_DID_INTEL_SKL_ID_H_2,
-	PCI_DID_INTEL_SKL_ID_S_2,
-	PCI_DID_INTEL_SKL_ID_S_4,
 	PCI_DID_INTEL_WHL_ID_W_2,
 	PCI_DID_INTEL_WHL_ID_W_4,
-	PCI_DID_INTEL_KBL_ID_S,
-	PCI_DID_INTEL_SKL_ID_H_EM,
-	PCI_DID_INTEL_KBL_ID_U,
-	PCI_DID_INTEL_KBL_ID_Y,
-	PCI_DID_INTEL_KBL_ID_H,
-	PCI_DID_INTEL_KBL_U_R,
-	PCI_DID_INTEL_KBL_ID_DT,
-	PCI_DID_INTEL_KBL_ID_DT_2,
 	PCI_DID_INTEL_CFL_ID_U,
 	PCI_DID_INTEL_CFL_ID_U_2,
 	PCI_DID_INTEL_CFL_ID_H,

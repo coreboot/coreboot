@@ -18,7 +18,7 @@ bool xdci_can_enable(unsigned int xdci_devfn)
 	return is_devfn_enabled(xdci_devfn);
 }
 
-static struct device_operations usb_xdci_ops = {
+struct device_operations usb_xdci_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -31,7 +31,6 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_APL_XDCI,
 	PCI_DID_INTEL_CNL_LP_XDCI,
 	PCI_DID_INTEL_GLK_XDCI,
-	PCI_DID_INTEL_SPT_LP_XDCI,
 	PCI_DID_INTEL_CNP_H_XDCI,
 	PCI_DID_INTEL_ICP_LP_XDCI,
 	PCI_DID_INTEL_CMP_LP_XDCI,

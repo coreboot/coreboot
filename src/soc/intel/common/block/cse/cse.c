@@ -1274,7 +1274,7 @@ static void cse_final(struct device *dev)
 		cse_final_end_of_firmware();
 }
 
-static struct device_operations cse_ops = {
+struct device_operations cse_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.read_resources		= pci_dev_read_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -1289,7 +1289,6 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_APL_CSE0,
 	PCI_DID_INTEL_GLK_CSE0,
 	PCI_DID_INTEL_CNL_CSE0,
-	PCI_DID_INTEL_SKL_CSE0,
 	PCI_DID_INTEL_LWB_CSE0,
 	PCI_DID_INTEL_LWB_CSE0_SUPER,
 	PCI_DID_INTEL_CNP_H_CSE0,

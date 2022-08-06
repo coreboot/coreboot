@@ -186,7 +186,7 @@ void soc_init_pre_device(void *chip_info)
 		pcie_rp_update_devicetree(pch_lp_rp_groups);
 }
 
-static struct device_operations pci_domain_ops = {
+struct device_operations pci_domain_ops = {
 	.read_resources   = &pci_domain_read_resources,
 	.set_resources    = &pci_domain_set_resources,
 	.scan_bus         = &pci_domain_scan_bus,
@@ -207,12 +207,8 @@ static struct device_operations cpu_bus_ops = {
 static void soc_enable(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN)
-		dev->ops = &pci_domain_ops;
-	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
+	if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &cpu_bus_ops;
-	else if (dev->path.type == DEVICE_PATH_GPIO)
-		block_gpio_enable(dev);
 }
 
 struct chip_operations soc_intel_skylake_ops = {

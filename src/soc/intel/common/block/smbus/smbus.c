@@ -38,7 +38,7 @@ static void finalize_smbus(struct device *dev)
 		tco_lockdown();
 }
 
-static struct device_operations smbus_ops = {
+struct device_operations smbus_ops = {
 	.read_resources		= smbus_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -56,8 +56,6 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_GLK_SMBUS,
 	PCI_DID_INTEL_CNL_SMBUS,
 	PCI_DID_INTEL_CNP_H_SMBUS,
-	PCI_DID_INTEL_SPT_LP_SMBUS,
-	PCI_DID_INTEL_SPT_H_SMBUS,
 	PCI_DID_INTEL_LWB_SMBUS_SUPER,
 	PCI_DID_INTEL_LWB_SMBUS,
 	PCI_DID_INTEL_ICP_LP_SMBUS,

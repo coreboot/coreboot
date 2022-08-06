@@ -124,7 +124,7 @@ static const char *lpc_acpi_name(const struct device *dev)
 }
 #endif
 
-static struct device_operations device_ops = {
+struct device_operations lpc_ops = {
 	.read_resources		= pch_lpc_read_resources,
 	.set_resources		= pch_lpc_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -210,24 +210,6 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_RPP_S_ESPI_29,
 	PCI_DID_INTEL_RPP_S_ESPI_30,
 	PCI_DID_INTEL_RPP_S_ESPI_31,
-	PCI_DID_INTEL_SPT_LP_SAMPLE,
-	PCI_DID_INTEL_SPT_LP_U_BASE,
-	PCI_DID_INTEL_SPT_LP_U_PREMIUM,
-	PCI_DID_INTEL_SPT_LP_Y_PREMIUM,
-	PCI_DID_INTEL_SPT_H_H110,
-	PCI_DID_INTEL_SPT_H_H170,
-	PCI_DID_INTEL_SPT_H_Z170,
-	PCI_DID_INTEL_SPT_H_Q170,
-	PCI_DID_INTEL_SPT_H_Q150,
-	PCI_DID_INTEL_SPT_H_B150,
-	PCI_DID_INTEL_SPT_H_C236,
-	PCI_DID_INTEL_SPT_H_C232,
-	PCI_DID_INTEL_SPT_H_QM170,
-	PCI_DID_INTEL_SPT_H_HM170,
-	PCI_DID_INTEL_SPT_H_CM236,
-	PCI_DID_INTEL_SPT_H_HM175,
-	PCI_DID_INTEL_SPT_H_QM175,
-	PCI_DID_INTEL_SPT_H_CM238,
 	PCI_DID_INTEL_LWB_C621,
 	PCI_DID_INTEL_LWB_C622,
 	PCI_DID_INTEL_LWB_C624,
@@ -248,21 +230,6 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_LWB_C627A_SUPER,
 	PCI_DID_INTEL_LWB_C629A_SUPER,
 	PCI_DID_INTEL_EMB_SUPER,
-	PCI_DID_INTEL_UPT_H_Q270,
-	PCI_DID_INTEL_UPT_H_H270,
-	PCI_DID_INTEL_UPT_H_Z270,
-	PCI_DID_INTEL_UPT_H_Q250,
-	PCI_DID_INTEL_UPT_H_B250,
-	PCI_DID_INTEL_UPT_H_Z370,
-	PCI_DID_INTEL_UPT_H_H310C,
-	PCI_DID_INTEL_UPT_H_B365,
-	PCI_DID_INTEL_SPT_LP_Y_PREMIUM_HDCP22,
-	PCI_DID_INTEL_SPT_LP_U_PREMIUM_HDCP22,
-	PCI_DID_INTEL_SPT_LP_U_BASE_HDCP22,
-	PCI_DID_INTEL_UPT_LP_SUPER_SKU,
-	PCI_DID_INTEL_UPT_LP_U_BASE,
-	PCI_DID_INTEL_UPT_LP_U_PREMIUM,
-	PCI_DID_INTEL_UPT_LP_Y_PREMIUM,
 	PCI_DID_INTEL_APL_LPC,
 	PCI_DID_INTEL_GLK_LPC,
 	PCI_DID_INTEL_GLK_ESPI,
@@ -416,7 +383,7 @@ static const unsigned short pci_device_ids[] = {
 };
 
 static const struct pci_driver pch_lpc __pci_driver = {
-	.ops = &device_ops,
+	.ops = &lpc_ops,
 	.vendor = PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };

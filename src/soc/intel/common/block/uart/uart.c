@@ -337,7 +337,7 @@ static const char *uart_acpi_name(const struct device *dev)
 	}
 }
 
-static struct device_operations device_ops = {
+struct device_operations uart_ops = {
 	.read_resources		= uart_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= uart_common_enable_resources,
@@ -351,15 +351,6 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_MTL_UART0,
 	PCI_DID_INTEL_MTL_UART1,
 	PCI_DID_INTEL_MTL_UART2,
-	PCI_DID_INTEL_SPT_UART0,
-	PCI_DID_INTEL_SPT_UART1,
-	PCI_DID_INTEL_SPT_UART2,
-	PCI_DID_INTEL_SPT_H_UART0,
-	PCI_DID_INTEL_SPT_H_UART1,
-	PCI_DID_INTEL_SPT_H_UART2,
-	PCI_DID_INTEL_UPT_H_UART0,
-	PCI_DID_INTEL_UPT_H_UART1,
-	PCI_DID_INTEL_UPT_H_UART2,
 	PCI_DID_INTEL_APL_UART0,
 	PCI_DID_INTEL_APL_UART1,
 	PCI_DID_INTEL_APL_UART2,
@@ -418,7 +409,7 @@ static const unsigned short pci_device_ids[] = {
 };
 
 static const struct pci_driver pch_uart __pci_driver = {
-	.ops		= &device_ops,
+	.ops		= &uart_ops,
 	.vendor		= PCI_VID_INTEL,
 	.devices	= pci_device_ids,
 };
@@ -426,7 +417,7 @@ static const struct pci_driver pch_uart __pci_driver = {
 static void uart_enable(struct device *dev)
 {
 	struct soc_intel_common_block_uart_config *conf = dev->chip_info;
-	dev->ops = &device_ops;
+	dev->ops = &uart_ops;
 	dev->device = conf ? conf->devid : 0;
 }
 

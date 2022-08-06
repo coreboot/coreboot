@@ -38,7 +38,7 @@ static void sd_fill_ssdt(const struct device *dev)
 }
 #endif
 
-static struct device_operations dev_ops = {
+struct device_operations sd_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -52,7 +52,6 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_APL_SD,
 	PCI_DID_INTEL_CNL_SD,
 	PCI_DID_INTEL_GLK_SD,
-	PCI_DID_INTEL_SKL_SD,
 	PCI_DID_INTEL_CNP_H_SD,
 	PCI_DID_INTEL_ICL_SD,
 	PCI_DID_INTEL_CMP_SD,
@@ -63,7 +62,7 @@ static const unsigned short pci_device_ids[] = {
 };
 
 static const struct pci_driver pch_sd __pci_driver = {
-	.ops	= &dev_ops,
+	.ops	= &sd_ops,
 	.vendor	= PCI_VID_INTEL,
 	.devices	= pci_device_ids
 };

@@ -161,7 +161,7 @@ static void dw_i2c_device_init(struct device *dev)
 	dw_i2c_dev_init(dev);
 }
 
-static struct device_operations i2c_dev_ops = {
+struct device_operations i2c_dev_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -181,16 +181,6 @@ static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_MTL_I2C3,
 	PCI_DID_INTEL_MTL_I2C4,
 	PCI_DID_INTEL_MTL_I2C5,
-	PCI_DID_INTEL_SPT_I2C0,
-	PCI_DID_INTEL_SPT_I2C1,
-	PCI_DID_INTEL_SPT_I2C2,
-	PCI_DID_INTEL_SPT_I2C3,
-	PCI_DID_INTEL_SPT_I2C4,
-	PCI_DID_INTEL_SPT_I2C5,
-	PCI_DID_INTEL_UPT_H_I2C0,
-	PCI_DID_INTEL_UPT_H_I2C1,
-	PCI_DID_INTEL_UPT_H_I2C2,
-	PCI_DID_INTEL_UPT_H_I2C3,
 	PCI_DID_INTEL_APL_I2C0,
 	PCI_DID_INTEL_APL_I2C1,
 	PCI_DID_INTEL_APL_I2C2,

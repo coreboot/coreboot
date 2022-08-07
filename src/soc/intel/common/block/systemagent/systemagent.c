@@ -305,7 +305,7 @@ void enable_power_aware_intr(void)
 void sa_lock_pam(void)
 {
 	const struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
-	if (!dev)
+	if (!CONFIG(HAVE_PAM0_REGISTER) || !dev)
 		return;
 
 	pci_or_config8(dev, PAM0, PAM_LOCK);

@@ -31,4 +31,10 @@ config ACPI_BERT_SIZE
 	  Specify the amount of DRAM reserved for gathering the data used to
 	  generate the ACPI table.
 
+config HAVE_PAM0_REGISTER
+	bool
+	default y
+	help
+	  Specify if the SOC has a PAM0 register
+
 endif

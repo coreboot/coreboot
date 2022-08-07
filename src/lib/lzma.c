@@ -1,8 +1,9 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 /*
  * coreboot interface to memory-saving variant of LZMA decoder
  *
  * Copyright (C) 2006 Carl-Daniel Hailfinger
- * Released under the GNU GPL v2 or later
  *
  * Parts of this file are based on C/7zip/Compress/LZMA_C/LzmaTest.c from the
  * LZMA SDK 4.42, which is written and distributed to public domain by Igor

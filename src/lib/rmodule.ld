@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 /*
  * This linker script is used to link rmodules (relocatable modules).  It
  * links at zero so that relocation fixups are easy when placing the binaries

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #include <delay.h>
 void mdelay(unsigned int msecs)
 {

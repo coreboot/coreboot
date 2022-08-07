@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-3.0-only WITH GCC-exception-3.1 */
+
 /* File format for coverage information
    Copyright (C) 1996, 1997, 1998, 2000, 2002,
    2003, 2004, 2005, 2008, 2009 Free Software Foundation, Inc.

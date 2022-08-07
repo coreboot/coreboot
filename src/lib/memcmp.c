@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #include <string.h>
 
 int memcmp(const void *src1, const void *src2, size_t bytes)

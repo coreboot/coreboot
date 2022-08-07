@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-3.0-only WITH GCC-exception-3.1 */
+
 /* Routines required for instrumenting a program.  */
 /* Compile this one with gcc.  */
 /* Copyright (C) 1989, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,

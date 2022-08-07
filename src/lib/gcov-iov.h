@@ -1,3 +1,7 @@
+/* SPDX-License-Identifier: CC-PDDC */
+
+/* Please update this license if any licensable material is added. */
+
 /* Generated automatically by the program `build/gcov-iov'
    from `4.7.2 (4 7) and  (*)'.  */
 

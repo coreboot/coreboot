@@ -4,6 +4,4 @@
 # DESCR: Check that files have license headers
 
 # Top level
-util/lint/lint-000-license-headers "src/acpi src/arch src/commonlib src/console \
-	src/cpu src/device src/drivers src/ec src/mainboard src/northbridge \
-	src/security src/soc src/southbridge src/superio tests payloads/coreinfo"
+util/lint/lint-000-license-headers "src tests payloads/coreinfo"

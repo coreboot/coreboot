@@ -34,6 +34,7 @@ EXAMPLE|\
 NEWS|\
 ChangeLog|\
 Dockerfile|\
+\.gitignore$|\
 \.in$|\
 \.[18]$|\
 \.md$|\

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef DEVICE_PNP_H
 #define DEVICE_PNP_H
 

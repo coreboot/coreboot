@@ -124,10 +124,8 @@ check_for_license 'SPDX-License-Identifier: BSD-4-Clause-UC'
 check_for_license 'SPDX-License-Identifier: CC-PDDC'
 
 for file in $headerlist; do
-	# Verify the file exists, and has content that requires a header
-	# This assumes that a file that has 4 lines or fewer is not notable
-	# enough to require a license.
-	if [ -f "$file" ] && [ "$(wc -l < "$file")" -gt 4 ]; then
+	# Verify the file actually exists
+	if [ -f "$file" ]; then
 		echo "$file has no recognized SPDX identifier."
 	fi
 done

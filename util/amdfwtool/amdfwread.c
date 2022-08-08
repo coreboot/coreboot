@@ -56,14 +56,24 @@ static uint64_t relative_offset(uint32_t header_offset, uint64_t addr, uint64_t 
 	}
 }
 
-static int read_fw_header(FILE *fw, uint32_t offset, embedded_firmware *fw_header)
+static int read_header(FILE *fw, uint32_t offset, void *header, size_t header_size)
 {
 	if (fseek(fw, offset, SEEK_SET) != 0) {
-		ERR("Failed to seek to fw header offset 0x%x\n", offset);
+		ERR("Failed to seek to file offset 0x%x\n", offset);
 		return 1;
 	}
 
-	if (fread(fw_header, sizeof(embedded_firmware), 1, fw) != 1) {
+	if (fread(header, header_size, 1, fw) != 1) {
+		ERR("Failed to read header at 0x%x\n", offset);
+		return 1;
+	}
+
+	return 0;
+}
+
+static int read_fw_header(FILE *fw, uint32_t offset, embedded_firmware *fw_header)
+{
+	if (read_header(fw, offset, fw_header, sizeof(embedded_firmware))) {
 		ERR("Failed to read fw header at 0x%x\n", offset);
 		return 1;
 	}
@@ -77,13 +87,8 @@ static int read_psp_directory(FILE *fw, uint32_t offset, uint32_t expected_cooki
 {
 	offset &= FILE_REL_MASK;
 
-	if (fseek(fw, offset, SEEK_SET) != 0) {
-		ERR("Failed to seek to PSP header at 0x%x\n", offset);
-		return 1;
-	}
-
-	if (fread(header, sizeof(psp_directory_header), 1, fw) != 1) {
-		ERR("Failed to read PSP header cookie\n");
+	if (read_header(fw, offset, header, sizeof(psp_directory_header))) {
+		ERR("Failed to read PSP header\n");
 		return 1;
 	}
 
@@ -106,6 +111,11 @@ static int read_psp_directory(FILE *fw, uint32_t offset, uint32_t expected_cooki
 	return 0;
 }
 
+static int read_ish_directory(FILE *fw, uint32_t offset, ish_directory_table *table)
+{
+	return read_header(fw, offset & FILE_REL_MASK, table, sizeof(*table));
+}
+
 static int read_soft_fuse(FILE *fw, const embedded_firmware *fw_header)
 {
 	psp_directory_entry *current_entries = NULL;
@@ -125,23 +135,56 @@ static int read_soft_fuse(FILE *fw, const embedded_firmware *fw_header)
 
 	while (1) {
 		uint32_t l2_dir_offset = 0;
+		uint32_t ish_dir_offset;
+		ish_directory_table ish_dir;
 
 		for (size_t i = 0; i < num_current_entries; i++) {
 			uint32_t type = current_entries[i].type;
 			uint64_t mode = current_entries[i].address_mode;
 			uint64_t addr = current_entries[i].addr;
+			uint64_t fuse;
 
-			if (type == AMD_PSP_FUSE_CHAIN) {
-				uint64_t fuse = mode << 62 | addr;
+			switch (type) {
+			case AMD_PSP_FUSE_CHAIN:
+				fuse = mode << 62 | addr;
 
 				printf("Soft-fuse:0x%lx\n", fuse);
+				free(current_entries);
 				return 0;
-			} else if (type == AMD_FW_L2_PTR) {
+
+			case AMD_FW_L2_PTR:
 				/* There's a second level PSP directory to read */
-				if (l2_dir_offset != 0)
+				if (l2_dir_offset != 0) {
+					ERR("Duplicate PSP L2 Entry, prior offset: %08x\n",
+										l2_dir_offset);
+					free(current_entries);
 					return 1;
+				}
 
 				l2_dir_offset = relative_offset(psp_offset, addr, mode);
+				break;
+
+			case AMD_FW_RECOVERYAB_A:
+				if (l2_dir_offset != 0) {
+					ERR("Duplicate PSP L2 Entry, prior offset: %08x\n",
+										l2_dir_offset);
+					free(current_entries);
+					return 1;
+				}
+
+				ish_dir_offset = relative_offset(psp_offset, addr, mode);
+				if (read_ish_directory(fw, ish_dir_offset, &ish_dir) != 0) {
+					ERR("Error reading ISH directory\n");
+					free(current_entries);
+					return 1;
+				}
+
+				l2_dir_offset = ish_dir.pl2_location;
+				break;
+
+			default:
+				/* No-op, continue to the next entry. */
+				break;
 			}
 		}
 

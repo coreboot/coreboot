@@ -248,6 +248,12 @@ M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
 F:	src/mainboard/gigabyte/ga-h61m-series/
 
+GOOGLE REX MAINBOARDS
+M:	Subrata Banik <subratabanik@google.com>
+M:	Tarun Tuli <taruntuli@google.com>
+M:	Kapil Porwal <kapilporwal@google.com>
+S:	Maintained
+F:	src/mainboard/google/rex/
 
 GOOGLE BRYA MAINBOARDS
 M:	Tim Wawrzynczak <twawrzynczak@chromium.org>
@@ -667,6 +673,13 @@ M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
 S:	Odd Fixes
 F:	src/soc/amd/stoneyridge/
+
+INTEL METEORLAKE SOC
+M:	Subrata Banik <subratabanik@google.com>
+M:	Tarun Tuli <taruntuli@google.com>
+M:	Kapil Porwal <kapilporwal@google.com>
+S:	Maintained
+F:	src/soc/intel/meteorlake/
 
 INTEL ALDERLAKE SOC
 M:	Tim Wawrzynczak <twawrzynczak@chromium.org>

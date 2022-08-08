@@ -3,6 +3,9 @@ if PLATFORM_USES_FSP2_0
 config SOC_AMD_COMMON_FSP_DMI_TABLES
 	bool
 
+config SOC_AMD_COMMON_FSP_CCX_CPPC_HOB
+	bool
+
 source "src/soc/amd/common/fsp/*/Kconfig"
 
 endif # PLATFORM_USES_FSP2_0

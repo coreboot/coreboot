@@ -4,6 +4,7 @@ ifeq ($(CONFIG_SOC_MEDIATEK_MT8186),y)
 all-y += ../common/flash_controller.c
 all-y += ../common/gpio.c ../common/gpio_op.c  gpio.c
 all-y += ../common/i2c.c i2c.c
+all-y += ../common/pll.c pll.c
 all-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 all-y += ../common/timer.c ../common/timer_prepare.c
 all-y += ../common/uart.c
@@ -12,7 +13,6 @@ bootblock-y += bootblock.c
 bootblock-y += ../common/eint_event.c
 bootblock-y += gic.c
 bootblock-y += ../common/mmu_operations.c
-bootblock-y += ../common/pll.c pll.c
 bootblock-y += ../common/tracker.c ../common/tracker_v1.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
@@ -23,7 +23,6 @@ romstage-y += emi.c
 romstage-y += ../common/memory.c
 romstage-y += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
-romstage-y += ../common/pll.c pll.c
 romstage-y += ../common/pmic_wrap.c pmic_wrap.c pmif.c mt6366.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c rtc.c
 

@@ -516,6 +516,12 @@ void mt_pll_raise_cci_freq(u32 freq)
 	clrsetbits32(&mtk_mcucfg->bus_plldiv_cfg, MCU_MUX_MASK, MCU_MUX_SRC_PLL);
 }
 
+void mt_pll_set_usb_clock(void)
+{
+	/* enable usb macro control */
+	SET32_BITFIELDS(&mtk_topckgen->usb_top_cfg, USB_TOP_CFG_MACRO_CTRL, 3);
+}
+
 u32 mt_fmeter_get_freq_khz(enum fmeter_type type, u32 id)
 {
 	u32 output, count, clk_dbg_cfg, clk_misc_cfg_0, clk26cali_0, clk26cali_1;

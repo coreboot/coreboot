@@ -8,6 +8,7 @@
 #include <device/mmio.h>
 #include <gpio.h>
 #include <soc/gpio.h>
+#include <soc/pll_common.h>
 #include <soc/usb.h>
 
 #define PERI_USB_WAKEUP_DEC_CON1	0x404
@@ -15,6 +16,8 @@
 
 void mtk_usb_prepare(void)
 {
+	mt_pll_set_usb_clock();
+
 	gpio_output(GPIO(USB_DRVVBUS_P1), 1);
 
 	/* disable IP0 debounce */

@@ -1,8 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-/* This file is safe to edit, but please do not change this comment block. */
-/* BaseID: None */
-/* Overrides: None */
+/* This header block is used to supply information to arbitrage, a
+ * google-internal tool. Updating it incorrectly will lead to issues,
+ * so please don't update it unless a change is specifically required.
+ * BaseID: EEF9BFAE6CA0D797
+ * Overrides: 5e80bcfaea530ebe7e64b520ed0727daeb73a187
+ */
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>

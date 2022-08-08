@@ -99,6 +99,23 @@ chip soc/intel/alderlake
 				register "hs_bias_sense_disable" = "true"
 				device i2c 48 on end
 			end
+			chip drivers/i2c/max98396
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
+				register "vmon_slot_no" = "0"
+				register "imon_slot_no" = "1"
+				register "uid" = "0"
+				register "desc" = ""Right Speaker Amp""
+				register "name" = ""MAXR""
+				device i2c 3c on end
+			end
+			chip drivers/i2c/max98396
+				register "vmon_slot_no" = "2"
+				register "imon_slot_no" = "3"
+				register "uid" = "1"
+				register "desc" = ""Left Speaker Amp""
+				register "name" = ""MAXL""
+				device i2c 3d on end
+			end
 		end
 		device ref i2c1 on
 			chip drivers/i2c/tpm

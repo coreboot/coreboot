@@ -553,7 +553,7 @@ typedef struct {
 /** Offset 0x01E0
 **/
 	UINT8                     ReservedMemoryInitUpd[16];
-} FSP_M_CONFIG;
+} FSPM_CONFIG;
 
 /** Fsp M UPD Configuration
 **/

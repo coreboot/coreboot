@@ -154,7 +154,7 @@ static void set_cmos_mrc_cold_boot_flag(bool cold_boot_required)
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
-	FSPM_CONFIG *m_cfg = &mupd->FspmConfig;
+	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	const struct device *dev;
 	const config_t *config = config_of_soc();
 

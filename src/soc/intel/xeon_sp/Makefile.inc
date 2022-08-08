@@ -19,5 +19,6 @@ postcar-y += spi.c
 subdirs-$(CONFIG_SOC_INTEL_XEON_RAS) += ras
 
 CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/include
+CPPFLAGS_common += -include $(src)/soc/intel/xeon_sp/include/soc/fsp_upd.h
 
 endif ## XEON_SP_COMMON_BASE

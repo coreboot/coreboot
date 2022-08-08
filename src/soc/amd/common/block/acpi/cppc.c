@@ -5,6 +5,7 @@
 #include <amdblocks/cppc.h>
 #include <arch/cpu.h>
 #include <soc/msr.h>
+#include <types.h>
 
 /*
  * version 2 is expected to be the typical use case.
@@ -13,6 +14,9 @@
  */
 static void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 {
+	uint32_t lowest_freq_mhz;
+	uint32_t nominal_freq_mhz;
+
 	config->version = version;
 
 	config->entries[CPPC_HIGHEST_PERF]		= CPPC_REG_MSR(MSR_CPPC_CAPABILITY_1, SHIFT_CPPC_CAPABILITY_1_HIGHEST_PERF, 8);
@@ -42,8 +46,12 @@ static void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 	if (version < 3)
 		return;
 
-	config->entries[CPPC_LOWEST_FREQ]		= CPPC_UNSUPPORTED;
-	config->entries[CPPC_NOMINAL_FREQ]		= CPPC_UNSUPPORTED;
+	config->entries[CPPC_LOWEST_FREQ]	=
+				get_ccx_cppc_min_frequency(&lowest_freq_mhz) == CB_SUCCESS ?
+				CPPC_DWORD(lowest_freq_mhz) : CPPC_UNSUPPORTED;
+	config->entries[CPPC_NOMINAL_FREQ]	=
+				get_ccx_cppc_nom_frequency(&nominal_freq_mhz) == CB_SUCCESS ?
+				CPPC_DWORD(nominal_freq_mhz) : CPPC_UNSUPPORTED;
 }
 
 void generate_cppc_entries(unsigned int core_id)

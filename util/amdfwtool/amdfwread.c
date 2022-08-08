@@ -179,19 +179,18 @@ int main(int argc, char **argv)
 	char *fw_file = NULL;
 
 	int selected_functions = 0;
-	int index = 0;
 	while (1) {
-		int opt = getopt_long(argc, argv, optstring, long_options, &index);
+		int opt = getopt_long(argc, argv, optstring, long_options, NULL);
 
 		if (opt == -1) {
-			index++;
-			if (index >= argc) {
-				/* Print usage if we didn't get any arguments */
+			if (optind != (argc - 1)) {
+				/* Print usage if one and only one option i.e. filename is
+				   not found. */
 				print_usage();
 				return 0;
 			}
 
-			fw_file = argv[index];
+			fw_file = argv[optind];
 			break;
 		}
 

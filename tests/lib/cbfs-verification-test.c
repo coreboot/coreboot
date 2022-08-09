@@ -28,8 +28,10 @@ size_t vb2_digest_size(enum vb2_hash_algorithm hash_alg)
 	return VB2_SHA256_DIGEST_SIZE;
 }
 
-vb2_error_t vb2_hash_verify(const void *buf, uint32_t size, const struct vb2_hash *hash)
+vb2_error_t vb2_hash_verify(bool allow_hwcrypto, const void *buf, uint32_t size,
+			    const struct vb2_hash *hash)
 {
+	assert_true(allow_hwcrypto);
 	check_expected_ptr(buf);
 	check_expected(size);
 	assert_int_equal(hash->algo, VB2_HASH_SHA256);
@@ -56,7 +58,8 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 	return 0;
 }
 
-vb2_error_t vb2_digest_init(struct vb2_digest_context *dc, enum vb2_hash_algorithm hash_alg)
+vb2_error_t vb2_digest_init(struct vb2_digest_context *dc, bool allow_hwcrypto,
+			    enum vb2_hash_algorithm hash_alg, uint32_t data_size)
 {
 	if (hash_alg != VB2_HASH_SHA256) {
 		fail_msg("Unsupported hash algorithm: %d\n", hash_alg);

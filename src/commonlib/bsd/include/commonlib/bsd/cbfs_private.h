@@ -27,6 +27,9 @@
  * cbfs_dev_t		An opaque type representing a CBFS storage backend.
  * CBFS_ENABLE_HASHING	Should be 0 to avoid linking hashing features, 1 otherwise. (Only for
  *			metadata hashing. Host application needs to check file hashes itself.)
+ * CBFS_HASH_HWCRYPTO	Should evaluate to true to allow using vboot hardware crypto routines
+ *			for hashing, false to forbid. This macro may expand to a function call
+ *			to decide this at runtime.
  * ERROR(...)		printf-style macro to print errors.
  * LOG(...)		printf-style macro to print normal-operation log messages.
  * DEBUG(...)		printf-style macro to print detailed debug output.

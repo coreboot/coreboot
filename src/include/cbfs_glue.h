@@ -5,6 +5,7 @@
 
 #include <commonlib/region.h>
 #include <console/console.h>
+#include <security/vboot/misc.h>
 #include <rules.h>
 
 /*
@@ -18,6 +19,7 @@
  */
 #define CBFS_ENABLE_HASHING (CONFIG(CBFS_VERIFICATION) && \
 			     (CONFIG(TOCTOU_SAFETY) || ENV_INITIAL_STAGE))
+#define CBFS_HASH_HWCRYPTO vboot_hwcrypto_allowed()
 
 #define ERROR(...) printk(BIOS_ERR, "CBFS ERROR: " __VA_ARGS__)
 #define LOG(...) printk(BIOS_INFO, "CBFS: " __VA_ARGS__)

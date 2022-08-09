@@ -5,9 +5,11 @@
 
 #include <libpayload-config.h>
 #include <boot_device.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 #define CBFS_ENABLE_HASHING CONFIG(LP_CBFS_VERIFICATION)
+#define CBFS_HASH_HWCRYPTO cbfs_hwcrypto_allowed()
 
 #define ERROR(...) printf("CBFS ERROR: " __VA_ARGS__)
 #define LOG(...) printf("CBFS: " __VA_ARGS__)
@@ -42,5 +44,7 @@ static inline size_t cbfs_dev_size(cbfs_dev_t dev)
 {
 	return dev->size;
 }
+
+bool cbfs_hwcrypto_allowed(void);
 
 #endif /* _CBFS_CBFS_GLUE_H */

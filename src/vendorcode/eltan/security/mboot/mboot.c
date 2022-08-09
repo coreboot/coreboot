@@ -128,9 +128,10 @@ int mboot_hash_extend_log(uint64_t flags, uint8_t *hashData, uint32_t hashDataLe
 		/* The hash is provided as data */
 		memcpy(digest->digest.sha256, (void *)hashData, hashDataLen);
 	} else {
-		if (vb2_digest_buffer(hashData, hashDataLen, VB2_HASH_SHA256, digest->digest.sha256,
-					VB2_SHA256_DIGEST_SIZE))
+		struct vb2_hash tmp;
+		if (vb2_hash_calculate(false, hashData, hashDataLen, VB2_HASH_SHA256, &tmp))
 			return TPM_E_IOERROR;
+		memcpy(digest->digest.sha256, tmp.sha256, sizeof(tmp.sha256));
 	}
 
 	printk(BIOS_DEBUG, "%s: SHA256 Hash Digest:\n", __func__);

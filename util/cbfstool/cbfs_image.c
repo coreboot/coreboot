@@ -1456,7 +1456,7 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 			break;
 		}
 		char *hash_str = bintohex(attr->hash.raw, hash_len);
-		int valid = vb2_hash_verify(CBFS_SUBHEADER(entry),
+		int valid = vb2_hash_verify(false, CBFS_SUBHEADER(entry),
 			be32toh(entry->len), &attr->hash) == VB2_SUCCESS;
 		const char *valid_str = valid ? "valid" : "invalid";
 
@@ -1544,7 +1544,7 @@ static int cbfs_print_parseable_entry_info(struct cbfs_image *image,
 			if (!hash_len)
 				continue;
 			char *hash_str = bintohex(attr->hash.raw, hash_len);
-			int valid = vb2_hash_verify(CBFS_SUBHEADER(entry),
+			int valid = vb2_hash_verify(false, CBFS_SUBHEADER(entry),
 				be32toh(entry->len), &attr->hash) == VB2_SUCCESS;
 			fprintf(fp, "%shash:%s:%s:%s", sep,
 				vb2_get_hash_algorithm_name(attr->hash.algo),
@@ -1873,7 +1873,7 @@ int cbfs_add_file_hash(struct cbfs_file *header, struct buffer *buffer,
 	if (attr == NULL)
 		return -1;
 
-	if (vb2_hash_calculate(buffer_get(buffer), buffer_size(buffer),
+	if (vb2_hash_calculate(false, buffer_get(buffer), buffer_size(buffer),
 			       alg, &attr->hash) != VB2_SUCCESS)
 		return -1;
 

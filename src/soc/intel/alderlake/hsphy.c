@@ -10,6 +10,7 @@
 #include <device/pci_ops.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/systemagent.h>
+#include <security/vboot/misc.h>
 #include <soc/hsphy.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -105,42 +106,28 @@ static int heci_get_hsphy_payload(void *buf, uint32_t *buf_size, uint8_t *hash_b
 
 static int verify_hsphy_hash(void *buf, uint32_t buf_size, uint8_t *hash_buf, uint8_t hash_alg)
 {
-	enum vb2_hash_algorithm alg;
-	uint32_t hash_size;
-	uint8_t hash_calc[MAX_HASH_SIZE];
+	struct vb2_hash hash;
 
 	switch (hash_alg) {
 	case HASHALG_SHA256:
-		alg = VB2_HASH_SHA256;
-		hash_size = VB2_SHA256_DIGEST_SIZE;
+		hash.algo = VB2_HASH_SHA256;
 		break;
 	case HASHALG_SHA384:
-		alg = VB2_HASH_SHA384;
-		hash_size = VB2_SHA384_DIGEST_SIZE;
+		hash.algo = VB2_HASH_SHA384;
 		break;
 	case HASHALG_SHA512:
-		alg = VB2_HASH_SHA512;
-		hash_size = VB2_SHA512_DIGEST_SIZE;
+		hash.algo = VB2_HASH_SHA512;
 		break;
 	case HASHALG_SHA1:
 	default:
 		printk(BIOS_ERR, "Hash alg %d not supported, trying SHA384\n", hash_alg);
-		alg = VB2_HASH_SHA384;
-		hash_size = VB2_SHA384_DIGEST_SIZE;
+		hash.algo = VB2_HASH_SHA384;
 		break;
 	}
+	memcpy(hash.raw, hash_buf, vb2_digest_size(hash.algo));
 
-	if (vb2_digest_buffer(buf, buf_size, alg, hash_calc, hash_size)) {
-		printk(BIOS_ERR, "HSPHY SHA calculation failed\n");
-		return -1;
-	}
-
-	if (memcmp(hash_buf, hash_calc, hash_size)) {
+	if (vb2_hash_verify(vboot_hwcrypto_allowed(), buf, buf_size, &hash) != VB2_SUCCESS) {
 		printk(BIOS_ERR, "HSPHY SHA hashes do not match\n");
-		printk(BIOS_DEBUG, "Hash from CSME:\n");
-		hexdump(hash_buf, hash_size);
-		printk(BIOS_DEBUG, "Calculated hash:\n");
-		hexdump(hash_calc, hash_size);
 		return -1;
 	}
 

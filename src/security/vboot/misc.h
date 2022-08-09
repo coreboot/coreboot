@@ -87,4 +87,18 @@ static inline int vboot_logic_executed(void)
 	}
 }
 
+static inline bool vboot_hwcrypto_allowed(void)
+{
+	/* When not using vboot firmware verification, HW crypto is always allowed. */
+	if (!CONFIG(VBOOT))
+		return 1;
+
+	/* Before vboot runs we can't check for HW crypto, so err on the side of caution. */
+	if (!vboot_logic_executed())
+		return 0;
+
+	/* Otherwise, vboot can decide. */
+	return vb2api_hwcrypto_allowed(vboot_get_context());
+}
+
 #endif /* __VBOOT_MISC_H__ */

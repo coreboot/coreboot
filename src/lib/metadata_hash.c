@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <metadata_hash.h>
+#include <security/vboot/misc.h>
 #include <symbols.h>
 
 #if !CONFIG(COMPRESS_BOOTBLOCK) || ENV_DECOMPRESSOR
@@ -46,5 +47,5 @@ vb2_error_t metadata_hash_verify_fmap(const void *fmap_buffer, size_t fmap_size)
 	struct vb2_hash hash = { .algo = get_anchor()->cbfs_hash.algo };
 	memcpy(hash.raw, metadata_hash_anchor_fmap_hash(get_anchor()),
 	       vb2_digest_size(hash.algo));
-	return vb2_hash_verify(fmap_buffer, fmap_size, &hash);
+	return vb2_hash_verify(vboot_hwcrypto_allowed(), fmap_buffer, fmap_size, &hash);
 }

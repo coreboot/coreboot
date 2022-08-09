@@ -6,6 +6,7 @@
 #include "cbfs_image.h"
 
 #define CBFS_ENABLE_HASHING 1
+#define CBFS_HASH_HWCRYPTO 0
 
 typedef const struct cbfs_image *cbfs_dev_t;
 

@@ -544,15 +544,15 @@ static bool cse_verify_cbfs_rw_sha256(const uint8_t *expected_rw_blob_sha,
 		const void *rw_blob, const size_t rw_blob_sz)
 
 {
-	uint8_t rw_comp_sha[VB2_SHA256_DIGEST_SIZE];
+	struct vb2_hash calculated;
 
-	if (vb2_digest_buffer(rw_blob, rw_blob_sz, VB2_HASH_SHA256, rw_comp_sha,
-				VB2_SHA256_DIGEST_SIZE)) {
+	if (vb2_hash_calculate(vboot_hwcrypto_allowed(), rw_blob, rw_blob_sz,
+			       VB2_HASH_SHA256, &calculated)) {
 		printk(BIOS_ERR, "cse_lite: CSE CBFS RW's SHA-256 calculation has failed\n");
 		return false;
 	}
 
-	if (memcmp(expected_rw_blob_sha, rw_comp_sha, VB2_SHA256_DIGEST_SIZE)) {
+	if (memcmp(expected_rw_blob_sha, calculated.sha256, sizeof(calculated.sha256))) {
 		printk(BIOS_ERR, "cse_lite: Computed CBFS RW's SHA-256 does not match with"
 				"the provided SHA in the metadata\n");
 		return false;

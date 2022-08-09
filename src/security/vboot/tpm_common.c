@@ -1,8 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <security/tpm/tspi.h>
-#include <vb2_api.h>
 #include <security/vboot/tpm_common.h>
+#include <vb2_api.h>
+#include <vb2_sha.h>
 
 #define TPM_PCR_BOOT_MODE "VBOOT: boot mode"
 #define TPM_PCR_GBB_HWID_NAME "VBOOT: GBB HWID"

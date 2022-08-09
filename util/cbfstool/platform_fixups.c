@@ -67,7 +67,7 @@ static void *qualcomm_find_hash(struct buffer *in, size_t bb_offset, struct vb2_
 	}
 
 	/* Pass out the actual hash of the current bootblock segment in |real_hash|. */
-	if (vb2_hash_calculate(buffer_get(&elf) + pelf.phdr[bb_segment].p_offset,
+	if (vb2_hash_calculate(false, buffer_get(&elf) + pelf.phdr[bb_segment].p_offset,
 			       pelf.phdr[bb_segment].p_filesz, VB2_HASH_SHA384, real_hash)) {
 		ERROR("fixups: vboot digest error\n");
 		goto destroy_elf;
@@ -159,7 +159,7 @@ static void *mediatek_find_hash(struct buffer *bootblock, struct vb2_hash *real_
 		return NULL;
 	}
 
-	if (vb2_hash_calculate(buffer_get(&buffer),
+	if (vb2_hash_calculate(false, buffer_get(&buffer),
 			       MEDIATEK_BOOTBLOCK_GFH_SIZE + data_size,
 			       VB2_HASH_SHA256, real_hash)) {
 		ERROR("fixups: MediaTek: vboot digest error\n");

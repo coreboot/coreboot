@@ -89,7 +89,7 @@ static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
 		ERROR("'%s' does not have a file hash!\n", mdata->h.filename);
 		return true;
 	}
-	if (vb2_hash_verify(buffer, size, hash) != VB2_SUCCESS) {
+	if (vb2_hash_verify(cbfs_hwcrypto_allowed(), buffer, size, hash) != VB2_SUCCESS) {
 		ERROR("'%s' file hash mismatch!\n", mdata->h.filename);
 		return true;
 	}
@@ -222,4 +222,11 @@ void *_cbfs_unverified_area_load(const char *area, const char *name, void *buf,
 	}
 
 	return do_load(&mdata, dev.offset + data_offset, buf, size_inout, true);
+}
+
+/* This should be overridden by payloads that want to enforce more explicit
+   policy on using HW crypto. */
+__weak bool cbfs_hwcrypto_allowed(void)
+{
+	return true;
 }

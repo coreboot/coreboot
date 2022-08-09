@@ -30,13 +30,10 @@ enum cb_err cbfs_walk(cbfs_dev_t dev, enum cb_err (*walker)(cbfs_dev_t dev, size
 	const bool do_hash = CBFS_ENABLE_HASHING && metadata_hash;
 	const size_t devsize = cbfs_dev_size(dev);
 	struct vb2_digest_context dc;
-	vb2_error_t vbrv;
 
 	assert(CBFS_ENABLE_HASHING || (!metadata_hash && !(flags & CBFS_WALK_WRITEBACK_HASH)));
-	if (do_hash && (vbrv = vb2_digest_init(&dc, metadata_hash->algo))) {
-		ERROR("Metadata hash digest (%d) init error: %#x\n", metadata_hash->algo, vbrv);
+	if (do_hash && vb2_digest_init(&dc, CBFS_HASH_HWCRYPTO, metadata_hash->algo, 0))
 		return CB_ERR_ARG;
-	}
 
 	size_t offset = 0;
 	enum cb_err ret_header;

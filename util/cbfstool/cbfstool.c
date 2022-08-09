@@ -271,12 +271,12 @@ static int maybe_update_fmap_hash(void)
 	if (mhc->cbfs_hash.algo == VB2_HASH_INVALID)
 		return 0;
 
-	uint8_t fmap_hash[VB2_MAX_DIGEST_SIZE];
+	struct vb2_hash fmap_hash;
 	const struct fmap *fmap = partitioned_file_get_fmap(param.image_file);
-	if (!fmap || vb2_digest_buffer((const void *)fmap, fmap_size(fmap),
-			mhc->cbfs_hash.algo, fmap_hash, sizeof(fmap_hash)))
+	if (!fmap || vb2_hash_calculate(false, fmap, fmap_size(fmap),
+					mhc->cbfs_hash.algo, &fmap_hash))
 		return -1;
-	return update_anchor(mhc, fmap_hash);
+	return update_anchor(mhc, fmap_hash.raw);
 }
 
 static bool verification_exclude(enum cbfs_type type)
@@ -1511,7 +1511,7 @@ static enum cb_err verify_walker(__always_unused cbfs_dev_t dev, size_t offset,
 	if (!hash)
 		return CB_ERR;
 	void *file_data = arg + offset + data_offset;
-	if (vb2_hash_verify(file_data, be32toh(mdata->h.len), hash) != VB2_SUCCESS)
+	if (vb2_hash_verify(false, file_data, be32toh(mdata->h.len), hash) != VB2_SUCCESS)
 		return CB_CBFS_HASH_MISMATCH;
 	return CB_CBFS_NOT_FOUND;
 }

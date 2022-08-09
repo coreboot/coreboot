@@ -12,7 +12,7 @@
 #include <list.h>
 #include <metadata_hash.h>
 #include <security/tpm/tspi/crtm.h>
-#include <security/vboot/vboot_common.h>
+#include <security/vboot/misc.h>
 #include <stdlib.h>
 #include <string.h>
 #include <symbols.h>
@@ -160,7 +160,7 @@ static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
 			ERROR("'%s' does not have a file hash!\n", mdata->h.filename);
 			return true;
 		}
-		if (vb2_hash_verify(buffer, size, hash) != VB2_SUCCESS) {
+		if (vb2_hash_verify(vboot_hwcrypto_allowed(), buffer, size, hash)) {
 			ERROR("'%s' file hash mismatch!\n", mdata->h.filename);
 			return true;
 		}
@@ -171,11 +171,15 @@ static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
 
 		/* No need to re-hash file if we already have it from verification. */
 		if (!hash || hash->algo != TPM_MEASURE_ALGO) {
-			vb2_hash_calculate(buffer, size, TPM_MEASURE_ALGO, &calculated_hash);
-			hash = &calculated_hash;
+			if (vb2_hash_calculate(vboot_hwcrypto_allowed(), buffer, size,
+					       TPM_MEASURE_ALGO, &calculated_hash))
+				hash = NULL;
+			else
+				hash = &calculated_hash;
 		}
 
-		if (tspi_cbfs_measurement(mdata->h.filename, be32toh(mdata->h.type), hash))
+		if (!hash ||
+		    tspi_cbfs_measurement(mdata->h.filename, be32toh(mdata->h.type), hash))
 			ERROR("failed to measure '%s' into TCPA log\n", mdata->h.filename);
 			/* We intentionally continue to boot on measurement errors. */
 	}

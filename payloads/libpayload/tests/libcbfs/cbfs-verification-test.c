@@ -23,8 +23,10 @@ size_t vb2_digest_size(enum vb2_hash_algorithm hash_alg)
 	return VB2_SHA256_DIGEST_SIZE;
 }
 
-vb2_error_t vb2_hash_verify(const void *buf, uint32_t size, const struct vb2_hash *hash)
+vb2_error_t vb2_hash_verify(bool allow_hwcrypto, const void *buf, uint32_t size,
+			    const struct vb2_hash *hash)
 {
+	assert_true(allow_hwcrypto);
 	check_expected_ptr(buf);
 	check_expected(size);
 

@@ -419,6 +419,7 @@ static void fill_fsps_ai_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
 	s_cfg->GnaEnable = is_devfn_enabled(PCI_DEVFN_GNA);
+	s_cfg->VpuEnable = is_devfn_enabled(PCI_DEVFN_VPU);
 }
 
 static void arch_silicon_init_params(FSPS_ARCH_UPD *s_arch_cfg)

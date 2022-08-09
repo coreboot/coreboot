@@ -72,6 +72,10 @@
 #define  PCI_DEV_TCSS_DMA0	_PCI_DEV(TCSS, 2)
 #define  PCI_DEV_TCSS_DMA1	_PCI_DEV(TCSS, 3)
 
+#define PCI_DEV_SLOT_VPU	0x0b
+#define  PCI_DEVFN_VPU		_PCI_DEVFN(VPU, 0)
+#define  PCI_DEV_VPU		_PCI_DEV(VPU, 0)
+
 #define PCI_DEV_SLOT_VMD	0x0e
 #define  PCI_DEVFN_VMD		_PCI_DEVFN(VMD, 0)
 #define  PCI_DEV_VMD		_PCI_DEV(VMD, 0)

@@ -53,3 +53,4 @@ Offset (0xa6),
 GPUD, 8,	// GPU Data
 Offset (0xa7),
 PWRT, 8,	// Power source and change count
+EOVD, 8,	// EC OEM Variable Data

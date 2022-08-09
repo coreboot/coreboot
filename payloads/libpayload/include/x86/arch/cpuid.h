@@ -47,6 +47,25 @@ _declare_cpuid(edx)
 
 #undef _declare_cpuid
 
+#define cpuid_sub_leaf(fn, sub_leaf, eax, ebx, ecx, edx) \
+	asm("cpuid" : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx) : "0"(fn), "1"(sub_leaf))
+
+#define _declare_cpuid_sub_leaf(reg)					\
+	static inline unsigned int cpuid_sub_leaf_##reg( \
+		unsigned int fn, unsigned int sub_leaf)	\
+	{								\
+		unsigned int eax, ebx, ecx, edx;			\
+		cpuid_sub_leaf(fn, sub_leaf, eax, ebx, ecx, edx);	\
+		return reg;						\
+	}
+
+_declare_cpuid_sub_leaf(eax)
+_declare_cpuid_sub_leaf(ebx)
+_declare_cpuid_sub_leaf(ecx)
+_declare_cpuid_sub_leaf(edx)
+
+#undef _declare_cpuid_sub_leaf
+
 static inline unsigned int cpuid_max(void)
 {
 	return cpuid_eax(0);

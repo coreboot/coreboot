@@ -31,15 +31,21 @@
 #ifndef __ARCH_CACHE_H__
 #define __ARCH_CACHE_H__
 
+#include <stddef.h>
+#include <stdint.h>
+
+/* returns number of bytes per cache line */
+unsigned int dcache_line_bytes(void);
+
+void dcache_invalidate_all(void);
+void dcache_clean_invalidate_all(void);
+void dcache_clean_all(void);
+void dcache_clean_by_mva(void const *addr, size_t len);
+void dcache_invalidate_by_mva(void const *addr, size_t len);
+void dcache_clean_invalidate_by_mva(void const *addr, size_t len);
 /* NOOPs mirroring ARM's cache API, since x86 devices usually cache snoop */
 #define dmb()
 #define dsb()
-#define dcache_clean_all()
-#define dcache_clean_by_mva(addr, len)
-#define dcache_invalidate_all()
-#define dcache_invalidate_by_mva(addr, len)
-#define dcache_clean_invalidate_all()
-#define dcache_clean_invalidate_by_mva(addr, len)
 #define cache_sync_instructions()
 
 #endif

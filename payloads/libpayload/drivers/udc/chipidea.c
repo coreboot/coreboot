@@ -221,10 +221,10 @@ static void advance_endpoint(struct chipidea_pdata *p, int endpoint, int in_dir)
 
 	job->tds = tds;
 	job->td_count = td_count;
-
 	dcache_clean_by_mva(tds, sizeof(struct td) * td_count);
-	dcache_clean_by_mva(job->data, job->length);
 	dcache_clean_by_mva(qh, sizeof(*qh));
+	if (!dma_coherent(job->data))
+		dcache_clean_by_mva(job->data, job->length);
 
 	debug("priming EP %d-%d with %zx bytes starting at %x (%p)\n", endpoint,
 		in_dir, job->length, tds[0].page0, job->data);
@@ -240,7 +240,7 @@ static void handle_endpoint(struct usbdev_ctrl *this, int endpoint, int in_dir)
 	struct job *job = SIMPLEQ_FIRST(&p->job_queue[endpoint][in_dir]);
 	SIMPLEQ_REMOVE_HEAD(&p->job_queue[endpoint][in_dir], queue);
 
-	if (in_dir)
+	if (in_dir && !dma_coherent(job->data))
 		dcache_invalidate_by_mva(job->data, job->length);
 
 	int length = job->length;

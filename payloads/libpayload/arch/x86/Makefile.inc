@@ -32,7 +32,7 @@ head.o-y += head.S
 libc-y += main.c sysinfo.c
 libc-y += timer.c coreboot.c util.S
 libc-y += exec.S virtual.c
-libc-y += selfboot.c
+libc-y += selfboot.c cache.c
 libc-y += exception_asm.S exception.c
 libc-y += delay.c
 

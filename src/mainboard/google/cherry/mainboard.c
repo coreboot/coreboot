@@ -6,6 +6,7 @@
 #include <delay.h>
 #include <device/device.h>
 #include <device/mmio.h>
+#include <ec/google/chromeec/ec.h>
 #include <edid.h>
 #include <framebuffer_info.h>
 #include <gpio.h>
@@ -20,6 +21,7 @@
 #include <soc/pcie.h>
 #include <soc/spm.h>
 #include <soc/usb.h>
+#include <types.h>
 
 #include "gpio.h"
 
@@ -31,28 +33,29 @@
 
 bool mainboard_needs_pcie_init(void)
 {
-	uint32_t sku;
+	uint32_t sku = sku_id();
 
-	if (!CONFIG(BOARD_GOOGLE_DOJO))
-		return false;
-
-	sku = sku_id();
-	switch (sku) {
-	case 0:
-	case 1:
-	case 4:
-	case 5:
-		return false;
-	case 2:
-	case 3:
-	case 6:
-	case 7:
+	if (sku == CROS_SKU_UNKNOWN) {
+		printk(BIOS_WARNING, "Unknown SKU (%#x); assuming PCIe", sku);
 		return true;
-	default:
-		/* For example CROS_SKU_UNPROVISIONED */
-		printk(BIOS_WARNING, "Unexpected sku %#x; assuming PCIe", sku);
+	} else if (sku == CROS_SKU_UNPROVISIONED) {
+		printk(BIOS_WARNING, "Unprovisioned SKU (%#x); assuming PCIe", sku);
 		return true;
 	}
+
+	/*
+	 * All cherry boards share the same SKU encoding. Therefore there is no need to check
+	 * the board here.
+	 * - BIT(1): NVMe (PCIe)
+	 * - BIT(3): UFS (which takes precedence over BIT(1))
+	 */
+	if (sku & BIT(3))
+		return false;
+	if (sku & BIT(1))
+		return true;
+
+	/* Otherwise, eMMC */
+	return false;
 }
 
 /* Set up backlight control pins as output pin and power-off by default */

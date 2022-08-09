@@ -10,6 +10,7 @@
 /* An address can be relative to the image/file start but it can also be the address when
  * the image is mapped at 0xff000000. Used to ensure that we only attempt to read within
  * the limits of the file. */
+#define SPI_ROM_BASE 0xff000000
 #define FILE_REL_MASK 0xffffff
 
 #define ERR(...) fprintf(stderr, __VA_ARGS__)
@@ -24,28 +25,35 @@ const uint32_t fw_header_offsets[] = {
 };
 
 /* Converts addresses to be relative to the start of the file */
-static uint64_t relative_offset(const psp_directory_header *header, uint32_t header_offset,
-	const psp_directory_entry *entry, size_t entry_index)
+static uint64_t relative_offset(uint32_t header_offset, uint64_t addr, uint64_t mode)
 {
-	amd_addr_mode mode = header->additional_info_fields.address_mode;
-	if (mode == AMD_ADDR_REL_BIOS) {
-		/* Entry address mode override directory mode with this value */
-		mode = entry->address_mode;
-	}
-
 	switch (mode) {
-	case AMD_ADDR_REL_BIOS:
-		return entry->addr + header_offset;
+	/* Since this utility operates on the BIOS file, physical address is converted
+	   relative to the start of the BIOS file. */
+	case AMD_ADDR_PHYSICAL:
+		if (addr < SPI_ROM_BASE || addr > (SPI_ROM_BASE + FILE_REL_MASK)) {
+			ERR("Invalid address(%lx) or mode(%lx)\n", addr, mode);
+			/* TODO: fix amdfwtool to program the right address/mode. In guybrush,
+			 * lots of addresses are marked as physical, but they are relative to
+			 * BIOS. Until that is fixed, just leave an error message. */
+			// exit(1);
+		}
+		return addr & FILE_REL_MASK;
 
-	case AMD_ADDR_REL_SLOT:
-		return entry->addr + header_offset + sizeof(psp_directory_header) +
-			entry_index * sizeof(psp_directory_entry);
+	case AMD_ADDR_REL_BIOS:
+		if (addr > FILE_REL_MASK) {
+			ERR("Invalid address(%lx) or mode(%lx)\n", addr, mode);
+			exit(1);
+		}
+		return addr & FILE_REL_MASK;
+
+	case AMD_ADDR_REL_TAB:
+		return addr + header_offset;
 
 	default:
-		break;
+		ERR("Unsupported mode %lu\n", mode);
+		exit(1);
 	}
-
-	return entry->addr & FILE_REL_MASK;
 }
 
 static int read_fw_header(FILE *fw, uint32_t offset, embedded_firmware *fw_header)
@@ -120,9 +128,10 @@ static int read_soft_fuse(FILE *fw, const embedded_firmware *fw_header)
 
 		for (size_t i = 0; i < num_current_entries; i++) {
 			uint32_t type = current_entries[i].type;
+			uint64_t mode = current_entries[i].address_mode;
+			uint64_t addr = current_entries[i].addr;
+
 			if (type == AMD_PSP_FUSE_CHAIN) {
-				uint64_t mode = current_entries[i].address_mode;
-				uint64_t addr = current_entries[i].addr;
 				uint64_t fuse = mode << 62 | addr;
 
 				printf("Soft-fuse:0x%lx\n", fuse);
@@ -132,8 +141,7 @@ static int read_soft_fuse(FILE *fw, const embedded_firmware *fw_header)
 				if (l2_dir_offset != 0)
 					return 1;
 
-				l2_dir_offset = relative_offset(&header, psp_offset,
-								&current_entries[i], i);
+				l2_dir_offset = relative_offset(psp_offset, addr, mode);
 			}
 		}
 

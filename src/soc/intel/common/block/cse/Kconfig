@@ -73,6 +73,12 @@ config SOC_INTEL_CSE_LITE_SKU
 	help
 	 Enables CSE Lite SKU
 
+config SOC_INTEL_CSE_SERVER_SKU
+	bool
+	default n
+	help
+	  Enables CSE Server SKU
+
 config SOC_INTEL_CSE_RW_UPDATE
 	bool "Enable the CSE RW Update Feature"
 	default n

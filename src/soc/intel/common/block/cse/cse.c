@@ -572,6 +572,8 @@ static enum cse_tx_rx_status heci_receive(void *buff, size_t *maxlen)
 
 		if ((hdr & MEI_HDR_IS_COMPLETE) && received) {
 			*maxlen = p - (uint8_t *)buff;
+			if (CONFIG(SOC_INTEL_CSE_SERVER_SKU))
+				clear_int();
 			return CSE_TX_RX_SUCCESS;
 		}
 	}

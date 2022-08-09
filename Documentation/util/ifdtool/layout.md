@@ -29,7 +29,7 @@ way to categorize anything required by the SoC but not provided by coreboot.
 +------------+------------------+-----------+-------------------------------------------+
 | 4          | Platform Data    | SI_PDR    |                                           |
 +------------+------------------+-----------+-------------------------------------------+
-| 8          | EC Firmware      | SI_EC     | Most ChromeOS devices do not use this    |
+| 8          | EC Firmware      | SI_EC     | Most ChromeOS devices do not use this     |
 |            |                  |           | region; EC firmware is stored in BIOS     |
 |            |                  |           | region of flash                           |
 +------------+------------------+-----------+-------------------------------------------+

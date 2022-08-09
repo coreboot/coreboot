@@ -162,10 +162,7 @@ static int read_soft_fuse(FILE *fw, const embedded_firmware *fw_header)
 
 enum {
 	AMDFW_OPT_HELP = 'h',
-
-	/* When bit 31 is set, options are a bitfield of info to print from the
-	   firmware image. */
-	AMDFW_OPT_SOFT_FUSE = 0xF0000001,
+	AMDFW_OPT_SOFT_FUSE = 1UL << 0, /* Print Softfuse */
 };
 
 static char const optstring[] = {AMDFW_OPT_HELP};
@@ -202,12 +199,18 @@ int main(int argc, char **argv)
 			break;
 		}
 
-		if (opt == AMDFW_OPT_HELP) {
+		switch (opt) {
+		case AMDFW_OPT_HELP:
 			print_usage();
 			return 0;
-		}
 
-		selected_functions |= opt;
+		case AMDFW_OPT_SOFT_FUSE:
+			selected_functions |= opt;
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	FILE *fw = fopen(fw_file, "rb");

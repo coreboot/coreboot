@@ -7,5 +7,6 @@ DRAM Part Name                 ID to assign
 K4U6E3S4AA-MGCR                0 (0000)
 K4UBE3D4AA-MGCR                1 (0001)
 H9HCNNNBKMMLXR-NEE             0 (0000)
+H9HCNNNCPMMLXR-NEE             1 (0001)
 MT53E1G32D2NP-046 WT:A         2 (0010)
 MT53E1G32D2NP-046 WT:B         1 (0001)

@@ -23,7 +23,7 @@ uintptr_t add_agesa_fsp_acpi_table(guid_t guid, const char *name, acpi_rsdp_t *r
 	size_t hob_size;
 
 	data = fsp_find_extension_hob_by_guid(guid.b, &hob_size);
-	if (!data) {
+	if (data == NULL) {
 		printk(BIOS_ERR, "AGESA %s ACPI table was not found.\n", name);
 		return current;
 	}

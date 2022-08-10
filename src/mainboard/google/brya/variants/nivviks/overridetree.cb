@@ -4,6 +4,10 @@ fw_config
 		option DB_1C_1A			1
 		option DB_1C_LTE		2
 	end
+	field THERMAL_SOLUTION 2
+		option THERMAL_SOLUTION_PASSIVE 0
+		option THERMAL_SOLUTION_ACTIVE  1
+	end
 	field SD_CARD 4
 		option SD_GL9750S		0
 		option SD_ABSENT		1
@@ -161,7 +165,9 @@ chip soc/intel/alderlake
 					[3] = {   8,  500 }
 				}"
 
-				device generic 0 on end
+				device generic 0 on
+					probe THERMAL_SOLUTION THERMAL_SOLUTION_PASSIVE
+				end
 			end
 		end
 		device ref ipu on

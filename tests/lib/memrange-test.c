@@ -529,7 +529,7 @@ static void test_memrange_steal(void **state)
 				ALIGN_DOWN(res_mock[READONLY_TAG].base, MEMRANGE_ALIGN));
 			assert_int_equal(
 				range_entry_end(ptr),
-				ALIGN_UP(range_entry_base(ptr) + res_mock[READONLY_TAG].size,
+				ALIGN_UP(res_mock[READONLY_TAG].base + res_mock[READONLY_TAG].size,
 					 MEMRANGE_ALIGN));
 		}
 		count++;

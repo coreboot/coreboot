@@ -6,6 +6,7 @@
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/mtcmos.h>
+#include <soc/spm_common.h>
 #include <types.h>
 
 /* SPM READ/WRITE CFG */
@@ -37,7 +38,7 @@ DEFINE_BIT(REG_SYSCLK1_SRC_MD2_SRCCLKENA, 28)
 #define SPM_WAKEUP_EVENT_MASK_CSYSPWREQ_B	BIT(11)
 
 /* DDR_EN_DBC_CON1 (0x10006000+0x0EC) */
-#define REG_ALL_DDR_EN_DBC_EN_LSB		BIT(0)
+#define REG_ALL_DDR_EN_DBC_EN_LSB		BIT(16)
 
 /* SPM_DVFS_MISC (0x10006000+0x4AC) */
 DEFINE_BIT(SPM_DVFS_FORCE_ENABLE_LSB, 2)
@@ -83,7 +84,20 @@ DEFINE_BIT(MD32PCM_CFGREG_SW_RSTN_RESET, 0)
 DEFINE_BIT(ISRM_TWAM_BF, 2)
 DEFINE_BITFIELD(ISRM_RET_IRQ_AUX_BF, 17, 8)
 #define ISRM_TWAM			BIT(2)
-#define ISRM_RET_IRQ_AUX		(0x3ff << 8)
+#define ISRM_RET_IRQ1			BIT(9)
+#define ISRM_RET_IRQ2			BIT(10)
+#define ISRM_RET_IRQ3			BIT(11)
+#define ISRM_RET_IRQ4			BIT(12)
+#define ISRM_RET_IRQ5			BIT(13)
+#define ISRM_RET_IRQ6			BIT(14)
+#define ISRM_RET_IRQ7			BIT(15)
+#define ISRM_RET_IRQ8			BIT(16)
+#define ISRM_RET_IRQ9			BIT(17)
+#define ISRM_RET_IRQ_AUX		((ISRM_RET_IRQ9) | (ISRM_RET_IRQ8) | \
+					(ISRM_RET_IRQ7) | (ISRM_RET_IRQ6) | \
+					(ISRM_RET_IRQ5) | (ISRM_RET_IRQ4) | \
+					(ISRM_RET_IRQ3) | (ISRM_RET_IRQ2) | \
+					(ISRM_RET_IRQ1))
 #define ISRM_ALL_EXC_TWAM		(ISRM_RET_IRQ_AUX)
 #define ISRM_ALL			(ISRM_ALL_EXC_TWAM | ISRM_TWAM)
 
@@ -103,6 +117,14 @@ DEFINE_BITFIELD(ISRM_RET_IRQ_AUX_BF, 17, 8)
 
 /* SPM_SWINT */
 #define PCM_SW_INT_ALL			0x3ff
+
+#define SPM_ACK_CHK_3_SEL_HW_S1		0x00350098
+#define SPM_ACK_CHK_3_HW_S1_CNT		1
+
+DEFINE_BIT(SPM_ACK_CHK_3_CON_CLR_ALL, 1)
+DEFINE_BIT(SPM_ACK_CHK_3_CON_EN_0, 4)
+DEFINE_BIT(SPM_ACK_CHK_3_CON_EN_1, 8)
+DEFINE_BIT(SPM_ACK_CHK_3_CON_HW_MODE_TRIG, 11)
 
 struct pwr_ctrl {
 	/* for SPM */
@@ -235,6 +257,10 @@ struct pwr_ctrl {
 	uint8_t reg_bak_psri_vrf18_req_mask_b;
 	/* [29] */
 	uint8_t reg_bak_psri_ddr_en_mask_b;
+	/* [30] */
+	uint8_t reg_cam_ddren_req_mask_b;
+	/* [31] */
+	uint8_t reg_img_ddren_req_mask_b;
 
 	/* SPM_SRC2_MASK */
 	/* [0] */
@@ -896,7 +922,19 @@ struct mtk_spm_regs {
 	u32 spm_twam_window_len;
 	u32 spm_twam_idle_sel;
 	u32 spm_twam_event_clear;
-	u8  reserved32[1376];
+	u8  reserved_69a0[96];
+	u32 md32pcm_cfgreg_sw_rstn;
+	u8  reserved_6a04[508];
+	u32 md32pcm_dma0_src;
+	u32 md32pcm_dma0_dst;
+	u32 md32pcm_dma0_wppt;
+	u32 md32pcm_dma0_wpto;
+	u32 md32pcm_dma0_count;
+	u32 md32pcm_dma0_con;
+	u32 md32pcm_dma0_start;
+	u8  reserved_6c1c[8];
+	u32 md32pcm_dma0_rlct;
+	u8  reserved32[728];
 	u32 pmsr_last_dat;
 	u32 pmsr_last_cnt;
 	u32 pmsr_last_ack;
@@ -938,20 +976,13 @@ check_member(mtk_spm_regs, audio_pwr_con, 0x034c);
 check_member(mtk_spm_regs, adsp_pwr_con, 0x0354);
 check_member(mtk_spm_regs, ap_mdsrc_req, 0x043c);
 check_member(mtk_spm_regs, ulposc_con, 0x644);
+check_member(mtk_spm_regs, md32pcm_cfgreg_sw_rstn, 0xa00);
+check_member(mtk_spm_regs, md32pcm_dma0_src, 0xc00);
+check_member(mtk_spm_regs, md32pcm_dma0_rlct, 0xc24);
+check_member(mtk_spm_regs, pmsr_last_dat, 0xf00);
+check_member(mtk_spm_regs, spm_pmsr_len_con2, 0xff4);
 
 static struct mtk_spm_regs *const mtk_spm = (void *)SPM_BASE;
-
-struct pcm_desc {
-	u32 pmem_words;
-	u32 total_words;
-	u32 pmem_start;
-	u32 dmem_start;
-};
-
-struct dyna_load_pcm {
-	u8 *buf;		/* binary array */
-	struct pcm_desc desc;
-};
 
 static const struct power_domain_data disp[] = {
 	{
@@ -1000,7 +1031,5 @@ static const struct power_domain_data audio[] = {
 		.sram_ack_mask = BIT(12),
 	},
 };
-
-int spm_init(void);
 
 #endif  /* SOC_MEDIATEK_MT8188_SPM_H */

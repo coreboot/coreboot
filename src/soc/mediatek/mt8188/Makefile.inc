@@ -42,6 +42,7 @@ ramstage-y += ../common/mt6359p.c mt6359p.c
 ramstage-y += ../common/pmif.c ../common/pmif_clk.c pmif_clk.c
 ramstage-y += ../common/pmif_spi.c pmif_spi.c
 ramstage-y += soc.c
+ramstage-y += ../common/spm.c spm.c
 ramstage-y += ../common/sspm.c
 ramstage-y += ../common/usb.c usb.c
 
@@ -54,6 +55,7 @@ mcu-firmware-files := \
 	$(CONFIG_DPM_DM_FIRMWARE) \
 	$(CONFIG_DPM_PM_FIRMWARE) \
 	$(CONFIG_MCUPM_FIRMWARE) \
+	$(CONFIG_SPM_FIRMWARE) \
 	$(CONFIG_SSPM_FIRMWARE)
 
 $(foreach fw, $(call strip_quotes,$(mcu-firmware-files)), \

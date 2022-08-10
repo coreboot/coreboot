@@ -9,6 +9,7 @@
 #include <soc/emi.h>
 #include <soc/mcupm.h>
 #include <soc/mmu_operations.h>
+#include <soc/spm.h>
 #include <soc/sspm.h>
 #include <symbols.h>
 
@@ -32,6 +33,13 @@ static void soc_init(struct device *dev)
 
 	if (dpm_init())
 		printk(BIOS_ERR, "dpm init failed, DVFS may not work\n");
+
+	/*
+	 * For MT8188, SPM will handshake with DPM to do initialization, so
+	 * this must run after dpm_init().
+	 */
+	if (spm_init())
+		printk(BIOS_ERR, "spm init failed, system suspend may not work\n");
 
 	if (CONFIG(MTK_DFD))
 		dfd_init();

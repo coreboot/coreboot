@@ -4,9 +4,11 @@
 #include <acpi/acpigen.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/amd_pci_util.h>
+#include <amdblocks/psp.h>
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <drivers/i2c/tpm/chip.h>
 #include <gpio.h>
 #include <soc/acpi.h>
 #include <variant/ec.h>
@@ -115,11 +117,22 @@ void __weak variant_devtree_update(void)
 {
 }
 
+static void configure_psp_tpm_gpio(void)
+{
+	const struct device *cr50_dev = DEV_PTR(cr50);
+	struct drivers_i2c_tpm_config *cfg = config_of(cr50_dev);
+
+	psp_set_tpm_irq_gpio(cfg->irq_gpio.pins[0]);
+}
+
 static void mainboard_init(void *chip_info)
 {
 	mainboard_configure_gpios();
 	mainboard_ec_init();
 	variant_devtree_update();
+
+	/* Run this after variant_devtree_update so the IRQ is correct. */
+	configure_psp_tpm_gpio();
 }
 
 static void mainboard_write_blken(void)

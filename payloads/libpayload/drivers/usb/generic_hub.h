@@ -45,7 +45,7 @@ typedef struct generic_hub_ops {
 	/* returns 1 if the port is enabled */
 	int (*port_enabled)(usbdev_t *, int port);
 	/* returns speed if port is enabled, negative value if not */
-	usb_speed (*port_speed)(usbdev_t *, int port);
+	usb_speed(*port_speed)(usbdev_t *, int port);
 
 	/* enables (powers up) a port (optional) */
 	int (*enable_port)(usbdev_t *, int port);

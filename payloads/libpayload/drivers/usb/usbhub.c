@@ -72,11 +72,11 @@ static int
 usb_hub_port_status_changed(usbdev_t *const dev, const int port)
 {
 	unsigned short buf[2];
-	int ret = get_status (dev, port, DR_PORT, sizeof(buf), buf);
+	int ret = get_status(dev, port, DR_PORT, sizeof(buf), buf);
 	if (ret >= 0) {
 		ret = buf[1] & PORT_CONNECTION;
 		if (ret)
-			clear_feature (dev, port, SEL_C_PORT_CONNECTION,
+			clear_feature(dev, port, SEL_C_PORT_CONNECTION,
 				       DR_PORT);
 	}
 	return ret;
@@ -86,7 +86,7 @@ static int
 usb_hub_port_connected(usbdev_t *const dev, const int port)
 {
 	unsigned short buf[2];
-	int ret = get_status (dev, port, DR_PORT, sizeof(buf), buf);
+	int ret = get_status(dev, port, DR_PORT, sizeof(buf), buf);
 	if (ret >= 0)
 		ret = buf[0] & PORT_CONNECTION;
 	return ret;
@@ -96,7 +96,7 @@ static int
 usb_hub_port_in_reset(usbdev_t *const dev, const int port)
 {
 	unsigned short buf[2];
-	int ret = get_status (dev, port, DR_PORT, sizeof(buf), buf);
+	int ret = get_status(dev, port, DR_PORT, sizeof(buf), buf);
 	if (ret >= 0)
 		ret = buf[0] & PORT_RESET;
 	return ret;
@@ -106,7 +106,7 @@ static int
 usb_hub_port_enabled(usbdev_t *const dev, const int port)
 {
 	unsigned short buf[2];
-	int ret = get_status (dev, port, DR_PORT, sizeof(buf), buf);
+	int ret = get_status(dev, port, DR_PORT, sizeof(buf), buf);
 	if (ret >= 0)
 		ret = buf[0] & PORT_ENABLE;
 	return ret;
@@ -116,7 +116,7 @@ static usb_speed
 usb_hub_port_speed(usbdev_t *const dev, const int port)
 {
 	unsigned short buf[2];
-	int ret = get_status (dev, port, DR_PORT, sizeof(buf), buf);
+	int ret = get_status(dev, port, DR_PORT, sizeof(buf), buf);
 	if (ret >= 0 && (buf[0] & PORT_ENABLE)) {
 		/* SuperSpeed hubs can only have SuperSpeed devices. */
 		if (is_usb_speed_ss(dev->speed))
@@ -144,7 +144,7 @@ usb_hub_enable_port(usbdev_t *const dev, const int port)
 static int
 usb_hub_start_port_reset(usbdev_t *const dev, const int port)
 {
-	return set_feature (dev, port, SEL_PORT_RESET, DR_PORT);
+	return set_feature(dev, port, SEL_PORT_RESET, DR_PORT);
 }
 
 static void usb_hub_set_hub_depth(usbdev_t *const dev)

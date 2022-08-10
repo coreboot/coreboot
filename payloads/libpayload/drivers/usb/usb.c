@@ -37,16 +37,16 @@
 hci_t *usb_hcs = 0;
 
 hci_t *
-new_controller (void)
+new_controller(void)
 {
-	hci_t *controller = xzalloc(sizeof (hci_t));
+	hci_t *controller = xzalloc(sizeof(hci_t));
 	controller->next = usb_hcs;
 	usb_hcs = controller;
 	return controller;
 }
 
 void
-detach_controller (hci_t *controller)
+detach_controller(hci_t *controller)
 {
 	if (controller == NULL)
 		return;
@@ -71,7 +71,7 @@ detach_controller (hci_t *controller)
  * Shut down all controllers
  */
 int
-usb_exit (void)
+usb_exit(void)
 {
 	while (usb_hcs != NULL) {
 		usb_hcs->shutdown(usb_hcs);
@@ -83,7 +83,7 @@ usb_exit (void)
  * Polls all hubs on all USB controllers, to find out about device changes
  */
 void
-usb_poll (void)
+usb_poll(void)
 {
 	if (usb_hcs == 0)
 		return;
@@ -96,7 +96,7 @@ usb_poll (void)
 		int i;
 		for (i = 0; i < 128; i++) {
 			if (controller->devices[i] != 0) {
-				controller->devices[i]->poll (controller->devices[i]);
+				controller->devices[i]->poll(controller->devices[i]);
 			}
 		}
 		controller = controller->next;
@@ -104,7 +104,7 @@ usb_poll (void)
 }
 
 usbdev_t *
-init_device_entry (hci_t *controller, int i)
+init_device_entry(hci_t *controller, int i)
 {
 	usbdev_t *dev = calloc(1, sizeof(usbdev_t));
 	if (!dev) {
@@ -119,12 +119,12 @@ init_device_entry (hci_t *controller, int i)
 	dev->hub = -1;
 	dev->port = -1;
 	dev->init = usb_nop_init;
-	dev->init (controller->devices[i]);
+	dev->init(controller->devices[i]);
 	return dev;
 }
 
 int
-set_feature (usbdev_t *dev, int endp, int feature, int rtype)
+set_feature(usbdev_t *dev, int endp, int feature, int rtype)
 {
 	dev_req_t dr;
 
@@ -135,11 +135,11 @@ set_feature (usbdev_t *dev, int endp, int feature, int rtype)
 	dr.wIndex = endp;
 	dr.wLength = 0;
 
-	return dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
+	return dev->controller->control(dev, OUT, sizeof(dr), &dr, 0, 0);
 }
 
 int
-get_status (usbdev_t *dev, int intf, int rtype, int len, void *data)
+get_status(usbdev_t *dev, int intf, int rtype, int len, void *data)
 {
 	dev_req_t dr;
 
@@ -150,7 +150,7 @@ get_status (usbdev_t *dev, int intf, int rtype, int len, void *data)
 	dr.wIndex = intf;
 	dr.wLength = len;
 
-	return dev->controller->control (dev, IN, sizeof (dr), &dr, len, data);
+	return dev->controller->control(dev, IN, sizeof(dr), &dr, len, data);
 }
 
 /*
@@ -186,7 +186,7 @@ get_descriptor(usbdev_t *dev, int rtype, int desc_type, int desc_idx,
 }
 
 int
-set_configuration (usbdev_t *dev)
+set_configuration(usbdev_t *dev)
 {
 	dev_req_t dr;
 
@@ -196,11 +196,11 @@ set_configuration (usbdev_t *dev)
 	dr.wIndex = 0;
 	dr.wLength = 0;
 
-	return dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
+	return dev->controller->control(dev, OUT, sizeof(dr), &dr, 0, 0);
 }
 
 int
-clear_feature (usbdev_t *dev, int endp, int feature, int rtype)
+clear_feature(usbdev_t *dev, int endp, int feature, int rtype)
 {
 	dev_req_t dr;
 
@@ -211,21 +211,21 @@ clear_feature (usbdev_t *dev, int endp, int feature, int rtype)
 	dr.wIndex = endp;
 	dr.wLength = 0;
 
-	return dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) < 0;
+	return dev->controller->control(dev, OUT, sizeof(dr), &dr, 0, 0) < 0;
 }
 
 int
-clear_stall (endpoint_t *ep)
+clear_stall(endpoint_t *ep)
 {
-	int ret = clear_feature (ep->dev, ep->endpoint, ENDPOINT_HALT,
-		gen_bmRequestType (host_to_device, standard_type, endp_recp));
+	int ret = clear_feature(ep->dev, ep->endpoint, ENDPOINT_HALT,
+		gen_bmRequestType(host_to_device, standard_type, endp_recp));
 	ep->toggle = 0;
 	return ret;
 }
 
 /* returns free address or -1 */
 static int
-get_free_address (hci_t *controller)
+get_free_address(hci_t *controller)
 {
 	int i = controller->latest_address + 1;
 	for (; i != controller->latest_address; i++) {
@@ -240,7 +240,7 @@ get_free_address (hci_t *controller)
 			return i;
 		}
 	}
-	usb_debug ("no free address found\n");
+	usb_debug("no free address found\n");
 	return -1;		// no free address
 }
 
@@ -342,15 +342,15 @@ usb_decode_interval(usb_speed speed, const endpoint_type type, const unsigned ch
 }
 
 usbdev_t *
-generic_set_address (hci_t *controller, usb_speed speed,
+generic_set_address(hci_t *controller, usb_speed speed,
 		     int hubport, int hubaddr)
 {
-	int adr = get_free_address (controller);	// address to set
+	int adr = get_free_address(controller);	// address to set
 	if (adr < 0)
 		return NULL;
 	dev_req_t dr;
 
-	memset (&dr, 0, sizeof (dr));
+	memset(&dr, 0, sizeof(dr));
 	dr.data_dir = host_to_device;
 	dr.req_type = standard_type;
 	dr.req_recp = dev_recp;
@@ -374,19 +374,19 @@ generic_set_address (hci_t *controller, usb_speed speed,
 	dev->endpoints[0].toggle = 0;
 	dev->endpoints[0].direction = SETUP;
 	dev->endpoints[0].type = CONTROL;
-	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) < 0) {
-		usb_debug ("set_address failed\n");
-		usb_detach_device (controller, adr);
+	if (dev->controller->control(dev, OUT, sizeof(dr), &dr, 0, 0) < 0) {
+		usb_debug("set_address failed\n");
+		usb_detach_device(controller, adr);
 		return NULL;
 	}
-	mdelay (SET_ADDRESS_MDELAY);
+	mdelay(SET_ADDRESS_MDELAY);
 
 	u8 buf[8];
 	dev->address = adr;
-	if (get_descriptor (dev, DR_DESC, DT_DEV, 0, buf, sizeof(buf))
+	if (get_descriptor(dev, DR_DESC, DT_DEV, 0, buf, sizeof(buf))
 			!= sizeof(buf)) {
 		usb_debug("first get_descriptor(DT_DEV) failed\n");
-		usb_detach_device (controller, adr);
+		usb_detach_device(controller, adr);
 		return NULL;
 	}
 	dev->endpoints[0].maxpacketsize = usb_decode_mps0(speed, buf[7]);
@@ -395,45 +395,45 @@ generic_set_address (hci_t *controller, usb_speed speed,
 }
 
 static int
-set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
+set_address(hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 {
 	usbdev_t *dev = controller->set_address(controller, speed,
 						hubport, hubaddr);
 	if (!dev) {
-		usb_debug ("set_address failed\n");
+		usb_debug("set_address failed\n");
 		return -1;
 	}
 
 	dev->descriptor = malloc(sizeof(*dev->descriptor));
-	if (!dev->descriptor || get_descriptor (dev, DR_DESC, DT_DEV, 0,
+	if (!dev->descriptor || get_descriptor(dev, DR_DESC, DT_DEV, 0,
 			dev->descriptor, sizeof(*dev->descriptor))
 			!= sizeof(*dev->descriptor)) {
-		usb_debug ("get_descriptor(DT_DEV) failed\n");
-		usb_detach_device (controller, dev->address);
+		usb_debug("get_descriptor(DT_DEV) failed\n");
+		usb_detach_device(controller, dev->address);
 		return -1;
 	}
 
-	usb_debug ("* found device (0x%04x:0x%04x, USB %x.%x, MPS0: %d)\n",
+	usb_debug("* found device (0x%04x:0x%04x, USB %x.%x, MPS0: %d)\n",
 		 dev->descriptor->idVendor, dev->descriptor->idProduct,
 		 dev->descriptor->bcdUSB >> 8, dev->descriptor->bcdUSB & 0xff,
 		 dev->endpoints[0].maxpacketsize);
 	dev->quirks = usb_quirk_check(dev->descriptor->idVendor,
 				      dev->descriptor->idProduct);
 
-	usb_debug ("device has %d configurations\n",
+	usb_debug("device has %d configurations\n",
 		   dev->descriptor->bNumConfigurations);
 	if (dev->descriptor->bNumConfigurations == 0) {
 		/* device isn't usable */
-		usb_debug ("... no usable configuration!\n");
-		usb_detach_device (controller, dev->address);
+		usb_debug("... no usable configuration!\n");
+		usb_detach_device(controller, dev->address);
 		return -1;
 	}
 
 	u16 buf[2];
-	if (get_descriptor (dev, DR_DESC, DT_CFG, 0, buf, sizeof(buf))
+	if (get_descriptor(dev, DR_DESC, DT_CFG, 0, buf, sizeof(buf))
 			!= sizeof(buf)) {
-		usb_debug ("first get_descriptor(DT_CFG) failed\n");
-		usb_detach_device (controller, dev->address);
+		usb_debug("first get_descriptor(DT_CFG) failed\n");
+		usb_detach_device(controller, dev->address);
 		return -1;
 	}
 	/* workaround for some USB devices: wait until they're ready, or
@@ -441,20 +441,20 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 	mdelay(1);
 	dev->configuration = malloc(buf[1]);
 	if (!dev->configuration) {
-		usb_debug ("could not allocate %d bytes for DT_CFG\n", buf[1]);
-		usb_detach_device (controller, dev->address);
+		usb_debug("could not allocate %d bytes for DT_CFG\n", buf[1]);
+		usb_detach_device(controller, dev->address);
 		return -1;
 	}
-	if (get_descriptor (dev, DR_DESC, DT_CFG, 0, dev->configuration,
+	if (get_descriptor(dev, DR_DESC, DT_CFG, 0, dev->configuration,
 			    buf[1]) != buf[1]) {
-		usb_debug ("get_descriptor(DT_CFG) failed\n");
-		usb_detach_device (controller, dev->address);
+		usb_debug("get_descriptor(DT_CFG) failed\n");
+		usb_detach_device(controller, dev->address);
 		return -1;
 	}
 	configuration_descriptor_t *cd = dev->configuration;
 	if (cd->wTotalLength != buf[1]) {
-		usb_debug ("configuration descriptor size changed, aborting\n");
-		usb_detach_device (controller, dev->address);
+		usb_debug("configuration descriptor size changed, aborting\n");
+		usb_detach_device(controller, dev->address);
 		return -1;
 	}
 
@@ -464,11 +464,11 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 	 * else for the time being. If you need it, see the SetInterface and
 	 * GetInterface functions in the USB specification and set it yourself.
 	 */
-	usb_debug ("device has %x interfaces\n", cd->bNumInterfaces);
+	usb_debug("device has %x interfaces\n", cd->bNumInterfaces);
 	int ifnum = usb_interface_check(dev->descriptor->idVendor,
 					dev->descriptor->idProduct);
 	if (cd->bNumInterfaces > 1 && ifnum < 0)
-		usb_debug ("NOTICE: Your device has multiple interfaces and\n"
+		usb_debug("NOTICE: Your device has multiple interfaces and\n"
 			   "this driver will only use the first one. That may\n"
 			   "be the wrong choice and cause the device to not\n"
 			   "work correctly. Please report this case\n"
@@ -483,20 +483,20 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 	/* Find our interface (or the first good one if we don't know) */
 	for (ptr = (void *)dev->configuration + sizeof(*cd); ; ptr += ptr[0]) {
 		if (ptr + 2 > end || !ptr[0] || ptr + ptr[0] > end) {
-			usb_debug ("Couldn't find usable DT_INTF\n");
-			usb_detach_device (controller, dev->address);
+			usb_debug("Couldn't find usable DT_INTF\n");
+			usb_detach_device(controller, dev->address);
 			return -1;
 		}
 		if (ptr[1] != DT_INTF)
 			continue;
 		intf = (void *)ptr;
 		if (intf->bLength != sizeof(*intf)) {
-			usb_debug ("Skipping broken DT_INTF\n");
+			usb_debug("Skipping broken DT_INTF\n");
 			continue;
 		}
 		if (ifnum >= 0 && intf->bInterfaceNumber != ifnum)
 			continue;
-		usb_debug ("Interface %d: class 0x%x, sub 0x%x. proto 0x%x\n",
+		usb_debug("Interface %d: class 0x%x, sub 0x%x. proto 0x%x\n",
 			intf->bInterfaceNumber, intf->bInterfaceClass,
 			intf->bInterfaceSubClass, intf->bInterfaceProtocol);
 		ptr += sizeof(*intf);
@@ -516,7 +516,7 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 		static const char *transfertypes[4] = {
 			"control", "isochronous", "bulk", "interrupt"
 		};
-		usb_debug (" #Endpoint %d (%s), max packet size %x, type %s\n",
+		usb_debug(" #Endpoint %d (%s), max packet size %x, type %s\n",
 			desc->bEndpointAddress & 0x7f,
 			(desc->bEndpointAddress & 0x80) ? "in" : "out",
 			desc->wMaxPacketSize,
@@ -529,15 +529,15 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 		ep->maxpacketsize = desc->wMaxPacketSize;
 		ep->direction = (desc->bEndpointAddress & 0x80) ? IN : OUT;
 		ep->type = desc->bmAttributes & 0x3;
-		ep->interval = usb_decode_interval (dev->speed, ep->type,
+		ep->interval = usb_decode_interval(dev->speed, ep->type,
 						    desc->bInterval);
 	}
 
 	if ((controller->finish_device_config &&
 			controller->finish_device_config(dev)) ||
 			set_configuration(dev) < 0) {
-		usb_debug ("Could not finalize device configuration\n");
-		usb_detach_device (controller, dev->address);
+		usb_debug("Could not finalize device configuration\n");
+		usb_detach_device(controller, dev->address);
 		return -1;
 	}
 
@@ -572,12 +572,12 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 		usb_debug("communication\n");
 		break;
 	case hid_device:
-		usb_debug ("HID\n");
+		usb_debug("HID\n");
 #if CONFIG(LP_USB_HID)
 		dev->init = usb_hid_init;
 		return dev->address;
 #else
-		usb_debug ("NOTICE: USB HID support not compiled in\n");
+		usb_debug("NOTICE: USB HID support not compiled in\n");
 #endif
 		break;
 	case physical_device:
@@ -590,21 +590,21 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 		usb_debug("printer\n");
 		break;
 	case msc_device:
-		usb_debug ("MSC\n");
+		usb_debug("MSC\n");
 #if CONFIG(LP_USB_MSC)
 		dev->init = usb_msc_init;
 		return dev->address;
 #else
-		usb_debug ("NOTICE: USB MSC support not compiled in\n");
+		usb_debug("NOTICE: USB MSC support not compiled in\n");
 #endif
 		break;
 	case hub_device:
-		usb_debug ("hub\n");
+		usb_debug("hub\n");
 #if CONFIG(LP_USB_HUB)
 		dev->init = usb_hub_init;
 		return dev->address;
 #else
-		usb_debug ("NOTICE: USB hub support not compiled in\n");
+		usb_debug("NOTICE: USB hub support not compiled in\n");
 #endif
 		break;
 	case cdc_device:
@@ -647,7 +647,7 @@ usb_detach_device(hci_t *controller, int devno)
 	/* check if device exists, as we may have
 	   been called yet by the USB class driver */
 	if (controller->devices[devno]) {
-		controller->devices[devno]->destroy (controller->devices[devno]);
+		controller->devices[devno]->destroy(controller->devices[devno]);
 
 		if (controller->destroy_device)
 			controller->destroy_device(controller, devno);
@@ -668,27 +668,27 @@ int
 usb_attach_device(hci_t *controller, int hubaddress, int port, usb_speed speed)
 {
 	static const char *speeds[] = { "full", "low", "high", "super", "ultra" };
-	usb_debug ("%sspeed device\n", (speed < sizeof(speeds) / sizeof(char*))
+	usb_debug("%sspeed device\n", (speed < sizeof(speeds) / sizeof(char*))
 		? speeds[speed] : "invalid value - no");
-	int newdev = set_address (controller, speed, port, hubaddress);
+	int newdev = set_address(controller, speed, port, hubaddress);
 	if (newdev == -1)
 		return -1;
 	usbdev_t *newdev_t = controller->devices[newdev];
 	// determine responsible driver - current done in set_address
-	newdev_t->init (newdev_t);
+	newdev_t->init(newdev_t);
 	/* init() may have called usb_detach_device() yet, so check */
 	return controller->devices[newdev] ? newdev : -1;
 }
 
 static void
-usb_generic_destroy (usbdev_t *dev)
+usb_generic_destroy(usbdev_t *dev)
 {
 	if (usb_generic_remove)
 		usb_generic_remove(dev);
 }
 
 void
-usb_generic_init (usbdev_t *dev)
+usb_generic_init(usbdev_t *dev)
 {
 	dev->data = NULL;
 	dev->destroy = usb_generic_destroy;

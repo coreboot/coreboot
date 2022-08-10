@@ -62,7 +62,7 @@ typedef struct {
 #define HID_INST(dev) ((usbhid_inst_t*)(dev)->data)
 
 static void
-usb_hid_destroy (usbdev_t *dev)
+usb_hid_destroy(usbdev_t *dev)
 {
 	if (HID_INST(dev)->queue) {
 		int i;
@@ -82,7 +82,7 @@ usb_hid_destroy (usbdev_t *dev)
 	free(HID_INST(dev)->descriptor);
 	HID_INST(dev)->descriptor = NULL;
 
-	free (dev->data);
+	free(dev->data);
 }
 
 /* keybuffer is global to all USB keyboards */
@@ -268,14 +268,14 @@ usb_hid_process_keyboard_event(usbhid_inst_t *const inst,
 	if (current->modifiers & 0x01) /* Left-Ctrl */   modifiers |= KB_MOD_CTRL;
 	if (current->modifiers & 0x02) /* Left-Shift */  modifiers |= KB_MOD_SHIFT;
 	if (current->modifiers & 0x04) /* Left-Alt */    modifiers |= KB_MOD_ALT;
-	if (current->modifiers & 0x08) /* Left-GUI */    ;
+	if (current->modifiers & 0x08) /* Left-GUI */;
 	if (current->modifiers & 0x10) /* Right-Ctrl */  modifiers |= KB_MOD_CTRL;
 	if (current->modifiers & 0x20) /* Right-Shift */ modifiers |= KB_MOD_SHIFT;
 	if (current->modifiers & 0x40) /* Right-AltGr */ modifiers |= KB_MOD_ALT;
-	if (current->modifiers & 0x80) /* Right-GUI */   ;
+	if (current->modifiers & 0x80) /* Right-GUI */;
 
 	if ((current->modifiers & 0x05) && ((current->keys[0] == 0x4c) ||
-				(current->keys[0]==0x63))) {
+				(current->keys[0] == 0x63))) {
 		/* vulcan nerve pinch */
 		if (reset_handler)
 			reset_handler();
@@ -297,14 +297,14 @@ usb_hid_process_keyboard_event(usbhid_inst_t *const inst,
 
 	inst->lastkeypress = 0;
 
-	for (i=0; i<6; i++) {
+	for (i = 0; i < 6; i++) {
 		int j;
 		int skip = 0;
 		// No more keys? skip
 		if (current->keys[i] == 0)
 			return;
 
-		for (j=0; j<6; j++) {
+		for (j = 0; j < 6; j++) {
 			if (current->keys[i] == previous->keys[j]) {
 				skip = 1;
 				break;
@@ -328,7 +328,7 @@ usb_hid_process_keyboard_event(usbhid_inst_t *const inst,
 
 		if (keypress == -1) {
 			/* Debug: Print unknown keys */
-			usb_debug ("usbhid: <%x> %x [ %x %x %x %x %x %x ] %d\n",
+			usb_debug("usbhid: <%x> %x [ %x %x %x %x %x %x ] %d\n",
 				current->modifiers, current->repeats,
 			current->keys[0], current->keys[1],
 			current->keys[2], current->keys[3],
@@ -347,12 +347,12 @@ usb_hid_process_keyboard_event(usbhid_inst_t *const inst,
 }
 
 static void
-usb_hid_poll (usbdev_t *dev)
+usb_hid_poll(usbdev_t *dev)
 {
 	usb_hid_keyboard_event_t current;
 	const u8 *buf;
 
-	while ((buf=dev->controller->poll_intr_queue (HID_INST(dev)->queue))) {
+	while ((buf = dev->controller->poll_intr_queue (HID_INST(dev)->queue))) {
 		memcpy(&current.buffer, buf, 8);
 		usb_hid_process_keyboard_event(HID_INST(dev), &current);
 		HID_INST(dev)->previous = current;
@@ -360,7 +360,7 @@ usb_hid_poll (usbdev_t *dev)
 }
 
 static void
-usb_hid_set_idle (usbdev_t *dev, interface_descriptor_t *interface, u16 duration)
+usb_hid_set_idle(usbdev_t *dev, interface_descriptor_t *interface, u16 duration)
 {
 	dev_req_t dr;
 	dr.data_dir = host_to_device;
@@ -370,11 +370,11 @@ usb_hid_set_idle (usbdev_t *dev, interface_descriptor_t *interface, u16 duration
 	dr.wValue = (duration >> 2) << 8;
 	dr.wIndex = interface->bInterfaceNumber;
 	dr.wLength = 0;
-	dev->controller->control (dev, OUT, sizeof (dev_req_t), &dr, 0, 0);
+	dev->controller->control(dev, OUT, sizeof(dev_req_t), &dr, 0, 0);
 }
 
 static void
-usb_hid_set_protocol (usbdev_t *dev, interface_descriptor_t *interface, hid_proto proto)
+usb_hid_set_protocol(usbdev_t *dev, interface_descriptor_t *interface, hid_proto proto)
 {
 	dev_req_t dr;
 	dr.data_dir = host_to_device;
@@ -384,7 +384,7 @@ usb_hid_set_protocol (usbdev_t *dev, interface_descriptor_t *interface, hid_prot
 	dr.wValue = proto;
 	dr.wIndex = interface->bInterfaceNumber;
 	dr.wLength = 0;
-	dev->controller->control (dev, OUT, sizeof (dev_req_t), &dr, 0, 0);
+	dev->controller->control(dev, OUT, sizeof(dev_req_t), &dr, 0, 0);
 }
 
 static struct console_input_driver cons = {
@@ -393,12 +393,12 @@ static struct console_input_driver cons = {
 	.input_type = CONSOLE_INPUT_TYPE_USB,
 };
 
-static int usb_hid_set_layout (const char *country)
+static int usb_hid_set_layout(const char *country)
 {
 	/* FIXME should be per keyboard */
 	int i;
 
-	for (i=0; i<ARRAY_SIZE(keyboard_layouts); i++) {
+	for (i = 0; i < ARRAY_SIZE(keyboard_layouts); i++) {
 		if (strncmp(keyboard_layouts[i].country, country,
 					strlen(keyboard_layouts[i].country)))
 			continue;
@@ -417,13 +417,13 @@ static int usb_hid_set_layout (const char *country)
 }
 
 void
-usb_hid_init (usbdev_t *dev)
+usb_hid_init(usbdev_t *dev)
 {
 
 	static int installed = 0;
 	if (!installed) {
 		installed = 1;
-		console_add_input_driver (&cons);
+		console_add_input_driver(&cons);
 	}
 
 	configuration_descriptor_t *cd = (configuration_descriptor_t*)dev->configuration;
@@ -431,31 +431,31 @@ usb_hid_init (usbdev_t *dev)
 
 	if (interface->bInterfaceSubClass == hid_subclass_boot) {
 		u8 countrycode;
-		usb_debug ("  supports boot interface..\n");
-		usb_debug ("  it's a %s\n",
+		usb_debug("  supports boot interface..\n");
+		usb_debug("  it's a %s\n",
 			boot_protos[interface->bInterfaceProtocol]);
 		switch (interface->bInterfaceProtocol) {
 		case hid_boot_proto_keyboard:
-			dev->data = xzalloc (sizeof (usbhid_inst_t));
-			usb_debug ("  configuring...\n");
+			dev->data = xzalloc(sizeof(usbhid_inst_t));
+			usb_debug("  configuring...\n");
 			usb_hid_set_protocol(dev, interface, hid_proto_boot);
 			usb_hid_set_idle(dev, interface, KEYBOARD_REPEAT_MS);
-			usb_debug ("  activating...\n");
+			usb_debug("  activating...\n");
 
 			hid_descriptor_t *desc = malloc(sizeof(hid_descriptor_t));
 			if (!desc || get_descriptor(dev, gen_bmRequestType(
 				device_to_host, standard_type, iface_recp),
 				0x21, 0, desc, sizeof(*desc)) != sizeof(*desc)) {
-				usb_debug ("get_descriptor(HID) failed\n");
-				usb_detach_device (dev->controller, dev->address);
+				usb_debug("get_descriptor(HID) failed\n");
+				usb_detach_device(dev->controller, dev->address);
 				return;
 			}
-			HID_INST (dev)->descriptor = desc;
+			HID_INST(dev)->descriptor = desc;
 			countrycode = desc->bCountryCode;
 			/* 35 countries defined: */
 			if (countrycode >= ARRAY_SIZE(countries))
 				countrycode = 0;
-			usb_debug ("  Keyboard has %s layout (country code %02x)\n",
+			usb_debug("  Keyboard has %s layout (country code %02x)\n",
 					countries[countrycode][0], countrycode);
 
 			/* Set keyboard layout accordingly */
@@ -473,15 +473,15 @@ usb_hid_init (usbdev_t *dev)
 				break;
 			}
 			if (i >= dev->num_endp) {
-				usb_debug ("Could not find HID endpoint\n");
-				usb_detach_device (dev->controller, dev->address);
+				usb_debug("Could not find HID endpoint\n");
+				usb_detach_device(dev->controller, dev->address);
 				return;
 			}
-			usb_debug ("  found endpoint %x for interrupt-in\n", i);
+			usb_debug("  found endpoint %x for interrupt-in\n", i);
 			/* 20 buffers of 8 bytes, for every 10 msecs */
-			HID_INST(dev)->queue = dev->controller->create_intr_queue (&dev->endpoints[i], 8, 20, 10);
+			HID_INST(dev)->queue = dev->controller->create_intr_queue(&dev->endpoints[i], 8, 20, 10);
 			keycount = 0;
-			usb_debug ("  configuration done.\n");
+			usb_debug("  configuration done.\n");
 			break;
 		case hid_boot_proto_mouse:
 			usb_debug("NOTICE: USB mice are not supported.\n");

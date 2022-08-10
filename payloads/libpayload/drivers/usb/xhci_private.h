@@ -40,7 +40,7 @@
 #ifdef XHCI_SPEW_DEBUG
 # define xhci_spew(fmt, args...) xhci_debug(fmt, ##args)
 #else
-# define xhci_spew(fmt, args...) do {} while(0)
+# define xhci_spew(fmt, args...) do {} while (0)
 #endif
 
 #define MASK(startbit, lenbit) (((1<<(lenbit))-1)<<(startbit))
@@ -377,7 +377,7 @@ typedef struct xhci {
 		u32 hccparams;
 		u32 dboff;
 		u32 rtsoff;
-	} __packed *capreg;
+	} __packed * capreg;
 
 	/* opreg is R/W is most places, so volatile access is necessary.
 	   volatile means that the compiler seeks byte writes if possible,
@@ -444,7 +444,7 @@ typedef struct xhci {
 			u32 portli; /* 0x408 + 4 * port */
 			u32 res; /* 0x40C + 4 * port */
 		} __packed prs[];
-	} __packed *opreg;
+	} __packed * opreg;
 
 	/* R/W, volatile, MMIO -> no bitfields */
 	volatile struct hcrreg {
@@ -460,7 +460,7 @@ typedef struct xhci {
 			u32 erdp_lo;
 			u32 erdp_hi;
 		} __packed intrrs[]; // up to 1024, but maximum host specific, given in capreg->MaxIntrs
-	} __packed *hcrreg;
+	} __packed * hcrreg;
 
 	/* R/W, volatile, MMIO -> no bitfields */
 	volatile u32 *dbreg;
@@ -486,7 +486,7 @@ typedef struct xhci {
 
 void *xhci_align(const size_t min_align, const size_t size);
 void xhci_init_cycle_ring(transfer_ring_t *, const size_t ring_size);
-usbdev_t *xhci_set_address (hci_t *, usb_speed speed, int hubport, int hubaddr);
+usbdev_t *xhci_set_address(hci_t *, usb_speed speed, int hubport, int hubaddr);
 int xhci_finish_device_config(usbdev_t *);
 void xhci_destroy_dev(hci_t *, int slot_id);
 
@@ -523,12 +523,12 @@ void xhci_dump_inputctx(const inputctx_t *);
 void xhci_dump_transfer_trb(const trb_t *);
 void xhci_dump_transfer_trbs(const trb_t *first, const trb_t *last);
 #else
-#define xhci_dump_slotctx(args...)		do {} while(0)
-#define xhci_dump_epctx(args...)		do {} while(0)
-#define xhci_dump_devctx(args...)		do {} while(0)
-#define xhci_dump_inputctx(args...)		do {} while(0)
-#define xhci_dump_transfer_trb(args...)		do {} while(0)
-#define xhci_dump_transfer_trbs(args...)	do {} while(0)
+#define xhci_dump_slotctx(args...)		do {} while (0)
+#define xhci_dump_epctx(args...)		do {} while (0)
+#define xhci_dump_devctx(args...)		do {} while (0)
+#define xhci_dump_inputctx(args...)		do {} while (0)
+#define xhci_dump_transfer_trb(args...)		do {} while (0)
+#define xhci_dump_transfer_trbs(args...)	do {} while (0)
 #endif
 
 #endif

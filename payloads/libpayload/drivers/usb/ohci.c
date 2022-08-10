@@ -34,21 +34,21 @@
 #include "ohci_private.h"
 #include "ohci.h"
 
-static void ohci_start (hci_t *controller);
-static void ohci_stop (hci_t *controller);
-static void ohci_reset (hci_t *controller);
-static void ohci_shutdown (hci_t *controller);
-static int ohci_bulk (endpoint_t *ep, int size, u8 *data, int finalize);
-static int ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq,
+static void ohci_start(hci_t *controller);
+static void ohci_stop(hci_t *controller);
+static void ohci_reset(hci_t *controller);
+static void ohci_shutdown(hci_t *controller);
+static int ohci_bulk(endpoint_t *ep, int size, u8 *data, int finalize);
+static int ohci_control(usbdev_t *dev, direction_t dir, int drlen, void *devreq,
 			 int dalen, u8 *data);
-static void* ohci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
-static void ohci_destroy_intr_queue (endpoint_t *ep, void *queue);
-static u8* ohci_poll_intr_queue (void *queue);
+static void* ohci_create_intr_queue(endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
+static void ohci_destroy_intr_queue(endpoint_t *ep, void *queue);
+static u8* ohci_poll_intr_queue(void *queue);
 static int ohci_process_done_queue(ohci_t *ohci, int spew_debug);
 
 #ifdef USB_DEBUG
 static void
-dump_td (td_t *cur)
+dump_td(td_t *cur)
 {
 	usb_debug("+---------------------------------------------------+\n");
 	if (((cur->config & (3UL << 19)) >> 19) == 0)
@@ -81,7 +81,7 @@ dump_td (td_t *cur)
 }
 
 static void
-dump_ed (ed_t *cur)
+dump_ed(ed_t *cur)
 {
 	td_t *tmp_td = NULL;
 	usb_debug("+===================================================+\n");
@@ -120,7 +120,7 @@ dump_ed (ed_t *cur)
 #endif
 
 static void
-ohci_reset (hci_t *controller)
+ohci_reset(hci_t *controller)
 {
 	if (controller == NULL)
 		return;
@@ -132,7 +132,7 @@ ohci_reset (hci_t *controller)
 }
 
 static void
-ohci_reinit (hci_t *controller)
+ohci_reinit(hci_t *controller)
 {
 }
 
@@ -167,12 +167,12 @@ static const char *direction[] = {
 #endif
 
 hci_t *
-ohci_init (unsigned long physical_bar)
+ohci_init(unsigned long physical_bar)
 {
 	int i;
 
-	hci_t *controller = new_controller ();
-	controller->instance = xzalloc(sizeof (ohci_t));
+	hci_t *controller = new_controller();
+	controller->instance = xzalloc(sizeof(ohci_t));
 	controller->reg_base = (uintptr_t)physical_bar;
 	controller->type = OHCI;
 	controller->start = ohci_start;
@@ -188,33 +188,33 @@ ohci_init (unsigned long physical_bar)
 	controller->create_intr_queue = ohci_create_intr_queue;
 	controller->destroy_intr_queue = ohci_destroy_intr_queue;
 	controller->poll_intr_queue = ohci_poll_intr_queue;
-	init_device_entry (controller, 0);
-	OHCI_INST (controller)->roothub = controller->devices[0];
+	init_device_entry(controller, 0);
+	OHCI_INST(controller)->roothub = controller->devices[0];
 
-	OHCI_INST (controller)->opreg = (opreg_t*)phys_to_virt(physical_bar);
-	usb_debug("OHCI Version %x.%x\n", (OHCI_INST (controller)->opreg->HcRevision >> 4) & 0xf, OHCI_INST (controller)->opreg->HcRevision & 0xf);
+	OHCI_INST(controller)->opreg = (opreg_t*)phys_to_virt(physical_bar);
+	usb_debug("OHCI Version %x.%x\n", (OHCI_INST(controller)->opreg->HcRevision >> 4) & 0xf, OHCI_INST(controller)->opreg->HcRevision & 0xf);
 
-	if ((OHCI_INST (controller)->opreg->HcControl & HostControllerFunctionalStateMask) == USBReset) {
+	if ((OHCI_INST(controller)->opreg->HcControl & HostControllerFunctionalStateMask) == USBReset) {
 		/* cold boot */
-		OHCI_INST (controller)->opreg->HcControl &= ~RemoteWakeupConnected;
-		OHCI_INST (controller)->opreg->HcFmInterval = (11999 * FrameInterval) | ((((11999 - 210)*6)/7) * FSLargestDataPacket);
+		OHCI_INST(controller)->opreg->HcControl &= ~RemoteWakeupConnected;
+		OHCI_INST(controller)->opreg->HcFmInterval = (11999 * FrameInterval) | ((((11999 - 210)*6)/7) * FSLargestDataPacket);
 		/* TODO: right value for PowerOnToPowerGoodTime ? */
-		OHCI_INST (controller)->opreg->HcRhDescriptorA = NoPowerSwitching | NoOverCurrentProtection | (10 * PowerOnToPowerGoodTime);
-		OHCI_INST (controller)->opreg->HcRhDescriptorB = (0 * DeviceRemovable);
+		OHCI_INST(controller)->opreg->HcRhDescriptorA = NoPowerSwitching | NoOverCurrentProtection | (10 * PowerOnToPowerGoodTime);
+		OHCI_INST(controller)->opreg->HcRhDescriptorB = (0 * DeviceRemovable);
 		udelay(100); /* TODO: reset asserting according to USB spec */
-	} else if ((OHCI_INST (controller)->opreg->HcControl & HostControllerFunctionalStateMask) != USBOperational) {
-		OHCI_INST (controller)->opreg->HcControl = (OHCI_INST (controller)->opreg->HcControl & ~HostControllerFunctionalStateMask) | USBResume;
+	} else if ((OHCI_INST(controller)->opreg->HcControl & HostControllerFunctionalStateMask) != USBOperational) {
+		OHCI_INST(controller)->opreg->HcControl = (OHCI_INST(controller)->opreg->HcControl & ~HostControllerFunctionalStateMask) | USBResume;
 		udelay(100); /* TODO: resume time according to USB spec */
 	}
-	int interval = OHCI_INST (controller)->opreg->HcFmInterval;
+	int interval = OHCI_INST(controller)->opreg->HcFmInterval;
 
-	OHCI_INST (controller)->opreg->HcCommandStatus = HostControllerReset;
-	udelay (10); /* at most 10us for reset to complete. State must be set to Operational within 2ms (5.1.1.4) */
-	OHCI_INST (controller)->opreg->HcFmInterval = interval;
-	OHCI_INST (controller)->hcca = dma_memalign(256, 256);
+	OHCI_INST(controller)->opreg->HcCommandStatus = HostControllerReset;
+	udelay(10); /* at most 10us for reset to complete. State must be set to Operational within 2ms (5.1.1.4) */
+	OHCI_INST(controller)->opreg->HcFmInterval = interval;
+	OHCI_INST(controller)->hcca = dma_memalign(256, 256);
 	if (!OHCI_INST(controller)->hcca)
 		fatal("Not enough DMA memory for OHCI HCCA.\n");
-	memset((void*)OHCI_INST (controller)->hcca, 0, 256);
+	memset((void*)OHCI_INST(controller)->hcca, 0, 256);
 
 	if (dma_initialized()) {
 		OHCI_INST(controller)->dma_buffer = dma_memalign(4096, DMA_SIZE);
@@ -230,66 +230,66 @@ ohci_init (unsigned long physical_bar)
 	memset((void *)periodic_ed, 0, sizeof(*periodic_ed));
 	for (i = 0; i < 32; ++i)
 		intr_table[i] = virt_to_phys(periodic_ed);
-	OHCI_INST (controller)->periodic_ed = periodic_ed;
+	OHCI_INST(controller)->periodic_ed = periodic_ed;
 
-	OHCI_INST (controller)->opreg->HcHCCA = virt_to_phys(OHCI_INST (controller)->hcca);
+	OHCI_INST(controller)->opreg->HcHCCA = virt_to_phys(OHCI_INST(controller)->hcca);
 	/* Make sure periodic schedule is enabled. */
-	OHCI_INST (controller)->opreg->HcControl |= PeriodicListEnable;
-	OHCI_INST (controller)->opreg->HcControl &= ~IsochronousEnable; // unused by this driver
+	OHCI_INST(controller)->opreg->HcControl |= PeriodicListEnable;
+	OHCI_INST(controller)->opreg->HcControl &= ~IsochronousEnable; // unused by this driver
 	// disable everything, contrary to what OHCI spec says in 5.1.1.4, as we don't need IRQs
-	OHCI_INST (controller)->opreg->HcInterruptEnable = 1 << 31;
-	OHCI_INST (controller)->opreg->HcInterruptDisable = ~(1 << 31);
-	OHCI_INST (controller)->opreg->HcInterruptStatus = ~0;
-	OHCI_INST (controller)->opreg->HcPeriodicStart = (((OHCI_INST (controller)->opreg->HcFmInterval & FrameIntervalMask) / 10) * 9);
-	OHCI_INST (controller)->opreg->HcControl = (OHCI_INST (controller)->opreg->HcControl & ~HostControllerFunctionalStateMask) | USBOperational;
+	OHCI_INST(controller)->opreg->HcInterruptEnable = 1 << 31;
+	OHCI_INST(controller)->opreg->HcInterruptDisable = ~(1 << 31);
+	OHCI_INST(controller)->opreg->HcInterruptStatus = ~0;
+	OHCI_INST(controller)->opreg->HcPeriodicStart = (((OHCI_INST(controller)->opreg->HcFmInterval & FrameIntervalMask) / 10) * 9);
+	OHCI_INST(controller)->opreg->HcControl = (OHCI_INST(controller)->opreg->HcControl & ~HostControllerFunctionalStateMask) | USBOperational;
 
 	mdelay(100);
 
 	controller->devices[0]->controller = controller;
 	controller->devices[0]->init = ohci_rh_init;
-	controller->devices[0]->init (controller->devices[0]);
+	controller->devices[0]->init(controller->devices[0]);
 	return controller;
 }
 
 #if CONFIG(LP_USB_PCI)
 hci_t *
-ohci_pci_init (pcidev_t addr)
+ohci_pci_init(pcidev_t addr)
 {
 	u32 reg_base;
 
 	/* regarding OHCI spec, Appendix A, BAR_OHCI register description, Table A-4
 	 * BASE ADDRESS only [31-12] bits. All other usually 0, but not all.
 	 * OHCI mandates MMIO, so bit 0 is clear */
-	reg_base = pci_read_config32 (addr, 0x10) & 0xfffff000;
+	reg_base = pci_read_config32(addr, 0x10) & 0xfffff000;
 
 	return ohci_init((unsigned long)reg_base);
 }
 #endif
 
 static void
-ohci_shutdown (hci_t *controller)
+ohci_shutdown(hci_t *controller)
 {
 	if (controller == 0)
 		return;
-	detach_controller (controller);
+	detach_controller(controller);
 	ohci_stop(controller);
 	ohci_reset(controller);
-	free (OHCI_INST (controller)->hcca);
-	free ((void *)OHCI_INST (controller)->periodic_ed);
-	free (OHCI_INST (controller));
-	free (controller);
+	free(OHCI_INST(controller)->hcca);
+	free((void *)OHCI_INST(controller)->periodic_ed);
+	free(OHCI_INST(controller));
+	free(controller);
 }
 
 static void
-ohci_start (hci_t *controller)
+ohci_start(hci_t *controller)
 {
-	OHCI_INST (controller)->opreg->HcControl |= PeriodicListEnable;
+	OHCI_INST(controller)->opreg->HcControl |= PeriodicListEnable;
 }
 
 static void
-ohci_stop (hci_t *controller)
+ohci_stop(hci_t *controller)
 {
-	OHCI_INST (controller)->opreg->HcControl &= ~PeriodicListEnable;
+	OHCI_INST(controller)->opreg->HcControl &= ~PeriodicListEnable;
 }
 
 #define OHCI_SLEEP_TIME_US	1000
@@ -330,7 +330,7 @@ wait_for_ed(usbdev_t *dev, ed_t *head, int pages)
 }
 
 static void
-ohci_free_ed (ed_t *const head)
+ohci_free_ed(ed_t *const head)
 {
 	/* In case the transfer canceled, we have to free unprocessed TDs. */
 	while ((head->head_pointer & ~0x3) != head->tail_pointer) {
@@ -351,7 +351,7 @@ ohci_free_ed (ed_t *const head)
 }
 
 static int
-ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *setup, int dalen,
+ohci_control(usbdev_t *dev, direction_t dir, int drlen, void *setup, int dalen,
 	      unsigned char *src)
 {
 	u8 *data = src;
@@ -501,7 +501,7 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *setup, int dalen,
 
 /* finalize == 1: if data is of packet aligned size, add a zero length packet */
 static int
-ohci_bulk (endpoint_t *ep, int dalen, u8 *src, int finalize)
+ohci_bulk(endpoint_t *ep, int dalen, u8 *src, int finalize)
 {
 	int i;
 	td_t *cur, *next;
@@ -763,7 +763,7 @@ ohci_destroy_intr_queue(endpoint_t *const ep, void *const q_)
 	/* Remove interrupt queue from periodic table. */
 	ohci_t *const ohci	= OHCI_INST(ep->dev->controller);
 	u32 *const intr_table	= ohci->hcca->HccaInterruptTable;
-	for (i=0; i < 32; ++i) {
+	for (i = 0; i < 32; ++i) {
 		if (intr_table[i] == virt_to_phys(intrq))
 			intr_table[i] = virt_to_phys(ohci->periodic_ed);
 	}

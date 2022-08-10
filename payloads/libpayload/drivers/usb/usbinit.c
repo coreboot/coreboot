@@ -52,7 +52,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 	pcidev_t pci_device;
 	u32 pciid;
 
-	pci_device = PCI_DEV (bus, dev, func);
+	pci_device = PCI_DEV(bus, dev, func);
 	class = pci_read_config32(pci_device, 8);
 	pciid = pci_read_config32(pci_device, 0);
 
@@ -73,7 +73,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 		case 0x00:
 #if CONFIG(LP_USB_UHCI)
 			usb_debug("UHCI controller\n");
-			uhci_pci_init (pci_device);
+			uhci_pci_init(pci_device);
 #else
 			usb_debug("UHCI controller (not supported)\n");
 #endif

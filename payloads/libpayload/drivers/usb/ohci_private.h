@@ -262,6 +262,6 @@
 		void *dma_buffer;
 	} ohci_t;
 
-	typedef enum { OHCI_SETUP=0, OHCI_OUT=1, OHCI_IN=2, OHCI_FROM_TD=3 } ohci_pid_t;
+	typedef enum { OHCI_SETUP = 0, OHCI_OUT = 1, OHCI_IN = 2, OHCI_FROM_TD = 3 } ohci_pid_t;
 
 #endif

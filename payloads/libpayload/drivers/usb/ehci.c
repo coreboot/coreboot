@@ -119,17 +119,17 @@ static void dump_qh(ehci_qh_t *cur)
 }
 #endif
 
-static void ehci_start (hci_t *controller)
+static void ehci_start(hci_t *controller)
 {
 	EHCI_INST(controller)->operation->usbcmd |= HC_OP_RS;
 }
 
-static void ehci_stop (hci_t *controller)
+static void ehci_stop(hci_t *controller)
 {
 	EHCI_INST(controller)->operation->usbcmd &= ~HC_OP_RS;
 }
 
-static void ehci_reset (hci_t *controller)
+static void ehci_reset(hci_t *controller)
 {
 	short count = 0;
 	ehci_stop(controller);
@@ -148,7 +148,7 @@ static void ehci_reset (hci_t *controller)
 	usb_debug("ehci_reset(): reset failed!\n");
 }
 
-static void ehci_reinit (hci_t *controller)
+static void ehci_reinit(hci_t *controller)
 {
 }
 
@@ -174,7 +174,7 @@ static int ehci_set_periodic_schedule(ehci_t *ehcic, int enable)
 	return 0;
 }
 
-static void ehci_shutdown (hci_t *controller)
+static void ehci_shutdown(hci_t *controller)
 {
 	detach_controller(controller);
 
@@ -192,7 +192,7 @@ static void ehci_shutdown (hci_t *controller)
 	free(controller);
 }
 
-enum { EHCI_OUT=0, EHCI_IN=1, EHCI_SETUP=2 };
+enum { EHCI_OUT = 0, EHCI_IN = 1, EHCI_SETUP = 2 };
 
 /* returns handled bytes. assumes that the fields it writes are empty on entry */
 static int fill_td(qtd_t *td, void* data, int datalen)
@@ -341,7 +341,7 @@ static int ehci_process_async_schedule(
 	return result;
 }
 
-static int ehci_bulk (endpoint_t *ep, int size, u8 *src, int finalize)
+static int ehci_bulk(endpoint_t *ep, int size, u8 *src, int finalize)
 {
 	int result = 0;
 	u8 *end = src + size;
@@ -430,7 +430,7 @@ oom:
 }
 
 /* FIXME: Handle control transfers as 3 QHs, so the 2nd stage can be >0x4000 bytes */
-static int ehci_control (usbdev_t *dev, direction_t dir, int drlen, void *setup,
+static int ehci_control(usbdev_t *dev, direction_t dir, int drlen, void *setup,
 			 int dalen, u8 *src)
 {
 	u8 *data = src;
@@ -771,11 +771,11 @@ static u8 *ehci_poll_intr_queue(void *const queue)
 }
 
 hci_t *
-ehci_init (unsigned long physical_bar)
+ehci_init(unsigned long physical_bar)
 {
 	int i;
-	hci_t *controller = new_controller ();
-	controller->instance = xzalloc(sizeof (ehci_t));
+	hci_t *controller = new_controller();
+	controller->instance = xzalloc(sizeof(ehci_t));
 	controller->reg_base = (uintptr_t)physical_bar;
 	controller->type = EHCI;
 	controller->start = ehci_start;
@@ -791,7 +791,7 @@ ehci_init (unsigned long physical_bar)
 	controller->create_intr_queue = ehci_create_intr_queue;
 	controller->destroy_intr_queue = ehci_destroy_intr_queue;
 	controller->poll_intr_queue = ehci_poll_intr_queue;
-	init_device_entry (controller, 0);
+	init_device_entry(controller, 0);
 
 	EHCI_INST(controller)->capabilities = phys_to_virt(physical_bar);
 	EHCI_INST(controller)->operation = (hc_op_t *)(phys_to_virt(physical_bar) + EHCI_INST(controller)->capabilities->caplength);
@@ -848,23 +848,23 @@ ehci_init (unsigned long physical_bar)
 
 	controller->devices[0]->controller = controller;
 	controller->devices[0]->init = ehci_rh_init;
-	controller->devices[0]->init (controller->devices[0]);
+	controller->devices[0]->init(controller->devices[0]);
 
 	return controller;
 }
 
 #if CONFIG(LP_USB_PCI)
 hci_t *
-ehci_pci_init (pcidev_t addr)
+ehci_pci_init(pcidev_t addr)
 {
 	hci_t *controller;
 	u32 reg_base;
 
 	u16 pci_command = pci_read_config16(addr, PCI_COMMAND);
-	pci_command = (pci_command | PCI_COMMAND_MEMORY) & ~PCI_COMMAND_IO ;
+	pci_command = (pci_command | PCI_COMMAND_MEMORY) & ~PCI_COMMAND_IO;
 	pci_write_config16(addr, PCI_COMMAND, pci_command);
 
-	reg_base = pci_read_config32 (addr, USBBASE);
+	reg_base = pci_read_config32(addr, USBBASE);
 
 	/* default value for frame length adjust */
 	pci_write_config8(addr, FLADJ, FLADJ_framelength(60000));

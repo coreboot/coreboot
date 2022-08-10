@@ -149,7 +149,7 @@ static const generic_hub_ops_t xhci_rh_ops = {
 };
 
 void
-xhci_rh_init (usbdev_t *dev)
+xhci_rh_init(usbdev_t *dev)
 {
 	/* we can set them here because a root hub _really_ shouldn't
 	   appear elsewhere */

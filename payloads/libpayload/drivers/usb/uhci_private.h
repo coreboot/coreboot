@@ -80,12 +80,12 @@ typedef struct {
 		     0x12
      } usbreg;
 
-     void uhci_reg_write32 (hci_t *ctrl, usbreg reg, u32 value);
-     u32 uhci_reg_read32 (hci_t *ctrl, usbreg reg);
-     void uhci_reg_write16 (hci_t *ctrl, usbreg reg, u16 value);
-     u16 uhci_reg_read16 (hci_t *ctrl, usbreg reg);
-     void uhci_reg_write8 (hci_t *ctrl, usbreg reg, u8 value);
-     u8 uhci_reg_read8 (hci_t *ctrl, usbreg reg);
+     void uhci_reg_write32(hci_t *ctrl, usbreg reg, u32 value);
+     u32 uhci_reg_read32(hci_t *ctrl, usbreg reg);
+     void uhci_reg_write16(hci_t *ctrl, usbreg reg, u16 value);
+     u16 uhci_reg_read16(hci_t *ctrl, usbreg reg);
+     void uhci_reg_write8(hci_t *ctrl, usbreg reg, u8 value);
+     u8 uhci_reg_read8(hci_t *ctrl, usbreg reg);
 
      typedef struct uhci {
 	     flistp_t *framelistptr;

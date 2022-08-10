@@ -32,9 +32,9 @@
 #include <pci.h>
 #include <usb/usb.h>
 
-hci_t *ohci_pci_init (pcidev_t addr);
-hci_t *ohci_init (unsigned long physical_bar);
+hci_t *ohci_pci_init(pcidev_t addr);
+hci_t *ohci_init(unsigned long physical_bar);
 
-void ohci_rh_init (usbdev_t *dev);
+void ohci_rh_init(usbdev_t *dev);
 
 #endif

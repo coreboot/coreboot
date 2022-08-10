@@ -67,29 +67,29 @@ static const char *msc_protocol_strings[0x51] = {
 };
 
 static void
-usb_msc_create_disk (usbdev_t *dev)
+usb_msc_create_disk(usbdev_t *dev)
 {
 	if (usbdisk_create) {
-		usbdisk_create (dev);
-		MSC_INST (dev)->usbdisk_created = 1;
+		usbdisk_create(dev);
+		MSC_INST(dev)->usbdisk_created = 1;
 	}
 }
 
 static void
-usb_msc_remove_disk (usbdev_t *dev)
+usb_msc_remove_disk(usbdev_t *dev)
 {
-	if (MSC_INST (dev)->usbdisk_created && usbdisk_remove) {
-		usbdisk_remove (dev);
-		MSC_INST (dev)->usbdisk_created = 0;
+	if (MSC_INST(dev)->usbdisk_created && usbdisk_remove) {
+		usbdisk_remove(dev);
+		MSC_INST(dev)->usbdisk_created = 0;
 	}
 }
 
 static void
-usb_msc_destroy (usbdev_t *dev)
+usb_msc_destroy(usbdev_t *dev)
 {
 	if (dev->data) {
-		usb_msc_remove_disk (dev);
-		free (dev->data);
+		usb_msc_remove_disk(dev);
+		free(dev->data);
 	}
 	dev->data = 0;
 }
@@ -136,17 +136,17 @@ enum {
 };
 
 static int
-request_sense (usbdev_t *dev);
+request_sense(usbdev_t *dev);
 static int
-request_sense_no_media (usbdev_t *dev);
+request_sense_no_media(usbdev_t *dev);
 static void
-usb_msc_poll (usbdev_t *dev);
+usb_msc_poll(usbdev_t *dev);
 
 static int
-reset_transport (usbdev_t *dev)
+reset_transport(usbdev_t *dev)
 {
 	dev_req_t dr;
-	memset (&dr, 0, sizeof (dr));
+	memset(&dr, 0, sizeof(dr));
 	dr.bmRequestType = 0;
 	dr.data_dir = host_to_device;
 #ifndef QEMU
@@ -158,15 +158,15 @@ reset_transport (usbdev_t *dev)
 	dr.wIndex = 0;
 	dr.wLength = 0;
 
-	if (MSC_INST (dev)->quirks & USB_MSC_QUIRK_NO_RESET)
+	if (MSC_INST(dev)->quirks & USB_MSC_QUIRK_NO_RESET)
 		return MSC_COMMAND_FAIL;
 
 	/* if any of these fails, detach device, as we are lost */
-	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) < 0 ||
-			clear_stall (MSC_INST (dev)->bulk_in) ||
-			clear_stall (MSC_INST (dev)->bulk_out)) {
-		usb_debug ("Detaching unresponsive device.\n");
-		usb_detach_device (dev->controller, dev->address);
+	if (dev->controller->control(dev, OUT, sizeof(dr), &dr, 0, 0) < 0 ||
+			clear_stall(MSC_INST(dev)->bulk_in) ||
+			clear_stall(MSC_INST(dev)->bulk_out)) {
+		usb_debug("Detaching unresponsive device.\n");
+		usb_detach_device(dev->controller, dev->address);
 		return MSC_COMMAND_DETACHED;
 	}
 	/* return fail as we are only called in case of failure */
@@ -175,9 +175,9 @@ reset_transport (usbdev_t *dev)
 
 /* device may stall this command, so beware! */
 static void
-initialize_luns (usbdev_t *dev)
+initialize_luns(usbdev_t *dev)
 {
-	usbmsc_inst_t *msc = MSC_INST (dev);
+	usbmsc_inst_t *msc = MSC_INST(dev);
 	dev_req_t dr;
 	dr.bmRequestType = 0;
 	dr.data_dir = device_to_host;
@@ -189,9 +189,9 @@ initialize_luns (usbdev_t *dev)
 	dr.wValue = 0;
 	dr.wIndex = 0;
 	dr.wLength = 1;
-	if (MSC_INST (dev)->quirks & USB_MSC_QUIRK_NO_LUNS ||
-	    dev->controller->control (dev, IN, sizeof (dr), &dr,
-			sizeof (msc->num_luns), &msc->num_luns) < 0)
+	if (MSC_INST(dev)->quirks & USB_MSC_QUIRK_NO_LUNS ||
+	    dev->controller->control(dev, IN, sizeof(dr), &dr,
+			sizeof(msc->num_luns), &msc->num_luns) < 0)
 		msc->num_luns = 0;	/* assume only 1 lun if req fails */
 	msc->num_luns++;	/* Get Max LUN returns number of last LUN */
 	msc->lun = 0;
@@ -200,10 +200,10 @@ initialize_luns (usbdev_t *dev)
 unsigned int tag;
 
 static void
-wrap_cbw (cbw_t *cbw, int datalen, cbw_direction dir, const u8 *cmd,
+wrap_cbw(cbw_t *cbw, int datalen, cbw_direction dir, const u8 *cmd,
 	  int cmdlen, u8 lun)
 {
-	memset (cbw, 0, sizeof (cbw_t));
+	memset(cbw, 0, sizeof(cbw_t));
 
 	/* commands are typically shorter, but we don't want overflows */
 	if (cmdlen > sizeof(cbw->CBWCB)) {
@@ -216,37 +216,37 @@ wrap_cbw (cbw_t *cbw, int datalen, cbw_direction dir, const u8 *cmd,
 
 	cbw->dCBWDataTransferLength = datalen;
 	cbw->bmCBWFlags = dir;
-	memcpy (cbw->CBWCB, cmd, cmdlen);
+	memcpy(cbw->CBWCB, cmd, cmdlen);
 	cbw->bCBWCBLength = cmdlen;
 }
 
 static int
-get_csw (endpoint_t *ep, csw_t *csw)
+get_csw(endpoint_t *ep, csw_t *csw)
 {
 	hci_t *ctrlr = ep->dev->controller;
-	int ret = ctrlr->bulk (ep, sizeof (csw_t), (u8 *) csw, 1);
+	int ret = ctrlr->bulk(ep, sizeof(csw_t), (u8 *) csw, 1);
 
 	/* Some broken sticks send a zero-length packet at the end of their data
 	   transfer which would show up here. Skip it to get the actual CSW. */
 	if (ret == 0)
-		ret = ctrlr->bulk (ep, sizeof (csw_t), (u8 *) csw, 1);
+		ret = ctrlr->bulk(ep, sizeof(csw_t), (u8 *) csw, 1);
 
 	if (ret < 0) {
-		clear_stall (ep);
-		ret = ctrlr->bulk (ep, sizeof (csw_t), (u8 *) csw, 1);
+		clear_stall(ep);
+		ret = ctrlr->bulk(ep, sizeof(csw_t), (u8 *) csw, 1);
 		if (ret < 0)
-			return reset_transport (ep->dev);
+			return reset_transport(ep->dev);
 	}
 	if (ret != sizeof(csw_t) || csw->dCSWTag != tag ||
 	    csw->dCSWSignature != csw_signature) {
-		usb_debug ("MSC: received malformed CSW\n");
-		return reset_transport (ep->dev);
+		usb_debug("MSC: received malformed CSW\n");
+		return reset_transport(ep->dev);
 	}
 	return MSC_COMMAND_OK;
 }
 
 static int
-execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
+execute_command(usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 		 u8 *buf, int buflen, int residue_ok)
 {
 	cbw_t cbw;
@@ -256,23 +256,23 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 	if ((cb[0] == 0x1b) && (cb[4] == 1)) {	//start command, always succeed
 		always_succeed = 1;
 	}
-	wrap_cbw (&cbw, buflen, dir, cb, cblen, MSC_INST (dev)->lun);
+	wrap_cbw(&cbw, buflen, dir, cb, cblen, MSC_INST(dev)->lun);
 	if (dev->controller->
-	    bulk (MSC_INST (dev)->bulk_out, sizeof (cbw), (u8 *) &cbw, 0) < 0) {
-		return reset_transport (dev);
+	    bulk(MSC_INST(dev)->bulk_out, sizeof(cbw), (u8 *) &cbw, 0) < 0) {
+		return reset_transport(dev);
 	}
 	if (buflen > 0) {
 		if (dir == cbw_direction_data_in) {
 			if (dev->controller->
-			    bulk (MSC_INST (dev)->bulk_in, buflen, buf, 0) < 0)
-				clear_stall (MSC_INST (dev)->bulk_in);
+			    bulk(MSC_INST(dev)->bulk_in, buflen, buf, 0) < 0)
+				clear_stall(MSC_INST(dev)->bulk_in);
 		} else {
 			if (dev->controller->
-			    bulk (MSC_INST (dev)->bulk_out, buflen, buf, 0) < 0)
-				clear_stall (MSC_INST (dev)->bulk_out);
+			    bulk(MSC_INST(dev)->bulk_out, buflen, buf, 0) < 0)
+				clear_stall(MSC_INST(dev)->bulk_out);
 		}
 	}
-	int ret = get_csw (MSC_INST (dev)->bulk_in, &csw);
+	int ret = get_csw(MSC_INST(dev)->bulk_in, &csw);
 	if (ret) {
 		return ret;
 	} else if (always_succeed == 1) {
@@ -280,7 +280,7 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 		return MSC_COMMAND_OK;
 	} else if (csw.bCSWStatus == 2) {
 		/* phase error, reset transport */
-		return reset_transport (dev);
+		return reset_transport(dev);
 	} else if (csw.bCSWStatus == 0) {
 		if ((csw.dCSWDataResidue == 0) || residue_ok)
 			/* no error, exit */
@@ -296,9 +296,9 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 			/* If command was TEST UNIT READY determine if the
 			 * device is of removable type indicating no media
 			 * found. */
-			return request_sense_no_media (dev);
+			return request_sense_no_media(dev);
 		/* error "check condition" or reserved error */
-		ret = request_sense (dev);
+		ret = request_sense(dev);
 		/* return fail or the status of request_sense if it's worse */
 		return ret ? ret : MSC_COMMAND_FAIL;
 	}
@@ -342,11 +342,11 @@ typedef struct {
  * @return 0 on success, 1 on failure
  */
 int
-readwrite_blocks_512 (usbdev_t *dev, int start, int n,
+readwrite_blocks_512(usbdev_t *dev, int start, int n,
 	cbw_direction dir, u8 *buf)
 {
 	int blocksize_divider = MSC_INST(dev)->blocksize / 512;
-	return readwrite_blocks (dev, start / blocksize_divider,
+	return readwrite_blocks(dev, start / blocksize_divider,
 		n / blocksize_divider, dir, buf);
 }
 
@@ -363,10 +363,10 @@ readwrite_blocks_512 (usbdev_t *dev, int start, int n,
  * @return 0 on success, 1 on failure
  */
 static int
-readwrite_chunk (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
+readwrite_chunk(usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
 {
 	cmdblock_t cb;
-	memset (&cb, 0, sizeof (cb));
+	memset(&cb, 0, sizeof(cb));
 	if (dir == cbw_direction_data_in) {
 		// read
 		cb.command = 0x28;
@@ -374,10 +374,10 @@ readwrite_chunk (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
 		// write
 		cb.command = 0x2a;
 	}
-	cb.block = htonl (start);
-	cb.numblocks = htonw (n);
+	cb.block = htonl(start);
+	cb.numblocks = htonw(n);
 
-	return execute_command (dev, dir, (u8 *) &cb, sizeof (cb), buf,
+	return execute_command(dev, dir, (u8 *) &cb, sizeof(cb), buf,
 				n * MSC_INST(dev)->blocksize, 0)
 		!= MSC_COMMAND_OK ? 1 : 0;
 }
@@ -399,14 +399,14 @@ readwrite_chunk (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
  * @return 0 on success, 1 on failure
  */
 int
-readwrite_blocks (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
+readwrite_blocks(usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
 {
 	int chunk_size = MAX_CHUNK_BYTES / MSC_INST(dev)->blocksize;
 	int chunk;
 
 	/* Read as many full chunks as needed. */
 	for (chunk = 0; chunk < (n / chunk_size); chunk++) {
-		if (readwrite_chunk (dev, start + (chunk * chunk_size),
+		if (readwrite_chunk(dev, start + (chunk * chunk_size),
 				     chunk_size, dir,
 				     buf + (chunk * MAX_CHUNK_BYTES))
 		    != MSC_COMMAND_OK)
@@ -415,7 +415,7 @@ readwrite_blocks (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
 
 	/* Read any remaining partial chunk at the end. */
 	if (n % chunk_size) {
-		if (readwrite_chunk (dev, start + (chunk * chunk_size),
+		if (readwrite_chunk(dev, start + (chunk * chunk_size),
 				     n % chunk_size, dir,
 				     buf + (chunk * MAX_CHUNK_BYTES))
 		    != MSC_COMMAND_OK)
@@ -429,29 +429,29 @@ readwrite_blocks (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
    On certain errors, that's necessary to get devices out of
    a special state called "Contingent Allegiance Condition" */
 static int
-request_sense (usbdev_t *dev)
+request_sense(usbdev_t *dev)
 {
 	u8 buf[19];
 	cmdblock6_t cb;
-	memset (&cb, 0, sizeof (cb));
+	memset(&cb, 0, sizeof(cb));
 	cb.command = 0x3;
-	cb.length = sizeof (buf);
+	cb.length = sizeof(buf);
 
-	return execute_command (dev, cbw_direction_data_in, (u8 *) &cb,
-				sizeof (cb), buf, sizeof (buf), 1);
+	return execute_command(dev, cbw_direction_data_in, (u8 *) &cb,
+				sizeof(cb), buf, sizeof(buf), 1);
 }
 
-static int request_sense_no_media (usbdev_t *dev)
+static int request_sense_no_media(usbdev_t *dev)
 {
 	u8 buf[19];
 	int ret;
 	cmdblock6_t cb;
-	memset (&cb, 0, sizeof (cb));
+	memset(&cb, 0, sizeof(cb));
 	cb.command = 0x3;
-	cb.length = sizeof (buf);
+	cb.length = sizeof(buf);
 
-	ret = execute_command (dev, cbw_direction_data_in, (u8 *) &cb,
-				sizeof (cb), buf, sizeof (buf), 1);
+	ret = execute_command(dev, cbw_direction_data_in, (u8 *) &cb,
+				sizeof(cb), buf, sizeof(buf), 1);
 
 	if (ret)
 		return ret;
@@ -466,45 +466,45 @@ static int request_sense_no_media (usbdev_t *dev)
 
 	/* No media is present. Return MSC_COMMAND_OK while marking the disk
 	 * not ready. */
-	usb_debug ("Empty media found.\n");
-	MSC_INST (dev)->ready = USB_MSC_NOT_READY;
+	usb_debug("Empty media found.\n");
+	MSC_INST(dev)->ready = USB_MSC_NOT_READY;
 	return MSC_COMMAND_OK;
 }
 
 static int
-test_unit_ready (usbdev_t *dev)
+test_unit_ready(usbdev_t *dev)
 {
 	cmdblock6_t cb;
-	memset (&cb, 0, sizeof (cb));	// full initialization for T-U-R
-	return execute_command (dev, cbw_direction_data_out, (u8 *) &cb,
-				sizeof (cb), 0, 0, 0);
+	memset(&cb, 0, sizeof(cb));	// full initialization for T-U-R
+	return execute_command(dev, cbw_direction_data_out, (u8 *) &cb,
+				sizeof(cb), 0, 0, 0);
 }
 
 static int
-spin_up (usbdev_t *dev)
+spin_up(usbdev_t *dev)
 {
 	cmdblock6_t cb;
-	memset (&cb, 0, sizeof (cb));
+	memset(&cb, 0, sizeof(cb));
 	cb.command = 0x1b;
 	cb.start = 1;
-	return execute_command (dev, cbw_direction_data_out, (u8 *) &cb,
-				sizeof (cb), 0, 0, 0);
+	return execute_command(dev, cbw_direction_data_out, (u8 *) &cb,
+				sizeof(cb), 0, 0, 0);
 }
 
 static int
-read_capacity (usbdev_t *dev)
+read_capacity(usbdev_t *dev)
 {
 	cmdblock_t cb;
-	memset (&cb, 0, sizeof (cb));
+	memset(&cb, 0, sizeof(cb));
 	cb.command = 0x25;	// read capacity
 	u32 buf[2];
 
-	usb_debug ("Reading capacity of mass storage device.\n");
+	usb_debug("Reading capacity of mass storage device.\n");
 	int count = 0, ret;
 	while (count++ < 20) {
 		switch (ret = execute_command
 				(dev, cbw_direction_data_in, (u8 *) &cb,
-				 sizeof (cb), (u8 *)buf, 8, 0)) {
+				 sizeof(cb), (u8 *)buf, 8, 0)) {
 		case MSC_COMMAND_OK:
 			break;
 		case MSC_COMMAND_FAIL:
@@ -516,24 +516,24 @@ read_capacity (usbdev_t *dev)
 	}
 	if (count >= 20) {
 		// still not successful, assume 2tb in 512byte sectors, which is just the same garbage as any other number, but probably more usable.
-		usb_debug ("  assuming 2 TB with 512-byte sectors as READ CAPACITY didn't answer.\n");
-		MSC_INST (dev)->numblocks = 0xffffffff;
-		MSC_INST (dev)->blocksize = 512;
+		usb_debug("  assuming 2 TB with 512-byte sectors as READ CAPACITY didn't answer.\n");
+		MSC_INST(dev)->numblocks = 0xffffffff;
+		MSC_INST(dev)->blocksize = 512;
 	} else {
-		MSC_INST (dev)->numblocks = ntohl(buf[0]) + 1;
-		MSC_INST (dev)->blocksize = ntohl(buf[1]);
+		MSC_INST(dev)->numblocks = ntohl(buf[0]) + 1;
+		MSC_INST(dev)->blocksize = ntohl(buf[1]);
 	}
-	usb_debug ("  %d %d-byte sectors (%d MB)\n", MSC_INST (dev)->numblocks,
-		MSC_INST (dev)->blocksize,
+	usb_debug("  %d %d-byte sectors (%d MB)\n", MSC_INST(dev)->numblocks,
+		MSC_INST(dev)->blocksize,
 		/* round down high block counts to avoid integer overflow */
-		MSC_INST (dev)->numblocks > 1000000
-			? (MSC_INST (dev)->numblocks / 1000) * MSC_INST (dev)->blocksize / 1000 :
-		MSC_INST (dev)->numblocks * MSC_INST (dev)->blocksize / 1000 / 1000);
+		MSC_INST(dev)->numblocks > 1000000
+			? (MSC_INST(dev)->numblocks / 1000) * MSC_INST(dev)->blocksize / 1000 :
+		MSC_INST(dev)->numblocks * MSC_INST(dev)->blocksize / 1000 / 1000);
 	return MSC_COMMAND_OK;
 }
 
 static int
-usb_msc_test_unit_ready (usbdev_t *dev)
+usb_msc_test_unit_ready(usbdev_t *dev)
 {
 	int i;
 	time_t start_time_secs;
@@ -543,21 +543,21 @@ usb_msc_test_unit_ready (usbdev_t *dev)
 	 * devices which fail to respond. */
 	const int timeout_secs = 5;
 
-	usb_debug ("  Waiting for device to become ready...");
+	usb_debug("  Waiting for device to become ready...");
 
 	/* Initially mark the device ready. */
-	MSC_INST (dev)->ready = USB_MSC_READY;
-	gettimeofday (&tv, NULL);
+	MSC_INST(dev)->ready = USB_MSC_READY;
+	gettimeofday(&tv, NULL);
 	start_time_secs = tv.tv_sec;
 
 	while (tv.tv_sec - start_time_secs < timeout_secs) {
-		switch (test_unit_ready (dev)) {
+		switch (test_unit_ready(dev)) {
 		case MSC_COMMAND_OK:
 			break;
 		case MSC_COMMAND_FAIL:
-			mdelay (100);
-			usb_debug (".");
-			gettimeofday (&tv, NULL);
+			mdelay(100);
+			usb_debug(".");
+			gettimeofday(&tv, NULL);
 			continue;
 		default:
 			/* Device detached, return immediately */
@@ -566,27 +566,27 @@ usb_msc_test_unit_ready (usbdev_t *dev)
 		break;
 	}
 	if (!(tv.tv_sec - start_time_secs < timeout_secs)) {
-		usb_debug ("timeout. Device not ready.\n");
-		MSC_INST (dev)->ready = USB_MSC_NOT_READY;
+		usb_debug("timeout. Device not ready.\n");
+		MSC_INST(dev)->ready = USB_MSC_NOT_READY;
 	}
 
 	/* Don't bother spinning up the storage device if the device is not
 	 * ready. This can happen when empty card readers are present.
 	 * Polling will pick it back up if readiness changes. */
-	if (!MSC_INST (dev)->ready)
-		return MSC_INST (dev)->ready;
+	if (!MSC_INST(dev)->ready)
+		return MSC_INST(dev)->ready;
 
-	usb_debug ("ok.\n");
+	usb_debug("ok.\n");
 
-	usb_debug ("  spin up");
+	usb_debug("  spin up");
 	for (i = 0; i < 30; i++) {
-		usb_debug (".");
-		switch (spin_up (dev)) {
+		usb_debug(".");
+		switch (spin_up(dev)) {
 		case MSC_COMMAND_OK:
-			usb_debug (" OK.");
+			usb_debug(" OK.");
 			break;
 		case MSC_COMMAND_FAIL:
-			mdelay (100);
+			mdelay(100);
 			continue;
 		default:
 			/* Device detached, return immediately */
@@ -594,30 +594,30 @@ usb_msc_test_unit_ready (usbdev_t *dev)
 		}
 		break;
 	}
-	usb_debug ("\n");
+	usb_debug("\n");
 
-	if (read_capacity (dev) == MSC_COMMAND_DETACHED)
+	if (read_capacity(dev) == MSC_COMMAND_DETACHED)
 		return USB_MSC_DETACHED;
 
-	return MSC_INST (dev)->ready;
+	return MSC_INST(dev)->ready;
 }
 
 void
-usb_msc_init (usbdev_t *dev)
+usb_msc_init(usbdev_t *dev)
 {
 	configuration_descriptor_t *cd =
 		(configuration_descriptor_t *) dev->configuration;
 	interface_descriptor_t *interface =
 		(interface_descriptor_t *) (((char *) cd) + cd->bLength);
 
-	usb_debug ("  it uses %s command set\n",
+	usb_debug("  it uses %s command set\n",
 		msc_subclass_strings[interface->bInterfaceSubClass]);
-	usb_debug ("  it uses %s protocol\n",
+	usb_debug("  it uses %s protocol\n",
 		msc_protocol_strings[interface->bInterfaceProtocol]);
 
 	if (interface->bInterfaceProtocol != 0x50) {
-		usb_debug ("  Protocol not supported.\n");
-		usb_detach_device (dev->controller, dev->address);
+		usb_debug("  Protocol not supported.\n");
+		usb_detach_device(dev->controller, dev->address);
 		return;
 	}
 
@@ -625,15 +625,15 @@ usb_msc_init (usbdev_t *dev)
 		(interface->bInterfaceSubClass != 5) &&	// ATAPI 8070
 		(interface->bInterfaceSubClass != 6)) {	// SCSI
 		/* Other protocols, such as ATAPI don't seem to be very popular. looks like ATAPI would be really easy to add, if necessary. */
-		usb_debug ("  Interface SubClass not supported.\n");
-		usb_detach_device (dev->controller, dev->address);
+		usb_debug("  Interface SubClass not supported.\n");
+		usb_detach_device(dev->controller, dev->address);
 		return;
 	}
 
-	usb_msc_force_init (dev, 0);
+	usb_msc_force_init(dev, 0);
 }
 
-void usb_msc_force_init (usbdev_t *dev, u32 quirks)
+void usb_msc_force_init(usbdev_t *dev, u32 quirks)
 {
 	int i;
 
@@ -643,14 +643,14 @@ void usb_msc_force_init (usbdev_t *dev, u32 quirks)
 	dev->destroy = usb_msc_destroy;
 	dev->poll = usb_msc_poll;
 
-	dev->data = malloc (sizeof (usbmsc_inst_t));
+	dev->data = malloc(sizeof(usbmsc_inst_t));
 	if (!dev->data)
 		fatal("Not enough memory for USB MSC device.\n");
 
-	MSC_INST (dev)->bulk_in = 0;
-	MSC_INST (dev)->bulk_out = 0;
-	MSC_INST (dev)->usbdisk_created = 0;
-	MSC_INST (dev)->quirks = quirks;
+	MSC_INST(dev)->bulk_in = 0;
+	MSC_INST(dev)->bulk_out = 0;
+	MSC_INST(dev)->usbdisk_created = 0;
+	MSC_INST(dev)->quirks = quirks;
 
 	for (i = 1; i <= dev->num_endp; i++) {
 		if (dev->endpoints[i].endpoint == 0)
@@ -658,56 +658,56 @@ void usb_msc_force_init (usbdev_t *dev, u32 quirks)
 		if (dev->endpoints[i].type != BULK)
 			continue;
 		if ((dev->endpoints[i].direction == IN)
-		    && (MSC_INST (dev)->bulk_in == 0))
-			MSC_INST (dev)->bulk_in = &dev->endpoints[i];
+		    && (MSC_INST(dev)->bulk_in == 0))
+			MSC_INST(dev)->bulk_in = &dev->endpoints[i];
 		if ((dev->endpoints[i].direction == OUT)
-		    && (MSC_INST (dev)->bulk_out == 0))
-			MSC_INST (dev)->bulk_out = &dev->endpoints[i];
+		    && (MSC_INST(dev)->bulk_out == 0))
+			MSC_INST(dev)->bulk_out = &dev->endpoints[i];
 	}
 
-	if (MSC_INST (dev)->bulk_in == 0) {
+	if (MSC_INST(dev)->bulk_in == 0) {
 		usb_debug("couldn't find bulk-in endpoint.\n");
-		usb_detach_device (dev->controller, dev->address);
+		usb_detach_device(dev->controller, dev->address);
 		return;
 	}
-	if (MSC_INST (dev)->bulk_out == 0) {
+	if (MSC_INST(dev)->bulk_out == 0) {
 		usb_debug("couldn't find bulk-out endpoint.\n");
-		usb_detach_device (dev->controller, dev->address);
+		usb_detach_device(dev->controller, dev->address);
 		return;
 	}
-	usb_debug ("  using endpoint %x as in, %x as out\n",
-		MSC_INST (dev)->bulk_in->endpoint,
-		MSC_INST (dev)->bulk_out->endpoint);
+	usb_debug("  using endpoint %x as in, %x as out\n",
+		MSC_INST(dev)->bulk_in->endpoint,
+		MSC_INST(dev)->bulk_out->endpoint);
 
 	/* Some sticks need a little more time to get ready after SET_CONFIG. */
 	udelay(50);
 
-	initialize_luns (dev);
-	usb_debug ("  has %d luns\n", MSC_INST (dev)->num_luns);
+	initialize_luns(dev);
+	usb_debug("  has %d luns\n", MSC_INST(dev)->num_luns);
 
 	/* Test if unit is ready (nothing to do if it isn't). */
-	if (usb_msc_test_unit_ready (dev) != USB_MSC_READY)
+	if (usb_msc_test_unit_ready(dev) != USB_MSC_READY)
 		return;
 
 	/* Create the disk. */
-	usb_msc_create_disk (dev);
+	usb_msc_create_disk(dev);
 }
 
 static void
-usb_msc_poll (usbdev_t *dev)
+usb_msc_poll(usbdev_t *dev)
 {
-	usbmsc_inst_t *msc = MSC_INST (dev);
+	usbmsc_inst_t *msc = MSC_INST(dev);
 	int prev_ready = msc->ready;
 
-	if (usb_msc_test_unit_ready (dev) == USB_MSC_DETACHED)
+	if (usb_msc_test_unit_ready(dev) == USB_MSC_DETACHED)
 		return;
 
 	if (!prev_ready && msc->ready) {
-		usb_debug ("USB msc: not ready -> ready (lun %d)\n", msc->lun);
-		usb_msc_create_disk (dev);
+		usb_debug("USB msc: not ready -> ready (lun %d)\n", msc->lun);
+		usb_msc_create_disk(dev);
 	} else if (prev_ready && !msc->ready) {
-		usb_debug ("USB msc: ready -> not ready (lun %d)\n", msc->lun);
-		usb_msc_remove_disk (dev);
+		usb_debug("USB msc: ready -> not ready (lun %d)\n", msc->lun);
+		usb_msc_remove_disk(dev);
 	} else if (!prev_ready && !msc->ready) {
 		u8 new_lun = (msc->lun + 1) % msc->num_luns;
 		usb_debug("USB msc: not ready (lun %d) -> lun %d\n", msc->lun,

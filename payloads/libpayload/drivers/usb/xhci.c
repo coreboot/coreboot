@@ -34,17 +34,17 @@
 #include "xhci_private.h"
 #include "xhci.h"
 
-static void xhci_start (hci_t *controller);
-static void xhci_stop (hci_t *controller);
-static void xhci_reset (hci_t *controller);
-static void xhci_reinit (hci_t *controller);
-static void xhci_shutdown (hci_t *controller);
-static int xhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize);
-static int xhci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq,
+static void xhci_start(hci_t *controller);
+static void xhci_stop(hci_t *controller);
+static void xhci_reset(hci_t *controller);
+static void xhci_reinit(hci_t *controller);
+static void xhci_shutdown(hci_t *controller);
+static int xhci_bulk(endpoint_t *ep, int size, u8 *data, int finalize);
+static int xhci_control(usbdev_t *dev, direction_t dir, int drlen, void *devreq,
 			 int dalen, u8 *data);
-static void* xhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
-static void xhci_destroy_intr_queue (endpoint_t *ep, void *queue);
-static u8* xhci_poll_intr_queue (void *queue);
+static void* xhci_create_intr_queue(endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
+static void xhci_destroy_intr_queue(endpoint_t *ep, void *queue);
+static u8* xhci_poll_intr_queue(void *queue);
 
 /*
  * Some structures must not cross page boundaries. To get this,
@@ -151,7 +151,7 @@ xhci_wait_ready(xhci_t *const xhci)
 }
 
 hci_t *
-xhci_init (unsigned long physical_bar)
+xhci_init(unsigned long physical_bar)
 {
 	int i;
 
@@ -167,7 +167,7 @@ xhci_init (unsigned long physical_bar)
 	controller->bulk		= xhci_bulk;
 	controller->control		= xhci_control;
 	controller->set_address		= xhci_set_address;
-	controller->finish_device_config= xhci_finish_device_config;
+	controller->finish_device_config = xhci_finish_device_config;
 	controller->destroy_device	= xhci_destroy_dev;
 	controller->create_intr_queue	= xhci_create_intr_queue;
 	controller->destroy_intr_queue	= xhci_destroy_intr_queue;
@@ -306,7 +306,7 @@ _free_xhci:
 
 #if CONFIG(LP_USB_PCI)
 hci_t *
-xhci_pci_init (pcidev_t addr)
+xhci_pci_init(pcidev_t addr)
 {
 	u32 reg_addr;
 	hci_t *controller;
@@ -358,7 +358,7 @@ xhci_reset(hci_t *const controller)
 }
 
 static void
-xhci_reinit (hci_t *controller)
+xhci_reinit(hci_t *controller)
 {
 	xhci_t *const xhci = XHCI_INST(controller);
 
@@ -464,7 +464,7 @@ xhci_shutdown(hci_t *const controller)
 }
 
 static void
-xhci_start (hci_t *controller)
+xhci_start(hci_t *controller)
 {
 	xhci_t *const xhci = XHCI_INST(controller);
 
@@ -474,7 +474,7 @@ xhci_start (hci_t *controller)
 }
 
 static void
-xhci_stop (hci_t *controller)
+xhci_stop(hci_t *controller)
 {
 	xhci_t *const xhci = XHCI_INST(controller);
 

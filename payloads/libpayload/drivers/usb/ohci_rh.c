@@ -40,7 +40,7 @@ typedef struct {
 #define RH_INST(dev) ((rh_inst_t*)(dev)->data)
 
 static void
-ohci_rh_enable_port (usbdev_t *dev, int port)
+ohci_rh_enable_port(usbdev_t *dev, int port)
 {
 	/* Reset RH port should hold 50ms with pulses of at least 10ms and
 	 * gaps of at most 3ms (usb20 spec 7.1.7.5).
@@ -54,15 +54,15 @@ ohci_rh_enable_port (usbdev_t *dev, int port)
 			return;
 
 		/* start reset */
-		OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] =
+		OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] =
 			SetPortReset;
 		int timeout = 200; /* timeout after 200 * 500us == 100ms */
-		while ((OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port]
+		while ((OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port]
 					& PortResetStatus)
 				&& timeout--) {
 			udelay(500); total_delay--;
 		}
-		if (OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port]
+		if (OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port]
 				& PortResetStatus) {
 			usb_debug("Warning: root-hub port reset timed out.\n");
 			break;
@@ -72,24 +72,24 @@ ohci_rh_enable_port (usbdev_t *dev, int port)
 					"should be at least 10ms.\n",
 					(200-timeout)/2);
 		/* clear reset status change */
-		OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] =
+		OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] =
 			PortResetStatusChange;
-		usb_debug ("rh port reset finished after %dms.\n", (200-timeout)/2);
+		usb_debug("rh port reset finished after %dms.\n", (200-timeout)/2);
 	}
 }
 
 /* disable root hub */
 static void
-ohci_rh_disable_port (usbdev_t *dev, int port)
+ohci_rh_disable_port(usbdev_t *dev, int port)
 {
-	if (RH_INST (dev)->port[port] != -1) {
-		usb_detach_device(dev->controller, RH_INST (dev)->port[port]);
-		RH_INST (dev)->port[port] = -1;
+	if (RH_INST(dev)->port[port] != -1) {
+		usb_detach_device(dev->controller, RH_INST(dev)->port[port]);
+		RH_INST(dev)->port[port] = -1;
 	}
 
-	OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] = ClearPortEnable; // disable port
+	OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] = ClearPortEnable; // disable port
 	int timeout = 50; /* timeout after 50 * 100us == 5ms */
-	while ((OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port]
+	while ((OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port]
 				& PortEnableStatus)
 			&& timeout--) {
 		udelay(100);
@@ -97,7 +97,7 @@ ohci_rh_disable_port (usbdev_t *dev, int port)
 }
 
 static void
-ohci_rh_scanport (usbdev_t *dev, int port)
+ohci_rh_scanport(usbdev_t *dev, int port)
 {
 	if (port >= RH_INST(dev)->numports) {
 		usb_debug("Invalid port %d\n", port);
@@ -105,9 +105,9 @@ ohci_rh_scanport (usbdev_t *dev, int port)
 	}
 
 	/* device registered, and device change logged, so something must have happened */
-	if (RH_INST (dev)->port[port] != -1) {
-		usb_detach_device(dev->controller, RH_INST (dev)->port[port]);
-		RH_INST (dev)->port[port] = -1;
+	if (RH_INST(dev)->port[port] != -1) {
+		usb_detach_device(dev->controller, RH_INST(dev)->port[port]);
+		RH_INST(dev)->port[port] = -1;
 	}
 
 	/* no device attached
@@ -115,24 +115,24 @@ ohci_rh_scanport (usbdev_t *dev, int port)
 	if (!(OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] & CurrentConnectStatus))
 		return;
 
-	OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] = ConnectStatusChange; // clear port state change
-	ohci_rh_enable_port (dev, port);
+	OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] = ConnectStatusChange; // clear port state change
+	ohci_rh_enable_port(dev, port);
 
 	mdelay(100); // wait for signal to stabilize
 
 	if (!(OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] & PortEnableStatus)) {
-		usb_debug ("port enable failed\n");
+		usb_debug("port enable failed\n");
 		return;
 	}
 
 	usb_speed speed = (OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] & LowSpeedDeviceAttached) != 0;
-	RH_INST (dev)->port[port] = usb_attach_device(dev->controller, dev->address, port, speed);
+	RH_INST(dev)->port[port] = usb_attach_device(dev->controller, dev->address, port, speed);
 }
 
 static int
-ohci_rh_report_port_changes (usbdev_t *dev)
+ohci_rh_report_port_changes(usbdev_t *dev)
 {
-	ohci_t *const ohcic = OHCI_INST (dev->controller);
+	ohci_t *const ohcic = OHCI_INST(dev->controller);
 
 	int i;
 
@@ -150,18 +150,18 @@ ohci_rh_report_port_changes (usbdev_t *dev)
 }
 
 static void
-ohci_rh_destroy (usbdev_t *dev)
+ohci_rh_destroy(usbdev_t *dev)
 {
 	int i;
-	for (i = 0; i < RH_INST (dev)->numports; i++)
-		ohci_rh_disable_port (dev, i);
-	free (RH_INST (dev));
+	for (i = 0; i < RH_INST(dev)->numports; i++)
+		ohci_rh_disable_port(dev, i);
+	free(RH_INST(dev));
 }
 
 static void
-ohci_rh_poll (usbdev_t *dev)
+ohci_rh_poll(usbdev_t *dev)
 {
-	ohci_t *const ohcic = OHCI_INST (dev->controller);
+	ohci_t *const ohcic = OHCI_INST(dev->controller);
 
 	int port;
 
@@ -172,26 +172,26 @@ ohci_rh_poll (usbdev_t *dev)
 	usb_debug("root hub status change\n");
 
 	/* Scan ports with changed connection status. */
-	while ((port = ohci_rh_report_port_changes (dev)) != -1)
-		ohci_rh_scanport (dev, port);
+	while ((port = ohci_rh_report_port_changes(dev)) != -1)
+		ohci_rh_scanport(dev, port);
 }
 
 void
-ohci_rh_init (usbdev_t *dev)
+ohci_rh_init(usbdev_t *dev)
 {
 	int i;
 
 	dev->destroy = ohci_rh_destroy;
 	dev->poll = ohci_rh_poll;
 
-	dev->data = xmalloc (sizeof (rh_inst_t));
-	RH_INST (dev)->numports = OHCI_INST (dev->controller)->opreg->HcRhDescriptorA & NumberDownstreamPortsMask;
-	RH_INST (dev)->port = xmalloc(sizeof(int) * RH_INST (dev)->numports);
-	usb_debug("%d ports registered\n", RH_INST (dev)->numports);
+	dev->data = xmalloc(sizeof(rh_inst_t));
+	RH_INST(dev)->numports = OHCI_INST(dev->controller)->opreg->HcRhDescriptorA & NumberDownstreamPortsMask;
+	RH_INST(dev)->port = xmalloc(sizeof(int) * RH_INST(dev)->numports);
+	usb_debug("%d ports registered\n", RH_INST(dev)->numports);
 
-	for (i = 0; i < RH_INST (dev)->numports; i++) {
-		ohci_rh_enable_port (dev, i);
-		RH_INST (dev)->port[i] = -1;
+	for (i = 0; i < RH_INST(dev)->numports; i++) {
+		ohci_rh_enable_port(dev, i);
+		RH_INST(dev)->port[i] = -1;
 	}
 
 	/* we can set them here because a root hub _really_ shouldn't

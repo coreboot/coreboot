@@ -75,4 +75,7 @@ void psp_notify_sx_info(u8 sleep_type);
 
 int psp_load_named_blob(enum psp_blob_type type, const char *name);
 
+/* Sets the GPIO used for the TPM IRQ */
+void psp_set_tpm_irq_gpio(unsigned int gpio);
+
 #endif /* AMD_BLOCK_PSP_H */

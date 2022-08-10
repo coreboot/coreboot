@@ -20,6 +20,7 @@
 #define MBOX_BIOS_CMD_PSB_AUTO_FUSING		0x21
 #define MBOX_BIOS_CMD_SET_SPL_FUSE		0x2d
 #define MBOX_BIOS_CMD_QUERY_SPL_FUSE		0x47
+#define MBOX_BIOS_CMD_I2C_TPM_ARBITRATION	0x64
 #define MBOX_BIOS_CMD_ABORT			0xfe
 
 /* x86 to PSP commands, v1-only */
@@ -80,6 +81,23 @@ struct mbox_cmd_late_spl_buffer {
 	struct mbox_buffer_header header;
 	uint32_t	spl_value;
 } __attribute__((packed, aligned(32)));
+
+struct dtpm_config {
+	uint32_t gpio;
+} __packed;
+
+enum dtpm_request_type {
+	DTPM_REQUEST_ACQUIRE,	/* Acquire I2C bus */
+	DTPM_REQUEST_RELEASE,	/* Release I2C bus */
+	DTPM_REQUEST_CONFIG,	/* Provide DTPM info */
+	DTPM_REQUEST_MAX,
+};
+
+struct mbox_cmd_dtpm_config_buffer {
+	struct mbox_buffer_header header;
+	uint32_t request_type;
+	struct dtpm_config config;
+} __packed __aligned(32);
 
 #define PSP_INIT_TIMEOUT 10000 /* 10 seconds */
 #define PSP_CMD_TIMEOUT 1000 /* 1 second */

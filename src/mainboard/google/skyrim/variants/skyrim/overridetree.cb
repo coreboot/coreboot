@@ -40,7 +40,7 @@ chip soc/amd/mendocino
 									register "port_count" = "4"
 									device usb 0.0 on # VL822 USB3 hub
 										chip drivers/usb/acpi
-											register "desc" = ""USB3 Type-A Port A0 (DB)""
+											register "desc" = ""USB3 Type-A Port A0 (MLB)""
 											register "type" = "UPC_TYPE_USB3_A"
 											register "use_custom_pld" = "true"
 											register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(2, 2))"
@@ -57,6 +57,13 @@ chip soc/amd/mendocino
 											register "enable_delay_ms" = "20"
 											device usb 3.1 on end
 										end
+										chip drivers/usb/acpi
+											register "desc" = ""USB3 Type-A Port A1 (DB)""
+											register "type" = "UPC_TYPE_USB3_A"
+											register "use_custom_pld" = "true"
+											register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, CENTER, ACPI_PLD_GROUP(3, 1))"
+											device usb 3.2 on end
+										end
 									end # VL822 USB3 hub
 								end
 							end # USB 3.1 port3
@@ -69,7 +76,7 @@ chip soc/amd/mendocino
 									register "port_count" = "4"
 									device usb 0.0 on # VL822 USB2 hub
 										chip drivers/usb/acpi
-											register "desc" = ""USB2 Type-A Port A0 (DB)""
+											register "desc" = ""USB2 Type-A Port A0 (MLB)""
 											register "type" = "UPC_TYPE_USB3_A"
 											register "use_custom_pld" = "true"
 											register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(2, 2))"
@@ -80,6 +87,13 @@ chip soc/amd/mendocino
 											register "type" = "UPC_TYPE_INTERNAL"
 											register "group" = "ACPI_PLD_GROUP(2, 2)"
 											device usb 2.1 on end
+										end
+										chip drivers/usb/acpi
+											register "desc" = ""USB2 Type-A Port A1 (DB)""
+											register "type" = "UPC_TYPE_USB3_A"
+											register "use_custom_pld" = "true"
+											register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, CENTER, ACPI_PLD_GROUP(3, 1))"
+											device usb 2.2 on end
 										end
 									end # VL822 USB2 hub
 								end

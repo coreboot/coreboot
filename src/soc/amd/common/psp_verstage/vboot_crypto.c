@@ -17,14 +17,10 @@ static uint8_t __attribute__((aligned(32))) sha_hash[64];
 
 vb2_error_t vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg, uint32_t data_size)
 {
-	printk(BIOS_DEBUG, "Calculating hash of %d bytes\n", data_size);
+	if (!data_size || platform_set_sha_op(hash_alg, &sha_op) != 0)
+		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
 
 	sha_op_size_remaining = data_size;
-
-	if (platform_set_sha_op(hash_alg, &sha_op) != 0) {
-		printk(BIOS_INFO, "Unsupported hash_alg %d!\n", hash_alg);
-		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
-	}
 
 	/* Set init flag for first operation */
 	sha_op.Init = 1;

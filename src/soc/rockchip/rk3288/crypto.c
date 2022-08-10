@@ -58,11 +58,8 @@ check_member(rk3288_crypto, trng_dout[7], 0x220);
 vb2_error_t vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg,
 				       uint32_t data_size)
 {
-	if (hash_alg != VB2_HASH_SHA256) {
-		printk(BIOS_INFO, "RK3288 doesn't support hash_alg %d!\n",
-		       hash_alg);
+	if (hash_alg != VB2_HASH_SHA256 || !data_size)
 		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
-	}
 
 	write32(&crypto->ctrl, RK_SETBITS(1 << 6));	/* Assert HASH_FLUSH */
 	udelay(1);					/* for 10+ cycles to */

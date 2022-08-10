@@ -2,44 +2,11 @@
 
 #include <device/mmio.h>
 #include <device/pci_ops.h>
+#include <device/xhci.h>
 #include <elog.h>
 #include <intelblocks/xhci.h>
 #include <soc/pci_devs.h>
 #include <stdint.h>
-
-/* Wake on disconnect enable */
-#define XHCI_STATUS_WDE			(1 << 26)
-/* Wake on connect enable */
-#define XHCI_STATUS_WCE			(1 << 25)
-/* Port link status change */
-#define XHCI_STATUS_PLC			(1 << 22)
-/* Connect status change */
-#define XHCI_STATUS_CSC			(1 << 17)
-/* Port link status */
-#define XHCI_STATUS_PLS_SHIFT		(5)
-#define XHCI_STATUS_PLS_MASK		(0xF << XHCI_STATUS_PLS_SHIFT)
-#define XHCI_STATUS_PLS_RESUME		(15 << XHCI_STATUS_PLS_SHIFT)
-
-static bool xhci_csc_set(uint32_t port_status)
-{
-	return !!(port_status & XHCI_STATUS_CSC);
-}
-
-static bool xhci_wake_capable(uint32_t port_status)
-{
-	return !!((port_status & XHCI_STATUS_WCE) |
-		  (port_status & XHCI_STATUS_WDE));
-}
-
-static bool xhci_plc_set(uint32_t port_status)
-{
-	return !!(port_status & XHCI_STATUS_PLC);
-}
-
-static bool xhci_resume(uint32_t port_status)
-{
-	return (port_status & XHCI_STATUS_PLS_MASK) == XHCI_STATUS_PLS_RESUME;
-}
 
 /*
  * Check if a particular USB port caused wake by:
@@ -73,8 +40,8 @@ static bool xhci_port_wake_check(uintptr_t base, uint8_t num, uint8_t host_event
 		 * connect/disconnect to identify if the port caused wake
 		 * event for USB attach/detach.
 		 */
-		if (xhci_csc_set(port_status) &&
-		    xhci_wake_capable(port_status)) {
+		if (xhci_portsc_csc(port_status) &&
+		    xhci_portsc_wake_capable(port_status)) {
 			elog_add_event_wake(host_event, 0);
 			elog_add_event_wake(event, i + 1);
 			found = true;
@@ -85,8 +52,8 @@ static bool xhci_port_wake_check(uintptr_t base, uint8_t num, uint8_t host_event
 		 * Check if PLC is set and PLS indicates resume to identify if
 		 * the port caused wake event for USB activity.
 		 */
-		if (xhci_plc_set(port_status) &&
-		    xhci_resume(port_status)) {
+		if (xhci_portsc_plc(port_status) &&
+		    xhci_portsc_resume(port_status)) {
 			elog_add_event_wake(host_event, 0);
 			elog_add_event_wake(event, i + 1);
 			found = true;

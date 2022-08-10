@@ -74,10 +74,10 @@ Device (XHCI)
 		Device (HS09) { Name (_ADR, 9) }
 		Device (HS10) { Name (_ADR, 10) }
 		/* USB3 */
-		Device (SS01) { Name (_ADR, 11) }
-		Device (SS02) { Name (_ADR, 12) }
-		Device (SS03) { Name (_ADR, 13) }
-		Device (SS04) { Name (_ADR, 14) }
+		Device (SS01) { Name (_ADR, 13) }
+		Device (SS02) { Name (_ADR, 14) }
+		Device (SS03) { Name (_ADR, 15) }
+		Device (SS04) { Name (_ADR, 16) }
 	}
 #endif
 }

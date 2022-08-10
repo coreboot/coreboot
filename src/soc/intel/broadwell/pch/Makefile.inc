@@ -42,5 +42,3 @@ bootblock-$(CONFIG_SERIALIO_UART_CONSOLE) += ../../../../southbridge/intel/lynxp
 bootblock-$(CONFIG_SERIALIO_UART_CONSOLE) += ../../../../southbridge/intel/lynxpoint/uart_init.c
 all-$(CONFIG_SERIALIO_UART_CONSOLE) += ../../../../southbridge/intel/lynxpoint/uart.c
 smm-$(CONFIG_SERIALIO_UART_CONSOLE) += ../../../../southbridge/intel/lynxpoint/uart.c
-
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c

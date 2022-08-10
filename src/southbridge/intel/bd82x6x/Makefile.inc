@@ -20,8 +20,6 @@ ramstage-y += me_common.c
 ramstage-y += smbus.c
 ramstage-y += ../common/pciehp.c
 
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
-
 ramstage-y += me_status.c
 
 ramstage-$(CONFIG_ELOG) += elog.c

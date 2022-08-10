@@ -19,8 +19,6 @@ ramstage-y += thermal.c
 ramstage-y += usb_ehci.c
 ramstage-y += ../common/pciehp.c
 
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
-
 smm-y += smihandler.c
 
 CPPFLAGS_common += -I$(src)/southbridge/intel/i82801jx/include

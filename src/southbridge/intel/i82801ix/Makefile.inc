@@ -20,8 +20,6 @@ ramstage-y += thermal.c
 ramstage-y += usb_ehci.c
 ramstage-y += ../common/pciehp.c
 
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
-
 smm-y += smihandler.c
 
 ifneq ($(CONFIG_BOARD_EMULATION_QEMU_X86_Q35),y)

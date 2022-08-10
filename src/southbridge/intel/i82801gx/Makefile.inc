@@ -18,8 +18,6 @@ ramstage-y += smbus.c
 ramstage-y += usb.c
 ramstage-y += usb_ehci.c
 
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/hda_verb.c
-
 smm-y += smihandler.c
 
 romstage-y += early_init.c

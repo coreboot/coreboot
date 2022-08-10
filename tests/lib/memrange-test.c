@@ -461,7 +461,7 @@ static void test_memrange_holes(void **state)
  * memory from region with READONLY_TAG.
  *
  * Example memory ranges (res_mock1) for test_memrange_steal.
- * Space marked with (/) is not covered by any region at the end of the test.
+ * Space marked with (/) is stolen during the test.
  *
  *     +--------CACHEABLE_TAG--------+ <-0xE000
  *     |                             |
@@ -471,10 +471,10 @@ static void test_memrange_holes(void **state)
  *
  *
  *
- *     +--------READONLY_TAG---------+ <-0xFF0000
+ *     +--------READONLY_TAG---------+ <-0xFF0000  <-stolen_base
+ *     |/////////////////////////////|             <-stolen_base + 0x4000
  *     |                             |
- *     |/////////////////////////////| <-stolen_base
- *     |/////////////////////////////| <-stolen_base + 0x4000
+ *     |                             |
  *     +-----------------------------+ <-0x1000000
  *
  *

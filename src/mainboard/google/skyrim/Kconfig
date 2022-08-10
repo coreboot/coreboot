@@ -65,6 +65,7 @@ config MAINBOARD_FAMILY
 
 config MAINBOARD_PART_NUMBER
 	default "Skyrim" if BOARD_GOOGLE_SKYRIM
+	default "Winterhold" if BOARD_GOOGLE_WINTERHOLD
 
 config OVERRIDE_DEVICETREE
 	string
@@ -73,6 +74,7 @@ config OVERRIDE_DEVICETREE
 config VARIANT_DIR
 	string
 	default "skyrim" if BOARD_GOOGLE_SKYRIM
+	default "winterhold" if BOARD_GOOGLE_WINTERHOLD
 
 config VBOOT
 	select VBOOT_LID_SWITCH

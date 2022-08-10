@@ -3,3 +3,7 @@ comment "Skyrim"
 config BOARD_GOOGLE_SKYRIM
 	bool "->  Skyrim"
 	select BOARD_GOOGLE_BASEBOARD_SKYRIM
+
+config BOARD_GOOGLE_WINTERHOLD
+	bool "->  Winterhold"
+	select BOARD_GOOGLE_BASEBOARD_SKYRIM

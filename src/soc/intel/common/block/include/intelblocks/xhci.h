@@ -4,22 +4,9 @@
 #define SOC_INTEL_COMMON_BLOCK_XHCI_H
 
 #include <device/device.h>
+#include <device/xhci.h>
 #include <elog.h>
 #include <stdint.h>
-
-/*
- * struct xhci_usb_info - Data containing number of USB ports & offset.
- * @usb2_port_status_reg: Offset to USB2 port status register.
- * @num_usb2_ports: Number of USB2 ports.
- * @usb3_port_status_reg: Offset to USB3 port status register.
- * @num_usb3_ports: Number of USB3 ports.
- */
-struct xhci_usb_info {
-	uint32_t usb2_port_status_reg;
-	uint32_t num_usb2_ports;
-	uint32_t usb3_port_status_reg;
-	uint32_t num_usb3_ports;
-};
 
 /*
  * struct xhci_wake_info - Relates an XHCI device to registers and wake types

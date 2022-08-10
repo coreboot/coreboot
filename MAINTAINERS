@@ -138,14 +138,29 @@ Maintainers List (try to look for most precise areas first)
 ################################################################################
 
 AMD family 17h and 19h reference boards
-M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
+L:	amd_coreboot_org_changes@googlegroups.com
 S:	Maintained
+F:	src/mainboard/amd/bilby/
 F:	src/mainboard/amd/chausie/
 F:	src/mainboard/amd/majolica/
 F:	src/mainboard/amd/mandolin/
+
+AMD reference boards outside of family 17h and 19h
+L:	amd_coreboot_org_changes@googlegroups.com
+F:	src/mainboard/amd/gardenia/
+F:	src/mainboard/amd/inagua/
+F:	src/mainboard/amd/olivehill/
+F:	src/mainboard/amd/padmelon/
+F:	src/mainboard/amd/parmer/
+F:	src/mainboard/amd/persimmon/
+F:	src/mainboard/amd/south_station/
+F:	src/mainboard/amd/thatcher/
+F:	src/mainboard/amd/union_station/
+
+
 
 APPLE MAINBOARDS
 M:	Evgeny Zinoviev <me@ch1p.io>
@@ -290,6 +305,15 @@ F:	src/mainboard/google/parrot/
 F:	src/mainboard/google/slippy/
 F:	src/mainboard/google/stout/
 
+GOOGLE AMD-BASED MAINBOARDS
+M:	Martin Roth <martin.roth@amd.corp-partner.google.com>
+M:	Jason Nien <jason.nien@amd.corp-partner.google.com>
+L:	amd_coreboot_org_changes@googlegroups.com
+S:	Supported
+F:	src/mainboard/google/kahlee/
+F:	src/mainboard/google/zork/
+F:	src/mainboard/google/guybrush/
+F:	src/mainboard/google/skyrim/
 
 
 HP 280 G2 MAINBOARD
@@ -592,6 +616,7 @@ F:	src/northbridge/intel/x4x/
 ################################################################################
 
 AMD SUPPORT
+L:	amd_coreboot_org_changes@googlegroups.com
 F:	src/vendorcode/amd/
 F:	src/cpu/amd/
 F:	src/northbridge/amd/
@@ -625,52 +650,51 @@ F:	src/drivers/intel/fsp2_0/
 ################################################################################
 
 AMD Cezanne
-M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Raul E Rangel <rrangel@chromium.org>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
 M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
+L:	amd_coreboot_org_changes@googlegroups.com
 S:	Maintained
 F:	src/soc/amd/cezanne/
 F:	src/vendorcode/amd/fsp/cezanne/
 
 AMD common SoC code
-M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Raul E Rangel <rrangel@chromium.org>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
 M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
+L:	amd_coreboot_org_changes@googlegroups.com
 S:	Maintained
 F:	src/soc/amd/common/
 
 AMD Picasso
-M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
-M:	Raul E Rangel <rrangel@chromium.org>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
 M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
+L:	amd_coreboot_org_changes@googlegroups.com
 S:	Maintained
 F:	src/soc/amd/picasso/
 F:	src/vendorcode/amd/fsp/picasso/
 
 AMD Mendocino
-M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Raul E Rangel <rrangel@chromium.org>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
 M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
-S:	Maintained
+L:	amd_coreboot_org_changes@googlegroups.com
+S:	Supported
 F:	src/soc/amd/mendocino/
 F:	src/vendorcode/amd/fsp/mendocino/
 
 AMD Stoneyridge
-M:	Marshall Dawson <marshalldawson3rd@gmail.com>
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
+L:	amd_coreboot_org_changes@googlegroups.com
 S:	Odd Fixes
 F:	src/soc/amd/stoneyridge/
 

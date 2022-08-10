@@ -20,10 +20,10 @@ const struct cpu_power_limits limits[] = {
 
 const struct system_power_limits sys_limits[] = {
 	/* SKU_ID, TDP (Watts), psys_pl2 (Watts) */
-	{ PCI_DID_INTEL_ADL_P_ID_10, 15, 135 },
-	{ PCI_DID_INTEL_ADL_P_ID_7, 15, 135 },
-	{ PCI_DID_INTEL_ADL_P_ID_6, 15, 135 },
-	{ PCI_DID_INTEL_ADL_P_ID_5, 28, 230 },
+	{ PCI_DID_INTEL_ADL_P_ID_10, 15, 90 },
+	{ PCI_DID_INTEL_ADL_P_ID_7, 15, 90 },
+	{ PCI_DID_INTEL_ADL_P_ID_6, 15, 90 },
+	{ PCI_DID_INTEL_ADL_P_ID_5, 28, 135 },
 };
 
 const struct psys_config psys_config = {

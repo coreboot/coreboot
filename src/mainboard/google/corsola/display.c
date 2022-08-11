@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <boardid.h>
 #include <console/console.h>
 #include <delay.h>
 #include <drivers/analogix/anx7625/anx7625.h>
@@ -124,18 +125,22 @@ static const struct edp_bridge ps8640_bridge = {
 	.post_power_on = bridge_ps8640_post_power_on,
 };
 
-_Static_assert(CONFIG(DRIVER_ANALOGIX_ANX7625) + CONFIG(DRIVER_PARADE_PS8640) == 1,
-	       "Exactly one of ANX7625 and PS8640 must be set");
+_Static_assert(CONFIG(BOARD_GOOGLE_KINGLER_COMMON) + CONFIG(BOARD_GOOGLE_KRABBY_COMMON) == 1,
+	       "Exactly one of KINGLER and KRABBY must be set");
 
 int configure_display(void)
 {
 	struct edid edid;
 	const u8 i2c_bus = I2C0;
 	const struct edp_bridge *bridge;
+	uint32_t board_version = board_id();
 
-	if (CONFIG(DRIVER_ANALOGIX_ANX7625))
-		bridge = &anx7625_bridge;
-	else if (CONFIG(DRIVER_PARADE_PS8640))
+	if (CONFIG(BOARD_GOOGLE_KINGLER_COMMON))
+		if (CONFIG(BOARD_GOOGLE_STEELIX) && board_version < 2)
+			bridge = &ps8640_bridge;
+		else
+			bridge = &anx7625_bridge;
+	else /* BOARD_GOOGLE_KRABBY_COMMON */
 		bridge = &ps8640_bridge;
 
 	printk(BIOS_INFO, "%s: Starting display init\n", __func__);

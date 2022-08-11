@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
 #ifndef __MT8195_SOC_PMIF_H__
 #define __MT8195_SOC_PMIF_H__

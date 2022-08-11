@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
 #ifndef __SOC_MEDIATEK_MT8195_MT6360_H__
 #define __SOC_MEDIATEK_MT8195_MT6360_H__

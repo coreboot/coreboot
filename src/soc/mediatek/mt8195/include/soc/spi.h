@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
 #ifndef MTK_MT8195_SPI_H
 #define MTK_MT8195_SPI_H

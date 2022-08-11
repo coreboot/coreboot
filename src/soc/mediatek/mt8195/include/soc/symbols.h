@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
 #ifndef _SOC_MEDIATEK_MT8195_SYMBOLS_H_
 #define _SOC_MEDIATEK_MT8195_SYMBOLS_H_

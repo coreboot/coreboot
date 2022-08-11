@@ -12,6 +12,7 @@ all-y += ../common/uart.c
 bootblock-y += bootblock.c
 bootblock-y += ../common/eint_event.c
 bootblock-y += gic.c
+bootblock-y += ../common/lastbus.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-y += ../common/tracker.c ../common/tracker_v1.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c

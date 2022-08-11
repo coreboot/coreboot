@@ -28,6 +28,7 @@ enum vb2_pcr_digest;
 /* 0x100d: Hash of MRC_CACHE training data for non-recovery boot */
 #define MRC_RW_HASH_NV_INDEX            0x100d
 #define HASH_NV_SIZE                    VB2_SHA256_DIGEST_SIZE
+#define ENT_ROLLBACK_SPACE_INDEX        0x100e
 /* Widevine Secure Counter space */
 #define WIDEVINE_COUNTER_NV_INDEX(n)	(0x3000 + (n))
 #define NUM_WIDEVINE_COUNTERS		4

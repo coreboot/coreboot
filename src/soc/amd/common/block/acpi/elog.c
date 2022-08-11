@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/acpi.h>
+#include <amdblocks/xhci.h>
 #include <elog.h>
 #include <soc/southbridge.h>
 
@@ -26,9 +27,16 @@ static void elog_gpe_events(const struct acpi_pm_gpe_state *state)
 	int i;
 	uint32_t valid_gpe = state->gpe0_sts & state->gpe0_en;
 
+	if (!ENV_SMM)
+		return;
+
 	for (i = 0; i <= 31; i++) {
-		if (valid_gpe & (1U << i))
+		if (valid_gpe & (1U << i)) {
 			elog_add_event_wake(ELOG_WAKE_SOURCE_GPE, i);
+
+			if (CONFIG(SOC_AMD_COMMON_BLOCK_XHCI_ELOG) && i == XHCI_GEVENT)
+				soc_xhci_log_wake_events();
+		}
 	}
 }
 

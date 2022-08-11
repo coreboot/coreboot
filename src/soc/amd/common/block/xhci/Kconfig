@@ -1,0 +1,16 @@
+config SOC_AMD_COMMON_BLOCK_XHCI
+	bool
+	help
+	  Select this option to use AMD common XHCI support.
+
+if SOC_AMD_COMMON_BLOCK_XHCI
+
+config SOC_AMD_COMMON_BLOCK_XHCI_ELOG
+	bool
+	default y
+	depends on ELOG
+	select SMM_PCI_RESOURCE_STORE
+	help
+	  Enables logging of XHCI events in the elog
+
+endif

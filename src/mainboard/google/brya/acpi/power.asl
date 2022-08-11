@@ -19,6 +19,9 @@
 
 #define GC6_DEFER_TYPE_EXIT_GC6		3
 
+/* 250ms in "Timer" units (i.e. 100ns increments) */
+#define MIN_OFF_TIME_TIMERS	2500000
+
 /* Optimus Power Control State */
 Name (OPCS, OPTIMUS_POWER_CONTROL_DISABLE)
 
@@ -45,6 +48,8 @@ Name (DFEN, 0)
 Name (DFCI, 0)
 /* Deferred GC6 Exit control */
 Name (DFCO, 0)
+/* GCOFF Timer */
+Name (GCOT, 0)
 
 /* "GC6 In", i.e. GC6 Entry Sequence */
 Method (GC6I, 0, Serialized)
@@ -113,6 +118,14 @@ Method (PGON, 0, Serialized)
 	{
 		Printf ("PGON: GPU already on")
 		Return
+	}
+
+	Local0 = Timer - GCOT
+	If (Local0 < MIN_OFF_TIME_TIMERS)
+	{
+		Local1 = (MIN_OFF_TIME_TIMERS - Local0) / 10000
+		Printf("Sleeping %o to ensure min GCOFF time", Local1)
+		Sleep (Local1)
 	}
 
 	/* Assert PERST# */
@@ -188,6 +201,8 @@ Method (PGOF, 0, Serialized)
 	/* Ramp down 1.8V */
 	\_SB.PCI0.CTXS (GPIO_1V8_PWR_EN)
 	GPPL (GPIO_1V8_PG, 0, 20)
+
+	GCOT = Timer
 
 	GPPS = GPU_POWER_STATE_OFF
 	Printf ("GPU sequenced off")

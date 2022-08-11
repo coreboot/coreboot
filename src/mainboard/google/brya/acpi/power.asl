@@ -54,30 +54,26 @@ Method (GC6I, 0, Serialized)
 	/* Put PCIe link into L2/3 */
 	\_SB.PCI0.PEG0.DL23 ()
 
-	/* Assert GPU_PERST_L */
-	\_SB.PCI0.CTXS (GPIO_GPU_PERST_L)
+	/* Wait for GPU to deassert its GPIO4, i.e. GPU_NVVDD_EN */
+	GPPL (GPIO_GPU_NVVDD_EN, 0, 20)
 
 	/* Deassert PG_GPU_ALLRAILS */
 	\_SB.PCI0.CTXS (GPIO_GPU_ALLRAILS_PG)
 
-	/* Deassert EN_PP0950_GPU_X */
+	/* Ramp down PEXVDD */
 	\_SB.PCI0.CTXS (GPIO_PEXVDD_PWR_EN)
-
-	/* Wait for de-assertion of PG_PP0950_GPU */
 	GPPL (GPIO_PEXVDD_PG, 0, 20)
-
-	/* Wait for GPU to deassert GPU_NVVDD_EN */
-	GPPL (GPIO_GPU_NVVDD_EN, 0, 20)
+	Sleep (10)
 
 	/* Deassert EN_PPVAR_GPU_NVVDD */
 	\_SB.PCI0.CTXS (GPIO_NVVDD_PWR_EN)
-
-	/* Wait for de-assertion of PG_PPVAR_GPU_NVVDD */
 	GPPL (GPIO_NVVDD_PG, 0, 20)
+	Sleep (2)
 
-	/* Deassert EN_PCH_PPVAR_GPU_FBVDDQ (active-low) */
-	\_SB.PCI0.STXS (GPIO_FBVDD_PWR_EN)
+	/* Assert GPU_PERST_L */
+	\_SB.PCI0.CTXS (GPIO_GPU_PERST_L)
 
+	Printf ("dGPU entered GC6")
 	GC6E = GC6_STATE_ENTERED
 }
 
@@ -89,33 +85,24 @@ Method (GC6O, 0, Serialized)
 	/* Deassert GPU_PERST_L */
 	\_SB.PCI0.STXS (GPIO_GPU_PERST_L)
 
-	/* Put PCIe link into L0 state */
-	\_SB.PCI0.PEG0.LD23 ()
-
 	/* Wait for GPU to assert GPU_NVVDD_EN */
 	GPPL (GPIO_GPU_NVVDD_EN, 1, 20)
 
-	/*
-	 * There is a 4ms window once the GPU asserts GPU_NVVDD_EN to
-	 * perform the following:
-	 * 1. Enable GPU_NVVDD
-	 * 2. Enable GPU_PEX
-	 * 3. Wait for all PG
-	 * 4. Assert FBVDD (active-low)
-	 * At the end of the 4ms window, the GPU will deassert its
-	 * GPIO1_GC6_FB_EN signal that is used to keep the FBVDD
-	 * rail up during GC6.
-	 */
-	 \_SB.PCI0.STXS (GPIO_NVVDD_PWR_EN)
-	 Stall (20)
+	/* Ramp up NVVDD */
+	\_SB.PCI0.STXS (GPIO_NVVDD_PWR_EN)
+	GPPL (GPIO_NVVDD_PG, 1, 4)
+
+	/* Ramp up PEXVDD */
 	 \_SB.PCI0.STXS (GPIO_PEXVDD_PWR_EN)
-	 GPPL (GPIO_NVVDD_PG, 1, 4)
 	 GPPL (GPIO_PEXVDD_PG, 1, 4)
-	 \_SB.PCI0.CTXS (GPIO_FBVDD_PWR_EN)
 
 	/* Assert PG_GPU_ALLRAILS */
 	\_SB.PCI0.STXS (GPIO_GPU_ALLRAILS_PG)
 
+	/* Put PCIe link into L0 state */
+	\_SB.PCI0.PEG0.LD23 ()
+
+	Printf ("dGPU exited GC6")
 	GC6E = GC6_STATE_EXITED
 }
 

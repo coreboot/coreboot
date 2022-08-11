@@ -58,7 +58,12 @@ Main();
 #-------------------------------------------------------------------------------
 sub Main {
 
-    check_arguments();
+	check_arguments();
+	if ( !($dont_use_git_grep || `git rev-parse --is-inside-work-tree`) ) {
+		$dont_use_git_grep = 1;
+		print STDERR "\nGit grep unavailable, falling back to regular grep...\n";
+	}
+
     open( STDOUT, "> $output_file" ) or die "Can't open $output_file for output: $!\n";
 
     if ( defined $top_dir ) {

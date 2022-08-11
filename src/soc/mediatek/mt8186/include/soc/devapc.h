@@ -15,6 +15,8 @@ enum devapc_ao_offset {
 	DOM_REMAP_0_0 = 0xD00,
 	DOM_REMAP_1_0 = 0xD04,
 	MAS_DOM_0 = 0x0A00,
+	MAS_DOM_1 = 0x0A04,
+	MAS_DOM_3 = 0x0A0C,
 	MAS_SEC_0 = 0x0B00,
 	AO_APC_CON = 0x0F00,
 };
@@ -58,5 +60,15 @@ enum devapc_cfg_index {
  * Bit Field DEFINITION
  ******************************************************************************/
 DEFINE_BIT(SCP_SSPM_SEC, 21)
+DEFINE_BITFIELD(SPM_DOM, 11, 8)
+DEFINE_BITFIELD(SCP_DOM, 3, 0)
+
+/* Domain Remap */
+DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_0, 1, 0)
+DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_1, 3, 2)
+DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_2, 5, 4)
+DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_3, 7, 6)
+DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_4, 9, 8)
+DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_5, 11, 10)
 
 #endif

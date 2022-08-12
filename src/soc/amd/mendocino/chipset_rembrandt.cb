@@ -1,4 +1,4 @@
-chip soc/amd/rembrandt
+chip soc/amd/mendocino
 	device cpu_cluster 0 on
 	end
 	device domain 0 on

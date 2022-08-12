@@ -564,7 +564,7 @@ static void fill_fsps_lpss_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->SerialIoUartMode[i] = config->serial_io_uart_mode[i];
 }
 
-static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
+static void fill_fsps_microcode_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
 	const struct microcode *microcode_file;
@@ -581,8 +581,17 @@ static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
 			s_cfg->MicrocodeRegionSize = (uint32_t)microcode_len;
 		}
 	}
+}
 
+static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
 	if (CONFIG(USE_FSP_MP_INIT)) {
+		/*
+		 * Fill `2nd microcode loading FSP UPD` if FSP is running CPU feature
+		 * programming.
+		 */
+		fill_fsps_microcode_params(s_cfg, config);
 		/*
 		 * Use FSP running MP PPI services to perform CPU feature programming
 		 * if Kconfig is enabled

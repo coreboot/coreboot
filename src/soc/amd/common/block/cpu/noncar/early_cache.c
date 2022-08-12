@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/cpu.h>
+#include <amdblocks/iomap.h>
 #include <assert.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/cache.h>
@@ -61,8 +62,9 @@ void early_cache_setup(void)
 	wrmsr(SYSCFG_MSR, sys_cfg);
 
 	var_mtrr_set(&mtrr_ctx.ctx, 0, ALIGN_DOWN(top_mem.lo, 8 * MiB), MTRR_TYPE_WRBACK);
-	/* TODO: check if we should always mark 16 MByte below 4 GByte as WRPROT */
-	var_mtrr_set(&mtrr_ctx.ctx, FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
+	/* Always mark the 16 MByte right below the 4 GB boundary as WRPROT */
+	var_mtrr_set(&mtrr_ctx.ctx, FLASH_BELOW_4GB_MAPPING_REGION_BASE,
+		     FLASH_BELOW_4GB_MAPPING_REGION_SIZE, MTRR_TYPE_WRPROT);
 
 	commit_mtrr_setup(&mtrr_ctx.ctx);
 

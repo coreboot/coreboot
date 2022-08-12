@@ -4,6 +4,7 @@
 
 #include <acpi/acpi.h>
 #include <amdblocks/cpu.h>
+#include <amdblocks/iomap.h>
 #include <amdblocks/mca.h>
 #include <amdblocks/reset.h>
 #include <amdblocks/smm.h>
@@ -58,7 +59,8 @@ void mp_init_cpus(struct bus *cpu_bus)
 				"mp_init_with_smm failed. Halting.\n");
 
 	/* pre_mp_init made the flash not cacheable. Reset to WP for performance. */
-	mtrr_use_temp_range(FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
+	mtrr_use_temp_range(FLASH_BELOW_4GB_MAPPING_REGION_BASE,
+			    FLASH_BELOW_4GB_MAPPING_REGION_SIZE, MTRR_TYPE_WRPROT);
 
 	/* SMMINFO only needs to be set up when booting from S5 */
 	if (!acpi_is_wakeup_s3())

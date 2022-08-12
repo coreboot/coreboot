@@ -19,8 +19,6 @@
 #define APU_UART0_BASE			0xfedc6000
 #define APU_UART1_BASE			0xfedc8000
 
-#define FLASH_BASE_ADDR			((0xffffffff - CONFIG_ROM_SIZE) + 1)
-
 /* I/O Ranges */
 #define ACPI_IO_BASE			0x400
 #define  ACPI_PM_EVT_BLK		(ACPI_IO_BASE + 0x00)		/* 4 bytes */

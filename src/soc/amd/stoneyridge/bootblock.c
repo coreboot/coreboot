@@ -12,6 +12,7 @@
 #include <amdblocks/agesawrapper_call.h>
 #include <amdblocks/amd_pci_mmconf.h>
 #include <amdblocks/biosram.h>
+#include <amdblocks/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/cpu.h>
 #include <soc/southbridge.h>
@@ -42,7 +43,8 @@ static void amd_initmmio(void)
 	 *       duplicate copies.
 	 */
 	mtrr = (mtrr_cap.lo & MTRR_CAP_VCNT) - SOC_EARLY_VMTRR_FLASH;
-	set_var_mtrr(mtrr, FLASH_BASE_ADDR, CONFIG_ROM_SIZE, MTRR_TYPE_WRPROT);
+	set_var_mtrr(mtrr, FLASH_BELOW_4GB_MAPPING_REGION_BASE,
+		     FLASH_BELOW_4GB_MAPPING_REGION_SIZE, MTRR_TYPE_WRPROT);
 
 	mtrr = (mtrr_cap.lo & MTRR_CAP_VCNT) - SOC_EARLY_VMTRR_CAR_HEAP;
 	set_var_mtrr(mtrr, CONFIG_PI_AGESA_CAR_HEAP_BASE,

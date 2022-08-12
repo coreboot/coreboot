@@ -16,6 +16,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/espi.h>
 #include <amdblocks/ioapic.h>
+#include <amdblocks/iomap.h>
 #include <amdblocks/lpc.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
@@ -109,9 +110,10 @@ static void lpc_read_resources(struct device *dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
+	/* Only up to 16 MByte of the SPI flash can be mapped right below 4 GB */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	res->base = FLASH_BASE_ADDR;
-	res->size = CONFIG_ROM_SIZE;
+	res->base = FLASH_BELOW_4GB_MAPPING_REGION_BASE;
+	res->size = FLASH_BELOW_4GB_MAPPING_REGION_SIZE;
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 

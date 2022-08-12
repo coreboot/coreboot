@@ -193,10 +193,10 @@ void before_post_cpus_init(void)
 	if (!CONFIG(USE_COREBOOT_MP_INIT))
 		return;
 
-	if (mp_run_on_all_cpus(&wrapper_init_core_prmrr, NULL) != CB_SUCCESS)
+	if (mp_run_on_all_cpus(wrapper_init_core_prmrr, NULL) != CB_SUCCESS)
 		printk(BIOS_ERR, "core PRMRR sync failure\n");
 
-	if (mp_run_on_all_cpus(&wrapper_set_bios_done, NULL) != CB_SUCCESS)
+	if (mp_run_on_all_cpus(wrapper_set_bios_done, NULL) != CB_SUCCESS)
 		printk(BIOS_ERR, "Set BIOS Done failure\n");
 
 	intel_reload_microcode();

@@ -42,9 +42,9 @@ void fch_pre_init(void)
 	/* Setup SPI base by calling lpc_early_init before setting up eSPI. */
 	lpc_early_init();
 
-	/* Setup eSPI to enable port80 routing if the board is using eSPI.
-	   TODO(b/241426419): Setup eSPI if it is not already done in verstage on PSP. */
-	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
+	/* Setup eSPI to enable port80 routing if the board is using eSPI and the eSPI
+	   interface hasn't already been set up in verstage on PSP */
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI) && !CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
 		configure_espi_with_mb_hook();
 
 	fch_spi_early_init();

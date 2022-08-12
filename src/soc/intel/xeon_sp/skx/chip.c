@@ -28,9 +28,7 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus = &xeonsp_pci_domain_scan_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables  = &northbridge_write_acpi_tables,
-	#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name        = soc_acpi_name
-#endif
 #endif
 };
 

@@ -33,6 +33,7 @@ tags
 .clang_complete
 .cache
 compile_commands.json
+.vscode/
 
 # Cross-compile toolkits
 xgcc/

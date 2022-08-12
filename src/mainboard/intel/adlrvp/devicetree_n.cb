@@ -154,6 +154,8 @@ chip soc/intel/alderlake
 		.vnn_icc_max_ma = 500,
 	}"
 
+	register "skip_mbp_hob" = "1"
+
 	device domain 0 on
 		device ref igpu on end
 		device ref dtt on

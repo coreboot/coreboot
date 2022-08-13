@@ -34,9 +34,9 @@
  * CSE Firmware supports 3 boot partitions. For CSE Lite SKU, only 2 boot partitions are
  * used and 3rd boot partition is set to BP_STATUS_PARTITION_NOT_PRESENT.
  * CSE Lite SKU Image Layout:
- * -------------    ------------------    --------------------
- * |CSE REGION | => | RO | DATA | RW | => | BP1 | DATA | BP2 |
- *  -------------   ------------------    --------------------
+ * +------------+    +----+------+----+    +-----+------+-----+
+ * | CSE REGION | => | RO | DATA | RW | => | BP1 | DATA | BP2 |
+ * +------------+    +----+------+----+    +-----+------+-----+
  */
 #define CSE_MAX_BOOT_PARTITIONS 3
 

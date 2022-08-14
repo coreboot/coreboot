@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <commonlib/clamp.h>
+#include <commonlib/bsd/clamp.h>
 #include <console/console.h>
 #include <console/usb.h>
 #include <cpu/intel/model_206ax/model_206ax.h>

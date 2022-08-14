@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
 
-#ifndef COMMONLIB_CLAMP_H
-#define COMMONLIB_CLAMP_H
+#ifndef COMMONLIB_BSD_CLAMP_H
+#define COMMONLIB_BSD_CLAMP_H
 
 #include <stdint.h>
 
@@ -19,4 +19,4 @@ static inline u32 clamp_u32(const u32 min, const u32 val, const u32 max)
 	return val;
 }
 
-#endif /* COMMONLIB_CLAMP_H */
+#endif /* COMMONLIB_BSD_CLAMP_H */

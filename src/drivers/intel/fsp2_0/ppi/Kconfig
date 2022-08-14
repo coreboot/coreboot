@@ -26,3 +26,11 @@ config MP_SERVICES_PPI_V2
 	  modification over MP services1 PPIs. A new API StartupAllCPUs have been
 	  added to allow running a task on BSP and all APs. Also the EFI_PEI_SERVICES
 	  parameter has been removed from all MP PPI APIs.
+
+config MP_SERVICES_PPI_V2_NOOP
+	bool
+	default n
+	select MP_SERVICES_PPI
+	help
+	  This option implement EFI_PEI_MP_SERVICES_PPI structure definitions
+	  with APIs that returns mp_api_unsupported().

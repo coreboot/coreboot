@@ -15,8 +15,6 @@ DefinitionBlock (
 	)
 {	/* Start of ASL file */
 	#include <acpi/dsdt_top.asl>
-
-	/* global NVS and variables */
 	#include <globalnvs.asl>
 
 	/* PCI IRQ mapping for the Southbridge */

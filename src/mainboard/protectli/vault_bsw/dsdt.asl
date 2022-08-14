@@ -14,8 +14,6 @@ DefinitionBlock(
 	#include "onboard.h"
 
 	#include <acpi/platform.asl>
-
-	/* global NVS and variables */
 	#include <acpi/globalnvs.asl>
 	#include <cpu/intel/common/acpi/cpu.asl>
 

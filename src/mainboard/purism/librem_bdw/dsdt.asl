@@ -12,11 +12,7 @@ DefinitionBlock(
 {
 	#include <acpi/dsdt_top.asl>
 	#include <soc/intel/broadwell/acpi/platform.asl>
-
-	/* Global NVS and variables */
 	#include <soc/intel/broadwell/pch/acpi/globalnvs.asl>
-
-	/* CPU */
 	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {
@@ -30,6 +26,5 @@ DefinitionBlock(
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 
-	/* Mainboard specific */
 	#include "acpi/mainboard.asl"
 }

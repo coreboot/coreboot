@@ -15,11 +15,7 @@ DefinitionBlock(
 {
 	#include <acpi/dsdt_top.asl>
 	#include <soc/intel/common/block/acpi/acpi/platform.asl>
-
-	/* global NVS and variables */
 	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
-
-	/* CPU */
 	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB)

@@ -12,14 +12,9 @@ DefinitionBlock(
 	0x20110725	// OEM revision
 )
 {
-	/* Some generic macros */
 	#include <acpi/dsdt_top.asl>
 	#include <soc/intel/common/acpi/platform.asl>
-
-	/* global NVS and variables */
 	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
-
-	/* CPU */
 	#include <cpu/intel/common/acpi/cpu.asl>
 
 	Scope (\_SB) {

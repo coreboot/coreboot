@@ -646,6 +646,7 @@ static struct device_operations pciexp_hotplug_dummy_ops = {
 
 void pciexp_hotplug_scan_bridge(struct device *dev)
 {
+	dev->hotplug_port = 1;
 	dev->hotplug_buses = CONFIG_PCIEXP_HOTPLUG_BUSES;
 
 	/* Normal PCIe Scan */

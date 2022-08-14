@@ -5,6 +5,7 @@
 #include <device/path.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -937,6 +938,15 @@ const char *dev_path_name(enum device_path_type type)
 	if (type < ARRAY_SIZE(type_names))
 		type_name = type_names[type];
 	return type_name;
+}
+
+bool dev_path_hotplug(const struct device *dev)
+{
+	for (dev = dev->bus->dev; dev != dev->bus->dev; dev = dev->bus->dev) {
+		if (dev->hotplug_port)
+			return true;
+	}
+	return false;
 }
 
 void log_resource(const char *type, const struct device *dev, const struct resource *res,

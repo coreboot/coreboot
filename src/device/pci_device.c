@@ -164,8 +164,12 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 		/* A Memory mapped base address. */
 		attr &= PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 		resource->flags |= IORESOURCE_MEM;
-		if (attr & PCI_BASE_ADDRESS_MEM_PREFETCH)
+		if (attr & PCI_BASE_ADDRESS_MEM_PREFETCH) {
 			resource->flags |= IORESOURCE_PREFETCH;
+			if (CONFIG(PCIEXP_HOTPLUG_PREFETCH_MEM_ABOVE_4G)
+			    && dev_path_hotplug(dev))
+				resource->flags |= IORESOURCE_ABOVE_4G;
+		}
 		attr &= PCI_BASE_ADDRESS_MEM_LIMIT_MASK;
 		if (attr == PCI_BASE_ADDRESS_MEM_LIMIT_32) {
 			/* 32bit limit. */

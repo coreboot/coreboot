@@ -128,6 +128,7 @@ struct device {
 	unsigned int    hidden : 1;
 	/* set if this device is used even in minimum PCI cases */
 	unsigned int    mandatory : 1;
+	unsigned int	hotplug_port : 1;
 	u8 command;
 	uint16_t hotplug_buses; /* Number of hotplug buses to allocate */
 
@@ -206,6 +207,9 @@ bool dev_is_active_bridge(struct device *dev);
 void add_more_links(struct device *dev, unsigned int total_links);
 bool is_dev_enabled(const struct device *const dev);
 bool is_devfn_enabled(unsigned int devfn);
+
+/* Returns whether there is a hotplug port on the path to the given device. */
+extern bool dev_path_hotplug(const struct device *);
 
 /* Option ROM helper functions */
 void run_bios(struct device *dev, unsigned long addr);

@@ -206,8 +206,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 			m_cfg->CpuPcieRpEnableMask |= 1 << i;
 	}
 
-	/* Change TmeEnable UPD value according to INTEL_TME Kconfig */
-	m_cfg->TmeEnable = CONFIG(INTEL_TME);
+	m_cfg->TmeEnable = CONFIG(INTEL_TME) && is_tme_supported();
 
 	/* crashLog config */
 	m_cfg->CpuCrashLogDevice = CONFIG(SOC_INTEL_CRASHLOG) && is_devfn_enabled(SA_DEVFN_TMT);

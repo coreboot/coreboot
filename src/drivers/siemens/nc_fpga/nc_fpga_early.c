@@ -40,7 +40,7 @@ void nc_fpga_remap(uint32_t new_mmio)
 
 void nc_fpga_post(uint8_t value)
 {
-	/* The function pci_earyl_device_probe is called in bootblock and romstage. Make sure
+	/* The function pci_early_device_probe is called in bootblock and romstage. Make sure
 	   that in these stages the initialization code was successful before the POST code
 	   value is written to the register. */
 	if ((ENV_BOOTBLOCK || ENV_ROMSTAGE) && nc_fpga_present == false)

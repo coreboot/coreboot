@@ -412,8 +412,8 @@ send_one_message(uint32_t hdr, const void *buff)
 
 /*
  * Send message msg of size len to host from host_addr to cse_addr.
- * Returns 1 on success and 0 otherwise.
- * In case of error heci_reset() may be required.
+ * Returns CSE_TX_RX_SUCCESS on success and other enum values on failure scenarios.
+ * Also, in case of errors, heci_reset() is triggered.
  */
 static enum cse_tx_rx_status
 heci_send(const void *msg, size_t len, uint8_t host_addr, uint8_t client_addr)
@@ -524,9 +524,9 @@ recv_one_message(uint32_t *hdr, void *buff, size_t maxlen, size_t *recv_len)
  * Receive message into buff not exceeding maxlen. Message is considered
  * successfully received if a 'complete' indication is read from ME side
  * and there was enough space in the buffer to fit that message. maxlen
- * is updated with size of message that was received. Returns 0 on failure
- * and 1 on success.
- * In case of error heci_reset() may be required.
+ * is updated with size of message that was received.
+ * Returns CSE_TX_RX_SUCCESS on success and other enum values on failure scenarios.
+ * Also, in case of errors, heci_reset() is triggered.
  */
 static enum cse_tx_rx_status heci_receive(void *buff, size_t *maxlen)
 {

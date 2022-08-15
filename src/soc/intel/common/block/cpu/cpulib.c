@@ -510,3 +510,10 @@ bool is_tme_supported(void)
 
 	return (cpuid_regs.ecx & TME_SUPPORTED);
 }
+
+void set_tme_core_activate(void)
+{
+	msr_t msr = { .lo = 0, .hi = 0 };
+
+	wrmsr(MSR_CORE_MKTME_ACTIVATION, msr);
+}

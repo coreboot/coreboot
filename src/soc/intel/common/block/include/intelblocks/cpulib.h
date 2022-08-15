@@ -202,4 +202,13 @@ void init_core_prmrr(void);
  */
 bool is_tme_supported(void);
 
+/*
+ * Set TME core activate MSR
+ *
+ * Write zero to TME core activate MSR will translate the TME_ACTIVATE[MK_TME_KEYID_BITS]
+ * value into PMH mask register.
+ * TME_ACTIVATE[MK_TME_KEYID_BITS] = MSR 0x982 Bits[32-35]
+ */
+void set_tme_core_activate(void);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_CPULIB_H */

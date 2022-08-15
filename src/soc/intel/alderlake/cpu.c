@@ -140,6 +140,9 @@ void soc_core_init(struct device *cpu)
 			set_energy_perf_pref(conf->energy_perf_pref_value);
 	/* Enable Turbo */
 	enable_turbo();
+
+	if (is_tme_supported())
+		set_tme_core_activate();
 }
 
 static void per_cpu_smm_trigger(void)

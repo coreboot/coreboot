@@ -1,10 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/*
- * This file is created based on MT8186 Functional Specification
- * Chapter number: 4.8
- */
-
 #include <assert.h>
 #include <cbmem.h>
 #include <commonlib/bsd/mem_chip_info.h>

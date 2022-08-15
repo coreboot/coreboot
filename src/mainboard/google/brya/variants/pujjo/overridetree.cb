@@ -1,3 +1,26 @@
+fw_config
+	field LTE 6
+		option LTE_ABSENT		0
+		option LTE_PRESENT		1
+	end
+	field SD_CARD 7
+		option SD_ABSENT 		0
+		option SD_PRESENT		1
+	end
+	field STYLUS 8
+		option STYLUS_ABSENT		0
+		option STYLUS_PRESENT		1
+	end
+	field WFC 9
+		option WFC_ABSENT		0
+		option WFC_PRESENT		1
+	end
+	field AUDIO 12 14
+		option ALC1019_ALC5682IVS	0
+	end
+
+end
+
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
@@ -140,7 +163,9 @@ chip soc/intel/alderlake
 				register "key.linux_code" = "SW_PEN_INSERTED"
 				register "key.linux_input_type" = "EV_SW"
 				register "key.label" = ""pen_eject""
-				device generic 0 on end
+				device generic 0 on
+					probe STYLUS STYLUS_PRESENT
+				end
 			end
 		end
 		device ref i2c2 on
@@ -190,7 +215,9 @@ chip soc/intel/alderlake
 				register "reg_adv_ctrl18" = "0x33"
 				register "reg_adv_ctrl19" = "0xf0"
 				register "reg_adv_ctrl20" = "0xf0"
-				device i2c 28 on end
+				device i2c 28 on
+					probe LTE LTE_PRESENT
+				end
 			end
 		end
 		device ref i2c3 on
@@ -204,12 +231,16 @@ chip soc/intel/alderlake
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
-				device i2c 1a on end
+				device i2c 1a on
+					probe AUDIO ALC1019_ALC5682IVS
+				end
 			end
 			chip drivers/generic/alc1015
 				register "hid" = ""RTL1019""
 				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
-				device generic 0 on end
+				device generic 0 on
+					probe AUDIO ALC1019_ALC5682IVS
+				end
 			end
 		end
 		device ref i2c5 on
@@ -256,6 +287,7 @@ chip soc/intel/alderlake
 				register "srcclk_pin" = "3"
 				device generic 0 on end
 			end
+			probe SD_CARD SD_PRESENT
 		end
 		device ref pch_espi on
 			chip ec/google/chromeec
@@ -300,7 +332,9 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb2_port2 on end
+						device ref usb2_port2 on
+							probe LTE LTE_PRESENT
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Port A0 (MLB)""
@@ -324,7 +358,9 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 WFC""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb2_port7 on end
+						device ref usb2_port7 on
+							probe WFC WFC_PRESENT
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Bluetooth""
@@ -357,7 +393,9 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb3_port3 on end
+						device ref usb3_port3 on
+							probe LTE LTE_PRESENT
+						end
 					end
 				end
 			end

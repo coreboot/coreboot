@@ -17,7 +17,7 @@ romstage-y += ../common/cbmem.c
 romstage-y += ../common/clkbuf.c
 romstage-y += ../common/dram_init.c
 romstage-y += ../common/dramc_param.c
-romstage-y += emi.c
+romstage-y += ../common/emi.c
 romstage-y += ../common/memory.c
 romstage-y += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
@@ -30,7 +30,7 @@ romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-y += ../common/auxadc.c
 ramstage-y += ../common/dfd.c
-ramstage-y += emi.c
+ramstage-y += ../common/emi.c
 ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mcupm.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c

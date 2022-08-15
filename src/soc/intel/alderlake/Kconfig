@@ -430,6 +430,13 @@ config USE_FSP_MP_INIT
 
 config USE_COREBOOT_MP_INIT
 	bool "Use coreboot MP init"
+	# FSP assumes ownership of the APs (Application Processors)
+	# upon passing `NULL` pointer to the CpuMpPpi FSP-S UPD.
+	# Hence, select `MP_SERVICES_PPI_V2_NOOP` config to pass a valid
+	# pointer to the CpuMpPpi UPD with FSP_UNSUPPORTED type APIs.
+	# This will protect APs from getting hijacked by FSP while coreboot
+	# decides to set SkipMpInit UPD.
+	select MP_SERVICES_PPI_V2_NOOP
 	select RELOAD_MICROCODE_PATCH
 	help
 	  Upon selection, coreboot performs MP Init.

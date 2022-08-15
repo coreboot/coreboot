@@ -586,22 +586,23 @@ static void fill_fsps_microcode_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
-	if (CONFIG(USE_FSP_MP_INIT)) {
+	/*
+	 * FIXME: FSP assumes ownership of the APs (Application Processors)
+	 * upon passing `NULL` pointer to the CpuMpPpi FSP-S UPD.
+	 * Hence, pass a valid pointer to the CpuMpPpi UPD unconditionally.
+	 * This would avoid APs from getting hijacked by FSP while coreboot
+	 * decides to set SkipMpInit UPD.
+	 */
+	s_cfg->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
+
+	if (CONFIG(USE_FSP_MP_INIT))
 		/*
 		 * Fill `2nd microcode loading FSP UPD` if FSP is running CPU feature
 		 * programming.
 		 */
 		fill_fsps_microcode_params(s_cfg, config);
-		/*
-		 * Use FSP running MP PPI services to perform CPU feature programming
-		 * if Kconfig is enabled
-		 */
-		s_cfg->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
-	} else {
-		/* Use coreboot native driver to perform MP init by default */
-		s_cfg->CpuMpPpi = (uintptr_t)NULL;
+	else
 		s_cfg->SkipMpInit = !CONFIG(USE_INTEL_FSP_MP_INIT);
-	}
 }
 
 static void fill_fsps_igd_params(FSP_S_CONFIG *s_cfg,

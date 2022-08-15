@@ -110,7 +110,7 @@ config CPU_SUPPORTS_INTEL_TME
 config INTEL_TME
 	bool "Total Memory Encryption (TME)/Multi-key TME (MKTME)"
 	depends on CPU_SUPPORTS_INTEL_TME
-	default n
+	default y
 	help
 	 Enable Total Memory Encryption (TME)/Multi-key TME (MKTME). The spec is
 	 available at "https://software.intel.com/sites/default/files/managed/a5

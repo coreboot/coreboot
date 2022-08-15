@@ -194,4 +194,12 @@ void get_cpu_topology_from_apicid(uint32_t apicid, uint8_t *package,
  */
 void init_core_prmrr(void);
 
+/*
+ * Check if TME is supported by the CPU
+ *
+ * coreboot shall detect the existence of TME feature by running CPUID instruction:
+ * CPUID leaf 7/sub-leaf 0: Return Value in ECX [bit 13] = 1
+ */
+bool is_tme_supported(void);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_CPULIB_H */

@@ -106,5 +106,6 @@
 #define SMRR_LOCK_SUPPORTED		(1<<14)
 
 #define SGX_SUPPORTED	(1<<2)
+#define TME_SUPPORTED	(1<<13)
 
 #endif	/* SOC_INTEL_COMMON_MSR_H */

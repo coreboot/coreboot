@@ -501,3 +501,12 @@ void init_core_prmrr(void)
 	if (msr.lo & MTRR_CAP_PRMRR)
 		sync_core_prmrr();
 }
+
+bool is_tme_supported(void)
+{
+	struct cpuid_result cpuid_regs;
+
+	cpuid_regs = cpuid_ext(0x7, 0x0); /* ECX[13] is feature capability */
+
+	return (cpuid_regs.ecx & TME_SUPPORTED);
+}

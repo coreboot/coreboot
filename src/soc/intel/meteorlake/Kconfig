@@ -323,7 +323,7 @@ config MTL_USE_COREBOOT_MP_INIT
 	bool "Use coreboot MP init"
 	select RELOAD_MICROCODE_PATCH
 	help
-	  Upon selection, coreboot performs MP Init.
+	  Upon selection, coreboot performs MP Initialization that includes feature programming.
 
 endchoice
 

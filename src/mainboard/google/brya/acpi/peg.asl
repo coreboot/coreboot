@@ -6,9 +6,14 @@ External (\_SB.PCI0.PEG0.PEGP.NPOF, MethodObj)
 OperationRegion (PCIC, PCI_Config, 0x00, 0x100)
 Field (PCIC, AnyAcc, NoLock, Preserve)
 {
+	Offset (0x4a),
+	CEDR,   1,		/* Correctable Error Detected, RW/1C/V */
 	Offset (0x52),
 	,	13,
 	LASX,	1,		/* Link Active Status */
+	Offset (0x69),
+	,       2,
+	LREN,   1,		/* LTR Enabled */
 	Offset (0xe0),
 	,	7,
 	NCB7,	1,		/* Scratch bit to save L2/3 state */

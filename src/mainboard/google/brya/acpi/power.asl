@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <device/pci_ids.h>
+
 External (\_SB.PCI0.PMC.IPCS, MethodObj)
 
 /* Voltage rail control signals */
@@ -70,6 +72,8 @@ Name (GCOT, 0)
 #define PMC_RP_IDX		(1 << 27)
 #define PMC_RP_ENABLE		(1 << 27)
 #define PMC_RP_DISABLE		0x0
+/* Copy of LTR enable bit from PEG port */
+Name (SLTR, 0)
 
 /* Control the PCIe SRCCLK# for dGPU */
 Method (SRCC, 1, Serialized)
@@ -93,6 +97,9 @@ Method (SRCC, 1, Serialized)
 Method (GC6I, 0, Serialized)
 {
 	GC6E = GC6_STATE_TRANSITION
+
+	/* Save the PEG port's LTR setting */
+	SLTR = LREN
 
 	/* Put PCIe link into L2/3 */
 	\_SB.PCI0.PEG0.DL23 ()
@@ -152,6 +159,24 @@ Method (GC6O, 0, Serialized)
 	\_SB.PCI0.PEG0.LD23 ()
 
 	Printf ("dGPU exited GC6")
+	/* Wait for dGPU to reappear on the bus */
+	Local0 = 50
+	While (NVID != PCI_VID_NVIDIA)
+	{
+		Stall (100)
+		Local0--
+		If (Local0 == 0)
+		{
+			Break
+		}
+	}
+
+	/* Restore the PEG LTR enable bit */
+	LREN = SLTR
+
+	/* Clear recoverable errors detected bit */
+	CEDR = 1
+
 	GC6E = GC6_STATE_EXITED
 }
 

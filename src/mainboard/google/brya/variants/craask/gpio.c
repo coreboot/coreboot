@@ -7,6 +7,8 @@
 
 /* Pad configuration in ramstage for craask */
 static const struct pad_config override_gpio_table[] = {
+	/* A8  : WWAN_RF_DISABLE_ODL */
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
 	/* D6  : WWAN_EN */
 	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D7  : WLAN_CLKREQ_ODL */
@@ -15,6 +17,10 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
 	PAD_NC_LOCK(GPP_H3, NONE, LOCK_CONFIG),
+	/* H19 : SOC_I2C_SUB_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_H19, NONE, PLTRST, LEVEL, NONE),
+	/* H23 : WWAN_SAR_DETECT_ODL */
+	PAD_CFG_GPO(GPP_H23, 1, DEEP),
 };
 
 /* Early pad configuration in bootblock */

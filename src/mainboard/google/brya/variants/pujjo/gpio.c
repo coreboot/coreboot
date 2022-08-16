@@ -7,6 +7,8 @@
 
 /* Pad configuration in ramstage for Pujjo */
 static const struct pad_config override_gpio_table[] = {
+	/* A8  : WWAN_RF_DISABLE_ODL */
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
 	/* D3  : WCAM_RST_L ==> NC */
 	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
@@ -17,8 +19,12 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
 	/* F12 : WWAN_RST_L */
 	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
+	/* H19 : SOC_I2C_SUB_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_H19, NONE, PLTRST, LEVEL, NONE),
 	/* H22  : WCAM_MCLK_R ==> NC */
 	PAD_NC(GPP_H22, NONE),
+	/* H23 : WWAN_SAR_DETECT_ODL */
+	PAD_CFG_GPO(GPP_H23, 1, DEEP),
 };
 
 /* Early pad configuration in bootblock */

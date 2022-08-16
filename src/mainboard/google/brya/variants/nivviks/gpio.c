@@ -8,6 +8,8 @@
 
 /* Pad configuration in ramstage for nivviks board_id = 0 */
 static const struct pad_config board_id0_overrides[] = {
+	/* A8  : WWAN_RF_DISABLE_ODL */
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
 	/* D6  : WWAN_EN */
 	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D7  : WLAN_CLKREQ_ODL */
@@ -16,6 +18,10 @@ static const struct pad_config board_id0_overrides[] = {
 	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
 	PAD_NC_LOCK(GPP_H3, NONE, LOCK_CONFIG),
+	/* H19 : SOC_I2C_SUB_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_H19, NONE, PLTRST, LEVEL, NONE),
+	/* H23 : WWAN_SAR_DETECT_ODL */
+	PAD_CFG_GPO(GPP_H23, 1, DEEP),
 	/* R4 : I2S2_SCLK ==> I2S_SPK_BCLK_R */
 	PAD_CFG_NF(GPP_R4, NONE, DEEP, NF2),
 	/* R5 : I2S2_SFRM ==> I2S_SPK_LRCK_R */
@@ -40,6 +46,8 @@ static const struct pad_config board_id0_overrides[] = {
 
 /* Pad configuration in ramstage for nivviks board_id >= 1 */
 static const struct pad_config override_gpio_table[] = {
+	/* A8  : WWAN_RF_DISABLE_ODL */
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
 	/* D6  : WWAN_EN */
 	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D7  : WLAN_CLKREQ_ODL */
@@ -48,6 +56,10 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
 	PAD_NC_LOCK(GPP_H3, NONE, LOCK_CONFIG),
+	/* H19 : SOC_I2C_SUB_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_H19, NONE, PLTRST, LEVEL, NONE),
+	/* H23 : WWAN_SAR_DETECT_ODL */
+	PAD_CFG_GPO(GPP_H23, 1, DEEP),
 
 	/* Configure the virtual CNVi Bluetooth I2S GPIO pads */
 	/* BT_I2S_BCLK */
@@ -70,6 +82,8 @@ static const struct pad_config override_gpio_table[] = {
 
 /* Pad configuration in ramstage for nirwen */
 static const struct pad_config override_gpio_table_nirwen[] = {
+	/* A8  : WWAN_RF_DISABLE_ODL */
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
 	/* B4  : SSD_PERST_L */
 	PAD_CFG_GPO_LOCK(GPP_B4, 1, LOCK_CONFIG),
 	/* D6  : SRCCLKREQ1# ==> SSD_CLKREQ_ODL */
@@ -86,6 +100,11 @@ static const struct pad_config override_gpio_table_nirwen[] = {
 	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
 	PAD_NC_LOCK(GPP_H3, NONE, LOCK_CONFIG),
+	/* H19 : SOC_I2C_SUB_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_H19, NONE, PLTRST, LEVEL, NONE),
+	/* H23 : WWAN_SAR_DETECT_ODL */
+	PAD_CFG_GPO(GPP_H23, 1, DEEP),
+
 	/* Configure the virtual CNVi Bluetooth I2S GPIO pads */
 	/* BT_I2S_BCLK */
 	PAD_CFG_NF(GPP_VGPIO_30, NONE, DEEP, NF3),

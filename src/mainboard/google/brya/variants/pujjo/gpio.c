@@ -17,6 +17,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_D15, NONE, LOCK_CONFIG),
 	/* D16  : EN_PP1800_PP1200_WCAM_X ==> NC */
 	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
+	/* D17 : NC ==> SD_WAKE_N */
+	PAD_CFG_GPI_LOCK(GPP_D17, NONE, LOCK_CONFIG),
 	/* F12 : WWAN_RST_L */
 	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H19 : SOC_I2C_SUB_INT_ODL */

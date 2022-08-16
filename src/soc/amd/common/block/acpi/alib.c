@@ -45,6 +45,35 @@ void acpigen_write_alib_dptc_default(uint8_t *default_param, size_t default_para
 	acpigen_write_scope_end();
 }
 
+void acpigen_write_alib_dptc_no_battery(uint8_t *no_battery_param, size_t no_battery_param_len)
+{
+	/* Scope (\_SB) */
+	acpigen_write_scope("\\_SB");
+
+	/* Low/No Battery Mode */
+	/* Scope (\_SB)
+	 * {
+	 *     Method (DTHL, 0, Serialized)
+	 *     {
+	 *         Debug = "DPTC: Using low/no battery mode SOC DPTC settings."
+	 *         Name (THTL, Buffer (0x25)
+	 *         {
+	 *             ...
+	 *         })
+	 *         \_SB.ALIB
+	 *         0x0C
+	 *         THTL
+	 *     }
+	 * }
+	 */
+	acpigen_write_method_serialized("DTHL", 0);
+	acpigen_write_debug_string("DPTC: Using low/no battery mode SOC DPTC settings.");
+	acpigen_dptc_call_alib("THTL", no_battery_param, no_battery_param_len);
+	acpigen_write_method_end();
+
+	acpigen_write_scope_end();
+}
+
 void acpigen_write_alib_dptc_tablet(uint8_t *tablet_param, size_t tablet_param_len)
 {
 	/* Scope (\_SB) */

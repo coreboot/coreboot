@@ -28,6 +28,7 @@ struct alib_dptc_param {
 } __packed;
 
 void acpigen_write_alib_dptc_default(uint8_t *default_param, size_t default_param_len);
+void acpigen_write_alib_dptc_no_battery(uint8_t *no_battery_param, size_t no_battery_param_len);
 void acpigen_write_alib_dptc_tablet(uint8_t *tablet_param, size_t tablet_param_len);
 
 #endif /* !__ACPI__ */

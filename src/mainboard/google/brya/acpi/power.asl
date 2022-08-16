@@ -27,6 +27,9 @@ External (\_SB.PCI0.PMC.IPCS, MethodObj)
 #define SRCCLK_DISABLE		0
 #define SRCCLK_ENABLE		1
 
+#define GPU_POWER_STATE_OFF	0
+#define GPU_POWER_STATE_ON	1
+
 /*
  * For board revs 3 and later, the PG pin for the NVVDD VR moved from
  * GPP_E16 to GPP_E3. To accommodate this, this DSDT contains a Name
@@ -52,8 +55,6 @@ Name (OPS0, OPTIMUS_CONTROL_NO_RUN_PS0)
 Name (GC6E, GC6_STATE_EXITED)
 
 /* Power State, GCOFF, GCON */
-#define GPU_POWER_STATE_OFF	0
-#define GPU_POWER_STATE_ON	1
 Name (GPPS, GPU_POWER_STATE_ON)
 
 /* Defer GC6 entry / exit until D3-cold request */
@@ -108,29 +109,28 @@ Method (GC6I, 0, Serialized)
 	GPPL (GPIO_GPU_NVVDD_EN, 0, 20)
 
 	/* Deassert PG_GPU_ALLRAILS */
-	\_SB.PCI0.CTXS (GPIO_GPU_ALLRAILS_PG)
+	CTXS (GPIO_GPU_ALLRAILS_PG)
 
 	/* Ramp down PEXVDD */
-	\_SB.PCI0.CTXS (GPIO_PEXVDD_PWR_EN)
+	CTXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 0, 20)
 	Sleep (10)
 
 	/* Deassert EN_PPVAR_GPU_NVVDD */
-	\_SB.PCI0.CTXS (GPIO_NVVDD_PWR_EN)
+	CTXS (GPIO_NVVDD_PWR_EN)
 	GPPL (NVPG, 0, 20)
 	Sleep (2)
 
 	/* Assert GPU_PERST_L */
-	\_SB.PCI0.CTXS (GPIO_GPU_PERST_L)
+	CTXS (GPIO_GPU_PERST_L)
 
 	/* Disable PCIe SRCCLK# */
 	SRCC (SRCCLK_DISABLE)
 
-	Printf ("dGPU entered GC6")
 	GC6E = GC6_STATE_ENTERED
 }
 
-/* "GC6 Out", i.e. GC6 Exit Sequence  */
+/* "GC6 Out", i.e. GC6 Exit Sequence */
 Method (GC6O, 0, Serialized)
 {
 	GC6E = GC6_STATE_TRANSITION
@@ -139,26 +139,25 @@ Method (GC6O, 0, Serialized)
 	SRCC (SRCCLK_ENABLE)
 
 	/* Deassert GPU_PERST_L */
-	\_SB.PCI0.STXS (GPIO_GPU_PERST_L)
+	STXS (GPIO_GPU_PERST_L)
 
 	/* Wait for GPU to assert GPU_NVVDD_EN */
 	GPPL (GPIO_GPU_NVVDD_EN, 1, 20)
 
 	/* Ramp up NVVDD */
-	\_SB.PCI0.STXS (GPIO_NVVDD_PWR_EN)
+	STXS (GPIO_NVVDD_PWR_EN)
 	GPPL (NVPG, 1, 4)
 
 	/* Ramp up PEXVDD */
-	 \_SB.PCI0.STXS (GPIO_PEXVDD_PWR_EN)
-	 GPPL (GPIO_PEXVDD_PG, 1, 4)
+	STXS (GPIO_PEXVDD_PWR_EN)
+	GPPL (GPIO_PEXVDD_PG, 1, 4)
 
 	/* Assert PG_GPU_ALLRAILS */
-	\_SB.PCI0.STXS (GPIO_GPU_ALLRAILS_PG)
+	STXS (GPIO_GPU_ALLRAILS_PG)
 
-	/* Put PCIe link into L0 state */
+	/* Restore PCIe link back to L0 state */
 	\_SB.PCI0.PEG0.LD23 ()
 
-	Printf ("dGPU exited GC6")
 	/* Wait for dGPU to reappear on the bus */
 	Local0 = 50
 	While (NVID != PCI_VID_NVIDIA)
@@ -198,38 +197,38 @@ Method (PGON, 0, Serialized)
 	}
 
 	/* Assert PERST# */
-	\_SB.PCI0.CTXS (GPIO_GPU_PERST_L)
+	CTXS (GPIO_GPU_PERST_L)
 
 	/* Ramp up 1.8V rail */
-	\_SB.PCI0.STXS (GPIO_1V8_PWR_EN)
+	STXS (GPIO_1V8_PWR_EN)
 	GPPL (GPIO_1V8_PG, 1, 20)
 
 	/* Ramp up NV33 rail */
-	\_SB.PCI0.STXS (GPIO_NV33_PWR_EN)
+	STXS (GPIO_NV33_PWR_EN)
 	GPPL (GPIO_NV33_PG, 1, 20)
 
 	/* Ramp up NVVDD rail */
-	\_SB.PCI0.STXS (GPIO_NVVDD_PWR_EN)
+	STXS (GPIO_NVVDD_PWR_EN)
 	GPPL (NVPG, 1, 5)
 
 	/* Ramp up PEXVDD rail */
-	\_SB.PCI0.STXS (GPIO_PEXVDD_PWR_EN)
+	STXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 1, 5)
 
 	/* Ramp up FBVDD rail (active low) */
-	\_SB.PCI0.CTXS (GPIO_FBVDD_PWR_EN)
+	CTXS (GPIO_FBVDD_PWR_EN)
 	GPPL (GPIO_FBVDD_PG, 1, 5)
 
 	/* All rails are good */
-	\_SB.PCI0.STXS (GPIO_GPU_ALLRAILS_PG)
+	STXS (GPIO_GPU_ALLRAILS_PG)
 	Sleep (1)
 
 	/* Deassert PERST# */
-	\_SB.PCI0.STXS (GPIO_GPU_PERST_L)
+	STXS (GPIO_GPU_PERST_L)
+
 
 	GC6E = GC6_STATE_EXITED
 	GPPS = GPU_POWER_STATE_ON
-	Printf ("GPU Sequenced on")
 }
 
 /* GCOFF entry sequence */
@@ -242,47 +241,89 @@ Method (PGOF, 0, Serialized)
 	}
 
 	/* Assert PERST# */
-	\_SB.PCI0.CTXS (GPIO_GPU_PERST_L)
+	CTXS (GPIO_GPU_PERST_L)
 
 	/* All rails are about to go down */
-	\_SB.PCI0.CTXS (GPIO_GPU_ALLRAILS_PG)
+	CTXS (GPIO_GPU_ALLRAILS_PG)
 	Sleep (1)
 
 	/* Ramp down FBVDD (active-low) and let rail discharge to <10% */
-	\_SB.PCI0.STXS (GPIO_FBVDD_PWR_EN)
+	STXS (GPIO_FBVDD_PWR_EN)
 	GPPL (GPIO_FBVDD_PG, 0, 20)
 
 	/* Ramp down PEXVDD and let rail discharge to <10% */
-	\_SB.PCI0.CTXS (GPIO_PEXVDD_PWR_EN)
+	CTXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 0, 20)
 	Sleep (10)
 
 	/* Ramp down NVVDD and let rail discharge to <10% */
-	\_SB.PCI0.CTXS (GPIO_NVVDD_PWR_EN)
+	CTXS (GPIO_NVVDD_PWR_EN)
 	GPPL (NVPG, 0, 20)
 	Sleep (2)
 
 	/* Ramp down NV33 and let rail discharge to <10% */
-	\_SB.PCI0.CTXS (GPIO_NV33_PWR_EN)
+	CTXS (GPIO_NV33_PWR_EN)
 	GPPL (GPIO_NV33_PG, 0, 20)
 	Sleep (4)
 
 	/* Ramp down 1.8V */
-	\_SB.PCI0.CTXS (GPIO_1V8_PWR_EN)
+	CTXS (GPIO_1V8_PWR_EN)
 	GPPL (GPIO_1V8_PG, 0, 20)
 
 	GCOT = Timer
 
 	GPPS = GPU_POWER_STATE_OFF
-	Printf ("GPU sequenced off")
+}
+
+/* GCOFF Out, i.e. full power-on sequence */
+Method (GCOO, 0, Serialized)
+{
+	SRCC (SRCCLK_ENABLE)
+	PGON ()
+	\_SB.PCI0.PEG0.LD23 ()
+
+	/* Wait for dGPU to reappear on the bus */
+	Local0 = 50
+	While (NVID != PCI_VID_NVIDIA)
+	{
+		Stall (100)
+		Local0--
+		If (Local0 == 0)
+		{
+			Break
+		}
+	}
+
+	/* Restore the PEG LTR enable bit */
+	LREN = SLTR
+
+	/* Clear recoverable errors detected bit */
+	CEDR = 1
+
+	/* Restore the PEG LTR enable bit */
+	LREN = SLTR
+
+	/* Clear recoverable errors detected bit */
+	CEDR = 1
+}
+
+/* GCOFF In, i.e. full power-off sequence */
+Method (GCOI, 0, Serialized)
+{
+	/* Save the PEG port's LTR setting */
+	SLTR = LREN
+
+	\_SB.PCI0.PEG0.DL23 ()
+	PGOF ()
+	SRCC (SRCCLK_DISABLE)
 }
 
 /* Handle deferred GC6 vs. poweron request */
 Method (NPON, 0, Serialized)
 {
-	If (DFEN == GC6_DEFER_ENABLE) /* 1 */
+	If (DFEN == GC6_DEFER_ENABLE)
 	{
-		If (DFCO == GC6_DEFER_TYPE_EXIT_GC6) /* 3 */
+		If (DFCO == GC6_DEFER_TYPE_EXIT_GC6)
 		{
 			GC6O ()
 		}
@@ -291,27 +332,7 @@ Method (NPON, 0, Serialized)
 	}
 	Else
 	{
-		SRCC (SRCCLK_ENABLE)
-		PGON ()
-		\_SB.PCI0.PEG0.LD23 ()
-
-		/* Wait for dGPU to reappear on the bus */
-		Local0 = 50
-		While (NVID != PCI_VID_NVIDIA)
-		{
-			Stall (100)
-			Local0--
-			If (Local0 == 0)
-			{
-				Break
-			}
-		}
-
-		/* Restore the PEG LTR enable bit */
-		LREN = SLTR
-
-		/* Clear recoverable errors detected bit */
-		CEDR = 1
+		GCOO ()
 	}
 }
 
@@ -330,11 +351,7 @@ Method (NPOF, 0, Serialized)
 	}
 	Else
 	{
-		/* Save the PEG port's LTR setting */
-		SLTR = LREN
-		\_SB.PCI0.PEG0.DL23 ()
-		PGOF ()
-		SRCC (SRCCLK_DISABLE)
+		GCOI ()
 	}
 }
 
@@ -380,7 +397,7 @@ Method (_PS3, 0,  NotSerialized)
 		/* Poweroff or deferred GC6 entry */
 		NPOF ()
 
-		/* Because _PS3 ran _OFF, _PS0 must run _ON */
+		/* Because _PS3 ran NPOF, _PS0 must run NPON */
 		OPS0 = OPTIMUS_CONTROL_RUN_PS0
 
 		/* OPCS is one-shot, so reset it */

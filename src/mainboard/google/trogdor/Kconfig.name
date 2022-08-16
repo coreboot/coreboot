@@ -38,10 +38,6 @@ config BOARD_GOOGLE_PAZQUEL
 	bool "->  Pazquel"
 	select BOARD_GOOGLE_TROGDOR_COMMON
 
-config BOARD_GOOGLE_PAZQUEL360
-	bool "->  Pazquel360"
-	select BOARD_GOOGLE_TROGDOR_COMMON
-
 config BOARD_GOOGLE_POMPOM
 	bool "->  Pompom"
 	select BOARD_GOOGLE_TROGDOR_COMMON

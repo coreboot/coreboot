@@ -15,6 +15,7 @@ static const struct {
 	{ 0x15d1, 0x001b, "SLB9670" },
 	{ 0x1ae0, 0x0028, "CR50" },
 	{ 0x104a, 0x0000, "ST33HTPH2E32" },
+	{ 0x6666, 0x504a, "TI50" },
 };
 
 static const char *tis_get_dev_name(struct tpm2_info *info)

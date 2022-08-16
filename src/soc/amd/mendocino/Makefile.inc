@@ -73,9 +73,9 @@ MENDOCINO_FWM_POSITION=$(call int-add, \
 	$(call int-shift-left, \
 	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000 1)
 
-# 0x40 accounts for the cbfs_file struct + filename + metadata structs, aligned to 64 bytes
+# 0x80 accounts for the cbfs_file struct + filename + metadata structs, aligned to 64 bytes
 # Building the cbfs image will fail if the offset isn't large enough
-AMD_FW_AB_POSITION := 0x40
+AMD_FW_AB_POSITION := 0x80
 
 MENDOCINO_FW_A_POSITION=$(call int-add, \
 	$(shell awk '$$2 == "FMAP_SECTION_FW_MAIN_A_START" {print $$3}' $(obj)/fmap_config.h) \

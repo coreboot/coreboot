@@ -104,7 +104,8 @@ void sa_add_fixed_mmio_resources(struct device *dev, int *resource_cnt,
 		size = sa_fixed_resources[i].size;
 		base = sa_fixed_resources[i].base;
 
-		printk(BIOS_DEBUG, "SA MMIO resource: %s ->  base = 0x%llx, size = 0x%llx\n",
+		printk(BIOS_DEBUG,
+			"SA MMIO resource: %-8s ->  base = 0x%08llx, size = 0x%08llx\n",
 			sa_fixed_resources[i].description, sa_fixed_resources[i].base,
 			sa_fixed_resources[i].size);
 

@@ -10,11 +10,11 @@ Method (GRXS, 1, Serialized)
 	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
 	Field (PREG, AnyAcc, NoLock, Preserve)
 	{
-		VAL0, 32
+		,     1,
+		RXST, 1,
 	}
-	Local0 = (PAD_CFG0_RX_STATE & VAL0) >> PAD_CFG0_RX_STATE_BIT
 
-	Return (Local0)
+	Return (RXST)
 }
 
 /*
@@ -26,11 +26,10 @@ Method (GTXS, 1, Serialized)
 	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
 	Field (PREG, AnyAcc, NoLock, Preserve)
 	{
-		VAL0, 32
+		TXST, 1,
 	}
-	Local0 = PAD_CFG0_TX_STATE & VAL0
 
-	Return (Local0)
+	Return (TXST)
 }
 
 /*
@@ -42,9 +41,9 @@ Method (STXS, 1, Serialized)
 	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
 	Field (PREG, AnyAcc, NoLock, Preserve)
 	{
-		VAL0, 32
+		TXST, 1,
 	}
-	VAL0 |= PAD_CFG0_TX_STATE
+	TXST = 1
 }
 
 /*
@@ -56,9 +55,9 @@ Method (CTXS, 1, Serialized)
 	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
 	Field (PREG, AnyAcc, NoLock, Preserve)
 	{
-		VAL0, 32
+		TXST, 1,
 	}
-	VAL0 &= ~PAD_CFG0_TX_STATE
+	TXST = 0
 }
 
 /*
@@ -75,11 +74,10 @@ Method (GPMO, 2, Serialized)
 	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
 	Field (PREG, AnyAcc, NoLock, Preserve)
 	{
-		VAL0, 32
+		,     10,
+		MODE, 3,
 	}
-	Local0 = ~PAD_CFG0_MODE_MASK & VAL0
-	Arg1 = (Arg1 << PAD_CFG0_MODE_SHIFT) & PAD_CFG0_MODE_MASK
-	VAL0 = Local0 | Arg1
+	MODE = Arg1
 }
 
 /*
@@ -94,14 +92,11 @@ Method (GTXE, 2, Serialized)
 	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
 	Field (PREG, AnyAcc, NoLock, Preserve)
 	{
-		VAL0, 32
+		,     8,
+		TXDI, 1,
 	}
 
-	If (Arg1 == 1) {
-		VAL0 &= ~PAD_CFG0_TX_DISABLE
-	} ElseIf (Arg1 == 0){
-		VAL0 |= PAD_CFG0_TX_DISABLE
-	}
+	TXDI = !Arg1
 }
 
 /*
@@ -116,12 +111,9 @@ Method (GRXE, 2, Serialized)
 	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
 	Field (PREG, AnyAcc, NoLock, Preserve)
 	{
-		VAL0, 32
+		,     9,
+		RXDI, 1,
 	}
 
-	If (Arg1 == 1) {
-		VAL0 &= ~PAD_CFG0_RX_DISABLE
-	} ElseIf (Arg1 == 0){
-		VAL0 |= PAD_CFG0_RX_DISABLE
-	}
+	RXDI = !Arg1
 }

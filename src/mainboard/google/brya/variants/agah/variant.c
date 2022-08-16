@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <baseboard/variants.h>
+#include <boardid.h>
 #include <delay.h>
 #include <device/pci_ops.h>
 #include <gpio.h>
@@ -14,7 +15,7 @@
 #define NV33_PWR_EN		GPP_A21
 #define NV33_PG			GPP_A22
 #define NVVDD_PWR_EN		GPP_E0
-#define NVVDD_PG		GPP_E16
+#define NVVDD_PG		GPP_E3
 #define PEXVDD_PWR_EN		GPP_E10
 #define PEXVDD_PG		GPP_E17
 #define FBVDD_PWR_EN		GPP_A19
@@ -46,7 +47,7 @@ struct power_rail_sequence {
 };
 
 /* In GCOFF exit order (i.e., power-on order) */
-static const struct power_rail_sequence gpu_on_seq[] = {
+static struct power_rail_sequence gpu_on_seq[] = {
 	{ "GPU 1.8V",		GPU_1V8_PWR_EN,	false, GPU_1V8_PG, },
 	{ "NV3_3",		NV33_PWR_EN,	false, NV33_PG, },
 	{ "NVVDD+MSVDD",	NVVDD_PWR_EN,	false, NVVDD_PG, },
@@ -55,7 +56,7 @@ static const struct power_rail_sequence gpu_on_seq[] = {
 };
 
 /* In GCOFF entry order (i.e., power-off order) */
-static const struct power_rail_sequence gpu_off_seq[] = {
+static struct power_rail_sequence gpu_off_seq[] = {
 	{ "FBVDD",		FBVDD_PWR_EN,	true,  FBVDD_PG,	0,},
 	{ "PEXVDD",		PEXVDD_PWR_EN,	false, PEXVDD_PG,	10,},
 	{ "NVVDD+MSVDD",	NVVDD_PWR_EN,	false, NVVDD_PG,	2,},
@@ -134,5 +135,29 @@ void variant_init(void)
 	if (acpi_is_wakeup_s3())
 		return;
 
+	/* For board revs 3 and later, the power good pin for the NVVDD
+	   VR moved from GPP_E16 to GPP_E3, so patch up the table for
+	   old board revs. */
+	if (board_id() < 3) {
+		gpu_on_seq[2].pg_gpio = GPP_E16;
+		gpu_off_seq[2].pg_gpio = GPP_E16;
+	}
+
 	dgpu_power_sequence_on();
+}
+
+/*
+ * For board revs 3 and later, the PG pin for the NVVDD VR moved from GPP_E16 to
+ * GPP_E3. To accommodate this, the DSDT contains a Name that this code will
+ * write the correct GPIO # to depending on the board rev, and we'll use that
+ * instead.
+ */
+void variant_fill_ssdt(const struct device *dev)
+{
+	const int nvvdd_pg_gpio = board_id() < 3 ? GPP_E16 : GPP_E3;
+	acpigen_write_scope("\\_SB.PCI0.PEG0.PEGP");
+	acpigen_write_method("_INI", 0);
+	acpigen_write_store_int_to_namestr(nvvdd_pg_gpio, "NVPG");
+	acpigen_write_method_end();
+	acpigen_write_scope_end();
 }

@@ -77,8 +77,8 @@ static const struct pad_config override_gpio_table[] = {
 
 	/* E0 : SATAXPCIE0 ==> EN_PPVAR_GPU_NVVDD_X */
 	PAD_CFG_GPO(GPP_E0, 0, DEEP),
-	/* E3  : PROC_GP0 ==> NC */
-	PAD_NC(GPP_E3, NONE),
+	/* E3  : PROC_GP0 ==> PG_PPVAR_GPU_NVVDD_X_OD (board rev 3 and later) */
+	PAD_CFG_GPI(GPP_E3, NONE, DEEP),
 	/* E4  : SATA_DEVSLP0 ==> PG_PPVAR_GPU_FBVDDQ_X_OD */
 	PAD_CFG_GPI(GPP_E4, NONE, DEEP),
 	/* E5  : SATA_DEVSLP1 ==> PG_GPU_ALLRAILS */
@@ -89,7 +89,7 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_NF_LOCK(GPP_E9, NONE, NF1, LOCK_CONFIG),
 	/* E10 : THC0_SPI1_CS# ==> EN_PP0950_GPU_X */
 	PAD_CFG_GPO_LOCK(GPP_E10, 0, LOCK_CONFIG),
-	/* E16 : RSVD_TP ==> PG_PPVAR_GPU_NVVDD_X_OD */
+	/* E16 : RSVD_TP ==> PG_PPVAR_GPU_NVVDD_X_OD (before board rev 3) */
 	PAD_CFG_GPI(GPP_E16, NONE, DEEP),
 	/* E17 : RSVD_TP ==> PG_PP0950_GPU_X_OD */
 	PAD_CFG_GPI(GPP_E17, NONE, DEEP),

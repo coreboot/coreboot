@@ -7,7 +7,6 @@
 #define GPIO_NV33_PWR_EN	GPP_A21
 #define GPIO_NV33_PG		GPP_A22
 #define GPIO_NVVDD_PWR_EN	GPP_E0
-#define GPIO_NVVDD_PG		GPP_E16
 #define GPIO_PEXVDD_PWR_EN	GPP_E10
 #define GPIO_PEXVDD_PG		GPP_E17
 #define GPIO_FBVDD_PWR_EN	GPP_A19
@@ -21,6 +20,15 @@
 
 /* 250ms in "Timer" units (i.e. 100ns increments) */
 #define MIN_OFF_TIME_TIMERS	2500000
+
+/*
+ * For board revs 3 and later, the PG pin for the NVVDD VR moved from
+ * GPP_E16 to GPP_E3. To accommodate this, this DSDT contains a Name
+ * that the `variant.c` code will write the correct GPIO # to depending
+ * on the board rev, and we'll use that instead.
+ */
+/* Dynamically-assigned NVVDD PG GPIO, set in _INI in SSDT */
+Name (NVPG, 0)
 
 /* Optimus Power Control State */
 Name (OPCS, OPTIMUS_POWER_CONTROL_DISABLE)
@@ -72,7 +80,7 @@ Method (GC6I, 0, Serialized)
 
 	/* Deassert EN_PPVAR_GPU_NVVDD */
 	\_SB.PCI0.CTXS (GPIO_NVVDD_PWR_EN)
-	GPPL (GPIO_NVVDD_PG, 0, 20)
+	GPPL (NVPG, 0, 20)
 	Sleep (2)
 
 	/* Assert GPU_PERST_L */
@@ -95,7 +103,7 @@ Method (GC6O, 0, Serialized)
 
 	/* Ramp up NVVDD */
 	\_SB.PCI0.STXS (GPIO_NVVDD_PWR_EN)
-	GPPL (GPIO_NVVDD_PG, 1, 4)
+	GPPL (NVPG, 1, 4)
 
 	/* Ramp up PEXVDD */
 	 \_SB.PCI0.STXS (GPIO_PEXVDD_PWR_EN)
@@ -141,7 +149,7 @@ Method (PGON, 0, Serialized)
 
 	/* Ramp up NVVDD rail */
 	\_SB.PCI0.STXS (GPIO_NVVDD_PWR_EN)
-	GPPL (GPIO_NVVDD_PG, 1, 5)
+	GPPL (NVPG, 1, 5)
 
 	/* Ramp up PEXVDD rail */
 	\_SB.PCI0.STXS (GPIO_PEXVDD_PWR_EN)
@@ -190,7 +198,7 @@ Method (PGOF, 0, Serialized)
 
 	/* Ramp down NVVDD and let rail discharge to <10% */
 	\_SB.PCI0.CTXS (GPIO_NVVDD_PWR_EN)
-	GPPL (GPIO_NVVDD_PG, 0, 20)
+	GPPL (NVPG, 0, 20)
 	Sleep (2)
 
 	/* Ramp down NV33 and let rail discharge to <10% */

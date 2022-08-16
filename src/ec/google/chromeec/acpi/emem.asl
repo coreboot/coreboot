@@ -33,6 +33,8 @@ BTEX, 1,	// Battery Present
 BFDC, 1,	// Battery Discharging
 BFCG, 1,	// Battery Charging
 BFCR, 1,	// Battery Level Critical
+BFIV, 1,	// Invalid Battery Data
+BFCT, 1,	// Battery cutoff
 Offset (0x4d),
 BTCN, 8,	// Battery Count
 BTIX, 8,	// Battery index

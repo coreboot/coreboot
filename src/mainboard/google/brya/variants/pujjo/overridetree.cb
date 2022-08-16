@@ -22,6 +22,14 @@ fw_config
 end
 
 chip soc/intel/alderlake
+	# Acoustic settings
+	register "acoustic_noise_mitigation" = "1"
+	register "slow_slew_rate[VR_DOMAIN_IA]" = "SLEW_FAST_8"
+	register "slow_slew_rate[VR_DOMAIN_GT]" = "SLEW_FAST_8"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_IA]" = "1"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_GT]" = "1"
+	register "PreWake" = "100"
+
 	register "sagv" = "SaGv_Enabled"
 
 	# SOC Aux orientation override:

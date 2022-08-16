@@ -1,32 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 chip soc/amd/mendocino
-
-	# I2C Config
-	#+-------------------+----------------------------+
-	#| Field             |  Value                     |
-	#+-------------------+----------------------------+
-	#| I2C0              | Trackpad                   |
-	#| I2C1              | Touchscreen                |
-	#| I2C2              | Speaker, Codec, P-SAR, USB |
-	#| I2C3              | D2 TPM                     |
-	#+-------------------+----------------------------+
-	register "i2c[0]" = "{
-		.speed = I2C_SPEED_FAST,
-	}"
-
-	register "i2c[1]" = "{
-		.speed = I2C_SPEED_FAST,
-	}"
-
-	register "i2c[2]" = "{
-		.speed = I2C_SPEED_FAST,
-	}"
-
-	register "i2c[3]" = "{
-		.speed = I2C_SPEED_FAST,
-		.early_init = true,
-	}"
-
 	device domain 0 on end
 end	# chip soc/amd/mendocino

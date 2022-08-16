@@ -47,6 +47,32 @@ chip soc/amd/mendocino
 	register "i2c_pad[2].rx_level" = "I2C_PAD_RX_1_8V" # Audio/SAR
 	register "i2c_pad[3].rx_level" = "I2C_PAD_RX_1_8V" # GSC
 
+	# I2C Config
+	#+-------------------+----------------------------+
+	#| Field             |  Value                     |
+	#+-------------------+----------------------------+
+	#| I2C0              | Trackpad                   |
+	#| I2C1              | Touchscreen                |
+	#| I2C2              | Speaker, Codec, P-SAR, USB |
+	#| I2C3              | D2 TPM                     |
+	#+-------------------+----------------------------+
+	register "i2c[0]" = "{
+		.speed = I2C_SPEED_FAST,
+	}"
+
+	register "i2c[1]" = "{
+		.speed = I2C_SPEED_FAST,
+	}"
+
+	register "i2c[2]" = "{
+		.speed = I2C_SPEED_FAST,
+	}"
+
+	register "i2c[3]" = "{
+		.speed = I2C_SPEED_FAST,
+		.early_init = true,
+	}"
+
 	# general purpose PCIe clock output configuration
 	register "gpp_clk_config[0]" = "GPP_CLK_REQ"
 	register "gpp_clk_config[1]" = "GPP_CLK_REQ"

@@ -91,32 +91,6 @@ chip soc/amd/mendocino
 		end # Internal GPP Bridge 0 to Bus A
 	end # domain
 
-	# I2C Config
-	#+-------------------+----------------------------+
-	#| Field             |  Value                     |
-	#+-------------------+----------------------------+
-	#| I2C0              | Trackpad                   |
-	#| I2C1              | Touchscreen                |
-	#| I2C2              | Speaker, Codec, P-SAR, USB |
-	#| I2C3              | D2 TPM                     |
-	#+-------------------+----------------------------+
-	register "i2c[0]" = "{
-		.speed = I2C_SPEED_FAST,
-	}"
-
-	register "i2c[1]" = "{
-		.speed = I2C_SPEED_FAST,
-	}"
-
-	register "i2c[2]" = "{
-		.speed = I2C_SPEED_FAST,
-	}"
-
-	register "i2c[3]" = "{
-		.speed = I2C_SPEED_FAST,
-		.early_init = true,
-	}"
-
 	device ref i2c_0 on
 		chip drivers/i2c/generic
 			register "hid" = ""ELAN0000""

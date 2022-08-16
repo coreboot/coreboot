@@ -648,7 +648,6 @@ static void reset_spm(struct mtk_mcu *mcu)
 	spm_reset_and_init_pcm();
 	spm_kick_im_to_fetch(pcm);
 	spm_init_pcm_register();
-	spm_set_power_control(&spm_init_ctrl);
 	spm_set_wakeup_event(&spm_init_ctrl);
 	spm_kick_pcm_to_run(&spm_init_ctrl);
 }

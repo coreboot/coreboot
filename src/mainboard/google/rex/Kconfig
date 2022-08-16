@@ -3,7 +3,10 @@ config BOARD_GOOGLE_REX_COMMON
 	# FIXME: Rex Proto 0 only has 64MB SPINOR mounted on the board,
 	# and the plan is to use 32MB later with Proto 1 onwards.
 	select BOARD_ROMSIZE_KB_65536
+	select EC_GOOGLE_CHROMEEC
 	select EC_GOOGLE_CHROMEEC_BOARDID
+	select EC_GOOGLE_CHROMEEC_ESPI
+	select EC_GOOGLE_CHROMEEC_SKUID
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select I2C_TPM
@@ -15,8 +18,6 @@ config BOARD_GOOGLE_BASEBOARD_REX
 	def_bool n
 	select BOARD_GOOGLE_REX_COMMON
 	select DRIVERS_INTEL_PMC
-	select EC_GOOGLE_CHROMEEC
-	select EC_GOOGLE_CHROMEEC_ESPI
 	select MAINBOARD_HAS_CHROMEOS
 	select MEMORY_SOLDERDOWN
 	select SOC_INTEL_METEORLAKE

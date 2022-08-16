@@ -117,3 +117,22 @@ Method (GRXE, 2, Serialized)
 
 	RXDI = !Arg1
 }
+
+/*
+ * Enable/Disable SCI interrupt route
+ * Arg0 - GPIO Number
+ * Arg1 - Route to SCI#
+ *     0 = Disable IRQ route to SCI#
+ *     1 = Enable IRQ route to SCI#
+ */
+Method (GSCI, 2, Serialized)
+{
+	OperationRegion (PREG, SystemMemory, GADD (Arg0), 4)
+	Field (PREG, AnyAcc, NoLock, Preserve)
+	{
+		,     19,
+		SCIR, 1,
+	}
+
+	SCIR = Arg1
+}

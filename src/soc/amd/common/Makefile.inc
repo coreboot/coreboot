@@ -14,4 +14,8 @@ DEP_FILES= $(patsubst %,$(FIRMWARE_LOCATION)/%, $(shell sed -e /^$(POUND_SIGN)/d
 
 amd_microcode_bins += $(wildcard ${FIRMWARE_LOCATION}/*UcodePatch_*.bin)
 
+ifeq ($(CONFIG_VBOOT_GSCVD),y)
+build_complete:: $(AMDFWREAD)
+endif # ifeq ($(CONFIG_VBOOT_GSCVD),y)
+
 endif

@@ -327,4 +327,17 @@ build_complete:: $(obj)/amdfw_a.rom $(obj)/amdfw_b.rom
 		-n apu/amdfw_b_hash -t raw
 endif
 
+# Add ranges for all components up until the first segment of BIOS to be verified by GSC
+ifeq ($(CONFIG_VBOOT_GSCVD),y)
+# Adding range for Bootblock
+vboot-gscvd-ranges += $(call amdfwread-range-cmd,BIOSL2: 0x62)
+# Adding range for PSP Stage1 Bootloader
+vboot-gscvd-ranges += $(call amdfwread-range-cmd,PSPL2: 0x01)
+
+ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+# Adding range for PSP Verstage
+vboot-gscvd-ranges += $(call amdfwread-range-cmd,PSPL2: 0x52)
+endif # ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+endif # ifeq ($(CONFIG_VBOOT_GSCVD),y)
+
 endif # ($(CONFIG_SOC_AMD_MENDOCINO),y)

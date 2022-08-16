@@ -28,6 +28,18 @@ endif # ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
 
 ifeq ($(CONFIG_VBOOT_GSCVD),y)
 build_complete:: $(AMDFWREAD)
+
+amdfwread-offset-size-cmd = $(AMDFWREAD) --ro-list $(obj)/coreboot.rom | \
+				awk --non-decimal-data '/$(1)/ {printf "%x:%x", $$3, $$4}'
+
+amdfwread-range-cmd = $(shell ( \
+	range=$$($(call amdfwread-offset-size-cmd,$(1))) ;\
+	if [ -n "$$range" ]; then \
+		printf $$range ;\
+	else \
+		printf "error" ;\
+	fi ;\
+))
 endif # ifeq ($(CONFIG_VBOOT_GSCVD),y)
 
 endif

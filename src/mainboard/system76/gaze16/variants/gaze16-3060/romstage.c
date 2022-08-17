@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include "../../variant.h"
 #include <soc/pch.h>
+#include <variant/romstage.h>
 
 void variant_memory_init_params(FSPM_UPD *mupd)
 {

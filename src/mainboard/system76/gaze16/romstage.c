@@ -1,9 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <fsp/util.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
-#include "variant.h"
+#include <variant/romstage.h>
 
 static const struct mb_cfg board_cfg = {
 	.type = MEM_TYPE_DDR4,

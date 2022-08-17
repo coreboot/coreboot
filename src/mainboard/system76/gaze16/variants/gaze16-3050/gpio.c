@@ -1,17 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef VARIANT_GPIO_H
-#define VARIANT_GPIO_H
-
 #include <soc/gpio.h>
-
-static const struct pad_config early_gpio_table[] = {
-	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1), // UART2_RXD
-	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1), // UART2_TXD
-	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF1), // NB_ENAVDD
-	PAD_CFG_GPO(GPP_F8, 0, DEEP), // DGPU_RST#_PCH
-	PAD_CFG_GPO(GPP_F9, 0, DEEP), // DGPU_PWR_EN
-};
+#include <variant/gpio.h>
 
 static const struct pad_config gpio_table[] = {
 	/* ------- GPIO Group GPD ------- */
@@ -285,4 +275,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_S7, NONE, DEEP), // DMIC_DAT_PCH
 };
 
-#endif /* VARIANT_GPIO_H */
+void variant_configure_gpios(void)
+{
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+}

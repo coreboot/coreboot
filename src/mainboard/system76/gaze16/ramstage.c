@@ -10,5 +10,5 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 
 	params->PchLegacyIoLowLatency = 1;
 
-	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+	variant_configure_gpios();
 }

@@ -23,6 +23,7 @@
 #include <string.h>
 
 #define FSP_DBG_LVL BIOS_NEVER
+#define MASK_24BITS  0x00FFFFFF
 
 /*
  * UEFI defines everything as little endian. However, this piece of code
@@ -68,12 +69,41 @@ static void *relative_offset(void *base, ssize_t offset)
 	return (void *)loc;
 }
 
+static size_t csh_size(const EFI_COMMON_SECTION_HEADER *csh)
+{
+	size_t size;
+
+	/* Unpack the array into a type that can be used. */
+	size = 0;
+	size |= read_le8(&csh->Size[0]) << 0;
+	size |= read_le8(&csh->Size[1]) << 8;
+	size |= read_le8(&csh->Size[2]) << 16;
+
+	return size;
+}
+
+static size_t file_section_offset(const EFI_FFS_FILE_HEADER *ffsfh)
+{
+	if (IS_FFS_FILE2(ffsfh))
+		return sizeof(EFI_FFS_FILE_HEADER2);
+	else
+		return sizeof(EFI_FFS_FILE_HEADER);
+}
+
+static size_t section_data_offset(const EFI_COMMON_SECTION_HEADER *csh)
+{
+	if (csh_size(csh) == MASK_24BITS)
+		return sizeof(EFI_COMMON_SECTION_HEADER2);
+	else
+		return sizeof(EFI_COMMON_SECTION_HEADER);
+}
+
 static uint32_t *fspp_reloc(void *fsp, size_t fsp_size, uint32_t e)
 {
 	size_t offset;
 
 	/* Offsets live in bits 23:0. */
-	offset = e & 0xffffff;
+	offset = e & MASK_24BITS;
 
 	/* If bit 31 is set then the offset is considered a negative value
 	 * relative to the end of the image using 16MiB as the offset's
@@ -98,6 +128,153 @@ static size_t reloc_offset(uint16_t reloc_entry)
 {
 	/* Offsets are in low 12 bits. */
 	return reloc_entry & ((1 << 12) - 1);
+}
+
+static FSP_INFO_HEADER *fsp_get_info_hdr(void *fsp, size_t fih_offset)
+{
+	EFI_FFS_FILE_HEADER *ffsfh;
+	EFI_COMMON_SECTION_HEADER *csh;
+	FSP_INFO_HEADER *fih;
+
+	printk(FSP_DBG_LVL, "FSP_INFO_HEADER offset is %zx\n", fih_offset);
+
+	if (fih_offset == 0) {
+		printk(BIOS_ERR, "FSP_INFO_HEADER offset is 0.\n");
+		return NULL;
+	}
+
+	/* FSP_INFO_HEADER is located at first file in FV within first RAW section. */
+	ffsfh = relative_offset(fsp, fih_offset);
+	fih_offset += file_section_offset(ffsfh);
+	csh = relative_offset(fsp, fih_offset);
+	fih_offset += section_data_offset(csh);
+	fih = relative_offset(fsp, fih_offset);
+
+	if (guid_compare(&ffsfh->Name, &fih_guid)) {
+		printk(BIOS_ERR, "Bad FIH GUID.\n");
+		return NULL;
+	}
+
+	if (read_le8(&csh->Type) != EFI_SECTION_RAW) {
+		printk(BIOS_ERR, "FIH file should have raw section: %x\n",
+			read_le8(&csh->Type));
+		return NULL;
+	}
+
+	if (read_le32(&fih->Signature) != FSP_SIG) {
+		printk(BIOS_ERR, "Unexpected FIH signature: %08x\n",
+			read_le32(&fih->Signature));
+		return NULL;
+	}
+
+	return fih;
+}
+
+static int pe_relocate(uintptr_t new_addr, void *pe, void *fsp, size_t fih_off)
+{
+	EFI_IMAGE_NT_HEADERS32 *peih;
+	EFI_IMAGE_DOS_HEADER *doshdr;
+	EFI_IMAGE_OPTIONAL_HEADER32 *ophdr;
+	FSP_INFO_HEADER *fih;
+	uint32_t  roffset, rsize;
+	uint32_t  offset;
+	uint8_t *pe_base = pe;
+	uint32_t image_base;
+	uint32_t img_base_off;
+	uint32_t delta;
+
+	doshdr = pe;
+	if (read_le16(&doshdr->e_magic) != EFI_IMAGE_DOS_SIGNATURE) {
+		printk(BIOS_ERR, "Invalid DOS Header/magic\n");
+		return -1;
+	}
+
+	peih = relative_offset(pe, doshdr->e_lfanew);
+
+	if (read_le32(&peih->Signature) != EFI_IMAGE_NT_SIGNATURE) {
+		printk(BIOS_ERR, "Invalid PE32 header\n");
+		return -1;
+	}
+
+	ophdr = &peih->OptionalHeader;
+
+	if (read_le16(&ophdr->Magic) != EFI_IMAGE_NT_OPTIONAL_HDR32_MAGIC) {
+		printk(BIOS_ERR, "No support for non-PE32 images\n");
+		return -1;
+	}
+
+	fih = fsp_get_info_hdr(fsp, fih_off);
+	if (fih == NULL) {
+		printk(BIOS_ERR, "No Image base found for FSP PE32\n");
+		return -1;
+	}
+	image_base = read_le32(&fih->ImageBase);
+	printk(FSP_DBG_LVL, "FSP InfoHdr Image Base is %x\n", image_base);
+
+	delta = new_addr - image_base;
+
+	img_base_off = read_le32(&ophdr->ImageBase);
+	printk(FSP_DBG_LVL, "lfanew 0x%x, delta-0x%x, FSP Base 0x%x, NT32ImageBase 0x%x, offset 0x%x\n",
+			read_le32(&doshdr->e_lfanew),
+			delta, image_base, img_base_off,
+			(uint32_t)((uint8_t *)&ophdr->ImageBase - pe_base));
+
+	printk(FSP_DBG_LVL, "relocating PE32 image at addr - 0x%lx\n", new_addr);
+	rsize = read_le32(&ophdr->DataDirectory[EFI_IMAGE_DIRECTORY_ENTRY_BASERELOC].Size);
+	roffset = read_le32(&ophdr->DataDirectory[EFI_IMAGE_DIRECTORY_ENTRY_BASERELOC].VirtualAddress);
+	printk(FSP_DBG_LVL, "relocation table at offset-%x,size=%x\n", roffset, rsize);
+	// TODO - add support for PE32+ also
+
+	offset = roffset;
+	while (offset < (roffset + rsize)) {
+		uint32_t vaddr;
+		uint32_t rlen, rnum;
+		uint16_t *rdata;
+		uint32_t i;
+		EFI_IMAGE_DATA_DIRECTORY *relocd;
+
+		relocd = (void *) &pe_base[offset];
+		offset += sizeof(*relocd);
+		// Read relocation type, offset pairs
+		rlen = read_le32(&relocd->Size) - sizeof(*relocd);
+		rnum = rlen / sizeof(uint16_t);
+		vaddr = read_le32(&relocd->VirtualAddress);
+		rdata = (uint16_t *) &pe_base[offset];
+		printk(FSP_DBG_LVL, "\t%d Relocs for RVA %x\n", rnum, vaddr);
+
+		for (i = 0; i < rnum; i++) {
+			uint16_t roff = reloc_offset(rdata[i]);
+			uint16_t rtype = reloc_type(rdata[i]);
+			uint32_t aoff = vaddr + roff;
+			uint32_t val;
+			printk(FSP_DBG_LVL, "\t\treloc type %x offset %x aoff %x, base-0x%x\n",
+					rtype, roff, aoff, img_base_off);
+			switch (rtype) {
+			case EFI_IMAGE_REL_BASED_ABSOLUTE:
+				continue;
+			case EFI_IMAGE_REL_BASED_HIGHLOW:
+				val = read_le32(&pe_base[aoff]);
+				printk(FSP_DBG_LVL, "Adjusting %p %x -> %x\n",
+					&pe_base[aoff], val, val + delta);
+				write_le32(&pe_base[aoff], val + delta);
+				break;
+			case EFI_IMAGE_REL_BASED_DIR64:
+				printk(BIOS_ERR, "Error: Unsupported DIR64\n");
+				break;
+			default:
+				printk(BIOS_ERR, "Error: Unsupported relocation type %d\n",
+						rtype);
+				return -1;
+			}
+		}
+		offset += sizeof(*rdata) * rnum;
+	}
+	printk(FSP_DBG_LVL, "Adjust Image Base %x->%x\n",
+			img_base_off, img_base_off + delta);
+	img_base_off += delta;
+	write_le32(&ophdr->ImageBase, img_base_off);
+
+	return -1;
 }
 
 static int te_relocate(uintptr_t new_addr, void *te)
@@ -201,45 +378,16 @@ static int te_relocate(uintptr_t new_addr, void *te)
 	return 0;
 }
 
-static size_t csh_size(const EFI_COMMON_SECTION_HEADER *csh)
-{
-	size_t size;
-
-	/* Unpack the array into a type that can be used. */
-	size = 0;
-	size |= read_le8(&csh->Size[0]) << 0;
-	size |= read_le8(&csh->Size[1]) << 8;
-	size |= read_le8(&csh->Size[2]) << 16;
-
-	return size;
-}
-
-static size_t section_data_offset(const EFI_COMMON_SECTION_HEADER *csh)
-{
-	if (csh_size(csh) == 0x00ffffff)
-		return sizeof(EFI_COMMON_SECTION_HEADER2);
-	else
-		return sizeof(EFI_COMMON_SECTION_HEADER);
-}
-
 static size_t section_data_size(const EFI_COMMON_SECTION_HEADER *csh)
 {
 	size_t section_size;
 
-	if (csh_size(csh) == 0x00ffffff)
+	if (csh_size(csh) == MASK_24BITS)
 		section_size = read_le32(&SECTION2_SIZE(csh));
 	else
 		section_size = csh_size(csh);
 
 	return section_size - section_data_offset(csh);
-}
-
-static size_t file_section_offset(const EFI_FFS_FILE_HEADER *ffsfh)
-{
-	if (IS_FFS_FILE2(ffsfh))
-		return sizeof(EFI_FFS_FILE_HEADER2);
-	else
-		return sizeof(EFI_FFS_FILE_HEADER);
 }
 
 static size_t ffs_file_size(const EFI_FFS_FILE_HEADER *ffsfh)
@@ -341,13 +489,14 @@ static ssize_t relocate_remaining_items(void *fsp, size_t size,
 	if (read_le32(&fih->Signature) != FSP_SIG) {
 		printk(BIOS_ERR, "Unexpected FIH signature: %08x\n",
 			read_le32(&fih->Signature));
-		return -1;
 	}
 
 	adjustment = (intptr_t)new_addr - read_le32(&fih->ImageBase);
 
 	/* Update ImageBase to reflect FSP's new home. */
 	write_le32(&fih->ImageBase, adjustment + read_le32(&fih->ImageBase));
+	printk(FSP_DBG_LVL, "Updated FSP InfoHdr Image Base to %x\n",
+			read_le32(&fih->ImageBase));
 
 	/* Need to find patch table and adjust each entry. The tables
 	 * following FSP_INFO_HEADER have a 32-bit signature and header
@@ -460,6 +609,9 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 		while (offset + sizeof(*csh) < file_offset) {
 			size_t data_size;
 			size_t data_offset;
+			void *section_data;
+			size_t section_offset;
+			uintptr_t section_addr;
 
 			csh = relative_offset(fsp, offset);
 
@@ -484,15 +636,18 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 			 * relocated address based on the TE offset within
 			 * FSP proper.
 			 */
-			if (read_le8(&csh->Type) == EFI_SECTION_TE) {
-				void *te;
-				size_t te_offset = offset + data_offset;
-				uintptr_t te_addr = new_addr + te_offset;
+			section_offset = offset + data_offset;
+			section_addr = new_addr + section_offset;
+			section_data = relative_offset(fsp, section_offset);
 
+			if (read_le8(&csh->Type) == EFI_SECTION_TE) {
 				printk(FSP_DBG_LVL, "TE image at offset %zx\n",
-					te_offset);
-				te = relative_offset(fsp, te_offset);
-				te_relocate(te_addr, te);
+					section_offset);
+				te_relocate(section_addr, section_data);
+			} else if (read_le8(&csh->Type) == EFI_SECTION_PE32) {
+				printk(FSP_DBG_LVL, "PE32 image at offset %zx\n",
+					section_offset);
+				pe_relocate(new_addr, section_data, fsp, *fih_offset);
 			}
 
 			offset += data_size + data_offset;

@@ -15,6 +15,12 @@ fw_config
 		option WFC_ABSENT		0
 		option WFC_PRESENT		1
 	end
+	field THERMAL 10 11
+		option THERMAL_FAN_TABLE_0	0
+		option THERMAL_FAN_TABLE_1	1
+		option THERMAL_FAN_TABLE_2	2
+		option THERMAL_FAN_TABLE_3	3
+	end
 	field AUDIO 12 14
 		option ALC1019_ALC5682IVS	0
 	end
@@ -126,6 +132,165 @@ chip soc/intel/alderlake
 	}"
 
 	device domain 0 on
+		device ref dtt on
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""CPU""
+				register "options.tsr[1].desc" = ""DDR""
+				register "options.tsr[2].desc" = ""5VCharger""
+
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,         CPU,           90, 10000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 80, 60000),
+					[2] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_1, 80, 60000),
+					[3] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_2, 75, 15000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     100, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     100, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     100, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+							.min_power = 3000,
+							.max_power = 6000,
+							.time_window_min = 1 * MSECS_PER_SEC,
+							.time_window_max = 1 * MSECS_PER_SEC,
+							.granularity = 200,
+						},
+					.pl2 = {
+							.min_power = 20000,
+							.max_power = 20000,
+							.time_window_min = 1 * MSECS_PER_SEC,
+							.time_window_max = 1 * MSECS_PER_SEC,
+							.granularity = 1000,
+						}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 3000 },
+					[1] = {  24, 2000 },
+					[2] = {  16, 1500 },
+					[3] = {   8, 1000 }
+				}"
+
+				device generic 0 on
+					probe THERMAL THERMAL_FAN_TABLE_0
+				end
+			end
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""CPU""
+				register "options.tsr[1].desc" = ""DDR""
+				register "options.tsr[2].desc" = ""5VCharger""
+
+				# TODO: below values are initial reference values only
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {
+						.target = DPTF_CPU,
+						.thresholds = {
+								TEMP_PCT(80, 100),
+								TEMP_PCT(75, 98),
+								TEMP_PCT(70, 86),
+								TEMP_PCT(65, 70),
+								TEMP_PCT(60, 70),
+						}
+					},
+					[1] = {
+						.target = DPTF_TEMP_SENSOR_1,
+						.thresholds = {
+								TEMP_PCT(50, 70),
+								TEMP_PCT(47, 58),
+								TEMP_PCT(45, 47),
+								TEMP_PCT(42, 45),
+								TEMP_PCT(39, 39),
+						}
+					},
+					[2] = {
+						.target = DPTF_TEMP_SENSOR_2,
+						.thresholds = {
+								TEMP_PCT(50, 70),
+								TEMP_PCT(47, 58),
+								TEMP_PCT(45, 47),
+								TEMP_PCT(42, 45),
+								TEMP_PCT(39, 39),
+						}
+					},
+				}"
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 90, 6000),
+					[2] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_1, 90, 6000),
+					[3] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_2, 90, 6000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     100, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     100, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     100, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+							.min_power = 3000,
+							.max_power = 15000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 200,
+						},
+					.pl2 = {
+							.min_power = 35000,
+							.max_power = 35000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 1000,
+						}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 1700 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{
+					[0] = { 100, 6000, 220, 2200, },
+					[1] = {  92, 5500, 180, 1800, },
+					[2] = {  85, 5000, 145, 1450, },
+					[3] = {  70, 4400, 115, 1150, },
+					[4] = {  56, 3900,  90,  900, },
+					[5] = {  45, 3300,  55,  550, },
+					[6] = {  39, 3000,  30,  300, },
+					[7] = {  33, 2900,  15,  150, },
+					[8] = {  10,  800,  10,  100, },
+					[9] = {   0,    0,   0,   50, }
+				}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 1 on
+					probe THERMAL THERMAL_FAN_TABLE_1
+				end
+			end
+		end
+
 		device ref i2c1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN9004""

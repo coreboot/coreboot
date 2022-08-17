@@ -15,9 +15,11 @@ import os
 # Byte 1 = 0x11 = Revision 1.1
 # Byte 2 = 0x11 = LPDDR4X SDRAM
 #        = 0x13 = LP5 SDRAM
+#        = 0x15 = LP5X SDRAM
 # Byte 3 = 0x0E = Non-DIMM Solution
 LP4_SPD_MAGIC = bytes.fromhex('2311110E')
 LP5_SPD_MAGIC = bytes.fromhex('2311130E')
+LP5X_SPD_MAGIC = bytes.fromhex('2311150E')
 EMPTY_SPD = b'\x00' * 512
 
 spd_ssp_struct_fmt = '??B?IIBBBxIIBBBx'
@@ -53,7 +55,7 @@ def parseargs():
         '--mem_type',
         type=str,
         default='lp4',
-        help='Memory type [lp4|lp5]. Default = lp4')
+        help='Memory type [lp4|lp5|lp5x]. Default = lp4')
     return parser.parse_args()
 
 
@@ -86,6 +88,8 @@ def main():
 
     if args.mem_type == 'lp5':
         spd_magic = LP5_SPD_MAGIC
+    elif args.mem_type == 'lp5x':
+        spd_magic = LP5X_SPD_MAGIC
 
     spds = []
     for spd_source in args.spd_sources:

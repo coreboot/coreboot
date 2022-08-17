@@ -126,8 +126,6 @@ struct soc_intel_meteorlake_config {
 	/* Program OC pins for TCSS */
 	struct tcss_port_config tcss_ports[MAX_TYPE_C_PORTS];
 	uint8_t tbt_pcie_port_disable[4];
-	/* Validate TBT firmware authenticated and loaded into IMR */
-	bool tbt_authentication;
 
 	/* SATA related */
 	uint8_t sata_mode;

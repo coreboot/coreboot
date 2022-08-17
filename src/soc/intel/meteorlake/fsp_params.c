@@ -14,8 +14,8 @@
 #include <intelblocks/lpss.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
+#include <intelblocks/tcss.h>
 #include <security/vboot/vboot_common.h>
-#include <soc/cpu.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
@@ -23,6 +23,7 @@
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>
 #include <soc/soc_info.h>
+#include <soc/cpu.h>
 #include <string.h>
 
 /* THC assignment definition */

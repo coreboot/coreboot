@@ -1,5 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+/* This header block is used to supply information to arbitrage, a
+ * google-internal tool. Updating it incorrectly will lead to issues,
+ * so please don't update it unless a change is specifically required.
+ * BaseID: 3EC4CE58201758F4
+ * Overrides: c826ba419f06f9df9cded8e60633253ddc7b60ff
+ */
+
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <soc/gpio.h>

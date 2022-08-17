@@ -1,6 +1,8 @@
 config BOARD_GOOGLE_REX_COMMON
 	def_bool n
-	select BOARD_ROMSIZE_KB_32768
+	# FIXME: Rex Proto 0 only has 64MB SPINOR mounted on the board,
+	# and the plan is to use 32MB later with Proto 1 onwards.
+	select BOARD_ROMSIZE_KB_65536
 	select EC_GOOGLE_CHROMEEC_BOARDID
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES

@@ -9,16 +9,6 @@
 #include <soc/southbridge.h>
 #include <types.h>
 
-static void sb_enable_lpc(void)
-{
-	u8 byte;
-
-	/* Enable LPC controller */
-	byte = pm_io_read8(PM_LPC_GATING);
-	byte |= PM_LPC_ENABLE;
-	pm_io_write8(PM_LPC_GATING, byte);
-}
-
 static void sb_lpc_decode(void)
 {
 	u32 tmp = 0;
@@ -119,11 +109,9 @@ void bootblock_fch_early_init(void)
 	   the GPIO registers. */
 	enable_acpimmio_decode_pm04();
 	lpc_enable_rom();
-	sb_enable_lpc();
+	lpc_early_init();
 	lpc_enable_port80();
 	sb_lpc_decode();
-	/* Make sure the base address is predictable */
-	lpc_set_spibase(SPI_BASE_ADDRESS);
 	fch_spi_early_init();
 	fch_smbus_init();
 	fch_enable_cf9_io();

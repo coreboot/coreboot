@@ -211,8 +211,7 @@ static bool _pciexp_enable_ltr(struct device *parent, unsigned int parent_cap,
 		return true;
 
 	if (parent &&
-	    (parent->path.type != DEVICE_PATH_PCI ||
-	     !_pciexp_ltr_supported(parent, parent_cap) ||
+	    (!_pciexp_ltr_supported(parent, parent_cap) ||
 	     !_pciexp_ltr_enabled(parent, parent_cap)))
 		return false;
 
@@ -235,6 +234,8 @@ static void pciexp_enable_ltr(struct device *dev)
 	unsigned int parent_cap = 0;
 	if (!dev->ops->ops_pci || !dev->ops->ops_pci->get_ltr_max_latencies) {
 		parent = dev->bus->dev;
+		if (parent->path.type != DEVICE_PATH_PCI)
+			return;
 		parent_cap = pci_find_capability(parent, PCI_CAP_ID_PCIE);
 		if (!parent_cap)
 			return;

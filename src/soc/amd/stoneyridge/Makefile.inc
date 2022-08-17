@@ -127,6 +127,11 @@ OPT_COMBOCAPABLE=--combo-capable
 OPT_SOCNAME=--soc-name "Stoneyridge"
 endif
 
+ifeq ($(FIRMWARE_TYPE),CZ)
+OPT_COMBOCAPABLE=--combo-capable
+OPT_SOCNAME=--soc-name "Carrizo"
+endif
+
 ifeq ($(CONFIG_USE_PSPSECUREOS),y)
 PSP_USE_PSPSECUREOS="--use-pspsecureos"
 endif

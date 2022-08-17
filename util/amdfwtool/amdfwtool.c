@@ -229,8 +229,9 @@ static void usage(void)
 	printf("--sharedmem-size               Maximum size of the PSP/FW shared memory\n");
 	printf("                               area\n");
 	printf("--soc-name <socname>           Specify SOC name. Supported names are\n");
-	printf("                               Stoneyridge, Raven, Picasso, Renoir, Cezanne\n");
-	printf("                               Mendocino, Phoenix, Glinda, or Lucienne\n");
+	printf("                               Carrizo, Stoneyridge, Raven, Picasso, Renoir,\n");
+	printf("                               Cezanne, Mendocino, Phoenix, Glinda, or\n");
+	printf("                               Lucienne\n");
 	printf("\nEmbedded Firmware Structure options used by the PSP:\n");
 	printf("--spi-speed <HEX_VAL>          SPI fast speed to place in EFS Table\n");
 	printf("                               0x0 66.66Mhz\n");
@@ -713,6 +714,7 @@ static ssize_t write_from_buf_to_file(int fd, const void *buf, size_t buf_size)
 
 enum platform {
 	PLATFORM_UNKNOWN,
+	PLATFORM_CARRIZO,
 	PLATFORM_STONEYRIDGE,
 	PLATFORM_RAVEN,
 	PLATFORM_PICASSO,
@@ -751,6 +753,7 @@ static uint32_t get_psp_id(enum platform soc_id)
 	case PLATFORM_PHOENIX:
 		psp_id = 0xBC0D0400;
 		break;
+	case PLATFORM_CARRIZO:
 	default:
 		psp_id = 0;
 		break;
@@ -1970,6 +1973,7 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 	}
 
 	switch (soc_id) {
+	case PLATFORM_CARRIZO:
 	case PLATFORM_STONEYRIDGE:
 		amd_romsig->spi_readmode_f15_mod_60_6f = efs_spi_readmode;
 		amd_romsig->fast_speed_new_f15_mod_60_6f = efs_spi_speed;
@@ -2073,6 +2077,8 @@ static int identify_platform(char *soc_name)
 {
 	if (!strcasecmp(soc_name, "Stoneyridge"))
 		return PLATFORM_STONEYRIDGE;
+	else if (!strcasecmp(soc_name, "Carrizo"))
+		return PLATFORM_CARRIZO;
 	else if (!strcasecmp(soc_name, "Raven"))
 		return PLATFORM_RAVEN;
 	else if (!strcasecmp(soc_name, "Picasso"))
@@ -2105,6 +2111,7 @@ static bool needs_ish(enum platform platform_type)
 static bool is_second_gen(enum platform platform_type)
 {
 	switch (platform_type) {
+	case PLATFORM_CARRIZO:
 	case PLATFORM_STONEYRIDGE:
 	case PLATFORM_RAVEN:
 	case PLATFORM_PICASSO:
@@ -2683,6 +2690,7 @@ int main(int argc, char **argv)
 		case PLATFORM_PHOENIX:
 		case PLATFORM_GLINDA:
 			break;
+		case PLATFORM_CARRIZO:
 		case PLATFORM_STONEYRIDGE:
 		case PLATFORM_RAVEN:
 		case PLATFORM_PICASSO:

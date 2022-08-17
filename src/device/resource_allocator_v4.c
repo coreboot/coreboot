@@ -112,12 +112,13 @@ static resource_t effective_limit(const struct resource *const res)
  * allocated base of the bridge resource.
  */
 static void update_bridge_resource(const struct device *bridge, struct resource *bridge_res,
-				   unsigned long type_match, int print_depth)
+				   int print_depth)
 {
 	const struct device *child;
 	struct resource *child_res;
 	resource_t base;
 	const unsigned long type_mask = IORESOURCE_TYPE_MASK | IORESOURCE_PREFETCH;
+	const unsigned long type_match = bridge_res->flags & type_mask;
 	struct bus *bus = bridge->link_list;
 
 	child_res = NULL;
@@ -228,7 +229,7 @@ static void compute_bridge_resources(const struct device *bridge, unsigned long 
 		 * Update the window for current bridge resource now that all downstream
 		 * requirements are gathered.
 		 */
-		update_bridge_resource(bridge, res, type_match, print_depth);
+		update_bridge_resource(bridge, res, print_depth);
 	}
 }
 

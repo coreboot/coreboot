@@ -61,12 +61,12 @@ static const fsp_ddi_descriptor skyrim_mdn_ddi_descriptors[] = {
 		.hdp_index = DDI_HDP2
 	},
 	{ /* DDI2 - DP (type C) */
-		.connector_type = DDI_DP,
+		.connector_type = DDI_DP_W_TYPEC,
 		.aux_index = DDI_AUX3,
 		.hdp_index = DDI_HDP3,
 	},
 	{ /* DDI3 - DP (type C) */
-		.connector_type = DDI_DP,
+		.connector_type = DDI_DP_W_TYPEC,
 		.aux_index = DDI_AUX4,
 		.hdp_index = DDI_HDP4,
 	},

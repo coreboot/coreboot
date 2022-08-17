@@ -8,7 +8,7 @@ stdenvNoCC.mkDerivation {
 		curl
 		flex
 		git
-		gnat11
+		gnat12
 		gnumake
 		patch
 		zlib

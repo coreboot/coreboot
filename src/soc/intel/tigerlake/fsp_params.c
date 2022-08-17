@@ -122,7 +122,7 @@ static const struct slot_irq_constraints irq_constraints[] = {
 	{
 		.slot = SA_DEV_SLOT_CPU_PCIE,
 		.fns = {
-			ANY_PIRQ(SA_DEVFN_CPU_PCIE),
+			FIXED_INT_PIRQ(SA_DEVFN_CPU_PCIE, PCI_INT_D, PIRQ_D),
 		},
 	},
 	{

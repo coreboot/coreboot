@@ -170,6 +170,13 @@ static const struct {
 	 "12th generation (Alder Lake S family) Core Processor (Desktop)" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_ADL_ID_S_6_0,
 	 "12th generation (Alder Lake S family) Core Processor (Desktop)" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_6_8,
+	  "12th generation (Alder Lake P family) Core Processor"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_4_8,
+	  "12th generation (Alder Lake P family) Core Processor"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_2_8,
+	  "12th generation (Alder Lake P family) Core Processor"},
+
 	/* Southbridges (LPC controllers) */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371XX, "371AB/EB/MB" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH10, "ICH10" },

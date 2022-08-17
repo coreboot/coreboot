@@ -287,6 +287,10 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_I5000V		0x25d4
 #define PCI_DEVICE_ID_INTEL_I5000P		0x25d8
 
+#define PCI_DEVICE_ID_INTEL_ADL_P		0x5182
+#define PCI_DEVICE_ID_INTEL_ADL_M		0x5187
+#define PCI_DEVICE_ID_INTEL_RPL_P		0x519d
+
 /* untested, but almost identical to D-series */
 #define PCI_DEVICE_ID_INTEL_ATOM_NXXX	0xa010
 
@@ -357,7 +361,9 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_HX_8_8	0x4637 /* Alderlake HX 8+8 */
 #define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_HX_6_8	0x463B /* Alderlake HX 6+8 */
 #define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_HX_4_8	0x4623 /* Alderlake HX 4+8 */
-
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_6_8	0x4641 /* Alderlake P 6+8 */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_4_8	0x4621 /* Alderlake P 4+8 */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_2_8	0x4601 /* Alderlake P 2+8 */
 
 /* Intel GPUs */
 #define PCI_DEVICE_ID_INTEL_G35_EXPRESS		0x2982

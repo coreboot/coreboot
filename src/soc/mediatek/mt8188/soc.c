@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
 #include <bootmem.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <soc/dfd.h>
+#include <soc/dpm.h>
 #include <soc/emi.h>
 #include <soc/mcupm.h>
 #include <soc/mmu_operations.h>
@@ -25,6 +27,9 @@ static void soc_init(struct device *dev)
 	mtk_mmu_disable_l2c_sram();
 	mcupm_init();
 	sspm_init();
+
+	if (dpm_init())
+		printk(BIOS_ERR, "dpm init failed, DVFS may not work\n");
 
 	if (CONFIG(MTK_DFD))
 		dfd_init();

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/i2c.h>
 #include <amdblocks/lpc.h>
 #include <amdblocks/pmlib.h>
 #include <amdblocks/reset.h>
@@ -8,6 +9,16 @@
 #include <amdblocks/spi.h>
 #include <soc/southbridge.h>
 #include <types.h>
+
+#include "chip.h"
+
+/* Table to switch SCL pins to outputs to initially reset the I2C peripherals */
+static const struct soc_i2c_scl_pin i2c_scl_pins[] = {
+	I2C_RESET_SCL_PIN(I2C0_SCL_PIN, GPIO_I2C0_SCL),
+	I2C_RESET_SCL_PIN(I2C1_SCL_PIN, GPIO_I2C1_SCL),
+	I2C_RESET_SCL_PIN(I2C2_SCL_PIN, GPIO_I2C2_SCL),
+	I2C_RESET_SCL_PIN(I2C3_SCL_PIN, GPIO_I2C3_SCL),
+};
 
 static void sb_lpc_decode(void)
 {
@@ -100,6 +111,17 @@ static void setup_misc(int *reboot)
 	}
 }
 
+static void reset_i2c_peripherals(void)
+{
+	const struct soc_amd_stoneyridge_config *cfg = config_of_soc();
+	struct soc_i2c_peripheral_reset_info reset_info;
+
+	reset_info.i2c_scl_reset_mask = cfg->i2c_scl_reset & GPIO_I2C_MASK;
+	reset_info.i2c_scl = i2c_scl_pins;
+	reset_info.num_pins = ARRAY_SIZE(i2c_scl_pins);
+	sb_reset_i2c_peripherals(&reset_info);
+}
+
 /* Before console init */
 void bootblock_fch_early_init(void)
 {
@@ -132,8 +154,19 @@ void bootblock_fch_early_init(void)
 /* After console init */
 void bootblock_fch_init(void)
 {
+	/*
+	 * This call (sb_reset_i2c_peripherals) was originally early at
+	 * bootblock_c_entry, but had to be moved here. There was an
+	 * unexplained delay in the middle of the i2c transaction when
+	 * we had it in bootblock_c_entry.  Moving it to this point
+	 * (or adding delays) fixes the issue.  It seems like the processor
+	 * just pauses but we don't know why.
+	 */
+	reset_i2c_peripherals();
 	pm_set_power_failure_state();
 	fch_print_pmxc0_status();
+	/* Initialize any early i2c buses. */
+	i2c_soc_early_init();
 	show_spi_speeds_and_modes();
 }
 

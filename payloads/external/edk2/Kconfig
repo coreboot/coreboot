@@ -262,6 +262,20 @@ config EDK2_SECURE_BOOT_SUPPORT
 	  Select this option to enable UEFI SecureBoot support in edk2.
 	  UEFI SecureBoot will be disabled by default and can be enabled from the menu option.
 
+config EDK2_GOP_DRIVER
+	bool "Add a GOP driver to the Tianocore build"
+	depends on INTEL_GMA_ADD_VBT && NO_GFX_INIT && (EDK2_REPO_MRCHROMEBOX || EDK2_REPO_CUSTOM)
+	default y if INTEL_GMA_ADD_VBT && NO_GFX_INIT && EDK2_REPO_MRCHROMEBOX
+	help
+	  Select this option to have edk2 use an external GOP driver for display init.
+
+config EDK2_GOP_FILE
+	string "GOP driver file"
+	depends on EDK2_GOP_DRIVER
+	default "IntelGopDriver.efi"
+	help
+	  The name of the GOP driver file passed to edk2.
+
 config EDK2_CUSTOM_BUILD_PARAMS
 	string "edk2 additional custom build parameters"
 	default "-D VARIABLE_SUPPORT=SMMSTORE" if EDK2_REPO_MRCHROMEBOX && SMMSTORE_V2

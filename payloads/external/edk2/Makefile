@@ -119,6 +119,10 @@ endif
 ifeq ($(CONFIG_PCIEXP_SUPPORT_RESIZABLE_BARS), y)
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdPcieResizableBarSupport=TRUE
 endif
+# GOP_DRIVER			= FALSE
+ifeq ($(CONFIG_EDK2_GOP_DRIVER), y)
+BUILD_STR += -D USE_PLATFORM_GOP=TRUE
+endif
 
 #
 # EDKII has the below PCDs that are relevant to coreboot:
@@ -191,6 +195,13 @@ logo: $(EDK2_PATH)
 			BMP3:$(EDK2_PATH)/MdeModulePkg/Logo/Logo.bmp;; \
 	esac \
 
+gop_driver:
+	if [ -n "$(CONFIG_EDK2_GOP_DRIVER)" ]; then \
+		echo "Using GOP driver $(CONFIG_EDK2_GOP_FILE)"; \
+		cp $(top)/$(CONFIG_EDK2_GOP_FILE) $(EDK2_PATH)/UefiPayloadPkg/IntelGopDriver.efi; \
+		cp $(top)/$(CONFIG_INTEL_GMA_VBT_FILE) $(EDK2_PATH)/UefiPayloadPkg/vbt.bin; \
+	fi; \
+
 checktools:
 	echo -n "EDK2: Checking uuid-dev:"
 	echo "#include <uuid/uuid.h>" > libtest.c
@@ -228,7 +239,7 @@ print:
 		-e 's/s /Build:          Silent/' \
 		-e 's/t /Toolchain:      /'
 
-prep: $(EDK2_PATH) $(EDK2_PLATFORMS_PATH) clean checktools logo
+prep: $(EDK2_PATH) $(EDK2_PLATFORMS_PATH) clean checktools logo gop_driver
 	cd $(WORKSPACE); \
 		source $(EDK2_PATH)/edksetup.sh; \
 		unset CC; $(MAKE) -C $(EDK2_PATH)/BaseTools 2>&1; \

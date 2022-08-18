@@ -28,7 +28,7 @@ static uint16_t ddr_speed_mhz_to_reported_mts(uint16_t ddr_type, uint16_t speed)
 	case MEMORY_TYPE_LPDDR4:
 		return lpddr4_speed_mhz_to_reported_mts(speed);
 	default:
-		printk(BIOS_ERR, "Unknown memory type %x", ddr_type);
+		printk(BIOS_ERR, "Unknown memory type %x\n", ddr_type);
 		return 0;
 	}
 }

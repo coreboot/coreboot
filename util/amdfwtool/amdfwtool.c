@@ -2159,6 +2159,7 @@ int main(int argc, char **argv)
 	psp_directory_table *pspdir = NULL;
 	psp_directory_table *pspdir2 = NULL;
 	psp_directory_table *pspdir2_b = NULL;
+	psp_combo_directory *psp_combo_dir = NULL;
 	int fuse_defined = 0;
 	int targetfd;
 	char *output = NULL, *config = NULL;
@@ -2587,6 +2588,10 @@ int main(int argc, char **argv)
 				signed_start_addr,
 				cb_config.soc_id);
 
+	if (cb_config.use_combo) {
+		psp_combo_dir = new_combo_dir(&ctx);
+	}
+
 	if (cb_config.multi_level) {
 		/* Do 2nd PSP directory followed by 1st */
 		pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
@@ -2619,15 +2624,14 @@ int main(int argc, char **argv)
 	fill_psp_directory_to_efs(amd_romsig, pspdir, &ctx, &cb_config);
 
 	if (cb_config.use_combo) {
-		psp_combo_directory *combo_dir = new_combo_dir(&ctx);
-		fill_psp_directory_to_efs(amd_romsig, combo_dir, &ctx, &cb_config);
+		fill_psp_directory_to_efs(amd_romsig, psp_combo_dir, &ctx, &cb_config);
 		/* 0 -Compare PSP ID, 1 -Compare chip family ID */
-		combo_dir->entries[0].id_sel = 0;
-		combo_dir->entries[0].id = get_psp_id(cb_config.soc_id);
-		combo_dir->entries[0].lvl2_addr =
+		psp_combo_dir->entries[0].id_sel = 0;
+		psp_combo_dir->entries[0].id = get_psp_id(cb_config.soc_id);
+		psp_combo_dir->entries[0].lvl2_addr =
 			BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
 
-		fill_dir_header(combo_dir, 1, PSP2_COOKIE, &ctx);
+		fill_dir_header(psp_combo_dir, 1, PSP2_COOKIE, &ctx);
 	}
 
 	if (have_bios_tables(amd_bios_table)) {

@@ -10,13 +10,13 @@ int pmif_ulposc_check(u32 current_clk, u32 target_clk)
 	if (current_clk < (target_clk * (1000 - CAL_TOL_RATE) / 1000) ||
 	    current_clk > (target_clk * (1000 + CAL_TOL_RATE) / 1000)) {
 		printk(BIOS_WARNING,
-		       "[%s] calibration fail: cur=%d, CAL_RATE=%d, target=%dM\n",
+		       "[%s] calibration fail: cur=%dM, CAL_RATE=%d, target=%dM\n",
 		       __func__, current_clk, CAL_TOL_RATE, target_clk);
 		return -1;
 	}
 
 	printk(BIOS_DEBUG,
-	       "[%s] calibration done: cur=%d, CAL_RATE=%d, target=%dM\n",
+	       "[%s] calibration done: cur=%dM, CAL_RATE=%d, target=%dM\n",
 	       __func__, current_clk, CAL_TOL_RATE, target_clk);
 
 	return 0;

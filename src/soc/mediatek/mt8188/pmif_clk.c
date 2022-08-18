@@ -123,8 +123,13 @@ int pmif_clk_init(void)
 {
 	u32 ulposc1;
 
-	ulposc1 = mt_fmeter_get_freq_khz(FMETER_ABIST, FREQ_METER_ABIST_AD_OSC_CK);
+	/* check hardware default value first */
+	ulposc1 = pmif_get_ulposc_freq_mhz(CALI_DEFAULT_CAP_VALUE);
 	if (pmif_ulposc_check(ulposc1, FREQ_260MHZ)) {
+		/*
+		 * If the hardware value is not what we want, we need to adjust
+		 * it by the software setting.
+		 */
 		pmif_clockmonitor_config(false);
 		if (pmif_init_ulposc())
 			return E_NODEV;

@@ -138,5 +138,6 @@ enum {
 };
 
 #define FREQ_METER_ABIST_AD_OSC_CK	42
+#define CALI_DEFAULT_CAP_VALUE		0x3d
 
 #endif /*__MT8188_SOC_PMIF_H__*/

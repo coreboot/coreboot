@@ -633,6 +633,7 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 
 	switch (cookie) {
 	case PSP2_COOKIE:
+	case BHD2_COOKIE:
 		cdir->header.cookie = cookie;
 		/* lookup mode is hardcoded for now. */
 		cdir->header.lookup = 1;
@@ -2159,7 +2160,7 @@ int main(int argc, char **argv)
 	psp_directory_table *pspdir = NULL;
 	psp_directory_table *pspdir2 = NULL;
 	psp_directory_table *pspdir2_b = NULL;
-	psp_combo_directory *psp_combo_dir = NULL;
+	psp_combo_directory *psp_combo_dir = NULL, *bhd_combo_dir = NULL;
 	int fuse_defined = 0;
 	int targetfd;
 	char *output = NULL, *config = NULL;
@@ -2590,6 +2591,10 @@ int main(int argc, char **argv)
 
 	if (cb_config.use_combo) {
 		psp_combo_dir = new_combo_dir(&ctx);
+
+		adjust_current_pointer(&ctx, 0, 0x1000U);
+
+		bhd_combo_dir = new_combo_dir(&ctx);
 	}
 
 	if (cb_config.multi_level) {
@@ -2667,7 +2672,17 @@ int main(int argc, char **argv)
 			integrate_bios_firmwares(&ctx, biosdir, NULL,
 						amd_bios_table, BHD_COOKIE, &cb_config);
 		}
-		fill_bios_directory_to_efs(amd_romsig, biosdir, &ctx, &cb_config);
+		if (!cb_config.use_combo) {
+			fill_bios_directory_to_efs(amd_romsig, biosdir, &ctx, &cb_config);
+		} else {
+			fill_bios_directory_to_efs(amd_romsig, bhd_combo_dir, &ctx, &cb_config);
+			bhd_combo_dir->entries[0].id_sel = 0;
+			bhd_combo_dir->entries[0].id = get_psp_id(cb_config.soc_id);
+			bhd_combo_dir->entries[0].lvl2_addr =
+				BUFF_TO_RUN_MODE(ctx, biosdir, AMD_ADDR_REL_BIOS);
+
+			fill_dir_header(bhd_combo_dir, 1, BHD2_COOKIE, &ctx);
+		}
 	}
 
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);

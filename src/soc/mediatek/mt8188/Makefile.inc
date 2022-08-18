@@ -29,6 +29,7 @@ romstage-y += ../common/pmif_spmi.c pmif_spmi.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-y += ../common/auxadc.c
+ramstage-y += ../common/devapc.c devapc.c
 ramstage-y += ../common/dfd.c
 ramstage-y += ../common/dpm.c
 ramstage-$(CONFIG_DPM_FOUR_CHANNEL) += ../common/dpm_4ch.c

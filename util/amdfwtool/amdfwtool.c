@@ -632,8 +632,9 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 
 	switch (cookie) {
 	case PSP2_COOKIE:
-		/* caller is responsible for lookup mode */
 		cdir->header.cookie = cookie;
+		/* lookup mode is hardcoded for now. */
+		cdir->header.lookup = 1;
 		cdir->header.num_entries = count;
 		cdir->header.reserved[0] = 0;
 		cdir->header.reserved[1] = 0;
@@ -2604,7 +2605,6 @@ int main(int argc, char **argv)
 		combo_dir->entries[0].lvl2_addr =
 			BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
 
-		combo_dir->header.lookup = 1;
 		fill_dir_header(combo_dir, 1, PSP2_COOKIE, &ctx);
 	}
 

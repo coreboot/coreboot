@@ -230,5 +230,10 @@ Scope (\_SB.PCI0.SPI0)
 				ResourceConsumer,    // ResourceUsage
 			)
 		})
+
+		Method (_STA)
+		{
+			Return (0xB)	//hidden from Windows
+		}
 	}
 }

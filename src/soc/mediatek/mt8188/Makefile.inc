@@ -48,6 +48,8 @@ CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 MT8188_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8188
 
 mcu-firmware-files := \
+	$(CONFIG_DPM_DM_FIRMWARE) \
+	$(CONFIG_DPM_PM_FIRMWARE) \
 	$(CONFIG_MCUPM_FIRMWARE) \
 	$(CONFIG_SSPM_FIRMWARE)
 

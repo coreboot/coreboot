@@ -20,6 +20,18 @@ config VBOOT
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_RETURN_FROM_VERSTAGE
 
+config DPM_DM_FIRMWARE
+	string
+	default "dpm.dm"
+	help
+	  The file name of the MediaTek DPM DM firmware.
+
+config DPM_PM_FIRMWARE
+	string
+	default "dpm.pm"
+	help
+	  The file name of the MediaTek DPM PM firmware.
+
 config MCUPM_FIRMWARE
 	string
 	default "mcupm.bin"

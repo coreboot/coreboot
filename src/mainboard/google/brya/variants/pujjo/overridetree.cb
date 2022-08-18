@@ -24,6 +24,10 @@ fw_config
 	field AUDIO 12 14
 		option ALC1019_ALC5682IVS	0
 	end
+	field EXT_VR 15
+		option EXT_VR_PRESENT		0
+		option EXT_VR_ABSENT		1
+	end
 
 end
 
@@ -55,19 +59,10 @@ chip soc/intel/alderlake
 
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 port for WWAN
 
-	# Configure external V1P05/Vnn/VnnSx Rails
+	# FIVR configurations for Pujjoteen are disabled since the board doesn't have V1p05 and Vnn
+	# bypass rails implemented.
 	register "ext_fivr_settings" = "{
 		.configure_ext_fivr = 1,
-		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX,
-		.vnn_enable_bitmap = FIVR_ENABLE_ALL_SX,
-		.vnn_sx_enable_bitmap = FIVR_ENABLE_ALL_SX,
-		.v1p05_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL,
-		.vnn_supported_voltage_bitmap = FIVR_VOLTAGE_MIN_ACTIVE,
-		.v1p05_voltage_mv = 1050,
-		.vnn_voltage_mv = 780,
-		.vnn_sx_voltage_mv = 1050,
-		.v1p05_icc_max_ma = 500,
-		.vnn_icc_max_ma = 500,
 	}"
 
 	# Intel Common SoC Config

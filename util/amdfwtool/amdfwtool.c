@@ -2621,9 +2621,9 @@ int main(int argc, char **argv)
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 	}
 
-	fill_psp_directory_to_efs(amd_romsig, pspdir, &ctx, &cb_config);
-
-	if (cb_config.use_combo) {
+	if (!cb_config.use_combo) {
+		fill_psp_directory_to_efs(amd_romsig, pspdir, &ctx, &cb_config);
+	} else {
 		fill_psp_directory_to_efs(amd_romsig, psp_combo_dir, &ctx, &cb_config);
 		/* 0 -Compare PSP ID, 1 -Compare chip family ID */
 		psp_combo_dir->entries[0].id_sel = 0;

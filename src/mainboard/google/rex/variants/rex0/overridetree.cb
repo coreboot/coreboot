@@ -198,7 +198,20 @@ chip soc/intel/meteorlake
 				device generic 0 on end
 			end
 		end
-		device ref i2c0 on end
+		device ref i2c0 on
+			chip drivers/i2c/generic
+				register "hid" = ""RTL5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_B06)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on end
+			end
+		end
 		device ref i2c1 on end
 		device ref i2c2 on end
 		device ref i2c3 on
@@ -260,6 +273,14 @@ chip soc/intel/meteorlake
 				end
 			end
 		end
-		device ref hda on end
+		device ref hda on
+			chip drivers/generic/max98357a
+				register "hid" = ""MX98357A""
+				register "sdmode_gpio" =
+						"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D04)"
+				register "sdmode_delay" = "5"
+				device generic 0 on end
+			end
+		end
 	end
 end

@@ -54,7 +54,7 @@ vb2_error_t vb2ex_read_resource(struct vb2_context *ctx,
 	return VB2_SUCCESS;
 }
 
-static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
+static vb2_error_t handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 {
 	int is_resume;
 
@@ -63,14 +63,14 @@ static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 	 * vboot_retrieve_hash(), if Chrome EC is not enabled then return.
 	 */
 	if (!CONFIG(EC_GOOGLE_CHROMEEC))
-		return 0;
+		return VB2_SUCCESS;
 
 	/*
 	 * Nothing to do since resuming on the platform doesn't require
 	 * vboot verification again.
 	 */
 	if (!CONFIG(RESUME_PATH_SAME_AS_BOOT))
-		return 0;
+		return VB2_SUCCESS;
 
 	/*
 	 * Assume that if vboot doesn't start in bootblock verified
@@ -78,7 +78,7 @@ static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 	 * lives in RO CBFS.
 	 */
 	if (!CONFIG(VBOOT_STARTS_IN_BOOTBLOCK))
-		return 0;
+		return VB2_SUCCESS;
 
 	is_resume = platform_is_resuming();
 
@@ -92,12 +92,12 @@ static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 
 		if (vboot_retrieve_hash(saved_hash, saved_hash_sz)) {
 			printk(BIOS_ERR, "Couldn't retrieve saved hash.\n");
-			return -1;
+			return VB2_ERROR_UNKNOWN;
 		}
 
 		if (memcmp(saved_hash, slot_hash, slot_hash_sz)) {
 			printk(BIOS_ERR, "Hash mismatch on resume.\n");
-			return -1;
+			return VB2_ERROR_UNKNOWN;
 		}
 	} else if (is_resume < 0)
 		printk(BIOS_ERR, "Unable to determine if platform resuming.\n");
@@ -111,10 +111,10 @@ static int handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 		 * lead to a reboot loop. The consequence of this is that
 		 * we will most likely fail resuming because of EC issues or
 		 * the hash digest not matching. */
-		return 0;
+		return VB2_SUCCESS;
 	}
 
-	return 0;
+	return VB2_SUCCESS;
 }
 
 static vb2_error_t hash_body(struct vb2_context *ctx,
@@ -179,10 +179,7 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 
 	timestamp_add_now(TS_HASH_BODY_END);
 
-	if (handle_digest_result(hash_digest, hash_digest_sz))
-		return VB2_ERROR_UNKNOWN;
-
-	return VB2_SUCCESS;
+	return handle_digest_result(hash_digest, hash_digest_sz);
 }
 
 static uint32_t extend_pcrs(struct vb2_context *ctx)
@@ -236,16 +233,10 @@ static void check_boot_mode(struct vb2_context *ctx)
 		ctx->flags |= VB2_CONTEXT_EC_TRUSTED;
 }
 
-/**
- * Verify and select the firmware in the RW image
- *
- * TODO: Avoid loading a stage twice (once in hash_body & again in load_stage).
- * when per-stage verification is ready.
- */
+/* Verify and select the firmware in the RW image */
 void verstage_main(void)
 {
 	struct vb2_context *ctx;
-	struct region_device fw_body;
 	vb2_error_t rv;
 
 	timestamp_add_now(TS_VBOOT_START);
@@ -326,7 +317,6 @@ void verstage_main(void)
 			extend_pcrs(ctx); /* ignore failures */
 			goto verstage_main_exit;
 		}
-
 		vboot_save_and_reboot(ctx, rv);
 	}
 
@@ -345,12 +335,22 @@ void verstage_main(void)
 		vboot_save_and_reboot(ctx, rv);
 
 	printk(BIOS_INFO, "Phase 4\n");
-	rv = vboot_locate_firmware(ctx, &fw_body);
-	if (rv)
-		die_with_post_code(POST_INVALID_ROM,
-			"Failed to read FMAP to locate firmware");
+	if (CONFIG(VBOOT_CBFS_INTEGRATION)) {
+		struct vb2_hash *metadata_hash;
+		rv = vb2api_get_metadata_hash(ctx, &metadata_hash);
+		if (rv == VB2_SUCCESS)
+			rv = handle_digest_result(metadata_hash->raw,
+						  vb2_digest_size(metadata_hash->algo));
+	} else {
+		struct region_device fw_body;
+		rv = vboot_locate_firmware(ctx, &fw_body);
+		if (rv)
+			die_with_post_code(POST_INVALID_ROM,
+					   "Failed to read FMAP to locate firmware");
 
-	rv = hash_body(ctx, &fw_body);
+		rv = hash_body(ctx, &fw_body);
+	}
+
 	if (rv)
 		vboot_save_and_reboot(ctx, rv);
 	vboot_save_data(ctx);

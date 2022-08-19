@@ -28,15 +28,32 @@ int vboot_executed;
 
 static void after_verstage(void)
 {
+	struct vb2_hash *metadata_hash = NULL;
+	struct vb2_context *ctx = NULL;
+
+	if (CONFIG(VBOOT_CBFS_INTEGRATION)) {
+		ctx = vboot_get_context();
+		vb2_error_t rv = vb2api_get_metadata_hash(ctx, &metadata_hash);
+		if (rv)
+			vboot_fail_and_reboot(ctx, VB2_RECOVERY_FW_PREAMBLE, rv);
+	}
+
 	vboot_executed = 1;	/* Mark verstage execution complete. */
 
 	const struct cbfs_boot_device *cbd = vboot_get_cbfs_boot_device();
 	if (!cbd)	/* Can't initialize RW CBFS in recovery mode. */
 		return;
 
-	enum cb_err err = cbfs_init_boot_device(cbd, NULL); /* TODO: RW hash */
-	if (err && err != CB_CBFS_CACHE_FULL)	/* TODO: -> recovery? */
-		die("RW CBFS initialization failure: %d", err);
+	enum cb_err err = cbfs_init_boot_device(cbd, metadata_hash);
+	if (err && err != CB_CBFS_CACHE_FULL) {
+		if (CONFIG(VBOOT_CBFS_INTEGRATION)) {
+			printk(BIOS_ERR, "RW CBFS initialization failed: %d\n", err);
+			/* CBFS error code does not fit in subcode. Use only lowest byte. */
+			vboot_fail_and_reboot(ctx, VB2_RECOVERY_FW_BODY, err & 0xFF);
+		} else {
+			die("RW CBFS initialization failure: %d", err);
+		}
+	}
 }
 
 void vboot_run_logic(void)

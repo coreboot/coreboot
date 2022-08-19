@@ -13,11 +13,17 @@
  * safety, we only need to verify the metadata hash in the initial stage and can assume it stays
  * valid in later stages. If TOCTOU safety is required, we may need them in every stage to
  * reverify metadata that had to be reloaded from flash (e.g. because it didn't fit the mcache).
+ * Moreover, if VBOOT_CBFS_INTEGRATION and verification are both enabled, then hashing functions
+ * are required during verification stage.
  * Note that this only concerns metadata hashing -- file access functions may still link hashing
  * routines independently for file data hashing.
  */
 #define CBFS_ENABLE_HASHING (CONFIG(CBFS_VERIFICATION) && \
-			     (CONFIG(TOCTOU_SAFETY) || ENV_INITIAL_STAGE))
+			     (CONFIG(TOCTOU_SAFETY) || ENV_INITIAL_STAGE || \
+			      (CONFIG(VBOOT_CBFS_INTEGRATION) && \
+				(verification_should_run() || \
+				 (verstage_should_load() && \
+				  CONFIG(VBOOT_RETURN_FROM_VERSTAGE))))))
 #define CBFS_HASH_HWCRYPTO vboot_hwcrypto_allowed()
 
 #define ERROR(...) printk(BIOS_ERR, "CBFS ERROR: " __VA_ARGS__)

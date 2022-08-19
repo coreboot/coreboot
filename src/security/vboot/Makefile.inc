@@ -61,6 +61,7 @@ bootblock-y += vbnv.c
 verstage-y += vbnv.c
 romstage-y += vbnv.c
 ramstage-y += vbnv.c
+postcar-y += vbnv.c
 
 romstage-$(CONFIG_VBOOT_EARLY_EC_SYNC) += ec_sync.c
 
@@ -68,16 +69,19 @@ bootblock-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
 verstage-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
 romstage-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
 ramstage-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
+postcar-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
 
 bootblock-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
 verstage-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
 romstage-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
 ramstage-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
+postcar-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
 
 bootblock-$(CONFIG_VBOOT_VBNV_FLASH) += vbnv_flash.c
 verstage-$(CONFIG_VBOOT_VBNV_FLASH) += vbnv_flash.c
 romstage-$(CONFIG_VBOOT_VBNV_FLASH) += vbnv_flash.c
 ramstage-$(CONFIG_VBOOT_VBNV_FLASH) += vbnv_flash.c
+postcar-$(CONFIG_VBOOT_VBNV_FLASH) += vbnv_flash.c
 
 bootblock-y += vboot_loader.c
 romstage-y += vboot_loader.c

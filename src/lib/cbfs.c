@@ -12,6 +12,7 @@
 #include <list.h>
 #include <metadata_hash.h>
 #include <security/tpm/tspi/crtm.h>
+#include <security/vboot/vboot_common.h>
 #include <security/vboot/misc.h>
 #include <stdlib.h>
 #include <string.h>
@@ -57,7 +58,10 @@ enum cb_err _cbfs_boot_lookup(const char *name, bool force_ro,
 			   RO CBFS would have been caught when building the mcache in cbfs_get
 			   boot_device(). (Note that TOCTOU_SAFETY implies !NO_CBFS_MCACHE.) */
 			assert(cbd == vboot_get_cbfs_boot_device());
-			die("TODO: set metadata_hash to RW metadata hash here.\n");
+			if (!CONFIG(VBOOT)
+			    || vb2api_get_metadata_hash(vboot_get_context(), &metadata_hash)
+				       != VB2_SUCCESS)
+				die("Failed to get RW metadata hash");
 		}
 		err = cbfs_lookup(&cbd->rdev, name, mdata, &data_offset, metadata_hash);
 	}
@@ -160,8 +164,14 @@ static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
 			ERROR("'%s' does not have a file hash!\n", mdata->h.filename);
 			return true;
 		}
-		if (vb2_hash_verify(vboot_hwcrypto_allowed(), buffer, size, hash)) {
+
+		vb2_error_t rv = vb2_hash_verify(vboot_hwcrypto_allowed(), buffer, size, hash);
+		if (rv != VB2_SUCCESS) {
 			ERROR("'%s' file hash mismatch!\n", mdata->h.filename);
+			if (CONFIG(VBOOT_CBFS_INTEGRATION) && !vboot_recovery_mode_enabled()
+			    && vboot_logic_executed())
+				vboot_fail_and_reboot(vboot_get_context(), VB2_RECOVERY_FW_BODY,
+						      rv);
 			return true;
 		}
 	}

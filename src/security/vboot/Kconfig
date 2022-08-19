@@ -35,6 +35,20 @@ config VBOOT_SLOTS_RW_AB
 	help
 	  Have two update partitions beside the RO partition.
 
+config VBOOT_CBFS_INTEGRATION
+	bool "Enable vboot and CBFS integration"
+	default n
+	depends on VBOOT_SLOTS_RW_A
+	depends on CBFS_VERIFICATION
+	help
+	  Say yes here to enable cryptographic verification of RW slots CBFS
+	  metadata. This will replace body hash verification.
+
+	  This option enables integration of vboot and CBFS. Verification of RW
+	  slots is performed by calculation of their CBFS metadata hash.
+	  It also requires CBFS_VERIFICATION to be enabled, so that CBFS files
+	  contents are correctly verified.
+
 config VBOOT_VBNV_CMOS
 	bool
 	default n

@@ -63,8 +63,16 @@ int vboot_locate_firmware(struct vb2_context *ctx, struct region_device *fw)
 	if (ret)
 		return ret;
 
-	/* Truncate area to the size that was actually signed by vboot. */
-	return rdev_chain(fw, fw, 0, vb2api_get_firmware_size(ctx));
+	/*
+	 * Truncate area to the size that was actually signed by vboot.
+	 * It is only required for old verification mechanism calculating full body hash.
+	 * New verification mechanism uses signature with zero data size, so truncation
+	 * is not possible.
+	 */
+	if (!CONFIG(VBOOT_CBFS_INTEGRATION))
+		return rdev_chain(fw, fw, 0, vb2api_get_firmware_size(ctx));
+
+	return 0;
 }
 
 static void vboot_setup_cbmem(int unused)

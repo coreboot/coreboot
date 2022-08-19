@@ -11,6 +11,11 @@
 
 void vboot_save_data(struct vb2_context *ctx)
 {
+	if (!verification_should_run() && !(ENV_ROMSTAGE && CONFIG(VBOOT_EARLY_EC_SYNC))
+	    && (ctx->flags
+		& (VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED | VB2_CONTEXT_SECDATA_KERNEL_CHANGED)))
+		die("TPM writeback in " ENV_STRING "?");
+
 	if (ctx->flags & VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED &&
 			(CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
 		printk(BIOS_INFO, "Saving secdata firmware\n");

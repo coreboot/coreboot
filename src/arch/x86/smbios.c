@@ -351,11 +351,10 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	rom_size = MIN(CONFIG_ROM_SIZE, 16 * MiB);
 	t->bios_rom_size = (rom_size / 65535) - 1;
 
-	if (CONFIG_ROM_SIZE >= 1 * GiB) {
+	if (CONFIG_ROM_SIZE >= 1 * GiB)
 		t->extended_bios_rom_size = DIV_ROUND_UP(CONFIG_ROM_SIZE, GiB) | (1 << 14);
-	} else {
+	else
 		t->extended_bios_rom_size = DIV_ROUND_UP(CONFIG_ROM_SIZE, MiB);
-	}
 
 	t->system_bios_major_release = coreboot_major_revision;
 	t->system_bios_minor_release = coreboot_minor_revision;
@@ -558,9 +557,9 @@ static int smbios_write_type4(unsigned long *current, int handle)
 		res = cpuid_ext(0xb, 0);
 		leaf_b_threads = res.ebx;
 		/* if hyperthreading is not available, pretend this is 1 */
-		if (leaf_b_threads == 0) {
+		if (leaf_b_threads == 0)
 			leaf_b_threads = 1;
-		}
+
 		t->core_count2 = leaf_b_cores / leaf_b_threads;
 		t->core_count = t->core_count2 > 0xff ? 0xff : t->core_count2;
 		t->thread_count2 = leaf_b_cores;

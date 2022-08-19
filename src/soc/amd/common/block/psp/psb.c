@@ -3,6 +3,7 @@
 #include <arch/mmio.h>
 #include <bootstate.h>
 #include <amdblocks/reset.h>
+#include <amdblocks/smn.h>
 #include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <types.h>

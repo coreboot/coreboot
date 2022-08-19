@@ -88,6 +88,10 @@ chip soc/intel/alderlake
 						}
 				}"
 
+				register "oem_data.oem_variables" = "{
+						[0] = 0x1
+				}"
+
 				## Fan Performance Control (Percent, Speed, Noise, Power)
 				register "controls.fan_perf" = "{
 					[0] = {  90, 6700, 220, 2200, },

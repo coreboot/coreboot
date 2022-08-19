@@ -34,11 +34,11 @@ config TI50_FIRMWARE_VERSION_NOT_SUPPORTED
 	bool
 	default n
 	help
-	  Ti50 FW versions below 0.15 don't support the firmware_version register,
+	  Ti50 FW versions below 0.22.4 don't support the firmware_version register,
 	  and trying to access it causes I2C errors. This config will skip accesses
 	  to the register, and should be selected for boards using Ti50 chips with
-	  FW < 0.0.15. The config will be removed once all Ti50 stocks are updated to
-	  0.0.15 or higher.
+	  FW < 0.22.4. The config will be removed once all Ti50 stocks are updated to
+	  0.22.4 or higher.
 
 config GOOGLE_TPM_IRQ_TIMEOUT_MS
 	int

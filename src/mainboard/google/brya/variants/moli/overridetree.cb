@@ -34,6 +34,12 @@ chip soc/intel/alderlake
 	}" # Type-A port A2
 	register "tcss_ports[3]" = "TCSS_PORT_EMPTY"		# Disable TCP3
 	register "tcc_offset" = "0"	# TCC of 100C
+	register "power_limits_config[ADL_P_142_242_282_15W_CORE]" = "{
+		.tdp_pl1_override = 55,
+	}"
+	register "power_limits_config[ADL_P_282_482_28W_CORE]" = "{
+		.tdp_pl1_override = 64,
+	}"
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf

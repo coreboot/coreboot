@@ -68,7 +68,10 @@ RUN \
 		pkg-config \
 		python2 \
 		python3 \
-		qemu \
+		qemu-system-arm \
+		qemu-system-misc \
+		qemu-system-ppc \
+		qemu-system-x86 \
 		rsync \
 		shellcheck \
 		subversion \

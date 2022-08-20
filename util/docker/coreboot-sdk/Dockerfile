@@ -35,7 +35,7 @@ RUN \
 		gawk \
 		gcc \
 		git \
-		gnat \
+		gnat-12 \
 		golang \
 		graphviz \
 		lcov \

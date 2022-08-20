@@ -6,7 +6,6 @@ menu "CBFS verification"
 
 config CBFS_VERIFICATION
 	bool "Enable CBFS verification"
-	depends on !VBOOT_STARTS_BEFORE_BOOTBLOCK # this is gonna get tricky...
 	select VBOOT_LIB
 	help
 	  Say yes here to enable code that cryptographically verifies each CBFS

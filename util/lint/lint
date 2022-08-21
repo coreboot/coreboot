@@ -8,7 +8,16 @@
 JUNIT=0
 
 usage () {
-	printf "Usage: %s <lint|lint-stable|lint-extended> [--junit]\n" "$0"
+	printf "Usage: %s <sub-command> [Options]\n" "$0"
+	printf " Sub-commands:\n"
+	printf "    lint-stable        : Run standard lint tests - should pass\n"
+	printf "    lint-extended      : Run extended lint tests - should pass\n"
+	printf "    lint               : Run full lint tests - Not expected to pass\n\n"
+
+	printf "  Options:\n"
+	printf "    -h | --help       : Show this help message\n"
+	printf "    -J | --junit      : Send test output to a JUnit file\n"
+	printf "\n"
 }
 
 #write to the junit xml file if --junit was specified

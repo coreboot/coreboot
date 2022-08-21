@@ -5,6 +5,8 @@
 
 #set -x # uncomment for debug
 
+JUNIT=0
+
 usage () {
 	printf "Usage: %s <lint|lint-stable|lint-extended> [--junit]\n" "$0"
 }
@@ -16,9 +18,36 @@ junit_write () {
 	fi
 }
 
+if ! cmd_args="$(getopt -l help,junit -o hJ -- "$@")"; then
+	usage
+	exit 0
+fi
+eval set -- "${cmd_args}"
+
+while true; do
+	case "$1" in
+	-h | --help)
+		usage
+		exit 0
+		;;
+	-J | --junit)
+		echo "selected junit"
+		JUNIT=1
+		;;
+	--) shift; break ;;
+	*) break ;;
+	esac
+	shift
+done
+
 #verify the first command line parameter
-if [ -z "$1" ] || [ "$1" != "lint" ] && [ "$1" != "lint-stable" ]  && \
+if [ -z "$1" ]; then
+	echo "Error: A sub-command is needed."
+	usage
+	exit 1
+elif [ "$1" != "lint" ] && [ "$1" != "lint-stable" ] &&
 		[ "$1" != "lint-extended" ]; then
+	echo "Error: $1 is not a valid sub-command."
 	usage
 	exit 1
 fi
@@ -30,13 +59,9 @@ if [ "$1" = "lint-extended" ]; then
 fi
 FAILED=0;
 
-#check optional second command line parameter.
-if [ "$2" = "--junit" ]; then
-	JUNIT=1
+if [ "${JUNIT}" -eq 1 ]; then
 	echo '<?xml version="1.0" encoding="utf-8"?>' > "$XMLFILE"
 	junit_write '<testsuite>'
-else
-	JUNIT=0
 fi
 
 #run all scripts of the requested type

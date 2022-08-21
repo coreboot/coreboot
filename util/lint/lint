@@ -6,6 +6,7 @@
 #set -x # uncomment for debug
 
 JUNIT=0
+INVERT=0
 
 usage () {
 	printf "Usage: %s <sub-command> [Options]\n" "$0"
@@ -16,6 +17,7 @@ usage () {
 
 	printf "  Options:\n"
 	printf "    -h | --help       : Show this help message\n"
+	printf "    -I | --invert     : Invert results - used for testing linters\n"
 	printf "    -J | --junit      : Send test output to a JUnit file\n"
 	printf "\n"
 }
@@ -27,7 +29,7 @@ junit_write () {
 	fi
 }
 
-if ! cmd_args="$(getopt -l help,junit -o hJ -- "$@")"; then
+if ! cmd_args="$(getopt -l help,junit,invert -o hIJ -- "$@")"; then
 	usage
 	exit 0
 fi
@@ -38,6 +40,9 @@ while true; do
 	-h | --help)
 		usage
 		exit 0
+		;;
+	-I | --invert)
+		INVERT=1
 		;;
 	-J | --junit)
 		echo "selected junit"
@@ -81,7 +86,10 @@ for script in "$(dirname "$0")/${1}-"*; do
 	$script | tee "$LINTLOG"
 
 	#if the lint script gives any output, that's a failure
-	if [ "$(wc -l < "$LINTLOG")" -eq 0 ]; then
+	if [ "${INVERT}" -eq 1 ] && [ "$(wc -l < "$LINTLOG")" -ne 0 ]; then
+		echo "success"
+		junit_write "		<system-out><![CDATA[success]]></system-out>"
+	elif [ "${INVERT}" -eq 0 ] && [ "$(wc -l < "$LINTLOG")" -eq 0 ]; then
 		echo "success"
 		junit_write "		<system-out><![CDATA[success]]></system-out>"
 	else

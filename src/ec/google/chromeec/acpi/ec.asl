@@ -166,8 +166,10 @@ Device (EC0)
 		// Initialize AC power state
 		Store (ACEX, \PWRS)
 		/*
-		 * Inform platform code about the current AC power state.
-		 * This allows the platform to take any action based on the initialized state.
+		 * Call PNOT (Platform Notify) to inform platform code
+		 * about the current AC/battery state. This handles all cases,
+		 * the battery transitioning into and out of having critically
+		 * low charge.
 		 * PWRS isn't valid before this point.
 		 */
 		\PNOT ()
@@ -258,6 +260,12 @@ Device (EC0)
 			Notify (\_SB.DPTF.TCHG, 0x80)
 		}
 #endif
+		/*
+		 * Call PNOT (Platform Notify) to inform platform code
+		 * about the current battery state. This handles all cases,
+		 * the battery transitioning into and out of having critically
+		 * low charge.
+		 */
 		\PNOT ()
 	}
 
@@ -272,6 +280,12 @@ Device (EC0)
 			Notify (\_SB.DPTF.TCHG, 0x80)
 		}
 #endif
+		/*
+		 * Call PNOT (Platform Notify) to inform platform code
+		 * about the current battery state. This handles all cases,
+		 * the battery transitioning into and out of having critically
+		 * low charge.
+		 */
 		\PNOT ()
 	}
 
@@ -384,6 +398,14 @@ Device (EC0)
 			Notify (BAT1, 0x80)
 		}
 #endif
+
+		/*
+		 * Call PNOT (Platform Notify) to inform platform code
+		 * about the current battery state. This handles all cases,
+		 * the battery transitioning into and out of having critically
+		 * low charge.
+		 */
+		\PNOT ()
 	}
 
 	// MKBP interrupt.

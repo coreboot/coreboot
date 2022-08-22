@@ -63,7 +63,7 @@ void p2sb_dev_hide(pci_devfn_t dev)
 				"Unable to hide the P2SB device!\n");
 }
 
-static void p2sb_execute_sideband_access(pci_devfn_t dev, uint8_t cmd, uint8_t pid,
+static void p2sb_send_sideband_msg(pci_devfn_t dev, uint8_t cmd, uint8_t pid,
 						uint16_t reg, uint32_t *data)
 {
 	struct pcr_sbi_msg msg = {
@@ -78,15 +78,38 @@ static void p2sb_execute_sideband_access(pci_devfn_t dev, uint8_t cmd, uint8_t p
 	uint8_t response;
 	int status;
 
-	/* Unhide the P2SB device */
-	p2sb_dev_unhide(dev);
-
 	status = pcr_execute_sideband_msg(dev, &msg, data, &response);
 	if (status || response)
 		printk(BIOS_ERR, "Fail to execute p2sb sideband access\n");
+}
+
+static void p2sb_execute_sbi_in_smm(pci_devfn_t dev, uint8_t cmd, uint8_t pid,
+						uint16_t reg, uint32_t *data)
+{
+	/* Unhide the P2SB device */
+	p2sb_dev_unhide(dev);
+
+	p2sb_send_sideband_msg(dev, cmd, pid, reg, data);
 
 	/* Hide the P2SB device */
 	p2sb_dev_hide(dev);
+}
+
+static void p2sb_execute_sideband_access(pci_devfn_t dev, uint8_t cmd, uint8_t pid,
+						uint16_t reg, uint32_t *data)
+{
+	if (ENV_SMM)
+		/*
+		 * FSP-S will hide the P2SB device. With the device hidden, we will not be
+		 * able to send the sideband interface message. Therefore, we need to unhide
+		 * the P2SB device which can only be done in SMM requiring that this
+		 * function is called from SMM.
+		 */
+		p2sb_execute_sbi_in_smm(dev, cmd, pid, reg, data);
+	else if (!p2sb_dev_is_hidden(dev))
+		p2sb_send_sideband_msg(dev, cmd, pid, reg, data);
+	else
+		printk(BIOS_WARNING, "Error: P2SB must be hidden, try calling from SMM!\n");
 }
 
 uint32_t p2sb_dev_sbi_read(pci_devfn_t dev, uint8_t pid, uint16_t reg)

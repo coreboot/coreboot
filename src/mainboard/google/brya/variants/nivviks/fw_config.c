@@ -94,6 +94,13 @@ static const struct pad_config nvme_disable_pads[] = {
 	PAD_NC_LOCK(GPP_E17, NONE, LOCK_CONFIG),
 };
 
+static const struct pad_config stylus_disable_pads[] = {
+	/* F13 : SOC_PEN_DETECT_R_ODL */
+	PAD_NC_LOCK(GPP_F13, NONE, LOCK_CONFIG),
+	/* F15 : SOC_PEN_DETECT_ODL */
+	PAD_NC_LOCK(GPP_F15, NONE, LOCK_CONFIG),
+};
+
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_1C_LTE))) {
@@ -132,5 +139,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		printk(BIOS_INFO, "Disable NVMe SSD GPIO pins.\n");
 		gpio_padbased_override(padbased_table, nvme_disable_pads,
 						ARRAY_SIZE(nvme_disable_pads));
+	}
+
+	if (fw_config_probe(FW_CONFIG(STYLUS, STYLUS_ABSENT))) {
+		printk(BIOS_INFO, "Disable Stylus GPIO pins.\n");
+		gpio_padbased_override(padbased_table, stylus_disable_pads,
+						ARRAY_SIZE(stylus_disable_pads));
 	}
 }

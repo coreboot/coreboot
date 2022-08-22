@@ -141,7 +141,9 @@ typedef enum {
   LpDdr2MemType,                                        ///< Assign 28 to LPDDR2
   LpDdr3MemType,                                        ///< Assign 29 to LPDDR3
   LpDdr4MemType,                                        ///< Assign 30 to LPDDR4
-  LpDdr5MemType,                                        ///< Assign 31 to LPDDR5
+  Ddr5MemType = 0x22,                                   ///< Assign 34 to DDR5
+  LpDdr5MemType,                                        ///< Assign 35 to LPDDR5
+  LpDdr5xMemType,                                       ///< Assign 36 to LPDDR5X
 } DMI_T17_MEMORY_TYPE;
 
 /// DMI Type 17 offset 13h - Type Detail

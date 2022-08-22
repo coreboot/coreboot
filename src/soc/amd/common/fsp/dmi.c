@@ -16,6 +16,7 @@
 #include <dmi_info.h>
 #include <device/dram/ddr4.h>
 #include <device/dram/lpddr4.h>
+#include <device/dram/ddr5.h>
 
 /**
  * Convert DDR clock speed (based on memory type) in MHz to the standard reported speed in MT/s
@@ -27,6 +28,9 @@ static uint16_t ddr_speed_mhz_to_reported_mts(uint16_t ddr_type, uint16_t speed)
 		return ddr4_speed_mhz_to_reported_mts(speed);
 	case MEMORY_TYPE_LPDDR4:
 		return lpddr4_speed_mhz_to_reported_mts(speed);
+	case MEMORY_TYPE_DDR5:
+	case MEMORY_TYPE_LPDDR5:
+		return ddr5_speed_mhz_to_reported_mts(speed);
 	default:
 		printk(BIOS_ERR, "Unknown memory type %x\n", ddr_type);
 		return 0;

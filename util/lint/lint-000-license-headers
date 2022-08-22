@@ -18,6 +18,7 @@ HEADER_EXCLUDED="\
 ^src/lib/gnat/|\
 ^src/lib/lzmadecode.[ch]\$|\
 ^src/lib/stack.c\$|\
+^src/sbom/TAGS|\
 ^src/vendorcode/|\
 ^util/amdtools/example_input/|\
 ^util/cbfstool/lzma/|\

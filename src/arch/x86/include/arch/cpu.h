@@ -48,6 +48,8 @@ static inline unsigned int cpuid_get_max_func(void)
 #define X86_VENDOR_UNKNOWN 0xff
 
 #define CPUID_FEATURE_PAE (1 << 6)
+#define CPUID_FEATURE_MCE (1 << 7)
+#define CPUID_FEATURE_MCA (1 << 14)
 #define CPUID_FEATURE_PSE36 (1 << 17)
 #define CPUID_FEATURE_HTT (1 << 28)
 

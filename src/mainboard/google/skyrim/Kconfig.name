@@ -7,3 +7,7 @@ config BOARD_GOOGLE_SKYRIM
 config BOARD_GOOGLE_WINTERHOLD
 	bool "->  Winterhold"
 	select BOARD_GOOGLE_BASEBOARD_SKYRIM
+
+config BOARD_GOOGLE_MORTHAL
+	bool "->  Morthal"
+	select BOARD_GOOGLE_BASEBOARD_SKYRIM

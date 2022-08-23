@@ -198,6 +198,22 @@ chip soc/intel/meteorlake
 				device generic 0 on end
 			end
 		end
+		device ref ipu on
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "0x50000"
+				register "acpi_name" = ""IPU0""
+				register "device_type" = "INTEL_ACPI_CAMERA_CIO2"
+
+				register "cio2_num_ports" = "2"
+				register "cio2_lanes_used" = "{2,2}" # 2 CSI Camera lanes are used
+				register "cio2_lane_endpoint[0]" = ""^I2C0.CAM0""
+				register "cio2_lane_endpoint[1]" = ""^I2C5.CAM1""
+				register "cio2_prt[0]" = "4"
+				register "cio2_prt[1]" = "0"
+
+				device generic 0 on end
+			end
+		end
 		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""RTL5682""
@@ -211,7 +227,76 @@ chip soc/intel/meteorlake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on end
 			end
-		end
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""OVTI8856""
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CAM0""
+				register "chip_name" = ""Ov 8856 Camera""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+
+				register "ssdb.lanes_used" = "2"
+				register "ssdb.link_used" = "0"
+				register "ssdb.vcm_type" = "0x0C"
+				register "vcm_name" = ""VCM0""
+				register "num_freq_entries" = "2"
+				register "link_freq[0]" = "720 * MHz" # 720 MHz
+				register "link_freq[1]" = "360 * MHz" # 360 MHz
+				register "remote_name" = ""IPU0""
+
+				register "has_power_resource" = "1"
+				#Controls
+				register "clk_panel.clks[0].clknum" = "1" # IMGCLKOUT_1
+				register "clk_panel.clks[0].freq" = "1" # FREQ_19_2_MHZ
+
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_C03" #EN_WCAM_SENR_PWR
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_C04" #EN_WCAM_PWR
+				register "gpio_panel.gpio[2].gpio_num" = "GPP_V22" #WCAM_RST_L
+
+				#_ON
+				register "on_seq.ops_cnt" = "5"
+				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(1, 0)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
+				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(2, 10)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "4"
+				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+
+				device i2c 10 on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "2"
+				register "acpi_name" = ""VCM0""
+				register "chip_name" = ""DW9714 VCM""
+				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
+
+				register "pr0" = ""\\_SB.PCI0.I2C0.CAM0.PRIC""
+				register "vcm_compat" = ""dongwoon,dw9714""
+
+				device i2c 0C on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "1"
+				register "acpi_name" = ""NVM0""
+				register "chip_name" = ""ST M24C64X""
+				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
+
+				register "pr0" = ""\\_SB.PCI0.I2C0.CAM0.PRIC""
+				register "nvm_compat" = ""atmel,24c64""
+
+				register "nvm_size" = "0x10000"
+				register "nvm_pagesize" = "0x01"
+				register "nvm_readonly" = "0x01"
+				register "nvm_width" = "0x0E"
+
+				device i2c 50 on end
+			end
+		end #I2C0
 		device ref i2c1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN6918""
@@ -249,7 +334,59 @@ chip soc/intel/meteorlake
 				device i2c 50 on end
 			end
 		end
-		device ref i2c5 on end
+		device ref i2c5 on
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""INT3474""
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CAM1""
+				register "chip_name" = ""Ov 2740 Camera""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+				register "has_power_resource" = "1"
+
+				register "ssdb.lanes_used" = "2"
+				register "ssdb.link_used" = "1"
+				register "num_freq_entries" = "1"
+				register "link_freq[0]" = "360 * MHz"
+				register "remote_name" = ""IPU0""
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
+
+				#Controls
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_A11" #EN_UCAM_SENR_PWR
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_B09" #EN_FCAM_PWR
+				register "gpio_panel.gpio[2].gpio_num" = "GPP_V23" #UCAM_RST_L
+
+				#_ON
+				register "on_seq.ops_cnt" = "4"
+				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(1, 0)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_ENABLE(2, 10)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "3"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+
+				device i2c 36 on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
+				register "acpi_uid" = "1"
+				register "acpi_name" = ""NVM1""
+				register "chip_name" = ""ST M24C64X""
+				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
+				register "pr0" = ""\\_SB.PCI0.I2C5.CAM1.PRIC""
+
+				register "nvm_size" = "0x10000"
+				register "nvm_pagesize" = "1"
+				register "nvm_readonly" = "1"
+				register "nvm_width" = "0x10"
+				register "nvm_compat" = ""atmel,24c64""
+
+				device i2c 50 on end
+			end
+		end #I2C5
 		device ref pcie_rp5 on
 			# Enable WLAN Card PCIE 5 using clk 5
 			register "pcie_rp[PCH_RP(5)]" = "{

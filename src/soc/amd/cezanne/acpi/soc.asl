@@ -27,10 +27,12 @@ Scope(\_SB) {
 
 #include <soc/amd/common/acpi/upep.asl>
 
+#include <soc/amd/common/acpi/dptc.asl>
+
 #include "rtc_workaround.asl"
 
 /*
- * Platform Wake Notify
+ * Platform Notify
  *
  * This is called by soc/amd/common/acpi/platform.asl.
  */

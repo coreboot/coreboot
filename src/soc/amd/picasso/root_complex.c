@@ -184,21 +184,24 @@ static void acipgen_dptci(void)
 {
 	const struct soc_amd_picasso_config *config = config_of_soc();
 
-	if (!config->dptc_enable)
+	if (!config->dptc_tablet_mode_enable)
 		return;
 
+	/* DPTC is enabled. Always fill out the default DPTC values. */
 	struct dptc_input default_input = DPTC_INPUTS(config->thermctl_limit_degreeC,
 							config->sustained_power_limit_mW,
 							config->fast_ppt_limit_mW,
 							config->slow_ppt_limit_mW);
+	acpigen_write_alib_dptc_default((uint8_t *)&default_input, sizeof(default_input));
+
+	/* Tablet Mode */
 	struct dptc_input tablet_mode_input = DPTC_INPUTS(
 					config->thermctl_limit_tablet_mode_degreeC,
 					config->sustained_power_limit_tablet_mode_mW,
 					config->fast_ppt_limit_tablet_mode_mW,
 					config->slow_ppt_limit_tablet_mode_mW);
-
-	acpigen_write_alib_dptc((uint8_t *)&default_input, sizeof(default_input),
-		(uint8_t *)&tablet_mode_input, sizeof(tablet_mode_input));
+	acpigen_write_alib_dptc_tablet((uint8_t *)&tablet_mode_input,
+		sizeof(tablet_mode_input));
 }
 
 static void root_complex_fill_ssdt(const struct device *device)

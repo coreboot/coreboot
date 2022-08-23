@@ -27,8 +27,8 @@ struct alib_dptc_param {
 	uint32_t value;
 } __packed;
 
-void acpigen_write_alib_dptc(uint8_t *default_param, size_t default_param_len,
-	uint8_t *tablet_param, size_t tablet_param_len);
+void acpigen_write_alib_dptc_default(uint8_t *default_param, size_t default_param_len);
+void acpigen_write_alib_dptc_tablet(uint8_t *tablet_param, size_t tablet_param_len);
 
 #endif /* !__ACPI__ */
 

@@ -16,3 +16,5 @@ Device(PCI0) {
 
 /* Add GPIO library */
 #include <soc/amd/common/acpi/gpio_bank_lib.asl>
+
+#include <soc/amd/common/acpi/dptc.asl>

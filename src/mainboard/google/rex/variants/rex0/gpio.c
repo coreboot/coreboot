@@ -432,8 +432,12 @@ static const struct pad_config default_early_gpio_table[] = {
 };
 
 static const struct pad_config romstage_gpio_table_id0[] = {
-	/* A20  : [] ==> SSD_PERST_L */
+	/* GPP_B11 : [] ==> EN_FP_PWR */
+	PAD_CFG_GPO(GPP_B11, 0, DEEP),
+	/* A20 : [] ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_A20, 0, DEEP),
+	/* GPP_C23 : [] ==> FP_RST_ODL */
+	PAD_CFG_GPO(GPP_C23, 0, DEEP),
 	/* GPP_E07 : [] ==> WWAN_FCPO_L */
 	PAD_CFG_GPO(GPP_E07, 1, DEEP),
 };

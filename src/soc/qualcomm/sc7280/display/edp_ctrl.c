@@ -739,7 +739,7 @@ static int edp_link_rate_down_shift(struct edp_ctrl *ctrl, uint8_t *dpcd)
 		ctrl->link_rate_khz = link_rate;
 		ctrl->link_rate = link_rate / 27000;
 		printk(BIOS_INFO, "new rate=0x%x\n", ctrl->link_rate_khz);
-}
+	}
 
 	return ret;
 }
@@ -916,7 +916,7 @@ static void edp_ctrl_config_misc(struct edp_ctrl *ctrl)
 	write32(&edp_lclk->misc1_misc0, misc_val);
 }
 
-static void edp_ctrl_pixel_clock_dividers(struct edp_ctrl *ctrl,
+static int edp_ctrl_pixel_clock_dividers(struct edp_ctrl *ctrl,
 					  uint32_t *pixel_m, uint32_t *pixel_n)
 {
 	uint32_t pixel_div = 0, dispcc_input_rate;
@@ -924,14 +924,16 @@ static void edp_ctrl_pixel_clock_dividers(struct edp_ctrl *ctrl,
 	uint8_t rate = ctrl->link_rate;
 	uint32_t stream_rate_khz = ctrl->pixel_rate;
 
-	if (rate == DP_LINK_BW_8_1)
+	if (rate == DP_LINK_BW_8_1) {
 		pixel_div = 6;
-	else if (rate == DP_LINK_BW_1_62 || rate == DP_LINK_BW_2_7)
+	} else if (rate == DP_LINK_BW_1_62 || rate == DP_LINK_BW_2_7) {
 		pixel_div = 2;
-	else if (rate == DP_LINK_BW_5_4)
+	} else if (rate == DP_LINK_BW_5_4) {
 		pixel_div = 4;
-	else
+	} else {
 		printk(BIOS_ERR, "Invalid pixel mux divider\n");
+		return -1;
+	}
 
 	dispcc_input_rate = (ctrl->link_rate_khz * 10) / pixel_div;
 
@@ -940,16 +942,20 @@ static void edp_ctrl_pixel_clock_dividers(struct edp_ctrl *ctrl,
 				    (unsigned long)(1 << 16) - 1, &den, &num);
 	*pixel_m = num;
 	*pixel_n = den;
+
+	return 0;
 }
 
-static void edp_ctrl_config_msa(struct edp_ctrl *ctrl)
+static int edp_ctrl_config_msa(struct edp_ctrl *ctrl)
 {
 	uint32_t pixel_m, pixel_n;
 	uint32_t mvid, nvid;
 	u32 const nvid_fixed = 0x8000;
 	uint8_t rate = ctrl->link_rate;
 
-	edp_ctrl_pixel_clock_dividers(ctrl, &pixel_m, &pixel_n);
+	if (edp_ctrl_pixel_clock_dividers(ctrl, &pixel_m, &pixel_n) < 0)
+		return -1;
+
 	pixel_n = ~(pixel_n - pixel_m);
 	pixel_n = pixel_n & 0xFFFF;
 	mvid = (pixel_m & 0xFFFF) * 5;
@@ -973,6 +979,8 @@ static void edp_ctrl_config_msa(struct edp_ctrl *ctrl)
 	write32(&edp_lclk->software_mvid, mvid);
 	write32(&edp_lclk->software_nvid, nvid);
 	write32(&edp_p0clk->dsc_dto, 0x0);
+
+	return 0;
 }
 
 static void tu_valid_boundary_calc(struct tu_algo_data *tu)
@@ -1070,7 +1078,7 @@ static void tu_valid_boundary_calc(struct tu_algo_data *tu)
 static void edp_ctrl_calc_tu(struct edp_ctrl *ctrl, struct edid *edid,
 			struct edp_ctrl_tu *tu_table)
 {
-	struct tu_algo_data *tu = NULL;
+	struct tu_algo_data tu;
 	int64_t f = 100000;
 	int64_t LCLK_FAST_SKEW_fp = (6 * f) / 1000; /* 0.0006 */
 	uint8_t DP_BRUTE_FORCE = 1;
@@ -1081,156 +1089,150 @@ static void edp_ctrl_calc_tu(struct edp_ctrl *ctrl, struct edid *edid,
 	int EXTRA_PIXCLK_CYCLE_DELAY = 4;
 	int64_t temp = 0;
 	int64_t temp_fp = 0;
-	uint32_t async_en = 0;
 
-	tu = malloc(sizeof(*tu));
-	memset(tu, 0, sizeof(*tu));
-
-	tu->lclk_fp = ctrl->link_rate_khz * f;
-	tu->lclk = ctrl->link_rate_khz;
-	tu->pclk = edid->mode.pixel_clock;
-	tu->pclk_fp = edid->mode.pixel_clock * f;
-	tu->nlanes = ctrl->lane_cnt;
-	tu->bpp = edid->panel_bits_per_pixel;
-	tu->lwidth = edid->mode.ha;
-	tu->lwidth_fp = tu->lwidth * f;
-	tu->hbp_relative_to_pclk = edid->mode.hbl;
-	tu->hbp_relative_to_pclk_fp = tu->hbp_relative_to_pclk * f;
-	tu->err_fp = 1000 * f;
-	tu->extra_buffer_margin = DIV_ROUND_UP(tu->lclk * 4, tu->pclk);
-	tu->ratio_fp =  ((int64_t)(tu->pclk_fp * tu->bpp) / 8) / (tu->nlanes * tu->lclk);
-	tu->original_ratio_fp = tu->ratio_fp;
-	tu->err_fp = 1000 * f;
-	if (((tu->lwidth % tu->nlanes) != 0) && (tu->ratio_fp < f)) {
-		tu->ratio_fp = (tu->ratio_fp * RATIO_SCALE_NUM) / RATIO_SCALE_DEN;
-		tu->ratio_fp = tu->ratio_fp < f ? tu->ratio_fp : f;
+	tu.lclk_fp = ctrl->link_rate_khz * f;
+	tu.lclk = ctrl->link_rate_khz;
+	tu.pclk = edid->mode.pixel_clock;
+	tu.pclk_fp = edid->mode.pixel_clock * f;
+	tu.nlanes = ctrl->lane_cnt;
+	tu.bpp = edid->panel_bits_per_pixel;
+	tu.lwidth = edid->mode.ha;
+	tu.lwidth_fp = tu.lwidth * f;
+	tu.hbp_relative_to_pclk = edid->mode.hbl;
+	tu.hbp_relative_to_pclk_fp = tu.hbp_relative_to_pclk * f;
+	tu.err_fp = 1000 * f;
+	tu.extra_buffer_margin = DIV_ROUND_UP(tu.lclk * 4, tu.pclk);
+	tu.ratio_fp =  ((int64_t)(tu.pclk_fp * tu.bpp) / 8) / (tu.nlanes * tu.lclk);
+	tu.original_ratio_fp = tu.ratio_fp;
+	tu.err_fp = 1000 * f;
+	if (((tu.lwidth % tu.nlanes) != 0) && (tu.ratio_fp < f)) {
+		tu.ratio_fp = (tu.ratio_fp * RATIO_SCALE_NUM) / RATIO_SCALE_DEN;
+		tu.ratio_fp = tu.ratio_fp < f ? tu.ratio_fp : f;
 	}
 
-	tu->err_fp = 1000 * f;
-	if (tu->ratio_fp > f)
-		tu->ratio_fp = f;
+	tu.err_fp = 1000 * f;
+	if (tu.ratio_fp > f)
+		tu.ratio_fp = f;
 
-	for (tu->tu_size = 32; tu->tu_size <= 64; tu->tu_size++) {
-		tu->new_err_fp = (tu->ratio_fp * tu->tu_size) -
-				 (((tu->ratio_fp * tu->tu_size) / f) * f);
-		if (tu->new_err_fp > 0)
-			tu->new_err_fp = f - tu->new_err_fp;
+	for (tu.tu_size = 32; tu.tu_size <= 64; tu.tu_size++) {
+		tu.new_err_fp = (tu.ratio_fp * tu.tu_size) -
+				 (((tu.ratio_fp * tu.tu_size) / f) * f);
+		if (tu.new_err_fp > 0)
+			tu.new_err_fp = f - tu.new_err_fp;
 
-		if (tu->new_err_fp < tu->err_fp) {
-			tu->err_fp = tu->new_err_fp;
-			tu->tu_size_desired = tu->tu_size;
+		if (tu.new_err_fp < tu.err_fp) {
+			tu.err_fp = tu.new_err_fp;
+			tu.tu_size_desired = tu.tu_size;
 		}
 	}
 
-	tu->tu_size_minus1 = tu->tu_size_desired - 1;
-	tu->valid_boundary_link = DIV_ROUND_UP(tu->tu_size_desired * tu->ratio_fp, f);
-	tu->num_tus = ((tu->bpp * tu->lwidth) / 8) / tu->valid_boundary_link;
-	tu->even_distribution_legacy = tu->num_tus % tu->nlanes == 0 ? 1 : 0;
-	tu->extra_bytes = DIV_ROUND_UP(((tu->num_tus + 1) * (tu->valid_boundary_link * f -
-					tu->original_ratio_fp *	tu->tu_size_desired)), f);
-	tu->extra_pclk_cycles = DIV_ROUND_UP(tu->extra_bytes * 8, tu->bpp);
-	tu->extra_pclk_cycles_in_link_clk = DIV_ROUND_UP(tu->extra_pclk_cycles * tu->lclk,
-							 tu->pclk);
-	tu->filler_size = tu->tu_size_desired - tu->valid_boundary_link;
-	tu->ratio_by_tu_fp = tu->ratio_fp * tu->tu_size_desired;
-	tu->delay_start_link = tu->extra_pclk_cycles_in_link_clk + tu->filler_size +
-			       tu->extra_buffer_margin;
-	tu->resulting_valid_fp = tu->valid_boundary_link * f;
-	tu->TU_ratio_err_fp = (tu->resulting_valid_fp / tu->tu_size_desired) -
-			       tu->original_ratio_fp;
-	tu->hbp_time_fp = (tu->hbp_relative_to_pclk_fp - HBLANK_MARGIN * f) / tu->pclk;
-	tu->delay_start_time_fp = (tu->delay_start_link * f) / tu->lclk;
-	if (tu->hbp_time_fp < tu->delay_start_time_fp)
-		tu->min_hblank_violated = 1;
+	tu.tu_size_minus1 = tu.tu_size_desired - 1;
+	tu.valid_boundary_link = DIV_ROUND_UP(tu.tu_size_desired * tu.ratio_fp, f);
+	tu.num_tus = ((tu.bpp * tu.lwidth) / 8) / tu.valid_boundary_link;
+	tu.even_distribution_legacy = tu.num_tus % tu.nlanes == 0 ? 1 : 0;
+	tu.extra_bytes = DIV_ROUND_UP(((tu.num_tus + 1) * (tu.valid_boundary_link * f -
+					tu.original_ratio_fp *	tu.tu_size_desired)), f);
+	tu.extra_pclk_cycles = DIV_ROUND_UP(tu.extra_bytes * 8, tu.bpp);
+	tu.extra_pclk_cycles_in_link_clk = DIV_ROUND_UP(tu.extra_pclk_cycles * tu.lclk,
+							 tu.pclk);
+	tu.filler_size = tu.tu_size_desired - tu.valid_boundary_link;
+	tu.ratio_by_tu_fp = tu.ratio_fp * tu.tu_size_desired;
+	tu.delay_start_link = tu.extra_pclk_cycles_in_link_clk + tu.filler_size +
+			       tu.extra_buffer_margin;
+	tu.resulting_valid_fp = tu.valid_boundary_link * f;
+	tu.TU_ratio_err_fp = (tu.resulting_valid_fp / tu.tu_size_desired) -
+			       tu.original_ratio_fp;
+	tu.hbp_time_fp = (tu.hbp_relative_to_pclk_fp - HBLANK_MARGIN * f) / tu.pclk;
+	tu.delay_start_time_fp = (tu.delay_start_link * f) / tu.lclk;
+	if (tu.hbp_time_fp < tu.delay_start_time_fp)
+		tu.min_hblank_violated = 1;
 
-	tu->hactive_time_fp = (tu->lwidth * f) / tu->pclk;
-	if (tu->hactive_time_fp < tu->delay_start_time_fp)
-		tu->min_hblank_violated = 1;
+	tu.hactive_time_fp = (tu.lwidth * f) / tu.pclk;
+	if (tu.hactive_time_fp < tu.delay_start_time_fp)
+		tu.min_hblank_violated = 1;
 
-	tu->delay_start_time_fp = 0;
+	tu.delay_start_time_fp = 0;
 
 	/* brute force */
-	tu->delay_start_link_extra_pclk = EXTRA_PIXCLK_CYCLE_DELAY;
-	tu->diff_abs_fp = tu->resulting_valid_fp - tu->ratio_by_tu_fp;
-	if (tu->diff_abs_fp < 0)
-		tu->diff_abs_fp = tu->diff_abs_fp * -1;
+	tu.delay_start_link_extra_pclk = EXTRA_PIXCLK_CYCLE_DELAY;
+	tu.diff_abs_fp = tu.resulting_valid_fp - tu.ratio_by_tu_fp;
+	if (tu.diff_abs_fp < 0)
+		tu.diff_abs_fp = tu.diff_abs_fp * -1;
 
-	tu->boundary_mod_lower_err = 0;
-	if ((tu->diff_abs_fp != 0 &&
-	    ((tu->diff_abs_fp > BRUTE_FORCE_THRESHOLD_fp) ||
-	     (tu->even_distribution_legacy == 0) ||
+	tu.boundary_mod_lower_err = 0;
+	if ((tu.diff_abs_fp != 0 &&
+	    ((tu.diff_abs_fp > BRUTE_FORCE_THRESHOLD_fp) ||
+	     (tu.even_distribution_legacy == 0) ||
 	     (DP_BRUTE_FORCE == 1))) ||
-	     (tu->min_hblank_violated == 1)) {
+	     (tu.min_hblank_violated == 1)) {
 		do {
-			tu->err_fp = 1000 * f;
-			tu->extra_buffer_margin = DIV_ROUND_UP(tu->lclk_fp *
-							       tu->delay_start_link_extra_pclk,
-							       tu->pclk_fp);
-			tu->n_symbols = DIV_ROUND_UP(tu->bpp * tu->lwidth, 8);
-			for (tu->tu_size = 32; tu->tu_size <= 64; tu->tu_size++) {
-				for (tu->i_upper_boundary_count = 1;
-					tu->i_upper_boundary_count <= 15;
-					tu->i_upper_boundary_count++) {
-					for (tu->i_lower_boundary_count = 1;
-					     tu->i_lower_boundary_count <= 15;
-					     tu->i_lower_boundary_count++) {
-						tu_valid_boundary_calc(tu);
+			tu.err_fp = 1000 * f;
+			tu.extra_buffer_margin = DIV_ROUND_UP(tu.lclk_fp *
+							       tu.delay_start_link_extra_pclk,
+							       tu.pclk_fp);
+			tu.n_symbols = DIV_ROUND_UP(tu.bpp * tu.lwidth, 8);
+			for (tu.tu_size = 32; tu.tu_size <= 64; tu.tu_size++) {
+				for (tu.i_upper_boundary_count = 1;
+					tu.i_upper_boundary_count <= 15;
+					tu.i_upper_boundary_count++) {
+					for (tu.i_lower_boundary_count = 1;
+					     tu.i_lower_boundary_count <= 15;
+					     tu.i_lower_boundary_count++) {
+						tu_valid_boundary_calc(&tu);
 					}
 				}
 			}
-			tu->delay_start_link_extra_pclk--;
-		} while (tu->boundary_moderation_en != true &&
-			 tu->boundary_mod_lower_err == 1 &&
-			 tu->delay_start_link_extra_pclk != 0);
+			tu.delay_start_link_extra_pclk--;
+		} while (tu.boundary_moderation_en != true &&
+			tu.boundary_mod_lower_err == 1 &&
+			tu.delay_start_link_extra_pclk != 0);
 
-		if (tu->boundary_moderation_en == true) {
-			tu->resulting_valid_fp = f * (tu->upper_boundary_count *
-						 tu->valid_boundary_link +
-						 tu->lower_boundary_count *
-						 (tu->valid_boundary_link - 1));
-			tu->resulting_valid_fp /= (tu->upper_boundary_count +
-						   tu->lower_boundary_count);
-			tu->ratio_by_tu_fp = tu->original_ratio_fp * tu->tu_size_desired;
-			tu->valid_lower_boundary_link = tu->valid_boundary_link - 1;
-			tu->num_tus = ((tu->bpp / 8) * tu->lwidth_fp) / tu->resulting_valid_fp;
-			tu->tu_size_minus1 = tu->tu_size_desired - 1;
-			tu->even_distribution_BF = 1;
-			tu->TU_ratio_err_fp = ((tu->tu_size_desired * f /
-						tu->resulting_valid_fp) * f);
-			tu->TU_ratio_err_fp -= tu->original_ratio_fp;
+		if (tu.boundary_moderation_en == true) {
+			tu.resulting_valid_fp = f * (tu.upper_boundary_count *
+						      tu.valid_boundary_link +
+						      tu.lower_boundary_count *
+						      (tu.valid_boundary_link - 1));
+			tu.resulting_valid_fp /= (tu.upper_boundary_count +
+						   tu.lower_boundary_count);
+			tu.ratio_by_tu_fp = tu.original_ratio_fp * tu.tu_size_desired;
+			tu.valid_lower_boundary_link = tu.valid_boundary_link - 1;
+			tu.num_tus = ((tu.bpp / 8) * tu.lwidth_fp) / tu.resulting_valid_fp;
+			tu.tu_size_minus1 = tu.tu_size_desired - 1;
+			tu.even_distribution_BF = 1;
+			tu.TU_ratio_err_fp = ((tu.tu_size_desired * f /
+						tu.resulting_valid_fp) * f);
+			tu.TU_ratio_err_fp -= tu.original_ratio_fp;
 		}
 	}
 
-	temp_fp = LCLK_FAST_SKEW_fp * tu->lwidth;
+	temp_fp = LCLK_FAST_SKEW_fp * tu.lwidth;
 	temp = DIV_ROUND_UP(temp_fp, f);
-	temp_fp = ((tu->bpp * f / 8) / (tu->nlanes * tu->original_ratio_fp)) * f * temp;
+	temp_fp = ((tu.bpp * f / 8) / (tu.nlanes * tu.original_ratio_fp)) * f * temp;
 	temp = temp_fp / f;
 
-	if (async_en)
-		tu->delay_start_link += (int)temp;
-	tu->delay_start_time_fp = (tu->delay_start_link * f) / tu->lclk;
+	tu.delay_start_time_fp = (tu.delay_start_link * f) / tu.lclk;
 
 	/* OUTPUTS */
-	tu_table->valid_boundary_link       = tu->valid_boundary_link;
-	tu_table->delay_start_link          = tu->delay_start_link;
-	tu_table->boundary_moderation_en    = tu->boundary_moderation_en;
-	tu_table->valid_lower_boundary_link = tu->valid_lower_boundary_link;
-	tu_table->upper_boundary_count      = tu->upper_boundary_count;
-	tu_table->lower_boundary_count      = tu->lower_boundary_count;
-	tu_table->tu_size_minus1            = tu->tu_size_minus1;
+	tu_table->valid_boundary_link       = tu.valid_boundary_link;
+	tu_table->delay_start_link          = tu.delay_start_link;
+	tu_table->boundary_moderation_en    = tu.boundary_moderation_en;
+	tu_table->valid_lower_boundary_link = tu.valid_lower_boundary_link;
+	tu_table->upper_boundary_count      = tu.upper_boundary_count;
+	tu_table->lower_boundary_count      = tu.lower_boundary_count;
+	tu_table->tu_size_minus1            = tu.tu_size_minus1;
 
 	printk(BIOS_INFO, "TU: valid_boundary_link: %d\n",
-				tu_table->valid_boundary_link);
+	       tu_table->valid_boundary_link);
 	printk(BIOS_INFO, "TU: delay_start_link: %d\n",
-				tu_table->delay_start_link);
+	       tu_table->delay_start_link);
 	printk(BIOS_INFO, "TU: boundary_moderation_en: %d\n",
-			tu_table->boundary_moderation_en);
+	       tu_table->boundary_moderation_en);
 	printk(BIOS_INFO, "TU: valid_lower_boundary_link: %d\n",
-			tu_table->valid_lower_boundary_link);
+	       tu_table->valid_lower_boundary_link);
 	printk(BIOS_INFO, "TU: upper_boundary_count: %d\n",
-			tu_table->upper_boundary_count);
+	       tu_table->upper_boundary_count);
 	printk(BIOS_INFO, "TU: lower_boundary_count: %d\n",
-			tu_table->lower_boundary_count);
+	       tu_table->lower_boundary_count);
 	printk(BIOS_INFO, "TU: tu_size_minus1: %d\n", tu_table->tu_size_minus1);
 }
 
@@ -1356,7 +1358,7 @@ static int edp_ctrl_training(struct edp_ctrl *ctrl, struct edid *edid, uint8_t *
 	return ret;
 }
 
-static void edp_ctrl_on(struct edp_ctrl *ctrl, struct edid *edid, uint8_t *dpcd)
+static int edp_ctrl_on(struct edp_ctrl *ctrl, struct edid *edid, uint8_t *dpcd)
 {
 	uint8_t value;
 	int ret;
@@ -1374,15 +1376,19 @@ static void edp_ctrl_on(struct edp_ctrl *ctrl, struct edid *edid, uint8_t *dpcd)
 	/* DP_SET_POWER register is only available on DPCD v1.1 and later */
 	if (dpcd[DP_DPCD_REV] >= 0x11) {
 		ret = edp_aux_transfer(DP_SET_POWER, DP_AUX_NATIVE_READ, &value, 1);
-		if (ret < 0)
+		if (ret < 0) {
 			printk(BIOS_ERR, "ERROR: edp native read failure\n");
+			return -1;
+		}
 
 		value &= ~DP_SET_POWER_MASK;
 		value |= DP_SET_POWER_D0;
 
 		ret = edp_aux_transfer(DP_SET_POWER, DP_AUX_NATIVE_WRITE, &value, 1);
-		if (ret < 0)
+		if (ret < 0) {
 			printk(BIOS_ERR, "ERROR: edp native read failure\n");
+			return -1;
+		}
 
 		/*
 		 * According to the DP 1.1 specification, a "Sink Device must
@@ -1396,8 +1402,10 @@ static void edp_ctrl_on(struct edp_ctrl *ctrl, struct edid *edid, uint8_t *dpcd)
 	edp_ctrl_link_enable(ctrl, edid, dpcd, 1);
 	/* Start link training */
 	ret = edp_ctrl_training(ctrl, edid, dpcd);
-	if (ret != EDP_TRAIN_SUCCESS)
+	if (ret != EDP_TRAIN_SUCCESS) {
 		printk(BIOS_ERR, "ERROR: edp training failure\n");
+		return -1;
+	}
 
 	edp_train_pattern_set_write(0);
 
@@ -1408,10 +1416,15 @@ static void edp_ctrl_on(struct edp_ctrl *ctrl, struct edid *edid, uint8_t *dpcd)
 	edp_config_ctrl(ctrl, dpcd);
 	edp_ctrl_config_misc(ctrl);
 	edp_ctrl_timing_cfg(edid);
-	edp_ctrl_config_msa(ctrl);
+
+	if (edp_ctrl_config_msa(ctrl) < 0)
+		return -1;
+
 	edp_ctrl_config_TU(ctrl, edid);
 	edp_state_ctrl(SW_SEND_VIDEO);
 	edp_ctrl_irq_enable(0);
+
+	return 0;
 }
 
 static bool edp_ctrl_panel_connected(uint8_t *dpcd)
@@ -1441,7 +1454,9 @@ enum cb_err edp_ctrl_init(struct edid *edid)
 	mdss_clock_enable(GCC_EDP_CLKREF_EN);
 
 	if (edp_ctrl_panel_connected(dpcd) && edp_read_edid(edid) == 0) {
-		edp_ctrl_on(&ctrl, edid, dpcd);
+		if (edp_ctrl_on(&ctrl, edid, dpcd) < 0)
+			return CB_ERR;
+
 		return CB_SUCCESS;
 	}
 

@@ -77,7 +77,8 @@ static void print_dimm_info(const struct dimm_info *dimm)
 	       "CBMEM_ID_MEMINFO:\n"
 	       "  dimm_size: %u\n"
 	       "  ddr_type: 0x%hx\n"
-	       "  ddr_frequency: %hu\n"
+	       "  max_speed_mts: %hu\n"
+	       "  config_speed_mts: %hu\n"
 	       "  rank_per_dimm: %hhu\n"
 	       "  channel_num: %hhu\n"
 	       "  dimm_num: %hhu\n"
@@ -89,7 +90,8 @@ static void print_dimm_info(const struct dimm_info *dimm)
 	       "  module_part_number(%zu): %s\n",
 	       dimm->dimm_size,
 	       dimm->ddr_type,
-	       dimm->ddr_frequency,
+	       dimm->max_speed_mts,
+	       dimm->configured_speed_mts,
 	       dimm->rank_per_dimm,
 	       dimm->channel_num,
 	       dimm->dimm_num,

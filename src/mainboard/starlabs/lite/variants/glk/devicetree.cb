@@ -65,6 +65,7 @@ chip soc/intel/apollolake
 				device generic 0 on end
 			end
 		end
+		device ref p2sb		on  end
 		device ref fast_spi	on  end
 		device ref hda		on  end
 		device ref heci1	on  end

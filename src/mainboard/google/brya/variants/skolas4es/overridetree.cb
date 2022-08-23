@@ -354,6 +354,7 @@ chip soc/intel/alderlake
 				register "link_freq[0]" = "360 * MHz" # 360 MHz
 				register "link_freq[1]" = "180 * MHz" # 180 MHz
 				register "remote_name" = ""IPU0""
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				register "has_power_resource" = "1"
 				#Controls
@@ -386,9 +387,22 @@ chip soc/intel/alderlake
 				register "acpi_name" = ""VCM0""
 				register "chip_name" = ""DW9768 VCM""
 				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
-
-				register "pr0" = ""\\_SB.PCI0.I2C0.CAM0.PRIC""
 				register "vcm_compat" = ""dongwoon,dw9768""
+
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
+
+				register "has_power_resource" = "1"
+
+				#Controls
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_D16" #EN_WCAM_PWR
+
+				#_ON
+				register "on_seq.ops_cnt" = "1"
+				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "1"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 0C on end
 			end
@@ -398,13 +412,27 @@ chip soc/intel/alderlake
 				register "chip_name" = ""AT24 EEPROM""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
 
-				register "pr0" = ""\\_SB.PCI0.I2C0.CAM0.PRIC""
 				register "nvm_compat" = ""atmel,24c1024""
 
 				register "nvm_size" = "0x2800"
 				register "nvm_pagesize" = "0x01"
 				register "nvm_readonly" = "0x01"
 				register "nvm_width" = "0x10"
+
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
+
+				register "has_power_resource" = "1"
+
+				#Controls
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_D16" #EN_WCAM_PWR
+
+				#_ON
+				register "on_seq.ops_cnt" = "1"
+				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "1"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 58 on end
 			end

@@ -118,7 +118,7 @@ int dma_initialized()
 }
 
 /* For boards that don't initialize DMA we assume all locations are coherent */
-int dma_coherent(void *ptr)
+int dma_coherent(const void *ptr)
 {
 	return !dma_initialized() || (dma->start <= ptr && dma->end > ptr);
 }

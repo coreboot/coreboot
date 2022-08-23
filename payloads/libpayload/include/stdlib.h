@@ -136,7 +136,7 @@ void print_malloc_map(void);
 
 void init_dma_memory(void *start, u32 size);
 int dma_initialized(void);
-int dma_coherent(void *ptr);
+int dma_coherent(const void *ptr);
 
 static inline void *xmalloc_work(size_t size, const char *file,
 				 const char *func, int line)

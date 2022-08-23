@@ -23,10 +23,10 @@ though TDD has a different work flow of building tests first, followed
 by the code that satisfies them, the process of writing tests and adding
 them to the tree is the same.
 
-## Analysis of unit under test First of all, it is necessary to
-precisely establish what we want to test in a particular module. Usually
-this will be an externally exposed API, which can be used by other
-modules.
+## Analysis of unit under test
+First of all, it is necessary to precisely establish what we want to
+test in a particular module. Usually this will be an externally exposed
+API, which can be used by other modules.
 
 ```eval_rst
 .. admonition:: i2c-test example

@@ -25,6 +25,8 @@ type LP5MemAttributes struct {
 	 * All the following parameters are optional and required only if the part requires
 	 * special parameters as per the datasheet.
 	 */
+	LP5X bool
+
 	/* Timing parameters */
 	TRFCABNs   int
 	TRFCPBNs   int
@@ -70,6 +72,7 @@ type LP5Set struct {
 	otherOptionalFeatures  byte
 	busWidthEncoding  byte
 	speedToTCKMinPs map[int]int
+	lp5xOverrideType byte
 }
 
 /* ------------------------------------------------------------------------------------------ */
@@ -128,8 +131,10 @@ const (
 
 	/*
 	 * As per advisory #616599, ADL MRC expects LPDDR5 memory type = 0x13.
+	 * From JEDEC spec, LPDDR5X memory type = 0x15.
 	 */
-	LP5SPDValueMemoryType = 0x13
+	LP5SPDValueMemoryType  = 0x13
+	LP5XSPDValueMemoryType = 0x15
 
 	/*
 	 * From JEDEC spec:
@@ -209,6 +214,12 @@ var LP5SetInfo = map[int]LP5Set{
 			 6400 : 1250, /* 1 / (6400 / 2 / 4) */
 			 5500 : 1455, /* 1 / (5500 / 2 / 4) */
 		},
+
+		/*
+		 * Intel FSP code doesn't distinguish between LP5/5X, existing
+		 * SPDs have been using 0x13 for both types.
+		 */
+		lp5xOverrideType: LP5SPDValueMemoryType,
 	},
 	1: {
 		SPDRevision: LP5SPDValueRevision1_1,
@@ -234,6 +245,8 @@ var LP5SetInfo = map[int]LP5Set{
 		 * Set to 0x02.
 		 */
 		busWidthEncoding: 0x02,
+
+		lp5xOverrideType: LP5XSPDValueMemoryType,
 	},
 }
 
@@ -386,7 +399,7 @@ var LP5SpeedMbpsToSPDEncoding = map[int]LP5SpeedParams{
 var LP5SPDAttribTable = map[int]LP5SPDAttribTableEntry{
 	LP5SPDIndexSize:                  {constVal: LP5SPDValueSize},
 	LP5SPDIndexRevision:              {getVal: LP5EncodeSPDRevision},
-	LP5SPDIndexMemoryType:            {constVal: LP5SPDValueMemoryType},
+	LP5SPDIndexMemoryType:            {getVal: LP5EncodeMemoryType},
 	LP5SPDIndexModuleType:            {constVal: LP5SPDValueModuleType},
 	LP5SPDIndexDensityBanks:          {getVal: LP5EncodeDensityBanks},
 	LP5SPDIndexAddressing:            {getVal: LP5EncodeSdramAddressing},
@@ -457,6 +470,17 @@ func LP5GetNumBanks(memAttribs *LP5MemAttributes) int {
 
 func LP5GetBankGroups(memAttribs *LP5MemAttributes) int {
 	return LP5BankArchToSPDEncoding[LP5GetBankArch(memAttribs)].BankGroups
+}
+
+func LP5EncodeMemoryType(memAttribs *LP5MemAttributes) byte {
+	var b byte = LP5SPDValueMemoryType
+
+	if memAttribs.LP5X {
+		if f, ok := LP5SetInfo[LP5CurrSet]; ok {
+			b = f.lp5xOverrideType
+		}
+	}
+	return b
 }
 
 func LP5EncodeDensityBanks(memAttribs *LP5MemAttributes) byte {

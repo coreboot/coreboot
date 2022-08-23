@@ -8,9 +8,9 @@ The memory technologies currently supported are:
 *   LPDDR4x - based on the JESD209-4C spec and Intel recommendations
     (docs #616599, #610202, #634730).
 *   DDR4 - based on the JESD79-4C and Jedec 4.1.2.L-5 R29 v103 specs.
-*   LPDDR5 - based on the LPDDR5 spec JESD209-5B, the SPD spec SPD4.1.2.M-2 (the
-    LPDDR3/4 spec is used since JEDEC has not released an SPD spec for LPDDR5),
-    and Intel recommendations in advisory #616599.
+*   LPDDR5/5X - based on the LPDDR5 spec JESD209-5B, the SPD spec SPD4.1.2.M-2
+    (the LPDDR3/4 spec is used since JEDEC has not released an SPD spec for
+    LPDDR5), and Intel recommendations in advisory #616599.
 
 There are two tools provided to assist with generating SPDs and Makefiles to
 integrate into the coreboot build. These tools can also be used to allocate DRAM
@@ -316,6 +316,9 @@ string like "9 10 11 12 14".
     `5500, 6400` Mbps.
 
 #### Optional
+
+*   `lp5x`: If this is an LP5X part. SPD format is identical for LP5/5X aside
+    from the memory type byte.
 
 *   `trfcabNs`: Minimum Refresh Recovery Delay Time (tRFCab) for all banks in
     nanoseconds. As per JESD209-5B, this is dependent on the density per die.

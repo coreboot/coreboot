@@ -22,7 +22,7 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	P1SV, 8,	// PD Port 1 Minor Version
 
 	Offset(0x10),
-	BFCP, 8,	// Battery Full Charge Percentage
+	PWCT, 8,	// Power Control
 	CDEV, 8,	// Control Device
 	OSFG, 8,	// OS Flag
 
@@ -35,7 +35,7 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	KLBE, 8,	// Keyboard Backlight Brightness
 
 	Offset(0x1a),
-	CWFU, 8,	// CW2015 Full
+	BFCP, 8,	// Battery Full Charge Percentage
 
 	Offset(0x1c),
 	WIFI, 8,	// WiFi Enable

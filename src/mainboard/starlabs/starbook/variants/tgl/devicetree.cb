@@ -181,6 +181,7 @@ chip soc/intel/tigerlake
 				device pnp 4e.19 off end			# Power Management Channel 5
 			end
 		end
+		device ref p2sb		on  end
 		device ref pmc		hidden end
 		device ref hda		on
 			register "PchHdaAudioLinkHdaEnable"	= "1"

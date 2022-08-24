@@ -374,6 +374,9 @@ static const struct pad_config early_gpio_table_id0[] = {
 	/* GPP_B19 : [] ==> SOC_I2C_TPM_SCL */
 	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF2),
 
+	/* GPP_E03 : [] ==> GSC_SOC_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_E03, NONE, PLTRST, LEVEL, INVERT),
+
 	/* GPP_H08 : [] ==> UART_DBG_TX_SOC_RX_R */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
 	/* GPP_H09 : [] ==> UART_SOC_TX_DBG_RX_R */
@@ -401,6 +404,8 @@ static const struct pad_config default_early_gpio_table[] = {
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF2),
 	/* GPP_B19 : [] ==> SOC_I2C_TPM_SCL */
 	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF2),
+	/* GPP_E03 : [] ==> GSC_SOC_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_E03, NONE, PLTRST, LEVEL, INVERT),
 
 	/* GPP_H08 : [] ==> UART_DBG_TX_SOC_RX_R */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),

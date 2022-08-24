@@ -23,6 +23,7 @@ fw_config
 	end
 	field AUDIO 12 14
 		option ALC1019_ALC5682IVS	0
+		option MAX98357_ALC5682I	1
 	end
 	field EXT_VR 15
 		option EXT_VR_PRESENT		0
@@ -390,6 +391,20 @@ chip soc/intel/alderlake
 		end
 		device ref i2c3 on
 			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+					probe AUDIO MAX98357_ALC5682I
+				end
+			end
+			chip drivers/i2c/generic
 				register "hid" = ""RTL5682""
 				register "name" = ""RT58""
 				register "desc" = ""Headset Codec""
@@ -428,6 +443,16 @@ chip soc/intel/alderlake
 				register "generic.probed" = "1"
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 0x2c on end
+			end
+		end
+		device ref hda on
+			chip drivers/generic/max98357a
+				register "hid" = ""MX98360A""
+				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
+				register "sdmode_delay" = "5"
+				device generic 0 on
+					probe AUDIO MAX98357_ALC5682I
+				end
 			end
 		end
 		device ref pcie_rp4 on

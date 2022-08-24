@@ -188,6 +188,9 @@ static void create_dsdt_iou_cxl_resource(uint8_t socket, uint8_t stack, const ST
 
 static void create_dsdt_dino_resource(uint8_t socket, uint8_t stack, const STACK_RES *ri, bool stack_enabled)
 {
+	if (!stack_enabled)
+		return;
+
 	/*
 	   Stacks 8 .. B (TYPE_DINO)
 		Scope: DI<socket><stack> for DINO, ResourceTemplate: DT
@@ -247,6 +250,11 @@ static void create_dsdt_dino_resource(uint8_t socket, uint8_t stack, const STACK
 			snprintf(tres, sizeof(tres), "HU%d%X", socket, stack);
 		}
 
+		/* Note, some SKU doesn't provide CPM1 and HQM1 and owns smaller bus ranges
+		 accordingly*/
+		if (bus_limit > ri->BusLimit)
+			continue;
+
 		printk(BIOS_DEBUG,
 		       "\tCreating Dino ResourceTemplate %s for socket: %d, "
 		       "stack: %d\n bus_base:0x%x, bus_limit:0x%x\n",
@@ -255,30 +263,19 @@ static void create_dsdt_dino_resource(uint8_t socket, uint8_t stack, const STACK
 		acpigen_write_name(tres);
 		acpigen_write_resourcetemplate_header();
 
-		if (stack_enabled) {
-			acpigen_resource_word(2, 0xc, 0, 0, bus_base, bus_limit, 0x0,
-					      (bus_limit - bus_base + 1));
+		acpigen_resource_word(2, 0xc, 0, 0, bus_base, bus_limit, 0x0,
+			(bus_limit - bus_base + 1));
 
-			/* Mem32 resource */
-			if (rlist[i] == DSDT_DINO)
-				acpigen_resource_dword(0, 0xc, 1, 0, ri->PciResourceMem32Base,
-						       ri->PciResourceMem32Limit, 0x0,
-						       (ri->PciResourceMem32Limit
-							- ri->PciResourceMem32Base + 1));
+		/* Mem32 resource */
+		if (rlist[i] == DSDT_DINO)
+			acpigen_resource_dword(0, 0xc, 1, 0, ri->PciResourceMem32Base,
+				ri->PciResourceMem32Limit, 0x0,
+				(ri->PciResourceMem32Limit
+				- ri->PciResourceMem32Base + 1));
 
-			/* Mem64 resource */
-			acpigen_resource_qword(0, 0xc, 1, 0, mem64_base, mem64_limit, 0,
-					       (mem64_limit - mem64_base + 1));
-		} else {
-			acpigen_resource_word(2, 0, 0, 0, 0, 0, 0, 0);
-
-			/* Mem32 resource */
-			if (rlist[i] == DSDT_DINO)
-				acpigen_resource_dword(0, 0, 1, 0, 0, 0, 0, 0);
-
-			/* Mem64 resource */
-			acpigen_resource_qword(0, 0, 1, 0, 0, 0, 0, 0);
-		}
+		/* Mem64 resource */
+		acpigen_resource_qword(0, 0xc, 1, 0, mem64_base, mem64_limit, 0,
+			(mem64_limit - mem64_base + 1));
 
 		acpigen_write_resourcetemplate_footer();
 	}

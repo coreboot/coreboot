@@ -114,7 +114,7 @@ void get_iiostack_info(struct iiostack_resource *info)
 		for (int x = 0; x < MAX_IIO_STACK; ++x) {
 			const STACK_RES *ri;
 			ri = &hob->PlatformData.IIO_resource[socket].StackRes[x];
-			if (!is_iio_stack_res(ri))
+			if (!stack_needs_resource_alloc(ri))
 				continue;
 			assert(info->no_of_stacks < (CONFIG_MAX_SOCKET * MAX_IIO_STACK));
 			memcpy(&info->res[info->no_of_stacks++], ri, sizeof(STACK_RES));

@@ -54,10 +54,15 @@ const struct SystemMemoryMapHob *get_system_memory_map(void)
 	return memmap_addr;
 }
 
-bool is_iio_stack_res(const STACK_RES *res)
+bool stack_needs_resource_alloc(const STACK_RES *res)
 {
 	// TODO: do we have situation with only bux 0 and one stack?
 	return res->BusBase < res->BusLimit;
+}
+
+bool is_pcie_iio_stack_res(const STACK_RES *res)
+{
+	return stack_needs_resource_alloc(res);
 }
 
 uint8_t get_stack_busno(const uint8_t stack)

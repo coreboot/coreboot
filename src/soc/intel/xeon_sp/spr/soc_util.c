@@ -68,9 +68,14 @@ const struct SystemMemoryMapElement *get_system_memory_map_elment(uint8_t *num)
 	return hob->Element;
 }
 
-bool is_iio_stack_res(const STACK_RES *res)
+bool stack_needs_resource_alloc(const STACK_RES *res)
 {
 	return res->Personality == TYPE_UBOX_IIO || res->Personality == TYPE_DINO;
+}
+
+bool is_pcie_iio_stack_res(const STACK_RES *res)
+{
+	return res->Personality == TYPE_UBOX_IIO;
 }
 
 /*

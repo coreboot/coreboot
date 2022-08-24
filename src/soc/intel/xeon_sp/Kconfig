@@ -107,4 +107,7 @@ config SOC_INTEL_XEON_RAS
 	select SOC_ACPI_HEST
 	select SOC_RAS_ELOG
 
+config HAVE_IOAT_DOMAINS
+	bool
+
 endif ## SOC_INTEL_XEON_SP

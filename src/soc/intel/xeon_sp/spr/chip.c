@@ -47,9 +47,9 @@ const char *soc_acpi_name(const struct device *dev)
 #endif
 
 static struct device_operations pci_domain_ops = {
-	.read_resources = &pci_domain_read_resources,
-	.set_resources = &xeonsp_pci_domain_set_resources,
-	.scan_bus = &xeonsp_pci_domain_scan_bus,
+	.read_resources = iio_pci_domain_read_resources,
+	.set_resources = pci_domain_set_resources,
+	.scan_bus = iio_pci_domain_scan_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables = &northbridge_write_acpi_tables,
 	.acpi_name = soc_acpi_name

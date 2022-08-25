@@ -161,6 +161,17 @@ PSP_VERSTAGE_FILE=$(call strip_quotes,$(CONFIG_PSP_VERSTAGE_FILE))
 PSP_VERSTAGE_SIG_FILE=$(call strip_quotes,$(CONFIG_PSP_VERSTAGE_SIGNING_TOKEN))
 endif # CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK
 
+ifeq ($(CONFIG_SEPARATE_SIGNED_PSPFW),y)
+SIGNED_AMDFW_A_POSITION=$(call int-subtract, \
+	$(shell awk '$$2 == "FMAP_SECTION_SIGNED_AMDFW_A_START" {print $$3}' $(obj)/fmap_config.h) \
+	$(shell awk '$$2 == "FMAP_SECTION_FLASH_START" {print $$3}' $(obj)/fmap_config.h))
+SIGNED_AMDFW_B_POSITION=$(call int-subtract, \
+	$(shell awk '$$2 == "FMAP_SECTION_SIGNED_AMDFW_B_START" {print $$3}' $(obj)/fmap_config.h) \
+	$(shell awk '$$2 == "FMAP_SECTION_FLASH_START" {print $$3}' $(obj)/fmap_config.h))
+SIGNED_AMDFW_A_FILE=$(obj)/amdfw_a.rom.signed
+SIGNED_AMDFW_B_FILE=$(obj)/amdfw_b.rom.signed
+endif # CONFIG_SEPARATE_SIGNED_PSPFW
+
 # Helper function to return a value with given bit set
 # Soft Fuse type = 0xb - See #55758 (NDA) for bit definitions.
 set-bit=$(call int-shift-left, 1 $(call _toint,$1))
@@ -193,6 +204,11 @@ OPT_APOB_NV_BASE=$(call add_opt_prefix, $(APOB_NV_BASE),--apob-nv-base)
 OPT_EFS_SPI_READ_MODE=$(call add_opt_prefix, $(CONFIG_EFS_SPI_READ_MODE), --spi-read-mode)
 OPT_EFS_SPI_SPEED=$(call add_opt_prefix, $(CONFIG_EFS_SPI_SPEED), --spi-speed)
 OPT_EFS_SPI_MICRON_FLAG=$(call add_opt_prefix, $(CONFIG_EFS_SPI_MICRON_FLAG), --spi-micron-flag)
+
+OPT_SIGNED_AMDFW_A_POSITION=$(call add_opt_prefix, $(SIGNED_AMDFW_A_POSITION), --signed-addr)
+OPT_SIGNED_AMDFW_A_FILE=$(call add_opt_prefix, $(SIGNED_AMDFW_A_FILE), --signed-output)
+OPT_SIGNED_AMDFW_B_POSITION=$(call add_opt_prefix, $(SIGNED_AMDFW_B_POSITION), --signed-addr)
+OPT_SIGNED_AMDFW_B_FILE=$(call add_opt_prefix, $(SIGNED_AMDFW_B_FILE), --signed-output)
 
 OPT_PSP_SOFTFUSE=$(call add_opt_prefix, $(PSP_SOFTFUSE), --soft-fuse)
 
@@ -260,6 +276,8 @@ $(obj)/amdfw_a.rom: $(obj)/amdfw.rom
 		$(OPT_APOB_NV_SIZE) \
 		$(OPT_APOB_NV_BASE) \
 		$(OPT_SPL_RW_AB_TABLE_FILE) \
+		$(OPT_SIGNED_AMDFW_A_POSITION) \
+		$(OPT_SIGNED_AMDFW_A_FILE) \
 		--location $(shell printf "%#x" $(MENDOCINO_FW_A_POSITION)) \
 		--anywhere \
 		--output $@
@@ -272,6 +290,8 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		$(OPT_APOB_NV_SIZE) \
 		$(OPT_APOB_NV_BASE) \
 		$(OPT_SPL_RW_AB_TABLE_FILE) \
+		$(OPT_SIGNED_AMDFW_B_POSITION) \
+		$(OPT_SIGNED_AMDFW_B_FILE) \
 		--location $(shell printf "%#x" $(MENDOCINO_FW_B_POSITION)) \
 		--anywhere \
 		--output $@
@@ -292,6 +312,17 @@ cbfs-files-y += apu/amdfw_b
 apu/amdfw_b-file := $(obj)/amdfw_b.rom
 apu/amdfw_b-position := $(AMD_FW_AB_POSITION)
 apu/amdfw_b-type := raw
+
+ifeq ($(CONFIG_SEPARATE_SIGNED_PSPFW),y)
+build_complete:: $(obj)/amdfw_a.rom $(obj)/amdfw_b.rom
+	@printf "    Adding Signed ROM and HASH\n"
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r SIGNED_AMDFW_A -i 0 -f $(obj)/amdfw_a.rom.signed
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r SIGNED_AMDFW_B -i 0 -f $(obj)/amdfw_b.rom.signed
+	$(CBFSTOOL) $(obj)/coreboot.rom add -r FW_MAIN_A -f $(obj)/amdfw_a.rom.signed.hash \
+		-n apu/amdfw_a_hash -t raw
+	$(CBFSTOOL) $(obj)/coreboot.rom add -r FW_MAIN_B -f $(obj)/amdfw_b.rom.signed.hash \
+		-n apu/amdfw_b_hash -t raw
+endif # CONFIG_SEPARATE_SIGNED_PSPFW
 endif
 
 endif # ($(CONFIG_SOC_AMD_MENDOCINO),y)

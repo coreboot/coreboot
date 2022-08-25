@@ -29,3 +29,9 @@ config PSP_SUPPORTS_EFS2_RELATIVE_ADDR
 	  On SoCs where PSP uses A/B recovery layout, PSP support relative addressing
 	  from the start of the SPI ROM. Enable this config on SoCs where PSP supports
 	  relative addressing so that PSP verstage can pass the offset.
+
+config SEPARATE_SIGNED_PSPFW
+	def_bool n
+	help
+	  Put signed AMD/PSP firmwares outside FW_MAIN_[AB] so vboot doesn't verify them,
+	  and rely on PSP's verification.

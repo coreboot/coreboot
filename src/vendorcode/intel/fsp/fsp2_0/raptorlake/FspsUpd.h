@@ -1936,7 +1936,7 @@ typedef struct {
 
 /** Offset 0x0896 - Reserved
 **/
-  UINT8                       Reserved58[2];
+  UINT16                      Reserved58;
 
 /** Offset 0x0898 - Touch Host Controller Port 1 Interrupt Pin Mux
   Set THC Port 1 Pin Muxing Value if signal can be enabled on multiple pads. Refer
@@ -2036,7 +2036,11 @@ typedef struct {
 
 /** Offset 0x09A1 - Reserved
 **/
-  UINT8                       Reserved61[3];
+  UINT8                       Reserved61;
+
+/** Offset 0x09A2 - Reserved
+**/
+  UINT16                      Reserved62;
 
 /** Offset 0x09A4 - PCIe EQ phase 1 downstream transmitter port preset
   Allows to select the downstream port preset value that will be used during phase
@@ -2325,7 +2329,7 @@ typedef struct {
 
 /** Offset 0x0A45 - Reserved
 **/
-  UINT8                       Reserved62;
+  UINT8                       Reserved63;
 
 /** Offset 0x0A46 - Thermal Throttling Custimized T0Level Value
   Custimized T0Level value.
@@ -2500,7 +2504,7 @@ typedef struct {
 
 /** Offset 0x0A6B - Reserved
 **/
-  UINT8                       Reserved63;
+  UINT8                       Reserved64;
 
 /** Offset 0x0A6C - Thermal Device Temperature
   Decides the temperature.
@@ -2525,11 +2529,11 @@ typedef struct {
 
 /** Offset 0x0A89 - Reserved
 **/
-  UINT8                       Reserved64[2];
+  UINT8                       Reserved65[2];
 
 /** Offset 0x0A8B - Reserved
 **/
-  UINT8                       Reserved65;
+  UINT8                       Reserved66;
 
 /** Offset 0x0A8C - xHCI High Idle Time LTR override
   Value used for overriding LTR recommendation for xHCI High Idle Time LTR setting
@@ -2579,19 +2583,19 @@ typedef struct {
 
 /** Offset 0x0A9C - Reserved
 **/
-  UINT8                       Reserved66;
+  UINT8                       Reserved67;
 
 /** Offset 0x0A9D - Reserved
 **/
-  UINT8                       Reserved67;
+  UINT8                       Reserved68;
 
 /** Offset 0x0A9E - Reserved
 **/
-  UINT8                       Reserved68;
+  UINT8                       Reserved69;
 
 /** Offset 0x0A9F - Reserved
 **/
-  UINT8                       Reserved69[1];
+  UINT8                       Reserved70[1];
 
 /** Offset 0x0AA0 - BgpdtHash[4]
   BgpdtHash values
@@ -2605,7 +2609,7 @@ typedef struct {
 
 /** Offset 0x0AC4 - Reserved
 **/
-  UINT8                       Reserved70[4];
+  UINT8                       Reserved71[4];
 
 /** Offset 0x0AC8 - BiosGuardModulePtr
   BiosGuardModulePtr default values
@@ -2638,7 +2642,7 @@ typedef struct {
 
 /** Offset 0x0ADB - Reserved
 **/
-  UINT8                       Reserved71;
+  UINT8                       Reserved72;
 
 /** Offset 0x0ADC - Change Default SVID
   Change the default SVID used in FSP to programming internal devices. This is only
@@ -2738,35 +2742,35 @@ typedef struct {
 
 /** Offset 0x0B00 - Reserved
 **/
-  UINT8                       Reserved72;
+  UINT8                       Reserved73;
 
 /** Offset 0x0B01 - Reserved
 **/
-  UINT8                       Reserved73;
+  UINT8                       Reserved74;
 
 /** Offset 0x0B02 - Reserved
 **/
-  UINT8                       Reserved74;
+  UINT8                       Reserved75;
 
 /** Offset 0x0B03 - Reserved
 **/
-  UINT8                       Reserved75;
+  UINT8                       Reserved76;
 
 /** Offset 0x0B04 - Reserved
 **/
-  UINT8                       Reserved76;
+  UINT8                       Reserved77;
 
 /** Offset 0x0B05 - Reserved
 **/
-  UINT8                       Reserved77;
+  UINT8                       Reserved78;
 
 /** Offset 0x0B06 - Reserved
 **/
-  UINT8                       Reserved78[2];
+  UINT8                       Reserved79[2];
 
 /** Offset 0x0B08 - Reserved
 **/
-  UINT32                      Reserved79;
+  UINT32                      Reserved80;
 
 /** Offset 0x0B0C - PCIE Eq Ph3 Lane Param Cm
   CPU_PCIE_EQ_LANE_PARAM. Coefficient C-1.
@@ -2859,7 +2863,7 @@ typedef struct {
 
 /** Offset 0x0BD1 - Reserved
 **/
-  UINT8                       Reserved80[3];
+  UINT8                       Reserved81[3];
 
 /** Offset 0x0BD4 - CPU PCIE device override table pointer
   The PCIe device table is being used to override PCIe device ASPM settings. This
@@ -3136,7 +3140,7 @@ typedef struct {
 
 /** Offset 0x0CA2 - Reserved
 **/
-  UINT8                       Reserved81[2];
+  UINT8                       Reserved82[2];
 
 /** Offset 0x0CA4 - LogoPixelHeight Address
   Address of LogoPixelHeight
@@ -3150,15 +3154,15 @@ typedef struct {
 
 /** Offset 0x0CAC - Reserved
 **/
-  UINT8                       Reserved82;
+  UINT8                       Reserved83;
 
 /** Offset 0x0CAD - Reserved
 **/
-  UINT8                       Reserved83;
+  UINT8                       Reserved84;
 
 /** Offset 0x0CAE - Reserved
 **/
-  UINT8                       Reserved84[3];
+  UINT8                       Reserved85[3];
 
 /** Offset 0x0CB1 - RSR feature
   Enable or Disable RSR feature; 0: Disable; <b>1: Enable </b>
@@ -3168,7 +3172,7 @@ typedef struct {
 
 /** Offset 0x0CB2 - Reserved
 **/
-  UINT8                       Reserved85[4];
+  UINT8                       Reserved86[4];
 
 /** Offset 0x0CB6 - Enable or Disable HWP
   Enable or Disable HWP(Hardware P states) Support. 0: Disable; <b>1: Enable;</b>
@@ -3561,7 +3565,7 @@ typedef struct {
 
 /** Offset 0x0D2D - Reserved
 **/
-  UINT8                       Reserved86;
+  UINT8                       Reserved87;
 
 /** Offset 0x0D2E - Platform Power Pmax
   PCODE MMIO Mailbox: Platform Power Pmax. <b>0 - Auto</b> Specified in 1/8 Watt increments.
@@ -3601,7 +3605,7 @@ typedef struct {
 
 /** Offset 0x0D3A - Reserved
 **/
-  UINT8                       Reserved87[2];
+  UINT8                       Reserved88[2];
 
 /** Offset 0x0D3C - Package Long duration turbo mode power limit
   Package Long duration turbo mode power limit. Units are based on POWER_MGMT_CONFIG.CustomPowerUnit.
@@ -3704,7 +3708,7 @@ typedef struct {
 
 /** Offset 0x0D73 - Reserved
 **/
-  UINT8                       Reserved88[4];
+  UINT8                       Reserved89[4];
 
 /** Offset 0x0D77 - Intel Turbo Boost Max Technology 3.0
   Intel Turbo Boost Max Technology 3.0. 0: Disabled; <b>1: Enabled</b>
@@ -3776,7 +3780,7 @@ typedef struct {
 
 /** Offset 0x0D82 - Reserved
 **/
-  UINT8                       Reserved89;
+  UINT8                       Reserved90;
 
 /** Offset 0x0D83 - Dual Tau Boost
   Enable, Disable Dual Tau Boost feature. This is only applicable for Desktop; <b>0:
@@ -3787,19 +3791,19 @@ typedef struct {
 
 /** Offset 0x0D84 - Reserved
 **/
-  UINT8                       Reserved90;
+  UINT8                       Reserved91;
 
 /** Offset 0x0D85 - Reserved
 **/
-  UINT8                       Reserved91;
+  UINT8                       Reserved92;
 
 /** Offset 0x0D86 - Reserved
 **/
-  UINT8                       Reserved92[14];
+  UINT8                       Reserved93[14];
 
 /** Offset 0x0D94 - Reserved
 **/
-  UINT8                       Reserved93[16];
+  UINT8                       Reserved94[16];
 
 /** Offset 0x0DA4 - End of Post message
   Test, Send End of Post message. Disable(0x0): Disable EOP message, Send in PEI(0x1):
@@ -3848,7 +3852,7 @@ typedef struct {
 
 /** Offset 0x0DAB - Reserved
 **/
-  UINT8                       Reserved94[1];
+  UINT8                       Reserved95[1];
 
 /** Offset 0x0DAC - PCIE RP Ltr Max Snoop Latency
   Latency Tolerance Reporting, Max Snoop Latency.
@@ -4000,19 +4004,19 @@ typedef struct {
 
 /** Offset 0x0F96 - Reserved
 **/
-  UINT8                       Reserved95[4];
+  UINT8                       Reserved96[4];
 
 /** Offset 0x0F9A - Reserved
 **/
-  UINT8                       Reserved96[4];
+  UINT8                       Reserved97[4];
 
 /** Offset 0x0F9E - Reserved
 **/
-  UINT8                       Reserved97[4];
+  UINT8                       Reserved98[4];
 
 /** Offset 0x0FA2 - Reserved
 **/
-  UINT8                       Reserved98[4];
+  UINT8                       Reserved99[4];
 
 /** Offset 0x0FA6 - FOMS Control Policy
   Choose the Foms Control Policy, <b>Default = 0 </b>
@@ -4034,23 +4038,23 @@ typedef struct {
 
 /** Offset 0x0FAF - Reserved
 **/
-  UINT8                       Reserved99[8];
+  UINT8                       Reserved100[8];
 
 /** Offset 0x0FB7 - Reserved
 **/
-  UINT8                       Reserved100[8];
+  UINT8                       Reserved101[8];
 
 /** Offset 0x0FBF - Reserved
 **/
-  UINT8                       Reserved101[8];
+  UINT8                       Reserved102[8];
 
 /** Offset 0x0FC7 - Reserved
 **/
-  UINT8                       Reserved102[8];
+  UINT8                       Reserved103[8];
 
 /** Offset 0x0FCF - Reserved
 **/
-  UINT8                       Reserved103;
+  UINT8                       Reserved104;
 
 /** Offset 0x0FD0 - FspEventHandler
   <b>Optional</b> pointer to the boot loader's implementation of FSP_EVENT_HANDLER.
@@ -4065,87 +4069,99 @@ typedef struct {
 
 /** Offset 0x0FD5 - Reserved
 **/
-  UINT8                       Reserved104[4];
+  UINT8                       Reserved105[4];
 
 /** Offset 0x0FD9 - Reserved
 **/
-  UINT8                       Reserved105;
+  UINT8                       Reserved106;
 
 /** Offset 0x0FDA - Reserved
 **/
-  UINT8                       Reserved106;
+  UINT8                       Reserved107;
 
 /** Offset 0x0FDB - Reserved
 **/
-  UINT8                       Reserved107;
+  UINT8                       Reserved108;
 
 /** Offset 0x0FDC - Reserved
 **/
-  UINT32                      Reserved108;
+  UINT32                      Reserved109;
 
 /** Offset 0x0FE0 - Reserved
 **/
-  UINT32                      Reserved109;
+  UINT32                      Reserved110;
 
 /** Offset 0x0FE4 - Reserved
 **/
-  UINT32                      Reserved110[2];
+  UINT32                      Reserved111[2];
 
 /** Offset 0x0FEC - Reserved
 **/
-  UINT32                      Reserved111[2];
+  UINT32                      Reserved112[2];
 
 /** Offset 0x0FF4 - Reserved
 **/
-  UINT32                      Reserved112[2];
+  UINT32                      Reserved113[2];
 
 /** Offset 0x0FFC - Reserved
 **/
-  UINT32                      Reserved113[2];
+  UINT32                      Reserved114[2];
 
 /** Offset 0x1004 - Reserved
 **/
-  UINT32                      Reserved114[2];
+  UINT32                      Reserved115[2];
 
 /** Offset 0x100C - Reserved
 **/
-  UINT32                      Reserved115[2];
+  UINT32                      Reserved116[2];
 
 /** Offset 0x1014 - Reserved
 **/
-  UINT32                      Reserved116[2];
+  UINT32                      Reserved117[2];
 
 /** Offset 0x101C - Reserved
 **/
-  UINT32                      Reserved117[2];
+  UINT32                      Reserved118[2];
 
 /** Offset 0x1024 - Reserved
 **/
-  UINT32                      Reserved118[2];
+  UINT32                      Reserved119[2];
 
 /** Offset 0x102C - Reserved
 **/
-  UINT32                      Reserved119[2];
+  UINT32                      Reserved120[2];
 
 /** Offset 0x1034 - Reserved
 **/
-  UINT32                      Reserved120[2];
+  UINT32                      Reserved121[2];
 
 /** Offset 0x103C - Reserved
 **/
-  UINT32                      Reserved121[2];
+  UINT32                      Reserved122[2];
 
 /** Offset 0x1044 - Reserved
 **/
-  UINT32                      Reserved122[2];
+  UINT32                      Reserved123[2];
 
 /** Offset 0x104C - Reserved
 **/
-  UINT8                       Reserved123[2];
+  UINT8                       Reserved124[4];
 
-/** Offset 0x104E - Reserved
+/** Offset 0x1050 - Reserved
 **/
-  UINT8                       Reserved124[2];
+  UINT64                      Reserved125;
+
+/** Offset 0x1058 - Reserved
+**/
+  UINT32                      Reserved126;
+
+/** Offset 0x105C - Reserved
+**/
+  UINT8                       Reserved127[2];
+
+/** Offset 0x105E - Reserved
+**/
+  UINT8                       Reserved128[2];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -4164,11 +4180,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x1050
+/** Offset 0x1060
 **/
   UINT8                       UnusedUpdSpace42[6];
 
-/** Offset 0x1056
+/** Offset 0x1066
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

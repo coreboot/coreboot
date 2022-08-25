@@ -294,6 +294,24 @@ Method (NPON, 0, Serialized)
 		SRCC (SRCCLK_ENABLE)
 		PGON ()
 		\_SB.PCI0.PEG0.LD23 ()
+
+		/* Wait for dGPU to reappear on the bus */
+		Local0 = 50
+		While (NVID != PCI_VID_NVIDIA)
+		{
+			Stall (100)
+			Local0--
+			If (Local0 == 0)
+			{
+				Break
+			}
+		}
+
+		/* Restore the PEG LTR enable bit */
+		LREN = SLTR
+
+		/* Clear recoverable errors detected bit */
+		CEDR = 1
 	}
 }
 
@@ -312,6 +330,8 @@ Method (NPOF, 0, Serialized)
 	}
 	Else
 	{
+		/* Save the PEG port's LTR setting */
+		SLTR = LREN
 		\_SB.PCI0.PEG0.DL23 ()
 		PGOF ()
 		SRCC (SRCCLK_DISABLE)

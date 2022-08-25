@@ -35,9 +35,11 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	const struct mem_spd dimm_module_spd_info = {
 		.topo = MEM_TOPO_DIMM_MODULE,
 		.smbus = {
-			[3] = {
+			[0] = {
+				.addr_dimm[0] = 0x50,
+			},
+			[1] = {
 				.addr_dimm[0] = 0x52,
-				.addr_dimm[1] = 0x53,
 			},
 		},
 	};

@@ -97,6 +97,7 @@ config VBOOT
 config VBOOT_STARTS_BEFORE_BOOTBLOCK
 	bool "Enable PSP_verstage"
 	default y if VBOOT
+	select SEPARATE_SIGNED_PSPFW
 
 config VBOOT_STARTS_IN_BOOTBLOCK
 	bool

@@ -32,13 +32,13 @@ static void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 	config->entries[CPPC_COUNTER_WRAP]		= CPPC_UNSUPPORTED;
 	config->entries[CPPC_REF_PERF_COUNTER]		= CPPC_REG_MSR(MSR_MAX_PERFORMANCE_FREQUENCY_CLOCK_COUNT, 0, 64);
 	config->entries[CPPC_DELIVERED_PERF_COUNTER]	= CPPC_REG_MSR(MSR_ACTUAL_PERFORMANCE_FREQUENCY_CLOCK_COUNT, 0, 64);
-	config->entries[CPPC_PERF_LIMITED]		= CPPC_REG_MSR(MSR_CPPC_STATUS, 1, 1);
+	config->entries[CPPC_PERF_LIMITED]		= CPPC_REG_MSR(MSR_CPPC_STATUS, 0, 2);
 	config->entries[CPPC_ENABLE]			= CPPC_REG_MSR(MSR_CPPC_ENABLE, 0, 1);
 
 	if (version < 2)
 		return;
 
-	config->entries[CPPC_AUTO_SELECT]		= CPPC_UNSUPPORTED;
+	config->entries[CPPC_AUTO_SELECT]		= CPPC_DWORD(1);
 	config->entries[CPPC_AUTO_ACTIVITY_WINDOW]	= CPPC_UNSUPPORTED;
 	config->entries[CPPC_PERF_PREF]			= CPPC_REG_MSR(MSR_CPPC_REQUEST, SHIFT_CPPC_REQUEST_ENERGY_PERF_PREF, 8);
 	config->entries[CPPC_REF_PERF]			= CPPC_UNSUPPORTED;

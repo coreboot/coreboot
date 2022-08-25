@@ -29,7 +29,6 @@ RUN \
 		device-tree-compiler \
 		dh-autoreconf \
 		diffutils \
-		doxygen \
 		exuberant-ctags \
 		flex \
 		g++ \
@@ -134,10 +133,6 @@ RUN \
   make -C coreboot filelist && \
   make -C coreboot ctags-project && \
   make -C coreboot cscope-project
-
-RUN \
-  cd /tmp/work && \
-  make -C coreboot doxygen -j
 
 RUN \
   cd /tmp/work && \

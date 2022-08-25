@@ -17,3 +17,7 @@ config BOARD_GOOGLE_KRABBY
 config BOARD_GOOGLE_TENTACRUEL
 	bool "->  Tentacruel"
 	select BOARD_GOOGLE_KRABBY_COMMON
+
+config BOARD_GOOGLE_MAGIKARP
+	bool "->  Magikarp"
+	select BOARD_GOOGLE_KRABBY_COMMON

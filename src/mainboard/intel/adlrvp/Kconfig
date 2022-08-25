@@ -15,7 +15,6 @@ config BOARD_INTEL_ADLRVP_COMMON
 	select HAVE_SPD_IN_CBFS
 	select MAINBOARD_HAS_CHROMEOS
 	select SOC_INTEL_COMMON_BLOCK_IPU
-	select SOC_INTEL_CSE_LITE_SKU
 	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config BOARD_INTEL_ADLRVP_P
@@ -83,6 +82,17 @@ config BOARD_INTEL_ADLRVP_N_EXT_EC
 	select FW_CONFIG_SOURCE_CHROMEEC_CBI
 
 if BOARD_INTEL_ADLRVP_COMMON
+
+config SOC_INTEL_CSE_LITE_SKU
+	bool "Use CSE Lite firmware"
+	default y if ADL_CHROME_EC
+	help
+	  Enable if CSE Lite firmware is used in your build. It is commonly
+	  used in Chrome boards (chromebooks, chromeboxes, ...).
+	  But since ADL RVP build can be used with or without CSE Lite firmware
+	  it is a configurable option. Alderlake RVP boards usually don't use
+	  an CSE Lite firmware, but are still very likely to use it in case
+	  ChromeEC is used.
 
 config CHROMEOS
 	select GBB_FLAG_FORCE_DEV_SWITCH_ON

@@ -141,4 +141,8 @@ struct cmd_param_set_platform_boot_mode {
 	uint32_t boot_mode;
 };
 
+struct cmd_param_set_fw_hash_table {
+	struct psp_fw_hash_table *ptr_psp_fw_hash_table;
+};
+
 #endif /* PSP_VERSTAGE_SVC_H */

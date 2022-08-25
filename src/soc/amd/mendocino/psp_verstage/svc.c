@@ -204,3 +204,13 @@ uint32_t svc_set_platform_boot_mode(enum chrome_platform_boot_mode boot_mode)
 	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_SET_PLATFORM_BOOT_MODE, (void *)&param, retval);
 	return retval;
 }
+
+uint32_t svc_set_fw_hash_table(struct psp_fw_hash_table *hash_table)
+{
+	uint32_t retval = 0;
+	struct cmd_param_set_fw_hash_table param = {
+		.ptr_psp_fw_hash_table = hash_table,
+	};
+	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_SET_FW_HASH_TABLE, (void *)&param, retval);
+	return retval;
+}

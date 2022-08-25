@@ -54,6 +54,7 @@ enum verstage_cmd_id {
 	CMD_UNMAP_FCH_IO_DEVICE,
 	CMD_CCP_DMA,
 	CMD_SET_PLATFORM_BOOT_MODE,
+	CMD_SET_FW_HASH_TABLE,
 };
 
 struct mod_exp_params {
@@ -151,6 +152,26 @@ enum chrome_platform_boot_mode
 	CHROME_BOOK_BOOT_MODE_DEVELOPER          = 0x3,
 	CHROME_BOOK_BOOT_MODE_TYPE_MAX_LIMIT     = 0x4, // used for boundary check
 };
+
+struct psp_fw_entry_hash_256 {
+	uint16_t fw_type;
+	uint16_t sub_type;
+	uint8_t  sha[32];
+} __packed;
+
+struct psp_fw_entry_hash_384 {
+	uint16_t fw_type;
+	uint16_t sub_type;
+	uint8_t  sha[48];
+} __packed;
+
+struct psp_fw_hash_table {
+	uint16_t version;			// Version of psp_fw_hash_table, Start with 0.
+	uint16_t no_of_entries_256;
+	uint16_t no_of_entries_384;
+	struct psp_fw_entry_hash_256 *fw_hash_256;
+	struct psp_fw_entry_hash_384 *fw_hash_384;
+} __packed;
 
 /*
  * Exit to the main Boot Loader. This does not return back to user application.
@@ -337,6 +358,16 @@ uint32_t svc_ccp_dma(uint32_t spi_rom_offset, void *dest, uint32_t size);
  *       - boot mode
  -----------------------------------------------------------------------------*/
 uint32_t svc_set_platform_boot_mode(enum chrome_platform_boot_mode boot_mode);
+
+/*
+ * Set the PSP FW hash table.
+ *
+ * Parameters:
+ *       - hash_table - Table of hash for each PSP binary signed against SoC chain of trust
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_set_fw_hash_table(struct psp_fw_hash_table *hash_table);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

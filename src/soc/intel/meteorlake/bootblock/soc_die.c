@@ -88,17 +88,27 @@ static void soc_die_early_ip_init(void)
 	soc_die_config_pwrmbase();
 }
 
-void bootblock_soc_die_early_init(void)
+static void soc_die_early_sa_init(void)
 {
 	const struct sa_mmio_descriptor soc_fixed_pci_resources[] = {
 		{ MCHBAR, MCH_BASE_ADDRESS, MCH_BASE_SIZE, "MCHBAR" },
 	};
 
 	bootblock_systemagent_early_init();
-	soc_die_early_ip_init();
 
 	/* Enable MCHBAR early, needed by IOC driver */
 	sa_set_pci_bar(soc_fixed_pci_resources, ARRAY_SIZE(soc_fixed_pci_resources));
+}
+
+void bootblock_soc_die_early_init(void)
+{
+	/*
+	 * Ensure performing SA related programming including MCHBAR prior to accessing
+	 * IOC driver.
+	 */
+	soc_die_early_sa_init();
+
+	soc_die_early_ip_init();
 
 	fast_spi_cache_bios_region();
 	soc_die_early_iorange_init();

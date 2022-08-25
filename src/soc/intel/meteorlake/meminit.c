@@ -196,6 +196,7 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 	bool dq_dqs_auto_detect = false;
 	FSP_M_CONFIG *mem_cfg = &memupd->FspmConfig;
 
+	mem_cfg->ECT = mb_cfg->ect;
 	mem_cfg->UserBd = mb_cfg->UserBd;
 	set_rcomp_config(mem_cfg, mb_cfg);
 

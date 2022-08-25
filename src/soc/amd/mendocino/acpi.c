@@ -197,16 +197,17 @@ static uint32_t get_pstate_core_power(msr_t pstate_def)
 	}
 
 	/* Power in mW */
-	power_in_mw = (voltage_in_uvolts) / 1000 * current_value_amps;
+	power_in_mw = (voltage_in_uvolts) / 10 * current_value_amps;
 
 	switch (current_divisor) {
 	case 0:
+		power_in_mw = power_in_mw / 100L;
 		break;
 	case 1:
-		power_in_mw = power_in_mw / 10L;
+		power_in_mw = power_in_mw / 1000L;
 		break;
 	case 2:
-		power_in_mw = power_in_mw / 100L;
+		power_in_mw = power_in_mw / 10000L;
 		break;
 	case 3:
 		/* current_divisor is set to an undefined value.*/

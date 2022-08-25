@@ -25,6 +25,7 @@ static void set_rcomp_config(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg)
 static void meminit_lp5x(FSP_M_CONFIG *mem_cfg, const struct mem_lp5x_config *lp5x_config)
 {
 	mem_cfg->DqPinsInterleaved = 0;
+	mem_cfg->Lp5CccConfig = lp5x_config->ccc_config;
 }
 
 static void meminit_ddr(FSP_M_CONFIG *mem_cfg, const struct mem_ddr_config *ddr_config)

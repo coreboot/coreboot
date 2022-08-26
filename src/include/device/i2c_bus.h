@@ -90,5 +90,19 @@ int i2c_dev_writeb_at(struct device *, uint8_t off, uint8_t val);
  * value on error.
  */
 int i2c_dev_read_at16(struct device *, uint8_t *buf, size_t len, uint16_t off);
+/*
+ * Sends the 8-bit register offset `off` and reads `len` bytes into `buf`.
+ *
+ * Returns the number of bytes read on success, negative `enum cb_err`
+ * value on error.
+ */
+int i2c_dev_read_at(struct device *, uint8_t *buf, size_t len, uint8_t off);
+/*
+ * Sends the 8-bit register offset `off` and writes `len` bytes from `buf`.
+ *
+ * Returns the number of bytes written on success, negative `enum cb_err`
+ * value on error.
+ */
+int i2c_dev_write_at(struct device *, uint8_t *buf, size_t len, uint8_t off);
 
 #endif	/* _DEVICE_I2C_BUS_H_ */

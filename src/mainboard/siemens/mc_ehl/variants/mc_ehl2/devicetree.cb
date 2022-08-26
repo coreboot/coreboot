@@ -123,23 +123,20 @@ chip soc/intel/elkhartlake
 		device pci 14.0 on	end # USB3.1 xHCI
 
 		device pci 15.0 on	end # I2C0
-		device pci 15.1 on	end # I2C1
-		device pci 15.2 on	    # I2C2
+		device pci 15.1 on	    # I2C1
 			# Enable external RTC chip
-			chip drivers/i2c/rx6110sa
-				register "bus_speed" = "I2C_SPEED_STANDARD"
-				register "pmon_sampling" = "PMON_SAMPL_256_MS"
-				register "bks_on" = "0"
-				register "bks_off" = "1"
-				register "iocut_en" = "1"
+			chip drivers/i2c/rv3028c7
 				register "set_user_date" = "1"
 				register "user_year" = "04"
 				register "user_month" = "07"
 				register "user_day" = "01"
 				register "user_weekday" = "4"
-				device i2c 0x32 on end  # RTC RX6110 SA
+				register "bckup_sw_mode" = "BACKUP_SW_LEVEL"
+				register "cap_charge" = "CHARGE_OFF"
+				device i2c 0x52 on end  # RTC RV3028-C7
 			end
 		end
+		device pci 15.2 on	end # I2C2
 		device pci 15.3 on	end # I2C3
 
 		device pci 16.0 hidden	end # Management Engine Interface 1

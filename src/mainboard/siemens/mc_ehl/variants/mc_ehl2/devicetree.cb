@@ -109,6 +109,9 @@ chip soc/intel/elkhartlake
 	register "pse_tsn_phy_irq_edge[1]" = "RISING_EDGE"
 
 	register "common_soc_config" = "{
+		.i2c[1] = {
+			.speed = I2C_SPEED_STANDARD,
+		},
 		.i2c[2] = {
 			.speed = I2C_SPEED_STANDARD,
 		},

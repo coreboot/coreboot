@@ -190,7 +190,7 @@ chip soc/intel/alderlake
 	}"
 
 	device domain 0 on
-		device ref pcie5 on end
+		device ref pcie5_0 on end
 		device ref igpu on end
 		device ref dtt on
 			chip drivers/intel/dptf

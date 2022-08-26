@@ -92,7 +92,7 @@ chip soc/intel/alderlake
 	device domain 0 on
 		device gpio 0 alias pch_gpio on end
 		device pci 00.0 alias system_agent on end
-		device pci 01.0 alias pcie5 off end
+		device pci 01.0 alias pcie5_0 off end
 		device pci 02.0 alias igpu off end
 		device pci 04.0 alias dtt off end
 		device pci 05.0 alias ipu off end

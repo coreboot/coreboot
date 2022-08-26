@@ -107,7 +107,7 @@ struct cmd_param_delay_in_micro_second {
 };
 
 struct cmd_param_reset_system {
-	enum reset_type reset_type;
+	uint32_t reset_type;
 };
 
 struct cmd_param_get_boot_mode {

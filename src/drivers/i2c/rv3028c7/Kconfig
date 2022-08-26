@@ -1,0 +1,5 @@
+config DRIVERS_I2C_RV3028C7
+	bool
+	default n
+	help
+	  Enable support for external RTC chip RV-3028-C7

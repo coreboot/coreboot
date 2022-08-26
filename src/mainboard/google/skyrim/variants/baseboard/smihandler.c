@@ -26,8 +26,3 @@ int mainboard_smi_apmc(u8 apmc)
 
 	return 0;
 }
-
-void elog_gsmi_cb_mainboard_log_wake_source(void)
-{
-	google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS | MAINBOARD_EC_S0IX_WAKE_EVENTS);
-}

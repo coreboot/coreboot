@@ -33,6 +33,9 @@ chip northbridge/intel/sandybridge
 			register "sata_interface_speed_support" = "0x3"
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x2005"
+			register "superspeed_capable_ports" = "0x0000000f"
+			register "xhci_switchable_ports"    = "0x0000000f"
+			register "xhci_overcurrent_mapping" = "0x0000000f"
 
 			device pci 14.0 on  end	# xHCI
 			device pci 16.0 on  end	# Management Engine Interface 1

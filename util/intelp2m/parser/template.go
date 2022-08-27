@@ -6,6 +6,8 @@ import (
 	"unicode"
 )
 
+const INTSEL_MASK uint32 = 0xffffff00
+
 type template func(string, *string, *string, *uint32, *uint32) int
 
 // extractPadFuncFromComment
@@ -38,7 +40,7 @@ func tokenCheck(c rune) bool {
 // *dw1      : DW1 register value
 // return
 //   error status
-func useInteltoolLogTemplate(line string, function *string,
+func UseInteltoolLogTemplate(line string, function *string,
 	id *string, dw0 *uint32, dw1 *uint32) int {
 
 	var val uint64
@@ -57,7 +59,7 @@ func useInteltoolLogTemplate(line string, function *string,
 			*function += "/" + fields[i]
 		}
 		// clear RO Interrupt Select (INTSEL)
-		*dw1 &= 0xffffff00
+		*dw1 &= INTSEL_MASK
 	}
 	return 0
 }

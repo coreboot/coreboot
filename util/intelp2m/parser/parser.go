@@ -117,7 +117,7 @@ func (parser *ParserData) padInfoExtract() int {
 	var function, id string
 	var dw0, dw1 uint32
 	var template = map[int]template{
-		config.TempInteltool: useInteltoolLogTemplate,
+		config.TempInteltool: UseInteltoolLogTemplate,
 		config.TempGpioh    : useGpioHTemplate,
 		config.TempSpec     : useYourTemplate,
 	}

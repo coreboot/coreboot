@@ -159,6 +159,8 @@ static void usage(void)
 	printf("--nvram <FILE>                 Add nvram binary\n");
 	printf("--soft-fuse                    Set soft fuse\n");
 	printf("--token-unlock                 Set token unlock\n");
+	printf("--nvram-base <HEX_VAL>         Base address of nvram\n");
+	printf("--nvram-size <HEX_VAL>         Size of nvram\n");
 	printf("--whitelist                    Set if there is a whitelist\n");
 	printf("--use-pspsecureos              Set if psp secure OS is needed\n");
 	printf("--load-mp2-fw                  Set if load MP2 firmware\n");
@@ -726,6 +728,8 @@ static void integrate_psp_firmwares(context *ctx,
 	ssize_t bytes;
 	unsigned int i, count;
 	int level;
+	uint32_t size;
+	uint64_t addr;
 	uint32_t current_table_save;
 	bool recovery_ab = cb_config->recovery_ab;
 	ish_directory_table *ish_a_dir = NULL, *ish_b_dir = NULL;
@@ -785,32 +789,40 @@ static void integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].address_mode = 0;
 			count++;
 		} else if (fw_table[i].type == AMD_FW_PSP_NVRAM) {
-			if (fw_table[i].filename == NULL)
-				continue;
-			/* TODO: Add a way to reserve for NVRAM without
-			 * requiring a filename.  This isn't a feature used
-			 * by coreboot systems, so priority is very low.
-			 */
-			ctx->current = ALIGN(ctx->current, ERASE_ALIGNMENT);
-			bytes = copy_blob(BUFF_CURRENT(*ctx),
-					fw_table[i].filename, BUFF_ROOM(*ctx));
-			if (bytes <= 0) {
-				free(ctx->rom);
-				exit(1);
+			if (fw_table[i].filename == NULL) {
+				if (fw_table[i].size == 0)
+					continue;
+				size = fw_table[i].size;
+				addr = fw_table[i].dest;
+				if (addr != ALIGN(addr, ERASE_ALIGNMENT)) {
+					fprintf(stderr,
+						"Error: PSP NVRAM section not aligned with erase block size.\n\n");
+					exit(1);
+				}
+			} else {
+				ctx->current = ALIGN(ctx->current, ERASE_ALIGNMENT);
+				bytes = copy_blob(BUFF_CURRENT(*ctx),
+						fw_table[i].filename, BUFF_ROOM(*ctx));
+				if (bytes <= 0) {
+					free(ctx->rom);
+					exit(1);
+				}
+
+				size = ALIGN(bytes, ERASE_ALIGNMENT);
+				addr = RUN_CURRENT(*ctx);
+				ctx->current = ALIGN(ctx->current + bytes,
+								BLOB_ERASE_ALIGNMENT);
 			}
 
 			pspdir->entries[count].type = fw_table[i].type;
 			pspdir->entries[count].subprog = fw_table[i].subprog;
 			pspdir->entries[count].rsvd = 0;
-			pspdir->entries[count].size = ALIGN(bytes,
-							ERASE_ALIGNMENT);
-			pspdir->entries[count].addr =
-				RUN_CURRENT_MODE(*ctx, AMD_ADDR_REL_BIOS);
+			pspdir->entries[count].size = size;
+			pspdir->entries[count].addr = addr;
+
 			pspdir->entries[count].address_mode =
 				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
 
-			ctx->current = ALIGN(ctx->current + bytes,
-							BLOB_ERASE_ALIGNMENT);
 			count++;
 		} else if (fw_table[i].filename != NULL) {
 			bytes = copy_blob(BUFF_CURRENT(*ctx),
@@ -1250,6 +1262,8 @@ enum {
 	LONGOPT_SPI_SPEED	= 257,
 	LONGOPT_SPI_MICRON_FLAG	= 258,
 	LONGOPT_BIOS_SIG	= 259,
+	LONGOPT_NVRAM_BASE	= 260,
+	LONGOPT_NVRAM_SIZE	= 261,
 };
 
 static char const optstring[] = {AMDFW_OPT_CONFIG, ':',
@@ -1267,6 +1281,8 @@ static struct option long_options[] = {
 	{"use-combo",              no_argument, 0, AMDFW_OPT_USE_COMBO },
 	{"multilevel",             no_argument, 0, AMDFW_OPT_MULTILEVEL },
 	{"nvram",            required_argument, 0, AMDFW_OPT_NVRAM },
+	{"nvram-base",       required_argument, 0, LONGOPT_NVRAM_BASE },
+	{"nvram-size",       required_argument, 0, LONGOPT_NVRAM_SIZE },
 	{"soft-fuse",        required_argument, 0, AMDFW_OPT_FUSE },
 	{"token-unlock",           no_argument, 0, AMDFW_OPT_UNLOCK },
 	{"whitelist",        required_argument, 0, AMDFW_OPT_WHITELIST },
@@ -1370,7 +1386,26 @@ static void register_bdt_data(amd_bios_type type, int sub, int ins, char name[])
 	}
 }
 
-static void register_fw_addr(amd_bios_type type, char *src_str,
+static void register_amd_psp_fw_addr(amd_fw_type type, int sub,
+					char *dst_str, char *size_str)
+{
+	unsigned int i;
+
+	for (i = 0; i < sizeof(amd_psp_fw_table) / sizeof(amd_fw_entry); i++) {
+		if (amd_psp_fw_table[i].type != type)
+			continue;
+
+		if (amd_psp_fw_table[i].subprog == sub) {
+			if (dst_str)
+				amd_psp_fw_table[i].dest = strtoull(dst_str, NULL, 16);
+			if (size_str)
+				amd_psp_fw_table[i].size = strtoul(size_str, NULL, 16);
+			return;
+		}
+	}
+}
+
+static void register_bios_fw_addr(amd_bios_type type, char *src_str,
 					char *dst_str, char *size_str)
 {
 	uint32_t i;
@@ -1607,17 +1642,17 @@ int main(int argc, char **argv)
 			break;
 		case AMDFW_OPT_APOBBASE:
 			/* APOB destination */
-			register_fw_addr(AMD_BIOS_APOB, 0, optarg, 0);
+			register_bios_fw_addr(AMD_BIOS_APOB, 0, optarg, 0);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_APOB_NVBASE:
 			/* APOB NV source */
-			register_fw_addr(AMD_BIOS_APOB_NV, optarg, 0, 0);
+			register_bios_fw_addr(AMD_BIOS_APOB_NV, optarg, 0, 0);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_APOB_NVSIZE:
 			/* APOB NV size */
-			register_fw_addr(AMD_BIOS_APOB_NV, 0, 0, optarg);
+			register_bios_fw_addr(AMD_BIOS_APOB_NV, 0, 0, optarg);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_BIOSBIN:
@@ -1626,22 +1661,22 @@ int main(int argc, char **argv)
 			break;
 		case AMDFW_OPT_BIOSBIN_SOURCE:
 			/* BIOS source */
-			register_fw_addr(AMD_BIOS_BIN, optarg, 0, 0);
+			register_bios_fw_addr(AMD_BIOS_BIN, optarg, 0, 0);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_BIOSBIN_DEST:
 			/* BIOS destination */
-			register_fw_addr(AMD_BIOS_BIN, 0, optarg, 0);
+			register_bios_fw_addr(AMD_BIOS_BIN, 0, optarg, 0);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_BIOS_UNCOMP_SIZE:
 			/* BIOS destination size */
-			register_fw_addr(AMD_BIOS_BIN, 0, 0, optarg);
+			register_bios_fw_addr(AMD_BIOS_BIN, 0, 0, optarg);
 			sub = instance = 0;
 			break;
 		case LONGOPT_BIOS_SIG:
 			/* BIOS signature size */
-			register_fw_addr(AMD_BIOS_SIG, 0, 0, optarg);
+			register_bios_fw_addr(AMD_BIOS_SIG, 0, 0, optarg);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_UCODE:
@@ -1714,15 +1749,24 @@ int main(int argc, char **argv)
 			break;
 		case AMDFW_OPT_SHAREDMEM:
 			/* shared memory destination */
-			register_fw_addr(AMD_BIOS_PSP_SHARED_MEM, 0, optarg, 0);
+			register_bios_fw_addr(AMD_BIOS_PSP_SHARED_MEM, 0, optarg, 0);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_SHAREDMEM_SIZE:
 			/* shared memory size */
-			register_fw_addr(AMD_BIOS_PSP_SHARED_MEM, NULL, NULL, optarg);
+			register_bios_fw_addr(AMD_BIOS_PSP_SHARED_MEM, NULL, NULL, optarg);
 			sub = instance = 0;
 			break;
-
+		case LONGOPT_NVRAM_BASE:
+			/* PSP NV base */
+			register_amd_psp_fw_addr(AMD_FW_PSP_NVRAM, sub, optarg, 0);
+			sub = instance = 0;
+			break;
+		case LONGOPT_NVRAM_SIZE:
+			/* PSP NV size */
+			register_amd_psp_fw_addr(AMD_FW_PSP_NVRAM, sub, 0, optarg);
+			sub = instance = 0;
+			break;
 		case AMDFW_OPT_CONFIG:
 			config = optarg;
 			break;

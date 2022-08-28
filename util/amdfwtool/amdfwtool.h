@@ -276,6 +276,8 @@ typedef struct _amd_fw_entry {
 	amd_fw_type type;
 	char *filename;
 	uint8_t subprog;
+	uint64_t dest;
+	size_t size;
 	int level;
 	uint64_t other;
 } amd_fw_entry;

@@ -192,13 +192,6 @@ enum cb_err cr50_get_firmware_version(struct cr50_firmware_version *version)
 	    cr50_firmware_version.minor)
 		goto success;
 
-	if (CONFIG(TI50_FIRMWARE_VERSION_NOT_SUPPORTED)) {
-		printk(BIOS_WARNING, "Reading Ti50 firmware version is not supported\n");
-		if (version)
-			*version = cr50_firmware_version;
-		return CB_ERR;
-	}
-
 	int chunk_count = 0;
 	size_t chunk_size = 50;
 	char version_str[301];

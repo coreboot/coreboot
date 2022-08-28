@@ -37,6 +37,7 @@ RUN \
 		git \
 		gnat-12 \
 		golang \
+		graphicsmagick-imagemagick-compat \
 		graphviz \
 		lcov \
 		libcrypto++-dev \

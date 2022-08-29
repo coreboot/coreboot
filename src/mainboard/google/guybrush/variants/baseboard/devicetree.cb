@@ -337,9 +337,8 @@ chip soc/amd/cezanne
 							register "type" = "UPC_TYPE_INTERNAL"
 							register "has_power_resource" = "true"
 							register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_132)"
-							# TODO(rrangel): Find data sheet
 							register "enable_delay_ms" = "500"
-							register "enable_off_delay_ms" = "10"
+							register "enable_off_delay_ms" = "200"
 							register "use_gpio_for_status" = "true"
 							device ref usb2_port6 on end
 						end

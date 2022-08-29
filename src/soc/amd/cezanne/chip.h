@@ -86,8 +86,8 @@ struct soc_amd_cezanne_config {
 	uint32_t telemetry_vddcrsocfull_scale_current_mA;
 	uint32_t telemetry_vddcrsocoffset;
 
-	/* Enable dptc for tablet mode (0 = disable, 1 = enable) */
-	uint8_t dptc_enable;
+	/* Enable dptc for tablet mode */
+	bool dptc_enable;
 
 	/* STAPM Configuration for tablet mode (need enable dptc_enable first) */
 	uint32_t fast_ppt_limit_tablet_mode_mW;

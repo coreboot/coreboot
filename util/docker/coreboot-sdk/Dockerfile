@@ -63,6 +63,7 @@ RUN \
 		msitools \
 		nasm \
 		openssl \
+		parted \
 		patch \
 		pbzip2 \
 		pkg-config \
@@ -73,8 +74,10 @@ RUN \
 		qemu-system-ppc \
 		qemu-system-x86 \
 		rsync \
+		sharutils \
 		shellcheck \
 		unifont \
+		unzip \
 		uuid-dev \
 		vim-common \
 		wget \

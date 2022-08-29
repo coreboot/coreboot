@@ -86,14 +86,7 @@ struct soc_amd_cezanne_config {
 	uint32_t telemetry_vddcrsocfull_scale_current_mA;
 	uint32_t telemetry_vddcrsocoffset;
 
-	/* Enable dptc tablet mode */
-	bool dptc_tablet_mode_enable;
-
-	/* STAPM Configuration for tablet mode */
-	uint32_t fast_ppt_limit_tablet_mode_mW;
-	uint32_t slow_ppt_limit_tablet_mode_mW;
-	uint32_t sustained_power_limit_tablet_mode_mW;
-	uint32_t thermctl_limit_tablet_mode_degreeC;
+	bool dptc_enable;
 
 	/* The array index is the general purpose PCIe clock output number. Values in here
 	   aren't the values written to the register to have the default to be always on. */

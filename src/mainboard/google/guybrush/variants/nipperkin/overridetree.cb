@@ -199,6 +199,16 @@ chip soc/amd/cezanne
 					device generic 0.0 on end
 				end
 			end # Audio
+			device ref xhci_1 on # USB 3.1 (USB1)
+				chip drivers/usb/acpi
+					device ref xhci_1_root_hub on
+						chip drivers/usb/acpi # Bluetooth
+							register "enable_off_delay_ms" = "10"
+							device ref usb2_port6 on end
+						end
+					end
+				end
+			end
 		end
 	end # domain
 

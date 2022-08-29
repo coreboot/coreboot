@@ -17,7 +17,7 @@
 External (\_SB.DPTF.TCHG, DeviceObj)
 #endif
 /* Enable DPTC interface with AMD ALIB */
-#ifdef EC_ENABLE_AMD_DPTC_SUPPORT
+#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
 External(\_SB.DPTC, MethodObj)
 #endif
 
@@ -177,7 +177,7 @@ Device (EC0)
 		// Initialize LID switch state
 		Store (LIDS, \LIDS)
 
-#ifdef EC_ENABLE_AMD_DPTC_SUPPORT
+#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
 		/*
 		 * Per the device mode (clamshell or tablet) to initialize
 		 * the thermal setting on OS startup.
@@ -435,7 +435,7 @@ Device (EC0)
 #ifdef EC_ENABLE_TBMC_DEVICE
 		Notify (TBMC, 0x80)
 #endif
-#ifdef EC_ENABLE_AMD_DPTC_SUPPORT
+#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
 		If (CondRefOf (\_SB.DPTC)) {
 			\_SB.DPTC()
 		}

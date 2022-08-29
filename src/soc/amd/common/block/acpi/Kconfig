@@ -8,6 +8,13 @@ config SOC_AMD_COMMON_BLOCK_ACPI
 config SOC_AMD_COMMON_BLOCK_ACPI_ALIB
 	bool
 
+config SOC_AMD_COMMON_BLOCK_ACPI_DPTC
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_ACPI_ALIB
+	help
+	  Selected by mainboards that implement support for ALIB
+	  to enable DPTC.
+
 config SOC_AMD_COMMON_BLOCK_ACPI_CPPC
 	bool
 

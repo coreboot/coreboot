@@ -6,6 +6,7 @@
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/mtcmos.h>
+#include <soc/spm_common.h>
 #include <types.h>
 
 /* SPM READ/WRITE CFG */
@@ -951,20 +952,6 @@ check_member(mtk_spm_regs, ap_mdsrc_req, 0x043c);
 check_member(mtk_spm_regs, ulposc_con, 0x644);
 
 static struct mtk_spm_regs *const mtk_spm = (void *)SPM_BASE;
-
-struct pcm_desc {
-	u32 pmem_words;
-	u32 total_words;
-	u32 pmem_start;
-	u32 dmem_start;
-};
-
-struct dyna_load_pcm {
-	u8 *buf;		/* binary array */
-	struct pcm_desc desc;
-};
-
-int spm_init(void);
 
 static const struct power_domain_data disp[] = {
 	{

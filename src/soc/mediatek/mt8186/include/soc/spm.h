@@ -11,6 +11,7 @@
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/mtcmos.h>
+#include <soc/spm_common.h>
 #include <types.h>
 
 #define SPM_INIT_DONE_US		20
@@ -22,19 +23,7 @@
 #define AP_PLL_CON3			(APMIXED_BASE + 0xC)
 #define AP_PLL_CON4			(APMIXED_BASE + 0x10)
 
-/* MD32PCM ADDR for SPM code fetch */
-#define MD32PCM_BASE			(SPM_BASE + 0x0A00)
-#define MD32PCM_CFGREG_SW_RSTN		(MD32PCM_BASE + 0x0000)
-#define MD32PCM_DMA0_SRC		(MD32PCM_BASE + 0x0200)
-#define MD32PCM_DMA0_DST		(MD32PCM_BASE + 0x0204)
-#define MD32PCM_DMA0_WPPT		(MD32PCM_BASE + 0x0208)
-#define MD32PCM_DMA0_WPTO		(MD32PCM_BASE + 0x020C)
-#define MD32PCM_DMA0_COUNT		(MD32PCM_BASE + 0x0210)
-#define MD32PCM_DMA0_CON		(MD32PCM_BASE + 0x0214)
-#define MD32PCM_DMA0_START		(MD32PCM_BASE + 0x0218)
-#define MD32PCM_DMA0_RLCT		(MD32PCM_BASE + 0x0224)
-#define MD32PCM_INTC_IRQ_RAW_STA	(MD32PCM_BASE + 0x033C)
-
+/* MD32PCM setting for SPM code fetch */
 #define MD32PCM_CFGREG_SW_RSTN_RUN	1
 #define MD32PCM_DMA0_CON_VAL		0x0003820E
 #define MD32PCM_DMA0_START_VAL		0x00008000
@@ -649,6 +638,17 @@ struct mtk_spm_regs {
 	uint32_t ssusb_top_p1_pwr_con;
 	uint32_t adsp_infra_pwr_con;
 	uint32_t adsp_ao_pwr_con;
+	uint32_t md32pcm_cfgreg_sw_rstn;
+	uint8_t reserved_6a04[0x200 - 4];
+	uint32_t md32pcm_dma0_src;
+	uint32_t md32pcm_dma0_dst;
+	uint32_t md32pcm_dma0_wppt;
+	uint32_t md32pcm_dma0_wpto;
+	uint32_t md32pcm_dma0_count;
+	uint32_t md32pcm_dma0_con;
+	uint32_t md32pcm_dma0_start;
+	uint8_t reserved_6c1c[8];
+	uint32_t md32pcm_dma0_rlct;
 };
 
 struct pwr_ctrl {
@@ -842,18 +842,15 @@ check_member(mtk_spm_regs, ssusb_top_pwr_con, 0x9F0);
 check_member(mtk_spm_regs, ssusb_top_p1_pwr_con, 0x9F4);
 check_member(mtk_spm_regs, adsp_infra_pwr_con, 0x9F8);
 check_member(mtk_spm_regs, adsp_ao_pwr_con, 0x9FC);
-
-struct pcm_desc {
-	uint32_t pmem_words;
-	uint32_t total_words;
-	uint32_t pmem_start;
-	uint32_t dmem_start;
-};
-
-struct dyna_load_pcm {
-	u8 *buf; /* binary array */
-	struct pcm_desc desc;
-};
+check_member(mtk_spm_regs, md32pcm_cfgreg_sw_rstn, 0xA00);
+check_member(mtk_spm_regs, md32pcm_dma0_src, 0xC00);
+check_member(mtk_spm_regs, md32pcm_dma0_dst, 0xC04);
+check_member(mtk_spm_regs, md32pcm_dma0_wppt, 0xC08);
+check_member(mtk_spm_regs, md32pcm_dma0_wpto, 0xC0C);
+check_member(mtk_spm_regs, md32pcm_dma0_count, 0xC10);
+check_member(mtk_spm_regs, md32pcm_dma0_con, 0xC14);
+check_member(mtk_spm_regs, md32pcm_dma0_start, 0xC18);
+check_member(mtk_spm_regs, md32pcm_dma0_rlct, 0xC24);
 
 static struct mtk_spm_regs *const mtk_spm = (void *)SPM_BASE;
 
@@ -869,7 +866,5 @@ static const struct power_domain_data disp[] = {
 /* without audio mtcmos control in MT8186 */
 static const struct power_domain_data audio[] = {
 };
-
-int spm_init(void);
 
 #endif  /* SOC_MEDIATEK_MT8186_SPM_H */

@@ -3,8 +3,10 @@
 #ifndef SOC_MEDIATEK_MT8192_SPM_H
 #define SOC_MEDIATEK_MT8192_SPM_H
 
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/mtcmos.h>
+#include <soc/spm_common.h>
 #include <types.h>
 
 /* SPM READ/WRITE CFG */
@@ -51,7 +53,7 @@
 #define SYS_TIMER_START_EN_LSB              (1U << 0)       /* 1b */
 
 /* MD32PCM_CFGREG_SW_RSTN (0x10006000+0xA00) */
-#define MD32PCM_CFGREG_SW_RSTN_RESET        (1U << 0)       /* 1b */
+DEFINE_BIT(MD32PCM_CFGREG_SW_RSTN_RESET, 0)
 
 /**************************************
  * Config and Parameter
@@ -659,20 +661,6 @@ check_member(mtk_spm_regs, md32pcm_dma0_start, 0xc18);
 check_member(mtk_spm_regs, md32pcm_dma0_rlct, 0xc24);
 
 static struct mtk_spm_regs *const mtk_spm = (void *)SPM_BASE;
-
-struct pcm_desc {
-	u32 pmem_words;
-	u32 total_words;
-	u32 pmem_start;
-	u32 dmem_start;
-};
-
-struct dyna_load_pcm {
-	u8 *buf;		/* binary array */
-	struct pcm_desc desc;
-};
-
-int spm_init(void);
 
 static const struct power_domain_data disp[] = {
 	{

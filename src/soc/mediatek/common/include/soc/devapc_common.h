@@ -47,4 +47,42 @@
 #define NO_PROTECTION3 NO_PROTECTION2, NO_PROTECTION
 #define NO_PROTECTION4 NO_PROTECTION3, NO_PROTECTION
 
+enum trans_type {
+	NON_SECURE_TRANS = 0,
+	SECURE_TRANS,
+};
+
+enum devapc_perm_type {
+	NO_PROTECTION = 0,
+	SEC_RW_ONLY,
+	SEC_RW_NS_R,
+	FORBIDDEN,
+	PERM_NUM,
+};
+
+enum domain_id {
+	DOMAIN_0 = 0,
+	DOMAIN_1,
+	DOMAIN_2,
+	DOMAIN_3,
+	DOMAIN_4,
+	DOMAIN_5,
+	DOMAIN_6,
+	DOMAIN_7,
+	DOMAIN_8,
+	DOMAIN_9,
+	DOMAIN_10,
+	DOMAIN_11,
+	DOMAIN_12,
+	DOMAIN_13,
+	DOMAIN_14,
+	DOMAIN_15,
+};
+
+void *getreg_domain(uintptr_t base, unsigned int offset,
+		    enum domain_id domain_id, unsigned int index);
+void *getreg(uintptr_t base, unsigned int offset);
+void set_module_apc(uintptr_t base, uint32_t module, enum domain_id domain_id,
+		    enum devapc_perm_type perm);
+
 #endif

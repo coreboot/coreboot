@@ -1196,31 +1196,6 @@ static const enum domain_id domain_map[] = {
 	DOMAIN_12, DOMAIN_13, DOMAIN_14, DOMAIN_15,
 };
 
-static inline void *getreg_domain(uintptr_t base, unsigned int offset,
-				  enum domain_id domain_id, unsigned int index)
-{
-	return (void *)(base + offset + domain_id * 0x100 + index * 0x4);
-}
-
-static inline void *getreg(uintptr_t base, unsigned int offset)
-{
-	return getreg_domain(base, offset, 0, 0);
-}
-
-static void set_module_apc(uintptr_t base, uint32_t module, enum domain_id domain_id,
-			   enum devapc_perm_type perm)
-{
-	uint32_t apc_register_index;
-	uint32_t apc_set_index;
-
-	apc_register_index = module / MOD_NO_IN_1_DEVAPC;
-	apc_set_index = module % MOD_NO_IN_1_DEVAPC;
-
-	clrsetbits32(getreg_domain(base, 0, domain_id, apc_register_index),
-		     0x3 << (apc_set_index * 2),
-		     perm << (apc_set_index * 2));
-}
-
 static void set_infra_ao_apc(uintptr_t base)
 {
 	int i, j;

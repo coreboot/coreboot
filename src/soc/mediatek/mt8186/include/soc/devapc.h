@@ -22,39 +22,6 @@ enum devapc_ao_offset {
 /******************************************************************************
  * STRUCTURE DEFINITION
  ******************************************************************************/
-/* Common */
-enum trans_type {
-	NON_SECURE_TRANS = 0,
-	SECURE_TRANS,
-};
-
-enum devapc_perm_type {
-	NO_PROTECTION = 0,
-	SEC_RW_ONLY,
-	SEC_RW_NS_R,
-	FORBIDDEN,
-	PERM_NUM,
-};
-
-enum domain_id {
-	DOMAIN_0 = 0,
-	DOMAIN_1,
-	DOMAIN_2,
-	DOMAIN_3,
-	DOMAIN_4,
-	DOMAIN_5,
-	DOMAIN_6,
-	DOMAIN_7,
-	DOMAIN_8,
-	DOMAIN_9,
-	DOMAIN_10,
-	DOMAIN_11,
-	DOMAIN_12,
-	DOMAIN_13,
-	DOMAIN_14,
-	DOMAIN_15,
-};
-
 struct apc_infra_peri_dom_16 {
 	unsigned char d_permission[16];
 };
@@ -84,6 +51,8 @@ enum devapc_cfg_index {
  * Variable DEFINITION
  ******************************************************************************/
 #define MOD_NO_IN_1_DEVAPC		16
+#define DOMAIN_OFT			0x100
+#define IDX_OFT				0x4
 
 /******************************************************************************
  * Bit Field DEFINITION

@@ -28,7 +28,7 @@ romstage-y += ../common/rtc.c ../common/rtc_osc_init.c rtc.c
 
 ramstage-y += ../common/auxadc.c
 ramstage-y += ../common/ddp.c ddp.c
-ramstage-y += devapc.c
+ramstage-y += ../common/devapc.c devapc.c
 ramstage-y += ../common/dfd.c
 ramstage-y += ../common/dsi.c ../common/mtk_mipi_dphy.c
 ramstage-y += ../common/emi.c

@@ -175,6 +175,11 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 	/* F21 : EXT_PWR_GATE2# ==> WWAN_FCPO_L (set here for correct power sequencing) */
 	PAD_CFG_GPO(GPP_F21, 1, DEEP),
+
+	/* D1  : ISH_GP1 ==> FP_RST_ODL */
+	PAD_CFG_GPO(GPP_D1, 0, DEEP),
+	/* D2  : ISH_GP2 ==> EN_FP_PWR */
+	PAD_CFG_GPO(GPP_D2, 0, DEEP),
 };
 
 const struct pad_config *variant_romstage_gpio_table(size_t *num)

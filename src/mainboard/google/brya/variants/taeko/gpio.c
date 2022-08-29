@@ -204,6 +204,11 @@ static const struct pad_config romstage_gpio_table[] = {
 	 * B4 is programmed here so that it is sequenced after EN_PP3300_SSD.
 	 */
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
+
+	/* D1  : ISH_GP1 ==> FP_RST_ODL */
+	PAD_CFG_GPO(GPP_D1, 0, DEEP),
+	/* D2  : ISH_GP2 ==> EN_FP_PWR */
+	PAD_CFG_GPO(GPP_D2, 0, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)

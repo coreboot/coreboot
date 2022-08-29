@@ -6,8 +6,6 @@
 int spi_soc_devfn_to_bus(unsigned int devfn)
 {
 	switch (devfn) {
-	case PCH_DEVFN_SPI:
-		return 0;
 	case PCH_DEVFN_GSPI0:
 		return 1;
 	case PCH_DEVFN_GSPI1:

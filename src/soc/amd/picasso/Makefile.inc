@@ -125,6 +125,11 @@ endif
 # BIOS Directory Table items - proper ordering is managed by amdfwtool
 #
 
+# type = 0x4
+# The flashmap section used for this is expected to be named PSP_NVRAM
+PSP_NVRAM_BASE=$(shell awk '$$2 == "FMAP_SECTION_PSP_NVRAM_START" {print $$3}' $(obj)/fmap_config.h)
+PSP_NVRAM_SIZE=$(shell awk '$$2 == "FMAP_SECTION_PSP_NVRAM_SIZE" {print $$3}' $(obj)/fmap_config.h)
+
 # type = 0x7
 # RSA 2048 signature
 #ifeq ($(CONFIG_PSP_PLATFORM_SECURE_BOOT),y)
@@ -173,6 +178,9 @@ PSP_SOFTFUSE=$(shell A=$(call int-add, \
 
 add_opt_prefix=$(if $(call strip_quotes, $(1)), $(2) $(call strip_quotes, $(1)), )
 
+OPT_PSP_NVRAM_BASE=$(call add_opt_prefix, $(PSP_NVRAM_BASE), --nvram-base)
+OPT_PSP_NVRAM_SIZE=$(call add_opt_prefix, $(PSP_NVRAM_SIZE), --nvram-size)
+
 OPT_VERSTAGE_FILE=$(call add_opt_prefix, $(PSP_VERSTAGE_FILE), --verstage)
 OPT_VERSTAGE_SIG_FILE=$(call add_opt_prefix, $(PSP_VERSTAGE_SIG_FILE), --verstage_sig)
 
@@ -207,6 +215,8 @@ endif
 OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
 
 AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
+		$(OPT_PSP_NVRAM_BASE) \
+		$(OPT_PSP_NVRAM_SIZE) \
 		$(OPT_PSP_APCB_FILES_BK) \
 		$(OPT_APOB_ADDR) \
 		$(OPT_PSP_BIOSBIN_FILE) \

@@ -34,7 +34,8 @@ static const struct pad_config gpio_table_id0[] = {
 	PAD_CFG_GPO(GPP_A15, 1, DEEP),
 	/* GPP_A16 : GPP_A16 ==> ESPI_SOC_ALERT_L configured on reset, do not touch */
 	/* GPP_A17 : [] ==> EC_SOC_INT_ODL */
-	PAD_CFG_GPI_IRQ_WAKE(GPP_A17, NONE, PLTRST, LEVEL, INVERT),
+	PAD_CFG_GPI_APIC_LOCK(GPP_A17, NONE, LEVEL, INVERT, LOCK_CONFIG),
+
 	/* GPP_A18 : [] ==> CAM_PSW_L */
 	PAD_CFG_GPI_INT_LOCK(GPP_A18, NONE, EDGE_BOTH, LOCK_CONFIG),
 	/* GPP_A19 : [] ==> EN_PP3300_SSD */
@@ -387,9 +388,6 @@ static const struct pad_config early_gpio_table_id0[] = {
 
 	/* GPP_E13 :  [] ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_E13, NONE, DEEP),
-
-	/* GPP_A17 : [] ==> EC_SOC_INT_ODL */
-	PAD_CFG_GPI_APIC_LOCK(GPP_A17, NONE, LEVEL, INVERT, LOCK_CONFIG),
 
 	/* GPP_A20 : [] ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_A20, 0, DEEP),

@@ -14,6 +14,12 @@ enum alib_dptc_parameter_ids {
 	ALIB_DPTC_SUSTAINED_POWER_LIMIT_ID = 0x5,
 	ALIB_DPTC_FAST_PPT_LIMIT_ID = 0x6,
 	ALIB_DPTC_SLOW_PPT_LIMIT_ID = 0x7,
+	ALIB_DPTC_SLOW_PPT_TIME_CONSTANT_ID = 0x8,
+	ALIB_DPTC_PROCHOT_L_DEASSERTION_RAMP_TIME_ID = 0x9,
+	ALIB_DPTC_VRM_CURRENT_LIMIT_ID = 0xb,
+	ALIB_DPTC_VRM_MAXIMUM_CURRENT_LIMIT = 0xc,
+	/* Picasso: SetVrmSocCurrentLimit (0xe) is not implemented in alib. */
+	ALIB_DPTC_VRM_SOC_CURRENT_LIMIT_ID = 0xe,
 };
 
 struct alib_dptc_param {

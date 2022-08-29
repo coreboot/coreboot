@@ -469,6 +469,11 @@
 #define  PCIE_EXT_CAP_LTR_ID		 0x0018
 #define  PCIE_EXT_CAP_RESIZABLE_BAR	 0x0015
 
+/* Secondary PCI Express Extended Capability Structure */
+#define PCI_EXP_SEC_CAP_ID	0x19
+#define PCI_EXP_SEC_LNK_CTL3	4	/* Link Control 3 */
+#define PCI_EXP_SEC_LANE_ERR_STATUS	8	/* Lane Error Status */
+
 /* Advanced Error Reporting */
 #define PCI_ERR_UNCOR_STATUS	4	/* Uncorrectable Error Status */
 #define  PCI_ERR_UNC_TRAIN	0x00000001	/* Training */

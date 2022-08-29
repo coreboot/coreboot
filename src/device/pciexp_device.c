@@ -532,6 +532,30 @@ static void pciexp_set_max_payload_size(struct device *root, unsigned int root_c
 	printk(BIOS_INFO, "PCIe: Max_Payload_Size adjusted to %d\n", (1 << (max_payload + 7)));
 }
 
+/*
+ * Clear Lane Error State at the end of PCIe link training.
+ * Lane error status is cleared if PCIEXP_LANE_ERR_STAT_CLEAR is set.
+ * Lane error is normal during link training, so we need to clear it.
+ * At this moment, link has been used, but for a very short duration.
+ */
+static void clear_lane_error_status(struct device *dev)
+{
+	u32 reg32;
+	u16 pos;
+
+	pos = pciexp_find_extended_cap(dev, PCI_EXP_SEC_CAP_ID, 0);
+	if (pos == 0)
+		return;
+
+	reg32 = pci_read_config32(dev, pos + PCI_EXP_SEC_LANE_ERR_STATUS);
+	if (reg32 == 0)
+		return;
+
+	printk(BIOS_DEBUG, "%s: Clear Lane Error Status.\n", dev_path(dev));
+	printk(BIOS_DEBUG, "LaneErrStat:0x%x\n", reg32);
+	pci_write_config32(dev, pos + PCI_EXP_SEC_LANE_ERR_STATUS, reg32);
+}
+
 static void pciexp_tune_dev(struct device *dev)
 {
 	struct device *root = dev->bus->dev;
@@ -560,6 +584,10 @@ static void pciexp_tune_dev(struct device *dev)
 	/* Check for and enable ASPM */
 	if (CONFIG(PCIEXP_ASPM))
 		pciexp_enable_aspm(root, root_cap, dev, cap);
+
+	/* Clear PCIe Lane Error Status */
+	if (CONFIG(PCIEXP_LANE_ERR_STAT_CLEAR))
+		clear_lane_error_status(root);
 
 	/* Adjust Max_Payload_Size of link ends. */
 	pciexp_set_max_payload_size(root, root_cap, dev, cap);

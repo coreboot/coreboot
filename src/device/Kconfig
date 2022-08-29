@@ -654,6 +654,13 @@ config PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS
 
 endif # PCIEXP_SUPPORT_RESIZABLE_BARS
 
+config PCIEXP_LANE_ERR_STAT_CLEAR
+	prompt "Enable Clear PCIe Lane Error Status"
+	bool
+	default n
+	help
+	  Clear the PCIe Lane Error Status at the end of link training.
+
 config PCIEXP_HOTPLUG
 	prompt "Enable PCIe Hotplug Support"
 	bool

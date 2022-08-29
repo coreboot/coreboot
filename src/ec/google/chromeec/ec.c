@@ -1462,7 +1462,7 @@ static int google_chromeec_usb_pd_get_info(int port, bool *ufp, bool *dbg_acc,
 	if (google_chromeec_command(&cmd) < 0)
 		return -1;
 
-	*ufp = (resp.cc_state == PD_CC_DFP_ATTACHED);
+	*ufp = !(resp.role & PD_CTRL_RESP_ROLE_DATA);
 	*dbg_acc = (resp.cc_state == PD_CC_DFP_DEBUG_ACC);
 	*active_cable = !!(resp.control_flags & USB_PD_CTRL_ACTIVE_CABLE);
 	*dp_mode = resp.dp_mode;

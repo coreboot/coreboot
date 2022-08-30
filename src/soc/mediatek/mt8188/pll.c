@@ -319,9 +319,9 @@ static const struct mux_sel mux_sels[] = {
 	{ .id = TOP_VDEC_SEL, .sel = 1 },			/* 1: mainpll_d5_d2 */
 	{ .id = TOP_PWM_SEL, .sel = 3 },			/* 3: univpll_d6_d4 */
 	{ .id = TOP_MCUPM_SEL, .sel = 1 },			/* 1: mainpll_d6_d2 */
-	{ .id = TOP_SPMI_P_MST_SEL, .sel = 7 },			/* 7: mainpll_d7_d8 */
+	{ .id = TOP_SPMI_P_MST_SEL, .sel = 3 },			/* 7: mainpll_d7_d8 */
 	/* CLK_CFG_14 */
-	{ .id = TOP_SPMI_M_MST_SEL, .sel = 7 },			/* 7: mainpll_d7_d8 */
+	{ .id = TOP_SPMI_M_MST_SEL, .sel = 3 },			/* 7: mainpll_d7_d8 */
 	{ .id = TOP_DVFSRC_SEL, .sel = 0 },			/* 0: clk26m */
 	{ .id = TOP_TL_SEL, .sel = 2 },				/* 2: mainpll_d4_d4 */
 	{ .id = TOP_AES_MSDCFDE_SEL, .sel = 5 },		/* 5: univpll_d6 */
@@ -522,8 +522,7 @@ void mt_pll_init(void)
 	}
 
 	/* disable mfg_ck_en[20], enable mfg_opp_ck_en[2]  */
-	clrbits32(&mtk_apmixed->mfgpll_con0, 0x1 << 20);
-	setbits32(&mtk_apmixed->mfgpll_con1, 0x1 << 2);
+	clrsetbits32(&mtk_apmixed->mfgpll_con0, BIT(20), BIT(2));
 
 	/* xPLL Frequency Set */
 	for (i = 0; i < ARRAY_SIZE(rates); i++)

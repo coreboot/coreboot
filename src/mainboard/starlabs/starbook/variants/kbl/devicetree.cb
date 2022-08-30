@@ -70,14 +70,14 @@ chip soc/intel/skylake
 			register "usb2_ports[2]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
+			# Internal Bluetooth
+			register "usb2_ports[5]"		= "USB2_PORT_MID(OC_SKIP)"
+
 			# Daughterboard SD Card
 			register "usb2_ports[6]"		= "USB2_PORT_MID(OC_SKIP)"
 
 			# Webcam
 			register "usb2_ports[CONFIG_CCD_PORT]"	= "USB2_PORT_MID(OC_SKIP)"
-
-			# Internal Bluetooth
-			register "usb2_ports[9]"		= "USB2_PORT_MID(OC_SKIP)"
 		end
 		device pci 14.1 off end						# USB xDCI (OTG)
 		device pci 14.2 on  end						# Thermal Subsystem

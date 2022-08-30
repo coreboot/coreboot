@@ -69,7 +69,7 @@ Method (NVJT, 2, Serialized)
 				/* Get GCU GCx Sleep Status */
 				Case (NVJT_GPC_GSS)
 				{
-					If (^_STA () != 0)
+					If (PSTA () != 0)
 					{
 						CGPS = 1
 						CGCS = 1

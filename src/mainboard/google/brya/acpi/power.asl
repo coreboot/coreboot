@@ -405,23 +405,20 @@ Method (_PS3, 0,  NotSerialized)
 	}
 }
 
-/*
- * Normally, _ON and _OFF of the power resources listed in _PRx will be
- * evaluated before entering D0/D3. However, for Optimus, the package
- * should refer to the PCIe controller itself, not a dependent device.
- */
-Name (_PR0, Package() { \_SB.PCI0.PEG0 })
-Name (_PR3, Package() { \_SB.PCI0.PEG0 })
-
-Method (_STA, 0, Serialized)
+Method (PSTA, 0, Serialized)
 {
 	If (GC6E == GC6_STATE_EXITED &&
 	    \_SB.PCI0.GTXS(GPIO_GPU_ALLRAILS_PG) == 1)
 	{
-		Return (0xF)
+		Return (1)
 	}
 	Else
 	{
 		Return (0)
 	}
+}
+
+Method (_STA, 0, Serialized)
+{
+	Return (0xF)
 }

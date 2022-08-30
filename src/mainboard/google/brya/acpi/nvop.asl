@@ -36,7 +36,7 @@ Method (NVOP, 2, Serialized)
 			}
 
 			/* Current GPU Control Status */
-			If (\_SB.PCI0.PEG0.PGPR._STA == 1)
+			If (PSTA () == 1)
 			{
 				Local0 = 3
 			}

@@ -9,8 +9,6 @@
 /* Fixme: Update proper GPIO number based on schematics */
 /* WP signal to PCH */
 #define GPIO_PCH_WP	GPP_H10
-/* EC in RW or RO */
-#define GPIO_EC_IN_RW	0
 /* GPIO IRQ for tight timestamps / wake support */
 #define EC_SYNC_IRQ	GPP_A17_IRQ
 /* eSPI virtual wire reporting */

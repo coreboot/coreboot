@@ -19,7 +19,7 @@ CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/in
 ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_SBR_D5.bin),)
 $(info APCB sources present.)
 
-ifneq ($(wildcard $(SPD_SOURCES)),)
+ifneq ($(wildcard $(top)/$(SPD_SOURCES)),)
 
 LIB_SPD_DEPS = $(SPD_SOURCES)
 

@@ -155,7 +155,9 @@ static __always_inline void lapic_send_ipi_self(uint32_t icrlow)
 	/* In case of X2APIC force a short delay, to prevent deadlock in a case
 	 * the immediately following code acquires some lock, like with printk().
 	 */
-	while (CONFIG(X2APIC_ONLY) && i--)
+	const bool x2apic = is_x2apic_mode();
+
+	while (x2apic && i--)
 		cpu_relax();
 }
 

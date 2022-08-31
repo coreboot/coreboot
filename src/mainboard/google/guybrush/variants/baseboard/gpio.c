@@ -138,7 +138,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_GPO(GPIO_121, LOW),
 	/* GPIO_122 - GPIO_128: Not available */
 	/* SOC_DISABLE_DISP_BL */
-	PAD_GPO(GPIO_129, HIGH),
+	PAD_GPO(GPIO_129, LOW),
 	/* WLAN_DISABLE */
 	PAD_GPO(GPIO_130, LOW),
 	/* CLK_REQ3_L */

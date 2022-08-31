@@ -30,11 +30,63 @@ chip soc/intel/jasperlake
 
 	register "disable_external_bypass_vr" = "1"    # Does not support external vnn power rail
 
+	register "power_limits_config" = "{
+		.tdp_pl1_override = 7,
+		.tdp_pl2_override = 25,
+	}"
+
+	register "tcc_offset" = "5"	# TCC of 100C
+
 	# USB Port Configuration
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"     # Camera
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"     # Lan
 
 	device domain 0 on
+		device pci 04.0 on
+			chip drivers/intel/dptf
+				# Default DPTF Policy for all drawcia boards if not overridden
+				register "options.tsr[0].desc" = ""Ambient""
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,		CPU,	       85, 60000),
+					[1] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_0, 65, 60000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,           105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,  78, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 6000,
+						.max_power = 6500,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 100,
+					},
+					.pl2 = {
+						.min_power = 25000,
+						.max_power = 25000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 1000,
+					}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 3000 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+
+				device generic 0 on end
+			end
+		end # SA Thermal device
 		device pci 14.0 on
 			chip drivers/usb/acpi
 				device usb 0.0 on

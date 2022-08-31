@@ -488,6 +488,7 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	TPM_PERMANENT_FLAGS pflags;
 	uint32_t result;
 
+	vb2api_secdata_firmware_create(ctx);
 	vb2api_secdata_kernel_create_v0(ctx);
 
 	result = tlcl_get_permanent_flags(&pflags);
@@ -557,12 +558,6 @@ uint32_t antirollback_lock_space_firmware(void)
 static uint32_t factory_initialize_tpm(struct vb2_context *ctx)
 {
 	uint32_t result;
-
-	/*
-	 * Set initial values of secdata_firmware space.
-	 * kernel space is created in _factory_initialize_tpm().
-	 */
-	vb2api_secdata_firmware_create(ctx);
 
 	VBDEBUG("TPM: factory initialization\n");
 

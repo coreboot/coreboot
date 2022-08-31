@@ -72,7 +72,6 @@ type LP5Set struct {
 	otherOptionalFeatures  byte
 	busWidthEncoding  byte
 	speedToTCKMinPs map[int]int
-	lp5xOverrideType byte
 }
 
 /* ------------------------------------------------------------------------------------------ */
@@ -214,12 +213,6 @@ var LP5SetInfo = map[int]LP5Set{
 			 6400 : 1250, /* 1 / (6400 / 2 / 4) */
 			 5500 : 1455, /* 1 / (5500 / 2 / 4) */
 		},
-
-		/*
-		 * Intel FSP code doesn't distinguish between LP5/5X, existing
-		 * SPDs have been using 0x13 for both types.
-		 */
-		lp5xOverrideType: LP5SPDValueMemoryType,
 	},
 	1: {
 		SPDRevision: LP5SPDValueRevision1_1,
@@ -245,8 +238,6 @@ var LP5SetInfo = map[int]LP5Set{
 		 * Set to 0x02.
 		 */
 		busWidthEncoding: 0x02,
-
-		lp5xOverrideType: LP5XSPDValueMemoryType,
 	},
 }
 
@@ -473,12 +464,12 @@ func LP5GetBankGroups(memAttribs *LP5MemAttributes) int {
 }
 
 func LP5EncodeMemoryType(memAttribs *LP5MemAttributes) byte {
-	var b byte = LP5SPDValueMemoryType
+	var b byte
 
 	if memAttribs.LP5X {
-		if f, ok := LP5SetInfo[LP5CurrSet]; ok {
-			b = f.lp5xOverrideType
-		}
+		b = LP5XSPDValueMemoryType
+	} else {
+		b = LP5SPDValueMemoryType
 	}
 	return b
 }

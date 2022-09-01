@@ -15,9 +15,18 @@
 #include <string.h>
 #include <thread.h>
 #include <timestamp.h>
+#include <xxhash.h>
 
 #define DEFAULT_MRC_CACHE	"RW_MRC_CACHE"
 #define DEFAULT_MRC_CACHE_SIZE	FMAP_SECTION_RW_MRC_CACHE_SIZE
+
+#if CONFIG(SOC_AMD_COMMON_BLOCK_APOB_HASH)
+#define MRC_HASH_SIZE		((uint32_t)sizeof(uint64_t))
+#else
+#define MRC_HASH_SIZE		0
+#endif
+#define MRC_HASH_OFFSET		(DEFAULT_MRC_CACHE_SIZE-MRC_HASH_SIZE)
+#define MRC_HASH_UNINITIALIZED	0xffffffffull
 
 #if !CONFIG_PSP_APOB_DRAM_ADDRESS
 #error Incorrect APOB configuration setting(s)
@@ -38,15 +47,17 @@ struct apob_base_header {
 
 static bool apob_header_valid(const struct apob_base_header *apob_header_ptr, const char *where)
 {
+	uint32_t size_plus_hash = apob_header_ptr->size + MRC_HASH_SIZE;
+
 	if (apob_header_ptr->signature != APOB_SIGNATURE) {
 		printk(BIOS_WARNING, "Invalid %s APOB signature %x\n",
 			where, apob_header_ptr->signature);
 		return false;
 	}
 
-	if (apob_header_ptr->size == 0 || apob_header_ptr->size > DEFAULT_MRC_CACHE_SIZE) {
-		printk(BIOS_WARNING, "%s APOB data is too large %x > %x\n",
-			where, apob_header_ptr->size, DEFAULT_MRC_CACHE_SIZE);
+	if (apob_header_ptr->size == 0 || size_plus_hash > DEFAULT_MRC_CACHE_SIZE) {
+		printk(BIOS_WARNING, "%s APOB data is too large (%x + %x) > %x\n",
+			where, apob_header_ptr->size, MRC_HASH_SIZE, DEFAULT_MRC_CACHE_SIZE);
 		return false;
 	}
 
@@ -104,7 +115,7 @@ void start_apob_cache_read(void)
 {
 	struct apob_thread_context *thread = &global_apob_thread;
 
-	if (!CONFIG(COOP_MULTITASKING))
+	if (!CONFIG(COOP_MULTITASKING) || CONFIG(SOC_AMD_COMMON_BLOCK_APOB_HASH))
 		return;
 
 	/* We don't perform any comparison on S3 resume */
@@ -139,13 +150,33 @@ static void *get_apob_from_nv_rdev(struct region_device *read_rdev)
 	return rdev_mmap_full(read_rdev);
 }
 
+static uint64_t get_apob_hash_from_nv_rdev(const struct region_device *read_rdev)
+{
+	uint64_t hash;
+
+	if (rdev_readat(read_rdev, &hash, MRC_HASH_OFFSET, MRC_HASH_SIZE) < 0) {
+		printk(BIOS_ERR, "Couldn't read APOB hash!\n");
+		return MRC_HASH_UNINITIALIZED;
+	}
+
+	return hash;
+}
+
+static void update_apob_nv_hash(uint64_t hash, struct region_device *write_rdev)
+{
+	if (rdev_writeat(write_rdev, &hash, MRC_HASH_OFFSET, MRC_HASH_SIZE) < 0) {
+		printk(BIOS_ERR, "APOB hash flash region update failed\n");
+	}
+}
+
 /* Save APOB buffer to flash */
 static void soc_update_apob_cache(void *unused)
 {
-	struct apob_base_header *apob_rom;
+	struct apob_base_header *apob_rom = NULL;
 	struct region_device read_rdev, write_rdev;
 	bool update_needed = false;
 	const struct apob_base_header *apob_src_ram;
+	uint64_t ram_hash, nv_hash;
 
 	/* Nothing to update in case of S3 resume. */
 	if (acpi_is_wakeup_s3())
@@ -160,9 +191,23 @@ static void soc_update_apob_cache(void *unused)
 
 	timestamp_add_now(TS_AMD_APOB_READ_START);
 
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_APOB_HASH)) {
+		nv_hash = get_apob_hash_from_nv_rdev(&read_rdev);
+		ram_hash = xxh64(apob_src_ram, apob_src_ram->size, 0);
+
+		if (nv_hash != ram_hash) {
+			printk(BIOS_INFO, "APOB RAM hash differs from flash\n");
+			update_needed = true;
+		} else {
+			printk(BIOS_DEBUG, "APOB hash matches flash\n");
+			timestamp_add_now(TS_AMD_APOB_END);
+			return;
+		}
+	}
+
 	if (CONFIG(COOP_MULTITASKING) && thread_join(&global_apob_thread.handle) == CB_SUCCESS)
 		apob_rom = (struct apob_base_header *)global_apob_thread.buffer;
-	else
+	else if (!update_needed)
 		apob_rom = get_apob_from_nv_rdev(&read_rdev);
 
 	if (apob_rom == NULL) {
@@ -201,6 +246,9 @@ static void soc_update_apob_cache(void *unused)
 		printk(BIOS_ERR, "APOB flash region update failed\n");
 		return;
 	}
+
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_APOB_HASH))
+		update_apob_nv_hash(ram_hash, &write_rdev);
 
 	timestamp_add_now(TS_AMD_APOB_END);
 

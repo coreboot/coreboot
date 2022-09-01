@@ -3,3 +3,9 @@ config SOC_AMD_COMMON_BLOCK_APOB
 	help
 	  Select this option to add firmware support for the non-volatile APOB
 	  cache to the build.
+
+config SOC_AMD_COMMON_BLOCK_APOB_HASH
+	bool
+	help
+	  Select this to use a hash of the APOB data to determine when to update
+	  the non-volatile APOB store.

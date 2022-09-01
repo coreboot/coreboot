@@ -182,12 +182,6 @@ Method (GC6O, 0, Serialized)
 /* GCOFF exit sequence */
 Method (PGON, 0, Serialized)
 {
-	If (GPPS == GPU_POWER_STATE_ON)
-	{
-		Printf ("PGON: GPU already on")
-		Return
-	}
-
 	Local0 = Timer - GCOT
 	If (Local0 < MIN_OFF_TIME_TIMERS)
 	{
@@ -234,12 +228,6 @@ Method (PGON, 0, Serialized)
 /* GCOFF entry sequence */
 Method (PGOF, 0, Serialized)
 {
-	If (GPPS == GPU_POWER_STATE_OFF)
-	{
-		Printf ("GPU already off")
-		Return
-	}
-
 	/* Assert PERST# */
 	CTXS (GPIO_GPU_PERST_L)
 
@@ -278,6 +266,12 @@ Method (PGOF, 0, Serialized)
 /* GCOFF Out, i.e. full power-on sequence */
 Method (GCOO, 0, Serialized)
 {
+	If (GPPS == GPU_POWER_STATE_ON)
+	{
+		Printf ("PGON: GPU already on")
+		Return
+	}
+
 	SRCC (SRCCLK_ENABLE)
 	PGON ()
 	\_SB.PCI0.PEG0.LD23 ()
@@ -310,9 +304,14 @@ Method (GCOO, 0, Serialized)
 /* GCOFF In, i.e. full power-off sequence */
 Method (GCOI, 0, Serialized)
 {
+	If (GPPS == GPU_POWER_STATE_OFF)
+	{
+		Printf ("GPU already off")
+		Return
+	}
+
 	/* Save the PEG port's LTR setting */
 	SLTR = LREN
-
 	\_SB.PCI0.PEG0.DL23 ()
 	PGOF ()
 	SRCC (SRCCLK_DISABLE)

@@ -174,6 +174,12 @@ static void mainboard_final(struct device *dev)
 	pmc_soc_set_afterg3_en(on);
 }
 
+static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t)
+{
+	t->count = smbios_add_string(t->eos, eeprom_read_serial(board_part_number, "N/A"));
+	t->count = smbios_add_string(t->eos, eeprom_read_serial(product_part_number, "N/A"));
+}
+
 #if CONFIG(HAVE_ACPI_TABLES)
 static void mainboard_acpi_fill_ssdt(const struct device *dev)
 {
@@ -219,6 +225,7 @@ static void mainboard_enable(struct device *dev)
 	mb_usb2_fp2_pwr_enable(1);
 
 	dev->ops->final = mainboard_final;
+	dev->ops->get_smbios_strings = mainboard_smbios_strings;
 
 #if CONFIG(HAVE_ACPI_TABLES)
 	dev->ops->acpi_fill_ssdt = mainboard_acpi_fill_ssdt;

@@ -39,7 +39,7 @@ int check_signature(const size_t offset, const uint64_t signature)
  */
 static bool get_board_settings_from_eeprom(struct eeprom_board_settings *board_cfg)
 {
-	const size_t board_settings_offset = offsetof(struct eeprom_layout, BoardSettings);
+	const size_t board_settings_offset = offsetof(struct eeprom_layout, board_settings);
 
 	if (eeprom_read_buffer(board_cfg, board_settings_offset, sizeof(*board_cfg))) {
 		printk(BIOS_ERR, "CFG EEPROM: Failed to read board settings\n");
@@ -72,7 +72,7 @@ struct eeprom_board_settings *get_board_settings(void)
 
 struct eeprom_bmc_settings *get_bmc_settings(void)
 {
-	const size_t bmc_settings_offset = offsetof(struct eeprom_layout, BMCSettings);
+	const size_t bmc_settings_offset = offsetof(struct eeprom_layout, bmc_settings);
 	static struct eeprom_bmc_settings bmc_cfg = {0};
 
 	/* 0: uninitialized, 1: settings are valid */
@@ -120,10 +120,10 @@ bool eeprom_read_buffer(void *blob, size_t read_offset, size_t size)
 			break;
 
 		/* Write to UPD */
-		uint8_t *writePointer = (uint8_t *)blob + i;
-		writePointer[0] = tmp[0];
+		uint8_t *write_ptr = (uint8_t *)blob + i;
+		write_ptr[0] = tmp[0];
 		if (size - i > 1)
-			writePointer[1] = tmp[1];
+			write_ptr[1] = tmp[1];
 	}
 
 	/* Restore I2C_EN bit */
@@ -182,7 +182,7 @@ static bool eeprom_write_byte(const uint8_t data, const uint16_t write_offset)
  */
 bool write_board_settings(const struct eeprom_board_layout *new_layout)
 {
-	const size_t off = offsetof(struct eeprom_layout, BoardLayout);
+	const size_t off = offsetof(struct eeprom_layout, board_layout);
 	struct eeprom_board_layout old_layout = {0};
 	bool ret = false;
 	bool changed = false;

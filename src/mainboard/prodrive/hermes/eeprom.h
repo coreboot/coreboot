@@ -73,27 +73,27 @@ struct __packed eeprom_bmc_settings {
 /* The EEPROM on address 0x57 has the following vendor defined layout: */
 struct __packed eeprom_layout {
 	union {
-		uint8_t RawFSPMUPD[0x600];
+		uint8_t raw_fspm_upd[0x600];
 		FSPM_UPD mupd;
 	};
 	union {
-		uint8_t RawFSPSUPD[0xc00];
+		uint8_t raw_fsps_upd[0xc00];
 		FSPS_UPD supd;
 	};
 	union {
-		uint8_t RawBoardLayout[0x400];
-		struct eeprom_board_layout BoardLayout;
+		uint8_t raw_board_layout[0x400];
+		struct eeprom_board_layout board_layout;
 	};
 	char system_serial_number[HERMES_SERIAL_NUMBER_LENGTH];
 	char board_serial_number[HERMES_SERIAL_NUMBER_LENGTH];
-	uint8_t BootOrder[0x8c0];
+	uint8_t boot_order[0x8c0];
 	union {
-		uint8_t RawBoardSetting[0xf8];
-		struct eeprom_board_settings BoardSettings;
+		uint8_t raw_board_settings[0xf8];
+		struct eeprom_board_settings board_settings;
 	};
 	union {
-		uint8_t RawBMCSetting[0x8];
-		struct eeprom_bmc_settings BMCSettings;
+		uint8_t raw_bmc_settings[0x8];
+		struct eeprom_bmc_settings bmc_settings;
 	};
 };
 
@@ -123,5 +123,5 @@ bool write_board_settings(const struct eeprom_board_layout *new_layout);
 		}									\
 	} while (0)
 
-#define READ_EEPROM_FSP_M(dest, opt_name) READ_EEPROM(FSPM_UPD, RawFSPMUPD, dest, opt_name)
-#define READ_EEPROM_FSP_S(dest, opt_name) READ_EEPROM(FSPS_UPD, RawFSPSUPD, dest, opt_name)
+#define READ_EEPROM_FSP_M(dest, opt_name) READ_EEPROM(FSPM_UPD, raw_fspm_upd, dest, opt_name)
+#define READ_EEPROM_FSP_S(dest, opt_name) READ_EEPROM(FSPS_UPD, raw_fsps_upd, dest, opt_name)

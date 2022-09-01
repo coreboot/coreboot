@@ -350,7 +350,7 @@ chip soc/intel/skylake
 				register "generic.desc" = ""Synaptics Touchpad""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E3_IRQ)"
 				register "generic.wake" = "GPE0_DW2_16"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 0x2c on end
 			end

@@ -398,14 +398,14 @@ chip soc/intel/cannonlake
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_B3_IRQ)"
-				register "probed" = "1"
+				register "detect" = "1"
 				device i2c 2c on end
 			end
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_B3_IRQ)"
-				register "probed" = "1"
+				register "detect" = "1"
 				device i2c 15 on end
 			end
 		end # I2C #1

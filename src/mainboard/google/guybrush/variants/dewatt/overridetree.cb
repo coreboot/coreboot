@@ -139,7 +139,7 @@ chip soc/amd/cezanne
 			register "desc" = ""ELAN Touchpad""
 			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_9)"
 			register "wake" = "GEVENT_22"
-			register "probed" = "1"
+			register "detect" = "1"
 			device i2c 15 on end
 		end
 		chip drivers/i2c/hid
@@ -147,7 +147,7 @@ chip soc/amd/cezanne
 			register "generic.desc" = ""Synaptics Touchpad""
 			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_9)"
 			register "generic.wake" = "GEVENT_22"
-			register "generic.probed" = "1"
+			register "generic.detect" = "1"
 			register "hid_desc_reg_offset" = "0x20"
 			device i2c 2c on end
 		end

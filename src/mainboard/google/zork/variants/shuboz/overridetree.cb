@@ -158,7 +158,7 @@ chip soc/amd/picasso
 			register "desc" = ""ELAN Touchpad""
 			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_9)"
 			register "wake" = "GEVENT_22"
-			register "probed" = "1"
+			register "detect" = "1"
 			device i2c 15 on
 				probe TOUCHPAD REGULAR_TOUCHPAD
 			end
@@ -168,7 +168,7 @@ chip soc/amd/picasso
 			register "generic.desc" = ""ELAN Touchpad""
 			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_9)"
 			register "generic.wake" = "GEVENT_22"
-			register "generic.probed" = "1"
+			register "generic.detect" = "1"
 			register "hid_desc_reg_offset" = "0x01"
 			device i2c 15 on
 				probe TOUCHPAD NUMPAD_TOUCHPAD

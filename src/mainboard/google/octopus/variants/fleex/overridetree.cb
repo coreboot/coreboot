@@ -158,7 +158,7 @@ chip soc/intel/apollolake
 				register "desc" = ""ELAN Touchpad""
 				register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPIO_135_IRQ)"
 				register "wake" = "GPE0_DW3_27"
-				register "probed" = "1"
+				register "detect" = "1"
 				device i2c 15 on end
 			end
 			chip drivers/i2c/hid
@@ -166,7 +166,7 @@ chip soc/intel/apollolake
 				register "generic.desc" = ""Goodix Touchpad""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_135_IRQ)"
 				register "generic.wake" = "GPE0_DW3_27"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 2c on end
 			end

@@ -149,7 +149,7 @@ chip soc/intel/jasperlake
 				register "desc" = ""ELAN Touchpad""
 				register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_B3_IRQ)"
 				register "wake" = "GPE0_DW0_03"
-				register "probed" = "1"
+				register "detect" = "1"
 				device i2c 15 on end
 			end
 			chip drivers/i2c/hid
@@ -157,7 +157,7 @@ chip soc/intel/jasperlake
 				register "generic.desc" = ""Zinitix Touchpad""
 				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
 				register "generic.wake" = "GPE0_DW0_03"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0xE"
 				device i2c 40 on end
 			end

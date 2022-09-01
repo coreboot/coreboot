@@ -270,7 +270,7 @@ chip soc/intel/apollolake
 				register "desc" = ""ELAN Touchpad""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_18_IRQ)"
 				register "wake" = "GPE0_DW1_15"
-				register "probed" = "1"
+				register "detect" = "1"
 				device i2c 15 on end
 			end
 		end # - I2C 4

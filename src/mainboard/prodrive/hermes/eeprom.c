@@ -7,6 +7,7 @@
 #include <device/pci_ops.h>
 #include <device/smbus_host.h>
 #include <soc/intel/common/block/smbus/smbuslib.h>
+#include <string.h>
 #include <types.h>
 
 #include "eeprom.h"
@@ -86,6 +87,17 @@ struct eeprom_bmc_settings *get_bmc_settings(void)
 		valid = 1;
 	}
 	return &bmc_cfg;
+}
+
+const char *eeprom_read_serial(const size_t offset, const char *const fallback)
+{
+	static char serial_no[HERMES_SERIAL_NUMBER_LENGTH] = { 0 };
+	memset(serial_no, 0, sizeof(serial_no));
+
+	if (eeprom_read_buffer(serial_no, offset, sizeof(serial_no)) == 0)
+		return serial_no;
+	else
+		return fallback;
 }
 
 uint8_t get_bmc_hsi(void)

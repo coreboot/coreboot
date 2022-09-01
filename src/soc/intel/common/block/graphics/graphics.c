@@ -180,6 +180,7 @@ static const struct device_operations graphics_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= gma_init,
+	.final			= pci_dev_request_bus_master,
 	.ops_pci		= &pci_dev_ops_pci,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt		= gma_generate_ssdt,

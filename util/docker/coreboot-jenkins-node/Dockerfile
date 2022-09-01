@@ -25,6 +25,7 @@ USER root
 RUN apt-get -y update && \
 	apt-get -y install \
 		default-jre-headless \
+		libcmocka-dev \
 		liblua5.3-dev \
 		linkchecker \
 		lua5.3 \

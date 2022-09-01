@@ -279,6 +279,9 @@ postcar-y += crc_byte.c
 ramstage-y += crc_byte.c
 smm-y += crc_byte.c
 
+romstage-y += xxhash.c
+ramstage-y += xxhash.c
+
 postcar-y += bootmode.c
 postcar-y += boot_device.c
 postcar-y += cbfs.c

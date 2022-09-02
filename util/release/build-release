@@ -40,15 +40,16 @@ if ! tar --sort=name -cf /dev/null /dev/null 2>/dev/null ; then
 fi
 
 if [ ! -d "coreboot-${VERSION_NAME}" ]; then
+	declare -a GIT_REF_OPTS
 	if [ -d .git ]; then
-		GIT_REF_OPTS="--reference . --dissociate"
+		GIT_REF_OPTS=("--reference" "." "--dissociate")
 	elif [ -d ../../.git ]; then
-		GIT_REF_OPTS="--reference ../.. --dissociate"
+		GIT_REF_OPTS=("--reference" "../.." "--dissociate")
 	fi
 	if [ -n "${USERNAME}" ]; then
-		git clone ${GIT_REF_OPTS} "ssh://${USERNAME}@review.coreboot.org:29418/coreboot.git" "coreboot-${VERSION_NAME}"
+		git clone "${GIT_REF_OPTS[@]}" "ssh://${USERNAME}@review.coreboot.org:29418/coreboot.git" "coreboot-${VERSION_NAME}" --
 	else
-		git clone ${GIT_REF_OPTS} https://review.coreboot.org/coreboot.git "coreboot-${VERSION_NAME}"
+		git clone "${GIT_REF_OPTS[@]}" https://review.coreboot.org/coreboot.git "coreboot-${VERSION_NAME}" --
 	fi
 fi
 
@@ -76,13 +77,15 @@ exclude_paths+="3rdparty/intel-microcode "
 exclude_paths+="3rdparty/amd_blobs "
 exclude_paths+="3rdparty/qc_blobs "
 
+declare -a blobs_paths
+declare -a exclude_opts
 for i in ${exclude_paths}; do
-	blobs_paths+="coreboot-${VERSION_NAME}/${i} "
-	exclude_opts+="--exclude=coreboot-${VERSION_NAME}/${i} "
+	blobs_paths+=("coreboot-${VERSION_NAME}/${i}")
+	exclude_opts+=("--exclude=coreboot-${VERSION_NAME}/${i}")
 done
 
-tar --sort=name --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore ${exclude_opts} -cvf - "coreboot-${VERSION_NAME}" |xz -9 > "coreboot-${VERSION_NAME}.tar.xz"
-tar --sort=name --mtime="$tstamp" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore -cvf - ${blobs_paths} |xz -9 > "coreboot-blobs-${VERSION_NAME}.tar.xz"
+tar --sort=name --mtime="${tstamp}" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore "${exclude_opts[@]}" -cvf - "coreboot-${VERSION_NAME}" |xz -9 > "coreboot-${VERSION_NAME}.tar.xz"
+tar --sort=name --mtime="${tstamp}" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore -cvf - "${blobs_paths[@]}" |xz -9 > "coreboot-blobs-${VERSION_NAME}.tar.xz"
 
 if [ -n "${GPG_KEY_ID}" ]; then
 	gpg --armor --local-user "$GPG_KEY_ID" --output "coreboot-${VERSION_NAME}.tar.xz.sig" --detach-sig "coreboot-${VERSION_NAME}.tar.xz"

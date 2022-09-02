@@ -12,7 +12,8 @@ GPG_KEY_ID=$4
 set -e
 
 if [ -z "$GPG_TTY" ]; then
-	export GPG_TTY=$(tty)
+	GPG_TTY=$(tty)
+	export GPG_TTY
 fi
 
 # set local + tz to be reproducible
@@ -21,7 +22,7 @@ LANG=C
 TZ=UTC0
 export LC_ALL LANG TZ
 
-if [ -z "$VERSION_NAME" ] || [ "$VERSION_NAME" = "--help" ] || [ -z "$COMMIT_ID" ]; then
+if [ -z "${VERSION_NAME}" ] || [ "${VERSION_NAME}" = "--help" ] || [ -z "${COMMIT_ID}" ]; then
 	echo "usage: $0 <version> <commit id> [username] [gpg key id]"
 	echo "Tags a new coreboot version and creates a tar archive"
 	echo
@@ -39,7 +40,9 @@ if ! tar --sort=name -cf /dev/null /dev/null 2>/dev/null ; then
 	exit 1
 fi
 
-if [ ! -d "coreboot-${VERSION_NAME}" ]; then
+# Clone new copy of repo if needed
+if [ ! -d "coreboot-${VERSION_NAME}/.git" ]; then
+	rm -rf "coreboot-${VERSION_NAME}"
 	declare -a GIT_REF_OPTS
 	if [ -d .git ]; then
 		GIT_REF_OPTS=("--reference" "." "--dissociate")
@@ -53,29 +56,31 @@ if [ ! -d "coreboot-${VERSION_NAME}" ]; then
 	fi
 fi
 
-cd "coreboot-${VERSION_NAME}" || exit 1
-if [ -n "$COMMIT_ID" ]; then
-	git reset --hard "$COMMIT_ID"
-fi
+# Handle everything that needs to be done from inside the new coreboot
+# directory. Use requested version, update submodules, and get ready to
+# run from outside a git repository, and create a signed tag to push.
+(
+	cd "coreboot-${VERSION_NAME}" || exit 1
+	if [ -n "${COMMIT_ID}" ]; then
+		git reset --hard "${COMMIT_ID}"
+	fi
 
-util/crossgcc/buildgcc -W > .crossgcc-version
+	util/crossgcc/buildgcc -W > .crossgcc-version
 
-git submodule update --init --checkout
-if [ -n "$GPG_KEY_ID" ]; then
-	git tag -a -s -u "$GPG_KEY_ID" --force "$VERSION_NAME" -m "coreboot version $VERSION_NAME"
-else
-	git tag -a --force "$VERSION_NAME" -m "coreboot version $VERSION_NAME"
-fi
+	git submodule update --init --checkout
+	if [ -n "${GPG_KEY_ID}" ]; then
+		git tag -a -s -u "$GPG_KEY_ID" --force "${VERSION_NAME}" -m "coreboot version ${VERSION_NAME}" --
+	else
+		git tag -a --force "${VERSION_NAME}" -m "coreboot version ${VERSION_NAME}" --
+	fi
 
-printf "%s-%s\n" "$VERSION_NAME"  "$(git log --pretty=%h -1)" > .coreboot-version
-tstamp=$(git log --pretty=format:%ci -1)
-cd ..
+	printf "%s-%s\n" "$VERSION_NAME"  "$(git log --pretty=%h -1)" > .coreboot-version
+)
 
-exclude_paths="3rdparty/blobs "
-exclude_paths+="3rdparty/fsp "
-exclude_paths+="3rdparty/intel-microcode "
-exclude_paths+="3rdparty/amd_blobs "
-exclude_paths+="3rdparty/qc_blobs "
+tstamp=$(tr "-" " " < "coreboot-${VERSION_NAME}/.coreboot-version")
+
+# Create the two tarballs, source and blobs.
+exclude_paths="3rdparty/blobs 3rdparty/fsp 3rdparty/intel-microcode 3rdparty/amd_blobs 3rdparty/qc_blobs"
 
 declare -a blobs_paths
 declare -a exclude_opts
@@ -87,6 +92,7 @@ done
 tar --sort=name --mtime="${tstamp}" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore "${exclude_opts[@]}" -cvf - "coreboot-${VERSION_NAME}" |xz -9 > "coreboot-${VERSION_NAME}.tar.xz"
 tar --sort=name --mtime="${tstamp}" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore -cvf - "${blobs_paths[@]}" |xz -9 > "coreboot-blobs-${VERSION_NAME}.tar.xz"
 
+# Sign the tarballs
 if [ -n "${GPG_KEY_ID}" ]; then
 	gpg --armor --local-user "$GPG_KEY_ID" --output "coreboot-${VERSION_NAME}.tar.xz.sig" --detach-sig "coreboot-${VERSION_NAME}.tar.xz"
 	gpg --armor --local-user "$GPG_KEY_ID" --output "coreboot-blobs-${VERSION_NAME}.tar.xz.sig" --detach-sig "coreboot-blobs-${VERSION_NAME}.tar.xz"

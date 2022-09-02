@@ -82,7 +82,7 @@ static void bridge_anx7625_power_on(void)
 	gpio_output(GPIO_EN_PP3300_EDPBRDG, 1);
 	mdelay(14);
 	gpio_output(GPIO_EDPBRDG_PWREN, 1);
-	mdelay(10);
+	mdelay(80);
 	gpio_output(GPIO_EDPBRDG_RST_L, 1);
 }
 

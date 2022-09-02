@@ -69,6 +69,8 @@ chip soc/intel/alderlake
 		.tdp_pl1_override = 30,
 	}"
 
+	register "tcc_offset" = "6"
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf
@@ -82,68 +84,63 @@ chip soc/intel/alderlake
 				## Active Policy
 				register "policies.active" = "{
 					[0] = {
-						.target = DPTF_CPU,
+						.target = DPTF_TEMP_SENSOR_0,
 						.thresholds = {
-								TEMP_PCT(80, 97),
-								TEMP_PCT(65, 93),
-								TEMP_PCT(58, 86),
-								TEMP_PCT(50, 80),
-								TEMP_PCT(45, 64),
-								TEMP_PCT(43, 52),
-								TEMP_PCT(40, 47),
+								TEMP_PCT(90, 97),
+								TEMP_PCT(60, 80),
+								TEMP_PCT(55, 70),
+								TEMP_PCT(50, 64),
+								TEMP_PCT(45, 54),
+								TEMP_PCT(42, 47),
+								TEMP_PCT(38, 43),
 								TEMP_PCT(35, 40),
+								TEMP_PCT(33, 36),
+								TEMP_PCT(30, 32),
 						}
 					},
 					[1] = {
-						.target = DPTF_TEMP_SENSOR_0,
+						.target = DPTF_TEMP_SENSOR_1,
 						.thresholds = {
-								TEMP_PCT(75, 97),
-								TEMP_PCT(70, 93),
-								TEMP_PCT(60, 86),
-								TEMP_PCT(52, 80),
-								TEMP_PCT(47, 64),
-								TEMP_PCT(43, 52),
-								TEMP_PCT(40, 47),
+								TEMP_PCT(90, 97),
+								TEMP_PCT(60, 80),
+								TEMP_PCT(55, 70),
+								TEMP_PCT(50, 64),
+								TEMP_PCT(45, 54),
+								TEMP_PCT(42, 47),
+								TEMP_PCT(38, 43),
 								TEMP_PCT(35, 40),
+								TEMP_PCT(33, 36),
+								TEMP_PCT(30, 32),
 						}
 					},
 					[2] = {
-						.target = DPTF_TEMP_SENSOR_1,
+						.target = DPTF_TEMP_SENSOR_2,
 						.thresholds = {
-								TEMP_PCT(75, 97),
-								TEMP_PCT(70, 93),
-								TEMP_PCT(60, 86),
-								TEMP_PCT(52, 80),
-								TEMP_PCT(47, 64),
-								TEMP_PCT(43, 52),
-								TEMP_PCT(40, 47),
+								TEMP_PCT(90, 97),
+								TEMP_PCT(60, 80),
+								TEMP_PCT(55, 70),
+								TEMP_PCT(50, 64),
+								TEMP_PCT(45, 54),
+								TEMP_PCT(42, 47),
+								TEMP_PCT(38, 43),
 								TEMP_PCT(35, 40),
+								TEMP_PCT(33, 36),
+								TEMP_PCT(30, 32),
 						}
 					},
 					[3] = {
-						.target = DPTF_TEMP_SENSOR_2,
-						.thresholds = {
-								TEMP_PCT(75, 97),
-								TEMP_PCT(70, 93),
-								TEMP_PCT(60, 86),
-								TEMP_PCT(52, 80),
-								TEMP_PCT(47, 64),
-								TEMP_PCT(43, 52),
-								TEMP_PCT(40, 47),
-								TEMP_PCT(35, 40),
-						}
-					},
-					[4] = {
 						.target = DPTF_TEMP_SENSOR_3,
 						.thresholds = {
-								TEMP_PCT(75, 97),
-								TEMP_PCT(70, 93),
-								TEMP_PCT(60, 86),
-								TEMP_PCT(52, 80),
-								TEMP_PCT(47, 64),
-								TEMP_PCT(43, 52),
-								TEMP_PCT(40, 47),
+								TEMP_PCT(90, 97),
+								TEMP_PCT(60, 80),
+								TEMP_PCT(55, 70),
+								TEMP_PCT(50, 64),
+								TEMP_PCT(45, 54),
+								TEMP_PCT(42, 47),
+								TEMP_PCT(38, 43),
 								TEMP_PCT(35, 40),
+								TEMP_PCT(33, 36),
+								TEMP_PCT(30, 32),
 						}
 					}
 				}"
@@ -160,10 +157,10 @@ chip soc/intel/alderlake
 				## Critical Policy
 				register "policies.critical" = "{
 					[0] = DPTF_CRITICAL(CPU,               100, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      93, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      93, SHUTDOWN),
-					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      93, SHUTDOWN),
-					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,      93, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      97, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      97, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      97, SHUTDOWN),
+					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,      97, SHUTDOWN),
 				}"
 
 				register "controls.power_limits" = "{

@@ -9,19 +9,29 @@ import (
 	"review.coreboot.org/coreboot.git/util/intelp2m/parser"
 )
 
+var (
+	// Version is injected into main during project build
+	Version string = "Unknown"
+)
+
+// printVersion - print the utility version in the console
+func printVersion() {
+	fmt.Printf("[ intelp2m ] Version: %s\n", Version)
+}
+
 // generateOutputFile - generates include file
 // parser            : parser data structure
 func generateOutputFile(parser *parser.ParserData) (err error) {
-
-	config.OutputGenFile.WriteString(`/* SPDX-License-Identifier: GPL-2.0-only */
+	header := fmt.Sprintf(`/* SPDX-License-Identifier: GPL-2.0-only */
 
 #ifndef CFG_GPIO_H
 #define CFG_GPIO_H
 
 #include <gpio.h>
 
-/* Pad configuration was generated automatically using intelp2m utility */
-static const struct pad_config gpio_table[] = {`)
+/* Pad configuration was generated automatically using intelp2m %s */
+static const struct pad_config gpio_table[] = {`, Version)
+	config.OutputGenFile.WriteString(header + "\n")
 	// Add the pads map
 	parser.PadMapFprint()
 	config.OutputGenFile.WriteString(`};
@@ -48,14 +58,14 @@ func main() {
 
 	nonCheckFlag := flag.Bool("n",
 		false,
-		"Generate macros without checking.\n" +
-		"\tIn this case, some fields of the configuration registers\n" +
-		"\tDW0 will be ignored.\n")
+		"Generate macros without checking.\n"+
+			"\tIn this case, some fields of the configuration registers\n"+
+			"\tDW0 will be ignored.\n")
 
-	infoLevels := []*bool {
-		flag.Bool("i",    false, "Show pads function in the comments"),
-		flag.Bool("ii",   false, "Show DW0/DW1 value in the comments"),
-		flag.Bool("iii",  false, "Show ignored bit fields in the comments"),
+	infoLevels := []*bool{
+		flag.Bool("i", false, "Show pads function in the comments"),
+		flag.Bool("ii", false, "Show DW0/DW1 value in the comments"),
+		flag.Bool("iii", false, "Show ignored bit fields in the comments"),
 		flag.Bool("iiii", false, "Show target PAD_CFG() macro in the comments"),
 	}
 
@@ -64,7 +74,7 @@ func main() {
 		"\t1 - gpio.h\n"+
 		"\t2 - your template\n\t")
 
-	platform :=  flag.String("p", "snr", "set platform:\n"+
+	platform := flag.String("p", "snr", "set platform:\n"+
 		"\tsnr - Sunrise PCH or Skylake/Kaby Lake SoC\n"+
 		"\tlbg - Lewisburg PCH with Xeon SP\n"+
 		"\tapl - Apollo Lake SoC\n"+
@@ -75,11 +85,12 @@ func main() {
 		"\tmtl - MeteorLake SoC\n"+
 		"\tebg - Emmitsburg PCH with Xeon SP\n")
 
-	fieldstyle :=  flag.String("fld", "none", "set fields macros style:\n"+
+	fieldstyle := flag.String("fld", "none", "set fields macros style:\n"+
 		"\tcb  - use coreboot style for bit fields macros\n"+
 		"\tfsp - use fsp style\n"+
 		"\traw - do not convert, print as is\n")
 
+	printVersion()
 	flag.Parse()
 
 	config.IgnoredFieldsFlagSet(*ignFlag)
@@ -88,7 +99,7 @@ func main() {
 	for level, flag := range infoLevels {
 		if *flag {
 			config.InfoLevelSet(level + 1)
-			fmt.Printf("Info level: Use level %d!\n", level + 1)
+			fmt.Printf("Info level: Use level %d!\n", level+1)
 			break
 		}
 	}

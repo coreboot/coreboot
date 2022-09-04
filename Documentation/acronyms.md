@@ -11,6 +11,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 `acpihelp _XXX`
 * 2FA - [**Two-factor Authentication**](https://en.wikipedia.org/wiki/Multi-factor_authentication)
 * 4G - In coreboot, this typically refers to the 4 gibibyte boundary of 32-bit addressable memory space.
+  Better abbreviated as 4GiB
 * 5G - Telecommunication: [**Fifth-Generation Cellular Network**](https://en.wikipedia.org/wiki/5G)
 
 ## A
@@ -45,6 +46,10 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * ALIB - AMD: ACPI-ASL Library
 * ALS - [**Ambient Light Sensor**](https://en.wikipedia.org/wiki/Ambient_light_sensor)
 * ALU - [**Arithmetic Logic Unit**](https://en.wikipedia.org/wiki/Arithmetic_logic_unit)
+* AMBA - ARM: [**Advanced Microcontroller Bus
+  Architecture**](https://en.wikipedia.org/wiki/Advanced_Microcontroller_Bus_Architecture):
+  An open standard to connect and manage functional blocks in an SoC
+  (System on a Chip)
 * AMD64 - Another name for [**x86-64**](https://en.wikipedia.org/wiki/X86-64)
 * AMPL - AMD: [**Advanced Platform Management Link**](https://web.archive.org/web/20220509053546/https://developer.amd.com/wordpress/media/2012/10/419181.pdf) - Also referred to as
   SBI: Sideband Interface
@@ -53,8 +58,8 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * AOAC - AMD: Always On, Always Connected
 * AP - Application processor - The main processor on the board (as
   opposed to the embedded controller or other processors that may be on
-  the system), any cores in processor chip that isn’t the BSP - Boot
-  Strap Processor.
+  the system), any cores in the processor chip that aren't the BSP (Boot
+  Strap Processor).
 * APCB - AMD: AMD PSP Customization Block
 * API - [**Application Programming Interface**](https://en.wikipedia.org/wiki/API)
 * APIC - [**Advanced Programmable Interrupt
@@ -123,6 +128,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   stored as a single object, this was co-opted by the open source
   communities to mean any proprietary binary file that is not available
   as source code.
+* BM - [**Bus Master**](https://en.wikipedia.org/wiki/Bus_mastering)
 * BMC - [**Baseboard Management Controller**](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface#Baseboard_management_controller)
 * BMP - [**Bitmap**](https://en.wikipedia.org/wiki/BMP_file_format)
 * BOM - [**Bill of Materials**](https://en.wikipedia.org/wiki/Bill_of_materials)
@@ -165,7 +171,8 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * CID - [**Coverity ID**](https://en.wikipedia.org/wiki/Coverity)
 * CIM - [**Common Information Model**](https://www.dmtf.org/standards/cim)
 * CISC - [**Complex Instruction Set Computer**](https://en.wikipedia.org/wiki/Complex_instruction_set_computer)
-* CL - Change List - A git patch in gerrit
+* CL - ChangeList - Another name for a patch or commit.  This seems to be
+  Perforce notation.
 * CLK - Clock - Used when there isn't enough room for 2 additional
   characters - similar to RST, for people who hate vowels.
 * CML - Intel: [**Comet Lake**](https://en.wikichip.org/wiki/intel/microarchitectures/comet_lake)
@@ -180,6 +187,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * CNVi - Intel: [**Connectivity Integration**](https://en.wikipedia.org/wiki/CNVi)
 * CPL - x86: Current Privilege Level - Privilege levels range from 0-3; lower numbers are more privileged.
 * CPLD - [**Complex Programmable Logic Device**](https://en.wikipedia.org/wiki/Complex_programmable_logic_device)
+* CPPC - AMD: Collaborative Processor Performance Controls
 * CPS - Characters Per Second
 * CPU - [**Central Processing
   Unit**](http://en.wikipedia.org/wiki/Central_processing_unit)
@@ -196,12 +204,14 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * CSI - MIPI: [**Camera Serial
   Interface**](https://en.wikipedia.org/wiki/Camera_Serial_Interface)
 * CSME - Intel: Converged Security and Management Engine
+* CTLE - Intel: Continuous Time Linear Equalization
 * CVE - [**Common Vulnerabilities and Exposures**](https://en.wikipedia.org/wiki/Common_Vulnerabilities_and_Exposures)
-* CZN - AMD: Cezanne - CPU Family 19h, Model 50h
+* CZN - AMD: [**Cezanne**](https://en.wikichip.org/wiki/amd/cores/cezanne) - CPU Family 19h, Model 50h
 
 
 ## D
 
+* D$ - Data Cache
 * D-States - [**ACPI Device power
   states**](https://en.wikipedia.org/wiki/Advanced_Configuration_and_Power_Interface#Device_states)
   D0-D3 - These are device specific power states, with each higher
@@ -223,6 +233,8 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * DDC - [**Display Data Channel**](https://en.wikipedia.org/wiki/Display_Data_Channel)
 * DDI -  Intel: Digital Display Interface
 * DDR - [**Double Data Rate**](https://en.wikipedia.org/wiki/Double_data_rate)
+* DEVAPC - Mediatek: Device Access Permission Control
+* DFP - USB: Downstream Facing port
 * DHCP - [**Dynamic Host Configuration Protocol**](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol)
 * DID - Device Identifier
 * DIMM - [**Dual Inline Memory Module**](https://en.wikipedia.org/wiki/DIMM)
@@ -243,6 +255,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * DNV - Intel: [**Denverton**](https://en.wikichip.org/wiki/intel/cores/denverton)
 * DOS - Disk Operating System
 * DP - DisplayPort
+* DPM - Mediatek: DRAM Power Manager
 * DPTF - Intel: Dynamic Power and Thermal Framework
 * DRAM - Memory: [**Dynamic Random Access Memory**](https://en.wikipedia.org/wiki/Dynamic_random-access_memory)
 * DRTM - Dynamic Root of Trust for Measurement
@@ -250,7 +263,10 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   data-in pin is generally referred to as D, and the data-out pin is Q,
   thus the IO Data signal lines are referred to as DQ lines.
 * DQS - Memory: Data Q Strobe - Data valid signal for DDR memory.
-* DRM - [**Digital Rights Management**](https://en.wikipedia.org/wiki/Digital_rights_management)
+* DRM - [**Digital Rights
+  Management**](https://en.wikipedia.org/wiki/Digital_rights_management)
+* DRP - USB: Port than can be switched between either a Downstream facing (DFP) or
+  an Upstream Facing (UFP).
 * DRQ - DMA Request
 * DRTU - Intel: Diagnostics and Regulatory Testing Utility
 * DSDT - The [**Differentiated System Descriptor
@@ -262,12 +278,15 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * DSL - [**Digital subscriber line**](https://en.wikipedia.org/wiki/Digital_subscriber_line)
 * DSP - [**Digital Signal Processor**](https://en.wikipedia.org/wiki/Digital_signal_processor)
 * DTB - U-Boot: Device Tree Binary
-* dTPM - Discrete Trusted Platform Module
+* dTPM - Discrete TPM (Trusted Platform Module) - A separate TPM chip,
+  vs Integrated TPMs or fTPMs (Firmware TPMs).
 * DTS - U-Boot: Device Tree Source
 * DVFS - ARM: Dynamic Voltage and Frequency Scaling
 * DVI - [**Digital Video Interface**](https://en.wikipedia.org/wiki/Digital_Visual_Interface)
 * DVT - Production Timeline: Design Validation Test
-* DW - DesignWare
+* DW - DesignWare: A portfolio of silicon IP blocks for sale by the
+  Synopsys company.  Includes blocks like USB, MIPI, PCIe, HDMI, SATA,
+  I2c, memory controllers and more.
 * DXE - UEFI:  [**Driver Execution Environment**](https://en.wikipedia.org/wiki/Unified_Extensible_Firmware_Interface#DXE_%E2%80%93_Driver_Execution_Environment_)
 * DXIO - AMD: Distributed CrossBar I/O
 
@@ -283,7 +302,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   Out**](https://en.wikipedia.org/wiki/Dynamic_random-access_memory#Extended_data_out_DRAM)
   - A DRAM standard introduced in 1994 that improved upon, but was
   backwards compatible with FPM (Fast Page Mode) memory.
-* EDP - [**Embedded DisplayPort**](DisplayPort)
+* eDP - [**Embedded DisplayPort**](https://en.wikipedia.org/wiki/DisplayPort#eDP)
 * EDS - Intel: External Design Specification
 * EEPROM - [**Electrically Erasable Programmable ROM**](https://en.wikipedia.org/wiki/EEPROM) (common mistake:
   electrical erasable programmable ROM).
@@ -340,7 +359,9 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * FSB - [**Front-Side Bus**](https://en.wikipedia.org/wiki/Front-side_bus)
 * FSP - Intel: Firmware Support Package
 * FTP - Network Protocol: [**File Transfer Protocol**](https://en.wikipedia.org/wiki/File_Transfer_Protocol)
-* FTPM - Firmware TPM
+* fTPM - Firmware TPM (Trusted Platform Module).  This is a TPM that is
+  based in firmware instead of actual hardware.  It typically runs in
+  some sort of TEE (Trusted Execution Environment).
 
 
 ## G
@@ -407,6 +428,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 
 ## I
 
+* I$ - Instruction Cache
 * I2C - **Inter-Integrated Circuit** is a bidirectional 2-wire bus for
   communication generally between different ICs on a circuit board.
   * [https://www.esacademy.com/en/library/technical-articles-and-documents/miscellaneous/i2c-bus.html](https://www.esacademy.com/en/library/technical-articles-and-documents/miscellaneous/i2c-bus.html)
@@ -540,6 +562,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * MCU - [**MicroController
   Unit**](https://en.wikipedia.org/wiki/Microcontroller)
 * MDFIO - Intel: Multi-Die Fabric IO
+* MDN - AMD: Mendocino
 * ME - Intel: Management Engine
 * MEI - Intel: ME Interface (Previously known as HECI)
 * Memory training - the process of finding the best speeds, voltages,
@@ -578,9 +601,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   OS software writers to produce SMP-capable machines and OSes in a
   vendor-independent manner. Version 1.1 of the spec was released in
   1994, and the 1.4 version was released in 1995.  This has been
-  generally been
-  https://en.wikipedia.org/wiki/MultiProcessor_Specification by the ACPI
-  tables.
+  generally superseded by the ACPI tables.
 * MRC - Intel: Memory Reference Code
 * MSB - Most Significant Bit
 * MSI - Message Signaled Interrupt
@@ -621,8 +642,8 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 
 * ODH - GPIOs: Open Drain High - High is driven to the reference voltage, low is a high-impedance state
 * ODL - GPIOs: Open Drain Low - Low is driven to ground, High is a high-impedance state.
-* ODM - Original Design Manufacturer
-* OEM - Original Equipment Manufacturer
+* ODM - [**Original Design Manufacturer**](https://en.wikipedia.org/wiki/Original_design_manufacturer)
+* OEM - [**Original Equipment Manufacturer**](https://en.wikipedia.org/wiki/Original_equipment_manufacturer)
 * OHCI - [**Open Host Controller
   Interface**](https://en.wikipedia.org/wiki/Host_Controller_Interface_%28USB%29)
   - non-proprietary USB Host controller for USB 1.1 (May also refer to
@@ -669,7 +690,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   function's configuration space from 256 bytes to 4K.
 * PCIe - [**PCI Express**](http://en.wikipedia.org/wiki/Pci_express)
 * PCMCIA: Personal Computer Memory Card International Association
-* PCO - AMD: Picasso
+* PCO - AMD: [**Picasso**](https://en.wikichip.org/wiki/amd/cores/picasso)
 * PCR: TPM: Platform Configuration Register
 * PD - GPIOs: Pull-Down - Setting the pin high drives it to the reference voltage.  Setting it low drives it to ground through a resistor.
 * PD - Power Delivery - This is a specification for communicating power
@@ -873,6 +894,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * SPI - [**Serial Peripheral
   Interface**](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface)
 * SPL - AMD: Security Patch Level
+* SPM - Mediatek: System Power Manager
 * SPMI - MIPI: System Power Management Interface
 * SRAM - Static Random Access Memory
 * SSD - Solid State Drive
@@ -889,7 +911,9 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   Bay**](https://en.wikipedia.org/wiki/SSI_CEB)
 * SSI-TEB - Physical board format: [**SSI Thin Electronics
   Bay**](https://en.wikipedia.org/wiki/SSI_CEB)
+* SSP - [**Speech Signal Processor**](https://en.wikipedia.org/wiki/Speech_processing)
 * STAPM - AMD: Skin Temperature Aware Power Management
+* STB - AMD: Smart Trace Buffer
 * SuperIO - The [**Super I/O**](https://en.wikipedia.org/wiki/Super_I/O)
   (SIO) device provides a system with any of a number of different
   peripherals.  Most common are: A PS/2 Keyboard and mouse port, LPT
@@ -909,7 +933,8 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * TDMA - Time-Division Multiple Access
 * TDP - [**Thermal Design
   Power**](https://en.wikipedia.org/wiki/Thermal_design_power)
-* TEE - Trusted Execution Environment
+* TEE - [**Trusted Execution
+  Environment**](https://en.wikipedia.org/wiki/Trusted_execution_environment)
 * TFTP - Network Protocol: Trivial File Transfer Protocol
 * TGL - Intel: Tigerlake
 * THC - Touch Host Controller
@@ -919,6 +944,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * TLA - Three Letter Acronym
 * TLB - [**Translation Lookside
   Buffer**](https://en.wikipedia.org/wiki/Translation_lookaside_buffer)
+* TME - Intel: Total Memory Encryption
 * TOCTOU - Time-Of-Check to Time-Of-Use
 * TOLUM - Top of Low Usable Memory
 * ToM - Top of Memory
@@ -927,6 +953,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * TSC - [**Time Stamp
   Counter**](https://en.wikipedia.org/wiki/Time_Stamp_Counter)
 * TSEG - TOM (Top of Memory) Segment
+* TSR - Temperature Sensor
 * TWAIN - Technology without an interesting name.
 * TX - Transmit
 * TXE - Intel: Trusted eXecution Engine
@@ -940,6 +967,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * UDK - UEFI: UEFI Development Kit
 * UDP - User Datagram Protocol
 * UEFI - Unified Extensible Firmware Interface
+* UFP - USB: Upstream Facing Port
 * UFS - Universal Flash storage
 * UHCI - USB: [**Universal Host Controller
   Interface**](https://en.wikipedia.org/wiki/Host_controller_interface_%28USB%2C_Firewire%29%23UHCI)
@@ -989,6 +1017,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   tablets, it's on the the side away from the screen.
 * WDT - [**WatchDog Timer**](https://en.wikipedia.org/wiki/Watchdog_timer)
 * WLAN - Wireless LAN (Local Area Network)
+* WWAN - Telecommunication: Wireless WAN (Wide Area Network)
 * WP - Cache policy: [**Write-Protected**](https://en.wikipedia.org/wiki/Cache_%28computing%29)
 * WO - Write-only
 * WOL - [**Wake-on-LAN**](https://en.wikipedia.org/wiki/Wake-on-LAN)

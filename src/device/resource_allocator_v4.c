@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
-#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <memrange.h>
@@ -22,17 +20,6 @@ static bool dev_has_children(const struct device *dev)
 {
 	const struct bus *bus = dev->link_list;
 	return bus && bus->children;
-}
-
-static resource_t effective_limit(const struct resource *const res)
-{
-	/* Always allow bridge resources above 4G. */
-	if (res->flags & IORESOURCE_BRIDGE)
-		return res->limit;
-
-	const resource_t quirk_4g_limit =
-		res->flags & IORESOURCE_ABOVE_4G ? UINT64_MAX : UINT32_MAX;
-	return MIN(res->limit, quirk_4g_limit);
 }
 
 #define res_printk(depth, str, ...)	printk(BIOS_DEBUG, "%*c"str, depth, ' ', __VA_ARGS__)
@@ -108,8 +95,22 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 		 * starts at the domain level takes into account all these constraints
 		 * thus working on a global view.
 		 */
-		if (effective_limit(child_res) < bridge_res->limit)
-			bridge_res->limit = effective_limit(child_res);
+		if (child_res->limit < bridge_res->limit)
+			bridge_res->limit = child_res->limit;
+
+		/*
+		 * Propagate the downstream resource request to allocate above 4G
+		 * boundary to upstream bridge resource. This ensures that during
+		 * pass 2, the resource allocator at domain level has a global view
+		 * of all the downstream device requirements and thus address space
+		 * is allocated as per updated flags in the bridge resource.
+		 *
+		 * Since the bridge resource is a single window, all the downstream
+		 * resources of this bridge resource will be allocated in space above
+		 * the 4G boundary.
+		 */
+		if (child_res->flags & IORESOURCE_ABOVE_4G)
+			bridge_res->flags |= IORESOURCE_ABOVE_4G;
 
 		/*
 		 * Alignment value of 0 means that the child resource has no alignment
@@ -222,6 +223,129 @@ static unsigned char get_alignment_by_resource_type(const struct resource *res)
 	die("Unexpected resource type: flags(%d)!\n", res->flags);
 }
 
+/*
+ * If the resource is NULL or if the resource is not assigned, then it
+ * cannot be used for allocation for downstream devices.
+ */
+static bool is_resource_invalid(const struct resource *res)
+{
+	return (res == NULL) || !(res->flags & IORESOURCE_ASSIGNED);
+}
+
+static void initialize_domain_io_resource_memranges(struct memranges *ranges,
+						    const struct resource *res,
+						    unsigned long memrange_type)
+{
+	memranges_insert(ranges, res->base, res->limit - res->base + 1, memrange_type);
+}
+
+static void initialize_domain_mem_resource_memranges(struct memranges *ranges,
+						     const struct resource *res,
+						     unsigned long memrange_type)
+{
+	resource_t res_base;
+	resource_t res_limit;
+
+	const resource_t limit_4g = 0xffffffff;
+
+	res_base = res->base;
+	res_limit = res->limit;
+
+	/*
+	 * Split the resource into two separate ranges if it crosses the 4G
+	 * boundary. Memrange type is set differently to ensure that memrange
+	 * does not merge these two ranges. For the range above 4G boundary,
+	 * given memrange type is ORed with IORESOURCE_ABOVE_4G.
+	 */
+	if (res_base <= limit_4g) {
+
+		resource_t range_limit;
+
+		/* Clip the resource limit at 4G boundary if necessary. */
+		range_limit = MIN(res_limit, limit_4g);
+		memranges_insert(ranges, res_base, range_limit - res_base + 1, memrange_type);
+
+		/*
+		 * If the resource lies completely below the 4G boundary, nothing more
+		 * needs to be done.
+		 */
+		if (res_limit <= limit_4g)
+			return;
+
+		/*
+		 * If the resource window crosses the 4G boundary, then update res_base
+		 * to add another entry for the range above the boundary.
+		 */
+		res_base = limit_4g + 1;
+	}
+
+	if (res_base > res_limit)
+		return;
+
+	/*
+	 * If resource lies completely above the 4G boundary or if the resource
+	 * was clipped to add two separate ranges, the range above 4G boundary
+	 * has the resource flag IORESOURCE_ABOVE_4G set. This allows domain to
+	 * handle any downstream requests for resource allocation above 4G
+	 * differently.
+	 */
+	memranges_insert(ranges, res_base, res_limit - res_base + 1,
+			 memrange_type | IORESOURCE_ABOVE_4G);
+}
+
+/*
+ * This function initializes memranges for domain device. If the
+ * resource crosses 4G boundary, then this function splits it into two
+ * ranges -- one for the window below 4G and the other for the window
+ * above 4G. The latter range has IORESOURCE_ABOVE_4G flag set to
+ * satisfy resource requests from downstream devices for allocations
+ * above 4G.
+ */
+static void initialize_domain_memranges(struct memranges *ranges, const struct resource *res,
+					unsigned long memrange_type)
+{
+	unsigned char align = get_alignment_by_resource_type(res);
+
+	memranges_init_empty_with_alignment(ranges, NULL, 0, align);
+
+	if (is_resource_invalid(res))
+		return;
+
+	if (res->flags & IORESOURCE_IO)
+		initialize_domain_io_resource_memranges(ranges, res, memrange_type);
+	else
+		initialize_domain_mem_resource_memranges(ranges, res, memrange_type);
+}
+
+/*
+ * This function initializes memranges for bridge device. Unlike domain,
+ * bridge does not need to care about resource window crossing 4G
+ * boundary. This is handled by the resource allocator at domain level
+ * to ensure that all downstream bridges are allocated space either
+ * above or below 4G boundary as per the state of IORESOURCE_ABOVE_4G
+ * for the respective bridge resource.
+ *
+ * So, this function creates a single range of the entire resource
+ * window available for the bridge resource. Thus all downstream
+ * resources of the bridge for the given resource type get allocated
+ * space from the same window. If there is any downstream resource of
+ * the bridge which requests allocation above 4G, then all other
+ * downstream resources of the same type under the bridge get allocated
+ * above 4G.
+ */
+static void initialize_bridge_memranges(struct memranges *ranges, const struct resource *res,
+					unsigned long memrange_type)
+{
+	unsigned char align = get_alignment_by_resource_type(res);
+
+	memranges_init_empty_with_alignment(ranges, NULL, 0, align);
+
+	if (is_resource_invalid(res))
+		return;
+
+	memranges_insert(ranges, res->base, res->limit - res->base + 1, memrange_type);
+}
+
 static void print_resource_ranges(const struct device *dev, const struct memranges *ranges)
 {
 	const struct range_entry *r;
@@ -259,13 +383,12 @@ static void allocate_child_resources(struct bus *bus, struct memranges *ranges,
 		if (!resource->size)
 			continue;
 
-		if (memranges_steal(ranges, effective_limit(resource), resource->size,
-				    resource->align, type_match, &resource->base,
-				    allocate_top_down) == false) {
+		if (memranges_steal(ranges, resource->limit, resource->size, resource->align,
+				    type_match, &resource->base, allocate_top_down) == false) {
 			printk(BIOS_ERR, "  ERROR: Resource didn't fit!!! ");
 			printk(BIOS_DEBUG, "  %s %02lx *  size: 0x%llx limit: %llx %s\n",
-			       dev_path(dev), resource->index, resource->size,
-			       effective_limit(resource), resource2str(resource));
+			       dev_path(dev), resource->index,
+			       resource->size, resource->limit, resource2str(resource));
 			continue;
 		}
 
@@ -348,8 +471,8 @@ static void constrain_domain_resources(const struct device *domain, struct memra
 
 /*
  * This function creates a list of memranges of given type using the
- * resource that is provided. If the given resource is unassigned or if
- * the resource window size is 0, then it creates an empty list. This
+ * resource that is provided. If the given resource is NULL or if the
+ * resource window size is 0, then it creates an empty list. This
  * results in resource allocation for that resource type failing for
  * all downstream devices since there is nothing to allocate from.
  *
@@ -363,17 +486,16 @@ static void constrain_domain_resources(const struct device *domain, struct memra
 static void setup_resource_ranges(const struct device *dev, const struct resource *res,
 				  unsigned long type, struct memranges *ranges)
 {
-	const unsigned char alignment = get_alignment_by_resource_type(res);
-
 	printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %d gran: %d limit: %llx\n",
 	       dev_path(dev), resource2str(res), res->base, res->size, res->align,
 	       res->gran, res->limit);
 
-	memranges_init_empty_with_alignment(ranges, NULL, 0, alignment);
-	if (res->flags & IORESOURCE_ASSIGNED)
-		memranges_insert(ranges, res->base, res->limit - res->base + 1, type);
-	if (dev->path.type == DEVICE_PATH_DOMAIN)
+	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+		initialize_domain_memranges(ranges, res, type);
 		constrain_domain_resources(dev, ranges, type);
+	} else {
+		initialize_bridge_memranges(ranges, res, type);
+	}
 
 	print_resource_ranges(dev, ranges);
 }
@@ -486,12 +608,26 @@ static void allocate_domain_resources(const struct device *domain)
 	 * the resource allocation at domain level considers mem and prefmem
 	 * together when finding the best fit based on the biggest resource
 	 * requirement.
+	 *
+	 * However, resource requests for allocation above 4G boundary need to
+	 * be handled separately if the domain resource window crosses this
+	 * boundary. There is a single window for resource of type
+	 * IORESOURCE_MEM. When creating memranges, this resource is split into
+	 * two separate ranges -- one for the window below 4G boundary and other
+	 * for the window above 4G boundary (with IORESOURCE_ABOVE_4G flag set).
+	 * Thus, when allocating child resources, requests for below and above
+	 * the 4G boundary are handled separately by setting the type_mask and
+	 * type_match to allocate_child_resources() accordingly.
 	 */
 	res = find_domain_resource(domain, IORESOURCE_MEM);
 	if (res) {
 		setup_resource_ranges(domain, res, IORESOURCE_MEM, &ranges);
 		allocate_child_resources(domain->link_list, &ranges,
-					 IORESOURCE_TYPE_MASK, IORESOURCE_MEM);
+					 IORESOURCE_TYPE_MASK | IORESOURCE_ABOVE_4G,
+					 IORESOURCE_MEM);
+		allocate_child_resources(domain->link_list, &ranges,
+					 IORESOURCE_TYPE_MASK | IORESOURCE_ABOVE_4G,
+					 IORESOURCE_MEM | IORESOURCE_ABOVE_4G);
 		cleanup_resource_ranges(domain, &ranges, res);
 	}
 

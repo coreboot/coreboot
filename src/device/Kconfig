@@ -934,7 +934,7 @@ config RESOURCE_ALLOCATOR_V4
 	  above 4G boundary as well.
 
 config RESOURCE_ALLOCATION_TOP_DOWN
-	bool "Allocate resources from top down" if !PCIEXP_HOTPLUG_PREFETCH_MEM_ABOVE_4G
+	bool "Allocate resources from top down"
 	default y
 	depends on RESOURCE_ALLOCATOR_V4
 

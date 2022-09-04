@@ -5,7 +5,7 @@
 # DESCR: Check for superfluous whitespace in the tree
 
 LC_ALL=C export LC_ALL
-EXCLUDELIST='^src/vendorcode/|^util/kconfig/|^util/nvidia/cbootimage$|COPYING|LICENSE|README|_shipped$|\.patch$|\.bin$|\.hex$|\.jpg$|\.gif$|\.ttf$|\.woff$|\.png$|\.eot$|\.vbt$|\.ico$|\.md$'
+EXCLUDELIST='^src/vendorcode/|^util/kconfig/|^util/nvidia/cbootimage$|^util/goswid$|COPYING|LICENSE|README|_shipped$|\.patch$|\.bin$|\.hex$|\.jpg$|\.gif$|\.ttf$|\.woff$|\.png$|\.eot$|\.vbt$|\.ico$|\.md$'
 INCLUDELIST="src util payloads Makefile* toolchain.inc tests"
 
 # shellcheck disable=SC2086,SC2046

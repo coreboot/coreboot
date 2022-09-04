@@ -935,8 +935,11 @@ config RESOURCE_ALLOCATOR_V4
 
 config RESOURCE_ALLOCATION_TOP_DOWN
 	bool "Allocate resources from top down"
-	default y
+	default n
 	depends on RESOURCE_ALLOCATOR_V4
+	help
+	  Should be the default, but many platforms don't report resources
+	  correctly. Hence, the allocator might cause conflicts.
 
 config XHCI_UTILS
 	def_bool n

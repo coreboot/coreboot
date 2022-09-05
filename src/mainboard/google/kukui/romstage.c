@@ -13,16 +13,16 @@
 #include "early_init.h"
 
 /* This must be defined in chromeos.fmd in same name and size. */
-#define CALIBRATION_REGION		"RW_DDR_TRAINING"
-#define CALIBRATION_REGION_SIZE		0x2000
+#define CAL_REGION_RW_DDR_TRAINING		"RW_DDR_TRAINING"
+#define CAL_REGION_RW_DDR_TRAINING_SIZE		0x2000
 
-_Static_assert(sizeof(struct dramc_param) <= CALIBRATION_REGION_SIZE,
-	       "sizeof(struct dramc_param) exceeds " CALIBRATION_REGION);
+_Static_assert(sizeof(struct dramc_param) <= CAL_REGION_RW_DDR_TRAINING_SIZE,
+	       "sizeof(struct dramc_param) exceeds " CAL_REGION_RW_DDR_TRAINING);
 
 static bool read_calibration_data_from_flash(struct dramc_param *dparam)
 {
 	const size_t length = sizeof(*dparam);
-	size_t ret = fmap_read_area(CALIBRATION_REGION, dparam, length);
+	size_t ret = fmap_read_area(CAL_REGION_RW_DDR_TRAINING, dparam, length);
 	printk(BIOS_DEBUG, "%s: ret=%#lx, length=%#lx\n",
 	       __func__, ret, length);
 
@@ -32,7 +32,7 @@ static bool read_calibration_data_from_flash(struct dramc_param *dparam)
 static bool write_calibration_data_to_flash(const struct dramc_param *dparam)
 {
 	const size_t length = sizeof(*dparam);
-	size_t ret = fmap_overwrite_area(CALIBRATION_REGION, dparam, length);
+	size_t ret = fmap_overwrite_area(CAL_REGION_RW_DDR_TRAINING, dparam, length);
 	printk(BIOS_DEBUG, "%s: ret=%#lx, length=%#lx\n",
 	       __func__, ret, length);
 

@@ -15,11 +15,11 @@
 #include <timer.h>
 
 /* This must be defined in chromeos.fmd in same name and size. */
-#define CALIBRATION_REGION		"RW_MRC_CACHE"
-#define CALIBRATION_REGION_SIZE		0x2000
+#define CAL_REGION_RW_MRC_CACHE			"RW_MRC_CACHE"
+#define CAL_REGION_RW_MRC_CACHE_SIZE		0x2000
 
-_Static_assert(sizeof(struct dramc_param) <= CALIBRATION_REGION_SIZE,
-	       "sizeof(struct dramc_param) exceeds " CALIBRATION_REGION);
+_Static_assert(sizeof(struct dramc_param) <= CAL_REGION_RW_MRC_CACHE_SIZE,
+	       "sizeof(struct dramc_param) exceeds " CAL_REGION_RW_MRC_CACHE);
 
 const char *get_dram_geometry_str(u32 ddr_geometry);
 const char *get_dram_type_str(u32 ddr_type);

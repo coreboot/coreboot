@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <rules.h>
-
 /*
  * This path is for stages that are post bootblock. The gdt is reloaded
  * to accommodate platforms that are executing out of CAR. In order to

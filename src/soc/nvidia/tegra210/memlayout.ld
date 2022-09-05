@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <memlayout.h>
-#include <rules.h>
 
 #include <arch/header.ld>
 

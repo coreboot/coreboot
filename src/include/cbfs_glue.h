@@ -6,7 +6,6 @@
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <security/vboot/misc.h>
-#include <rules.h>
 
 /*
  * This flag prevents linking hashing functions into stages where they're not required. We don't

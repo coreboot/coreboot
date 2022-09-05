@@ -6,7 +6,6 @@
  */
 
 #include <arch/asm.h>
-#include <rules.h>
 
 /*
  * Dcache invalidations by set/way work by passing a [way:sbz:set:sbz:level:0]

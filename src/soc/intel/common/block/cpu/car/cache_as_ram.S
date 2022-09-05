@@ -7,7 +7,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/post_code.h>
-#include <rules.h>
 #include <intelblocks/msr.h>
 
 .section .init, "ax", @progbits

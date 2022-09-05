@@ -11,6 +11,28 @@ EXCLUDED_FILES='src/include/kconfig.h'
 
 HEADER_FILES="k\?config rules compiler"
 
+TESTFILE1="src/lib/version.c"
+TESTFILE2="src/lib/string.c"
+TESTFILE3="src/lib/malloc.c"
+TESTFILE4="src/lib/hardwaremain.c"
+EXPECTED_FAILURES=4
+
+# Configure to make sure tests fail
+if [ "$1" = "--test" ]; then
+	sed -i.bak "s|^.*SPDX-License-Identifier.*|&\n\n#include <config.h>\n|" "${TESTFILE1}"
+	sed -i.bak "s|^.*SPDX-License-Identifier.*|&\n\n#include \"kconfig.h\"\n|" "${TESTFILE2}"
+	sed -i.bak "s|^.*SPDX-License-Identifier.*|&\n\n#include \"compiler.h\"\n|" "${TESTFILE3}"
+	sed -i.bak "s|^.*SPDX-License-Identifier.*|&\n\n#include <rules.h>\n|" "${TESTFILE4}"
+	echo "Expect ${EXPECTED_FAILURES} failures."
+	exit 0
+elif [ "$1" = "--reset" ]; then
+	mv "${TESTFILE1}.bak" "${TESTFILE1}"
+	mv "${TESTFILE2}.bak" "${TESTFILE2}"
+	mv "${TESTFILE3}.bak" "${TESTFILE3}"
+	mv "${TESTFILE4}.bak" "${TESTFILE4}"
+	exit 0
+fi
+
 # Use git grep if the code is in a git repo, otherwise use grep.
 if [ -n "$(command -v git)" ] && \
 	[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]

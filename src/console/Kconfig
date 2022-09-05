@@ -297,6 +297,30 @@ config CONSOLE_SPI_FLASH_BUFFER_SIZE
 	  value (128K or 0x20000 bytes) is large enough to accommodate
 	  even the BIOS_SPEW level.
 
+config CONSOLE_I2C_SMBUS
+	bool "SMBus console output"
+	depends on SOUTHBRIDGE_INTEL_COMMON_SMBUS
+	help
+	  Send coreboot debug output to the SMBus.
+	  The output can be read with an I2C slave device connected
+	  the SMBus. Please refer to the technotes section of the
+	  coreboot documentation for more details.
+
+if CONSOLE_I2C_SMBUS
+	comment "Set logging device address and data register address"
+
+config CONSOLE_I2C_SMBUS_SLAVE_ADDRESS
+	hex "I2C slave address of the logging device"
+	help
+	  I2C address of the device which logs the data.
+
+config CONSOLE_I2C_SMBUS_SLAVE_DATA_REGISTER
+	hex "Data register address of the I2C logging device"
+	help
+	  This an 8-bit data register.
+
+endif # CONSOLE_I2C_SMBUS
+
 config CONSOLE_QEMU_DEBUGCON
 	bool "QEMU debug console output"
 	depends on CPU_QEMU_X86

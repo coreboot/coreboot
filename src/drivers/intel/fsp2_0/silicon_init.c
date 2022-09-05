@@ -217,6 +217,8 @@ void fsps_load(void)
 	if (load_done)
 		return;
 
+	timestamp_add_now(TS_FSP_SILICON_INIT_LOAD);
+
 	if (resume_from_stage_cache()) {
 		printk(BIOS_DEBUG, "Loading FSPS from stage_cache\n");
 		stage_cache_load_stage(STAGE_REFCODE, fsps);
@@ -245,7 +247,6 @@ void preload_fsps(void)
 
 void fsp_silicon_init(void)
 {
-	timestamp_add_now(TS_FSP_SILICON_INIT_LOAD);
 	fsps_load();
 	do_silicon_init(&fsps_hdr);
 

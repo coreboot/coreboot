@@ -105,7 +105,7 @@ static const struct pad_config gpio_table_id0[] = {
 	/* GPP_C04 : [] ==> EN_WCAM_PWR */
 	PAD_CFG_GPO_LOCK(GPP_C04, 0, LOCK_CONFIG),
 	/* GPP_C05 : [] ==> WWAN_PERST_L_STRAP */
-	PAD_CFG_GPO(GPP_C05, 0, PLTRST),
+	PAD_CFG_GPO(GPP_C05, 1, PLTRST),
 	/* GPP_C06 : [] ==> USI_REPORT_EN */
 	PAD_CFG_GPO(GPP_C06, 0, DEEP),
 	/* GPP_C07 : [] ==> USI_INT */
@@ -370,14 +370,21 @@ static const struct pad_config gpio_table_id0[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table_id0[] = {
+	/* GPP_B17 : [] ==> EN_WWAN_PWR */
+	PAD_CFG_GPO(GPP_B17, 1, DEEP),
 	/* GPP_B18 : [] ==> SOC_I2C_TPM_SDA */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF2),
 	/* GPP_B19 : [] ==> SOC_I2C_TPM_SCL */
 	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF2),
-
+	/* GPP_C05 : [] ==> WWAN_PERST_L_STRAP (updated in ramstage) */
+	PAD_CFG_GPO(GPP_C05, 0, DEEP),
+	/* GPP_A15 : [] ==> WWAN_RST_L (updated in ramstage) */
+	PAD_CFG_GPO(GPP_A15, 0, DEEP),
 	/* GPP_E03 : [] ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_E03, NONE, PLTRST, LEVEL, INVERT),
 
+	/* GPP_E07 : [] ==> WWAN_FCPO_L (updated in romstage) */
+	PAD_CFG_GPO(GPP_E07, 0, DEEP),
 	/* GPP_H08 : [] ==> UART_DBG_TX_SOC_RX_R */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
 	/* GPP_H09 : [] ==> UART_SOC_TX_DBG_RX_R */
@@ -414,6 +421,8 @@ static const struct pad_config default_early_gpio_table[] = {
 static const struct pad_config romstage_gpio_table_id0[] = {
 	/* A20  : [] ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_A20, 0, DEEP),
+	/* GPP_E07 : [] ==> WWAN_FCPO_L */
+	PAD_CFG_GPO(GPP_E07, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

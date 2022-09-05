@@ -265,6 +265,23 @@ chip soc/intel/meteorlake
 				.clk_req = 3,
 				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
 			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C05)"
+				register "reset_off_delay_ms" = "20"
+				register "srcclk_pin" = "3"
+				register "ext_pm_support" = "ACPI_PCIE_RP_EMIT_ALL"
+				register "skip_on_off_support" = "true"
+				device generic 0 alias rp6_rtd3 on end
+			end
+			chip drivers/wwan/fm
+				register "fcpo_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E07)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A15)"
+				register "perst_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C05)"
+				register "wake_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F10)"
+				register "add_acpi_dma_property" = "true"
+				use rp6_rtd3 as rtd3dev
+				device generic 0 on end
+			end
 		end	#PCIE6 WWAN card
 		device ref gspi1 on end
 		device ref soc_espi on

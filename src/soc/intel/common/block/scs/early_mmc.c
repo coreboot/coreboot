@@ -5,7 +5,6 @@
 #include <commonlib/storage/sd_mmc.h>
 #include <commonlib/sd_mmc_ctrlr.h>
 #include <commonlib/sdhci.h>
-#include <compiler.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <intelblocks/mmc.h>

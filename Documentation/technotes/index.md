@@ -5,3 +5,4 @@
 * [Unit testing coreboot](2020-03-unit-testing-coreboot.md)
 * [Unit Test Code Coverage](2021-05-code-coverage.md)
 * [Address Sanitizer](asan.md)
+* [coreboot Consoles](console.md)

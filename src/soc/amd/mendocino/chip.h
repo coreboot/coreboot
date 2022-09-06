@@ -56,6 +56,7 @@ struct soc_amd_mendocino_config {
 	uint16_t stt_error_coeff;
 	uint16_t stt_error_rate_coefficient;
 
+	/* Default */
 	uint8_t stapm_boost;
 	uint32_t stapm_time_constant_s;
 	uint32_t apu_only_sppt_limit;
@@ -64,6 +65,9 @@ struct soc_amd_mendocino_config {
 	uint32_t slow_ppt_limit_mW;
 	uint32_t slow_ppt_time_constant_s;
 	uint32_t thermctl_limit_degreeC;
+	uint32_t vrm_current_limit_mA;
+	uint32_t vrm_maximum_current_limit_mA;
+	uint32_t vrm_soc_current_limit_mA;
 
 	uint8_t smartshift_enable;
 

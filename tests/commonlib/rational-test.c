@@ -52,6 +52,6 @@ int main(void)
 		cmocka_unit_test(test_rational),
 	};
 
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	return cb_run_group_tests(tests, NULL, NULL);
 }
 

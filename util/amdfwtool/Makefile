@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
+top ?= $(abspath ../..)
 HOSTCC ?= cc
 
 READ_SRC = amdfwread.c
@@ -10,6 +11,7 @@ HEADER=amdfwtool.h
 TARGETS = amdfwread amdfwtool
 WERROR=-Werror
 CFLAGS=-O2 -Wall -Wextra -Wshadow ${WERROR}
+CFLAGS += -I $(top)/src/commonlib/bsd/include
 
 all: $(TARGETS)
 

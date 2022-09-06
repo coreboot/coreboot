@@ -3,6 +3,7 @@
 #ifndef _AMD_FW_TOOL_H_
 #define _AMD_FW_TOOL_H_
 
+#include <commonlib/bsd/compiler.h>
 #include <stdint.h>
 #include <stdbool.h>
 

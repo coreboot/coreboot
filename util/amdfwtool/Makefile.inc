@@ -3,6 +3,7 @@
 amdfwtoolobj = amdfwtool.o data_parse.o
 
 AMDFWTOOLCFLAGS=-O2 -Wall -Wextra -Wshadow -Werror
+AMDFWTOOLCFLAGS += -I $(top)/src/commonlib/bsd/include
 
 $(objutil)/amdfwtool/%.o: $(top)/util/amdfwtool/%.c # $(HEADER)
 	$(HOSTCC) $(AMDFWTOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<

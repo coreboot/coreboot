@@ -22,6 +22,13 @@ chip soc/intel/alderlake
 		[DDI_PORT_2] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 	}"
 
+	# Acoustic settings
+	register "acoustic_noise_mitigation" = "1"
+	register "slow_slew_rate[VR_DOMAIN_IA]" = "SLEW_FAST_4"
+	register "slow_slew_rate[VR_DOMAIN_GT]" = "SLEW_FAST_4"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_IA]" = "1"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_GT]" = "1"
+
 	# USB configuration
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"

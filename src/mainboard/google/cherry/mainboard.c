@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <bl31.h>
 #include <boardid.h>
 #include <bootmode.h>
 #include <console/console.h>
@@ -10,6 +9,7 @@
 #include <edid.h>
 #include <framebuffer_info.h>
 #include <gpio.h>
+#include <soc/bl31.h>
 #include <soc/ddp.h>
 #include <soc/dpm.h>
 #include <soc/dptx.h>
@@ -22,8 +22,6 @@
 #include <soc/usb.h>
 
 #include "gpio.h"
-
-#include <arm-trusted-firmware/include/export/plat/mediatek/common/plat_params_exp.h>
 
 /* GPIO to schematics names */
 #define GPIO_AP_EDP_BKLTEN GPIO(DGI_D5)
@@ -55,17 +53,6 @@ bool mainboard_needs_pcie_init(void)
 		printk(BIOS_WARNING, "Unexpected sku %#x; assuming PCIe", sku);
 		return true;
 	}
-}
-
-static void register_reset_to_bl31(void)
-{
-	static struct bl_aux_param_gpio param_reset = {
-		.h = { .type = BL_AUX_PARAM_MTK_RESET_GPIO },
-		.gpio = { .polarity = ARM_TF_GPIO_LEVEL_HIGH },
-	};
-
-	param_reset.gpio.index = GPIO_RESET.id;
-	register_bl31_aux_param(&param_reset.h);
 }
 
 /* Set up backlight control pins as output pin and power-off by default */
@@ -160,7 +147,8 @@ static void mainboard_init(struct device *dev)
 	if (spm_init())
 		printk(BIOS_ERR, "spm init failed, system suspend may not work\n");
 
-	register_reset_to_bl31();
+	if (CONFIG(ARM64_USE_ARM_TRUSTED_FIRMWARE))
+		register_reset_to_bl31(GPIO_RESET.id, true);
 }
 
 static void mainboard_enable(struct device *dev)

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <bl31.h>
 #include <bootmode.h>
 #include <console/console.h>
 #include <delay.h>
@@ -10,6 +9,7 @@
 #include <edid.h>
 #include <framebuffer_info.h>
 #include <gpio.h>
+#include <soc/bl31.h>
 #include <soc/ddp.h>
 #include <soc/dpm.h>
 #include <soc/dsi.h>
@@ -23,8 +23,6 @@
 #include <soc/usb.h>
 
 #include "gpio.h"
-
-#include <arm-trusted-firmware/include/export/plat/mediatek/common/plat_params_exp.h>
 
 #define MSDC0_BASE	0x11f60000
 #define MSDC0_TOP_BASE	0x11f50000
@@ -52,17 +50,6 @@
 #define GPIO_EN_PP3300_DISPLAY_DX	GPIO(CAM_CLK3)		/* 136 */
 #define GPIO_AP_EDP_BKLTEN		GPIO(KPROW1)		/* 152 */
 #define GPIO_BL_PWM_1V8			GPIO(DISP_PWM)		/* 40 */
-
-static void register_reset_to_bl31(void)
-{
-	static struct bl_aux_param_gpio param_reset = {
-		.h = { .type = BL_AUX_PARAM_MTK_RESET_GPIO },
-		.gpio = { .polarity = ARM_TF_GPIO_LEVEL_HIGH },
-	};
-
-	param_reset.gpio.index = GPIO_RESET.id;
-	register_bl31_aux_param(&param_reset.h);
-}
 
 /* Override hs_da_trail for ANX7625 */
 void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing)
@@ -161,7 +148,8 @@ static void mainboard_init(struct device *dev)
 	configure_audio();
 	setup_usb_host();
 
-	register_reset_to_bl31();
+	if (CONFIG(ARM64_USE_ARM_TRUSTED_FIRMWARE))
+		register_reset_to_bl31(GPIO_RESET.id, true);
 
 	if (dpm_init())
 		printk(BIOS_ERR, "dpm init fail, system can't do DVFS switch\n");

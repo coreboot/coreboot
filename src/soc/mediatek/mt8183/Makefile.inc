@@ -44,6 +44,7 @@ romstage-y += ../common/timer.c
 romstage-y += ../common/uart.c
 romstage-y += ../common/wdt.c
 
+ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += emi.c
 ramstage-y += ../common/auxadc.c
 ramstage-y += ../common/ddp.c ddp.c

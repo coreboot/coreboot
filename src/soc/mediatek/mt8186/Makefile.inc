@@ -27,6 +27,7 @@ romstage-y += ../common/pmic_wrap.c pmic_wrap.c pmif.c mt6366.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c rtc.c
 
 ramstage-y += ../common/auxadc.c
+ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += ../common/devapc.c devapc.c
 ramstage-y += ../common/dfd.c

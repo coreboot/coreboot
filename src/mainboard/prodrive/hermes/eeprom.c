@@ -38,37 +38,73 @@ int check_signature(const size_t offset, const uint64_t signature)
  * Read board settings from the EEPROM and verify their checksum.
  * If checksum is valid, we assume the settings are sane as well.
  */
-static bool get_board_settings_from_eeprom(struct eeprom_board_settings *board_cfg)
+static size_t get_board_settings_from_eeprom(struct eeprom_board_settings *board_cfg)
 {
 	const size_t board_settings_offset = offsetof(struct eeprom_layout, board_settings);
 
 	if (eeprom_read_buffer(board_cfg, board_settings_offset, sizeof(*board_cfg))) {
 		printk(BIOS_ERR, "CFG EEPROM: Failed to read board settings\n");
-		return false;
+		return 0;
 	}
 
-	const uint32_t crc =
-		CRC(&board_cfg->raw_settings, sizeof(board_cfg->raw_settings), crc32_byte);
+	/*
+	 * Ideally, the definition for board settings would always be the same across
+	 * coreboot and the BMC. However, this is not always the case. When there's a
+	 * mismatch, coreboot often has the newer definition with more settings. When
+	 * there's a mismatch, coreboot and the BMC calculate the CRC for a different
+	 * set of bytes, which results in two different CRC values.
+	 *
+	 * As existing board settings do not get repurposed, it is relatively easy to
+	 * make coreboot backwards compatible with older BMC firmware revisions which
+	 * do not provide the latest board settings. Starting with all board settings
+	 * coreboot knows about, if the CRC does not match, we drop the last byte and
+	 * try again until we find a match or exhaust all bytes.
+	 */
+	for (size_t len = sizeof(board_cfg->raw_settings); len > 0; len--) {
+		const uint32_t crc = CRC(&board_cfg->raw_settings, len, crc32_byte);
+		if (crc != board_cfg->signature)
+			continue;
 
-	if (crc != board_cfg->signature) {
-		printk(BIOS_ERR, "CFG EEPROM: Board settings have invalid checksum\n");
-		return false;
+		printk(BIOS_DEBUG, "CFG EEPROM: Board settings CRC OK for %zu / %lu bytes\n",
+				len, sizeof(board_cfg->raw_settings));
+		return len;
 	}
-	return true;
+
+	printk(BIOS_ERR, "CFG EEPROM: Board settings have invalid checksum\n");
+	return 0;
 }
 
 struct eeprom_board_settings *get_board_settings(void)
 {
+	/*
+	 * Default settings to be used if the EEPROM settings are unavailable.
+	 * Unspecified settings default to 0. These default values do not get
+	 * passed to edk2 in any way, so there is no need to provide defaults
+	 * for edk2-only options like `secureboot`.
+	 */
+	const struct eeprom_board_settings default_cfg = {
+		.deep_sx_enabled      = 1,
+		.wake_on_usb          = 1,
+		.power_state_after_g3 = !CONFIG_MAINBOARD_POWER_FAILURE_STATE,
+		.blue_rear_vref       = 2,
+		.pink_rear_vref       = 2,
+	};
+
 	static struct eeprom_board_settings board_cfg = {0};
+	static bool cfg_cached = false;
 
-	/* Tri-state: -1: settings are invalid, 0: uninitialized, 1: settings are valid */
-	static int checked_valid = 0;
+	if (cfg_cached)
+		return &board_cfg;
 
-	if (checked_valid == 0) {
-		const bool success = get_board_settings_from_eeprom(&board_cfg);
-		checked_valid = success ? 1 : -1;
-	}
-	return checked_valid > 0 ? &board_cfg : NULL;
+	const size_t valid_bytes = get_board_settings_from_eeprom(&board_cfg);
+
+	/* If we could not read all settings from the EEPROM, get the rest from defaults */
+	for (size_t i = valid_bytes; i < sizeof(board_cfg.raw_settings); i++)
+		board_cfg.raw_settings[i] = default_cfg.raw_settings[i];
+
+	cfg_cached = true;
+
+	return &board_cfg;
 }
 
 struct eeprom_bmc_settings *get_bmc_settings(void)

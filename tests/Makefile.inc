@@ -60,21 +60,63 @@ $(foreach test, $(alltests), \
 DEPENDENCIES += $(addsuffix .d,$(basename $(all-test-objs)))
 -include $(DEPENDENCIES)
 
-.PHONY: $(alltests) $(addprefix clean-,$(alltests))
+.PHONY: $(alltests) $(addprefix clean-,$(alltests)) $(addprefix try-,$(alltests))
+.PHONY: $(addprefix build-,$(alltests)) $(addprefix run-,$(alltests))
 .PHONY: unit-tests build-unit-tests run-unit-tests clean-unit-tests
+.PHONY: junit.xml-unit-tests clean-junit.xml-unit-tests
 
 # %g in CMOCKA_XML_FILE will be replaced with "__TEST_NAME__(<test-group-name>)"
 # by macro cb_run_group_tests(), which should be used for running tests.
 # __TEST_NAME__ contains test name including path e.g. tests_lib_rtc-test
 ifeq ($(JUNIT_OUTPUT),y)
-$(alltests): export CMOCKA_MESSAGE_OUTPUT=xml
-$(alltests): export CMOCKA_XML_FILE=$(testobj)/junit-%g.xml
+$(addprefix run-,$(alltests)): export CMOCKA_MESSAGE_OUTPUT=xml
+$(addprefix run-,$(alltests)): export CMOCKA_XML_FILE=$(testobj)/junit-%g.xml
 endif
 
-$(alltests): $$($$(@)-bin)
+$(addprefix run-,$(alltests)): run-%: $$(%-bin)
 	rm -f $(testobj)/junit-$(subst /,_,$(patsubst $(testobj)/%/,%,$(dir $^)))\(*\).xml
 	rm -f $(testobj)/$(subst /,_,$^).failed
 	-$^ || echo failed > $(testobj)/$(subst /,_,$^).failed
+
+$(addprefix build-,$(alltests)): build-%: $$(%-bin)
+
+$(alltests): run-$$(@)
+
+$(addprefix try-,$(alltests)): try-%: clean-% $(TEST_COMMON_DEPENDENCIES)
+	mkdir -p $(testobj)/$*
+	echo "<testcase classname='coreboot_build_unit_test' name='$*'>" >> $(testobj)/$*.tmp; \
+	$(MAKE) V=$(V) Q=$(Q) COV=$(COV) JUNIT_OUTPUT=y "build-$*" >> $(testobj)/$*.tmp.2 2>&1 \
+		&& type="system-out" || type="failure"; \
+	if [ $$type = "failure" ]; then \
+		echo "<failure type='buildFailed'>" >> $(testobj)/$*.tmp; \
+	else \
+		echo "<$$type>" >> $(testobj)/$*.tmp; \
+	fi; \
+	echo '<![CDATA[' >> $(testobj)/$*.tmp; \
+	cat $(testobj)/$*.tmp.2 >> $(testobj)/$*.tmp; \
+	echo "]]></$$type>" >> $(testobj)/$*.tmp; \
+	rm -f $(testobj)/$*.tmp.2; \
+	echo "</testcase>" >> $(testobj)/$*.tmp; \
+	if [ $$type != 'failure' ]; then \
+		$(MAKE) V=$(V) Q=$(Q) COV=$(COV) JUNIT_OUTPUT=y "run-$*"; \
+	fi
+
+
+TESTS_BUILD_XML_FILE := $(testobj)/junit-tests-build.xml
+
+$(TESTS_BUILD_XML_FILE): clean-junit.xml-unit-tests $(addprefix try-,$(alltests))
+	mkdir -p $(dir $@)
+	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@
+	for tst in $(alltests); do \
+		cat $(testobj)/$$tst.tmp >> $@; \
+	done
+	echo "</testsuite>" >> $@
+
+junit.xml-unit-tests: $(TESTS_BUILD_XML_FILE)
+
+clean-junit.xml-unit-tests:
+	rm -f $(TESTS_BUILD_XML_FILE)
+
 
 # Build a code coverage report by collecting all the gcov files into a single
 # report. If COV is not set, this might be a user error, and they're trying

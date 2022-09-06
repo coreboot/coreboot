@@ -202,18 +202,60 @@ $(TEST_KCONFIG_AUTOHEADER): $(TEST_DOTCONFIG) $(objk)/conf
 $(TEST_KCONFIG_AUTOCONFIG): $(TEST_KCONFIG_AUTOHEADER)
 	true
 
-.PHONY: $(alltests) $(addprefix clean-,$(alltests))
+.PHONY: $(alltests) $(addprefix clean-,$(alltests)) $(addprefix try-,$(alltests))
+.PHONY: $(addprefix build-,$(alltests)) $(addprefix run-,$(alltests))
 .PHONY: unit-tests build-unit-tests run-unit-tests clean-unit-tests
+.PHONY: junit.xml-unit-tests clean-junit.xml-unit-tests
 
 ifeq ($(JUNIT_OUTPUT),y)
-$(alltests): export CMOCKA_MESSAGE_OUTPUT=xml
-$(alltests): export CMOCKA_XML_FILE=$(testobj)/junit-%g.xml
+$(addprefix run-,$(alltests)): export CMOCKA_MESSAGE_OUTPUT=xml
+$(addprefix run-,$(alltests)): export CMOCKA_XML_FILE=$(testobj)/junit-libpayload-%g.xml
 endif
 
-$(alltests): $$($$(@)-bin)
+$(addprefix run-,$(alltests)): run-%: $$(%-bin)
 	rm -f $(testobj)/junit-libpayload-$(subst /,_,$(patsubst $(testobj)/%/,%,$(dir $^)))\(*\).xml
 	rm -f $(testobj)/$(subst /,_,$^).failed
 	-$^ || echo failed > $(testobj)/$(subst /,_,$^).failed
+
+$(addprefix build-,$(alltests)): build-%: $$(%-bin)
+
+$(alltests): run-$$(@)
+
+$(addprefix try-,$(alltests)): try-%: clean-% $(CMOCKA_LIB) $(TEST_KCONFIG_AUTOCONFIG)
+	mkdir -p $(testobj)/$*
+	echo "<testcase classname='libpayload_build_unit_test' name='$*'>" >> $(testobj)/$*.tmp; \
+	$(MAKE) V=$(V) Q=$(Q) COV=$(COV) JUNIT_OUTPUT=y "build-$*" >> $(testobj)/$*.tmp.2 2>&1 \
+		&& type="system-out" || type="failure"; \
+	if [ $$type = "failure" ]; then \
+		echo "<failure type='buildFailed'>" >> $(testobj)/$*.tmp; \
+	else \
+		echo "<$$type>" >> $(testobj)/$*.tmp; \
+	fi; \
+	echo '<![CDATA[' >> $(testobj)/$*.tmp; \
+	cat $(testobj)/$*.tmp.2 >> $(testobj)/$*.tmp; \
+	echo "]]></$$type>" >> $(testobj)/$*.tmp; \
+	rm -f $(testobj)/$*.tmp.2; \
+	echo "</testcase>" >> $(testobj)/$*.tmp; \
+	if [ $$type != 'failure' ]; then \
+		$(MAKE) V=$(V) Q=$(Q) COV=$(COV) JUNIT_OUTPUT=y "run-$*"; \
+	fi
+
+
+TESTS_BUILD_XML_FILE := $(testobj)/junit-libpayload-tests-build.xml
+
+$(TESTS_BUILD_XML_FILE): clean-junit.xml-unit-tests $(addprefix try-,$(alltests))
+	mkdir -p $(dir $@)
+	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@
+	for tst in $(alltests); do \
+		cat $(testobj)/$$tst.tmp >> $@; \
+	done
+	echo "</testsuite>" >> $@
+
+junit.xml-unit-tests: $(TESTS_BUILD_XML_FILE)
+
+clean-junit.xml-unit-tests:
+	rm -f $(TESTS_BUILD_XML_FILE)
+
 
 # Build a code coverage report by collecting all the gcov files into a single
 # report. If COV is not set, this might be a user error, and they're trying
@@ -254,7 +296,7 @@ run-unit-tests: $(alltests)
 		exit 0; \
 	fi
 
-$(addprefix clean-,$(alltests)): clean-%
+$(addprefix clean-,$(alltests)): clean-%:
 	rm -rf $(testobj)/$*
 
 clean-unit-tests:

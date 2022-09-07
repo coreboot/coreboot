@@ -542,6 +542,7 @@ static struct device_operations fast_spi_dev_ops = {
 
 static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_APL_HWSEQ_SPI,
+	PCI_DID_INTEL_GLK_HWSEQ_SPI,
 	0
 };
 

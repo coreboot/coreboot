@@ -82,7 +82,7 @@ chip soc/intel/alderlake
 	# Enable PCIe-to-i225 bridge using clk 1
 	register "pch_pcie_rp[PCH_RP(10)]" = "{
 		.clk_src = 1,
-		.flags = PCIE_RP_LTR | PCIE_RP_AER,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_BUILT_IN,
 		.pcie_rp_aspm = ASPM_DISABLE,
 	}"
 	register "pcie_clk_config_flag[0]" = "PCIE_CLK_FREE_RUNNING"

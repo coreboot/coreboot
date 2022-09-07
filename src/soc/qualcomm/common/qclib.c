@@ -16,6 +16,7 @@
 #include <security/vboot/misc.h>
 #include <vb2_api.h>
 #include <commonlib/bsd/mem_chip_info.h>
+#include <include/reset.h>
 
 #define QCLIB_VERSION 0
 
@@ -275,6 +276,11 @@ void qclib_load_and_run(void)
 	mmu_disable();
 	mmu_restore_context(&pre_qclib_mmu_context);
 	mmu_enable();
+
+	if (qclib_cb_if_table.global_attributes & QCLIB_GA_FORCE_COLD_REBOOT) {
+		printk(BIOS_NOTICE, "QcLib requested cold reboot\n");
+		board_reset();
+	}
 
 	/* step through I/F table, handling return values */
 	for (i = 0; i < qclib_cb_if_table.num_entries; i++)

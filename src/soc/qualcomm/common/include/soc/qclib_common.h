@@ -44,6 +44,7 @@ struct qclib_cb_if_table_entry {
 
 /* GA_BMASK_VALUES (global_attributes bit mask values) */
 #define QCLIB_GA_ENABLE_UART_LOGGING   0x00000001
+#define QCLIB_GA_FORCE_COLD_REBOOT BIT(3)
 
 #define QCLIB_INTERFACE_VERSION 0x00000001
 #define QCLIB_MAX_NUMBER_OF_ENTRIES 16

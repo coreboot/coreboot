@@ -13,6 +13,9 @@ verstage-y += chromeos.c
 romstage-y += romstage.c
 romstage-y += boardid.c
 romstage-y += chromeos.c
+ifneq ($(CONFIG_BOARD_GOOGLE_BUBS),y)
+romstage-y += reset.c
+endif
 
 ramstage-y += mainboard.c
 ifneq ($(CONFIG_BOARD_GOOGLE_BUBS),y)

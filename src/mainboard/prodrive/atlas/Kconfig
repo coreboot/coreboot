@@ -38,4 +38,8 @@ config UART_FOR_CONSOLE
 config CBFS_SIZE
 	default 0x800000
 
+# This platform has limited means to display POST codes
+config NO_POST
+	default y
+
 endif #BOARD_PRODRIVE_ATLAS_BASEBOARD

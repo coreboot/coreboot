@@ -1,0 +1,355 @@
+chip soc/intel/cannonlake
+
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	# DW1 is used by:
+	#   - GPP_C1  - PCIE_14_WLAN_WAKE_ODL
+	#   - GPP_C21 - H1_PCH_INT_ODL
+	register "gpe0_dw0" = "PMC_GPP_A"
+	register "gpe0_dw1" = "PMC_GPP_C"
+	register "gpe0_dw2" = "PMC_GPP_D"
+
+	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
+	register "gen1_dec" = "0x00fc0801"
+	register "gen2_dec" = "0x000c0201"
+	# EC memory map range is 0x900-0x9ff
+	register "gen3_dec" = "0x00fc0901"
+
+	# FSP configuration
+	register "SkipExtGfxScan" = "1"
+	register "SataSalpSupport" = "1"
+	register "SataPortsEnable[1]" = "1"
+	register "SataPortsDevSlp[1]" = "1"
+	# Configure devslp pad reset to PLT_RST
+	register "SataPortsDevSlpResetConfig[1]" = "SataDevSlpPlatformReset"
+	register "satapwroptimize" = "1"
+	# Enable System Agent dynamic frequency
+	register "SaGv" = "SaGv_Enabled"
+	# Enable S0ix
+	register "s0ix_enable" = "1"
+	# Enable DPTF
+	register "dptf_enable" = "1"
+	register "power_limits_config" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 64,
+	}"
+	register "Device4Enable" = "1"
+	# Enable eDP device
+	register "DdiPortEdp" = "1"
+	# Enable HPD for DDI ports B/C
+	register "DdiPortBHpd" = "1"
+	register "DdiPortCHpd" = "1"
+	register "tcc_offset" = "10"	# TCC of 90C
+	# Unlock GPIO pads
+	register "PchUnlockGpioPads" = "1"
+	# SD card WP pin configuration
+	register "ScsSdCardWpPinEnabled" = "0"
+
+	# NOTE: if any variant wants to override this value, use the same format
+	# as register "common_soc_config.pch_thermal_trip" = "value", instead of
+	# putting it under register "common_soc_config" in overridetree.cb file.
+	register "common_soc_config.pch_thermal_trip" = "77"
+
+	# Select CPU PL2/PL4 config
+	register "cpu_pl2_4_cfg" = "baseline"
+
+	# VR Settings Configuration for 4 Domains
+	#+----------------+-------+-------+-------+-------+
+	#| Domain/Setting |  SA   |  IA   | GTUS  |  GTS  |
+	#+----------------+-------+-------+-------+-------+
+	#| Psi1Threshold  | 20A   | 20A   | 20A   | 20A   |
+	#| Psi2Threshold  | 5A    | 5A    | 5A    | 5A    |
+	#| Psi3Threshold  | 1A    | 1A    | 1A    | 1A    |
+	#| Psi3Enable     | 1     | 1     | 1     | 1     |
+	#| Psi4Enable     | 1     | 1     | 1     | 1     |
+	#| ImonSlope      | 0     | 0     | 0     | 0     |
+	#| ImonOffset     | 0     | 0     | 0     | 0     |
+	#| IccMax         | 6A    | 70A   | 31A   | 31A   |
+	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
+	#| AcLoadline     | 10.3  | 1.8   | 3.1   | 3.1   |
+	#| DcLoadline     | 10.3  | 1.8   | 3.1   | 3.1   |
+	#+----------------+-------+-------+-------+-------+
+	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = 0,
+		.voltage_limit = 1520,
+		.ac_loadline = 1030,
+		.dc_loadline = 1030,
+	}"
+
+	register "domain_vr_config[VR_IA_CORE]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = 0,
+		.voltage_limit = 1520,
+		.ac_loadline = 180,
+		.dc_loadline = 180,
+	}"
+
+	register "domain_vr_config[VR_GT_UNSLICED]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = 0,
+		.voltage_limit = 1520,
+		.ac_loadline = 310,
+		.dc_loadline = 310,
+	}"
+
+	register "domain_vr_config[VR_GT_SLICED]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0x0,
+		.imon_offset = 0x0,
+		.icc_max = 0,
+		.voltage_limit = 1520,
+		.ac_loadline = 310,
+		.dc_loadline = 310,
+	}"
+
+	register "PchPmSlpS3MinAssert" = "2"  # 50ms
+	register "PchPmSlpS4MinAssert" = "1"  # 1s
+	register "PchPmSlpSusMinAssert" = "1" # 500ms
+	register "PchPmSlpAMinAssert" = "3"   # 98ms
+
+	# NOTE: Duration programmed in the below register should never be smaller than the
+	# stretch duration programmed in the following registers -
+	#	- GEN_PMCON_A.SLP_S3_MIN_ASST_WDTH (PchPmSlpS3MinAssert)
+	#	- GEN_PMCON_A.S4MAW (PchPmSlpS4MinAssert)
+	#	- PM_CFG.SLP_A_MIN_ASST_WDTH (PchPmSlpAMinAssert)
+	#	- PM_CFG.SLP_LAN_MIN_ASST_WDTH
+	register "PchPmPwrCycDur" = "1"       # 1s
+
+	# Enable Audio DSP oscillator qualification for S0ix
+	register "cppmvric2_adsposcdis" = "1"
+
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 0
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC2)"	# Type-C Port 1
+	register "usb2_ports[2]" = "USB2_PORT_SHORT(OC3)"	# Type-A Port 0
+	register "usb2_ports[3]" = "USB2_PORT_LONG(OC3)"	# Type-A Port 1
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# WWAN
+	register "usb2_ports[6]" = "USB2_PORT_LONG(OC_SKIP)"	# Camera
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# BT
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C Port 0
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C Port 1
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Port 0
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Port 1
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# WWAN
+
+	# Enable Root port 9(x4) for NVMe.
+	register "PcieRpEnable[8]" = "1"
+	register "PcieRpLtrEnable[8]" = "1"
+	# RP 9 uses CLK SRC 1
+	register "PcieClkSrcUsage[1]" = "8"
+	# ClkReq-to-ClkSrc mapping for CLK SRC 1
+	register "PcieClkSrcClkReq[1]" = "1"
+
+	# PCIe port 14 for M.2 E-key WLAN
+	register "PcieRpEnable[13]" = "1"
+	register "PcieRpLtrEnable[13]" = "1"
+	# RP 14 uses CLK SRC 3
+	register "PcieClkSrcUsage[3]" = "13"
+	register "PcieClkSrcClkReq[3]" = "3"
+
+	#Enable I2S Audio, SSP0, SSP1 and DMIC0, default DMIC1 N/A (by variants override)
+	register "PchHdaDspEnable" = "1"
+	register "PchHdaAudioLinkSsp0" = "1"
+	register "PchHdaAudioLinkSsp1" = "1"
+	register "PchHdaAudioLinkDmic0" = "1"
+	register "PchHdaAudioLinkDmic1" = "0"
+
+	# GPIO PM programming
+	register "gpio_override_pm" = "1"
+
+	# GPIO community PM configuration
+	# Disable dynamic clock gating; with bits 0-5 set in these registers,
+	# some short interrupt pulses were missed (esp. cr50 irq)
+	register "gpio_pm[COMM_0]" = "0"
+	register "gpio_pm[COMM_1]" = "0"
+	register "gpio_pm[COMM_2]" = "0"
+	register "gpio_pm[COMM_3]" = "0"
+	register "gpio_pm[COMM_4]" = "0"
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	device domain 0 on
+		device pci 00.0 on end # Host Bridge
+		device pci 02.0 on  end # Integrated Graphics Device
+		device pci 04.0 off end # SA Thermal device
+		device pci 05.0 off end # SA IPU
+		device pci 12.0 on end # Thermal Subsystem
+		device pci 12.5 off end # UFS SCS
+		device pci 12.6 off end # GSPI #2
+		device pci 14.0 on
+			chip drivers/usb/acpi
+				register "desc" = ""Root Hub""
+				register "type" = "UPC_TYPE_HUB"
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""Left Type-C Port""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device usb 2.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Right Type-C Port 1""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device usb 2.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Left Type-A Port""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device usb 2.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Right Type-A Port 1""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device usb 2.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""WWAN""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 2.6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C14)"
+						device usb 2.9 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Left Type-C Port""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device usb 3.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Right Type-C Port 1""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device usb 3.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Left Type-A Port""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device usb 3.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Right Type-A Port 1""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device usb 3.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""WWAN""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device usb 3.4 on end
+					end
+				end
+			end
+		end # USB xHCI
+		device pci 14.1 off end # USB xDCI (OTG)
+		device pci 14.3 on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
+		end # CNVi wifi
+		device pci 14.5 on  end # SDCard
+		device pci 15.0 on  end # I2C #0
+		device pci 15.1 on  end # I2C #1
+		device pci 15.2 on  end # I2C #2
+		device pci 15.3 on  end # I2C #3
+		device pci 16.0 on  end # Management Engine Interface 1
+		device pci 16.1 off end # Management Engine Interface 2
+		device pci 16.2 off end # Management Engine IDE-R
+		device pci 16.3 off end # Management Engine KT Redirection
+		device pci 16.4 off end # Management Engine Interface 3
+		device pci 16.5 off end # Management Engine Interface 4
+		device pci 17.0 on  end # SATA
+		device pci 19.0 on  end # I2C #4
+		device pci 19.1 off end # I2C #5
+		device pci 19.2 off end # UART #2
+		device pci 1a.0 off end # eMMC
+		device pci 1c.0 off end # PCI Express Port 1 (USB)
+		device pci 1c.1 off end # PCI Express Port 2 (USB)
+		device pci 1c.2 off end # PCI Express Port 3 (USB)
+		device pci 1c.3 off end # PCI Express Port 4 (USB)
+		device pci 1c.4 off end # PCI Express Port 5 (USB)
+		device pci 1c.5 off end # PCI Express Port 6
+		device pci 1c.6 off end # PCI Express Port 7
+		device pci 1c.7 off end # PCI Express Port 8
+		device pci 1d.0 on	# PCI Express Port 9 (X4 NVME)
+			register "PcieRpSlotImplemented[8]" = "1"
+		end
+		device pci 1d.1 off end # PCI Express Port 10
+		device pci 1d.2 off end # PCI Express Port 11
+		device pci 1d.3 off end # PCI Express Port 12
+		device pci 1d.4 off end # PCI Express port 13
+		device pci 1d.5 on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_DW1_01"
+				device pci 00.0 on  end
+			end
+			register "PcieRpSlotImplemented[13]" = "1"
+		end # PCI Express Port 14 (x4)
+		device pci 1e.0 on  end # UART #0
+		device pci 1e.1 off end # UART #1
+		device pci 1e.2 on
+			chip drivers/spi/acpi
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "compat_string" = ""google,cr50""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_C21_IRQ)"
+				device spi 0 on end
+			end
+		end # GSPI #0
+		device pci 1e.3 on end # GSPI #1
+		device pci 1f.0 on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
+		end # eSPI Interface
+		device pci 1f.1 on  end # P2SB
+		device pci 1f.2 hidden end # Power Management Controller
+		device pci 1f.3 on  end # Intel HDA
+		device pci 1f.4 on  end # SMBus
+		device pci 1f.5 on  end # PCH SPI
+		device pci 1f.6 off end # GbE
+	end
+end

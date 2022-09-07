@@ -23,7 +23,6 @@ DefinitionBlock(
 		{
 			#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 			#include <soc/intel/cannonlake/acpi/southbridge.asl>
-			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
 	}
 
@@ -36,14 +35,5 @@ DefinitionBlock(
 		#include <ec/google/chromeec/acpi/superio.asl>
 		/* ACPI code for EC functions */
 		#include <ec/google/chromeec/acpi/ec.asl>
-	}
-
-	/* Dynamic Platform Thermal Framework */
-	Scope (\_SB)
-	{
-		/* Per board variant specific definitions. */
-		#include <variant/acpi/dptf.asl>
-		/* Include common dptf ASL files */
-		#include <soc/intel/common/acpi/dptf/dptf.asl>
 	}
 }

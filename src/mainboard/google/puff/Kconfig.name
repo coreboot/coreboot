@@ -1,0 +1,40 @@
+comment "Puff"
+
+config BOARD_GOOGLE_AMBASSADOR
+	bool "->  Ambassador"
+
+config BOARD_GOOGLE_DOOLY
+	bool "->  Dooly"
+
+config BOARD_GOOGLE_DUFFY_LEGACY
+	bool "->  Duffy Legacy (32MB)"
+
+config BOARD_GOOGLE_DUFFY
+	bool "->  Duffy (ASUS Chromebox 4)"
+
+config BOARD_GOOGLE_FAFFY
+	bool "->  Faffy (ASUS Fanless Chromebox)"
+
+config BOARD_GOOGLE_GENESIS
+	bool "->  Genesis"
+
+config BOARD_GOOGLE_KAISA_LEGACY
+	bool "->  Kaisa Legacy (32MB)"
+
+config BOARD_GOOGLE_KAISA
+	bool "->  Kaisa (Acer Chromebox CXI4)"
+
+config BOARD_GOOGLE_MOONBUGGY
+	bool "->  Moonbuggy"
+
+config BOARD_GOOGLE_NOIBAT
+	bool "->  Noibat (HP Chromebox G3)"
+
+config BOARD_GOOGLE_PUFF
+	bool "->  Puff"
+
+config BOARD_GOOGLE_SCOUT
+	bool "->  Scout"
+
+config BOARD_GOOGLE_WYVERN
+	bool "->  Wyvern (CTL Chromebox CBx2)"

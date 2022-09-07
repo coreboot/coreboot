@@ -86,6 +86,7 @@ chip soc/intel/cannonlake
 			register "usb2_ports[9]"		= "USB2_PORT_MID(OC_SKIP)"
 		end
 		device pci 14.1 off end						# USB xDCI (OTG)
+		device pci 14.2 on  end						# SRAM
 		device pci 14.3 on						# CNVi
 			chip drivers/wifi/generic
 				register "wake"			= "GPE0_PME_B0"

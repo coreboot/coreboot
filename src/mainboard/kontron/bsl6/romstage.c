@@ -39,5 +39,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	memory_params->DqPinsInterleaved = true;
 	memory_params->CaVrefConfig = 2;
 
+	memory_params->UserBd = BOARD_TYPE_MOBILE;
+
 	variant_memory_init_params(mupd);
 }

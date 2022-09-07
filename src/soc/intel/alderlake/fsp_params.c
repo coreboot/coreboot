@@ -757,6 +757,8 @@ static void fill_fsps_sata_params(FSP_S_CONFIG *s_cfg,
 	 * these disable variables to 1 in devicetree overrides.
 	 */
 	s_cfg->SataPwrOptEnable = !(config->sata_pwr_optimize_disable);
+	/* Test mode for SATA margining */
+	s_cfg->SataTestMode = CONFIG(ENABLE_SATA_TEST_MODE);
 	/*
 	 *  Enable DEVSLP Idle Timeout settings DmVal and DitoVal.
 	 *  SataPortsDmVal is the DITO multiplier. Default is 15.

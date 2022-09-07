@@ -317,6 +317,12 @@ config SOC_INTEL_ALDERLAKE_S3
 	help
 	  Select if using S3 instead of S0ix to disable D3Cold.
 
+config ENABLE_SATA_TEST_MODE
+	bool "Enable test mode for SATA margining"
+	default n
+	help
+	  Enable SATA test mode in FSP-S.
+
 config SOC_INTEL_UART_DEV_MAX
 	int
 	default 7

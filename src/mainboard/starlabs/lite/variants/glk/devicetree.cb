@@ -67,6 +67,7 @@ chip soc/intel/apollolake
 		end
 		device ref p2sb		on  end
 		device ref fast_spi	on  end
+		device ref sram		on  end
 		device ref hda		on  end
 		device ref heci1	on  end
 		device ref heci2	on  end

@@ -44,7 +44,7 @@ enum {
 
 	/* Maximum found by automatic inspection (awk) */
 	DPTF_MAX_CHARGER_PERF_STATES	= 10,
-	DPTF_MAX_FAN_PERF_STATES	= 10,
+	DPTF_MAX_FAN_PERF_STATES	= 20,
 
 	/* From ACPI spec 6.3 */
 	DPTF_FIELD_UNUSED		= 0xFFFFFFFFull,

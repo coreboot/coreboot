@@ -352,25 +352,6 @@ static void fill_fsps_8254_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->Enable8254ClockGatingOnS3 = !CONFIG(USE_LEGACY_8254_TIMER);
 }
 
-static void fill_fsps_storage_params(FSP_S_CONFIG *s_cfg,
-		const struct soc_intel_meteorlake_config *config)
-{
-	/* Enable Hybrid storage auto detection */
-	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && cse_is_hfs3_fw_sku_lite()
-		&& vboot_recovery_mode_enabled() && !cse_is_hfs1_com_normal()) {
-		/*
-		 * CSE Lite SKU does not support hybrid storage dynamic configuration
-		 * in CSE RO boot, and FSP does not allow to send the strap override
-		 * HECI commands if CSE is not in normal mode; hence, hybrid storage
-		 * mode is disabled on CSE RO boot in recovery boot mode.
-		 */
-		printk(BIOS_INFO, "cse_lite: CSE RO boot. HybridStorageMode disabled\n");
-		s_cfg->HybridStorageMode = 0;
-	} else {
-		s_cfg->HybridStorageMode = config->hybrid_storage_mode;
-	}
-}
-
 static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
@@ -459,7 +440,6 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_vmd_params,
 		fill_fsps_tbt_params,
 		fill_fsps_8254_params,
-		fill_fsps_storage_params,
 		fill_fsps_pcie_params,
 		fill_fsps_misc_power_params,
 		fill_fsps_ufs_params,

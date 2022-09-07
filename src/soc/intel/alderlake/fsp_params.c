@@ -646,7 +646,7 @@ static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 
 	/* D3Hot and D3Cold for TCSS */
 	s_cfg->D3HotEnable = !config->tcss_d3_hot_disable;
-	s_cfg->D3ColdEnable = !config->tcss_d3_cold_disable;
+	s_cfg->D3ColdEnable = !CONFIG(SOC_INTEL_ALDERLAKE_S3) && !config->tcss_d3_cold_disable;
 
 	s_cfg->UsbTcPortEn = 0;
 	for (int i = 0; i < MAX_TYPE_C_PORTS; i++) {

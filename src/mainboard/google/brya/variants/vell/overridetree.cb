@@ -547,4 +547,12 @@ chip soc/intel/alderlake
 			end
 		end
 	end
+
+	# VR Settings
+	register "domain_vr_config[VR_DOMAIN_IA]" = "{
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(13),
+		.psi2threshold = VR_CFG_AMP(7),
+	}"
+
 end

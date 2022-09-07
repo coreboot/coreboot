@@ -195,6 +195,13 @@ asmlinkage void smm_handler_start(void *arg)
 	southbridge_smi_set_eos();
 }
 
+#if CONFIG(SMM_PCI_RESOURCE_STORE)
+const volatile struct smm_pci_resource_info *smm_get_pci_resource_store(void)
+{
+	return &smm_runtime.pci_resources[0];
+}
+#endif
+
 RMODULE_ENTRY(smm_handler_start);
 
 /* Provide a default implementation for all weak handlers so that relocation

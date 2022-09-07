@@ -1,6 +1,9 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 ramstage-y += smm_module_loader.c
+ramstage-$(CONFIG_SMM_PCI_RESOURCE_STORE) += pci_resource_store.c
+
+smm-$(CONFIG_SMM_PCI_RESOURCE_STORE) += pci_resource_store.c
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 $(eval $(call create_class_compiler,smm,x86_32))

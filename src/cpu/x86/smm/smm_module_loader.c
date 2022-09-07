@@ -343,6 +343,9 @@ static void setup_smihandler_params(struct smm_runtime *mod_params,
 		mod_params->smm_log_level = mainboard_set_smm_log_level();
 	else
 		mod_params->smm_log_level = 0;
+
+	if (CONFIG(SMM_PCI_RESOURCE_STORE))
+		smm_pci_resource_store_init(mod_params);
 }
 
 static void print_region(const char *name, const struct region region)

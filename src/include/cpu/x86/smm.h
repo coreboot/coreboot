@@ -5,6 +5,8 @@
 
 #include <arch/cpu.h>
 #include <commonlib/region.h>
+#include <device/pci_type.h>
+#include <device/resource.h>
 #include <types.h>
 
 #define SMM_DEFAULT_BASE 0x30000
@@ -28,6 +30,8 @@
 #define APM_CNT_SMMSTORE	0xed
 #define APM_CNT_ELOG_GSMI	0xef
 #define APM_STS		0xb3
+
+#define SMM_PCI_RESOURCE_STORE_NUM_RESOURCES 6
 
 /* Send cmd to APM_CNT with HAVE_SMI_HANDLER checking. */
 int apm_control(u8 cmd);
@@ -58,6 +62,13 @@ void smm_soc_exit(void);
 extern unsigned char _binary_smm_start[];
 extern unsigned char _binary_smm_end[];
 
+struct smm_pci_resource_info {
+	pci_devfn_t pci_addr;
+	uint16_t class_device;
+	uint8_t class_prog;
+	struct resource resources[SMM_PCI_RESOURCE_STORE_NUM_RESOURCES];
+};
+
 struct smm_runtime {
 	u32 smbase;
 	u32 smm_size;
@@ -66,6 +77,9 @@ struct smm_runtime {
 	u32 gnvs_ptr;
 	u32 cbmemc_size;
 	void *cbmemc;
+#if CONFIG(SMM_PCI_RESOURCE_STORE)
+	struct smm_pci_resource_info pci_resources[CONFIG_SMM_PCI_RESOURCE_STORE_NUM_SLOTS];
+#endif
 	uintptr_t save_state_top[CONFIG_MAX_CPUS];
 	int smm_log_level;
 } __packed;
@@ -197,5 +211,17 @@ uint32_t smm_revision(void);
 /* Returns the PM ACPI SMI port. On Intel systems this typically not configurable (APM_CNT, 0xb2).
    On AMD systems it is sometimes configurable. */
 uint16_t pm_acpi_smi_cmd_port(void);
+
+const volatile struct smm_pci_resource_info *smm_get_pci_resource_store(void);
+
+void smm_pci_get_stored_resources(const volatile struct smm_pci_resource_info **out_slots,
+				  size_t *out_size);
+/* Weak handler function to store PCI BARs. */
+void smm_mainboard_pci_resource_store_init(struct smm_pci_resource_info *slots, size_t size);
+/* Helper function to fill BARs from an array of device pointers. */
+bool smm_pci_resource_store_fill_resources(struct smm_pci_resource_info *slots, size_t num_slots,
+					   const struct device **devices, size_t num_devices);
+
+void smm_pci_resource_store_init(struct smm_runtime *smm_runtime);
 
 #endif /* CPU_X86_SMM_H */

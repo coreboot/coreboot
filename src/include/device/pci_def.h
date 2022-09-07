@@ -590,4 +590,8 @@
 #define PCI_DEV2DEVFN(sdev)		(((sdev)>>12) & 0xff)
 #define PCI_DEV2SEGBUS(sdev)	(((sdev)>>20) & 0xfff)
 
+/* Fields from within the device's class value. */
+#define PCI_CLASS_GET_DEVICE(c) (c >> 8)
+#define PCI_CLASS_GET_PROG(c) (c & 0xff)
+
 #endif /* PCI_DEF_H */

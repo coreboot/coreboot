@@ -275,8 +275,10 @@ parse_microcode_blob(struct cbfs_image *image,
 	struct cbfs_file *mcode_file;
 
 	mcode_file = cbfs_get_entry(image, blob_name);
-	if (!mcode_file)
+	if (!mcode_file) {
+		ERROR("Couldn't find microcode blob.\n");
 		return 1;
+	}
 
 	fit_location_from_cbfs_header(&current_offset, &file_length,
 				      mcode_file);
@@ -301,6 +303,11 @@ parse_microcode_blob(struct cbfs_image *image,
 		    total_size > file_length)
 			break;
 
+		if (num_mcus == max_fit_entries) {
+			ERROR("Maximum of FIT entries reached.\n");
+			return 1;
+		}
+
 		/* FIXME: Should the checksum be validated? */
 		mcus[num_mcus].offset = current_offset;
 		mcus[num_mcus].size = total_size;
@@ -309,9 +316,6 @@ parse_microcode_blob(struct cbfs_image *image,
 		current_offset += mcus[num_mcus].size;
 		file_length -= mcus[num_mcus].size;
 		num_mcus++;
-		/* Reached limit of FIT entries. */
-		if (num_mcus == max_fit_entries)
-			break;
 		if (file_length < sizeof(struct microcode_header))
 			break;
 	}
@@ -492,13 +496,6 @@ int fit_add_microcode_file(struct fit_table *fit,
 
 	if (parse_microcode_blob(image, blob_name, &mcus_found, mcus,
 				 max_fit_entries)) {
-		ERROR("Couldn't parse microcode blob.\n");
-		free(mcus);
-		return 1;
-	}
-
-	if (mcus_found > fit_free_space(fit, max_fit_entries)) {
-		ERROR("Maximum of FIT entries reached.\n");
 		free(mcus);
 		return 1;
 	}

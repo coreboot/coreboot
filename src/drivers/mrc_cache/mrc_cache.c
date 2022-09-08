@@ -693,10 +693,10 @@ int mrc_cache_stash_data(int type, uint32_t version, const void *data,
 		.signature = MRC_DATA_SIGNATURE,
 		.data_size = size,
 		.version = version,
+		.data_checksum = compute_ip_checksum(data, size),
 	};
-	if (!CONFIG(MRC_SAVE_HASH_IN_TPM))
-		md.data_checksum = compute_ip_checksum(data, size);
-	md.header_checksum = compute_ip_checksum(&md, sizeof(md));
+	md.header_checksum =
+		compute_ip_checksum(&md, sizeof(md));
 
 	if (CONFIG(MRC_STASH_TO_CBMEM)) {
 		/* Store data in cbmem for use in ramstage */

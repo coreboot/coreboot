@@ -50,7 +50,7 @@ config DRAM_SIZE_MB
 
 config OPENSBI_PLATFORM
 	string
-	default "qemu/virt"
+	default "generic"
 
 # ugly, but CBFS is placed in DRAM...
 config OPENSBI_TEXT_START

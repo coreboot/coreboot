@@ -3,6 +3,7 @@
 /* OpenSBI wants to make its own definitions for some of our compiler.h macros. */
 #undef __packed
 #undef __noreturn
+#undef __aligned
 
 #include <sbi/fw_dynamic.h>
 #include <arch/boot.h>

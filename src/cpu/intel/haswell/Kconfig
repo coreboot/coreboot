@@ -36,4 +36,7 @@ config SMM_RESERVED_SIZE
 config MAX_CPUS
 	int
 	default 8
+
+config CPU_INTEL_NUM_FIT_ENTRIES
+	default 6
 endif

@@ -297,7 +297,8 @@ parse_microcode_blob(struct cbfs_image *image,
 		uint32_t total_size = mcu_header->total_size ?: 2048;
 
 		/* Quickly sanity check a prospective microcode update. */
-		if (total_size < sizeof(*mcu_header))
+		if (total_size < sizeof(*mcu_header) ||
+		    total_size > file_length)
 			break;
 
 		/* FIXME: Should the checksum be validated? */

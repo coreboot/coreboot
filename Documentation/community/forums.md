@@ -31,7 +31,7 @@ topics, including community and technical matters that benefit from
 an official decision.
 
 We tried a whole lot of different tools, but so far the meetings worked
-best with [Google Meet](https://meet.google.com/syn-toap-agu),
+best with [Google Meet](https://meet.google.com/pyt-newq-rbb),
 using [Google Docs](https://docs.google.com/document/d/1NRXqXcLBp5pFkHiJbrLdv3Spqh1Hu086HYkKrgKjeDQ/edit)
 for the agenda and meeting minutes. Neither the video conference nor
 the document require a Google account to participate, although editing

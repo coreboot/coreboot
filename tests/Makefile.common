@@ -45,6 +45,8 @@ TEST_CFLAGS += -I$(src) -I$(src)/include -I$(src)/commonlib/include \
 # unintentional.
 TEST_CFLAGS += -Wall -Werror -Wundef -Wstrict-prototypes -Wno-inline-asm
 TEST_CFLAGS += -Wno-unknown-warning-option -Wno-source-mgr -Wno-main-return-type
+TEST_CFLAGS += -Wno-array-compare -Wno-packed-not-aligned -Wno-trigraphs
+TEST_CFLAGS += -Wno-unused-but-set-variables
 
 # Path for Kconfig autoheader
 TEST_CFLAGS += -I$(dir $(TEST_KCONFIG_AUTOHEADER))

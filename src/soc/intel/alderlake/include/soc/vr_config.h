@@ -28,6 +28,12 @@ struct vr_config {
 	/* Thermal Design Current current limit.
 	   Defined in 1/8A units and range is 0-4095. 1000 = 125A. */
 	uint16_t tdc_currentlimit;
+
+	/* Power State 1/2/3 Threshold Current.
+	   Defined in 1/4A units and range is 0-128A */
+	uint16_t psi1threshold;
+	uint16_t psi2threshold;
+	uint16_t psi3threshold;
 };
 
 #define VR_CFG_AMP(i) (uint16_t)((i) * 4)

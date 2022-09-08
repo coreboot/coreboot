@@ -272,6 +272,12 @@ void fill_vr_domain_config(FSP_S_CONFIG *s_cfg,
 			s_cfg->DcLoadline[domain] = cfg->dc_loadline;
 		if (cfg->icc_max)
 			s_cfg->IccMax[domain] = cfg->icc_max;
+		if (cfg->psi1threshold)
+			s_cfg->Psi1Threshold[domain] = cfg->psi1threshold;
+		if (cfg->psi2threshold)
+			s_cfg->Psi2Threshold[domain] = cfg->psi2threshold;
+		if (cfg->psi3threshold)
+			s_cfg->Psi3Threshold[domain] = cfg->psi3threshold;
 		s_cfg->TdcTimeWindow[domain] = cfg->tdc_timewindow;
 		s_cfg->TdcCurrentLimit[domain] = cfg->tdc_currentlimit;
 	} else {

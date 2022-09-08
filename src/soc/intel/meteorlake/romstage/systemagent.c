@@ -8,7 +8,6 @@
 void systemagent_early_init(void)
 {
 	static const struct sa_mmio_descriptor soc_fixed_pci_resources[] = {
-		{ MCHBAR, MCH_BASE_ADDRESS, MCH_BASE_SIZE, "MCHBAR" },
 		{ DMIBAR, DMI_BASE_ADDRESS, DMI_BASE_SIZE, "DMIBAR" },
 		{ EPBAR, EP_BASE_ADDRESS, EP_BASE_SIZE, "EPBAR" },
 	};

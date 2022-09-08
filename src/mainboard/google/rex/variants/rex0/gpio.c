@@ -55,12 +55,12 @@ static const struct pad_config gpio_table_id0[] = {
 	PAD_NC(GPP_B03, NONE),
 	/* GPP_B04 : GPP_B04_STRAP ==> Component NC */
 	PAD_NC(GPP_B04, NONE),
-	/* GPP_B05 : net NC is not present in the given design */
-	PAD_NC(GPP_B05, NONE),
-	/* GPP_B06 : net NC is not present in the given design */
+	/* GPP_B05 : [] ==> SPKR_INT_L_R */
+	PAD_CFG_GPI(GPP_B05, NONE, DEEP),
+	/* GPP_B06 : [] ==> HP_INT_L_R */
 	PAD_CFG_GPI_INT(GPP_B06, NONE, PLTRST, EDGE_BOTH),
-	/* GPP_B07 : net NC is not present in the given design */
-	PAD_NC(GPP_B07, NONE),
+	/* GPP_B07 : [] ==> RST_HP_L */
+	PAD_CFG_GPO(GPP_B07, 1, DEEP),
 	/* GPP_B08 : net NC is not present in the given design */
 	PAD_NC(GPP_B08, NONE),
 	/* GPP_B09 : [] ==> EN_FCAM_PWR */
@@ -77,8 +77,8 @@ static const struct pad_config gpio_table_id0[] = {
 	PAD_NC(GPP_B14, NONE),
 	/* GPP_B15 : [] ==> USB_OC3# */
 	PAD_CFG_NF_LOCK(GPP_B15, NONE, NF1, LOCK_CONFIG),
-	/* GPP_B16 : No heuristic was found useful */
-	PAD_NC(GPP_B16, NONE),
+	/* GPP_B16 : [] ==> SOC_HDMI_HPD_L */
+	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),
 	/* GPP_B17 : [] ==> EN_WWAN_PWR */
 	PAD_CFG_GPO(GPP_B17, 1, DEEP),
 	/* GPP_B18 : [] ==> SOC_I2C_TPM_SDA */
@@ -110,8 +110,8 @@ static const struct pad_config gpio_table_id0[] = {
 	PAD_CFG_GPO(GPP_C06, 0, DEEP),
 	/* GPP_C07 : [] ==> USI_INT */
 	PAD_CFG_GPI_APIC(GPP_C07, NONE, PLTRST, LEVEL, NONE),
-	/* GPP_C08 : No heuristic was found useful */
-	PAD_NC(GPP_C08, NONE),
+	/* GPP_C08 : [] ==> SOCHOT_ODL */
+	PAD_CFG_NF(GPP_C08, NONE, DEEP, NF2),
 	/* GPP_C09 : net NC is not present in the given design */
 	PAD_NC(GPP_C09, NONE),
 	/* GPP_C10 : net NC is not present in the given design */
@@ -210,8 +210,8 @@ static const struct pad_config gpio_table_id0[] = {
 	PAD_CFG_GPI_APIC_LOCK(GPP_E08, NONE, LEVEL, NONE, LOCK_CONFIG),
 	/* GPP_E09 : No heuristic was found useful */
 	PAD_CFG_NF_LOCK(GPP_E09, NONE, NF1, LOCK_CONFIG),
-	/* GPP_E10 : net NC is not present in the given design */
-	PAD_NC(GPP_E10, NONE),
+	/* GPP_E10 : [] ==> SOC_FPMCU_INT_L */
+	PAD_CFG_GPI_IRQ_WAKE_LOCK(GPP_E10, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* GPP_E11 : [] ==> MEM_STRAP_0 */
 	PAD_CFG_GPI_LOCK(GPP_E11, NONE, LOCK_CONFIG),
 	/* GPP_E12 : [] ==> MEM_STRAP_3 */
@@ -247,8 +247,8 @@ static const struct pad_config gpio_table_id0[] = {
 	PAD_CFG_GPO(GPP_F07, 0, DEEP),
 	/* GPP_F08 : [] ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_F08, 1, DEEP),
-	/* GPP_F09 : No heuristic was found useful */
-	PAD_NC(GPP_F09, NONE),
+	/* GPP_F09 : [] ==> EN_PP3300_WLAN */
+	PAD_CFG_GPO(GPP_F09, 1, DEEP),
 	/* GPP_F10 : [] ==> WWAN_PCIE_WAKE_ODL */
 	PAD_CFG_GPI_IRQ_WAKE(GPP_F10, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_F11 : GSP1_SOC_CLK_R */

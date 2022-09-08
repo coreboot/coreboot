@@ -8,6 +8,7 @@
 #include <intelblocks/cse.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smbus.h>
+#include <intelblocks/thermal.h>
 #include <memory_info.h>
 #include <soc/intel/common/smbios.h>
 #include <soc/iomap.h>
@@ -132,6 +133,14 @@ void mainboard_romstage_entry(void)
 			cse_fw_sync();
 	}
 
+	/*
+	 * Set low maximum temp threshold value used for dynamic thermal sensor
+	 * shutdown consideration.
+	 *
+	 * If Dynamic Thermal Shutdown is enabled then PMC logic shuts down the
+	 * thermal sensor when CPU is in a C-state and LTT >= DTS Temp.
+	 */
+	pch_thermal_configuration();
 	fsp_memory_init(s3wake);
 	pmc_set_disb();
 	if (!s3wake)

@@ -21,19 +21,25 @@ $(error "You need to select ARCH_RISCV_RV64 or ARCH_RISCV_RV32")
 endif
 endif
 
+# Needed for -print-libgcc-file-name which gets confused about all those arch
+# suffixes in ARCH_SUFFIX_riscv.
+simple_riscv_flags = $(riscv_flags)
+
 ifeq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
-riscv_flags += -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI) -mcmodel=$(CONFIG_RISCV_CODEMODEL)
+riscv_flags += -march=$(CONFIG_RISCV_ARCH)$(ARCH_SUFFIX_riscv) -mabi=$(CONFIG_RISCV_ABI) -mcmodel=$(CONFIG_RISCV_CODEMODEL)
+simple_riscv_flags += -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI) -mcmodel=$(CONFIG_RISCV_CODEMODEL)
 else
 riscv_flags += $(_rv_flags)
+simple_riscv_flags += $(_rv_flags)
 endif
 
-riscv_asm_flags = -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI)
+riscv_asm_flags = -march=$(CONFIG_RISCV_ARCH)$(ARCH_SUFFIX_riscv) -mabi=$(CONFIG_RISCV_ABI)
 
-COMPILER_RT_bootblock = $(shell $(GCC_bootblock) $(riscv_flags) -print-libgcc-file-name)
+COMPILER_RT_bootblock = $(shell $(GCC_bootblock) $(simple_riscv_flags) -print-libgcc-file-name)
 
-COMPILER_RT_romstage  = $(shell  $(GCC_romstage) $(riscv_flags) -print-libgcc-file-name)
+COMPILER_RT_romstage  = $(shell  $(GCC_romstage) $(simple_riscv_flags) -print-libgcc-file-name)
 
-COMPILER_RT_ramstage  = $(shell  $(GCC_ramstage) $(riscv_flags) -print-libgcc-file-name)
+COMPILER_RT_ramstage  = $(shell  $(GCC_ramstage) $(simple_riscv_flags) -print-libgcc-file-name)
 
 ################################################################################
 ## bootblock

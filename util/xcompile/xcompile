@@ -202,6 +202,10 @@ detect_special_flags() {
 		  "$LDFLAGS --fix-cortex-a53-843419" && \
 		  LDFLAGS_ARM64_A53_ERRATUM_843419+=" --fix-cortex-a53-843419"
 		;;
+	riscv)
+		testcc "$GCC" "$FLAGS_GCC -march=rv64iadc_zicsr_zifencei" &&
+		  ARCH_SUFFIX="_zicsr_zifencei"
+		;;
 	esac
 }
 
@@ -221,6 +225,7 @@ report_arch_toolchain() {
 # elf${TWIDTH}-${TBFDARCH} toolchain (${GCC})
 ARCH_SUPPORTED+=${TARCH}
 SUBARCH_SUPPORTED+=${TSUPP-${TARCH}}
+ARCH_SUFFIX_${TARCH}:=${ARCH_SUFFIX}
 
 # GCC
 GCC_CC_${TARCH}:=${GCC}
@@ -399,6 +404,7 @@ test_architecture() {
 	unset TABI TARCH TBFDARCH TCLIST TENDIAN TSUPP TWIDTH
 	unset CC_RT_EXTRA_GCC CC_RT_EXTRA_CLANG
 	unset GCC CLANG
+	unset ARCH_SUFFIX
 	if type "arch_config_$architecture" > /dev/null; then
 		"arch_config_$architecture"
 	else

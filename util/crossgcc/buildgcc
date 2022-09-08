@@ -681,11 +681,13 @@ build_BINUTILS() {
 	if [ $TARGETARCH = "x86_64-elf" ]; then
 		ADDITIONALTARGET=",i386-elf"
 	fi
+	# shellcheck disable=SC2086
 	CC="$(hostcc target)" CXX="$(hostcxx target)" \
 	../binutils-${BINUTILS_VERSION}/configure --prefix="$TARGETDIR" \
 		--target=${TARGETARCH} --enable-targets=${TARGETARCH}${ADDITIONALTARGET} \
 		--disable-werror --disable-nls --enable-lto \
 		--enable-gold --enable-multilib \
+		${BINUTILS_OPTIONS} \
 		CFLAGS="$HOSTCFLAGS" \
 		CXXFLAGS="$HOSTCFLAGS" \
 		|| touch .failed
@@ -932,7 +934,9 @@ case "$TARGETARCH" in
 	x86_64*)		TARGETARCH=x86_64-elf;;
 	i386-elf)		;;
 	i386-mingw32)		;;
-	riscv-elf)		TARGETARCH=riscv64-elf;;
+	riscv-elf)		TARGETARCH=riscv64-elf
+				GCC_OPTIONS="$GCC_OPTIONS --with-isa-spec=20191213"
+				BINUTILS_OPTIONS="$BINUTILS_OPTIONS --with-isa-spec=20191213";;
 	powerpc64*-linux*)	;;
 	i386*)			TARGETARCH=i386-elf;;
 	arm*)			TARGETARCH=arm-eabi;;

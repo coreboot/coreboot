@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# DESCR: Check that no touchpad uses the "probed" flag
+
+FAIL=0
+
+TESTFILE1="src/mainboard/google/eve/devicetree.cb"
+EXPECTED_FAILURES=1
+
+# Configure to make sure tests fail
+if [ "$1" = "--test" ]; then
+	sed -i.bak "/^.*register \"generic.desc\" = \"\"Touchpad\"\"/a \t\t\t\tregister \"generic.probed\" = \"1\"" "${TESTFILE1}"
+	echo "Expect ${EXPECTED_FAILURES} failures."
+	exit 0
+elif [ "$1" = "--reset" ]; then
+	mv "${TESTFILE1}.bak" "${TESTFILE1}"
+	exit 0
+fi
+
+for f in `find src/mainboard/ -name *tree.cb`; do
+	if grep -B8 "probed\" = \"1\"" $f | grep -q "Touchpad"; then
+		echo "ERROR: in $f:"
+		echo "    Use of the 'probed' flag for touchpads is deprecated; use 'detect' instead"
+		FAIL=1
+	fi
+done
+
+exit $FAIL

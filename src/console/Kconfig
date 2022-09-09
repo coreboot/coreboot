@@ -311,13 +311,28 @@ if CONSOLE_I2C_SMBUS
 
 config CONSOLE_I2C_SMBUS_SLAVE_ADDRESS
 	hex "I2C slave address of the logging device"
+	default 0x48 if SC16IS7XX_INIT
 	help
 	  I2C address of the device which logs the data.
 
 config CONSOLE_I2C_SMBUS_SLAVE_DATA_REGISTER
 	hex "Data register address of the I2C logging device"
+	default 0x00 if SC16IS7XX_INIT
 	help
 	  This an 8-bit data register.
+
+config SC16IS7XX_INIT
+	bool "Initialize SC16IS7XX I2C to UART converter chip"
+	help
+	  SC16IS7XX is a slave I2C to UART converter chip. Enabling
+	  this option will initialize the chip.
+
+	  The default I2C slave address value 0x48 is the address of
+	  SC16IS7XX I2C to UART converter chip when the A1 and A0 pins
+	  are set to Vcc.
+
+	  The default data register address value 0x00 is the data
+	  register address of SC16IS7XX I2C to UART converter chip.
 
 endif # CONSOLE_I2C_SMBUS
 

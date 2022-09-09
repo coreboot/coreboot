@@ -3,8 +3,13 @@
 #include <console/i2c_smbus.h>
 #include <device/smbus_host.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include "sc16is7xx_init.h"
 
-void i2c_smbus_console_init(void) {}
+void i2c_smbus_console_init(void)
+{
+	if (CONFIG(SC16IS7XX_INIT))
+		sc16is7xx_init();
+}
 
 void i2c_smbus_console_tx_byte(unsigned char c)
 {

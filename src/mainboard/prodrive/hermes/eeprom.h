@@ -38,6 +38,12 @@ struct __packed eeprom_board_layout {
 _Static_assert(sizeof(struct eeprom_board_layout) == (617 + sizeof(uint32_t)),
 		"struct eeprom_board_layout has invalid size!");
 
+struct __packed eeprom_reset_cause_regs {
+	uint32_t gblrst_cause0;
+	uint32_t gblrst_cause1;
+	uint32_t hpr_cause0;
+};
+
 struct __packed eeprom_board_settings {
 	uint32_t signature;
 	union {
@@ -89,7 +95,11 @@ struct __packed eeprom_layout {
 	uint8_t boot_order[0x200];
 	char board_part_number[HERMES_SN_PN_LENGTH];
 	char product_part_number[HERMES_SN_PN_LENGTH];
-	uint8_t unused[0x680];
+	union {
+		struct eeprom_reset_cause_regs reset_cause_regs;
+		uint8_t raw_reset_cause_registers[0x80];
+	};
+	uint8_t unused[0x600];
 	union {
 		uint8_t raw_board_settings[0xf8];
 		struct eeprom_board_settings board_settings;
@@ -111,6 +121,7 @@ struct eeprom_bmc_settings *get_bmc_settings(void);
 const char *eeprom_read_serial(size_t offset, const char *fallback);
 uint8_t get_bmc_hsi(void);
 void report_eeprom_error(const size_t off);
+bool eeprom_write_byte(const uint8_t data, const uint16_t write_offset);
 bool write_board_settings(const struct eeprom_board_layout *new_layout);
 
 #define READ_EEPROM(section_type, section_name, dest, opt_name)				\

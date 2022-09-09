@@ -153,7 +153,7 @@ void report_eeprom_error(const size_t off)
  * Write a single byte into the EEPROM at specified offset.
  * Returns true on error, false on success.
  */
-static bool eeprom_write_byte(const uint8_t data, const uint16_t write_offset)
+bool eeprom_write_byte(const uint8_t data, const uint16_t write_offset)
 {
 	int ret = 0;
 

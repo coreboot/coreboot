@@ -14,6 +14,7 @@
 #include <intelblocks/pmclib.h>
 #include <smbios.h>
 #include <soc/gpio.h>
+#include <soc/pm.h>
 #include <string.h>
 #include <types.h>
 
@@ -249,6 +250,31 @@ struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 };
 
+static void log_reset_causes(void)
+{
+	struct chipset_power_state *ps = pmc_get_power_state();
+
+	if (!ps) {
+		printk(BIOS_ERR, "chipset_power_state not found!\n");
+		return;
+	}
+
+	union {
+		struct eeprom_reset_cause_regs regs;
+		uint8_t raw[sizeof(struct eeprom_reset_cause_regs)];
+	} reset_cause = {
+		.regs = {
+			.gblrst_cause0 = ps->gblrst_cause[0],
+			.gblrst_cause1 = ps->gblrst_cause[1],
+			.hpr_cause0 = ps->hpr_cause0,
+		},
+	};
+
+	const size_t base = offsetof(struct eeprom_layout, reset_cause_regs);
+	for (size_t i = 0; i < ARRAY_SIZE(reset_cause.raw); i++)
+		eeprom_write_byte(reset_cause.raw[i], base + i);
+}
+
 /* Must happen before MPinit */
 static void mainboard_early(void *unused)
 {
@@ -273,6 +299,8 @@ static void mainboard_early(void *unused)
 		READ_EEPROM_FSP_S((&supd), FspsConfig.TurboMode);
 		config->cpu_turbo_disable = !supd.FspsConfig.TurboMode;
 	}
+
+	log_reset_causes();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, mainboard_early, NULL);

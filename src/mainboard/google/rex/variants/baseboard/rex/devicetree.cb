@@ -1,7 +1,7 @@
 chip soc/intel/meteorlake
 
 	# GPE configuration
-	register "pmc_gpe0_dw0" = "GPP_A"
+	register "pmc_gpe0_dw0" = "GPP_B"
 	register "pmc_gpe0_dw1" = "GPP_E"
 	register "pmc_gpe0_dw2" = "GPP_F"
 

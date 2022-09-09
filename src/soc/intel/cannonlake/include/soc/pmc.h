@@ -142,6 +142,7 @@ extern struct device_operations pmc_ops;
 #define GBLRST_CAUSE0			0x1924
 #define   GBLRST_CAUSE0_THERMTRIP	(1 << 5)
 #define GBLRST_CAUSE1			0x1928
+#define HPR_CAUSE0			0x192C
 
 #define LTR_IGN				0x1B0C
 #define   IGN_GBE			(1 << 3)

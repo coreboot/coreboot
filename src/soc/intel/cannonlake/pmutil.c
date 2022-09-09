@@ -232,12 +232,15 @@ void soc_fill_power_state(struct chipset_power_state *ps)
 	ps->gen_pmcon_b = read32(pmc + GEN_PMCON_B);
 	ps->gblrst_cause[0] = read32(pmc + GBLRST_CAUSE0);
 	ps->gblrst_cause[1] = read32(pmc + GBLRST_CAUSE1);
+	ps->hpr_cause0 = read32(pmc + HPR_CAUSE0);
 
 	printk(BIOS_DEBUG, "GEN_PMCON: %08x %08x\n",
 		ps->gen_pmcon_a, ps->gen_pmcon_b);
 
 	printk(BIOS_DEBUG, "GBLRST_CAUSE: %08x %08x\n",
 		ps->gblrst_cause[0], ps->gblrst_cause[1]);
+
+	printk(BIOS_DEBUG, "HPR_CAUSE0: %08x\n", ps->hpr_cause0);
 }
 
 /* STM Support */

@@ -143,6 +143,7 @@ struct chipset_power_state {
 	uint32_t gen_pmcon_a;
 	uint32_t gen_pmcon_b;
 	uint32_t gblrst_cause[2];
+	uint32_t hpr_cause0;
 	uint32_t prev_sleep_state;
 } __packed;
 

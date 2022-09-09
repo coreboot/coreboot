@@ -10,6 +10,7 @@
 #include <console/spi.h>
 #include <console/flash.h>
 #include <console/system76_ec.h>
+#include <console/i2c_smbus.h>
 
 /* Note: when adding a new console, make sure you update the definition of
    HAS_ONLY_FAST_CONSOLES in <console.h>! */
@@ -25,6 +26,7 @@ void console_hw_init(void)
 	__spiconsole_init();
 	__flashconsole_init();
 	__system76_ec_init();
+	__i2c_smbus_console_init();
 }
 
 void console_interactive_tx_byte(unsigned char byte, void *data_unused)
@@ -33,6 +35,7 @@ void console_interactive_tx_byte(unsigned char byte, void *data_unused)
 		/* Some consoles want newline conversion to keep terminals happy. */
 		__uart_tx_byte('\r');
 		__usb_tx_byte('\r');
+		__i2c_smbus_console_tx_byte('\r');
 	}
 
 	__spkmodem_tx_byte(byte);
@@ -42,6 +45,7 @@ void console_interactive_tx_byte(unsigned char byte, void *data_unused)
 	__usb_tx_byte(byte);
 	__spiconsole_tx_byte(byte);
 	__system76_ec_tx_byte(byte);
+	__i2c_smbus_console_tx_byte(byte);
 }
 
 void console_stored_tx_byte(unsigned char byte, void *data_unused)

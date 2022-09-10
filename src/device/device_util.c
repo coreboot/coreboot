@@ -957,3 +957,14 @@ void log_resource(const char *type, const struct device *dev, const struct resou
 			  srcfile, line, type, dev_path(dev), res->index, res->base,
 			  resource_end(res), res->size / KiB);
 }
+
+bool is_cpu(const struct device *cpu)
+{
+	return cpu->path.type == DEVICE_PATH_APIC &&
+	       cpu->bus->dev->path.type == DEVICE_PATH_CPU_CLUSTER;
+}
+
+bool is_enabled_cpu(const struct device *cpu)
+{
+	return is_cpu(cpu) && cpu->enabled;
+}

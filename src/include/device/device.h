@@ -207,6 +207,8 @@ bool dev_is_active_bridge(struct device *dev);
 void add_more_links(struct device *dev, unsigned int total_links);
 bool is_dev_enabled(const struct device *const dev);
 bool is_devfn_enabled(unsigned int devfn);
+bool is_cpu(const struct device *cpu);
+bool is_enabled_cpu(const struct device *cpu);
 
 /* Returns whether there is a hotplug port on the path to the given device. */
 extern bool dev_path_hotplug(const struct device *);

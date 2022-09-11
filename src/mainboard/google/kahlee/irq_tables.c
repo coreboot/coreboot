@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <commonlib/bsd/helpers.h>
 #include <string.h>
 #include <stdint.h>
 #include <arch/pirq_routing.h>
@@ -35,8 +36,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	int i;
 
 	/* Align the table to be 16 byte aligned. */
-	addr += 15;
-	addr &= ~15;
+	addr = ALIGN_UP(addr, 16);
 
 	/* This table must be between 0xf0000 & 0x100000 */
 	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);

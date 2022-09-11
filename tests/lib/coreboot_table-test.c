@@ -20,8 +20,7 @@ static struct lb_header *lb_table_init(unsigned long addr)
 	struct lb_header *header;
 
 	/* 16 byte align the address */
-	addr += 15;
-	addr &= ~15;
+	addr = ALIGN_UP(addr, 16);
 
 	header = (void *)addr;
 	header->signature[0] = 'L';

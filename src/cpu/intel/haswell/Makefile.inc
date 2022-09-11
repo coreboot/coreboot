@@ -28,4 +28,6 @@ endif
 else
 # Haswell Trad
 cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-3c-*)
+# Crystal Well (Trad)
+cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-46-*)
 endif

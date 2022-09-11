@@ -190,7 +190,7 @@ int soc_get_rtc_failed(void)
 {
 	const struct chipset_power_state *ps;
 
-	if (acpi_pm_state_for_rtc(&ps) < 0)
+	if (acpi_fetch_pm_state(&ps, PS_CLAIMER_RTC) < 0)
 		return 1;
 
 	return check_rtc_failed(ps->gen_pmcon_b);

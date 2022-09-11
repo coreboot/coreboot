@@ -2,9 +2,16 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpi_pm.h>
+#include <assert.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <smbios.h>
+
+static const char *pm_fetch_failure_msg[PS_CLAIMER_MAX] = {
+	[PS_CLAIMER_ELOG]	= "no event recorded in ELOG.",
+	[PS_CLAIMER_RTC]	= "RTC init aborted.",
+	[PS_CLAIMER_WAKE]	= "wake source unknown.",
+};
 
 void __weak mainboard_suspend_resume(void)
 {
@@ -38,31 +45,16 @@ struct chipset_power_state *acpi_get_pm_state(void)
 	return acpi_pm_state;
 }
 
-int acpi_pm_state_for_elog(const struct chipset_power_state **ps)
+int acpi_fetch_pm_state(const struct chipset_power_state **ps,
+			enum power_state_claimer ps_claimer)
 {
+	assert(ps_claimer < PS_CLAIMER_MAX);
 	*ps = acpi_get_pm_state();
-	if (!*ps) {
-		printk(BIOS_ERR, "No CBMEM_ID_POWER_STATE entry, no event recorded in ELOG.\n");
-		return -1;
-	}
-	return 0;
-}
 
-int acpi_pm_state_for_rtc(const struct chipset_power_state **ps)
-{
-	*ps = acpi_get_pm_state();
 	if (!*ps) {
-		printk(BIOS_ERR, "No CBMEM_ID_POWER_STATE entry, RTC init aborted.\n");
-		return -1;
-	}
-	return 0;
-}
-
-int acpi_pm_state_for_wake(const struct chipset_power_state **ps)
-{
-	*ps = acpi_get_pm_state();
-	if (!*ps) {
-		printk(BIOS_ERR, "No CBMEM_ID_POWER_STATE entry, wake source unknown.\n");
+		printk(BIOS_ERR, "No CBMEM_ID_POWER_STATE entry, %s\n",
+		       ps_claimer < PS_CLAIMER_MAX ?
+		       pm_fetch_failure_msg[ps_claimer] : "unknown claimer.");
 		return -1;
 	}
 	return 0;

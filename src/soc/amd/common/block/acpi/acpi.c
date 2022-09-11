@@ -79,7 +79,7 @@ void acpi_pm_gpe_add_events_print_events(void)
 	const struct chipset_power_state *ps;
 	const struct acpi_pm_gpe_state *state;
 
-	if (acpi_pm_state_for_elog(&ps) < 0)
+	if (acpi_fetch_pm_state(&ps, PS_CLAIMER_ELOG) < 0)
 		return;
 
 	state = &ps->gpe_state;

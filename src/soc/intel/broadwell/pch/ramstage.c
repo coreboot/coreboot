@@ -51,7 +51,7 @@ static void acpi_save_wake_source(void *unused)
 
 	if (acpi_reset_gnvs_for_wake(&gnvs) < 0)
 		return;
-	if (acpi_pm_state_for_wake(&ps) < 0)
+	if (acpi_fetch_pm_state(&ps, PS_CLAIMER_WAKE) < 0)
 		return;
 
 	pm_fill_gnvs(gnvs, ps);

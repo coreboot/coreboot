@@ -77,7 +77,7 @@ void southcluster_log_state(void)
 {
 	const struct chipset_power_state *ps;
 
-	if (acpi_pm_state_for_elog(&ps) < 0)
+	if (acpi_fetch_pm_state(&ps, PS_CLAIMER_ELOG) < 0)
 		return;
 
 	log_power_and_resets(ps);

@@ -386,7 +386,7 @@ void gpio_add_events(void)
 	unsigned int i;
 	unsigned int end;
 
-	if (acpi_pm_state_for_elog(&ps) < 0)
+	if (acpi_fetch_pm_state(&ps, PS_CLAIMER_ELOG) < 0)
 		return;
 	state = &ps->gpio_state;
 

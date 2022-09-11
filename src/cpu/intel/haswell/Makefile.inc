@@ -23,7 +23,7 @@ ifeq ($(CONFIG_INTEL_LYNXPOINT_LP),y)
 cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-45-*)
 ifeq ($(CONFIG_SOC_INTEL_BROADWELL),y)
 # Broadwell ULT/ULX
-cpu_microcode_bins += 3rdparty/blobs/soc/intel/broadwell/microcode.bin
+cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-3d-*)
 endif
 else
 # Haswell Trad

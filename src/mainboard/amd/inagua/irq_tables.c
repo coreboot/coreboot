@@ -63,10 +63,9 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_info = (void *)(&pirq->checksum + 1);
 	slot_num = 0;
 
-	/* pci bridge */
+	/* PCI bridge */
 	write_pirq_info(pirq_info, 0, PCI_DEVFN(0x14, 4),
-			0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0,
-			0);
+			0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++;
 
 	slot_num++;
@@ -78,9 +77,8 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	sum = pirq->checksum - sum;
 
-	if (sum != pirq->checksum) {
+	if (sum != pirq->checksum)
 		pirq->checksum = sum;
-	}
 
 	printk(BIOS_INFO, "%s done.\n", __func__);
 

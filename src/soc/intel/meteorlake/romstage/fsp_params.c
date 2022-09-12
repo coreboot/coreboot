@@ -230,6 +230,8 @@ static void fill_fspm_usb4_params(FSP_M_CONFIG *m_cfg,
 
 	m_cfg->TcssItbtPcie0En = !(config->tbt_pcie_port_disable[0]);
 	m_cfg->TcssItbtPcie1En = !(config->tbt_pcie_port_disable[1]);
+	m_cfg->TcssItbtPcie2En = !(config->tbt_pcie_port_disable[2]);
+	m_cfg->TcssItbtPcie3En = !(config->tbt_pcie_port_disable[3]);
 }
 
 static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,

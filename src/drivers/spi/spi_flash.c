@@ -212,7 +212,7 @@ int spi_flash_cmd_poll_bit(const struct spi_flash *flash, unsigned long timeout,
 			return 0;
 	} while (!stopwatch_expired(&sw));
 
-	printk(BIOS_WARNING, "SF: timeout at %ld msec after %d attempts\n",
+	printk(BIOS_WARNING, "SF: timeout at %lld msec after %d attempts\n",
 	       stopwatch_duration_msecs(&sw), attempt);
 
 	return -1;

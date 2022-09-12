@@ -174,7 +174,7 @@ static vb2_error_t ec_hash_image(enum vb2_firmware_selection select,
 		return VB2_ERROR_UNKNOWN;
 	}
 
-	printk(BIOS_INFO, "EC took %luus to calculate image hash\n",
+	printk(BIOS_INFO, "EC took %lldus to calculate image hash\n",
 		stopwatch_duration_usecs(&sw));
 
 	*hash = resp.hash_digest;
@@ -460,7 +460,7 @@ vb2_error_t vb2ex_ec_vboot_done(struct vb2_context *ctx)
 		       "EC requests limited power usage. Request shutdown.\n");
 		return VB2_REQUEST_SHUTDOWN;
 	} else {
-		printk(BIOS_INFO, "Waited %luus to clear limit power flag.\n",
+		printk(BIOS_INFO, "Waited %lldus to clear limit power flag.\n",
 			stopwatch_duration_usecs(&sw));
 	}
 
@@ -541,7 +541,7 @@ vb2_error_t vb2ex_ec_jump_to_rw(void)
 	mdelay(50);
 	while (google_chromeec_hello()) {
 		if (stopwatch_expired(&sw)) {
-			printk(BIOS_ERR, "EC did not return from reboot after %luus\n",
+			printk(BIOS_ERR, "EC did not return from reboot after %lldus\n",
 			       stopwatch_duration_usecs(&sw));
 			return VB2_ERROR_UNKNOWN;
 		}
@@ -549,7 +549,7 @@ vb2_error_t vb2ex_ec_jump_to_rw(void)
 		mdelay(5);
 	}
 
-	printk(BIOS_INFO, "\nEC returned from reboot after %luus\n",
+	printk(BIOS_INFO, "\nEC returned from reboot after %lldus\n",
 	       stopwatch_duration_usecs(&sw));
 
 	return VB2_SUCCESS;

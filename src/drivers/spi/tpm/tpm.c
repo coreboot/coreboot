@@ -390,14 +390,14 @@ static enum cb_err tpm2_claim_locality(void)
 			break;
 		}
 
-		printk(BIOS_INFO, "TPM ready after %ld ms\n",
+		printk(BIOS_INFO, "TPM ready after %lld ms\n",
 		       stopwatch_duration_msecs(&sw));
 
 		return CB_SUCCESS;
 	} while (!stopwatch_expired(&sw));
 
 	printk(BIOS_ERR,
-	       "Failed to claim locality 0 after %ld ms, status: %#x\n",
+	       "Failed to claim locality 0 after %lld ms, status: %#x\n",
 	       stopwatch_duration_msecs(&sw), access);
 
 	return CB_ERR;

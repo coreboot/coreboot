@@ -315,7 +315,7 @@ uint8_t cse_wait_sec_override_mode(void)
 			return 0;
 		}
 	}
-	printk(BIOS_DEBUG, "HECI: CSE took %lu ms to enter security override mode\n",
+	printk(BIOS_DEBUG, "HECI: CSE took %lld ms to enter security override mode\n",
 			stopwatch_duration_msecs(&sw));
 	return 1;
 }
@@ -335,7 +335,7 @@ uint8_t cse_wait_com_soft_temp_disable(void)
 			return 0;
 		}
 	}
-	printk(BIOS_SPEW, "HECI: CSE took %lu ms to boot from RO\n",
+	printk(BIOS_SPEW, "HECI: CSE took %lld ms to boot from RO\n",
 			stopwatch_duration_msecs(&sw));
 	return 1;
 }

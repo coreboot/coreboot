@@ -23,7 +23,7 @@ static int32_t smu_poll_response(bool print_command_duration)
 		result = smn_read32(SMN_SMU_MESG_RESP);
 		if (result) {
 			if (print_command_duration)
-				printk(BIOS_SPEW, "SMU command consumed %ld usecs\n",
+				printk(BIOS_SPEW, "SMU command consumed %lld usecs\n",
 					stopwatch_duration_usecs(&sw));
 			return result;
 		}

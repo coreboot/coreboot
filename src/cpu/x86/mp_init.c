@@ -525,7 +525,7 @@ static enum cb_err bsp_do_flight_plan(struct mp_params *mp_params)
 		release_barrier(&rec->barrier);
 	}
 
-	printk(BIOS_INFO, "%s done after %ld msecs.\n", __func__,
+	printk(BIOS_INFO, "%s done after %lld msecs.\n", __func__,
 	       stopwatch_duration_msecs(&sw));
 	return ret;
 }

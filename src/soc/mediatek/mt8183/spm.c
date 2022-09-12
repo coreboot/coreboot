@@ -264,7 +264,7 @@ static int spm_load_firmware(enum dyna_load_pcm_index index,
 	assert(offset < file_size);
 	printk(BIOS_DEBUG, "SPM: version = %s\n", spm_bin + offset);
 
-	printk(BIOS_INFO, "SPM binary loaded in %ld msecs\n",
+	printk(BIOS_INFO, "SPM binary loaded in %lld msecs\n",
 	       stopwatch_duration_msecs(&sw));
 
 	return 0;
@@ -330,7 +330,7 @@ int spm_init(void)
 	spm_init_event_vector(pcmdesc);
 	spm_kick_pcm_to_run();
 
-	printk(BIOS_INFO, "SPM: %s done in %ld msecs\n", __func__,
+	printk(BIOS_INFO, "SPM: %s done in %lld msecs\n", __func__,
 	       stopwatch_duration_msecs(&sw));
 
 	return 0;

@@ -1651,7 +1651,7 @@ int google_chromeec_wait_for_displayport(long timeout_ms)
 		}
 		mdelay(200);
 	}
-	printk(BIOS_INFO, "DisplayPort ready after %lu ms\n",
+	printk(BIOS_INFO, "DisplayPort ready after %lld ms\n",
 	       stopwatch_duration_msecs(&sw));
 
 	return ret;
@@ -1671,7 +1671,7 @@ int google_chromeec_wait_for_dp_hpd(int port, long timeout_ms)
 		}
 		mdelay(100);
 	} while (!(mux_flags & USB_PD_MUX_HPD_LVL) || !(mux_flags & USB_PD_MUX_DP_ENABLED));
-	printk(BIOS_INFO, "HPD ready after %lu ms\n", stopwatch_duration_msecs(&sw));
+	printk(BIOS_INFO, "HPD ready after %lld ms\n", stopwatch_duration_msecs(&sw));
 
 	return 0;
 }

@@ -174,7 +174,7 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 	} while (!stopwatch_expired(&sw));
 
 	if (!timeout) {
-		printk(BIOS_ERR, "Video Clock Not ok after %ldus.\n",
+		printk(BIOS_ERR, "Video Clock Not ok after %lldus.\n",
 				stopwatch_duration_usecs(&sw));
 		return -ERR_VIDEO_CLOCK_BAD;
 	}

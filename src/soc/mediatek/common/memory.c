@@ -265,7 +265,7 @@ static void mt_mem_init_run(struct dramc_param *dparam,
 		ret = dram_run_fast_calibration(dparam);
 		if (ret != 0) {
 			printk(BIOS_ERR, "DRAM-K: Failed to run fast calibration "
-			       "in %ld msecs, error: %d\n",
+			       "in %lld msecs, error: %d\n",
 			       stopwatch_duration_msecs(&sw), ret);
 
 			/* Erase flash data after fast calibration failed */
@@ -274,7 +274,7 @@ static void mt_mem_init_run(struct dramc_param *dparam,
 					     DRAMC_PARAM_HEADER_VERSION,
 					     dparam, mrc_cache_size);
 		} else {
-			printk(BIOS_INFO, "DRAM-K: Fast calibration passed in %ld msecs\n",
+			printk(BIOS_INFO, "DRAM-K: Fast calibration passed in %lld msecs\n",
 			       stopwatch_duration_msecs(&sw));
 			return;
 		}
@@ -290,13 +290,13 @@ static void mt_mem_init_run(struct dramc_param *dparam,
 	stopwatch_init(&sw);
 	int err = dram_run_full_calibration(dparam);
 	if (err == 0) {
-		printk(BIOS_INFO, "DRAM-K: Full calibration passed in %ld msecs\n",
+		printk(BIOS_INFO, "DRAM-K: Full calibration passed in %lld msecs\n",
 		       stopwatch_duration_msecs(&sw));
 		mrc_cache_stash_data(MRC_TRAINING_DATA,
 				     DRAMC_PARAM_HEADER_VERSION,
 				     dparam, mrc_cache_size);
 	} else {
-		printk(BIOS_ERR, "DRAM-K: Full calibration failed in %ld msecs\n",
+		printk(BIOS_ERR, "DRAM-K: Full calibration failed in %lld msecs\n",
 		       stopwatch_duration_msecs(&sw));
 	}
 }

@@ -283,7 +283,7 @@ static void bs_call_callbacks(struct boot_state *state,
 			bscb->callback(bscb->arg);
 			if (CONFIG(DEBUG_BOOT_STATE)) {
 				timer_monotonic_get(&mt_stop);
-				printk(BIOS_DEBUG, "BS: callback (%p) @ %s (%ld ms).\n", bscb,
+				printk(BIOS_DEBUG, "BS: callback (%p) @ %s (%lld ms).\n", bscb,
 				       bscb_location(bscb),
 				       mono_time_diff_microseconds(&mt_start, &mt_stop)
 					       / USECS_PER_MSEC);

@@ -478,7 +478,7 @@ void exit_soft_temp_disable_wait(struct device *dev)
 	if (!hfs.fw_init_complete)
 		printk(BIOS_ERR, "ME: giving up on waiting for fw_init_complete\n");
 	else
-		printk(BIOS_NOTICE, "ME: took %lums to complete initialization\n",
+		printk(BIOS_NOTICE, "ME: took %lldms to complete initialization\n",
 		       stopwatch_duration_msecs(&sw));
 }
 

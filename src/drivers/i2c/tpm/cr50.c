@@ -173,7 +173,7 @@ static int process_reset(void)
 			continue;
 		}
 
-		printk(BIOS_INFO, "TPM ready after %ld ms\n",
+		printk(BIOS_INFO, "TPM ready after %lld ms\n",
 		       stopwatch_duration_msecs(&sw));
 
 		return 0;
@@ -183,7 +183,7 @@ static int process_reset(void)
 		printk(BIOS_ERR, "Failed to read TPM\n");
 	else
 		printk(BIOS_ERR,
-			"TPM failed to reset after %ld ms, status: %#x\n",
+			"TPM failed to reset after %lld ms, status: %#x\n",
 			stopwatch_duration_msecs(&sw), access);
 
 	return -1;

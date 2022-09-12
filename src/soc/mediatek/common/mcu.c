@@ -31,7 +31,7 @@ int mtk_init_mcu(struct mtk_mcu *mcu)
 	if (mcu->reset)
 		mcu->reset(mcu);
 
-	printk(BIOS_DEBUG, "%s: Loaded (and reset) %s in %ld msecs (%zd bytes)\n",
+	printk(BIOS_DEBUG, "%s: Loaded (and reset) %s in %lld msecs (%zd bytes)\n",
 	       __func__, mcu->firmware_name, stopwatch_duration_msecs(&sw), mcu->run_size);
 
 	return CB_SUCCESS;

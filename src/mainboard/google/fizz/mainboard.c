@@ -245,7 +245,7 @@ static void wait_for_hpd(gpio_t gpio, long timeout)
 		}
 		mdelay(200);
 	}
-	printk(BIOS_INFO, "HPD ready after %lu ms\n",
+	printk(BIOS_INFO, "HPD ready after %lld ms\n",
 	       stopwatch_duration_msecs(&sw));
 }
 

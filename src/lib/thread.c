@@ -400,7 +400,7 @@ enum cb_err thread_join(struct thread_handle *handle)
 	while (handle->state != THREAD_DONE)
 		assert(thread_yield() == 0);
 
-	printk(BIOS_SPEW, "took %lu us\n", stopwatch_duration_usecs(&sw));
+	printk(BIOS_SPEW, "took %lld us\n", stopwatch_duration_usecs(&sw));
 
 	return handle->error;
 }
@@ -415,7 +415,7 @@ void thread_mutex_lock(struct thread_mutex *mutex)
 		assert(thread_yield() == 0);
 	mutex->locked = true;
 
-	printk(BIOS_SPEW, "took %lu us to acquire mutex\n", stopwatch_duration_usecs(&sw));
+	printk(BIOS_SPEW, "took %lld us to acquire mutex\n", stopwatch_duration_usecs(&sw));
 }
 
 void thread_mutex_unlock(struct thread_mutex *mutex)

@@ -39,7 +39,7 @@ enum cb_err phy_gmii_ready(void *base)
 
 	} while (!stopwatch_expired(&sw));
 
-	printk(BIOS_ERR, "%s Timeout after %ld msec\n", __func__,
+	printk(BIOS_ERR, "%s Timeout after %lld msec\n", __func__,
 			stopwatch_duration_msecs(&sw));
 	return CB_ERR;
 }

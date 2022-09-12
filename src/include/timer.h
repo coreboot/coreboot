@@ -47,28 +47,28 @@ int timers_run(void);
 
 /* Schedule a callback to be ran microseconds from time of invocation.
  * 0 returned on success, < 0 on error. */
-int timer_sched_callback(struct timeout_callback *tocb, unsigned long us);
+int timer_sched_callback(struct timeout_callback *tocb, uint64_t us);
 
 /* Set an absolute time to a number of microseconds. */
-static inline void mono_time_set_usecs(struct mono_time *mt, long us)
+static inline void mono_time_set_usecs(struct mono_time *mt, uint64_t us)
 {
 	mt->microseconds = us;
 }
 
 /* Set an absolute time to a number of milliseconds. */
-static inline void mono_time_set_msecs(struct mono_time *mt, long ms)
+static inline void mono_time_set_msecs(struct mono_time *mt, uint64_t ms)
 {
 	mt->microseconds = ms * USECS_PER_MSEC;
 }
 
 /* Add microseconds to an absolute time. */
-static inline void mono_time_add_usecs(struct mono_time *mt, long us)
+static inline void mono_time_add_usecs(struct mono_time *mt, int64_t us)
 {
 	mt->microseconds += us;
 }
 
 /* Add milliseconds to an absolute time. */
-static inline void mono_time_add_msecs(struct mono_time *mt, long ms)
+static inline void mono_time_add_msecs(struct mono_time *mt, int64_t ms)
 {
 	mono_time_add_usecs(mt, ms * USECS_PER_MSEC);
 }
@@ -102,8 +102,8 @@ static inline int mono_time_before(const struct mono_time *t1,
 }
 
 /* Return time difference between t1 and t2. i.e. t2 - t1. */
-static inline long mono_time_diff_microseconds(const struct mono_time *t1,
-					       const struct mono_time *t2)
+static inline int64_t mono_time_diff_microseconds(const struct mono_time *t1,
+						  const struct mono_time *t2)
 {
 	return t2->microseconds - t1->microseconds;
 }
@@ -124,13 +124,13 @@ static inline void stopwatch_init(struct stopwatch *sw)
 	sw->current = sw->expires = sw->start;
 }
 
-static inline void stopwatch_init_usecs_expire(struct stopwatch *sw, long us)
+static inline void stopwatch_init_usecs_expire(struct stopwatch *sw, uint64_t us)
 {
 	stopwatch_init(sw);
 	mono_time_add_usecs(&sw->expires, us);
 }
 
-static inline void stopwatch_init_msecs_expire(struct stopwatch *sw, long ms)
+static inline void stopwatch_init_msecs_expire(struct stopwatch *sw, uint64_t ms)
 {
 	stopwatch_init_usecs_expire(sw, USECS_PER_MSEC * ms);
 }
@@ -167,7 +167,7 @@ static inline void stopwatch_wait_until_expired(struct stopwatch *sw)
 /*
  * Return number of microseconds since starting the stopwatch.
  */
-static inline long stopwatch_duration_usecs(struct stopwatch *sw)
+static inline int64_t stopwatch_duration_usecs(struct stopwatch *sw)
 {
 	/*
 	 * If the stopwatch hasn't been ticked (current == start) tick
@@ -179,7 +179,7 @@ static inline long stopwatch_duration_usecs(struct stopwatch *sw)
 	return mono_time_diff_microseconds(&sw->start, &sw->current);
 }
 
-static inline long stopwatch_duration_msecs(struct stopwatch *sw)
+static inline int64_t stopwatch_duration_msecs(struct stopwatch *sw)
 {
 	return stopwatch_duration_usecs(sw) / USECS_PER_MSEC;
 }
@@ -197,7 +197,7 @@ static inline long stopwatch_duration_msecs(struct stopwatch *sw)
  */
 #define wait_us(timeout_us, condition)					\
 ({									\
-	long __ret = 0;							\
+	int64_t __ret = 0;							\
 	struct stopwatch __sw;						\
 	stopwatch_init_usecs_expire(&__sw, timeout_us);			\
 	do {								\

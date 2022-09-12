@@ -209,7 +209,7 @@ int spm_init(void)
 		return -1;
 	}
 
-	printk(BIOS_INFO, "SPM: %s done in %ld msecs, spm pc = %#x\n",
+	printk(BIOS_INFO, "SPM: %s done in %lld msecs, spm pc = %#x\n",
 	       __func__, stopwatch_duration_msecs(&sw),
 	       read32(&mtk_spm->md32pcm_pc));
 

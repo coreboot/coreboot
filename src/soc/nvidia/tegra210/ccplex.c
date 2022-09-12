@@ -64,7 +64,7 @@ static void request_ram_repair(void)
 	while ((read32(&flow->ram_repair) & sts) != sts)
 		;
 
-	printk(BIOS_DEBUG, "RAM repair complete in %ld usecs.\n",
+	printk(BIOS_DEBUG, "RAM repair complete in %lld usecs.\n",
 		stopwatch_duration_usecs(&sw));
 }
 

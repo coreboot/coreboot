@@ -44,5 +44,5 @@ void cf9_reset_prepare(void)
 		}
 		mdelay(1);
 	}
-	printk(BIOS_SPEW, "CSE took %lu ms\n", stopwatch_duration_msecs(&sw));
+	printk(BIOS_SPEW, "CSE took %lld ms\n", stopwatch_duration_msecs(&sw));
 }

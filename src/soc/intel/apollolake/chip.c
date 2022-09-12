@@ -800,7 +800,7 @@ static void configure_xhci_host_mode_port0(void)
 		}
 	}
 
-	printk(BIOS_INFO, "xHCI port 0 host switch over took %lu ms\n",
+	printk(BIOS_INFO, "xHCI port 0 host switch over took %lld ms\n",
 		stopwatch_duration_msecs(&sw));
 }
 

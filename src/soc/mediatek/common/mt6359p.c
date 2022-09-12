@@ -141,7 +141,7 @@ static void pmic_efuse_setting(void)
 		mt6359p_write(PMIC_BUCK_VPA_DLC_CON1, 0x800);
 	}
 
-	printk(BIOS_DEBUG, "%s: Set efuses in %ld msecs\n",
+	printk(BIOS_DEBUG, "%s: Set efuses in %lld msecs\n",
 	       __func__, stopwatch_duration_msecs(&sw));
 }
 

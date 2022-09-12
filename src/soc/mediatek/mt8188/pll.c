@@ -292,7 +292,7 @@ static const struct mux_sel mux_sels[] = {
 	{ .id = TOP_AUD_INTBUS_SEL, .sel = 1 },			/* 1: mainpll_d4_d4 */
 	/* CLK_CFG_8 */
 	{ .id = TOP_AUDIO_H_SEL, .sel = 2 },			/* 2: apll1_ck */
-	{ .id = TOP_PWRAP_ULPOSC_SEL, .sel = 1 },			/* 1: ulposc_d10 */
+	{ .id = TOP_PWRAP_ULPOSC_SEL, .sel = 1 },		/* 1: ulposc_d10 */
 	{ .id = TOP_ATB_SEL, .sel = 1 },			/* 1: mainpll_d4_d2 */
 	{ .id = TOP_SSPM_SEL, .sel = 3 },			/* 3: mainpll_d5_d2 */
 	/* CLK_CFG_9 */

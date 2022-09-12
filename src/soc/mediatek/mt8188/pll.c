@@ -129,10 +129,10 @@ enum mux_id {
 
 static const struct mux muxes[] = {
 	/* CLK_CFG_0 */
-	MUX_UPD(TOP_AXI_SEL, clk_cfg_0, 0, 3, clk_cfg_update, 0),
-	MUX_UPD(TOP_SPM_SEL, clk_cfg_0, 8, 2, clk_cfg_update, 1),
-	MUX_UPD(TOP_SCP_SEL, clk_cfg_0, 16, 3, clk_cfg_update, 2),
-	MUX_UPD(TOP_BUS_AXIMEM_SEL, clk_cfg_0, 24, 3, clk_cfg_update, 3),
+	MUX_UPD(TOP_AXI_SEL, clk_cfg_0, 0, 4, clk_cfg_update, 0),
+	MUX_UPD(TOP_SPM_SEL, clk_cfg_0, 8, 4, clk_cfg_update, 1),
+	MUX_UPD(TOP_SCP_SEL, clk_cfg_0, 16, 4, clk_cfg_update, 2),
+	MUX_UPD(TOP_BUS_AXIMEM_SEL, clk_cfg_0, 24, 4, clk_cfg_update, 3),
 	/* CLK_CFG_1 */
 	MUX_UPD(TOP_VPP_SEL, clk_cfg_1, 0, 4, clk_cfg_update, 4),
 	MUX_UPD(TOP_ETHDR_SEL, clk_cfg_1, 8, 4, clk_cfg_update, 5),
@@ -141,107 +141,107 @@ static const struct mux muxes[] = {
 	/* CLK_CFG_2 */
 	MUX_UPD(TOP_CCU_SEL, clk_cfg_2, 0, 4, clk_cfg_update, 8),
 	MUX_UPD(TOP_CCU_AHB_SEL, clk_cfg_2, 8, 4, clk_cfg_update, 9),
-	MUX_UPD(TOP_IMG_SEL, clk_cfg_2, 16, 2, clk_cfg_update, 10),
-	MUX_UPD(TOP_CAMTM_SEL, clk_cfg_2, 24, 3, clk_cfg_update, 11),
+	MUX_UPD(TOP_IMG_SEL, clk_cfg_2, 16, 4, clk_cfg_update, 10),
+	MUX_UPD(TOP_CAMTM_SEL, clk_cfg_2, 24, 4, clk_cfg_update, 11),
 	/* CLK_CFG_3 */
-	MUX_UPD(TOP_DSP_SEL, clk_cfg_3, 0, 3, clk_cfg_update, 12),
-	MUX_UPD(TOP_DSP1_SEL, clk_cfg_3, 8, 3, clk_cfg_update, 13),
-	MUX_UPD(TOP_DSP2_SEL, clk_cfg_3, 16, 3, clk_cfg_update, 14),
-	MUX_UPD(TOP_DSP3_SEL, clk_cfg_3, 24, 3, clk_cfg_update, 15),
+	MUX_UPD(TOP_DSP_SEL, clk_cfg_3, 0, 4, clk_cfg_update, 12),
+	MUX_UPD(TOP_DSP1_SEL, clk_cfg_3, 8, 4, clk_cfg_update, 13),
+	MUX_UPD(TOP_DSP2_SEL, clk_cfg_3, 16, 4, clk_cfg_update, 14),
+	MUX_UPD(TOP_DSP3_SEL, clk_cfg_3, 24, 4, clk_cfg_update, 15),
 	/* CLK_CFG_4 */
-	MUX_UPD(TOP_DSP4_SEL, clk_cfg_4, 0, 3, clk_cfg_update, 16),
-	MUX_UPD(TOP_DSP5_SEL, clk_cfg_4, 8, 3, clk_cfg_update, 17),
-	MUX_UPD(TOP_DSP6_SEL, clk_cfg_4, 16, 3, clk_cfg_update, 18),
-	MUX_UPD(TOP_DSP7_SEL, clk_cfg_4, 24, 3, clk_cfg_update, 19),
+	MUX_UPD(TOP_DSP4_SEL, clk_cfg_4, 0, 4, clk_cfg_update, 16),
+	MUX_UPD(TOP_DSP5_SEL, clk_cfg_4, 8, 4, clk_cfg_update, 17),
+	MUX_UPD(TOP_DSP6_SEL, clk_cfg_4, 16, 4, clk_cfg_update, 18),
+	MUX_UPD(TOP_DSP7_SEL, clk_cfg_4, 24, 4, clk_cfg_update, 19),
 	/* CLK_CFG_5 */
-	MUX_UPD(TOP_MFG_CORE_TMP_SEL, clk_cfg_5, 0, 2, clk_cfg_update, 20),
-	MUX_UPD(TOP_CAMTG_SEL, clk_cfg_5, 8, 3, clk_cfg_update, 21),
-	MUX_UPD(TOP_CAMTG2_SEL, clk_cfg_5, 16, 3, clk_cfg_update, 22),
-	MUX_UPD(TOP_CAMTG3_SEL, clk_cfg_5, 24, 3, clk_cfg_update, 23),
+	MUX_UPD(TOP_MFG_CORE_TMP_SEL, clk_cfg_5, 0, 4, clk_cfg_update, 20),
+	MUX_UPD(TOP_CAMTG_SEL, clk_cfg_5, 8, 4, clk_cfg_update, 21),
+	MUX_UPD(TOP_CAMTG2_SEL, clk_cfg_5, 16, 4, clk_cfg_update, 22),
+	MUX_UPD(TOP_CAMTG3_SEL, clk_cfg_5, 24, 4, clk_cfg_update, 23),
 	/* CLK_CFG_6 */
-	MUX_UPD(TOP_UART_SEL, clk_cfg_6, 0, 3, clk_cfg_update, 24),
-	MUX_UPD(TOP_SPI_SEL, clk_cfg_6, 8, 3, clk_cfg_update, 25),
-	MUX_UPD(TOP_MSDC50_0_HSEL, clk_cfg_6, 16, 1, clk_cfg_update, 26),
-	MUX_UPD(TOP_MSDC50_0_SEL, clk_cfg_6, 24, 3, clk_cfg_update, 27),
+	MUX_UPD(TOP_UART_SEL, clk_cfg_6, 0, 4, clk_cfg_update, 24),
+	MUX_UPD(TOP_SPI_SEL, clk_cfg_6, 8, 4, clk_cfg_update, 25),
+	MUX_UPD(TOP_MSDC50_0_HSEL, clk_cfg_6, 16, 4, clk_cfg_update, 26),
+	MUX_UPD(TOP_MSDC50_0_SEL, clk_cfg_6, 24, 4, clk_cfg_update, 27),
 	/* CLK_CFG_7 */
-	MUX_UPD(TOP_MSDC30_1_SEL, clk_cfg_7, 0, 3, clk_cfg_update, 28),
-	MUX_UPD(TOP_MSDC30_2_SEL, clk_cfg_7, 8, 2, clk_cfg_update, 29),
-	MUX_UPD(TOP_INTDIR_SEL, clk_cfg_7, 16, 3, clk_cfg_update, 30),
-	MUX_UPD(TOP_AUD_INTBUS_SEL, clk_cfg_7, 24, 3, clk_cfg_update, 31),
+	MUX_UPD(TOP_MSDC30_1_SEL, clk_cfg_7, 0, 4, clk_cfg_update, 28),
+	MUX_UPD(TOP_MSDC30_2_SEL, clk_cfg_7, 8, 4, clk_cfg_update, 29),
+	MUX_UPD(TOP_INTDIR_SEL, clk_cfg_7, 16, 4, clk_cfg_update, 30),
+	MUX_UPD(TOP_AUD_INTBUS_SEL, clk_cfg_7, 24, 4, clk_cfg_update, 31),
 	/* CLK_CFG_8 */
-	MUX_UPD(TOP_AUDIO_H_SEL, clk_cfg_8, 0, 3, clk_cfg_update1, 0),
-	MUX_UPD(TOP_PWRAP_ULPOSC_SEL, clk_cfg_8, 8, 2, clk_cfg_update1, 1),
-	MUX_UPD(TOP_ATB_SEL, clk_cfg_8, 16, 2, clk_cfg_update1, 2),
-	MUX_UPD(TOP_SSPM_SEL, clk_cfg_8, 24, 2, clk_cfg_update1, 3),
+	MUX_UPD(TOP_AUDIO_H_SEL, clk_cfg_8, 0, 4, clk_cfg_update1, 0),
+	MUX_UPD(TOP_PWRAP_ULPOSC_SEL, clk_cfg_8, 8, 4, clk_cfg_update1, 1),
+	MUX_UPD(TOP_ATB_SEL, clk_cfg_8, 16, 4, clk_cfg_update1, 2),
+	MUX_UPD(TOP_SSPM_SEL, clk_cfg_8, 24, 4, clk_cfg_update1, 3),
 	/* CLK_CFG_9 */
-	MUX_UPD(TOP_DP_SEL, clk_cfg_9, 0, 3, clk_cfg_update1, 4),
-	MUX_UPD(TOP_EDP_SEL, clk_cfg_9, 8, 2, clk_cfg_update1, 5),
-	MUX_UPD(TOP_DPI_SEL, clk_cfg_9, 16, 3, clk_cfg_update1, 6),
+	MUX_UPD(TOP_DP_SEL, clk_cfg_9, 0, 4, clk_cfg_update1, 4),
+	MUX_UPD(TOP_EDP_SEL, clk_cfg_9, 8, 4, clk_cfg_update1, 5),
+	MUX_UPD(TOP_DPI_SEL, clk_cfg_9, 16, 4, clk_cfg_update1, 6),
 	MUX_UPD(TOP_DISP_PWM0_SEL, clk_cfg_9, 24, 4, clk_cfg_update1, 7),
 	/* CLK_CFG_10 */
 	MUX_UPD(TOP_DISP_PWM1_SEL, clk_cfg_10, 0, 4, clk_cfg_update1, 8),
 	MUX_UPD(TOP_USB_TOP_SEL, clk_cfg_10, 8, 4, clk_cfg_update1, 9),
-	MUX_UPD(TOP_SSUSB_XHCI_SEL, clk_cfg_10, 16, 3, clk_cfg_update1, 10),
-	MUX_UPD(TOP_USB_TOP_2P_SEL, clk_cfg_10, 24, 3, clk_cfg_update1, 11),
+	MUX_UPD(TOP_SSUSB_XHCI_SEL, clk_cfg_10, 16, 4, clk_cfg_update1, 10),
+	MUX_UPD(TOP_USB_TOP_2P_SEL, clk_cfg_10, 24, 4, clk_cfg_update1, 11),
 	/* CLK_CFG_11 */
-	MUX_UPD(TOP_SSUSB_XHCI_2P_SEL, clk_cfg_11, 0, 2, clk_cfg_update1, 12),
-	MUX_UPD(TOP_USB_TOP_3P_SEL, clk_cfg_11, 8, 2, clk_cfg_update1, 13),
-	MUX_UPD(TOP_SSUSB_XHCI_3P_SEL, clk_cfg_11, 16, 2, clk_cfg_update1, 14),
-	MUX_UPD(TOP_I2C_SEL, clk_cfg_11, 24, 2, clk_cfg_update1, 15),
+	MUX_UPD(TOP_SSUSB_XHCI_2P_SEL, clk_cfg_11, 0, 4, clk_cfg_update1, 12),
+	MUX_UPD(TOP_USB_TOP_3P_SEL, clk_cfg_11, 8, 4, clk_cfg_update1, 13),
+	MUX_UPD(TOP_SSUSB_XHCI_3P_SEL, clk_cfg_11, 16, 4, clk_cfg_update1, 14),
+	MUX_UPD(TOP_I2C_SEL, clk_cfg_11, 24, 4, clk_cfg_update1, 15),
 	/* CLK_CFG_12 */
-	MUX_UPD(TOP_SENINF_SEL, clk_cfg_12, 0, 2, clk_cfg_update1, 16),
-	MUX_UPD(TOP_SENINF1_SEL, clk_cfg_12, 8, 2, clk_cfg_update1, 17),
-	MUX_UPD(TOP_GCPU_SEL, clk_cfg_12, 16, 2, clk_cfg_update1, 18),
-	MUX_UPD(TOP_VENC_SEL, clk_cfg_12, 24, 2, clk_cfg_update1, 19),
+	MUX_UPD(TOP_SENINF_SEL, clk_cfg_12, 0, 4, clk_cfg_update1, 16),
+	MUX_UPD(TOP_SENINF1_SEL, clk_cfg_12, 8, 4, clk_cfg_update1, 17),
+	MUX_UPD(TOP_GCPU_SEL, clk_cfg_12, 16, 4, clk_cfg_update1, 18),
+	MUX_UPD(TOP_VENC_SEL, clk_cfg_12, 24, 4, clk_cfg_update1, 19),
 	/* CLK_CFG_13 */
-	MUX_UPD(TOP_VDEC_SEL, clk_cfg_13, 0, 2, clk_cfg_update1, 20),
-	MUX_UPD(TOP_PWM_SEL, clk_cfg_13, 8, 3, clk_cfg_update1, 21),
-	MUX_UPD(TOP_MCUPM_SEL, clk_cfg_13, 16, 3, clk_cfg_update1, 22),
-	MUX_UPD(TOP_SPMI_P_MST_SEL, clk_cfg_13, 24, 3, clk_cfg_update1, 23),
+	MUX_UPD(TOP_VDEC_SEL, clk_cfg_13, 0, 4, clk_cfg_update1, 20),
+	MUX_UPD(TOP_PWM_SEL, clk_cfg_13, 8, 4, clk_cfg_update1, 21),
+	MUX_UPD(TOP_MCUPM_SEL, clk_cfg_13, 16, 4, clk_cfg_update1, 22),
+	MUX_UPD(TOP_SPMI_P_MST_SEL, clk_cfg_13, 24, 4, clk_cfg_update1, 23),
 	/* CLK_CFG_14 */
-	MUX_UPD(TOP_SPMI_M_MST_SEL, clk_cfg_14, 0, 3, clk_cfg_update1, 24),
-	MUX_UPD(TOP_DVFSRC_SEL, clk_cfg_14, 8, 3, clk_cfg_update1, 25),
-	MUX_UPD(TOP_TL_SEL, clk_cfg_14, 16, 2, clk_cfg_update1, 26),
-	MUX_UPD(TOP_AES_MSDCFDE_SEL, clk_cfg_14, 24, 3, clk_cfg_update1, 27),
+	MUX_UPD(TOP_SPMI_M_MST_SEL, clk_cfg_14, 0, 4, clk_cfg_update1, 24),
+	MUX_UPD(TOP_DVFSRC_SEL, clk_cfg_14, 8, 4, clk_cfg_update1, 25),
+	MUX_UPD(TOP_TL_SEL, clk_cfg_14, 16, 4, clk_cfg_update1, 26),
+	MUX_UPD(TOP_AES_MSDCFDE_SEL, clk_cfg_14, 24, 4, clk_cfg_update1, 27),
 	/* CLK_CFG_15 */
-	MUX_UPD(TOP_DSI_OCC_SEL, clk_cfg_15, 0, 3, clk_cfg_update1, 28),
-	MUX_UPD(TOP_WPE_VPP_SEL, clk_cfg_15, 8, 3, clk_cfg_update1, 29),
-	MUX_UPD(TOP_HDCP_SEL, clk_cfg_15, 16, 1, clk_cfg_update1, 30),
-	MUX_UPD(TOP_HDCP_24M_SEL, clk_cfg_15, 24, 1, clk_cfg_update1, 31),
+	MUX_UPD(TOP_DSI_OCC_SEL, clk_cfg_15, 0, 4, clk_cfg_update1, 28),
+	MUX_UPD(TOP_WPE_VPP_SEL, clk_cfg_15, 8, 4, clk_cfg_update1, 29),
+	MUX_UPD(TOP_HDCP_SEL, clk_cfg_15, 16, 4, clk_cfg_update1, 30),
+	MUX_UPD(TOP_HDCP_24M_SEL, clk_cfg_15, 24, 4, clk_cfg_update1, 31),
 	/* CLK_CFG_16 */
 	MUX_UPD(TOP_HDMI_APB_SEL, clk_cfg_16, 0, 4, clk_cfg_update2, 0),
 	MUX_UPD(TOP_SNPS_ETH_250M_SEL, clk_cfg_16, 8, 4, clk_cfg_update2, 1),
-	MUX_UPD(TOP_SNPS_ETH_62P4M_PTP_SEL, clk_cfg_16, 16, 1, clk_cfg_update2, 2),
-	MUX_UPD(TOP_SNPS_ETH_50M_RMII_SEL, clk_cfg_16, 24, 2, clk_cfg_update2, 3),
+	MUX_UPD(TOP_SNPS_ETH_62P4M_PTP_SEL, clk_cfg_16, 16, 4, clk_cfg_update2, 2),
+	MUX_UPD(TOP_SNPS_ETH_50M_RMII_SEL, clk_cfg_16, 24, 4, clk_cfg_update2, 3),
 	/* CLK_CFG_17 */
 	MUX_UPD(TOP_ADSP_SEL, clk_cfg_17, 0, 4, clk_cfg_update2, 4),
 	MUX_UPD(TOP_AUDIO_LOCAL_BUS_SEL, clk_cfg_17, 8, 4, clk_cfg_update2, 5),
-	MUX_UPD(TOP_ASM_H_SEL, clk_cfg_17, 16, 2, clk_cfg_update2, 6),
-	MUX_UPD(TOP_ASM_L_SEL, clk_cfg_17, 24, 2, clk_cfg_update2, 7),
+	MUX_UPD(TOP_ASM_H_SEL, clk_cfg_17, 16, 4, clk_cfg_update2, 6),
+	MUX_UPD(TOP_ASM_L_SEL, clk_cfg_17, 24, 4, clk_cfg_update2, 7),
 	/* CLK_CFG_18 */
-	MUX_UPD(TOP_APLL1_SEL, clk_cfg_18, 0, 2, clk_cfg_update2, 8),
-	MUX_UPD(TOP_APLL2_SEL, clk_cfg_18, 8, 3, clk_cfg_update2, 9),
-	MUX_UPD(TOP_APLL3_SEL, clk_cfg_18, 16, 2, clk_cfg_update2, 10),
+	MUX_UPD(TOP_APLL1_SEL, clk_cfg_18, 0, 4, clk_cfg_update2, 8),
+	MUX_UPD(TOP_APLL2_SEL, clk_cfg_18, 8, 4, clk_cfg_update2, 9),
+	MUX_UPD(TOP_APLL3_SEL, clk_cfg_18, 16, 4, clk_cfg_update2, 10),
 	MUX_UPD(TOP_APLL4_SEL, clk_cfg_18, 24, 4, clk_cfg_update2, 11),
 	/* CLK_CFG_19 */
-	MUX_UPD(TOP_APLL5_SEL, clk_cfg_19, 0, 2, clk_cfg_update2, 12),
-	MUX_UPD(TOP_I2SO1_SEL, clk_cfg_19, 8, 2, clk_cfg_update2, 13),
-	MUX_UPD(TOP_I2SO2_SEL, clk_cfg_19, 16, 2, clk_cfg_update2, 14),
-	MUX_UPD(TOP_I2SI1_SEL, clk_cfg_19, 24, 2, clk_cfg_update2, 15),
+	MUX_UPD(TOP_APLL5_SEL, clk_cfg_19, 0, 4, clk_cfg_update2, 12),
+	MUX_UPD(TOP_I2SO1_SEL, clk_cfg_19, 8, 4, clk_cfg_update2, 13),
+	MUX_UPD(TOP_I2SO2_SEL, clk_cfg_19, 16, 4, clk_cfg_update2, 14),
+	MUX_UPD(TOP_I2SI1_SEL, clk_cfg_19, 24, 4, clk_cfg_update2, 15),
 	/* CLK_CFG_20 */
-	MUX_UPD(TOP_I2SI2_SEL, clk_cfg_20, 0, 1, clk_cfg_update2, 16),
-	MUX_UPD(TOP_DPTX_SEL, clk_cfg_20, 8, 2, clk_cfg_update2, 17),
-	MUX_UPD(TOP_AUD_IEC_SEL, clk_cfg_20, 16, 1, clk_cfg_update2, 18),
-	MUX_UPD(TOP_A1SYS_HP_SEL, clk_cfg_20, 24, 2, clk_cfg_update2, 19),
+	MUX_UPD(TOP_I2SI2_SEL, clk_cfg_20, 0, 4, clk_cfg_update2, 16),
+	MUX_UPD(TOP_DPTX_SEL, clk_cfg_20, 8, 4, clk_cfg_update2, 17),
+	MUX_UPD(TOP_AUD_IEC_SEL, clk_cfg_20, 16, 4, clk_cfg_update2, 18),
+	MUX_UPD(TOP_A1SYS_HP_SEL, clk_cfg_20, 24, 4, clk_cfg_update2, 19),
 	/* CLK_CFG_21 */
-	MUX_UPD(TOP_A2SYS_SEL, clk_cfg_21, 0, 1, clk_cfg_update2, 20),
-	MUX_UPD(TOP_A3SYS_SEL, clk_cfg_21, 8, 3, clk_cfg_update2, 21),
+	MUX_UPD(TOP_A2SYS_SEL, clk_cfg_21, 0, 4, clk_cfg_update2, 20),
+	MUX_UPD(TOP_A3SYS_SEL, clk_cfg_21, 8, 4, clk_cfg_update2, 21),
 	MUX_UPD(TOP_A4SYS_SEL, clk_cfg_21, 16, 4, clk_cfg_update2, 22),
 	MUX_UPD(TOP_ECC_SEL, clk_cfg_21, 24, 4, clk_cfg_update2, 23),
 	/* CLK_CFG_22 */
 	MUX_UPD(TOP_SPINOR_SEL, clk_cfg_22, 0, 4, clk_cfg_update2, 24),
-	MUX_UPD(TOP_ULPOSC_SEL, clk_cfg_22, 8, 2, clk_cfg_update2, 25),
-	MUX_UPD(TOP_SRCK_SEL, clk_cfg_22, 16, 2, clk_cfg_update2, 26),
+	MUX_UPD(TOP_ULPOSC_SEL, clk_cfg_22, 8, 4, clk_cfg_update2, 25),
+	MUX_UPD(TOP_SRCK_SEL, clk_cfg_22, 16, 4, clk_cfg_update2, 26),
 };
 
 struct mux_sel {
@@ -259,12 +259,12 @@ static const struct mux_sel mux_sels[] = {
 	{ .id = TOP_VPP_SEL, .sel = 8 },			/* 8: univpll_d6 */
 	{ .id = TOP_ETHDR_SEL, .sel = 8 },			/* 8: univpll_d6 */
 	{ .id = TOP_IPE_SEL, .sel = 8 },			/* 8: mainpll_d4_d2 */
-	{ .id = TOP_CAM_SEL, .sel = 8 },			/* 8: mainpll_d4_d2 */
+	{ .id = TOP_CAM_SEL, .sel = 9 },			/* 9: mainpll_d4_d2 */
 	/* CLK_CFG_2 */
 	{ .id = TOP_CCU_SEL, .sel = 2 },			/* 2: mainpll_d4_d2 */
-	{ .id = TOP_CCU_AHB_SEL, .sel = 11 },			/* 11: univpll_d5_d2 */
-	{ .id = TOP_IMG_SEL, .sel = 2 },			/* 2: univpll_d6_d2 */
-	{ .id = TOP_CAMTM_SEL, .sel = 7 },			/* 7: univpll_d3 */
+	{ .id = TOP_CCU_AHB_SEL, .sel = 2 },			/* 2: mainpll_d4_d2 */
+	{ .id = TOP_IMG_SEL, .sel = 11 },			/* 11: mainpll_d4_d2 */
+	{ .id = TOP_CAMTM_SEL, .sel = 2 },			/* 2: univpll_d6_d2 */
 	/* CLK_CFG_3 */
 	{ .id = TOP_DSP_SEL, .sel = 7 },			/* 7: univpll_d3 */
 	{ .id = TOP_DSP1_SEL, .sel = 7 },			/* 7: univpll_d3 */
@@ -274,7 +274,7 @@ static const struct mux_sel mux_sels[] = {
 	{ .id = TOP_DSP4_SEL, .sel = 7 },			/* 7: univpll_d3 */
 	{ .id = TOP_DSP5_SEL, .sel = 7 },			/* 7: univpll_d3 */
 	{ .id = TOP_DSP6_SEL, .sel = 7 },			/* 7: univpll_d3 */
-	{ .id = TOP_DSP7_SEL, .sel = 7 },			/* 7: mmpll_d4 */
+	{ .id = TOP_DSP7_SEL, .sel = 7 },			/* 7: univpll_d3 */
 	/* CLK_CFG_5 */
 	{ .id = TOP_MFG_CORE_TMP_SEL, .sel = 3 },		/* 3: univpll_d7 */
 	{ .id = TOP_CAMTG_SEL, .sel = 2 },			/* 2: univpll_d6_d8 */
@@ -298,7 +298,7 @@ static const struct mux_sel mux_sels[] = {
 	/* CLK_CFG_9 */
 	{ .id = TOP_DP_SEL, .sel = 3 },				/* 3: tvdpll1_d4  */
 	{ .id = TOP_EDP_SEL, .sel = 4 },			/* 4: tvdpll2_d4 */
-	{ .id = TOP_DPI_SEL, .sel = 2 },			/* 2: tvdpll1_d2 */
+	{ .id = TOP_DPI_SEL, .sel = 1 },			/* 1: tvdpll1_d2 */
 	{ .id = TOP_DISP_PWM0_SEL, .sel = 2 },			/* 2: ulposc_d2 */
 	/* CLK_CFG_10 */
 	{ .id = TOP_DISP_PWM1_SEL, .sel = 2 },			/* 2: ulposc_d2 */
@@ -319,21 +319,21 @@ static const struct mux_sel mux_sels[] = {
 	{ .id = TOP_VDEC_SEL, .sel = 1 },			/* 1: mainpll_d5_d2 */
 	{ .id = TOP_PWM_SEL, .sel = 3 },			/* 3: univpll_d6_d4 */
 	{ .id = TOP_MCUPM_SEL, .sel = 1 },			/* 1: mainpll_d6_d2 */
-	{ .id = TOP_SPMI_P_MST_SEL, .sel = 3 },			/* 7: mainpll_d7_d8 */
+	{ .id = TOP_SPMI_P_MST_SEL, .sel = 7 },			/* 7: mainpll_d7_d8 */
 	/* CLK_CFG_14 */
-	{ .id = TOP_SPMI_M_MST_SEL, .sel = 3 },			/* 7: mainpll_d7_d8 */
+	{ .id = TOP_SPMI_M_MST_SEL, .sel = 7 },			/* 7: mainpll_d7_d8 */
 	{ .id = TOP_DVFSRC_SEL, .sel = 0 },			/* 0: clk26m */
 	{ .id = TOP_TL_SEL, .sel = 2 },				/* 2: mainpll_d4_d4 */
 	{ .id = TOP_AES_MSDCFDE_SEL, .sel = 5 },		/* 5: univpll_d6 */
 	/* CLK_CFG_15 */
 	{ .id = TOP_DSI_OCC_SEL, .sel = 1 },			/* 1: univpll_d6_d2 */
-	{ .id = TOP_WPE_VPP_SEL, .sel = 7 },			/* 7: mainpll_d6 */
+	{ .id = TOP_WPE_VPP_SEL, .sel = 4 },			/* 4: mainpll_d4_d2 */
 	{ .id = TOP_HDCP_SEL, .sel = 3 },			/* 3: univpll_d6_d4 */
 	{ .id = TOP_HDCP_24M_SEL, .sel = 1 },			/* 1: univpll_192m_d4 */
 	/* CLK_CFG_16 */
 	{ .id = TOP_HDMI_APB_SEL, .sel = 2 },			/* 2: msdcpll_d2 */
 	{ .id = TOP_SNPS_ETH_250M_SEL, .sel = 1 },		/* 1: ethpll_d2 */
-	{ .id = TOP_SNPS_ETH_62P4M_PTP_SEL, .sel = 1 },		/* 1: ethpll_d8 */
+	{ .id = TOP_SNPS_ETH_62P4M_PTP_SEL, .sel = 3 },		/* 3: ethpll_d8 */
 	{ .id = TOP_SNPS_ETH_50M_RMII_SEL, .sel = 1 },		/* 1: ethpll_d10 */
 	/* CLK_CFG_17 */
 	{ .id = TOP_ADSP_SEL, .sel = 8 },			/* 8: adsppll_ck */

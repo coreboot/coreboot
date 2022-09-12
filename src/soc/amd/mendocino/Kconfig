@@ -421,6 +421,21 @@ config SPL_TABLE_FILE
 	depends on HAVE_SPL_FILE
 	default "3rdparty/blobs/mainboard/\$(CONFIG_MAINBOARD_DIR)/TypeId0x55_SplTableBl_MDN.sbin"
 
+config HAVE_SPL_RW_AB_FILE
+	bool "Have a separate mainboard-specific SPL file in RW A/B partitions"
+	default n
+	depends on HAVE_SPL_FILE
+	depends on VBOOT_SLOTS_RW_AB
+	help
+	  Have separate mainboard-specific Security Patch Level (SPL) table
+	  file for the RW A/B FMAP partitions. See the help text of
+	  HAVE_SPL_FILE for a more detailed description.
+
+config SPL_RW_AB_TABLE_FILE
+	string "Separate SPL table file for RW A/B partitions"
+	depends on HAVE_SPL_RW_AB_FILE
+	default "3rdparty/blobs/mainboard/\$(CONFIG_MAINBOARD_DIR)/TypeId0x55_SplTableBl_MDN.sbin"
+
 config PSP_SOFTFUSE_BITS
 	string "PSP Soft Fuse bits to enable"
 	default "34 28 6"

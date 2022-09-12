@@ -121,6 +121,11 @@ endif
 # type = 0x55
 ifeq ($(CONFIG_HAVE_SPL_FILE),y)
 SPL_TABLE_FILE=$(CONFIG_SPL_TABLE_FILE)
+ifeq ($(CONFIG_HAVE_SPL_RW_AB_FILE),y)
+SPL_RW_AB_TABLE_FILE=$(CONFIG_SPL_RW_AB_TABLE_FILE)
+else
+SPL_RW_AB_TABLE_FILE=$(CONFIG_SPL_TABLE_FILE)
+endif
 endif
 
 #
@@ -193,6 +198,7 @@ OPT_PSP_SOFTFUSE=$(call add_opt_prefix, $(PSP_SOFTFUSE), --soft-fuse)
 
 OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
 OPT_SPL_TABLE_FILE=$(call add_opt_prefix, $(SPL_TABLE_FILE), --spl-table)
+OPT_SPL_RW_AB_TABLE_FILE=$(call add_opt_prefix, $(SPL_RW_AB_TABLE_FILE), --spl-table)
 
 # If vboot uses 2 RW slots, then 2 copies of PSP binaries are redundant
 OPT_RECOVERY_AB_SINGLE_COPY=$(if $(CONFIG_VBOOT_SLOTS_RW_AB), --recovery-ab-single-copy)
@@ -209,7 +215,6 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		--combo-capable \
 		$(OPT_TOKEN_UNLOCK) \
 		$(OPT_WHITELIST_FILE) \
-		$(OPT_SPL_TABLE_FILE) \
 		$(OPT_PSP_SHAREDMEM_BASE) \
 		$(OPT_PSP_SHAREDMEM_SIZE) \
 		$(OPT_EFS_SPI_READ_MODE) \
@@ -237,6 +242,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		$(OPT_APOB_NV_BASE) \
 		$(OPT_VERSTAGE_FILE) \
 		$(OPT_VERSTAGE_SIG_FILE) \
+		$(OPT_SPL_TABLE_FILE) \
 		--location $(shell printf "%#x" $(MENDOCINO_FWM_POSITION)) \
 		--output $@
 
@@ -253,6 +259,7 @@ $(obj)/amdfw_a.rom: $(obj)/amdfw.rom
 		$(AMDFW_COMMON_ARGS) \
 		$(OPT_APOB_NV_SIZE) \
 		$(OPT_APOB_NV_BASE) \
+		$(OPT_SPL_RW_AB_TABLE_FILE) \
 		--location $(shell printf "%#x" $(MENDOCINO_FW_A_POSITION)) \
 		--anywhere \
 		--output $@
@@ -264,6 +271,7 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		$(AMDFW_COMMON_ARGS) \
 		$(OPT_APOB_NV_SIZE) \
 		$(OPT_APOB_NV_BASE) \
+		$(OPT_SPL_RW_AB_TABLE_FILE) \
 		--location $(shell printf "%#x" $(MENDOCINO_FW_B_POSITION)) \
 		--anywhere \
 		--output $@

@@ -213,7 +213,7 @@ static void fill_fspm_tcss_params(FSP_M_CONFIG *m_cfg,
 
 	/* TCSS DMA */
 	m_cfg->TcssDma0En = is_devfn_enabled(PCI_DEVFN_TCSS_DMA0);
-	m_cfg->TcssDma1En = 0;
+	m_cfg->TcssDma1En = is_devfn_enabled(PCI_DEVFN_TCSS_DMA1);
 
 	/* Enable TCSS port */
 	max_port = get_max_tcss_port();

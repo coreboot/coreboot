@@ -256,8 +256,8 @@ static const struct mux_sel mux_sels[] = {
 	{ .id = TOP_SCP_SEL, .sel = 5 },			/* 5: mainpll_d4_d2 */
 	{ .id = TOP_BUS_AXIMEM_SEL, .sel = 1 },			/* 1: mainpll_d7_d2 */
 	/* CLK_CFG_1 */
-	{ .id = TOP_VPP_SEL, .sel = 8 },			/* 8: mainpll_d6 */
-	{ .id = TOP_ETHDR_SEL, .sel = 10 },			/* 10: mmpll_d5_d4 */
+	{ .id = TOP_VPP_SEL, .sel = 8 },			/* 8: univpll_d6 */
+	{ .id = TOP_ETHDR_SEL, .sel = 8 },			/* 8: univpll_d6 */
 	{ .id = TOP_IPE_SEL, .sel = 8 },			/* 8: mainpll_d4_d2 */
 	{ .id = TOP_CAM_SEL, .sel = 8 },			/* 8: mainpll_d4_d2 */
 	/* CLK_CFG_2 */

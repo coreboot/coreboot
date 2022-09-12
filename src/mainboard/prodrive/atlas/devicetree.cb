@@ -17,6 +17,9 @@ chip soc/intel/alderlake
 	# SaGv Configuration
 	register "sagv" = "CONFIG(ATLAS_ENABLE_SAGV) ? SaGv_Enabled : SaGv_Disabled"
 
+	# Disable S0ix
+	register "s0ix_enable" = "0"
+
 	# Display configuration (4 DPs)
 	register "ddi_ports_config" = "{
 		[DDI_PORT_A] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,

@@ -54,6 +54,15 @@ config CBFS_SIZE
 config NO_POST
 	default y
 
+config ENABLE_BUZZER_SUPPORT
+	bool "Enable Buzzer support"
+	default y
+	select USE_LEGACY_8254_TIMER
+	help
+	  8254 timer is required for buzzer support on GPP_B14 (based on Intel doc 621483,
+	  26.1.1 - NMI_STS_CNT). However since 8254 timer clock gating has to be enabled for
+	  S0ix support, enabling buzzer will disable s0ix.
+
 config PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS
 	int
 	default 32

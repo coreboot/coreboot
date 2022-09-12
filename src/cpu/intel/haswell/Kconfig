@@ -7,7 +7,6 @@ if CPU_INTEL_HASWELL
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
 	select ARCH_X86
-	select BOOT_DEVICE_SPI_FLASH_NO_EARLY_WRITES
 	select MMX
 	select SSE2
 	select UDELAY_TSC

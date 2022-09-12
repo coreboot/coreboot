@@ -271,12 +271,14 @@ bool cse_is_hfs1_com_soft_temp_disable(void)
 }
 
 /*
- * TGL HFSTS1.spi_protection_mode bit replaces the previous
- * `manufacturing mode (mfg_mode)` without changing the offset and purpose
- * of this bit.
+ * Starting from TGL platform, HFSTS1.spi_protection_mode replaces mfg_mode to indicate
+ * SPI protection status as well as end-of-manufacturing(EOM) status where EOM flow is
+ * triggered in single staged operation (either through first boot with required MFIT
+ * configuratin or FPT /CLOSEMANUF).
+ * In staged manufacturing flow, spi_protection_mode alone doesn't indicate the EOM status.
  *
- * Using HFSTS1.mfg_mode to get the SPI protection status for all PCH.
- * mfg_mode = 0 means SPI protection in on.
+ * HFSTS1.spi_protection_mode description:
+ * mfg_mode = 0 means SPI protection is on.
  * mfg_mode = 1 means SPI is unprotected.
  */
 bool cse_is_hfs1_spi_protected(void)

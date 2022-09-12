@@ -9,7 +9,7 @@ void verstage_mainboard_init(void)
 {
 	struct spi_slave spi;
 
-	printk(BIOS_ERR, "Trying to initialize TPM SPI bus\n");
+	printk(BIOS_INFO, "Trying to initialize TPM SPI bus\n");
 	if (spi_setup_slave(CONFIG_DRIVER_TPM_SPI_BUS,
 			    CONFIG_DRIVER_TPM_SPI_CHIP, &spi)) {
 		printk(BIOS_ERR, "Failed to setup TPM SPI slave\n");

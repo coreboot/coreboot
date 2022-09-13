@@ -188,10 +188,7 @@ static void acipgen_dptci(void)
 {
 	const struct soc_amd_mendocino_config *config = config_of_soc();
 
-	if (!config->dptc_enable)
-		return;
-
-	/* DPTC is enabled. Always fill out the default DPTC values. */
+	/* Normal mode DPTC values. */
 	struct dptc_input default_input = DPTC_INPUTS(config->thermctl_limit_degreeC,
 		config->sustained_power_limit_mW,
 		config->fast_ppt_limit_mW,
@@ -202,7 +199,8 @@ static void acipgen_dptci(void)
 static void root_complex_fill_ssdt(const struct device *device)
 {
 	acpi_fill_root_complex_tom(device);
-	acipgen_dptci();
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC))
+		acipgen_dptci();
 }
 
 static const char *gnb_acpi_name(const struct device *dev)

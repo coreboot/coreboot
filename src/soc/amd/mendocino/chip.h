@@ -82,8 +82,6 @@ struct soc_amd_mendocino_config {
 	uint32_t telemetry_vddcrsocfull_scale_current_mA;
 	uint32_t telemetry_vddcrsocoffset;
 
-	bool dptc_enable;
-
 	/* The array index is the general purpose PCIe clock output number. Values in here
 	   aren't the values written to the register to have the default to be always on. */
 	enum {

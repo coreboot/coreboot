@@ -26,8 +26,8 @@ static const struct reset_mapping rst_map[] = {
  */
 static const struct pad_group mtl_community0_groups[] = {
 	INTEL_GPP(GPP_PECI, GPP_PECI, GPP_VIDALERT_B),			/* GPP_CPU */
-	INTEL_GPP_BASE(GPP_PECI, GPP_V00, GPP_V23, 0),			/* GPP_V */
-	INTEL_GPP_BASE(GPP_PECI, GPP_C00, GPP_C23, 32),			/* GPP_C */
+	INTEL_GPP_BASE(GPP_PECI, GPP_V00, GPP_V23, 32),			/* GPP_V */
+	INTEL_GPP_BASE(GPP_PECI, GPP_C00, GPP_C23, 64),			/* GPP_C */
 };
 
 static const struct vw_entries mtl_community0_vw[] = {
@@ -35,8 +35,8 @@ static const struct vw_entries mtl_community0_vw[] = {
 };
 
 static const struct pad_group mtl_community1_groups[] = {
-	INTEL_GPP_BASE(GPP_A00, GPP_A00, GPP_ESPI_CLK_LPBK, 64),		/* GPP_A */
-	INTEL_GPP_BASE(GPP_A00, GPP_E00, GPP_THC0_GSPI_CLK_LPBK, 96),	/* GPP_E */
+	INTEL_GPP_BASE(GPP_A00, GPP_A00, GPP_ESPI_CLK_LPBK, 96),	/* GPP_A */
+	INTEL_GPP_BASE(GPP_A00, GPP_E00, GPP_THC0_GSPI_CLK_LPBK, 128),	/* GPP_E */
 };
 
 static const struct vw_entries mtl_community1_vw[] = {
@@ -45,8 +45,8 @@ static const struct vw_entries mtl_community1_vw[] = {
 };
 
 static const struct pad_group mtl_community3_groups[] = {
-	INTEL_GPP_BASE(GPP_H00, GPP_H00, GPP_LPI3C0_CLK_LPBK, 128),	/* GPP_H */
-	INTEL_GPP_BASE(GPP_H00, GPP_F00, GPP_GSPI0A_CLK_LOOPBK, 160),	/* GPP_F */
+	INTEL_GPP_BASE(GPP_H00, GPP_H00, GPP_LPI3C0_CLK_LPBK, 160),	/* GPP_H */
+	INTEL_GPP_BASE(GPP_H00, GPP_F00, GPP_GSPI0A_CLK_LOOPBK, 192),	/* GPP_F */
 	INTEL_GPP(GPP_H00, GPP_SPI0_IO_2, GPP_SPI0_CLK_LOOPBK),		/* GPP_SPI0 */
 	INTEL_GPP(GPP_H00, GPP_VGPIO3_USB0, GPP_VGPIO3_THC3),		/* GPP_VGPIO3 */
 };
@@ -57,13 +57,13 @@ static const struct vw_entries mtl_community3_vw[] = {
 };
 
 static const struct pad_group mtl_community4_groups[] = {
-	INTEL_GPP_BASE(GPP_S00, GPP_S00, GPP_S07, 192),			/* GPP_S */
+	INTEL_GPP_BASE(GPP_S00, GPP_S00, GPP_S07, 288),			/* GPP_S */
 	INTEL_GPP(GPP_S00, GPP_JTAG_MBPB0, GPP_JTAG_TRST_B),		/* GPP_JTAG */
 };
 
 static const struct pad_group mtl_community5_groups[] = {
-	INTEL_GPP_BASE(GPP_B00, GPP_B00, GPP_ACI3C0_CLK_LPBK, 224),	/* GPP_B */
-	INTEL_GPP_BASE(GPP_B00, GPP_D00, GPP_BOOTHALT_B, 256),		/* GPP_D */
+	INTEL_GPP_BASE(GPP_B00, GPP_B00, GPP_ACI3C0_CLK_LPBK, 352),	/* GPP_B */
+	INTEL_GPP_BASE(GPP_B00, GPP_D00, GPP_BOOTHALT_B, 384),		/* GPP_D */
 	INTEL_GPP(GPP_B00, GPP_VGPIO00, GPP_VGPIO47),			/* GPP_VGPIO */
 };
 

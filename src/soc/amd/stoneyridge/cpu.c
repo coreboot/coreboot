@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/cpu.h>
 #include <amdblocks/iomap.h>
 #include <amdblocks/mca.h>
 #include <amdblocks/reset.h>
@@ -40,11 +41,6 @@ static void pre_mp_init(void)
 	else
 		x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
-}
-
-static int get_cpu_count(void)
-{
-	return 1 + (cpuid_ecx(0x80000008) & 0xff);
 }
 
 static const struct mp_ops mp_ops = {

@@ -8,11 +8,6 @@
 #include <smbios.h>
 #include <soc/iomap.h>
 
-int get_cpu_count(void)
-{
-	return 1 + (cpuid_ecx(0x80000008) & 0xff);
-}
-
 unsigned int smbios_processor_family(struct cpuid_result res)
 {
 	return 0x6b; /* Zen */

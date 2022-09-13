@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/cpu.h>
 #include <amdblocks/smm.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
@@ -25,7 +26,7 @@ static void model_16_init(struct device *dev)
 	mca_clear_status();
 
 	if (CONFIG(LOGICAL_CPUS)) {
-		siblings = cpuid_ecx(0x80000008) & 0xff;
+		siblings = get_cpu_count() - 1; // minus BSP
 
 		if (siblings > 0) {
 			msr = rdmsr_amd(CPU_ID_FEATURES_MSR);

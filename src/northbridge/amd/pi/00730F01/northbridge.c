@@ -23,6 +23,7 @@
 #include <northbridge/amd/nb_common.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <southbridge/amd/pi/hudson/pci_devs.h>
+#include <amdblocks/cpu.h>
 
 #define MAX_NODE_NUMS MAX_NODES
 #define PCIE_CAP_AER		BIT(5)
@@ -871,13 +872,6 @@ static void pre_mp_init(void)
 {
 	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
-}
-
-static int get_cpu_count(void)
-{
-	uint8_t siblings = cpuid_ecx(0x80000008) & 0xff;
-
-	return siblings + 1;
 }
 
 static const struct mp_ops mp_ops = {

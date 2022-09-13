@@ -443,7 +443,7 @@ static void set_early_mmc_wake_status(int32_t status)
 
 	ms_cbmem = cbmem_add(CBMEM_ID_MMC_STATUS, sizeof(status));
 
-	if (ms_cbmem == NULL) {
+	if (!ms_cbmem) {
 		printk(BIOS_ERR,
 		       "%s: Failed to add early mmc wake status to cbmem!\n",
 		       __func__);

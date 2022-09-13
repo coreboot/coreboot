@@ -135,7 +135,7 @@ s32 pwrap_wacs2(u32 write, u16 addr, u16 wdata, u16 *rdata, u32 init_check)
 
 	write32(&mtk_pwrap->wacs2_cmd, wacs_cmd);
 	if (write == 0) {
-		if (rdata == NULL) {
+		if (!rdata) {
 			pwrap_err("rdata is a NULL pointer\n");
 			return E_PWR_INVALID_ARG;
 		}

@@ -118,7 +118,7 @@ static void pmic_read(u32 addr, u32 *rdata)
 {
 	static struct pmif *pmif_arb;
 
-	if (pmif_arb == NULL)
+	if (!pmif_arb)
 		pmif_arb = get_pmif_controller(PMIF_SPI, 0);
 
 	pmif_arb->read(pmif_arb, 0, addr, rdata);

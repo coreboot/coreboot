@@ -15,7 +15,7 @@ void rtc_read(u16 addr, u16 *rdata)
 {
 	u32 data;
 
-	if (pmif_arb == NULL)
+	if (!pmif_arb)
 		pmif_arb = get_pmif_controller(PMIF_SPI, 0);
 	pmif_arb->read(pmif_arb, 0, (u32)addr, &data);
 
@@ -24,7 +24,7 @@ void rtc_read(u16 addr, u16 *rdata)
 
 void rtc_write(u16 addr, u16 wdata)
 {
-	if (pmif_arb == NULL)
+	if (!pmif_arb)
 		pmif_arb = get_pmif_controller(PMIF_SPI, 0);
 	pmif_arb->write(pmif_arb, 0, (unsigned int)addr, (unsigned int)wdata);
 }

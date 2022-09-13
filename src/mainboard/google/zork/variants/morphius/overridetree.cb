@@ -30,7 +30,6 @@ chip soc/amd/picasso
 	register "telemetry_vddcr_soc_offset" = "0"
 
 	# Set STAPM confiuration for tablet mode
-	register "dptc_tablet_mode_enable" = "true"
 	register "slow_ppt_limit_tablet_mode_mW" = "20000"
 	register "fast_ppt_limit_tablet_mode_mW" = "24000"
 	register "sustained_power_limit_tablet_mode_mW" = "12000"

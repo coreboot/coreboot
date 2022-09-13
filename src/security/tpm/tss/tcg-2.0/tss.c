@@ -55,7 +55,7 @@ static uint32_t tlcl_send_startup(TPM_SU type)
 	response = tpm_process_command(TPM2_Startup, &startup);
 
 	/* IO error, tpm2_response pointer is empty. */
-	if (response == NULL) {
+	if (!response) {
 		printk(BIOS_ERR, "%s: TPM communication error\n", __func__);
 		return TPM_E_IOERROR;
 	}
@@ -89,7 +89,7 @@ static uint32_t tlcl_send_shutdown(TPM_SU type)
 	response = tpm_process_command(TPM2_Shutdown, &shutdown);
 
 	/* IO error, tpm2_response pointer is empty. */
-	if (response == NULL) {
+	if (!response) {
 		printk(BIOS_ERR, "%s: TPM communication error\n", __func__);
 		return TPM_E_IOERROR;
 	}

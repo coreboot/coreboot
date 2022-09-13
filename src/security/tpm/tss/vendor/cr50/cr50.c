@@ -18,7 +18,7 @@ uint32_t tlcl_cr50_enable_nvcommits(void)
 
 	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &sub_command);
 
-	if (response == NULL || (response && response->hdr.tpm_code)) {
+	if (!response || (response && response->hdr.tpm_code)) {
 		if (response)
 			printk(BIOS_INFO, "%s: failed %x\n", __func__,
 			       response->hdr.tpm_code);

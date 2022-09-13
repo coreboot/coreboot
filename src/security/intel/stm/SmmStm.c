@@ -481,7 +481,7 @@ int add_pi_resource(STM_RSC *resource_list, uint32_t num_entries)
 	if (resource_size == 0)
 		return -1; // INVALID_PARAMETER;
 
-	if (m_stm_resources_ptr == NULL) {
+	if (!m_stm_resources_ptr) {
 
 		// Copy EndResource for initialization
 		m_stm_resources_ptr = stm_resource_heap;
@@ -522,7 +522,7 @@ int add_pi_resource(STM_RSC *resource_list, uint32_t num_entries)
  */
 int32_t delete_pi_resource(STM_RSC *resource_list, uint32_t num_entries)
 {
-	if (resource_list != NULL) {
+	if (resource_list) {
 		// ASSERT (false);
 		return -1; // UNSUPPORTED;
 	}

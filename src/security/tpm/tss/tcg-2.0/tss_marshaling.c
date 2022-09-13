@@ -517,7 +517,7 @@ static int unmarshal_TPM2B_MAX_NV_BUFFER(struct ibuf *ib,
 
 	nv_buffer->t.buffer = ibuf_oob_drain(ib, nv_buffer->t.size);
 
-	if (nv_buffer->t.buffer == NULL) {
+	if (!nv_buffer->t.buffer) {
 		printk(BIOS_ERR, "%s:%d - "
 		       "size mismatch: expected %d, remaining %zd\n",
 		       __func__, __LINE__, nv_buffer->t.size,

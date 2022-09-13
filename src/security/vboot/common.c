@@ -17,10 +17,10 @@ static void *vboot_get_workbuf(void)
 	if (cbmem_possibly_online())
 		wb = cbmem_find(CBMEM_ID_VBOOT_WORKBUF);
 
-	if (wb == NULL && !CONFIG(VBOOT_STARTS_IN_ROMSTAGE) && preram_symbols_available())
+	if (!wb && !CONFIG(VBOOT_STARTS_IN_ROMSTAGE) && preram_symbols_available())
 		wb = _vboot2_work;
 
-	assert(wb != NULL);
+	assert(wb);
 
 	return wb;
 }
@@ -72,7 +72,7 @@ static void vboot_setup_cbmem(int unused)
 	vb2_error_t rv;
 	const size_t cbmem_size = VB2_KERNEL_WORKBUF_RECOMMENDED_SIZE;
 	void *wb_cbmem = cbmem_add(CBMEM_ID_VBOOT_WORKBUF, cbmem_size);
-	assert(wb_cbmem != NULL);
+	assert(wb_cbmem);
 	/*
 	 * On platforms where VBOOT_STARTS_BEFORE_BOOTBLOCK, the verification
 	 * occurs before the main processor starts running.  The vboot data-

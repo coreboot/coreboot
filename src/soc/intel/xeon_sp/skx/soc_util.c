@@ -50,7 +50,7 @@ const struct SystemMemoryMapHob *get_system_memory_map(void)
 	const struct SystemMemoryMapHob *memmap_addr;
 
 	memmap_addr = fsp_find_extension_hob_by_guid(mem_hob_guid, &hob_size);
-	assert(memmap_addr != NULL && hob_size != 0);
+	assert(memmap_addr && hob_size != 0);
 
 	return memmap_addr;
 }

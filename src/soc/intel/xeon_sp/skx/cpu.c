@@ -61,7 +61,7 @@ static void xeon_sp_core_init(struct device *cpu)
 
 	printk(BIOS_INFO, "%s dev: %s, cpu: %d, apic_id: 0x%x\n",
 		__func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id);
-	assert(chip_config != NULL);
+	assert(chip_config);
 
 	/* set MSR_PKG_CST_CONFIG_CONTROL - scope per core*/
 	msr.hi = 0;

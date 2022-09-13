@@ -48,9 +48,9 @@ static const struct SystemMemoryMapHob *get_system_memory_map(void)
 	memmap_addr = (const struct SystemMemoryMapHob **)
 		fsp_find_extension_hob_by_guid(mem_hob_guid, &hob_size);
 	/* hob_size is the size of the 8-byte address not the hob data */
-	assert(memmap_addr != NULL && hob_size != 0);
+	assert(memmap_addr && hob_size != 0);
 	/* assert the pointer to the hob is not NULL */
-	assert(*memmap_addr != NULL);
+	assert(*memmap_addr);
 
 	return *memmap_addr;
 }
@@ -85,14 +85,14 @@ void save_dimm_info(void)
 	uint32_t vdd_voltage;
 
 	hob = get_system_memory_map();
-	assert(hob != NULL);
+	assert(hob);
 
 	/*
 	 * Allocate CBMEM area for DIMM information used to populate SMBIOS
 	 * table 17
 	 */
 	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
-	if (mem_info == NULL) {
+	if (!mem_info) {
 		printk(BIOS_ERR, "CBMEM entry for DIMM info missing\n");
 		return;
 	}

@@ -78,7 +78,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 
 	microcode_file = cbfs_map("cpu_microcode_blob.bin", &microcode_len);
 
-	if ((microcode_file != NULL) && (microcode_len != 0)) {
+	if ((microcode_file) && (microcode_len != 0)) {
 		/* Update CPU Microcode patch base address/size */
 		silupd->FspsConfig.PcdCpuMicrocodePatchBase =
 		       (uint32_t)microcode_file;

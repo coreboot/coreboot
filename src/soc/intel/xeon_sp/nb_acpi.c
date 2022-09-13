@@ -46,7 +46,7 @@ static unsigned int get_srat_memory_entries(acpi_srat_mem_t *srat_mem)
 	unsigned int mmap_index;
 
 	memory_map = get_system_memory_map();
-	assert(memory_map != NULL);
+	assert(memory_map);
 	printk(BIOS_DEBUG, "memory_map: %p\n", memory_map);
 
 	mmap_index = 0;
@@ -332,7 +332,7 @@ static unsigned long acpi_create_rmrr(unsigned long current)
 	ptr = cbmem_find(CBMEM_ID_STORAGE_DATA);
 	if (!ptr) {
 		ptr = cbmem_add(CBMEM_ID_STORAGE_DATA, size);
-		assert(ptr != NULL);
+		assert(ptr);
 		memset(ptr, 0, size);
 	}
 

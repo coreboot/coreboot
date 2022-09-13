@@ -37,7 +37,7 @@ void soc_display_hob(const struct hob_header *hob)
 	const struct hob_resource *res;
 
 	res = fsp_hob_header_to_resource(hob);
-	assert(res != NULL);
+	assert(res);
 	printk(BIOS_DEBUG, "\tResource type: 0x%x, attribute: 0x%x, addr: 0x%08llx, len: 0x%08llx\n",
 		res->type, res->attribute_type, res->addr, res->length);
 	printk(BIOS_DEBUG, "\tOwner GUID: ");
@@ -57,7 +57,7 @@ void soc_display_memmap_hob(void)
 	size_t hob_size = 0;
 	const struct SystemMemoryMapHob *hob =
 		fsp_find_extension_hob_by_guid(fsp_hob_memmap_guid, &hob_size);
-	assert(hob != NULL && hob_size != 0);
+	assert(hob && hob_size != 0);
 
 	printk(BIOS_DEBUG, "===================== MEMORY MAP HOB DATA =====================\n");
 	printk(BIOS_DEBUG, "hob: %p, hob_size: 0x%zx, SystemMemoryMapHob size: 0x%zx, "
@@ -90,7 +90,7 @@ void soc_display_iio_universal_data_hob(void)
 	size_t hob_size = 0;
 	const IIO_UDS *hob = fsp_find_extension_hob_by_guid(fsp_hob_iio_uds_guid, &hob_size);
 
-	assert(hob != NULL && hob_size != 0);
+	assert(hob && hob_size != 0);
 
 	printk(BIOS_DEBUG, "===================== IIO_UDS HOB DATA =====================\n");
 

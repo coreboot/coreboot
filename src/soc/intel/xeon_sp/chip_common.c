@@ -91,7 +91,7 @@ void xeonsp_pci_domain_scan_bus(struct device *dev)
 
 	printk(BIOS_SPEW, "%s:%s scanning buses under device %s\n",
 		__FILE__, __func__, dev_path(dev));
-	while (link != NULL) {
+	while (link) {
 		if (link->secondary == 0)  { // scan only PSTACK buses
 			struct device *d;
 			for (d = link->children; d; d = d->sibling)
@@ -171,7 +171,7 @@ static void add_res_to_stack(struct stack_dev_resource **root,
 {
 	struct stack_dev_resource *cur = *root;
 	while (cur) {
-		if (cur->align == res->align || cur->next == NULL) /* equal or last record */
+		if (cur->align == res->align || !cur->next) /* equal or last record */
 			break;
 		else if (cur->align > res->align) {
 			if (cur->next->align < res->align) /* need to insert new record here */
@@ -192,7 +192,7 @@ static void add_res_to_stack(struct stack_dev_resource **root,
 		if (!cur) {
 			*root = nr; /* head node */
 		} else if (cur->align > nr->align) {
-			if (cur->next == NULL) {
+			if (!cur->next) {
 				cur->next = nr;
 			} else {
 				nr->next = cur->next;
@@ -206,20 +206,20 @@ static void add_res_to_stack(struct stack_dev_resource **root,
 		nr = cur;
 	}
 
-	assert(nr != NULL && nr->align == res->align);
+	assert(nr && nr->align == res->align);
 
 	struct pci_resource *npr = malloc(sizeof(struct pci_resource));
-	if (npr == NULL)
+	if (!npr)
 		die("%s: out of memory.\n", __func__);
 	npr->res = res;
 	npr->dev = dev;
 	npr->next = NULL;
 
-	if (nr->children == NULL) {
+	if (!nr->children) {
 		nr->children = npr;
 	} else {
 		struct pci_resource *pr = nr->children;
-		while (pr->next != NULL)
+		while (pr->next)
 			pr = pr->next;
 		pr->next = npr;
 	}
@@ -343,7 +343,7 @@ static void assign_stack_resources(struct iiostack_resource *stack_list,
 
 		/* get IIO stack for this bus */
 		stack = find_stack_for_bus(stack_list, bus->secondary);
-		assert(stack != NULL);
+		assert(stack);
 
 		/* Assign resources to bridge */
 		for (curdev = bus->children; curdev; curdev = curdev->sibling)
@@ -473,7 +473,7 @@ void xeonsp_pci_domain_set_resources(struct device *dev)
 	xeonsp_pci_domain_read_resources(dev);
 
 	struct bus *link = dev->link_list;
-	while (link != NULL) {
+	while (link) {
 		assign_resources(link);
 		link = link->next;
 	}
@@ -499,7 +499,7 @@ void attach_iio_stacks(struct device *dev)
 			continue;
 
 		iiostack_bus = malloc(sizeof(struct bus));
-		if (iiostack_bus == NULL)
+		if (!iiostack_bus)
 			die("%s: out of memory.\n", __func__);
 		memset(iiostack_bus, 0, sizeof(*iiostack_bus));
 		memcpy(iiostack_bus, dev->bus, sizeof(*iiostack_bus));
@@ -518,11 +518,11 @@ void attach_iio_stacks(struct device *dev)
 			printk(BIOS_WARNING, "IIO Stack device %s not visible\n",
 				dev_path(&dummy));
 
-		if (dev->link_list == NULL) {
+		if (!dev->link_list) {
 			dev->link_list = iiostack_bus;
 		} else {
 			struct bus *nlink = dev->link_list;
-			while (nlink->next != NULL)
+			while (nlink->next)
 				nlink = nlink->next;
 			nlink->next = iiostack_bus;
 		}

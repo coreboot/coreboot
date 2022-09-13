@@ -59,7 +59,7 @@ union dpr_register txt_get_chipset_dpr(void)
 
 	dpr.raw = 0;
 
-	if (dev == NULL) {
+	if (!dev) {
 		printk(BIOS_ERR, "BUS 0: Unable to find VTD PCI dev");
 		return dpr;
 	}
@@ -76,7 +76,7 @@ union dpr_register txt_get_chipset_dpr(void)
 			uint8_t bus = ri->BusBase;
 			dev = VTD_DEV(bus);
 
-			if (dev == NULL) {
+			if (!dev) {
 				printk(BIOS_ERR, "BUS %x: Unable to find VTD PCI dev\n", bus);
 				dpr.raw = 0;
 				return  dpr;

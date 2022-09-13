@@ -43,7 +43,7 @@ static void save_dimm_info(void)
 	meminfo_hob = fsp_find_extension_hob_by_guid(
 						smbios_memory_info_guid,
 						&hob_size);
-	if (meminfo_hob == NULL || hob_size == 0) {
+	if (!meminfo_hob || hob_size == 0) {
 		printk(BIOS_ERR, "SMBIOS MEMORY_INFO_DATA_HOB not found\n");
 		return;
 	}
@@ -53,7 +53,7 @@ static void save_dimm_info(void)
 	 * table 17
 	 */
 	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
-	if (mem_info == NULL) {
+	if (!mem_info) {
 		printk(BIOS_ERR, "CBMEM entry for DIMM info missing\n");
 		return;
 	}

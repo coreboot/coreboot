@@ -67,7 +67,7 @@ static int number(void (*tx_byte)(unsigned char byte, void *data), unsigned long
 		precision = i;
 	}
 	size -= precision;
-	if (!(type & (ZEROPAD + LEFT))) {
+	if (!(type & (ZEROPAD | LEFT))) {
 		while (size-- > 0)
 			call_tx(' '), count++;
 	}

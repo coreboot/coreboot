@@ -26,31 +26,10 @@
 
 static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(sizeof(uint64_t));
 
-static void save_memory_training_data(uint32_t fsp_version)
-{
-	size_t  mrc_data_size;
-	const void *mrc_data;
-
-	mrc_data = fsp_find_nv_storage_data(&mrc_data_size);
-	if (!mrc_data) {
-		printk(BIOS_ERR, "FSP_NON_VOLATILE_STORAGE_HOB missing!\n");
-		return;
-	}
-
-	/*
-	 * Save MRC Data to CBMEM. By always saving the data this forces
-	 * a retrain after a trip through ChromeOS recovery path. The
-	 * code which saves the data to flash doesn't write if the latest
-	 * training data matches this one.
-	 */
-	if (mrc_cache_stash_data(MRC_TRAINING_DATA, fsp_version, mrc_data,
-				mrc_data_size) < 0)
-		printk(BIOS_ERR, "Failed to stash MRC data\n");
-}
-
 static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 {
 	struct range_entry fsp_mem;
+	uint32_t *fsp_version_cbmem;
 
 	fsp_find_reserved_memory(&fsp_mem);
 
@@ -73,8 +52,14 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 		(uintptr_t)cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY))
 		die("Failed to accommodate FSP reserved memory request!\n");
 
-	if (CONFIG(CACHE_MRC_SETTINGS) && !s3wake)
-		save_memory_training_data(fsp_version);
+	/* ramstage uses the FSP-M version when updating the MRC cache */
+	if (CONFIG(CACHE_MRC_SETTINGS) && !s3wake) {
+		fsp_version_cbmem = cbmem_add(CBMEM_ID_FSPM_VERSION,
+					      sizeof(fsp_version));
+		if (!fsp_version_cbmem)
+			printk(BIOS_ERR, "Failed to add FSP-M version to cbmem.\n");
+		*fsp_version_cbmem = fsp_version;
+	}
 
 	/* Create romstage handof information */
 	romstage_handoff_init(s3wake);

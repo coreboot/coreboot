@@ -29,6 +29,7 @@ ramstage-y += notify.c
 ramstage-y += silicon_init.c
 ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 ramstage-y += util.c
+ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += save_mrc_data.c
 ramstage-$(CONFIG_MMA) += mma_core.c
 
 ifneq ($(CONFIG_NO_FSP_TEMP_RAM_EXIT),y)

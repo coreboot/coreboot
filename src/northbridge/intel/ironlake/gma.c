@@ -172,7 +172,7 @@ static void gma_read_resources(struct device *dev)
 
 	/* Set the graphics memory to write combining. */
 	res = probe_resource(dev, PCI_BASE_ADDRESS_2);
-	if (res == NULL) {
+	if (!res) {
 		printk(BIOS_DEBUG, "gma: memory resource not found.\n");
 		return;
 	}

@@ -152,7 +152,7 @@ static void gma_func0_init(struct device *dev)
 	intel_gma_init_igd_opregion();
 
 	gtt_res = probe_resource(dev, PCI_BASE_ADDRESS_0);
-	if (gtt_res == NULL)
+	if (!gtt_res)
 		return;
 	mmio = res2mmio(gtt_res, 0, 0);
 

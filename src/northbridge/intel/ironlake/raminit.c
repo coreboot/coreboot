@@ -3207,7 +3207,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	}
 
 	if (s3resume) {
-		if (info.cached_training == NULL) {
+		if (!info.cached_training) {
 			u32 reg32;
 			printk(BIOS_ERR,
 			       "Couldn't find training data. Rebooting\n");

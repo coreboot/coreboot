@@ -111,7 +111,7 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
 	pei_data->mrc_input = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
 							  MRC_CACHE_VERSION,
 							  &mrc_size);
-	if (pei_data->mrc_input == NULL) {
+	if (!pei_data->mrc_input) {
 		/* Error message printed in find_current_mrc_cache */
 		return;
 	}

@@ -107,7 +107,7 @@ static void setup_sdram_meminfo(ramctr_timing *ctrl)
 
 	/* The 'spd_add_smbios17' function allocates this CBMEM area */
 	struct memory_info *m = cbmem_find(CBMEM_ID_MEMINFO);
-	if (m == NULL)
+	if (!m)
 		return;
 
 	const uint32_t capid0_a = pci_read_config32(HOST_BRIDGE, CAPID0_A);

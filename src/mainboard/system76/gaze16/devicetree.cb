@@ -95,6 +95,8 @@ chip soc/intel/tigerlake
 			register "DdiPortBConfig" = "DDI_PORT_CFG_NO_LFP"
 			register "DdiPortBHpd" = "1"
 			register "DdiPortBDdc" = "1"
+
+			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 		end
 		device ref dptf on end
 		device ref gna on end

@@ -61,7 +61,9 @@ chip soc/intel/cannonlake
 	device domain 0 on
 		subsystemid 0x1558 0x1401 inherit
 		device pci 00.0 on  end # Host Bridge
-		device pci 02.0 on  end # Integrated Graphics Device
+		device pci 02.0 on      # Integrated Graphics Device
+			register "gfx" = "GMA_DEFAULT_PANEL(0)"
+		end
 		device pci 04.0 on      # SA Thermal device
 			register "Device4Enable" = "1"
 		end

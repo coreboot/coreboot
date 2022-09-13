@@ -124,7 +124,7 @@ static void dl_oem_smbios_strings(struct device *dev, struct smbios_type11 *t)
 
 	/* OEM string 7 is the register vendor ID in SPD for each DIMM strung together */
 	hob = get_system_memory_map();
-	assert(hob != NULL);
+	assert(hob);
 	/* There are at most 6 channels and 2 DIMMs per channel, but Delta Lake has 6 DIMMs,
 	   e.g. b300 0000 b300 0000 b300 0000 b300 0000 b300 0000 b300 0000 */
 	for (int ch = 0; ch < MAX_CH; ch++) {

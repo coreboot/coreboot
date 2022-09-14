@@ -137,7 +137,7 @@ static const struct mb_cfg lp5_mem_config = {
 		.ddr7 = { .dqs0 = 0, .dqs1 = 1 }
 	},
 
-	.ect = false, /* Early Command Training */
+	.ect = true, /* Early Command Training */
 
 	.LpDdrDqDqsReTraining = 1,
 

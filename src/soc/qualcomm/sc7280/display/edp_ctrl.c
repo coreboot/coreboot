@@ -1078,7 +1078,7 @@ static void tu_valid_boundary_calc(struct tu_algo_data *tu)
 static void edp_ctrl_calc_tu(struct edp_ctrl *ctrl, struct edid *edid,
 			struct edp_ctrl_tu *tu_table)
 {
-	struct tu_algo_data tu;
+	struct tu_algo_data tu = {0};
 	int64_t f = 100000;
 	int64_t LCLK_FAST_SKEW_fp = (6 * f) / 1000; /* 0.0006 */
 	uint8_t DP_BRUTE_FORCE = 1;
@@ -1104,13 +1104,11 @@ static void edp_ctrl_calc_tu(struct edp_ctrl *ctrl, struct edid *edid,
 	tu.extra_buffer_margin = DIV_ROUND_UP(tu.lclk * 4, tu.pclk);
 	tu.ratio_fp =  ((int64_t)(tu.pclk_fp * tu.bpp) / 8) / (tu.nlanes * tu.lclk);
 	tu.original_ratio_fp = tu.ratio_fp;
-	tu.err_fp = 1000 * f;
 	if (((tu.lwidth % tu.nlanes) != 0) && (tu.ratio_fp < f)) {
 		tu.ratio_fp = (tu.ratio_fp * RATIO_SCALE_NUM) / RATIO_SCALE_DEN;
 		tu.ratio_fp = tu.ratio_fp < f ? tu.ratio_fp : f;
 	}
 
-	tu.err_fp = 1000 * f;
 	if (tu.ratio_fp > f)
 		tu.ratio_fp = f;
 

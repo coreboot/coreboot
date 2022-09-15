@@ -19,7 +19,7 @@ chip soc/intel/alderlake
 		[DDI_PORT_A] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 		[DDI_PORT_1] = DDI_ENABLE_HPD,
-		[DDI_PORT_2] = DDI_ENABLE_HPD,
+		[DDI_PORT_2] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 		[DDI_PORT_3] = DDI_ENABLE_HPD,
 	}"
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY" 		# Disable USB2 Port2

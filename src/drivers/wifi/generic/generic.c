@@ -112,11 +112,6 @@ static const unsigned short intel_pci_device_ids[] = {
 	PCI_DID_GrP_6SERIES_1_WIFI,
 	PCI_DID_GrP_6SERIES_2_WIFI,
 	PCI_DID_GrP_6SERIES_3_WIFI,
-	/* Typhoon Peak 2 */
-	PCI_DID_TyP2_6SERIES_1_WIFI,
-	PCI_DID_TyP2_6SERIES_2_WIFI,
-	PCI_DID_TyP2_6SERIES_3_WIFI,
-	PCI_DID_TyP2_6SERIES_4_WIFI,
 	0
 };
 

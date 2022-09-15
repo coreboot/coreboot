@@ -1002,7 +1002,7 @@ The C Programming Language, Second Edition by Brian W. Kernighan and
 Dennis M. Ritchie. Prentice Hall, Inc., 1988. ISBN 0-13-110362-8
 (paperback), 0-13-110370-9 (hardback). URL:
 <https://duckduckgo.com/?q=isbn+0-13-110362-8> or
-<https://www.google.com/search?q=isbn+0-13-110362-8.
+<https://www.google.com/search?q=isbn+0-13-110362-8>
 
 
 The Practice of Programming by Brian W. Kernighan and Rob Pike.

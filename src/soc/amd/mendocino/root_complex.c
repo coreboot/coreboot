@@ -19,14 +19,15 @@
 #include <stdint.h>
 #include "chip.h"
 
-#define DPTC_TOTAL_UPDATE_PARAMS	4
+#define DPTC_TOTAL_UPDATE_PARAMS	7
 
 struct dptc_input {
 	uint16_t size;
 	struct alib_dptc_param params[DPTC_TOTAL_UPDATE_PARAMS];
 } __packed;
 
-#define DPTC_INPUTS(_thermctllmit, _sustained, _fast, _slow)			\
+#define DPTC_INPUTS(_thermctllmit, _sustained, _fast, _slow,			\
+	_vrmCurrentLimit, _vrmMaxCurrentLimit, _vrmSocCurrentLimit)		\
 	{									\
 		.size = sizeof(struct dptc_input),				\
 		.params = {							\
@@ -45,6 +46,18 @@ struct dptc_input {
 			{							\
 				.id = ALIB_DPTC_SLOW_PPT_LIMIT_ID,		\
 				.value = _slow,					\
+			},							\
+			{							\
+				.id = ALIB_DPTC_VRM_CURRENT_LIMIT_ID,		\
+				.value = _vrmCurrentLimit,			\
+			},							\
+			{							\
+				.id = ALIB_DPTC_VRM_MAXIMUM_CURRENT_LIMIT,	\
+				.value = _vrmMaxCurrentLimit,			\
+			},							\
+			{							\
+				.id = ALIB_DPTC_VRM_SOC_CURRENT_LIMIT_ID,	\
+				.value = _vrmSocCurrentLimit,			\
 			},							\
 		},								\
 	}
@@ -192,7 +205,10 @@ static void acipgen_dptci(void)
 	struct dptc_input default_input = DPTC_INPUTS(config->thermctl_limit_degreeC,
 		config->sustained_power_limit_mW,
 		config->fast_ppt_limit_mW,
-		config->slow_ppt_limit_mW);
+		config->slow_ppt_limit_mW,
+		config->vrm_current_limit_mA,
+		config->vrm_maximum_current_limit_mA,
+		config->vrm_soc_current_limit_mA);
 	acpigen_write_alib_dptc_default((uint8_t *)&default_input, sizeof(default_input));
 }
 

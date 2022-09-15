@@ -469,6 +469,7 @@ chip soc/intel/alderlake
 				register "short_key_debounce" = "2"	# 100ms
 				register "jack_insert_debounce" = "7"	# 512ms
 				register "jack_eject_debounce" = "7"	# 512ms
+				register "adcout_ds" = "true"
 				device i2c 1a on end
 			end
 		end

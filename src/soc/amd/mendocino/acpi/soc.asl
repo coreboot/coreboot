@@ -35,6 +35,9 @@ Scope(\_SB) {
 
 #include "rtc_workaround.asl"
 
+/* Enable DPTC interface with AMD ALIB */
+External(\_SB.DPTC, MethodObj)
+
 /*
  * Platform Notify
  *
@@ -44,4 +47,8 @@ Method (PNOT)
 {
 	/* Report AC/DC state to ALIB using WAL1() */
 	\WAL1 ()
+
+	If (CondRefOf (\_SB.DPTC)) {
+		\_SB.DPTC()
+	}
 }

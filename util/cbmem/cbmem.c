@@ -235,7 +235,7 @@ static int find_cbmem_entry(uint32_t id, uint64_t *addr, size_t *size)
 
 	while (offset < mapping_size(&lbtable_mapping)) {
 		const struct lb_record *lbr;
-		const struct lb_cbmem_entry *lbe;
+		struct lb_cbmem_entry lbe;
 
 		lbr = (const void *)(table + offset);
 		offset += lbr->size;
@@ -243,12 +243,12 @@ static int find_cbmem_entry(uint32_t id, uint64_t *addr, size_t *size)
 		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
 			continue;
 
-		lbe = (const void *)lbr;
-		if (lbe->id != id)
+		aligned_memcpy(&lbe, lbr, sizeof(lbe));
+		if (lbe.id != id)
 			continue;
 
-		*addr = lbe->address;
-		*size = lbe->entry_size;
+		*addr = lbe.address;
+		*size = lbe.entry_size;
 		ret = 0;
 		break;
 	}
@@ -1128,7 +1128,7 @@ static void dump_cbmem_raw(unsigned int id)
 
 	while (offset < mapping_size(&lbtable_mapping)) {
 		const struct lb_record *lbr;
-		const struct lb_cbmem_entry *lbe;
+		struct lb_cbmem_entry lbe;
 
 		lbr = (const void *)(table + offset);
 		offset += lbr->size;
@@ -1136,11 +1136,11 @@ static void dump_cbmem_raw(unsigned int id)
 		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
 			continue;
 
-		lbe = (const void *)lbr;
-		if (lbe->id == id) {
-			debug("found id for raw dump %0x", lbe->id);
-			base = lbe->address;
-			size = lbe->entry_size;
+		aligned_memcpy(&lbe, lbr, sizeof(lbe));
+		if (lbe.id == id) {
+			debug("found id for raw dump %0x", lbe.id);
+			base = lbe.address;
+			size = lbe.entry_size;
 			break;
 		}
 	}
@@ -1211,7 +1211,7 @@ static void dump_cbmem_toc(void)
 
 	while (offset < mapping_size(&lbtable_mapping)) {
 		const struct lb_record *lbr;
-		const struct lb_cbmem_entry *lbe;
+		struct lb_cbmem_entry lbe;
 
 		lbr = (const void *)(table + offset);
 		offset += lbr->size;
@@ -1219,8 +1219,8 @@ static void dump_cbmem_toc(void)
 		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
 			continue;
 
-		lbe = (const void *)lbr;
-		cbmem_print_entry(i, lbe->id, lbe->address, lbe->entry_size);
+		aligned_memcpy(&lbe, lbr, sizeof(lbe));
+		cbmem_print_entry(i, lbe.id, lbe.address, lbe.entry_size);
 		i++;
 	}
 }

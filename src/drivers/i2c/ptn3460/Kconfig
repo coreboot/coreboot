@@ -3,3 +3,17 @@ config DRIVERS_I2C_PTN3460
 	default n
 	help
 	  Enable support for external display bridge (eDP to LVDS) PTN3460.
+
+config PTN3460_EARLY_INIT
+	bool
+	default n
+	depends on DRIVERS_I2C_PTN3460
+	help
+	  Enable early initialization of the PTN3460 DP-to-LVDS bridge
+
+config PTN3460_EARLY_ADDR
+	hex
+	default 0x60
+	depends on PTN3460_EARLY_INIT
+	help
+	  I2C address for early initialization of the PTN3460 DP-to-LVDS bridge

@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <device/i2c_bus.h>
 #include <types.h>
+#include <bootstate.h>
 
 #include "ptn3460.h"
 
@@ -65,6 +66,14 @@ static void ptn3460_init(struct device *dev)
 	uint8_t edid_data[PTN_EDID_LEN], edid_tab, *ptr = (uint8_t *) &cfg;
 	int i, val;
 
+	/* Guard against re-initialization of the device */
+	static bool init_done = false;
+
+	if (init_done) {
+		printk(BIOS_DEBUG, "Skipping PTN3460 init as it's already initialized\n");
+		return;
+	}
+
 	/* Mainboard provides EDID data. */
 	if (mb_get_edid(edid_data) != CB_SUCCESS) {
 		printk(BIOS_ERR, "PTN3460 error: Unable to get EDID data from mainboard.\n");
@@ -109,6 +118,8 @@ static void ptn3460_init(struct device *dev)
 			}
 		}
 	}
+
+	init_done = true;
 }
 
 __weak enum cb_err mb_get_edid(uint8_t edid_data[0x80])
@@ -139,3 +150,30 @@ struct chip_operations drivers_i2c_ptn3460_ops = {
 	CHIP_NAME("PTN3460")
 	.enable_dev = ptn3460_enable
 };
+
+#if CONFIG(PTN3460_EARLY_INIT)
+
+/**
+ * \brief This function provides a callback for the boot state machine to initialize the
+ *        PTN3460 DP-to-LVDS bridge before graphics initialization in order for the bootsplash
+ *        logo to be shown.
+ * @param  *unused	Unused argument for the callback.
+ */
+
+static void ptn3460_early_init(void *unused)
+{
+	struct device *ptn_dev;
+
+	printk(BIOS_DEBUG, "Attempting PTN3460 early init.\n");
+	ptn_dev = dev_find_slot_on_smbus(0, CONFIG_PTN3460_EARLY_ADDR);
+	if (!ptn_dev) {
+		printk(BIOS_ERR, "Failed to find the PTN3460 device!\n");
+		return;
+	}
+
+	ptn3460_init(ptn_dev);
+}
+
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, ptn3460_early_init, NULL);
+
+#endif /* CONFIG(PTN3460_EARLY_INIT) */

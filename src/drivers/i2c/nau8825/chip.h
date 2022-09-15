@@ -96,4 +96,9 @@ struct drivers_i2c_nau8825_config {
 	 *  R is Button impedance
 	 */
 	uint64_t sar_threshold[NAU8825_MAX_BUTTONS];
+
+	/* Make the drive strength of ADCOUT IO PIN strong if set.
+	 * Otherwise, the drive keeps normal strength.
+	 */
+	bool adcout_ds;
 };

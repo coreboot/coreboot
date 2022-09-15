@@ -69,6 +69,7 @@ static void nau8825_fill_ssdt(const struct device *dev)
 	NAU8825_DP_INT("jack-insert-debounce", config->jack_insert_debounce);
 	NAU8825_DP_INT("jack-eject-deboune", config->jack_eject_debounce);
 	NAU8825_DP_INT("sar-threshold-num", config->sar_threshold_num);
+	NAU8825_DP_INT("adcout-drive-strong", config->adcout_ds ? 1 : 0);
 	acpi_dp_add_integer_array(dp, "nuvoton,sar-threshold",
 			  config->sar_threshold, config->sar_threshold_num);
 	acpi_dp_write(dp);

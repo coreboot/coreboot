@@ -6,10 +6,17 @@
 #include <intelpch/lockdown.h>
 #include <soc/pm.h>
 
+static void pmc_lock_smi(void)
+{
+	uint8_t *pmcbase;
+
+	pmcbase = pmc_mmio_regs();
+
+	setbits32(pmcbase + GEN_PMCON2, SMI_LOCK);
+}
+
 void soc_lockdown_config(int chipset_lockdown)
 {
-	/*
-	 * Nothing to do here as pmc_global_reset_disable_and_lock
-	 * is called from chip.c
-	 */
+	/* APL only supports CHIPSET_LOCKDOWN_COREBOOT */
+	pmc_lock_smi();
 }

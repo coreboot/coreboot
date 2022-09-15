@@ -6,11 +6,15 @@ config BOARD_SPECIFIC_OPTIONS
 	select DRIVER_INTEL_I210
 	select SOC_INTEL_SET_MIN_CLOCK_RATIO
 	select DRIVERS_I2C_PTN3460
+	select PTN3460_EARLY_INIT
 
 config UART_FOR_CONSOLE
 	default 1
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/mc_apl1.fmd"
+
+config PTN3460_EARLY_ADDR
+	default 0x60
 
 endif # BOARD_SIEMENS_MC_APL7

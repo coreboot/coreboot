@@ -68,6 +68,10 @@ struct soc_amd_mendocino_config {
 	uint32_t vrm_current_limit_mA;
 	uint32_t vrm_maximum_current_limit_mA;
 	uint32_t vrm_soc_current_limit_mA;
+	/* Throttle (e.g., Low/No Battery) */
+	uint32_t vrm_current_limit_throttle_mA;
+	uint32_t vrm_maximum_current_limit_throttle_mA;
+	uint32_t vrm_soc_current_limit_throttle_mA;
 
 	uint8_t smartshift_enable;
 

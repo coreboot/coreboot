@@ -14,7 +14,7 @@ chip soc/intel/alderlake
 	# Configure external V1P05/Vnn/VnnSx Rails
 	register "ext_fivr_settings" = "{
 		.configure_ext_fivr = 1,
-		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX & ~FIVR_ENABLE_S0,
 		.vnn_enable_bitmap = FIVR_ENABLE_ALL_SX,
 		.vnn_sx_enable_bitmap = FIVR_ENABLE_ALL_SX,
 		.v1p05_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL,

@@ -10,7 +10,7 @@ void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 		config->ext_fivr_settings.configure_ext_fivr = 1;
 
 		config->ext_fivr_settings.v1p05_enable_bitmap =
-				FIVR_ENABLE_ALL_SX;
+				FIVR_ENABLE_ALL_SX & ~FIVR_ENABLE_S0;
 
 		config->ext_fivr_settings.vnn_enable_bitmap =
 				FIVR_ENABLE_ALL_SX;

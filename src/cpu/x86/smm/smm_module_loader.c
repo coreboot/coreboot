@@ -428,7 +428,7 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 	const uintptr_t smram_top = region_end(&smram);
 
 	const size_t stm_size =
-		CONFIG(STM) ? CONFIG_MSEG_SIZE - CONFIG_BIOS_RESOURCE_LIST_SIZE : 0;
+		CONFIG(STM) ? CONFIG_MSEG_SIZE + CONFIG_BIOS_RESOURCE_LIST_SIZE : 0;
 
 	if (CONFIG(STM)) {
 		struct region stm = {};

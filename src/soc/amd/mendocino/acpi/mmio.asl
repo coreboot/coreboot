@@ -327,7 +327,11 @@ Device (I2C2) {
 
 Device (I2C3)
 {
+#if CONFIG(SOC_AMD_COMMON_BLOCK_I2C3_TPM_SHARED_WITH_PSP)
+	Name (_HID, "AMDI0019")
+#else
 	Name (_HID, "AMDI0010")
+#endif
 	Name (_UID, 0x3)
 	Method (_CRS, 0) {
 		Local0 = ResourceTemplate() {
@@ -358,7 +362,10 @@ Device (I2C3)
 		Return (0x0F)
 	}
 
+/* If this device is shared with PSP, then PSP takes care of power management */
+#if !CONFIG(SOC_AMD_COMMON_BLOCK_I2C3_TPM_SHARED_WITH_PSP)
 	AOAC_DEVICE(FCH_AOAC_DEV_I2C3, 0)
+#endif
 }
 
 Device (MISC)

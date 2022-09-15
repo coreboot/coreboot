@@ -256,5 +256,9 @@ chip soc/amd/mendocino
 	register "vrm_current_limit_mA"                  = "28000"
 	register "vrm_maximum_current_limit_mA"          = "50000"
 	register "vrm_soc_current_limit_mA"              = "10000"
+	# Throttle (e.g., Low/No Battery)
+	register "vrm_current_limit_throttle_mA"         = "20000"
+	register "vrm_maximum_current_limit_throttle_mA" = "20000"
+	register "vrm_soc_current_limit_throttle_mA"     = "10000"
 
 end	# chip soc/amd/mendocino

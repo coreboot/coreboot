@@ -50,7 +50,9 @@ Method(_PRT)
 		Package(){0x0019FFFF, 0, 0, SPI0_INT},
 		Package(){0x0019FFFF, 1, 0, SPI1_INT},
 		Package(){0x0019FFFF, 2, 0, SPI2_INT},
+#if !CONFIG(SOC_INTEL_GEMINILAKE)
 		Package(){0x001BFFFF, 0, 0, SDCARD_INT},
+#endif
 		Package(){0x001CFFFF, 0, 0, EMMC_INT},
 		Package(){0x001EFFFF, 0, 0, SDIO_INT},
 		Package(){0x001FFFFF, 0, 0, SMBUS_INT},

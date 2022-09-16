@@ -39,7 +39,7 @@ GCC_VERSION=11.2.0
 BINUTILS_VERSION=2.37
 IASL_VERSION=20220331
 # CLANG version number
-CLANG_VERSION=14.0.6
+CLANG_VERSION=15.0.0
 CMAKE_VERSION=3.24.2
 NASM_VERSION=2.15.05
 
@@ -58,12 +58,13 @@ LLVM_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${C
 CLANG_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/clang-${CLANG_VERSION}.src.tar.xz"
 CRT_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz"
 CTE_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
+LLVMCMAKE_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/cmake-${CLANG_VERSION}.src.tar.xz"
 CMAKE_ARCHIVE="https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}.tar.gz"
 NASM_ARCHIVE="https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.bz2"
 
 ALL_ARCHIVES="$GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE \
 	$GCC_ARCHIVE $BINUTILS_ARCHIVE $IASL_ARCHIVE \
-	$LLVM_ARCHIVE $CLANG_ARCHIVE \
+	$LLVM_ARCHIVE $CLANG_ARCHIVE $LLVMCMAKE_ARCHIVE \
 	$CRT_ARCHIVE $CTE_ARCHIVE $CMAKE_ARCHIVE $NASM_ARCHIVE"
 
 # GCC toolchain directories
@@ -80,6 +81,7 @@ LLVM_DIR="llvm-${CLANG_VERSION}.src"
 CLANG_DIR="clang-${CLANG_VERSION}.src"
 CRT_DIR="compiler-rt-${CLANG_VERSION}.src"
 CTE_DIR="clang-tools-extra-${CLANG_VERSION}.src"
+LLVMCMAKE_DIR="cmake-${CLANG_VERSION}.src"
 CMAKE_DIR="cmake-${CMAKE_VERSION}"
 NASM_DIR="nasm-${NASM_VERSION}"
 
@@ -806,6 +808,7 @@ build_LLVM() {
 	ln -nsf "$CLANG_DIR" ../clang
 	ln -nsf "$CTE_DIR" ../clang-tools-extra
 	ln -nsf "$CRT_DIR" ../compiler-rt
+	ln -nsf "$LLVMCMAKE_DIR" ../cmake
 
 	$CMAKE -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$DESTDIR$TARGETDIR" \
 		-DCLANG_VENDOR="coreboot toolchain v$CROSSGCC_VERSION - " \
@@ -956,7 +959,7 @@ case "$PACKAGE" in
 	CLANG|clang)
 		NAME="LLVM clang"
 		LLVM_VERSION=${CLANG_VERSION}
-		PACKAGES="CMAKE LLVM CLANG CRT CTE"
+		PACKAGES="CMAKE LLVM CLANG CRT CTE LLVMCMAKE"
 		CMAKE=${DESTDIR}${TARGETDIR}/bin/cmake
 		;;
 	IASL|iasl)

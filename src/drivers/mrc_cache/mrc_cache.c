@@ -8,12 +8,12 @@
 #include <cbmem.h>
 #include <elog.h>
 #include <fmap.h>
-#include <ip_checksum.h>
 #include <region_file.h>
 #include <security/vboot/antirollback.h>
 #include <security/vboot/mrc_cache_hash_tpm.h>
 #include <security/vboot/vboot_common.h>
 #include <spi_flash.h>
+#include <xxhash.h>
 
 #include "mrc_cache.h"
 
@@ -27,8 +27,8 @@
 struct mrc_metadata {
 	uint32_t signature;
 	uint32_t data_size;
-	uint16_t data_checksum;
-	uint16_t header_checksum;
+	uint32_t data_hash;
+	uint32_t header_hash;
 	uint32_t version;
 } __packed;
 
@@ -166,8 +166,8 @@ static const struct cache_region *lookup_region(struct region *r, int type)
 
 static int mrc_header_valid(struct region_device *rdev, struct mrc_metadata *md)
 {
-	uint16_t checksum;
-	uint16_t checksum_result;
+	uint32_t hash;
+	uint32_t hash_result;
 	size_t size;
 
 	if (rdev_readat(rdev, md, 0, sizeof(*md)) < 0) {
@@ -180,19 +180,19 @@ static int mrc_header_valid(struct region_device *rdev, struct mrc_metadata *md)
 		return -1;
 	}
 
-	/* Compute checksum over header with 0 as the value. */
-	checksum = md->header_checksum;
-	md->header_checksum = 0;
-	checksum_result = compute_ip_checksum(md, sizeof(*md));
+	/* Compute hash over header with 0 as the value. */
+	hash = md->header_hash;
+	md->header_hash = 0;
+	hash_result = xxh32(md, sizeof(*md), 0);
 
-	if (checksum != checksum_result) {
-		printk(BIOS_ERR, "MRC: header checksum mismatch: %x vs %x\n",
-			checksum, checksum_result);
+	if (hash != hash_result) {
+		printk(BIOS_ERR, "MRC: header hash mismatch: %x vs %x\n",
+			hash, hash_result);
 		return -1;
 	}
 
 	/* Put back original. */
-	md->header_checksum = checksum;
+	md->header_hash = hash;
 
 	/* Re-size the region device according to the metadata as a region_file
 	 * does block allocation. */
@@ -209,7 +209,7 @@ static int mrc_header_valid(struct region_device *rdev, struct mrc_metadata *md)
 static int mrc_data_valid(int type, const struct mrc_metadata *md,
 			  void *data, size_t data_size)
 {
-	uint16_t checksum;
+	uint32_t hash;
 	const struct cache_region *cr = lookup_region_type(type);
 	uint32_t hash_idx;
 
@@ -224,11 +224,11 @@ static int mrc_data_valid(int type, const struct mrc_metadata *md,
 		if (!mrc_cache_verify_hash(hash_idx, data, data_size))
 			return -1;
 	} else {
-		checksum = compute_ip_checksum(data, data_size);
+		hash = xxh32(data, data_size, 0);
 
-		if (md->data_checksum != checksum) {
-			printk(BIOS_ERR, "MRC: data checksum mismatch: %x vs %x\n",
-			       md->data_checksum, checksum);
+		if (md->data_hash != hash) {
+			printk(BIOS_ERR, "MRC: data hash mismatch: %x vs %x\n",
+			       md->data_hash, hash);
 			return -1;
 		}
 	}
@@ -368,9 +368,9 @@ void *mrc_cache_current_mmap_leak(int type, uint32_t version,
 
 static bool mrc_cache_needs_update(const struct region_device *rdev,
 				   const struct mrc_metadata *new_md,
-				   const void *new_data, size_t new_data_size)
+				   size_t new_data_size)
 {
-	void *mapping, *data_mapping;
+	void *mapping;
 	size_t old_data_size = region_device_sz(rdev) - sizeof(struct mrc_metadata);
 	bool need_update = false;
 
@@ -382,15 +382,12 @@ static bool mrc_cache_needs_update(const struct region_device *rdev,
 		printk(BIOS_ERR, "MRC: cannot mmap existing cache.\n");
 		return true;
 	}
-	data_mapping = mapping + sizeof(struct mrc_metadata);
 
-	/* we need to compare the md and the data separately */
-	/* check the mrc_metadata */
+	/*
+	 * Compare the old and new metadata only. If the data hashes don't
+	 * match, the comparison will fail.
+	 */
 	if (memcmp(new_md, mapping, sizeof(struct mrc_metadata)))
-		need_update = true;
-
-	/* check the data */
-	if (!need_update && memcmp(new_data, data_mapping, new_data_size))
 		need_update = true;
 
 	rdev_munmap(rdev, mapping);
@@ -475,8 +472,7 @@ static void update_mrc_cache_by_type(int type,
 
 		return;
 
-	if (!mrc_cache_needs_update(&latest_rdev,
-				    new_md, new_data, new_data_size)) {
+	if (!mrc_cache_needs_update(&latest_rdev, new_md, new_data_size)) {
 		printk(BIOS_DEBUG, "MRC: '%s' does not need update.\n", cr->name);
 		log_event_cache_update(cr->elog_slot, ALREADY_UPTODATE);
 		return;
@@ -693,10 +689,9 @@ int mrc_cache_stash_data(int type, uint32_t version, const void *data,
 		.signature = MRC_DATA_SIGNATURE,
 		.data_size = size,
 		.version = version,
-		.data_checksum = compute_ip_checksum(data, size),
+		.data_hash = xxh32(data, size, 0),
 	};
-	md.header_checksum =
-		compute_ip_checksum(&md, sizeof(md));
+	md.header_hash = xxh32(&md, sizeof(md), 0);
 
 	if (CONFIG(MRC_STASH_TO_CBMEM)) {
 		/* Store data in cbmem for use in ramstage */

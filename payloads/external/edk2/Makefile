@@ -11,7 +11,9 @@ export PACKAGES_PATH := $(EDK2_PATH)
 BUILD_STR = -p UefiPayloadPkg/UefiPayloadPkg.dsc
 BUILD_STR += -t COREBOOT
 BUILD_STR += -D BOOTLOADER=COREBOOT
+ifneq ($(CONFIG_EDK2_VERBOSE_BUILD),y)
 BUILD_STR += -q -s
+endif
 
 #
 # EDK II has the following build options relevant to coreboot:

@@ -78,6 +78,13 @@ config EDK2_RELEASE
 
 endchoice
 
+config EDK2_VERBOSE_BUILD
+	bool "Output verbose build log for troubleshooting build failures"
+	help
+	  Switch off the `-q` (quiet) and `-s` (silent) build arguments which makes the
+	  build log extremely verbose. This can be used to troubleshoot failed builds
+	  which are usually down to missing tools or toolchain.
+
 config EDK2_ABOVE_4G_MEMORY
 	bool "Enable above 4G memory"
 	default n

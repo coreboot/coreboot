@@ -256,7 +256,7 @@ static void wait_for_legacy_dev(void *unused)
 	uint32_t legacy_delay, us_since_boot;
 	struct stopwatch sw;
 
-	if (CONFIG(BOARD_SIEMENS_MC_APL4))
+	if (CONFIG(BOARD_SIEMENS_MC_APL4) || CONFIG(BOARD_SIEMENS_MC_APL7))
 		return;
 
 	/* Open main hwinfo block. */

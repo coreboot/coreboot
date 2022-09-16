@@ -1,8 +1,6 @@
 config BOARD_GOOGLE_REX_COMMON
 	def_bool n
-	# FIXME: Rex Proto 0 only has 64MB SPINOR mounted on the board,
-	# and the plan is to use 32MB later with Proto 1 onwards.
-	select BOARD_ROMSIZE_KB_65536
+	select BOARD_ROMSIZE_KB_32768
 	select DRIVERS_GENERIC_MAX98357A
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_I2C_HID

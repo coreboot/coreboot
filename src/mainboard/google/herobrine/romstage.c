@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/stages.h>
+#include <soc/aop_common.h>
 #include <soc/cpucp.h>
 #include <soc/qclib_common.h>
 #include <soc/shrm.h>
@@ -25,6 +26,7 @@ void platform_romstage_main(void)
 	cpucp_prepare();
 	/* QCLib: DDR init & train */
 	qclib_load_and_run();
+	aop_fw_load_reset();
 	prepare_usb();
 	/* This rail needs to be stable by the time we take the FPMCU out of
 	   reset in ramstage, so already turn it on here. This needs to happen

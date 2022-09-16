@@ -4,7 +4,6 @@
 #include <soc/mmu.h>
 #include <soc/mmu_common.h>
 #include <soc/symbols_common.h>
-#include <soc/aop_common.h>
 #include <soc/cpucp.h>
 #include <soc/pcie.h>
 
@@ -32,7 +31,6 @@ static void soc_read_resources(struct device *dev)
 
 static void soc_init(struct device *dev)
 {
-	aop_fw_load_reset();
 	cpucp_fw_load_reset();
 }
 

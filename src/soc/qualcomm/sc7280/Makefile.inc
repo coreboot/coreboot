@@ -36,6 +36,7 @@ romstage-y += ../common/watchdog.c
 romstage-y += mmu.c
 romstage-y += ../common/usb/usb.c
 romstage-y += carve_out.c
+romstage-y += ../common/aop_load_reset.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
@@ -46,7 +47,6 @@ ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ramstage-y += ../common/usb/usb.c
 ramstage-y += ../common/usb/snps_usb_phy.c
 ramstage-y += ../common/usb/qmpv4_usb_phy.c
-ramstage-y += ../common/aop_load_reset.c
 ramstage-y += cpucp_load_reset.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/edp_aux.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += display/edp_ctrl.c

@@ -9,6 +9,20 @@ import (
 	"review.coreboot.org/coreboot.git/util/intelp2m/parser"
 )
 
+type Printer struct{}
+
+func (Printer) Linef(lvl int, format string, args ...interface{}) {
+	if config.InfoLevelGet() >= lvl {
+		fmt.Fprintf(config.OutputGenFile, format, args...)
+	}
+}
+
+func (Printer) Line(lvl int, str string) {
+	if config.InfoLevelGet() >= lvl {
+		fmt.Fprint(config.OutputGenFile, str)
+	}
+}
+
 var (
 	// Version is injected into main during project build
 	Version string = "Unknown"
@@ -17,28 +31,6 @@ var (
 // printVersion - print the utility version in the console
 func printVersion() {
 	fmt.Printf("[ intelp2m ] Version: %s\n", Version)
-}
-
-// generateOutputFile - generates include file
-// parser            : parser data structure
-func generateOutputFile(parser *parser.ParserData) (err error) {
-	header := fmt.Sprintf(`/* SPDX-License-Identifier: GPL-2.0-only */
-
-#ifndef CFG_GPIO_H
-#define CFG_GPIO_H
-
-#include <gpio.h>
-
-/* Pad configuration was generated automatically using intelp2m %s */
-static const struct pad_config gpio_table[] = {`, Version)
-	config.OutputGenFile.WriteString(header + "\n")
-	// Add the pads map
-	parser.PadMapFprint()
-	config.OutputGenFile.WriteString(`};
-
-#endif /* CFG_GPIO_H */
-`)
-	return nil
 }
 
 // main
@@ -148,13 +140,31 @@ func main() {
 	config.OutputGenFile = outputGenFile
 	config.InputRegDumpFile = inputRegDumpFile
 
-	parser := parser.ParserData{}
-	parser.Parse()
+	prs := parser.ParserData{}
+	prs.Parse()
 
-	// gpio.h
-	err = generateOutputFile(&parser)
-	if err != nil {
-		fmt.Printf("Error! Can not create the file with GPIO configuration!\n")
+	generator := parser.Generator{
+		PrinterIf: Printer{},
+		Data:      &prs,
+	}
+	header := fmt.Sprintf(`/* SPDX-License-Identifier: GPL-2.0-only */
+
+#ifndef CFG_GPIO_H
+#define CFG_GPIO_H
+
+#include <gpio.h>
+
+/* Pad configuration was generated automatically using intelp2m %s */
+static const struct pad_config gpio_table[] = {`, Version)
+	config.OutputGenFile.WriteString(header + "\n")
+	// Add the pads map
+
+	if err := generator.Run(); err != nil {
+		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
+	config.OutputGenFile.WriteString(`};
+
+#endif /* CFG_GPIO_H */
+`)
 }

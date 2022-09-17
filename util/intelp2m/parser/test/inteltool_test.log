@@ -1,0 +1,55 @@
+CPU: ID 0x906e9, Processor Type 0x0, Family 0x6, Model 0x9e, Stepping 0x9
+Northbridge: 8086:591f (unknown)
+Southbridge: 8086:a143 (H110)
+IGD: 8086:5912 (Intel(R) UHD Graphics 630)
+Trying to reveal Primary to Sideband Bridge (P2SB),
+let's hope the OS doesn't mind... done.
+SBREG_BAR = 0xfd000000 (MEM)
+
+Hiding Primary to Sideband Bridge (P2SB).
+
+============= GPIOS =============
+
+------- GPIO Community 0 -------
+
+PCR Port ID: 0xaf0000
+
+------- GPIO Group GPP_A -------
+0x0400: 0x0000001884000502 GPP_A0       RCIN#
+0x0408: 0x0000301984000402 GPP_A1       LAD0
+0x0428: 0x0000001d84000600 GPP_A5       LFRAME#
+0x0468: 0x0000002544000600 GPP_A13      SUSWARN#/SUSPWRDNACK
+0x04b8: 0x0000002f84000102 GPP_A23      GPIO
+------- GPIO Group GPP_B -------
+0x0438: 0xffffffffffffffff GPP_C1       RESERVED
+0x04c0: 0x0000003084000100 GPP_B0       GPIO
+0x0578: 0x0000104784000a01 GPP_B23      PCHHOT#
+------- GPIO Community 1 -------
+
+PCR Port ID: 0xae0000
+
+------- GPIO Group GPP_C -------
+0x0400: 0x0000004844000502 GPP_C0       SMBCLK
+0x0428: 0x0000004d84000100 GPP_C5       GPIO
+0x0430: 0xffffffffffffffff GPP_C6       RESERVED
+0x0438: 0xffffffffffffffff GPP_C7       RESERVED
+0x04b0: 0x0000005e84000600 GPP_C22      UART2_RTS#
+------- GPIO Group GPP_D -------
+------- GPIO Group GPP_E -------
+0x0580: 0x0000301884000502 GPP_E0       SATAXPCIE0
+------- GPIO Group GPP_G -------
+0x0740: 0x0000005084000500 GPP_G19      SMI#
+------- GPIO Community 2 -------
+
+PCR Port ID: 0xad0000
+
+-------- GPIO Group GPD --------
+0x0448: 0x0000002104000600 GPD9         SLP_WLAN#
+------- GPIO Community 3 -------
+
+PCR Port ID: 0xac0000
+
+------- GPIO Group GPP_I -------
+0x0400: 0x0000006d84000500 GPP_I0       DDPB_HPD0
+0x0408: 0x0000006e84000502 GPP_I1       DDPC_HPD1
+0x0410: 0x0000006f84000502 GPP_I2       DDPD_HPD2

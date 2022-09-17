@@ -2,21 +2,22 @@ package parser
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
-	"strings"
 	"strconv"
+	"strings"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/snr"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/lbg"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/adl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/apl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/cnl"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/tgl"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/adl"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/jsl"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/mtl"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/ebg"
-	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/jsl"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/lbg"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/mtl"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/snr"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/tgl"
 )
 
 // PlatformSpecific - platform-specific interface
@@ -42,57 +43,16 @@ type padInfo struct {
 	ownership uint8
 }
 
-// generate - wrapper for Fprintf(). Writes text to the file specified
-// in config.OutputGenFile
-func (info *padInfo) generate(lvl int, line string, a ...interface{}) {
-	if config.InfoLevelGet() >= lvl {
-		fmt.Fprintf(config.OutputGenFile, line, a...)
-	}
-}
-
-// titleFprint - print GPIO group title to file
-// /* ------- GPIO Group GPP_L ------- */
-func (info *padInfo) titleFprint() {
-	info.generate(0, "\n\t/* %s */\n", info.function)
-}
-
-// reservedFprint - print reserved GPIO to file as comment
-// /* GPP_H17 - RESERVED */
-func (info *padInfo) reservedFprint() {
-	info.generate(2, "\n")
-	// small comment about reserved port
-	info.generate(0, "\t/* %s - %s */\n", info.id, info.function)
-}
-
-// padInfoMacroFprint - print information about current pad to file using
-// special macros:
-// PAD_CFG_NF(GPP_F1, 20K_PU, PLTRST, NF1), /* SATAXPCIE4 */
-// gpio  : gpio.c file descriptor
-// macro : string of the generated macro
-func (info *padInfo) padInfoMacroFprint(macro string) {
-	info.generate(2,
-		"\n\t/* %s - %s */\n\t/* DW0: 0x%0.8x, DW1: 0x%0.8x */\n",
-		info.id,
-		info.function,
-		info.dw0,
-		info.dw1)
-	info.generate(0, "\t%s", macro)
-	if config.InfoLevelGet() == 1 {
-		info.generate(1, "\t/* %s */", info.function)
-	}
-	info.generate(0, "\n")
-}
-
 // ParserData - global data
 // line       : string from the configuration file
 // padmap     : pad info map
 // RawFmt     : flag for generating pads config file with DW0/1 reg raw values
 // Template   : structure template type of ConfigFile
 type ParserData struct {
-	platform   PlatformSpecific
-	line       string
-	padmap     []padInfo
-	ownership  map[string]uint32
+	platform  PlatformSpecific
+	line      string
+	padmap    []padInfo
+	ownership map[string]uint32
 }
 
 // hostOwnershipGet - get the host software ownership value for the corresponding
@@ -118,14 +78,14 @@ func (parser *ParserData) padInfoExtract() int {
 	var dw0, dw1 uint32
 	var template = map[int]template{
 		config.TempInteltool: UseInteltoolLogTemplate,
-		config.TempGpioh    : useGpioHTemplate,
-		config.TempSpec     : useYourTemplate,
+		config.TempGpioh:     useGpioHTemplate,
+		config.TempSpec:      useYourTemplate,
 	}
 	if template[config.TemplateGet()](parser.line, &function, &id, &dw0, &dw1) == 0 {
 		pad := padInfo{id: id,
-			function: function,
-			dw0: dw0,
-			dw1: dw1,
+			function:  function,
+			dw0:       dw0,
+			dw1:       dw1,
 			ownership: parser.hostOwnershipGet(id)}
 		parser.padmap = append(parser.padmap, pad)
 		return 0
@@ -143,56 +103,46 @@ func (parser *ParserData) communityGroupExtract() {
 // PlatformSpecificInterfaceSet - specific interface for the platform selected
 // in the configuration
 func (parser *ParserData) PlatformSpecificInterfaceSet() {
-	var platform = map[uint8]PlatformSpecific {
-		config.SunriseType   : snr.PlatformSpecific{},
+	var platform = map[uint8]PlatformSpecific{
+		config.SunriseType: snr.PlatformSpecific{},
 		// See platforms/lbg/macro.go
-		config.LewisburgType : lbg.PlatformSpecific{
-			InheritanceTemplate : snr.PlatformSpecific{},
+		config.LewisburgType: lbg.PlatformSpecific{
+			InheritanceTemplate: snr.PlatformSpecific{},
 		},
-		config.ApolloType    : apl.PlatformSpecific{},
-		config.CannonType    : cnl.PlatformSpecific{
-			InheritanceTemplate : snr.PlatformSpecific{},
+		config.ApolloType: apl.PlatformSpecific{},
+		config.CannonType: cnl.PlatformSpecific{
+			InheritanceTemplate: snr.PlatformSpecific{},
 		},
-		config.TigerType     : tgl.PlatformSpecific{},
-		config.AlderType     : adl.PlatformSpecific{},
-		config.JasperType    : jsl.PlatformSpecific{},
-		config.MeteorType    : mtl.PlatformSpecific{},
+		config.TigerType:  tgl.PlatformSpecific{},
+		config.AlderType:  adl.PlatformSpecific{},
+		config.JasperType: jsl.PlatformSpecific{},
+		config.MeteorType: mtl.PlatformSpecific{},
 		// See platforms/ebg/macro.go
-		config.EmmitsburgType : ebg.PlatformSpecific{
-			InheritanceTemplate : cnl.PlatformSpecific{
-				InheritanceTemplate : snr.PlatformSpecific{},
+		config.EmmitsburgType: ebg.PlatformSpecific{
+			InheritanceTemplate: cnl.PlatformSpecific{
+				InheritanceTemplate: snr.PlatformSpecific{},
 			},
 		},
 	}
 	parser.platform = platform[config.PlatformGet()]
 }
 
-// PadMapFprint - print pad info map to file
-func (parser *ParserData) PadMapFprint() {
-	for _, pad := range parser.padmap {
-		switch pad.dw0 {
-		case 0:
-			pad.titleFprint()
-		case 0xffffffff:
-			pad.reservedFprint()
-		default:
-			str := parser.platform.GenMacro(pad.id, pad.dw0, pad.dw1, pad.ownership)
-			pad.padInfoMacroFprint(str)
-		}
-	}
-}
-
 // Register - read specific platform registers (32 bits)
 // line         : string from file with pad config map
 // nameTemplate : register name femplate to filter parsed lines
 // return
-//     valid  : true if the dump of the register in intertool.log is set in accordance
-//              with the template
-//     name   : full register name
-//     offset : register offset relative to the base address
-//     value  : register value
+//
+//	valid  : true if the dump of the register in intertool.log is set in accordance
+//	         with the template
+//	name   : full register name
+//	offset : register offset relative to the base address
+//	value  : register value
 func (parser *ParserData) Register(nameTemplate string) (
-		valid bool, name string, offset uint32, value uint32) {
+	valid bool,
+	name string,
+	offset uint32,
+	value uint32,
+) {
 	if strings.Contains(parser.line, nameTemplate) &&
 		config.TemplateGet() == config.TempInteltool {
 		if registerInfoTemplate(parser.line, &name, &offset, &value) == 0 {
@@ -204,7 +154,8 @@ func (parser *ParserData) Register(nameTemplate string) (
 }
 
 // padOwnershipExtract - extract Host Software Pad Ownership from inteltool dump
-//                       return true if success
+//
+//	return true if success
 func (parser *ParserData) padOwnershipExtract() bool {
 	var group string
 	status, name, offset, value := parser.Register("HOSTSW_OWN_GPP_")
@@ -212,13 +163,14 @@ func (parser *ParserData) padOwnershipExtract() bool {
 		_, group = parser.platform.GroupNameExtract(parser.line)
 		parser.ownership[group] = value
 		fmt.Printf("\n\t/* padOwnershipExtract: [offset 0x%x] %s = 0x%x */\n",
-				offset, name, parser.ownership[group])
+			offset, name, parser.ownership[group])
 	}
 	return status
 }
 
 // padConfigurationExtract - reads GPIO configuration registers and returns true if the
-//                           information from the inteltool log was successfully parsed.
+//
+//	information from the inteltool log was successfully parsed.
 func (parser *ParserData) padConfigurationExtract() bool {
 	// Only for Sunrise or CannonLake, and only for inteltool.log file template
 	if config.TemplateGet() != config.TempInteltool || config.IsPlatformApollo() {
@@ -242,7 +194,7 @@ func (parser *ParserData) Parse() {
 	scanner := bufio.NewScanner(config.InputRegDumpFile)
 	for scanner.Scan() {
 		parser.line = scanner.Text()
-		isIncluded, _ := common.KeywordsCheck(parser.line, "GPIO Community", "GPIO Group");
+		isIncluded, _ := common.KeywordsCheck(parser.line, "GPIO Community", "GPIO Group")
 		if isIncluded {
 			parser.communityGroupExtract()
 		} else if !parser.padConfigurationExtract() && parser.platform.KeywordCheck(parser.line) {
@@ -252,4 +204,49 @@ func (parser *ParserData) Parse() {
 		}
 	}
 	fmt.Println("...done!")
+}
+
+type PrinterIf interface {
+	Linef(lvl int, format string, args ...interface{})
+	Line(lvl int, str string)
+}
+
+type Generator struct {
+	Data      *ParserData // information from the parser
+	PrinterIf             // interface for printing
+}
+
+// Run - generate a new gpio file based on the information from the parser
+func (g Generator) Run() error {
+	if g.PrinterIf == nil && g.Data == nil {
+		return errors.New("Generator: Incorrect initialization")
+	}
+	for _, pad := range g.Data.padmap {
+		switch pad.dw0 {
+		case 0x00000000:
+			// titleFprint - print GPIO group title to file
+			// /* ------- GPIO Group GPP_L ------- */
+			g.Linef(0, "\n\t/* %s */\n", pad.function)
+		case 0xffffffff:
+			// reservedFprint - print reserved GPIO to file as comment
+			// /* GPP_H17 - RESERVED */
+			g.Line(2, "\n")
+			// small comment about reserved port
+			g.Linef(0, "\t/* %s - %s */\n", pad.id, pad.function)
+		default:
+			// padInfoMacroFprint - print information about current pad to file using
+			// special macros:
+			// PAD_CFG_NF(GPP_F1, 20K_PU, PLTRST, NF1), /* SATAXPCIE4 */
+			platform := g.Data.platform
+			macro := platform.GenMacro(pad.id, pad.dw0, pad.dw1, pad.ownership)
+			g.Linef(2, "\n\t/* %s - %s */\n\t/* DW0: 0x%0.8x, DW1: 0x%0.8x */\n",
+				pad.id, pad.function, pad.dw0, pad.dw1)
+			g.Linef(0, "\t%s", macro)
+			if config.InfoLevelGet() == 1 {
+				g.Linef(1, "\t/* %s */", pad.function)
+			}
+			g.Line(0, "\n")
+		}
+	}
+	return nil
 }

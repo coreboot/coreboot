@@ -4,6 +4,7 @@
 #define ARCH_CPU_H
 
 #include <types.h>
+#include <arch/cpuid.h>
 
 /*
  * EFLAGS bits
@@ -25,109 +26,6 @@
 #define X86_EFLAGS_VIF	0x00080000 /* Virtual Interrupt Flag */
 #define X86_EFLAGS_VIP	0x00100000 /* Virtual Interrupt Pending */
 #define X86_EFLAGS_ID	0x00200000 /* CPUID detection flag */
-
-struct cpuid_result {
-	uint32_t eax;
-	uint32_t ebx;
-	uint32_t ecx;
-	uint32_t edx;
-};
-
-/*
- * Generic CPUID function
- */
-static inline struct cpuid_result cpuid(int op)
-{
-	struct cpuid_result result;
-	asm volatile(
-		"mov %%ebx, %%edi;"
-		"cpuid;"
-		"mov %%ebx, %%esi;"
-		"mov %%edi, %%ebx;"
-		: "=a" (result.eax),
-		  "=S" (result.ebx),
-		  "=c" (result.ecx),
-		  "=d" (result.edx)
-		: "0" (op)
-		: "edi");
-	return result;
-}
-
-/*
- * Generic Extended CPUID function
- */
-static inline struct cpuid_result cpuid_ext(int op, unsigned int ecx)
-{
-	struct cpuid_result result;
-	asm volatile(
-		"mov %%ebx, %%edi;"
-		"cpuid;"
-		"mov %%ebx, %%esi;"
-		"mov %%edi, %%ebx;"
-		: "=a" (result.eax),
-		  "=S" (result.ebx),
-		  "=c" (result.ecx),
-		  "=d" (result.edx)
-		: "0" (op), "2" (ecx)
-		: "edi");
-	return result;
-}
-
-/*
- * CPUID functions returning a single datum
- */
-static inline unsigned int cpuid_eax(unsigned int op)
-{
-	unsigned int eax;
-
-	__asm__("mov %%ebx, %%edi;"
-		"cpuid;"
-		"mov %%edi, %%ebx;"
-		: "=a" (eax)
-		: "0" (op)
-		: "ecx", "edx", "edi");
-	return eax;
-}
-
-static inline unsigned int cpuid_ebx(unsigned int op)
-{
-	unsigned int eax, ebx;
-
-	__asm__("mov %%ebx, %%edi;"
-		"cpuid;"
-		"mov %%ebx, %%esi;"
-		"mov %%edi, %%ebx;"
-		: "=a" (eax), "=S" (ebx)
-		: "0" (op)
-		: "ecx", "edx", "edi");
-	return ebx;
-}
-
-static inline unsigned int cpuid_ecx(unsigned int op)
-{
-	unsigned int eax, ecx;
-
-	__asm__("mov %%ebx, %%edi;"
-		"cpuid;"
-		"mov %%edi, %%ebx;"
-		: "=a" (eax), "=c" (ecx)
-		: "0" (op)
-		: "edx", "edi");
-	return ecx;
-}
-
-static inline unsigned int cpuid_edx(unsigned int op)
-{
-	unsigned int eax, edx;
-
-	__asm__("mov %%ebx, %%edi;"
-		"cpuid;"
-		"mov %%edi, %%ebx;"
-		: "=a" (eax), "=d" (edx)
-		: "0" (op)
-		: "ecx", "edi");
-	return edx;
-}
 
 static inline unsigned int cpuid_get_max_func(void)
 {

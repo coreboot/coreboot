@@ -79,6 +79,7 @@ chip soc/intel/alderlake
 	register "usb3_ports[0]" = "USB3_PORT_EMPTY"
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A MLB port
 	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"
+	register "tcc_offset" = "1"	# TCC of 99C
 
 	device domain 0 on
 		device ref dtt on

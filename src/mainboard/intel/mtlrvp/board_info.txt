@@ -1,0 +1,6 @@
+Vendor name: Intel
+Board name: Meteor Lake rvp
+Category: eval
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

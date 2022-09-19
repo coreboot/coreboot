@@ -1550,6 +1550,12 @@ static void dump_peri_par_ao_apc(uintptr_t base)
 
 static void infra_init(uintptr_t base)
 {
+	/* Side band */
+	SET32_BITFIELDS(getreg(base, MAS_SEC_0), MCUPM_SEC, SECURE_TRANS);
+
+	/* Master domain */
+	SET32_BITFIELDS(getreg(base, MAS_DOM_0), SCP_SSPM_DOM, DOMAIN_2, MCUPM_DOM, DOMAIN_2);
+
 	/* Default APC setting */
 	set_infra_ao_apc(base);
 }

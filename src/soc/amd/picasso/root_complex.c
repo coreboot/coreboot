@@ -12,7 +12,6 @@
 #include <cpu/amd/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <fsp/util.h>
 #include <stdint.h>
 #include <soc/iomap.h>
@@ -213,17 +212,11 @@ static const char *gnb_acpi_name(const struct device *dev)
 	return "GNB";
 }
 
-static struct device_operations root_complex_operations = {
+struct device_operations picasso_root_complex_operations = {
 	.read_resources		= read_resources,
 	.set_resources		= noop_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= root_complex_init,
 	.acpi_name		= gnb_acpi_name,
 	.acpi_fill_ssdt		= root_complex_fill_ssdt,
-};
-
-static const struct pci_driver family17_root_complex __pci_driver = {
-	.ops	= &root_complex_operations,
-	.vendor	= PCI_VID_AMD,
-	.device	= PCI_DID_AMD_17H_MODEL_101F_NB,
 };

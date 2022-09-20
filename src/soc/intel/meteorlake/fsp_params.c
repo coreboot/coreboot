@@ -394,10 +394,10 @@ static void fill_fsps_ai_params(FSP_S_CONFIG *s_cfg,
 
 static void arch_silicon_init_params(FSPS_ARCH_UPD *s_arch_cfg)
 {
-	/* UPDATEME: Disable for VP
+	/*
 	 * EnableMultiPhaseSiliconInit for running MultiPhaseSiInit
 	 */
-	s_arch_cfg->EnableMultiPhaseSiliconInit = 0;
+	s_arch_cfg->EnableMultiPhaseSiliconInit = 1;
 
 	/* Assign FspEventHandler arch Upd to use coreboot debug event handler */
 	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER) && CONFIG(CONSOLE_SERIAL) &&

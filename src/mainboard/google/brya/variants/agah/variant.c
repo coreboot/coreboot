@@ -5,7 +5,7 @@
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <delay.h>
-#include <device/pci_ops.h>
+#include <device/pci.h>
 #include <gpio.h>
 #include <timer.h>
 #include <types.h>
@@ -160,4 +160,20 @@ void variant_fill_ssdt(const struct device *dev)
 	acpigen_write_store_int_to_namestr(nvvdd_pg_gpio, "NVPG");
 	acpigen_write_method_end();
 	acpigen_write_scope_end();
+}
+
+void variant_finalize(void)
+{
+	/*
+	 * Currently the `pch_pirq_init()` function in lpc_lib.c will program
+	 * PIRQ IRQs for all PCI devices discovered during enumeration. This may
+	 * not be correct for all devices, and causes strange behavior with the
+	 * Nvidia dGPU; it will start out with IRQ 11 and then after a
+	 * suspend/resume cycle, it will get programmed back to 16, so the Linux
+	 * kernel must be doing some IRQ sanitization at some point.  To fix
+	 * this anomaly, explicitly program the IRQ to 16 (which we know is what
+	 * IRQ it will eventually take).
+	*/
+	const struct device *dgpu = DEV_PTR(dgpu);
+	pci_write_config8(dgpu, PCI_INTERRUPT_LINE, 16);
 }

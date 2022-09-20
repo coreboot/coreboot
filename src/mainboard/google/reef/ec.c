@@ -17,7 +17,7 @@ static void ramstage_ec_init(void)
 		.s0ix_wake_events = MAINBOARD_EC_S0IX_WAKE_EVENTS,
 	};
 
-	printk(BIOS_ERR, "mainboard: EC init\n");
+	printk(BIOS_INFO, "mainboard: EC init\n");
 
 	google_chromeec_events_init(&info, acpi_is_wakeup_s3());
 }

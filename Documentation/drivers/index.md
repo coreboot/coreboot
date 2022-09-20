@@ -7,6 +7,6 @@ they allow to easily reuse existing code across platforms.
 * [Intel DPTF](dptf.md)
 * [IPMI KCS](ipmi_kcs.md)
 * [SMMSTORE](smmstore.md)
-* [SoundWire](soundwire.md)
 * [SMMSTOREv2](smmstorev2.md)
+* [SoundWire](soundwire.md)
 * [USB4 Retimer](retimer.md)

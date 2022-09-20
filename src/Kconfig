@@ -173,14 +173,14 @@ config COMPRESS_RAMSTAGE
 
 config COMPRESS_PRERAM_STAGES
 	bool "Compress romstage and verstage with LZ4"
-	depends on (HAVE_ROMSTAGE || HAVE_VERSTAGE) && NO_XIP_EARLY_STAGES
+	depends on !ARCH_X86 && (HAVE_ROMSTAGE || HAVE_VERSTAGE)
 	# Default value set at the end of the file
 	help
 	  Compress romstage and (if it exists) verstage with LZ4 to save flash
 	  space and speed up boot, since the time for reading the image from SPI
 	  (and in the vboot case verifying it) is usually much greater than the
-	  time spent decompressing. Doesn't work for XIP stages for obvious
-	  reasons.
+	  time spent decompressing. Doesn't work for XIP stages (assume all
+	  ARCH_X86 for now) for obvious reasons.
 
 config COMPRESS_BOOTBLOCK
 	bool
@@ -1370,7 +1370,7 @@ config COMPRESS_RAMSTAGE
 	default y if !UNCOMPRESSED_RAMSTAGE
 
 config COMPRESS_PRERAM_STAGES
-	depends on (HAVE_ROMSTAGE || HAVE_VERSTAGE) && NO_XIP_EARLY_STAGES
+	depends on !ARCH_X86
 	default y
 
 config INCLUDE_CONFIG_FILE

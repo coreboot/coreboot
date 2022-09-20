@@ -86,10 +86,7 @@ struct __packed eeprom_layout {
 	};
 	char system_serial_number[HERMES_SERIAL_NUMBER_LENGTH];
 	char board_serial_number[HERMES_SERIAL_NUMBER_LENGTH];
-	uint8_t boot_order[0x200];
-	char board_part_number[HERMES_SERIAL_NUMBER_LENGTH];
-	char product_part_number[HERMES_SERIAL_NUMBER_LENGTH];
-	uint8_t unused[0x680];
+	uint8_t boot_order[0x8c0];
 	union {
 		uint8_t raw_board_settings[0xf8];
 		struct eeprom_board_settings board_settings;

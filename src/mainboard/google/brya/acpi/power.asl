@@ -338,6 +338,7 @@ Method (NPON, 0, Serialized)
 /* Handle deferred GC6 vs. poweroff request */
 Method (NPOF, 0, Serialized)
 {
+	/* Don't touch the `DFEN` flag until the GC6 exit. */
 	If (DFEN == GC6_DEFER_ENABLE)
 	{
 		/* Deferred GC6 entry */
@@ -345,8 +346,6 @@ Method (NPOF, 0, Serialized)
 		{
 			GC6I ()
 		}
-
-		DFEN = GC6_DEFER_DISABLE
 	}
 	Else
 	{

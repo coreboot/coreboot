@@ -16,7 +16,6 @@
 #include <intelblocks/p2sb.h>
 #include <intelblocks/power_limit.h>
 #include <intelblocks/xdci.h>
-#include <intelpch/lockdown.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
@@ -698,13 +697,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 
 	silconfig->SkipMpInit = !CONFIG(USE_INTEL_FSP_MP_INIT);
 
-	/* coreboot handles the lockdown */
-	silconfig->LockDownGlobalSmi		= 0;
-	silconfig->BiosLock			= 0;
-	silconfig->BiosInterface		= 0;
-	silconfig->WriteProtectionEnable[0]	= 0;
-	silconfig->SpiEiss			= 0;
-	silconfig->RtcLock			= 0;
+	/* Disable setting of EISS bit in FSP. */
+	silconfig->SpiEiss = 0;
+
+	/* Disable FSP from locking access to the RTC NVRAM */
+	silconfig->RtcLock = 0;
 
 	/* Enable Audio clk gate and power gate */
 	silconfig->HDAudioClkGate = cfg->hdaudio_clk_gate_enable;

@@ -2,8 +2,10 @@
 
 chip soc/amd/picasso
 	device cpu_cluster 0 on
+		ops picasso_cpu_bus_ops
 	end
 	device domain 0 on
+		ops picasso_pci_domain_ops
 		device pci 00.0 alias gnb on end
 		device pci 00.2 alias iommu off end
 		device pci 01.0 on end # Dummy Host Bridge, do not disable
@@ -43,10 +45,10 @@ chip soc/amd/picasso
 		device pci 18.7 alias data_fabric_7 on end
 	end
 
-	device mmio 0xfedc4000 alias i2c_2 off end
-	device mmio 0xfedc5000 alias i2c_3 off end
-	device mmio 0xfedc9000 alias uart_0 off end
-	device mmio 0xfedca000 alias uart_1 off end
-	device mmio 0xfedce000 alias uart_2 off end
-	device mmio 0xfedcf000 alias uart_3 off end
+	device mmio 0xfedc4000 alias i2c_2 off ops soc_amd_i2c_mmio_ops end
+	device mmio 0xfedc5000 alias i2c_3 off ops soc_amd_i2c_mmio_ops end
+	device mmio 0xfedc9000 alias uart_0 off ops picasso_uart_mmio_ops end
+	device mmio 0xfedca000 alias uart_1 off ops picasso_uart_mmio_ops end
+	device mmio 0xfedce000 alias uart_2 off ops picasso_uart_mmio_ops end
+	device mmio 0xfedcf000 alias uart_3 off ops picasso_uart_mmio_ops end
 end

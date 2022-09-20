@@ -11,6 +11,20 @@
 #include <fw_config.h>
 #include <intelblocks/power_limit.h>
 #include <drivers/intel/dptf/chip.h>
+#include <boardid.h>
+#include <soc/intel/common/block/pcie/rtd3/chip.h>
+#include <acpi/acpi_device.h>
+
+static void devtree_update_emmc_rtd3(void)
+{
+	uint32_t board_ver = board_id();
+	struct device *emmc_rtd3 = DEV_PTR(emmc_rtd3);
+	struct soc_intel_common_block_pcie_rtd3_config *config = emmc_rtd3->chip_info;
+	if (board_ver <= 1)
+		return;
+
+	config->enable_gpio = (struct acpi_gpio) ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A21);
+}
 
 const struct cpu_power_limits limits[] = {
 	/* SKU_ID, TDP (Watts), pl1_min, pl1_max, pl2_min, pl2_max, pl4 */
@@ -65,6 +79,7 @@ const struct psys_config psys_config = {
 
 void variant_devtree_update(void)
 {
+	devtree_update_emmc_rtd3();
 	size_t total_entries = ARRAY_SIZE(limits);
 	variant_update_psys_power_limits(limits, sys_limits, total_entries, &psys_config);
 	variant_update_power_limits(limits, total_entries);

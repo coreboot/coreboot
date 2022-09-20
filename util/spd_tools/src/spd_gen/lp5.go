@@ -466,7 +466,9 @@ func LP5GetBankGroups(memAttribs *LP5MemAttributes) int {
 func LP5EncodeMemoryType(memAttribs *LP5MemAttributes) byte {
 	var b byte
 
-	if memAttribs.LP5X {
+	// Mendocino supports LP5x, but doesn't support 0x15 as a memory type currently.
+	// Temporary workaround until it's supported with ABL changes
+	if memAttribs.LP5X && LP5CurrSet != 1 {
 		b = LP5XSPDValueMemoryType
 	} else {
 		b = LP5SPDValueMemoryType

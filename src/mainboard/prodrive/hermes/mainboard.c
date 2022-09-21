@@ -14,6 +14,7 @@
 #include <intelblocks/pmclib.h>
 #include <smbios.h>
 #include <soc/gpio.h>
+#include <string.h>
 #include <types.h>
 
 #include "eeprom.h"
@@ -170,6 +171,27 @@ static void mainboard_final(struct device *dev)
 	pmc_soc_set_afterg3_en(on);
 }
 
+static const char *format_pn(const char *prefix, size_t offset)
+{
+	static char buffer[32 + HERMES_SN_PN_LENGTH] = { 0 };
+
+	const char *part_num = eeprom_read_serial(offset, "N/A");
+
+	memset(buffer, 0, sizeof(buffer));
+	strcpy(buffer, prefix);
+	strcpy(buffer + strlen(prefix), part_num);
+
+	return buffer;
+}
+
+static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t)
+{
+	const size_t board_offset = offsetof(struct eeprom_layout, board_part_number);
+	const size_t product_offset = offsetof(struct eeprom_layout, product_part_number);
+	t->count = smbios_add_string(t->eos, format_pn("Board P/N: ", board_offset));
+	t->count = smbios_add_string(t->eos, format_pn("Product P/N: ", product_offset));
+}
+
 #if CONFIG(HAVE_ACPI_TABLES)
 static void mainboard_acpi_fill_ssdt(const struct device *dev)
 {
@@ -215,6 +237,7 @@ static void mainboard_enable(struct device *dev)
 	mb_usb2_fp2_pwr_enable(1);
 
 	dev->ops->final = mainboard_final;
+	dev->ops->get_smbios_strings = mainboard_smbios_strings;
 
 #if CONFIG(HAVE_ACPI_TABLES)
 	dev->ops->acpi_fill_ssdt = mainboard_acpi_fill_ssdt;

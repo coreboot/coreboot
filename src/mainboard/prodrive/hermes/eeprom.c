@@ -91,7 +91,7 @@ struct eeprom_bmc_settings *get_bmc_settings(void)
 
 const char *eeprom_read_serial(const size_t offset, const char *const fallback)
 {
-	static char serial_no[HERMES_SERIAL_NUMBER_LENGTH] = { 0 };
+	static char serial_no[HERMES_SN_PN_LENGTH] = { 0 };
 	memset(serial_no, 0, sizeof(serial_no));
 
 	if (eeprom_read_buffer(serial_no, offset, sizeof(serial_no)) == 0)

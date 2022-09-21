@@ -261,11 +261,17 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		--location $(shell printf "%#x" $(MENDOCINO_FWM_POSITION)) \
 		--output $@
 
+ifeq ($(CONFIG_CBFS_VERIFICATION)$(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),yy)
+$(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE)
+	rm -f $@
+	$(OBJCOPY_bootblock) -O binary $< $@
+else
 $(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE) $(AMDCOMPRESS)
 	rm -f $@
 	@printf "    AMDCOMPRS  $(subst $(obj)/,,$(@))\n"
 	$(AMDCOMPRESS) --infile $(PSP_ELF_FILE) --outfile $@ --compress \
 		--maxsize $(PSP_BIOSBIN_SIZE)
+endif
 
 $(obj)/amdfw_a.rom: $(obj)/amdfw.rom
 	rm -f $@

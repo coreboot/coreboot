@@ -16,21 +16,21 @@ subdirs-y += variants/$(VARIANT_DIR)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
 
-ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_SBR_D5.bin),)
+ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_MDN_D5.bin),)
 $(info APCB sources present.)
 
 ifneq ($(wildcard $(top)/$(SPD_SOURCES)),)
 
 LIB_SPD_DEPS = $(SPD_SOURCES)
 
-APCB_SOURCES = $(obj)/APCB_SBR_D5.gen
-APCB_SOURCES_RECOVERY = $(obj)/APCB_SBR_D5.gen
+APCB_SOURCES = $(obj)/APCB_MDN_D5.gen
+APCB_SOURCES_RECOVERY = $(obj)/APCB_MDN_D5.gen
 
-$(obj)/APCB_SBR_D5.gen: $(SPD_SOURCES) \
+$(obj)/APCB_MDN_D5.gen: $(SPD_SOURCES) \
 			$(APCB_V3_EDIT_TOOL) \
-			$(MAINBOARD_BLOBS_DIR)/APCB_SBR_D5.bin
-	$(APCB_V3_EDIT_TOOL) $(MAINBOARD_BLOBS_DIR)/APCB_SBR_D5.bin \
-			     $(obj)/APCB_SBR_D5.gen  \
+			$(MAINBOARD_BLOBS_DIR)/APCB_MDN_D5.bin
+	$(APCB_V3_EDIT_TOOL) $(MAINBOARD_BLOBS_DIR)/APCB_MDN_D5.bin \
+			     $(obj)/APCB_MDN_D5.gen  \
 			     --spd_sources $(SPD_SOURCES) \
 			     --mem_type 'lp5'
 else

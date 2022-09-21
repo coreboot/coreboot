@@ -9,6 +9,7 @@ device pci 15.0 on
 		register "hid" = ""ELAN0000""
 		register "desc" = ""ELAN Touchpad""
 		register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_A21_IRQ)"
+		register "detect" = "1"
 		register "wake" = "GPE0_DW0_21"
 		device i2c 15 on end
 	end
@@ -140,6 +141,31 @@ find the names in your SoC's header file.  The ACPI_* macros are defined in
 Using a GPIO as an IRQ requires that it is configured in coreboot correctly.
 This is often done in a mainboard-specific file named ``gpio.c``.
 
+### detect
+
+The next register is:
+
+```
+    register "detect" = "1"
+```
+
+This flag tells the I2C driver that it should attempt to detect the presence of
+the device (using an I2C zero-byte write), and only generate a SSDT entry if the
+device is actually present. This alleviates the OS from having to determine if
+a device is present or not (ChromeOS/Linux) and prevents resource conflict/
+driver issues (Windows).
+
+Currently, the detect feature works and is hooked up for all I2C touchpads,
+and should be used any time a board has multiple touchpad options.
+I2C audio devices should also work without issue.
+
+Touchscreens can use this feature as well, but special care is needed to
+implement the proper power sequencing for the device to be detected. Generally,
+this means driving the enable GPIO high and holding the reset GPIO low in early
+GPIO init (bootblock/romstage), then releasing reset in ramstage. While no
+boards in the tree currently implement this, it has been used in downstream
+forks without issue for some time now.
+
 ### wake
 
 The last register is:
@@ -206,5 +232,7 @@ Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
 
 ## Notes
 
- - **All devices in devicetrees end up in the SSDT table, and are generated in
-   coreboot's ramstage**
+ - **All device driver entries in devicetrees end up in the SSDT table, and are
+   generated in coreboot's ramstage**
+   (The lone exception to this rule is i2c touchpads with the 'detect' flag set;
+    in this case, devices not present will not be added to the SSDT)

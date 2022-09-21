@@ -50,7 +50,11 @@ bootblock-y += prog_ops.c
 bootblock-y += cbfs.c
 bootblock-$(CONFIG_GENERIC_GPIO_LIB) += gpio.c
 bootblock-y += libgcc.c
+ifneq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 bootblock-$(CONFIG_CBFS_VERIFICATION) += metadata_hash.c
+else # ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+verstage-$(CONFIG_CBFS_VERIFICATION) += metadata_hash.c
+endif # ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 bootblock-$(CONFIG_GENERIC_UDELAY) += timer.c
 
 bootblock-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c

@@ -286,11 +286,6 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		--anywhere \
 		--output $@
 
-cbfs-files-y += apu/amdfw
-apu/amdfw-file := $(obj)/amdfw.rom
-apu/amdfw-position := $(PICASSO_FWM_POSITION)
-apu/amdfw-type := raw
-
 ifeq ($(CONFIG_VBOOT_SLOTS_RW_A)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
 cbfs-files-y += apu/amdfw_a
 apu/amdfw_a-file := $(obj)/amdfw_a.rom

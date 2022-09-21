@@ -14,6 +14,18 @@ DEP_FILES= $(patsubst %,$(FIRMWARE_LOCATION)/%, $(shell sed -e /^$(POUND_SIGN)/d
 
 amd_microcode_bins += $(wildcard ${FIRMWARE_LOCATION}/*UcodePatch_*.bin)
 
+ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
+$(objcbfs)/bootblock.bin: $(obj)/amdfw.rom
+	cp $< $@
+
+add_bootblock = \
+	$(CBFSTOOL) $(1) add -f $(2) -n apu/amdfw -t amdfw \
+	-b $(call int-add, \
+	$(call int-subtract, 0xffffffff \
+	$(call int-shift-left, \
+	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000 1)
+endif # ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
+
 ifeq ($(CONFIG_VBOOT_GSCVD),y)
 build_complete:: $(AMDFWREAD)
 endif # ifeq ($(CONFIG_VBOOT_GSCVD),y)

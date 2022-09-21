@@ -148,7 +148,7 @@ timer_queue_expired(struct timer_queue *tq, struct mono_time *current_time)
 	return tocb;
 }
 
-int timer_sched_callback(struct timeout_callback *tocb, unsigned long us)
+int timer_sched_callback(struct timeout_callback *tocb, uint64_t us)
 {
 	struct mono_time current_time;
 

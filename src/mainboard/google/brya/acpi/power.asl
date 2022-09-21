@@ -10,7 +10,7 @@ External (\_SB.PCI0.PMC.IPCS, MethodObj)
 #define GPIO_NV33_PWR_EN	GPP_A21
 #define GPIO_NV33_PG		GPP_A22
 #define GPIO_NVVDD_PWR_EN	GPP_E0
-#define GPIO_PEXVDD_PWR_EN	GPP_E10
+#define GPIO_PEXVDD_PWR_EN	GPP_F12
 #define GPIO_PEXVDD_PG		GPP_E17
 #define GPIO_FBVDD_PWR_EN	GPP_A19
 #define GPIO_FBVDD_PG		GPP_E4
@@ -31,13 +31,17 @@ External (\_SB.PCI0.PMC.IPCS, MethodObj)
 #define GPU_POWER_STATE_ON	1
 
 /*
- * For board revs 3 and later, the PG pin for the NVVDD VR moved from
- * GPP_E16 to GPP_E3. To accommodate this, this DSDT contains a Name
- * that the `variant.c` code will write the correct GPIO # to depending
- * on the board rev, and we'll use that instead.
+ * For board revs 3 and later, two pins moved:
+ * - The PG pin for the NVVDD VR moved from GPP_E16 to GPP_E3.
+ * - The enable pin for the PEXVDD VR moved from GPP_E10 to GPP_F12
+ *
+ * To accommodate this, the DSDT contains two Names that this code
+ * will write the correct GPIO # to depending on the board rev, and
+ * we'll use that instead.
  */
 /* Dynamically-assigned NVVDD PG GPIO, set in _INI in SSDT */
 Name (NVPG, 0)
+Name (PXEN, 0)
 
 /* Optimus Power Control State */
 Name (OPCS, OPTIMUS_POWER_CONTROL_DISABLE)
@@ -112,7 +116,7 @@ Method (GC6I, 0, Serialized)
 	CTXS (GPIO_GPU_ALLRAILS_PG)
 
 	/* Ramp down PEXVDD */
-	CTXS (GPIO_PEXVDD_PWR_EN)
+	CTXS (PXEN)
 	GPPL (GPIO_PEXVDD_PG, 0, 20)
 	Sleep (10)
 
@@ -149,7 +153,7 @@ Method (GC6O, 0, Serialized)
 	GPPL (NVPG, 1, 4)
 
 	/* Ramp up PEXVDD */
-	STXS (GPIO_PEXVDD_PWR_EN)
+	STXS (PXEN)
 	GPPL (GPIO_PEXVDD_PG, 1, 4)
 
 	/* Assert PG_GPU_ALLRAILS */
@@ -206,7 +210,7 @@ Method (PGON, 0, Serialized)
 	GPPL (NVPG, 1, 5)
 
 	/* Ramp up PEXVDD rail */
-	STXS (GPIO_PEXVDD_PWR_EN)
+	STXS (PXEN)
 	GPPL (GPIO_PEXVDD_PG, 1, 5)
 
 	/* Ramp up FBVDD rail (active low) */
@@ -240,7 +244,7 @@ Method (PGOF, 0, Serialized)
 	GPPL (GPIO_FBVDD_PG, 0, 20)
 
 	/* Ramp down PEXVDD and let rail discharge to <10% */
-	CTXS (GPIO_PEXVDD_PWR_EN)
+	CTXS (PXEN)
 	GPPL (GPIO_PEXVDD_PG, 0, 20)
 	Sleep (10)
 

@@ -16,7 +16,7 @@
 #define NV33_PG			GPP_A22
 #define NVVDD_PWR_EN		GPP_E0
 #define NVVDD_PG		GPP_E3
-#define PEXVDD_PWR_EN		GPP_E10
+#define PEXVDD_PWR_EN		GPP_F12
 #define PEXVDD_PG		GPP_E17
 #define FBVDD_PWR_EN		GPP_A19
 #define FBVDD_PG		GPP_E4
@@ -135,29 +135,54 @@ void variant_init(void)
 	if (acpi_is_wakeup_s3())
 		return;
 
-	/* For board revs 3 and later, the power good pin for the NVVDD
-	   VR moved from GPP_E16 to GPP_E3, so patch up the table for
-	   old board revs. */
+	/* For board revs 3 and later, the power good pin for the
+	   NVVDD VR moved from GPP_E16 to GPP_E3, and the PEX enable
+	   pin moved from GPP_E10 to GPP_F12, so patch up the table
+	   for old board revs. */
 	if (board_id() < 3) {
+		const struct pad_config board_rev_2_gpios[] = {
+			PAD_NC(GPP_E3, NONE),
+			PAD_CFG_GPO_LOCK(GPP_E10, 0, LOCK_CONFIG),
+			PAD_CFG_GPI(GPP_E16, NONE, PLTRST),
+			PAD_NC(GPP_F12, NONE),
+		};
+		gpio_configure_pads(board_rev_2_gpios, ARRAY_SIZE(board_rev_2_gpios));
+
 		gpu_on_seq[2].pg_gpio = GPP_E16;
 		gpu_off_seq[2].pg_gpio = GPP_E16;
+
+		gpu_on_seq[3].pwr_en_gpio = GPP_E10;
+		gpu_off_seq[3].pwr_en_gpio = GPP_E10;
+	} else {
+		const struct pad_config board_rev_3_gpios[] = {
+			PAD_CFG_GPO(GPP_E3, 0, PLTRST),
+			PAD_NC(GPP_E10, NONE),
+			PAD_NC(GPP_E16, NONE),
+			PAD_CFG_GPO(GPP_F12, 0, PLTRST),
+		};
+		gpio_configure_pads(board_rev_3_gpios, ARRAY_SIZE(board_rev_3_gpios));
 	}
 
 	dgpu_power_sequence_on();
 }
 
 /*
- * For board revs 3 and later, the PG pin for the NVVDD VR moved from GPP_E16 to
- * GPP_E3. To accommodate this, the DSDT contains a Name that this code will
- * write the correct GPIO # to depending on the board rev, and we'll use that
- * instead.
+ * For board revs 3 and later, two pins moved:
+ * - The PG pin for the NVVDD VR moved from GPP_E16 to GPP_E3.
+ * - The enable pin for the PEXVDD VR moved from GPP_E10 to GPP_F12
+ *
+ * To accommodate this, the DSDT contains two Names that this code
+ * will write the correct GPIO # to depending on the board rev, and
+ * we'll use that instead.
  */
 void variant_fill_ssdt(const struct device *dev)
 {
 	const int nvvdd_pg_gpio = board_id() < 3 ? GPP_E16 : GPP_E3;
+	const int pex_en_gpio = board_id() < 3 ? GPP_E10 : GPP_F12;
 	acpigen_write_scope("\\_SB.PCI0.PEG0.PEGP");
 	acpigen_write_method("_INI", 0);
 	acpigen_write_store_int_to_namestr(nvvdd_pg_gpio, "NVPG");
+	acpigen_write_store_int_to_namestr(pex_en_gpio, "PXEN");
 	acpigen_write_method_end();
 	acpigen_write_scope_end();
 }

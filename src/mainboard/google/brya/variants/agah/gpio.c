@@ -88,7 +88,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* E9  : USB_OC0# ==> USB_A2_OC_ODL */
 	PAD_CFG_NF_LOCK(GPP_E9, NONE, NF1, LOCK_CONFIG),
 	/* E10 : THC0_SPI1_CS# ==> EN_PP0950_GPU_X */
-	PAD_CFG_GPO_LOCK(GPP_E10, 0, LOCK_CONFIG),
+	PAD_CFG_GPO(GPP_E10, 0, PLTRST),
 	/* E16 : RSVD_TP ==> PG_PPVAR_GPU_NVVDD_X_OD (before board rev 3) */
 	PAD_CFG_GPI(GPP_E16, NONE, DEEP),
 	/* E17 : RSVD_TP ==> PG_PP0950_GPU_X_OD */
@@ -106,8 +106,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_F6, NONE),
 	/* F11 : THC1_SPI2_CLK ==> NC */
 	PAD_NC_LOCK(GPP_F11, NONE, LOCK_CONFIG),
-	/* F12 : GSXDOUT ==> NC */
-	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
+	/* F12 : GSXDOUT ==> EN_PP0950_GPU_X (board rev 3 and after) */
+	PAD_CFG_GPO(GPP_F12, 0, PLTRST),
 	/* F13 : GSXDOUT ==> NC */
 	PAD_NC_LOCK(GPP_F13, NONE, LOCK_CONFIG),
 	/* F14 : GSXDIN ==> TCHPAD_INT_ODL */

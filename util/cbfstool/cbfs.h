@@ -52,6 +52,7 @@ static struct typedesc_t filetypes[] unused = {
 	{CBFS_TYPE_STRUCT, "struct"},
 	{CBFS_TYPE_DELETED, "deleted"},
 	{CBFS_TYPE_NULL, "null"},
+	{CBFS_TYPE_AMDFW, "amdfw"},
 	{0, NULL}
 };
 

@@ -36,6 +36,7 @@ enum cbfs_type {
 	CBFS_TYPE_MMA		= 0x62,
 	CBFS_TYPE_EFI		= 0x63,
 	CBFS_TYPE_STRUCT	= 0x70,
+	CBFS_TYPE_AMDFW         = 0x80,
 	CBFS_TYPE_CMOS_DEFAULT	= 0xaa,
 	CBFS_TYPE_SPD		= 0xab,
 	CBFS_TYPE_MRC_CACHE	= 0xac,

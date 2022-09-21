@@ -148,7 +148,7 @@ static struct mh_cache *get_mh_cache(void)
 	if (!fmap)
 		goto no_metadata_hash;
 
-	/* Find the bootblock. If there is a "BOOTBLOCK" FMAP section, it's
+	/* Find the metadata_hash container. If there is a "BOOTBLOCK" FMAP section, it's
 	   there. If not, it's a normal file in the primary CBFS section. */
 	size_t offset, size;
 	struct buffer buffer;
@@ -161,22 +161,27 @@ static struct mh_cache *get_mh_cache(void)
 		size = buffer.size;
 	} else {
 		struct cbfs_image cbfs;
-		struct cbfs_file *bootblock;
+		struct cbfs_file *mh_container;
 		if (!partitioned_file_read_region(&buffer, param.image_file,
 						  SECTION_NAME_PRIMARY_CBFS))
 			goto no_metadata_hash;
 		mhc.region = SECTION_NAME_PRIMARY_CBFS;
 		if (cbfs_image_from_buffer(&cbfs, &buffer, param.headeroffset))
 			goto no_metadata_hash;
-		bootblock = cbfs_get_entry(&cbfs, "bootblock");
-		if (!bootblock || be32toh(bootblock->type) != CBFS_TYPE_BOOTBLOCK)
-			goto no_metadata_hash;
-		offset = (void *)bootblock + be32toh(bootblock->offset) -
+		mh_container = cbfs_get_entry(&cbfs, "bootblock");
+		if (!mh_container || be32toh(mh_container->type) != CBFS_TYPE_BOOTBLOCK) {
+			/* Check for apu/amdfw file */
+			mh_container = cbfs_get_entry(&cbfs, "apu/amdfw");
+			if (!mh_container || be32toh(mh_container->type) != CBFS_TYPE_AMDFW)
+				goto no_metadata_hash;
+		}
+
+		offset = (void *)mh_container + be32toh(mh_container->offset) -
 			 buffer_get(&cbfs.buffer);
-		size = be32toh(bootblock->len);
+		size = be32toh(mh_container->len);
 	}
 
-	/* Find and validate the metadata hash anchor inside the bootblock and
+	/* Find and validate the metadata hash anchor inside the containing file and
 	   record its exact byte offset from the start of the FMAP region. */
 	struct metadata_hash_anchor *anchor = memmem(buffer_get(&buffer) + offset,
 			size, METADATA_HASH_ANCHOR_MAGIC, sizeof(anchor->magic));
@@ -264,7 +269,8 @@ static int maybe_update_fmap_hash(void)
 {
 	if (strcmp(param.region_name, SECTION_NAME_BOOTBLOCK) &&
 	    strcmp(param.region_name, SECTION_NAME_FMAP) &&
-	    param.type != CBFS_TYPE_BOOTBLOCK)
+	    param.type != CBFS_TYPE_BOOTBLOCK &&
+	    param.type != CBFS_TYPE_AMDFW)
 		return 0;	/* FMAP and bootblock didn't change. */
 
 	struct mh_cache *mhc = get_mh_cache();
@@ -285,6 +291,7 @@ static bool verification_exclude(enum cbfs_type type)
 	case CBFS_TYPE_BOOTBLOCK:
 	case CBFS_TYPE_CBFSHEADER:
 	case CBFS_TYPE_INTEL_FIT:
+	case CBFS_TYPE_AMDFW:
 		return true;
 	default:
 		return false;

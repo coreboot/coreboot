@@ -43,7 +43,7 @@ This policy monitors the temperature of participants and controls fans to spin
 at varying speeds. These speeds are defined by the platform, and will be enabled
 depending on the various temperatures reported by participants.
 
-# Note about units
+## Note about units
 
 ACPI uses unusual units for specifying various physical measurements. For
 example, temperatures are specified in 10ths of a degree K, and time is measured
@@ -69,7 +69,7 @@ data was a 0). The following Methods were removed:
 2) There is no more implicit inclusion of _ACn methods for TCPU (these must be
    specified in the devicetree entries or by calling the DPTF acpigen API).
 
-# ACPI Tables
+## ACPI Tables
 
 DPTF relies on an assortment of ACPI tables to provide parameters to the DPTF
 application. We will discuss the more important ones here.
@@ -108,7 +108,7 @@ various informational properties.
 This table describes performance states supported by a participant (typically
 the battery charger).
 
-# ACPI Methods
+## ACPI Methods
 
 The Active and Passive policies also provide for short Methods to define
 different kinds of temperature thresholds.
@@ -141,7 +141,7 @@ a "graceful shutdown".
 
 These are optional, and are enabled by selecting the Critical Policy.
 
-# How to use the devicetree entries
+## How to use the devicetree entries
 
 The `drivers/intel/dptf` chip driver is organized into several sections:
 - Policies
@@ -151,7 +151,7 @@ The `drivers/intel/dptf` chip driver is organized into several sections:
 The Policies section (`policies.active`, `policies.passive`, and
 `policies.critical`) is where the components of each policy are defined.
 
-## Active Policy
+### Active Policy
 
 Each Active Policy is defined in terms of 4 parts:
 1) A Source (this is implicitly defined as TFN1, the system fan)
@@ -182,7 +182,7 @@ the CPU's active cooling capability). When the CPU temperature first crosses
 rest of the table (note that it *must* be defined from highest temperature/
 percentage on down to the lowest).
 
-## Passive Policy
+### Passive Policy
 
 Each Passive Policy is defined in terms of 5 parts:
 1) Source - The device that can be throttled
@@ -201,7 +201,7 @@ This example sets up a policy to begin throttling the charger performance when
 temperature sensor 1 reaches 65C. The sampling period here is 60000 ms (60 s).
 The Priority is defaulted to 100 in this case.
 
-## Critical Policy
+### Critical Policy
 
 Each Critical Policy is defined in terms of 3 parts:
 1) Source - A device that can trigger a critical event
@@ -218,7 +218,7 @@ register "policies.critical[1]" = "DPTF_CRITICAL(CPU, 75, SHUTDOWN)"
 This example sets up a policy wherein ACPI will cause the system to shutdown
 (in a "graceful" manner) when the CPU temperature reaches 75C.
 
-## Power Limits
+### Power Limits
 
 Control over the SoC's Running Average Power Limits (RAPL) is one of the tools
 that DPTF uses to enact Passive policies. DPTF can control both PL1 and PL2, if
@@ -244,7 +244,7 @@ This example allow DPTF to control the SoC's PL1 level to between 3W and 15W,
 over a time interval ranging from 28 to 32 seconds, and it can move PL1 in
 increments of 200 mW.
 
-## Charger Performance
+### Charger Performance
 
 The battery charger can be a large contributor of unwanted heat in a system that
 has one. Controlling the rate of charging is another tool that DPTF uses to enact
@@ -266,7 +266,7 @@ register "controls.charger_perf[3]" = "{   8,  500 }"
 In this example, when DPTF decides to throttle the charger, it has four different
 performance states to choose from.
 
-## Fan Performance
+### Fan Performance
 
 When using DPTF, the system fan (`TFN1`) is the device responsible for actively
 cooling the other temperature sensors on the mainboard. A fan speed table can be
@@ -298,21 +298,21 @@ increment of 10 percentage points. This is common when specifying fine-grained
 control of the fan, wherein DPTF will interpolate between the percentages in the
 table for a given temperature threshold.
 
-## Options
+### Options
 
-### Fan
+#### Fan
 1) Fine-grained control - a boolean (see Fan Performance section above)
 2) Step-size - Recommended minimum step size (in percentage points) to adjust
    the fan speed when using fine-grained control (ranges from 1 - 9).
 3) Low-speed notify - If true, the platform will issue a `Notify (0x80)` to the
    fan device if a low fan speed is detected.
 
-### Temperature sensors
+#### Temperature sensors
 1) Hysteresis - The amount of hysteresis implemented in either circuitry or
    the firmware that reads the temperature sensor (in degrees C).
 2) Name - This name is applied to the _STR property of the sensor
 
-## OEM Variables
+### OEM Variables
 Platform vendors can define an array of OEM-specific values as OEM variables
 to be used under DPTF policy. There are total six OEM variables available.
 These can be used in AP policy for more specific actions. These OEM variables

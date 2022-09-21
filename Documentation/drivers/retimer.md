@@ -1,6 +1,6 @@
 # USB4 Retimers
 
-# Introduction
+## Introduction
 As USB speeds continue to increase (up to 5G, 10G, and even 20G or higher in
 newer revisions of the spec), it becomes more difficult to maintain signal
 integrity for longer traces. Devices such as retimers and redrivers can be used
@@ -17,7 +17,7 @@ by doing CDR and retransmitting the data (i.e., it is protocol-aware). Since
 this is a digital component, it may have firmware.
 
 
-# Driver Usage
+## Driver Usage
 
 Some operating systems may have the ability to update firmware on USB4 retimers,
 and ultimately will need some way to power the device on and off so that its new

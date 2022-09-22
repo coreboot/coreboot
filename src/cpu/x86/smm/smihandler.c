@@ -8,6 +8,7 @@
 #include <cpu/amd/amd64_save_state.h>
 #include <cpu/intel/em64t100_save_state.h>
 #include <cpu/intel/em64t101_save_state.h>
+#include <cpu/x86/lapic_def.h>
 #include <cpu/x86/legacy_save_state.h>
 
 #if CONFIG(SPI_FLASH_SMM)
@@ -49,10 +50,9 @@ static void smi_release_lock(void)
 	);
 }
 
-#define LAPIC_ID 0xfee00020
 static __always_inline unsigned long nodeid(void)
 {
-	return (*((volatile unsigned long *)(LAPIC_ID)) >> 24);
+	return (*((volatile unsigned long *)(LAPIC_DEFAULT_BASE + LAPIC_ID)) >> 24);
 }
 
 void io_trap_handler(int smif)

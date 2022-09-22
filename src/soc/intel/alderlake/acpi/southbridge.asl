@@ -31,6 +31,9 @@
 #include "scs.asl"
 #endif
 
+/* UFS */
+#include "ufs.asl"
+
 /* SMBus 0:1f.4 */
 #include <soc/intel/common/block/acpi/acpi/smbus.asl>
 

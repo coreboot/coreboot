@@ -373,7 +373,6 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
-						register "privacy_gpio"  = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_F19)"
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi

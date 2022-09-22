@@ -33,6 +33,8 @@ config EDK2_REPO_OFFICIAL
 	  Select this option if you want to use the official edk2 repository to build
 	  edk2.
 
+	  Please note, this option will not work on any SOC without modification.
+
 config EDK2_REPO_CUSTOM
 	bool "Specify your own repository"
 	help

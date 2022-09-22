@@ -8,6 +8,7 @@
 #include <cpu/amd/amd64_save_state.h>
 #include <cpu/intel/em64t100_save_state.h>
 #include <cpu/intel/em64t101_save_state.h>
+#include <cpu/x86/lapic.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/legacy_save_state.h>
 
@@ -48,11 +49,6 @@ static void smi_release_lock(void)
 		: "g" (SMI_UNLOCKED)
 		: "eax"
 	);
-}
-
-static __always_inline unsigned long nodeid(void)
-{
-	return (*((volatile unsigned long *)(LAPIC_DEFAULT_BASE + LAPIC_ID)) >> 24);
 }
 
 void io_trap_handler(int smif)
@@ -164,7 +160,7 @@ void smi_handler(void)
 
 	smi_backup_pci_address();
 
-	node = nodeid();
+	node = lapicid();
 
 	console_init();
 

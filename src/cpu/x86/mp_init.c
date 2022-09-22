@@ -26,8 +26,6 @@
 
 #include <security/intel/stm/SmmStm.h>
 
-#define MAX_APIC_IDS 256
-
 struct mp_callback {
 	void (*func)(void *);
 	void *arg;

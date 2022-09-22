@@ -113,10 +113,11 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_NONE),
 	/* SOC_FPMCU_BOOT0 */
 	PAD_GPO(GPIO_130, LOW),
+	/* Enable touchscreen, release from reset */
 	/* EN_PP3300_TCHSCR */
-	PAD_GPO(GPIO_131, LOW),
+	PAD_GPO(GPIO_131, HIGH),
 	/* TCHSCR_RESET_L */
-	PAD_GPO(GPIO_136, LOW),
+	PAD_GPO(GPIO_136, HIGH),
 	/* SOC_BIOS_WP_L */
 	PAD_GPI(GPIO_138, PULL_NONE),
 	/* EN_SPKR */
@@ -200,6 +201,11 @@ static const struct soc_amd_gpio romstage_gpio_table[] = {
 	PAD_NFO(GPIO_27, PCIE_RST1_L, HIGH),
 	/* SSD_AUX_RESET_L */
 	PAD_GPO(GPIO_6, HIGH),
+	/* Enable touchscreen, hold in reset */
+	/* EN_PP3300_TCHSCR */
+	PAD_GPO(GPIO_131, HIGH),
+	/* TCHSCR_RESET_L */
+	PAD_GPO(GPIO_136, LOW),
 };
 
 void baseboard_romstage_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)

@@ -77,7 +77,7 @@ chip soc/amd/mendocino
 		chip drivers/i2c/hid
 			register "generic.hid" = ""GXTP7863""
 			register "generic.desc" = ""Goodix Touchpad""
-			register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_40)"
+			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_40)"
 			register "generic.wake" = "GEVENT_20"
 			register "generic.detect" = "1"
 			register "hid_desc_reg_offset" = "0x20"

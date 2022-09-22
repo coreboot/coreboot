@@ -218,7 +218,6 @@ static void setup_default_sipi_vector_params(struct sipi_params *sp)
 	sp->stack_top = ALIGN_DOWN((uintptr_t)&_estack, CONFIG_STACK_SIZE);
 }
 
-#define NUM_FIXED_MTRRS 11
 static const unsigned int fixed_mtrrs[NUM_FIXED_MTRRS] = {
 	MTRR_FIX_64K_00000, MTRR_FIX_16K_80000, MTRR_FIX_16K_A0000,
 	MTRR_FIX_4K_C0000, MTRR_FIX_4K_C8000, MTRR_FIX_4K_D0000,

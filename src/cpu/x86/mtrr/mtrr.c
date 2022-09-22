@@ -103,7 +103,6 @@ static void enable_var_mtrr(unsigned char deftype)
 	(((x) > RANGE_SHIFT) ? ((x) - RANGE_SHIFT) : RANGE_SHIFT)
 #define PHYS_TO_RANGE_ADDR(x) ((x) >> RANGE_SHIFT)
 #define RANGE_TO_PHYS_ADDR(x) (((resource_t)(x)) << RANGE_SHIFT)
-#define NUM_FIXED_MTRRS (NUM_FIXED_RANGES / RANGES_PER_FIXED_MTRR)
 
 /* Helpful constants. */
 #define RANGE_1MB PHYS_TO_RANGE_ADDR(1ULL << 20)

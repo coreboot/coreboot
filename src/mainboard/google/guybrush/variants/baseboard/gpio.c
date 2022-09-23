@@ -298,7 +298,7 @@ const struct soc_amd_gpio *__weak variant_bootblock_gpio_table(size_t *size)
 	return bootblock_gpio_table;
 }
 
-const struct soc_amd_gpio *__weak variant_base_gpio_table(size_t *size)
+const struct soc_amd_gpio  *baseboard_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(base_gpio_table);
 	return base_gpio_table;

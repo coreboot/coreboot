@@ -5,6 +5,7 @@
 #include <cpu/intel/cpu_ids.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
+#include <drivers/wifi/generic/wifi.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
@@ -199,6 +200,19 @@ static void fill_fspm_audio_params(FSP_M_CONFIG *m_cfg,
 	memset(m_cfg->PchHdaAudioLinkSndwEnable, 0, sizeof(m_cfg->PchHdaAudioLinkSndwEnable));
 }
 
+static void fill_fspm_cnvi_params(FSP_M_CONFIG *m_cfg,
+		const struct soc_intel_meteorlake_config *config)
+{
+	/* CNVi DDR RFI Mitigation */
+	const struct device_path path[] = {
+		{ .type = DEVICE_PATH_PCI, .pci.devfn = PCI_DEVFN_CNVI_WIFI },
+		{ .type = DEVICE_PATH_GENERIC, .generic.id = 0 } };
+	const struct device *dev = find_dev_nested_path(pci_root_bus(), path,
+							ARRAY_SIZE(path));
+	if (is_dev_enabled(dev))
+		m_cfg->CnviDdrRfim = wifi_generic_cnvi_ddr_rfim_enabled(dev);
+}
+
 static void fill_fspm_ish_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
@@ -281,6 +295,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		fill_fspm_smbus_params,
 		fill_fspm_misc_params,
 		fill_fspm_audio_params,
+		fill_fspm_cnvi_params,
 		fill_fspm_pcie_rp_params,
 		fill_fspm_ish_params,
 		fill_fspm_tcss_params,

@@ -5,11 +5,11 @@
 
 void mb_pre_fspm(FSP_M_CONFIG *mcfg)
 {
-	size_t base_num_gpios;
-	const struct soc_amd_gpio *base_gpios;
+	size_t num_base_gpios, num_override_gpios;
+	const struct soc_amd_gpio *base_gpios, *override_gpios;
 
-	/* Initialize PCIe reset. */
-	variant_romstage_gpio_table(&base_gpios, &base_num_gpios);
-
-	gpio_configure_pads(base_gpios, base_num_gpios);
+	baseboard_romstage_gpio_table(&base_gpios, &num_base_gpios);
+	variant_romstage_override_gpio_table(&override_gpios, &num_override_gpios);
+	gpio_configure_pads_with_override(base_gpios, num_base_gpios,
+				override_gpios, num_override_gpios);
 }

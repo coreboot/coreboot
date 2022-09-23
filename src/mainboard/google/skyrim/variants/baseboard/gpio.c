@@ -202,10 +202,16 @@ static const struct soc_amd_gpio romstage_gpio_table[] = {
 	PAD_GPO(GPIO_6, HIGH),
 };
 
-__weak void variant_romstage_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+void baseboard_romstage_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
 {
 	*size = ARRAY_SIZE(romstage_gpio_table);
 	*gpio = romstage_gpio_table;
+}
+
+__weak void variant_romstage_override_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+{
+	*size = 0;
+	*gpio = NULL;
 }
 
 void baseboard_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)

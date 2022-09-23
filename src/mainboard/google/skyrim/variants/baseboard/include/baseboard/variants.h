@@ -39,6 +39,9 @@ void variant_espi_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 void variant_tpm_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 
 /* This function provides GPIO settings in romstage. */
-void variant_romstage_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
+void baseboard_romstage_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
+
+/* This function allows variant to override any GPIO init in romstage. */
+void variant_romstage_override_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

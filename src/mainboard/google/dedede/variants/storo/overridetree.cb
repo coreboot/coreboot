@@ -7,6 +7,10 @@ fw_config
 end
 
 chip soc/intel/jasperlake
+	# Disable PCIe Root Port 8 (index 7)
+	register "PcieRpEnable[7]" = "0"
+	# Disable PCIe Clock Source 4 (index 3)
+	register "PcieClkSrcUsage[3]" = "0xff"
 
 	# USB Port Configuration
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # User Facing Camera

@@ -188,8 +188,9 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 	PAD_GPO(GPIO_9, HIGH),
 };
 
-/* PCIE_RST needs to be brought high before FSP-M runs */
-static const struct soc_amd_gpio pcie_gpio_table[] = {
+/* Romstage GPIO configuration */
+static const struct soc_amd_gpio romstage_gpio_table[] = {
+	/* PCIE_RST needs to be brought high before FSP-M runs */
 	/* Deassert all AUX_RESET lines & PCIE_RST */
 	/* WLAN_AUX_RESET_L (ACTIVE LOW) */
 	PAD_GPO(GPIO_7, HIGH),
@@ -201,10 +202,10 @@ static const struct soc_amd_gpio pcie_gpio_table[] = {
 	PAD_GPO(GPIO_6, HIGH),
 };
 
-__weak void variant_pcie_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+__weak void variant_romstage_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
 {
-	*size = ARRAY_SIZE(pcie_gpio_table);
-	*gpio = pcie_gpio_table;
+	*size = ARRAY_SIZE(romstage_gpio_table);
+	*gpio = romstage_gpio_table;
 }
 
 void baseboard_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)

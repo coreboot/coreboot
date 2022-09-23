@@ -229,6 +229,11 @@ Device (EC0)
 	Method (_Q01, 0, NotSerialized)
 	{
 		Printf ("EC: LID CLOSE")
+#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
+		If (CondRefOf (\_SB.DPTC)) {
+			\_SB.DPTC()
+		}
+#endif
 		Store (LIDS, \LIDS)
 #ifdef EC_ENABLE_LID_SWITCH
 		Notify (LID0, 0x80)
@@ -239,6 +244,11 @@ Device (EC0)
 	Method (_Q02, 0, NotSerialized)
 	{
 		Printf ("EC: LID OPEN")
+#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
+		If (CondRefOf (\_SB.DPTC)) {
+			\_SB.DPTC()
+		}
+#endif
 		Store (LIDS, \LIDS)
 		Notify (CREC, 0x2)
 #ifdef EC_ENABLE_LID_SWITCH
@@ -540,6 +550,12 @@ Device (EC0)
 	 */
 	Method (_Q09, 0, NotSerialized)
 	{
+
+#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
+		If (CondRefOf (\_SB.DPTC)) {
+			\_SB.DPTC()
+		}
+#endif
 		If (!Acquire (^PATM, 1000)) {
 			/* Read sensor ID for event */
 			Store (^PATI, Local0)

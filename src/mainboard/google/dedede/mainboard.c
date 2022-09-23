@@ -36,7 +36,7 @@ static void mainboard_init(void *chip_info)
 	const struct pad_config *override_pads;
 	size_t base_num, override_num;
 
-	base_pads = variant_base_gpio_table(&base_num);
+	base_pads = baseboard_gpio_table(&base_num);
 	override_pads = variant_override_gpio_table(&override_num);
 
 	gpio_configure_pads_with_override(base_pads, base_num,

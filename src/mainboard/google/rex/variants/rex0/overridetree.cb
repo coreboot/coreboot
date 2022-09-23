@@ -229,6 +229,7 @@ chip soc/intel/meteorlake
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
 				register "is_untrusted" = "true"
+				register "enable_cnvi_ddr_rfim" = "true"
 				device generic 0 on end
 			end
 		end

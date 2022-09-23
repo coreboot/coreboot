@@ -14,11 +14,7 @@ static int determine_total_number_of_cores(void)
 	struct device *cpu;
 	int count = 0;
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
-		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-			(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
-			continue;
-		}
-		if (!cpu->enabled)
+		if (!is_enabled_cpu(cpu))
 			continue;
 		count++;
 	}

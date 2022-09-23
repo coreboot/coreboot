@@ -160,12 +160,7 @@ void smp_write_processors(struct mp_config_table *mc)
 	for (order_id = 0; order_id < 256; order_id++) {
 		for (cpu = all_devices; cpu; cpu = cpu->next) {
 			unsigned long cpu_flag;
-			if ((cpu->path.type != DEVICE_PATH_APIC) ||
-				(cpu->bus->dev->path.type !=
-					DEVICE_PATH_CPU_CLUSTER))
-				continue;
-
-			if (!cpu->enabled)
+			if (!is_enabled_cpu(cpu))
 				continue;
 
 			cpu_flag = MPC_CPU_ENABLED;

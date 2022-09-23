@@ -104,11 +104,7 @@ static void update_board_layout(void)
 
 	/* Update CPU fields */
 	for (struct device *cpu = all_devices; cpu; cpu = cpu->next) {
-		if (cpu->path.type != DEVICE_PATH_APIC)
-			continue;
-		if (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)
-			continue;
-		if (!cpu->enabled)
+		if (!is_enabled_cpu(cpu))
 			continue;
 		layout.cpu_count++;
 		if (!layout.cpu_name[0])

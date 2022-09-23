@@ -25,11 +25,7 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 	unsigned int cpu_index = 0;
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
-		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-		   (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
-			continue;
-		}
-		if (!cpu->enabled)
+		if (!is_enabled_cpu(cpu))
 			continue;
 		printk(BIOS_DEBUG, "SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n",
 			cpu_index, cpu->path.apic.node_id, cpu->path.apic.apic_id);

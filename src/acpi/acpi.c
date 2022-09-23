@@ -147,11 +147,7 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 	int index, apic_ids[CONFIG_MAX_CPUS] = {0}, num_cpus = 0;
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
-		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-			(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
-			continue;
-		}
-		if (!cpu->enabled)
+		if (!is_enabled_cpu(cpu))
 			continue;
 		if (num_cpus >= ARRAY_SIZE(apic_ids))
 			break;

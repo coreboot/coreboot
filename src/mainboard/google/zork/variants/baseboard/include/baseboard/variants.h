@@ -11,16 +11,12 @@
 #include <soc/platform_descriptors.h>
 
 const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
-/*
- * This function provides base GPIO configuration table. It is typically provided by
- * baseboard using a weak implementation. If GPIO configuration for a variant differs
- * significantly from the baseboard, then the variant can also provide a strong implementation
- * of this function.
- */
-const struct soc_amd_gpio *variant_base_gpio_table(size_t *size);
+
+/* This function provides base GPIO configuration table. */
+const struct soc_amd_gpio *baseboard_gpio_table(size_t *size);
 /*
  * This function allows variant to override any GPIOs that are different than the base GPIO
- * configuration provided by variant_base_gpio_table().
+ * configuration provided by baseboard_gpio_table().
  */
 const struct soc_amd_gpio *variant_override_gpio_table(size_t *size);
 

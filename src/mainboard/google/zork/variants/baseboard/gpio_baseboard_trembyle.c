@@ -172,8 +172,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_GPO(GPIO_144, LOW),
 };
 
-const __weak
-struct soc_amd_gpio *variant_base_gpio_table(size_t *size)
+const struct soc_amd_gpio *baseboard_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(gpio_set_stage_ram);
 	return gpio_set_stage_ram;

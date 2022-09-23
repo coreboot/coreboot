@@ -98,7 +98,7 @@ static void mainboard_init(void *chip_info)
 	boardid = board_id();
 	printk(BIOS_INFO, "Board ID: %d\n", boardid);
 
-	base_pads = variant_base_gpio_table(&base_num);
+	base_pads = baseboard_gpio_table(&base_num);
 	override_pads = variant_override_gpio_table(&override_num);
 	gpio_modification_by_ssfc((struct pad_config *)override_pads,
 			override_num);

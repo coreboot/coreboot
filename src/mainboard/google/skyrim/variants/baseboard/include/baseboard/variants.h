@@ -11,17 +11,12 @@
 #define SD_DEVFN	PCIE_GPP_2_1_DEVFN
 #define NVME_DEVFN	PCIE_GPP_2_2_DEVFN
 
-/*
- * This function provides base GPIO configuration table. It is typically provided by
- * baseboard using a weak implementation. If GPIO configuration for a variant differs
- * significantly from the baseboard, then the variant can also provide a strong implementation
- * of this function.
- */
-void variant_base_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
+/* This function provides base GPIO configuration table. */
+void baseboard_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 
 /*
  * This function allows variant to override any GPIOs that are different than the base GPIO
- * configuration provided by variant_base_gpio_table().
+ * configuration provided by baseboard_gpio_table().
  */
 void variant_override_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 

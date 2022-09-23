@@ -207,7 +207,7 @@ __weak void variant_pcie_gpio_table(const struct soc_amd_gpio **gpio, size_t *si
 	*gpio = pcie_gpio_table;
 }
 
-__weak void variant_base_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+void baseboard_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
 {
 	*size = ARRAY_SIZE(base_gpio_table);
 	*gpio = base_gpio_table;

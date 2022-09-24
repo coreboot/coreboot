@@ -10,8 +10,8 @@ ramstage-y += chromeos.c
 ramstage-y += gpio.c
 ramstage-y += port_descriptors.c
 
-ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_FT6_Updatable.bin),)
-APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_FT6_Updatable.bin
+ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_FT6.bin),)
+APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_FT6.bin
 APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_FT6_DefaultRecovery.bin
 else
 $(info APCB sources not found. Skipping APCB. The resulting image won't boot.)

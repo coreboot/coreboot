@@ -96,6 +96,9 @@ PHONY+= clean-abuild coreboot check-style build_complete
 
 #######################################################################
 # root source directories of coreboot
+# site-local Makefile.mk must go first to override default locations (for binaries etc.)
+subdirs-y := site-local
+
 subdirs-y := src/lib src/commonlib/ src/console src/device src/acpi src/superio/common
 subdirs-$(CONFIG_EC_ACPI) += src/ec/intel
 subdirs-y += src/ec/acpi $(wildcard src/ec/*/*) $(wildcard src/southbridge/*/*)
@@ -112,8 +115,6 @@ subdirs-y += src/mainboard/$(MAINBOARDDIR)
 subdirs-y += src/security
 subdirs-y += payloads payloads/external
 subdirs-$(CONFIG_SBOM) += src/sbom
-
-subdirs-y += site-local
 subdirs-y += util/checklist util/testing
 
 #######################################################################

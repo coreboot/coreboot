@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<svg
+   width="40.266247mm"
+   height="20.267391mm"
+   viewBox="0 0 40.266247 20.267391"
+   version="1.1"
+   id="svg5"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2" />
+  <g
+     id="layer1"
+     transform="translate(0.1322915,0.1322915)">
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583"
+       d="M 0,0 C 0,6.6676027 0,13.335205 0,20.002808"
+       id="path500" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583"
+       d="m 0,20.002808 c 13.333889,0 26.667777,0 40.001666,0 0,-6.667603 0,-13.3352053 0,-20.002808 -6.665673,0 -13.331347,0 -19.99702,0 0,6.6676027 0,13.335205 0,20.002808"
+       id="path506" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583"
+       d="m 0,0 c 3.3327445,0 6.6654889,0 9.9982334,0 0,6.6676027 0,13.335205 0,20.002808"
+       id="path508" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583"
+       d="m 0,10.001404 c 13.333889,0 26.667777,0 40.001666,0"
+       id="path510" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583"
+       d="m 30.003154,0 c 0,6.6676027 0,13.335205 0,20.002808"
+       id="path512" />
+    <text
+       xml:space="preserve"
+       font-size="2.82222px"
+       style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal"
+       x="22.156124"
+       y="6.3107877"
+       id="text676"><tspan
+         x="22.156124"
+         y="6.3107877">VCC</tspan></text>
+    <text
+       xml:space="preserve"
+       font-size="2.82222px"
+       style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal"
+       x="31.972855"
+       y="6.3107877"
+       id="text730"><tspan
+         id="tspan728"
+         x="31.972855"
+         y="6.3107877">GND</tspan></text>
+    <text
+       xml:space="preserve"
+       font-size="2.82222px"
+       style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal"
+       x="32.398666"
+       y="16.285427"
+       id="text734"><tspan
+         id="tspan732"
+         x="32.398666"
+         y="16.285427">CLK</tspan></text>
+    <text
+       xml:space="preserve"
+       font-size="2.82222px"
+       style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal"
+       x="22.770041"
+       y="16.285427"
+       id="text738"><tspan
+         id="tspan736"
+         x="22.770041"
+         y="16.285427">DO</tspan></text>
+    <text
+       xml:space="preserve"
+       font-size="2.82222px"
+       style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal"
+       x="13.605446"
+       y="16.286804"
+       id="text742"><tspan
+         id="tspan740"
+         x="13.605446"
+         y="16.286804">DI</tspan></text>
+    <text
+       xml:space="preserve"
+       font-size="2.82222px"
+       style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal"
+       x="2.5204566"
+       y="6.1998558"
+       id="text746"><tspan
+         id="tspan744"
+         x="2.5204566"
+         y="6.1998558">/CS</tspan></text>
+    <text
+       xml:space="preserve"
+       font-size="2.5px"
+       style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal"
+       x="5.0321894"
+       y="14.500522"
+       id="text750"><tspan
+         id="tspan748"
+         x="5.0321894"
+         y="14.500522">/CS</tspan><tspan
+         x="5.0321894"
+         y="17.146358"
+         id="tspan752">chipset</tspan></text>
+  </g>
+</svg>

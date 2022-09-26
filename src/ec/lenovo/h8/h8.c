@@ -311,7 +311,7 @@ static void h8_enable(struct device *dev)
 	if (conf->has_uwb)
 		h8_uwb_enable(get_uint_option("uwb", 1));
 
-	h8_fn_ctrl_swap(get_uint_option("fn_ctrl_swap", 0));
+	h8_fn_ctrl_swap(get_uint_option("fn_ctrl_swap", CONFIG(H8_FN_CTRL_SWAP)));
 
 	h8_sticky_fn(get_uint_option("sticky_fn", 0));
 

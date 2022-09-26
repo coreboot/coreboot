@@ -28,6 +28,14 @@ config H8_SUPPORT_BT_ON_WIFI
 	  Disable BDC detection and assume bluetooth is installed. Required for
 	  bluetooth on wifi cards, as it's not possible to detect it in coreboot.
 
+config H8_FN_CTRL_SWAP
+	bool "Swap Fn and Ctrl keys"
+	help
+	  Specifies the fallback value of the "fn_ctrl_swap" option, which is
+	  only used when the value cannot be obtained from the option backend.
+	  The main use-case for this Kconfig option is to enable Fn-Ctrl swap
+	  without using any runtime configurable option backends (e.g. CMOS).
+
 config H8_HAS_BAT_THRESHOLDS_IMPL
 	bool
 	default n

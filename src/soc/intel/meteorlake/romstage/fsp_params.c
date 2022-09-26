@@ -226,12 +226,10 @@ static void fill_fspm_tcss_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_usb4_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
-	memset(&m_cfg->TcssItbtPcie0En, 0, sizeof(m_cfg->TcssItbtPcie0En)*4);
-
-	m_cfg->TcssItbtPcie0En = !(config->tbt_pcie_port_disable[0]);
-	m_cfg->TcssItbtPcie1En = !(config->tbt_pcie_port_disable[1]);
-	m_cfg->TcssItbtPcie2En = !(config->tbt_pcie_port_disable[2]);
-	m_cfg->TcssItbtPcie3En = !(config->tbt_pcie_port_disable[3]);
+	m_cfg->TcssItbtPcie0En = is_devfn_enabled(PCI_DEVFN_TBT0);
+	m_cfg->TcssItbtPcie1En = is_devfn_enabled(PCI_DEVFN_TBT1);
+	m_cfg->TcssItbtPcie2En = is_devfn_enabled(PCI_DEVFN_TBT2);
+	m_cfg->TcssItbtPcie3En = is_devfn_enabled(PCI_DEVFN_TBT3);
 }
 
 static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,

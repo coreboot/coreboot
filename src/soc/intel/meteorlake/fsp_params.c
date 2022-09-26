@@ -337,11 +337,8 @@ static void fill_fsps_vmd_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_tbt_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
-	int max_port = get_max_tbt_pcie_port();
-
-	memset(s_cfg->ITbtPcieRootPortEn, 0, sizeof(s_cfg->ITbtPcieRootPortEn));
-	for (int i = 0; i < max_port; i++)
-		s_cfg->ITbtPcieRootPortEn[i] = !(config->tbt_pcie_port_disable[i]);
+	for (int i = 0; i < ARRAY_SIZE(s_cfg->ITbtPcieRootPortEn); i++)
+		s_cfg->ITbtPcieRootPortEn[i] = is_devfn_enabled(PCI_DEVFN_TBT(i));
 }
 
 static void fill_fsps_8254_params(FSP_S_CONFIG *s_cfg,

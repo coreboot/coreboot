@@ -29,7 +29,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-pragma Compiler_Unit_Warning;
 pragma Assertion_Policy (Statement_Assertions => Ignore);
 
 with Ada.Unchecked_Conversion;

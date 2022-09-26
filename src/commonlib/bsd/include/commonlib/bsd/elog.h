@@ -306,8 +306,45 @@ struct elog_event_mem_cache_update {
 #define ELOG_TYPE_MI_HR                   0xb5
 
 /* ChromeOS diagnostics-related events */
-#define ELOG_DEPRECATED_TYPE_CROS_DIAGNOSTICS        0xb6
-#define  ELOG_DEPRECATED_CROS_LAUNCH_DIAGNOSTICS      0x01
+#define ELOG_TYPE_CROS_DIAGNOSTICS                0xb6
+#define  ELOG_DEPRECATED_CROS_LAUNCH_DIAGNOSTICS   0x01
+#define  ELOG_CROS_DIAGNOSTICS_LOGS                0x02
+/* Type codes for elog_event_cros_diag_log in ELOG_CROS_DIAGNOSTICS_LOGS */
+#define   ELOG_CROS_DIAG_TYPE_NONE                  0x00
+#define   ELOG_CROS_DIAG_TYPE_STORAGE_HEALTH        0x01
+#define   ELOG_CROS_DIAG_TYPE_STORAGE_TEST_SHORT    0x02
+#define   ELOG_CROS_DIAG_TYPE_STORAGE_TEST_EXTENDED 0x03
+#define   ELOG_CROS_DIAG_TYPE_MEMORY_QUICK          0x04
+#define   ELOG_CROS_DIAG_TYPE_MEMORY_FULL           0x05
+/* Result codes for elog_event_cros_diag_log in ELOG_CROS_DIAGNOSTICS_LOGS */
+#define   ELOG_CROS_DIAG_RESULT_PASSED              0x01
+#define   ELOG_CROS_DIAG_RESULT_ERROR               0x02
+#define   ELOG_CROS_DIAG_RESULT_FAILED              0x03
+#define   ELOG_CROS_DIAG_RESULT_ABORTED             0x04
+
+/*
+ * ChromeOS diagnostics log format:
+ * [23:19] = ELOG_CROS_DIAG_TYPE_*
+ * [18:16] = ELOG_CROS_DIAG_RESULT_*
+ * [15:0]  = Running time in seconds
+ */
+#define ELOG_CROS_DIAG_LOG_TYPE_BITS 5
+#define ELOG_CROS_DIAG_LOG_RESULT_BITS 3
+union elog_event_cros_diag_log {
+	uint8_t raw[3];
+	struct {
+		/* 5-bit type code, see ELOG_CROS_DIAG_TYPE_* above */
+		uint8_t type	: ELOG_CROS_DIAG_LOG_TYPE_BITS;
+		/* 3-bit result code, see ELOG_CROS_DIAG_RESULT_* above */
+		uint8_t result	: ELOG_CROS_DIAG_LOG_RESULT_BITS;
+		/*
+		 * The running time of this diagnostics test item. If the
+		 * running time exceeds the UINT16_MAX, it will be stored as
+		 * UINT16_MAX instead.
+		 */
+		uint16_t time_s;
+	} __packed;
+} __packed;
 
 struct elog_event_extended_event {
 	uint8_t event_type;

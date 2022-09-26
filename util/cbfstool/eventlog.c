@@ -157,7 +157,7 @@ static void eventlog_print_type(const struct event_header *event)
 		{ELOG_TYPE_CR50_NEED_RESET, "cr50 Reset Required"},
 		{ELOG_TYPE_EC_DEVICE_EVENT, "EC Device"},
 		{ELOG_TYPE_EXTENDED_EVENT, "Extended Event"},
-		{ELOG_DEPRECATED_TYPE_CROS_DIAGNOSTICS, "Diagnostics Mode"},
+		{ELOG_TYPE_CROS_DIAGNOSTICS, "Diagnostics Mode"},
 		{ELOG_TYPE_FW_VBOOT_INFO, "Firmware vboot info"},
 
 		{ELOG_TYPE_EOL, "End of log"},
@@ -436,8 +436,27 @@ static int eventlog_print_data(const struct event_header *event)
 		{0, NULL},
 	};
 
-	static const struct valstr cros_deprecated_diagnostics_types[] = {
+	static const struct valstr cros_diagnostics_types[] = {
 		{ELOG_DEPRECATED_CROS_LAUNCH_DIAGNOSTICS, "Launch Diagnostics"},
+		{ELOG_CROS_DIAGNOSTICS_LOGS, "Diagnostics Logs"},
+		{0, NULL},
+	};
+
+	static const struct valstr cros_diagnostics_diag_types[] = {
+		{ELOG_CROS_DIAG_TYPE_NONE, "None"},
+		{ELOG_CROS_DIAG_TYPE_STORAGE_HEALTH, "Storage Health Info"},
+		{ELOG_CROS_DIAG_TYPE_STORAGE_TEST_SHORT, "Storage self-test (short)"},
+		{ELOG_CROS_DIAG_TYPE_STORAGE_TEST_EXTENDED, "Storage self-test (extended)"},
+		{ELOG_CROS_DIAG_TYPE_MEMORY_QUICK, "Memory check (quick)"},
+		{ELOG_CROS_DIAG_TYPE_MEMORY_FULL, "Memory check (full)"},
+		{0, NULL},
+	};
+
+	static const struct valstr cros_diagnostics_diag_results[] = {
+		{ELOG_CROS_DIAG_RESULT_PASSED, "Passed"},
+		{ELOG_CROS_DIAG_RESULT_ERROR, "Error"},
+		{ELOG_CROS_DIAG_RESULT_FAILED, "Failed"},
+		{ELOG_CROS_DIAG_RESULT_ABORTED, "Aborted"},
 		{0, NULL},
 	};
 
@@ -522,9 +541,44 @@ static int eventlog_print_data(const struct event_header *event)
 		eventlog_printf("0x%X", ext_event->event_complement);
 		break;
 	}
-	case ELOG_DEPRECATED_TYPE_CROS_DIAGNOSTICS: {
-		const uint8_t *type = event_get_data(event);
-		eventlog_printf("%s", val2str(*type, cros_deprecated_diagnostics_types));
+	case ELOG_TYPE_CROS_DIAGNOSTICS: {
+		const uint8_t *data = event_get_data(event);
+		const uint8_t subtype = *data;
+		eventlog_printf("%s", val2str(subtype, cros_diagnostics_types));
+
+		/*
+		 * If the subtype is diagnostics logs, there will be many
+		 * elog_event_diag_log events after subtype:
+		 *
+		 * [event_header][(subtype)(log 1)(log 2)...(log n)][checksum]
+		 *
+		 * Parse them one by one.
+		 */
+		if (subtype == ELOG_CROS_DIAGNOSTICS_LOGS) {
+			size_t i, base_size, log_size, num_logs;
+			const union elog_event_cros_diag_log *log;
+
+			/*
+			 * base_size = event header + checksum + subtype;
+			 * log_size = event length - base_size.
+			 */
+			base_size = sizeof(*event) + 1 + sizeof(subtype);
+			/* Validity check to prevent log_size overflow */
+			if (event->length > base_size) {
+				log_size = event->length - base_size;
+				num_logs = log_size / sizeof(union elog_event_cros_diag_log);
+				log = (const union elog_event_cros_diag_log *)(data + 1);
+				for (i = 0; i < num_logs; i++) {
+					eventlog_printf("type=%s, result=%s, time=%um%us",
+						val2str(log->type,
+							cros_diagnostics_diag_types),
+						val2str(log->result,
+							cros_diagnostics_diag_results),
+						log->time_s / 60, log->time_s % 60);
+					log++;
+				}
+			}
+		}
 		break;
 	}
 	case ELOG_TYPE_FW_VBOOT_INFO: {

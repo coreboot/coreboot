@@ -12,6 +12,9 @@ end
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
+	# Disable CNVi BT
+	register "cnvi_bt_core" = "false"
+
 	# SOC Aux orientation override:
 	# This is a bitfield that corresponds to up to 4 TCSS ports.
 	# Bits (0,1) allocated for TCSS Port1 configuration and Bits (2,3)for TCSS Port2.
@@ -209,6 +212,9 @@ chip soc/intel/alderlake
 				device pci 00.0 on end
 			end
 		end
+
+		device ref cnvi_wifi off end
+
 		device ref pch_espi on
 			chip ec/google/chromeec
 				use conn0 as mux_conn[0]

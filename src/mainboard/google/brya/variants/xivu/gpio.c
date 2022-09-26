@@ -13,6 +13,18 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_E20, NONE),
 	/* E21 : DDP2_CTRLDATA ==> NC */
 	PAD_NC(GPP_E21, NONE),
+	/* F0  : CNV_BRI_DT ==> NC*/
+	PAD_NC(GPP_F0, NONE),
+	/* F1  : CNV_BRI_RSP ==> NC */
+	PAD_NC(GPP_F1, NONE),
+	/* F2  : CNV_RGI_DT ==> NC */
+	PAD_NC(GPP_F2, NONE),
+	/* F3  : CNV_RGI_RSP ==> NC */
+	PAD_NC(GPP_F3, NONE),
+	/* F4  : CNV_RF_RESET# ==> NC */
+	PAD_NC(GPP_F4, NONE),
+	/* F5  : CRF_XTAL_CLKREQ ==> NC */
+	PAD_NC(GPP_F5, NONE),
 };
 
 /* Early pad configuration in bootblock */
@@ -35,8 +47,6 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_SOC_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
-	/* B11 : PMCALERT# ==> EN_PP3300_WLAN_X */
-	PAD_CFG_GPO(GPP_B11, 1, DEEP),
 	/* H13 : UART0_CTS# ==> EN_PP3300_SD_X */
 	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 };

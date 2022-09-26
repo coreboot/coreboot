@@ -1,22 +1,22 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/cbmem_console.h>
-#include <cbmem.h>
-#include <string.h>
-#include <fmap.h>
 #include <assert.h>
 #include <arch/mmu.h>
 #include <cbfs.h>
+#include <cbmem.h>
+#include <commonlib/bsd/mem_chip_info.h>
+#include <console/cbmem_console.h>
 #include <console/console.h>
+#include <fmap.h>
 #include <mrc_cache.h>
+#include <reset.h>
+#include <security/vboot/misc.h>
 #include <soc/mmu.h>
 #include <soc/mmu_common.h>
 #include <soc/qclib_common.h>
 #include <soc/symbols_common.h>
-#include <security/vboot/misc.h>
+#include <string.h>
 #include <vb2_api.h>
-#include <commonlib/bsd/mem_chip_info.h>
-#include <include/reset.h>
 
 #define QCLIB_VERSION 0
 

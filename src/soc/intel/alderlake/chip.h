@@ -680,6 +680,13 @@ struct soc_intel_alderlake_config {
 	 * IGD panel configuration
 	 */
 	struct i915_gpu_panel_config panel_cfg;
+
+	/*
+	 * Enable or Disable Tccold Handshake
+	 * Default is set to 0.
+	 * Set this to 1 in order to disable Tccold Handshake
+	 */
+	bool disable_dynamic_tccold_handshake;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

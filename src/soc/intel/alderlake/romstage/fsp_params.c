@@ -270,6 +270,11 @@ static void fill_fspm_tcss_params(FSP_M_CONFIG *m_cfg,
 	/* TCSS DMA */
 	m_cfg->TcssDma0En = is_devfn_enabled(SA_DEVFN_TCSS_DMA0);
 	m_cfg->TcssDma1En = is_devfn_enabled(SA_DEVFN_TCSS_DMA1);
+
+#if CONFIG(SOC_INTEL_RAPTORLAKE)
+	m_cfg->DisableDynamicTccoldHandshake =
+			config->disable_dynamic_tccold_handshake;
+#endif
 }
 
 static void fill_fspm_usb4_params(FSP_M_CONFIG *m_cfg,

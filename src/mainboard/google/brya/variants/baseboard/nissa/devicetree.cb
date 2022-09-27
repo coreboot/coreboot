@@ -102,11 +102,11 @@ chip soc/intel/alderlake
 	register "common_soc_config" = "{
 		.i2c[0] = {
 			.early_init = 1,
-			.speed = I2C_SPEED_FAST,
+			.speed = I2C_SPEED_FAST_PLUS,
 			.speed_config[0] = {
-				.speed = I2C_SPEED_FAST,
-				.scl_lcnt = 158,
-				.scl_hcnt = 79,
+				.speed = I2C_SPEED_FAST_PLUS,
+				.scl_lcnt = 55,
+				.scl_hcnt = 30,
 				.sda_hold = 7,
 			}
 		},

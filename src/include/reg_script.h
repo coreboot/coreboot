@@ -104,7 +104,7 @@ struct reg_script_bus_entry {
 
 #define REG_SCRIPT_BUS_ENTRY(bus_entry_)				\
 	const struct reg_script_bus_entry *rsbe_ ## bus_entry_	\
-		REG_SCRIPT_TABLE_ATTRIBUTE = &bus_entry_;
+		REG_SCRIPT_TABLE_ATTRIBUTE = &bus_entry_
 
 /* Internal helper Macros. */
 

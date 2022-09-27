@@ -55,6 +55,15 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50
 
+config HAVE_SPL_FILE
+	bool
+	default y
+
+config SPL_TABLE_FILE
+	string
+	depends on HAVE_SPL_FILE
+	default "3rdparty/blobs/mainboard/google/skyrim/TypeId0x55_SplTableBl_MDN_CHROME.sbin"
+
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
 

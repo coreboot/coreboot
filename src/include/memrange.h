@@ -100,13 +100,13 @@ void memranges_init_with_alignment(struct memranges *ranges,
 /* Initialize memranges structure providing an optional array of range_entry
  * to use as the free list. Addresses are default aligned to 4KiB(2^12). */
 #define memranges_init_empty(__ranges, __free, __num_free)	\
-	memranges_init_empty_with_alignment(__ranges, __free, __num_free, 12);
+	memranges_init_empty_with_alignment(__ranges, __free, __num_free, 12)
 
 /* Initialize and fill a memranges structure according to the
  * mask and match type for all memory resources. Tag each entry with the
  * specified type. Addresses are default aligned to 4KiB(2^12). */
 #define memranges_init(__ranges, __mask, __match, __tag)	\
-	memranges_init_with_alignment(__ranges, __mask, __match, __tag, 12);
+	memranges_init_with_alignment(__ranges, __mask, __match, __tag, 12)
 
 /* Clone a memrange. The new memrange has the same entries as the old one. */
 void memranges_clone(struct memranges *newranges, struct memranges *oldranges);

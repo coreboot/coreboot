@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <commonlib/bsd/compiler.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <lib.h>

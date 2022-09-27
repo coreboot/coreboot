@@ -210,6 +210,7 @@ config MAINBOARD_PART_NUMBER
 	default "Xivu" if BOARD_GOOGLE_XIVU
 	default "Gaelin4ADL" if BOARD_GOOGLE_GAELIN4ADL
 	default "Yaviks" if BOARD_GOOGLE_YAVIKS
+	default "Lisbon" if BOARD_GOOGLE_LISBON
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -247,6 +248,7 @@ config VARIANT_DIR
 	default "xivu" if BOARD_GOOGLE_XIVU
 	default "gaelin" if BOARD_GOOGLE_GAELIN4ADL
 	default "yaviks" if BOARD_GOOGLE_YAVIKS
+	default "lisbon" if BOARD_GOOGLE_LISBON
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

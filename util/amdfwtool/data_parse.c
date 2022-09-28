@@ -375,13 +375,13 @@ static uint8_t find_register_fw_filename_bios_dir(char *fw_name, char *filename,
 	if (strncmp(fw_name, PMUI_STR_BASE, PMU_STR_BASE_LEN) == 0) {
 		assert(strlen(fw_name) == PMU_STR_ALL_LEN);
 		fw_type = AMD_BIOS_PMUI;
-		subprog = fw_name[PMU_STR_SUB_INDEX] - '0';
-		instance = fw_name[PMU_STR_INS_INDEX] - '0';
+		subprog = strtol(&fw_name[PMU_STR_SUB_INDEX], NULL, 16);
+		instance = strtol(&fw_name[PMU_STR_INS_INDEX], NULL, 16);
 	} else if (strncmp(fw_name, PMUD_STR_BASE, PMU_STR_BASE_LEN) == 0) {
 		assert(strlen(fw_name) == PMU_STR_ALL_LEN);
 		fw_type = AMD_BIOS_PMUD;
-		subprog = fw_name[PMU_STR_SUB_INDEX] - '0';
-		instance = fw_name[PMU_STR_INS_INDEX] - '0';
+		subprog = strtol(&fw_name[PMU_STR_SUB_INDEX], NULL, 16);
+		instance = strtol(&fw_name[PMU_STR_INS_INDEX], NULL, 16);
 	} else if (strcmp(fw_name, "RTM_PUBKEY_FILE") == 0) {
 		fw_type = AMD_BIOS_RTM_PUBKEY;
 		subprog = 0;

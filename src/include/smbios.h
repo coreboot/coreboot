@@ -34,6 +34,17 @@ int smbios_write_type38(unsigned long *current, int *handle,
 int smbios_write_type41(unsigned long *current, int *handle,
 			const char *name, u8 instance, u16 segment,
 			u8 bus, u8 device, u8 function, u8 device_type);
+enum smbios_temp_location;
+enum smbios_temp_status;
+int smbios_write_type28(unsigned long *current, int *handle,
+			const char *name,
+			const enum smbios_temp_location location,
+			const enum smbios_temp_status status,
+			u16 max_value, u16 min_value,
+			u16 resolution, u16 tolerance,
+			u16 accuracy,
+			u32 oem,
+			u16 nominal_value);
 
 int smbios_write_type43(unsigned long *current, int *handle, const u32 vendor_id,
 			const u8 major_spec_ver, const u8 minor_spec_ver,
@@ -255,6 +266,7 @@ typedef enum {
 	SMBIOS_MEMORY_DEVICE = 17,
 	SMBIOS_MEMORY_ARRAY_MAPPED_ADDRESS = 19,
 	SMBIOS_MEMORY_DEVICE_MAPPED_ADDRESS = 20,
+	SMBIOS_TEMPERATURE_PROBE = 28,
 	SMBIOS_SYSTEM_BOOT_INFORMATION = 32,
 	SMBIOS_IPMI_DEVICE_INFORMATION = 38,
 	SMBIOS_ONBOARD_DEVICES_EXTENDED_INFORMATION = 41,
@@ -920,6 +932,46 @@ struct smbios_type20 {
 	u64 ext_addr_end;
 	u8 eos[2];
 } __packed;
+
+/* Bit[7..5] = Temp status */
+enum smbios_temp_status {
+	SMBIOS_TEMP_STATUS_OTHER = 0x01,
+	SMBIOS_TEMP_STATUS_UNKNOWN,
+	SMBIOS_TEMP_STATUS_OK,
+	SMBIOS_TEMP_STATUS_NONCRITICAL,
+	SMBIOS_TEMP_STATUS_CRITICAL,
+	SMBIOS_TEMP_STATUS_NONREC,			// Non-Recoverable.
+};
+
+/* Bit[4..0] = Temp location */
+enum smbios_temp_location {
+	SMBIOS_TEMP_LOCATION_OTHER = 0x01,
+	SMBIOS_TEMP_LOCATION_UNKNOWN,
+	SMBIOS_TEMP_LOCATION_PROCESSOR,
+	SMBIOS_TEMP_LOCATION_DISK,
+	SMBIOS_TEMP_LOCATION_BAY,			// Peripheral Bay.
+	SMBIOS_TEMP_LOCATION_SMM,			// System Management Module.
+	SMBIOS_TEMP_LOCATION_BOARD,			// Motherboard.
+	SMBIOS_TEMP_LOCATION_MM,			// Memory.
+	SMBIOS_TEMP_LOCATION_PM,			// Processor Module.
+	SMBIOS_TEMP_LOCATION_POW,			// Power Unit.
+	SMBIOS_TEMP_LOCATION_ADDCARD,
+};
+
+struct smbios_type28 {
+	struct smbios_header header;
+	u8 description;
+	u8 location_and_status;
+	u16 maximum_value;
+	u16 minimum_value;
+	u16 resolution;
+	u16 tolerance;
+	u16 accuracy;
+	u32 oem_defined;
+	u16 nominal_value;
+	u8 eos[2];
+} __packed;
+
 
 struct smbios_type32 {
 	struct smbios_header header;

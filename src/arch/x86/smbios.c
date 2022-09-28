@@ -1052,6 +1052,35 @@ static int smbios_write_type20(unsigned long *current, int *handle,
 	return totallen;
 }
 
+int smbios_write_type28(unsigned long *current, int *handle,
+			const char *name,
+			const enum smbios_temp_location location,
+			const enum smbios_temp_status status,
+			u16 max_value, u16 min_value,
+			u16 resolution, u16 tolerance,
+			u16 accuracy,
+			u32 oem,
+			u16 nominal_value)
+{
+	struct smbios_type28 *t = smbios_carve_table(*current, SMBIOS_TEMPERATURE_PROBE,
+						     sizeof(*t), *handle);
+
+	t->description = smbios_add_string(t->eos, name ? name : "Temperature");
+	t->location_and_status = location | (status << 5);
+	t->maximum_value = max_value;
+	t->minimum_value = min_value;
+	t->resolution = resolution;
+	t->tolerance = tolerance;
+	t->accuracy = accuracy;
+	t->oem_defined = oem;
+	t->nominal_value = nominal_value;
+
+	const int len = smbios_full_table_len(&t->header, t->eos);
+	*current += len;
+	*handle += 1;
+	return len;
+}
+
 static int smbios_write_type32(unsigned long *current, int handle)
 {
 	struct smbios_type32 *t = smbios_carve_table(*current, SMBIOS_SYSTEM_BOOT_INFORMATION,

@@ -314,10 +314,10 @@ static void gather_common_timing(struct sys_info *sysinfo, struct timings *saved
 
 	printk(BIOS_DEBUG, "This mainboard supports ");
 	if (sdram_capabilities_dual_channel()) {
-		sysinfo->dual_channel = 1;
+		sysinfo->dual_channel = true;
 		printk(BIOS_DEBUG, "Dual Channel Operation.\n");
 	} else {
-		sysinfo->dual_channel = 0;
+		sysinfo->dual_channel = false;
 		printk(BIOS_DEBUG, "only Single Channel Operation.\n");
 	}
 
@@ -765,7 +765,7 @@ static const u8 single_channel_slew_group_lookup[] = {
 	DQ2330, NC,      CTL3215, NC,      CLK2030, CLK2030, DQ2030, CMD3210
 };
 
-static const u32 *slew_group_lookup(int dual_channel, int index)
+static const u32 *slew_group_lookup(bool dual_channel, int index)
 {
 	const u8 *slew_group;
 	/* Dual Channel needs different tables. */
@@ -902,7 +902,8 @@ static const u8 single_channel_strength_multiplier[] = {
 static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 {
 	const u8 *strength_multiplier;
-	int idx, dual_channel;
+	int idx;
+	bool dual_channel;
 
 	/* Set Strength Multipliers */
 
@@ -910,12 +911,12 @@ static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 	if (sdram_capabilities_dual_channel()) {
 		printk(BIOS_DEBUG, "Programming Dual Channel RCOMP\n");
 		strength_multiplier = dual_channel_strength_multiplier;
-		dual_channel = 1;
+		dual_channel = true;
 		idx = 5 * sysinfo->dimm[0] + sysinfo->dimm[2];
 	} else {
 		printk(BIOS_DEBUG, "Programming Single Channel RCOMP\n");
 		strength_multiplier = single_channel_strength_multiplier;
-		dual_channel = 0;
+		dual_channel = false;
 		idx = 5 * sysinfo->dimm[0] + sysinfo->dimm[1];
 	}
 
@@ -1536,9 +1537,9 @@ static void sdram_set_channel_mode(struct sys_info *sysinfo)
 	     (sysinfo->banksize[4] + sysinfo->banksize[5] +
 	      sysinfo->banksize[6] + sysinfo->banksize[7]))) {
 		/* Both channels equipped with DIMMs of the same size */
-		sysinfo->interleaved = 1;
+		sysinfo->interleaved = true;
 	} else {
-		sysinfo->interleaved = 0;
+		sysinfo->interleaved = false;
 	}
 
 	reg32 = mchbar_read32(DCC);

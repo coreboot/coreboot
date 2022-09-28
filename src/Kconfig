@@ -114,6 +114,12 @@ config CCACHE
 
 	  For details see https://ccache.samba.org.
 
+config IWYU
+	bool "Test platform with include-what-you-use"
+	help
+	  This runs each source file through the include-what-you-use tool
+	  to check the header includes.
+
 config FMD_GENPARSER
 	bool "Generate flashmap descriptor parser using flex and bison"
 	default n

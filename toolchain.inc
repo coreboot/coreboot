@@ -32,6 +32,21 @@ HOSTCC:=CCC_CC="$(HOSTCC)" $(CC)
 HOSTCXX:=CCC_CXX="$(HOSTCXX)" $(CXX)
 endif
 
+# include-what-you-use integration
+ifeq ($(CONFIG_IWYU),y)
+
+IWYU:=$(word 1,$(wildcard $(addsuffix /iwyu,$(subst :, ,$(PATH)))))
+ifeq ($(IWYU),)
+$(error include-what-you-use selected, but not found in PATH)
+endif
+
+$(foreach arch,$(ARCH_SUPPORTED), \
+	$(eval CC_$(arch):=$(IWYU) ))
+
+CFLAGS_common := -Xiwyu --prefix_header_includes=remove  -Xiwyu --no_comments  -Xiwyu --no_fwd_decls $(CFLAGS_common)
+NOCOMPILE := 1
+endif
+
 COREBOOT_STANDARD_STAGES := decompressor bootblock verstage romstage ramstage
 MAP-decompressor := bootblock
 

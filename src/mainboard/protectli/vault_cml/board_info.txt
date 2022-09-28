@@ -1,0 +1,6 @@
+Vendor name: Protectli
+Board name: VP4630/VP4650/VP4670
+Category: sbc
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

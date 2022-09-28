@@ -1,0 +1,67 @@
+if BOARD_PROTECTLI_VP4630_VP4650 || BOARD_PROTECTLI_VP4670
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select GFX_GMA_IGNORE_PRESENCE_STRAPS
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_INTEL_PTT
+	select HAVE_OPTION_TABLE
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MEMORY_MAPPED_TPM
+	select SEABIOS_ADD_SERCON_PORT_FILE if PAYLOAD_SEABIOS
+	select SOC_INTEL_COMETLAKE_1 if BOARD_PROTECTLI_VP4670
+	select SOC_INTEL_COMETLAKE_2 if BOARD_PROTECTLI_VP4630_VP4650
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SPI_FLASH_MACRONIX
+	select SUPERIO_ITE_IT8786E
+
+config MAINBOARD_DIR
+	default "protectli/vault_cml"
+
+config MAINBOARD_PART_NUMBER
+	default "VP4630/VP4650" if BOARD_PROTECTLI_VP4630_VP4650
+	default "VP4670" if BOARD_PROTECTLI_VP4670
+
+config MAINBOARD_FAMILY
+	default "Vault Pro"
+
+config DIMM_MAX
+	default 2
+
+config DIMM_SPD_SIZE
+	default 512
+
+config CBFS_SIZE
+	default 0xa00000
+
+config GFX_GMA_PANEL_1_ON_EDP
+	default n
+
+config VBOOT
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_FWMP
+	select GBB_FLAG_DISABLE_LID_SHUTDOWN
+	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
+	select VBOOT_ALWAYS_ENABLE_DISPLAY
+	select VBOOT_NO_BOARD_SUPPORT
+
+config VBOOT_SLOTS_RW_A
+	default y if VBOOT
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT && VBOOT_SLOTS_RW_A
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+config BEEP_ON_BOOT
+	bool "Beep on successful boot"
+	default y
+	help
+	  Make the platform beep using the PC speaker in final coreboot phase.
+	  May serve as a useful indicator in headless mode that platform is
+	  properly booting.
+
+endif

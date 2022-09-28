@@ -168,6 +168,7 @@ The boards in this section are not real mainboards, but emulators.
 
 - [FW2B / FW4B](protectli/fw2b_fw4b.md)
 - [FW6A / FW6B / FW6C](protectli/fw6.md)
+- [VP4630 / VP4650 / VP4670](protectli/vp46xx.md)
 
 ## Roda
 

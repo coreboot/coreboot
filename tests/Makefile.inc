@@ -10,7 +10,13 @@ endif
 
 include $(top)/tests/Makefile.common
 
-# Enable code coverage if COV=1
+# Enable GDB debug build if requested
+GDB_DEBUG ?= 0
+ifneq ($(GDB_DEBUG),0)
+TEST_CFLAGS += -g -Og
+endif
+
+# Enable code coverage if requested
 ifeq ($(COV),1)
 TEST_CFLAGS += --coverage
 TEST_LDFLAGS += --coverage
@@ -175,6 +181,7 @@ list-unit-tests:
 help-unit-tests help::
 	@echo  '*** coreboot unit-tests targets ***'
 	@echo  '  Use "COV=1 make [target]" to enable code coverage for unit tests'
+	@echo  '  Use "GDB_DEBUG=1 make [target]" to build with debug symbols'
 	@echo  '  unit-tests            - Run all unit-tests from tests/'
 	@echo  '  clean-unit-tests      - Remove unit-tests build artifacts'
 	@echo  '  list-unit-tests       - List all unit-tests'

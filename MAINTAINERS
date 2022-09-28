@@ -271,12 +271,10 @@ S:	Maintained
 F:	src/mainboard/google/rex/
 
 GOOGLE BRYA MAINBOARDS
-M:	Tim Wawrzynczak <twawrzynczak@chromium.org>
 S:	Maintained
 F:	src/mainboard/google/brya/
 
 GOOGLE HATCH MAINBOARDS
-M:	Tim Wawrzynczak <twawrzynczak@chromium.org>
 S:	Maintained
 F:	src/mainboard/google/hatch/
 
@@ -286,7 +284,6 @@ S:	Supported
 F:	src/mainboard/google/panther/
 
 GOOGLE VOLTEER MAINBOARDS
-M:	Tim Wawrzynczak <twawrzynczak@chromium.org>
 M:	Nick Vaccaro <nvaccaro@chromium.org>
 S:	Maintained
 F:	src/mainboard/google/volteer/
@@ -565,7 +562,6 @@ F:	src/include/cpu/x86/
 ################################################################################
 
 CHROME EC
-M:	Tim Wawrzynczak <twawrzynczak@chromium.org>
 S:	Maintained
 F:	src/ec/google/chromeec/
 
@@ -706,7 +702,6 @@ S:	Maintained
 F:	src/soc/intel/meteorlake/
 
 INTEL ALDERLAKE SOC
-M:	Tim Wawrzynczak <twawrzynczak@chromium.org>
 S:	Maintained
 F:	src/soc/intel/alderlake/
 
@@ -738,7 +733,6 @@ S:	Maintained
 F:	src/soc/intel/elkhartlake/
 
 INTEL TIGERLAKE SOC
-M:	Tim Wawrzynczak <twawrzynczak@chromium.org>
 S:	Maintained
 F:	src/soc/intel/tigerlake/
 
@@ -879,7 +873,7 @@ F:	src/drivers/aspeed/ast2050/
 
 ACPI
 M:	Lance Zhao <lance.zhao@gmail.com>
-M:	Tim Wawrzynczak <twawrzynczak@chromium.org>
+M:	Tim Wawrzynczak <inforichland@gmail.com>
 S:	Supported
 F:	src/acpi/
 F:	src/arch/x86/acpi/

@@ -17,6 +17,12 @@ chip soc/intel/tigerlake
 				device generic 0 on end
 			end
 		end
+		device ref igpu on
+			# DDIB is HDMI
+			register "DdiPortBConfig" = "DDI_PORT_CFG_NO_LFP"
+			register "DdiPortBHpd" = "1"
+			register "DdiPortBDdc" = "1"
+		end
 		device ref peg0 on
 			# PCIe PEG0 x4, Clock 4 (SSD2)
 			register "PcieClkSrcUsage[4]" = "0x40"

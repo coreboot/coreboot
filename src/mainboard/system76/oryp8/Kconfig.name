@@ -1,2 +1,0 @@
-config BOARD_SYSTEM76_ORYP8
-	bool "oryp8"

@@ -91,11 +91,6 @@ chip soc/intel/tigerlake
 			register "DdiPortAHpd" = "1"
 			register "DdiPortADdc" = "0"
 
-			# DDIB is HDMI
-			register "DdiPortBConfig" = "DDI_PORT_CFG_NO_LFP"
-			register "DdiPortBHpd" = "1"
-			register "DdiPortBDdc" = "1"
-
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 		end
 		device ref dptf on end
@@ -123,6 +118,14 @@ chip soc/intel/tigerlake
 				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""SYNA1202""
+				register "generic.desc" = ""Synaptics Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_R12)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2c on end
 			end
 		end
 		device ref heci1 on end

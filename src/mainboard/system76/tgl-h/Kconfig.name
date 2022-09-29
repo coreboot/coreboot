@@ -6,3 +6,6 @@ config BOARD_SYSTEM76_GAZE16_3060
 
 config BOARD_SYSTEM76_GAZE16_3060_B
 	bool "gaze16 3060-b"
+
+config BOARD_SYSTEM76_ORYP8
+	bool "oryp8"

@@ -12,6 +12,7 @@
 #include <bl_uapp/bl_errorcodes_public.h>
 #include <bl_uapp/bl_syscall_public.h>
 #include <console/console.h>
+#include <device/mmio.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
 #include <stdint.h>
@@ -55,12 +56,12 @@ static void io_set_bar(void *bar)
 
 u8 io_read8(u16 reg)
 {
-	return read8((void *)(io_bar + reg));
+	return read8p(io_bar + reg);
 }
 
 void io_write8(u16 reg, u8 value)
 {
-	write8((void *)(io_bar + reg), value);
+	write8p(io_bar + reg, value);
 }
 
 static void aoac_set_bar(void *bar)

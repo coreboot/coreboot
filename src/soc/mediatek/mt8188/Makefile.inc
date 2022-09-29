@@ -33,6 +33,7 @@ ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += ../common/devapc.c devapc.c
 ramstage-y += ../common/dfd.c
+ramstage-y += ../common/dp/dp_intf.c ../common/dp/dptx.c ../common/dp/dptx_hal.c dp_intf.c
 ramstage-y += ../common/dpm.c
 ramstage-$(CONFIG_DPM_FOUR_CHANNEL) += ../common/dpm_4ch.c
 ramstage-y += ../common/emi.c
@@ -51,6 +52,7 @@ ramstage-y += ../common/usb.c usb.c
 BL31_MAKEARGS += PLAT=mt8188
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8188/include
+CPPFLAGS_common += -Isrc/soc/mediatek/common/dp/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 
 MT8188_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8188

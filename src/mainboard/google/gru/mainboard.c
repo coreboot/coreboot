@@ -121,7 +121,7 @@ static void register_reset_to_bl31(void)
 	};
 
 	/* gru/kevin reset pin: gpio0b3 */
-	param_reset.gpio.index = GPIO_RESET.raw,
+	param_reset.gpio.index = GPIO_RESET.raw;
 
 	register_bl31_aux_param(&param_reset.h);
 }
@@ -142,7 +142,7 @@ static void register_poweroff_to_bl31(void)
 	 * reuse with tsadc int pin, so iomux need set back to
 	 * gpio in BL31 and depthcharge before you setting this gpio
 	 */
-	param_poweroff.gpio.index = GPIO_POWEROFF.raw,
+	param_poweroff.gpio.index = GPIO_POWEROFF.raw;
 
 	register_bl31_aux_param(&param_poweroff.h);
 }

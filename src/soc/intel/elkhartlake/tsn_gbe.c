@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/lpss.h>
 #include <soc/soc_chip.h>
 #include <soc/tsn_gbe.h>
 #include <timer.h>
@@ -99,6 +100,13 @@ static void tsn_set_phy2mac_irq_polarity(void *base, enum tsn_phy_irq_polarity p
 	}
 }
 
+static void gbe_tsn_enable(struct device *dev)
+{
+	/* Ensure controller is in D0 state. */
+	lpss_set_power_state(PCI_DEV(0, PCI_SLOT(dev->path.pci.devfn),
+			PCI_FUNC(dev->path.pci.devfn)), STATE_D0);
+}
+
 static void gbe_tsn_init(struct device *dev)
 {
 	/* Get the base address of the I/O registers in memory space */
@@ -127,6 +135,7 @@ static struct device_operations gbe_tsn_ops  = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
+	.enable           = gbe_tsn_enable,
 	.init             = gbe_tsn_init,
 };
 

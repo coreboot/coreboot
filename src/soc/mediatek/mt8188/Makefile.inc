@@ -42,6 +42,7 @@ ramstage-y += ../common/mcupm.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-$(CONFIG_COMMONLIB_STORAGE_MMC) += ../common/msdc.c msdc.c
 ramstage-y += ../common/mt6359p.c mt6359p.c
+ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += ../common/pmif.c ../common/pmif_clk.c pmif_clk.c
 ramstage-y += ../common/pmif_spi.c pmif_spi.c
 ramstage-y += soc.c

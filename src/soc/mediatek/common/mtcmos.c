@@ -14,10 +14,18 @@ enum {
 	PWR_RST_B	= 1U << 0
 };
 
+__weak void mtcmos_set_scpd_ext_buck_iso(const struct power_domain_data *pd)
+{
+	/* do nothing */
+}
+
 void mtcmos_power_on(const struct power_domain_data *pd)
 {
 	write32(&mtk_spm->poweron_config_set,
 		(SPM_PROJECT_CODE << 16) | (1U << 0));
+
+	if (pd->caps & SCPD_EXT_BUCK_ISO)
+		mtcmos_set_scpd_ext_buck_iso(pd);
 
 	setbits32(pd->pwr_con, PWR_ON);
 	setbits32(pd->pwr_con, PWR_ON_2ND);

@@ -986,26 +986,8 @@ static struct mtk_spm_regs *const mtk_spm = (void *)SPM_BASE;
 
 static const struct power_domain_data disp[] = {
 	{
-		.pwr_con = &mtk_spm->vppsys0_pwr_con,
-		.pwr_sta_mask = BIT(11),
-		.sram_pdn_mask = BIT(8),
-		.sram_ack_mask = BIT(12),
-	},
-	{
 		.pwr_con = &mtk_spm->vdosys0_pwr_con,
 		.pwr_sta_mask = BIT(13),
-		.sram_pdn_mask = BIT(8),
-		.sram_ack_mask = BIT(12),
-	},
-	{
-		.pwr_con = &mtk_spm->vppsys1_pwr_con,
-		.pwr_sta_mask = BIT(12),
-		.sram_pdn_mask = BIT(8),
-		.sram_ack_mask = BIT(12),
-	},
-	{
-		.pwr_con = &mtk_spm->vdosys1_pwr_con,
-		.pwr_sta_mask = BIT(14),
 		.sram_pdn_mask = BIT(8),
 		.sram_ack_mask = BIT(12),
 	},
@@ -1019,14 +1001,21 @@ static const struct power_domain_data disp[] = {
 
 static const struct power_domain_data audio[] = {
 	{
-		.pwr_con = &mtk_spm->adsp_pwr_con,
+		.pwr_con = &mtk_spm->adsp_ao_pwr_con,
+		.pwr_sta_mask = BIT(10),
+		.ext_buck_iso_bits = BIT(10),
+		.caps = SCPD_EXT_BUCK_ISO,
+	},
+	{
+		.pwr_con = &mtk_spm->adsp_infra_pwr_con,
 		.pwr_sta_mask = BIT(10),
 		.sram_pdn_mask = BIT(8),
 		.sram_ack_mask = BIT(12),
+		.caps = SCPD_SRAM_ISO,
 	},
 	{
 		.pwr_con = &mtk_spm->audio_pwr_con,
-		.pwr_sta_mask = BIT(8),
+		.pwr_sta_mask = BIT(6),
 		.sram_pdn_mask = BIT(8),
 		.sram_ack_mask = BIT(12),
 	},

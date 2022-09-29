@@ -2,7 +2,7 @@
 
 #include <amdblocks/lpc.h>
 #include <amdblocks/spi.h>
-#include <arch/mmio.h>
+#include <device/mmio.h>
 #include <assert.h>
 #include <stdint.h>
 
@@ -27,30 +27,30 @@ uintptr_t spi_get_bar(void)
 
 uint8_t spi_read8(uint8_t reg)
 {
-	return read8((void *)(spi_get_bar() + reg));
+	return read8p(spi_get_bar() + reg);
 }
 
 uint16_t spi_read16(uint8_t reg)
 {
-	return read16((void *)(spi_get_bar() + reg));
+	return read16p(spi_get_bar() + reg);
 }
 
 uint32_t spi_read32(uint8_t reg)
 {
-	return read32((void *)(spi_get_bar() + reg));
+	return read32p(spi_get_bar() + reg);
 }
 
 void spi_write8(uint8_t reg, uint8_t val)
 {
-	write8((void *)(spi_get_bar() + reg), val);
+	write8p(spi_get_bar() + reg, val);
 }
 
 void spi_write16(uint8_t reg, uint16_t val)
 {
-	write16((void *)(spi_get_bar() + reg), val);
+	write16p(spi_get_bar() + reg, val);
 }
 
 void spi_write32(uint8_t reg, uint32_t val)
 {
-	write32((void *)(spi_get_bar() + reg), val);
+	write32p(spi_get_bar() + reg, val);
 }

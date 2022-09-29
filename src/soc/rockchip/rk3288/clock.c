@@ -53,7 +53,7 @@ static struct rk3288_cru_reg * const cru_ptr = (void *)CRU_BASE;
 	.nr = _nr, .nf = (u32)((u64)hz * _nr * _no / OSC_HZ), .no = _no};\
 	_Static_assert(((u64)hz * _nr * _no / OSC_HZ) * OSC_HZ /\
 		       (_nr * _no) == hz, #hz "Hz cannot be hit with PLL "\
-		       "divisors on line " STRINGIFY(__LINE__));
+		       "divisors on line " STRINGIFY(__LINE__))
 
 /* Keep divisors as low as possible to reduce jitter and power usage. */
 static const struct pll_div gpll_init_cfg = PLL_DIVISORS(GPLL_HZ, 2, 2);

@@ -440,7 +440,7 @@ void spm_register_init(void)
 	/* set clock path for SPM */
 	setbits32(&mtk_topckgen->clk_scp_cfg_0, 0x7ff);
 	/* enable register control */
-	write32(&mtk_spm->poweron_config_en, SPM_REGWR_CFG_KEY | BCLK_CG_EN_LSB);
+	write32(&mtk_spm->poweron_config_set, SPM_REGWR_CFG_KEY | BCLK_CG_EN_LSB);
 	/* init power control register, dram will set this register */
 	write32(&mtk_spm->spm_power_on_val1, POWER_ON_VAL1_DEF);
 	write32(&mtk_spm->pcm_pwr_io_en, 0);

@@ -437,7 +437,7 @@ enum {
 };
 
 struct mtk_spm_regs {
-	u32 poweron_config_en;
+	u32 poweron_config_set;
 	u32 spm_power_on_val0;
 	u32 spm_power_on_val1;
 	u32 spm_clk_con;

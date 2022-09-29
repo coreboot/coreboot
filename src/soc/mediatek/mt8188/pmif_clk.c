@@ -106,8 +106,8 @@ static int pmif_init_ulposc(void)
 	pmif_ulposc_config();
 
 	/* enable APB clock swinf */
-	if (!READ32_BITFIELD(&mtk_spm->poweron_config_en, BCLK_CG_EN))
-		SET32_BITFIELDS(&mtk_spm->poweron_config_en, BCLK_CG_EN, 1,
+	if (!READ32_BITFIELD(&mtk_spm->poweron_config_set, BCLK_CG_EN))
+		SET32_BITFIELDS(&mtk_spm->poweron_config_set, BCLK_CG_EN, 1,
 				PROJECT_CODE, 0xb16);
 
 	/* turn on ulposc */

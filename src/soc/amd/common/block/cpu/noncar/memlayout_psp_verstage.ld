@@ -17,8 +17,14 @@ SECTIONS
 		.text : { *(.text*) }
 		.rodata : { *(.rodata*) }
 
-		.data : { *(.data*) }
-		.data : { *(PSP_FOOTER_DATA) }
+		.data : {
+			*(.data*);
+			*(PSP_FOOTER_DATA);
+#if CONFIG(CBFS_VERIFICATION)
+			*(.metadata_hash_anchor);
+			. = ALIGN(64);
+#endif
+		}
 
 		_bss_start = .;
 		.bss : { *(.bss*) }

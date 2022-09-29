@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef SOC_MEDIATEK_MT8195_DPTX_H
-#define SOC_MEDIATEK_MT8195_DPTX_H
+#ifndef SOC_MEDIATEK_COMMON_DP_DPTX_H
+#define SOC_MEDIATEK_COMMON_DP_DPTX_H
 
 #define DPTX_TBC_BUF_READSTARTADRTHRD	0x08
 #define ENABLE_DPTX_EF_MODE		0x1
@@ -74,4 +74,4 @@ struct mtk_dp {
 
 int mtk_edp_init(struct edid *edid);
 
-#endif /* SOC_MEDIATEK_MT8195_DPTX_H */
+#endif /* SOC_MEDIATEK_COMMON_DP_DPTX_H */

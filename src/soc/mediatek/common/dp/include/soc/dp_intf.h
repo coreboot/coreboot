@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef SOC_MEDIATEK_MT8195_DP_INTF_H
-#define SOC_MEDIATEK_MT8195_DP_INTF_H
+#ifndef SOC_MEDIATEK_COMMON_DP_DP_INTF_H
+#define SOC_MEDIATEK_COMMON_DP_DP_INTF_H
 
 #include <edid.h>
 
@@ -255,4 +255,4 @@ struct mtk_dpintf_yc_limit {
 
 void dp_intf_config(const struct edid *edid);
 
-#endif /* SOC_MEDIATEK_MT8195_DP_INTF_H */
+#endif /* SOC_MEDIATEK_COMMON_DP_DP_INTF_H */

@@ -46,7 +46,7 @@ ramstage-y += ../common/devapc.c devapc.c
 ramstage-y += ../common/dfd.c
 ramstage-y += ../common/dpm.c
 ramstage-$(CONFIG_DPM_FOUR_CHANNEL) += ../common/dpm_4ch.c
-ramstage-y += dp_intf.c dptx.c dptx_hal.c
+ramstage-y += ../common/dp/dp_intf.c ../common/dp/dptx.c ../common/dp/dptx_hal.c
 ramstage-y += emi.c
 ramstage-y += hdmi.c
 ramstage-y += ../common/mcu.c
@@ -66,6 +66,7 @@ ramstage-y += ../common/ufs.c
 ramstage-y += ../common/usb.c usb.c
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8195/include
+CPPFLAGS_common += -Isrc/soc/mediatek/common/dp/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 CPPFLAGS_common += -Isrc/vendorcode/mediatek/mt8195/include
 

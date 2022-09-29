@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef SOC_MEDIATEK_MT8195_DPTX_HAL_H
-#define SOC_MEDIATEK_MT8195_DPTX_HAL_H
+#ifndef SOC_MEDIATEK_COMMON_DP_DPTX_HAL_H
+#define SOC_MEDIATEK_COMMON_DP_DPTX_HAL_H
 
 #define AUX_CMD_I2C_R_MOT0	0x1
 #define AUX_CMD_I2C_R		0x5
@@ -100,4 +100,4 @@ void dptx_hal_set_color_format(struct mtk_dp *mtk_dp, u8 color_format);
 void dptx_hal_set_txrate(struct mtk_dp *mtk_dp, int value);
 void dptx_hal_analog_power_en(struct mtk_dp *mtk_dp, bool enable);
 
-#endif /* SOC_MEDIATEK_MT8195_DPTX_HAL_H */
+#endif /* SOC_MEDIATEK_COMMON_DP_DPTX_HAL_H */

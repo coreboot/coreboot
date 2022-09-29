@@ -155,7 +155,7 @@ void variant_init(void)
 		gpu_off_seq[3].pwr_en_gpio = GPP_E10;
 	} else {
 		const struct pad_config board_rev_3_gpios[] = {
-			PAD_CFG_GPO(GPP_E3, 0, PLTRST),
+			PAD_CFG_GPI(GPP_E3, NONE, PLTRST),
 			PAD_NC(GPP_E10, NONE),
 			PAD_NC(GPP_E16, NONE),
 			PAD_CFG_GPO(GPP_F12, 0, PLTRST),

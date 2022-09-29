@@ -51,7 +51,7 @@ static void mainboard_smbios_strings(
 
 static void mainboard_enable(struct device *dev)
 {
-	dev->ops->get_smbios_strings = mainboard_smbios_strings,
+	dev->ops->get_smbios_strings = mainboard_smbios_strings;
 
 	install_intel_vga_int15_handler(
 		GMA_INT15_ACTIVE_LFP_INT_LVDS,

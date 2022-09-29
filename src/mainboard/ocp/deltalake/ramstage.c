@@ -336,7 +336,7 @@ unsigned int smbios_processor_characteristics(void)
 
 static void mainboard_enable(struct device *dev)
 {
-	dev->ops->get_smbios_strings = dl_oem_smbios_strings,
+	dev->ops->get_smbios_strings = dl_oem_smbios_strings;
 	read_fru_areas(CONFIG_BMC_KCS_BASE, CONFIG_FRU_DEVICE_ID, 0, &fru_strings);
 	dev->ops->get_smbios_data = mainboard_smbios_data;
 }

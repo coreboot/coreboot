@@ -165,7 +165,7 @@ static void tp_oem_smbios_strings(struct device *dev, struct smbios_type11 *t)
 
 static void mainboard_enable(struct device *dev)
 {
-	dev->ops->get_smbios_strings = tp_oem_smbios_strings,
+	dev->ops->get_smbios_strings = tp_oem_smbios_strings;
 	read_fru_areas(CONFIG_BMC_KCS_BASE, CONFIG_FRU_DEVICE_ID, 0, &fru_strings);
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 	dev->ops->get_smbios_data = mainboard_smbios_data;

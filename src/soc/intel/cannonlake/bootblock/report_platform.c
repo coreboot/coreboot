@@ -140,6 +140,8 @@ static struct {
 	{ PCI_DID_INTEL_CML_GT2_ULT_4, "CometLake ULT GT2" },
 	{ PCI_DID_INTEL_CML_GT2_ULT_5, "CometLake ULT GT2" },
 	{ PCI_DID_INTEL_CML_GT2_ULT_6, "CometLake ULT GT2" },
+	{ PCI_DID_INTEL_CML_GT2_ULT_7, "CometLake ULT GT2" },
+	{ PCI_DID_INTEL_CML_GT2_ULT_8, "CometLake ULT GT2" },
 	{ PCI_DID_INTEL_CML_GT1_ULX_1, "CometLake ULX GT1" },
 	{ PCI_DID_INTEL_CML_GT2_ULX_1, "CometLake ULX GT2" },
 	{ PCI_DID_INTEL_CML_GT1_S_1, "CometLake S GT1" },

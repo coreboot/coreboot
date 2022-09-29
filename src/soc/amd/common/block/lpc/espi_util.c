@@ -3,7 +3,7 @@
 #include <amdblocks/chip.h>
 #include <amdblocks/espi.h>
 #include <amdblocks/lpc.h>
-#include <arch/mmio.h>
+#include <device/mmio.h>
 #include <console/console.h>
 #include <espi.h>
 #include <soc/pci_devs.h>
@@ -32,32 +32,32 @@ static uintptr_t espi_get_bar(void)
 
 static uint32_t espi_read32(unsigned int reg)
 {
-	return read32((void *)(espi_get_bar() + reg));
+	return read32p(espi_get_bar() + reg);
 }
 
 static void espi_write32(unsigned int reg, uint32_t val)
 {
-	write32((void *)(espi_get_bar() + reg), val);
+	write32p(espi_get_bar() + reg, val);
 }
 
 static uint16_t espi_read16(unsigned int reg)
 {
-	return read16((void *)(espi_get_bar() + reg));
+	return read16p(espi_get_bar() + reg);
 }
 
 static void espi_write16(unsigned int reg, uint16_t val)
 {
-	write16((void *)(espi_get_bar() + reg), val);
+	write16p(espi_get_bar() + reg, val);
 }
 
 static uint8_t espi_read8(unsigned int reg)
 {
-	return read8((void *)(espi_get_bar() + reg));
+	return read8p(espi_get_bar() + reg);
 }
 
 static void espi_write8(unsigned int reg, uint8_t val)
 {
-	write8((void *)(espi_get_bar() + reg), val);
+	write8p(espi_get_bar() + reg, val);
 }
 
 static inline uint32_t espi_decode_io_range_en_bit(unsigned int idx)

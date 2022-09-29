@@ -26,7 +26,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select TPM_RDRESP_NEED_DELAY
 
 config MAINBOARD_DIR
-	default "system76/gaze16"
+	default "system76/tgl-h"
 
 config MAINBOARD_PART_NUMBER
 	default "gaze16-3050" if BOARD_SYSTEM76_GAZE16_3050

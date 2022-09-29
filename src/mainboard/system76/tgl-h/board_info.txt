@@ -1,7 +1,5 @@
 Vendor name: System76
-Board name: gaze16
 Category: laptop
-Release year: 2021
 ROM package: SOIC-8
 ROM protocol: SPI
 ROM socketed: n

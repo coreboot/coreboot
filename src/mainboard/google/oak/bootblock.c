@@ -31,7 +31,7 @@ static void nor_set_gpio_pinmux(void)
 	/* EINT4: 0x10005B20[14:13] */
 	clrsetbits16(&mtk_gpio->drv_mode[2].val, 0xf << 12, 2 << 13);
 	/* EINT5~EINT9: 0x10005B30[2:1] */
-	clrsetbits16(&mtk_gpio->drv_mode[3].val, 0xf << 0, 2 << 1),
+	clrsetbits16(&mtk_gpio->drv_mode[3].val, 0xf << 0, 2 << 1);
 
 	gpio_set_pull(GPIO(EINT4), GPIO_PULL_ENABLE, GPIO_PULL_UP);
 	gpio_set_pull(GPIO(EINT5), GPIO_PULL_ENABLE, GPIO_PULL_UP);

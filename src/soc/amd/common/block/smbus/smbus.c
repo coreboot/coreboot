@@ -2,6 +2,7 @@
 
 #include <inttypes.h>
 #include <console/console.h>
+#include <device/mmio.h>
 #include <device/smbus_host.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/smbus.h>
@@ -18,12 +19,12 @@
 
 static u8 controller_read8(const uintptr_t base, const u8 reg)
 {
-	return read8((void *)(base + reg));
+	return read8p(base + reg);
 }
 
 static void controller_write8(const uintptr_t base, const u8 reg, const u8 val)
 {
-	write8((void *)(base + reg), val);
+	write8p(base + reg, val);
 }
 
 static int smbus_wait_until_ready(uintptr_t mmio)

@@ -45,7 +45,7 @@ uintptr_t get_uart_base(unsigned int idx)
 
 void clear_uart_legacy_config(void)
 {
-	write16((void *)FCH_LEGACY_UART_DECODE, 0);
+	write16p(FCH_LEGACY_UART_DECODE, 0);
 }
 
 void set_uart_config(unsigned int idx)

@@ -13,6 +13,11 @@
 #define GPIO_GSC_AP_INT_ODL	GPIO(GPIO00)
 #define GPIO_XHCI_INIT_DONE	GPIO(DPI_CK)
 
+#define GPIO_AP_EDP_BKLTEN		GPIO(GPIO01)
+#define GPIO_EDP_BL_PWM_1V8		GPIO(DISP_PWM1)
+#define GPIO_EDP_HPD_1V8		GPIO(GPIO17)
+#define GPIO_EN_PP3300_EDP_DISP_X	GPIO(DSI1_LCM_RST)
+
 void setup_chromeos_gpios(void);
 
 #endif

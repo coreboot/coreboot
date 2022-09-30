@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef THINKPAD_X60_DOCK_H
-#define THINKPAD_X60_DOCK_H
+#ifndef THINKPAD_T60_DOCK_H
+#define THINKPAD_T60_DOCK_H
 
 int dock_connect(void);
 void dock_disconnect(void);

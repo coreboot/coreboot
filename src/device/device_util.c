@@ -965,3 +965,18 @@ bool is_enabled_cpu(const struct device *cpu)
 {
 	return is_cpu(cpu) && cpu->enabled;
 }
+
+bool is_pci(const struct device *pci)
+{
+	return pci->path.type == DEVICE_PATH_PCI;
+}
+
+bool is_enabled_pci(const struct device *pci)
+{
+	return is_pci(pci) && pci->enabled;
+}
+
+bool is_pci_dev_on_bus(const struct device *pci, unsigned int bus)
+{
+	return is_pci(pci) && pci->bus->secondary == bus;
+}

@@ -209,6 +209,9 @@ bool is_dev_enabled(const struct device *const dev);
 bool is_devfn_enabled(unsigned int devfn);
 bool is_cpu(const struct device *cpu);
 bool is_enabled_cpu(const struct device *cpu);
+bool is_pci(const struct device *pci);
+bool is_enabled_pci(const struct device *pci);
+bool is_pci_dev_on_bus(const struct device *pci, unsigned int bus);
 
 /* Returns whether there is a hotplug port on the path to the given device. */
 extern bool dev_path_hotplug(const struct device *);

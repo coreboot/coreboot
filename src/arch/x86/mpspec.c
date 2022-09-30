@@ -575,7 +575,7 @@ unsigned long __weak write_smp_table(unsigned long addr)
 
 	for (dev = all_devices; dev; dev = dev->next) {
 
-		if (dev->path.type != DEVICE_PATH_PCI || !dev->enabled)
+		if (!is_enabled_pci(dev))
 			continue;
 
 		have_fixed_entries = 0;

@@ -254,7 +254,7 @@ static u8 dnv_get_int_line(struct device *irq_dev)
 	int8_t original_int_pin = 0, new_int_pin = 0, swiz_int_pin = 0;
 	uint8_t int_line = 0xff;
 
-	if (irq_dev->path.type != DEVICE_PATH_PCI || !irq_dev->enabled) {
+	if (!is_enabled_pci(irq_dev)) {
 		printk(BIOS_ERR, "%s for non pci device?\n", __func__);
 		goto dnv_get_int_line_done;
 	}
@@ -380,7 +380,7 @@ static void pch_pirq_init(struct device *dev)
 		int devfn = irq_dev->path.pci.devfn;
 		u8 int_pin = 0, int_line = 0;
 
-		if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
+		if (!is_enabled_pci(irq_dev))
 			continue;
 
 		int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);

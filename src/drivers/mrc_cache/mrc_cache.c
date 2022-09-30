@@ -22,7 +22,8 @@
 #define RECOVERY_MRC_CACHE	"RECOVERY_MRC_CACHE"
 #define UNIFIED_MRC_CACHE	"UNIFIED_MRC_CACHE"
 
-#define MRC_DATA_SIGNATURE       (('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
+/* Signature "MRCD" was used for older header format before CB:67670. */
+#define MRC_DATA_SIGNATURE       (('M'<<0)|('R'<<8)|('C'<<16)|('d'<<24))
 
 struct mrc_metadata {
 	uint32_t signature;

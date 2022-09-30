@@ -30,8 +30,8 @@ fw_config
 	end
 	field WFC 15 16
 		option WFC_ABSENT		0
-		option WFC_MIPI_OVTI5675	1
-		option WFC_MIPI_OVTI8856	2
+		option WFC_MIPI_OVTI8856	1
+		option WFC_MIPI_KBAE350		2
 	end
 	field HPS 17 17
 		option HPS_ABSENT               0
@@ -379,7 +379,9 @@ chip soc/intel/alderlake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 10 on end
+				device i2c 10 on
+					probe WFC WFC_MIPI_OVTI8856
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "2"
@@ -390,7 +392,9 @@ chip soc/intel/alderlake
 				register "pr0" = ""\\_SB.PCI0.I2C0.CAM0.PRIC""
 				register "vcm_compat" = ""dongwoon,dw9768""
 
-				device i2c 0C on end
+				device i2c 0C on
+					probe WFC WFC_MIPI_OVTI8856
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "1"
@@ -406,7 +410,84 @@ chip soc/intel/alderlake
 				register "nvm_readonly" = "0x01"
 				register "nvm_width" = "0x10"
 
-				device i2c 58 on end
+				device i2c 58 on
+					probe WFC WFC_MIPI_OVTI8856
+				end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""OVTI8856""
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CAM0""
+				register "chip_name" = ""Ov 8856 Camera""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+
+				register "ssdb.lanes_used" = "4"
+				register "ssdb.link_used" = "0"
+				register "ssdb.vcm_type" = "0x0C"
+				register "vcm_name" = ""VCM0""
+				register "num_freq_entries" = "2"
+				register "link_freq[0]" = "360 * MHz" # 360 MHz
+				register "link_freq[1]" = "180 * MHz" # 180 MHz
+				register "remote_name" = ""IPU0""
+
+				register "has_power_resource" = "1"
+				#Controls
+				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_3"
+				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
+
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_D15" #power_enable_2p8
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_D16" #power_enable_1p2
+				register "gpio_panel.gpio[2].gpio_num" = "GPP_D3" #reset
+
+				#_ON
+				register "on_seq.ops_cnt" = "5"
+				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 5)"
+				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(2, 5)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "4"
+				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+
+				device i2c 36 on
+					probe WFC WFC_MIPI_KBAE350
+				end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "2"
+				register "acpi_name" = ""VCM0""
+				register "chip_name" = ""DW AF DAC""
+				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
+
+				register "pr0" = ""\\_SB.PCI0.I2C0.CAM0.PRIC""
+				register "vcm_compat" = ""dongwoon,dw9714""
+
+				device i2c 0C on
+					probe WFC WFC_MIPI_KBAE350
+				end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "1"
+				register "acpi_name" = ""NVM0""
+				register "chip_name" = ""GT24C08""
+				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
+
+				register "pr0" = ""\\_SB.PCI0.I2C0.CAM0.PRIC""
+				register "nvm_compat" = ""atmel,24c08""
+
+				register "nvm_size" = "0x2000"
+				register "nvm_pagesize" = "0x01"
+				register "nvm_readonly" = "0x01"
+				register "nvm_width" = "0x10"
+
+				device i2c 50 on
+					probe WFC WFC_MIPI_KBAE350
+				end
 			end
 		end #I2C0
 		device ref i2c1 on

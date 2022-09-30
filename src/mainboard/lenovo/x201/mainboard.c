@@ -1,10 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <device/device.h>
 #include <ec/acpi/ec.h>
-#include <northbridge/intel/ironlake/ironlake.h>
-#include <southbridge/intel/bd82x6x/pch.h>
-#include "dock.h"
 #include <drivers/intel/gma/int15.h>
 #include <drivers/lenovo/lenovo.h>
 

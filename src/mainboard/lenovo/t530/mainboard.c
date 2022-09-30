@@ -2,7 +2,6 @@
 
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
-#include <ec/lenovo/h8/h8.h>
 
 // mainboard_enable is executed as first thing after
 // enumerate_buses().

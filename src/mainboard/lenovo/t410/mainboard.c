@@ -2,7 +2,6 @@
 
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
-#include "dock.h"
 
 static void mainboard_enable(struct device *dev)
 {

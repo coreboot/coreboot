@@ -2,7 +2,6 @@
 
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
-#include <ec/lenovo/h8/h8.h>
 
 static void mainboard_enable(struct device *dev)
 {

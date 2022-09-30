@@ -388,6 +388,8 @@ static int get_socket_type(void)
 		return 0x15;
 	if (CONFIG(XEON_SP_COMMON_BASE))
 		return 0x36;
+	if (CONFIG(SOC_INTEL_ALDERLAKE))
+		return 0x40;
 
 	return 0x02; /* Unknown */
 }

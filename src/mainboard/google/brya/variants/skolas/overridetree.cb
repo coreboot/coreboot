@@ -37,6 +37,10 @@ fw_config
 		option HPS_ABSENT               0
 		option HPS_PRESENT              1
 	end
+	field THERMAL 18 18
+		option THERMAL_28W		0
+		option THERMAL_15W		1
+	end
 end
 
 chip soc/intel/alderlake

@@ -184,7 +184,8 @@ detect_special_flags() {
 		CFLAGS_GCC="$CFLAGS_GCC -fno-stack-protector"
 	testcc "$GCC"      "$CFLAGS_GCC -Wl,--build-id=none" &&
 		CFLAGS_GCC="$CFLAGS_GCC -Wl,--build-id=none"
-
+	testcc "$GCC"      "$CFLAGS_GCC --param=min-pagesize=1024 $FLAGS_GCC" &&
+		CFLAGS_GCC="$CFLAGS_GCC --param=min-pagesize=1024"
 	case "$architecture" in
 	x86)
 		;;

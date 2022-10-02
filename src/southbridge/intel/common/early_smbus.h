@@ -4,6 +4,7 @@
 #define SOUTHBRIDGE_INTEL_COMMON_EARLY_SMBUS_H
 
 #include <device/pci_def.h>
+#include <device/pci_type.h>
 
 #define PCI_DEV_SMBUS		PCI_DEV(0, 0x1f, 3)
 

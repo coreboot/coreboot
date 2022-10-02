@@ -8,21 +8,21 @@
  * Programming
  */
 
-#include <stddef.h>
-#include <stdint.h>
-#include <string.h>
+#include <assert.h>
 #include <bootstate.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
-#include <device/device.h>
-#include <device/pci_ids.h>
+#include <cpu/amd/mtrr.h>
 #include <cpu/cpu.h>
+#include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/x86/cache.h>
+#include <device/device.h>
+#include <device/pci_ids.h>
 #include <memrange.h>
-#include <cpu/amd/mtrr.h>
-#include <assert.h>
+#include <string.h>
+#include <types.h>
+
 #if CONFIG(X86_AMD_FIXED_MTRRS)
 #define MTRR_FIXED_WRBACK_BITS (MTRR_READ_MEM | MTRR_WRITE_MEM)
 #else

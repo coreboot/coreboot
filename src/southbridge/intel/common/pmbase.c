@@ -1,13 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <acpi/acpi.h>
 #include <arch/io.h>
+#include <assert.h>
 #include <bootmode.h>
 #include <device/pci_ops.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <assert.h>
+#include <device/pci_type.h>
+#include <stdint.h>
 
 #include "pmbase.h"
 #include "pmutil.h"

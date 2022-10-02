@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <program_loading.h>
+#include <types.h>
 
 /* For each segment of a program loaded this function is called*/
 void prog_segment_loaded(uintptr_t start, size_t size, int flags)

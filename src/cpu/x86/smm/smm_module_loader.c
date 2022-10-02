@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include "assert.h"
 #include <acpi/acpi_gnvs.h>
 #include <cbmem.h>
 #include <commonlib/helpers.h>
@@ -8,12 +7,9 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <rmodule.h>
-#include <security/intel/stm/SmmStm.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <types.h>
 
 #define FXSAVE_SIZE 512
 #define SMM_CODE_SEGMENT_SIZE 0x10000

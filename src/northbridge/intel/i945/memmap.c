@@ -3,16 +3,15 @@
 // Use simple device model for this file even in ramstage
 #define __SIMPLE_DEVICE__
 
-#include <device/pci_ops.h>
 #include <arch/romstage.h>
 #include <cbmem.h>
-#include "i945.h"
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
-#include <program_loading.h>
-#include <cpu/intel/smm_reloc.h>
+#include <device/pci_ops.h>
 #include <types.h>
+
+#include "i945.h"
 
 /* Decodes TSEG region size to bytes. */
 u32 decode_tseg_size(const u8 esmramc)

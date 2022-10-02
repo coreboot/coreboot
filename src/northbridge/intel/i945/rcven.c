@@ -2,8 +2,10 @@
 
 #include <console/console.h>
 #include <device/mmio.h>
-#include "raminit.h"
+#include <types.h>
+
 #include "i945.h"
+#include "raminit.h"
 
 /**
  * sample the strobes signal

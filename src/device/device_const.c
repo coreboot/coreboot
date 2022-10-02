@@ -4,10 +4,10 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
-#include <device/pci.h>
 #include <device/pci_def.h>
-#include <device/resource.h>
+#include <device/pci_type.h>
 #include <fw_config.h>
+#include <types.h>
 
 /** Linked list of ALL devices */
 DEVTREE_CONST struct device *DEVTREE_CONST all_devices = &dev_root;

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cpu/x86/tsc.h>
+#include <stdint.h>
 #include <timestamp.h>
 
 uint64_t timestamp_get(void)

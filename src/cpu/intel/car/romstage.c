@@ -1,14 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
 #include <arch/romstage.h>
-#include <console/console.h>
-#include <cpu/x86/smm.h>
 #include <arch/symbols.h>
 #include <commonlib/helpers.h>
+#include <console/console.h>
+#include <cpu/x86/smm.h>
 #include <program_loading.h>
 #include <romstage_common.h>
 #include <security/vboot/vboot_common.h>
+#include <types.h>
 
 /* If we do not have a constrained _car_stack region size, use the
    following as a guideline for acceptable stack usage. */

@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <halt.h>
+#include <stdarg.h>
 
 /*
  * The method should be overwritten in mainboard directory to signal that a

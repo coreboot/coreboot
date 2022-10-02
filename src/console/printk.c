@@ -11,6 +11,7 @@
 #include <smp/spinlock.h>
 #include <smp/node.h>
 #include <timer.h>
+#include <types.h>
 
 DECLARE_SPIN_LOCK(console_lock)
 

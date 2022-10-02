@@ -192,6 +192,8 @@ detect_special_flags() {
 
 	testcc "$GCC"      "$CFLAGS_GCC -Wno-address-of-packed-member $FLAGS_GCC" &&
 		CFLAGS_GCC="$CFLAGS_GCC -Wno-address-of-packed-member"
+	testcc "$GCC"      "$CFLAGS_GCC --param=min-pagesize=1024 $FLAGS_GCC" &&
+		CFLAGS_GCC="$CFLAGS_GCC --param=min-pagesize=1024"
 	case "$architecture" in
 	x86)
 		;;

@@ -1,16 +1,17 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/cbmem_console.h>
+#include <console/flash.h>
+#include <console/i2c_smbus.h>
 #include <console/ne2k.h>
 #include <console/qemu_debugcon.h>
+#include <console/spi.h>
 #include <console/spkmodem.h>
 #include <console/streams.h>
+#include <console/system76_ec.h>
 #include <console/uart.h>
 #include <console/usb.h>
-#include <console/spi.h>
-#include <console/flash.h>
-#include <console/system76_ec.h>
-#include <console/i2c_smbus.h>
+#include <types.h>
 
 /* Note: when adding a new console, make sure you update the definition of
    HAS_ONLY_FAST_CONSOLES in <console.h>! */

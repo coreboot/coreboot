@@ -1,22 +1,24 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <delay.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
-#include <device/smbus_host.h>
-#include <cf9_reset.h>
-#include <device/mmio.h>
 #include <device/device.h>
+#include <device/dram/ddr2.h>
+#include <device/mmio.h>
+#include <device/pci_ops.h>
+#include <device/pci_type.h>
+#include <device/smbus_host.h>
 #include <lib.h>
 #include <pc80/mc146818rtc.h>
 #include <spd.h>
 #include <string.h>
+#include <timestamp.h>
+#include <types.h>
+
 #include "raminit.h"
 #include "i945.h"
 #include "chip.h"
-#include <device/dram/ddr2.h>
-#include <timestamp.h>
 
 /* Debugging macros. */
 #if CONFIG(DEBUG_RAM_SETUP)

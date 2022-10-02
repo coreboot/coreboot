@@ -9,11 +9,10 @@
 #include <program_loading.h>
 #include <reset.h>
 #include <rmodule.h>
+#include <security/vboot/vboot_common.h>
 #include <stage_cache.h>
 #include <symbols.h>
-#include <thread.h>
 #include <timestamp.h>
-#include <security/vboot/vboot_common.h>
 
 void run_romstage(void)
 {

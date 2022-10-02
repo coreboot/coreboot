@@ -3,11 +3,12 @@
 #define __SIMPLE_DEVICE__
 
 #include <console/console.h>
-#include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <security/vboot/vbnv.h>
-#include <pc80/mc146818rtc.h>
+#include <device/pci_type.h>
 #include <elog.h>
+#include <pc80/mc146818rtc.h>
+#include <security/vboot/vbnv.h>
+
 #include "pmutil.h"
 #include "rtc.h"
 

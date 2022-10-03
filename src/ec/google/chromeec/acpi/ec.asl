@@ -56,6 +56,7 @@ Device (EC0)
 		CHGL, 8,	// Charger Current Limit
 		TBMD, 1,	// Tablet mode
 		DDPN, 3,	// Device DPTF Profile Number
+		STTB, 1,	// Switch thermal table by body detection status
 		// DFUD must be 0 for the other 31 values to be valid
 		Offset (0x0a),
 		DFUD, 1,	// Device Features Undefined

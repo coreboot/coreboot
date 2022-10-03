@@ -271,10 +271,12 @@ S:	Maintained
 F:	src/mainboard/google/rex/
 
 GOOGLE BRYA MAINBOARDS
+M:	Tarun Tuli <taruntuli@google.com>
 S:	Maintained
 F:	src/mainboard/google/brya/
 
 GOOGLE HATCH MAINBOARDS
+M:	Tarun Tuli <taruntuli@google.com>
 S:	Maintained
 F:	src/mainboard/google/hatch/
 
@@ -562,6 +564,8 @@ F:	src/include/cpu/x86/
 ################################################################################
 
 CHROME EC
+M:	Boris Mittelberg <bmbm@google.com>
+M:	Caveh Jalali <caveh@chromium.org>
 S:	Maintained
 F:	src/ec/google/chromeec/
 
@@ -702,6 +706,8 @@ S:	Maintained
 F:	src/soc/intel/meteorlake/
 
 INTEL ALDERLAKE SOC
+M:	Subrata Banik <subratabanik@google.com>
+M:	Tarun Tuli <taruntuli@google.com>
 S:	Maintained
 F:	src/soc/intel/alderlake/
 
@@ -733,6 +739,8 @@ S:	Maintained
 F:	src/soc/intel/elkhartlake/
 
 INTEL TIGERLAKE SOC
+M:	Subrata Banik <subratabanik@google.com>
+M:	Tarun Tuli <taruntuli@google.com>
 S:	Maintained
 F:	src/soc/intel/tigerlake/
 

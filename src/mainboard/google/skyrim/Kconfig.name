@@ -3,10 +3,12 @@ comment "Skyrim"
 config BOARD_GOOGLE_SKYRIM
 	bool "->  Skyrim"
 	select BOARD_GOOGLE_BASEBOARD_SKYRIM
+	select SOC_AMD_COMMON_BLOCK_ACPI_DPTC
 
 config BOARD_GOOGLE_WINTERHOLD
 	bool "->  Winterhold"
 	select BOARD_GOOGLE_BASEBOARD_SKYRIM
+	select SOC_AMD_COMMON_BLOCK_ACPI_DPTC
 
 config BOARD_GOOGLE_MORTHAL
 	bool "->  Morthal"

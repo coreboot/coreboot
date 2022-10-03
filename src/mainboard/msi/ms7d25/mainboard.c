@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <device/device.h>
+#include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <smbios.h>
 #include <string.h>
@@ -30,6 +31,19 @@ smbios_wakeup_type smbios_system_wakeup_type(void)
 const char *smbios_system_product_name(void)
 {
 	return "MS-7D25";
+}
+
+const char *smbios_mainboard_product_name(void)
+{
+	/* Currently we support DDR4 variants, but e.g. DDR5 can be added later */
+	if (CONFIG(BOARD_MSI_Z690_A_PRO_WIFI_DDR4)) {
+		if (is_devfn_enabled(PCH_DEVFN_CNVI_WIFI))
+			return "PRO Z690-A WIFI DDR4(MS-7D25)";
+		else
+			return "PRO Z690-A DDR4(MS-7D25)";
+	}
+
+	return CONFIG_MAINBOARD_PART_NUMBER;
 }
 
 /* Only baseboard serial number is populated */

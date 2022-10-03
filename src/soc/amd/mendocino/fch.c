@@ -6,6 +6,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/gpio.h>
+#include <amdblocks/pci_clk_req.h>
 #include <amdblocks/smi.h>
 #include <assert.h>
 #include <bootstate.h>
@@ -130,7 +131,7 @@ static void fch_init_acpi_ports(void)
 /* configure the general purpose PCIe clock outputs according to the devicetree settings */
 static void gpp_clk_setup(void)
 {
-	const struct soc_amd_mendocino_config *cfg = config_of_soc();
+	struct soc_amd_mendocino_config *cfg = config_of_soc();
 
 	/* look-up table to be able to iterate over the PCIe clock output settings */
 	const uint8_t gpp_clk_shift_lut[GPP_CLK_OUTPUT_COUNT] = {
@@ -145,6 +146,8 @@ static void gpp_clk_setup(void)
 
 	uint32_t gpp_clk_ctl = misc_read32(GPP_CLK_CNTRL);
 
+	pcie_gpp_dxio_update_clk_req_config(&cfg->gpp_clk_config[0],
+					    ARRAY_SIZE(cfg->gpp_clk_config));
 	for (int i = 0; i < GPP_CLK_OUTPUT_COUNT; i++) {
 		gpp_clk_ctl &= ~GPP_CLK_REQ_MASK(gpp_clk_shift_lut[i]);
 		/*

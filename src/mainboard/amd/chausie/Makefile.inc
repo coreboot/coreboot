@@ -8,6 +8,7 @@ romstage-y += port_descriptors.c
 
 ramstage-y += chromeos.c
 ramstage-y += gpio.c
+ramstage-y += port_descriptors.c
 
 ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_FT6_Updatable.bin),)
 APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_FT6_Updatable.bin

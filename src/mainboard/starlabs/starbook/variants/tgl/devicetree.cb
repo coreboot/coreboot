@@ -182,7 +182,17 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref p2sb		on  end
-		device ref pmc		hidden end
+		device ref pmc		hidden
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port1 as usb2_port
+						use tcss_usb3_port1 as usb3_port
+						device generic 0 alias conn0 on end
+					end
+				end
+			end
+		end
 		device ref hda		on
 			register "PchHdaAudioLinkHdaEnable"	= "1"
 		end

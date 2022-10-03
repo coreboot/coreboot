@@ -5,18 +5,13 @@
 
 #include <amdblocks/chip.h>
 #include <amdblocks/i2c.h>
+#include <amdblocks/pci_clk_req.h>
 #include <gpio.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <types.h>
 #include <vendorcode/amd/fsp/cezanne/FspUsb.h>
-
-enum gpp_clk_req {
-	GPP_CLK_ON,  /* GPP clock always on; default */
-	GPP_CLK_REQ, /* GPP clock controlled by corresponding #CLK_REQx pin */
-	GPP_CLK_OFF, /* GPP clk off */
-};
 
 struct soc_amd_cezanne_config {
 	struct soc_amd_common_config common_config;

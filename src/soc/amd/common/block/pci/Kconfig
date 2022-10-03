@@ -16,3 +16,10 @@ config SOC_AMD_COMMON_BLOCK_PCIE_GPP_DRIVER
 	depends on SOC_AMD_COMMON_BLOCK_PCI
 	help
 	  Select this option to use AMD common PCIe GPP driver.
+
+config SOC_AMD_COMMON_BLOCK_PCIE_CLK_REQ
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_PCIE_GPP_DRIVER
+	help
+	  This option includes code to disable PCIe clock request if the corresponding
+	  PCIe device is disabled.

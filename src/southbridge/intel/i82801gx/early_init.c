@@ -5,8 +5,10 @@
 #include <device/smbus_host.h>
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmbase.h>
-#include "i82801gx.h"
+#include <southbridge/intel/common/rcba.h>
+
 #include "chip.h"
+#include "i82801gx.h"
 
 void i82801gx_lpc_setup(void)
 {

@@ -500,7 +500,7 @@ config CMOS_RECOVERY_BYTE
 	  This is the byte before the default first byte used by VBNV
 	  (0x26 + 0x0E - 1)
 
-if VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
+if VBOOT_SLOTS_RW_A && VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 config RWA_REGION_ONLY
 	string
@@ -508,6 +508,10 @@ config RWA_REGION_ONLY
 	help
 	  Add a space-delimited list of filenames that should only be in the
 	  RW-A section.
+
+endif # VBOOT_SLOTS_RW_A && VBOOT_STARTS_BEFORE_BOOTBLOCK
+
+if VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 config RWB_REGION_ONLY
 	string

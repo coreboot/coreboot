@@ -302,18 +302,21 @@ apu/amdfw-file := $(obj)/amdfw.rom
 apu/amdfw-position := $(MENDOCINO_FWM_POSITION)
 apu/amdfw-type := raw
 
-ifeq ($(CONFIG_VBOOT_SLOTS_RW_AB)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
+ifeq ($(CONFIG_VBOOT_SLOTS_RW_A)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
 cbfs-files-y += apu/amdfw_a
 apu/amdfw_a-file := $(obj)/amdfw_a.rom
 apu/amdfw_a-position := $(AMD_FW_AB_POSITION)
 apu/amdfw_a-type := raw
+endif
 
+ifeq ($(CONFIG_VBOOT_SLOTS_RW_AB)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
 cbfs-files-y += apu/amdfw_b
 apu/amdfw_b-file := $(obj)/amdfw_b.rom
 apu/amdfw_b-position := $(AMD_FW_AB_POSITION)
 apu/amdfw_b-type := raw
+endif
 
-ifeq ($(CONFIG_SEPARATE_SIGNED_PSPFW),y)
+ifeq ($(CONFIG_SEPARATE_SIGNED_PSPFW)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
 build_complete:: $(obj)/amdfw_a.rom $(obj)/amdfw_b.rom
 	@printf "    Adding Signed ROM and HASH\n"
 	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r SIGNED_AMDFW_A -i 0 -f $(obj)/amdfw_a.rom.signed
@@ -322,7 +325,6 @@ build_complete:: $(obj)/amdfw_a.rom $(obj)/amdfw_b.rom
 		-n apu/amdfw_a_hash -t raw
 	$(CBFSTOOL) $(obj)/coreboot.rom add -r FW_MAIN_B -f $(obj)/amdfw_b.rom.signed.hash \
 		-n apu/amdfw_b_hash -t raw
-endif # CONFIG_SEPARATE_SIGNED_PSPFW
 endif
 
 endif # ($(CONFIG_SOC_AMD_MENDOCINO),y)

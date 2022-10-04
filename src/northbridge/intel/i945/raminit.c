@@ -74,7 +74,7 @@ static __attribute__((noinline)) void do_ram_command(u32 command)
 
 static void ram_read32(uintptr_t offset)
 {
-	PRINTK_DEBUG("   RAM read: %08x\n", offset);
+	PRINTK_DEBUG("   RAM read: %" PRIxPTR "\n", offset);
 
 	read32p(offset);
 }

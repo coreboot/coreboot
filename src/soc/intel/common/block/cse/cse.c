@@ -247,6 +247,15 @@ static bool cse_check_hfs1_com(int mode)
 	return hfs1.fields.operation_mode == mode;
 }
 
+static bool cse_is_hfs1_fw_init_complete(void)
+{
+	union me_hfsts1 hfs1;
+	hfs1.data = me_read_config32(PCI_ME_HFSTS1);
+	if (hfs1.fields.fw_init_complete)
+		return true;
+	return false;
+}
+
 bool cse_is_hfs1_cws_normal(void)
 {
 	union me_hfsts1 hfs1;
@@ -1067,6 +1076,154 @@ void cse_control_global_reset_lock(void)
 		pmc_global_reset_disable_and_lock();
 	else
 		pmc_global_reset_enable(false);
+}
+
+enum cb_err cse_get_fw_feature_state(uint32_t *feature_state)
+{
+	struct fw_feature_state_msg {
+		struct mkhi_hdr hdr;
+		uint32_t rule_id;
+	} __packed;
+
+	/* Get Firmware Feature State message */
+	struct fw_feature_state_msg msg = {
+		.hdr = {
+			.group_id = MKHI_GROUP_ID_FWCAPS,
+			.command = MKHI_FWCAPS_GET_FW_FEATURE_STATE,
+		},
+		.rule_id = ME_FEATURE_STATE_RULE_ID
+	};
+
+	/* Get Firmware Feature State response */
+	struct fw_feature_state_resp {
+		struct mkhi_hdr hdr;
+		uint32_t rule_id;
+		uint8_t rule_len;
+		uint32_t fw_runtime_status;
+	} __packed;
+
+	struct fw_feature_state_resp resp;
+	size_t resp_size = sizeof(struct fw_feature_state_resp);
+
+	/* Ignore if CSE is disabled or input buffer is invalid */
+	if (!is_cse_enabled() || !feature_state)
+		return CB_ERR;
+
+	/*
+	 * Prerequisites:
+	 * 1) HFSTS1 Current Working State is Normal
+	 * 2) HFSTS1 Current Operation Mode is Normal
+	 * 3) It's after DRAM INIT DONE message (taken care of by calling it
+	 *    during ramstage)
+	 */
+	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_normal() || !ENV_RAMSTAGE)
+		return CB_ERR;
+
+	printk(BIOS_DEBUG, "HECI: Send GET FW FEATURE STATE Command\n");
+
+	if (heci_send_receive(&msg, sizeof(struct fw_feature_state_msg),
+				&resp, &resp_size, HECI_MKHI_ADDR))
+		return CB_ERR;
+
+	if (resp.hdr.result) {
+		printk(BIOS_ERR, "HECI: Resp Failed:%d\n", resp.hdr.result);
+		return CB_ERR;
+	}
+
+	if (resp.rule_len != sizeof(resp.fw_runtime_status)) {
+		printk(BIOS_ERR, "HECI: GET FW FEATURE STATE has invalid rule data length\n");
+		return CB_ERR;
+	}
+
+	*feature_state = resp.fw_runtime_status;
+
+	return CB_SUCCESS;
+}
+
+void cse_enable_ptt(bool state)
+{
+	struct fw_feature_shipment_override_msg {
+		struct mkhi_hdr hdr;
+		uint32_t enable_mask;
+		uint32_t disable_mask;
+	} __packed;
+
+	/* FW Feature Shipment Time State Override message */
+	struct fw_feature_shipment_override_msg msg = {
+		.hdr = {
+			.group_id = MKHI_GROUP_ID_GEN,
+			.command = MKHI_GEN_FW_FEATURE_SHIPMENT_OVER,
+		},
+		.enable_mask = 0,
+		.disable_mask = 0
+	};
+
+	/* FW Feature Shipment Time State Override response */
+	struct fw_feature_shipment_override_resp {
+		struct mkhi_hdr hdr;
+		uint32_t data;
+	} __packed;
+
+	struct fw_feature_shipment_override_resp resp;
+	size_t resp_size = sizeof(struct fw_feature_shipment_override_resp);
+	uint32_t feature_status;
+
+	/* Ignore if CSE is disabled */
+	if (!is_cse_enabled())
+		return;
+
+	printk(BIOS_DEBUG, "Requested to change PTT state to %sabled\n", state ? "en" : "dis");
+
+	/*
+	 * Prerequisites:
+	 * 1) HFSTS1 Current Working State is Normal
+	 * 2) HFSTS1 Current Operation Mode is Normal
+	 * 3) It's after DRAM INIT DONE message (taken care of by calling it
+	 *    during ramstage
+	 * 4) HFSTS1 FW Init Complete is set
+	 * 5) Before EOP issued to CSE
+	 */
+	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_normal() ||
+	    !cse_is_hfs1_fw_init_complete() || !ENV_RAMSTAGE) {
+		printk(BIOS_ERR, "HECI: Unmet prerequisites for"
+				 "FW FEATURE SHIPMENT TIME STATE OVERRIDE\n");
+		return;
+	}
+
+	if (cse_get_fw_feature_state(&feature_status) != CB_SUCCESS) {
+		printk(BIOS_ERR, "HECI: Cannot determine current feature status\n");
+		return;
+	}
+
+	if (!!(feature_status & ME_FW_FEATURE_PTT) == state) {
+		printk(BIOS_DEBUG, "HECI: PTT is already in the requested state\n");
+		return;
+	}
+
+	printk(BIOS_DEBUG, "HECI: Send FW FEATURE SHIPMENT TIME STATE OVERRIDE Command\n");
+
+	if (state)
+		msg.enable_mask |= ME_FW_FEATURE_PTT;
+	else
+		msg.disable_mask |= ME_FW_FEATURE_PTT;
+
+	if (heci_send_receive(&msg, sizeof(struct fw_feature_shipment_override_msg),
+				&resp, &resp_size, HECI_MKHI_ADDR))
+		return;
+
+	if (resp.hdr.result) {
+		printk(BIOS_ERR, "HECI: Resp Failed:%d\n", resp.hdr.result);
+		return;
+	}
+
+	/* Global reset is required after acceptance of the command */
+	if (resp.data == 0) {
+		printk(BIOS_DEBUG, "HECI: FW FEATURE SHIPMENT TIME STATE OVERRIDE success\n");
+		do_global_reset();
+	} else {
+		printk(BIOS_ERR, "HECI: FW FEATURE SHIPMENT TIME STATE OVERRIDE error (%x)\n",
+			resp.data);
+	}
 }
 
 #if ENV_RAMSTAGE

@@ -3,6 +3,7 @@
 #include <arch/io.h>
 #include <commonlib/helpers.h>
 #include <cpu/x86/tsc.h>
+#include <delay.h>
 #include <pc80/i8254.h>
 
 /* Initialize i8254 timers */
@@ -110,3 +111,24 @@ unsigned long tsc_freq_mhz(void)
 	return timer_tsc;
 }
 #endif
+
+void beep(unsigned int frequency_hz, unsigned int duration_msec)
+{
+	unsigned int count = CLOCK_TICK_RATE / frequency_hz;
+
+	/* Set command for counter 2, 2 byte write, mode 3 */
+	outb(TIMER2_SEL | WORD_ACCESS | MODE3, TIMER_MODE_PORT);
+
+	/* Select desired Hz */
+	outb(count & 0xff, TIMER2_PORT);
+	outb((count >> 8) & 0xff, TIMER2_PORT);
+
+	/* Switch on the speaker */
+	outb(inb(PPC_PORTB) | (PPCB_T2GATE | PPCB_SPKR), PPC_PORTB);
+
+	/* Block for specified milliseconds */
+	mdelay(duration_msec);
+
+	/* Switch off the speaker */
+	outb(inb(PPC_PORTB) & ~(PPCB_T2GATE | PPCB_SPKR), PPC_PORTB);
+}

@@ -43,5 +43,6 @@
 
 void setup_i8254(void);
 unsigned long calibrate_tsc_with_pit(void);
+void beep(unsigned int frequency_hz, unsigned int duration_msec);
 
 #endif /* PC80_I8254_H */

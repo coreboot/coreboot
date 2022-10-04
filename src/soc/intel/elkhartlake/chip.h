@@ -444,6 +444,16 @@ struct soc_intel_elkhartlake_config {
 	bool PsePwmPinEn[16];
 	/* PSE Console Shell */
 	bool PseShellEn;
+
+	/*
+	 * DDR Frequency Limit
+	 *
+	 * Maximum Memory Frequency Selections in Mhz.
+	 * Values: 1067, 1200, 1333, 1400, 1600, 1800, 1867, 2000, 2133,
+	 *         2200, 2400, 2600, 2667, 2800, 2933, 3000, 3200, 3467,
+	 *         3600, 3733, 4000, 4200, 4267 and 0 for Auto.
+	 */
+	uint16_t max_dram_speed_mts;
 };
 
 typedef struct soc_intel_elkhartlake_config config_t;

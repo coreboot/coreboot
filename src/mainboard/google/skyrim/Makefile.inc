@@ -10,6 +10,8 @@ ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 verstage-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += verstage.c
 
+all-y += spi_speeds.c
+
 subdirs-y += variants/baseboard
 subdirs-y += variants/$(VARIANT_DIR)
 

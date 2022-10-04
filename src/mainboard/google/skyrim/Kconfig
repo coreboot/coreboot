@@ -126,4 +126,20 @@ config ALT_SPI_SPEED
 
 endif # !EM100
 
+config OVERRIDE_EFS_SPI_SPEED
+	int
+	default 3 if EM100
+	default 4	# 100MHz
+	help
+	  Override EFS SPI Speed Configuration to be applied based on certain
+	  board version.
+
+config OVERRIDE_EFS_SPI_SPEED_MIN_BOARD
+	hex
+	default 0x5 if BOARD_GOOGLE_SKYRIM
+	default 0xffffffff
+	help
+	  Minimum board version starting which the Override EFS SPI Speed
+	  configuration has to be applied.
+
 endif # BOARD_GOOGLE_BASEBOARD_SKYRIM

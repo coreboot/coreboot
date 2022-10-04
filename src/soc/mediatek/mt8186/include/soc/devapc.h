@@ -19,6 +19,8 @@ enum devapc_ao_offset {
 	MAS_DOM_3 = 0x0A0C,
 	MAS_SEC_0 = 0x0B00,
 	AO_APC_CON = 0x0F00,
+	AUD_DOM_0 = 0x0900,
+	AUD_SEC_0 = 0x0A00,
 };
 
 /******************************************************************************
@@ -39,6 +41,7 @@ struct apc_infra_peri_dom_4 {
 enum devapc_sys_dom_num {
 	DOM_NUM_INFRA_AO_SYS0 = 8,
 	DOM_NUM_MM_AO_SYS0 = 4,
+	DOM_NUM_AUD_AO_SYS0 = 16,
 };
 
 enum devapc_cfg_index {
@@ -48,6 +51,7 @@ enum devapc_cfg_index {
 /* PERM_ATTR MACRO */
 #define DAPC_INFRA_AO_SYS0_ATTR(...)	{ { DAPC_PERM_ATTR_8(__VA_ARGS__) } }
 #define DAPC_MM_AO_SYS0_ATTR(...)	{ { DAPC_PERM_ATTR_4(__VA_ARGS__) } }
+#define DAPC_AUD_AO_SYS0_ATTR(...)	{ { DAPC_PERM_ATTR_16(__VA_ARGS__) } }
 
 /******************************************************************************
  * Variable DEFINITION
@@ -62,6 +66,7 @@ enum devapc_cfg_index {
 DEFINE_BIT(SCP_SSPM_SEC, 21)
 DEFINE_BITFIELD(SPM_DOM, 11, 8)
 DEFINE_BITFIELD(SCP_DOM, 3, 0)
+DEFINE_BITFIELD(ADSP_DOM, 3, 0)
 
 /* Domain Remap */
 DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_0, 1, 0)

@@ -10,7 +10,7 @@ static const struct apc_infra_peri_dom_8 infra_ao_sys0_devices[] = {
 	/* 0 */
 	DAPC_INFRA_AO_SYS0_ATTR("INFRA_AO_TOPCKGEN",
 				NO_PROTECTION, FORBIDDEN3,
-				NO_PROTECTION, NO_PROTECTION, FORBIDDEN, NO_PROTECTION),
+				NO_PROTECTION, NO_PROTECTION, NO_PROTECTION, NO_PROTECTION),
 	DAPC_INFRA_AO_SYS0_ATTR("INFRA_AO_INFRASYS_CONFIG_REGS",
 				NO_PROTECTION, NO_PROTECTION, FORBIDDEN, NO_PROTECTION,
 				FORBIDDEN, NO_PROTECTION, FORBIDDEN, FORBIDDEN),
@@ -40,7 +40,7 @@ static const struct apc_infra_peri_dom_8 infra_ao_sys0_devices[] = {
 				NO_PROTECTION, FORBIDDEN7),
 	DAPC_INFRA_AO_SYS0_ATTR("INFRA_AO_APMIXEDSYS",
 				NO_PROTECTION, FORBIDDEN, NO_PROTECTION, FORBIDDEN,
-				NO_PROTECTION, NO_PROTECTION, FORBIDDEN, NO_PROTECTION),
+				NO_PROTECTION, NO_PROTECTION, NO_PROTECTION, NO_PROTECTION),
 	DAPC_INFRA_AO_SYS0_ATTR("INFRA_AO_PMIC_WRAP",
 				NO_PROTECTION, NO_PROTECTION, FORBIDDEN3,
 				NO_PROTECTION, NO_PROTECTION, FORBIDDEN),
@@ -366,7 +366,7 @@ static const struct apc_infra_peri_dom_8 infra_ao_sys0_devices[] = {
 
 	/* 150 */
 	DAPC_INFRA_AO_SYS0_ATTR("PERISYS_AUDIODSP",
-				NO_PROTECTION, FORBIDDEN7),
+				NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN),
 };
 
 /* module, AP permission, N/A, SSPM permission, N/A */
@@ -1183,6 +1183,88 @@ static const struct apc_infra_peri_dom_4 mm_ao_sys0_devices[] = {
 			     NO_PROTECTION, FORBIDDEN, FORBIDDEN, NO_PROTECTION),
 };
 
+static const struct apc_infra_peri_dom_16 adsp_ao_sys0_devices[] = {
+	/* 0 */
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_INFRA",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_INFRA_1",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_INFRA_2",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_EMI",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_AFE",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_AFE_1",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSP1",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSP1_1",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSP2",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSP2_1",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+
+	/* 10 */
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_F_SRAM",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_H_SRAM",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSPCFG",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSPCKCTL",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DMA0_CFG",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSP_TIMER",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSP_UART",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_BUSMON_DRAM",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSPMBOX_0",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSPMBOX_1",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+
+	/* 20 */
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSPMBOX_2",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSPMBOX_3",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSPMBOX_4",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DSPCFG_SEC",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_BUSMON_INFRA",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DMA1_CFG",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_RESERVED",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_BUSCFG",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_TMBIST",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_BCRM",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+
+	/* 30 */
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_BUS_DEBUG",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_SYSCFG_AO",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_MASRC",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DAPC_AO",
+			      SEC_RW_ONLY, FORBIDDEN15),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_K_BCRM",
+			      NO_PROTECTION, FORBIDDEN5, NO_PROTECTION, FORBIDDEN9),
+	DAPC_AUD_AO_SYS0_ATTR("AUD_AO_DAPC",
+			      SEC_RW_ONLY, FORBIDDEN15),
+};
+
 static const enum domain_id domain_map[] = {
 	DOMAIN_0, DOMAIN_1, DOMAIN_2, DOMAIN_3,
 	DOMAIN_4, DOMAIN_5, DOMAIN_6, DOMAIN_7,
@@ -1218,6 +1300,37 @@ static void set_mm_ao_apc(uintptr_t base)
 				       mm_ao_sys0_devices[i].d_permission[j]);
 }
 
+#define AUD_DOMAIN_OFT 0x40
+static void *adsp_getreg_domain(uintptr_t base, unsigned int offset,
+				enum domain_id domain_id, unsigned int index)
+{
+	return (void *)(base + offset + domain_id * AUD_DOMAIN_OFT + index * IDX_OFT);
+}
+
+static void adsp_set_module_apc(uintptr_t base, uint32_t module, enum domain_id domain_id,
+				enum devapc_perm_type perm)
+{
+	uint32_t apc_register_index;
+	uint32_t apc_set_index;
+
+	apc_register_index = module / MOD_NO_IN_1_DEVAPC;
+	apc_set_index = module % MOD_NO_IN_1_DEVAPC;
+
+	clrsetbits32(adsp_getreg_domain(base, 0, domain_id, apc_register_index),
+		     0x3 << (apc_set_index * 2),
+		     perm << (apc_set_index * 2));
+}
+
+static void set_adsp_ao_apc(uintptr_t base)
+{
+	int i, j;
+
+	for (i = 0; i < ARRAY_SIZE(adsp_ao_sys0_devices); i++)
+		for (j = 0; j < ARRAY_SIZE(adsp_ao_sys0_devices[i].d_permission); j++)
+			adsp_set_module_apc(base + SYS0_D0_APC_0, i, domain_map[j],
+					    adsp_ao_sys0_devices[i].d_permission[j]);
+}
+
 static void dump_infra_ao_apc(uintptr_t base)
 {
 	int reg_max;
@@ -1246,6 +1359,24 @@ static void dump_mm_ao_apc(uintptr_t base)
 
 	printk(BIOS_DEBUG, "[DEVAPC] (MM_AO)MAS_SEC_0: %#x\n",
 	       read32(getreg(base, MAS_SEC_0)));
+}
+
+static void dump_adsp_ao_apc(uintptr_t base)
+{
+	int reg_max;
+	unsigned int d, i;
+
+	reg_max = DIV_ROUND_UP(ARRAY_SIZE(adsp_ao_sys0_devices), MOD_NO_IN_1_DEVAPC);
+	for (d = 0; d < DOM_NUM_AUD_AO_SYS0; d++)
+		for (i = 0; i < reg_max; i++)
+			printk(BIOS_DEBUG, "[DEVAPC] (AUD_AO_SYS0)D%d_APC_%d: %#x\n", d, i,
+			       read32(adsp_getreg_domain(base, SYS0_D0_APC_0, d, i)));
+
+	printk(BIOS_DEBUG, "[DEVAPC] (AUD_AO)MAS_0: %#x\n",
+	       read32(getreg(base, AUD_DOM_0)));
+
+	printk(BIOS_DEBUG, "[DEVAPC] (AUD_AO)SEC_0: %#x\n",
+	       read32(getreg(base, AUD_SEC_0)));
 }
 
 static void infra_init(uintptr_t base)
@@ -1281,6 +1412,15 @@ static void mm_init(uintptr_t base)
 			TWO_BIT_DOM_REMAP_5, DOMAIN_2);
 }
 
+static void adsp_init(uintptr_t base)
+{
+	set_adsp_ao_apc(base);
+
+	/* Master domain/secure */
+	SET32_BITFIELDS(getreg(base, AUD_DOM_0), ADSP_DOM, DOMAIN_6);
+	write32(getreg(base, AUD_SEC_0), 0);
+}
+
 struct devapc_init_ops {
 	uintptr_t base;
 	void (*init)(uintptr_t base);
@@ -1288,6 +1428,7 @@ struct devapc_init_ops {
 } devapc_init[] = {
 	{ DEVAPC_AO_INFRA_PERI_BASE, infra_init, dump_infra_ao_apc },
 	{ DEVAPC_AO_MM_BASE, mm_init, dump_mm_ao_apc },
+	{ DEVAPC_AO_AUD_BASE, adsp_init, dump_adsp_ao_apc },
 };
 
 void dapc_init(void)

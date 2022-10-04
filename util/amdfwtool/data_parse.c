@@ -331,6 +331,45 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	} else if (strcmp(fw_name, "TA_IKEK_FILE") == 0) {
 		fw_type = AMD_TA_IKEK;
 		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_OEM_ABL_KEY_FILE") == 0) {
+		fw_type = AMD_FW_ABL_PUBKEY;
+		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_MP5FW_SUB0_FILE") == 0) {
+		fw_type = AMD_FW_MP5;
+		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_MP5FW_SUB1_FILE") == 0) {
+		fw_type = AMD_FW_MP5;
+		subprog = 1;
+	} else if (strcmp(fw_name, "PSP_MP5FW_SUB2_FILE") == 0) {
+		fw_type = AMD_FW_MP5;
+		subprog = 2;
+	} else if (strcmp(fw_name, "PSP_DXIOFW_FILE") == 0) {
+		fw_type = AMD_FW_DXIO;
+		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_MPIOFW_FILE") == 0) {
+		fw_type = AMD_FW_MPIO;
+		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_RIB_FILE") == 0) {
+		fw_type = AMD_RIB;
+		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_MPDMATFFW_FILE") == 0) {
+		fw_type = AMD_FW_MPDMA_TF;
+		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_GMI3PHYFW_FILE") == 0) {
+		fw_type = AMD_FW_GMI3_PHY;
+		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_MPDMAPMFW_FILE") == 0) {
+		fw_type = AMD_FW_MPDMA_PM;
+		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_TOKEN_UNLOCK_FILE") == 0) {
+		fw_type = AMD_TOKEN_UNLOCK;
+		subprog = 0;
+	} else if (strcmp(fw_name, "SEV_DATA_FILE") == 0) {
+		fw_type = AMD_SEV_DATA;
+		subprog = 0;
+	} else if (strcmp(fw_name, "SEV_CODE_FILE") == 0) {
+		fw_type = AMD_SEV_CODE;
+		subprog = 0;
 	} else {
 		fw_type = AMD_FW_INVALID;
 		/* TODO: Add more */

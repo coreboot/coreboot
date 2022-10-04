@@ -38,8 +38,6 @@ AMDFW_CFG_WITH_PATH = $(shell echo "$(AMDFW_CFG_FILES)" | tr ' ' '\n' | grep "/"
 DEP_FILES = $(patsubst %,$(FIRMWARE_LOCATION)/%, $(AMDFW_CFG_IN_FW_LOC)) \
 	$(AMDFW_CFG_WITH_PATH)
 
-amd_microcode_bins += $(wildcard ${FIRMWARE_LOCATION}/*U?odePatch*.bin)
-
 ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
 $(objcbfs)/bootblock.bin: $(obj)/amdfw.rom $(obj)/fmap_config.h
 	cp $< $@

@@ -357,7 +357,7 @@ config DIMM_SPD_SIZE
 
 config RO_REGION_ONLY
 	string
-	depends on CHROMEOS
+	depends on VBOOT_SLOTS_RW_AB || VBOOT_SLOTS_RW_A
 	default "apu/amdfw"
 
 config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ

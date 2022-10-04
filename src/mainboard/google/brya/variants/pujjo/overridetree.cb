@@ -43,6 +43,51 @@ chip soc/intel/alderlake
 
 	register "sagv" = "SaGv_Enabled"
 
+	# EMMC Tx CMD Delay
+	# Refer to EDS-Vol2-42.3.7.
+	# [14:8] steps of delay for DDR mode, each 125ps, range: 0 - 39.
+	# [6:0] steps of delay for SDR mode, each 125ps, range: 0 - 39.
+	register "common_soc_config.emmc_dll.emmc_tx_cmd_cntl" = "0x505"
+
+	# EMMC TX DATA Delay 1
+	# Refer to EDS-Vol2-42.3.8.
+	# [14:8] steps of delay for HS400, each 125ps, range: 0 - 78.
+	# [6:0] steps of delay for SDR104/HS200, each 125ps, range: 0 - 79.
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl1" = "0x909"
+
+	# EMMC TX DATA Delay 2
+	# Refer to EDS-Vol2-42.3.9.
+	# [30:24] steps of delay for SDR50, each 125ps, range: 0 - 79.
+	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 -79.
+	# [6:0] steps of delay for SDR12, each 125ps. Range: 0 - 79.
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl2" = "0x1C2A2828"
+
+	# EMMC RX CMD/DATA Delay 1
+	# Refer to EDS-Vol2-42.3.10.
+	# [30:24] steps of delay for SDR50, each 125ps, range: 0 - 119.
+	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 - 119.
+	# [6:0] steps of delay for SDR12, each 125ps, range: 0 - 119.
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl1" = "0x1C1B1D1B"
+
+	# EMMC RX CMD/DATA Delay 2
+	# Refer to EDS-Vol2-42.3.12.
+	# [17:16] stands for Rx Clock before Output Buffer,
+	#         00: Rx clock after output buffer,
+	#         01: Rx clock before output buffer,
+	#         10: Automatic selection based on working mode.
+	#         11: Reserved
+	# [14:8] steps of delay for Auto Tuning Mode, each 125ps, range: 0 - 39.
+	# [6:0] steps of delay for HS200, each 125ps, range: 0 - 79.
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x10049"
+
+	# EMMC Rx Strobe Delay
+	# Refer to EDS-Vol2-42.3.11.
+	# [14:8] Rx Strobe Delay DLL 1(HS400 Mode), each 125ps, range: 0 - 39.
+	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps, range: 0 - 39.
+	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x11515"
+
 	# SOC Aux orientation override:
 	# This is a bitfield that corresponds to up to 4 TCSS ports.
 	# Bits (0,1) allocated for TCSS Port1 configuration and Bits (2,3)for TCSS Port2.

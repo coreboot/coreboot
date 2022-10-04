@@ -33,6 +33,7 @@ ramstage-y	+= agesa_acpi.c
 ramstage-y	+= chip.c
 ramstage-y	+= cpu.c
 ramstage-y	+= data_fabric.c
+ramstage-y	+= emmc.c
 ramstage-y	+= fch.c
 ramstage-y	+= fsp_s_params.c
 ramstage-y	+= gpio.c

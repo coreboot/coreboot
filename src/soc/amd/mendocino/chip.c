@@ -2,13 +2,11 @@
 
 /* TODO: Check if this is still correct */
 
-#include <amdblocks/aoac.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <soc/acpi.h>
-#include <soc/aoac_defs.h>
 #include <soc/cpu.h>
 #include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
@@ -20,6 +18,9 @@
 extern struct device_operations soc_amd_i2c_mmio_ops;
 /* Supplied by uart.c */
 extern struct device_operations mendocino_uart_mmio_ops;
+/* Supplied by emmc.c */
+extern struct device_operations mendocino_emmc_mmio_ops;
+
 
 struct device_operations cpu_bus_ops = {
 	.read_resources	= noop_read_resources,
@@ -65,8 +66,7 @@ static void set_mmio_dev_ops(struct device *dev)
 		dev->ops = &mendocino_uart_mmio_ops;
 		break;
 	case APU_EMMC_BASE:
-		if (!dev->enabled)
-			power_off_aoac_device(FCH_AOAC_DEV_EMMC);
+		dev->ops = &mendocino_emmc_mmio_ops;
 		break;
 	}
 }

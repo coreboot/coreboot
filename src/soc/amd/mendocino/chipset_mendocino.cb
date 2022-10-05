@@ -10,15 +10,16 @@ chip soc/amd/mendocino
 		device pci 01.0 on end # Dummy Host Bridge
 
 		device pci 02.0 on end # Dummy Host Bridge, do not disable
-		device pci 02.1 alias gpp_bridge_0 off end
-		device pci 02.2 alias gpp_bridge_1 off end
-		device pci 02.3 alias gpp_bridge_2 off end
-		device pci 02.4 alias gpp_bridge_3 off end
-		device pci 02.5 alias gpp_bridge_4 off end
-		device pci 02.6 alias gpp_bridge_5 off end
+		device pci 02.1 alias gpp_bridge_0 off ops amd_external_pcie_gpp_ops end
+		device pci 02.2 alias gpp_bridge_1 off ops amd_external_pcie_gpp_ops end
+		device pci 02.3 alias gpp_bridge_2 off ops amd_external_pcie_gpp_ops end
+		device pci 02.4 alias gpp_bridge_3 off ops amd_external_pcie_gpp_ops end
+		device pci 02.5 alias gpp_bridge_4 off ops amd_external_pcie_gpp_ops end
+		device pci 02.6 alias gpp_bridge_5 off ops amd_external_pcie_gpp_ops end
 
 		device pci 08.0 on end # Dummy Host Bridge, do not disable
 		device pci 08.1 alias gpp_bridge_a off  # Internal GPP Bridge 0 to Bus A
+			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 alias gfx off end # Internal GPU (GFX)
 			device pci 0.1 alias gfx_hda off end # Display HD Audio Controller (GFXAZ)
 			device pci 0.2 alias crypto off end # Crypto Coprocessor
@@ -64,8 +65,9 @@ chip soc/amd/mendocino
 			device pci 0.6 alias hda off end # Audio Processor HD Audio Controller (main AZ)
 			device pci 0.7 alias mp2 off end # Sensor Fusion Hub (MP2)
 		end
-		device pci 08.2 alias gpp_bridge_b off end # Internal GPP Bridge 1 to Bus B
+		device pci 08.2 alias gpp_bridge_b off ops amd_internal_pcie_gpp_ops end # Internal GPP Bridge 1 to Bus B
 		device pci 08.3 alias gpp_bridge_c off # Internal GPP Bridge 2 to Bus C
+			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 alias xhci_2 off end # Might also be a dummy device with different PCI DID
 		end
 

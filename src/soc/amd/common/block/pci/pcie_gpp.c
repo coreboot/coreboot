@@ -7,7 +7,6 @@
 #include <assert.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <device/pciexp.h>
 #include <soc/pci_devs.h>
 #include <stdio.h>
@@ -48,7 +47,7 @@ static void acpi_device_write_gpp_pci_dev(const struct device *dev)
 	acpigen_pop_len(); /* Scope */
 }
 
-static struct device_operations internal_pcie_gpp_ops = {
+struct device_operations amd_internal_pcie_gpp_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_bus_enable_resources,
@@ -58,21 +57,7 @@ static struct device_operations internal_pcie_gpp_ops = {
 	.acpi_fill_ssdt		= acpi_device_write_gpp_pci_dev,
 };
 
-static const unsigned short internal_pci_gpp_ids[] = {
-	PCI_DID_AMD_FAM17H_MODEL18H_PCIE_GPP_BUSA,
-	PCI_DID_AMD_FAM17H_MODEL18H_PCIE_GPP_BUSB,
-	PCI_DID_AMD_FAM17H_MODEL60H_PCIE_GPP_BUSABC,
-	PCI_DID_AMD_FAM17H_MODELA0H_PCIE_GPP_BUSABC,
-	0
-};
-
-static const struct pci_driver internal_pcie_gpp_driver __pci_driver = {
-	.ops			= &internal_pcie_gpp_ops,
-	.vendor			= PCI_VID_AMD,
-	.devices		= internal_pci_gpp_ids,
-};
-
-static struct device_operations external_pcie_gpp_ops = {
+struct device_operations amd_external_pcie_gpp_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_bus_enable_resources,
@@ -80,18 +65,4 @@ static struct device_operations external_pcie_gpp_ops = {
 	.reset_bus		= pci_bus_reset,
 	.acpi_name		= pcie_gpp_acpi_name,
 	.acpi_fill_ssdt		= acpi_device_write_gpp_pci_dev,
-};
-
-static const unsigned short external_pci_gpp_ids[] = {
-	PCI_DID_AMD_FAM17H_MODEL18H_PCIE_GPP,
-	PCI_DID_AMD_FAM17H_MODEL60H_PCIE_GPP_D1,
-	PCI_DID_AMD_FAM17H_MODEL60H_PCIE_GPP_D2,
-	PCI_DID_AMD_FAM17H_MODELA0H_PCIE_GPP,
-	0
-};
-
-static const struct pci_driver external_pcie_gpp_driver __pci_driver = {
-	.ops			= &external_pcie_gpp_ops,
-	.vendor			= PCI_VID_AMD,
-	.devices		= external_pci_gpp_ids,
 };

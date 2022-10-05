@@ -9,15 +9,16 @@ chip soc/amd/picasso
 		device pci 00.0 alias gnb on ops picasso_root_complex_operations end
 		device pci 00.2 alias iommu off end
 		device pci 01.0 on end # Dummy Host Bridge, do not disable
-		device pci 01.1 alias gpp_bridge_0 off end
-		device pci 01.2 alias gpp_bridge_1 off end
-		device pci 01.3 alias gpp_bridge_2 off end
-		device pci 01.4 alias gpp_bridge_3 off end
-		device pci 01.5 alias gpp_bridge_4 off end
-		device pci 01.6 alias gpp_bridge_5 off end
-		device pci 01.7 alias gpp_bridge_6 off end
+		device pci 01.1 alias gpp_bridge_0 off ops amd_external_pcie_gpp_ops end
+		device pci 01.2 alias gpp_bridge_1 off ops amd_external_pcie_gpp_ops end
+		device pci 01.3 alias gpp_bridge_2 off ops amd_external_pcie_gpp_ops end
+		device pci 01.4 alias gpp_bridge_3 off ops amd_external_pcie_gpp_ops end
+		device pci 01.5 alias gpp_bridge_4 off ops amd_external_pcie_gpp_ops end
+		device pci 01.6 alias gpp_bridge_5 off ops amd_external_pcie_gpp_ops end
+		device pci 01.7 alias gpp_bridge_6 off ops amd_external_pcie_gpp_ops end
 		device pci 08.0 on end # Dummy Host Bridge, do not disable
 		device pci 08.1 alias internal_bridge_a off  # internal bridge to bus A
+			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 alias gfx off end # internal GPU
 			device pci 0.1 alias gfx_hda off end # display HD Audio controller
 			device pci 0.2 alias crypto off end # cryptography coprocessor
@@ -28,6 +29,7 @@ chip soc/amd/picasso
 			device pci 0.7 alias mp2 off end # sensor fusion hub (MP2)
 		end
 		device pci 08.2 alias internal_bridge_b off # internal bridge to bus B
+			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 alias sata off end
 			device pci 0.1 alias xgbe_0 off end
 			device pci 0.2 alias xgbe_1 off end

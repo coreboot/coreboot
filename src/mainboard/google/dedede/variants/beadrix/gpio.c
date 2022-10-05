@@ -30,8 +30,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_D0, 1, DEEP),
 	/* D12 : WCAM_RST_L ==> NC */
 	PAD_NC(GPP_D12, NONE),
-	/* D13 : EN_PP2800_CAMERA ==> NC */
-	PAD_NC(GPP_D13, NONE),
+	/* D13 : EN_PP2800_CAMERA */
+	PAD_CFG_GPO(GPP_D13, 1, PLTRST),
 	/* D14 : EN_PP1200_CAMERA ==> NC */
 	PAD_NC(GPP_D14, NONE),
 	/* D15 : UCAM_RST_L ==> NC */

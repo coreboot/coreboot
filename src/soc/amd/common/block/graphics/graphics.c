@@ -4,7 +4,6 @@
 #include <acpi/acpigen.h>
 #include <boot/coreboot_tables.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <console/console.h>
 #include <fsp/graphics.h>
 #include <soc/intel/common/vbt.h>
@@ -168,7 +167,7 @@ static void graphics_dev_init(struct device *const dev)
 	pci_dev_init(dev);
 }
 
-static const struct device_operations graphics_ops = {
+const struct device_operations amd_graphics_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= graphics_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -178,20 +177,4 @@ static const struct device_operations graphics_ops = {
 	.write_acpi_tables	= pci_rom_write_acpi_tables,
 	.acpi_fill_ssdt		= graphics_fill_ssdt,
 	.acpi_name		= graphics_acpi_name,
-};
-
-static const unsigned short pci_device_ids[] = {
-	PCI_DID_ATI_FAM17H_MODEL18H_GPU,
-	PCI_DID_ATI_FAM17H_MODEL60H_GPU,
-	PCI_DID_ATI_FAM17H_MODEL68H_GPU,
-	PCI_DID_ATI_FAM17H_MODELA0H_GPU,
-	PCI_DID_ATI_FAM19H_MODEL51H_GPU_CEZANNE,
-	PCI_DID_ATI_FAM19H_MODEL51H_GPU_BARCELO,
-	0,
-};
-
-static const struct pci_driver graphics_driver __pci_driver = {
-	.ops		= &graphics_ops,
-	.vendor		= PCI_VID_ATI,
-	.devices	= pci_device_ids,
 };

@@ -24,7 +24,7 @@ chip soc/amd/cezanne
 		device pci 08.0 on end # Dummy Host Bridge, do not disable
 		device pci 08.1 alias gpp_bridge_a off  # Internal GPP Bridge 0 to Bus A
 			ops amd_internal_pcie_gpp_ops
-			device pci 0.0 alias gfx off end # Internal GPU (GFX)
+			device pci 0.0 alias gfx off ops amd_graphics_ops end # Internal GPU (GFX)
 			device pci 0.1 alias gfx_hda off end # Display HD Audio Controller (GFXAZ)
 			device pci 0.2 alias crypto off end # Crypto Coprocessor
 			device pci 0.3 alias xhci_0 off

@@ -19,7 +19,7 @@ chip soc/amd/picasso
 		device pci 08.0 on end # Dummy Host Bridge, do not disable
 		device pci 08.1 alias internal_bridge_a off  # internal bridge to bus A
 			ops amd_internal_pcie_gpp_ops
-			device pci 0.0 alias gfx off end # internal GPU
+			device pci 0.0 alias gfx off ops amd_graphics_ops end # internal GPU
 			device pci 0.1 alias gfx_hda off end # display HD Audio controller
 			device pci 0.2 alias crypto off end # cryptography coprocessor
 			device pci 0.3 alias xhci_0 off end

@@ -3,7 +3,6 @@
 #include <amdblocks/acpimmio.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <device/smbus.h>
 #include <device/smbus_host.h>
 
@@ -64,7 +63,7 @@ static const char *smbus_acpi_name(const struct device *dev)
 }
 #endif
 
-static struct device_operations smbus_ops = {
+struct device_operations amd_smbus_ops = {
 	.read_resources		= noop_read_resources,
 	.set_resources		= noop_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -74,11 +73,4 @@ static struct device_operations smbus_ops = {
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= smbus_acpi_name,
 #endif
-};
-
-static const struct pci_driver smbus_driver __pci_driver = {
-	.ops = &smbus_ops,
-	.vendor = PCI_VID_AMD,
-	/* PCI device ID is used on all integrated FCHs except Family 16h Models 00h-3Fh */
-	.device = PCI_DID_AMD_CZ_SMBUS,
 };

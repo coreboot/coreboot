@@ -76,7 +76,7 @@ chip soc/amd/cezanne
 					end
 				end
 			end
-			device pci 0.5 alias acp off end # Audio Processor (ACP)
+			device pci 0.5 alias acp off ops amd_acp_ops end # Audio Processor (ACP)
 			device pci 0.6 alias hda off end # Audio Processor HD Audio Controller (main AZ)
 			device pci 0.7 alias mp2 off end # Sensor Fusion Hub (MP2)
 		end

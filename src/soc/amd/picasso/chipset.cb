@@ -23,7 +23,7 @@ chip soc/amd/picasso
 			device pci 0.2 alias crypto off end # cryptography coprocessor
 			device pci 0.3 alias xhci_0 off end
 			device pci 0.4 alias xhci_1 off end
-			device pci 0.5 alias acp off end # audio co-processor
+			device pci 0.5 alias acp off ops amd_acp_ops end # audio co-processor
 			device pci 0.6 alias hda off end # main HD Audio Controller
 			device pci 0.7 alias mp2 off end # sensor fusion hub (MP2)
 		end

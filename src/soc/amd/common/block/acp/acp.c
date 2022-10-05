@@ -7,7 +7,6 @@
 #include <amdblocks/chip.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <commonlib/helpers.h>
 #include "acp_def.h"
@@ -42,7 +41,7 @@ static void acp_fill_ssdt(const struct device *dev)
 	acp_fill_wov_method(dev);
 }
 
-static struct device_operations acp_ops = {
+struct device_operations amd_acp_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
@@ -51,10 +50,4 @@ static struct device_operations acp_ops = {
 	.scan_bus = scan_static_bus,
 	.acpi_name = acp_acpi_name,
 	.acpi_fill_ssdt = acp_fill_ssdt,
-};
-
-static const struct pci_driver acp_driver __pci_driver = {
-	.ops = &acp_ops,
-	.vendor = PCI_VID_AMD,
-	.device = PCI_DID_AMD_FAM17H_ACP,
 };

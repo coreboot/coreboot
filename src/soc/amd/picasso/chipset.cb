@@ -30,7 +30,7 @@ chip soc/amd/picasso
 		end
 		device pci 08.2 alias internal_bridge_b off # internal bridge to bus B
 			ops amd_internal_pcie_gpp_ops
-			device pci 0.0 alias sata off end
+			device pci 0.0 alias sata off ops amd_sata_ops end
 			device pci 0.1 alias xgbe_0 off end
 			device pci 0.2 alias xgbe_1 off end
 		end

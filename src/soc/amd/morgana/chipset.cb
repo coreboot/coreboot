@@ -7,7 +7,7 @@ chip soc/amd/morgana
 	device domain 0 on
 		ops morgana_pci_domain_ops
 		device pci 00.0 alias gnb on ops morgana_root_complex_operations end
-		device pci 00.2 alias iommu off end
+		device pci 00.2 alias iommu off ops amd_iommu_ops end
 
 		device pci 01.0 on end # Dummy Host Bridge
 

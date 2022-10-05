@@ -5,7 +5,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pnp.h>
-#include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <pc80/mc146818rtc.h>
@@ -319,7 +318,7 @@ static const char *lpc_acpi_name(const struct device *dev)
 }
 #endif
 
-static struct device_operations lpc_ops = {
+struct device_operations amd_lpc_ops = {
 	.read_resources = lpc_read_resources,
 	.set_resources = lpc_set_resources,
 	.enable_resources = lpc_enable_resources,
@@ -330,17 +329,4 @@ static struct device_operations lpc_ops = {
 	.init = lpc_init,
 	.scan_bus = scan_static_bus,
 	.ops_pci = &pci_dev_ops_pci,
-};
-
-static const unsigned short pci_device_ids[] = {
-	/* PCI device ID is used on all discrete FCHs and Family 16h Models 00h-3Fh */
-	PCI_DID_AMD_SB900_LPC,
-	/* PCI device ID is used on all integrated FCHs except Family 16h Models 00h-3Fh */
-	PCI_DID_AMD_CZ_LPC,
-	0
-};
-static const struct pci_driver lpc_driver __pci_driver = {
-	.ops = &lpc_ops,
-	.vendor = PCI_VID_AMD,
-	.devices = pci_device_ids,
 };

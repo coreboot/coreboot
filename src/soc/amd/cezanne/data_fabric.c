@@ -132,37 +132,9 @@ static const char *data_fabric_acpi_name(const struct device *dev)
 	return NULL;
 }
 
-static struct device_operations data_fabric_ops = {
+struct device_operations cezanne_data_fabric_ops = {
 	.read_resources		= noop_read_resources,
 	.set_resources		= noop_set_resources,
 	.acpi_name		= data_fabric_acpi_name,
 	.acpi_fill_ssdt		= acpi_device_write_pci_dev,
-};
-
-static const unsigned short pci_device_ids[] = {
-	/* Renoir DF devices */
-	PCI_DID_AMD_FAM17H_MODEL60H_DF0,
-	PCI_DID_AMD_FAM17H_MODEL60H_DF1,
-	PCI_DID_AMD_FAM17H_MODEL60H_DF2,
-	PCI_DID_AMD_FAM17H_MODEL60H_DF3,
-	PCI_DID_AMD_FAM17H_MODEL60H_DF4,
-	PCI_DID_AMD_FAM17H_MODEL60H_DF5,
-	PCI_DID_AMD_FAM17H_MODEL60H_DF6,
-	PCI_DID_AMD_FAM17H_MODEL60H_DF7,
-	/* Cezanne DF devices */
-	PCI_DID_AMD_FAM19H_MODEL51H_DF0,
-	PCI_DID_AMD_FAM19H_MODEL51H_DF1,
-	PCI_DID_AMD_FAM19H_MODEL51H_DF2,
-	PCI_DID_AMD_FAM19H_MODEL51H_DF3,
-	PCI_DID_AMD_FAM19H_MODEL51H_DF4,
-	PCI_DID_AMD_FAM19H_MODEL51H_DF5,
-	PCI_DID_AMD_FAM19H_MODEL51H_DF6,
-	PCI_DID_AMD_FAM19H_MODEL51H_DF7,
-	0
-};
-
-static const struct pci_driver data_fabric_driver __pci_driver = {
-	.ops			= &data_fabric_ops,
-	.vendor			= PCI_VID_AMD,
-	.devices		= pci_device_ids,
 };

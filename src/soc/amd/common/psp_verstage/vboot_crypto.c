@@ -6,9 +6,11 @@
 #include <commonlib/bsd/helpers.h>
 #include <console/console.h>
 #include "psp_verstage.h"
+#include <soc/psp_verstage_addr.h>
 #include <stddef.h>
 #include <string.h>
 #include <swab.h>
+#include <symbols.h>
 #include <vb2_api.h>
 
 static struct sha_generic_data sha_op;
@@ -40,9 +42,10 @@ vb2_error_t vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg, uint32_
 	return VB2_SUCCESS;
 }
 
-vb2_error_t vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
+static vb2_error_t vb2ex_hwcrypto_digest_extend_psp_sram(const uint8_t *buf, uint32_t size)
 {
 	uint32_t retval;
+
 	sha_op.Data = (uint8_t *)buf;
 
 	if (!sha_op_size_remaining) {
@@ -71,6 +74,39 @@ vb2_error_t vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
 			sha_op.Init = 0;
 
 		size -= sha_op.DataLen;
+	}
+
+	return VB2_SUCCESS;
+}
+
+
+vb2_error_t vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
+{
+	vb2_error_t retval;
+	uint32_t offset = 0, copy_size;
+
+	/*
+	 * Crypto engine prefers the buffer from SRAM. CBFS verification may pass the
+	 * mapped address of SPI flash which makes crypto engine to return invalid address.
+	 * Hence if the buffer is from SRAM, pass it to crypto engine. Else copy into a
+	 * temporary buffer before passing it to crypto engine.
+	 */
+	if (buf >= _sram && (buf + size) < _esram)
+		return vb2ex_hwcrypto_digest_extend_psp_sram(buf, size);
+
+	while (size) {
+		uint8_t block[CONFIG_VBOOT_HASH_BLOCK_SIZE];
+
+		copy_size = size < CONFIG_VBOOT_HASH_BLOCK_SIZE ?
+					size : CONFIG_VBOOT_HASH_BLOCK_SIZE;
+		memcpy(block, buf + offset, copy_size);
+
+		retval = vb2ex_hwcrypto_digest_extend_psp_sram(block, copy_size);
+		if (retval != VB2_SUCCESS)
+			return retval;
+
+		size -= copy_size;
+		offset += copy_size;
 	}
 
 	return VB2_SUCCESS;

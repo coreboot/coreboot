@@ -766,6 +766,11 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 	case PCI_DEVICE_ID_INTEL_C224:
 	case PCI_DEVICE_ID_INTEL_C226:
 	case PCI_DEVICE_ID_INTEL_H81:
+	case PCI_DEVICE_ID_INTEL_C9_MOBILE:
+	case PCI_DEVICE_ID_INTEL_C9_DESKTOP:
+	case PCI_DEVICE_ID_INTEL_HM97:
+	case PCI_DEVICE_ID_INTEL_Z97:
+	case PCI_DEVICE_ID_INTEL_H97:
 		pmbase = pci_read_word(sb, 0x40) & 0xff80;
 		pm_registers = pch_pm_registers;
 		pm_registers_size = ARRAY_SIZE(pch_pm_registers);

@@ -1,0 +1,108 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_AMD_BIRMAN
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select EC_ACPI
+	select SOC_AMD_MORGANA
+	select SOC_AMD_COMMON_BLOCK_USE_ESPI
+	select AMD_SOC_CONSOLE_UART
+	select MAINBOARD_HAS_CHROMEOS
+	select PCIEXP_ASPM
+	select PCIEXP_CLK_PM
+	select PCIEXP_COMMON_CLOCK
+	select PCIEXP_L1_SUB_STATE
+	select SOC_AMD_COMMON_BLOCK_ESPI_RETAIN_PORT80_EN
+
+config FMDFILE
+	default "src/mainboard/amd/birman/chromeos.fmd" if CHROMEOS
+	default "src/mainboard/amd/birman/board.fmd"
+
+config MAINBOARD_DIR
+	default "amd/birman"
+
+config MAINBOARD_PART_NUMBER
+	default "BIRMAN"
+
+config AMD_FWM_POSITION_INDEX
+	int
+	default 3 if CHROMEOS
+	help
+	  TODO: might need to be adapted for better placement of files in cbfs
+
+config BIRMAN_HAVE_MCHP_FW
+	bool "Have Microchip EC firmware?"
+	default n
+
+config BIRMAN_MCHP_SIG_FILE
+	string "Microchip EC signature file"
+	depends on BIRMAN_HAVE_MCHP_FW
+	default "3rdparty/blobs/mainboard/amd/birman/EC_birman_sig.bin"
+	help
+	  The EC sig blob is the first 4kBytes of the firmware image.
+	  The first 4 bytes form a pointer (with CRC) to where the EC firmware
+	  is located
+
+config BIRMAN_MCHP_FW_FILE
+	string "Microchip EC firmware file"
+	depends on BIRMAN_HAVE_MCHP_FW
+	default "3rdparty/blobs/mainboard/amd/birman/EC_birman.bin"
+	help
+	  The EC firmware blob is at the BIRMAN_MCHP_FW_OFFSET offset of the
+	  firmware image.
+
+config BIRMAN_MCHP_FW_OFFSET
+	hex
+	depends on BIRMAN_HAVE_MCHP_FW
+	default 0xB80000
+	help
+	  The EC firmware blob defaults to the 4MByte offset of the firmware
+	  image. If this offset needs to change, a new signature block must be
+	  generated with the updated offset.
+
+config VBOOT
+	select VBOOT_NO_BOARD_SUPPORT
+	select VBOOT_SEPARATE_VERSTAGE
+	select VBOOT_STARTS_IN_BOOTBLOCK
+
+config VBOOT_VBNV_OFFSET
+	hex
+	default 0x2A
+
+config RO_REGION_ONLY
+	string
+	depends on VBOOT_SLOTS_RW_AB || VBOOT_SLOTS_RW_A
+	# Add the EFS and EC to the RO region only
+	# This is a birman-specific override of soc/amd/morgana/Kconfig
+	default "apu/amdfw apu/ecfw"
+
+config CHROMEOS
+	# Use default libpayload config
+	select LP_DEFCONFIG_OVERRIDE if PAYLOAD_DEPTHCHARGE
+	# We don't have recovery buttons, so we can't manually enable devmode.
+	select GBB_FLAG_FORCE_DEV_SWITCH_ON
+
+if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
+config EFS_SPI_READ_MODE
+	default 3	# Quad IO (1-1-4)
+
+config EFS_SPI_SPEED
+	default 0	# 66MHz
+
+config EFS_SPI_MICRON_FLAG
+	default 0
+
+config NORMAL_READ_SPI_SPEED
+	default 1	# 33MHz
+
+config ALT_SPI_SPEED
+	default 1	# 33MHz
+
+config TPM_SPI_SPEED
+	default 1	# 33MHz
+
+endif # !EM100
+
+endif # BOARD_AMD_BIRMAN

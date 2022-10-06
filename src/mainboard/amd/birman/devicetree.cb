@@ -1,0 +1,226 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+# TODO: Update for birman
+
+chip soc/amd/morgana
+	register "common_config.espi_config" = "{
+		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X2E_0X2F_EN | ESPI_DECODE_IO_0X60_0X64_EN,
+		.generic_io_range[0] = {
+			.base = 0x3f8,
+			.size = 8,
+		},
+		.generic_io_range[1] = {
+			.base = 0x600,
+			.size = 256,
+		},
+		.io_mode = ESPI_IO_MODE_QUAD,
+		.op_freq_mhz = ESPI_OP_FREQ_16_MHZ,
+		.crc_check_enable = 1,
+		.alert_pin = ESPI_ALERT_PIN_PUSH_PULL,
+		.periph_ch_en = 1,
+		.vw_ch_en = 1,
+		.oob_ch_en = 1,
+		.flash_ch_en = 0,
+	}"
+
+	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
+					GPIO_I2C2_SCL | GPIO_I2C3_SCL"
+
+	register "i2c[0].early_init" = "1"
+	register "i2c[1].early_init" = "1"
+	register "i2c[2].early_init" = "1"
+	register "i2c[3].early_init" = "1"
+
+	# I2C Pad Control RX Select Configuration
+	register "i2c_pad[0].rx_level" = "I2C_PAD_RX_1_8V"
+	register "i2c_pad[1].rx_level" = "I2C_PAD_RX_1_8V"
+	register "i2c_pad[2].rx_level" = "I2C_PAD_RX_1_8V"
+	register "i2c_pad[3].rx_level" = "I2C_PAD_RX_1_8V"
+
+	register "s0ix_enable" = "true"
+
+	register "pspp_policy" = "DXIO_PSPP_DISABLED" # TODO: reenable when PSPP works
+
+	register "usb_phy_custom" = "1"
+	register "usb_phy" = "{
+		.Usb2PhyPort[0] = {
+			.compdistune = 0x3,
+			.pllbtune = 0x1,
+			.pllitune = 0x0,
+			.pllptune = 0xe,
+			.sqrxtune = 0x3,
+			.txfslstune = 0x3,
+			.txpreempamptune = 0x2,
+			.txpreemppulsetune = 0x0,
+			.txrisetune = 0x1,
+			.txvreftune = 0x3,
+			.txhsxvtune = 0x3,
+			.txrestune = 0x2,
+		},
+		.Usb2PhyPort[1] = {
+			.compdistune = 0x3,
+			.pllbtune = 0x1,
+			.pllitune = 0x0,
+			.pllptune = 0xe,
+			.sqrxtune = 0x3,
+			.txfslstune = 0x3,
+			.txpreempamptune = 0x2,
+			.txpreemppulsetune = 0x0,
+			.txrisetune = 0x1,
+			.txvreftune = 0x3,
+			.txhsxvtune = 0x3,
+			.txrestune = 0x2,
+		},
+		.Usb2PhyPort[2] = {
+			.compdistune = 0x3,
+			.pllbtune = 0x1,
+			.pllitune = 0x0,
+			.pllptune = 0xe,
+			.sqrxtune = 0x3,
+			.txfslstune = 0x3,
+			.txpreempamptune = 0x2,
+			.txpreemppulsetune = 0x0,
+			.txrisetune = 0x1,
+			.txvreftune = 0x3,
+			.txhsxvtune = 0x3,
+			.txrestune = 0x2,
+		},
+		.Usb2PhyPort[3] = {
+			.compdistune = 0x3,
+			.pllbtune = 0x1,
+			.pllitune = 0x0,
+			.pllptune = 0xe,
+			.sqrxtune = 0x3,
+			.txfslstune = 0x3,
+			.txpreempamptune = 0x2,
+			.txpreemppulsetune = 0x0,
+			.txrisetune = 0x1,
+			.txvreftune = 0x3,
+			.txhsxvtune = 0x3,
+			.txrestune = 0x2,
+		},
+		.Usb2PhyPort[4] = {
+			.compdistune = 0x3,
+			.pllbtune = 0x1,
+			.pllitune = 0x0,
+			.pllptune = 0xe,
+			.sqrxtune = 0x3,
+			.txfslstune = 0x3,
+			.txpreempamptune = 0x2,
+			.txpreemppulsetune = 0x0,
+			.txrisetune = 0x1,
+			.txvreftune = 0x3,
+			.txhsxvtune = 0x3,
+			.txrestune = 0x2,
+		},
+		.Usb2PhyPort[5] = {
+			.compdistune = 0x3,
+			.pllbtune = 0x1,
+			.pllitune = 0x0,
+			.pllptune = 0xe,
+			.sqrxtune = 0x3,
+			.txfslstune = 0x3,
+			.txpreempamptune = 0x2,
+			.txpreemppulsetune = 0x0,
+			.txrisetune = 0x1,
+			.txvreftune = 0x3,
+			.txhsxvtune = 0x3,
+			.txrestune = 0x2,
+		},
+		.Usb3PhyPort[0] = {
+			.tx_term_ctrl = 0x2,
+			.rx_term_ctrl = 0x2,
+			.tx_vboost_lvl_en = 0x0,
+			.tx_vboost_lvl = 0x5,
+		},
+		.Usb3PhyPort[1] = {
+			.tx_term_ctrl = 0x2,
+			.rx_term_ctrl = 0x2,
+			.tx_vboost_lvl_en = 0x0,
+			.tx_vboost_lvl = 0x5,
+		},
+		.Usb3PhyPort[2] = {
+			.tx_term_ctrl = 0x2,
+			.rx_term_ctrl = 0x2,
+			.tx_vboost_lvl_en = 0x0,
+			.tx_vboost_lvl = 0x5,
+		},
+		.ComboPhyStaticConfig[0] = USB_COMBO_PHY_MODE_USB_C,
+		.ComboPhyStaticConfig[1] = USB_COMBO_PHY_MODE_USB_C,
+		.BatteryChargerEnable = 0,
+		.PhyP3CpmP4Support = 0,
+	}"
+
+	register "gpp_clk_config[0]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[1]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[2]" = "GPP_CLK_OFF"
+	register "gpp_clk_config[3]" = "GPP_CLK_REQ"
+
+	device domain 0 on
+		device ref iommu on end
+		device ref gpp_bridge_0 on end # GBE
+		device ref gpp_bridge_1 on end # WIFI
+		device ref gpp_bridge_2 on end # NVMe SSD
+		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
+			device ref gfx on end # Internal GPU (GFX)
+			device ref gfx_hda on end # Display HD Audio Controller (GFXAZ)
+			device ref crypto on end # Crypto Coprocessor
+			device ref xhci_0 on # USB 3.1 (USB0)
+				chip drivers/usb/acpi
+					device ref xhci_0_root_hub on
+						chip drivers/usb/acpi
+							device ref usb3_port0 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port0 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port1 on end
+						end
+					end
+				end
+			end
+			device ref xhci_1 on # USB 3.1 (USB1)
+				chip drivers/usb/acpi
+					device ref xhci_1_root_hub on
+						chip drivers/usb/acpi
+							device ref usb3_port2 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb3_port3 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port2 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port3 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port4 on end
+						end
+					end
+				end
+			end
+			device ref acp on end # Audio Processor (ACP)
+		end
+		device ref gpp_bridge_c on  # Internal GPP Bridge 2 to Bus C
+			device ref xhci_2 on
+				chip drivers/usb/acpi
+					register "type" = "UPC_TYPE_HUB"
+					device usb 0.0 alias xhci_2_root_hub on
+						chip drivers/usb/acpi
+							device usb 2.0 alias usb2_port5 on end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	device ref i2c_0 on end
+	device ref i2c_1 on end
+	device ref i2c_2 on end
+	device ref i2c_3 on end
+	device ref uart_0 on end # UART0
+
+end

@@ -67,6 +67,38 @@ $(call add_intermediate, check-fmap-16mib-crossing, $(obj)/fmap_config.h)
 	done;								\
 	exit $$fail
 
-CBFSTOOL_ADD_CMD_OPTIONS += --ext-win-base $(CONFIG_EXT_BIOS_WIN_BASE) --ext-win-size $(CONFIG_EXT_BIOS_WIN_SIZE)
+# If the platform supports extended window and the SPI flash size is greater
+# than 16MiB, then create a mapping for the extended window as well.
+# The assumptions here are:
+# 1. Top 16MiB is still decoded in the fixed decode window just below 4G
+# boundary.
+# 2. Rest of the SPI flash below the top 16MiB is mapped at the top of extended
+# window. Even though the platform might support a larger extended window, the
+# SPI flash part used by the mainboard might not be large enough to be mapped
+# in the entire window. In such cases, the mapping is assumed to be in the top
+# part of the extended window with the bottom part remaining unused.
+#
+# Example:
+# ext_win_base = 0xF8000000
+# ext_win_size = 32 # MiB
+# ext_win_limit = ext_win_base + ext_win_size - 1 = 0xF9FFFFFF
+#
+# If SPI flash is 32MiB, then top 16MiB is mapped from 0xFF000000 - 0xFFFFFFFF
+# whereas the bottom 16MiB is mapped from 0xF9000000 - 0xF9FFFFFF. The extended
+# window 0xF8000000 - 0xF8FFFFFF remains unused.
+#
+
+ifeq ($(call int-gt, $(CONFIG_ROM_SIZE) 0x1000000), 1)
+DEFAULT_WINDOW_SIZE=0x1000000
+DEFAULT_WINDOW_FLASH_BASE=$(call int-subtract, $(CONFIG_ROM_SIZE) $(DEFAULT_WINDOW_SIZE))
+DEFAULT_WINDOW_MMIO_BASE=0xff000000
+EXT_WINDOW_FLASH_BASE=0
+EXT_WINDOW_SIZE=$(DEFAULT_WINDOW_FLASH_BASE)
+EXT_WINDOW_MMIO_BASE=$(call int-subtract, $(call int-add, $(CONFIG_EXT_BIOS_WIN_BASE) $(CONFIG_EXT_BIOS_WIN_SIZE)) \
+	$(EXT_WINDOW_SIZE))
+CBFSTOOL_ADD_CMD_OPTIONS += --mmap $(DEFAULT_WINDOW_FLASH_BASE):$(DEFAULT_WINDOW_MMIO_BASE):$(DEFAULT_WINDOW_SIZE)
+CBFSTOOL_ADD_CMD_OPTIONS += --mmap $(EXT_WINDOW_FLASH_BASE):$(EXT_WINDOW_MMIO_BASE):$(EXT_WINDOW_SIZE)
+endif
+
 
 endif # CONFIG_FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW

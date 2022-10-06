@@ -200,6 +200,14 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end	#PCIE8 SD card
+		device ref pcie_rp12 on
+			# Enable PCIE eMMC bridge 12 using clk 4
+			register "pch_pcie_rp[PCH_RP(12)]" = "{
+				.clk_src = 4,
+				.clk_req = 4,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_AER,
+			}"
+		end     #PCIE12 EMMC
 		device ref gspi1 off end
 		device ref pch_espi on
 			chip ec/google/chromeec

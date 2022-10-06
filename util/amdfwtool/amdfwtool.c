@@ -204,7 +204,7 @@ static void usage(void)
 	printf("                               area\n");
 	printf("--soc-name <socname>           Specify SOC name. Supported names are\n");
 	printf("                               Stoneyridge, Raven, Picasso, Renoir, Cezanne\n");
-	printf("                               or Lucienne\n");
+	printf("                               Morgana, Glinda, or Lucienne\n");
 	printf("\nEmbedded Firmware Structure options used by the PSP:\n");
 	printf("--spi-speed <HEX_VAL>          SPI fast speed to place in EFS Table\n");
 	printf("                               0x0 66.66Mhz\n");
@@ -625,6 +625,8 @@ enum platform {
 	PLATFORM_CEZANNE,
 	PLATFORM_MENDOCINO,
 	PLATFORM_LUCIENNE,
+	PLATFORM_MORGANA,
+	PLATFORM_GLINDA
 };
 
 static uint32_t get_psp_id(enum platform soc_id)
@@ -1904,6 +1906,10 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 			return 1;
 		}
 		break;
+	/* TODO: Update for morgana and glinda */
+	case PLATFORM_MORGANA:
+	case PLATFORM_GLINDA:
+		break;
 	case PLATFORM_UNKNOWN:
 	default:
 		fprintf(stderr, "Error: Invalid SOC name.\n\n");
@@ -1928,6 +1934,10 @@ static int identify_platform(char *soc_name)
 		return PLATFORM_RENOIR;
 	else if (!strcasecmp(soc_name, "Lucienne"))
 		return PLATFORM_LUCIENNE;
+	else if (!strcasecmp(soc_name, "Morgana"))
+		return PLATFORM_MORGANA;
+	else if (!strcasecmp(soc_name, "Glinda"))
+		return PLATFORM_GLINDA;
 	else
 		return PLATFORM_UNKNOWN;
 

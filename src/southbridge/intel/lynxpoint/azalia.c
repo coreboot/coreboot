@@ -122,6 +122,7 @@ static struct device_operations azalia_ops = {
 
 static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_LPT_H_AUDIO,
+	PCI_DID_INTEL_LPT_H_AUDIO_9,
 	PCI_DID_INTEL_LPT_LP_AUDIO,
 	0
 };

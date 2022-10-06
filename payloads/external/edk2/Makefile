@@ -12,7 +12,10 @@ BUILD_STR = -p UefiPayloadPkg/UefiPayloadPkg.dsc
 BUILD_STR += -t COREBOOT
 BUILD_STR += -D BOOTLOADER=COREBOOT
 ifneq ($(CONFIG_EDK2_VERBOSE_BUILD),y)
-BUILD_STR += -q -s
+BUILD_STR += -q
+ifeq ($(CONFIG_EDK2_UEFIPAYLOAD),y)
+BUILD_STR += -s
+endif
 endif
 
 #

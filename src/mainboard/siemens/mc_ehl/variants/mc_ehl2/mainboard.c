@@ -9,6 +9,8 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 
+#define HOSTCTRL2		0x3E
+#define  HOSTCTRL2_PRESET	(1 << 15)
 #define SD_CAP_BYP		0x810
 #define  SD_CAP_BYP_EN		0x5A
 #define SD_CAP_BYP_REG1		0x814
@@ -34,6 +36,7 @@ void variant_mainboard_final(void)
 	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
 	if (dev) {
 		uint32_t reg;
+		uint16_t reg16;
 		struct resource *res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 		if (!res)
 			return;
@@ -43,6 +46,11 @@ void variant_mainboard_final(void)
 		reg &= ~(SD_CAP_BYP_SDR104 | SD_CAP_BYP_SDR50);
 		reg |= SD_CAP_BYP_DDR50;
 		write32(res2mmio(res, SD_CAP_BYP_REG1, 0), reg);
+
+		/* Use preset driver strength from preset value registers. */
+		reg16 = read16(res2mmio(res, HOSTCTRL2, 0));
+		reg16 |= HOSTCTRL2_PRESET;
+		write16(res2mmio(res, HOSTCTRL2, 0), reg16);
 	}
 }
 

@@ -198,6 +198,18 @@ $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd: 
 		fi
 		echo "Success!"; \
 
+$(WORKSPACE)/Build/UefiPayloadPkgX64/UniversalPayload.elf: \
+	prep print
+	cd $(WORKSPACE); \
+		source $(EDK2_PATH)/edksetup.sh; \
+		echo -n "EDK2: Building... "; \
+		$(EDK2_PATH)/UefiPayloadPkg/UniversalPayloadBuild.sh -a IA32 -a X64 -b $(RELEASE_STR) $(BUILD_STR)
+		if [ ! -f $@ ]; then \
+			echo "Failed!"; \
+			exit 1; \
+		fi
+		echo "Success!"; \
+
 UefiPayloadPkg: $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd
 	mv $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd \
 		../../../build/UEFIPAYLOAD.fd

@@ -175,6 +175,16 @@
                 "speedMbps": 7500,
                 "lp5x": true
             }
+        },
+	{
+            "name": "H9JCNNNFA5MLYR-N6E",
+            "attribs": {
+                "densityPerDieGb": 8,
+                "diesPerPackage": 8,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 2,
+                "speedMbps": 6400
+            }
         }
     ]
 }

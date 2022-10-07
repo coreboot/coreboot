@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <spi_bitbang.h>
+#include <types.h>
 
 /* Set to 1 to dump all SPI transfers to the UART. */
 #define TRACE		0

@@ -3,6 +3,7 @@
 #include <arch/io.h>
 #include <pc80/i8259.h>
 #include <console/console.h>
+#include <stdint.h>
 
 /* Read the current PIC IRQ mask */
 u16 pic_read_irq_mask(void)

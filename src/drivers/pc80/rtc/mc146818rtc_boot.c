@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <console/console.h>
-#include <pc80/mc146818rtc.h>
 #include <fallback.h>
+#include <pc80/mc146818rtc.h>
+#include <stdint.h>
 
 #if  CONFIG_MAX_REBOOT_CNT > 15
 #error "CONFIG_MAX_REBOOT_CNT too high"

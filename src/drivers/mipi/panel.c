@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <mipi/panel.h>
+#include <types.h>
 
 enum cb_err mipi_panel_parse_init_commands(const void *buf, mipi_cmd_func_t cmd_func)
 {

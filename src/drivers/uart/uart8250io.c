@@ -2,7 +2,10 @@
 
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
+#include <commonlib/bsd/helpers.h>
 #include <console/uart.h>
+#include <stdint.h>
+
 #include "uart8250reg.h"
 
 /* Should support 8250, 16450, 16550, 16550A type UARTs */

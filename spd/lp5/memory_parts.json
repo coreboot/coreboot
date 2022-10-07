@@ -153,6 +153,28 @@
                 "speedMbps": 7500,
                 "lp5x": true
             }
+        },
+        {
+            "name":  "H58G66BK7BX067",
+            "attribs": {
+                "densityPerDieGb": 16,
+                "diesPerPackage": 4,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 2,
+                "speedMbps": 7500,
+                "lp5x": true
+            }
+        },
+        {
+            "name":  "H58G56BK7BX068",
+            "attribs": {
+                "densityPerDieGb": 16,
+                "diesPerPackage": 2,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 1,
+                "speedMbps": 7500,
+                "lp5x": true
+            }
         }
     ]
 }

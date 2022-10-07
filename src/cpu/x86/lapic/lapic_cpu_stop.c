@@ -4,6 +4,7 @@
 #include <cpu/x86/lapic.h>
 #include <delay.h>
 #include <halt.h>
+#include <stdint.h>
 
 /**
  * Sending INIT IPI to self is equivalent of asserting #INIT with a bit of

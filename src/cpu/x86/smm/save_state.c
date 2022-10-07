@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <cpu/x86/smm.h>
+#include <commonlib/bsd/helpers.h>
 #include <cpu/x86/save_state.h>
+#include <cpu/x86/smm.h>
+#include <types.h>
 
 /* These are weakly linked such that platforms can link only the save state
    ops they actually require. */

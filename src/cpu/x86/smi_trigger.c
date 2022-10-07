@@ -3,6 +3,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <stdint.h>
 
 static void apmc_log(const char *fn, u8 cmd)
 {

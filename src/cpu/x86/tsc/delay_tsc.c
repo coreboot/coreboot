@@ -3,6 +3,7 @@
 #include <arch/cpu.h>
 #include <cpu/x86/tsc.h>
 #include <delay.h>
+#include <stdint.h>
 #include <thread.h>
 
 void init_timer(void)

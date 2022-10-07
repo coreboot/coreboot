@@ -5,7 +5,7 @@
 #include <cpu/x86/msr.h>
 #include <console/console.h>
 #include <commonlib/bsd/helpers.h>
-#include <stdint.h>
+#include <types.h>
 
 /* Get first available variable MTRR.
  * Returns var# if available, else returns -1.

@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <smp/node.h>
-#include <cpu/x86/msr.h>
 #include <cpu/x86/lapic_def.h>
+#include <cpu/x86/msr.h>
+#include <smp/node.h>
 
 #if CONFIG(SMP)
 int boot_cpu(void)

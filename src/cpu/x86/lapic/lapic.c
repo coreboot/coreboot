@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
-#include <console/console.h>
 #include <smp/node.h>
-#include <stdint.h>
+#include <types.h>
 
 void enable_lapic_mode(bool try_set_x2apic)
 {

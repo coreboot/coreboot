@@ -1,11 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/io.h>
+#include <commonlib/bsd/compiler.h>
+#include <commonlib/region.h>
 #include <console/cbmem_console.h>
 #include <console/console.h>
-#include <commonlib/region.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
 #include <rmodule.h>
+#include <types.h>
 
 #if CONFIG(SPI_FLASH_SMM)
 #include <spi-generic.h>

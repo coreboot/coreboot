@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <string.h>
 #include <acpi/acpi.h>
-#include <console/console.h>
 #include <cbmem.h>
+#include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <string.h>
 
 void *backup_default_smm_area(void)
 {

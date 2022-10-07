@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <console/console.h>
+#include <stdint.h>
 
 /* Write POST information */
 void __weak arch_post_code(uint8_t value) { }

@@ -204,7 +204,7 @@ static void usage(void)
 	printf("                               area\n");
 	printf("--soc-name <socname>           Specify SOC name. Supported names are\n");
 	printf("                               Stoneyridge, Raven, Picasso, Renoir, Cezanne\n");
-	printf("                               Morgana, Glinda, or Lucienne\n");
+	printf("                               Mendocino, Morgana, Glinda, or Lucienne\n");
 	printf("\nEmbedded Firmware Structure options used by the PSP:\n");
 	printf("--spi-speed <HEX_VAL>          SPI fast speed to place in EFS Table\n");
 	printf("                               0x0 66.66Mhz\n");

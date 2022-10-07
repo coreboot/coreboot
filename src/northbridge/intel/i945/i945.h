@@ -3,9 +3,10 @@
 #ifndef NORTHBRIDGE_INTEL_I945_H
 #define NORTHBRIDGE_INTEL_I945_H
 
-#define DEFAULT_X60BAR		0xfed13000
-
+#include <northbridge/intel/common/fixed_bars.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
+
+#define DEFAULT_X60BAR		0xfed13000
 
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
@@ -85,12 +86,6 @@
 #define GTTADR		0x1c
 #define BSM		0x5c
 #define GCFC		0xf0	/* Graphics Clock Frequency & Gating Control */
-
-/*
- * MCHBAR
- */
-
-#include <northbridge/intel/common/fixed_bars.h>
 
 /* Chipset Control Registers */
 #define FSBPMC3		0x40	/* 32bit */

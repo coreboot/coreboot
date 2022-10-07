@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
-#include <cf9_reset.h>
 #include <arch/romstage.h>
+#include <cf9_reset.h>
 #include <northbridge/intel/i945/i945.h>
 #include <northbridge/intel/i945/raminit.h>
-#include <southbridge/intel/i82801gx/i82801gx.h>
 #include <southbridge/intel/common/pmclib.h>
+#include <southbridge/intel/i82801gx/i82801gx.h>
+#include <stdint.h>
 
 __weak void mainboard_lpc_decode(void)
 {

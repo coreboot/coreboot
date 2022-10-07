@@ -1,0 +1,130 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/haswell
+
+	# This mainboard has DVI-I
+	register "gpu_ddi_e_connected" = "1"
+
+	# This mainboard has a DP output
+	register "gpu_dp_c_hotplug" = "7"
+
+	chip cpu/intel/haswell
+		device cpu_cluster 0 on ops haswell_cpu_bus_ops end
+	end
+
+	device domain 0 on
+		ops haswell_pci_domain_ops
+		subsystemid 0x1849 0x0c00 inherit
+
+		device pci 00.0 on  end		# Host bridge
+		device pci 01.0 on  end		# Bifurcated PEG: PCIE2 slot
+		device pci 01.1 on  end		# Bifurcated PEG: PCIE4 slot
+		device pci 01.2 on  end		# Bifurcated PEG: M2_1 slot
+		device pci 02.0 on  end		# iGPU
+		device pci 03.0 on  end		# Mini-HD
+
+		chip southbridge/intel/lynxpoint
+			register "gen1_dec"		= "0x000c0291"	# Super I/O HWM
+			register "sata_port_map"	= "0x3f"
+
+			device pci 14.0 on  end		# xHCI controller
+			device pci 16.0 on  end		# MEI #1
+			device pci 16.1 off end		# MEI #2
+			device pci 19.0 on  end		# Intel GbE through I218-V PHY
+			device pci 1a.0 on  end		# EHCI #2
+			device pci 1b.0 on  end		# HD Audio
+			device pci 1c.0 on  end		# RP #1: muxed M2_2 slot, SATA Express
+			device pci 1c.1 off end		# RP #2
+			device pci 1c.2 on		# RP #3: Realtek RTL8111E GbE NIC
+				device pci 00.0 on end
+			end
+			device pci 1c.3 on  end		# RP #4: ASM1184E 4-Port PCIe switch
+			device pci 1c.4 on  end		# RP #5: PCIE5 slot
+			device pci 1c.5 off end		# RP #6
+			device pci 1c.6 on  end		# RP #7: ASM1042A USB 3.0
+			device pci 1c.7 off end		# RP #8
+			device pci 1d.0 on  end		# EHCI #1
+			device pci 1f.0 on		# LPC bridge
+				chip superio/common
+					device pnp 2e.0 on
+						chip superio/nuvoton/nct6791d
+							device pnp 2e.1   off end	# Parallel
+							device pnp 2e.2   on		# UART A
+								io  0x60 = 0x03f8
+								irq 0x70 = 4
+							end
+							device pnp 2e.3   off end	# IR
+							device pnp 2e.5   on		# PS/2 Keyboard/Mouse
+								io  0x60 = 0x0060
+								io  0x62 = 0x0064
+								irq 0x70 = 1		# + Keyboard IRQ
+								irq 0x72 = 12		# + Mouse IRQ
+							end
+							device pnp 2e.6   off end	# CIR
+							device pnp 2e.7   off end	# GPIO6
+							device pnp 2e.107 on		# GPIO7
+								irq 0xe0 = 0x6f
+								irq 0xe1 = 0x10
+							end
+							device pnp 2e.207 off end	# GPIO8
+							device pnp 2e.8   off end	# WDT
+							device pnp 2e.108 off end	# GPIO0
+							device pnp 2e.308 off end	# GPIO base
+							device pnp 2e.408 off end	# WDTMEM
+							device pnp 2e.708 on		# GPIO1
+								irq 0xf0 = 0xbe
+								irq 0xf1 = 0x01
+							end
+							device pnp 2e.9   on		# GPIO2
+								irq 0xe0 = 0xff
+								irq 0xe1 = 0x00
+							end
+							device pnp 2e.109 on		# GPIO3
+								irq 0xe4 = 0x6f
+								irq 0xe5 = 0x72
+							end
+							device pnp 2e.209 on		# GPIO4
+								irq 0xf0 = 0x0f
+								irq 0xf1 = 0x00
+							end
+							device pnp 2e.309 on		# GPIO5
+								irq 0xf4 = 0xdf
+								irq 0xf5 = 0x00
+							end
+							device pnp 2e.a   on		# ACPI
+								# Power RAM in S3
+								irq 0xe4 = 0x10
+								irq 0xe5 = 0x12
+								irq 0xed = 0x01
+								irq 0xf0 = 0x30
+							end
+							device pnp 2e.b   on		# HWM, LED
+								irq 0x30 = 0xe1		# + Fan RPM sense pins
+								io  0x60 = 0x0290	# + HWM base address
+								io  0x62 = 0
+								irq 0x70 = 0
+							end
+							device pnp 2e.d   off end	# BCLK, WDT2, WDT_MEM
+							device pnp 2e.e   off end	# CIR wake-up
+							device pnp 2e.f   off end	# GPIO PP/OD
+							device pnp 2e.14  off end	# SVID, Port 80 UART
+							device pnp 2e.16  off end	# DS5
+							device pnp 2e.116 off end	# DS3
+							device pnp 2e.316 off end	# PCHDSW
+							device pnp 2e.416 off end	# DSWWOPT
+							device pnp 2e.516 on  end	# DS3OPT
+							device pnp 2e.616 off end	# DSDSS
+							device pnp 2e.716 off end	# DSPU
+						end
+					end
+				end
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end	# TPM
+				end
+			end
+			device pci 1f.2 on  end		# SATA (AHCI)
+			device pci 1f.3 on  end		# SMBus
+			device pci 1f.5 off end		# SATA (Legacy)
+		end
+	end
+end

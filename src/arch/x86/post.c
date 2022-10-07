@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/io.h>
+#include <console/console.h>
 #include <post.h>
 #include <stdint.h>
-#include <console/console.h>
-#include <arch/io.h>
 
 void arch_post_code(uint8_t value)
 {

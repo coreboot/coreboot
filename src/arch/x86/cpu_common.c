@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cpu/cpu.h>
+#include <types.h>
 
 #if ENV_X86_32
 /* Standard macro to see if a specific flag is changeable */

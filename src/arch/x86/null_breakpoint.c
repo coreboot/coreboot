@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
+
 #include <arch/breakpoint.h>
 #include <arch/null_breakpoint.h>
 #include <bootstate.h>
 #include <console/console.h>
-#include <stdint.h>
+#include <types.h>
 
 static struct breakpoint_handle null_deref_bp;
 static struct breakpoint_handle null_fetch_bp;

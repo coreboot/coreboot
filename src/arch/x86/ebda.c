@@ -3,7 +3,7 @@
 #include <acpi/acpi.h>
 #include <bootstate.h>
 #include <commonlib/endian.h>
-#include <stdint.h>
+#include <types.h>
 
 #define X86_BDA_SIZE		0x200
 #define X86_BDA_BASE		((void *)0x400)

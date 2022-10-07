@@ -9,9 +9,10 @@
 #include <program_loading.h>
 #include <reset.h>
 #include <rmodule.h>
+#include <security/vboot/vboot_common.h>
 #include <stage_cache.h>
 #include <timestamp.h>
-#include <security/vboot/vboot_common.h>
+#include <types.h>
 
 static size_t var_mtrr_ctx_size(void)
 {

@@ -1,14 +1,17 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
-#include <device/path.h>
-#include <device/pci_ids.h>
+#include <acpi/acpi.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
-#include <string.h>
+#include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
+#include <device/device.h>
+#include <device/path.h>
+#include <device/pci_ids.h>
 #include <drivers/generic/ioapic/chip.h>
+#include <stdint.h>
+#include <string.h>
 
 /* Initialize the specified "mc" struct with initial values. */
 void mptable_init(struct mp_config_table *mc)

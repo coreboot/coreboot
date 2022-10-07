@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <random.h>
+#include <stdint.h>
 
 /*
  * Intel recommends that applications attempt 10 retries in a tight loop

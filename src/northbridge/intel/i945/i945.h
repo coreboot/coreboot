@@ -8,9 +8,6 @@
 
 #define DEFAULT_X60BAR		0xfed13000
 
-/* Everything below this line is ignored in the DSDT */
-#ifndef __ACPI__
-
 /* Display defines for the interrupt 15h handler */
 #define INT15_5F35_CL_DISPLAY_DEFAULT		0
 #define INT15_5F35_CL_DISPLAY_CRT		(1 << 0)
@@ -347,7 +344,5 @@ void mainboard_pre_raminit_config(int s3_resume);
 void mainboard_late_rcba_config(void);
 /* Optional: mainboard callback to get SPD map */
 void mainboard_get_spd_map(u8 spd_map[4]);
-
-#endif /* __ACPI__ */
 
 #endif /* NORTHBRIDGE_INTEL_I945_H */

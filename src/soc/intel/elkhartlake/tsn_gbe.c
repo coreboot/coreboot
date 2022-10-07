@@ -72,7 +72,7 @@ void tsn_mdio_write(void *base, uint8_t phy_adr, uint8_t reg_adr, uint16_t data)
 {
 	enum cb_err status;
 
-	setbits16(base + TSN_MAC_MDIO_DATA, data);
+	write16(base + TSN_MAC_MDIO_DATA, data);
 	clrsetbits32(base + TSN_MAC_MDIO_ADR, TSN_MAC_MDIO_ADR_MASK,
 			TSN_MAC_PHYAD(phy_adr) | TSN_MAC_REGAD(reg_adr)
 			| TSN_MAC_CLK_TRAIL_4 | TSN_MAC_CSR_CLK_DIV_62

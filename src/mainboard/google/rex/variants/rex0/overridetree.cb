@@ -1,3 +1,32 @@
+fw_config
+	field AUDIO 0 3
+		option AUDIO_UNKNOWN		0
+		option MAX98357_ALC5682I_I2S	1
+	end
+	field CELLULAR 4 5
+		option CELLULAR_ABSENT		0
+		option CELLULAR_USB		1
+		option CELLULAR_PCIE		2
+	end
+	field UFC 6 7
+		option UFC_USB			0
+		option UFC_MIPI			1
+	end
+	field WFC 8 9
+		option WFC_USB			0
+		option WFC_MIPI			1
+	end
+	field DB_SD 10 11
+		option SD_ABSENT		0
+		option SD_GL9755S		1
+	end
+	field DB_USB 12 13
+		option USB_UNKNOWN		0
+		option USB3_PS8815		1
+		option USB4			2
+	end
+end
+
 chip soc/intel/meteorlake
 
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C0
@@ -96,6 +125,7 @@ chip soc/intel/meteorlake
 			}"
 		end	#PCIE9 SSD card
 		device ref pcie_rp11 on
+			probe DB_SD SD_GL9755S
 			# Enable SD Card PCIE 11 using clk 2
 			register "pcie_rp[PCH_RP(11)]" = "{
 				.clk_src = 2,
@@ -161,12 +191,16 @@ chip soc/intel/meteorlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb2_port5 on end
+						device ref usb2_port5 on
+							probe CELLULAR CELLULAR_USB
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb2_port6 on end
+						device ref usb2_port6 on
+							probe UFC UFC_USB
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Port A0 (DB)""
@@ -211,7 +245,10 @@ chip soc/intel/meteorlake
 				register "cio2_prt[0]" = "4"
 				register "cio2_prt[1]" = "0"
 
-				device generic 0 on end
+				device generic 0 on
+					probe UFC UFC_MIPI
+					probe WFC WFC_MIPI
+				end
 			end
 		end
 		device ref i2c0 on
@@ -225,7 +262,9 @@ chip soc/intel/meteorlake
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
-				device i2c 1a on end
+				device i2c 1a on
+					probe AUDIO MAX98357_ALC5682I_I2S
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = ""OVTI8856""
@@ -267,7 +306,9 @@ chip soc/intel/meteorlake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 10 on end
+				device i2c 10 on
+					probe UFC UFC_MIPI
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "2"
@@ -278,7 +319,9 @@ chip soc/intel/meteorlake
 				register "pr0" = ""\\_SB.PCI0.I2C0.CAM0.PRIC""
 				register "vcm_compat" = ""dongwoon,dw9714""
 
-				device i2c 0C on end
+				device i2c 0C on
+					probe UFC UFC_MIPI
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "1"
@@ -294,7 +337,9 @@ chip soc/intel/meteorlake
 				register "nvm_readonly" = "0x01"
 				register "nvm_width" = "0x0E"
 
-				device i2c 50 on end
+				device i2c 50 on
+					probe UFC UFC_MIPI
+				end
 			end
 		end #I2C0
 		device ref i2c1 on
@@ -368,7 +413,9 @@ chip soc/intel/meteorlake
 				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 36 on end
+				device i2c 36 on
+					probe WFC WFC_MIPI
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
@@ -384,7 +431,9 @@ chip soc/intel/meteorlake
 				register "nvm_width" = "0x10"
 				register "nvm_compat" = ""atmel,24c64""
 
-				device i2c 50 on end
+				device i2c 50 on
+					probe WFC WFC_MIPI
+				end
 			end
 		end #I2C5
 		device ref pcie_rp5 on
@@ -396,6 +445,7 @@ chip soc/intel/meteorlake
 			}"
 		end	#PCIE5 WLAN card
 		device ref pcie_rp6 on
+			probe CELLULAR CELLULAR_PCIE
 			# Enable WWAN Card PCIE 6 using clk 3
 			register "pcie_rp[PCH_RP(6)]" = "{
 				.clk_src = 3,
@@ -450,7 +500,9 @@ chip soc/intel/meteorlake
 				register "sdmode_gpio" =
 						"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D04)"
 				register "sdmode_delay" = "5"
-				device generic 0 on end
+				device generic 0 on
+					probe AUDIO MAX98357_ALC5682I_I2S
+				end
 			end
 		end
 	end

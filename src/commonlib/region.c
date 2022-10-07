@@ -2,6 +2,7 @@
 
 #include <commonlib/helpers.h>
 #include <commonlib/region.h>
+#include <stdint.h>
 #include <string.h>
 
 int region_is_subregion(const struct region *p, const struct region *c)

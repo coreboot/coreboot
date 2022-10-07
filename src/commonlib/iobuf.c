@@ -3,6 +3,7 @@
 #include <commonlib/endian.h>
 #include <commonlib/iobuf.h>
 #include <string.h>
+#include <stdint.h>
 
 static int ibuf_check_size(const struct ibuf *ib, size_t sz)
 {

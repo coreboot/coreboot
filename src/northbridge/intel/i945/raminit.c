@@ -216,7 +216,7 @@ static int sdram_capabilities_core_frequencies(void)
 static void sdram_detect_errors(struct sys_info *sysinfo)
 {
 	u8 reg8;
-	u8 do_reset = 0;
+	bool do_reset = false;
 
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2);
 
@@ -225,7 +225,7 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 			printk(BIOS_DEBUG, "SLP S4# Assertion Width Violation.\n");
 			/* Write back clears bit 2 */
 			pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, reg8);
-			do_reset = 1;
+			do_reset = true;
 
 		}
 
@@ -233,7 +233,7 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 			printk(BIOS_DEBUG, "DRAM initialization was interrupted.\n");
 			reg8 &= ~(1 << 7);
 			pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, reg8);
-			do_reset = 1;
+			do_reset = true;
 		}
 
 		/* Set SLP_S3# Assertion Stretch Enable */
@@ -258,12 +258,12 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 		if (((sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED) ||
 		     (sysinfo->dimm[1] != SYSINFO_DIMM_NOT_POPULATED)) &&
 		    !(mchbar_read8(SLFRCS) & (1 << 0))) {
-			do_reset = 1;
+			do_reset = true;
 		}
 		if (((sysinfo->dimm[2] != SYSINFO_DIMM_NOT_POPULATED) ||
 		     (sysinfo->dimm[3] != SYSINFO_DIMM_NOT_POPULATED)) &&
 		    !(mchbar_read8(SLFRCS) & (1 << 1))) {
-			do_reset = 1;
+			do_reset = true;
 		}
 	}
 

@@ -1,7 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-# TODO(b/239090306): Check if this is still correct
-
 verstage-generic-ccopts += -I$(src)/soc/amd/mendocino/psp_verstage/include
 verstage-generic-ccopts += -I$(src)/vendorcode/amd/fsp/mendocino/include
 

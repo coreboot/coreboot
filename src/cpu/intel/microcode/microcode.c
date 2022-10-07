@@ -2,14 +2,13 @@
 
 /* Microcode update for Intel PIII and later CPUs */
 
-#include <stdint.h>
-#include <stddef.h>
-#include <cbfs.h>
 #include <arch/cpu.h>
+#include <cbfs.h>
 #include <console/console.h>
-#include <cpu/x86/msr.h>
 #include <cpu/intel/microcode.h>
+#include <cpu/x86/msr.h>
 #include <smp/spinlock.h>
+#include <types.h>
 
 DECLARE_SPIN_LOCK(microcode_lock)
 

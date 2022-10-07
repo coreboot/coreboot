@@ -1,8 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <bootblock_common.h>
 #include <arch/bootblock.h>
+#include <bootblock_common.h>
 #include <cpu/x86/bist.h>
+#include <stdint.h>
 
 static uint32_t saved_bist;
 

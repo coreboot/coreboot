@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/device.h>
 #include <cpu/cpu.h>
-#include <cpu/x86/mtrr.h>
-#include <cpu/intel/microcode.h>
-#include <cpu/intel/hyperthreading.h>
 #include <cpu/intel/common/common.h>
+#include <cpu/intel/hyperthreading.h>
+#include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
+#include <cpu/x86/mtrr.h>
+#include <device/device.h>
 
 static void model_f3x_init(struct device *cpu)
 {

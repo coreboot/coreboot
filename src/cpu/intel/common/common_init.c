@@ -4,8 +4,10 @@
 #include <arch/cpu.h>
 #include <console/console.h>
 #include <cpu/intel/msr.h>
-#include <cpu/x86/msr.h>
 #include <cpu/intel/turbo.h>
+#include <cpu/x86/msr.h>
+#include <types.h>
+
 #include "common.h"
 
 #define  CPUID_6_ECX_EPB		(1 << 3)

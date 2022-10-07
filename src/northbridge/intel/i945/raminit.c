@@ -426,11 +426,12 @@ static void gather_common_timing(struct sys_info *sysinfo, struct timings *saved
 			die("DDR-II rank size smaller than 128MB is not supported.\n");
 
 		sysinfo->banksize[i * 2] = dimm_info.ranksize_mb / 32;
-		printk(BIOS_DEBUG, "DIMM %d side 0 = %d MB\n", i, sysinfo->banksize[i * 2] * 32);
+		printk(BIOS_DEBUG, "DIMM %d side 0 = %zu MB\n", i,
+			sysinfo->banksize[i * 2] * 32);
 		if (dimm_info.ranks == 2) {
 			sysinfo->banksize[(i * 2) + 1] =
 				dimm_info.ranksize_mb / 32;
-			printk(BIOS_DEBUG, "DIMM %d side 1 = %d MB\n",
+			printk(BIOS_DEBUG, "DIMM %d side 1 = %zu MB\n",
 				i, sysinfo->banksize[(i * 2) + 1] * 32);
 		}
 
@@ -1142,7 +1143,7 @@ static void sdram_enable_system_memory_io(struct sys_info *sysinfo)
 static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 {
 	int i;
-	int cum0, cum1, tolud, tom, pci_mmio_size;
+	size_t cum0, cum1, tolud, tom, pci_mmio_size;
 	const struct device *dev;
 	const struct northbridge_intel_i945_config *cfg = NULL;
 

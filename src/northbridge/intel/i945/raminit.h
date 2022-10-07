@@ -49,7 +49,7 @@ struct sys_info {
 #define SYSINFO_DIMM_NOT_POPULATED	0x04
 
 	u8 banks[2 * DIMM_SOCKETS];
-	u8 banksize[2 * 2 * DIMM_SOCKETS];
+	size_t banksize[2 * 2 * DIMM_SOCKETS];
 	const u8 *spd_addresses;
 
 } __packed;

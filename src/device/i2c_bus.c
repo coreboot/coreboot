@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
+#include <commonlib/bsd/helpers.h>
 #include <console/console.h>
+#include <device/device.h>
 #include <device/smbus.h>
 #include <device/i2c_bus.h>
 #include <commonlib/endian.h>
+#include <types.h>
 
 bool i2c_dev_detect(struct device *dev, unsigned int addr)
 {

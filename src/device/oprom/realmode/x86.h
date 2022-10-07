@@ -4,6 +4,7 @@
 #define __DEVICE_OPROM_REALMODE_X86_H__
 
 #include <arch/cpu.h>
+#include <stdint.h>
 
 #define REALMODE_BASE ((void *)0x600)
 

@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/gpio.h>
+#include <stddef.h>
 
 const struct gpio_operations *dev_get_gpio_ops(struct device *dev)
 {

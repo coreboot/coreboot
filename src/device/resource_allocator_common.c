@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
+#include <stddef.h>
 
 struct pick_largest_state {
 	struct resource *last;

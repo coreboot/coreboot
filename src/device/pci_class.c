@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/bsd/helpers.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
+#include <stddef.h>
 
 typedef struct {
 	const unsigned char subclass_id;

@@ -5,6 +5,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/cardbus.h>
+#include <types.h>
 
 /*
  * I don't think this code is quite correct but it is close.

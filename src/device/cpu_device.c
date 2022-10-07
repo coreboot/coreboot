@@ -2,6 +2,7 @@
 
 #include <device/device.h>
 #include <console/console.h>
+#include <stddef.h>
 
 struct device *add_cpu_device(struct bus *cpu_bus, unsigned int apic_id,
 			      int enabled)

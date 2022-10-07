@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/bsd/helpers.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <memrange.h>
 #include <post.h>
+#include <types.h>
 
 static const char *resource2str(const struct resource *res)
 {

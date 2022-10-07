@@ -2,6 +2,7 @@
 
 #include <device/dram/spd.h>
 #include <spd.h>
+#include <stddef.h>
 
 const char *spd_manufacturer_name(const uint16_t mod_id)
 {

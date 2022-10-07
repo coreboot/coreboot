@@ -1604,7 +1604,8 @@ static void sdram_program_pll_settings(struct sys_info *sysinfo)
 static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 {
 	u8 reg8;
-	u8 freq, second_vco, voltage;
+	u8 freq, voltage;
+	bool second_vco = false;
 
 #define CRCLK_166MHz	0x00
 #define CRCLK_200MHz	0x01
@@ -1680,10 +1681,8 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 	else
 		sysinfo->mvco4x = 0;
 
-	second_vco = 0;
-
 	if (voltage == VOLTAGE_1_50) {
-		second_vco = 1;
+		second_vco = true;
 	} else if ((i945_silicon_revision() > 0) && (freq == CRCLK_250MHz)) {
 		u16 mem = sysinfo->memory_frequency;
 		u16 fsb = sysinfo->fsb_frequency;
@@ -1691,17 +1690,14 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 		if ((fsb == 667 && mem == 533) ||
 		    (fsb == 533 && mem == 533) ||
 		    (fsb == 533 && mem == 400)) {
-			second_vco = 1;
+			second_vco = true;
 		}
 
 		if (fsb == 667 && mem == 533)
 			sysinfo->mvco4x = 1;
 	}
 
-	if (second_vco)
-		sysinfo->clkcfg_bit7 = 1;
-	else
-		sysinfo->clkcfg_bit7 = 0;
+	sysinfo->clkcfg_bit7 = second_vco;
 
 	/* Graphics Core Render Clock */
 	pci_update_config16(IGD_DEV, GCFC, ~((7 << 0) | (1 << 13)), freq);

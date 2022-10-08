@@ -82,7 +82,7 @@ static int read_psp_directory(FILE *fw, uint32_t offset, uint32_t expected_cooki
 	/* Ensure that we have a PSP directory */
 	if (header->cookie != expected_cookie) {
 		ERR("Invalid PSP header cookie value found: 0x%x, expected: 0x%x\n",
-			expected_cookie, header->cookie);
+		    header->cookie, expected_cookie);
 		return 1;
 	}
 

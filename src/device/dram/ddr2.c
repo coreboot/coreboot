@@ -122,7 +122,7 @@ u8 spd_get_msbs(u8 c)
  * Decodes a raw SPD data from a DDR2 DIMM.
  * Returns cycle time in 1/256th ns.
  */
-static int spd_decode_tck_time(u32 *tck, u8 c)
+static enum cb_err spd_decode_tck_time(u32 *tck, u8 c)
 {
 	u8 high, low;
 
@@ -159,7 +159,7 @@ static int spd_decode_tck_time(u32 *tck, u8 c)
  * Decodes a raw SPD data from a DDR2 DIMM.
  * Returns cycle time in 1/256th ns.
  */
-static int spd_decode_bcd_time(u32 *bcd, u8 c)
+static enum cb_err spd_decode_bcd_time(u32 *bcd, u8 c)
 {
 	u8 high, low;
 
@@ -194,7 +194,7 @@ static u32 spd_decode_quarter_time(u8 c)
  * Decodes a raw SPD data from a DDR2 DIMM.
  * Returns cycle time in 1/256th us.
  */
-static int spd_decode_tRR_time(u32 *tRR, u8 c)
+static enum cb_err spd_decode_tRR_time(u32 *tRR, u8 c)
 {
 	switch (c & ~0x80) {
 	default:

@@ -7,7 +7,7 @@ postcar-y += mode_switch.S
 ramstage-y += mode_switch.S
 
 # Add --defsym=_start=0 to suppress a linker warning.
-$(objcbfs)/pt: $(dir)/pt.S
+$(objcbfs)/pt: $(dir)/pt.S $(obj)/config.h
 	$(CC_bootblock) $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) -o $@.tmp $< -Wl,--section-start=.rodata=$(CONFIG_ARCH_X86_64_PGTBL_LOC),--defsym=_start=0
 	$(OBJCOPY_ramstage) -Obinary -j .rodata $@.tmp $@
 	rm $@.tmp

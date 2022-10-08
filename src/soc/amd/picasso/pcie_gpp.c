@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <amdblocks/amd_pci_util.h>
+#include <commonlib/bsd/helpers.h>
 #include <soc/pci_devs.h>
+#include <stddef.h>
 
 /* See AMD PPR 55570 - IOAPIC Initialization for the table that AGESA sets up */
 const struct pci_routing_info pci_routing_table[] = {

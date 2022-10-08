@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <amdblocks/smu.h>
+#include <console/console.h>
 #include <soc/smu.h>
 
 /*

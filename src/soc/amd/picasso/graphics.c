@@ -4,6 +4,7 @@
 #include <device/pci_rom.h>
 #include <soc/cpu.h>
 #include <soc/soc_util.h>
+#include <stdint.h>
 
 void map_oprom_vendev_rev(u32 *vendev, u8 *rev)
 {

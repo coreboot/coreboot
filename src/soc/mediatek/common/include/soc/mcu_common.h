@@ -13,6 +13,6 @@ struct mtk_mcu {
 	void (*reset)(struct mtk_mcu *mcu);	/* The reset callback */
 };
 
-int mtk_init_mcu(struct mtk_mcu *mcu);
+enum cb_err mtk_init_mcu(struct mtk_mcu *mcu);
 
 #endif /* SOC_MEDIATEK_MTLIB_COMMON_H */

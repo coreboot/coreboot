@@ -7,7 +7,7 @@
 #include <soc/symbols.h>
 #include <timer.h>
 
-int mtk_init_mcu(struct mtk_mcu *mcu)
+enum cb_err mtk_init_mcu(struct mtk_mcu *mcu)
 {
 	struct stopwatch sw;
 

@@ -1,6 +1,7 @@
 # vboot-enabled devices
 
 ## AMD
+- Birman
 - Chausie
 - Majolica
 
@@ -35,7 +36,6 @@
 - Anahera4ES
 - Brask
 - Brya 0
-- Brya4ES
 - Felwinter
 - Gimble
 - Gimble4ES
@@ -46,6 +46,8 @@
 - Primus4ES
 - Redrix
 - Redrix4ES
+- Skolas
+- Skolas4ES
 - Taeko
 - Taeko4ES
 - Taniks
@@ -55,12 +57,26 @@
 - Crota
 - Moli
 - Kinox
+- Craask
+- Osiris
+- Mithrax
+- Kuldax
+- Joxer
+- Pujjo
+- Xivu
+- Gaelin4ADL
+- Yaviks
+- Lisbon
+- Zydron
 - Butterfly (HP Pavilion Chromebook 14)
 - Cherry
 - Dojo
 - Tomato
 - Kingler
+- Steelix
 - Krabby
+- Tentacruel
+- Magikarp
 - Banon (Acer Chromebook 15 (CB3-532))
 - Celes (Samsung Chromebook 3)
 - Cyan (Acer Chromebook R11 (C738T))
@@ -72,7 +88,6 @@
 - Terra (ASUS Chromebook C202SA/C300SA/C301SA)
 - Ultima (Lenovo Yoga 11e G3)
 - Wizpig
-- Daisy (Samsung Chromebook (2012))
 - Drallion
 - Eve (Google Pixelbook)
 - Fizz
@@ -80,6 +95,7 @@
 - Endeavour
 - Foster
 - Gale (Google WiFi)
+- Geralt
 - Asuka (Dell Chromebook 13 3380)
 - Caroline (Samsung Chromebook Pro)
 - Cave (Asus Chromebook Flip C302SA)
@@ -97,34 +113,25 @@
 - Nipperkin
 - Dewatt
 - Akemi (IdeaPad Flex 5/5i Chromebook)
-- Ambassador
-- Dooly
 - Dratini (HP Pro c640 Chromebook)
-- Duffy Legacy (32MB)
-- Duffy (ASUS Chromebox 4)
-- Faffy (ASUS Fanless Chromebox)
-- Genesis
 - Hatch
 - Helios (ASUS Chromebook Flip C436FA)
 - Helios_Diskswap
 - Jinlon (HP Elite c1030 Chromebook)
-- Kaisa Legacy (32MB)
-- Kaisa (Acer Chromebox CXI4)
 - Kindred (Acer Chromebook 712)
 - Kohaku (Samsung Galaxy Chromebook)
-- Moonbuggy
 - Mushu
 - Nightfury (Samsung Galaxy Chromebook 2)
-- Noibat (HP Chromebox G3)
 - Palkia
-- Puff
-- Scout
-- Wyvern (CTL Chromebox CBx2)
 - Herobrine
 - Herobrine_Rev0
 - Senor
 - Piglin
 - Hoglin
+- Villager
+- Evoker
+- Zoglin
+- Zombie
 - Guado (ASUS Chromebox CN62)
 - Jecht
 - Rikku (Acer Chromebox CXI2)
@@ -164,14 +171,26 @@
 - Elm (Acer Chromebook R13)
 - Hana (Lenovo N23 Yoga Chromebook)
 - Parrot (Acer C7/C710 Chromebook)
-- Peach Pit (Samsung Chromebook 2 11\")
 - Atlas (Google Pixelbook Go)
 - Poppy
 - Nami
 - Nautilus (Samsung Chromebook Plus V2, V2 LTE)
 - Nocturne (Google Pixel Slate)
-- Rammus (Asus Chromebook C425, Flip C433, Flip C434)
+- Rammus
 - Soraka (HP Chromebook x2)
+- Ambassador
+- Dooly
+- Duffy Legacy (32MB)
+- Duffy (ASUS Chromebox 4)
+- Faffy (ASUS Fanless Chromebox)
+- Genesis
+- Kaisa Legacy (32MB)
+- Kaisa (Acer Chromebox CXI4)
+- Moonbuggy
+- Noibat (HP Chromebox G3)
+- Puff
+- Scout
+- Wyvern (CTL Chromebox CBx2)
 - Banjo (Acer Chromebook 15 (CB3-531))
 - Candy (Dell Chromebook 11 3120)
 - Clapper (Lenovo N20 Chromebook)
@@ -193,8 +212,13 @@
 - Sand (Acer Chromebook 15 CB515-1HT/1H)
 - Snappy (HP Chromebook x360 11 G1 EE)
 - Coral
+- Rex 0
 - Arcada (Latitude 5300 2-in-1 Chromebook Enterprise)
 - Sarien (Dell Latitude 5400 Chromebook Enterprise)
+- Skyrim
+- Winterhold
+- Morthal
+- Frostflow
 - Falco (HP Chromebook 14)
 - Leon (Toshiba Chromebook)
 - Peppy (Acer C720/C720P Chromebook)
@@ -222,6 +246,25 @@
 - Veyron_Speedy (ASUS C201 Chromebook)
 - Veyron_Mickey (Asus Chromebit CS10)
 - Veyron_Rialto
+- Delbin (ASUS Chromebook Flip CX5)
+- Eldrid
+- Halvor
+- Lindar
+- Malefor
+- Terrador
+- Todor
+- Trondo
+- Volteer
+- Volteer2
+- Volteer2_Ti50
+- Voxel (Acer Chromebook Spin 713 (CP713-3W))
+- Elemi (HP Pro c640 G2 Chromebook)
+- Voema
+- Drobit (ASUS Chromebook CX9400)
+- Copano (ASUS Chromebook Flip CX5400)
+- Collis
+- Volet
+- Chronicler
 - Dalboz
 - Vilboz (Lenovo 100e/300e Gen3 AMD)
 - Ezkinil (Acer Chromebook Spin 514)
@@ -234,6 +277,7 @@
 - Gumboz (HP Chromebook x360 14a)
 
 ## HP
+- Z220 CMT Workstation
 - Z220 SFF Workstation
 
 ## Intel
@@ -244,6 +288,7 @@
 - Alderlake-M RVP with Chrome EC
 - Alderlake-N RVP
 - Alderlake-N RVP with Chrome EC
+- Raptorlake silicon with Alderlake-P RVP and Chrome EC
 - Basking Ridge CRB
 - Coffeelake U SO-DIMM DDR4 RVP
 - Coffeelake H SO-DIMM DDR4 RVP11
@@ -270,6 +315,8 @@
 - Whitetip Mountain 2 CRB
 
 ## Lenovo
+- ThinkPad T440p
+- ThinkPad W541
 - ThinkPad T400
 - ThinkPad T500
 - ThinkPad R400
@@ -281,7 +328,6 @@
 - ThinkPad T430
 - ThinkPad T430s
 - ThinkPad T431s
-- ThinkPad T440p
 - ThinkPad T520
 - ThinkPad W520
 - ThinkPad T530
@@ -299,6 +345,9 @@
 - ThinkPad X230s
 - ThinkPad X60 / X60s / X60t
 
+## MSI
+- PRO Z690-A WIFI DDR4
+
 ## OpenCellular
 - Elgon (GBCv2)
 
@@ -313,6 +362,11 @@
 - MC APL4
 - MC APL5
 - MC APL6
+- MC APL7
+
+## Star Labs
+- Star Labs Lite Mk III (N5000)
+- Star Labs Lite Mk IV (N5030)
 
 ## Supermicro
 - X11SSH-TF

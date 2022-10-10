@@ -1068,6 +1068,15 @@ static void fill_fsps_fivr_params(FSP_S_CONFIG *s_cfg,
 
 	s_cfg->PchFivrExtVnnRailIccMaximum =
 			config->ext_fivr_settings.vnn_icc_max_ma;
+
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
+	/* Enable the FIVR VCCST ICCMax Control for ADL-N.
+	 * TODO:Right now the UPD is update in partial headers for only ADL-N and when its
+	 * updated for ADL-P then we will remove the config since this needs to be enabled for
+	 * all the Alderlake platforms.
+	 */
+	s_cfg->PchFivrVccstIccMaxControl = 1;
+#endif
 }
 
 static void fill_fsps_fivr_rfi_params(FSP_S_CONFIG *s_cfg,

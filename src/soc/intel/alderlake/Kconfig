@@ -428,6 +428,7 @@ config ACPI_ADL_IPU_ES_SUPPORT
 config ALDERLAKE_ENABLE_SOC_WORKAROUND
 	bool
 	default y
+	select SOC_INTEL_UFS_LTR_DISQUALIFY
 	select SOC_INTEL_UFS_OCP_TIMER_DISABLE
 	help
 	  Selects the workarounds applicable for Alder Lake SoC.

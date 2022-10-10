@@ -56,4 +56,9 @@ config SOC_INTEL_UFS_OCP_TIMER_DISABLE
 	  work around the Silicon Issue due to which LTR mechanism
 	  doesn't work.
 
+config SOC_INTEL_UFS_LTR_DISQUALIFY
+	bool
+	help
+	  LTR needs to be disqualified for UFS in D3 to ensure PMC
+	  ignores LTR from UFS IP which is infinite.
 endif

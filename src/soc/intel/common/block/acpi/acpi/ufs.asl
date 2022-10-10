@@ -1,6 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
+#include <soc/iomap.h>
 #include <soc/pcr_ids.h>
 #include <soc/ufs.h>
+
+#define TRUE 1
+#define FALSE 0
 
 Scope (\_SB.PCI0)
 {
@@ -59,6 +63,18 @@ Scope (\_SB.PCI0)
 			PGEN, 1
 		}
 
+		OperationRegion(PWMR, SystemMemory, PCH_PWRM_BASE_ADDRESS, PCH_PWRM_BASE_SIZE)
+		Field(PWMR, DWordAcc, NoLock, Preserve)
+		{
+			Offset(R_PMC_PWRM_LTR_IGN),
+			, 18,
+			LTRU,  1,         /* Bit 18 - Ignore LTR from UFS X2 */
+		}
+
+		Method (ULTR, 1, Serialized) {
+			LTRU = Arg0
+		}
+
 		Method (_PS0, 0, Serialized)
 		{
 			/* Disable PG */
@@ -66,6 +82,11 @@ Scope (\_SB.PCI0)
 
 			/* Set BIT[1:0] = 00b - Power State D0 */
 			PSTA &= 0xFFFFFFFC
+
+#if CONFIG(SOC_INTEL_UFS_LTR_DISQUALIFY)
+			/* Remove Disqualification of LTR from UFS IP */
+			ULTR (FALSE)
+#endif
 
 #if CONFIG(SOC_INTEL_UFS_OCP_TIMER_DISABLE)
 			/* Disable OCP Timer in SCS UFS IOSF Bridge */
@@ -75,6 +96,11 @@ Scope (\_SB.PCI0)
 
 		Method (_PS3, 0, Serialized)
 		{
+#if CONFIG(SOC_INTEL_UFS_LTR_DISQUALIFY)
+			/* Disqualify LTR from UFS IP */
+			ULTR (TRUE)
+#endif
+
 			/* Enable PG */
 			PGEN = 1
 		}

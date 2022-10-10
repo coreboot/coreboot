@@ -93,6 +93,57 @@ unsigned int pciexp_find_ext_vendor_cap(const struct device *dev, unsigned int c
 	}
 }
 
+/**
+ * Find a PCIe device with a given serial number, and a given VID if applicable
+ *
+ * @param serial The serial number of the device.
+ * @param vid Vendor ID of the device, may be 0 if not applicable.
+ * @param from Pointer to the device structure, used as a starting point in
+ *             the linked list of all_devices, which can be 0 to start at the
+ *             head of the list (i.e. all_devices).
+ * @return Pointer to the device struct.
+ */
+struct device *pcie_find_dsn(const uint64_t serial, const uint16_t vid,
+			struct device *from)
+{
+	union dsn {
+		struct {
+			uint32_t dsn_low;
+			uint32_t dsn_high;
+		};
+		uint64_t dsn;
+	} dsn;
+	unsigned int cap;
+	uint16_t vendor_id;
+
+	if (!from)
+		from = all_devices;
+	else
+		from = from->next;
+
+	while (from) {
+		if (from->path.type == DEVICE_PATH_PCI) {
+			cap = pciexp_find_extended_cap(from, PCI_EXT_CAP_ID_DSN, 0);
+			/*
+			 * For PCIe device, find extended capability for serial number.
+			 * The capability header is 4 bytes, followed by lower 4 bytes
+			 * of serial number, then higher 4 byes of serial number.
+			 */
+			if (cap != 0) {
+				dsn.dsn_low = pci_read_config32(from, cap + 4);
+				dsn.dsn_high = pci_read_config32(from, cap + 8);
+				vendor_id = pci_read_config16(from, PCI_VENDOR_ID);
+				if ((dsn.dsn == serial) && (vid == 0 || vendor_id == vid))
+					return from;
+			}
+		}
+
+		from = from->next;
+	}
+
+	return from;
+}
+
 /*
  * Re-train a PCIe link
  */

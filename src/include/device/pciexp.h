@@ -44,6 +44,9 @@ static inline bool pciexp_is_downstream_port(int type)
 	       type == PCI_EXP_TYPE_PCIE_BRIDGE;
 }
 
+struct device *pcie_find_dsn(const uint64_t serial, const uint16_t vid,
+	struct device *from);
+
 bool pciexp_get_ltr_max_latencies(struct device *dev, u16 *max_snoop, u16 *max_nosnoop);
 
 #endif /* DEVICE_PCIEXP_H */

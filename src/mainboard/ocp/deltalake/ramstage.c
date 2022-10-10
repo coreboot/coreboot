@@ -1,22 +1,26 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <commonlib/bsd/helpers.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
+#include <cpxsp_dl_gpio.h>
+#include <device/device.h>
+#include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include <drivers/ipmi/ipmi_ops.h>
 #include <drivers/ocp/dmi/ocp_dmi.h>
 #include <drivers/vpd/vpd.h>
-#include <security/intel/txt/txt.h>
-#include <soc/ramstage.h>
-#include <soc/soc_util.h>
-#include <stdio.h>
-#include <string.h>
-#include <smbios.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
-#include <soc/util.h>
 #include <hob_iiouds.h>
 #include <hob_memmap.h>
-#include <cpxsp_dl_gpio.h>
+#include <security/intel/txt/txt.h>
+#include <smbios.h>
+#include <soc/ramstage.h>
+#include <soc/soc_util.h>
+#include <soc/util.h>
+#include <stdio.h>
+#include <string.h>
+#include <types.h>
 
 #include "ipmi.h"
 #include "vpd.h"

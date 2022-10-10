@@ -3,7 +3,7 @@
 #ifndef DELTALAKE_IPMI_H
 #define DELTALAKE_IPMI_H
 
-#include <stdint.h>
+#include <types.h>
 
 #define IPMI_OEM_GET_PCIE_CONFIG		0xf4
 #define IPMI_OEM_GET_BOARD_ID			0x37

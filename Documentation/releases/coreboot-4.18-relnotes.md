@@ -40,9 +40,8 @@ Plans for Code Deprecation
 
 ### Intel Icelake
 
-Intel Icelake code will be removed following the 4.19 release, planned
-for November 2022. This consists of the Intel Icelake SOC and Intel
-Icelake RVP mainboard
+Intel Icelake code will be removed with the release 4.19. This consists
+of the Intel Icelake SOC and Intel Icelake RVP mainboard
 
 Intel Icelake is unmaintained. Also, the only user of this platform ever
 was the CRB board. From the looks of it the code never was ready for

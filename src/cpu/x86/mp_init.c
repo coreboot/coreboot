@@ -151,6 +151,7 @@ static enum cb_err wait_for_aps(atomic_t *val, int target, int total_delay,
 	}
 
 	/* APs ready before timeout */
+	printk(BIOS_SPEW, "APs are ready after %dus\n", delayed);
 	return CB_SUCCESS;
 }
 
@@ -468,7 +469,7 @@ static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_ap
 		if (send_sipi_to_aps(ap_count, num_aps, sipi_vector) != CB_SUCCESS)
 			return CB_ERR;
 
-		/* Wait for CPUs to check in up to 200 us. */
+		/* Wait for CPUs to check in. */
 		wait_for_aps(num_aps, ap_count, 200 /* us */, 15 /* us */);
 	}
 
@@ -477,7 +478,7 @@ static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_ap
 		return CB_ERR;
 
 	/* Wait for CPUs to check in. */
-	if (wait_for_aps(num_aps, ap_count, 100000 /* 100 ms */, 50 /* us */) != CB_SUCCESS) {
+	if (wait_for_aps(num_aps, ap_count, 400000 /* 400 ms */, 50 /* us */) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Not all APs checked in: %d/%d.\n",
 		       atomic_read(num_aps), ap_count);
 		return CB_ERR;

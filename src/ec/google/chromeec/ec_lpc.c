@@ -239,7 +239,7 @@ static int google_chromeec_command_v3(struct chromeec_command *cec_command)
 	/* Check result */
 	cec_command->cmd_code = read_byte(EC_LPC_ADDR_HOST_DATA);
 	if (cec_command->cmd_code) {
-		printk(BIOS_ERR, "EC returned error result code %d\n",
+		printk(BIOS_SPEW, "EC returned error result code %d\n",
 			cec_command->cmd_code);
 		return -i;
 	}

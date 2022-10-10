@@ -173,7 +173,7 @@ static void save_mma_results_data(void *unused)
 		return;
 	}
 
-	mma_data_size = ALIGN(mma_hob_size, 16) +
+	mma_data_size = ALIGN_UP(mma_hob_size, 16) +
 			sizeof(struct mma_data_container);
 
 	mma_data = cbmem_add(CBMEM_ID_MMA_DATA, mma_data_size);

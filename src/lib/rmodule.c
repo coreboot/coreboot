@@ -222,7 +222,7 @@ static void *rmodule_cbfs_allocator(void *rsl_arg, size_t unused,
 	 * to place the rmodule so that the program falls on the aligned
 	 * address with the header just before it. Therefore, we need at least
 	 * a page to account for the size of the header. */
-	size_t region_size = ALIGN(memlen + region_alignment, 4096);
+	size_t region_size = ALIGN_UP(memlen + region_alignment, 4096);
 	/* The program starts immediately after the header. However,
 	 * it needs to be aligned to a 4KiB boundary. Therefore, adjust the
 	 * program location so that the program lands on a page boundary.  The

@@ -91,7 +91,7 @@ unsigned long hest_create(unsigned long current, struct acpi_rsdp *rsdp)
 	printk(BIOS_DEBUG, "elog_addr: %llx, size:%x\n", gnvs->hest_log_addr,
 		CONFIG_ERROR_LOG_BUFFER_SIZE);
 
-	current = ALIGN(current, 8);
+	current = ALIGN_UP(current, 8);
 	hest = (acpi_hest_t *)current;
 	acpi_write_hest(hest, acpi_fill_hest);
 	acpi_add_table(rsdp, (void *)current);

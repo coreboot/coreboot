@@ -228,7 +228,7 @@ void *bootmem_allocate_buffer(size_t size)
 	}
 
 	/* 4KiB alignment. */
-	size = ALIGN(size, 4096);
+	size = ALIGN_UP(size, 4096);
 	region = NULL;
 	memranges_each_entry(r, &bootmem) {
 		if (range_entry_base(r) >= max_addr)

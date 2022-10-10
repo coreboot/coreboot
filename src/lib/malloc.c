@@ -26,7 +26,7 @@ void *memalign(size_t boundary, size_t size)
 	MALLOCDBG("%s Enter, boundary %zu, size %zu, free_mem_ptr %p\n",
 		__func__, boundary, size, free_mem_ptr);
 
-	free_mem_ptr = (void *)ALIGN((unsigned long)free_mem_ptr, boundary);
+	free_mem_ptr = (void *)ALIGN_UP((unsigned long)free_mem_ptr, boundary);
 
 	p = free_mem_ptr;
 	free_mem_ptr += size;

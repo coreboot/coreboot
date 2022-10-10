@@ -235,13 +235,13 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	acpi_hest_t *hest;
 
 	/* HEST */
-	current = ALIGN(current, 8);
+	current = ALIGN_UP(current, 8);
 	hest = (acpi_hest_t *)current;
 	acpi_write_hest(hest, acpi_fill_hest);
 	acpi_add_table(rsdp, (void *)current);
 	current += hest->header.length;
 
-	current = ALIGN(current, 8);
+	current = ALIGN_UP(current, 8);
 	printk(BIOS_DEBUG, "ACPI:    * IVRS at %lx\n", current);
 	ivrs = agesawrapper_getlateinitptr(PICK_IVRS);
 	if (ivrs != NULL) {
@@ -254,7 +254,7 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	}
 
 	/* SRAT */
-	current = ALIGN(current, 8);
+	current = ALIGN_UP(current, 8);
 	printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", current);
 	srat = (acpi_srat_t *)agesawrapper_getlateinitptr(PICK_SRAT);
 	if (srat != NULL) {
@@ -267,7 +267,7 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	}
 
 	/* SLIT */
-	current = ALIGN(current, 8);
+	current = ALIGN_UP(current, 8);
 	printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", current);
 	slit = (acpi_slit_t *)agesawrapper_getlateinitptr(PICK_SLIT);
 	if (slit != NULL) {
@@ -280,7 +280,7 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	}
 
 	/* ALIB */
-	current = ALIGN(current, 16);
+	current = ALIGN_UP(current, 16);
 	printk(BIOS_DEBUG, "ACPI:  * AGESA ALIB SSDT at %lx\n", current);
 	alib = (acpi_header_t *)agesawrapper_getlateinitptr(PICK_ALIB);
 	if (alib != NULL) {
@@ -293,7 +293,7 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 							" Skipping.\n");
 	}
 
-	current   = ALIGN(current, 16);
+	current   = ALIGN_UP(current, 16);
 	printk(BIOS_DEBUG, "ACPI:    * SSDT at %lx\n", current);
 	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr(PICK_PSTATE);
 	if (ssdt != NULL) {

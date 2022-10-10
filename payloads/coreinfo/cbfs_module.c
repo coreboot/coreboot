@@ -68,7 +68,7 @@ static struct cbfile *firstfile(void)
 
 static struct cbfile *nextfile(struct cbfile *f)
 {
-	f = (struct cbfile *)((u8 *)f + ALIGN(ntohl(f->len) + ntohl(f->offset),
+	f = (struct cbfile *)((u8 *)f + ALIGN_UP(ntohl(f->len) + ntohl(f->offset),
 			      ntohl(header->align)));
 	return getfile(f);
 }

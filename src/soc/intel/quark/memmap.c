@@ -12,7 +12,7 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 
 	/* Locate the top of RAM */
 	top_of_low_usable_memory = (uintptr_t) cbmem_top();
-	top_of_ram = ALIGN(top_of_low_usable_memory, 16 * MiB);
+	top_of_ram = ALIGN_UP(top_of_low_usable_memory, 16 * MiB);
 
 	/* Cache postcar and ramstage */
 	postcar_frame_add_mtrr(pcf, top_of_ram - (16 * MiB), 16 * MiB,

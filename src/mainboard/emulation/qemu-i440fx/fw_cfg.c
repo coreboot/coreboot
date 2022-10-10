@@ -249,7 +249,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 		uint64_t addr8;
 		switch (s[i].command) {
 		case BIOS_LINKER_LOADER_COMMAND_ALLOCATE:
-			current = ALIGN(current, s[i].alloc.align);
+			current = ALIGN_UP(current, s[i].alloc.align);
 			if (fw_cfg_check_file(&f, s[i].alloc.file))
 				goto err;
 
@@ -329,7 +329,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 	printk(BIOS_DEBUG, "QEMU: loaded ACPI tables from fw_cfg.\n");
 	free(s);
 	free(addrs);
-	return ALIGN(current, 16);
+	return ALIGN_UP(current, 16);
 
 err:
 	printk(BIOS_DEBUG, "QEMU: loading ACPI tables from fw_cfg failed.\n");

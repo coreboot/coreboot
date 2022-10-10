@@ -414,7 +414,7 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 	const config_t *const config = config_of(device);
 
 	/* SRAT */
-	current = ALIGN(current, 8);
+	current = ALIGN_UP(current, 8);
 	printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", current);
 	srat = (acpi_srat_t *) current;
 	acpi_create_srat(srat, acpi_fill_srat);
@@ -422,7 +422,7 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 	acpi_add_table(rsdp, srat);
 
 	/* SLIT */
-	current = ALIGN(current, 8);
+	current = ALIGN_UP(current, 8);
 	printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", current);
 	slit = (acpi_slit_t *) current;
 	acpi_create_slit(slit, acpi_fill_slit);
@@ -431,7 +431,7 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 
 	/* DMAR */
 	if (config->vtd_support) {
-		current = ALIGN(current, 8);
+		current = ALIGN_UP(current, 8);
 		dmar = (acpi_dmar_t *)current;
 		enum dmar_flags flags = DMAR_INTR_REMAP;
 

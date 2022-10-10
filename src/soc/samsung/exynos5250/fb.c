@@ -100,7 +100,7 @@ void fb_init(unsigned long int fb_size, void *lcdbase,
 {
 	unsigned int val;
 
-	fb_size = ALIGN(fb_size, 4096);
+	fb_size = ALIGN_UP(fb_size, 4096);
 
 	write32(&exynos_disp_ctrl->vidcon1, pd->ivclk | pd->fixvclk);
 	val = ENVID_ON | ENVID_F_ON | (pd->clkval_f << CLKVAL_F_OFFSET);

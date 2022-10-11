@@ -32,7 +32,7 @@
 #endif
 
 /* UFS */
-#include "ufs.asl"
+#include <soc/intel/common/block/acpi/acpi/ufs.asl>
 
 /* SMBus 0:1f.4 */
 #include <soc/intel/common/block/acpi/acpi/smbus.asl>

@@ -42,5 +42,9 @@ scope (\_SB) {
 
 			Return (^RBUF)
 		}
+		Method (_STA, 0x0, NotSerialized)
+		{
+			Return(0xb)
+		}
 	}
 }

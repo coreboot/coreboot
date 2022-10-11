@@ -72,7 +72,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm_tmr_blk.addrh = 0x0;
 
 	fadt->x_gpe0_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_gpe0_blk.bit_width = 64;
+	fadt->x_gpe0_blk.bit_width = fadt->gpe0_blk_len * 8;
 	fadt->x_gpe0_blk.bit_offset = 0;
 	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_UNDEFINED;
 	fadt->x_gpe0_blk.addrl = pmbase + 0x28;

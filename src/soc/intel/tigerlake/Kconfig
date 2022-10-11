@@ -219,7 +219,7 @@ config CONSOLE_UART_BASE_ADDRESS
 
 # Clock divider parameters for 115200 baud rate
 # Baudrate = (UART source clock * M) /(N *16)
-# TGL UART source clock: 120MHz
+# TGL UART source clock: 100MHz
 config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
 	hex
 	default 0x25a

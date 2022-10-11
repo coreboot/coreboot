@@ -238,7 +238,7 @@ config VBT_DATA_SIZE_KB
 
 # Clock divider parameters for 115200 baud rate
 # Baudrate = (UART source clock * M) /(N *16)
-# MTL UART source clock: 120MHz
+# MTL UART source clock: 100MHz
 config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
 	hex
 	default 0x25a

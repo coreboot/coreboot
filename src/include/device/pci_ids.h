@@ -4365,9 +4365,6 @@
 #define PCI_DID_INTEL_JSP_EMMC			0x4dc4
 #define PCI_DID_INTEL_ADP_EMMC			0x54c4
 
-/* Intel UFS device Ids */
-#define PCI_DID_INTEL_ADP_UFS			0x54ff
-
 /* Intel Thunderbolt device Ids */
 #define PCI_DID_INTEL_TGL_TBT_RP0		0x9a23
 #define PCI_DID_INTEL_TGL_TBT_RP1		0x9a25

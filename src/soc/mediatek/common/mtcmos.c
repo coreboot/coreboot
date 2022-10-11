@@ -14,7 +14,7 @@ enum {
 	PWR_RST_B	= 1U << 0
 };
 
-static void mtcmos_power_on(const struct power_domain_data *pd)
+void mtcmos_power_on(const struct power_domain_data *pd)
 {
 	write32(&mtk_spm->poweron_config_set,
 		(SPM_PROJECT_CODE << 16) | (1U << 0));

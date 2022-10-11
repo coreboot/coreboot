@@ -867,4 +867,22 @@ static const struct power_domain_data disp[] = {
 static const struct power_domain_data audio[] = {
 };
 
+static const struct power_domain_data adsp[] = {
+	{
+		.pwr_con = &mtk_spm->adsp_ao_pwr_con,
+		.pwr_sta_mask = 0x1 << 17,
+	},
+	{
+		.pwr_con = &mtk_spm->adsp_infra_pwr_con,
+		.pwr_sta_mask = 0x1 << 10,
+	},
+	{
+		.pwr_con = &mtk_spm->adsp_pwr_con,
+		.pwr_sta_mask = 0x1 << 31,
+		.sram_pdn_mask = 0x1 << 8,
+		.sram_ack_mask = 0x1 << 12,
+		.caps = SCPD_SRAM_ISO,
+	},
+};
+
 #endif  /* SOC_MEDIATEK_MT8186_SPM_H */

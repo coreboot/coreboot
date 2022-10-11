@@ -13,9 +13,12 @@ struct power_domain_data {
 
 #define SCPD_SRAM_ISO	(1U << 0)
 
+void mtcmos_power_on(const struct power_domain_data *pd);
+void mtcmos_adsp_power_on(void);
 void mtcmos_audio_power_on(void);
 void mtcmos_display_power_on(void);
 
+void mtcmos_protect_adsp_bus(void);
 void mtcmos_protect_audio_bus(void);
 void mtcmos_protect_display_bus(void);
 

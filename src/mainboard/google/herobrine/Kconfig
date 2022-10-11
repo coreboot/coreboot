@@ -58,6 +58,7 @@ config MAINBOARD_PART_NUMBER
 	default "Villager" if BOARD_GOOGLE_VILLAGER
 	default "Evoker" if BOARD_GOOGLE_EVOKER
 	default "Zoglin" if BOARD_GOOGLE_ZOGLIN
+	default "Zombie" if BOARD_GOOGLE_ZOMBIE
 
 config DRIVER_TPM_I2C_BUS
 	depends on I2C_TPM

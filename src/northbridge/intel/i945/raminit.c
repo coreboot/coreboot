@@ -9,6 +9,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_type.h>
 #include <device/smbus_host.h>
+#include <inttypes.h>
 #include <lib.h>
 #include <pc80/mc146818rtc.h>
 #include <spd.h>

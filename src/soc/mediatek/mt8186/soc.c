@@ -2,10 +2,12 @@
 
 #include <bootmem.h>
 #include <device/device.h>
+#include <soc/adsp.h>
 #include <soc/devapc.h>
 #include <soc/dfd.h>
 #include <soc/emi.h>
 #include <soc/mmu_operations.h>
+#include <soc/mtcmos.h>
 #include <soc/sspm.h>
 #include <symbols.h>
 
@@ -24,6 +26,12 @@ static void soc_init(struct device *dev)
 {
 	mtk_mmu_disable_l2c_sram();
 	sspm_init();
+
+	/* ADSP is required for all MT8186 projects, so it's initialized in soc.c */
+	mtcmos_adsp_power_on();
+	mtcmos_protect_adsp_bus();
+	mtk_adsp_init();
+
 	dapc_init();
 
 	if (CONFIG(MTK_DFD))

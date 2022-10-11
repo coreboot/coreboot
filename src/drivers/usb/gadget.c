@@ -205,6 +205,73 @@ small_write:
 	return 0;
 }
 
+/* Refer to USB CDC PSTN Subclass specification section 6.3 */
+#define CDC_SET_LINE_CODING_REQUEST 0x20
+struct cdc_line_coding {
+	u32 baudrate;
+	u8 stop_bits;
+	u8 parity;
+	u8 data_bits;
+} __packed;
+
+static int probe_for_ch347(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe)
+{
+	int ret;
+	u8 devnum = 0;
+	u8 uart_if = 2; /* CH347 UART 1 */
+
+	/* Move the device to 127 if it isn't already there */
+	ret = dbgp_control_msg(ehci_debug, devnum,
+		USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
+		USB_REQ_SET_ADDRESS, USB_DEBUG_DEVNUM, 0, NULL, 0);
+	if (ret < 0) {
+		printk(BIOS_INFO, "Could not move attached device to %d.\n",
+			USB_DEBUG_DEVNUM);
+			return -2;
+	}
+	devnum = USB_DEBUG_DEVNUM;
+	printk(BIOS_INFO, "EHCI debug device renamed to %d.\n", devnum);
+
+	/* Send Set Configure request to device.  */
+	ret = dbgp_control_msg(ehci_debug, devnum,
+		USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
+		USB_REQ_SET_CONFIGURATION, 1, 0, NULL, 0);
+	if (ret < 0) {
+		printk(BIOS_INFO, "CH347 set configuration failed.\n");
+		return -2;
+	}
+
+	struct cdc_line_coding line_coding = {
+		.baudrate = CONFIG_USBDEBUG_DONGLE_WCH_CH347_BAUD,
+		.stop_bits = 0, /* 1 stop bit */
+		.parity = 0, /* No parity */
+		.data_bits = 8
+	};
+
+	ret = dbgp_control_msg(ehci_debug, devnum,
+		USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+		CDC_SET_LINE_CODING_REQUEST, 0, uart_if, &line_coding, sizeof(line_coding));
+	if (ret < 0) {
+		printk(BIOS_INFO, "CDC SET_LINE_CODING failed.\n");
+		return -3;
+	}
+
+	/* Modes 0, 1, and 3 all have UART 1 on endpoint 4 in common */
+	pipe[DBGP_CONSOLE_EPOUT].endpoint = 0x04;
+	pipe[DBGP_CONSOLE_EPIN].endpoint = 0x84;
+
+	ack_set_configuration(pipe, devnum, 1000);
+
+	/* Perform a small write. */
+	ret = dbgp_bulk_write_x(&pipe[DBGP_CONSOLE_EPOUT], "USB\r\n", 5);
+	if (ret < 0) {
+		printk(BIOS_INFO, "dbgp_bulk_write failed: %d\n", ret);
+		return -4;
+	}
+	printk(BIOS_INFO, "Test write done\n");
+	return 0;
+}
+
 /* FTDI FT232H UART programming. */
 #define FTDI_SIO_SET_FLOW_CTRL_REQUEST 0x02
 #define FTDI_SIO_SET_BAUDRATE_REQUEST  0x03
@@ -329,6 +396,8 @@ int dbgp_probe_gadget(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe)
 
 	if (CONFIG(USBDEBUG_DONGLE_FTDI_FT232H)) {
 		ret = probe_for_ftdi(ehci_debug, pipe);
+	} else if (CONFIG(USBDEBUG_DONGLE_WCH_CH347)) {
+		ret = probe_for_ch347(ehci_debug, pipe);
 	} else {
 		ret = probe_for_debug_descriptor(ehci_debug, pipe);
 	}

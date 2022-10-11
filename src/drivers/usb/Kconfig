@@ -92,6 +92,14 @@ config USBDEBUG_DONGLE_FTDI_FT232H
 	  Use this with FT232H usb-to-uart. Configuration is hard-coded
 	  to use 8n1, no flow control.
 
+config USBDEBUG_DONGLE_WCH_CH347
+	bool "WCH CH347 UART"
+	help
+	  Use this with CH347 usb-to-uart. Configuration is hard-coded
+	  to use 8n1, no flow control. For compatibility across modes
+	  0, 1, and 3, only UART 1 is supported. The UART in mode 2 is
+	  not currently supported.
+
 endchoice
 
 config USBDEBUG_DONGLE_FTDI_FT232H_BAUD
@@ -100,6 +108,16 @@ config USBDEBUG_DONGLE_FTDI_FT232H_BAUD
 	depends on USBDEBUG_DONGLE_FTDI_FT232H
 	help
 	  Select baud rate for FT232H in the range 733..12,000,000. Make
+	  sure that your receiving side supports the same setting and your
+	  connection works with it. Multiples of 115,200 seem to be a good
+	  choice, and EHCI debug usually can't saturate more than 576,000.
+
+config USBDEBUG_DONGLE_WCH_CH347_BAUD
+	int "WCH CH347 baud rate"
+	default 115200
+	depends on USBDEBUG_DONGLE_WCH_CH347
+	help
+	  Select baud rate for CH347 in the range 1200..9,000,000. Make
 	  sure that your receiving side supports the same setting and your
 	  connection works with it. Multiples of 115,200 seem to be a good
 	  choice, and EHCI debug usually can't saturate more than 576,000.

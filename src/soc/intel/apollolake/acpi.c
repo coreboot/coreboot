@@ -106,7 +106,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->x_pm_tmr_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;
-	fadt->x_pm_tmr_blk.addrl = ACPI_BASE_ADDRESS + PM1_TMR;
+	fadt->x_pm_tmr_blk.addrl = fadt->pm_tmr_blk;
 	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
 
 	if (cfg->lpss_s0ix_enable)

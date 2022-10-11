@@ -7,6 +7,7 @@
 #include <psp_verstage.h>
 #include <stddef.h>
 #include <string.h>
+#include <svc_call.h>
 
 void svc_exit(uint32_t status)
 {

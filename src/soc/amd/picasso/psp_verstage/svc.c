@@ -1,11 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include "svc.h"
-
 #include <assert.h>
 #include <bl_uapp/bl_syscall_public.h>
 #include <psp_verstage.h>
 #include <stddef.h>
+#include <svc_call.h>
 
 void svc_exit(uint32_t status)
 {

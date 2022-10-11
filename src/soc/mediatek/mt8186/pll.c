@@ -474,8 +474,11 @@ void mt_pll_init(void)
 	write32(&mt8186_infracfg_ao->module_sw_cg_0_clr, 0x00000030);
 	/* [7] DVFSRC_CG, [20] DEVICE_APC_CG */
 	write32(&mt8186_infracfg_ao->module_sw_cg_1_clr, 0x00100080);
-	/* [15] SEJ_F13M_CK_CG, [16] AES_TOP0_BCLK_CK_CG */
-	write32(&mt8186_infracfg_ao->module_sw_cg_3_clr, 0x00018000);
+	/*
+	 * [15] SEJ_F13M_CK_CG, [16] AES_TOP0_BCLK_CK_CG,
+	 * [22] FADSP_26M_CG, [23] FADSP_32K_CG, [27] FADSP_CK_CG
+	 */
+	write32(&mt8186_infracfg_ao->module_sw_cg_3_clr, 0x08C18000);
 }
 
 void mt_pll_raise_little_cpu_freq(u32 freq)

@@ -7,8 +7,8 @@
  * EC communication interface for ITE Embedded Controller
  */
 
-#ifndef _EC_STARLABS_CEZANNE_EC_DEFS_H
-#define _EC_STARLABS_CEZANNE_EC_DEFS_H
+#ifndef _EC_STARLABS_CEZANNE_DESKTOP_EC_DEFS_H
+#define _EC_STARLABS_CEZANNE_DESKTOP_EC_DEFS_H
 
 /* IT5570 chip ID byte values */
 #define ITE_CHIPID_VAL		0x5570

@@ -43,4 +43,6 @@
 #define PID_CPU_GPIOCOM4	0xb9
 #define PID_CPU_GPIOCOM5	0xba
 
+#define PID_UFSX2	0x50
+
 #endif

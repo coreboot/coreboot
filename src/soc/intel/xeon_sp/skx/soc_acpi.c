@@ -62,7 +62,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 
 	/* PM1 Timer Register */
 	fadt->x_pm_tmr_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm_tmr_blk.bit_width = 32;
+	fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;
 	fadt->x_pm_tmr_blk.bit_offset = 0;
 	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
 	fadt->x_pm_tmr_blk.addrl = fadt->pm_tmr_blk;

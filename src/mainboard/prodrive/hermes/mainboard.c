@@ -178,9 +178,7 @@ static const char *format_pn(const char *prefix, size_t offset)
 
 	const char *part_num = eeprom_read_serial(offset, "N/A");
 
-	memset(buffer, 0, sizeof(buffer));
-	strcpy(buffer, prefix);
-	strcpy(buffer + strlen(prefix), part_num);
+	snprintf(buffer, sizeof(buffer), "%s%s", prefix, part_num);
 
 	return buffer;
 }

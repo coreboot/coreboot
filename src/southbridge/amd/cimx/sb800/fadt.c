@@ -89,7 +89,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->ARM_boot_arch = 0;	/* Must be zero if ACPI Revision <= 5.0 */
 
 	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm1a_evt_blk.bit_width = 32;
+	fadt->x_pm1a_evt_blk.bit_width = fadt->pm1_evt_len * 8;
 	fadt->x_pm1a_evt_blk.bit_offset = 0;
 	fadt->x_pm1a_evt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
 	fadt->x_pm1a_evt_blk.addrl = PM1_EVT_BLK_ADDRESS;

@@ -92,6 +92,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe0_blk.bit_width = fadt->gpe0_blk_len * 8; /* EventStatus + Event Enable */
 	fadt->x_gpe0_blk.bit_offset = 0;
 	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
-	fadt->x_gpe0_blk.addrl = ACPI_GPE0_BLK;
+	fadt->x_gpe0_blk.addrl = fadt->gpe0_blk;
 	fadt->x_gpe0_blk.addrh = 0x0;
 }

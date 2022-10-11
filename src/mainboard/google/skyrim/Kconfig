@@ -139,4 +139,8 @@ config OVERRIDE_EFS_SPI_SPEED_MIN_BOARD
 	  Minimum board version starting which the Override EFS SPI Speed
 	  configuration has to be applied.
 
+config CONSOLE_CBMEM_BUFFER_SIZE
+	hex
+	default 0x80000
+
 endif # BOARD_GOOGLE_BASEBOARD_SKYRIM

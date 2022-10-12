@@ -47,16 +47,13 @@ chip soc/amd/stoneyridge
 		device ref iommu off end # IOMMU (Disabled for performance and battery)
 		device ref gfx on end
 		device ref gfx_hda on end
-		device ref gpp_bridge_0 on end
-		device ref gpp_bridge_1 on end
-		device ref gpp_bridge_2 on end
+		device ref gpp_bridge_1 on end # WLAN
 		device ref gpp_bridge_3 on
 			chip drivers/generic/bayhub
 				register "power_saving" = "1"
 				device pci 00.0 on end
 			end
 		end
-		device ref gpp_bridge_4 on end
 		device ref hda_bridge on end
 		device ref hda on end
 		device ref xhci on end

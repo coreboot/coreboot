@@ -6,5 +6,8 @@ chip soc/amd/stoneyridge
 		{ {0xA0, 0x00}, {0xA4, 0x00} }, // socket 0 - Channel 0 & 1, slot 0
 	}"
 
-	device domain 0 on end
+	device domain 0 on
+		device pci 3.0 on end # GFX host bridge
+		device pci 3.1 on end # GFX PCIe x8 slot
+	end
 end

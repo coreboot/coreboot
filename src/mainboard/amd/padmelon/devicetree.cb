@@ -17,7 +17,6 @@ chip soc/amd/stoneyridge
 		device pci 2.2 on  end # mini PCIe slot x1
 		device pci 2.4 on  end # LAN RTL8111F
 		device pci 2.5 on  end # LAN RTL8111F
-		device pci 3.0 on  end # GFX host bridge
 		device pci 8.0 on  end # PSP
 		device pci 9.0 on  end # HDA
 		device pci 9.2 on  end # HDA

@@ -45,43 +45,31 @@ chip soc/amd/stoneyridge
 				    GPIO_I2C2_SCL | GPIO_I2C3_SCL"
 
 	device domain 0 on
-		device pci 0.0 on  end # Root Complex
-		device pci 0.2 off end # IOMMU (Disabled for performance and battery)
-		device pci 1.0 on  end # Internal Graphics P2P bridge 0x98e4
-		device pci 1.1 on  end # Internal Multimedia
-		device pci 2.0 on  end # PCIe Host Bridge
-		device pci 2.1 on  end #
-		device pci 2.2 on  end #
-		device pci 2.3 on  end #
-		device pci 2.4 on
+		device ref iommu off end # IOMMU (Disabled for performance and battery)
+		device ref gfx on end
+		device ref gfx_hda on end
+		device ref gpp_bridge_0 on end
+		device ref gpp_bridge_1 on end
+		device ref gpp_bridge_2 on end
+		device ref gpp_bridge_3 on
 			chip drivers/generic/bayhub
 				register "power_saving" = "1"
 				device pci 00.0 on end
 			end
-		end #
-		device pci 2.5 on  end #
-		device pci 8.0 on  end # PSP
-		device pci 9.0 on  end # PCIe Host Bridge
-		device pci 9.2 on  end # HDA
-		device pci 10.0 on  end # xHCI
-		device pci 11.0 off  end # SATA
-		device pci 12.0 on  end # EHCI
-		device pci 14.0 on      # SMbus
-		end # SMbus
-		device pci 14.3 on
+		end
+		device ref gpp_bridge_4 on end
+		device ref hda_bridge on end
+		device ref hda on end
+		device ref xhci on end
+		device ref ehci on end
+		device ref lpc_bridge on
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end
 			end
-		end # LPC
-		device pci 14.7 on  end # SD
-		device pci 18.0 on  end
-		device pci 18.1 on  end
-		device pci 18.2 on  end
-		device pci 18.3 on  end
-		device pci 18.4 on  end
-		device pci 18.5 on  end
+		end
+		device ref sdhci on end
 	end #domain
-	device mmio 0xfedc2000 on
+	device ref i2c_0 on
 		chip drivers/generic/adau7002
 			device generic 0.0 on end
 		end
@@ -110,7 +98,7 @@ chip soc/amd/stoneyridge
 			device generic 0.1 on end
 		end
 	end
-	device mmio 0xfedc3000 on
+	device ref i2c_1 on
 		chip drivers/i2c/tpm
 			register "hid" = ""GOOG0005""
 			register "desc" = ""Cr50 TPM""
@@ -118,7 +106,7 @@ chip soc/amd/stoneyridge
 			device i2c 50 on end
 		end
 	end
-	device mmio 0xfedc4000 on
+	device ref i2c_2 on
 		chip drivers/i2c/generic
 			register "hid" = ""ELAN0000""
 			register "desc" = ""ELAN Touchpad""
@@ -127,7 +115,7 @@ chip soc/amd/stoneyridge
 			device i2c 15 on end
 		end
 	end
-	device mmio 0xfedc5000 on
+	device ref i2c_3 on
 		chip drivers/i2c/generic
 			register "hid" = ""RAYD0001""
 			register "desc" = ""Raydium Touchscreen""

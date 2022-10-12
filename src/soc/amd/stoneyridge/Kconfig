@@ -77,6 +77,12 @@ config AMD_SOC_PACKAGE
 	default "FP4" if AMD_APU_PKG_FP4
 	default "FT4" if AMD_APU_PKG_FT4
 
+config CHIPSET_DEVICETREE
+	string
+	default "soc/amd/stoneyridge/chipset_cz.cb" if AMD_APU_MERLINFALCON
+	default "soc/amd/stoneyridge/chipset_st.cb" if AMD_APU_PRAIRIEFALCON
+	default "soc/amd/stoneyridge/chipset_st.cb" if AMD_APU_STONEYRIDGE
+
 config VBOOT
 	select VBOOT_STARTS_IN_BOOTBLOCK
 	select VBOOT_VBNV_CMOS

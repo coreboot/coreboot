@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/amd/stoneyridge
+	device cpu_cluster 0 on
+	end
+	device domain 0 on
+		device pci 00.0 alias gnb on end
+		device pci 00.2 alias iommu off end
+		device pci 01.0 alias gfx off end # internal GPU
+		device pci 01.1 alias gfx_hda off end # display HD Audio controller
+		device pci 02.0 on end # Dummy Host Bridge, do not disable
+		device pci 02.1 alias gpp_bridge_0 off end
+		device pci 02.2 alias gpp_bridge_1 off end
+		device pci 02.3 alias gpp_bridge_2 off end
+		device pci 02.4 alias gpp_bridge_3 off end
+		device pci 02.5 alias gpp_bridge_4 off end
+		device pci 03.0 on end # Dummy Host Bridge, do not disable
+		device pci 03.1 alias gfx_bridge_0 off end
+		device pci 03.2 alias gfx_bridge_1 off end
+		device pci 03.3 alias gfx_bridge_2 off end
+		device pci 03.4 alias gfx_bridge_3 off end
+		device pci 03.5 alias gfx_bridge_4 off end
+		device pci 08.0 alias crypto on end # cryptography coprocessor / PSP
+		device pci 09.0 alias hda_bridge off end # host audio bridge
+		device pci 09.2 alias hda off end # main HD Audio Controller
+		device pci 10.0 alias xhci off end
+		device pci 11.0 alias sata off end
+		device pci 12.0 alias ehci off end
+		device pci 14.0 alias smbus on end # primary FCH function
+		device pci 14.3 alias lpc_bridge on end
+		device pci 14.7 alias sdhci off end
+		device pci 18.0 alias ht_0 on end
+		device pci 18.1 alias ht_1 on end
+		device pci 18.2 alias ht_2 on end
+		device pci 18.3 alias ht_3 on end
+		device pci 18.4 alias ht_4 on end
+		device pci 18.5 alias ht_5 on end
+	end
+
+	device mmio 0xfedc2000 alias i2c_0 off end
+	device mmio 0xfedc3000 alias i2c_1 off end
+	device mmio 0xfedc4000 alias i2c_2 off end
+	device mmio 0xfedc5000 alias i2c_3 off end
+end

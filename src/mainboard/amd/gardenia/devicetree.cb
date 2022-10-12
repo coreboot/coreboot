@@ -9,31 +9,19 @@ chip soc/amd/stoneyridge
 
 	device domain 0 on
 		subsystemid 0x1022 0x1410 inherit
-		device pci 0.0 on  end # Root Complex
-		device pci 0.2 on  end # IOMMU
-		device pci 1.0 on  end # Internal Graphics P2P bridge 0x98e4
-		device pci 1.1 on  end # Internal Multimedia
-		device pci 2.0 on  end # PCIe Host Bridge
-		device pci 2.1 on  end # x4 PCIe slot
-		device pci 2.2 on  end # M.2 slot
-		device pci 2.3 on  end # M.2 slot
-		device pci 2.4 on  end # x1 PCIe slot
-		device pci 2.5 on  end # Cardreader
-		# devices on the NB/SB Link, but on the same pci bus
-		device pci 8.0 on  end # PSP
-		device pci 9.0 on  end # PCIe Host Bridge
-		device pci 9.2 on  end # HDA
-		device pci 10.0 on  end # xHCI
-		device pci 11.0 on  end # SATA
-		device pci 12.0 on  end # EHCI
-		device pci 14.0 on  end # SM
-		device pci 14.3 on  end # LPC	0x790e
-		device pci 14.7 on  end # SD
-		device pci 18.0 on  end
-		device pci 18.1 on  end
-		device pci 18.2 on  end
-		device pci 18.3 on  end
-		device pci 18.4 on  end
-		device pci 18.5 on  end
+		device ref iommu on end
+		device ref gfx on end
+		device ref gfx_hda on end
+		device ref gpp_bridge_0 on end # x4 PCIe slot
+		device ref gpp_bridge_1 on end # M.2 slot
+		device ref gpp_bridge_2 on end # M.2 slot
+		device ref gpp_bridge_3 on end # x1 PCIe slot
+		device ref gpp_bridge_4 on end # Cardreader
+		device ref hda_bridge on end
+		device ref hda on end
+		device ref xhci on end
+		device ref sata on end
+		device ref ehci on end
+		device ref sdhci on end
 	end #domain
 end	#chip soc/amd/stoneyridge

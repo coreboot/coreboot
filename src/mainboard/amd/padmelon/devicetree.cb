@@ -14,9 +14,9 @@ chip soc/amd/stoneyridge
 		device pci 1.0 on  end # Internal Graphics P2P bridge 0x9874
 		device pci 1.1 on  end # Internal Multimedia
 		device pci 2.0 on  end # PCIe Host Bridge
-		device pci 2.1 on  end # mini PCIe slot x1
-		device pci 2.3 on  end # LAN RTL8111F
+		device pci 2.2 on  end # mini PCIe slot x1
 		device pci 2.4 on  end # LAN RTL8111F
+		device pci 2.5 on  end # LAN RTL8111F
 		device pci 3.0 on  end # GFX host bridge
 		device pci 8.0 on  end # PSP
 		device pci 9.0 on  end # HDA

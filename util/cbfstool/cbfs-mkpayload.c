@@ -433,7 +433,7 @@ int parse_fit_to_payload(const struct buffer *input, struct buffer *output,
 	 */
 	if (algo != CBFS_COMPRESS_NONE) {
 		ERROR("FIT images don't support whole-image compression,"
-		      " compress the kernel component instead!\n")
+		      " compress the kernel component instead!\n");
 		return -1;
 	}
 

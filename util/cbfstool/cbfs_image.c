@@ -399,7 +399,7 @@ int cbfs_copy_instance(struct cbfs_image *image, struct buffer *dst)
 		cbfs_calculate_file_header_size("") - sizeof(int32_t);
 
 	if (last_entry_size < 0)
-		WARN("No room to create the last entry!\n")
+		WARN("No room to create the last entry!\n");
 	else
 		cbfs_create_empty_entry(dst_entry, CBFS_TYPE_NULL,
 			last_entry_size, "");

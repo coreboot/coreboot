@@ -19,7 +19,7 @@ coreboot uses TianoCore interchangeably with EDK II, and whilst the
 meaning is generally clear, it's not the payload it uses. Consequentially,
 Tianocore has been renamed to EDK II (2).
 
-The option to use the already depreciated CorebootPayloadPkg has been
+The option to use the already deprecated CorebootPayloadPkg has been
 removed.
 
 Recent changes to both coreboot and edk2 means that UefiPayloadPkg
@@ -32,7 +32,7 @@ seems to work on all hardware. It has been tested on:
 CorebootPayloadPkg can still be found [here](https://github.com/MrChromebox/edk2/tree/coreboot_fb).
 
 The recommended option to use is `EDK2_UEFIPAYLOAD_MRCHROMEBOX` as
-`EDK2_UEFIPAYLOAD_OFFICIAL` will no longer work on any SOC.
+`EDK2_UEFIPAYLOAD_OFFICIAL` will no longer work on any SoC.
 
 Plans for Code Deprecation
 --------------------------
@@ -41,12 +41,12 @@ Plans for Code Deprecation
 ### Intel Icelake
 
 Intel Icelake code will be removed with the release 4.19. This consists
-of the Intel Icelake SOC and Intel Icelake RVP mainboard
+of the Intel Icelake SoC and Intel Icelake RVP mainboard.
 
 Intel Icelake is unmaintained. Also, the only user of this platform ever
-was the CRB board. From the looks of it the code never was ready for
-production as only engineering sample CPUIDs are supported. This reduces
-the maintanence overhead for the coreboot project.
+was the Intel CRB (Customer Reference Board). From the looks of it the
+code was never ready for production as only engineering sample CPUIDs are
+supported. This reduces the maintanence overhead for the coreboot project.
 
 
 ### Intel Quark

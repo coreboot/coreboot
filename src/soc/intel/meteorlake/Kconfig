@@ -385,4 +385,16 @@ config DROP_CPU_FEATURE_PROGRAM_IN_FSP
 	  This feature is default enabled, in case of "coreboot running MP init"
 	  aka MP_SERVICES_PPI_V2_NOOP config is selected.
 
+config PCIE_LTR_MAX_SNOOP_LATENCY
+	hex
+	default 0x100f
+	help
+	  Latency tolerance reporting, max snoop latency value defaults to 15.73 ms.
+
+config PCIE_LTR_MAX_NO_SNOOP_LATENCY
+	hex
+	default 0x100f
+	help
+	  Latency tolerance reporting, max non-snoop latency value defaults to 15.73 ms.
+
 endif

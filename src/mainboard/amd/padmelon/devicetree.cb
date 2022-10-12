@@ -5,22 +5,18 @@ chip soc/amd/stoneyridge
 
 	device domain 0 on
 		subsystemid 0x1022 0x1410 inherit
-		device pci 0.0 on  end # Root Complex
-		device pci 0.2 on  end # IOMMU
-		device pci 1.0 on  end # Internal Graphics P2P bridge 0x9874
-		device pci 1.1 on  end # Internal Multimedia
-		device pci 2.0 on  end # PCIe Host Bridge
-		device pci 2.2 on  end # mini PCIe slot x1
-		device pci 2.4 on  end # LAN RTL8111F
-		device pci 2.5 on  end # LAN RTL8111F
-		device pci 8.0 on  end # PSP
-		device pci 9.0 on  end # HDA
-		device pci 9.2 on  end # HDA
-		device pci 10.0 on  end # USB xHCI
-		device pci 11.0 on  end # SATA
-		device pci 12.0 on  end # USB EHCI
-		device pci 14.0 on  end # SM
-		device pci 14.3 on      # LPC	0x439d
+		device ref iommu on end
+		device ref gfx on end
+		device ref gfx_hda on end
+		device ref gpp_bridge_1 on end # mini PCIe slot x1
+		device ref gpp_bridge_3 on end # LAN RTL8111F
+		device ref gpp_bridge_4 on end # LAN RTL8111F
+		device ref hda_bridge on end
+		device ref hda on end
+		device ref xhci on end
+		device ref sata on end
+		device ref ehci on end
+		device ref lpc_bridge on
 			chip superio/fintek/f81803a
 				device pnp 4e.1 on      # COM1
 					io 0x60 = 0x3f8
@@ -39,13 +35,7 @@ chip soc/amd/stoneyridge
 				device pnp 4e.7 off end # WDT
 				device pnp 4e.a off end # PME
 			end # f81803a
-		end # LPC
-		device pci 14.7 on  end # SD
-		device pci 18.0 on  end
-		device pci 18.1 on  end
-		device pci 18.2 on  end
-		device pci 18.3 on  end
-		device pci 18.4 on  end
-		device pci 18.5 on  end
+		end
+		device ref sdhci on end
 	end #domain
 end #soc/amd/stoneyridge

@@ -7,7 +7,6 @@ chip soc/amd/stoneyridge
 	}"
 
 	device domain 0 on
-		device pci 3.0 on end # GFX host bridge
-		device pci 3.1 on end # GFX PCIe x8 slot
+		device ref gfx_bridge_0 on end # GFX PCIe x8 slot
 	end
 end

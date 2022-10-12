@@ -10,6 +10,7 @@ chip soc/amd/stoneyridge
 	device domain 0 on
 		subsystemid 0x1022 0x1410 inherit
 		device pci 0.0 on  end # Root Complex
+		device pci 0.2 on  end # IOMMU
 		device pci 1.0 on  end # Internal Graphics P2P bridge 0x9874
 		device pci 1.1 on  end # Internal Multimedia
 		device pci 2.0 on  end # PCIe Host Bridge

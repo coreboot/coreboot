@@ -38,6 +38,11 @@ config PADMELON_PRAIRIE_FALCON
 
 endchoice
 
+
+config OVERRIDE_DEVICETREE
+	default "override-merlinfalcon.cb" if PADMELON_MERLIN_FALCON
+	default "override-prairiefalcon.cb" if PADMELON_PRAIRIE_FALCON
+
 config MAX_CPUS
 	int
 	default 4

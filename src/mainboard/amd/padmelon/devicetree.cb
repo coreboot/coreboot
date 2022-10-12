@@ -1,16 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 chip soc/amd/stoneyridge
-
-	register "spd_addr_lookup" = "
-	{
-#if CONFIG(AMD_APU_MERLINFALCON)
-		{ {0xA0, 0x00}, {0xA4, 0x00} }, // socket 0 - Channel 0 & 1, slot 0
-#else
-		{ {0xA0, 0x00} }, // socket 0 - Channel 0, slot 0
-#endif
-	}"
-
 	register "uma_mode" = "UMAMODE_AUTO_LEGACY"
 
 	device cpu_cluster 0 on

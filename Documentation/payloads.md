@@ -27,7 +27,7 @@ When chainloaded from GRUB2, the following menuentry could be used:
 
 [edk2](https://github.com/tianocore/tianocore.github.io/wiki/Getting-Started-with-EDK-II) is an open-source modern, feature-rich,
 cross-platform firmware development environment for the UEFI and UEFI
-Platform Initialization (PI) specifications. 
+Platform Initialization (PI) specifications.
 
 ## GRUB2
 

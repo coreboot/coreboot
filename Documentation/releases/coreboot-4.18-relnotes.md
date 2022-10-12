@@ -31,7 +31,7 @@ seems to work on all hardware. It has been tested on:
 
 CorebootPayloadPkg can still be found [here](https://github.com/MrChromebox/edk2/tree/coreboot_fb).
 
-The recommended option to use is `EDK2_UEFIPAYLOAD_MRCHROMEBOX` as 
+The recommended option to use is `EDK2_UEFIPAYLOAD_MRCHROMEBOX` as
 `EDK2_UEFIPAYLOAD_OFFICIAL` will no longer work on any SOC.
 
 Plans for Code Deprecation

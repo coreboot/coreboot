@@ -51,7 +51,7 @@ index 28e78fb366..0cce41b316 100644
 @@ -303,10 +303,10 @@ static void gpio_configure_pad(const struct pad_config *cfg)
                 /* Patch GPIO settings for SoC specifically */
                 soc_pad_conf = soc_gpio_pad_config_fixup(cfg, i, soc_pad_conf);
- 
+
 -               if (CONFIG(DEBUG_GPIO))
 +               if (soc_pad_conf != pad_conf)
                         printk(BIOS_DEBUG,

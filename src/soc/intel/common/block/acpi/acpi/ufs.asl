@@ -67,8 +67,10 @@ Scope (\_SB.PCI0)
 			/* Set BIT[1:0] = 00b - Power State D0 */
 			PSTA &= 0xFFFFFFFC
 
+#if CONFIG(SOC_INTEL_UFS_OCP_TIMER_DISABLE)
 			/* Disable OCP Timer in SCS UFS IOSF Bridge */
 			OCPD ()
+#endif
 		}
 
 		Method (_PS3, 0, Serialized)
@@ -79,7 +81,9 @@ Scope (\_SB.PCI0)
 
 		Method (_INI)
 		{
+#if CONFIG(SOC_INTEL_UFS_OCP_TIMER_DISABLE)
 			OCPD ()
+#endif
 		}
 	}
 }

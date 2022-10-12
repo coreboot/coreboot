@@ -49,4 +49,11 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_CPU_HYBRID
 	help
 	  Defines hybrid CPU specific ACPI helper functions.
 
+config SOC_INTEL_UFS_OCP_TIMER_DISABLE
+	bool
+	help
+	  OCP Timer need to be disabled in SCS UFS IOSF Bridge to
+	  work around the Silicon Issue due to which LTR mechanism
+	  doesn't work.
+
 endif

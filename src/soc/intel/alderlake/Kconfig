@@ -425,6 +425,13 @@ config ACPI_ADL_IPU_ES_SUPPORT
 	help
 	  Enables ACPI entry to provide silicon type information to IPU kernel driver.
 
+config ALDERLAKE_ENABLE_SOC_WORKAROUND
+	bool
+	default y
+	select SOC_INTEL_UFS_OCP_TIMER_DISABLE
+	help
+	  Selects the workarounds applicable for Alder Lake SoC.
+
 choice
 	prompt "Multiprocessor (MP) Initialization configuration to use"
 	default USE_FSP_MP_INIT

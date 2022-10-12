@@ -48,8 +48,8 @@
 #define LINK_SPEED_GEN_1		0x1
 #define LINK_SPEED_GEN_2		0x2
 #define LINK_SPEED_GEN_3		0x3
-#define PCIE_LINK_UP_MS			10
-#define LINK_WAIT_MAX_RETRIES		100
+#define PCIE_LINK_UP_MS			100
+#define LINK_WAIT_MAX_RETRIES		10
 
 #define COMMAND_MASK			0xffff
 

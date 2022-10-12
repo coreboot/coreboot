@@ -3,10 +3,6 @@
 chip soc/amd/stoneyridge
 	register "uma_mode" = "UMAMODE_AUTO_LEGACY"
 
-	device cpu_cluster 0 on
-		device lapic 10 on end
-	end
-
 	device domain 0 on
 		subsystemid 0x1022 0x1410 inherit
 		device pci 0.0 on  end # Root Complex

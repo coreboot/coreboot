@@ -7,9 +7,6 @@ chip soc/amd/stoneyridge
 		{ {0xA2, 0x00} }, // socket 0 - Channel 0, slots 0 & 1
 	}"
 
-	device cpu_cluster 0 on
-		device lapic 10 on end
-	end
 	device domain 0 on
 		subsystemid 0x1022 0x1410 inherit
 		device pci 0.0 on  end # Root Complex

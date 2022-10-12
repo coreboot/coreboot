@@ -14,7 +14,6 @@ chip soc/amd/stoneyridge
 		device ref gfx_hda on end
 		device ref gpp_bridge_0 on end # x4 PCIe slot
 		device ref gpp_bridge_1 on end # M.2 slot
-		device ref gpp_bridge_2 on end # M.2 slot
 		device ref gpp_bridge_3 on end # x1 PCIe slot
 		device ref gpp_bridge_4 on end # Cardreader
 		device ref hda_bridge on end

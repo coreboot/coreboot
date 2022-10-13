@@ -65,25 +65,25 @@ static void print_regs(struct exc_state *exc_state)
 
 static struct exception_handler *handlers[NUM_EXC_VIDS];
 
-int exception_handler_register(uint64_t vid, struct exception_handler *h)
+enum cb_err exception_handler_register(uint64_t vid, struct exception_handler *h)
 {
 	if (vid >= NUM_EXC_VIDS)
-		return -1;
+		return CB_ERR;
 
 	/* Just place at head of queue. */
 	h->next = handlers[vid];
 	store_release(&handlers[vid], h);
 
-	return 0;
+	return CB_SUCCESS;
 }
 
-int exception_handler_unregister(uint64_t vid, struct exception_handler *h)
+enum cb_err exception_handler_unregister(uint64_t vid, struct exception_handler *h)
 {
 	struct exception_handler *cur;
 	struct exception_handler **prev;
 
 	if (vid >= NUM_EXC_VIDS)
-		return -1;
+		return CB_ERR;
 
 	prev = &handlers[vid];
 
@@ -92,11 +92,11 @@ int exception_handler_unregister(uint64_t vid, struct exception_handler *h)
 			continue;
 		/* Update previous pointer. */
 		store_release(prev, cur->next);
-		return 0;
+		return CB_SUCCESS;
 	}
 
 	/* Not found */
-	return -1;
+	return CB_ERR;
 }
 
 static void print_exception_info(struct exc_state *state, uint64_t idx)

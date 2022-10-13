@@ -46,6 +46,14 @@ config CHROMEOS
 	select GBB_FLAG_FORCE_MANUAL_RECOVERY
 	select HAS_RECOVERY_MRC_CACHE
 
+config CHROMEOS_WIFI_SAR
+	bool "Enable SAR options for ChromeOS build"
+	depends on CHROMEOS
+	select DSAR_ENABLE
+	select GEO_SAR_ENABLE
+	select SAR_ENABLE
+	select USE_SAR
+
 config DEVICETREE
 	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree.cb"
 

@@ -44,7 +44,11 @@ uint32_t sku_id(void)
 
 	/* Update modem status in 9th bit of sku id */
 	uint32_t mask = 1 << 9;
+
+	/* Update pro-part status in 10th bit of sku id */
+	uint32_t mask_pro = 1 << 10;
 	id = google_chromeec_get_board_sku();
 	id = ((id & ~mask) | (socinfo_modem_supported() << 9));
+	id = ((id & ~mask_pro) | (socinfo_pro_part() << 10));
 	return id;
 }

@@ -2,8 +2,10 @@
 
 chip soc/amd/stoneyridge
 	device cpu_cluster 0 on
+		ops stoneyridge_cpu_bus_ops
 	end
 	device domain 0 on
+		ops stoneyridge_pci_domain_ops
 		device pci 00.0 alias gnb on end
 		device pci 00.2 alias iommu off end
 		device pci 01.0 alias gfx off end # internal GPU
@@ -31,8 +33,8 @@ chip soc/amd/stoneyridge
 		device pci 18.5 alias ht_5 on end
 	end
 
-	device mmio 0xfedc2000 alias i2c_0 off end
-	device mmio 0xfedc3000 alias i2c_1 off end
-	device mmio 0xfedc4000 alias i2c_2 off end
-	device mmio 0xfedc5000 alias i2c_3 off end
+	device mmio 0xfedc2000 alias i2c_0 off ops soc_amd_i2c_mmio_ops end
+	device mmio 0xfedc3000 alias i2c_1 off ops soc_amd_i2c_mmio_ops end
+	device mmio 0xfedc4000 alias i2c_2 off ops soc_amd_i2c_mmio_ops end
+	device mmio 0xfedc5000 alias i2c_3 off ops soc_amd_i2c_mmio_ops end
 end

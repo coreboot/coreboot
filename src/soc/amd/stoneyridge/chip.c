@@ -18,10 +18,7 @@
 
 #include "chip.h"
 
-/* Supplied by i2c.c */
-extern struct device_operations soc_amd_i2c_mmio_ops;
-
-struct device_operations cpu_bus_ops = {
+struct device_operations stoneyridge_cpu_bus_ops = {
 	.read_resources	  = noop_read_resources,
 	.set_resources	  = noop_set_resources,
 	.init		  = mp_cpu_bus_init,
@@ -90,43 +87,13 @@ const char *soc_acpi_name(const struct device *dev)
 	}
 };
 
-static struct device_operations pci_domain_ops = {
+struct device_operations stoneyridge_pci_domain_ops = {
 	.read_resources	  = domain_read_resources,
 	.set_resources	  = pci_domain_set_resources,
 	.enable_resources = domain_enable_resources,
 	.scan_bus	  = pci_domain_scan_bus,
 	.acpi_name	  = soc_acpi_name,
 };
-
-static void set_mmio_dev_ops(struct device *dev)
-{
-	switch (dev->path.mmio.addr) {
-	case APU_I2C0_BASE:
-	case APU_I2C1_BASE:
-	case APU_I2C2_BASE:
-	case APU_I2C3_BASE:
-		dev->ops = &soc_amd_i2c_mmio_ops;
-		break;
-	}
-}
-
-static void enable_dev(struct device *dev)
-{
-	/* Set the operations if it is a special bus type */
-	switch (dev->path.type) {
-	case DEVICE_PATH_DOMAIN:
-		dev->ops = &pci_domain_ops;
-		break;
-	case DEVICE_PATH_CPU_CLUSTER:
-		dev->ops = &cpu_bus_ops;
-		break;
-	case DEVICE_PATH_MMIO:
-		set_mmio_dev_ops(dev);
-		break;
-	default:
-		break;
-	}
-}
 
 static void soc_init(void *chip_info)
 {
@@ -141,7 +108,6 @@ static void soc_final(void *chip_info)
 
 struct chip_operations soc_amd_stoneyridge_ops = {
 	CHIP_NAME("AMD StoneyRidge SOC")
-	.enable_dev = enable_dev,
 	.init = soc_init,
 	.final = soc_final
 };

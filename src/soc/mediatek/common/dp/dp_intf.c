@@ -9,22 +9,22 @@
 #include <soc/pll_common.h>
 #include <soc/spm.h>
 
-static void mtk_dpintf_mask(struct mtk_dpintf *dpintf, u32 offset, u32 val, u32 mask)
+static void mtk_dpintf_mask(const struct mtk_dpintf *dpintf, u32 offset, u32 val, u32 mask)
 {
 	clrsetbits32(dpintf->regs + offset, mask, val);
 }
 
-static void mtk_dpintf_sw_reset(struct mtk_dpintf *dpintf, bool reset)
+static void mtk_dpintf_sw_reset(const struct mtk_dpintf *dpintf, bool reset)
 {
 	mtk_dpintf_mask(dpintf, DPINTF_RET, reset ? RST : 0, RST);
 }
 
-static void mtk_dpintf_enable(struct mtk_dpintf *dpintf)
+static void mtk_dpintf_enable(const struct mtk_dpintf *dpintf)
 {
 	mtk_dpintf_mask(dpintf, DPINTF_EN, EN, EN);
 }
 
-static void mtk_dpintf_config_hsync(struct mtk_dpintf *dpintf,
+static void mtk_dpintf_config_hsync(const struct mtk_dpintf *dpintf,
 				    struct mtk_dpintf_sync_param *sync)
 {
 	mtk_dpintf_mask(dpintf, DPINTF_TGEN_HWIDTH,
@@ -35,7 +35,7 @@ static void mtk_dpintf_config_hsync(struct mtk_dpintf *dpintf,
 			sync->front_porch << HFP, HFP_MASK);
 }
 
-static void mtk_dpintf_config_vsync(struct mtk_dpintf *dpintf,
+static void mtk_dpintf_config_vsync(const struct mtk_dpintf *dpintf,
 				    struct mtk_dpintf_sync_param *sync,
 				    u32 width_addr, u32 porch_addr)
 {
@@ -53,35 +53,35 @@ static void mtk_dpintf_config_vsync(struct mtk_dpintf *dpintf,
 			VSYNC_FRONT_PORCH_MASK);
 }
 
-static void mtk_dpintf_config_vsync_lodd(struct mtk_dpintf *dpintf,
+static void mtk_dpintf_config_vsync_lodd(const struct mtk_dpintf *dpintf,
 					 struct mtk_dpintf_sync_param *sync)
 {
 	mtk_dpintf_config_vsync(dpintf, sync, DPINTF_TGEN_VWIDTH,
 				DPINTF_TGEN_VPORCH);
 }
 
-static void mtk_dpintf_config_vsync_leven(struct mtk_dpintf *dpintf,
+static void mtk_dpintf_config_vsync_leven(const struct mtk_dpintf *dpintf,
 					  struct mtk_dpintf_sync_param *sync)
 {
 	mtk_dpintf_config_vsync(dpintf, sync, DPINTF_TGEN_VWIDTH_LEVEN,
 				DPINTF_TGEN_VPORCH_LEVEN);
 }
 
-static void mtk_dpintf_config_vsync_rodd(struct mtk_dpintf *dpintf,
+static void mtk_dpintf_config_vsync_rodd(const struct mtk_dpintf *dpintf,
 					 struct mtk_dpintf_sync_param *sync)
 {
 	mtk_dpintf_config_vsync(dpintf, sync, DPINTF_TGEN_VWIDTH_RODD,
 				DPINTF_TGEN_VPORCH_RODD);
 }
 
-static void mtk_dpintf_config_vsync_reven(struct mtk_dpintf *dpintf,
+static void mtk_dpintf_config_vsync_reven(const struct mtk_dpintf *dpintf,
 					  struct mtk_dpintf_sync_param *sync)
 {
 	mtk_dpintf_config_vsync(dpintf, sync, DPINTF_TGEN_VWIDTH_REVEN,
 				DPINTF_TGEN_VPORCH_REVEN);
 }
 
-static void mtk_dpintf_config_pol(struct mtk_dpintf *dpintf,
+static void mtk_dpintf_config_pol(const struct mtk_dpintf *dpintf,
 				  struct mtk_dpintf_polarities *dpintf_pol)
 {
 	u32 pol;
@@ -91,24 +91,24 @@ static void mtk_dpintf_config_pol(struct mtk_dpintf *dpintf,
 	mtk_dpintf_mask(dpintf, DPINTF_OUTPUT_SETTING, pol, HSYNC_POL | VSYNC_POL);
 }
 
-static void mtk_dpintf_config_3d(struct mtk_dpintf *dpintf, bool en_3d)
+static void mtk_dpintf_config_3d(const struct mtk_dpintf *dpintf, bool en_3d)
 {
 	mtk_dpintf_mask(dpintf, DPINTF_CON, en_3d ? TDFP_EN : 0, TDFP_EN);
 }
 
-static void mtk_dpintf_config_interface(struct mtk_dpintf *dpintf, bool inter)
+static void mtk_dpintf_config_interface(const struct mtk_dpintf *dpintf, bool inter)
 {
 	mtk_dpintf_mask(dpintf, DPINTF_CON, inter ? INTL_EN : 0, INTL_EN);
 }
 
-static void mtk_dpintf_config_fb_size(struct mtk_dpintf *dpintf,
+static void mtk_dpintf_config_fb_size(const struct mtk_dpintf *dpintf,
 				      u32 width, u32 height)
 {
 	mtk_dpintf_mask(dpintf, DPINTF_SIZE, width << HSIZE, HSIZE_MASK);
 	mtk_dpintf_mask(dpintf, DPINTF_SIZE, height << VSIZE, VSIZE_MASK);
 }
 
-static void mtk_dpintf_config_channel_limit(struct mtk_dpintf *dpintf,
+static void mtk_dpintf_config_channel_limit(const struct mtk_dpintf *dpintf,
 					    struct mtk_dpintf_yc_limit *limit)
 {
 	mtk_dpintf_mask(dpintf, DPINTF_Y_LIMIT,
@@ -121,7 +121,7 @@ static void mtk_dpintf_config_channel_limit(struct mtk_dpintf *dpintf,
 			limit->c_top << C_LIMIT_TOP, C_LIMIT_TOP_MASK);
 }
 
-static void mtk_dpintf_config_bit_num(struct mtk_dpintf *dpintf,
+static void mtk_dpintf_config_bit_num(const struct mtk_dpintf *dpintf,
 				      enum mtk_dpintf_out_bit_num num)
 {
 	u32 val;
@@ -146,7 +146,7 @@ static void mtk_dpintf_config_bit_num(struct mtk_dpintf *dpintf,
 	mtk_dpintf_mask(dpintf, DPINTF_OUTPUT_SETTING, val, OUT_BIT_MASK);
 }
 
-static void mtk_dpintf_config_channel_swap(struct mtk_dpintf *dpintf,
+static void mtk_dpintf_config_channel_swap(const struct mtk_dpintf *dpintf,
 					   enum mtk_dpintf_out_channel_swap swap)
 {
 	u32 val;
@@ -178,12 +178,12 @@ static void mtk_dpintf_config_channel_swap(struct mtk_dpintf *dpintf,
 	mtk_dpintf_mask(dpintf, DPINTF_OUTPUT_SETTING, val, CH_SWAP_MASK);
 }
 
-static void mtk_dpintf_config_yuv422_enable(struct mtk_dpintf *dpintf, bool enable)
+static void mtk_dpintf_config_yuv422_enable(const struct mtk_dpintf *dpintf, bool enable)
 {
 	mtk_dpintf_mask(dpintf, DPINTF_CON, enable ? YUV422_EN : 0, YUV422_EN);
 }
 
-static void mtk_dpintf_config_color_format(struct mtk_dpintf *dpintf,
+static void mtk_dpintf_config_color_format(const struct mtk_dpintf *dpintf,
 					   enum mtk_dpintf_out_color_format format)
 {
 	bool enable;
@@ -206,7 +206,7 @@ static void mtk_dpintf_config_color_format(struct mtk_dpintf *dpintf,
 	mtk_dpintf_config_channel_swap(dpintf, channel_swap);
 }
 
-static int mtk_dpintf_power_on(struct mtk_dpintf *dpintf, const struct edid *edid)
+static int mtk_dpintf_power_on(const struct mtk_dpintf *dpintf, const struct edid *edid)
 {
 	u32 clksrc;
 	u32 pll_rate;
@@ -228,7 +228,7 @@ static int mtk_dpintf_power_on(struct mtk_dpintf *dpintf, const struct edid *edi
 	return 0;
 }
 
-static int mtk_dpintf_set_display_mode(struct mtk_dpintf *dpintf,
+static int mtk_dpintf_set_display_mode(const struct mtk_dpintf *dpintf,
 				       const struct edid *edid)
 {
 	struct mtk_dpintf_yc_limit limit;
@@ -284,7 +284,7 @@ static int mtk_dpintf_set_display_mode(struct mtk_dpintf *dpintf,
 	mtk_dpintf_config_channel_swap(dpintf, dpintf->channel_swap);
 	mtk_dpintf_config_color_format(dpintf, dpintf->color_format);
 
-	mtk_dpintf_mask(dpintf, DPINTF_CON, INPUT_2P_EN, INPUT_2P_EN);
+	mtk_dpintf_mask(dpintf, DPINTF_CON, dpintf->input_mode, INPUT_2P_EN);
 	mtk_dpintf_sw_reset(dpintf, false);
 
 	return 0;
@@ -292,14 +292,8 @@ static int mtk_dpintf_set_display_mode(struct mtk_dpintf *dpintf,
 
 void dp_intf_config(const struct edid *edid)
 {
-	struct mtk_dpintf dpintf = {
-		.regs = (void *)(DP_INTF0_BASE),
-		.color_format = MTK_DPINTF_COLOR_FORMAT_RGB,
-		.yc_map = MTK_DPINTF_OUT_YC_MAP_RGB,
-		.bit_num = MTK_DPINTF_OUT_BIT_NUM_8BITS,
-		.channel_swap = MTK_DPINTF_OUT_CHANNEL_SWAP_RGB,
-	};
+	const struct mtk_dpintf *data = &dpintf_data;
 
-	mtk_dpintf_power_on(&dpintf, edid);
-	mtk_dpintf_set_display_mode(&dpintf, edid);
+	mtk_dpintf_power_on(data, edid);
+	mtk_dpintf_set_display_mode(data, edid);
 }

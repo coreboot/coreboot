@@ -4,6 +4,7 @@
 #define SOC_MEDIATEK_COMMON_DP_DP_INTF_H
 
 #include <edid.h>
+#include <types.h>
 
 #define DPINTF_EN			0x00
 #define EN				BIT(0)
@@ -211,6 +212,11 @@ enum mtk_dpintf_out_color_format {
 	MTK_DPINTF_COLOR_FORMAT_YCBCR_422_FULL,
 };
 
+enum mtk_dpintf_input_mode {
+	MTK_DPINTF_INPUT_MODE_1P = 0,
+	MTK_DPINTF_INPUT_MODE_2P = INPUT_2P_EN,
+};
+
 enum TVDPLL_CLK {
 	TVDPLL_PLL = 0,
 	TVDPLL_D2 = 1,
@@ -225,6 +231,7 @@ struct mtk_dpintf {
 	enum mtk_dpintf_out_yc_map yc_map;
 	enum mtk_dpintf_out_bit_num bit_num;
 	enum mtk_dpintf_out_channel_swap channel_swap;
+	enum mtk_dpintf_input_mode input_mode;
 };
 
 enum mtk_dpintf_polarity {
@@ -252,6 +259,8 @@ struct mtk_dpintf_yc_limit {
 	u16 c_top;
 	u16 c_bottom;
 };
+
+extern const struct mtk_dpintf dpintf_data;
 
 void dp_intf_config(const struct edid *edid);
 

@@ -325,6 +325,12 @@ struct soc_intel_meteorlake_config {
 	 * Default 0.
 	 */
 	uint8_t lan_clk;
+
+	/*
+	 * Enable or Disable Skipping MBP HOB.
+	 * Default is set to 0 and set to 1 to skip the MBP HOB.
+	 */
+	bool skip_mbp_hob;
 };
 
 typedef struct soc_intel_meteorlake_config config_t;

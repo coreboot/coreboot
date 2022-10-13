@@ -2,6 +2,12 @@
 
 #include <amdblocks/agesawrapper.h>
 
+/*
+ * TODO:
+ * Check if a separate PCIe port list is needed for Prairie Falcon APUs. Only Merlin Falcon has
+ * PCIe root ports on the functions of bus 0 device 3.
+ */
+
 static const PCIe_PORT_DESCRIPTOR PortList[] = {
 	/*
 	 * Init Port descriptor (PCIe port, Lanes 8-15,

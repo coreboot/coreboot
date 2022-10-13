@@ -41,7 +41,7 @@ int __weak mainboard_get_ehci_oc_map(uint16_t *map)
 	return -1;
 }
 
-static struct device_operations usb_ops = {
+struct device_operations stoneyridge_usb_ops = {
 	.read_resources = pci_ehci_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
@@ -49,20 +49,4 @@ static struct device_operations usb_ops = {
 	.scan_bus = scan_static_bus,
 	.acpi_name = soc_acpi_name,
 	.ops_pci = &pci_dev_ops_pci,
-};
-
-static const unsigned short pci_device_ids[] = {
-	PCI_DID_AMD_SB900_USB_18_0,
-	PCI_DID_AMD_SB900_USB_18_2,
-	PCI_DID_AMD_SB900_USB_20_5,
-	PCI_DID_AMD_CZ_USB_0,
-	PCI_DID_AMD_CZ_USB_1,
-	PCI_DID_AMD_CZ_USB3_0,
-	0
-};
-
-static const struct pci_driver usb_0_driver __pci_driver = {
-	.ops = &usb_ops,
-	.vendor = PCI_VID_AMD,
-	.devices = pci_device_ids,
 };

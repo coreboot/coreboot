@@ -19,13 +19,13 @@ chip soc/amd/stoneyridge
 		device pci 08.0 alias crypto on end # cryptography coprocessor / PSP
 		device pci 09.0 alias hda_bridge off end # host audio bridge
 		device pci 09.2 alias hda off end # main HD Audio Controller
-		device pci 10.0 alias xhci off end
+		device pci 10.0 alias xhci off ops stoneyridge_usb_ops end
 		device pci 11.0 alias sata off end
-		device pci 12.0 alias ehci off end
+		device pci 12.0 alias ehci off ops stoneyridge_usb_ops end
 		device pci 14.0 alias smbus on end # primary FCH function
 		device pci 14.3 alias lpc_bridge on end
 		device pci 14.7 alias sdhci off end
-		device pci 18.0 alias ht_0 on end
+		device pci 18.0 alias ht_0 on ops stoneyridge_northbridge_operations end
 		device pci 18.1 alias ht_1 on end
 		device pci 18.2 alias ht_2 on end
 		device pci 18.3 alias ht_3 on end

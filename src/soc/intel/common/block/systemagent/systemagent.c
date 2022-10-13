@@ -210,7 +210,7 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 	/* top_of_ram -> TOLUD */
 	base_k = top_of_ram;
 	size_k = sa_map_values[SA_TOLUD_REG] - base_k;
-	mmio_resource_kb(dev, index++, base_k / KiB, size_k / KiB);
+	reserved_ram_resource_kb(dev, index++, base_k / KiB, size_k / KiB);
 
 	/* 4GiB -> TOUUD */
 	upper_ram_end(dev, index++, sa_map_values[SA_TOUUD_REG]);

@@ -25,7 +25,6 @@ int send_ec_oem_command(u8 command);
 int send_ec_oem_data(u8 data);
 u8 recv_ec_oem_data(void);
 u8 ec_oem_read(u8 addr);
-int ec_oem_write(u8 addr, u8 data);
 
 int ec_dump_status(void);
 int ec_oem_dump_status(void);

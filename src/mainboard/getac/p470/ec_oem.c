@@ -80,13 +80,6 @@ u8 ec_oem_read(u8 addr)
 	return recv_ec_oem_data();
 }
 
-int ec_oem_write(u8 addr, u8 data)
-{
-	send_ec_oem_command(0x81);
-	send_ec_oem_data(addr);
-	return send_ec_oem_data(data);
-}
-
 int ec_oem_dump_status(void)
 {
 	u8 ec_sc = inb(EC_OEM_SC);

@@ -187,8 +187,6 @@ static void sa_get_mem_map(struct device *dev, uint64_t *values)
  */
 static void sa_add_dram_resources(struct device *dev, int *resource_count)
 {
-	uintptr_t base_k;
-	size_t size_k;
 	uint64_t sa_map_values[MAX_MAP_ENTRIES];
 	uintptr_t top_of_ram;
 	int index = *resource_count;
@@ -196,21 +194,15 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 	top_of_ram = (uintptr_t)cbmem_top();
 
 	/* 0 - > 0xa0000 */
-	base_k = 0;
-	size_k = (0xa0000 / KiB) - base_k;
-	ram_resource_kb(dev, index++, base_k, size_k);
+	ram_from_to(dev, index++, 0, 0xa0000);
 
 	/* 0xc0000 -> top_of_ram */
-	base_k = 0xc0000 / KiB;
-	size_k = (top_of_ram / KiB) - base_k;
-	ram_resource_kb(dev, index++, base_k, size_k);
+	ram_from_to(dev, index++, 0xc0000, top_of_ram);
 
 	sa_get_mem_map(dev, &sa_map_values[0]);
 
 	/* top_of_ram -> TOLUD */
-	base_k = top_of_ram;
-	size_k = sa_map_values[SA_TOLUD_REG] - base_k;
-	reserved_ram_resource_kb(dev, index++, base_k / KiB, size_k / KiB);
+	reserved_ram_from_to(dev, index++, top_of_ram, sa_map_values[SA_TOLUD_REG]);
 
 	/* 4GiB -> TOUUD */
 	upper_ram_end(dev, index++, sa_map_values[SA_TOUUD_REG]);
@@ -221,9 +213,8 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 	 * 0xa0000 - 0xbffff: legacy VGA
 	 * 0xc0000 - 0xfffff: RAM
 	 */
-	mmio_resource_kb(dev, index++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
-	reserved_ram_resource_kb(dev, index++, 0xc0000 / KiB,
-			(1*MiB - 0xc0000) / KiB);
+	mmio_from_to(dev, index++, 0xa0000, 0xc0000);
+	reserved_ram_from_to(dev, index++, 0xc0000, 1 * MiB);
 
 	*resource_count = index;
 }

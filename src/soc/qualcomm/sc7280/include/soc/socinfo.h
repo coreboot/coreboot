@@ -1,31 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/**
- Chip identification type.  Any new ids must be added to the end.
- */
-
-typedef enum{
-	CHIPINFO_ID_UNKNOWN             = 0,
-	CHIPINFO_ID_SM_KODIAK           = 475,
-	CHIPINFO_ID_SC_KODIAK_CHROME    = 487,
-	CHIPINFO_ID_SC_7CPLUSGEN3       = CHIPINFO_ID_SC_KODIAK_CHROME,
-	CHIPINFO_ID_SC_KODIAK_WINDOWS   = 488,
-	CHIPINFO_ID_QCM_KODIAK          = 497,
-	CHIPINFO_ID_QCS_KODIAK          = 498,
-	CHIPINFO_ID_SMP_KODIAK          = 499,
-	CHIPINFO_ID_SM_KODIAK_LTE_ONLY  = 515,
-	CHIPINFO_ID_SCP_KODIAK          = 546,
-	CHIPINFO_ID_SCP_7CPLUSGEN3      = CHIPINFO_ID_SCP_KODIAK,
-	CHIPINFO_ID_SC_8CGEN3           = 553,
-	CHIPINFO_ID_SCP_8CGEN3          = 563,
-	CHIPINFO_ID_KODIAK_SCP_7CGEN3   = 567,
-	CHIPINFO_ID_QCS_KODIAK_LITE     = 575,
-	CHIPINFO_ID_QCM_KODIAK_LITE     = 576,
-
-	CHIPINFO_NUM_IDS,
-	CHIPINFO_ID_32BITS              = 0x7FFFFFF
-	} ChipInfoIdType;
-
 /*
  * CHIPINFO_PARTNUM_*
  *
@@ -46,14 +20,13 @@ typedef enum{
 #define CHIPINFO_PARTNUM_QCM_KODIAK_LITE	0x20E
 
 
-#define CHIPINFO_MODEM_SUPPORTED        0x1
-#define CHIPINFO_MODEM_UNKNOWN          0x0
 #define DEVICE_ID                       0xFFFF
 
 struct chipinfo {
-	uint32_t chipid;
-	uint32_t jtagid;
-	bool modem;
+	uint16_t jtagid : 14;
+	uint16_t modem  : 1;
+	uint16_t pro    : 1;
 };
 
-bool socinfo_modem_supported(void);
+uint16_t socinfo_modem_supported(void);
+uint16_t socinfo_pro_part(void);

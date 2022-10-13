@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Morgana */
-
 #include <amdblocks/gpio.h>
 #include <soc/gpio.h>
 #include <types.h>

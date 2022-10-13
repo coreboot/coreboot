@@ -47,13 +47,13 @@ type LP5DensityParams struct {
 
 type LP5SpeedParams struct {
 	defaultTCKMinPs int
-	MaxCASLatency int
+	MaxCASLatency   int
 }
 
 type LP5BankArchParams struct {
-	NumBanks		int
-	BankGroups		int
-	BurstAddressBits	int
+	NumBanks         int
+	BankGroups       int
+	BurstAddressBits int
 }
 
 type LP5SPDAttribFunc func(*LP5MemAttributes) byte
@@ -66,12 +66,12 @@ type LP5SPDAttribTableEntry struct {
 type LP5SetFunc func(*LP5MemAttributes) int
 
 type LP5Set struct {
-	SPDRevision    byte
-	getBankArch  LP5SetFunc
-	optionalFeatures  byte
-	otherOptionalFeatures  byte
-	busWidthEncoding  byte
-	speedToTCKMinPs map[int]int
+	SPDRevision           byte
+	getBankArch           LP5SetFunc
+	optionalFeatures      byte
+	otherOptionalFeatures byte
+	busWidthEncoding      byte
+	speedToTCKMinPs       map[int]int
 }
 
 /* ------------------------------------------------------------------------------------------ */
@@ -208,10 +208,10 @@ var LP5SetInfo = map[int]LP5Set{
 		 *            = 1 / (WCK rate / WCK:CK)
 		 *            = 1 / (speed grade / 2 / WCK:CK)      // "double data rate"
 		 */
-		 speedToTCKMinPs: map[int]int{
-			 7500 : 1066, /* 1 / (7500 / 2 / 4) */
-			 6400 : 1250, /* 1 / (6400 / 2 / 4) */
-			 5500 : 1455, /* 1 / (5500 / 2 / 4) */
+		speedToTCKMinPs: map[int]int{
+			7500: 1066, /* 1 / (7500 / 2 / 4) */
+			6400: 1250, /* 1 / (6400 / 2 / 4) */
+			5500: 1455, /* 1 / (5500 / 2 / 4) */
 		},
 	},
 	1: {
@@ -310,8 +310,8 @@ var LP5DensityGbToSPDEncoding = map[int]LP5DensityParams{
  * Maps the number of banks to the SPD encoding as per JESD 21-C.
  */
 var LP5NumBanksEncoding = map[int]byte{
-	4: 0x0,
-	8: 0x1,
+	4:  0x0,
+	8:  0x1,
 	16: 0x2,
 }
 
@@ -339,7 +339,7 @@ var LP5RowAddressBitsEncoding = map[int]byte{
  * Maps the number of column address bits to the SPD encoding as per JESD 21-C.
  */
 var LP5ColAddressBitsEncoding = map[int]byte{
-	9: 0x0,
+	9:  0x0,
 	10: 0x1,
 	11: 0x2,
 	12: 0x3,
@@ -347,18 +347,18 @@ var LP5ColAddressBitsEncoding = map[int]byte{
 
 var LP5BankArchToSPDEncoding = map[int]LP5BankArchParams{
 	LP5BGBankArch: {
-		NumBanks: 4,
-		BankGroups: 4,
+		NumBanks:         4,
+		BankGroups:       4,
 		BurstAddressBits: 4,
 	},
 	LP58BBankArch: {
-		NumBanks: 8,
-		BankGroups: 1,
+		NumBanks:         8,
+		BankGroups:       1,
 		BurstAddressBits: 5,
 	},
 	LP516BBankArch: {
-		NumBanks: 16,
-		BankGroups: 1,
+		NumBanks:         16,
+		BankGroups:       1,
 		BurstAddressBits: 4,
 	},
 }
@@ -374,16 +374,16 @@ var LP5BankArchToSPDEncoding = map[int]LP5BankArchParams{
  */
 var LP5SpeedMbpsToSPDEncoding = map[int]LP5SpeedParams{
 	7500: {
-		defaultTCKMinPs : 266, /* 1 / (7500 / 2) */
-		MaxCASLatency: 20,
+		defaultTCKMinPs: 266, /* 1 / (7500 / 2) */
+		MaxCASLatency:   20,
 	},
 	6400: {
-		defaultTCKMinPs : 312, /* 1 / (6400 / 2) */
-		MaxCASLatency: 17,
+		defaultTCKMinPs: 312, /* 1 / (6400 / 2) */
+		MaxCASLatency:   17,
 	},
 	5500: {
-		defaultTCKMinPs : 363, /* 1 / (5500 / 2) */
-		MaxCASLatency: 15,
+		defaultTCKMinPs: 363, /* 1 / (5500 / 2) */
+		MaxCASLatency:   15,
 	},
 }
 
@@ -439,7 +439,7 @@ func LP5GetBankArchSet1(memAttribs *LP5MemAttributes) int {
 	 * Mendocino does not support 8B. It uses 16B Bank Architecture for speed <= 3200 Mbps.
 	 * It uses BG Bank Architecture for speed > 3200 Mbps.
 	 */
-	 if memAttribs.SpeedMbps <= 3200 {
+	if memAttribs.SpeedMbps <= 3200 {
 		return LP516BBankArch
 	}
 	return LP5BGBankArch
@@ -498,7 +498,7 @@ func LP5EncodeSdramAddressing(memAttribs *LP5MemAttributes) byte {
 	var b byte
 
 	// 2:0 Column address bits.
-	b = LP5ColAddressBitsEncoding[LP5ColAddressBits + LP5GetBurstAddressBits(memAttribs)]
+	b = LP5ColAddressBitsEncoding[LP5ColAddressBits+LP5GetBurstAddressBits(memAttribs)]
 
 	// 5:3 Row address bits.
 	density := memAttribs.DensityPerDieGb

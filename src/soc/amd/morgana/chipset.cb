@@ -95,5 +95,5 @@ chip soc/amd/morgana
 	device mmio 0xfedce000 alias uart_2 off ops morgana_uart_mmio_ops end
 	device mmio 0xfedcf000 alias uart_3 off ops morgana_uart_mmio_ops end
 	device mmio 0xfedd1000 alias uart_4 off ops morgana_uart_mmio_ops end
-	device mmio 0xfedd5000 alias emmc off ops morgana_emmc_mmio_ops end
+	device mmio 0xfedd5000 alias emmc off ops amd_emmc_mmio_ops end
 end

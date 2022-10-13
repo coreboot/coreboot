@@ -1,0 +1,4 @@
+config SOC_AMD_COMMON_BLOCK_EMMC
+	bool
+	help
+	  Select this option to use AMD common EMMC driver support.

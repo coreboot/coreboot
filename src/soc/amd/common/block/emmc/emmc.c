@@ -15,7 +15,7 @@ static void emmc_enable(struct device *dev)
 		power_off_aoac_device(FCH_AOAC_DEV_EMMC);
 }
 
-struct device_operations morgana_emmc_mmio_ops = {
+struct device_operations amd_emmc_mmio_ops = {
 	.read_resources = emmc_read_resources,
 	.set_resources = noop_set_resources,
 	.scan_bus = scan_static_bus,

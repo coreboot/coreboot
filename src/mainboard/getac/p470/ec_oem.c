@@ -47,13 +47,6 @@ int send_ec_oem_data(u8 data)
 	return 0;
 }
 
-int send_ec_oem_data_nowait(u8 data)
-{
-	outb(data, EC_OEM_DATA);
-
-	return 0;
-}
-
 u8 recv_ec_oem_data(void)
 {
 	int timeout;

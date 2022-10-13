@@ -69,6 +69,8 @@ chip soc/intel/meteorlake
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
+	register "skip_mbp_hob" = "1"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

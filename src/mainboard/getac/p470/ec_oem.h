@@ -3,6 +3,8 @@
 #ifndef _MAINBOARD_EC_OEM_H
 #define _MAINBOARD_EC_OEM_H
 
+#include <types.h>
+
 #define EC_OEM_DATA	0x68
 #define EC_OEM_SC	0x6c
 
@@ -21,8 +23,8 @@
 #define   BD_EC	0x83 // Burst Disable Embedded Controller
 #define   QR_EC	0x84 // Query Embedded Controller
 
-int send_ec_oem_command(u8 command);
-int send_ec_oem_data(u8 data);
+enum cb_err send_ec_oem_command(u8 command);
+enum cb_err send_ec_oem_data(u8 data);
 u8 recv_ec_oem_data(void);
 u8 ec_oem_read(u8 addr);
 

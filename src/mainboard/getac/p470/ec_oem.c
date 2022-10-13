@@ -4,9 +4,11 @@
 #include <arch/io.h>
 #include <delay.h>
 #include <ec/acpi/ec.h>
+#include <types.h>
+
 #include "ec_oem.h"
 
-int send_ec_oem_command(u8 command)
+enum cb_err send_ec_oem_command(u8 command)
 {
 	int timeout;
 
@@ -19,14 +21,14 @@ int send_ec_oem_command(u8 command)
 	if (!timeout) {
 		printk(BIOS_DEBUG, "Timeout while sending OEM command 0x%02x to EC!\n",
 				command);
-		// return -1;
+		// return CB_ERR;
 	}
 
 	outb(command, EC_OEM_SC);
-	return 0;
+	return CB_SUCCESS;
 }
 
-int send_ec_oem_data(u8 data)
+enum cb_err send_ec_oem_data(u8 data)
 {
 	int timeout;
 
@@ -39,12 +41,12 @@ int send_ec_oem_data(u8 data)
 	if (!timeout) {
 		printk(BIOS_DEBUG, "Timeout while sending OEM data 0x%02x to EC!\n",
 				data);
-		// return -1;
+		// return CB_ERR;
 	}
 
 	outb(data, EC_OEM_DATA);
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 u8 recv_ec_oem_data(void)

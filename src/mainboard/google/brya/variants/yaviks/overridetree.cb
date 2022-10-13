@@ -211,15 +211,9 @@ chip soc/intel/alderlake
 				device pci 00.0 on end
 			end
 		end
-                device ref emmc on
-			probe STORAGE STORAGE_EMMC
-		end
-		device ref ish on
-			probe STORAGE STORAGE_UFS
-		end
-		device ref ufs on
-			probe STORAGE STORAGE_UFS
-		end
+		device ref emmc on end
+		device ref ish on end
+		device ref ufs on end
 		device ref pch_espi on
 			chip ec/google/chromeec
 				use conn0 as mux_conn[0]

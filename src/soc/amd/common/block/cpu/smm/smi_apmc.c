@@ -1,6 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi.h>
+#include <amdblocks/acpi.h>
+#include <amdblocks/psp.h>
 #include <amdblocks/smm.h>
+#include <arch/io.h>
 #include <cpu/amd/amd64_save_state.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
@@ -83,4 +87,32 @@ void handle_smi_store(void)
 
 	/* drivers/smmstore/smi.c */
 	io_smi->rax = smmstore_exec(sub_command, (void *)(uintptr_t)reg_ebx);
+}
+
+void fch_apmc_smi_handler(void)
+{
+	const uint8_t cmd = inb(pm_acpi_smi_cmd_port());
+
+	switch (cmd) {
+	case APM_CNT_ACPI_ENABLE:
+		acpi_clear_pm_gpe_status();
+		acpi_enable_sci();
+		break;
+	case APM_CNT_ACPI_DISABLE:
+		acpi_disable_sci();
+		break;
+	case APM_CNT_ELOG_GSMI:
+		if (CONFIG(ELOG_GSMI))
+			handle_smi_gsmi();
+	break;
+	case APM_CNT_SMMSTORE:
+		if (CONFIG(SMMSTORE))
+			handle_smi_store();
+	break;
+	case APM_CNT_SMMINFO:
+		psp_notify_smm();
+		break;
+	}
+
+	mainboard_smi_apmc(cmd);
 }

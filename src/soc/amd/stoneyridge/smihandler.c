@@ -15,7 +15,11 @@
 #include <soc/southbridge.h>
 #include <types.h>
 
-static void fch_apmc_smi_handler(void)
+/*
+ * stoneyridge does not implement the APM_CNT_SMMINFO handler,
+ * so it needs a special version
+ */
+static void stoneyridge_fch_apmc_smi_handler(void)
 {
 	const uint8_t cmd = inb(pm_acpi_smi_cmd_port());
 
@@ -135,7 +139,7 @@ int southbridge_io_trap_handler(int smif)
  * in southbridge.c is unrelated to this list.
  */
 static const struct smi_sources_t smi_sources[] = {
-	{ .type = SMITYPE_SMI_CMD_PORT, .handler = fch_apmc_smi_handler },
+	{ .type = SMITYPE_SMI_CMD_PORT, .handler = stoneyridge_fch_apmc_smi_handler },
 	{ .type = SMITYPE_SLP_TYP, .handler = fch_slp_typ_handler},
 };
 

@@ -2,9 +2,15 @@
 
 #include <device/mmio.h>
 #include <intelblocks/cfg.h>
+#include <intelblocks/pcr.h>
 #include <intelpch/lockdown.h>
+#include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <stdint.h>
+
+/* PCR PSTH Control Register */
+#define PCR_PSTH_CTRLREG	0x1d00
+#define PSTH_CTRLREG_IOSFPTCGE	(1 << 2)
 
 static void pmc_lock_pmsync(void)
 {
@@ -53,8 +59,19 @@ static void pmc_lockdown_cfg(int chipset_lockdown)
 		pmc_lock_smi();
 }
 
+static void soc_die_lockdown_cfg(void)
+{
+	if (CONFIG(USE_FSP_NOTIFY_PHASE_POST_PCI_ENUM))
+		return;
+
+	/* Enable IOSF Primary Trunk Clock Gating */
+	pcr_rmw32(PID_PSTH, PCR_PSTH_CTRLREG, ~0, PSTH_CTRLREG_IOSFPTCGE);
+}
+
 void soc_lockdown_config(int chipset_lockdown)
 {
 	/* PMC lock down configuration */
 	pmc_lockdown_cfg(chipset_lockdown);
+	/* SOC Die lock down configuration */
+	soc_die_lockdown_cfg();
 }

@@ -3,7 +3,6 @@
 #ifndef __BASEBOARD_GPIO_H__
 #define __BASEBOARD_GPIO_H__
 
-#include <soc/gpe.h>
 #include <soc/gpio.h>
 
 void configure_gpio_pads(void);

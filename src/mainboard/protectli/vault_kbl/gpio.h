@@ -3,7 +3,6 @@
 #ifndef _GPIOFW6B_H
 #define _GPIOFW6B_H
 
-#include <soc/gpe.h>
 #include <soc/gpio.h>
 
 #ifndef __ACPI__

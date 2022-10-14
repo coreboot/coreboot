@@ -3,7 +3,6 @@
 #ifndef LT1000_GPIO_H
 #define LT1000_GPIO_H
 
-#include <soc/gpe.h>
 #include <soc/gpio.h>
 
 #ifndef __ACPI__

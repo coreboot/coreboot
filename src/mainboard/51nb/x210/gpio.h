@@ -3,7 +3,6 @@
 #ifndef MAINBOARD_GPIO_H
 #define MAINBOARD_GPIO_H
 
-#include <soc/gpe.h>
 #include <soc/gpio.h>
 
 /*

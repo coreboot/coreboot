@@ -126,7 +126,7 @@ static size_t fill_up_entries_cache(struct vpd_blob_cache_t *cache,
 			cache->key_size = key_length;
 			cache->value_size = decoded_size;
 			cache->blob_size =
-				ALIGN(sizeof(struct calibration_blob) +
+				ALIGN_UP(sizeof(struct calibration_blob) +
 				      cache->key_size +
 				      cache->value_size, 4);
 			cbmem_entry_size += cache->blob_size;

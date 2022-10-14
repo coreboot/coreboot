@@ -253,7 +253,7 @@ int parse_bzImage_to_payload(const struct buffer *input,
 			/* 16 MB should be way outside coreboot's playground,
 			 * so if possible (relocatable kernel) use that to
 			 * avoid a trampoline copy. */
-			kernel_base = ALIGN(16*1024*1024, params.kernel_alignment);
+			kernel_base = ALIGN_UP(16*1024*1024, params.kernel_alignment);
 			if (hdr->init_size == 0) {
 				ERROR("init_size 0 for relocatable kernel\n");
 				return -1;
@@ -275,7 +275,7 @@ int parse_bzImage_to_payload(const struct buffer *input,
 		 * close to the kernel, so give it some room.
 		 */
 		initrd_base = kernel_base + buffer_size(&bzp.kernel);
-		initrd_base = ALIGN(initrd_base, 64*1024*1024);
+		initrd_base = ALIGN_UP(initrd_base, 64*1024*1024);
 
 		params.initrd_start = initrd_base;
 		params.initrd_size = buffer_size(&bzp.initrd);

@@ -1174,7 +1174,7 @@ int elf_writer_serialize(struct elf_writer *ew, struct buffer *out)
 	metadata_size += (Elf64_Xword)ew->ehdr.e_phnum * ew->ehdr.e_phentsize;
 	shstroffset = metadata_size;
 	/* Align up section header string size and metadata size to 4KiB */
-	metadata_size = ALIGN(metadata_size + shstrlen, 4096);
+	metadata_size = ALIGN_UP(metadata_size + shstrlen, 4096);
 
 	if (buffer_create(out, metadata_size + program_size, "elfout")) {
 		ERROR("Could not create output buffer for ELF.\n");

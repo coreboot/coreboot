@@ -4,6 +4,7 @@
 
 #include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
+#include <commonlib/bsd/helpers.h>
 #include <device/device.h>
 #include <FspGuids.h>
 #include <soc/acpi.h>
@@ -18,7 +19,7 @@ uintptr_t agesa_write_acpi_tables(const struct device *device, uintptr_t current
 	current = add_agesa_fsp_acpi_table(AMD_FSP_ACPI_ALIB_HOB_GUID, "ALIB", rsdp, current);
 
 	/* IVRS */
-	current = ALIGN(current, 8);
+	current = ALIGN_UP(current, 8);
 	ivrs = (acpi_ivrs_t *)current;
 	acpi_create_ivrs(ivrs, acpi_fill_ivrs);
 	current += ivrs->header.length;

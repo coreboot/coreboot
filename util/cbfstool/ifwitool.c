@@ -1,6 +1,7 @@
 /* ifwitool, CLI utility for IFWI manipulation */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/bsd/helpers.h>
 #include <commonlib/endian.h>
 #include <getopt.h>
 #include <stdlib.h>
@@ -909,7 +910,7 @@ static int ifwi_parse(void)
 	 * part of the image.
 	 * ASSUMPTION: IFWI image always ends on a 4K boundary.
 	 */
-	ifwi_image.input_ifwi_end_offset = ALIGN(end_offset, 4 * KiB);
+	ifwi_image.input_ifwi_end_offset = ALIGN_UP(end_offset, 4 * KiB);
 	DEBUG("Parsing done.\n");
 
 	return 0;
@@ -979,7 +980,7 @@ static void bpdt_reset(void)
 	__bpdt_reset(&ifwi_image.bpdt, bpdt_count, bpdt_size);
 
 	/* Update S-BPDT if required. */
-	bpdt_size = ALIGN(BPDT_HEADER_SIZE + sbpdt_count * BPDT_ENTRY_SIZE,
+	bpdt_size = ALIGN_UP(BPDT_HEADER_SIZE + sbpdt_count * BPDT_ENTRY_SIZE,
 			  4 * KiB);
 	__bpdt_reset(&ifwi_image.subpart_buf[S_BPDT_TYPE], sbpdt_count,
 		     bpdt_size);
@@ -1091,7 +1092,7 @@ static void bpdt_entries_init_pack_order(void)
 	}
 
 	/* Pad ff bytes if there is any empty space left in BPDT 4K. */
-	curr_end = ALIGN(curr_offset, 4 * KiB);
+	curr_end = ALIGN_UP(curr_offset, 4 * KiB);
 	pad_buffer(last_bpdt_buff,
 		   buffer_size(last_bpdt_buff) + (curr_end - curr_offset));
 	curr_offset = curr_end;
@@ -1107,9 +1108,9 @@ static void bpdt_entries_init_pack_order(void)
 		if (subparts[type].attr & LIES_WITHIN_BPDT_4K)
 			continue;
 
-		assert(curr_offset == ALIGN(curr_offset, 4 * KiB));
+		assert(curr_offset == ALIGN_UP(curr_offset, 4 * KiB));
 		curr->offset = curr_offset;
-		curr_end = ALIGN(curr->offset + curr->size, 4 * KiB);
+		curr_end = ALIGN_UP(curr->offset + curr->size, 4 * KiB);
 		curr->size = curr_end - curr->offset;
 
 		pad_buffer(&ifwi_image.subpart_buf[type], curr->size);
@@ -1130,7 +1131,7 @@ static void bpdt_entries_init_pack_order(void)
 	curr = find_entry_by_type(S_BPDT_TYPE);
 	assert(curr);
 
-	assert(curr_offset == ALIGN(curr_offset, 4 * KiB));
+	assert(curr_offset == ALIGN_UP(curr_offset, 4 * KiB));
 	curr->size = curr_offset - curr->offset;
 }
 
@@ -1190,7 +1191,7 @@ static void ifwi_write(const char *image_name)
 	size_t ifwi_start, ifwi_end, file_end;
 
 	ifwi_start = ifwi_image.input_ifwi_start_offset;
-	ifwi_end = ifwi_start + ALIGN(s->offset + s->size, 4 * KiB);
+	ifwi_end = ifwi_start + ALIGN_UP(s->offset + s->size, 4 * KiB);
 	file_end = ifwi_end + (buffer_size(&ifwi_image.input_buff) -
 			       ifwi_image.input_ifwi_end_offset);
 

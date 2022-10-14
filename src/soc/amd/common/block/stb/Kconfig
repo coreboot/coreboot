@@ -1,0 +1,17 @@
+config SOC_AMD_COMMON_BLOCK_STB
+	bool
+	select SOC_AMD_COMMON_BLOCK_SMN
+	help
+	  Select in the SOC if it supports the Smart Trace Buffer
+
+if SOC_AMD_COMMON_BLOCK_STB
+
+config WRITE_STB_BUFFER_TO_CONSOLE
+	bool "Write STB entries to the console log"
+	default n
+	help
+	  This option will tell coreboot to print the STB buffer at various
+	  points through the boot process. Note that this will prevent the
+	  entries from being stored if the Spill-to-DRAM feature is enabled.
+
+endif

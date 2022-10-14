@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-/* TODO: Update for Morgana */
-
 #ifndef AMD_MORGANA_SMI_H
 #define AMD_MORGANA_SMI_H
 
@@ -87,7 +85,7 @@
 #define SMITYPE_AZPME			39
 #define SMITYPE_USB_PD_I2C4		40
 #define SMITYPE_GPIO_CTL		41
-#define SMITYPE_XHC2_PME		42
+/* 42 Reserved */
 #define SMITYPE_ALT_HPET_ALARM		43
 #define SMITYPE_FAN_THERMAL		44
 #define SMITYPE_ASF_MASTER_SLAVE	45
@@ -104,18 +102,11 @@
 #define SMITYPE_XHC0_PME		56
 #define SMITYPE_XHC1_PME		57
 #define SMITYPE_ACDC_TIMER		58
-/* 59-60 Reserved */
-#define SMITYPE_XHC3_PME		61
-#define SMITYPE_XHC4_PME		62
-#define SMITYPE_CUR_TEMP_STATUS_5	63
+/* 59-63 Reserved */
 #define SMITYPE_KB_RESET		64
 #define SMITYPE_SLP_TYP			65
 #define SMITYPE_AL2H_ACPI		66
-/* 67 Reserved */
-#define SMITYPE_NB_GPP_PME_PULSE	68
-#define SMITYPE_NB_GPP_HP_PULSE		69
-#define SMITYPE_USB_PD_I2C4_INTR2	70
-/* 71 Reserved */
+/* 67-71 Reserved */
 #define SMITYPE_GBL_RLS			72
 #define SMITYPE_BIOS_RLS		73
 #define SMITYPE_PWRBUTTON_DOWN		74
@@ -137,7 +128,7 @@
 #define SMITYPE_SHORT_TIMER		142
 #define SMITYPE_LONG_TIMER		143
 #define SMITYPE_AB_SMI			144
-#define SMITYPE_ANY_RESET		145
+/* 145 Reserved */
 #define SMITYPE_ESPI_SMI		146
 /* 147 Reserved */
 #define SMITYPE_IOTRAP0			148
@@ -158,22 +149,22 @@
 #define SMI_REG_SMISTS4			0x90
 
 #define SMI_REG_POINTER			0x94
-# define SMI_STATUS_SRC_SCI			(1 << 0)
-# define SMI_STATUS_SRC_0			(1 << 1) /* SMIx80 */
-# define SMI_STATUS_SRC_1			(1 << 2) /* SMIx84... */
-# define SMI_STATUS_SRC_2			(1 << 3)
-# define SMI_STATUS_SRC_3			(1 << 4)
-# define SMI_STATUS_SRC_4			(1 << 5)
+# define SMI_STATUS_SRC_SCI			BIT(0)
+# define SMI_STATUS_SRC_0			BIT(1) /* SMIx80 */
+# define SMI_STATUS_SRC_1			BIT(2) /* SMIx84... */
+# define SMI_STATUS_SRC_2			BIT(3)
+# define SMI_STATUS_SRC_3			BIT(4)
+# define SMI_STATUS_SRC_4			BIT(5)
 
 #define SMI_TIMER			0x96
 #define SMI_TIMER_MASK				0x7fff
 #define SMI_TIMER_EN				(1 << 15)
 
 #define SMI_REG_SMITRIG0		0x98
-# define SMITRIG0_PSP				(1 << 25)
-# define SMITRG0_EOS				(1 << 28)
-# define SMI_TIMER_SEL				(1 << 29)
-# define SMITRG0_SMIENB				(1 << 31)
+# define SMITRIG0_PSP				BIT(25)
+# define SMITRG0_EOS				BIT(28)
+# define SMI_TIMER_SEL				BIT(29)
+# define SMITRG0_SMIENB				BIT(31)
 
 #define SMI_REG_CONTROL0		0xa0
 #define SMI_REG_CONTROL1		0xa4

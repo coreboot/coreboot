@@ -23,12 +23,6 @@ static const struct sci_source xhci_sci_sources[] = {
 		.gpe = GEVENT_31,
 		.direction = SMI_SCI_LVL_HIGH,
 		.level = SMI_SCI_EDG
-	},
-	{
-		.scimap = SMITYPE_XHC2_PME,
-		.gpe = GEVENT_31,
-		.direction = SMI_SCI_LVL_HIGH,
-		.level = SMI_SCI_EDG
 	}
 };
 
@@ -46,12 +40,6 @@ enum cb_err pci_xhci_get_wake_gpe(const struct device *dev, int *gpe)
 			return CB_SUCCESS;
 		} else if (dev->path.pci.devfn == XHCI1_DEVFN) {
 			*gpe = xhci_sci_sources[1].gpe;
-			return CB_SUCCESS;
-		}
-	} else if (dev->bus->dev->path.pci.devfn == PCIE_GPP_C_DEVFN) {
-		if (dev->path.pci.devfn == XHCI2_DEVFN
-		    && dev->device == PCI_DID_AMD_FAM17H_MODELA0H_XHCI2) {
-			*gpe = xhci_sci_sources[2].gpe;
 			return CB_SUCCESS;
 		}
 	}

@@ -9,6 +9,7 @@
 #include <amdblocks/lpc.h>
 #include <amdblocks/pmlib.h>
 #include <amdblocks/smbus.h>
+#include <amdblocks/stb.h>
 #include <amdblocks/uart.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
@@ -54,6 +55,9 @@ void fch_pre_init(void)
 /* After console init */
 void fch_early_init(void)
 {
+	if (CONFIG(WRITE_STB_BUFFER_TO_CONSOLE))
+		write_stb_to_console();
+
 	reset_i2c_peripherals();
 	pm_set_power_failure_state();
 	fch_print_pmxc0_status();

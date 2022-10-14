@@ -6,6 +6,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/memmap.h>
 #include <amdblocks/pmlib.h>
+#include <amdblocks/stb.h>
 #include <arch/cpu.h>
 #include <console/console.h>
 #include <fsp/api.h>
@@ -15,6 +16,9 @@
 void __noreturn romstage_main(void)
 {
 	post_code(0x40);
+
+	if (CONFIG(WRITE_STB_BUFFER_TO_CONSOLE))
+		write_stb_to_console();
 
 	/* Snapshot chipset state prior to any FSP call */
 	fill_chipset_state();

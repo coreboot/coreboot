@@ -4,6 +4,7 @@
 #define _AMD_FW_TOOL_H_
 
 #include <commonlib/bsd/compiler.h>
+#include <commonlib/bsd/helpers.h>
 #include <openssl/sha.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -372,7 +373,5 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 
 #define LINE_EOF (1)
 #define LINE_TOO_LONG (2)
-
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 #endif	/* _AMD_FW_TOOL_H_ */

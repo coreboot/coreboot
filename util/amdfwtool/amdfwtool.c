@@ -46,6 +46,7 @@
  *
  */
 
+#include <commonlib/bsd/helpers.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <openssl/sha.h>
@@ -65,7 +66,6 @@
 #define AMD_ROMSIG_OFFSET	0x20000
 #define MIN_ROM_KB		256
 
-#define ALIGN(val, by) (((val) + (by) - 1) & ~((by) - 1))
 #define _MAX(A, B) (((A) > (B)) ? (A) : (B))
 #define ERASE_ALIGNMENT 0x1000U
 #define TABLE_ALIGNMENT 0x1000U
@@ -443,9 +443,9 @@ static void *new_psp_dir(context *ctx, int multi)
 	 * if secondary is reprogrammed.
 	 */
 	if (multi)
-		ctx->current = ALIGN(ctx->current, TABLE_ERASE_ALIGNMENT);
+		ctx->current = ALIGN_UP(ctx->current, TABLE_ERASE_ALIGNMENT);
 	else
-		ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+		ctx->current = ALIGN_UP(ctx->current, TABLE_ALIGNMENT);
 
 	ptr = BUFF_CURRENT(*ctx);
 	((psp_directory_header *)ptr)->num_entries = 0;
@@ -459,7 +459,7 @@ static void *new_psp_dir(context *ctx, int multi)
 static void *new_ish_dir(context *ctx)
 {
 	void *ptr;
-	ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+	ctx->current = ALIGN_UP(ctx->current, TABLE_ALIGNMENT);
 	ptr = BUFF_CURRENT(*ctx);
 	ctx->current += TABLE_ALIGNMENT;
 	return ptr;
@@ -469,7 +469,7 @@ static void *new_combo_dir(context *ctx)
 {
 	void *ptr;
 
-	ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+	ctx->current = ALIGN_UP(ctx->current, TABLE_ALIGNMENT);
 	ptr = BUFF_CURRENT(*ctx);
 	ctx->current += sizeof(psp_combo_header)
 			+ MAX_COMBO_ENTRIES * sizeof(psp_combo_entry);
@@ -491,7 +491,7 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 	}
 
 	/* The table size needs to be 0x1000 aligned. So align the end of table. */
-	ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+	ctx->current = ALIGN_UP(ctx->current, TABLE_ALIGNMENT);
 
 	switch (cookie) {
 	case PSP2_COOKIE:
@@ -782,13 +782,13 @@ static void integrate_firmwares(context *ctx,
 	uint32_t i;
 
 	ctx->current += sizeof(embedded_firmware);
-	ctx->current = ALIGN(ctx->current, BLOB_ALIGNMENT);
+	ctx->current = ALIGN_UP(ctx->current, BLOB_ALIGNMENT);
 
 	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (fw_table[i].filename != NULL) {
 			switch (fw_table[i].type) {
 			case AMD_FW_IMC:
-				ctx->current = ALIGN(ctx->current, 0x10000U);
+				ctx->current = ALIGN_UP(ctx->current, 0x10000U);
 				romsig->imc_entry = RUN_CURRENT(*ctx);
 				break;
 			case AMD_FW_GEC:
@@ -809,7 +809,7 @@ static void integrate_firmwares(context *ctx,
 				exit(1);
 			}
 
-			ctx->current = ALIGN(ctx->current + bytes,
+			ctx->current = ALIGN_UP(ctx->current + bytes,
 							BLOB_ALIGNMENT);
 		}
 	}
@@ -1194,7 +1194,7 @@ static void integrate_psp_firmwares(context *ctx,
 	}
 	current_table_save = ctx->current_table;
 	ctx->current_table = (char *)pspdir - ctx->rom;
-	ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+	ctx->current = ALIGN_UP(ctx->current, TABLE_ALIGNMENT);
 
 	for (i = 0, count = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (!(fw_table[i].level & level))
@@ -1205,14 +1205,14 @@ static void integrate_psp_firmwares(context *ctx,
 		if (fw_table[i].type == AMD_TOKEN_UNLOCK) {
 			if (!fw_table[i].other)
 				continue;
-			ctx->current = ALIGN(ctx->current, ERASE_ALIGNMENT);
+			ctx->current = ALIGN_UP(ctx->current, ERASE_ALIGNMENT);
 			pspdir->entries[count].type = fw_table[i].type;
 			pspdir->entries[count].size = 4096; /* TODO: doc? */
 			pspdir->entries[count].addr = RUN_CURRENT(*ctx);
 			pspdir->entries[count].address_mode = SET_ADDR_MODE_BY_TABLE(pspdir);
 			pspdir->entries[count].subprog = fw_table[i].subprog;
 			pspdir->entries[count].rsvd = 0;
-			ctx->current = ALIGN(ctx->current + 4096, 0x100U);
+			ctx->current = ALIGN_UP(ctx->current + 4096, 0x100U);
 			count++;
 		} else if (fw_table[i].type == AMD_PSP_FUSE_CHAIN) {
 			pspdir->entries[count].type = fw_table[i].type;
@@ -1228,13 +1228,13 @@ static void integrate_psp_firmwares(context *ctx,
 					continue;
 				size = fw_table[i].size;
 				addr = fw_table[i].dest;
-				if (addr != ALIGN(addr, ERASE_ALIGNMENT)) {
+				if (addr != ALIGN_UP(addr, ERASE_ALIGNMENT)) {
 					fprintf(stderr,
 						"Error: PSP NVRAM section not aligned with erase block size.\n\n");
 					exit(1);
 				}
 			} else {
-				ctx->current = ALIGN(ctx->current, ERASE_ALIGNMENT);
+				ctx->current = ALIGN_UP(ctx->current, ERASE_ALIGNMENT);
 				bytes = copy_blob(BUFF_CURRENT(*ctx),
 						fw_table[i].filename, BUFF_ROOM(*ctx));
 				if (bytes <= 0) {
@@ -1242,9 +1242,9 @@ static void integrate_psp_firmwares(context *ctx,
 					exit(1);
 				}
 
-				size = ALIGN(bytes, ERASE_ALIGNMENT);
+				size = ALIGN_UP(bytes, ERASE_ALIGNMENT);
 				addr = RUN_CURRENT(*ctx);
-				ctx->current = ALIGN(ctx->current + bytes,
+				ctx->current = ALIGN_UP(ctx->current + bytes,
 								BLOB_ERASE_ALIGNMENT);
 			}
 
@@ -1275,7 +1275,7 @@ static void integrate_psp_firmwares(context *ctx,
 				pspdir->entries[count].addr = RUN_CURRENT(*ctx);
 				pspdir->entries[count].address_mode =
 							SET_ADDR_MODE_BY_TABLE(pspdir);
-				ctx->current = ALIGN(ctx->current + bytes,
+				ctx->current = ALIGN_UP(ctx->current + bytes,
 								BLOB_ALIGNMENT);
 			}
 
@@ -1373,9 +1373,9 @@ static void *new_bios_dir(context *ctx, bool multi)
 	 * if secondary is reprogrammed.
 	 */
 	if (multi)
-		ctx->current = ALIGN(ctx->current, TABLE_ERASE_ALIGNMENT);
+		ctx->current = ALIGN_UP(ctx->current, TABLE_ERASE_ALIGNMENT);
 	else
-		ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+		ctx->current = ALIGN_UP(ctx->current, TABLE_ALIGNMENT);
 	ptr = BUFF_CURRENT(*ctx);
 	((bios_directory_hdr *) ptr)->additional_info = 0;
 	((bios_directory_hdr *) ptr)->additional_info_fields.address_mode = ctx->address_mode;
@@ -1457,7 +1457,7 @@ static void integrate_bios_firmwares(context *ctx,
 	else
 		level = BDT_BOTH;
 
-	ctx->current = ALIGN(ctx->current, TABLE_ALIGNMENT);
+	ctx->current = ALIGN_UP(ctx->current, TABLE_ALIGNMENT);
 
 	for (i = 0, count = 0; fw_table[i].type != AMD_BIOS_INVALID; i++) {
 		if (!(fw_table[i].level & level))
@@ -1541,7 +1541,7 @@ static void integrate_bios_firmwares(context *ctx,
 					SET_ADDR_MODE_BY_TABLE(biosdir);
 			memset(BUFF_CURRENT(*ctx), 0xff,
 							biosdir->entries[count].size);
-			ctx->current = ALIGN(ctx->current
+			ctx->current = ALIGN_UP(ctx->current
 							+ biosdir->entries[count].size, 0x100U);
 			break;
 		case AMD_BIOS_APOB:
@@ -1558,11 +1558,11 @@ static void integrate_bios_firmwares(context *ctx,
 				biosdir->entries[count].size = fw_table[i].size;
 			} else {
 				/* Else reserve size bytes within amdfw.rom */
-				ctx->current = ALIGN(ctx->current, ERASE_ALIGNMENT);
+				ctx->current = ALIGN_UP(ctx->current, ERASE_ALIGNMENT);
 				biosdir->entries[count].source = RUN_CURRENT(*ctx);
 				biosdir->entries[count].address_mode =
 						SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
-				biosdir->entries[count].size = ALIGN(
+				biosdir->entries[count].size = ALIGN_UP(
 						fw_table[i].size, ERASE_ALIGNMENT);
 				memset(BUFF_CURRENT(*ctx), 0xff,
 						biosdir->entries[count].size);
@@ -1602,7 +1602,7 @@ static void integrate_bios_firmwares(context *ctx,
 			biosdir->entries[count].address_mode =
 				SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
 
-			ctx->current = ALIGN(ctx->current + bytes, 0x100U);
+			ctx->current = ALIGN_UP(ctx->current + bytes, 0x100U);
 			break;
 		case AMD_BIOS_PSP_SHARED_MEM:
 			biosdir->entries[count].dest = fw_table[i].dest;
@@ -1612,7 +1612,7 @@ static void integrate_bios_firmwares(context *ctx,
 		default: /* everything else is copied from input */
 			if (fw_table[i].type == AMD_BIOS_APCB ||
 					fw_table[i].type == AMD_BIOS_APCB_BK)
-				ctx->current = ALIGN(
+				ctx->current = ALIGN_UP(
 						ctx->current, ERASE_ALIGNMENT);
 			bytes = copy_blob(BUFF_CURRENT(*ctx),
 					fw_table[i].filename, BUFF_ROOM(*ctx));
@@ -1625,7 +1625,7 @@ static void integrate_bios_firmwares(context *ctx,
 			biosdir->entries[count].source = RUN_CURRENT(*ctx);
 			biosdir->entries[count].address_mode = SET_ADDR_MODE_BY_TABLE(biosdir);
 
-			ctx->current = ALIGN(ctx->current + bytes, 0x100U);
+			ctx->current = ALIGN_UP(ctx->current + bytes, 0x100U);
 			break;
 		}
 
@@ -2382,7 +2382,7 @@ int main(int argc, char **argv)
 
 	integrate_firmwares(&ctx, amd_romsig, amd_fw_table);
 
-	ctx.current = ALIGN(ctx.current, 0x10000U); /* TODO: is it necessary? */
+	ctx.current = ALIGN_UP(ctx.current, 0x10000U); /* TODO: is it necessary? */
 	ctx.current_table = 0;
 
 	/* If the tool is invoked with command-line options to keep the signed PSP

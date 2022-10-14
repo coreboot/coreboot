@@ -1,4 +1,4 @@
-# Padmelon board
+# Pademelon board
 
 ## Specs (with Merlin Falcon SOC)
 
@@ -18,7 +18,7 @@
 
 ## Mainboard
 
-![mainboard][padmelon]
+![mainboard][pademelon]
 
 Three items are marked in this picture
 1. dediprog header
@@ -27,7 +27,7 @@ Three items are marked in this picture
 
 ## Back panel
 
-![back panel][padmelon_io]
+![back panel][pademelon_io]
 
 * The lower serial port is UART A (debug serial)
 
@@ -65,9 +65,9 @@ Three items are marked in this picture
 
 ```eval_rst
 +----------------------------+----------------------------------------+
-|padmelon.jpg                | Motherboard with components identified |
+|pademelon.jpg               | Motherboard with components identified |
 +----------------------------+----------------------------------------+
-|padmelon_io.jpg             | Back panel picture                     |
+|pademelon_io.jpg            | Back panel picture                     |
 +----------------------------+----------------------------------------+
 ```
 
@@ -76,5 +76,5 @@ Three items are marked in this picture
 [Merlin Falcon BKDG][merlinfalcon]
 
 [merlinfalcon]: ../../../soc/amd/family15h.md
-[padmelon]: padmelon.jpg
-[padmelon_io]: padmelon_io.jpg
+[pademelon]: pademelon.jpg
+[pademelon_io]: pademelon_io.jpg

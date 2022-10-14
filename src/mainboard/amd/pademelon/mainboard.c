@@ -101,7 +101,7 @@ static void mainboard_init(void *chip_info)
 }
 
 /*************************************************
- * enable the dedicated function in padmelon board.
+ * enable the dedicated function in pademelon board.
  *************************************************/
 static void mainboard_enable(struct device *dev)
 {

@@ -11,7 +11,7 @@ This section contains documentation about coreboot on specific mainboards.
 - [G43T-AM3](acer/g43t-am3.md)
 
 ## AMD
-- [padmelon](amd/padmelon/padmelon.md)
+- [pademelon](amd/pademelon/pademelon.md)
 
 ## ASRock
 

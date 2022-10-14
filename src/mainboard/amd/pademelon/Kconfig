@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-if BOARD_AMD_PADMELON
+if BOARD_AMD_PADEMELON
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -19,20 +19,20 @@ config BOARD_SPECIFIC_OPTIONS
 	select AZALIA_PLUGIN_SUPPORT
 
 config MAINBOARD_DIR
-	default "amd/padmelon"
+	default "amd/pademelon"
 
 config MAINBOARD_PART_NUMBER
-	default "Padmelon"
+	default "Pademelon"
 
 choice
-	prompt "SOC used in padmelon board"
-	default PADMELON_MERLIN_FALCON
+	prompt "SOC used in pademelon board"
+	default PADEMELON_MERLIN_FALCON
 
-config PADMELON_MERLIN_FALCON
+config PADEMELON_MERLIN_FALCON
 	bool "Merlin Falcon"
 	select AMD_APU_MERLINFALCON
 
-config PADMELON_PRAIRIE_FALCON
+config PADEMELON_PRAIRIE_FALCON
 	bool "Prairie Falcon"
 	select AMD_APU_PRAIRIEFALCON
 
@@ -40,8 +40,8 @@ endchoice
 
 
 config OVERRIDE_DEVICETREE
-	default "override-merlinfalcon.cb" if PADMELON_MERLIN_FALCON
-	default "override-prairiefalcon.cb" if PADMELON_PRAIRIE_FALCON
+	default "override-merlinfalcon.cb" if PADEMELON_MERLIN_FALCON
+	default "override-prairiefalcon.cb" if PADEMELON_PRAIRIE_FALCON
 
 config MAX_CPUS
 	int
@@ -61,7 +61,7 @@ config HWM_PORT
 	  HWM base address must be an odd address. Hardware monitor used
 	  addresses are HWM_PORT for index an HWM_PORT + 1 for data.
 	  If changed, make sure fan_init.c IO window setting. The HWM
-	  (Hardware Monitor) is used for fan control within padmelon.
+	  (Hardware Monitor) is used for fan control within pademelon.
 
 if !EM100
 config EFS_SPI_READ_MODE
@@ -71,4 +71,4 @@ config EFS_SPI_SPEED
 	default 0	# 66MHz
 endif
 
-endif # BOARD_AMD_PADMELON
+endif # BOARD_AMD_PADEMELON

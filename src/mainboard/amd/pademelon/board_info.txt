@@ -1,5 +1,5 @@
 Vendor name: AMD
-Board name: Padmelon
+Board name: Pademelon
 Category: desktop
 ROM package: SOIC-8
 ROM protocol: SPI

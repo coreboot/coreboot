@@ -153,7 +153,7 @@ L:	amd_coreboot_org_changes@googlegroups.com
 F:	src/mainboard/amd/gardenia/
 F:	src/mainboard/amd/inagua/
 F:	src/mainboard/amd/olivehill/
-F:	src/mainboard/amd/padmelon/
+F:	src/mainboard/amd/pademelon/
 F:	src/mainboard/amd/parmer/
 F:	src/mainboard/amd/persimmon/
 F:	src/mainboard/amd/south_station/

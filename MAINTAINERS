@@ -144,6 +144,7 @@ M:	Fred Reitberger <reitbergerfred@gmail.com>
 L:	amd_coreboot_org_changes@googlegroups.com
 S:	Maintained
 F:	src/mainboard/amd/bilby/
+F:	src/mainboard/amd/birman/
 F:	src/mainboard/amd/chausie/
 F:	src/mainboard/amd/majolica/
 F:	src/mainboard/amd/mandolin/
@@ -690,6 +691,16 @@ L:	amd_coreboot_org_changes@googlegroups.com
 S:	Supported
 F:	src/soc/amd/mendocino/
 F:	src/vendorcode/amd/fsp/mendocino/
+
+AMD Morgana
+M:	Felix Held <felix-coreboot@felixheld.de>
+M:	Jason Glenesk <jason.glenesk@gmail.com>
+M:	Fred Reitberger <reitbergerfred@gmail.com>
+M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
+L:	amd_coreboot_org_changes@googlegroups.com
+S:	Supported
+F:	src/soc/amd/morgana/
+F:	src/vendorcode/amd/fsp/morgana/
 
 AMD Stoneyridge
 M:	Felix Held <felix-coreboot@felixheld.de>

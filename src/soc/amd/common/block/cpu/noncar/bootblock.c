@@ -1,11 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Morgana */
-
 #include <amdblocks/amd_pci_mmconf.h>
 #include <amdblocks/cpu.h>
 #include <bootblock_common.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/tsc.h>
 #include <soc/southbridge.h>
 #include <soc/psp_transfer.h>

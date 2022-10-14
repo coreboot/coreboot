@@ -9,7 +9,6 @@ subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += ../common/psp_verstage
 all-y += config.c
 all-y += aoac.c
 
-bootblock-y += bootblock.c
 bootblock-y += early_fch.c
 bootblock-y += gpio.c
 bootblock-y += i2c.c

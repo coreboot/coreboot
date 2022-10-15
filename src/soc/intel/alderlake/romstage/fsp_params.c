@@ -300,6 +300,8 @@ static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->VtdIgdEnable = m_cfg->InternalGfx;
 	m_cfg->VtdIpuEnable = m_cfg->SaIpuEnable;
 
+	m_cfg->PreBootDmaMask = CONFIG(ENABLE_EARLY_DMA_PROTECTION);
+
 	if (m_cfg->VtdIgdEnable && m_cfg->VtdBaseAddress[VTD_GFX] == 0) {
 		m_cfg->VtdIgdEnable = 0;
 		printk(BIOS_ERR, "Requested IGD VT-d, but GFXVT_BASE_ADDRESS is 0\n");

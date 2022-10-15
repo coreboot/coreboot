@@ -13,6 +13,7 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smbus.h>
 #include <intelblocks/thermal.h>
+#include <intelblocks/vtd.h>
 #include <intelbasecode/debug_feature.h>
 #include <memory_info.h>
 #include <soc/intel/common/smbios.h>
@@ -227,4 +228,7 @@ void mainboard_romstage_entry(void)
 	 *   RUN_FSP_GOP is selected
 	 */
 	early_graphics_stop();
+
+	if (CONFIG(ENABLE_EARLY_DMA_PROTECTION))
+		vtd_enable_dma_protection();
 }

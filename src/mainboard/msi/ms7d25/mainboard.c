@@ -35,12 +35,18 @@ const char *smbios_system_product_name(void)
 
 const char *smbios_mainboard_product_name(void)
 {
-	/* Currently we support DDR4 variants, but e.g. DDR5 can be added later */
 	if (CONFIG(BOARD_MSI_Z690_A_PRO_WIFI_DDR4)) {
 		if (is_devfn_enabled(PCH_DEVFN_CNVI_WIFI))
 			return "PRO Z690-A WIFI DDR4(MS-7D25)";
 		else
 			return "PRO Z690-A DDR4(MS-7D25)";
+	}
+
+	if (CONFIG(BOARD_MSI_Z690_A_PRO_WIFI_DDR5)) {
+		if (is_devfn_enabled(PCH_DEVFN_CNVI_WIFI))
+			return "PRO Z690-A WIFI (MS-7D25)";
+		else
+			return "PRO Z690-A (MS-7D25)";
 	}
 
 	return CONFIG_MAINBOARD_PART_NUMBER;

@@ -1,6 +1,9 @@
 config BOARD_MSI_Z690_A_PRO_WIFI_DDR4
 	select BOARD_MSI_MS7D25
 
+config BOARD_MSI_Z690_A_PRO_WIFI_DDR5
+	select BOARD_MSI_MS7D25
+
 config BOARD_MSI_MS7D25
 	def_bool n
 	select SOC_INTEL_ALDERLAKE_PCH_S
@@ -21,6 +24,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	default "PRO Z690-A WIFI DDR4(MS-7D25)" if BOARD_MSI_Z690_A_PRO_WIFI_DDR4
+	default "PRO Z690-A WIFI (MS-7D25)" if BOARD_MSI_Z690_A_PRO_WIFI_DDR5
 
 config MAINBOARD_VENDOR
 	string
@@ -29,6 +33,10 @@ config MAINBOARD_VENDOR
 config MAINBOARD_FAMILY
 	string
 	default "Default string"
+
+config MAINBOARD_VERSION
+	string
+	default "2.0" if BOARD_MSI_Z690_A_PRO_WIFI_DDR5
 
 config DIMM_SPD_SIZE
 	default 512

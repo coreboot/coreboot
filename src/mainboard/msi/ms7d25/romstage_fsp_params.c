@@ -10,11 +10,25 @@
 
 static const struct mb_cfg ddr4_mem_config = {
 	.type = MEM_TYPE_DDR4,
+	/* According to DOC #573387 rcomp values no longer have to be provided */
+	/* DDR DIMM configuration does not need to set DQ/DQS maps */
+	.UserBd = BOARD_TYPE_DESKTOP_2DPC,
+
+	.ddr_config = {
+		.dq_pins_interleaved = true,
+	},
+};
+
+static const struct mb_cfg ddr5_mem_config = {
+	.type = MEM_TYPE_DDR5,
+
+	.ect = true, /* Early Command Training */
 
 	/* According to DOC #573387 rcomp values no longer have to be provided */
 	/* DDR DIMM configuration does not need to set DQ/DQS maps */
+	.UserBd = BOARD_TYPE_DESKTOP_2DPC,
 
-	.UserBd = BOARD_TYPE_DESKTOP_2DPC, /* FIXME */
+	.LpDdrDqDqsReTraining = 1,
 
 	.ddr_config = {
 		.dq_pins_interleaved = true,
@@ -54,7 +68,10 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	 */
 	memupd->FspmConfig.GpioOverride = 0;
 
-	memcfg_init(memupd, &ddr4_mem_config, &dimm_module_spd_info, false);
+	if (CONFIG(BOARD_MSI_Z690_A_PRO_WIFI_DDR4))
+		memcfg_init(memupd, &ddr4_mem_config, &dimm_module_spd_info, false);
+	if (CONFIG(BOARD_MSI_Z690_A_PRO_WIFI_DDR5))
+		memcfg_init(memupd, &ddr5_mem_config, &dimm_module_spd_info, false);
 
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }

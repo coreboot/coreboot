@@ -1,0 +1,19 @@
+config SOC_INTEL_COMMON_BLOCK_VTD
+	bool
+	depends on PLATFORM_USES_FSP2_0
+	help
+	  Intel Processor common VT-d/IOMMU support
+
+config ENABLE_EARLY_DMA_PROTECTION
+	bool "Enable early DMA protection"
+	depends on SOC_INTEL_COMMON_BLOCK_VTD
+	default n
+	help
+	  Setting this makes the whole memory from 0 to TOLUM and from 4GB
+	  to TOUUD DMA protected with VT-d PMR registers.
+
+	  Disable this setting if your OS does not support IOMMU. The payload
+	  must be aware of the DMA protection, otherwise I/O devices might not
+	  work.
+
+	  If unsure, say N.

@@ -152,11 +152,11 @@ config DRIVER_TPM_I2C_ADDR
 	default 0x50
 
 config FMDFILE
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-serger.fmd" if BOARD_GOOGLE_BRASK
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-nissa-16MiB-debugfsp.fmd" if BOARD_GOOGLE_BASEBOARD_NISSA && BOARD_ROMSIZE_KB_16384 && BUILDING_WITH_DEBUG_FSP
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-nissa-16MiB.fmd" if BOARD_GOOGLE_BASEBOARD_NISSA && BOARD_ROMSIZE_KB_16384
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-nissa-32MiB.fmd" if BOARD_GOOGLE_BASEBOARD_NISSA && BOARD_ROMSIZE_KB_32768
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-serger.fmd" if CHROMEOS && BOARD_GOOGLE_BRASK
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-nissa-16MiB-debugfsp.fmd" if CHROMEOS && BOARD_GOOGLE_BASEBOARD_NISSA && BOARD_ROMSIZE_KB_16384 && BUILDING_WITH_DEBUG_FSP
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-nissa-16MiB.fmd" if CHROMEOS && BOARD_GOOGLE_BASEBOARD_NISSA && BOARD_ROMSIZE_KB_16384
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-nissa-32MiB.fmd" if CHROMEOS && BOARD_GOOGLE_BASEBOARD_NISSA && BOARD_ROMSIZE_KB_32768
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
 
 config TPM_TIS_ACPI_INTERRUPT
 	int

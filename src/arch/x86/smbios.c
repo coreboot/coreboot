@@ -1116,6 +1116,55 @@ int smbios_write_type38(unsigned long *current, int *handle,
 	return len;
 }
 
+int smbios_write_type39(unsigned long *current, int *handle,
+			u8 unit_group, const char *loc, const char *dev_name,
+			const char *man, const char *serial_num,
+			const char *tag_num, const char *part_num,
+			const char *rev_lvl, u16 max_pow_cap,
+			const struct power_supply_ch *ps_ch)
+{
+	struct smbios_type39 *t = smbios_carve_table(*current,
+						SMBIOS_SYSTEM_POWER_SUPPLY,
+						sizeof(*t), *handle);
+
+	uint16_t val = 0;
+	uint16_t ps_type, ps_status, vol_switch, ps_unplug, ps_present, hot_rep;
+
+	t->power_unit_group = unit_group;
+	t->location = smbios_add_string(t->eos, loc);
+	t->device_name = smbios_add_string(t->eos, dev_name);
+	t->manufacturer = smbios_add_string(t->eos, man);
+	t->serial_number = smbios_add_string(t->eos, serial_num);
+	t->asset_tag_number = smbios_add_string(t->eos, tag_num);
+	t->model_part_number = smbios_add_string(t->eos, part_num);
+	t->revision_level = smbios_add_string(t->eos, rev_lvl);
+	t->max_power_capacity = max_pow_cap;
+
+	ps_type = ps_ch->power_supply_type & 0xF;
+	ps_status = ps_ch->power_supply_status & 0x7;
+	vol_switch = ps_ch->input_voltage_range_switch & 0xF;
+	ps_unplug = ps_ch->power_supply_unplugged & 0x1;
+	ps_present = ps_ch->power_supply_present & 0x1;
+	hot_rep = ps_ch->power_supply_hot_replaceble & 0x1;
+
+	val |= (ps_type << 10);
+	val |= (ps_status << 7);
+	val |= (vol_switch << 3);
+	val |= (ps_unplug << 2);
+	val |= (ps_present << 1);
+	val |= hot_rep;
+	t->power_supply_characteristics = val;
+
+	t->input_voltage_probe_handle = 0xFFFF;
+	t->cooling_device_handle = 0xFFFF;
+	t->input_current_probe_handle = 0xFFFF;
+
+	const int len = smbios_full_table_len(&t->header, t->eos);
+	*current += len;
+	*handle += 1;
+	return len;
+}
+
 int smbios_write_type41(unsigned long *current, int *handle,
 			const char *name, u8 instance, u16 segment,
 			u8 bus, u8 device, u8 function, u8 device_type)

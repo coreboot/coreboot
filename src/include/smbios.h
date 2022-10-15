@@ -270,6 +270,7 @@ typedef enum {
 	SMBIOS_TEMPERATURE_PROBE = 28,
 	SMBIOS_SYSTEM_BOOT_INFORMATION = 32,
 	SMBIOS_IPMI_DEVICE_INFORMATION = 38,
+	SMBIOS_SYSTEM_POWER_SUPPLY = 39,
 	SMBIOS_ONBOARD_DEVICES_EXTENDED_INFORMATION = 41,
 	SMBIOS_TPM_DEVICE = 43,
 	SMBIOS_END_OF_TABLE = 127,
@@ -1011,6 +1012,69 @@ enum smbios_bmc_interface_type {
 	SMBIOS_BMC_INTERFACE_BLOCK,
 	SMBIOS_BMC_INTERFACE_SMBUS,
 };
+
+typedef enum {
+	PowerSupplyTypeOther = 1,
+	PowerSupplyTypeUnknown = 2,
+	PowerSupplyTypeLinear = 3,
+	PowerSupplyTypeSwitching = 4,
+	PowerSupplyTypeBattery = 5,
+	PowerSupplyTypeUps = 6,
+	PowerSupplyTypeConverter = 7,
+	PowerSupplyTypeRegulator = 8
+} power_supply_type;
+
+typedef enum {
+	PowerSupplyStatusOther = 1,
+	PowerSupplyStatusUnknown = 2,
+	PowerSupplyStatusOk = 3,
+	PowerSupplyStatusNonCritical = 4,
+	PowerSupplyStatusCritical = 5
+} power_supply_status;
+
+typedef enum {
+	PowerSupplyInputVoltageRangeSwitchingOther = 1,
+	PowerSupplyInputVoltageRangeSwitchingUnknown = 2,
+	PowerSupplyInputVoltageRangeSwitchingManual = 3,
+	PowerSupplyInputVoltageRangeSwitchingAutoSwitch = 4,
+	PowerSupplyInputVoltageRangeSwitchingWideRange = 5,
+	PowerSupplyInputVoltageRangeSwitchingNotApplicable = 6
+} power_supply_input_voltage_range_switching;
+
+struct power_supply_ch {
+	u16 reserved				:2;
+	u16 power_supply_type			:4;
+	u16 power_supply_status			:3;
+	u16 input_voltage_range_switch		:4;
+	u16 power_supply_unplugged		:1;
+	u16 power_supply_present		:1;
+	u16 power_supply_hot_replaceble		:1;
+};
+
+struct smbios_type39 {
+	struct smbios_header header;
+	u8 power_unit_group;
+	u8 location;
+	u8 device_name;
+	u8 manufacturer;
+	u8 serial_number;
+	u8 asset_tag_number;
+	u8 model_part_number;
+	u8 revision_level;
+	u16 max_power_capacity;
+	u16 power_supply_characteristics;
+	u16 input_voltage_probe_handle;
+	u16 cooling_device_handle;
+	u16 input_current_probe_handle;
+	u8 eos[2];
+} __packed;
+
+int smbios_write_type39(unsigned long *current, int *handle,
+			u8 unit_group, const char *loc, const char *dev_name,
+			const char *man, const char *serial_num,
+			const char *tag_num, const char *part_num,
+			const char *rev_lvl, u16 max_pow_cap,
+			const struct power_supply_ch *ps_ch);
 
 typedef enum {
 	SMBIOS_DEVICE_TYPE_OTHER = 0x01,

@@ -721,6 +721,12 @@ static uint32_t get_psp_id(enum platform soc_id)
 	case PLATFORM_STONEYRIDGE:
 		psp_id = 0x10220B00;
 		break;
+	case PLATFORM_GLINDA:
+		psp_id = 0xBC0E0200;
+		break;
+	case PLATFORM_PHOENIX:
+		psp_id = 0xBC0D0400;
+		break;
 	default:
 		psp_id = 0;
 		break;
@@ -1962,6 +1968,8 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 	case PLATFORM_LUCIENNE:
 	case PLATFORM_CEZANNE:
 	case PLATFORM_MENDOCINO:
+	case PLATFORM_PHOENIX:
+	case PLATFORM_GLINDA:
 		amd_romsig->spi_readmode_f17_mod_30_3f = efs_spi_readmode;
 		amd_romsig->spi_fastspeed_f17_mod_30_3f = efs_spi_speed;
 		switch (efs_spi_micron_flag) {
@@ -1978,10 +1986,6 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 			fprintf(stderr, "Error: EFS Micron flag must be correctly set.\n\n");
 			return 1;
 		}
-		break;
-	/* TODO: Update for phoenix and glinda */
-	case PLATFORM_PHOENIX:
-	case PLATFORM_GLINDA:
 		break;
 	case PLATFORM_UNKNOWN:
 	default:
@@ -2066,7 +2070,7 @@ static int identify_platform(char *soc_name)
 
 static bool needs_ish(enum platform platform_type)
 {
-	if (platform_type == PLATFORM_MENDOCINO)
+	if (platform_type == PLATFORM_MENDOCINO || platform_type == PLATFORM_PHOENIX || platform_type == PLATFORM_GLINDA)
 		return true;
 	else
 		return false;
@@ -2083,6 +2087,8 @@ static bool is_second_gen(enum platform platform_type)
 	case PLATFORM_LUCIENNE:
 	case PLATFORM_CEZANNE:
 	case PLATFORM_MENDOCINO:
+	case PLATFORM_PHOENIX:
+	case PLATFORM_GLINDA:
 		return true;
 	case PLATFORM_UNKNOWN:
 	default:
@@ -2616,6 +2622,8 @@ int main(int argc, char **argv)
 				amd_romsig->bios3_entry = BUFF_TO_RUN(ctx, biosdir);
 			break;
 		case PLATFORM_MENDOCINO:
+		case PLATFORM_PHOENIX:
+		case PLATFORM_GLINDA:
 			break;
 		case PLATFORM_STONEYRIDGE:
 		case PLATFORM_RAVEN:

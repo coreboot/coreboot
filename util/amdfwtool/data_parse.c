@@ -171,6 +171,18 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	} else if (strcmp(fw_name, "PSP_SMUFW2_SUB2_FILE") == 0) {
 		fw_type = AMD_FW_PSP_SMU_FIRMWARE2;
 		subprog = 2;
+	} else if (strcmp(fw_name, "PSP_BOOT_DRIVER_FILE") == 0) {
+		fw_type = AMD_BOOT_DRIVER;
+		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_SOC_DRIVER_FILE") == 0) {
+		fw_type = AMD_SOC_DRIVER;
+		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_DEBUG_DRIVER_FILE") == 0) {
+		fw_type = AMD_DEBUG_DRIVER;
+		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_INTERFACE_DRIVER_FILE") == 0) {
+		fw_type = AMD_INTERFACE_DRIVER;
+		subprog = 0;
 	} else if (strcmp(fw_name, "PSP_SEC_DBG_KEY_FILE") == 0) {
 		if (cb_config->unlock_secure) {
 			fw_type = AMD_FW_PSP_SECURED_DEBUG;
@@ -263,6 +275,51 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		} else {
 			fw_type = AMD_FW_SKIP;
 		}
+	} else if (strcmp(fw_name, "PSP_C20MP_FILE") == 0) {
+		fw_type = AMD_FW_C20_MP;
+		subprog = 0;
+	} else if (strcmp(fw_name, "RIB_FILE") == 0) {
+		fw_type = AMD_RIB;
+		subprog = 0;
+	} else if (strcmp(fw_name, "AMF_SRAM_FILE") == 0) {
+		fw_type = AMD_FW_AMF_SRAM;
+		subprog = 0;
+	} else if (strcmp(fw_name, "AMF_DRAM_FILE_INS0") == 0) {
+		fw_type = AMD_FW_AMF_DRAM;
+		subprog = 0;
+		instance = 0;
+	} else if (strcmp(fw_name, "AMF_DRAM_FILE_INS1") == 0) {
+		fw_type = AMD_FW_AMF_DRAM;
+		subprog = 0;
+		instance = 1;
+	} else if (strcmp(fw_name, "AMF_WLAN_FILE_INS0") == 0) {
+		fw_type = AMD_FW_AMF_WLAN;
+		subprog = 0;
+		instance = 0;
+	} else if (strcmp(fw_name, "AMF_WLAN_FILE_INS1") == 0) {
+		fw_type = AMD_FW_AMF_WLAN;
+		subprog = 0;
+		instance = 1;
+	} else if (strcmp(fw_name, "AMF_MFD_FILE") == 0) {
+		fw_type = AMD_FW_AMF_MFD;
+		subprog = 0;
+	} else if (strcmp(fw_name, "MPCCX_FILE") == 0) {
+		fw_type = AMD_FW_MPCCX;
+		subprog = 0;
+	} else if (strcmp(fw_name, "LSDMA_FILE") == 0) {
+		fw_type = AMD_FW_LSDMA;
+		subprog = 0;
+	} else if (strcmp(fw_name, "MINIMSMU_FILE") == 0) {
+		fw_type = AMD_FW_MINIMSMU;
+		instance = 0;
+		subprog = 0;
+	} else if (strcmp(fw_name, "MINIMSMU_FILE_INS1") == 0) {
+		fw_type = AMD_FW_MINIMSMU;
+		instance = 1;
+		subprog = 0;
+	} else if (strcmp(fw_name, "SRAM_FW_EXT_FILE") == 0) {
+		fw_type = AMD_FW_SRAM_FW_EXT;
+		subprog = 0;
 	} else if (strcmp(fw_name, "PSP_DRIVERS_FILE") == 0) {
 		fw_type = AMD_DRIVER_ENTRIES;
 		subprog = 0;
@@ -316,6 +373,13 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	} else if (strcmp(fw_name, "SPIROM_CONFIG_FILE") == 0) {
 		fw_type = AMD_FW_SPIROM_CFG;
 		subprog = 0;
+	} else if (strcmp(fw_name, "MPIO_FILE") == 0) {
+		fw_type = AMD_FW_MPIO;
+		subprog = 0;
+	} else if (strcmp(fw_name, "TPMLITE_FILE") == 0) {
+		printf("TPMLITE\n");
+		fw_type = AMD_FW_TPMLITE;
+		subprog = 0;
 	} else if (strcmp(fw_name, "PSP_KVM_ENGINE_DUMMY_FILE") == 0) {
 		fw_type = AMD_FW_KVM_IMAGE;
 		subprog = 0;
@@ -352,6 +416,9 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		subprog = 0;
 	} else if (strcmp(fw_name, "PSP_RIB_FILE") == 0) {
 		fw_type = AMD_RIB;
+		subprog = 0;
+	} else if (strcmp(fw_name, "FEATURE_TABLE_FILE") == 0) {
+		fw_type = AMD_FW_FCFG_TABLE;
 		subprog = 0;
 	} else if (strcmp(fw_name, "PSP_MPDMATFFW_FILE") == 0) {
 		fw_type = AMD_FW_MPDMA_TF;

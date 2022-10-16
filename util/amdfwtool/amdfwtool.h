@@ -166,7 +166,16 @@ typedef struct _psp_directory_header {
 typedef struct _psp_directory_entry {
 	uint8_t type;
 	uint8_t subprog;
-	uint16_t rsvd;
+	union {
+		uint16_t rsvd;
+		struct {
+			uint8_t rom_id:2;
+			uint8_t writable:1;
+			uint8_t inst:4;
+			uint8_t rsvd_1:1;
+			uint8_t rsvd_2:8;
+		} __attribute__((packed));
+	};
 	uint32_t size;
 	uint64_t addr:62; /* or a value in some cases */
 	uint64_t address_mode:2;
@@ -300,6 +309,7 @@ typedef struct _amd_fw_entry {
 	uint16_t fw_id;
 	char *filename;
 	uint8_t subprog;
+	uint8_t inst;
 	uint64_t dest;
 	size_t size;
 	int level;

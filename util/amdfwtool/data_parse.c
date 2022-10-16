@@ -106,6 +106,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	amd_fw_type fw_type = AMD_FW_INVALID;
 	amd_fw_entry *psp_tableptr;
 	uint8_t subprog;
+	uint8_t instance = 0;
 
 	if (strcmp(fw_name, "PSPBTLDR_WL_FILE") == 0) {
 		if (cb_config->have_whitelist) {
@@ -380,7 +381,8 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	if (fw_type != AMD_FW_SKIP && fw_type != AMD_FW_INVALID) {
 		while (psp_tableptr->type != AMD_FW_INVALID) {
 			/* instance are not used in PSP table */
-			if (psp_tableptr->type == fw_type && psp_tableptr->subprog == subprog) {
+			if (psp_tableptr->type == fw_type && psp_tableptr->subprog == subprog
+				&& psp_tableptr->inst  == instance) {
 				psp_tableptr->filename = filename;
 				SET_LEVEL(psp_tableptr, level_to_set, PSP,
 					cb_config->recovery_ab);

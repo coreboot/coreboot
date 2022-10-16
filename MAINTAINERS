@@ -987,6 +987,15 @@ S:	Maintained
 F:	tests/
 F:	payloads/libpayload/tests/
 
+COREBOOT RELEASES
+M:	Felix Singer <felixsinger@posteo.net>
+M:	Jason Glenesk <jason.glenesk@gmail.com>
+M:	Angel Pons <th3fanbus@gmail.com>
+M:	Martin Roth <gaumless@gmail.com>
+S:	Maintained
+F:	Documentation/releases/
+F:	util/release/
+
 MISSING: TIMERS / DELAYS
 
 MISSING: TIMESTAMPS

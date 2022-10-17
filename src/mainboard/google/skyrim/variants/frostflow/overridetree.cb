@@ -1,5 +1,122 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 chip soc/amd/mendocino
-	device domain 0 on end
+	device domain 0 on
+		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
+			device ref xhci_1 on # XHCI1 controller
+				chip drivers/usb/acpi
+					device ref xhci_1_root_hub on # XHCI1 root hub
+						chip drivers/usb/acpi
+							device ref usb3_port3 on # USB 3.1 port3
+								chip drivers/usb/acpi
+									register "desc" = ""USB3 Type-A Port A1 (DB)""
+									register "type" = "UPC_TYPE_USB3_A"
+									register "use_custom_pld" = "true"
+									register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, CENTER, ACPI_PLD_GROUP(3, 1))"
+									device usb 3.2 on end
+								end
+							end # USB 3.1 port3
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port3 on # USB 2 port3
+								chip drivers/usb/acpi
+									register "desc" = ""USB2 Type-A Port A1 (DB)""
+									register "type" = "UPC_TYPE_USB3_A"
+									register "use_custom_pld" = "true"
+									register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, CENTER, ACPI_PLD_GROUP(3, 1))"
+									device usb 2.2 on end
+								end
+							end # USB 2 port3
+						end
+					end # XHCI1 root hub
+				end
+			end # XHCI1 controller
+		end # Internal GPP Bridge 0 to Bus A
+	end # domain
+
+	device ref i2c_0 on
+		chip drivers/i2c/generic
+			register "hid" = ""ELAN0000""
+			register "desc" = ""ELAN Touchpad""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_40)"
+			register "wake" = "GEVENT_20"
+			register "detect" = "1"
+			device i2c 15 on end
+		end
+	end # I2C0
+	device ref i2c_1 on
+		chip drivers/i2c/hid
+			register "generic.hid" = ""ELAN9008""
+			register "generic.desc" = ""ELAN Touchscreen""
+			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_29)"
+			register "generic.probed" = "1"
+			register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_131)"
+			register "generic.enable_delay_ms" = "1"
+			register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_136)"
+			register "generic.reset_off_delay_ms" = "2"
+			register "generic.reset_delay_ms" = "20"
+			register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_76)"
+			register "generic.stop_delay_ms" = "300"
+			register "generic.stop_off_delay_ms" = "2"
+			register "generic.has_power_resource" = "1"
+			register "hid_desc_reg_offset" = "0x01"
+			device i2c 10 on end
+		end
+		chip drivers/generic/gpio_keys
+			register "name" = ""PENH""
+			register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPIO_3)"
+			register "key.dev_name" = ""EJCT""
+			register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"
+			register "key.linux_code" = "SW_PEN_INSERTED"
+			register "key.linux_input_type" = "EV_SW"
+			register "key.label" = ""pen_eject""
+			register "key.debounce_interval" = "100"
+			register "key.wakeup_route" = "WAKEUP_ROUTE_GPIO_IRQ"
+			device generic 0 on end
+		end
+	end # I2C1
+	device ref i2c_2 on
+		chip drivers/i2c/generic
+			register "hid" = ""RTL5682""
+			register "name" = ""RT58""
+			register "desc" = ""Realtek RT5682""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPIO_90)"
+			register "property_count" = "1"
+			register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+			register "property_list[0].name" = ""realtek,jd-src""
+			register "property_list[0].integer" = "1"
+			device i2c 1a on end
+		end
+		chip drivers/i2c/generic
+			register "hid" = ""10EC1019""
+			register "desc" = ""Realtek SPK AMP R""
+			register "uid" = "1"
+			device i2c 29 on end
+		end
+		chip drivers/i2c/generic
+			register "hid" = ""10EC1019""
+			register "desc" = ""Realtek SPK AMP L""
+			register "uid" = "2"
+			register "probed" = "1"
+			device i2c 2a on end
+		end
+	end # I2C2
+
+	device ref uart_1 on
+		chip drivers/uart/acpi
+			register "name" = ""CRFP""
+			register "desc" = ""Fingerprint Reader""
+			register "hid" = "ACPI_DT_NAMESPACE_HID"
+			register "compat_string" = ""google,cros-ec-uart""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_24)"
+			register "wake" = "GEVENT_15"
+			register "uart" = "ACPI_UART_RAW_DEVICE(3000000, 64)"
+			register "has_power_resource" = "1"
+			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_12)"
+			register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_4)"
+			register "enable_delay_ms" = "3"
+			device generic 0 alias fpmcu on end
+		end
+	end # UART1
+
 end	# chip soc/amd/mendocino

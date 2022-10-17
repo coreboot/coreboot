@@ -33,7 +33,8 @@ fi
 if [ "${IN_GIT_TREE}" -eq 1 ]; then
 	FIND_FILES="${GIT} ls-files"
 else
-	FIND_FILES="find src"
+	FIND_FILES="find "
+	FINDOPTS="-type f"
 fi
 
 # Use git grep if the code is in a git repo, otherwise use grep.

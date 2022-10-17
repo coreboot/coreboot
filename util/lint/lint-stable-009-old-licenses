@@ -28,7 +28,11 @@ HEADER_EXCLUDED="\
 _shipped$|\
 ^util/scripts/no-fsf-addresses.sh|\
 ^util/lint/lint-000-license-headers|\
-^util/lint/lint-stable-009-old-licenses\
+^util/lint/lint-stable-009-old-licenses|\
+^util/nvidia/cbootimage|\
+^3rdparty|\
+__pycache__|\
+^payloads/external\
 "
 
 if [ -z "$HEADER_DIRS" ]; then

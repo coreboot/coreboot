@@ -14,7 +14,7 @@ LINTDIR="$(
 
 PIDS=""
 INCLUDED_DIRS_AND_FILES='util/* src/* payloads/* configs/* Makefile *.inc'
-EXCLUDED_DIRS='src/vendorcode/\|cbfstool/lzma/\|cbfstool/lz4/\|Documentation/\|build/\|3rdparty/\|\.git/\|coreboot-builds/\|util/nvidia/cbootimage/'
+EXCLUDED_DIRS='src/vendorcode/\|cbfstool/lzma/\|cbfstool/lz4/\|Documentation/\|build/\|3rdparty/\|\.git/\|coreboot-builds/\|util/nvidia/cbootimage/\|^util/goswid/vendor'
 EXCLUDED_FILES='\.gif$\|\.jpg$\|\.cksum$\|\.bin$\|\.vbt$\|\.hex$\|\.ico$\|\.o$\|\.bz2$\|\.xz$\|^.tmpconfig\|\.pyc$\|_shipped$\|sha256$\|\.png$\|\.patch$'
 
 HAVE_FILE=$(command -v file 1>/dev/null 2>&1; echo $?)

@@ -18,5 +18,6 @@ static void pmc_lock_smi(void)
 void soc_lockdown_config(int chipset_lockdown)
 {
 	/* APL only supports CHIPSET_LOCKDOWN_COREBOOT */
-	pmc_lock_smi();
+	if (CONFIG(SOC_INTEL_GEMINILAKE))
+		pmc_lock_smi();
 }

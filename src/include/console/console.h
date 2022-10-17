@@ -16,6 +16,7 @@
 void post_code(u8 value);
 void mainboard_post(u8 value);
 void arch_post_code(u8 value);
+void soc_post_code(uint8_t value);
 
 void __noreturn die(const char *fmt, ...);
 #define die_with_post_code(value, fmt, ...) \

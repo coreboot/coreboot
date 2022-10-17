@@ -1,11 +1,11 @@
-Upcoming release - coreboot 4.18 release
+coreboot 4.18 release
 ========================================================================
 
-The 4.18 release is quite late, but is now planned for October 16, 2022.
+The 4.18 release was quite late, but was completed on October 16, 2022.
 
-In the past 4 months since the 4.17 release, the coreboot project has
-merged more than 1800 commits from over 200 different authors. Over 50
-of those authors submitted their first patches.
+In the 4 months since the 4.17 release, the coreboot project has merged
+more than 1800 commits from over 200 different authors. Over 50 of those
+authors submitted their first patches.
 
 Welcome and thank you to all of our new contributors, and of course the
 work of all of the seasoned contributors is greatly appreciated.
@@ -222,15 +222,37 @@ be maintained on the release 4.20 branch.
   * Intel Galileo mainboard
 
 
-Statistics
-----------
+Statistics from commit d2d9021543 to f4c97ea131
+-----------------------------------------------
 
-- Total Commits: 1819
-- Average Commits per day: 13.44
-- Total lines added: 150195
-- Average lines added per commit: 82.57
-- Number of patches adding more than 100 lines: 127
-- Average lines added per small commit: 38.38
-- Total lines removed: 33788
+- Total Commits: 1822
+- Average Commits per day: 13.38
+- Total lines added: 150578
+- Average lines added per commit: 82.64
+- Number of patches adding more than 100 lines: 128
+- Average lines added per small commit: 38.44
+- Total lines removed: 33849
 - Average lines removed per commit: 18.58
-- Total difference between added and removed: 116407
+- Total difference between added and removed: 116729
+- Total authors: 202
+- New authors: 52
+
+
+Known Issues
+------------
+
+A couple of issues were discovered immediately following the release
+that will be fixed in a follow-on point release in the upcoming weeks.
+
+A pair of changes ([CB:67754](https://review.coreboot.org/67754) and
+[CB:67662](https://review.coreboot.org/67662)) which merged shortly
+before the 4.18 release have created an issue on Intel Apollo Lake
+platform boards which prevents SMM/SMI from functioning; this affects
+only Apollo Lake (but not Gemini Lake) devices.
+See [CB:68599](https://review.coreboot.org/68599) for the fix.
+
+Another issue applies to all Intel-based boards with onboard I2C TPMs
+when verified boot is not enabled. The I2C buses don’t get initialized
+until after the TPM, causing timeouts, TPM initialization failures, and
+long boot times.  See [CB:68550](https://review.coreboot.org/68550) for
+the fix.

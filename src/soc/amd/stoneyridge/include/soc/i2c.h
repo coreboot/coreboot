@@ -22,4 +22,6 @@
 #define I2C2_SCL_PIN_IOMUX_GPIOxx	GPIO_113_IOMUX_GPIOxx
 #define I2C3_SCL_PIN_IOMUX_GPIOxx	GPIO_19_IOMUX_GPIOxx
 
+void reset_i2c_peripherals(void);
+
 #endif /* AMD_STONEYRIDGE_I2C_H */

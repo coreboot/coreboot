@@ -25,5 +25,6 @@
 
 /* Sets the base address for the specific I2C bus. */
 void i2c_set_bar(unsigned int bus, uintptr_t bar);
+void reset_i2c_peripherals(void);
 
 #endif /* AMD_PICASSO_I2C_H */

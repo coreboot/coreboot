@@ -12,14 +12,6 @@
 
 #include "chip.h"
 
-/* Table to switch SCL pins to outputs to initially reset the I2C peripherals */
-static const struct soc_i2c_scl_pin i2c_scl_pins[] = {
-	I2C_RESET_SCL_PIN(I2C0_SCL_PIN, GPIO_I2C0_SCL),
-	I2C_RESET_SCL_PIN(I2C1_SCL_PIN, GPIO_I2C1_SCL),
-	I2C_RESET_SCL_PIN(I2C2_SCL_PIN, GPIO_I2C2_SCL),
-	I2C_RESET_SCL_PIN(I2C3_SCL_PIN, GPIO_I2C3_SCL),
-};
-
 static void sb_lpc_decode(void)
 {
 	u32 tmp = 0;
@@ -109,17 +101,6 @@ static void setup_misc(int *reboot)
 		misc_write32(0x50, reg);
 		*reboot = 1;
 	}
-}
-
-static void reset_i2c_peripherals(void)
-{
-	const struct soc_amd_stoneyridge_config *cfg = config_of_soc();
-	struct soc_i2c_peripheral_reset_info reset_info;
-
-	reset_info.i2c_scl_reset_mask = cfg->i2c_scl_reset & GPIO_I2C_MASK;
-	reset_info.i2c_scl = i2c_scl_pins;
-	reset_info.num_pins = ARRAY_SIZE(i2c_scl_pins);
-	sb_reset_i2c_peripherals(&reset_info);
 }
 
 /* Before console init */

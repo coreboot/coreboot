@@ -14,4 +14,10 @@ config WRITE_STB_BUFFER_TO_CONSOLE
 	  points through the boot process. Note that this will prevent the
 	  entries from being stored if the Spill-to-DRAM feature is enabled.
 
+config ADD_POSTCODES_TO_STB
+	bool "Add coreboot postcodes to STB"
+	default y
+	help
+	  Add coreboot's postcodes to the smart trace buffer
+
 endif

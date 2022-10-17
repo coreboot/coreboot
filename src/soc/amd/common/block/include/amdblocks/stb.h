@@ -7,6 +7,7 @@
 
 #define AMD_STB_PMI_0			0x30600
 
+#define AMD_STB_COREBOOT_POST_PREFIX	0xBA000000
 #define AMD_STB_COREBOOT_MARKER		0xBAADF00D
 
 struct stb_entry_struct {

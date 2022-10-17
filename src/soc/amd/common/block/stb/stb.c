@@ -18,6 +18,12 @@ static uint32_t stb_read32(uint32_t reg)
 	return smn_read32(STB_CFG_SMN_ADDR + reg);
 }
 
+void soc_post_code(uint8_t value)
+{
+	if (CONFIG(ADD_POSTCODES_TO_STB))
+		stb_write32(AMD_STB_PMI_0, AMD_STB_COREBOOT_POST_PREFIX | value);
+}
+
 void write_stb_to_console(void)
 {
 	int i;

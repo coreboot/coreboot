@@ -42,9 +42,6 @@
  * ACPI related definitions for ASL code.
  */
 
-/* Enable EC backed ALS device in ACPI */
-#define EC_ENABLE_ALS_DEVICE
-
 /* Provide wake pin for EC */
 #define EC_ENABLE_WAKE_PIN	GPE_EC_WAKE
 

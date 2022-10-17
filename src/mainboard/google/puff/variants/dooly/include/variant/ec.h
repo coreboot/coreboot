@@ -5,7 +5,4 @@
 
 #include <puff/ec.h>
 
-/* Enable EC backed ALS device in ACPI */
-#define EC_ENABLE_ALS_DEVICE
-
 #endif

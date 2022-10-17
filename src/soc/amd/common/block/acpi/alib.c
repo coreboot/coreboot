@@ -102,3 +102,148 @@ void acpigen_write_alib_dptc_tablet(uint8_t *tablet_param, size_t tablet_param_l
 
 	acpigen_write_scope_end();
 }
+
+void acpigen_write_alib_dptc_thermal_B(uint8_t *thermal_param_B, size_t thermal_param_B_len)
+{
+	/* Scope (\_SB) */
+	acpigen_write_scope("\\_SB");
+
+	/* Table B for dynamic DPTC*/
+	/* Scope (\_SB)
+	 * {
+	 *     Method (DTTB, 0, Serialized)
+	 *     {
+	 *         Debug = "DPTC: TABLE B"
+	 *         Name (THTB, Buffer (0x25)
+	 *         {
+	 *             ...
+	 *         })
+	 *         \_SB.ALIB
+	 *         0x0C
+	 *         THTB
+	 *     }
+	 * }
+	 */
+	acpigen_write_method_serialized("DTTB", 0);
+	acpigen_write_debug_string("DPTC: TABLE B");
+	acpigen_dptc_call_alib("THTB", thermal_param_B, thermal_param_B_len);
+	acpigen_write_method_end();
+
+	acpigen_write_scope_end();
+}
+
+void acpigen_write_alib_dptc_thermal_C(uint8_t *thermal_param_C, size_t thermal_param_C_len)
+{
+	/* Scope (\_SB) */
+	acpigen_write_scope("\\_SB");
+
+	/* Table C for dynamic DPTC*/
+	/* Scope (\_SB)
+	 * {
+	 *     Method (DTTC, 0, Serialized)
+	 *     {
+	 *         Debug = "DPTC: TABLE C"
+	 *         Name (THTC, Buffer (0x25)
+	 *         {
+	 *             ...
+	 *         })
+	 *         \_SB.ALIB
+	 *         0x0C
+	 *         THTC
+	 *     }
+	 * }
+	 */
+	acpigen_write_method_serialized("DTTC", 0);
+	acpigen_write_debug_string("DPTC: TABLE C");
+	acpigen_dptc_call_alib("THTC", thermal_param_C, thermal_param_C_len);
+	acpigen_write_method_end();
+
+	acpigen_write_scope_end();
+}
+
+void acpigen_write_alib_dptc_thermal_D(uint8_t *thermal_param_D, size_t thermal_param_D_len)
+{
+	/* Scope (\_SB) */
+	acpigen_write_scope("\\_SB");
+
+	/* Table D for dynamic DPTC*/
+	/* Scope (\_SB)
+	 * {
+	 *     Method (DTTD, 0, Serialized)
+	 *     {
+	 *         Debug = "DPTC: Using normal SOC DPTC Settings."
+	 *         Name (THTD, Buffer (0x25)
+	 *         {
+	 *             ...
+	 *         })
+	 *         \_SB.ALIB
+	 *         0x0C
+	 *         THTD
+	 *     }
+	 * }
+	 */
+	acpigen_write_method_serialized("DTTD", 0);
+	acpigen_write_debug_string("DPTC: TABLE D");
+	acpigen_dptc_call_alib("THTD", thermal_param_D, thermal_param_D_len);
+	acpigen_write_method_end();
+
+	acpigen_write_scope_end();
+}
+
+void acpigen_write_alib_dptc_thermal_E(uint8_t *thermal_param_E, size_t thermal_param_E_len)
+{
+	/* Scope (\_SB) */
+	acpigen_write_scope("\\_SB");
+
+	/* Table E for dynamic DPTC*/
+	/* Scope (\_SB)
+	 * {
+	 *     Method (DTTE, 0, Serialized)
+	 *     {
+	 *         Debug = "DPTC: TABLE E"
+	 *         Name (THTE, Buffer (0x25)
+	 *         {
+	 *             ...
+	 *         })
+	 *         \_SB.ALIB
+	 *         0x0C
+	 *         THTE
+	 *     }
+	 * }
+	 */
+	acpigen_write_method_serialized("DTTE", 0);
+	acpigen_write_debug_string("DPTC: TABLE E");
+	acpigen_dptc_call_alib("THTE", thermal_param_E, thermal_param_E_len);
+	acpigen_write_method_end();
+
+	acpigen_write_scope_end();
+}
+
+void acpigen_write_alib_dptc_thermal_F(uint8_t *thermal_param_F, size_t thermal_param_F_len)
+{
+	/* Scope (\_SB) */
+	acpigen_write_scope("\\_SB");
+
+	/* Table F for dynamic DPTC*/
+	/* Scope (\_SB)
+	 * {
+	 *     Method (DTTF, 0, Serialized)
+	 *     {
+	 *         Debug = "DPTC: TABLE F"
+	 *         Name (THTF, Buffer (0x25)
+	 *         {
+	 *             ...
+	 *         })
+	 *         \_SB.ALIB
+	 *         0x0C
+	 *         THTF
+	 *     }
+	 * }
+	 */
+	acpigen_write_method_serialized("DTTF", 0);
+	acpigen_write_debug_string("DPTC: TABLE F");
+	acpigen_dptc_call_alib("THTF", thermal_param_F, thermal_param_F_len);
+	acpigen_write_method_end();
+
+	acpigen_write_scope_end();
+}

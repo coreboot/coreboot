@@ -20,6 +20,12 @@ enum alib_dptc_parameter_ids {
 	ALIB_DPTC_VRM_MAXIMUM_CURRENT_LIMIT = 0xc,
 	/* Picasso: SetVrmSocCurrentLimit (0xe) is not implemented in alib. */
 	ALIB_DPTC_VRM_SOC_CURRENT_LIMIT_ID = 0xe,
+
+	ALIB_DPTC_STT_SKIN_TEMPERATURE_LIMIT_APU_ID = 0x22,
+	ALIB_DPTC_STT_M1_ID = 0x26,
+	ALIB_DPTC_STT_M2_ID = 0x27,
+	ALIB_DPTC_STT_C_APU_ID = 0x2C,
+	ALIB_DPTC_STT_MIN_LIMIT_ID = 0x2E,
 };
 
 struct alib_dptc_param {
@@ -30,7 +36,11 @@ struct alib_dptc_param {
 void acpigen_write_alib_dptc_default(uint8_t *default_param, size_t default_param_len);
 void acpigen_write_alib_dptc_no_battery(uint8_t *no_battery_param, size_t no_battery_param_len);
 void acpigen_write_alib_dptc_tablet(uint8_t *tablet_param, size_t tablet_param_len);
-
+void acpigen_write_alib_dptc_thermal_B(uint8_t *thermal_param_B, size_t thermal_param_B_len);
+void acpigen_write_alib_dptc_thermal_C(uint8_t *thermal_param_C, size_t thermal_param_C_len);
+void acpigen_write_alib_dptc_thermal_D(uint8_t *thermal_param_D, size_t thermal_param_D_len);
+void acpigen_write_alib_dptc_thermal_E(uint8_t *thermal_param_E, size_t thermal_param_E_len);
+void acpigen_write_alib_dptc_thermal_F(uint8_t *thermal_param_F, size_t thermal_param_F_len);
 #endif /* !__ACPI__ */
 
 #endif /* AMD_COMMON_ALIB_H */

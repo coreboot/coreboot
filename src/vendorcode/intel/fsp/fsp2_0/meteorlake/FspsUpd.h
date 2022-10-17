@@ -138,7 +138,8 @@ typedef struct {
   UINT32                      MicrocodeRegionSize;
 
 /** Offset 0x0060 - Turbo Mode
-  Enable/Disable processor Turbo Mode. 0:disable, <b>1: Enable</b>
+  Enable/Disable processor Turbo Mode (requires EMTTM enabled too). 0:disable, <b>1:
+  Enable</b>
   $EN_DIS
 **/
   UINT8                       TurboMode;
@@ -3121,17 +3122,17 @@ typedef struct {
 
 /** Offset 0x1CEC - Reserved
 **/
-  UINT8                       Reserved66[2];
+  UINT8                       Reserved66[3];
 
-/** Offset 0x1CEE - PMC C10 dynamic threshold dajustment enable
+/** Offset 0x1CEF - PMC C10 dynamic threshold dajustment enable
   Set if you want to enable PMC C10 dynamic threshold adjustment. Only works on supported SKUs
   $EN_DIS
 **/
   UINT8                       PmcC10DynamicThresholdAdjustment;
 
-/** Offset 0x1CEF - Reserved
+/** Offset 0x1CF0 - Reserved
 **/
-  UINT8                       Reserved67[33];
+  UINT8                       Reserved67[32];
 
 /** Offset 0x1D10 - FspEventHandler
   <b>Optional</b> pointer to the boot loader's implementation of FSP_EVENT_HANDLER.
@@ -3161,7 +3162,7 @@ typedef struct {
 
 /** Offset 0x1D20
 **/
-  UINT8                       UnusedUpdSpace43[6];
+  UINT8                       UnusedUpdSpace42[6];
 
 /** Offset 0x1D26
 **/

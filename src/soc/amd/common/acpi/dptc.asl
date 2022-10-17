@@ -31,7 +31,11 @@ Scope (\_SB)
             Return (Zero)
         }
 
+#if CONFIG(FEATURE_DYNAMIC_DPTC)
+        \_SB.DTTS()
+#else
         \_SB.DDEF()
+#endif
         Return (Zero)
     }
 }

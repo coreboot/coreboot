@@ -14,6 +14,9 @@ DefinitionBlock (
 {
 	#include <acpi/dsdt_top.asl>
 	#include <soc.asl>
+#if CONFIG(FEATURE_DYNAMIC_DPTC)
+	#include <variant/acpi/dtts.asl>
+#endif
 
 	/* ChromeOS Embedded Controller */
 	Scope (\_SB.PCI0.LPCB)

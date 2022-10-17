@@ -37,6 +37,8 @@ void acpi_pm_gpe_add_events_print_events(void);
 /* Clear PM and GPE status registers. */
 void acpi_clear_pm_gpe_status(void);
 
+void fill_fadt_extended_pm_regs(acpi_fadt_t *fadt);
+
 /*
  * If a system reset is about to be requested, modify the PM1 register so it
  * will never be misinterpreted as an S3 resume.

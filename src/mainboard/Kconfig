@@ -14,7 +14,7 @@ config MAINBOARD_DIR
 	string
 
 config MAINBOARD_PART_NUMBER
-	string
+	string "Mainboard part number"
 
 config MAINBOARD_VENDOR
 	string "Mainboard vendor name"

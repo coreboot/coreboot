@@ -13,12 +13,7 @@
 #include <soc/uart.h>
 #include <types.h>
 
-static const struct {
-	uintptr_t base;
-	unsigned int aoac_device;
-	const char *acpi_name;
-	struct soc_amd_gpio mux[2];
-} uart_info[] = {
+static const struct soc_uart_ctrlr_info uart_info[] = {
 	[0] =	{ APU_UART0_BASE, FCH_AOAC_DEV_UART0, "FUR0", {
 			PAD_NF(GPIO_138, UART0_TXD, PULL_NONE),
 			PAD_NF(GPIO_136, UART0_RXD, PULL_NONE),

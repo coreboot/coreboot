@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Morgana */
-
 #include <amdblocks/i2c.h>
 #include <console/console.h>
 #include <soc/i2c.h>

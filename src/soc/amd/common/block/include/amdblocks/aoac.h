@@ -35,5 +35,8 @@
 bool is_aoac_device_enabled(unsigned int dev);
 void power_on_aoac_device(unsigned int dev);
 void power_off_aoac_device(unsigned int dev);
+/* the following 2 functions are implemented in the SoC code */
+void enable_aoac_devices(void);
+void wait_for_aoac_enabled(unsigned int dev);
 
 #endif /* AMD_BLOCK_AOAC_H */

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/aoac.h>
 #include <amdblocks/i2c.h>
 #include <amdblocks/lpc.h>
 #include <amdblocks/pmlib.h>

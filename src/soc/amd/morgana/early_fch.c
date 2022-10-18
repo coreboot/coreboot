@@ -3,6 +3,7 @@
 /* TODO: Update for Morgana */
 
 #include <amdblocks/acpimmio.h>
+#include <amdblocks/aoac.h>
 #include <amdblocks/espi.h>
 #include <amdblocks/i2c.h>
 #include <amdblocks/lpc.h>

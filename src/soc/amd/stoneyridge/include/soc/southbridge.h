@@ -181,7 +181,6 @@ void bootblock_fch_init(void);
 void fch_init(void *chip_info);
 void fch_final(void *chip_info);
 
-void enable_aoac_devices(void);
 void fch_clk_output_48Mhz(u32 osc);
 
 void set_uart_config(unsigned int idx);

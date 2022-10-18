@@ -16,5 +16,6 @@ struct soc_uart_ctrlr_info {
 
 uintptr_t get_uart_base(unsigned int idx); /* get MMIO base address of FCH UART */
 void uart_inject_ssdt(const struct device *dev);
+void set_uart_config(unsigned int idx); /* configure hardware of FCH UART selected by idx */
 
 #endif /* AMD_BLOCK_UART_H */

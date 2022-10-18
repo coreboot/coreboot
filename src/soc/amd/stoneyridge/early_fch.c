@@ -8,6 +8,7 @@
 #include <amdblocks/reset.h>
 #include <amdblocks/smbus.h>
 #include <amdblocks/spi.h>
+#include <amdblocks/uart.h>
 #include <soc/southbridge.h>
 #include <types.h>
 

@@ -6,7 +6,6 @@
 #include <soc/aoac_defs.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
-#include <soc/southbridge.h>
 #include <types.h>
 
 static const struct soc_uart_ctrlr_info uart_info[] = {

@@ -112,13 +112,13 @@ chip soc/intel/alderlake
 
 	register "power_limits_config[ADL_N_041_6W_CORE]" = "{
 		.tdp_pl1_override = 6,
-		.tdp_pl2_override = 12,
+		.tdp_pl2_override = 25,
 		.tdp_pl4 = 78,
 	}"
 
 	register "power_limits_config[ADL_N_021_6W_CORE]" = "{
 		.tdp_pl1_override = 6,
-		.tdp_pl2_override = 12,
+		.tdp_pl2_override = 25,
 		.tdp_pl4 = 78,
 	}"
 
@@ -149,17 +149,17 @@ chip soc/intel/alderlake
 
 				register "controls.power_limits" = "{
 					.pl1 = {
-							.min_power = 3000,
+							.min_power = 5500,
 							.max_power = 6000,
 							.time_window_min = 28 * MSECS_PER_SEC,
-							.time_window_max = 32 * MSECS_PER_SEC,
+							.time_window_max = 28 * MSECS_PER_SEC,
 							.granularity = 200
 						},
 					.pl2 = {
-							.min_power = 12000,
-							.max_power = 12000,
-							.time_window_min = 28 * MSECS_PER_SEC,
-							.time_window_max = 32 * MSECS_PER_SEC,
+							.min_power = 25000,
+							.max_power = 25000,
+							.time_window_min = 1,
+							.time_window_max = 1,
 							.granularity = 1000
 						}
 				}"

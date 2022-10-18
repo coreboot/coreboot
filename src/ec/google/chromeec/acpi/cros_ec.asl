@@ -51,6 +51,11 @@ Device (CREC)
 #ifdef EC_ENABLE_PD_MCU_DEVICE
 	#include "pd.asl"
 #endif
+
+#ifdef EC_ENABLE_TBMC_DEVICE
+	#include "tbmc.asl"
+#endif
+
 	Method(_STA, 0)
 	{
 		Return (0xF)

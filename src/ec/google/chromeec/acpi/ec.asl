@@ -457,7 +457,7 @@ Device (EC0)
 		\_SB.DPTF.TPET()
 #endif
 #ifdef EC_ENABLE_TBMC_DEVICE
-		Notify (TBMC, 0x80)
+		Notify (^CREC.TBMC, 0x80)
 #endif
 #if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
 		If (CondRefOf (\_SB.DPTC)) {
@@ -659,9 +659,5 @@ Device (EC0)
 
 #ifdef EC_ENABLE_KEYBOARD_BACKLIGHT
 	#include "keyboard_backlight.asl"
-#endif
-
-#ifdef EC_ENABLE_TBMC_DEVICE
-	#include "tbmc.asl"
 #endif
 }

@@ -24,6 +24,7 @@
 #define   UART8250_IIR_THRI	0x02 /* Transmitter holding register empty */
 #define   UART8250_IIR_RDI	0x04 /* Receiver data interrupt */
 #define   UART8250_IIR_RLSI	0x06 /* Receiver line status interrupt */
+#define   UART8250_IIR_FIFO_EN	0xC0 /* FIFO enabled */
 
 #define UART8250_FCR 0x02
 #define   UART8250_FCR_FIFO_EN		BIT(0) /* Fifo enable */

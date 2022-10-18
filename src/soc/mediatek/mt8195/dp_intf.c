@@ -221,7 +221,7 @@ static int mtk_dpintf_power_on(struct mtk_dpintf *dpintf, const struct edid *edi
 	pll_rate = edid->mode.pixel_clock * 1000 * (1 << ((clksrc + 1) / 2));
 
 	mt_pll_set_tvd_pll1_freq(pll_rate / 4);
-	edp_mux_set_sel(clksrc);
+	mt_pll_edp_mux_set_sel(clksrc);
 
 	mtk_dpintf_enable(dpintf);
 

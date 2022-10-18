@@ -468,7 +468,7 @@ void mt_pll_init(void)
 			INFRACFG_AO_PERI_BUS_REG0_2, 1);
 
 	for (i = 0; i < ARRAY_SIZE(mux_sels); i++)
-		mux_set_sel(&muxes[mux_sels[i].id], mux_sels[i].sel);
+		pll_mux_set_sel(&muxes[mux_sels[i].id], mux_sels[i].sel);
 
 	/* [4] SCP_CORE_CK_CG, [5] SEJ_CG */
 	write32(&mt8186_infracfg_ao->module_sw_cg_0_clr, 0x00000030);
@@ -528,7 +528,7 @@ void mt_pll_set_usb_clock(void)
 void mt_pll_spmi_mux_select(void)
 {
 	/* 4: ulposc1_d10 */
-	mux_set_sel(&muxes[TOP_SPMI_MST_SEL], 4);
+	pll_mux_set_sel(&muxes[TOP_SPMI_MST_SEL], 4);
 }
 
 u32 mt_fmeter_get_freq_khz(enum fmeter_type type, u32 id)

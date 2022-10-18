@@ -64,14 +64,17 @@ DEFINE_BITFIELD(PLL_POWER_ISO_ENABLE, 1, 0)
 
 DEFINE_BITFIELD(PLL_CON1, 31, 0)
 
+/* PLL internal interface */
 void pll_set_pcw_change(const struct pll *pll);
-void mux_set_sel(const struct mux *mux, u32 sel);
+void pll_mux_set_sel(const struct mux *mux, u32 sel);
 int pll_set_rate(const struct pll *pll, u32 rate);
+
+/* PLL internal interface */
 void mt_pll_init(void);
 void mt_pll_raise_little_cpu_freq(u32 freq);
 void mt_pll_raise_cci_freq(u32 freq);
 void mt_pll_set_tvd_pll1_freq(u32 freq);
-void edp_mux_set_sel(u32 sel);
+void mt_pll_edp_mux_set_sel(u32 sel);
 void mt_pll_spmi_mux_select(void);
 void mt_pll_set_usb_clock(void);
 

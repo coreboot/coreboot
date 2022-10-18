@@ -347,7 +347,7 @@ void mt_pll_init(void)
 	 * TOP CLKMUX -- DO NOT CHANGE WITHOUT ADJUSTING <soc/pll.h> CONSTANTS!
 	 *************/
 	for (i = 0; i < ARRAY_SIZE(mux_sels); i++)
-		mux_set_sel(&muxes[mux_sels[i].id], mux_sels[i].sel);
+		pll_mux_set_sel(&muxes[mux_sels[i].id], mux_sels[i].sel);
 
 	/* enable scpsys clock off control */
 	write32(&mtk_topckgen->clk_scp_cfg_0,
@@ -445,5 +445,5 @@ void mt_mem_pll_config_post(void)
 void mt_mem_pll_mux(void)
 {
 	/* CLK_CFG_0 */
-	mux_set_sel(&muxes[TOP_MEM_SEL], 1); /* 1: dmpll_ck */
+	pll_mux_set_sel(&muxes[TOP_MEM_SEL], 1); /* 1: dmpll_ck */
 }

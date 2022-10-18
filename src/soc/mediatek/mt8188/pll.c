@@ -573,7 +573,7 @@ void mt_pll_init(void)
 	 * TOP CLKMUX -- DO NOT CHANGE WITHOUT ADJUSTING <soc/pll.h> CONSTANTS!
 	 */
 	for (i = 0; i < ARRAY_SIZE(mux_sels); i++)
-		mux_set_sel(&muxes[mux_sels[i].id], mux_sels[i].sel);
+		pll_mux_set_sel(&muxes[mux_sels[i].id], mux_sels[i].sel);
 
 	/* turn off unused clock in infra_ao */
 	write32(&mt8188_infracfg_ao->module_sw_cg_1_set, 0x00004000);
@@ -633,9 +633,9 @@ void mt_pll_set_tvd_pll1_freq(u32 freq)
 	udelay(PLL_EN_DELAY);
 }
 
-void edp_mux_set_sel(u32 sel)
+void mt_pll_edp_mux_set_sel(u32 sel)
 {
-	mux_set_sel(&muxes[TOP_EDP_SEL], sel);
+	pll_mux_set_sel(&muxes[TOP_EDP_SEL], sel);
 }
 
 void mt_pll_set_usb_clock(void)

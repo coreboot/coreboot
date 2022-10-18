@@ -344,7 +344,7 @@ void mt_pll_init(void)
 	 * TOP CLKMUX -- DO NOT CHANGE WITHOUT ADJUSTING <soc/pll.h> CONSTANTS!
 	 */
 	for (i = 0; i < ARRAY_SIZE(mux_sels); i++)
-		mux_set_sel(&muxes[mux_sels[i].id], mux_sels[i].sel);
+		pll_mux_set_sel(&muxes[mux_sels[i].id], mux_sels[i].sel);
 
 	/* enable [14] dramc_pll104m_ck */
 	setbits32(&mtk_topckgen->clk_misc_cfg_0, 1 << 14);

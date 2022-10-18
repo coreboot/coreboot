@@ -5,7 +5,7 @@
 #include <soc/pll.h>
 #include <types.h>
 
-void mux_set_sel(const struct mux *mux, u32 sel)
+void pll_mux_set_sel(const struct mux *mux, u32 sel)
 {
 	u32 mask = GENMASK(mux->mux_width - 1, 0);
 	u32 val = read32(mux->reg);

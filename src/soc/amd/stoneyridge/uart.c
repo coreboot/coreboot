@@ -6,6 +6,7 @@
 #include <soc/aoac_defs.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
+#include <soc/southbridge.h>
 #include <types.h>
 
 static const struct soc_uart_ctrlr_info uart_info[] = {
@@ -25,4 +26,12 @@ uintptr_t get_uart_base(unsigned int idx)
 		return 0;
 
 	return uart_info[idx].base;
+}
+
+void set_uart_config(unsigned int idx)
+{
+	if (idx >= ARRAY_SIZE(uart_info))
+		return;
+
+	gpio_configure_pads(uart_info[idx].mux, 2);
 }

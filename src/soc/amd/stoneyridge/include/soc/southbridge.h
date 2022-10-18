@@ -184,6 +184,8 @@ void fch_final(void *chip_info);
 void enable_aoac_devices(void);
 void fch_clk_output_48Mhz(u32 osc);
 
+void set_uart_config(unsigned int idx);
+
 /*
  * Call the mainboard to get the USB Over Current Map. The mainboard
  * returns the map and 0 on Success or -1 on error or no map. There is

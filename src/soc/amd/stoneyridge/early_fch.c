@@ -127,6 +127,9 @@ void bootblock_fch_early_init(void)
 	fch_enable_legacy_io();
 	enable_aoac_devices();
 
+	if (CONFIG(AMD_SOC_CONSOLE_UART))
+		set_uart_config(CONFIG_UART_FOR_CONSOLE);
+
 	/* disable the keyboard reset function before mainboard GPIO setup */
 	if (CONFIG(DISABLE_KEYBOARD_RESET_PIN))
 		fch_disable_kb_rst();

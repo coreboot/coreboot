@@ -10,4 +10,4 @@ static void init_tpm_dev(void *unused)
 	tpm_setup(s3resume);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, init_tpm_dev, NULL);
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, init_tpm_dev, NULL);

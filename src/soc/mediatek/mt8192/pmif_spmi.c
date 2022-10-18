@@ -56,6 +56,27 @@ int spmi_config_master(void)
 	return 0;
 }
 
+void pmif_spmi_config(struct pmif *arb, int mstid)
+{
+	u32 cmd_per;
+
+	/* Clear all cmd permission for per channel */
+	write32(&arb->mtk_pmif->inf_cmd_per_0, 0);
+	write32(&arb->mtk_pmif->inf_cmd_per_1, 0);
+	write32(&arb->mtk_pmif->inf_cmd_per_2, 0);
+	write32(&arb->mtk_pmif->inf_cmd_per_3, 0);
+
+	/* Enable if we need cmd 0~3 permission for per channel */
+	cmd_per = PMIF_CMD_PER_3 << 28 | PMIF_CMD_PER_3 << 24 |
+		  PMIF_CMD_PER_3 << 20 | PMIF_CMD_PER_3 << 16 |
+		  PMIF_CMD_PER_3 << 8 | PMIF_CMD_PER_3 << 4 |
+		  PMIF_CMD_PER_1_3 << 0;
+	write32(&arb->mtk_pmif->inf_cmd_per_0, cmd_per);
+
+	cmd_per = PMIF_CMD_PER_3 << 4;
+	write32(&arb->mtk_pmif->inf_cmd_per_1, cmd_per);
+}
+
 void pmif_spmi_iocfg(void)
 {
 	SET32_BITFIELDS(&mtk_iocfg_bm->drv_cfg2, SPMI_SCL, 0x2, SPMI_SDA, 0x2);

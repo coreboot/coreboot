@@ -20,18 +20,30 @@ static const struct soc_uart_ctrlr_info uart_info[] = {
 		} },
 };
 
+static const struct soc_uart_ctrlr_info *soc_get_uart_ctrlr_info(size_t *num_ctrlrs)
+{
+	*num_ctrlrs = ARRAY_SIZE(uart_info);
+	return uart_info;
+}
+
 uintptr_t get_uart_base(unsigned int idx)
 {
-	if (idx >= ARRAY_SIZE(uart_info))
+	size_t num_ctrlrs;
+	const struct soc_uart_ctrlr_info *ctrlr = soc_get_uart_ctrlr_info(&num_ctrlrs);
+
+	if (idx >= num_ctrlrs)
 		return 0;
 
-	return uart_info[idx].base;
+	return ctrlr[idx].base;
 }
 
 void set_uart_config(unsigned int idx)
 {
-	if (idx >= ARRAY_SIZE(uart_info))
+	size_t num_ctrlrs;
+	const struct soc_uart_ctrlr_info *ctrlr = soc_get_uart_ctrlr_info(&num_ctrlrs);
+
+	if (idx >= num_ctrlrs)
 		return;
 
-	gpio_configure_pads(uart_info[idx].mux, 2);
+	gpio_configure_pads(ctrlr[idx].mux, 2);
 }

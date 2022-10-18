@@ -9,6 +9,7 @@
 #include <device/mmio.h>
 #include <soc/aoac_defs.h>
 #include <soc/gpio.h>
+#include <soc/iomap.h>
 #include <soc/southbridge.h>
 #include <soc/uart.h>
 #include <types.h>

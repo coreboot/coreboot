@@ -72,6 +72,7 @@ void mt_pll_raise_little_cpu_freq(u32 freq);
 void mt_pll_raise_cci_freq(u32 freq);
 void mt_pll_set_tvd_pll1_freq(u32 freq);
 void edp_mux_set_sel(u32 sel);
+void mt_pll_spmi_mux_select(void);
 void mt_pll_set_usb_clock(void);
 
 enum fmeter_type {

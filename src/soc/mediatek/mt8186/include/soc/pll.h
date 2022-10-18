@@ -16,7 +16,8 @@ struct mtk_topckgen_regs {
 	u32 clk_mode;
 	u32 clk_cfg_update;
 	u32 clk_cfg_update1;
-	u32 reserved1[13];
+	u32 clk_cfg_update2;
+	u32 reserved1[12];
 	u32 clk_cfg_0;
 	u32 clk_cfg_0_set;
 	u32 clk_cfg_0_clr;
@@ -117,6 +118,7 @@ struct mtk_topckgen_regs {
 check_member(mtk_topckgen_regs, clk_mode, 0x0);
 check_member(mtk_topckgen_regs, clk_cfg_update, 0x4);
 check_member(mtk_topckgen_regs, clk_cfg_update1, 0x8);
+check_member(mtk_topckgen_regs, clk_cfg_update2, 0xc);
 check_member(mtk_topckgen_regs, clk_cfg_0, 0x40);
 check_member(mtk_topckgen_regs, clk_cfg_0_set, 0x44);
 check_member(mtk_topckgen_regs, clk_cfg_0_clr, 0x48);

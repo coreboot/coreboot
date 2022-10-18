@@ -25,7 +25,10 @@ romstage-y += ../common/emi.c
 romstage-y += ../common/memory.c
 romstage-y += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
+romstage-y += ../common/mt6315.c mt6315.c
 romstage-y += ../common/pmic_wrap.c pmic_wrap.c pmif.c mt6366.c
+romstage-y += ../common/pmif.c ../common/pmif_clk.c pmif_clk.c
+romstage-y += ../common/pmif_spmi.c pmif_spmi.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c rtc.c
 
 ramstage-y += adsp.c

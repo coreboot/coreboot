@@ -90,10 +90,10 @@ chip soc/amd/morgana
 	device mmio 0xfedc3000 alias i2c_1 off ops soc_amd_i2c_mmio_ops end
 	device mmio 0xfedc4000 alias i2c_2 off ops soc_amd_i2c_mmio_ops end
 	device mmio 0xfedc5000 alias i2c_3 off ops soc_amd_i2c_mmio_ops end
-	device mmio 0xfedc9000 alias uart_0 off ops morgana_uart_mmio_ops end
-	device mmio 0xfedca000 alias uart_1 off ops morgana_uart_mmio_ops end
-	device mmio 0xfedce000 alias uart_2 off ops morgana_uart_mmio_ops end
-	device mmio 0xfedcf000 alias uart_3 off ops morgana_uart_mmio_ops end
-	device mmio 0xfedd1000 alias uart_4 off ops morgana_uart_mmio_ops end
+	device mmio 0xfedc9000 alias uart_0 off ops amd_uart_mmio_ops end
+	device mmio 0xfedca000 alias uart_1 off ops amd_uart_mmio_ops end
+	device mmio 0xfedce000 alias uart_2 off ops amd_uart_mmio_ops end
+	device mmio 0xfedcf000 alias uart_3 off ops amd_uart_mmio_ops end
+	device mmio 0xfedd1000 alias uart_4 off ops amd_uart_mmio_ops end
 	device mmio 0xfedd5000 alias emmc off ops amd_emmc_mmio_ops end
 end

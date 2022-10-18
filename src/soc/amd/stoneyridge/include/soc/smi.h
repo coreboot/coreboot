@@ -3,6 +3,8 @@
 #ifndef AMD_STONEYRIDGE_SMI_H
 #define AMD_STONEYRIDGE_SMI_H
 
+#include <types.h>
+
 #define SMI_GEVENTS			24
 #define SCIMAPS				59 /* 0..58 */
 #define SCI_GPES			32
@@ -149,21 +151,21 @@
 #define SMI_REG_SMISTS4			0x90
 
 #define SMI_REG_POINTER			0x94
-# define SMI_STATUS_SRC_SCI			(1 << 0)
-# define SMI_STATUS_SRC_0			(1 << 1) /* SMIx80 */
-# define SMI_STATUS_SRC_1			(1 << 2) /* SMIx84... */
-# define SMI_STATUS_SRC_2			(1 << 3)
-# define SMI_STATUS_SRC_3			(1 << 4)
-# define SMI_STATUS_SRC_4			(1 << 5)
+# define SMI_STATUS_SRC_SCI			BIT(0)
+# define SMI_STATUS_SRC_0			BIT(1) /* SMIx80 */
+# define SMI_STATUS_SRC_1			BIT(2) /* SMIx84... */
+# define SMI_STATUS_SRC_2			BIT(3)
+# define SMI_STATUS_SRC_3			BIT(4)
+# define SMI_STATUS_SRC_4			BIT(5)
 
 #define SMI_TIMER			0x96
 #define SMI_TIMER_MASK				0x7fff
 #define SMI_TIMER_EN				(1 << 15)
 
 #define SMI_REG_SMITRIG0		0x98
-# define SMITRG0_EOS				(1 << 28)
-# define SMI_TIMER_SEL				(1 << 29)
-# define SMITRG0_SMIENB				(1 << 31)
+# define SMITRG0_EOS				BIT(28)
+# define SMI_TIMER_SEL				BIT(29)
+# define SMITRG0_SMIENB				BIT(31)
 
 #define SMI_REG_CONTROL0		0xa0
 #define SMI_REG_CONTROL1		0xa4

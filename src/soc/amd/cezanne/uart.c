@@ -25,19 +25,29 @@ static const struct soc_uart_ctrlr_info uart_info[] = {
 		} },
 };
 
-uintptr_t get_uart_base(unsigned int idx)
+static const struct soc_uart_ctrlr_info *soc_get_uart_ctrlr_info(size_t *num_ctrlrs)
 {
-	if (idx >= ARRAY_SIZE(uart_info))
-		return 0;
-
-	return uart_info[idx].base;
+	*num_ctrlrs = ARRAY_SIZE(uart_info);
+	return uart_info;
 }
 
-static enum cb_err get_uart_idx(uintptr_t base, unsigned int *idx)
+uintptr_t get_uart_base(unsigned int idx)
+{
+	size_t num_ctrlrs;
+	const struct soc_uart_ctrlr_info *ctrlr = soc_get_uart_ctrlr_info(&num_ctrlrs);
+
+	if (idx >= num_ctrlrs)
+		return 0;
+
+	return ctrlr[idx].base;
+}
+
+static enum cb_err get_uart_idx(uintptr_t base, const struct soc_uart_ctrlr_info *ctrlr,
+				size_t num_ctrlrs, unsigned int *idx)
 {
 	unsigned int i;
-	for (i = 0; i < ARRAY_SIZE(uart_info); i++) {
-		if (base == uart_info[i].base) {
+	for (i = 0; i < num_ctrlrs; i++) {
+		if (base == ctrlr[i].base) {
 			*idx = i;
 			return CB_SUCCESS;
 		}
@@ -48,10 +58,13 @@ static enum cb_err get_uart_idx(uintptr_t base, unsigned int *idx)
 static enum cb_err get_uart_aoac_device(uintptr_t base, unsigned int *aoac_dev)
 {
 	unsigned int idx;
-	if (get_uart_idx(base, &idx) == CB_ERR)
+	size_t num_ctrlrs;
+	const struct soc_uart_ctrlr_info *ctrlr = soc_get_uart_ctrlr_info(&num_ctrlrs);
+
+	if (get_uart_idx(base, ctrlr, num_ctrlrs, &idx) == CB_ERR)
 		return CB_ERR;
 
-	*aoac_dev = uart_info[idx].aoac_device;
+	*aoac_dev = ctrlr[idx].aoac_device;
 	return CB_SUCCESS;
 }
 
@@ -62,17 +75,23 @@ void clear_uart_legacy_config(void)
 
 void set_uart_config(unsigned int idx)
 {
-	if (idx >= ARRAY_SIZE(uart_info))
+	size_t num_ctrlrs;
+	const struct soc_uart_ctrlr_info *ctrlr = soc_get_uart_ctrlr_info(&num_ctrlrs);
+
+	if (idx >= num_ctrlrs)
 		return;
 
-	gpio_configure_pads(uart_info[idx].mux, 2);
+	gpio_configure_pads(ctrlr[idx].mux, 2);
 }
 
 static const char *uart_acpi_name(const struct device *dev)
 {
 	unsigned int idx;
-	if (get_uart_idx(dev->path.mmio.addr, &idx) == CB_SUCCESS)
-		return uart_info[idx].acpi_name;
+	size_t num_ctrlrs;
+	const struct soc_uart_ctrlr_info *ctrlr = soc_get_uart_ctrlr_info(&num_ctrlrs);
+
+	if (get_uart_idx(dev->path.mmio.addr, ctrlr, num_ctrlrs, &idx) == CB_SUCCESS)
+		return ctrlr[idx].acpi_name;
 	else
 		return NULL;
 }

@@ -96,7 +96,8 @@ static void save_dimm_info(void)
 				memory_info_hob->VddVoltage[memProfNum],
 				memory_info_hob->EccSupport,
 				src_dimm->MfgId,
-				src_dimm->SpdModuleType);
+				src_dimm->SpdModuleType,
+				0);
 			index++;
 		}
 	}

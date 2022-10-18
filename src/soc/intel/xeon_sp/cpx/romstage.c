@@ -131,7 +131,8 @@ void save_dimm_info(void)
 					vdd_voltage,
 					true, /* hard-coded as ECC supported */
 					src_dimm.VendorID,
-					src_dimm.actKeyByte2);
+					src_dimm.actKeyByte2,
+					0);
 				index++;
 			}
 		}

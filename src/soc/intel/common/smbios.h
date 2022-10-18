@@ -14,6 +14,6 @@ void dimm_info_fill(struct dimm_info *dimm, u32 dimm_capacity, u8 ddr_type,
 		u32 frequency, u8 rank_per_dimm, u8 channel_id, u8 dimm_id,
 		const char *module_part_num, size_t module_part_number_size,
 		const u8 *module_serial_num, u16 data_width, u32 vdd_voltage,
-		bool ecc_support, u16 mod_id, u8 mod_type);
+		bool ecc_support, u16 mod_id, u8 mod_type, u8 ctrlr_id);
 
 #endif /* _COMMON_SMBIOS_H_ */

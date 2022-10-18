@@ -82,6 +82,7 @@ void save_lpddr4_dimm_info_part_num(const char *dram_part_num)
 				0,
 				0,
 				src_dimm->MfgId,
+				0,
 				0);
 			index++;
 		}

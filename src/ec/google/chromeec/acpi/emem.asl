@@ -16,7 +16,6 @@ TIN8, 8,	// Temperature 8
 TIN9, 8,	// Temperature 9
 Offset (0x10),
 FAN0, 16,	// Fan Speed 0
-FAN1, 16,	// Fan Speed 1
 Offset (0x24),
 BTVR, 8,	// Battery structure version
 Offset (0x30),

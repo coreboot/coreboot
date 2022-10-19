@@ -25,8 +25,6 @@ struct drivers_intel_dptf_config {
 	struct {
 		struct dptf_charger_perf charger_perf[DPTF_MAX_CHARGER_PERF_STATES];
 		struct dptf_fan_perf fan_perf[DPTF_MAX_FAN_PERF_STATES];
-		struct dptf_multifan_perf
-			multifan_perf[DPTF_MAX_FAN_PARTICIPANTS][DPTF_MAX_FAN_PERF_STATES];
 		struct dptf_power_limits power_limits;
 	} controls;
 
@@ -46,14 +44,6 @@ struct drivers_intel_dptf_config {
 			 */
 			bool low_speed_notify;
 		} fan;
-
-		/* For multiple TFN fan options */
-		struct {
-			bool fine_grained_control;
-			uint8_t step_size;
-			bool low_speed_notify;
-		} multifan_options[DPTF_MAX_FAN_PARTICIPANTS];
-
 		struct {
 			/*
 			 * The amount of hysteresis implemented in circuitry or in the platform
@@ -72,8 +62,6 @@ struct drivers_intel_dptf_config {
 
 	/* Rest of platform Power */
 	uint32_t prop;
-
-	bool dptf_multifan_support;
 };
 
 #endif /* _DRIVERS_INTEL_DPTF_CHIP_H_ */

@@ -3,9 +3,7 @@
 #include <acpi/acpigen.h>
 #include <acpi/acpigen_dptf.h>
 #include <ec/google/common/dptf.h>
-#include <drivers/intel/dptf/chip.h>
 
-#include "chip.h"
 /*
  * The Chrome EC is typically in charge of many system functions, including battery charging and
  * fan PWM control. This places it in the middle of a DPTF implementation and therefore, many of
@@ -23,19 +21,6 @@ enum {
 enum {
 	EC_FAN_DUTY_AUTO		= 0xFF,
 };
-
-/* Return the fan number as a string for the FAN participant */
-static const char *fan_num_namestring_of(enum dptf_participant participant)
-{
-	switch (participant) {
-	case DPTF_FAN:
-		return "FAN0";
-	case DPTF_FAN_2:
-		return "FAN1";
-	default:
-		return "";
-	}
-}
 
 static void write_charger_PPPC(const struct device *ec)
 {
@@ -106,7 +91,7 @@ static void write_charger_SPPC(const struct device *ec)
 	acpigen_pop_len(); /* Method */
 }
 
-static void write_fan_fst(const struct device *ec, int participant)
+static void write_fan_fst(const struct device *ec)
 {
 	/* TFST is a package that is used to store data from FAND */
 	acpigen_write_name("TFST");
@@ -125,7 +110,7 @@ static void write_fan_fst(const struct device *ec, int participant)
 	acpigen_write_integer(1);
 	acpigen_emit_byte(ZERO_OP); /* 3rd arg to Index */
 	acpigen_write_store();
-	acpigen_emit_namestring(acpi_device_path_join(ec, fan_num_namestring_of(participant)));
+	acpigen_emit_namestring(acpi_device_path_join(ec, "FAN0"));
 	acpigen_emit_byte(INDEX_OP);
 	acpigen_emit_namestring("TFST");
 	acpigen_write_integer(2);
@@ -315,11 +300,11 @@ static void write_charger_methods(const struct device *ec)
 	acpigen_pop_len(); /* Scope */
 }
 
-static void write_fan_methods(const struct device *ec, int participant)
+static void write_fan_methods(const struct device *ec)
 {
-	dptf_write_scope(participant);
+	dptf_write_scope(DPTF_FAN);
 	write_fan_fsl(ec);
-	write_fan_fst(ec, participant);
+	write_fan_fst(ec);
 	acpigen_pop_len(); /* Scope */
 }
 
@@ -367,20 +352,14 @@ static void write_thermal_methods(const struct device *ec, enum dptf_participant
 	acpigen_pop_len(); /* Scope */
 }
 
-void ec_fill_dptf_helpers(const struct device *ec, const struct device *fan_dev)
+void ec_fill_dptf_helpers(const struct device *ec)
 {
 	enum dptf_participant p;
 	int i;
-	struct ec_google_chromeec_config *config = fan_dev->chip_info;
 
 	write_dppm_methods(ec);
 	write_charger_methods(ec);
-
-	if (config->ec_multifan_support) {
-		for (p = DPTF_FAN; p <= DPTF_FAN_2; ++p)
-			write_fan_methods(ec, p);
-	} else
-		write_fan_methods(ec, DPTF_FAN);
+	write_fan_methods(ec);
 
 	for (p = DPTF_TEMP_SENSOR_0, i = 0; p <= DPTF_TEMP_SENSOR_4; ++p, ++i)
 		write_thermal_methods(ec, p, i);

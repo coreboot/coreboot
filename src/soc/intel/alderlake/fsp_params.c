@@ -517,6 +517,7 @@ static uint16_t get_vccin_aux_imon_iccmax(void)
 	case PCI_DID_INTEL_RPL_P_ID_1:
 	case PCI_DID_INTEL_RPL_P_ID_2:
 	case PCI_DID_INTEL_RPL_P_ID_3:
+	case PCI_DID_INTEL_RPL_P_ID_4:
 		tdp = get_cpu_tdp();
 		if (tdp == TDP_45W)
 			return ICC_MAX_TDP_45W;

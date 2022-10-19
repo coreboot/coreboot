@@ -4133,6 +4133,7 @@
 #define PCI_DID_INTEL_RPL_P_ID_1		0xa706
 #define PCI_DID_INTEL_RPL_P_ID_2		0xa707
 #define PCI_DID_INTEL_RPL_P_ID_3		0xa708
+#define PCI_DID_INTEL_RPL_P_ID_4		0xa71b
 
 /* Intel SMBUS device Ids */
 #define PCI_DID_INTEL_LPT_H_SMBUS			0x8c22

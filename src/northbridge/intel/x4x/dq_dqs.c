@@ -74,7 +74,7 @@ static void set_db(const struct sysinfo *s, struct dll_setting *dq_dqs_setting)
 
 static const u8 max_tap[3] = {12, 10, 13};
 
-static int increment_dq_dqs(const struct sysinfo *s, struct dll_setting *dq_dqs_setting)
+static enum cb_err increment_dq_dqs(const struct sysinfo *s, struct dll_setting *dq_dqs_setting)
 {
 	u8 max_tap_val = max_tap[s->selected_timings.mem_clk - MEM_CLOCK_800MHz];
 
@@ -99,7 +99,7 @@ static int increment_dq_dqs(const struct sysinfo *s, struct dll_setting *dq_dqs_
 	return CB_SUCCESS;
 }
 
-static int decrement_dq_dqs(const struct sysinfo *s, struct dll_setting *dq_dqs_setting)
+static enum cb_err decrement_dq_dqs(const struct sysinfo *s, struct dll_setting *dq_dqs_setting)
 {
 	u8 max_tap_val = max_tap[s->selected_timings.mem_clk - MEM_CLOCK_800MHz];
 
@@ -195,12 +195,12 @@ static u8 test_dq_aligned(const struct sysinfo *s, const u8 channel)
  * This is probably done because lanes cannot be trained independent from
  * each other.
  */
-static int find_dq_limit(const struct sysinfo *s, const u8 channel,
+static enum cb_err find_dq_limit(const struct sysinfo *s, const u8 channel,
 			struct dll_setting dq_setting[TOTAL_BYTELANES],
 			u8 dq_lim[TOTAL_BYTELANES],
 			const enum training_modes expected_result)
 {
-	int status = CB_SUCCESS;
+	enum cb_err status = CB_SUCCESS;
 	int lane;
 	u8 test_result;
 	u8 pass_count[TOTAL_BYTELANES];
@@ -250,7 +250,7 @@ static int find_dq_limit(const struct sysinfo *s, const u8 channel,
  * - note: bytelanes cannot be trained independently, so the delays need to be
  *   adjusted and tested for all of them at the same time
  */
-int do_write_training(struct sysinfo *s)
+enum cb_err do_write_training(struct sysinfo *s)
 {
 	int i;
 	u8 channel, lane;
@@ -328,7 +328,7 @@ static const u32 read_training_schedule[RT_PATTERN_SIZE] = {
 	0xdfdfdfdf, 0xbebebebe, 0x7f7f7f7f, 0xfefefefe
 };
 
-static int rt_increment_dqs(struct rt_dqs_setting *setting)
+static enum cb_err rt_increment_dqs(struct rt_dqs_setting *setting)
 {
 	if (setting->pi < 7) {
 		setting->pi++;
@@ -364,14 +364,14 @@ static u8 test_dqs_aligned(const struct sysinfo *s, const u8 channel)
 	return bytelane_error;
 }
 
-static int rt_find_dqs_limit(struct sysinfo *s, u8 channel,
+static enum cb_err rt_find_dqs_limit(struct sysinfo *s, u8 channel,
 			struct rt_dqs_setting dqs_setting[TOTAL_BYTELANES],
 			u8 dqs_lim[TOTAL_BYTELANES],
 			const enum training_modes expected_result)
 {
 	int lane;
 	u8 test_result;
-	int status = CB_SUCCESS;
+	enum cb_err status = CB_SUCCESS;
 
 	FOR_EACH_BYTELANE(lane)
 		rt_set_dqs(channel, lane, 0, &dqs_setting[lane]);
@@ -418,7 +418,7 @@ static int rt_find_dqs_limit(struct sysinfo *s, u8 channel,
  *   seems to be required, most likely because the signals can't really be generated
  *   separately.
  */
-int do_read_training(struct sysinfo *s)
+enum cb_err do_read_training(struct sysinfo *s)
 {
 	int loop, channel, i, lane, rank;
 	u32 address, content;

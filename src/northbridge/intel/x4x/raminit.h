@@ -3,7 +3,7 @@
 #ifndef __X4X_RAMINIT_H__
 #define __X4X_RAMINIT_H__
 
-#include <stdint.h>
+#include <types.h>
 
 #define NOP_CMD		0x2
 #define PRECHARGE_CMD	0x4
@@ -218,8 +218,8 @@ u32 test_address(int channel, int rank);
 void dqsset(u8 ch, u8 lane, const struct dll_setting *setting);
 void dqset(u8 ch, u8 lane, const struct dll_setting *setting);
 void rt_set_dqs(u8 channel, u8 lane, u8 rank, struct rt_dqs_setting *dqs_setting);
-int do_write_training(struct sysinfo *s);
-int do_read_training(struct sysinfo *s);
+enum cb_err do_write_training(struct sysinfo *s);
+enum cb_err do_read_training(struct sysinfo *s);
 void search_write_leveling(struct sysinfo *s);
 void send_jedec_cmd(const struct sysinfo *s, u8 r, u8 ch, u8 cmd, u32 val);
 

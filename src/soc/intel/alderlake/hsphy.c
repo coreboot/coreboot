@@ -10,6 +10,7 @@
 #include <device/pci_ops.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/systemagent.h>
+#include <intelblocks/vtd.h>
 #include <security/vboot/misc.h>
 #include <soc/hsphy.h>
 #include <soc/iomap.h>
@@ -161,6 +162,7 @@ void load_and_init_hsphy(void)
 	uint8_t hsphy_hash[MAX_HASH_SIZE] = { 0 };
 	uint8_t hash_type;
 	uint32_t buf_size = HSPHY_PAYLOAD_SIZE;
+	size_t dma_buf_size;
 	pci_devfn_t dev = PCH_DEV_CSE;
 	const uint16_t pci_cmd_bme_mem = PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	uint32_t status;
@@ -171,13 +173,30 @@ void load_and_init_hsphy(void)
 		return;
 	}
 
-	/* Align the buffer to page size, otherwise the HECI command will fail */
-	hsphy_buf = memalign(4 * KiB, HSPHY_PAYLOAD_SIZE);
+	if (CONFIG(ENABLE_EARLY_DMA_PROTECTION)) {
+		hsphy_buf = vtd_get_dma_buffer(&dma_buf_size);
+		if (!hsphy_buf || dma_buf_size < HSPHY_PAYLOAD_SIZE) {
+			printk(BIOS_ERR, "DMA protection enabled but DMA buffer does not"
+					 " exist or is too small\n");
+			printk(BIOS_ERR, "Aborting HSPHY firmware loading, "
+					 "PCIe Gen5 won't work.\n");
+			return;
+		}
 
-	if (!hsphy_buf) {
-		printk(BIOS_ERR, "Could not allocate memory for HSPHY blob\n");
-		printk(BIOS_ERR, "Aborting HSPHY firmware loading, PCIe Gen5 won't work.\n");
-		return;
+		/* Rather impossible scenario, but check alignment anyways */
+		if (!IS_ALIGNED((uintptr_t)hsphy_buf, 4 * KiB) &&
+		    (HSPHY_PAYLOAD_SIZE + 4 * KiB) <= dma_buf_size)
+			hsphy_buf = (void *)ALIGN_UP((uintptr_t)hsphy_buf, 4 * KiB);
+	} else {
+		/* Align the buffer to page size, otherwise the HECI command will fail */
+		hsphy_buf = memalign(4 * KiB, HSPHY_PAYLOAD_SIZE);
+
+		if (!hsphy_buf) {
+			printk(BIOS_ERR, "Could not allocate memory for HSPHY blob\n");
+			printk(BIOS_ERR, "Aborting HSPHY firmware loading, "
+					 "PCIe Gen5 won't work.\n");
+			return;
+		}
 	}
 
 	memset(hsphy_buf, 0, HSPHY_PAYLOAD_SIZE);
@@ -186,8 +205,7 @@ void load_and_init_hsphy(void)
 		printk(BIOS_ERR, "%s: CSME not enabled or not visible, but required\n",
 		       __func__);
 		printk(BIOS_ERR, "Aborting HSPHY firmware loading, PCIe Gen5 won't work.\n");
-		free(hsphy_buf);
-		return;
+		goto hsphy_exit;
 	}
 
 	/* Ensure BAR, BME and memory space are enabled */
@@ -203,17 +221,17 @@ void load_and_init_hsphy(void)
 
 	if (heci_get_hsphy_payload(hsphy_buf, &buf_size, hsphy_hash, &hash_type, &status)) {
 		printk(BIOS_ERR, "Aborting HSPHY firmware loading, PCIe Gen5 won't work.\n");
-		free(hsphy_buf);
-		return;
+		goto hsphy_exit;
 	}
 
 	if (verify_hsphy_hash(hsphy_buf, buf_size, hsphy_hash, hash_type)) {
 		printk(BIOS_ERR, "Aborting HSPHY firmware loading, PCIe Gen5 won't work.\n");
-		free(hsphy_buf);
-		return;
+		goto hsphy_exit;
 	}
 
 	upload_hsphy_to_cpu_pcie(hsphy_buf, buf_size);
 
-	free(hsphy_buf);
+hsphy_exit:
+	if (!CONFIG(ENABLE_EARLY_DMA_PROTECTION))
+		free(hsphy_buf);
 }

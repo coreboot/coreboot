@@ -70,4 +70,11 @@ config PWRAP_WITH_PMIF_SPMI
 	  When this option is enabled, the PMIC interface only supports PWRAP
 	  and PMIF_SPMI.
 
+config PMIF_SPMI_IOCFG_DEFAULT_SETTING
+	bool
+	default n
+	help
+	  For SoCs where IO pins default to PMIF_SPMI mode, enable this option
+	  to skip software PMIF_SPMI IO pins configuration.
+
 endif

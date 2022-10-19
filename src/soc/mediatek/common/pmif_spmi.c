@@ -82,7 +82,8 @@ static int spmi_mst_init(struct pmif *pmif_arb)
 		return -E_INVAL;
 	}
 
-	pmif_spmi_iocfg();
+	if (!CONFIG(PMIF_SPMI_IOCFG_DEFAULT_SETTING))
+		pmif_spmi_iocfg();
 	spmi_config_master();
 
 	for (i = 0; i < spmi_dev_cnt; i++)

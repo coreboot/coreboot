@@ -833,7 +833,8 @@ static void free_bdt_firmware_filenames(amd_bios_entry *fw_table)
 		if (index->filename &&
 				index->type != AMD_BIOS_APCB &&
 				index->type != AMD_BIOS_BIN &&
-				index->type != AMD_BIOS_APCB_BK)
+				index->type != AMD_BIOS_APCB_BK &&
+				index->type != AMD_BIOS_UCODE)
 			free(index->filename);
 	}
 }

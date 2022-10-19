@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Morgana */
-
 #ifndef AMD_MORGANA_AOAC_DEFS_H
 #define AMD_MORGANA_AOAC_DEFS_H
 

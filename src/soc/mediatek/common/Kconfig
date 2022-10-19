@@ -63,4 +63,11 @@ config FLASH_DUAL_IO_READ
 	  When this option is enabled, the flash controller provides the ability
 	  to dual IO read mode.
 
+config PWRAP_WITH_PMIF_SPMI
+	bool
+	default n
+	help
+	  When this option is enabled, the PMIC interface only supports PWRAP
+	  and PMIF_SPMI.
+
 endif

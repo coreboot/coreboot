@@ -297,7 +297,7 @@ int mtk_pmif_init(void)
 	ret = pmif_clk_init();
 	if (!ret)
 		ret = pmif_spmi_init(get_pmif_controller(PMIF_SPMI, SPMI_MASTER_0));
-	if (!ret)
+	if (!ret && !CONFIG(PWRAP_WITH_PMIF_SPMI))
 		ret = pmif_spi_init(get_pmif_controller(PMIF_SPI, 0));
 
 	return ret;

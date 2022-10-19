@@ -24,14 +24,7 @@ int is_sgx_supported(void)
 
 void prmrr_core_configure(void)
 {
-	union {
-		uint64_t data64;
-		struct {
-			uint32_t lo;
-			uint32_t hi;
-		} data32;
-	} prmrr_base, prmrr_mask;
-	msr_t msr;
+	msr_t prmrr_base, prmrr_mask;
 
 	/*
 	 * Software Developer's Manual Volume 4:
@@ -45,38 +38,36 @@ void prmrr_core_configure(void)
 		return;
 
 	/* PRMRR_PHYS_MASK is in scope "Core" */
-	msr = rdmsr(MSR_PRMRR_PHYS_MASK);
+	prmrr_mask = rdmsr(MSR_PRMRR_PHYS_MASK);
 	/* If it is locked don't attempt to write PRMRR MSRs. */
-	if (msr.lo & PRMRR_PHYS_MASK_LOCK)
+	if (prmrr_mask.lo & PRMRR_PHYS_MASK_LOCK)
 		return;
 
 	/* PRMRR base and mask are read from the UNCORE PRMRR MSRs
 	 * that are already set in FSP-M. */
-	if (soc_get_uncore_prmmr_base_and_mask(&prmrr_base.data64,
-						&prmrr_mask.data64) < 0) {
+	if (soc_get_uncore_prmmr_base_and_mask(&prmrr_base.raw,
+						&prmrr_mask.raw) < 0) {
 		printk(BIOS_ERR, "SGX: Failed to get PRMRR base and mask\n");
 		return;
 	}
 
-	if (!prmrr_base.data32.lo) {
+	if (!prmrr_base.lo) {
 		printk(BIOS_ERR, "SGX Error: Uncore PRMRR is not set!\n");
 		return;
 	}
 
-	printk(BIOS_INFO, "SGX: prmrr_base = 0x%llx\n", prmrr_base.data64);
-	printk(BIOS_INFO, "SGX: prmrr_mask = 0x%llx\n", prmrr_mask.data64);
+	printk(BIOS_INFO, "SGX: prmrr_base = 0x%llx\n", prmrr_base.raw);
+	printk(BIOS_INFO, "SGX: prmrr_mask = 0x%llx\n", prmrr_mask.raw);
 
 	/* Program core PRMRR MSRs.
 	 * - Set cache writeback mem attrib in PRMRR base MSR
 	 * - Clear the valid bit in PRMRR mask MSR
 	 * - Lock PRMRR MASK MSR */
-	prmrr_base.data32.lo |= MTRR_TYPE_WRBACK;
-	wrmsr(MSR_PRMRR_PHYS_BASE, (msr_t) {.lo = prmrr_base.data32.lo,
-					.hi = prmrr_base.data32.hi});
-	prmrr_mask.data32.lo &= ~PRMRR_PHYS_MASK_VALID;
-	prmrr_mask.data32.lo |= PRMRR_PHYS_MASK_LOCK;
-	wrmsr(MSR_PRMRR_PHYS_MASK, (msr_t) {.lo = prmrr_mask.data32.lo,
-					.hi = prmrr_mask.data32.hi});
+	prmrr_base.lo |= MTRR_TYPE_WRBACK;
+	wrmsr(MSR_PRMRR_PHYS_BASE, prmrr_base);
+	prmrr_mask.lo &= ~PRMRR_PHYS_MASK_VALID;
+	prmrr_mask.lo |= PRMRR_PHYS_MASK_LOCK;
+	wrmsr(MSR_PRMRR_PHYS_MASK, prmrr_mask);
 }
 
 static int is_prmrr_set(void)
@@ -133,7 +124,7 @@ static int owner_epoch_update(void)
 {
 	/* TODO - the Owner Epoch update mechanism is not determined yet,
 	 * for PoC just write '0's to the MSRs. */
-	msr_t msr = {0, 0};
+	msr_t msr = { .raw = 0 };
 
 	/* SGX_OWNEREPOCH is in scope "Package" */
 	wrmsr(MSR_SGX_OWNEREPOCH0, msr);

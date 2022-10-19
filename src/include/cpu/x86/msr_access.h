@@ -6,10 +6,14 @@
 #ifndef __ASSEMBLER__
 #include <types.h>
 
-typedef struct msr_struct {
-	unsigned int lo;
-	unsigned int hi;
+typedef union msr_union {
+	struct {
+		unsigned int lo;
+		unsigned int hi;
+	};
+	uint64_t raw;
 } msr_t;
+_Static_assert(sizeof(msr_t) == sizeof(uint64_t), "Incorrect size for msr_t");
 
 #if CONFIG(SOC_SETS_MSRS)
 msr_t soc_msr_read(unsigned int index);

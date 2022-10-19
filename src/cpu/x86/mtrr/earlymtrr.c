@@ -55,7 +55,7 @@ void set_var_mtrr(
 
 void clear_all_var_mtrr(void)
 {
-	msr_t mtrr = {0, 0};
+	msr_t mtrr = { .raw = 0 };
 	int vcnt;
 	int i;
 

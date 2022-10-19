@@ -285,7 +285,7 @@ static inline enum mca_err_code_types mca_err_type(msr_t reg)
 static inline uint64_t msr_read(unsigned int reg)
 {
 	msr_t msr = rdmsr(reg);
-	return (((uint64_t)msr.hi << 32) | msr.lo);
+	return msr.raw;
 }
 
 /**
@@ -296,10 +296,7 @@ static inline uint64_t msr_read(unsigned int reg)
  */
 static inline void msr_write(unsigned int reg, uint64_t value)
 {
-	msr_t msr = {
-		.lo = (unsigned int)value,
-		.hi = (unsigned int)(value >> 32)
-	};
+	msr_t msr = { .raw = value };
 	wrmsr(reg, msr);
 }
 
@@ -315,10 +312,8 @@ static inline void msr_unset_and_set(unsigned int reg, uint64_t unset, uint64_t 
 	msr_t msr;
 
 	msr = rdmsr(reg);
-	msr.lo &= (unsigned int)~unset;
-	msr.hi &= (unsigned int)~(unset >> 32);
-	msr.lo |= (unsigned int)set;
-	msr.hi |= (unsigned int)(set >> 32);
+	msr.raw &= ~unset;
+	msr.raw |= set;
 	wrmsr(reg, msr);
 }
 

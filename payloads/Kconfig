@@ -1,15 +1,8 @@
 menu "Payload"
 
-config NO_DEFAULT_PAYLOAD
-	bool
-
-choice
-	prompt "Add a payload"
-	default PAYLOAD_NONE if NO_DEFAULT_PAYLOAD || !ARCH_X86
-	default PAYLOAD_SEABIOS if ARCH_X86
-
 config PAYLOAD_NONE
-	bool "None"
+	bool "Don't add a payload"
+	default y if !ARCH_X86
 	help
 	  Select this option if you want to create an "empty" coreboot
 	  ROM image for a certain mainboard, i.e. a coreboot ROM image
@@ -17,6 +10,11 @@ config PAYLOAD_NONE
 
 	  For such an image to be useful, you have to use 'cbfstool'
 	  to add a payload to the ROM image later.
+
+if !PAYLOAD_NONE
+choice
+	prompt "Payload to add"
+	default PAYLOAD_SEABIOS if ARCH_X86
 
 config PAYLOAD_ELF
 	bool "An ELF executable payload"
@@ -58,7 +56,7 @@ choice
 	prompt "Payload compression algorithm"
 	default COMPRESSED_PAYLOAD_LZMA
 	default COMPRESSED_PAYLOAD_NONE if PAYLOAD_LINUX || PAYLOAD_LINUXBOOT || PAYLOAD_FIT
-	depends on !PAYLOAD_NONE && !PAYLOAD_LINUX && !PAYLOAD_LINUXBOOT && !PAYLOAD_FIT
+	depends on !PAYLOAD_LINUX && !PAYLOAD_LINUXBOOT && !PAYLOAD_FIT
 	help
 	  Choose the compression algorithm for the chosen payloads.
 	  You can choose between None, LZMA, or LZ4.
@@ -178,4 +176,7 @@ config COREDOOM_SECONDARY_PAYLOAD
 source "payloads/external/*/Kconfig.secondary"
 
 endmenu # "Secondary Payloads"
+
+endif # !PAYLOAD_NONE
+
 endmenu

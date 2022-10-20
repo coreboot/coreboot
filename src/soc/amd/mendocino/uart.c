@@ -3,8 +3,6 @@
 #include <amdblocks/gpio.h>
 #include <amdblocks/uart.h>
 #include <commonlib/helpers.h>
-#include <console/console.h>
-#include <device/device.h>
 #include <device/mmio.h>
 #include <soc/aoac_defs.h>
 #include <soc/gpio.h>

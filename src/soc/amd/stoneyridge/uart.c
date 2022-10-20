@@ -2,6 +2,7 @@
 
 #include <amdblocks/gpio.h>
 #include <amdblocks/uart.h>
+#include <commonlib/helpers.h>
 #include <soc/aoac_defs.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>

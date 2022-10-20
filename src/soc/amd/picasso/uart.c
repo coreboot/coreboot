@@ -1,11 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
-#include <commonlib/helpers.h>
-#include <device/device.h>
 #include <device/mmio.h>
 #include <amdblocks/gpio.h>
 #include <amdblocks/uart.h>
+#include <commonlib/helpers.h>
 #include <soc/aoac_defs.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>

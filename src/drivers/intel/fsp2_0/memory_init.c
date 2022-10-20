@@ -26,13 +26,10 @@
 
 static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(sizeof(uint64_t));
 
-static void save_memory_training_data(bool s3wake, uint32_t fsp_version)
+static void save_memory_training_data(uint32_t fsp_version)
 {
 	size_t  mrc_data_size;
 	const void *mrc_data;
-
-	if (!CONFIG(CACHE_MRC_SETTINGS) || s3wake)
-		return;
 
 	mrc_data = fsp_find_nv_storage_data(&mrc_data_size);
 	if (!mrc_data) {
@@ -76,7 +73,8 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 		(uintptr_t)cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY))
 		die("Failed to accommodate FSP reserved memory request!\n");
 
-	save_memory_training_data(s3wake, fsp_version);
+	if (CONFIG(CACHE_MRC_SETTINGS) && !s3wake)
+		save_memory_training_data(fsp_version);
 
 	/* Create romstage handof information */
 	romstage_handoff_init(s3wake);

@@ -1,3 +1,4 @@
+
 # SPDX-License-Identifier: GPL-2.0-only
 
 chip soc/amd/stoneyridge
@@ -8,37 +9,6 @@ chip soc/amd/stoneyridge
 	register "dram_clear_on_reset" = "DRAM_CONTENTS_KEEP"
 	register "uma_mode" = "UMAMODE_SPECIFIED_SIZE"
 	register "uma_size" = "32 * MiB"
-	register "lvds_poseq_varybl_to_blon" = "0x5" # in 4ms
-	register "lvds_poseq_blon_to_varybl" = "0x5" # in 4ms
-
-	# Enable I2C0 for audio, USB3 hub at 400kHz
-	register "i2c[0]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 85,
-		.fall_time_ns = 3,
-	}"
-
-	# Enable I2C1 for H1 at 400kHz
-	register "i2c[1]" = "{
-		.early_init = 1,
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 3,
-		.fall_time_ns = 2,
-	}"
-
-	# Enable I2C2 for trackpad, pen at 400kHz
-	register "i2c[2]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 3,
-		.fall_time_ns = 2,
-	}"
-
-	# Enable I2C3 for touchscreen at 400kHz
-	register "i2c[3]" = "{
-		.speed = I2C_SPEED_FAST,
-		.rise_time_ns = 16,
-		.fall_time_ns = 8,
-	}"
 
 	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL | \
 				    GPIO_I2C2_SCL | GPIO_I2C3_SCL"
@@ -65,9 +35,9 @@ chip soc/amd/stoneyridge
 		end
 		device ref sdhci on end
 	end #domain
+
 	device ref i2c_0 on
 		chip drivers/generic/adau7002
-			register "wakeup_delay" = "20"
 			device generic 0.0 on end
 		end
 		chip drivers/i2c/da7219
@@ -109,32 +79,10 @@ chip soc/amd/stoneyridge
 			register "desc" = ""ELAN Touchpad""
 			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_5)"
 			register "wake" = "7"
-			register "detect" = "1"
 			device i2c 15 on end
-		end
-		chip drivers/i2c/hid
-			register "generic.hid" = ""PNP0C50""
-			register "generic.desc" = ""Synaptics Touchpad""
-			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_5)"
-			register "generic.wake" = "7"
-			register "generic.detect" = "1"
-			register "hid_desc_reg_offset" = "0x20"
-			device i2c 2c on end
 		end
 	end
 	device ref i2c_3 on
-		chip drivers/i2c/generic
-			register "hid" = ""RAYD0001""
-			register "desc" = ""Raydium Touchscreen""
-			register "probed" = "1"
-			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_11)"
-			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_85)"
-			register "reset_delay_ms" = "20"
-			register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_76)"
-			register "enable_delay_ms" = "1"
-			register "has_power_resource" = "1"
-			device i2c 39 on end
-		end
 		chip drivers/i2c/generic
 			register "hid" = ""ELAN0001""
 			register "desc" = ""ELAN Touchscreen""

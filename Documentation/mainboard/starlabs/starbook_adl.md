@@ -40,6 +40,8 @@
 
 ## Building coreboot
 
+Please follow the [Star Labs build instructions](../common/building.md) to build coreboot, using `config.starlabs_starbook_adl` as config file.
+
 ### Preliminaries
 
 Prior to building coreboot the following files are required:

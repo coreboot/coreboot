@@ -247,6 +247,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   Graphics Card, Sound Card. DMA is an essential feature of all modern
   computers, as it allows devices of different speeds to communicate
   without subjecting the CPU to a massive interrupt load.
+* DMI - Direct Media Interface is a link/bus between CPU and PCH.
 * DMI - [**Desktop Management Interface**](Desktop_Management_Interface)
 * DMIC - Digital Microphone
 * DMTF - [**Distributed Management Task Force**](https://en.wikipedia.org/wiki/Distributed_Management_Task_Force)
@@ -377,6 +378,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   Real Time Clock, and maybe a few other registers running.
 * GART - AMD: [**Graphics Address Remapping Table**](https://en.wikipedia.org/wiki/Graphics_address_remapping_table)
 * GATT - Graphics Aperture Translation Table
+* GDT - [Global Descriptor Table](https://wiki.osdev.org/Global_Descriptor_Table)
 * GLK - Intel: [**Gemini Lake**](https://en.wikichip.org/wiki/intel/cores/gemini_lake)
 * GMA - Intel: [**Graphics Media
   Accelerator**](https://en.wikipedia.org/wiki/Intel_GMA)
@@ -450,6 +452,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * IDSEL/AD - Initialization Device SELect/Address and Data. Each PCI
   slot has a signal called IDSEL. It is used to differentiate between
   the different slots.
+* IDT - [Interrupt Descriptor Table](https://en.wikipedia.org/wiki/Interrupt_descriptor_table)
 * IF - AMD: [**Infinity
   Fabric**](https://en.wikipedia.org/wiki/HyperTransport#Infinity_Fabric)
   is a superset of AMD's earlier Hypertransport interconnect.
@@ -561,6 +564,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * MCU - Memory Control Unit
 * MCU - [**MicroController
   Unit**](https://en.wikipedia.org/wiki/Microcontroller)
+* MCTP - [**Management Component Transport Protocol**](https://en.wikipedia.org/wiki/Management_Component_Transport_Protocol)
 * MDFIO - Intel: Multi-Die Fabric IO
 * MDN - AMD: Mendocino
 * ME - Intel: Management Engine
@@ -609,8 +613,13 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * MT/s - MegaTransfers per second
 * MTL - Intel: Meteor Lake
 * MTL - ARM: MHU Transport Layer
-* MTRR - [**Memory Type and Range
-  Register**](http://en.wikipedia.org/wiki/MTRR)
+* MTRR - [**Memory Type and Range Register**](http://en.wikipedia.org/wiki/MTRR)
+  allows to set the cache behaviour on memory access in x86. Basically,
+  it tells the CPU how to cache certain ranges of memory
+  (e.g. write-through, write-combining, write-back...). Memory ranges
+  are specified over physical address ranges. In Linux, they are visible
+  over `/proc/mtrr` and they can be modified there. For further
+  information, see the [**Linux documentation**](https://www.kernel.org/doc/html/v5.19/x86/pat.html).
 
 
 ## N
@@ -664,7 +673,9 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * PAT - [**Page Attribute
   Table**](https://en.wikipedia.org/wiki/Page_attribute_table) This can
   be used independently or in combination with MTRR to setup memory type
-  access ranges. Allows more finely-grained control than MTRR.
+  access ranges. Allows more finely-grained control than MTRR. Compared to MTRR,
+  which sets memory types by physical address ranges, PAT sets them at Page
+  level.
 * PAT - Intel: [**Performance Acceleration
   Technology**](https://en.wikipedia.org/wiki/Performance_acceleration_technology)
 * PATA - Parallel Advanced Technology Attachment - A renaming of ATA
@@ -858,6 +869,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * SEEP - Serial EEPROM (Electrically Erasable Programmable Read-Only
   Memory)
 * SEV - AMD: Secure Encrypted Virtualization
+* SF - Snoop Filter
 * Shadow RAM - RAM which content is copied from ROM residing at the same
   address for speedup purposes.
 * Shim - A small piece of code whose only purpose is to act as an

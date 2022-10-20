@@ -1,6 +1,7 @@
 config SOC_AMD_COMMON_BLOCK_STB
 	bool
 	select SOC_AMD_COMMON_BLOCK_SMN
+	select SOC_AMD_COMMON_BLOCK_SMU
 	help
 	  Select in the SOC if it supports the Smart Trace Buffer
 
@@ -9,10 +10,27 @@ if SOC_AMD_COMMON_BLOCK_STB
 config WRITE_STB_BUFFER_TO_CONSOLE
 	bool "Write STB entries to the console log"
 	default n
+	depends on !ENABLE_STB_SPILL_TO_DRAM
 	help
 	  This option will tell coreboot to print the STB buffer at various
 	  points through the boot process. Note that this will prevent the
 	  entries from being stored if the Spill-to-DRAM feature is enabled.
+
+config ENABLE_STB_SPILL_TO_DRAM
+	bool "Enable Smart Trace Buffer Spill-to-DRAM"
+	default n
+	help
+	  Spill-to-DRAM is an STB feature that extends the buffer from using
+	  just the small SRAM buffer to a much larger area reserved in main
+	  memory.
+
+config AMD_STB_SIZE_IN_MB
+	int "Smart Trace Buffer Spill-to-DRAM buffer size in MB"
+	default 3
+	range 3 16
+	depends on ENABLE_STB_SPILL_TO_DRAM
+	help
+	  Size of the STB Spill-to-DRAM buffer in MB.
 
 config ADD_POSTCODES_TO_STB
 	bool "Add coreboot postcodes to STB"

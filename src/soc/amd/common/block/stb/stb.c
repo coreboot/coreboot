@@ -1,9 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include "commonlib/bsd/cb_err.h"
 #include <amdblocks/smn.h>
+#include <amdblocks/smu.h>
 #include <amdblocks/stb.h>
 #include <bootstate.h>
+#include <cbmem.h>
 #include <console/console.h>
+#include <soc/smu.h>
 #include <soc/stb.h>
 
 #define STB_ENTRIES_PER_ROW 4
@@ -59,9 +63,37 @@ void write_stb_to_console(void)
 		if ((i % STB_ENTRIES_PER_ROW) == STB_ENTRIES_PER_ROW - 1)
 			printk(BIOS_DEBUG, "\n");
 		printed_data = 1;
+	}
+}
 
+static void init_spill_buffer(void *unused)
+{
+	struct smu_payload smu_payload = {0};
+	uintptr_t stb;
+	uint32_t size = CONFIG_AMD_STB_SIZE_IN_MB * MiB;
+	int i;
+
+	if (!CONFIG(ENABLE_STB_SPILL_TO_DRAM))
+		return;
+
+	stb = (uintptr_t)cbmem_add(CBMEM_ID_AMD_STB, size);
+	if (!stb) {
+		printk(BIOS_ERR, "Could not allocate cbmem buffer for STB\n");
+		return;
 	}
 
+	smu_payload.msg[0] = (uint32_t)stb;
+	smu_payload.msg[1] = 0;
+	smu_payload.msg[2] = size;
+
+	printk(BIOS_DEBUG, "STB spill buffer: allocated %d MiB at %lx\n",
+	       CONFIG_AMD_STB_SIZE_IN_MB, stb);
+
+	if (send_smu_message(SMC_MSG_SET_S2D_ADDR, &smu_payload) == CB_ERR)
+		printk(BIOS_ERR, "Could not enable STB Spill-to-dram\n");
+
+	for (i = 0; i < SMU_NUM_ARGS; i++)
+		printk(BIOS_DEBUG, "smu_payload.msg[%d]: 0x%x\n", i, smu_payload.msg[i]);
 }
 
 static void final_stb_console(void *unused)
@@ -70,4 +102,5 @@ static void final_stb_console(void *unused)
 		write_stb_to_console();
 }
 
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, init_spill_buffer, NULL);
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, final_stb_console, NULL);

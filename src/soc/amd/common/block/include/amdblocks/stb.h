@@ -16,7 +16,6 @@ struct stb_entry_struct {
 };
 
 void write_stb_to_console(void);
-void init_spill_buffer(void);
 void add_stb_to_timestamp_buffer(void);
 
 #endif /* AMD_BLOCK_STB_H */

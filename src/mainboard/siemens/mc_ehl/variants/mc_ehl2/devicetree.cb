@@ -117,6 +117,12 @@ chip soc/intel/elkhartlake
 		},
 	}"
 
+	# FIVR related settings
+	register "fivr" = "{
+		.fivr_config_en = true,
+		.vcc_low_high_us = 50,
+	}"
+
 	device domain 0 on
 		device pci 00.0 on	end # Host Bridge
 		device pci 02.0 on	end # Integrated Graphics Device

@@ -6,6 +6,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <ec/google/chromeec/ec.h>
+#include <fw_config.h>
 #include <intelblocks/power_limit.h>
 
 const struct cpu_power_limits limits[] = {
@@ -20,6 +21,15 @@ const struct cpu_power_limits limits[] = {
 const struct system_power_limits sys_limits[] = {
 	/* SKU_ID, TDP (Watts), psys_pl2 (Watts) */
 	{ PCI_DID_INTEL_ADL_P_ID_10, 15, 65 },
+	{ PCI_DID_INTEL_ADL_P_ID_7, 15, 150 },
+	{ PCI_DID_INTEL_ADL_P_ID_6, 15, 150 },
+	{ PCI_DID_INTEL_ADL_P_ID_5, 28, 150 },
+	{ PCI_DID_INTEL_ADL_P_ID_3, 28, 150 },
+};
+
+const struct system_power_limits revise_sys_limits[] = {
+	/* SKU_ID, TDP (Watts), psys_pl2 (Watts) */
+	{ PCI_DID_INTEL_ADL_P_ID_10, 15, 150 },
 	{ PCI_DID_INTEL_ADL_P_ID_7, 15, 150 },
 	{ PCI_DID_INTEL_ADL_P_ID_6, 15, 150 },
 	{ PCI_DID_INTEL_ADL_P_ID_5, 28, 150 },
@@ -55,6 +65,13 @@ const struct psys_config psys_config = {
 void variant_devtree_update(void)
 {
 	size_t total_entries = ARRAY_SIZE(limits);
-	variant_update_psys_power_limits(limits, sys_limits, total_entries, &psys_config);
+
+	if (fw_config_probe(FW_CONFIG(BJ_POWER, BJ_POWER_65W)))
+		variant_update_psys_power_limits(limits, sys_limits, total_entries,
+							&psys_config);
+	else
+		variant_update_psys_power_limits(limits, revise_sys_limits,
+							total_entries, &psys_config);
+
 	variant_update_power_limits(limits, total_entries);
 }

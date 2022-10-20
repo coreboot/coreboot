@@ -3,6 +3,12 @@ fw_config
 		option AUDIO_UNKNOWN	0
 		option NAU88L25B_I2S	1
 	end
+	field BJ_POWER 3 4
+		option BJ_POWER_150W	0
+		option BJ_POWER_230W	1
+		option BJ_POWER_65W	2
+		option BJ_POWER_135W	3
+	end
 end
 
 chip soc/intel/alderlake

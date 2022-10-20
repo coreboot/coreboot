@@ -173,7 +173,10 @@ This helps verify that the patch train won’t tie up the jenkins builders
 for no reason if there are failing patches in the train. For running
 parallel builds, you can specify the number of cores to use by setting the
 the CPUS environment variable. Example:
-        make what-jenkins-does CPUS=8
+
+```Bash
+make what-jenkins-does CPUS=8
+```
 
 * Use a topic when pushing a train of patches. This groups the commits
 together so people can easily see the connection at the top level of
@@ -181,7 +184,10 @@ gerrit. Topics can be set for individual patches in gerrit by going into
 the patch and clicking on the icon next to the topic line. Topics can also
 be set when you push the patches into gerrit. For example, to push a set of
 commits with the i915-kernel-x60 set, use the command:
-        git push origin HEAD:refs/for/master%topic=i915-kernel-x60
+
+```Bash
+git push origin HEAD:refs/for/master%topic=i915-kernel-x60
+```
 
 * If one of your patches isn't ready to be merged, make sure it's obvious
 that you don't feel it's ready for merge yet. The preferred way to show
@@ -191,7 +197,10 @@ Examples of this are "WIP: title" or "[NEEDS_TEST]: title".  Another way to
 mark the patch as not ready would be to give it a -1 or -2 review, but
 isn't as obvious as the commit message. These patches can also be pushed with
 the wip flag:
-	git push origin HEAD:refs/for/master%wip
+
+```Bash
+git push origin HEAD:refs/for/master%wip
+```
 
 * When pushing patches that are not for submission, these should be marked
 as such. This can be done in the title ‘[DONOTSUBMIT]’, or can be pushed as
@@ -200,10 +209,16 @@ sorts of patches are frequently posted as ideas or RFCs for the community to
 look at. Note that private changes can still be fetched from Gerrit by anybody
 who knows their commit ID, so don't use this for sensitive changes. To push
 a private change, use the command:
-        git push origin HEAD:refs/for/master%private
+
+```Bash
+git push origin HEAD:refs/for/master%private
+```
 
 * Multiple push options can be combined:
-        git push origin HEAD:refs/for/master%private,wip,topic=experiment
+
+```Bash
+git push origin HEAD:refs/for/master%private,wip,topic=experiment
+```
 
 * Respond to anyone who has taken the time to review your patches, even if
 it's just to say that you disagree. While it may seem annoying to address a
@@ -277,13 +292,15 @@ git/gerrit tags by prepending the lines with 'Original-'.  Marking
 the original text this way makes it much easier to tell what changes
 happened in which repository. This applies to these lines, not the actual
 commit message itself:
-        Commit-Id:
-        Change-Id:
-        Signed-off-by:
-        Reviewed-on:
-        Tested-by:
-        Reviewed-by:
-The script 'util/gitconfig/rebase.sh' can be used to help automate this.
+
+	* Commit-Id:
+	* Change-Id:
+	* Signed-off-by:
+	* Reviewed-on:
+	* Tested-by:
+	* Reviewed-by:
+
+The script `util/gitconfig/rebase.sh` can be used to help automate this.
 Other tags such as 'Commit-Queue' can simply be removed.
 
 * Check if there's documentation that needs to be updated to remain current

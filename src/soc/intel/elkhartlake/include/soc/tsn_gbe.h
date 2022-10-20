@@ -15,7 +15,7 @@
 #define  TSN_MAC_PHYAD(pa)		(pa << 21)	/* Physical Layer Address */
 #define  TSN_MAC_REGAD(rda)		(rda << 16)	/* Register/Device Address */
 #define  TSN_MAC_CLK_TRAIL_4		(4 << 12)	/* 4 Trailing Clocks */
-#define  TSN_MAC_CSR_CLK_DIV_62		(1 << 8)	/* 0001: CSR=100-150 MHz; CSR/62 */
+#define  TSN_MAC_CSR_CLK_DIV_102	(1 << 10)	/* 0100: CSR=150-250 MHz; CSR/102 */
 #define  TSN_MAC_OP_CMD_WRITE		(1 << 2)	/* GMII Operation Command Write */
 #define  TSN_MAC_OP_CMD_READ		(3 << 2)	/* GMII Operation Command Read */
 #define  TSN_MAC_GMII_BUSY		(1 << 0)	/* GMII Busy bit */

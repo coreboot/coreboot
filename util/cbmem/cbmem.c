@@ -1185,11 +1185,10 @@ static void cbmem_print_entry(int n, uint32_t id, uint64_t base, uint64_t size)
 
 	printf("%2d. ", n);
 	if (name == NULL)
-		printf("\t\t%08x", id);
-	else
-		printf("%s\t%08x", name, id);
+		name = "(unknown)";
+	printf("%-20s  %08x", name, id);
 	printf("  %08" PRIx64 " ", base);
-	printf("  %08" PRIx64 "\n", size);
+	printf(" %08" PRIx64 "\n", size);
 }
 
 static void dump_cbmem_toc(void)
@@ -1204,7 +1203,8 @@ static void dump_cbmem_toc(void)
 		return;
 
 	printf("CBMEM table of contents:\n");
-	printf("    NAME          ID           START      LENGTH\n");
+	printf("    %-20s  %-8s  %-8s  %-8s\n", "NAME", "ID", "START",
+			"LENGTH");
 
 	i = 0;
 	offset = 0;

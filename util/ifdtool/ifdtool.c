@@ -203,7 +203,6 @@ static enum ich_chipset ifd1_guess_chipset(char *image, int size)
 	uint32_t iccriba = (fdb->flmap2 >> 16) & 0xff;
 	uint32_t msl = (fdb->flmap2 >> 8) & 0xff;
 	uint32_t isl = (fdb->flmap1 >> 24);
-	uint32_t nm = (fdb->flmap1 >> 8) & 0x7;
 
 	/* Rest for IFD1 chipset type */
 	if (iccriba == 0x00) {
@@ -226,8 +225,6 @@ static enum ich_chipset ifd1_guess_chipset(char *image, int size)
 			return CHIPSET_8_SERIES_LYNX_POINT;
 		printf("Peculiar firmware descriptor, assuming Wildcat Point compatibility.\n");
 		return CHIPSET_9_SERIES_WILDCAT_POINT;
-	} else if (nm == 6) {
-		return CHIPSET_C620_SERIES_LEWISBURG;
 	}
 	return CHIPSET_PCH_UNKNOWN;
 }

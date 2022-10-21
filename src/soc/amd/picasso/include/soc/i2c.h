@@ -8,7 +8,7 @@
 
 #define GPIO_I2C2_SCL		BIT(2)
 #define GPIO_I2C3_SCL		BIT(3)
-#define GPIO_I2C_MASK		(BIT(2) | BIT(3))
+#define GPIO_I2C_MASK		(GPIO_I2C2_SCL | GPIO_I2C3_SCL)
 
 #define I2C2_SCL_PIN			GPIO_113
 #define I2C3_SCL_PIN			GPIO_19

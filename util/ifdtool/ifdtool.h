@@ -7,6 +7,7 @@
 
 enum ifd_version {
 	IFD_VERSION_1,
+	IFD_VERSION_1_5,
 	IFD_VERSION_2,
 };
 
@@ -62,6 +63,7 @@ enum platform {
 	PLATFORM_IFD2,
 	PLATFORM_DNV,
 	PLATFORM_MTL,
+	PLATFORM_WBG
 };
 
 #define LAYOUT_LINELEN 80

@@ -258,6 +258,8 @@ static enum ich_chipset ifd2_platform_to_chipset(const int pindex)
 		return CHIPSET_C620_SERIES_LEWISBURG;
 	case PLATFORM_DNV:
 		return CHIPSET_DENVERTON;
+	case PLATFORM_WBG:
+		return CHIPSET_8_SERIES_WELLSBURG;
 	default:
 		return CHIPSET_PCH_UNKNOWN;
 	}
@@ -285,6 +287,7 @@ static int is_platform_ifd_2(void)
 		PLATFORM_SKLKBL,
 		PLATFORM_IFD2,
 		PLATFORM_MTL,
+		PLATFORM_WBG,
 	};
 	unsigned int i;
 
@@ -301,8 +304,11 @@ static void check_ifd_version(char *image, int size)
 	const fdbar_t *fdb = find_fd(image, size);
 
 	if (is_platform_ifd_2()) {
-		ifd_version = IFD_VERSION_2;
 		chipset = ifd2_platform_to_chipset(platform);
+		if (chipset == CHIPSET_8_SERIES_WELLSBURG)
+			ifd_version = IFD_VERSION_1_5;
+		else
+			ifd_version = IFD_VERSION_2;
 		max_regions = MIN(max_regions_from_fdbar(fdb), MAX_REGIONS);
 	} else {
 		ifd_version = IFD_VERSION_1;
@@ -517,6 +523,7 @@ static void _decode_spi_frequency(unsigned int freq)
 	case SPI_FREQUENCY_50MHZ_30MHZ:
 		switch (ifd_version) {
 		case IFD_VERSION_1:
+		case IFD_VERSION_1_5:
 			printf("50MHz");
 			break;
 		case IFD_VERSION_2:
@@ -709,6 +716,7 @@ static void dump_fcba(const fcba_t *fcba, const fpsba_t *fpsba)
 		printf("\n  Component 1 Density:                 ");
 		decode_component_density(fcba->flcomp & 7);
 		break;
+	case IFD_VERSION_1_5:
 	case IFD_VERSION_2:
 		printf("\n  Component 2 Density:                 ");
 		decode_component_density((fcba->flcomp >> 4) & 0xf);
@@ -1153,6 +1161,7 @@ static void set_em100_mode(const char *filename, char *image, int size)
 
 	switch (ifd_version) {
 	case IFD_VERSION_1:
+	case IFD_VERSION_1_5:
 		freq = SPI_FREQUENCY_20MHZ;
 		break;
 	case IFD_VERSION_2:
@@ -1191,6 +1200,7 @@ static void set_chipdensity(const char *filename, char *image, int size,
 		mask = 0x7;
 		chip2_offset = 3;
 		break;
+	case IFD_VERSION_1_5:
 	case IFD_VERSION_2:
 		mask = 0xf;
 		chip2_offset = 4;
@@ -1318,6 +1328,7 @@ static void lock_descriptor(const char *filename, char *image, int size)
 		}
 		break;
 	case PLATFORM_DNV:
+	case PLATFORM_WBG:
 		/* CPU/BIOS can read descriptor and BIOS. */
 		fmba->flmstr1 |= (1 << REGION_DESC) << rd_shift;
 		fmba->flmstr1 |= (1 << REGION_BIOS) << rd_shift;
@@ -1756,6 +1767,7 @@ static void print_usage(const char *name)
 	       "                                         jsl    - Jasper Lake\n"
 	       "                                         sklkbl - Sky Lake/Kaby Lake\n"
 	       "                                         tgl    - Tiger Lake\n"
+	       "                                         wbg    - Wellsburg\n"
 	       "   -S | --setpchstrap                    Write a PCH strap\n"
 	       "   -V | --newvalue                       The new value to write into PCH strap specified by -S\n"
 	       "   -v | --version:                       print the version\n"
@@ -2026,6 +2038,8 @@ int main(int argc, char *argv[])
 				platform = PLATFORM_IFD2;
 			} else if (!strcmp(optarg, "mtl")) {
 				platform = PLATFORM_MTL;
+			} else if (!strcmp(optarg, "wbg")) {
+				platform = PLATFORM_WBG;
 			} else {
 				fprintf(stderr, "Unknown platform: %s\n", optarg);
 				exit(EXIT_FAILURE);

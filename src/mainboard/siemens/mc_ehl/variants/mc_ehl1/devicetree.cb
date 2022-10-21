@@ -132,6 +132,9 @@ chip soc/intel/elkhartlake
 		.vcc_low_high_us = 50,
 	}"
 
+	# Disable L1 prefetcher
+	register "L1_prefetcher_disable" = "true"
+
 	device domain 0 on
 		device pci 00.0 on	end # Host Bridge
 		device pci 02.0 on	end # Integrated Graphics Device

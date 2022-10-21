@@ -110,8 +110,10 @@ main() {
 
 		if git branch -a | grep -q "origin/main"; then
 			branch_name="origin/main"
-		else
+		elif git branch -a | grep -q "origin/master"; then
 			branch_name="origin/master"
+		elif git branch -a | grep -q "origin/trunk"; then
+			branch_name="origin/trunk"
 		fi
 
 		updated_commit_id="$(git log --pretty='%h' -n 1 "${branch_name}" -- )"

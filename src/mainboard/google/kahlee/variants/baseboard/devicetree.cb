@@ -79,6 +79,7 @@ chip soc/amd/stoneyridge
 			register "desc" = ""ELAN Touchpad""
 			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_5)"
 			register "wake" = "7"
+			register "detect" = "1"
 			device i2c 15 on end
 		end
 	end

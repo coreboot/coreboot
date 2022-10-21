@@ -40,14 +40,6 @@ chip soc/amd/stoneyridge
 		end
 	end
 	device ref i2c_2 on
-		chip drivers/i2c/generic
-			register "hid" = ""ELAN0000""
-			register "desc" = ""ELAN Touchpad""
-			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_5)"
-			register "wake" = "7"
-			register "detect" = "1"
-			device i2c 15 on end
-		end
 		chip drivers/i2c/hid
 			register "generic.hid" = ""PNP0C50""
 			register "generic.desc" = ""Synaptics Touchpad""

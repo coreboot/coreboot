@@ -18,15 +18,17 @@
 #include <stdint.h>
 #include "chip.h"
 
-#define DPTC_TOTAL_UPDATE_PARAMS	7
+#define DPTC_TOTAL_UPDATE_PARAMS	13
 
 struct dptc_input {
 	uint16_t size;
 	struct alib_dptc_param params[DPTC_TOTAL_UPDATE_PARAMS];
 } __packed;
 
-#define DPTC_INPUTS(_thermctllmit, _sustained, _fast, _slow,			\
-	_vrmCurrentLimit, _vrmMaxCurrentLimit, _vrmSocCurrentLimit)		\
+
+#define DPTC_INPUTS(_thermctllmit, _sustained, _spptTimeConst, _fast, _slow,	\
+	_vrmCurrentLimit, _vrmMaxCurrentLimit, _vrmSocCurrentLimit,		\
+	_sttMinLimit, _sttM1, _sttM2, _sttCApu, _sttSkinTempLimitApu)		\
 	{									\
 		.size = sizeof(struct dptc_input),				\
 		.params = {							\
@@ -37,6 +39,10 @@ struct dptc_input {
 			{							\
 				.id = ALIB_DPTC_SUSTAINED_POWER_LIMIT_ID,	\
 				.value = _sustained,				\
+			},							\
+			{							\
+				.id = ALIB_DPTC_SLOW_PPT_TIME_CONSTANT_ID,	\
+				.value = _spptTimeConst,			\
 			},							\
 			{							\
 				.id = ALIB_DPTC_FAST_PPT_LIMIT_ID,		\
@@ -57,6 +63,26 @@ struct dptc_input {
 			{							\
 				.id = ALIB_DPTC_VRM_SOC_CURRENT_LIMIT_ID,	\
 				.value = _vrmSocCurrentLimit,			\
+			},							\
+			{							\
+				.id = ALIB_DPTC_STT_MIN_LIMIT_ID,		\
+				.value = _sttMinLimit,				\
+			},							\
+			{							\
+				.id = ALIB_DPTC_STT_M1_ID,			\
+				.value = _sttM1,				\
+			},							\
+			{							\
+				.id = ALIB_DPTC_STT_M2_ID,			\
+				.value = _sttM2,				\
+			},							\
+			{							\
+				.id = ALIB_DPTC_STT_C_APU_ID,			\
+				.value = _sttCApu,				\
+			},							\
+			{							\
+				.id = ALIB_DPTC_STT_SKIN_TEMPERATURE_LIMIT_APU_ID,	\
+				.value = _sttSkinTempLimitApu,			\
 			},							\
 		},								\
 	}
@@ -195,26 +221,131 @@ static void acipgen_dptci(void)
 	const struct soc_amd_mendocino_config *config = config_of_soc();
 
 	/* Normal mode DPTC values. */
-	struct dptc_input default_input = DPTC_INPUTS(config->thermctl_limit_degreeC,
+	struct dptc_input default_input = DPTC_INPUTS(
+		config->thermctl_limit_degreeC,
 		config->sustained_power_limit_mW,
+		config->slow_ppt_time_constant_s,
 		config->fast_ppt_limit_mW,
 		config->slow_ppt_limit_mW,
 		config->vrm_current_limit_mA,
 		config->vrm_maximum_current_limit_mA,
-		config->vrm_soc_current_limit_mA);
+		config->vrm_soc_current_limit_mA,
+		config->stt_min_limit,
+		config->stt_m1,
+		config->stt_m2,
+		config->stt_c_apu,
+		config->stt_skin_temp_apu);
 	acpigen_write_alib_dptc_default((uint8_t *)&default_input, sizeof(default_input));
 
 	/* Low/No Battery */
 	struct dptc_input no_battery_input = DPTC_INPUTS(
 		config->thermctl_limit_degreeC,
 		config->sustained_power_limit_mW,
+		config->slow_ppt_time_constant_s,
 		config->fast_ppt_limit_mW,
 		config->slow_ppt_limit_mW,
 		config->vrm_current_limit_throttle_mA,
 		config->vrm_maximum_current_limit_throttle_mA,
-		config->vrm_soc_current_limit_throttle_mA);
+		config->vrm_soc_current_limit_throttle_mA,
+		config->stt_min_limit,
+		config->stt_m1,
+		config->stt_m2,
+		config->stt_c_apu,
+		config->stt_skin_temp_apu);
 	acpigen_write_alib_dptc_no_battery((uint8_t *)&no_battery_input,
 		sizeof(no_battery_input));
+
+#if (CONFIG(FEATURE_DYNAMIC_DPTC))
+	/* Profile B */
+	struct dptc_input thermal_B_input = DPTC_INPUTS(
+		config->thermctl_limit_degreeC,
+		config->sustained_power_limit_mW_B,
+		config->slow_ppt_time_constant_s_B,
+		config->fast_ppt_limit_mW_B,
+		config->slow_ppt_limit_mW_B,
+		config->vrm_current_limit_throttle_mA,
+		config->vrm_maximum_current_limit_mA,
+		config->vrm_soc_current_limit_mA,
+		config->stt_min_limit_B,
+		config->stt_m1_B,
+		config->stt_m2_B,
+		config->stt_c_apu_B,
+		config->stt_skin_temp_apu_B);
+	acpigen_write_alib_dptc_thermal_B((uint8_t *)&thermal_B_input,
+		sizeof(thermal_B_input));
+
+	/* Profile C */
+	struct dptc_input thermal_C_input = DPTC_INPUTS(
+		config->thermctl_limit_degreeC,
+		config->sustained_power_limit_mW_C,
+		config->slow_ppt_time_constant_s_C,
+		config->fast_ppt_limit_mW_C,
+		config->slow_ppt_limit_mW_C,
+		config->vrm_current_limit_mA,
+		config->vrm_maximum_current_limit_mA,
+		config->vrm_soc_current_limit_mA,
+		config->stt_min_limit_C,
+		config->stt_m1_C,
+		config->stt_m2_C,
+		config->stt_c_apu_C,
+		config->stt_skin_temp_apu_C);
+	acpigen_write_alib_dptc_thermal_C((uint8_t *)&thermal_C_input,
+		sizeof(thermal_C_input));
+
+	/* Profile D */
+	struct dptc_input thermal_D_input = DPTC_INPUTS(
+		config->thermctl_limit_degreeC,
+		config->sustained_power_limit_mW_D,
+		config->slow_ppt_time_constant_s_D,
+		config->fast_ppt_limit_mW_D,
+		config->slow_ppt_limit_mW_D,
+		config->vrm_current_limit_mA,
+		config->vrm_maximum_current_limit_mA,
+		config->vrm_soc_current_limit_mA,
+		config->stt_min_limit_D,
+		config->stt_m1_D,
+		config->stt_m2_D,
+		config->stt_c_apu_D,
+		config->stt_skin_temp_apu_D);
+	acpigen_write_alib_dptc_thermal_D((uint8_t *)&thermal_D_input,
+		sizeof(thermal_D_input));
+
+	/* Profile E */
+	struct dptc_input thermal_E_input = DPTC_INPUTS(
+		config->thermctl_limit_degreeC,
+		config->sustained_power_limit_mW_E,
+		config->slow_ppt_time_constant_s_E,
+		config->fast_ppt_limit_mW_E,
+		config->slow_ppt_limit_mW_E,
+		config->vrm_current_limit_mA,
+		config->vrm_maximum_current_limit_mA,
+		config->vrm_soc_current_limit_mA,
+		config->stt_min_limit_E,
+		config->stt_m1_E,
+		config->stt_m2_E,
+		config->stt_c_apu_E,
+		config->stt_skin_temp_apu_E);
+	acpigen_write_alib_dptc_thermal_E((uint8_t *)&thermal_E_input,
+		sizeof(thermal_E_input));
+
+	/* Profile F */
+	struct dptc_input thermal_F_input = DPTC_INPUTS(
+		config->thermctl_limit_degreeC,
+		config->sustained_power_limit_mW_F,
+		config->slow_ppt_time_constant_s_F,
+		config->fast_ppt_limit_mW_F,
+		config->slow_ppt_limit_mW_F,
+		config->vrm_current_limit_mA,
+		config->vrm_maximum_current_limit_mA,
+		config->vrm_soc_current_limit_mA,
+		config->stt_min_limit_F,
+		config->stt_m1_F,
+		config->stt_m2_F,
+		config->stt_c_apu_F,
+		config->stt_skin_temp_apu_F);
+	acpigen_write_alib_dptc_thermal_F((uint8_t *)&thermal_F_input,
+		sizeof(thermal_F_input));
+#endif
 }
 
 static void root_complex_fill_ssdt(const struct device *device)

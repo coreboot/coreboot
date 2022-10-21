@@ -67,6 +67,14 @@ static void configure_misc(void)
 	msr.lo |= (1 << 0);	/* Enable Bi-directional PROCHOT as an input */
 	msr.lo |= (1 << 23);	/* Lock it */
 	wrmsr(MSR_POWER_CTL, msr);
+
+	/* In some cases it is beneficial for the performance to disable the
+	   L1 prefetcher as on Elkhart Lake it is set up a bit too aggressive. */
+	if (conf->L1_prefetcher_disable) {
+		msr = rdmsr(MSR_PREFETCH_CTL);
+		msr.lo |= PREFETCH_L1_DISABLE;
+		wrmsr(MSR_PREFETCH_CTL, msr);
+	}
 }
 
 /* All CPUs including BSP will run the following function. */

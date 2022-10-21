@@ -454,6 +454,9 @@ struct soc_intel_elkhartlake_config {
 	 *         3600, 3733, 4000, 4200, 4267 and 0 for Auto.
 	 */
 	uint16_t max_dram_speed_mts;
+
+	/* Disable L1 prefetcher */
+	bool L1_prefetcher_disable;
 };
 
 typedef struct soc_intel_elkhartlake_config config_t;

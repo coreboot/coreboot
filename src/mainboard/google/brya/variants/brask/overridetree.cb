@@ -6,6 +6,8 @@ fw_config
 end
 
 chip soc/intel/alderlake
+	register "sagv" = "SaGv_Enabled"
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf

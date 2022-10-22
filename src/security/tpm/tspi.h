@@ -4,6 +4,7 @@
 #define TSPI_H_
 
 #include <security/tpm/tpm1_log_serialized.h>
+#include <security/tpm/tpm2_log_serialized.h>
 #include <security/tpm/tspi/logs.h>
 #include <security/tpm/tss.h>
 #include <commonlib/tpm_log_serialized.h>
@@ -32,6 +33,8 @@ static inline void *tpm_log_cbmem_init(void)
 		return tpm_cb_log_cbmem_init();
 	if (CONFIG(TPM_LOG_TPM1))
 		return tpm1_log_cbmem_init();
+	if (CONFIG(TPM_LOG_TPM2))
+		return tpm2_log_cbmem_init();
 	return NULL;
 }
 
@@ -45,6 +48,8 @@ static inline void tpm_preram_log_clear(void)
 		tpm_cb_preram_log_clear();
 	else if (CONFIG(TPM_LOG_TPM1))
 		tpm1_preram_log_clear();
+	else if (CONFIG(TPM_LOG_TPM2))
+		tpm2_preram_log_clear();
 }
 
 /**
@@ -56,6 +61,8 @@ static inline uint16_t tpm_log_get_size(const void *log_table)
 		return tpm_cb_log_get_size(log_table);
 	if (CONFIG(TPM_LOG_TPM1))
 		return tpm1_log_get_size(log_table);
+	if (CONFIG(TPM_LOG_TPM2))
+		return tpm2_log_get_size(log_table);
 	return 0;
 }
 
@@ -68,6 +75,8 @@ static inline void tpm_log_copy_entries(const void *from, void *to)
 		tpm_cb_log_copy_entries(from, to);
 	else if (CONFIG(TPM_LOG_TPM1))
 		tpm1_log_copy_entries(from, to);
+	else if (CONFIG(TPM_LOG_TPM2))
+		tpm2_log_copy_entries(from, to);
 }
 
 /**
@@ -80,6 +89,8 @@ static inline int tpm_log_get(int entry_idx, int *pcr, const uint8_t **digest_da
 		return tpm_cb_log_get(entry_idx, pcr, digest_data, digest_algo, event_name);
 	if (CONFIG(TPM_LOG_TPM1))
 		return tpm1_log_get(entry_idx, pcr, digest_data, digest_algo, event_name);
+	if (CONFIG(TPM_LOG_TPM2))
+		return tpm2_log_get(entry_idx, pcr, digest_data, digest_algo, event_name);
 	return 1;
 }
 
@@ -100,6 +111,8 @@ static inline void tpm_log_add_table_entry(const char *name, const uint32_t pcr,
 		tpm_cb_log_add_table_entry(name, pcr, digest_algo, digest, digest_len);
 	else if (CONFIG(TPM_LOG_TPM1))
 		tpm1_log_add_table_entry(name, pcr, digest_algo, digest, digest_len);
+	else if (CONFIG(TPM_LOG_TPM2))
+		tpm2_log_add_table_entry(name, pcr, digest_algo, digest, digest_len);
 }
 
 /**
@@ -111,6 +124,8 @@ static inline void tpm_log_dump(void *unused)
 		tpm_cb_log_dump();
 	else if (CONFIG(TPM_LOG_TPM1))
 		tpm1_log_dump();
+	else if (CONFIG(TPM_LOG_TPM2))
+		tpm2_log_dump();
 }
 
 /**

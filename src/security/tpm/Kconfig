@@ -98,7 +98,7 @@ choice
 	prompt "TPM event log format"
 	depends on TPM_MEASURED_BOOT
 	default TPM_LOG_TPM1 if TPM1
-	default TPM_LOG_CB
+	default TPM_LOG_TPM2 if TPM2
 
 config TPM_LOG_CB
 	bool "coreboot's custom format"
@@ -110,6 +110,29 @@ config TPM_LOG_TPM1
 	help
 	  Log per TPM 1.2 specification.
 	  See "TCG PC Client Specific Implementation Specification for Conventional BIOS".
+config TPM_LOG_TPM2
+	bool "TPM 2.0 format"
+	depends on TPM2
+	help
+	  Log per TPM 2.0 specification.
+	  See "TCG PC Client Platform Firmware Profile Specification".
+
+endchoice
+
+choice
+	prompt "TPM2 hashing algorithm"
+	depends on TPM_MEASURED_BOOT && TPM_LOG_TPM2
+	default TPM_HASH_SHA1 if TPM1
+	default TPM_HASH_SHA256 if TPM2
+
+config TPM_HASH_SHA1
+	bool "SHA1"
+config TPM_HASH_SHA256
+	bool "SHA256"
+config TPM_HASH_SHA384
+	bool "SHA384"
+config TPM_HASH_SHA512
+	bool "SHA512"
 
 endchoice
 

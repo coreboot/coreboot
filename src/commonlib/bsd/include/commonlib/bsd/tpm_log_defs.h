@@ -9,6 +9,21 @@
 #define TCPA_SPEC_ID_EVENT_SIGNATURE    "Spec ID Event00"
 #define TCG_EFI_SPEC_ID_EVENT_SIGNATURE "Spec ID Event03"
 
+#define TPM2_ALG_ERROR   0x0000
+#define TPM2_ALG_HMAC    0x0005
+#define TPM2_ALG_NULL    0x0010
+#define TPM2_ALG_SHA1    0x0004
+#define TPM2_ALG_SHA256  0x000B
+#define TPM2_ALG_SHA384  0x000C
+#define TPM2_ALG_SHA512  0x000D
+#define TPM2_ALG_SM3_256 0x0012
+
+#define SHA1_DIGEST_SIZE    20
+#define SHA256_DIGEST_SIZE  32
+#define SHA384_DIGEST_SIZE  48
+#define SHA512_DIGEST_SIZE  64
+#define SM3_256_DIGEST_SIZE 32
+
 #define EV_PREBOOT_CERT			0x00000000
 #define EV_POST_CODE			0x00000001
 #define EV_UNUSED			0x00000002
@@ -37,6 +52,28 @@ struct spec_id_event_data {
 	uint8_t spec_errata;
 	uint8_t reserved;
 	uint8_t vendor_info_size;
+} __packed;
+
+struct tpm_digest_sizes {
+	uint16_t alg_id;
+	uint16_t digest_size;
+} __packed;
+
+struct tcg_efi_spec_id_event {
+	uint32_t pcr_index;
+	uint32_t event_type;
+	uint8_t digest[20];
+	uint32_t event_size;
+	uint8_t signature[16];
+	uint32_t platform_class;
+	uint8_t spec_version_minor;
+	uint8_t spec_version_major;
+	uint8_t spec_errata;
+	uint8_t uintn_size;
+	uint32_t num_of_algorithms;
+	struct tpm_digest_sizes digest_sizes[0]; /* variable number of members */
+	/* uint8_t vendor_info_size; */
+	/* uint8_t vendor_info[vendor_info_size]; */
 } __packed;
 
 #endif

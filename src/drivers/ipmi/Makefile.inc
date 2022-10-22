@@ -8,3 +8,4 @@ romstage-$(CONFIG_IPMI_KCS_ROMSTAGE) += ipmi_if.c
 romstage-$(CONFIG_IPMI_KCS_ROMSTAGE) += ipmi_ops_premem.c
 romstage-$(CONFIG_IPMI_KCS_ROMSTAGE) += ipmi_kcs.c
 romstage-$(CONFIG_IPMI_KCS_ROMSTAGE) += ipmi_ops.c
+smm-$(CONFIG_SOC_RAS_BMC_SEL) += ipmi_kcs.c

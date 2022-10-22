@@ -96,6 +96,7 @@ static const char *const ich_chipset_names[] = {
 	"400 series Ice Point",
 	"500 series Tiger Point/ 600 series Alder Point",
 	"C620 series Lewisburg",
+	"Denverton: C39xx",
 	NULL
 };
 

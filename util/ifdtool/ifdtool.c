@@ -361,6 +361,16 @@ static const char *region_name(unsigned int region_type)
 	return region_names[region_type].pretty;
 }
 
+static const char *region_name_fmap(unsigned int region_type)
+{
+	if (region_type >= max_regions) {
+		fprintf(stderr, "Invalid region type.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	return region_names[region_type].fmapname;
+}
+
 static const char *region_name_short(unsigned int region_type)
 {
 	if (region_type >= max_regions) {
@@ -1073,7 +1083,7 @@ static void validate_layout(char *image, int size)
 	fmap = (struct fmap *)(image + fmap_loc);
 
 	for (i = 0; i < max_regions; i++) {
-		if (region_names[i].fmapname == NULL)
+		if (region_name_fmap(i) == NULL)
 			continue;
 
 		region_t region = get_region(frba, i);
@@ -1082,7 +1092,7 @@ static void validate_layout(char *image, int size)
 			continue;
 
 		const struct fmap_area *area =
-			fmap_find_area(fmap, region_names[i].fmapname);
+			fmap_find_area(fmap, region_name_fmap(i));
 
 		if (!area)
 			continue;

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <security/tpm/tspi/logs.h>
 #include <security/tpm/tspi.h>
 #include <region_file.h>
 #include <string.h>
@@ -8,7 +9,7 @@
 #include <cbmem.h>
 #include <vb2_sha.h>
 
-void *tpm_log_cbmem_init(void)
+void *tpm_cb_log_cbmem_init(void)
 {
 	static struct tpm_cb_log_table *tclt;
 	if (tclt)
@@ -29,7 +30,7 @@ void *tpm_log_cbmem_init(void)
 	return tclt;
 }
 
-void tpm_log_dump(void *unused)
+void tpm_cb_log_dump(void)
 {
 	int i, j;
 	struct tpm_cb_log_table *tclt;
@@ -54,10 +55,10 @@ void tpm_log_dump(void *unused)
 	printk(BIOS_INFO, "\n");
 }
 
-void tpm_log_add_table_entry(const char *name, const uint32_t pcr,
-			     enum vb2_hash_algorithm digest_algo,
-			     const uint8_t *digest,
-			     const size_t digest_len)
+void tpm_cb_log_add_table_entry(const char *name, const uint32_t pcr,
+				enum vb2_hash_algorithm digest_algo,
+				const uint8_t *digest,
+				const size_t digest_len)
 {
 	struct tpm_cb_log_table *tclt = tpm_log_init();
 	if (!tclt) {
@@ -93,7 +94,7 @@ void tpm_log_add_table_entry(const char *name, const uint32_t pcr,
 	memcpy(tce->digest, digest, tce->digest_length);
 }
 
-void tpm_preram_log_clear(void)
+void tpm_cb_preram_log_clear(void)
 {
 	printk(BIOS_INFO, "TPM LOG: clearing preram log\n");
 	struct tpm_cb_log_table *tclt = (struct tpm_cb_log_table *)_tpm_log;
@@ -101,8 +102,8 @@ void tpm_preram_log_clear(void)
 	tclt->num_entries = 0;
 }
 
-int tpm_log_get(int entry_idx, int *pcr, const uint8_t **digest_data,
-		enum vb2_hash_algorithm *digest_algo, const char **event_name)
+int tpm_cb_log_get(int entry_idx, int *pcr, const uint8_t **digest_data,
+		   enum vb2_hash_algorithm *digest_algo, const char **event_name)
 {
 	struct tpm_cb_log_table *tclt;
 	struct tpm_cb_log_entry *tce;
@@ -131,13 +132,13 @@ int tpm_log_get(int entry_idx, int *pcr, const uint8_t **digest_data,
 	return 0;
 }
 
-uint16_t tpm_log_get_size(const void *log_table)
+uint16_t tpm_cb_log_get_size(const void *log_table)
 {
 	const struct tpm_cb_log_table *tclt = log_table;
 	return tclt->num_entries;
 }
 
-void tpm_log_copy_entries(const void *from, void *to)
+void tpm_cb_log_copy_entries(const void *from, void *to)
 {
 	const struct tpm_cb_log_table *from_log = from;
 	struct tpm_cb_log_table *to_log = to;

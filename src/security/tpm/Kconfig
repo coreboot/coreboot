@@ -97,12 +97,19 @@ config TPM_MEASURED_BOOT
 choice
 	prompt "TPM event log format"
 	depends on TPM_MEASURED_BOOT
+	default TPM_LOG_TPM1 if TPM1
 	default TPM_LOG_CB
 
 config TPM_LOG_CB
 	bool "coreboot's custom format"
 	help
 	  Custom coreboot-specific format of the log derived from TPM1 log format.
+config TPM_LOG_TPM1
+	bool "TPM 1.2 format"
+	depends on TPM1
+	help
+	  Log per TPM 1.2 specification.
+	  See "TCG PC Client Specific Implementation Specification for Conventional BIOS".
 
 endchoice
 

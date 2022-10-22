@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <security/tpm/tspi/crtm.h>
+#include <security/tpm/tspi/logs.h>
 #include <security/tpm/tspi.h>
 #include <security/tpm/tss.h>
 #include <assert.h>

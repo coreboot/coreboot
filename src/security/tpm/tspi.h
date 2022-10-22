@@ -3,6 +3,8 @@
 #ifndef TSPI_H_
 #define TSPI_H_
 
+#include <security/tpm/tpm1_log_serialized.h>
+#include <security/tpm/tspi/logs.h>
 #include <security/tpm/tss.h>
 #include <commonlib/tpm_log_serialized.h>
 #include <commonlib/region.h>
@@ -24,29 +26,62 @@ void *tpm_log_init(void);
  * Get the pointer to the single CBMEM instance of global
  * TPM log data, and initialize it when necessary
  */
-void *tpm_log_cbmem_init(void);
+static inline void *tpm_log_cbmem_init(void)
+{
+	if (CONFIG(TPM_LOG_CB))
+		return tpm_cb_log_cbmem_init();
+	if (CONFIG(TPM_LOG_TPM1))
+		return tpm1_log_cbmem_init();
+	return NULL;
+}
 
 /**
  * Clears the pre-RAM TPM log data and initializes
  * any content with default values
  */
-void tpm_preram_log_clear(void);
+static inline void tpm_preram_log_clear(void)
+{
+	if (CONFIG(TPM_LOG_CB))
+		tpm_cb_preram_log_clear();
+	else if (CONFIG(TPM_LOG_TPM1))
+		tpm1_preram_log_clear();
+}
 
 /**
  * Retrieves number of entries currently stored in the log.
  */
-uint16_t tpm_log_get_size(const void *log_table);
+static inline uint16_t tpm_log_get_size(const void *log_table)
+{
+	if (CONFIG(TPM_LOG_CB))
+		return tpm_cb_log_get_size(log_table);
+	if (CONFIG(TPM_LOG_TPM1))
+		return tpm1_log_get_size(log_table);
+	return 0;
+}
 
 /**
  * Copies data from pre-RAM TPM log to CBMEM (RAM) log
  */
-void tpm_log_copy_entries(const void *from, void *to);
+static inline void tpm_log_copy_entries(const void *from, void *to)
+{
+	if (CONFIG(TPM_LOG_CB))
+		tpm_cb_log_copy_entries(from, to);
+	else if (CONFIG(TPM_LOG_TPM1))
+		tpm1_log_copy_entries(from, to);
+}
 
 /**
  * Retrieves an entry from a log. Returns non-zero on invalid index or error.
  */
-int tpm_log_get(int entry_idx, int *pcr, const uint8_t **digest_data,
-		enum vb2_hash_algorithm *digest_algo, const char **event_name);
+static inline int tpm_log_get(int entry_idx, int *pcr, const uint8_t **digest_data,
+			      enum vb2_hash_algorithm *digest_algo, const char **event_name)
+{
+	if (CONFIG(TPM_LOG_CB))
+		return tpm_cb_log_get(entry_idx, pcr, digest_data, digest_algo, event_name);
+	if (CONFIG(TPM_LOG_TPM1))
+		return tpm1_log_get(entry_idx, pcr, digest_data, digest_algo, event_name);
+	return 1;
+}
 
 /**
  * Add table entry for cbmem TPM log.
@@ -56,15 +91,27 @@ int tpm_log_get(int entry_idx, int *pcr, const uint8_t **digest_data,
  * @param digest sets the hash extended into the tpm
  * @param digest_len the length of the digest
  */
-void tpm_log_add_table_entry(const char *name, const uint32_t pcr,
-			     enum vb2_hash_algorithm digest_algo,
-			     const uint8_t *digest,
-			     const size_t digest_len);
+static inline void tpm_log_add_table_entry(const char *name, const uint32_t pcr,
+					   enum vb2_hash_algorithm digest_algo,
+					   const uint8_t *digest,
+					   const size_t digest_len)
+{
+	if (CONFIG(TPM_LOG_CB))
+		tpm_cb_log_add_table_entry(name, pcr, digest_algo, digest, digest_len);
+	else if (CONFIG(TPM_LOG_TPM1))
+		tpm1_log_add_table_entry(name, pcr, digest_algo, digest, digest_len);
+}
 
 /**
  * Dump TPM log entries on console
  */
-void tpm_log_dump(void *unused);
+static inline void tpm_log_dump(void *unused)
+{
+	if (CONFIG(TPM_LOG_CB))
+		tpm_cb_log_dump();
+	else if (CONFIG(TPM_LOG_TPM1))
+		tpm1_log_dump();
+}
 
 /**
  * Ask vboot for a digest and extend a TPM PCR with it.

@@ -60,10 +60,10 @@
 #define CBMEM_ID_STAGEx_CACHE	0x57a9e100
 #define CBMEM_ID_STAGEx_RAW	0x57a9e200
 #define CBMEM_ID_STORAGE_DATA	0x53746f72
-#define CBMEM_ID_TPM_CB_LOG	0x54435041
-#define CBMEM_ID_TCPA_TCG_LOG	0x54445041
+#define CBMEM_ID_TPM_CB_LOG	0x54435041 /* TPM log in coreboot-specific format */
+#define CBMEM_ID_TCPA_TCG_LOG	0x54445041 /* TPM log per TPM 1.2 specification */
 #define CBMEM_ID_TIMESTAMP	0x54494d45
-#define CBMEM_ID_TPM2_TCG_LOG	0x54504d32
+#define CBMEM_ID_TPM2_TCG_LOG	0x54504d32 /* TPM log per TPM 2.0 specification */
 #define CBMEM_ID_TPM_PPI	0x54505049
 #define CBMEM_ID_VBOOT_HANDOFF	0x780074f0  /* deprecated */
 #define CBMEM_ID_VBOOT_SEL_REG	0x780074f1  /* deprecated */

@@ -61,4 +61,10 @@ verstage-$(CONFIG_TPM_LOG_CB) += tspi/log.c
 postcar-$(CONFIG_TPM_LOG_CB) += tspi/log.c
 bootblock-$(CONFIG_TPM_LOG_CB) += tspi/log.c
 
+ramstage-$(CONFIG_TPM_LOG_TPM1) += tspi/log-tpm1.c
+romstage-$(CONFIG_TPM_LOG_TPM1) += tspi/log-tpm1.c
+verstage-$(CONFIG_TPM_LOG_TPM1) += tspi/log-tpm1.c
+postcar-$(CONFIG_TPM_LOG_TPM1) += tspi/log-tpm1.c
+bootblock-$(CONFIG_TPM_LOG_TPM1) += tspi/log-tpm1.c
+
 endif # CONFIG_TPM_MEASURED_BOOT

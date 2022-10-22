@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/meminit.h>
+#include <stdbool.h>
 #include <variant/romstage.h>
 
 void variant_configure_fspm(FSPM_UPD *memupd)

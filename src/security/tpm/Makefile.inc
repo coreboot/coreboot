@@ -55,10 +55,10 @@ romstage-y += tspi/crtm.c
 ramstage-y += tspi/crtm.c
 postcar-y += tspi/crtm.c
 
-ramstage-y += tspi/log.c
-romstage-y += tspi/log.c
-verstage-y += tspi/log.c
-postcar-y += tspi/log.c
-bootblock-y += tspi/log.c
+ramstage-$(CONFIG_TPM_LOG_CB) += tspi/log.c
+romstage-$(CONFIG_TPM_LOG_CB) += tspi/log.c
+verstage-$(CONFIG_TPM_LOG_CB) += tspi/log.c
+postcar-$(CONFIG_TPM_LOG_CB) += tspi/log.c
+bootblock-$(CONFIG_TPM_LOG_CB) += tspi/log.c
 
 endif # CONFIG_TPM_MEASURED_BOOT

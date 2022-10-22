@@ -94,6 +94,18 @@ config TPM_MEASURED_BOOT
 	help
 	  Enables measured boot (experimental)
 
+choice
+	prompt "TPM event log format"
+	depends on TPM_MEASURED_BOOT
+	default TPM_LOG_CB
+
+config TPM_LOG_CB
+	bool "coreboot's custom format"
+	help
+	  Custom coreboot-specific format of the log derived from TPM1 log format.
+
+endchoice
+
 config TPM_MEASURED_BOOT_INIT_BOOTBLOCK
 	bool
 	depends on TPM_MEASURED_BOOT && !VBOOT

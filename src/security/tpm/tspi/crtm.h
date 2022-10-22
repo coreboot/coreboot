@@ -16,7 +16,19 @@
  */
 #define TPM_RUNTIME_DATA_PCR 3
 
-#define TPM_MEASURE_ALGO (CONFIG(TPM1) ? VB2_HASH_SHA1 : VB2_HASH_SHA256)
+#if CONFIG(TPM_LOG_CB) && CONFIG(TPM1)
+#  define TPM_MEASURE_ALGO VB2_HASH_SHA1
+#elif CONFIG(TPM_LOG_CB) && CONFIG(TPM2)
+#  define TPM_MEASURE_ALGO VB2_HASH_SHA256
+#endif
+
+#if !defined(TPM_MEASURE_ALGO)
+#  if !CONFIG(TPM_MEASURED_BOOT)
+#    define TPM_MEASURE_ALGO VB2_HASH_INVALID
+#  else
+#    error "Misconfiguration: failed to determine TPM hashing algorithm"
+#  endif
+#endif
 
 /**
  * Measure digests cached in TCPA log entries into PCRs

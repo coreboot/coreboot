@@ -1,11 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <assert.h>
+#include <commonlib/bsd/helpers.h>
 #include <console/console.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/pmc_ipc.h>
 #include <stdlib.h>
+#include <string.h>
 #include <types.h>
 
 #define LPI_S0_HELPER_UUID		"c4eb40a0-6cd2-11e2-bcfd-0800200c9a66"

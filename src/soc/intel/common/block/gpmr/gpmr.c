@@ -5,6 +5,7 @@
 #include <intelblocks/ioc.h>
 #include <intelblocks/pcr.h>
 #include <soc/pcr_ids.h>
+#include <types.h>
 
 /* GPMR Register read given offset */
 uint32_t gpmr_read32(uint16_t offset)

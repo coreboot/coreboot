@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <string.h>
+
 #include "chip.h"
 
 #define PCI_HOTPLUG_IN_D3_UUID	"6211E2C0-58A3-4AF3-90E1-927A4E0C55A4"

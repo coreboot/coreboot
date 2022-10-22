@@ -4,8 +4,11 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/smbus_host.h>
+#include <device/pci_type.h>
 #include <intelblocks/smbus.h>
 #include <soc/pci_devs.h>
+#include <stdint.h>
+
 #include "smbuslib.h"
 
 void smbus_common_init(void)

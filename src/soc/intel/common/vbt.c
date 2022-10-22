@@ -2,9 +2,10 @@
 
 #include <acpi/acpi.h>
 #include <bootmode.h>
+#include <drivers/intel/gma/opregion.h>
+#include <stddef.h>
 
 #include "vbt.h"
-#include <drivers/intel/gma/opregion.h>
 
 void *vbt_get(void)
 {

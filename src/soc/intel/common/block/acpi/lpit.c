@@ -4,6 +4,7 @@
 #include <cpu/intel/msr.h>
 #include <soc/iomap.h>
 #include <soc/pmc.h>
+#include <stdint.h>
 
 unsigned long acpi_fill_lpit(unsigned long current)
 {

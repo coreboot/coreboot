@@ -3,8 +3,8 @@
 #include <assert.h>
 #include <device/device.h>
 #include <device/gpio.h>
-#include <intelblocks/gpio.h>
 #include <gpio.h>
+#include <intelblocks/gpio.h>
 
 static struct gpio_operations gpio_ops = {
 	.get		= gpio_get,

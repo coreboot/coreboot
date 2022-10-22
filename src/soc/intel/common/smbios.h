@@ -3,8 +3,8 @@
 #ifndef _COMMON_SMBIOS_H_
 #define _COMMON_SMBIOS_H_
 
-#include <stdint.h>
 #include <memory_info.h>
+#include <types.h>
 
 /* Offset info DIMM_INFO SpdSave for start of serial number */
 #define SPD_SAVE_OFFSET_SERIAL	5

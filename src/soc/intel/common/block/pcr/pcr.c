@@ -2,13 +2,17 @@
 
 #define __SIMPLE_DEVICE__
 
-#include <device/mmio.h>
 #include <assert.h>
+#include <commonlib/bsd/helpers.h>
 #include <console/console.h>
-#include <intelblocks/pcr.h>
+#include <device/mmio.h>
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <device/pci_type.h>
+#include <intelblocks/pcr.h>
 #include <soc/pci_devs.h>
 #include <timer.h>
+#include <types.h>
 
 #if (CONFIG_PCR_BASE_ADDRESS == 0)
 #error "PCR_BASE_ADDRESS need to be non-zero!"

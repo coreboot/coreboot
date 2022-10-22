@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <fsp/util.h>
 #include <soc/intel/common/reset.h>
+#include <stdint.h>
 
 void chipset_handle_reset(uint32_t status)
 {

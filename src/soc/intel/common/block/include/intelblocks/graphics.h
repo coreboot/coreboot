@@ -4,6 +4,7 @@
 #define SOC_INTEL_COMMON_BLOCK_GRAPHICS_H
 
 #include <device/device.h>
+#include <stdint.h>
 
 /*
  * SoC overrides

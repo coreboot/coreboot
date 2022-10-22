@@ -2,6 +2,7 @@
 
 #include <arch/romstage.h>
 #include <cbmem.h>
+#include <commonlib/bsd/helpers.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>

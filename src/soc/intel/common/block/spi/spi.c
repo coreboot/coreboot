@@ -2,17 +2,22 @@
 
 #define __SIMPLE_DEVICE__
 
+#include <assert.h>
+#include <commonlib/bsd/helpers.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <device/pci_type.h>
 #include <device/spi.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/spi.h>
 #include <soc/pci_devs.h>
 #include <spi-generic.h>
+#include <types.h>
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
 	{ .ctrlr = &fast_spi_flash_ctrlr, .bus_start = 0, .bus_end = 0 },

@@ -10,6 +10,7 @@
 #include <intelblocks/cfg.h>
 #include <intelpch/lockdown.h>
 #include <soc/pm.h>
+#include <stdint.h>
 
 static void pmc_lock_pmsync(void)
 {

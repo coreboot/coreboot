@@ -4,6 +4,7 @@
 #include <device/device.h>
 #include <drivers/intel/usb4/retimer/retimer.h>
 #include <intelblocks/tcss.h>
+#include <stdint.h>
 
 int retimer_get_index_for_typec(uint8_t typec_port)
 {

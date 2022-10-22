@@ -3,6 +3,7 @@
 #include <device/pci_type.h>
 #include <intelblocks/xhci.h>
 #include <soc/pci_devs.h>
+#include <stddef.h>
 
 #define PCH_XHCI_USB2_PORT_STATUS_REG	0x480
 #define PCH_XHCI_USB3_PORT_STATUS_REG	0x520

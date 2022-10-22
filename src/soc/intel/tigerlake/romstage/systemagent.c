@@ -6,6 +6,7 @@
  * Chapter number: 3
  */
 
+#include <commonlib/bsd/helpers.h>
 #include <intelblocks/systemagent.h>
 #include <soc/iomap.h>
 #include <soc/romstage.h>

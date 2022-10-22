@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <drivers/intel/dptf/dptf.h>
+#include <stdbool.h>
 
 static const struct dptf_platform_info tgl_dptf_platform_info = {
 	.use_eisa_hids = false,

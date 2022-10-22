@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootstate.h>
-#include <intelblocks/cse.h>
 #include <console/console.h>
+#include <intelblocks/cse.h>
 #include <soc/me.h>
-#include <stdint.h>
+#include <types.h>
 
 /* Host Firmware Status Register 2 */
 union me_hfsts2 {

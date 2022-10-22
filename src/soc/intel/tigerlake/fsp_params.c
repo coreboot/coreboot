@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <arch/pci_io_cfg.h>
 #include <cpu/intel/cpu_ids.h>
 #include <device/pci_ops.h>
 #include <device/pci.h>

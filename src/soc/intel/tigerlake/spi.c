@@ -6,9 +6,10 @@
  * Chapter number: 7
  */
 
-#include <intelblocks/spi.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/spi.h>
 #include <soc/pci_devs.h>
+#include <stdint.h>
 
 #define PSF_SPI_DESTINATION_ID_H	0x23b0
 #define PSF_SPI_DESTINATION_ID		0x23a8

@@ -74,13 +74,6 @@ static const struct region_name region_names[MAX_REGIONS] = {
 /* port from flashrom */
 static const char *const ich_chipset_names[] = {
 	"Unknown ICH",
-	"ICH",
-	"ICH2345",
-	"ICH6",
-	"SCH U",
-	"Atom E6xx",
-	"Atom S1220 S1240 S1260",
-	"ICH7",
 	"ICH8",
 	"ICH9",
 	"ICH10",

@@ -11,6 +11,7 @@
 #define  IPMI_BMC_SET_POST_START		0x73
 #define  IPMI_OEM_SET_BIOS_BOOT_ORDER		0x52
 #define  IPMI_OEM_GET_BIOS_BOOT_ORDER		0x53
+#define  IPMI_OEM_GET_BOARD_ID			0x37
 
 #define CMOS_BIT  (1 << 1)
 #define VALID_BIT (1 << 7)
@@ -101,6 +102,13 @@ struct ipmi_sel_pcie_dev_fail {
 	uint8_t rsvd2;
 } __packed;
 
+struct ipmi_config_rsp {
+	uint8_t board_sku_id;
+	uint8_t board_rev_id;
+	uint8_t slot_id;
+	uint8_t slot_config_id;
+} __packed;
+
 #define SEL_RECORD_ID			0x01
 #define SEL_PCIE_DEV_ERR		0x20
 #define SEL_PCIE_IIO_ERR		0x23
@@ -167,4 +175,7 @@ void ipmi_send_sel_pcie_dev_err(pci_devfn_t bdf, uint16_t prmry_cnt, uint8_t sec
 	uint8_t prmry_id);
 void ipmi_send_sel_pcie_dev_fail(uint16_t sts_reg, uint16_t src_id, enum fail_type code);
 void ipmi_send_sel_iio_err(uint8_t iio_stack_num, uint8_t err_id);
+
+enum cb_err ipmi_get_board_config(const int port, struct ipmi_config_rsp *config);
+uint8_t get_blade_id(void);
 #endif

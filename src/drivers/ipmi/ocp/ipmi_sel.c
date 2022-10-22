@@ -79,3 +79,35 @@ void ipmi_send_sel_pcie_dev_fail(uint16_t sts_reg, uint16_t src_id, enum fail_ty
 	printk(BIOS_DEBUG, "\terror_code = %x, src_id = %x\n", ubslp.type,
 	       ubslp.failure_details2);
 }
+
+enum cb_err ipmi_get_board_config(const int port, struct ipmi_config_rsp *config)
+{
+	int ret;
+	struct ipmi_oem_rsp {
+		struct ipmi_rsp resp;
+		struct ipmi_config_rsp data;
+	} __packed;
+
+	struct ipmi_oem_rsp rsp;
+
+	ret = ipmi_message(port, IPMI_NETFN_OEM, 0x0, IPMI_OEM_GET_BOARD_ID, NULL, 0,
+			   (unsigned char *)&rsp, sizeof(rsp));
+	if (ret < sizeof(struct ipmi_rsp) || rsp.resp.completion_code) {
+		printk(BIOS_ERR, "IPMI: %s command failed (ret=%d resp=0x%x)\n",
+			__func__, ret, rsp.resp.completion_code);
+		return CB_ERR;
+	}
+	*config = rsp.data;
+	return CB_SUCCESS;
+}
+
+__weak uint8_t get_blade_id(void)
+{
+	struct ipmi_config_rsp rsp = {.slot_id = UINT8_MAX};
+
+	if (CONFIG(IPMI_KCS) && CONFIG_BMC_KCS_BASE) {
+		if (ipmi_get_board_config(CONFIG_BMC_KCS_BASE, &rsp) != CB_SUCCESS)
+			return UINT8_MAX;
+	}
+	return rsp.slot_id;
+}

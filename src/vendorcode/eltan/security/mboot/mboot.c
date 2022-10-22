@@ -137,7 +137,8 @@ int mboot_hash_extend_log(uint64_t flags, uint8_t *hashData, uint32_t hashDataLe
 	printk(BIOS_DEBUG, "%s: SHA256 Hash Digest:\n", __func__);
 	mboot_print_buffer(digest->digest.sha256, VB2_SHA256_DIGEST_SIZE);
 
-	return (tlcl_extend(newEventHdr->pcrIndex, (uint8_t *)&(newEventHdr->digest), NULL));
+	return (tlcl_extend(newEventHdr->pcrIndex, (uint8_t *)&(newEventHdr->digest),
+			    VB2_HASH_SHA256));
 }
 
 /*

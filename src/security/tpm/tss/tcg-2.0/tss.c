@@ -118,21 +118,40 @@ uint32_t tlcl_assert_physical_presence(void)
 	return TPM_SUCCESS;
 }
 
-/*
- * The caller will provide the digest in a 32 byte buffer, let's consider it a
- * sha256 digest.
- */
-uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
-		     uint8_t *out_digest)
+static TPM_ALG_ID tpmalg_from_vb2_hash(enum vb2_hash_algorithm hash_type)
+{
+	switch (hash_type) {
+	case VB2_HASH_SHA1:
+		return TPM_ALG_SHA1;
+	case VB2_HASH_SHA256:
+		return TPM_ALG_SHA256;
+	case VB2_HASH_SHA384:
+		return TPM_ALG_SHA384;
+	case VB2_HASH_SHA512:
+		return TPM_ALG_SHA512;
+
+	default:
+		return TPM_ALG_ERROR;
+	}
+}
+
+uint32_t tlcl_extend(int pcr_num, const uint8_t *digest_data,
+		     enum vb2_hash_algorithm digest_type)
 {
 	struct tpm2_pcr_extend_cmd pcr_ext_cmd;
 	struct tpm2_response *response;
+	TPM_ALG_ID alg;
+
+	alg = tpmalg_from_vb2_hash(digest_type);
+	if (alg == TPM_ALG_ERROR)
+		return TPM_E_HASH_ERROR;
 
 	pcr_ext_cmd.pcrHandle = HR_PCR + pcr_num;
 	pcr_ext_cmd.digests.count = 1;
-	pcr_ext_cmd.digests.digests[0].hashAlg = TPM_ALG_SHA256;
-	memcpy(pcr_ext_cmd.digests.digests[0].digest.sha256, in_digest,
-	       sizeof(pcr_ext_cmd.digests.digests[0].digest.sha256));
+	pcr_ext_cmd.digests.digests[0].hashAlg = alg;
+	/* Always copying to sha512 as it's the largest one */
+	memcpy(pcr_ext_cmd.digests.digests[0].digest.sha512, digest_data,
+	       vb2_digest_size(digest_type));
 
 	response = tpm_process_command(TPM2_PCR_Extend, &pcr_ext_cmd);
 

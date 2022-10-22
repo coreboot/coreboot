@@ -233,7 +233,7 @@ uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
 		}
 
 		printk(BIOS_DEBUG, "TPM: Extending digest for `%s` into PCR %d\n", name, pcr);
-		result = tlcl_extend(pcr, digest, NULL);
+		result = tlcl_extend(pcr, digest, digest_algo);
 		if (result != TPM_SUCCESS) {
 			printk(BIOS_ERR, "TPM: Extending hash for `%s` into PCR %d failed.\n",
 			       name, pcr);

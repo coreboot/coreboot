@@ -331,25 +331,20 @@ uint32_t tlcl_set_global_lock(void)
 	return tlcl_write(TPM_NV_INDEX0, NULL, 0);
 }
 
-uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
-		     uint8_t *out_digest)
+uint32_t tlcl_extend(int pcr_num, const uint8_t *digest_data,
+		     enum vb2_hash_algorithm digest_algo)
 {
 	struct s_tpm_extend_cmd cmd;
 	uint8_t response[kTpmResponseHeaderLength + kPcrDigestLength];
-	uint32_t result;
+
+	if (digest_algo != VB2_HASH_SHA1)
+		return TPM_E_INVALID_ARG;
 
 	memcpy(&cmd, &tpm_extend_cmd, sizeof(cmd));
 	to_tpm_uint32(cmd.buffer + tpm_extend_cmd.pcrNum, pcr_num);
-	memcpy(cmd.buffer + cmd.inDigest, in_digest, kPcrDigestLength);
+	memcpy(cmd.buffer + cmd.inDigest, digest_data, kPcrDigestLength);
 
-	result = tlcl_send_receive(cmd.buffer, response, sizeof(response));
-	if (result != TPM_SUCCESS)
-		return result;
-
-	if (out_digest)
-		memcpy(out_digest, response + kTpmResponseHeaderLength,
-		       kPcrDigestLength);
-	return result;
+	return tlcl_send_receive(cmd.buffer, response, sizeof(response));
 }
 
 uint32_t tlcl_get_permissions(uint32_t index, uint32_t *permissions)

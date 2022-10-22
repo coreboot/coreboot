@@ -171,7 +171,7 @@ int tspi_measure_cache_to_pcr(void)
 			       tce->name, tce->pcr);
 			int result = tlcl_extend(tce->pcr,
 						 tce->digest,
-						 NULL);
+						 TPM_MEASURE_ALGO);
 			if (result != TPM_SUCCESS) {
 				printk(BIOS_ERR, "TPM: Writing digest"
 				       " of %s into PCR failed with error"

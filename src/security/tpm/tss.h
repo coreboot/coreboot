@@ -10,6 +10,7 @@
 #define TSS_H_
 
 #include <types.h>
+#include <vb2_sha.h>
 
 #include <security/tpm/tss/common/tss_common.h>
 #include <security/tpm/tss_errors.h>
@@ -187,8 +188,8 @@ uint32_t tlcl_lock_nv_write(uint32_t index);
 /**
  * Perform a TPM_Extend.
  */
-uint32_t tlcl_extend(int pcr_num, const uint8_t *in_digest,
-		     uint8_t *out_digest);
+uint32_t tlcl_extend(int pcr_num, const uint8_t *digest_data,
+		     enum vb2_hash_algorithm digest_algo);
 
 /**
  * Disable platform hierarchy. Specific to TPM2. The TPM error code is returned.

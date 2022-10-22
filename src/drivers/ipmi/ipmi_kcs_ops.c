@@ -259,14 +259,8 @@ static void ipmi_ssdt(const struct device *dev)
 
 void ipmi_bmc_version(uint8_t *ipmi_bmc_major_revision, uint8_t *ipmi_bmc_minor_revision)
 {
-	if (!bmc_revision_major || !bmc_revision_minor) {
-		printk(BIOS_ERR, "IPMI: BMC revision missing\n");
-		*ipmi_bmc_major_revision = 0;
-		*ipmi_bmc_minor_revision = 0;
-	} else {
-		*ipmi_bmc_major_revision = bmc_revision_major;
-		*ipmi_bmc_minor_revision = bmc_revision_minor;
-	}
+	*ipmi_bmc_major_revision = bmc_revision_major;
+	*ipmi_bmc_minor_revision = bmc_revision_minor;
 }
 
 #if CONFIG(GENERATE_SMBIOS_TABLES)

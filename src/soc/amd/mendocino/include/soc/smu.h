@@ -12,6 +12,7 @@
 
 enum smu_message_id {
 	SMC_MSG_S3ENTRY = 0x0b,
+	SMC_MSG_SET_S2D_ADDR = 0x53,
 };
 
 /*

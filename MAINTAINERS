@@ -149,6 +149,7 @@ F:	src/mainboard/amd/majolica/
 F:	src/mainboard/amd/mandolin/
 
 AMD reference boards outside of family 17h and 19h
+S:	Odd Fixes
 L:	amd_coreboot_org_changes@googlegroups.com
 F:	src/mainboard/amd/gardenia/
 F:	src/mainboard/amd/inagua/
@@ -185,11 +186,6 @@ M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
 F:	src/mainboard/asrock/g41c-gs/
 
-ASROCK H81M-HDS MAINBOARD
-M:	Tristan Corrick <tristan@corrick.kiwi>
-S:	Maintained
-F:	src/mainboard/asrock/h81m-hds/
-
 
 
 ASUS A88XM-E MAINBOARD
@@ -204,14 +200,8 @@ F:	src/mainboard/asus/am1i-a/
 
 ASUS H61 SERIES MAINBOARDS
 M:	Angel Pons <th3fanbus@gmail.com>
-M:	Tristan Corrick <tristan@corrick.kiwi>
 S:	Maintained
 F:	src/mainboard/asus/h61-series/
-
-ASUS MAXIMUS IV GENE-Z MAINBOARD
-M:	Tristan Corrick <tristan@corrick.kiwi>
-S:	Maintained
-F:	src/mainboard/asus/maximus_iv_gene-z/
 
 ASUS P5QC PRO MAINBOARD & VARIANTS
 M:	Angel Pons <th3fanbus@gmail.com>
@@ -325,11 +315,6 @@ M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
 F:	src/mainboard/gigabyte/ga-d510ud/
 
-GIGABYTE GA-G41M-ES2L MAINBOARD
-M:	Damien Zammit <damien@zamaudio.com>
-S:	Odd Fixes
-F:	src/mainboard/gigabyte/ga-g41m-es2l/
-
 GIGABYTE GA-H61M SERIES MAINBOARDS
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
@@ -359,11 +344,6 @@ GOOGLE HATCH MAINBOARDS
 M:	Tarun Tuli <taruntuli@google.com>
 S:	Maintained
 F:	src/mainboard/google/hatch/
-
-GOOGLE PANTHER MAINBOARD
-M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
-S:	Supported
-F:	src/mainboard/google/panther/
 
 GOOGLE VOLTEER MAINBOARDS
 M:	Nick Vaccaro <nvaccaro@chromium.org>
@@ -409,23 +389,11 @@ F:	src/mainboard/ibase/
 
 
 
-INTEL D510MO MAINBOARD
-M:	Damien Zammit <damien@zamaudio.com>
-S:	Odd Fixes
-F:	src/mainboard/intel/d510mo/
-
 INTEL HARCUVAR_CRB MAINBOARD
 M:	Jeff Daly <jeffd@silicom-usa.com>
 M:	Vanessa Eusebio <vanessa.f.eusebio@intel.com>
-M:	Suresh Bellampalli <suresh.bellampalli@intel.com>
-M:	Mariusz Szafranski <mariuszx.szafranski@intel.com>
 S:	Maintained
 F:	src/mainboard/intel/harcuvar/
-
-INTEL STRAGO MAINBOARD
-M:	Hannah Williams <hannah.williams@intel.com>
-S:	Supported
-F:	/src/mainboard/intel/strago/
 
 
 
@@ -510,7 +478,6 @@ F:	src/mainboard/ocp/deltalake/
 
 OCP TIOGAPASS MAINBOARD
 M:	Jonathan Zhang <jonzhang@fb.com>
-M:	Reddy Chagam <anjaneya.chagam@intel.com>
 M:	Johnny Lin <Johnny_Lin@wiwynn.com>
 M:	Morgan Jang <Morgan_Jang@wiwynn.com>
 M:	Ryback Hung <<Ryback.Hung@quantatw.com>
@@ -639,23 +606,18 @@ F:	src/mainboard/starlabs/
 
 
 
+SUPERMICRO X11-LGA1151-SERIES
+M:	Michael Niewöhner <foss@mniewoehner.de>
+S:	Maintained
+F:	src/mainboard/supermicro/x11-lga1151-series/
+
+
+
 SYSTEM76 MAINBOARDS
 M:	Jeremy Soller <jeremy@system76.com>
 M:	Tim Crawford <tcrawford@system76.com>
 S:	Maintained
 F:	src/mainboard/system76/
-
-
-
-SUPERMICRO X10SLM+-F MAINBOARD
-M:	Tristan Corrick <tristan@corrick.kiwi>
-S:	Maintained
-F:	src/mainboard/supermicro/x10slm-f/
-
-SUPERMICRO X11-LGA1151-SERIES
-M:	Michael Niewöhner <foss@mniewoehner.de>
-S:	Maintained
-F:	src/mainboard/supermicro/x11-lga1151-series/
 
 
 
@@ -745,7 +707,6 @@ S:	Maintained
 F:	src/northbridge/intel/haswell/
 
 INTEL PINEVIEW CHIPSET
-M:	Damien Zammit <damien@zamaudio.com>
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Odd Fixes
 F:	src/northbridge/intel/pineview/
@@ -756,7 +717,6 @@ S:	Maintained
 F:	src/northbridge/intel/sandybridge/
 
 INTEL X4X CHIPSET
-M:	Damien Zammit <damien@zamaudio.com>
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Odd Fixes
 F:	src/northbridge/intel/x4x/
@@ -887,8 +847,6 @@ F:	/src/vendorcode/intel/fsp/fsp1_1/braswell/
 INTEL DENVERTON-NS SOC
 M:	Jeff Daly <jeffd@silicom-usa.com>
 M:	Vanessa Eusebio <vanessa.f.eusebio@intel.com>
-M:	Suresh Bellampalli <suresh.bellampalli@intel.com>
-M:	Mariusz Szafranski <mariuszx.szafranski@intel.com>
 S:	Maintained
 F:	src/soc/intel/denverton_ns/
 

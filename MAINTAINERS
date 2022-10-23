@@ -665,6 +665,7 @@ F:	src/mainboard/sifive/
 F:	util/riscv/
 
 X86 ARCHITECTURE
+S:	MAINTAINED
 F:	src/arch/x86/
 F:	src/cpu/x86/
 F:	src/drivers/pc80/
@@ -740,6 +741,7 @@ F:	src/northbridge/intel/x4x/
 
 AMD SUPPORT
 L:	amd_coreboot_org_changes@googlegroups.com
+S:	Odd Fixes
 F:	src/vendorcode/amd/
 F:	src/cpu/amd/
 F:	src/northbridge/amd/
@@ -757,9 +759,7 @@ F:	src/drivers/intel/
 F:	src/include/cpu/intel/
 
 INTEL FSP 1.1
-M:	Lee Leahy <leroy.p.leahy@intel.com>
 M:	Huang Jin <huang.jin@intel.com>
-M:	York Yang <york.yang@intel.com>
 S:	Supported
 F:	src/drivers/intel/fsp1_1/
 
@@ -877,7 +877,6 @@ F:	src/soc/intel/tigerlake/
 
 INTEL Xeon Sacalable Processor Family
 M:	Jonathan Zhang <jonzhang@fb.com>
-M:	Reddy Chagam <anjaneya.chagam@intel.com>
 M:	Johnny Lin <Johnny_Lin@wiwynn.com>
 M:	Tim Chu <Tim.Chu@quantatw.com>
 M:	Arthur Heymans <arthur@aheymans.xyz>
@@ -899,7 +898,7 @@ F:	src/soc/mediatek/mt8192/
 F:	src/vendorcode/mediatek/mt8192/
 
 ORPHANED ARM SOCS
-S:	Orphaned
+S:	Orphan
 F:	src/cpu/armltd/
 F:	src/soc/ti/
 F:	src/soc/qualcomm/
@@ -1153,7 +1152,7 @@ MISSING: SPI
 
 CODE OF CONDUCT
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
-M:	Ronald Minnich <rminnich@coreboot.org>
+M:	Ronald Minnich <rminnich@gmail.com>
 M:	Martin Roth <martin@coreboot.org>
 S:	Maintained
 F:	Documentation/community/code_of_conduct.md

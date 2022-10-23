@@ -679,7 +679,7 @@ CHROME EC
 M:	Boris Mittelberg <bmbm@google.com>
 M:	Caveh Jalali <caveh@chromium.org>
 S:	Maintained
-F:	src/ec/google/chromeec/
+F:	src/ec/google/
 
 LENOVO EC
 M:	Alexander Couzens <lynxis@fe80.eu>
@@ -696,6 +696,19 @@ M:	Jeremy Soller <jeremy@system76.com>
 M:	Tim Crawford <tcrawford@system76.com>
 S:	Maintained
 F:	src/ec/system76/
+
+ORPHANED ECS
+S:	Orphan
+F:	src/ec/51nb/
+F:	src/ec/acpi/
+F:	src/ec/apple/
+F:	src/ec/compal/
+F:	src/ec/hp/
+F:	src/ec/kontron/
+F:	src/ec/purism/
+F:	src/ec/quanta/
+F:	src/ec/roda/
+F:	src/ec/smsc/
 
 ################################################################################
 # Northbridges

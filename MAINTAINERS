@@ -118,6 +118,24 @@ Maintainers List (try to look for most precise areas first)
 # Mainboards
 ################################################################################
 
+51NB MAINBOARDS
+S:	Orphan
+F:	src/mainboard/51nb/
+
+
+
+ACER MAINBOARDS
+S:	Orphan
+F:	src/mainboard/acer/
+
+
+
+ADLINK MAINBOARDS
+S:	Orphan
+F:	src/mainboard/adlink/
+
+
+
 AMD family 17h and 19h reference boards
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
@@ -141,6 +159,12 @@ F:	src/mainboard/amd/persimmon/
 F:	src/mainboard/amd/south_station/
 F:	src/mainboard/amd/thatcher/
 F:	src/mainboard/amd/union_station/
+
+
+
+AOPEN MAINBOARDS
+S:	Orphan
+F:	src/mainboard/aopen/
 
 
 
@@ -208,11 +232,65 @@ F:	src/mainboard/asus/p8z77-series/
 
 
 
+BAP MAINBOARDS
+S:	Orphan
+F:	src/mainboard/bap/
+
+
+
+BIOSTAR MAINBOARDS
+S:	Orphan
+F:	src/mainboard/biostar/
+
+
+
+BOSTENTECH MAINBOARDS
+S:	Orphan
+F:	src/mainboard/bostentech/
+
+
+
+CAVIUM MAINBOARDS
+S:	Orphan
+F:	src/mainboard/cavium/
+
+
+
 CLEVO MAINBOARDS
 M:	Felix Singer <felixsinger@posteo.net>
 M:	Michael Niewöhner <foss@mniewoehner.de>
 S:	Supported
 F:	src/mainboard/clevo/
+
+
+
+COMPULAB MAINBOARDS
+S:	Orphan
+F:	src/mainboard/compulab/
+
+
+
+DELL MAINBOARDS
+S:	Orphan
+F:	src/mainboard/dell/
+
+
+
+ELMEX MAINBOARDS
+S:	Orphan
+F:	src/mainboard/elmex/
+
+
+
+EMULATION MAINBOARDS
+S:	Orphan
+F:	src/mainboard/emulation/
+
+
+
+EXAMPLE MAINBOARDS
+S:	Orphan
+F:	src/mainboard/example/
 
 
 
@@ -230,6 +308,18 @@ F:	src/mainboard/facebook/monolith/
 
 
 
+FOXCONN MAINBOARDS
+S:	Orphan
+F:	src/mainboard/foxconn/
+
+
+
+GETAC MAINBOARDS
+S:	Orphan
+F:	src/mainboard/getac/
+
+
+
 GIGABYTE GA-D510UD MAINBOARD
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
@@ -244,6 +334,14 @@ GIGABYTE GA-H61M SERIES MAINBOARDS
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
 F:	src/mainboard/gigabyte/ga-h61m-series/
+
+
+
+GIZMOSPHERE MAINBOARDS
+S:	Orphan
+F:	src/mainboard/gizmosphere/
+
+
 
 GOOGLE REX MAINBOARDS
 M:	Subrata Banik <subratabanik@google.com>
@@ -297,10 +395,17 @@ F:	src/mainboard/google/guybrush/
 F:	src/mainboard/google/skyrim/
 
 
+
 HP 280 G2 MAINBOARD
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
 F:	src/mainboard/hp/280_g2/
+
+
+
+IBASE MAINBOARDS
+S:	Orphan
+F:	src/mainboard/ibase/
 
 
 
@@ -321,6 +426,12 @@ INTEL STRAGO MAINBOARD
 M:	Hannah Williams <hannah.williams@intel.com>
 S:	Supported
 F:	/src/mainboard/intel/strago/
+
+
+
+JETWAY MAINBOARDS
+S:	Orphan
+F:	src/mainboard/jetway/
 
 
 
@@ -360,11 +471,18 @@ S:	Maintained
 F:	src/mainboard/lenovo/x201/
 
 
+
 LIBRETREND LT1000 MAINBOARD
 M:	Piotr Król <piotr.krol@3mdeb.com>
 M:	Michał Żygowski <michal.zygowski@3mdeb.com>
 S:	Maintained
 F:	src/mainboard/libretrend/lt1000/
+
+
+
+LIPPERT MAINBOARDS (acquired by Adlink)
+S:	Orphan
+F:	src/mainboard/lippert/
 
 
 
@@ -378,6 +496,8 @@ M:	Michał Żygowski <michal.zygowski@3mdeb.com>
 M:	Michał Kopeć <michal.kopec@3mdeb.com>
 S:	Maintained
 F:	src/mainboard/msi/ms7d25/
+
+
 
 OCP DELTALAKE MAINBOARD
 M:	Arthur Heymans <arthur@aheymans.xyz>
@@ -413,6 +533,12 @@ M:	Piotr Król <piotr.krol@3mdeb.com>
 M:	Michał Żygowski <michal.zygowski@3mdeb.com>
 S:	Supported
 F:	src/mainboard/pcengines/
+
+
+
+PINE64 MAINBOARDS
+S:	Orphan
+F:	src/mainboard/pine64/
 
 
 
@@ -454,11 +580,35 @@ F:	src/mainboard/purism/
 
 
 
+RAZER MAINBOARDS
+S:	Orphan
+F:	src/mainboard/razer/
+
+
+
+RODA MAINBOARDS
+S:	Orphan
+F:	src/mainboard/roda/
+
+
+
 SAMSUNG CHROMEOS MAINBOARDS
 M:	Matt DeVillier <MrChromebox@gmail.com>
 S:	Maintained
 F:	src/mainboard/samsung/lumpy/
 F:	src/mainboard/samsung/stumpy/
+
+
+
+SAPPHIRE MAINBOARDS
+S:	Orphan
+F:	src/mainboard/sapphire/
+
+
+
+SCALEWAY MAINBOARDS
+S:	Orphan
+F:	src/mainboard/scaleway/
 
 
 
@@ -473,6 +623,12 @@ M:	Werner Zeh <werner.zeh@siemens.com>
 S:	Maintained
 F:	src/mainboard/siemens/mc_apl1/
 F:	src/mainboard/siemens/mc_ehl/
+
+
+
+SIFIVE MAINBOARDS
+S:	Orphan
+F:	src/mainboard/sifive/
 
 
 
@@ -500,6 +656,18 @@ SUPERMICRO X11-LGA1151-SERIES
 M:	Michael Niewöhner <foss@mniewoehner.de>
 S:	Maintained
 F:	src/mainboard/supermicro/x11-lga1151-series/
+
+
+
+TI MAINBOARDS
+S:	Orphan
+F:	src/mainboard/ti/
+
+
+
+UP MAINBOARDS
+S:	Orphan
+F:	src/mainboard/up/
 
 ################################################################################
 # Architectures

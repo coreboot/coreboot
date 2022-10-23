@@ -3,7 +3,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <baseboard/variant.h>
+#include <drivers/vpd/vpd.h>
 #include <fsp/soc_binding.h>
+#include <smbios.h>
 
 #define K4E6E304EB_MEM_ID	0x5
 
@@ -13,6 +15,9 @@
 #define MEM_SINGLE_CHAN7	0x7
 #define MEM_SINGLE_CHANB	0xb
 #define MEM_SINGLE_CHANC	0xc
+
+#define VPD_KEY_CUSTOMIZATION_ID    "customization_id"
+#define VPD_CUSTOMIZATION_LEN        32
 
 void variant_memory_init_params(FSPM_UPD *mupd, const int spd_index)
 {
@@ -62,4 +67,24 @@ int is_dual_channel(const int spd_index)
 		&& spd_index != MEM_SINGLE_CHAN7
 		&& spd_index != MEM_SINGLE_CHANB
 		&& spd_index != MEM_SINGLE_CHANC);
+}
+
+/* SKU ID enumeration */
+#define SKU_LARS	"sku0"
+#define SKU_LILI	"sku1"
+
+const char *smbios_system_sku(void)
+{
+	if (!CONFIG(VPD))
+		return SKU_LARS;
+
+	static char customization_id[VPD_CUSTOMIZATION_LEN];
+	if (!vpd_gets(VPD_KEY_CUSTOMIZATION_ID, customization_id,
+				VPD_CUSTOMIZATION_LEN, VPD_RO))
+		return SKU_LARS;
+
+	if (strstr(customization_id, "LILI"))
+		return SKU_LILI;
+
+	return SKU_LARS;
 }

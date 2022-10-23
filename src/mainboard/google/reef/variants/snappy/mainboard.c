@@ -43,7 +43,7 @@ uint8_t variant_board_sku(void)
 
 	board_sku_num = sku_strapping_value();
 
-	if (!CONFIG(CHROMEOS))
+	if (!CONFIG(VPD))
 		return board_sku_num;
 
 	if (!vpd_gets(vpd_skuid, vpd_buffer, ARRAY_SIZE(vpd_buffer), VPD_RO_THEN_RW))

@@ -8,14 +8,6 @@
 #include <types.h>
 #include <vb2_sha.h>
 
-/* CRTM */
-#define TPM_CRTM_PCR 2
-
-/* PCR for measuring data which changes during runtime
- * e.g. CMOS, NVRAM...
- */
-#define TPM_RUNTIME_DATA_PCR 3
-
 #if CONFIG(TPM_LOG_CB) && CONFIG(TPM1)
 #  define TPM_MEASURE_ALGO VB2_HASH_SHA1
 #elif CONFIG(TPM_LOG_CB) && CONFIG(TPM2)

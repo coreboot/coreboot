@@ -46,7 +46,7 @@ static uint32_t tspi_init_crtm(void)
 
 	struct region_device fmap;
 	if (fmap_locate_area_as_rdev("FMAP", &fmap) == 0) {
-		if (tpm_measure_region(&fmap, TPM_CRTM_PCR, "FMAP: FMAP")) {
+		if (tpm_measure_region(&fmap, CONFIG_PCR_SRTM, "FMAP: FMAP")) {
 			printk(BIOS_ERR,
 			       "TSPI: Couldn't measure FMAP into CRTM!\n");
 			return VB2_ERROR_UNKNOWN;
@@ -60,7 +60,7 @@ static uint32_t tspi_init_crtm(void)
 		struct region_device bootblock_fmap;
 		if (fmap_locate_area_as_rdev("BOOTBLOCK", &bootblock_fmap) == 0) {
 			if (tpm_measure_region(&bootblock_fmap,
-					TPM_CRTM_PCR,
+					CONFIG_PCR_SRTM,
 					"FMAP: BOOTBLOCK"))
 				return VB2_ERROR_UNKNOWN;
 		}
@@ -79,7 +79,7 @@ static uint32_t tspi_init_crtm(void)
 		/* Since none of the above conditions are met let the SOC code measure the
 		 * bootblock. This accomplishes for cases where the bootblock is treated
 		 * in a special way (e.g. part of IFWI or located in a different CBFS). */
-		if (tspi_soc_measure_bootblock(TPM_CRTM_PCR)) {
+		if (tspi_soc_measure_bootblock(CONFIG_PCR_SRTM)) {
 			printk(BIOS_INFO,
 			       "TSPI: Couldn't measure bootblock into CRTM on SoC level!\n");
 			return VB2_ERROR_UNKNOWN;
@@ -124,7 +124,7 @@ uint32_t tspi_cbfs_measurement(const char *name, uint32_t type, const struct vb2
 
 	switch (type) {
 	case CBFS_TYPE_MRC_CACHE:
-		pcr_index = TPM_RUNTIME_DATA_PCR;
+		pcr_index = CONFIG_PCR_RUNTIME_DATA;
 		break;
 	/*
 	 * mrc.bin is code executed on CPU, so it
@@ -134,13 +134,13 @@ uint32_t tspi_cbfs_measurement(const char *name, uint32_t type, const struct vb2
 	case CBFS_TYPE_STAGE:
 	case CBFS_TYPE_SELF:
 	case CBFS_TYPE_FIT_PAYLOAD:
-		pcr_index = TPM_CRTM_PCR;
+		pcr_index = CONFIG_PCR_SRTM;
 		break;
 	default:
 		if (is_runtime_data(name))
-			pcr_index = TPM_RUNTIME_DATA_PCR;
+			pcr_index = CONFIG_PCR_RUNTIME_DATA;
 		else
-			pcr_index = TPM_CRTM_PCR;
+			pcr_index = CONFIG_PCR_SRTM;
 		break;
 	}
 

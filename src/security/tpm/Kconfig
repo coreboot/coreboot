@@ -152,4 +152,23 @@ config TPM_MEASURED_BOOT_RUNTIME_DATA
 	  Runtime data whitelist of cbfs filenames. Needs to be a
 	  space delimited list
 
+config PCR_BOOT_MODE
+	int
+	default 0 if CHROMEOS
+	default 1
+
+config PCR_HWID
+	int
+	default 1
+
+config PCR_SRTM
+	int
+	default 2
+
+# PCR for measuring data which changes during runtime
+# e.g. CMOS, NVRAM...
+config PCR_RUNTIME_DATA
+	int
+	default 3
+
 endmenu # Trusted Platform Module (tpm)

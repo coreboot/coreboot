@@ -184,8 +184,8 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 
 static uint32_t extend_pcrs(struct vb2_context *ctx)
 {
-	return vboot_extend_pcr(ctx, 0, BOOT_MODE_PCR) ||
-		   vboot_extend_pcr(ctx, 1, HWID_DIGEST_PCR);
+	return vboot_extend_pcr(ctx, CONFIG_PCR_BOOT_MODE, BOOT_MODE_PCR) ||
+		   vboot_extend_pcr(ctx, CONFIG_PCR_HWID, HWID_DIGEST_PCR);
 }
 
 #define EC_EFS_BOOT_MODE_VERIFIED_RW	0x00

@@ -44,6 +44,8 @@
 #define PLATFORM_HAS_10GBE_0_REGION (platform == PLATFORM_DNV)
 #define PLATFORM_HAS_10GBE_1_REGION (platform == PLATFORM_DNV)
 
+static int max_regions_from_fdbar(const fdbar_t *fdb);
+
 static int ifd_version;
 static int chipset;
 static unsigned int max_regions = 0;
@@ -296,14 +298,16 @@ static int is_platform_ifd_2(void)
 
 static void check_ifd_version(char *image, int size)
 {
+	const fdbar_t *fdb = find_fd(image, size);
+
 	if (is_platform_ifd_2()) {
 		ifd_version = IFD_VERSION_2;
 		chipset = ifd2_platform_to_chipset(platform);
-		max_regions = MAX_REGIONS;
+		max_regions = MIN(max_regions_from_fdbar(fdb), MAX_REGIONS);
 	} else {
 		ifd_version = IFD_VERSION_1;
 		chipset = ifd1_guess_chipset(image, size);
-		max_regions = MAX_REGIONS_OLD;
+		max_regions = MIN(max_regions_from_fdbar(fdb), MAX_REGIONS_OLD);
 	}
 }
 
@@ -408,6 +412,49 @@ static void dump_region_layout(char *buf, size_t bufsize, unsigned int num,
 	region_t region = get_region(frba, num);
 	snprintf(buf, bufsize, "%08x:%08x %s\n",
 		region.base, region.limit, region_name_short(num));
+}
+
+static int sort_compare(const void *a, const void *b)
+{
+	return *(size_t *)a - *(size_t *)b;
+}
+
+/*
+ * IFDv1 always has 8 regions, while IFDv2 always has 16 regions.
+ *
+ * It's platform specific which regions are used or are reserved.
+ * The 'SPI programming guide' as the name says is a guide only,
+ * not a specification what the hardware actually does.
+ * The best to do is not to rely on the guide, but detect how many
+ * regions are present in the IFD and expose them all.
+ *
+ * Very early IFDv2 chipsets, sometimes unofficially referred to as
+ * IFDv1.5 platforms, only have 8 regions. To not corrupt the IFD when
+ * operating on an IFDv1.5 detect how much space is actually present
+ * in the IFD.
+ */
+static int max_regions_from_fdbar(const fdbar_t *fdb)
+{
+	const size_t fcba = (fdb->flmap0 & 0xff) << 4;
+	const size_t fmba = (fdb->flmap1 & 0xff) << 4;
+	const size_t frba = ((fdb->flmap0 >> 16) & 0xff) << 4;
+	const size_t fpsba = ((fdb->flmap1 >> 16) & 0xff) << 4;
+	const size_t flumap = 4096 - 256 - 4;
+	size_t sorted[5] = {fcba, fmba, frba, fpsba, flumap};
+
+	qsort(sorted, ARRAY_SIZE(sorted), sizeof(size_t), sort_compare);
+
+	for (size_t i = 0; i < 4; i++) {
+		/*
+		 * Find FRBA in the sorted array and determine the size of the
+		 * region by the start of the next region. Every region requires
+		 * 4 bytes of space.
+		 */
+		if (sorted[i] == frba)
+			return MIN((sorted[i+1] - sorted[i])/4, MAX_REGIONS);
+	}
+	/* Never reaches this point */
+	return 0;
 }
 
 static void dump_frba(const frba_t *frba)

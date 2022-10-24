@@ -75,14 +75,3 @@ config UART_USE_REFCLK_AS_INPUT_CLOCK
 	default n
 	help
 	  Use uart_platform_refclk to specify the input clock value.
-
-config UART_PCI_ADDR
-	hex "UART's PCI bus, device, function address"
-	default 0x0
-	help
-	  Specify zero if the UART is connected to another bus type.
-	  For PCI based UARTs, build the value as:
-	  * 1 << 31 - Valid bit, PCI UART in use
-	  * Bus << 20
-	  * Device << 15
-	  * Function << 12

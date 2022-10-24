@@ -191,14 +191,6 @@ struct cb_serial {
 	 * decisions as to which dividers to select and their values
 	 * to eventually arrive at the desired console baud-rate. */
 	u32 input_hertz;
-
-	/* UART PCI address: bus, device, function
-	 * 1 << 31 - Valid bit, PCI UART in use
-	 * Bus << 20
-	 * Device << 15
-	 * Function << 12
-	 */
-	u32 uart_pci_addr;
 };
 
 struct cb_console {

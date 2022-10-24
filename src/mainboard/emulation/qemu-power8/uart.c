@@ -37,7 +37,6 @@ void uart_fill_lb(void *data)
 	serial.baud = 115200;
 	serial.regwidth = 1;
 	serial.input_hertz = uart_platform_refclk();
-	serial.uart_pci_addr = CONFIG_UART_PCI_ADDR;
 	lb_add_serial(&serial, data);
 
 	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);

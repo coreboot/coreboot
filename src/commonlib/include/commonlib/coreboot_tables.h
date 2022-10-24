@@ -197,14 +197,6 @@ struct lb_serial {
 	 * decisions as to which dividers to select and their values
 	 * to eventually arrive at the desired console baud-rate. */
 	uint32_t input_hertz;
-
-	/* UART PCI address: bus, device, function
-	 * 1 << 31 - Valid bit, PCI UART in use
-	 * Bus << 20
-	 * Device << 15
-	 * Function << 12
-	 */
-	uint32_t uart_pci_addr;
 };
 
 struct lb_console {

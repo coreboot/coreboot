@@ -127,7 +127,6 @@ static void test_lb_add_serial(void **state)
 	serial.baud = 115200;
 	serial.regwidth = 1;
 	serial.input_hertz = 115200 * 16;
-	serial.uart_pci_addr = 0x0;
 	lb_add_serial(&serial, header);
 
 	assert_int_equal(1, header->table_entries);
@@ -244,7 +243,6 @@ void uart_fill_lb(void *data)
 	serial.baud = 115200;
 	serial.regwidth = 1;
 	serial.input_hertz = 115200 * 16;
-	serial.uart_pci_addr = 0x0;
 	lb_add_serial(&serial, data);
 
 	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
@@ -419,7 +417,6 @@ static void test_write_tables(void **state)
 			assert_int_equal(115200, serial->baud);
 			assert_int_equal(1, serial->regwidth);
 			assert_int_equal(115200 * 16, serial->input_hertz);
-			assert_int_equal(0x0, serial->uart_pci_addr);
 			break;
 		case LB_TAG_CONSOLE:
 			assert_int_equal(sizeof(struct lb_console), record->size);

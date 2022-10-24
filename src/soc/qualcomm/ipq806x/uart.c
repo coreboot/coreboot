@@ -368,6 +368,7 @@ uint8_t uart_rx_byte(unsigned int idx)
 }
 
 /* TODO: Implement function */
-void uart_fill_lb(void *data)
+enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
+	return CB_ERR;
 }

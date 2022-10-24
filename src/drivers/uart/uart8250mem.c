@@ -133,20 +133,18 @@ void uart_tx_flush(unsigned int idx)
 	uart8250_mem_tx_flush(base);
 }
 
-void uart_fill_lb(void *data)
+enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
-	struct lb_serial serial;
-	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
-	if (!serial.baseaddr)
-		return;
-	serial.baud = get_uart_baudrate();
+	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial->baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
+	if (!serial->baseaddr)
+		return CB_ERR;
+	serial->baud = get_uart_baudrate();
 	if (CONFIG(DRIVERS_UART_8250MEM_32))
-		serial.regwidth = sizeof(uint32_t);
+		serial->regwidth = sizeof(uint32_t);
 	else
-		serial.regwidth = sizeof(uint8_t);
-	serial.input_hertz = uart_platform_refclk();
-	lb_add_serial(&serial, data);
+		serial->regwidth = sizeof(uint8_t);
+	serial->input_hertz = uart_platform_refclk();
 
-	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
+	return CB_SUCCESS;
 }

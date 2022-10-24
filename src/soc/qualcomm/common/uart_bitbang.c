@@ -5,9 +5,9 @@
 #include <boot/coreboot_tables.h>
 #include <soc/uart.h>
 
-void uart_fill_lb(void *data)
+enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
-
+	return CB_ERR;
 }
 
 static void set_tx(int line_state)

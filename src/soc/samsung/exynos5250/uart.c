@@ -132,15 +132,13 @@ void uart_tx_flush(unsigned int idx)
 	exynos5_uart_tx_flush(uart);
 }
 
-void uart_fill_lb(void *data)
+enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
-	struct lb_serial serial;
-	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
-	serial.baud = get_uart_baudrate();
-	serial.regwidth = 4;
-	serial.input_hertz = uart_platform_refclk();
-	lb_add_serial(&serial, data);
+	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial->baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
+	serial->baud = get_uart_baudrate();
+	serial->regwidth = 4;
+	serial->input_hertz = uart_platform_refclk();
 
-	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
+	return CB_SUCCESS;
 }

@@ -19,8 +19,7 @@ void fill_lb_gpios(struct lb_gpios *gpios);
 void lb_add_gpios(struct lb_gpios *gpios, const struct lb_gpio *gpio_table,
 		  size_t count);
 
-void uart_fill_lb(void *data);
-void lb_add_serial(struct lb_serial *serial, void *data);
+enum cb_err fill_lb_serial(struct lb_serial *serial);
 void lb_add_console(uint16_t consoletype, void *data);
 
 enum cb_err lb_fill_pcie(struct lb_pcie *pcie);

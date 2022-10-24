@@ -100,7 +100,8 @@ unsigned int uart_input_clock_divider(void)
 	return 1;
 }
 
-void uart_fill_lb(void *data)
+enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
+	return CB_ERR;
 	/* TODO */
 }

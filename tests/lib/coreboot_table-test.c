@@ -117,25 +117,6 @@ static void test_lb_new_record(void **state)
 	}
 }
 
-static void test_lb_add_serial(void **state)
-{
-	struct lb_header *header = *state;
-	struct lb_serial serial;
-
-	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = 0xFEDC6000;
-	serial.baud = 115200;
-	serial.regwidth = 1;
-	serial.input_hertz = 115200 * 16;
-	lb_add_serial(&serial, header);
-
-	assert_int_equal(1, header->table_entries);
-	/* Table bytes and checksum should be zero, because it is updated with size of previous
-	   record or when table is closed. No previous record is present. */
-	assert_int_equal(0, header->table_bytes);
-	assert_int_equal(0, header->table_checksum);
-}
-
 static void test_lb_add_console(void **state)
 {
 	struct lb_header *header = *state;
@@ -235,17 +216,15 @@ void bootmem_write_memory_table(struct lb_memory *mem)
 	}
 }
 
-void uart_fill_lb(void *data)
+enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
-	struct lb_serial serial;
-	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = 0xFEDC6000;
-	serial.baud = 115200;
-	serial.regwidth = 1;
-	serial.input_hertz = 115200 * 16;
-	lb_add_serial(&serial, data);
+	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial->baseaddr = 0xFEDC6000;
+	serial->baud = 115200;
+	serial->regwidth = 1;
+	serial->input_hertz = 115200 * 16;
 
-	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
+	return CB_SUCCESS;
 }
 
 struct cbfs_boot_device cbfs_boot_dev = {
@@ -495,7 +474,6 @@ int main(void)
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_lb_add_gpios),
 		cmocka_unit_test_setup(test_lb_new_record, setup_test_header),
-		cmocka_unit_test_setup(test_lb_add_serial, setup_test_header),
 		cmocka_unit_test_setup(test_lb_add_console, setup_test_header),
 		cmocka_unit_test_setup(test_multiple_entries, setup_test_header),
 		cmocka_unit_test_setup(test_write_coreboot_forwarding_table, setup_test_header),

@@ -257,16 +257,13 @@ uint8_t uart_rx_byte(unsigned int idx)
 }
 #endif
 
-void uart_fill_lb(void *data)
+enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
-	struct lb_serial serial;
+	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial->baseaddr = (uint64_t)UART2_DM_BASE;
+	serial->baud = get_uart_baudrate();
+	serial->regwidth = 1;
+	serial->input_hertz = uart_platform_refclk();
 
-	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = (uint64_t)UART2_DM_BASE;
-	serial.baud = get_uart_baudrate();
-	serial.regwidth = 1;
-	serial.input_hertz = uart_platform_refclk();
-	lb_add_serial(&serial, data);
-
-	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
+	return CB_SUCCESS;
 }

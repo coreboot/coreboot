@@ -101,15 +101,13 @@ unsigned char uart_rx_byte(unsigned int idx)
 	return tegra210_uart_rx_byte();
 }
 
-void uart_fill_lb(void *data)
+enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
-	struct lb_serial serial;
-	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ADDRESS;
-	serial.baud = get_uart_baudrate();
-	serial.regwidth = 4;
-	serial.input_hertz = uart_platform_refclk();
-	lb_add_serial(&serial, data);
+	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial->baseaddr = CONFIG_CONSOLE_SERIAL_TEGRA210_UART_ADDRESS;
+	serial->baud = get_uart_baudrate();
+	serial->regwidth = 4;
+	serial->input_hertz = uart_platform_refclk();
 
-	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
+	return CB_SUCCESS;
 }

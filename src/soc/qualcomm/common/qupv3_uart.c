@@ -140,15 +140,13 @@ uintptr_t uart_platform_base(unsigned int idx)
 	return (uintptr_t)qup[idx].regs;
 }
 
-void uart_fill_lb(void *data)
+enum cb_err fill_lb_serial(struct lb_serial *serial)
 {
-	struct lb_serial serial = {0};
+	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial->baseaddr = (uint32_t)uart_platform_base(CONFIG_UART_FOR_CONSOLE);
+	serial->baud = get_uart_baudrate();
+	serial->regwidth = 4;
+	serial->input_hertz = SRC_XO_HZ;
 
-	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = (uint32_t)uart_platform_base(CONFIG_UART_FOR_CONSOLE);
-	serial.baud = get_uart_baudrate();
-	serial.regwidth = 4;
-	serial.input_hertz = SRC_XO_HZ;
-
-	lb_add_serial(&serial, data);
+	return CB_SUCCESS;
 }

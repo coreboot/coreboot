@@ -1,16 +1,52 @@
 # Measured Boot
-coreboot measured boot is implemented as Google Verified Boot extension. This
-means in order to use it, vboot needs to be available for your platform. The
-goal of this implementation is to implement an easy to understand and
-transparent measured boot mechanism.
+Measured boot feature was initially implemented as an extension of Google
+Verified Boot. However, the two features were decoupled since then and use of
+measured boot no longer requires enabling vboot.
+
+In most cases TPM eventlog is initialized during bootblock before TPM gets set
+up, hence digests are not measured into TPM immediately, but are only cached in
+the event log. Later, as part of TPM setup, the cached events are applied onto
+TPM device. The behaviour is different if TPM_MEASURED_BOOT_INIT_BOOTBLOCK
+kconfig is set, which moves TPM initialization into bootblock.
+
+## SRTM
+A measured-based trust chain is one that begins with an initial entity that
+takes the first measurement, referred to as the "Core Root of Trust for
+Measurement" (CRTM), before control is granted to the measured entity. This
+process of measurement and then passing control is referred to as a transitive
+trust. When the CRTM can only ever be executed once during the power life-cycle
+of the system, it is referred to as a "Static CRTM" (S-CRTM). Thus the trust
+chain constructed from the S-CRTM is referred to as the Static Root of Trust for
+Measurement (SRTM) trust chain. The theory is that as long as a proper
+transitive trust is conducted as more code is allowed to execute, a trustworthy
+record showing the provenance of the executing system may be provided to
+establish the trustworthiness of the system.
 
 ## IBB/CRTM
-The "Initial Boot Block" or "Core Root of Trust for Measurement" is the first
-code block loaded at reset vector and measured by a DRTM solution.
-In case SRTM mode is active, the IBB measures itself before measuring the next
-code block. In coreboot, cbfs files which are part of the IBB are identified
-by a metadata tag. This makes it possible to have platform specific IBB
-measurements without hardcoding them.
+The "Initial Boot Block" (IBB) is a one-time executed code block loaded at the
+reset vector. Under measured boot mode, the IBB measures itself before measuring
+the next code block making it an S-CRTM for the measured boot trust chain, an
+SRTM trust chain. Since the IBB measures itself and executes out of DRAM, it is
+said to have a "Root of Trust" (RoT) that is rooted in software.
+
+## S-CRTM Hardening
+To address attacks that took advantage of the IBB being self-referential with
+both the "Root of Trust for Verification" (RTV) and "Root of Trust for
+Measurement" (RTM) being rooted in software, hardening was implemented by CPU
+manufactures. This was accomplished by introducing RoT, typically an RTV, to an
+external entity provided by the manufacture that could be validated by the CPU
+at boot. Examples of this are Intel's BootGuard and AMD's Hardware Validated
+Boot (also known as Platform Secure Boot). These solutions work by having the
+IBB invoke the manufacture provided RoT as early as possible, for which the CPU
+has already validated or validates when invoked. The RoT will then validate the
+IBB, thus moving the root for the respective trust chain, typically the
+verification trust chain, into hardware.
+
+It should be noted that when Intel BootGuard was originally designed, it
+provided a measurement mode that resulted in the ACM (Authenticated Code
+Module) becoming the S-CRTM for the SRTM trust chain. Unfortunately, this was
+never deployed and thus relying on "Root of Trust for Verification" (RTV)
+signature check as the only assertion rooted in hardware.
 
 ## Known Limitations
 At the moment measuring IBB dynamically and FMAP partitions are not possible but
@@ -19,13 +55,10 @@ will be added later to the implementation.
 Also SoCs making use of VBOOT_RETURN_FROM_VERSTAGE are not able to use the
 measured boot extension because of platform constraints.
 
-## SRTM Mode
-The "Static Root of Trust for Measurement" is the easiest way doing measurements
-by measuring code before it is loaded.
-
 ### Measurements
-SRTM mode measurements are done starting with the IBB as root of trust.
-Only CBFS contents are measured at the moment.
+To construct the coreboot SRTM trust chain, the CBFS files which are part of the
+IBB, are identified by a metadata tag. This makes it possible to have platform
+specific IBB measurements without hard-coding them.
 
 #### CBFS files (stages, blobs)
 * CBFS data is measured as raw data before decompression happens.
@@ -102,14 +135,27 @@ cbfstool coreboot.rom extract -r COREBOOT -n fallback/romstage -U -f /dev/stdout
 cbfstool coreboot.rom read -n SI_ME -f /dev/stdout | sha256sum
 ```
 
-## DRTM Mode
-The "Dynamic Root of Trust for Measurement" is realised by platform features
-like Intel TXT or Boot Guard. The features provide a way of loading a signed
-"Authenticated Code Module" aka signed blob. Most of these features are also
-a "Trusted Execution Environment", e.g. Intel TXT.
+## DRTM
+Certain hardware platforms, for example those with Intel TXT or AMD-V, provide
+a mechanism to dynamically execute a CRTM, referred to as the "Dynamic
+CRTM" (D-CRTM), at any point and repeatedly during a single power life-cycle of
+a system. The trust chain constructed by this D-CRTM is referred to as the
+"Dynamic Root of Trust for Measurement" (DRTM) trust chain. On platforms with
+Intel TXT and AMD-V, the D-CRTM is the CPU itself, which is the reason for these
+capabilities being referred to as having a "Root of Trust" (RoT) rooted in
+hardware.
 
-DRTM gives you the ability of measuring the IBB from a higher Root of Trust
-instead of doing it yourself without any hardware support.
+To provide as an authority assertion and for the DRTM trust chain attestations
+to co-exist with the SRTM trust chain, the TPM provides localities, localities
+1 - 4, which restrict access to a subset of the Platform Configuration
+Registers (PCR), specifically the DRTM PCRs 17 - 22. The mechanism to assert
+authority for access to these localities is platform specific, though the
+intention was for it to be a hardware mechanism. On Intel x86 platforms this is
+controlled through communication between the CPU and the PCH to determine if
+the "Dynamic Launch" instruction, `GETSEC[SENTER]`, was executed and that the
+CPU is in SMX mode. For AMD x86 platforms, this controlled with the APU with a
+similar enforcement that the "Dynamic Launch" instruction, `SKINIT`, was
+executed.
 
 ## Platform Configuration Register
 Normally PCR 0-7 are reserved for firmware usage. In coreboot we use just 4 PCR

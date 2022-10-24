@@ -63,38 +63,104 @@ specific IBB measurements without hard-coding them.
 #### CBFS files (stages, blobs)
 * CBFS data is measured as raw data before decompression happens.
 * CBFS header is excluded from measurements.
-* Measurements are stored in PCR 2.
+* Measurements are stored in PCR 2 (by default, use PCR_SRTM kconfig option to
+  change).
 
 #### Runtime Data
 * CBFS data which changes by external input dynamically. Never stays the same.
 * It is identified by VBOOT_MEASURED_BOOT_RUNTIME_DATA kconfig option and
-  measured into a different PCR 3 in order to avoid PCR pre-calculation issues.
+  measured into a different PCR (PCR_RUNTIME_DATA kconfig option, 3 by default)
+  in order to avoid PCR pre-calculation issues.
 
 ![][srtm]
 
 [srtm]: srtm.png
 
-### TCPA eventlog
-coreboot makes use of its own TCPA log implementation. Normally the eventlog
-specification can be found via the TCG homepage:
+### TPM eventlog
+There are three supported formats of event logs:
+* coreboot-specific format.
+* [TPM1.2 Specification][TPM12] (chapter 11).
+* [TPM2.0 Specification][TPM20] (chapter 10).
 
-[UEFI Specification](https://trustedcomputinggroup.org/resource/tcg-efi-platform-specification/)
+#### coreboot-specific format
+```c
+struct tcpa_entry {
+	uint32_t pcr;           /* PCR number. */
+	char digest_type[10];   /* Hash algorithm name. */
+	uint8_t digest[64];     /* Digest (tail can be unused). */
+	uint32_t digest_length; /* Number of digest bytes used. */
+	char name[50];          /* Description of what was hashed. */
+} __packed;
 
-[BIOS Specification](https://www.trustedcomputinggroup.org/wp-content/uploads/TCG_PCClientImplementation_1-21_1_00.pdf)
+struct tcpa_table {
+	uint16_t max_entries;
+	uint16_t num_entries;
+	struct tcpa_entry entries[0];
+} __packed;
+```
 
-Both of them are not representing firmware measurements in a generalized way.
-Therefore we have to implement our own solution.
+Single hash per PCR. No magic number or any other way of recognizing it.
+Endianness isn't specified.
 
-We decided to provide an easy to understand TCPA log which can be read out
-from the operating system and firmware itself.
+In principle can hold any hash with 512 bits or less. In practice,
+SHA-1 (for TPM1) and SHA-256 (TPM2) are used.
 
-#### Table Format
+Can be parsed by `cbmem`.
+
+##### Console dump format
 The first column describes the PCR index used for measurement.
 The second column is the hash of the raw data. The third column contains
 the hash algorithm used in the operation. The last column provides
 information about what is measured. First the namespace from where the data
 came from, CBFS or FMAP, then the name used to look up the data
 (region or file name).
+
+#### TPM 1.2 format
+Single hash per PCR (always SHA-1). First entry serves as a header, provides
+ID and version. Always little endian. Event data describes what is being hashed
+as a NUL-terminated string instead of providing the actual raw data.
+
+Can be parsed by at least `cbmem` and Linux (exports in both text and binary
+forms).
+
+Packed data in vendor info section of the header:
+```c
+uint8_t reserved;      /* 0 */
+uint8_t version_major; /* 1 */
+uint8_t version_minor; /* 0 */
+uint32_t magic;        /* 0x31544243 ("CBT1" in LE) */
+uint16_t max_entries;
+uint16_t num_entries;
+uint32_t entry_size;
+```
+All fields are little endian.
+
+#### TPM 2.0 format
+One or more hashes per PCR, but implementation is limited to single hash (SHA-1,
+SHA-256, SHA-384 or SHA-512). First entry is overall compatible with TPM 1.2 and
+serves as a header with ID, version and number of hashing algorithms used.
+Always little endian. Event data describes what is being hashed as a
+NUL-terminated string instead of providing the actual raw data.
+
+By default SHA-1 is used for TPM1 and SHA-256 for TPM2. Other options are
+selectable via kconfig menu.
+
+Can be parsed by at least `cbmem`, Linux (exports only binary form) and
+[Skiboot][skiboot].
+
+[skiboot]: https://github.com/open-power/skiboot/
+
+Packed data in vendor info section of the header:
+```c
+uint8_t reserved;      /* 0 */
+uint8_t version_major; /* 1 */
+uint8_t version_minor; /* 0 */
+uint32_t magic;        /* 0x32544243 ("CBT2" in LE) */
+uint16_t max_entries;
+uint16_t num_entries;
+uint32_t entry_size;
+```
+All fields are little endian.
 
 #### Example:
 ```bash
@@ -120,7 +186,7 @@ PCR-2 178561f046e2adbc621b12b47d65be82756128e2a1fe5116b53ef3637da700e8 SHA256 [F
 PCR-2 091706f5fce3eb123dd9b96c15a9dcc459a694f5e5a86e7bf6064b819a8575c7 SHA256 [FMAP: FW_MAIN_B CBFS: fallback/payload]
 ```
 
-#### Dump TCPA eventlog in the OS:
+#### Dump TPM eventlog in the OS:
 ```bash
 cbmem -L
 ```
@@ -157,29 +223,42 @@ CPU is in SMX mode. For AMD x86 platforms, this controlled with the APU with a
 similar enforcement that the "Dynamic Launch" instruction, `SKINIT`, was
 executed.
 
-## Platform Configuration Register
-Normally PCR 0-7 are reserved for firmware usage. In coreboot we use just 4 PCR
-banks in order to store the measurements. coreboot uses the SHA-1 or SHA-256
-hash algorithm depending on the TPM specification for measurements. PCR-4 to
-PCR-7 are left empty.
+## Platform Configuration Registers
+PCRs are allocated as follows:
+* PCRs 0-15 are SRTM PCRs.
+  - PCRs 0-7 are reserved for firmware usage.
+* PCR 16 is the debug PCR.
+* PCRs 17-22 are DRTM PCRs (PCR 22 is resettable from locality 1).
+* PCR 23 is the application/user PCR and is resettable from locality 0.
 
-### PCR-0
-_Hash:_ SHA1
+coreboot uses 3 or 4 PCRs in order to store the measurements. PCRs 4-7 are left
+empty.
 
-_Description:_ Google vboot GBB flags.
+The firmware computes the hash and passes it to TPM.
 
-### PCR-1
-_Hash:_ SHA1/SHA256
+The bank used by the TPM depends on the selected eventlog format. CBFS hashes
+use the same algorithm as the bank. However, GBB flags are always hashed by
+SHA-1 and GBB HWID by SHA-256. This results in these hashes being truncated or
+extended with zeroes in eventlog and on passing them to TPM.
 
-_Description:_ Google vboot GBB HWID.
+### If CHROMEOS kconfig option is set
+vboot-specific (non-standard) PCR usage.
 
-### PCR-2
-_Hash:_ SHA1/SHA256
+* PCR-0 - SHA1 of Google vboot GBB flags.
+* PCR-1 - SHA256 of Google vboot GBB HWID.
+* PCR-2 - Hash of Root of Trust for Measurement which includes all stages,
+          data and blobs.
+* PCR-3 - Hash of runtime data like hwinfo.hex or MRC cache.
 
-_Description:_ Core Root of Trust for Measurement which includes all stages,
-data and blobs.
+### If CHROMEOS kconfig option is NOT set
+See [TPM1.2 Specification][TPM12] (section 3.3.3) and
+[TPM2.0 Specification][TPM20] (section 3.3.4) for PCR assignment information.
 
-### PCR-3
-_Hash:_ SHA1/SHA256
+* PCR-0 - Unused.
+* PCR-1 - SHA1 of Google vboot GBB flags, SHA256 of Google vboot GBB HWID.
+* PCR-2 - Hash of Root of Trust for Measurement which includes all stages,
+          data and blobs.
+* PCR-3 - Hash of runtime data like hwinfo.hex or MRC cache.
 
-_Description:_ Runtime data like hwinfo.hex or MRC cache.
+[TPM12]: https://trustedcomputinggroup.org/wp-content/uploads/TCG_PCClientImplementation_1-21_1_00.pdf
+[TPM20]: https://trustedcomputinggroup.org/wp-content/uploads/TCG_PCClient_PFP_r1p05_v23_pub.pdf

@@ -85,6 +85,18 @@ chip soc/amd/stoneyridge
 	end
 	device ref i2c_3 on
 		chip drivers/i2c/generic
+			register "hid" = ""RAYD0001""
+			register "desc" = ""Raydium Touchscreen""
+			register "probed" = "1"
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_11)"
+			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_85)"
+			register "reset_delay_ms" = "20"
+			register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_76)"
+			register "enable_delay_ms" = "1"
+			register "has_power_resource" = "1"
+			device i2c 39 on end
+		end
+		chip drivers/i2c/generic
 			register "hid" = ""ELAN0001""
 			register "desc" = ""ELAN Touchscreen""
 			register "probed" = "1"

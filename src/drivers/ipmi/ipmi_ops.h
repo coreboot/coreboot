@@ -57,17 +57,17 @@ struct standard_spec_sel_rec {
 	uint8_t sensor_num;
 	uint8_t event_dir_type;
 	uint8_t event_data[3];
-};
+} __packed;
 
 struct oem_ts_spec_sel_rec {
 	uint32_t timestamp;
 	uint8_t manf_id[3];
 	uint8_t oem_defined[6];
-};
+} __packed;
 
 struct oem_nots_spec_sel_rec {
 	uint8_t oem_defined[13];
-};
+} __packed;
 
 /* SEL Event Record */
 struct sel_event_record {

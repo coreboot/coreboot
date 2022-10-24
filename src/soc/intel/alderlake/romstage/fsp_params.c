@@ -342,6 +342,24 @@ static void fill_fspm_trace_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->CpuCrashLogEnable = m_cfg->CpuCrashLogDevice;
 }
 
+static void fill_fspm_ibecc_params(FSP_M_CONFIG *m_cfg,
+		const struct soc_intel_alderlake_config *config)
+{
+	/* In-Band ECC configuration */
+	if (config->ibecc.enable) {
+		m_cfg->Ibecc = config->ibecc.enable;
+		m_cfg->IbeccOperationMode = config->ibecc.mode;
+		if (m_cfg->IbeccOperationMode == IBECC_MODE_PER_REGION) {
+			FSP_ARRAY_LOAD(m_cfg->IbeccProtectedRangeEnable,
+				       config->ibecc.range_enable);
+			FSP_ARRAY_LOAD(m_cfg->IbeccProtectedRangeBase,
+				       config->ibecc.range_base);
+			FSP_ARRAY_LOAD(m_cfg->IbeccProtectedRangeMask,
+				       config->ibecc.range_mask);
+		}
+	}
+}
+
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
@@ -362,6 +380,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		fill_fspm_usb4_params,
 		fill_fspm_vtd_params,
 		fill_fspm_trace_params,
+		fill_fspm_ibecc_params,
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(fill_fspm_params); i++)

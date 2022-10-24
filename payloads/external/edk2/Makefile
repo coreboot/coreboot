@@ -8,6 +8,8 @@ export WORKSPACE := $(CURDIR)/workspace
 export EDK2_PATH := $(WORKSPACE)/$(word 3,$(subst /, ,$(CONFIG_EDK2_REPOSITORY)))
 export PACKAGES_PATH := $(EDK2_PATH)
 
+OBJCOPY = $(GCC_PREFIX)objcopy
+
 ifeq ($(CONFIG_EDK2_UEFIPAYLOAD),y)
 BUILD_STR = -p UefiPayloadPkg/UefiPayloadPkg.dsc
 endif

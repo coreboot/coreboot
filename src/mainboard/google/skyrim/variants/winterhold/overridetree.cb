@@ -86,8 +86,8 @@ chip soc/amd/mendocino
 	end # I2C0
 	device ref i2c_1 on
 		chip drivers/i2c/hid
-			register "generic.hid" = ""GDIX0000""
-			register "generic.desc" = ""Goodix Touchscreen""
+			register "generic.hid" = ""ELAN900C""
+			register "generic.desc" = ""ELAN Touchscreen""
 			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_29)"
 			register "generic.probed" = "1"
 			register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_131)"
@@ -100,11 +100,11 @@ chip soc/amd/mendocino
 			register "generic.stop_off_delay_ms" = "1"
 			register "generic.has_power_resource" = "1"
 			register "hid_desc_reg_offset" = "0x01"
-			device i2c 5d on end
+			device i2c 10 on end
 		end
 		chip drivers/i2c/generic
-			register "hid" = ""ELAN0001""
-			register "desc" = ""ELAN Touchscreen""
+			register "hid" = ""MELF0410""
+			register "desc" = ""Melfas Touchscreen""
 			register "probed" = "1"
 			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_29)"
 			register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_131)"
@@ -116,7 +116,7 @@ chip soc/amd/mendocino
 			register "stop_off_delay_ms" = "2"
 			register "has_power_resource" = "1"
 			register "disable_gpio_export_in_crs" = "1"
-			device i2c 10 on end
+			device i2c 34 on end
 		end
 		chip drivers/generic/gpio_keys
 			register "name" = ""PENH""

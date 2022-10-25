@@ -47,6 +47,9 @@ chip soc/intel/alderlake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"
 
+	register "ibecc.enable" = "CONFIG(ATLAS_ENABLE_IBECC)"
+	register "ibecc.mode" = "CONFIG(ATLAS_ENABLE_IBECC) ? IBECC_MODE_ALL : IBECC_MODE_NONE"
+
 	register "sata_salp_support" = "1"
 
 	register "sata_ports_enable" = "{

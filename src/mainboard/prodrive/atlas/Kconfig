@@ -19,6 +19,13 @@ config ATLAS_ENABLE_SAGV
 	bool "Enable SaGv"
 	default y
 
+config ATLAS_ENABLE_IBECC
+	bool "Enable IBECC"
+	help
+	  Enables In Band Error Correction Code. It's only needed for endurance testing
+	  and therefore not always required.
+	default n
+
 config MAINBOARD_FAMILY
 	string
 	default "PRODRIVE_ATLAS_SERIES"

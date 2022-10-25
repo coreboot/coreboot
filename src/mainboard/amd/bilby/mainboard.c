@@ -56,18 +56,32 @@ static const struct fch_irq_routing fch_irq_map[] = {
 	{ PIRQ_MISC2,	0x00,		0x00 },
 };
 
+static const struct fch_irq_routing *mb_get_fch_irq_mapping(size_t *length)
+{
+	*length = ARRAY_SIZE(fch_irq_map);
+	return fch_irq_map;
+}
+
 static void init_tables(void)
 {
-	const struct fch_irq_routing *entry;
-	int i;
+	const struct fch_irq_routing *mb_irq_map;
+	size_t mb_fch_irq_mapping_table_size;
+	size_t i;
+
+	mb_irq_map = mb_get_fch_irq_mapping(&mb_fch_irq_mapping_table_size);
 
 	memset(fch_pic_routing, PIRQ_NC, sizeof(fch_pic_routing));
 	memset(fch_apic_routing, PIRQ_NC, sizeof(fch_apic_routing));
 
-	for (i = 0; i < ARRAY_SIZE(fch_irq_map); i++) {
-		entry = fch_irq_map + i;
-		fch_pic_routing[entry->intr_index] = entry->pic_irq_num;
-		fch_apic_routing[entry->intr_index] = entry->apic_irq_num;
+	for (i = 0; i < mb_fch_irq_mapping_table_size; i++) {
+		if (mb_irq_map[i].intr_index >= FCH_IRQ_ROUTING_ENTRIES) {
+			printk(BIOS_WARNING,
+			       "Invalid IRQ index %u in FCH IRQ routing table entry %zu\n",
+			       mb_irq_map[i].intr_index, i);
+			continue;
+		}
+		fch_pic_routing[mb_irq_map[i].intr_index] = mb_irq_map[i].pic_irq_num;
+		fch_apic_routing[mb_irq_map[i].intr_index] = mb_irq_map[i].apic_irq_num;
 	}
 }
 

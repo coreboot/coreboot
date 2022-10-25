@@ -8,8 +8,6 @@
 static const struct pad_config gpio_table[] = {
 	/* A8  : PEN_GARAGE_DET_L (wake) */
 	PAD_CFG_GPI_SCI(GPP_A8, NONE, DEEP, EDGE_SINGLE, NONE),
-	/* A11 : PCH_SPI_FPMCU_CS_L */
-	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF2),
 	/* A12 : FPMCU_RST_ODL */
 	PAD_CFG_GPO(GPP_A12, 0, DEEP),
 	/* A16 : EMR_GARAGE_DET (notification) */
@@ -128,6 +126,23 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
+}
+
+/* Set the FPMCU SPI CS line very late to workaround
+ * leakage of this line onto the VDD of the MCU.
+ */
+static const struct pad_config finalize_gpio_table[] = {
+	/* A11 : PCH_SPI_FPMCU_CS_L */
+	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF2),
+};
+
+/*
+ * GPIOs configured during the mainboard finalize
+ */
+const struct pad_config *variant_finalize_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(finalize_gpio_table);
+	return finalize_gpio_table;
 }
 
 /*

@@ -22,6 +22,21 @@ struct fru_info_str fru_strings = {0};
 msr_t xeon_sp_ppin[2] = {0};
 static bool remote_ppin_done = false;
 
+/*
+ * Update SMBIOS type 0 ec version.
+ * For OCP platforms, BMC version is used to represent ec version.
+ * Refer to IPMI v2.0 spec, minor revision is defined as BCD encoded,
+ * format it accordingly.
+ */
+void smbios_ec_revision(uint8_t *ec_major_revision, uint8_t *ec_minor_revision)
+{
+	uint8_t bmc_major_revision, bmc_minor_revision;
+
+	ipmi_bmc_version(&bmc_major_revision, &bmc_minor_revision);
+	*ec_major_revision = bmc_major_revision & 0x7f; /* bit[6:0] Major Firmware Revision */
+	*ec_minor_revision = ((bmc_minor_revision / 16) * 10) + (bmc_minor_revision % 16);
+}
+
 /* Override SMBIOS type 1 data. */
 const char *smbios_system_manufacturer(void)
 {

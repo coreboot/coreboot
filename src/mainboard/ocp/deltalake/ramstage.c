@@ -30,21 +30,6 @@
 extern struct fru_info_str fru_strings;
 static char slot_id_str[SLOT_ID_LEN];
 
-/*
- * Update SMBIOS type 0 ec version.
- * In deltalake, BMC version is used to represent ec version.
- * In current version of OpenBMC, it follows IPMI v2.0 to define minor revision as BCD
- * encoded, so the format of it must be transferred before send to SMBIOS.
- */
-void smbios_ec_revision(uint8_t *ec_major_revision, uint8_t *ec_minor_revision)
-{
-	uint8_t bmc_major_revision, bmc_minor_revision;
-
-	ipmi_bmc_version(&bmc_major_revision, &bmc_minor_revision);
-	*ec_major_revision = bmc_major_revision & 0x7f; /* bit[6:0] Major Firmware Revision */
-	*ec_minor_revision = ((bmc_minor_revision / 16) * 10) + (bmc_minor_revision % 16);
-}
-
 /* Override SMBIOS 2 Location In Chassis from BMC */
 const char *smbios_mainboard_location_in_chassis(void)
 {

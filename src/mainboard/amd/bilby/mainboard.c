@@ -31,7 +31,7 @@
 static uint8_t fch_pic_routing[FCH_IRQ_ROUTING_ENTRIES];
 static uint8_t fch_apic_routing[FCH_IRQ_ROUTING_ENTRIES];
 
-static const struct fch_irq_routing bilby_fch[] = {
+static const struct fch_irq_routing fch_irq_map[] = {
 	{ PIRQ_A,	8,		16 },
 	{ PIRQ_B,	10,		17 },
 	{ PIRQ_C,	11,		18 },
@@ -64,8 +64,8 @@ static void init_tables(void)
 	memset(fch_pic_routing, PIRQ_NC, sizeof(fch_pic_routing));
 	memset(fch_apic_routing, PIRQ_NC, sizeof(fch_apic_routing));
 
-	for (i = 0; i < ARRAY_SIZE(bilby_fch); i++) {
-		entry = bilby_fch + i;
+	for (i = 0; i < ARRAY_SIZE(fch_irq_map); i++) {
+		entry = fch_irq_map + i;
 		fch_pic_routing[entry->intr_index] = entry->pic_irq_num;
 		fch_apic_routing[entry->intr_index] = entry->apic_irq_num;
 	}

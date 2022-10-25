@@ -53,7 +53,7 @@ static uint8_t fch_apic_routing[FCH_IRQ_ROUTING_ENTRIES];
  *  9: acpi <- soc/amd/common/acpi/lpc.asl
  * 12: i8042 <- ec/google/chromeec/acpi/superio.asl
  */
-static const struct fch_irq_routing fch_pirq[] = {
+static const struct fch_irq_routing fch_irq_map[] = {
 	{ PIRQ_A,	6,		PIRQ_NC },
 	{ PIRQ_B,	13,		PIRQ_NC },
 	{ PIRQ_C,	14,		PIRQ_NC },
@@ -86,8 +86,8 @@ static void init_tables(void)
 	memset(fch_pic_routing, PIRQ_NC, sizeof(fch_pic_routing));
 	memset(fch_apic_routing, PIRQ_NC, sizeof(fch_apic_routing));
 
-	for (i = 0; i < ARRAY_SIZE(fch_pirq); i++) {
-		entry = fch_pirq + i;
+	for (i = 0; i < ARRAY_SIZE(fch_irq_map); i++) {
+		entry = fch_irq_map + i;
 		fch_pic_routing[entry->intr_index] = entry->pic_irq_num;
 		fch_apic_routing[entry->intr_index] = entry->apic_irq_num;
 	}

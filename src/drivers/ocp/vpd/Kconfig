@@ -1,0 +1,6 @@
+config OCP_VPD
+	bool
+	default n
+	depends on VPD
+	help
+	  It implements functions that get common VPD variables for OCP projects.

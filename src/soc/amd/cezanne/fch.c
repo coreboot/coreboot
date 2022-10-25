@@ -153,7 +153,8 @@ static void gpp_clk_setup(void)
 
 	uint32_t gpp_clk_ctl = misc_read32(GPP_CLK_CNTRL);
 
-	pcie_gpp_dxio_update_clk_req_config(&cfg->gpp_clk_config[0], GPP_CLK_OUTPUT_COUNT);
+	pcie_gpp_dxio_update_clk_req_config(&cfg->gpp_clk_config[0],
+					    ARRAY_SIZE(cfg->gpp_clk_config));
 	for (int i = 0; i < GPP_CLK_OUTPUT_COUNT; i++) {
 		gpp_clk_ctl &= ~GPP_CLK_REQ_MASK(gpp_clk_shift_lut[i]);
 

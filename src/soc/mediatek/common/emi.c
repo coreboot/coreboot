@@ -19,8 +19,7 @@ size_t sdram_size(void)
 	mc = cbmem_find(CBMEM_ID_MEM_CHIP_INFO);
 	assert(mc);
 
-	for (unsigned int i = 0; i < mc->num_channels; ++i)
-		size += mc->channel[i].density;
+	size = mem_chip_info_total_density_bytes(mc);
 
 	printk(BIOS_INFO, "dram size: %#lx\n", size);
 	return size;

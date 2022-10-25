@@ -112,20 +112,26 @@ size_t mtk_dram_size(void)
 
 static void fill_dram_info(struct mem_chip_info *mc, const struct ddr_base_info *ddr)
 {
-	unsigned int i;
-	size_t size;
+	unsigned int c, r;
 
-	mc->type = MEM_CHIP_LPDDR4X;
-	mc->num_channels = CHANNEL_MAX;
-	size = mtk_dram_size();
-	assert(size);
+	mc->num_entries = CHANNEL_MAX * ddr->mrr_info.rank_nums;
+	mc->struct_version = MEM_CHIP_STRUCT_VERSION;
 
-	for (i = 0; i < mc->num_channels; ++i) {
-		mc->channel[i].density = size / mc->num_channels;
-		mc->channel[i].io_width = DQ_DATA_WIDTH_LP4;
-		mc->channel[i].manufacturer_id = ddr->mrr_info.mr5_vendor_id;
-		mc->channel[i].revision_id[0] = ddr->mrr_info.mr6_revision_id;
-		mc->channel[i].revision_id[1] = ddr->mrr_info.mr7_revision_id;
+	struct mem_chip_entry *entry = mc->entries;
+	for (c = 0; c < CHANNEL_MAX; c++) {
+		for (r = 0; r < ddr->mrr_info.rank_nums; r++) {
+			entry->channel = c;
+			entry->rank = r;
+			entry->type = MEM_CHIP_LPDDR4X;
+			entry->channel_io_width = DQ_DATA_WIDTH_LP4;
+			entry->density_mbits = ddr->mrr_info.mr8_density[r] / CHANNEL_MAX /
+					       (MiB / 8);
+			entry->io_width = DQ_DATA_WIDTH_LP4;
+			entry->manufacturer_id = ddr->mrr_info.mr5_vendor_id;
+			entry->revision_id[0] = ddr->mrr_info.mr6_revision_id;
+			entry->revision_id[1] = ddr->mrr_info.mr7_revision_id;
+			entry++;
+		}
 	}
 }
 
@@ -140,9 +146,10 @@ static void add_mem_chip_info(int unused)
 		return;
 	}
 
-	size = sizeof(*mc) + sizeof(struct mem_chip_channel) * CHANNEL_MAX;
+	size = mem_chip_info_size(CHANNEL_MAX * curr_ddr_info->mrr_info.rank_nums);
 	mc = cbmem_add(CBMEM_ID_MEM_CHIP_INFO, size);
 	assert(mc);
+	memset(mc, 0, size);
 
 	fill_dram_info(mc, curr_ddr_info);
 }

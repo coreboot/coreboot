@@ -21,14 +21,15 @@
 #define QCLIB_VERSION 0
 
 /* store QcLib return data until CBMEM_CREATION_HOOK runs */
-static void *mem_chip_addr;
+static struct mem_chip_info *mem_chip_info;
 
 static void write_mem_chip_information(struct qclib_cb_if_table_entry *te)
 {
+	struct mem_chip_info *info = (void *)te->blob_address;
 	if (te->size > sizeof(struct mem_chip_info) &&
-	    te->size == mem_chip_info_size((void *)te->blob_address)) {
-		/* Save mem_chip_addr in global variable ahead of hook running */
-		mem_chip_addr = (void *)te->blob_address;
+	    te->size == mem_chip_info_size(info->num_entries)) {
+		/* Save mem_chip_info in global variable ahead of hook running */
+		mem_chip_info = info;
 	}
 }
 
@@ -37,19 +38,20 @@ static void add_mem_chip_info(int unused)
 	void *mem_region_base = NULL;
 	size_t size;
 
-	if (!mem_chip_addr) {
+	if (!mem_chip_info || !mem_chip_info->num_entries ||
+	    mem_chip_info->struct_version != MEM_CHIP_STRUCT_VERSION) {
 		printk(BIOS_ERR, "Did not receive valid mem_chip_info from QcLib!");
 		return;
 	}
 
-	size = mem_chip_info_size(mem_chip_addr);
+	size = mem_chip_info_size(mem_chip_info->num_entries);
 
 	/* Add cbmem table */
 	mem_region_base = cbmem_add(CBMEM_ID_MEM_CHIP_INFO, size);
 	ASSERT(mem_region_base != NULL);
 
 	/* Migrate the data into CBMEM */
-	memcpy(mem_region_base, mem_chip_addr, size);
+	memcpy(mem_region_base, mem_chip_info, size);
 }
 
 CBMEM_CREATION_HOOK(add_mem_chip_info);

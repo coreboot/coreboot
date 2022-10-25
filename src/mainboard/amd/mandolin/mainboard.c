@@ -7,6 +7,7 @@
 #include <soc/cpu.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
+#include <string.h>
 #include <types.h>
 #include <commonlib/helpers.h>
 #include <soc/amd/picasso/chip.h>

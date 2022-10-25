@@ -57,9 +57,12 @@ size_t probe_ramsize(const uintptr_t dram_start, const size_t probe_size)
 	msb = MIN(msb, MAX_ADDRESSABLE_SPACE);
 
 	/* Compact binary search.  */
-	for (i = msb; i >= 0; i--)
+	for (i = msb; i >= 0; i--) {
+		if ((discovered | (1ULL << i)) > probe_size)
+			continue;
 		if (probe_mb(dram_start, (discovered | (1ULL << i))))
 			discovered |= (1ULL << i);
+	}
 
 	saved_result = discovered;
 	printk(BIOS_DEBUG, "RAMDETECT: Found %zu MiB RAM\n", discovered);

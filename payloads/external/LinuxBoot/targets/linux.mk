@@ -45,6 +45,8 @@ else ifeq ($(findstring x4.,x$(kernel_version)),x4.)
 kernel_mirror_path := $(kernel_mirror)/v4.x
 else ifeq ($(findstring x5.,x$(kernel_version)),x5.)
 kernel_mirror_path := $(kernel_mirror)/v5.x
+else ifeq ($(findstring x6.,x$(kernel_version)),x6.)
+kernel_mirror_path := $(kernel_mirror)/v6.x
 endif
 
 all: kernel

@@ -19,6 +19,8 @@ struct fch_irq_routing {
 	uint8_t apic_irq_num;
 };
 
+const struct fch_irq_routing *mb_get_fch_irq_mapping(size_t *length);
+
 struct pirq_struct {
 	u8 devfn;
 	u8 PIN[4];	/* PINA/B/C/D are index 0/1/2/3 */
@@ -31,8 +33,6 @@ struct irq_idx_name {
 
 extern const struct pirq_struct *pirq_data_ptr;
 extern u32 pirq_data_size;
-extern const u8 *intr_data_ptr;
-extern const u8 *picr_data_ptr;
 
 u8 read_pci_int_idx(u8 index, int mode);
 void write_pci_int_idx(u8 index, int mode, u8 data);

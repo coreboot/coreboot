@@ -7,11 +7,21 @@
 #include <amdblocks/amd_pci_util.h>
 #include <pc80/i8259.h>
 #include <soc/amd_pci_int_defs.h>
+#include <string.h>
+
+/*
+ * These arrays set up the FCH PCI_INTR registers 0xC00/0xC01.
+ * This table is responsible for physically routing the PIC and
+ * IOAPIC IRQs to the different PCI devices on the system.  It
+ * is read and written via registers 0xC00/0xC01 as an
+ * Index/Data pair.  These values are chipset and mainboard
+ * dependent and should be updated accordingly.
+ */
+static uint8_t fch_pic_routing[FCH_IRQ_ROUTING_ENTRIES];
+static uint8_t fch_apic_routing[FCH_IRQ_ROUTING_ENTRIES];
 
 const struct pirq_struct *pirq_data_ptr;
 u32 pirq_data_size;
-const u8 *intr_data_ptr;
-const u8 *picr_data_ptr;
 
 /*
  * Read the FCH PCI_INTR registers 0xC00/0xC01 at a
@@ -33,6 +43,29 @@ void write_pci_int_idx(u8 index, int mode, u8 data)
 	outb(data, PCI_INTR_DATA);
 }
 
+static void init_fch_irq_map_tables(void)
+{
+	const struct fch_irq_routing *mb_irq_map;
+	size_t mb_fch_irq_mapping_table_size;
+	size_t i;
+
+	mb_irq_map = mb_get_fch_irq_mapping(&mb_fch_irq_mapping_table_size);
+
+	memset(fch_pic_routing, PIRQ_NC, sizeof(fch_pic_routing));
+	memset(fch_apic_routing, PIRQ_NC, sizeof(fch_apic_routing));
+
+	for (i = 0; i < mb_fch_irq_mapping_table_size; i++) {
+		if (mb_irq_map[i].intr_index >= FCH_IRQ_ROUTING_ENTRIES) {
+			printk(BIOS_WARNING,
+			       "Invalid IRQ index %u in FCH IRQ routing table entry %zu\n",
+			       mb_irq_map[i].intr_index, i);
+			continue;
+		}
+		fch_pic_routing[mb_irq_map[i].intr_index] = mb_irq_map[i].pic_irq_num;
+		fch_apic_routing[mb_irq_map[i].intr_index] = mb_irq_map[i].apic_irq_num;
+	}
+}
+
 /*
  * Write the FCH PCI_INTR registers 0xC00/0xC01 with values
  * given in global variables intr_data and picr_data.
@@ -44,13 +77,13 @@ void write_pci_int_table(void)
 	size_t i, limit;
 	const struct irq_idx_name *idx_name;
 
+	init_fch_irq_map_tables();
+
 	idx_name = sb_get_apic_reg_association(&limit);
-	if (picr_data_ptr == NULL || intr_data_ptr == NULL ||
-	    idx_name == NULL) {
+	if (idx_name == NULL) {
 		printk(BIOS_ERR, "Warning: Can't write PCI_INTR 0xC00/0xC01"
 				" registers because\n"
-				"'mainboard_picr_data' or 'mainboard_intr_data'"
-				" or 'irq_association'\ntables are NULL\n");
+				" 'irq_association'\ntables is NULL\n");
 		return;
 	}
 
@@ -67,11 +100,11 @@ void write_pci_int_table(void)
 	 */
 	for (i = 0 ; i < limit; i++) {
 		byte = idx_name[i].index;
-		write_pci_int_idx(byte, 0, (u8)picr_data_ptr[byte]);
+		write_pci_int_idx(byte, 0, fch_pic_routing[byte]);
 		printk(BIOS_DEBUG, "0x%02X\t\t%-20s 0x%02X\t",
 				byte, idx_name[i].name,
 				read_pci_int_idx(byte, 0));
-		write_pci_int_idx(byte, 1, (u8)intr_data_ptr[byte]);
+		write_pci_int_idx(byte, 1, fch_apic_routing[byte]);
 		printk(BIOS_DEBUG, "0x%02X\n", read_pci_int_idx(byte, 1));
 	}
 }

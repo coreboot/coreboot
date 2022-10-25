@@ -12,6 +12,7 @@
 #include <gpio.h>
 #include <soc/acpi.h>
 #include <variant/ec.h>
+#include <string.h>
 
 #define BACKLIGHT_GPIO			GPIO_129
 #define WWAN_AUX_RST_GPIO		GPIO_18

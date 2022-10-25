@@ -6,6 +6,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <soc/acpi.h>
+#include <string.h>
 #include <variant/ec.h>
 
 /*

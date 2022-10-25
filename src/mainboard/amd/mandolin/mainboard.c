@@ -28,11 +28,7 @@ static uint8_t fch_apic_routing[0x80];
 _Static_assert(sizeof(fch_pic_routing) == sizeof(fch_apic_routing),
 	"PIC and APIC FCH interrupt tables must be the same size");
 
-static const struct fch_irq_routing {
-	uint8_t intr_index;
-	uint8_t pic_irq_num;
-	uint8_t apic_irq_num;
-} mandolin_fch[] = {
+static const struct fch_irq_routing mandolin_fch[] = {
 	{ PIRQ_A,	8,		16 },
 	{ PIRQ_B,	10,		17 },
 	{ PIRQ_C,	11,		18 },

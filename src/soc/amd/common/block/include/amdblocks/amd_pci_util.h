@@ -11,6 +11,12 @@
 #define PCI_INTR_INDEX		0xc00
 #define PCI_INTR_DATA		0xc01
 
+struct fch_irq_routing {
+	uint8_t intr_index;
+	uint8_t pic_irq_num;
+	uint8_t apic_irq_num;
+};
+
 struct pirq_struct {
 	u8 devfn;
 	u8 PIN[4];	/* PINA/B/C/D are index 0/1/2/3 */

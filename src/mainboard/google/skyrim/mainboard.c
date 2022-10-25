@@ -33,11 +33,7 @@ _Static_assert(sizeof(fch_pic_routing) == sizeof(fch_apic_routing),
  *  9: acpi <- soc/amd/common/acpi/lpc.asl
  */
 
-static const struct fch_irq_routing {
-	uint8_t intr_index;
-	uint8_t pic_irq_num;
-	uint8_t apic_irq_num;
-} skyrim_fch[] = {
+static const struct fch_irq_routing skyrim_fch[] = {
 	{ PIRQ_A,	12,		PIRQ_NC },
 	{ PIRQ_B,	14,		PIRQ_NC },
 	{ PIRQ_C,	15,		PIRQ_NC },

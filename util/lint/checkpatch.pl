@@ -3338,6 +3338,7 @@ sub process {
 # if LONG_LINE is ignored, the other 2 types are also ignored
 #
 
+		$max_line_length += 1;	# consider leading + in patches
 		if ($line =~ /^\+/ && $length > $max_line_length) {
 			my $msg_type = "LONG_LINE";
 

@@ -22,11 +22,8 @@
  * Index/Data pair.  These values are chipset and mainboard
  * dependent and should be updated accordingly.
  */
-static uint8_t fch_pic_routing[0x80];
-static uint8_t fch_apic_routing[0x80];
-
-_Static_assert(sizeof(fch_pic_routing) == sizeof(fch_apic_routing),
-	"PIC and APIC FCH interrupt tables must be the same size");
+static uint8_t fch_pic_routing[FCH_IRQ_ROUTING_ENTRIES];
+static uint8_t fch_apic_routing[FCH_IRQ_ROUTING_ENTRIES];
 
 static const struct fch_irq_routing mandolin_fch[] = {
 	{ PIRQ_A,	8,		16 },

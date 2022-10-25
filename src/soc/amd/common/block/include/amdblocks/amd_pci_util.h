@@ -11,6 +11,8 @@
 #define PCI_INTR_INDEX		0xc00
 #define PCI_INTR_DATA		0xc01
 
+#define FCH_IRQ_ROUTING_ENTRIES	0x80
+
 struct fch_irq_routing {
 	uint8_t intr_index;
 	uint8_t pic_irq_num;

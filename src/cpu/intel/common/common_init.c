@@ -225,5 +225,5 @@ void enable_energy_perf_pref(void)
 void set_energy_perf_pref(u8 pref)
 {
 	msr_unset_and_set(IA32_HWP_REQUEST, IA32_HWP_REQUEST_EPP_MASK,
-		pref << IA32_HWP_REQUEST_EPP_SHIFT);
+		(uint64_t)pref << IA32_HWP_REQUEST_EPP_SHIFT);
 }

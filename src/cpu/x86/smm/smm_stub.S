@@ -183,30 +183,9 @@ apicid_end:
 	movl	$0, 4(%ebx)
 #endif
 
-	/* Create stack frame by pushing a NULL stack base pointer */
-	pushl	$0x0
-	mov	%esp, %ebp
-
-	/* Allocate locals (efer_backup) */
-	subl	$0x8, %esp
-
 align_stack:
 	/* Align stack to 16 bytes. Another 32 bytes are pushed below. */
 	andl	$0xfffffff0, %esp
-
-#if ENV_X86_64
-	mov	%ecx, %edi
-	/* Backup IA32_EFER. Preserves ebx. */
-	movl	$(IA32_EFER), %ecx
-	rdmsr
-	movl	%eax, -0x4(%ebp)
-	movl	%edx, -0x8(%ebp)
-
-	/* entry64.inc preserves ebx, esi, edi, ebp */
-#include <cpu/x86/64bit/entry64.inc>
-	mov	%edi, %ecx
-
-#endif
 
 	/* Call into the c-based SMM relocation function with the platform
 	 * parameters. Equivalent to:
@@ -214,6 +193,12 @@ align_stack:
 	 *   c_handler(&arg)
 	 */
 #if ENV_X86_64
+	mov	%ecx, %edi
+	/* entry64.inc preserves ebx, esi, edi, ebp */
+#include <cpu/x86/64bit/entry64.inc>
+	mov	%edi, %ecx
+
+
 	push	%rbx /* uintptr_t *canary */
 	push	%rcx /* size_t cpu */
 
@@ -221,24 +206,6 @@ align_stack:
 
 	movabs	c_handler, %eax
 	call	*%rax
-
-	/*
-	 * The only reason to go back to protected mode is that RSM doesn't restore
-	 * MSR registers and MSR IA32_EFER was modified by entering long mode.
-	 * Drop to protected mode to safely operate on the IA32_EFER MSR.
-	 */
-
-	/* Disable long mode. */
-	#include <cpu/x86/64bit/exit32.inc>
-
-	/* Restore IA32_EFER as RSM doesn't restore MSRs. */
-	movl	$(IA32_EFER), %ecx
-	rdmsr
-	movl	-0x4(%ebp), %eax
-	movl	-0x8(%ebp), %edx
-
-	wrmsr
-
 #else
 	push	$0x0 /* Padding */
 	push	%ebx /* uintptr_t *canary */

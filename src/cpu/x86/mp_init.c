@@ -201,6 +201,7 @@ static asmlinkage void ap_init(unsigned int index)
 	/* Fix up APIC id with reality. */
 	dev->path.apic.apic_id = lapicid();
 	dev->path.apic.initial_lapicid = initial_lapicid();
+	dev->enabled = 1;
 
 	if (cpu_is_intel())
 		printk(BIOS_INFO, "AP: slot %u apic_id %x, MCU rev: 0x%08x\n", index,
@@ -387,6 +388,7 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 			continue;
 		}
 		new->name = processor_name;
+		new->enabled = 0; /* Runtime will enable it */
 	}
 
 	return max_cpus;

@@ -230,7 +230,7 @@ apicid_end:
 	movl	%eax, -0x8(%ebp)
 	movl	%edx, -0xc(%ebp)
 
-	/* entry64.inc preserves ebx, esi, edi */
+	/* entry64.inc preserves ebx, esi, edi, ebp */
 #include <cpu/x86/64bit/entry64.inc>
 	mov	%edi, %ecx
 

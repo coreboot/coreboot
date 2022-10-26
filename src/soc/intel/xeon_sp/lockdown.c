@@ -3,10 +3,24 @@
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <intelblocks/cfg.h>
+#include <intelblocks/lpc_lib.h>
 #include <intelblocks/pmclib.h>
 #include <intelpch/lockdown.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
+
+static void lpc_lockdown_config(void)
+{
+	/* Set BIOS Interface Lock, BIOS Lock */
+	lpc_set_bios_interface_lock_down();
+
+	/* Only allow writes in SMM */
+	if (CONFIG(BOOTMEDIA_SMM_BWP)) {
+		lpc_set_eiss();
+		lpc_enable_wp();
+	}
+	lpc_set_lock_enable();
+}
 
 static void pmc_lockdown_config(int chipset_lockdown)
 {
@@ -36,6 +50,7 @@ static void sata_lockdown_config(int chipset_lockdown)
 
 void soc_lockdown_config(int chipset_lockdown)
 {
+	lpc_lockdown_config();
 	pmc_lockdown_config(chipset_lockdown);
 	sata_lockdown_config(chipset_lockdown);
 }

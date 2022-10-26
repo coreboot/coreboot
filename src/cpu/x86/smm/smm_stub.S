@@ -238,7 +238,7 @@ apicid_end:
 
 	/* Call into the c-based SMM relocation function with the platform
 	 * parameters. Equivalent to:
-	 *   struct arg = { c_handler_params, cpu_num, smm_runtime, canary };
+	 *   struct arg = { cpu_num, canary };
 	 *   c_handler(&arg)
 	 */
 #if ENV_X86_64

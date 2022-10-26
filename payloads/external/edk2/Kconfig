@@ -61,6 +61,30 @@ config EDK2_TAG_OR_REV
 	  EDK2_REPOSITORY, and in the case of a branch name, prefixed with origin i.e.
 	  "origin/uefipayload_202202"
 
+config EDK2_USE_EDK2_PLATFORMS
+	bool "Use edk2-platforms repository"
+	default n
+	help
+	  Clone edk2-platforms repository to the edk2 workspace for additional modules.
+
+if EDK2_USE_EDK2_PLATFORMS
+
+config EDK2_PLATFORMS_REPOSITORY
+	string "URL to git repository for edk2-platforms"
+	default "https://github.com/tianocore/edk2-platforms"
+	help
+	  URL to the edk2-platfors repository to clone.
+
+config EDK2_PLATFORMS_TAG_OR_REV
+	string "Insert a commit's SHA-1 or a branch name"
+	default "origin/master"
+	help
+	  The commit's SHA-1 or branch name of the revision to use. This must exist in
+	  EDK2_PLATFORMS_REPOSITORY, and in the case of a branch name, prefixed with
+	  origin i.e. "origin/master"
+
+endif
+
 choice
 	prompt "edk2 build"
 	default EDK2_RELEASE

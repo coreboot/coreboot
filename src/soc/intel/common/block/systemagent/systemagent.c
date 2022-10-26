@@ -201,8 +201,11 @@ static void sa_add_dram_resources(struct device *dev, int *resource_count)
 
 	sa_get_mem_map(dev, &sa_map_values[0]);
 
-	/* top_of_ram -> TOLUD */
-	reserved_ram_from_to(dev, index++, top_of_ram, sa_map_values[SA_TOLUD_REG]);
+	/*
+	 * top_of_ram -> TOLUD: This contains TSEG which needs to be uncacheable
+	 * for proper operation of the smihandler.
+	 */
+	mmio_from_to(dev, index++, top_of_ram, sa_map_values[SA_TOLUD_REG]);
 
 	/* 4GiB -> TOUUD */
 	upper_ram_end(dev, index++, sa_map_values[SA_TOUUD_REG]);

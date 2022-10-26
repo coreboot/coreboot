@@ -76,6 +76,10 @@ chip soc/intel/alderlake
 	register "tcss_ports[3]" = "TCSS_PORT_DEFAULT(OC3)"
 	register "sagv" = "SaGv_Enabled"
 
+	# Set EPP to 50%: 50 * 256 / 100 = 0x80
+	register "enable_energy_perf_pref" = "true"
+	register "energy_perf_pref_value" = "0x80"
+
 	# FIVR RFI Spread Spectrum 6%
 	register "fivr_spread_spectrum" = "FIVR_SS_6"
 

@@ -485,6 +485,16 @@ struct smbios_type4 {
 #define SMBIOS_PROCESSOR_STATUS_POPULATED		(1 << 6)
 #define SMBIOS_PROCESSOR_STATUS_CPU_ENABLED		(1 << 0)
 
+/* defines for processor family */
+#define SMBIOS_PROCESSOR_FAMILY_OTHER			0x01
+#define SMBIOS_PROCESSOR_FAMILY_UNKNOWN			0x02
+#define SMBIOS_PROCESSOR_FAMILY_XEON			0xb3
+
+/* defines for processor characteristics */
+#define PROCESSOR_64BIT_CAPABLE				(1 << 2)
+#define PROCESSOR_MULTI_CORE				(1 << 3)
+#define PROCESSOR_POWER_PERFORMANCE_CONTROL		(1 << 7)
+
 /* defines for supported_sram_type/current_sram_type */
 
 #define SMBIOS_CACHE_SRAM_TYPE_OTHER			(1 << 0)
@@ -721,6 +731,7 @@ enum misc_slot_type {
 	SlotTypePciExpressMini52pinWithBSKO = 0x21,
 	SlotTypePciExpressMini52pinWithoutBSKO = 0x22,
 	SlotTypePciExpressMini76pin = 0x23,
+	SlotTypePciExpressOCPNIC30SFF = 0x26,
 	SlotTypePC98C20 = 0xA0,
 	SlotTypePC98C24 = 0xA1,
 	SlotTypePC98E = 0xA2,

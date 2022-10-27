@@ -2,8 +2,8 @@ Index: kconfig/confdata.c
 ===================================================================
 --- kconfig.orig/confdata.c
 +++ kconfig/confdata.c
-@@ -241,6 +241,13 @@ static const char *conf_get_autoconfig_n
- 	return name ? name : "include/config/auto.conf";
+@@ -230,6 +230,13 @@ static const char *conf_get_autoheader_n
+ 	return name ? name : "include/generated/autoconf.h";
  }
  
 +static const char *conf_get_autobase_name(void)
@@ -16,7 +16,7 @@ Index: kconfig/confdata.c
  static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
  {
  	char *p2;
-@@ -1024,7 +1031,7 @@ static int conf_touch_deps(void)
+@@ -1031,7 +1038,7 @@ static int conf_touch_deps(void)
  	struct symbol *sym;
  	int res, i;
  
@@ -25,15 +25,3 @@ Index: kconfig/confdata.c
  	depfile_prefix_len = strlen(depfile_path);
  
  	name = conf_get_autoconfig_name();
-@@ -1102,7 +1109,10 @@ int conf_write_autoconf(int overwrite)
- 	if (!overwrite && is_present(autoconf_name))
- 		return 0;
- 
--	conf_write_dep("include/config/auto.conf.cmd");
-+	char autoconfcmd_path[PATH_MAX];
-+	snprintf(autoconfcmd_path, sizeof(autoconfcmd_path), "%s%s",
-+		conf_get_autobase_name(), "auto.conf.cmd");
-+	conf_write_dep(autoconfcmd_path);
- 
- 	if (conf_touch_deps())
- 		return 1;

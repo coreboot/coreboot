@@ -34,7 +34,7 @@ Index: kconfig/lexer.l
  #include <limits.h>
  #include <stdio.h>
  #include <stdlib.h>
-@@ -438,6 +439,32 @@ void zconf_nextfile(const char *name)
+@@ -439,6 +440,32 @@ void zconf_nextfile(const char *name)
  	current_file = file;
  }
  

@@ -14,7 +14,7 @@ Index: kconfig/conf.c
 ===================================================================
 --- kconfig.orig/conf.c
 +++ kconfig/conf.c
-@@ -900,7 +900,7 @@ int main(int ac, char **av)
+@@ -889,7 +889,7 @@ int main(int ac, char **av)
  
  	if (input_mode == savedefconfig) {
  		if (conf_write_defconfig(defconfig_file)) {

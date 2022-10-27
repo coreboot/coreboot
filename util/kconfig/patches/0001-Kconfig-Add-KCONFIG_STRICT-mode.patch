@@ -19,7 +19,7 @@ Index: kconfig/confdata.c
 ===================================================================
 --- kconfig.orig/confdata.c
 +++ kconfig/confdata.c
-@@ -439,6 +439,7 @@ load:
+@@ -428,6 +428,7 @@ load:
  			if (def == S_DEF_USER) {
  				sym = sym_find(line + 2 + strlen(CONFIG_));
  				if (!sym) {
@@ -27,7 +27,7 @@ Index: kconfig/confdata.c
  					conf_set_changed(true);
  					continue;
  				}
-@@ -521,6 +522,13 @@ load:
+@@ -510,6 +511,13 @@ load:
  	}
  	free(line);
  	fclose(in);

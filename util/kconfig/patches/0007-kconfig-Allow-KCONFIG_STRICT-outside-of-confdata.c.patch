@@ -36,7 +36,7 @@ Index: kconfig/conf.c
  static void conf(struct menu *menu);
  static void check_conf(struct menu *menu);
  
-@@ -732,6 +734,7 @@ int main(int ac, char **av)
+@@ -721,6 +723,7 @@ int main(int ac, char **av)
  	const char *progname = av[0];
  	int opt;
  	const char *name, *defconfig_file = NULL /* gcc uninit */;
@@ -44,7 +44,7 @@ Index: kconfig/conf.c
  	int no_conf_write = 0;
  
  	tty_stdio = isatty(0) && isatty(1);
-@@ -838,6 +841,13 @@ int main(int ac, char **av)
+@@ -827,6 +830,13 @@ int main(int ac, char **av)
  		break;
  	}
  
@@ -62,7 +62,7 @@ Index: kconfig/confdata.c
 ===================================================================
 --- kconfig.orig/confdata.c
 +++ kconfig/confdata.c
-@@ -539,11 +539,7 @@ load:
+@@ -528,11 +528,7 @@ load:
  	free(line);
  	fclose(in);
  

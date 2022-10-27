@@ -10,74 +10,6 @@ Date:   Fri Nov 22 22:08:15 2019 +0100
     Change-Id: I9e62b05e45709f1539e455e2eed37308609be15e
     Signed-off-by: Patrick Georgi <pgeorgi@google.com>
 
-Index: kconfig/confdata.c
-===================================================================
---- kconfig.orig/confdata.c
-+++ kconfig/confdata.c
-@@ -687,6 +687,9 @@ header_print_symbol(FILE *fp, struct sym
- 
- 		switch (*value) {
- 		case 'n':
-+			if (getenv("KCONFIG_NEGATIVES") != NULL)
-+				fprintf(fp, "#define %s%s%s 0\n",
-+				    CONFIG_, sym->name, suffix);
- 			break;
- 		case 'm':
- 			suffix = "_MODULE";
-@@ -702,14 +705,28 @@ header_print_symbol(FILE *fp, struct sym
- 
- 		if (value[0] != '0' || (value[1] != 'x' && value[1] != 'X'))
- 			prefix = "0x";
-+		if (value[0] == '\0') {
-+			/*
-+			 * prefix is reset to remain closer to the older
-+			 * coreboot patch. No need to keep this once kconfig
-+			 * is fully upreved
-+			 */
-+			prefix = "";
-+			value = "0";
-+		}
- 		fprintf(fp, "#define %s%s %s%s\n",
- 		    CONFIG_, sym->name, prefix, value);
- 		break;
- 	}
- 	case S_STRING:
-+		if (value[0] == '\0')
-+			break;
-+		if (!(sym->flags & SYMBOL_WRITE))
-+			break;
-+		/* fall through */
- 	case S_INT:
- 		fprintf(fp, "#define %s%s %s\n",
--		    CONFIG_, sym->name, value);
-+		    CONFIG_, sym->name, value[0]?value:"0");
- 		break;
- 	default:
- 		break;
-@@ -1080,6 +1097,7 @@ int conf_write_autoconf(int overwrite)
- 	const char *autoconf_name = conf_get_autoconfig_name();
- 	FILE *out, *out_h;
- 	int i;
-+	int print_negatives = getenv("KCONFIG_NEGATIVES") != NULL;
- 
- 	if (!overwrite && is_present(autoconf_name))
- 		return 0;
-@@ -1104,11 +1122,13 @@ int conf_write_autoconf(int overwrite)
- 
- 	for_all_symbols(i, sym) {
- 		sym_calc_value(sym);
--		if (!(sym->flags & SYMBOL_WRITE) || !sym->name)
-+		if (!(sym->flags & SYMBOL_WRITE) && !print_negatives)
-+			continue;
-+		if (!sym->name)
- 			continue;
- 
- 		/* write symbols to auto.conf and autoconf.h */
--		conf_write_symbol(out, sym, &kconfig_printer_cb, (void *)1);
-+		conf_write_symbol(out, sym, &kconfig_printer_cb, print_negatives?NULL:(void *)1);
- 		conf_write_symbol(out_h, sym, &header_printer_cb, NULL);
- 	}
- 	fclose(out);
 Index: kconfig/symbol.c
 ===================================================================
 --- kconfig.orig/symbol.c
@@ -91,3 +23,56 @@ Index: kconfig/symbol.c
  	case S_STRING:
  		return str;
  	case S_UNKNOWN:
+Index: kconfig/confdata.c
+===================================================================
+--- kconfig.orig/confdata.c
++++ kconfig/confdata.c
+@@ -720,7 +720,12 @@ static void print_symbol_for_dotconfig(F
+ 
+ static void print_symbol_for_autoconf(FILE *fp, struct symbol *sym)
+ {
+-	__print_symbol(fp, sym, OUTPUT_N_NONE, true);
++	int print_negatives = getenv("KCONFIG_NEGATIVES") != NULL;
++	enum output_n out = OUTPUT_N_NONE;
++	if (print_negatives) {
++		out = OUTPUT_N;
++	}
++	__print_symbol(fp, sym, out, true);
+ }
+ 
+ void print_symbol_for_listconfig(struct symbol *sym)
+@@ -745,6 +750,10 @@ static void print_symbol_for_c(FILE *fp,
+ 	case S_TRISTATE:
+ 		switch (*val) {
+ 		case 'n':
++			if (getenv("KCONFIG_NEGATIVES") != NULL) {
++				val = "0";
++				break;
++			}
+ 			return;
+ 		case 'm':
+ 			sym_suffix = "_MODULE";
+@@ -756,6 +765,12 @@ static void print_symbol_for_c(FILE *fp,
+ 	case S_HEX:
+ 		if (val[0] != '0' || (val[1] != 'x' && val[1] != 'X'))
+ 			val_prefix = "0x";
++		/* fall through */
++	case S_INT:
++		if (val[0] == '\0') {
++			val = "0";
++			val_prefix = "";
++		}
+ 		break;
+ 	case S_STRING:
+ 		escaped = escape_string_value(val);
+@@ -1106,8 +1121,9 @@ static int __conf_write_autoconf(const c
+ 
+ 	conf_write_heading(file, comment_style);
+ 
++	int print_negatives = getenv("KCONFIG_NEGATIVES") != NULL;
+ 	for_all_symbols(i, sym)
+-		if ((sym->flags & SYMBOL_WRITE) && sym->name)
++		if (((sym->flags & SYMBOL_WRITE) || (print_negatives && sym->type != S_STRING)) && sym->name)
+ 			print_symbol(file, sym);
+ 
+ 	/* check possible errors in conf_write_heading() and print_symbol() */

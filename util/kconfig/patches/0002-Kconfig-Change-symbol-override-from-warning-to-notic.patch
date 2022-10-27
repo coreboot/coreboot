@@ -23,7 +23,7 @@ Index: kconfig/confdata.c
 ===================================================================
 --- kconfig.orig/confdata.c
 +++ kconfig/confdata.c
-@@ -184,6 +184,16 @@ static void conf_warning(const char *fmt
+@@ -166,6 +166,16 @@ static void conf_warning(const char *fmt
  	conf_warnings++;
  }
  
@@ -40,7 +40,7 @@ Index: kconfig/confdata.c
  static void conf_default_message_callback(const char *s)
  {
  	printf("#\n# ");
-@@ -449,7 +459,7 @@ load:
+@@ -438,7 +448,7 @@ load:
  					sym->type = S_BOOLEAN;
  			}
  			if (sym->flags & def_flags) {
@@ -49,7 +49,7 @@ Index: kconfig/confdata.c
  			}
  			switch (sym->type) {
  			case S_BOOLEAN:
-@@ -488,7 +498,7 @@ load:
+@@ -477,7 +487,7 @@ load:
  			}
  
  			if (sym->flags & def_flags) {
@@ -58,7 +58,7 @@ Index: kconfig/confdata.c
  			}
  			if (conf_set_sym_val(sym, def, def_flags, p))
  				continue;
-@@ -513,7 +523,7 @@ load:
+@@ -502,7 +512,7 @@ load:
  				break;
  			case yes:
  				if (cs->def[def].tri != no)

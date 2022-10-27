@@ -15,14 +15,14 @@ Index: kconfig/confdata.c
 ===================================================================
 --- kconfig.orig/confdata.c
 +++ kconfig/confdata.c
-@@ -164,6 +164,10 @@ struct conf_printer {
- 	void (*print_comment)(FILE *, const char *, void *);
- };
+@@ -155,6 +155,10 @@ static void conf_message(const char *fmt
+ static const char *conf_filename;
+ static int conf_lineno, conf_warnings;
  
 +#ifdef __MINGW32__
 +#define mkdir(_n,_p) mkdir((_n))
 +#endif
 +
  static void conf_warning(const char *fmt, ...)
- 	__attribute__ ((format (printf, 1, 2)));
- 
+ {
+ 	va_list ap;

@@ -78,8 +78,9 @@ static void each_cpu_init(struct device *cpu)
 {
 	msr_t msr;
 
-	printk(BIOS_SPEW, "%s dev: %s, cpu: %lu, apic_id: 0x%x\n",
-		__func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id);
+	printk(BIOS_SPEW, "%s dev: %s, cpu: %lu, apic_id: 0x%x, package_id: 0x%x\n",
+	       __func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id,
+	       cpu->path.apic.package_id);
 
 	/*
 	 * Set HWP base feature, EPP reg enumeration, lock thermal and msr
@@ -227,7 +228,4 @@ void mp_init_cpus(struct bus *bus)
 	 * rest of the CPU devices do not have chip_info updated.
 	 */
 	chip_config = bus->dev->chip_info;
-
-	/* update numa domain for all cpu devices */
-	xeonsp_init_cpu_config();
 }

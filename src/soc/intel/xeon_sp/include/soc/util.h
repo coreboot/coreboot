@@ -13,7 +13,6 @@ msr_t read_msr_ppin(void);
 int get_platform_thread_count(void);
 const IIO_UDS *get_iio_uds(void);
 unsigned int soc_get_num_cpus(void);
-void xeonsp_init_cpu_config(void);
 void set_bios_init_completion(void);
 uint8_t soc_get_iio_ioapicid(int socket, int stack);
 

@@ -59,8 +59,9 @@ static void xeon_sp_core_init(struct device *cpu)
 {
 	msr_t msr;
 
-	printk(BIOS_INFO, "%s dev: %s, cpu: %lu, apic_id: 0x%x\n",
-		__func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id);
+	printk(BIOS_INFO, "%s dev: %s, cpu: %lu, apic_id: 0x%x, package_id: 0x%x\n",
+	       __func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id,
+	       cpu->path.apic.package_id);
 	assert(chip_config);
 
 	/* set MSR_PKG_CST_CONFIG_CONTROL - scope per core*/
@@ -246,9 +247,6 @@ void mp_init_cpus(struct bus *bus)
 	/* calls src/cpu/x86/mp_init.c */
 	/* TODO: Handle mp_init_with_smm failure? */
 	mp_init_with_smm(bus, &mp_ops);
-
-	/* update numa domain for all cpu devices */
-	xeonsp_init_cpu_config();
 
 	FUNC_EXIT();
 }

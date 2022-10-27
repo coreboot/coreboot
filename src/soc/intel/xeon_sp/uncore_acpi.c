@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <cbmem.h>
 #include <cpu/x86/lapic.h>
+#include <commonlib/sort.h>
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pciexp.h>
@@ -22,29 +23,54 @@
 
 /* NUMA related ACPI table generation. SRAT, SLIT, etc */
 
+/* Increase if necessary. Currently all x86 CPUs only have 2 SMP threads */
+#define MAX_THREAD 2
+
 unsigned long acpi_create_srat_lapics(unsigned long current)
 {
 	struct device *cpu;
-	unsigned int cpu_index = 0;
+	unsigned int num_cpus = 0;
+	int apic_ids[CONFIG_MAX_CPUS] = {};
 
-	for (cpu = all_devices; cpu; cpu = cpu->next) {
-		if (!is_enabled_cpu(cpu))
+	unsigned int sort_start = 0;
+	for (unsigned int thread_id = 0; thread_id < MAX_THREAD; thread_id++) {
+		for (cpu = all_devices; cpu; cpu = cpu->next) {
+			if (!is_enabled_cpu(cpu))
+				continue;
+			if (num_cpus >= ARRAY_SIZE(apic_ids))
+				break;
+			if (cpu->path.apic.thread_id != thread_id)
+				continue;
+			apic_ids[num_cpus++] = cpu->path.apic.apic_id;
+		}
+		bubblesort(&apic_ids[sort_start], num_cpus - sort_start, NUM_ASCENDING);
+		sort_start = num_cpus;
+	}
+
+	for (unsigned int i = 0; i < num_cpus; i++) {
+		/* Match the sorted apic_ids to a struct device */
+		for (cpu = all_devices; cpu; cpu = cpu->next) {
+			if (!is_enabled_cpu(cpu))
+				continue;
+			if (cpu->path.apic.apic_id == apic_ids[i])
+				break;
+		}
+		if (!cpu)
 			continue;
 
 		if (is_x2apic_mode()) {
-			printk(BIOS_DEBUG, "SRAT: x2apic cpu_index=%08x, node_id=%02x, apic_id=%08x\n",
-			       cpu_index, cpu->path.apic.node_id, cpu->path.apic.apic_id);
+			printk(BIOS_DEBUG, "SRAT: x2apic cpu_index=%04x, node_id=%02x, apic_id=%08x\n",
+			       i, cpu->path.apic.node_id, cpu->path.apic.apic_id);
 
 			current += acpi_create_srat_x2apic((acpi_srat_x2apic_t *)current,
 				cpu->path.apic.node_id, cpu->path.apic.apic_id);
 		} else {
 			printk(BIOS_DEBUG, "SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n",
-			       cpu_index, cpu->path.apic.node_id, cpu->path.apic.apic_id);
+			       i, cpu->path.apic.node_id, cpu->path.apic.apic_id);
 
 			current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current,
 				cpu->path.apic.node_id, cpu->path.apic.apic_id);
 		}
-		cpu_index++;
 	}
 	return current;
 }

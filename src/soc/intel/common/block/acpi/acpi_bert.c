@@ -9,11 +9,6 @@
 
 static bool boot_error_src_present(void)
 {
-	if (!CONFIG(SOC_INTEL_CRASHLOG)) {
-		printk(BIOS_DEBUG, "Crashlog disabled.\n");
-		return false;
-	}
-
 	if (!discover_crashlog()) {
 		printk(BIOS_SPEW, "Crashlog discovery result: crashlog not found\n");
 		return false;
@@ -27,7 +22,7 @@ static bool boot_error_src_present(void)
 	return (crashlog_size > 0);
 }
 
-enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
+static enum cb_err record_crashlog_into_bert(void **region, size_t *length)
 {
 	acpi_generic_error_status_t *status = NULL;
 	size_t cpu_record_size, pmc_record_size;
@@ -96,4 +91,21 @@ enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
 	*region = (void *)status;
 
 	return CB_SUCCESS;
+}
+
+enum cb_err acpi_soc_get_bert_region(void **region, size_t *length)
+{
+	if (CONFIG(SOC_INTEL_CRASHLOG)) {
+		return record_crashlog_into_bert(region, length);
+	} else {
+		/* Check if MCA error has been added into BERT. */
+		if (bert_should_generate_acpi_table()) {
+			bert_errors_region(region, length);
+			if (!*region) {
+				printk(BIOS_ERR, "Can't find BERT storage area\n");
+				return CB_ERR;
+			}
+		}
+		return CB_SUCCESS;
+	}
 }

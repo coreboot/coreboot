@@ -164,7 +164,7 @@ chip soc/intel/meteorlake
 		device pci 1e.4 alias tsn_gbe1 off end
 		device pci 1e.5 alias tsn_gbe2 off end
 		device pci 1f.0 alias soc_espi on end
-		device pci 1f.1 alias p2sb off end
+		device pci 1f.1 alias p2sb hidden end
 		device pci 1f.2 alias pmc hidden end
 		device pci 1f.3 alias hda off end
 		device pci 1f.4 alias smbus off end

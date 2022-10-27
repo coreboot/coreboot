@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <device/device.h>
+#include <device/pci_def.h>
 #include <intelblocks/p2sb.h>
 #include <soc/iomap.h>
 
@@ -37,8 +38,25 @@ static void ioe_p2sb_read_resources(struct device *dev)
 	mmio_resource_kb(dev, 0, IOM_BASE_ADDR / KiB, IOM_BASE_SIZE / KiB);
 }
 
+static void p2sb_read_resources(struct device *dev)
+{
+	/*
+	 * There's only one resource on the P2SB device. It's also already
+	 * manually set to a fixed address in earlier boot stages.
+	 * The following code makes sure that it doesn't change even the
+	 * resource allocator is being run.
+	 */
+	mmio_range(dev, PCI_BASE_ADDRESS_0, P2SB_BAR, P2SB_SIZE);
+}
+
 struct device_operations ioe_p2sb_ops = {
 	.read_resources   = ioe_p2sb_read_resources,
+	.set_resources    = noop_set_resources,
+	.scan_bus         = scan_static_bus,
+};
+
+struct device_operations soc_p2sb_ops = {
+	.read_resources   = p2sb_read_resources,
 	.set_resources    = noop_set_resources,
 	.scan_bus         = scan_static_bus,
 };

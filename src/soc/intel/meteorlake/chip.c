@@ -183,6 +183,9 @@ static void soc_enable(struct device *dev)
 		 dev->path.pci.devfn == PCI_DEVFN_PMC)
 		dev->ops = &pmc_ops;
 	else if (dev->path.type == DEVICE_PATH_PCI &&
+		 dev->path.pci.devfn == PCI_DEVFN_P2SB)
+		dev->ops = &soc_p2sb_ops;
+	else if (dev->path.type == DEVICE_PATH_PCI &&
 		 dev->path.pci.devfn == PCI_DEVFN_IOE_P2SB)
 		dev->ops = &ioe_p2sb_ops;
 	else if (dev->path.type == DEVICE_PATH_GPIO)

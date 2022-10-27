@@ -40,7 +40,7 @@ Index: kconfig/confdata.c
  static void conf_default_message_callback(const char *s)
  {
  	printf("#\n# ");
-@@ -438,7 +448,7 @@ load:
+@@ -440,7 +450,7 @@ load:
  					sym->type = S_BOOLEAN;
  			}
  			if (sym->flags & def_flags) {
@@ -49,7 +49,7 @@ Index: kconfig/confdata.c
  			}
  			switch (sym->type) {
  			case S_BOOLEAN:
-@@ -477,7 +487,7 @@ load:
+@@ -479,7 +489,7 @@ load:
  			}
  
  			if (sym->flags & def_flags) {
@@ -58,7 +58,7 @@ Index: kconfig/confdata.c
  			}
  			if (conf_set_sym_val(sym, def, def_flags, p))
  				continue;
-@@ -502,7 +512,7 @@ load:
+@@ -504,7 +514,7 @@ load:
  				break;
  			case yes:
  				if (cs->def[def].tri != no)

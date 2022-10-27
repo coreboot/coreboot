@@ -230,13 +230,6 @@ static const char *conf_get_autoheader_name(void)
 	return name ? name : "include/generated/autoconf.h";
 }
 
-static const char *conf_get_autobase_name(void)
-{
-	char *name = getenv("KCONFIG_SPLITCONFIG");
-
-	return name ? name : "include/config/";
-}
-
 static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 {
 	char *p2;
@@ -265,19 +258,21 @@ static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 				     p, sym->name);
 		return 1;
 	case S_STRING:
-		if (*p++ != '"')
-			break;
-		for (p2 = p; (p2 = strpbrk(p2, "\"\\")); p2++) {
-			if (*p2 == '"') {
-				*p2 = 0;
+		/* No escaping for S_DEF_AUTO (include/config/auto.conf) */
+		if (def != S_DEF_AUTO) {
+			if (*p++ != '"')
 				break;
+			for (p2 = p; (p2 = strpbrk(p2, "\"\\")); p2++) {
+				if (*p2 == '"') {
+					*p2 = 0;
+					break;
+				}
+				memmove(p2, p2 + 1, strlen(p2));
 			}
-			memmove(p2, p2 + 1, strlen(p2));
-		}
-		if (!p2) {
-			if (def != S_DEF_AUTO)
+			if (!p2) {
 				conf_warning("invalid string found");
-			return 1;
+				return 1;
+			}
 		}
 		/* fall through */
 	case S_INT:
@@ -732,7 +727,7 @@ static void print_symbol_for_autoconf(FILE *fp, struct symbol *sym)
 	if (print_negatives) {
 		out = OUTPUT_N;
 	}
-	__print_symbol(fp, sym, out, true);
+	__print_symbol(fp, sym, out, false);
 }
 
 void print_symbol_for_listconfig(struct symbol *sym)
@@ -1019,10 +1014,10 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
 
 	fprintf(out, "\n$(deps_config): ;\n");
 
-	if (ferror(out)) /* error check for all fprintf() calls */
-		return -1;
-
+	ret = ferror(out); /* error check for all fprintf() calls */
 	fclose(out);
+	if (ret)
+		return -1;
 
 	if (rename(tmp, name)) {
 		perror("rename");
@@ -1034,14 +1029,19 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
 
 static int conf_touch_deps(void)
 {
-	const char *name;
+	const char *name, *tmp;
 	struct symbol *sym;
 	int res, i;
 
-	strcpy(depfile_path, conf_get_autobase_name());
-	depfile_prefix_len = strlen(depfile_path);
-
 	name = conf_get_autoconfig_name();
+	tmp = strrchr(name, '/');
+	depfile_prefix_len = tmp ? tmp - name + 1 : 0;
+	if (depfile_prefix_len + 1 > sizeof(depfile_path))
+		return -1;
+
+	strncpy(depfile_path, name, depfile_prefix_len);
+	depfile_path[depfile_prefix_len] = 0;
+
 	conf_read_simple(name, S_DEF_AUTO);
 	sym_calc_value(modules_sym);
 
@@ -1134,10 +1134,10 @@ static int __conf_write_autoconf(const char *filename,
 			print_symbol(file, sym);
 
 	/* check possible errors in conf_write_heading() and print_symbol() */
-	if (ferror(file))
-		return -1;
-
+	ret = ferror(file);
 	fclose(file);
+	if (ret)
+		return -1;
 
 	if (rename(tmp, filename)) {
 		perror("rename");

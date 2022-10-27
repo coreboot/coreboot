@@ -36,7 +36,7 @@ Index: kconfig/conf.c
  static void conf(struct menu *menu);
  static void check_conf(struct menu *menu);
  
-@@ -721,6 +723,7 @@ int main(int ac, char **av)
+@@ -720,6 +722,7 @@ int main(int ac, char **av)
  	const char *progname = av[0];
  	int opt;
  	const char *name, *defconfig_file = NULL /* gcc uninit */;
@@ -62,7 +62,7 @@ Index: kconfig/confdata.c
 ===================================================================
 --- kconfig.orig/confdata.c
 +++ kconfig/confdata.c
-@@ -528,11 +528,7 @@ load:
+@@ -530,11 +530,7 @@ load:
  	free(line);
  	fclose(in);
  

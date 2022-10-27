@@ -27,7 +27,7 @@ Index: kconfig/confdata.c
 ===================================================================
 --- kconfig.orig/confdata.c
 +++ kconfig/confdata.c
-@@ -722,7 +722,12 @@ static void print_symbol_for_dotconfig(F
+@@ -715,7 +715,12 @@ static void print_symbol_for_dotconfig(F
  
  static void print_symbol_for_autoconf(FILE *fp, struct symbol *sym)
  {
@@ -41,7 +41,7 @@ Index: kconfig/confdata.c
  }
  
  void print_symbol_for_listconfig(struct symbol *sym)
-@@ -747,6 +752,10 @@ static void print_symbol_for_c(FILE *fp,
+@@ -740,6 +745,10 @@ static void print_symbol_for_c(FILE *fp,
  	case S_TRISTATE:
  		switch (*val) {
  		case 'n':
@@ -52,7 +52,7 @@ Index: kconfig/confdata.c
  			return;
  		case 'm':
  			sym_suffix = "_MODULE";
-@@ -758,6 +767,12 @@ static void print_symbol_for_c(FILE *fp,
+@@ -751,6 +760,12 @@ static void print_symbol_for_c(FILE *fp,
  	case S_HEX:
  		if (val[0] != '0' || (val[1] != 'x' && val[1] != 'X'))
  			val_prefix = "0x";
@@ -65,7 +65,7 @@ Index: kconfig/confdata.c
  		break;
  	case S_STRING:
  		escaped = escape_string_value(val);
-@@ -1113,8 +1128,9 @@ static int __conf_write_autoconf(const c
+@@ -1108,8 +1123,9 @@ static int __conf_write_autoconf(const c
  
  	conf_write_heading(file, comment_style);
  
@@ -75,4 +75,4 @@ Index: kconfig/confdata.c
 +		if (((sym->flags & SYMBOL_WRITE) || (print_negatives && sym->type != S_STRING)) && sym->name)
  			print_symbol(file, sym);
  
- 	/* check possible errors in conf_write_heading() and print_symbol() */
+ 	fflush(file);

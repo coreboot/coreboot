@@ -21,6 +21,5 @@ typedef struct {
 unsigned long northbridge_write_acpi_tables(const struct device *device,
 	unsigned long current, struct acpi_rsdp *rsdp);
 void uncore_inject_dsdt(const struct device *device);
-unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current);
 
 #endif /* _SOC_ACPI_H_ */

@@ -30,7 +30,14 @@ bool is_debug_cse_fw_update_disable(void)
 
 enum cb_err dbg_feature_cntrl_init(void)
 {
-	if (spi_flash_read(boot_device_spi_flash(), DEBUG_FEATURE_CTRL_OFFSET,
+	const struct spi_flash *spi_flash_dev = boot_device_spi_flash();
+
+	if (spi_flash_dev == NULL) {
+		printk(BIOS_ERR, "Failed to Initialize boot device SPI flash\n");
+		return CB_ERR;
+	}
+
+	if (spi_flash_read(spi_flash_dev, DEBUG_FEATURE_CTRL_OFFSET,
 				DEBUG_FEATURE_CTRL_SZ, &dbg_feature_cntrl)) {
 		printk(BIOS_ERR, "Failed to read Descriptor Region from SPI Flash\n");
 		return CB_ERR;

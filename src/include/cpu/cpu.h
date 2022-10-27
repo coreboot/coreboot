@@ -3,7 +3,7 @@
 #ifndef CPU_CPU_H
 #define CPU_CPU_H
 
-#include <arch/cpu.h>
+#include <arch/cpu.h>  /* IWYU pragma: export */
 #include <stdint.h>
 
 void cpu_initialize(unsigned int cpu_index);

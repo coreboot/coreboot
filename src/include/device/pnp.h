@@ -6,8 +6,8 @@
 #include <stdint.h>
 #include <device/device.h>
 /* When <device/pnp.h> is needed, it supposed to provide <device/pnp_{def,type}.h> */
-#include <device/pnp_def.h>
-#include <device/pnp_type.h>
+#include <device/pnp_def.h> /* IWYU pragma: export */
+#include <device/pnp_type.h> /* IWYU pragma: export */
 #include <arch/io.h>
 
 #if !ENV_PNP_SIMPLE_DEVICE

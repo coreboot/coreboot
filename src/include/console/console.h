@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 /* console.h is supposed to provide the log levels defined in here: */
-#include <commonlib/loglevel.h>
+#include <commonlib/loglevel.h> /* IWYU pragma: export */
 
 #define RAM_DEBUG (CONFIG(DEBUG_RAM_SETUP) ? BIOS_DEBUG : BIOS_NEVER)
 #define RAM_SPEW  (CONFIG(DEBUG_RAM_SETUP) ? BIOS_SPEW  : BIOS_NEVER)

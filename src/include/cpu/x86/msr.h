@@ -3,7 +3,7 @@
 #ifndef CPU_X86_MSR_H
 #define CPU_X86_MSR_H
 
-#include <cpu/x86/msr_access.h>
+#include <cpu/x86/msr_access.h> /* IWYU pragma: export */
 
 /* Intel SDM: Table 2-1
  * IA-32 architectural MSR: Extended Feature Enable Register

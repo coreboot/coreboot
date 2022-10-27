@@ -19,14 +19,15 @@
 
 #if CONFIG(PCI)
 
-#include <stdint.h>
-#include <stddef.h>
-#include <device/pci_def.h>
-#include <device/resource.h>
+/* When <device/pci.h> is needed, it supposed to provide <device/pci_{def,type}.h> */
 #include <device/device.h>
+#include <device/pci_def.h> /* IWYU pragma: export */
 #include <device/pci_ops.h>
 #include <device/pci_rom.h>
-#include <device/pci_type.h>
+#include <device/pci_type.h> /* IWYU pragma: export */
+#include <device/resource.h>
+#include <stddef.h>
+#include <stdint.h>
 
 /* Common pci operations without a standard interface */
 struct pci_operations {

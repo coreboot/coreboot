@@ -3,7 +3,7 @@
 #ifndef _CBMEM_H_
 #define _CBMEM_H_
 
-#include <commonlib/bsd/cbmem_id.h>
+#include <commonlib/bsd/cbmem_id.h> /* IWYU pragma: export */
 #include <stddef.h>
 #include <stdint.h>
 #include <boot/coreboot_tables.h>

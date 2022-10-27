@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pci_type.h>
-#include <arch/pci_ops.h>
+#include <arch/pci_ops.h> /* IWYU pragma: export */
 
 void __noreturn pcidev_die(void);
 

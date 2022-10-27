@@ -22,7 +22,7 @@
 #define DEFAULT_GPIOBASE	0x0480
 #define DEFAULT_PMBASE		0x0500
 
-#include <southbridge/intel/common/rcba.h>
+#include <southbridge/intel/common/rcba.h> /* IWYU pragma: export */
 
 #if CONFIG(SOUTHBRIDGE_INTEL_BD82X6X)
 #define CROS_GPIO_DEVICE_NAME	"CougarPoint"

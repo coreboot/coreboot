@@ -3,7 +3,7 @@
 #ifndef __DEVICE_MMIO_H__
 #define __DEVICE_MMIO_H__
 
-#include <arch/mmio.h>
+#include <arch/mmio.h> /* IWYU pragma: export */
 #include <commonlib/helpers.h>
 #include <endian.h>
 #include <types.h>

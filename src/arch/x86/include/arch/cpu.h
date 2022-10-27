@@ -4,7 +4,7 @@
 #define ARCH_CPU_H
 
 #include <types.h>
-#include <arch/cpuid.h>
+#include <arch/cpuid.h> /* IWYU pragma: export */
 
 /*
  * EFLAGS bits

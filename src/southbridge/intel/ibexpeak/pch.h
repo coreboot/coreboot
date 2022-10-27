@@ -4,6 +4,7 @@
 #define SOUTHBRIDGE_INTEL_BD82X6X_PCH_H
 
 #include <acpi/acpi.h>
+#include <southbridge/intel/common/rcba.h> /* IWYU pragma: export */
 
 /* PCH types */
 #define PCH_TYPE_CPT	   0x1c /* CougarPoint */
@@ -23,8 +24,6 @@
 #define DEFAULT_GPIOBASE	0x0480
 #define DEFAULT_PMBASE		0x0500
 #define DEFAULT_HECIBAR		((u8 *)0xfed17000)
-
-#include <southbridge/intel/common/rcba.h>
 
 #ifndef __ACPI__
 

@@ -4,6 +4,7 @@
 #define SOUTHBRIDGE_INTEL_LYNXPOINT_PCH_H
 
 #include <acpi/acpi.h>
+#include <southbridge/intel/common/rcba.h> /* IWYU pragma: export */
 
 #define CROS_GPIO_DEVICE_NAME	"LynxPoint"
 
@@ -54,8 +55,6 @@
 #define DEFAULT_GPIOBASE	0x480
 #define DEFAULT_GPIOSIZE	0x80
 #endif
-
-#include <southbridge/intel/common/rcba.h>
 
 #ifndef __ACPI__
 

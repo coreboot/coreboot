@@ -7,7 +7,7 @@
 #define DEFAULT_GPIOBASE	0x0480
 #define DEFAULT_PMBASE		0x0500
 
-#include <southbridge/intel/common/rcba.h>
+#include <southbridge/intel/common/rcba.h> /* IWYU pragma: export */
 
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0

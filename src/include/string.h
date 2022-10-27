@@ -3,9 +3,9 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include <stdarg.h>
+#include <stdarg.h> /* IWYU pragma: export */
 #include <stddef.h>
-#include <stdio.h>
+#include <stdio.h> /* IWYU pragma: export */
 
 void *memcpy(void *dest, const void *src, size_t n);
 void *memmove(void *dest, const void *src, size_t n);

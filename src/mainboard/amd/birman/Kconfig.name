@@ -1,2 +1,9 @@
-config BOARD_AMD_BIRMAN
-	bool "Birman"
+comment "Birman"
+
+config BOARD_AMD_BIRMAN_MORGANA
+	bool "->  Birman for Morgana SoC"
+	select SOC_AMD_MORGANA
+
+config BOARD_AMD_BIRMAN_GLINDA
+	bool "->  Birman for Glinda SoC"
+	select SOC_AMD_GLINDA

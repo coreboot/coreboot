@@ -23,5 +23,6 @@
 #define ECRAM_KBL_BRIGHTNESS	0x19
 #define ECRAM_FN_LOCK_STATE	0x2c
 #define ECRAM_FAST_CHARGE	dead_code_t(uint8_t)
+#define ECRAM_MIRROR_FLAG	0x04
 
 #endif

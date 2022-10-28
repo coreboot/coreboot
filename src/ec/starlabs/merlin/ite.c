@@ -70,6 +70,7 @@ static void merlin_init(struct device *dev)
 	 * trackpad_state
 	 * kbl_brightness
 	 * kbl_state
+	 * mirror_flag
 	 */
 
 	/*
@@ -247,6 +248,25 @@ static void merlin_init(struct device *dev)
 					 1,
 					 kbl_state,
 					 ARRAY_SIZE(kbl_state)));
+
+	/*
+	 * Mirror Flag
+	 *
+	 * Setting:	mirror_flag
+	 *
+	 * Values:	Off, On
+	 * Default:	On
+	 */
+	const uint8_t mirror_flag[] = {
+		MIRROR_DISABLED,
+		MIRROR_ENABLED
+	};
+	if (CONFIG(EC_STARLABS_MIRROR_FLAG))
+		ec_write(ECRAM_MIRROR_FLAG,
+			get_ec_value_from_option("mirror_flag",
+						1,
+						mirror_flag,
+						ARRAY_SIZE(mirror_flag)));
 }
 
 static struct device_operations ops = {

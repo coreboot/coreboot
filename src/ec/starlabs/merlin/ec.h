@@ -98,6 +98,10 @@
 #define KBL_DISABLED		0x00
 #define KBL_ENABLED		0xdd
 
+/* Mirror Flag */
+#define MIRROR_DISABLED		0x00
+#define MIRROR_ENABLED		0x01
+
 uint16_t ec_get_version(void);
 
 #endif

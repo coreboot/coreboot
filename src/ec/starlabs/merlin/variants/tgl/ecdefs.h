@@ -23,5 +23,6 @@
 #define ECRAM_MAX_CHARGE	0x1a
 #define ECRAM_FAN_MODE		0x1b
 #define ECRAM_FAST_CHARGE	dead_code_t(uint8_t)
+#define ECRAM_MIRROR_FLAG	0x05
 
 #endif

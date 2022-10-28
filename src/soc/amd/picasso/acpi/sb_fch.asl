@@ -389,6 +389,6 @@ Device (MISC)
 	})
 	Method (_STA, 0x0, NotSerialized)
 	{
-		Return (0x0F)
+		Return (0x0b)
 	}
 }

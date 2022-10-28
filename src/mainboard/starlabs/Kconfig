@@ -12,4 +12,8 @@ source "src/mainboard/starlabs/*/Kconfig"
 config MAINBOARD_VENDOR
 	default "Star Labs"
 
+config LOCAL_VERSION
+	string
+	default "8.18"
+
 endif # VENDOR_STARLABS

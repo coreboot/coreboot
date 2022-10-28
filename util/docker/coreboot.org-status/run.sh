@@ -11,7 +11,10 @@ set -e
 # /data-out.
 
 cd /data-in/board-status.git
-/opt/tools/status-to-html.sh > /tmp/board-status.html
+/opt/tools/board-status.html \
+	-board-status-dir /data-in/board-status.git \
+	-coreboot-dir /data-in/coreboot.git \
+	> /tmp/board-status.html
 mv /tmp/board-status.html /data-out/
 
 cd /data-in/coreboot.git

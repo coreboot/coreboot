@@ -1,39 +1,35 @@
-Scripts to publish board-status data to the wiki
+Tool to publish board-status data to the website
 ================================================
 
-These scripts parse the board-status repository (and the coreboot repository as companion)
-to build a meaningful representation of the test coverage stored in board-status.
+This tool parses the board-status repository (and the coreboot repository as
+companion) to build a meaningful representation of the test coverage stored
+in board-status.
 
-The server runs these nightly (CET/CEST), so no user interaction with the wiki page is needed.
+The server runs these regularly to update
+https://coreboot.org/status/board-status.html
 
 How to use
 ----------
-When modifying the scripts, or when publishing the results elsewhere, you might want to run them
-yourself. You'll need the board-status and the coreboot repository checked out side by side, named
-"board-status" and "coreboot" respectively (in particular without .git suffix).
+When modifying the tool, or when publishing the results elsewhere, you
+might want to run it yourself. You'll need the board-status and the coreboot
+repository checked out.
 
-To emit wiki-text, in the board-status repository's top-level directory, run
+To build the tool, run the following commands
 
-    $ ../util/board_status/to-wiki/status-to-wiki.sh
+    $ go mod download
+    $ go build
 
-The output ends up on stdout, so you'll have to store it yourself, if you need it later.
+To run it, use
 
-`push-to-wiki.sh FILENAME TITLE` can be used to push a file into the wiki.
-User credentials are looked up in ~/.wikiaccount, which should look like
+    $ ./board-status.html \
+      -board-status-dir .../board-status.git \
+      -coreboot-dir .../coreboot.git > out.html
 
-    USERNAME=user
-    USERPASS=password
+There will be a few errors about missing revisions, those come from status
+reports based on unpublished commits.
 
-How it works
-------------
-status-to-wiki collects the reports and sorts them in buckets by report date. These can have
-weekly, monthly and quarterly granularity.
-It then passes these into the towiki script, which reads the data in more details and prints
-them in the output format.
-
-Contributions
--------------
-These scripts are rather bare, and you're welcome to extend them to extract more useful data
-from both repositories, and to present the data in a nicer way.
-A rewrite into another (reasonable) language is fine, too - shell quickly finds its limits
-for this kind of text processing.
+LIMITATIONS
+-----------
+The tool doesn't support board variants or "clone of" specifiers in
+board-info.txt. The output is also a bit unwieldy, leading to many megabytes
+of HTML in a single file.

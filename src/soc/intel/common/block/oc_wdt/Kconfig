@@ -1,0 +1,41 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_BLOCK_OC_WDT
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_PMC
+	help
+	  Intel Processor common Overclocking Watchdog support
+
+config SOC_INTEL_COMMON_OC_WDT_ENABLE
+	bool "Enable overclocking watchdog during boot"
+	depends on SOC_INTEL_COMMON_BLOCK_OC_WDT
+	help
+	  Enables Intel chipset Overclocking Watchdog to count during system
+	  boot. The platform will reset during lockups if watchdog is not
+	  reloaded. Software/firmware is responsible for feeding the watchdog.
+
+	  If unsure, say N.
+
+config SOC_INTEL_COMMON_OC_WDT_TIMEOUT_SECONDS
+	int
+	depends on SOC_INTEL_COMMON_OC_WDT_ENABLE
+	range 70 1024
+	default 600
+	help
+	  The Intel chipset Overclocking Watchdog timeout value in seconds.
+	  coreboot will preload the watchdog with the timeout value specified
+	  in this option. Specify a high enough value so that the platform
+	  will have a chance to perform full memory training and boot. Default
+	  is 10 minutes. Boards and SoCs may override this value.
+
+config SOC_INTEL_COMMON_OC_WDT_RELOAD_IN_PERIODIC_SMI
+	bool "Reload the overclocking watchdog using periodic SMI"
+	depends on SOC_INTEL_COMMON_OC_WDT_ENABLE
+	depends on SOC_INTEL_COMMON_BLOCK_SMM
+	default y
+	help
+	  Enables Intel chipset Overclocking Watchdog reloading in the periodic
+	  SMI handler. Without this option the platform will keep power cycling
+	  unless the OS drivers are installed for this watchdog.
+
+	  If unsure, say Y.

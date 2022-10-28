@@ -36,17 +36,19 @@ chip soc/intel/alderlake
 		},
 	}"
 
-	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	# Disable USB2 Port 1
-	register "usb2_ports[2]" = "USB2_PORT_EMPTY"	# Disable USB2 Port 2
-	register "usb2_ports[3]" = "USB2_PORT_EMPTY"	# Disable USB2 Port 3
-	register "usb2_ports[4]" = "USB2_PORT_EMPTY"	# Disable USB2 Port 4
+	register "usb2_ports[0]" = "USB2_PORT_MAX_TYPE_C(OC2)"  # set to Max for USB2_C0
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	    	# Disable Port 1
+	register "usb2_ports[2]" = "USB2_PORT_EMPTY"	    	# Disable Port 2
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"        	# Disable Port 3
+	register "usb2_ports[4]" = "USB2_PORT_EMPTY"	    	# Disable Port 4
 
-	register "usb3_ports[0]" = "{
-		.enable           = 1,
-		.ocpin            = OC_SKIP,
-		.tx_de_emp        = 0x2B,
-		.tx_downscale_amp = 0x00,
-	}" # Type-A port A0
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A port A0
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A port A1(DCI)
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A port A2
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A port A3
+
+	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC1)"     # USB TYPE C
+	register "tcss_ports[2]" = "TCSS_PORT_EMPTY"            # Disable Port2
 
 	register "serial_io_gspi_mode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,

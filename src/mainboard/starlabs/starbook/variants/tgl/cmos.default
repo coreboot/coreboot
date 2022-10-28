@@ -16,6 +16,7 @@ thunderbolt=Disable
 # EC
 kbl_timeout=30 seconds
 fn_ctrl_swap=Disable
+mirror_flag=Enable
 # southbridge
 power_on_after_fail=Disable
 # Functions

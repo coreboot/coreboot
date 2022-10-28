@@ -107,7 +107,8 @@ config VBOOT_STARTS_IN_BOOTBLOCK
 
 if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE
-	default 2          # Dual IO (1-1-2)
+	default 2 if BOARD_GOOGLE_SKYRIM          # Dual IO (1-1-2)
+	default 4                                 # Dual IO (1-2-2)
 
 config EFS_SPI_SPEED
 	default 0	# 66MHz

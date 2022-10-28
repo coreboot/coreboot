@@ -50,7 +50,7 @@ void show_spi_speeds_and_modes(void)
 	printk(BIOS_DEBUG, "SPI Read Mode: %s\n", read_mode_str[DECODE_SPI_READ_MODE(val32)]);
 }
 
-void __weak mainboard_spi_fast_speed_override(uint8_t *fast_speed)
+void __weak mainboard_spi_cfg_override(uint8_t *fast_speed, uint8_t *read_mode)
 {
 	/* No overriding SPI speeds. */
 }
@@ -107,7 +107,7 @@ void fch_spi_config_modes(void)
 		read_mode = CONFIG_EFS_SPI_READ_MODE;
 		fast_speed = CONFIG_EFS_SPI_SPEED;
 	}
-	mainboard_spi_fast_speed_override(&fast_speed);
+	mainboard_spi_cfg_override(&fast_speed, &read_mode);
 
 	if (fast_speed != CONFIG_EFS_SPI_SPEED) {
 		normal_speed = lower_speed(normal_speed, fast_speed);

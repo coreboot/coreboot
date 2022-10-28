@@ -118,7 +118,7 @@ void spi_write16(uint8_t reg, uint16_t val);
 void spi_write32(uint8_t reg, uint32_t val);
 
 void fch_spi_config_modes(void);
-void mainboard_spi_fast_speed_override(uint8_t *fast_speed);
+void mainboard_spi_cfg_override(uint8_t *fast_speed, uint8_t *read_mode);
 
 /* Ensure you hold the mutex when performing SPI transactions */
 extern struct thread_mutex spi_hw_mutex;

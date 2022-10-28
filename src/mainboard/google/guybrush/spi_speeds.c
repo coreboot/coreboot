@@ -4,7 +4,7 @@
 #include <boardid.h>
 #include <stdint.h>
 
-void mainboard_spi_fast_speed_override(uint8_t *fast_speed)
+void mainboard_spi_cfg_override(uint8_t *fast_speed, uint8_t *read_mode)
 {
 	uint32_t board_ver = board_id();
 

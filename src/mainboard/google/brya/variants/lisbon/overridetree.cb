@@ -150,13 +150,12 @@ chip soc/intel/alderlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end
-		device ref tcss_dma0 on
-			chip drivers/intel/usb4/retimer
-				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E4)"
-				use tcss_usb3_port1 as dfp[0].typec_port
-				device generic 0 on end
-			end
-		end
+		device ref tbt_pcie_rp0 off end
+		device ref tbt_pcie_rp1 off end
+		device ref tbt_pcie_rp2 off end
+
+		device ref tcss_dma0 off end
+		device ref tcss_dma1 off end
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"

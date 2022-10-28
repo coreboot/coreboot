@@ -9,6 +9,7 @@
 #include <intelblocks/cfg.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/early_graphics.h>
+#include <intelblocks/oc_wdt.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smbus.h>
@@ -165,6 +166,8 @@ void mainboard_romstage_entry(void)
 {
 	struct chipset_power_state *ps = pmc_get_power_state();
 	bool s3wake = pmc_fill_power_state(ps) == ACPI_S3;
+
+	setup_oc_wdt();
 
 	/* Initialize HECI interface */
 	cse_init(HECI1_BASE_ADDRESS);

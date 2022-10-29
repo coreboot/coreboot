@@ -1,0 +1,180 @@
+#!/bin/bash
+set -e -o pipefail
+
+PROGNAME="$(basename "${0}")"
+VERSION="1.00"
+
+ABUILD="./util/abuild/abuild"
+OUTPUT="coreboot-builds"
+MAINBOARDS=()
+UNSORTED=()
+CPUS=$(nproc || echo "4")
+NO_CROS=0
+
+# Text STYLE variables
+BOLD="\033[1m"
+RED='\033[38;5;9m'
+GREEN='\033[38;5;2m'
+NO_COLOR='\033[0m'
+
+usage() {
+	cat <<EOF
+The ${PROGNAME} script helps select boards to run test builds on.  It searches
+through all of the mainboard Kconfig files for specified identifiers and then
+runs abuild on the mainboards it finds.
+
+  Usage: ${PROGNAME} [options]
+
+Options:
+ -C | --cpus <num>       Specify number of CPUs to use (currently ${CPUS})
+ -K | --kconfig <CONFIG> Search for Kconfig option
+ -n | --no_cros	         Don't run chromeos builds
+ -h | --help             Print usage and exit
+ -D | --debug            Print debug information.  Use -DD to show all commands
+ -V | --version          Print the version and exit
+      --nocolor          Don't print color codes
+EOF
+}
+
+_echo_color() {
+	local color="$1"
+	local text="$2"
+	local newline="${3:-0}"
+	if [[ ${newline} == "0" ]]; then
+		printf "${color}%s${NO_COLOR}" "${text}"
+	else
+		printf "${color}%s${NO_COLOR}\n" "${text}"
+	fi
+}
+
+_echo_error() {
+	_echo_color "${RED}" "$*" 1 >&2
+}
+
+show_version() {
+	echo
+	_echo_color "${BOLD}${GREEN}" "${PROGNAME} version ${VERSION}"
+	echo
+}
+
+get_real_dir() (
+	cd -- "$1" >/dev/null 2>&1 || exit 1
+	pwd -P
+)
+
+get_args() {
+	local mblist
+	local mainboards=()
+
+	if ! args="$(getopt -l version,help,debug,nocolor,kconfig:,cpus:,no_cros -o C:K:nDhV -- "$@")"; then
+		usage
+		exit 1
+	fi
+
+	eval set -- "${args}"
+
+	while true; do
+		case "$1" in
+		-C | --cpus)
+			shift
+			CPUS=$1
+			;;
+		-K | --kconfig)
+			shift
+			mblist=$(grep -r "$1" src/mainboard | sed 's|src/mainboard/||;s|/Kconfig.*||')
+			printf "Adding mainboard for %s\n%s\n" "$1" "${mblist}"
+			echo
+			mapfile -t mainboards <<<"$mblist"
+			UNSORTED+=(${mainboards[@]})
+			;;
+		-n | no_cros)
+			NO_CROS=1
+			;;
+		-D | --debug)
+			if [ -n "${VERBOSE}" ]; then
+				set -x
+			else
+				VERBOSE="V=1"
+			fi
+			;;
+		-h | --help)
+			usage
+			exit 0
+			;;
+		--nocolor)
+			BOLD=""
+			RED=""
+			GREEN=""
+			NO_COLOR=""
+			;;
+		-V | --version) exit 0 ;;
+		--)
+			shift
+			break
+			;;
+		*)
+			_echo_error "Unknown argument '$1'"
+			usage
+			exit 1
+			;;
+		esac
+		shift
+	done
+
+	if [[ -n $1 ]]; then
+		_echo_error "Unknown command '$1'"
+		echo
+		usage
+		exit 1
+	fi
+}
+
+main() {
+	show_version
+	get_args "$@"
+
+	if [[ ! -f "MAINTAINERS" ]]; then
+		echo "${PWD}"
+		_echo_error "Error: This doesn't look like the coreboot directory."
+		exit 1
+	fi
+
+	# Sort and dedupe list
+	mapfile -t MAINBOARDS <<<"$(printf "%s\n" "${UNSORTED[@]}" | sort -u)"
+
+	if [[ "${#MAINBOARDS[@]}" != "0" ]]; then
+		echo "Using ${CPUS} CPUs to build ${#MAINBOARDS[@]} boards:"
+		printf "%s\n" "${MAINBOARDS[@]}"
+		echo
+	else
+		_echo_error "Error: No mainboards found/specified."
+		exit 1
+	fi
+
+	for board in ${MAINBOARDS[*]}; do
+		rm -rf "./${OUTPUT}"
+
+		# Non-CrOS build
+		if ! "${ABUILD}" --exitcode --cpus ${CPUS} --target "${board}"; then
+			_echo_error "Error: Non-cros build of ${board} failed."
+			exit 1
+		fi
+
+		# CrOS build
+		if [[ ${NO_CROS} -eq 0 ]]; then
+			rm -rf "./${OUTPUT}"
+			if ! "${ABUILD}" --exitcode --cpus ${CPUS} --target "${board}" --chromeos; then
+				_echo_error "Error: CrOS build of ${board} failed."
+				exit 1
+			fi
+		fi
+
+	done
+
+	echo
+	echo "Successfully built all boards:"
+	printf "%s\n" "${MAINBOARDS[@]}"
+
+}
+
+main "$@"

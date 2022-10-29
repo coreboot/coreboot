@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 #
 # Makefile for coreboot paper.
 # hacked together by Stefan Reinauer <stepan@openbios.org>

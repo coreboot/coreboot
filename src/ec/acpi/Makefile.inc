@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_EC_ACPI),y)
 
 bootblock-y += ec.c

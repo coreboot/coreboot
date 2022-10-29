@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_EC_GOOGLE_WILCO),y)
 
 bootblock-y += bootblock.c commands.c mailbox.c

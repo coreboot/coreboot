@@ -193,6 +193,7 @@ Contents:
 * [SuperIO](superio/index.md)
 * [Vendorcode](vendorcode/index.md)
 * [Utilities](util.md)
+* [Software Bill of Materials](sbom/sbom.md)
 * [Project infrastructure & services](infrastructure/index.md)
 * [Boards supported in each release directory](releases/boards_supported_on_branches.md)
 * [Release notes](releases/index.md)

@@ -1,0 +1,61 @@
+@startuml
+
+map "src/sbom/compiler-gcc.json" as gcc {
+    software-name => GCC
+    version => x.y.z
+    ... => ...
+}
+map "src/sbom/intel-me.json" as me {
+    software-name => Intel Mangement Engine
+    ... => ...
+}
+map "src/sbom/intel-microcode.json" as ucode {
+    software-name => Intel Microcode
+    ... => ...
+}
+map "src/sbom/generic-ec.json" as ec {
+    software-name => ecxyz
+    ... => ...
+}
+map "src/sbom/generic-fsp.json" as fsp {
+    software-name => Firmware Support Package
+    version => x.y.z
+    ... => ...
+}
+map "src/sbom/payload-[...].json" as payload {
+    software-name => ...
+    version => x.y.z
+    ... => ...
+}
+map "src/sbom/coreboot.json" as coreboot {
+    software-name => coreboot
+    version => x.y.z
+    url => coreboot.rocks
+    ... => ...
+}
+object "sbom.uswid" as uswid {
+    merged SBOM data in binary format
+}
+object goswid {
+    # ./goswid
+        --compiler gcc.json
+        --parent coreboot.json
+        --requires fsp.json,payload.json
+        intel-me.json
+        intel-ec.json
+        intel-ucode.json
+        --output sbom.uswid
+}
+
+left to right direction
+gcc --> goswid
+me --> goswid
+ucode --> goswid
+goswid <-- ec
+goswid <-- fsp
+goswid <-- payload
+
+coreboot -up> goswid
+goswid -up> uswid
+
+@enduml

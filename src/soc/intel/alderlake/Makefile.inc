@@ -114,4 +114,28 @@ $(eval $(call cse_add_input,bp2,IUNP))
 
 endif
 
+ifeq ($(CONFIG_INCLUDE_HSPHY_IN_FMAP),y)
+ifneq ($(call strip_quotes,$(CONFIG_HSPHY_FW_FILE)),)
+
+# Create the target HSPHY file that will be put into flashmap region.
+# First goes the HSPHY size, then hash algorithm (3 - SHA384, default for now),
+# the hash digest, padding to max digest size (SHA512 - 64 bytes) and at last the
+# HSPHY firmware itself
+$(obj)/hsphy_fw.bin: $(call strip_quotes,$(top)/$(CONFIG_HSPHY_FW_FILE))
+	printf "    HSPHY      $(obj)/hsphy_fw.bin\n"
+	$(shell wc -c $< | awk '{print $$1}' | tr -d '\n' | xargs -0 printf '%08X' | \
+			 tac -rs .. | xxd -r -p > $@)
+	$(shell printf '%02X' 3 | xxd -r -p >> $@)
+	$(shell sha384sum $< | awk '{print $$1}' | tac -rs .. | xxd -r -p >> $@)
+	$(shell dd if=/dev/zero bs=1 count=16 2> /dev/null >> $@)
+	$(shell cat $< >> $@)
+
+add_hsphy_firmware: $(obj)/hsphy_fw.bin $(obj)/fmap.fmap $(obj)/coreboot.pre $(CBFSTOOL)
+	$(CBFSTOOL) $(obj)/coreboot.pre write -u -r HSPHY_FW -f $(obj)/hsphy_fw.bin
+
+$(call add_intermediate, add_hsphy_firmware)
+
+endif
+endif
+
 endif

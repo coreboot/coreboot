@@ -527,4 +527,30 @@ config FSP_PUBLISH_MBP_HOB
 	  later platforms so creation of MBP HOB can be skipped for ADL-N and RPL based
 	  platforms.
 
+config INCLUDE_HSPHY_IN_FMAP
+	bool "Include PCIe 5.0 HSPHY firmware in flash"
+	default n
+	help
+	  Set this option to cache the PCIe 5.0 HSPHY firmware after it is
+	  fetched from ME during boot. By default coreboot will fetch the
+	  HSPHY FW from ME, but if for some reason ME is not enabled or
+	  visible, the cached blob will be attempted to initialize the PCIe
+	  5.0 root port. Select it if ME is soft disabled or disabled with HAP
+	  bit. If possible, the HSPHY FW will be saved to flashmap region if
+	  the firmware file is not provided directly in the HSPHY_FW_FILE
+	  Kconfig.
+
+config HSPHY_FW_FILE
+	string "HSPHY firmware file path"
+	depends on INCLUDE_HSPHY_IN_FMAP
+	help
+	  Path pointing to the PCIe 5.0 HSPHY file. The file can be extracted
+	  from full firmware image or ME region using UEFITool. If left empty,
+	  HSPHY loading procedure will try to save the firmware to the flashmap
+	  region if fetched successfully from ME.
+
+config HSPHY_FW_MAX_SIZE
+	hex
+	default 0x8000
+
 endif

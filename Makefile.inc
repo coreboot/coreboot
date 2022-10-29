@@ -1029,6 +1029,15 @@ else
 FMAP_VPD_ENTRY :=
 endif
 
+ifeq ($(CONFIG_INCLUDE_HSPHY_IN_FMAP),y)
+FMAP_HSPHY_FW_BASE := $(call int-align, $(FMAP_CURRENT_BASE), 0x1000)
+FMAP_HSPHY_FW_SIZE := $(CONFIG_HSPHY_FW_MAX_SIZE)
+FMAP_HSPHY_FW_ENTRY := HSPHY_FW@$(FMAP_HSPHY_FW_BASE) $(FMAP_HSPHY_FW_SIZE)
+FMAP_CURRENT_BASE := $(call int-add, $(FMAP_HSPHY_FW_BASE) $(FMAP_HSPHY_FW_SIZE))
+else
+FMAP_HSPHY_FW_ENTRY :=
+endif
+
 #
 # X86 FMAP region
 #
@@ -1107,6 +1116,7 @@ $(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP) $(obj)/config.h
 	    -e "s,##SMMSTORE_ENTRY##,$(FMAP_SMMSTORE_ENTRY)," \
 	    -e "s,##SPD_CACHE_ENTRY##,$(FMAP_SPD_CACHE_ENTRY)," \
 	    -e "s,##VPD_ENTRY##,$(FMAP_VPD_ENTRY)," \
+	    -e "s,##HSPHY_FW_ENTRY##,$(FMAP_HSPHY_FW_ENTRY)," \
 	    -e "s,##CBFS_BASE##,$(FMAP_CBFS_BASE)," \
 	    -e "s,##CBFS_SIZE##,$(FMAP_CBFS_SIZE)," \
 		$(DEFAULT_FLASHMAP) > $@.tmp

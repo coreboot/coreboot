@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 # simple makefile for the project
 
 OUTPUT_DIR = generate

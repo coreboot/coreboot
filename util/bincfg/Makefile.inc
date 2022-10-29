@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 bincfg_obj := bincfg.lex.o bincfg.tab.o
 
 BINCFG_FLAGS += -I$(top)/util/bincfg -I$(objutil)/bincfg

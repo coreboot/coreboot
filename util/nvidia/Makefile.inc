@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 # copied from cbootimage/src/Makefile.am
 CBOOTIMAGE_RAW_SRCS:= \
 	cbootimage.c \

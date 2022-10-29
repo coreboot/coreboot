@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 additional-dirs += $(objutil)/futility
 
 VBOOT_FUTILITY = $(VBOOT_HOST_BUILD)/futility/futility

@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 sconfigobj :=
 sconfigobj += lex.yy.o
 sconfigobj += sconfig.tab.o

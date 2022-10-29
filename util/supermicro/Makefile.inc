@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 TOOLCPPFLAGS += -include $(top)/src/commonlib/bsd/include/commonlib/bsd/compiler.h
 
 SMCBIOSINFOTOOL:= $(objutil)/supermicro/smcbiosinfo

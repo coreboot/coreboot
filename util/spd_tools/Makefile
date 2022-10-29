@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 SPD_GEN = bin/spd_gen
 PART_ID_GEN = bin/part_id_gen
 

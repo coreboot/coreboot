@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 all:
 	$(CC) post.c -o post
 clean:

@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 DOIMAGE_FOLDER = marvell/doimage_mv
 DOIMAGE_BINARY = doimage
 

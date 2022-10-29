@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 # if no architecture is specified, set a default
 BUILD_PLATFORM ?= i386-elf
 DEST ?= $(CURDIR)/xgcc

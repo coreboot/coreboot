@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 CC:=gcc
 OBJ:=bucts.o
 TARGET=bucts

@@ -55,7 +55,22 @@ static void mainboard_chip_init(void *chip_info)
 	variant_ramstage_init();
 }
 
+void __weak variant_final(void)
+{
+}
+
+static void mainboard_final(void *chip_info)
+{
+	const struct pad_config *variant_finalize;
+	size_t variant_gpios;
+	variant_finalize = variant_finalize_gpio_table(&variant_gpios);
+	gpio_configure_pads(variant_finalize, variant_gpios);
+
+	variant_final();
+}
+
 struct chip_operations mainboard_ops = {
 	.init = mainboard_chip_init,
 	.enable_dev = mainboard_enable,
+	.final = mainboard_final,
 };

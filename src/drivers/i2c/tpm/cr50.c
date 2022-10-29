@@ -505,7 +505,6 @@ tpm_result_t tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t d
                 cr50_set_board_cfg();
 	}
 
-	chip->is_open = 1;
 	return TPM_SUCCESS;
 }
 

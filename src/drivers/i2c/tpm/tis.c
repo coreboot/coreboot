@@ -19,29 +19,6 @@ static struct tpm_chip chip;
 #define TPM_CMD_COUNT_BYTE 2
 #define TPM_CMD_ORDINAL_BYTE 6
 
-tpm_result_t tis_open(void)
-{
-	tpm_result_t rc;
-
-	if (chip.is_open) {
-		printk(BIOS_DEBUG, "%s() called twice.\n", __func__);
-		return TPM_CB_FAIL;
-	}
-
-	rc = tpm_vendor_init(&chip, CONFIG_DRIVER_TPM_I2C_BUS,
-			     CONFIG_DRIVER_TPM_I2C_ADDR);
-	if (rc != TPM_SUCCESS)
-		chip.is_open = 0;
-
-	return rc;
-}
-
-tpm_result_t tis_init(void)
-{
-	return tpm_vendor_probe(CONFIG_DRIVER_TPM_I2C_BUS,
-				CONFIG_DRIVER_TPM_I2C_ADDR);
-}
-
 static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 			size_t rbufsiz)
 {
@@ -103,8 +80,8 @@ out:
 	return rc;
 }
 
-tpm_result_t tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
-		uint8_t *recvbuf, size_t *rbuf_len)
+static tpm_result_t i2c_tpm_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
+				     uint8_t *recvbuf, size_t *rbuf_len)
 {
 	ASSERT(sbuf_size >= 10);
 
@@ -139,4 +116,15 @@ tpm_result_t tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 	}
 
 	return TPM_SUCCESS;
+}
+
+tis_sendrecv_fn tis_probe(void)
+{
+	if (tpm_vendor_probe(CONFIG_DRIVER_TPM_I2C_BUS, CONFIG_DRIVER_TPM_I2C_ADDR))
+		return NULL;
+
+	if (tpm_vendor_init(&chip, CONFIG_DRIVER_TPM_I2C_BUS, CONFIG_DRIVER_TPM_I2C_ADDR))
+		return NULL;
+
+	return &i2c_tpm_sendrecv;
 }

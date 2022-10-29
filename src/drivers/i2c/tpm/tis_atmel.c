@@ -22,18 +22,8 @@ struct tpm_output_header {
 	uint32_t return_code;
 } __packed;
 
-tpm_result_t tis_open(void)
-{
-	return TPM_SUCCESS;
-}
-
-tpm_result_t tis_init(void)
-{
-	return TPM_SUCCESS;
-}
-
-tpm_result_t tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
-		uint8_t *recvbuf, size_t *rbuf_len)
+static tpm_result_t i2c_tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
+				     uint8_t *recvbuf, size_t *rbuf_len)
 {
 	size_t hdr_bytes;
 	struct tpm_output_header *header;
@@ -115,4 +105,9 @@ tpm_result_t tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 
 	/* Successful transfer */
 	return TPM_SUCCESS;
+}
+
+tis_sendrecv_fn tis_probe(void)
+{
+	return &i2c_tis_sendrecv;
 }

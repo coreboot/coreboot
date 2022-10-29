@@ -16,6 +16,8 @@
  * TPM2 specification.
  */
 
+static tis_sendrecv_fn tis_sendrecv;
+
 void *tpm_process_command(TPM_CC command, void *command_body)
 {
 	struct obuf ob;
@@ -25,6 +27,11 @@ void *tpm_process_command(TPM_CC command, void *command_body)
 	const uint8_t *sendb;
 	/* Command/response buffer. */
 	static uint8_t cr_buffer[TPM_BUFFER_SIZE];
+
+	if (tis_sendrecv == NULL) {
+		printk(BIOS_ERR, "Attempted use of uninitialized TSS 2.0 stack\n");
+		return NULL;
+	}
 
 	obuf_init(&ob, cr_buffer, sizeof(cr_buffer));
 
@@ -201,30 +208,19 @@ tpm_result_t tlcl_clear_control(bool disable)
 	return TPM_SUCCESS;
 }
 
-static uint8_t tlcl_init_done;
-
 /* This function is called directly by vboot, uses vboot return types. */
 tpm_result_t tlcl_lib_init(void)
 {
-	tpm_result_t rc = TPM_SUCCESS;
-	if (tlcl_init_done)
-		return rc;
+	if (tis_sendrecv != NULL)
+		return TPM_SUCCESS;
 
-	rc = tis_init();
-	if (rc) {
-		printk(BIOS_ERR, "%s: tis_init returned error %d\n", __func__, rc);
-		return rc;
-	}
-	rc = tis_open();
-	if (rc) {
-		printk(BIOS_ERR, "%s: tis_open returned error %d\n"
-			, __func__, rc);
-		return rc;
+	tis_sendrecv = tis_probe();
+	if (tis_sendrecv == NULL) {
+		printk(BIOS_ERR, "%s: tis_probe returned error\n", __func__);
+		return TPM_CB_NO_DEVICE;
 	}
 
-	tlcl_init_done = 1;
-
-	return rc;
+	return TPM_SUCCESS;
 }
 
 tpm_result_t tlcl_physical_presence_cmd_enable(void)

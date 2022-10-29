@@ -356,14 +356,14 @@ static tpm_result_t tis_command_ready(u8 locality)
 }
 
 /*
- * tis_init()
+ * pc80_tis_probe()
  *
  * Probe the TPM device and try determining its manufacturer/device name.
  *
  * Returns TPM_SUCCESS on success (the device is found or was found during
  * an earlier invocation) or TPM_CB_FAIL if the device is not found.
  */
-tpm_result_t tis_init(void)
+static tpm_result_t pc80_tis_probe(void)
 {
 	const char *device_name = "unknown";
 	const char *vendor_name = device_name;
@@ -607,13 +607,13 @@ static tpm_result_t tis_readresponse(u8 *buffer, size_t *len)
 }
 
 /*
- * tis_open()
+ * pc80_tis_open()
  *
  * Requests access to locality 0 for the caller.
  *
  * Returns TPM_SUCCESS on success, TSS Error on failure.
  */
-tpm_result_t tis_open(void)
+static tpm_result_t pc80_tis_open(void)
 {
 	u8 locality = 0; /* we use locality zero for everything */
 	tpm_result_t rc = TPM_SUCCESS;
@@ -650,8 +650,8 @@ tpm_result_t tis_open(void)
  * Returns TPM_SUCCESS on success (and places the number of response bytes
  * at recv_len) or TPM_CB_FAIL on failure.
  */
-tpm_result_t tis_sendrecv(const uint8_t *sendbuf, size_t send_size,
-		 uint8_t *recvbuf, size_t *recv_len)
+static tpm_result_t pc80_tpm_sendrecv(const uint8_t *sendbuf, size_t send_size,
+				      uint8_t *recvbuf, size_t *recv_len)
 {
 	tpm_result_t rc = tis_senddata(sendbuf, send_size);
 	if (rc) {
@@ -661,6 +661,23 @@ tpm_result_t tis_sendrecv(const uint8_t *sendbuf, size_t send_size,
 	}
 
 	return tis_readresponse(recvbuf, recv_len);
+}
+
+/*
+ * tis_probe()
+ *
+ * Probe for the TPM device and set it up for use within locality 0. Returns
+ * pointer to send-receive function on success or NULL on failure.
+ */
+tis_sendrecv_fn tis_probe(void)
+{
+	if (pc80_tis_probe())
+		return NULL;
+
+	if (pc80_tis_open())
+		return NULL;
+
+	return &pc80_tpm_sendrecv;
 }
 
 /*

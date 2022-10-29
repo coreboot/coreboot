@@ -69,7 +69,7 @@ static bpdt_hdr_ptr create_bpdt_hdr(void)
 	h->fit_tool_version.build = 0;
 	h->fit_tool_version.hotfix = 0;
 
-	return 0;
+	return h;
 }
 
 static void print_bpdt_hdr(const bpdt_hdr_ptr ptr)
@@ -159,7 +159,7 @@ static cse_layout_ptr create_cse_layout(const struct region *r)
 	l->bp3_size = r[BP3].size;
 	l->checksum = 0;		/* unused */
 
-	return 0;
+	return l;
 }
 
 static void print_cse_layout(const cse_layout_ptr ptr)

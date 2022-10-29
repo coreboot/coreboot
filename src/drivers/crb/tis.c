@@ -14,8 +14,6 @@
 #include "tpm.h"
 #include "chip.h"
 
-static unsigned int tpm_is_open;
-
 static const struct {
 	uint16_t vid;
 	uint16_t did;
@@ -35,41 +33,8 @@ static const char *tis_get_dev_name(struct tpm2_info *info)
 	return "Unknown";
 }
 
-int tis_open(void)
-{
-	if (tpm_is_open) {
-		printk(BIOS_ERR, "%s called twice.\n", __func__);
-		return -1;
-	}
-
-	if (CONFIG(HAVE_INTEL_PTT)) {
-		if (!ptt_active()) {
-			printk(BIOS_ERR, "%s: Intel PTT is not active.\n", __func__);
-			return -1;
-		}
-		printk(BIOS_DEBUG, "%s: Intel PTT is active.\n", __func__);
-	}
-
-	return 0;
-}
-
-int tis_init(void)
-{
-	struct tpm2_info info;
-
-	// Wake TPM up (if necessary)
-	if (tpm2_init() != 0)
-		return -1;
-
-	tpm2_get_info(&info);
-
-	printk(BIOS_INFO, "Initialized TPM device %s revision %d\n", tis_get_dev_name(&info),
-	       info.revision);
-
-	return 0;
-}
-
-int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size, uint8_t *recvbuf, size_t *rbuf_len)
+static int crb_tpm_sendrecv(const uint8_t *sendbuf, size_t sbuf_size, uint8_t *recvbuf,
+			    size_t *rbuf_len)
 {
 	int len = tpm2_process_command(sendbuf, sbuf_size, recvbuf, *rbuf_len);
 
@@ -79,6 +44,30 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size, uint8_t *recvbuf, siz
 	*rbuf_len = len;
 
 	return 0;
+}
+
+tis_sendrecv_fn tis_probe(void)
+{
+	struct tpm2_info info;
+
+	/* Wake TPM up (if necessary) */
+	if (tpm2_init() != 0)
+		return NULL;
+
+	tpm2_get_info(&info);
+
+	printk(BIOS_INFO, "Initialized TPM device %s revision %d\n", tis_get_dev_name(&info),
+	       info.revision);
+
+	if (CONFIG(HAVE_INTEL_PTT)) {
+		if (!ptt_active()) {
+			printk(BIOS_ERR, "%s: Intel PTT is not active.\n", __func__);
+			return NULL;
+		}
+		printk(BIOS_DEBUG, "%s: Intel PTT is active.\n", __func__);
+	}
+
+	return &crb_tpm_sendrecv;
 }
 
 static void crb_tpm_fill_ssdt(const struct device *dev)

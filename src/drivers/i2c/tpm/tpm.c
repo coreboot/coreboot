@@ -507,8 +507,6 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	tpm_dev.sleep_short = SLEEP_DURATION;
 	tpm_dev.sleep_long = SLEEP_DURATION_LONG;
 
-	chip->is_open = 1;
-
 	chip->req_complete_mask = TPM_STS_DATA_AVAIL | TPM_STS_VALID;
 	chip->req_complete_val = TPM_STS_DATA_AVAIL | TPM_STS_VALID;
 	chip->req_canceled = TPM_STS_COMMAND_READY;

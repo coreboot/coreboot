@@ -5,8 +5,6 @@
 
 #include "tpm.h"
 
-static unsigned int tpm_is_open;
-
 static const struct {
 	uint16_t vid;
 	uint16_t did;
@@ -29,41 +27,8 @@ static const char *tis_get_dev_name(struct tpm2_info *info)
 	return "Unknown";
 }
 
-int tis_open(void)
-{
-	if (tpm_is_open) {
-		printk(BIOS_ERR, "%s() called twice.\n", __func__);
-		return -1;
-	}
-	return 0;
-}
-
-int tis_init(void)
-{
-	struct spi_slave spi;
-	struct tpm2_info info;
-
-	if (spi_setup_slave(CONFIG_DRIVER_TPM_SPI_BUS,
-			    CONFIG_DRIVER_TPM_SPI_CHIP, &spi)) {
-		printk(BIOS_ERR, "Failed to setup TPM SPI slave\n");
-		return -1;
-	}
-
-	if (tpm2_init(&spi)) {
-		printk(BIOS_ERR, "Failed to initialize TPM SPI interface\n");
-		return -1;
-	}
-
-	tpm2_get_info(&info);
-
-	printk(BIOS_INFO, "Initialized TPM device %s revision %d\n",
-	       tis_get_dev_name(&info), info.revision);
-
-	return 0;
-}
-
-int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
-		 uint8_t *recvbuf, size_t *rbuf_len)
+static int tpm_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
+			uint8_t *recvbuf, size_t *rbuf_len)
 {
 	int len = tpm2_process_command(sendbuf, sbuf_size, recvbuf, *rbuf_len);
 
@@ -73,4 +38,28 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 	*rbuf_len = len;
 
 	return 0;
+}
+
+tis_sendrecv_fn tis_probe(void)
+{
+	struct spi_slave spi;
+	struct tpm2_info info;
+
+	if (spi_setup_slave(CONFIG_DRIVER_TPM_SPI_BUS,
+			    CONFIG_DRIVER_TPM_SPI_CHIP, &spi)) {
+		printk(BIOS_ERR, "Failed to setup TPM SPI slave\n");
+		return NULL;
+	}
+
+	if (tpm2_init(&spi)) {
+		printk(BIOS_ERR, "Failed to initialize TPM SPI interface\n");
+		return NULL;
+	}
+
+	tpm2_get_info(&info);
+
+	printk(BIOS_INFO, "Initialized TPM device %s revision %d\n",
+	       tis_get_dev_name(&info), info.revision);
+
+	return &tpm_sendrecv;
 }

@@ -953,4 +953,6 @@ config XHCI_UTILS
 	help
 	  Provides xHCI utility functions.
 
+source "src/device/dram/Kconfig"
+
 endmenu

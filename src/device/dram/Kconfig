@@ -1,0 +1,57 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+# Short-term plan: Start adding 'USE_' and "NO_" options to each chip.
+#
+# Long-term plan: Every SoC or chipset should select the memory types they
+# use. When they all select their memory, the 'no_' options can be removed
+# and the defaults for all memory types can be set to n.
+
+config NO_DDR5
+	bool
+
+config NO_LPDDR4
+	bool
+
+config NO_DDR4
+	bool
+
+config NO_DDR3
+	bool
+
+config NO_DDR2
+	bool
+
+config USE_DDR5
+	bool
+	default n if NO_DDR5
+	default y
+	help
+	  system supports DDR5 memory
+
+config USE_LPDDR4
+	bool
+	default n if NO_LPDDR4
+	default y
+	help
+	  system supports LPDDR4 memory
+
+config USE_DDR4
+	bool
+	default n if NO_DDR4
+	default y
+	help
+	  system supports DDR4 memory
+
+config USE_DDR3
+	bool
+	default n if NO_DDR3
+	default y
+	help
+	  system supports DDR3 memory
+
+config USE_DDR2
+	bool
+	default n if NO_DDR2
+	default y
+	help
+	  system supports DDR2 memory

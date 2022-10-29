@@ -54,7 +54,7 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 	memcpy(&count, sbuf + TPM_CMD_COUNT_BYTE, sizeof(count));
 	count = be32_to_cpu(count);
 
-	if (!chip.vendor.send || !chip.vendor.status || !chip.vendor.cancel)
+	if (!chip.send || !chip.status || !chip.cancel)
 		return -1;
 
 	if (count == 0) {
@@ -67,8 +67,8 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 		return -1;
 	}
 
-	ASSERT(chip.vendor.send);
-	rc = chip.vendor.send(&chip, (uint8_t *)sbuf, count);
+	ASSERT(chip.send);
+	rc = chip.send((uint8_t *)sbuf, count);
 	if (rc < 0) {
 		printk(BIOS_DEBUG, "%s: tpm_send error\n", __func__);
 		goto out;
@@ -76,14 +76,13 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 
 	int timeout = 2 * 60 * 1000; /* two minutes timeout */
 	while (timeout) {
-		ASSERT(chip.vendor.status);
-		uint8_t status = chip.vendor.status(&chip);
-		if ((status & chip.vendor.req_complete_mask) ==
-		    chip.vendor.req_complete_val) {
+		ASSERT(chip.status);
+		uint8_t status = chip.status();
+		if ((status & chip.req_complete_mask) == chip.req_complete_val) {
 			goto out_recv;
 		}
 
-		if (status == chip.vendor.req_canceled) {
+		if (status == chip.req_canceled) {
 			printk(BIOS_DEBUG,
 				"%s: Operation Canceled\n", __func__);
 			rc = -1;
@@ -93,15 +92,15 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 		timeout--;
 	}
 
-	ASSERT(chip.vendor.cancel);
-	chip.vendor.cancel(&chip);
+	ASSERT(chip.cancel);
+	chip.cancel();
 	printk(BIOS_DEBUG, "%s: Operation Timed out\n", __func__);
 	rc = -1; //ETIME;
 	goto out;
 
 out_recv:
 
-	rc = chip.vendor.recv(&chip, (uint8_t *)rbuf, rbufsiz);
+	rc = chip.recv((uint8_t *)rbuf, rbufsiz);
 	if (rc < 0)
 		printk(BIOS_DEBUG, "%s: tpm_recv: error %d\n", __func__, rc);
 out:

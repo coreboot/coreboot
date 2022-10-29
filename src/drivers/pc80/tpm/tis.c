@@ -20,6 +20,7 @@
 #include <device/device.h>
 #include <console/console.h>
 #include <security/tpm/tis.h>
+#include <security/tpm/tss.h>
 #include <device/pnp.h>
 #include <drivers/tpm/tpm_ppi.h>
 #include <timer.h>
@@ -316,11 +317,6 @@ static int tis_wait_access(int locality, u8 mask, u8 expected)
 	return TPM_TIMEOUT_ERR;
 }
 
-static inline int tis_wait_dropped_access(int locality)
-{
-	return tis_wait_access(locality, TIS_ACCESS_ACTIVE_LOCALITY, 0);
-}
-
 static inline int tis_wait_received_access(int locality)
 {
 	return tis_wait_access(locality, TIS_ACCESS_ACTIVE_LOCALITY,
@@ -335,11 +331,6 @@ static inline int tis_has_access(int locality)
 static inline void tis_request_access(int locality)
 {
 	tpm_write_access(TIS_ACCESS_REQUEST_USE, locality);
-}
-
-static inline void tis_drop_access(int locality)
-{
-	tpm_write_access(TIS_ACCESS_ACTIVE_LOCALITY, locality);
 }
 
 /*
@@ -632,8 +623,7 @@ int tis_init(void)
 /*
  * tis_open()
  *
- * Requests access to locality 0 for the caller. After all commands have been
- * completed the caller is supposed to call tis_close().
+ * Requests access to locality 0 for the caller.
  *
  * Returns 0 on success, TPM_DRIVER_ERR on failure.
  */
@@ -641,46 +631,24 @@ int tis_open(void)
 {
 	u8 locality = 0; /* we use locality zero for everything */
 
-	if (tis_close())
-		return TPM_DRIVER_ERR;
+	if (!tis_has_access(locality)) {
+		/* request access to locality */
+		tis_request_access(locality);
 
-	/* now request access to locality */
-	tis_request_access(locality);
+		/* did we get a lock? */
+		if (tis_wait_received_access(locality)) {
+			printf("%s:%d - failed to lock locality %u\n",
+			__FILE__, __LINE__, locality);
+			return TPM_DRIVER_ERR;
+		}
 
-	/* did we get a lock? */
-	if (tis_wait_received_access(locality)) {
-		printf("%s:%d - failed to lock locality %u\n",
-		       __FILE__, __LINE__, locality);
-		return TPM_DRIVER_ERR;
+		/* Certain TPMs seem to need some delay here or they hang... */
+		udelay(10);
 	}
-
-	/* Certain TPMs seem to need some delay here or they hang... */
-	udelay(10);
 
 	if (tis_command_ready(locality) == TPM_TIMEOUT_ERR)
 		return TPM_DRIVER_ERR;
 
-	return 0;
-}
-
-/*
- * tis_close()
- *
- * terminate the current session with the TPM by releasing the locked
- * locality. Returns 0 on success of TPM_DRIVER_ERR on failure (in case lock
- * removal did not succeed).
- */
-int tis_close(void)
-{
-	u8 locality = 0;
-	if (tis_has_access(locality)) {
-		tis_drop_access(locality);
-		if (tis_wait_dropped_access(locality)) {
-			printf("%s:%d - failed to release locality %u\n",
-			       __FILE__, __LINE__, locality);
-			return TPM_DRIVER_ERR;
-		}
-	}
 	return 0;
 }
 
@@ -727,10 +695,8 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t send_size,
 static int tis_setup_interrupt(int vector, int polarity)
 {
 	u8 locality = 0;
-	int has_access = tis_has_access(locality);
 
-	/* Open connection and request access if not already granted */
-	if (!has_access && tis_open() < 0)
+	if (tlcl_lib_init())
 		return TPM_DRIVER_ERR;
 
 	/* Set TPM interrupt vector */
@@ -738,10 +704,6 @@ static int tis_setup_interrupt(int vector, int polarity)
 
 	/* Set TPM interrupt polarity and disable interrupts */
 	tpm_write_int_polarity(polarity, locality);
-
-	/* Close connection if it was opened */
-	if (!has_access && tis_close() < 0)
-		return TPM_DRIVER_ERR;
 
 	return 0;
 }

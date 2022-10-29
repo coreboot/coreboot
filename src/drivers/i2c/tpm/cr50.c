@@ -494,10 +494,6 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	return 0;
 }
 
-void tpm_vendor_cleanup(struct tpm_chip *chip)
-{
-}
-
 enum cb_err tis_vendor_write(unsigned int addr, const void *buffer, size_t bytes)
 {
 	return cr50_i2c_write(addr & 0xff, buffer, bytes) ? CB_ERR : CB_SUCCESS;

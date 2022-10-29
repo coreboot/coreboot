@@ -27,11 +27,6 @@ int tis_open(void)
 	return 0;
 }
 
-int tis_close(void)
-{
-	return 0;
-}
-
 int tis_init(void)
 {
 	return 0;

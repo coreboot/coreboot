@@ -39,16 +39,6 @@ int tis_open(void)
 	return 0;
 }
 
-int tis_close(void)
-{
-	if (chip.is_open) {
-		tpm_vendor_cleanup(&chip);
-		chip.is_open = 0;
-	}
-
-	return 0;
-}
-
 int tis_init(void)
 {
 	return tpm_vendor_probe(CONFIG_DRIVER_TPM_I2C_BUS,

@@ -53,19 +53,6 @@ int tis_open(void)
 	return 0;
 }
 
-int tis_close(void)
-{
-	if (tpm_is_open) {
-		/*
-		 * Do we need to do something here, like waiting for a
-		 * transaction to stop?
-		 */
-		tpm_is_open = 0;
-	}
-
-	return 0;
-}
-
 int tis_init(void)
 {
 	struct tpm2_info info;

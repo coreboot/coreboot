@@ -61,6 +61,4 @@ int tpm_vendor_probe(unsigned int bus, uint32_t addr);
 
 int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr);
 
-void tpm_vendor_cleanup(struct tpm_chip *chip);
-
 #endif /* __DRIVERS_TPM_SLB9635_I2C_TPM_H__ */

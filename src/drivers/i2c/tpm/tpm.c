@@ -550,8 +550,3 @@ out_err:
 	release_locality(chip, 0, 1);
 	return -1;
 }
-
-void tpm_vendor_cleanup(struct tpm_chip *chip)
-{
-	release_locality(chip, chip->vendor.locality, 1);
-}

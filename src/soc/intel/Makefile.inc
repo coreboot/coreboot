@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_STITCH_ME_BIN),y)
 
 objcse := $(obj)/cse

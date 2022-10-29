@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_CPU_SAMSUNG_EXYNOS5250),y)
 
 bootblock-y += spi.c alternate_cbfs.c

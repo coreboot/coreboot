@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_SOC_EXAMPLE_MIN86),y)
 
 bootblock-y	+= cache_as_ram.S

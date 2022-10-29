@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_SOC_QUALCOMM_SC7280),y)
 
 decompressor-y += decompressor.c

@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_MCA_COMMON),y)
 ramstage-y += mca_common.c
 ramstage-$(CONFIG_ACPI_BERT) += mca_common_bert.c

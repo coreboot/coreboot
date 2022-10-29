@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_PLATFORM_USES_FSP2_0),y)
 romstage-y += fsp_reset.c
 romstage-y += fsp_validate.c

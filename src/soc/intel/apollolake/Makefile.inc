@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_SOC_INTEL_APOLLOLAKE),y)
 
 subdirs-y += ../../../cpu/intel/common

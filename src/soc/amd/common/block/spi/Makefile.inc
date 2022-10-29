@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_SPI),y)
 
 bootblock-y += fch_spi_ctrl.c

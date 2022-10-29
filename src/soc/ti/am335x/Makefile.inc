@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_SOC_TI_AM335X),y)
 bootblock-y	+= bootblock.c
 bootblock-y	+= timer.c

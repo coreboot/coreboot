@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_SOC_INTEL_COMMON_BLOCK_PMC),y)
 bootblock-y += pmclib.c
 romstage-y += pmclib.c

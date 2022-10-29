@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H),y)
 
 bootblock-y += tsc_freq.c

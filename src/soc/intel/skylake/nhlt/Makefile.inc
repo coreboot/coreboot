@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ramstage-y += dmic.c
 ramstage-y += nau88l25.c
 ramstage-y += max98357.c

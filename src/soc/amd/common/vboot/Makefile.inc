@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_VBOOT_VBNV_CMOS),y)
 bootblock-y += vbnv_cmos.c
 verstage-y += vbnv_cmos.c

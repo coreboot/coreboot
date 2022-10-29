@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_SOC_MEDIATEK_MT8183),y)
 
 bootblock-y += bootblock.c

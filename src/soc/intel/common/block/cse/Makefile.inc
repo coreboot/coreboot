@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 romstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CSE) += cse.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CSE) += cse.c
 romstage-$(CONFIG_SOC_INTEL_CSE_LITE_SKU) += cse_lite.c

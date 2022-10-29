@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_FSP_CAR),y)
 bootblock-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU)+= car/cache_as_ram_fsp.S
 ifeq ($(CONFIG_NO_FSP_TEMP_RAM_EXIT),y)

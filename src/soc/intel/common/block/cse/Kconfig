@@ -46,7 +46,7 @@ config SOC_INTEL_COMMON_BLOCK_HECI1_DISABLE_USING_PCR
 	  to make `HECI1` device disable using private configuration register (PCR) write.
 
 config SOC_INTEL_CSE_SEND_EOP_EARLY
-	bool
+	bool "CSE send EOP early"
 	depends on SOC_INTEL_COMMON_BLOCK_CSE
 	help
 	  Use this config to send End Of Post (EOP) earlier through SoC code in order to

@@ -28,6 +28,7 @@
 #define TPM_ACCESS_REG    (TPM_LOCALITY_0_SPI_BASE + 0)
 #define TPM_STS_REG       (TPM_LOCALITY_0_SPI_BASE + 0x18)
 #define TPM_DATA_FIFO_REG (TPM_LOCALITY_0_SPI_BASE + 0x24)
+#define TPM_INTF_ID_REG   (TPM_LOCALITY_0_SPI_BASE + 0x30)
 #define TPM_DID_VID_REG   (TPM_LOCALITY_0_SPI_BASE + 0xf00)
 #define TPM_RID_REG       (TPM_LOCALITY_0_SPI_BASE + 0xf04)
 #define TPM_FW_VER	  (TPM_LOCALITY_0_SPI_BASE + 0xf90)
@@ -412,7 +413,7 @@ static const uint32_t supported_did_vids[] = {
 
 int tpm2_init(struct spi_slave *spi_if)
 {
-	uint32_t did_vid, status;
+	uint32_t did_vid, status, intf_id;
 	uint8_t cmd;
 	int retries;
 
@@ -453,6 +454,20 @@ int tpm2_init(struct spi_slave *spi_if)
 	}
 
 	printk(BIOS_INFO, " done!\n");
+
+	/* Google TPMs haven't always been 100% accurate in reflecting the spec (particularly
+	 * on older versions) and are always TPM 2.0. */
+	if (!CONFIG(TPM_GOOGLE)) {
+		if (tpm2_read_reg(TPM_INTF_ID_REG, &intf_id, sizeof(intf_id)) != CB_SUCCESS) {
+			printk(BIOS_ERR, "\n%s: Failed to read interface ID register\n",
+			       __func__);
+			return -1;
+		}
+		if ((be32toh(intf_id) & 0xF) == 0xF) {
+			printk(BIOS_DEBUG, "\n%s: Not a TPM2 device\n", __func__);
+			return -1;
+		}
+	}
 
 	// FIXME: Move this to tpm_setup()
 	if (tpm_first_access_this_boot())

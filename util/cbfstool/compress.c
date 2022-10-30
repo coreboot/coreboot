@@ -23,9 +23,12 @@ static int lz4_compress(char *in, int in_len, char *out, int *out_len)
 	if (!bounce)
 		return -1;
 	*out_len = LZ4F_compressFrame(bounce, worst_size, in, in_len, &prefs);
-	if (LZ4F_isError(*out_len) || *out_len >= in_len)
+	if (LZ4F_isError(*out_len) || *out_len >= in_len) {
+		free(bounce);
 		return -1;
+	}
 	memcpy(out, bounce, *out_len);
+	free(bounce);
 	return 0;
 }
 

@@ -9,6 +9,14 @@ config NORTHBRIDGE_INTEL_SANDYBRIDGE
 
 if NORTHBRIDGE_INTEL_SANDYBRIDGE
 
+config NORTHBRIDGE_SPECIFIC_OPTIONS
+	def_bool y
+	select NO_DDR5
+	select NO_LPDDR4
+	select NO_DDR4
+	select NO_DDR2
+	select USE_DDR3
+
 config SANDYBRIDGE_VBOOT_IN_ROMSTAGE
 	bool
 	default n

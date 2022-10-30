@@ -61,5 +61,6 @@ typedef uint32_t tpm_result_t;
 #define TPM_CB_RANGE                  ((tpm_result_t) (TPM_CB_ERROR + 0x8F))
 #define TPM_CB_FAIL                   ((tpm_result_t) (TPM_CB_ERROR + 0x90))
 #define TPM_CB_TIMEOUT                ((tpm_result_t) (TPM_CB_ERROR + 0x91))
+#define TPM_CB_PROBE_FAILURE          ((tpm_result_t) (TPM_CB_ERROR + 0x92))
 
 #endif /* TSS_ERRORS_H_ */

@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
 #include <console/console.h>
-#include <FspGuids.h>
+#include <cpu/cpu.h>
 #include <fsp/util.h>
+#include <FspGuids.h>
 #include <misc_data.h>
 #include <soc/cpu.h>
 #include <soc/soc_util.h>

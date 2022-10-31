@@ -2,16 +2,16 @@
 
 #include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
-#include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
+#include <amdblocks/agesawrapper.h>
 #include <amdblocks/biosram.h>
 #include <amdblocks/psp.h>
-#include <arch/cpu.h>
 #include <arch/romstage.h>
 #include <cbmem.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/amd/mtrr.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>

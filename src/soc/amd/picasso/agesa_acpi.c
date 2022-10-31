@@ -1,24 +1,24 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
 #include <acpi/acpi_crat.h>
 #include <acpi/acpi_ivrs.h>
-#include <arch/cpu.h>
-#include <cpu/amd/cpuid.h>
-#include <cpu/amd/msr.h>
-#include <FspGuids.h>
-#include <soc/acpi.h>
-#include <stdint.h>
-#include <device/device.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
+#include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/cpu.h>
 #include <amdblocks/data_fabric.h>
 #include <amdblocks/ioapic.h>
+#include <arch/mmio.h>
+#include <cpu/amd/cpuid.h>
+#include <cpu/amd/msr.h>
+#include <cpu/cpu.h>
+#include <device/device.h>
+#include <device/pci_def.h>
+#include <device/pci_ops.h>
+#include <FspGuids.h>
+#include <soc/acpi.h>
 #include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
-#include <arch/mmio.h>
+#include <stdint.h>
 
 static unsigned long gen_crat_hsa_entry(struct acpi_crat_header *crat, unsigned long current)
 {

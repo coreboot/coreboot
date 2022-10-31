@@ -4,8 +4,8 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/memmap.h>
 #include <amdblocks/pmlib.h>
-#include <arch/cpu.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <fsp/api.h>
 #include <program_loading.h>
 #include <romstage_common.h>

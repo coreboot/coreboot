@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <arch/cpu.h>
 #include <amdblocks/cpu.h>
 #include <cpu/amd/msr.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <stdint.h>
 

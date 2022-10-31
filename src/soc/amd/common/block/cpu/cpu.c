@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
 #include <amdblocks/cpu.h>
+#include <cpu/cpu.h>
 
 int get_cpu_count(void)
 {

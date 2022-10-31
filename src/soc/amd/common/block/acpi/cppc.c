@@ -3,7 +3,7 @@
 #include <acpi/acpi_pm.h>
 #include <acpi/acpigen.h>
 #include <amdblocks/cppc.h>
-#include <arch/cpu.h>
+#include <cpu/cpu.h>
 #include <soc/msr.h>
 #include <types.h>
 

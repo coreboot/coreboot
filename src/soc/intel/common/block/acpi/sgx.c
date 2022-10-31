@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpigen.h>
-#include <arch/cpu.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/sgx.h>
 

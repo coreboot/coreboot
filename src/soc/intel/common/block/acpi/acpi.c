@@ -2,16 +2,17 @@
 
 #include <acpi/acpi_pm.h>
 #include <acpi/acpigen.h>
-#include <arch/cpu.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <console/console.h>
-#include <cpu/intel/turbo.h>
-#include <cpu/intel/msr.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/common/common.h>
+#include <cpu/intel/msr.h>
+#include <cpu/intel/turbo.h>
+#include <cpu/x86/lapic.h>
 #include <cpu/x86/smm.h>
-#include <intelblocks/acpi.h>
 #include <intelblocks/acpi_wake_source.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/sgx.h>
@@ -19,7 +20,6 @@
 #include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
-#include <cpu/x86/lapic.h>
 
 #define  CPUID_6_EAX_ISST	(1 << 7)
 

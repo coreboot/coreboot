@@ -1,15 +1,15 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpi_pm.h>
+#include <acpi/acpi.h>
 #include <acpi/acpigen.h>
-#include <arch/cpu.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <console/console.h>
-#include <intelblocks/acpi.h>
+#include <cpu/cpu.h>
 #include <intelblocks/acpi_wake_source.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pmclib.h>
 #include <soc/cpu.h>

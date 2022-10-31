@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <arch/cpu.h>
-#include <device/device.h>
-#include <device/pci_ops.h>
-#include <device/pci_ids.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/cpu_ids.h>
+#include <device/device.h>
+#include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include <soc/lpm.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_chip.h>

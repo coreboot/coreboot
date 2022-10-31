@@ -3,7 +3,7 @@
 #ifndef _SOC_RAMSTAGE_H_
 #define _SOC_RAMSTAGE_H_
 
-#include <arch/cpu.h>
+#include <cpu/cpu.h>
 #include <device/device.h>
 #include <soc/QuarkNcSocId.h>
 

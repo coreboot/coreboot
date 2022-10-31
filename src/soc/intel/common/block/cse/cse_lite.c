@@ -1,17 +1,17 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <arch/cpu.h>
 #include <bootstate.h>
-#include <console/console.h>
 #include <cbfs.h>
 #include <commonlib/region.h>
+#include <console/console.h>
+#include <cpu/cpu.h>
 #include <fmap.h>
+#include <intelbasecode/debug_feature.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/cse_layout.h>
-#include <intelbasecode/debug_feature.h>
-#include <security/vboot/vboot_common.h>
 #include <security/vboot/misc.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/intel/common/reset.h>
 #include <timestamp.h>
 

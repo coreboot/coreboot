@@ -6,14 +6,14 @@
  * Chapter number: 2, 4, 5, 6
  */
 
-#include <arch/cpu.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/cpu_ids.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/msr.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include <soc/bootblock.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>

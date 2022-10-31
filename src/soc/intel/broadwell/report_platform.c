@@ -1,17 +1,17 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
-#include <device/pci.h>
-#include <string.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/msr.h>
+#include <device/pci.h>
+#include <device/pci_ops.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <soc/systemagent.h>
+#include <string.h>
 
 /* FIXME: Needs an update */
 static struct {

@@ -1,16 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/cpu_ids.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/name.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <soc/romstage.h>
+#include <device/pci_ops.h>
 #include <soc/pci_devs.h>
+#include <soc/romstage.h>
 
 static struct {
 	u32 cpuid;

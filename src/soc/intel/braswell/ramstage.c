@@ -1,16 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
 #include <acpi/acpi_pm.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <intelblocks/acpi_wake_source.h>
 #include <fsp/util.h>
+#include <intelblocks/acpi_wake_source.h>
 #include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/msr.h>

@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <arch/cpu.h>
 #include <arch/mmio.h>
 #include <cf9_reset.h>
 #include <commonlib/region.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/cpu_ids.h>
 #include <fmap.h>
 #include <intelblocks/pmclib.h>

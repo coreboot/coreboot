@@ -375,14 +375,6 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->PsOnEnable = 1;
 	/* Enable the energy efficient turbo mode */
 	s_cfg->EnergyEfficientTurbo = 1;
-
-	/*
-	 * UPDATEME: This is WA for HFPGA
-	 * Disable Pch Pm Energy Report
-	 * Energy Report is disabled to enhance boottime with HFPGA.
-	 */
-	s_cfg->PchPmDisableEnergyReport = 1;
-
 	s_cfg->PmcLpmS0ixSubStateEnableMask = get_supported_lpm_mask();
 }
 

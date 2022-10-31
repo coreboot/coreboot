@@ -107,7 +107,19 @@ static tpm_result_t i2c_tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 	return TPM_SUCCESS;
 }
 
-tis_sendrecv_fn tis_probe(void)
+tis_sendrecv_fn tis_probe(enum tpm_family *family)
 {
+	/*
+	 * Can't query version or really anything as the device doesn't support
+	 * much through this interface (can't specify address on accesses).
+	 *
+	 * Hence the assumption is that whatever TPM version is enabled at
+	 * compile-time defines what the device supports. The check is written
+	 * in a way to give TPM 1 preference even if support for both versions
+	 * is compiled in.
+	 */
+	if (family != NULL)
+		*family = CONFIG(TPM1) ? TPM_1 : TPM_2;
+
 	return &i2c_tis_sendrecv;
 }

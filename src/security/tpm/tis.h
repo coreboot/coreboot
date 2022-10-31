@@ -32,6 +32,12 @@ enum tis_status {
 	TPM_STS_RESPONSE_RETRY = (1 << 1),
 };
 
+enum tpm_family {
+	TPM_UNKNOWN = 0,
+	TPM_1 = 1,
+	TPM_2 = 2,
+};
+
 /*
  * tis_sendrecv()
  *
@@ -50,13 +56,16 @@ typedef tpm_result_t (*tis_sendrecv_fn)(const u8 *sendbuf, size_t send_size, u8 
 /*
  * tis_probe()
  *
- * Probe for the TPM device and set it up for use within locality 0. Returns
- * pointer to send-receive function on success or NULL on failure.
+ * Probe for the TPM device and set it up for use within locality 0.
+ *
+ * @family - pointer which is set to TPM family of the device
+ *
+ * Returns pointer to send-receive function on success or NULL on failure.
  *
  * Do not call this explicitly, it's meant to be used exclusively by TSS
  * implementation (tlcl_lib_init() function to be specific).
  */
-tis_sendrecv_fn tis_probe(void);
+tis_sendrecv_fn tis_probe(enum tpm_family *family);
 
 /*
  * tis_vendor_write()

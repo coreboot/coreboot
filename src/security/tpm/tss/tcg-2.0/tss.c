@@ -211,13 +211,22 @@ tpm_result_t tlcl_clear_control(bool disable)
 /* This function is called directly by vboot, uses vboot return types. */
 tpm_result_t tlcl_lib_init(void)
 {
+	enum tpm_family family;
+
 	if (tis_sendrecv != NULL)
 		return TPM_SUCCESS;
 
-	tis_sendrecv = tis_probe();
+	tis_sendrecv = tis_probe(&family);
 	if (tis_sendrecv == NULL) {
 		printk(BIOS_ERR, "%s: tis_probe returned error\n", __func__);
 		return TPM_CB_NO_DEVICE;
+	}
+
+	if (family != TPM_2) {
+		tis_sendrecv = NULL;
+		printk(BIOS_ERR, "%s: tis_probe returned unsupported TPM family: %d\n",
+		       __func__, family);
+		return TPM_CB_INTERNAL_INCONSISTENCY;
 	}
 
 	return TPM_SUCCESS;

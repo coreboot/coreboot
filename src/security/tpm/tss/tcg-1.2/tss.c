@@ -153,12 +153,19 @@ static tpm_result_t send(const uint8_t *command)
 
 tpm_result_t tlcl_lib_init(void)
 {
+	enum tpm_family family;
+
 	if (tis_sendrecv != NULL)
 		return TPM_SUCCESS;
 
-	tis_sendrecv = tis_probe();
+	tis_sendrecv = tis_probe(&family);
 	if (tis_sendrecv == NULL)
 		return TPM_CB_NO_DEVICE;
+
+	if (family != TPM_1) {
+		tis_sendrecv = NULL;
+		return TPM_CB_INTERNAL_INCONSISTENCY;
+	}
 
 	return TPM_SUCCESS;
 }

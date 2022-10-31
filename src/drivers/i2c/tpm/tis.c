@@ -118,9 +118,9 @@ static tpm_result_t i2c_tpm_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 	return TPM_SUCCESS;
 }
 
-tis_sendrecv_fn tis_probe(void)
+tis_sendrecv_fn tis_probe(enum tpm_family *family)
 {
-	if (tpm_vendor_probe(CONFIG_DRIVER_TPM_I2C_BUS, CONFIG_DRIVER_TPM_I2C_ADDR))
+	if (tpm_vendor_probe(CONFIG_DRIVER_TPM_I2C_BUS, CONFIG_DRIVER_TPM_I2C_ADDR, family))
 		return NULL;
 
 	if (tpm_vendor_init(&chip, CONFIG_DRIVER_TPM_I2C_BUS, CONFIG_DRIVER_TPM_I2C_ADDR))

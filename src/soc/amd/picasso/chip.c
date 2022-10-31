@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/data_fabric.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
-#include <soc/data_fabric.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>

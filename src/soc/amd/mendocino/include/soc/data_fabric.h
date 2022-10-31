@@ -12,6 +12,4 @@
 
 #define NUM_NB_MMIO_REGS		8
 
-void data_fabric_set_mmio_np(void);
-
 #endif /* AMD_MENDOCINO_DATA_FABRIC_H */

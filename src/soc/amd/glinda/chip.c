@@ -2,13 +2,13 @@
 
 /* TODO: Update for Glinda */
 
+#include <amdblocks/data_fabric.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
-#include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <types.h>

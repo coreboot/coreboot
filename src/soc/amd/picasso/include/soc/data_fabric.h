@@ -49,6 +49,4 @@
 #define DF_DRAM_LIMIT(dram_map_pair)	((dram_map_pair) * 2 * sizeof(uint32_t) \
 						+ D18F0_DRAM_LIMIT0)
 
-void data_fabric_set_mmio_np(void);
-
 #endif /* AMD_PICASSO_DATA_FABRIC_H */

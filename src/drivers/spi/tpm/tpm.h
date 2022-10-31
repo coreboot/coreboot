@@ -4,6 +4,7 @@
 #define __COREBOOT_SRC_DRIVERS_SPI_TPM_TPM_H
 
 #include <drivers/tpm/cr50.h>
+#include <security/tpm/tis.h>
 #include <security/tpm/tss_errors.h>
 #include <stddef.h>
 #include <spi-generic.h>
@@ -43,5 +44,7 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 
 /* Get information about previously initialized TPM device. */
 void tpm2_get_info(struct tpm2_info *info);
+
+tis_sendrecv_fn spi_tis_probe(enum tpm_family *family);
 
 #endif  /* ! __COREBOOT_SRC_DRIVERS_SPI_TPM_TPM_H */

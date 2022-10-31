@@ -40,7 +40,7 @@ static tpm_result_t tpm_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 	return TPM_SUCCESS;
 }
 
-tis_sendrecv_fn tis_probe(enum tpm_family *family)
+tis_sendrecv_fn spi_tis_probe(enum tpm_family *family)
 {
 	struct spi_slave spi;
 	struct tpm2_info info;

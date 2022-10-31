@@ -46,7 +46,7 @@ static tpm_result_t crb_tpm_sendrecv(const uint8_t *sendbuf, size_t sbuf_size, u
 	return TPM_SUCCESS;
 }
 
-tis_sendrecv_fn tis_probe(enum tpm_family *family)
+tis_sendrecv_fn crb_tis_probe(enum tpm_family *family)
 {
 	struct crb_tpm_info info;
 

@@ -56,4 +56,6 @@ tpm_result_t tpm_vendor_probe(unsigned int bus, uint32_t addr, enum tpm_family *
 
 tpm_result_t tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr);
 
+tis_sendrecv_fn i2c_tis_probe(enum tpm_family *family);
+
 #endif /* __DRIVERS_TPM_SLB9635_I2C_TPM_H__ */

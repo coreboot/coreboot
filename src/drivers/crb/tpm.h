@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* This is a driver for a Command Response Buffer Interface */
 
+#include <security/tpm/tis.h>
 #include <security/tpm/tss_errors.h>
 
 /* CRB driver */
@@ -65,3 +66,5 @@ void crb_tpm_get_info(struct crb_tpm_info *crb_tpm_info);
 size_t crb_tpm_process_command(const void *tpm2_command, size_t command_size,
 			       void *tpm2_response, size_t max_response);
 bool crb_tpm_is_active(void);
+
+tis_sendrecv_fn crb_tis_probe(enum tpm_family *family);

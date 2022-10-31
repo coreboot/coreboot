@@ -35,7 +35,7 @@ void p2sb_soc_get_sb_mask(uint32_t *ep_mask, size_t count)
 static void ioe_p2sb_read_resources(struct device *dev)
 {
 	/* Add the fixed MMIO resource for IOM */
-	mmio_resource_kb(dev, 0, IOM_BASE_ADDR / KiB, IOM_BASE_SIZE / KiB);
+	mmio_range(dev, PCI_BASE_ADDRESS_0, IOM_BASE_ADDR, IOM_BASE_SIZE);
 }
 
 static void p2sb_read_resources(struct device *dev)

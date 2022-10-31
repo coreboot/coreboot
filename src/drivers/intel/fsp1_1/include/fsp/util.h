@@ -3,7 +3,7 @@
 #ifndef FSP1_1_UTIL_H
 #define FSP1_1_UTIL_H
 
-#include <arch/cpu.h>
+#include <cpu/cpu.h>
 #include <fsp/api.h>
 /* Current users expect to get the SoC's FSP definitions by including util.h. */
 #include <fsp/soc_binding.h>

@@ -6,7 +6,7 @@
 #include <boot/coreboot_tables.h>
 #include <cbfs.h>
 #include <commonlib/region.h>
-#include <arch/cpu.h>
+#include <cpu/cpu.h>
 #include <fsp/api.h>
 #include <efi/efi_datatype.h>
 #include <fsp/info_header.h>

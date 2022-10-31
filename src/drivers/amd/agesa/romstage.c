@@ -1,21 +1,21 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <amdblocks/biosram.h>
 #include <acpi/acpi.h>
-#include <arch/cpu.h>
+#include <amdblocks/biosram.h>
 #include <arch/romstage.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <halt.h>
+#include <northbridge/amd/agesa/agesa_helper.h>
+#include <northbridge/amd/agesa/state_machine.h>
 #include <program_loading.h>
+#include <romstage_common.h>
 #include <romstage_handoff.h>
 #include <smp/node.h>
 #include <string.h>
 #include <timestamp.h>
-#include <romstage_common.h>
-#include <northbridge/amd/agesa/agesa_helper.h>
-#include <northbridge/amd/agesa/state_machine.h>
 
 void __weak board_BeforeAgesa(struct sysinfo *cb) { }
 

@@ -5,7 +5,7 @@
 #include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
 #include <acpi/acpigen_pci.h>
-#include <arch/cpu.h>
+#include <cpu/cpu.h>
 #include <console/console.h>
 #include <cpu/intel/cpu_ids.h>
 #include <device/i2c_simple.h>

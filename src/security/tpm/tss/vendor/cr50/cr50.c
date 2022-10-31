@@ -16,7 +16,7 @@ tpm_result_t tlcl_cr50_enable_nvcommits(void)
 
 	printk(BIOS_INFO, "Enabling cr50 nvmem commits\n");
 
-	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &sub_command);
+	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, &sub_command);
 
 	if (!response || (response && response->hdr.tpm_code)) {
 		if (response)
@@ -39,7 +39,7 @@ tpm_result_t tlcl_cr50_enable_update(uint16_t timeout_ms,
 
 	printk(BIOS_INFO, "Checking cr50 for pending updates\n");
 
-	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, command_body);
+	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, command_body);
 
 	if (!response || response->hdr.tpm_code)
 		return TPM_IOERROR;
@@ -55,7 +55,7 @@ tpm_result_t tlcl_cr50_get_recovery_button(uint8_t *recovery_button_state)
 
 	printk(BIOS_INFO, "Checking cr50 for recovery request\n");
 
-	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &sub_command);
+	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, &sub_command);
 
 	if (!response || response->hdr.tpm_code)
 		return TPM_IOERROR;
@@ -72,7 +72,7 @@ tpm_result_t tlcl_cr50_get_tpm_mode(uint8_t *tpm_mode)
 
 	printk(BIOS_INFO, "Reading cr50 TPM mode\n");
 
-	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &mode_command);
+	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, &mode_command);
 
 	if (!response)
 		return TPM_IOERROR;
@@ -112,7 +112,7 @@ tpm_result_t tlcl_cr50_get_boot_mode(uint8_t *boot_mode)
 
 	printk(BIOS_DEBUG, "Reading cr50 boot mode\n");
 
-	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &mode_command);
+	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, &mode_command);
 
 	if (!response)
 		return TPM_IOERROR;
@@ -141,8 +141,7 @@ tpm_result_t tlcl_cr50_immediate_reset(uint16_t timeout_ms)
 	 * Issue an immediate reset to the Cr50.
 	 */
 	printk(BIOS_INFO, "Issuing cr50 reset\n");
-	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND,
-				       &reset_command_body);
+	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, &reset_command_body);
 
 	if (!response)
 		return TPM_IOERROR;
@@ -157,7 +156,7 @@ tpm_result_t tlcl_cr50_reset_ec(void)
 
 	printk(BIOS_DEBUG, "Issuing EC reset\n");
 
-	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &reset_cmd);
+	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, &reset_cmd);
 
 	if (!response)
 		return TPM_IOERROR;
@@ -183,7 +182,7 @@ tpm_result_t tlcl_cr50_get_factory_config(uint64_t *factory_config)
 	uint16_t factory_config_command = TPM2_CR50_SUB_CMD_GET_FACTORY_CONFIG;
 	*factory_config = 0;
 
-	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &factory_config_command);
+	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, &factory_config_command);
 
 	if (!response)
 		return TPM_IOERROR;

@@ -12,6 +12,8 @@ bootblock-y += tss/tcg-1.2/tss.c
 verstage-y += tss/tcg-1.2/tss.c
 postcar-y += tss/tcg-1.2/tss.c
 
+all-y += tss/tss.c
+
 ## TSPI
 
 ramstage-y += tspi/tspi.c
@@ -26,18 +28,23 @@ ifeq ($(CONFIG_TPM2),y)
 
 ramstage-y += tss/tcg-2.0/tss_marshaling.c
 ramstage-y += tss/tcg-2.0/tss.c
+ramstage-y += tss/tss.c
 
 romstage-y += tss/tcg-2.0/tss_marshaling.c
 romstage-y += tss/tcg-2.0/tss.c
+romstage-y += tss/tss.c
 
 verstage-$(CONFIG_VBOOT) += tss/tcg-2.0/tss_marshaling.c
 verstage-$(CONFIG_VBOOT) += tss/tcg-2.0/tss.c
+verstage-$(CONFIG_VBOOT) += tss/tss.c
 
 postcar-y += tss/tcg-2.0/tss_marshaling.c
 postcar-y += tss/tcg-2.0/tss.c
+postcar-y += tss/tss.c
 
 bootblock-y += tss/tcg-2.0/tss_marshaling.c
 bootblock-y += tss/tcg-2.0/tss.c
+bootblock-y += tss/tss.c
 
 ## TSPI
 

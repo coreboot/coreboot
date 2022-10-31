@@ -3,6 +3,8 @@
 #ifndef __ACPI_CRAT_H__
 #define __ACPI_CRAT_H__
 
+#include <stdint.h>
+
 enum crat_entry_type {
 	CRAT_HSA_PROC_UNIT_TYPE,
 	CRAT_MEMORY_TYPE,

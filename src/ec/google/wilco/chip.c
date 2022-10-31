@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpi.h>
 #include <acpi/acpi_device.h>
+#include <acpi/acpi.h>
 #include <acpi/acpigen.h>
-#include <arch/cpu.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <device/pnp.h>
 #include <ec/acpi/ec.h>
 #include <intelblocks/cpulib.h>

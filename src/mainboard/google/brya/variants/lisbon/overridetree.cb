@@ -6,6 +6,8 @@ fw_config
 end
 
 chip soc/intel/alderlake
+	register "sagv" = "SaGv_Enabled"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

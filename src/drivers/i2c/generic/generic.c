@@ -62,7 +62,7 @@ void i2c_generic_fill_ssdt(const struct device *dev,
 		return;
 
 	if (!config->hid) {
-		printk(BIOS_ERR, "%s: ERROR: HID required\n", dev_path(dev));
+		printk(BIOS_ERR, "%s: HID required but not set\n", dev_path(dev));
 		return;
 	}
 

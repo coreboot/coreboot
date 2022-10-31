@@ -1,18 +1,19 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/cpu_ids.h>
 #include <device/device.h>
 #include <drivers/intel/gma/opregion.h>
 #include <ec/ec.h>
-#include <soc/gpio.h>
+#include <fw_config.h>
 #include <smbios.h>
+#include <soc/gpio.h>
 #include <stdint.h>
 #include <string.h>
+
 #include "board_id.h"
-#include <fw_config.h>
 
 const char *smbios_system_sku(void)
 {

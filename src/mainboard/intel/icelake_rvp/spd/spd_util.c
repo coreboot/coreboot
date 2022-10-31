@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
+#include <cpu/cpu.h>
 #include <intelblocks/mp_init.h>
 #include <stdint.h>
 #include <string.h>

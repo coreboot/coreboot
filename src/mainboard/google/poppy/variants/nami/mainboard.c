@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
 #include <assert.h>
 #include <baseboard/variants.h>
 #include <cbfs.h>
 #include <chip.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/cpu_ids.h>
 #include <device/device.h>
 #include <drivers/intel/gma/opregion.h>

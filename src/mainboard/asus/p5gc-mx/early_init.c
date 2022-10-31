@@ -1,17 +1,18 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootblock_common.h>
-#include <stdint.h>
 #include <cf9_reset.h>
-#include <device/pnp_ops.h>
-#include <superio/winbond/common/winbond.h>
-#include <superio/winbond/w83627dhg/w83627dhg.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
+#include <cpu/intel/speedstep.h>
+#include <cpu/x86/msr.h>
+#include <device/pnp_ops.h>
 #include <northbridge/intel/i945/i945.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
-#include <cpu/x86/msr.h>
-#include <cpu/intel/speedstep.h>
-#include <arch/cpu.h>
+#include <stdint.h>
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627dhg/w83627dhg.h>
+
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627DHG_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, W83627DHG_GPIO2345_V)

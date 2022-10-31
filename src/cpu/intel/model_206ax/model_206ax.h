@@ -3,7 +3,7 @@
 #ifndef _CPU_INTEL_MODEL_206AX_H
 #define _CPU_INTEL_MODEL_206AX_H
 
-#include <arch/cpu.h>
+#include <cpu/cpu.h>
 #include <stdint.h>
 
 /* SandyBridge CPU stepping */

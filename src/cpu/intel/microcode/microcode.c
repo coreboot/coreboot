@@ -2,9 +2,9 @@
 
 /* Microcode update for Intel PIII and later CPUs */
 
-#include <arch/cpu.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/msr.h>
 #include <smp/spinlock.h>

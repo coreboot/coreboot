@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/cpu.h>
 #include <cpu/intel/common/common.h>
-#include <arch/cpu.h>
 #include <types.h>
 
 bool intel_ht_supported(void)

@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
-#include <string.h>
-#include <arch/cpu.h>
-#include <cpu/x86/msr.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/speedstep.h>
+#include <cpu/x86/msr.h>
+#include <string.h>
+#include <types.h>
 
 /**
  * @brief Gather speedstep limits for current processor

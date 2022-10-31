@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
 #include <cbfs.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/pae.h>

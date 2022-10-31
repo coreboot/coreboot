@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
-#include <console/console.h>
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
-#include <arch/cpu.h>
+#include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/fsb.h>
 #include <cpu/intel/speedstep.h>
 #include <device/device.h>
+#include <types.h>
 
 static int determine_total_number_of_cores(void)
 {

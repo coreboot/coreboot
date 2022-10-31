@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>
-#include <arch/cpu.h>
 
 #if CONFIG(CPU_INTEL_TURBO_NOT_PACKAGE_SCOPED)
 static inline int get_global_turbo_state(void)

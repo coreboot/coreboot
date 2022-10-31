@@ -3,7 +3,7 @@
 #ifndef _CPU_INTEL_HASWELL_H
 #define _CPU_INTEL_HASWELL_H
 
-#include <arch/cpu.h>
+#include <cpu/cpu.h>
 #include <stdint.h>
 
 /* CPU types without stepping */

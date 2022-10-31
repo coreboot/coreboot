@@ -23,12 +23,12 @@
  * Covington-core Celerons do not have L2 cache.
  */
 
-#include <stdint.h>
-#include <arch/cpu.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/l2_cache.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
+#include <stdint.h>
 
 /* Latency Tables */
 struct latency_entry {

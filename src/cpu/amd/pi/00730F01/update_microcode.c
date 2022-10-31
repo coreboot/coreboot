@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
-#include <arch/cpu.h>
-#include <cpu/amd/microcode.h>
+#include <cbfs.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
-#include <cpu/x86/msr.h>
+#include <cpu/amd/microcode.h>
 #include <cpu/amd/msr.h>
-#include <cbfs.h>
+#include <cpu/cpu.h>
+#include <cpu/x86/msr.h>
+#include <stdint.h>
 
 /*
  * Values and header structure from:

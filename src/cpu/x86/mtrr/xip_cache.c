@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
-#include <program_loading.h>
 #include <commonlib/region.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
+#include <program_loading.h>
 
 /* For now this is a good lowest common denominator for the total CPU cache.
    TODO: fetch the total amount of cache from CPUID leaf2. */

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/cpu.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/intel/hyperthreading.h>
 #include <device/device.h>
 #include <option.h>

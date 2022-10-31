@@ -3,7 +3,6 @@
 #ifndef AM335X_MMC_H
 #define AM335X_MMC_H
 
-#include <inttypes.h>
 #include <commonlib/sd_mmc_ctrlr.h>
 
 #define MMCHS0_BASE 0x48060000

@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <device/i2c_simple.h>
 #include <gpio.h>
-#include <inttypes.h>
 #include <lib.h>
 #include <soc/clock.h>
 #include <soc/qcom_qup_se.h>

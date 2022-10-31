@@ -1,6 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_device.h>
+#include <device/device.h>
 #include <intelblocks/sd.h>
+#include <stdint.h>
+
 #include "chip.h"
 
 int sd_fill_soc_gpio_info(struct acpi_gpio *gpio, const struct device *dev)

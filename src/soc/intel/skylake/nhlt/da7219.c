@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <commonlib/bsd/helpers.h>
 #include <nhlt.h>
 #include <soc/nhlt.h>
 

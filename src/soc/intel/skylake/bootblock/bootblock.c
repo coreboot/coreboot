@@ -1,11 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootblock_common.h>
+#include <cpu/cpu.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/systemagent.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/uart.h>
 #include <soc/bootblock.h>
+#include <stdint.h>
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {

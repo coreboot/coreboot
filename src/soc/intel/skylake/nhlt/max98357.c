@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/bsd/helpers.h>
 #include <soc/nhlt.h>
 
 static const struct nhlt_format_config max98357_render_formats[] = {

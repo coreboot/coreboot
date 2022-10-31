@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <intelblocks/p2sb.h>
+#include <types.h>
 
 void p2sb_soc_get_sb_mask(uint32_t *ep_mask, size_t count)
 {

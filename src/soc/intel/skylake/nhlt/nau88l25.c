@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/bsd/helpers.h>
 #include <soc/nhlt.h>
 
 /* The same DSP firmware settings are used for both the capture and

@@ -1,0 +1,49 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_PROTECTLI_VP2420
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_ELKHARTLAKE
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select SUPERIO_ITE_IT8613E
+	select SPI_FLASH_MACRONIX
+	select INTEL_GMA_HAVE_VBT
+	select SEABIOS_ADD_SERCON_PORT_FILE if PAYLOAD_SEABIOS
+	select MEMORY_MAPPED_TPM
+
+config MAINBOARD_DIR
+	default "protectli/vault_ehl"
+
+config MAINBOARD_PART_NUMBER
+	default "VP2420"
+
+config MAINBOARD_FAMILY
+	default "Vault Pro"
+
+config MAX_CPUS
+	default 4
+
+config CBFS_SIZE
+	default 0x900000
+
+config VBOOT
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_FWMP
+	select GBB_FLAG_DISABLE_LID_SHUTDOWN
+	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
+	select VBOOT_ALWAYS_ENABLE_DISPLAY
+	select VBOOT_NO_BOARD_SUPPORT
+	select VBOOT_VBNV_CMOS
+	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
+	select VBOOT_SEPARATE_VERSTAGE
+
+config VBOOT_SLOTS_RW_A
+	default y if VBOOT
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT && VBOOT_SLOTS_RW_A
+
+endif # BOARD_PROTECTLI_VP2420

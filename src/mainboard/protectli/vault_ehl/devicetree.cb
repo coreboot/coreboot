@@ -1,0 +1,214 @@
+chip soc/intel/elkhartlake
+
+	#register "enable_vtd" = "1"
+
+	register "power_limits_config" = "{
+		.tdp_pl1_override = 10,
+		.tdp_pl2_override = 15,
+	}"
+
+	register "SaGv" = "SaGv_Enabled"
+	register "eist_enable" = "1"
+
+	# Enable lpss s0ix
+	register "s0ix_enable" = "1"
+
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route, i.e., if this route changes then the affected GPE
+	# offset bits also need to be changed. This sets the PMC register
+	# GPE_CFG fields.
+	#register "pmc_gpe0_dw1" = "PMC_GPE_SCC_63_32"
+	#register "pmc_gpe0_dw2" = "PMC_GPE_N_31_0"
+	#register "pmc_gpe0_dw3" = "PMC_GPE_SCC_31_0"
+
+	register "tcc_offset" = "5" # TCC of 95C
+
+	# USB 2.0 ports
+	register "usb2_ports[0]" = "USB2_PORT_SHORT(OC_SKIP)"	# Header FUSB1
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[2]" = "USB2_PORT_SHORT(OC_SKIP)"	# Header FUSB1
+	register "usb2_ports[3]" = "USB2_PORT_SHORT(OC_SKIP)"	# M.2 WLAN
+	register "usb2_ports[4]" = "USB2_PORT_SHORT(OC_SKIP)"	# M.2 WWAN
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[6]" = "USB2_PORT_SHORT(OC_SKIP)"	# USB Type-A Upper
+	register "usb2_ports[7]" = "USB2_PORT_SHORT(OC_SKIP)"	# USB Type-C
+	register "usb2_ports[8]" = "USB2_PORT_SHORT(OC_SKIP)"	# USB Type-A Lower
+	register "usb2_ports[9]" = "USB2_PORT_EMPTY"
+
+	# USB 3.x ports
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB Type-A Upper
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB Type-A Lower
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB Type-C Muxed
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"
+
+	# PCIe root ports related UPDs
+	register "PcieRpEnable[0]" = "1"
+	register "PcieRpEnable[1]" = "1"
+	register "PcieRpEnable[2]" = "1"
+	register "PcieRpEnable[4]" = "1"
+	register "PcieRpEnable[6]" = "1"
+
+	register "PcieClkSrcUsage[0]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[1]" = "PCIE_CLK_FREE"
+	register "PcieClkSrcUsage[2]" = "PCIE_CLK_FREE"
+	register "PcieClkSrcUsage[3]" = "PCIE_CLK_FREE"
+	register "PcieClkSrcUsage[4]" = "PCIE_CLK_FREE"
+	register "PcieClkSrcUsage[5]" = "PCIE_CLK_FREE"
+
+	register "PcieClkSrcClkReq[0]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[1]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[2]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[3]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[4]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[5]" = "PCIE_CLK_NOTUSED"
+
+	# Storage (SATA/SDCARD/EMMC) related UPDs
+	register "SataSalpSupport" = "1"
+	register "SataPortsEnable[0]" = "1" # Header
+	register "SataPortsEnable[1]" = "1" # M.2 2280
+	register "SataPortsDevSlp[0]" = "0"
+	register "SataPortsDevSlp[1]" = "1"
+
+	register "PchHdaAudioLinkHdaEnable" = "1"
+	register "PchHdaSdiEnable[0]" = "1"
+	register "ScsEmmcHs400Enabled" = "1"
+	register "SkipCpuReplacementCheck" = "1"
+
+	# Enable DDI ports A/B/C
+	register "DdiPortAConfig" = "1"
+	register "DdiPortBConfig" = "1"
+	register "DdiPortCConfig" = "1"
+
+	# Enable HPD for DDI ports A/B
+	register "DdiPortAHpd" = "1"
+	register "DdiPortBHpd" = "1"
+
+	# Enable DDC for DDI ports A/B
+	register "DdiPortADdc" = "1"
+	register "DdiPortBDdc" = "1"
+
+	device cpu_cluster 0 on	end
+	device domain 0 on
+		device pci 00.0 on	end # Host Bridge
+		device pci 02.0 on	end # Integrated Graphics Device
+		device pci 04.0 off	end # SA Thermal device
+		device pci 08.0 off	end # GNA
+		device pci 09.0 off	end # CPU Intel Trace Hub
+
+		device pci 10.0 on	end # I2C6
+		device pci 10.1 on	end # I2C7
+		device pci 10.5 on	end # Integrated Error Handler
+
+		device pci 11.0 off	end # Intel PSE UART0
+		device pci 11.1 off	end # Intel PSE UART1
+		device pci 11.2 off	end # Intel PSE UART2
+		device pci 11.3 off	end # Intel PSE UART3
+		device pci 11.4 off	end # Intel PSE UART4
+		device pci 11.5 off	end # Intel PSE UART5
+		device pci 11.6 off	end # Intel PSE IS20
+		device pci 11.7 off	end # Intel PSE IS21
+
+		device pci 12.0 on	end # GSPI2
+		device pci 12.3 on	end # Management Engine UMA Access
+		device pci 12.4 on	end # Management Engine PTT DMA Controller
+		device pci 12.5 off	end # UFS0
+		device pci 12.7 off	end # UFS1
+
+		device pci 13.0 off	end # Intel PSE GSPI0
+		device pci 13.1 off	end # Intel PSE GSPI1
+		device pci 13.2 off	end # Intel PSE GSPI2
+		device pci 13.3 off	end # Intel PSE GSPI3
+		device pci 13.4 off	end # Intel PSE GPIO0
+		device pci 13.5 off	end # Intel PSE GPIO1
+
+		device pci 14.0 on	end # USB3.1 xHCI
+		device pci 14.1 off	end # USB3.1 xDCI (OTG)
+		device pci 14.2 on	end # Shared RAM
+
+		device pci 15.0 off	end # I2C0
+		device pci 15.1 off	end # I2C1
+		device pci 15.2 off	end # I2C2
+		device pci 15.3 off	end # I2C3
+
+		device pci 16.0 on	end # Management Engine Interface 1
+		device pci 16.1 off	end # Management Engine Interface 2
+		device pci 16.4 off	end # Management Engine Interface 3
+		device pci 16.5 off	end # Management Engine Interface 4
+
+		device pci 17.0 on	end # SATA
+
+		device pci 18.0 off	end # Intel PSE I2C7
+		device pci 18.1 off	end # Intel PSE CAN0
+		device pci 18.2 off	end # Intel PSE CAN1
+		device pci 18.3 off	end # Intel PSE QEP0
+		device pci 18.4 off	end # Intel PSE QEP1
+		device pci 18.5 off	end # Intel PSE QEP2
+		device pci 18.6 off	end # Intel PSE QEP3
+
+		device pci 19.0 on	end # I2C4
+		device pci 19.1 off	end # I2C5
+		device pci 19.2 on	end # UART2
+
+		device pci 1a.0 on	end # eMMC
+		device pci 1a.1 off	end # SD
+		device pci 1a.3 off	end # Intel Safety Island
+
+		device pci 1b.0 off	end # Intel PSE I2C0
+		device pci 1b.1 off	end # Intel PSE I2C1
+		device pci 1b.2 off	end # Intel PSE I2C2
+		device pci 1b.3 off	end # Intel PSE I2C3
+		device pci 1b.4 off	end # Intel PSE I2C4
+		device pci 1b.5 off	end # Intel PSE I2C5
+		device pci 1b.6 off	end # Intel PSE I2C6
+
+		device pci 1c.0 on	end # RP0 (pcie0 single VC)
+		device pci 1c.1 on	end # RP1 (pcie0 single VC)
+		device pci 1c.2 on	end # RP2 (pcie0 single VC)
+		device pci 1c.3 off	end # RP3 (pcie0 single VC)
+		device pci 1c.4 on	end # RP4 (pcie1 multi VC)
+		device pci 1c.5 off	end # RP5 (pcie2 multi VC)
+		device pci 1c.6 on	end # RP6 (pcie3 multi VC)
+
+		device pci 1d.0 off	end # Intel PSE IPC (local host to PSE)
+		device pci 1d.1 off	end # Intel PSE Time-Sensitive Networking GbE 0
+		device pci 1d.2 off	end # Intel PSE Time-Sensitive Networking GbE 1
+		device pci 1d.3 off	end # Intel PSE DMA0
+		device pci 1d.4 off	end # Intel PSE DMA1
+		device pci 1d.5 off	end # Intel PSE DMA2
+		device pci 1d.6 off	end # Intel PSE PWM
+		device pci 1d.7 off	end # Intel PSE ADC
+
+		device pci 1e.0 off	end # UART0
+		device pci 1e.1 off	end # UART1
+		device pci 1e.2 off	end # GSPI0
+		device pci 1e.3 off	end # GSPI1
+		device pci 1e.4 off	end # PCH Time-Sensitive Networking GbE
+		device pci 1e.6 off	end # HPET
+		device pci 1e.7 off	end # IOAPIC
+
+		device pci 1f.0 on	# eSPI interface
+			chip superio/ite/it8613e
+				device pnp 2e.0 off end
+				device pnp 2e.1 on      # COM 1
+					io 0x60 = 0x3f8
+					irq 0x70 = 4
+				end
+				device pnp 2e.4 off end # Environment Controller
+				device pnp 2e.5 off end # Keyboard
+				device pnp 2e.6 off end # Mouse
+				device pnp 2e.7 off end # GPIO
+				device pnp 2e.a off end # CIR
+			end
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end
+		device pci 1f.1 on	end # P2SB
+		device pci 1f.2 hidden	end # Power Management Controller
+		device pci 1f.3 on	end # Intel cAVS/HDA
+		device pci 1f.4 on	end # SMBUS
+		device pci 1f.5 on	end # PCH SPI (flash & TPM)
+		device pci 1f.7 off	end # PCH Intel Trace Hub
+	end
+end

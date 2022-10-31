@@ -444,7 +444,7 @@ static int eventlog_print_data(const struct event_header *event)
 
 	static const struct valstr cros_diagnostics_diag_types[] = {
 		{ELOG_CROS_DIAG_TYPE_NONE, "None"},
-		{ELOG_CROS_DIAG_TYPE_STORAGE_HEALTH, "Storage Health Info"},
+		{ELOG_CROS_DIAG_TYPE_STORAGE_HEALTH, "Storage health info"},
 		{ELOG_CROS_DIAG_TYPE_STORAGE_TEST_SHORT, "Storage self-test (short)"},
 		{ELOG_CROS_DIAG_TYPE_STORAGE_TEST_EXTENDED, "Storage self-test (extended)"},
 		{ELOG_CROS_DIAG_TYPE_MEMORY_QUICK, "Memory check (quick)"},

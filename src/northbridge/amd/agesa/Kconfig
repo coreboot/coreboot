@@ -2,7 +2,6 @@
 
 config NORTHBRIDGE_AMD_AGESA
 	bool
-	default CPU_AMD_AGESA
 
 if NORTHBRIDGE_AMD_AGESA
 

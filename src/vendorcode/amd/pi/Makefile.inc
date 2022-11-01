@@ -108,7 +108,7 @@ ifeq ($(CONFIG_HUDSON_IMC_FWM),y)
 agesa_raw_files += $(wildcard $(src)/vendorcode/amd/pi/Lib/imc/*.c)
 endif
 
-classes-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += libagesa
+classes-y += libagesa
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 $(eval $(call create_class_compiler,libagesa,x86_32))
@@ -135,7 +135,7 @@ ramstage-libs += $(agesa_output_path)/libagesa.a
 
 #######################################################################
 
-cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_CBFS_NAME)
+cbfs-files-y += $(CONFIG_AGESA_CBFS_NAME)
 $(CONFIG_AGESA_CBFS_NAME)-file := $(CONFIG_AGESA_BINARY_PI_FILE)
 $(CONFIG_AGESA_CBFS_NAME)-type := raw
 $(CONFIG_AGESA_CBFS_NAME)-position := $(CONFIG_AGESA_BINARY_PI_LOCATION)

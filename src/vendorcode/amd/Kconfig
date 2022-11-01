@@ -1,42 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-if CPU_AMD_AGESA || CPU_AMD_PI || SOC_AMD_PI
+if CPU_AMD_PI || SOC_AMD_PI
 
 menu "AMD Platform Initialization"
 
-choice
-	prompt "AGESA source"
-	default CPU_AMD_AGESA_BINARY_PI if CPU_AMD_PI
-	default CPU_AMD_AGESA_BINARY_PI if SOC_AMD_PI
-	default CPU_AMD_AGESA_OPENSOURCE if CPU_AMD_AGESA
-	help
-	  Select the method for including the AMD Platform Initialization
-	  code into coreboot.  Platform Initialization code is required for
-	  all AMD processors.
-
-config CPU_AMD_AGESA_BINARY_PI
-	bool "binary PI"
-	help
-	  Use a binary PI package.  Generally, these will be stored in the
-	  "3rdparty/blobs" directory.  For some processors, these must be obtained
-	  directly from AMD Embedded Processors Group
-	  (http://www.amd.com/embedded).
-
-config CPU_AMD_AGESA_OPENSOURCE
-	bool "open-source AGESA"
-	help
-	  Build the PI package ("AGESA") from source code in the "vendorcode"
-	  directory.
-
-endchoice
-
-if CPU_AMD_AGESA_OPENSOURCE
-source "src/vendorcode/amd/agesa/Kconfig"
-endif
-
-if CPU_AMD_AGESA_BINARY_PI
 source "src/vendorcode/amd/pi/Kconfig"
-endif
 
 config AGESA_EXTRA_TIMESTAMPS
 	bool "Add instrumentation for AGESA calls"

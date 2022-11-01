@@ -85,7 +85,7 @@ agesa_raw_files += $(wildcard $(AGESA_ROOT)/Lib/*.[cS])
 
 agesa_raw_files += $(wildcard $(AGESA_ROOT)/binaryPI/*.[cS])
 
-classes-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += libagesa
+classes-y += libagesa
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)
 $(eval $(call create_class_compiler,libagesa,x86_32))
@@ -136,7 +136,7 @@ $(AGESA_POST_MEM_ELF): $(AGESA_POST_MEM_INPUT_ELF)
 
 $(AGESA_POST_MEM_ELF_RMOD): $(AGESA_POST_MEM_ELF)
 
-cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)
+cbfs-files-y += $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)
 $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-file := $(CONFIG_AGESA_PRE_MEMORY_BINARY_PI_FILE)
 $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-type := stage
 $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-options :=  --xip
@@ -144,7 +144,7 @@ $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-options :=  --xip
 # 64 byte alignment.
 $(CONFIG_AGESA_PRE_MEMORY_CBFS_NAME)-align := 4096
 
-cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)
+cbfs-files-y += $(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)
 $(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)-file := $(AGESA_POST_MEM_ELF_RMOD)
 $(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)-type := stage
 $(CONFIG_AGESA_POST_MEMORY_CBFS_NAME)-compression := $(CBFS_COMPRESS_FLAG)
@@ -158,7 +158,7 @@ ifeq ($(AGESA_BINARYPI_INPUT_FILE),)
 files_added:: warn_no_agesa
 else
 
-cbfs-files-$(CONFIG_CPU_AMD_AGESA_BINARY_PI) += $(CONFIG_AGESA_CBFS_NAME)
+cbfs-files-y += $(CONFIG_AGESA_CBFS_NAME)
 $(CONFIG_AGESA_CBFS_NAME)-file := $(AGESA_BINARYPI_INPUT_FILE)
 
 ifeq ($(CONFIG_AGESA_BINARY_PI_AS_STAGE),y)

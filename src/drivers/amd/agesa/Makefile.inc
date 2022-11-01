@@ -21,7 +21,4 @@ ramstage-y += eventlog.c
 ramstage-y += heapmanager.c
 ramstage-y += acpi_tables.c
 
-romstage-$(CONFIG_CPU_AMD_AGESA) += oem_s3.c
-ramstage-$(CONFIG_CPU_AMD_AGESA) += oem_s3.c s3_mtrr.c
-
 endif

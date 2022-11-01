@@ -14,10 +14,6 @@
 
 #include <AMD.h>
 
-#if CONFIG(CPU_AMD_AGESA_OPENSOURCE)
-#include "Dispatcher.h"
-#endif
-
 #if ENV_RAMINIT
 #include <PlatformMemoryConfiguration.h>
 CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {PSO_END};
@@ -25,7 +21,6 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {PSO_END};
 
 static void agesa_locate_image(AMD_CONFIG_PARAMS *StdHeader)
 {
-#if CONFIG(CPU_AMD_AGESA_BINARY_PI)
 	const char ModuleIdentifier[] = AGESA_ID;
 	const void *agesa, *image;
 	size_t file_size;
@@ -37,7 +32,6 @@ static void agesa_locate_image(AMD_CONFIG_PARAMS *StdHeader)
 	image = LibAmdLocateImage(agesa, agesa + file_size, 4096,
 		ModuleIdentifier);
 	StdHeader->ImageBasePtr = (void *)image;
-#endif
 }
 
 void agesa_set_interface(struct sysinfo *cb)
@@ -46,15 +40,13 @@ void agesa_set_interface(struct sysinfo *cb)
 
 	cb->StdHeader.CalloutPtr = GetBiosCallout;
 
-	if (CONFIG(CPU_AMD_AGESA_BINARY_PI)) {
-		agesa_locate_image(&cb->StdHeader);
-		AMD_IMAGE_HEADER *image =
-			(void *)(uintptr_t)cb->StdHeader.ImageBasePtr;
-		ASSERT(image);
-		AMD_MODULE_HEADER *module =
-			(void *)(uintptr_t)image->ModuleInfoOffset;
-		ASSERT(module && module->ModuleDispatcher);
-	}
+	agesa_locate_image(&cb->StdHeader);
+	AMD_IMAGE_HEADER *image =
+		(void *)(uintptr_t)cb->StdHeader.ImageBasePtr;
+	ASSERT(image);
+	AMD_MODULE_HEADER *module =
+		(void *)(uintptr_t)image->ModuleInfoOffset;
+	ASSERT(module && module->ModuleDispatcher);
 }
 
 AGESA_STATUS module_dispatch(AGESA_STRUCT_NAME func,
@@ -62,14 +54,9 @@ AGESA_STATUS module_dispatch(AGESA_STRUCT_NAME func,
 {
 	MODULE_ENTRY dispatcher;
 
-#if CONFIG(CPU_AMD_AGESA_OPENSOURCE)
-	dispatcher = AmdAgesaDispatcher;
-#endif
-#if CONFIG(CPU_AMD_AGESA_BINARY_PI)
 	AMD_IMAGE_HEADER *image = (void *)(uintptr_t)StdHeader->ImageBasePtr;
 	AMD_MODULE_HEADER *module = (void *)(uintptr_t)image->ModuleInfoOffset;
 	dispatcher = module->ModuleDispatcher;
-#endif
 
 	StdHeader->Func = func;
 	return dispatcher(StdHeader);

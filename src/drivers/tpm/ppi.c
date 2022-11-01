@@ -5,6 +5,7 @@
 #include <acpi/acpi_device.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <security/tpm/tss.h>
 
 #include "tpm_ppi.h"
 
@@ -35,6 +36,8 @@ static void set_package_element_name(const char *package_name, unsigned int elem
 /* PPI function is passed in src_op. Converted to Local2. Clobbers Local1 and Local2 */
 static void verify_supported_ppi(uint8_t src_op)
 {
+	enum tpm_family family = tlcl_get_family();
+
 	/*
 	 * Old OSes incorrectly pass a Buffer instead of a Package.
 	 * See TCG Physical Presence Interface Specification Chapter 8.1.2 for details.
@@ -62,7 +65,7 @@ static void verify_supported_ppi(uint8_t src_op)
 	acpigen_write_store();
 	acpigen_emit_namestring("^FSUP");
 	acpigen_emit_byte(LOCAL2_OP);
-	acpigen_emit_byte(CONFIG(TPM1) ? ONE_OP : ZERO_OP);
+	acpigen_emit_byte(family == TPM_1 ? ONE_OP : ZERO_OP);
 	acpigen_emit_byte(LOCAL1_OP);
 	acpigen_write_if_lequal_op_int(LOCAL1_OP, 0);
 
@@ -84,7 +87,7 @@ static void verify_supported_ppi(uint8_t src_op)
 	acpigen_write_store();
 	acpigen_emit_namestring("^FSUP");
 	acpigen_emit_byte(LOCAL2_OP);
-	acpigen_emit_byte(CONFIG(TPM1) ? ZERO_OP : ONE_OP);
+	acpigen_emit_byte(family == TPM_1 ? ZERO_OP : ONE_OP);
 	acpigen_emit_byte(LOCAL1_OP);
 
 	acpigen_write_if_lequal_op_int(LOCAL1_OP, 1);
@@ -114,7 +117,7 @@ static void tpm_ppi_func0_cb(void *arg)
  */
 static void tpm_ppi_func1_cb(void *arg)
 {
-	if (CONFIG(TPM2))
+	if (tlcl_get_family() == TPM_2)
 		/* Interface version: 1.3 */
 		acpigen_write_return_string("1.3");
 	else
@@ -400,6 +403,8 @@ static void tpm_ppi_func7_cb(void *arg)
  */
 static void tpm_ppi_func8_cb(void *arg)
 {
+	enum tpm_family family = tlcl_get_family();
+
 	acpigen_write_to_integer(ARG1_OP, LOCAL0_OP);
 
 	/* Revision 1 */
@@ -410,7 +415,7 @@ static void tpm_ppi_func8_cb(void *arg)
 	acpigen_write_store();
 	acpigen_emit_namestring("^FSUP");
 	acpigen_emit_byte(LOCAL2_OP);
-	acpigen_emit_byte(CONFIG(TPM1) ? ONE_OP : ZERO_OP);
+	acpigen_emit_byte(family == TPM_1 ? ONE_OP : ZERO_OP);
 	acpigen_emit_byte(LOCAL1_OP);
 	acpigen_write_if_lequal_op_int(LOCAL1_OP, 0);
 	acpigen_write_return_byte(0);	/* Not implemented */
@@ -418,7 +423,7 @@ static void tpm_ppi_func8_cb(void *arg)
 
 	// FIXME: Only advertise supported functions
 
-	if (CONFIG(TPM1)) {
+	if (family == TPM_1) {
 		/*
 		 * Some functions do not require PP depending on configuration.
 		 * Those aren't listed here, so the 'required PP' is always set for those.
@@ -434,7 +439,7 @@ static void tpm_ppi_func8_cb(void *arg)
 			acpigen_write_return_integer(PPI8_RET_ALLOWED);
 			acpigen_pop_len();	/* Pop : If */
 		}
-	} else if (CONFIG(TPM2)) {
+	} else if (family == TPM_2) {
 		/*
 		 * Some functions do not require PP depending on configuration.
 		 * Those aren't listed here, so the 'required PP' is always set for those.
@@ -564,6 +569,12 @@ void tpm_ppi_acpi_fill_ssdt(const struct device *dev)
 	printk(BIOS_DEBUG, "PPI: Pending OS request: 0x%x (0x%x)\n", ppib->pprq, ppib->pprm);
 	printk(BIOS_DEBUG, "PPI: OS response: CMD 0x%x = 0x%x\n", ppib->lppr, ppib->pprp);
 
+	enum tpm_family family = tlcl_get_family();
+	if (family == TPM_UNKNOWN) {
+		printk(BIOS_WARN, "PPI: %s: aborting, because no TPM detected\n", __func__);
+		return;
+	}
+
 	/* Clear unsupported fields */
 	ppib->next_step = 0;
 	ppib->ppin = 1; // Not used by ACPI. Read by EDK-2, must be 1.
@@ -574,7 +585,7 @@ void tpm_ppi_acpi_fill_ssdt(const struct device *dev)
 	bool found = false;
 	/* Fill in defaults, the TPM command executor may overwrite this list */
 	memset(ppib->func, 0, sizeof(ppib->func));
-	if (CONFIG(TPM1)) {
+	if (family == TPM_1) {
 		for (size_t i = 0; i < ARRAY_SIZE(tpm1_funcs); i++) {
 			ppib->func[tpm1_funcs[i]] = 1;
 			if (ppib->pprq == tpm1_funcs[i])
@@ -706,17 +717,24 @@ void tpm_ppi_acpi_fill_ssdt(const struct device *dev)
 void lb_tpm_ppi(struct lb_header *header)
 {
 	struct lb_tpm_physical_presence *tpm_ppi;
+	enum tpm_family family;
 	void *ppib;
 
 	ppib = cbmem_find(CBMEM_ID_TPM_PPI);
 	if (!ppib)
 		return;
 
+	family = tlcl_get_family();
+	if (family == TPM_UNKNOWN) {
+		printk(BIOS_WARN, "PPI: %s: aborting, because no TPM detected\n", __func__);
+		return;
+	}
+
 	tpm_ppi = (struct lb_tpm_physical_presence *)lb_new_record(header);
 	tpm_ppi->tag = LB_TAG_TPM_PPI_HANDOFF;
 	tpm_ppi->size = sizeof(*tpm_ppi);
 	tpm_ppi->ppi_address = (uintptr_t)ppib;
-	tpm_ppi->tpm_version = CONFIG(TPM1) ? LB_TPM_VERSION_TPM_VERSION_1_2 :
+	tpm_ppi->tpm_version = family == TPM_1 ? LB_TPM_VERSION_TPM_VERSION_1_2 :
 		LB_TPM_VERSION_TPM_VERSION_2;
 
 	tpm_ppi->ppi_version = BCD(1, 3);

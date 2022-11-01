@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <security/tpm/tspi.h>
+#include <security/tpm/tss.h>
 #include <security/vboot/tpm_common.h>
 #include <security/tpm/tss_errors.h>
 #include <vb2_api.h>
@@ -43,7 +44,8 @@ tpm_result_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
 	 */
 	_Static_assert(sizeof(buffer) >= VB2_SHA256_DIGEST_SIZE,
 		       "Buffer needs to be able to fit at least a SHA256");
-	enum vb2_hash_algorithm algo = CONFIG(TPM1) ? VB2_HASH_SHA1 : VB2_HASH_SHA256;
+	enum vb2_hash_algorithm algo = tlcl_get_family() == TPM_1 ?
+		VB2_HASH_SHA1 : VB2_HASH_SHA256;
 
 	switch (which_digest) {
 	/* SHA1 of (devmode|recmode|keyblock) bits */

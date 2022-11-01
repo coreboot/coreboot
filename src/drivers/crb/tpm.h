@@ -64,3 +64,4 @@ tpm_result_t tpm2_init(void);
 void tpm2_get_info(struct tpm2_info *tpm2_info);
 size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 			    void *tpm2_response, size_t max_response);
+bool tpm2_has_crb_active(void);

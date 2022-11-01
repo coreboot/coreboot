@@ -9,10 +9,8 @@
 #include <types.h>
 #include <vb2_sha.h>
 
-#if CONFIG(TPM_LOG_CB) && CONFIG(TPM1)
-#  define TPM_MEASURE_ALGO VB2_HASH_SHA1
-#elif CONFIG(TPM_LOG_CB) && CONFIG(TPM2)
-#  define TPM_MEASURE_ALGO VB2_HASH_SHA256
+#if CONFIG(TPM_LOG_CB)
+#  define TPM_MEASURE_ALGO (tlcl_get_family() == TPM_1 ? VB2_HASH_SHA1 : VB2_HASH_SHA256)
 #elif CONFIG(TPM_LOG_TPM1)
 #  define TPM_MEASURE_ALGO VB2_HASH_SHA1
 #elif CONFIG(TPM_LOG_TPM2)

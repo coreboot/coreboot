@@ -30,7 +30,7 @@ static tpm_result_t safe_write(uint32_t index, const void *data, uint32_t length
 
 tpm_result_t antirollback_read_space_kernel(struct vb2_context *ctx)
 {
-	if (!CONFIG(TPM2)) {
+	if (tlcl_get_family() == TPM_1) {
 		/*
 		 * Before reading the kernel space, verify its permissions. If
 		 * the kernel space has the wrong permission, we give up. This
@@ -224,12 +224,6 @@ static uint32_t define_space(const char *name, uint32_t index, uint32_t length,
 	return rc;
 }
 
-/* Nothing special in the TPM2 path yet. */
-static tpm_result_t safe_write(uint32_t index, const void *data, uint32_t length)
-{
-	return tlcl_write(index, data, length);
-}
-
 static tpm_result_t setup_space(const char *name, uint32_t index, const void *data,
 				uint32_t length, const TPMA_NV nv_attributes,
 				const uint8_t *nv_policy, size_t nv_policy_size)
@@ -376,7 +370,7 @@ static tpm_result_t setup_widevine_counter_spaces(void)
 	return rc;
 }
 
-static tpm_result_t _factory_initialize_tpm(struct vb2_context *ctx)
+static tpm_result_t _factory_initialize_tpm2(struct vb2_context *ctx)
 {
 	RETURN_ON_FAILURE(tlcl_force_clear());
 
@@ -424,11 +418,6 @@ static tpm_result_t _factory_initialize_tpm(struct vb2_context *ctx)
 	RETURN_ON_FAILURE(setup_firmware_space(ctx));
 
 	return TPM_SUCCESS;
-}
-
-tpm_result_t antirollback_lock_space_firmware(void)
-{
-	return tlcl2_lock_nv_write(FIRMWARE_NV_INDEX);
 }
 
 tpm_result_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_t size)
@@ -521,25 +510,9 @@ tpm_result_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t s
 	return safe_write(VBIOS_CACHE_NV_INDEX, data, size);
 }
 
-#else
+#endif /* CONFIG(TPM2) */
 
-/**
- * Like tlcl_write(), but checks for write errors due to hitting the 64-write
- * limit and clears the TPM when that happens.  This can only happen when the
- * TPM is unowned, so it is OK to clear it (and we really have no choice).
- * This is not expected to happen frequently, but it could happen.
- */
-
-static tpm_result_t safe_write(uint32_t index, const void *data, uint32_t length)
-{
-	tpm_result_t rc = tlcl_write(index, data, length);
-	if (rc == TPM_MAXNVWRITES) {
-		RETURN_ON_FAILURE(tpm_clear_and_reenable());
-		return tlcl_write(index, data, length);
-	} else {
-		return rc;
-	}
-}
+#if CONFIG(TPM1)
 
 /**
  * Similarly to safe_write(), this ensures we don't fail a DefineSpace because
@@ -558,7 +531,7 @@ static tpm_result_t safe_define_space(uint32_t index, uint32_t perm, uint32_t si
 	}
 }
 
-static tpm_result_t _factory_initialize_tpm(struct vb2_context *ctx)
+static tpm_result_t _factory_initialize_tpm1(struct vb2_context *ctx)
 {
 	TPM_PERMANENT_FLAGS pflags;
 	tpm_result_t rc;
@@ -616,12 +589,45 @@ static tpm_result_t _factory_initialize_tpm(struct vb2_context *ctx)
 	return TPM_SUCCESS;
 }
 
-tpm_result_t antirollback_lock_space_firmware(void)
+#endif /* CONFIG(TPM1) */
+
+static tpm_result_t safe_write(uint32_t index, const void *data, uint32_t length)
 {
-	return tlcl1_set_global_lock();
+	tpm_result_t rc = tlcl_write(index, data, length);
+	if (tlcl_get_family() == TPM_1 && rc == TPM_MAXNVWRITES) {
+		/**
+		 * Clear the TPM on write error due to hitting the 64-write
+		 * limit.  This can only happen when the TPM is unowned, so it
+		 * is OK to clear it (and we really have no choice).  This is
+		 * not expected to happen frequently, but it could happen.
+		 */
+		RETURN_ON_FAILURE(tpm_clear_and_reenable());
+		rc = tlcl_write(index, data, length);
+	}
+	return rc;
 }
 
+static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
+{
+#if CONFIG(TPM1)
+	if (tlcl_get_family() == TPM_1)
+		return _factory_initialize_tpm1(ctx);
 #endif
+#if CONFIG(TPM2)
+	if (tlcl_get_family() == TPM_2)
+		return _factory_initialize_tpm2(ctx);
+#endif
+	return TPM_CB_CORRUPTED_STATE;
+}
+
+uint32_t antirollback_lock_space_firmware(void)
+{
+	if (tlcl_get_family() == TPM_1)
+		return tlcl1_set_global_lock();
+	if (tlcl_get_family() == TPM_2)
+		return tlcl2_lock_nv_write(FIRMWARE_NV_INDEX);
+	return TPM_CB_CORRUPTED_STATE;
+}
 
 /**
  * Perform one-time initializations.

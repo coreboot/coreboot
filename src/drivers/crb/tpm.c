@@ -320,3 +320,29 @@ void tpm2_get_info(struct tpm2_info *tpm2_info)
 	tpm2_info->device_id = (interfaceReg >> 32) & 0xFFFF;
 	tpm2_info->revision = (interfaceReg >> 24) & 0xFF;
 }
+
+/*
+ * tpm2_has_crb_active
+ *
+ * Checks that CRB interface is available and active.
+ *
+ * The body was derived from crb_probe() which unlike this function can also
+ * write to registers.
+ */
+bool tpm2_has_crb_active(void)
+{
+	uint64_t tpmStatus = read64(CRB_REG(0, CRB_REG_INTF_ID));
+	printk(BIOS_SPEW, "Interface ID Reg. %llx\n", tpmStatus);
+
+	if ((tpmStatus & CRB_INTF_REG_CAP_CRB) == 0) {
+		printk(BIOS_DEBUG, "TPM: CRB Interface is not supported.\n");
+		return false;
+	}
+
+	if ((tpmStatus & (0xf)) != 1) {
+		printk(BIOS_DEBUG, "TPM: CRB Interface is not active.\n");
+		return false;
+	}
+
+	return true;
+}

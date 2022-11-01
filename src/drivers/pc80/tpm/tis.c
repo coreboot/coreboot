@@ -809,7 +809,7 @@ static void lpc_tpm_fill_ssdt(const struct device *dev)
 	acpigen_write_scope(path);
 	acpigen_write_device(acpi_device_name(dev));
 
-	if (CONFIG(TPM2)) {
+	if (tlcl_get_family() == TPM_2) {
 		acpigen_write_name_string("_HID", "MSFT0101");
 		acpigen_write_name_string("_CID", "MSFT0101");
 	} else {

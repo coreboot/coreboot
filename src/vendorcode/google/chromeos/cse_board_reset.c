@@ -19,6 +19,11 @@ void cse_board_reset(void)
 	if (CONFIG(CSE_RESET_CLEAR_EC_AP_IDLE_FLAG))
 		google_chromeec_clear_ec_ap_idle();
 
+	/*
+	 * Assuming that if particular TPM implementation is enabled at compile
+	 * time, it's the one being used.  This isn't generic code, so can
+	 * probably get away with it.
+	 */
 	if (CONFIG(TPM2) && CONFIG(TPM_GOOGLE_CR50)) {
 		/* Initialize TPM and get the cr50 firmware version. */
 		rc = tlcl_lib_init();

@@ -33,16 +33,31 @@
  */
 tpm_result_t tlcl_lib_init(void);
 
+/**
+ * Query active TPM family.  Returns TPM_UNKNOWN if uninitialized and TPM_1 or TPM_2 otherwise.
+ */
+static inline enum tpm_family tlcl_get_family(void)
+{
+	/* Defined in tss/tss.c */
+	extern enum tpm_family tlcl_tpm_family;
+
+	if (CONFIG(TPM1) && CONFIG(TPM2))
+		return tlcl_tpm_family;
+	if (CONFIG(TPM1))
+		return TPM_1;
+	if (CONFIG(TPM2))
+		return TPM_2;
+	return TPM_UNKNOWN;
+}
+
 /* Commands */
 
-extern enum tpm_family tlcl_tpm_family;
-
-#define TLCL_CALL(name, ...) do {                                                \
-		if (CONFIG(TPM1) && (!CONFIG(TPM2) || tlcl_tpm_family == TPM_1)) \
-			return tlcl1_##name(__VA_ARGS__);                        \
-		if (CONFIG(TPM2) && (!CONFIG(TPM1) || tlcl_tpm_family == TPM_2)) \
-			return tlcl2_##name(__VA_ARGS__);                        \
-		return TPM_CB_INTERNAL_INCONSISTENCY;                            \
+#define TLCL_CALL(name, ...) do {                         \
+		if (tlcl_get_family() == TPM_1)           \
+			return tlcl1_##name(__VA_ARGS__); \
+		if (tlcl_get_family() == TPM_2)           \
+			return tlcl2_##name(__VA_ARGS__); \
+		return TPM_CB_INTERNAL_INCONSISTENCY;     \
 	} while (0)
 
 /**

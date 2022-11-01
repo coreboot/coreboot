@@ -25,7 +25,9 @@
 #include <device/device.h>
 #include <device/mmio.h>
 #include <device/pci.h>
+#include <drivers/crb/tpm.h>
 #include <drivers/uart/pl011.h>
+#include <security/tpm/tss.h>
 #include <string.h>
 #include <types.h>
 #include <version.h>
@@ -205,7 +207,7 @@ static void *get_tcpa_log(u32 *size)
 
 static void acpi_create_tcpa(acpi_header_t *header, void *unused)
 {
-	if (!CONFIG(TPM1))
+	if (tlcl_get_family() != TPM_1)
 		return;
 
 	acpi_tcpa_t *tcpa = (acpi_tcpa_t *)header;
@@ -251,7 +253,7 @@ static void *get_tpm2_log(u32 *size)
 
 static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 {
-	if (!CONFIG(TPM2))
+	if (tlcl_get_family() != TPM_2)
 		return;
 
 	acpi_tpm2_t *tpm2 = (acpi_tpm2_t *)header;
@@ -271,7 +273,7 @@ static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 
 	/* Hard to detect for coreboot. Just set it to 0 */
 	tpm2->platform_class = 0;
-	if (CONFIG(CRB_TPM)) {
+	if (CONFIG(CRB_TPM) && tpm2_has_crb_active()) {
 		/* Must be set to 7 for CRB Support */
 		tpm2->control_area = CONFIG_CRB_TPM_BASE_ADDRESS + 0x40;
 		tpm2->start_method = 7;

@@ -88,7 +88,7 @@ int google_chromeec_vstore_write(int slot, uint8_t *data, size_t size);
 
 /* Issue reboot command to EC with specified type and flags. Returns 0 on
    success, < 0 otherwise. */
-int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags);
+int google_chromeec_reboot(enum ec_reboot_cmd type, uint8_t flags);
 
 /**
  * Get data from Cros Board Info

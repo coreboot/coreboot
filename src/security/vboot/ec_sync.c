@@ -56,7 +56,7 @@ void vboot_sync_ec(void)
 
 	case VB2_REQUEST_REBOOT_EC_TO_RO:
 		printk(BIOS_INFO, "EC Reboot requested. Doing cold reboot\n");
-		if (google_chromeec_reboot(0, EC_REBOOT_COLD, 0))
+		if (google_chromeec_reboot(EC_REBOOT_COLD, 0))
 			printk(BIOS_EMERG, "Failed to get EC to cold reboot\n");
 
 		halt();
@@ -65,7 +65,7 @@ void vboot_sync_ec(void)
 	/* Only for EC-EFS */
 	case VB2_REQUEST_REBOOT_EC_SWITCH_RW:
 		printk(BIOS_INFO, "Switch EC slot requested. Doing cold reboot\n");
-		if (google_chromeec_reboot(0, EC_REBOOT_COLD,
+		if (google_chromeec_reboot(EC_REBOOT_COLD,
 						EC_REBOOT_FLAG_SWITCH_RW_SLOT))
 			printk(BIOS_EMERG, "Failed to get EC to cold reboot\n");
 
@@ -510,7 +510,7 @@ vb2_error_t vb2ex_ec_get_expected_image_hash(enum vb2_firmware_selection select,
  */
 vb2_error_t vb2ex_ec_disable_jump(void)
 {
-	if (google_chromeec_reboot(0, EC_REBOOT_DISABLE_JUMP, 0))
+	if (google_chromeec_reboot(EC_REBOOT_DISABLE_JUMP, 0))
 		return VB2_ERROR_UNKNOWN;
 
 	return VB2_SUCCESS;
@@ -531,7 +531,7 @@ vb2_error_t vb2ex_ec_jump_to_rw(void)
 {
 	struct stopwatch sw;
 
-	if (google_chromeec_reboot(0, EC_REBOOT_JUMP_RW, 0))
+	if (google_chromeec_reboot(EC_REBOOT_JUMP_RW, 0))
 		return VB2_ERROR_UNKNOWN;
 
 	/* Give the EC 3 seconds to sysjump */

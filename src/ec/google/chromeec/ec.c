@@ -790,7 +790,7 @@ int rtc_get(struct rtc_time *time)
 }
 #endif
 
-int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags)
+int google_chromeec_reboot(enum ec_reboot_cmd type, uint8_t flags)
 {
 	struct ec_params_reboot_ec params = {
 		.cmd = type,
@@ -804,7 +804,7 @@ int google_chromeec_reboot(int dev_idx, enum ec_reboot_cmd type, uint8_t flags)
 		.cmd_data_out = &resp,
 		.cmd_size_in = sizeof(params),
 		.cmd_size_out = 0, /* ignore response, if any */
-		.cmd_dev_index = dev_idx,
+		.cmd_dev_index = 0,
 	};
 
 	return google_chromeec_command(&cmd);

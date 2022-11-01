@@ -1,4 +1,3 @@
-subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY15_TN) += f15tn
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY16_KB) += f16kb
 
 ifeq ($(CONFIG_CPU_AMD_AGESA),y)

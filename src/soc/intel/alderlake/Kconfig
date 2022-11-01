@@ -484,4 +484,16 @@ config BUILDING_WITH_DEBUG_FSP
 	help
 	  Set this option if debug build of FSP is used.
 
+config INTEL_GMA_BCLV_OFFSET
+	default 0xc8258
+
+config INTEL_GMA_BCLV_WIDTH
+	default 32
+
+config INTEL_GMA_BCLM_OFFSET
+	default 0xc8254
+
+config INTEL_GMA_BCLM_WIDTH
+	default 32
+
 endif

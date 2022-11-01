@@ -9,11 +9,6 @@
 
 #include <soc/nvs.h>
 
-#if CONFIG(SMM_LEGACY_ASEG)
-/* For qemu/x86-q35 to build properly. */
-struct global_nvs *gnvs;
-#endif
-
 int southbridge_io_trap_handler(int smif)
 {
 	switch (smif) {

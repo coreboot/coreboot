@@ -26,9 +26,6 @@ ifneq ($(CONFIG_BOARD_EMULATION_QEMU_X86_Q35),y)
 ramstage-y += madt.c
 endif
 
-ramstage-$(CONFIG_SMM_LEGACY_ASEG) += smi.c
-ramstage-$(CONFIG_SMM_LEGACY_ASEG) += ../../../cpu/x86/smm/smmrelocate.S
-
 CPPFLAGS_common += -I$(src)/southbridge/intel/i82801ix/include
 
 endif

@@ -374,12 +374,6 @@ static void lpc_init(struct device *dev)
 	i8259_configure_irq_trigger(9, 1);
 
 	i82801ix_set_acpi_mode(dev);
-
-	/* Don't allow evil boot loaders, kernels, or
-	 * userspace applications to deceive us:
-	 */
-	if (CONFIG(SMM_LEGACY_ASEG))
-		aseg_smm_lock();
 }
 
 static void i82801ix_lpc_read_resources(struct device *dev)

@@ -2,7 +2,6 @@ if ARCH_X86
 
 config PARALLEL_MP
 	def_bool y
-	depends on !LEGACY_SMP_INIT
 	select CPU_INFO_V2
 	help
 	 This option uses common MP infrastructure for bringing up APs
@@ -26,9 +25,6 @@ config X86_SMM_SKIP_RELOCATION_HANDLER
 	  Skip SMM relocation using a relocation handler running in SMM
 	  with a stub at 0x30000. This is useful on platforms that have
 	  an alternative way to set SMBASE.
-
-config LEGACY_SMP_INIT
-	bool
 
 config DEFAULT_X2APIC
 	def_bool n
@@ -154,13 +150,7 @@ config SMM_TSEG
 	default y
 	depends on !(NO_SMM || SMM_ASEG)
 
-config SMM_LEGACY_ASEG
-	bool
-	default y if HAVE_SMI_HANDLER && SMM_ASEG && LEGACY_SMP_INIT
-	help
-	  SMM support without PARALLEL_MP, to be deprecated.
-
-if HAVE_SMI_HANDLER && !SMM_LEGACY_ASEG
+if HAVE_SMI_HANDLER
 
 config SMM_MODULE_STACK_SIZE
 	hex

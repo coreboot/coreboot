@@ -76,17 +76,3 @@ $(obj)/smm/smm: $(obj)/smm/smm.elf.rmod
 	$(OBJCOPY_smm) -O binary $< $@
 
 endif
-
-ifeq ($(CONFIG_SMM_LEGACY_ASEG),y)
-
-smm-y += smm.ld
-
-$(obj)/smm/smm: $(obj)/smm/smm.o $(call src-to-obj,smm,$(src)/cpu/x86/smm/smm.ld)
-	$(LD_smm) $(LDFLAGS_smm) -o $(obj)/smm/smm.elf -T $(call src-to-obj,smm,$(src)/cpu/x86/smm/smm.ld) $(obj)/smm/smm.o
-	$(NM_smm) -n $(obj)/smm/smm.elf | sort > $(obj)/smm/smm.map
-	$(OBJCOPY_smm) -O binary $(obj)/smm/smm.elf $@
-
-smm-y += smmhandler.S
-smm-y += smihandler.c
-
-endif # CONFIG_SMM_LEGACY_ASEG

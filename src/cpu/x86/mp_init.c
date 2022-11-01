@@ -532,7 +532,7 @@ static enum cb_err bsp_do_flight_plan(struct mp_params *mp_params)
 	return ret;
 }
 
-static void init_bsp(struct bus *cpu_bus)
+static enum cb_err init_bsp(struct bus *cpu_bus)
 {
 	struct device_path cpu_path;
 	struct cpu_info *info;
@@ -554,11 +554,14 @@ static void init_bsp(struct bus *cpu_bus)
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
 	info->cpu->name = processor_name;
 
-	if (info->index != 0)
+	if (info->index != 0) {
 		printk(BIOS_CRIT, "BSP index(%zd) != 0!\n", info->index);
+		return CB_ERR;
+	}
 
 	/* Track BSP in cpu_map structures. */
 	cpu_add_map_entry(info->index);
+	return CB_SUCCESS;
 }
 
 /*
@@ -585,7 +588,10 @@ static enum cb_err mp_init(struct bus *cpu_bus, struct mp_params *p)
 
 	g_cpu_bus = cpu_bus;
 
-	init_bsp(cpu_bus);
+	if (init_bsp(cpu_bus) != CB_SUCCESS) {
+		printk(BIOS_CRIT, "Setting up BSP failed\n");
+		return CB_ERR;
+	}
 
 	if (p == NULL || p->flight_plan == NULL || p->num_records < 1) {
 		printk(BIOS_CRIT, "Invalid MP parameters\n");

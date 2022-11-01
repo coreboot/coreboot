@@ -1,9 +1,0 @@
-libagesa-y += mndctkb.c
-libagesa-y += mnflowkb.c
-libagesa-y += mnidendimmkb.c
-libagesa-y += mnkb.c
-libagesa-y += mnmctkb.c
-libagesa-y += mnotkb.c
-libagesa-y += mnphykb.c
-libagesa-y += mnregkb.c
-libagesa-y += mns3kb.c

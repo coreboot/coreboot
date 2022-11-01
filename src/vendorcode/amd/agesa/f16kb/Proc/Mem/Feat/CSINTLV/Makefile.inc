@@ -1,1 +1,0 @@
-libagesa-y += mfcsi.c

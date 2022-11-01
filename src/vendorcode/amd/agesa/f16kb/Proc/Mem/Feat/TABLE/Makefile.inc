@@ -1,1 +1,0 @@
-libagesa-y += mftds.c

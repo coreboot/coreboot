@@ -1,1 +1,0 @@
-libagesa-y += mfStandardTraining.c

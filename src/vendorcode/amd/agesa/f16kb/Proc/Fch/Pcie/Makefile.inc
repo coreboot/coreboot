@@ -1,9 +1,0 @@
-libagesa-y += AbEnv.c
-libagesa-y += AbLate.c
-libagesa-y += AbMid.c
-libagesa-y += AbReset.c
-libagesa-y += PcieEnv.c
-libagesa-y += PcieEnv.c
-libagesa-y += PcieLate.c
-libagesa-y += PcieMid.c
-libagesa-y += PcieReset.c

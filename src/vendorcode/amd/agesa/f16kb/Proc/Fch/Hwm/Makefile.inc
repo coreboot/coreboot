@@ -1,1 +1,0 @@
-libagesa-y += HwmLate.c

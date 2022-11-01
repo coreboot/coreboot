@@ -136,10 +136,6 @@ untampered_lapic:
 	/* This is an ugly hack, and we should find a way to read the CPU index
 	 * without relying on the LAPIC ID.
 	 */
-#if CONFIG(CPU_AMD_AGESA_FAMILY15_TN)
-	/* LAPIC IDs start from 0x10; map that to the proper core index */
-	subl	$0x10, %ecx
-#endif
 
 	/* calculate stack offset by multiplying the APIC ID
 	 * by 1024 (0x400), and save that offset in ebp.

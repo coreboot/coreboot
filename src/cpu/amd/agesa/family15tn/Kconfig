@@ -1,7 +1,0 @@
-# SPDX-License-Identifier: GPL-2.0-only
-
-config CPU_AMD_AGESA_FAMILY15_TN
-	bool
-	select IDS_OPTIONS_HOOKED_UP
-	select SMM_ASEG
-	select X86_AMD_FIXED_MTRRS

@@ -149,8 +149,6 @@ struct per_cpu_segment_data {
 
 static inline struct cpu_info *cpu_info(void)
 {
-/* We use a #if because we don't want to mess with the &s below. */
-#if CONFIG(CPU_INFO_V2)
 	struct cpu_info *ci = NULL;
 
 	__asm__("mov %%gs:%c[offset], %[ci]"
@@ -159,11 +157,6 @@ static inline struct cpu_info *cpu_info(void)
 	);
 
 	return ci;
-#else
-	char s;
-	uintptr_t info = ALIGN_UP((uintptr_t)&s, CONFIG_STACK_SIZE) - sizeof(struct cpu_info);
-	return (struct cpu_info *)info;
-#endif /* CPU_INFO_V2 */
 }
 
 struct cpuinfo_x86 {

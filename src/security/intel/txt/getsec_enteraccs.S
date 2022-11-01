@@ -227,7 +227,7 @@ cond_clear_var_mtrrs:
 	movd	%esp, %xmm0
 	movd	%ebp, %xmm1
 
-	/* Backup %gs used by CPU_INFO_V2 */
+	/* Backup %gs used by cpu_info() */
 	movl	%gs, %eax
 	movd	%eax, %xmm2
 
@@ -265,7 +265,7 @@ cond_clear_var_mtrrs:
 	movl	%eax, %es
 	movl	%eax, %ss
 	movl	%eax, %fs
-	/* Restore %gs used by CPU_INFO_V2 */
+	/* Restore %gs used by cpu_info */
 	movd	%xmm2, %eax
 	movl	%eax, %gs
 

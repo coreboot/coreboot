@@ -715,7 +715,7 @@ config TIMER_QUEUE
 config COOP_MULTITASKING
 	def_bool n
 	select TIMER_QUEUE
-	depends on ARCH_X86 && CPU_INFO_V2
+	depends on ARCH_X86
 	help
 	  Cooperative multitasking allows callbacks to be multiplexed on the
 	  main thread. With this enabled it allows for multiple execution paths

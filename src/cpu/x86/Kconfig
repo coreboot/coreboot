@@ -2,7 +2,6 @@ if ARCH_X86
 
 config PARALLEL_MP
 	def_bool y
-	select CPU_INFO_V2
 	help
 	 This option uses common MP infrastructure for bringing up APs
 	 in parallel. It additionally provides a more flexible mechanism
@@ -209,13 +208,5 @@ config RESERVE_MTRRS_FOR_OS
 	  the system BIOS and the last 2 are to be reserved for OS usage.
 	  However, modern OSes use PAT to control cacheability instead of
 	  using MTRRs.
-
-config CPU_INFO_V2
-	bool
-	depends on PARALLEL_MP
-	help
-	  Enables the new method of locating struct cpu_info. This new method
-	  uses the %gs segment to locate the cpu_info pointer. The old method
-	  relied on the stack being CONFIG_STACK_SIZE aligned.
 
 endif # ARCH_X86

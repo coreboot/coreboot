@@ -478,6 +478,7 @@
 #define PCI_ERR_UNCOR_STATUS	4	/* Uncorrectable Error Status */
 #define  PCI_ERR_UNC_TRAIN	0x00000001	/* Training */
 #define  PCI_ERR_UNC_DLP	0x00000010	/* Data Link Protocol */
+#define  PCI_ERR_SURPRISE_DN	0x00000020	/* Surprise Down */
 #define  PCI_ERR_UNC_POISON_TLP	0x00001000	/* Poisoned TLP */
 #define  PCI_ERR_UNC_FCP	0x00002000	/* Flow Control Protocol */
 #define  PCI_ERR_UNC_COMP_TIME	0x00004000	/* Completion Timeout */
@@ -487,6 +488,8 @@
 #define  PCI_ERR_UNC_MALF_TLP	0x00040000	/* Malformed TLP */
 #define  PCI_ERR_UNC_ECRC	0x00080000	/* ECRC Error Status */
 #define  PCI_ERR_UNC_UNSUP	0x00100000	/* Unsupported Request */
+#define  PCI_ERR_UNC_INTL_ERR	0x00400000	/* Uncorrectable Internal Error */
+#define  PCI_ERR_UNC_POISON_BLK	0x04000000	/* Poisoned TLP Egress Blocked */
 #define PCI_ERR_UNCOR_MASK	8	/* Uncorrectable Error Mask */
 	/* Same bits as above */
 #define PCI_ERR_UNCOR_SEVER	12	/* Uncorrectable Error Severity */
@@ -497,6 +500,9 @@
 #define  PCI_ERR_COR_BAD_DLLP	0x00000080	/* Bad DLLP Status */
 #define  PCI_ERR_COR_REP_ROLL	0x00000100	/* REPLAY_NUM Rollover */
 #define  PCI_ERR_COR_REP_TIMER	0x00001000	/* Replay Timer Timeout */
+#define  PCI_ERR_COR_ANF	0x00002000	/* Advisory Non-Fatal Error */
+#define  PCI_ERR_COR_INTL_ERR	0x00004000	/* Corrected Internal Error */
+#define  PCI_ERR_COR_LOG_OVER	0x00008000	/* Header Log Overflow Error */
 #define PCI_ERR_COR_MASK	20	/* Correctable Error Mask */
 	/* Same bits as above */
 #define PCI_ERR_CAP		24	/* Advanced Error Capabilities */
@@ -507,9 +513,22 @@
 #define  PCI_ERR_CAP_ECRC_CHKE	0x00000100	/* ECRC Check Enable */
 #define PCI_ERR_HEADER_LOG	28	/* Header Log Register (16 bytes) */
 #define PCI_ERR_ROOT_COMMAND	44	/* Root Error Command */
+#define  PCI_EXP_ROOT_CERE	0x0001		/* Correctable Error Reporting Enable */
+#define  PCI_EXP_ROOT_NFERE	0x0002		/* Non-Fatal Error Reporting Enable */
+#define  PCI_EXP_ROOT_FERE	0x0004		/* Fatal Error Reporting Enable */
 #define PCI_ERR_ROOT_STATUS	48
 #define PCI_ERR_ROOT_COR_SRC	52
 #define PCI_ERR_ROOT_SRC	54
+
+/* DPC Capability Structure */
+#define PCIE_DPC_CAP_ID			0x1d
+#define PCIE_DPC_CTL			0x6
+#define  DPC_TRIGGER_EN			(1 << 1)
+#define  DPC_INT_EN			(1 << 3)
+#define  DPC_ERR_COR_EN			(1 << 4)
+#define  DPC_POISON_TLP			(1 << 5)
+#define PCIE_DPC_RP_PIO_MASK		0x10
+#define PCIE_DPC_SEV			0x14
 
 /* Virtual Channel */
 #define PCI_VC_PORT_REG1	4

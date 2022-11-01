@@ -4,9 +4,7 @@
 // can it be cleaned up so this include is not required?
 // It's needed right now because we get our DEFAULT_PMBASE from
 // here.
-#if CONFIG(SOUTHBRIDGE_INTEL_I82801DX)
-#include <southbridge/intel/i82801dx/i82801dx.h>
-#elif CONFIG(SOUTHBRIDGE_INTEL_I82801IX)
+#if CONFIG(SOUTHBRIDGE_INTEL_I82801IX)
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #else
 #error "Southbridge needs SMM handler support."

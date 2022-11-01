@@ -1,2 +1,0 @@
-config BOARD_AOPEN_DXPLPLUSU
-	bool "DXPL Plus-U"

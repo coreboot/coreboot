@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 subdirs-y += fdc37n972
-subdirs-y += lpc47m10x
 subdirs-y += lpc47m15x
 subdirs-y += lpc47n207
 subdirs-y += lpc47n217

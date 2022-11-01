@@ -457,8 +457,7 @@ int do_smbus_block_write(uintptr_t base, u8 device, u8 cmd, const size_t bytes, 
 /* Only since ICH5 */
 static int has_i2c_read_command(void)
 {
-	if (CONFIG(SOUTHBRIDGE_INTEL_I82371EB) ||
-	    CONFIG(SOUTHBRIDGE_INTEL_I82801DX))
+	if (CONFIG(SOUTHBRIDGE_INTEL_I82371EB))
 		return 0;
 	return 1;
 }

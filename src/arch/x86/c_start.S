@@ -10,11 +10,9 @@
 .global _estack
 .global _stack_size
 
-/* Stack alignment is not enforced with rmodule loader, reserve one
- * extra CPU such that alignment can be enforced on entry. */
-.align CONFIG_STACK_SIZE
+.align 16
 _stack:
-.space (CONFIG_MAX_CPUS+1)*CONFIG_STACK_SIZE
+.space CONFIG_STACK_SIZE
 _estack:
 .set _stack_size, _estack - _stack
 
@@ -75,7 +73,7 @@ _start:
 
 	/* Set new stack with enforced alignment. */
 	movl	$_estack, %esp
-	andl	$(~(CONFIG_STACK_SIZE-1)), %esp
+	andl	$(0xfffffff0), %esp
 
 	/*
 	 *	Now we are finished. Memory is up, data is copied and

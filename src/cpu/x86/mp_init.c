@@ -215,6 +215,8 @@ static asmlinkage void ap_init(unsigned int index)
 	park_this_cpu(NULL);
 }
 
+static __aligned(16) uint8_t ap_stack[CONFIG_AP_STACK_SIZE * CONFIG_MAX_CPUS];
+
 static void setup_default_sipi_vector_params(struct sipi_params *sp)
 {
 	sp->gdt = (uintptr_t)&gdt;
@@ -222,8 +224,8 @@ static void setup_default_sipi_vector_params(struct sipi_params *sp)
 	sp->idt_ptr = (uintptr_t)&idtarg;
 	sp->per_cpu_segment_descriptors = (uintptr_t)&per_cpu_segment_descriptors;
 	sp->per_cpu_segment_selector = per_cpu_segment_selector;
-	sp->stack_size = CONFIG_STACK_SIZE;
-	sp->stack_top = ALIGN_DOWN((uintptr_t)&_estack, CONFIG_STACK_SIZE);
+	sp->stack_size = CONFIG_AP_STACK_SIZE;
+	sp->stack_top = (uintptr_t)ap_stack + ARRAY_SIZE(ap_stack);
 }
 
 static const unsigned int fixed_mtrrs[NUM_FIXED_MTRRS] = {

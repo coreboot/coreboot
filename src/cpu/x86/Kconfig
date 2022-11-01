@@ -202,4 +202,11 @@ config RESERVE_MTRRS_FOR_OS
 	  However, modern OSes use PAT to control cacheability instead of
 	  using MTRRs.
 
+config AP_STACK_SIZE
+	hex
+	default 0x800
+	help
+	  This is the amount of stack each AP needs. The BSP stack size can be
+	  larger and is set with STACK_SIZE.
+
 endif # ARCH_X86

@@ -53,6 +53,7 @@ config MAINBOARD_PART_NUMBER
 	default "Steelix" if BOARD_GOOGLE_STEELIX
 	default "Tentacruel" if BOARD_GOOGLE_TENTACRUEL
 	default "Magikarp" if BOARD_GOOGLE_MAGIKARP
+	default "Voltorb" if BOARD_GOOGLE_VOLTORB
 
 config BOOT_DEVICE_SPI_FLASH_BUS
 	int

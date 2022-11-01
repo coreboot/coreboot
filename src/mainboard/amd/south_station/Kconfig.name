@@ -1,2 +1,0 @@
-config BOARD_AMD_SOUTHSTATION
-	bool "Southstation"

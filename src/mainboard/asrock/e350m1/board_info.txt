@@ -1,7 +1,0 @@
-Category: mini
-Board URL: http://www.asrock.com/mb/overview.asp?Model=E350M1
-ROM package: DIP8
-ROM protocol: SPI
-ROM socketed: y
-Flashrom support: y
-Release year: 2011

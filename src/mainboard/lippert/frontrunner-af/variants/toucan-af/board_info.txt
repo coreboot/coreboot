@@ -1,6 +1,0 @@
-Category: half
-Board URL: http://www.adlinktech.com/PD/web/PD_detail.php?pid=1132
-ROM package: SOIC8
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y

@@ -1,2 +1,0 @@
-config BOARD_ELMEX_PCM205400
-	bool "pcm205400"

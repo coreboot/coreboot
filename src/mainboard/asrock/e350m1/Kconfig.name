@@ -1,2 +1,0 @@
-config BOARD_ASROCK_E350M1
-	bool "E350M1"

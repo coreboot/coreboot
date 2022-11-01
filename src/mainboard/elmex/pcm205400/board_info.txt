@@ -1,5 +1,0 @@
-Board name: PCM205400
-Category: sbc
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y

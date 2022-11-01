@@ -1,2 +1,0 @@
-config BOARD_JETWAY_NF81_T56N_LF
-	bool "NF81_T56N_LF"

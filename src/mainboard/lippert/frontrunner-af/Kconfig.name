@@ -1,5 +1,0 @@
-config BOARD_LIPPERT_FRONTRUNNER_AF
-	bool "FrontRunner-AF aka ADLINK CoreModule2-GF"
-
-config BOARD_LIPPERT_TOUCAN_AF
-	bool "Toucan-AF aka cExpress-GFR (+W83627DHG SIO)"

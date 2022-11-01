@@ -1,4 +1,0 @@
-# The code for this board is under elmex/pcm205400
-
-config BOARD_ELMEX_PCM205401
-	bool "pcm205401"

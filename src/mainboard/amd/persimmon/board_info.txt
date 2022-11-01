@@ -1,5 +1,0 @@
-Board name: DBFT1-00-EVAL-KT (Persimmon)
-Category: eval
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y

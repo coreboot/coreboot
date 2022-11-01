@@ -1,6 +1,0 @@
-Category: half
-Board URL: https://www.adlinktech.com/Products/PC104SBCs/PC_104_Plus_SBCs/CM2-GF
-ROM package: SOIC8
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y

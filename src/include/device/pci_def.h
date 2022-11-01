@@ -422,6 +422,8 @@
 #define  PCI_EXP_DEVSTA_AUXPD	0x10	/* AUX Power Detected */
 #define  PCI_EXP_DEVSTA_TRPND	0x20	/* Transactions Pending */
 #define PCI_EXP_LNKCAP		12	/* Link Capabilities */
+#define  PCI_EXP_LNKCAP_MLS	0x000f	/* Maximum Link Speed */
+#define  PCI_EXP_LNKCAP_MLW	0x03f0	/* Maximum Link Width */
 #define  PCI_EXP_LNKCAP_ASPMS	0xc00	/* ASPM Support */
 #define  PCI_EXP_LNKCAP_L0SEL	0x7000	/* L0s Exit Latency */
 #define  PCI_EXP_LNKCAP_L1EL	0x38000	/* L1 Exit Latency */
@@ -436,6 +438,7 @@
 #define  PCI_EXP_LNKSTA_SLC	0x1000	/* Slot Clock Configuration */
 #define PCI_EXP_SLTCAP		20	/* Slot Capabilities */
 #define  PCI_EXP_SLTCAP_HPC	0x0040	/* Hot-Plug Capable */
+#define  PCI_EXP_SLTCAP_PSN	0xfff80000 /* Physical Slot Number */
 #define PCI_EXP_SLTCTL		24	/* Slot Control */
 #define PCI_EXP_SLTSTA		26	/* Slot Status */
 #define PCI_EXP_RTCTL		28	/* Root Control */

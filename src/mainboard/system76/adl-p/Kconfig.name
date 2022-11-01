@@ -1,0 +1,2 @@
+config BOARD_SYSTEM76_DARP8
+	bool "darp8"

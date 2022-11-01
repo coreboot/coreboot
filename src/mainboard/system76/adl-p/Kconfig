@@ -1,0 +1,66 @@
+if BOARD_SYSTEM76_DARP8
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_32768
+	select DRIVERS_I2C_HID
+	select DRIVERS_INTEL_PMC
+	select DRIVERS_INTEL_USB4_RETIMER
+	select EC_SYSTEM76_EC
+	select EC_SYSTEM76_EC_COLOR_KEYBOARD if BOARD_SYSTEM76_DARP8
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MAINBOARD_HAS_TPM2
+	select MEMORY_MAPPED_TPM
+	select NO_UART_ON_SUPERIO
+	select SOC_INTEL_ALDERLAKE_PCH_P
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_CRASHLOG
+	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+	select SPD_READ_BY_WORD
+	select SYSTEM_TYPE_LAPTOP
+
+config MAINBOARD_DIR
+	default "system76/adl-p"
+
+config VARIANT_DIR
+	default "darp8" if BOARD_SYSTEM76_DARP8
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config MAINBOARD_PART_NUMBER
+	default "darp8" if BOARD_SYSTEM76_DARP8
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "Darter Pro" if BOARD_SYSTEM76_DARP8
+
+config MAINBOARD_VERSION
+	default "darp8" if BOARD_SYSTEM76_DARP8
+
+config CBFS_SIZE
+	default 0xA00000
+
+config CONSOLE_POST
+	default y
+
+config DIMM_SPD_SIZE
+	default 512
+
+config POST_DEVICE
+	default n
+
+config TPM_MEASURED_BOOT
+	default y
+
+config UART_FOR_CONSOLE
+	default 0
+
+# PM Timer Disabled, saves power
+config USE_PM_ACPI_TIMER
+	default n
+
+endif

@@ -1550,7 +1550,10 @@ static void dump_peri_par_ao_apc(uintptr_t base)
 
 static void infra_init(uintptr_t base)
 {
-	/* Default APC setting */
+	/* Side-band */
+	SET32_BITFIELDS(getreg(base, MAS_SEC_0), MCUPM_SEC, SECURE_TRANS);
+
+	/* TODO: Setup SCP, SSPM and MCUPM permissions in APC . */
 	set_infra_ao_apc(base);
 }
 

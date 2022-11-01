@@ -291,10 +291,6 @@ static void amd_bs_dev_enable(void *arg)
 
 	if (!acpi_is_wakeup_s3())
 		agesa_execute_state(cb, AMD_INIT_MID);
-
-	/* FIXME */
-	if (CONFIG(AMD_SB_CIMX) && acpi_is_wakeup_s3())
-		sb_After_Pci_Restore_Init();
 }
 
 static void amd_bs_post_device(void *arg)

@@ -1,7 +1,0 @@
-# SPDX-License-Identifier: GPL-2.0-only
-
-config AMD_SB_CIMX
-	bool
-	default n
-
-source "src/southbridge/amd/cimx/sb800/Kconfig"

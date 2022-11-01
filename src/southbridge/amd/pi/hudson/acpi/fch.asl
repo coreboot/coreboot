@@ -144,9 +144,4 @@ Method(_INI, 0) {
 	/* DBGO(\_REV) */
 	/* DBGO("\n") */
 
-#if CONFIG(HUDSON_IMC_FWM)
-#if CONFIG(ACPI_ENABLE_THERMAL_ZONE)
-	ITZE() /* enable IMC Fan Control*/
-#endif
-#endif
 } /* End Method(_SB._INI) */

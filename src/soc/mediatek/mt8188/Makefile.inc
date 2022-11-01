@@ -31,6 +31,7 @@ romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-y += ../common/auxadc.c
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
+ramstage-y += cpu_input_gating.c
 ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += ../common/devapc.c devapc.c
 ramstage-y += ../common/dfd.c

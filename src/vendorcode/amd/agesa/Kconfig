@@ -159,20 +159,6 @@ config CUSTOM_SPD_TRC
 	default 181
 	range 1 255
 
-if CPU_AMD_AGESA_FAMILY16_KB
-
-config CUSTOM_SPD_TRFC_LO
-	int "[24]: Min Refresh Recovery Delay Time, LOWER tRFC"
-	default 56
-	range 1 255
-
-config CUSTOM_SPD_TRFC_HI
-	int "[25]: Min Refresh Recovery Delay Time, UPPER tRFC"
-	default 14
-	range 0 255
-
-endif
-
 config CUSTOM_SPD_TWTR
 	int "[26]: Min Internal Write to Read Command Delay, tWTR"
 	default 105

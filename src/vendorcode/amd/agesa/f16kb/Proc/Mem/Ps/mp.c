@@ -489,10 +489,7 @@ MemPIsIdSupported (
       return TRUE;
     }
   }
-  if (CONFIG(FORCE_AM1_SOCKET_SUPPORT))
-    return TRUE;
-  else
-    return FALSE;
+  return FALSE;
 }
 
 /* -----------------------------------------------------------------------------*/

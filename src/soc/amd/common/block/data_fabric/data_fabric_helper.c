@@ -13,14 +13,12 @@
 
 static void data_fabric_set_indirect_address(uint8_t func, uint16_t reg, uint8_t instance_id)
 {
-	uint32_t fabric_indirect_access_reg = DF_IND_CFG_INST_ACC_EN;
-	/* Register offset field [10:2] in this register corresponds to [10:2] of the
-	   requested offset. */
-	fabric_indirect_access_reg |= reg & DF_IND_CFG_ACC_REG_MASK;
-	fabric_indirect_access_reg |=
-		(func << DF_IND_CFG_ACC_FUN_SHIFT) & DF_IND_CFG_ACC_FUN_MASK;
-	fabric_indirect_access_reg |= instance_id << DF_IND_CFG_INST_ID_SHIFT;
-	pci_write_config32(SOC_DF_F4_DEV, DF_FICAA_BIOS, fabric_indirect_access_reg);
+	union df_ficaa ficaa = { .cfg_inst_acc_en = 1 };
+	/* convert register address to 32-bit register number */
+	ficaa.reg_num = reg >> 2;
+	ficaa.func_num = func;
+	ficaa.inst_id = instance_id;
+	pci_write_config32(SOC_DF_F4_DEV, DF_FICAA_BIOS, ficaa.raw);
 }
 
 uint32_t data_fabric_read32(uint8_t function, uint16_t reg, uint8_t instance_id)
@@ -64,16 +62,17 @@ void data_fabric_print_mmio_conf(void)
 
 void data_fabric_disable_mmio_reg(unsigned int reg)
 {
-	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg),
-		IOMS0_FABRIC_ID << DF_MMIO_DST_FABRIC_ID_SHIFT);
+	union df_mmio_control ctrl = { .fabric_id = IOMS0_FABRIC_ID };
+	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg), ctrl.raw);
 	data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), 0);
 	data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), 0);
 }
 
 static bool is_mmio_reg_disabled(unsigned int reg)
 {
-	uint32_t val = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(reg));
-	return !(val & (DF_MMIO_WE | DF_MMIO_RE));
+	union df_mmio_control ctrl;
+	ctrl.raw = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(reg));
+	return !(ctrl.we || ctrl.re);
 }
 
 int data_fabric_find_unused_mmio_reg(void)
@@ -109,7 +108,8 @@ void data_fabric_set_mmio_np(void)
 
 	unsigned int i;
 	int reg;
-	uint32_t base, limit, ctrl;
+	uint32_t base, limit;
+	union df_mmio_control ctrl;
 	const uint32_t np_bot = HPET_BASE_ADDRESS >> D18F0_MMIO_SHIFT;
 	const uint32_t np_top = (LAPIC_DEFAULT_BASE - 1) >> D18F0_MMIO_SHIFT;
 
@@ -117,8 +117,8 @@ void data_fabric_set_mmio_np(void)
 
 	for (i = 0; i < NUM_NB_MMIO_REGS; i++) {
 		/* Adjust all registers that overlap */
-		ctrl = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(i));
-		if (!(ctrl & (DF_MMIO_WE | DF_MMIO_RE)))
+		ctrl.raw = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(i));
+		if (!(ctrl.we || ctrl.re))
 			continue; /* not enabled */
 
 		base = data_fabric_broadcast_read32(0, NB_MMIO_BASE(i));
@@ -145,7 +145,7 @@ void data_fabric_set_mmio_np(void)
 			}
 			data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), np_top + 1);
 			data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), limit);
-			data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg), ctrl);
+			data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg), ctrl.raw);
 			continue;
 		}
 
@@ -162,11 +162,11 @@ void data_fabric_set_mmio_np(void)
 		return;
 	}
 
+	union df_mmio_control np_ctrl = { .fabric_id = IOMS0_FABRIC_ID,
+					  .np = 1, .we = 1, .re = 1 };
 	data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), np_bot);
 	data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), np_top);
-	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg),
-			   (IOMS0_FABRIC_ID << DF_MMIO_DST_FABRIC_ID_SHIFT) | DF_MMIO_NP
-				   | DF_MMIO_WE | DF_MMIO_RE);
+	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg), np_ctrl.raw);
 
 	data_fabric_print_mmio_conf();
 }

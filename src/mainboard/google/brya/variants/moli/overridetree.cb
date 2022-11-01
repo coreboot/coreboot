@@ -48,18 +48,6 @@ chip soc/intel/alderlake
 				register "options.tsr[1].desc" = ""CPU_VR""
 				register "options.tsr[2].desc" = ""DIMM""
 
-				# TODO: below values are initial reference values only
-				## Active Policy
-				register "policies.active" = "{
-					[0] = {
-						.target = DPTF_CPU,
-						.thresholds = {
-								TEMP_PCT(85, 90),
-								TEMP_PCT(80, 80),
-								TEMP_PCT(75, 70),
-						}
-					}
-				}"
 
 				## Passive Policy
 				register "policies.passive" = "{
@@ -97,24 +85,6 @@ chip soc/intel/alderlake
 				register "oem_data.oem_variables" = "{
 						[0] = 0x1
 				}"
-
-				## Fan Performance Control (Percent, Speed, Noise, Power)
-				register "controls.fan_perf" = "{
-					[0] = {  90, 6700, 220, 2200, },
-					[1] = {  80, 5800, 180, 1800, },
-					[2] = {  70, 5000, 145, 1450, },
-					[3] = {  60, 4900, 115, 1150, },
-					[4] = {  50, 3838,  90,  900, },
-					[5] = {  40, 2904,  55,  550, },
-					[6] = {  30, 2337,  30,  300, },
-					[7] = {  20, 1608,  15,  150, },
-					[8] = {  10,  800,  10,  100, },
-					[9] = {   0,    0,   0,   50, }
-				}"
-
-				## Fan options
-				register "options.fan.fine_grained_control" = "1"
-				register "options.fan.step_size" = "2"
 
 				device generic 0 alias dptf_policy on end
 			end

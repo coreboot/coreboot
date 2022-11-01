@@ -5,8 +5,15 @@
 
 #include <types.h>
 
-/* SoC-specific bits in D18F0_MMIO_CTRL0 */
-#define   DF_MMIO_NP			BIT(16)
+/* D18F0 - Fabric Configuration registers */
+#define D18F0_MMIO_BASE0		0x200
+#define D18F0_MMIO_LIMIT0		0x204
+#define   D18F0_MMIO_SHIFT		16
+#define D18F0_MMIO_CTRL0		0x208
+
+#define DF_FICAA_BIOS			0x5C
+#define DF_FICAD_LO			0x98
+#define DF_FICAD_HI			0x9C
 
 #define IOMS0_FABRIC_ID			10
 

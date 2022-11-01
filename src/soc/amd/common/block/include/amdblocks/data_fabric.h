@@ -5,20 +5,11 @@
 
 #include <amdblocks/pci_devs.h>
 #include <device/pci_ops.h>
+#include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
 #include <stdint.h>
 
 #define BROADCAST_FABRIC_ID		0xff
-
-/* D18F0 - Fabric Configuration registers */
-#define D18F0_MMIO_BASE0		0x200
-#define D18F0_MMIO_LIMIT0		0x204
-#define   D18F0_MMIO_SHIFT		16
-#define D18F0_MMIO_CTRL0		0x208
-/* The MMIO_NP bit is SoC-specific */
-#define   DF_MMIO_DST_FABRIC_ID_SHIFT	4
-#define   DF_MMIO_WE			BIT(1)
-#define   DF_MMIO_RE			BIT(0)
 
 /* The number of data fabric MMIO registers is SoC-specific */
 #define NB_MMIO_BASE(reg)		((reg) * 4 * sizeof(uint32_t) + D18F0_MMIO_BASE0)

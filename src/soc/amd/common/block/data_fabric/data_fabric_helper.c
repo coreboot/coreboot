@@ -9,7 +9,6 @@
 #include <soc/data_fabric.h>
 #include <soc/pci_devs.h>
 #include <types.h>
-#include "data_fabric_def.h"
 
 static void data_fabric_set_indirect_address(uint8_t func, uint16_t reg, uint8_t instance_id)
 {

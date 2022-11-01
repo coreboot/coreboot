@@ -15,6 +15,26 @@
 
 #include "ec.h"
 
+#define CROS_EC_COMMAND_INFO const void
+#define CROS_EC_COMMAND(h, c, v, p, ps, r, rs)			\
+	google_chromeec_command(&(struct chromeec_command) {	\
+			.cmd_code = (c),			\
+			.cmd_version = (v),			\
+			.cmd_data_in = (p),			\
+			.cmd_size_in = (ps),			\
+			.cmd_data_out = (r),			\
+			.cmd_size_out = (rs),			\
+			.cmd_dev_index = 0,			\
+		})
+
+#include "ec_cmd_api.h"
+
+/*
+ * coreboot only supports a single platform EC, so there is no need to
+ * provide a context handle for the EC.
+ */
+#define PLAT_EC NULL
+
 #define INVALID_HCMD 0xFF
 
 /*
@@ -74,20 +94,11 @@ uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size)
 
 int google_chromeec_kbbacklight(int percent)
 {
-	struct ec_params_pwm_set_keyboard_backlight params = {
+	const struct ec_params_pwm_set_keyboard_backlight params = {
 		.percent = percent % 101,
 	};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_PWM_SET_KEYBOARD_BACKLIGHT,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_data_out = NULL,
-		.cmd_size_in = sizeof(params),
-		.cmd_size_out = 0,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_pwm_set_keyboard_backlight(PLAT_EC, &params) != 0)
 		return -1;
 
 	return 0;
@@ -115,22 +126,13 @@ static int google_chromeec_uhepi_cmd(uint8_t mask, uint8_t action,
 		.mask_type = mask,
 	};
 	struct ec_response_host_event resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_HOST_EVENT,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 
 	if (action != EC_HOST_EVENT_GET)
 		params.value = *value;
 	else
 		*value = 0;
 
-	ret = google_chromeec_command(&cmd);
+	ret = ec_cmd_host_event(PLAT_EC, &params, &resp);
 
 	if (action != EC_HOST_EVENT_GET)
 		return ret;
@@ -282,37 +284,18 @@ int google_chromeec_clear_events_b(uint64_t mask)
 
 int google_chromeec_get_mkbp_event(struct ec_response_get_next_event *event)
 {
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_GET_NEXT_EVENT,
-		.cmd_version = 0,
-		.cmd_data_in = NULL,
-		.cmd_size_in = 0,
-		.cmd_data_out = event,
-		.cmd_size_out = sizeof(*event),
-		.cmd_dev_index = 0,
-	};
-
-	return google_chromeec_command(&cmd);
+	return ec_cmd_get_next_event(PLAT_EC, event);
 }
 
 /* Get the current device event mask */
 uint64_t google_chromeec_get_device_enabled_events(void)
 {
-	struct ec_params_device_event params = {
+	const struct ec_params_device_event params = {
 		.param = EC_DEVICE_EVENT_PARAM_GET_ENABLED_EVENTS,
 	};
 	struct ec_response_device_event resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_DEVICE_EVENT,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) == 0)
+	if (ec_cmd_device_event(PLAT_EC, &params, &resp) == 0)
 		return resp.event_mask;
 
 	return 0;
@@ -321,42 +304,24 @@ uint64_t google_chromeec_get_device_enabled_events(void)
 /* Set the current device event mask */
 int google_chromeec_set_device_enabled_events(uint64_t mask)
 {
-	struct ec_params_device_event params = {
+	const struct ec_params_device_event params = {
 		.event_mask = (uint32_t)mask,
 		.param = EC_DEVICE_EVENT_PARAM_SET_ENABLED_EVENTS,
 	};
 	struct ec_response_device_event resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_DEVICE_EVENT,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 
-	return google_chromeec_command(&cmd);
+	return ec_cmd_device_event(PLAT_EC, &params, &resp);
 }
 
 /* Read and clear pending device events */
 uint64_t google_chromeec_get_device_current_events(void)
 {
-	struct ec_params_device_event params = {
+	const struct ec_params_device_event params = {
 		.param = EC_DEVICE_EVENT_PARAM_GET_CURRENT_EVENTS,
 	};
 	struct ec_response_device_event resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_DEVICE_EVENT,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) == 0)
+	if (ec_cmd_device_event(PLAT_EC, &params, &resp) == 0)
 		return resp.event_mask;
 
 	return 0;
@@ -442,16 +407,8 @@ void google_chromeec_events_init(const struct google_chromeec_event_info *info,
 int google_chromeec_check_feature(int feature)
 {
 	struct ec_response_get_features resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_GET_FEATURES,
-		.cmd_version = 0,
-		.cmd_size_in = 0,
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_get_features(PLAT_EC, &resp) != 0)
 		return -1;
 
 	if (feature >= 8 * sizeof(resp.flags))
@@ -462,21 +419,12 @@ int google_chromeec_check_feature(int feature)
 
 int google_chromeec_get_cmd_versions(int command, uint32_t *pmask)
 {
-	struct ec_params_get_cmd_versions_v1 params = {
+	const struct ec_params_get_cmd_versions_v1 params = {
 		.cmd = command,
 	};
 	struct ec_response_get_cmd_versions resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_GET_CMD_VERSIONS,
-		.cmd_version = 1,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_in = &params,
-		.cmd_size_out = sizeof(resp),
-		.cmd_data_out = &resp,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_get_cmd_versions_v1(PLAT_EC, &params, &resp) != 0)
 		return -1;
 
 	*pmask = resp.version_mask;
@@ -486,21 +434,12 @@ int google_chromeec_get_cmd_versions(int command, uint32_t *pmask)
 int google_chromeec_get_vboot_hash(uint32_t offset,
 				struct ec_response_vboot_hash *resp)
 {
-	struct ec_params_vboot_hash params = {
+	const struct ec_params_vboot_hash params = {
 		.cmd = EC_VBOOT_HASH_GET,
 		.offset = offset,
 	};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_VBOOT_HASH,
-		.cmd_version = 0,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_in = &params,
-		.cmd_size_out = sizeof(*resp),
-		.cmd_data_out = resp,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_vboot_hash(PLAT_EC, &params, resp) != 0)
 		return -1;
 
 	return 0;
@@ -510,23 +449,14 @@ int google_chromeec_start_vboot_hash(enum ec_vboot_hash_type hash_type,
 				uint32_t hash_offset,
 				struct ec_response_vboot_hash *resp)
 {
-	struct ec_params_vboot_hash params = {
+	const struct ec_params_vboot_hash params = {
 		.cmd = EC_VBOOT_HASH_START,
 		.hash_type = hash_type,
 		.nonce_size = 0,
 		.offset = hash_offset,
 	};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_VBOOT_HASH,
-		.cmd_version = 0,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_in = &params,
-		.cmd_size_out = sizeof(*resp),
-		.cmd_data_out = resp,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_vboot_hash(PLAT_EC, &params, resp) != 0)
 		return -1;
 
 	return 0;
@@ -535,21 +465,12 @@ int google_chromeec_start_vboot_hash(enum ec_vboot_hash_type hash_type,
 int google_chromeec_flash_protect(uint32_t mask, uint32_t flags,
 	struct ec_response_flash_protect *resp)
 {
-	struct ec_params_flash_protect params = {
+	const struct ec_params_flash_protect params = {
 		.mask = mask,
 		.flags = flags,
 	};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_FLASH_PROTECT,
-		.cmd_version = EC_VER_FLASH_PROTECT,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_in = &params,
-		.cmd_size_out = sizeof(*resp),
-		.cmd_data_out = resp,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_flash_protect_v1(PLAT_EC, &params, resp) != 0)
 		return -1;
 
 	return 0;
@@ -558,21 +479,12 @@ int google_chromeec_flash_protect(uint32_t mask, uint32_t flags,
 int google_chromeec_flash_region_info(enum ec_flash_region region,
 				uint32_t *offset, uint32_t *size)
 {
-	struct ec_params_flash_region_info params = {
+	const struct ec_params_flash_region_info params = {
 		.region = region,
 	};
 	struct ec_response_flash_region_info resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_FLASH_REGION_INFO,
-		.cmd_version = EC_VER_FLASH_REGION_INFO,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_in = &params,
-		.cmd_size_out = sizeof(resp),
-		.cmd_data_out = &resp,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_flash_region_info_v1(PLAT_EC, &params, &resp) != 0)
 		return -1;
 
 	if (offset)
@@ -585,21 +497,12 @@ int google_chromeec_flash_region_info(enum ec_flash_region region,
 
 int google_chromeec_flash_erase(uint32_t offset, uint32_t size)
 {
-	struct ec_params_flash_erase params = {
+	const struct ec_params_flash_erase params = {
 		.offset = offset,
 		.size = size,
 	};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_FLASH_ERASE,
-		.cmd_version = 0,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_in = &params,
-		.cmd_size_out = 0,
-		.cmd_data_out = NULL,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_flash_erase(PLAT_EC, &params) != 0)
 		return -1;
 
 	return 0;
@@ -607,17 +510,7 @@ int google_chromeec_flash_erase(uint32_t offset, uint32_t size)
 
 int google_chromeec_flash_info(struct ec_response_flash_info *info)
 {
-	struct chromeec_command cmd;
-
-	cmd.cmd_code = EC_CMD_FLASH_INFO;
-	cmd.cmd_version = 0;
-	cmd.cmd_size_in = 0;
-	cmd.cmd_data_in = NULL;
-	cmd.cmd_size_out = sizeof(*info);
-	cmd.cmd_data_out = info;
-	cmd.cmd_dev_index = 0;
-
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_flash_info(PLAT_EC, info) != 0)
 		return -1;
 
 	return 0;
@@ -677,20 +570,11 @@ int google_chromeec_efs_verify(enum ec_flash_region region)
 
 int google_chromeec_battery_cutoff(uint8_t flags)
 {
-	struct ec_params_battery_cutoff params = {
+	const struct ec_params_battery_cutoff params = {
 		.flags = flags,
 	};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_BATTERY_CUT_OFF,
-		.cmd_version = 1,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_in = &params,
-		.cmd_data_out = NULL,
-		.cmd_size_out = 0,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_battery_cut_off_v1(PLAT_EC, &params) != 0)
 		return -1;
 
 	return 0;
@@ -698,7 +582,7 @@ int google_chromeec_battery_cutoff(uint8_t flags)
 
 int google_chromeec_read_limit_power_request(int *limit_power)
 {
-	struct ec_params_charge_state params = {
+	const struct ec_params_charge_state params = {
 		.cmd = CHARGE_STATE_CMD_GET_PARAM,
 		.get_param.param = CS_PARAM_LIMIT_POWER,
 	};
@@ -733,17 +617,7 @@ int google_chromeec_read_limit_power_request(int *limit_power)
 int google_chromeec_get_protocol_info(
 	struct ec_response_get_protocol_info *resp)
 {
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_GET_PROTOCOL_INFO,
-		.cmd_version = 0,
-		.cmd_size_in = 0,
-		.cmd_data_in = NULL,
-		.cmd_data_out = resp,
-		.cmd_size_out = sizeof(*resp),
-		.cmd_dev_index = 0,
-	};
-
-	if (google_chromeec_command(&cmd))
+	if (ec_cmd_get_protocol_info(PLAT_EC, resp))
 		return -1;
 
 	return 0;
@@ -751,20 +625,11 @@ int google_chromeec_get_protocol_info(
 
 int google_chromeec_set_sku_id(uint32_t skuid)
 {
-	struct ec_sku_id_info params = {
+	const struct ec_sku_id_info params = {
 		.sku_id = skuid
 	};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_SET_SKU_ID,
-		.cmd_version = 0,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_in = &params,
-		.cmd_data_out = NULL,
-		.cmd_size_out = 0,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_set_sku_id(PLAT_EC, &params) != 0)
 		return -1;
 
 	return 0;
@@ -774,16 +639,8 @@ int google_chromeec_set_sku_id(uint32_t skuid)
 int rtc_get(struct rtc_time *time)
 {
 	struct ec_response_rtc resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_RTC_GET_VALUE,
-		.cmd_version = 0,
-		.cmd_size_in = 0,
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_rtc_get_value(PLAT_EC, &resp) != 0)
 		return -1;
 
 	return rtc_to_tm(resp.time, time);
@@ -792,22 +649,12 @@ int rtc_get(struct rtc_time *time)
 
 int google_chromeec_reboot(enum ec_reboot_cmd type, uint8_t flags)
 {
-	struct ec_params_reboot_ec params = {
+	const struct ec_params_reboot_ec params = {
 		.cmd = type,
 		.flags = flags,
 	};
-	struct ec_response_get_version resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_REBOOT_EC,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_data_out = &resp,
-		.cmd_size_in = sizeof(params),
-		.cmd_size_out = 0, /* ignore response, if any */
-		.cmd_dev_index = 0,
-	};
 
-	return google_chromeec_command(&cmd);
+	return ec_cmd_reboot_ec(PLAT_EC, &params);
 }
 
 static int cbi_get_uint32(uint32_t *id, uint32_t tag)
@@ -914,16 +761,8 @@ int google_chromeec_cbi_get_oem_name(char *buf, size_t bufsize)
 int google_chromeec_get_board_version(uint32_t *version)
 {
 	struct ec_response_board_version resp;
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_GET_BOARD_VERSION,
-		.cmd_version = 0,
-		.cmd_size_in = 0,
-		.cmd_size_out = sizeof(resp),
-		.cmd_data_out = &resp,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd))
+	if (ec_cmd_get_board_version(PLAT_EC, &resp))
 		return -1;
 
 	*version = resp.board_version;
@@ -933,16 +772,8 @@ int google_chromeec_get_board_version(uint32_t *version)
 uint32_t google_chromeec_get_sku_id(void)
 {
 	struct ec_sku_id_info resp;
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_GET_SKU_ID,
-		.cmd_version = 0,
-		.cmd_size_in = 0,
-		.cmd_size_out = sizeof(resp),
-		.cmd_data_out = &resp,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) != 0)
+	if (ec_cmd_get_sku_id(PLAT_EC, &resp) != 0)
 		return 0;
 
 	return resp.sku_id;
@@ -951,17 +782,7 @@ uint32_t google_chromeec_get_sku_id(void)
 static bool google_chromeec_get_uptime_info(
 	struct ec_response_uptime_info *resp)
 {
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_GET_UPTIME_INFO,
-		.cmd_version = 0,
-		.cmd_data_in = NULL,
-		.cmd_size_in = 0,
-		.cmd_data_out = resp,
-		.cmd_size_out = sizeof(*resp),
-		.cmd_dev_index = 0,
-	};
-
-	return google_chromeec_command(&cmd) == 0;
+	return ec_cmd_get_uptime_info(PLAT_EC, resp) == 0;
 }
 
 bool google_chromeec_get_ap_watchdog_flag(void)
@@ -1101,44 +922,26 @@ uint64_t google_chromeec_get_wake_mask(void)
 
 int google_chromeec_set_usb_charge_mode(uint8_t port_id, enum usb_charge_mode mode)
 {
-	struct ec_params_usb_charge_set_mode params = {
+	const struct ec_params_usb_charge_set_mode params = {
 		.usb_port_id = port_id,
 		.mode = mode,
 	};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_USB_CHARGE_SET_MODE,
-		.cmd_version = 0,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_in = &params,
-		.cmd_size_out = 0,
-		.cmd_data_out = NULL,
-		.cmd_dev_index = 0,
-	};
 
-	return google_chromeec_command(&cmd);
+	return ec_cmd_usb_charge_set_mode(PLAT_EC, &params);
 }
 
 /* Get charger voltage and current.  Also returns type of charger */
 int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
 					  uint16_t *current_max, uint16_t *voltage_max)
 {
-	struct ec_params_usb_pd_power_info params = {
+	const struct ec_params_usb_pd_power_info params = {
 		.port = PD_POWER_CHARGING_PORT,
 	};
 	struct ec_response_usb_pd_power_info resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_USB_PD_POWER_INFO,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 	struct usb_chg_measures m;
 	int rv;
 
-	rv = google_chromeec_command(&cmd);
+	rv = ec_cmd_usb_pd_power_info(PLAT_EC, &params, &resp);
 	if (rv != 0)
 		return rv;
 
@@ -1153,62 +956,35 @@ int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
 int google_chromeec_override_dedicated_charger_limit(uint16_t current_lim,
 						     uint16_t voltage_lim)
 {
-	struct ec_params_dedicated_charger_limit params = {
+	const struct ec_params_dedicated_charger_limit params = {
 		.current_lim = current_lim,
 		.voltage_lim = voltage_lim,
 	};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_OVERRIDE_DEDICATED_CHARGER_LIMIT,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_out = NULL,
-		.cmd_size_out = 0,
-		.cmd_dev_index = 0,
-	};
 
-	return google_chromeec_command(&cmd);
+	return ec_cmd_override_dedicated_charger_limit(PLAT_EC, &params);
 }
 
 int google_chromeec_set_usb_pd_role(uint8_t port, enum usb_pd_control_role role)
 {
-	struct ec_params_usb_pd_control params = {
+	const struct ec_params_usb_pd_control params = {
 		.port = port,
 		.role = role,
 		.mux = USB_PD_CTRL_MUX_NO_CHANGE,
 		.swap = USB_PD_CTRL_SWAP_NONE,
 	};
 	struct ec_response_usb_pd_control resp;
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_USB_PD_CONTROL,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 
-	return google_chromeec_command(&cmd);
+	return ec_cmd_usb_pd_control(PLAT_EC, &params, &resp);
 }
 
 int google_chromeec_hello(void)
 {
-	struct ec_params_hello params = {
+	const struct ec_params_hello params = {
 		.in_data = 0x10203040,
 	};
 	struct ec_response_hello resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_HELLO,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_data_out = &resp,
-		.cmd_size_in = sizeof(params),
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 
-	int rv = google_chromeec_command(&cmd);
+	int rv = ec_cmd_hello(PLAT_EC, &params, &resp);
 	if (rv)
 		return -1;
 
@@ -1348,17 +1124,9 @@ enum ec_image google_chromeec_get_current_image(void)
 		return ec_image_type;
 
 	struct ec_response_get_version resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_GET_VERSION,
-		.cmd_version = 0,
-		.cmd_data_out = &resp,
-		.cmd_size_in = 0,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 	int rv;
 
-	rv = google_chromeec_command(&cmd);
+	rv = ec_cmd_get_version(PLAT_EC, &resp);
 
 	if (rv != 0) {
 		printk(BIOS_DEBUG,
@@ -1379,17 +1147,9 @@ enum ec_image google_chromeec_get_current_image(void)
 int google_chromeec_get_num_pd_ports(unsigned int *num_ports)
 {
 	struct ec_response_usb_pd_ports resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_USB_PD_PORTS,
-		.cmd_version = 0,
-		.cmd_data_out = &resp,
-		.cmd_size_in = 0,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 	int rv;
 
-	rv = google_chromeec_command(&cmd);
+	rv = ec_cmd_usb_pd_ports(PLAT_EC, &resp);
 	if (rv)
 		return rv;
 
@@ -1400,22 +1160,13 @@ int google_chromeec_get_num_pd_ports(unsigned int *num_ports)
 int google_chromeec_get_pd_port_caps(int port,
 				struct usb_pd_port_caps *port_caps)
 {
-	struct ec_params_get_pd_port_caps params = {
+	const struct ec_params_get_pd_port_caps params = {
 		.port = port,
 	};
 	struct ec_response_get_pd_port_caps resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_GET_PD_PORT_CAPS,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 	int rv;
 
-	rv = google_chromeec_command(&cmd);
+	rv = ec_cmd_get_pd_port_caps(PLAT_EC, &params, &resp);
 	if (rv)
 		return rv;
 
@@ -1441,24 +1192,15 @@ int google_ec_running_ro(void)
 static int google_chromeec_usb_pd_get_info(int port, bool *ufp, bool *dbg_acc,
 				    bool *active_cable, uint8_t *dp_mode)
 {
-	struct ec_params_usb_pd_control pd_control = {
+	const struct ec_params_usb_pd_control pd_control = {
 		.port = port,
 		.role = USB_PD_CTRL_ROLE_NO_CHANGE,
 		.mux = USB_PD_CTRL_ROLE_NO_CHANGE,
 		.swap = USB_PD_CTRL_SWAP_NONE,
 	};
 	struct ec_response_usb_pd_control_v2 resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_USB_PD_CONTROL,
-		.cmd_version = 2,
-		.cmd_data_in = &pd_control,
-		.cmd_size_in = sizeof(pd_control),
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd) < 0)
+	if (ec_cmd_usb_pd_control_v2(PLAT_EC, &pd_control, &resp) < 0)
 		return -1;
 
 	*ufp = !(resp.role & PD_CTRL_RESP_ROLE_DATA);
@@ -1474,23 +1216,13 @@ int google_chromeec_typec_control_enter_dp_mode(int port)
 	if (!google_chromeec_check_feature(EC_FEATURE_TYPEC_REQUIRE_AP_MODE_ENTRY))
 		return 0;
 
-	struct ec_params_typec_control typec_control = {
+	const struct ec_params_typec_control typec_control = {
 		.port = port,
 		.command = TYPEC_CONTROL_COMMAND_ENTER_MODE,
 		.mode_to_enter = TYPEC_MODE_DP,
 	};
 
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_TYPEC_CONTROL,
-		.cmd_version = 0,
-		.cmd_data_in = &typec_control,
-		.cmd_size_in = sizeof(typec_control),
-		.cmd_data_out = NULL,
-		.cmd_size_out = 0,
-		.cmd_dev_index = 0,
-	};
-
-	if (google_chromeec_command(&cmd) < 0)
+	if (ec_cmd_typec_control(PLAT_EC, &typec_control) < 0)
 		return -1;
 
 	return 0;
@@ -1502,24 +1234,15 @@ int google_chromeec_typec_control_enter_dp_mode(int port)
  */
 int google_chromeec_usb_get_pd_mux_info(int port, uint8_t *flags)
 {
-	struct ec_params_usb_pd_mux_info req_mux = {
+	const struct ec_params_usb_pd_mux_info req_mux = {
 		.port = port,
 	};
 	struct ec_response_usb_pd_mux_info resp_mux = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_USB_PD_MUX_INFO,
-		.cmd_version = 0,
-		.cmd_data_in = &req_mux,
-		.cmd_size_in = sizeof(req_mux),
-		.cmd_data_out = &resp_mux,
-		.cmd_size_out = sizeof(resp_mux),
-		.cmd_dev_index = 0,
-	};
 
 	if (port < 0)
 		return -1;
 
-	if (google_chromeec_command(&cmd) < 0)
+	if (ec_cmd_usb_pd_mux_info(PLAT_EC, &req_mux, &resp_mux) < 0)
 		return -1;
 
 	*flags = resp_mux.flags;
@@ -1572,22 +1295,14 @@ int google_chromeec_get_usbc_mux_info(int port, struct usbc_mux_info *mux_info)
 static int google_chromeec_pd_get_amode(uint16_t svid)
 {
 	struct ec_response_usb_pd_ports resp;
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_USB_PD_PORTS,
-		.cmd_version = 0,
-		.cmd_data_in = NULL,
-		.cmd_size_in = 0,
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 	int i;
 	int ret = 0;
 
-	if (google_chromeec_command(&cmd) < 0)
+	if (ec_cmd_usb_pd_ports(PLAT_EC, &resp) < 0)
 		return -1;
 
 	for (i = 0; i < resp.num_ports; i++) {
+		struct chromeec_command cmd = { };
 		struct ec_params_usb_pd_get_mode_request params;
 		struct ec_params_usb_pd_get_mode_response resp2;
 		int svid_idx = 0;
@@ -1677,35 +1392,14 @@ int google_chromeec_wait_for_dp_hpd(int port, long timeout_ms)
 
 int google_chromeec_get_keybd_config(struct ec_response_keybd_config *keybd)
 {
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_GET_KEYBD_CONFIG,
-		.cmd_version = 0,
-		.cmd_data_in = NULL,
-		.cmd_size_in = 0,
-		.cmd_data_out = keybd,
-		.cmd_size_out = sizeof(*keybd),
-		.cmd_dev_index = 0,
-	};
-
-	if (google_chromeec_command(&cmd))
+	if (ec_cmd_get_keybd_config(PLAT_EC, keybd))
 		return -1;
-
 	return 0;
 }
 
 int google_chromeec_ap_reset(void)
 {
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_AP_RESET,
-		.cmd_version = 0,
-		.cmd_data_in = NULL,
-		.cmd_size_in = 0,
-		.cmd_data_out = NULL,
-		.cmd_size_out = 0,
-		.cmd_dev_index = 0,
-	};
-
-	if (google_chromeec_command(&cmd))
+	if (ec_cmd_ap_reset(NULL))
 		return -1;
 
 	return 0;
@@ -1713,21 +1407,12 @@ int google_chromeec_ap_reset(void)
 
 int google_chromeec_regulator_enable(uint32_t index, uint8_t enable)
 {
-	struct ec_params_regulator_enable params = {
+	const struct ec_params_regulator_enable params = {
 		.index = index,
 		.enable = enable,
 	};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_REGULATOR_ENABLE,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_out = NULL,
-		.cmd_size_out = 0,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd))
+	if (ec_cmd_regulator_enable(PLAT_EC, &params))
 		return -1;
 
 	return 0;
@@ -1735,21 +1420,12 @@ int google_chromeec_regulator_enable(uint32_t index, uint8_t enable)
 
 int google_chromeec_regulator_is_enabled(uint32_t index, uint8_t *enabled)
 {
-	struct ec_params_regulator_is_enabled params = {
+	const struct ec_params_regulator_is_enabled params = {
 		.index = index,
 	};
 	struct ec_response_regulator_is_enabled resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_REGULATOR_IS_ENABLED,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd))
+	if (ec_cmd_regulator_is_enabled(PLAT_EC, &params, &resp))
 		return -1;
 
 	*enabled = resp.enabled;
@@ -1760,22 +1436,13 @@ int google_chromeec_regulator_is_enabled(uint32_t index, uint8_t *enabled)
 int google_chromeec_regulator_set_voltage(uint32_t index, uint32_t min_mv,
 					  uint32_t max_mv)
 {
-	struct ec_params_regulator_set_voltage params = {
+	const struct ec_params_regulator_set_voltage params = {
 		.index = index,
 		.min_mv = min_mv,
 		.max_mv = max_mv,
 	};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_REGULATOR_SET_VOLTAGE,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_out = NULL,
-		.cmd_size_out = 0,
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd))
+	if (ec_cmd_regulator_set_voltage(PLAT_EC, &params))
 		return -1;
 
 	return 0;
@@ -1783,21 +1450,12 @@ int google_chromeec_regulator_set_voltage(uint32_t index, uint32_t min_mv,
 
 int google_chromeec_regulator_get_voltage(uint32_t index, uint32_t *voltage_mv)
 {
-	struct ec_params_regulator_get_voltage params = {
+	const struct ec_params_regulator_get_voltage params = {
 		.index = index,
 	};
 	struct ec_response_regulator_get_voltage resp = {};
-	struct chromeec_command cmd = {
-		.cmd_code = EC_CMD_REGULATOR_GET_VOLTAGE,
-		.cmd_version = 0,
-		.cmd_data_in = &params,
-		.cmd_size_in = sizeof(params),
-		.cmd_data_out = &resp,
-		.cmd_size_out = sizeof(resp),
-		.cmd_dev_index = 0,
-	};
 
-	if (google_chromeec_command(&cmd))
+	if (ec_cmd_regulator_get_voltage(PLAT_EC, &params, &resp))
 		return -1;
 
 	*voltage_mv = resp.voltage_mv;

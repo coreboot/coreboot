@@ -1,2 +1,0 @@
-config BOARD_ASROCK_IMB_A180
-	bool "IMB-A180"

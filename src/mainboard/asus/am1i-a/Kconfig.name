@@ -1,2 +1,0 @@
-config BOARD_ASUS_AM1I_A
-	bool "AM1I-A"

@@ -1,2 +1,0 @@
-config BOARD_BIOSTAR_AM1ML
-	bool"AM1ML"

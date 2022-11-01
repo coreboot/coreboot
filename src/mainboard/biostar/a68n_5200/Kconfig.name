@@ -1,2 +1,0 @@
-config BOARD_BIOSTAR_A68N5200
-	bool "A68N-5200"

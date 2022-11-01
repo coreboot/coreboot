@@ -1,5 +1,0 @@
-Category: mini
-ROM package: SOIC8
-ROM protocol: SPI
-ROM socketed: y
-Flashrom support: y

@@ -1,4 +1,0 @@
-boot_option=Fallback
-debug_level=Debug
-sata_mode=IDE
-sata_speed=6Gbps

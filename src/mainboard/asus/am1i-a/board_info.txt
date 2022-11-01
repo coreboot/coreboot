@@ -1,5 +1,0 @@
-Category: mini
-Board URL: https://www.asus.com/us/Motherboards/AM1IA/
-ROM package: DIP8
-ROM protocol: SPI
-ROM socketed: y

@@ -1,5 +1,0 @@
-Category: mini
-Board URL: http://www.biostar.com.tw/app/en/mb/introduction.php?S_ID=694
-ROM package: DIP8
-ROM protocol: SPI
-ROM socketed: y

@@ -1,4 +1,0 @@
-boot_option=Fallback
-debug_level=Debug
-nmi=Disable
-power_on_after_fail=Disable

@@ -1,2 +1,0 @@
-config BOARD_ASUS_A88XM_E
-	bool "A88XM-E"

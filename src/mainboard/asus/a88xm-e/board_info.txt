@@ -1,7 +1,0 @@
-Category: desktop
-Board URL: https://www.asus.com/Motherboards/A88XME/
-ROM package: DIP8
-ROM protocol: SPI
-ROM socketed: y
-Flashrom support: y (without AmdSpiRomProtect modules)
-Release year: 2014

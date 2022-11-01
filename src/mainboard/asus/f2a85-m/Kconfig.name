@@ -1,8 +1,0 @@
-config BOARD_ASUS_F2A85_M
-	bool "F2A85-M"
-
-config BOARD_ASUS_F2A85_M_PRO
-	bool "F2A85-M PRO"
-
-config BOARD_ASUS_F2A85_M_LE
-	bool "F2A85-M LE"

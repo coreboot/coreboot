@@ -1,7 +1,0 @@
-Category: desktop
-Board URL: https://www.msi.com/Motherboard/FM2-A75MA-E35.html
-ROM package: SOIC8
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y
-Release year: 2012

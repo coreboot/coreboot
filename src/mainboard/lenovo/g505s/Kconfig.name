@@ -1,2 +1,0 @@
-config BOARD_LENOVO_G505S
-	bool "AMD G505s"

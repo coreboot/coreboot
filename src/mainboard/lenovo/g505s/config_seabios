@@ -1,7 +1,0 @@
-###
-### SeaBIOS custom configuration for Lenovo G505S
-###
-# CONFIG_MEGASAS is not set
-# CONFIG_NVME is not set
-# CONFIG_TCGBIOS is not set
-#

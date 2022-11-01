@@ -1,2 +1,0 @@
-config BOARD_MSI_MS7721
-	bool "MS-7721 (FM2-A75MA-E35)"

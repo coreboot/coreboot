@@ -1,7 +1,0 @@
-Category: desktop
-Board URL: http://www.asus.com/Motherboards/AMD_Socket_FM2/F2A85M/
-ROM package: DIP8
-ROM protocol: [http://www.winbond-usa.com/hq/enu/ProductAndSales/ProductLines/FlashMemory/SerialFlash/W25Q64BV.htm SPI]
-ROM socketed: y
-Flashrom support: y
-Release year: 2013

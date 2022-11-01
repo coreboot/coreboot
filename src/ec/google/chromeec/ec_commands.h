@@ -1,6 +1,15 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 
+
+
+
 /* Host communication command constants for Chrome EC */
+
+/*
+ * TODO(b/272518464): Work around coreboot GCC preprocessor bug.
+ * #line marks the *next* line, so it is off by one.
+ */
+#line 13
 
 #ifndef __CROS_EC_EC_COMMANDS_H
 #define __CROS_EC_EC_COMMANDS_H
@@ -1270,7 +1279,7 @@ struct ec_response_get_version_v1 {
 	char cros_fwid_rw[32]; /* Added in version 1 */
 } __ec_align4;
 
-/* Read test - DEPRECATED */
+/* Read test - OBSOLETE */
 #define EC_CMD_READ_TEST 0x0003
 
 /*
@@ -3722,17 +3731,6 @@ struct ec_params_mkbp_simulate_key {
 	uint8_t pressed;
 } __ec_align1;
 
-#define EC_CMD_GET_KEYBOARD_ID 0x0063
-
-struct ec_response_keyboard_id {
-	uint32_t keyboard_id;
-} __ec_align4;
-
-enum keyboard_id {
-	KEYBOARD_ID_UNSUPPORTED = 0,
-	KEYBOARD_ID_UNREADABLE = 0xffffffff,
-};
-
 /* Configure keyboard scanning */
 #define EC_CMD_MKBP_SET_CONFIG 0x0064
 #define EC_CMD_MKBP_GET_CONFIG 0x0065
@@ -4785,8 +4783,10 @@ struct ec_response_charge_state {
 
 struct ec_params_current_limit {
 	uint32_t limit; /* in mA */
+} __ec_align4;
 
-	/* Added in v1 */
+struct ec_params_current_limit_v1 {
+	uint32_t limit; /* in mA */
 	/*
 	 * Battery state of charge is the minimum charge percentage at which
 	 * the battery charge current limit will apply.
@@ -4990,39 +4990,34 @@ struct ec_response_device_event {
 } __ec_align4;
 
 /*****************************************************************************/
+/* Get s0ix counter */
+#define EC_CMD_GET_S0IX_COUNTER 0x00AB
+
+/* Flag use to reset the counter */
+#define EC_S0IX_COUNTER_RESET 0x1
+
+struct ec_params_s0ix_cnt {
+	/* If EC_S0IX_COUNTER_RESET then reset otherwise get the counter */
+	uint32_t flags;
+} __ec_align4;
+
+struct ec_response_s0ix_cnt {
+	/* Value of the s0ix_counter */
+	uint32_t s0ix_counter;
+} __ec_align4;
+
+/*****************************************************************************/
 /* Smart battery pass-through */
 
-/* Get / Set 16-bit smart battery registers */
+/* Get / Set 16-bit smart battery registers  - OBSOLETE */
 #define EC_CMD_SB_READ_WORD 0x00B0
 #define EC_CMD_SB_WRITE_WORD 0x00B1
 
 /* Get / Set string smart battery parameters
- * formatted as SMBUS "block".
+ * formatted as SMBUS "block". - OBSOLETE
  */
 #define EC_CMD_SB_READ_BLOCK 0x00B2
 #define EC_CMD_SB_WRITE_BLOCK 0x00B3
-
-struct ec_params_sb_rd {
-	uint8_t reg;
-} __ec_align1;
-
-struct ec_response_sb_rd_word {
-	uint16_t value;
-} __ec_align2;
-
-struct ec_params_sb_wr_word {
-	uint8_t reg;
-	uint16_t value;
-} __ec_align1;
-
-struct ec_response_sb_rd_block {
-	uint8_t data[32];
-} __ec_align1;
-
-struct ec_params_sb_wr_block {
-	uint8_t reg;
-	uint16_t data[32];
-} __ec_align1;
 
 /*****************************************************************************/
 /* Battery vendor parameters
@@ -5052,61 +5047,9 @@ struct ec_response_battery_vendor_param {
 
 /*****************************************************************************/
 /*
- * Smart Battery Firmware Update Commands
+ * Smart Battery Firmware Update Command - OBSOLETE
  */
 #define EC_CMD_SB_FW_UPDATE 0x00B5
-
-enum ec_sb_fw_update_subcmd {
-	EC_SB_FW_UPDATE_PREPARE = 0x0,
-	EC_SB_FW_UPDATE_INFO = 0x1, /*query sb info */
-	EC_SB_FW_UPDATE_BEGIN = 0x2, /*check if protected */
-	EC_SB_FW_UPDATE_WRITE = 0x3, /*check if protected */
-	EC_SB_FW_UPDATE_END = 0x4,
-	EC_SB_FW_UPDATE_STATUS = 0x5,
-	EC_SB_FW_UPDATE_PROTECT = 0x6,
-	EC_SB_FW_UPDATE_MAX = 0x7,
-};
-
-#define SB_FW_UPDATE_CMD_WRITE_BLOCK_SIZE 32
-#define SB_FW_UPDATE_CMD_STATUS_SIZE 2
-#define SB_FW_UPDATE_CMD_INFO_SIZE 8
-
-struct ec_sb_fw_update_header {
-	uint16_t subcmd; /* enum ec_sb_fw_update_subcmd */
-	uint16_t fw_id; /* firmware id */
-} __ec_align4;
-
-struct ec_params_sb_fw_update {
-	struct ec_sb_fw_update_header hdr;
-	union {
-		/* EC_SB_FW_UPDATE_PREPARE  = 0x0 */
-		/* EC_SB_FW_UPDATE_INFO     = 0x1 */
-		/* EC_SB_FW_UPDATE_BEGIN    = 0x2 */
-		/* EC_SB_FW_UPDATE_END      = 0x4 */
-		/* EC_SB_FW_UPDATE_STATUS   = 0x5 */
-		/* EC_SB_FW_UPDATE_PROTECT  = 0x6 */
-		/* Those have no args */
-
-		/* EC_SB_FW_UPDATE_WRITE    = 0x3 */
-		struct __ec_align4 {
-			uint8_t data[SB_FW_UPDATE_CMD_WRITE_BLOCK_SIZE];
-		} write;
-	};
-} __ec_align4;
-
-struct ec_response_sb_fw_update {
-	union {
-		/* EC_SB_FW_UPDATE_INFO     = 0x1 */
-		struct __ec_align1 {
-			uint8_t data[SB_FW_UPDATE_CMD_INFO_SIZE];
-		} info;
-
-		/* EC_SB_FW_UPDATE_STATUS   = 0x5 */
-		struct __ec_align1 {
-			uint8_t data[SB_FW_UPDATE_CMD_STATUS_SIZE];
-		} status;
-	};
-} __ec_align1;
 
 /*
  * Entering Verified Boot Mode Command
@@ -5571,6 +5514,54 @@ struct ec_params_reboot_ec {
  */
 #define EC_CMD_VERSION0 0x00DC
 
+/*
+ * Memory Dump Commands
+ *
+ * Since the HOSTCMD response size is limited, depending on the
+ * protocol, retrieving a memory dump is split into 3 commands.
+ *
+ * 1. EC_CMD_MEMORY_DUMP_GET_METADATA returns the number of memory dump entries,
+ *    and the total dump size.
+ * 2. EC_CMD_MEMORY_DUMP_GET_ENTRY_INFO returns the address and size for a given
+ *    memory dump entry index.
+ * 3. EC_CMD_MEMORY_DUMP_READ_MEMORY returns the actual memory at a given
+ *    address. The address and size must be within the bounds of the given
+ *    memory dump entry index. Each response is limited to the max response size
+ *    of the host protocol, so this may need to be called repeatedly to retrieve
+ *    the entire memory dump entry.
+ *
+ * Memory entries may overlap and may be out of order.
+ * The host should check for overlaps to optimize transfer rate.
+ */
+#define EC_CMD_MEMORY_DUMP_GET_METADATA 0x00DD
+struct ec_response_memory_dump_get_metadata {
+	uint16_t memory_dump_entry_count;
+	uint32_t memory_dump_total_size;
+} __ec_align4;
+
+#define EC_CMD_MEMORY_DUMP_GET_ENTRY_INFO 0x00DE
+struct ec_params_memory_dump_get_entry_info {
+	uint16_t memory_dump_entry_index;
+} __ec_align4;
+
+struct ec_response_memory_dump_get_entry_info {
+	uint32_t address;
+	uint32_t size;
+} __ec_align4;
+
+#define EC_CMD_MEMORY_DUMP_READ_MEMORY 0x00DF
+
+struct ec_params_memory_dump_read_memory {
+	uint16_t memory_dump_entry_index;
+	uint32_t address;
+	uint32_t size;
+} __ec_align4;
+
+/*
+ * EC_CMD_MEMORY_DUMP_READ_MEMORY response buffer is written directly into
+ * host_cmd_handler_args.response and host_cmd_handler_args.response_size.
+ */
+
 /*****************************************************************************/
 /*
  * PD commands
@@ -5739,6 +5730,8 @@ enum pd_cc_states {
 #define USB_PD_CTRL_TBT_LEGACY_ADAPTER BIT(2)
 /* Active Link Uni-Direction */
 #define USB_PD_CTRL_ACTIVE_LINK_UNIDIR BIT(3)
+/* Retimer/Redriver cable */
+#define USB_PD_CTRL_RETIMER_CABLE BIT(4)
 
 struct ec_response_usb_pd_control_v2 {
 	uint8_t enabled;
@@ -5992,10 +5985,14 @@ struct ec_params_usb_pd_get_mode_request {
 	uint8_t port; /* port */
 } __ec_align_size1;
 
+#define VDO_MAX_SIZE 7
+/* Max number of VDM data objects without VDM header */
+#define VDO_MAX_OBJECTS (VDO_MAX_SIZE - 1)
+
 struct ec_params_usb_pd_get_mode_response {
 	uint16_t svid; /* SVID */
 	uint16_t opos; /* Object Position */
-	uint32_t vdo[6]; /* Mode VDOs */
+	uint32_t vdo[VDO_MAX_OBJECTS]; /* Mode VDOs */
 } __ec_align4;
 
 #define EC_CMD_USB_PD_SET_AMODE 0x0117
@@ -6779,14 +6776,14 @@ struct ec_params_typec_discovery {
 struct svid_mode_info {
 	uint16_t svid;
 	uint16_t mode_count; /* Number of modes partner sent */
-	uint32_t mode_vdo[6]; /* Max VDOs allowed after VDM header is 6 */
+	uint32_t mode_vdo[VDO_MAX_OBJECTS];
 };
 
 struct ec_response_typec_discovery {
 	uint8_t identity_count; /* Number of identity VDOs partner sent */
 	uint8_t svid_count; /* Number of SVIDs partner sent */
 	uint16_t reserved;
-	uint32_t discovery_vdo[6]; /* Max VDOs allowed after VDM header is 6 */
+	uint32_t discovery_vdo[VDO_MAX_OBJECTS];
 	struct svid_mode_info svids[0];
 } __ec_align1;
 
@@ -6825,8 +6822,6 @@ struct typec_usb_mux_set {
 	/* USB_PD_MUX_*-encoded USB mux state to set */
 	uint8_t mux_flags;
 } __ec_align1;
-
-#define VDO_MAX_SIZE 7
 
 struct typec_vdm_req {
 	/* VDM data, including VDM header */
@@ -7057,7 +7052,12 @@ struct ec_params_typec_status {
 	uint8_t port;
 } __ec_align1;
 
-struct ec_response_typec_status {
+/*
+ * ec_response_typec_status is deprecated. Use ec_response_typec_status_v1.
+ * If you need to support old ECs who speak only v0, use
+ * ec_response_typec_status_v0 instead. They're binary-compatible.
+ */
+struct ec_response_typec_status /* DEPRECATED */ {
 	uint8_t pd_enabled; /* PD communication enabled - bool */
 	uint8_t dev_connected; /* Device connected - bool */
 	uint8_t sop_connected; /* Device is SOP PD capable - bool */
@@ -7094,6 +7094,53 @@ struct ec_response_typec_status {
 	uint32_t source_cap_pdos[7]; /* Max 7 PDOs can be present */
 
 	uint32_t sink_cap_pdos[7]; /* Max 7 PDOs can be present */
+} __ec_align1;
+
+struct cros_ec_typec_status {
+	uint8_t pd_enabled; /* PD communication enabled - bool */
+	uint8_t dev_connected; /* Device connected - bool */
+	uint8_t sop_connected; /* Device is SOP PD capable - bool */
+	uint8_t source_cap_count; /* Number of Source Cap PDOs */
+
+	uint8_t power_role; /* enum pd_power_role */
+	uint8_t data_role; /* enum pd_data_role */
+	uint8_t vconn_role; /* enum pd_vconn_role */
+	uint8_t sink_cap_count; /* Number of Sink Cap PDOs */
+
+	uint8_t polarity; /* enum tcpc_cc_polarity */
+	uint8_t cc_state; /* enum pd_cc_states */
+	uint8_t dp_pin; /* DP pin mode (MODE_DP_IN_[A-E]) */
+	uint8_t mux_state; /* USB_PD_MUX* - encoded mux state */
+
+	char tc_state[32]; /* TC state name */
+
+	uint32_t events; /* PD_STATUS_EVENT bitmask */
+
+	/*
+	 * BCD PD revisions for partners
+	 *
+	 * The format has the PD major revision in the upper nibble, and the PD
+	 * minor revision in the next nibble. The following two nibbles hold the
+	 * major and minor specification version. If a partner does not support
+	 * the Revision message, only the major revision will be given.
+	 * ex. PD Revision 3.2 Version 1.9 would map to 0x3219
+	 *
+	 * PD revision/version will be 0 if no PD device is connected.
+	 */
+	uint16_t sop_revision;
+	uint16_t sop_prime_revision;
+} __ec_align1;
+
+struct ec_response_typec_status_v0 {
+	struct cros_ec_typec_status typec_status;
+	uint32_t source_cap_pdos[7]; /* Max 7 PDOs can be present */
+	uint32_t sink_cap_pdos[7]; /* Max 7 PDOs can be present */
+} __ec_align1;
+
+struct ec_response_typec_status_v1 {
+	struct cros_ec_typec_status typec_status;
+	uint32_t source_cap_pdos[11]; /* Max 11 PDOs can be present */
+	uint32_t sink_cap_pdos[11]; /* Max 11 PDOs can be present */
 } __ec_align1;
 
 /**

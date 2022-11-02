@@ -77,20 +77,19 @@ int google_chromeec_kbbacklight(int percent)
 	struct ec_params_pwm_set_keyboard_backlight params = {
 		.percent = percent % 101,
 	};
-	struct ec_response_pwm_get_keyboard_backlight resp = {};
 	struct chromeec_command cmd = {
 		.cmd_code = EC_CMD_PWM_SET_KEYBOARD_BACKLIGHT,
 		.cmd_version = 0,
 		.cmd_data_in = &params,
-		.cmd_data_out = &resp,
+		.cmd_data_out = NULL,
 		.cmd_size_in = sizeof(params),
-		.cmd_size_out = sizeof(resp),
+		.cmd_size_out = 0,
 		.cmd_dev_index = 0,
 	};
 
 	google_chromeec_command(&cmd);
-	printk(BIOS_DEBUG, "Google Chrome set keyboard backlight: %x status (%x)\n",
-	       resp.percent, cmd.cmd_code);
+	printk(BIOS_DEBUG, "Google Chrome set keyboard backlight: status (%x)\n",
+	       cmd.cmd_code);
 	return cmd.cmd_code;
 }
 

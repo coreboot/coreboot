@@ -33,12 +33,12 @@ static void init_egress(void)
 	epbar_write32(EP_PORTARB(7), 0x00005555);
 	epbar_setbits32(EPVC1RCTL, 1 << 16);
 
-	while ((epbar_read8(EPVC1RSTS) & 1) != 0);
+	do {} while ((epbar_read8(EPVC1RSTS) & 1) != 0);
 
 	/* VC1: enable */
 	epbar_setbits32(EPVC1RCTL, 1 << 31);
 
-	while ((epbar_read8(EPVC1RSTS) & 2) != 0);
+	do {} while ((epbar_read8(EPVC1RSTS) & 2) != 0);
 }
 
 /* MCH side */
@@ -56,7 +56,7 @@ static void init_dmi(int b2step)
 	/* VC1: enable */
 	dmibar_setbits32(DMIVC1RCTL, 1 << 31);
 
-	while ((dmibar_read8(DMIVC1RSTS) & VC1NP) != 0);
+	do {} while ((dmibar_read8(DMIVC1RSTS) & VC1NP) != 0);
 
 	/* additional configuration. */
 	dmibar_setbits32(0x200, 3 << 13);

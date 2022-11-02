@@ -210,7 +210,7 @@ void fast_spi_set_strap_msg_data(uint32_t soft_reset_data)
 	/* Write Soft Reset Data register at SPIBAR0 offset 0xF8[0:15] */
 	write32(spibar + SPIBAR_RESET_DATA, soft_reset_data);
 
-	/* Set Strap Mux Select  set to '1' */
+	/* Set Strap Mux Select set to '1' */
 	ssms = read32(spibar + SPIBAR_RESET_CTRL);
 	ssms |= SPIBAR_RESET_CTRL_SSMC;
 	write32(spibar + SPIBAR_RESET_CTRL, ssms);
@@ -521,7 +521,6 @@ static void fast_spi_fill_ssdt(const struct device *dev)
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
 }
-
 
 static void fast_spi_read_resources(struct device *dev)
 {

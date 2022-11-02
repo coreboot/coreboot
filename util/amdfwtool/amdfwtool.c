@@ -49,6 +49,7 @@
 #include <commonlib/bsd/helpers.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <limits.h>
 #include <openssl/sha.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -85,6 +86,8 @@ enum signature_id {
 	SIG_ID_RSA4096 = 2,
 };
 #define HASH_FILE_SUFFIX ".hash"
+#define EFS_FILE_SUFFIX ".efs"
+#define TMP_FILE_SUFFIX ".tmp"
 
 /*
  * Beginning with Family 15h Models 70h-7F, a.k.a Stoney Ridge, the PSP
@@ -781,7 +784,6 @@ static void integrate_firmwares(context *ctx,
 	ssize_t bytes;
 	uint32_t i;
 
-	ctx->current += sizeof(embedded_firmware);
 	ctx->current = ALIGN_UP(ctx->current, BLOB_ALIGNMENT);
 
 	for (i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
@@ -1702,6 +1704,7 @@ enum {
 	AMDFW_OPT_SOC_NAME,
 	AMDFW_OPT_SIGNED_OUTPUT,
 	AMDFW_OPT_SIGNED_ADDR,
+	AMDFW_OPT_BODY_LOCATION,
 	/* begin after ASCII characters */
 	LONGOPT_SPI_READ_MODE	= 256,
 	LONGOPT_SPI_SPEED	= 257,
@@ -1753,6 +1756,7 @@ static struct option long_options[] = {
 	{"spi-read-mode",    required_argument, 0, LONGOPT_SPI_READ_MODE },
 	{"spi-speed",        required_argument, 0, LONGOPT_SPI_SPEED },
 	{"spi-micron-flag",  required_argument, 0, LONGOPT_SPI_MICRON_FLAG },
+	{"body-location",     required_argument, 0, AMDFW_OPT_BODY_LOCATION },
 	/* other */
 	{"output",           required_argument, 0, AMDFW_OPT_OUTPUT },
 	{"flashsize",        required_argument, 0, AMDFW_OPT_FLASHSIZE },
@@ -1945,6 +1949,54 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 	return 0;
 }
 
+static ssize_t write_efs(char *output, embedded_firmware *amd_romsig)
+{
+	char efs_name[PATH_MAX], efs_tmp_name[PATH_MAX];
+	int ret;
+	int fd;
+	ssize_t bytes = -1;
+
+	/* Create a tmp file and rename it at the end so that make does not get confused
+	   if amdfwtool is killed for some unexpected reasons. */
+	ret = snprintf(efs_tmp_name, sizeof(efs_tmp_name), "%s%s%s",
+			output, EFS_FILE_SUFFIX, TMP_FILE_SUFFIX);
+	if (ret < 0) {
+		fprintf(stderr, "Error %s forming EFS tmp file name: %d\n",
+							strerror(errno), ret);
+		exit(1);
+	} else if ((unsigned int)ret >= sizeof(efs_tmp_name)) {
+		fprintf(stderr, "EFS File name %d  > %zu\n", ret, sizeof(efs_tmp_name));
+		exit(1);
+	}
+
+	fd = open(efs_tmp_name, O_RDWR | O_CREAT | O_TRUNC, 0666);
+	if (fd < 0) {
+		fprintf(stderr, "Error: Opening %s file: %s\n", efs_tmp_name, strerror(errno));
+		exit(1);
+	}
+
+	bytes = write_from_buf_to_file(fd, amd_romsig, sizeof(*amd_romsig));
+	if (bytes != sizeof(*amd_romsig)) {
+		fprintf(stderr, "Error: Writing to file %s failed\n", efs_tmp_name);
+		exit(1);
+	}
+	close(fd);
+
+	/* Rename the tmp file */
+	ret = snprintf(efs_name, sizeof(efs_name), "%s%s", output, EFS_FILE_SUFFIX);
+	if (ret < 0) {
+		fprintf(stderr, "Error %s forming EFS file name: %d\n", strerror(errno), ret);
+		exit(1);
+	}
+
+	if (rename(efs_tmp_name, efs_name)) {
+		fprintf(stderr, "Error: renaming file %s to %s\n", efs_tmp_name, efs_name);
+		exit(1);
+	}
+
+	return bytes;
+}
+
 static int identify_platform(char *soc_name)
 {
 	if (!strcasecmp(soc_name, "Stoneyridge"))
@@ -2016,6 +2068,7 @@ int main(int argc, char **argv)
 	/* Values cleared after each firmware or parameter, regardless if N/A */
 	uint8_t sub = 0, instance = 0;
 	uint32_t dir_location = 0;
+	uint32_t efs_location = 0;
 	bool any_location = 0;
 	uint32_t romsig_offset;
 	uint32_t rom_base_address;
@@ -2203,12 +2256,13 @@ int main(int argc, char **argv)
 			}
 			break;
 		case AMDFW_OPT_LOCATION:
-			dir_location = (uint32_t)strtoul(optarg, &tmp, 16);
+			efs_location = (uint32_t)strtoul(optarg, &tmp, 16);
 			if (*tmp != '\0') {
 				fprintf(stderr, "Error: Directory Location specified"
 					" incorrectly (%s)\n\n", optarg);
 				retval = 1;
 			}
+			dir_location = efs_location;
 			break;
 		case AMDFW_OPT_ANYWHERE:
 			any_location = 1;
@@ -2245,6 +2299,15 @@ int main(int argc, char **argv)
 		case AMDFW_OPT_LIST_DEPEND:
 			list_deps = 1;
 			break;
+		case AMDFW_OPT_BODY_LOCATION:
+			dir_location = (uint32_t)strtoul(optarg, &tmp, 16);
+			if (*tmp != '\0') {
+				fprintf(stderr, "Error: Body Location specified"
+					" incorrectly (%s)\n\n", optarg);
+				retval = 1;
+			}
+			break;
+
 		default:
 			break;
 		}
@@ -2313,19 +2376,42 @@ int main(int argc, char **argv)
 	printf("    AMDFWTOOL  Using ROM size of %dKB\n", ctx.rom_size / 1024);
 
 	rom_base_address = 0xFFFFFFFF - ctx.rom_size + 1;
-	if (dir_location && (dir_location < rom_base_address)) {
-		fprintf(stderr, "Error: Directory location outside of ROM.\n\n");
+	if (efs_location && (efs_location < rom_base_address)) {
+		fprintf(stderr, "Error: EFS/Directory location outside of ROM.\n\n");
+		return 1;
+	}
+
+	if (!efs_location && dir_location) {
+		fprintf(stderr, "Error AMDFW body location specified without EFS location.\n");
+		return 1;
+	}
+
+	/*
+	 * On boards using vboot, there can be more than one instance of EFS + AMDFW Body.
+	 * For the instance in the RO section, there is no need to split EFS + AMDFW body
+	 * currently. This condition is to ensure that it is not accidentally split. Revisit
+	 * this condition if such a need arises in the future.
+	 */
+	if (!any_location && dir_location != efs_location) {
+		fprintf(stderr, "Error: EFS cannot be separate from AMDFW Body.\n");
+		return 1;
+	}
+
+	if (dir_location != efs_location &&
+	    dir_location < ALIGN(efs_location + sizeof(embedded_firmware), BLOB_ALIGNMENT)) {
+		fprintf(stderr, "Error: Insufficient space between EFS and Blobs.\n");
+		fprintf(stderr, "  Require safe spacing of 256 bytes\n");
 		return 1;
 	}
 
 	if (any_location) {
-		if (dir_location & 0x3f) {
-			fprintf(stderr, "Error: Invalid Directory location.\n");
+		if ((dir_location & 0x3f) || (efs_location & 0x3f)) {
+			fprintf(stderr, "Error: Invalid Directory/EFS location.\n");
 			fprintf(stderr, "  Valid locations are 64-byte aligned\n");
 			return 1;
 		}
 	} else {
-		switch (dir_location) {
+		switch (efs_location) {
 		case 0:          /* Fall through */
 		case 0xFFFA0000: /* Fall through */
 		case 0xFFF20000: /* Fall through */
@@ -2348,10 +2434,18 @@ int main(int argc, char **argv)
 	}
 	memset(ctx.rom, 0xFF, ctx.rom_size);
 
-	if (dir_location)
-		romsig_offset = ctx.current = dir_location - rom_base_address;
-	else
-		romsig_offset = ctx.current = AMD_ROMSIG_OFFSET;
+	if (efs_location) {
+		if (efs_location != dir_location) {
+			romsig_offset = efs_location - rom_base_address;
+			ctx.current = dir_location - rom_base_address;
+		} else {
+			romsig_offset = efs_location - rom_base_address;
+			ctx.current = romsig_offset + sizeof(embedded_firmware);
+		}
+	} else {
+		romsig_offset = AMD_ROMSIG_OFFSET;
+		ctx.current = romsig_offset + sizeof(embedded_firmware);
+	}
 
 	amd_romsig = BUFF_OFFSET(ctx, romsig_offset);
 	amd_romsig->signature = EMBEDDED_FW_SIGNATURE;
@@ -2497,8 +2591,10 @@ int main(int argc, char **argv)
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (targetfd >= 0) {
 		ssize_t bytes;
-		bytes = write(targetfd, amd_romsig, ctx.current - romsig_offset);
-		if (bytes != ctx.current - romsig_offset) {
+		uint32_t offset = dir_location ? dir_location - rom_base_address : AMD_ROMSIG_OFFSET;
+
+		bytes = write(targetfd, BUFF_OFFSET(ctx, offset), ctx.current - offset);
+		if (bytes != ctx.current - offset) {
 			fprintf(stderr, "Error: Writing to file %s failed\n", output);
 			retval = 1;
 		}
@@ -2506,6 +2602,16 @@ int main(int argc, char **argv)
 	} else {
 		fprintf(stderr, "Error: could not open file: %s\n", output);
 		retval = 1;
+	}
+
+	if (efs_location != dir_location) {
+		ssize_t bytes;
+
+		bytes = write_efs(output, amd_romsig);
+		if (bytes != sizeof(*amd_romsig)) {
+			fprintf(stderr, "Error: Writing EFS\n");
+			retval = 1;
+		}
 	}
 
 	free(rom);

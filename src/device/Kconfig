@@ -699,7 +699,6 @@ config PCIEXP_HOTPLUG_PREFETCH_MEM
 
 config PCIEXP_HOTPLUG_PREFETCH_MEM_ABOVE_4G
 	bool
-	depends on RESOURCE_ALLOCATOR_V4
 	default y if !PCIEXP_HOTPLUG_PREFETCH_MEM_BELOW_4G
 	default n
 	help
@@ -922,28 +921,9 @@ config I2C_TRANSFER_TIMEOUT_US
 	  maximum time a device could stretch clock bits before the transfer
 	  is aborted and an error returned.
 
-config RESOURCE_ALLOCATOR_V3
-	bool
-	default n
-	help
-	  This config option enables resource allocator v3 which performs
-	  top down allocation of resources in a single MMIO window. This is the
-	  old resource allocator meant to be used only until the broken AMD
-	  chipsets are fixed. DO NOT USE THIS FOR ANY NEW CHIPSETS!
-
-config RESOURCE_ALLOCATOR_V4
-	bool
-	default n if RESOURCE_ALLOCATOR_V3
-	default y if !RESOURCE_ALLOCATOR_V3
-	help
-	  This config option enables resource allocator v4 which uses multiple
-	  ranges for allocating resources. This allows allocation of resources
-	  above 4G boundary as well.
-
 config RESOURCE_ALLOCATION_TOP_DOWN
 	bool "Allocate resources from top down"
 	default n
-	depends on RESOURCE_ALLOCATOR_V4
 	help
 	  Should be the default, but many platforms don't report resources
 	  correctly. Hence, the allocator might cause conflicts.

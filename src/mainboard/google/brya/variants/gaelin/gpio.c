@@ -1,0 +1,185 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
+#include <baseboard/gpio.h>
+#include <baseboard/variants.h>
+#include <commonlib/helpers.h>
+#include <soc/gpio.h>
+
+/* Pad configuration in ramstage */
+static const struct pad_config override_gpio_table[] = {
+	/* A13 : PMC_I2C_SCL ==> GSC_PCH_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
+	/* A17 : DISP_MISCC ==> EN_FCAM_PWR */
+	PAD_CFG_GPO(GPP_A17, 0, DEEP),
+	/* A19 : DDSP_HPD1 ==> NC */
+	PAD_NC(GPP_A19, NONE),
+	/* A20 : DDSP_HPD2 ==> NC */
+	PAD_NC(GPP_A20, NONE),
+	/* A21 : DDPC_CTRCLK ==> NC */
+	PAD_NC(GPP_A21, NONE),
+	/* A22 : DDPC_CTRLDATA ==> NC */
+	PAD_NC(GPP_A22, NONE),
+
+	/* B2  : VRALERT# ==> NC */
+	PAD_NC(GPP_B2, NONE),
+	/* B3  : PROC_GP2 ==> NC */
+	PAD_NC(GPP_B3, NONE),
+	/* B4  : PROC_GP3 ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
+	/* B7  : ISH_12C1_SDA ==> NC */
+	PAD_NC(GPP_B7, NONE),
+	/* B8  : ISH_I2C1_SCL ==> NC */
+	PAD_NC(GPP_B8, NONE),
+
+	/* C6  : SML1CLK ==> USI_RST_L */
+	PAD_CFG_GPO(GPP_C6, 0, DEEP),
+	/* C7  : SML1DATA ==> USI_INT_L */
+	PAD_CFG_GPO(GPP_C7, 0, DEEP),
+
+	/* D0  : ISH_GP0 ==> NC */
+	PAD_NC(GPP_D0, NONE),
+	/* D1  : ISH_GP1 ==> NC */
+	PAD_NC(GPP_D1, NONE),
+	/* D2  : ISH_GP2 ==> NC */
+	PAD_NC(GPP_D2, NONE),
+	/* D3  : ISH_GP3 ==> NC */
+	PAD_NC(GPP_D3, NONE),
+	/* D8  : SRCCLKREQ3# ==> NC */
+	PAD_NC(GPP_D8, NONE),
+	/* D9  : ISH_SPI_CS# ==> NC */
+	PAD_NC(GPP_D9, NONE),
+	/* D11 : ISH_SPI_MISO ==> NC */
+	PAD_NC(GPP_D11, NONE),
+	/* D12 : ISH_SPI_MOSI ==> GPP_D12_STRAP */
+	PAD_NC(GPP_D12, NONE),
+	/* D17 : UART1_RXD ==> NC */
+	PAD_NC(GPP_D17, NONE),
+	/* D18 : UART1_TXD ==> NC */
+	PAD_NC(GPP_D18, NONE),
+
+	/* E4  : SATA_DEVSLP0 ==> USB_A0_RT_RST_ODL */
+	PAD_CFG_GPO(GPP_E4, 1, DEEP),
+	/* E5  : SATA_DEVSLP1 ==> USB_A1_RT_RST_ODL */
+	PAD_CFG_GPO(GPP_E5, 1, DEEP),
+	/* E7  : PROC_GP1 ==> EN_MIC_PWR */
+	PAD_CFG_GPO(GPP_E7, 0, DEEP),
+	/* E14 : DDSP_HPDA ==> EDP_HPD */
+	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
+	/* E15 : RSVD_TP ==> PCH_WP_OD */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
+	/* E18 : DDP1_CTRLCLK ==> NC */
+	PAD_NC(GPP_E18, NONE),
+	/* E20 : DDP2_CTRLCLK ==> NC */
+	PAD_NC(GPP_E20, NONE),
+
+	/* F11 : THC1_SPI2_CLK ==> NC */
+	PAD_NC(GPP_F11, NONE),
+	/* F12 : GSXDOUT ==> NC */
+	PAD_NC(GPP_F12, NONE),
+	/* F13 : GSXDOUT ==> NC */
+	PAD_NC(GPP_F13, NONE),
+	/* F14 : GSXDIN ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_F14, 1, DEEP),
+	/* F15 : GSXSRESET# ==> NC */
+	PAD_NC(GPP_F15, NONE),
+	/* F16 : GSXCLK ==> NC */
+	PAD_NC(GPP_F16, NONE),
+	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
+
+	/* H6  : I2C1_SDA ==> PCH_I2C_TPM_SDA */
+	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
+	/* H7  : I2C1_SCL ==> PCH_I2C_TPM_SCL */
+	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
+	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
+	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
+	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
+	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+	/* H12 : I2C7_SDA ==> NC */
+	PAD_NC(GPP_H12, NONE),
+	/* H13 : I2C7_SCL ==> NC */
+	PAD_NC(GPP_H13, NONE),
+
+	/* R6 : I2S2_TXD ==> NC */
+	PAD_NC(GPP_R6, NONE),
+	/* R7 : I2S2_RXD ==> NC */
+	PAD_NC(GPP_R7, NONE),
+
+	/* S0 : SNDW0_CLK ==> I2S1_SPKR_SCLK_R */
+	PAD_CFG_NF(GPP_S0, NONE, DEEP, NF4),
+	/* S1 : SNDW0_DATA ==> I2S1_SPKR_SFRM_R */
+	PAD_CFG_NF(GPP_S1, NONE, DEEP, NF4),
+	/* S2 : SNDW1_CLK ==> I2S1_PCH_TX_SPKR_RX_R */
+	PAD_CFG_NF(GPP_S2, NONE, DEEP, NF4),
+	/* S6 : SNDW3_CLK ==> DMIC_CLK1_R */
+	PAD_CFG_NF(GPP_S6, NONE, DEEP, NF2),
+	/* S7 : SNDW3_DATA ==> DMIC_DATA1_R */
+	PAD_CFG_NF(GPP_S7, NONE, DEEP, NF2),
+};
+
+/* Early pad configuration in bootblock */
+static const struct pad_config early_gpio_table[] = {
+	/* A13 : PMC_I2C_SCL ==> GSC_PCH_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
+	/* B4  : PROC_GP3 ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 0, DEEP),
+	/* E15 : RSVD_TP ==> PCH_WP_OD */
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
+	/* F14 : GSXDIN ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_F14, 1, DEEP),
+	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
+	/* H6  : I2C1_SDA ==> PCH_I2C_TPM_SDA */
+	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
+	/* H7  : I2C1_SCL ==> PCH_I2C_TPM_SCL */
+	PAD_CFG_NF(GPP_H7, NONE, DEEP, NF1),
+	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
+	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
+	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
+	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+
+	/* CPU PCIe VGPIO for PEG60 */
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_48, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_49, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_50, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_51, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_52, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_53, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_54, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_55, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_56, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_57, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_58, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_59, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_60, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_61, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_62, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_63, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_76, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_77, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_78, NONE, PLTRST, NF1),
+	PAD_CFG_NF_VWEN(GPP_vGPIO_PCIE_79, NONE, PLTRST, NF1),
+};
+
+static const struct pad_config romstage_gpio_table[] = {
+	/* B4  : PROC_GP3 ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
+};
+
+const struct pad_config *variant_gpio_override_table(size_t *num)
+{
+	*num = ARRAY_SIZE(override_gpio_table);
+	return override_gpio_table;
+}
+
+const struct pad_config *variant_early_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(early_gpio_table);
+	return early_gpio_table;
+}
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
+}

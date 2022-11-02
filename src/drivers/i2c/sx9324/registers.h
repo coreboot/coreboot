@@ -4,6 +4,10 @@
 #error "define REGISTER(NAME) before including this file"
 #endif
 
+#if !CONFIG(DRIVERS_I2C_SX9324_SUPPORT_LEGACY_LINUX_DRIVER)
+#error "This file is only to support the legacy sx932x linux driver"
+#endif
+
 REGISTER(reg_adv_ctrl0);
 REGISTER(reg_adv_ctrl1);
 REGISTER(reg_adv_ctrl2);

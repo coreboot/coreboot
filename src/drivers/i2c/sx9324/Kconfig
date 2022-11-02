@@ -4,3 +4,19 @@ config DRIVERS_I2C_SX9324
 	depends on HAVE_ACPI_TABLES
 	help
 	  Board has a Semtech SX9324 proximity sensor.
+
+config DRIVERS_I2C_SX9324_SUPPORT_LEGACY_LINUX_DRIVER
+	bool
+	default n
+	depends on DRIVERS_I2C_SX9324
+	help
+	  Board may use the legacy sx932x linux driver.
+	  This option is mainly to ease migrating from the legacy driver to the
+	  Linux one and should be deleted once all variants finish migration.
+	  This driver never reached upstream Linux and is only available in
+	  ChromeOS kernel fork of 4.4 and 5.4. Linux later accepted a different
+	  implementation named SX9324 and has been available since 5.4.
+	  Ideally all variants should adopt the new driver; however, during the
+	  transition phase, coreboot must support both drivers. By selecting this
+	  option, coreboot's SX9324 driver will specify all properties to work with
+	  both Linux kernel drivers.

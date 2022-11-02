@@ -56,7 +56,23 @@ static void i2c_sx9324_fill_ssdt(const struct device *dev)
 
 	/* DSD */
 	dsd = acpi_dp_new_table("_DSD");
+	acpi_dp_add_integer_array(dsd, "semtech,ph0-pin", config->ph0_pin, ARRAY_SIZE(config->ph0_pin));
+	acpi_dp_add_integer_array(dsd, "semtech,ph1-pin", config->ph1_pin, ARRAY_SIZE(config->ph1_pin));
+	acpi_dp_add_integer_array(dsd, "semtech,ph2-pin", config->ph2_pin, ARRAY_SIZE(config->ph2_pin));
+	acpi_dp_add_integer_array(dsd, "semtech,ph3-pin", config->ph3_pin, ARRAY_SIZE(config->ph3_pin));
+	acpi_dp_add_integer(dsd, "semtech,ph01-resolution", config->ph01_resolution);
+	acpi_dp_add_integer(dsd, "semtech,ph23-resolution", config->ph23_resolution);
+	acpi_dp_add_integer(dsd, "semtech,startup-sensor", config->startup_sensor);
+	acpi_dp_add_integer(dsd, "semtech,ph01-proxraw-strength", config->ph01_proxraw_strength);
+	acpi_dp_add_integer(dsd, "semtech,ph23-proxraw-strength", config->ph23_proxraw_strength);
+	acpi_dp_add_integer(dsd, "semtech,avg-pos-strength", config->avg_pos_strength);
+	acpi_dp_add_integer(dsd, "semtech,input-precharge-resistor-ohms", config->input_precharge_resistor_ohms);
+	acpi_dp_add_integer(dsd, "semtech,input-analog-gain", config->input_analog_gain);
+	acpi_dp_add_string(dsd, "semtech,cs-idle-sleep", config->cs_idle_sleep);
+	acpi_dp_add_string(dsd, "semtech,int-comp-resistor", config->int_comp_resistor);
+#if CONFIG(DRIVERS_I2C_SX9324_SUPPORT_LEGACY_LINUX_DRIVER)
 #include "registers.h"
+#endif
 	acpi_dp_write(dsd);
 
 	acpigen_pop_len(); /* Device */

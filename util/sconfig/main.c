@@ -908,6 +908,10 @@ static struct device *new_device_with_path(struct bus *parent,
 	case GPIO:
 		new_d->path = ".type=DEVICE_PATH_GPIO,{.gpio={ .id = 0x%x }}";
 		break;
+
+	case MDIO:
+		new_d->path = ".type=DEVICE_PATH_MDIO,{.mdio={ .addr = 0x%x }}";
+		break;
 	}
 
 	return new_d;

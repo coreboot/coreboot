@@ -135,6 +135,9 @@ u32 dev_path_encode(const struct device *dev)
 	case DEVICE_PATH_GPIO:
 		ret |= dev->path.gpio.id;
 		break;
+	case DEVICE_PATH_MDIO:
+		ret |= dev->path.mdio.addr;
+		break;
 	case DEVICE_PATH_NONE:
 	case DEVICE_PATH_MMIO:  /* don't care */
 	default:
@@ -222,6 +225,9 @@ const char *dev_path(const struct device *dev)
 			break;
 		case DEVICE_PATH_GPIO:
 			snprintf(buffer, sizeof(buffer), "GPIO: %d", dev->path.gpio.id);
+			break;
+		case DEVICE_PATH_MDIO:
+			snprintf(buffer, sizeof(buffer), "MDIO: %02x", dev->path.mdio.addr);
 			break;
 		default:
 			printk(BIOS_ERR, "Unknown device path type: %d\n",

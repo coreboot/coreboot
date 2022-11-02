@@ -26,12 +26,12 @@ host up to 4 Delta Lake servers (blades) in one sled.
 
 The Yosemite-V3 system is in mass production. Meta, Intel and partners
 jointly develop Open System Firmware (OSF) solution on Delta Lake as an alternative
-solution. The OSF solution is based on FSP/coreboot/LinuxBoot stack. The
-OSF solution reached production quality for some use cases in July, 2021.
+solution. The OSF solution reached production quality for some use cases
+in July, 2021.
 
 ## How to build
 
-OSF code base is public at
+OSF code base is publicly available at
 https://github.com/opencomputeproject/OpenSystemFirmware
 
 Run following commands to build Delta Lake OSF image from scratch:
@@ -42,19 +42,21 @@ The Delta Lake OSF code base leverages [osf-builder] to sync down coreboot,
 Linux kernel and u-root code from their upstream repo, and sync down needed
 binary blobs. [osf-builder] also provides the top level build system.
 
-Delta Lake server OSF solution requires following binary blobs:
-- FSP blob: The blob (Intel Cooper Lake Scalable Processor Firmware Support Package)
-  can be downloaded from https://github.com/intel/FSP/tree/master/CedarIslandFspBinPkg.
-- Microcode: Available through github.com/intel/Intel-Linux-Processor-Microcode-Data-Files.
-  coreboot.org mirrors this repo and by default the correct binary is included.
-- ME binary: Ignition binary can be downloaded from
+Besides coreboot, the Delta Lake OSF solution includes following components:
+- FSP blob: The blobs (Intel Cooper Lake Scalable Processor Firmware Support Package)
+  is downloaded from https://github.com/intel/FSP/tree/master/CedarIslandFspBinPkg.
+- Microcode: downloaded from github.com/intel/Intel-Linux-Processor-Microcode-Data-Files.
+- ME ignition binary: downloaded from
 	https://github.com/tianocore/edk2-non-osi/tree/master/Silicon/Intel/PurleySiliconBinPkg/MeFirmware
 - ACM binaries: only required for CBnT enablement. Available under NDA with Intel.
 - Payload: LinuxBoot is necessary when LinuxBoot is used as the coreboot payload.
-  U-root as initramfs, is used in the joint development. It can be built
+  U-root as initramfs, is used in the joint development. It is built
   following [All about u-root].
 
-## Flashing coreboot
+The Delta Lake OSF solution is updated periodically to newer versions of
+upstream coreboot code base and other components.
+
+## How to verify Delta Lake OSF image
 
 To do in-band FW image update, use [flashrom]:
     flashrom -p internal:ich_spi_mode=hwseq -c "Opaque flash chip" --ifd \
@@ -69,6 +71,21 @@ To power off/on the host:
 
 To connect to console through SOL (Serial Over Lan):
     sol-util slotx
+
+## How to work on coreboot for Delta Lake
+After the OSF image for Delta Lake is built and verified, under
+OpenSystemFirmware/Wiwynn/deltalake directory:
+    cd src/osf-builder/projects/craterlake/coreboot
+
+Run "git remote -v" to confirm the origin is from coreboot upstream repo.
+
+Run "git branch -v" to know the confirmed working coreboot commit ID for the
+Delta Lake OSF solution.
+
+Fetch down the tip of coreboot upstream repo, run "make" to build a new OSF
+image for Delta Lake, verify that it works.
+
+Now you are in a familiar coreboot environment, happy coding!
 
 ## Firmware configurations
 [ChromeOS VPD] is used to store most of the firmware configurations.

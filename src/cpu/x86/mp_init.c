@@ -375,11 +375,9 @@ static int allocate_cpu_devices(struct bus *cpu_bus, struct mp_params *p)
 		/* Build the CPU device path */
 		cpu_path.type = DEVICE_PATH_APIC;
 
-		/*
-		 * Set a bogus apic_id.
-		 * AP will set its own APIC id in the ap_init() path above.
-		 */
-		cpu_path.apic.apic_id = UINT32_MAX;
+		/* Assuming linear APIC space allocation. AP will set its own
+		   APIC id in the ap_init() path above. */
+		cpu_path.apic.apic_id = info->cpu->path.apic.apic_id + i;
 
 		/* Allocate the new CPU device structure */
 		new = alloc_find_dev(cpu_bus, &cpu_path);

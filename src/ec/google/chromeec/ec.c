@@ -948,7 +948,7 @@ uint32_t google_chromeec_get_sku_id(void)
 	return resp.sku_id;
 }
 
-static uint16_t google_chromeec_get_uptime_info(
+static bool google_chromeec_get_uptime_info(
 	struct ec_response_uptime_info *resp)
 {
 	struct chromeec_command cmd = {
@@ -961,8 +961,7 @@ static uint16_t google_chromeec_get_uptime_info(
 		.cmd_dev_index = 0,
 	};
 
-	google_chromeec_command(&cmd);
-	return cmd.cmd_code;
+	return google_chromeec_command(&cmd) == 0;
 }
 
 bool google_chromeec_get_ap_watchdog_flag(void)
@@ -970,7 +969,7 @@ bool google_chromeec_get_ap_watchdog_flag(void)
 	int i;
 	struct ec_response_uptime_info resp;
 
-	if (google_chromeec_get_uptime_info(&resp))
+	if (!google_chromeec_get_uptime_info(&resp))
 		return false;
 
 	if (resp.ec_reset_flags & EC_RESET_FLAG_AP_WATCHDOG)
@@ -1297,7 +1296,7 @@ static void google_chromeec_log_uptimeinfo(void)
 	struct ec_response_uptime_info cmd_resp;
 	int i, flag, flag_count;
 
-	if (google_chromeec_get_uptime_info(&cmd_resp)) {
+	if (!google_chromeec_get_uptime_info(&cmd_resp)) {
 		/*
 		 * Deliberately say nothing for EC's that don't support this
 		 * command

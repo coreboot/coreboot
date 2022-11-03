@@ -162,9 +162,10 @@ I2C audio devices should also work without issue.
 Touchscreens can use this feature as well, but special care is needed to
 implement the proper power sequencing for the device to be detected. Generally,
 this means driving the enable GPIO high and holding the reset GPIO low in early
-GPIO init (bootblock/romstage), then releasing reset in ramstage. While no
-boards in the tree currently implement this, it has been used in downstream
-forks without issue for some time now.
+GPIO init (bootblock/romstage), then releasing reset in ramstage. The first
+mainboards in the tree to implement this are google/skyrim and google/guybrush.
+This feature has also been used in downstream forks without issue for some time
+now on several other boards.
 
 ### wake
 

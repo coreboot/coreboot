@@ -286,7 +286,7 @@ static const struct soc_amd_gpio pcie_gpio_table[] = {
 	PAD_NFO(GPIO_26, PCIE_RST_L, HIGH),
 };
 
-const struct soc_amd_gpio *__weak variant_pcie_gpio_table(size_t *size)
+const struct soc_amd_gpio *baseboard_pcie_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(pcie_gpio_table);
 	return pcie_gpio_table;

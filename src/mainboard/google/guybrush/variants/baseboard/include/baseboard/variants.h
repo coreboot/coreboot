@@ -30,7 +30,7 @@ const struct soc_amd_gpio *variant_early_gpio_table(size_t *size);
 const struct soc_amd_gpio *variant_bootblock_gpio_table(size_t *size);
 
 /* This function provides GPIO settings before PCIe enumeration. */
-const struct soc_amd_gpio *variant_pcie_gpio_table(size_t *size);
+const struct soc_amd_gpio *baseboard_pcie_gpio_table(size_t *size);
 
 /* This function provides GPIO settings for eSPI bus. */
 const struct soc_amd_gpio *variant_espi_gpio_table(size_t *size);

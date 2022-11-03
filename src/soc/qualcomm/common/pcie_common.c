@@ -414,7 +414,7 @@ static enum cb_err qcom_dw_pcie_enable(struct qcom_pcie_cntlr_t *pcie)
  * Fill coreboot table with PCIe info.
  * It allows exporting this info to payloads.
  */
-enum cb_err lb_fill_pcie(struct lb_pcie *pcie)
+enum cb_err fill_lb_pcie(struct lb_pcie *pcie)
 {
 	pcie_cntlr_cfg_t *pcierc = qcom_pcie_cfg.cntlr_cfg;
 	pcie->ctrl_base = (uintptr_t)pcierc->dbi_base;

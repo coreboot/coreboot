@@ -33,7 +33,7 @@
 void lb_string_platform_blob_version(struct lb_header *header);
 #endif
 
-__weak enum cb_err lb_fill_pcie(struct lb_pcie *pcie)
+__weak enum cb_err fill_lb_pcie(struct lb_pcie *pcie)
 {
 	return CB_ERR_NOT_IMPLEMENTED;
 }
@@ -129,7 +129,7 @@ static void lb_pcie(struct lb_header *header)
 {
 	struct lb_pcie pcie = { .tag = LB_TAG_PCIE, .size = sizeof(pcie) };
 
-	if (lb_fill_pcie(&pcie) != CB_SUCCESS)
+	if (fill_lb_pcie(&pcie) != CB_SUCCESS)
 		return;
 
 	memcpy(lb_new_record(header), &pcie, sizeof(pcie));

@@ -211,7 +211,7 @@ void mtk_pcie_domain_set_resources(struct device *dev)
 	pci_domain_set_resources(dev);
 }
 
-enum cb_err lb_fill_pcie(struct lb_pcie *pcie)
+enum cb_err fill_lb_pcie(struct lb_pcie *pcie)
 {
 	if (!pci_root_bus())
 		return CB_ERR;

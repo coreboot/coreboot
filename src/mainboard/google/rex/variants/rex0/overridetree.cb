@@ -307,7 +307,7 @@ chip soc/intel/meteorlake
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 10 on
-					probe UFC UFC_MIPI
+					probe WFC WFC_MIPI
 				end
 			end
 			chip drivers/intel/mipi_camera
@@ -320,7 +320,7 @@ chip soc/intel/meteorlake
 				register "vcm_compat" = ""dongwoon,dw9714""
 
 				device i2c 0C on
-					probe UFC UFC_MIPI
+					probe WFC WFC_MIPI
 				end
 			end
 			chip drivers/intel/mipi_camera
@@ -338,7 +338,7 @@ chip soc/intel/meteorlake
 				register "nvm_width" = "0x0E"
 
 				device i2c 50 on
-					probe UFC UFC_MIPI
+					probe WFC WFC_MIPI
 				end
 			end
 		end #I2C0
@@ -414,7 +414,7 @@ chip soc/intel/meteorlake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 36 on
-					probe WFC WFC_MIPI
+					probe UFC UFC_MIPI
 				end
 			end
 			chip drivers/intel/mipi_camera
@@ -432,7 +432,7 @@ chip soc/intel/meteorlake
 				register "nvm_compat" = ""atmel,24c64""
 
 				device i2c 50 on
-					probe WFC WFC_MIPI
+					probe UFC UFC_MIPI
 				end
 			end
 		end #I2C5

@@ -4,31 +4,26 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
+#include <soc/pci_devs.h>
 
 static const char *data_fabric_acpi_name(const struct device *dev)
 {
-	switch (dev->device) {
-	case PCI_DID_AMD_FAM17H_MODELA0H_DF0:
-		return "DFD0";
-	case PCI_DID_AMD_FAM17H_MODELA0H_DF1:
-		return "DFD1";
-	case PCI_DID_AMD_FAM17H_MODELA0H_DF2:
-		return "DFD2";
-	case PCI_DID_AMD_FAM17H_MODELA0H_DF3:
-		return "DFD3";
-	case PCI_DID_AMD_FAM17H_MODELA0H_DF4:
-		return "DFD4";
-	case PCI_DID_AMD_FAM17H_MODELA0H_DF5:
-		return "DFD5";
-	case PCI_DID_AMD_FAM17H_MODELA0H_DF6:
-		return "DFD6";
-	case PCI_DID_AMD_FAM17H_MODELA0H_DF7:
-		return "DFD7";
-	default:
-		printk(BIOS_ERR, "%s: Unhandled device id 0x%x\n", __func__, dev->device);
-	}
+	const char *df_acpi_names[8] = {
+		"DFD0",
+		"DFD1",
+		"DFD2",
+		"DFD3",
+		"DFD4",
+		"DFD5",
+		"DFD6",
+		"DFD7"
+	};
 
+	if (dev->path.type == DEVICE_PATH_PCI &&
+	    PCI_SLOT(dev->path.pci.devfn) == DF_DEV)
+		return df_acpi_names[PCI_FUNC(dev->path.pci.devfn)];
+
+	printk(BIOS_ERR, "%s: Unhandled device id 0x%x\n", __func__, dev->device);
 	return NULL;
 }
 

@@ -87,10 +87,10 @@ int google_chromeec_kbbacklight(int percent)
 		.cmd_dev_index = 0,
 	};
 
-	google_chromeec_command(&cmd);
-	printk(BIOS_DEBUG, "Google Chrome set keyboard backlight: status (%x)\n",
-	       cmd.cmd_code);
-	return cmd.cmd_code;
+	if (google_chromeec_command(&cmd) != 0)
+		return -1;
+
+	return 0;
 }
 
 void google_chromeec_post(uint8_t postcode)

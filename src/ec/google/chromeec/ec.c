@@ -1378,7 +1378,7 @@ enum ec_image google_chromeec_get_current_image(void)
 
 int google_chromeec_get_num_pd_ports(unsigned int *num_ports)
 {
-	struct ec_response_charge_port_count resp = {};
+	struct ec_response_usb_pd_ports resp = {};
 	struct chromeec_command cmd = {
 		.cmd_code = EC_CMD_USB_PD_PORTS,
 		.cmd_version = 0,
@@ -1393,7 +1393,7 @@ int google_chromeec_get_num_pd_ports(unsigned int *num_ports)
 	if (rv)
 		return rv;
 
-	*num_ports = resp.port_count;
+	*num_ports = resp.num_ports;
 	return 0;
 }
 

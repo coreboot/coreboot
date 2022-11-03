@@ -97,14 +97,14 @@ chip soc/amd/cezanne
 		device pci 14.0 alias smbus on ops amd_smbus_ops end # primary FCH function
 		device pci 14.3 alias lpc_bridge on ops amd_lpc_ops end
 
-		device pci 18.0 alias data_fabric_0 on ops cezanne_data_fabric_ops end
-		device pci 18.1 alias data_fabric_1 on ops cezanne_data_fabric_ops end
-		device pci 18.2 alias data_fabric_2 on ops cezanne_data_fabric_ops end
-		device pci 18.3 alias data_fabric_3 on ops cezanne_data_fabric_ops end
-		device pci 18.4 alias data_fabric_4 on ops cezanne_data_fabric_ops end
-		device pci 18.5 alias data_fabric_5 on ops cezanne_data_fabric_ops end
-		device pci 18.6 alias data_fabric_6 on ops cezanne_data_fabric_ops end
-		device pci 18.7 alias data_fabric_7 on ops cezanne_data_fabric_ops end
+		device pci 18.0 alias data_fabric_0 on ops amd_data_fabric_ops end
+		device pci 18.1 alias data_fabric_1 on ops amd_data_fabric_ops end
+		device pci 18.2 alias data_fabric_2 on ops amd_data_fabric_ops end
+		device pci 18.3 alias data_fabric_3 on ops amd_data_fabric_ops end
+		device pci 18.4 alias data_fabric_4 on ops amd_data_fabric_ops end
+		device pci 18.5 alias data_fabric_5 on ops amd_data_fabric_ops end
+		device pci 18.6 alias data_fabric_6 on ops amd_data_fabric_ops end
+		device pci 18.7 alias data_fabric_7 on ops amd_data_fabric_ops end
 	end
 
 	device mmio 0xfedc2000 alias i2c_0 off ops soc_amd_i2c_mmio_ops end

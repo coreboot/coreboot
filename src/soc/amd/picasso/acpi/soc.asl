@@ -8,6 +8,9 @@ Device(PCI0) {
 	#include "sb_pci0_fch.asl"
 }
 
+/* PCI IRQ mapping for the Southbridge */
+#include "pci_int_defs.asl"
+
 /* Describe PCI INT[A-H] for the Southbridge */
 #include <soc/amd/common/acpi/pci_int.asl>
 

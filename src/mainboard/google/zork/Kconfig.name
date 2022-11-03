@@ -7,6 +7,7 @@ config BOARD_GOOGLE_DALBOZ
 config BOARD_GOOGLE_VILBOZ
 	bool "->  Vilboz (Lenovo 100e/300e Gen3 AMD)"
 	select BOARD_GOOGLE_BASEBOARD_DALBOZ
+	select DRIVERS_I2C_SX9324
 
 config BOARD_GOOGLE_EZKINIL
 	bool "->  Ezkinil (Acer Chromebook Spin 514)"

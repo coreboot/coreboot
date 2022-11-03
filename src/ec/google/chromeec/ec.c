@@ -1356,10 +1356,11 @@ enum ec_image google_chromeec_get_current_image(void)
 		.cmd_size_out = sizeof(resp),
 		.cmd_dev_index = 0,
 	};
+	int rv;
 
-	google_chromeec_command(&cmd);
+	rv = google_chromeec_command(&cmd);
 
-	if (cmd.cmd_code) {
+	if (rv != 0) {
 		printk(BIOS_DEBUG,
 			"Google Chrome EC: version command failed!\n");
 	} else {

@@ -143,9 +143,29 @@ static void pcie_rtd3_acpi_method_srck(unsigned int pcie_rp,
 static void
 pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 			 const struct soc_intel_common_block_pcie_rtd3_config *config,
-			 enum pcie_rp_type rp_type)
+			 enum pcie_rp_type rp_type,
+			 const struct device *dev)
 {
+	const struct device *parent = dev->bus->dev;
+
 	acpigen_write_method_serialized("_ON", 0);
+
+	/* The _STA returns current power status of device, so we can skip _ON
+	 * if _STA returns 1
+	 * Example:
+	 * Local0 = \_SB.PCI0.RP01.RTD3._STA ()
+	 * If ((Local0 == One))
+	 * {
+	 *   Return (One)
+	 * }
+	 */
+	acpigen_write_store();
+	acpigen_emit_namestring(acpi_device_path_join(parent, "RTD3._STA"));
+	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_if_lequal_op_int(LOCAL0_OP, ONE_OP);
+	acpigen_write_return_op(ONE_OP);
+	acpigen_write_if_end();
+
 
 	/* When this feature is enabled, ONSK indicates if the previous _OFF was
 	 * skipped. If so, since the device was not in Off state, and the current
@@ -448,7 +468,7 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 	}
 
 	pcie_rtd3_acpi_method_status(config);
-	pcie_rtd3_acpi_method_on(pcie_rp, config, rp_type);
+	pcie_rtd3_acpi_method_on(pcie_rp, config, rp_type, dev);
 	pcie_rtd3_acpi_method_off(pcie_rp, config, rp_type);
 	acpigen_pop_len(); /* PowerResource */
 

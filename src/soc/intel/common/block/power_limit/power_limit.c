@@ -72,7 +72,7 @@ static const u8 power_limit_time_msr_to_sec[] = {
 void set_power_limits(u8 power_limit_1_time,
 		struct soc_power_limits_config *conf)
 {
-	msr_t msr = rdmsr(MSR_PLATFORM_INFO);
+	msr_t msr;
 	msr_t limit;
 	unsigned int power_unit;
 	unsigned int tdp, min_power, max_power, max_time, tdp_pl2, tdp_pl1;
@@ -96,9 +96,9 @@ void set_power_limits(u8 power_limit_1_time,
 	}
 
 	if (power_limit_1_time >= ARRAY_SIZE(power_limit_time_sec_to_msr))
-		power_limit_1_time =
-			ARRAY_SIZE(power_limit_time_sec_to_msr) - 1;
+		power_limit_1_time = ARRAY_SIZE(power_limit_time_sec_to_msr) - 1;
 
+	msr = rdmsr(MSR_PLATFORM_INFO);
 	if (!(msr.lo & PLATFORM_INFO_SET_TDP))
 		return;
 

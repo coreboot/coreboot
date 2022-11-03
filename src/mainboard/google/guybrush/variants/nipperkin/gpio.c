@@ -47,7 +47,7 @@ static const struct soc_amd_gpio override_early_gpio_table[] = {
 	PAD_GPO(GPIO_31, LOW),
 };
 
-static const struct soc_amd_gpio override_pcie_gpio_table[] = {
+static const struct soc_amd_gpio override_romstage_gpio_table[] = {
 	PAD_NC(GPIO_18),
 };
 
@@ -91,10 +91,10 @@ const struct soc_amd_gpio *variant_early_override_gpio_table(size_t *size)
 	return override_early_gpio_table;
 }
 
-const struct soc_amd_gpio *variant_pcie_override_gpio_table(size_t *size)
+const struct soc_amd_gpio *variant_romstage_override_gpio_table(size_t *size)
 {
-	*size = ARRAY_SIZE(override_pcie_gpio_table);
-	return override_pcie_gpio_table;
+	*size = ARRAY_SIZE(override_romstage_gpio_table);
+	return override_romstage_gpio_table;
 }
 
 const struct soc_amd_gpio *variant_tpm_gpio_table(size_t *size)

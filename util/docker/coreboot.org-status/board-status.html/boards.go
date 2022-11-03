@@ -536,6 +536,14 @@ func collectBoards(dirs <-chan NamedFS) {
 			bi["Vendor cooperation score"] = "—"
 		}
 
+		venboard := vendor + string(filepath.Separator) + board
+		if bi["Clone of"] != "" {
+			venboard = bi["Clone of"]
+			venboard = strings.ReplaceAll(venboard, "/", string(filepath.Separator))
+			newpath := filepath.Join(dir.Name, "..", "..", venboard)
+			dir.Name = newpath
+		}
+
 		north, south, superio, cpu, partnum, err := readKconfig(dir)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "'%s' is not a mainboard directory: %v\n", dir.Name, err)

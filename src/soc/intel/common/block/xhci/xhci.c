@@ -27,7 +27,7 @@ static uint8_t *xhci_mem_base(void)
 	if (mem_base == 0 || mem_base == 0xffffffff)
 		return 0;
 
-	return (uint8_t *)(mem_base & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK);
+	return (uint8_t *)(uintptr_t)(mem_base & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK);
 }
 
 void xhci_host_reset(void)

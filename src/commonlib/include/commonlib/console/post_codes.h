@@ -287,6 +287,27 @@
 #define POST_FSP_SILICON_EXIT			0x99
 
 /**
+ * \brief Entry to write_pirq_table
+ *
+ * coreboot entered write_pirq_table
+ */
+#define POST_X86_WRITE_PIRQ_TABLE		0x9a
+
+/**
+ * \brief Entry to write_mptable
+ *
+ * coreboot entered write_mptable
+ */
+#define POST_X86_WRITE_MPTABLE			0x9b
+
+/**
+ * \brief Entry to write_acpi_table
+ *
+ * coreboot entered write_acpi_table
+ */
+#define POST_X86_WRITE_ACPITABLE		0x9c
+
+/**
  * \brief Before calling FSP Multiphase SiliconInit
  *
  * Going to call into FSP binary for Multiple phase SI Init

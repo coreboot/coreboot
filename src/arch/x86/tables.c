@@ -17,7 +17,7 @@ static unsigned long write_pirq_table(unsigned long rom_table_end)
 	unsigned long high_table_pointer;
 
 #define MAX_PIRQ_TABLE_SIZE (4 * 1024)
-	post_code(0x9a);
+	post_code(POST_X86_WRITE_PIRQ_TABLE);
 
 	/* This table must be between 0x0f0000 and 0x100000 */
 	rom_table_end = write_pirq_routing_table(rom_table_end);
@@ -49,7 +49,7 @@ static unsigned long write_mptable(unsigned long rom_table_end)
 	unsigned long high_table_pointer;
 
 #define MAX_MP_TABLE_SIZE (4 * 1024)
-	post_code(0x9b);
+	post_code(POST_X86_WRITE_MPTABLE);
 
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
 	rom_table_end = write_smp_table(rom_table_end);
@@ -78,7 +78,7 @@ static unsigned long write_acpi_table(unsigned long rom_table_end)
 	unsigned long high_table_pointer;
 	const size_t max_acpi_size = CONFIG_MAX_ACPI_TABLE_SIZE_KB * KiB;
 
-	post_code(0x9c);
+	post_code(POST_X86_WRITE_ACPITABLE);
 
 	/* Write ACPI tables to F segment and high tables area */
 

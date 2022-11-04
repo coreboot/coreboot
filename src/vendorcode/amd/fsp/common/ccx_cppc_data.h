@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef COMMOM_FSP_CCX_CPPC_DATA_H
+#ifndef COMMON_FSP_CCX_CPPC_DATA_H
 #define COMMON_FSP_CCX_CPPC_DATA_H
 
 #include <types.h>

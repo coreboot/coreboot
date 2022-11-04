@@ -71,7 +71,8 @@ static void soc_pmc_read_resources(struct device *dev)
 {
 	struct resource *res;
 
-	mmio_resource_kb(dev, 0, PCH_PWRM_BASE_ADDRESS / KiB, PCH_PWRM_BASE_SIZE / KiB);
+	mmio_resource_kb(dev, PWRMBASE, PCH_PWRM_BASE_ADDRESS / KiB,
+			PCH_PWRM_BASE_SIZE / KiB);
 
 	res = new_resource(dev, 1);
 	res->base = (resource_t)ACPI_BASE_ADDRESS;

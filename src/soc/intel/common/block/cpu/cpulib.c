@@ -15,23 +15,6 @@
 #include <soc/soc_chip.h>
 #include <types.h>
 
-#define CPUID_EXTENDED_CPU_TOPOLOGY 0x0b
-#define LEVEL_TYPE_CORE 2
-#define LEVEL_TYPE_SMT 1
-
-#define CPUID_CPU_TOPOLOGY(x, val) \
-	(((val) >> CPUID_CPU_TOPOLOGY_##x##_SHIFT) & CPUID_CPU_TOPOLOGY_##x##_MASK)
-
-#define CPUID_CPU_TOPOLOGY_LEVEL_TYPE_SHIFT 0x8
-#define CPUID_CPU_TOPOLOGY_LEVEL_TYPE_MASK 0xff
-#define CPUID_CPU_TOPOLOGY_LEVEL(res) CPUID_CPU_TOPOLOGY(LEVEL_TYPE, (res).ecx)
-
-#define CPUID_CPU_TOPOLOGY_LEVEL_BITS_SHIFT 0x0
-#define CPUID_CPU_TOPOLOGY_LEVEL_BITS_MASK 0x1f
-#define CPUID_CPU_TOPOLOGY_THREAD_BITS(res) CPUID_CPU_TOPOLOGY(LEVEL_BITS, (res).eax)
-#define CPUID_CPU_TOPOLOGY_CORE_BITS(res, threadbits) \
-	((CPUID_CPU_TOPOLOGY(LEVEL_BITS, (res).eax)) - threadbits)
-
 #define CPUID_PROCESSOR_FREQUENCY		0X16
 #define CPUID_HYBRID_INFORMATION		0x1a
 
@@ -479,52 +462,6 @@ int get_valid_prmrr_size(void)
 	valid_size *= MiB;
 
 	return valid_size;
-}
-
-/* Get number of bits for core ID and SMT ID */
-static void get_cpu_core_thread_bits(uint32_t *core_bits, uint32_t *thread_bits)
-{
-	struct cpuid_result cpuid_regs;
-	int level_num, cpu_id_op = 0;
-	const uint32_t cpuid_max_func = cpuid_get_max_func();
-
-	/* Assert if extended CPU topology not supported */
-	assert(cpuid_max_func >= CPUID_EXTENDED_CPU_TOPOLOGY);
-
-	cpu_id_op = CPUID_EXTENDED_CPU_TOPOLOGY;
-
-	*core_bits = level_num = 0;
-	cpuid_regs = cpuid_ext(cpu_id_op, level_num);
-
-	/* Sub-leaf index 0 enumerates SMT level, if not assert */
-	assert(CPUID_CPU_TOPOLOGY_LEVEL(cpuid_regs) == LEVEL_TYPE_SMT);
-
-	*thread_bits = CPUID_CPU_TOPOLOGY_THREAD_BITS(cpuid_regs);
-	do {
-		level_num++;
-		cpuid_regs = cpuid_ext(cpu_id_op, level_num);
-		if (CPUID_CPU_TOPOLOGY_LEVEL(cpuid_regs) == LEVEL_TYPE_CORE) {
-			*core_bits = CPUID_CPU_TOPOLOGY_CORE_BITS(cpuid_regs, *thread_bits);
-			break;
-		}
-	/* Stop when level type is invalid i.e 0 */
-	} while (CPUID_CPU_TOPOLOGY_LEVEL(cpuid_regs));
-}
-
-void get_cpu_topology_from_apicid(uint32_t apicid, uint8_t *package,
-		uint8_t *core, uint8_t *thread)
-{
-
-	uint32_t core_bits, thread_bits;
-
-	get_cpu_core_thread_bits(&core_bits, &thread_bits);
-
-	if (package)
-		*package = apicid >> (thread_bits + core_bits);
-	if (core)
-		*core = (apicid  >> thread_bits) & ((1 << core_bits) - 1);
-	if (thread)
-		*thread = apicid  & ((1 << thread_bits) - 1);
 }
 
 static void sync_core_prmrr(void)

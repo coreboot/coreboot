@@ -28,9 +28,6 @@ efi_return_status_t mp_get_number_of_processors(efi_uintn_t *number_of_processor
 efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 	efi_processor_information *processor_info_buffer)
 {
-	int apicid;
-	uint8_t package, core, thread;
-
 	if (processor_number >= MIN(get_cpu_count(), CONFIG_MAX_CPUS))
 		return FSP_NOT_FOUND;
 
@@ -39,14 +36,10 @@ efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 	if (!info)
 		return FSP_DEVICE_ERROR;
 
+	struct device *dev = info->cpu;
+
 	if (processor_info_buffer == NULL)
 		return FSP_INVALID_PARAMETER;
-	apicid = info->cpu->path.apic.apic_id;
-
-	if (apicid < 0)
-		return FSP_DEVICE_ERROR;
-
-	processor_info_buffer->ProcessorId = apicid;
 
 	processor_info_buffer->StatusFlag = PROCESSOR_HEALTH_STATUS_BIT
 			| PROCESSOR_ENABLED_BIT;
@@ -54,12 +47,10 @@ efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 	if (processor_number == BSP_CPU_SLOT)
 		processor_info_buffer->StatusFlag |= PROCESSOR_AS_BSP_BIT;
 
-	/* Fill EFI_CPU_PHYSICAL_LOCATION structure information */
-	get_cpu_topology_from_apicid(apicid, &package, &core, &thread);
-
-	processor_info_buffer->Location.Package = package;
-	processor_info_buffer->Location.Core = core;
-	processor_info_buffer->Location.Thread = thread;
+	processor_info_buffer->ProcessorId = dev->path.apic.apic_id;
+	processor_info_buffer->Location.Package = dev->path.apic.package_id;
+	processor_info_buffer->Location.Core = dev->path.apic.core_id;
+	processor_info_buffer->Location.Thread = dev->path.apic.thread_id;
 
 	return FSP_SUCCESS;
 }

@@ -183,10 +183,6 @@ int get_valid_prmrr_size(void);
  */
 void enable_pm_timer_emulation(void);
 
-/* Derive core, package and thread information from lapic ID */
-void get_cpu_topology_from_apicid(uint32_t apicid, uint8_t *package,
-		uint8_t *core, uint8_t *thread);
-
 /*
  * Initialize core PRMRR
  *

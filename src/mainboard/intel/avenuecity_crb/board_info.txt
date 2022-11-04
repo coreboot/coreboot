@@ -1,0 +1,6 @@
+Vendor name: Intel
+Board name: Avenue City CRB
+Category: eval
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

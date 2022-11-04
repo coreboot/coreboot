@@ -110,7 +110,7 @@ static int ram_bitset_nodie(uintptr_t start)
 		}
 	}
 	if (failures) {
-		post_code(0xea);
+		post_code(POST_RAM_FAILURE);
 		printk(BIOS_DEBUG, "\nDRAM did _NOT_ verify!\n");
 		return 1;
 	}
@@ -200,7 +200,7 @@ void quick_ram_check_or_die(uintptr_t dst)
 
 	write_phys(dst, backup);
 	if (fail) {
-		post_code(0xea);
+		post_code(POST_RAM_FAILURE);
 		die("RAM INIT FAILURE!\n");
 	}
 	phys_memory_barrier();

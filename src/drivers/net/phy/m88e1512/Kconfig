@@ -1,0 +1,5 @@
+config DRIVERS_ETH_PHY_M88E1512
+	bool
+	default n
+	help
+	  Enable support for external Marvell PHY chip 88E1512.

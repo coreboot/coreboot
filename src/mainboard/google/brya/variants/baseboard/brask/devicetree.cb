@@ -1,4 +1,7 @@
 chip soc/intel/alderlake
+	# As per Intel Advisory doc#723158, the change is required to prevent possible
+	# display flickering issue.
+	register "usb2_phy_sus_pg_disable" = "1"
 
 	# GPE configuration
 	register "pmc_gpe0_dw0" = "GPP_A"

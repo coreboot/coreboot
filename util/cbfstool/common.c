@@ -34,8 +34,13 @@ int buffer_create(struct buffer *buffer, size_t size, const char *name)
 	if (!buffer->data) {
 		fprintf(stderr, "buffer_create: Insufficient memory (0x%zx).\n",
 			size);
+		if (buffer->name) {
+			free(buffer->name);
+			buffer->name = NULL;
+		}
+		return -1;
 	}
-	return (buffer->data == NULL);
+	return 0;
 }
 
 int buffer_from_file_aligned_size(struct buffer *buffer, const char *filename,

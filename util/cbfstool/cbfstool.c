@@ -770,8 +770,8 @@ static int cbfs_add_master_header(void)
 	 */
 	if (param.topswap_size) {
 		if (update_master_header_loc_topswap(&image, h_loc,
-							header_offset))
-			return 1;
+						     header_offset))
+			goto done;
 	}
 
 	ret = maybe_update_metadata_hash(&image);

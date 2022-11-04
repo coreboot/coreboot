@@ -409,6 +409,11 @@ static int append_and_check_region(const struct region smram,
 int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 		    struct smm_loader_params *params)
 {
+	if (CONFIG(SMM_ASEG) && (smram_base != SMM_BASE || smram_size != SMM_CODE_SEGMENT_SIZE)) {
+		printk(BIOS_ERR, "SMM base & size are 0x%lx, 0x%zx, but must be 0x%x, 0x%x\n",
+		       smram_base, smram_size, SMM_BASE, SMM_CODE_SEGMENT_SIZE);
+		return -1;
+	}
 	/*
 	 * Place in .bss to reduce stack usage.
 	 * TODO: once CPU_INFO_V2 is used everywhere, use smaller stack for APs and move
@@ -457,18 +462,7 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 	if (append_and_check_region(smram, handler, region_list, "HANDLER"))
 		return -1;
 
-	uintptr_t stub_segment_base;
-
-	if (CONFIG(SMM_TSEG)) {
-		stub_segment_base = handler_base - SMM_CODE_SEGMENT_SIZE;
-	} else if (CONFIG(SMM_ASEG)) {
-		stub_segment_base = smram_base;
-		if (smram_base != SMM_BASE || smram_size != SMM_CODE_SEGMENT_SIZE) {
-			printk(BIOS_ERR, "SMM base & size are 0x%lx, 0x%zx, but must be 0x%x, 0x%x\n",
-			       smram_base, smram_size, SMM_BASE, SMM_CODE_SEGMENT_SIZE);
-			return -1;
-		}
-	}
+	uintptr_t stub_segment_base = handler_base - SMM_CODE_SEGMENT_SIZE;
 
 	if (!smm_create_map(stub_segment_base, params->num_concurrent_save_states, params)) {
 		printk(BIOS_ERR, "%s: Error creating CPU map\n", __func__);

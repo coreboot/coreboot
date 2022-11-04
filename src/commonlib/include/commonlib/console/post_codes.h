@@ -66,6 +66,20 @@
 #define POST_ENTRY_C_START			0x13
 
 /**
+ * \brief Entry into pci_scan_bus
+ *
+ * Entered pci_scan_bus()
+ */
+#define POST_ENTER_PCI_SCAN_BUS			0x24
+
+/**
+ * \brief Entry into pci_scan_bus
+ *
+ * Entered pci_scan_bus()
+ */
+#define POST_EXIT_PCI_SCAN_BUS			0x25
+
+/**
  * \brief Pre-memory init preparation start
  *
  * Post code emitted in romstage before making callbacks to allow SoC/mainboard

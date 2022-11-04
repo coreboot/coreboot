@@ -113,6 +113,7 @@
 #define GPIO_DEB_REMOVE_GLITCH		(DEB_GLITCH_REMOVE << DEB_GLITCH_SHIFT)
 
 #define GPIO_TIMEBASE_61uS		0
+/* The next value is only 183uS on Picasso. It is 244uS on Cezanne and later SoCs */
 #define GPIO_TIMEBASE_183uS		(1 << 4)
 #define GPIO_TIMEBASE_15560uS		(1 << 7)
 #define GPIO_TIMEBASE_62440uS		(GPIO_TIMEBASE_183uS | GPIO_TIMEBASE_15560uS)

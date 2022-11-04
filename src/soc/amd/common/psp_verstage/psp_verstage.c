@@ -42,11 +42,8 @@ static void reboot_into_recovery(struct vb2_context *ctx, uint32_t subcode)
 		return;
 	}
 
-	vb2api_fail(ctx, VB2_RECOVERY_RO_UNSPECIFIED, (int)subcode);
-	vboot_save_data(ctx);
-
 	svc_debug_print("Rebooting into recovery\n");
-	vboot_reboot();
+	vboot_fail_and_reboot(ctx, VB2_RECOVERY_RO_UNSPECIFIED, (int)subcode);
 }
 
 static uint32_t check_cmos_recovery(void)

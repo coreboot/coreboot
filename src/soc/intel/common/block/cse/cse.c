@@ -931,15 +931,10 @@ void cse_trigger_vboot_recovery(enum csme_failure_reason reason)
 	       "HFSTS3: 0x%x\n", me_read_config32(PCI_ME_HFSTS1),
 	       me_read_config32(PCI_ME_HFSTS2), me_read_config32(PCI_ME_HFSTS3));
 
-	if (CONFIG(VBOOT)) {
-		struct vb2_context *ctx = vboot_get_context();
-		if (ctx == NULL)
-			goto failure;
-		vb2api_fail(ctx, VB2_RECOVERY_INTEL_CSE_LITE_SKU, reason);
-		vboot_save_data(ctx);
-		vboot_reboot();
-	}
-failure:
+	if (CONFIG(VBOOT))
+		vboot_fail_and_reboot(vboot_get_context(), VB2_RECOVERY_INTEL_CSE_LITE_SKU,
+				      reason);
+
 	die("cse: Failed to trigger recovery mode(recovery subcode:%d)\n", reason);
 }
 

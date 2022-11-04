@@ -20,6 +20,16 @@ int vboot_check_recovery_request(void);
  */
 void vboot_reboot(void);
 
+/*
+ * Save vboot data and reboot device. Subcode will only be printed. To store
+ * failure reason and subcode vb2api_fail() should be called before this
+ * function or vboot_fail_and_reboot() should be used instead.
+ */
+void vboot_save_and_reboot(struct vb2_context *ctx, uint8_t subcode);
+
+/* Call vb2api_fail() with reason and subcode, save vboot data and reboot. */
+void vboot_fail_and_reboot(struct vb2_context *ctx, uint8_t reason, uint8_t subcode);
+
 /* Allow the platform to do any clean up work when vboot requests a reboot. */
 void vboot_platform_prepare_reboot(void);
 

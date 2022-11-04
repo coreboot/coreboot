@@ -64,3 +64,18 @@ void vboot_reboot(void)
 	vboot_platform_prepare_reboot();
 	board_reset();
 }
+
+void vboot_save_and_reboot(struct vb2_context *ctx, uint8_t subcode)
+{
+	printk(BIOS_INFO, "vboot: reboot requested (%#x)\n", subcode);
+	vboot_save_data(ctx);
+	vboot_reboot();
+}
+
+void vboot_fail_and_reboot(struct vb2_context *ctx, uint8_t reason, uint8_t subcode)
+{
+	if (reason)
+		vb2api_fail(ctx, reason, subcode);
+
+	vboot_save_and_reboot(ctx, subcode);
+}

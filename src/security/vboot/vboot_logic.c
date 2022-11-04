@@ -327,30 +327,22 @@ void verstage_main(void)
 			goto verstage_main_exit;
 		}
 
-		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
-		vboot_save_data(ctx);
-		vboot_reboot();
+		vboot_save_and_reboot(ctx, rv);
 	}
 
 	/* Determine which firmware slot to boot (based on NVRAM) */
 	printk(BIOS_INFO, "Phase 2\n");
 	rv = vb2api_fw_phase2(ctx);
-	if (rv) {
-		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
-		vboot_save_data(ctx);
-		vboot_reboot();
-	}
+	if (rv)
+		vboot_save_and_reboot(ctx, rv);
 
 	/* Try that slot (verify its keyblock and preamble) */
 	printk(BIOS_INFO, "Phase 3\n");
 	timestamp_add_now(TS_VERIFY_SLOT_START);
 	rv = vb2api_fw_phase3(ctx);
 	timestamp_add_now(TS_VERIFY_SLOT_END);
-	if (rv) {
-		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
-		vboot_save_data(ctx);
-		vboot_reboot();
-	}
+	if (rv)
+		vboot_save_and_reboot(ctx, rv);
 
 	printk(BIOS_INFO, "Phase 4\n");
 	rv = vboot_locate_firmware(ctx, &fw_body);
@@ -359,22 +351,17 @@ void verstage_main(void)
 			"Failed to read FMAP to locate firmware");
 
 	rv = hash_body(ctx, &fw_body);
+	if (rv)
+		vboot_save_and_reboot(ctx, rv);
 	vboot_save_data(ctx);
-	if (rv) {
-		printk(BIOS_INFO, "Reboot requested (%x)\n", rv);
-		vboot_reboot();
-	}
 
 	/* Only extend PCRs once on boot. */
 	if (!(ctx->flags & VB2_CONTEXT_S3_RESUME)) {
 		timestamp_add_now(TS_TPMPCR_START);
 		rv = extend_pcrs(ctx);
 		if (rv) {
-			printk(BIOS_WARNING,
-			       "Failed to extend TPM PCRs (%#x)\n", rv);
-			vb2api_fail(ctx, VB2_RECOVERY_RO_TPM_U_ERROR, rv);
-			vboot_save_data(ctx);
-			vboot_reboot();
+			printk(BIOS_WARNING, "Failed to extend TPM PCRs (%#x)\n", rv);
+			vboot_fail_and_reboot(ctx, VB2_RECOVERY_RO_TPM_U_ERROR, rv);
 		}
 		timestamp_add_now(TS_TPMPCR_END);
 	}
@@ -385,9 +372,7 @@ void verstage_main(void)
 	rv = antirollback_lock_space_firmware();
 	if (rv) {
 		printk(BIOS_INFO, "Failed to lock TPM (%x)\n", rv);
-		vb2api_fail(ctx, VB2_RECOVERY_RO_TPM_L_ERROR, 0);
-		vboot_save_data(ctx);
-		vboot_reboot();
+		vboot_fail_and_reboot(ctx, VB2_RECOVERY_RO_TPM_L_ERROR, 0);
 	}
 	timestamp_add_now(TS_TPMLOCK_END);
 
@@ -395,12 +380,8 @@ void verstage_main(void)
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE)) {
 		rv = antirollback_lock_space_mrc_hash(MRC_REC_HASH_NV_INDEX);
 		if (rv) {
-			printk(BIOS_INFO, "Failed to lock rec hash space(%x)\n",
-			       rv);
-			vb2api_fail(ctx, VB2_RECOVERY_RO_TPM_REC_HASH_L_ERROR,
-				    0);
-			vboot_save_data(ctx);
-			vboot_reboot();
+			printk(BIOS_INFO, "Failed to lock rec hash space(%x)\n", rv);
+			vboot_fail_and_reboot(ctx, VB2_RECOVERY_RO_TPM_REC_HASH_L_ERROR, 0);
 		}
 	}
 

@@ -157,20 +157,39 @@ unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 index, u32 l
 	return current;
 }
 
+/* Increase if necessary. Currently all x86 CPUs only have 2 SMP threads */
+#define MAX_THREAD_ID 1
+/*
+ * From ACPI 6.4 spec:
+ * "The advent of multi-threaded processors yielded multiple logical processors
+ * executing on common processor hardware. ACPI defines logical processors in
+ * an identical manner as physical processors. To ensure that non
+ * multi-threading aware OSPM implementations realize optimal performance on
+ * platforms containing multi-threaded processors, two guidelines should be
+ * followed. The first is the same as above, that is, OSPM should initialize
+ * processors in the order that they appear in the MADT. The second is that
+ * platform firmware should list the first logical processor of each of the
+ * individual multi-threaded processors in the MADT before listing any of the
+ * second logical processors. This approach should be used for all successive
+ * logical processors."
+ */
 static unsigned long acpi_create_madt_lapics(unsigned long current)
 {
 	struct device *cpu;
-	int index, apic_ids[CONFIG_MAX_CPUS] = {0}, num_cpus = 0;
-
-	for (cpu = all_devices; cpu; cpu = cpu->next) {
-		if (!is_enabled_cpu(cpu))
-			continue;
-		if (num_cpus >= ARRAY_SIZE(apic_ids))
-			break;
-		apic_ids[num_cpus++] = cpu->path.apic.apic_id;
+	int index, apic_ids[CONFIG_MAX_CPUS] = {0}, num_cpus = 0, sort_start = 0;
+	for (unsigned int thread_id = 0; thread_id <= MAX_THREAD_ID; thread_id++) {
+		for (cpu = all_devices; cpu; cpu = cpu->next) {
+			if (!is_enabled_cpu(cpu))
+				continue;
+			if (num_cpus >= ARRAY_SIZE(apic_ids))
+				break;
+			if (cpu->path.apic.thread_id != thread_id)
+				continue;
+			apic_ids[num_cpus++] = cpu->path.apic.apic_id;
+		}
+		bubblesort(&apic_ids[sort_start], num_cpus - sort_start, NUM_ASCENDING);
+		sort_start = num_cpus;
 	}
-	if (num_cpus > 1)
-		bubblesort(apic_ids, num_cpus, NUM_ASCENDING);
 	for (index = 0; index < num_cpus; index++)
 		current = acpi_create_madt_one_lapic(current, index, apic_ids[index]);
 

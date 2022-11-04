@@ -63,6 +63,8 @@ static const char *spd_get_module_type_string(int dram_type)
 		return "DDR5";
 	case SPD_DRAM_LPDDR5:
 		return "LPDDR5";
+	case SPD_DRAM_LPDDR5X:
+		return "LPDDR5X";
 	}
 	return "UNKNOWN";
 }

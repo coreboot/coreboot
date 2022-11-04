@@ -19,6 +19,7 @@
 #define  SPD_DRAM_LPDDR4X	0x11
 #define  SPD_DRAM_DDR5		0x12
 #define  SPD_DRAM_LPDDR5	0x13
+#define  SPD_DRAM_LPDDR5X	0x15
 #define SPD_DENSITY_BANKS	4
 #define SPD_ADDRESSING		5
 #define SPD_SN_LEN		4

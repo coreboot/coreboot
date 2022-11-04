@@ -370,6 +370,38 @@ typedef struct cper_ia32x64_ctx_x64state {
 	u16 tr;
 } cper_ia32x64_ctx_x64state_t;
 
+/* UEFI Spec 2.10, Appendix N.2.5 Memory Error Types (Table N.31) */
+#define CPER_UNDEFINED			0
+#define CPER_ERR_SINGLE_BIT_ECC		2
+#define CPER_ERR_MULTI_BIT_ECC		3
+#define CPER_ERR_MEM_PARITY_ERR		8
+#define CPER_ERR_MEM_SCRUB_CE_ERR	13
+#define CPER_ERR_MEM_SCRUB_UCE_ERR	14
+
+/* UEFI Spec 2.10, Appendix N.2.5 Memory Error Section (Table N.31) */
+struct cper_memory_section {
+	u64	valid_bits;
+	u64	err_sts;
+	u64	phys_addr;
+	u64	phys_addr_mask;
+	u16	node;
+	u16	card;
+	u16	module;
+	u16	bank;
+	u16	device;
+	u16	row;
+	u16	column;
+	u16	bit_position;
+	u64	requestor_id;
+	u64	responder_id;
+	u64	target_id;
+	u8	mem_err_type;
+	u8	extended;
+	u16	rank_number;
+	u16	card_handle;
+	u16	module_handle;
+};
+
 #define FW_ERR_RECORD_ID_CRASHLOG_GUID				\
 	GUID_INIT(0x8f87f311, 0xc998, 0x4d9e,			\
 		0xa0, 0xc4, 0x60, 0x65, 0x51, 0x8c, 0x4f, 0x6d)

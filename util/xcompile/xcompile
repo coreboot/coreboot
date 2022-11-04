@@ -235,6 +235,13 @@ GCC_CFLAGS_${TARCH}+=-fno-delete-null-pointer-checks -Wlogical-op
 GCC_ADAFLAGS_${TARCH}:=${FLAGS_GCC}
 GCC_COMPILER_RT_${TARCH}:=${CC_RT_GCC}
 GCC_COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_GCC}
+EOF
+if [ "${TARCH}" = "x86_64" ]; then
+cat <<EOF
+	GCC_CFLAGS_${TARCH} += -malign-data=abi
+EOF
+fi
+cat <<EOF
 
 # Clang
 CLANG_CC_${TARCH}:=${CLANG}
@@ -270,7 +277,7 @@ EOF
 # to use i586 instead.
 if [ "${TARCH}" = "x86_64" ]; then
 cat <<EOF
-	CFLAGS_${TARCH} += -march=nocona -malign-data=abi
+	CFLAGS_${TARCH} += -march=nocona
 EOF
 fi
 
@@ -459,7 +466,7 @@ test_architecture() {
 		# but that's more of a clang limitation. Let's be optimistic
 		# that this will change in the future.
 		CLANG="${clang_prefix}clang"
-		CFLAGS_CLANG="-target ${clang_arch}-${TABI} $CFLAGS_CLANG -ccc-gcc-name ${GCC}"
+		CFLAGS_CLANG="-target ${clang_arch}-${TABI} $CFLAGS_CLANG"
 	fi
 }
 

@@ -13,6 +13,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
+#include <cpu/x86/topology.h>
 #include <cpu/x86/mp.h>
 #include <delay.h>
 #include <device/device.h>
@@ -202,6 +203,8 @@ static asmlinkage void ap_init(unsigned int index)
 	dev->path.apic.apic_id = lapicid();
 	dev->path.apic.initial_lapicid = initial_lapicid();
 	dev->enabled = 1;
+
+	set_cpu_topology_from_leaf_b(dev);
 
 	if (cpu_is_intel())
 		printk(BIOS_INFO, "AP: slot %u apic_id %x, MCU rev: 0x%08x\n", index,

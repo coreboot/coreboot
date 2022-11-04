@@ -240,15 +240,6 @@ struct device *dev_find_lapic(unsigned int apic_id);
 int dev_count_cpu(void);
 struct device *add_cpu_device(struct bus *cpu_bus, unsigned int apic_id,
 				int enabled);
-void set_cpu_topology(struct device *cpu, unsigned int node,
-	unsigned int package, unsigned int core, unsigned int thread);
-
-#define amd_cpu_topology(cpu, node, core) \
-	set_cpu_topology(cpu, node, 0, core, 0)
-
-#define intel_cpu_topology(cpu, package, core, thread) \
-	set_cpu_topology(cpu, 0, package, core, thread)
-
 void mp_init_cpus(DEVTREE_CONST struct bus *cpu_bus);
 static inline void mp_cpu_bus_init(struct device *dev)
 {

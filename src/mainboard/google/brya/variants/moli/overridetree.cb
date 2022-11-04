@@ -14,6 +14,9 @@ fw_config
 	end
 end
 chip soc/intel/alderlake
+	# As per Intel Advisory doc#723158, the change is required to prevent possible
+	# display flickering issue.
+	register "usb2_phy_sus_pg_disable" = "1"
 	# Enable HDMI2 in PortA, HDMI1 in PortB, HDMI/DP in Port2
 	register "ddi_ports_config" = "{
 		[DDI_PORT_A] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,

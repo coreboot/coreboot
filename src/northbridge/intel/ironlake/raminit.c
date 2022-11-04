@@ -782,6 +782,8 @@ static void compute_derived_timings(struct raminfo *info)
 		    some_delay_2_halfcycles_ceil - 1;
 	if (!info->revision_flag_1)
 		some_delay_2_halfcycles_floor++;
+	/* FIXME: this variable is unused. Should it be used? */
+	(void)some_delay_2_halfcycles_floor;
 	info->some_delay_2_halfcycles_ceil = some_delay_2_halfcycles_ceil;
 	info->some_delay_3_ps_rounded = some_delay_3_ps_rounded;
 	if ((info->populated_ranks[0][0][0] && info->populated_ranks[0][1][0])

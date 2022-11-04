@@ -65,7 +65,7 @@ static size_t get_board_settings_from_eeprom(struct eeprom_board_settings *board
 		if (crc != board_cfg->signature)
 			continue;
 
-		printk(BIOS_DEBUG, "CFG EEPROM: Board settings CRC OK for %zu / %lu bytes\n",
+		printk(BIOS_DEBUG, "CFG EEPROM: Board settings CRC OK for %zu / %zu bytes\n",
 				len, sizeof(board_cfg->raw_settings));
 		return len;
 	}

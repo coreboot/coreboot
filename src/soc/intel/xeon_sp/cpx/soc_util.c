@@ -9,20 +9,6 @@
 #include <soc/soc_util.h>
 #include <soc/util.h>
 
-const EWL_PRIVATE_DATA *get_ewl_hob(void)
-{
-	size_t hob_size;
-	static const EWL_PRIVATE_DATA *hob;
-	const uint8_t ewl_id_hob_guid[16] = FSP_HOB_EWLID_GUID;
-
-	if (hob != NULL)
-		return hob;
-
-	hob = fsp_find_extension_hob_by_guid(ewl_id_hob_guid, &hob_size);
-	assert(hob != NULL && hob_size != 0);
-	return hob;
-}
-
 const struct SystemMemoryMapHob *get_system_memory_map(void)
 {
 	size_t hob_size;

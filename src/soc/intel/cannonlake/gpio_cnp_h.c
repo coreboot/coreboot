@@ -11,7 +11,7 @@ static const struct reset_mapping rst_map[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_PLTRST, .chipset = 2U << 30 },
 };
 
-static const struct reset_mapping rst_map_com0[] = {
+static const struct reset_mapping rst_map_gpd[] = {
 	{ .logical = PAD_CFG0_LOGICAL_RESET_PWROK, .chipset = 0U << 30 },
 	{ .logical = PAD_CFG0_LOGICAL_RESET_DEEP, .chipset = 1U << 30 },
 	{ .logical = PAD_CFG0_LOGICAL_RESET_PLTRST, .chipset = 2U << 30 },
@@ -83,8 +83,8 @@ static const struct pad_community cnl_communities[] = {
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
 		.name = "GPP_AB",
 		.acpi_path = "\\_SB.PCI0.GPIO",
-		.reset_map = rst_map_com0,
-		.num_reset_vals = ARRAY_SIZE(rst_map_com0),
+		.reset_map = rst_map,
+		.num_reset_vals = ARRAY_SIZE(rst_map),
 		.groups = cnl_community0_groups,
 		.num_groups = ARRAY_SIZE(cnl_community0_groups),
 	},
@@ -127,8 +127,8 @@ static const struct pad_community cnl_communities[] = {
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
 		.name = "GPD",
 		.acpi_path = "\\_SB.PCI0.GPIO",
-		.reset_map = rst_map,
-		.num_reset_vals = ARRAY_SIZE(rst_map),
+		.reset_map = rst_map_gpd,
+		.num_reset_vals = ARRAY_SIZE(rst_map_gpd),
 		.groups = cnl_community2_groups,
 		.num_groups = ARRAY_SIZE(cnl_community2_groups),
 	},

@@ -1,12 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 chip northbridge/intel/x4x		# Northbridge
-	device cpu_cluster 0 on
-		ops x4x_cpu_bus_ops		# APIC cluster
-		chip cpu/intel/socket_LGA775
-			device lapic 0 on end
-		end
-	end
+	device cpu_cluster 0 on ops x4x_cpu_bus_ops end		# APIC cluster
 	device domain 0 on
 		ops x4x_pci_domain_ops		# PCI domain
 		device pci 0.0 on  end		# Host Bridge

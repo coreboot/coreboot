@@ -10,4 +10,10 @@ source "src/soc/amd/common/fsp/Kconfig"
 source "src/soc/amd/common/pi/Kconfig"
 source "src/soc/amd/common/psp_verstage/Kconfig"
 
+config APCB_BLOBS_DIR
+	string "Mainboard blobs path"
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)"
+	help
+	  The path to the APCB mainboard blobs
+
 endif # SOC_AMD_COMMON

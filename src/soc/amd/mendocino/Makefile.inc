@@ -52,11 +52,6 @@ CPPFLAGS_common += -I$(src)/soc/amd/mendocino/include
 CPPFLAGS_common += -I$(src)/soc/amd/mendocino/acpi
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/mendocino
 
-# allow site-local Makefile to override blobs location
-ifeq ($(MAINBOARD_BLOBS_DIR),)
-MAINBOARD_BLOBS_DIR:=$(top)/3rdparty/blobs/mainboard/$(MAINBOARDDIR)
-endif
-
 # ROMSIG Normally At ROMBASE + 0x20000
 # Overridden by CONFIG_AMD_FWM_POSITION_INDEX
 # +-----------+---------------+----------------+------------+

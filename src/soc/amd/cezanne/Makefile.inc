@@ -50,8 +50,6 @@ CPPFLAGS_common += -I$(src)/soc/amd/cezanne/include
 CPPFLAGS_common += -I$(src)/soc/amd/cezanne/acpi
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/cezanne
 
-MAINBOARD_BLOBS_DIR:=$(top)/3rdparty/blobs/mainboard/$(MAINBOARDDIR)
-
 # ROMSIG Normally At ROMBASE + 0x20000
 # Overridden by CONFIG_AMD_FWM_POSITION_INDEX
 # +-----------+---------------+----------------+------------+

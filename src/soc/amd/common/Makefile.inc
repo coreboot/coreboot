@@ -44,3 +44,5 @@ amdfwread-range-cmd = $(shell ( \
 endif # ifeq ($(CONFIG_VBOOT_GSCVD),y)
 
 endif
+
+MAINBOARD_BLOBS_DIR := $(call strip_quotes, $(CONFIG_APCB_BLOBS_DIR))

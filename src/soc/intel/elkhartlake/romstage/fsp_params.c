@@ -10,6 +10,12 @@
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
 
+/* ISA Serial Base selection. */
+enum {
+	ISA_SERIAL_BASE_ADDR_3F8,
+	ISA_SERIAL_BASE_ADDR_2F8,
+} isa_serial_uart_base;
+
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_elkhartlake_config *config)
 {
@@ -46,17 +52,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	/* Set CPU Ratio */
 	m_cfg->CpuRatio = 0;
 
-	/* Set debug interface flags */
-	m_cfg->PcdDebugInterfaceFlags = CONFIG(DRIVERS_UART_8250IO) ?
-		DEBUG_INTERFACE_UART_8250IO : DEBUG_INTERFACE_LPSS_SERIAL_IO;
-
-	/* TraceHub configuration */
-	if (is_devfn_enabled(PCH_DEVFN_TRACEHUB) && config->TraceHubMode) {
-		m_cfg->PcdDebugInterfaceFlags |= DEBUG_INTERFACE_TRACEHUB;
-		m_cfg->PchTraceHubMode = config->TraceHubMode;
-		m_cfg->CpuTraceHubMode = config->TraceHubMode;
-	}
-
 	/* Change VmxEnable UPD value according to ENABLE_VMX Kconfig */
 	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);
 
@@ -72,9 +67,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	}
 
 	m_cfg->SmbusEnable = is_devfn_enabled(PCH_DEVFN_SMBUS);
-
-	/* Set debug probe type */
-	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_ELKHARTLAKE_DEBUG_CONSENT;
 
 	/* DMAR related config */
 	m_cfg->VtdDisable = 0;
@@ -96,7 +88,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->WdtDisableAndLock = 0x1;
 
 	m_cfg->HeciCommunication2 = config->Heci2Enable;
-	m_cfg->SerialIoUartDebugControllerNumber = CONFIG_UART_FOR_CONSOLE;
 
 	/* Audio */
 	m_cfg->PchHdaEnable = is_devfn_enabled(PCH_DEVFN_HDA);
@@ -138,12 +129,57 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	}
 }
 
+
+static void fill_fsp_debug_params(FSP_M_CONFIG *m_cfg,
+		const struct soc_intel_elkhartlake_config *config)
+{
+	/* Set debug interface flags */
+	m_cfg->PcdDebugInterfaceFlags = CONFIG(DRIVERS_UART_8250IO) ?
+		DEBUG_INTERFACE_UART_8250IO : DEBUG_INTERFACE_LPSS_SERIAL_IO;
+	m_cfg->SerialIoUartDebugControllerNumber = CONFIG_UART_FOR_CONSOLE;
+
+	/* Set debug probe type */
+	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_ELKHARTLAKE_DEBUG_CONSENT;
+
+	/* TraceHub configuration */
+	if (is_devfn_enabled(PCH_DEVFN_TRACEHUB) && config->TraceHubMode) {
+		m_cfg->PcdDebugInterfaceFlags |= DEBUG_INTERFACE_TRACEHUB;
+		m_cfg->PchTraceHubMode = config->TraceHubMode;
+		m_cfg->CpuTraceHubMode = config->TraceHubMode;
+	}
+
+	if (CONFIG(CONSOLE_SERIAL)) {
+		enum fsp_log_level log_level = fsp_map_console_log_level();
+		/* Set Serial debug message level */
+		m_cfg->PcdSerialDebugLevel = log_level;
+		/* Set MRC debug level */
+		m_cfg->MrcTaskDebugEnable = 0xff;
+	} else {
+		/* Disable Serial debug message */
+		m_cfg->PcdSerialDebugLevel = 0;
+		/* Disable MRC debug message */
+		m_cfg->MrcTaskDebugEnable = 0;
+	}
+
+	if (CONFIG(DRIVERS_UART_8250IO)) {
+		if (CONFIG_TTYS0_BASE == 0x3f8)
+			m_cfg->PcdIsaSerialUartBase = ISA_SERIAL_BASE_ADDR_3F8;
+		else if (CONFIG_TTYS0_BASE == 0x2f8)
+			m_cfg->PcdIsaSerialUartBase = ISA_SERIAL_BASE_ADDR_2F8;
+		else {
+			printk(BIOS_ERR, "Unsupported UART I/O base, "
+				"skipping FSP UART base UPD setting\n");
+		}
+	}
+}
+
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	const struct soc_intel_elkhartlake_config *config = config_of_soc();
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 
 	soc_memory_init_params(m_cfg, config);
+	fill_fsp_debug_params(m_cfg, config);
 
 	mainboard_memory_init_params(mupd);
 }

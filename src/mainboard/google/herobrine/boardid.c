@@ -43,7 +43,8 @@ uint32_t ram_code(void)
 uint32_t sku_id(void)
 {
 	static uint32_t id = UNDEFINED_STRAPPING_ID;
-	/*Update modem status in 9th bit of sku id*/
+
+	/* Update modem status in 9th bit of sku id */
 	uint32_t mask = 1 << 9;
 	id = google_chromeec_get_board_sku();
 	id = ((id & ~mask) | (socinfo_modem_supported() << 9));

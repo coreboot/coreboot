@@ -111,9 +111,21 @@ chip soc/intel/elkhartlake
 	register "common_soc_config" = "{
 		.i2c[1] = {
 			.speed = I2C_SPEED_STANDARD,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_STANDARD,
+				.scl_hcnt = 0x1e1,
+				.scl_lcnt = 0x1f4,
+				.sda_hold = 0x64
+			},
 		},
 		.i2c[2] = {
 			.speed = I2C_SPEED_STANDARD,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_STANDARD,
+				.scl_hcnt = 0x1df,
+				.scl_lcnt = 0x1f4,
+				.sda_hold = 0x64
+			},
 		},
 	}"
 

@@ -2,6 +2,7 @@ chip northbridge/intel/gm45
 	# IGD Displays
 	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 	device cpu_cluster 0 on
+		ops gm45_cpu_bus_ops
 		chip cpu/intel/socket_BGA956
 			device lapic 0 on end
 		end
@@ -21,6 +22,7 @@ chip northbridge/intel/gm45
 	register "pci_mmio_size" = "2048"
 
 	device domain 0 on
+		ops gm45_pci_domain_ops
 		subsystemid 0x4352 0x8986
 		device pci 00.0 on end # host bridge
 		device pci 02.0 on end # VGA

@@ -200,7 +200,7 @@ static void pci_domain_ssdt(const struct device *dev)
 	set_above_4g_pci(dev);
 }
 
-static struct device_operations pci_domain_ops = {
+struct device_operations gm45_pci_domain_ops = {
 	.read_resources   = mch_domain_read_resources,
 	.set_resources    = mch_domain_set_resources,
 	.init             = mch_domain_init,
@@ -210,21 +210,11 @@ static struct device_operations pci_domain_ops = {
 	.acpi_name        = northbridge_acpi_name,
 };
 
-static struct device_operations cpu_bus_ops = {
+struct device_operations gm45_cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
 	.init             = mp_cpu_bus_init,
 };
-
-static void enable_dev(struct device *dev)
-{
-	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN) {
-		dev->ops = &pci_domain_ops;
-	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
-		dev->ops = &cpu_bus_ops;
-	}
-}
 
 static void gm45_init(void *const chip_info)
 {
@@ -265,6 +255,5 @@ static void gm45_init(void *const chip_info)
 
 struct chip_operations northbridge_intel_gm45_ops = {
 	CHIP_NAME("Intel GM45 Northbridge")
-	.enable_dev = enable_dev,
 	.init = gm45_init,
 };

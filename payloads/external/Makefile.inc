@@ -304,8 +304,14 @@ img/tint-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
 # Memtest86+
 
+ifeq ($(CONFIG_MEMTEST86PLUS_V6),y)
+memtest_dir:=memtest86plus_v6
+else
+memtest_dir:=memtest86plus_v5
+endif
+
 cbfs-files-$(CONFIG_MEMTEST_SECONDARY_PAYLOAD) += img/memtest
-img/memtest-file := payloads/external/Memtest86Plus/memtest86plus/memtest
+img/memtest-file := payloads/external/Memtest86Plus/$(memtest_dir)/memtest
 img/memtest-type := payload
 img/memtest-compression := $(CBFS_SECONDARY_PAYLOAD_COMPRESS_FLAG)
 
@@ -315,7 +321,7 @@ ifeq ($(CONFIG_CONSOLE_SERIAL)$(CONFIG_DRIVERS_UART_8250IO),yy)
 		SERIAL_BAUD_RATE=$(CONFIG_TTYS0_BAUD)
 endif
 
-payloads/external/Memtest86Plus/memtest86plus/memtest: $(DOTCONFIG)
+payloads/external/Memtest86Plus/$(memtest_dir)/memtest: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/Memtest86Plus all \
 		CC="$(CC_x86_32)" \
 		LD="$(LD_x86_32)" \
@@ -325,6 +331,8 @@ payloads/external/Memtest86Plus/memtest86plus/memtest: $(DOTCONFIG)
 		CONFIG_MEMTEST_REVISION_ID=$(CONFIG_MEMTEST_REVISION_ID) \
 		CONFIG_MEMTEST_MAIN=$(CONFIG_MEMTEST_MAIN) \
 		CONFIG_MEMTEST_STABLE=$(CONFIG_MEMTEST_STABLE) \
+		CONFIG_MEMTEST86PLUS_V5=$(CONFIG_MEMTEST86PLUS_V5) \
+		CONFIG_MEMTEST86PLUS_V6=$(CONFIG_MEMTEST86PLUS_V6) \
 		$(MEMTEST_SERIAL_OPTIONS) \
 		MFLAGS= MAKEFLAGS=
 

@@ -3,10 +3,21 @@
 /* Magic value used to locate this chip in the device tree */
 #define SPEEDSTEP_APIC_MAGIC 0xACAC
 
+/* Keep this in sync with acpi.c */
+enum cpu_acpi_level {
+	CPU_ACPI_DISABLED = 0,
+	CPU_ACPI_C1,
+	CPU_ACPI_C2,
+	CPU_ACPI_C3,
+	CPU_ACPI_C6,
+	CPU_ACPI_C7,
+	CPU_ACPI_C7S,
+};
+
 struct cpu_intel_model_206ax_config {
-	int acpi_c1;		/* ACPI C1 */
-	int acpi_c2;		/* ACPI C2 */
-	int acpi_c3;		/* ACPI C3 */
+	enum cpu_acpi_level acpi_c1;
+	enum cpu_acpi_level acpi_c2;
+	enum cpu_acpi_level acpi_c3;
 
 	int tcc_offset;		/* TCC Activation Offset */
 };

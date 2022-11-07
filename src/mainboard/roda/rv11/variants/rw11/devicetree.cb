@@ -23,8 +23,8 @@ chip northbridge/intel/sandybridge
 			device lapic 0 on end
 			device lapic 0xacac off end
 
-			register "acpi_c2" = "4"	# ACPI(C2) = MWAIT(C6)
-			register "acpi_c3" = "0"
+			register "acpi_c2" = "CPU_ACPI_C6"
+			register "acpi_c3" = "CPU_ACPI_DISABLED"
 		end
 	end
 

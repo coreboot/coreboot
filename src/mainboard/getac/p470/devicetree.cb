@@ -6,6 +6,7 @@ chip northbridge/intel/i945
 	register "gfx.did" = "{ 0x80000100, 0x80000410, 0x80000320, 0x80000410, 0x00000005 }"
 
 	device cpu_cluster 0 on
+		ops i945_cpu_bus_ops
 		chip cpu/intel/socket_m
 			device lapic 0 on end
 		end
@@ -14,6 +15,7 @@ chip northbridge/intel/i945
 	register "pci_mmio_size" = "768"
 
 	device domain 0 on
+		ops i945_pci_domain_ops
 		device pci 00.0 on end # host bridge
 		device pci 01.0 off end # i945 PCIe root port
 		device pci 02.0 on end # vga controller

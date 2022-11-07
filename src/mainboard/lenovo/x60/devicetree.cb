@@ -14,6 +14,7 @@ chip northbridge/intel/i945
 	register "gpu_panel_power_cycle_delay" = "2"
 
 	device cpu_cluster 0 on
+		ops i945_cpu_bus_ops
 		chip cpu/intel/socket_m
 			device lapic 0 on end
 		end
@@ -22,6 +23,7 @@ chip northbridge/intel/i945
 	register "pci_mmio_size" = "768"
 
 	device domain 0 on
+		ops i945_pci_domain_ops
 		device pci 00.0 on # Host bridge
 			subsystemid 0x17aa 0x2017
 		end

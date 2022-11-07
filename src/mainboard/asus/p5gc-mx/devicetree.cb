@@ -3,6 +3,7 @@
 chip northbridge/intel/i945
 
 	device cpu_cluster 0 on
+		ops i945_cpu_bus_ops
 		chip cpu/intel/socket_LGA775
 			device lapic 0 on end
 		end
@@ -12,6 +13,7 @@ chip northbridge/intel/i945
 	end
 
 	device domain 0 on
+		ops i945_pci_domain_ops
 		device pci 00.0 on # host bridge
 			subsystemid 0x1458 0x5000
 		end

@@ -3,6 +3,7 @@
 chip northbridge/intel/i945
 
 	device cpu_cluster 0 on
+		ops i945_cpu_bus_ops
 		chip cpu/intel/socket_441
 			device lapic 0 on end
 		end
@@ -11,6 +12,7 @@ chip northbridge/intel/i945
 	register "pci_mmio_size" = "768"
 
 	device domain 0 on
+		ops i945_pci_domain_ops
 		subsystemid 0x8086 0x464c inherit
 		device pci 00.0 on  end # host bridge
 		device pci 01.0 off end # i945 PCIe root port

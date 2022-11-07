@@ -1,0 +1,5 @@
+config OCP_EWL
+	bool
+	default n
+	help
+	  It implements checking FSP Enhanced Warning Log Hob.

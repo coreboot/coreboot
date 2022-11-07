@@ -201,7 +201,7 @@ enum spd_memory_type {
 #define SPD_ECC_8BIT (1<<3)
 #define SPD_ECC_8BIT_LP5_DDR5 (1<<4)
 
-/* Byte 3: Module type information */
+/* Byte 20 [5:0]: DDR2 Module type information */
 enum ddr2_module_type {
 	DDR2_SPD_RDIMM = 0x01,
 	DDR2_SPD_UDIMM = 0x02,
@@ -213,6 +213,7 @@ enum ddr2_module_type {
 	DDR2_SPD_MINI_UDIMM = 0x20,
 };
 
+/* Byte 3 [3:0]: DDR3 Module type information */
 enum ddr3_module_type {
 	DDR3_SPD_RDIMM = 0x01,
 	DDR3_SPD_UDIMM = 0x02,
@@ -229,6 +230,7 @@ enum ddr3_module_type {
 	DDR3_SPD_32B_SO_RDIMM = 0x0d,
 };
 
+/* Byte 3 [3:0]: DDR4 Module type information */
 enum ddr4_module_type {
 	DDR4_SPD_RDIMM = 0x01,
 	DDR4_SPD_UDIMM = 0x02,

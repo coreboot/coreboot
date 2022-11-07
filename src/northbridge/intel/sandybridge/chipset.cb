@@ -2,6 +2,7 @@
 
 chip northbridge/intel/sandybridge
 	device cpu_cluster 0 on
+		ops sandybridge_cpu_bus_ops
 		chip cpu/intel/model_206ax
 			# Magic APIC ID to locate this chip
 			device lapic 0 on end
@@ -14,5 +15,6 @@ chip northbridge/intel/sandybridge
 	end
 
 	device domain 0 on
+		ops sandybridge_pci_domain_ops
 	end
 end

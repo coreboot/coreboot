@@ -76,7 +76,7 @@ config RO_REGION_ONLY
 	depends on VBOOT_SLOTS_RW_AB || VBOOT_SLOTS_RW_A
 	# Add the EFS and EC to the RO region only
 	# This is a chausie-specific override of soc/amd/mendocino/Kconfig
-	default "apu/amdfw apu/ecfw"
+	default "apu/amdfw ec/ecfw"
 
 config CHROMEOS
 	# Use default libpayload config

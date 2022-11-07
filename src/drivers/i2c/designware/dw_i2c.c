@@ -196,6 +196,13 @@ static const struct soc_clock {
 	struct freq freq;
 } soc_clocks[] = {
 	{
+		.clk_speed_mhz = 100,
+		.freq = {
+			.ticks = 100,
+			.ns = 1000,
+		},
+	},
+	{
 		.clk_speed_mhz = 120,
 		.freq = {
 			.ticks = 120,

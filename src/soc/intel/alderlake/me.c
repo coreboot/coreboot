@@ -102,9 +102,23 @@ static void log_me_ro_write_protection_info(bool mfg_mode)
 				base, limit);
 	}
 
-	/* If EOM is disabled, but CSE RO is not write protected, log error */
+	/*
+	 * If manufacturing mode is disabled, but CSE RO is not write protected,
+	 * log error.
+	 */
 	if (!mfg_mode && !cse_ro_wp_en)
 		printk(BIOS_ERR, "ME: Write protection for CSE RO is not enabled\n");
+}
+
+static bool is_manuf_mode(union me_hfsts1 hfsts1, union me_hfsts6 hfsts6)
+{
+	/*
+	 * ME manufacturing mode is disabled if the descriptor is locked, fuses
+	 * are programmed and manufacturing variables are locked.
+	 */
+	return !((hfsts1.fields.mfg_mode == 0) &&
+		 (hfsts6.fields.fpf_soc_lock == 1) &&
+		 (hfsts6.fields.manuf_lock == 1));
 }
 
 static void dump_me_status(void *unused)
@@ -115,6 +129,7 @@ static void dump_me_status(void *unused)
 	union me_hfsts4 hfsts4;
 	union me_hfsts5 hfsts5;
 	union me_hfsts6 hfsts6;
+	bool manuf_mode;
 
 	if (!is_cse_enabled())
 		return;
@@ -133,19 +148,19 @@ static void dump_me_status(void *unused)
 	printk(BIOS_DEBUG, "ME: HFSTS5                      : 0x%08X\n", hfsts5.data);
 	printk(BIOS_DEBUG, "ME: HFSTS6                      : 0x%08X\n", hfsts6.data);
 
-	/*
-	 * Lock Descriptor, and Fuses must be programmed on a
-	 * production system to indicate ME Manufacturing mode is disabled.
-	 */
+	manuf_mode = is_manuf_mode(hfsts1, hfsts6);
 	printk(BIOS_DEBUG, "ME: Manufacturing Mode          : %s\n",
-		((hfsts1.fields.mfg_mode == 0) &&
-		(hfsts6.fields.fpf_soc_lock == 1)) ? "NO" : "YES");
+	       manuf_mode ? "YES" : "NO");
 	/*
 	 * The SPI Protection Mode bit reflects SPI descriptor
 	 * locked(0) or unlocked(1).
 	 */
 	printk(BIOS_DEBUG, "ME: SPI Protection Mode Enabled : %s\n",
 		hfsts1.fields.mfg_mode ? "NO" : "YES");
+	printk(BIOS_DEBUG, "ME: FPFs Committed              : %s\n",
+		hfsts6.fields.fpf_soc_lock ? "YES" : "NO");
+	printk(BIOS_DEBUG, "ME: Manufacturing Vars Locked   : %s\n",
+		hfsts6.fields.manuf_lock ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: FW Partition Table          : %s\n",
 		hfsts1.fields.fpt_bad ? "BAD" : "OK");
 	printk(BIOS_DEBUG, "ME: Bringup Loader Failure      : %s\n",
@@ -180,7 +195,7 @@ static void dump_me_status(void *unused)
 		hfsts6.fields.txt_support ? "YES" : "NO");
 
 	if (CONFIG(SOC_INTEL_CSE_LITE_SKU))
-		log_me_ro_write_protection_info(!!hfsts1.fields.mfg_mode);
+		log_me_ro_write_protection_info(manuf_mode);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, print_me_fw_version, NULL);

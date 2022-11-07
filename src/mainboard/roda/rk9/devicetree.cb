@@ -2,12 +2,7 @@ chip northbridge/intel/gm45
 	# IGD Displays
 	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 	register "slfm" = "1"
-	device cpu_cluster 0 on
-		ops gm45_cpu_bus_ops
-		chip cpu/intel/socket_BGA956
-			device lapic 0 on end
-		end
-	end
+	device cpu_cluster 0 on ops gm45_cpu_bus_ops end
 
 	register "pci_mmio_size" = "2048"
 

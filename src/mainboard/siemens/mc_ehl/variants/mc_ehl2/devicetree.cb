@@ -144,8 +144,21 @@ chip soc/intel/elkhartlake
 				register "cap_charge" = "CHARGE_OFF"
 				device i2c 0x52 on end  # RTC RV3028-C7
 			end
+			# Add dummy I2C device to limit BUS speed to 100 kHz in OS
+			chip drivers/i2c/generic
+				register "hid" = ""PRP0001""
+				register "speed" = "I2C_SPEED_STANDARD"
+				device i2c 0x7f on end
+			end
 		end
-		device pci 15.2 on	end # I2C2
+		device pci 15.2 on	    # I2C2
+		# Add dummy I2C device to limit BUS speed to 100 kHz in OS
+			chip drivers/i2c/generic
+				register "hid" = ""PRP0001""
+				register "speed" = "I2C_SPEED_STANDARD"
+				device i2c 0x7f on end
+			end
+		end
 		device pci 15.3 on	end # I2C3
 
 		device pci 16.0 hidden	end # Management Engine Interface 1

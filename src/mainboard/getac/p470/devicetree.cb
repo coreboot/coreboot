@@ -5,12 +5,7 @@ chip northbridge/intel/i945
 	register "gfx.ndid" = "2"
 	register "gfx.did" = "{ 0x80000100, 0x80000410, 0x80000320, 0x80000410, 0x00000005 }"
 
-	device cpu_cluster 0 on
-		ops i945_cpu_bus_ops
-		chip cpu/intel/socket_m
-			device lapic 0 on end
-		end
-	end
+	device cpu_cluster 0 on ops i945_cpu_bus_ops end		# APIC cluster
 
 	register "pci_mmio_size" = "768"
 

@@ -13,12 +13,7 @@ chip northbridge/intel/i945
 	register "gpu_panel_power_backlight_off_delay" = "2380"
 	register "gpu_panel_power_cycle_delay" = "2"
 
-	device cpu_cluster 0 on
-		ops i945_cpu_bus_ops
-		chip cpu/intel/socket_m
-			device lapic 0 on end
-		end
-	end
+	device cpu_cluster 0 on ops i945_cpu_bus_ops end		# APIC cluster
 
 	register "pci_mmio_size" = "768"
 

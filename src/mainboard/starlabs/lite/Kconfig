@@ -8,6 +8,7 @@ config BOARD_STARLABS_LITE_SERIES
 	select HAVE_OPTION_TABLE
 	select HAVE_INTEL_PTT
 	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
 	select CRB_TPM
 	select MAINBOARD_HAS_TPM2
 	select ONBOARD_VGA_IS_PRIMARY
@@ -36,6 +37,9 @@ config CMOS_DEFAULT_FILE
 
 config CMOS_LAYOUT_FILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/cmos.layout" if BOARD_STARLABS_LITE_GLKR
+
+config CONSOLE_SERIAL
+	default n if !EDK2_DEBUG
 
 config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"

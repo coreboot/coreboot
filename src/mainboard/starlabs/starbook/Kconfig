@@ -8,6 +8,7 @@ config BOARD_STARLABS_STARBOOK_SERIES
 	select HAVE_CMOS_DEFAULT
 	select HAVE_OPTION_TABLE
 	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
 	select NO_UART_ON_SUPERIO
 	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
 	select SYSTEM_TYPE_LAPTOP
@@ -85,6 +86,9 @@ config CMOS_DEFAULT_FILE
 
 config CMOS_LAYOUT_FILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/cmos.layout" if BOARD_STARLABS_STARBOOK_TGL
+
+config CONSOLE_SERIAL
+	default n if !EDK2_DEBUG
 
 config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"

@@ -3,6 +3,7 @@
 chip northbridge/intel/haswell
 
 	device cpu_cluster 0 on
+		ops haswell_cpu_bus_ops
 		chip cpu/intel/haswell
 			device lapic 0 on end
 			device lapic 0xacac off end
@@ -10,6 +11,7 @@ chip northbridge/intel/haswell
 	end
 
 	device domain 0 on
+		ops haswell_pci_domain_ops
 		subsystemid 0x15d9 0x0803 inherit
 
 		device pci 00.0 on  end # Host bridge

@@ -12,6 +12,7 @@ chip northbridge/intel/haswell
 	register "gpu_dp_b_hotplug" = "0x06"
 
 	device cpu_cluster 0 on
+		ops haswell_cpu_bus_ops
 		chip cpu/intel/haswell
 			device lapic 0 on end
 			# Magic APIC ID to locate this chip
@@ -20,6 +21,7 @@ chip northbridge/intel/haswell
 	end
 
 	device domain 0 on
+		ops haswell_pci_domain_ops
 		device pci 00.0 on end # host bridge
 		device pci 02.0 on end # vga controller
 

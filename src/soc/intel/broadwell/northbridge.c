@@ -419,7 +419,7 @@ static const struct pci_driver systemagent_driver __pci_driver = {
 	.devices = systemagent_ids
 };
 
-static struct device_operations pci_domain_ops = {
+struct device_operations broadwell_pci_domain_ops = {
 	.read_resources    = &pci_domain_read_resources,
 	.set_resources     = &pci_domain_set_resources,
 	.scan_bus          = &pci_domain_scan_bus,
@@ -428,21 +428,11 @@ static struct device_operations pci_domain_ops = {
 #endif
 };
 
-static struct device_operations cpu_bus_ops = {
+struct device_operations broadwell_cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
 	.init             = mp_cpu_bus_init,
 };
-
-static void broadwell_enable(struct device *dev)
-{
-	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN) {
-		dev->ops = &pci_domain_ops;
-	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
-		dev->ops = &cpu_bus_ops;
-	}
-}
 
 static void broadwell_init_pre_device(void *chip_info)
 {
@@ -451,6 +441,5 @@ static void broadwell_init_pre_device(void *chip_info)
 
 struct chip_operations soc_intel_broadwell_ops = {
 	CHIP_NAME("Intel Broadwell")
-	.enable_dev = &broadwell_enable,
 	.init       = &broadwell_init_pre_device,
 };

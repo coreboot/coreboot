@@ -21,12 +21,14 @@ chip soc/intel/broadwell
 	}"
 
 	device cpu_cluster 0 on
+		ops broadwell_cpu_bus_ops
 		chip cpu/intel/haswell
 			device lapic 0 on end
 			device lapic 0xacac off end
 		end
 	end
 	device domain 0 on
+		ops broadwell_pci_domain_ops
 		device pci 00.0 on  end # host bridge
 		device pci 02.0 on  end # vga controller
 		device pci 03.0 on  end # mini-hd audio

@@ -15,6 +15,7 @@ chip soc/intel/broadwell
 	register "ec_present" = "true"
 
 	device cpu_cluster 0 on
+		ops broadwell_cpu_bus_ops
 		chip cpu/intel/haswell
 			register "s0ix_enable" = "1"
 
@@ -24,6 +25,7 @@ chip soc/intel/broadwell
 	end
 
 	device domain 0 on
+		ops broadwell_pci_domain_ops
 		device pci 00.0 on  end # host bridge
 		device pci 02.0 on  end # vga controller
 		device pci 03.0 on  end # mini-hd audio

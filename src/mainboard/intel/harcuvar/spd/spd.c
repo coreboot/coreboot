@@ -6,7 +6,7 @@
 #include "spd.h"
 
 /* Get SPD data for on-board memory */
-uint8_t *mainboard_find_spd_data()
+uint8_t *mainboard_find_spd_data(void)
 {
 	uint8_t *spd_data;
 	int spd_index;

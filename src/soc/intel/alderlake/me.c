@@ -23,7 +23,8 @@ union me_hfsts2 {
 		uint32_t me_power_gate		: 1;
 		uint32_t ipu_needed		: 1;
 		uint32_t forced_safe_boot	: 1;
-		uint32_t rsvd1			: 2;
+		uint32_t rsvd1			: 1;
+		uint32_t cse_to_be_disabled	: 1;
 		uint32_t listener_change	: 1;
 		uint32_t status_data		: 8;
 		uint32_t current_pmevent	: 4;
@@ -58,10 +59,7 @@ union me_hfsts5 {
 		uint32_t acm_done_sts		: 1;
 		uint32_t timeout_count		: 7;
 		uint32_t scrtm_indicator	: 1;
-		uint32_t inc_boot_guard_acm	: 4;
-		uint32_t inc_key_manifest	: 4;
-		uint32_t inc_boot_policy	: 4;
-		uint32_t rsvd0			: 2;
+		uint32_t rsvd0			: 14;
 		uint32_t start_enforcement	: 1;
 	} __packed fields;
 };
@@ -78,9 +76,8 @@ union me_hfsts6 {
 		uint32_t error_enforce_policy	: 2;
 		uint32_t measured_boot		: 1;
 		uint32_t verified_boot		: 1;
-		uint32_t boot_guard_acmsvn	: 4;
-		uint32_t kmsvn			: 4;
-		uint32_t bpmsvn			: 4;
+		uint32_t rsvd1			: 11;
+		uint32_t manuf_lock		: 1;
 		uint32_t key_manifest_id	: 4;
 		uint32_t boot_policy_status	: 1;
 		uint32_t error			: 1;

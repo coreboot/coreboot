@@ -8,21 +8,12 @@ chip northbridge/intel/gm45
 	register "gpu_panel_power_backlight_off_delay" = "2500"	# Tx:   250ms
 	register "gpu_panel_power_cycle_delay" = "3"		# T4:   200ms
 
+	register "slfm" = "1"
+
 	device cpu_cluster 0 on
 		ops gm45_cpu_bus_ops
 		chip cpu/intel/socket_BGA956
 			device lapic 0 on end
-		end
-		chip cpu/intel/model_1067x
-			# Magic APIC ID to locate this chip
-			device lapic 0xACAC off end
-
-			# Enable Super LFM
-			register "slfm" = "1"
-
-			# Enable C5, C6
-			register "c5" = "1"
-			register "c6" = "1"
 		end
 	end
 

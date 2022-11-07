@@ -19,6 +19,7 @@ struct northbridge_intel_gm45_config {
 	 * Maximum PCI mmio size in MiB.
 	 */
 	u16 pci_mmio_size;
+	int slfm;
 };
 
 #endif				/* NORTHBRIDGE_INTEL_GM45_CHIP_H */

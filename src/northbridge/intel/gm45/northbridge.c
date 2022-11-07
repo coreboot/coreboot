@@ -7,6 +7,7 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <cpu/intel/speedstep.h>
 #include <cpu/intel/smm_reloc.h>
 #include <device/device.h>
 #include <device/pci_def.h>
@@ -257,3 +258,10 @@ struct chip_operations northbridge_intel_gm45_ops = {
 	CHIP_NAME("Intel GM45 Northbridge")
 	.init = gm45_init,
 };
+
+bool northbridge_support_slfm(void)
+{
+	struct device *gmch = __pci_0_00_0;
+	struct northbridge_intel_gm45_config *config = gmch->chip_info;
+	return config->slfm == 1;
+}

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/intel/speedstep.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -137,6 +138,20 @@ static void i82801ix_gpi_routing(struct device *dev)
 	pci_write_config32(dev, D31F0_GPIO_ROUT, reg32);
 }
 
+bool southbridge_support_c5(void)
+{
+	struct device *lpc_dev = __pci_0_1f_0;
+	struct southbridge_intel_i82801ix_config *config = lpc_dev->chip_info;
+	return config->c5_enable == 1;
+}
+
+bool southbridge_support_c6(void)
+{
+	struct device *lpc_dev = __pci_0_1f_0;
+	struct southbridge_intel_i82801ix_config *config = lpc_dev->chip_info;
+	return config->c6_enable == 1;
+}
+
 static void i82801ix_power_options(struct device *dev)
 {
 	u8 reg8;
@@ -216,15 +231,15 @@ static void i82801ix_power_options(struct device *dev)
 	reg16 |= (1 << 10);	// BIOS_PCI_EXP_EN - Desktop/Mobile only
 	if (CONFIG(DEBUG_PERIODIC_SMI))
 		reg16 |= (3 << 0); // Periodic SMI every 8s
-	if (config->c5_enable)
+	if (southbridge_support_c5())
 		reg16 |= (1 << 11); /* Enable C5, C6 and PMSYNC# */
 	pci_write_config16(dev, D31F0_GEN_PMCON_1, reg16);
 
 	/* Set exit timings for C5/C6. */
-	if (config->c5_enable) {
+	if (southbridge_support_c5()) {
 		reg8 = pci_read_config8(dev, D31F0_C5_EXIT_TIMING);
 		reg8 &= ~((7 << 3) | (7 << 0));
-		if (config->c6_enable)
+		if (southbridge_support_c6())
 			reg8 |= (5 << 3) | (3 << 0); /* 38-44us PMSYNC# to STPCLK#,
 							95-102us DPRSTP# to STP_CPU# */
 		else

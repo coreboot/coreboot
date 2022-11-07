@@ -6,9 +6,6 @@ chip northbridge/intel/x4x		# Northbridge
 		chip cpu/intel/socket_LGA775
 			device lapic 0 on end
 		end
-		chip cpu/intel/model_1067x	# CPU
-			device lapic 0xACAC off end
-		end
 	end
 	device domain 0 on
 		ops x4x_pci_domain_ops		# PCI domain

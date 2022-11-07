@@ -12,6 +12,7 @@
 #include <northbridge/intel/x4x/chip.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <cpu/intel/smm_reloc.h>
+#include <cpu/intel/speedstep.h>
 
 static void mch_domain_read_resources(struct device *dev)
 {
@@ -194,3 +195,8 @@ struct chip_operations northbridge_intel_x4x_ops = {
 	CHIP_NAME("Intel 4-Series Northbridge")
 	.init = x4x_init,
 };
+
+bool northbridge_support_slfm(void)
+{
+	return false;
+}

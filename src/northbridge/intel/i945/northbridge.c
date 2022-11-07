@@ -10,6 +10,7 @@
 #include <device/pci_ids.h>
 #include <acpi/acpi.h>
 #include <cpu/intel/smm_reloc.h>
+#include <cpu/intel/speedstep.h>
 #include "i945.h"
 
 static void mch_domain_read_resources(struct device *dev)
@@ -164,3 +165,8 @@ struct device_operations i945_cpu_bus_ops = {
 struct chip_operations northbridge_intel_i945_ops = {
 	CHIP_NAME("Intel i945 Northbridge")
 };
+
+bool northbridge_support_slfm(void)
+{
+	return false;
+}

@@ -9,25 +9,18 @@
 #include <cpu/x86/name.h>
 #include <cpu/intel/smm_reloc.h>
 
-#include "chip.h"
-
 #define MSR_BBL_CR_CTL3		0x11e
 
 static void configure_c_states(const int quad)
 {
 	msr_t msr;
 
-	/* Find pointer to CPU configuration. */
-	const struct device *lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
-	const struct cpu_intel_model_1067x_config *const conf =
-		(lapic && lapic->chip_info) ? lapic->chip_info : NULL;
-
 	/* Is C5 requested and supported? */
-	const int c5 = conf && conf->c5 &&
+	const int c5 = southbridge_support_c5() &&
 			(rdmsr(MSR_BBL_CR_CTL3).lo & (3 << 30)) &&
 			!(rdmsr(MSR_FSB_FREQ).lo & (1 << 31));
 	/* Is C6 requested and supported? */
-	const int c6 = conf && conf->c6 &&
+	const int c6 = southbridge_support_c6() &&
 			((cpuid_edx(5) >> (6 * 4)) & 0xf) && c5;
 
 	const int cst_range = (c6 ? 6 : (c5 ? 5 : 4)) - 2; /* zero means lvl2 */
@@ -75,14 +68,9 @@ static void configure_p_states(const char stepping, const char cores)
 {
 	msr_t msr;
 
-	/* Find pointer to CPU configuration. */
-	const struct device *lapic = dev_find_lapic(SPEEDSTEP_APIC_MAGIC);
-	struct cpu_intel_model_1067x_config *const conf =
-		(lapic && lapic->chip_info) ? lapic->chip_info : NULL;
-
 	msr = rdmsr(MSR_EXTENDED_CONFIG);
 	/* Super LFM supported? */
-	if (conf && conf->slfm && (msr.lo & (1 << 27)))
+	if (northbridge_support_slfm() && (msr.lo & (1 << 27)))
 		msr.lo |= (1 << 28); /* Enable Super LFM. */
 	wrmsr(MSR_EXTENDED_CONFIG, msr);
 

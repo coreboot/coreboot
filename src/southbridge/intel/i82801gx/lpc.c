@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/intel/speedstep.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -473,3 +474,13 @@ static const struct pci_driver ich7_lpc __pci_driver = {
 	.vendor	= PCI_VID_INTEL,
 	.devices = pci_device_ids,
 };
+
+bool southbridge_support_c5(void)
+{
+	return false;
+}
+
+bool southbridge_support_c6(void)
+{
+	return false;
+}

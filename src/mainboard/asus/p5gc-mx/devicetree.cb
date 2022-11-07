@@ -7,9 +7,6 @@ chip northbridge/intel/i945
 		chip cpu/intel/socket_LGA775
 			device lapic 0 on end
 		end
-		chip cpu/intel/model_1067x
-			device lapic 0xACAC off end
-		end
 	end
 
 	device domain 0 on

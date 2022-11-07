@@ -3,10 +3,8 @@
 #ifndef CPU_INTEL_SPEEDSTEP_H
 #define CPU_INTEL_SPEEDSTEP_H
 
+#include <stdbool.h>
 #include <stdint.h>
-
-/* Magic value used to locate speedstep configuration in the device tree */
-#define SPEEDSTEP_APIC_MAGIC 0xACAC
 
 /* MWAIT coordination I/O base address. This must match
  * the \_PR_.CP00 PM base address.
@@ -91,5 +89,9 @@ void speedstep_gen_pstates(sst_table_t *);
 #define SPEEDSTEP_MAX_POWER_PENRYN	35000
 #define SPEEDSTEP_MIN_POWER_PENRYN	15000
 #define SPEEDSTEP_SLFM_POWER_PENRYN	12000
+
+bool southbridge_support_c5(void);
+bool southbridge_support_c6(void);
+bool northbridge_support_slfm(void);
 
 #endif /* CPU_INTEL_SPEEDSTEP_H */

@@ -20,9 +20,7 @@ chip soc/intel/apollolake
 	# 0:HS400 (Default) 1:HS200 2:DDR50
 	register "emmc_host_max_speed" = "1"
 
-	device cpu_cluster 0 on
-		device lapic 0 on end
-	end
+	device cpu_cluster 0 on end
 	device domain 0 on
 		subsystemid 0x8086 0x7270 inherit
 		device pci 00.0 on end	# - Host Bridge

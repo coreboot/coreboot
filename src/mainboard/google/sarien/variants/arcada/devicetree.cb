@@ -208,9 +208,7 @@ chip soc/intel/cannonlake
 	register "gpio_pm[COMM_3]" = "MISCCFG_GPIO_PM_CONFIG_BITS"
 	register "gpio_pm[COMM_4]" = "MISCCFG_GPIO_PM_CONFIG_BITS"
 
-	device cpu_cluster 0 on
-		device lapic 0 on end
-	end
+	device cpu_cluster 0 on end
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device

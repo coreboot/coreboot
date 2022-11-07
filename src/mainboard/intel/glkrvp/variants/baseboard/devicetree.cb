@@ -1,8 +1,6 @@
 chip soc/intel/apollolake
 
-	device cpu_cluster 0 on
-		device lapic 0 on end
-	end
+	device cpu_cluster 0 on end
 
 	register "pcie_rp_clkreq_pin[0]" = "CLKREQ_DISABLED"
 	# Disable unused clkreq of PCIe root ports

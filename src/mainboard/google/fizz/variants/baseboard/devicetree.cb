@@ -305,9 +305,7 @@ chip soc/intel/skylake
 	}"
 	register "tcc_offset" = "6"     # TCC of 94C
 
-	device cpu_cluster 0 on
-		device lapic 0 on end
-	end
+	device cpu_cluster 0 on end
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device

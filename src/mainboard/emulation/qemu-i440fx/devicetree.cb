@@ -1,9 +1,5 @@
 chip mainboard/emulation/qemu-i440fx
-	device cpu_cluster 0 on
-		chip cpu/qemu-x86
-			device lapic 0 on end
-		end
-	end
+	device cpu_cluster 0 on	end
 	device domain 0 on
 		device pci 0.0 on end		# northbridge (i440fx)
 		chip southbridge/intel/i82371eb # southbridge

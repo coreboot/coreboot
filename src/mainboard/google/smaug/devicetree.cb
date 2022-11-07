@@ -1,8 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 chip soc/nvidia/tegra210
-	device cpu_cluster 0 on
-	end
+	device cpu_cluster 0 on end
 
 	register "display_controller" = "TEGRA_ARM_DISPLAYA"
 	register "xres" = "2560"

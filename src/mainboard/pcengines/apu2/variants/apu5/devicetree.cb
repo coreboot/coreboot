@@ -1,11 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 chip northbridge/amd/pi/00730F01/root_complex
-	device cpu_cluster 0 on
-		chip cpu/amd/pi/00730F01
-			device lapic 0 on  end
-		end
-	end
+	device cpu_cluster 0 on end
 
 	device domain 0 on
 		subsystemid 0x1022 0x1410 inherit

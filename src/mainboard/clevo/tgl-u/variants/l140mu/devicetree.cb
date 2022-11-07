@@ -2,7 +2,6 @@ chip soc/intel/tigerlake
 	device cpu_cluster 0 on
 		register "tcc_offset" = "12"
 		register "eist_enable" = "true"
-		device lapic 0 on end
 	end
 	device domain 0 on
 		subsystemid 0x1558 0x14a1 inherit

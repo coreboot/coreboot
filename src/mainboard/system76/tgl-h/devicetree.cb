@@ -78,9 +78,7 @@ chip soc/intel/tigerlake
 	register "pmc_gpe0_dw2" = "PMC_GPP_D"
 
 # Actual device tree
-	device cpu_cluster 0 on
-		device lapic 0 on end
-	end
+	device cpu_cluster 0 on end
 
 	device domain 0 on
 		#From CPU EDS(575683)

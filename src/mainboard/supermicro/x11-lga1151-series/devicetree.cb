@@ -26,9 +26,7 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert"	= "SLP_SUS_MIN_ASSERT_4S"
 	register "PmConfigSlpAMinAssert"	= "SLP_A_MIN_ASSERT_2S"
 
-	device cpu_cluster 0 on
-		device lapic 0 on end
-	end
+	device cpu_cluster 0 on end
 	device domain 0 on
 		device pci 00.0 on  end	# Host Bridge
 		device pci 01.0 off end	# CPU PCIe Port 10 (x16)

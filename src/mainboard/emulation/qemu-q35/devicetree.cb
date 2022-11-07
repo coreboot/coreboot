@@ -1,9 +1,5 @@
 chip mainboard/emulation/qemu-q35
-	device cpu_cluster 0 on
-		chip cpu/qemu-x86
-			device lapic 0 on end
-		end
-	end
+	device cpu_cluster 0 on end
 	device domain 0 on
 		device pci 0.0 mandatory end		# northbridge (q35)
 		chip southbridge/intel/i82801ix

@@ -53,9 +53,7 @@ chip soc/intel/baytrail
 	# Disable SLP_X stretching after SUS power well fail.
 	register "disable_slp_x_stretch_sus_fail" = "1"
 
-	device cpu_cluster 0 on
-		device lapic 0 on end
-	end
+	device cpu_cluster 0 on end
 	device domain 0 on
 		device pci 00.0 on  end # SoC router
 		device pci 02.0 on  end # GFX

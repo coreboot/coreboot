@@ -1,8 +1,6 @@
 chip soc/intel/cannonlake
 
-	device cpu_cluster 0 on
-		device lapic 0 on end
-	end
+	device cpu_cluster 0 on end
 
 	# FSP configuration
 	register "SaGv" = "SaGv_Enabled"

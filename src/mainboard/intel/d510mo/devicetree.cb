@@ -5,11 +5,7 @@ chip northbridge/intel/pineview		# Northbridge
 	register "use_crt" = "true"
 	register "use_lvds" = "false"
 
-	device cpu_cluster 0 on		# APIC cluster
-		chip cpu/intel/socket_FCBGA559	# CPU
-			device lapic 0 on end		# APIC
-		end
-	end
+	device cpu_cluster 0 on end		# APIC cluster
 	device domain 0 on			# PCI domain
 		device pci 0.0 on end		# Host Bridge
 		device pci 2.0 on end		# Integrated graphics controller

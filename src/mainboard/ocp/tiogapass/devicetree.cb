@@ -40,9 +40,7 @@ chip soc/intel/xeon_sp/skx
 
 	register "gen2_dec" = "0x000c0ca1" # IPMI KCS
 
-	device cpu_cluster 0 on
-	  device lapic 0 on end
-	end
+	device cpu_cluster 0 on end
 
 	device domain 0 on
 		device gpio 0 alias pch_gpio on end

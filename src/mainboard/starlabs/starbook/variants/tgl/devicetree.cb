@@ -64,9 +64,7 @@ chip soc/intel/tigerlake
 	register "PcieClkSrcClkReq[6]"		= "PCIE_CLK_NOTUSED"
 
 # Actual device tree.
-	device cpu_cluster 0 on
-		device lapic 0 on end
-	end
+	device cpu_cluster 0 on end
 
 	device domain 0 on
 		device ref igpu		on  end

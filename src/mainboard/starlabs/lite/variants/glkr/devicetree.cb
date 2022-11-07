@@ -1,7 +1,5 @@
 chip soc/intel/apollolake
-	device cpu_cluster 0 on
-		device lapic 0 on end
-	end
+	device cpu_cluster 0 on end
 
 	# Graphics
 	# TODO:

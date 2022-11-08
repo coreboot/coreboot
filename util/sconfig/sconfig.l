@@ -31,7 +31,6 @@ pci			{yylval.number=PCI; return(BUS);}
 ioapic			{yylval.number=IOAPIC; return(BUS);}
 pnp			{yylval.number=PNP; return(BUS);}
 i2c			{yylval.number=I2C; return(BUS);}
-lapic			{yylval.number=APIC; return(BUS);}
 cpu_cluster		{yylval.number=CPU_CLUSTER; return(BUS);}
 cpu			{yylval.number=CPU; return(BUS);}
 domain			{yylval.number=DOMAIN; return(BUS);}

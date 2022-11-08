@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_HOME_WERNER_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
-# define YY_YY_HOME_WERNER_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
+#ifndef YY_YY_HOME_ARTHUR_SRC_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
+# define YY_YY_HOME_ARTHUR_SRC_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -72,33 +72,32 @@ extern int yydebug;
     PCI = 273,                     /* PCI  */
     PNP = 274,                     /* PNP  */
     I2C = 275,                     /* I2C  */
-    APIC = 276,                    /* APIC  */
-    CPU_CLUSTER = 277,             /* CPU_CLUSTER  */
-    CPU = 278,                     /* CPU  */
-    DOMAIN = 279,                  /* DOMAIN  */
-    IRQ = 280,                     /* IRQ  */
-    DRQ = 281,                     /* DRQ  */
-    SLOT_DESC = 282,               /* SLOT_DESC  */
-    SMBIOS_DEV_INFO = 283,         /* SMBIOS_DEV_INFO  */
-    IO = 284,                      /* IO  */
-    NUMBER = 285,                  /* NUMBER  */
-    SUBSYSTEMID = 286,             /* SUBSYSTEMID  */
-    INHERIT = 287,                 /* INHERIT  */
-    IOAPIC_IRQ = 288,              /* IOAPIC_IRQ  */
-    IOAPIC = 289,                  /* IOAPIC  */
-    PCIINT = 290,                  /* PCIINT  */
-    GENERIC = 291,                 /* GENERIC  */
-    SPI = 292,                     /* SPI  */
-    USB = 293,                     /* USB  */
-    MMIO = 294,                    /* MMIO  */
-    GPIO = 295,                    /* GPIO  */
-    MDIO = 296,                    /* MDIO  */
-    FW_CONFIG_TABLE = 297,         /* FW_CONFIG_TABLE  */
-    FW_CONFIG_FIELD = 298,         /* FW_CONFIG_FIELD  */
-    FW_CONFIG_OPTION = 299,        /* FW_CONFIG_OPTION  */
-    FW_CONFIG_PROBE = 300,         /* FW_CONFIG_PROBE  */
-    PIPE = 301,                    /* PIPE  */
-    OPS = 302                      /* OPS  */
+    CPU_CLUSTER = 276,             /* CPU_CLUSTER  */
+    CPU = 277,                     /* CPU  */
+    DOMAIN = 278,                  /* DOMAIN  */
+    IRQ = 279,                     /* IRQ  */
+    DRQ = 280,                     /* DRQ  */
+    SLOT_DESC = 281,               /* SLOT_DESC  */
+    SMBIOS_DEV_INFO = 282,         /* SMBIOS_DEV_INFO  */
+    IO = 283,                      /* IO  */
+    NUMBER = 284,                  /* NUMBER  */
+    SUBSYSTEMID = 285,             /* SUBSYSTEMID  */
+    INHERIT = 286,                 /* INHERIT  */
+    IOAPIC_IRQ = 287,              /* IOAPIC_IRQ  */
+    IOAPIC = 288,                  /* IOAPIC  */
+    PCIINT = 289,                  /* PCIINT  */
+    GENERIC = 290,                 /* GENERIC  */
+    SPI = 291,                     /* SPI  */
+    USB = 292,                     /* USB  */
+    MMIO = 293,                    /* MMIO  */
+    GPIO = 294,                    /* GPIO  */
+    MDIO = 295,                    /* MDIO  */
+    FW_CONFIG_TABLE = 296,         /* FW_CONFIG_TABLE  */
+    FW_CONFIG_FIELD = 297,         /* FW_CONFIG_FIELD  */
+    FW_CONFIG_OPTION = 298,        /* FW_CONFIG_OPTION  */
+    FW_CONFIG_PROBE = 299,         /* FW_CONFIG_PROBE  */
+    PIPE = 300,                    /* PIPE  */
+    OPS = 301                      /* OPS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -127,4 +126,4 @@ extern YYSTYPE yylval;
 int yyparse (void);
 
 
-#endif /* !YY_YY_HOME_WERNER_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED  */
+#endif /* !YY_YY_HOME_ARTHUR_SRC_COREBOOT_UTIL_SCONFIG_SCONFIG_TAB_H_SHIPPED_INCLUDED  */

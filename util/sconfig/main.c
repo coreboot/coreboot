@@ -869,10 +869,6 @@ static struct device *new_device_with_path(struct bus *parent,
 		new_d->path = ".type=DEVICE_PATH_I2C,{.i2c={ .device = 0x%x, .mode_10bit = %d }}";
 		break;
 
-	case APIC:
-		new_d->path = ".type=DEVICE_PATH_APIC,{.apic={ .apic_id = 0x%x }}";
-		break;
-
 	case CPU_CLUSTER:
 		new_d->path = ".type=DEVICE_PATH_CPU_CLUSTER,{.cpu_cluster={ .cluster = 0x%x }}";
 		break;

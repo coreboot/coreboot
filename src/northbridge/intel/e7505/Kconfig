@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config NORTHBRIDGE_INTEL_E7505
+	bool
+
+if NORTHBRIDGE_INTEL_E7505
+
+config NORTHBRIDGE_SPECIFIC_OPTIONS
+	def_bool y
+	select NO_ECAM_MMCONF_SUPPORT
+	select HAVE_DEBUG_RAM_SETUP
+	select NO_CBFS_MCACHE
+
+endif

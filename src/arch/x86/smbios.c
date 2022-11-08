@@ -382,6 +382,8 @@ static int get_socket_type(void)
 {
 	if (CONFIG(CPU_INTEL_SLOT_1))
 		return 0x08;
+	if (CONFIG(CPU_INTEL_SOCKET_MPGA604))
+		return 0x13;
 	if (CONFIG(CPU_INTEL_SOCKET_LGA775))
 		return 0x15;
 	if (CONFIG(XEON_SP_COMMON_BASE))

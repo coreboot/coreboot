@@ -1,0 +1,36 @@
+config CPU_INTEL_SOCKET_MPGA604
+	bool
+
+if CPU_INTEL_SOCKET_MPGA604
+
+config SOCKET_SPECIFIC_OPTIONS
+	def_bool y
+	select CPU_INTEL_MODEL_F2X
+	select MMX
+	select SSE
+	select UDELAY_TSC
+	select TSC_MONOTONIC_TIMER
+	select SIPI_VECTOR_IN_ROM
+	select CPU_INTEL_COMMON
+	select CPU_INTEL_COMMON_TIMEBASE
+
+# mPGA604 are usually Intel Netburst CPUs which should have SSE2
+# but the ramtest.c code on the Dell S1850 seems to choke on
+# enabling it, so disable it for now.
+config SSE2
+	bool
+	default n
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xfefc0000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x4000
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x2000
+
+endif # CPU_INTEL_SOCKET_MPGA604

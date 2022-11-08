@@ -1,0 +1,67 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/e7505
+
+	device cpu_cluster 0 on
+	end
+
+	device domain 0 on
+		device pci 0.0 on end # Chipset host controller
+		device pci 0.1 on end # Host RASUM controller
+		device pci 2.0 on # Hub interface B
+			chip southbridge/intel/i82870 # P64H2
+				device pci 1c.0 on end # IOAPIC - bus B
+				device pci 1d.0 on end # Hub to PCI-B bridge
+				device pci 1e.0 on end # IOAPIC - bus A
+				device pci 1f.0 on end # Hub to PCI-A bridge
+			end
+		end
+		device pci 4.0 off end #  (undocumented)
+		device pci 6.0 off end #  (undocumented)
+		chip southbridge/intel/i82801dx
+			device pci 1d.0 on end # USB UHCI
+			device pci 1d.1 on end # USB UHCI
+			device pci 1d.2 on end # USB UHCI
+			device pci 1d.7 on end # USB EHCI
+			device pci 1e.0 on # Hub to PCI bridge
+				device pci 2.0 off end
+			end
+			device pci 1f.0 on # LPC bridge
+				chip superio/smsc/lpc47m10x
+					device pnp 2e.0 off # Floppy
+						io 0x60 = 0x3f0
+						irq 0x70 = 6
+						drq 0x74 = 2
+					end
+					device pnp 2e.3 off # Parallel Port
+						io 0x60 = 0x378
+						irq 0x70 = 7
+					end
+					device pnp 2e.4 on # Com1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.5 off # Com2
+						io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 2e.7 off # Keyboard
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1 # Keyboard interrupt
+						irq 0x72 = 12 # Mouse interrupt
+					end
+					device pnp 2e.a on # ACPI
+						io 0x60 = 0x0e00
+					end
+				end
+			end
+			device pci 1f.1 on end # IDE
+			register "ide0_enable" = "1"
+			register "ide1_enable" = "1"
+			device pci 1f.3 on end # SMBus
+			device pci 1f.5 on end # AC97 Audio
+			device pci 1f.6 off end # AC97 Modem
+		end # SB
+	end # PCI domain
+end

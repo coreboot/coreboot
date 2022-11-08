@@ -1,0 +1,7 @@
+config CPU_INTEL_MODEL_F2X
+	bool
+	select ARCH_X86
+	select SUPPORT_CPU_UCODE_IN_CBFS
+	select CPU_INTEL_COMMON
+	select SSE2
+	select NO_SMM

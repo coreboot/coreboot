@@ -1,0 +1,6 @@
+Category: server
+Board URL: ftp://ftp.aopen.com/pub/server/motherboard/dxplpu/manual/dxplpu-ol-e.pdf
+ROM package: PLCC
+ROM protocol: FWH
+ROM socketed: y
+Flashrom support: y

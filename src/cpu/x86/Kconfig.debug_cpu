@@ -1,12 +1,5 @@
 if ARCH_X86
 
-config HAVE_DEBUG_CAR
-	bool
-
-config DEBUG_CAR
-	bool "Output verbose Cache-as-RAM debug messages"
-	depends on HAVE_DEBUG_CAR
-
 config DISPLAY_MTRRS
 	bool "Display intermediate MTRR settings"
 

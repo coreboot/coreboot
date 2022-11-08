@@ -138,6 +138,11 @@ static const struct spi_flash_part_id flash_table[] = {
 		.id[0] = 0x9517,
 		.nr_sectors_shift = 11,
 	},
+	{
+		/* MX77U25650F */
+		.id[0] = 0x7539,
+		.nr_sectors_shift = 13,
+	},
 };
 
 const struct spi_flash_vendor_info spi_flash_macronix_vi = {

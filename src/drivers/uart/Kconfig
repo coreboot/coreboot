@@ -69,9 +69,3 @@ config DRIVERS_UART_SIFIVE
 	bool
 	select HAVE_UART_SPECIAL
 	select UART_OVERRIDE_INPUT_CLOCK_DIVIDER
-
-config UART_USE_REFCLK_AS_INPUT_CLOCK
-	bool
-	default n
-	help
-	  Use uart_platform_refclk to specify the input clock value.

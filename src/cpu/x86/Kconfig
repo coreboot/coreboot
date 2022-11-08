@@ -159,13 +159,6 @@ config SMM_MODULE_STACK_SIZE
 	  This option determines the size of the stack within the SMM handler
 	  modules.
 
-config SMM_STUB_STACK_SIZE
-	hex
-	default 0x400
-	help
-	  This option determines the size of the stack within the SMM handler
-	  modules.
-
 endif
 
 config SMM_LAPIC_REMAP_MITIGATION

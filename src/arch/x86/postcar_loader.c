@@ -20,7 +20,7 @@ static size_t var_mtrr_ctx_size(void)
 	return sizeof(struct var_mtrr_context) + mtrr_count * 2 * sizeof(msr_t);
 }
 
-static int postcar_frame_init(struct postcar_frame *pcf)
+static enum cb_err postcar_frame_init(struct postcar_frame *pcf)
 {
 	memset(pcf, 0, sizeof(*pcf));
 
@@ -29,13 +29,13 @@ static int postcar_frame_init(struct postcar_frame *pcf)
 	ctx = cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK, var_mtrr_ctx_size());
 	if (ctx == NULL) {
 		printk(BIOS_ERR, "Couldn't add var_mtrr_ctx setup in cbmem.\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	pcf->mtrr = ctx;
 	var_mtrr_context_init(pcf->mtrr);
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 void postcar_frame_add_mtrr(struct postcar_frame *pcf,

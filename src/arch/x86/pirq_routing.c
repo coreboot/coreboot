@@ -1,10 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <console/console.h>
 #include <arch/pirq_routing.h>
 #include <commonlib/helpers.h>
-#include <string.h>
+#include <console/console.h>
 #include <device/pci.h>
+#include <string.h>
+#include <types.h>
 
 static void check_pirq_routing_table(struct irq_routing_table *rt)
 {
@@ -59,7 +60,7 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	printk(BIOS_INFO, "done.\n");
 }
 
-static int verify_copy_pirq_routing_table(unsigned long addr,
+static enum cb_err verify_copy_pirq_routing_table(unsigned long addr,
 	const struct irq_routing_table *routing_table)
 {
 	int i;
@@ -73,14 +74,14 @@ static int verify_copy_pirq_routing_table(unsigned long addr,
 	for (i = 0; i < routing_table->size; i++) {
 		if (*(rt_curr + i) != *(rt_orig + i)) {
 			printk(BIOS_INFO, "failed\n");
-			return -1;
+			return CB_ERR;
 		}
 	}
 	printk(BIOS_INFO, "done\n");
 
 	check_pirq_routing_table((struct irq_routing_table *)addr);
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 static u8 pirq_get_next_free_irq(u8 *pirq, u16 bitmap)

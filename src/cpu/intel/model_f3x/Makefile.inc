@@ -1,6 +1,5 @@
 ramstage-y += model_f3x_init.c
 
-subdirs-y += ../hyperthreading
 subdirs-y += ../smm/gen1
 
 ramstage-$(CONFIG_PARALLEL_MP) += ../model_1067x/mp_init.c

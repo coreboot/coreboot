@@ -254,45 +254,13 @@ void mp_init_cpus(struct bus *cpu_bus)
 
 static void cpu_bus_init(struct device *dev)
 {
-	if (CONFIG(PARALLEL_MP))
-		mp_cpu_bus_init(dev);
-	else
-		initialize_cpus(dev->link_list);
-}
-
-static void cpu_bus_scan(struct device *bus)
-{
-	unsigned int max_cpus = fw_cfg_max_cpus();
-	struct device *cpu;
-	int i;
-
-	if (max_cpus == 0)
-		return;
-	/*
-	 * Do not install more CPUs than supported by coreboot.
-	 * This will cause a buffer overflow where fixed arrays of CONFIG_MAX_CPUS
-	 * are used and might result in a boot failure.
-	 */
-	max_cpus = MIN(max_cpus, CONFIG_MAX_CPUS);
-
-	/*
-	 * TODO: This only handles the simple "qemu -smp $nr" case
-	 * correctly.  qemu also allows to specify the number of
-	 * cores, threads & sockets.
-	 */
-	printk(BIOS_INFO, "QEMU: max_cpus is %d\n", max_cpus);
-	for (i = 0; i < max_cpus; i++) {
-		cpu = add_cpu_device(bus->link_list, i, 1);
-		if (cpu)
-			set_cpu_topology(cpu, 1, 0, i, 0);
-	}
+	mp_cpu_bus_init(dev);
 }
 
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
 	.init             = cpu_bus_init,
-	.scan_bus         = cpu_bus_scan,
 };
 
 static void northbridge_enable(struct device *dev)

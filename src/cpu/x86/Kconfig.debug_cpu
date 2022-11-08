@@ -10,8 +10,4 @@ config DEBUG_CAR
 config DISPLAY_MTRRS
 	bool "Display intermediate MTRR settings"
 
-config DEBUG_SMM_RELOCATION
-	bool "Debug SMM relocation code"
-	depends on HAVE_SMI_HANDLER && SMM_ASEG
-
 endif # ARCH_X86

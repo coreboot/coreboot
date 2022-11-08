@@ -7,13 +7,6 @@ config SOC_INTEL_COMMON_BLOCK_SMBUS
 config FIXED_SMBUS_IO_BASE
 	default 0xefa0
 
-config SOC_INTEL_COMMON_BLOCK_SMBUS_ACPI_DRIVER
-	bool
-	default n
-	depends on SOC_INTEL_COMMON_BLOCK_SMBUS
-	help
-	  Intel Processor SMBus ACPI driver support
-
 config SOC_INTEL_COMMON_BLOCK_TCO
 	bool
 	help

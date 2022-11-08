@@ -28,15 +28,16 @@ cache_as_ram:
 	jz	ap_init
 
 	/* Clear/disable fixed MTRRs */
-	mov	$fixed_mtrr_list_size, %ebx
+	mov	$fixed_mtrr_list, %ebx
 	xor	%eax, %eax
 	xor	%edx, %edx
 
 clear_fixed_mtrr:
-	add	$-2, %ebx
-	movzwl	fixed_mtrr_list(%ebx), %ecx
+	movzwl	(%ebx), %ecx
 	wrmsr
-	jnz	clear_fixed_mtrr
+	add	$2, %ebx
+	cmp	$fixed_mtrr_list_end, %ebx
+	jl	clear_fixed_mtrr
 
 	/* Figure out how many MTRRs we have, and clear them out */
 	mov	$MTRR_CAP_MSR, %ecx
@@ -402,6 +403,6 @@ fixed_mtrr_list:
 	.word	MTRR_FIX_4K_E8000
 	.word	MTRR_FIX_4K_F0000
 	.word	MTRR_FIX_4K_F8000
-fixed_mtrr_list_size = . - fixed_mtrr_list
+fixed_mtrr_list_end:
 
 _cache_as_ram_setup_end:

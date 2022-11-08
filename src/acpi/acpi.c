@@ -888,7 +888,7 @@ void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions)
 
 	printk(BIOS_DEBUG, "%s einj_smi = %p\n", __func__, einj_smi);
 	memset(einj_smi, 0, sizeof(acpi_einj_smi_t));
-	tat = (acpi_einj_trigger_table_t *)(einj_smi + sizeof(acpi_einj_smi_t));
+	tat = (acpi_einj_trigger_table_t *)((uint8_t *)einj_smi + sizeof(acpi_einj_smi_t));
 	tat->header_size =  16;
 	tat->revision =  0;
 	tat->table_size =  sizeof(acpi_einj_trigger_table_t) +

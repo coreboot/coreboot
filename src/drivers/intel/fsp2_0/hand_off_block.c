@@ -132,8 +132,7 @@ struct hob_resource *find_resource_hob_by_guid(const struct hob_header *hob,
 {
 	const struct hob_resource *res;
 
-	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST;
-		hob = fsp_next_hob(hob)) {
+	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST; hob = fsp_next_hob(hob)) {
 		if (hob->type != HOB_TYPE_RESOURCE_DESCRIPTOR)
 			continue;
 
@@ -195,8 +194,7 @@ const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size)
 	if (!hob)
 		return NULL;
 
-	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST;
-		hob = fsp_next_hob(hob)) {
+	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST; hob = fsp_next_hob(hob)) {
 		if (hob->type != HOB_TYPE_GUID_EXTENSION)
 			continue;
 
@@ -219,12 +217,10 @@ static void display_fsp_version_info_hob(const void *hob)
 	uint8_t vs;
 #if CONFIG(DISPLAY_FSP_VERSION_INFO)
 	const FIRMWARE_VERSION_INFO *fvi;
-	const FIRMWARE_VERSION_INFO_HOB *fvih =
-			(FIRMWARE_VERSION_INFO_HOB *)hob;
+	const FIRMWARE_VERSION_INFO_HOB *fvih = (FIRMWARE_VERSION_INFO_HOB *)hob;
 
 	fvi = (void *)&fvih[1];
-	str_ptr = (char *)((uintptr_t)fvi +
-			 (fvih->Count * sizeof(FIRMWARE_VERSION_INFO)));
+	str_ptr = (char *)((uintptr_t)fvi + (fvih->Count * sizeof(FIRMWARE_VERSION_INFO)));
 	tcount = fvih->Count;
 #elif CONFIG(DISPLAY_FSP_VERSION_INFO_2)
 
@@ -255,8 +251,7 @@ static void display_fsp_version_info_hob(const void *hob)
 			fvi[index].Version.Revision == 0xFF &&
 			fvi[index].Version.BuildNumber == 0xFF &&
 			vs == 0) {
-			str_ptr = (char *)((uintptr_t)str_ptr + cnt +
-					sizeof(uint8_t));
+			str_ptr = (char *)((uintptr_t)str_ptr + cnt + sizeof(uint8_t));
 			continue;
 		}
 		/*
@@ -274,13 +269,11 @@ static void display_fsp_version_info_hob(const void *hob)
 					fvi[index].Version.Revision,
 					fvi[index].Version.BuildNumber);
 		else {
-			str_ptr = (char *)((uintptr_t)str_ptr + cnt +
-					sizeof(uint8_t));
+			str_ptr = (char *)((uintptr_t)str_ptr + cnt + sizeof(uint8_t));
 			cnt = strlen(str_ptr);
 			printk(BIOS_DEBUG, "%s\n", str_ptr);
 		}
-		str_ptr = (char *)((uintptr_t)str_ptr + cnt +
-				sizeof(uint8_t));
+		str_ptr = (char *)((uintptr_t)str_ptr + cnt + sizeof(uint8_t));
 	}
 #endif
 }
@@ -294,8 +287,7 @@ void fsp_display_fvi_version_hob(void)
 		return;
 
 	printk(BIOS_DEBUG, "Display FSP Version Info HOB\n");
-	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST;
-			hob = fsp_next_hob(hob)) {
+	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST; hob = fsp_next_hob(hob)) {
 		if (hob->type != HOB_TYPE_GUID_EXTENSION)
 			continue;
 

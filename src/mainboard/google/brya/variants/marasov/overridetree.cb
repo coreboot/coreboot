@@ -1,6 +1,246 @@
+fw_config
+	field KB_BL 7 7
+		option KB_BL_ABSENT			0
+		option KB_BL_PRESENT			1
+	end
+	field AUDIO 8 10
+		option AUDIO_UNKNOWN			0
+		option ALC1019_ALC5682I_VD_I2S		1
+		option ALC1019_ALC5682I_VS_I2S		2
+	end
+	field THERMAL 18 18
+		option THERMAL_6W			0
+		option THERMAL_15W			1
+	end
+	field STORAGE 30 31
+		option STORAGE_NVME			0
+		option STORAGE_UFS			1
+	end
+end
+
 chip soc/intel/alderlake
 
-        device domain 0 on
-        end
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI1             | Fingerprint MCU           |
+	#| I2C0              | Audio                     |
+	#| I2C1              | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#| I2C3              | TouchScreen               |
+	#| I2C5              | Trackpad                  |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+	register "sagv" = "SaGv_Enabled"
+	register "serial_io_i2c_mode" = "{
+		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
+	}"
 
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C0
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"		# Disable USB2_Port 1
+	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC1)"	# USB2_C2
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC2)"		# Type-A Port A1
+	register "usb2_ports[4]" = "USB2_PORT_EMPTY"		# Disable USB2 Port 4
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Camera
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"		# Disable USB2 Port 6
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# DCI port
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC3)"		# Type-A Port A0
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Bluetooth
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port A0
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# DCI port
+	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Disable USB3 Port 2
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC2)"	# USB3/2 Type A port A1
+
+	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC0)"
+	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"
+	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC1)"
+
+        device domain 0 on
+		device ref i2c0 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+					probe AUDIO AUDIO_UNKNOWN
+					probe AUDIO ALC1019_ALC5682I_VD_I2S
+				end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""RTL5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+                                        probe AUDIO ALC1019_ALC5682I_VS_I2S
+				end
+			end
+			chip drivers/generic/alc1015
+				register "hid" = ""RTL1019""
+				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
+				device generic 1 on end
+			end
+		end #I2C0
+		device ref i2c1 on
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A13_IRQ)"
+				device i2c 50 on end
+			end
+		end #I2C1
+		device ref pcie_rp11 on
+			# Enable NVMe SSD PCIe 11-12 using clk 1
+			register "pch_pcie_rp[PCH_RP(11)]" = "{
+				.clk_src = 1,
+				.clk_req = 1,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			probe STORAGE STORAGE_NVME
+		end
+		device ref ish on
+			probe STORAGE STORAGE_UFS
+		end
+		device ref ufs on
+			probe STORAGE STORAGE_UFS
+		end
+		device ref gspi1 on
+			chip drivers/spi/acpi
+				register "name" = ""CRFP""
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "uid" = "1"
+				register "compat_string" = ""google,cros-ec-spi""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F15_IRQ)"
+				register "wake" = "GPE0_DW2_15"
+				register "has_power_resource" = "1"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D1)"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D2)"
+				register "enable_delay_ms" = "3"
+				device spi 0 on end
+			end # FPMCU
+		end
+		device ref pmc hidden
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port1 as usb2_port
+						use tcss_usb3_port1 as usb3_port
+						device generic 0 alias conn0 on end
+					end
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port3 as usb2_port
+						use tcss_usb3_port3 as usb3_port
+						device generic 2 alias conn2 on end
+					end
+				end
+			end
+		end
+		device ref tcss_xhci on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(1, 1))"
+						device ref tcss_usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C2 (DB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(3, 1))"
+						device ref tcss_usb3_port3 on end
+					end
+				end
+			end
+		end
+		device ref xhci on
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(1, 1))"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C2 (DB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(3, 1))"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A1 (MLB)""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 2))"
+						device ref usb2_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A0 (MLB)""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(1, 2))"
+						device ref usb2_port9 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A0 (MLB)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(1, 2))"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A1 (MLB)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 2))"
+						device ref usb3_port4 on end
+					end
+				end
+			end
+		end
+	end
 end

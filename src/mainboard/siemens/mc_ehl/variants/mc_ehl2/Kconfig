@@ -6,6 +6,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select DRIVER_INTEL_I210
 	select SOC_INTEL_COMMON_BLOCK_LPC_COMB_ENABLE
 	select EHL_TSN_DRIVER
+	select DRIVERS_ETH_PHY_M88E1512
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/mc_ehl.fmd"

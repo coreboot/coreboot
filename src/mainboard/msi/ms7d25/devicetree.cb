@@ -98,7 +98,7 @@ chip soc/intel/alderlake
 			register "cpu_pcie_rp[CPU_RP(2)]" = "{
 				.clk_src = 0,
 				.clk_req = 0,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_HOTPLUG,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 				.PcieRpL1Substates = L1_SS_L1_2,
 				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"
@@ -141,7 +141,7 @@ chip soc/intel/alderlake
 			register "pch_pcie_rp[PCH_RP(1)]" = "{
 				.clk_src = 10,
 				.clk_req = 10,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_HOTPLUG | PCIE_RP_CLK_REQ_DETECT,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
 				.PcieRpL1Substates = L1_SS_L1_2,
 				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"
@@ -152,7 +152,7 @@ chip soc/intel/alderlake
 			register "pch_pcie_rp[PCH_RP(2)]" = "{
 				.clk_src = 17,
 				.clk_req = 17,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_HOTPLUG | PCIE_RP_CLK_REQ_DETECT,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
 				.PcieRpL1Substates = L1_SS_L1_2,
 				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"
@@ -174,7 +174,7 @@ chip soc/intel/alderlake
 			register "pch_pcie_rp[PCH_RP(5)]" = "{
 				.clk_src = 15,
 				.clk_req = 15,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_HOTPLUG | PCIE_RP_CLK_REQ_DETECT,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
 				.PcieRpL1Substates = L1_SS_L1_2,
 				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"

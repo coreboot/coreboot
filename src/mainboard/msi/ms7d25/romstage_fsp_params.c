@@ -59,14 +59,6 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	memupd->FspmConfig.PchHdaSdiEnable[0] = 1;
 
-	/*
-	 * Let FSP configure virtual wires, CLKREQs, etc.
-	 * Otherwise undefined behaviour occurs when coreboot enables ASPM on
-	 * CPU PCIe root ports. This is caused by FSP reprogramming certain
-	 * pads including CLKREQ pins, despite GpioOverride = 1.
-	 */
-	memupd->FspmConfig.GpioOverride = 0;
-
 	if (CONFIG(BOARD_MSI_Z690_A_PRO_WIFI_DDR4))
 		memcfg_init(memupd, &ddr4_mem_config, &dimm_module_spd_info, false);
 	if (CONFIG(BOARD_MSI_Z690_A_PRO_WIFI_DDR5))

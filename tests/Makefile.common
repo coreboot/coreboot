@@ -55,14 +55,10 @@ TEST_CFLAGS += -std=gnu11 -Os -ffunction-sections -fdata-sections -fno-builtin
 
 TEST_CFLAGS += -D__TEST__
 
-TEST_CFLAGS += -I$(cmockasrc)/include
-
 ifneq ($(filter-out 0,$(TEST_PRINT)),)
 TEST_CFLAGS += -DTEST_PRINT=1
 endif
 
-# Link against Cmocka
-TEST_LDFLAGS := -L$(cmockaobj)/src -lcmocka -Wl,-rpath=$(cmockaobj)/src
 TEST_LDFLAGS += -Wl,--gc-sections
 
 # Some memlayout symbols don't work with userspace relocation -- disable it.
@@ -70,7 +66,7 @@ TEST_CFLAGS += -fno-pie -fno-pic
 TEST_LDFLAGS += -no-pie
 
 # Extra attributes for unit tests, declared per test
-attributes := srcs cflags config mocks stage
+attributes := srcs cflags config mocks no_test_framework stage
 
 # Copy attributes of one test to another.
 # $1 - input test name
@@ -136,7 +132,15 @@ $($(1)-objs): $(testobj)/$(1)/%.o: $$$$*.c $$($(1)-config-file)
 	done ; \
 	$(OBJCOPY) $$@.orig $$$$objcopy_wrap_flags $$@
 
-$($(1)-bin): $($(1)-objs) $(CMOCKA_LIB)
+# Link against Cmocka if not disabled
+ifeq ($(strip $(filter-out 0 n no,$($(1)-no_test_framework))),)
+$($(1)-objs): TEST_CFLAGS += -I$(cmockasrc)/include
+$($(1)-bin): TEST_LDFLAGS += -L$(cmockaobj)/src -lcmocka -Wl,-rpath=$(cmockaobj)/src
+$($(1)-bin): TEST_CFLAGS += -I$(cmockasrc)/include
+$($(1)-bin): $(CMOCKA_LIB)
+endif
+
+$($(1)-bin): $($(1)-objs)
 	$(HOSTCC) $$^ $($(1)-cflags) $$(TEST_LDFLAGS) -o $$@
 
 endef

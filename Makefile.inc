@@ -653,6 +653,14 @@ bootblock-c-deps+=$(DEVICETREE_STATIC_C)
 postcar-c-deps+=$(DEVICETREE_STATIC_C)
 smm-c-deps+=$(DEVICETREE_STATIC_C)
 
+# Ensure fmap_config.h are created before any objects are compiled
+ramstage-c-deps+=$(obj)/fmap_config.h
+romstage-c-deps+=$(obj)/fmap_config.h
+verstage-c-deps+=$(obj)/fmap_config.h
+bootblock-c-deps+=$(obj)/fmap_config.h
+postcar-c-deps+=$(obj)/fmap_config.h
+smm-c-deps+=$(obj)/fmap_config.h
+
 .PHONY: devicetree
 devicetree: $(DEVICETREE_STATIC_C)
 

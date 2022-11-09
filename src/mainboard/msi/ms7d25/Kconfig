@@ -16,6 +16,7 @@ config BOARD_MSI_MS7D25
 	select INTEL_GMA_HAVE_VBT
 	select CRB_TPM
 	select HAVE_INTEL_PTT
+	select USE_LEGACY_8254_TIMER
 
 if BOARD_MSI_MS7D25
 
@@ -46,10 +47,6 @@ config UART_FOR_CONSOLE
 	default 0
 
 config USE_PM_ACPI_TIMER
-	bool
-	default n
-
-config USE_LEGACY_8254_TIMER
 	bool
 	default n
 

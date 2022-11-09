@@ -126,6 +126,70 @@ void *fsp_get_hob_list_ptr(void)
 	return &fsp_hob_list_ptr;
 }
 
+enum cb_err fsp_hob_iterator_init(const struct hob_header **hob_iterator)
+{
+	*hob_iterator = fsp_get_hob_list();
+	return *hob_iterator ? CB_SUCCESS : CB_ERR;
+}
+
+static enum cb_err fsp_hob_iterator_get_next(const struct hob_header **hob_iterator,
+					     uint16_t hob_type,
+					     const struct hob_header **hob)
+{
+	const struct hob_header *current_hob;
+	while ((*hob_iterator)->type != HOB_TYPE_END_OF_HOB_LIST) {
+		current_hob = *hob_iterator;
+		*hob_iterator = fsp_next_hob(*hob_iterator);
+		if (current_hob->type == hob_type) {
+			*hob = current_hob;
+			return CB_SUCCESS;
+		}
+	}
+	return CB_ERR;
+}
+
+enum cb_err fsp_hob_iterator_get_next_resource(const struct hob_header **hob_iterator,
+					       const struct hob_resource **res)
+{
+	const struct hob_header *hob;
+	while (fsp_hob_iterator_get_next(hob_iterator, HOB_TYPE_RESOURCE_DESCRIPTOR, &hob) == CB_SUCCESS) {
+		*res = fsp_hob_header_to_resource(hob);
+		return CB_SUCCESS;
+	}
+	return CB_ERR;
+}
+
+enum cb_err fsp_hob_iterator_get_next_guid_resource(const struct hob_header **hob_iterator,
+						    const uint8_t guid[16],
+						    const struct hob_resource **res)
+{
+	const struct hob_resource *res_hob;
+	while (fsp_hob_iterator_get_next_resource(hob_iterator, &res_hob) == CB_SUCCESS) {
+		if (fsp_guid_compare(res_hob->owner_guid, guid)) {
+			*res = res_hob;
+			return CB_SUCCESS;
+		}
+	}
+	return CB_ERR;
+}
+
+enum cb_err fsp_hob_iterator_get_next_guid_extension(const struct hob_header **hob_iterator,
+						     const uint8_t guid[16],
+						     const void **data, size_t *size)
+{
+	const struct hob_header *hob;
+	const uint8_t *guid_hob;
+	while (fsp_hob_iterator_get_next(hob_iterator, HOB_TYPE_GUID_EXTENSION, &hob) == CB_SUCCESS) {
+		guid_hob = hob_header_to_struct(hob);
+		if (fsp_guid_compare(guid_hob, guid)) {
+			*size = hob->length - (HOB_HEADER_LEN + 16);
+			*data = hob_header_to_extension_hob(hob);
+			return CB_SUCCESS;
+		}
+	}
+	return CB_ERR;
+}
+
 static const
 struct hob_resource *find_resource_hob_by_guid(const struct hob_header *hob,
 					       const uint8_t guid[16])

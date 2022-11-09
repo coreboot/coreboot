@@ -24,7 +24,7 @@ void update_psp_fw_hash_table(const char *fname)
 	uint32_t len;
 
 	if (!spi_ptr) {
-		printk(BIOS_ERR, "Error: AMD Firmware hash table %s not found\n", fname);
+		printk(BIOS_ERR, "AMD Firmware hash table %s not found\n", fname);
 		/*
 		 * If we don't supply hash table, the PSP will refuse to boot.
 		 * So returning here is safe to do.
@@ -36,7 +36,7 @@ void update_psp_fw_hash_table(const char *fname)
 
 	if (hash_table.no_of_entries_256 > MAX_NUM_HASH_ENTRIES ||
 			hash_table.no_of_entries_384 > MAX_NUM_HASH_ENTRIES) {
-		printk(BIOS_ERR, "Error: Too many entries in AMD Firmware hash table"
+		printk(BIOS_ERR, "Too many entries in AMD Firmware hash table"
 				 " (SHA256:%d, SHA384:%d)\n",
 				 hash_table.no_of_entries_256, hash_table.no_of_entries_384);
 		return;
@@ -44,7 +44,7 @@ void update_psp_fw_hash_table(const char *fname)
 
 	if (hash_table.no_of_entries_256 == 0 &&
 			hash_table.no_of_entries_384 == 0) {
-		printk(BIOS_ERR, "Error: No entries in AMD Firmware hash table"
+		printk(BIOS_ERR, "No entries in AMD Firmware hash table"
 				 " (SHA256:%d, SHA384:%d)\n",
 				 hash_table.no_of_entries_256, hash_table.no_of_entries_384);
 		return;

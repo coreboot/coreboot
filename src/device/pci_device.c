@@ -408,7 +408,7 @@ static void configure_adjustable_base(const struct device *dev,
 
 	int max_requested_bits = __fls64(size_mask);
 	if (max_requested_bits > CONFIG_PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS) {
-		printk(BIOS_WARNING, "WARNING: Device %s requests a BAR with"
+		printk(BIOS_WARNING, "Device %s requests a BAR with"
 		       " %u bits of address space, which coreboot is not"
 		       " configured to hand out, truncating to %u bits\n",
 		       dev_path(dev), max_requested_bits,
@@ -417,7 +417,7 @@ static void configure_adjustable_base(const struct device *dev,
 	}
 
 	if (!(res->flags & IORESOURCE_PCI64) && max_requested_bits > 32) {
-		printk(BIOS_ERR, "ERROR: Resizable BAR requested"
+		printk(BIOS_ERR, "Resizable BAR requested"
 		       " above 32 bits, but PCI function reported a"
 		       " 32-bit BAR.");
 		return;

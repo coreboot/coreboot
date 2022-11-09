@@ -34,7 +34,7 @@ static struct soc_i2c_ctrlr_info i2c_ctrlr[I2C_CTRLR_COUNT] = {
 void i2c_set_bar(unsigned int bus, uintptr_t bar)
 {
 	if (bus >= ARRAY_SIZE(i2c_ctrlr)) {
-		printk(BIOS_ERR, "Error: i2c index out of bounds: %u.", bus);
+		printk(BIOS_ERR, "i2c index out of bounds: %u.", bus);
 		return;
 	}
 

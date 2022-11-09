@@ -100,7 +100,7 @@ static void fch_slp_typ_handler(void)
 			psp_notify_sx_info(ACPI_S3);
 
 		smu_sx_entry(); /* Leave SlpTypeEn clear, SMU will set */
-		printk(BIOS_ERR, "Error: System did not go to sleep\n");
+		printk(BIOS_ERR, "System did not go to sleep\n");
 		hlt();
 	}
 }

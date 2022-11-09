@@ -32,13 +32,13 @@ static void edp_wait_for_aux_done(void)
 	u32 intr_status = 0;
 
 	if (!wait_ms(100, read32(&edp_auxclk->status) & EDP_AUX_INTERRUPT)) {
-		printk(BIOS_ERR, "ERROR: AUX SEND not acknowledged\n");
+		printk(BIOS_ERR, "AUX SEND not acknowledged\n");
 		return;
 	}
 
 	intr_status = read32(&edp_auxclk->status);
 	if (!(intr_status & AUX_INTR_I2C_DONE)) {
-		printk(BIOS_ERR, "ERROR: AUX command failed, status = %#x\n", intr_status);
+		printk(BIOS_ERR, "AUX command failed, status = %#x\n", intr_status);
 		return;
 	}
 
@@ -176,7 +176,7 @@ int edp_read_edid(struct edid *out)
 		err = edp_aux_transfer(EDID_I2C_ADDR, DP_AUX_I2C_READ, edid, EDID_LENGTH);
 
 	if (err < EDID_LENGTH) {
-		printk(BIOS_ERR, "ERROR: Failed to read EDID. :%d\n", err);
+		printk(BIOS_ERR, "Failed to read EDID. :%d\n", err);
 		return err;
 	}
 
@@ -196,7 +196,7 @@ int edp_read_edid(struct edid *out)
 	}
 
 	if (decode_edid(edid, edid_size, out) != EDID_CONFORMANT) {
-		printk(BIOS_ERR, "ERROR: Failed to decode EDID.\n");
+		printk(BIOS_ERR, "Failed to decode EDID.\n");
 		return CB_ERR;
 	}
 

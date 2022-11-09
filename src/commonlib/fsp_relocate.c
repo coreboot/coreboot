@@ -259,10 +259,10 @@ static int pe_relocate(uintptr_t new_addr, void *pe, void *fsp, size_t fih_off)
 				write_le32(&pe_base[aoff], val + delta);
 				break;
 			case EFI_IMAGE_REL_BASED_DIR64:
-				printk(BIOS_ERR, "Error: Unsupported DIR64\n");
+				printk(BIOS_ERR, "Unsupported DIR64\n");
 				break;
 			default:
-				printk(BIOS_ERR, "Error: Unsupported relocation type %d\n",
+				printk(BIOS_ERR, "Unsupported relocation type %d\n",
 						rtype);
 				return -1;
 			}

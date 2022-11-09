@@ -1375,7 +1375,7 @@ static int edp_ctrl_on(struct edp_ctrl *ctrl, struct edid *edid, uint8_t *dpcd)
 	if (dpcd[DP_DPCD_REV] >= 0x11) {
 		ret = edp_aux_transfer(DP_SET_POWER, DP_AUX_NATIVE_READ, &value, 1);
 		if (ret < 0) {
-			printk(BIOS_ERR, "ERROR: edp native read failure\n");
+			printk(BIOS_ERR, "edp native read failure\n");
 			return -1;
 		}
 
@@ -1384,7 +1384,7 @@ static int edp_ctrl_on(struct edp_ctrl *ctrl, struct edid *edid, uint8_t *dpcd)
 
 		ret = edp_aux_transfer(DP_SET_POWER, DP_AUX_NATIVE_WRITE, &value, 1);
 		if (ret < 0) {
-			printk(BIOS_ERR, "ERROR: edp native read failure\n");
+			printk(BIOS_ERR, "edp native read failure\n");
 			return -1;
 		}
 
@@ -1401,7 +1401,7 @@ static int edp_ctrl_on(struct edp_ctrl *ctrl, struct edid *edid, uint8_t *dpcd)
 	/* Start link training */
 	ret = edp_ctrl_training(ctrl, edid, dpcd);
 	if (ret != EDP_TRAIN_SUCCESS) {
-		printk(BIOS_ERR, "ERROR: edp training failure\n");
+		printk(BIOS_ERR, "edp training failure\n");
 		return -1;
 	}
 

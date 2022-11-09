@@ -9,20 +9,20 @@
 #include <bootstate.h>
 #include <vb2_sha.h>
 
-static struct tcpa_table *tcpa_cbmem_init(void)
+static struct tpm_cb_log_table *tpm_log_cbmem_init(void)
 {
-	static struct tcpa_table *tclt;
+	static struct tpm_cb_log_table *tclt;
 	if (tclt)
 		return tclt;
 
 	if (cbmem_possibly_online()) {
-		tclt = cbmem_find(CBMEM_ID_TCPA_LOG);
+		tclt = cbmem_find(CBMEM_ID_TPM_CB_LOG);
 		if (!tclt) {
-			size_t tcpa_log_len = sizeof(struct tcpa_table) +
-			MAX_TCPA_LOG_ENTRIES * sizeof(struct tcpa_entry);
-			tclt = cbmem_add(CBMEM_ID_TCPA_LOG, tcpa_log_len);
+			size_t tpm_log_len = sizeof(struct tpm_cb_log_table) +
+				MAX_TPM_LOG_ENTRIES * sizeof(struct tpm_cb_log_entry);
+			tclt = cbmem_add(CBMEM_ID_TPM_CB_LOG, tpm_log_len);
 			if (tclt) {
-				tclt->max_entries = MAX_TCPA_LOG_ENTRIES;
+				tclt->max_entries = MAX_TPM_LOG_ENTRIES;
 				tclt->num_entries = 0;
 			}
 		}
@@ -30,39 +30,39 @@ static struct tcpa_table *tcpa_cbmem_init(void)
 	return tclt;
 }
 
-struct tcpa_table *tcpa_log_init(void)
+struct tpm_cb_log_table *tpm_log_init(void)
 {
-	static struct tcpa_table *tclt;
+	static struct tpm_cb_log_table *tclt;
 
 	/* We are dealing here with pre CBMEM environment.
 	 * If cbmem isn't available use CAR or SRAM */
 	if (!cbmem_possibly_online() &&
 		!CONFIG(VBOOT_RETURN_FROM_VERSTAGE))
-		return (struct tcpa_table *)_tpm_tcpa_log;
+		return (struct tpm_cb_log_table *)_tpm_log;
 	else if (ENV_CREATES_CBMEM
 		 && !CONFIG(VBOOT_RETURN_FROM_VERSTAGE)) {
-		tclt = tcpa_cbmem_init();
+		tclt = tpm_log_cbmem_init();
 		if (!tclt)
-			return (struct tcpa_table *)_tpm_tcpa_log;
+			return (struct tpm_cb_log_table *)_tpm_log;
 	} else {
-		tclt = tcpa_cbmem_init();
+		tclt = tpm_log_cbmem_init();
 	}
 
 	return tclt;
 }
 
-void tcpa_log_dump(void *unused)
+void tpm_log_dump(void *unused)
 {
 	int i, j;
-	struct tcpa_table *tclt;
+	struct tpm_cb_log_table *tclt;
 
-	tclt = tcpa_log_init();
+	tclt = tpm_log_init();
 	if (!tclt)
 		return;
 
-	printk(BIOS_INFO, "coreboot TCPA measurements:\n\n");
+	printk(BIOS_INFO, "coreboot TPM log measurements:\n\n");
 	for (i = 0; i < tclt->num_entries; i++) {
-		struct tcpa_entry *tce = &tclt->entries[i];
+		struct tpm_cb_log_entry *tce = &tclt->entries[i];
 		if (tce) {
 			printk(BIOS_INFO, " PCR-%u ", tce->pcr);
 
@@ -76,85 +76,87 @@ void tcpa_log_dump(void *unused)
 	printk(BIOS_INFO, "\n");
 }
 
-void tcpa_log_add_table_entry(const char *name, const uint32_t pcr,
-			enum vb2_hash_algorithm digest_algo,
-			const uint8_t *digest,
-			const size_t digest_len)
+void tpm_log_add_table_entry(const char *name, const uint32_t pcr,
+			     enum vb2_hash_algorithm digest_algo,
+			     const uint8_t *digest,
+			     const size_t digest_len)
 {
-	struct tcpa_table *tclt = tcpa_log_init();
+	struct tpm_cb_log_table *tclt = tpm_log_init();
 	if (!tclt) {
-		printk(BIOS_WARNING, "TCPA: Log non-existent!\n");
+		printk(BIOS_WARNING, "TPM LOG: Log non-existent!\n");
 		return;
 	}
 
 	if (tclt->num_entries >= tclt->max_entries) {
-		printk(BIOS_WARNING, "TCPA: TCPA log table is full\n");
+		printk(BIOS_WARNING, "TPM LOG: log table is full\n");
 		return;
 	}
 
 	if (!name) {
-		printk(BIOS_WARNING, "TCPA: TCPA entry name not set\n");
+		printk(BIOS_WARNING, "TPM LOG: entry name not set\n");
 		return;
 	}
 
-	struct tcpa_entry *tce = &tclt->entries[tclt->num_entries++];
-	strncpy(tce->name, name, TCPA_PCR_HASH_NAME - 1);
+	struct tpm_cb_log_entry *tce = &tclt->entries[tclt->num_entries++];
+	strncpy(tce->name, name, TPM_CB_LOG_PCR_HASH_NAME - 1);
 	tce->pcr = pcr;
 
-	if (digest_len > TCPA_DIGEST_MAX_LENGTH) {
-		printk(BIOS_WARNING, "TCPA: PCR digest too long for TCPA log entry\n");
+	if (digest_len > TPM_CB_LOG_DIGEST_MAX_LENGTH) {
+		printk(BIOS_WARNING, "TPM LOG: PCR digest too long for log entry\n");
 		return;
 	}
 
 	strncpy(tce->digest_type,
-			vb2_get_hash_algorithm_name(digest_algo),
-			TCPA_PCR_HASH_LEN - 1);
+		vb2_get_hash_algorithm_name(digest_algo),
+		TPM_CB_LOG_PCR_HASH_LEN - 1);
 	tce->digest_length = digest_len;
 	memcpy(tce->digest, digest, tce->digest_length);
 }
 
-void tcpa_preram_log_clear(void)
+void tpm_preram_log_clear(void)
 {
-	printk(BIOS_INFO, "TCPA: Clearing coreboot TCPA log\n");
-	struct tcpa_table *tclt = (struct tcpa_table *)_tpm_tcpa_log;
-	tclt->max_entries = MAX_TCPA_LOG_ENTRIES;
+	printk(BIOS_INFO, "TPM LOG: clearing preram log\n");
+	struct tpm_cb_log_table *tclt = (struct tpm_cb_log_table *)_tpm_log;
+	tclt->max_entries = MAX_TPM_LOG_ENTRIES;
 	tclt->num_entries = 0;
 }
 
 #if !CONFIG(VBOOT_RETURN_FROM_VERSTAGE)
-static void recover_tcpa_log(int is_recovery)
+static void recover_tpm_log(int is_recovery)
 {
-	struct tcpa_table *preram_log = (struct tcpa_table *)_tpm_tcpa_log;
-	struct tcpa_table *ram_log = NULL;
+	struct tpm_cb_log_table *preram_log = (struct tpm_cb_log_table *)_tpm_log;
+	struct tpm_cb_log_table *ram_log = NULL;
 	int i;
 
-	if (preram_log->num_entries > MAX_PRERAM_TCPA_LOG_ENTRIES) {
-		printk(BIOS_WARNING, "TCPA: Pre-RAM TCPA log is too full, possible corruption\n");
+	if (preram_log->num_entries > MAX_PRERAM_TPM_LOG_ENTRIES) {
+		printk(BIOS_WARNING, "TPM LOG: pre-RAM log is too full, possible corruption\n");
 		return;
 	}
 
-	ram_log = tcpa_cbmem_init();
+	ram_log = tpm_log_cbmem_init();
 	if (!ram_log) {
-		printk(BIOS_WARNING, "TCPA: CBMEM not available something went wrong\n");
+		printk(BIOS_WARNING, "TPM LOG: CBMEM not available something went wrong\n");
 		return;
 	}
 
 	for (i = 0; i < preram_log->num_entries; i++) {
-		struct tcpa_entry *tce = &ram_log->entries[ram_log->num_entries++];
-		strncpy(tce->name, preram_log->entries[i].name, TCPA_PCR_HASH_NAME - 1);
+		struct tpm_cb_log_entry *tce = &ram_log->entries[ram_log->num_entries++];
+		strncpy(tce->name, preram_log->entries[i].name, TPM_CB_LOG_PCR_HASH_NAME - 1);
 		tce->pcr = preram_log->entries[i].pcr;
 
-		if (preram_log->entries[i].digest_length > TCPA_DIGEST_MAX_LENGTH) {
-			printk(BIOS_WARNING, "TCPA: PCR digest too long for TCPA log entry\n");
+		if (preram_log->entries[i].digest_length > TPM_CB_LOG_DIGEST_MAX_LENGTH) {
+			printk(BIOS_WARNING, "TPM LOG: PCR digest too long for log entry\n");
 			return;
 		}
 
-		strncpy(tce->digest_type, preram_log->entries[i].digest_type, TCPA_PCR_HASH_LEN - 1);
-		tce->digest_length = MIN(preram_log->entries[i].digest_length, TCPA_DIGEST_MAX_LENGTH);
+		strncpy(tce->digest_type, preram_log->entries[i].digest_type,
+			TPM_CB_LOG_PCR_HASH_LEN - 1);
+		tce->digest_length = MIN(preram_log->entries[i].digest_length,
+					 TPM_CB_LOG_DIGEST_MAX_LENGTH);
 		memcpy(tce->digest, preram_log->entries[i].digest, tce->digest_length);
 	}
 }
-CBMEM_CREATION_HOOK(recover_tcpa_log);
+CBMEM_CREATION_HOOK(recover_tpm_log);
 #endif
 
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, tcpa_log_dump, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, tpm_log_dump, NULL);

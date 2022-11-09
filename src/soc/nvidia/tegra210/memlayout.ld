@@ -19,7 +19,7 @@ SECTIONS
 	PRERAM_CBFS_CACHE(0x40001000, 20K)
 	CBFS_MCACHE(0x40006000, 8K)
 	VBOOT2_WORK(0x40008000, 12K)
-	TPM_TCPA_LOG(0x4000B000, 2K)
+	TPM_LOG(0x4000B000, 2K)
 #if ENV_ARM64
 	STACK(0x4000B800, 3K)
 #else	/* AVP gets a separate stack to avoid any chance of handoff races. */

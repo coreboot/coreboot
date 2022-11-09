@@ -242,8 +242,7 @@ uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
 	}
 
 	if (CONFIG(TPM_MEASURED_BOOT))
-		tcpa_log_add_table_entry(name, pcr, digest_algo,
-			digest, digest_len);
+		tpm_log_add_table_entry(name, pcr, digest_algo, digest, digest_len);
 
 	printk(BIOS_DEBUG, "TPM: Digest of `%s` to PCR %d %s\n",
 	       name, pcr, tspi_tpm_is_setup() ? "measured" : "logged");

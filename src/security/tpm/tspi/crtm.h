@@ -31,7 +31,7 @@
 #endif
 
 /**
- * Measure digests cached in TCPA log entries into PCRs
+ * Measure digests cached in TPM log entries into PCRs
  */
 int tspi_measure_cache_to_pcr(void);
 

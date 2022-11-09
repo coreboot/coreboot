@@ -6,11 +6,11 @@
 #include "crtm.h"
 #include <string.h>
 
-static int tcpa_log_initialized;
-static inline int tcpa_log_available(void)
+static int tpm_log_initialized;
+static inline int tpm_log_available(void)
 {
 	if (ENV_BOOTBLOCK)
-		return tcpa_log_initialized;
+		return tpm_log_initialized;
 
 	return 1;
 }
@@ -33,10 +33,10 @@ static inline int tcpa_log_available(void)
  */
 static uint32_t tspi_init_crtm(void)
 {
-	/* Initialize TCPA PRERAM log. */
-	if (!tcpa_log_available()) {
-		tcpa_preram_log_clear();
-		tcpa_log_initialized = 1;
+	/* Initialize TPM PRERAM log. */
+	if (!tpm_log_available()) {
+		tpm_preram_log_clear();
+		tpm_log_initialized = 1;
 	} else {
 		printk(BIOS_WARNING, "TSPI: CRTM already initialized!\n");
 		return VB2_SUCCESS;
@@ -109,9 +109,9 @@ static bool is_runtime_data(const char *name)
 uint32_t tspi_cbfs_measurement(const char *name, uint32_t type, const struct vb2_hash *hash)
 {
 	uint32_t pcr_index;
-	char tcpa_metadata[TCPA_PCR_HASH_NAME];
+	char tpm_log_metadata[TPM_CB_LOG_PCR_HASH_NAME];
 
-	if (!tcpa_log_available()) {
+	if (!tpm_log_available()) {
 		if (tspi_init_crtm() != VB2_SUCCESS) {
 			printk(BIOS_WARNING,
 			       "Initializing CRTM failed!\n");
@@ -142,29 +142,29 @@ uint32_t tspi_cbfs_measurement(const char *name, uint32_t type, const struct vb2
 		break;
 	}
 
-	snprintf(tcpa_metadata, TCPA_PCR_HASH_NAME, "CBFS: %s", name);
+	snprintf(tpm_log_metadata, TPM_CB_LOG_PCR_HASH_NAME, "CBFS: %s", name);
 
 	return tpm_extend_pcr(pcr_index, hash->algo, hash->raw, vb2_digest_size(hash->algo),
-			      tcpa_metadata);
+			      tpm_log_metadata);
 }
 
 int tspi_measure_cache_to_pcr(void)
 {
 	int i;
-	struct tcpa_table *tclt = tcpa_log_init();
+	struct tpm_cb_log_table *tclt = tpm_log_init();
 
 	/* This means the table is empty. */
-	if (!tcpa_log_available())
+	if (!tpm_log_available())
 		return VB2_SUCCESS;
 
 	if (!tclt) {
-		printk(BIOS_WARNING, "TCPA: Log non-existent!\n");
+		printk(BIOS_WARNING, "TPM LOG: log non-existent!\n");
 		return VB2_ERROR_UNKNOWN;
 	}
 
-	printk(BIOS_DEBUG, "TPM: Write digests cached in TCPA log to PCR\n");
+	printk(BIOS_DEBUG, "TPM: Write digests cached in TPM log to PCR\n");
 	for (i = 0; i < tclt->num_entries; i++) {
-		struct tcpa_entry *tce = &tclt->entries[i];
+		struct tpm_cb_log_entry *tce = &tclt->entries[i];
 		if (tce) {
 			printk(BIOS_DEBUG, "TPM: Write digest for"
 			       " %s into PCR %d\n",

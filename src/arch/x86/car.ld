@@ -20,9 +20,9 @@
 	VBOOT2_WORK(., 12K)
 #endif
 #if CONFIG(TPM_MEASURED_BOOT)
-	/* Vboot measured boot TCPA log measurements.
+	/* Vboot measured boot TPM log measurements.
 	 * Needs to be transferred until CBMEM is available */
-	TPM_TCPA_LOG(., 2K)
+	TPM_LOG(., 2K)
 #endif
 	/* Stack for CAR stages. Since it persists across all stages that
 	 * use CAR it can be reused. The chipset/SoC is expected to provide

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <baseboard/variants.h>
 #include <device/device.h>
 #include <drivers/intel/gma/opregion.h>
 #include <ec/ec.h>
@@ -30,6 +31,8 @@ void mainboard_update_soc_chip_config(struct soc_intel_meteorlake_config *cfg)
 
 static void mainboard_init(void *chip_info)
 {
+	configure_gpio_pads();
+
 	if (CONFIG(EC_GOOGLE_CHROMEEC))
 		mainboard_ec_init();
 }

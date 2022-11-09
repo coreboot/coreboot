@@ -8,5 +8,39 @@ chip soc/intel/meteorlake
 
 	device domain 0 on
 		device ref igpu on end
+		device ref heci1 on end
+		device ref tbt_pcie_rp0 on end
+		device ref tbt_pcie_rp1 on end
+		device ref tbt_pcie_rp2 on end
+		device ref tbt_pcie_rp3 on end
+		device ref tcss_xhci on end
+		device ref tcss_dma0 on end
+		device ref tcss_dma1 on end
+		device ref pcie_rp10 on
+			# Enable SSD Gen4 PCIE 10 using CLK 8
+			register "pcie_rp[PCIE_RP(10)]" = "{
+				.clk_src = 8,
+				.clk_req = 8,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+			}"
+		end # PCIE10 SSD Gen4
+		device ref pcie_rp11 on
+			# Enable SSD Gen4 PCIE 11 using CLK 7
+			register "pcie_rp[PCIE_RP(11)]" = "{
+				.clk_src = 7,
+				.clk_req = 7,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+			}"
+		end # PCIE11 SSD Gen4
+		device ref xhci on end
+		device ref i2c0 on end
+		device ref i2c1 on end
+		device ref i2c2 on end
+		device ref i2c3 on end
+		device ref i2c4 on end
+		device ref i2c5 on end
+		device ref shared_sram on end
+		device ref uart0 on end
+		device ref smbus on end
 	end
 end

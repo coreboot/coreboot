@@ -99,8 +99,6 @@ chip soc/intel/alderlake
 				.clk_src = 0,
 				.clk_req = 0,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-				.PcieRpL1Substates = L1_SS_L1_2,
-				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"
 			smbios_slot_desc "SlotTypePciExpressGen5x16" "SlotLengthLong"
 					 "PCI_E1" "SlotDataBusWidth16X"
@@ -112,8 +110,6 @@ chip soc/intel/alderlake
 				.clk_src = 9,
 				.clk_req = 9,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-				.PcieRpL1Substates = L1_SS_L1_2,
-				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
 					 "M2_1" "SlotDataBusWidth4X"
@@ -142,8 +138,6 @@ chip soc/intel/alderlake
 				.clk_src = 10,
 				.clk_req = 10,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-				.PcieRpL1Substates = L1_SS_L1_2,
-				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"
 			smbios_slot_desc "SlotTypePciExpressGen3X1" "SlotLengthShort"
 					 "PCI_E2" "SlotDataBusWidth1X"
@@ -153,8 +147,6 @@ chip soc/intel/alderlake
 				.clk_src = 17,
 				.clk_req = 17,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-				.PcieRpL1Substates = L1_SS_L1_2,
-				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
 					 "PCI_E4" "SlotDataBusWidth1X"
@@ -164,8 +156,6 @@ chip soc/intel/alderlake
 			register "pch_pcie_rp[PCH_RP(3)]" = "{
 				.clk_src = 12,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_BUILT_IN,
-				.PcieRpL1Substates = L1_SS_L1_2,
-				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"
 		end
 		device ref pcie_rp4 off end
@@ -175,8 +165,6 @@ chip soc/intel/alderlake
 				.clk_src = 15,
 				.clk_req = 15,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-				.PcieRpL1Substates = L1_SS_L1_2,
-				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
 					 "PCI_E3" "SlotDataBusWidth4X"
@@ -187,8 +175,6 @@ chip soc/intel/alderlake
 				.clk_src = 13,
 				.clk_req = 13,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-				.PcieRpL1Substates = L1_SS_L1_2,
-				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
 					 "M2_3" "SlotDataBusWidth4X"
@@ -211,8 +197,6 @@ chip soc/intel/alderlake
 				.clk_src = 14,
 				.clk_req = 14,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-				.PcieRpL1Substates = L1_SS_L1_2,
-				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
 					 "M2_4" "SlotDataBusWidth4X"
@@ -223,8 +207,6 @@ chip soc/intel/alderlake
 				.clk_src = 8,
 				.clk_req = 8,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-				.PcieRpL1Substates = L1_SS_L1_2,
-				.pcie_rp_aspm = ASPM_L0S_L1,
 			}"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
 					 "M2_2" "SlotDataBusWidth4X"

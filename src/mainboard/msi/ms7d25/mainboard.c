@@ -66,6 +66,21 @@ const char *smbios_system_sku(void)
 
 void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
+	uint8_t aspm, aspm_l1;
+
+	/* ASPM L1 sub-states require CLKREQ, so CLK_PM should be enabled as well */
+	if (CONFIG(PCIEXP_L1_SUB_STATE) && CONFIG(PCIEXP_CLK_PM))
+		aspm_l1 = 2; // 2 - L1.1 and L1.2
+	else
+		aspm_l1 = 0;
+
+	if (CONFIG(PCIEXP_ASPM)) {
+		aspm = CONFIG(PCIEXP_L1_SUB_STATE) ? 3 : 1; // 3 - L0sL1, 1 - L0s
+	} else {
+		aspm = 0;
+		aspm_l1 = 0;
+	}
+
 	memset(params->PcieRpEnableCpm, 0, sizeof(params->PcieRpEnableCpm));
 	memset(params->CpuPcieRpEnableCpm, 0, sizeof(params->CpuPcieRpEnableCpm));
 	memset(params->CpuPcieClockGating, 0, sizeof(params->CpuPcieClockGating));
@@ -91,13 +106,13 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	params->PcieRpPmSci[20]   = 1; // M2_4
 	params->PcieRpPmSci[24]   = 1; // M2_2
 
-	params->PcieRpMaxPayload[0]    = 1; // PCI_E2
-	params->PcieRpMaxPayload[1]    = 1; // PCI_E4
-	params->PcieRpMaxPayload[2]    = 1; // Ethernet
-	params->PcieRpMaxPayload[4]    = 1; // PCI_E3
-	params->PcieRpMaxPayload[8]    = 1; // M2_3
-	params->PcieRpMaxPayload[20]   = 1; // M2_4
-	params->PcieRpMaxPayload[24]   = 1; // M2_2
+	params->PcieRpMaxPayload[0]  = 1; // PCI_E2
+	params->PcieRpMaxPayload[1]  = 1; // PCI_E4
+	params->PcieRpMaxPayload[2]  = 1; // Ethernet
+	params->PcieRpMaxPayload[4]  = 1; // PCI_E3
+	params->PcieRpMaxPayload[8]  = 1; // M2_3
+	params->PcieRpMaxPayload[20] = 1; // M2_4
+	params->PcieRpMaxPayload[24] = 1; // M2_2
 
 	params->CpuPcieRpTransmitterHalfSwing[0] = 1; // M2_1
 	params->CpuPcieRpTransmitterHalfSwing[1] = 1; // PCI_E1
@@ -109,12 +124,32 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	params->PcieRpTransmitterHalfSwing[20]   = 1; // M2_4
 	params->PcieRpTransmitterHalfSwing[24]   = 1; // M2_2
 
-	params->PcieRpEnableCpm[0]  = 1; // PCI_E2
-	params->PcieRpEnableCpm[1]  = 1; // PCI_E4
-	params->PcieRpEnableCpm[4]  = 1; // PCI_E3
-	params->PcieRpEnableCpm[8]  = 1; // M2_3
-	params->PcieRpEnableCpm[20] = 1; // M2_4
-	params->PcieRpEnableCpm[24] = 1; // M2_2
+	params->CpuPcieRpEnableCpm[0] = CONFIG(PCIEXP_CLK_PM); // M2_1
+	params->CpuPcieRpEnableCpm[1] = CONFIG(PCIEXP_CLK_PM); // PCI_E1
+	params->PcieRpEnableCpm[0]    = CONFIG(PCIEXP_CLK_PM); // PCI_E2
+	params->PcieRpEnableCpm[1]    = CONFIG(PCIEXP_CLK_PM); // PCI_E4
+	params->PcieRpEnableCpm[4]    = CONFIG(PCIEXP_CLK_PM); // PCI_E3
+	params->PcieRpEnableCpm[8]    = CONFIG(PCIEXP_CLK_PM); // M2_3
+	params->PcieRpEnableCpm[20]   = CONFIG(PCIEXP_CLK_PM); // M2_4
+	params->PcieRpEnableCpm[24]   = CONFIG(PCIEXP_CLK_PM); // M2_2
+
+	params->CpuPcieRpL1Substates[0] = aspm_l1; // M2_1
+	params->CpuPcieRpL1Substates[1] = aspm_l1; // PCI_E1
+	params->PcieRpL1Substates[0]    = aspm_l1; // PCI_E2
+	params->PcieRpL1Substates[1]    = aspm_l1; // PCI_E4
+	params->PcieRpL1Substates[4]    = aspm_l1; // PCI_E3
+	params->PcieRpL1Substates[8]    = aspm_l1; // M2_3
+	params->PcieRpL1Substates[20]   = aspm_l1; // M2_4
+	params->PcieRpL1Substates[24]   = aspm_l1; // M2_2
+
+	params->CpuPcieRpAspm[0] = aspm; // M2_1
+	params->CpuPcieRpAspm[1] = aspm; // PCI_E1
+	params->PcieRpAspm[0]    = aspm; // PCI_E2
+	params->PcieRpAspm[1]    = aspm; // PCI_E4
+	params->PcieRpAspm[4]    = aspm; // PCI_E3
+	params->PcieRpAspm[8]    = aspm; // M2_3
+	params->PcieRpAspm[20]   = aspm; // M2_4
+	params->PcieRpAspm[24]   = aspm; // M2_2
 
 	params->PcieRpAcsEnabled[0]  = 1; // PCI_E2
 	params->PcieRpAcsEnabled[1]  = 1; // PCI_E4
@@ -124,17 +159,15 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	params->PcieRpAcsEnabled[20] = 1; // M2_4
 	params->PcieRpAcsEnabled[24] = 1; // M2_2
 
-	params->CpuPcieRpEnableCpm[0] = 1; // M2_1
-	params->CpuPcieClockGating[0] = 1;
-	params->CpuPciePowerGating[0] = 1;
+	params->CpuPcieClockGating[0] = CONFIG(PCIEXP_CLK_PM);
+	params->CpuPciePowerGating[0] = CONFIG(PCIEXP_CLK_PM);
 	params->CpuPcieRpMultiVcEnabled[0] = 1;
 	params->CpuPcieRpPeerToPeerMode[0] = 1;
 	params->CpuPcieRpMaxPayload[0] = 2; // 512B
 	params->CpuPcieRpAcsEnabled[0] = 1;
 
-	params->CpuPcieRpEnableCpm[1] = 1; // PCI_E1
-	params->CpuPcieClockGating[1] = 1;
-	params->CpuPciePowerGating[1] = 1;
+	params->CpuPcieClockGating[1] = CONFIG(PCIEXP_CLK_PM);
+	params->CpuPciePowerGating[1] = CONFIG(PCIEXP_CLK_PM);
 	params->CpuPcieRpPeerToPeerMode[1] = 1;
 	params->CpuPcieRpMaxPayload[1] = 2; // 512B
 	params->CpuPcieRpAcsEnabled[1] = 1;

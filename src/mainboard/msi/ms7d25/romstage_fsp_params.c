@@ -5,8 +5,12 @@
 #include <fsp/api.h>
 #include <soc/romstage.h>
 #include <soc/meminit.h>
+#include <string.h>
 
 #include "gpio.h"
+
+#define FSP_CLK_NOTUSED			0xFF
+#define FSP_CLK_FREE_RUNNING		0x80
 
 static const struct mb_cfg ddr4_mem_config = {
 	.type = MEM_TYPE_DDR4,
@@ -49,11 +53,30 @@ static const struct mem_spd dimm_module_spd_info = {
 	},
 };
 
+static void disable_pcie_clock_requests(FSP_M_CONFIG *m_cfg)
+{
+	memset(m_cfg->PcieClkSrcUsage, FSP_CLK_NOTUSED, sizeof(m_cfg->PcieClkSrcUsage));
+	memset(m_cfg->PcieClkSrcClkReq, FSP_CLK_NOTUSED, sizeof(m_cfg->PcieClkSrcClkReq));
+
+	/* PCIe CLK SRCes as per devicetree.cb */
+	m_cfg->PcieClkSrcUsage[0]  = FSP_CLK_FREE_RUNNING;
+	m_cfg->PcieClkSrcUsage[8]  = FSP_CLK_FREE_RUNNING;
+	m_cfg->PcieClkSrcUsage[9]  = FSP_CLK_FREE_RUNNING;
+	m_cfg->PcieClkSrcUsage[10] = FSP_CLK_FREE_RUNNING;
+	m_cfg->PcieClkSrcUsage[12] = FSP_CLK_FREE_RUNNING;
+	m_cfg->PcieClkSrcUsage[13] = FSP_CLK_FREE_RUNNING;
+	m_cfg->PcieClkSrcUsage[14] = FSP_CLK_FREE_RUNNING;
+	m_cfg->PcieClkSrcUsage[15] = FSP_CLK_FREE_RUNNING;
+	m_cfg->PcieClkSrcUsage[17] = FSP_CLK_FREE_RUNNING;
+
+	gpio_configure_pads(clkreq_disabled_table, ARRAY_SIZE(clkreq_disabled_table));
+}
+
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
-	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[0] = 1;
-	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[1] = 1;
-	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[2] = 0;
+	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[0] = CONFIG(PCIEXP_CLK_PM);
+	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[1] = CONFIG(PCIEXP_CLK_PM);
+	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[2] = CONFIG(PCIEXP_CLK_PM);
 	memupd->FspmConfig.DmiMaxLinkSpeed = 4; // Gen4 speed, undocumented
 	memupd->FspmConfig.DmiAspm = 0;
 	memupd->FspmConfig.DmiAspmCtrl = 0;
@@ -67,4 +90,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 		memcfg_init(memupd, &ddr5_mem_config, &dimm_module_spd_info, false);
 
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+
+	if (!CONFIG(PCIEXP_CLK_PM))
+		disable_pcie_clock_requests(&memupd->FspmConfig);
 }

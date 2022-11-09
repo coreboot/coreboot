@@ -243,9 +243,9 @@ void cbmem_run_init_hooks(int is_recovery)
 }
 
 extern uintptr_t _cbmem_top_ptr;
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
-	return (void *)_cbmem_top_ptr;
+	return _cbmem_top_ptr;
 }
 
 #define CBMEM_SIZE (64 * KiB)

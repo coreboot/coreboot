@@ -19,7 +19,7 @@ void smm_region(uintptr_t *start, size_t *size)
 	*size = smm_region_size();
 }
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
 	uintptr_t smm_base;
 	size_t smm_size;
@@ -53,5 +53,5 @@ void *cbmem_top_chipset(void)
 	*/
 
 	smm_region(&smm_base, &smm_size);
-	return (void *)smm_base;
+	return smm_base;
 }

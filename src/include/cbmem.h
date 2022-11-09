@@ -65,7 +65,7 @@ void *cbmem_top(void);
  * in the _cbmem_top_ptr symbol. Without CONFIG_RAMSTAGE_CBMEM_TOP_ARG the same
  * implementation as used in romstage will be used.
  */
-void *cbmem_top_chipset(void);
+uintptr_t cbmem_top_chipset(void);
 
 /* Add a cbmem entry of a given size and id. These return NULL on failure. The
  * add function performs a find first and do not check against the original

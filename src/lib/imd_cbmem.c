@@ -18,11 +18,11 @@ static struct imd imd;
 void *cbmem_top(void)
 {
 	if (ENV_CREATES_CBMEM) {
-		static void *top;
+		static uintptr_t top;
 		if (top)
-			return top;
+			return (void *)top;
 		top = cbmem_top_chipset();
-		return top;
+		return (void *)top;
 	}
 	if (ENV_POSTCAR || ENV_RAMSTAGE)
 		return (void *)_cbmem_top_ptr;

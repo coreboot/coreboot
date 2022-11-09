@@ -3,7 +3,7 @@
 #include <cbmem.h>
 #include <ramdetect.h>
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
-	return (void *)(probe_ramsize(0, CONFIG_DRAM_SIZE_MB) * MiB);
+	return probe_ramsize(0, CONFIG_DRAM_SIZE_MB) * MiB;
 }

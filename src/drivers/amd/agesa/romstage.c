@@ -93,8 +93,8 @@ static void ap_romstage_main(void)
 	halt();
 }
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
 	/* Top of CBMEM is at highest usable DRAM address below 4GiB. */
-	return (void *)restore_top_of_low_cacheable();
+	return restore_top_of_low_cacheable();
 }

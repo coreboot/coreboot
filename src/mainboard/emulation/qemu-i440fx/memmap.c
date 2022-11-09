@@ -41,7 +41,7 @@ unsigned long qemu_get_memory_size(void)
 	return tomk;
 }
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
 	uintptr_t top = 0;
 
@@ -56,7 +56,7 @@ void *cbmem_top_chipset(void)
 		smm_region(&top, &smm_size);
 	}
 
-	return (void *)top;
+	return top;
 }
 
 /* Nothing to do, MTRRs are no-op on QEMU. */

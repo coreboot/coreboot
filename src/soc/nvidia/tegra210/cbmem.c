@@ -3,7 +3,7 @@
 #include <cbmem.h>
 #include <soc/addressmap.h>
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
 	static uintptr_t addr;
 
@@ -19,5 +19,5 @@ void *cbmem_top_chipset(void)
 			addr = end_mib << 20;
 	}
 
-	return (void *)addr;
+	return addr;
 }

@@ -54,9 +54,9 @@ static uintptr_t top_of_low_usable_memory(void)
 	return tolum;
 }
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
-	return (void *)top_of_low_usable_memory();
+	return top_of_low_usable_memory();
 }
 
 void smm_region(uintptr_t *start, size_t *size)

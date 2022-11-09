@@ -3,14 +3,16 @@
 // Use simple device model for this file even in ramstage
 #define __SIMPLE_DEVICE__
 
-#include <device/pci_ops.h>
 #include <arch/romstage.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
+#include <device/pci_ops.h>
 #include <program_loading.h>
+#include <stdint.h>
+
 #include "e7505.h"
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
 	const pci_devfn_t mch = PCI_DEV(0, 0, 0);
 	uintptr_t tolm;
@@ -19,7 +21,7 @@ void *cbmem_top_chipset(void)
 	tolm = pci_read_config16(mch, TOLM) >> 11;
 	tolm <<= 27;
 
-	return (void *)tolm;
+	return tolm;
 }
 
 void northbridge_write_smram(u8 smram);

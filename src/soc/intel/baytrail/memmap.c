@@ -16,9 +16,9 @@ static size_t smm_region_size(void)
 	return CONFIG_SMM_TSEG_SIZE;
 }
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
-	return (void *) smm_region_start();
+	return smm_region_start();
 }
 
 void smm_region(uintptr_t *start, size_t *size)

@@ -10,7 +10,7 @@ void ipq_cbmem_backing_store_ready(void)
 	cbmem_backing_store_ready = 1;
 }
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
 	/*
 	 * In romstage, make sure that cbmem backing store is ready before
@@ -19,7 +19,7 @@ void *cbmem_top_chipset(void)
 	 * for loading ipq blobs before DRAM is initialized).
 	 */
 	if (cbmem_backing_store_ready == 0)
-		return NULL;
+		return 0;
 
-	return _memlayout_cbmem_top;
+	return (uintptr_t)_memlayout_cbmem_top;
 }

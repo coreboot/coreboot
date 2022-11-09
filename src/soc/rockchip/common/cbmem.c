@@ -6,8 +6,7 @@
 #include <soc/sdram.h>
 #include <symbols.h>
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
-	return (void *)MIN((uintptr_t)_dram + sdram_size_mb() * MiB,
-			   MAX_DRAM_ADDRESS);
+	return MIN((uintptr_t)_dram + sdram_size_mb() * MiB, MAX_DRAM_ADDRESS);
 }

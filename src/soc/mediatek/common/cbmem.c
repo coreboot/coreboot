@@ -7,7 +7,7 @@
 
 #define MAX_DRAM_ADDRESS ((uintptr_t)4 * GiB)
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
-	return (void *)MIN((uintptr_t)_dram + sdram_size(), MAX_DRAM_ADDRESS);
+	return MIN((uintptr_t)_dram + sdram_size(), MAX_DRAM_ADDRESS);
 }

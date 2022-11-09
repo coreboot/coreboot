@@ -4,7 +4,7 @@
 #include <commonlib/bsd/helpers.h>
 #include <symbols.h>
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
-	return _dram + CONFIG_DRAM_SIZE_MB * MiB;
+	return (uintptr_t)_dram + CONFIG_DRAM_SIZE_MB * MiB;
 }

@@ -29,9 +29,9 @@ static uintptr_t dpr_region_start(void)
 	return tom;
 }
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
-	return (void *) dpr_region_start();
+	return dpr_region_start();
 }
 
 void smm_region(uintptr_t *start, size_t *size)

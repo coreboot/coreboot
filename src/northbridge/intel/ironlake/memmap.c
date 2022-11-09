@@ -22,9 +22,9 @@ static size_t northbridge_get_tseg_size(void)
 	return CONFIG_SMM_TSEG_SIZE;
 }
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
-	return (void *)northbridge_get_tseg_base();
+	return northbridge_get_tseg_base();
 }
 
 void smm_region(uintptr_t *start, size_t *size)

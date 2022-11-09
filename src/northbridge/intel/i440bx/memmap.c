@@ -8,7 +8,7 @@
 #include <program_loading.h>
 #include "i440bx.h"
 
-void *cbmem_top_chipset(void)
+uintptr_t cbmem_top_chipset(void)
 {
 	/* Base of TSEG is top of usable DRAM */
 	/*
@@ -39,7 +39,7 @@ void *cbmem_top_chipset(void)
 	 *
 	 * Source: 440BX datasheet, pages 3-28 thru 3-29.
 	 */
-	unsigned long tom = pci_read_config8(NB, DRB7) * 8 * MiB;
+	uintptr_t tom = pci_read_config8(NB, DRB7) * 8 * MiB;
 
 	int gsmrame = pci_read_config8(NB, SMRAM) & 0x8;
 	/* T_SZ and TSEG_EN */
@@ -48,7 +48,7 @@ void *cbmem_top_chipset(void)
 		int tseg_size = 128 * KiB * (1 << (tseg >> 1));
 		tom -= tseg_size;
 	}
-	return (void *)tom;
+	return tom;
 }
 
 void fill_postcar_frame(struct postcar_frame *pcf)

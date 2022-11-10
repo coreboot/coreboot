@@ -1,12 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/io.h>
 #include <console/console.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <arch/io.h>
 #include <device/pci_ops.h>
-#include <delay.h>
+#include <stdint.h>
+
 #include "i82801dx.h"
 
 #define NAMBAR		0x10

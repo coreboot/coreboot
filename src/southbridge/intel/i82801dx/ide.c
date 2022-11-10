@@ -5,6 +5,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <stdint.h>
+
 #include "chip.h"
 #include "i82801dx.h"
 

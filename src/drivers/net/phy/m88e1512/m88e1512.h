@@ -7,5 +7,7 @@
 #define PAGE_REG		0x16
 #define LED_FUNC_CTRL_REG	0x10
 #define LED_FUNC_CTRL_MASK	0x0FFF
+#define LED_TIMER_CTRL_REG	0x12
+#define  LED_IRQ_ENABLE		(1 << 7)
 
 #endif /* _PHY_M88E1512_H_ */

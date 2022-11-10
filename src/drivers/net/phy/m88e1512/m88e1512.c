@@ -34,6 +34,22 @@ static void m88e1512_init(struct device *dev)
 		/* Switch back to page 0. */
 		switch_page(dev, 0);
 	}
+
+	/* INTn can be routed to LED[2] pin. */
+	if (config->enable_int) {
+		printk(BIOS_DEBUG, "%s: INTn is routed to LED[2] pin %s.\n",
+				dev_path(dev->bus->dev), dev->chip_ops->name);
+
+		/* Select page 3 to access LED function control register. */
+		switch_page(dev, 3);
+
+		reg = mdio_read(dev, LED_TIMER_CTRL_REG);
+		setbits16(&reg, LED_IRQ_ENABLE);
+		mdio_write(dev, LED_TIMER_CTRL_REG, reg);
+
+		/* Switch back to page 0. */
+		switch_page(dev, 0);
+	}
 }
 
 struct device_operations m88e1512_ops = {

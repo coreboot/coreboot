@@ -488,7 +488,7 @@ static void emit_sar_acpi_structures(const struct device *dev, struct dsm_profil
 
 	/* copy the dsm data to be later used for creating _DSM function */
 	if (sar_limits.dsm != NULL)
-		memcpy(dsm, &sar_limits.dsm, sizeof(struct dsm_profile));
+		memcpy(dsm, sar_limits.dsm, sizeof(struct dsm_profile));
 
 	free(sar_limits.sar);
 }
@@ -571,7 +571,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 			dsm_ids[dsm_count].uuid = ACPI_DSM_OEM_WIFI_UUID;
 			dsm_ids[dsm_count].callbacks = &wifi_dsm_callbacks[0];
 			dsm_ids[dsm_count].count = ARRAY_SIZE(wifi_dsm_callbacks);
-			dsm_ids[dsm_count].arg = NULL;
+			dsm_ids[dsm_count].arg = &dsm;
 			dsm_count++;
 		}
 	}

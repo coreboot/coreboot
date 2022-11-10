@@ -6,12 +6,9 @@
 #include <commonlib/bsd/helpers.h>
 #include <stdint.h>
 
-#define MAX_TPM_LOG_ENTRIES 50
 #define TPM_CB_LOG_DIGEST_MAX_LENGTH 64
 #define TPM_CB_LOG_PCR_HASH_NAME 50
 #define TPM_CB_LOG_PCR_HASH_LEN 10
-/* Assumption of 2K TCPA log size reserved for CAR/SRAM */
-#define MAX_PRERAM_TPM_LOG_ENTRIES 15
 
 struct tpm_cb_log_entry {
 	uint32_t pcr;

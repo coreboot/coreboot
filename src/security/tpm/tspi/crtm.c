@@ -2,7 +2,9 @@
 
 #include <console/console.h>
 #include <fmap.h>
+#include <bootstate.h>
 #include <cbfs.h>
+#include <symbols.h>
 #include "crtm.h"
 #include <string.h>
 
@@ -148,39 +150,79 @@ uint32_t tspi_cbfs_measurement(const char *name, uint32_t type, const struct vb2
 			      tpm_log_metadata);
 }
 
+void *tpm_log_init(void)
+{
+	static void *tclt;
+
+	/* We are dealing here with pre CBMEM environment.
+	 * If cbmem isn't available use CAR or SRAM */
+	if (!cbmem_possibly_online() &&
+		!CONFIG(VBOOT_RETURN_FROM_VERSTAGE))
+		return _tpm_log;
+	else if (ENV_CREATES_CBMEM
+		 && !CONFIG(VBOOT_RETURN_FROM_VERSTAGE)) {
+		tclt = tpm_log_cbmem_init();
+		if (!tclt)
+			return _tpm_log;
+	} else {
+		tclt = tpm_log_cbmem_init();
+	}
+
+	return tclt;
+}
+
 int tspi_measure_cache_to_pcr(void)
 {
 	int i;
-	struct tpm_cb_log_table *tclt = tpm_log_init();
+	int pcr;
+	const char *event_name;
+	const uint8_t *digest_data;
+	enum vb2_hash_algorithm digest_algo;
 
 	/* This means the table is empty. */
 	if (!tpm_log_available())
 		return VB2_SUCCESS;
 
-	if (!tclt) {
+	if (tpm_log_init() == NULL) {
 		printk(BIOS_WARNING, "TPM LOG: log non-existent!\n");
 		return VB2_ERROR_UNKNOWN;
 	}
 
 	printk(BIOS_DEBUG, "TPM: Write digests cached in TPM log to PCR\n");
-	for (i = 0; i < tclt->num_entries; i++) {
-		struct tpm_cb_log_entry *tce = &tclt->entries[i];
-		if (tce) {
-			printk(BIOS_DEBUG, "TPM: Write digest for"
-			       " %s into PCR %d\n",
-			       tce->name, tce->pcr);
-			int result = tlcl_extend(tce->pcr,
-						 tce->digest,
-						 TPM_MEASURE_ALGO);
-			if (result != TPM_SUCCESS) {
-				printk(BIOS_ERR, "TPM: Writing digest"
-				       " of %s into PCR failed with error"
-				       " %d\n",
-				       tce->name, result);
-				return VB2_ERROR_UNKNOWN;
-			}
+	i = 0;
+	while (!tpm_log_get(i++, &pcr, &digest_data, &digest_algo, &event_name)) {
+		printk(BIOS_DEBUG, "TPM: Write digest for %s into PCR %d\n", event_name, pcr);
+		int result = tlcl_extend(pcr, digest_data, digest_algo);
+		if (result != TPM_SUCCESS) {
+			printk(BIOS_ERR,
+			       "TPM: Writing digest of %s into PCR failed with error %d\n",
+				event_name, result);
+			return VB2_ERROR_UNKNOWN;
 		}
 	}
 
 	return VB2_SUCCESS;
 }
+
+#if !CONFIG(VBOOT_RETURN_FROM_VERSTAGE)
+static void recover_tpm_log(int is_recovery)
+{
+	const void *preram_log = _tpm_log;
+	void *ram_log = tpm_log_cbmem_init();
+
+	if (tpm_log_get_size(preram_log) > MAX_PRERAM_TPM_LOG_ENTRIES) {
+		printk(BIOS_WARNING, "TPM LOG: pre-RAM log is too full, possible corruption\n");
+		return;
+	}
+
+	if (ram_log == NULL) {
+		printk(BIOS_WARNING, "TPM LOG: CBMEM not available, something went wrong\n");
+		return;
+	}
+
+	tpm_log_copy_entries(_tpm_log, ram_log);
+}
+CBMEM_CREATION_HOOK(recover_tpm_log);
+#endif
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, tpm_log_dump, NULL);

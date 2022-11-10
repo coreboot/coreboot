@@ -10,18 +10,43 @@
 
 #define TPM_PCR_MAX_LEN 64
 #define HASH_DATA_CHUNK_SIZE 1024
+#define MAX_TPM_LOG_ENTRIES 50
+/* Assumption of 2K TCPA log size reserved for CAR/SRAM */
+#define MAX_PRERAM_TPM_LOG_ENTRIES 15
 
 /**
  * Get the pointer to the single instance of global
  * TPM log data, and initialize it when necessary
  */
-struct tpm_cb_log_table *tpm_log_init(void);
+void *tpm_log_init(void);
+
+/**
+ * Get the pointer to the single CBMEM instance of global
+ * TPM log data, and initialize it when necessary
+ */
+void *tpm_log_cbmem_init(void);
 
 /**
  * Clears the pre-RAM TPM log data and initializes
  * any content with default values
  */
 void tpm_preram_log_clear(void);
+
+/**
+ * Retrieves number of entries currently stored in the log.
+ */
+uint16_t tpm_log_get_size(const void *log_table);
+
+/**
+ * Copies data from pre-RAM TPM log to CBMEM (RAM) log
+ */
+void tpm_log_copy_entries(const void *from, void *to);
+
+/**
+ * Retrieves an entry from a log. Returns non-zero on invalid index or error.
+ */
+int tpm_log_get(int entry_idx, int *pcr, const uint8_t **digest_data,
+		enum vb2_hash_algorithm *digest_algo, const char **event_name);
 
 /**
  * Add table entry for cbmem TPM log.

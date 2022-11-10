@@ -105,7 +105,7 @@ __weak uint8_t get_blade_id(void)
 {
 	struct ipmi_config_rsp rsp = {.slot_id = UINT8_MAX};
 
-	if (CONFIG(IPMI_KCS) && CONFIG_BMC_KCS_BASE) {
+	if (CONFIG(IPMI_KCS) && CONFIG_BMC_KCS_BASE != 0) {
 		if (ipmi_get_board_config(CONFIG_BMC_KCS_BASE, &rsp) != CB_SUCCESS)
 			return UINT8_MAX;
 	}

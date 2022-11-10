@@ -176,20 +176,19 @@ static struct bus *g_cpu_bus;
 
 /* By the time APs call ap_init() caching has been setup, and microcode has
  * been loaded. */
-static void asmlinkage ap_init(void)
+static asmlinkage void ap_init(unsigned int index)
 {
-	struct cpu_info *info = cpu_info();
-
 	/* Ensure the local APIC is enabled */
 	enable_lapic();
 	setup_lapic_interrupts();
 
 	struct device *dev = g_cpu_bus->children;
-	for (unsigned int i = info->index; i > 0; i--)
+	for (unsigned int i = index; i > 0; i--)
 		dev = dev->sibling;
 
-	info->cpu = dev;
+	set_cpu_info(index, dev);
 
+	struct cpu_info *info = cpu_info();
 	cpu_add_map_entry(info->index);
 
 	/* Fix up APIC id with reality. */
@@ -540,6 +539,7 @@ static enum cb_err init_bsp(struct bus *cpu_bus)
 	}
 
 	/* Find the device structure for the boot CPU. */
+	set_cpu_info(0, bsp);
 	info = cpu_info();
 	info->cpu = bsp;
 	info->cpu->name = processor_name;

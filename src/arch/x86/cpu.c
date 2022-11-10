@@ -6,6 +6,7 @@
 #include <cpu/cpu.h>
 #include <post.h>
 #include <string.h>
+#include <cpu/x86/gdt.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/tsc.h>
@@ -339,4 +340,42 @@ int cpu_index(void)
 			return i;
 	}
 	return -1;
+}
+
+/* cpu_info() looks at address 0 at the base of %gs for a pointer to struct cpu_info */
+static struct per_cpu_segment_data segment_data[CONFIG_MAX_CPUS];
+static struct cpu_info cpu_infos[CONFIG_MAX_CPUS];
+
+enum cb_err set_cpu_info(unsigned int index, struct device *cpu)
+{
+	if (index >= ARRAY_SIZE(cpu_infos))
+		return CB_ERR;
+
+	if (!cpu)
+		return CB_ERR;
+
+	const struct cpu_info info = { .cpu = cpu, .index = index};
+	cpu_infos[index] = info;
+	segment_data[index].cpu_info = &cpu_infos[index];
+
+	struct segment_descriptor {
+		uint16_t segment_limit_0_15;
+		uint16_t base_address_0_15;
+		uint8_t base_address_16_23;
+		uint8_t attrs[2];
+		uint8_t base_address_24_31;
+	} *segment_descriptor = (void *)&per_cpu_segment_descriptors;
+
+	segment_descriptor[index].base_address_0_15 = (uintptr_t)&segment_data[index] & 0xffff;
+	segment_descriptor[index].base_address_16_23 = ((uintptr_t)&segment_data[index] >> 16) & 0xff;
+	segment_descriptor[index].base_address_24_31 = ((uintptr_t)&segment_data[index] >> 24) & 0xff;
+
+	const unsigned int cpu_segment = per_cpu_segment_selector + (index << 3);
+
+	__asm__ __volatile__ ("mov %0, %%gs\n"
+		:
+		: "r" (cpu_segment)
+		: );
+
+	return CB_SUCCESS;
 }

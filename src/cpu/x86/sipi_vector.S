@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <cpu/x86/cpu_info.S.inc>
 #include <cpu/x86/cr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/msr.h>
@@ -104,19 +103,8 @@ _start:
 	subl	%eax, %edx
 	mov	%edx, %esp
 
-	push_cpu_info index=%ecx
-	push_per_cpu_segment_data
-
-	/*
-	 * Update the AP's per_cpu_segment_descriptor to point to the
-	 * per_cpu_segment_data that was allocated on the stack.
-	 */
-	set_segment_descriptor_base per_cpu_segment_descriptors, %esp, %ecx
-
-	mov	%ecx, %eax
-	shl	$3, %eax /* The index is << 3 in the segment selector */
-	add	per_cpu_segment_selector, %eax
-	mov	%eax, %gs
+	/* Save CPU number for calling the AP entry */
+	push	%ecx
 
 	/*
 	 * The following code only needs to run on Intel platforms and thus the caller
@@ -230,15 +218,19 @@ load_msr:
 	mov	%eax, %cr4
 #endif
 
+	pop	%edi /* Retrieve cpu index */
 	andl	$0xfffffff0, %esp /* ensure stack alignment */
 
 #if ENV_X86_64
-	/* entry64.inc preserves ebx. */
+	/* entry64.inc preserves ebx, esi, edi, ebp */
 #include <cpu/x86/64bit/entry64.inc>
-
 	movabs	c_handler, %eax
 	call	*%rax
 #else
+	push	$0
+	push	$0
+	push	$0
+	push	%edi
 	mov	c_handler, %eax
 	call	*%eax
 #endif

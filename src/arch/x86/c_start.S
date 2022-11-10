@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <cpu/x86/cpu_info.S.inc>
 #include <cpu/x86/post_code.h>
 #include <arch/ram_segs.h>
 
@@ -77,21 +76,6 @@ _start:
 	/* Set new stack with enforced alignment. */
 	movl	$_estack, %esp
 	andl	$(~(CONFIG_STACK_SIZE-1)), %esp
-
-	push_cpu_info
-
-	/* Allocate the per_cpu_segment_data on the stack */
-	push_per_cpu_segment_data
-
-	/*
-	 * Update the BSP's per_cpu_segment_descriptor to point to the
-	 * per_cpu_segment_data that was allocated on the stack.
-	 */
-	set_segment_descriptor_base $per_cpu_segment_descriptors, %esp
-
-	mov	$per_cpu_segment_selector, %eax
-	movl	(%eax), %eax
-	mov	%eax, %gs
 
 	/*
 	 *	Now we are finished. Memory is up, data is copied and

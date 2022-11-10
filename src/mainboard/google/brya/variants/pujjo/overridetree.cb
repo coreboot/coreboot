@@ -334,7 +334,7 @@ chip soc/intel/alderlake
 
 		device ref i2c1 on
 			chip drivers/i2c/hid
-				register "generic.hid" = ""ELAN9004""
+				register "generic.hid" = ""ELAN901C""
 				register "generic.desc" = ""ELAN Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
 				register "generic.probed" = "1"

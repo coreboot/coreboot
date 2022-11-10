@@ -157,6 +157,12 @@ static void read_resources(struct device *dev)
 
 	mmconf_resource(dev, idx++);
 
+	/* GNB IOAPIC resource */
+	gnb_apic = new_resource(dev, idx++);
+	gnb_apic->base = GNB_IO_APIC_ADDR;
+	gnb_apic->size = 0x00001000;
+	gnb_apic->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
 	if (!hob) {
 		printk(BIOS_ERR, "%s incomplete because no HOB list was found\n",
 				__func__);
@@ -183,12 +189,6 @@ static void read_resources(struct device *dev)
 			printk(BIOS_ERR, "Failed to set resources for type %d\n",
 					res->type);
 	}
-
-	/* GNB IOAPIC resource */
-	gnb_apic = new_resource(dev, idx++);
-	gnb_apic->base = GNB_IO_APIC_ADDR;
-	gnb_apic->size = 0x00001000;
-	gnb_apic->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
 static void root_complex_init(struct device *dev)

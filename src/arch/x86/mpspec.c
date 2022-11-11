@@ -507,25 +507,3 @@ void *mptable_finalize(struct mp_config_table *mc)
 		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }
-
-unsigned long __weak write_smp_table(unsigned long addr)
-{
-	struct mp_config_table *mc;
-	int isa_bus;
-	void *tmp, *v;
-
-	v = smp_write_floating_table(addr, 0);
-	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
-
-	mptable_init(mc);
-
-	smp_write_processors(mc);
-
-	mptable_write_buses(mc, NULL, &isa_bus);
-
-	mptable_lintsrc(mc, isa_bus);
-	tmp = mptable_finalize(mc);
-	printk(BIOS_INFO, "MPTABLE len: %d\n", (unsigned int)((uintptr_t)tmp -
-				(uintptr_t)v));
-	return (unsigned long)tmp;
-}

@@ -409,11 +409,6 @@ static int append_and_check_region(const struct region smram,
 int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 		    struct smm_loader_params *params)
 {
-	if (CONFIG(SMM_ASEG) && (smram_base != SMM_BASE || smram_size != SMM_CODE_SEGMENT_SIZE)) {
-		printk(BIOS_ERR, "SMM base & size are 0x%lx, 0x%zx, but must be 0x%x, 0x%x\n",
-		       smram_base, smram_size, SMM_BASE, SMM_CODE_SEGMENT_SIZE);
-		return -1;
-	}
 	/*
 	 * Place in .bss to reduce stack usage.
 	 * TODO: once CPU_INFO_V2 is used everywhere, use smaller stack for APs and move

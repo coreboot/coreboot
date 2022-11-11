@@ -29,13 +29,9 @@ endif
 
 smm-y += save_state.c
 
-ifeq ($(CONFIG_SMM_TSEG),y)
-
 ramstage-y += tseg_region.c
 romstage-y += tseg_region.c
 postcar-y += tseg_region.c
-
-endif
 
 ifeq ($(CONFIG_PARALLEL_MP),y)
 

@@ -165,6 +165,12 @@ void restore_default_smm_area(void *smm_save_area);
  */
 void smm_region(uintptr_t *start, size_t *size);
 
+static inline void aseg_region(uintptr_t *start, size_t *size)
+{
+	*start = SMM_BASE;
+	*size = SMM_DEFAULT_SIZE; /* SMM_CODE_SEGMENT_SIZE ? */
+}
+
 enum {
 	/* SMM handler area. */
 	SMM_SUBREGION_HANDLER,

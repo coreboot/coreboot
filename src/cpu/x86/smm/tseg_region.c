@@ -26,7 +26,12 @@ int smm_subregion(int sub, uintptr_t *start, size_t *size)
 	const size_t ied_size = CONFIG_IED_REGION_SIZE;
 	const size_t cache_size = CONFIG_SMM_RESERVED_SIZE;
 
-	smm_region(&sub_base, &sub_size);
+	if (CONFIG(SMM_TSEG))
+		smm_region(&sub_base, &sub_size);
+	else if (CONFIG(SMM_ASEG))
+		aseg_region(&sub_base, &sub_size);
+	else
+		return -1;
 
 	ASSERT(IS_ALIGNED(sub_base, sub_size));
 	ASSERT(sub_size > (cache_size + ied_size));

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/amd/amd64_save_state.h>
 #include <cpu/intel/smm_reloc.h>
@@ -15,14 +16,10 @@ static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 {
 	printk(BIOS_DEBUG, "Setting up SMI for CPU\n");
 
-	if (CONFIG(SMM_TSEG))
-		smm_subregion(SMM_SUBREGION_HANDLER, perm_smbase, perm_smsize);
+	smm_subregion(SMM_SUBREGION_HANDLER, perm_smbase, perm_smsize);
 
-	if (CONFIG(SMM_ASEG)) {
+	if (CONFIG(SMM_ASEG))
 		smm_open_aseg();
-		*perm_smbase = 0xa0000;
-		*perm_smsize = 0x10000;
-	}
 
 	/* FIXME: on X86_64 the save state size is smaller than the size of the SMM stub */
 	*smm_save_state_size = sizeof(amd64_smm_state_save_area_t);

@@ -3,6 +3,10 @@
 #ifndef _I2C_RV3028C7_H_
 #define _I2C_RV3028C7_H_
 
+#define RV3028C7_ACPI_NAME		"MC28"
+#define RV3028C7_HID_NAME		"MCRY3028"
+#define RV3028C7_HID_DESC		"Real Time Clock"
+
 /* Register layout */
 #define SECOND_REG			0x00
 #define MINUTE_REG			0x01

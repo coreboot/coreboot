@@ -35,6 +35,7 @@ enum charge_mode {
 };
 
 struct drivers_i2c_rv3028c7_config {
+	unsigned int bus_speed;		/* Bus clock in Hz */
 	unsigned char user_weekday;	/* User day of the week to set */
 	unsigned char user_day;		/* User day to set */
 	unsigned char user_month;	/* User month to set */

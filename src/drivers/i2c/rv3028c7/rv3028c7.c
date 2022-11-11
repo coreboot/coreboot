@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_device.h>
+#include <acpi/acpigen.h>
 #include <commonlib/bsd/bcd.h>
 #include <console/console.h>
 #include <delay.h>
@@ -176,11 +178,71 @@ static void rtc_init(struct device *dev)
 	}
 }
 
+#if CONFIG(HAVE_ACPI_TABLES)
+static void rv3028c7_fill_ssdt(const struct device *dev)
+{
+	const char *scope = acpi_device_scope(dev);
+	struct drivers_i2c_rv3028c7_config *config = dev->chip_info;
+	enum i2c_speed bus_speed;
+
+	if (!scope)
+		return;
+
+	switch (config->bus_speed) {
+	case I2C_SPEED_STANDARD:
+	case I2C_SPEED_FAST:
+		bus_speed = config->bus_speed;
+		break;
+	default:
+		bus_speed = I2C_SPEED_STANDARD;
+		printk(BIOS_INFO, "%s: Bus speed unsupported, fall back to %d kHz!\n",
+			dev->chip_ops->name, bus_speed / 1000);
+		break;
+	}
+
+	struct acpi_i2c i2c = {
+		.address = dev->path.i2c.device,
+		.mode_10bit = dev->path.i2c.mode_10bit,
+		.speed = bus_speed,
+		.resource = scope,
+	};
+
+	/* Device */
+	acpigen_write_scope(scope);
+	acpigen_write_device(acpi_device_name(dev));
+	acpigen_write_name_string("_HID", RV3028C7_HID_NAME);
+	acpigen_write_name_string("_DDN", RV3028C7_HID_DESC);
+	acpigen_write_STA(acpi_device_status(dev));
+
+	/* Resources */
+	acpigen_write_name("_CRS");
+
+	acpigen_write_resourcetemplate_header();
+	acpi_device_write_i2c(&i2c);
+	acpigen_write_resourcetemplate_footer();
+
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+
+	printk(BIOS_INFO, "%s: %s at %s\n", acpi_device_path(dev), dev->chip_ops->name,
+			dev_path(dev));
+}
+
+static const char *rv3028c7_acpi_name(const struct device *dev)
+{
+	return RV3028C7_ACPI_NAME;
+}
+#endif
+
 static struct device_operations rv3028c7_ops = {
 	.read_resources		= noop_read_resources,
 	.set_resources		= noop_set_resources,
 	.init			= rtc_init,
 	.final			= rtc_final,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_name		= rv3028c7_acpi_name,
+	.acpi_fill_ssdt		= rv3028c7_fill_ssdt,
+#endif
 };
 
 static void rtc_enable(struct device *dev)

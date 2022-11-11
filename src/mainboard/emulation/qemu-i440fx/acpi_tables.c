@@ -14,8 +14,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = acpi_create_madt_lapics(current);
 
 	/* IOAPIC */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
-				2, IO_APIC_ADDR, 0);
+	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
 
 	/* INT_SRC_OVR */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)

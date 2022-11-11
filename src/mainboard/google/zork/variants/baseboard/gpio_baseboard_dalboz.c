@@ -353,3 +353,11 @@ const struct soc_amd_gpio *variant_early_gpio_table(size_t *size)
 	*size = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
 }
+
+static const struct soc_amd_gpio romstage_gpio_table[] = {};
+
+const struct soc_amd_gpio *baseboard_romstage_gpio_table(size_t *size)
+{
+	*size = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
+}

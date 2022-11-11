@@ -117,6 +117,38 @@ chip soc/intel/alderlake
 				device i2c 50 on end
 			end
 		end #I2C1
+		device ref i2c3 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN9008""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "300"
+				register "generic.reset_off_delay_ms" = "1"
+				register "generic.enable_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "6"
+				register "generic.stop_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
+				register "generic.stop_off_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "generic.disable_gpio_export_in_crs" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 10 on end
+			end
+		end #I2C3
+		device ref i2c5 on
+			chip drivers/i2c/generic
+				register "hid" = ""PIXA2342""
+				register "desc" = ""PIXART Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
+				register "wake" = "GPE0_DW2_14"
+				register "detect" = "1"
+				device i2c 15 on end
+			end
+		end #I2C5
 		device ref pcie_rp11 on
 			# Enable NVMe SSD PCIe 11-12 using clk 1
 			register "pch_pcie_rp[PCH_RP(11)]" = "{

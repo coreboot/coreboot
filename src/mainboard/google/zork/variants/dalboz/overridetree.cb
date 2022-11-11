@@ -46,7 +46,7 @@ chip soc/amd/picasso
 		chip drivers/i2c/generic
 			register "hid" = ""RAYD0001""
 			register "desc" = ""Raydium Touchscreen""
-			register "probed" = "1"
+			register "detect" = "1"
 			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_12)"
 			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_140)"
 			# 32ms: Rise time of the reset line
@@ -59,7 +59,7 @@ chip soc/amd/picasso
 		chip drivers/i2c/generic
 			register "hid" = ""ELAN0001""
 			register "desc" = ""ELAN Touchscreen""
-			register "probed" = "1"
+			register "detect" = "1"
 			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_12)"
 			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_140)"
 			register "reset_delay_ms" = "20"
@@ -70,7 +70,7 @@ chip soc/amd/picasso
 			register "generic.hid" = ""SYTS7817""
 			register "generic.desc" = ""Synaptics Touchscreen""
 			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_12)"
-			register "generic.probed" = "1"
+			register "generic.detect" = "1"
 			register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_140)"
 			register "generic.reset_delay_ms" = "45"
 			register "generic.has_power_resource" = "1"
@@ -82,7 +82,7 @@ chip soc/amd/picasso
 			register "generic.hid" = ""GDIX0000""
 			register "generic.desc" = ""Goodix Touchscreen""
 			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_12)"
-			register "generic.probed" = "1"
+			register "generic.detect" = "1"
 			register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_140)"
 			register "generic.reset_delay_ms" = "120"
 			register "generic.reset_off_delay_ms" = "1"

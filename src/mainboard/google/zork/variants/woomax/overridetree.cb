@@ -117,7 +117,7 @@ chip soc/amd/picasso
 		chip drivers/i2c/hid
 			register "generic.hid" = ""ELAN9008""
 			register "generic.desc" = ""ELAN Touchscreen""
-			register "generic.probed" = "1"
+			register "generic.detect" = "1"
 			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_12)"
 			register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_90)"
 			register "generic.enable_delay_ms" = "1"

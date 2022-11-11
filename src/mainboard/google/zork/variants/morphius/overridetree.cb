@@ -119,7 +119,7 @@ chip soc/amd/picasso
 			register "generic.hid" = ""GDIX0000""
 			register "generic.desc" = ""Goodix Touchscreen""
 			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_12)"
-			register "generic.probed" = "1"
+			register "generic.detect" = "1"
 			register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_90)"
 			register "generic.enable_delay_ms" = "10"
 			register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_140)"

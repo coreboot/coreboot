@@ -36,7 +36,8 @@ struct ied_header {
 /* These helpers are for performing SMM relocation. */
 void northbridge_write_smram(u8 smram);
 
-void smm_open_aseg(void);
+void smm_close(void);
+void smm_open(void);
 void smm_lock(void);
 void smm_relocate(void);
 

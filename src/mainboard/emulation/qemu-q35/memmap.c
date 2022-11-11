@@ -78,6 +78,26 @@ void smm_region(uintptr_t *start, size_t *size)
 	printk(BIOS_SPEW, "SMM_BASE: 0x%08lx, SMM_SIZE: %zu MiB\n", *start, *size / MiB);
 }
 
+void smm_open(void)
+{
+	/* Set D_OPEN */
+	if (CONFIG(SMM_ASEG))
+		pci_write_config8(HOST_BRIDGE, SMRAMC, D_OPEN | G_SMRAME | C_BASE_SEG);
+
+	if (CONFIG(SMM_TSEG))
+		pci_and_config8(HOST_BRIDGE, ESMRAMC, ~T_EN);
+}
+
+void smm_close(void)
+{
+	/* Clear D_OPEN */
+	if (CONFIG(SMM_ASEG))
+		pci_write_config8(HOST_BRIDGE, SMRAMC, G_SMRAME | C_BASE_SEG);
+
+	if (CONFIG(SMM_TSEG))
+		pci_or_config8(HOST_BRIDGE, ESMRAMC, T_EN);
+}
+
 void smm_lock(void)
 {
 	/*
@@ -87,13 +107,5 @@ void smm_lock(void)
 	 */
 	printk(BIOS_DEBUG, "Locking SMM.\n");
 
-	if (CONFIG(SMM_TSEG))
-		pci_or_config8(HOST_BRIDGE, ESMRAMC, T_EN);
-
-	pci_write_config8(PCI_DEV(0, 0, 0), SMRAMC, D_LCK | G_SMRAME | C_BASE_SEG);
-}
-
-void smm_open_aseg(void)
-{
-	pci_write_config8(PCI_DEV(0, 0, 0), SMRAMC, G_SMRAME | C_BASE_SEG | D_OPEN);
+	pci_write_config8(HOST_BRIDGE, SMRAMC, D_LCK | G_SMRAME | C_BASE_SEG);
 }

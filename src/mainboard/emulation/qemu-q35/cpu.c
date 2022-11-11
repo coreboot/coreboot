@@ -18,8 +18,7 @@ static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 
 	smm_subregion(SMM_SUBREGION_HANDLER, perm_smbase, perm_smsize);
 
-	if (CONFIG(SMM_ASEG))
-		smm_open_aseg();
+	smm_open();
 
 	/* FIXME: on X86_64 the save state size is smaller than the size of the SMM stub */
 	*smm_save_state_size = sizeof(amd64_smm_state_save_area_t);
@@ -77,6 +76,9 @@ static void relocation_handler(int cpu, uintptr_t curr_smbase,
 
 static void post_mp_init(void)
 {
+	/* Limit access to SMRAM to SMM module. */
+	smm_close();
+
 	/* Now that all APs have been relocated as well as the BSP let SMIs start flowing. */
 	global_smi_enable();
 

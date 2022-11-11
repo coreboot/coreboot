@@ -47,24 +47,33 @@ void mainboard_machine_check(void)
 #define TSEG_SZ_MASK	(3 << 1)
 #define H_SMRAME	(1 << 7)
 
+/* Decodes TSEG region size to bytes. */
+static size_t decode_tseg_size(u8 esmramc)
+{
+	/* If we intent to enable TSEG, fake it always enabled. */
+	if (CONFIG(SMM_TSEG))
+		esmramc |= T_EN;
+
+	if (!(esmramc & T_EN))
+		return 0;
+
+	switch ((esmramc & TSEG_SZ_MASK) >> 1) {
+	case 0:
+		return 1 * MiB;
+	case 1:
+		return 2 * MiB;
+	case 2:
+		return 8 * MiB;
+	default:
+		return pci_read_config16(HOST_BRIDGE, EXT_TSEG_MBYTES) * MiB;
+	}
+}
+
 void smm_region(uintptr_t *start, size_t *size)
 {
 	uint8_t esmramc = pci_read_config8(HOST_BRIDGE, ESMRAMC);
 
-	switch ((esmramc & TSEG_SZ_MASK) >> 1) {
-	case 0:
-		*size = 1 * MiB;
-		break;
-	case 1:
-		*size = 2 * MiB;
-		break;
-	case 2:
-		*size = 8 * MiB;
-		break;
-	default:
-		*size = pci_read_config16(HOST_BRIDGE, EXT_TSEG_MBYTES) * MiB;
-	}
-
+	*size = decode_tseg_size(esmramc);
 	*start = qemu_get_memory_size() * KiB - *size;
 	printk(BIOS_SPEW, "SMM_BASE: 0x%08lx, SMM_SIZE: %zu MiB\n", *start, *size / MiB);
 }
@@ -79,7 +88,8 @@ void smm_lock(void)
 	printk(BIOS_DEBUG, "Locking SMM.\n");
 
 	if (CONFIG(SMM_TSEG))
-		pci_or_config8(PCI_DEV(0, 0, 0), ESMRAMC, T_EN);
+		pci_or_config8(HOST_BRIDGE, ESMRAMC, T_EN);
+
 	pci_write_config8(PCI_DEV(0, 0, 0), SMRAMC, D_LCK | G_SMRAME | C_BASE_SEG);
 }
 

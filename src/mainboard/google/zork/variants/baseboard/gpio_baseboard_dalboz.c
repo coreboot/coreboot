@@ -64,7 +64,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* EC_AP_INT_ODL (Sensor Framesync) */
 	PAD_GPI(GPIO_31, PULL_NONE),
 	/* EN_PWR_TOUCHSCREEN */
-	PAD_GPO(GPIO_32, LOW),
+	PAD_GPO(GPIO_32, HIGH),
 	/* GPIO_33 - GPIO_39: Not available */
 	/* NVME_AUX_RESET_L */
 	PAD_GPO(GPIO_40, HIGH),
@@ -148,8 +148,8 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_138, UART0_TXD, PULL_NONE),
 	/* DEV_BEEP_BCLK */
 	PAD_GPI(GPIO_139, PULL_NONE),
-	/* USI_RESET_L */
-	PAD_GPO(GPIO_140, LOW),
+	/* TOUCHSCREEN_RESET_L */
+	PAD_GPO(GPIO_140, HIGH),
 	/* USB_HUB_RST_L */
 	PAD_GPO(GPIO_141, HIGH),
 	/* SD_AUX_RESET_L */
@@ -354,7 +354,13 @@ const struct soc_amd_gpio *variant_early_gpio_table(size_t *size)
 	return early_gpio_table;
 }
 
-static const struct soc_amd_gpio romstage_gpio_table[] = {};
+static const struct soc_amd_gpio romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	/* EN_PWR_TOUCHSCREEN */
+	PAD_GPO(GPIO_32, HIGH),
+	/* TOUCHSCREEN_RESET_L */
+	PAD_GPO(GPIO_140, LOW),
+};
 
 const struct soc_amd_gpio *baseboard_romstage_gpio_table(size_t *size)
 {

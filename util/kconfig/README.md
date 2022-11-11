@@ -37,3 +37,44 @@ Linux.
 Check that kconfig still works, `git add` and `git commit` the changes and
 write a meaningful commit message that documents what Linux kconfig version
 the tree has been upreved to.
+
+## Adding a new patch
+The format of the patches to kconfig is a mix of the headers produced by `git
+format-patch` and the patch format of quilt. However neither git nor quilt
+seems to have any functionality to directly produce a file in such a format
+
+To add a patch in this format:
+1. Add your changes to the sources and `git commit` them
+2. Generate a git patch for the commit:
+
+    $ git format-patch HEAD~
+
+3. Reverse apply the newly created patch file to restore the tree back to the
+   state quilt thinks it is in:
+
+    $ git apply -R <the patch file>
+
+4. Import the patch info quilt:
+
+    $ quilt import <the patch file>
+
+5. Force push the change to the top of quilt's patch stack (quilt won't like
+   the git diff style and would normally refuse to apply the patch):
+
+    $ quilt push -f <the patch file>
+
+6. Add the changed files to be tracked against the quilt:
+
+    $ quilt add <the files you changed>
+
+7. Re-apply your changes from the patch file:
+
+    $ git apply <the patch file>
+
+8. Add the changes to quilt to regenerate the patch file in a quilt compatible
+   format while keeping the git header:
+
+    $ quilt refresh
+
+9. The new patch file and updated patches/series files can now be added to the
+   git commit

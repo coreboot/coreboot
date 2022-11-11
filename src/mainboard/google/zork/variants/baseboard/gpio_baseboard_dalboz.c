@@ -248,7 +248,7 @@ static void wifi_power_reset_configure_pre_v3(void)
 	gpio_set(GPIO_42, 1);
 }
 
-__weak void variant_pcie_gpio_configure(void)
+void baseboard_pcie_gpio_configure(void)
 {
 	static const struct soc_amd_gpio pcie_gpio_table[] = {
 		/* PCIE_RST1_L - Variable timings (May remove) */

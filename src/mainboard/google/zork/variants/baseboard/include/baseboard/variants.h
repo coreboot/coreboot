@@ -47,8 +47,8 @@ void variant_audio_update(void);
 void variant_bluetooth_update(void);
 /* Update touchscreen configuration in devicetree during ramstage. */
 void variant_touchscreen_update(void);
-/* Configure PCIe GPIOs as per variant sequencing requirements. */
-void variant_pcie_gpio_configure(void);
+/* Configure PCIe GPIOs as per baseboard sequencing requirements. */
+void baseboard_pcie_gpio_configure(void);
 
 /* Per variant FSP-S initialization, default implementation in baseboard and
  * overridable by the variant. */

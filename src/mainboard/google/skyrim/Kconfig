@@ -80,6 +80,7 @@ config MAINBOARD_PART_NUMBER
 	default "Winterhold" if BOARD_GOOGLE_WINTERHOLD
 	default "Morthal" if BOARD_GOOGLE_MORTHAL
 	default "Frostflow" if BOARD_GOOGLE_FROSTFLOW
+	default "Crystaldrift" if BOARD_GOOGLE_CRYSTALDRIFT
 
 config OVERRIDE_DEVICETREE
 	string
@@ -91,6 +92,7 @@ config VARIANT_DIR
 	default "winterhold" if BOARD_GOOGLE_WINTERHOLD
 	default "morthal" if BOARD_GOOGLE_MORTHAL
 	default "frostflow" if BOARD_GOOGLE_FROSTFLOW
+	default "crystaldrift" if BOARD_GOOGLE_CRYSTALDRIFT
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES

@@ -8,7 +8,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	struct device *bdev, *dev = NULL;
 	struct resource *res = NULL;
 
-	current = acpi_create_madt_lapics(current);
+	current = acpi_create_madt_lapics_with_nmis(current);
 
 	/* Southbridge IOAPIC */
 	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, 0xfec00000);

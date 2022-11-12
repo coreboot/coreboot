@@ -190,23 +190,6 @@ enum cb_err fsp_hob_iterator_get_next_guid_extension(const struct hob_header **h
 	return CB_ERR;
 }
 
-static const
-struct hob_resource *find_resource_hob_by_guid(const struct hob_header *hob,
-					       const uint8_t guid[16])
-{
-	const struct hob_resource *res;
-
-	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST; hob = fsp_next_hob(hob)) {
-		if (hob->type != HOB_TYPE_RESOURCE_DESCRIPTOR)
-			continue;
-
-		res = fsp_hob_header_to_resource(hob);
-		if (fsp_guid_compare(res->owner_guid, guid))
-			return res;
-	}
-	return NULL;
-}
-
 void fsp_print_guid(const void *base)
 {
 	uint32_t big;
@@ -224,17 +207,15 @@ void fsp_print_guid(const void *base)
 
 int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16])
 {
+	const struct hob_header *hob_iterator;
 	const struct hob_resource *fsp_mem;
-	const void *hob_list = fsp_get_hob_list();
 
-	if (!hob_list)
+	if (fsp_hob_iterator_init(&hob_iterator) != CB_SUCCESS)
 		return -1;
 
 	range_entry_init(re, 0, 0, 0);
 
-	fsp_mem = find_resource_hob_by_guid(hob_list, guid);
-
-	if (!fsp_mem) {
+	if (fsp_hob_iterator_get_next_guid_resource(&hob_iterator, guid, &fsp_mem) != CB_SUCCESS) {
 		fsp_print_guid(guid);
 		printk(BIOS_SPEW, " not found!\n");
 		return -1;

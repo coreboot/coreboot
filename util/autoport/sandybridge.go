@@ -36,34 +36,6 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 		},
 		Children: []DevTreeNode{
 			{
-				Chip: "cpu_cluster",
-				Dev:  0,
-				Children: []DevTreeNode{
-					{
-						Chip:    "cpu/intel/model_206ax",
-						Comment: "FIXME: check all registers",
-						Registers: map[string]string{
-							/* FIXME:XX hardcoded.  */
-							"acpi_c1": "1",
-							"acpi_c2": "3",
-							"acpi_c3": "5",
-						},
-						Children: []DevTreeNode{
-							{
-								Chip: "lapic",
-								Dev:  0,
-							},
-							{
-								Chip:     "lapic",
-								Dev:      0xacac,
-								Disabled: true,
-							},
-						},
-					},
-				},
-			},
-
-			{
 				Chip:          "domain",
 				Dev:           0,
 				PCIController: true,

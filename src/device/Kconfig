@@ -197,7 +197,7 @@ choice
 config PCI_OPTION_ROM_RUN_REALMODE
 	prompt "Native mode"
 	bool
-	depends on ARCH_X86
+	depends on ARCH_X86 && !ARCH_RAMSTAGE_X86_64
 	help
 	  If you select this option, PCI Option ROMs will be executed
 	  natively on the CPU in real mode. No CPU emulation is involved,

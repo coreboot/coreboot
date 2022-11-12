@@ -1,10 +1,12 @@
 config CPU_INTEL_SOCKET_BGA956
 	bool
-	select CPU_INTEL_MODEL_1067X
-	select MMX
-	select SSE
 
 if CPU_INTEL_SOCKET_BGA956
+
+config SOCKET_SPECIFIC_OPTIONS
+	def_bool y
+	select CPU_INTEL_MODEL_1067X
+	select MMX
 
 config DCACHE_RAM_BASE
 	hex

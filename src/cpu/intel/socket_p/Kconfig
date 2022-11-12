@@ -1,10 +1,13 @@
 config CPU_INTEL_SOCKET_P
 	bool
+
+if CPU_INTEL_SOCKET_P
+
+config SOCKET_SPECIFIC_OPTIONS
+	def_bool y
 	select CPU_INTEL_MODEL_1067X
 	select CPU_INTEL_MODEL_6FX
 	select MMX
-
-if CPU_INTEL_SOCKET_P
 
 config DCACHE_RAM_BASE
 	hex

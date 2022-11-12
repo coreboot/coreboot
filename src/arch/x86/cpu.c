@@ -318,33 +318,9 @@ void arch_bootstate_coreboot_exit(void)
 	mp_park_aps();
 }
 
-/*
- * Previously cpu_index() implementation assumes that cpu_index()
- * function will always getting called from coreboot context
- * (ESP stack pointer will always refer to coreboot).
- *
- * But with MP_SERVICES_PPI implementation in coreboot this
- * assumption might not be true, where FSP context (stack pointer refers
- * to FSP) will request to get cpu_index().
- *
- * Hence new logic to use cpuid to fetch lapic id and matches with
- * cpus_default_apic_id[] variable to return correct cpu_index().
- */
-int cpu_index(void)
-{
-	int i;
-	int lapic_id = initial_lapicid();
-
-	for (i = 0; i < CONFIG_MAX_CPUS; i++) {
-		if (cpu_get_apic_id(i) == lapic_id)
-			return i;
-	}
-	return -1;
-}
-
 /* cpu_info() looks at address 0 at the base of %gs for a pointer to struct cpu_info */
 static struct per_cpu_segment_data segment_data[CONFIG_MAX_CPUS];
-static struct cpu_info cpu_infos[CONFIG_MAX_CPUS];
+struct cpu_info cpu_infos[CONFIG_MAX_CPUS];
 
 enum cb_err set_cpu_info(unsigned int index, struct device *cpu)
 {

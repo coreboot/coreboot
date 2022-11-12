@@ -31,16 +31,17 @@ efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 	int apicid;
 	uint8_t package, core, thread;
 
-	if (cpu_index() < 0)
+	if (processor_number >= MIN(get_cpu_count(), CONFIG_MAX_CPUS))
+		return FSP_NOT_FOUND;
+
+	extern struct cpu_info cpu_infos[];
+	struct cpu_info *info = &cpu_infos[processor_number];
+	if (!info)
 		return FSP_DEVICE_ERROR;
 
 	if (processor_info_buffer == NULL)
 		return FSP_INVALID_PARAMETER;
-
-	if (processor_number >= get_cpu_count())
-		return FSP_NOT_FOUND;
-
-	apicid = cpu_get_apic_id(processor_number);
+	apicid = info->cpu->path.apic.apic_id;
 
 	if (apicid < 0)
 		return FSP_DEVICE_ERROR;
@@ -66,7 +67,7 @@ efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 efi_return_status_t mp_startup_all_aps(efi_ap_procedure procedure,
 	bool run_serial, efi_uintn_t timeout_usec, void *argument)
 {
-	if (cpu_index() < 0)
+	if (!cpu_info())
 		return FSP_DEVICE_ERROR;
 
 	if (procedure == NULL)
@@ -84,7 +85,7 @@ efi_return_status_t mp_startup_all_aps(efi_ap_procedure procedure,
 efi_return_status_t mp_startup_all_cpus(efi_ap_procedure procedure,
 	efi_uintn_t timeout_usec, void *argument)
 {
-	if (cpu_index() < 0)
+	if (!cpu_info())
 		return FSP_DEVICE_ERROR;
 
 	if (procedure == NULL)
@@ -119,7 +120,7 @@ efi_return_status_t mp_startup_all_cpus(efi_ap_procedure procedure,
 efi_return_status_t mp_startup_this_ap(efi_ap_procedure procedure,
 	efi_uintn_t processor_number, efi_uintn_t timeout_usec, void *argument)
 {
-	if (cpu_index() < 0)
+	if (!cpu_info())
 		return FSP_DEVICE_ERROR;
 
 	if (processor_number > get_cpu_count())

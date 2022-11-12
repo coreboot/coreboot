@@ -25,8 +25,8 @@ chip northbridge/intel/sandybridge
 	end
 
 	device domain 0 on
-		device pci 00.0 on end # host bridge
-		device pci 02.0 on end # vga controller
+		device ref host_bridge on end # host bridge
+		device ref igd on end # vga controller
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			# LPC i/o generic decodes
@@ -57,30 +57,30 @@ chip northbridge/intel/sandybridge
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0x2005"
 
-			device pci 14.0 on end # USB 3.0 Controller
-			device pci 16.0 on end # Management Engine Interface 1
-			device pci 16.1 off end # Management Engine Interface 2
-			device pci 16.2 off end # Management Engine IDE-R
-			device pci 16.3 off end # Management Engine KT
-			device pci 19.0 on end # Intel Gigabit Ethernet
-			device pci 1a.0 on end # USB2 EHCI #2
-			device pci 1b.0 on # High Definition Audio
+			device ref xhci on end # USB 3.0 Controller
+			device ref mei1 on end # Management Engine Interface 1
+			device ref mei2 off end # Management Engine Interface 2
+			device ref me_ide_r off end # Management Engine IDE-R
+			device ref me_kt off end # Management Engine KT
+			device ref gbe on end # Intel Gigabit Ethernet
+			device ref ehci2 on end # USB2 EHCI #2
+			device ref hda on # High Definition Audio
 				subsystemid 0x1a86 0x4352
 			end
 
 			# Disabling 1c.0 might break IRQ settings as it enables port coalescing
-			device pci 1c.0 on end # PCIe Port #1
-			device pci 1c.1 on end # PCIe Port #2
-			device pci 1c.2 on end # PCIe Port #3
-			device pci 1c.3 on end # PCIe Port #4
-			device pci 1c.4 on end # PCIe Port #5
-			device pci 1c.5 on end # PCIe Port #6
-			device pci 1c.6 on end # PCIe Port #7
-			device pci 1c.7 on end # PCIe Port #8
+			device ref pcie_rp1 on end # PCIe Port #1
+			device ref pcie_rp2 on end # PCIe Port #2
+			device ref pcie_rp3 on end # PCIe Port #3
+			device ref pcie_rp4 on end # PCIe Port #4
+			device ref pcie_rp5 on end # PCIe Port #5
+			device ref pcie_rp6 on end # PCIe Port #6
+			device ref pcie_rp7 on end # PCIe Port #7
+			device ref pcie_rp8 on end # PCIe Port #8
 
-			device pci 1d.0 on end # USB2 EHCI #1
-			device pci 1e.0 off end # PCI bridge
-			device pci 1f.0 on # LPC bridge
+			device ref ehci1 on end # USB2 EHCI #1
+			device ref pci_bridge off end # PCI bridge
+			device ref lpc on # LPC bridge
 				chip ec/roda/it8518
 					register "cpuhot_limit" = "100"
 					# 60h/64h KBC
@@ -144,10 +144,10 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.c off end	# CIR
 				end
 			end # LPC bridge
-			device pci 1f.2 on end # SATA Controller 1
-			device pci 1f.3 on end # SMBus
-			device pci 1f.5 off end # SATA Controller 2
-			device pci 1f.6 off end # Thermal
+			device ref sata1 on end # SATA Controller 1
+			device ref smbus on end # SMBus
+			device ref sata2 off end # SATA Controller 2
+			device ref thermal off end # Thermal
 		end
 	end
 end

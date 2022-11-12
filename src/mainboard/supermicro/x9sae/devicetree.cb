@@ -10,11 +10,11 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x15d9 0x0644 inherit
 
-		device pci 00.0 on  end		# Host bridge
-		device pci 01.0 on  end		# CPU1 SLOT6 (x8 or x16)
-		device pci 01.1 on  end		# CPU1 SLOT4 (electrical x8 in x16 if present)
-		device pci 02.0 on  end		# iGPU
-		device pci 06.0 on  end		# CPU1 SLOT7 (electrical x4 in x8)
+		device ref host_bridge on  end		# Host bridge
+		device ref peg10 on  end		# CPU1 SLOT6 (x8 or x16)
+		device ref peg11 on  end		# CPU1 SLOT4 (electrical x8 in x16 if present)
+		device ref igd on  end		# iGPU
+		device ref peg60 on  end		# CPU1 SLOT7 (electrical x4 in x8)
 
 		chip southbridge/intel/bd82x6x
 			register "gen1_dec" = "0x00fc0a01" # NCT6776 SuperIO (0x0a00-0aff)
@@ -26,29 +26,29 @@ chip northbridge/intel/sandybridge
 			register "xhci_overcurrent_mapping" = "0x00000c03"
 			register "xhci_switchable_ports"    = "0x0000000f"
 
-			device pci 14.0 on  end		# xHCI
-			device pci 16.0 on  end		# MEI #1
-			device pci 16.1 off end		# MEI #2
-			device pci 16.2 off end		# ME IDE-R
-			device pci 16.3 off end		# ME KT
-			device pci 19.0 on  end		# Intel GbE LAN1
-			device pci 1a.0 on  end		# EHCI #2
-			device pci 1b.0 on  end		# HD Audio
+			device ref xhci on  end		# xHCI
+			device ref mei1 on  end		# MEI #1
+			device ref mei2 off end		# MEI #2
+			device ref me_ide_r off end		# ME IDE-R
+			device ref me_kt off end		# ME KT
+			device ref gbe on  end		# Intel GbE LAN1
+			device ref ehci2 on  end		# EHCI #2
+			device ref hda on  end		# HD Audio
 
-			device pci 1c.0 on  end		# RP #1 PCH SLOT2
-			device pci 1c.1 off end		# RP #2
-			device pci 1c.2 off end		# RP #3
-			device pci 1c.3 off end		# RP #4
-			device pci 1c.4 on  end		# RP #5 PCH SLOT3
-			device pci 1c.5 off end		# RP #6
-			device pci 1c.6 on  end		# RP #7 PCH SLOT5
-			device pci 1c.7 on		# RP #8
+			device ref pcie_rp1 on  end		# RP #1 PCH SLOT2
+			device ref pcie_rp2 off end		# RP #2
+			device ref pcie_rp3 off end		# RP #3
+			device ref pcie_rp4 off end		# RP #4
+			device ref pcie_rp5 on  end		# RP #5 PCH SLOT3
+			device ref pcie_rp6 off end		# RP #6
+			device ref pcie_rp7 on  end		# RP #7 PCH SLOT5
+			device ref pcie_rp8 on		# RP #8
 			       device pci 00.0 on end # 574 GbE LAN2
 			end
 
-			device pci 1d.0 on  end		# EHCI #1
-			device pci 1e.0 on  end		# PCI bridge
-			device pci 1f.0 on		# LPC bridge
+			device ref ehci1 on  end		# EHCI #1
+			device ref pci_bridge on  end		# PCI bridge
+			device ref lpc on		# LPC bridge
 				chip superio/nuvoton/nct6776
 					device pnp 2e.0 off end		# Floppy
 					device pnp 2e.1 off end		# Parallel port
@@ -108,10 +108,10 @@ chip northbridge/intel/sandybridge
 					device pnp c31.0 on end	# TPM
 				end
 			end
-			device pci 1f.2 on  end		# SATA (AHCI)
-			device pci 1f.3 on  end		# SMBus
-			device pci 1f.5 off end		# SATA (Legacy)
-			device pci 1f.6 off end		# Thermal
+			device ref sata1 on  end		# SATA (AHCI)
+			device ref smbus on  end		# SMBus
+			device ref sata2 off end		# SATA (Legacy)
+			device ref thermal off end		# Thermal
 		end
 	end
 end

@@ -2,11 +2,11 @@
 
 chip northbridge/intel/sandybridge
 	device domain 0 on
-		device pci 00.0 on # Host bridge
+		device ref host_bridge on # Host bridge
 			subsystemid 0x1849 0x0100
 		end
-		device pci 01.0 on end # PEG - slot "PCIE1"
-		device pci 02.0 on # iGPU
+		device ref peg10 on end # PEG - slot "PCIE1"
+		device ref igd on # iGPU
 			subsystemid 0x1849 0x0102
 		end
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
@@ -20,45 +20,45 @@ chip northbridge/intel/sandybridge
 			register "superspeed_capable_ports" = "0x0000000f"
 			register "xhci_overcurrent_mapping" = "0x00000c03"
 			register "xhci_switchable_ports" = "0x0000000f"
-			device pci 14.0 on # USB 3.0 Controller
+			device ref xhci on # USB 3.0 Controller
 				subsystemid 0x1849 0x1e31
 			end
-			device pci 16.0 on # Management Engine Interface 1
+			device ref mei1 on # Management Engine Interface 1
 				subsystemid 0x1849 0x1e3a
 			end
-			device pci 16.1 off end # Management Engine Interface 2
-			device pci 16.2 off end # Management Engine IDE-R
-			device pci 16.3 off end # Management Engine KT
-			device pci 19.0 off end # Intel Gigabit Ethernet
-			device pci 1a.0 on # USB2 EHCI #2
+			device ref mei2 off end # Management Engine Interface 2
+			device ref me_ide_r off end # Management Engine IDE-R
+			device ref me_kt off end # Management Engine KT
+			device ref gbe off end # Intel Gigabit Ethernet
+			device ref ehci2 on # USB2 EHCI #2
 				subsystemid 0x1849 0x1e2d
 			end
-			device pci 1b.0 on # High Definition Audio
+			device ref hda on # High Definition Audio
 				subsystemid 0x1849 0x8892
 			end
-			device pci 1c.0 on # PCIe Port #1 - slot "PCIE4", 4 lanes
+			device ref pcie_rp1 on # PCIe Port #1 - slot "PCIE4", 4 lanes
 				subsystemid 0x1849 0x1e10
 			end
-			device pci 1c.1 off end # PCIe Port #2
-			device pci 1c.2 off end # PCIe Port #3
-			device pci 1c.3 off end # PCIe Port #4
-			device pci 1c.4 on # PCIe Port #5 - slot "PCIE2", 1 lane
+			device ref pcie_rp2 off end # PCIe Port #2
+			device ref pcie_rp3 off end # PCIe Port #3
+			device ref pcie_rp4 off end # PCIe Port #4
+			device ref pcie_rp5 on # PCIe Port #5 - slot "PCIE2", 1 lane
 				subsystemid 0x1849 0x1e18
 			end
-			device pci 1c.5 on # PCIe Port #6 - RTL8111E GbE
+			device ref pcie_rp6 on # PCIe Port #6 - RTL8111E GbE
 				subsystemid 0x1849 0x1e1a
 			end
-			device pci 1c.6 on # PCIe Port #7 - slot "PCIE3", 1 lane
+			device ref pcie_rp7 on # PCIe Port #7 - slot "PCIE3", 1 lane
 				subsystemid 0x1849 0x1e16
 			end
-			device pci 1c.7 on # PCIe Port #8 - ASM1061 SATA Controller
+			device ref pcie_rp8 on # PCIe Port #8 - ASM1061 SATA Controller
 				subsystemid 0x1849 0x1e1e
 			end
-			device pci 1d.0 on # USB2 EHCI #1
+			device ref ehci1 on # USB2 EHCI #1
 				subsystemid 0x1849 0x1e26
 			end
-			device pci 1e.0 off end # PCI bridge
-			device pci 1f.0 on # LPC bridge
+			device ref pci_bridge off end # PCI bridge
+			device ref lpc on # LPC bridge
 				subsystemid 0x1849 0x1e4a
 				chip superio/nuvoton/nct6776
 					device pnp 2e.0 off end		# Floppy
@@ -118,14 +118,14 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.17 off end	# GPIOA
 				end
 			end
-			device pci 1f.2 on # SATA (AHCI)
+			device ref sata1 on # SATA (AHCI)
 				subsystemid 0x1849 0x1e02
 			end
-			device pci 1f.3 on # SMBus
+			device ref smbus on # SMBus
 				subsystemid 0x1849 0x1e22
 			end
-			device pci 1f.5 off end # SATA (Legacy)
-			device pci 1f.6 off end # Thermal
+			device ref sata2 off end # SATA (Legacy)
+			device ref thermal off end # Thermal
 		end
 	end
 end

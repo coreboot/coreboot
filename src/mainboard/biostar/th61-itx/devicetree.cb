@@ -4,9 +4,9 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x1565 0x3108 inherit
 
-		device pci 00.0 on end	# Host bridge
-		device pci 01.0 on end	# PEG
-		device pci 02.0 on end	# iGPU
+		device ref host_bridge on end	# Host bridge
+		device ref peg10 on end	# PEG
+		device ref igd on end	# iGPU
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "gen1_dec" = "0x003c0a01"
@@ -15,18 +15,18 @@ chip northbridge/intel/sandybridge
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x2005"
 
-			device pci 16.0 on  end	# MEI #1
-			device pci 1a.0 on  end	# EHCI #2
-			device pci 1b.0 on  end	# HD Audio
-			device pci 1c.0 on  end	# RP #1: Realtek RTL8111F GbE NIC
-			device pci 1c.1 on  end	# RP #2: ASMedia ASM1042 USB3 #1
-			device pci 1c.2 on  end	# RP #3: ASMedia ASM1042 USB3 #2
-			device pci 1c.3 off end # RP #4
-			device pci 1c.4 off end # RP #5
-			device pci 1c.5 off end # RP #6
-			device pci 1d.0 on  end	# EHCI #1
-			device pci 1e.0 off end # PCI bridge
-			device pci 1f.0 on	# LPC bridge
+			device ref mei1 on  end	# MEI #1
+			device ref ehci2 on  end	# EHCI #2
+			device ref hda on  end	# HD Audio
+			device ref pcie_rp1 on  end	# RP #1: Realtek RTL8111F GbE NIC
+			device ref pcie_rp2 on  end	# RP #2: ASMedia ASM1042 USB3 #1
+			device ref pcie_rp3 on  end	# RP #3: ASMedia ASM1042 USB3 #2
+			device ref pcie_rp4 off end # RP #4
+			device ref pcie_rp5 off end # RP #5
+			device ref pcie_rp6 off end # RP #6
+			device ref ehci1 on  end	# EHCI #1
+			device ref pci_bridge off end # PCI bridge
+			device ref lpc on	# LPC bridge
 				chip superio/ite/it8728f
 					device pnp 2e.0 off end	# Floppy
 					device pnp 2e.1 off end	# COM1
@@ -56,10 +56,10 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.a off end	# CIR
 				end
 			end
-			device pci 1f.2 on  end	# SATA #1
-			device pci 1f.3 on  end	# SMBus
-			device pci 1f.5 off end # SATA #2 (IDE mode)
-			device pci 1f.6 on  end # Thermal subsystem
+			device ref sata1 on  end	# SATA #1
+			device ref smbus on  end	# SMBus
+			device ref sata2 off end # SATA #2 (IDE mode)
+			device ref thermal on  end # Thermal subsystem
 		end
 	end
 end

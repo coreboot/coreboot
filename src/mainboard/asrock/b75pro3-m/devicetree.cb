@@ -15,13 +15,13 @@ chip northbridge/intel/sandybridge
 	register "gpu_pch_backlight" = "0x00000000"
 
 	device domain 0 on
-		device pci 00.0 on
+		device ref host_bridge on
 			subsystemid 0x1849 0x0150
 		end
-		device pci 01.0 on
+		device ref peg10 on
 			subsystemid 0x1849 0x0151
 		end
-		device pci 02.0 on
+		device ref igd on
 			subsystemid 0x1849 0x0152
 		end
 		chip southbridge/intel/bd82x6x
@@ -39,53 +39,53 @@ chip northbridge/intel/sandybridge
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0x2005"
 
-			device pci 14.0 on # USB 3.0 Controller
+			device ref xhci on # USB 3.0 Controller
 				subsystemid 0x1849 0x1e31
 			end
-			device pci 16.0 on # Management Engine Interface 1
+			device ref mei1 on # Management Engine Interface 1
 				subsystemid 0x1849 0x1e3a
 			end
-			device pci 16.1 off # Management Engine Interface 2
+			device ref mei2 off # Management Engine Interface 2
 			end
-			device pci 16.2 off # Management Engine IDE-R
+			device ref me_ide_r off # Management Engine IDE-R
 			end
-			device pci 16.3 on # Management Engine KT
+			device ref me_kt on # Management Engine KT
 				subsystemid 0x1849 0x1e3d
 			end
-			device pci 19.0 off # Intel Gigabit Ethernet
+			device ref gbe off # Intel Gigabit Ethernet
 			end
-			device pci 1a.0 on # USB2 EHCI #2
+			device ref ehci2 on # USB2 EHCI #2
 				subsystemid 0x1849 0x1e2d
 			end
-			device pci 1b.0 on # High Definition Audio Audio controller
+			device ref hda on # High Definition Audio Audio controller
 				subsystemid 0x1849 0x8892
 			end
-			device pci 1c.0 on # PCIe Port #1
+			device ref pcie_rp1 on # PCIe Port #1
 				subsystemid 0x1849 0x1e10
 			end
-			device pci 1c.1 off # PCIe Port #2
+			device ref pcie_rp2 off # PCIe Port #2
 			end
-			device pci 1c.2 off # PCIe Port #3
+			device ref pcie_rp3 off # PCIe Port #3
 			end
-			device pci 1c.3 off # PCIe Port #4
+			device ref pcie_rp4 off # PCIe Port #4
 			end
-			device pci 1c.4 on # PCIe Port #5, ASMedia ASM1062 SATA Controller
+			device ref pcie_rp5 on # PCIe Port #5, ASMedia ASM1062 SATA Controller
 				subsystemid 0x1849 0x1e18
 			end
-			device pci 1c.5 on # PCIe Port #6, Realtek PCIe GbE Controller
+			device ref pcie_rp6 on # PCIe Port #6, Realtek PCIe GbE Controller
 				subsystemid 0x1849 0x1e1a
 			end
-			device pci 1c.6 off # PCIe Port #7
+			device ref pcie_rp7 off # PCIe Port #7
 			end
-			device pci 1c.7 off # PCIe Port #8
+			device ref pcie_rp8 off # PCIe Port #8
 			end
-			device pci 1d.0 on # USB2 EHCI #1
+			device ref ehci1 on # USB2 EHCI #1
 				subsystemid 0x1849 0x1e26
 			end
-			device pci 1e.0 on # PCI bridge
+			device ref pci_bridge on # PCI bridge
 				subsystemid 0x1849 0x244e
 			end
-			device pci 1f.0 on # LPC bridge
+			device ref lpc on # LPC bridge
 				subsystemid 0x1849 0x1e49
 				chip superio/nuvoton/nct6776
 					device pnp 2e.0 off end		# Floppy
@@ -130,15 +130,15 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.17 on end		# GPIOA
 				end
 			end
-			device pci 1f.2 on # SATA Controller 1
+			device ref sata1 on # SATA Controller 1
 				subsystemid 0x1849 0x1e02
 			end
-			device pci 1f.3 on # SMBus
+			device ref smbus on # SMBus
 				subsystemid 0x1849 0x1e22
 			end
-			device pci 1f.5 off # SATA Controller 2
+			device ref sata2 off # SATA Controller 2
 			end
-			device pci 1f.6 off # Thermal
+			device ref thermal off # Thermal
 			end
 		end
 	end

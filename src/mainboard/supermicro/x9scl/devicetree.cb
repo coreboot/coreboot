@@ -1,11 +1,11 @@
 chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x15d9 0x0624 inherit
-		device pci 00.0 on  end # Host bridge
-		device pci 01.0 on  end # PEG
-		device pci 01.1 on  end # PEG
-		device pci 02.0 off end # iGPU
-		device pci 06.0 on  end # PEG
+		device ref host_bridge on  end # Host bridge
+		device ref peg10 on  end # PEG
+		device ref peg11 on  end # PEG
+		device ref igd off end # iGPU
+		device ref peg60 on  end # PEG
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "gen1_dec" = "0x00fc0a01" # NCT6776 SuperIO (0x0a00-0aff)
 			register "gen2_dec" = "0x00fc1641" # WPCM450 SuperIO (0x1600-16ff)
@@ -16,32 +16,32 @@ chip northbridge/intel/sandybridge
 			register "sata_port_map" = "0x3f"
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x2005"
-			device pci 16.0 off end # Management Engine Interface 1
-			device pci 16.1 off end # Management Engine Interface 2
-			device pci 16.2 off end # Management Engine IDE-R
-			device pci 16.3 off end # Management Engine KT
-			device pci 19.0 on	# Intel Gigabit Ethernet (not for X9SCL+-F)
+			device ref mei1 off end # Management Engine Interface 1
+			device ref mei2 off end # Management Engine Interface 2
+			device ref me_ide_r off end # Management Engine IDE-R
+			device ref me_kt off end # Management Engine KT
+			device ref gbe on	# Intel Gigabit Ethernet (not for X9SCL+-F)
 				subsystemid 0x15d9 0x1502
 			end
-			device pci 1a.0 on  end # USB2 EHCI #2
-			device pci 1b.0 off end # High Definition Audio
-			device pci 1c.0 on  end # PCIe Port #1
-			device pci 1c.1 off end # PCIe Port #2
-			device pci 1c.2 off end # PCIe Port #3
-			device pci 1c.3 off end # PCIe Port #4
-			device pci 1c.4 on	# PCIe Port #5
+			device ref ehci2 on  end # USB2 EHCI #2
+			device ref hda off end # High Definition Audio
+			device ref pcie_rp1 on  end # PCIe Port #1
+			device ref pcie_rp2 off end # PCIe Port #2
+			device ref pcie_rp3 off end # PCIe Port #3
+			device ref pcie_rp4 off end # PCIe Port #4
+			device ref pcie_rp5 on	# PCIe Port #5
 				device pci 00.0 on end # primary 574 GigE
 			end
-			device pci 1c.5 off end # PCIe Port #6
-			device pci 1c.6 on	# PCIe Port #7
+			device ref pcie_rp6 off end # PCIe Port #6
+			device ref pcie_rp7 on	# PCIe Port #7
 				device pci 00.0 on end # secondary 574 GigE on X9SCL+-F
 			end
-			device pci 1c.7 off end # PCIe Port #8
-			device pci 1d.0 on  end # USB2 EHCI #1
-			device pci 1e.0 on      # PCI bridge
+			device ref pcie_rp8 off end # PCIe Port #8
+			device ref ehci1 on  end # USB2 EHCI #1
+			device ref pci_bridge on      # PCI bridge
 				device pci 03.0 on end # Matrox G200e in BMC
 			end
-			device pci 1f.0 on	# LPC bridge
+			device ref lpc on	# LPC bridge
 				chip superio/nuvoton/nct6776
 					device pnp 2e.0 off end		# Floppy
 					device pnp 2e.1 off end		# Parallel port
@@ -105,10 +105,10 @@ chip northbridge/intel/sandybridge
 					device pnp 164e.6 off end
 				end
 			end
-			device pci 1f.2 on  end # SATA Controller 1
-			device pci 1f.3 on  end # SMBus
-			device pci 1f.5 off end # SATA Controller 2
-			device pci 1f.6 off end # Thermal
+			device ref sata1 on  end # SATA Controller 1
+			device ref smbus on  end # SMBus
+			device ref sata2 off end # SATA Controller 2
+			device ref thermal off end # Thermal
 		end
 	end
 end

@@ -9,9 +9,9 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x103c 0x1495 inherit
 
-		device pci 00.0 on  end	# Host bridge Host bridge
-		device pci 01.0 on  end	# PCIe Bridge for discrete graphics
-		device pci 02.0 on  end	# Internal graphics VGA controller
+		device ref host_bridge on  end	# Host bridge Host bridge
+		device ref peg10 on  end	# PCIe Bridge for discrete graphics
+		device ref igd on  end	# Internal graphics VGA controller
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "docking_supported" = "0"
@@ -24,24 +24,24 @@ chip northbridge/intel/sandybridge
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x0"
 
-			device pci 16.0 on  end	# Management Engine Interface 1
-			device pci 16.1 off end	# Management Engine Interface 2
-			device pci 16.2 off end	# Management Engine IDE-R
-			device pci 16.3 on  end	# Management Engine KT
-			device pci 19.0 on  end	# Intel Gigabit Ethernet
-			device pci 1a.0 on  end	# USB2 EHCI #2
-			device pci 1b.0 on  end	# High Definition Audio Audio controller
-			device pci 1c.0 on  end	# PCIe Port #1
-			device pci 1c.1 off end	# PCIe Port #2
-			device pci 1c.2 off end	# PCIe Port #3
-			device pci 1c.3 off end	# PCIe Port #4
-			device pci 1c.4 on  end	# PCIe Port #5
-			device pci 1c.5 off end	# PCIe Port #6
-			device pci 1c.6 on  end	# PCIe Port #7
-			device pci 1c.7 on  end	# PCIe Port #8
-			device pci 1d.0 on  end	# USB2 EHCI #1
-			device pci 1e.0 on  end	# PCI bridge
-			device pci 1f.0 on	# LPC bridge PCI-LPC bridge
+			device ref mei1 on  end	# Management Engine Interface 1
+			device ref mei2 off end	# Management Engine Interface 2
+			device ref me_ide_r off end	# Management Engine IDE-R
+			device ref me_kt on  end	# Management Engine KT
+			device ref gbe on  end	# Intel Gigabit Ethernet
+			device ref ehci2 on  end	# USB2 EHCI #2
+			device ref hda on  end	# High Definition Audio Audio controller
+			device ref pcie_rp1 on  end	# PCIe Port #1
+			device ref pcie_rp2 off end	# PCIe Port #2
+			device ref pcie_rp3 off end	# PCIe Port #3
+			device ref pcie_rp4 off end	# PCIe Port #4
+			device ref pcie_rp5 on  end	# PCIe Port #5
+			device ref pcie_rp6 off end	# PCIe Port #6
+			device ref pcie_rp7 on  end	# PCIe Port #7
+			device ref pcie_rp8 on  end	# PCIe Port #8
+			device ref ehci1 on  end	# USB2 EHCI #1
+			device ref pci_bridge on  end	# PCI bridge
+			device ref lpc on	# LPC bridge PCI-LPC bridge
 				chip superio/common
 					device pnp 2e.ff on # passes SIO base addr to SSDT gen
 						chip superio/nuvoton/npcd378
@@ -146,10 +146,10 @@ chip northbridge/intel/sandybridge
 					device pnp 4e.0 on end          # TPM module
 				end
 			end
-			device pci 1f.2 on  end	# SATA Controller 1
-			device pci 1f.3 on  end	# SMBus
-			device pci 1f.5 off end	# SATA Controller 2
-			device pci 1f.6 off end	# Thermal
+			device ref sata1 on  end	# SATA Controller 1
+			device ref smbus on  end	# SMBus
+			device ref sata2 off end	# SATA Controller 2
+			device ref thermal off end	# Thermal
 		end
 	end
 end

@@ -10,5 +10,38 @@ chip northbridge/intel/sandybridge
 	end
 	device domain 0 on
 		ops sandybridge_pci_domain_ops
+		device pci 00.0 alias host_bridge on end # host bridge
+		device pci 01.0 alias peg10 off end # PEG10
+		device pci 01.1 alias peg11 off end # PEG11
+		device pci 01.2 alias peg12 off end # PEG12
+		device pci 02.0 alias igd off end # vga controller
+		device pci 04.0 alias dev4 off end # Device 4
+		device pci 06.0 alias peg60 off end # PEG60
+
+		chip southbridge/intel/bd82x6x # Intel Series 6/7 PCH
+			device pci 14.0 alias xhci off end       # USB 3.0 Controller (only on 7 series)
+			device pci 16.0 alias mei1 on end        # Management Engine Interface 1
+			device pci 16.1 alias mei2 off end       # Management Engine Interface 2
+			device pci 16.2 alias me_ide_r off end   # Management Engine IDE-R
+			device pci 16.3 alias me_kt off end      # Management Engine KT
+			device pci 19.0 alias gbe off end        # Intel Gigabit Ethernet
+			device pci 1a.0 alias ehci2 off end      # USB2 EHCI #2
+			device pci 1b.0 alias hda off end        # High Definition Audio
+			device pci 1c.0 alias pcie_rp1 off end   # PCIe Port #1
+			device pci 1c.1 alias pcie_rp2 off end   # PCIe Port #2
+			device pci 1c.2 alias pcie_rp3 off end   # PCIe Port #3
+			device pci 1c.3 alias pcie_rp4 off end   # PCIe Port #4
+			device pci 1c.4 alias pcie_rp5 off end   # PCIe Port #5
+			device pci 1c.5 alias pcie_rp6 off end   # PCIe Port #6
+			device pci 1c.6 alias pcie_rp7 off end   # PCIe Port #7
+			device pci 1c.7 alias pcie_rp8 off end   # PCIe Port #8
+			device pci 1d.0 alias ehci1 off end      # USB2 EHCI #1
+			device pci 1e.0 alias pci_bridge off end # PCI bridge
+			device pci 1f.0 alias lpc on end         # LPC bridge
+			device pci 1f.2 alias sata1 off end      # SATA Controller 1
+			device pci 1f.3 alias smbus on end       # SMBus
+			device pci 1f.5 alias sata2 off end      # SATA Controller 2
+			device pci 1f.6 alias thermal off end    # Thermal
+		end
 	end
 end

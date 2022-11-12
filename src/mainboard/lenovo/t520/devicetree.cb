@@ -18,9 +18,9 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x17aa 0x21cf inherit
 
-		device pci 00.0 on end # host bridge
-		device pci 01.0 on end # NVIDIA Corporation GF119M [NVS 4200M]
-		device pci 02.0 on
+		device ref host_bridge on end # host bridge
+		device ref peg10 on end # NVIDIA Copcie_rporation GF119M [NVS 4200M]
+		device ref igd on
 			subsystemid 0x17aa 0x21d1
 		end # vga controller
 
@@ -50,28 +50,27 @@ chip northbridge/intel/sandybridge
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0x2005"
 
-			device pci 16.0 on end # Management Engine Interface 1
-			device pci 16.1 off end
-			device pci 16.2 off end
-			device pci 16.3 off end
-			device pci 19.0 on # Intel Gigabit Ethernet
+			device ref mei1 on end # Management Engine Interface 1
+			device ref mei2 off end
+			device ref me_ide_r off end
+			device ref me_kt off end
+			device ref gbe on # Intel Gigabit Ethernet
 				subsystemid 0x17aa 0x21ce
 			end
-			device pci 1a.0 on end # USB2 EHCI #2
-			device pci 1b.0 on end # High Definition Audio
-			device pci 1c.0 off end # PCIe Port #1
-			device pci 1c.1 on end # PCIe Port #2 Integrated Wireless LAN
-			device pci 1c.2 off end # PCIe Port #3
-			device pci 1c.3 on
+			device ref ehci2 on end # USB2 EHCI #2
+			device ref hda on end # High Definition Audio
+			device ref pcie_rp1 off end # PCIe Port #1
+			device ref pcie_rp2 on end # PCIe Port #2 Integrated Wireless LAN
+			device ref pcie_rp3 off end # PCIe Port #3
+			device ref pcie_rp4 on
 				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
 			end # PCIe Port #4 Express Card
-			device pci 1c.4 on end # PCIe Port #5 MMC/SDXC + IEEE1394
-			device pci 1c.5 off end # PCIe Port #6 Intel Ethernet PHY
-			device pci 1c.6 off end # PCIe Port #7
-			device pci 1c.7 off end # PCIe Port #8
-			device pci 1d.0 on end # USB2 EHCI #1
-			device pci 1e.0 off end # PCI-2-PCI bridge
-			device pci 1f.0 on #LPC bridge
+			device ref pcie_rp5 on end # PCIe Port #5 MMC/SDXC + IEEE1394
+			device ref pcie_rp6 off end # PCIe Port #6 Intel Ethernet PHY
+			device ref pcie_rp7 off end # PCIe Port #7
+			device ref pcie_rp8 off end # PCIe Port #8
+			device ref ehci1 on end # USB2 EHCI #1
+			device ref lpc on #LPC bridge
 				chip ec/lenovo/pmh7
 					device pnp ff.1 on end # dummy
 					register "backlight_enable" = "0x01"
@@ -131,8 +130,8 @@ chip northbridge/intel/sandybridge
 					register "has_thinker1" = "1"
 				end
 			end # LPC bridge
-			device pci 1f.2 on end # SATA Controller 1
-			device pci 1f.3 on # SMBUS controller
+			device ref sata1 on end # SATA Controller 1
+			device ref smbus on # SMBUS controller
 				# eeprom, 8 virtual devices, same chip
 				chip drivers/i2c/at24rf08c
 					device i2c 54 on end

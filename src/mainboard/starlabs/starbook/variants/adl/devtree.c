@@ -12,6 +12,9 @@ void devtree_update(void)
 {
 	config_t *cfg = config_of_soc();
 
+	struct soc_intel_common_config *common_config;
+	common_config = chip_get_common_soc_structure();
+
 	struct soc_power_limits_config *soc_conf_10core =
 		&cfg->power_limits_config[ADL_P_282_482_28W_CORE];
 
@@ -28,21 +31,21 @@ void devtree_update(void)
 		soc_conf_12core->tdp_pl1_override	= 15;
 		soc_conf_10core->tdp_pl2_override	= 15;
 		soc_conf_12core->tdp_pl2_override	= 15;
-		// TODO:common_config->pch_thermal_trip	= 20;
+		common_config->pch_thermal_trip		= 20;
 		break;
 	case PP_BALANCED:
 		soc_conf_10core->tdp_pl1_override	= 15;
 		soc_conf_12core->tdp_pl1_override	= 15;
 		soc_conf_10core->tdp_pl2_override	= 25;
 		soc_conf_12core->tdp_pl2_override	= 25;
-		// TODO:common_config->pch_thermal_trip	= 15;
+		common_config->pch_thermal_trip		= 15;
 		break;
 	case PP_PERFORMANCE:
 		soc_conf_10core->tdp_pl1_override	= 28;
 		soc_conf_12core->tdp_pl1_override	= 28;
 		soc_conf_10core->tdp_pl2_override	= 40;
 		soc_conf_12core->tdp_pl2_override	= 40;
-		// TODO:common_config->pch_thermal_trip	= 10;
+		common_config->pch_thermal_trip		= 10;
 		break;
 	}
 

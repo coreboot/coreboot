@@ -233,22 +233,14 @@ void fsp_find_reserved_memory(struct range_entry *re)
 
 const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size)
 {
-	const uint8_t *hob_guid;
-	const struct hob_header *hob = fsp_get_hob_list();
+	const struct hob_header *hob_iterator;
+	const void *hob_guid;
 
-	if (!hob)
+	if (fsp_hob_iterator_init(&hob_iterator) != CB_SUCCESS)
 		return NULL;
 
-	for (; hob->type != HOB_TYPE_END_OF_HOB_LIST; hob = fsp_next_hob(hob)) {
-		if (hob->type != HOB_TYPE_GUID_EXTENSION)
-			continue;
-
-		hob_guid = hob_header_to_struct(hob);
-		if (fsp_guid_compare(hob_guid, guid)) {
-			*size = hob->length - (HOB_HEADER_LEN + 16);
-			return hob_header_to_extension_hob(hob);
-		}
-	}
+	if (fsp_hob_iterator_get_next_guid_extension(&hob_iterator, guid, &hob_guid, size) == CB_SUCCESS)
+		return hob_guid;
 
 	return NULL;
 }

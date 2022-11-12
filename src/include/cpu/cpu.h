@@ -13,8 +13,6 @@ uintptr_t cpu_get_lapic_addr(void);
 /* Function to keep track of cpu default apic_id */
 void cpu_add_map_entry(unsigned int index);
 struct bus;
-void initialize_cpus(struct bus *cpu_bus);
-asmlinkage void secondary_cpu_init(unsigned int cpu_index);
 int cpu_phys_address_size(void);
 
 #if ENV_RAMSTAGE

@@ -1,10 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/*
- * Ported to Intel XE7501DEVKIT by Agami Aruma
- * Ported to AOpen DXPL Plus-U by Kyösti Mälkki
- */
-
 #include <acpi/acpi.h>
 #include <device/pci_def.h>
 
@@ -13,11 +8,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	struct device *bdev, *dev = NULL;
 	struct resource *res = NULL;
 
-	/* SJM: Hard-code CPU LAPIC entries for now */
-	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 0, 0);
-	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 1, 6);
-	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 2, 1);
-	current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, 3, 7);
+	current = acpi_create_madt_lapics(current);
 
 	/* Southbridge IOAPIC */
 	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, 0xfec00000);

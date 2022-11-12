@@ -6,7 +6,7 @@
 #include <arch/cpu.h>  /* IWYU pragma: export */
 #include <stdint.h>
 
-void cpu_initialize(unsigned int cpu_index);
+void cpu_initialize(void);
 /* Returns default APIC id based on logical_cpu number or < 0 on failure. */
 int cpu_get_apic_id(int logical_cpu);
 uintptr_t cpu_get_lapic_addr(void);

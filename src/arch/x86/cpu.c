@@ -229,7 +229,7 @@ int cpu_get_apic_id(int logical_cpu)
 	return cpus_default_apic_id[logical_cpu];
 }
 
-void cpu_initialize(unsigned int index)
+void cpu_initialize(void)
 {
 	/* Because we busy wait at the printk spinlock.
 	 * It is important to keep the number of printed messages
@@ -242,7 +242,7 @@ void cpu_initialize(unsigned int index)
 
 	info = cpu_info();
 
-	printk(BIOS_INFO, "Initializing CPU #%d\n", index);
+	printk(BIOS_INFO, "Initializing CPU #%zd\n", info->index);
 
 	cpu = info->cpu;
 	if (!cpu)
@@ -284,7 +284,7 @@ void cpu_initialize(unsigned int index)
 	}
 	post_log_clear();
 
-	printk(BIOS_INFO, "CPU #%d initialized\n", index);
+	printk(BIOS_INFO, "CPU #%zd initialized\n", info->index);
 }
 
 void lb_arch_add_records(struct lb_header *header)

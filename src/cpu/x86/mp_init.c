@@ -628,14 +628,6 @@ static enum cb_err mp_init(struct bus *cpu_bus, struct mp_params *p)
 	return bsp_do_flight_plan(p);
 }
 
-/* Calls cpu_initialize(info->index) which calls the coreboot CPU drivers. */
-static void mp_initialize_cpu(void)
-{
-	/* Call back into driver infrastructure for the AP initialization.   */
-	struct cpu_info *info = cpu_info();
-	cpu_initialize(info->index);
-}
-
 void smm_initiate_relocation_parallel(void)
 {
 	if (lapic_busy()) {
@@ -1078,7 +1070,7 @@ static struct mp_flight_record mp_steps[] = {
 	/* Perform SMM relocation. */
 	MP_FR_NOBLOCK_APS(trigger_smm_relocation, trigger_smm_relocation),
 	/* Initialize each CPU through the driver framework. */
-	MP_FR_BLOCK_APS(mp_initialize_cpu, mp_initialize_cpu),
+	MP_FR_BLOCK_APS(cpu_initialize, cpu_initialize),
 	/* Wait for APs to finish then optionally start looking for work. */
 	MP_FR_BLOCK_APS(ap_wait_for_instruction, NULL),
 };

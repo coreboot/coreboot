@@ -9,7 +9,7 @@
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	/* Local APICs */
-	current = acpi_create_madt_lapics(current);
+	current = acpi_create_madt_lapics_with_nmis(current);
 
 	/* IOAPIC */
 	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
@@ -24,19 +24,5 @@ unsigned long acpi_fill_madt(unsigned long current)
 						MP_IRQ_POLARITY_HIGH |
 						MP_IRQ_TRIGGER_LEVEL);
 
-	/* LAPIC_NMI */
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)
-					      current, 0,
-					      MP_IRQ_POLARITY_HIGH |
-					      MP_IRQ_TRIGGER_EDGE, 0x01);
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)
-					      current, 1, MP_IRQ_POLARITY_HIGH |
-					      MP_IRQ_TRIGGER_EDGE, 0x01);
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)
-					      current, 2, MP_IRQ_POLARITY_HIGH |
-					      MP_IRQ_TRIGGER_EDGE, 0x01);
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)
-					      current, 3, MP_IRQ_POLARITY_HIGH |
-					      MP_IRQ_TRIGGER_EDGE, 0x01);
 	return current;
 }

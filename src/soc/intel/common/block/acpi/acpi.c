@@ -69,12 +69,6 @@ static unsigned long acpi_madt_irq_overrides(unsigned long current)
 	current +=
 	    acpi_create_madt_irqoverride((void *)current, 0, sci, sci, flags);
 
-	/* NMI */
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, 0xff, 5, 1);
-
-	if (is_x2apic_mode())
-		current += acpi_create_madt_lx2apic_nmi((acpi_madt_lx2apic_nmi_t *)current,
-				0xffffffff, 0x5, 1);
 
 	return current;
 }
@@ -91,7 +85,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	size_t ioapic_entries;
 
 	/* Local APICs */
-	current = acpi_create_madt_lapics(current);
+	current = acpi_create_madt_lapics_with_nmis(current);
 
 	/* IOAPIC */
 	ioapic_table = soc_get_ioapic_info(&ioapic_entries);

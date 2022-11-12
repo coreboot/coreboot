@@ -26,7 +26,7 @@
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	/* create all subtables for processors */
-	current = acpi_create_madt_lapics(current);
+	current = acpi_create_madt_lapics_with_nmis(current);
 
 	/* Write Kern IOAPIC, only one */
 	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
@@ -41,12 +41,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)current,
 			MP_BUS_ISA, 9, 9,
 			MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
-
-	/* create all subtables for processors */
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current,
-			ACPI_MADT_LAPIC_NMI_ALL_PROCESSORS,
-			MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			1 /* 1: LINT1 connect to NMI */);
 
 	return current;
 }

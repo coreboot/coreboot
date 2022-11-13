@@ -945,8 +945,10 @@ if [ "$recursive" = "false" ]; then
 		if [ "$exitcode" != "0" ]; then
 			failed=1
 		fi
-	else
+	elif [ -f "$PASSED_BOARDS" ]; then
 		printf "All %s tested configurations passed.\n" "$( wc -l < "$PASSED_BOARDS" )"
+	else
+		printf "No boards tested.\n"
 	fi
 fi
 

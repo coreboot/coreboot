@@ -34,7 +34,7 @@ static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
  * SMRAM entry point to here.
  */
 
-__packed union save_state {
+union __packed save_state {
 	amd64_smm_state_save_area_t amd64;
 	struct {
 		char _reserved[sizeof(amd64_smm_state_save_area_t)

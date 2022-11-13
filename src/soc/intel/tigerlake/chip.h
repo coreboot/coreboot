@@ -432,9 +432,6 @@ struct soc_intel_tigerlake_config {
 	 */
 	uint8_t cpu_ratio_override;
 
-	/* HyperThreadingDisable : Yes (1) / No (0) */
-	uint8_t HyperThreadingDisable;
-
 	/*
 	 * Enable(0)/Disable(1) DMI Power Optimizer on PCH side.
 	 * Default 0. Setting this to 1 disables the DMI Power Optimizer.

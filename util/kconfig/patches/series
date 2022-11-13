@@ -9,3 +9,4 @@
 0009-util-kconfig-Allow-emitting-false-booleans-into-kconfig-output.patch
 0010-reenable-source-in-choice.patch
 0013-util-kconfig-detect-ncurses-on-FreeBSD.patch
+0014-util-kconfig-Move-Kconfig-deps-back-into-build-confi.patch

@@ -1,0 +1,64 @@
+From 2a44aa33d6506a29b14d9c429410ad582d1d6636 Mon Sep 17 00:00:00 2001
+From: Martin Roth <gaumless@gmail.com>
+Date: Sun, 13 Nov 2022 15:20:57 -0700
+Subject: [PATCH] util/kconfig: Move Kconfig deps back into build/config
+
+revert commit 1b9e740a8 (kconfig: fix failing to generate auto.conf) [1]
+
+The above change caused all of the enabled kconfig options to be written
+into the top level build directory.  We don't want that, so go back to
+the old behavior for the coreboot tree.
+
+[1] https://web.archive.org/web/20220316120807/https://github.com/torvalds/linux/commit/1b9e740a81f91ae338b29ed70455719804957b80
+
+Signed-off-by: Martin Roth <gaumless@gmail.com>
+Change-Id: I2904f69a5d85337ad0a6b48590ccd4b4a6e38b70
+---
+ util/kconfig/confdata.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/util/kconfig/confdata.c b/util/kconfig/confdata.c
+index 95fb960179..3da9e8b38d 100644
+--- a/util/kconfig/confdata.c
++++ b/util/kconfig/confdata.c
+@@ -230,6 +230,13 @@ static const char *conf_get_autoheader_name(void)
+ 	return name ? name : "include/generated/autoconf.h";
+ }
+ 
++static const char *conf_get_autobase_name(void)
++{
++	char *name = getenv("KCONFIG_SPLITCONFIG");
++
++	return name ? name : "include/config/";
++}
++
+ static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
+ {
+ 	char *p2;
+@@ -1024,19 +1031,14 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
+ 
+ static int conf_touch_deps(void)
+ {
+-	const char *name, *tmp;
++	const char *name;
+ 	struct symbol *sym;
+ 	int res, i;
+ 
+-	name = conf_get_autoconfig_name();
+-	tmp = strrchr(name, '/');
+-	depfile_prefix_len = tmp ? tmp - name + 1 : 0;
+-	if (depfile_prefix_len + 1 > sizeof(depfile_path))
+-		return -1;
+-
+-	strncpy(depfile_path, name, depfile_prefix_len);
+-	depfile_path[depfile_prefix_len] = 0;
++	strcpy(depfile_path, conf_get_autobase_name());
++	depfile_prefix_len = strlen(depfile_path);
+ 
++	name = conf_get_autoconfig_name();
+ 	conf_read_simple(name, S_DEF_AUTO);
+ 	sym_calc_value(modules_sym);
+ 
+-- 
+2.30.2
+

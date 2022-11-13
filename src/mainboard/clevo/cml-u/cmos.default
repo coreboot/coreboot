@@ -1,5 +1,6 @@
 boot_option=Fallback
 debug_level=Debug
+hyper_threading=Enable
 power_on_after_fail=Disable
 
 # EC options

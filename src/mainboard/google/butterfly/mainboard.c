@@ -40,7 +40,7 @@ static unsigned char get_hex_digit(char *offset)
 			retval = *offset - 'a' + 0x0a;
 	}
 	if (retval > 0x0F) {
-		printk(BIOS_DEBUG, "Error: Invalid Hex digit found: %c - 0x%02x\n",
+		printk(BIOS_ERR, "Invalid Hex digit found: %c - 0x%02x\n",
 			*offset, (unsigned char)*offset);
 		retval = 0;
 	}
@@ -58,8 +58,7 @@ static int get_mac_address(u32 *high_dword, u32 *low_dword,
 	offset = search(key, (char *)search_address,
 			sizeof(key) - 1, search_length);
 	if (offset == search_length) {
-		printk(BIOS_DEBUG,
-		       "Error: Could not locate '%s' in VPD\n", key);
+		printk(BIOS_ERR, "Could not locate '%s' in VPD\n", key);
 		return 0;
 	}
 	printk(BIOS_DEBUG, "Located '%s' in VPD\n", key);
@@ -149,7 +148,7 @@ static void program_keyboard_type(u32 search_address, u32 search_length)
 				kbd_type = EC_KBD_JP;
 		}
 	} else {
-		printk(BIOS_DEBUG, "Error: Could not locate VPD area\n");
+		printk(BIOS_ERR, "Could not locate VPD area\n");
 	}
 
 	printk(BIOS_DEBUG, "Setting Keyboard type in EC to ");

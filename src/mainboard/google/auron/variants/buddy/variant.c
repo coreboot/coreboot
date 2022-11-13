@@ -55,8 +55,7 @@ static unsigned char get_hex_digit(u8 *offset)
 			retval = *offset - 'a' + 0x0a;
 	}
 	if (retval > 0x0F) {
-		printk(BIOS_DEBUG, "Error: Invalid Hex digit found: %c - 0x%02x\n",
-			*offset, *offset);
+		printk(BIOS_ERR, "Invalid Hex digit found: %c - 0x%02x\n", *offset, *offset);
 		retval = 0;
 	}
 
@@ -72,8 +71,7 @@ static int get_mac_address(u32 *high_dword, u32 *low_dword,
 
 	offset = search(key, search_address, sizeof(key) - 1, search_length);
 	if (offset == search_length) {
-		printk(BIOS_DEBUG,
-		       "Error: Could not locate '%s' in VPD\n", key);
+		printk(BIOS_ERR, "Could not locate '%s' in VPD\n", key);
 		return 0;
 	}
 	printk(BIOS_DEBUG, "Located '%s' in VPD\n", key);

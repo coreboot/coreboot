@@ -67,7 +67,7 @@ bool fit_payload_arch(struct prog *payload, struct fit_config_node *config,
 	void *arg = NULL;
 
 	if (!config->fdt || !fdt) {
-		printk(BIOS_CRIT, "CRIT: Providing a valid FDT is mandatory to "
+		printk(BIOS_CRIT, "Providing a valid FDT is mandatory to "
 		       "boot a RISC-V kernel!\n");
 		return false;
 		/* TODO: Fall back to the ROM FDT? */

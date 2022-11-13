@@ -169,7 +169,7 @@ bool fit_payload_arch(struct prog *payload, struct fit_config_node *config,
 	void *arg = NULL;
 
 	if (!decompress_kernel_header(config->kernel)) {
-		printk(BIOS_CRIT, "CRIT: Payload doesn't look like an ARM64"
+		printk(BIOS_CRIT, "Payload doesn't look like an ARM64"
 		       " kernel Image.\n");
 		return false;
 	}

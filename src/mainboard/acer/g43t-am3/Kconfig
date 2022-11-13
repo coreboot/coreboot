@@ -2,9 +2,6 @@
 
 if BOARD_ACER_G43T_AM3
 
-config IGNORE_IASL_MISSING_DEPENDENCY
-	def_bool y
-
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select CPU_INTEL_SOCKET_LGA775

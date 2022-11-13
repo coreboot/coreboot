@@ -15,9 +15,6 @@ entries
 # coreboot config options: console
 395	4	e	6	debug_level
 
-# coreboot config options: cpu
-400	1	e	2	hyper_threading
-
 # coreboot config options: southbridge
 408	1	e	1	nmi
 409	2	e	7	power_on_after_fail
@@ -36,8 +33,6 @@ enumerations
 #ID	value	text
 1	0	Disable
 1	1	Enable
-2	0	Enable
-2	1	Disable
 4	0	Fallback
 4	1	Normal
 6	0	Emergency

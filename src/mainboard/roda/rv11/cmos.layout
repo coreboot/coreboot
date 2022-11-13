@@ -17,7 +17,6 @@ entries
 395	4	e	5	debug_level
 
 # coreboot config options: cpu
-400	1	e	2	hyper_threading
 401	3	e	9	gfx_uma_size
 
 # coreboot config options: southbridge
@@ -46,8 +45,6 @@ enumerations
 #ID	value	text
 1	0	Disable
 1	1	Enable
-2	0	Enable
-2	1	Disable
 3	0	Fallback
 3	1	Normal
 5	0	Emergency

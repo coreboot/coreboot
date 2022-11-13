@@ -21,9 +21,6 @@ entries
 
 421	1	e	9	sata_mode
 
-# coreboot config options: cpu
-424	1	e	2	hyper_threading
-
 # coreboot config options: northbridge
 432	3	e	11	gfx_uma_size
 
@@ -42,8 +39,6 @@ enumerations
 #ID	value	text
 1	0	Disable
 1	1	Enable
-2	0	Enable
-2	1	Disable
 4	0	Fallback
 4	1	Normal
 6	0	Emergency

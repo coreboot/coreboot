@@ -3,4 +3,3 @@ debug_level=Debug
 power_on_after_fail=Enable
 nmi=Enable
 sata_mode=AHCI
-hyper_threading=Enable

@@ -16,7 +16,6 @@ entries
 395	4	e	6	debug_level
 
 # coreboot config options: cpu
-400	1	e	2	hyper_threading
 401	3	e	12	gfx_uma_size
 
 # coreboot config options: southbridge

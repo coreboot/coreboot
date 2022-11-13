@@ -14,9 +14,6 @@ config BOARD_ASUS_H61_SERIES
 
 if BOARD_ASUS_H61_SERIES
 
-config IGNORE_IASL_MISSING_DEPENDENCY
-	def_bool y
-
 config MAINBOARD_DIR
 	default "asus/h61-series"
 

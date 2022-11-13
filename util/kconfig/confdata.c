@@ -230,6 +230,13 @@ static const char *conf_get_autoheader_name(void)
 	return name ? name : "include/generated/autoconf.h";
 }
 
+static const char *conf_get_autobase_name(void)
+{
+	char *name = getenv("KCONFIG_SPLITCONFIG");
+
+	return name ? name : "include/config/";
+}
+
 static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 {
 	char *p2;
@@ -1024,19 +1031,14 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
 
 static int conf_touch_deps(void)
 {
-	const char *name, *tmp;
+	const char *name;
 	struct symbol *sym;
 	int res, i;
 
+	strcpy(depfile_path, conf_get_autobase_name());
+	depfile_prefix_len = strlen(depfile_path);
+
 	name = conf_get_autoconfig_name();
-	tmp = strrchr(name, '/');
-	depfile_prefix_len = tmp ? tmp - name + 1 : 0;
-	if (depfile_prefix_len + 1 > sizeof(depfile_path))
-		return -1;
-
-	strncpy(depfile_path, name, depfile_prefix_len);
-	depfile_path[depfile_prefix_len] = 0;
-
 	conf_read_simple(name, S_DEF_AUTO);
 	sym_calc_value(modules_sym);
 

@@ -25,17 +25,6 @@ Device (SIO)
 			FixedIO (0x64, 0x01)
 			IRQNoFlags () {1}
 		})
-
-		Name (_PRS, ResourceTemplate()
-		{
-			StartDependentFn (0, 0)
-			{
-				FixedIO (0x60, 0x01)
-				FixedIO (0x64, 0x01)
-				IRQNoFlags () {1}
-			}
-			EndDependentFn ()
-		})
 	}
 #endif
 
@@ -54,17 +43,6 @@ Device (SIO)
 			FixedIO (0x60, 0x01)
 			FixedIO (0x64, 0x01)
 			IRQNoFlags () {12}
-		})
-
-		Name (_PRS, ResourceTemplate()
-		{
-			StartDependentFn (0, 0)
-			{
-				FixedIO (0x60, 0x01)
-				FixedIO (0x64, 0x01)
-				IRQNoFlags () {12}
-			}
-			EndDependentFn ()
 		})
 	}
 #endif

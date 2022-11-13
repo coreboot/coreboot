@@ -26,15 +26,6 @@ Device (SIO)
 			IO (Decode16, 0x03F8, 0x3F8, 0x08, 0x08)
 			IRQNoFlags () {4}
 		})
-
-		Name (_PRS, ResourceTemplate ()
-		{
-			StartDependentFn (0, 0) {
-				IO (Decode16, 0x03F8, 0x3F8, 0x08, 0x08)
-				IRQNoFlags () {4}
-			}
-			EndDependentFn ()
-		})
 	}
 
 	Device (PS2K)
@@ -58,16 +49,6 @@ Device (SIO)
 			IO (Decode16, 0x64, 0x64, 0x01, 0x01)
 			IRQ (Edge, ActiveHigh, Exclusive) {1}
 		})
-
-		Name (_PRS, ResourceTemplate()
-		{
-			StartDependentFn (0, 0) {
-				IO (Decode16, 0x60, 0x60, 0x01, 0x01)
-				IO (Decode16, 0x64, 0x64, 0x01, 0x01)
-				IRQ (Edge, ActiveHigh, Exclusive) {1}
-			}
-			EndDependentFn ()
-		})
 	}
 
 	Device (PS2M)
@@ -87,14 +68,6 @@ Device (SIO)
 		Name (_CRS, ResourceTemplate()
 		{
 			IRQ (Edge, ActiveHigh, Exclusive) {12}
-		})
-
-		Name (_PRS, ResourceTemplate()
-		{
-			StartDependentFn (0, 0) {
-				IRQ (Edge, ActiveHigh, Exclusive) {12}
-			}
-			EndDependentFn ()
 		})
 	}
 }

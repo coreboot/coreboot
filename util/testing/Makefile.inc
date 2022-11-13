@@ -81,18 +81,20 @@ ABUILD_OPTIONS+=$(JENKINS_ABUILD_OPT)
 
 COREBOOT_BUILD_DIR?=coreboot-builds
 
-what-jenkins-does:
-	rm -rf $(COREBOOT_BUILD_DIR)/chromeos $(COREBOOT_BUILD_DIR)/default
-	rm -rf $(COREBOOT_BUILD_DIR)/chromeos-clang $(COREBOOT_BUILD_DIR)/default-clang
-ifneq ($(JENKINS_SKIP_LINT_TESTS),y)
-	util/lint/lint lint-stable --junit
-	util/lint/lint lint-extended --junit
-endif
+validate_sec_tools:
 	if [ ! -f 3rdparty/intel-sec-tools/go.mod ]; then \
 		echo "Please download 3rdparty/intel-sec-tools/:"; \
 		echo "git submodule update --init 3rdparty/intel-sec-tools"; \
 		exit 1; \
 	fi
+
+what-jenkins-does: validate_sec_tools
+	rm -rf $(COREBOOT_BUILD_DIR)/chromeos $(COREBOOT_BUILD_DIR)/default
+	rm -rf $(COREBOOT_BUILD_DIR)/chromeos-clang $(COREBOOT_BUILD_DIR)/default-clang
+ifneq ($(JENKINS_SKIP_UNIT_TESTS),y)
+	util/lint/lint lint-stable --junit
+	util/lint/lint lint-extended --junit
+endif
 	cd 3rdparty/intel-sec-tools/ ; go mod vendor
 	cd util/goswid ; go mod vendor
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos.xml

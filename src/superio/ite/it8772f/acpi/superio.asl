@@ -108,12 +108,6 @@ Device (SIO) {
 			IO (Decode16, SIO_ENVC_IO1, SIO_ENVC_IO1, 0x04, 0x04)
 		})
 
-		Name (_PRS, ResourceTemplate ()
-		{
-			IO (Decode16, SIO_ENVC_IO0, SIO_ENVC_IO0, 0x08, 0x08)
-			IO (Decode16, SIO_ENVC_IO1, SIO_ENVC_IO1, 0x04, 0x04)
-		})
-
 		OperationRegion (ECAP, SystemIO, SIO_ENVC_IO0, 0x07)
 		Field (ECAP, ByteAcc, NoLock, Preserve)
 		{
@@ -151,12 +145,6 @@ Device (SIO) {
 			IO (Decode16, SIO_GPIO_IO0, SIO_GPIO_IO0, 0x01, 0x01)
 			IO (Decode16, SIO_GPIO_IO1, SIO_GPIO_IO1, 0x08, 0x08)
 		})
-
-		Name (_PRS, ResourceTemplate ()
-		{
-			IO (Decode16, SIO_GPIO_IO0, SIO_GPIO_IO0, 0x01, 0x01)
-			IO (Decode16, SIO_GPIO_IO1, SIO_GPIO_IO1, 0x08, 0x08)
-		})
 	}
 #endif
 
@@ -175,11 +163,6 @@ Device (SIO) {
 			IRQNoFlags () {4}
 		})
 
-		Name (_PRS, ResourceTemplate ()
-		{
-			IO (Decode16, 0x03F8, 0x03F8, 0x08, 0x08)
-			IRQNoFlags () {4}
-		})
 	}
 #endif
 
@@ -200,12 +183,6 @@ Device (SIO) {
 			IRQNoFlags () {1}
 		})
 
-		Name (_PRS, ResourceTemplate()
-		{
-			IO (Decode16, 0x60, 0x60, 0x01, 0x01)
-			IO (Decode16, 0x64, 0x64, 0x01, 0x01)
-			IRQNoFlags () {1}
-		})
 	}
 #endif
 
@@ -223,10 +200,6 @@ Device (SIO) {
 			IRQNoFlags () {12}
 		})
 
-		Name (_PRS, ResourceTemplate()
-		{
-			IRQNoFlags () {12}
-		})
 	}
 #endif
 
@@ -247,13 +220,6 @@ Device (SIO) {
 			DMA (Compatibility, NotBusMaster, Transfer8) {2}
 		})
 
-		Name (_PRS, ResourceTemplate()
-		{
-			IO (Decode16, 0x03F0, 0x03F0, 0x01, 0x06)
-			IO (Decode16, 0x03F7, 0x03F7, 0x01, 0x01)
-			IRQNoFlags () {6}
-			DMA (Compatibility, NotBusMaster, Transfer8) {2}
-		})
 	}
 #endif
 
@@ -272,11 +238,6 @@ Device (SIO) {
 			IRQNoFlags () { SIO_INFR_IRQ }
 		})
 
-		Name (_PRS, ResourceTemplate()
-		{
-			IO (Decode16, SIO_INFR_IO0, SIO_INFR_IO0, 0x08, 0x08)
-			IRQNoFlags () { SIO_INFR_IRQ }
-		})
 	}
 #endif
 }

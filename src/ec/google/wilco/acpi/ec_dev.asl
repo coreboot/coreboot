@@ -29,25 +29,6 @@ Device (WLCO)
 		    CONFIG_EC_BASE_PACKET,
 		    16, 16)
 	})
-
-	Name (_PRS, ResourceTemplate ()
-	{
-		StartDependentFn (0, 0) {
-			IO (Decode16,
-			    CONFIG_EC_BASE_HOST_DATA,
-			    CONFIG_EC_BASE_HOST_DATA,
-			    4, 4)
-			IO (Decode16,
-			    CONFIG_EC_BASE_HOST_COMMAND,
-			    CONFIG_EC_BASE_HOST_COMMAND,
-			    4, 4)
-			IO (Decode16,
-			    CONFIG_EC_BASE_PACKET,
-			    CONFIG_EC_BASE_PACKET,
-			    16, 16)
-		}
-		EndDependentFn ()
-	})
 }
 
 Device (WEVT)

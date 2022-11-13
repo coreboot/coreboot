@@ -19,8 +19,4 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mem_cfg->MemorySpdPtr00 = spd_cbfs_map(6);
 	mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
 	mem_cfg->MemorySpdDataLen = CONFIG_DIMM_SPD_SIZE;
-
-	const uint8_t ht = get_uint_option("hyper_threading",
-		mupd->FspmConfig.HyperThreading);
-	mupd->FspmConfig.HyperThreading = ht;
 }

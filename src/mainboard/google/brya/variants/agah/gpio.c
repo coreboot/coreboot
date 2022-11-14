@@ -132,7 +132,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* H9  : I2C4_SCL ==> NC */
 	PAD_NC(GPP_H9, NONE),
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
-	PAD_CFG_GPO(GPP_H13, 1, DEEP),
+	PAD_CFG_GPO(GPP_H13, 1, PLTRST),
 	/* H19 : SRCCLKREQ4# ==> LAN_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
 	/* H21 : IMGCLKOUT2 ==> NC */
@@ -190,7 +190,7 @@ static const struct pad_config early_gpio_table[] = {
 	 * then deassert PERST# in romstage
 	 */
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
-	PAD_CFG_GPO(GPP_H13, 1, DEEP),
+	PAD_CFG_GPO(GPP_H13, 1, PLTRST),
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 0, DEEP),
 

@@ -76,6 +76,18 @@ union me_hfsts6 {
 	} __packed fields;
 };
 
+
+/*
+ * Manufacturing mode is disabled if the descriptor is locked, fuses
+ * are programmed and manufacturing variables are locked.
+ * The function returns true if manufacturing mode is disabled otherwise false.
+ */
+static bool is_eom(union me_hfsts1 hfsts1, union me_hfsts6 hfsts6)
+{
+	return (hfsts1.fields.mfg_mode == 0) && (hfsts6.fields.manuf_lock == 1) &&
+		(hfsts6.fields.fpf_soc_lock == 1);
+}
+
 static void dump_me_status(void *unused)
 {
 	union me_hfsts1 hfsts1;
@@ -102,13 +114,9 @@ static void dump_me_status(void *unused)
 	printk(BIOS_DEBUG, "ME: HFSTS5                      : 0x%08X\n", hfsts5.data);
 	printk(BIOS_DEBUG, "ME: HFSTS6                      : 0x%08X\n", hfsts6.data);
 
-	/*
-	 * Lock Descriptor, and Fuses must be programmed on a
-	 * production system to indicate ME Manufacturing mode is disabled.
-	 */
 	printk(BIOS_DEBUG, "ME: Manufacturing Mode          : %s\n",
-		((hfsts1.fields.mfg_mode == 0) &&
-		(hfsts6.fields.fpf_soc_lock == 1)) ? "NO" : "YES");
+			is_eom(hfsts1, hfsts6) ? "NO" : "YES");
+
 	/*
 	 * The SPI Protection Mode bit reflects SPI descriptor
 	 * locked(0) or unlocked(1).

@@ -44,6 +44,10 @@ fw_config
 end
 
 chip soc/intel/alderlake
+	register "domain_vr_config[VR_DOMAIN_IA]" = "{
+		.enable_fast_vmode = 1,
+	}"
+
 	register "sagv" = "SaGv_Enabled"
 
 	register "platform_pmax" = "145"

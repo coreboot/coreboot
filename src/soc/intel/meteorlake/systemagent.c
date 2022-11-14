@@ -77,6 +77,9 @@ void soc_systemagent_init(struct device *dev)
 	case PCI_DID_INTEL_MTL_P_ID_3:
 		soc_config = &config->power_limits_config[MTL_P_POWER_LIMITS_3];
 		break;
+	case PCI_DID_INTEL_MTL_P_ID_4:
+		soc_config = &config->power_limits_config[MTL_P_POWER_LIMITS_4];
+		break;
 	default:
 		printk(BIOS_ERR, "unknown SA ID: 0x%4x, skipping power limits configuration\n",
 			sa_pci_id);

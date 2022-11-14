@@ -22,6 +22,7 @@ enum soc_intel_meteorlake_power_limits {
 	MTL_P_POWER_LIMITS_1,
 	MTL_P_POWER_LIMITS_2,
 	MTL_P_POWER_LIMITS_3,
+	MTL_P_POWER_LIMITS_4,
 	MTL_POWER_LIMITS_COUNT
 };
 

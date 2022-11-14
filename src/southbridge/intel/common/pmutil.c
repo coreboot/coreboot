@@ -73,6 +73,7 @@ void dump_smi_status(u32 smi_sts)
 {
 	printk(BIOS_DEBUG, "SMI_STS: ");
 	if (smi_sts & (1 << 26)) printk(BIOS_DEBUG, "SPI ");
+	if (smi_sts & (1 << 25)) printk(BIOS_DEBUG, "EL_SMI ");
 	if (smi_sts & (1 << 21)) printk(BIOS_DEBUG, "MONITOR ");
 	if (smi_sts & (1 << 20)) printk(BIOS_DEBUG, "PCI_EXP_SMI ");
 	if (smi_sts & (1 << 18)) printk(BIOS_DEBUG, "INTEL_USB2 ");
@@ -100,13 +101,15 @@ void dump_smi_status(u32 smi_sts)
  */
 u64 reset_gpe0_status(void)
 {
-	u32 reg_h, reg_l;
+	u32 reg_h = 0, reg_l;
 
 	reg_l = read_pmbase32(GPE0_STS);
-	reg_h = read_pmbase32(GPE0_STS + 4);
+	if (GPE0_HAS_64_EVENTS)
+		reg_h = read_pmbase32(GPE0_STS + 4);
 	/* set status bits are cleared by writing 1 to them */
 	write_pmbase32(GPE0_STS, reg_l);
-	write_pmbase32(GPE0_STS + 4, reg_h);
+	if (GPE0_HAS_64_EVENTS)
+		write_pmbase32(GPE0_STS + 4, reg_h);
 
 	return (((u64)reg_h) << 32) | reg_l;
 }
@@ -128,7 +131,7 @@ void dump_gpe0_status(u64 gpe0_sts)
 	if (gpe0_sts & (1 <<  8)) printk(BIOS_DEBUG, "RI ");
 	if (gpe0_sts & (1 <<  7)) printk(BIOS_DEBUG, "SMB_WAK ");
 	if (gpe0_sts & (1 <<  6)) printk(BIOS_DEBUG, "TCO_SCI ");
-	if (gpe0_sts & (1 <<  5)) printk(BIOS_DEBUG, "USB5 ");
+	if (gpe0_sts & (1 <<  5)) printk(BIOS_DEBUG, "AC97/USB5 ");
 	if (gpe0_sts & (1 <<  4)) printk(BIOS_DEBUG, "USB2 ");
 	if (gpe0_sts & (1 <<  3)) printk(BIOS_DEBUG, "USB1 ");
 	if (gpe0_sts & (1 <<  2)) printk(BIOS_DEBUG, "SWGPE ");

@@ -409,7 +409,6 @@ void pch_enable(struct device *dev);
 #define LV2		0x14
 #define LV3		0x15
 #define LV4		0x16
-#define PM2_CNT		0x50 // mobile only
 #define GPE0_STS	0x20
 #define   PME_B0_STS	(1 << 13)
 #define   PME_STS	(1 << 11)
@@ -443,8 +442,9 @@ void pch_enable(struct device *dev);
 #define ALT_GP_SMI_STS	0x3a
 #define GPE_CNTL	0x42
 #define DEVACT_STS	0x44
-#define SS_CNT		0x50
+#define PM2_CNT		0x50 // mobile only
 #define C3_RES		0x54
+
 #define TCO1_STS	0x64
 #define   DMISCI_STS	(1 << 9)
 #define TCO2_STS	0x66

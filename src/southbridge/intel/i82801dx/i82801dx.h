@@ -113,9 +113,6 @@ void i82801dx_early_init(void);
 #define PM1_TMR		0x08
 #define PROC_CNT	0x10
 #define LV2		0x14
-#define LV3		0x15
-#define LV4		0x16
-#define PM2_CNT		0x20 // mobile only
 #define GPE0_STS	0x28
 #define   PME_B0_STS	(1 << 13)
 #define   USB3_STS	(1 << 12)
@@ -155,7 +152,6 @@ void i82801dx_early_init(void);
 #define GPE_CNTL	0x42
 #define DEVACT_STS	0x44
 #define SS_CNT		0x50
-#define C3_RES		0x54
 
 #define TCOBASE		0x60 /* TCO Base Address Register */
 #define TCO1_CNT	0x08 /* TCO1 Control Register */

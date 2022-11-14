@@ -147,6 +147,7 @@ chip soc/intel/elkhartlake
 		device pci 15.1 on	    # I2C1
 			# Enable external RTC chip
 			chip drivers/i2c/rv3028c7
+				register "bus_speed" = "I2C_SPEED_STANDARD"
 				register "set_user_date" = "1"
 				register "user_year" = "04"
 				register "user_month" = "07"
@@ -155,12 +156,6 @@ chip soc/intel/elkhartlake
 				register "bckup_sw_mode" = "BACKUP_SW_LEVEL"
 				register "cap_charge" = "CHARGE_OFF"
 				device i2c 0x52 on end  # RTC RV3028-C7
-			end
-			# Add dummy I2C device to limit BUS speed to 100 kHz in OS
-			chip drivers/i2c/generic
-				register "hid" = ""PRP0001""
-				register "speed" = "I2C_SPEED_STANDARD"
-				device i2c 0x7f on end
 			end
 		end
 		device pci 15.2 on	    # I2C2

@@ -3,7 +3,7 @@
 #include "rx6110sa.h"
 
 struct drivers_i2c_rx6110sa_config {
-	unsigned int bus_speed;		/* Bus clock in Hz (default 400 kHz)*/
+	unsigned int bus_speed;		/* Bus clock in Hz */
 	/* The day (of the week) is indicated by 7 bits, bit 0 to bit 6. */
 	unsigned char user_weekday;	/* User day of the week to set */
 	unsigned char user_day;		/* User day to set */

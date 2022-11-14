@@ -40,10 +40,6 @@ config VBOOT
 config VBOOT_SLOTS_RW_AB
 	default y
 
-config VBOOT_VBNV_OFFSET
-	hex
-	default 0x2a
-
 config VARIANT_DIR
 	default "t440p" if BOARD_LENOVO_THINKPAD_T440P
 	default "w541" if BOARD_LENOVO_THINKPAD_W541

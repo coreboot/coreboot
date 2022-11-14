@@ -30,7 +30,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SERIRQ_CONTINUOUS_MODE
 
 config VBOOT
-	select VBOOT_VBNV_CMOS
+	select VBOOT_VBNV_FLASH
 	select GBB_FLAG_DISABLE_LID_SHUTDOWN
 	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
@@ -39,10 +39,6 @@ config VBOOT
 
 config VBOOT_SLOTS_RW_AB
 	default y
-
-config VBOOT_VBNV_OFFSET
-	hex
-	default 0x2a
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab.fmd" if VBOOT

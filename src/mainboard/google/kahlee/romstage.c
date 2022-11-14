@@ -20,7 +20,7 @@ void mainboard_romstage_entry(void)
 	size_t num_gpios;
 	const struct soc_amd_gpio *gpios;
 
-	gpios = variant_romstage_gpio_table(&num_gpios);
+	gpios = baseboard_romstage_gpio_table(&num_gpios);
 	gpio_configure_pads(gpios, num_gpios);
 
 	variant_romstage_entry();

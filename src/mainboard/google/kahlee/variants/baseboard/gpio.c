@@ -254,8 +254,8 @@ struct soc_amd_gpio *variant_wlan_rst_early_gpio_table(size_t *size)
 	return gpio_wlan_rst_early_reset;
 }
 
-const __weak
-struct soc_amd_gpio *variant_romstage_gpio_table(size_t *size)
+const
+struct soc_amd_gpio *baseboard_romstage_gpio_table(size_t *size)
 {
 	*size = ARRAY_SIZE(gpio_set_stage_rom);
 	return gpio_set_stage_rom;

@@ -97,8 +97,8 @@ endif
 	cd util/goswid ; go mod vendor
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos.xml
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default $(ABUILD_OPTIONS)
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos_clang $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos_clang.xml -L
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default_clang $(ABUILD_OPTIONS) -L
+	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos-clang $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos_clang.xml -L
+	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default-clang $(ABUILD_OPTIONS) -L
 	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR="util/$(tool)" BLD="$(tool)" MFLAGS= MAKEFLAGS= MAKETARGET= junit.xml; )
 	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/nvramcui BLD=nvramcui MFLAGS= MAKEFLAGS= MAKETARGET=all junit.xml
 	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/coreinfo BLD=coreinfo MFLAGS= MAKEFLAGS= MAKETARGET=defaultbuild junit.xml

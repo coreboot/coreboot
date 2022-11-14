@@ -1,4 +1,8 @@
 fw_config
+	field SD_BOOT 29
+		option SD_BOOT_ENABLE		0
+		option SD_BOOT_DISABLE		1
+	end
 	field STORAGE 30 31
 		option STORAGE_EMMC		0
 		option STORAGE_NVME		1

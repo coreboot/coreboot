@@ -41,7 +41,7 @@ void soc_display_hob(const struct hob_header *hob)
 	printk(BIOS_DEBUG, "\tResource type: 0x%x, attribute: 0x%x, addr: 0x%08llx, len: 0x%08llx\n",
 		res->type, res->attribute_type, res->addr, res->length);
 	printk(BIOS_DEBUG, "\tOwner GUID: ");
-	fsp_print_guid(res->owner_guid);
+	fsp_print_guid(BIOS_DEBUG, res->owner_guid);
 	printk(BIOS_DEBUG, " (%s)\n", fsp_get_guid_name(res->owner_guid));
 
 	if (fsp_guid_compare(res->owner_guid, fsp_hob_iio_uds_guid) == 0)

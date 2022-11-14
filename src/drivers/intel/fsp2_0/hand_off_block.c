@@ -190,7 +190,7 @@ enum cb_err fsp_hob_iterator_get_next_guid_extension(const struct hob_header **h
 	return CB_ERR;
 }
 
-void fsp_print_guid(const void *base)
+void fsp_print_guid(int level, const void *base)
 {
 	uint32_t big;
 	uint16_t mid[2];
@@ -200,7 +200,7 @@ void fsp_print_guid(const void *base)
 	mid[0] = read16(id + 4);
 	mid[1] = read16(id + 6);
 
-	printk(BIOS_SPEW, "%08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x",
+	printk(level, "%08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x",
 	       big, mid[0], mid[1],
 	       id[8], id[9], id[10], id[11], id[12], id[13], id[14], id[15]);
 }
@@ -216,7 +216,7 @@ int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16])
 	range_entry_init(re, 0, 0, 0);
 
 	if (fsp_hob_iterator_get_next_guid_resource(&hob_iterator, guid, &fsp_mem) != CB_SUCCESS) {
-		fsp_print_guid(guid);
+		fsp_print_guid(BIOS_SPEW, guid);
 		printk(BIOS_SPEW, " not found!\n");
 		return -1;
 	}

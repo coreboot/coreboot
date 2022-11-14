@@ -97,7 +97,7 @@ void fsp_print_resource_descriptor(const void *base)
 	printk(BIOS_SPEW, "\t0x%08llx + 0x%08llx\n", res->addr, res->length);
 	if (!fsp_guid_compare(res->owner_guid, empty_guid)) {
 		printk(BIOS_SPEW, "\tOwner GUID: ");
-		fsp_print_guid(res->owner_guid);
+		fsp_print_guid(BIOS_SPEW, res->owner_guid);
 		printk(BIOS_SPEW, " (%s)\n",
 			fsp_get_guid_name(res->owner_guid));
 	}
@@ -159,7 +159,7 @@ void fsp_print_guid_extension_hob(const struct hob_header *hob)
 
 	res = fsp_hob_header_to_resource(hob);
 	printk(BIOS_SPEW, "\t");
-	fsp_print_guid(res->owner_guid);
+	fsp_print_guid(BIOS_SPEW, res->owner_guid);
 	printk(BIOS_SPEW, ": %s\n", fsp_get_guid_name(res->owner_guid));
 
 	/* Some of the SoC FSP specific hobs are of type HOB_TYPE_GUID_EXTENSION */

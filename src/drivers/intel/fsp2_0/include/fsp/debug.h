@@ -51,7 +51,7 @@ void soc_display_hob(const struct hob_header *hob);
 /* FSP debug utility functions */
 void fsp_display_upd_value(const char *name, size_t size, uint64_t old,
 	uint64_t new);
-void fsp_print_guid(const void *guid);
+void fsp_print_guid(int level, const void *guid);
 void fsp_print_memory_resource_hobs(void);
 void fsp_print_resource_descriptor(const void *base);
 const char *fsp_get_hob_type_name(const struct hob_header *hob);

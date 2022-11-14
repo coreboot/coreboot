@@ -27,16 +27,19 @@ TEST_KCONFIG_SPLITCONFIG := $(testobj)/config/
 TEST_KCONFIG_TRISTATE := $(testobj)/tristate.conf
 
 # Include order should be same as in real build
-TEST_CFLAGS := -include $(src)/include/kconfig.h \
+TEST_INCLUDES := -include $(src)/include/kconfig.h \
 	-include $(src)/include/rules.h \
 	-include $(src)/commonlib/bsd/include/commonlib/bsd/compiler.h
 
 # Include generic test mock headers, before original ones
-TEST_CFLAGS += -I$(testsrc)/include/mocks -I$(testsrc)/include
+TEST_INCLUDES += -I$(testsrc)/include/mocks -I$(testsrc)/include
 
-TEST_CFLAGS += -I$(src) -I$(src)/include -I$(src)/commonlib/include \
+TEST_INCLUDES += -I$(src) -I$(src)/include -I$(src)/commonlib/include \
 	-I$(src)/commonlib/bsd/include -I$(src)/arch/x86/include \
 	-I$(top)/3rdparty/vboot/firmware/include
+
+# Path for Kconfig autoheader
+TEST_INCLUDES += -I$(dir $(TEST_KCONFIG_AUTOHEADER))
 
 # Note: This is intentionally just a subset of the warnings in the toplevel
 # Makefile.inc. We don't need to be as strict with test code, and things like
@@ -47,9 +50,6 @@ TEST_CFLAGS += -Wall -Werror -Wundef -Wstrict-prototypes -Wno-inline-asm
 TEST_CFLAGS += -Wno-unknown-warning-option -Wno-source-mgr -Wno-main-return-type
 TEST_CFLAGS += -Wno-array-compare -Wno-packed-not-aligned -Wno-trigraphs
 TEST_CFLAGS += -Wno-unused-but-set-variables
-
-# Path for Kconfig autoheader
-TEST_CFLAGS += -I$(dir $(TEST_KCONFIG_AUTOHEADER))
 
 TEST_CFLAGS += -std=gnu11 -Os -ffunction-sections -fdata-sections -fno-builtin
 
@@ -66,7 +66,7 @@ TEST_CFLAGS += -fno-pie -fno-pic
 TEST_LDFLAGS += -no-pie
 
 # Extra attributes for unit tests, declared per test
-attributes := srcs cflags config mocks no_test_framework stage
+attributes := srcs syssrcs cflags config mocks no_test_framework stage
 
 # Copy attributes of one test to another.
 # $1 - input test name
@@ -113,12 +113,15 @@ $($(1)-objs): TEST_CFLAGS += -I$$(dir $$($(1)-config-file)) \
 # Give us a way to distinguish between coreboot source files and test files in code.
 $($(1)-srcobjs): TEST_CFLAGS += -D__TEST_SRCOBJ__
 
+# Add coreboot, vboot, kconfig etc. includes only to non-system libc linked objects
+$(filter-out $($(1)-sysobjs),$($(1)-objs)): TEST_CFLAGS += $(TEST_INCLUDES)
+
 # Compile sources and apply mocking/wrapping of selected symbols.
 # For each listed mock add new symbol with prefix `__real_`,
 # and pointing to the same section:address.
 $($(1)-objs): $(testobj)/$(1)/%.o: $$$$*.c $$($(1)-config-file)
 	mkdir -p $$(dir $$@)
-	$(HOSTCC) $(HOSTCFLAGS) $$(TEST_CFLAGS) $($(1)-cflags) -MMD \
+	$(HOSTCC) $(HOSTCFLAGS) $$(TEST_CFLAGS) $$(TEST_INCLUDES) $($(1)-cflags) -MMD \
 		-MF $$(basename $$@).d -MT $$@ -c $$< -o $$@.orig
 	objcopy_wrap_flags=''; \
 	for sym in $$($(1)-mocks); do \
@@ -132,6 +135,13 @@ $($(1)-objs): $(testobj)/$(1)/%.o: $$$$*.c $$($(1)-config-file)
 	done ; \
 	$(OBJCOPY) $$@.orig $$$$objcopy_wrap_flags $$@
 
+# Compile system-side sources linked with system libc, without mocking symbols
+# or code-under-test includes.
+$($(1)-sysobjs): $(testobj)/$(1)/%.o: $$$$*.c $$($(1)-config-file)
+	mkdir -p $$(dir $$@)
+	$(HOSTCC) $(HOSTCFLAGS) $$(TEST_CFLAGS) $($(1)-cflags) -MMD \
+		-MF $$(basename $$@).d -MT $$@ -c $$< -o $$@
+
 # Link against Cmocka if not disabled
 ifeq ($(strip $(filter-out 0 n no,$($(1)-no_test_framework))),)
 $($(1)-objs): TEST_CFLAGS += -I$(cmockasrc)/include
@@ -140,7 +150,7 @@ $($(1)-bin): TEST_CFLAGS += -I$(cmockasrc)/include
 $($(1)-bin): $(CMOCKA_LIB)
 endif
 
-$($(1)-bin): $($(1)-objs)
+$($(1)-bin): $($(1)-objs) $($(1)-sysobjs)
 	$(HOSTCC) $$^ $($(1)-cflags) $$(TEST_LDFLAGS) -o $$@
 
 endef

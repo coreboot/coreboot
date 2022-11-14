@@ -51,6 +51,8 @@ $(call evaluate_subdirs)
 $(foreach test, $(alltests), \
 	$(eval $(test)-srcobjs := $(addprefix $(testobj)/$(test)/, \
 		$(patsubst %.c,%.o,$(filter src/%,$($(test)-srcs))))) \
+	$(eval $(test)-sysobjs := $(addprefix $(testobj)/$(test)/, \
+		$(patsubst %.c,%.o,$($(test)-syssrcs)))) \
 	$(eval $(test)-objs := $(addprefix $(testobj)/$(test)/, \
 		$(patsubst %.c,%.o,$($(test)-srcs)))))
 $(foreach test, $(alltests), \

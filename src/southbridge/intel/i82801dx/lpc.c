@@ -22,20 +22,6 @@
 typedef struct southbridge_intel_i82801dx_config config_t;
 
 /**
- * Enable ACPI I/O range.
- *
- * @param dev PCI device with ACPI and PM BAR's
- */
-static void i82801dx_enable_acpi(struct device *dev)
-{
-	/* Set ACPI base address (I/O space). */
-	pci_write_config32(dev, PMBASE, (PMBASE_ADDR | 1));
-
-	/* Enable ACPI I/O range decode and ACPI power management. */
-	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
-}
-
-/**
  * Set miscellaneous static southbridge features.
  *
  * @param dev PCI device with I/O APIC control registers
@@ -155,12 +141,6 @@ static void i82801dx_power_options(struct device *dev)
 	outl(reg32, pmbase + 0x04);
 }
 
-static void gpio_init(struct device *dev)
-{
-	/* This should be done in romstage.c already */
-	pci_write_config32(dev, GPIO_BASE, (GPIOBASE_ADDR | 1));
-	pci_write_config8(dev, GPIO_CNTL, 0x10);
-}
 
 static void i82801dx_rtc_init(struct device *dev)
 {
@@ -195,17 +175,6 @@ static void i82801dx_lpc_route_dma(struct device *dev, u8 mask)
 		reg16 |= ((mask & (1 << i)) ? 3 : 1) << (i * 2);
 	}
 	pci_write_config16(dev, PCI_DMA_CFG, reg16);
-}
-
-static void i82801dx_lpc_decode_en(struct device *dev)
-{
-	/* Decode 0x3F8-0x3FF (COM1) for COMA port, 0x2F8-0x2FF (COM2) for COMB.
-	 * LPT decode defaults to 0x378-0x37F and 0x778-0x77F.
-	 * Floppy decode defaults to 0x3F0-0x3F5, 0x3F7.
-	 * We also need to set the value for LPC I/F Enables Register.
-	 */
-	pci_write_config8(dev, COM_DEC, 0x10);
-	pci_write_config16(dev, LPC_EN, 0x300F);
 }
 
 /* ICH4 does not mention HPET in the docs, but
@@ -247,7 +216,6 @@ static void enable_hpet(struct device *dev)
 
 static void lpc_init(struct device *dev)
 {
-	i82801dx_enable_acpi(dev);
 	/* IO APIC initialization. */
 	i82801dx_enable_ioapic(dev);
 
@@ -259,9 +227,6 @@ static void lpc_init(struct device *dev)
 	/* Setup power options. */
 	i82801dx_power_options(dev);
 
-	/* Set the state of the GPIO lines. */
-	gpio_init(dev);
-
 	/* Initialize the real time clock. */
 	i82801dx_rtc_init(dev);
 
@@ -270,9 +235,6 @@ static void lpc_init(struct device *dev)
 
 	/* Initialize ISA DMA. */
 	isa_dma_init();
-
-	/* Setup decode ports and LPC I/F enables. */
-	i82801dx_lpc_decode_en(dev);
 
 	/* Initialize the High Precision Event Timers */
 	enable_hpet(dev);

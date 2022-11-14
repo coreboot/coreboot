@@ -1,26 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* the problem: we have 82801dbm support in fb1, and 82801er in fb2.
- * fb1 code is what we want, fb2 structure is needed however.
- * so we need to get fb1 code for 82801dbm into fb2 structure.
- */
-/* What I did: took the 80801er stuff from fb2, verify it against the
- * db stuff in fb1, and made sure it was right.
- */
-
 #ifndef I82801DX_H
 #define I82801DX_H
 
 #include <acpi/acpi.h>
-
-#if !defined(__ASSEMBLER__)
-
 #include <device/device.h>
 
 void i82801dx_enable(struct device *dev);
 void i82801dx_early_init(void);
-
-#endif
+void i82801dx_lpc_setup(void);
 
 #define DEBUG_PERIODIC_SMIS 0
 
@@ -54,8 +42,7 @@ void i82801dx_early_init(void);
 
 #define PCICMD          0x04
 #define PMBASE          0x40
-#define   PMBASE_ADDR	0x0400
-#define   DEFAULT_PMBASE PMBASE_ADDR
+#define   DEFAULT_PMBASE 0x0400
 #define ACPI_CNTL       0x44
 #define   ACPI_EN	(1 << 4)
 #define BIOS_CNTL       0x4E

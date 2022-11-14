@@ -8,10 +8,9 @@
 
 void mainboard_romstage_entry(void)
 {
-	/* Perform some early chipset initialization required
-	 * before RAM initialization can work
-	 */
+	/* FIXME: Keep until flashed bootblock has these. */
 	i82801dx_early_init();
+	i82801dx_lpc_setup();
 
 	sdram_initialize();
 

@@ -59,7 +59,7 @@ chip soc/amd/stoneyridge
 		chip drivers/i2c/generic
 			register "hid" = ""RAYD0001""
 			register "desc" = ""Raydium Touchscreen""
-			register "probed" = "1"
+			register "detect" = "1"
 			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_11)"
 			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_85)"
 			register "reset_delay_ms" = "20"
@@ -72,7 +72,7 @@ chip soc/amd/stoneyridge
 		chip drivers/i2c/hid
 			register "generic.hid" = ""GTCH7503""
 			register "generic.desc" = ""G2TOUCH Touchscreen""
-			register "generic.probed" = "1"
+			register "generic.detect" = "1"
 			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_11)"
 			register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_85)"
 			register "generic.reset_delay_ms" = "50"

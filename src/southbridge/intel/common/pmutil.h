@@ -120,7 +120,6 @@ void dump_smi_status(u32 smi_sts);
 u32 reset_smi_status(void);
 void gpe0_mask(u32 clr, u32 set);
 void alt_gpi_mask(u16 clr, u16 set);
-void smi_set_eos(void);
 void dump_alt_gp_smi_status(u16 alt_gp_smi_sts);
 u16 reset_alt_gp_smi_status(void);
 void dump_all_status(void);

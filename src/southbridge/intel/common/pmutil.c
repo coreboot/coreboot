@@ -176,18 +176,6 @@ void dump_tco_status(u32 tco_sts)
 	printk(BIOS_DEBUG, "\n");
 }
 
-/**
- * @brief Set the EOS bit
- */
-void smi_set_eos(void)
-{
-	u8 reg8;
-
-	reg8 = read_pmbase8(SMI_EN);
-	reg8 |= EOS;
-	write_pmbase8(SMI_EN, reg8);
-}
-
 void dump_alt_gp_smi_status(u16 alt_gp_smi_sts)
 {
 	int i;

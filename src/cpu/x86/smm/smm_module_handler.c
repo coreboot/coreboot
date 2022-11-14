@@ -74,14 +74,6 @@ void io_trap_handler(int smif)
 	printk(BIOS_DEBUG, "Unknown function\n");
 }
 
-/**
- * @brief Set the EOS bit
- */
-static void smi_set_eos(void)
-{
-	southbridge_smi_set_eos();
-}
-
 static u32 pci_orig;
 
 /**
@@ -196,7 +188,7 @@ asmlinkage void smm_handler_start(void *arg)
 	smi_release_lock();
 
 	/* De-assert SMI# signal to allow another SMI */
-	smi_set_eos();
+	southbridge_smi_set_eos();
 }
 
 RMODULE_ENTRY(smm_handler_start);

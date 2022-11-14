@@ -25,6 +25,8 @@
 /* Signature "MRCD" was used for older header format before CB:67670. */
 #define MRC_DATA_SIGNATURE       (('M'<<0)|('R'<<8)|('C'<<16)|('d'<<24))
 
+const static uint32_t mrc_invalid_sig = ~MRC_DATA_SIGNATURE;
+
 struct mrc_metadata {
 	uint32_t signature;
 	uint32_t data_size;
@@ -154,8 +156,9 @@ static const struct cache_region *lookup_region(struct region *r, int type)
 	cr = lookup_region_type(type);
 
 	if (cr == NULL) {
-		printk(BIOS_ERR, "MRC: failed to locate region type %d.\n",
-		       type);
+		/* There will be no recovery MRC cache region if (!HAS_RECOVERY_MRC_CACHE &&
+		   !VBOOT_STARTS_IN_ROMSTAGE). */
+		printk(BIOS_DEBUG, "MRC: failed to locate region type %d\n", type);
 		return NULL;
 	}
 
@@ -172,6 +175,14 @@ static int mrc_header_valid(struct region_device *rdev, struct mrc_metadata *md)
 	size_t size;
 
 	if (rdev_readat(rdev, md, 0, sizeof(*md)) < 0) {
+		/* When the metadata was invalidated intentionally (for example from the
+		   previous recovery boot), print a warning instead of an error. */
+		if (rdev_readat(rdev, md, 0, sizeof(mrc_invalid_sig)) >= 0 &&
+		    md->signature == mrc_invalid_sig) {
+			printk(BIOS_INFO, "MRC: metadata was invalidated\n");
+			return -1;
+		}
+
 		printk(BIOS_ERR, "MRC: couldn't read metadata\n");
 		return -1;
 	}
@@ -262,10 +273,8 @@ static int mrc_cache_get_latest_slot_info(const char *name,
 
 	/* Validate header and resize region to reflect actual usage on the
 	 * saved medium (including metadata and data). */
-	if (mrc_header_valid(rdev, md) < 0) {
-		printk(BIOS_ERR, "MRC: invalid header in '%s'\n", name);
+	if (mrc_header_valid(rdev, md) < 0)
 		return fail_bad_data ? -1 : 0;
-	}
 
 	return 0;
 }
@@ -595,7 +604,6 @@ static void invalidate_normal_cache(void)
 	struct region_file cache_file;
 	struct region_device rdev;
 	const char *name = DEFAULT_MRC_CACHE;
-	const uint32_t invalid = ~MRC_DATA_SIGNATURE;
 
 	/*
 	 * If !HAS_RECOVERY_MRC_CACHE and VBOOT_STARTS_IN_ROMSTAGE is
@@ -631,7 +639,8 @@ static void invalidate_normal_cache(void)
 
 	/* Push an update that consists of 4 bytes that is smaller than the
 	 * MRC metadata as well as an invalid signature. */
-	if (region_file_update_data(&cache_file, &invalid, sizeof(invalid)) < 0)
+	if (region_file_update_data(&cache_file, &mrc_invalid_sig,
+				    sizeof(mrc_invalid_sig)) < 0)
 		printk(BIOS_ERR, "MRC: invalidation failed for '%s'.\n", name);
 }
 

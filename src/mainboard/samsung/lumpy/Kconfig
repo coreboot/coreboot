@@ -26,7 +26,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_SPD_IN_CBFS
 
 config VBOOT
-	select VBOOT_VBNV_CMOS
+	select VBOOT_VBNV_FLASH
 
 config MAINBOARD_DIR
 	default "samsung/lumpy"

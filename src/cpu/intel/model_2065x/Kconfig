@@ -7,7 +7,6 @@ config CPU_SPECIFIC_OPTIONS
 	def_bool y
 	select HAVE_EXP_X86_64_SUPPORT
 	select ARCH_X86
-	select BOOT_DEVICE_SPI_FLASH_NO_EARLY_WRITES
 	select SSE2
 	select UDELAY_TSC
 	select TSC_MONOTONIC_TIMER

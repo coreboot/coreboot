@@ -22,7 +22,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SANDYBRIDGE_VBOOT_IN_ROMSTAGE
 
 config VBOOT
-	select VBOOT_VBNV_CMOS
+	select VBOOT_VBNV_FLASH
 
 config MAINBOARD_DIR
 	default "samsung/stumpy"

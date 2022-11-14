@@ -1,13 +1,7 @@
 FLASH 16M {
 	SI_ALL 3776K {
 		SI_DESC 4K
-		SI_ME {
-			CSE_LAYOUT 8K
-			CSE_RO 1360K
-			CSE_DATA 420K
-			# 64-KiB aligned to optimize RW erases during CSE update.
-			CSE_RW 1984K
-		}
+		SI_ME
 	}
 	SI_BIOS 12608K {
 		RW_SECTION_A 4180K {

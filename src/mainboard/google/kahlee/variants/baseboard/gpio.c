@@ -69,6 +69,11 @@ static const struct soc_amd_gpio gpio_wlan_rst_early_reset[] = {
 };
 
 static const struct soc_amd_gpio gpio_set_stage_rom[] = {
+	/* Enable touchscreen, hold in reset */
+	/* GPIO_76 - EN_PP3300_TOUCHSCREEN */
+	PAD_GPO(GPIO_76, HIGH),
+	/* GPIO_85 - TOUCHSCREEN_RST (Active High) */
+	PAD_GPO(GPIO_85, HIGH),
 	/* GPIO_133 - APU_EDP_BKLTEN_L (backlight - Active LOW) */
 	PAD_GPO(GPIO_133, HIGH),
 };

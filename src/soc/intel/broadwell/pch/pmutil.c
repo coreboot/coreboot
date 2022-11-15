@@ -309,7 +309,7 @@ u32 clear_tco_status(void)
 void enable_tco_sci(void)
 {
 	/* Clear pending events */
-	outl(get_pmbase() + GPE0_STS(3), TCOSCI_STS);
+	outl(TCOSCI_STS, get_pmbase() + GPE0_STS(3));
 
 	/* Enable TCO SCI events */
 	enable_gpe(TCOSCI_EN);

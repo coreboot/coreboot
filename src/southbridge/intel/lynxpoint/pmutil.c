@@ -356,7 +356,7 @@ void enable_tco_sci(void)
 	u16 gpe0_sts = pch_is_lp() ? LP_GPE0_STS_4 : GPE0_STS;
 
 	/* Clear pending events */
-	outl(get_pmbase() + gpe0_sts, TCOSCI_STS);
+	outl(TCOSCI_STS, get_pmbase() + gpe0_sts);
 
 	/* Enable TCO SCI events */
 	enable_gpe(TCOSCI_EN);

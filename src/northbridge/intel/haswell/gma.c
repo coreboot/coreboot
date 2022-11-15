@@ -408,7 +408,7 @@ static void gma_enable_swsci(void)
 	/* Clear DMISCI status */
 	reg16 = inw(get_pmbase() + TCO1_STS);
 	reg16 &= DMISCI_STS;
-	outw(get_pmbase() + TCO1_STS, reg16);
+	outw(reg16, get_pmbase() + TCO1_STS);
 
 	/* Clear and enable ACPI TCO SCI */
 	enable_tco_sci();

@@ -14,4 +14,7 @@ struct mdio_bus_operations {
 /* Helper for getting mdio operations from a device */
 const struct mdio_bus_operations *dev_get_mdio_ops(struct device *dev);
 
+uint16_t mdio_read(struct device *dev, uint8_t offset);
+void mdio_write(struct device *dev, uint8_t offset, uint16_t val);
+
 #endif	/* __DEVICE_MDIO_H__ */

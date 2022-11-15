@@ -192,7 +192,7 @@ chip soc/intel/alderlake
 		end
 		device ref i2c1 on
 			chip drivers/i2c/hid
-				register "generic.hid" = ""GTCH7503""
+				register "generic.hid" = ""GTCH7502""
 				register "generic.desc" = ""G2 Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
 				register "generic.probed" = "1"

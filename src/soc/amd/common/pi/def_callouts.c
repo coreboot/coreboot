@@ -147,7 +147,7 @@ AGESA_STATUS agesa_GfxGetVbiosImage(uint32_t Func, uintptr_t FchData,
 AGESA_STATUS __weak platform_PcieSlotResetControl(uint32_t Func,
 	uintptr_t Data, void *ConfigPtr)
 {
-	printk(BIOS_WARNING, "Warning - AGESA callout: %s not supported\n",
+	printk(BIOS_WARNING, "AGESA callout: %s not supported\n",
 		__func__);
 	return AGESA_UNSUPPORTED;
 }
@@ -231,7 +231,7 @@ AGESA_STATUS agesa_RunFcnOnAllAps(uint32_t Func, uintptr_t Data,
 AGESA_STATUS agesa_WaitForAllApsFinished(uint32_t Func, uintptr_t Data,
 	void *ConfigPtr)
 {
-	printk(BIOS_WARNING, "Warning - AGESA callout: %s not supported\n",
+	printk(BIOS_WARNING, "AGESA callout: %s not supported\n",
 		__func__);
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 
@@ -240,7 +240,7 @@ AGESA_STATUS agesa_WaitForAllApsFinished(uint32_t Func, uintptr_t Data,
 
 AGESA_STATUS agesa_IdleAnAp(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 {
-	printk(BIOS_WARNING, "Warning - AGESA callout: %s no supported\n",
+	printk(BIOS_WARNING, "AGESA callout: %s not supported\n",
 		__func__);
 	AGESA_STATUS Status = AGESA_UNSUPPORTED;
 

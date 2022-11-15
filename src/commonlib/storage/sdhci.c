@@ -320,8 +320,7 @@ static int sdhci_send_command(struct sd_mmc_ctrlr *ctrlr,
 		if (!dma_coherent(buf)) {
 			bbstate = &bbstate_val;
 			if (bounce_buffer_start(bbstate, buf, len, bbflags)) {
-				sdhc_error(
-					"ERROR: Failed to get bounce buffer.\n");
+				sdhc_error("Failed to get bounce buffer.\n");
 				return -1;
 			}
 		}

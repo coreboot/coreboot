@@ -7,6 +7,10 @@ fw_config
 		option STYLUS_PRESENT		0
 		option STYLUS_ABSENT		1
 	end
+	field AUDIO_CODEC_SOURCE 8
+		option AUDIO_CODEC_ALC5682_VS	0
+		option AUDIO_CODEC_ALC5682_VD	1
+	end
 end
 
 chip soc/intel/alderlake
@@ -281,7 +285,23 @@ chip soc/intel/alderlake
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
-				device i2c 1a on end
+				device i2c 1a on
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682_VS
+				end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682_VD
+				end
 			end
 			chip drivers/generic/alc1015
 				register "hid" = ""RTL1019""

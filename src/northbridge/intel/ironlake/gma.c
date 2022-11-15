@@ -122,15 +122,15 @@ static void gma_enable_swsci(void)
 	/* clear DMISCI status */
 	reg16 = inw(DEFAULT_PMBASE + TCO1_STS);
 	reg16 &= DMISCI_STS;
-	outw(DEFAULT_PMBASE + TCO1_STS, reg16);
+	outw(reg16, DEFAULT_PMBASE + TCO1_STS);
 
 	/* clear acpi tco status */
-	outl(DEFAULT_PMBASE + GPE0_STS, TCOSCI_STS);
+	outl(TCOSCI_STS, DEFAULT_PMBASE + GPE0_STS);
 
 	/* enable acpi tco scis */
 	reg16 = inw(DEFAULT_PMBASE + GPE0_EN);
 	reg16 |= TCOSCI_EN;
-	outw(DEFAULT_PMBASE + GPE0_EN, reg16);
+	outw(reg16, DEFAULT_PMBASE + GPE0_EN);
 }
 
 static void gma_func0_init(struct device *dev)

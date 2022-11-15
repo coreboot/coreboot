@@ -72,7 +72,7 @@ void free(void *ptr)
 		return;
 
 	if (ptr < (void *)&_heap || ptr >= free_mem_end_ptr) {
-		printk(BIOS_WARNING, "Warning - Pointer passed to %s is not "
+		printk(BIOS_WARNING, "Pointer passed to %s is not "
 					"pointing to the heap\n", __func__);
 		return;
 	}

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/cpu_ids.h>
@@ -65,6 +66,21 @@ static inline uint16_t get_dev_id(pci_devfn_t dev)
 	return pci_read_config16(dev, PCI_DEVICE_ID);
 }
 
+static void report_cache_info(void)
+{
+	int cache_level = CACHE_L3;
+	struct cpu_cache_info info;
+
+	if (!fill_cpu_cache_info(cache_level, &info))
+		return;
+
+	printk(BIOS_INFO, "Cache: Level %d: ", cache_level);
+	printk(BIOS_INFO, "Associativity = %zd Partitions = %zd Line Size = %zd Sets = %zd\n",
+		info.num_ways, info.physical_partitions, info.line_size, info.num_sets);
+
+	printk(BIOS_INFO, "Cache size = %zu MiB\n", get_cache_size(&info)/MiB);
+}
+
 static void report_cpu_info(void)
 {
 	u32 i, cpu_id, cpu_feature_flag;
@@ -95,6 +111,8 @@ static void report_cpu_info(void)
 	printk(BIOS_DEBUG,
 		"CPU: AES %ssupported, TXT %ssupported, VT %ssupported\n",
 		mode[aes], mode[txt], mode[vt]);
+
+	report_cache_info();
 }
 
 static void report_mch_info(void)

@@ -4,8 +4,12 @@ verstage-generic-ccopts += -I$(src)/soc/amd/common/psp_verstage/include
 verstage-generic-ccopts += -D__USER_SPACE__
 CPPFLAGS_common += -I$(VBOOT_SOURCE)/firmware/2lib/include/
 
+ifeq ($(CONFIG_COMPILER_GCC),y)
 # This size should match the size in the linker script.
 CFLAGS_arm += -Wstack-usage=40960
+else
+CFLAGS_arm += -Wframe-larger-than=40960
+endif
 
 verstage-y += boot_dev.c
 verstage-y += delay.c

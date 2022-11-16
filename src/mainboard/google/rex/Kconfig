@@ -106,4 +106,7 @@ config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 35  # GPE0_DW1_03 (GPP_E03)
 
+config USE_PM_ACPI_TIMER
+	default n
+
 endif # BOARD_GOOGLE_REX_COMMON

@@ -10,6 +10,8 @@
 #ifndef PI_PLATFORM_DESCRIPTORS_H
 #define PI_PLATFORM_DESCRIPTORS_H
 
+#include <stdint.h>
+
 #define NUM_DXIO_PHY_PARAMS	6
 #define NUM_DXIO_PORT_PARAMS	6
 
@@ -55,7 +57,7 @@ enum cpm_clk_req {
 	CLK_REQ1,
 	CLK_REQ2,
 	CLK_REQ3,
-	CLK_REQ4_GFX,
+	CLK_REQ4,
 	CLK_REQ5,
 	CLK_REQ6,
 	CLK_ENABLE = 0xff,
@@ -144,8 +146,8 @@ enum ddi_connector_type {
 	DDI_DP_TO_LVDS,		// DP-to-LVDS
 	DDI_NUTMEG_DP_TO_VGA,	// Hudson-2 NutMeg DP-to-VGA
 	DDI_SINGLE_LINK_DVI_I,	// Single Link DVI-I
-	DDI_CRT,		// CRT (VGA)
-	DDI_LVDS,		// LVDS
+	DDI_DP_W_TYPEC,		// DP with USB type C
+	DDI_DP_WO_TYPEC,	// DP without USB type C
 	DDI_EDP_TO_LVDS,	// eDP-to-LVDS translator chip without AMD SW init
 	DDI_EDP_TO_LVDS_SW,	// eDP-to-LVDS translator which requires AMD SW init
 	DDI_AUTO_DETECT,	// VBIOS auto detect connector type
@@ -162,15 +164,17 @@ typedef struct __packed {
 } fsp_ddi_descriptor;
 
 /*
- * Mendocino DXIO Descriptor: Used for assigning lanes to PCIe engines, configure
+ * Morgana DXIO Descriptor: Used for assigning lanes to PCIe engines, configure
  * bifurcation and other settings. Beware that the lane numbers in here are the
  * logical and not the physical lane numbers!
  *
- * Mendocino DXIO logical lane to physical PCIe lane mapping:
+ * Morgana DXIO logical lane to physical PCIe lane mapping:
  *
- * logical | physical
- * --------|------------
- * [00:03] | GPP[03:00]
+ *   logical | physical
+ * ----------|------------
+ * PA[00:03] | GPP[03:00]
+ * PA[04:05] | GPP[08:09]
+ * PB[00:07] | GPP[12:19]
  *
  * Different ports mustn't overlap or be assigned to the same lane(s). Within
  * ports with the same width the one with a higher start logical lane number
@@ -183,7 +187,7 @@ typedef struct __packed {
 	uint8_t		end_logical_lane;		// End lane of the pci device
 	uint8_t		gpio_group_id;			// GPIO number used as reset
 	uint32_t	port_present		:1;	// Should be TRUE if train link
-	uint32_t	reserved_3		:7;
+	uint32_t				:7;
 	uint32_t	device_number		:5;	// Desired root port device number
 	uint32_t	function_number		:3;	// Desired root port function number
 	uint32_t	link_speed_capability	:2;	// See dxio_link_speed_cap
@@ -193,14 +197,14 @@ typedef struct __packed {
 	uint32_t	link_aspm_L1_1		:1;	// En/Dis root port capabilities for L1.1
 	uint32_t	link_aspm_L1_2		:1;	// En/Dis root port capabilities for L1.2
 	uint32_t	clk_req			:4;	// See cpm_clk_req
-	uint8_t		link_hotplug;			// Currently unused by FSP
-	uint8_t		slot_power_limit;		// Currently unused by FSP
-	uint32_t	slot_power_limit_scale	:2;	// Currently unused by FSP
-	uint32_t	reserved_4		:6;
-	uint32_t	link_compliance_mode	:1;	// Currently unused by FSP
-	uint32_t	link_safe_mode		:1;	// Currently unused by FSP
-	uint32_t	sb_link			:1;	// Currently unused by FSP
-	uint32_t	clk_pm_support		:1;	// Currently unused by FSP
+	uint8_t		link_hotplug;			// Hotplug control
+	uint8_t		slot_power_limit;		// PCIe slot power limit
+	uint32_t	slot_power_limit_scale	:2;	// PCIe slot power limit scale
+	uint32_t				:6;
+	uint32_t	link_compliance_mode	:1;	// Force port into compliance mode
+	uint32_t	link_safe_mode		:1;	// Safe mode capability
+	uint32_t	sb_link			:1;	// Link type
+	uint32_t	clk_pm_support		:1;	// Clock power management support
 	uint32_t	channel_type		:3;	// See dxio_sata_channel_type
 	uint32_t	turn_off_unused_lanes	:1;	// Power down lanes if device not present
 	uint8_t		reserved[4];

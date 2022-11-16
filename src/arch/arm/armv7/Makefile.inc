@@ -5,7 +5,10 @@ armv7-a_flags = -march=armv7-a $(armv7_flags) -D__COREBOOT_ARM_V7_A__
 armv7-m_flags = -march=armv7-m $(armv7_flags) -D__COREBOOT_ARM_V7_M__
 armv7-r_flags = -march=armv7-r $(armv7_flags) -D__COREBOOT_ARM_V7_R__
 
-armv7_asm_flags = -Wa,-mthumb -Wa,-mimplicit-it=always -Wa,-mno-warn-deprecated
+armv7_asm_flags = -Wa,-mthumb -Wa,-mimplicit-it=always
+ifeq ($(CONFIG_COMPILER_GCC),y)
+armv7_asm_flags += -Wa,-mno-warn-deprecated
+endif
 armv7-r_asm_flags = $(armv7-r_flags) $(armv7_asm_flags)
 
 ###############################################################################

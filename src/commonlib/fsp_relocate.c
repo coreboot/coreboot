@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <commonlib/endian.h>
 #include <commonlib/fsp.h>
+#include <inttypes.h>
 /*
  * Intel's code does not have a handle on changing global packing state.
  * Therefore, one needs to protect against packing policies that are set
@@ -219,7 +220,7 @@ static int pe_relocate(uintptr_t new_addr, void *pe, void *fsp, size_t fih_off)
 			delta, image_base, img_base_off,
 			(uint32_t)((uint8_t *)&ophdr->ImageBase - pe_base));
 
-	printk(FSP_DBG_LVL, "relocating PE32 image at addr - 0x%lx\n", new_addr);
+	printk(FSP_DBG_LVL, "relocating PE32 image at addr - 0x%" PRIxPTR "\n", new_addr);
 	rsize = read_le32(&ophdr->DataDirectory[EFI_IMAGE_DIRECTORY_ENTRY_BASERELOC].Size);
 	roffset = read_le32(&ophdr->DataDirectory[EFI_IMAGE_DIRECTORY_ENTRY_BASERELOC].VirtualAddress);
 	printk(FSP_DBG_LVL, "relocation table at offset-%x,size=%x\n", roffset, rsize);

@@ -128,7 +128,7 @@ chip soc/amd/mendocino
 			device i2c 10 on end
 		end
 		chip drivers/i2c/generic
-			register "hid" = ""MELF0410""
+			register "hid" = ""MLFS0000""
 			register "desc" = ""Melfas Touchscreen""
 			register "detect" = "1"
 			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_29)"

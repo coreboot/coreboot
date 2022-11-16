@@ -127,6 +127,7 @@ chip soc/intel/cannonlake
 			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-A right
 			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A left
 			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C right
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C left
 			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C left
 			register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Card Reader
 		end

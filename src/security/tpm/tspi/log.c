@@ -77,6 +77,8 @@ void tpm_log_add_table_entry(const char *name, const uint32_t pcr,
 
 	struct tpm_cb_log_entry *tce = &tclt->entries[tclt->num_entries++];
 	strncpy(tce->name, name, TPM_CB_LOG_PCR_HASH_NAME - 1);
+	tce->name[TPM_CB_LOG_PCR_HASH_NAME - 1] = '\0';
+
 	tce->pcr = pcr;
 
 	if (digest_len > TPM_CB_LOG_DIGEST_MAX_LENGTH) {
@@ -143,7 +145,10 @@ void tpm_log_copy_entries(const void *from, void *to)
 
 	for (i = 0; i < from_log->num_entries; i++) {
 		struct tpm_cb_log_entry *tce = &to_log->entries[to_log->num_entries++];
+
 		strncpy(tce->name, from_log->entries[i].name, TPM_CB_LOG_PCR_HASH_NAME - 1);
+		tce->name[TPM_CB_LOG_PCR_HASH_NAME - 1] = '\0';
+
 		tce->pcr = from_log->entries[i].pcr;
 
 		if (from_log->entries[i].digest_length > TPM_CB_LOG_DIGEST_MAX_LENGTH) {
@@ -153,6 +158,8 @@ void tpm_log_copy_entries(const void *from, void *to)
 
 		strncpy(tce->digest_type, from_log->entries[i].digest_type,
 			TPM_CB_LOG_PCR_HASH_LEN - 1);
+		tce->digest_type[TPM_CB_LOG_PCR_HASH_LEN - 1] = '\0';
+
 		tce->digest_length = MIN(from_log->entries[i].digest_length,
 					 TPM_CB_LOG_DIGEST_MAX_LENGTH);
 		memcpy(tce->digest, from_log->entries[i].digest, tce->digest_length);

@@ -2,7 +2,8 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 PROGRAM   = cbmem
-ROOT      = ../../src
+TOP      ?= $(abspath ../..)
+ROOT      = $(TOP)/src
 CC       ?= $(CROSS_COMPILE)gcc
 INSTALL  ?= /usr/bin/env install
 PREFIX   ?= /usr/local

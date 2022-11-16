@@ -1,10 +1,10 @@
 FLASH 32M {
-	SI_ALL 3776K {
+	SI_ALL 3712K {
 		SI_DESC 4K
 		SI_ME
 	}
-	SI_BIOS 28992K {
-		RW_SECTION_A 4344K {
+	SI_BIOS 29056K {
+		RW_SECTION_A 4376K {
 			VBLOCK_A 8K
 			FW_MAIN_A(CBFS)
 			RW_FWID_A 64
@@ -24,19 +24,19 @@ FLASH 32M {
 			RW_NVRAM(PRESERVE) 8K
 		}
 		# RW UNUSED Region 1.
-		RW_UNUSED_1 7088K
+		RW_UNUSED_1 7120K
 		# This section starts at the 16M boundary in SPI flash.
 		# ADL does not support a region crossing this boundary,
 		# because the SPI flash is memory-mapped into two non-
 		# contiguous windows.
-		RW_SECTION_B 4344K {
+		RW_SECTION_B 4376K {
 			VBLOCK_B 8K
 			FW_MAIN_B(CBFS)
 			RW_FWID_B 64
 			ME_RW_B(CBFS) 1434K
 		}
 		# RW UNUSED Region 2.
-		RW_UNUSED_2 7944K
+		RW_UNUSED_2 7912K
 		# Make WP_RO region align with SPI vendor
 		# memory protected range specification.
 		WP_RO 4M {

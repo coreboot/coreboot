@@ -151,16 +151,23 @@ chip soc/amd/phoenix
 		.PhyP3CpmP4Support = 0,
 	}"
 
-	register "gpp_clk_config[0]" = "GPP_CLK_REQ"
-	register "gpp_clk_config[1]" = "GPP_CLK_REQ"
-	register "gpp_clk_config[2]" = "GPP_CLK_OFF"
-	register "gpp_clk_config[3]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[0]" = "GPP_CLK_REQ" # MXM
+	register "gpp_clk_config[1]" = "GPP_CLK_REQ" # NVMe SSD1
+	register "gpp_clk_config[2]" = "GPP_CLK_REQ" # NVMe SSD0
+	register "gpp_clk_config[3]" = "GPP_CLK_REQ" # WLAN
+	register "gpp_clk_config[4]" = "GPP_CLK_REQ" # WWAN
+	register "gpp_clk_config[5]" = "GPP_CLK_REQ" # SD
+	register "gpp_clk_config[6]" = "GPP_CLK_REQ" # GBE
 
 	device domain 0 on
 		device ref iommu on end
-		device ref gpp_bridge_2_1 on end # GBE
-		device ref gpp_bridge_2_2 on end # WIFI
-		device ref gpp_bridge_2_3 on end # NVMe SSD
+		device ref gpp_bridge_1_1 on end # MXM
+		device ref gpp_bridge_1_2 on end # NVMe SSD1
+		device ref gpp_bridge_1_3 on end # GBE
+		device ref gpp_bridge_2_1 on end # SD
+		device ref gpp_bridge_2_2 on end # WWAN
+		device ref gpp_bridge_2_3 on end # WIFI
+		device ref gpp_bridge_2_4 on end # NVMe SSD0
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
 			device ref gfx_hda on end # Display HD Audio Controller (GFXAZ)

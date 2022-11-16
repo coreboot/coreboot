@@ -3,7 +3,7 @@
  * from input maintainer's tree:
  * git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git
  * from master branch
- * at SHA: fbf66796a0aedbaea248c7ade1459ccd0dd4cb44
+ * at SHA: 1260cd04a601e0e02e09fa332111b8639611970d
  */
 
 /* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
@@ -286,7 +286,8 @@
 #define KEY_PAUSECD		201
 #define KEY_PROG3		202
 #define KEY_PROG4		203
-#define KEY_DASHBOARD		204	/* AL Dashboard */
+#define KEY_ALL_APPLICATIONS	204	/* AC Desktop Show All Applications */
+#define KEY_DASHBOARD		KEY_ALL_APPLICATIONS
 #define KEY_SUSPEND		205
 #define KEY_CLOSE		206	/* AC Close */
 #define KEY_PLAY		207
@@ -523,6 +524,9 @@
 #define KEY_10CHANNELSUP	0x1b8	/* 10 channels up (10+) */
 #define KEY_10CHANNELSDOWN	0x1b9	/* 10 channels down (10-) */
 #define KEY_IMAGES		0x1ba	/* AL Image Browser */
+#define KEY_NOTIFICATION_CENTER	0x1bc	/* Show/hide the notification center */
+#define KEY_PICKUP_PHONE	0x1bd	/* Answer incoming call */
+#define KEY_HANGUP_PHONE	0x1be	/* Decline incoming call */
 
 #define KEY_DEL_EOL		0x1c0
 #define KEY_DEL_EOS		0x1c1
@@ -550,6 +554,7 @@
 #define KEY_FN_F		0x1e2
 #define KEY_FN_S		0x1e3
 #define KEY_FN_B		0x1e4
+#define KEY_FN_RIGHT_SHIFT	0x1e5
 
 #define KEY_BRL_DOT1		0x1f1
 #define KEY_BRL_DOT2		0x1f2
@@ -615,6 +620,8 @@
 #define KEY_VOICECOMMAND		0x246	/* Listening Voice Command */
 #define KEY_ASSISTANT		0x247	/* AL Context-aware desktop assistant */
 #define KEY_KBD_LAYOUT_NEXT	0x248	/* AC Next Keyboard Layout Select */
+#define KEY_EMOJI_PICKER	0x249	/* Show/hide emoji picker (HUTRR101) */
+#define KEY_DICTATE		0x24a	/* Start or Stop Voice Dictation Session (HUTRR99) */
 
 #define KEY_BRIGHTNESS_MIN		0x250	/* Set Brightness to Minimum */
 #define KEY_BRIGHTNESS_MAX		0x251	/* Set Brightness to Maximum */
@@ -662,6 +669,27 @@
 
 /* Select an area of screen to be copied */
 #define KEY_SELECTIVE_SCREENSHOT	0x27a
+
+/* Move the focus to the next or previous user controllable element within a UI container */
+#define KEY_NEXT_ELEMENT               0x27b
+#define KEY_PREVIOUS_ELEMENT           0x27c
+
+/* Toggle Autopilot engagement */
+#define KEY_AUTOPILOT_ENGAGE_TOGGLE    0x27d
+
+/* Shortcut Keys */
+#define KEY_MARK_WAYPOINT              0x27e
+#define KEY_SOS                                0x27f
+#define KEY_NAV_CHART                  0x280
+#define KEY_FISHING_CHART              0x281
+#define KEY_SINGLE_RANGE_RADAR         0x282
+#define KEY_DUAL_RANGE_RADAR           0x283
+#define KEY_RADAR_OVERLAY              0x284
+#define KEY_TRADITIONAL_SONAR          0x285
+#define KEY_CLEARVU_SONAR              0x286
+#define KEY_SIDEVU_SONAR               0x287
+#define KEY_NAV_INFO                   0x288
+#define KEY_BRIGHTNESS_MENU            0x289
 
 /*
  * Some keyboards have keys which do not have a defined meaning, these keys
@@ -842,6 +870,7 @@
 #define ABS_TOOL_WIDTH		0x1c
 
 #define ABS_VOLUME		0x20
+#define ABS_PROFILE		0x21
 
 #define ABS_MISC		0x28
 
@@ -895,7 +924,8 @@
 #define SW_LINEIN_INSERT	0x0d  /* set = inserted */
 #define SW_MUTE_DEVICE		0x0e  /* set = device disabled */
 #define SW_PEN_INSERTED		0x0f  /* set = pen inserted */
-#define SW_MAX			0x0f
+#define SW_MACHINE_COVER	0x10  /* set = cover closed */
+#define SW_MAX			0x10
 #define SW_CNT			(SW_MAX+1)
 
 /*

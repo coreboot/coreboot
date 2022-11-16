@@ -10,6 +10,8 @@
 #ifndef PI_PLATFORM_DESCRIPTORS_H
 #define PI_PLATFORM_DESCRIPTORS_H
 
+#include <stdint.h>
+
 #define NUM_DXIO_PHY_PARAMS	6
 #define NUM_DXIO_PORT_PARAMS	6
 
@@ -55,7 +57,7 @@ enum cpm_clk_req {
 	CLK_REQ1,
 	CLK_REQ2,
 	CLK_REQ3,
-	CLK_REQ4_GFX,
+	CLK_REQ4,
 	CLK_REQ5,
 	CLK_REQ6,
 	CLK_ENABLE = 0xff,
@@ -144,8 +146,8 @@ enum ddi_connector_type {
 	DDI_DP_TO_LVDS,		// DP-to-LVDS
 	DDI_NUTMEG_DP_TO_VGA,	// Hudson-2 NutMeg DP-to-VGA
 	DDI_SINGLE_LINK_DVI_I,	// Single Link DVI-I
-	DDI_CRT,		// CRT (VGA)
-	DDI_LVDS,		// LVDS
+	DDI_DP_W_TYPEC,		// DP with USB type C
+	DDI_DP_WO_TYPEC,	// DP without USB type C
 	DDI_EDP_TO_LVDS,	// eDP-to-LVDS translator chip without AMD SW init
 	DDI_EDP_TO_LVDS_SW,	// eDP-to-LVDS translator which requires AMD SW init
 	DDI_AUTO_DETECT,	// VBIOS auto detect connector type

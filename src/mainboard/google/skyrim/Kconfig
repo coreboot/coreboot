@@ -147,4 +147,11 @@ config CONSOLE_CBMEM_BUFFER_SIZE
 	hex
 	default 0x80000
 
+config ENABLE_STB_SPILL_TO_DRAM
+	default y
+	help
+	  Spill-to-DRAM is an STB feature that extends the buffer from using
+	  just the small SRAM buffer to a much larger area reserved in main
+	  memory.
+
 endif # BOARD_GOOGLE_BASEBOARD_SKYRIM

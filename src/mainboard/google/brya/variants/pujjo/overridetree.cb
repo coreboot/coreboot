@@ -543,6 +543,7 @@ chip soc/intel/alderlake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H13)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H12)"
 				register "srcclk_pin" = "3"
+				register "enable_delay_ms" = "50"
 				device generic 0 on end
 			end
 			probe SD_CARD SD_PRESENT

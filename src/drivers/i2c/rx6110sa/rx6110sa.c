@@ -183,7 +183,7 @@ static void rx6110sa_fill_ssdt(const struct device *dev)
 		break;
 	default:
 		printk(BIOS_INFO, "%s: Bus speed unsupported, fall back to %d kHz!\n",
-			dev_path(dev), I2C_SPEED_STANDARD / 1000);
+			dev->chip_ops->name, I2C_SPEED_STANDARD / 1000);
 		bus_speed = I2C_SPEED_STANDARD;
 		break;
 	}

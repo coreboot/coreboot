@@ -202,7 +202,6 @@ static int send_pmc_dp_hpd_request(int port, const struct usbc_mux_info *mux_dat
 	req.buf[0] = cmd;
 
 	return send_pmc_req(HPD_REQ, &req, &rsp, PMC_IPC_HPD_REQ_SIZE);
-
 }
 
 static int send_pmc_dp_mode_request(int port, const struct usbc_mux_info *mux_data,
@@ -287,7 +286,7 @@ static void tcss_init_mux(int port, const struct tcss_port_map *port_map)
 
 static void tcss_configure_dp_mode(const struct tcss_port_map *port_map, size_t num_ports)
 {
-	int ret, port_bitmask;
+	int ret;
 	size_t i;
 	const struct usbc_ops *ops;
 	struct usbc_mux_info mux_info;
@@ -300,24 +299,9 @@ static void tcss_configure_dp_mode(const struct tcss_port_map *port_map, size_t 
 	if (ops == NULL)
 		return;
 
-	port_bitmask = ops->dp_ops.wait_for_connection(WAIT_FOR_DISPLAYPORT_TIMEOUT_MS);
-	if (!port_bitmask)	/* No DP device is connected */
-		return;
-
 	for (i = 0; i < num_ports; i++) {
-		if (!(port_bitmask & BIT(i)))
-			continue;
-
-		ret = ops->dp_ops.enter_dp_mode(i);
-		if (ret < 0)
-			continue;
-
-		ret = ops->dp_ops.wait_for_hpd(i, WAIT_FOR_HPD_TIMEOUT_MS);
-		if (ret < 0)
-			continue;
-
 		ret = ops->mux_ops.get_mux_info(i, &mux_info);
-		if (ret < 0)
+		if ((ret < 0) || (!mux_info.dp))
 			continue;
 
 		port_info = &port_map[i];

@@ -211,9 +211,9 @@ config INCLUDE_CONFIG_FILE
 
 	  Saying Y here will increase the image size by 2-3KB.
 
-	  You can use the following command to easily list the options:
+	  You can then use cbfstool to extract the config from a final image:
 
-	    grep -a CONFIG_ coreboot.rom
+	    cbfstool coreboot.rom extract -n config -f <output file path>
 
 	  Alternatively, you can also use cbfstool to print the image
 	  contents (including the raw 'config' item we're looking for).

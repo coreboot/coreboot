@@ -172,7 +172,7 @@ static uint32_t reg_gpe0_read(uint32_t reg_address)
 static void reg_gpe0_write(uint32_t reg_address, uint32_t value)
 {
 	/* Write the GPE0 register */
-	outl(get_gpe0_address(reg_address), value);
+	outl(value, get_gpe0_address(reg_address));
 }
 
 static uint32_t reg_gpio_read(uint32_t reg_address)

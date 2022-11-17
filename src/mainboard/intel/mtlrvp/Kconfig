@@ -3,6 +3,7 @@ config BOARD_INTEL_MTLRVP_COMMON
 	select BOARD_ROMSIZE_KB_32768
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
+	select HAVE_SPD_IN_CBFS
 	select MAINBOARD_HAS_CHROMEOS
 	select SOC_INTEL_CSE_LITE_SKU
 	select SOC_INTEL_METEORLAKE
@@ -62,6 +63,9 @@ config DEVICETREE
 config OVERRIDE_DEVICETREE
 	string
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config DIMM_SPD_SIZE
+	default 512
 
 choice
 	prompt "ON BOARD EC"

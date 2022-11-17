@@ -1,0 +1,11 @@
+# This is a CSV file containing a list of memory parts used by this variant.
+# One part per line with an optional fixed ID in column 2.
+# Only include a fixed ID if it is required for legacy reasons!
+# Generated IDs are dependent on the order of parts in this file,
+# so new parts must always be added at the end of the file!
+#
+# Generate an updated Makefile.inc and dram_id.generated.txt by running the
+# part_id_gen tool from util/spd_tools.
+
+# Part Name
+MT62F2G32D8DR-031 WT:B,2

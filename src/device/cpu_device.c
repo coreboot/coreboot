@@ -7,7 +7,7 @@
 struct device *add_cpu_device(struct bus *cpu_bus, unsigned int apic_id,
 			      int enabled)
 {
-	struct device_path cpu_path;
+	struct device_path cpu_path = {};
 	struct device *cpu;
 
 	/* Build the CPU device path */

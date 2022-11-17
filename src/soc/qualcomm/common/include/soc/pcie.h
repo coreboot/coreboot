@@ -221,5 +221,6 @@ void gcom_pcie_power_on_ep(void);
 void gcom_pcie_get_config(struct qcom_pcie_cntlr_t *host_cfg);
 void qcom_pci_domain_read_resources(struct device *dev);
 void qcom_setup_pcie_host(struct device *dev);
+bool mainboard_needs_pcie_init(void);
 
 #endif

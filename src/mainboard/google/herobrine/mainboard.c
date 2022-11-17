@@ -8,10 +8,12 @@
 #include <delay.h>
 #include <device/device.h>
 #include <device/mmio.h>
+#include <ec/google/chromeec/ec.h>
 #include <edid.h>
 #include <soc/clock.h>
 #include <soc/display/mdssreg.h>
 #include <soc/display/edp_ctrl.h>
+#include <soc/pcie.h>
 #include <soc/qupv3_config_common.h>
 #include <soc/qup_se_handlers_common.h>
 #include <soc/qcom_qup_se.h>
@@ -80,6 +82,30 @@ static void display_startup(void)
 		edid_set_framebuffer_bits_per_pixel(&ed, 32, 0);
 		fb_new_framebuffer_info_from_edid(&ed, (uintptr_t)0);
 	}
+}
+
+/*
+ * Determine if board need to perform PCIe initialization.  On Herobrine,
+ * resistor strapping will be such that bit 0 will be assigned 2 (high Z) if it
+ * is an NVMe enabled platform.
+ */
+bool mainboard_needs_pcie_init(void)
+{
+	uint32_t sku = sku_id();
+
+	if (sku == CROS_SKU_UNKNOWN) {
+		printk(BIOS_WARNING, "Unknown SKU (%#x); assuming PCIe", sku);
+		return true;
+	} else if (sku == CROS_SKU_UNPROVISIONED) {
+		printk(BIOS_WARNING, "Unprovisioned SKU (%#x); assuming PCIe", sku);
+		return true;
+	}
+
+	if ((sku % 3) == 2)
+		return true;
+
+	/* Otherwise, eMMC */
+	return false;
 }
 
 static void mainboard_init(struct device *dev)

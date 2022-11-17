@@ -2,4 +2,7 @@
 
 chip soc/qualcomm/sc7280
 	device cpu_cluster 0 on end
+	device domain 0 on
+		device pci 00.0 on end
+	end
 end

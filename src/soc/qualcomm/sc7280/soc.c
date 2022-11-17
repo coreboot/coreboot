@@ -43,14 +43,10 @@ static struct device_operations soc_ops = {
 static void enable_soc_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN) {
-		if (CONFIG(PCI) && CONFIG(NO_ECAM_MMCONF_SUPPORT))
-			dev->ops = &pci_domain_ops;
-		else
-			printk(BIOS_INFO,  "Skip setting PCIe ops\n");
-	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		dev->ops = &pci_domain_ops;
+	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &soc_ops;
-	}
 }
 
 struct chip_operations soc_qualcomm_sc7280_ops = {

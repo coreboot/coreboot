@@ -9,6 +9,7 @@ armv7_asm_flags = -Wa,-mthumb -Wa,-mimplicit-it=always
 ifeq ($(CONFIG_COMPILER_GCC),y)
 armv7_asm_flags += -Wa,-mno-warn-deprecated
 else # CLANG
+armv7_flags += -mfpu=none
 bootblock-ld-ccopts += -target arm-eabi
 verstage-ld-ccopts += -target arm-eabi
 romstage-ld-ccopts += -target arm-eabi

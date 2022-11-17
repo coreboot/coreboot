@@ -8,6 +8,12 @@ armv7-r_flags = -march=armv7-r $(armv7_flags) -D__COREBOOT_ARM_V7_R__
 armv7_asm_flags = -Wa,-mthumb -Wa,-mimplicit-it=always
 ifeq ($(CONFIG_COMPILER_GCC),y)
 armv7_asm_flags += -Wa,-mno-warn-deprecated
+else # CLANG
+bootblock-ld-ccopts += -target arm-eabi
+verstage-ld-ccopts += -target arm-eabi
+romstage-ld-ccopts += -target arm-eabi
+ramstage-ld-ccopts += -target arm-eabi
+rmodule_arm-ld-ccopts += -target arm-eabi
 endif
 armv7-r_asm_flags = $(armv7-r_flags) $(armv7_asm_flags)
 

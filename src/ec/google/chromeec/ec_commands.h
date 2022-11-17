@@ -4636,12 +4636,12 @@ struct ec_params_charge_state {
 
 		struct __ec_todo_unpacked {
 			uint32_t param;		/* enum charge_state_param */
-		} get_param;
+		} __ec_todo_packed get_param; /* coreboot change */
 
 		struct __ec_todo_unpacked {
 			uint32_t param;		/* param to set */
 			uint32_t value;		/* value to set */
-		} set_param;
+		} __ec_todo_packed set_param; /* coreboot change */
 	};
 	uint8_t chgnum;				/* Version 1 supports chgnum */
 } __ec_todo_packed;

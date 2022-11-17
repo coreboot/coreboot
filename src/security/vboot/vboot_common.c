@@ -9,25 +9,32 @@
 
 #include "antirollback.h"
 
-void vboot_save_data(struct vb2_context *ctx)
+static void save_secdata(struct vb2_context *ctx)
 {
-	if (!verification_should_run() && !(ENV_ROMSTAGE && CONFIG(VBOOT_EARLY_EC_SYNC))
-	    && (ctx->flags
-		& (VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED | VB2_CONTEXT_SECDATA_KERNEL_CHANGED)))
-		die("TPM writeback in " ENV_STRING "?");
-
-	if (ctx->flags & VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED &&
-			(CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
+	if (ctx->flags & VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED
+	    && (CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
 		printk(BIOS_INFO, "Saving secdata firmware\n");
 		antirollback_write_space_firmware(ctx);
 		ctx->flags &= ~VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED;
 	}
 
-	if (ctx->flags & VB2_CONTEXT_SECDATA_KERNEL_CHANGED &&
-			(CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
+	if (ctx->flags & VB2_CONTEXT_SECDATA_KERNEL_CHANGED
+	    && (CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
 		printk(BIOS_INFO, "Saving secdata kernel\n");
 		antirollback_write_space_kernel(ctx);
 		ctx->flags &= ~VB2_CONTEXT_SECDATA_KERNEL_CHANGED;
+	}
+}
+
+void vboot_save_data(struct vb2_context *ctx)
+{
+	if (!verification_should_run() && !(ENV_ROMSTAGE && CONFIG(VBOOT_EARLY_EC_SYNC))) {
+		if (ctx->flags
+		    & (VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED
+		       | VB2_CONTEXT_SECDATA_KERNEL_CHANGED))
+			die("TPM writeback in " ENV_STRING "?");
+	} else {
+		save_secdata(ctx);
 	}
 
 	if (ctx->flags & VB2_CONTEXT_NVDATA_CHANGED) {

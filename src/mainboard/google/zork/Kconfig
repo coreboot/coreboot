@@ -107,6 +107,9 @@ config VGA_BIOS
 	default y if USE_AMD_BLOBS
 
 config VBOOT
+	bool
+	# selected by default as PSP verstage required for booting at present time
+	default y
 	select EC_GOOGLE_CHROMEEC_SWITCHES
 	select VBOOT_LID_SWITCH
 	select VBOOT_STARTS_BEFORE_BOOTBLOCK

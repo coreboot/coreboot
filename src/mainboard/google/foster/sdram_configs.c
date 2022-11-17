@@ -11,7 +11,7 @@ static struct sdram_params sdram_configs[] = {
 #include "bct/sdram-unused.inc"				/* ram_code = 0011 */
 };
 
-const struct sdram_params *get_sdram_config()
+const struct sdram_params *get_sdram_config(void)
 {
 	uint32_t ramcode = sdram_get_ram_code();
 	/*

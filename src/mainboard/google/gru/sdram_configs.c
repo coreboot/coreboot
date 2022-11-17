@@ -44,7 +44,7 @@ static enum dram_speeds get_sdram_target_mhz(void)
 	return dram_928MHz;
 }
 
-const struct rk3399_sdram_params *get_sdram_config()
+const struct rk3399_sdram_params *get_sdram_config(void)
 {
 	char config_file[64];
 	uint32_t ramcode;

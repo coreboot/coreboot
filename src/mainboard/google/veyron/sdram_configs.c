@@ -34,7 +34,7 @@ static struct rk3288_sdram_params sdram_configs[] = {
 
 _Static_assert(ARRAY_SIZE(sdram_configs) == 24, "Must have 24 sdram_configs!");
 
-const struct rk3288_sdram_params *get_sdram_config()
+const struct rk3288_sdram_params *get_sdram_config(void)
 {
 	u32 ramcode = ram_code();
 

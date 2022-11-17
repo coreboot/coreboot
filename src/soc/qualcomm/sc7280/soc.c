@@ -43,9 +43,12 @@ static struct device_operations soc_ops = {
 static void enable_soc_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN)
-		dev->ops = &pci_domain_ops;
-	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
+	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+		if (mainboard_needs_pcie_init())
+			dev->ops = &pci_domain_ops;
+		else
+			printk(BIOS_DEBUG, "Skip setting PCIe ops\n");
+	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
 		dev->ops = &soc_ops;
 }
 

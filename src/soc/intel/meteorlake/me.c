@@ -123,6 +123,10 @@ static void dump_me_status(void *unused)
 	 */
 	printk(BIOS_DEBUG, "ME: SPI Protection Mode Enabled : %s\n",
 		hfsts1.fields.mfg_mode ? "NO" : "YES");
+	printk(BIOS_DEBUG, "ME: FPFs Committed              : %s\n",
+		hfsts6.fields.fpf_soc_lock ? "YES" : "NO");
+	printk(BIOS_DEBUG, "ME: Manufacturing Vars Locked   : %s\n",
+		hfsts6.fields.manuf_lock ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: FW Partition Table          : %s\n",
 		hfsts1.fields.fpt_bad ? "BAD" : "OK");
 	printk(BIOS_DEBUG, "ME: Bringup Loader Failure      : %s\n",

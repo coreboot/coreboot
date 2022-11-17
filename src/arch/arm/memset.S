@@ -8,6 +8,8 @@
 #include <arch/asm.h>
 #include "asmlib.h"
 
+.syntax unified
+
 ENTRY(memset)
 	ands	r3, r0, #3		@ 1 unaligned?
 	mov	ip, r0			@ preserve r0 as return value
@@ -31,20 +33,20 @@ ENTRY(memset)
 	mov	lr, r1
 
 2:	subs	r2, r2, #64
-	stmgeia	ip!, {r1, r3, r8, lr}	@ 64 bytes at a time.
-	stmgeia	ip!, {r1, r3, r8, lr}
-	stmgeia	ip!, {r1, r3, r8, lr}
-	stmgeia	ip!, {r1, r3, r8, lr}
+	stmiage	ip!, {r1, r3, r8, lr}	@ 64 bytes at a time.
+	stmiage	ip!, {r1, r3, r8, lr}
+	stmiage	ip!, {r1, r3, r8, lr}
+	stmiage	ip!, {r1, r3, r8, lr}
 	bgt	2b
-	ldmeqfd	sp!, {r8, pc}		@ Now <64 bytes to go.
+	ldmfdeq	sp!, {r8, pc}		@ Now <64 bytes to go.
 /*
  * No need to correct the count; we're only testing bits from now on
  */
 	tst	r2, #32
-	stmneia	ip!, {r1, r3, r8, lr}
-	stmneia	ip!, {r1, r3, r8, lr}
+	stmiane	ip!, {r1, r3, r8, lr}
+	stmiane	ip!, {r1, r3, r8, lr}
 	tst	r2, #16
-	stmneia	ip!, {r1, r3, r8, lr}
+	stmiane	ip!, {r1, r3, r8, lr}
 	ldmfd	sp!, {r8, lr}
 
 #else
@@ -77,21 +79,21 @@ ENTRY(memset)
 	strne	r1, [ip], #4
 
 3:	subs	r2, r2, #64
-	stmgeia	ip!, {r1, r3-r8, lr}
-	stmgeia	ip!, {r1, r3-r8, lr}
+	stmiage	ip!, {r1, r3-r8, lr}
+	stmiage	ip!, {r1, r3-r8, lr}
 	bgt	3b
-	ldmeqfd	sp!, {r4-r8, pc}
+	ldmfdeq	sp!, {r4-r8, pc}
 
 	tst	r2, #32
-	stmneia	ip!, {r1, r3-r8, lr}
+	stmiane	ip!, {r1, r3-r8, lr}
 	tst	r2, #16
-	stmneia	ip!, {r4-r7}
+	stmiane	ip!, {r4-r7}
 	ldmfd	sp!, {r4-r8, lr}
 
 #endif
 
 4:	tst	r2, #8
-	stmneia	ip!, {r1, r3}
+	stmiane	ip!, {r1, r3}
 	tst	r2, #4
 	strne	r1, [ip], #4
 /*
@@ -99,17 +101,17 @@ ENTRY(memset)
  * may have an unaligned pointer as well.
  */
 5:	tst	r2, #2
-	strneb	r1, [ip], #1
-	strneb	r1, [ip], #1
+	strbne	r1, [ip], #1
+	strbne	r1, [ip], #1
 	tst	r2, #1
-	strneb	r1, [ip], #1
+	strbne	r1, [ip], #1
 	mov	pc, lr
 
 6:	subs	r2, r2, #4		@ 1 do we have enough
 	blt	5b			@ 1 bytes to align with?
 	cmp	r3, #2			@ 1
-	strltb	r1, [ip], #1		@ 1
-	strleb	r1, [ip], #1		@ 1
+	strblt	r1, [ip], #1		@ 1
+	strble	r1, [ip], #1		@ 1
 	strb	r1, [ip], #1		@ 1
 	add	r2, r2, r3		@ 1 (r2 = r2 - (4 - r3))
 	b	1b

@@ -4,6 +4,8 @@
 #include <arch/asm.h>
 #include "asmlib.h"
 
+.syntax unified
+
 /*
  * Prototype: void *memmove(void *dest, const void *src, size_t n);
  *
@@ -88,20 +90,20 @@ ENTRY(memmove)
 7:		ldmfd	sp!, {r5 - r8}
 
 8:		movs	r2, r2, lsl #31
-		ldrneb	r3, [r1, #-1]!
-		ldrcsb	r4, [r1, #-1]!
-		ldrcsb	ip, [r1, #-1]
-		strneb	r3, [r0, #-1]!
-		strcsb	r4, [r0, #-1]!
-		strcsb	ip, [r0, #-1]
+		ldrbne	r3, [r1, #-1]!
+		ldrbcs	r4, [r1, #-1]!
+		ldrbcs	ip, [r1, #-1]
+		strbne	r3, [r0, #-1]!
+		strbcs	r4, [r0, #-1]!
+		strbcs	ip, [r0, #-1]
 		ldmfd	sp!, {r0, r4, pc}
 
 9:		cmp	ip, #2
-		ldrgtb	r3, [r1, #-1]!
-		ldrgeb	r4, [r1, #-1]!
+		ldrbgt	r3, [r1, #-1]!
+		ldrbge	r4, [r1, #-1]!
 		ldrb	lr, [r1, #-1]!
-		strgtb	r3, [r0, #-1]!
-		strgeb	r4, [r0, #-1]!
+		strbgt	r3, [r0, #-1]!
+		strbge	r4, [r0, #-1]!
 		subs	r2, r2, ip
 		strb	lr, [r0, #-1]!
 		blt	8b

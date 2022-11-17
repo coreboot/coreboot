@@ -6,6 +6,8 @@
 #include <arch/asm.h>
 #include "asmlib.h"
 
+.syntax unified
+
 #define LDR1W_SHIFT	0
 #define STR1W_SHIFT	0
 
@@ -22,7 +24,7 @@
 	.endm
 
 	.macro ldr1b ptr reg cond=al abort
-	ldr\cond\()b \reg, [\ptr], #1
+	ldrb\cond \reg, [\ptr], #1
 	.endm
 
 	.macro str1w ptr reg abort
@@ -34,7 +36,7 @@
 	.endm
 
 	.macro str1b ptr reg cond=al abort
-	str\cond\()b \reg, [\ptr], #1
+	strb\cond \reg, [\ptr], #1
 	.endm
 
 	.macro enter reg1 reg2
@@ -197,7 +199,7 @@ ENTRY(memcpy)
 		orr	r9, r9, ip, push #\push
 		mov	ip, ip, pull #\pull
 		orr	ip, ip, lr, push #\push
-		str8w	r0, r3, r4, r5, r6, r7, r8, r9, ip, , abort=19f
+		str8w	r0, r3, r4, r5, r6, r7, r8, r9, ip, abort=19f
 		bge	12b
 	PLD(	cmn	r2, #96			)
 	PLD(	bge	13b			)

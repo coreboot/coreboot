@@ -14,6 +14,8 @@ config SOC_NVIDIA_TEGRA124
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	select MAINBOARD_FORCE_NATIVE_VGA_INIT
 	select HAVE_LINEAR_FRAMEBUFFER
+	# clang creates larger binaries that may not fit
+	select CLANG_UNSUPPORTED if CHROMEOS
 
 if SOC_NVIDIA_TEGRA124
 

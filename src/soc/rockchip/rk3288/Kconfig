@@ -18,6 +18,8 @@ config SOC_ROCKCHIP_RK3288
 	select NO_BOOTBLOCK_CONSOLE
 	select NO_FMAP_CACHE
 	select NO_CBFS_MCACHE
+# clang creates larger binaries that may not fit
+	select CLANG_UNSUPPORTED if CHROMEOS
 
 if SOC_ROCKCHIP_RK3288
 

@@ -9,6 +9,8 @@ config SOC_QC_IPQ40XX
 	select ARCH_RAMSTAGE_ARMV7
 	select HAVE_UART_SPECIAL
 	select GENERIC_GPIO_LIB
+# clang creates larger binaries that may not fit
+	select CLANG_UNSUPPORTED if CHROMEOS
 
 if SOC_QC_IPQ40XX
 

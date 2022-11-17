@@ -10,6 +10,8 @@ config SOC_QC_IPQ806X
 	select HAVE_UART_SPECIAL
 	select GENERIC_GPIO_LIB
 	select NO_MONOTONIC_TIMER
+# clang creates larger binaries that may not fit
+	select CLANG_UNSUPPORTED if CHROMEOS
 
 if SOC_QC_IPQ806X
 

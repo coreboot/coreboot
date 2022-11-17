@@ -3,6 +3,8 @@
 #include <arch/bootblock.h>
 #include <device/pci_ops.h>
 
+#include "i82801dx.h"
+
 void bootblock_early_southbridge_init(void)
 {
 	/* Set FWH IDs for 2 MB flash part. */

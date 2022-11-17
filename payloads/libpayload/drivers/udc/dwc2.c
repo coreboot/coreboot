@@ -502,7 +502,7 @@ static void complete_ep_transfer(struct usbdev_ctrl *this, int endpoint,
 	}
 	SIMPLEQ_REMOVE_HEAD(&p->eps[endpoint][in_dir].job_queue, queue);
 
-	usb_debug("%d-%d: scheduled %zd, now %d bytes\n", endpoint, in_dir,
+	usb_debug("%d-%d: scheduled %zd, now %zd bytes\n", endpoint, in_dir,
 	      job->length, job->xfered_length);
 
 	if (this->current_config &&

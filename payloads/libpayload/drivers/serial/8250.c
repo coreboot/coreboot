@@ -72,9 +72,9 @@ static void serial_write_reg(uint8_t val, int offset)
 static void serial_hardware_init(int speed, int word_bits,
 				 int parity, int stop_bits)
 {
+#if !CONFIG(LP_PL011_SERIAL_CONSOLE)
 	unsigned char reg;
 
-#if !CONFIG(LP_PL011_SERIAL_CONSOLE)
 	/* Disable interrupts. */
 	serial_write_reg(0, 0x01);
 

@@ -160,6 +160,9 @@ static void dump_me_status(void *unused)
 		hfsts5.fields.cpu_debug_disabled ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: TXT Support                 : %s\n",
 		hfsts5.fields.txt_support ? "YES" : "NO");
+
+	if (CONFIG(SOC_INTEL_CSE_LITE_SKU))
+		cse_log_ro_write_protection_info(manufacturing_mode);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_EXIT, print_me_fw_version, NULL);

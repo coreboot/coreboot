@@ -86,7 +86,7 @@ static vb2_error_t handle_digest_result(void *slot_hash, size_t slot_hash_sz)
 		uint8_t saved_hash[VBOOT_MAX_HASH_SIZE];
 		const size_t saved_hash_sz = sizeof(saved_hash);
 
-		assert(slot_hash_sz == saved_hash_sz);
+		assert(slot_hash_sz <= saved_hash_sz);
 
 		printk(BIOS_DEBUG, "Platform is resuming.\n");
 

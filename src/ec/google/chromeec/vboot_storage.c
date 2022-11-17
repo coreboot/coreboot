@@ -14,8 +14,8 @@ int vboot_save_hash(void *digest, size_t digest_size)
 	uint32_t lock_status;
 	int num_slots;
 
-	/* Ensure the digests being saved match the EC's slot size. */
-	assert(digest_size == EC_VSTORE_SLOT_SIZE);
+	/* Ensure the digests being saved does not exceed the EC's slot size. */
+	assert(digest_size > 0 && digest_size <= EC_VSTORE_SLOT_SIZE);
 
 	if (google_chromeec_vstore_write(slot, digest, digest_size))
 		return -1;

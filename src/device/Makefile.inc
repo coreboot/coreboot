@@ -61,7 +61,8 @@ ramstage-y += mmio.c
 ramstage-y += resource_allocator_common.c
 ramstage-y += resource_allocator_v4.c
 
-ramstage-$(CONFIG_XHCI_UTILS) += xhci.c
+ramstage-$(CONFIG_XHCI_UTILS) += xhci.c xhci_resource.c
+smm-$(CONFIG_XHCI_UTILS) += xhci_resource.c
 
 ramstage-y += gpio.c
 ramstage-y += mdio.c

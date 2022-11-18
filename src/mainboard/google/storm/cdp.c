@@ -49,7 +49,7 @@ void board_nand_init(void)
 	if (board_id() != BOARD_ID_PROTO_0_2_NAND)
 		return;
 
-	ebi2_regs = (struct ebi2cr_regs *) EBI2CR_BASE;
+	ebi2_regs = (struct ebi2cr_regs *)EBI2CR_BASE;
 
 	nand_clock_config();
 	configure_nand_gpio();

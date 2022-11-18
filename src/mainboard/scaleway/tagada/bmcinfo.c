@@ -94,7 +94,7 @@ static bool bmcinfo_is_valid(size_t minsize)
 char *bmcinfo_serial(void)
 {
 	if (IS_BMC_INFO_FIELD_VALID(bmcSerial))
-		return (char *) BMC_INFO->bmcSerial;
+		return (char *)BMC_INFO->bmcSerial;
 	return NULL;
 }
 

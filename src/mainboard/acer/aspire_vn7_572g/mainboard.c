@@ -81,7 +81,7 @@ static void ec_send_time(void)
 	send_ec_command(0xE0);
 	for (int i = 0; i < 4; i++) {
 		/* Shift bytes */
-		ec_time_byte = (uint8_t) (ec_time >> (i * 8));
+		ec_time_byte = (uint8_t)(ec_time >> (i * 8));
 		printk(BIOS_DEBUG, "EC: Sending 0x%x (iteration %d)\n", ec_time_byte, i);
 		send_ec_data(ec_time_byte);
 	}

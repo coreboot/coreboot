@@ -15,7 +15,7 @@ static void init_gfx(void)
 	/* height is at most 1024 */
 	int width = 800, height = 600;
 	uint32_t framebuffer = 0x4c000000;
-	pl111 = (uint32_t *) 0x10020000;
+	pl111 = (uint32_t *)0x10020000;
 	write32(pl111, (width / 4) - 4);
 	write32(pl111 + 1, height - 1);
 	/* registers 2, 3 and 5 are ignored by qemu. Set them correctly if

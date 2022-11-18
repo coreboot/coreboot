@@ -6,5 +6,5 @@
 
 uintptr_t uart_platform_base(unsigned int idx)
 {
-	return (uintptr_t) QEMU_VIRT_UART0;
+	return (uintptr_t)QEMU_VIRT_UART0;
 }

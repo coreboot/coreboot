@@ -20,7 +20,7 @@ enum cb_err ipmi_get_pcie_config(uint8_t *pcie_config)
 	struct ipmi_config_rsp rsp;
 
 	ret = ipmi_message(CONFIG_BMC_KCS_BASE, IPMI_NETFN_OEM, 0x0,
-			IPMI_OEM_GET_PCIE_CONFIG, NULL, 0, (unsigned char *) &rsp,
+			IPMI_OEM_GET_PCIE_CONFIG, NULL, 0, (unsigned char *)&rsp,
 			sizeof(rsp));
 
 	if (ret < sizeof(struct ipmi_rsp) || rsp.resp.completion_code) {
@@ -46,7 +46,7 @@ enum cb_err ipmi_get_slot_id(uint8_t *slot_id)
 	struct ipmi_config_rsp rsp;
 
 	ret = ipmi_message(CONFIG_BMC_KCS_BASE, IPMI_NETFN_OEM, 0x0, IPMI_OEM_GET_BOARD_ID,
-			NULL, 0, (unsigned char *) &rsp, sizeof(rsp));
+			NULL, 0, (unsigned char *)&rsp, sizeof(rsp));
 
 	if (ret < sizeof(struct ipmi_rsp) || rsp.resp.completion_code) {
 		printk(BIOS_ERR, "IPMI: %s command failed (ret=%d resp=0x%x)\n",

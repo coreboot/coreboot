@@ -53,15 +53,15 @@ uint8_t ec_cmd_94_query(void)
 
 uint8_t ec_idx_read(uint16_t addr)
 {
-	outb((uint8_t) (addr >> 8), EC_INDEX_IO_HIGH_ADDR_PORT);
-	outb((uint8_t) addr, EC_INDEX_IO_LOW_ADDR_PORT);
+	outb((uint8_t)(addr >> 8), EC_INDEX_IO_HIGH_ADDR_PORT);
+	outb((uint8_t)addr, EC_INDEX_IO_LOW_ADDR_PORT);
 	return inb(EC_INDEX_IO_DATA_PORT);
 }
 
 void ec_idx_write(uint16_t addr, uint8_t data)
 {
-	outb((uint8_t) (addr >> 8), EC_INDEX_IO_HIGH_ADDR_PORT);
-	outb((uint8_t) addr, EC_INDEX_IO_LOW_ADDR_PORT);
+	outb((uint8_t)(addr >> 8), EC_INDEX_IO_HIGH_ADDR_PORT);
+	outb((uint8_t)addr, EC_INDEX_IO_LOW_ADDR_PORT);
 	outb(data, EC_INDEX_IO_DATA_PORT);
 }
 

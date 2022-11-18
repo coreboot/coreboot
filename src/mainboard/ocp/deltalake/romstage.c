@@ -105,7 +105,7 @@ static void mainboard_config_upd(FSPM_UPD *mupd)
 	}
 
 	/* Select DDR Frequency Limit */
-	if (vpd_get_int(FSP_DIMM_FREQ, VPD_RW_THEN_RO, (int *const) &val_int)) {
+	if (vpd_get_int(FSP_DIMM_FREQ, VPD_RW_THEN_RO, (int *const)&val_int)) {
 		printk(BIOS_INFO, "Setting DdrFreqLimit %d from VPD\n", val_int);
 		mupd->FspmConfig.DdrFreqLimit = ddr_freq_limit(val_int);
 	} else {

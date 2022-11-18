@@ -32,17 +32,17 @@ static void mainboard_config_iio(FSPM_UPD *mupd)
 {
 	memcpy(iio_table_buf, tp_iio_bifur_table, sizeof(tp_iio_bifur_table));
 	mupd->FspmConfig.IioBifurcationConfig.IIoBifurcationTable =
-		(UPD_IIO_BIFURCATION_DATA_ENTRY *) iio_table_buf;
+		(UPD_IIO_BIFURCATION_DATA_ENTRY *)iio_table_buf;
 	mupd->FspmConfig.IioBifurcationConfig.NumberOfEntries =
 		ARRAY_SIZE(tp_iio_bifur_table);
 
 	mupd->FspmConfig.IioPciConfig.ConfigurationTable =
-		(UPD_PCI_PORT_CONFIG *) tp_iio_pci_port_skt0;
+		(UPD_PCI_PORT_CONFIG *)tp_iio_pci_port_skt0;
 	mupd->FspmConfig.IioPciConfig.NumberOfEntries =
 		ARRAY_SIZE(tp_iio_pci_port_skt0);
 
 	mupd->FspmConfig.PchPciConfig.PciPortConfig =
-		(UPD_PCH_PCIE_PORT *) tp_pch_pci_port_skt0;
+		(UPD_PCH_PCIE_PORT *)tp_pch_pci_port_skt0;
 	mupd->FspmConfig.PchPciConfig.NumberOfEntries =
 		ARRAY_SIZE(tp_pch_pci_port_skt0);
 

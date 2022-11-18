@@ -17,7 +17,7 @@ static long acpi_create_ecdt(acpi_ecdt_t * ecdt)
 
 	acpi_header_t *header = &(ecdt->header);
 
-	memset((void *) ecdt, 0, ecdt_len);
+	memset((void *)ecdt, 0, ecdt_len);
 
 	/* fill out header fields */
 	memcpy(header->signature, "ECDT", 4);
@@ -48,7 +48,7 @@ static long acpi_create_ecdt(acpi_ecdt_t * ecdt)
 	memcpy(ecdt->ec_id, ec_id, sizeof(ec_id));
 
 	header->checksum =
-	    acpi_checksum((void *) ecdt, ecdt_len);
+	    acpi_checksum((void *)ecdt, ecdt_len);
 
 	return header->length;
 }

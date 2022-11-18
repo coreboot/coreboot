@@ -7,7 +7,7 @@
 static uint8_t *buf = (void *)0;
 uintptr_t uart_platform_base(unsigned int idx)
 {
-	return (uintptr_t) buf;
+	return (uintptr_t)buf;
 }
 
 void uart_init(unsigned int idx)

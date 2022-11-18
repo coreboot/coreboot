@@ -15,7 +15,7 @@ void mainboard_after_memory_init(void)
 	 * FSP enables internal UART. Disable it and re-enable Super I/O UART to
 	 * prevent loss of debug information on serial.
 	 */
-	pci_write_config32(PCI_DEV(0, LPC_DEV, 0), UART_CONT, (u32) 0);
+	pci_write_config32(PCI_DEV(0, LPC_DEV, 0), UART_CONT, (u32)0);
 	ite_enable_serial(SERIAL1_DEV, CONFIG_TTYS0_BASE);
 }
 

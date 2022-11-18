@@ -264,7 +264,7 @@ static void wait_for_legacy_dev(void *unused)
 		return;
 
 	/* Get legacy delay parameter from hwinfo. */
-	if (hwilib_get_field(LegacyDelay, (uint8_t *) &legacy_delay,
+	if (hwilib_get_field(LegacyDelay, (uint8_t *)&legacy_delay,
 			      sizeof(legacy_delay)) != sizeof(legacy_delay))
 		return;
 

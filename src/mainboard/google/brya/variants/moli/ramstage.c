@@ -23,7 +23,7 @@ static void devtree_update_emmc_rtd3(void)
 	if (board_ver <= 1)
 		return;
 
-	config->enable_gpio = (struct acpi_gpio) ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A21);
+	config->enable_gpio = (struct acpi_gpio)ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A21);
 }
 
 const struct cpu_power_limits limits[] = {

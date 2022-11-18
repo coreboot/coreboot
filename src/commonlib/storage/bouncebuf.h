@@ -76,7 +76,7 @@ int bounce_buffer_stop(struct bounce_buffer *state);
 #define ALLOC_CACHE_ALIGN_BUFFER(type, name, size)                   \
 	char __##name[ROUND(size * sizeof(type), DMA_MINALIGN) +     \
 		      DMA_MINALIGN - 1];                             \
-	type *name = (type *) ALIGN_UP((uintptr_t)__##name, DMA_MINALIGN)
+	type *name = (type *)ALIGN_UP((uintptr_t)__##name, DMA_MINALIGN)
 #ifndef ARCH_DMA_MINALIGN
 #define ARCH_DMA_MINALIGN (DMA_MINALIGN)
 #endif

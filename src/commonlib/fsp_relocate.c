@@ -233,13 +233,13 @@ static int pe_relocate(uintptr_t new_addr, void *pe, void *fsp, size_t fih_off)
 		uint32_t i;
 		EFI_IMAGE_DATA_DIRECTORY *relocd;
 
-		relocd = (void *) &pe_base[offset];
+		relocd = (void *)&pe_base[offset];
 		offset += sizeof(*relocd);
 		// Read relocation type, offset pairs
 		rlen = read_le32(&relocd->Size) - sizeof(*relocd);
 		rnum = rlen / sizeof(uint16_t);
 		vaddr = read_le32(&relocd->VirtualAddress);
-		rdata = (uint16_t *) &pe_base[offset];
+		rdata = (uint16_t *)&pe_base[offset];
 		printk(FSP_DBG_LVL, "\t%d Relocs for RVA %x\n", rnum, vaddr);
 
 		for (i = 0; i < rnum; i++) {

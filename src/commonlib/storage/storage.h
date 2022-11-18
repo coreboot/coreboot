@@ -11,7 +11,7 @@
 #define ALLOC_CACHE_ALIGN_BUFFER(type, name, size)                   \
 	char __##name[ROUND(size * sizeof(type), DMA_MINALIGN) +     \
 		      DMA_MINALIGN - 1];                             \
-	type *name = (type *) ALIGN_UP((uintptr_t)__##name, DMA_MINALIGN)
+	type *name = (type *)ALIGN_UP((uintptr_t)__##name, DMA_MINALIGN)
 
 /* NOOPs mirroring ARM's cache API, since x86 devices usually cache snoop */
 #define dcache_invalidate_by_mva(addr, len)

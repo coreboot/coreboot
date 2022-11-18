@@ -120,10 +120,10 @@ int sdhci_setup_adma(struct sdhci_ctrlr *sdhci_ctrlr, struct mmc_data *data)
 	}
 
 	if (dma64)
-		sdhci_writel(sdhci_ctrlr, (uintptr_t) sdhci_ctrlr->adma64_descs,
+		sdhci_writel(sdhci_ctrlr, (uintptr_t)sdhci_ctrlr->adma64_descs,
 			     SDHCI_ADMA_ADDRESS);
 	else
-		sdhci_writel(sdhci_ctrlr, (uintptr_t) sdhci_ctrlr->adma_descs,
+		sdhci_writel(sdhci_ctrlr, (uintptr_t)sdhci_ctrlr->adma_descs,
 			     SDHCI_ADMA_ADDRESS);
 
 	return 0;

@@ -161,7 +161,7 @@
 #endif
 
 /* VBOOT2_WORK must always use VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE for its
- * size argument.  The constant is imported via vb2_workbuf_size.h.  */
+ * size argument.  The constant is imported via 2constants.h.  */
 #define VBOOT2_WORK(addr, sz) \
 	REGION(vboot2_work, addr, sz, 16) \
 	_ = ASSERT(sz == VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE, \

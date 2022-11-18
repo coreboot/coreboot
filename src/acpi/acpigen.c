@@ -256,7 +256,7 @@ static void acpigen_emit_multi_namestring(const char *name)
 	unsigned char *pathlen;
 	acpigen_emit_byte(MULTI_NAME_PREFIX);
 	acpigen_emit_byte(ZERO_OP);
-	pathlen = ((unsigned char *) acpigen_get_current()) - 1;
+	pathlen = ((unsigned char *)acpigen_get_current()) - 1;
 
 	while (name[0] != '\0') {
 		acpigen_emit_simple_namestring(name);
@@ -399,7 +399,7 @@ void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 	acpigen_write_len_f();
 
 	snprintf(pscope, sizeof(pscope),
-		 CONFIG_ACPI_CPU_STRING, (unsigned int) cpuindex);
+		 CONFIG_ACPI_CPU_STRING, (unsigned int)cpuindex);
 	acpigen_emit_namestring(pscope);
 	acpigen_emit_byte(cpuindex);
 	acpigen_emit_dword(pblock_addr);

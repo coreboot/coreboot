@@ -361,7 +361,7 @@ static void acpi_create_tcpa(acpi_tcpa_t *tcpa)
 
 	tcpa->platform_class = 0;
 	tcpa->laml = tcpa_log_len;
-	tcpa->lasa = (uintptr_t) lasa;
+	tcpa->lasa = (uintptr_t)lasa;
 
 	/* Calculate checksum. */
 	header->checksum = acpi_checksum((void *)tcpa, header->length);
@@ -436,7 +436,7 @@ static void acpi_create_tpm2(acpi_tpm2_t *tpm2)
 
 	/* Fill the log area size and start address fields. */
 	tpm2->laml = tpm2_log_len;
-	tpm2->lasa = (uintptr_t) lasa;
+	tpm2->lasa = (uintptr_t)lasa;
 
 	/* Calculate checksum. */
 	header->checksum = acpi_checksum((void *)tpm2, header->length);
@@ -480,7 +480,7 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 	ssdt->asl_compiler_revision = asl_revision;
 	ssdt->length = sizeof(acpi_header_t);
 
-	acpigen_set_current((char *) current);
+	acpigen_set_current((char *)current);
 
 	/* Write object to declare coreboot tables */
 	acpi_ssdt_write_cbtable();
@@ -490,7 +490,7 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 		for (dev = all_devices; dev; dev = dev->next)
 			if (dev->enabled && dev->ops && dev->ops->acpi_fill_ssdt)
 				dev->ops->acpi_fill_ssdt(dev);
-		current = (unsigned long) acpigen_get_current();
+		current = (unsigned long)acpigen_get_current();
 	}
 
 	/* (Re)calculate length and checksum. */
@@ -1070,7 +1070,7 @@ void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions)
 	};
 
 	einj_smi->err_inj_cap = ACPI_EINJ_DEFAULT_CAP;
-	einj_smi->trigger_action_table = (u64) (uintptr_t)tat;
+	einj_smi->trigger_action_table = (u64)(uintptr_t)tat;
 
 	for (i = 0; i < ACTION_COUNT; i++)
 		printk(BIOS_DEBUG, "default_actions[%d].reg.addr is %llx\n", i,
@@ -1248,7 +1248,7 @@ unsigned long acpi_write_hpet(const struct device *device, unsigned long current
 	 */
 	printk(BIOS_DEBUG, "ACPI:    * HPET\n");
 
-	hpet = (acpi_hpet_t *) current;
+	hpet = (acpi_hpet_t *)current;
 	current += sizeof(acpi_hpet_t);
 	current = ALIGN_UP(current, 16);
 	acpi_create_hpet(hpet);
@@ -1494,7 +1494,7 @@ unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
 	case 0:			/* MCE */
 		break;
 	case 1:			/* CMC */
-		hen = (acpi_hest_hen_t *) (pos);
+		hen = (acpi_hest_hen_t *)(pos);
 		memset(pos, 0, sizeof(acpi_hest_hen_t));
 		hen->type = 3;		/* SCI? */
 		hen->length = sizeof(acpi_hest_hen_t);
@@ -1587,7 +1587,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
 
-	memset((void *) fadt, 0, sizeof(acpi_fadt_t));
+	memset((void *)fadt, 0, sizeof(acpi_fadt_t));
 
 	if (!header)
 		return;
@@ -1601,11 +1601,11 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	header->asl_compiler_revision = asl_revision;
 
 	fadt->FADT_MinorVersion = get_acpi_fadt_minor_version();
-	fadt->firmware_ctrl = (unsigned long) facs;
+	fadt->firmware_ctrl = (unsigned long)facs;
 	fadt->x_firmware_ctl_l = (unsigned long)facs;
 	fadt->x_firmware_ctl_h = 0;
 
-	fadt->dsdt = (unsigned long) dsdt;
+	fadt->dsdt = (unsigned long)dsdt;
 	fadt->x_dsdt_l = (unsigned long)dsdt;
 	fadt->x_dsdt_h = 0;
 
@@ -1625,7 +1625,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	mainboard_fill_fadt(fadt);
 
 	header->checksum =
-	    acpi_checksum((void *) fadt, header->length);
+	    acpi_checksum((void *)fadt, header->length);
 }
 
 void acpi_create_lpit(acpi_lpit_t *lpit)
@@ -1746,7 +1746,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		ssdt->asl_compiler_revision = asl_revision;
 		ssdt->length = sizeof(acpi_header_t);
 
-		acpigen_set_current((char *) current);
+		acpigen_set_current((char *)current);
 
 		/* Write object to declare coreboot tables */
 		acpi_ssdt_write_cbtable();
@@ -1795,19 +1795,19 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx.\n", start);
 
 	/* We need at least an RSDP and an RSDT Table */
-	rsdp = (acpi_rsdp_t *) current;
+	rsdp = (acpi_rsdp_t *)current;
 	coreboot_rsdp = (uintptr_t)rsdp;
 	current += sizeof(acpi_rsdp_t);
 	current = acpi_align_current(current);
-	rsdt = (acpi_rsdt_t *) current;
+	rsdt = (acpi_rsdt_t *)current;
 	current += sizeof(acpi_rsdt_t);
 	current = acpi_align_current(current);
-	xsdt = (acpi_xsdt_t *) current;
+	xsdt = (acpi_xsdt_t *)current;
 	current += sizeof(acpi_xsdt_t);
 	current = acpi_align_current(current);
 
 	/* clear all table memory */
-	memset((void *) start, 0, current - start);
+	memset((void *)start, 0, current - start);
 
 	acpi_write_rsdp(rsdp, rsdt, xsdt, oem_id);
 	acpi_write_rsdt(rsdt, oem_id, oem_table_id);
@@ -1815,18 +1815,18 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "ACPI:    * FACS\n");
 	current = ALIGN_UP(current, 64);
-	facs = (acpi_facs_t *) current;
+	facs = (acpi_facs_t *)current;
 	current += sizeof(acpi_facs_t);
 	current = acpi_align_current(current);
 	acpi_create_facs(facs);
 
 	printk(BIOS_DEBUG, "ACPI:    * DSDT\n");
-	dsdt = (acpi_header_t *) current;
+	dsdt = (acpi_header_t *)current;
 	memcpy(dsdt, dsdt_file, sizeof(acpi_header_t));
 	if (dsdt->length >= sizeof(acpi_header_t)) {
 		current += sizeof(acpi_header_t);
 
-		acpigen_set_current((char *) current);
+		acpigen_set_current((char *)current);
 
 		if (CONFIG(ACPI_SOC_NVS))
 			acpi_fill_gnvs();
@@ -1836,7 +1836,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		for (dev = all_devices; dev; dev = dev->next)
 			if (dev->ops && dev->ops->acpi_inject_dsdt)
 				dev->ops->acpi_inject_dsdt(dev);
-		current = (unsigned long) acpigen_get_current();
+		current = (unsigned long)acpigen_get_current();
 		memcpy((char *)current,
 		       (char *)dsdt_file + sizeof(acpi_header_t),
 		       dsdt->length - sizeof(acpi_header_t));
@@ -1851,7 +1851,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current = acpi_align_current(current);
 
 	printk(BIOS_DEBUG, "ACPI:    * FADT\n");
-	fadt = (acpi_fadt_t *) current;
+	fadt = (acpi_fadt_t *)current;
 	current += sizeof(acpi_fadt_t);
 	current = acpi_align_current(current);
 
@@ -1877,7 +1877,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	}
 
 	printk(BIOS_DEBUG, "ACPI:    * MCFG\n");
-	mcfg = (acpi_mcfg_t *) current;
+	mcfg = (acpi_mcfg_t *)current;
 	acpi_create_mcfg(mcfg);
 	if (mcfg->header.length > sizeof(acpi_mcfg_t)) {
 		current += mcfg->header.length;
@@ -1887,7 +1887,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	if (CONFIG(TPM1)) {
 		printk(BIOS_DEBUG, "ACPI:    * TCPA\n");
-		tcpa = (acpi_tcpa_t *) current;
+		tcpa = (acpi_tcpa_t *)current;
 		acpi_create_tcpa(tcpa);
 		if (tcpa->header.length >= sizeof(acpi_tcpa_t)) {
 			current += tcpa->header.length;
@@ -1898,7 +1898,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	if (CONFIG(TPM2)) {
 		printk(BIOS_DEBUG, "ACPI:    * TPM2\n");
-		tpm2 = (acpi_tpm2_t *) current;
+		tpm2 = (acpi_tpm2_t *)current;
 		acpi_create_tpm2(tpm2);
 		if (tpm2->header.length >= sizeof(acpi_tpm2_t)) {
 			current += tpm2->header.length;
@@ -1921,7 +1921,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "ACPI:    * MADT\n");
 
-	madt = (acpi_madt_t *) current;
+	madt = (acpi_madt_t *)current;
 	acpi_create_madt(madt);
 	if (madt->header.length > sizeof(acpi_madt_t)) {
 		current += madt->header.length;
@@ -1933,7 +1933,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	if (CONFIG(ACPI_BERT)) {
 		void *region;
 		size_t size;
-		bert = (acpi_bert_t *) current;
+		bert = (acpi_bert_t *)current;
 		if (acpi_soc_get_bert_region(&region, &size) == CB_SUCCESS) {
 			printk(BIOS_DEBUG, "ACPI:    * BERT\n");
 			acpi_write_bert(bert, (uintptr_t)region, size);

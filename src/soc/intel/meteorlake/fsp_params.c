@@ -137,7 +137,7 @@ static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
 		 * Use FSP running MP PPI services to perform CPU feature programming
 		 * if Kconfig is enabled
 		 */
-		s_cfg->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
+		s_cfg->CpuMpPpi = (uintptr_t)mp_fill_ppi_services_data();
 	} else {
 		/* Use coreboot native driver to perform MP init by default */
 		s_cfg->CpuMpPpi = (uintptr_t)NULL;

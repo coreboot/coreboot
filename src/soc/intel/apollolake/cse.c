@@ -117,7 +117,7 @@ int save_fpf_state(enum fuse_flash_state state, struct region_device *rdev)
 {
 	uint8_t buff;
 
-	write8(&buff, (uint8_t) state);
+	write8(&buff, (uint8_t)state);
 	return rdev_writeat(rdev, &buff, 0, sizeof(buff));
 }
 

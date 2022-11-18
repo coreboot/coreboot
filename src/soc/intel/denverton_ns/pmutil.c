@@ -93,7 +93,7 @@ uint8_t *pmc_mmio_regs(void)
 	/* 4KiB alignment. */
 	reg32 &= ~0xfff;
 
-	return (void *)(uintptr_t) reg32;
+	return (void *)(uintptr_t)reg32;
 }
 
 void disable_smi(uint32_t mask)

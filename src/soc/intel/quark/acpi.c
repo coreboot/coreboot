@@ -72,5 +72,5 @@ uint16_t get_pmbase(void)
 {
 	struct device *dev = pcidev_on_root(PCI_DEVICE_NUMBER_QNC_LPC,
 		PCI_FUNCTION_NUMBER_QNC_LPC);
-	return (uint16_t) pci_read_config32(dev, R_QNC_LPC_PM1BLK) & B_QNC_LPC_PM1BLK_MASK;
+	return (uint16_t)pci_read_config32(dev, R_QNC_LPC_PM1BLK) & B_QNC_LPC_PM1BLK_MASK;
 }

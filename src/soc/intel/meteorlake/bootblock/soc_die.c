@@ -50,7 +50,7 @@ static void soc_die_config_pwrmbase(void)
 	pci_or_config16(PCI_DEV_PMC, PCI_COMMAND, (PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER));
 
 	/* Enable PWRM in PMC */
-	setbits32((void *) PCH_PWRM_BASE_ADDRESS + ACTL, PWRM_EN);
+	setbits32((void *)PCH_PWRM_BASE_ADDRESS + ACTL, PWRM_EN);
 }
 
 static void soc_die_early_iorange_init(void)

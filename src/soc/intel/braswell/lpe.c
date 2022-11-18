@@ -114,7 +114,7 @@ static void lpe_stash_firmware_info(struct device *dev)
 		printk(BIOS_DEBUG, "LPE Firmware memory not found.\n");
 		return;
 	}
-	printk(BIOS_DEBUG, "LPE FW Resource: 0x%08x\n", (u32) res->base);
+	printk(BIOS_DEBUG, "LPE FW Resource: 0x%08x\n", (u32)res->base);
 
 	/* Continue using old way of informing firmware address / size. */
 	pci_write_config32(dev, FIRMWARE_PCI_REG_BASE,   res->base);

@@ -580,9 +580,9 @@ void pmc_gpe_init(void)
 		dw1 = (gpio_cfg >> GPE0_DW_SHIFT(1)) & GPE0_DWX_MASK;
 		dw2 = (gpio_cfg >> GPE0_DW_SHIFT(2)) & GPE0_DWX_MASK;
 	} else {
-		gpio_cfg |= (uint32_t) dw0 << GPE0_DW_SHIFT(0);
-		gpio_cfg |= (uint32_t) dw1 << GPE0_DW_SHIFT(1);
-		gpio_cfg |= (uint32_t) dw2 << GPE0_DW_SHIFT(2);
+		gpio_cfg |= (uint32_t)dw0 << GPE0_DW_SHIFT(0);
+		gpio_cfg |= (uint32_t)dw1 << GPE0_DW_SHIFT(1);
+		gpio_cfg |= (uint32_t)dw2 << GPE0_DW_SHIFT(2);
 	}
 
 	gpio_cfg_reg = read32p(pmc_bar + GPIO_GPE_CFG) & ~gpio_cfg_mask;

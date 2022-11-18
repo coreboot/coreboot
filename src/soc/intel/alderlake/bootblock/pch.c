@@ -54,7 +54,7 @@ static void soc_config_pwrmbase(void)
 	pci_or_config16(PCH_DEV_PMC, PCI_COMMAND, (PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER));
 
 	/* Enable PWRM in PMC */
-	setbits32((void *) PCH_PWRM_BASE_ADDRESS + ACTL, PWRM_EN);
+	setbits32((void *)PCH_PWRM_BASE_ADDRESS + ACTL, PWRM_EN);
 }
 
 void bootblock_pch_early_init(void)

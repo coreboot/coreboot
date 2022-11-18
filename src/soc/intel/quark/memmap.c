@@ -11,7 +11,7 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 	uintptr_t top_of_low_usable_memory;
 
 	/* Locate the top of RAM */
-	top_of_low_usable_memory = (uintptr_t) cbmem_top();
+	top_of_low_usable_memory = (uintptr_t)cbmem_top();
 	top_of_ram = ALIGN_UP(top_of_low_usable_memory, 16 * MiB);
 
 	/* Cache postcar and ramstage */
@@ -19,7 +19,7 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 		MTRR_TYPE_WRBACK);
 
 	/* Cache RMU area */
-	postcar_frame_add_mtrr(pcf, (uintptr_t) top_of_low_usable_memory,
+	postcar_frame_add_mtrr(pcf, (uintptr_t)top_of_low_usable_memory,
 		0x10000, MTRR_TYPE_WRTHROUGH);
 
 	/* Cache ESRAM */

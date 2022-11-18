@@ -277,7 +277,7 @@ static bool set_bios_reset_cpl_for_package(uint32_t socket, uint32_t rst_cpl_mas
 	const pci_devfn_t dev = PCI_DEV(bus, PCU_DEV, PCU_CR1_FUN);
 
 	uint32_t reg = pci_s_read_config32(dev, PCU_CR1_BIOS_RESET_CPL_REG);
-	reg &= (uint32_t) ~rst_cpl_mask;
+	reg &= (uint32_t)~rst_cpl_mask;
 	reg |= val;
 
 	/* update BIOS RESET completion bit */

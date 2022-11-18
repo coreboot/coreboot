@@ -70,7 +70,7 @@ int soc_get_uncore_prmmr_base_and_mask(uint64_t *prmrr_base,
 		printk(BIOS_ERR, "Incorrect PRMRR base hob size\n");
 		return -1;
 	}
-	*prmrr_base = *(uint64_t *) hob;
+	*prmrr_base = *(uint64_t *)hob;
 
 	hob = fsp_find_extension_hob_by_guid(prmrr_size_guid,
 			&hob_size);
@@ -82,7 +82,7 @@ int soc_get_uncore_prmmr_base_and_mask(uint64_t *prmrr_base,
 		printk(BIOS_ERR, "Incorrect PRMRR base hob size\n");
 		return -1;
 	}
-	prmrr_size = *(uint64_t *) hob;
+	prmrr_size = *(uint64_t *)hob;
 	phys_address_mask = (1ULL << cpu_phys_address_size()) - 1;
 	*prmrr_mask = phys_address_mask & ~(uint64_t)(prmrr_size - 1);
 

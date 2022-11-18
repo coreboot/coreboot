@@ -50,7 +50,7 @@ void broadwell_run_reference_code(void)
 	broadwell_fill_pei_data(&pei_data);
 
 	pei_data.boot_mode = acpi_is_wakeup_s3() ? ACPI_S3 : 0;
-	pei_data.saved_data = (void *) &dummy;
+	pei_data.saved_data = (void *)&dummy;
 
 	entry = load_reference_code();
 	if (entry == NULL) {

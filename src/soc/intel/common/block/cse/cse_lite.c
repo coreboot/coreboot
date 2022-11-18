@@ -526,7 +526,7 @@ static bool cse_get_target_rdev(const struct cse_bp_info *cse_bp_info,
 		return false;
 
 	printk(BIOS_DEBUG, "cse_lite: CSE RW partition: offset = 0x%x, size = 0x%x\n",
-			(uint32_t)start_offset, (uint32_t) size);
+			(uint32_t)start_offset, (uint32_t)size);
 
 	return true;
 }
@@ -930,8 +930,8 @@ static void cse_sub_part_get_source_fw_version(void *subpart_cbfs_rw, struct fw_
 	struct subpart_entry *subpart_entry;
 	struct subpart_entry_manifest_header *man_hdr;
 
-	subpart_entry = (struct subpart_entry *) (ptr + SUBPART_HEADER_SZ);
-	man_hdr = (struct subpart_entry_manifest_header *) (ptr + subpart_entry->offset_bytes);
+	subpart_entry = (struct subpart_entry *)(ptr + SUBPART_HEADER_SZ);
+	man_hdr = (struct subpart_entry_manifest_header *)(ptr + subpart_entry->offset_bytes);
 
 	fw_ver->major = man_hdr->binary_version.major;
 	fw_ver->minor = man_hdr->binary_version.minor;

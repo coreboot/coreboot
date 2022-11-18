@@ -240,7 +240,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		printk(BIOS_DEBUG, "psys_pmax = %d\n", tconfig->PsysPmax);
 	}
 
-	params->GraphicsConfigPtr = (u32) vbt_data;
+	params->GraphicsConfigPtr = (u32)vbt_data;
 
 	for (i = 0; i < ARRAY_SIZE(config->usb2_ports); i++) {
 		params->PortUsb20Enable[i] =

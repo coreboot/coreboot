@@ -82,8 +82,8 @@ static void sata_init(struct device *dev)
 
 	/* PI (Ports implemented) */
 	write32(abar + 0x0c, config->sata_port_map);
-	(void) read32(abar + 0x0c); /* Read back 1 */
-	(void) read32(abar + 0x0c); /* Read back 2 */
+	(void)read32(abar + 0x0c); /* Read back 1 */
+	(void)read32(abar + 0x0c); /* Read back 2 */
 
 	/* CAP2 (HBA Capabilities Extended)*/
 	if (config->sata_devslp_disable) {

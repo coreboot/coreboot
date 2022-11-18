@@ -221,7 +221,7 @@ int vbnv_cmos_failed(void)
 /* STM Support */
 uint16_t get_pmbase(void)
 {
-	return (uint16_t) ACPI_BASE_ADDRESS;
+	return (uint16_t)ACPI_BASE_ADDRESS;
 }
 
 void pmc_soc_set_afterg3_en(const bool on)

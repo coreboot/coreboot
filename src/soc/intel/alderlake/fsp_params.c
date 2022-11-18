@@ -594,7 +594,7 @@ static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
 	 * This would avoid APs from getting hijacked by FSP while coreboot
 	 * decides to set SkipMpInit UPD.
 	 */
-	s_cfg->CpuMpPpi = (uintptr_t) mp_fill_ppi_services_data();
+	s_cfg->CpuMpPpi = (uintptr_t)mp_fill_ppi_services_data();
 
 	if (CONFIG(USE_FSP_MP_INIT))
 		/*

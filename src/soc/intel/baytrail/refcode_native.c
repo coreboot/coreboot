@@ -29,21 +29,21 @@ static void program_modphy_table(struct modphy_entry *table)
 
 static void gpio_sc_sdcard_workaround(void)
 {
-	setbits32((char *) IO_BASE_ADDRESS + 0x698, (1 << 0));
-	setbits32((char *) IO_BASE_ADDRESS + 0x698, (1 << 2));
-	clrbits32((char *) IO_BASE_ADDRESS + 0x698, (1 << 1));
-	clrbits32((char *) IO_BASE_ADDRESS + 0x690, (1 << 3));
+	setbits32((char *)IO_BASE_ADDRESS + 0x698, (1 << 0));
+	setbits32((char *)IO_BASE_ADDRESS + 0x698, (1 << 2));
+	clrbits32((char *)IO_BASE_ADDRESS + 0x698, (1 << 1));
+	clrbits32((char *)IO_BASE_ADDRESS + 0x690, (1 << 3));
 	udelay(100);
-	clrbits32((char *) IO_BASE_ADDRESS + 0x698, (1 << 0));
+	clrbits32((char *)IO_BASE_ADDRESS + 0x698, (1 << 0));
 	udelay(100);
-	write32((char *) IO_BASE_ADDRESS + 0x830, 0x78480);
+	write32((char *)IO_BASE_ADDRESS + 0x830, 0x78480);
 	udelay(40);
-	write32((char *) IO_BASE_ADDRESS + 0x830, 0x78080);
-	setbits32((char *) IO_BASE_ADDRESS + 0x698, (1 << 0));
+	write32((char *)IO_BASE_ADDRESS + 0x830, 0x78080);
+	setbits32((char *)IO_BASE_ADDRESS + 0x698, (1 << 0));
 	udelay(100);
-	setbits32((char *) IO_BASE_ADDRESS + 0x698, (1 << 1));
-	clrbits32((char *) IO_BASE_ADDRESS + 0x698, (1 << 2));
-	clrsetbits32((char *) IO_BASE_ADDRESS + 0x690, 7, (1 << 0));
+	setbits32((char *)IO_BASE_ADDRESS + 0x698, (1 << 1));
+	clrbits32((char *)IO_BASE_ADDRESS + 0x698, (1 << 2));
+	clrsetbits32((char *)IO_BASE_ADDRESS + 0x690, 7, (1 << 0));
 }
 
 #define BUNIT_BALIMIT0	0x0b
@@ -99,10 +99,10 @@ void baytrail_run_reference_code(void)
 		program_modphy_table(revb0_modphy_table);
 	}
 
-	setbits32((char *) PMC_BASE_ADDRESS + R_PCH_PMC_MTPMC1, 8);
+	setbits32((char *)PMC_BASE_ADDRESS + R_PCH_PMC_MTPMC1, 8);
 
 	for (pollcnt = 0; pollcnt < 10; ++pollcnt) {
-		tmp = read32((char *) PMC_BASE_ADDRESS + R_PCH_PMC_MTPMC1);
+		tmp = read32((char *)PMC_BASE_ADDRESS + R_PCH_PMC_MTPMC1);
 		printk(BIOS_DEBUG, "Polling bit3 of R_PCH_PMC_MTPMC1 = %x\n", tmp);
 		if (!(tmp & 8))
 			break;

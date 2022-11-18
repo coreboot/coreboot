@@ -244,7 +244,7 @@ void soc_fill_power_state(struct chipset_power_state *ps)
 /* STM Support */
 uint16_t get_pmbase(void)
 {
-	return (uint16_t) ACPI_BASE_ADDRESS;
+	return (uint16_t)ACPI_BASE_ADDRESS;
 }
 
 /*

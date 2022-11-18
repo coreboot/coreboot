@@ -163,7 +163,7 @@ static size_t filled_slots(uint32_t data)
 	uint8_t wp, rp;
 	rp = data >> CSR_RP_START;
 	wp = data >> CSR_WP_START;
-	return (uint8_t) (wp - rp);
+	return (uint8_t)(wp - rp);
 }
 
 static size_t cse_filled_slots(void)
@@ -571,7 +571,7 @@ static enum cse_tx_rx_status heci_receive(void *buff, size_t *maxlen)
 		} while (received && !(hdr & MEI_HDR_IS_COMPLETE) && left > 0);
 
 		if ((hdr & MEI_HDR_IS_COMPLETE) && received) {
-			*maxlen = p - (uint8_t *) buff;
+			*maxlen = p - (uint8_t *)buff;
 			return CSE_TX_RX_SUCCESS;
 		}
 	}

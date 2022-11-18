@@ -226,7 +226,7 @@ void soc_display_hob(const struct hob_header *hob)
 	if (hob->type != HOB_TYPE_GUID_EXTENSION)
 		return;
 
-	guid = (uint8_t *) fsp_hob_header_to_resource(hob);
+	guid = (uint8_t *)fsp_hob_header_to_resource(hob);
 
 	if (fsp_guid_compare(guid, fsp_hob_iio_uds_guid))
 		soc_display_iio_universal_data_hob((const IIO_UDS *)(guid + 16));

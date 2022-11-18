@@ -77,7 +77,7 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 
 	/* Assign address of PERST_0 if GPIO is defined in devicetree */
 	if (cfg->prt0_gpio != GPIO_PRT0_UDEF)
-		gnvs->prt0 = (uintptr_t) gpio_dwx_address(cfg->prt0_gpio);
+		gnvs->prt0 = (uintptr_t)gpio_dwx_address(cfg->prt0_gpio);
 
 	/* Get sdcard cd GPIO portid if GPIO is defined in devicetree.
 	 * Get offset of sdcard cd pin.
@@ -216,7 +216,7 @@ static void acpigen_soc_get_dw0_in_local5(uintptr_t addr)
 static int acpigen_soc_get_gpio_val(unsigned int gpio_num, uint32_t mask)
 {
 	assert(gpio_num < TOTAL_PADS);
-	uintptr_t addr = (uintptr_t) gpio_dwx_address(gpio_num);
+	uintptr_t addr = (uintptr_t)gpio_dwx_address(gpio_num);
 
 	acpigen_soc_get_dw0_in_local5(addr);
 
@@ -240,7 +240,7 @@ static int acpigen_soc_get_gpio_val(unsigned int gpio_num, uint32_t mask)
 static int acpigen_soc_set_gpio_val(unsigned int gpio_num, uint32_t val)
 {
 	assert(gpio_num < TOTAL_PADS);
-	uintptr_t addr = (uintptr_t) gpio_dwx_address(gpio_num);
+	uintptr_t addr = (uintptr_t)gpio_dwx_address(gpio_num);
 
 	acpigen_soc_get_dw0_in_local5(addr);
 

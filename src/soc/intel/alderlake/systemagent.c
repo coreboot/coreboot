@@ -84,9 +84,9 @@ int soc_get_uncore_prmmr_base_and_mask(uint64_t *prmrr_base,
 {
 	msr_t msr;
 	msr = rdmsr(MSR_PRMRR_BASE_0);
-	*prmrr_base = (uint64_t) msr.hi << 32 | msr.lo;
+	*prmrr_base = (uint64_t)msr.hi << 32 | msr.lo;
 	msr = rdmsr(MSR_PRMRR_PHYS_MASK);
-	*prmrr_mask = (uint64_t) msr.hi << 32 | msr.lo;
+	*prmrr_mask = (uint64_t)msr.hi << 32 | msr.lo;
 	return 0;
 }
 

@@ -598,7 +598,7 @@ static void intel_me_finalize(struct device *dev)
 	u16 reg16;
 
 	/* S3 path will have hidden this device already */
-	if (!mei_base_address || mei_base_address == (u8 *) 0xfffffff0)
+	if (!mei_base_address || mei_base_address == (u8 *)0xfffffff0)
 		return;
 
 	/* Make sure IO is disabled */

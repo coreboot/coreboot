@@ -92,12 +92,12 @@ const char *const *soc_std_gpe_sts_array(size_t *gpe_arr)
 
 uint8_t *pmc_mmio_regs(void)
 {
-	return (void *)(uintptr_t) pci_read_config32(PCH_DEV_PMC, PWRMBASE);
+	return (void *)(uintptr_t)pci_read_config32(PCH_DEV_PMC, PWRMBASE);
 }
 
 uintptr_t soc_read_pmc_base(void)
 {
-	return (uintptr_t) (pmc_mmio_regs());
+	return (uintptr_t)(pmc_mmio_regs());
 }
 
 uint32_t *soc_pmc_etr_addr(void)

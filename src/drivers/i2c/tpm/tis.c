@@ -78,7 +78,7 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 	}
 
 	ASSERT(chip.vendor.send);
-	rc = chip.vendor.send(&chip, (uint8_t *) sbuf, count);
+	rc = chip.vendor.send(&chip, (uint8_t *)sbuf, count);
 	if (rc < 0) {
 		printk(BIOS_DEBUG, "%s: tpm_send error\n", __func__);
 		goto out;
@@ -111,7 +111,7 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 
 out_recv:
 
-	rc = chip.vendor.recv(&chip, (uint8_t *) rbuf, rbufsiz);
+	rc = chip.vendor.recv(&chip, (uint8_t *)rbuf, rbufsiz);
 	if (rc < 0)
 		printk(BIOS_DEBUG, "%s: tpm_recv: error %d\n", __func__, rc);
 out:

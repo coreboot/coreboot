@@ -281,7 +281,7 @@ int ne2k_init(unsigned int eth_nic_base)
 	c = inb(eth_nic_base + NE_ASIC_OFFSET + NE_RESET);
 	outb(c, eth_nic_base + NE_ASIC_OFFSET + NE_RESET);
 
-	(void) inb(0x84);
+	(void)inb(0x84);
 
 	outb(D8390_COMMAND_STP | D8390_COMMAND_RD2, eth_nic_base + D8390_P0_COMMAND);
 	outb(D8390_RCR_MON, eth_nic_base + D8390_P0_RCR);

@@ -36,8 +36,8 @@ static void set_coreboot_ver(const uint16_t kcs_port)
 	bios_ver.ver = IPMI_LUN0_AC_SET_BIOS_VER;
 
 	ret = ipmi_message(kcs_port, IPMI_NETFN_OEM, 0, IPMI_LUN0_SET_BIOS_STRING,
-			   (const unsigned char *) &bios_ver, sizeof(bios_ver),
-			   (unsigned char *) &rsp, sizeof(rsp));
+			   (const unsigned char *)&bios_ver, sizeof(bios_ver),
+			   (unsigned char *)&rsp, sizeof(rsp));
 	if (ret < sizeof(rsp) || rsp.completion_code) {
 		printk(BIOS_ERR, "BMC_IPMI: %s command failed (ret=%d resp=0x%x)\n",
 		       __func__, ret, rsp.completion_code);
@@ -55,8 +55,8 @@ static void set_coreboot_date(const uint16_t kcs_port)
 	bios_ver.ver = IPMI_LUN0_AC_SET_BIOS_DATE;
 
 	ret = ipmi_message(kcs_port, IPMI_NETFN_OEM, 0, IPMI_LUN0_SET_BIOS_STRING,
-			   (const unsigned char *) &bios_ver, sizeof(bios_ver),
-			   (unsigned char *) &rsp, sizeof(rsp));
+			   (const unsigned char *)&bios_ver, sizeof(bios_ver),
+			   (unsigned char *)&rsp, sizeof(rsp));
 	if (ret < sizeof(rsp) || rsp.completion_code) {
 		printk(BIOS_ERR, "BMC_IPMI: %s command failed (ret=%d resp=0x%x)\n",
 		       __func__, ret, rsp.completion_code);

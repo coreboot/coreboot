@@ -42,7 +42,7 @@ void EmptyHeap(void)
 	memset(base, 0, BIOS_HEAP_SIZE);
 
 	printk(BIOS_DEBUG, "Wiped HEAP at [%08x - %08x]\n",
-		(unsigned int)(uintptr_t)base, (unsigned int)(uintptr_t) base + BIOS_HEAP_SIZE - 1);
+		(unsigned int)(uintptr_t)base, (unsigned int)(uintptr_t)base + BIOS_HEAP_SIZE - 1);
 }
 
 #if defined(HEAP_CALLOUT_RUNTIME) && ENV_RAMSTAGE
@@ -345,7 +345,7 @@ static AGESA_STATUS agesa_LocateBuffer(BIOS_HEAP_MANAGER *BiosHeapBasePtr,
 		}
 	}
 
-	AllocParams->BufferPointer = (UINT8 *)((UINT8 *) AllocNodePtr + sizeof(BIOS_BUFFER_NODE));
+	AllocParams->BufferPointer = (UINT8 *)((UINT8 *)AllocNodePtr + sizeof(BIOS_BUFFER_NODE));
 	AllocParams->BufferLength = AllocNodePtr->BufferSize;
 
 	return AGESA_SUCCESS;

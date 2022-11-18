@@ -147,10 +147,10 @@ vga_ar_read(unsigned char index)
 {
 	unsigned char ret;
 
-	(void) inb(VGA_STAT1);
+	(void)inb(VGA_STAT1);
 	outb(index, VGA_AR_INDEX);
 	ret = inb(VGA_AR_VALUE_READ);
-	(void) inb(VGA_STAT1);
+	(void)inb(VGA_STAT1);
 
 	return ret;
 }
@@ -158,10 +158,10 @@ vga_ar_read(unsigned char index)
 void
 vga_ar_write(unsigned char index, unsigned char value)
 {
-	(void) inb(VGA_STAT1);
+	(void)inb(VGA_STAT1);
 	outb(index, VGA_AR_INDEX);
 	outb(value, VGA_AR_VALUE_WRITE);
-	(void) inb(VGA_STAT1);
+	(void)inb(VGA_STAT1);
 }
 
 void
@@ -209,17 +209,17 @@ vga_gr_mask(unsigned char index, unsigned char value, unsigned char mask)
 void
 vga_palette_enable(void)
 {
-	(void) inb(VGA_STAT1);
+	(void)inb(VGA_STAT1);
 	outb(0x00, VGA_AR_INDEX);
-	(void) inb(VGA_STAT1);
+	(void)inb(VGA_STAT1);
 }
 
 void
 vga_palette_disable(void)
 {
-	(void) inb(VGA_STAT1);
+	(void)inb(VGA_STAT1);
 	outb(0x20, VGA_AR_INDEX);
-	(void) inb(VGA_STAT1);
+	(void)inb(VGA_STAT1);
 }
 
 unsigned char

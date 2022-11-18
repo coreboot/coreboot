@@ -29,8 +29,8 @@ static enum cb_err ipmi_set_ppin(struct device *dev)
 		req.cpu1_hi = xeon_sp_ppin[1].hi;
 	}
 	ret = ipmi_message(dev->path.pnp.port, IPMI_NETFN_OEM, 0x0, IPMI_OEM_SET_PPIN,
-			   (const unsigned char *) &req, sizeof(req),
-			   (unsigned char *) &rsp, sizeof(rsp));
+			   (const unsigned char *)&req, sizeof(req),
+			   (unsigned char *)&rsp, sizeof(rsp));
 
 	if (ret < sizeof(struct ipmi_rsp) || rsp.completion_code) {
 		printk(BIOS_ERR, "IPMI: %s command failed (ret=%d resp=0x%x)\n",

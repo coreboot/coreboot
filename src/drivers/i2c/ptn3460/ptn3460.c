@@ -63,7 +63,7 @@ static int ptn3460_write_edid(struct device *dev, u8 edid_num, u8 *data)
 static void ptn3460_init(struct device *dev)
 {
 	struct ptn_3460_config cfg;
-	uint8_t edid_data[PTN_EDID_LEN], edid_tab, *ptr = (uint8_t *) &cfg;
+	uint8_t edid_data[PTN_EDID_LEN], edid_tab, *ptr = (uint8_t *)&cfg;
 	int i, val;
 
 	/* Guard against re-initialization of the device */
@@ -108,7 +108,7 @@ static void ptn3460_init(struct device *dev)
 	/* Mainboard can modify the configuration data.
 	   Write back configuration data to PTN3460 if modified by mainboard */
 	if (mb_adjust_cfg(&cfg) == PTN_CFG_MODIFIED) {
-		ptr = (uint8_t *) &cfg;
+		ptr = (uint8_t *)&cfg;
 		for (i = 0; i < sizeof(struct ptn_3460_config); i++) {
 			val = i2c_dev_writeb_at(dev, PTN_CONFIG_OFF + i, *ptr++);
 			if (val < 0) {

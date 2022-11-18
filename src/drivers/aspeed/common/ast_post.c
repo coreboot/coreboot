@@ -740,9 +740,9 @@ static void finetuneDQSI(struct ast_private *ast)
 					passcnt[dqsip]++;
 					tag[dqsip][dlli] = 'P';
 					if (dlli < pass[dqidly][dqsip][0])
-						pass[dqidly][dqsip][0] = (u16) dlli;
+						pass[dqidly][dqsip][0] = (u16)dlli;
 					if (dlli > pass[dqidly][dqsip][1])
-						pass[dqidly][dqsip][1] = (u16) dlli;
+						pass[dqidly][dqsip][1] = (u16)dlli;
 				} else if (passcnt[dqsip] >= 5)
 					break;
 				else {

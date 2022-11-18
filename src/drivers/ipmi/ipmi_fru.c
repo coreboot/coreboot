@@ -36,8 +36,8 @@ static enum cb_err ipmi_read_fru(const int port, struct ipmi_read_fru_data_req *
 
 		while (retry_count <= MAX_FRU_BUSY_RETRY) {
 			ret = ipmi_message(port, IPMI_NETFN_STORAGE, 0x0,
-					IPMI_READ_FRU_DATA, (const unsigned char *) req,
-					sizeof(*req), (unsigned char *) &rsp, sizeof(rsp));
+					IPMI_READ_FRU_DATA, (const unsigned char *)req,
+					sizeof(*req), (unsigned char *)&rsp, sizeof(rsp));
 			if (rsp.resp.completion_code == 0x81) {
 				/* Device is busy */
 				if (retry_count == MAX_FRU_BUSY_RETRY) {

@@ -261,14 +261,14 @@ static void display_fsp_version_info_hob(const void *hob)
 	tcount = fvih->Count;
 #elif CONFIG(DISPLAY_FSP_VERSION_INFO_2)
 
-	uint8_t *hobstart = (uint8_t *) hob;
+	uint8_t *hobstart = (uint8_t *)hob;
 	hobstart += sizeof(EFI_HOB_GUID_TYPE);
 
 	const SMBIOS_TABLE_TYPE_OEM_INTEL_FVI *stfvi =
 			(SMBIOS_TABLE_TYPE_OEM_INTEL_FVI *)hobstart;
 	const INTEL_FIRMWARE_VERSION_INFO *fvi;
 
-	str_ptr = ((char *) &(stfvi->Fvi[0])) +
+	str_ptr = ((char *)&(stfvi->Fvi[0])) +
 			(stfvi->Count * sizeof(INTEL_FIRMWARE_VERSION_INFO));
 	tcount = stfvi->Count;
 	fvi = &stfvi->Fvi[0];

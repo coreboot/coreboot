@@ -186,7 +186,7 @@ vga_font_8x16_load(void)
 
 	/* plane 2 */
 	vga_sr_write(0x02, 0x04);
-	p = (unsigned char *) VGA_FB;
+	p = (unsigned char *)VGA_FB;
 	for (i = 0; i < count; i++) {
 		for (j = 0; j < 32; j++) {
 			if (j < height)
@@ -262,7 +262,7 @@ vga_frame_set(unsigned int line, unsigned int character)
 void
 vga_line_write(unsigned int line, const char *string)
 {
-	unsigned short *p = (unsigned short *) VGA_FB + (80 * line);
+	unsigned short *p = (unsigned short *)VGA_FB + (80 * line);
 	int i, len = strlen(string);
 
 	for (i = 0; i < 80; i++) {

@@ -13,8 +13,9 @@ fw_config
 		option THERMAL_15W			1
 	end
 	field STORAGE 30 31
-		option STORAGE_NVME			0
-		option STORAGE_UFS			1
+		option STORAGE_UNKNOWN			0
+		option STORAGE_NVME			1
+		option STORAGE_UFS			2
 	end
 end
 
@@ -123,6 +124,7 @@ chip soc/intel/alderlake
 				.clk_req = 1,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
+			probe STORAGE STORAGE_UNKNOWN
 			probe STORAGE STORAGE_NVME
 		end
 		device ref ish on

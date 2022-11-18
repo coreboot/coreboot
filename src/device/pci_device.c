@@ -108,7 +108,7 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 	     PCI_BASE_ADDRESS_MEM_LIMIT_64)) {
 		/* Find the high bits that move. */
 		moving |=
-		    ((resource_t) pci_moving_config32(dev, index + 4)) << 32;
+		    ((resource_t)pci_moving_config32(dev, index + 4)) << 32;
 	}
 
 	/* Find the resource constraints.
@@ -496,13 +496,13 @@ static void pci_bridge_read_bases(struct device *dev)
 	resource_t moving_base, moving_limit, moving;
 
 	/* See if the bridge I/O resources are implemented. */
-	moving_base = ((u32) pci_moving_config8(dev, PCI_IO_BASE)) << 8;
+	moving_base = ((u32)pci_moving_config8(dev, PCI_IO_BASE)) << 8;
 	moving_base |=
-	  ((u32) pci_moving_config16(dev, PCI_IO_BASE_UPPER16)) << 16;
+	  ((u32)pci_moving_config16(dev, PCI_IO_BASE_UPPER16)) << 16;
 
-	moving_limit = ((u32) pci_moving_config8(dev, PCI_IO_LIMIT)) << 8;
+	moving_limit = ((u32)pci_moving_config8(dev, PCI_IO_LIMIT)) << 8;
 	moving_limit |=
-	  ((u32) pci_moving_config16(dev, PCI_IO_LIMIT_UPPER16)) << 16;
+	  ((u32)pci_moving_config16(dev, PCI_IO_LIMIT_UPPER16)) << 16;
 
 	moving = moving_base & moving_limit;
 
@@ -511,14 +511,14 @@ static void pci_bridge_read_bases(struct device *dev)
 
 	/* See if the bridge prefmem resources are implemented. */
 	moving_base =
-	  ((resource_t) pci_moving_config16(dev, PCI_PREF_MEMORY_BASE)) << 16;
+	  ((resource_t)pci_moving_config16(dev, PCI_PREF_MEMORY_BASE)) << 16;
 	moving_base |=
-	  ((resource_t) pci_moving_config32(dev, PCI_PREF_BASE_UPPER32)) << 32;
+	  ((resource_t)pci_moving_config32(dev, PCI_PREF_BASE_UPPER32)) << 32;
 
 	moving_limit =
-	  ((resource_t) pci_moving_config16(dev, PCI_PREF_MEMORY_LIMIT)) << 16;
+	  ((resource_t)pci_moving_config16(dev, PCI_PREF_MEMORY_LIMIT)) << 16;
 	moving_limit |=
-	  ((resource_t) pci_moving_config32(dev, PCI_PREF_LIMIT_UPPER32)) << 32;
+	  ((resource_t)pci_moving_config32(dev, PCI_PREF_LIMIT_UPPER32)) << 32;
 
 	moving = moving_base & moving_limit;
 	/* Initialize the prefetchable memory constraints on the current bus. */
@@ -526,8 +526,8 @@ static void pci_bridge_read_bases(struct device *dev)
 				   IORESOURCE_MEM | IORESOURCE_PREFETCH);
 
 	/* See if the bridge mem resources are implemented. */
-	moving_base = ((u32) pci_moving_config16(dev, PCI_MEMORY_BASE)) << 16;
-	moving_limit = ((u32) pci_moving_config16(dev, PCI_MEMORY_LIMIT)) << 16;
+	moving_base = ((u32)pci_moving_config16(dev, PCI_MEMORY_BASE)) << 16;
+	moving_limit = ((u32)pci_moving_config16(dev, PCI_MEMORY_LIMIT)) << 16;
 
 	moving = moving_base & moving_limit;
 

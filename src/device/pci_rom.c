@@ -159,10 +159,10 @@ struct rom_header *pci_rom_load(struct device *dev,
 
 	do {
 		/* Get next image. */
-		rom_header = (struct rom_header *)((void *) rom_header
+		rom_header = (struct rom_header *)((void *)rom_header
 							    + image_size);
 
-		rom_data = (struct pci_data *)((void *) rom_header
+		rom_data = (struct pci_data *)((void *)rom_header
 				+ le32_to_cpu(rom_header->data));
 
 		image_size = le32_to_cpu(rom_data->ilen) * 512;
@@ -190,7 +190,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 			memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header,
 			       rom_size);
 		}
-		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
+		return (struct rom_header *)(PCI_VGA_RAM_IMAGE_START);
 	}
 
 	printk(BIOS_DEBUG, "Copying non-VGA ROM image from %p to %p, 0x%x bytes\n",
@@ -198,7 +198,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 
 	memcpy(pci_ram_image_start, rom_header, rom_size);
 	pci_ram_image_start += rom_size;
-	return (struct rom_header *) (pci_ram_image_start-rom_size);
+	return (struct rom_header *)(pci_ram_image_start-rom_size);
 }
 
 /* ACPI */

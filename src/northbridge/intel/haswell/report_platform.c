@@ -22,7 +22,7 @@ static void report_cpu_info(void)
 	if (cpuidr.eax < 0x80000004) {
 		strcpy(cpu_string, "Platform info not available");
 	} else {
-		u32 *p = (u32*) cpu_string;
+		u32 *p = (u32 *)cpu_string;
 		for (i = 2; i <= 4; i++) {
 			cpuidr = cpuid(index + i);
 			*p++ = cpuidr.eax;

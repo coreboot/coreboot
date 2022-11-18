@@ -358,7 +358,7 @@ static void do_ram_command(u32 command)
 	/* Configure the RAM command. */
 	reg16 = pci_read_config16(NB, SDRAMC);
 	reg16 &= 0xff1f;		/* Clear bits 7-5. */
-	reg16 |= (u16) (command << 5);	/* Write command into bits 7-5. */
+	reg16 |= (u16)(command << 5);	/* Write command into bits 7-5. */
 	pci_write_config16(NB, SDRAMC, reg16);
 
 	/*

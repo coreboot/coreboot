@@ -179,8 +179,8 @@ static void gma_read_resources(struct device *dev)
 	res->flags |= IORESOURCE_RESERVE | IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
 	pci_write_config32(dev, PCI_BASE_ADDRESS_2, 0xd0000001);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_2 + 4, 0);
-	res->base = (resource_t) 0xd0000000;
-	res->size = (resource_t) 0x10000000;
+	res->base = (resource_t)0xd0000000;
+	res->size = (resource_t)0x10000000;
 }
 
 static void gma_generate_ssdt(const struct device *device)

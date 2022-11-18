@@ -98,9 +98,9 @@ compute_frequence_ratios(struct raminfo *info, u16 freq1, u16 freq2,
 			     (freq1_reduced - freq2_reduced)) / freq2_reduced;
 			result->freq4_to_2_remainder =
 			    -(char)((freq1_reduced - freq2_reduced) +
-				    ((u8) freq4 -
+				    ((u8)freq4 -
 				     (freq1_reduced -
-				      freq2_reduced)) % (u8) freq2_reduced);
+				      freq2_reduced)) % (u8)freq2_reduced);
 		} else {
 			if (freq2_reduced > freq1_reduced) {
 				result->freq4_to_max_remainder =
@@ -275,11 +275,11 @@ set_2d5x_reg(struct raminfo *info, u16 reg, u16 freq1, u16 freq2,
 			+ vv.freq_min_reduced - 1, vv.freq_max_reduced) - 1;
 
 	u32 y =
-	    (u8) ((vv.freq_max_reduced - vv.freq_min_reduced) +
+	    (u8)((vv.freq_max_reduced - vv.freq_min_reduced) +
 		  vv.freq_max_reduced * multiplier)
 	    | (vv.
-	       freqs_reversed << 8) | ((u8) (vv.freq_min_reduced *
-					     multiplier) << 16) | ((u8) (vv.
+	       freqs_reversed << 8) | ((u8)(vv.freq_min_reduced *
+					     multiplier) << 16) | ((u8)(vv.
 									 freq_min_reduced
 									 *
 									 multiplier)

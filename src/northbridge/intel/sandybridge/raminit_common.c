@@ -693,9 +693,9 @@ static u32 make_mr0(ramctr_timing *ctrl, u8 rank)
 
 	/* Convert CAS to MCH register friendly */
 	if (ctrl->CAS < 12) {
-		mch_cas = (u16) ((ctrl->CAS - 4) << 1);
+		mch_cas = (u16)((ctrl->CAS - 4) << 1);
 	} else {
-		mch_cas = (u16) (ctrl->CAS - 12);
+		mch_cas = (u16)(ctrl->CAS - 12);
 		mch_cas = ((mch_cas << 1) | 0x1);
 	}
 
@@ -1732,7 +1732,7 @@ static void train_write_flyby(ramctr_timing *ctrl)
 
 		FOR_ALL_LANES {
 			u64 res = mchbar_read32(lane_base[lane] + GDCRTRAININGRESULT1(channel));
-			res |= ((u64) mchbar_read32(lane_base[lane] +
+			res |= ((u64)mchbar_read32(lane_base[lane] +
 				GDCRTRAININGRESULT2(channel))) << 32;
 
 			old = ctrl->timings[channel][slotrank].lanes[lane].tx_dqs;

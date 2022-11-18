@@ -1651,7 +1651,7 @@ static u8 check_testing(struct raminfo *info, u8 total_rank, int flip)
 				u32 curroffset =
 				    comp3 * 8 * 60 + 2 * comp1 + 8 * comp2;
 				read128((total_rank << 28) | (curroffset << 3),
-					(u64 *) re);
+					(u64 *)re);
 				failxor[0] |=
 				    get_etalon2(flip, curroffset) ^ re[0];
 				failxor[1] |=

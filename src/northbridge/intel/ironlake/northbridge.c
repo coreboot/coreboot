@@ -48,8 +48,8 @@ static void add_fixed_resources(struct device *dev, int index)
 	   0xff800000-0xffffffff ROM. */
 
 	resource = new_resource(dev, index++);
-	resource->base = (resource_t) HPET_BASE_ADDRESS;
-	resource->size = (resource_t) 0x00100000;
+	resource->base = (resource_t)HPET_BASE_ADDRESS;
+	resource->size = (resource_t)0x00100000;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE | IORESOURCE_FIXED |
 			  IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 

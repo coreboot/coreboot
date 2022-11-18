@@ -526,7 +526,7 @@ static void sdram_detect_ram_speed(struct sysinfo *s)
 		s->pioffset = 1;
 	} else {
 		PRINTK_DEBUG("MCH set to unknown (%02x)\n",
-			(uint8_t) s->selected_timings.mem_clock & 0xff);
+			(uint8_t)s->selected_timings.mem_clock & 0xff);
 	}
 }
 
@@ -723,7 +723,7 @@ static void sdram_timings(struct sysinfo *s)
 	if (wl > 2) {
 		flag = 1;
 	}
-	reg16 = (u8) (wl - 1 - flag);
+	reg16 = (u8)(wl - 1 - flag);
 	reg16 |= reg16 << 4;
 	reg16 |= flag << 8;
 	mchbar_clrsetbits16(C0WRDATACTRL, 0x1ff, reg16);
@@ -794,11 +794,11 @@ static void sdram_timings(struct sysinfo *s)
 	reg32 = (2 << 29) | (1 << 28) | (1 << 23);
 	mchbar_clrsetbits32(WRWMCONFIG, 0xffb << 20, reg32);
 
-	reg8  = (u8) ((mchbar_read16(C0CYCTRKACT)     & 0xe000) >> 13);
-	reg8 |= (u8) ((mchbar_read16(C0CYCTRKACT + 2) & 1) << 3);
+	reg8  = (u8)((mchbar_read16(C0CYCTRKACT)     & 0xe000) >> 13);
+	reg8 |= (u8)((mchbar_read16(C0CYCTRKACT + 2) & 1) << 3);
 	mchbar_clrsetbits8(BYPACTSF, 0xf << 4, reg8 << 4);
 
-	reg8 = (u8) ((mchbar_read32(C0CYCTRKRD) & 0x000f0000) >> 17);
+	reg8 = (u8)((mchbar_read32(C0CYCTRKRD) & 0x000f0000) >> 17);
 	mchbar_clrsetbits8(BYPACTSF, 0xf, reg8);
 
 	/* FIXME: Why not clear everything at once? */
@@ -875,12 +875,12 @@ static void sdram_p_ctrl(const struct pllparam *pll, u8 f, u8 i)
 	u32 reg32;
 
 	/* CTRL0 and CTRL1 */
-	reg32  = ((u32) pll->dbsel[f][i]) << 20;
-	reg32 |= ((u32) pll->dben[f][i])  << 21;
-	reg32 |= ((u32) pll->dbsel[f][i]) << 22;
-	reg32 |= ((u32) pll->dben[f][i])  << 23;
-	reg32 |= ((u32) pll->clkdelay[f][i]) << 24;
-	reg32 |= ((u32) pll->clkdelay[f][i]) << 27;
+	reg32  = ((u32)pll->dbsel[f][i]) << 20;
+	reg32 |= ((u32)pll->dben[f][i])  << 21;
+	reg32 |= ((u32)pll->dbsel[f][i]) << 22;
+	reg32 |= ((u32)pll->dben[f][i])  << 23;
+	reg32 |= ((u32)pll->clkdelay[f][i]) << 24;
+	reg32 |= ((u32)pll->clkdelay[f][i]) << 27;
 	mchbar_clrsetbits32(C0CTLTX2, 0x01bf0000, reg32);
 
 	reg8 = pll->pi[f][i];
@@ -888,12 +888,12 @@ static void sdram_p_ctrl(const struct pllparam *pll, u8 f, u8 i)
 	mchbar_clrsetbits8(C0TXCTL1DLL, 0x3f, reg8);
 
 	/* CTRL2 and CTRL3 */
-	reg32  = ((u32) pll->dbsel[f][i]) << 12;
-	reg32 |= ((u32) pll->dben[f][i])  << 13;
-	reg32 |= ((u32) pll->dbsel[f][i]) << 8;
-	reg32 |= ((u32) pll->dben[f][i])  << 9;
-	reg32 |= ((u32) pll->clkdelay[f][i]) << 14;
-	reg32 |= ((u32) pll->clkdelay[f][i]) << 10;
+	reg32  = ((u32)pll->dbsel[f][i]) << 12;
+	reg32 |= ((u32)pll->dben[f][i])  << 13;
+	reg32 |= ((u32)pll->dbsel[f][i]) << 8;
+	reg32 |= ((u32)pll->dben[f][i])  << 9;
+	reg32 |= ((u32)pll->clkdelay[f][i]) << 14;
+	reg32 |= ((u32)pll->clkdelay[f][i]) << 10;
 	mchbar_clrsetbits32(C0CMDTX2, 0xff << 8, reg32);
 
 	reg8 = pll->pi[f][i];
@@ -912,12 +912,12 @@ static void sdram_p_dqs(struct pllparam *pll, u8 f, u8 clk)
 	rank  = j % 4;
 	dqs   = j / 4;
 
-	reg32 |= ((u32) pll->dben[f][clk])  << (dqs + 9);
-	reg32 |= ((u32) pll->dbsel[f][clk]) << dqs;
+	reg32 |= ((u32)pll->dben[f][clk])  << (dqs + 9);
+	reg32 |= ((u32)pll->dbsel[f][clk]) << dqs;
 
 	mchbar_clrsetbits32(C0DQSRyTX1(rank), 1 << (dqs + 9) | 1 << dqs, reg32);
 
-	reg32 = ((u32) pll->clkdelay[f][clk]) << ((dqs * 2) + 16);
+	reg32 = ((u32)pll->clkdelay[f][clk]) << ((dqs * 2) + 16);
 	mchbar_clrsetbits32(C0DQSDQRyTX3(rank), 1 << (dqs * 2 + 17) | 1 << (dqs * 2 + 16),
 			reg32);
 
@@ -936,12 +936,12 @@ static void sdram_p_dq(struct pllparam *pll, u8 f, u8 clk)
 	rank  = j % 4;
 	dq    = j / 4;
 
-	reg32 |= ((u32) pll->dben[f][clk])  << (dq + 9);
-	reg32 |= ((u32) pll->dbsel[f][clk]) << dq;
+	reg32 |= ((u32)pll->dben[f][clk])  << (dq + 9);
+	reg32 |= ((u32)pll->dbsel[f][clk]) << dq;
 
 	mchbar_clrsetbits32(C0DQRyTX1(rank), 1 << (dq + 9) | 1 << dq, reg32);
 
-	reg32 = ((u32) pll->clkdelay[f][clk]) << (dq*2);
+	reg32 = ((u32)pll->clkdelay[f][clk]) << (dq*2);
 	mchbar_clrsetbits32(C0DQSDQRyTX3(rank), 1 << (dq * 2 + 1) | 1 << (dq * 2), reg32);
 
 	reg8 = pll->pi[f][clk];
@@ -1414,8 +1414,8 @@ static void sdram_rcomp(struct sysinfo *s)
 			;
 
 		reg32 = mchbar_read32(XCOMP);
-		rcompp = (u8) ((reg32 & ~(1 << 31)) >> 24);
-		rcompn = (u8) ((reg32 & ~(0xff800000)) >> 16);
+		rcompp = (u8)((reg32 & ~(1 << 31)) >> 24);
+		rcompn = (u8)((reg32 & ~(0xff800000)) >> 16);
 
 		FOR_EACH_RCOMP_GROUP(i) {
 			srup = (mchbar_read8(C0RCOMPCTRLx(i) + 1) & 0xc0) >> 6;
@@ -2134,7 +2134,7 @@ static void sdram_enhancedmode(struct sysinfo *s)
 
 	FOR_EACH_POPULATED_RANK(s->dimms, ch, r) {
 		nranks++;
-		dra = (u8) ((mchbar_read32(C0DRA01) >> (8 * r)) & 0x7f);
+		dra = (u8)((mchbar_read32(C0DRA01) >> (8 * r)) & 0x7f);
 		curranksize = drbtab[dra];
 		if (maxranksize == 0) {
 			maxranksize = curranksize;

@@ -63,7 +63,7 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 	current = start;
 
 	printk(BIOS_DEBUG, "ACPI:     * DMAR\n");
-	dmar = (acpi_dmar_t *) current;
+	dmar = (acpi_dmar_t *)current;
 	acpi_create_dmar(dmar, 0, acpi_fill_dmar);
 	current += dmar->header.length;
 	current = acpi_align_current(current);

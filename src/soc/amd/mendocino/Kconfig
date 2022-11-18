@@ -155,7 +155,7 @@ config PSP_SHAREDMEM_SIZE
 
 config PRE_X86_CBMEM_CONSOLE_SIZE
 	hex
-	default 0x1600
+	default 0x1000
 	help
 	  Size of the CBMEM console used in PSP verstage.
 
@@ -167,7 +167,7 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 
 config CBFS_MCACHE_SIZE
 	hex
-	default 0x2000 if VBOOT_STARTS_BEFORE_BOOTBLOCK
+	default 0x3800 if VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 config C_ENV_BOOTBLOCK_SIZE
 	hex

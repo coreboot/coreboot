@@ -36,7 +36,7 @@ struct hs_usb_phy_reg *hs_phy_reg = (void *)HS_USB_PRIM_PHY_BASE;
 void hs_usb_phy_init(void *board_data)
 {
 	struct usb_board_data *override_data =
-				(struct usb_board_data *) board_data;
+				(struct usb_board_data *)board_data;
 
 	clrsetbits32(&hs_phy_reg->cfg0, UTMI_PHY_CMN_CTRL_OVERRIDE_EN,
 					UTMI_PHY_CMN_CTRL_OVERRIDE_EN);

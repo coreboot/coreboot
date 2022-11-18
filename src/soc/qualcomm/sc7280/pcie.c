@@ -140,13 +140,13 @@ static const struct qcom_qmp_phy_init_tbl sc7280_qmp_gen3x2_pcie_misc_tbl[] = {
 };
 
 static pcie_cntlr_cfg_t pcie_host = {
-	.parf		= (void *) PCIE1_PCIE_PARF,
-	.dbi_base	= (void *) PCIE1_GEN3X2_PCIE_DBI,
-	.elbi		= (void *) PCIE1_GEN3X2_PCIE_ELBI,
-	.atu_base	= (void *) PCIE1_GEN3X2_DWC_PCIE_DM_IATU,
-	.cfg_base	= (void *) PCIE1_GEN3X2_PCIE_DBI + PCIE_EP_CONF_OFFSET,
-	.pcie_bcr	= (void *) PCIE1_BCR,
-	.qmp_phy_bcr	= (void *) GCC_PCIE_1_PHY_BCR,
+	.parf		= (void *)PCIE1_PCIE_PARF,
+	.dbi_base	= (void *)PCIE1_GEN3X2_PCIE_DBI,
+	.elbi		= (void *)PCIE1_GEN3X2_PCIE_ELBI,
+	.atu_base	= (void *)PCIE1_GEN3X2_DWC_PCIE_DM_IATU,
+	.cfg_base	= (void *)PCIE1_GEN3X2_PCIE_DBI + PCIE_EP_CONF_OFFSET,
+	.pcie_bcr	= (void *)PCIE1_BCR,
+	.qmp_phy_bcr	= (void *)GCC_PCIE_1_PHY_BCR,
 	.lanes		= PCIE_3x2_NUM_LANES,
 	.cfg_size	= PCIE_EP_CONF_SIZE,
 	.perst		= GPIO(2),
@@ -160,14 +160,14 @@ static pcie_cntlr_cfg_t pcie_host = {
 };
 
 static pcie_qmp_phy_cfg_t pcie1_qmp_phy_3x2 = {
-	.qmp_phy_base		= (void *) PCIE_1_QMP_PHY,
-	.serdes			= (void *) PCE1_QPHY_SERDES,
-	.tx0			= (void *) PCE1_QPHY_TX0,
-	.rx0			= (void *) PCE1_QPHY_RX0,
-	.pcs			= (void *) PCIE1_QMP_PHY_PCS_COM,
-	.tx1			= (void *) PCE1_QPHY_TX1,
-	.rx1			= (void *) PCE1_QPHY_RX1,
-	.pcs_misc		= (void *) PCE1_QPHY_PCS_MISC,
+	.qmp_phy_base		= (void *)PCIE_1_QMP_PHY,
+	.serdes			= (void *)PCE1_QPHY_SERDES,
+	.tx0			= (void *)PCE1_QPHY_TX0,
+	.rx0			= (void *)PCE1_QPHY_RX0,
+	.pcs			= (void *)PCIE1_QMP_PHY_PCS_COM,
+	.tx1			= (void *)PCE1_QPHY_TX1,
+	.rx1			= (void *)PCE1_QPHY_RX1,
+	.pcs_misc		= (void *)PCE1_QPHY_PCS_MISC,
 	.serdes_tbl		= sc7280_qmp_pcie_serdes_tbl,
 	.serdes_tbl_num		= ARRAY_SIZE(sc7280_qmp_pcie_serdes_tbl),
 	.tx_tbl			= sc7280_qmp_pcie_tx_tbl,

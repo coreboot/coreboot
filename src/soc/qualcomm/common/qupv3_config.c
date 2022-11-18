@@ -188,7 +188,7 @@ void gpi_firmware_load(int addr)
 	struct gsi_fw_hdr *gsi_hdr;
 	struct gsi_fw_iep *fwIep;
 	struct gsi_fw_iram *fwIRam;
-	struct gsi_regs *regs = (struct gsi_regs *)(uintptr_t) addr;
+	struct gsi_regs *regs = (struct gsi_regs *)(uintptr_t)addr;
 	static const char * const filename = "fallback/gsi_fw";
 
 	/* Assign firmware header base */
@@ -241,7 +241,7 @@ static void qup_common_init(int addr)
 {
 	struct qupv3_common_reg *qupv3_common;
 	/* HPG section 3.1.2 */
-	qupv3_common = (struct qupv3_common_reg *)(uintptr_t) addr;
+	qupv3_common = (struct qupv3_common_reg *)(uintptr_t)addr;
 	setbits32(&qupv3_common->qupv3_common_cfg_reg,
 			QUPV3_COMMON_CFG_FAST_SWITCH_TO_HIGH_DISABLE_BMSK);
 

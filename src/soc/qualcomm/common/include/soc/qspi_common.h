@@ -30,7 +30,7 @@ struct qcom_qspi_regs {
 };
 
 check_member(qcom_qspi_regs, rd_fifo, 0x50);
-static struct qcom_qspi_regs * const qcom_qspi = (void *) QSPI_BASE;
+static struct qcom_qspi_regs * const qcom_qspi = (void *)QSPI_BASE;
 
 // MSTR_CONFIG register
 

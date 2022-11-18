@@ -31,7 +31,7 @@ static void *load_ipq_blob(const char *file_name)
 	    (blob_mbn->mbn_total_size > blob_size))
 		return NULL;
 
-	blob_dest = (void *) blob_mbn->mbn_destination;
+	blob_dest = (void *)blob_mbn->mbn_destination;
 
 	if (blob_mbn->mbn_destination) {
 		/* Copy the blob to the appropriate memory location. */

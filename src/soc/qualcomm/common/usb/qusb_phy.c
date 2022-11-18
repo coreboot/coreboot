@@ -96,7 +96,7 @@ void hs_usb_phy_init(void *board_data)
 
 	hs_phy_reg = &qusb_phy;
 
-	hs_phy_reg->board_data = (struct usb_board_data *) board_data;
+	hs_phy_reg->board_data = (struct usb_board_data *)board_data;
 
 	/* PWR_CTRL: set the power down bit to disable the PHY */
 

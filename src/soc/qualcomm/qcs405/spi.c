@@ -660,7 +660,7 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		return ret;
 
 	if (dout != NULL) {
-		ret = blsp_spi_write(ds, txp, (unsigned int) out_bytes);
+		ret = blsp_spi_write(ds, txp, (unsigned int)out_bytes);
 		if (ret != SUCCESS)
 			goto out;
 	}

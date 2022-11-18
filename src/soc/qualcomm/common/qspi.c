@@ -66,7 +66,7 @@ static void dma_transfer_chain(struct cmd_desc *chain)
 	uint32_t mstr_int_status;
 
 	write32(&qcom_qspi->mstr_int_sts, 0xFFFFFFFF);
-	write32(&qcom_qspi->next_dma_desc_addr, (uint32_t)(uintptr_t) chain);
+	write32(&qcom_qspi->next_dma_desc_addr, (uint32_t)(uintptr_t)chain);
 
 	while (1) {
 		mstr_int_status = read32(&qcom_qspi->mstr_int_sts);
@@ -87,15 +87,15 @@ static void flush_chain(void)
 		if (desc->direction == MASTER_READ) {
 			if (desc->bounce_length == 0)
 				dcache_invalidate_by_mva(
-					(void *)(uintptr_t) desc->data_address,
+					(void *)(uintptr_t)desc->data_address,
 					desc->length);
 			else {
-				src = (void *)(uintptr_t) desc->bounce_src;
-				dst = (void *)(uintptr_t) desc->bounce_dst;
+				src = (void *)(uintptr_t)desc->bounce_src;
+				dst = (void *)(uintptr_t)desc->bounce_dst;
 				memcpy(dst, src, desc->bounce_length);
 			}
 		}
-		desc = (void *)(uintptr_t) desc->next_descriptor;
+		desc = (void *)(uintptr_t)desc->next_descriptor;
 	}
 	curr_desc_idx = -1;
 }
@@ -112,7 +112,7 @@ static struct cmd_desc *allocate_descriptor(void)
 	index = ++curr_desc_idx;
 	next = &dma->descriptors[index];
 
-	next->data_address = (uint32_t) (uintptr_t) dma->buffers[index];
+	next->data_address = (uint32_t)(uintptr_t)dma->buffers[index];
 
 	next->next_descriptor = 0;
 	next->direction = MASTER_READ;
@@ -131,7 +131,7 @@ static struct cmd_desc *allocate_descriptor(void)
 	next->bounce_length = 0;
 
 	if (current)
-		current->next_descriptor = (uint32_t)(uintptr_t) next;
+		current->next_descriptor = (uint32_t)(uintptr_t)next;
 
 	return next;
 }
@@ -164,13 +164,13 @@ static void queue_bounce_data(uint8_t *data, uint32_t data_bytes,
 	desc = allocate_descriptor();
 	desc->direction = write;
 	desc->multi_io_mode = data_mode;
-	ptr = (void *)(uintptr_t) desc->data_address;
+	ptr = (void *)(uintptr_t)desc->data_address;
 
 	if (write) {
 		memcpy(ptr, data, data_bytes);
 	} else {
-		desc->bounce_src = (uint32_t)(uintptr_t) ptr;
-		desc->bounce_dst = (uint32_t)(uintptr_t) data;
+		desc->bounce_src = (uint32_t)(uintptr_t)ptr;
+		desc->bounce_dst = (uint32_t)(uintptr_t)data;
 		desc->bounce_length = data_bytes;
 	}
 
@@ -185,7 +185,7 @@ static void queue_direct_data(uint8_t *data, uint32_t data_bytes,
 	desc = allocate_descriptor();
 	desc->direction = write;
 	desc->multi_io_mode = data_mode;
-	desc->data_address = (uint32_t)(uintptr_t) data;
+	desc->data_address = (uint32_t)(uintptr_t)data;
 	desc->length = data_bytes;
 
 	if (write)
@@ -291,7 +291,7 @@ static int xfer(enum qspi_mode mode, const void *dout, size_t out_bytes,
 		return -1;
 	}
 
-	queue_data((uint8_t *) (out_bytes ? dout : din),
+	queue_data((uint8_t *)(out_bytes ? dout : din),
 		in_bytes | out_bytes, mode, !!out_bytes);
 
 	flush_chain();

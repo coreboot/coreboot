@@ -985,14 +985,14 @@ static bool dramc_find_gating_window(u32 result_r, u32 result_f, u32 *debug_cnt,
 	u16 debug_cnt_perbyte, current_pass = 0, pass_byte_cnt = 0;
 
 	for (u8 dqs = 0; dqs < DQS_NUMBER; dqs++) {
-		u8 dqs_result_r = (u8) ((result_r >> (8 * dqs)) & 0xff);
-		u8 dqs_result_f = (u8) ((result_f >> (8 * dqs)) & 0xff);
+		u8 dqs_result_r = (u8)((result_r >> (8 * dqs)) & 0xff);
+		u8 dqs_result_f = (u8)((result_f >> (8 * dqs)) & 0xff);
 
 		if (pass_byte_cnt & (1 << dqs))
 			continue;
 		current_pass = 0;
 
-		debug_cnt_perbyte = (u16) debug_cnt[dqs];
+		debug_cnt_perbyte = (u16)debug_cnt[dqs];
 		if (dqs_result_r == 0 && dqs_result_f == 0 &&
 			debug_cnt_perbyte == GATING_GOLDEND_DQSCNT)
 			current_pass = 1;
@@ -2135,7 +2135,7 @@ static void dramc_window_perbit_cal_partial(u8 chn, u8 rank,
 			dramc_dbg("%d ", dly);
 
 		for (size_t bit = 0; bit < DQ_DATA_WIDTH; bit++) {
-			bool bit_fail = (err_value & ((u32) 1 << bit)) != 0;
+			bool bit_fail = (err_value & ((u32)1 << bit)) != 0;
 
 			/* pass window bigger than 7,
 			   * consider as real pass window.
@@ -2401,7 +2401,7 @@ static u8 dramc_rx_datlat_cal(u8 chn, u8 rank, u8 freq_group,
 	SET32_BITFIELDS(&ch[chn].ao.padctrl,
 			PADCTRL_DQIENQKEND, 1, PADCTRL_DQIENLATEBEGIN, 1);
 
-	return (u8) best_step;
+	return (u8)best_step;
 }
 
 static void dramc_dual_rank_rx_datlat_cal(u8 chn, u8 freq_group, u8 datlat0, u8 datlat1)

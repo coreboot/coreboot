@@ -156,7 +156,7 @@ static void spm_load_pcm_code(const struct dyna_load_pcm *pcm)
 		write32(&mtk_spm->pcm_im_host_rw_ptr,
 			PCM_IM_HOST_EN_LSB | PCM_IM_HOST_W_EN_LSB | i);
 		write32(&mtk_spm->pcm_im_host_rw_dat,
-			(u32) *(pcm->buf + i));
+			(u32)*(pcm->buf + i));
 	}
 	write32(&mtk_spm->pcm_im_host_rw_ptr, 0);
 }
@@ -168,7 +168,7 @@ static void spm_check_pcm_code(const struct dyna_load_pcm *pcm)
 	for (i = 0; i < pcm->desc.size; i++) {
 		write32(&mtk_spm->pcm_im_host_rw_ptr, PCM_IM_HOST_EN_LSB | i);
 		if ((read32(&mtk_spm->pcm_im_host_rw_dat)) !=
-			(u32) *(pcm->buf + i))
+			(u32)*(pcm->buf + i))
 			spm_load_pcm_code(pcm);
 	}
 	write32(&mtk_spm->pcm_im_host_rw_ptr, 0);

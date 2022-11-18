@@ -28,7 +28,7 @@ struct tegra_dc_dp_data dp_data;
 
 static inline u32 tegra_dpaux_readl(struct tegra_dc_dp_data *dp, u32 reg)
 {
-	void *addr = dp->aux_base + (u32) (reg << 2);
+	void *addr = dp->aux_base + (u32)(reg << 2);
 	u32 reg_val = READL(addr);
 	return reg_val;
 }
@@ -36,7 +36,7 @@ static inline u32 tegra_dpaux_readl(struct tegra_dc_dp_data *dp, u32 reg)
 static inline void tegra_dpaux_writel(struct tegra_dc_dp_data *dp,
 					  u32 reg, u32 val)
 {
-	void *addr = dp->aux_base + (u32) (reg << 2);
+	void *addr = dp->aux_base + (u32)(reg << 2);
 	WRITEL(val, addr);
 }
 

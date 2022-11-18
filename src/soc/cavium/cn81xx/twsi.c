@@ -497,7 +497,7 @@ static int twsi_write_data(void *baseaddr, const u8 slave_addr,
 	twsi_sw.u = 0;
 	twsi_sw.s.op = TWSI_SW_EOP_IA;
 	twsi_sw.s.eop_ia = TWSI_DATA;
-	twsi_sw.s.data = (u32) (slave_addr << 1) | TWSI_OP_WRITE;
+	twsi_sw.s.data = (u32)(slave_addr << 1) | TWSI_OP_WRITE;
 
 	twsi_write_sw(baseaddr, twsi_sw);
 	twsi_write_ctl(baseaddr, TWSI_CTL_ENAB);
@@ -574,7 +574,7 @@ static int twsi_read_data(void *baseaddr, const u8 slave_addr,
 	twsi_sw.s.op = TWSI_SW_EOP_IA;
 	twsi_sw.s.eop_ia = TWSI_DATA;
 
-	twsi_sw.s.data  = (u32) (slave_addr << 1) | TWSI_OP_READ;
+	twsi_sw.s.data  = (u32)(slave_addr << 1) | TWSI_OP_READ;
 
 	twsi_write_sw(baseaddr, twsi_sw);
 	twsi_write_ctl(baseaddr, TWSI_CTL_ENAB);

@@ -76,7 +76,7 @@ void southbridge_configure_default_intmap(void)
 	/* Enable IOAPIC (generic) */
 	RCBA16(OIC) = 0x0100;
 	/* PCH BWG says to read back the IOAPIC enable register */
-	(void) RCBA16(OIC);
+	(void)RCBA16(OIC);
 }
 
 void southbridge_rcba_config(void)

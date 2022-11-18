@@ -45,8 +45,8 @@ static void sata_enable_ahci_mmap(struct device *const dev, const u8 port_map)
 	/* PI (Ports implemented) */
 	write32(abar + 0x0c, port_map);
 	/* PCH code reads back twice, do we need it, too? */
-	(void) read32(abar + 0x0c); /* Read back 1 */
-	(void) read32(abar + 0x0c); /* Read back 2 */
+	(void)read32(abar + 0x0c); /* Read back 1 */
+	(void)read32(abar + 0x0c); /* Read back 2 */
 
 	/* VSP (Vendor Specific Register) */
 	reg32 = read32(abar + 0xa0);

@@ -97,7 +97,7 @@ static int recv_heci_packet(struct mei_header *head, u32 *packet, u32 *packet_si
 		csr.raw = read32(DEFAULT_HECIBAR + 0xc);
 	} while (csr.csr.buffer_write_ptr == csr.csr.buffer_read_ptr);
 
-	*(u32 *) head = read32(DEFAULT_HECIBAR + 0x8);
+	*(u32 *)head = read32(DEFAULT_HECIBAR + 0x8);
 	if (!head->length) {
 		write32(DEFAULT_HECIBAR + 0x4, read32(DEFAULT_HECIBAR + 0x4) | 2);
 		*packet_size = 0;
@@ -188,7 +188,7 @@ static void send_heci_uma_message(const u64 heci_uma_addr, const unsigned int he
 	};
 	u32 reply_size;
 
-	send_heci_message((u8 *) &msg, sizeof(msg), 0, 7);
+	send_heci_message((u8 *)&msg, sizeof(msg), 0, 7);
 
 	reply_size = sizeof(reply);
 	if (recv_heci_message(&reply, &reply_size) == -1)

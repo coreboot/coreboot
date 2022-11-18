@@ -281,7 +281,7 @@ int set_sections(u16 base_address, u8 fan, u8 *boundaries, u8 *sections)
 		if (value > 100)
 			return message_invalid_2(HWM_STATUS_INVALID_SECTION_VALUE, fan);
 		temp = (255 * value) / 100;
-		value = (u8) (temp & 0x00ff);
+		value = (u8)(temp & 0x00ff);
 		write_hwm_reg(base_address, index, value);
 		index++;
 	}

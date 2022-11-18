@@ -408,7 +408,7 @@
 #define ASPEED_EXIT_KEY 0xAA
 
 #define TO_BE_UPDATE 0
-#define AndMask32(HighBit, LowBit) ~((((uint32_t) 1 << (HighBit - LowBit + 1)) - 1) << LowBit)
+#define AndMask32(HighBit, LowBit) ~((((uint32_t)1 << (HighBit - LowBit + 1)) - 1) << LowBit)
 
 typedef enum {
 	GPIOA = 0,

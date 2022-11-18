@@ -55,6 +55,8 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[1] = 1;
 	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[2] = 0;
 	memupd->FspmConfig.DmiMaxLinkSpeed = 4; // Gen4 speed, undocumented
+	memupd->FspmConfig.DmiAspm = 0;
+	memupd->FspmConfig.DmiAspmCtrl = 0;
 	memupd->FspmConfig.SkipExtGfxScan = 0;
 
 	memupd->FspmConfig.PchHdaSdiEnable[0] = 1;

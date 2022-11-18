@@ -78,6 +78,9 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	params->PcieRpFunctionSwap = 0;
 	params->CpuPcieRpFunctionSwap = 0;
 
+	params->PchLegacyIoLowLatency = 1;
+	params->PchDmiAspmCtrl = 0;
+
 	params->CpuPcieRpPmSci[0] = 1; // M2_1
 	params->CpuPcieRpPmSci[1] = 1; // PCI_E1
 	params->PcieRpPmSci[0]    = 1; // PCI_E2

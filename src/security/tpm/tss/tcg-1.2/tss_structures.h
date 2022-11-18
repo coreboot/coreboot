@@ -21,13 +21,13 @@
 #define TPM_NV_PER_READ_STCLEAR (((uint32_t)1)<<31)
 #define TPM_NV_PER_WRITE_STCLEAR (((uint32_t)1)<<14)
 
-#define TPM_TAG_RQU_COMMAND       ((uint16_t) 0xc1)
-#define TPM_TAG_RQU_AUTH1_COMMAND ((uint16_t) 0xc2)
-#define TPM_TAG_RQU_AUTH2_COMMAND ((uint16_t) 0xc3)
+#define TPM_TAG_RQU_COMMAND       ((uint16_t)0xc1)
+#define TPM_TAG_RQU_AUTH1_COMMAND ((uint16_t)0xc2)
+#define TPM_TAG_RQU_AUTH2_COMMAND ((uint16_t)0xc3)
 
-#define TPM_TAG_RSP_COMMAND       ((uint16_t) 0xc4)
-#define TPM_TAG_RSP_AUTH1_COMMAND ((uint16_t) 0xc5)
-#define TPM_TAG_RSP_AUTH2_COMMAND ((uint16_t) 0xc6)
+#define TPM_TAG_RSP_COMMAND       ((uint16_t)0xc4)
+#define TPM_TAG_RSP_AUTH1_COMMAND ((uint16_t)0xc5)
+#define TPM_TAG_RSP_AUTH2_COMMAND ((uint16_t)0xc6)
 
 typedef uint8_t TSS_BOOL;
 typedef uint16_t TPM_STRUCTURE_TAG;

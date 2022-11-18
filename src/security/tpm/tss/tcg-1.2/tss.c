@@ -51,7 +51,7 @@ static inline int tpm_command_size(const uint8_t *buffer)
 {
 	uint32_t size;
 	from_tpm_uint32(buffer + sizeof(uint16_t), &size);
-	return (int) size;
+	return (int)size;
 }
 
 /* Gets the code field of a TPM command. */

@@ -24,7 +24,7 @@ static uint8_t crc8_vbnv(const uint8_t *data, int len)
 		}
 	}
 
-	return (uint8_t) (crc >> 8);
+	return (uint8_t)(crc >> 8);
 }
 
 void vbnv_reset(uint8_t *vbnv_copy)

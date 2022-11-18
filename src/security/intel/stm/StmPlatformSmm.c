@@ -85,7 +85,7 @@ void setup_smm_descriptor(void *smbase, int32_t apic_id, int32_t entry32_off)
 
 	TXT_PROCESSOR_SMM_DESCRIPTOR *psd;
 
-	smbase_processor =  (void *) SMM_DEFAULT_BASE;//we are here
+	smbase_processor =  (void *)SMM_DEFAULT_BASE;//we are here
 	psd = smbase + SMM_PSD_OFFSET;
 
 	printk(BIOS_DEBUG,
@@ -121,8 +121,8 @@ void setup_smm_descriptor(void *smbase, int32_t apic_id, int32_t entry32_off)
 
 	read_gdtr(&gdtr);
 
-	gdtr.base -= (uintptr_t) smbase_processor;
-	gdtr.base += (uintptr_t) smbase;
+	gdtr.base -= (uintptr_t)smbase_processor;
+	gdtr.base += (uintptr_t)smbase;
 
 	psd->smm_gdt_ptr = gdtr.base;
 	psd->smm_gdt_size = gdtr.limit + 1; // the stm will subtract, so add
@@ -159,7 +159,7 @@ void stm_setup(uintptr_t mseg, int cpu, uintptr_t smbase,
 	// some processor to receive a bad value
 	// calculate the location in SMRAM
 	addr_calc = mseg - CONFIG_BIOS_RESOURCE_LIST_SIZE;
-	stm_resource_heap = (uint8_t *) addr_calc;
+	stm_resource_heap = (uint8_t *)addr_calc;
 
 	if (cpu == 0) {
 

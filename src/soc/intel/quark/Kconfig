@@ -9,6 +9,7 @@ if SOC_INTEL_QUARK
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
+	select ACPI_NO_MADT
 	select ARCH_X86
 	select NO_ECAM_MMCONF_SUPPORT
 	select NO_SMM

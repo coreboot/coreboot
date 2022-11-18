@@ -282,7 +282,8 @@ void acpi_create_madt(acpi_madt_t *madt)
 	if (CONFIG(ACPI_HAVE_PCAT_8259))
 		madt->flags |= 1;
 
-	current = acpi_fill_madt(current);
+	if (!CONFIG(ACPI_NO_MADT))
+		current = acpi_fill_madt(current);
 
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)madt;

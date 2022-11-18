@@ -2,6 +2,7 @@
 
 #include <amdblocks/gpio.h>
 #include <amdblocks/smi.h>
+#include <amdblocks/xhci.h>
 #include <bootstate.h>
 #include <device/device.h>
 #include <drivers/usb/pci_xhci/pci_xhci.h>
@@ -11,13 +12,13 @@
 static const struct sci_source xhci_sci_sources[] = {
 	{
 		.scimap = SMITYPE_XHC0_PME,
-		.gpe = GEVENT_31,
+		.gpe = XHCI_GEVENT,
 		.direction = SMI_SCI_LVL_HIGH,
 		.level = SMI_SCI_EDG
 	},
 	{
 		.scimap = SMITYPE_XHC1_PME,
-		.gpe = GEVENT_31,
+		.gpe = XHCI_GEVENT,
 		.direction = SMI_SCI_LVL_HIGH,
 		.level = SMI_SCI_EDG
 	}

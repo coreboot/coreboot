@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #define PCI_ROM_HDR 0xAA55
-#define PCI_DATA_HDR ((uint32_t) (('R' << 24) | ('I' << 16) | ('C' << 8) | 'P'))
+#define PCI_DATA_HDR ((uint32_t)(('R' << 24) | ('I' << 16) | ('C' << 8) | 'P'))
 
 #define PCI_RAM_IMAGE_START 0xD0000
 #define PCI_VGA_RAM_IMAGE_START 0xC0000

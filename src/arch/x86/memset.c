@@ -12,7 +12,7 @@ typedef uint32_t op_t;
 void *memset(void *dstpp, int c, size_t len)
 {
 	int d0;
-	unsigned long int dstp = (unsigned long int) dstpp;
+	unsigned long int dstp = (unsigned long int)dstpp;
 
 #if (ENV_ROMSTAGE && CONFIG(ASAN_IN_ROMSTAGE)) || \
 		(ENV_RAMSTAGE && CONFIG(ASAN_IN_RAMSTAGE))
@@ -22,7 +22,7 @@ void *memset(void *dstpp, int c, size_t len)
 	/* This explicit register allocation improves code very much indeed. */
 	register op_t x asm("ax");
 
-	x = (unsigned char) c;
+	x = (unsigned char)c;
 
 	/* Clear the direction flag, so filling will move forward.  */
 	asm volatile("cld");

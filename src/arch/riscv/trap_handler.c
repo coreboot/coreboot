@@ -64,8 +64,8 @@ static void print_trap_information(const trapframe *tf)
 			previous_mode, mprv? " (MPRV)":"");
 	printk(BIOS_DEBUG, "Bad instruction pc: %p\n", (void *)tf->epc);
 	printk(BIOS_DEBUG, "Bad address:        %p\n", (void *)tf->badvaddr);
-	printk(BIOS_DEBUG, "Stored ra:          %p\n", (void*) tf->gpr[1]);
-	printk(BIOS_DEBUG, "Stored sp:          %p\n", (void*) tf->gpr[2]);
+	printk(BIOS_DEBUG, "Stored ra:          %p\n", (void *)tf->gpr[1]);
+	printk(BIOS_DEBUG, "Stored sp:          %p\n", (void *)tf->gpr[2]);
 }
 
 static void interrupt_handler(trapframe *tf)

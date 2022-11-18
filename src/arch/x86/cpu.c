@@ -59,7 +59,7 @@ static inline int test_cyrix_52div(void)
 	     : "cc");
 
 	/* AH is 0x02 on Cyrix after the divide.. */
-	return (unsigned char) (test >> 8) == 0x02;
+	return (unsigned char)(test >> 8) == 0x02;
 }
 
 /*

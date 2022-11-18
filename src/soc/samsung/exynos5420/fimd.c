@@ -182,7 +182,7 @@ static void exynos_fimd_set_clock(vidinfo_t *vid)
 	cfg |= (EXYNOS_VIDCON0_CLKSEL_SCLK | EXYNOS_VIDCON0_CLKVALUP_ALWAYS |
 		EXYNOS_VIDCON0_VCLKEN_NORMAL | EXYNOS_VIDCON0_CLKDIR_DIVIDED);
 
-	src_clock = (unsigned long long) get_lcd_clk();
+	src_clock = (unsigned long long)get_lcd_clk();
 
 	/* get quotient and remainder. */
 	remainder = src_clock % pixel_clock;

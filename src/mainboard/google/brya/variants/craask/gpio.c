@@ -17,8 +17,6 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
 	PAD_NC_LOCK(GPP_H3, NONE, LOCK_CONFIG),
-	/* H19 : SOC_I2C_SUB_INT_ODL */
-	PAD_CFG_GPI_APIC(GPP_H19, NONE, PLTRST, LEVEL, NONE),
 	/* H23 : WWAN_SAR_DETECT_ODL */
 	PAD_CFG_GPO(GPP_H23, 1, DEEP),
 

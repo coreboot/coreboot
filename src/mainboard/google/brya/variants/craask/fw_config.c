@@ -12,8 +12,6 @@ static const struct pad_config lte_disable_pads[] = {
 	PAD_NC(GPP_D6, NONE),
 	/* F12 : WWAN_RST_L */
 	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
-	/* H19 : SOC_I2C_SUB_INT_ODL */
-	PAD_NC(GPP_H19, NONE),
 	/* H23 : WWAN_SAR_DETECT_ODL */
 	PAD_NC(GPP_H23, NONE),
 };

@@ -74,9 +74,9 @@ CPUS?=4
 lint lint-stable lint-extended:
 	util/lint/lint $@
 
-ABUILD_OPTIONS=-B -J -c $(CPUS) -Z -p $(JENKINS_PAYLOAD)
-ABUILD_OPTIONS+=$(if $(V),-v,)
-ABUILD_OPTIONS+=$(if $(JENKINS_NOCCACHE),,-y)
+ABUILD_OPTIONS=--blobs --junit --cpus $(CPUS) --clean-somewhat --payloads $(JENKINS_PAYLOAD)
+ABUILD_OPTIONS+=$(if $(V),--verbose,)
+ABUILD_OPTIONS+=$(if $(JENKINS_NOCCACHE),,--ccache)
 ABUILD_OPTIONS+=$(JENKINS_ABUILD_OPT)
 
 COREBOOT_BUILD_DIR?=coreboot-builds

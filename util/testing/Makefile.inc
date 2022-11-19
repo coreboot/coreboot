@@ -94,10 +94,7 @@ ifneq ($(JENKINS_SKIP_LINT_TESTS),y)
 endif
 	cd 3rdparty/intel-sec-tools/ ; go mod vendor
 	cd util/goswid ; go mod vendor
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos.xml
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default $(ABUILD_OPTIONS)
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos-clang $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos_clang.xml -L
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default-clang $(ABUILD_OPTIONS) -L
+	$(MAKE) test-abuild
 	$(foreach tool, $(TOOLLIST), $(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR="util/$(tool)" BLD="$(tool)" MFLAGS= MAKEFLAGS= MAKETARGET= junit.xml; )
 	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/nvramcui BLD=nvramcui MFLAGS= MAKEFLAGS= MAKETARGET=all junit.xml
 	unset COREBOOT_BUILD_DIR;$(MAKE) CPUS=$(CPUS) V=$(V) Q=$(Q) BLD_DIR=payloads/coreinfo BLD=coreinfo MFLAGS= MAKEFLAGS= MAKETARGET=defaultbuild junit.xml
@@ -119,10 +116,10 @@ test-lint:
 	util/lint/lint lint-extended $(JUNIT)
 
 test-abuild:
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos -B -e $(if $(TEST_NOCCACHE),,-y) -c $(CPUS) -p $(TEST_PAYLOAD) -x
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default -B -e $(if $(TEST_NOCCACHE),,-y) -c $(CPUS) -p $(TEST_PAYLOAD)
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos-clang -B -e $(if $(TEST_NOCCACHE),,-y) -c $(CPUS) -p $(TEST_PAYLOAD) -x -L
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default-clang -B -e $(if $(TEST_NOCCACHE),,-y) -c $(CPUS) -p $(TEST_PAYLOAD) -L
+	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos.xml
+	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default $(ABUILD_OPTIONS)
+	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos-clang $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos_clang.xml -L
+	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default-clang $(ABUILD_OPTIONS) -L
 
 test-payloads:
 	$(MAKE) -C payloads/libpayload test-configs -j $(CPUS) V=$(V) Q=$(Q) MFLAGS= MAKEFLAGS= $(if $(TEST_NOCCACHE),,CONFIG_LP_CCACHE=y)

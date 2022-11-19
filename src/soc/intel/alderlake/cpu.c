@@ -242,6 +242,14 @@ enum adl_cpu_type get_adl_cpu_type(void)
 		PCI_DID_INTEL_ADL_N_ID_4,
 	};
 
+	const uint16_t rpl_s_mch_ids[] = {
+		PCI_DID_INTEL_RPL_S_ID_1,
+		PCI_DID_INTEL_RPL_S_ID_2,
+		PCI_DID_INTEL_RPL_S_ID_3,
+		PCI_DID_INTEL_RPL_S_ID_4,
+		PCI_DID_INTEL_RPL_S_ID_5
+	};
+
 	const uint16_t rpl_p_mch_ids[] = {
 		PCI_DID_INTEL_RPL_P_ID_1,
 		PCI_DID_INTEL_RPL_P_ID_2,
@@ -269,6 +277,11 @@ enum adl_cpu_type get_adl_cpu_type(void)
 			return ADL_S;
 	}
 
+	for (size_t i = 0; i < ARRAY_SIZE(rpl_s_mch_ids); i++) {
+		if (rpl_s_mch_ids[i] == mchid)
+			return RPL_S;
+	}
+
 	for (size_t i = 0; i < ARRAY_SIZE(adl_n_mch_ids); i++) {
 		if (adl_n_mch_ids[i] == mchid)
 			return ADL_N;
@@ -292,6 +305,7 @@ uint8_t get_supported_lpm_mask(void)
 	case RPL_P:
 		return LPM_S0i2_0 | LPM_S0i3_0;
 	case ADL_S:
+	case RPL_S:
 		return LPM_S0i2_0 | LPM_S0i2_1;
 	default:
 		printk(BIOS_ERR, "Unknown ADL CPU type: %d\n", type);

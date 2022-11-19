@@ -92,6 +92,144 @@ chip soc/intel/alderlake
 		.tdp_pl4 = 44,
 	}"
 
+	register "power_limits_config[RPL_S_8161_35W_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 106,
+		.tdp_pl4 = 194,
+	}"
+
+	register "power_limits_config[RPL_S_8161_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 219,
+		.tdp_pl4 = 341,
+	}"
+
+	register "power_limits_config[RPL_S_8161_95W_CORE]" = "{
+		.tdp_pl1_override = 95,
+		.tdp_pl2_override = 253,
+		.tdp_pl4 = 380,
+	}"
+
+	register "power_limits_config[RPL_S_8161_125W_CORE]" = "{
+		.tdp_pl1_override = 125,
+		.tdp_pl2_override = 253,
+		.tdp_pl4 = 380,
+	}"
+
+	register "power_limits_config[RPL_S_8161_150W_CORE]" = "{
+		.tdp_pl1_override = 125,
+		.tdp_pl2_override = 253,
+		.tdp_pl4 = 380,
+	}"
+
+	register "power_limits_config[RPL_S_881_35W_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 106,
+		.tdp_pl4 = 194,
+	}"
+
+	register "power_limits_config[RPL_S_881_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 219,
+		.tdp_pl4 = 341,
+	}"
+
+	register "power_limits_config[RPL_S_881_125W_CORE]" = "{
+		.tdp_pl1_override = 125,
+		.tdp_pl2_override = 253,
+		.tdp_pl4 = 380,
+	}"
+
+	register "power_limits_config[RPL_S_681_35W_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 92,
+		.tdp_pl4 = 136,
+	}"
+
+	register "power_limits_config[RPL_S_681_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 153,
+		.tdp_pl4 = 212,
+	}"
+
+	register "power_limits_config[RPL_S_681_125W_CORE]" = "{
+		.tdp_pl1_override = 125,
+		.tdp_pl2_override = 181,
+		.tdp_pl4 = 285,
+	}"
+
+	register "power_limits_config[RPL_S_641_35W_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 82,
+		.tdp_pl4 = 124,
+	}"
+
+	register "power_limits_config[RPL_S_641_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 148,
+		.tdp_pl4 = 194,
+	}"
+
+	register "power_limits_config[RPL_S_641_125W_CORE]" = "{
+		.tdp_pl1_override = 125,
+		.tdp_pl2_override = 181,
+		.tdp_pl4 = 285,
+	}"
+
+	register "power_limits_config[RPL_S_801_80W_CORE]" = "{
+		.tdp_pl1_override = 80,
+		.tdp_pl2_override = 253,
+		.tdp_pl4 = 380,
+	}"
+
+	register "power_limits_config[RPL_S_801_95W_CORE]" = "{
+		.tdp_pl1_override = 95,
+		.tdp_pl2_override = 253,
+		.tdp_pl4 = 380,
+	}"
+
+	register "power_limits_config[RPL_S_401_35W_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 69,
+		.tdp_pl4 = 98,
+	}"
+
+	register "power_limits_config[RPL_S_401_58W_CORE]" = "{
+		.tdp_pl1_override = 58,
+		.tdp_pl2_override = 89,
+		.tdp_pl4 = 125,
+	}"
+
+	register "power_limits_config[RPL_S_401_60W_CORE]" = "{
+		.tdp_pl1_override = 60,
+		.tdp_pl2_override = 89,
+		.tdp_pl4 = 125,
+	}"
+
+	register "power_limits_config[RPL_S_401_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 89,
+		.tdp_pl4 = 125,
+	}"
+
+	register "power_limits_config[RPL_S_201_35W_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 35,
+		.tdp_pl4 = 44,
+	}"
+
+	register "power_limits_config[RPL_S_201_46W_CORE]" = "{
+		.tdp_pl1_override = 46,
+		.tdp_pl2_override = 46,
+		.tdp_pl4 = 57,
+	}"
+
+	register "power_limits_config[RPL_S_201_65W_CORE]" = "{
+		.tdp_pl1_override = 65,
+		.tdp_pl2_override = 65,
+		.tdp_pl4 = 65,
+	}"
+
 	# NOTE: if any variant wants to override this value, use the same format
 	# as register "common_soc_config.pch_thermal_trip" = "value", instead of
 	# putting it under register "common_soc_config" in overridetree.cb file.

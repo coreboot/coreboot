@@ -34,6 +34,10 @@ static struct {
 	{ CPUID_ALDERLAKE_S_C0, "Alderlake-S C0 Platform" },
 	{ CPUID_ALDERLAKE_S_G0, "Alderlake-S G0 Platform" },
 	{ CPUID_ALDERLAKE_S_H0, "Alderlake-S H0 Platform" },
+	{ CPUID_RAPTORLAKE_S_A0, "Raptorlake-S A0 Platform" },
+	{ CPUID_RAPTORLAKE_S_B0, "Raptorlake-S B0 Platform" },
+	{ CPUID_RAPTORLAKE_S_C0, "Raptorlake-S C0 Platform" },
+	{ CPUID_RAPTORLAKE_S_H0, "Raptorlake-S H0 Platform" },
 	{ CPUID_RAPTORLAKE_P_J0, "Raptorlake-P J0 Platform" },
 	{ CPUID_RAPTORLAKE_P_Q0, "Raptorlake-P Q0 Platform" },
 };
@@ -76,7 +80,11 @@ static struct {
 	{ PCI_DID_INTEL_RPL_P_ID_3, "Raptorlake-P" },
 	{ PCI_DID_INTEL_RPL_P_ID_4, "Raptorlake-P" },
 	{ PCI_DID_INTEL_RPL_P_ID_5, "Raptorlake-P" },
-
+	{ PCI_DID_INTEL_RPL_S_ID_1, "Raptorlake-S (8+16)" },
+	{ PCI_DID_INTEL_RPL_S_ID_2, "Raptorlake-S (8+0)" },
+	{ PCI_DID_INTEL_RPL_S_ID_3, "Raptorlake-S (8+8)" },
+	{ PCI_DID_INTEL_RPL_S_ID_4, "Raptorlake-S (6+8)" },
+	{ PCI_DID_INTEL_RPL_S_ID_5, "Raptorlake-S (6+4)" },
 };
 
 static struct {
@@ -101,9 +109,9 @@ static struct {
 	{ PCI_DID_INTEL_RPP_S_ESPI_1, "Raptorlake-S SKU" },
 	{ PCI_DID_INTEL_RPP_S_ESPI_2, "Raptorlake-S SKU" },
 	{ PCI_DID_INTEL_RPP_S_ESPI_3, "Raptorlake-S SKU" },
-	{ PCI_DID_INTEL_RPP_S_ESPI_4, "Raptorlake-S SKU" },
-	{ PCI_DID_INTEL_RPP_S_ESPI_5, "Raptorlake-S SKU" },
-	{ PCI_DID_INTEL_RPP_S_ESPI_6, "Raptorlake-S SKU" },
+	{ PCI_DID_INTEL_RPP_S_ESPI_4, "Raptorlake-S Z790" },
+	{ PCI_DID_INTEL_RPP_S_ESPI_5, "Raptorlake-S H770" },
+	{ PCI_DID_INTEL_RPP_S_ESPI_6, "Raptorlake-S B760" },
 	{ PCI_DID_INTEL_RPP_S_ESPI_7, "Raptorlake-S SKU" },
 	{ PCI_DID_INTEL_RPP_S_ESPI_8, "Raptorlake-S SKU" },
 	{ PCI_DID_INTEL_RPP_S_ESPI_9, "Raptorlake-S SKU" },
@@ -205,6 +213,10 @@ static struct {
 	{ PCI_DID_INTEL_RPL_P_GT4, "Raptorlake P GT4" },
 	{ PCI_DID_INTEL_RPL_P_GT5, "Raptorlake P GT5" },
 	{ PCI_DID_INTEL_RPL_P_GT6, "Raptorlake P GT6" },
+	{ PCI_DID_INTEL_RPL_S_GT0, "Raptorlake S GT0" },
+	{ PCI_DID_INTEL_RPL_S_GT1_1, "Raptorlake S GT1" },
+	{ PCI_DID_INTEL_RPL_S_GT1_2, "Raptorlake S GT1" },
+	{ PCI_DID_INTEL_RPL_S_GT1_3, "Raptorlake S GT1" }
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

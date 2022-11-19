@@ -88,12 +88,10 @@ validate_sec_tools:
 		exit 1; \
 	fi
 
-what-jenkins-does: validate_sec_tools
-	rm -rf $(COREBOOT_BUILD_DIR)/chromeos $(COREBOOT_BUILD_DIR)/default
-	rm -rf $(COREBOOT_BUILD_DIR)/chromeos-clang $(COREBOOT_BUILD_DIR)/default-clang
 ifneq ($(JENKINS_SKIP_UNIT_TESTS),y)
 	util/lint/lint lint-stable --junit
 	util/lint/lint lint-extended --junit
+what-jenkins-does: test-cleanup validate_sec_tools
 endif
 	cd 3rdparty/intel-sec-tools/ ; go mod vendor
 	cd util/goswid ; go mod vendor
@@ -122,7 +120,6 @@ test-lint:
 	util/lint/lint lint-extended
 
 test-abuild:
-	rm -rf coreboot-builds-chromeos coreboot-builds
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos -B -e $(if $(TEST_NOCCACHE),,-y) -c $(CPUS) -p $(TEST_PAYLOAD) -x
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default -B -e $(if $(TEST_NOCCACHE),,-y) -c $(CPUS) -p $(TEST_PAYLOAD)
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos-clang -B -e $(if $(TEST_NOCCACHE),,-y) -c $(CPUS) -p $(TEST_PAYLOAD) -x -L
@@ -139,7 +136,6 @@ test-payloads:
 
 test-tools:
 	@echo "Build testing $(TOOLLIST)"
-	$(foreach tool, $(TOOLLIST), $(MAKE) -C util/$(tool) clean ; )
 	$(foreach tool, $(TOOLLIST), echo "Building $(tool)";export MFLAGS= ;export MAKEFLAGS= ;$(MAKE) -C util/$(tool) all V=$(V) Q=$(Q) || exit 1; )
 	@echo "Running gitconfig tests"
 	@for test in $$(find util/gitconfig/test -maxdepth 1 \
@@ -149,10 +145,12 @@ test-tools:
 	done
 
 test-cleanup:
-	rm -rf coreboot-builds coreboot-builds-chromeos
+	rm -rf $(COREBOOT_BUILD_DIR)/chromeos $(COREBOOT_BUILD_DIR)/default
+	rm -rf $(COREBOOT_BUILD_DIR)/chromeos-clang $(COREBOOT_BUILD_DIR)/default-clang
 	$(MAKE) clean
-	$(MAKE) distclean
 	$(foreach tool, $(TOOLLIST), $(MAKE) -C util/$(tool) clean ; )
+	$(MAKE) -C src/soc/nvidia/tegra124/lp0 clean
+	$(MAKE) -C src/soc/nvidia/tegra210/lp0 clean
 
 .PHONY: test-basic test-lint test-abuild test-payloads
 .PHONY: test-tools test-cleanup test-help

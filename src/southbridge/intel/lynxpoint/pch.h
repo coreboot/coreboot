@@ -619,10 +619,13 @@ void mainboard_config_rcba(void);
 #define PM2_CNT		0x50 // mobile only
 #define C3_RES		0x54
 
+#if CONFIG(TCO_SPACE_NOT_YET_SPLIT)
 #define TCO1_STS	0x64
 #define   DMISCI_STS	(1 << 9)
 #define TCO2_STS	0x66
 #define   SECOND_TO_STS	(1 << 1)
+#endif
+
 #define ALT_GP_SMI_EN2	0x5c
 #define ALT_GP_SMI_STS2	0x5e
 

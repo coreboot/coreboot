@@ -140,8 +140,10 @@ void i82801dx_lpc_setup(void);
 #define DEVACT_STS	0x44
 #define SS_CNT		0x50
 
+#if CONFIG(TCO_SPACE_NOT_YET_SPLIT)
 /* TCO1 Control Register */
 #define TCO1_CNT	0x68
+#endif
 
 #define GEN_PMCON_1		0xa0
 #define GEN_PMCON_2		0xa2

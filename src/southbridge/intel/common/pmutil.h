@@ -104,6 +104,7 @@
 #define GPE_CNTL	0x42
 #define DEVACT_STS	0x44
 
+#if CONFIG(TCO_SPACE_NOT_YET_SPLIT)
 #define TCO1_STS	0x64
 #define   DMISCI_STS	(1 << 9)
 #define   BOOT_STS	(1 << 18)
@@ -111,6 +112,7 @@
 #define TCO1_CNT	0x68
 #define   TCO_LOCK	(1 << 12)
 #define TCO2_CNT	0x6a
+#endif
 
 u16 get_pmbase(void);
 

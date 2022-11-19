@@ -222,6 +222,8 @@
 # define  UPRWC_WR_EN	 (1 << 1) /* USB Per-Port Registers Write Enable */
 #define GPE_CTRL		0x40
 #define PM2A_CNT_BLK		0x50
+
+#if CONFIG(TCO_SPACE_NOT_YET_SPLIT)
 #define TCO_RLD			0x60
 #define TCO_STS			0x64
 #	define SECOND_TO_STS	(1 << 17)
@@ -230,6 +232,7 @@
 #	define TCO_LOCK		(1 << 12)
 #	define TCO_TMR_HALT	(1 << 11)
 #define TCO_TMR			0x70
+#endif
 
 /* I/O ports */
 #define RST_CNT			0xcf9

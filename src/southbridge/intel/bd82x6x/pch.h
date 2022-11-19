@@ -464,6 +464,7 @@ void early_usb_init(const struct southbridge_usb_port *portmap);
 #define PM2_CNT		0x50 // mobile only
 #define C3_RES		0x54
 
+#if CONFIG(TCO_SPACE_NOT_YET_SPLIT)
 #define TCO1_STS	0x64
 #define   TCO1_TIMEOUT	(1 << 3)
 #define   DMISCI_STS	(1 << 9)
@@ -473,6 +474,7 @@ void early_usb_init(const struct southbridge_usb_port *portmap);
 #define   TCO_TMR_HLT	(1 << 11)
 #define   TCO_LOCK	(1 << 12)
 #define TCO2_CNT	0x6a
+#endif
 
 #define SPIBAR_HSFS                 0x3804   /* SPI hardware sequence status */
 #define  SPIBAR_HSFS_SCIP           (1 << 5) /* SPI Cycle In Progress */

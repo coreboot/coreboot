@@ -53,12 +53,15 @@
 #define  SWGPE_CTRL		(1 << 1)
 #define DEVACT_STS		0x44
 #define PM2_CNT			0x50
+
+#if CONFIG(TCO_SPACE_NOT_YET_SPLIT)
 #define TCO1_CNT		0x60
 #define  TCO_TMR_HLT		(1 << 11)
 #define TCO1_STS		0x64
 #define  DMISCI_STS		(1 << 9)
 #define TCO2_STS		0x66
 #define  TCO2_STS_SECOND_TO	(1 << 1)
+#endif
 
 #define GPE0_REG_MAX		4
 #define GPE0_REG_SIZE		32

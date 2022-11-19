@@ -182,7 +182,7 @@ chip soc/amd/mendocino
 			register "hid" = ""GOOG0005""
 			register "desc" = ""Ti50 TPM""
 			register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_18)"
-			device i2c 50 on end
+			device i2c 50 alias ti50 on end
 		end
 	end
 

@@ -2,9 +2,11 @@
 
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/amd_pci_util.h>
+#include <amdblocks/psp.h>
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <drivers/i2c/tpm/chip.h>
 #include <soc/acpi.h>
 #include <variant/ec.h>
 
@@ -69,10 +71,19 @@ static void mainboard_configure_gpios(void)
 				override_gpios, override_num_gpios);
 }
 
+static void configure_psp_tpm_gpio(void)
+{
+	const struct device *ti50_dev = DEV_PTR(ti50);
+	struct drivers_i2c_tpm_config *cfg = config_of(ti50_dev);
+
+	psp_set_tpm_irq_gpio(cfg->irq_gpio.pins[0]);
+}
+
 static void mainboard_init(void *chip_info)
 {
 	mainboard_configure_gpios();
 	mainboard_ec_init();
+	configure_psp_tpm_gpio();
 }
 
 static void mainboard_enable(struct device *dev)

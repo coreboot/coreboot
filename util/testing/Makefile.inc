@@ -109,10 +109,10 @@ test-lint:
 	util/lint/lint lint-extended $(JUNIT)
 
 test-abuild:
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos.xml
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default $(ABUILD_OPTIONS)
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos-clang $(ABUILD_OPTIONS) -x -X $(top)/abuild-chromeos_clang.xml -L
-	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/default-clang $(ABUILD_OPTIONS) -L
+	NAME=gcc-chromeos; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) -x --name $${NAME}
+	NAME=gcc; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) --name $${NAME}
+	NAME=clang-chromeos; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) -L -x --name $${NAME}
+	NAME=clang; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) -L --name $${NAME}
 
 test-payloads:
 	$(MAKE) -C payloads/libpayload test-configs -j $(CPUS) V=$(V) Q=$(Q) MFLAGS= MAKEFLAGS= $(if $(TEST_NOCCACHE),,CONFIG_LP_CCACHE=y)

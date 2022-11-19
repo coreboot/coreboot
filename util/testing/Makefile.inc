@@ -88,10 +88,9 @@ validate_sec_tools:
 		exit 1; \
 	fi
 
-ifneq ($(JENKINS_SKIP_UNIT_TESTS),y)
-	util/lint/lint lint-stable --junit
-	util/lint/lint lint-extended --junit
 what-jenkins-does: test-cleanup validate_sec_tools
+ifneq ($(JENKINS_SKIP_LINT_TESTS),y)
+	JUNIT=--junit $(MAKE) test-lint
 endif
 	cd 3rdparty/intel-sec-tools/ ; go mod vendor
 	cd util/goswid ; go mod vendor
@@ -116,8 +115,8 @@ endif
 test-basic: test-lint test-tools test-abuild test-payloads test-cleanup
 
 test-lint:
-	util/lint/lint lint-stable
-	util/lint/lint lint-extended
+	util/lint/lint lint-stable $(JUNIT)
+	util/lint/lint lint-extended $(JUNIT)
 
 test-abuild:
 	util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/chromeos -B -e $(if $(TEST_NOCCACHE),,-y) -c $(CPUS) -p $(TEST_PAYLOAD) -x

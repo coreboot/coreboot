@@ -109,6 +109,7 @@ test-lint:
 	util/lint/lint lint-extended $(JUNIT)
 
 test-abuild:
+	NAME=scanbuild; SCANBUILD_ARGS='-k -plist-html -maxloop 10' util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) -scan-build --target EMULATION_QEMU_X86_Q35 --exitcode --name $${NAME}
 	NAME=gcc-chromeos; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) -x --name $${NAME}
 	NAME=gcc; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) --name $${NAME}
 	NAME=clang-chromeos; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) -L -x --name $${NAME}
@@ -143,6 +144,7 @@ test-tools:
 test-cleanup:
 	rm -rf $(COREBOOT_BUILD_DIR)/chromeos $(COREBOOT_BUILD_DIR)/default
 	rm -rf $(COREBOOT_BUILD_DIR)/chromeos-clang $(COREBOOT_BUILD_DIR)/default-clang
+	rm -rf $(COREBOOT_BUILD_DIR)/scanbuild
 	$(MAKE) clean
 	$(foreach tool, $(TOOLLIST), $(MAKE) -C util/$(tool) clean ; )
 	$(MAKE) -C src/soc/nvidia/tegra124/lp0 clean

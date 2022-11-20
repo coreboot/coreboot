@@ -17,11 +17,11 @@ Change-Id: I2904f69a5d85337ad0a6b48590ccd4b4a6e38b70
  util/kconfig/confdata.c | 20 +++++++++++---------
  1 file changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/util/kconfig/confdata.c b/util/kconfig/confdata.c
-index 95fb960179..3da9e8b38d 100644
---- a/util/kconfig/confdata.c
-+++ b/util/kconfig/confdata.c
-@@ -230,6 +230,13 @@ static const char *conf_get_autoheader_name(void)
+Index: kconfig/confdata.c
+===================================================================
+--- kconfig.orig/confdata.c
++++ kconfig/confdata.c
+@@ -230,6 +230,13 @@ static const char *conf_get_autoheader_n
  	return name ? name : "include/generated/autoconf.h";
  }
  
@@ -35,7 +35,7 @@ index 95fb960179..3da9e8b38d 100644
  static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
  {
  	char *p2;
-@@ -1024,19 +1031,14 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
+@@ -1024,19 +1031,14 @@ static int conf_write_autoconf_cmd(const
  
  static int conf_touch_deps(void)
  {
@@ -59,6 +59,3 @@ index 95fb960179..3da9e8b38d 100644
  	conf_read_simple(name, S_DEF_AUTO);
  	sym_calc_value(modules_sym);
  
--- 
-2.30.2
-

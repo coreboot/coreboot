@@ -11,15 +11,21 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="Mar 28, 2017"
-ABUILD_VERSION="0.10.03"
+ABUILD_DATE="Nov 19, 2022"
+ABUILD_VERSION="0.11.00"
 
 TOP=$PWD
 
 # Where shall we place all the build trees?
-TARGET=${COREBOOT_BUILD_DIR:-coreboot-builds}
-XMLFILE=$TOP/abuild.xml
-REAL_XMLFILE=$XMLFILE
+TARGET_DEFAULT=coreboot-builds
+TARGET=${COREBOOT_BUILD_DIR:-${TARGET_DEFAULT}}
+XML_DEFAULT="$TOP/abuild.xml"
+XMLFILE="${XML_DEFAULT}"
+REAL_XMLFILE="${XML_DEFAULT}"
+
+# Name associated with a run of abuild
+TESTRUN_DEFAULT=default
+TESTRUN="${TESTRUN_DEFAULT}"
 
 export KCONFIG_OVERWRITECONFIG=1
 
@@ -367,7 +373,7 @@ function compile_target
 
 	etime=$(perl -e 'print time();' 2>/dev/null || date +%s)
 	duration=$(( etime - stime ))
-	junit " <testcase classname='board${testclass/#/.}' name='$BUILD_NAME' time='$duration' >"
+	junit " <testcase classname='${TESTRUN}${testclass/#/.}' name='$BUILD_NAME' time='$duration' >"
 
 	if [ $MAKE_FAILED -eq 0 ]; then
 		junit "<system-out>"
@@ -465,7 +471,7 @@ function build_config
 	fi
 
 	if [ $BUILDENV_CREATED -ne 0 ] || [ $MAINBOARD_OK -ne 0 ] || [ $VENDOR_OK -ne 0 ] || [ $FORCE_ENABLED_CROS -eq 1 ]; then
-		junit " <testcase classname='board${testclass/#/.}' name='$BUILD_NAME' >"
+		junit " <testcase classname='${TESTRUN}${testclass/#/.}' name='$BUILD_NAME' >"
 
 		junit "<failure type='BuildFailed'>"
 		junitfile "$build_dir/config.log"
@@ -581,7 +587,7 @@ Usage: $0 [options]
        $0 [-V|--version]
        $0 [-h|--help]
 
-Options:\n"
+Options:\n
     [-a|--all]                    Build previously succeeded ports as well
     [-A|--any-toolchain]          Use any toolchain
     [-b|--board-variant <name>]   Build specific board variant under the
@@ -596,6 +602,8 @@ Options:\n"
     [-K|--kconfig <name>]         Prepend file to generated Kconfig
     [-l|--loglevel <num>]         Set loglevel
     [-L|--clang]                  Use clang on supported arch
+    [-n|--name]                   Set build name - also sets xmlfile if not
+                                  already set
     [-o|--outdir <path>]          Store build results in path
                                   (defaults to $TARGET)
     [-p|--payloads <dir>]         Use payloads in <dir> to build images
@@ -663,12 +671,12 @@ getoptbrand="$(getopt -V)"
 # shellcheck disable=SC2086
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,verbose,quiet,help,all,target:,board-variant:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,any-toolchain,clean,clean-somewhat,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode,asserts -o Vvqhat:b:p:c:sJCl:rP:uyBLAzZo:xX:K:d:R:Ie -- "$@") || exit 1
+	args=$(getopt -l version,verbose,quiet,help,all,target:,board-variant:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,any-toolchain,clean,clean-somewhat,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode,asserts,name: -o Vvqhat:b:p:c:sJCl:rP:uyBLAzZo:xX:K:d:R:Ien: -- "$@") || exit 1
 	eval set -- $args
 	retval=$?
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vvqhat:b:p:c:sJCl:rP:uyBLAZzo:xX:K:d:R:Ie "$@")
+	args=$(getopt Vvqhat:b:p:c:sJCl:rP:uyBLAZzo:xX:K:d:R:Ien: "$@")
 	set -- $args
 	retval=$?
 fi
@@ -762,13 +770,19 @@ while true ; do
 		-o|--outdir)	shift
 			TARGET=$1; shift
 			;;
+		-n|--name)	shift
+			TESTRUN=$1
+			shift;;
 		-x|--chromeos)	shift
 			chromeos=true
 			testclass=chromeos
 			customizing="${customizing}, chromeos"
 			configoptions="${configoptions}CONFIG_CHROMEOS=y\nCONFIG_VBOOT_MEASURED_BOOT=y\n"
 			;;
-		-X|--xmlfile)	shift; XMLFILE=$1; REAL_XMLFILE=$1; shift;;
+		-X|--xmlfile)	shift
+			XMLFILE=$1
+			REAL_XMLFILE=$1
+			shift;;
 		-I|--recursive) shift; recursive=true;;
 		-K|--kconfig)	shift
 			testclass="$(basename "$1" | tr '.' '_' )"
@@ -782,6 +796,18 @@ while true ; do
 		*)		break;;
 	esac
 done
+
+if [[ "${TESTRUN}" != "${TESTRUN_DEFAULT}" ]]; then
+	unset testclass
+	if [[ "${XML_UPDATED}" != "${XML_DEFAULT}" ]]; then
+		XMLFILE="abuild-${TESTRUN}.xml"
+		REAL_XMLFILE="${XMLFILE}"
+	fi
+	if [[ "${TARGET}" == "${TARGET_DEFAULT}" ]]; then
+		TARGET="${TESTRUN}"
+	fi
+fi
+
 if [ -n "$1" ]; then
 	printf "Invalid option '%s'\n\n" "$1"; myhelp; exit 1;
 fi

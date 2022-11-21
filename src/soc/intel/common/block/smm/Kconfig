@@ -44,3 +44,12 @@ config HECI_DISABLE_USING_SMM
 	help
 	  HECI disable using SMM. Select this option to make HECI disable
 	  using SMM mode, independent of dedicated UPD to perform HECI disable.
+
+config PERIODIC_SMI_RATE_SELECTION_IN_GEN_PMCON_B
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_SMM
+	default n
+	help
+	  Intel Core processors select the periodic SMI rate via GEN_PMCON_A.
+	  On Intel Atom processors the register is different and they use
+	  GEN_PMCON_B/GEN_PMCON2 with different address.

@@ -1,0 +1,246 @@
+chip soc/intel/elkhartlake
+
+	device cpu_cluster 0 on
+		device lapic 0 on end
+	end
+
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	register "pmc_gpe0_dw0" = "GPP_B"
+	register "pmc_gpe0_dw1" = "GPP_F"
+	register "pmc_gpe0_dw2" = "GPP_E"
+
+	# FSP configuration
+	register "SaGv" = "SaGv_Disabled"
+
+	# Enable IBECC for the complete memory
+	register "ibecc" = "{
+		.enable = 1,
+		.mode = IBECC_ALL
+	}"
+
+	# USB related UPDs
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC2)"	# X125/X135
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC2)"	# X125/X135
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)"	# X145/X155
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC0)"	# X145/X155
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"	# USB Panel
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC3)"	# USB Panel
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"
+	register "usb2_ports[9]" = "USB2_PORT_EMPTY"
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port1
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port2
+	register "usb3_ports[2]" = "USB3_PORT_EMPTY"	# UNUSED
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"	# UNUSED
+
+	# Skip the CPU replacement check
+	register "SkipCpuReplacementCheck" = "1"
+
+	# PCIe root ports related UPDs
+	register "PcieRpEnable[1]" = "1"
+	register "PcieRpEnable[6]" = "1"
+
+	register "PcieClkSrcUsage[0]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[1]" = "PCIE_CLK_FREE"
+	register "PcieClkSrcUsage[2]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[3]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[4]" = "PCIE_CLK_FREE"
+	register "PcieClkSrcUsage[5]" = "PCIE_CLK_NOTUSED"
+
+	register "PcieClkSrcClkReq[0]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[1]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[2]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[3]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[4]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[5]" = "PCIE_CLK_NOTUSED"
+
+	# Disable all L1 substates for PCIe root ports
+	register "PcieRpL1Substates[1]" = "L1_SS_DISABLED"
+	register "PcieRpL1Substates[6]" = "L1_SS_DISABLED"
+
+	# Disable LTR for all PCIe root ports
+	register "PcieRpLtrDisable[1]" = "true"
+	register "PcieRpLtrDisable[6]" = "true"
+
+	# Storage (SDCARD/EMMC) related UPDs
+	register "ScsEmmcHs400Enabled" = "0"
+	register "ScsEmmcDdr50Enabled" = "1"
+	register "SdCardPowerEnableActiveHigh" = "1"
+
+	# GPIO for SD card detect
+	register "sdcard_cd_gpio" = "GPP_G5"
+
+	# LPSS Serial IO (I2C/UART/GSPI) related UPDs
+	register "SerialIoI2cMode" = "{
+		[PchSerialIoIndexI2C0] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoPci,
+		[PchSerialIoIndexI2C2] = PchSerialIoPci,
+		[PchSerialIoIndexI2C3] = PchSerialIoPci,
+		[PchSerialIoIndexI2C4] = PchSerialIoPci,
+		[PchSerialIoIndexI2C5] = PchSerialIoPci,
+		[PchSerialIoIndexI2C6] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C7] = PchSerialIoDisabled,
+	}"
+
+	register "SerialIoUartMode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoPci,
+		[PchSerialIoIndexUART1] = PchSerialIoPci,
+		[PchSerialIoIndexUART2] = PchSerialIoPci,
+	}"
+
+	register "SerialIoUartDmaEnable" = "{
+		[PchSerialIoIndexUART0] = 1,
+		[PchSerialIoIndexUART1] = 1,
+		[PchSerialIoIndexUART2] = 1,
+	}"
+
+	# TSN GBE related UPDs
+	register "PchTsnGbeLinkSpeed" = "Tsn_1_Gbps"
+	register "PchTsnGbeSgmiiEnable" = "1"
+	register "PseDmaOwn[0]" = "Host_Owned"
+	register "PseDmaOwn[1]" = "Host_Owned"
+	register "pch_tsn_phy_irq_edge" = "RISING_EDGE"
+	register "pse_tsn_phy_irq_edge[0]" = "RISING_EDGE"
+	register "pse_tsn_phy_irq_edge[1]" = "RISING_EDGE"
+
+	register "common_soc_config" = "{
+		.i2c[1] = {
+			.speed = I2C_SPEED_STANDARD,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_STANDARD,
+				.scl_hcnt = 0x1e1,
+				.scl_lcnt = 0x1f4,
+				.sda_hold = 0x64
+			},
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_STANDARD,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_STANDARD,
+				.scl_hcnt = 0x1df,
+				.scl_lcnt = 0x1f4,
+				.sda_hold = 0x64
+			},
+		},
+	}"
+
+	# FIVR related settings
+	register "fivr" = "{
+		.fivr_config_en = true,
+		.vcc_low_high_us = 50,
+	}"
+
+	# Disable L1 prefetcher for real-time demands
+	register "L1_prefetcher_disable" = "true"
+
+	device domain 0 on
+		device pci 00.0 on	end # Host Bridge
+		device pci 02.0 on	end # Integrated Graphics Device
+
+		device pci 14.0 on	end # USB3.1 xHCI
+
+		device pci 15.0 on	end # I2C0
+		device pci 15.1 on	    # I2C1
+			# Enable external RTC chip
+			chip drivers/i2c/rv3028c7
+				register "bus_speed" = "I2C_SPEED_STANDARD"
+				register "set_user_date" = "1"
+				register "user_year" = "04"
+				register "user_month" = "07"
+				register "user_day" = "01"
+				register "user_weekday" = "4"
+				register "bckup_sw_mode" = "BACKUP_SW_LEVEL"
+				register "cap_charge" = "CHARGE_OFF"
+				device i2c 0x52 on end  # RTC RV3028-C7
+			end
+		end
+		device pci 15.2 on	    # I2C2
+		# Add dummy I2C device to limit BUS speed to 100 kHz in OS
+			chip drivers/i2c/generic
+				register "hid" = ""PRP0001""
+				register "speed" = "I2C_SPEED_STANDARD"
+				device i2c 0x7f on end
+			end
+		end
+		device pci 15.3 on	end # I2C3
+
+		device pci 16.0 hidden	end # Management Engine Interface 1
+
+		device pci 19.0 on	end # I2C4
+		device pci 19.1 on	end # I2C5
+		device pci 19.2 on	end # UART2
+
+		device pci 1a.0 on	end # eMMC
+		device pci 1a.1 on	end # SD
+
+		device pci 1c.1 on	end # RP2 (pcie0 single VC)
+		device pci 1c.6 on	end # RP7 (pcie3 multi VC)
+
+		device pci 1d.0 off	end # Intel PSE IPC (local host to PSE)
+		device pci 1d.1 on	    # Intel PSE Time-Sensitive Networking GbE 0
+			# Enable external Marvell PHY 88E1512
+			chip drivers/net/phy/m88e1512
+				register "configure_leds" = "true"
+				# LED[0]: On - 1000 Mbps Link, Off - Else
+				register "led_0_ctrl" = "7"
+				# LED[1]: On - Link, Blink - Activity, Off - No Link
+				register "led_1_ctrl" = "1"
+				# INTn is routed to LED[2] pin
+				register "enable_int" = "true"
+				register "downshift_cnt" = "2"
+				device mdio 0 on    # PHY address
+					ops m88e1512_ops
+				end
+			end
+		end
+		device pci 1d.2 on	    # Intel PSE Time-Sensitive Networking GbE 1
+			# Enable external Marvell PHY 88E1512
+			chip drivers/net/phy/m88e1512
+				register "configure_leds" = "true"
+				# LED[0]: On - 1000 Mbps Link, Off - Else
+				register "led_0_ctrl" = "7"
+				# LED[1]: On - Link, Blink - Activity, Off - No Link
+				register "led_1_ctrl" = "1"
+				# INTn is routed to LED[2] pin
+				register "enable_int" = "true"
+				register "downshift_cnt" = "2"
+				device mdio 1 on    # PHY address
+					ops m88e1512_ops
+				end
+			end
+		end
+
+		device pci 1e.0 on	end # UART0
+		device pci 1e.1 on	end # UART1
+		device pci 1e.4 on	    # PCH Time-Sensitive Networking GbE
+			# Enable external Marvell PHY 88E1512
+			chip drivers/net/phy/m88e1512
+				register "configure_leds" = "true"
+				# LED[0]: On - 1000 Mbps Link, Off - Else
+				register "led_0_ctrl" = "7"
+				# LED[1]: On - Link, Blink - Activity, Off - No Link
+				register "led_1_ctrl" = "1"
+				# INTn is routed to LED[2] pin
+				register "enable_int" = "true"
+				register "downshift_cnt" = "2"
+				device mdio 1 on    # PHY address
+					ops m88e1512_ops
+				end
+			end
+		end
+
+		device pci 1f.0 on	    # eSPI Interface
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end
+		device pci 1f.2 hidden	end # Power Management Controller
+		device pci 1f.4	on	end # SMBus
+		device pci 1f.5 on	end # PCH SPI (flash & TPM)
+	end
+end

@@ -90,6 +90,7 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_MONOTONIC_TIMER
 	select UDELAY_TSC
 	select UDK_202111_BINDING
+	select X86_INIT_NEED_1_SIPI
 
 config MAX_CPUS
 	int

@@ -5,6 +5,7 @@
 #include <amdblocks/agesawrapper_call.h>
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/biosram.h>
+#include <amdblocks/post_codes.h>
 #include <amdblocks/psp.h>
 #include <arch/romstage.h>
 #include <cbmem.h>
@@ -35,10 +36,10 @@ void __weak mainboard_romstage_entry(void)
 
 static void agesa_call(void)
 {
-	post_code(0x37);
+	post_code(POST_AGESA_AMDINITRESET);
 	do_agesawrapper(AMD_INIT_RESET, "amdinitreset");
 
-	post_code(0x38);
+	post_code(POST_AGESA_AMDINITEARLY);
 	/* APs will not exit amdinitearly */
 	do_agesawrapper(AMD_INIT_EARLY, "amdinitearly");
 }
@@ -66,10 +67,10 @@ void __noreturn romstage_main(void)
 	bsp_agesa_call();
 
 	if (!s3_resume) {
-		post_code(0x40);
+		post_code(POST_AGESA_AMDINITPOST);
 		do_agesawrapper(AMD_INIT_POST, "amdinitpost");
 
-		post_code(0x41);
+		post_code(POST_AGESA_AMDINITPOST_DONE);
 		/*
 		 * TODO: This is a hack to work around current AGESA behavior.
 		 *       AGESA needs to change to reflect that coreboot owns
@@ -99,16 +100,16 @@ void __noreturn romstage_main(void)
 		wrmsr(SYSCFG_MSR, sys_cfg);
 	} else {
 		printk(BIOS_INFO, "S3 detected\n");
-		post_code(0x60);
+		post_code(POST_AGESA_AMDINITRESUME);
 		do_agesawrapper(AMD_INIT_RESUME, "amdinitresume");
 
-		post_code(0x61);
+		post_code(POST_AGESA_AMDINITRESUME_DONE);
 	}
 
-	post_code(0x42);
+	post_code(POST_PSP_NOTIFY_DRAM);
 	psp_notify_dram();
 
-	post_code(0x43);
+	post_code(POST_PSP_NOTIFY_DRAM_DONE);
 	if (cbmem_recovery(s3_resume))
 		printk(BIOS_CRIT, "Failed to recover cbmem\n");
 	if (romstage_handoff_init(s3_resume))
@@ -117,7 +118,7 @@ void __noreturn romstage_main(void)
 	if (CONFIG(SMM_TSEG))
 		smm_list_regions();
 
-	post_code(0x44);
+	post_code(POST_ROMSTAGE_RUN_POSTCAR);
 	prepare_and_run_postcar();
 }
 

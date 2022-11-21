@@ -13,6 +13,7 @@
 #include <amdblocks/amd_pci_mmconf.h>
 #include <amdblocks/biosram.h>
 #include <amdblocks/iomap.h>
+#include <amdblocks/post_codes.h>
 #include <soc/pci_devs.h>
 #include <soc/cpu.h>
 #include <soc/southbridge.h>
@@ -77,7 +78,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 void bootblock_soc_early_init(void)
 {
 	bootblock_fch_early_init();
-	post_code(0x90);
+	post_code(POST_BOOTBLOCK_SOC_EARLY_INIT);
 }
 
 void bootblock_soc_init(void)

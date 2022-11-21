@@ -15,6 +15,7 @@
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/agesawrapper_call.h>
 #include <amdblocks/i2c.h>
+#include <amdblocks/post_codes.h>
 
 #include "chip.h"
 
@@ -115,15 +116,15 @@ struct chip_operations soc_amd_stoneyridge_ops = {
 static void earliest_ramstage(void *unused)
 {
 	if (!acpi_is_wakeup_s3()) {
-		post_code(0x46);
+		post_code(POST_PSP_LOAD_SMU);
 		if (CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW))
 			psp_load_named_blob(BLOB_SMU_FW2, "smu_fw2");
 
-		post_code(0x47);
+		post_code(POST_AGESA_AMDINITENV);
 		do_agesawrapper(AMD_INIT_ENV, "amdinitenv");
 	} else {
 		/* Complete the initial system restoration */
-		post_code(0x46);
+		post_code(POST_AGESA_AMDS3LATERESTORE);
 		do_agesawrapper(AMD_S3LATE_RESTORE, "amds3laterestore");
 	}
 }

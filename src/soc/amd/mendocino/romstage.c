@@ -6,6 +6,7 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/memmap.h>
 #include <amdblocks/pmlib.h>
+#include <amdblocks/post_codes.h>
 #include <amdblocks/stb.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
@@ -15,7 +16,7 @@
 
 void __noreturn romstage_main(void)
 {
-	post_code(0x40);
+	post_code(POST_ROMSTAGE_MAIN);
 
 	if (CONFIG(WRITE_STB_BUFFER_TO_CONSOLE))
 		write_stb_to_console();

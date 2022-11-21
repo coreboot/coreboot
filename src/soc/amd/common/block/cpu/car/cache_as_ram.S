@@ -8,6 +8,7 @@
  ******************************************************************************
  */
 
+#include <amdblocks/post_codes.h>
 #include <cpu/x86/post_code.h>
 
 .section .init
@@ -27,7 +28,7 @@ _cache_as_ram_setup:
 .global bootblock_pre_c_entry
 bootblock_pre_c_entry:
 
-	post_code(0xa0)
+	post_code(POST_BOOTBLOCK_PRE_C_ENTRY)
 
 	AMD_ENABLE_STACK
 
@@ -41,7 +42,7 @@ bootblock_pre_c_entry:
 	pushl	%eax		/* tsc[31:0] */
 
 before_carstage:
-	post_code(0xa2)
+	post_code(POST_BOOTBLOCK_PRE_C_DONE)
 
 	call	bootblock_c_entry
 	/* Never reached */

@@ -819,7 +819,7 @@ build_LLVM() {
 	$MAKE $JOBS || touch .failed
 	$MAKE install || touch .failed
 
-	rm -f ../llvm ../clang ../clang-tools-extra ../compiler-rt
+	rm -f ../llvm ../clang ../clang-tools-extra ../compiler-rt ../cmake
 
 	cp -a ../$CLANG_DIR/tools/scan-build/* "$DESTDIR$TARGETDIR/bin"
 	cp -a ../$CLANG_DIR/tools/scan-view/* "$DESTDIR$TARGETDIR/bin"

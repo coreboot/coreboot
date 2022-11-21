@@ -322,6 +322,25 @@ char *strdup(const char *s)
 }
 
 /**
+ * Duplicate a string with a max length of size
+ *
+ * @param s The string to duplicate.
+ * @param size The max length of the string
+ * @return A pointer to the copy of the original string.
+ */
+char *strndup(const char *s, size_t size)
+{
+	size_t n = strnlen(s, size);
+	char *p = malloc(n + 1);
+
+	if (p != NULL) {
+		strncpy(p, s, n);
+		p[n] = 0;
+	}
+	return p;
+}
+
+/**
  * Find a substring within a string.
  *
  * @param h The haystack string.

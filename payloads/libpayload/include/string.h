@@ -59,6 +59,7 @@ char *strcat(char *d, const char *s);
 char *strchr(const char *s, int c);
 char *strrchr(const char *s, int c);
 char *strdup(const char *s);
+char *strndup(const char *s, size_t size);
 char *strstr(const char *h, const char *n);
 char *strsep(char **stringp, const char *delim);
 size_t strspn(const char *s, const char *a);

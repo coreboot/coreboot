@@ -94,6 +94,19 @@ struct xhci_usb_info {
 	uint32_t num_usb3_ports;
 };
 
+struct xhci_capability_regs {
+	uint8_t caplength;
+	uint8_t reserved0;
+	uint16_t hciversion;
+	uint32_t hcsparams1;
+	uint32_t hcsparams2;
+	uint32_t hcsparams3;
+	uint32_t hccparams1;
+	uint32_t dboff;
+	uint32_t rtsoff;
+	uint32_t hccparams2;
+} __packed;
+
 /**
  * Iterates over the xHCI Extended Capabilities List.
  */

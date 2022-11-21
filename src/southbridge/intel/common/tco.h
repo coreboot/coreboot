@@ -15,7 +15,7 @@
 #define TCO1_STS		0x04
 #define  TCO1_TIMEOUT		(1 << 3)
 #define TCO2_STS		0x06
-#define  SECOND_TO_STS		(1 << 1)
+#define  TCO2_STS_SECOND_TO	(1 << 1)
 #define TCO1_CNT		0x08
 #define  TCO_TMR_HLT		(1 << 11)
 

@@ -7,7 +7,7 @@
 #define TCO1_STS			0x04
 #define  TCO_TIMEOUT			(1 << 3)
 #define TCO2_STS			0x06
-#define  TCO_STS_SECOND_TO		(1 << 1)
+#define  TCO2_STS_SECOND_TO		(1 << 1)
 #define  TCO_INTRD_DET			(1 << 0)
 #define TCO1_CNT			0x08
 #define  TCO_LOCK			(1 << 12)

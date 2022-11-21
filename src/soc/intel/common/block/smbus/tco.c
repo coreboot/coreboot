@@ -72,7 +72,7 @@ uint32_t tco_reset_status(void)
 
 	/* TCO Status 2 register */
 	tco2_sts = tco_read_reg(TCO2_STS);
-	tco_write_reg(TCO2_STS, tco2_sts | TCO_STS_SECOND_TO);
+	tco_write_reg(TCO2_STS, tco2_sts | TCO2_STS_SECOND_TO);
 
 	return (tco2_sts << 16) | tco1_sts;
 }

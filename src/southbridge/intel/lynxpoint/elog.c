@@ -124,7 +124,7 @@ void pch_log_state(void)
 		elog_add_event(ELOG_TYPE_PWROK_FAIL);
 
 	/* Second TCO Timeout */
-	if (tco2_sts & SECOND_TO_STS)
+	if (tco2_sts & TCO2_STS_SECOND_TO)
 		elog_add_event(ELOG_TYPE_TCO_RESET);
 
 	/* Power Button Override */

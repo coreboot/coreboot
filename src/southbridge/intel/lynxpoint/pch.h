@@ -623,7 +623,7 @@ void mainboard_config_rcba(void);
 #define TCO1_STS	0x64
 #define   DMISCI_STS	(1 << 9)
 #define TCO2_STS	0x66
-#define   SECOND_TO_STS	(1 << 1)
+#define   TCO2_STS_SECOND_TO	(1 << 1)
 #endif
 
 #define ALT_GP_SMI_EN2	0x5c

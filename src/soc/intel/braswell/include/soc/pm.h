@@ -188,7 +188,7 @@
 #if CONFIG(TCO_SPACE_NOT_YET_SPLIT)
 #define TCO_RLD			0x60
 #define TCO_STS			0x64
-#	define SECOND_TO_STS	(1 << 17)
+#	define TCO1_32_STS_SECOND_TO_STS	(1 << 17)
 #	define TCO_TIMEOUT	(1 << 3)
 #define TCO1_CNT		0x68
 #	define TCO_LOCK		(1 << 12)

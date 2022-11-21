@@ -469,7 +469,7 @@ void early_usb_init(const struct southbridge_usb_port *portmap);
 #define   TCO1_TIMEOUT	(1 << 3)
 #define   DMISCI_STS	(1 << 9)
 #define TCO2_STS	0x66
-#define   SECOND_TO_STS	(1 << 1)
+#define   TCO2_STS_SECOND_TO	(1 << 1)
 #define TCO1_CNT	0x68
 #define   TCO_TMR_HLT	(1 << 11)
 #define   TCO_LOCK	(1 << 12)

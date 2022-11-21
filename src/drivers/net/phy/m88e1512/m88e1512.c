@@ -17,6 +17,28 @@ static void m88e1512_init(struct device *dev)
 	struct drivers_net_phy_m88e1512_config *config = dev->chip_info;
 	uint16_t reg;
 
+	/* Enable downshift. */
+	if (config->downshift_cnt) {
+		if (config->downshift_cnt > DOWNSHIFT_CNT_MAX) {
+			printk(BIOS_INFO, "%s: Downshift counter for %s is too large.\n",
+					dev_path(dev->bus->dev), dev->chip_ops->name);
+		} else {
+			printk(BIOS_DEBUG, "%s: Enable downshift after %d attempts for %s.\n",
+					dev_path(dev->bus->dev), config->downshift_cnt,
+					dev->chip_ops->name);
+
+			reg = mdio_read(dev, COPPER_SPEC_CTRL_REG_1);
+			clrsetbits16(&reg, DOWNSHIFT_CNT_MASK,
+					DOWNSHIFT_CNT(config->downshift_cnt) | DOWNSHIFT_EN);
+			mdio_write(dev, COPPER_SPEC_CTRL_REG_1, reg);
+
+			/* Downshift enable requires a software reset to take effect. */
+			reg = mdio_read(dev, COPPER_CTRL_REG);
+			setbits16(&reg, SOFTWARE_RESET);
+			mdio_write(dev, COPPER_CTRL_REG, reg);
+		}
+	}
+
 	/* Configure LEDs if requested. */
 	if (config->configure_leds) {
 		printk(BIOS_DEBUG, "%s: Set a customized LED mode for %s.\n",

@@ -8,4 +8,7 @@ struct drivers_net_phy_m88e1512_config {
 	unsigned char led_1_ctrl;	/* LED[1] Control */
 	unsigned char led_2_ctrl;	/* LED[2] Control */
 	bool enable_int;		/* INTn can be routed to LED[2] pin */
+	/* 1x, 2x,...8x is the number of times the PHY attempts to establish Gigabit link
+	   before the PHY downshifts to the next highest speed. */
+	unsigned char downshift_cnt;
 };

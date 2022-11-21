@@ -3,6 +3,7 @@
 #include <device/pci_def.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/post_code.h>
+#include <intelblocks/post_codes.h>
 
 #define CBFS_FILE_MAGIC 0
 #define CBFS_FILE_LEN (CBFS_FILE_MAGIC + 8)
@@ -19,7 +20,7 @@ bootblock_pre_c_entry:
 
 .global	cache_as_ram
 cache_as_ram:
-	post_code(0x21)
+	post_code(POST_BOOTBLOCK_CAR)
 
 	movl	$(CONFIG_FSP_T_LOCATION), %ebx
 	add	$0x94, %ebx

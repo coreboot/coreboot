@@ -12,6 +12,7 @@
 #include <device/pci_ops.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/pmclib.h>
+#include <intelblocks/post_codes.h>
 #include <option.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
@@ -611,7 +612,7 @@ int heci_reset(void)
 	uint32_t csr;
 
 	/* Clear post code to prevent eventlog entry from unknown code. */
-	post_code(0);
+	post_code(POST_CODE_ZERO);
 
 	/* Send reset request */
 	csr = read_host_csr();

@@ -2478,6 +2478,10 @@ int main(int argc, char **argv)
 		fprintf(stderr, "  Require safe spacing of 256 bytes\n");
 		return 1;
 	}
+	if (efs_location & 0xFF000000)
+		efs_location = efs_location - rom_base_address;
+	if (body_location & 0xFF000000)
+		body_location = body_location - rom_base_address;
 
 	if (any_location) {
 		if ((body_location & 0x3f) || (efs_location & 0x3f)) {
@@ -2486,19 +2490,43 @@ int main(int argc, char **argv)
 			return 1;
 		}
 	} else {
+		/* efs_location is relative address now. */
 		switch (efs_location) {
 		case 0:
-		case 0xFFFA0000:
-		case 0xFFF20000:
-		case 0xFFE20000:
-		case 0xFFC20000:
-		case 0xFF820000:
-		case 0xFF020000:
+		case 0xFA0000:
+		case 0xF20000:
+		case 0xE20000:
+		case 0xC20000:
+		case 0x820000:
+		case 0x020000:
+			break;
+		case 0x7A0000:
+		case 0x720000:
+		case 0x620000:
+		case 0x420000:
+			/* Special cases for 8M. */
+			if (ctx.rom_size != 0x800000) {
+				fprintf(stderr, "Error: Invalid Directory location.\n");
+				fprintf(stderr, "%x is only for 8M image size.", efs_location);
+				return 1;
+			}
+			break;
+		case 0x3A0000:
+		case 0x320000:
+		case 0x220000:
+			/* Special cases for 4M. */
+			if (ctx.rom_size != 0x400000) {
+				fprintf(stderr, "Error: Invalid Directory location.\n");
+				fprintf(stderr, "%x is only for 4M image size.", efs_location);
+				return 1;
+			}
 			break;
 		default:
 			fprintf(stderr, "Error: Invalid Directory location.\n");
 			fprintf(stderr, "  Valid locations are 0xFFFA0000, 0xFFF20000,\n");
 			fprintf(stderr, "  0xFFE20000, 0xFFC20000, 0xFF820000, 0xFF020000\n");
+			fprintf(stderr, "  0xFA0000, 0xF20000, 0xE20000, 0xC20000,\n");
+			fprintf(stderr, "  0x820000, 0x020000\n");
 			return 1;
 		}
 	}
@@ -2511,10 +2539,10 @@ int main(int argc, char **argv)
 
 	if (efs_location) {
 		if (efs_location != body_location) {
-			romsig_offset = efs_location - rom_base_address;
-			ctx.current = body_location - rom_base_address;
+			romsig_offset = efs_location;
+			ctx.current = body_location;
 		} else {
-			romsig_offset = efs_location - rom_base_address;
+			romsig_offset = efs_location;
 			ctx.current = romsig_offset + sizeof(embedded_firmware);
 		}
 	} else {
@@ -2671,7 +2699,7 @@ int main(int argc, char **argv)
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (targetfd >= 0) {
 		ssize_t bytes;
-		uint32_t offset = body_location ? body_location - rom_base_address : AMD_ROMSIG_OFFSET;
+		uint32_t offset = body_location ? body_location : AMD_ROMSIG_OFFSET;
 
 		bytes = write(targetfd, BUFF_OFFSET(ctx, offset), ctx.current - offset);
 		if (bytes != ctx.current - offset) {

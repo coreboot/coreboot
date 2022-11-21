@@ -172,7 +172,12 @@
 #define  BIOS_PCI_EXP_EN	(1 << 10)
 #define  PWRBTN_LVL		(1 <<  9)
 #define  SMI_LOCK		(1 <<  4)
-#define  PER_SMI_SEL		(1 <<  0)
+#define  PER_SMI_SEL_MASK	(3 <<  0)
+#define    SMI_RATE_64S		(0 <<  0)
+#define    SMI_RATE_32S		(1 <<  0)
+#define    SMI_RATE_16S		(2 <<  0)
+#define    SMI_RATE_8S		(3 <<  0)
+
 #define GEN_PMCON3		0x1028
 #define  SLP_S3_ASSERT_WIDTH_SHIFT	10
 #define  SLP_S3_ASSERT_MASK	(0x3 << SLP_S3_ASSERT_WIDTH_SHIFT)

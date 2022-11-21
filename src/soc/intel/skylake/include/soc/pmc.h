@@ -35,6 +35,12 @@
 #define  ALLOW_L1LOW_C0		(1 << 7)
 #define  ALLOW_L1LOW_OPI_ON	(1 << 6)
 #define  SMI_LOCK		(1 << 4)
+#define  PER_SMI_SEL_MASK	(3 << 0)
+#define    SMI_RATE_64S		(0 << 0)
+#define    SMI_RATE_32S		(1 << 0)
+#define    SMI_RATE_16S		(2 << 0)
+#define    SMI_RATE_8S		(3 << 0)
+
 #define GEN_PMCON_B		0xa4
 #define  SLP_STR_POL_LOCK	(1 << 18)
 #define  ACPI_BASE_LOCK		(1 << 17)

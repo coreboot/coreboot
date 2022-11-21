@@ -212,12 +212,7 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref emmc on end
-		device ref ish on
-			chip drivers/intel/ish
-				register "firmware_name" = ""adl_ish_lite.bin""
-				device generic 0 on end
-			end
-		end
+		device ref ish on end
 		device ref ufs on end
 		device ref pch_espi on
 			chip ec/google/chromeec

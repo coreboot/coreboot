@@ -61,8 +61,15 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->VmxEnable = CONFIG(ENABLE_VMX);
 
 	/* PCH Master Gating Control */
-	m_cfg->PchMasterClockGating = 1;
-	m_cfg->PchMasterPowerGating = 1;
+	if (config->realtime_tuning_enable) {
+		m_cfg->PchMasterClockGating = 0;
+		m_cfg->PchMasterPowerGating = 0;
+		m_cfg->DisPgCloseIdleTimeout = 0;
+		m_cfg->PowerDownMode = 0;
+	} else {
+		m_cfg->PchMasterClockGating = 1;
+		m_cfg->PchMasterPowerGating = 1;
+	}
 
 	m_cfg->SmbusEnable = is_devfn_enabled(PCH_DEVFN_SMBUS);
 

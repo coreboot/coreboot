@@ -465,6 +465,9 @@ struct soc_intel_elkhartlake_config {
 
 	/* Disable L1 prefetcher */
 	bool L1_prefetcher_disable;
+
+	/* Activate real time tuning according to the Real-Time Tuning Guide (doc #640979) */
+	bool realtime_tuning_enable;
 };
 
 typedef struct soc_intel_elkhartlake_config config_t;

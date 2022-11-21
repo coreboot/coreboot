@@ -1111,7 +1111,10 @@ int mtk_edp_init(struct edid *edid)
 
 	dptx_check_sinkcap(&mtk_edp);
 
-	dptx_get_edid(&mtk_edp, edid);
+	if (dptx_get_edid(&mtk_edp, edid) != 0) {
+		printk(BIOS_ERR, "Failed to get EDID\n");
+		return -1;
+	}
 
 	dptx_set_trainingstart(&mtk_edp);
 	dp_intf_config(edid);

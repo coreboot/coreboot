@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/intel/post_codes.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
@@ -15,7 +16,7 @@ _cache_as_ram_setup:
 bootblock_pre_c_entry:
 
 cache_as_ram:
-	post_code(0x20)
+	post_code(POST_BOOTBLOCK_CAR)
 
 	/* Send INIT IPI to all excluding ourself. */
 	movl	$0x000C4500, %eax
@@ -28,7 +29,7 @@ wait_for_sipi:
 	bt	$12, %eax
 	jc	wait_for_sipi
 
-	post_code(0x22)
+	post_code(POST_SOC_CLEAR_FIXED_MTRRS)
 
 	/* Clear/disable fixed MTRRs */
 	mov	$fixed_mtrr_list_size, %ebx
@@ -57,7 +58,7 @@ clear_var_mtrr:
 	dec	%ebx
 	jnz	clear_var_mtrr
 
-	post_code(0x22)
+	post_code(POST_SOC_SET_DEF_MTRR_TYPE)
 	/* Configure the default memory type to uncacheable. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	rdmsr
@@ -82,7 +83,7 @@ addrsize_set_high:
 	movl	$MTRR_PHYS_MASK(1), %ecx
 	wrmsr
 
-	post_code(0x23)
+	post_code(POST_SOC_SET_MTRR_BASE)
 	/* Set Cache-as-RAM base address. */
 	movl	$(MTRR_PHYS_BASE(0)), %ecx
 	movl	$_car_mtrr_start, %eax
@@ -90,7 +91,7 @@ addrsize_set_high:
 	xorl	%edx, %edx
 	wrmsr
 
-	post_code(0x24)
+	post_code(POST_SOC_SET_MTRR_MASK)
 	/* Set Cache-as-RAM mask. */
 	movl	$(MTRR_PHYS_MASK(0)), %ecx
 	rdmsr
@@ -98,7 +99,7 @@ addrsize_set_high:
 	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
-	post_code(0x25)
+	post_code(POST_SOC_ENABLE_MTRRS)
 
 	/* Enable MTRR. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
@@ -126,7 +127,7 @@ addrsize_set_high:
 	shr	$2, %ecx
 	rep	stosl
 
-	post_code(0x26)
+	post_code(POST_SOC_DISABLE_CACHE)
 	/* Enable Cache-as-RAM mode by disabling cache. */
 	movl	%cr0, %eax
 	orl	$CR0_CacheDisable, %eax
@@ -145,7 +146,7 @@ addrsize_set_high:
 	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
-	post_code(0x28)
+	post_code(POST_SOC_ENABLE_CACHE)
 	/* Enable cache. */
 	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
@@ -179,7 +180,7 @@ addrsize_set_high:
 #endif
 
 before_c_entry:
-	post_code(0x29)
+	post_code(POST_BOOTBLOCK_BEFORE_C_ENTRY)
 	call	bootblock_c_entry_bist
 
 	/* Should never see this postcode */

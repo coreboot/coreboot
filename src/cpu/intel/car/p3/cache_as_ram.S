@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/intel/post_codes.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
@@ -13,7 +14,7 @@ _cache_as_ram_setup:
 bootblock_pre_c_entry:
 
 cache_as_ram:
-	post_code(0x20)
+	post_code(POST_BOOTBLOCK_CAR)
 
 	/* Clear/disable fixed MTRRs */
 	mov	$fixed_mtrr_list_size, %ebx
@@ -41,7 +42,7 @@ clear_var_mtrr:
 	inc	%ecx
 	dec	%ebx
 	jnz	clear_var_mtrr
-	post_code(0x21)
+	post_code(POST_SOC_SET_DEF_MTRR_TYPE)
 
 	/* Configure the default memory type to uncacheable. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
@@ -49,7 +50,7 @@ clear_var_mtrr:
 	andl	$(~0x00000cff), %eax
 	wrmsr
 
-	post_code(0x22)
+	post_code(POST_SOC_DETERMINE_CPU_ADDR_BITS)
 
 	/* Determine CPU_ADDR_BITS and load PHYSMASK high word to %edx. */
 	movl	$1, %eax
@@ -67,7 +68,7 @@ addrsize_set_high:
 	movl	$MTRR_PHYS_MASK(1), %ecx
 	wrmsr
 
-	post_code(0x2a)
+	post_code(POST_SOC_SET_CAR_BASE)
 
 	/* Set Cache-as-RAM base address. */
 	movl	$(MTRR_PHYS_BASE(0)), %ecx
@@ -83,7 +84,7 @@ addrsize_set_high:
 	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
-	post_code(0x2b)
+	post_code(POST_SOC_ENABLE_MTRRS)
 
 	/* Enable MTRR. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
@@ -91,7 +92,7 @@ addrsize_set_high:
 	orl	$MTRR_DEF_TYPE_EN, %eax
 	wrmsr
 
-	post_code(0x2c)
+	post_code(POST_SOC_ENABLE_CACHE)
 
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
 	movl	%cr0, %eax
@@ -113,7 +114,7 @@ addrsize_set_high:
 	xorl	%eax, %eax
 	rep	stosl
 
-	post_code(0x2d)
+	post_code(POST_SOC_DISABLE_CACHE)
 	/* Enable Cache-as-RAM mode by disabling cache. */
 	movl	%cr0, %eax
 	orl	$CR0_CacheDisable, %eax
@@ -132,7 +133,7 @@ addrsize_set_high:
 	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
-	post_code(0x2e)
+	post_code(POST_SOC_FILL_CACHE)
 	/* Enable cache. */
 	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
@@ -155,7 +156,7 @@ addrsize_set_high:
 	pushl	%eax	/* tsc[31:0] */
 
 before_c_entry:
-	post_code(0x29)
+	post_code(POST_BOOTBLOCK_BEFORE_C_ENTRY)
 	call	bootblock_c_entry_bist
 
 	/* Should never see this postcode */

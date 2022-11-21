@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/intel/post_codes.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/post_code.h>
@@ -12,14 +13,14 @@
 chipset_teardown_car:
 	pop %esp
 
-	post_code(0x30)
+	post_code(POST_POSTCAR_DISABLE_CACHE)
 
 	/* Disable cache. */
 	movl	%cr0, %eax
 	orl	$CR0_CacheDisable, %eax
 	movl	%eax, %cr0
 
-	post_code(0x31)
+	post_code(POST_POSTCAR_DISABLE_DEF_MTRR)
 
 	/* Disable MTRR. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
@@ -35,7 +36,7 @@ chipset_teardown_car:
 	andl	$~1, %eax
 	wrmsr
 
-	post_code(0x32)
+	post_code(POST_POSTCAR_TEARDOWN_DONE)
 
 	/* Return to caller. */
 	jmp	*%esp

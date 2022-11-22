@@ -667,7 +667,7 @@ size_t ZSTD_decompressMultiFrame(ZSTD_DCtx* dctx,
         {   const size_t res = ZSTD_decompressFrame(dctx, dst, dstCapacity,
                                                     &src, &srcSize);
             RETURN_ERROR_IF(
-                (ZSTD_getErrorCode(res) == ZSTD_error_prefix_unknown)
+                (ERR_getErrorCode(res) == ZSTD_error_prefix_unknown)
              && (moreThan1Frame==1),
                 srcSize_wrong,
                 "At least one frame successfully completed, "

@@ -86,6 +86,12 @@ config COMPRESSED_PAYLOAD_LZMA
 	  In order to reduce the size payloads take up in the ROM chip
 	  coreboot can compress them using the LZMA algorithm.
 
+config COMPRESSED_PAYLOAD_ZSTD
+	bool "Use ZSTD compression for payloads"
+	help
+	  In order to reduce the size payloads take up in the ROM chip
+	  coreboot can compress them using the ZSTD algorithm.
+
 config COMPRESSED_PAYLOAD_LZ4
 	bool "Use LZ4 compression for payloads"
 	help

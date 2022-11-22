@@ -87,6 +87,19 @@ static int load_one_segment(uint8_t *dest,
 			return 0;
 		break;
 	}
+	case CBFS_COMPRESS_ZSTD: {
+		if (!CONFIG(COMPRESSED_PAYLOAD_ZSTD))
+			return 0;
+
+		printk(BIOS_DEBUG, "using ZSTD\n");
+		timestamp_add_now(TS_UZSTDF_START);
+		len = uzstdn(src, len, dest, memsz);
+		timestamp_add_now(TS_UZSTDF_END);
+		if (!len) /* Decompression Error. */
+			return 0;
+		break;
+	}
+
 	case CBFS_COMPRESS_NONE: {
 		printk(BIOS_DEBUG, "it's not compressed!\n");
 		memcpy(dest, src, len);

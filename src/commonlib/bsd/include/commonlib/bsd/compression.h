@@ -19,6 +19,6 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn);
 size_t ulz4f(const void *src, void *dst);
 
 /* Decompresses ZSTD image */
-size_t uzstdfn(const void *src, size_t srcn, void *dst, size_t dstn);
+size_t uzstdn(const void *src, size_t srcn, void *dst, size_t dstn);
 
 #endif	/* _COMMONLIB_COMPRESSION_H_ */

@@ -62,6 +62,14 @@ size_t ulzman(const void *src, size_t srcn, void *dst, size_t dstn)
 	return dstn;
 }
 
+size_t uzstdn(const void *src, size_t srcn, void *dst, size_t dstn)
+{
+	check_expected(srcn);
+	check_expected(dstn);
+	memcpy(dst, src, dstn);
+	return dstn;
+}
+
 size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 {
 	check_expected(srcn);

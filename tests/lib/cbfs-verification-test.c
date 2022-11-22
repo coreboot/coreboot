@@ -52,6 +52,12 @@ size_t ulzman(const void *src, size_t srcn, void *dst, size_t dstn)
 	return 0;
 }
 
+size_t uzstdn(const void *src, size_t srcn, void *dst, size_t dstn)
+{
+	fail_msg("Unexpected call to %s", __func__);
+	return 0;
+}
+
 size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 {
 	fail_msg("Unexpected call to %s", __func__);

@@ -1,6 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 subdirs-y += storage
+subdirs-y += bsd/zstd
 
 bootblock-y += mem_pool.c
 verstage-y += mem_pool.c
@@ -58,6 +59,7 @@ ramstage-y += bsd/lz4_wrapper.c
 postcar-y += bsd/lz4_wrapper.c
 
 all-y += list.c
+all-y += bsd/zstd_wrapper.c
 
 ramstage-y += sort.c
 

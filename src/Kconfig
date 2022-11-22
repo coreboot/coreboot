@@ -202,10 +202,16 @@ config MB_COMPRESS_RAMSTAGE_LZ4
 	help
 	  Select this in a mainboard to use LZ4 compression by default
 
+config MB_COMPRESS_RAMSTAGE_ZSTD
+	bool
+	help
+	  Select this in a mainboard to use ZSTD compression by default
+
 choice
 	prompt "Ramstage compression"
 	depends on HAVE_RAMSTAGE && !UNCOMPRESSED_RAMSTAGE
 	default COMPRESS_RAMSTAGE_LZ4 if MB_COMPRESS_RAMSTAGE_LZ4
+	default COMPRESS_RAMSTAGE_ZSTD if MB_COMPRESS_RAMSTAGE_ZSTD
 	default COMPRESS_RAMSTAGE_LZMA
 
 config COMPRESS_RAMSTAGE_LZMA
@@ -226,6 +232,13 @@ config COMPRESS_RAMSTAGE_LZ4
 
 	  If you're not sure, stick with LZMA.
 
+config COMPRESS_RAMSTAGE_ZSTD
+	bool "Compress ramstage with ZSTD"
+	help
+	  Compress ramstage with ZSTD.
+	  This is faster than LZMA but uses more BSS.
+	  However it decompresses faster on slower CPUs and is suited for
+	  platforms with high speed SPI interfaces, but limited computing power.
 endchoice
 
 config COMPRESS_PRERAM_STAGES

@@ -12,6 +12,34 @@ compressionobj += lzma.o
 compressionobj += LzFind.o
 compressionobj += LzmaDec.o
 compressionobj += LzmaEnc.o
+# ZSTD
+# common
+compressionobj += debug.o
+compressionobj += entropy_common.o
+compressionobj += error_private.o
+compressionobj += fse_decompress.o
+compressionobj += zstd_common.o
+# compress
+compressionobj += fse_compress.o
+compressionobj += hist.o
+compressionobj += huf_compress.o
+compressionobj += zstd_compress.o
+compressionobj += zstd_compress_literals.o
+compressionobj += zstd_compress_sequences.o
+compressionobj += zstd_compress_superblock.o
+compressionobj += zstd_double_fast.o
+compressionobj += zstd_fast.o
+compressionobj += zstd_lazy.o
+compressionobj += zstd_ldm.o
+compressionobj += zstd_preSplit.o
+compressionobj += zstd_opt.o
+# xxhash.o Already included for LZ4
+# decompress
+compressionobj += huf_decompress.o
+compressionobj += zstd_ddict.o
+compressionobj += zstd_decompress_block.o
+compressionobj += zstd_decompress.o
+#compressionobj += huf_decomppress_amd64.o
 
 cbfsobj :=
 cbfsobj += cbfstool.o
@@ -132,6 +160,7 @@ TOOLCPPFLAGS += -I$(VBOOT_SOURCE)/host/lib/include
 # have right now.
 TOOLCPPFLAGS += -I$(top)/src
 TOOLCPPFLAGS += -I$(top)/src/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include
+TOOLCPPFLAGS += -I$(top)/src/commonlib/bsd/zstd/
 
 TOOLLDFLAGS ?=
 
@@ -147,6 +176,7 @@ TOOLCFLAGS+=-std=c11
 endif
 
 LZ4CFLAGS ?= -Wno-strict-prototypes
+ZSTDCPPFLAGS ?= -DZSTD_DISABLE_ASM=1
 
 VBOOT_HOSTLIB = $(VBOOT_HOST_BUILD)/libvboot_host.a
 
@@ -188,6 +218,10 @@ $(objutil)/cbfstool/%.o: $(top)/src/commonlib/%.c
 $(objutil)/cbfstool/%.o: $(top)/src/commonlib/bsd/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+
+$(objutil)/cbfstool/%.o: $(top)/src/commonlib/bsd/zstd/*/%.c
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
+	$(HOSTCC) $(TOOLCPPFLAGS) $(TOOLCFLAGS) $(HOSTCFLAGS) $(ZSTDCPPFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lz4/lib/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"

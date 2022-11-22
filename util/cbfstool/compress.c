@@ -6,9 +6,11 @@
 #include <stdlib.h>
 #include "common.h"
 #include "lz4/lib/lz4frame.h"
+#include <zstd.h>
 #include <commonlib/bsd/compression.h>
 
-static int lz4_compress(char *in, int in_len, char *out, int *out_len)
+static int
+lz4_compress(char *in, int in_len, char *out, int *out_len)
 {
 	LZ4F_preferences_t prefs = {
 		.compressionLevel = 20,
@@ -53,6 +55,52 @@ static int lzma_decompress(char *in, int in_len, char *out, unused int out_len,
 {
 	return do_lzma_uncompress(out, out_len, in, in_len, actual_size);
 }
+
+static int zstd_compress(char *in, int in_len, char *out, int *out_len)
+{
+	size_t worst_size = ZSTD_compressBound(in_len);
+	size_t ret;
+
+	void *bounce = malloc(worst_size);
+	if (!bounce)
+		return -1;
+	ret = ZSTD_compress(bounce, worst_size, in, in_len, ZSTD_maxCLevel());
+	if (ZSTD_isError(ret)) {
+		ERROR("ZSTD_compress (v%s) returned %zu (%s)\n",
+		      ZSTD_versionString(), ret, ZSTD_getErrorName(ret));
+		free(bounce);
+		return -2;
+	}
+	if (ret >= (size_t)in_len) {
+		free(bounce);
+		return -3;
+	}
+	*out_len = (int)ret;
+
+	memcpy(out, bounce, *out_len);
+	free(bounce);
+	return 0;
+}
+
+static int zstd_decompress(char *in, int in_len, char *out, int out_len,
+			   size_t *actual_size)
+{
+	ZSTD_DCtx* dctx = ZSTD_createDCtx();
+	size_t ret = ZSTD_decompressDCtx(dctx, out, out_len, in, in_len);
+	ZSTD_freeDCtx(dctx);
+
+	if (ret == 0)
+		return -1;
+	if (ZSTD_isError(ret)) {
+		ERROR("ZSTD_decompress (v%s) returned %zu (%s)\n",
+		      ZSTD_versionString(), ret, ZSTD_getErrorName(ret));
+		return -2;
+	}
+	if (actual_size != NULL)
+		*actual_size = ret;
+	return 0;
+}
+
 static int none_compress(char *in, int in_len, char *out, int *out_len)
 {
 	memcpy(out, in, in_len);
@@ -82,6 +130,9 @@ comp_func_ptr compression_function(enum cbfs_compression algo)
 	case CBFS_COMPRESS_LZ4:
 		compress = lz4_compress;
 		break;
+	case CBFS_COMPRESS_ZSTD:
+		compress = zstd_compress;
+		break;
 	default:
 		ERROR("Unknown compression algorithm %d!\n", algo);
 		return NULL;
@@ -101,6 +152,9 @@ decomp_func_ptr decompression_function(enum cbfs_compression algo)
 		break;
 	case CBFS_COMPRESS_LZ4:
 		decompress = lz4_decompress;
+		break;
+	case CBFS_COMPRESS_ZSTD:
+		decompress = zstd_decompress;
 		break;
 	default:
 		ERROR("Unknown compression algorithm %d!\n", algo);

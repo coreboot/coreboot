@@ -18,4 +18,7 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn);
 /* Same as ulz4fn() but does not perform any bounds checks. */
 size_t ulz4f(const void *src, void *dst);
 
+/* Decompresses ZSTD image */
+size_t uzstdfn(const void *src, size_t srcn, void *dst, size_t dstn);
+
 #endif	/* _COMMONLIB_COMPRESSION_H_ */

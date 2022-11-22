@@ -1,7 +1,12 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 # TODO: update for Herobrine
+
+#if CONFIG_BOARD_GOOGLE_PIGLIN || CONFIG_BOARD_GOOGLE_HOGLIN
+FLASH@0x0 CONFIG_ROM_SIZE {
+#else
 FLASH@0x0 8M {
+#endif
 	WP_RO 4M {
 		RO_SECTION 0x3c4000 {
 			BOOTBLOCK 96K

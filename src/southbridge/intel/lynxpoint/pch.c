@@ -185,7 +185,7 @@ void pch_enable(struct device *dev)
 		return;
 
 	if (!dev->enabled) {
-		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
+		printk(BIOS_DEBUG, "%s: Disabling device\n", dev_path(dev));
 
 		/* Ensure memory, io, and bus master are all disabled */
 		pci_and_config16(dev, PCI_COMMAND,

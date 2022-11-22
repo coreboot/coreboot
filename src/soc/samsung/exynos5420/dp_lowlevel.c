@@ -229,7 +229,7 @@ unsigned int exynos_dp_set_analog_power_down(unsigned int block, u32 enable)
 				CH2_PD | CH3_PD);
 		break;
 	default:
-		printk(BIOS_ERR, "DP undefined block number : %d\n",  block);
+		printk(BIOS_ERR, "DP undefined block number : %d\n", block);
 		return -1;
 	}
 

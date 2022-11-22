@@ -15,7 +15,7 @@
 #include <console/console.h>
 
 #define VBDEBUG(format, args...) \
-	printk(BIOS_INFO, "%s():%d: " format,  __func__, __LINE__, ## args)
+	printk(BIOS_INFO, "%s():%d: " format, __func__, __LINE__, ## args)
 
 #define RETURN_ON_FAILURE(tpm_cmd) do {				\
 		uint32_t result_;					\

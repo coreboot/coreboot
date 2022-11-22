@@ -327,7 +327,7 @@ static void pch_pcie_enable(struct device *dev)
 	}
 
 	if (!dev->enabled) {
-		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
+		printk(BIOS_DEBUG, "%s: Disabling device\n", dev_path(dev));
 
 		/*
 		 * PCIE Power Savings for PantherPoint and CougarPoint/B1+
@@ -408,7 +408,7 @@ void pch_enable(struct device *dev)
 		return pch_pcie_enable(dev);
 
 	if (!dev->enabled) {
-		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
+		printk(BIOS_DEBUG, "%s: Disabling device\n", dev_path(dev));
 
 		/* Ensure memory, io, and bus master are all disabled */
 		pci_and_config16(dev, PCI_COMMAND,

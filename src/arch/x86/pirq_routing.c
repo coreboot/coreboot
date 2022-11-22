@@ -164,7 +164,7 @@ static void pirq_route_irqs(unsigned long addr)
 	}
 
 	for (i = 0; i < CONFIG_MAX_PIRQ_LINKS; i++)
-		printk(BIOS_DEBUG, "PIRQ%c: %d\n", i + 'A',  pirq[i]);
+		printk(BIOS_DEBUG, "PIRQ%c: %d\n", i + 'A', pirq[i]);
 
 	pirq_assign_irqs(pirq);
 }

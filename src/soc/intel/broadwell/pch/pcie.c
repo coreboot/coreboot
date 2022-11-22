@@ -295,7 +295,7 @@ static void root_port_commit_config(void)
 		if (dev->enabled)
 			continue;
 
-		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
+		printk(BIOS_DEBUG, "%s: Disabling device\n", dev_path(dev));
 
 		/* 8.2 Configuration of PCI Express Root Ports */
 		pci_or_config32(dev, 0x338, 1 << 26);

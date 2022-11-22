@@ -56,7 +56,7 @@ void i82801gx_enable(struct device *dev)
 	u16 reg16;
 
 	if (!dev->enabled) {
-		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
+		printk(BIOS_DEBUG, "%s: Disabling device\n", dev_path(dev));
 
 		/* Ensure memory, io, and bus master are all disabled */
 		reg16 = pci_read_config16(dev, PCI_COMMAND);

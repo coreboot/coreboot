@@ -93,7 +93,7 @@ static int load_one_segment(uint8_t *dest,
 		break;
 	}
 	default:
-		printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", compression);
+		printk(BIOS_INFO, "CBFS:  Unknown compression type %d\n", compression);
 		return 0;
 	}
 	/* Calculate middle after any changes to len. */

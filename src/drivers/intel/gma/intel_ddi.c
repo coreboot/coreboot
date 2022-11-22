@@ -48,7 +48,7 @@ static void intel_prepare_ddi_buffers(int port, int use_fdi_mode)
 				 hsw_ddi_translations_fdi :
 				 hsw_ddi_translations_dp);
 
-	printk(BIOS_SPEW,  "Initializing DDI buffers for port %d in %s mode\n",
+	printk(BIOS_SPEW, "Initializing DDI buffers for port %d in %s mode\n",
 	       port,
 	       use_fdi_mode ? "FDI" : "DP");
 

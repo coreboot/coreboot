@@ -34,7 +34,7 @@ my $warnings_found = 0;
 my $exclude_dirs_and_files =
   '^build/\|^coreboot-builds/\|^configs/\|^util/\|^\.git/\|^payloads\|^Documentation\|^3rdparty'
   . '\|' .                            # directories to exclude when searching for used symbols
-  '\.config\|\.txt$\|\.tex$\|\.tags\|/kconfig.h'; #files to exclude when looking for symbols
+  '\.config\|\.txt$\|\.tex$\|\.tags\|/kconfig.h\|\.fmd'; #files to exclude when looking for symbols
 my $payload_files_to_check='payloads/Makefile.inc payloads/external/Makefile.inc';
 my $config_file = "";                 # name of config file to load symbol values from.
 my @wholeconfig;                      # document the entire kconfig structure

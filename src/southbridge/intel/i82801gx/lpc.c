@@ -285,7 +285,6 @@ static void i82801gx_set_acpi_mode(struct device *dev)
 	}
 }
 
-#define SPIBASE 0x3020
 static void i82801gx_spi_init(void)
 {
 	u16 spicontrol;
@@ -417,9 +416,6 @@ static void i82801gx_lpc_read_resources(struct device *dev)
 		}
 	}
 }
-
-#define SPIBAR16(x) RCBA16(0x3020 + x)
-#define SPIBAR32(x) RCBA32(0x3020 + x)
 
 static void lpc_final(struct device *dev)
 {

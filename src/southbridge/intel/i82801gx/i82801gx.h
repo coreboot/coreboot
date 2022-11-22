@@ -9,10 +9,13 @@
 
 #include <southbridge/intel/common/rcba.h> /* IWYU pragma: export */
 
-#ifndef __ACPI__
-#define DEBUG_PERIODIC_SMIS 0
+#define SPIBASE 0x3020
+#define SPIBAR16(x) RCBA16(SPIBASE + x)
+#define SPIBAR32(x) RCBA32(SPIBASE + x)
 
+#ifndef __ACPI__
 #include <device/device.h>
+
 void i82801gx_enable(struct device *dev);
 
 void i82801gx_lpc_setup(void);

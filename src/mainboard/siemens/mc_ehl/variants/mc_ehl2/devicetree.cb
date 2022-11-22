@@ -191,6 +191,7 @@ chip soc/intel/elkhartlake
 				register "led_1_ctrl" = "1"
 				# INTn is routed to LED[2] pin
 				register "enable_int" = "true"
+				register "downshift_cnt" = "2"
 				device mdio 0 on    # PHY address
 					ops m88e1512_ops
 				end
@@ -206,6 +207,7 @@ chip soc/intel/elkhartlake
 				register "led_1_ctrl" = "1"
 				# INTn is routed to LED[2] pin
 				register "enable_int" = "true"
+				register "downshift_cnt" = "2"
 				device mdio 1 on    # PHY address
 					ops m88e1512_ops
 				end
@@ -224,6 +226,7 @@ chip soc/intel/elkhartlake
 				register "led_1_ctrl" = "1"
 				# INTn is routed to LED[2] pin
 				register "enable_int" = "true"
+				register "downshift_cnt" = "2"
 				device mdio 1 on    # PHY address
 					ops m88e1512_ops
 				end

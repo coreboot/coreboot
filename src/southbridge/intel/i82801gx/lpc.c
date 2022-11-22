@@ -445,7 +445,7 @@ static void lpc_final(struct device *dev)
 	outw(tco1_cnt, DEFAULT_PMBASE + 0x60 + TCO1_CNT);
 
 	/* Indicate finalize step with post code */
-	outb(POST_OS_BOOT, 0x80);
+	post_code(POST_OS_BOOT);
 }
 
 static const char *lpc_acpi_name(const struct device *dev)

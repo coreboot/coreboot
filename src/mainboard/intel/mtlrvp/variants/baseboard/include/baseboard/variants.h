@@ -12,4 +12,7 @@ enum mtl_boardid {
 	MTLM_LP5_RVP = 0x06,
 };
 
+/* Functions to configure GPIO as per variant schematics */
+void configure_early_gpio_pads(void);
+
 #endif /*__BASEBOARD_VARIANTS_H__ */

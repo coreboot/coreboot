@@ -2,6 +2,8 @@
 
 all-$(CONFIG_CHROMEOS) += chromeos.c
 
+bootblock-y += bootblock.c
+
 ramstage-y += ec.c
 ramstage-y += mainboard.c
 

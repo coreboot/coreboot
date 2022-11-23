@@ -82,7 +82,8 @@ enum {
 				  CG_CON0_DISP_AAL0 |
 				  CG_CON0_DISP_GAMMA0 |
 				  CG_CON0_DISP_DITHER0 |
-				  CG_CON0_DISP_DP_INTF0,
+				  CG_CON0_DISP_DP_INTF0 |
+				  CG_CON0_DISP_DSI0,
 	CG_CON0_ALL		= 0xffffffff
 };
 
@@ -122,7 +123,8 @@ enum {
 	CG_CON2_DPI_DPI0	= BIT(8),
 	CG_CON2_DP_INTF0	= BIT(16),
 
-	CG_CON2_DISP_ALL	= CG_CON2_DP_INTF0,
+	CG_CON2_DISP_ALL	= CG_CON2_DSI_DSI0 |
+				  CG_CON2_DP_INTF0,
 	CG_CON2_ALL		= 0xffffffff
 };
 
@@ -280,7 +282,12 @@ enum {
 	SMI_LARB_PORT_L0_OVL_RDMA0	= 0xF88,
 };
 
+enum disp_path_sel {
+	DISP_PATH_EDP = 0,
+	DISP_PATH_MIPI,
+};
+
 void mtk_ddp_init(void);
-void mtk_ddp_mode_set(const struct edid *edid);
+void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel);
 
 #endif

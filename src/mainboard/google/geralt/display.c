@@ -55,7 +55,7 @@ int configure_display(void)
 
 	edid_set_framebuffer_bits_per_pixel(&edid, 32, 0);
 
-	mtk_ddp_mode_set(&edid);
+	mtk_ddp_mode_set(&edid, DISP_PATH_EDP);
 	info = fb_new_framebuffer_info_from_edid(&edid, (uintptr_t)0);
 	if (info)
 		fb_set_orientation(info, LB_FB_ORIENTATION_NORMAL);

@@ -6,24 +6,36 @@
 #include <soc/addressmap.h>
 #include <soc/ddp.h>
 
-static void disp_config_main_path_connection(void)
+static void disp_config_main_path_connection(enum disp_path_sel path)
 {
 	/* ovl0 */
 	write32(&mmsys_cfg->mmsys_ovl_mout_en,
 		DISP_OVL0_TO_DISP_RDMA0);
-	write32(&mmsys_cfg->mmsys_dp_intf0_sel_in,
-		SEL_IN_DP_INTF0_FROM_DISP_DITHER0);
-	write32(&mmsys_cfg->mmsys_dither0_sel_out,
-		SEL_OUT_DISP_DITHER0_TO_DP_INTF0);
+
+	if (path == DISP_PATH_EDP) {
+		write32(&mmsys_cfg->mmsys_dp_intf0_sel_in,
+			SEL_IN_DP_INTF0_FROM_DISP_DITHER0);
+		write32(&mmsys_cfg->mmsys_dither0_sel_out,
+			SEL_OUT_DISP_DITHER0_TO_DP_INTF0);
+	} else {
+		write32(&mmsys_cfg->mmsys_dsi0_sel_in,
+			SEL_IN_DSI0_FROM_DISP_DITHER0);
+		write32(&mmsys_cfg->mmsys_dither0_sel_out,
+			SEL_OUT_DISP_DITHER0_TO_DSI0);
+	}
 }
 
-static void disp_config_main_path_mutex(void)
+static void disp_config_main_path_mutex(enum disp_path_sel path)
 {
 	write32(&disp_mutex->mutex[0].mod, MUTEX_MOD_MAIN_PATH);
 
-	/* Clock source from DP_INTF0 */
-	write32(&disp_mutex->mutex[0].ctl,
-		MUTEX_SOF_DP_INTF0 | (MUTEX_SOF_DP_INTF0 << 7));
+	if (path == DISP_PATH_EDP)
+		write32(&disp_mutex->mutex[0].ctl,
+			MUTEX_SOF_DP_INTF0 | (MUTEX_SOF_DP_INTF0 << 7));
+	else
+		write32(&disp_mutex->mutex[0].ctl,
+			MUTEX_SOF_DSI0 | (MUTEX_SOF_DSI0 << 7));
+
 	write32(&disp_mutex->mutex[0].en, BIT(0));
 }
 
@@ -94,7 +106,7 @@ static void dither_config(u32 width, u32 height)
 	write32(&regs->en, PQ_EN);
 }
 
-static void main_disp_path_setup(u32 width, u32 height, u32 vrefresh)
+static void main_disp_path_setup(u32 width, u32 height, u32 vrefresh, enum disp_path_sel path)
 {
 	u32 idx;
 	const u32 pixel_clk = width * height * vrefresh;
@@ -114,8 +126,8 @@ static void main_disp_path_setup(u32 width, u32 height, u32 vrefresh)
 	gamma_config(width, height);
 	postmask_config(width, height);
 	dither_config(width, height);
-	disp_config_main_path_connection();
-	disp_config_main_path_mutex();
+	disp_config_main_path_connection(path);
+	disp_config_main_path_mutex(path);
 }
 
 static void disp_clock_on(void)
@@ -133,7 +145,7 @@ void mtk_ddp_init(void)
 	write32p(SMI_LARB0 + SMI_LARB_PORT_L0_OVL_RDMA0, 0);
 }
 
-void mtk_ddp_mode_set(const struct edid *edid)
+void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path)
 {
 	u32 fmt = OVL_INFMT_RGBA8888;
 	u32 bpp = edid->framebuffer_bits_per_pixel / 8;
@@ -156,7 +168,7 @@ void mtk_ddp_mode_set(const struct edid *edid)
 		       __func__, vrefresh);
 	}
 
-	main_disp_path_setup(width, height, vrefresh);
+	main_disp_path_setup(width, height, vrefresh, path);
 	rdma_start();
 	ovl_layer_config(fmt, bpp, width, height);
 }

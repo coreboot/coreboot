@@ -136,7 +136,7 @@ chip soc/intel/alderlake
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
-				register "is_untrusted" = "true"
+				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
 		end

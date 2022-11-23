@@ -176,7 +176,7 @@ chip soc/intel/alderlake
 			}"
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW1_03"
-				register "is_untrusted" = "true"
+				register "add_acpi_dma_property" = "true"
 				device pci 00.0 on end
 			end
 		end

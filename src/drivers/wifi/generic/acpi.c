@@ -522,7 +522,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 		acpigen_write_PRW(config->wake, ACPI_S3);
 
 		/* Add _DSD for DmaProperty property. */
-		if (config->is_untrusted) {
+		if (config->add_acpi_dma_property) {
 			struct acpi_dp *dsd, *pkg;
 
 			dsd = acpi_dp_new_table("_DSD");

@@ -39,6 +39,7 @@ ramstage-y += ../common/dfd.c
 ramstage-y += ../common/dp/dp_intf.c ../common/dp/dptx.c ../common/dp/dptx_hal.c dp_intf.c
 ramstage-y += ../common/dpm.c
 ramstage-$(CONFIG_DPM_FOUR_CHANNEL) += ../common/dpm_4ch.c
+ramstage-y += ../common/dsi.c ../common/mtk_mipi_dphy.c
 ramstage-y += ../common/emi.c
 ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mcupm.c

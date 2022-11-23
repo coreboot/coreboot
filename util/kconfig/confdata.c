@@ -1035,6 +1035,11 @@ static int conf_touch_deps(void)
 	struct symbol *sym;
 	int res, i;
 
+	/*
+	 * Upstream Kconfig sets depfile_path based on the directory
+	 * prefix of the autoconfig path, but coreboot overrides this
+	 * using the KCONFIG_SPLITCONFIG environment variable
+	 */
 	strcpy(depfile_path, conf_get_autobase_name());
 	depfile_prefix_len = strlen(depfile_path);
 

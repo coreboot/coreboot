@@ -35,7 +35,7 @@ Index: kconfig/confdata.c
  static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
  {
  	char *p2;
-@@ -1024,19 +1031,14 @@ static int conf_write_autoconf_cmd(const
+@@ -1024,19 +1031,19 @@ static int conf_write_autoconf_cmd(const
  
  static int conf_touch_deps(void)
  {
@@ -52,6 +52,11 @@ Index: kconfig/confdata.c
 -
 -	strncpy(depfile_path, name, depfile_prefix_len);
 -	depfile_path[depfile_prefix_len] = 0;
++	/*
++	 * Upstream Kconfig sets depfile_path based on the directory
++	 * prefix of the autoconfig path, but coreboot overrides this
++	 * using the KCONFIG_SPLITCONFIG environment variable
++	 */
 +	strcpy(depfile_path, conf_get_autobase_name());
 +	depfile_prefix_len = strlen(depfile_path);
  

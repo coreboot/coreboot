@@ -242,7 +242,7 @@ chip soc/intel/alderlake
 		device pci 1e.2 alias gspi0 off end
 		device pci 1e.3 alias gspi1 off end
 		device pci 1f.0 alias pch_espi on end
-		device pci 1f.1 alias p2sb off end
+		device pci 1f.1 alias p2sb hidden end
 		device pci 1f.2 alias pmc hidden end
 		device pci 1f.3 alias hda off end
 		device pci 1f.4 alias smbus off end

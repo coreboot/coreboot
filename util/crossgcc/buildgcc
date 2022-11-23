@@ -849,6 +849,8 @@ build_LLVM() {
 		-DCLANG_VENDOR="coreboot toolchain v$CROSSGCC_VERSION - " \
 		-DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt" \
 		-DLLVM_INCLUDE_BENCHMARKS="OFF" \
+		-DLLVM_INCLUDE_TESTS="OFF" \
+		-DLLVM_INCLUDE_EXAMPLES="OFF" \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DLLVM_TARGETS_TO_BUILD="AArch64;ARM;PowerPC;RISCV;X86" \
 		../llvm || touch .failed

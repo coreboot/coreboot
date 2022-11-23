@@ -16,6 +16,7 @@
 #include <soc/hsphy.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/itss.h>
+#include <soc/p2sb.h>
 #include <soc/pci_devs.h>
 #include <soc/pcie.h>
 #include <soc/ramstage.h>
@@ -244,6 +245,7 @@ static struct device_operations cpu_bus_ops = {
 
 static void soc_enable(struct device *dev)
 {
+	struct device_operations *soc_p2sb_ops = (struct device_operations *)&p2sb_ops;
 	/*
 	 * Set the operations if it is a special bus type or a hidden PCI
 	 * device.
@@ -255,6 +257,9 @@ static void soc_enable(struct device *dev)
 	else if (dev->path.type == DEVICE_PATH_PCI &&
 		 dev->path.pci.devfn == PCH_DEVFN_PMC)
 		dev->ops = &pmc_ops;
+	else if (dev->path.type == DEVICE_PATH_PCI &&
+		 dev->path.pci.devfn == PCH_DEVFN_P2SB)
+		dev->ops = soc_p2sb_ops;
 	else if (dev->path.type == DEVICE_PATH_GPIO)
 		block_gpio_enable(dev);
 }

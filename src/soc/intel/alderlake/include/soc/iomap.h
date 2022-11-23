@@ -123,6 +123,10 @@
 #define TCO_BASE_SIZE		0x20
 
 #define P2SB_BAR		CONFIG_PCR_BASE_ADDRESS
+#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_S)
+#define P2SB_SIZE		(256 * MiB)
+#else
 #define P2SB_SIZE		(16 * MiB)
+#endif
 
 #endif

@@ -813,8 +813,9 @@ build_LLVM() {
 	$CMAKE -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$DESTDIR$TARGETDIR" \
 		-DCLANG_VENDOR="coreboot toolchain v$CROSSGCC_VERSION - " \
 		-DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt" \
-		-DLLVM_INCLUDE_BENCHMARKS="OFF" -DCMAKE_BUILD_TYPE=Release ../llvm \
-		-DLLVM_TARGETS_TO_BUILD="AArch64;ARM;PowerPC;RISCV;X86" || touch .failed
+		-DLLVM_INCLUDE_BENCHMARKS="OFF" -DCMAKE_BUILD_TYPE=Release \
+		-DLLVM_TARGETS_TO_BUILD="AArch64;ARM;PowerPC;RISCV;X86" \
+		../llvm || touch .failed
 	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install || touch .failed

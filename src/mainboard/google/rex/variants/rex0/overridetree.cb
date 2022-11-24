@@ -373,7 +373,6 @@ chip soc/intel/meteorlake
 				device i2c 15 on end
 			end
 		end
-		device ref sata on end
 		device ref i2c4 on
 			chip drivers/i2c/tpm
 				register "hid" = ""GOOG0005""

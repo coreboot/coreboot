@@ -542,6 +542,12 @@ void cse_control_global_reset_lock(void);
 void cse_send_end_of_post(void);
 
 /*
+ * This function to perform essential post EOP cse related operations
+ * upon SoC selecting `SOC_INTEL_CSE_SEND_EOP_LATE` config
+ */
+void cse_late_finalize(void);
+
+/*
  * SoC override API to make heci1 disable using PCR.
  *
  * Allow SoC to implement heci1 disable override due to PSF registers being

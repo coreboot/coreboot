@@ -1256,6 +1256,22 @@ static void cse_final_end_of_firmware(void)
 }
 
 /*
+ * This function to perform essential post EOP cse related operations
+ * upon SoC selecting `SOC_INTEL_CSE_SEND_EOP_LATE` config
+ */
+void cse_late_finalize(void)
+{
+	if (!CONFIG(SOC_INTEL_CSE_SEND_EOP_LATE))
+		return;
+
+	if (!CONFIG(USE_FSP_NOTIFY_PHASE_READY_TO_BOOT))
+		cse_final_ready_to_boot();
+
+	if (!CONFIG(USE_FSP_NOTIFY_PHASE_END_OF_FIRMWARE))
+		cse_final_end_of_firmware();
+}
+
+/*
  * `cse_final` function is native implementation of equivalent events performed by
  * each FSP NotifyPhase() API invocations.
  */

@@ -142,8 +142,6 @@ chip soc/intel/elkhartlake
 		device pci 00.0 on	end # Host Bridge
 		device pci 02.0 on	end # Integrated Graphics Device
 
-		device pci 12.0 on	end # GSPI2
-
 		device pci 14.0 on	end # USB3.1 xHCI
 
 		device pci 15.0 on	end # I2C0

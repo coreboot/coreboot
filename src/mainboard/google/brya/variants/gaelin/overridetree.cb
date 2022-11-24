@@ -160,6 +160,30 @@ chip soc/intel/alderlake
 				end
 			end
 		end
+		device ref i2c0 on
+			chip drivers/i2c/nau8825
+				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_A23)"
+				register "jkdet_enable" = "1"
+				register "jkdet_pull_enable" = "0"
+				register "jkdet_pull_up" = "0"
+				register "jkdet_polarity" = "1"      # ActiveLow
+				register "vref_impedance" = "2"      # 125kOhm
+				register "micbias_voltage" = "6"     # 2.754
+				register "sar_threshold_num" = "4"
+				register "sar_threshold[0]" = "0x0C"
+				register "sar_threshold[1]" = "0x1C"
+				register "sar_threshold[2]" = "0x38"
+				register "sar_threshold[3]" = "0x60"
+				register "sar_hysteresis" = "1"
+				register "sar_voltage" = "6"
+				register "sar_compare_time" = "0"     # 500ns
+				register "sar_sampling_time" = "0"    # 2us
+				register "short_key_debounce" = "2"   # 100ms
+				register "jack_insert_debounce" = "7" # 512ms
+				register "jack_eject_debounce" = "7"  # 512ms
+				device i2c 1a on end
+			end # Audio Nau8825
+		end # I2C0
 		device ref pcie_rp5 on
 			# Enable PCIE 5 using clk 2
 			register "pch_pcie_rp[PCH_RP(5)]" = "{
@@ -212,5 +236,11 @@ chip soc/intel/alderlake
 				end
 			end
 		end
+		device ref hda on
+			chip drivers/generic/alc1015
+				register "hid" = ""RTL1015""
+				device generic 0 on end
+			end # RT1015 Amplifier
+		end # Intel HDA
 	end
 end

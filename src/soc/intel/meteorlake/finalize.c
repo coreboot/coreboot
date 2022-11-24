@@ -64,6 +64,13 @@ static void sa_finalize(void)
 		sa_lock_pam();
 }
 
+static void heci_finalize(void)
+{
+	heci_set_to_d0i3();
+	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT))
+		heci1_disable();
+}
+
 static void soc_finalize(void *unused)
 {
 	printk(BIOS_DEBUG, "Finalizing chipset.\n");
@@ -72,9 +79,9 @@ static void soc_finalize(void *unused)
 	apm_control(APM_CNT_FINALIZE);
 	tbt_finalize();
 	sa_finalize();
-	heci_set_to_d0i3();
-	if (CONFIG(DISABLE_HECI1_AT_PRE_BOOT))
-		heci1_disable();
+	if (CONFIG(USE_FSP_NOTIFY_PHASE_READY_TO_BOOT) &&
+			 CONFIG(USE_FSP_NOTIFY_PHASE_END_OF_FIRMWARE))
+		heci_finalize();
 
 	/* Indicate finalize step with post code */
 	post_code(POST_OS_BOOT);

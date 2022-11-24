@@ -107,7 +107,7 @@ chip soc/intel/alderlake
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,         CPU,           90, 5000),
 					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 77, 5000),
-					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 60, 5000),
+					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 68, 5000),
 					[3] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_2, 78, 5000),
 				}"
 

@@ -13,6 +13,10 @@ if BOARD_INTEL_MTLRVP_COMMON
 config MAINBOARD_DIR
 	default "intel/mtlrvp"
 
+config BASEBOARD_DIR
+	string
+	default "mtlrvp"
+
 config MAINBOARD_PART_NUMBER
 	string
 	default "mtlrvp"

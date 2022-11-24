@@ -10,7 +10,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* A13 : PMC_I2C_SCL ==> GSC_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 	/* A17 : DISP_MISCC ==> EN_FCAM_PWR */
-	PAD_CFG_GPO(GPP_A17, 0, DEEP),
+	PAD_CFG_GPO(GPP_A17, 1, DEEP),
 	/* A19 : DDSP_HPD1 ==> NC */
 	PAD_NC(GPP_A19, NONE),
 	/* A20 : DDSP_HPD2 ==> NC */
@@ -62,7 +62,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* E5  : SATA_DEVSLP1 ==> USB_A1_RT_RST_ODL */
 	PAD_CFG_GPO(GPP_E5, 1, DEEP),
 	/* E7  : PROC_GP1 ==> EN_MIC_PWR */
-	PAD_CFG_GPO(GPP_E7, 0, DEEP),
+	PAD_CFG_GPO(GPP_E7, 1, DEEP),
 	/* E14 : DDSP_HPDA ==> EDP_HPD */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */

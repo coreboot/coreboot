@@ -9,10 +9,16 @@
 static const struct pad_config override_gpio_table[] = {
 	/* A8  : WWAN_RF_DISABLE_ODL */
 	PAD_CFG_GPO(GPP_A8, 1, DEEP),
+	/* B4  : SSD_PERST_L */
+	PAD_CFG_GPO_LOCK(GPP_B4, 1, LOCK_CONFIG),
 	/* D6  : WWAN_EN */
 	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D7  : WLAN_CLKREQ_ODL */
 	PAD_NC(GPP_D7, NONE),
+	/* D11 : EN_PP3300_SSD */
+	PAD_CFG_GPO_LOCK(GPP_D11, 1, LOCK_CONFIG),
+	/* E17 : SSD_PLN_L */
+	PAD_CFG_GPO_LOCK(GPP_E17, 1, LOCK_CONFIG),
 	/* F12 : WWAN_RST_L */
 	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H3  : WLAN_PCIE_WAKE_ODL */
@@ -41,6 +47,8 @@ static const struct pad_config override_gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* B4  : SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 0, DEEP),
 	/* F12 : GSXDOUT ==> WWAN_RST_L */
 	PAD_CFG_GPO(GPP_F12, 0, DEEP),
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
@@ -61,11 +69,15 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_SOC_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+	/* D11 : EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_D11, 1, DEEP),
 	/* H13 : UART0_CTS# ==> EN_PP3300_SD_X */
 	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {
+	/* B4  : SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_H12, 1, DEEP),
 };

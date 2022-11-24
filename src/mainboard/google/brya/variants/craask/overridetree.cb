@@ -445,6 +445,14 @@ chip soc/intel/alderlake
 			end
 			probe SD_CARD SD_GL9750S
 		end
+		device ref pcie_rp9 on
+			# Enable NVMe SSD PCIe 9-12 using clk 1
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 1,
+				.clk_req = 1,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
 		device ref pch_espi on
 			chip ec/google/chromeec
 				use conn0 as mux_conn[0]

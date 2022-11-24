@@ -10,6 +10,7 @@
 #include <intelbasecode/debug_feature.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/cse_layout.h>
+#include <intelblocks/spi.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/intel/common/reset.h>
@@ -132,6 +133,28 @@ struct get_bp_info_rsp {
 } __packed;
 
 static const char * const cse_regions[] = {"RO", "RW"};
+
+void cse_log_ro_write_protection_info(bool mfg_mode)
+{
+	bool cse_ro_wp_en = is_spi_wp_cse_ro_en();
+
+	printk(BIOS_DEBUG, "ME: WP for RO is enabled        : %s\n",
+			cse_ro_wp_en ? "YES" : "NO");
+
+	if (cse_ro_wp_en) {
+		uint32_t base, limit;
+		spi_get_wp_cse_ro_range(&base, &limit);
+		printk(BIOS_DEBUG, "ME: RO write protection scope - Start=0x%X, End=0x%X\n",
+				base, limit);
+	}
+
+	/*
+	 * If manufacturing mode is disabled, but CSE RO is not write protected,
+	 * log error.
+	 */
+	if (!mfg_mode && !cse_ro_wp_en)
+		printk(BIOS_ERR, "ME: Write protection for CSE RO is not enabled\n");
+}
 
 bool cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf_rsp)
 {

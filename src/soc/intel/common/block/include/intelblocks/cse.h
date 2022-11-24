@@ -555,4 +555,7 @@ void soc_disable_heci1_using_pcr(void);
  */
 void cse_get_telemetry_data(void);
 
+/* Function to log the cse WP information like range, if WP etc. */
+void cse_log_ro_write_protection_info(bool mfg_mode);
+
 #endif // SOC_INTEL_COMMON_CSE_H

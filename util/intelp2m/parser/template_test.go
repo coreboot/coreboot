@@ -20,7 +20,7 @@ func TestTemp(t *testing.T) {
 			dw0, dw1 uint32
 		)
 		line := fmt.Sprintf("0x0520: 0x%08x%08x %s %s", ref_dw1, ref_dw0, ref_id, ref_fn)
-		_ = parser.UseInteltoolLogTemplate(line, &fn, &id, &dw0, &dw1)
+		_ = parser.UseTemplate(line, &fn, &id, &dw0, &dw1)
 		if fn != ref_fn {
 			t.Errorf("function from '%s':\nExpects:  '%s'\nActually: '%s'\n\n",
 				line, ref_fn, fn)

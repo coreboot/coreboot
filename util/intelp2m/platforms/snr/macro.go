@@ -1,12 +1,12 @@
 package snr
 
 import (
-	"strings"
 	"fmt"
+	"strings"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 	"review.coreboot.org/coreboot.git/util/intelp2m/config"
 	"review.coreboot.org/coreboot.git/util/intelp2m/fields"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 )
 
 const (
@@ -20,15 +20,11 @@ const (
 	MAX_DW_NUM  = common.MAX_DW_NUM
 )
 
-type PlatformSpecific struct {}
+type PlatformSpecific struct{}
 
 // RemmapRstSrc - remmap Pad Reset Source Config
 func (PlatformSpecific) RemmapRstSrc() {
 	macro := common.GetMacro()
-	if config.TemplateGet() != config.TempInteltool {
-		// Use reset source remapping only if the input file is inteltool.log dump
-		return
-	}
 	if strings.Contains(macro.PadIdGet(), "GPD") {
 		// See reset map for the Sunrise GPD Group in the Community 2:
 		// https://github.com/coreboot/coreboot/blob/master/src/soc/intel/skylake/gpio.c#L15
@@ -39,7 +35,7 @@ func (PlatformSpecific) RemmapRstSrc() {
 	dw0 := macro.Register(PAD_CFG_DW0)
 	var remapping = map[uint8]uint32{
 		0: common.RST_RSMRST << common.PadRstCfgShift,
-		1: common.RST_DEEP   << common.PadRstCfgShift,
+		1: common.RST_DEEP << common.PadRstCfgShift,
 		2: common.RST_PLTRST << common.PadRstCfgShift,
 	}
 	resetsrc, valid := remapping[dw0.GetResetConfig()]
@@ -48,7 +44,7 @@ func (PlatformSpecific) RemmapRstSrc() {
 		ResetConfigFieldVal := (dw0.ValueGet() & 0x3fffffff) | remapping[dw0.GetResetConfig()]
 		dw0.ValueSet(ResetConfigFieldVal)
 	} else {
-		fmt.Println("Invalid Pad Reset Config [ 0x", resetsrc ," ] for ", macro.PadIdGet())
+		fmt.Println("Invalid Pad Reset Config [ 0x", resetsrc, " ] for ", macro.PadIdGet())
 	}
 	dw0.CntrMaskFieldsClear(common.PadRstCfgMask)
 }
@@ -73,9 +69,9 @@ func (PlatformSpecific) Pull() {
 	if !valid {
 		str = "INVALID"
 		fmt.Println("Error",
-				macro.PadIdGet(),
-				" invalid TERM value = ",
-				int(dw1.GetTermination()))
+			macro.PadIdGet(),
+			" invalid TERM value = ",
+			int(dw1.GetTermination()))
 	}
 	macro.Separator().Add(str)
 }
@@ -146,7 +142,7 @@ func (PlatformSpecific) GpiMacroAdd() {
 	macro := common.GetMacro()
 	var ids []string
 	macro.Set("PAD_CFG_GPI")
-	for routeid, isRoute := range map[string]func() (bool) {
+	for routeid, isRoute := range map[string]func() bool{
 		"IOAPIC": ioApicRoute,
 		"SCI":    sciRoute,
 		"SMI":    smiRoute,

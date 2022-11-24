@@ -61,11 +61,6 @@ func main() {
 		flag.Bool("iiii", false, "Show target PAD_CFG() macro in the comments"),
 	}
 
-	template := flag.Int("t", 0, "template type number\n"+
-		"\t0 - inteltool.log (default)\n"+
-		"\t1 - gpio.h\n"+
-		"\t2 - your template\n\t")
-
 	platform := flag.String("p", "snr", "set platform:\n"+
 		"\tsnr - Sunrise PCH or Skylake/Kaby Lake SoC\n"+
 		"\tlbg - Lewisburg PCH with Xeon SP\n"+
@@ -94,11 +89,6 @@ func main() {
 			fmt.Printf("Info level: Use level %d!\n", level+1)
 			break
 		}
-	}
-
-	if !config.TemplateSet(*template) {
-		fmt.Printf("Error! Unknown template format of input file!\n")
-		os.Exit(1)
 	}
 
 	if valid := config.PlatformSet(*platform); valid != 0 {

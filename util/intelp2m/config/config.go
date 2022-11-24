@@ -3,36 +3,15 @@ package config
 import "os"
 
 const (
-	TempInteltool  int  = 0
-	TempGpioh      int  = 1
-	TempSpec       int  = 2
-)
-
-var template int = 0
-
-func TemplateSet(temp int) bool {
-	if temp > TempSpec {
-		return false
-	} else {
-		template = temp
-		return true
-	}
-}
-
-func TemplateGet() int {
-	return template
-}
-
-const (
-	SunriseType    uint8  = 0
-	LewisburgType  uint8  = 1
-	ApolloType     uint8  = 2
-	CannonType     uint8  = 3
-	TigerType      uint8  = 4
-	AlderType      uint8  = 5
-	JasperType     uint8  = 6
-	MeteorType     uint8  = 7
-	EmmitsburgType uint8  = 8
+	SunriseType    uint8 = 0
+	LewisburgType  uint8 = 1
+	ApolloType     uint8 = 2
+	CannonType     uint8 = 3
+	TigerType      uint8 = 4
+	AlderType      uint8 = 5
+	JasperType     uint8 = 6
+	MeteorType     uint8 = 7
+	EmmitsburgType uint8 = 8
 )
 
 var key uint8 = SunriseType
@@ -48,6 +27,7 @@ var platform = map[string]uint8{
 	"mtl": MeteorType,
 	"ebg": EmmitsburgType,
 }
+
 func PlatformSet(name string) int {
 	if platformType, valid := platform[name]; valid {
 		key = platformType
@@ -90,6 +70,7 @@ var InputRegDumpFile *os.File = nil
 var OutputGenFile *os.File = nil
 
 var ignoredFieldsFormat bool = false
+
 func IgnoredFieldsFlagSet(flag bool) {
 	ignoredFieldsFormat = flag
 }
@@ -98,6 +79,7 @@ func AreFieldsIgnored() bool {
 }
 
 var nonCheckingFlag bool = false
+
 func NonCheckingFlagSet(flag bool) {
 	nonCheckingFlag = flag
 }
@@ -105,8 +87,8 @@ func IsNonCheckingFlagUsed() bool {
 	return nonCheckingFlag
 }
 
-
 var infolevel int = 0
+
 func InfoLevelSet(lvl int) {
 	infolevel = lvl
 }
@@ -115,17 +97,20 @@ func InfoLevelGet() int {
 }
 
 var fldstyle uint8 = CbFlds
+
 const (
-	NoFlds  uint8  = 0
-	CbFlds  uint8  = 1 // coreboot style
-	FspFlds uint8  = 2 // FSP/edk2 style
-	RawFlds uint8  = 3 // raw DW0/1 values
+	NoFlds  uint8 = 0
+	CbFlds  uint8 = 1 // coreboot style
+	FspFlds uint8 = 2 // FSP/edk2 style
+	RawFlds uint8 = 3 // raw DW0/1 values
 )
+
 var fldstylemap = map[string]uint8{
-	"none" : NoFlds,
-	"cb"   : CbFlds,
-	"fsp"  : FspFlds,
-	"raw"  : RawFlds}
+	"none": NoFlds,
+	"cb":   CbFlds,
+	"fsp":  FspFlds,
+	"raw":  RawFlds}
+
 func FldStyleSet(name string) int {
 	if style, valid := fldstylemap[name]; valid {
 		fldstyle = style

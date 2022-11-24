@@ -3,9 +3,8 @@ package lbg
 import (
 	"fmt"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
-	"review.coreboot.org/coreboot.git/util/intelp2m/config"
 	"review.coreboot.org/coreboot.git/util/intelp2m/fields"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/snr"
 )
 
@@ -36,14 +35,10 @@ type PlatformSpecific struct {
 // RemmapRstSrc - remmap Pad Reset Source Config
 func (PlatformSpecific) RemmapRstSrc() {
 	macro := common.GetMacro()
-	if config.TemplateGet() != config.TempInteltool {
-		// Use reset source remapping only if the input file is inteltool.log dump
-		return
-	}
 	dw0 := macro.Register(PAD_CFG_DW0)
 	var remapping = map[uint8]uint32{
 		0: common.RST_RSMRST << common.PadRstCfgShift,
-		1: common.RST_DEEP   << common.PadRstCfgShift,
+		1: common.RST_DEEP << common.PadRstCfgShift,
 		2: common.RST_PLTRST << common.PadRstCfgShift,
 	}
 	resetsrc, valid := remapping[dw0.GetResetConfig()]
@@ -52,7 +47,7 @@ func (PlatformSpecific) RemmapRstSrc() {
 		ResetConfigFieldVal := (dw0.ValueGet() & 0x3fffffff) | remapping[dw0.GetResetConfig()]
 		dw0.ValueSet(ResetConfigFieldVal)
 	} else {
-		fmt.Println("Invalid Pad Reset Config [ 0x", resetsrc ," ] for ", macro.PadIdGet())
+		fmt.Println("Invalid Pad Reset Config [ 0x", resetsrc, " ] for ", macro.PadIdGet())
 	}
 	dw0.CntrMaskFieldsClear(common.PadRstCfgMask)
 }
@@ -91,8 +86,8 @@ func (platform PlatformSpecific) NoConnMacroAdd() {
 func (platform PlatformSpecific) GenMacro(id string, dw0 uint32, dw1 uint32, ownership uint8) string {
 	// The GPIO controller architecture in Lewisburg and Sunrise are very similar,
 	// so we will inherit some platform-dependent functions from Sunrise.
-	macro := common.GetInstanceMacro(PlatformSpecific{InheritanceMacro : snr.PlatformSpecific{}},
-			fields.InterfaceGet())
+	macro := common.GetInstanceMacro(PlatformSpecific{InheritanceMacro: snr.PlatformSpecific{}},
+		fields.InterfaceGet())
 	macro.Clear()
 	macro.Register(PAD_CFG_DW0).CntrMaskFieldsClear(common.AllFields)
 	macro.Register(PAD_CFG_DW1).CntrMaskFieldsClear(common.AllFields)

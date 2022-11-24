@@ -61,12 +61,10 @@ type ParserData struct {
 // return the host software ownership form the parser struct
 func (parser *ParserData) hostOwnershipGet(id string) uint8 {
 	var ownership uint8 = 0
-	status, group := parser.platform.GroupNameExtract(id)
-	if config.TemplateGet() == config.TempInteltool && status {
-		numder, _ := strconv.Atoi(strings.TrimLeft(id, group))
-		if (parser.ownership[group] & (1 << uint8(numder))) != 0 {
-			ownership = 1
-		}
+	_, group := parser.platform.GroupNameExtract(id)
+	numder, _ := strconv.Atoi(strings.TrimLeft(id, group))
+	if (parser.ownership[group] & (1 << uint8(numder))) != 0 {
+		ownership = 1
 	}
 	return ownership
 }
@@ -76,22 +74,17 @@ func (parser *ParserData) hostOwnershipGet(id string) uint8 {
 func (parser *ParserData) padInfoExtract() int {
 	var function, id string
 	var dw0, dw1 uint32
-	var template = map[int]template{
-		config.TempInteltool: UseInteltoolLogTemplate,
-		config.TempGpioh:     useGpioHTemplate,
-		config.TempSpec:      useYourTemplate,
+	if rc := UseTemplate(parser.line, &function, &id, &dw0, &dw1); rc != 0 {
+		return rc
 	}
-	if template[config.TemplateGet()](parser.line, &function, &id, &dw0, &dw1) == 0 {
-		pad := padInfo{id: id,
-			function:  function,
-			dw0:       dw0,
-			dw1:       dw1,
-			ownership: parser.hostOwnershipGet(id)}
-		parser.padmap = append(parser.padmap, pad)
-		return 0
-	}
-	fmt.Printf("This template (%d) does not match!\n", config.TemplateGet())
-	return -1
+	pad := padInfo{id: id,
+		function:  function,
+		dw0:       dw0,
+		dw1:       dw1,
+		ownership: parser.hostOwnershipGet(id)}
+	parser.padmap = append(parser.padmap, pad)
+	return 0
+
 }
 
 // communityGroupExtract
@@ -143,8 +136,7 @@ func (parser *ParserData) Register(nameTemplate string) (
 	offset uint32,
 	value uint32,
 ) {
-	if strings.Contains(parser.line, nameTemplate) &&
-		config.TemplateGet() == config.TempInteltool {
+	if strings.Contains(parser.line, nameTemplate) {
 		if registerInfoTemplate(parser.line, &name, &offset, &value) == 0 {
 			fmt.Printf("\n\t/* %s : 0x%x : 0x%x */\n", name, offset, value)
 			return true, name, offset, value
@@ -173,7 +165,7 @@ func (parser *ParserData) padOwnershipExtract() bool {
 //	information from the inteltool log was successfully parsed.
 func (parser *ParserData) padConfigurationExtract() bool {
 	// Only for Sunrise or CannonLake, and only for inteltool.log file template
-	if config.TemplateGet() != config.TempInteltool || config.IsPlatformApollo() {
+	if config.IsPlatformApollo() {
 		return false
 	}
 	return parser.padOwnershipExtract()

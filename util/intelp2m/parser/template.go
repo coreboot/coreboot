@@ -32,7 +32,7 @@ func tokenCheck(c rune) bool {
 	return c != '_' && c != '#' && !unicode.IsLetter(c) && !unicode.IsNumber(c)
 }
 
-// useGpioHTemplate
+// UseTemplate
 // line      : string from file with pad config map
 // *function : the string that means the pad function
 // *id       : pad id string
@@ -40,9 +40,7 @@ func tokenCheck(c rune) bool {
 // *dw1      : DW1 register value
 // return
 //   error status
-func UseInteltoolLogTemplate(line string, function *string,
-	id *string, dw0 *uint32, dw1 *uint32) int {
-
+func UseTemplate(line string, function *string, id *string, dw0 *uint32, dw1 *uint32) int {
 	var val uint64
 	// 0x0520: 0x0000003c44000600 GPP_B12  SLP_S0#
 	// 0x0438: 0xffffffffffffffff GPP_C7   RESERVED
@@ -62,56 +60,6 @@ func UseInteltoolLogTemplate(line string, function *string,
 		*dw1 &= INTSEL_MASK
 	}
 	return 0
-}
-
-// useGpioHTemplate
-// line      : string from file with pad config map
-// *function : the string that means the pad function
-// *id       : pad id string
-// *dw0      : DW0 register value
-// *dw1      : DW1 register value
-// return
-//   error status
-func useGpioHTemplate(line string, function *string,
-	id *string, dw0 *uint32, dw1 *uint32) int {
-
-	// /* RCIN# */	_PAD_CFG_STRUCT(GPP_A0, 0x44000702, 0x00000000),
-	// _PAD_CFG_STRUCT(GPP_A0, 0x44000702, 0x00000000), /* RCIN# */
-	// _PAD_CFG_STRUCT(GPP_A0, 0x44000702, 0x00000000)
-	fields := strings.FieldsFunc(line, tokenCheck)
-	for i, field := range fields {
-		if field == "_PAD_CFG_STRUCT" {
-			if len(fields) < 4 {
-				/* the number of definitions does not match the format */
-				return -1
-			}
-
-			if !strings.Contains(fields[i+2], "0x") || !strings.Contains(fields[i+3], "0x") {
-				/* definitions inside the macro do not match the pattern */
-				return -1
-			}
-			*id = fields[i+1]
-			fmt.Sscanf(fields[i+2], "0x%x", dw0)
-			fmt.Sscanf(fields[i+3], "0x%x", dw1)
-			*function = extractPadFuncFromComment(line)
-			return 0
-		}
-	}
-	return -1
-}
-
-// useYourTemplate
-func useYourTemplate(line string, function *string,
-	id *string, dw0 *uint32, dw1 *uint32) int {
-
-	// ADD YOUR TEMPLATE HERE
-	*function = ""
-	*id = ""
-	*dw0 = 0
-	*dw1 = 0
-
-	fmt.Printf("ADD YOUR TEMPLATE!\n")
-	return -1
 }
 
 // registerInfoTemplate

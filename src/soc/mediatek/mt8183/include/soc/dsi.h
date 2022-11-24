@@ -4,6 +4,7 @@
 #define SOC_MEDIATEK_MT8183_DSI_H
 
 #include <soc/dsi_common.h>
+#include <soc/dsi_register_v1.h>
 #include <types.h>
 
 /* DSI features */

@@ -4,6 +4,7 @@
 #define _DSI_REG_H_
 
 #include <soc/dsi_common.h>
+#include <soc/dsi_register_v1.h>
 #include <types.h>
 
 /* DSI features */

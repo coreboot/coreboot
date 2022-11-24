@@ -1263,6 +1263,7 @@ typedef struct {
   UINT8                     PortType;                       ///< The enumeration value from MISC_PORT_TYPE.
 } SMBIOS_TABLE_TYPE8;
 
+#if !CONFIG(DISPLAY_FSP_VERSION_INFO_2)
 ///
 /// System Slots - Slot Type
 ///
@@ -1375,6 +1376,7 @@ typedef enum {
   SlotLengthLong    = 0x04
 } MISC_SLOT_LENGTH;
 
+#endif
 ///
 /// System Slots - Slot Characteristics 1.
 ///

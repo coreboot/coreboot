@@ -8,6 +8,8 @@
 #include <gpio.h>
 #include "chip.h"
 
+const char *nauhid[MAX_HID] = {"NVTN2010", "NVTN2012"};
+
 static void nau8315_fill_ssdt(const struct device *dev)
 {
 	struct drivers_generic_nau8315_config *config = dev->chip_info;
@@ -26,7 +28,7 @@ static void nau8315_fill_ssdt(const struct device *dev)
 	acpigen_write_scope(scope);
 	acpigen_write_device(name);
 
-	acpigen_write_name_string("_HID", "NVTN2010");
+	acpigen_write_name_string("_HID", nauhid[config->hid]);
 	acpigen_write_name_integer("_UID", 0);
 	acpigen_write_name_string("_DDN", dev->chip_ops->name);
 	acpigen_write_STA(acpi_device_status(dev));

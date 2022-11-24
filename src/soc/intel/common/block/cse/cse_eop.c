@@ -238,9 +238,11 @@ void cse_send_end_of_post(void)
 	return do_send_end_of_post();
 }
 
-static void set_cse_end_of_post(void *unused)
+static void send_cse_eop_with_late_finalize(void *unused)
 {
-	return do_send_end_of_post();
+	do_send_end_of_post();
+	if (CONFIG(SOC_INTEL_CSE_SEND_EOP_LATE))
+		cse_late_finalize();
 }
 
 /*
@@ -253,7 +255,7 @@ static void set_cse_end_of_post(void *unused)
  * BS_PAYLOAD_BOOT instead.
  */
 #if !CONFIG(HECI_DISABLE_USING_SMM)
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, set_cse_end_of_post, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, send_cse_eop_with_late_finalize, NULL);
 #else
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_ENTRY, set_cse_end_of_post, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_ENTRY, send_cse_eop_with_late_finalize, NULL);
 #endif

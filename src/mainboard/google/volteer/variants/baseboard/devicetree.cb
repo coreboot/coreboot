@@ -489,7 +489,7 @@ chip soc/intel/tigerlake
 			chip soc/intel/common/block/pcie/rtd3
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H3)"
 				register "srcclk_pin" = "3"
-				register "is_external" = "1"
+				register "add_acpi_external_facing_port" = "1"
 				device generic 1 on
 					probe DB_SD SD_RTS5261
 				end

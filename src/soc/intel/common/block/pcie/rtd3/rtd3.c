@@ -479,7 +479,7 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 	acpi_dp_add_package(dsd, pkg);
 
 	/* Indicate to the OS if the device provides an External facing port. */
-	if (config->is_external) {
+	if (config->add_acpi_external_facing_port) {
 		pkg = acpi_dp_new_table(PCIE_EXTERNAL_PORT_UUID);
 		acpi_dp_add_integer(pkg, PCIE_EXTERNAL_PORT_PROPERTY, 1);
 		acpi_dp_add_package(dsd, pkg);

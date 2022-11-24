@@ -44,7 +44,7 @@ struct soc_intel_common_block_pcie_rtd3_config {
 	 * Add device property indicating the device provides an external PCI port
 	 * for the OS to apply security restrictions.
 	 */
-	bool is_external;
+	bool add_acpi_external_facing_port;
 
 	/*
 	 * Allow a device to add the RuntimeD3Storage property even if the detected

@@ -306,7 +306,7 @@ cbfs-files-processor-nvramtool= \
 		mv $(2).tmp $(2))
 
 #######################################################################
-# Reduce a .config file by removing lines about unset booleans
+# Reduce a .config file by removing lines about default unset booleans
 # arg1: input
 # arg2: output
 define cbfs-files-processor-config
@@ -314,8 +314,12 @@ define cbfs-files-processor-config
 		+printf "    CREATE     $(2) (from $(1))\n"; \
 		printf "# This image was built using coreboot " > $(2).tmp && \
 		grep "\<COREBOOT_VERSION\>" $(obj)/build.h |cut -d\" -f2 >> $(2).tmp && \
-		sed -e '/^CONFIG/!d' $(1) >> $(2).tmp && \
-		\mv -f $(2).tmp $(2))
+		$(MAKE) DOTCONFIG=$(1) DEFCONFIG=$(2).tmp2 savedefconfig && \
+		cat $(2).tmp2 >> $(2).tmp && \
+		printf "# End of defconfig. Derivable values start here.\n" >> $(2).tmp && \
+		grep "^CONFIG" $(1) | grep -F -v -f $(2).tmp2 >> $(2).tmp && \
+		rm -f $(2).tmp2 && \
+		mv -f $(2).tmp $(2))
 endef
 
 #######################################################################

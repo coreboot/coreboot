@@ -85,7 +85,7 @@ func (reg *Register) ReadOnlyFieldsGet() uint32 {
 // Returns true if the macro is generated correctly
 func (reg *Register) MaskCheck() bool {
 	mask := ^(reg.mask | reg.roFileds)
-	return reg.value&mask == 0
+	return (reg.value & mask) == 0
 }
 
 // getResetConfig - get Reset Configuration from PADRSTCFG field in PAD_CFG_DW0_GPx register
@@ -97,14 +97,17 @@ func (reg *Register) getFieldVal(mask uint32, shift uint8) uint8 {
 // CntrMaskFieldsClear - clear filed in control mask
 // fieldMask - mask of the field to be cleared
 func (reg *Register) CntrMaskFieldsClear(fieldMask uint32) {
-	reg.mask &= ^fieldMask;
+	reg.mask &= ^fieldMask
 }
 
 // IgnoredFieldsGet - return mask of unchecked (ignored) fields.
-//                    These bit fields were not read when the macro was
-//                    generated.
+//
+//	These bit fields were not read when the macro was
+//	generated.
+//
 // return
-//   mask of ignored bit field
+//
+//	mask of ignored bit field
 func (reg *Register) IgnoredFieldsGet() uint32 {
 	mask := reg.mask | reg.roFileds
 	return reg.value & ^mask

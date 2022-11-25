@@ -4,22 +4,23 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
 	"review.coreboot.org/coreboot.git/util/intelp2m/parser"
 )
 
 type Printer struct{}
 
 func (Printer) Linef(lvl int, format string, args ...interface{}) {
-	if config.InfoLevelGet() >= lvl {
-		fmt.Fprintf(config.OutputGenFile, format, args...)
+	if p2m.Config.GenLevel >= lvl {
+		fmt.Fprintf(p2m.Config.OutputFile, format, args...)
 	}
 }
 
 func (Printer) Line(lvl int, str string) {
-	if config.InfoLevelGet() >= lvl {
-		fmt.Fprint(config.OutputGenFile, str)
+	if p2m.Config.GenLevel >= lvl {
+		fmt.Fprint(p2m.Config.OutputFile, str)
 	}
 }
 
@@ -36,25 +37,22 @@ func printVersion() {
 // main
 func main() {
 	// Command line arguments
-	inputFileName := flag.String("file",
-		"inteltool.log",
+	inputFilePath := flag.String("file", "inteltool.log",
 		"the path to the inteltool log file\n")
 
-	outputFileName := flag.String("o",
+	outputFilePath := flag.String("o",
 		"generate/gpio.h",
 		"the path to the generated file with GPIO configuration\n")
 
-	ignFlag := flag.Bool("ign",
-		false,
+	ignored := flag.Bool("ign", false,
 		"exclude fields that should be ignored from advanced macros\n")
 
-	nonCheckFlag := flag.Bool("n",
-		false,
+	unchecking := flag.Bool("n", false,
 		"Generate macros without checking.\n"+
 			"\tIn this case, some fields of the configuration registers\n"+
 			"\tDW0 will be ignored.\n")
 
-	infoLevels := []*bool{
+	levels := []*bool{
 		flag.Bool("i", false, "Show pads function in the comments"),
 		flag.Bool("ii", false, "Show DW0/DW1 value in the comments"),
 		flag.Bool("iii", false, "Show ignored bit fields in the comments"),
@@ -72,63 +70,55 @@ func main() {
 		"\tmtl - MeteorLake SoC\n"+
 		"\tebg - Emmitsburg PCH with Xeon SP\n")
 
-	fieldstyle := flag.String("fld", "none", "set fields macros style:\n"+
+	field := flag.String("fld", "none", "set fields macros style:\n"+
 		"\tcb  - use coreboot style for bit fields macros\n"+
 		"\tfsp - use fsp style\n"+
 		"\traw - do not convert, print as is\n")
 
-	printVersion()
 	flag.Parse()
+	printVersion()
 
-	config.IgnoredFieldsFlagSet(*ignFlag)
-	config.NonCheckingFlagSet(*nonCheckFlag)
-
-	for level, flag := range infoLevels {
-		if *flag {
-			config.InfoLevelSet(level + 1)
+	// settings
+	p2m.Config.Version = Version
+	p2m.Config.IgnoredFields = *ignored
+	p2m.Config.AutoCheck = !(*unchecking)
+	for level, set := range levels {
+		if *set {
+			p2m.Config.GenLevel = level + 1
 			fmt.Printf("Info level: Use level %d!\n", level+1)
 			break
 		}
 	}
 
-	if valid := config.PlatformSet(*platform); valid != 0 {
-		fmt.Printf("Error: invalid platform -%s!\n", *platform)
+	if err := p2m.SetPlatformType(*platform); err != nil {
+		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("Log file:", *inputFileName)
-	fmt.Println("Output generated file:", *outputFileName)
-
-	inputRegDumpFile, err := os.Open(*inputFileName)
-	if err != nil {
-		fmt.Printf("Error: inteltool log file was not found!\n")
+	if err := p2m.SetFieldType(*field); err != nil {
+		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
 
-	if config.FldStyleSet(*fieldstyle) != 0 {
-		fmt.Printf("Error! Unknown bit fields style option -%s!\n", *fieldstyle)
+	if file, err := os.Open(*inputFilePath); err != nil {
+		fmt.Printf("input file error: %v", err)
+		os.Exit(1)
+	} else {
+		p2m.Config.InputFile = file
+	}
+	defer p2m.Config.InputFile.Close()
+
+	if err := os.MkdirAll(filepath.Dir(*outputFilePath), os.ModePerm); err != nil {
+		fmt.Printf("failed to create output directory: %v", err)
 		os.Exit(1)
 	}
-
-	// create dir for output files
-	err = os.MkdirAll("generate", os.ModePerm)
-	if err != nil {
-		fmt.Printf("Error! Can not create a directory for the generated files!\n")
+	if file, err := os.Create(*outputFilePath); err != nil {
+		fmt.Printf("failed to create output file: %v", err)
 		os.Exit(1)
+	} else {
+		p2m.Config.OutputFile = file
 	}
-
-	// create empty gpio.h file
-	outputGenFile, err := os.Create(*outputFileName)
-	if err != nil {
-		fmt.Printf("Error: unable to generate GPIO config file!\n")
-		os.Exit(1)
-	}
-
-	defer inputRegDumpFile.Close()
-	defer outputGenFile.Close()
-
-	config.OutputGenFile = outputGenFile
-	config.InputRegDumpFile = inputRegDumpFile
+	defer p2m.Config.OutputFile.Close()
 
 	prs := parser.ParserData{}
 	prs.Parse()
@@ -146,15 +136,16 @@ func main() {
 
 /* Pad configuration was generated automatically using intelp2m %s */
 static const struct pad_config gpio_table[] = {`, Version)
-	config.OutputGenFile.WriteString(header + "\n")
+	p2m.Config.OutputFile.WriteString(header + "\n")
 	// Add the pads map
 
 	if err := generator.Run(); err != nil {
 		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
-	config.OutputGenFile.WriteString(`};
+	p2m.Config.OutputFile.WriteString(`};
 
 #endif /* CFG_GPIO_H */
 `)
+	os.Exit(0)
 }

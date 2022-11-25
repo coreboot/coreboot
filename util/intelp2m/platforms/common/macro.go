@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"sync"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
 )
 
 type Fields interface {
@@ -33,9 +33,9 @@ const (
 )
 
 const (
-	IOSTERM_SAME	= 0x0
-	IOSTERM_DISPUPD	= 0x1
-	IOSTERM_ENPD	= 0x2
+	IOSTERM_SAME    = 0x0
+	IOSTERM_DISPUPD = 0x1
+	IOSTERM_ENPD    = 0x2
 	IOSTERM_ENPU    = 0x3
 )
 
@@ -77,13 +77,13 @@ type Macro struct {
 	Fields
 }
 
-var	instanceMacro *Macro
-var	once           sync.Once
+var instanceMacro *Macro
+var once sync.Once
 
 // GetInstance returns singleton
 func GetInstanceMacro(p PlatformSpecific, f Fields) *Macro {
 	once.Do(func() {
-		instanceMacro = &Macro{ Platform : p, Fields : f }
+		instanceMacro = &Macro{Platform: p, Fields: f}
 	})
 	return instanceMacro
 }
@@ -159,7 +159,7 @@ func (macro *Macro) Separator() *Macro {
 // return: Macro
 func (macro *Macro) Rstsrc() *Macro {
 	dw0 := macro.Register(PAD_CFG_DW0)
-	var resetsrc = map[uint8]string {
+	var resetsrc = map[uint8]string{
 		0: "PWROK",
 		1: "DEEP",
 		2: "PLTRST",
@@ -199,7 +199,7 @@ func (macro *Macro) Trig() *Macro {
 // return: Macro
 func (macro *Macro) Invert() *Macro {
 	macro.Separator()
-	if macro.Register(PAD_CFG_DW0).GetRxInvert() !=0 {
+	if macro.Register(PAD_CFG_DW0).GetRxInvert() != 0 {
 		return macro.Add("INVERT")
 	}
 	return macro.Add("NONE")
@@ -227,8 +227,8 @@ func (macro *Macro) Own() *Macro {
 	return macro.Separator().Add("ACPI")
 }
 
-//Adds pad native function (PMODE) as a new argument
-//return: Macro
+// Adds pad native function (PMODE) as a new argument
+// return: Macro
 func (macro *Macro) Padfn() *Macro {
 	dw0 := macro.Register(PAD_CFG_DW0)
 	nfnum := int(dw0.GetPadMode())
@@ -287,22 +287,21 @@ func (macro *Macro) check() *Macro {
 
 // or - Set " | " if its needed
 func (macro *Macro) Or() *Macro {
-
-		if str := macro.Get(); str[len(str) - 1] == ')' {
-			macro.Add(" | ")
-		}
-		return macro
+	if str := macro.Get(); str[len(str)-1] == ')' {
+		macro.Add(" | ")
+	}
+	return macro
 }
 
 // DecodeIgnored - Add info about ignored field mask
 // reg : PAD_CFG_DW0 or PAD_CFG_DW1 register
 func (macro *Macro) DecodeIgnored(reg uint8) *Macro {
-	var decode = map[uint8]func() {
+	var decode = map[uint8]func(){
 		PAD_CFG_DW0: macro.Fields.DecodeDW0,
 		PAD_CFG_DW1: macro.Fields.DecodeDW1,
 	}
 	decodefn, valid := decode[reg]
-	if !valid || config.IsFspStyleMacro() {
+	if !valid || p2m.Config.Field == p2m.FspFlds {
 		return macro
 	}
 	dw := macro.Register(reg)
@@ -328,21 +327,21 @@ func (macro *Macro) GenerateFields() *Macro {
 	dw0Ignored := dw0.IgnoredFieldsGet()
 	dw1Ignored := dw1.IgnoredFieldsGet()
 
-	if config.InfoLevelGet() != 4 {
+	if p2m.Config.GenLevel != 4 {
 		macro.Clear()
 	}
-	if config.InfoLevelGet() >= 3 {
+	if p2m.Config.GenLevel >= 3 {
 		// Add string of reference macro as a comment
 		reference := macro.Get()
 		macro.Clear()
 		/* DW0 : PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) | 1 - IGNORED */
 		macro.DecodeIgnored(PAD_CFG_DW0).DecodeIgnored(PAD_CFG_DW1)
-		if config.InfoLevelGet() >= 4 {
+		if p2m.Config.GenLevel >= 4 {
 			/* PAD_CFG_NF(GPP_B23, 20K_PD, PLTRST, NF2), */
 			macro.Add("/* ").Add(reference).Add(" */\n\t")
 		}
 	}
-	if config.AreFieldsIgnored() {
+	if p2m.Config.IgnoredFields {
 		// Consider bit fields that should be ignored when regenerating
 		// advansed macros
 		var tempVal uint32 = dw0.ValueGet() & ^dw0Ignored
@@ -404,17 +403,17 @@ func (macro *Macro) Generate() string {
 		macro.Platform.NativeFunctionMacroAdd()
 	}
 
-	if config.IsFieldsMacroUsed() {
+	if p2m.Config.Field != p2m.NoFlds {
 		// Clear control mask to generate advanced macro only
 		return macro.GenerateFields().Get()
 	}
 
-	if config.IsNonCheckingFlagUsed() {
+	if !p2m.Config.AutoCheck {
 		body := macro.Get()
-		if config.InfoLevelGet() >= 3 {
+		if p2m.Config.GenLevel >= 3 {
 			macro.Clear().DecodeIgnored(PAD_CFG_DW0).DecodeIgnored(PAD_CFG_DW1)
 			comment := macro.Get()
-			if config.InfoLevelGet() >= 4 {
+			if p2m.Config.GenLevel >= 4 {
 				macro.Clear().Add("/* ")
 				macro.Fields.GenerateString()
 				macro.Add(" */\n\t")

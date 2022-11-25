@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
 	"review.coreboot.org/coreboot.git/util/intelp2m/fields"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 )
@@ -159,7 +159,7 @@ func (PlatformSpecific) GpiMacroAdd() {
 		macro.Add("_TRIG_OWN").Add("(").Id().Pull().Rstsrc().Trig().Own().Add("),")
 	case 1:
 		// GPI with IRQ route
-		if config.AreFieldsIgnored() {
+		if p2m.Config.IgnoredFields {
 			// Set Host Software Ownership to ACPI mode
 			macro.SetPadOwnership(common.PAD_OWN_ACPI)
 		}
@@ -168,7 +168,7 @@ func (PlatformSpecific) GpiMacroAdd() {
 		// PAD_CFG_GPI_DUAL_ROUTE(pad, pull, rst, trig, inv, route1, route2)
 		macro.Set("PAD_CFG_GPI_DUAL_ROUTE(").Id().Pull().Rstsrc().Trig().Invert()
 		macro.Add(", " + ids[0] + ", " + ids[1] + "),")
-		if config.AreFieldsIgnored() {
+		if p2m.Config.IgnoredFields {
 			// Set Host Software Ownership to ACPI mode
 			macro.SetPadOwnership(common.PAD_OWN_ACPI)
 		}
@@ -246,7 +246,8 @@ func (PlatformSpecific) NoConnMacroAdd() {
 // dw0 : DW0 config register value
 // dw1 : DW1 config register value
 // return: string of macro
-//         error
+//
+//	error
 func (PlatformSpecific) GenMacro(id string, dw0 uint32, dw1 uint32, ownership uint8) string {
 	macro := common.GetInstanceMacro(PlatformSpecific{}, fields.InterfaceGet())
 	macro.Clear()

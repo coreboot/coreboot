@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
 	"review.coreboot.org/coreboot.git/util/intelp2m/parser"
 )
 
@@ -16,19 +16,20 @@ type Printer struct {
 }
 
 func (p *Printer) Linef(lvl int, format string, args ...interface{}) {
-	if config.InfoLevelGet() >= lvl {
+	if p2m.Config.GenLevel >= lvl {
 		p.lines = append(p.lines, fmt.Sprintf(format, args...))
 	}
 }
 
 func (p *Printer) Line(lvl int, str string) {
-	if config.InfoLevelGet() >= lvl {
+	if p2m.Config.GenLevel >= lvl {
 		p.lines = append(p.lines, str)
 	}
 }
 
 func TestParser(t *testing.T) {
 	t.Run("PARSER/PARSE-INTELTOOL-FILE", func(t *testing.T) {
+		var err error
 		reference := []string{
 			"\n\t/* ------- GPIO Community 0 ------- */\n",
 			"\n\t/* ------- GPIO Group GPP_A ------- */\n",
@@ -62,18 +63,15 @@ func TestParser(t *testing.T) {
 			"\tPAD_CFG_NF(GPP_I1, NONE, PLTRST, NF1),", "\t/* DDPC_HPD1 */", "\n",
 			"\tPAD_CFG_NF(GPP_I2, NONE, PLTRST, NF1),", "\t/* DDPD_HPD2 */", "\n",
 		}
-
-		input, err := os.Open(testLogFilePath)
-		if err != nil {
+		if p2m.Config.InputFile, err = os.Open(testLogFilePath); err != nil {
 			t.Errorf("Something is wrong with the test file - %s!\n", testLogFilePath)
 			os.Exit(1)
 		}
-		defer input.Close()
+		defer p2m.Config.InputFile.Close()
 
-		config.InputRegDumpFile = input
-		config.FldStyleSet("none")
-		config.NonCheckingFlagSet(true)
-		config.InfoLevelSet(1)
+		p2m.Config.AutoCheck = false
+		p2m.Config.Field = p2m.NoFlds
+		p2m.Config.GenLevel = 1
 
 		prs := parser.ParserData{}
 		prs.Parse()

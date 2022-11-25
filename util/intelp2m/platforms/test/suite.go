@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
 )
 
 type (
@@ -29,14 +29,18 @@ type (
 )
 
 func (p Pad) toShortMacro(platform PlatformSpecificIf) string {
-	config.FldStyleSet("none")
-	config.NonCheckingFlagSet(true)
+	if err := p2m.SetFieldType("none"); err != nil {
+		panic(err)
+	}
+	p2m.Config.AutoCheck = false
 	return platform.GenMacro(p.ID, p.DW0, p.DW1, p.Ownership)
 }
 
 func (p Pad) toLongMacro(platform PlatformSpecificIf) string {
-	config.FldStyleSet("cb")
-	config.NonCheckingFlagSet(false)
+	if err := p2m.SetFieldType("cb"); err != nil {
+		panic(err)
+	}
+	p2m.Config.AutoCheck = true
 	return platform.GenMacro(p.ID, p.DW0, p.DW1, p.Ownership)
 }
 

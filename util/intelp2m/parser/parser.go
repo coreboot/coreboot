@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/adl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/apl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/cnl"
@@ -96,28 +96,28 @@ func (parser *ParserData) communityGroupExtract() {
 // PlatformSpecificInterfaceSet - specific interface for the platform selected
 // in the configuration
 func (parser *ParserData) PlatformSpecificInterfaceSet() {
-	var platform = map[uint8]PlatformSpecific{
-		config.SunriseType: snr.PlatformSpecific{},
+	platform := map[p2m.PlatformType]PlatformSpecific{
+		p2m.Sunrise: snr.PlatformSpecific{},
 		// See platforms/lbg/macro.go
-		config.LewisburgType: lbg.PlatformSpecific{
+		p2m.Lewisburg: lbg.PlatformSpecific{
 			InheritanceTemplate: snr.PlatformSpecific{},
 		},
-		config.ApolloType: apl.PlatformSpecific{},
-		config.CannonType: cnl.PlatformSpecific{
+		p2m.Apollo: apl.PlatformSpecific{},
+		p2m.Cannon: cnl.PlatformSpecific{
 			InheritanceTemplate: snr.PlatformSpecific{},
 		},
-		config.TigerType:  tgl.PlatformSpecific{},
-		config.AlderType:  adl.PlatformSpecific{},
-		config.JasperType: jsl.PlatformSpecific{},
-		config.MeteorType: mtl.PlatformSpecific{},
+		p2m.Tiger:  tgl.PlatformSpecific{},
+		p2m.Alder:  adl.PlatformSpecific{},
+		p2m.Jasper: jsl.PlatformSpecific{},
+		p2m.Meteor: mtl.PlatformSpecific{},
 		// See platforms/ebg/macro.go
-		config.EmmitsburgType: ebg.PlatformSpecific{
+		p2m.Emmitsburg: ebg.PlatformSpecific{
 			InheritanceTemplate: cnl.PlatformSpecific{
 				InheritanceTemplate: snr.PlatformSpecific{},
 			},
 		},
 	}
-	parser.platform = platform[config.PlatformGet()]
+	parser.platform = platform[p2m.Config.Platform]
 }
 
 // Register - read specific platform registers (32 bits)
@@ -164,8 +164,7 @@ func (parser *ParserData) padOwnershipExtract() bool {
 //
 //	information from the inteltool log was successfully parsed.
 func (parser *ParserData) padConfigurationExtract() bool {
-	// Only for Sunrise or CannonLake, and only for inteltool.log file template
-	if config.IsPlatformApollo() {
+	if p2m.Config.Platform == p2m.Apollo {
 		return false
 	}
 	return parser.padOwnershipExtract()
@@ -183,7 +182,8 @@ func (parser *ParserData) Parse() {
 	// map of thepad ownership registers for the GPIO controller
 	parser.ownership = make(map[string]uint32)
 
-	scanner := bufio.NewScanner(config.InputRegDumpFile)
+	file := p2m.Config.InputFile
+	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		parser.line = scanner.Text()
 		isIncluded, _ := common.KeywordsCheck(parser.line, "GPIO Community", "GPIO Group")
@@ -234,7 +234,7 @@ func (g Generator) Run() error {
 			g.Linef(2, "\n\t/* %s - %s */\n\t/* DW0: 0x%0.8x, DW1: 0x%0.8x */\n",
 				pad.id, pad.function, pad.dw0, pad.dw1)
 			g.Linef(0, "\t%s", macro)
-			if config.InfoLevelGet() == 1 {
+			if p2m.Config.GenLevel == 1 {
 				g.Linef(1, "\t/* %s */", pad.function)
 			}
 			g.Line(0, "\n")

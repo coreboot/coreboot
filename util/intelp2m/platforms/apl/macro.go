@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
-	"review.coreboot.org/coreboot.git/util/intelp2m/config"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
 	"review.coreboot.org/coreboot.git/util/intelp2m/fields"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 )
 
 const (
@@ -21,18 +21,18 @@ const (
 )
 
 const (
-	PULL_NONE    = 0x0  // 0 000: none
-	PULL_DN_5K   = 0x2  // 0 010: 5k wpd (Only available on SMBus GPIOs)
-	PULL_DN_20K  = 0x4  // 0 100: 20k wpd
+	PULL_NONE   = 0x0 // 0 000: none
+	PULL_DN_5K  = 0x2 // 0 010: 5k wpd (Only available on SMBus GPIOs)
+	PULL_DN_20K = 0x4 // 0 100: 20k wpd
 	// PULL_NONE = 0x8  // 1 000: none
-	PULL_UP_1K   = 0x9  // 1 001: 1k wpu (Only available on I2C GPIOs)
-	PULL_UP_2K   = 0xb  // 1 011: 2k wpu (Only available on I2C GPIOs)
-	PULL_UP_20K  = 0xc  // 1 100: 20k wpu
-	PULL_UP_667  = 0xd  // 1 101: 1k & 2k wpu (Only available on I2C GPIOs)
-	PULL_NATIVE  = 0xf  // 1 111: (optional) Native controller selected by Pad Mode
+	PULL_UP_1K  = 0x9 // 1 001: 1k wpu (Only available on I2C GPIOs)
+	PULL_UP_2K  = 0xb // 1 011: 2k wpu (Only available on I2C GPIOs)
+	PULL_UP_20K = 0xc // 1 100: 20k wpu
+	PULL_UP_667 = 0xd // 1 101: 1k & 2k wpu (Only available on I2C GPIOs)
+	PULL_NATIVE = 0xf // 1 111: (optional) Native controller selected by Pad Mode
 )
 
-type PlatformSpecific struct {}
+type PlatformSpecific struct{}
 
 // RemmapRstSrc - remmap Pad Reset Source Config
 // remmap is not required because it is the same as common.
@@ -52,7 +52,6 @@ func (PlatformSpecific) Pull() {
 		PULL_UP_20K: "UP_20K",
 		PULL_UP_667: "UP_667",
 		PULL_NATIVE: "NATIVE",
-
 	}
 	terminationFieldValue := dw1.GetTermination()
 	str, valid := pull[terminationFieldValue]
@@ -107,7 +106,7 @@ func sciRoute() bool {
 		// PAD_CFG_GPI_SCI_IOS(GPIO_141, NONE, DEEP, EDGE_SINGLE, INVERT, IGNORE, DISPUPD),
 		macro.Add("_SCI_IOS")
 		macro.Add("(").Id().Pull().Rstsrc().Trig().Invert().IOSstate().IOTerm()
-	} else if dw0.GetRXLevelEdgeConfiguration() & 0x1 != 0 {
+	} else if dw0.GetRXLevelEdgeConfiguration()&0x1 != 0 {
 		// e.g. PAD_CFG_GPI_ACPI_SCI(GPP_G2, NONE, DEEP, YES),
 		macro.Add("_ACPI_SCI").Add("(").Id().Pull().Rstsrc().Invert()
 	} else {
@@ -130,7 +129,7 @@ func smiRoute() bool {
 		// PAD_CFG_GPI_SMI_IOS(GPIO_41, UP_20K, DEEP, EDGE_SINGLE, NONE, IGNORE, SAME),
 		macro.Add("_SMI_IOS")
 		macro.Add("(").Id().Pull().Rstsrc().Trig().Invert().IOSstate().IOTerm()
-	} else if dw0.GetRXLevelEdgeConfiguration() & 0x1 != 0 {
+	} else if dw0.GetRXLevelEdgeConfiguration()&0x1 != 0 {
 		// e.g. PAD_CFG_GPI_ACPI_SMI(GPP_I3, NONE, DEEP, YES),
 		macro.Add("_ACPI_SMI").Add("(").Id().Pull().Rstsrc().Invert()
 	} else {
@@ -143,10 +142,11 @@ func smiRoute() bool {
 
 // Generate macro for GPI port
 func (PlatformSpecific) GpiMacroAdd() {
-	macro := common.GetMacro()
 	var ids []string
+
+	macro := common.GetMacro()
 	macro.Set("PAD_CFG_GPI")
-	for routeid, isRoute := range map[string]func() (bool) {
+	for routeid, isRoute := range map[string]func() bool{
 		"IOAPIC": ioApicRoute,
 		"SCI":    sciRoute,
 		"SMI":    smiRoute,
@@ -157,7 +157,7 @@ func (PlatformSpecific) GpiMacroAdd() {
 		}
 	}
 
-	switch argc := len(ids); argc {
+	switch config, argc := p2m.Config, len(ids); argc {
 	case 0:
 		dw1 := macro.Register(PAD_CFG_DW1)
 		isIOStandbyStateUsed := dw1.GetIOStandbyState() != 0
@@ -176,14 +176,14 @@ func (PlatformSpecific) GpiMacroAdd() {
 		}
 	case 1:
 		// GPI with IRQ route
-		if config.AreFieldsIgnored() {
+		if config.IgnoredFields {
 			macro.SetPadOwnership(common.PAD_OWN_ACPI)
 		}
 	case 2:
 		// PAD_CFG_GPI_DUAL_ROUTE(pad, pull, rst, trig, inv, route1, route2)
 		macro.Set("PAD_CFG_GPI_DUAL_ROUTE(").Id().Pull().Rstsrc().Trig().Invert()
 		macro.Add(", " + ids[0] + ", " + ids[1] + "),")
-		if config.AreFieldsIgnored() {
+		if config.IgnoredFields {
 			macro.SetPadOwnership(common.PAD_OWN_ACPI)
 		}
 	default:
@@ -193,12 +193,11 @@ func (PlatformSpecific) GpiMacroAdd() {
 	}
 }
 
-
 // Adds PAD_CFG_GPO macro with arguments
 func (PlatformSpecific) GpoMacroAdd() {
 	macro := common.GetMacro()
-	dw0 :=  macro.Register(PAD_CFG_DW0)
-	dw1 :=  macro.Register(PAD_CFG_DW1)
+	dw0 := macro.Register(PAD_CFG_DW0)
+	dw1 := macro.Register(PAD_CFG_DW1)
 	term := dw1.GetTermination()
 
 	macro.Set("PAD_CFG")
@@ -291,7 +290,8 @@ func (PlatformSpecific) NoConnMacroAdd() {
 // dw0 : DW0 config register value
 // dw1 : DW1 config register value
 // return: string of macro
-//         error
+//
+//	error
 func (PlatformSpecific) GenMacro(id string, dw0 uint32, dw1 uint32, ownership uint8) string {
 	macro := common.GetInstanceMacro(PlatformSpecific{}, fields.InterfaceGet())
 	// use platform-specific interface in Macro struct

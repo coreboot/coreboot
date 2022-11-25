@@ -182,9 +182,16 @@ static asmlinkage void ap_init(unsigned int index)
 	enable_lapic();
 	setup_lapic_interrupts();
 
-	struct device *dev = g_cpu_bus->children;
-	for (unsigned int i = index; i > 0; i--)
-		dev = dev->sibling;
+	struct device *dev;
+	int i = 0;
+	for (dev = g_cpu_bus->children; dev; dev = dev->sibling)
+		if (i++ == index)
+			break;
+
+	if (!dev) {
+		printk(BIOS_ERR, "Could not find allocated device for index %u\n", index);
+		return;
+	}
 
 	set_cpu_info(index, dev);
 

@@ -1037,7 +1037,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * VBIOS - Video BIOS
 * VBNV - Vboot Non-Volatile storage
 * VBT - [**Video BIOS
-  Table**](https://01.org/linuxgraphics/gfx-docs/drm/ch04s02.html#id-1.4.3.4.16)
+  Table**](https://www.kernel.org/doc/html/latest/gpu/i915.html#video-bios-table-vbt)
 * VESA - Video Electronics Standards Association
 * VGA: Video Graphics Array
 * VID: Vendor Identifier

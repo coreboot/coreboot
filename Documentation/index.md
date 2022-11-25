@@ -1,9 +1,8 @@
 # Welcome to the coreboot documentation
 
 This is the developer documentation for [coreboot](https://coreboot.org).
-It is built from Markdown files in the
-[Documentation](https://review.coreboot.org/cgit/coreboot.git/tree/Documentation)
-directory in the source code.
+It is built from Markdown files in the [Documentation] directory in the
+source code.
 
 ## Spelling of coreboot
 
@@ -143,7 +142,7 @@ say hello!
 ## Getting the source code
 
 coreboot is primarily developed in the
-[git](https://review.coreboot.org/cgit/coreboot.git) version control
+[git](https://review.coreboot.org/plugins/gitiles/coreboot) version control
 system, using [Gerrit](https://review.coreboot.org) to manage
 contributions and code review.
 
@@ -200,3 +199,5 @@ Contents:
 * [Acronyms & Definitions](acronyms.md)
 * [External Resources](external_docs.md)
 * [Documentation License](documentation_license.md)
+
+[Documentation]: https://review.coreboot.org/plugins/gitiles/coreboot/+/refs/heads/master/Documentation/

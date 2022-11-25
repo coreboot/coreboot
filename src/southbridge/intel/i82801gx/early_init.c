@@ -6,7 +6,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/common/rcba.h>
-#include <southbridge/intel/common/tco.h>
 
 #include "chip.h"
 #include "i82801gx.h"
@@ -58,6 +57,8 @@ void i82801gx_setup_bars(void)
 	pci_write_config8(d31f0, GPIO_CNTL, GPIO_EN);
 }
 
+#define TCO_BASE 0x60
+
 #if ENV_RAMINIT
 void i82801gx_early_init(void)
 {
@@ -71,9 +72,9 @@ void i82801gx_early_init(void)
 
 	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
 	RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
-	write_pmbase16(PMBASE_TCO_OFFSET + TCO1_CNT, TCO_TMR_HLT);
-	write_pmbase16(PMBASE_TCO_OFFSET + TCO1_STS, TCO1_TIMEOUT);
-	write_pmbase16(PMBASE_TCO_OFFSET + TCO2_STS, SECOND_TO_STS);
+	write_pmbase16(TCO_BASE + 0x8, (1 << 11));	/* halt timer */
+	write_pmbase16(TCO_BASE + 0x4, (1 << 3));	/* clear timeout */
+	write_pmbase16(TCO_BASE + 0x6, (1 << 1));	/* clear 2nd timeout */
 	printk(BIOS_DEBUG, " done.\n");
 
 	/* program secondary mlt XXX byte? */

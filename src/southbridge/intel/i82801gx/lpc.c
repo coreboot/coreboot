@@ -20,7 +20,6 @@
 #include <southbridge/intel/common/hpet.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/common/spi.h>
-#include <southbridge/intel/common/tco.h>
 
 #include "chip.h"
 #include "i82801gx.h"
@@ -428,9 +427,9 @@ static void lpc_final(struct device *dev)
 	pci_or_config16(dev, GEN_PMCON_1, 1 << 4);
 
 	/* TCO_Lock */
-	tco1_cnt = read_pmbase16(PMBASE_TCO_OFFSET + TCO1_CNT);
+	tco1_cnt = inw(DEFAULT_PMBASE + 0x60 + TCO1_CNT);
 	tco1_cnt |= (1 << 12); /* TCO lock */
-	write_pmbase16(PMBASE_TCO_OFFSET + TCO1_CNT, tco1_cnt);
+	outw(tco1_cnt, DEFAULT_PMBASE + 0x60 + TCO1_CNT);
 
 	/* Indicate finalize step with post code */
 	post_code(POST_OS_BOOT);

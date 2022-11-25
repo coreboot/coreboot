@@ -18,7 +18,7 @@ CMAKE := cmake
 OBJCOPY ?= objcopy
 OBJDUMP ?= objdump
 
-TEST_DEFAULT_CONFIG := $(top)/configs/config.emulation_qemu_x86_i440fx
+TEST_DEFAULT_CONFIG ?= $(top)/configs/config.emulation_qemu_x86_i440fx
 TEST_DOTCONFIG := $(testobj)/.config
 TEST_KCONFIG_AUTOHEADER := $(testobj)/config.src.h
 TEST_KCONFIG_AUTOCONFIG := $(testobj)/auto.conf

@@ -27,9 +27,6 @@ void smm_southbridge_clear_state(void)
 	if (CONFIG(ELOG))
 		southcluster_log_state();
 
-	printk(BIOS_DEBUG, "Initializing Southbridge SMI...");
-	printk(BIOS_SPEW, " pmbase = 0x%04x\n", get_pmbase());
-
 	smi_en = inl(get_pmbase() + SMI_EN);
 	if (smi_en & APMC_EN) {
 		printk(BIOS_INFO, "SMI# handler already enabled?\n");

@@ -23,15 +23,12 @@ static int smi_enabled(void)
 	if (CONFIG(ELOG))
 		pch_log_state();
 
-	printk(BIOS_DEBUG, "Initializing southbridge SMI...");
-	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", lpc_get_pmbase());
-
 	smi_en = read_pmbase32(SMI_EN);
 	if (smi_en & APMC_EN) {
 		printk(BIOS_INFO, "SMI# handler already enabled?\n");
 		return 1;
 	}
-	printk(BIOS_DEBUG, "\n");
+
 	return 0;
 }
 

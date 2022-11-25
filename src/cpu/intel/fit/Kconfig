@@ -12,3 +12,17 @@ config CPU_INTEL_NUM_FIT_ENTRIES
 	depends on CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	help
 	  This option selects the number of empty entries in the FIT table.
+
+config HAVE_PBP_BIN
+	bool "Add Intel platform boot policy file"
+	default n
+	depends on SOC_INTEL_COMMON_IBL_BASE
+	help
+	  The platform boot policy file. Platform boot policy (type 4) entry
+	  in the FIT is required for server executing CBnT and/or PFR without
+	  a PCH.
+
+config PBP_BIN_PATH
+	string "Path and filename of the platform boot policy file"
+	default "site-local/mainboard/\$(MAINBOARDDIR)/pbp.bin"
+	depends on HAVE_PBP_BIN

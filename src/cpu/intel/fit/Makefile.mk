@@ -50,4 +50,17 @@ endif # CONFIG_INTEL_ADD_TOP_SWAP_BOOTBLOCK
 
 endif # CONFIG_CPU_MICROCODE_CBFS_NONE
 
+# Platform Boot Policy
+ifeq ($(CONFIG_HAVE_PBP_BIN),y)
+
+cbfs-files-y += pbp.bin
+pbp.bin-file := $(call strip_quotes,$(CONFIG_PBP_BIN_PATH))
+pbp.bin-type := raw
+
+$(call add_intermediate, add_pbp_fit, set_fit_ptr $(IFITTOOL))
+	@printf "    UPDATE-FIT Platform Boot Policy binary\n"
+	$(IFITTOOL) -f $< -a -n pbp.bin -t 4 -s $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES) -r COREBOOT
+
+endif # CONFIG_HAVE_PBP_BIN
+
 endif # CONFIG_UPDATE_IMAGE

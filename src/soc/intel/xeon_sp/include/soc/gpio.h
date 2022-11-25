@@ -3,7 +3,7 @@
 #ifndef _SOC_GPIO_H_
 #define _SOC_GPIO_H_
 
-#include <soc/lewisburg_pch_gpio_defs.h>
+#include <soc/gpio_soc_defs.h>
 #include <intelblocks/gpio.h>
 
 /*

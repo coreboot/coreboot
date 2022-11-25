@@ -7,7 +7,7 @@
 #include <soc/romstage.h>
 #include <string.h>
 #include <gpio.h>
-#include <soc/lewisburg_pch_gpio_defs.h>
+#include <soc/gpio_soc_defs.h>
 #include <skxsp_tp_iio.h>
 
 #include "ipmi.h"

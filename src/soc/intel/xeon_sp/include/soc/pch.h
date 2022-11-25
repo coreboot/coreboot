@@ -10,6 +10,5 @@ void pch_disable_devfn(struct device *dev);
 #endif
 
 void override_hpet_ioapic_bdf(void);
-void pch_lock_dmictl(void);
 
 #endif /* _SOC_PCH_H_ */

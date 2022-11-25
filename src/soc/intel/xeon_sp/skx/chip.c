@@ -8,6 +8,7 @@
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
 #include <soc/pch.h>
+#include <soc/soc_pch.h>
 #include <soc/ramstage.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>

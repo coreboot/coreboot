@@ -16,4 +16,4 @@ $(objutil)/ifdtool/%.o: $(top)/util/cbfstool/flashmap/%.c
 
 $(objutil)/ifdtool/ifdtool: $(addprefix $(objutil)/ifdtool/,$(ifdtoolobj))
 	printf "   IFDTOOL\n"
-	$(HOSTCC) $(addprefix $(objutil)/ifdtool/,$(ifdtoolobj)) -o $@
+	$(HOSTCC) ${LDFLAGS} $(addprefix $(objutil)/ifdtool/,$(ifdtoolobj)) -o $@

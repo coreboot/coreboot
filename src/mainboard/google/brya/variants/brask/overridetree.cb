@@ -77,6 +77,7 @@ chip soc/intel/alderlake
 				register "customized_led0" = "0x23f"
 				register "customized_led2" = "0x028"
 				register "enable_aspm_l1_2" = "1"
+				register "add_acpi_dma_property" = "true"
 				device pci 00.0 on end
 			end
 		end # RTL8125 Ethernet NIC

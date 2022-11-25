@@ -266,6 +266,7 @@ chip soc/intel/alderlake
 				register "customized_leds" = "0x05af"
 				register "wake" = "GPE0_DW0_07" #GPP_A7
 				register "device_index" = "0"
+				register "add_acpi_dma_property" = "true"
 				device pci 00.0 on end
 			end
 		end # RTL8111K Ethernet NIC

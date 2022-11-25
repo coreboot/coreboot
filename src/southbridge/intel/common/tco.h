@@ -13,7 +13,7 @@
 #define PMBASE_TCO_OFFSET	0x60
 
 #define TCO1_STS		0x04
-#define  TCO1_TIMEOUT		(1 << 3)
+#define  TCO_TIMEOUT		(1 << 3)
 #define TCO2_STS		0x06
 #define  TCO2_STS_SECOND_TO	(1 << 1)
 #define TCO1_CNT		0x08

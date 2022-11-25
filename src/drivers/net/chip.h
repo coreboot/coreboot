@@ -34,6 +34,10 @@ struct drivers_net_config {
 
 	/* Allow kernel driver to enable ASPM L1.2. */
 	bool enable_aspm_l1_2;
+
+	/* When set to true, this will add a _DSD which contains a single
+	   property, `DmaProperty`, set to 1, under the ACPI Device. */
+	bool add_acpi_dma_property;
 };
 
 #endif /* __DRIVERS_R8168_CHIP_H__ */

@@ -400,6 +400,9 @@ static void r8168_net_fill_ssdt(const struct device *dev)
 	if (config->wake)
 		acpigen_write_PRW(config->wake, 3);
 
+	if (config->add_acpi_dma_property)
+		acpi_device_add_dma_property(NULL);
+
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
 

@@ -37,7 +37,7 @@ MPFR_VERSION=4.1.0
 MPC_VERSION=1.2.1
 GCC_VERSION=11.2.0
 BINUTILS_VERSION=2.37
-IASL_VERSION=20221020
+IASL_VERSION="R10_20_22"
 # CLANG version number
 CLANG_VERSION=15.0.0
 CMAKE_VERSION=3.24.2
@@ -52,7 +52,7 @@ MPFR_ARCHIVE="https://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.xz"
 MPC_ARCHIVE="https://ftpmirror.gnu.org/mpc/mpc-${MPC_VERSION}.tar.gz"
 GCC_ARCHIVE="https://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz"
 BINUTILS_ARCHIVE="https://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.xz"
-IASL_ARCHIVE="https://acpica.org/sites/acpica/files/acpica-unix2-${IASL_VERSION}.tar.gz"
+IASL_ARCHIVE="https://github.com/acpica/acpica/archive/refs/tags/${IASL_VERSION}.tar.gz"
 # CLANG toolchain archive locations
 LLVM_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/llvm-${CLANG_VERSION}.src.tar.xz"
 CLANG_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/clang-${CLANG_VERSION}.src.tar.xz"
@@ -75,7 +75,7 @@ MPC_DIR="mpc-${MPC_VERSION}"
 GCC_DIR="gcc-${GCC_VERSION}"
 # shellcheck disable=SC2034
 BINUTILS_DIR="binutils-${BINUTILS_VERSION}"
-IASL_DIR="acpica-unix2-${IASL_VERSION}"
+IASL_DIR="acpica-${IASL_VERSION}"
 # CLANG toolchain directories
 LLVM_DIR="llvm-${CLANG_VERSION}.src"
 CLANG_DIR="clang-${CLANG_VERSION}.src"

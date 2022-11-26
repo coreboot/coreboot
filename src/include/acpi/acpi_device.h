@@ -588,4 +588,13 @@ void acpi_dp_write(struct acpi_dp *table);
  */
 void acpi_device_write_pci_dev(const struct device *dev);
 
+/*
+ * Helper function to add DmaProperty to _DSD in the current scope.
+ *
+ * dsd - Pointer to a _DSD object.
+ *       Append to existing _DSD object if not NULL.
+ *       Create new _DSD object and flush it if NULL.
+ */
+void acpi_device_add_dma_property(struct acpi_dp *dsd);
+
 #endif /* __ACPI_ACPI_DEVICE_H__ */

@@ -1183,3 +1183,19 @@ void acpi_device_write_pci_dev(const struct device *dev)
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
 }
+
+/* ID for the DmaProperty _DSD */
+#define ACPI_DSD_DMA_PROPERTY_UUID "70D24161-6DD5-4C9E-8070-705531292865"
+
+/* _DSD with DmaProperty */
+void acpi_device_add_dma_property(struct acpi_dp *dsd)
+{
+	struct acpi_dp *prev_dsd = dsd, *pkg;
+	if (prev_dsd == NULL)
+		dsd = acpi_dp_new_table("_DSD");
+	pkg = acpi_dp_new_table(ACPI_DSD_DMA_PROPERTY_UUID);
+	acpi_dp_add_integer(pkg, "DmaProperty", 1);
+	acpi_dp_add_package(dsd, pkg);
+	if (prev_dsd == NULL)
+		acpi_dp_write(dsd);
+}

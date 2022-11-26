@@ -30,9 +30,6 @@
 /* Unique ID for the WIFI _DSM */
 #define ACPI_DSM_OEM_WIFI_UUID    "F21202BF-8F78-4DC6-A5B3-1F738E285ADE"
 
-/* ID for the Wifi DmaProperty _DSD */
-#define ACPI_DSD_DMA_PROPERTY_UUID	  "70D24161-6DD5-4C9E-8070-705531292865"
-
 /* Unique ID for CnviDdrRfim entry in WIFI _DSM */
 #define ACPI_DSM_RFIM_WIFI_UUID   "7266172C-220B-4B29-814F-75E4DD26B5FD"
 
@@ -522,15 +519,8 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 		acpigen_write_PRW(config->wake, ACPI_S3);
 
 		/* Add _DSD for DmaProperty property. */
-		if (config->add_acpi_dma_property) {
-			struct acpi_dp *dsd, *pkg;
-
-			dsd = acpi_dp_new_table("_DSD");
-			pkg = acpi_dp_new_table(ACPI_DSD_DMA_PROPERTY_UUID);
-			acpi_dp_add_integer(pkg, "DmaProperty", 1);
-			acpi_dp_add_package(dsd, pkg);
-			acpi_dp_write(dsd);
-		}
+		if (config->add_acpi_dma_property)
+			acpi_device_add_dma_property(NULL);
 	}
 
 	/* Fill regulatory domain structure */

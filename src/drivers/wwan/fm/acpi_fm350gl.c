@@ -5,9 +5,6 @@
 #include "chip.h"
 #include "soc/intel/common/block/pcie/rtd3/chip.h"
 
-/* ID for the DmaProperty in _DSD */
-#define ACPI_DSD_DMA_PROPERTY_UUID "70D24161-6DD5-4C9E-8070-705531292865"
-
 /* FCPO# to RESET# delay time during WWAN ON */
 #define FM350GL_TN2B 20
 /* RESET# to PERST# delay time during WWAN ON */
@@ -245,14 +242,8 @@ static void wwan_fm350gl_acpi_fill_ssdt(const struct device *dev)
 			wwan_fm350gl_acpi_method_rst(parent, config);
 			wwan_fm350gl_acpi_method_dpts(parent, config);
 
-			if (config->add_acpi_dma_property) {
-				struct acpi_dp *dsd, *pkg;
-				dsd = acpi_dp_new_table("_DSD");
-				pkg = acpi_dp_new_table(ACPI_DSD_DMA_PROPERTY_UUID);
-				acpi_dp_add_integer(pkg, "DmaProperty", 1);
-				acpi_dp_add_package(dsd, pkg);
-				acpi_dp_write(dsd);
-			}
+			if (config->add_acpi_dma_property)
+				acpi_device_add_dma_property(NULL);
 
 			/* NOTE: the 5G driver will call MRST._RST to trigger a cold reset
 			 * during firmware update.

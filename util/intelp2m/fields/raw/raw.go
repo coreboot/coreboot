@@ -1,22 +1,21 @@
 package raw
 
 import (
-	"fmt"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 )
 
-type FieldMacros struct {}
+type FieldMacros struct{}
 
 func (FieldMacros) DecodeDW0() {
 	macro := common.GetMacro()
-	// Do not decode, print as is.
-	macro.Add(fmt.Sprintf("0x%0.8x", macro.Register(common.PAD_CFG_DW0).ValueGet()))
+	dw0 := macro.GetRegisterDW0()
+	macro.Add(dw0.String())
 }
 
 func (FieldMacros) DecodeDW1() {
 	macro := common.GetMacro()
-	// Do not decode, print as is.
-	macro.Add(fmt.Sprintf("0x%0.8x", macro.Register(common.PAD_CFG_DW1).ValueGet()))
+	dw1 := macro.GetRegisterDW1()
+	macro.Add(dw1.String())
 }
 
 // GenerateString - generates the entire string of bitfield macros.

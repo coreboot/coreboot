@@ -6,7 +6,7 @@ import (
 	"unicode"
 )
 
-const INTSEL_MASK uint32 = 0xffffff00
+const IntSelMask uint32 = 0xffffff00
 
 type template func(string, *string, *string, *uint32, *uint32) int
 
@@ -57,7 +57,7 @@ func UseTemplate(line string, function *string, id *string, dw0 *uint32, dw1 *ui
 			*function += "/" + fields[i]
 		}
 		// clear RO Interrupt Select (INTSEL)
-		*dw1 &= INTSEL_MASK
+		*dw1 &= IntSelMask
 	}
 	return 0
 }

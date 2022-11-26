@@ -50,7 +50,7 @@ func generate(fields ...*field) {
 // DecodeDW0 - decode value of DW0 register
 func (FieldMacros) DecodeDW0() {
 	macro := common.GetMacro()
-	dw0 := macro.Register(common.PAD_CFG_DW0)
+	dw0 := macro.GetRegisterDW0()
 	generate(
 		&field{
 			prefix: "PAD_FUNC",
@@ -133,7 +133,7 @@ func (FieldMacros) DecodeDW0() {
 // DecodeDW1 - decode value of DW1 register
 func (FieldMacros) DecodeDW1() {
 	macro := common.GetMacro()
-	dw1 := macro.Register(common.PAD_CFG_DW1)
+	dw1 := macro.GetRegisterDW1()
 	generate(
 		&field{
 			name:   "PAD_CFG1_TOL_1V8",

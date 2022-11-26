@@ -30,9 +30,9 @@ func TestTemp(t *testing.T) {
 		} else if dw0 != ref_dw0 {
 			t.Errorf("dw0 from '%s':\nExpects:  '0x%08x'\nActually: '0x%08x'\n\n",
 				line, ref_dw0, dw0)
-		} else if dw1 != (ref_dw1 & parser.INTSEL_MASK) {
+		} else if dw1 != (ref_dw1 & parser.IntSelMask) {
 			t.Errorf("dw1 from '%s':\nExpects:  '0x%08x'\nActually: '0x%08x'\n\n",
-				line, (ref_dw1 & parser.INTSEL_MASK), dw1)
+				line, (ref_dw1 & parser.IntSelMask), dw1)
 		}
 	})
 }

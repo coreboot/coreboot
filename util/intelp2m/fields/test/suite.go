@@ -29,13 +29,13 @@ func (suite Suite) Run(t *testing.T, label string, decoderIf common.Fields) {
 	t.Run(label, func(t *testing.T) {
 		platform := snr.PlatformSpecific{}
 		macro := common.GetInstanceMacro(platform, decoderIf)
-		dw0 := macro.Register(common.PAD_CFG_DW0)
-		dw1 := macro.Register(common.PAD_CFG_DW1)
+		dw0 := macro.GetRegisterDW0()
+		dw1 := macro.GetRegisterDW1()
 		for _, tc := range suite {
 			macro.Clear()
 			macro.PadIdSet("").SetPadOwnership(tc.Ownership)
-			dw0.ValueSet(tc.DW0)
-			dw1.ValueSet(tc.DW1)
+			dw0.Value = tc.DW0
+			dw1.Value = tc.DW1
 			macro.Fields.GenerateString()
 			if err := tc.Check(macro.Get()); err != nil {
 				t.Errorf("Test failed: %v", err)

@@ -7,18 +7,13 @@ import (
 	"review.coreboot.org/coreboot.git/util/intelp2m/fields"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/cnl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common/register/bits"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/snr"
 )
 
 const (
 	PAD_CFG_DW0_RO_FIELDS = (0x1 << 27) | (0x1 << 18) | (0x3f << 11) | (0x3f << 2) | (0x1 << 1)
 	PAD_CFG_DW1_RO_FIELDS = 0xdfffc3ff
-)
-
-const (
-	PAD_CFG_DW0 = common.PAD_CFG_DW0
-	PAD_CFG_DW1 = common.PAD_CFG_DW1
-	MAX_DW_NUM  = common.MAX_DW_NUM
 )
 
 type InheritanceMacro interface {
@@ -47,21 +42,22 @@ func (PlatformSpecific) RemmapRstSrc() {
 		return
 	}
 
-	dw0 := macro.Register(PAD_CFG_DW0)
-	var remapping = map[uint8]uint32{
-		0: common.RST_RSMRST << common.PadRstCfgShift,
-		1: common.RST_DEEP << common.PadRstCfgShift,
-		2: common.RST_PLTRST << common.PadRstCfgShift,
+	dw0 := macro.GetRegisterDW0()
+	var remapping = map[uint32]uint32{
+		0: bits.RstCfgRSMRST << bits.DW0PadRstCfg,
+		1: bits.RstCfgDEEP << bits.DW0PadRstCfg,
+		2: bits.RstCfgPLTRST << bits.DW0PadRstCfg,
 	}
 	resetsrc, valid := remapping[dw0.GetResetConfig()]
 	if valid {
 		// dw0.SetResetConfig(resetsrc)
-		ResetConfigFieldVal := (dw0.ValueGet() & 0x3fffffff) | remapping[dw0.GetResetConfig()]
-		dw0.ValueSet(ResetConfigFieldVal)
+		ResetConfigFieldVal := (dw0.Value & 0x3fffffff) | remapping[dw0.GetResetConfig()]
+		dw0.Value = ResetConfigFieldVal
 	} else {
 		fmt.Println("Invalid Pad Reset Config [ 0x", resetsrc, " ] for ", macro.PadIdGet())
 	}
-	dw0.CntrMaskFieldsClear(common.PadRstCfgMask)
+	mask := bits.DW0[bits.DW0PadRstCfg]
+	dw0.CntrMaskFieldsClear(mask)
 }
 
 // Adds The Pad Termination (TERM) parameter from PAD_CFG_DW1 to the macro
@@ -94,9 +90,7 @@ func (platform PlatformSpecific) NoConnMacroAdd() {
 // dw0 : DW0 config register value
 // dw1 : DW1 config register value
 // return: string of macro
-//
-//	error
-func (PlatformSpecific) GenMacro(id string, dw0 uint32, dw1 uint32, ownership uint8) string {
+func (PlatformSpecific) GenMacro(id string, dw0Val, dw1Val uint32, ownership uint8) string {
 	macro := common.GetInstanceMacro(
 		PlatformSpecific{
 			InheritanceMacro: cnl.PlatformSpecific{
@@ -106,10 +100,19 @@ func (PlatformSpecific) GenMacro(id string, dw0 uint32, dw1 uint32, ownership ui
 		fields.InterfaceGet(),
 	)
 	macro.Clear()
-	macro.Register(PAD_CFG_DW0).CntrMaskFieldsClear(common.AllFields)
-	macro.Register(PAD_CFG_DW1).CntrMaskFieldsClear(common.AllFields)
+
+	macro.Clear()
+	dw0 := macro.GetRegisterDW0()
+	dw0.CntrMaskFieldsClear(bits.All32)
+
+	dw1 := macro.GetRegisterDW1()
+	dw1.CntrMaskFieldsClear(bits.All32)
+
+	dw0.Value = dw0Val
+	dw1.Value = dw1Val
+	dw0.ReadOnly = PAD_CFG_DW0_RO_FIELDS
+	dw1.ReadOnly = PAD_CFG_DW1_RO_FIELDS
+
 	macro.PadIdSet(id).SetPadOwnership(ownership)
-	macro.Register(PAD_CFG_DW0).ValueSet(dw0).ReadOnlyFieldsSet(PAD_CFG_DW0_RO_FIELDS)
-	macro.Register(PAD_CFG_DW1).ValueSet(dw1).ReadOnlyFieldsSet(PAD_CFG_DW1_RO_FIELDS)
 	return macro.Generate()
 }

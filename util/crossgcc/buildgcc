@@ -30,6 +30,8 @@ DESTDIR=
 SAVETEMPS=0
 BOOTSTRAP=0
 THREADS=1
+USE_COREBOOT_MIRROR=0
+COREBOOT_MIRROR_URL="https://www.coreboot.org/releases/crossgcc-sources"
 
 # GCC toolchain version numbers
 GMP_VERSION=6.2.1
@@ -43,29 +45,46 @@ CLANG_VERSION=15.0.6
 CMAKE_VERSION=3.25.0
 NASM_VERSION=2.15.05
 
-# GCC toolchain archive locations
-# These are sanitized by the jenkins toolchain test builder, so if
+# Filename for each package
+GMP_ARCHIVE="gmp-${GMP_VERSION}.tar.xz"
+MPFR_ARCHIVE="mpfr-${MPFR_VERSION}.tar.xz"
+MPC_ARCHIVE="mpc-${MPC_VERSION}.tar.gz"
+GCC_ARCHIVE="gcc-${GCC_VERSION}.tar.xz"
+BINUTILS_ARCHIVE="binutils-${BINUTILS_VERSION}.tar.xz"
+IASL_ARCHIVE="${IASL_VERSION}.tar.gz"
+# CLANG toolchain FILE locations
+LLVM_ARCHIVE="llvm-${CLANG_VERSION}.src.tar.xz"
+CLANG_ARCHIVE="clang-${CLANG_VERSION}.src.tar.xz"
+CRT_ARCHIVE="compiler-rt-${CLANG_VERSION}.src.tar.xz"
+CTE_ARCHIVE="clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
+LLVMCMAKE_ARCHIVE="cmake-${CLANG_VERSION}.src.tar.xz"
+CMAKE_ARCHIVE="cmake-${CMAKE_VERSION}.tar.gz"
+NASM_ARCHIVE="nasm-${NASM_VERSION}.tar.bz2"
+
+# These URLs are sanitized by the jenkins toolchain test builder, so if
 # a completely new URL is added here, it probably needs to be added
 # to the jenkins build as well, or the builder won't download it.
-GMP_ARCHIVE="https://ftpmirror.gnu.org/gmp/gmp-${GMP_VERSION}.tar.xz"
-MPFR_ARCHIVE="https://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.xz"
-MPC_ARCHIVE="https://ftpmirror.gnu.org/mpc/mpc-${MPC_VERSION}.tar.gz"
-GCC_ARCHIVE="https://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz"
-BINUTILS_ARCHIVE="https://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.xz"
-IASL_ARCHIVE="https://github.com/acpica/acpica/archive/refs/tags/${IASL_VERSION}.tar.gz"
-# CLANG toolchain archive locations
-LLVM_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/llvm-${CLANG_VERSION}.src.tar.xz"
-CLANG_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/clang-${CLANG_VERSION}.src.tar.xz"
-CRT_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz"
-CTE_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
-LLVMCMAKE_ARCHIVE="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/cmake-${CLANG_VERSION}.src.tar.xz"
-CMAKE_ARCHIVE="https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}.tar.gz"
-NASM_ARCHIVE="https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.bz2"
 
-ALL_ARCHIVES="$GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE \
-	$GCC_ARCHIVE $BINUTILS_ARCHIVE $IASL_ARCHIVE \
-	$LLVM_ARCHIVE $CLANG_ARCHIVE $LLVMCMAKE_ARCHIVE \
-	$CRT_ARCHIVE $CTE_ARCHIVE $CMAKE_ARCHIVE $NASM_ARCHIVE"
+# GCC toolchain archive locations
+GMP_BASE_URL="https://ftpmirror.gnu.org/gmp"
+MPFR_BASE_URL="https://ftpmirror.gnu.org/mpfr"
+MPC_BASE_URL="https://ftpmirror.gnu.org/mpc"
+GCC_BASE_URL="https://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}"
+BINUTILS_BASE_URL="https://ftpmirror.gnu.org/binutils"
+IASL_BASE_URL="https://github.com/acpica/acpica/archive/refs/tags/"
+# CLANG toolchain archive locations
+LLVM_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"
+CLANG_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"
+CRT_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"
+CTE_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"
+LLVMCMAKE_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"
+CMAKE_BASE_URL="https://cmake.org/files/v${CMAKE_VERSION%.*}"
+NASM_BASE_URL="https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}"
+
+ALL_ARCHIVES="$GMP_BASE_URL/$GMP_ARCHIVE $MPFR_BASE_URL/$MPFR_ARCHIVE $MPC_BASE_URL/$MPC_ARCHIVE \
+	$GCC_BASE_URL/$GCC_ARCHIVE $BINUTILS_BASE_URL/$BINUTILS_ARCHIVE $IASL_BASE_URL/$IASL_ARCHIVE \
+	$LLVM_BASE_URL/$LLVM_ARCHIVE $CLANG_BASE_URL/$CLANG_ARCHIVE $LLVMCMAKE_BASE_URL/$LLVMCMAKE_ARCHIVE \
+	$CRT_BASE_URL/$CRT_ARCHIVE $CTE_BASE_URL/$CTE_ARCHIVE $CMAKE_BASE_URL/$CMAKE_ARCHIVE $NASM_BASE_URL/$NASM_ARCHIVE"
 
 # GCC toolchain directories
 GMP_DIR="gmp-${GMP_VERSION}"
@@ -300,23 +319,27 @@ ada_requested() {
 download() {
 	package=$1
 	# shellcheck disable=SC2086
-	archive="$(eval echo \$$package"_ARCHIVE")"
+	if [ "${USE_COREBOOT_MIRROR}" -eq 0 ]; then
+		url="$(eval echo \$$package"_BASE_URL")"
+	else
+		url="${COREBOOT_MIRROR_URL}"
+	fi
 
-	FILE=$(basename "$archive")
-	printf " * $FILE "
+	file="$(eval echo \$$package"_ARCHIVE")"
+	printf " * ${file} "
 
-	if test -f "tarballs/$FILE"; then
+	if test -f "tarballs/${file}"; then
 		printf "(cached)... "
 	else
-		printf "(downloading from $archive)"
-		rm -f "tarballs/$FILE"
+		printf "(downloading from ${url}/${file})"
+		rm -f "tarballs/${file}"
 		cd tarballs || exit 1
-		download_showing_percentage "$archive"
+		download_showing_percentage "${url}/${file}"
 		cd ..
 	fi
 
-	if [ ! -f "tarballs/$FILE" ]; then
-		printf "${RED}Failed to download $FILE.${NC}\n"
+	if [ ! -f "tarballs/${file}" ]; then
+		printf "${RED}Failed to download ${file}.${NC}\n"
 		exit 1
 	fi
 }
@@ -326,8 +349,7 @@ download() {
 compute_hash() {
 	package=$1
 	# shellcheck disable=SC2086
-	archive="$(eval echo \$$package"_ARCHIVE")"
-	file="$(basename "$archive")"
+	file="$(eval echo \$$package"_ARCHIVE")"
 
 	if test -z "$CHECKSUM"; then
 		echo "${RED}\$CHECKSUM program missing. This is bad.${NC}" 1>&2
@@ -340,8 +362,7 @@ compute_hash() {
 error_hash_missing() {
 	package="$1"
 	# shellcheck disable=SC2086
-	archive="$(eval echo \$$package"_ARCHIVE")"
-	file="$(basename "$archive")"
+	file="$(eval echo \$$package"_ARCHIVE")"
 
 	fullhashfile="util/crossgcc/sum/$file.cksum"
 	printf "${RED}hash file missing:${NC}\n\n" 1>&2
@@ -357,8 +378,7 @@ error_hash_missing() {
 get_known_hash() {
 	package=$1
 	# shellcheck disable=SC2086
-	archive="$(eval echo \$$package"_ARCHIVE")"
-	file="$(basename "$archive")"
+	file="$(eval echo \$$package"_ARCHIVE")"
 	hashfile="sum/$file.cksum"
 
 	if [ ! -f "$hashfile" ]; then
@@ -377,8 +397,7 @@ error_hash_mismatch() {
 	known_hash="$2"
 	computed_hash="$3"
 	# shellcheck disable=SC2086
-	archive="$(eval echo \$$package"_ARCHIVE")"
-	file="$(basename "$archive")"
+	file="$(eval echo \$$package"_ARCHIVE")"
 
 	printf "${RED}hash mismatch:${NC}\n\n"
 	printf "             expected (known) hash: $known_hash\n"
@@ -397,8 +416,6 @@ error_hash_mismatch() {
 # hash; Bail out on mismatch or missing hash file.
 verify_hash() {
 	package=$1
-	# shellcheck disable=SC2086
-	archive="$(eval echo \$$package"_ARCHIVE")"
 
 	known_hash="$(get_known_hash "$package")" || exit "$?"
 	computed_hash="$(compute_hash "$package")" || exit "$?"
@@ -418,7 +435,7 @@ unpack_and_patch() {
 	# shellcheck disable=SC2086
 	dir="$(eval echo \$$package"_DIR")"
 	test -d "${dir}" && test -f "${dir}/.unpack_success" || (
-		printf " * $(basename "$archive")\n"
+		printf " * "$archive"\n"
 		FLAGS=zxf
 		suffix=$(echo "$archive" | sed 's,.*\.,,')
 		if [ "$suffix" = "gz" ] && [ -n "$PIGZ" ]; then FLAGS="-I pigz -xf"
@@ -429,7 +446,7 @@ unpack_and_patch() {
 		elif [ "$suffix" = "lzma" ]; then FLAGS="--lzma -xf"
 		fi
 		# shellcheck disable=SC2086
-		$TAR $FLAGS "tarballs/$(basename "$archive")"
+		$TAR $FLAGS "tarballs/$archive"
 		for patch in patches/${dir}_*.patch; do
 			test -r "$patch" || continue
 			printf "   o $(basename "$patch")\n"
@@ -915,12 +932,12 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="$(getopt -V 2>/dev/null | sed -e '1!d' -e 's,^\(......\).*,\1,')"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l print-version,version,help,clean,directory:,bootstrap,bootstrap-only,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported:,urls,nocolor -o WVhcd:bBp:l:P:j:D:tSys:un -- "$@")
+	args=$(getopt -l print-version,version,help,clean,directory:,bootstrap,bootstrap-only,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported:,urls,nocolor,mirror -o WVhcd:bBp:l:P:j:D:tSys:unm -- "$@")
 	getopt_ret=$?
 	eval set -- "$args"
 else
 	# Detected non-GNU getopt
-	args=$(getopt WVhcd:bBp:l:P:j:D:tSys:un $*)
+	args=$(getopt WVhcd:bBp:l:P:j:D:tSys:unm $*)
 	getopt_ret=$?
 	# shellcheck disable=SC2086
 	set -- $args
@@ -943,6 +960,7 @@ while true ; do
 		-B|--bootstrap-only)	shift; BOOTSTRAPONLY=1; BOOTSTRAP=1;;
 		-p|--platform)		shift; TARGETARCH="$1"; shift;;
 		-l|--languages)		shift; LANGUAGES="$1"; shift;;
+		-m|--mirror)		shift; USE_COREBOOT_MIRROR=1;;
 		-D|--destdir)		shift; DESTDIR="$1"; shift;;
 		-j|--jobs)		shift; THREADS="$1"; JOBS="-j $1"; shift;;
 		-P|--package)		shift; PACKAGE="$1"; shift;;

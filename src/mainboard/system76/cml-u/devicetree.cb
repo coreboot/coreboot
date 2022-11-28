@@ -70,31 +70,14 @@ chip soc/intel/cannonlake
 		device pci 12.5 off end # UFS SCS
 		device pci 12.6 off end # GSPI #2
 		device pci 13.0 off end # Integrated Sensor Hub
-		device pci 14.0 on      # USB xHCI
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"		# Type-A port 1
-			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"		# 3G / LTE
-			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)"		# Type-C port 3
-			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"		# USB Board port 4
-			register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"		# Camera
-			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"		# Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 1
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# 4G
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-C port 3
-			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# USB Board port 4
-			register "usb3_ports[4]" = "USB3_PORT_EMPTY"			# Used by TBT
-			register "usb3_ports[5]" = "USB3_PORT_EMPTY"			# Used by TBT
-		end
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.3 on      # CNVi wifi
 			chip drivers/wifi/generic
-				register "wake" = "PME_B0_EN_BIT"
+				register "wake" = "GPE0_PME_B0"
 				device generic 0 on end
 			end
 		end
 		device pci 14.5 off end # SDCard
-		device pci 15.0 on  end # I2C #0
 		device pci 15.1 off end # I2C #1
 		device pci 15.2 off end # I2C #2
 		device pci 15.3 off end # I2C #3
@@ -104,52 +87,23 @@ chip soc/intel/cannonlake
 		device pci 16.3 off end # Management Engine KT Redirection
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 16.5 off end # Management Engine Interface 4
-		device pci 17.0 on      # SATA
-			register "SataPortsEnable[0]" = "1"
-			register "SataPortsEnable[2]" = "1"
-		end
 		device pci 19.0 off end # I2C #4
 		device pci 19.1 off end # I2C #5
 		device pci 19.2 on  end # UART #2
 		device pci 1a.0 off end # eMMC
-		device pci 1c.0 on  end # PCI Express Port 1
+		device pci 1c.0 off end # PCI Express Port 1
 		device pci 1c.1 off end # PCI Express Port 2
 		device pci 1c.2 off end # PCI Express Port 3
 		device pci 1c.3 off end # PCI Express Port 4
-		device pci 1c.4 on      # PCI Express Port 5
-			# PCI Express Root port #5 x4, Clock 4 (TBT)
-			register "PcieRpEnable[4]" = "1"
-			register "PcieRpLtrEnable[4]" = "1"
-			register "PcieRpHotPlug[4]" = "1"
-			register "PcieClkSrcUsage[4]" = "4"
-			register "PcieClkSrcClkReq[4]" = "4"
-		end
+		device pci 1c.4 off end # PCI Express Port 5
 		device pci 1c.5 off end # PCI Express Port 6
 		device pci 1c.6 off end # PCI Express Port 7
 		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 on      # PCI Express Port 9
-			# PCI Express Root port #9 x1, Clock 3 (LAN)
-			register "PcieRpEnable[8]" = "1"
-			register "PcieRpLtrEnable[8]" = "1"
-			register "PcieClkSrcUsage[3]" = "8"
-			register "PcieClkSrcClkReq[3]" = "3"
-		end
-		device pci 1d.1 on      # PCI Express Port 10
-			# PCI Express Root port #10 x1, Clock 2 (WLAN)
-			register "PcieRpEnable[9]" = "1"
-			register "PcieRpLtrEnable[9]" = "0"
-			register "PcieClkSrcUsage[2]" = "9"
-			register "PcieClkSrcClkReq[2]" = "2"
-		end
+		device pci 1d.0 off end # PCI Express Port 9
+		device pci 1d.1 off end # PCI Express Port 10
 		device pci 1d.2 off end # PCI Express Port 11
 		device pci 1d.3 off end # PCI Express Port 12
-		device pci 1d.4 on      # PCI Express Port 13
-			# PCI Express Root port #13 x4, Clock 5 (NVMe)
-			register "PcieRpEnable[12]" = "1"
-			register "PcieRpLtrEnable[12]" = "1"
-			register "PcieClkSrcUsage[5]" = "12"
-			register "PcieClkSrcClkReq[5]" = "5"
-		end
+		device pci 1d.4 off end # PCI Express Port 13
 		device pci 1d.5 off end # PCI Express Port 14
 		device pci 1d.6 off end # PCI Express Port 15
 		device pci 1d.7 off end # PCI Express Port 16
@@ -169,8 +123,6 @@ chip soc/intel/cannonlake
 		device pci 1f.2 hidden end # Power Management Controller
 		device pci 1f.3 on      # Intel HDA
 			register "PchHdaAudioLinkHda" = "1"
-			register "PchHdaAudioLinkDmic0" = "1"
-			register "PchHdaAudioLinkDmic1" = "1"
 		end
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end # PCH SPI

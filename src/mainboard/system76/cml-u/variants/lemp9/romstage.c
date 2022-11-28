@@ -5,12 +5,12 @@
 
 static const struct cnl_mb_cfg memcfg = {
 	.spd[0] = {
-		.read_type = READ_SMBUS,
-		.spd_spec = {.spd_smbus_address = 0xa0},
+		.read_type = READ_SPD_CBFS,
+		.spd_spec = { .spd_index = 0 },
 	},
 	.spd[2] = {
 		.read_type = READ_SMBUS,
-		.spd_spec = {.spd_smbus_address = 0xa4},
+		.spd_spec = { .spd_smbus_address = 0xa4 },
 	},
 	.rcomp_resistor = { 121, 81, 100 },
 	.rcomp_targets = { 100, 40, 20, 20, 26 },

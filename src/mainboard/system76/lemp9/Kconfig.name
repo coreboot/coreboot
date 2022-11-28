@@ -1,2 +1,0 @@
-config BOARD_SYSTEM76_LEMP9
-	bool "lemp9"

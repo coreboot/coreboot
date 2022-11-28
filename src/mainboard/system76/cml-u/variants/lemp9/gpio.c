@@ -1,23 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef MAINBOARD_GPIO_H
-#define MAINBOARD_GPIO_H
-
+#include <mainboard/gpio.h>
 #include <soc/gpio.h>
 
-#ifndef __ACPI__
-
-/* Name format: <pad name> / <net/pin name in schematics> */
-
-/* Early pad configuration in bootblock */
-static const struct pad_config early_gpio_table[] = {
-	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),		/* UART2_RXD */
-	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),		/* UART2_TXD */
-	PAD_NC(GPP_C22, UP_20K),
-	PAD_NC(GPP_C23, UP_20K),
-};
-
-/* Pad configuration in ramstage. */
 static const struct pad_config gpio_table[] = {
 	/* ------- GPIO Group GPD ------- */
 	PAD_NC(GPD0, NONE),
@@ -248,6 +233,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H23, UP_20K),
 };
 
-#endif
-
-#endif
+void mainboard_configure_gpios(void)
+{
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+}

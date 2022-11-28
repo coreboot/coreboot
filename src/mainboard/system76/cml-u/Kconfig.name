@@ -3,3 +3,6 @@ config BOARD_SYSTEM76_GALP4
 
 config BOARD_SYSTEM76_DARP6
 	bool "darp6"
+
+config BOARD_SYSTEM76_LEMP9
+	bool "lemp9"

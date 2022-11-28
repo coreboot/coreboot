@@ -1,0 +1,75 @@
+chip soc/intel/cannonlake
+	device domain 0 on
+		subsystemid 0x1558 0x1401 inherit
+
+		device pci 14.0 on      # USB xHCI
+			# USB2
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # Type-A port 1
+			register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type-C port 2
+			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # Type-A port 3
+			register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)" # Camera
+			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
+			# USB3
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A port 1
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C port 2
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A port 3
+		end
+		device pci 15.0 on # I2C #0
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN040D""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_B3_IRQ)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+		end
+		device pci 17.0 on      # SATA
+			register "SataSalpSupport" = "1"
+			# Port 2 (J_SSD2)
+			register "SataPortsEnable[1]" = "1"
+			register "SataPortsDevSlp[1]" = "1"
+			# Port 3 (J_SSD1)
+			register "SataPortsEnable[2]" = "1"
+			register "SataPortsDevSlp[2]" = "1"
+		end
+		device pci 1c.5 on      # PCI Express Port 6
+			device pci 00.0 on end # x1 Card reader
+			register "PcieRpEnable[5]" = "1"
+			register "PcieRpLtrEnable[5]" = "1"
+			register "PcieClkSrcUsage[3]" = "5"
+			register "PcieClkSrcClkReq[3]" = "3"
+			register "PcieRpSlotImplemented[5]" = "1"
+		end
+		device pci 1c.7 on      # PCI Express Port 8
+			device pci 00.0 on end # x1 M.2/E 2230 (J_WLAN1)
+			register "PcieRpEnable[7]" = "1"
+			register "PcieRpLtrEnable[7]" = "1"
+			register "PcieClkSrcUsage[2]" = "7"
+			register "PcieClkSrcClkReq[2]" = "2"
+			register "PcieRpSlotImplemented[7]" = "1"
+			chip drivers/wifi/generic
+				device pci 00.0 on end
+			end
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
+		end
+		device pci 1d.0 on      # PCI Express Port 9
+			device pci 00.0 on end # x4 M.2/M 2280 (J_SSD2)
+			register "PcieRpEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieClkSrcUsage[4]" = "8"
+			register "PcieClkSrcClkReq[4]" = "4"
+			register "PcieRpSlotImplemented[8]" = "1"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD2)" "SlotDataBusWidth4X"
+		end
+		device pci 1d.4 on      # PCI Express Port 13
+			device pci 00.0 on end # x4 M.2/M 2280 (J_SSD1)
+			register "PcieRpEnable[12]" = "1"
+			register "PcieRpLtrEnable[12]" = "1"
+			register "PcieClkSrcUsage[5]" = "12"
+			register "PcieClkSrcClkReq[5]" = "5"
+			register "PcieRpSlotImplemented[12]" = "1"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
+		end
+	end
+end

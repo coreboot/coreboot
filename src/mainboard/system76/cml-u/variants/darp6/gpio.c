@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <mainboard/gpio.h>
-#include <soc/gpe.h>
 #include <soc/gpio.h>
 
 static const struct pad_config gpio_table[] = {

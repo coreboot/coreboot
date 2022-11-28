@@ -425,6 +425,8 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_C23, 0, DEEP),
 	/* GPP_E07 : [] ==> WWAN_FCPO_L */
 	PAD_CFG_GPO(GPP_E07, 1, DEEP),
+	/* GPP_D02 : [] ==> SD_PERST_L */
+	PAD_CFG_GPO(GPP_D02, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

@@ -126,15 +126,6 @@ chip soc/intel/meteorlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end	#PCIE9 SSD card
-		device ref pcie_rp11 on
-			probe DB_SD SD_GL9755S
-			# Enable SD Card PCIE 11 using clk 2
-			register "pcie_rp[PCH_RP(11)]" = "{
-				.clk_src = 2,
-				.clk_req = 2,
-				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
-			}"
-		end	#PCIE11 SD card
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp2 on end
 		device ref tcss_xhci on
@@ -471,6 +462,21 @@ chip soc/intel/meteorlake
 				device generic 0 on end
 			end
 		end	#PCIE6 WWAN card
+		device ref pcie_rp7 on
+			# Enable SD Card PCIE 7 using clk 2
+			register "pcie_rp[PCH_RP(7)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D03)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D02)"
+				register "srcclk_pin" = "2"
+				device generic 0 on end
+			end
+			probe DB_SD SD_GL9755S
+		end
 		device ref gspi1 on
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""

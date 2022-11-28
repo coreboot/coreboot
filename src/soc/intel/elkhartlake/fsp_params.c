@@ -259,10 +259,23 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->PeiGraphicsPeimInit = CONFIG(RUN_FSP_GOP) && is_devfn_enabled(SA_DEVFN_IGD);
 
 	/* Display config */
+	params->DdiPortAConfig = config->DdiPortAConfig;
+	params->DdiPortBConfig = config->DdiPortBConfig;
+	params->DdiPortCConfig = config->DdiPortCConfig;
 	params->DdiPortAHpd = config->DdiPortAHpd;
-	params->DdiPortADdc = config->DdiPortADdc;
+	params->DdiPortBHpd = config->DdiPortBHpd;
 	params->DdiPortCHpd = config->DdiPortCHpd;
+	params->DdiPort1Hpd = config->DdiPort1Hpd;
+	params->DdiPort2Hpd = config->DdiPort2Hpd;
+	params->DdiPort3Hpd = config->DdiPort3Hpd;
+	params->DdiPort4Hpd = config->DdiPort4Hpd;
+	params->DdiPortADdc = config->DdiPortADdc;
+	params->DdiPortBDdc = config->DdiPortBDdc;
 	params->DdiPortCDdc = config->DdiPortCDdc;
+	params->DdiPort1Ddc = config->DdiPort1Ddc;
+	params->DdiPort2Ddc = config->DdiPort2Ddc;
+	params->DdiPort3Ddc = config->DdiPort3Ddc;
+	params->DdiPort4Ddc = config->DdiPort4Ddc;
 
 	/* Intel Speed Step */
 	params->Eist = config->eist_enable;

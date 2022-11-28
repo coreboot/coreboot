@@ -338,6 +338,7 @@ struct soc_intel_elkhartlake_config {
 	 */
 	uint8_t DdiPortAConfig;
 	uint8_t DdiPortBConfig;
+	uint8_t DdiPortCConfig;
 
 	/* Enable(1)/Disable(0) HPD */
 	uint8_t DdiPortAHpd;

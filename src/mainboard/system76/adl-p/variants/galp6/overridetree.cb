@@ -1,0 +1,181 @@
+chip soc/intel/alderlake
+	register "power_limits_config[ADL_P_282_482_28W_CORE]" = "{
+		.tdp_pl1_override = 28,
+		.tdp_pl2_override = 60,
+		.tdp_pl4 = 90,
+	}"
+
+	# GPE configuration
+	register "pmc_gpe0_dw0" = "PMC_GPP_A"
+	register "pmc_gpe0_dw1" = "PMC_GPP_R"
+	register "pmc_gpe0_dw2" = "PMC_GPD"
+
+	device domain 0 on
+		subsystemid 0x1558 0x4041 inherit
+
+		device ref pcie4_0 on
+			# PCIe PEG0 x4, Clock 0 (SSD1)
+			register "cpu_pcie_rp[CPU_RP(1)]" = "{
+				.clk_src = 0,
+				.clk_req = 0,
+				.flags = PCIE_RP_LTR,
+			}"
+		end
+		device ref tcss_xhci on
+			register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 TBT Type-C""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref tcss_usb3_port1 on end
+					end
+				end
+			end
+		end
+		device ref tcss_dma0 on
+			chip drivers/intel/usb4/retimer
+				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E4)"
+				use tcss_usb3_port1 as dfp[0].typec_port
+				device generic 0 on end
+			end
+		end
+		device ref xhci on
+			# USB2
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # J_USB3_2
+			register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # J_TYPEC1
+			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # J_USB3_1
+			register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)" # Fingerprint
+			register "usb2_ports[5]" = "USB2_PORT_TYPE_C(OC_SKIP)" # J_TYPEC2
+			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # Camera
+			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
+			# USB3
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C
+			# ACPI
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 J_USB3_2""
+						register "type" = "UPC_TYPE_A"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 J_TYPEC1""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 J_USB3_1""
+						register "type" = "UPC_TYPE_A"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Fingerprint""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 J_TYPEC2""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port7 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 J_USB3_2""
+						register "type" = "UPC_TYPE_A"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 J_USB3_1""
+						register "type" = "UPC_TYPE_A"
+						device ref usb3_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 J_TYPEC1""
+						register "type" = "UPC_TYPE_A"
+						device ref usb3_port4 on end
+					end
+				end
+			end
+		end
+		device ref i2c0 on
+			# Touchpad I2C bus
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0412""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_A17)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""FTCS1000""
+				register "generic.desc" = ""FocalTech Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_A17)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 38 on end
+			end
+		end
+		device ref sata off end
+		device ref pcie_rp5 on
+			# PCIe RP#5 x1, Clock 2 (WLAN)
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E3)" # PCH_WLAN_EN
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B13)" # BUF_PLT_RST#
+				register "srcclk_pin" = "2" # WLAN_CLKREQ#
+				device generic 0 on end
+			end
+		end
+		device ref pcie_rp9 on
+			# PCIe RP#9 x1, Clock 5 (CARD)
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 5,
+				.clk_req = 5,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp10 on
+			# PCIe RP#10 x1, Clock 6 (GLAN)
+			register "pch_pcie_rp[PCH_RP(10)]" = "{
+				.clk_src = 6,
+				.clk_req = 6,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F7)" # LAN_PLT_RST#
+				register "srcclk_pin" = "6" # LAN_CLKREQ#
+				device generic 0 on end
+			end
+		end
+		device ref pmc hidden
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						# J_TYPEC2
+						use usb2_port6 as usb2_port
+						use tcss_usb3_port1 as usb3_port
+						device generic 0 alias conn0 on end
+					end
+				end
+			end
+		end
+	end
+end

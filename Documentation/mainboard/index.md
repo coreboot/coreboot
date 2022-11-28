@@ -204,6 +204,7 @@ The boards in this section are not real mainboards, but emulators.
 - [Darter Pro 8](system76/darp8.md)
 - [Galago Pro 4](system76/galp4.md)
 - [Galago Pro 5](system76/galp5.md)
+- [Galago Pro 6](system76/galp6.md)
 - [Gazelle 15](system76/gaze15.md)
 - [Gazelle 16](system76/gaze16.md)
 - [Lemur Pro 9](system76/lemp9.md)

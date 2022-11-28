@@ -1,4 +1,4 @@
-if BOARD_SYSTEM76_DARP8
+if BOARD_SYSTEM76_DARP8 || BOARD_SYSTEM76_GALP6
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -28,18 +28,22 @@ config MAINBOARD_DIR
 
 config VARIANT_DIR
 	default "darp8" if BOARD_SYSTEM76_DARP8
+	default "galp6" if BOARD_SYSTEM76_GALP6
 
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAINBOARD_PART_NUMBER
 	default "darp8" if BOARD_SYSTEM76_DARP8
+	default "galp6" if BOARD_SYSTEM76_GALP6
 
 config MAINBOARD_SMBIOS_PRODUCT_NAME
 	default "Darter Pro" if BOARD_SYSTEM76_DARP8
+	default "Galago Pro" if BOARD_SYSTEM76_GALP6
 
 config MAINBOARD_VERSION
 	default "darp8" if BOARD_SYSTEM76_DARP8
+	default "galp6" if BOARD_SYSTEM76_GALP6
 
 config CBFS_SIZE
 	default 0xA00000

@@ -55,7 +55,7 @@ static void mch_domain_set_resources(struct device *dev)
 	assign_resources(dev->link_list);
 }
 
-static struct device_operations pci_domain_ops = {
+struct device_operations e7505_pci_domain_ops = {
 	.read_resources   = mch_domain_read_resources,
 	.set_resources    = mch_domain_set_resources,
 	.scan_bus         = pci_domain_scan_bus,
@@ -63,23 +63,12 @@ static struct device_operations pci_domain_ops = {
 };
 
 
-static struct device_operations cpu_bus_ops = {
+struct device_operations e7505_cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
 	.init             = mp_cpu_bus_init,
 };
 
-static void enable_dev(struct device *dev)
-{
-	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN) {
-		dev->ops = &pci_domain_ops;
-	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
-		dev->ops = &cpu_bus_ops;
-	}
-}
-
 struct chip_operations northbridge_intel_e7505_ops = {
 	CHIP_NAME("Intel E7505 Northbridge")
-	.enable_dev = enable_dev,
 };

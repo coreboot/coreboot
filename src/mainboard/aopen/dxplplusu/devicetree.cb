@@ -3,9 +3,11 @@
 chip northbridge/intel/e7505
 
 	device cpu_cluster 0 on
+		ops e7505_cpu_bus_ops
 	end
 
 	device domain 0 on
+		ops e7505_pci_domain_ops
 		device pci 0.0 on end # Chipset host controller
 		device pci 0.1 on end # Host RASUM controller
 		device pci 2.0 on # Hub interface B

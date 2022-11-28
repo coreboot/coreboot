@@ -484,6 +484,11 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 		acpi_dp_add_integer(pkg, PCIE_EXTERNAL_PORT_PROPERTY, 1);
 		acpi_dp_add_package(dsd, pkg);
 	}
+
+	/* Indicate to the OS if the device has DMA property. */
+	if (config->add_acpi_dma_property)
+		acpi_device_add_dma_property(dsd);
+
 	acpi_dp_write(dsd);
 
 	/*

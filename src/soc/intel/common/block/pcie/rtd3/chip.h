@@ -40,6 +40,10 @@ struct soc_intel_common_block_pcie_rtd3_config {
 	 */
 	int srcclk_pin;
 
+	/* When set to true, this will add a _DSD which contains a single
+	   property, `DmaProperty`, set to 1, under the ACPI Device. */
+	bool add_acpi_dma_property;
+
 	/*
 	 * Add device property indicating the device provides an external PCI port
 	 * for the OS to apply security restrictions.

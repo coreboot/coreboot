@@ -6,6 +6,9 @@ DATE=""
 GITREV=""
 TIMESOURCE=""
 XGCCPATH="${XGCCPATH:-util/crossgcc/xgcc/bin/}"
+MAJOR_VER="0"
+MINOR_VER="0"
+COREBOOT_VERSION_FILE=".coreboot-version"
 
 export LANG=C
 export LC_ALL=C
@@ -32,10 +35,17 @@ elif [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
 	GITREV=$(get_git_head_data %h)
 	TIMESOURCE=git
 	DATE=$(get_git_head_data %ct)
+	VERSION="$(git describe)"
+	MAJOR_VER="$(echo "${VERSION}" | sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\1/')"
+	MINOR_VER="$(echo "${VERSION}" | sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\2/')"
 else
 	GITREV=Unknown
 	TIMESOURCE="date"
-	DATE=$(LANG= LC_ALL=C TZ=UTC0 date +%s)
+	DATE=$(LANG="" LC_ALL=C TZ=UTC0 date +%s)
+	if [ -f "${COREBOOT_VERSION_FILE}" ]; then
+		MAJOR_VER="$(sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\1/' "${COREBOOT_VERSION_FILE}")"
+		MINOR_VER="$(sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\2/' "${COREBOOT_VERSION_FILE}")"
+	fi
 fi
 
 our_date() {
@@ -70,7 +80,8 @@ printf "#define COREBOOT_VERSION_TIMESTAMP $DATE\n"
 printf "#define COREBOOT_ORIGIN_GIT_REVISION \"$GITREV\"\n"
 
 printf "#define COREBOOT_EXTRA_VERSION \"%s\"\n" "$COREBOOT_EXTRA_VERSION"
-printf "#define COREBOOT_MAJOR_VERSION %d\n#define COREBOOT_MINOR_VERSION %d\n" `git describe --match [0-9].[0-9]* | sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\1 \2/'`
+printf "#define COREBOOT_MAJOR_VERSION %d\n" "${MAJOR_VER}"
+printf "#define COREBOOT_MINOR_VERSION %d\n" "${MINOR_VER}"
 printf "#define COREBOOT_BUILD \"$(our_date "$DATE")\"\n"
 printf "#define COREBOOT_BUILD_YEAR_BCD 0x$(our_date "$DATE" +%y)\n"
 printf "#define COREBOOT_BUILD_MONTH_BCD 0x$(our_date "$DATE" +%m)\n"

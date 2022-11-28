@@ -73,7 +73,8 @@ chip soc/intel/alderlake
 		device ref sata on
 			register "sata_salp_support" = "1"
 			register "sata_ports_enable[1]" = "1" # SSD1
-			register "sata_ports_dev_slp[1]" = "1" # GPP_H12 (SATA1_DEVSLP1)
+			# FIXME: DevSlp breaks S0ix
+			#register "sata_ports_dev_slp[1]" = "1" # GPP_H12 (SATA1_DEVSLP1)
 		end
 		device ref pch_espi on
 			register "gen1_dec" = "0x00040069" # EC PM channel

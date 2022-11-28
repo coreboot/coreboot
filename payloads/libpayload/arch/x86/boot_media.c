@@ -1,11 +1,7 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 
-#include <arch/virtual.h>
+#include <libpayload.h>
 #include <boot_device.h>
-#include <commonlib/bsd/cb_err.h>
-#include <stddef.h>
-#include <string.h>
-#include <sysinfo.h>
 
 __attribute__((weak)) ssize_t boot_device_read(void *buf, size_t offset, size_t size)
 {

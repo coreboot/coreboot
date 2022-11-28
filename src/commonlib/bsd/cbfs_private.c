@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
 
 #include <commonlib/bsd/cbfs_private.h>
+#include <commonlib/bsd/helpers.h>
 #include <assert.h>
 
 static enum cb_err read_next_header(cbfs_dev_t dev, size_t *offset, struct cbfs_file *buffer,

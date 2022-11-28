@@ -2,7 +2,10 @@
 #define _STDDEF_H
 
 #include <arch/types.h>
-#include <commonlib/bsd/helpers.h>
+
+#if !defined(offsetof)
+#define offsetof(type, member) __builtin_offsetof(type, member)
+#endif
 
 #ifndef __WCHAR_TYPE__
 #define __WCHAR_TYPE__ int

@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <commonlib/bsd/cbfs_private.h>
+#include <commonlib/bsd/helpers.h>
 
 /*
  * A CBFS metadata cache is an in memory data structure storing CBFS file headers (= metadata).

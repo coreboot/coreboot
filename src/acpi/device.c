@@ -19,6 +19,27 @@
 #define ACPI_DP_UUID		"daffd814-6eba-4d8c-8a91-bc9bbf4aa301"
 #define ACPI_DP_CHILD_UUID	"dbb8e3e6-5886-4ba6-8795-1319f52a966b"
 
+/*
+ * Below properties are defined at
+ * https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
+ */
+#define ACPI_DSD_EXTERNAL_FACING_PORT_UUID "EFCC06CC-73AC-4BC3-BFF0-76143807C389"
+#define ACPI_DSD_EXTERNAL_FACING_PORT_NAME "ExternalFacingPort"
+
+#define ACPI_DSD_HOTPLUG_IN_D3_UUID "6211E2C0-58A3-4AF3-90E1-927A4E0C55A4"
+#define ACPI_DSD_HOTPLUG_IN_D3_NAME "HotPlugSupportInD3"
+
+/* ID for the DmaProperty _DSD */
+#define ACPI_DSD_DMA_PROPERTY_UUID "70D24161-6DD5-4C9E-8070-705531292865"
+#define ACPI_DSD_DMA_PROPERTY_NAME "DmaProperty"
+
+/*
+ * Below properties are defined at
+ * https://docs.microsoft.com/en-us/windows-hardware/design/component-guidelines/power-management-for-storage-hardware-devices-intro
+ */
+#define ACPI_DSD_STORAGE_D3_UUID "5025030F-842F-4AB4-A561-99A5189762D0"
+#define ACPI_DSD_STORAGE_D3_NAME "StorageD3Enable"
+
 /* Write empty word value and return pointer to it */
 static void *acpi_device_write_zero_len(void)
 {
@@ -1184,18 +1205,63 @@ void acpi_device_write_pci_dev(const struct device *dev)
 	acpigen_pop_len(); /* Scope */
 }
 
-/* ID for the DmaProperty _DSD */
-#define ACPI_DSD_DMA_PROPERTY_UUID "70D24161-6DD5-4C9E-8070-705531292865"
-
-/* _DSD with DmaProperty */
-void acpi_device_add_dma_property(struct acpi_dp *dsd)
+/*
+ * Helper function to add given integer property with an UUID to _DSD in the current scope.
+ *
+ * dsd   - Pointer to a _DSD object.
+ *         Append to existing _DSD object if not NULL.
+ *         Create new _DSD object and flush it if NULL.
+ * uuid  - Pointer to the UUID string.
+ * name  - Pointer to the property name string.
+ * value - Value of the integer property.
+ */
+static void acpi_device_add_integer_property_with_uuid(struct acpi_dp *dsd,
+						const char *uuid,
+						const char *name,
+						uint64_t value)
 {
 	struct acpi_dp *prev_dsd = dsd, *pkg;
 	if (prev_dsd == NULL)
 		dsd = acpi_dp_new_table("_DSD");
-	pkg = acpi_dp_new_table(ACPI_DSD_DMA_PROPERTY_UUID);
-	acpi_dp_add_integer(pkg, "DmaProperty", 1);
+	pkg = acpi_dp_new_table(uuid);
+	acpi_dp_add_integer(pkg, name, value);
 	acpi_dp_add_package(dsd, pkg);
 	if (prev_dsd == NULL)
 		acpi_dp_write(dsd);
+}
+
+/* _DSD with ExternalFacingPort */
+void acpi_device_add_external_facing_port(struct acpi_dp *dsd)
+{
+	acpi_device_add_integer_property_with_uuid(dsd,
+						ACPI_DSD_EXTERNAL_FACING_PORT_UUID,
+						ACPI_DSD_EXTERNAL_FACING_PORT_NAME,
+						1);
+}
+
+/* _DSD with HotPlugSupportInD3 */
+void acpi_device_add_hotplug_support_in_d3(struct acpi_dp *dsd)
+{
+	acpi_device_add_integer_property_with_uuid(dsd,
+						ACPI_DSD_HOTPLUG_IN_D3_UUID,
+						ACPI_DSD_HOTPLUG_IN_D3_NAME,
+						1);
+}
+
+/* _DSD with DmaProperty */
+void acpi_device_add_dma_property(struct acpi_dp *dsd)
+{
+	acpi_device_add_integer_property_with_uuid(dsd,
+						ACPI_DSD_DMA_PROPERTY_UUID,
+						ACPI_DSD_DMA_PROPERTY_NAME,
+						1);
+}
+
+/* _DSD with StorageD3Enable */
+void acpi_device_add_storage_d3_enable(struct acpi_dp *dsd)
+{
+	acpi_device_add_integer_property_with_uuid(dsd,
+						ACPI_DSD_STORAGE_D3_UUID,
+						ACPI_DSD_STORAGE_D3_NAME,
+						1);
 }

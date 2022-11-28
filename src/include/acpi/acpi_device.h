@@ -588,13 +588,16 @@ void acpi_dp_write(struct acpi_dp *table);
  */
 void acpi_device_write_pci_dev(const struct device *dev);
 
-/*
- * Helper function to add DmaProperty to _DSD in the current scope.
- *
- * dsd - Pointer to a _DSD object.
- *       Append to existing _DSD object if not NULL.
- *       Create new _DSD object and flush it if NULL.
- */
+/* Helper function to add ExternalFacingPort to _DSD in the current scope */
+void acpi_device_add_external_facing_port(struct acpi_dp *dsd);
+
+/* Helper function to add HotPlugSupportInD3 to _DSD in the current scope */
+void acpi_device_add_hotplug_support_in_d3(struct acpi_dp *dsd);
+
+/* Helper function to add DmaProperty to _DSD in the current scope */
 void acpi_device_add_dma_property(struct acpi_dp *dsd);
+
+/* Helper function to add StorageD3Enable to _DSD in the current scope */
+void acpi_device_add_storage_d3_enable(struct acpi_dp *dsd);
 
 #endif /* __ACPI_ACPI_DEVICE_H__ */

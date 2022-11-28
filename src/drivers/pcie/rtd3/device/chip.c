@@ -12,15 +12,6 @@
 #include "chip.h"
 
 /*
- * This UUID and the resulting ACPI Device Property is defined by the
- * Power Management for Storage Hardware Devices:
- *
- * https://docs.microsoft.com/en-us/windows-hardware/design/component-guidelines/power-management-for-storage-hardware-devices-intro
- */
-#define PCIE_RTD3_STORAGE_UUID "5025030F-842F-4AB4-A561-99A5189762D0"
-#define PCIE_RTD3_STORAGE_PROPERTY "StorageD3Enable"
-
-/*
  * Writes the ACPI power resources for a PCI device so it can enter D3Cold.
  *
  * If the device is a storage class, then the StorageD3Enable _DSD will
@@ -81,7 +72,6 @@
  */
 static void pcie_rtd3_device_acpi_fill_ssdt(const struct device *dev)
 {
-	struct acpi_dp *dsd, *pkg;
 	const struct drivers_pcie_rtd3_device_config *config = config_of(dev);
 	/* Copy the GPIOs to avoid discards 'const' qualifier error */
 	struct acpi_gpio reset_gpio = config->reset_gpio;
@@ -114,11 +104,7 @@ static void pcie_rtd3_device_acpi_fill_ssdt(const struct device *dev)
 
 	/* Storage devices won't enter D3 without this property */
 	if ((dev->class >> 16) == PCI_BASE_CLASS_STORAGE) {
-		dsd = acpi_dp_new_table("_DSD");
-		pkg = acpi_dp_new_table(PCIE_RTD3_STORAGE_UUID);
-		acpi_dp_add_integer(pkg, PCIE_RTD3_STORAGE_PROPERTY, 1);
-		acpi_dp_add_package(dsd, pkg);
-		acpi_dp_write(dsd);
+		acpi_device_add_storage_d3_enable(NULL);
 
 		printk(BIOS_INFO, "%s.%s: Added StorageD3Enable property\n", scope, name);
 	}

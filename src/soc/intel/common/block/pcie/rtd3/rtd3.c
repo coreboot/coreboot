@@ -13,25 +13,6 @@
 #include <soc/iomap.h>
 #include "chip.h"
 
-/*
- * The "ExternalFacingPort" and "HotPlugSupportInD3" properties are defined at
- * https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
- */
-#define PCIE_EXTERNAL_PORT_UUID "EFCC06CC-73AC-4BC3-BFF0-76143807C389"
-#define PCIE_EXTERNAL_PORT_PROPERTY "ExternalFacingPort"
-
-#define PCIE_HOTPLUG_IN_D3_UUID "6211E2C0-58A3-4AF3-90E1-927A4E0C55A4"
-#define PCIE_HOTPLUG_IN_D3_PROPERTY "HotPlugSupportInD3"
-
-/*
- * This UUID and the resulting ACPI Device Property is defined by the
- * Power Management for Storage Hardware Devices:
- *
- * https://docs.microsoft.com/en-us/windows-hardware/design/component-guidelines/power-management-for-storage-hardware-devices-intro
- */
-#define PCIE_RTD3_STORAGE_UUID "5025030F-842F-4AB4-A561-99A5189762D0"
-#define PCIE_RTD3_STORAGE_PROPERTY "StorageD3Enable"
-
 /* PCIe Root Port registers for link status and L23 control. */
 #define PCH_PCIE_CFG_LSTS 0x52	  /* Link Status Register */
 #define PCH_PCIE_CFG_SPR 0xe0	  /* Scratchpad */
@@ -367,7 +348,7 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 		FIELDLIST_NAMESTR(ACPI_REG_PCI_L23_RDY_DETECT, 1),
 	};
 	int pcie_rp;
-	struct acpi_dp *dsd, *pkg;
+	struct acpi_dp *dsd;
 
 	if (!is_dev_enabled(parent)) {
 		printk(BIOS_ERR, "%s: root port not enabled\n", __func__);
@@ -474,16 +455,11 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 
 	/* Indicate to the OS that device supports hotplug in D3. */
 	dsd = acpi_dp_new_table("_DSD");
-	pkg = acpi_dp_new_table(PCIE_HOTPLUG_IN_D3_UUID);
-	acpi_dp_add_integer(pkg, PCIE_HOTPLUG_IN_D3_PROPERTY, 1);
-	acpi_dp_add_package(dsd, pkg);
+	acpi_device_add_hotplug_support_in_d3(dsd);
 
 	/* Indicate to the OS if the device provides an External facing port. */
-	if (config->add_acpi_external_facing_port) {
-		pkg = acpi_dp_new_table(PCIE_EXTERNAL_PORT_UUID);
-		acpi_dp_add_integer(pkg, PCIE_EXTERNAL_PORT_PROPERTY, 1);
-		acpi_dp_add_package(dsd, pkg);
-	}
+	if (config->add_acpi_external_facing_port)
+		acpi_device_add_external_facing_port(dsd);
 
 	/* Indicate to the OS if the device has DMA property. */
 	if (config->add_acpi_dma_property)
@@ -502,11 +478,7 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 		acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 		acpigen_write_name_integer("_S0W", ACPI_DEVICE_SLEEP_D3_COLD);
 
-		dsd = acpi_dp_new_table("_DSD");
-		pkg = acpi_dp_new_table(PCIE_RTD3_STORAGE_UUID);
-		acpi_dp_add_integer(pkg, PCIE_RTD3_STORAGE_PROPERTY, 1);
-		acpi_dp_add_package(dsd, pkg);
-		acpi_dp_write(dsd);
+		acpi_device_add_storage_d3_enable(NULL);
 
 		acpigen_pop_len(); /* Device */
 

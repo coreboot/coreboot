@@ -9,15 +9,12 @@
 
 #include "chip.h"
 
-#define PCI_HOTPLUG_IN_D3_UUID	"6211E2C0-58A3-4AF3-90E1-927A4E0C55A4"
-#define PCI_EXTERNAL_PORT_UUID	"EFCC06CC-73AC-4BC3-BFF0-76143807C389"
-
 #if CONFIG(HAVE_ACPI_TABLES)
 static void usb4_pcie_acpi_fill_ssdt(const struct device *dev)
 {
 	const struct soc_intel_common_block_usb4_config *config;
 	const struct device *parent;
-	struct acpi_dp *dsd, *pkg;
+	struct acpi_dp *dsd;
 	const char *usb4_path;
 	int port_id;
 
@@ -56,15 +53,11 @@ static void usb4_pcie_acpi_fill_ssdt(const struct device *dev)
 	acpi_dp_add_integer(dsd, "usb4-port-number", port_id);
 
 	/* Indicate that device supports hotplug in D3. */
-	pkg = acpi_dp_new_table(PCI_HOTPLUG_IN_D3_UUID);
-	acpi_dp_add_integer(pkg, "HotPlugSupportInD3", 1);
-	acpi_dp_add_package(dsd, pkg);
+	acpi_device_add_hotplug_support_in_d3(dsd);
 
 	/* Indicate that port is external. */
-	pkg = acpi_dp_new_table(PCI_EXTERNAL_PORT_UUID);
-	acpi_dp_add_integer(pkg, "ExternalFacingPort", 1);
+	acpi_device_add_external_facing_port(dsd);
 
-	acpi_dp_add_package(dsd, pkg);
 	acpi_dp_write(dsd);
 
 	acpigen_pop_len(); /* Scope */

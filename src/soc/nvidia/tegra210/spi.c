@@ -331,7 +331,7 @@ static void flush_fifos(struct tegra_spi_channel *spi)
 
 	uint32_t fifo_status = read32(&spi->regs->fifo_status);
 	fifo_status |= flush_mask;
-	write32(&spi->regs->fifo_status, flush_mask);
+	write32(&spi->regs->fifo_status, fifo_status);
 
 	while (read32(&spi->regs->fifo_status) & flush_mask)
 		;

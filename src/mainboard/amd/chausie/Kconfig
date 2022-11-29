@@ -29,6 +29,7 @@ config MAINBOARD_PART_NUMBER
 config AMD_FWM_POSITION_INDEX
 	int
 	default 3 if CHROMEOS
+	default 4
 	help
 	  TODO: might need to be adapted for better placement of files in cbfs
 

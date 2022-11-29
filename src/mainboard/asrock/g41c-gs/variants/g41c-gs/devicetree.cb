@@ -33,7 +33,7 @@ chip northbridge/intel/x4x		# Northbridge
 			register "pirqg_routing" = "0x80"
 			register "pirqh_routing" = "0x0b"
 
-			register "ide_enable_primary" = "0x1"
+			register "ide_enable_primary" = "true"
 			register "gpe0_en" = "0x440"
 
 			register "gen1_dec" = "0x000c0291" # Superio HWM

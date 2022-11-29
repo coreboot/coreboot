@@ -61,8 +61,8 @@ chip northbridge/intel/i945
 
 			register "gpe0_en" = "0"
 
-			register "ide_enable_primary" = "0x1"
-			register "ide_enable_secondary" = "0x0"
+			register "ide_enable_primary" = "true"
+			register "ide_enable_secondary" = "false"
 			register "c3_latency" = "85"
 
 			register "p_cnt_throttling_supported" = "0"

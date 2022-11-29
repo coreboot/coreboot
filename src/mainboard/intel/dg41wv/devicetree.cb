@@ -50,7 +50,7 @@ chip northbridge/intel/x4x		# Northbridge
 			register "gpi14_routing" = "2"
 			register "gpi15_routing" = "2"
 
-			register "ide_enable_primary" = "0x1"
+			register "ide_enable_primary" = "true"
 			register "gpe0_en" = "0x440"
 
 			register "gen1_dec" = "0x00fc0a01" # HWM

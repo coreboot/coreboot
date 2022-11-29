@@ -29,7 +29,7 @@ chip northbridge/intel/x4x		# Northbridge
 			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
 			#  2 SCI (if corresponding GPIO_EN bit is also set)
 
-			register "ide_enable_primary" = "0x1"
+			register "ide_enable_primary" = "true"
 			register "gpe0_en" = "0x04000440"
 
 			register "gen1_dec" = "0x00000295" # HWM

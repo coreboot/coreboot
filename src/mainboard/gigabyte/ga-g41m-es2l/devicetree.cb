@@ -32,8 +32,8 @@ chip northbridge/intel/x4x		# Northbridge
 			register "pirqf_routing" = "0x0b"
 			register "pirqg_routing" = "0x0b"
 			register "pirqh_routing" = "0x0b"
-			register "ide_enable_primary" = "0x1"
-			register "ide_enable_secondary" = "0x0"
+			register "ide_enable_primary" = "true"
+			register "ide_enable_secondary" = "false"
 			register "sata_ports_implemented" = "0x3"
 			register "gpe0_en" = "0x40"
 

@@ -31,8 +31,8 @@ chip northbridge/intel/x4x		# Northbridge
 			register "gpe0_en" = "0x00000441"
 			register "alt_gp_smi_en" = "0x0000"
 
-			register "ide_enable_primary" = "0x0"
-			register "ide_enable_secondary" = "0x0"
+			register "ide_enable_primary" = "false"
+			register "ide_enable_secondary" = "false"
 			register "sata_ports_implemented" = "0x3"
 
 			register "gen1_dec" = "0x003c0a01" # Super I/O EC and GPIO

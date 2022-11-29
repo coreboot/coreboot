@@ -34,7 +34,7 @@ static void mainboard_init(struct device *dev)
 	} else if (idedev && idedev->chip_info &&
 		   h8_ultrabay_device_present()) {
 		config = idedev->chip_info;
-		config->ide_enable_primary = 1;
+		config->ide_enable_primary = true;
 		pmh7_ultrabay_power_enable(1);
 		ec_write(0x0c, 0x84);
 	} else {

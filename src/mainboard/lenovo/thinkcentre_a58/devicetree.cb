@@ -31,7 +31,7 @@ chip northbridge/intel/x4x		# Northbridge
 			#  2 SCI (if corresponding GPIO_EN bit is also set)
 			register "gpi13_routing" = "1" # ??vendor
 
-			register "ide_enable_primary" = "0x1"
+			register "ide_enable_primary" = "true"
 			register "gpe0_en" = "0x440"
 
 			register "gen1_dec" = "0x00fc0a01"

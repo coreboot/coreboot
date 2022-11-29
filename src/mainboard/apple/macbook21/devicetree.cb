@@ -55,8 +55,8 @@ chip northbridge/intel/i945
 			register "gpe0_en" = "0x11000006"
 			register "alt_gp_smi_en" = "0x1000"
 
-			register "ide_enable_primary" = "1"
-			register "ide_enable_secondary" = "1"
+			register "ide_enable_primary" = "true"
+			register "ide_enable_secondary" = "true"
 
 			register "c4onc3_enable" = "1"
 

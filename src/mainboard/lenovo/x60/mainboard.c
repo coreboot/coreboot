@@ -37,7 +37,7 @@ static void mainboard_init(struct device *dev)
 	idedev = pcidev_on_root(0x1f, 1);
 	if (idedev && idedev->chip_info && dock_ultrabay_device_present()) {
 		struct southbridge_intel_i82801gx_config *config = idedev->chip_info;
-		config->ide_enable_primary = 1;
+		config->ide_enable_primary = true;
 		/* enable Ultrabay power */
 		outb(inb(0x1628) | 0x01, 0x1628);
 		ec_write(0x0c, 0x84);

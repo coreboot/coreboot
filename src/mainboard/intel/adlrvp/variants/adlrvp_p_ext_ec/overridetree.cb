@@ -84,5 +84,24 @@ chip soc/intel/alderlake
 				end
 			end
 		end
+		device ref pcie_rp8 on
+			# NOTE: requires GPP_A7 set to Native Function 1 for SRCCLK_OE7
+			register "pch_pcie_rp[PCH_RP(8)]" = "{
+				  .clk_src = 7,
+				  .clk_req = 7,
+				  .flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+				  .PcieRpL1Substates = L1_SS_L1_2,
+				  .pcie_rp_detect_timeout_ms = 50,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H17)"
+				register "enable_delay_ms" = "50"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F10)"
+				register "reset_off_delay_ms" = "20"
+				register "srcclk_pin" = "7"
+				device generic 0 on
+				end
+			end
+		end
 	end
 end

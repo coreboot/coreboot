@@ -6,6 +6,7 @@
 #include <amdblocks/ioapic.h>
 #include <amdblocks/memmap.h>
 #include <assert.h>
+#include <console/console.h>
 #include <console/uart.h>
 #include <device/device.h>
 #include <fsp/api.h>
@@ -157,9 +158,15 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		lcl_usb_phy.Version_Major = FSP_USB_STRUCT_MAJOR_VERSION;
 		lcl_usb_phy.Version_Minor = FSP_USB_STRUCT_MINOR_VERSION;
 		lcl_usb_phy.TableLength = sizeof(struct usb_phy_config);
-		mcfg->usb_phy = &lcl_usb_phy;
+		if ((uintptr_t)&lcl_usb_phy <= UINT32_MAX) {
+			mcfg->usb_phy_ptr = (uint32_t)(uintptr_t)&lcl_usb_phy;
+		} else {
+			printk(BIOS_ERR, "USB PHY config struct above 4GB; can't pass USB PHY "
+					 "configuration to 32 bit FSP.\n");
+			mcfg->usb_phy_ptr = 0;
+		}
 	} else {
-		mcfg->usb_phy = NULL;
+		mcfg->usb_phy_ptr = 0;
 	}
 
 	fsp_fill_pcie_ddi_descriptors(mcfg);

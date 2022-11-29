@@ -14,7 +14,7 @@
 
 #include "board.h"
 
-void bootblock_mainboard_early_init()
+void bootblock_mainboard_early_init(void)
 {
 	if (CONFIG(CONSOLE_SERIAL)) {
 		assert(CONFIG_CONSOLE_SERIAL_UART_ADDRESS == UART2_BASE);

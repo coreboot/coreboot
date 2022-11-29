@@ -471,7 +471,9 @@ static const SI_PCH_DEVICE_INTERRUPT_CONFIG *pci_irq_to_fsp(size_t *out_count)
  */
 static int get_l1_substate_control(enum L1_substates_control ctl)
 {
-	if ((ctl > L1_SS_L1_2) || (ctl == L1_SS_FSP_DEFAULT))
+	if (CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE))
+		ctl = L1_SS_DISABLED;
+	else if ((ctl > L1_SS_L1_2) || (ctl == L1_SS_FSP_DEFAULT))
 		ctl = L1_SS_L1_2;
 	return ctl - 1;
 }

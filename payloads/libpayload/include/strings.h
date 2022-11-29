@@ -29,8 +29,6 @@
 #ifndef _STRINGS_H
 #define _STRINGS_H
 
-#include <libpayload.h>
-
-static inline int ffs(int i) { return __ffs(i) + 1; }
+#define ffs(x) __builtin_ffs(x)
 
 #endif

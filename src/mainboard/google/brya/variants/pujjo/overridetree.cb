@@ -24,6 +24,7 @@ fw_config
 	field AUDIO 12 14
 		option ALC1019_ALC5682IVS	0
 		option MAX98357_ALC5682I	1
+		option MAX98357_ALC5682IVS      2
 	end
 	field EXT_VR 15
 		option EXT_VR_PRESENT		0
@@ -480,6 +481,7 @@ chip soc/intel/alderlake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on
 					probe AUDIO ALC1019_ALC5682IVS
+					probe AUDIO MAX98357_ALC5682IVS
 				end
 			end
 			chip drivers/generic/alc1015
@@ -516,6 +518,7 @@ chip soc/intel/alderlake
 				register "sdmode_delay" = "5"
 				device generic 0 on
 					probe AUDIO MAX98357_ALC5682I
+					probe AUDIO MAX98357_ALC5682IVS
 				end
 			end
 		end

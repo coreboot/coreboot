@@ -12,6 +12,7 @@
 
 /* Include EC functions */
 #include <ec/google/chromeec/ec.h>
+#include <ec/google/chromeec/smm.h>
 #include "ec.h"
 
 static u8 mainboard_smi_ec(void)
@@ -78,21 +79,6 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 int mainboard_smi_apmc(u8 apmc)
 {
-	switch (apmc) {
-	case APM_CNT_ACPI_ENABLE:
-		google_chromeec_set_smi_mask(0);
-		/* Clear all pending events */
-		while (google_chromeec_get_event() != EC_HOST_EVENT_NONE)
-			;
-		google_chromeec_set_sci_mask(LINK_EC_SCI_EVENTS);
-		break;
-	case APM_CNT_ACPI_DISABLE:
-		google_chromeec_set_sci_mask(0);
-		/* Clear all pending events */
-		while (google_chromeec_get_event() != EC_HOST_EVENT_NONE)
-			;
-		google_chromeec_set_smi_mask(LINK_EC_SMI_EVENTS);
-		break;
-	}
+	chromeec_smi_apmc(apmc, LINK_EC_SCI_EVENTS, LINK_EC_SMI_EVENTS);
 	return 0;
 }

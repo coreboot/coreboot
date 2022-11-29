@@ -7,6 +7,7 @@
 #include <cpu/x86/smm.h>
 #include "ec.h"
 #include <ec/google/chromeec/ec.h>
+#include <ec/google/chromeec/smm.h>
 #include <elog.h>
 #include <soc/nvs.h>
 #include <soc/pm.h>
@@ -115,21 +116,6 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 
 int mainboard_smi_apmc(uint8_t apmc)
 {
-	switch (apmc) {
-	case APM_CNT_ACPI_ENABLE:
-		google_chromeec_set_smi_mask(0);
-		/* Clear all pending events */
-		while (google_chromeec_get_event() != EC_HOST_EVENT_NONE)
-			;
-		google_chromeec_set_sci_mask(MAINBOARD_EC_SCI_EVENTS);
-		break;
-	case APM_CNT_ACPI_DISABLE:
-		google_chromeec_set_sci_mask(0);
-		/* Clear all pending events */
-		while (google_chromeec_get_event() != EC_HOST_EVENT_NONE)
-			;
-		google_chromeec_set_smi_mask(MAINBOARD_EC_SMI_EVENTS);
-		break;
-	}
+	chromeec_smi_apmc(apmc, MAINBOARD_EC_SCI_EVENTS, MAINBOARD_EC_SMI_EVENTS);
 	return 0;
 }

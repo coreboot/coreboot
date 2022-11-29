@@ -251,6 +251,9 @@ static enum dev_sleep_states get_min_sleep_state(const struct device *dev)
 		return DEFAULT_CPU_D_STATE;
 
 	case DEVICE_PATH_PCI:
+		/* skip external buses*/
+		if (dev->bus->secondary != 0)
+			return NONE;
 		for (size_t i = 0; i < ARRAY_SIZE(min_pci_sleep_states); i++)
 			if (min_pci_sleep_states[i].pci_dev == dev->path.pci.devfn)
 				return min_pci_sleep_states[i].min_sleep_state;

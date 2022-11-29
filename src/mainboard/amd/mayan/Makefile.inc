@@ -25,10 +25,10 @@ MAYAN_EC_POSITION=$(call int-add, \
 	$(call int-subtract, 0xffffffff \
 	$(CONFIG_ROM_SIZE)) $(CONFIG_MAYAN_MCHP_FW_OFFSET) 1)
 
-cbfs-files-y += apu/ecfw
-apu/ecfw-file := $(CONFIG_MAYAN_MCHP_FW_FILE)
-apu/ecfw-position := $(MAYAN_EC_POSITION)
-apu/ecfw-type := raw
+cbfs-files-y += ec/ecfw
+ec/ecfw-file := $(CONFIG_MAYAN_MCHP_FW_FILE)
+ec/ecfw-position := $(MAYAN_EC_POSITION)
+ec/ecfw-type := raw
 
 else
 files_added:: warn_no_mchp

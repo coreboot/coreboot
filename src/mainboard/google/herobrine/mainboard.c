@@ -91,7 +91,12 @@ static void display_startup(void)
  */
 bool mainboard_needs_pcie_init(void)
 {
-	uint32_t sku = sku_id();
+	/*
+	 * Mask out everything above the actual SKU bits We have 3 sku pins,
+	 * each tristate, so we can represent numbers up to 27, or 5 bits
+	 */
+	uint32_t sku_bits_mask = 0xff;
+	uint32_t sku = sku_id() & sku_bits_mask;
 
 	if (sku == CROS_SKU_UNKNOWN) {
 		printk(BIOS_WARNING, "Unknown SKU (%#x); assuming PCIe", sku);

@@ -26,6 +26,7 @@ omap-header-generic-ccopts += -D__COREBOOT_ARM_ARCH__=7
 
 real-target: $(obj)/MLO
 
+omap-header-y += header.ld
 header_ld := $(call src-to-obj,omap-header,$(dir)/header.ld)
 
 get_header_size= \
@@ -33,11 +34,10 @@ get_header_size= \
 
 $(obj)/omap-header.bin: $$(omap-header-objs) $(objcbfs)/bootblock.bin
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_omap-header) -nostdlib -nostartfiles -static -include $(obj)/config.h \
-		-Wl,--defsym,header_load_size=$(strip \
+	$(LD_omap-header)  --defsym header_load_size=$(strip \
 			$(call get_header_size,$(obj)/coreboot.rom) \
-		) \
-		-o $@.tmp $< -T $(header_ld)
+		) -L$(obj) --whole-archive --start-group $(filter-out %.ld,$(omap-header-objs)) --end-group \
+		-o $@.tmp -T $(header_ld)
 	$(OBJCOPY_omap-header) --only-section=".header" -O binary $@.tmp $@
 
 $(obj)/MLO: $(obj)/coreboot.rom $(obj)/omap-header.bin

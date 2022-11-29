@@ -7,6 +7,6 @@ Device (ECPD)
 	Name (_DDN, "EC PD Device")
 	Method(_STA, 0)
 	{
-		Return (0xB)
+		Return (0xF)
 	}
 }

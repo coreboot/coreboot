@@ -229,5 +229,5 @@ else
     # header to be placed below 0x2000 in the resulting image.  See:
     # http://www.gnu.org/software/grub/manual/multiboot/html_node/OS-image-format.html
 
-    $DEFAULT_CC $_LDFLAGS $HEAD_O $CMDLINE $_CFLAGS -lpayload $_LIBGCC
+    $DEFAULT_CC $_LDFLAGS $HEAD_O $CMDLINE $_CFLAGS -lpayload -xnone $_LIBGCC
 fi

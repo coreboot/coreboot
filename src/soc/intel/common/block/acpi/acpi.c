@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi.h>
 #include <acpi/acpi_pm.h>
 #include <acpi/acpigen.h>
 #include <arch/ioapic.h>
@@ -68,7 +69,6 @@ static unsigned long acpi_madt_irq_overrides(unsigned long current)
 	/* SCI */
 	current +=
 	    acpi_create_madt_irqoverride((void *)current, 0, sci, sci, flags);
-
 
 	return current;
 }

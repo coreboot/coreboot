@@ -51,6 +51,7 @@ enum acpi_device_sleep_states {
 	ACPI_DEVICE_SLEEP_D3		= 3,
 	ACPI_DEVICE_SLEEP_D3_HOT	= ACPI_DEVICE_SLEEP_D3,
 	ACPI_DEVICE_SLEEP_D3_COLD	= 4,
+	ACPI_DEVICE_SLEEP_NONE		= 5,
 };
 
 #define RSDP_SIG		"RSD PTR "  /* RSDT pointer signature */
@@ -1283,7 +1284,6 @@ typedef struct acpi_einj {
 	acpi_einj_action_table_t action_table[ACTION_COUNT];
 } __packed acpi_einj_t;
 
-
 uintptr_t get_coreboot_rsdp(void);
 void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions);
 
@@ -1297,8 +1297,6 @@ unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current);
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
 void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length);
 void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt);
-
-void soc_lpi_get_constraints(void *unused);
 
 void acpi_fill_fadt(acpi_fadt_t *fadt);
 void arch_fill_fadt(acpi_fadt_t *fadt);

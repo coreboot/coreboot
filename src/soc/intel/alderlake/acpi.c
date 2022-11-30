@@ -22,13 +22,6 @@
 #include <cpu/cpu.h>
 #include <types.h>
 
-
-#define DEFAULT_CPU_D_STATE	D0
-#define LPI_STATES_ALL		0xff
-#define LPI_REVISION		0
-#define LPI_ENABLED		1
-
-
 /*
  * List of supported C-states in this processor.
  */
@@ -119,14 +112,6 @@ static int cstate_set_s0ix[] = {
 	C_STATE_C10
 };
 
-enum dev_sleep_states {
-	D0,  /* 0 */
-	D1,  /* 1 */
-	D2,  /* 2 */
-	D3,  /* 3 */
-	NONE
-};
-
 const acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 {
 	static acpi_cstate_t map[MAX(ARRAY_SIZE(cstate_set_s0ix),
@@ -181,156 +166,68 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;
 }
 
-static const struct {
-	uint8_t pci_dev;
-	enum dev_sleep_states min_sleep_state;
-} min_pci_sleep_states[] = {
-	{ SA_DEVFN_ROOT,	D3 },
-	{ SA_DEVFN_CPU_PCIE1_0,	D3 },
-	{ SA_DEVFN_IGD,		D3 },
-	{ SA_DEVFN_DPTF,	D3 },
-	{ SA_DEVFN_IPU,		D3 },
-	{ SA_DEVFN_CPU_PCIE6_0,	D3 },
-	{ SA_DEVFN_CPU_PCIE6_2,	D3 },
-	{ SA_DEVFN_TBT0,	D3 },
-	{ SA_DEVFN_TBT1,	D3 },
-	{ SA_DEVFN_TBT2,	D3 },
-	{ SA_DEVFN_TBT3,	D3 },
-	{ SA_DEVFN_GNA,		D3 },
-	{ SA_DEVFN_TCSS_XHCI,	D3 },
-	{ SA_DEVFN_TCSS_XDCI,	D3 },
-	{ SA_DEVFN_TCSS_DMA0,	D3 },
-	{ SA_DEVFN_TCSS_DMA1,	D3 },
-	{ SA_DEVFN_VMD,		D3 },
-	{ PCH_DEVFN_I2C6,	D3 },
-	{ PCH_DEVFN_I2C7,	D3 },
-	{ PCH_DEVFN_THC0,	D3 },
-	{ PCH_DEVFN_THC1,	D3 },
-	{ PCH_DEVFN_XHCI,	D3 },
-	{ PCH_DEVFN_USBOTG,	D3 },
-	{ PCH_DEVFN_SRAM,	D3 },
-	{ PCH_DEVFN_CNVI_WIFI,	D3 },
-	{ PCH_DEVFN_I2C0,	D3 },
-	{ PCH_DEVFN_I2C1,	D3 },
-	{ PCH_DEVFN_I2C2,	D3 },
-	{ PCH_DEVFN_I2C3,	D3 },
-	{ PCH_DEVFN_CSE,	D0 },
-	{ PCH_DEVFN_SATA,	D3 },
-	{ PCH_DEVFN_I2C4,	D3 },
-	{ PCH_DEVFN_I2C5,	D3 },
-	{ PCH_DEVFN_UART2,	D3 },
-	{ PCH_DEVFN_PCIE1,	D0 },
-	{ PCH_DEVFN_PCIE2,	D0 },
-	{ PCH_DEVFN_PCIE3,	D0 },
-	{ PCH_DEVFN_PCIE4,	D0 },
-	{ PCH_DEVFN_PCIE5,	D0 },
-	{ PCH_DEVFN_PCIE6,	D0 },
-	{ PCH_DEVFN_PCIE7,	D0 },
-	{ PCH_DEVFN_PCIE8,	D0 },
-	{ PCH_DEVFN_PCIE9,	D0 },
-	{ PCH_DEVFN_PCIE10,	D0 },
-	{ PCH_DEVFN_PCIE11,	D0 },
-	{ PCH_DEVFN_PCIE12,	D0 },
-	{ PCH_DEVFN_UART0,	D3 },
-	{ PCH_DEVFN_UART1,	D3 },
-	{ PCH_DEVFN_GSPI0,	D3 },
-	{ PCH_DEVFN_GSPI1,	D3 },
-	{ PCH_DEVFN_ESPI,	D0 },
-	{ PCH_DEVFN_PMC,	D0 },
-	{ PCH_DEVFN_HDA,	D0 },
-	{ PCH_DEVFN_SPI,	D3 },
-	{ PCH_DEVFN_GBE,	D3 },
+static struct min_sleep_state min_pci_sleep_states[] = {
+	{ SA_DEVFN_ROOT,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_CPU_PCIE1_0,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_IGD,		ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_DPTF,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_IPU,		ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_CPU_PCIE6_0,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_CPU_PCIE6_2,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_TBT0,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_TBT1,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_TBT2,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_TBT3,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_GNA,		ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_TCSS_XHCI,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_TCSS_XDCI,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_TCSS_DMA0,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_TCSS_DMA1,	ACPI_DEVICE_SLEEP_D3 },
+	{ SA_DEVFN_VMD,		ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_I2C6,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_I2C7,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_THC0,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_THC1,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_XHCI,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_USBOTG,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_SRAM,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_CNVI_WIFI,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_I2C0,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_I2C1,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_I2C2,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_I2C3,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_CSE,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_SATA,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_I2C4,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_I2C5,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_UART2,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_PCIE1,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_PCIE2,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_PCIE3,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_PCIE4,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_PCIE5,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_PCIE6,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_PCIE7,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_PCIE8,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_PCIE9,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_PCIE10,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_PCIE11,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_PCIE12,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_UART0,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_UART1,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_GSPI0,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_GSPI1,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_ESPI,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_PMC,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_HDA,	ACPI_DEVICE_SLEEP_D0 },
+	{ PCH_DEVFN_SPI,	ACPI_DEVICE_SLEEP_D3 },
+	{ PCH_DEVFN_GBE,	ACPI_DEVICE_SLEEP_D3 },
 };
 
-static enum dev_sleep_states get_min_sleep_state(const struct device *dev)
+struct min_sleep_state *soc_get_min_sleep_state_array(size_t *size)
 {
-	if (!is_dev_enabled(dev))
-		return NONE;
-
-	switch (dev->path.type) {
-	case DEVICE_PATH_APIC:
-		return DEFAULT_CPU_D_STATE;
-
-	case DEVICE_PATH_PCI:
-		/* skip external buses*/
-		if (dev->bus->secondary != 0)
-			return NONE;
-		for (size_t i = 0; i < ARRAY_SIZE(min_pci_sleep_states); i++)
-			if (min_pci_sleep_states[i].pci_dev == dev->path.pci.devfn)
-				return min_pci_sleep_states[i].min_sleep_state;
-		printk(BIOS_WARNING, "Unknown min d_state for %x\n", dev->path.pci.devfn);
-		return NONE;
-
-	default:
-		return NONE;
-	}
-}
-
-/* Generate the LPI constraint table and return the number of devices included */
-void soc_lpi_get_constraints(void *unused)
-{
-	unsigned int num_entries;
-	const struct device *dev;
-	enum dev_sleep_states min_sleep_state;
-
-	num_entries = 0;
-
-	for (dev = all_devices; dev; dev = dev->next) {
-		if (get_min_sleep_state(dev) != NONE)
-			num_entries++;
-	}
-
-	acpigen_emit_byte(RETURN_OP);
-	acpigen_write_package(num_entries);
-
-	size_t cpu_index = 0;
-	for (dev = all_devices; dev; dev = dev->next) {
-		min_sleep_state = get_min_sleep_state(dev);
-		if (min_sleep_state == NONE)
-			continue;
-
-		acpigen_write_package(3);
-		{
-			char path[32] = { 0 };
-			/* Emit the device path */
-			switch (dev->path.type) {
-			case DEVICE_PATH_PCI:
-				acpigen_emit_namestring(acpi_device_path(dev));
-				break;
-
-			case DEVICE_PATH_APIC:
-				snprintf(path, sizeof(path), CONFIG_ACPI_CPU_STRING,
-					 cpu_index++);
-				acpigen_emit_namestring(path);
-				break;
-
-			default:
-				/* Unhandled */
-				printk(BIOS_WARNING,
-					"Unhandled device path type %d\n", dev->path.type);
-				acpigen_emit_namestring(NULL);
-				break;
-			}
-
-			acpigen_write_integer(LPI_ENABLED);
-			acpigen_write_package(2);
-			{
-				acpigen_write_integer(LPI_REVISION);
-				acpigen_write_package(2);	/* no optional device info */
-				{
-					/* Assume constraints apply to all entries */
-					acpigen_write_integer(LPI_STATES_ALL);
-					acpigen_write_integer(min_sleep_state); /* min D-state */
-				}
-				acpigen_write_package_end();
-			}
-			acpigen_write_package_end();
-		}
-		acpigen_write_package_end();
-	}
-
-	acpigen_write_package_end();
-	printk(BIOS_INFO, "Returning SoC specific constraint package for %d devices\n", num_entries);
+	*size = ARRAY_SIZE(min_pci_sleep_states);
+	return min_pci_sleep_states;
 }
 
 uint32_t soc_read_sci_irq_select(void)

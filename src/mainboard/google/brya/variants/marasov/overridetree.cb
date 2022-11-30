@@ -1,16 +1,16 @@
 fw_config
-	field KB_BL 7 7
+	field KB_BL 0 0
 		option KB_BL_ABSENT			0
 		option KB_BL_PRESENT			1
 	end
-	field AUDIO 8 10
+	field AUDIO 1 3
 		option AUDIO_UNKNOWN			0
 		option ALC1019_ALC5682I_VD_I2S		1
 		option ALC1019_ALC5682I_VS_I2S		2
 	end
-	field THERMAL 18 18
-		option THERMAL_6W			0
-		option THERMAL_15W			1
+	field UFC 4 4
+		option UFC_USB				0
+		option UFC_MIPI				1
 	end
 	field STORAGE 30 31
 		option STORAGE_UNKNOWN			0

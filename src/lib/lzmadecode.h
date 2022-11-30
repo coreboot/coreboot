@@ -22,10 +22,12 @@
 #ifndef __LZMADECODE_H
 #define __LZMADECODE_H
 
+#include <types.h>
+
 typedef unsigned char Byte;
 typedef unsigned short UInt16;
 typedef unsigned int UInt32;
-typedef UInt32 SizeT;
+typedef size_t SizeT;
 
 #define CProb UInt16
 

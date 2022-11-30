@@ -35,15 +35,15 @@
 #define kBitModelTotal (1 << kNumBitModelTotalBits)
 #define kNumMoveBits 5
 
-/* Use 32-bit reads whenever possible to avoid bad flash performance. Fall back
- * to byte reads for last 4 bytes since RC_TEST returns an error when BufferLim
+/* Use sizeof(SizeT) sized reads whenever possible to avoid bad flash performance. Fall back
+ * to byte reads for last sizeof(SizeT) bytes since RC_TEST returns an error when BufferLim
  * is *reached* (not surpassed!), meaning we can't allow that to happen while
  * there are still bytes to decode from the algorithm's point of view. */
 #define RC_READ_BYTE							\
-	(look_ahead_ptr < 4 ? look_ahead.raw[look_ahead_ptr++]		\
-	: ((((uintptr_t) Buffer & 3)					\
-		|| ((SizeT) (BufferLim - Buffer) <= 4)) ? (*Buffer++)	\
-	: ((look_ahead.dw = *(UInt32 *)Buffer), (Buffer += 4),		\
+	(look_ahead_ptr < sizeof(SizeT) ? look_ahead.raw[look_ahead_ptr++]	\
+	 : ((((uintptr_t) Buffer & (sizeof(SizeT) - 1))				\
+	     || ((SizeT) (BufferLim - Buffer) <= sizeof(SizeT))) ? (*Buffer++) \
+	   : ((look_ahead.dw = *(SizeT *)Buffer), (Buffer += sizeof(SizeT)),	\
 		(look_ahead_ptr = 1), look_ahead.raw[0])))
 
 #define RC_INIT2 Code = 0; Range = 0xFFFFFFFF;		\
@@ -207,10 +207,10 @@ int LzmaDecode(CLzmaDecoderState *vs,
 	int len = 0;
 	const Byte *Buffer;
 	const Byte *BufferLim;
-	int look_ahead_ptr = 4;
+	int look_ahead_ptr = sizeof(SizeT);
 	union {
-		Byte raw[4];
-		UInt32 dw;
+		Byte raw[sizeof(SizeT)];
+		SizeT dw;
 	} look_ahead;
 	UInt32 Range;
 	UInt32 Code;

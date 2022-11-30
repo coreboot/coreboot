@@ -1,7 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 chip northbridge/intel/pineview
-	register "use_crt"  = "1"
+	register "use_crt"  = "true"
 
 	device cpu_cluster 0 on
 		chip cpu/intel/socket_FCBGA559

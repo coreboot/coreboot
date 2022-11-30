@@ -2,8 +2,8 @@
 
 chip northbridge/intel/pineview		# Northbridge
 	register "gfx.use_spread_spectrum_clock" = "0"
-	register "use_crt" = "1"
-	register "use_lvds" = "0"
+	register "use_crt" = "true"
+	register "use_lvds" = "false"
 
 	device cpu_cluster 0 on		# APIC cluster
 		chip cpu/intel/socket_FCBGA559	# CPU

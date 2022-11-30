@@ -316,7 +316,12 @@ struct elog_event_mem_cache_update {
 #define   ELOG_CROS_DIAG_TYPE_STORAGE_TEST_EXTENDED 0x03
 #define   ELOG_CROS_DIAG_TYPE_MEMORY_QUICK          0x04
 #define   ELOG_CROS_DIAG_TYPE_MEMORY_FULL           0x05
-/* Result codes for elog_event_cros_diag_log in ELOG_CROS_DIAGNOSTICS_LOGS */
+/*
+ * Result codes for elog_event_cros_diag_log in ELOG_CROS_DIAGNOSTICS_LOGS
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ */
 #define   ELOG_CROS_DIAG_RESULT_PASSED              0x01
 #define   ELOG_CROS_DIAG_RESULT_ERROR               0x02
 #define   ELOG_CROS_DIAG_RESULT_FAILED              0x03

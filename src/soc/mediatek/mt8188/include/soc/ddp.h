@@ -283,7 +283,8 @@ enum {
 };
 
 enum disp_path_sel {
-	DISP_PATH_EDP = 0,
+	DISP_PATH_NONE = 0,
+	DISP_PATH_EDP,
 	DISP_PATH_MIPI,
 };
 

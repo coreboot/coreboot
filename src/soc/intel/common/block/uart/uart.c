@@ -253,7 +253,9 @@ static void uart_fill_ssdt(const struct device *dev)
 
 	acpi_device_write_uid(dev);
 	acpigen_write_name_string("_DDN", "LPSS ACPI UART");
-	acpigen_write_STA(acpi_device_status(dev));
+
+	/* Do not hide the UART device from the OS */
+	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 
 	/* Resources */
 	acpigen_write_name("_CRS");

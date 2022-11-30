@@ -5,7 +5,7 @@ chip northbridge/intel/i945
 	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 
 	register "gpu_hotplug" = "0x00000220"
-	register "gpu_lvds_use_spread_spectrum_clock" = "1"
+	register "gpu_lvds_use_spread_spectrum_clock" = "true"
 	register "pwm_freq" = "180"
 	register "gpu_panel_power_up_delay" = "250"
 	register "gpu_panel_power_backlight_on_delay" = "2380"

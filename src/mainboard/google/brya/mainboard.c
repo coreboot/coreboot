@@ -132,6 +132,36 @@ static void mainboard_generate_dgpu_shutdown(const struct device *dev)
 		acpigen_emit_namestring(acpi_device_path_join(parent, "PGPR._OFF"));
 }
 
+static void mainboard_generate_mpts(void)
+{
+	const struct device *wwan = DEV_PTR(rp6_wwan);
+	const struct device *dgpu = DEV_PTR(dgpu);
+
+	/*
+	 * If HAVE_WWAN_POWER_SEQUENCE is selected, MPTS will be added to the
+	 * DSDT via wwan_power.asl. We can't add MPTS to the SSDT as well,
+	 * since the duplicate definition will result in a kernel error.
+	 *
+	 * This special case can be removed in the future if the power-off
+	 * sequences for all WWAN devices used on brya are moved to the SSDT.
+	 */
+	if (CONFIG(HAVE_WWAN_POWER_SEQUENCE)) {
+		if (wwan || dgpu)
+			printk(BIOS_ERR, "Skip adding duplicate MPTS entry to SSDT\n");
+		return;
+	}
+
+	acpigen_write_scope("\\_SB");
+	acpigen_write_method_serialized("MPTS", 1);
+	if (wwan)
+		mainboard_generate_wwan_shutdown(wwan);
+	if (dgpu)
+		mainboard_generate_dgpu_shutdown(dgpu);
+
+	acpigen_write_method_end(); /* Method */
+	acpigen_write_scope_end(); /* Scope */
+}
+
 static void mainboard_generate_s0ix_hook(void)
 {
 	acpigen_write_if_lequal_op_int(ARG0_OP, 1);
@@ -151,18 +181,7 @@ static void mainboard_generate_s0ix_hook(void)
 
 static void mainboard_fill_ssdt(const struct device *dev)
 {
-	const struct device *wwan = DEV_PTR(rp6_wwan);
-	const struct device *dgpu = DEV_PTR(dgpu);
-
-	acpigen_write_scope("\\_SB");
-	acpigen_write_method_serialized("MPTS", 1);
-	if (wwan)
-		mainboard_generate_wwan_shutdown(wwan);
-	if (dgpu)
-		mainboard_generate_dgpu_shutdown(dgpu);
-
-	acpigen_write_method_end(); /* Method */
-	acpigen_write_scope_end(); /* Scope */
+	mainboard_generate_mpts();
 
 	/* for variant to fill additional SSDT */
 	variant_fill_ssdt(dev);

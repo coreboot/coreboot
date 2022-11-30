@@ -15,6 +15,7 @@
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
+#include <timestamp.h>
 #include <string.h>
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\
@@ -130,8 +131,11 @@ void mainboard_romstage_entry(void)
 
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
 	if (!s3wake) {
-		if (CONFIG(SOC_INTEL_CSE_LITE_SKU))
+		if (CONFIG(SOC_INTEL_CSE_LITE_SKU)) {
+			timestamp_add_now(TS_CSE_FW_SYNC_START);
 			cse_fw_sync();
+			timestamp_add_now(TS_CSE_FW_SYNC_END);
+		}
 	}
 
 	/*

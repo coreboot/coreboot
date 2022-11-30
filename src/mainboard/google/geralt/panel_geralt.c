@@ -14,9 +14,19 @@ static void configure_mipi_pwm_backlight(void)
 	gpio_output(GPIO_MIPI_PANEL_BL_PWM, 0);
 }
 
+static void configure_edp_aux_backlight(void)
+{
+	/* TODO: Add edp aux backlight for MUTTO_B152731E1 when we get MUTTO_B152731E1 */
+}
+
 static void power_on_mipi_boe_nv110c9m_l60(void)
 {
 	/* TODO: Add the poweron for BOE_NV110C9M_L60 when we get BOE_NV110C9M_L60 */
+}
+
+static void power_on_edp_mutto_b152731e1(void)
+{
+	/* TODO: Add the poweron for MUTTO_B152731E1 when we get MUTTO_B152731E1 */
 }
 
 static struct panel_description panels[] = {
@@ -25,6 +35,12 @@ static struct panel_description panels[] = {
 		.power_on = power_on_mipi_boe_nv110c9m_l60,
 		.configure_panel_backlight = configure_mipi_pwm_backlight,
 		.disp_path = DISP_PATH_MIPI,
+	},
+	[11] = {
+		.name = "MUTTO_B152731E1",
+		.power_on = power_on_edp_mutto_b152731e1,
+		.configure_panel_backlight = configure_edp_aux_backlight,
+		.disp_path = DISP_PATH_EDP,
 	},
 };
 

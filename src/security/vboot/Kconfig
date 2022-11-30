@@ -40,6 +40,7 @@ config VBOOT_CBFS_INTEGRATION
 	default n
 	depends on VBOOT_SLOTS_RW_A
 	depends on CBFS_VERIFICATION
+	select INCLUDE_CONFIG_FILE  # futility needs this to auto-detect signing type
 	help
 	  Say yes here to enable cryptographic verification of RW slots CBFS
 	  metadata. This will replace body hash verification.

@@ -109,7 +109,8 @@ static void test_lb_new_record(void **state)
 	accumulated_size = sizeof(struct lb_record);
 	for (i = 0; i < entries; ++i) {
 		curr = lb_new_record(header);
-		curr->size = sizeof(struct lb_record) + ((i + 2) * 7) % 32;
+		curr->size = sizeof(struct lb_record) +
+			     ALIGN_UP(((i + 2) * 7) % 32, LB_ENTRY_ALIGN);
 
 		assert_int_equal(entries_offset + (i + 1), header->table_entries);
 		assert_int_equal(accumulated_size, header->table_bytes);
@@ -359,31 +360,31 @@ static void test_write_tables(void **state)
 			assert_int_equal(ALIGN_UP(sizeof(struct lb_mainboard)
 							  + ARRAY_SIZE(mainboard_vendor)
 							  + ARRAY_SIZE(mainboard_part_number),
-						  8),
+						  LB_ENTRY_ALIGN),
 					 record->size);
 			break;
 		case LB_TAG_VERSION:
 			assert_int_equal(ALIGN_UP(sizeof(struct lb_string)
 							  + ARRAY_SIZE(coreboot_version),
-						  8),
+						  LB_ENTRY_ALIGN),
 					 record->size);
 			break;
 		case LB_TAG_EXTRA_VERSION:
 			assert_int_equal(ALIGN_UP(sizeof(struct lb_string)
 							  + ARRAY_SIZE(coreboot_extra_version),
-						  8),
+						  LB_ENTRY_ALIGN),
 					 record->size);
 			break;
 		case LB_TAG_BUILD:
 			assert_int_equal(
 				ALIGN_UP(sizeof(struct lb_string) + ARRAY_SIZE(coreboot_build),
-					 8),
+					 LB_ENTRY_ALIGN),
 				record->size);
 			break;
 		case LB_TAG_COMPILE_TIME:
 			assert_int_equal(ALIGN_UP(sizeof(struct lb_string)
 							  + ARRAY_SIZE(coreboot_compile_time),
-						  8),
+						  LB_ENTRY_ALIGN),
 					 record->size);
 			break;
 		case LB_TAG_SERIAL:

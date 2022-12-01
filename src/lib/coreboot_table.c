@@ -76,9 +76,11 @@ struct lb_record *lb_new_record(struct lb_header *header)
 {
 	struct lb_record *rec;
 	rec = lb_last_record(header);
-	if (header->table_entries)
+	if (header->table_entries) {
+		assert(IS_ALIGNED(rec->size, LB_ENTRY_ALIGN));
 		header->table_bytes += rec->size;
-	rec = lb_last_record(header);
+		rec = lb_last_record(header);
+	}
 	header->table_entries++;
 	rec->tag = LB_TAG_UNUSED;
 	rec->size = sizeof(*rec);
@@ -301,7 +303,7 @@ static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 
 	mainboard->size = ALIGN_UP(sizeof(*mainboard) +
 		strlen(mainboard_vendor) + 1 +
-		strlen(mainboard_part_number) + 1, 8);
+		strlen(mainboard_part_number) + 1, LB_ENTRY_ALIGN);
 
 	mainboard->vendor_idx = 0;
 	mainboard->part_number_idx = strlen(mainboard_vendor) + 1;
@@ -380,7 +382,7 @@ static void lb_strings(struct lb_header *header)
 		rec = (struct lb_string *)lb_new_record(header);
 		len = strlen(strings[i].string);
 		rec->tag = strings[i].tag;
-		rec->size = ALIGN_UP(sizeof(*rec) + len + 1, 8);
+		rec->size = ALIGN_UP(sizeof(*rec) + len + 1, LB_ENTRY_ALIGN);
 		memcpy(rec->string, strings[i].string, len+1);
 	}
 
@@ -422,8 +424,10 @@ static unsigned long lb_table_fini(struct lb_header *head)
 {
 	struct lb_record *rec, *first_rec;
 	rec = lb_last_record(head);
-	if (head->table_entries)
+	if (head->table_entries) {
+		assert(IS_ALIGNED(rec->size, LB_ENTRY_ALIGN));
 		head->table_bytes += rec->size;
+	}
 
 	first_rec = lb_first_record(head);
 	head->table_checksum = compute_ip_checksum(first_rec,

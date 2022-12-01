@@ -197,4 +197,5 @@ Contents:
 * [Boards supported in each release directory](releases/boards_supported_on_branches.md)
 * [Release notes](releases/index.md)
 * [Acronyms & Definitions](acronyms.md)
+* [External Resources](external_docs.md)
 * [Documentation License](documentation_license.md)

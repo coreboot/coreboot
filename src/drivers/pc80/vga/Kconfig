@@ -2,3 +2,8 @@ config VGA
 	bool
 	help
 	  Include legacy VGA support code.
+
+config ROMSTAGE_VGA
+	bool
+	help
+	  Include legacy VGA support code in romstage.

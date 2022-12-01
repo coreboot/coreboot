@@ -1,7 +1,7 @@
 fw_config
-	field AUDIO 0 2
-		option AUDIO_UNKNOWN	0
-		option ALC5682IVS_I2S	1
+	field STORAGE 1 1
+		option STORAGE_EMMC	0
+		option STORAGE_NVME	1
 	end
 end
 
@@ -149,7 +149,8 @@ chip soc/intel/alderlake
 				.clk_src = 0,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
-		end
+			probe STORAGE STORAGE_NVME
+		end #NVMe
 		device ref tbt_pcie_rp0 off end
 		device ref tbt_pcie_rp1 off end
 		device ref tbt_pcie_rp2 off end
@@ -173,9 +174,7 @@ chip soc/intel/alderlake
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
-				device i2c 1a on
-                                        probe AUDIO ALC5682IVS_I2S
-				end
+				device i2c 1a on end
 			end
 		end #I2C0
 		device ref i2c1 on
@@ -211,6 +210,7 @@ chip soc/intel/alderlake
 				.clk_req = 4,
 				.flags = PCIE_RP_HOTPLUG | PCIE_RP_AER,
 			}"
+			probe STORAGE STORAGE_EMMC
 		end     #PCIE12 EMMC
 		device ref gspi1 off end
 		device ref pch_espi on

@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
+#include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <drivers/wwan/fm/chip.h>
@@ -17,6 +18,36 @@ static void mainboard_init(void *chip_info)
 	size_t num;
 	pads = variant_gpio_table(&num);
 	gpio_configure_pads(pads, num);
+}
+
+void __weak variant_generate_s0ix_hook(enum s0ix_entry entry)
+{
+	/* Add board-specific MS0X entries */
+	/*
+	   if (s0ix_entry == S0IX_ENTRY) {
+		implement variant operations here
+	   }
+	   if (s0ix_entry == S0IX_EXIT) {
+		implement variant operations here
+	   }
+	 */
+}
+
+static void mainboard_generate_s0ix_hook(void)
+{
+	acpigen_write_if_lequal_op_int(ARG0_OP, 1);
+	{
+		if (CONFIG(HAVE_SLP_S0_GATE))
+			acpigen_soc_clear_tx_gpio(GPIO_SLP_S0_GATE);
+		variant_generate_s0ix_hook(S0IX_ENTRY);
+	}
+	acpigen_write_else();
+	{
+		if (CONFIG(HAVE_SLP_S0_GATE))
+			acpigen_soc_set_tx_gpio(GPIO_SLP_S0_GATE);
+		variant_generate_s0ix_hook(S0IX_EXIT);
+	}
+	acpigen_write_if_end();
 }
 
 static void mainboard_generate_wwan_shutdown(const struct device *dev)
@@ -50,6 +81,12 @@ static void mainboard_fill_ssdt(const struct device *dev)
 		acpigen_write_method_end(); /* Method */
 		acpigen_write_scope_end(); /* Scope */
 	}
+
+	acpigen_write_scope("\\_SB");
+	acpigen_write_method_serialized("MS0X", 1);
+	mainboard_generate_s0ix_hook();
+	acpigen_write_method_end(); /* Method */
+	acpigen_write_scope_end(); /* Scope */
 }
 
 static void add_fw_config_oem_string(const struct fw_config *config, void *arg)

@@ -21,4 +21,11 @@ void variant_get_spd_info(struct mem_spd *spd_info);
 int variant_memory_sku(void);
 bool variant_is_half_populated(void);
 
+enum s0ix_entry {
+	S0IX_EXIT,
+	S0IX_ENTRY,
+};
+
+void variant_generate_s0ix_hook(enum s0ix_entry entry);
+
 #endif /*__BASEBOARD_VARIANTS_H__ */

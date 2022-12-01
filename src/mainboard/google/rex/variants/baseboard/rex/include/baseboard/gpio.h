@@ -13,6 +13,8 @@
 #define EC_SYNC_IRQ	GPP_A17_IRQ
 /* eSPI virtual wire reporting */
 #define EC_SCI_GPI	GPE0_ESPI
+/* Used to gate SoC's SLP_S0# signal */
+#define GPIO_SLP_S0_GATE	GPP_H14
 /* EC wake is LAN_WAKE# which is a special DeepSX wake pin */
 #define GPE_EC_WAKE	GPE0_LAN_WAK
 /* Memory configuration board straps */

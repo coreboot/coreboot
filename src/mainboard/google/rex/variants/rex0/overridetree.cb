@@ -414,17 +414,17 @@ chip soc/intel/meteorlake
 		end
 		device ref i2c5 on
 			chip drivers/intel/mipi_camera
-				register "acpi_hid" = ""INT3474""
+				register "acpi_hid" = ""INT3537""
 				register "acpi_uid" = "0"
 				register "acpi_name" = ""CAM1""
-				register "chip_name" = ""Ov 2740 Camera""
+				register "chip_name" = ""Hi-556 Camera""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 				register "has_power_resource" = "1"
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
 				register "num_freq_entries" = "1"
-				register "link_freq[0]" = "360 * MHz"
+				register "link_freq[0]" = "437 * MHz"
 				register "remote_name" = ""IPU0""
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
@@ -432,21 +432,24 @@ chip soc/intel/meteorlake
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_A11" #EN_UCAM_SENR_PWR
 				register "gpio_panel.gpio[1].gpio_num" = "GPP_B09" #EN_FCAM_PWR
 				register "gpio_panel.gpio[2].gpio_num" = "GPP_V23" #UCAM_RST_L
+				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_3"
+				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
 
 				#_ON
-				register "on_seq.ops_cnt" = "4"
-				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
-				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(1, 0)"
-				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
-				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_ENABLE(2, 10)"
+				register "on_seq.ops_cnt" = "5"
+				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 5)"
+				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(2, 5)"
 
 				#_OFF
-				register "off_seq.ops_cnt" = "3"
-				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
-				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
-				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
-
-				device i2c 36 on
+				register "off_seq.ops_cnt" = "4"
+				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+				device i2c 20 on
 					probe UFC UFC_MIPI
 				end
 			end

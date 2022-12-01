@@ -67,6 +67,12 @@
 	*(.bss.*)
 	*(.sbss)
 	*(.sbss.*)
+	/* '*_E' GNAT generated global variables actually are un-initialized
+	 * (filled with zeros) variables which are initialized at
+	 * runtime. Therefore, they can be placed in the _bss region. */
+#if CONFIG(ROMSTAGE_LIBHWBASE)
+	*(.data.hw__*_E)
+#endif
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_ebss = .;
 	RECORD_SIZE(bss)

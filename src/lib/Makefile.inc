@@ -342,28 +342,34 @@ $(obj)/%.elf.rmod: $(obj)/%.elf | $(RMODTOOL)
 romstage-$(CONFIG_ROMSTAGE_ADA) += cb.ads
 ramstage-$(CONFIG_RAMSTAGE_ADA) += cb.ads
 
-ifeq ($(CONFIG_RAMSTAGE_LIBHWBASE),y)
+ifneq (,$(filter y, $(CONFIG_RAMSTAGE_LIBHWBASE) $(CONFIG_ROMSTAGE_LIBHWBASE)))
 
 to-ada-hex = $(eval $(1) := 16\\\#$(patsubst 0x%,%,$($(1)))\\\#)
 
 $(call to-ada-hex,CONFIG_HWBASE_DEFAULT_MMCONF)
 
+libhwbase-stages = $(foreach stage, romstage ramstage, \
+	$(if $(filter y,$(CONFIG_$(call toupper,$(stage))_LIBHWBASE)),$(stage)))
+
 $(call add-special-class,hw)
-hw-handler = $(eval ramstage-srcs += $$(addprefix $(1),$(2)))
+hw-handler +=$(foreach stage, $(libhwbase-stages), \
+	$(eval $(stage)-srcs += $$(addprefix $(1),$(2))))
 
 $(call add-special-class,hw-gen)
 hw-gen-handler = \
 	$(eval additional-dirs += $(dir $(2))) \
-	$(eval ramstage-srcs += $(2)) \
-	$(eval ramstage-ads-deps += $(2)) \
-	$(eval ramstage-adb-deps += $(2)) \
+	$(foreach stage, $(libhwbase-stages), \
+		$(eval $(stage)-srcs += $(2)) \
+		$(eval $(stage)-ads-deps += $(2)) \
+		$(eval $(stage)-adb-deps += $(2))) \
 	$(eval $(2): $(obj)/config.h)
 
 subdirs-y += ../../3rdparty/libhwbase
 
-ramstage-$(CONFIG_HAVE_MONOTONIC_TIMER) += hw-time-timer.adb
+$(foreach stage,$(libhwbase-stages), \
+	$(eval $(stage)-$(CONFIG_HAVE_MONOTONIC_TIMER) += hw-time-timer.adb))
 
-endif # CONFIG_RAMSTAGE_LIBHWBASE
+endif # CONFIG_ROMSTAGE_LIBHWBASE || CONFIG_RAMSTAGE_LIBHWBASE
 
 romstage-y += spd_bin.c
 

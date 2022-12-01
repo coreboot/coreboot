@@ -5,6 +5,8 @@ ramstage-y += die.c
 ifeq ($(CONFIG_HWBASE_DEBUG_CB),y)
 ramstage-$(CONFIG_RAMSTAGE_LIBHWBASE) += hw-debug_sink.ads
 ramstage-$(CONFIG_RAMSTAGE_LIBHWBASE) += hw-debug_sink.adb
+romstage-$(CONFIG_ROMSTAGE_LIBHWBASE) += hw-debug_sink.ads
+romstage-$(CONFIG_ROMSTAGE_LIBHWBASE) += hw-debug_sink.adb
 endif
 
 smm-$(CONFIG_DEBUG_SMI) += init.c console.c vtxprintf.c printk.c

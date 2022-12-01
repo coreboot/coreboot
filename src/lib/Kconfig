@@ -21,6 +21,12 @@ config RAMSTAGE_LIBHWBASE
 	help
 	  Selected by features that require `libhwbase` in ramstage.
 
+config ROMSTAGE_LIBHWBASE
+	bool
+	select ROMSTAGE_ADA
+	help
+	  Selected by features that require `libhwbase` in romstage.
+
 config FLATTENED_DEVICE_TREE
 	bool
 	help
@@ -68,10 +74,21 @@ config SPD_CACHE_FMAP_NAME
 	help
 	  Name of the FMAP region created in the default FMAP to cache SPD data.
 
-if RAMSTAGE_LIBHWBASE
+if RAMSTAGE_LIBHWBASE && !ROMSTAGE_LIBHWBASE
 
 config HWBASE_DYNAMIC_MMIO
 	def_bool y
+
+endif
+
+if ROMSTAGE_LIBHWBASE
+
+config HWBASE_STATIC_MMIO
+	def_bool y
+
+endif
+
+if RAMSTAGE_LIBHWBASE || ROMSTAGE_LIBHWBASE
 
 config HWBASE_DEFAULT_MMCONF
 	hex

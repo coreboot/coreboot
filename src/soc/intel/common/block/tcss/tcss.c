@@ -409,14 +409,14 @@ void tcss_configure(const struct typec_aux_bias_pads aux_bias_pads[MAX_TYPE_C_PO
 	if (!platform_is_resuming()) {
 		for (i = 0; i < num_ports; i++)
 			tcss_init_mux(i, &port_map[i]);
+
+		/* This should be performed before alternate modes are entered */
+		if (tcss_ops.configure_aux_bias_pads)
+			tcss_ops.configure_aux_bias_pads(aux_bias_pads);
+
+		if (CONFIG(ENABLE_TCSS_DISPLAY_DETECTION))
+			tcss_configure_dp_mode(port_map, num_ports);
 	}
-
-	/* This should be performed before alternate modes are entered */
-	if (tcss_ops.configure_aux_bias_pads)
-		tcss_ops.configure_aux_bias_pads(aux_bias_pads);
-
-	if (CONFIG(ENABLE_TCSS_DISPLAY_DETECTION))
-		tcss_configure_dp_mode(port_map, num_ports);
 }
 
 bool tcss_valid_tbt_auth(void)

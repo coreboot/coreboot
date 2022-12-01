@@ -242,7 +242,7 @@ chip soc/intel/meteorlake
 				register "device_type" = "INTEL_ACPI_CAMERA_CIO2"
 
 				register "cio2_num_ports" = "2"
-				register "cio2_lanes_used" = "{2,2}" # 2 CSI Camera lanes are used
+				register "cio2_lanes_used" = "{4,2}" # 4 and 2 CSI Camera lanes are used
 				register "cio2_lane_endpoint[0]" = ""^I2C0.CAM0""
 				register "cio2_lane_endpoint[1]" = ""^I2C5.CAM1""
 				register "cio2_prt[0]" = "4"
@@ -270,19 +270,18 @@ chip soc/intel/meteorlake
 				end
 			end
 			chip drivers/intel/mipi_camera
-				register "acpi_hid" = ""OVTI8856""
+				register "acpi_hid" = ""OVTIDB10""
 				register "acpi_uid" = "0"
 				register "acpi_name" = ""CAM0""
-				register "chip_name" = ""Ov 8856 Camera""
+				register "chip_name" = ""Ov 13b10 Camera""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 
-				register "ssdb.lanes_used" = "2"
+				register "ssdb.lanes_used" = "4"
 				register "ssdb.link_used" = "0"
 				register "ssdb.vcm_type" = "0x0C"
 				register "vcm_name" = ""VCM0""
-				register "num_freq_entries" = "2"
-				register "link_freq[0]" = "720 * MHz" # 720 MHz
-				register "link_freq[1]" = "360 * MHz" # 360 MHz
+				register "num_freq_entries" = "1"
+				register "link_freq[0]" = "560 * MHz" # 560 MHz
 				register "remote_name" = ""IPU0""
 
 				register "has_power_resource" = "1"
@@ -309,7 +308,7 @@ chip soc/intel/meteorlake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 10 on
+				device i2c 36 on
 					probe WFC WFC_MIPI
 				end
 			end

@@ -450,7 +450,9 @@ chip soc/intel/meteorlake
 				register "srcclk_pin" = "3"
 				register "ext_pm_support" = "ACPI_PCIE_RP_EMIT_ALL"
 				register "skip_on_off_support" = "true"
-				device generic 0 alias rp6_rtd3 on end
+				device generic 0 alias rp6_rtd3 on
+					probe CELLULAR CELLULAR_PCIE
+				end
 			end
 			chip drivers/wwan/fm
 				register "fcpo_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E07)"
@@ -459,7 +461,9 @@ chip soc/intel/meteorlake
 				register "wake_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F10)"
 				register "add_acpi_dma_property" = "true"
 				use rp6_rtd3 as rtd3dev
-				device generic 0 on end
+				device generic 0 alias rp6_wwan on
+					probe CELLULAR CELLULAR_PCIE
+				end
 			end
 		end	#PCIE6 WWAN card
 		device ref pcie_rp7 on

@@ -173,6 +173,18 @@ static void graphics_dev_read_resources(struct device *dev)
 		if (res_bar0->flags & IORESOURCE_PREFETCH)
 			res_bar0->flags &= ~IORESOURCE_PREFETCH;
 	}
+
+	/*
+	 * If libhwbase static MMIO driver is used, IGD BAR 0 has to be set to
+	 * CONFIG_GFX_GMA_DEFAULT_MMIO for the libgfxinit to operate properly.
+	 */
+	if (CONFIG(MAINBOARD_USE_LIBGFXINIT) && CONFIG(HWBASE_STATIC_MMIO)) {
+		struct resource *res_bar0 = find_resource(dev, PCI_BASE_ADDRESS_0);
+		res_bar0->base = CONFIG_GFX_GMA_DEFAULT_MMIO;
+		res_bar0->flags |= IORESOURCE_ASSIGNED;
+		pci_dev_set_resources(dev);
+		res_bar0->flags |= IORESOURCE_FIXED;
+	}
 }
 
 const struct device_operations graphics_ops = {

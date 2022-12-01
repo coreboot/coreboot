@@ -4,7 +4,7 @@ menu "Devices"
 
 config HAVE_VGA_TEXT_FRAMEBUFFER
 	bool
-	depends on !NO_GFX_INIT
+	depends on !(NO_GFX_INIT && NO_EARLY_GFX_INIT)
 	help
 	  Selected by graphics drivers that support legacy VGA text mode.
 
@@ -57,6 +57,13 @@ config MAINBOARD_HAS_LIBGFXINIT
 	help
 	  Selected by mainboards that implement support for `libgfxinit`.
 	  Usually this requires a list of ports to be probed for displays.
+
+config MAINBOARD_HAS_EARLY_LIBGFXINIT
+	def_bool n
+	help
+	  Selected by mainboards that implement early (cache-as-ram
+	  stage) support of `libgfxinit`. Usually this requires a list
+	  of ports to be probed for displays.
 
 choice
 	prompt "Graphics initialization"
@@ -114,6 +121,28 @@ config NO_GFX_INIT
 	  Select this to not perform any graphics initialization in
 	  coreboot. This is useful if the payload (e.g. SeaBIOS) can
 	  initialize graphics or if pre-boot graphics are not required.
+
+endchoice
+
+choice
+	prompt "Early (romstage) graphics initialization"
+	default MAINBOARD_USE_EARLY_LIBGFXINIT if MAINBOARD_HAS_EARLY_LIBGFXINIT
+	default NO_EARLY_GFX_INIT
+
+config NO_EARLY_GFX_INIT
+	bool "None"
+	help
+	  Select this to not perform any graphics initialization at
+	  romstage.
+
+config MAINBOARD_USE_EARLY_LIBGFXINIT
+	bool "Use libgfxinit"
+	depends on MAINBOARD_HAS_EARLY_LIBGFXINIT
+	select ROMSTAGE_VGA
+	help
+	  Use the SPARK library `libgfxinit` for the romstage native
+	  graphics initialization. This requires an Ada
+	  toolchain. Graphics at romstage is limited to VGA text mode.
 
 endchoice
 

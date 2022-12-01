@@ -20,24 +20,39 @@ endif
 
 $(call add_vbt_to_cbfs, vbt.bin, $(call strip_quotes,$(CONFIG_INTEL_GMA_VBT_FILE)))
 
-ifeq ($(CONFIG_GFX_GMA),y)
+ifneq (,$(filter y, $(CONFIG_GFX_GMA) $(CONFIG_EARLY_GFX_GMA)))
+
+gfx-gma-stages = \
+	$(if $(filter y,$(CONFIG_EARLY_GFX_GMA)),romstage) \
+	$(if $(filter y,$(CONFIG_GFX_GMA)),ramstage) \
 
 $(call add-special-class,gfxinit)
-gfxinit-handler = $(eval ramstage-srcs += $(1)$(2))
+gfxinit-handler +=$(foreach stage, $(gfx-gma-stages), \
+	$(eval $(stage)-srcs += $$(addprefix $(1),$(2))))
 
 $(call add-special-class,gfxinit-gen)
-gfxinit-gen-handler = \
+gfxinit-gen-handler += \
 	$(eval additional-dirs += $(dir $(2))) \
-	$(eval ramstage-srcs += $(2)) \
-	$(eval ramstage-ads-deps += $(2)) \
-	$(eval ramstage-adb-deps += $(2)) \
+	$(foreach stage, $(gfx-gma-stages), \
+		$(eval $(stage)-srcs += $(2)) \
+		$(eval $(stage)-ads-deps += $(2)) \
+		$(eval $(stage)-adb-deps += $(2))) \
 	$(eval $(2): $(obj)/config.h)
 
+ifeq ($(CONFIG_GFX_GMA_DEFAULT_MMIO),)
 CONFIG_GFX_GMA_DEFAULT_MMIO := 0 # dummy, will be overwritten at runtime
+else
+$(call to-ada-hex,CONFIG_GFX_GMA_DEFAULT_MMIO)
+endif
 
 subdirs-y += ../../../../3rdparty/libgfxinit
 
-ramstage-y += gma.ads gma.adb
+$(foreach stage,$(gfx-gma-stages), \
+	$(eval $(stage)-y += gma.ads gma.adb))
+
+endif # CONFIG_GFX_GMA || CONFIG_EARLY_GFX_GMA
+
+ifeq ($(CONFIG_GFX_GMA),y)
 
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-gfx_init.ads
 ifeq ($(CONFIG_LINEAR_FRAMEBUFFER),y)
@@ -47,3 +62,11 @@ ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += text_fb/gma-gfx_init.adb
 endif
 
 endif # CONFIG_GFX_GMA
+
+ifeq ($(CONFIG_EARLY_GFX_GMA),y)
+
+romstage-$(CONFIG_MAINBOARD_USE_EARLY_LIBGFXINIT) += \
+	gma-gfx_init.ads \
+	text_fb/gma-gfx_init.adb
+
+endif # CONFIG_EARLY_GFX_GMA

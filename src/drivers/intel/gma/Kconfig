@@ -90,15 +90,31 @@ config GFX_GMA
 	depends on MAINBOARD_USE_LIBGFXINIT || INTEL_GMA_LIBGFXINIT_EDID
 	select RAMSTAGE_LIBHWBASE
 
+config EARLY_GFX_GMA
+	def_bool y
+	depends on SOC_INTEL_ALDERLAKE
+	depends on MAINBOARD_USE_EARLY_LIBGFXINIT
+	select ROMSTAGE_LIBHWBASE
+
+config GFX_GMA_DEFAULT_MMIO
+	hex
+	depends on HWBASE_STATIC_MMIO && (GFX_GMA || EARLY_GFX_GMA)
+	help
+	  Graphics device MMIO address. This is typically an unused
+	  memory mapping region which can be allocated to the MMIO
+	  region as graphics PCI device Base Address Range zero.
+
 config GFX_GMA_PANEL_1_ON_EDP
 	bool
-	depends on GFX_GMA || MAINBOARD_HAS_LIBGFXINIT
+	depends on GFX_GMA || MAINBOARD_HAS_LIBGFXINIT \
+		|| MAINBOARD_HAS_EARLY_LIBGFXINIT
 	default n if GFX_GMA_PANEL_1_ON_LVDS
 	default y
 
 config GFX_GMA_PANEL_1_ON_LVDS
 	bool
-	depends on GFX_GMA || MAINBOARD_HAS_LIBGFXINIT
+	depends on GFX_GMA || MAINBOARD_HAS_LIBGFXINIT \
+		|| MAINBOARD_HAS_EARLY_LIBGFXINIT
 	default y if NORTHBRIDGE_INTEL_GM45 || NORTHBRIDGE_INTEL_IRONLAKE
 	default n
 
@@ -111,7 +127,7 @@ config INTEL_GMA_OPREGION_2_1
 	bool
 	default n
 
-if GFX_GMA
+if GFX_GMA || EARLY_GFX_GMA
 
 config GFX_GMA_DYN_CPU
 	def_bool y

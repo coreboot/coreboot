@@ -73,6 +73,13 @@
 #if CONFIG(ROMSTAGE_LIBHWBASE)
 	*(.data.hw__*_E)
 #endif
+#if CONFIG(EARLY_GFX_GMA)
+	*(.data.gma*_E)
+	/* libgfxinit uses a boolean variable to track its initialization
+	 * state. Since the initial value is False it can safely be placed in
+	 * the _bss region. */
+	*(.data.hw__gfx__gma__initialized)
+#endif
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_ebss = .;
 	RECORD_SIZE(bss)

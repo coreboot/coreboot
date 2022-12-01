@@ -24,5 +24,4 @@
 #define R_SCS_PCR_1078		0x1078
 
 #define R_PMC_PWRM_LTR_IGN	0x1b0c
-#define PCH_PWRM_BASE_SIZE	0x1e30
 #endif

@@ -316,6 +316,9 @@ $(eval $(postinclude-hooks))
 $(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))
 
 # Build Kconfig .ads if necessary
+ifeq ($(CONFIG_ROMSTAGE_ADA),y)
+romstage-srcs += $(obj)/romstage/$(notdir $(KCONFIG_AUTOADS))
+endif
 ifeq ($(CONFIG_RAMSTAGE_ADA),y)
 ramstage-srcs += $(obj)/ramstage/$(notdir $(KCONFIG_AUTOADS))
 endif

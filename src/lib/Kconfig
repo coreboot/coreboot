@@ -5,6 +5,11 @@ config MISSING_BOARD_RESET
 	  implementation. This activates a stub that logs the missing
 	  board reset and halts execution.
 
+config ROMSTAGE_ADA
+	bool
+	help
+	  Selected by features that use Ada code in romstage.
+
 config RAMSTAGE_ADA
 	bool
 	help

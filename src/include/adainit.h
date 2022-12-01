@@ -15,6 +15,12 @@
  * lizations automatically. When not, we have to call it explicitly.
  */
 
+#if CONFIG(ROMSTAGE_ADA)
+void romstage_adainit(void);
+#else
+static inline void romstage_adainit(void) {}
+#endif
+
 #if CONFIG(RAMSTAGE_ADA)
 void ramstage_adainit(void);
 #else

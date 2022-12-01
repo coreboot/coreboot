@@ -85,18 +85,14 @@ static void display_startup(void)
 }
 
 /*
- * Determine if board need to perform PCIe initialization.  On Herobrine,
- * resistor strapping will be such that bit 0 will be assigned 2 (high Z) if it
- * is an NVMe enabled platform.
+ * Determine if board need to perform PCIe initialization.  Will return true if
+ * NVMe initialization is needed, or false if it is an eMMC device.  On
+ * Herobrine, if it is an NVMe enabled platform, logical sku_id & 2 will be
+ * true.
  */
 bool mainboard_needs_pcie_init(void)
 {
-	/*
-	 * Mask out everything above the actual SKU bits We have 3 sku pins,
-	 * each tristate, so we can represent numbers up to 27, or 5 bits
-	 */
-	uint32_t sku_bits_mask = 0xff;
-	uint32_t sku = sku_id() & sku_bits_mask;
+	uint32_t sku = sku_id();
 
 	if (sku == CROS_SKU_UNKNOWN) {
 		printk(BIOS_WARNING, "Unknown SKU (%#x); assuming PCIe", sku);
@@ -106,11 +102,7 @@ bool mainboard_needs_pcie_init(void)
 		return true;
 	}
 
-	if ((sku % 3) == 2)
-		return true;
-
-	/* Otherwise, eMMC */
-	return false;
+	return !!(sku & 0x2);
 }
 
 static void mainboard_init(struct device *dev)

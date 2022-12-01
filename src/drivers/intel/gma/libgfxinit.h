@@ -17,6 +17,7 @@ enum {
 };
 
 void gma_gfxinit(int *lightup_ok);
+void gma_gfxstop(int *stop_ok);
 int gma_read_edid(unsigned char edid[], int port);
 
 #endif

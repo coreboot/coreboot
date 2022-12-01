@@ -1,5 +1,6 @@
 config SOC_INTEL_COMMON_BLOCK_GRAPHICS
 	bool
+	select ROMSTAGE_VGA if MAINBOARD_USE_EARLY_LIBGFXINIT
 	help
 	  Intel Processor common Graphics support
 

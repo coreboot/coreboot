@@ -56,4 +56,17 @@ is
       end if;
    end gfxinit;
 
+   procedure gfxstop (stop_ok : out Interfaces.C.int)
+   is
+      success : boolean;
+   begin
+      HW.GFX.GMA.Initialize (Clean_State => True,
+      			     Success => success);
+      if success then
+         stop_ok := 1;
+      else
+         stop_ok := 0;
+      end if;
+   end gfxstop;
+
 end GMA.GFX_Init;

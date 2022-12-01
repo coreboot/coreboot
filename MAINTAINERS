@@ -147,6 +147,7 @@ F:	src/mainboard/amd/birman/
 F:	src/mainboard/amd/chausie/
 F:	src/mainboard/amd/majolica/
 F:	src/mainboard/amd/mandolin/
+F:	src/mainboard/amd/mayan/
 
 AMD reference boards outside of family 17h and 19h
 S:	Odd Fixes

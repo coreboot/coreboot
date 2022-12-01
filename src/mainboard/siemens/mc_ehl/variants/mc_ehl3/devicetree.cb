@@ -43,14 +43,15 @@ chip soc/intel/elkhartlake
 
 	# PCIe root ports related UPDs
 	register "PcieRpEnable[1]" = "1"
-	register "PcieRpEnable[6]" = "1"
+	register "PcieRpEnable[2]" = "1"
+	register "PcieRpEnable[4]" = "1"
 
 	register "PcieClkSrcUsage[0]" = "PCIE_CLK_NOTUSED"
 	register "PcieClkSrcUsage[1]" = "PCIE_CLK_FREE"
-	register "PcieClkSrcUsage[2]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[2]" = "PCIE_CLK_FREE"
 	register "PcieClkSrcUsage[3]" = "PCIE_CLK_NOTUSED"
-	register "PcieClkSrcUsage[4]" = "PCIE_CLK_FREE"
-	register "PcieClkSrcUsage[5]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[4]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcUsage[5]" = "PCIE_CLK_FREE"
 
 	register "PcieClkSrcClkReq[0]" = "PCIE_CLK_NOTUSED"
 	register "PcieClkSrcClkReq[1]" = "PCIE_CLK_NOTUSED"
@@ -61,11 +62,13 @@ chip soc/intel/elkhartlake
 
 	# Disable all L1 substates for PCIe root ports
 	register "PcieRpL1Substates[1]" = "L1_SS_DISABLED"
-	register "PcieRpL1Substates[6]" = "L1_SS_DISABLED"
+	register "PcieRpL1Substates[2]" = "L1_SS_DISABLED"
+	register "PcieRpL1Substates[4]" = "L1_SS_DISABLED"
 
 	# Disable LTR for all PCIe root ports
 	register "PcieRpLtrDisable[1]" = "true"
-	register "PcieRpLtrDisable[6]" = "true"
+	register "PcieRpLtrDisable[2]" = "true"
+	register "PcieRpLtrDisable[4]" = "true"
 
 	# Storage (SDCARD/EMMC) related UPDs
 	register "ScsEmmcHs400Enabled" = "0"
@@ -178,8 +181,9 @@ chip soc/intel/elkhartlake
 		device pci 1a.0 on	end # eMMC
 		device pci 1a.1 on	end # SD
 
-		device pci 1c.1 on	end # RP2 (pcie0 single VC)
-		device pci 1c.6 on	end # RP7 (pcie3 multi VC)
+		device pci 1c.1 on	end # RP2
+		device pci 1c.2 on	end # RP3
+		device pci 1c.4 on	end # RP5
 
 		device pci 1d.0 off	end # Intel PSE IPC (local host to PSE)
 		device pci 1d.1 on	    # Intel PSE Time-Sensitive Networking GbE 0

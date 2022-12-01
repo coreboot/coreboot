@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/auxadc.h>
+#include "panel.h"
 
 /* board_id is provided by ec/google/chromeec/ec_boardid.c */
 
@@ -16,6 +17,8 @@ enum {
 	RAM_ID_HIGH_CHANNEL = 3,
 	/* SKU ID */
 	SKU_ID_CHANNEL = 4,
+	/* PANEL ID */
+	PANEL_ID_CHANNEL = 5,
 };
 
 static const unsigned int ram_voltages[ADC_LEVELS] = {
@@ -34,10 +37,27 @@ static const unsigned int ram_voltages[ADC_LEVELS] = {
 	[11] = 1342600,
 };
 
+static const unsigned int panel_voltages[ADC_LEVELS] = {
+	/* ID : Voltage (unit: uV) */
+	[0]  =       0,
+	[1]  =  283000,
+	[2]  =  394000,
+	[3]  =  503000,
+	[4]  =  608000,
+	[5]  =  712000,
+	[6]  =  823000,
+	[7]  =  937000,
+	[8]  = 1046000,
+	[9]  = 1155000,
+	[10] = 1277000,
+	[11] = 1434000,
+};
+
 static const unsigned int *adc_voltages[] = {
 	[RAM_ID_LOW_CHANNEL] = ram_voltages,
 	[RAM_ID_HIGH_CHANNEL] = ram_voltages,
 	[SKU_ID_CHANNEL] = ram_voltages,
+	[PANEL_ID_CHANNEL] = panel_voltages,
 };
 
 static uint32_t get_adc_index(unsigned int channel)
@@ -56,6 +76,17 @@ static uint32_t get_adc_index(unsigned int channel)
 
 	printk(BIOS_DEBUG, "ADC[%u]: Raw value=%u ID=%u\n", channel, value, id);
 	return id;
+}
+
+/* Returns the ID for LCD module (type of panel). */
+uint32_t panel_id(void)
+{
+	static uint32_t cached_panel_id = BOARD_ID_INIT;
+
+	if (cached_panel_id == BOARD_ID_INIT)
+		cached_panel_id = get_adc_index(PANEL_ID_CHANNEL);
+
+	return cached_panel_id;
 }
 
 uint32_t sku_id(void)

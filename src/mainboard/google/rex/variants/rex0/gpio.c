@@ -14,7 +14,7 @@
 #include <boardid.h>
 
 /* Pad configuration in ramstage */
-static const struct pad_config gpio_table_id0[] = {
+static const struct pad_config gpio_table[] = {
 	/* GPP_A00 : GPP_A00 ==> ESPI_SOC_IO0_R configured on reset, do not touch */
 	/* GPP_A01 : GPP_A01 ==> ESPI_SOC_IO1_R configured on reset, do not touch */
 	/* GPP_A02 : GPP_A02 ==> ESPI_SOC_IO2_R configured on reset, do not touch */
@@ -382,7 +382,7 @@ static const struct pad_config gpio_table_id0[] = {
 };
 
 /* Early pad configuration in bootblock */
-static const struct pad_config early_gpio_table_id0[] = {
+static const struct pad_config early_gpio_table[] = {
 	/* GPP_B17 : [] ==> EN_WWAN_PWR */
 	PAD_CFG_GPO(GPP_B17, 1, DEEP),
 	/* GPP_B18 : [] ==> SOC_I2C_TPM_SDA */
@@ -416,22 +416,7 @@ static const struct pad_config early_gpio_table_id0[] = {
 	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_H10, NONE, LOCK_CONFIG),
 };
 
-/* Default/Minimal early pad configuration if we can't find board_id */
-static const struct pad_config default_early_gpio_table[] = {
-	/* GPP_B18 : [] ==> SOC_I2C_TPM_SDA */
-	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF2),
-	/* GPP_B19 : [] ==> SOC_I2C_TPM_SCL */
-	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF2),
-	/* GPP_E03 : [] ==> GSC_SOC_INT_ODL */
-	PAD_CFG_GPI_APIC(GPP_E03, NONE, PLTRST, LEVEL, INVERT),
-
-	/* GPP_H08 : [] ==> UART_DBG_TX_SOC_RX_R */
-	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
-	/* GPP_H09 : [] ==> UART_SOC_TX_DBG_RX_R */
-	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),
-};
-
-static const struct pad_config romstage_gpio_table_id0[] = {
+static const struct pad_config romstage_gpio_table[] = {
 	/* GPP_B11 : [] ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_B11, 0, DEEP),
 	/* A20 : [] ==> SSD_PERST_L */
@@ -444,52 +429,21 @@ static const struct pad_config romstage_gpio_table_id0[] = {
 
 const struct pad_config *variant_gpio_table(size_t *num)
 {
-	const uint32_t id = board_id();
-	switch (id) {
-	case 0:
-		*num = ARRAY_SIZE(gpio_table_id0);
-		return gpio_table_id0;
-
-	case BOARD_ID_UNKNOWN:
-	default:
-		printk(BIOS_ERR, "board_id() not found.  Unable to load gpio table.\n");
-		*num = 0;
-		return NULL;
-	}
+	*num = ARRAY_SIZE(gpio_table);
+	return gpio_table;
 }
 
 const struct pad_config *variant_early_gpio_table(size_t *num)
 {
-	const uint32_t id = board_id();
-	switch (id) {
-	case 0:
-		*num = ARRAY_SIZE(early_gpio_table_id0);
-		return early_gpio_table_id0;
-
-	case BOARD_ID_UNKNOWN:
-	default:
-		printk(BIOS_ERR, "board_id() not found.  Loading default early gpio table.\n");
-		*num = ARRAY_SIZE(default_early_gpio_table);
-		return default_early_gpio_table;
-	}
+	*num = ARRAY_SIZE(early_gpio_table);
+	return early_gpio_table;
 }
 
 /* Create the stub for romstage gpio, typically use for power sequence */
 const struct pad_config *variant_romstage_gpio_table(size_t *num)
 {
-	const uint32_t id = board_id();
-	switch (id) {
-	case 0:
-		*num = ARRAY_SIZE(romstage_gpio_table_id0);
-		return romstage_gpio_table_id0;
-
-	case BOARD_ID_UNKNOWN:
-	default:
-		printk(BIOS_ERR,
-		       "board_id() not found.  Unable to load romstage gpio table.\n");
-		*num = 0;
-		return NULL;
-	}
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }
 
 static const struct cros_gpio cros_gpios[] = {

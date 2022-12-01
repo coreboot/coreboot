@@ -4,6 +4,7 @@
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <ec/ec.h>
+#include <fw_config.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 static void mainboard_init(void *chip_info)
@@ -19,9 +20,20 @@ static void mainboard_fill_ssdt(const struct device *dev)
 	/* TODO: Add mainboard-specific SSDT entries */
 }
 
+static void add_fw_config_oem_string(const struct fw_config *config, void *arg)
+{
+	struct smbios_type11 *t;
+	char buffer[64];
+
+	t = (struct smbios_type11 *)arg;
+
+	snprintf(buffer, sizeof(buffer), "%s-%s", config->field_name, config->option_name);
+	t->count = smbios_add_string(t->eos, buffer);
+}
+
 static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t)
 {
-	/* TODO: Add mainboard-smbios entries */
+	fw_config_for_each_found(add_fw_config_oem_string, t);
 }
 
 static void mainboard_dev_init(struct device *dev)

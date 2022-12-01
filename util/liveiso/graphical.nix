@@ -53,7 +53,7 @@
 			gnome-online-accounts.enable = lib.mkForce false;
 			gnome-online-miners.enable = lib.mkForce false;
 			gnome-initial-setup.enable = lib.mkForce false;
-			chrome-gnome-shell.enable = lib.mkForce false;
+			gnome-browser-connector.enable = lib.mkForce false;
 		};
 		telepathy.enable = lib.mkForce false;
 		dleyna-renderer.enable = lib.mkForce false;

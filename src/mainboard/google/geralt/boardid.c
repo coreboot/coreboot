@@ -14,9 +14,8 @@ enum {
 	/* RAM IDs */
 	RAM_ID_LOW_CHANNEL = 2,
 	RAM_ID_HIGH_CHANNEL = 3,
-	/* SKU IDs */
-	SKU_ID_LOW_CHANNEL = 4,
-	SKU_ID_HIGH_CHANNEL = 5,
+	/* SKU ID */
+	SKU_ID_CHANNEL = 4,
 };
 
 static const unsigned int ram_voltages[ADC_LEVELS] = {
@@ -38,8 +37,7 @@ static const unsigned int ram_voltages[ADC_LEVELS] = {
 static const unsigned int *adc_voltages[] = {
 	[RAM_ID_LOW_CHANNEL] = ram_voltages,
 	[RAM_ID_HIGH_CHANNEL] = ram_voltages,
-	[SKU_ID_LOW_CHANNEL] = ram_voltages,
-	[SKU_ID_HIGH_CHANNEL] = ram_voltages,
+	[SKU_ID_CHANNEL] = ram_voltages,
 };
 
 static uint32_t get_adc_index(unsigned int channel)
@@ -69,8 +67,7 @@ uint32_t sku_id(void)
 
 		if (cached_sku_code == CROS_SKU_UNKNOWN) {
 			printk(BIOS_WARNING, "Failed to get SKU code from EC\n");
-			cached_sku_code = (get_adc_index(SKU_ID_HIGH_CHANNEL) << 4 |
-					   get_adc_index(SKU_ID_LOW_CHANNEL));
+			cached_sku_code = get_adc_index(SKU_ID_CHANNEL);
 		}
 		printk(BIOS_DEBUG, "SKU Code: %#02x\n", cached_sku_code);
 	}

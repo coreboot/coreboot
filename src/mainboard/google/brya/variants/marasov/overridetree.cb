@@ -64,7 +64,12 @@ chip soc/intel/alderlake
 		.vnn_sx_voltage_mv = 1250,
 	}"
 	register "serial_io_i2c_mode" = "{
+		[PchSerialIoIndexI2C0] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoPci,
 		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3] = PchSerialIoPci,
+		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C0

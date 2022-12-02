@@ -8,7 +8,6 @@
 #include <ec/google/chromeec/smm.h>
 #include "ec.h"
 
-#include <soc/nvs.h>
 #include <soc/pm.h>
 
 /* The wake gpio is SUS_GPIO[0]. */
@@ -25,28 +24,16 @@ void mainboard_smi_gpi(uint32_t alt_gpio_smi)
 void mainboard_smi_sleep(uint8_t slp_typ)
 {
 	/* Disable USB charging if required */
+	chromeec_set_usb_charge_mode(slp_typ);
+
 	switch (slp_typ) {
 	case ACPI_S3:
-		if (gnvs->s3u0 == 0)
-			google_chromeec_set_usb_charge_mode(
-				0, USB_CHARGE_MODE_DISABLED);
-		if (gnvs->s3u1 == 0)
-			google_chromeec_set_usb_charge_mode(
-				1, USB_CHARGE_MODE_DISABLED);
-
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 		/* Enable wake pin in GPE block. */
 		enable_gpe(WAKE_GPIO_EN);
 		break;
 	case ACPI_S5:
-		if (gnvs->s5u0 == 0)
-			google_chromeec_set_usb_charge_mode(
-				0, USB_CHARGE_MODE_DISABLED);
-		if (gnvs->s5u1 == 0)
-			google_chromeec_set_usb_charge_mode(
-				1, USB_CHARGE_MODE_DISABLED);
-
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
 		break;

@@ -8,6 +8,8 @@
 /* Process all events from the EC when EC triggered an SMI#. */
 void chromeec_smi_process_events(void);
 
+void chromeec_set_usb_charge_mode(int slp_type);
+
 /*
  * Set wake masks according to sleep type, clear SCI and SMI masks,
  * and clear any pending events.

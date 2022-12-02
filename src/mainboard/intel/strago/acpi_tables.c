@@ -11,10 +11,6 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 	gnvs->s3u0 = 1;
 	gnvs->s3u1 = 1;
 
-	/* Disable USB ports in S5 */
-	gnvs->s5u0 = 0;
-	gnvs->s5u1 = 0;
-
 	/* PMIC is configured in I2C1, hidden it from OS */
 	struct device_nvs *dev_nvs = acpi_get_device_nvs();
 	dev_nvs->lpss_en[LPSS_NVS_I2C2] = 0;

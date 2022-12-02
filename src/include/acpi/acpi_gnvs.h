@@ -18,6 +18,9 @@ static inline void *acpi_get_gnvs(void) { return NULL; }
 static inline int acpi_reset_gnvs_for_wake(struct global_nvs **gnvs) { return -1; }
 #endif
 
+/* Return GNVS fields for USB0/1 disablement for S3/S4/S5 sleep states. */
+void usb_charge_mode_from_gnvs(uint8_t slp_typ, bool *usb0_disable, bool *usb1_disable);
+
 /*
  * These functions populate the gnvs structure in acpi table.
  * Defined as weak in common acpi as gnvs structure definition is

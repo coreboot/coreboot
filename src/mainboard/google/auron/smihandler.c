@@ -8,7 +8,6 @@
 #include <ec/google/chromeec/smm.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <soc/iomap.h>
-#include <soc/nvs.h>
 #include "ec.h"
 #include <variant/onboard.h>
 
@@ -36,28 +35,17 @@ static void mainboard_disable_gpios(void)
 void mainboard_smi_sleep(u8 slp_typ)
 {
 	/* Disable USB charging if required */
+	/* NOTE: Setting of usb0 _may_ also control usb1 here. */
+	chromeec_set_usb_charge_mode(slp_typ);
+
 	switch (slp_typ) {
 	case ACPI_S3:
-		if (gnvs->s3u0 == 0) {
-			google_chromeec_set_usb_charge_mode(
-				0, USB_CHARGE_MODE_DISABLED);
-			google_chromeec_set_usb_charge_mode(
-				1, USB_CHARGE_MODE_DISABLED);
-		}
-
 		mainboard_disable_gpios();
 
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 		break;
 	case ACPI_S5:
-		if (gnvs->s5u0 == 0) {
-			google_chromeec_set_usb_charge_mode(
-				0, USB_CHARGE_MODE_DISABLED);
-			google_chromeec_set_usb_charge_mode(
-				1, USB_CHARGE_MODE_DISABLED);
-		}
-
 		mainboard_disable_gpios();
 
 		/* Enable wake events */

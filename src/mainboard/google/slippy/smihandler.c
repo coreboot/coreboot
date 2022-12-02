@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <soc/nvs.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/lynxpoint/me.h>
@@ -31,15 +30,10 @@ void mainboard_smi_gpi(u32 gpi_sts)
 void mainboard_smi_sleep(u8 slp_typ)
 {
 	/* Disable USB charging if required */
+	chromeec_set_usb_charge_mode(slp_typ);
+
 	switch (slp_typ) {
 	case ACPI_S3:
-		if (gnvs->s3u0 == 0)
-			google_chromeec_set_usb_charge_mode(
-				0, USB_CHARGE_MODE_DISABLED);
-		if (gnvs->s3u1 == 0)
-			google_chromeec_set_usb_charge_mode(
-				1, USB_CHARGE_MODE_DISABLED);
-
 		/* Prevent leak from standby rail to WLAN rail in S3. */
 		set_gpio(GPIO_WLAN_DISABLE_L, 0);
 		set_gpio(GPIO_PP3300_CODEC_EN, 0);
@@ -51,13 +45,6 @@ void mainboard_smi_sleep(u8 slp_typ)
 		break;
 	case ACPI_S4:
 	case ACPI_S5:
-		if (gnvs->s5u0 == 0)
-			google_chromeec_set_usb_charge_mode(
-				0, USB_CHARGE_MODE_DISABLED);
-		if (gnvs->s5u1 == 0)
-			google_chromeec_set_usb_charge_mode(
-				1, USB_CHARGE_MODE_DISABLED);
-
 		/* Prevent leak from standby rail to WLAN rail in S5. */
 		set_gpio(GPIO_WLAN_DISABLE_L, 0);
 		set_gpio(GPIO_PP3300_CODEC_EN, 0);

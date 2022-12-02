@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_gnvs.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <halt.h>
-#include <soc/nvs.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
 #include <southbridge/intel/common/pmutil.h>
@@ -48,6 +48,8 @@ void mainboard_smi_gpi(u32 gpi_sts)
 
 void mainboard_smi_sleep(u8 slp_typ)
 {
+	bool usb0_disable = 0, usb1_disable = 0;
+
 	/* Disable SCI and SMI events */
 
 	/* Clear pending events that may trigger immediate wake */
@@ -55,7 +57,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 	/* Enable wake events */
 
 	/* Tell the EC to Disable USB power */
-	if (gnvs->s3u0 == 0 && gnvs->s3u1 == 0) {
+	usb_charge_mode_from_gnvs(3, &usb0_disable, &usb1_disable);
+	if (usb0_disable && usb1_disable) {
 		ec_kbc_write_cmd(0x45);
 		ec_kbc_write_ib(0xF2);
 	}

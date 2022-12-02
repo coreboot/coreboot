@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_gnvs.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
@@ -38,6 +39,8 @@ void mainboard_smi_gpi(u32 gpi_sts)
 
 void mainboard_smi_sleep(u8 slp_typ)
 {
+	bool usb0_disable = 0, usb1_disable = 0;
+
 	/*
 	 * Tell the EC to Enable USB power for S3 if requested.
 	 * Bit0 of 0x0D/Bit0 of 0x26
@@ -47,7 +50,9 @@ void mainboard_smi_sleep(u8 slp_typ)
 	 *             charge smart phone.
 	 * 1/1 USB on, yellow port in AUTO mode and didn't support wake up system.
 	 */
-	if (gnvs->s3u0 != 0 || gnvs->s3u1 != 0) {
+	usb_charge_mode_from_gnvs(3, &usb0_disable, &usb1_disable);
+
+	if (!usb0_disable || !usb1_disable) {
 		ec_write(EC_PERIPH_CNTL_3, ec_read(EC_PERIPH_CNTL_3) | 0x00);
 		ec_write(EC_USB_S3_EN, ec_read(EC_USB_S3_EN) | 0x01);
 		printk(BIOS_DEBUG, "USB wake from S3 enabled.\n");

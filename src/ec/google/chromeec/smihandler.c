@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/ec.h>
@@ -43,6 +44,19 @@ static void clear_pending_events(void)
 	printk(BIOS_DEBUG, "Clearing pending EC events. Error code EC_RES_UNAVAILABLE(9) is expected.\n");
 	while (google_chromeec_get_mkbp_event(&mkbp_event) == 0)
 		;
+}
+
+void chromeec_set_usb_charge_mode(int slp_type)
+{
+	bool usb0_disable = 0, usb1_disable = 0;
+
+	usb_charge_mode_from_gnvs(slp_type, &usb0_disable, &usb1_disable);
+
+	if (usb0_disable)
+		google_chromeec_set_usb_charge_mode(0, USB_CHARGE_MODE_DISABLED);
+
+	if (usb1_disable)
+		google_chromeec_set_usb_charge_mode(1, USB_CHARGE_MODE_DISABLED);
 }
 
 void chromeec_smi_sleep(int slp_type, uint64_t s3_mask, uint64_t s5_mask)

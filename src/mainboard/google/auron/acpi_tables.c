@@ -10,9 +10,7 @@ void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
 	/* Enable USB ports in S3 */
 	gnvs->s3u0 = 1;
-
-	/* Disable USB ports in S5 */
-	gnvs->s5u0 = 0;
+	gnvs->s3u1 = gnvs->s3u0;
 
 	gnvs->tmps = CTL_TDP_SENSOR_ID;
 	gnvs->tcrt = CRITICAL_TEMPERATURE;

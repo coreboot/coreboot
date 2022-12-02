@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_gnvs.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <soc/nvs.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
@@ -13,8 +13,11 @@
 
 void mainboard_smi_sleep(u8 slp_typ)
 {
+	bool usb0_disable = 0, usb1_disable = 0;
+
 	/* Tell the EC to Enable USB power for S3 if requested */
-	if (gnvs->s3u0 != 0 || gnvs->s3u1 != 0)
+	usb_charge_mode_from_gnvs(3, &usb0_disable, &usb1_disable);
+	if (!usb0_disable || !usb1_disable)
 		ec_mem_write(EC_EC_PSW, ec_mem_read(EC_EC_PSW) | EC_PSW_USB);
 
 	/* Disable wake on USB, LAN & RTC */

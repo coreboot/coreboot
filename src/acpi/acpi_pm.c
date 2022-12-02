@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_gnvs.h>
 #include <acpi/acpi_pm.h>
 #include <assert.h>
 #include <cbmem.h>
@@ -59,3 +60,29 @@ int acpi_fetch_pm_state(const struct chipset_power_state **ps,
 	}
 	return 0;
 }
+
+/* Not every <soc/nvs.h> exists and has required fields. */
+#if CONFIG(ACPI_GNVS_USB_CHARGECTL) && ENV_SMM
+
+#include <cpu/x86/smm.h>
+#include <soc/nvs.h>
+
+void usb_charge_mode_from_gnvs(uint8_t slp_typ, bool *usb0_disable, bool *usb1_disable)
+{
+	if (!gnvs)
+		return;
+
+	switch (slp_typ) {
+	case ACPI_S3:
+		*usb0_disable = (gnvs->s3u0 == 0);
+		*usb1_disable = (gnvs->s3u1 == 0);
+		break;
+	case ACPI_S4:
+	case ACPI_S5:
+		*usb0_disable = (gnvs->s5u0 == 0);
+		*usb1_disable = (gnvs->s5u1 == 0);
+		break;
+	}
+}
+
+#endif /* CONFIG(ACPI_GNVS_USB_CHARGECTL) */

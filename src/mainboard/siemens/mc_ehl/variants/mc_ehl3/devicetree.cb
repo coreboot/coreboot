@@ -163,7 +163,11 @@ chip soc/intel/elkhartlake
 			end
 		end
 		device pci 15.2 on	    # I2C2
-		# Add dummy I2C device to limit BUS speed to 100 kHz in OS
+			# Enable external display bridge (eDP to LVDS)
+			chip drivers/i2c/ptn3460
+				device i2c 0x20 on end  # PTN3460 DP2LVDS Bridge
+			end
+			# Add dummy I2C device to limit BUS speed to 100 kHz in OS
 			chip drivers/i2c/generic
 				register "hid" = ""PRP0001""
 				register "speed" = "I2C_SPEED_STANDARD"

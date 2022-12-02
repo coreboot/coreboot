@@ -43,11 +43,6 @@ static void hudson_apmc_smi_handler(void)
 	mainboard_smi_apmc(cmd);
 }
 
-int southbridge_io_trap_handler(int smif)
-{
-	return 0;
-}
-
 static void process_smi_sci(void)
 {
 	const uint32_t status = smi_read32(0x10);

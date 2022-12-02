@@ -105,11 +105,6 @@ static void fch_slp_typ_handler(void)
 	}
 }
 
-int southbridge_io_trap_handler(int smif)
-{
-	return 0;
-}
-
 /*
  * Table of functions supported in the SMI handler.  Note that SMI source setup
  * in fch.c is unrelated to this list.

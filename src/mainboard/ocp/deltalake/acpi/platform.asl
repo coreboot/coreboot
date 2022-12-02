@@ -23,16 +23,6 @@ Field (APMP, ByteAcc, NoLock, Preserve)
 
 #include <arch/x86/acpi/post.asl>
 
-/* IO-Trap at 0x800.
- * This is the ACPI->SMI communication interface.
- */
-OperationRegion (IO_T, SystemIO, 0x800, 0x10)
-Field (IO_T, ByteAcc, NoLock, Preserve)
-{
-	Offset (0x8),
-	TRP0, 8		/* IO-Trap at 0x808 */
-}
-
 OperationRegion (PSYS, SystemMemory, 0x6D081000, 0x0400)
 Field (PSYS, ByteAcc, NoLock, Preserve)
 {
@@ -318,14 +308,6 @@ Field (PSYS, ByteAcc, NoLock, Preserve)
 	FKB5,   8,
 	FKB6,   8,
 	FKB7,   8
-}
-
-/* SMI I/O Trap */
-Method (TRAP, 1, Serialized)
-{
-	SMIF = Arg0	// SMI Function
-	TRP0 = 0	// Generate trap
-	Return (SMIF)	// Return value of SMI handler
 }
 
 /*

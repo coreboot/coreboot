@@ -4,15 +4,6 @@
 
 Scope(\)
 {
-	// IO-Trap at 0x800. This is the ACPI->SMI communication interface.
-
-	OperationRegion(IO_T, SystemIO, 0x800, 0x10)
-	Field(IO_T, ByteAcc, NoLock, Preserve)
-	{
-		Offset(0x8),
-		TRP0, 8		// IO-Trap at 0x808
-	}
-
 	// Private Chipset Register(PCR). Memory Mapped through ILB
 	OperationRegion(PCRR, SystemMemory, DEFAULT_PCR_BASE, 0x01000000)
 	Field(PCRR, DWordAcc, Lock, Preserve)

@@ -9,14 +9,6 @@
 
 Scope (\)
 {
-	// IO-Trap at 0x800. This is the ACPI->SMI communication interface.
-	OperationRegion (IO_T, SystemIO, 0x800, 0x10)
-	Field (IO_T, ByteAcc, NoLock, Preserve)
-	{
-		Offset (0x8),
-		TRP0, 8		// IO-Trap at 0x808
-	}
-
 	// Root Complex Register Block
 	OperationRegion (RCRB, SystemMemory, CONFIG_FIXED_RCBA_MMIO_BASE, CONFIG_RCBA_LENGTH)
 	Field (RCRB, DWordAcc, Lock, Preserve)

@@ -122,9 +122,6 @@ Scope(\_SB)
 			TRAP(0x3d)
 		}
 
-		/* SMM power state and C4-on-C3 settings need to be updated */
-		// TRAP(43)
-
 		/* OS Init */
 		TRAP(0x32)
 	}

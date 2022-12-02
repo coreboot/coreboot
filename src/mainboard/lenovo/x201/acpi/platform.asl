@@ -35,13 +35,6 @@ Scope(\_SB)
 	 */
 	Method(_INI, 0)
 	{
-		/* The DTS data in NVS is probably not up to date.
-		 * Update temperature values and make sure AP thermal
-		 * interrupts can happen
-		 */
-
-		/* TRAP(71) */ /* TODO */
-
 		/* Determine the Operating System and save the value in OSYS.
 		 * We have to do this in order to be able to work around
 		 * certain windows bugs.

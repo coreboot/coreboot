@@ -6,8 +6,6 @@
 
 Method(_PTS,1)
 {
-	// Call a trap so SMI can prepare for Sleep as well.
-	// TRAP(0x55)
 	\_SB.PCI0.LPCB.EC.MUTE(1)
 	\_SB.PCI0.LPCB.EC.USBP(0)
 	\_SB.PCI0.LPCB.EC.RADI(0)
@@ -19,26 +17,6 @@ Method(_WAK,1)
 {
 	/* Wake the HKEY to init BT/WWAN */
 	\_SB.PCI0.LPCB.EC.HKEY.WAKE (Arg0)
-
-	// CPU specific part
-
-	// Notify PCI Express slots in case a card
-	// was inserted while a sleep state was active.
-
-	// Are we going to S3?
-	If (LEqual(Arg0, 3)) {
-		// ..
-	}
-
-	// Are we going to S4?
-	If (LEqual(Arg0, 4)) {
-		// ..
-	}
-
-	// TODO: Windows XP SP2 P-State restore
-
-	// TODO: Return Arg0 as second value if S-Arg0 was entered
-	// before.
 
 	Return(Package(){0,0})
 }
@@ -52,16 +30,6 @@ Scope(\_SB)
 	 */
 	Method(_INI, 0)
 	{
-		/* The DTS data in NVS is probably not up to date.
-		 * Update temperature values and make sure AP thermal
-		 * interrupts can happen
-		 */
-
-		// TRAP(71) // TODO
-
 		\GOS()
-
-		/* SMM power state and C4-on-C3 settings need to be updated */
-		// TRAP(43) // TODO
 	}
 }

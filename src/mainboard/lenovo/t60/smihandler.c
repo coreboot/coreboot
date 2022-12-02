@@ -45,32 +45,42 @@ static void mainboard_smi_brightness_up(void)
 		*(bar+LVTMA_BL_MOD_LEVEL) += 0x10;
 }
 
+static void mainboard_smi_dock_connect(void)
+{
+	/* If there's an legacy I/O module present, we're not
+	 * allowed to connect the Docking LPC Bus, as both Super I/O
+	 * chips are using 0x2e as base address.
+	 */
+	if (legacy_io_present())
+		return;
+
+	if (!dock_connect()) {
+		/* set dock LED to indicate status */
+		ec_write(0x0c, 0x08);
+		ec_write(0x0c, 0x89);
+	} else {
+		/* blink dock LED to indicate failure */
+		ec_write(0x0c, 0xc8);
+		ec_write(0x0c, 0x09);
+	}
+}
+
+static void mainboard_smi_dock_disconnect(void)
+{
+	dock_disconnect();
+	ec_write(0x0c, 0x09);
+	ec_write(0x0c, 0x08);
+}
+
 int mainboard_io_trap_handler(int smif)
 {
 	switch (smif) {
 	case SMI_DOCK_CONNECT:
-		/* If there's an legacy I/O module present, we're not
-		 * allowed to connect the Docking LPC Bus, as both Super I/O
-		 * chips are using 0x2e as base address.
-		 */
-		if (legacy_io_present())
-			break;
-
-		if (!dock_connect()) {
-			/* set dock LED to indicate status */
-			ec_write(0x0c, 0x08);
-			ec_write(0x0c, 0x89);
-		} else {
-			/* blink dock LED to indicate failure */
-			ec_write(0x0c, 0xc8);
-			ec_write(0x0c, 0x09);
-		}
+		mainboard_smi_dock_connect();
 		break;
 
 	case SMI_DOCK_DISCONNECT:
-		dock_disconnect();
-		ec_write(0x0c, 0x09);
-		ec_write(0x0c, 0x08);
+		mainboard_smi_dock_disconnect();
 		break;
 
 	case SMI_BRIGHTNESS_UP:
@@ -116,11 +126,11 @@ static void mainboard_smi_handle_ec_sci(void)
 		case 0x27:
 		/* undock event */
 		case 0x50:
-			mainboard_io_trap_handler(SMI_DOCK_DISCONNECT);
+			mainboard_smi_dock_disconnect();
 			break;
 		/* dock event */
 		case 0x37:
-			mainboard_io_trap_handler(SMI_DOCK_CONNECT);
+			mainboard_smi_dock_connect();
 			break;
 		default:
 			break;

@@ -21,24 +21,6 @@
 /* Trapped write data */
 #define PCR_PSTH_TRPD   0x1E18
 
-/* Inherited from cpu/x86/smm.h resulting in a different signature */
-int southbridge_io_trap_handler(int smif)
-{
-	switch (smif) {
-	case 0x32:
-		printk(BIOS_DEBUG, "OS Init\n");
-		/*
-		 * gnvs->smif:
-		 * - On success, the IO Trap Handler returns 0
-		 * - On failure, the IO Trap Handler returns a value != 0
-		 */
-		gnvs->smif = 0;
-		return 1; /* IO trap handled */
-	}
-
-	/* Not handled */
-	return 0;
-}
 
 void smihandler_southbridge_mc(
 	const struct smm_save_state_ops *save_state_ops)

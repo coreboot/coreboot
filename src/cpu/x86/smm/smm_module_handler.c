@@ -65,9 +65,6 @@ void io_trap_handler(int smif)
 	 */
 	printk(BIOS_DEBUG, "SMI function trap 0x%x: ", smif);
 
-	if (southbridge_io_trap_handler(smif))
-		return;
-
 	if (mainboard_io_trap_handler(smif))
 		return;
 

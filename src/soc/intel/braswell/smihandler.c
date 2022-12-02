@@ -18,24 +18,6 @@
 #include <soc/gpio.h>
 #include <smmstore.h>
 
-int southbridge_io_trap_handler(int smif)
-{
-	switch (smif) {
-	case 0x32:
-		printk(BIOS_DEBUG, "OS Init\n");
-		/*
-		 * gnvs->smif:
-		 *  On success, the IO Trap Handler returns 0
-		 *  On failure, the IO Trap Handler returns a value != 0
-		 */
-		gnvs->smif = 0;
-		return 1; /* IO trap handled */
-	}
-
-	/* Not handled */
-	return 0;
-}
-
 void southbridge_smi_set_eos(void)
 {
 	enable_smi(EOS);

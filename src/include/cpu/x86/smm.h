@@ -34,7 +34,6 @@ int apm_control(u8 cmd);
 u8 apm_get_apmc(void);
 
 void io_trap_handler(int smif);
-int southbridge_io_trap_handler(int smif);
 int mainboard_io_trap_handler(int smif);
 
 void southbridge_smi_set_eos(void);

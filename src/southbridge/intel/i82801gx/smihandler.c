@@ -19,23 +19,6 @@
 /* While we read PMBASE dynamically in case it changed, let's initialize it with a sane value */
 u16 pmbase = DEFAULT_PMBASE;
 
-int southbridge_io_trap_handler(int smif)
-{
-	switch (smif) {
-	case 0x32:
-		printk(BIOS_DEBUG, "OS Init\n");
-		/* gnvs->smif:
-		 *  On success, the IO Trap Handler returns 0
-		 *  On failure, the IO Trap Handler returns a value != 0
-		 */
-		gnvs->smif = 0;
-		return 1; /* IO trap handled */
-	}
-
-	/* Not handled */
-	return 0;
-}
-
 void southbridge_smi_monitor(void)
 {
 #define IOTRAP(x) (trap_sts & (1 << x))

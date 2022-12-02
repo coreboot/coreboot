@@ -235,13 +235,13 @@ chip soc/intel/alderlake
 			}"
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW1_03"
+				register "add_acpi_dma_property" = "true"
 				device pci 00.0 on end
 			end
 			chip soc/intel/common/block/pcie/rtd3
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B11)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H20)"
 				register "srcclk_pin" = "2"
-				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
 		end

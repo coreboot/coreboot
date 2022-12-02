@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <arch/io.h>
 #include <cpu/x86/smm.h>
-#include <soc/nvs.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/me.h>
 #include <northbridge/intel/haswell/haswell.h>

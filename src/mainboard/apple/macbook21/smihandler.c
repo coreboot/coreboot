@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cpu/x86/smm.h>
-#include <soc/nvs.h>
 #include <southbridge/intel/common/pmutil.h>
 
 #define GPE_EC_SCI	12

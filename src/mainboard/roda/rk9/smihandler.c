@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <soc/nvs.h>
 #include <southbridge/intel/i82801ix/i82801ix.h>
 #include <ec/acpi/ec.h>
 

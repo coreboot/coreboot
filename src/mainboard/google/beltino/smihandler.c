@@ -5,7 +5,6 @@
 #include <cpu/x86/smm.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <southbridge/intel/lynxpoint/me.h>
-#include <soc/nvs.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <superio/ite/it8772f/it8772f.h>
 

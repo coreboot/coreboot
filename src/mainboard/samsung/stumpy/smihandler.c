@@ -3,7 +3,6 @@
 #include <acpi/acpi.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <soc/nvs.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>

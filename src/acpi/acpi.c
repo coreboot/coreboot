@@ -2085,8 +2085,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 4;
 	case SSDT: /* ACPI 3.0 up to 6.3: 2 */
 		return 2;
-	case SRAT: /* ACPI 2.0: 1, ACPI 3.0: 2, ACPI 4.0 up to 6.3: 3 */
-		return 1; /* TODO Should probably be upgraded to 2 */
+	case SRAT: /* ACPI 2.0: 1, ACPI 3.0: 2, ACPI 4.0 up to 6.4: 3 */
+		return 3;
 	case HMAT: /* ACPI 6.4: 2 */
 		return 2;
 	case DMAR:
@@ -2118,6 +2118,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 	case NHLT:
 		return 5;
 	case BERT:
+		return 1;
+	case CEDT: /* CXL 3.0 section 9.17.1 */
 		return 1;
 	case CRAT:
 		return 1;

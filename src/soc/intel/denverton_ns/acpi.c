@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
+#include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
@@ -188,8 +189,8 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	current += acpi_create_dmar_drhd(current,
 			DRHD_INCLUDE_PCI_ALL, 0, vtbar);
 
-	current += acpi_create_dmar_ds_ioapic(current,
-			2, PCH_IOAPIC_PCI_BUS, PCH_IOAPIC_PCI_SLOT, 0);
+	current += acpi_create_dmar_ds_ioapic_from_hw(current,
+			IO_APIC_ADDR, PCH_IOAPIC_PCI_BUS, PCH_IOAPIC_PCI_SLOT, 0);
 	current += acpi_create_dmar_ds_msi_hpet(current,
 			0, PCH_HPET_PCI_BUS, PCH_HPET_PCI_SLOT, 0);
 

@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
+#include <arch/ioapic.h>
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>
 #include <console/console.h>
@@ -191,8 +192,8 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	tmp = current;
 	current += acpi_create_dmar_drhd(current,
 			DRHD_INCLUDE_PCI_ALL, 0, VTVC0_BASE_ADDRESS);
-	current += acpi_create_dmar_ds_ioapic(current,
-			2, V_P2SB_CFG_IBDF_BUS, V_P2SB_CFG_IBDF_DEV,
+	current += acpi_create_dmar_ds_ioapic_from_hw(current,
+			IO_APIC_ADDR, V_P2SB_CFG_IBDF_BUS, V_P2SB_CFG_IBDF_DEV,
 			V_P2SB_CFG_IBDF_FUNC);
 	current += acpi_create_dmar_ds_msi_hpet(current,
 			0, V_P2SB_CFG_HBDF_BUS, V_P2SB_CFG_HBDF_DEV,

@@ -4,6 +4,7 @@
 #include <intelblocks/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/util.h>
+#include <stdint.h>
 
 #include "chip.h"
 
@@ -87,42 +88,14 @@ const acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 	return map;
 }
 
-static void print_madt_ioapic(int socket, int stack,
-				     int ioapic_id, uint32_t ioapic_base, int gsi_base)
-{
-	printk(BIOS_DEBUG, "Adding MADT IOAPIC for socket: %d, stack: %d, ioapic_id: 0x%x, "
-	       "ioapic_base: 0x%x, gsi_base: 0x%x\n",
-	       socket, stack,  ioapic_id, ioapic_base, gsi_base);
-}
+static uintptr_t xeonsp_ioapic_bases[CONFIG(XEON_SP_HAVE_IIO_IOAPIC) * 8 + 1];
 
-const struct madt_ioapic_info *soc_get_ioapic_info(size_t *entries)
+size_t soc_get_ioapic_info(const uintptr_t *ioapic_bases[])
 {
-	int cur_index;
-	int gsi_per_iiostack = 0;
-
+	int index = 0;
 	const IIO_UDS *hob = get_iio_uds();
 
-	uint8_t gsi_bases[CONFIG(XEON_SP_HAVE_IIO_IOAPIC) * 8 + 1] = { 0 };
-
-	for (uint8_t i = 1; i < sizeof(gsi_bases); i++) {
-		int gsi_base = CONFIG_XEON_SP_PCH_IOAPIC_GSI_BASES;
-		gsi_bases[i] = gsi_base + (i * gsi_per_iiostack);
-	}
-
-	static struct madt_ioapic_info madt_tbl[ARRAY_SIZE(gsi_bases)];
-
-	cur_index = 0;
-	madt_tbl[cur_index].id  = PCH_IOAPIC_ID;
-	madt_tbl[cur_index].addr = hob->PlatformData.IIO_resource[0].StackRes[0].IoApicBase;
-	madt_tbl[cur_index].gsi_base = gsi_bases[cur_index];
-	print_madt_ioapic(0, 0,  madt_tbl[cur_index].id,
-			  madt_tbl[cur_index].addr, madt_tbl[cur_index].gsi_base);
-	++cur_index;
-
-	if (!CONFIG(XEON_SP_HAVE_IIO_IOAPIC)) {
-		*entries = cur_index;
-		return madt_tbl;
-	}
+	*ioapic_bases = xeonsp_ioapic_bases;
 
 	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
 		for (int stack = 0; stack < MAX_IIO_STACK; ++stack) {
@@ -130,25 +103,22 @@ const struct madt_ioapic_info *soc_get_ioapic_info(size_t *entries)
 				&hob->PlatformData.IIO_resource[socket].StackRes[stack];
 			if (!is_iio_stack_res(ri))
 				continue;
-			assert(cur_index < ARRAY_SIZE(gsi_bases));
-			madt_tbl[cur_index].id = soc_get_iio_ioapicid(socket, stack);
-			madt_tbl[cur_index].gsi_base = gsi_bases[cur_index];
-			madt_tbl[cur_index].addr = ri->IoApicBase;
-
+			uint32_t ioapic_base = ri->IoApicBase;
+			assert(index < ARRAY_SIZE(xeonsp_ioapic_bases));
+			xeonsp_ioapic_bases[index++] = ioapic_base;
+			if (!CONFIG(XEON_SP_HAVE_IIO_IOAPIC))
+				return index;
 			/*
 			 * Stack 0 has non-PCH IOAPIC and PCH IOAPIC.
 			 * The IIO IOAPIC is placed at 0x1000 from the reported base.
 			 */
-			if (stack == 0 && socket == 0)
-				madt_tbl[cur_index].addr += 0x1000;
-
-			print_madt_ioapic(socket, stack, madt_tbl[cur_index].id,
-					  madt_tbl[cur_index].addr,
-					  madt_tbl[cur_index].gsi_base);
-			++cur_index;
+			if (socket == 0 && stack == 0) {
+				ioapic_base += 0x1000;
+				assert(index < ARRAY_SIZE(xeonsp_ioapic_bases));
+				xeonsp_ioapic_bases[index++] = ioapic_base;
+			}
 		}
 	}
 
-	*entries = cur_index;
-	return madt_tbl;
+	return index;
 }

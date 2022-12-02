@@ -73,34 +73,26 @@ static unsigned long acpi_madt_irq_overrides(unsigned long current)
 	return current;
 }
 
-__weak const struct madt_ioapic_info *soc_get_ioapic_info(size_t *entries)
+static const uintptr_t default_ioapic_bases[] = { IO_APIC_ADDR };
+
+__weak size_t soc_get_ioapic_info(const uintptr_t *ioapic_bases[])
 {
-	*entries = 0;
-	return NULL;
+	*ioapic_bases = default_ioapic_bases;
+	return ARRAY_SIZE(default_ioapic_bases);
 }
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	const struct madt_ioapic_info *ioapic_table;
+	const uintptr_t *ioapic_table;
 	size_t ioapic_entries;
 
 	/* Local APICs */
 	current = acpi_create_madt_lapics_with_nmis(current);
 
 	/* IOAPIC */
-	ioapic_table = soc_get_ioapic_info(&ioapic_entries);
-	if (ioapic_entries) {
-		for (int i = 0; i < ioapic_entries; i++) {
-			current += acpi_create_madt_ioapic(
-					(void *)current,
-					ioapic_table[i].id,
-					ioapic_table[i].addr,
-					ioapic_table[i].gsi_base);
-		}
-	} else {
-		/* Default SOC IOAPIC entry */
-		current += acpi_create_madt_ioapic_from_hw((void *)current, IO_APIC_ADDR);
-	}
+	ioapic_entries = soc_get_ioapic_info(&ioapic_table);
+	for (int i = 0; i < ioapic_entries; i++)
+		current += acpi_create_madt_ioapic_from_hw((void *)current, ioapic_table[i]);
 
 	return acpi_madt_irq_overrides(current);
 }

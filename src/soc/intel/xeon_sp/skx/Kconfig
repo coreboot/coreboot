@@ -63,8 +63,4 @@ config XEON_SP_HAVE_IIO_IOAPIC
 	bool
 	default y
 
-config XEON_SP_PCH_IOAPIC_GSI_BASES
-	hex
-	default 0x18
-
 endif

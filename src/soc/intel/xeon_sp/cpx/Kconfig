@@ -112,10 +112,6 @@ config XEON_SP_HAVE_IIO_IOAPIC
 	bool
 	default y
 
-config XEON_SP_PCH_IOAPIC_GSI_BASES
-	hex
-	default 0x78
-
 if INTEL_TXT
 
 config INTEL_TXT_SINIT_SIZE

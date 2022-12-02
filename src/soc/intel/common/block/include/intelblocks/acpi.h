@@ -93,17 +93,11 @@ void soc_power_states_generation(int core_id, int cores_per_package);
  */
 int common_calculate_power_ratio(int tdp, int p1_ratio, int ratio);
 
-struct madt_ioapic_info {
-	u8  id;
-	u32 addr;
-	u32 gsi_base;
-};
 
 /*
- * Returns a table of MADT ioapic_info entries and the number of entries
- * If the SOC doesn't implement this hook a default ioapic setting is used.
+ * Return the number of table entries and takes a pointer to an array of ioapic bases.
  */
-const struct madt_ioapic_info *soc_get_ioapic_info(size_t *entries);
+size_t soc_get_ioapic_info(const uintptr_t *ioapic_bases[]);
 
 struct soc_pmc_lpm {
 	unsigned int num_substates;

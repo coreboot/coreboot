@@ -1432,6 +1432,8 @@ unsigned long acpi_create_dmar_ds_pci(unsigned long current,
 unsigned long acpi_create_dmar_ds_ioapic(unsigned long current,
 					      u8 enumeration_id,
 					      u8 bus, u8 dev, u8 fn);
+unsigned long acpi_create_dmar_ds_ioapic_from_hw(unsigned long current,
+						 u32 addr, u8 bus, u8 dev, u8 fn);
 unsigned long acpi_create_dmar_ds_msi_hpet(unsigned long current,
 						u8 enumeration_id,
 						u8 bus, u8 dev, u8 fn);

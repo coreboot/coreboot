@@ -65,7 +65,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* ESPI_CS_L */
 	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
 	/* INT_CLKREQ_L */
-	PAD_SCI(GPIO_31, PULL_UP, EDGE_LOW),
+	PAD_INT(GPIO_31, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* LPC_RST_L */
 	PAD_NF(GPIO_32, LPC_RST_L, PULL_NONE),
 	/* GPIO_33 - GPIO_37: Not available */
@@ -138,7 +138,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_NONE),
 	/* GPIO_117 - GPIO_129: Not available */
 	/* TPM IRQ */
-	PAD_SCI(GPIO_130, PULL_UP, EDGE_LOW),
+	PAD_INT(GPIO_130, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* CLK_REQ3_L */
 	PAD_NF(GPIO_131, CLK_REQ3_L, PULL_NONE),
 	/* CLK_REQ4_L */

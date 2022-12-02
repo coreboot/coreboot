@@ -23,7 +23,7 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	/* ESPI_ALERT_L */
 	PAD_NF(GPIO_22, ESPI_ALERT_D1, PULL_NONE),
 	/* TPM IRQ */
-	PAD_SCI(GPIO_130, PULL_UP, EDGE_LOW),
+	PAD_INT(GPIO_130, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
 	/* SPI_ROM_REQ */
 	PAD_NF(GPIO_67, SPI_ROM_REQ, PULL_NONE),
 	/* SPI_ROM_GNT */

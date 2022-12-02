@@ -423,6 +423,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	/* Override the memory init params through runtime debug capability */
 	if (CONFIG(SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE))
 		debug_override_memory_init_params(m_cfg);
+
+	if (CONFIG(HWBASE_STATIC_MMIO))
+		m_cfg->GttMmAdr = CONFIG_GFX_GMA_DEFAULT_MMIO;
 }
 
 __weak void mainboard_memory_init_params(FSPM_UPD *memupd)

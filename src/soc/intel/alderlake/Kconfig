@@ -206,6 +206,9 @@ config HEAP_SIZE
 	hex
 	default 0x10000
 
+config GFX_GMA_DEFAULT_MMIO
+	default 0xfa000000 if MAINBOARD_HAS_EARLY_LIBGFXINIT
+
 # Intel recommends reserving the following resources per PCIe TBT root port,
 # from ADL BIOS Spec (doc #627270) Revision 0.6.0 Section 7.2.5.1.5
 # - 42 buses

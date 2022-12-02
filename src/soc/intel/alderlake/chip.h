@@ -674,6 +674,11 @@ struct soc_intel_alderlake_config {
 
 	/* i915 struct for GMA backlight control */
 	struct i915_gpu_controller_info gfx;
+
+	/*
+	 * IGD panel configuration
+	 */
+	struct i915_gpu_panel_config panel_cfg;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

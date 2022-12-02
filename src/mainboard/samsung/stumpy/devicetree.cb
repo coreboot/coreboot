@@ -69,11 +69,11 @@ chip northbridge/intel/sandybridge
 					# Enable GPIO52 as USBPWRON1#
 					register "gpio_set5" = "0x06"
 					# Skip keyboard init
-					register "skip_keyboard" = "1"
+					register "skip_keyboard" = "true"
 					# Enable PECI on TMPIN3
 					register "peci_tmpin" = "3"
 					# Enable FAN3
-					register "fan3_enable" = "1"
+					register "fan3_enable" = "true"
 
 					device pnp 2e.0 off end # FDC
 					device pnp 2e.1 on # Serial Port 1

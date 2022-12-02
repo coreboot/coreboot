@@ -79,11 +79,11 @@ chip northbridge/intel/haswell
 				end
 				chip superio/ite/it8772f
 					# Skip keyboard init
-					register "skip_keyboard" = "1"
+					register "skip_keyboard" = "true"
 					# Enable PECI on TMPIN3
 					register "peci_tmpin" = "3"
 					# Enable FAN2
-					register "fan2_enable" = "1"
+					register "fan2_enable" = "true"
 
 					device pnp 2e.0 off end # FDC
 					device pnp 2e.1 on # Serial Port 1

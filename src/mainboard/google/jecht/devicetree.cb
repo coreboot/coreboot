@@ -73,7 +73,7 @@ chip soc/intel/broadwell
 				end
 				chip superio/ite/it8772f
 					# Skip keyboard init
-					register "skip_keyboard" = "1"
+					register "skip_keyboard" = "true"
 					# Enable PECI on TMPIN3
 					register "peci_tmpin" = "3"
 					# Disable use of TMPIN1
@@ -81,7 +81,7 @@ chip soc/intel/broadwell
 					# Enable Thermal Diode on TMPIN2
 					register "tmpin2_mode" = "1"
 					# Enable FAN2
-					register "fan2_enable" = "1"
+					register "fan2_enable" = "true"
 					# Default FAN2 speed
 					register "fan2_speed" = "0x4d"
 

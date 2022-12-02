@@ -4,6 +4,8 @@
 #define SUPERIO_ITE_IT8772F_CHIP_H
 
 #include <device/device.h>
+#include <types.h>
+
 #include "it8772f.h"
 
 struct superio_ite_it8772f_config {
@@ -15,7 +17,7 @@ struct superio_ite_it8772f_config {
 	u8 gpio_set5;
 	u8 gpio_set6;
 
-	u8 skip_keyboard;
+	bool skip_keyboard;
 
 	/*
 	 * Enable external temperature sensor to use PECI GetTemp()
@@ -32,9 +34,9 @@ struct superio_ite_it8772f_config {
 	/*
 	 * Enable a FAN for software control.
 	 */
-	u8 fan1_enable;
-	u8 fan2_enable;
-	u8 fan3_enable;
+	bool fan1_enable;
+	bool fan2_enable;
+	bool fan3_enable;
 
 	/*
 	 * Default FAN speed

@@ -4,6 +4,7 @@ verstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 romstage-y += romstage.c
+romstage-$(CONFIG_MAINBOARD_USE_EARLY_LIBGFXINIT) += gma-mainboard.ads
 
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += mainboard.c

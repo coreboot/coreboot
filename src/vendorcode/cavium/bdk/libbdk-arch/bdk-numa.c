@@ -89,7 +89,7 @@ int bdk_numa_exists(bdk_node_t node)
  *
  * @return
  */
-extern int bdk_numa_is_only_one()
+extern int bdk_numa_is_only_one(void)
 {
 	/* FIXME(dhendrix): stub */
 	return 1;

@@ -169,7 +169,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 
 uint32_t soc_read_sci_irq_select(void)
 {
-	return read32((void *)soc_read_pmc_base() + IRQ_REG);
+	return read32p(soc_read_pmc_base() + IRQ_REG);
 }
 
 static unsigned long soc_fill_dmar(unsigned long current)

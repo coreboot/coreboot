@@ -659,7 +659,7 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 		if (dimm_end_64M_multiple > dimm_start_64M_multiple) {
 			dimm_start_address &= 0x3ffffff;
 			dimm_start_address |= dimm_start_64M_multiple << 26;
-			read32((void *)dimm_start_address);
+			read32p(dimm_start_address);
 			// Set the start of the next DIMM
 			dimm_start_64M_multiple = dimm_end_64M_multiple;
 		}

@@ -86,25 +86,6 @@ Method(_PTS,1)
 	fmt.Fprintf(smi, "#define GPE_EC_WAKE	%d\n", wakeGPE)
 
 	smi.WriteString(`
-static void mainboard_smm_init(void)
-{
-	printk(BIOS_DEBUG, "initializing SMI\n");
-	/* Enable 0x1600/0x1600 register pair */
-	ec_set_bit(0x00, 0x05);
-}
-
-int mainboard_io_trap_handler(int smif)
-{
-	static int smm_initialized;
-
-	if (!smm_initialized) {
-		mainboard_smm_init();
-		smm_initialized = 1;
-	}
-
-	return 0;
-}
-
 static void mainboard_smi_handle_ec_sci(void)
 {
 	u8 status = inb(EC_SC);

@@ -60,7 +60,18 @@ static void mainboard_chip_init(void *chip_info)
 	gpio_configure_pads(pads, num);
 }
 
+void __weak variant_final(void)
+{
+	/* nop */
+}
+
+static void mainboard_final(void *chip_info)
+{
+	variant_final();
+}
+
 struct chip_operations mainboard_ops = {
 	.init = mainboard_chip_init,
 	.enable_dev = mainboard_enable,
+	.final = mainboard_final
 };

@@ -210,40 +210,40 @@ static uintptr_t hudson_spibase(void)
 void hudson_set_spi100(u16 norm, u16 fast, u16 alt, u16 tpm)
 {
 	uintptr_t base = hudson_spibase();
-	write16((void *)(base + SPI100_SPEED_CONFIG),
-				(norm << SPI_NORM_SPEED_NEW_SH) |
-				(fast << SPI_FAST_SPEED_NEW_SH) |
-				(alt << SPI_ALT_SPEED_NEW_SH) |
-				(tpm << SPI_TPM_SPEED_NEW_SH));
-	write16((void *)(base + SPI100_ENABLE), SPI_USE_SPI100 |
-		read16((void *)(base + SPI100_ENABLE)));
+	write16p(base + SPI100_SPEED_CONFIG,
+			(norm << SPI_NORM_SPEED_NEW_SH) |
+			(fast << SPI_FAST_SPEED_NEW_SH) |
+			(alt << SPI_ALT_SPEED_NEW_SH) |
+			(tpm << SPI_TPM_SPEED_NEW_SH));
+	write16p(base + SPI100_ENABLE, SPI_USE_SPI100 |
+		read16p(base + SPI100_ENABLE));
 }
 
 void hudson_disable_4dw_burst(void)
 {
 	uintptr_t base = hudson_spibase();
-	write16((void *)(base + SPI100_HOST_PREF_CONFIG),
-			read16((void *)(base + SPI100_HOST_PREF_CONFIG))
-					& ~SPI_RD4DW_EN_HOST);
+	write16p(base + SPI100_HOST_PREF_CONFIG,
+		read16p(base + SPI100_HOST_PREF_CONFIG)
+				& ~SPI_RD4DW_EN_HOST);
 }
 
 /* Hudson 1-3 only.  For Hudson 1, call with fast=1 */
 void hudson_set_readspeed(u16 norm, u16 fast)
 {
 	uintptr_t base = hudson_spibase();
-	write16((void *)(base + SPI_CNTRL1),
-			(read16((void *)(base + SPI_CNTRL1))
-			& ~SPI_CNTRL1_SPEED_MASK)
-			| (norm << SPI_NORM_SPEED_SH)
-			| (fast << SPI_FAST_SPEED_SH));
+	write16p(base + SPI_CNTRL1,
+		(read16p(base + SPI_CNTRL1)
+		& ~SPI_CNTRL1_SPEED_MASK)
+		| (norm << SPI_NORM_SPEED_SH)
+		| (fast << SPI_FAST_SPEED_SH));
 }
 
 void hudson_read_mode(u32 mode)
 {
 	uintptr_t base = hudson_spibase();
-	write32((void *)(base + SPI_CNTRL0),
-			(read32((void *)(base + SPI_CNTRL0))
-					& ~SPI_READ_MODE_MASK) | mode);
+	write32p(base + SPI_CNTRL0,
+		(read32p(base + SPI_CNTRL0)
+			& ~SPI_READ_MODE_MASK) | mode);
 }
 
 void hudson_tpm_decode_spi(void)

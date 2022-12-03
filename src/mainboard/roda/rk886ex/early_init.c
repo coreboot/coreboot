@@ -77,16 +77,6 @@ void mainboard_late_rcba_config(void)
 
 	/* Disable unused devices */
 	RCBA32(FD) |= FD_INTLAN;
-
-	/* This should probably go into the ACPI OS Init trap */
-
-	/* Set up I/O Trap #0 for 0xfe00 (SMIC) */
-	RCBA32(0x1e84) = 0x00020001;
-	RCBA32(0x1e80) = 0x0000fe01;
-
-	/* Set up I/O Trap #3 for 0x800-0x80c (Trap) */
-	RCBA32(0x1e9c) = 0x000200f0;
-	RCBA32(0x1e98) = 0x000c0801;
 }
 
 static void init_artec_dongle(void)

@@ -265,10 +265,6 @@ static void mobile5_pm_init(struct device *dev)
 	(void)RCBA32(0x1d44);
 	RCBA32(0x1d48) = 0x00030000;
 	(void)RCBA32(0x1d48);
-	RCBA32(0x1e80) = 0x000c0801;
-	(void)RCBA32(0x1e80);
-	RCBA32(0x1e84) = 0x000200f0;
-	(void)RCBA32(0x1e84);
 
 	const u32 rcba2010[] = {
 		/* 2010: */ 0x00188200, 0x14000016, 0xbc4abcb5, 0x00000000,

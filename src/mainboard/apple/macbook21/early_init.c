@@ -23,10 +23,4 @@ void mainboard_late_rcba_config(void)
 
 	/* Disable unused devices */
 	RCBA32(FD) |= FD_INTLAN;
-
-	/* Set up I/O Trap #0 for 0xfe00 (SMIC) */
-
-	/* Set up I/O Trap #3 for 0x800-0x80c (Trap) */
-	RCBA32(0x1e9c) = 0x000200f0;
-	RCBA32(0x1e98) = 0x000c0801;
 }

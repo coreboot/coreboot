@@ -46,7 +46,7 @@ u64 thunderx_get_io_clock(void)
 {
 	union cavm_rst_boot rst_boot;
 
-	rst_boot.u = read64((void *)RST_PF_BAR0);
+	rst_boot.u = read64p(RST_PF_BAR0);
 
 	return ((u64)rst_boot.s.pnr_mul) * PLL_REF_CLK;
 }
@@ -58,7 +58,7 @@ u64 thunderx_get_core_clock(void)
 {
 	union cavm_rst_boot rst_boot;
 
-	rst_boot.u = read64((void *)RST_PF_BAR0);
+	rst_boot.u = read64p(RST_PF_BAR0);
 
 	return ((u64)rst_boot.s.c_mul) * PLL_REF_CLK;
 }

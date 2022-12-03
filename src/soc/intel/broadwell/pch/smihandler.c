@@ -429,7 +429,7 @@ static void southbridge_smi_monitor(void)
 	trap_cycle = RCBA32(0x1e10);
 	for (i = 16; i < 20; i++) {
 		if (trap_cycle & (1 << i))
-			mask |= (0xff << ((i - 16) << 2));
+			mask |= (0xff << ((i - 16) << 3));
 	}
 
 	/* IOTRAP(3) SMI function call */

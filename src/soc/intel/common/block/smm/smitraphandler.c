@@ -70,7 +70,7 @@ void smihandler_southbridge_monitor(
 	trap_cycle = pcr_read32(PID_PSTH, PCR_PSTH_TRPC);
 	for (i = 16; i < 20; i++) {
 		if (trap_cycle & (1 << i))
-			mask |= (0xff << ((i - 16) << 2));
+			mask |= (0xff << ((i - 16) << 3));
 	}
 
 	/* IOTRAP(3) SMI function call */

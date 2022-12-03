@@ -1641,7 +1641,7 @@ sdram_jedec(struct sysinfo *s, u8 rank, u8 jmode, u16 jval)
 	reg32 = jval << 3;
 	reg32 |= rank * (1 << 27);
 	mchbar_clrsetbits8(C0JEDEC, 0x3e, jmode);
-	read32((void *)reg32);
+	read32p(reg32);
 	barrier();
 	hpet_udelay(1); // 1us
 }
@@ -1849,7 +1849,7 @@ static u8 sampledqs(u32 dqshighaddr, u32 strobeaddr, u8 highlow, u8 count)
 		mchbar_setbits8(C0RSTCTL, 1 << 1);
 		hpet_udelay(1);
 		barrier();
-		read32((void *)strobeaddr);
+		read32p(strobeaddr);
 		barrier();
 		hpet_udelay(1);
 

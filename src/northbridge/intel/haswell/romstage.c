@@ -47,7 +47,7 @@ void mainboard_romstage_entry(void)
 	if (CONFIG(INTEL_TXT)) {
 		printk(BIOS_DEBUG, "Check TXT_ERROR register after MRC\n");
 
-		intel_txt_log_acm_error(read32((void *)TXT_ERROR));
+		intel_txt_log_acm_error(read32p(TXT_ERROR));
 
 		intel_txt_log_spad();
 

@@ -169,14 +169,14 @@ static void haswell_setup_iommu(void)
 
 	/* Set L3HIT2PEND_DIS, lock GFXVTBAR policy config registers */
 	u32 reg32;
-	reg32 = read32((void *)(GFXVT_BASE_ADDRESS + ARCHDIS));
-	write32((void *)(GFXVT_BASE_ADDRESS + ARCHDIS), reg32 | DMAR_LCKDN | L3HIT2PEND_DIS);
+	reg32 = read32p(GFXVT_BASE_ADDRESS + ARCHDIS);
+	write32p(GFXVT_BASE_ADDRESS + ARCHDIS, reg32 | DMAR_LCKDN | L3HIT2PEND_DIS);
 
 	/* Clear SPCAPCTRL */
-	reg32 = read32((void *)(VTVC0_BASE_ADDRESS + ARCHDIS)) & ~SPCAPCTRL;
+	reg32 = read32p(VTVC0_BASE_ADDRESS + ARCHDIS) & ~SPCAPCTRL;
 
 	/* Set GLBIOTLBINV, GLBCTXTINV; lock VTVC0BAR policy config registers */
-	write32((void *)(VTVC0_BASE_ADDRESS + ARCHDIS),
+	write32p(VTVC0_BASE_ADDRESS + ARCHDIS,
 			reg32 | DMAR_LCKDN | GLBIOTLBINV | GLBCTXTINV);
 }
 

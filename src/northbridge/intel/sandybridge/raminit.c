@@ -31,11 +31,11 @@ static void wait_txt_clear(void)
 		return;
 
 	/* Some TXT public bit */
-	if (!(read32((void *)0xfed30010) & 1))
+	if (!(read32p(0xfed30010) & 1))
 		return;
 
 	/* Wait for TXT clear */
-	while (!(read8((void *)0xfed40000) & (1 << 7)))
+	while (!(read8p(0xfed40000) & (1 << 7)))
 		;
 }
 

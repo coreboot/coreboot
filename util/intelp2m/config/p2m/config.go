@@ -50,6 +50,8 @@ type Settings struct {
 	Version       string
 	Platform      PlatformType
 	Field         FieldType
+	InputPath     string
+	OutputPath    string
 	InputFile     *os.File
 	OutputFile    *os.File
 	IgnoredFields bool
@@ -60,7 +62,7 @@ type Settings struct {
 var Config = Settings{
 	Version:       "unknown",
 	Platform:      Sunrise,
-	Field:         CbFlds,
+	Field:         NoFlds,
 	IgnoredFields: false,
 	AutoCheck:     true,
 	GenLevel:      0,

@@ -1513,7 +1513,7 @@ static void fill_pattern0(ramctr_timing *ctrl, int channel, u32 a, u32 b)
 
 	for (j = 0; j < 16; j++) {
 		addr = 0x04000000 + channel_offset + 4 * j;
-		write32((void *)addr, j & 2 ? b : a);
+		write32p(addr, j & 2 ? b : a);
 	}
 
 	sfence();
@@ -1538,11 +1538,11 @@ static void fill_pattern1(ramctr_timing *ctrl, int channel)
 
 	for (j = 0; j < 16; j++) {
 		addr = 0x04000000 + channel_offset + j * 4;
-		write32((void *)addr, 0xffffffff);
+		write32p(addr, 0xffffffff);
 	}
 	for (j = 0; j < 16; j++) {
 		addr = 0x04000000 + channel_offset + channel_step + j * 4;
-		write32((void *)addr, 0);
+		write32p(addr, 0);
 	}
 	sfence();
 
@@ -1948,7 +1948,7 @@ static void fill_pattern5(ramctr_timing *ctrl, int channel, int patno)
 					val = ~val;
 
 				addr = (1 << 26) + offset + i * step + j * 4;
-				write32((void *)addr, val);
+				write32p(addr, val);
 			}
 		}
 	} else {
@@ -1956,7 +1956,7 @@ static void fill_pattern5(ramctr_timing *ctrl, int channel, int patno)
 			for (j = 0; j < 16; j++) {
 				const u32 val = pattern[i][j];
 				addr = (1 << 26) + offset + i * step + j * 4;
-				write32((void *)addr, val);
+				write32p(addr, val);
 			}
 		}
 		sfence();

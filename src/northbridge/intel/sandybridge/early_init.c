@@ -23,14 +23,14 @@ static void systemagent_vtd_init(void)
 	mchbar_write32(VTVC0BAR + 0, VTVC0_BASE | 1);
 
 	/* Lock policies */
-	write32((void *)(GFXVT_BASE + 0xff0), 0x80000000);
+	write32p(GFXVT_BASE + 0xff0, 0x80000000);
 
 	const struct device *const azalia = pcidev_on_root(0x1b, 0);
 	if (azalia && azalia->enabled) {
-		write32((void *)(VTVC0_BASE + 0xff0), 0x20000000);
-		write32((void *)(VTVC0_BASE + 0xff0), 0xa0000000);
+		write32p(VTVC0_BASE + 0xff0, 0x20000000);
+		write32p(VTVC0_BASE + 0xff0, 0xa0000000);
 	} else {
-		write32((void *)(VTVC0_BASE + 0xff0), 0x80000000);
+		write32p(VTVC0_BASE + 0xff0, 0x80000000);
 	}
 }
 

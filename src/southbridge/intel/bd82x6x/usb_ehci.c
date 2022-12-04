@@ -2,12 +2,13 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
-#include <device/pci_ids.h>
-#include "pch.h"
-#include <device/pci_ehci.h>
 #include <device/mmio.h>
+#include <device/pci_ehci.h>
+#include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <device/pci.h>
+
+#include "pch.h"
 
 static void usb_ehci_init(struct device *dev)
 {
@@ -46,8 +47,8 @@ static void usb_ehci_init(struct device *dev)
 	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 	if (res) {
 		/* Number of ports and companion controllers.  */
-		reg32 = read32((void *)(uintptr_t)(res->base + 4));
-		write32((void *)(uintptr_t)(res->base + 4),
+		reg32 = read32p((uintptr_t)(res->base + 4));
+		write32p((uintptr_t)(res->base + 4),
 			(reg32 & 0xfff00000) | 3);
 	}
 

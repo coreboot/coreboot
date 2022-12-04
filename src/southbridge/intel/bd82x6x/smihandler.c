@@ -1,20 +1,21 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
 #include <arch/io.h>
-#include <device/pci_ops.h>
-#include <console/console.h>
 #include <commonlib/region.h>
-#include <device/pci_def.h>
-#include <cpu/x86/smm.h>
+#include <console/console.h>
 #include <cpu/intel/em64t101_save_state.h>
+#include <cpu/intel/model_206ax/model_206ax.h>
+#include <cpu/x86/smm.h>
+#include <device/mmio.h>
+#include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <soc/nvs.h>
 #include <southbridge/intel/bd82x6x/me.h>
-#include <southbridge/intel/common/gpio.h>
-#include <cpu/intel/model_206ax/model_206ax.h>
-#include <southbridge/intel/common/pmutil.h>
 #include <southbridge/intel/common/finalize.h>
+#include <southbridge/intel/common/gpio.h>
+#include <southbridge/intel/common/pmutil.h>
+#include <types.h>
 
 #include "pch.h"
 
@@ -168,7 +169,7 @@ static void xhci_a0_suspend_smm_workaround(void)
 
 	/* Steps 3 to 6: If USB3 PORTSC current connect status (bit 0) is set, do IOBP magic */
 	for (unsigned int port = 0; port < 4; port++) {
-		if (read32((void *)(xhci_bar + XHCI_PORTSC_x_USB3(port))) & (1 << 0))
+		if (read32p((xhci_bar + XHCI_PORTSC_x_USB3(port))) & (1 << 0))
 			pch_iobp_update(0xec000082 + 0x100 * port, ~0, 3 << 2);
 	}
 

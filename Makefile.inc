@@ -823,7 +823,7 @@ extract_nth=$(subst *,$(spc),$(patsubst -%-,%,$(word $(1), $(subst |,- -,-$(2)-)
 #
 # This is the default implementation. When using a boot strategy employing
 # multiple CBFSes in fmap regions, override it.
-regions-for-file ?= COREBOOT
+regions-for-file ?= $(if $(value regions-for-file-$(1)), $(regions-for-file-$(1)), COREBOOT)
 
 ifeq ($(CONFIG_CBFS_AUTOGEN_ATTRIBUTES),y)
 	cbfs-autogen-attributes=-g

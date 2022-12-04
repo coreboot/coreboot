@@ -29,7 +29,7 @@ static bool xhci_port_wake_check(uintptr_t base, uint8_t num, uint8_t host_event
 
 	for (i = 0; i < num; i++, base += 0x10) {
 		/* Read port status and control register for the port. */
-		port_status = read32((void *)base);
+		port_status = read32p(base);
 
 		/* Ensure that the status is not all 1s. */
 		if (port_status == 0xffffffff)

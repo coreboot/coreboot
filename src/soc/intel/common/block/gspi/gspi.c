@@ -283,14 +283,14 @@ static uint32_t gspi_read_mmio_reg(const struct gspi_ctrlr_params *p,
 					uint32_t offset)
 {
 	assert(p->mmio_base != 0);
-	return read32((void *)(p->mmio_base + offset));
+	return read32p(p->mmio_base + offset);
 }
 
 static void gspi_write_mmio_reg(const struct gspi_ctrlr_params *p,
 				uint32_t offset, uint32_t value)
 {
 	assert(p->mmio_base != 0);
-	write32((void *)(p->mmio_base + offset), value);
+	write32p(p->mmio_base + offset, value);
 }
 
 static int gspi_ctrlr_params_init(struct gspi_ctrlr_params *p,

@@ -3,6 +3,7 @@
 #include <acpi/acpi_device.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <drivers/usb/acpi/chip.h>
@@ -68,7 +69,7 @@ static bool is_usb_port_connected(const struct xhci_usb_info *info,
 	else
 		port_sts_reg = (uintptr_t)res->base +
 				info->usb3_port_status_reg + port_id * 0x10;
-	port_status = read32((void *)port_sts_reg);
+	port_status = read32p(port_sts_reg);
 
 	/* Ensure that the status is not all 1s */
 	if (port_status == 0xffffffff)

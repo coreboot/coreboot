@@ -42,7 +42,7 @@ static uint32_t fast_spi_flash_ctrlr_reg_read(struct fast_spi_flash_ctx *ctx,
 	uint16_t reg)
 {
 	uintptr_t addr =  ALIGN_DOWN(ctx->mmio_base + reg, sizeof(uint32_t));
-	return read32((void *)addr);
+	return read32p(addr);
 }
 
 /* Write to register in FAST_SPI flash controller. */
@@ -50,7 +50,7 @@ static void fast_spi_flash_ctrlr_reg_write(struct fast_spi_flash_ctx *ctx,
 					uint16_t reg, uint32_t val)
 {
 	uintptr_t addr =  ALIGN_DOWN(ctx->mmio_base + reg, sizeof(uint32_t));
-	write32((void *)addr, val);
+	write32p(addr, val);
 }
 
 /*
@@ -378,7 +378,7 @@ static int fast_spi_flash_protect(const struct spi_flash *flash,
 
 	/* Find first empty FPR */
 	for (fpr = 0; fpr < SPIBAR_FPR_MAX; fpr++) {
-		reg = read32((void *)fpr_base);
+		reg = read32p(fpr_base);
 		if (reg == 0)
 			break;
 		fpr_base += sizeof(uint32_t);
@@ -408,8 +408,8 @@ static int fast_spi_flash_protect(const struct spi_flash *flash,
 	reg = SPI_FPR(start, end) | protect_mask;
 
 	/* Set the FPR register and verify it is protected */
-	write32((void *)fpr_base, reg);
-	reg = read32((void *)fpr_base);
+	write32p(fpr_base, reg);
+	reg = read32p(fpr_base);
 	if (!(reg & protect_mask)) {
 		printk(BIOS_ERR, "Unable to set SPI FPR %d\n", fpr);
 		return -1;

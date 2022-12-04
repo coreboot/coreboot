@@ -148,12 +148,12 @@ static uintptr_t graphics_get_gtt_base(void)
 
 uint32_t graphics_gtt_read(unsigned long reg)
 {
-	return read32((void *)(graphics_get_gtt_base() + reg));
+	return read32p(graphics_get_gtt_base() + reg);
 }
 
 void graphics_gtt_write(unsigned long reg, uint32_t data)
 {
-	write32((void *)(graphics_get_gtt_base() + reg), data);
+	write32p(graphics_get_gtt_base() + reg, data);
 }
 
 void graphics_gtt_rmw(unsigned long reg, uint32_t andmask, uint32_t ormask)

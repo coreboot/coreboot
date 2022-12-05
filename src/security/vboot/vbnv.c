@@ -3,11 +3,12 @@
 #include <assert.h>
 #include <string.h>
 #include <types.h>
+#include <security/vboot/misc.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/vbnv_layout.h>
+#include <vb2_api.h>
 
-static int vbnv_initialized;
-static uint8_t vbnv[VBOOT_VBNV_BLOCK_SIZE];
+static bool vbnv_initialized;
 
 /* Return CRC-8 of the data, using x^8 + x^2 + x + 1 polynomial. */
 static uint8_t crc8_vbnv(const uint8_t *data, int len)
@@ -30,15 +31,6 @@ static uint8_t crc8_vbnv(const uint8_t *data, int len)
 void vbnv_reset(uint8_t *vbnv_copy)
 {
 	memset(vbnv_copy, 0, VBOOT_VBNV_BLOCK_SIZE);
-}
-
-/* Read VBNV data into cache. */
-static void vbnv_setup(void)
-{
-	if (!vbnv_initialized) {
-		read_vbnv(vbnv);
-		vbnv_initialized = 1;
-	}
 }
 
 /* Verify VBNV header and checksum. */
@@ -84,21 +76,31 @@ void save_vbnv(const uint8_t *vbnv_copy)
 		save_vbnv_flash(vbnv_copy);
 	else
 		dead_code();
-
-	/* Clear initialized flag to force cached data to be updated */
-	vbnv_initialized = 0;
 }
 
 /* Read the USB Device Controller(UDC) enable flag from VBNV. */
 int vbnv_udc_enable_flag(void)
 {
-	vbnv_setup();
-	return (vbnv[DEV_FLAGS_OFFSET] & DEV_ENABLE_UDC) ? 1 : 0;
+	struct vb2_context *ctx = vboot_get_context();
+
+	/* This function is expected to be called after temporary nvdata storage in vboot
+	   context is initialized. */
+	assert(vbnv_initialized);
+
+	return (ctx->nvdata[DEV_FLAGS_OFFSET] & DEV_ENABLE_UDC) ? 1 : 0;
 }
 
-void vbnv_init(uint8_t *vbnv_copy)
+void vbnv_init(void)
 {
+	struct vb2_context *ctx;
+
+	/* NV data already initialized and read */
+	if (vbnv_initialized)
+		return;
+
+	ctx = vboot_get_context();
 	if (CONFIG(VBOOT_VBNV_CMOS))
-		vbnv_init_cmos(vbnv_copy);
-	read_vbnv(vbnv_copy);
+		vbnv_init_cmos(ctx->nvdata);
+	read_vbnv(ctx->nvdata);
+	vbnv_initialized = true;
 }

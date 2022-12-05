@@ -249,7 +249,7 @@ void verstage_main(void)
 	ctx = vboot_get_context();
 
 	/* Initialize and read nvdata from non-volatile storage. */
-	vbnv_init(ctx->nvdata);
+	vbnv_init();
 
 	/* Set S3 resume flag if vboot should behave differently when selecting
 	 * which slot to boot.  This is only relevant to vboot if the platform

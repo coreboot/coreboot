@@ -15,7 +15,7 @@ void regen_vbnv_crc(uint8_t *vbnv_copy);
 int vbnv_udc_enable_flag(void);
 
 /* Initialize and read vbnv. This is used in the main vboot logic path. */
-void vbnv_init(uint8_t *vbnv_copy);
+void vbnv_init(void);
 /* Reset vbnv snapshot to a known state. */
 void vbnv_reset(uint8_t *vbnv_copy);
 

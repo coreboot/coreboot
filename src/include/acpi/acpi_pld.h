@@ -22,12 +22,6 @@ enum acpi_pld_vertical_position {
 	PLD_VERTICAL_POSITION_LOWER
 };
 
-/*
- * The ACPI spec 6.2A does not define the horizontal position field.
- * These values are taken from the IASL compiler:
- * https://github.com/acpica/acpica/blob/master/source/components/utilities/utglobal.c#L321
- */
-
 enum acpi_pld_horizontal_position {
 	PLD_HORIZONTAL_POSITION_LEFT,
 	PLD_HORIZONTAL_POSITION_CENTER,

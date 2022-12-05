@@ -89,7 +89,7 @@ enum core_type get_soc_cpu_type(void)
 
 void soc_get_scaling_factor(u16 *big_core_scal_factor, u16 *small_core_scal_factor)
 {
-	*big_core_scal_factor = 127;
+	*big_core_scal_factor = 125;
 	*small_core_scal_factor = 100;
 }
 

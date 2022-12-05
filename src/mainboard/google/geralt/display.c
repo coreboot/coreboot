@@ -16,7 +16,7 @@
 /* Set up backlight control pins as output pin and power-off by default */
 static void configure_edp_panel_backlight(void)
 {
-	gpio_output(GPIO_AP_EDP_BKLTEN, 0);
+	gpio_output(GPIO_AP_DISP_BKLTEN, 0);
 	gpio_output(GPIO_EDP_BL_PWM_1V8, 0);
 }
 

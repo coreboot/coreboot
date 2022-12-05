@@ -479,7 +479,8 @@ config BOOTSPLASH
 config LINEAR_FRAMEBUFFER_MAX_WIDTH
 	int "Maximum width in pixels"
 	depends on LINEAR_FRAMEBUFFER && MAINBOARD_USE_LIBGFXINIT
-	default 2560
+	default 2560 if SYSTEM_TYPE_LAPTOP
+	default 3840
 	help
 	  Set the maximum width of the framebuffer. This may help with
 	  default fonts too tiny for high-resolution displays.
@@ -487,7 +488,8 @@ config LINEAR_FRAMEBUFFER_MAX_WIDTH
 config LINEAR_FRAMEBUFFER_MAX_HEIGHT
 	int "Maximum height in pixels"
 	depends on LINEAR_FRAMEBUFFER && MAINBOARD_USE_LIBGFXINIT
-	default 1600
+	default 1600 if SYSTEM_TYPE_LAPTOP
+	default 2160
 	help
 	  Set the maximum height of the framebuffer. This may help with
 	  default fonts too tiny for high-resolution displays.

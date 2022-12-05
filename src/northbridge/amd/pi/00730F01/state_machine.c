@@ -9,6 +9,7 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/nb_common.h>
+#include <southbridge/amd/pi/hudson/ioapic.h>
 
 void platform_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 {
@@ -64,8 +65,8 @@ void platform_BeforeInitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late)
 		 * when IOMMU build config is enabled otherwise AGESA will skip
 		 * it during IOMMU init and IVRS generation.
 		 */
-		Late->GnbLateConfiguration.GnbIoapicId = CONFIG_MAX_CPUS + 1;
-		Late->GnbLateConfiguration.FchIoapicId = CONFIG_MAX_CPUS;
+		Late->GnbLateConfiguration.GnbIoapicId = GNB_IOAPIC_ID;
+		Late->GnbLateConfiguration.FchIoapicId = FCH_IOAPIC_ID;
 	}
 
 	/* Code for creating CDIT requires hop count table. If it is not

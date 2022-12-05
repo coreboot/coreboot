@@ -23,6 +23,7 @@
 #include <northbridge/amd/nb_common.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <southbridge/amd/pi/hudson/pci_devs.h>
+#include <southbridge/amd/pi/hudson/ioapic.h>
 #include <amdblocks/cpu.h>
 
 #define MAX_NODE_NUMS MAX_NODES
@@ -221,7 +222,7 @@ static void nb_set_resources(struct device *dev)
 
 static void northbridge_init(struct device *dev)
 {
-	setup_ioapic((u8 *)IO_APIC2_ADDR, CONFIG_MAX_CPUS + 1);
+	setup_ioapic((u8 *)IO_APIC2_ADDR, GNB_IOAPIC_ID);
 }
 
 static unsigned long acpi_fill_hest(acpi_hest_t *hest)
@@ -253,7 +254,7 @@ unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
 	ivhd_ioapic->dte_setting = IVHD_DTE_LINT_1_PASS | IVHD_DTE_LINT_0_PASS |
 				   IVHD_DTE_SYS_MGT_NO_TRANS | IVHD_DTE_NMI_PASS |
 				   IVHD_DTE_EXT_INT_PASS | IVHD_DTE_INIT_PASS;
-	ivhd_ioapic->handle = CONFIG_MAX_CPUS; /* FCH IOAPIC ID */
+	ivhd_ioapic->handle = FCH_IOAPIC_ID;
 	ivhd_ioapic->source_dev_id = PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC);
 	ivhd_ioapic->variety = IVHD_SPECIAL_DEV_IOAPIC;
 	current += sizeof(ivrs_ivhd_special_t);
@@ -263,7 +264,7 @@ unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
 	ivhd_ioapic->type = IVHD_DEV_8_BYTE_EXT_SPECIAL_DEV;
 	ivhd_ioapic->reserved = 0x0000;
 	ivhd_ioapic->dte_setting = 0x00;
-	ivhd_ioapic->handle = CONFIG_MAX_CPUS + 1; /* GNB IOAPIC ID */
+	ivhd_ioapic->handle = GNB_IOAPIC_ID;
 	ivhd_ioapic->source_dev_id = PCI_DEVFN(0, 1);
 	ivhd_ioapic->variety = IVHD_SPECIAL_DEV_IOAPIC;
 	current += sizeof(ivrs_ivhd_special_t);

@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <arch/ioapic.h>
 #include <northbridge/amd/nb_common.h>
+#include <southbridge/amd/pi/hudson/ioapic.h>
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
@@ -10,11 +11,11 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = acpi_create_madt_lapics_with_nmis(current);
 
 	/* Write SB800 IOAPIC, only one */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, CONFIG_MAX_CPUS,
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, FCH_IOAPIC_ID,
 					   IO_APIC_ADDR, 0);
 
 	/* TODO: Remove the hardcode */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, CONFIG_MAX_CPUS + 1,
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, GNB_IOAPIC_ID,
 					   IO_APIC2_ADDR, 24);
 
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)

@@ -87,6 +87,7 @@ basic functions:
     -v | -version           Print version
          -file <path>       Set path to the inteltool file. <inteltool.log> by default
          -out <path>        Set path to the generated file. <generate/gpio.h> by default
+         -logs <path>       Override the log file path. <logs.txt> by default
     -p | -platform <type>   Set the PCH platform type. <sunrise> by default
                             (enter ? to show datails)
 
@@ -193,6 +194,8 @@ func ParseOptions() {
 	flag.Usage = Usage
 	flag.StringVar(&p2m.Config.InputPath, "file", "inteltool.log", "")
 	flag.StringVar(&p2m.Config.OutputPath, "out", "generate/gpio.h", "")
+	flag.StringVar(&p2m.Config.LogsPath, "logs", "logs.txt", "")
+
 	help := flag.Bool("help", false, "")
 
 	vers, v := flag.Bool("version", false, ""), flag.Bool("v", false, "")

@@ -7,6 +7,7 @@ import (
 
 	"review.coreboot.org/coreboot.git/util/intelp2m/cli"
 	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
+	"review.coreboot.org/coreboot.git/util/intelp2m/logs"
 	"review.coreboot.org/coreboot.git/util/intelp2m/parser"
 )
 
@@ -33,6 +34,13 @@ func main() {
 
 	cli.ParseOptions()
 
+	if file, err := logs.Init(); err != nil {
+		fmt.Printf("logs init error: %v\n", err)
+		os.Exit(1)
+	} else {
+		defer file.Close()
+	}
+
 	if file, err := os.Open(p2m.Config.InputPath); err != nil {
 		fmt.Printf("input file error: %v\n", err)
 		os.Exit(1)
@@ -52,6 +60,8 @@ func main() {
 		p2m.Config.OutputFile = file
 		defer file.Close()
 	}
+
+	logs.Infof("start %s", os.Args[0])
 
 	prs := parser.ParserData{}
 	prs.Parse()
@@ -80,5 +90,6 @@ static const struct pad_config gpio_table[] = {`, Version)
 
 #endif /* CFG_GPIO_H */
 `)
+	logs.Infof("exit from %s\n", os.Args[0])
 	os.Exit(0)
 }

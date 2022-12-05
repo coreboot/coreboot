@@ -52,6 +52,7 @@ type Settings struct {
 	Field         FieldType
 	InputPath     string
 	OutputPath    string
+	LogsPath      string
 	InputFile     *os.File
 	OutputFile    *os.File
 	IgnoredFields bool

@@ -50,6 +50,12 @@ Device (SPI1)
 	Name (_DDN, "Serial IO SPI Controller 1")
 }
 
+Device (SPI2)
+{
+	Name (_ADR, 0x00120006)
+	Name (_DDN, "Serial IO SPI Controller 2")
+}
+
 Device (UAR0)
 {
 	Name (_ADR, 0x001e0000)

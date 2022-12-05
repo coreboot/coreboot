@@ -20,7 +20,6 @@ DefinitionBlock(
 		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 		#include <soc/intel/tigerlake/acpi/southbridge.asl>
 		#include <soc/intel/tigerlake/acpi/tcss.asl>
-		#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 	}
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>

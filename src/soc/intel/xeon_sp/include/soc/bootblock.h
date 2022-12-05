@@ -7,5 +7,5 @@
 
 /* Bootblock post console init programming */
 void bootblock_pch_init(void);
-
+void report_platform_info(void);
 #endif

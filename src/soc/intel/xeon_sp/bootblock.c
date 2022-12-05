@@ -77,4 +77,6 @@ void bootblock_soc_init(void)
 
 	/* Programming TCO_BASE_ADDRESS and TCO Timer Halt */
 	tco_configure();
+
+	report_platform_info();
 }

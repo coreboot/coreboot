@@ -3,6 +3,7 @@
 #include "psp_verstage.h"
 
 #include <amdblocks/acpimmio.h>
+#include <bl_uapp/bl_errorcodes_public.h>
 #include <bl_uapp/bl_syscall_public.h>
 #include <boot_device.h>
 #include <cbfs.h>
@@ -134,6 +135,25 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 		update_psp_fw_hash_table(hash_fname);
 
 	return 0;
+}
+
+static void report_prev_boot_status_to_vboot(void)
+{
+	uint32_t boot_status = 0;
+	int ret;
+	struct vb2_context *ctx = vboot_get_context();
+
+	/* Already in recovery mode. No need to report previous boot status. */
+	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE)
+		return;
+
+	ret = svc_get_prev_boot_status(&boot_status);
+	if (ret != BL_OK || boot_status) {
+		printk(BIOS_ERR, "PSPFW failure in previous boot: %d:%#8x\n", ret, boot_status);
+		vbnv_init();
+		vb2api_previous_boot_fail(ctx, VB2_RECOVERY_FW_VENDOR_BLOB,
+					  boot_status ? (int)boot_status : ret);
+	}
 }
 
 /*
@@ -288,6 +308,8 @@ void Main(void)
 	verstage_mainboard_init();
 
 	post_code(POSTCODE_VERSTAGE_MAIN);
+	if (CONFIG(SEPARATE_SIGNED_PSPFW))
+		report_prev_boot_status_to_vboot();
 
 	vboot_run_logic();
 

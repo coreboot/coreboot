@@ -8,6 +8,8 @@ else
 testobj := $(obj)/tests
 endif
 
+objutil := $(testobj)/util
+
 include $(top)/tests/Makefile.common
 
 # Enable GDB debug build if requested

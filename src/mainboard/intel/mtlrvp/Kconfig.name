@@ -1,2 +1,5 @@
 config BOARD_INTEL_MTLRVP_P
 	bool "Meteorlake-P RVP"
+
+config BOARD_INTEL_MTLRVP_P_EXT_EC
+	bool "Meteorlake-P RVP with Chrome EC"

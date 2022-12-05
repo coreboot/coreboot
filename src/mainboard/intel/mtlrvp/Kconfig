@@ -8,6 +8,9 @@ config BOARD_INTEL_MTLRVP_COMMON
 config BOARD_INTEL_MTLRVP_P
 	select BOARD_INTEL_MTLRVP_COMMON
 
+config BOARD_INTEL_MTLRVP_P_EXT_EC
+	select BOARD_INTEL_MTLRVP_COMMON
+
 if BOARD_INTEL_MTLRVP_COMMON
 
 config MAINBOARD_DIR
@@ -15,7 +18,7 @@ config MAINBOARD_DIR
 
 config BASEBOARD_DIR
 	string
-	default "mtlrvp"
+	default "mtlrvp_p" if BOARD_INTEL_MTLRVP_P || BOARD_INTEL_MTLRVP_P_EXT_EC
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -31,9 +34,14 @@ config MAINBOARD_FAMILY
 config VARIANT_DIR
 	string
 	default "mtlrvp_p" if BOARD_INTEL_MTLRVP_P
+	default "mtlrvp_p_ext_ec" if BOARD_INTEL_MTLRVP_P_EXT_EC
 
 config DEVICETREE
 	string
-	default "devicetree.cb"
+	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree.cb"
+
+config OVERRIDE_DEVICETREE
+	string
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 endif # BOARD_INTEL_MTLRVP_COMMON

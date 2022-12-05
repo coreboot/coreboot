@@ -129,6 +129,8 @@ extern struct device_operations pmc_ops;
 #define   HPR_CAUSE0_MI_HRPC		(1 << 9)
 #define   HPR_CAUSE0_MI_HR		(1 << 8)
 
+#define SLP_S0_RES			0x193c
+
 #define CPPMVRIC			0x1B1C
 #define   XTALSDQDIS			(1 << 22)
 

@@ -29,6 +29,15 @@ bool cpu_soc_is_in_untrusted_mode(void)
 	return !!(msr.lo & ENABLE_IA_UNTRUSTED);
 }
 
+void cpu_soc_bios_done(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_BIOS_DONE);
+	msr.lo |= ENABLE_IA_UNTRUSTED;
+	wrmsr(MSR_BIOS_DONE, msr);
+}
+
 uint8_t get_supported_lpm_mask(void)
 {
 	return LPM_S0i2_0 | LPM_S0i2_1 | LPM_S0i2_2;

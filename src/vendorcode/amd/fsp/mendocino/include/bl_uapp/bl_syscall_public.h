@@ -55,6 +55,7 @@ enum verstage_cmd_id {
 	CMD_CCP_DMA,
 	CMD_SET_PLATFORM_BOOT_MODE,
 	CMD_SET_FW_HASH_TABLE,
+	CMD_GET_PREV_BOOT_STATUS,
 };
 
 struct mod_exp_params {
@@ -368,6 +369,15 @@ uint32_t svc_set_platform_boot_mode(enum chrome_platform_boot_mode boot_mode);
  * Return value: BL_OK or error code
  */
 uint32_t svc_set_fw_hash_table(struct psp_fw_hash_table *hash_table);
+
+/* Get the previous boot status.
+ *
+ * Parameters:
+ * 	- boot_status - Address where the boot status is read into
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_get_prev_boot_status(uint32_t *boot_status);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

@@ -343,6 +343,15 @@ uint32_t svc_ccp_dma(uint32_t spi_rom_offset, void *dest, uint32_t size);
  -----------------------------------------------------------------------------*/
 uint32_t svc_set_platform_boot_mode(enum chrome_platform_boot_mode boot_mode);
 
+/* Get the previous boot status.
+ *
+ * Parameters:
+ * 	- boot_status - Address where the boot status is read into
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_get_prev_boot_status(uint32_t *boot_status);
+
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);
 

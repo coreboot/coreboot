@@ -215,3 +215,13 @@ uint32_t svc_set_fw_hash_table(struct psp_fw_hash_table *hash_table)
 	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_SET_FW_HASH_TABLE, (void *)&param, retval);
 	return retval;
 }
+
+uint32_t svc_get_prev_boot_status(uint32_t *boot_status)
+{
+	uint32_t retval = 0;
+	struct cmd_param_get_prev_boot_status param = {
+		.ptr_boot_status = boot_status,
+	};
+	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_GET_PREV_BOOT_STATUS, (void *)&param, retval);
+	return retval;
+}

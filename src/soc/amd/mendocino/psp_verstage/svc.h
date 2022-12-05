@@ -94,4 +94,8 @@ struct cmd_param_set_fw_hash_table {
 	struct psp_fw_hash_table *ptr_psp_fw_hash_table;
 };
 
+struct cmd_param_get_prev_boot_status {
+	unsigned int *ptr_boot_status;
+};
+
 #endif /* PSP_VERSTAGE_SVC_H */

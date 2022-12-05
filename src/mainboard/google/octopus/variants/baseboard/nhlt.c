@@ -28,6 +28,12 @@ void __weak variant_nhlt_init(struct nhlt *nhlt)
 			printk(BIOS_INFO, "Added Dialog_7219 codec.\n");
 	}
 
+	if (CONFIG(NHLT_DA7219) && codec == SSFC_AUDIO_CODEC_CS42L42) {
+		/* Use Dialog NHLT for Cirrus Logic */
+		if (!nhlt_soc_add_da7219(nhlt, AUDIO_LINK_SSP2))
+			printk(BIOS_INFO, "Added Cirrus Logic codec.\n");
+	}
+
 	if (CONFIG(NHLT_RT5682) &&
 			(codec == SSFC_AUDIO_CODEC_RT5682 ||
 			codec == SSFC_AUDIO_CODEC_RT5682_VS)) {

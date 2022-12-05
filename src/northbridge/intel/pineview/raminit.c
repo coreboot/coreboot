@@ -149,14 +149,8 @@ static void find_ramconfig(struct sysinfo *s, u32 chan)
 			// NC/NC
 			s->dimm_config[chan] = 0;
 		} else if (s->dimms[(chan>>1) + 1].sides == 1) {
-			// NC/SS
-			if (s->dimms[(chan>>1) + 1].width == 0) {
-				// NC/8SS
-				s->dimm_config[chan] = 1;
-			} else {
-				// NC/16SS
-				s->dimm_config[chan] = 1;
-			}
+			// NC/{8,16}SS
+			s->dimm_config[chan] = 1;
 		} else {
 			// NC/DS
 			if (s->dimms[(chan>>1) + 1].width == 0) {
@@ -170,14 +164,8 @@ static void find_ramconfig(struct sysinfo *s, u32 chan)
 	} else if (s->dimms[chan>>1].sides == 1) {
 		// SS
 		if (s->dimms[(chan>>1) + 1].sides == 0) {
-			// SS/NC
-			if (s->dimms[chan>>1].width == 0) {
-				// 8SS/NC
-				s->dimm_config[chan] = 1;
-			} else {
-				// 16SS/NC
-				s->dimm_config[chan] = 1;
-			}
+			// {8,16}SS/NC
+			s->dimm_config[chan] = 1;
 		} else if (s->dimms[(chan>>1) + 1].sides == 1) {
 			// SS/SS
 			if (s->dimms[chan>>1].width == 0) {
@@ -198,22 +186,8 @@ static void find_ramconfig(struct sysinfo *s, u32 chan)
 				}
 			}
 		} else {
-			// SS/DS
-			if (s->dimms[chan>>1].width == 0) {
-				if (s->dimms[(chan>>1) + 1].width == 0) {
-					// 8SS/8DS
-					die("Mixed Not supported\n");
-				} else {
-					die("Mixed Not supported\n");
-				}
-			} else {
-				if (s->dimms[(chan>>1) + 1].width == 0) {
-					// 16SS/8DS
-					die("Mixed Not supported\n");
-				} else {
-					die("Mixed Not supported\n");
-				}
-			}
+			// {8,16}SS/8DS
+			die("Mixed Not supported\n");
 		}
 	} else {
 		// DS
@@ -226,15 +200,9 @@ static void find_ramconfig(struct sysinfo *s, u32 chan)
 				s->dimm_config[chan] = 4;
 			}
 		} else if (s->dimms[(chan>>1) + 1].sides == 1) {
-			// DS/SS
+			// 8DS/{8,16}SS
 			if (s->dimms[chan>>1].width == 0) {
-				if (s->dimms[(chan>>1) + 1].width == 0) {
-					// 8DS/8SS
-					die("Mixed Not supported\n");
-				} else {
-					// 8DS/16SS
-					die("Mixed Not supported\n");
-				}
+				die("Mixed Not supported\n");
 			} else {
 				if (s->dimms[(chan>>1) + 1].width == 0) {
 					die("Mixed Not supported\n");

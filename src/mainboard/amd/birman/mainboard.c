@@ -33,9 +33,7 @@ static const struct fch_irq_routing fch_irq_map[] = {
 	{ PIRQ_H,	14,		PIRQ_NC },
 
 	{ PIRQ_SCI,	ACPI_SCI_IRQ,	ACPI_SCI_IRQ },
-	{ PIRQ_SD,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_SDIO,	PIRQ_NC,	PIRQ_NC },
-	{ PIRQ_EMMC,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_GPIO,	11,		11 },
 	{ PIRQ_I2C0,	10,		10 },
 	{ PIRQ_I2C1,	 7,		 7 },

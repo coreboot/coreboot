@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/psp_efs.h>
-#include <arch/mmio.h>
 #include <assert.h>
 #include <boot_device.h>
 #include <commonlib/region.h>
+#include <device/mmio.h>
 #include <types.h>
 
 static struct embedded_firmware *efs;

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/mmio.h>
 #include <bootstate.h>
+#include <device/mmio.h>
 #include <fw_config.h>
 #include <gpio.h>
 #include <intelblocks/gpio.h>

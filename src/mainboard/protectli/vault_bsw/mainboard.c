@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <arch/mmio.h>
 #include <device/device.h>
+#include <device/mmio.h>
 #include <soc/iomap.h>
 
 #define BIOS_CONTROL_REG	0xFC

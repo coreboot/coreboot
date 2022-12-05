@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/mmio.h>
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <device/dram/common.h>
+#include <device/mmio.h>
 #include <hwilib.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>

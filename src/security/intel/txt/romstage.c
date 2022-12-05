@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/cpu.h>
-#include <arch/mmio.h>
 #include <console/console.h>
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
+#include <device/mmio.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <timer.h>
 #include <types.h>

@@ -1,16 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <arch/io.h>
-#include <arch/mmio.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <device/mmio.h>
 #include <device/pci.h>
-#include <device/pci_ops.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
+#include <framebuffer_info.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
-#include <framebuffer_info.h>
+#include <stdint.h>
 
 /* VGA init. We use the Bochs VESA VBE extensions  */
 #define VBE_DISPI_IOPORT_INDEX          0x01CE

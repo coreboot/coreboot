@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <bootstate.h>
-#include <arch/mmio.h>
-#include <delay.h>
 #include <bootmode.h>
+#include <bootstate.h>
+#include <delay.h>
 #include <device/device.h>
+#include <device/mmio.h>
 #include <device/pci.h>
-#include <soc/pci_devs.h>
 #include <drivers/intel/gma/i915_reg.h>
+#include <soc/pci_devs.h>
 
 static void panel_power_on(uintptr_t igd_bar)
 {

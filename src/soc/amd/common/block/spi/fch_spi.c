@@ -4,8 +4,8 @@
 #include <amdblocks/lpc.h>
 #include <amdblocks/psp_efs.h>
 #include <amdblocks/spi.h>
-#include <arch/mmio.h>
 #include <console/console.h>
+#include <device/mmio.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <stdint.h>

@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/mmio.h>
 #include <console/console.h>
-#include <hsio.h>
+#include <device/mmio.h>
+#include <fast_spi_def.h>
 #include <gpio_defs.h>
+#include <hsio.h>
 #include <soc/fiamux.h>
 #include <string.h>
-#include <fast_spi_def.h>
 
 #ifdef __RAMSTAGE__
 static void update_hsio_info_for_m2_slots(size_t num_of_entry, BL_HSIO_INFORMATION *config)

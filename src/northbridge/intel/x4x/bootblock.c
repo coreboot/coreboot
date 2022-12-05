@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <arch/bootblock.h>
-#include <arch/mmio.h>
 #include <assert.h>
+#include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <types.h>
 

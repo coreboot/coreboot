@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/io.h>
-#include <arch/mmio.h>
 #include <assert.h>
 #include <console/uart.h>
+#include <device/mmio.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <southbridge/intel/lynxpoint/iobp.h>

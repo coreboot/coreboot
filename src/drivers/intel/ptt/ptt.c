@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/mmio.h>
-#include <soc/pci_devs.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
+#include <device/mmio.h>
+#include <device/pci_ops.h>
 #include <security/intel/txt/txt_register.h>
+#include <soc/pci_devs.h>
 #include <stdint.h>
 
 #include "ptt.h"

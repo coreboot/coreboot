@@ -7,11 +7,11 @@
 #include <amdblocks/cpu.h>
 #include <amdblocks/data_fabric.h>
 #include <amdblocks/ioapic.h>
-#include <arch/mmio.h>
 #include <cpu/amd/cpuid.h>
 #include <cpu/amd/msr.h>
 #include <cpu/cpu.h>
 #include <device/device.h>
+#include <device/mmio.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <FspGuids.h>

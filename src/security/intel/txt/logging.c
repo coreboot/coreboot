@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/mmio.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <device/mmio.h>
 #include <types.h>
 
 #include "txt.h"

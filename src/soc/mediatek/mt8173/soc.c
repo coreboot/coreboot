@@ -2,8 +2,22 @@
 
 #include <bootmem.h>
 #include <device/device.h>
+#include <program_loading.h>
 #include <symbols.h>
 #include <soc/emi.h>
+
+int payload_arch_usable_ram_quirk(uint64_t start, uint64_t size)
+{
+	if (size > REGION_SIZE(sram))
+		return 0;
+
+	if (start >= (uintptr_t)_sram && (start + size) <= (uintptr_t)_esram) {
+		printk(BIOS_DEBUG, "MT8173 uses SRAM for loading BL31.\n");
+		return 1;
+	}
+
+	return 0;
+}
 
 void bootmem_platform_add_ranges(void)
 {

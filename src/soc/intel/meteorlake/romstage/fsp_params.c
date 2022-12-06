@@ -28,6 +28,7 @@ static void pcie_rp_init(FSP_M_CONFIG *m_cfg, uint32_t en_mask,
 			const struct pcie_rp_config *cfg, size_t cfg_count)
 {
 	size_t i;
+	static unsigned int clk_req_mapping = 0;
 
 	for (i = 0; i < cfg_count; i++) {
 		if (!(en_mask & BIT(i)))
@@ -37,8 +38,13 @@ static void pcie_rp_init(FSP_M_CONFIG *m_cfg, uint32_t en_mask,
 		/* flags 0 means, RP config is not specify from devicetree */
 		if (cfg[i].flags == 0)
 			continue;
-		if (!(cfg[i].flags & PCIE_RP_CLK_REQ_UNUSED))
+		if (clk_req_mapping & (1 << cfg[i].clk_req))
+			printk(BIOS_WARNING, "Found overlapped clkreq assignment on clk req %d\n"
+				, cfg[i].clk_req);
+		if (!(cfg[i].flags & PCIE_RP_CLK_REQ_UNUSED)) {
 			m_cfg->PcieClkSrcClkReq[cfg[i].clk_src] = cfg[i].clk_req;
+			clk_req_mapping |= 1 << cfg[i].clk_req;
+		}
 		m_cfg->PcieClkSrcUsage[cfg[i].clk_src] = i;
 	}
 }

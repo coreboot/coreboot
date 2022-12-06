@@ -3,7 +3,6 @@
 #include <baseboard/variants.h>
 #include <delay.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <soc/smi.h>
 #include <variant/gpio.h>
 

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 
 static const struct soc_amd_gpio woomax_bid0_gpio_set_stage_ram[] = {
 	/* GPIO_4 NC */

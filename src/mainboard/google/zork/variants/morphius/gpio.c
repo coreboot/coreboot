@@ -3,7 +3,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <ec/google/chromeec/ec.h>
 
 static const struct soc_amd_gpio morphius_bid1_gpio_set_stage_ram[] = {

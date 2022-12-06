@@ -3,7 +3,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <ec/google/chromeec/ec.h>
 
 /* This table is used by dalboz variant with board version < 2. */

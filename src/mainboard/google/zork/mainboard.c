@@ -6,14 +6,12 @@
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <amdblocks/amd_pci_util.h>
-#include <amdblocks/gpio.h>
 #include <amdblocks/smi.h>
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <gpio.h>
 #include <smbios.h>
 #include <soc/cpu.h>
-#include <soc/gpio.h>
 #include <soc/pci_devs.h>
 #include <soc/platform_descriptors.h>
 #include <soc/southbridge.h>

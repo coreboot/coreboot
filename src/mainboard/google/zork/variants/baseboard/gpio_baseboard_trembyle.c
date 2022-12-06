@@ -5,7 +5,6 @@
 #include <delay.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <soc/smi.h>
 #include <variant/gpio.h>
 

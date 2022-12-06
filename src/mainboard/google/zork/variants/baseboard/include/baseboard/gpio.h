@@ -4,8 +4,7 @@
 #define __BASEBOARD_GPIO_H__
 
 #ifndef __ACPI__
-#include <amdblocks/gpio_defs.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 
 #if CONFIG(BOARD_GOOGLE_BASEBOARD_TREMBYLE)
 #define EC_IN_RW_OD		GPIO_130

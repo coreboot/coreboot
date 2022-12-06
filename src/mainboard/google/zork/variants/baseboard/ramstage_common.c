@@ -9,7 +9,7 @@
 #include <drivers/i2c/hid/chip.h>
 #include <drivers/usb/acpi/chip.h>
 #include <ec/google/chromeec/ec.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 

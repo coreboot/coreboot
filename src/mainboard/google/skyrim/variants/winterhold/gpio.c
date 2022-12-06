@@ -2,7 +2,7 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 
 /* GPIO configuration in ramstage */
 static const struct soc_amd_gpio override_gpio_table[] = {

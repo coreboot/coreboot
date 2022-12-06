@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpi.h>
-#include <amdblocks/gpio.h>
 #include <amdblocks/smi.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
+#include <gpio.h>
 #include <soc/smi.h>
 #include <variant/ec.h>
 

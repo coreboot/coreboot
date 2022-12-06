@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <amdblocks/gpio.h>
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
 #include <elog.h>
+#include <gpio.h>
 #include <variant/ec.h>
 
 void mainboard_smi_sleep(u8 slp_typ)

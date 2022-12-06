@@ -3,7 +3,7 @@
 #ifndef __BASEBOARD_VARIANTS_H__
 #define __BASEBOARD_VARIANTS_H__
 
-#include <amdblocks/gpio.h>
+#include <gpio.h>
 #include <soc/pci_devs.h>
 #include <platform_descriptors.h>
 

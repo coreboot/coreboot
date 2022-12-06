@@ -6,6 +6,7 @@
 #include <ec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
 #include <baseboard/gpio.h>
+/* Since this ends up being included in dsdt.asl, <gpio.h> can't be included instead */
 #include <soc/gpio.h>
 
 #define MAINBOARD_EC_SCI_EVENTS                                                                \

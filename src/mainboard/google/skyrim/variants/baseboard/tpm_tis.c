@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <security/tpm/tis.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 
 int tis_plat_irq_status(void)
 {

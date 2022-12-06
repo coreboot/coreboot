@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <amdblocks/acpimmio.h>
-#include <amdblocks/gpio.h>
 #include <arch/io.h>
 #include <baseboard/variants.h>
+#include <gpio.h>
 #include <psp_verstage.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/espi.h>

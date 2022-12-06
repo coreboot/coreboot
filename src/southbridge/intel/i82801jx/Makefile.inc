@@ -21,6 +21,4 @@ ramstage-y += ../common/pciehp.c
 
 smm-y += smihandler.c
 
-CPPFLAGS_common += -I$(src)/southbridge/intel/i82801jx/include
-
 endif

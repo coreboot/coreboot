@@ -5,6 +5,7 @@
 #include <amdblocks/cpu.h>
 #include <amdblocks/data_fabric.h>
 #include <amdblocks/ioapic.h>
+#include <arch/ioapic.h>
 #include <arch/mmio.h>
 #include <console/console.h>
 #include <cpu/amd/cpuid.h>
@@ -14,6 +15,7 @@
 #include <device/pci_ops.h>
 #include <soc/acpi.h>
 #include <soc/data_fabric.h>
+#include <soc/iomap.h>
 #include <soc/pci_devs.h>
 
 #define MAX_DEV_ID 0xFFFF
@@ -27,7 +29,7 @@ unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
 	ivhd_ioapic->dte_setting = IVHD_DTE_LINT_1_PASS | IVHD_DTE_LINT_0_PASS |
 				   IVHD_DTE_SYS_MGT_NO_TRANS | IVHD_DTE_NMI_PASS |
 				   IVHD_DTE_EXT_INT_PASS | IVHD_DTE_INIT_PASS;
-	ivhd_ioapic->handle = FCH_IOAPIC_ID;
+	ivhd_ioapic->handle = get_ioapic_id(VIO_APIC_VADDR);
 	ivhd_ioapic->source_dev_id = PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC);
 	ivhd_ioapic->variety = IVHD_SPECIAL_DEV_IOAPIC;
 	current += sizeof(ivrs_ivhd_special_t);
@@ -36,7 +38,7 @@ unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
 	memset(ivhd_ioapic, 0, sizeof(*ivhd_ioapic));
 
 	ivhd_ioapic->type = IVHD_DEV_8_BYTE_EXT_SPECIAL_DEV;
-	ivhd_ioapic->handle = GNB_IOAPIC_ID;
+	ivhd_ioapic->handle = get_ioapic_id((u8 *)GNB_IO_APIC_ADDR);
 	ivhd_ioapic->source_dev_id = PCI_DEVFN(0, 1);
 	ivhd_ioapic->variety = IVHD_SPECIAL_DEV_IOAPIC;
 	current += sizeof(ivrs_ivhd_special_t);

@@ -10,6 +10,7 @@
 #include <fsp/fsp_debug_event.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
+#include <option.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/xdci.h>
@@ -24,6 +25,7 @@
 #include <soc/soc_chip.h>
 #include <soc/soc_info.h>
 #include <string.h>
+#include <types.h>
 
 /* THC assignment definition */
 #define THC_NONE	0
@@ -345,8 +347,9 @@ static void fill_fsps_8254_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
 	/* Legacy 8254 timer support */
-	s_cfg->Enable8254ClockGating = !CONFIG(USE_LEGACY_8254_TIMER);
-	s_cfg->Enable8254ClockGatingOnS3 = !CONFIG(USE_LEGACY_8254_TIMER);
+	bool use_8254 = get_uint_option("legacy_8254_timer", CONFIG(USE_LEGACY_8254_TIMER));
+	s_cfg->Enable8254ClockGating = !use_8254;
+	s_cfg->Enable8254ClockGatingOnS3 = !use_8254;
 }
 
 static void fill_fsps_pm_timer_params(FSP_S_CONFIG *s_cfg,

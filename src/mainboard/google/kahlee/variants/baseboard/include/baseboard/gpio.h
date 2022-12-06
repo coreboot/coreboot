@@ -4,8 +4,7 @@
 #define __BASEBOARD_GPIO_H__
 
 #ifndef __ACPI__
-#include <amdblocks/gpio_defs.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 
 # define MEM_CONFIG0		GPIO_139
 # define MEM_CONFIG1		GPIO_142

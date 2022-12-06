@@ -3,7 +3,7 @@
 #include <amdblocks/dimm_spd.h>
 #include <arch/romstage.h>
 #include <baseboard/variants.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 
 int mainboard_read_spd(uint8_t spdAddress, char *buf, size_t len)
 {

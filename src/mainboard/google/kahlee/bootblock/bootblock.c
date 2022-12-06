@@ -2,7 +2,7 @@
 
 #include <baseboard/variants.h>
 #include <bootblock_common.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/southbridge.h>
 #include <amdblocks/lpc.h>
 #include <variant/ec.h>

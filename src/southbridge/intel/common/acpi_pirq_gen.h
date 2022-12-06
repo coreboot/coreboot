@@ -89,6 +89,7 @@ void intel_write_pci0_PRT(const struct slot_pin_irq_map *pin_irq_map,
 			  const struct pic_pirq_map *pirq_map);
 
 bool is_slot_pin_assigned(const struct slot_pin_irq_map *pin_irq_map,
-			  unsigned int map_count, unsigned int slot, unsigned int pin);
+			  unsigned int map_count, unsigned int slot,
+			  enum pci_pin pin);
 
 #endif

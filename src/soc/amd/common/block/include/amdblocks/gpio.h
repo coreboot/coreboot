@@ -4,7 +4,7 @@
 #define AMD_BLOCK_GPIO_BANKS_H
 
 #include <types.h>
-#include "gpio_defs.h"
+#include <amdblocks/gpio_defs.h>
 
 typedef uint32_t gpio_t;
 

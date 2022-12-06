@@ -25,7 +25,6 @@ type InheritanceMacro interface {
 
 type PlatformSpecific struct {
 	InheritanceMacro
-	InheritanceTemplate
 }
 
 // RemmapRstSrc - remmap Pad Reset Source Config

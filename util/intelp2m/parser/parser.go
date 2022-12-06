@@ -4,8 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"strconv"
-	"strings"
 
 	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/adl"
@@ -23,7 +21,6 @@ import (
 // PlatformSpecific - platform-specific interface
 type PlatformSpecific interface {
 	GenMacro(id string, dw0 uint32, dw1 uint32, ownership uint8) string
-	GroupNameExtract(line string) (bool, string)
 	KeywordCheck(line string) bool
 }
 
@@ -55,20 +52,6 @@ type ParserData struct {
 	ownership map[string]uint32
 }
 
-// hostOwnershipGet - get the host software ownership value for the corresponding
-// pad ID
-// id : pad ID string
-// return the host software ownership form the parser struct
-func (parser *ParserData) hostOwnershipGet(id string) uint8 {
-	var ownership uint8 = 0
-	_, group := parser.platform.GroupNameExtract(id)
-	numder, _ := strconv.Atoi(strings.TrimLeft(id, group))
-	if (parser.ownership[group] & (1 << uint8(numder))) != 0 {
-		ownership = 1
-	}
-	return ownership
-}
-
 // padInfoExtract - adds a new entry to pad info map
 // return error status
 func (parser *ParserData) padInfoExtract() int {
@@ -81,7 +64,7 @@ func (parser *ParserData) padInfoExtract() int {
 		function:  function,
 		dw0:       dw0,
 		dw1:       dw1,
-		ownership: parser.hostOwnershipGet(id)}
+		ownership: 0}
 	parser.padmap = append(parser.padmap, pad)
 	return 0
 
@@ -111,63 +94,9 @@ func (parser *ParserData) PlatformSpecificInterfaceSet() {
 		p2m.Jasper: jsl.PlatformSpecific{},
 		p2m.Meteor: mtl.PlatformSpecific{},
 		// See platforms/ebg/macro.go
-		p2m.Emmitsburg: ebg.PlatformSpecific{
-			InheritanceTemplate: cnl.PlatformSpecific{
-				InheritanceTemplate: snr.PlatformSpecific{},
-			},
-		},
+		p2m.Emmitsburg: ebg.PlatformSpecific{},
 	}
 	parser.platform = platform[p2m.Config.Platform]
-}
-
-// Register - read specific platform registers (32 bits)
-// line         : string from file with pad config map
-// nameTemplate : register name femplate to filter parsed lines
-// return
-//
-//	valid  : true if the dump of the register in intertool.log is set in accordance
-//	         with the template
-//	name   : full register name
-//	offset : register offset relative to the base address
-//	value  : register value
-func (parser *ParserData) Register(nameTemplate string) (
-	valid bool,
-	name string,
-	offset uint32,
-	value uint32,
-) {
-	if strings.Contains(parser.line, nameTemplate) {
-		if registerInfoTemplate(parser.line, &name, &offset, &value) == 0 {
-			fmt.Printf("\n\t/* %s : 0x%x : 0x%x */\n", name, offset, value)
-			return true, name, offset, value
-		}
-	}
-	return false, "ERROR", 0, 0
-}
-
-// padOwnershipExtract - extract Host Software Pad Ownership from inteltool dump
-//
-//	return true if success
-func (parser *ParserData) padOwnershipExtract() bool {
-	var group string
-	status, name, offset, value := parser.Register("HOSTSW_OWN_GPP_")
-	if status {
-		_, group = parser.platform.GroupNameExtract(parser.line)
-		parser.ownership[group] = value
-		fmt.Printf("\n\t/* padOwnershipExtract: [offset 0x%x] %s = 0x%x */\n",
-			offset, name, parser.ownership[group])
-	}
-	return status
-}
-
-// padConfigurationExtract - reads GPIO configuration registers and returns true if the
-//
-//	information from the inteltool log was successfully parsed.
-func (parser *ParserData) padConfigurationExtract() bool {
-	if p2m.Config.Platform == p2m.Apollo {
-		return false
-	}
-	return parser.padOwnershipExtract()
 }
 
 // Parse pads groupe information in the inteltool log file
@@ -189,7 +118,7 @@ func (parser *ParserData) Parse() {
 		isIncluded, _ := common.KeywordsCheck(parser.line, "GPIO Community", "GPIO Group")
 		if isIncluded {
 			parser.communityGroupExtract()
-		} else if !parser.padConfigurationExtract() && parser.platform.KeywordCheck(parser.line) {
+		} else if parser.platform.KeywordCheck(parser.line) {
 			if parser.padInfoExtract() != 0 {
 				fmt.Println("...error!")
 			}

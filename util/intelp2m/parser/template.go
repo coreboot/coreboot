@@ -38,8 +38,9 @@ func tokenCheck(c rune) bool {
 // *id       : pad id string
 // *dw0      : DW0 register value
 // *dw1      : DW1 register value
+//
 // return
-//   error status
+// error status
 func UseTemplate(line string, function *string, id *string, dw0 *uint32, dw1 *uint32) int {
 	var val uint64
 	// 0x0520: 0x0000003c44000600 GPP_B12  SLP_S0#
@@ -60,23 +61,4 @@ func UseTemplate(line string, function *string, id *string, dw0 *uint32, dw1 *ui
 		*dw1 &= IntSelMask
 	}
 	return 0
-}
-
-// registerInfoTemplate
-// line    : (in)  string from file with pad config map
-// *name   : (out) register name
-// *offset : (out) offset name
-// *value  : (out) register value
-// return
-//   error status
-func registerInfoTemplate(line string, name *string, offset *uint32, value *uint32) int {
-	// 0x0088: 0x00ffffff (HOSTSW_OWN_GPP_F)
-	// 0x0100: 0x00000000 (GPI_IS_GPP_A)
-	if fields := strings.FieldsFunc(line, tokenCheck); len(fields) == 3 {
-		*name = fields[2]
-		fmt.Sscanf(fields[1], "0x%x", value)
-		fmt.Sscanf(fields[0], "0x%x", offset)
-		return 0
-	}
-	return -1
 }

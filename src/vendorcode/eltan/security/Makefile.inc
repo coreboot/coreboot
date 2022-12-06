@@ -8,7 +8,3 @@ CPPFLAGS_common += -I$(src)/vendorcode/eltan/security/mboot
 CPPFLAGS_common += -I$(src)/vendorcode/eltan/security/include
 CPPFLAGS_common += -I$(src)/vendorcode/eltan/security/verified_boot
 endif
-
-ifeq ($(CONFIG_TPM2),y)
-CPPFLAGS_common += -I$(src)/security/include
-endif

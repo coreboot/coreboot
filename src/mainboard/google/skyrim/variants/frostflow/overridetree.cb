@@ -1,4 +1,14 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
+fw_config
+	field FP 0
+		option FP_ABSENT 0
+		option FP_PRESENT 1
+	end
+	field STYLUS 1
+		option STYLUS_ABSENT 0
+		option STYLUS_PRESENT 1
+	end
+end
 
 chip soc/amd/mendocino
 	# Set Package Power Parameters
@@ -75,7 +85,9 @@ chip soc/amd/mendocino
 			register "key.label" = ""pen_eject""
 			register "key.debounce_interval" = "100"
 			register "key.wakeup_route" = "WAKEUP_ROUTE_GPIO_IRQ"
-			device generic 0 on end
+			device generic 0 on
+				probe STYLUS STYLUS_PRESENT
+			end
 		end
 	end # I2C1
 	device ref i2c_2 on
@@ -118,7 +130,9 @@ chip soc/amd/mendocino
 			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_12)"
 			register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_4)"
 			register "enable_delay_ms" = "3"
-			device generic 0 alias fpmcu on end
+			device generic 0 alias fpmcu on
+				probe FP FP_PRESENT
+			end
 		end
 	end # UART1
 

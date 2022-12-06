@@ -11,21 +11,6 @@
 
 #include <types.h>
 
-#define ALL		(0xff << 24)
-#define NONE		(0)
-#define INT_DISABLED	(1 << 16)
-#define INT_ENABLED	(0 << 16)
-#define TRIGGER_EDGE	(0 << 15)
-#define TRIGGER_LEVEL	(1 << 15)
-#define POLARITY_HIGH	(0 << 13)
-#define POLARITY_LOW	(1 << 13)
-#define PHYSICAL_DEST	(0 << 11)
-#define LOGICAL_DEST	(1 << 11)
-#define ExtINT		(7 << 8)
-#define NMI		(4 << 8)
-#define SMI		(2 << 8)
-#define INT		(1 << 8)
-
 u8 get_ioapic_id(void *ioapic_base);
 u8 get_ioapic_version(void *ioapic_base);
 

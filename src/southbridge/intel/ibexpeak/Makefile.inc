@@ -33,6 +33,4 @@ romstage-y += early_cir.c
 romstage-y += early_usb.c
 romstage-y += setup_heci_uma.c
 
-CPPFLAGS_common += -I$(src)/southbridge/intel/ibexpeak/include
-
 endif

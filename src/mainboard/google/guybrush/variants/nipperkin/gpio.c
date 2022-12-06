@@ -4,7 +4,6 @@
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 
 /* This table is used by nipperkin variant with board version < 2. */
 static const struct soc_amd_gpio bid1_override_gpio_table[] = {

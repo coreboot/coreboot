@@ -3,8 +3,8 @@
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <device/device.h>
-#include <soc/gpio.h>
 #include <amdblocks/cpu.h>
+#include <gpio.h>
 
 bool variant_has_pcie_wwan(void)
 {

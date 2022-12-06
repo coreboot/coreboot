@@ -3,8 +3,8 @@
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <gpio.h>
 #include <soc/platform_descriptors.h>
-#include <soc/gpio.h>
 #include <types.h>
 
 /* All PCIe Resets are handled in coreboot */

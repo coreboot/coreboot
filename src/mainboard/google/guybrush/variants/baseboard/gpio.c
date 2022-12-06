@@ -4,7 +4,6 @@
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 
 /* GPIO configuration in ramstage */
 /* Please make sure that *ALL* GPIOs are configured in this table */

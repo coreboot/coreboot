@@ -2,7 +2,7 @@
 
 #include <baseboard/variants.h>
 #include <device/device.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 
 bool __weak variant_has_pcie_wwan(void)
 {

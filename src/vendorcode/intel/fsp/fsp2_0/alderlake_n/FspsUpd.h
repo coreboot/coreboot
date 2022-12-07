@@ -2224,7 +2224,8 @@ typedef struct {
   UINT8                       SataRstPcieDeviceResetDelay[3];
 
 /** Offset 0x0A42 - UFS enable/disable
-  PCIe Storage Device Reset Delay in milliseconds. Default value is 100ms
+  Enable/Disable UFS controller, One byte for each Controller - (1,0) to enable controller
+  0 and (0,1) to enable controller 1
   $EN_DIS
 **/
   UINT8                       UfsEnable[2];

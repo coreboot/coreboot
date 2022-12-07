@@ -1,5 +1,8 @@
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include
+
+ifeq ($(CONFIG_BOARD_SYSTEM76_GALP5),y)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
+endif
 
 bootblock-y += bootblock.c
 bootblock-y += variants/$(VARIANT_DIR)/gpio_early.c

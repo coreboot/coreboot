@@ -239,8 +239,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E16, NONE),
 	/* GPP_E17 : [] ==> EN_HPS_PWR */
 	PAD_CFG_GPO(GPP_E17, 1, DEEP),
-	/* GPP_E22 : net EN_PP3300_WLAN is not present in the given design */
-	PAD_NC(GPP_E22, NONE),
+	/* GPP_E22 : [] ==> EN_PP3300_WLAN */
+	PAD_CFG_GPO(GPP_E22, 1, DEEP),
 
 	/* GPP_F00 :  [] ==> CNV_BRI_DT_R */
 	PAD_CFG_NF(GPP_F00, NONE, DEEP, NF1),
@@ -260,8 +260,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_F07, 0, DEEP),
 	/* GPP_F08 : [] ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_F08, 1, DEEP),
-	/* GPP_F09 : [] ==> EN_PP3300_WLAN */
-	PAD_CFG_GPO(GPP_F09, 1, DEEP),
+	/* GPP_F09 : [] ==> WLAN_PE_WAKE_ODL */
+	PAD_CFG_GPI_IRQ_WAKE(GPP_F09, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_F10 : [] ==> WWAN_PCIE_WAKE_ODL */
 	PAD_CFG_GPI_IRQ_WAKE(GPP_F10, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_F11 : GSP1_SOC_CLK_R */

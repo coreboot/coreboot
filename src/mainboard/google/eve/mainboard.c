@@ -34,7 +34,7 @@ static unsigned long mainboard_write_acpi_tables(
 	nhlt->subsystem_id = SUBSYSTEM_ID;
 
 	/* 4 Channel DMIC array */
-	if (nhlt_soc_add_rt5514(nhlt, AUDIO_LINK_SSP0, 4))
+	if (nhlt_soc_add_rt5514(nhlt, AUDIO_LINK_SSP0, 4, 1))
 		printk(BIOS_ERR, "Couldn't add rt5514.\n");
 
 	/* RT5663 Headset codec */
@@ -42,7 +42,8 @@ static unsigned long mainboard_write_acpi_tables(
 		printk(BIOS_ERR, "Couldn't add headset codec.\n");
 
 	/* MAXIM98927 Smart Amps for left and right channel */
-	if (nhlt_soc_add_max98927(nhlt, AUDIO_LINK_SSP0))
+	/* Render time_slot is 0 and feedback time_slot is 2 */
+	if (nhlt_soc_add_max98927(nhlt, AUDIO_LINK_SSP0, 0, 2))
 		printk(BIOS_ERR, "Couldn't add max98927\n");
 
 	end_addr = nhlt_soc_serialize_oem_overrides(nhlt, start_addr,

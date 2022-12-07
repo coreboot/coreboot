@@ -16,7 +16,8 @@ void variant_nhlt_init(struct nhlt *nhlt)
 		printk(BIOS_ERR, "Couldn't add Dialog DA7219 codec.\n");
 
 	/* MAXIM Smart Amps for left and right speakers. */
-	if (nhlt_soc_add_max98373(nhlt, AUDIO_LINK_SSP0))
+	/* Render time_slot is 0 and feedback time_slot is 2 */
+	if (nhlt_soc_add_max98373(nhlt, AUDIO_LINK_SSP0, 0, 2))
 		printk(BIOS_ERR, "Couldn't add Maxim 98373 codec.\n");
 }
 

@@ -74,8 +74,14 @@ static struct nhlt_endp_descriptor max98927_descriptors[] = {
 	},
 };
 
-int nhlt_soc_add_max98927(struct nhlt *nhlt, int hwlink)
+int nhlt_soc_add_max98927(struct nhlt *nhlt, int hwlink, int render_slot,
+				int feedback_slot)
 {
+	render_config.tdm_config.virtual_slot = render_slot;
+	render_config.feedback_virtual_slot = feedback_slot;
+	capture_config.tdm_config.virtual_slot = feedback_slot;
+	capture_config.feedback_virtual_slot = render_slot;
+
 	/* Virtual bus id of SSP links are the hardware port ids proper. */
 	return nhlt_add_ssp_endpoints(nhlt, hwlink, max98927_descriptors,
 					ARRAY_SIZE(max98927_descriptors));

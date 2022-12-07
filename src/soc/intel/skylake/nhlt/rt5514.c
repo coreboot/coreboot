@@ -16,7 +16,7 @@ static const struct nhlt_format_config rt5514_4ch_formats[] = {
 	},
 };
 
-static const struct nhlt_dmic_array_config rt5514_4ch_mic_config = {
+static struct nhlt_dmic_array_config rt5514_4ch_mic_config = {
 	.tdm_config = {
 		.virtual_slot = 0x1,
 		.config_type = NHLT_TDM_MIC_ARRAY,
@@ -24,7 +24,7 @@ static const struct nhlt_dmic_array_config rt5514_4ch_mic_config = {
 	.array_type = NHLT_MIC_ARRAY_4CH_L_SHAPED,
 };
 
-static const struct nhlt_endp_descriptor rt5514_4ch_descriptors[] = {
+static struct nhlt_endp_descriptor rt5514_4ch_descriptors[] = {
 	{
 		.link = NHLT_LINK_SSP,
 		.device = NHLT_SSP_DEV_I2S,
@@ -38,8 +38,10 @@ static const struct nhlt_endp_descriptor rt5514_4ch_descriptors[] = {
 	},
 };
 
-int nhlt_soc_add_rt5514(struct nhlt *nhlt, int hwlink, int num_channels)
+int nhlt_soc_add_rt5514(struct nhlt *nhlt, int hwlink, int num_channels, int virtual_slot)
 {
+	rt5514_4ch_mic_config.tdm_config.virtual_slot = virtual_slot;
+
 	switch (num_channels) {
 	case 4:
 		return nhlt_add_ssp_endpoints(nhlt, hwlink,

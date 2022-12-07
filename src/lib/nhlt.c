@@ -181,14 +181,6 @@ int nhlt_endpoint_add_formats(struct nhlt_endpoint *endp,
 	return 0;
 }
 
-void nhlt_next_instance(struct nhlt *nhlt, int link_type)
-{
-	if (link_type < NHLT_LINK_HDA || link_type >= NHLT_MAX_LINK_TYPES)
-		return;
-
-	nhlt->current_instance_id[link_type]++;
-}
-
 static size_t calc_specific_config_size(struct nhlt_specific_config *cfg)
 {
 	return sizeof(cfg->size) + cfg->size;
@@ -255,7 +247,7 @@ static size_t calc_size(struct nhlt *nhlt)
 
 size_t nhlt_current_size(struct nhlt *nhlt)
 {
-	return calc_size(nhlt) + sizeof(acpi_header_t);
+	return calc_size(nhlt) + sizeof(acpi_header_t) + sizeof(uint32_t);
 }
 
 static void nhlt_free_resources(struct nhlt *nhlt)
@@ -360,12 +352,13 @@ static void serialize_endpoint(struct nhlt_endpoint *endp, struct cursor *cur)
 
 static void nhlt_serialize_endpoints(struct nhlt *nhlt, struct cursor *cur)
 {
-	int i;
+	int i, capabilities_size = 0;
 
 	ser8(cur, nhlt->num_endpoints);
 
 	for (i = 0; i < nhlt->num_endpoints; i++)
 		serialize_endpoint(&nhlt->endpoints[i], cur);
+	ser32(cur, capabilities_size);
 }
 
 uintptr_t nhlt_serialize(struct nhlt *nhlt, uintptr_t acpi_addr)
@@ -468,12 +461,5 @@ int nhlt_add_endpoints(struct nhlt *nhlt,
 int nhlt_add_ssp_endpoints(struct nhlt *nhlt, int virtual_bus_id,
 		const struct nhlt_endp_descriptor *epds, size_t num_epds)
 {
-	int ret;
-
-	ret = _nhlt_add_endpoints(nhlt, virtual_bus_id, epds, num_epds);
-
-	if (!ret)
-		nhlt_next_instance(nhlt, NHLT_LINK_SSP);
-
-	return ret;
+	return  _nhlt_add_endpoints(nhlt, virtual_bus_id, epds, num_epds);
 }

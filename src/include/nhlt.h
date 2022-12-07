@@ -299,6 +299,17 @@ struct nhlt_tdm_config {
 enum {
 	NHLT_TDM_BASIC,
 	NHLT_TDM_MIC_ARRAY,
+	NHLT_TDM_RENDER_WITH_LOOPBACK,
+	NHLT_TDM_RENDER_FEEDBACK,
+	NHLT_TDM_MULTI_MODE,
+	NHLT_TDM_MULTI_MODE_MIC_ARRAY = NHLT_TDM_MULTI_MODE | NHLT_TDM_MIC_ARRAY
+};
+
+struct nhlt_feedback_config {
+	struct nhlt_tdm_config tdm_config;
+	uint8_t feedback_virtual_slot;
+	uint16_t feedback_channels;
+	uint16_t feedback_valid_bits_per_sample;
 };
 
 struct nhlt_dmic_array_config {

@@ -18,6 +18,7 @@ static const struct nhlt_format_config rt5514_4ch_formats[] = {
 
 static const struct nhlt_dmic_array_config rt5514_4ch_mic_config = {
 	.tdm_config = {
+		.virtual_slot = 0x1,
 		.config_type = NHLT_TDM_MIC_ARRAY,
 	},
 	.array_type = NHLT_MIC_ARRAY_4CH_L_SHAPED,

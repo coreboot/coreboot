@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Morgana */
-
 #ifndef AMD_MORGANA_SOUTHBRIDGE_H
 #define AMD_MORGANA_SOUTHBRIDGE_H
 
@@ -13,7 +11,7 @@
 #define PM_PCI_CTRL			0x08
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 #define PWR_RESET_CFG			0x10
-#define   TOGGLE_ALL_PWR_GOOD		(1 << 1)
+#define   TOGGLE_ALL_PWR_GOOD		BIT(1)
 #define PM_SERIRQ_CONF			0x54
 #define   PM_SERIRQ_NUM_BITS_17		0x0000
 #define   PM_SERIRQ_NUM_BITS_18		0x0004
@@ -61,7 +59,6 @@
 #define   PM_ACPI_SW_S5PWRMUX		BIT(16)
 #define   PM_ACPI_EN_SHUTDOWN_MSG	BIT(17)
 #define   PM_ACPI_EN_SYNC_FLOOD		BIT(18)
-#define   PM_ACPI_FORCE_SPIUSEPIN_0	BIT(19)
 #define   PM_ACPI_EN_DF_INTRWAKE	BIT(20)
 #define   PM_ACPI_MASK_USB_S5_RST	BIT(21)
 #define   PM_ACPI_USE_RSMU_RESET	BIT(22)
@@ -96,7 +93,7 @@
 #define   GPP_CLK5_REQ_SHIFT		10
 #define   GPP_CLK6_REQ_SHIFT		12
 #define     GPP_CLK_OUTPUT_COUNT	7
-#define     GPP_CLK_OUTPUT_AVAILABLE	4
+#define     GPP_CLK_OUTPUT_AVAILABLE	7
 #define   GPP_CLK_REQ_MASK(clk_shift)	(0x3 << (clk_shift))
 #define   GPP_CLK_REQ_ON(clk_shift)	(0x3 << (clk_shift))
 #define   GPP_CLK_REQ_EXT(clk_shift)	(0x1 << (clk_shift))

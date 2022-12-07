@@ -7,6 +7,7 @@
 
 #include <amdblocks/chip.h>
 #include <amdblocks/i2c.h>
+#include <amdblocks/pci_clk_req.h>
 #include <gpio.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
@@ -92,11 +93,7 @@ struct soc_amd_morgana_config {
 
 	/* The array index is the general purpose PCIe clock output number. Values in here
 	   aren't the values written to the register to have the default to be always on. */
-	enum {
-		GPP_CLK_ON,	/* GPP clock always on; default */
-		GPP_CLK_REQ,	/* GPP clock controlled by corresponding #CLK_REQx pin */
-		GPP_CLK_OFF,	/* GPP clk off */
-	} gpp_clk_config[GPP_CLK_OUTPUT_AVAILABLE];
+	enum gpp_clk_req gpp_clk_config[GPP_CLK_OUTPUT_AVAILABLE];
 
 	/* performance policy for the PCIe links: power consumption vs. link speed */
 	enum {

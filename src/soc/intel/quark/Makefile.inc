@@ -50,7 +50,6 @@ ramstage-$(CONFIG_ENABLE_BUILTIN_HSUART1) += uart.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/quark
 CPPFLAGS_common += -I$(src)/soc/intel/quark/include
-CPPFLAGS_common += -I$(src)/soc/intel/quark/include/soc/fsp
 
 # Chipset microcode path
 CPPFLAGS_common += -I3rdparty/blobs/soc/intel/quark

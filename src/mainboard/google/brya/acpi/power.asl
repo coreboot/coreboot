@@ -5,12 +5,12 @@
 External (\_SB.PCI0.PMC.IPCS, MethodObj)
 
 /* Voltage rail control signals */
-#define GPIO_1V8_PWR_EN		GPP_E18
+#define GPIO_1V8_PWR_EN		GPP_F12
 #define GPIO_1V8_PG		GPP_E20
 #define GPIO_NV33_PWR_EN	GPP_A21
 #define GPIO_NV33_PG		GPP_A22
 #define GPIO_NVVDD_PWR_EN	GPP_E0
-#define GPIO_PEXVDD_PWR_EN	GPP_F12
+#define GPIO_PEXVDD_PWR_EN	GPP_E10
 #define GPIO_PEXVDD_PG		GPP_E17
 #define GPIO_FBVDD_PWR_EN	GPP_A19
 #define GPIO_FBVDD_PG		GPP_E4
@@ -41,7 +41,7 @@ External (\_SB.PCI0.PMC.IPCS, MethodObj)
  */
 /* Dynamically-assigned NVVDD PG GPIO, set in _INI in SSDT */
 Name (NVPG, 0)
-Name (PXEN, 0)
+Name (GPEN, 0)
 
 /* Optimus Power Control State */
 Name (OPCS, OPTIMUS_POWER_CONTROL_DISABLE)
@@ -116,7 +116,7 @@ Method (GC6I, 0, Serialized)
 	CTXS (GPIO_GPU_ALLRAILS_PG)
 
 	/* Ramp down PEXVDD */
-	CTXS (PXEN)
+	CTXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 0, 20)
 	Sleep (10)
 
@@ -153,7 +153,7 @@ Method (GC6O, 0, Serialized)
 	GPPL (NVPG, 1, 4)
 
 	/* Ramp up PEXVDD */
-	STXS (PXEN)
+	STXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 1, 4)
 
 	/* Assert PG_GPU_ALLRAILS */
@@ -198,7 +198,7 @@ Method (PGON, 0, Serialized)
 	CTXS (GPIO_GPU_PERST_L)
 
 	/* Ramp up 1.8V rail */
-	STXS (GPIO_1V8_PWR_EN)
+	STXS (GPEN)
 	GPPL (GPIO_1V8_PG, 1, 20)
 
 	/* Ramp up NV33 rail */
@@ -210,7 +210,7 @@ Method (PGON, 0, Serialized)
 	GPPL (NVPG, 1, 5)
 
 	/* Ramp up PEXVDD rail */
-	STXS (PXEN)
+	STXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 1, 5)
 
 	/* Ramp up FBVDD rail (active low) */
@@ -244,7 +244,7 @@ Method (PGOF, 0, Serialized)
 	GPPL (GPIO_FBVDD_PG, 0, 20)
 
 	/* Ramp down PEXVDD and let rail discharge to <10% */
-	CTXS (PXEN)
+	CTXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 0, 20)
 	Sleep (10)
 
@@ -259,7 +259,7 @@ Method (PGOF, 0, Serialized)
 	Sleep (4)
 
 	/* Ramp down 1.8V */
-	CTXS (GPIO_1V8_PWR_EN)
+	CTXS (GPEN)
 	GPPL (GPIO_1V8_PG, 0, 20)
 
 	GCOT = Timer

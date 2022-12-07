@@ -1,9 +1,5 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-ifneq ($(filter y,$(CONFIG_VENDORCODE_ELTAN_VBOOT) $(CONFIG_VENDORCODE_ELTAN_MBOOT)),)
-CPPFLAGS_common += -I$(src)/security/mboot
-endif
-
 ifeq ($(CONFIG_VENDORCODE_ELTAN_MBOOT),y)
 postcar-y += mboot.c
 

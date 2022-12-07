@@ -67,7 +67,7 @@ static const struct mb_cfg baseboard_memcfg = {
 
 	.ect = 1, /* Early Command Training */
 
-	.UserBd = BOARD_TYPE_MOBILE,
+	.UserBd = BOARD_TYPE_ULT_ULX,
 };
 
 const struct mb_cfg *variant_memory_params(void)

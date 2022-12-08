@@ -29,7 +29,7 @@ unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
 				   IVHD_DTE_SYS_MGT_NO_TRANS | IVHD_DTE_NMI_PASS |
 				   IVHD_DTE_EXT_INT_PASS | IVHD_DTE_INIT_PASS;
 	ivhd_ioapic->handle = get_ioapic_id(VIO_APIC_VADDR);
-	ivhd_ioapic->source_dev_id = PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC);
+	ivhd_ioapic->source_dev_id = SMBUS_DEVFN; /* function 0 of FCH PCI device */
 	ivhd_ioapic->variety = IVHD_SPECIAL_DEV_IOAPIC;
 	current += sizeof(ivrs_ivhd_special_t);
 
@@ -53,7 +53,7 @@ static unsigned long ivhd_describe_hpet(unsigned long current)
 	ivhd_hpet->reserved = 0x0000;
 	ivhd_hpet->dte_setting = 0x00;
 	ivhd_hpet->handle = 0x00;
-	ivhd_hpet->source_dev_id = PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC);
+	ivhd_hpet->source_dev_id = SMBUS_DEVFN; /* function 0 of FCH PCI device */
 	ivhd_hpet->variety = IVHD_SPECIAL_DEV_HPET;
 	current += sizeof(ivrs_ivhd_special_t);
 

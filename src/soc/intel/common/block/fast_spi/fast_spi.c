@@ -457,6 +457,13 @@ void fast_spi_disable_wp(void)
 	pci_write_config8(dev, SPI_BIOS_CONTROL, bios_cntl);
 }
 
+void fast_spi_set_bde(void)
+{
+	const pci_devfn_t dev = PCH_DEV_SPI;
+
+	pci_or_config32(dev, SPI_BIOS_DECODE_EN, SPI_BIOS_DECODE_LOCK);
+}
+
 void fast_spi_clear_outstanding_status(void)
 {
 	void *spibar = fast_spi_get_bar();

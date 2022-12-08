@@ -4,6 +4,8 @@
 #define SOC_INTEL_COMMON_BLOCK_FAST_SPI_DEF_H
 
 /* PCI configuration registers */
+#define SPI_BIOS_DECODE_EN		0xd8
+#define  SPI_BIOS_DECODE_LOCK		BIT(31)
 
 #define SPI_BIOS_CONTROL		0xdc
 

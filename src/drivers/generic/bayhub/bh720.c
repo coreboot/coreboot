@@ -14,14 +14,14 @@
 
 static u32 bh720_read_pcr(u32 sdbar, u32 addr)
 {
-	write32((void *)(sdbar + BH720_MEM_RW_ADR), BH720_MEM_RW_READ | addr);
-	return read32((void *)(sdbar + BH720_MEM_RW_DATA));
+	write32p(sdbar + BH720_MEM_RW_ADR, BH720_MEM_RW_READ | addr);
+	return read32p(sdbar + BH720_MEM_RW_DATA);
 }
 
 static void bh720_write_pcr(u32 sdbar, u32 addr, u32 data)
 {
-	write32((void *)(sdbar + BH720_MEM_RW_DATA), data);
-	write32((void *)(sdbar + BH720_MEM_RW_ADR), BH720_MEM_RW_WRITE | addr);
+	write32p(sdbar + BH720_MEM_RW_DATA, data);
+	write32p(sdbar + BH720_MEM_RW_ADR, BH720_MEM_RW_WRITE | addr);
 }
 
 static void bh720_rmw_pcr(u32 sdbar, u32 addr, u32 clear, u32 set)
@@ -37,7 +37,7 @@ static void bh720_program_hs200_mode(struct device *dev)
 	u32 sdbar = pci_read_config32(dev, PCI_BASE_ADDRESS_1);
 
 	/* Enable Memory Access Function */
-	write32((void *)(sdbar + BH720_MEM_ACCESS_EN), 0x40000000);
+	write32p(sdbar + BH720_MEM_ACCESS_EN, 0x40000000);
 	bh720_write_pcr(sdbar, 0xd0, 0x80000000);
 
 	/* Set EMMC VCCQ 1.8V PCR 0x308[4] */
@@ -51,7 +51,7 @@ static void bh720_program_hs200_mode(struct device *dev)
 
 	/* Disable Memory Access */
 	bh720_write_pcr(sdbar, 0xd0, 0x80000001);
-	write32((void *)(sdbar + BH720_MEM_ACCESS_EN), 0x80000000);
+	write32p(sdbar + BH720_MEM_ACCESS_EN, 0x80000000);
 }
 
 static void bh720_init(struct device *dev)

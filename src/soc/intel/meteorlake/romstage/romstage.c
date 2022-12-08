@@ -130,12 +130,10 @@ void mainboard_romstage_entry(void)
 	cse_init(HECI1_BASE_ADDRESS);
 
 	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
-	if (!s3wake) {
-		if (CONFIG(SOC_INTEL_CSE_LITE_SKU)) {
-			timestamp_add_now(TS_CSE_FW_SYNC_START);
-			cse_fw_sync();
-			timestamp_add_now(TS_CSE_FW_SYNC_END);
-		}
+	if (!s3wake && CONFIG(SOC_INTEL_CSE_LITE_SKU)) {
+		timestamp_add_now(TS_CSE_FW_SYNC_START);
+		cse_fw_sync();
+		timestamp_add_now(TS_CSE_FW_SYNC_END);
 	}
 
 	/*

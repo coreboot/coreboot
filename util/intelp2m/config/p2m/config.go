@@ -2,7 +2,6 @@ package p2m
 
 import (
 	"fmt"
-	"os"
 )
 
 type PlatformType int
@@ -53,20 +52,24 @@ type Settings struct {
 	InputPath     string
 	OutputPath    string
 	LogsPath      string
-	InputFile     *os.File
-	OutputFile    *os.File
 	IgnoredFields bool
 	AutoCheck     bool
 	GenLevel      int
 }
 
-var Config = Settings{
+var defaultConfig = Settings{
 	Version:       "unknown",
 	Platform:      Sunrise,
 	Field:         NoFlds,
 	IgnoredFields: false,
 	AutoCheck:     true,
 	GenLevel:      0,
+}
+
+var Config = defaultConfig
+
+func SettingsReset() {
+	Config = defaultConfig
 }
 
 func SetPlatformType(format string) error {

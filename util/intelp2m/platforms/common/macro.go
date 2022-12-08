@@ -289,7 +289,7 @@ func (macro *Macro) DecodeIgnoredFieldsDW0() *Macro {
 		dw0.Value = ignored
 		macro.Add("/* DW0: ")
 		macro.Fields.DecodeDW0()
-		macro.Add(" - IGNORED */\n\t")
+		macro.Add(" - IGNORED */\n")
 		dw0.Value = saved
 	}
 	return macro
@@ -305,7 +305,7 @@ func (macro *Macro) DecodeIgnoredFieldsDW1() *Macro {
 		dw1.Value = ignored
 		macro.Add("/* DW0: ")
 		macro.DecodeDW1()
-		macro.Add(" - IGNORED */\n\t")
+		macro.Add(" - IGNORED */\n")
 		dw1.Value = saved
 	}
 	return macro
@@ -332,7 +332,7 @@ func (macro *Macro) GenerateFields() *Macro {
 		macro.DecodeIgnoredFieldsDW1()
 		if p2m.Config.GenLevel >= 4 {
 			/* PAD_CFG_NF(GPP_B23, 20K_PD, PLTRST, NF2), */
-			macro.Add("/* ").Add(reference).Add(" */\n\t")
+			macro.Add("/* ").Add(reference).Add(" */\n")
 		}
 	}
 	if p2m.Config.IgnoredFields {
@@ -408,7 +408,7 @@ func (macro *Macro) Generate() string {
 			if p2m.Config.GenLevel >= 4 {
 				macro.Clear().Add("/* ")
 				macro.Fields.GenerateString()
-				macro.Add(" */\n\t")
+				macro.Add(" */\n")
 				comment += macro.Get()
 			}
 			return comment + body

@@ -1,0 +1,111 @@
+package testsuites
+
+const ReferenceI3Uncheck string = `
+	/* ------- GPIO Community 0 ------- */
+
+	/* ------- GPIO Group GPP_A ------- */
+
+	/* GPP_A0 - RCIN# */
+	/* DW0: 0x84000502, DW1: 0x00000000 */
+	/* DW0: PAD_TRIG(OFF) | PAD_BUF(TX_DISABLE) | (1 << 1) - IGNORED */
+	PAD_CFG_NF(GPP_A0, NONE, PLTRST, NF1),
+
+	/* GPP_A1 - LAD0 */
+	/* DW0: 0x84000402, DW1: 0x00003000 */
+	/* DW0: PAD_TRIG(OFF) | (1 << 1) - IGNORED */
+	PAD_CFG_NF(GPP_A1, UP_20K, PLTRST, NF1),
+
+	/* GPP_A5 - LFRAME# */
+	/* DW0: 0x84000600, DW1: 0x00000000 */
+	/* DW0: PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) - IGNORED */
+	PAD_CFG_NF(GPP_A5, NONE, PLTRST, NF1),
+
+	/* GPP_A13 - SUSWARN#/SUSPWRDNACK */
+	/* DW0: 0x44000600, DW1: 0x00000000 */
+	/* DW0: PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) - IGNORED */
+	PAD_CFG_NF(GPP_A13, NONE, DEEP, NF1),
+
+	/* GPP_A23 - GPIO */
+	/* DW0: 0x84000102, DW1: 0x00000000 */
+	/* DW0: (1 << 1) - IGNORED */
+	PAD_CFG_GPI_TRIG_OWN(GPP_A23, NONE, PLTRST, OFF, ACPI),
+
+	/* ------- GPIO Group GPP_B ------- */
+
+	/* GPP_C1 - RESERVED */
+
+	/* GPP_B0 - GPIO */
+	/* DW0: 0x84000100, DW1: 0x00000000 */
+	PAD_CFG_GPI_TRIG_OWN(GPP_B0, NONE, PLTRST, OFF, ACPI),
+
+	/* GPP_B23 - PCHHOT# */
+	/* DW0: 0x84000a01, DW1: 0x00001000 */
+	/* DW0: PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) | 1 - IGNORED */
+	PAD_CFG_NF(GPP_B23, DN_20K, PLTRST, NF2),
+
+	/* ------- GPIO Community 1 ------- */
+
+	/* ------- GPIO Group GPP_C ------- */
+
+	/* GPP_C0 - SMBCLK */
+	/* DW0: 0x44000502, DW1: 0x00000000 */
+	/* DW0: PAD_TRIG(OFF) | PAD_BUF(TX_DISABLE) | (1 << 1) - IGNORED */
+	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),
+
+	/* GPP_C5 - GPIO */
+	/* DW0: 0x84000100, DW1: 0x00000000 */
+	PAD_CFG_GPI_TRIG_OWN(GPP_C5, NONE, PLTRST, OFF, ACPI),
+
+	/* GPP_C6 - RESERVED */
+
+	/* GPP_C7 - RESERVED */
+
+	/* GPP_C22 - UART2_RTS# */
+	/* DW0: 0x84000600, DW1: 0x00000000 */
+	/* DW0: PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) - IGNORED */
+	PAD_CFG_NF(GPP_C22, NONE, PLTRST, NF1),
+
+	/* ------- GPIO Group GPP_D ------- */
+
+	/* ------- GPIO Group GPP_E ------- */
+
+	/* GPP_E0 - SATAXPCIE0 */
+	/* DW0: 0x84000502, DW1: 0x00003000 */
+	/* DW0: PAD_TRIG(OFF) | PAD_BUF(TX_DISABLE) | (1 << 1) - IGNORED */
+	PAD_CFG_NF(GPP_E0, UP_20K, PLTRST, NF1),
+
+	/* ------- GPIO Group GPP_G ------- */
+
+	/* GPP_G19 - SMI# */
+	/* DW0: 0x84000500, DW1: 0x00000000 */
+	/* DW0: PAD_TRIG(OFF) | PAD_BUF(TX_DISABLE) - IGNORED */
+	PAD_CFG_NF(GPP_G19, NONE, PLTRST, NF1),
+
+	/* ------- GPIO Community 2 ------- */
+
+	/* -------- GPIO Group GPD -------- */
+
+	/* GPD9 - SLP_WLAN# */
+	/* DW0: 0x04000600, DW1: 0x00000000 */
+	/* DW0: PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) - IGNORED */
+	PAD_CFG_NF(GPD9, NONE, PWROK, NF1),
+
+	/* ------- GPIO Community 3 ------- */
+
+	/* ------- GPIO Group GPP_I ------- */
+
+	/* GPP_I0 - DDPB_HPD0 */
+	/* DW0: 0x84000500, DW1: 0x00000000 */
+	/* DW0: PAD_TRIG(OFF) | PAD_BUF(TX_DISABLE) - IGNORED */
+	PAD_CFG_NF(GPP_I0, NONE, PLTRST, NF1),
+
+	/* GPP_I1 - DDPC_HPD1 */
+	/* DW0: 0x84000502, DW1: 0x00000000 */
+	/* DW0: PAD_TRIG(OFF) | PAD_BUF(TX_DISABLE) | (1 << 1) - IGNORED */
+	PAD_CFG_NF(GPP_I1, NONE, PLTRST, NF1),
+
+	/* GPP_I2 - DDPD_HPD2 */
+	/* DW0: 0x84000502, DW1: 0x00000000 */
+	/* DW0: PAD_TRIG(OFF) | PAD_BUF(TX_DISABLE) | (1 << 1) - IGNORED */
+	PAD_CFG_NF(GPP_I2, NONE, PLTRST, NF1),
+`

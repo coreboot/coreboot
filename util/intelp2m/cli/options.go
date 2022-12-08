@@ -192,8 +192,9 @@ func cbOptionsInfo(_ string) error {
 
 func ParseOptions() {
 	flag.Usage = Usage
+
 	flag.StringVar(&p2m.Config.InputPath, "file", "inteltool.log", "")
-	flag.StringVar(&p2m.Config.OutputPath, "out", "generate/gpio.h", "")
+	flag.StringVar(&p2m.Config.OutputPath, "out", "output/gpio.h", "")
 	flag.StringVar(&p2m.Config.LogsPath, "logs", "logs.txt", "")
 
 	help := flag.Bool("help", false, "")

@@ -2,172 +2,127 @@ package parser
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
+	"os"
+	"strings"
 
 	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/adl"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/apl"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/cnl"
+	"review.coreboot.org/coreboot.git/util/intelp2m/logs"
+	"review.coreboot.org/coreboot.git/util/intelp2m/parser/template"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/ebg"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/jsl"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/lbg"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/mtl"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/snr"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/tgl"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common/register/bits"
 )
 
-// PlatformSpecific - platform-specific interface
-type PlatformSpecific interface {
-	GenMacro(id string, dw0 uint32, dw1 uint32, ownership uint8) string
-	KeywordCheck(line string) bool
+type EntryType int
+
+const (
+	EntryEmpty EntryType = iota
+	EntryPad
+	EntryGroup
+	EntryReserved
+)
+
+// Parser entry
+// ID        : pad id string
+// Function  : the string that means the pad function
+// DW0       : DW0 register struct
+// DW1       : DW1 register struct
+// 0wnership : host software ownership
+type Entry struct {
+	EType     EntryType
+	ID        string
+	Function  string
+	DW0       uint32
+	DW1       uint32
+	Ownership uint8
 }
 
-// padInfo - information about pad
-// id        : pad id string
-// offset    : the offset of the register address relative to the base
-// function  : the string that means the pad function
-// dw0       : DW0 register value
-// dw1       : DW1 register value
-// ownership : host software ownership
-type padInfo struct {
-	id        string
-	offset    uint16
-	function  string
-	dw0       uint32
-	dw1       uint32
-	ownership uint8
+func (e *Entry) ToMacro() []string {
+	platform := platforms.GetSpecificInterface()
+	line := platform.GenMacro(e.ID, e.DW0, e.DW1, e.Ownership)
+	slices := strings.Split(line, "\n")
+	return slices
 }
 
-// ParserData - global data
-// line       : string from the configuration file
-// padmap     : pad info map
-// RawFmt     : flag for generating pads config file with DW0/1 reg raw values
-// Template   : structure template type of ConfigFile
-type ParserData struct {
-	platform  PlatformSpecific
-	line      string
-	padmap    []padInfo
-	ownership map[string]uint32
-}
-
-// padInfoExtract - adds a new entry to pad info map
-// return error status
-func (parser *ParserData) padInfoExtract() int {
-	var function, id string
-	var dw0, dw1 uint32
-	if rc := UseTemplate(parser.line, &function, &id, &dw0, &dw1); rc != 0 {
-		return rc
+// extractPad() extracts pad information from a string
+func extractPad(line string) (Entry, error) {
+	function, id, dw0, dw1, err := template.Apply(line)
+	if err != nil {
+		logs.Errorf("%v", err)
+		return Entry{EType: EntryEmpty}, err
 	}
-	pad := padInfo{id: id,
-		function:  function,
-		dw0:       dw0,
-		dw1:       dw1,
-		ownership: 0}
-	parser.padmap = append(parser.padmap, pad)
-	return 0
 
-}
-
-// communityGroupExtract
-func (parser *ParserData) communityGroupExtract() {
-	pad := padInfo{function: parser.line}
-	parser.padmap = append(parser.padmap, pad)
-}
-
-// PlatformSpecificInterfaceSet - specific interface for the platform selected
-// in the configuration
-func (parser *ParserData) PlatformSpecificInterfaceSet() {
-	platform := map[p2m.PlatformType]PlatformSpecific{
-		p2m.Sunrise: snr.PlatformSpecific{},
-		// See platforms/lbg/macro.go
-		p2m.Lewisburg: lbg.PlatformSpecific{
-			InheritanceTemplate: snr.PlatformSpecific{},
-		},
-		p2m.Apollo: apl.PlatformSpecific{},
-		p2m.Cannon: cnl.PlatformSpecific{
-			InheritanceTemplate: snr.PlatformSpecific{},
-		},
-		p2m.Tiger:  tgl.PlatformSpecific{},
-		p2m.Alder:  adl.PlatformSpecific{},
-		p2m.Jasper: jsl.PlatformSpecific{},
-		p2m.Meteor: mtl.PlatformSpecific{},
-		// See platforms/ebg/macro.go
-		p2m.Emmitsburg: ebg.PlatformSpecific{},
+	pad := Entry{
+		EType:     EntryPad,
+		Function:  function,
+		ID:        id,
+		DW0:       dw0,
+		DW1:       dw1,
+		Ownership: 0,
 	}
-	parser.platform = platform[p2m.Config.Platform]
+
+	if dw0 == bits.All32 {
+		pad.EType = EntryReserved
+	}
+
+	return pad, nil
 }
 
-// Parse pads groupe information in the inteltool log file
-// ConfigFile : name of inteltool log file
-func (parser *ParserData) Parse() {
-	// Read all lines from inteltool log file
-	fmt.Println("Parse IntelTool Log File...")
+// extractGroup() extracts information about the pad group from the string
+func extractGroup(line string) Entry {
+	group := Entry{
+		EType:    EntryGroup,
+		Function: line,
+	}
+	return group
+}
 
-	// determine the platform type and set the interface for it
-	parser.PlatformSpecificInterfaceSet()
+// Extract() extracts pad information from a string
+func Extract(line string, platform platforms.SpecificIf) Entry {
+	if included, _ := common.KeywordsCheck(line, "GPIO Community", "GPIO Group"); included {
+		return extractGroup(line)
+	}
 
-	// map of thepad ownership registers for the GPIO controller
-	parser.ownership = make(map[string]uint32)
+	if platform.KeywordCheck(line) {
+		pad, err := extractPad(line)
+		if err != nil {
+			logs.Errorf("extract pad info from %s: %v", line, err)
+			return Entry{EType: EntryEmpty}
+		}
+		return pad
+	}
+	logs.Infof("skip line <%s>", line)
+	return Entry{EType: EntryEmpty}
+}
 
-	file := p2m.Config.InputFile
+// Run() starts the file parsing process
+func Run() ([]Entry, error) {
+	entries := make([]Entry, 0)
+
+	platform := platforms.GetSpecificInterface()
+	if platform == nil {
+		return nil, fmt.Errorf("unknown platform")
+	}
+
+	file, err := os.Open(p2m.Config.InputPath)
+	if err != nil {
+		err = fmt.Errorf("input file error: %v", err)
+		logs.Errorf("%v", err)
+		return nil, err
+	}
+	defer file.Close()
+
+	logs.Infof("parse %s file", p2m.Config.InputPath)
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		parser.line = scanner.Text()
-		isIncluded, _ := common.KeywordsCheck(parser.line, "GPIO Community", "GPIO Group")
-		if isIncluded {
-			parser.communityGroupExtract()
-		} else if parser.platform.KeywordCheck(parser.line) {
-			if parser.padInfoExtract() != 0 {
-				fmt.Println("...error!")
-			}
+		line := scanner.Text()
+		entry := Extract(line, platform)
+		if entry.EType != EntryEmpty {
+			entries = append(entries, entry)
 		}
 	}
-	fmt.Println("...done!")
-}
 
-type PrinterIf interface {
-	Linef(lvl int, format string, args ...interface{})
-	Line(lvl int, str string)
-}
-
-type Generator struct {
-	Data      *ParserData // information from the parser
-	PrinterIf             // interface for printing
-}
-
-// Run - generate a new gpio file based on the information from the parser
-func (g Generator) Run() error {
-	if g.PrinterIf == nil && g.Data == nil {
-		return errors.New("Generator: Incorrect initialization")
-	}
-	for _, pad := range g.Data.padmap {
-		switch pad.dw0 {
-		case 0x00000000:
-			// titleFprint - print GPIO group title to file
-			// /* ------- GPIO Group GPP_L ------- */
-			g.Linef(0, "\n\t/* %s */\n", pad.function)
-		case 0xffffffff:
-			// reservedFprint - print reserved GPIO to file as comment
-			// /* GPP_H17 - RESERVED */
-			g.Line(2, "\n")
-			// small comment about reserved port
-			g.Linef(0, "\t/* %s - %s */\n", pad.id, pad.function)
-		default:
-			// padInfoMacroFprint - print information about current pad to file using
-			// special macros:
-			// PAD_CFG_NF(GPP_F1, 20K_PU, PLTRST, NF1), /* SATAXPCIE4 */
-			platform := g.Data.platform
-			macro := platform.GenMacro(pad.id, pad.dw0, pad.dw1, pad.ownership)
-			g.Linef(2, "\n\t/* %s - %s */\n\t/* DW0: 0x%0.8x, DW1: 0x%0.8x */\n",
-				pad.id, pad.function, pad.dw0, pad.dw1)
-			g.Linef(0, "\t%s", macro)
-			if p2m.Config.GenLevel == 1 {
-				g.Linef(1, "\t/* %s */", pad.function)
-			}
-			g.Line(0, "\n")
-		}
-	}
-	return nil
+	logs.Infof("successfully completed: %d entries", len(entries))
+	return entries, nil
 }

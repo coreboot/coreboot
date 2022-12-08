@@ -5,7 +5,7 @@ THIS_FILE := $(lastword $(MAKEFILE_LIST))
 THIS_DIR  := $(abspath $(dir $(THIS_FILE)))
 SCRIPTS_DIR := $(THIS_DIR)/scripts/linux
 
-OUTPUT_DIR := $(THIS_DIR)/generate
+OUTPUT_DIR := $(THIS_DIR)/output
 VERSION ?= $(shell $(SCRIPTS_DIR)/version.sh)
 LDFLAGS = "-X main.Version=$(VERSION)"
 

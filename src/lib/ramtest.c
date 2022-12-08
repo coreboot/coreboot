@@ -24,7 +24,7 @@ static void phys_memory_barrier(void)
 #else
 static void write_phys(uintptr_t addr, u32 value)
 {
-	write32((void *)addr, value);
+	write32p(addr, value);
 }
 
 static void phys_memory_barrier(void)
@@ -35,7 +35,7 @@ static void phys_memory_barrier(void)
 
 static u32 read_phys(uintptr_t addr)
 {
-	return read32((void *)addr);
+	return read32p(addr);
 }
 
 /**

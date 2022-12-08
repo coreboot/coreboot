@@ -489,7 +489,7 @@ Scope (\_SB.PCI0)
 		TACK, 1,          /* [16:16] IOM Acknowledge bit */
 		DPOF, 1,          /* [17:17] Set 1 to indicate IOM, all the */
 				  /* display is OFF, clear otherwise */
-		Offset(0x70),     /* Pyhsical addr is offset 0x70. */
+		Offset(0x70),     /* Physical addr is offset 0x70. */
 		IMCD, 32,         /* R_SA_IOM_BIOS_MAIL_BOX_CMD */
 		IMDA, 32          /* R_SA_IOM_BIOS_MAIL_BOX_DATA */
 	}

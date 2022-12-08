@@ -66,6 +66,13 @@ TEST_CFLAGS += -fno-pie -fno-pic
 TEST_LDFLAGS += -no-pie
 
 # Extra attributes for unit tests, declared per test
+#   srcs              - sources linked with coreboot libc symbols
+#   syssrcs           - sources linked with system libc, no coreboot includes
+#   cflags            - attribute with additional CFLAGS
+#   config            - Kconfig and defines override (`gcc -D` style)
+#   mocks             - list of symbols to mock
+#   no_test_framework - set to `1` not to link test framework
+#   stage             - name of stage e.g. romstage, bootblock, etc.
 attributes := srcs syssrcs cflags config mocks no_test_framework stage
 
 # Copy attributes of one test to another.

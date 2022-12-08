@@ -135,6 +135,8 @@ void pmc_disable_all_gpe(void);
 /* Clear STD and GPIO GPE status registers. */
 void pmc_clear_all_gpe_status(void);
 
+/* Write PMC MMIO register value with the provided bitmask. */
+void pmc_or_mmio32(uint32_t offset, uint32_t ormask);
 /* Clear status bits in Power and Reset Status (PRSTS) register */
 void pmc_clear_prsts(void);
 

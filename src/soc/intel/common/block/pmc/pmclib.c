@@ -367,6 +367,17 @@ void soc_clear_pm_registers(uintptr_t pmc_bar)
 {
 }
 
+void pmc_or_mmio32(uint32_t offset, uint32_t ormask)
+{
+	uint32_t reg;
+	uintptr_t pmc_bar;
+
+	pmc_bar = soc_read_pmc_base();
+	reg = read32p(pmc_bar + offset);
+	reg |= ormask;
+	write32p(pmc_bar + offset, reg);
+}
+
 void pmc_clear_prsts(void)
 {
 	uint32_t prsts;

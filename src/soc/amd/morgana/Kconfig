@@ -51,7 +51,6 @@ config SOC_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_APOB_HASH
 	select SOC_AMD_COMMON_BLOCK_BANKED_GPIOS
 	select SOC_AMD_COMMON_BLOCK_DATA_FABRIC
-	select SOC_AMD_COMMON_BLOCK_EMMC
 	select SOC_AMD_COMMON_BLOCK_ESPI_EXTENDED_DECODE_RANGES # TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_GRAPHICS		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_HAS_ESPI		# TODO: Check if this is still correct

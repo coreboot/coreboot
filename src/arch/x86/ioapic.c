@@ -147,7 +147,12 @@ static void set_ioapic_id(void *ioapic_base, u8 ioapic_id)
 
 u8 get_ioapic_id(void *ioapic_base)
 {
-	return (io_apic_read(ioapic_base, 0x00) >> 24) & 0x0f;
+	/*
+	 * According to 82093AA I/O ADVANCED PROGRAMMABLE INTERRUPT CONTROLLER (IOAPIC)
+	 * only 4 bits (24:27) are used for the ID. In practice the upper bits are either
+	 * always 0 or used for larger IDs.
+	 */
+	return (io_apic_read(ioapic_base, 0x00) >> 24) & 0xff;
 }
 
 u8 get_ioapic_version(void *ioapic_base)

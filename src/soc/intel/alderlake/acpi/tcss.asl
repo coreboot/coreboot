@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <soc/iomap.h>
+#include <soc/tcss.h>
 
 /*
  * Type C Subsystem(TCSS) topology provides Runtime D3 support for USB host controller(xHCI),

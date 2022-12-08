@@ -11,16 +11,6 @@ Field (APMP, ByteAcc, NoLock, Preserve)
 
 #include <arch/x86/acpi/post.asl>
 
-#if CONFIG(ACPI_SOC_NVS)
-/* SMI I/O Trap */
-Method(TRAP, 1, Serialized)
-{
-	SMIF = Arg0	// SMI Function
-	TRP0 = 0		// Generate trap
-	Return (SMIF)		// Return value of SMI handler
-}
-#endif /* ACPI_SOC_NVS */
-
 Method(GOS, 0)
 {
 	/* Determine the Operating System and save the value in OSYS.

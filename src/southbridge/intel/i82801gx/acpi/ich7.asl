@@ -15,6 +15,14 @@ Scope(\)
 		TRP0, 8		// IO-Trap at 0x808
 	}
 
+	/* SMI I/O Trap */
+	Method(TRAP, 1, Serialized)
+	{
+		SMIF = Arg0	// SMI Function
+		TRP0 = 0	// Generate trap
+		Return (SMIF)	// Return value of SMI handler
+	}
+
 	// ICH7 Power Management Registers, located at PMBASE (0x1f.0 0x40.l)
 	OperationRegion(PMIO, SystemIO, DEFAULT_PMBASE, 0x80)
 	Field(PMIO, ByteAcc, NoLock, Preserve)

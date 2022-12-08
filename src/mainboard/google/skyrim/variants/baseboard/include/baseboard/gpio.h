@@ -3,8 +3,7 @@
 #ifndef __BASEBOARD_GPIO_H__
 #define __BASEBOARD_GPIO_H__
 
-/* Since this ends up being included in dsdt.asl, <gpio.h> can't be included instead */
-#include <soc/gpio.h>
+#include <gpio.h>
 
 /* SPI Write protect */
 #define CROS_WP_GPIO GPIO_138

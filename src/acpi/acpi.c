@@ -1362,9 +1362,6 @@ static void acpi_create_dsdt(acpi_header_t *header, void *dsdt_file_arg)
 		if (CONFIG(CHROMEOS_NVS))
 			acpi_fill_cnvs();
 
-		for (const struct device *dev = all_devices; dev; dev = dev->next)
-			if (dev->ops && dev->ops->acpi_inject_dsdt)
-				dev->ops->acpi_inject_dsdt(dev);
 		current = (unsigned long)acpigen_get_current();
 		memcpy((char *)current,
 		       (char *)dsdt_file + sizeof(acpi_header_t),

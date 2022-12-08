@@ -85,21 +85,21 @@ static void program_mac_address(u32 mem_base)
 	printk(BIOS_DEBUG, "atl1e: Programming MAC Address...");
 
 	value = (mac[2] << 24) | (mac[3] << 16) | (mac[4] << 8) | (mac[5] << 0);
-	write32((void *)mem_base + REG_MAC_STA_ADDR, value);
+	write32p(mem_base + REG_MAC_STA_ADDR, value);
 	value = (mac[0] << 8) | (mac[1] << 0);
-	write32((void *)mem_base + REG_MAC_STA_ADDR + 4, value);
+	write32p(mem_base + REG_MAC_STA_ADDR + 4, value);
 
 	printk(BIOS_DEBUG, "done\n");
 }
 
 static int atl1e_eeprom_exist(u32 mem_base)
 {
-	u32 value = read32((void *)mem_base + REG_SPI_FLASH_CTRL);
+	u32 value = read32p(mem_base + REG_SPI_FLASH_CTRL);
 	if (value & SPI_FLASH_CTRL_EN_VPD) {
 		value &= ~SPI_FLASH_CTRL_EN_VPD;
-		write32((void *)mem_base + REG_SPI_FLASH_CTRL, value);
+		write32p(mem_base + REG_SPI_FLASH_CTRL, value);
 	}
-	value = read32((void *)mem_base + REG_PCIE_CAP_LIST);
+	value = read32p(mem_base + REG_PCIE_CAP_LIST);
 	return ((value & 0xff00) == 0x6c00) ? 1 : 0;
 }
 

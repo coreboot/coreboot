@@ -4,6 +4,7 @@
 #define _TCSS_H_
 
 #include <intelblocks/gpio.h>
+#if !defined(__ACPI__)
 #include <device/usbc_mux.h>
 
 /* PMC IPC related offsets and commands */
@@ -165,5 +166,26 @@ const struct tcss_port_map *tcss_get_port_info(size_t *num_ports);
 /* Method to validate the Thunderbolt authentication */
 bool tcss_valid_tbt_auth(void);
 bool ioe_tcss_valid_tbt_auth(void);
+#endif /* !defined(__ACPI__) */
+
+/*
+ * The PCI-SIG engineering change requirement provides the ACPI additions for firmware latency
+ * optimization. Both of FW_RESET_TIME and FW_D3HOT_TO_D0_TIME are applicable to the upstream
+ * port of the USB4/TBT topology.
+ */
+/* Number of microseconds to wait after a conventional reset */
+#define FW_RESET_TIME			50000
+
+/* Number of microseconds to wait after data link layer active report */
+#define FW_DL_UP_TIME			1
+
+/* Number of microseconds to wait after a function level reset */
+#define FW_FLR_RESET_TIME		1
+
+/* Number of microseconds to wait from D3 hot to D0 transition */
+#define FW_D3HOT_TO_D0_TIME		50000
+
+/* Number of microseconds to wait after setting the VF enable bit  */
+#define FW_VF_ENABLE_TIME		1
 
 #endif /* _TCSS_H_ */

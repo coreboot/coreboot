@@ -4,6 +4,9 @@
 #define __SRC_INCLUDE_GPIO_H__
 
 #include <soc/gpio.h> /* IWYU pragma: export */
+
+#ifndef __ASSEMBLER__ /* __ASSEMBLER__ also covers __ACPI__ case */
+
 #include <types.h>
 
 /* <soc/gpio.h> must typedef a gpio_t that fits in 32 bits. */
@@ -95,5 +98,7 @@ static inline uint32_t gpio_binary_first_base3_value(const gpio_t gpio[],
 {
 	return _gpio_base3_value(gpio, num_gpio, 1);
 }
+
+#endif /* !__ASSEMBLER__ */
 
 #endif /* __SRC_INCLUDE_GPIO_H__ */

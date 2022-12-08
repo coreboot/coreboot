@@ -13,6 +13,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select OCP_DMI
 	select SOC_INTEL_SKYLAKE_SP
 	select SUPERIO_ASPEED_AST2400
+	select UART_OVERRIDE_BAUDRATE
 	select VPD
 
 config MAINBOARD_DIR
@@ -27,5 +28,12 @@ config MAINBOARD_FAMILY
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+config UART_FOR_CONSOLE
+	int
+	default 1
+
+config TTYS0_BAUD
+	default 57600
 
 endif # BOARD_OCP_TIOGAPASS

@@ -16,10 +16,14 @@ config BOARD_SPECIFIC_OPTIONS
 	select IPMI_OCP
 	select MEMORY_MAPPED_TPM
 	select MAINBOARD_HAS_TPM2
+	select UART_OVERRIDE_BAUDRATE
 
 config UART_FOR_CONSOLE
 	int
 	default 1
+
+config TTYS0_BAUD
+	default 57600
 
 config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 	default n

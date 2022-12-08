@@ -61,6 +61,8 @@ void lpc_set_bios_interface_lock_down(void);
 void lpc_set_lock_enable(void);
 /* Set LPC BIOS Control EISS bit. */
 void lpc_set_eiss(void);
+/* Set LPC BIOS Decode LE bit */
+void lpc_set_bde(void);
 /* Set LPC Serial IRQ mode. */
 void lpc_set_serirq_mode(enum serirq_mode mode);
 /* Enable CLKRUN_EN for power gating LPC. */

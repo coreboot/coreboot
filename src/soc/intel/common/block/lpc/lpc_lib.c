@@ -298,6 +298,16 @@ void lpc_disable_wp(void)
 	lpc_configure_write_protect(false);
 }
 
+void lpc_set_bde(void)
+{
+	const pci_devfn_t dev = PCH_DEV_LPC;
+	uint32_t bde;
+
+	bde = pci_read_config32(dev, LPC_BIOS_DECODE_EN);
+	bde |= LPC_BIOS_DECODE_LOCK;
+	pci_write_config32(dev, LPC_BIOS_DECODE_EN, bde);
+}
+
 /*
 * Set LPC Serial IRQ mode.
 */

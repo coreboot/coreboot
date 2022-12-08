@@ -27,6 +27,8 @@
 #define  LPC_LGMR_ADDR_MASK		0xffff0000
 #define  LPC_LGMR_EN			(1 << 0)
 #define LPC_LGMR_WINDOW_SIZE		(64 * KiB)
+#define LPC_BIOS_DECODE_EN		0xd8
+#define  LPC_BIOS_DECODE_LOCK		(1 << 31)
 #define LPC_BIOS_CNTL			0xdc
 #define  LPC_BC_BILD			(1 << 7) /* BILD */
 #define  LPC_BC_LE			(1 << 1) /* LE */

@@ -280,9 +280,9 @@ static void display_startup(void)
 static void configure_sdhci(void)
 {
 	/* Program eMMC drive strength to 16/16/16 mA */
-	write32((void *)SDC1_TLMM_CFG_ADDR, 0x9FFF);
+	write32p(SDC1_TLMM_CFG_ADDR, 0x9FFF);
 	/* Program SD card drive strength to 16/10/10 mA */
-	write32((void *)SDC2_TLMM_CFG_ADDR, 0x1FE4);
+	write32p(SDC2_TLMM_CFG_ADDR, 0x1FE4);
 }
 
 static void mainboard_init(struct device *dev)

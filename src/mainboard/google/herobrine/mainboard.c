@@ -38,9 +38,9 @@ static void setup_usb(void)
 static void configure_sdhci(void)
 {
 	/* Program eMMC drive strength to 16/10/10 mA */
-	write32((void *)SDC1_TLMM_CFG_ADDR, 0x9FE4);
+	write32p(SDC1_TLMM_CFG_ADDR, 0x9FE4);
 	/* Program SD card drive strength to 16/10/10 mA */
-	write32((void *)SDC2_TLMM_CFG_ADDR, 0x1FE4);
+	write32p(SDC2_TLMM_CFG_ADDR, 0x1FE4);
 }
 
 static void qi2s_configure_gpios(void)

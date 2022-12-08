@@ -340,9 +340,9 @@ static void add_mmap_window(size_t flash_offset, size_t host_offset,
 }
 
 
-static int decode_mmap_arg(char *optarg)
+static int decode_mmap_arg(char *arg)
 {
-	if (optarg == NULL)
+	if (arg == NULL)
 		return 1;
 
 	union {
@@ -354,17 +354,17 @@ static int decode_mmap_arg(char *optarg)
 		};
 	} mmap_args;
 	char *suffix = NULL;
-	char *substring = strtok(optarg, ":");
+	char *substring = strtok(arg, ":");
 	for (size_t i = 0; i < ARRAY_SIZE(mmap_args.array); i++) {
 		if (!substring) {
 			ERROR("Invalid mmap arguments '%s'.\n",
-			      optarg);
+			      arg);
 			return 1;
 		}
 		mmap_args.array[i] = strtol(substring, &suffix, 0);
 		if (suffix && *suffix) {
 			ERROR("Invalid mmap arguments '%s'.\n",
-			      optarg);
+			      arg);
 			return 1;
 		}
 		substring = strtok(NULL, ":");
@@ -372,7 +372,7 @@ static int decode_mmap_arg(char *optarg)
 
 	if (substring != NULL) {
 		ERROR("Invalid argument, too many substrings '%s'.\n",
-		      optarg);
+		      arg);
 
 		return 1;
 	}

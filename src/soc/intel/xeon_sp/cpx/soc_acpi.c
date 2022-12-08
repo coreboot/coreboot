@@ -41,7 +41,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->flags &=  ~(ACPI_FADT_SEALED_CASE | ACPI_FADT_S4_RTC_WAKE);
 }
 
-void uncore_inject_dsdt(const struct device *device)
+void uncore_fill_ssdt(const struct device *device)
 {
 	struct iiostack_resource stack_info = {0};
 
@@ -51,15 +51,14 @@ void uncore_inject_dsdt(const struct device *device)
 
 	get_iiostack_info(&stack_info);
 
-	acpigen_write_scope("\\_SB");
-
 	for (uint8_t stack = 0; stack < stack_info.no_of_stacks; ++stack) {
 		const STACK_RES *ri = &stack_info.res[stack];
 		char rtname[16];
 
-		snprintf(rtname, sizeof(rtname), "RT%02x", stack);
+		snprintf(rtname, sizeof(rtname), "\\_SB.PC%02x", stack);
+		acpigen_write_scope(rtname);
 
-		acpigen_write_name(rtname);
+		acpigen_write_name("_CRS");
 		printk(BIOS_DEBUG, "\tCreating ResourceTemplate %s for stack: %d\n",
 			rtname, stack);
 
@@ -106,8 +105,10 @@ void uncore_inject_dsdt(const struct device *device)
 			(ri->PciResourceMem64Limit - ri->PciResourceMem64Base + 1));
 
 		acpigen_write_resourcetemplate_footer();
+
+		/* Scope */
+		acpigen_pop_len();
 	}
-	acpigen_pop_len();
 }
 
 /* TODO: See if we can use the common generate_p_state_entries */

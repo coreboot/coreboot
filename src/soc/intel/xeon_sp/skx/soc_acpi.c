@@ -54,7 +54,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fill_fadt_extended_pm_io(fadt);
 }
 
-void uncore_inject_dsdt(const struct device *device)
+void uncore_fill_ssdt(const struct device *device)
 {
 	const IIO_UDS *hob = get_iio_uds();
 
@@ -62,7 +62,6 @@ void uncore_inject_dsdt(const struct device *device)
 	if (device->bus->secondary != 0)
 		return;
 
-	acpigen_write_scope("\\_SB");
 	for (int socket = 0, iio = 0; iio < hob->PlatformData.numofIIO; ++socket) {
 		if (!soc_cpu_is_enabled(socket))
 			continue;
@@ -72,10 +71,12 @@ void uncore_inject_dsdt(const struct device *device)
 		for (int stack = 0; stack <= PSTACK2; ++stack) {
 			const STACK_RES *ri = &iio_resource.StackRes[stack];
 			char rtname[16];
-			snprintf(rtname, sizeof(rtname), "RT%02x",
-				(socket*MAX_IIO_STACK)+stack);
 
-			acpigen_write_name(rtname);
+			snprintf(rtname, sizeof(rtname), "\\_SB.PC%02x", socket * MAX_IIO_STACK + stack);
+			acpigen_write_scope(rtname);
+
+			acpigen_write_name("_CRS");
+
 			printk(BIOS_DEBUG, "\tCreating ResourceTemplate %s for socket: %d, stack: %d\n",
 				rtname, socket, stack);
 
@@ -126,9 +127,11 @@ void uncore_inject_dsdt(const struct device *device)
 				(ri->PciResourceMem64Limit - ri->PciResourceMem64Base + 1));
 
 			acpigen_write_resourcetemplate_footer();
+
+			/* Scope */
+			acpigen_pop_len();
 		}
 	}
-	acpigen_pop_len();
 }
 
 void soc_power_states_generation(int core, int cores_per_package)

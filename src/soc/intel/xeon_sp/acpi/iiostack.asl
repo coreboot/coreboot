@@ -14,11 +14,6 @@
 			}						\
 			Return (\_SB_.PR##rt)				\
 		}							\
-		External(\_SB.RT##id)					\
-		Method (_CRS, 0, NotSerialized)				\
-		{							\
-			Return (\_SB.RT##id)				\
-		}							\
 		Name (SUPP, 0x00)					\
 		Name (CTRL, 0x00)					\
 		Name (_PXM, 0x00)  /* _PXM: Device Proximity */		\

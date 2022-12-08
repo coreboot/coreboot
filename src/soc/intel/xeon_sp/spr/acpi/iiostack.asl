@@ -3,8 +3,6 @@
 /* ***** PCI Stacks **** */
 #undef DEVPREFIX
 #define DEVPREFIX  PC
-#undef RESPREFIX
-#define RESPREFIX  PT
 #undef STPREFIX
 #define STPREFIX   ST
 
@@ -39,8 +37,6 @@
 /* ***** CXL Stacks **** */
 #undef DEVPREFIX
 #define DEVPREFIX  CX
-#undef RESPREFIX
-#define RESPREFIX  CT
 
 #undef STACK
 #define STACK 1

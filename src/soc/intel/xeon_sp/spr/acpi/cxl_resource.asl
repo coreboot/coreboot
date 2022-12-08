@@ -26,11 +26,6 @@ Device (IIO_DEVICE_NAME(DEVPREFIX, SOCKET, STACK))
 	{
 		Return (\_SB.PRTID)
 	}
-	External (\_SB.IIO_DEVICE_NAME(RESPREFIX, SOCKET, STACK))
-	Method (_CRS, 0, NotSerialized)
-	{
-		Return (\_SB.IIO_DEVICE_NAME(RESPREFIX, SOCKET, STACK))
-	}
 	Name (SUPP, 0x00) // PCI _OSC Support Field Value
 	Name (CTRL, 0x00) // PCI _OSC Control Field Value
 	Name (SUPC, 0x00) // CXL _OSC Support Field Value

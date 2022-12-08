@@ -5,8 +5,6 @@
 
 #undef DEVPREFIX
 #define DEVPREFIX  UC
-#undef RESPREFIX
-#define RESPREFIX  UT
 #include "pci_resource.asl"
 
 #undef PRTID
@@ -14,6 +12,4 @@
 
 #undef DEVPREFIX
 #define DEVPREFIX  UD
-#undef RESPREFIX
-#define RESPREFIX  UU
 #include "pci_resource.asl"

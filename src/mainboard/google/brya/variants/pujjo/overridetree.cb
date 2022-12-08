@@ -30,6 +30,11 @@ fw_config
 		option EXT_VR_PRESENT		0
 		option EXT_VR_ABSENT		1
 	end
+	field WIFI_SAR_ID 16 17
+		option WIFI_SAR_TABLE_0		0
+		option WIFI_SAR_TABLE_1		1
+		option WIFI_SAR_TABLE_2		2
+	end
 
 end
 

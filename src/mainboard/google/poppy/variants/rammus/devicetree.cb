@@ -272,7 +272,7 @@ chip soc/intel/skylake
 				end
 			end
 		end # USB xHCI
-		device pci 14.1 on  end # USB xDCI (OTG)
+		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 on  end # Thermal Subsystem
 		device pci 14.3 off end # Camera
 		device pci 15.0 on

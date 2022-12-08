@@ -323,3 +323,13 @@ Device (PEG2)
 	Name (_ADR, 0x00010000)
 }
 #endif
+
+Device (SRAM)
+{
+	Name (_ADR, 0x00140002)
+}
+
+Device (HEC1)
+{
+	Name (_ADR, 0x00160000)
+}

@@ -1971,25 +1971,25 @@ int main(int argc, char **argv)
 				  &option_index)) != EOF) {
 		switch (opt) {
 		case 'm':
-			base_devtree = strdup(optarg);
+			base_devtree = optarg;
 			break;
 		case 'o':
-			override_devtree = strdup(optarg);
+			override_devtree = optarg;
 			break;
 		case 'p':
-			chipset_devtree = strdup(optarg);
+			chipset_devtree = optarg;
 			break;
 		case 'c':
-			outputc = strdup(optarg);
+			outputc = optarg;
 			break;
 		case 'r':
-			outputh = strdup(optarg);
+			outputh = optarg;
 			break;
 		case 'd':
-			outputd = strdup(optarg);
+			outputd = optarg;
 			break;
 		case 'f':
-			outputf = strdup(optarg);
+			outputf = optarg;
 			break;
 		case 'h':
 		default:

@@ -2461,13 +2461,13 @@ int main(int argc, char **argv)
 		}
 	} else {
 		switch (efs_location) {
-		case 0:          /* Fall through */
-		case 0xFFFA0000: /* Fall through */
-		case 0xFFF20000: /* Fall through */
-		case 0xFFE20000: /* Fall through */
-		case 0xFFC20000: /* Fall through */
-		case 0xFF820000: /* Fall through */
-		case 0xFF020000: /* Fall through */
+		case 0:
+		case 0xFFFA0000:
+		case 0xFFF20000:
+		case 0xFFE20000:
+		case 0xFFC20000:
+		case 0xFF820000:
+		case 0xFF020000:
 			break;
 		default:
 			fprintf(stderr, "Error: Invalid Directory location.\n");

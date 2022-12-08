@@ -27,6 +27,8 @@ static const struct pad_config board_id0_1_overrides[] = {
 	PAD_CFG_GPO(GPP_F20, 0, DEEP),
 	/* F21 : EXT_PWR_GATE2# ==> WAKE_ON_WWAN_ODL */
 	PAD_NC(GPP_F21, NONE),
+	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
+	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 	/* H21 : IMGCLKOUT2 ==> WLAN_INT_L */
 	PAD_CFG_GPI_APIC(GPP_H21, NONE, DEEP, EDGE_SINGLE, NONE),
 	/* GPD2: LAN_WAKE# ==> NC */
@@ -69,7 +71,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
-	PAD_NC(GPP_H13, UP_20K),
+	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 };
 
 /* Early pad configuration in bootblock for board id 2 */

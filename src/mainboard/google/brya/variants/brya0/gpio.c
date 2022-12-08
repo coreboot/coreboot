@@ -114,7 +114,7 @@ static const struct pad_config early_gpio_table_id2[] = {
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
-	PAD_NC(GPP_H13, UP_20K),
+	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 };
 
 /* Early pad configuration in bootblock for board id 4 */
@@ -160,7 +160,7 @@ static const struct pad_config early_gpio_table_id4[] = {
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* H13 : I2C7_SCL ==> EN_PP3300_SD */
-	PAD_NC(GPP_H13, UP_20K),
+	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {

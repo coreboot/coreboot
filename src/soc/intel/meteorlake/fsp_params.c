@@ -143,11 +143,6 @@ static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
 	} else {
 		/* Use coreboot native driver to perform MP init by default */
 		s_cfg->CpuMpPpi = (uintptr_t)NULL;
-		/*
-		 * FIXME: Bring back SkipMpInit UPD in MTL FSP to let coreboot perform
-		 * AP programming independently.
-		 */
-		// s_cfg->SkipMpInit = !CONFIG(USE_INTEL_FSP_MP_INIT);
 	}
 }
 

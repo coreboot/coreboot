@@ -252,8 +252,8 @@ config MAX_PCIE_CLOCK_SRC
 	int
 	default 6 if SOC_INTEL_ALDERLAKE_PCH_M
 	default 5 if SOC_INTEL_ALDERLAKE_PCH_N
-	default 18 if SOC_INTEL_ALDERLAKE_PCH_S
 	default 10 if SOC_INTEL_ALDERLAKE_PCH_P
+	default 18 if SOC_INTEL_ALDERLAKE_PCH_S
 	help
 	  With external clock buffer, Alderlake-P can support up to three additional source clocks.
 	  This is done by setting the corresponding GPIO pin(s) to native function to use as

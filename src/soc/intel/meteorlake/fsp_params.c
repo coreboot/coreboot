@@ -4,6 +4,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <cpu/intel/cpu_ids.h>
+#include <cpu/intel/microcode.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/api.h>
@@ -119,22 +120,34 @@ static void fill_fsps_lpss_params(FSP_S_CONFIG *s_cfg,
 	}
 }
 
-static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
+static void fill_fsps_microcode_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
 	const struct microcode *microcode_file;
 	size_t microcode_len;
 
 	/* Locate microcode and pass to FSP-S for 2nd microcode loading */
-	microcode_file = cbfs_map("cpu_microcode_blob.bin", &microcode_len);
+	microcode_file = intel_microcode_find();
 
-	if ((microcode_file) && (microcode_len != 0)) {
-		/* Update CPU Microcode patch base address/size */
-		s_cfg->MicrocodeRegionBase = (uint32_t)microcode_file;
-		s_cfg->MicrocodeRegionSize = (uint32_t)microcode_len;
+	if (microcode_file != NULL) {
+		microcode_len = get_microcode_size(microcode_file);
+		if (microcode_len != 0) {
+			/* Update CPU Microcode patch base address/size */
+			s_cfg->MicrocodeRegionBase = (uint32_t)(uintptr_t)microcode_file;
+			s_cfg->MicrocodeRegionSize = (uint32_t)microcode_len;
+		}
 	}
+}
 
+static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_meteorlake_config *config)
+{
 	if (CONFIG(MTL_USE_FSP_MP_INIT)) {
+		/*
+		 * Fill `2nd microcode loading FSP UPD` if FSP is running CPU feature
+		 * programming.
+		 */
+		fill_fsps_microcode_params(s_cfg, config);
 		/*
 		 * Use FSP running MP PPI services to perform CPU feature programming
 		 * if Kconfig is enabled

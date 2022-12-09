@@ -3,7 +3,7 @@
 #ifndef __SRC_INCLUDE_GPIO_H__
 #define __SRC_INCLUDE_GPIO_H__
 
-#include <soc/gpio.h>
+#include <soc/gpio.h> /* IWYU pragma: export */
 #include <types.h>
 
 /* <soc/gpio.h> must typedef a gpio_t that fits in 32 bits. */

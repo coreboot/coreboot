@@ -263,15 +263,6 @@ static void fill_fspm_usb4_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
-	const uint32_t cpuid = cpu_get_cpuid();
-
-	/* FIXME: Enable Vtd back when kernel cmdline needs it. */
-	if (cpuid == CPUID_METEORLAKE_A0_1 || cpuid == CPUID_METEORLAKE_A0_2) {
-		m_cfg->VtdDisable = 1;
-		m_cfg->VmxEnable = 0;
-		return;
-	}
-
 	m_cfg->VtdDisable = 0;
 	m_cfg->VtdBaseAddress[0] = GFXVT_BASE_ADDRESS;
 	m_cfg->VtdBaseAddress[1] = VTVC0_BASE_ADDRESS;

@@ -267,7 +267,7 @@ Device (EC0)
 	/* Graphical hotkey */
 	Method (_Q19, 0, NotSerialized)
 	{
-		Debug = "Graphical hotkey display switching not implemented in coreboot!"
+		Printf ("Graphical hotkey display switching not implemented in coreboot!")
 	}
 
 	/* Increase brightness */
@@ -292,7 +292,7 @@ Device (EC0)
 				Local1 = AHKE
 				If ((Local1 > 0) && (Local1 < 0x80))
 				{
-					Debug = "Hotkeys - TODO: Airplane mode?"
+					Printf ("Hotkeys - TODO: Airplane mode?")
 					/* WMI -> "GCMS" method */
 				}
 				ElseIf ((Local1 > 0x80) && (Local1 < 0xA0))
@@ -377,32 +377,32 @@ Device (EC0)
 
 	Method (_Q60, 0, NotSerialized)
 	{
-		Debug = "EC Query (0x60): WMI"
+		Printf ("EC Query (0x60): WMI")
 	}
 
 	Method (_Q61, 0, NotSerialized)
 	{
-		Debug = "EC Query (0x61): WMI"
+		Printf ("EC Query (0x61): WMI")
 	}
 
 	Method (_Q62, 0, NotSerialized)
 	{
-		Debug = "EC Query (0x62): Optimus GC6 or NVIDIA GPS"
+		Printf ("EC Query (0x62): Optimus GC6 or NVIDIA GPS")
 	}
 
 	Method (_Q63, 0, NotSerialized)
 	{
-		Debug = "EC Query (0x63): Optimus GC6 or NVIDIA GPS"
+		Printf ("EC Query (0x63): Optimus GC6 or NVIDIA GPS")
 	}
 
 	Method (_Q67, 0, NotSerialized)
 	{
-		Debug = "EC Query (0x67): NVIDIA GPS"
+		Printf ("EC Query (0x67): NVIDIA GPS")
 	}
 
 	Method (_Q68, 0, NotSerialized)
 	{
-		Debug = "EC Query (0x68): NVIDIA GPS"
+		Printf ("EC Query (0x68): NVIDIA GPS")
 	}
 
 	Method (_Q6C, 0, NotSerialized)

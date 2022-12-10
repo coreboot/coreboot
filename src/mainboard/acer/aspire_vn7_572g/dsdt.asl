@@ -28,13 +28,13 @@ DefinitionBlock(
 	/* Returns a non-zero integer if SMI function failed */
 	Method (TRPS, 3, Serialized)
 	{
-		Debug = Concatenate ("SMIF: ", ToHexString (Arg0))
-		Debug = Concatenate ("Param0: ", ToHexString (Arg1))
-		Debug = Concatenate ("Param1: ", ToHexString (Arg2))
+		Printf ("SMIF: %o", ToHexString (Arg0))
+		Printf ("Param0: %o", ToHexString (Arg1))
+		Printf ("Param1: %o", ToHexString (Arg2))
 
 		Local0 = Arg1
 		Local0 |= (Arg2 << 4)
-		Debug = Concatenate ("Local0: ", ToHexString (Local0))
+		Printf ("Local0: %o", ToHexString (Local0))
 
 		SMIF = Arg0
 		SSDP = Local0

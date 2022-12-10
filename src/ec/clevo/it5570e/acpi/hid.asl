@@ -48,7 +48,7 @@ Device (HIDD)
 					Case (3)
 					{
 						/* Driver status */
-						HRDY = DeRefOf (Index (Arg3, 0))
+						HRDY = DeRefOf (Arg3[0])
 					}
 					Case (4)
 					{

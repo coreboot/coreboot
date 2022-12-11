@@ -8,10 +8,13 @@ typedef EDKII_PEI_MP_SERVICES2_PPI efi_pei_mp_services_ppi;
 
 static efi_return_status_t mps2_noop_get_number_of_processors(
 	efi_pei_mp_services_ppi *ignored1,
-	efi_uintn_t *ignored2,
-	efi_uintn_t *ignored3)
+	efi_uintn_t *number_of_processors,
+	efi_uintn_t *number_of_enabled_processors)
 {
-	return mp_api_unsupported();
+	*number_of_processors = 1; /* BSP alone */
+	*number_of_enabled_processors = 1; /* BSP alone */
+
+	return FSP_SUCCESS;
 }
 
 static efi_return_status_t mps2_noop_get_processor_info(

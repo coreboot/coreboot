@@ -69,6 +69,9 @@ endif
 HOSTCFLAGS := -g
 HOSTCXXFLAGS := -g
 
+HOSTPKG_CONFIG ?= pkg-config
+COREBOOT_EXPORTS += HOSTPKG_CONFIG
+
 PREPROCESS_ONLY := -E -P -x assembler-with-cpp -undef -I .
 
 export $(COREBOOT_EXPORTS)

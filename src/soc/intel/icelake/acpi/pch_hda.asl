@@ -37,8 +37,7 @@ Device (HDAS)
 				 * if NHLT address and length are set in NVS.
 				 */
 				If (LAnd (Arg1 == One,
-					  LAnd (LNotEqual (NHLA, Zero),
-						LNotEqual (NHLL, Zero)))) {
+					  LAnd (NHLA != Zero, NHLL != Zero))) {
 					Return (Buffer (One) { 0x03 })
 				} Else {
 					Return (Buffer (One) { 0x01 })

@@ -14,6 +14,8 @@
 #include <option.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/lpss.h>
+#include <intelblocks/mp_init.h>
+#include <intelblocks/systemagent.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
 #include <security/vboot/vboot_common.h>
@@ -488,6 +490,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
  * Phase   |  FSP return point                                |  Purpose
  * ------- + ------------------------------------------------ + -------------------------------
  *   1     |  After TCSS initialization completed             |  for TCSS specific init
+ *   2     |  Before BIOS Reset CPL is set by FSP-S           |  for CPU specific init
  */
 void platform_fsp_multi_phase_init_cb(uint32_t phase_index)
 {
@@ -501,6 +504,14 @@ void platform_fsp_multi_phase_init_cb(uint32_t phase_index)
 			const config_t *config = config_of_soc();
 			tcss_configure(config->typec_aux_bias_pads);
 		}
+		break;
+	case 2:
+		/* CPU specific initialization here */
+		printk(BIOS_DEBUG, "FSP MultiPhaseSiInit %s/%s called\n",
+			__FILE__, __func__);
+		before_post_cpus_init();
+		/* Enable BIOS Reset CPL */
+		enable_bios_reset_cpl();
 		break;
 	default:
 		break;

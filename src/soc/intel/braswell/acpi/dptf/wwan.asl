@@ -9,7 +9,7 @@ Device (WWAN)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == One) {
 			Return (0xF)
 		} Else {
 			Return (0x0)

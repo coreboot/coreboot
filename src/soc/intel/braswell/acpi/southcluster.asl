@@ -154,7 +154,7 @@ Method (_CRS, 0, Serialized)
 	CreateDWordField (MCRS, LMEM._MIN, LMIN)
 	CreateDWordField (MCRS, LMEM._MAX, LMAX)
 	CreateDWordField (MCRS, LMEM._LEN, LLEN)
-	If (LAnd (LNotEqual (LPFW, Zero), LEqual (LPEN, One)))
+	If (LAnd (LNotEqual (LPFW, Zero), LPEN == One))
 	{
 		Store (LPFW, LMIN)
 		Store (Add (LMIN, 0x001FFFFF), LMAX)
@@ -207,7 +207,7 @@ Device (PDRC)
 Method (_OSC, 4)
 {
 	/* Check for proper GUID */
-	If (LEqual (Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
+	If (Arg0 == ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766"))
 	{
 		/* Let OS control everything */
 		Return (Arg3)

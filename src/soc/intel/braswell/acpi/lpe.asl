@@ -64,7 +64,7 @@ Device (LPEA)
 
 	Method (_STA)
 	{
-		If (LEqual (\LPEN, 1)) {
+		If (\LPEN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)

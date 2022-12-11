@@ -139,22 +139,22 @@ Method (_INI, 0, NotSerialized)
 
 Method (MLED, 1, NotSerialized)
 {
-	If (LEqual (Arg0, 0x00))
+	If (Arg0 == 0x00)
 	{
 		Store (0x00, LED1)
 	}
 
-	If (LEqual (Arg0, 0x01) || LEqual (Arg0, 0x02))
+	If (Arg0 == 0x01 || Arg0 == 0x02)
 	{
 		Store (0x01, LED1)
 	}
 
-	If (LEqual (Arg0, 0x03))
+	If (Arg0 == 0x03)
 	{
 		Store (0x02, LED1)
 	}
 
-	If (LEqual (Arg0, 0x04) || LEqual (Arg0, 0x05))
+	If (Arg0 == 0x04 || Arg0 == 0x05)
 	{
 		Store (0x03, LED1)
 	}

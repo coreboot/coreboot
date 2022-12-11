@@ -11,7 +11,7 @@
 static void reset_mcupm(struct mtk_mcu *mcu)
 {
 	/* Clear abnormal boot register */
-	write32((void *)ABNORMALBOOT_REG, 0x0);
+	write32p(ABNORMALBOOT_REG, 0x0);
 	write32(&mcupm_reg->sw_rstn, 0x1);
 }
 

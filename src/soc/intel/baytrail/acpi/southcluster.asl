@@ -176,7 +176,7 @@ Method (_CRS, 0, Serialized)
 	/* TOLM is BMBOUND accessible from IOSF so is saved in NVS */
 	Store (\TOLM, PMIN)
 	Store (Subtract(CONFIG_ECAM_MMCONF_BASE_ADDRESS, 1), PMAX)
-	Add (Subtract (PMAX, PMIN), 1, PLEN)
+	PLEN = Subtract (PMAX, PMIN) + 1
 
 	Return (MCRS)
 }

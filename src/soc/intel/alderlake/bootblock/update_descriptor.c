@@ -23,13 +23,13 @@
 static bool is_descriptor_writeable(uint8_t *desc)
 {
 	/* Check flash has valid signature */
-	if (read32((void *)(desc + FLASH_SIGN_OFFSET)) != FLASH_VAL_SIGN) {
+	if (read32p(desc + FLASH_SIGN_OFFSET) != FLASH_VAL_SIGN) {
 		printk(BIOS_ERR, "Flash Descriptor is not valid\n");
 		return 0;
 	}
 
 	/* Check host has write access to the Descriptor Region */
-	if (!((read32((void *)(desc + FLMSTR1)) >> FLMSTR_WR_SHIFT_V2) & BIT(0))) {
+	if (!((read32p(desc + FLMSTR1) >> FLMSTR_WR_SHIFT_V2) & BIT(0))) {
 		printk(BIOS_ERR, "Host doesn't have write access to Descriptor Region\n");
 		return 0;
 	}

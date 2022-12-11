@@ -12,7 +12,7 @@ Scope (\_TZ)
 	//  1 = Start throttling
 	Method (THRT, 1, Serialized)
 	{
-		If (LEqual (Arg0, 0)) {
+		If (Arg0 == 0) {
 			/* Disable Power Limit */
 			\_SB.PCI0.MCHC.CTLD ()
 		} Else {
@@ -67,22 +67,22 @@ Scope (\_TZ)
 			Store (\_SB.PCI0.LPCB.EC0.TINS (TMPS), Local0)
 
 			// Check for sensor not calibrated
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNCA)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TNCA) {
 				Return (CTOK(0))
 			}
 
 			// Check for sensor not present
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNPR)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TNPR) {
 				Return (CTOK(0))
 			}
 
 			// Check for sensor not powered
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNOP)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TNOP) {
 				Return (CTOK(0))
 			}
 
 			// Check for sensor bad reading
-			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TBAD)) {
+			If (Local0 == \_SB.PCI0.LPCB.EC0.TBAD) {
 				Return (CTOK(0))
 			}
 

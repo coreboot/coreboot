@@ -28,7 +28,7 @@ Scope (\_SB.PCI0.I2C6)
 
 		Method (_STA)
 		{
-			If (LEqual (\S6EN, 1)) {
+			If (\S6EN == 1) {
 				Return (0xF)
 			} Else {
 				Return (0x0)

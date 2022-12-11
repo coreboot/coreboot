@@ -23,7 +23,7 @@ Scope (\_SB)
 		Method (_CRS)
 		{
 			/* Only return interrupt if I2C1 is PCI mode */
-			If (LEqual (\S1EN, 0)) {
+			If (\S1EN == 0) {
 				Return (^RBUF)
 			}
 
@@ -51,7 +51,7 @@ Scope (\_SB)
 		Method (_CRS)
 		{
 			/* Return interrupt if I2C6 is PCI mode */
-			If (LEqual (\S6EN, 0)) {
+			If (\S6EN == 0) {
 				Return (^RBUF)
 			}
 
@@ -93,7 +93,7 @@ Scope (\_SB.PCI0.I2C2)
 
 		Method (_STA)
 		{
-			If (LEqual (\S2EN, 1)) {
+			If (\S2EN == 1) {
 				Return (0xF)
 			} Else {
 				Return (0x0)

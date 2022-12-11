@@ -72,7 +72,7 @@ size_t start_cpu(size_t cpu, void (*entry_64)(size_t core_id))
 		return 1;
 
 	/* Write the address of the main entry point */
-	write64((void *)MIO_BOOT_AP_JUMP, (uintptr_t)secondary_init);
+	write64p(MIO_BOOT_AP_JUMP, (uintptr_t)secondary_init);
 
 	/* Get coremask of cores in reset */
 	const uint64_t reset = read64p(RST_PP_RESET);
@@ -86,7 +86,7 @@ size_t start_cpu(size_t cpu, void (*entry_64)(size_t core_id))
 	printk(BIOS_DEBUG, "CPU: Taking core %zu out of reset.\n", cpu);
 
 	/* Release core from reset */
-	write64((void *)RST_PP_RESET, reset & ~coremask);
+	write64p(RST_PP_RESET, reset & ~coremask);
 
 	/* Wait for cores to finish coming out of reset */
 	udelay(1);

@@ -159,7 +159,7 @@ Method (_CRS, 0, Serialized)
 	{
 		Store (LPFW, LMIN)
 		Store (0x00100000, LLEN)
-		Subtract (Add (LMIN, LLEN), One, LMAX)
+		Subtract (LMIN + LLEN, One, LMAX)
 	}
 	Else
 	{
@@ -238,7 +238,7 @@ Device (IOSF)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^RBAR._BAS, RBAS)
-		Store (Add (CONFIG_ECAM_MMCONF_BASE_ADDRESS, 0xD0), RBAS)
+		Store (CONFIG_ECAM_MMCONF_BASE_ADDRESS + 0xD0, RBAS)
 		Return (^RBUF)
 	}
 }

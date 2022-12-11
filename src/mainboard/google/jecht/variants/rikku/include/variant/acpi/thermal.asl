@@ -64,12 +64,12 @@ Scope (\_TZ)
 			Store (\_SB.PCI0.LPCB.SIO.ENVC.TIN3, Local0)
 
 			// Check for "no reading available
-			If (LEqual (Local0, 0x80)) {
+			If (Local0 == 0x80) {
 				Return (CTOK (FAN0_THRESHOLD_ON))
 			}
 
 			// Check for invalid readings
-			If (LEqual (Local0, 255) || LEqual (Local0, 0)) {
+			If (Local0 == 255 || Local0 == 0) {
 				Return (CTOK (FAN0_THRESHOLD_ON))
 			}
 

@@ -16,7 +16,7 @@ Scope (\_SB.PCI0.RP01)
 		{
 			Store (JECHT_NIC_WAKE_GPIO, Local0)
 
-			If (LEqual (Arg0, 1)) {
+			If (Arg0 == 1) {
 				// Enable GPIO as wake source
 				\_SB.PCI0.LPCB.GPIO.GWAK (Local0)
 			}
@@ -38,7 +38,7 @@ Scope (\_SB.PCI0.RP02)
 		{
 			Store (JECHT_WLAN_WAKE_GPIO, Local0)
 
-			If (LEqual (Arg0, 1)) {
+			If (Arg0 == 1) {
 				// Enable GPIO as wake source
 				\_SB.PCI0.LPCB.GPIO.GWAK (Local0)
 			}

@@ -107,22 +107,22 @@ Scope (\_TZ)
 			Store (\_SB.PCI0.LPCB.SIO.ENVC.TIN2, Local0)
 
 			// Check for "no reading available
-			If (LEqual (Local0, 0x80)) {
+			If (Local0 == 0x80) {
 				Store (THERMAL_POLICY_0_THRESHOLD_ON, Local0)
 			}
 
 			// Check for invalid readings
-			If (LEqual (Local0, 255) || LEqual (Local0, 0)) {
+			If (Local0 == 255 || Local0 == 0) {
 				Store (THERMAL_POLICY_0_THRESHOLD_ON, Local0)
 			}
 
-			If (LEqual (THTB, 2)) {
+			If (THTB == 2) {
 				If (Local0 >= THERMAL_POLICY_0_THRESHOLD_ON) {
 					TTB0 ()
 				} ElseIf (Local0 >= THERMAL_POLICY_1_THRESHOLD_ON) {
 					TTB1 ()
 				}
-			} ElseIf (LEqual (THTB, 1)) {
+			} ElseIf (THTB == 1) {
 				If (Local0 >= THERMAL_POLICY_0_THRESHOLD_ON) {
 					TTB0 ()
 				} ElseIf (LLessEqual (Local0, THERMAL_POLICY_1_THRESHOLD_OFF)) {
@@ -172,12 +172,12 @@ Scope (\_TZ)
 			Store (\_SB.PCI0.LPCB.SIO.ENVC.TIN3, Local0)
 
 			// Check for "no reading available
-			If (LEqual (Local0, 0x80)) {
+			If (Local0 == 0x80) {
 				Return (CTOK (FAN0_0_THRESHOLD_ON))
 			}
 
 			// Check for invalid readings
-			If (LEqual (Local0, 255) || LEqual (Local0, 0)) {
+			If (Local0 == 255 || Local0 == 0) {
 				Return (CTOK (FAN0_0_THRESHOLD_ON))
 			}
 

@@ -29,7 +29,7 @@ Scope (\_SB.PCI0.I2C1)
 
 		Method (_STA)
 		{
-			If (LEqual (\S1EN, 1)) {
+			If (\S1EN == 1) {
 				Return (0xF)
 			} Else {
 				Return (0x0)

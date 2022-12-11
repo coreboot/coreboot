@@ -156,7 +156,7 @@ Device (DPTF)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == One) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -173,7 +173,7 @@ Device (DPTF)
 	Method (_OSC, 4, Serialized)
 	{
 		/* Check for Passive Policy UUID */
-		If (LEqual (DeRefOf (IDSP[0]), Arg0)) {
+		If (DeRefOf (IDSP[0]) == Arg0) {
 			/* Initialize Thermal Devices */
 			^TINI ()
 
@@ -192,7 +192,7 @@ Device (DPTF)
 	/* Return TRT table defined by Terra2 or Terra3 mainboard */
 	Method (_TRT)
 	{
-		If (Lequal(\_SB.GPID, TERRA2_PROJECT_ID))
+		If (\_SB.GPID == TERRA2_PROJECT_ID)
 		{
 			Return (\_SB.TRT2)
 		} Else {

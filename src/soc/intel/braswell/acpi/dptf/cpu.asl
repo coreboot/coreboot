@@ -101,7 +101,7 @@ Device (B0DB)
 	{
 		If (CondRefOf (\_SB.CP00._TSS)) {
 			Store (SizeOf (\_SB.CP00._TSS ()), Local0)
-			Decrement (Local0)
+			Local0--
 			Return (Local0)
 		} Else {
 			Return (0)
@@ -144,7 +144,7 @@ Device (B0DB)
 			Return (\_SB.MPDL)
 		} ElseIf (CondRefOf (\_SB.CP00._PSS)) {
 			Store (SizeOf (\_SB.CP00._PSS ()), Local0)
-			Decrement (Local0)
+			Local0--
 			Return (Local0)
 		} Else {
 			Return (0)

@@ -27,7 +27,7 @@ Device (TCHG)
 	{
 		/* Convert size of PPSS table to index */
 		Store (SizeOf (\_SB.CHPS), Local0)
-		Decrement (Local0)
+		Local0--
 
 		/* Check if charging is disabled (AC removed) */
 		If (LEqual (\_SB.PCI0.LPCB.EC0.ACEX, Zero)) {

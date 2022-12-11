@@ -44,7 +44,7 @@ Device (LNKA)
 		/* Which bit is set? */
 		FindSetRightBit(IRQ0, Local0)
 
-		Decrement(Local0)
+		Local0--
 		Store(Local0, PRTA)
 	}
 
@@ -103,7 +103,7 @@ Device (LNKB)
 		/* Which bit is set? */
 		FindSetRightBit(IRQ0, Local0)
 
-		Decrement(Local0)
+		Local0--
 		Store(Local0, PRTB)
 	}
 
@@ -162,7 +162,7 @@ Device (LNKC)
 		/* Which bit is set? */
 		FindSetRightBit(IRQ0, Local0)
 
-		Decrement(Local0)
+		Local0--
 		Store(Local0, PRTC)
 	}
 
@@ -221,7 +221,7 @@ Device (LNKD)
 		/* Which bit is set? */
 		FindSetRightBit(IRQ0, Local0)
 
-		Decrement(Local0)
+		Local0--
 		Store(Local0, PRTD)
 	}
 
@@ -280,7 +280,7 @@ Device (LNKE)
 		/* Which bit is set? */
 		FindSetRightBit(IRQ0, Local0)
 
-		Decrement(Local0)
+		Local0--
 		Store(Local0, PRTE)
 	}
 
@@ -339,7 +339,7 @@ Device (LNKF)
 		/* Which bit is set? */
 		FindSetRightBit(IRQ0, Local0)
 
-		Decrement(Local0)
+		Local0--
 		Store(Local0, PRTF)
 	}
 
@@ -398,7 +398,7 @@ Device (LNKG)
 		/* Which bit is set? */
 		FindSetRightBit(IRQ0, Local0)
 
-		Decrement(Local0)
+		Local0--
 		Store(Local0, PRTG)
 	}
 
@@ -457,7 +457,7 @@ Device (LNKH)
 		/* Which bit is set? */
 		FindSetRightBit(IRQ0, Local0)
 
-		Decrement(Local0)
+		Local0--
 		Store(Local0, PRTH)
 	}
 

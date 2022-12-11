@@ -13,7 +13,7 @@ Scope(\_TZ)
 	{
 		Local0 = Arg0 * 10
 		Local0 += 2732
-		if (LLessEqual(Local0, 2732)) {
+		if (Local0 <= 2732) {
 			Return (3000)
 		}
 

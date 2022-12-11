@@ -5,6 +5,11 @@ config NORTHBRIDGE_INTEL_I440BX
 	select NO_ECAM_MMCONF_SUPPORT
 	select HAVE_DEBUG_RAM_SETUP
 	select NO_CBFS_MCACHE
+	select NO_DDR5
+	select NO_LPDDR4
+	select NO_DDR4
+	select NO_DDR3
+	select NO_DDR2
 
 config SDRAMPWR_4DIMM
 	bool

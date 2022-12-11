@@ -87,18 +87,17 @@ Scope (\_SB.PCI0.I2C2)
 		 */
 		Method (_DSM, 4, NotSerialized)
 		{
-			If (LEqual (Arg0, ToUUID
-			            ("3cdff6f7-4267-4555-ad05-b30a3d8938de"))) {
-				If (LEqual (Arg2, Zero)) {
+			If (Arg0 == ToUUID ("3cdff6f7-4267-4555-ad05-b30a3d8938de")) {
+				If (Arg2 == Zero) {
 					/* Function 0 - Query */
-					If (LEqual (Arg1, One)) {
+					If (Arg1 == One) {
 						/* Revision 1 Function 1 */
 						Return (Buffer (One) { 0x03 })
 					} Else {
 						/* Revision 2+ not supported */
 						Return (Buffer (One) { 0x00 })
 					}
-				} ElseIf (LEqual (Arg2, One)) {
+				} ElseIf (Arg2 == One) {
 					/* Function 1 - HID Descriptor Addr */
 					Return (0x0001)
 				} Else {

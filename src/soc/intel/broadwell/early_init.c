@@ -47,12 +47,12 @@ void systemagent_early_init(void)
 
 		/* set PRSCAPDIS, lock GFXVTBAR policy cfg registers */
 		u32 reg32;
-		reg32 = read32((void *)(GFXVT_BASE_ADDRESS + ARCHDIS));
-		write32((void *)(GFXVT_BASE_ADDRESS + ARCHDIS),
+		reg32 = read32p(GFXVT_BASE_ADDRESS + ARCHDIS);
+		write32p(GFXVT_BASE_ADDRESS + ARCHDIS,
 				reg32 | DMAR_LCKDN | PRSCAPDIS);
 		/* lock VTVC0BAR policy cfg registers */
-		reg32 = read32((void *)(VTVC0_BASE_ADDRESS + ARCHDIS));
-		write32((void *)(VTVC0_BASE_ADDRESS + ARCHDIS),
+		reg32 = read32p(VTVC0_BASE_ADDRESS + ARCHDIS);
+		write32p(VTVC0_BASE_ADDRESS + ARCHDIS,
 				reg32 | DMAR_LCKDN);
 	}
 }

@@ -9,17 +9,17 @@ Method (TEVT, 1, NotSerialized)
 	Store (ToInteger (Arg0), Local0)
 
 #ifdef DPTF_TSR0_SENSOR_ID
-	If (LEqual (Local0, DPTF_TSR0_SENSOR_ID)) {
+	If (Local0 == DPTF_TSR0_SENSOR_ID) {
 		Notify (^TSR0, 0x90)
 	}
 #endif
 #ifdef DPTF_TSR1_SENSOR_ID
-	If (LEqual (Local0, DPTF_TSR1_SENSOR_ID)) {
+	If (Local0 == DPTF_TSR1_SENSOR_ID) {
 		Notify (^TSR1, 0x90)
 	}
 #endif
 #ifdef DPTF_TSR2_SENSOR_ID
-	If (LEqual (Local0, DPTF_TSR2_SENSOR_ID)) {
+	If (Local0 == DPTF_TSR2_SENSOR_ID) {
 		Notify (^TSR2, 0x90)
 	}
 #endif
@@ -52,7 +52,7 @@ Device (TSR0)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == One) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -108,7 +108,7 @@ Device (TSR1)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == One) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -164,7 +164,7 @@ Device (TSR2)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == One) {
 			Return (0xF)
 		} Else {
 			Return (0x0)

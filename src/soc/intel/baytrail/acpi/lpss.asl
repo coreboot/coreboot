@@ -24,7 +24,7 @@ Device (SDM1)
 
 	Method (_STA)
 	{
-		If (LEqual (\S0EN, 1)) {
+		If (\S0EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -56,7 +56,7 @@ Device (SDM2)
 
 	Method (_STA)
 	{
-		If (LEqual (\S8EN, 1)) {
+		If (\S8EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -96,7 +96,7 @@ Device (I2C1)
 
 	Method (_STA)
 	{
-		If (LEqual (\S1EN, 1)) {
+		If (\S1EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -155,7 +155,7 @@ Device (I2C2)
 
 	Method (_STA)
 	{
-		If (LEqual (\S2EN, 1)) {
+		If (\S2EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -214,7 +214,7 @@ Device (I2C3)
 
 	Method (_STA)
 	{
-		If (LEqual (\S3EN, 1)) {
+		If (\S3EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -273,7 +273,7 @@ Device (I2C4)
 
 	Method (_STA)
 	{
-		If (LEqual (\S4EN, 1)) {
+		If (\S4EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -332,7 +332,7 @@ Device (I2C5)
 
 	Method (_STA)
 	{
-		If (LEqual (\S5EN, 1)) {
+		If (\S5EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -391,7 +391,7 @@ Device (I2C6)
 
 	Method (_STA)
 	{
-		If (LEqual (\S6EN, 1)) {
+		If (\S6EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -450,7 +450,7 @@ Device (I2C7)
 
 	Method (_STA)
 	{
-		If (LEqual (\S7EN, 1)) {
+		If (\S7EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -503,7 +503,7 @@ Device (SPI1)
 
 	Method (_STA)
 	{
-		If (LEqual (\S9EN, 1)) {
+		If (\S9EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -550,7 +550,7 @@ Device (PWM1)
 
 	Method (_STA)
 	{
-		If (LEqual (\SAEN, 1)) {
+		If (\SAEN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -578,7 +578,7 @@ Device (PWM2)
 
 	Method (_STA)
 	{
-		If (LEqual (\SBEN, 1)) {
+		If (\SBEN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -612,7 +612,7 @@ Device (UAR1)
 
 	Method (_STA)
 	{
-		If (LEqual (\SCEN, 1)) {
+		If (\SCEN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -665,7 +665,7 @@ Device (UAR2)
 
 	Method (_STA)
 	{
-		If (LEqual (\SDEN, 1)) {
+		If (\SDEN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)

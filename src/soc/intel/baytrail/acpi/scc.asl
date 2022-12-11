@@ -25,7 +25,7 @@ Device (EMMC)
 
 	Method (_STA)
 	{
-		If (LEqual (\C0EN, 1)) {
+		If (\C0EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -88,7 +88,7 @@ Device (SDIO)
 
 	Method (_STA)
 	{
-		If (LEqual (\C1EN, 1)) {
+		If (\C1EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -140,7 +140,7 @@ Device (SDCD)
 
 	Method (_STA)
 	{
-		If (LEqual (\C2EN, 1)) {
+		If (\C2EN == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)

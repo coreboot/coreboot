@@ -9,7 +9,7 @@ Device (TCHG)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == One) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -30,7 +30,7 @@ Device (TCHG)
 		Local0--
 
 		/* Check if charging is disabled (AC removed) */
-		If (LEqual (\PWRS, Zero)) {
+		If (\PWRS == Zero) {
 			/* Return last power state */
 			Return (Local0)
 		} Else {

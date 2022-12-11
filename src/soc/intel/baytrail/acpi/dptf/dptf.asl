@@ -19,7 +19,7 @@ Device (DPTF)
 
 	Method (_STA)
 	{
-		If (LEqual (\DPTE, One)) {
+		If (\DPTE == One) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -36,7 +36,7 @@ Device (DPTF)
 	Method (_OSC, 4, Serialized)
 	{
 		/* Check for Passive Policy UUID */
-		If (LEqual (DeRefOf (Index (IDSP, 0)), Arg0)) {
+		If (DeRefOf (Index (IDSP, 0)) == Arg0) {
 			/* Initialize Thermal Devices */
 			^TINI ()
 

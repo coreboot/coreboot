@@ -110,7 +110,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC0) {
-			If (LLessEqual (\FLVL, 0)) {
+			If (\FLVL <= 0) {
 				Return (CTOK (FAN0_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN0_THRESHOLD_ON))
@@ -118,7 +118,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC1) {
-			If (LLessEqual (\FLVL, 1)) {
+			If (\FLVL <= 1) {
 				Return (CTOK (FAN1_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN1_THRESHOLD_ON))
@@ -126,7 +126,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC2) {
-			If (LLessEqual (\FLVL, 2)) {
+			If (\FLVL <= 2) {
 				Return (CTOK (FAN2_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN2_THRESHOLD_ON))
@@ -134,7 +134,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC3) {
-			If (LLessEqual (\FLVL, 3)) {
+			If (\FLVL <= 3) {
 				Return (CTOK (FAN3_THRESHOLD_OFF))
 			} Else {
 				Return (CTOK (FAN3_THRESHOLD_ON))
@@ -142,7 +142,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC4) {
-			If (LLessEqual (\FLVL, 4)) {
+			If (\FLVL <= 4) {
 				Return (CTOK (0))
 			} Else {
 				Return (CTOK (0))
@@ -158,7 +158,7 @@ Scope (\_TZ)
 		PowerResource (FNP0, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 0)) {
+				If (\FLVL <= 0) {
 					Return (One)
 				} Else {
 					Return (Zero)
@@ -185,7 +185,7 @@ Scope (\_TZ)
 		PowerResource (FNP1, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 1)) {
+				If (\FLVL <= 1) {
 					Return (One)
 				} Else {
 					Return (Zero)
@@ -212,7 +212,7 @@ Scope (\_TZ)
 		PowerResource (FNP2, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 2)) {
+				If (\FLVL <= 2) {
 					Return (One)
 				} Else {
 					Return (Zero)
@@ -239,7 +239,7 @@ Scope (\_TZ)
 		PowerResource (FNP3, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 3)) {
+				If (\FLVL <= 3) {
 					Return (One)
 				} Else {
 					Return (Zero)
@@ -266,7 +266,7 @@ Scope (\_TZ)
 		PowerResource (FNP4, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 4)) {
+				If (\FLVL <= 4) {
 					Return (One)
 				} Else {
 					Return (Zero)

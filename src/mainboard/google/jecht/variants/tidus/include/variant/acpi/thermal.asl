@@ -125,13 +125,13 @@ Scope (\_TZ)
 			} ElseIf (THTB == 1) {
 				If (Local0 >= THERMAL_POLICY_0_THRESHOLD_ON) {
 					TTB0 ()
-				} ElseIf (LLessEqual (Local0, THERMAL_POLICY_1_THRESHOLD_OFF)) {
+				} ElseIf (Local0 <= THERMAL_POLICY_1_THRESHOLD_OFF) {
 					TTB2 ()
 				}
 			} Else {
 				If (Local0 < THERMAL_POLICY_1_THRESHOLD_OFF) {
 					TTB2 ()
-				} ElseIf (LLessEqual (Local0, THERMAL_POLICY_0_THRESHOLD_OFF)) {
+				} ElseIf (Local0 <= THERMAL_POLICY_0_THRESHOLD_OFF) {
 					TTB1 ()
 				}
 			}
@@ -218,7 +218,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC0) {
-			If (LLessEqual (\FLVL, 0)) {
+			If (\FLVL <= 0) {
 				Return (CTOK (F0OF))
 			} Else {
 				Return (CTOK (F0ON))
@@ -226,7 +226,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC1) {
-			If (LLessEqual (\FLVL, 1)) {
+			If (\FLVL <= 1) {
 				Return (CTOK (F1OF))
 			} Else {
 				Return (CTOK (F1ON))
@@ -234,7 +234,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC2) {
-			If (LLessEqual (\FLVL, 2)) {
+			If (\FLVL <= 2) {
 				Return (CTOK (F2OF))
 			} Else {
 				Return (CTOK (F2ON))
@@ -242,7 +242,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC3) {
-			If (LLessEqual (\FLVL, 3)) {
+			If (\FLVL <= 3) {
 				Return (CTOK (F3OF))
 			} Else {
 				Return (CTOK (F3ON))
@@ -250,7 +250,7 @@ Scope (\_TZ)
 		}
 
 		Method (_AC4) {
-			If (LLessEqual (\FLVL, 4)) {
+			If (\FLVL <= 4) {
 				Return (CTOK (0))
 			} Else {
 				Return (CTOK (0))
@@ -266,7 +266,7 @@ Scope (\_TZ)
 		PowerResource (FNP0, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 0)) {
+				If (\FLVL <= 0) {
 					Return (One)
 				} Else {
 					Return (Zero)
@@ -293,7 +293,7 @@ Scope (\_TZ)
 		PowerResource (FNP1, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 1)) {
+				If (\FLVL <= 1) {
 					Return (One)
 				} Else {
 					Return (Zero)
@@ -320,7 +320,7 @@ Scope (\_TZ)
 		PowerResource (FNP2, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 2)) {
+				If (\FLVL <= 2) {
 					Return (One)
 				} Else {
 					Return (Zero)
@@ -347,7 +347,7 @@ Scope (\_TZ)
 		PowerResource (FNP3, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 3)) {
+				If (\FLVL <= 3) {
 					Return (One)
 				} Else {
 					Return (Zero)
@@ -374,7 +374,7 @@ Scope (\_TZ)
 		PowerResource (FNP4, 0, 0)
 		{
 			Method (_STA) {
-				If (LLessEqual (\FLVL, 4)) {
+				If (\FLVL <= 4) {
 					Return (One)
 				} Else {
 					Return (Zero)

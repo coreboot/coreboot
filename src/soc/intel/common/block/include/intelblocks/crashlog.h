@@ -10,7 +10,6 @@
 #include <fsp/util.h>
 #include <intelblocks/pmc_ipc.h>
 #include <types.h>
-#include <arch/io.h>
 
 /* PMC  CrashLog Command */
 #define PMC_IPC_CMD_CRASHLOG			0xA6

@@ -6,7 +6,6 @@
  * Chapter number: 4, 29
  */
 
-#include <arch/io.h>
 #include <bootstate.h>
 #include <commonlib/console/post_codes.h>
 #include <console/console.h>

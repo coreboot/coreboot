@@ -31,7 +31,7 @@ Device (PM1) {
 	 */
 	Method (CTK)
 	{
-		Store (EC_READ (0x52), Local0)
+		Local0 = EC_READ (0x52)
 		If (And (Local0, EC_ERROR_MASK)) {
 			Return (0)
 		}
@@ -73,17 +73,17 @@ Device (PM2) {
 	Method (CTK)
 	{
 		Acquire (EC_MUTEX, 0xffff)
-		Store (SEND_EC_COMMAND (0x20), Local0) /* GET_CPUTEMP */
+		Local0 = SEND_EC_COMMAND (0x20) /* GET_CPUTEMP */
 		If (And (Local0, EC_ERROR_MASK)) {
 			Release (EC_MUTEX)
 			Return (0)
 		}
-		Store (RECV_EC_DATA (), Local0)	/* Temp low byte in 64th °C */
+		Local0 = RECV_EC_DATA ()	/* Temp low byte in 64th °C */
 		If (And (Local0, EC_ERROR_MASK)) {
 			Release (EC_MUTEX)
 			Return (0)
 		}
-		Store (RECV_EC_DATA (), Local1)	/* Temp high byte in 64th °C */
+		Local1 = RECV_EC_DATA ()	/* Temp high byte in 64th °C */
 		If (And (Local1, EC_ERROR_MASK)) {
 			Release (EC_MUTEX)
 			Return (0)
@@ -91,7 +91,7 @@ Device (PM2) {
 		Release (EC_MUTEX)
 
 		Or (ShiftLeft (Local1, 8), Local0, Local0)
-		Store (Local0 * 10 / 64, Local0)		/* Convert to 10th °C */
+		Local0 *= 10 / 64				/* Convert to 10th °C */
 		Return (Local0 + 2732)				/* Return as 10th Kelvin */
 	}
 }

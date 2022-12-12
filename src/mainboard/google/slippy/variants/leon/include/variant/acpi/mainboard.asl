@@ -37,7 +37,7 @@ Scope (\_SB.PCI0.I2C0)
 
 		Method (_DSW, 3, NotSerialized)
 		{
-			Store (BOARD_TRACKPAD_WAKE_GPIO, Local0)
+			Local0 = BOARD_TRACKPAD_WAKE_GPIO
 			If (Arg0 == 1) {
 				// Enable GPIO as wake source
 				\_SB.PCI0.LPCB.GPIO.GWAK (Local0)

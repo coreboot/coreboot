@@ -47,13 +47,13 @@ Device (BAT0)
 	// Method to enable full battery workaround
 	Method (BFWE)
 	{
-		Store (One, BFWK)
+		BFWK = One
 	}
 
 	// Method to disable full battery workaround
 	Method (BFWD)
 	{
-		Store (Zero, BFWK)
+		BFWK = Zero
 	}
 
 	// Swap bytes in a word
@@ -64,7 +64,7 @@ Device (BAT0)
 		And (Local1, 0xFF00, Local1)
 		Or (Local0, Local1, Local0)
 		If (Local0 == 0xFFFF) {
-			Store (0xFFFFFFFF, Local0)
+			Local0 = 0xFFFFFFFF
 		}
 		Return (Local0)
 	}
@@ -81,15 +81,15 @@ Device (BAT0)
 	Method (_BIF, 0, Serialized)
 	{
 		// Update fields from EC
-		Store (SWAB (BTDA), PBIF[1])
-		Store (SWAB (BTDF), PBIF[2])
-		Store (SWAB (BTDV), PBIF[4])
-		Store (SWAB (BTDL), PBIF[6])
+		PBIF[1] = SWAB (BTDA)
+		PBIF[2] = SWAB (BTDF)
+		PBIF[4] = SWAB (BTDV)
+		PBIF[6] = SWAB (BTDL)
 
 		// Get battery info from mainboard
-		Store (\BATM, PBIF[9])
-		Store (\BATS, PBIF[10])
-		Store (\BATV, PBIF[12])
+		PBIF[9] = \BATM
+		PBIF[10] = \BATS
+		PBIF[12] = \BATV
 
 		Return (PBIF)
 	}
@@ -105,8 +105,8 @@ Device (BAT0)
 		//
 
 		// Get battery state from EC
-		Store (BTST, Local0)
-		Store (Zero, Local1)
+		Local0 = BTST
+		Local1 = Zero
 
 		// Check if AC is present
 		If (ACEX) {
@@ -114,17 +114,17 @@ Device (BAT0)
 			And (Local0, 0x03, Local1)
 		} Else {
 			// Always discharging when on battery power
-			Store (0x01, Local1)
+			Local1 = 0x01
 		}
 
 		// Flag if the battery level is critical
 		And (Local0, 0x04, Local4)
 		Or (Local1, Local4, Local1)
-		Store (Local1, PBST[0])
+		PBST[0] = Local1
 
 		// Notify if battery state has changed since last time
 		If (Local1 != BSTP) {
-			Store (Local1, BSTP)
+			BSTP = Local1
 			Notify (BAT0, 0x80)
 		}
 
@@ -132,17 +132,17 @@ Device (BAT0)
 		// 1: BATTERY PRESENT RATE
 		//
 
-		Store (SWAB (BTPR), Local1)
+		Local1 = SWAB (BTPR)
 		If (Local1 != 0xFFFFFFFF && Local1 >= 0x8000) {
 			Xor (Local1, 0xFFFF, Local1)
 			Local1++
 		}
-		Store (Local1, PBST[1])
+		PBST[1] = Local1
 
 		//
 		// 2: BATTERY REMAINING CAPACITY
 		//
-		Store (SWAB (BTRA), Local1)
+		Local1 = SWAB (BTRA)
 		If (Local1 != 0xFFFFFFFF && Local1 >= 0x8000) {
 			Xor (Local1, 0xFFFF, Local1)
 			Local1++
@@ -153,21 +153,21 @@ Device (BAT0)
 			// nor discharging.  Linux expects a full battery
 			// to report same capacity as last full charge.
 			// https://bugzilla.kernel.org/show_bug.cgi?id=12632
-			Store (SWAB (BTDF), Local2)
+			Local2 = SWAB (BTDF)
 
 			// See if within ~3% of full
 			ShiftRight (Local2, 5, Local3)
 			If (Local1 > Local2 - Local3 && Local1 < Local2 + Local3)
 			{
-				Store (Local2, Local1)
+				Local1 = Local2
 			}
 		}
-		Store (Local1, PBST[2])
+		PBST[2] = Local1
 
 		//
 		// 3: BATTERY PRESENT VOLTAGE
 		//
-		Store (SWAB (BTVO), PBST[3])
+		PBST[3] = SWAB (BTVO)
 
 		Return (PBST)
 	}

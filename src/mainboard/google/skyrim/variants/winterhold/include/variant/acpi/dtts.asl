@@ -21,7 +21,7 @@ Scope (\_SB)
         If (\_SB.PRTN == 7)
         {
             \_SB.DDEF()
-            Store (0, \_SB.PRTN)
+            \_SB.PRTN = 0
             Return (Zero)
         }
 
@@ -34,13 +34,13 @@ Scope (\_SB)
                     // 50C=323K, 323-200(offset)=123(0x7B)
                     If (\_SB.PCI0.LPCB.EC0.TIN4 >= 123) {
                         \_SB.DTTB()
-                        Store (1, \_SB.PRTN)
+                        \_SB.PRTN = 1
                         Return (Zero)
                     }
                     // AMB sensor release point
                     If ((\_SB.PCI0.LPCB.EC0.TIN4 <= 118)) {
                         \_SB.DDEF()
-                        Store (0, \_SB.PRTN)
+                        \_SB.PRTN = 0
                         Return (Zero)
                     }
                     // Keep tht previous thermal table
@@ -48,11 +48,11 @@ Scope (\_SB)
                 } Else {
                     If (\_SB.PRTN == 3 || \_SB.PRTN == 5) {
                         \_SB.DTTB()
-                        Store (1, \_SB.PRTN)
+                        \_SB.PRTN = 1
                         Return (Zero)
                     } Else {
                         \_SB.DDEF()
-                        Store (0, \_SB.PRTN)
+                        \_SB.PRTN = 0
                         Return (Zero)
                     }
                 }
@@ -61,12 +61,12 @@ Scope (\_SB)
                 If (\_SB.PRTN == 2 || \_SB.PRTN == 3) {
                     If (\_SB.PCI0.LPCB.EC0.TIN4 >= 128) {
                         \_SB.DTTD()
-                        Store (3, \_SB.PRTN)
+                        \_SB.PRTN = 3
                         Return (Zero)
                     }
                     If(\_SB.PCI0.LPCB.EC0.TIN4 <= 123) {
                         \_SB.DTTC()
-                        Store (2, \_SB.PRTN)
+                        \_SB.PRTN = 2
                         Return (Zero)
                     }
                     // Keep tht previous thermal table
@@ -74,11 +74,11 @@ Scope (\_SB)
                 } Else {
                     If (\_SB.PRTN == 1 || \_SB.PRTN == 5) {
                         \_SB.DTTD()
-                        Store (3, \_SB.PRTN)
+                        \_SB.PRTN = 3
                         Return (Zero)
                     } Else {
                         \_SB.DTTC()
-                        Store (2, \_SB.PRTN)
+                        \_SB.PRTN = 2
                         Return (Zero)
                     }
                 }
@@ -89,13 +89,13 @@ Scope (\_SB)
                 // AMB sensor trigger point
                 If (\_SB.PCI0.LPCB.EC0.TIN4 >= 118) {
                     \_SB.DTTF()
-                    Store (5, \_SB.PRTN)
+                    \_SB.PRTN = 5
                     Return (Zero)
                 }
                 // AMB sensor release point
                 If ((\_SB.PCI0.LPCB.EC0.TIN4 <= 113)) {
                     \_SB.DTTE()
-                    Store (4, \_SB.PRTN)
+                    \_SB.PRTN = 4
                     Return (Zero)
                 }
                 // Keep tht previous thermal table
@@ -103,11 +103,11 @@ Scope (\_SB)
             } Else {
                 If (\_SB.PRTN == 1 || \_SB.PRTN == 3) {
                     \_SB.DTTF()
-                    Store (5, \_SB.PRTN)
+                    \_SB.PRTN = 5
                     Return (Zero)
                 } Else {
                     \_SB.DTTE()
-                    Store (4, \_SB.PRTN)
+                    \_SB.PRTN = 4
                     Return (Zero)
                 }
             }

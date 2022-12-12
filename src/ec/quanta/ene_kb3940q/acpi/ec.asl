@@ -122,23 +122,23 @@ Device (EC0)
 	Method (_REG, 2, NotSerialized)
 	{
 		// Initialize AC power state
-		Store (ADPT, \PWRS)
+		\PWRS = ADPT
 
 		// Initialize LID switch state
-		Store (LIDF, \LIDS)
+		\LIDS = LIDF
 
 		// Force a read of CPU temperature
-		Store (CTMP, Local0)
+		Local0 = CTMP
 
 		// Use Local0 to avoid iasl warning: Method Local is set but never used
 		And(Local0, Ones, Local0)
 
 		// Find and program number of P-States
-		Store (SizeOf (\_SB.CP00._PSS), MPST)
+		MPST = SizeOf (\_SB.CP00._PSS)
 		Printf ("Programming number of P-states: %o", MPST)
 
 		// Find and program the current P-State
-		Store(\_SB.CP00._PPC, NPST)
+		NPST = \_SB.CP00._PPC
 		Printf ("Programming Current P-state: %o", NPST)
 	}
 
@@ -176,7 +176,7 @@ Device (EC0)
 	{
 		Printf ("Pstate Event 0x0E")
 
-		Store(\_SB.CP00._PPC, Local0)
+		Local0 = \_SB.CP00._PPC
 		Local1 = PPCM - 1
 
 		If(Local0 < Local1) {
@@ -184,28 +184,28 @@ Device (EC0)
 			\PPCN ()
 		}
 
-		Store(Local0, NPST)
+		NPST = Local0
 	}
 
 	// Pstate Up
 	Method (_Q0F)
 	{
 		Printf ("Pstate Event 0x0F")
-		Store(\_SB.CP00._PPC, Local0)
+		Local0 = \_SB.CP00._PPC
 
 		If(Local0) {
 			Local0--
 			\PPCN ()
 		}
 
-		Store(Local0, NPST)
+		NPST = Local0
 	}
 
 	// AC Power Connected
 	Method (_Q10, 0, NotSerialized)
 	{
 		Printf ("AC Insertion Event 0x10")
-		Store (One, \PWRS)
+		\PWRS = One
 		Notify (AC, 0x80)
 		Notify (BATX, 0x80)
 		\PNOT ()
@@ -215,7 +215,7 @@ Device (EC0)
 	Method (_Q11, 0, NotSerialized)
 	{
 		Printf ("AC Detach Event 0x11")
-		Store (Zero, \PWRS)
+		\PWRS = Zero
 		Notify (AC, 0x80)
 		Notify (BATX, 0x80)
 		\PNOT ()
@@ -255,7 +255,7 @@ Device (EC0)
 	{
 		Printf ("Lid Switch Event 0x06")
 		sleep(20)
-		Store (LIDF, \LIDS)
+		\LIDS = LIDF
 		Notify (\_SB.LID0, 0x80)
 	}
 

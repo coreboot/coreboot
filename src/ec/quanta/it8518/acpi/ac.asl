@@ -9,7 +9,7 @@ Device (AC)
 
 	Method (_PSR)
 	{
-		Store(ACPW, Local0)
+		Local0 = ACPW
 		Return(Local0)
 	}
 

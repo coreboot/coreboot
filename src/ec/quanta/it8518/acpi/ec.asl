@@ -544,17 +544,17 @@ Device (EC0)
 	Method (_REG, 2, NotSerialized)
 	{
 		// Initialize AC power state
-		Store (ACPW, \PWRS)
+		\PWRS = ACPW
 
 		// Initialize LID switch state
-		Store (NOT(HPLD), \LIDS)
+		\LIDS = NOT(HPLD)
 
 		// Enable OS control of fan speed
-		// TODO Store (One, FCOS)
+		// TODO FCOS = One
 
 		// Force a read of CPU temperature
 		// TODO Which temperature corresponds to the CPU?
-		Store (TMP0, Local0)
+		Local0 = TMP0
 		/* So that we don't get a warning that Local0 is unused.  */
 		Local0++
 	}
@@ -593,7 +593,7 @@ Device (EC0)
 	// AC Power Connected
 	Method (_Q26, 0, NotSerialized)
 	{
-		Store (One, \PWRS)
+		\PWRS = One
 		Notify (AC, 0x80)
 		Notify (BATX, 0x80)
 		\PNOT ()
@@ -602,7 +602,7 @@ Device (EC0)
 	// AC Power Removed
 	Method (_Q27, 0, NotSerialized)
 	{
-		Store (Zero, \PWRS)
+		\PWRS = Zero
 		Notify (AC, 0x80)
 		\PNOT ()
 	}
@@ -610,14 +610,14 @@ Device (EC0)
 	// LID Open
 	Method (_Q2A)
 	{
-		Store (One, \LIDS)
+		\LIDS = One
 		Notify (\_SB.LID0, 0x80)
 	}
 
 	// LID Close (Suspend Trigger)
 	Method (_Q2B)
 	{
-		Store (Zero, \LIDS)
+		\LIDS = Zero
 		Notify (\_SB.LID0, 0x80)
 	}
 
@@ -640,7 +640,7 @@ Device (EC0)
 	{
 		IF (DCWL) //if Wlan exist
 		{
-			//TODO Store (WLAT, LANE)
+			//TODO LANE = WLAT
 		}
 	}
 

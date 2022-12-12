@@ -49,20 +49,20 @@ Device (BATX)
 	// Method to enable full battery workaround
 	Method (BFWE)
 	{
-		Store (One, BFWK)
+		BFWK = One
 	}
 
 	// Method to disable full battery workaround
 	Method (BFWD)
 	{
-		Store (Zero, BFWK)
+		BFWK = Zero
 	}
 
 	// Method to wait for EC to be ready after changing the Battery Info ID
 	// Selector
 	Method (WAEC)
 	{
-		Store (20, Local0)	// Timeout 100 msec
+		Local0 = 20	// Timeout 100 msec
 		While (HSID == 0)
 		{
 			// EC Is not ready
@@ -78,7 +78,7 @@ Device (BATX)
 	// Battery Slot Status
 	Method (_STA, 0, Serialized)
 	{
-		Store (MBTS, BXST)
+		BXST = MBTS
 		If (BXST)
 		{
 			// Battery is present
@@ -97,7 +97,7 @@ Device (BATX)
 		//
 		// Information ID 1 -
 		//
-		Store (One, HIID)
+		HIID = One
 		WAEC ()
 
 		//
@@ -105,13 +105,13 @@ Device (BATX)
 		//   SMART battery : 1 - 10mWh : 0 - mAh
 		//   ACPI spec     : 0 - mWh   : 1 - mAh
 		//
-		Store(SBCM, Local7)
+		Local7 = SBCM
 		XOr (Local7, One, PBIF[0])
 
 		//
 		// Information ID 0 -
 		//
-		Store (Zero, HIID)
+		HIID = Zero
 		WAEC ()
 
 		//
@@ -123,13 +123,13 @@ Device (BATX)
 		}
 		Else
 		{
-			Store (SBFC, PBIF[2])
+			PBIF[2] = SBFC
 		}
 
 		//
 		// Information ID 2 -
 		//
-		Store (2, HIID)
+		HIID = 2
 		WAEC ()
 
 		//
@@ -141,9 +141,9 @@ Device (BATX)
 		}
 		Else
 		{
-			Store (SBDC, Local0)
+			Local0 = SBDC
 		}
-		Store (Local0, PBIF[1])
+		PBIF[1] = Local0
 
 		//
 		//  Design capacity of High (5%)
@@ -155,45 +155,45 @@ Device (BATX)
 		//
 		//  Design voltage
 		//
-		Store (SBDV, PBIF[4])
+		PBIF[4] = SBDV
 
 		//
 		// Serial Number
 		//
-		Store (ToHexString (SBSN), PBIF[10])
+		PBIF[10] = ToHexString (SBSN)
 
 		//
 		// Information ID 4 -
 		//
-		Store (4, HIID)
+		HIID = 4
 		WAEC ()
 
 		//
 		//  Battery Type - Device Chemistry
 		//
-		Store (ToString (Concatenate(SBCH, 0x00)), PBIF[11])
+		PBIF[11] = ToString (Concatenate(SBCH, 0x00))
 
 		//
 		// Information ID 5 -
 		//
-		Store (5, HIID)
+		HIID = 5
 		WAEC ()
 
 		//
 		// OEM Information - Manufacturer Name
 		//
-		Store (ToString (Concatenate(SBMN, 0x00)), PBIF[12])
+		PBIF[12] = ToString (Concatenate(SBMN, 0x00))
 
 		//
 		// Information ID 6 -
 		//
-		Store (6, HIID)
+		HIID = 6
 		WAEC ()
 
 		//
 		// Model Number - Device Name
 		//
-		Store (ToString (Concatenate(SBDN, 0x00)), PBIF[9])
+		PBIF[9] = ToString (Concatenate(SBDN, 0x00))
 
 		Return (PBIF)
 	}
@@ -218,17 +218,17 @@ Device (BATX)
 		// Get battery state from EC
 		If (And (HB0S, 0x20))
 		{
-			Store (2, Local0)
+			Local0 = 2
 		}
 		Else
 		{
 			if (And (HB0S, 0x40))
 			{
-				Store (One, Local0)
+				Local0 = One
 			}
 			Else
 			{
-				Store (Zero, Local0)
+				Local0 = Zero
 			}
 		}
 
@@ -238,7 +238,7 @@ Device (BATX)
 			Or (Local0, 4, Local0)
 		}
 
-		Store (Zero, Local1)
+		Local1 = Zero
 
 		// Check if AC is present
 		If (ACPW)
@@ -249,18 +249,18 @@ Device (BATX)
 		Else
 		{
 			// Always discharging when on battery power
-			Store (One, Local1)
+			Local1 = One
 		}
 
 		// Flag if the battery level is critical
 		And (Local0, 0x04, Local4)
 		Or (Local1, Local4, Local1)
-		Store (Local1, PBST[0])
+		PBST[0] = Local1
 
 		//
 		// 1: BATTERY PRESENT RATE/CURRENT
 		//
-		Store (ECAC, Local1)
+		Local1 = ECAC
 		If (Local1 >= 0x8000)
 		{
 			If (And (Local0, 1))
@@ -270,7 +270,7 @@ Device (BATX)
 			Else
 			{
 				// Error
-				Store (Zero, Local1)
+				Local1 = Zero
 			}
 		}
 		Else
@@ -278,7 +278,7 @@ Device (BATX)
 			If (!(AND (Local0, 2)))
 			{
 				// Battery is not charging
-				Store (Zero, Local1)
+				Local1 = Zero
 			}
 		}
 
@@ -289,7 +289,7 @@ Device (BATX)
 			Local1 *= ECVO
 			Local1 /= 1000
 		}
-		Store (Local1, PBST[1])
+		PBST[1] = Local1
 
 		//
 		// 2: BATTERY REMAINING CAPACITY
@@ -303,7 +303,7 @@ Device (BATX)
 		}
 		Else
 		{
-			Store (ECRC, Local1)
+			Local1 = ECRC
 		}
 
 		If (BFWK && ACPW && !Local0)
@@ -313,21 +313,21 @@ Device (BATX)
 			// to report same capacity as last full charge.
 			// https://bugzilla.kernel.org/show_bug.cgi?id=12632
 			// TODO: Is SBRS the "battery gas gauge"?
-			Store (SBRS, Local2)
+			Local2 = SBRS
 
 			// See if within ~3% of full
 			ShiftRight (Local2, 5, Local3)
 			If (Local1 > Local2 - Local3 && Local1 < Local2 + Local3)
 			{
-				Store (Local2, Local1)
+				Local1 = Local2
 			}
 		}
-		Store (Local1, PBST[2])
+		PBST[2] = Local1
 
 		//
 		// 3: BATTERY PRESENT VOLTAGE
 		//
-		Store (ECVO, PBST[3])
+		PBST[3] = ECVO
 
 		Return (PBST)
 	}

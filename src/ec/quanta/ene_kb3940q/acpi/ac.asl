@@ -9,7 +9,7 @@ Device (AC)
 
 	Method (_PSR)
 	{
-		Store(ADPT, Local0)
+		Local0 = ADPT
 		Return(Local0)
 	}
 

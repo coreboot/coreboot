@@ -60,7 +60,7 @@ Device (DPTF)
 	/* Convert from Degrees C to 1/10 Kelvin for ACPI */
 	Method (CTOK, 1) {
 		/* 10th of Degrees C */
-		Multiply (Arg0, 10, Local0)
+		Local0 = Arg0 * 10
 
 		/* Convert to Kelvin */
 		Local0 += 2732

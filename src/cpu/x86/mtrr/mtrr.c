@@ -291,7 +291,7 @@ static void commit_fixed_mtrrs(void)
 	int j;
 	int msr_num;
 	int type_index;
-	int cpu_idx = cpu_index();
+	unsigned long cpu_idx = cpu_index();
 	/* 8 ranges per msr. */
 	msr_t fixed_msrs[NUM_FIXED_MTRRS];
 	unsigned long msr_index[NUM_FIXED_MTRRS];
@@ -335,7 +335,7 @@ static void commit_fixed_mtrrs(void)
 	ASSERT(msr_num == NUM_FIXED_MTRRS)
 
 	for (i = 0; i < ARRAY_SIZE(fixed_msrs); i++)
-		printk(BIOS_DEBUG, "CPU 0x%x: MTRR: Fixed MSR 0x%lx 0x%08x%08x\n",
+		printk(BIOS_DEBUG, "CPU 0x%lx: MTRR: Fixed MSR 0x%lx 0x%08x%08x\n",
 		       cpu_idx, msr_index[i], fixed_msrs[i].hi, fixed_msrs[i].lo);
 
 	disable_cache();
@@ -355,7 +355,7 @@ void x86_setup_fixed_mtrrs(void)
 {
 	x86_setup_fixed_mtrrs_no_enable();
 
-	printk(BIOS_SPEW, "CPU 0x%x call enable_fixed_mtrr()\n", cpu_index());
+	printk(BIOS_SPEW, "CPU 0x%lx call enable_fixed_mtrr()\n", cpu_index());
 	enable_fixed_mtrr();
 }
 
@@ -807,7 +807,7 @@ static void _x86_setup_mtrrs(unsigned int above4gb)
 
 	x86_setup_fixed_mtrrs();
 	address_size = cpu_phys_address_size();
-	printk(BIOS_DEBUG, "CPU 0x%x setup mtrr for CPU physical address size: %d bits\n",
+	printk(BIOS_DEBUG, "CPU 0x%lx setup mtrr for CPU physical address size: %d bits\n",
 				cpu_index(), address_size);
 	x86_setup_var_mtrrs(address_size, above4gb);
 }

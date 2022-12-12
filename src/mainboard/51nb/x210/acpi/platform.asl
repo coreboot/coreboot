@@ -16,7 +16,7 @@ Method (_PTS, 1)
 
 Method (_WAK, 1)
 {
-	Store(\_SB.PCI0.LPCB.EC.LIDC, \LIDS)
-	Store(\_SB.PCI0.LPCB.EC.ACIN, \PWRS)
+	\LIDS = \_SB.PCI0.LPCB.EC.LIDC
+	\PWRS = \_SB.PCI0.LPCB.EC.ACIN
 	Return (Package (){ 0, 0 })
 }

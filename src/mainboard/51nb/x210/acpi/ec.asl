@@ -45,10 +45,10 @@ Device (EC)
 	Method (_REG, 2, NotSerialized)
 	{
 		/* Initialize AC power state */
-		Store (ACIN, \PWRS)
+		\PWRS = ACIN
 
 		/* Initialize LID switch state */
-		Store (LIDC, \LIDS)
+		\LIDS = LIDC
 	}
 
 	/* KEY_BRIGHTNESSUP */
@@ -72,14 +72,14 @@ Device (EC)
 	/* AC event */
 	Method (_Q0D)
 	{
-		Store (ACIN, \PWRS)
+		\PWRS = ACIN
 		Notify (AC, 0x80)
 	}
 
 	/* Lid event */
 	Method (_Q0E)
 	{
-		Store (LIDC, \LIDS)
+		\LIDS = LIDC
 		Notify (LID0, 0x80)
 	}
 

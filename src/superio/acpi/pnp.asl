@@ -44,18 +44,18 @@
 #define PNP_GENERIC_STA(LDN) \
 	ENTER_CONFIG_MODE (LDN)\
 	  If (PNP_DEVICE_ACTIVE) {\
-		Store (DEVICE_PRESENT_ACTIVE, Local0)\
+		Local0 = DEVICE_PRESENT_ACTIVE \
 	  }\
 	  Else\
 	  {\
-		Store (DEVICE_PRESENT_INACTIVE, Local0)\
+		Local0 = DEVICE_PRESENT_INACTIVE \
 	  }\
 	EXIT_CONFIG_MODE ()\
 	Return (Local0)\
 
 #define PNP_GENERIC_DIS(LDN) \
 	ENTER_CONFIG_MODE (LDN)\
-	  Store (Zero, PNP_DEVICE_ACTIVE)\
+	  PNP_DEVICE_ACTIVE = Zero \
 	EXIT_CONFIG_MODE ()\
 
 
@@ -63,7 +63,7 @@
  * Current power state (returns the chip's state)
  */
 #define PNP_DEFAULT_PSC \
-	Store(^^_PSC (), Local0)\
+	Local0 = ^^_PSC () \
 	Return (Local0)
 
 /*
@@ -76,10 +76,10 @@
  *		bit
  */
 #define PNP_GENERIC_PSC(PM_REG, PM_VAL, PM_LDN) \
-	Store(^^_PSC (), Local0)\
+	Local0 = ^^_PSC () \
 	If (Local0) { Return (Local0) }\
 	ENTER_CONFIG_MODE (PM_LDN)\
-	  Store (PM_REG, Local0)\
+	  Local0 = PM_REG \
 	EXIT_CONFIG_MODE ()\
 	If (Local0 == PM_VAL) { Return (3) }\
 	Else { Return (0) }\
@@ -87,13 +87,13 @@
 /* Disable power saving mode */
 #define PNP_GENERIC_PS0(PM_REG, PM_VAL, PM_LDN) \
 	ENTER_CONFIG_MODE (PM_LDN)\
-	  Store (Not(PM_VAL), PM_REG)\
+	  PM_REG = Not(PM_VAL) \
 	EXIT_CONFIG_MODE ()
 
 /* Enable power saving mode */
 #define PNP_GENERIC_PS3(PM_REG, PM_VAL, PM_LDN) \
 	ENTER_CONFIG_MODE (PM_LDN)\
-	  Store (PM_VAL, PM_REG)\
+	  PM_REG = PM_VAL \
 	EXIT_CONFIG_MODE ()
 
 
@@ -103,8 +103,8 @@
 	CreateWordField (RESOURCE_TEMPLATE, IO_TAG._MIN, IO_TAG##I)\
 	CreateWordField (RESOURCE_TEMPLATE, IO_TAG._MAX, IO_TAG##A)\
 	Or (ShiftLeft (IO_FROM##_HIGH_BYTE, 8), IO_FROM##_LOW_BYTE, Local0)\
-	Store (Local0, IO_TAG##I)\
-	Store (Local0, IO_TAG##A)
+	IO_TAG##I = Local0 \
+	IO_TAG##A = Local0
 
 #define PNP_READ_IRQ(IRQ_FROM, RESOURCE_TEMPLATE, IRQ_TAG) \
 	CreateWordField (RESOURCE_TEMPLATE, IRQ_TAG._INT, IRQ_TAG##W)\
@@ -116,8 +116,8 @@
 
 #define PNP_WRITE_IO(IO_TO, RESOURCE, IO_TAG) \
 	CreateWordField (RESOURCE, IO_TAG._MIN, IO_TAG##I)\
-	Store (And(IO_TAG##I, 0xff), IO_TO##_LOW_BYTE)\
-	Store (IO_TAG##I >> 8, IO_TO##_HIGH_BYTE)
+	IO_TO##_LOW_BYTE = And(IO_TAG##I, 0xff) \
+	IO_TO##_HIGH_BYTE = IO_TAG##I >> 8
 
 #define PNP_WRITE_IRQ(IRQ_TO, RESOURCE, IRQ_TAG) \
 	CreateWordField (RESOURCE, IRQ_TAG._INT, IRQ_TAG##W)\

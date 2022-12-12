@@ -93,6 +93,21 @@ static int get_l1_substate_control(enum L1_substates_control ctl)
 	return ctl - 1;
 }
 
+/*
+ * get_aspm_control() ensures that the right UPD value is set in fsp_params.
+ * 0: Disable ASPM
+ * 1: L0s only
+ * 2: L1 only
+ * 3: L0s and L1
+ * 4: Auto configuration
+ */
+static unsigned int get_aspm_control(enum ASPM_control ctl)
+{
+	if (ctl > ASPM_AUTO)
+		ctl = ASPM_AUTO;
+	return ctl;
+}
+
 __weak void mainboard_update_soc_chip_config(struct soc_intel_meteorlake_config *config)
 {
 	/* Override settings per board. */
@@ -393,6 +408,8 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->PcieRpHotPlug[i] = !!(rp_cfg->flags & PCIE_RP_HOTPLUG)
 				|| CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 		s_cfg->PcieRpClkReqDetect[i] = !!(rp_cfg->flags & PCIE_RP_CLK_REQ_DETECT);
+		if (rp_cfg->pcie_rp_aspm)
+			s_cfg->PcieRpAspm[i] = get_aspm_control(rp_cfg->pcie_rp_aspm);
 	}
 	s_cfg->PcieComplianceTestMode = CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 }

@@ -31,7 +31,7 @@ Device(intx) {						\
 	}						\
 							\
 	Method(_DIS ,0) {				\
-		Store(0x80, pinx)			\
+		pinx = 0x80			\
 	}						\
 							\
 	Method(_PRS ,0) {				\
@@ -52,7 +52,7 @@ Device(intx) {						\
 		if (Local0) {				\
 			Local0--			\
 		}					\
-		Store(Local0, pinx)			\
+		pinx = Local0			\
 	}						\
 }							\
 

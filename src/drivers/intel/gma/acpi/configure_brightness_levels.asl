@@ -53,12 +53,12 @@
 
 			/* Always keep BCLP up to date, even if driver is not ready.
 			   It requires a full 8-bit brightness value. 255 = 100% */
-			Store (Arg0 * 255 / 100, Local1)
+			Local1 = Arg0 * 255 / 100
 			If (Local1 > 255) {
-				Store (255, Local1)
+				Local1 = 255
 			}
 			/* also set valid bit */
-			Store (Or (Local1, 0x80000000), BCLP)
+			BCLP = Or (Local1, 0x80000000)
 
 			If (ARDY == 0)
 			{
@@ -66,11 +66,11 @@
 			}
 
 			/* Request back-light change */
-			Store (0x2, ASLC)
+			ASLC = 0x2
 			/* Trigger IRQ */
-			Store (0x1, ASLE)
+			ASLE = 0x1
 
-			Store (0x20, Local0)
+			Local0 = 0x20
 			While (Local0 > 0)
 			{
 				Sleep (1)
@@ -105,7 +105,7 @@
 
 		Method (XBCM, 1, NotSerialized)
 		{
-			Store (DRCL (Arg0 * BCLM, 100), BCLV)
+			BCLV = DRCL (Arg0 * BCLM, 100)
 		}
 
 		/* Find value closest to BCLV in BRIG (which must be ordered) */
@@ -117,14 +117,14 @@
 				Return (Zero)
 			}
 			/* Local0: current percentage */
-			Store (DRCL (BCLV * 100, BCLM), Local0)
+			Local0 = DRCL (BCLV * 100, BCLM)
 
 			/* Local1: loop index (selectable values start at 2 in BRIG) */
-			Store (2, Local1)
+			Local1 = 2
 			While (Local1 < SizeOf (BRIG) - 1) {
 				/* Local[23]: adjacent values in BRIG */
-				Store (DeRefOf (BRIG[Local1]), Local2)
-				Store (DeRefOf (BRIG[Local1 + 1]), Local3)
+				Local2 = DeRefOf (BRIG[Local1])
+				Local3 = DeRefOf (BRIG[Local1 + 1])
 
 				If (Local0 < Local3) {
 					If (Local0 < Local2 || Local0 - Local2 < Local3 - Local0) {

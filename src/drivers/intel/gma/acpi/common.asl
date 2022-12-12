@@ -6,7 +6,7 @@
 
 	Method(BRID, 1, NotSerialized)
 	{
-		Store (Match (BRIG, MEQ, Arg0, MTR, Zero, 2), Local0)
+		Local0 = Match (BRIG, MEQ, Arg0, MTR, Zero, 2)
 		If (Local0 == Ones)
 		{
 			Return (SizeOf(BRIG) - 1)
@@ -16,7 +16,7 @@
 
 	Method (XBCL, 0, NotSerialized)
 	{
-		Store (1, BRCT)
+		BRCT = 1
 		Return (BRIG)
 	}
 
@@ -37,7 +37,7 @@
 		{
 			Notify (LCD0, 0x87)
 		} Else {
-			Store (BRID (XBQC ()), Local0)
+			Local0 = BRID (XBQC ())
 			If (Local0 != 2)
 			{
 				Local0--
@@ -55,7 +55,7 @@
 		{
 			Notify (LCD0, 0x86)
 		} Else {
-			Store (BRID (XBQC ()), Local0)
+			Local0 = BRID (XBQC ())
 			If (Local0 != SizeOf(BRIG) - 1)
 			{
 				Local0++

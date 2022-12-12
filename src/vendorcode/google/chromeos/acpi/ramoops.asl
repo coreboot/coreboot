@@ -17,8 +17,8 @@ Scope (\_SB)
 		{
 			CreateDwordField (^RBUF, ^MRES._BAS, RBAS)
 			CreateDwordField (^RBUF, ^MRES._LEN, RLEN)
-			Store (\RMOB, RBAS)
-			Store (\RMOL, RLEN)
+			RBAS = \RMOB
+			RLEN = \RMOL
 			Return (^RBUF)
 		}
 		Method(_STA, 0)

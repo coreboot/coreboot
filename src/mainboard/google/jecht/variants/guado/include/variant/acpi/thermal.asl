@@ -53,15 +53,15 @@ Scope (\_TZ)
 		// Start fan at state 4 = lowest temp state
 		Method (_INI)
 		{
-			Store (4, \FLVL)
-			Store (FAN4_PWM, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+			\FLVL = 4
+			\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN4_PWM
 			Notify (\_TZ.THRM, 0x81)
 		}
 
 		Method (TCHK, 0, Serialized)
 		{
 			// Get CPU Temperature from PECI via SuperIO TMPIN3
-			Store (\_SB.PCI0.LPCB.SIO.ENVC.TIN3, Local0)
+			Local0 = \_SB.PCI0.LPCB.SIO.ENVC.TIN3
 
 			// Check for "no reading available
 			If (Local0 == 0x80) {
@@ -89,10 +89,10 @@ Scope (\_TZ)
 		Method (_TMP, 0, Serialized)
 		{
 			// Get temperature from SuperIO in deci-kelvin
-			Store (TCHK (), Local0)
+			Local0 = TCHK ()
 
 			// Critical temperature in deci-kelvin
-			Store (CTOK (\TMAX), Local1)
+			Local1 = CTOK (\TMAX)
 
 			If (Local0 >= Local1) {
 				Printf ("CRITICAL TEMPERATURE: %o", Local0)
@@ -101,7 +101,7 @@ Scope (\_TZ)
 				Sleep (1000)
 
 				// Re-read temperature from SuperIO
-				Store (TCHK (), Local0)
+				Local0 = TCHK ()
 
 				Printf ("RE-READ TEMPERATURE: %o", Local0)
 			}
@@ -166,17 +166,15 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				If (! _STA ()) {
-					Store (0, \FLVL)
-					Store (FAN0_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 0
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN0_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (1, \FLVL)
-					Store (FAN1_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 1
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN1_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
@@ -193,17 +191,15 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				If (! _STA ()) {
-					Store (1, \FLVL)
-					Store (FAN1_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 1
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN1_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (2, \FLVL)
-					Store (FAN2_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 2
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN2_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
@@ -220,17 +216,15 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				If (! _STA ()) {
-					Store (2, \FLVL)
-					Store (FAN2_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 2
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN2_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (3, \FLVL)
-					Store (FAN3_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 3
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN3_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
@@ -247,17 +241,15 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				If (! _STA ()) {
-					Store (3, \FLVL)
-					Store (FAN3_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 3
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN3_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (4, \FLVL)
-					Store (FAN4_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 4
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN4_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
@@ -274,17 +266,15 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				If (! _STA ()) {
-					Store (4, \FLVL)
-					Store (FAN4_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 4
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN4_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (4, \FLVL)
-					Store (FAN4_PWM,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 4
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN4_PWM
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}

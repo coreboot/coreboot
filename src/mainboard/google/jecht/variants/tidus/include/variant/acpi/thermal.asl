@@ -49,71 +49,71 @@ Scope (\_TZ)
 
 		// Thermal Table 0
 		Method (TTB0, 0) {
-			Store (FAN0_0_THRESHOLD_ON, F0ON)
-			Store (FAN0_0_THRESHOLD_OFF, F0OF)
-			Store (FAN0_0_PWM, F0PW)
-			Store (FAN1_0_THRESHOLD_ON, F1ON)
-			Store (FAN1_0_THRESHOLD_OFF, F1OF)
-			Store (FAN1_0_PWM, F1PW)
-			Store (FAN2_0_THRESHOLD_ON, F2ON)
-			Store (FAN2_0_THRESHOLD_OFF, F2OF)
-			Store (FAN2_0_PWM, F2PW)
-			Store (FAN3_0_THRESHOLD_ON, F3ON)
-			Store (FAN3_0_THRESHOLD_OFF, F3OF)
-			Store (FAN3_0_PWM, F3PW)
-			Store (FAN4_0_PWM, F4PW)
-			Store (0, THTB)
+			F0ON = FAN0_0_THRESHOLD_ON
+			F0OF = FAN0_0_THRESHOLD_OFF
+			F0PW = FAN0_0_PWM
+			F1ON = FAN1_0_THRESHOLD_ON
+			F1OF = FAN1_0_THRESHOLD_OFF
+			F1PW = FAN1_0_PWM
+			F2ON = FAN2_0_THRESHOLD_ON
+			F2OF = FAN2_0_THRESHOLD_OFF
+			F2PW = FAN2_0_PWM
+			F3ON = FAN3_0_THRESHOLD_ON
+			F3OF = FAN3_0_THRESHOLD_OFF
+			F3PW = FAN3_0_PWM
+			F4PW = FAN4_0_PWM
+			THTB = 0
 		}
 
 		// Thermal Table 1
 		Method (TTB1, 0) {
-			Store (FAN0_1_THRESHOLD_ON, F0ON)
-			Store (FAN0_1_THRESHOLD_OFF, F0OF)
-			Store (FAN0_1_PWM, F0PW)
-			Store (FAN1_1_THRESHOLD_ON, F1ON)
-			Store (FAN1_1_THRESHOLD_OFF, F1OF)
-			Store (FAN1_1_PWM, F1PW)
-			Store (FAN2_1_THRESHOLD_ON, F2ON)
-			Store (FAN2_1_THRESHOLD_OFF, F2OF)
-			Store (FAN2_1_PWM, F2PW)
-			Store (FAN3_1_THRESHOLD_ON, F3ON)
-			Store (FAN3_1_THRESHOLD_OFF, F3OF)
-			Store (FAN3_1_PWM, F3PW)
-			Store (FAN4_1_PWM, F4PW)
-			Store (1, THTB)
+			F0ON = FAN0_1_THRESHOLD_ON
+			F0OF = FAN0_1_THRESHOLD_OFF
+			F0PW = FAN0_1_PWM
+			F1ON = FAN1_1_THRESHOLD_ON
+			F1OF = FAN1_1_THRESHOLD_OFF
+			F1PW = FAN1_1_PWM
+			F2ON = FAN2_1_THRESHOLD_ON
+			F2OF = FAN2_1_THRESHOLD_OFF
+			F2PW = FAN2_1_PWM
+			F3ON = FAN3_1_THRESHOLD_ON
+			F3OF = FAN3_1_THRESHOLD_OFF
+			F3PW = FAN3_1_PWM
+			F4PW = FAN4_1_PWM
+			THTB = 1
 		}
 
 		// Thermal Table 2
 		Method (TTB2, 0) {
-			Store (FAN0_2_THRESHOLD_ON, F0ON)
-			Store (FAN0_2_THRESHOLD_OFF, F0OF)
-			Store (FAN0_2_PWM, F0PW)
-			Store (FAN1_2_THRESHOLD_ON, F1ON)
-			Store (FAN1_2_THRESHOLD_OFF, F1OF)
-			Store (FAN1_2_PWM, F1PW)
-			Store (FAN2_2_THRESHOLD_ON, F2ON)
-			Store (FAN2_2_THRESHOLD_OFF, F2OF)
-			Store (FAN2_2_PWM, F2PW)
-			Store (FAN3_2_THRESHOLD_ON, F3ON)
-			Store (FAN3_2_THRESHOLD_OFF, F3OF)
-			Store (FAN3_2_PWM, F3PW)
-			Store (FAN4_2_PWM, F4PW)
-			Store (2, THTB)
+			F0ON = FAN0_2_THRESHOLD_ON
+			F0OF = FAN0_2_THRESHOLD_OFF
+			F0PW = FAN0_2_PWM
+			F1ON = FAN1_2_THRESHOLD_ON
+			F1OF = FAN1_2_THRESHOLD_OFF
+			F1PW = FAN1_2_PWM
+			F2ON = FAN2_2_THRESHOLD_ON
+			F2OF = FAN2_2_THRESHOLD_OFF
+			F2PW = FAN2_2_PWM
+			F3ON = FAN3_2_THRESHOLD_ON
+			F3OF = FAN3_2_THRESHOLD_OFF
+			F3PW = FAN3_2_PWM
+			F4PW = FAN4_2_PWM
+			THTB = 2
 		}
 
 		// Update Thermal Table
 		Method (UPTB, 0) {
 			// Get System Temperature via SuperIO TMPIN2
-			Store (\_SB.PCI0.LPCB.SIO.ENVC.TIN2, Local0)
+			Local0 = \_SB.PCI0.LPCB.SIO.ENVC.TIN2
 
 			// Check for "no reading available
 			If (Local0 == 0x80) {
-				Store (THERMAL_POLICY_0_THRESHOLD_ON, Local0)
+				Local0 = THERMAL_POLICY_0_THRESHOLD_ON
 			}
 
 			// Check for invalid readings
 			If (Local0 == 255 || Local0 == 0) {
-				Store (THERMAL_POLICY_0_THRESHOLD_ON, Local0)
+				Local0 = THERMAL_POLICY_0_THRESHOLD_ON
 			}
 
 			If (THTB == 2) {
@@ -158,8 +158,8 @@ Scope (\_TZ)
 		// Start fan at state 4 = lowest temp state
 		Method (_INI)
 		{
-			Store (4, \FLVL)
-			Store (FAN4_2_PWM, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+			\FLVL = 4
+			\_SB.PCI0.LPCB.SIO.ENVC.F2PS = FAN4_2_PWM
 			Notify (\_TZ.THRM, 0x81)
 		}
 
@@ -169,7 +169,7 @@ Scope (\_TZ)
 			UPTB ()
 
 			// Get CPU Temperature from PECI via SuperIO TMPIN3
-			Store (\_SB.PCI0.LPCB.SIO.ENVC.TIN3, Local0)
+			Local0 = \_SB.PCI0.LPCB.SIO.ENVC.TIN3
 
 			// Check for "no reading available
 			If (Local0 == 0x80) {
@@ -197,10 +197,10 @@ Scope (\_TZ)
 		Method (_TMP, 0, Serialized)
 		{
 			// Get temperature from SuperIO in deci-kelvin
-			Store (TCHK (), Local0)
+			Local0 = TCHK ()
 
 			// Critical temperature in deci-kelvin
-			Store (CTOK (\TMAX), Local1)
+			Local1 = CTOK (\TMAX)
 
 			If (Local0 >= Local1) {
 				Printf ("CRITICAL TEMPERATURE: %o", Local0)
@@ -209,7 +209,7 @@ Scope (\_TZ)
 				Sleep (1000)
 
 				// Re-read temperature from SuperIO
-				Store (TCHK (), Local0)
+				Local0 = TCHK ()
 
 				Printf ("RE-READ TEMPERATURE: %o", Local0)
 			}
@@ -274,17 +274,15 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				If (! _STA ()) {
-					Store (0, \FLVL)
-					Store (F0PW,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 0
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = F0PW
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (1, \FLVL)
-					Store (F1PW,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 1
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = F1PW
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
@@ -301,17 +299,15 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				If (! _STA ()) {
-					Store (1, \FLVL)
-					Store (F1PW,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 1
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = F1PW
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (2, \FLVL)
-					Store (F2PW,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 2
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = F2PW
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
@@ -328,17 +324,15 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				If (! _STA ()) {
-					Store (2, \FLVL)
-					Store (F2PW,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 2
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = F2PW
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (3, \FLVL)
-					Store (F3PW,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 3
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = F3PW
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
@@ -355,17 +349,15 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				If (! _STA ()) {
-					Store (3, \FLVL)
-					Store (F3PW,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 3
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = F3PW
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (4, \FLVL)
-					Store (F4PW,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 4
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = F4PW
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
@@ -382,17 +374,15 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				If (! _STA ()) {
-					Store (4, \FLVL)
-					Store (F4PW,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 4
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = F4PW
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}
 			Method (_OFF) {
 				If (_STA ()) {
-					Store (4, \FLVL)
-					Store (F4PW,
-						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					\FLVL = 4
+					\_SB.PCI0.LPCB.SIO.ENVC.F2PS = F4PW
 					Notify (\_TZ.THRM, 0x81)
 				}
 			}

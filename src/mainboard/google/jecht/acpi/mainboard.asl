@@ -14,7 +14,7 @@ Scope (\_SB.PCI0.RP01)
 
 		Method (_DSW, 3, NotSerialized)
 		{
-			Store (JECHT_NIC_WAKE_GPIO, Local0)
+			Local0 = JECHT_NIC_WAKE_GPIO
 
 			If (Arg0 == 1) {
 				// Enable GPIO as wake source
@@ -36,7 +36,7 @@ Scope (\_SB.PCI0.RP02)
 
 		Method (_DSW, 3, NotSerialized)
 		{
-			Store (JECHT_WLAN_WAKE_GPIO, Local0)
+			Local0 = JECHT_WLAN_WAKE_GPIO
 
 			If (Arg0 == 1) {
 				// Enable GPIO as wake source

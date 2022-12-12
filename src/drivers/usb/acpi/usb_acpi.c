@@ -3,6 +3,7 @@
 #include <acpi/acpi_device.h>
 #include <acpi/acpi_pld.h>
 #include <acpi/acpigen.h>
+#include <acpi/acpigen_dsm.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
@@ -38,6 +39,7 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 	struct drivers_usb_acpi_config *config = dev->chip_info;
 	const char *path = acpi_device_path(dev);
 	struct acpi_pld pld;
+	struct dsm_usb_config usb_cfg;
 
 	if (!path || !config)
 		return;
@@ -55,6 +57,11 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 		acpigen_write_pld(&pld);
 	else
 		printk(BIOS_ERR, "Error retrieving PLD for %s\n", path);
+
+	if (config->usb_lpm_incapable) {
+		usb_cfg.usb_lpm_incapable = 1;
+		acpigen_write_dsm_usb(&usb_cfg);
+	}
 
 	/* Resources */
 	if (usb_acpi_add_gpios_to_crs(config) == true) {

@@ -47,3 +47,26 @@ void acpigen_write_dsm_i2c_hid(struct dsm_i2c_hid_config *config)
 }
 
 /* ------------------- End: I2C HID DSM ------------------------- */
+
+#define USB_DSM_UUID    "CE2EE385-00E6-48CB-9F05-2EDB927C4899"
+
+static void usb_dsm_func5_cb(void *arg)
+{
+	struct dsm_usb_config *config = arg;
+	acpigen_write_return_byte(config->usb_lpm_incapable);
+}
+
+static void (*usb_dsm_callbacks[6])(void *) = {
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	usb_dsm_func5_cb,
+};
+
+void acpigen_write_dsm_usb(struct dsm_usb_config *config)
+{
+	acpigen_write_dsm(USB_DSM_UUID, usb_dsm_callbacks,
+			  ARRAY_SIZE(usb_dsm_callbacks), config);
+}

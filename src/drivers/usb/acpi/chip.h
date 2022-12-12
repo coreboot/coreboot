@@ -72,6 +72,12 @@ struct drivers_usb_acpi_config {
 	 * will always return ON.
 	 */
 	bool use_gpio_for_status;
+
+	/*
+	 * Generate _DSM method Function 5 to disable USB U1/U2 transition
+	 * for a port
+	 */
+	bool usb_lpm_incapable;
 };
 
 /* Method to get PLD structure from USB device */

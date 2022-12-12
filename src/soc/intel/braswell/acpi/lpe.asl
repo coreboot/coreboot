@@ -43,15 +43,15 @@ Device (LPEA)
 	{
 		/* Update BAR0 from NVS */
 		CreateDwordField (^RBUF, ^BAR0._BAS, BAS0)
-		Store (\LPB0, BAS0)
+		BAS0 = \LPB0
 
 		/* Update BAR1 from NVS */
 		CreateDwordField (^RBUF, ^BAR1._BAS, BAS1)
-		Store (\LPB1, BAS1)
+		BAS1 = \LPB1
 
 		/* Update LPE FW from NVS */
 		CreateDwordField (^RBUF, ^BAR2._BAS, BAS2)
-		Store (\LPFW, BAS2)
+		BAS2 = \LPFW
 
 		/* Append any Mainboard defined GPIOs */
 		If (CondRefOf (^GBUF)) {

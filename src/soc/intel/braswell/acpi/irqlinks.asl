@@ -8,7 +8,7 @@ Device (LNKA)
 	/* Disable method */
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTA)
+		PRTA = 0x80
 	}
 
 	/* Possible Resource Settings for this Link */
@@ -28,7 +28,7 @@ Device (LNKA)
 		CreateWordField(RTLA, 1, IRQ0)
 
 		/* Clear the WordField */
-		Store (Zero, IRQ0)
+		IRQ0 = Zero
 
 		/* Set the bit from PRTA */
 		ShiftLeft(1, And(PRTA, 0x0f), IRQ0)
@@ -45,7 +45,7 @@ Device (LNKA)
 		FindSetRightBit(IRQ0, Local0)
 
 		Local0--
-		Store(Local0, PRTA)
+		PRTA = Local0
 	}
 
 	/* Status */
@@ -67,7 +67,7 @@ Device (LNKB)
 	/* Disable method */
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTB)
+		PRTB = 0x80
 	}
 
 	/* Possible Resource Settings for this Link */
@@ -87,7 +87,7 @@ Device (LNKB)
 		CreateWordField(RTLB, 1, IRQ0)
 
 		/* Clear the WordField */
-		Store (Zero, IRQ0)
+		IRQ0 = Zero
 
 		/* Set the bit from PRTB */
 		ShiftLeft(1, And(PRTB, 0x0f), IRQ0)
@@ -104,7 +104,7 @@ Device (LNKB)
 		FindSetRightBit(IRQ0, Local0)
 
 		Local0--
-		Store(Local0, PRTB)
+		PRTB = Local0
 	}
 
 	/* Status */
@@ -126,7 +126,7 @@ Device (LNKC)
 	/* Disable method */
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTC)
+		PRTC = 0x80
 	}
 
 	/* Possible Resource Settings for this Link */
@@ -146,7 +146,7 @@ Device (LNKC)
 		CreateWordField(RTLC, 1, IRQ0)
 
 		/* Clear the WordField */
-		Store (Zero, IRQ0)
+		IRQ0 = Zero
 
 		/* Set the bit from PRTC */
 		ShiftLeft(1, And(PRTC, 0x0f), IRQ0)
@@ -163,7 +163,7 @@ Device (LNKC)
 		FindSetRightBit(IRQ0, Local0)
 
 		Local0--
-		Store(Local0, PRTC)
+		PRTC = Local0
 	}
 
 	/* Status */
@@ -185,7 +185,7 @@ Device (LNKD)
 	/* Disable method */
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTD)
+		PRTD = 0x80
 	}
 
 	/* Possible Resource Settings for this Link */
@@ -205,7 +205,7 @@ Device (LNKD)
 		CreateWordField(RTLD, 1, IRQ0)
 
 		/* Clear the WordField */
-		Store (Zero, IRQ0)
+		IRQ0 = Zero
 
 		/* Set the bit from PRTD */
 		ShiftLeft(1, And(PRTD, 0x0f), IRQ0)
@@ -222,7 +222,7 @@ Device (LNKD)
 		FindSetRightBit(IRQ0, Local0)
 
 		Local0--
-		Store(Local0, PRTD)
+		PRTD = Local0
 	}
 
 	/* Status */
@@ -244,7 +244,7 @@ Device (LNKE)
 	/* Disable method */
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTE)
+		PRTE = 0x80
 	}
 
 	/* Possible Resource Settings for this Link */
@@ -264,7 +264,7 @@ Device (LNKE)
 		CreateWordField(RTLE, 1, IRQ0)
 
 		/* Clear the WordField */
-		Store (Zero, IRQ0)
+		IRQ0 = Zero
 
 		/* Set the bit from PRTE */
 		ShiftLeft(1, And(PRTE, 0x0f), IRQ0)
@@ -281,7 +281,7 @@ Device (LNKE)
 		FindSetRightBit(IRQ0, Local0)
 
 		Local0--
-		Store(Local0, PRTE)
+		PRTE = Local0
 	}
 
 	/* Status */
@@ -303,7 +303,7 @@ Device (LNKF)
 	/* Disable method */
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTF)
+		PRTF = 0x80
 	}
 
 	/* Possible Resource Settings for this Link */
@@ -323,7 +323,7 @@ Device (LNKF)
 		CreateWordField(RTLF, 1, IRQ0)
 
 		/* Clear the WordField */
-		Store (Zero, IRQ0)
+		IRQ0 = Zero
 
 		/* Set the bit from PRTF */
 		ShiftLeft(1, And(PRTF, 0x0f), IRQ0)
@@ -340,7 +340,7 @@ Device (LNKF)
 		FindSetRightBit(IRQ0, Local0)
 
 		Local0--
-		Store(Local0, PRTF)
+		PRTF = Local0
 	}
 
 	/* Status */
@@ -362,7 +362,7 @@ Device (LNKG)
 	/* Disable method */
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTG)
+		PRTG = 0x80
 	}
 
 	/* Possible Resource Settings for this Link */
@@ -382,7 +382,7 @@ Device (LNKG)
 		CreateWordField(RTLG, 1, IRQ0)
 
 		/* Clear the WordField */
-		Store (Zero, IRQ0)
+		IRQ0 = Zero
 
 		/* Set the bit from PRTG */
 		ShiftLeft(1, And(PRTG, 0x0f), IRQ0)
@@ -399,7 +399,7 @@ Device (LNKG)
 		FindSetRightBit(IRQ0, Local0)
 
 		Local0--
-		Store(Local0, PRTG)
+		PRTG = Local0
 	}
 
 	/* Status */
@@ -421,7 +421,7 @@ Device (LNKH)
 	/* Disable method */
 	Method (_DIS, 0, Serialized)
 	{
-		Store (0x80, PRTH)
+		PRTH = 0x80
 	}
 
 	/* Possible Resource Settings for this Link */
@@ -441,7 +441,7 @@ Device (LNKH)
 		CreateWordField(RTLH, 1, IRQ0)
 
 		/* Clear the WordField */
-		Store (Zero, IRQ0)
+		IRQ0 = Zero
 
 		/* Set the bit from PRTH */
 		ShiftLeft(1, And(PRTH, 0x0f), IRQ0)
@@ -458,7 +458,7 @@ Device (LNKH)
 		FindSetRightBit(IRQ0, Local0)
 
 		Local0--
-		Store(Local0, PRTH)
+		PRTH = Local0
 	}
 
 	/* Status */

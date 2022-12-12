@@ -26,7 +26,7 @@ Device (TCHG)
 	Method (PPPC)
 	{
 		/* Convert size of PPSS table to index */
-		Store (SizeOf (\_SB.CHPS), Local0)
+		Local0 = SizeOf (\_SB.CHPS)
 		Local0--
 
 		/* Check if charging is disabled (AC removed) */
@@ -45,8 +45,8 @@ Device (TCHG)
 	Method (SPPC, 1)
 	{
 		/* Retrieve Control (index 4) for specified PPSS level */
-		Store (DeRefOf (Index (DeRefOf (Index
-			(\_SB.CHPS, ToInteger (Arg0))), 4)), Local0)
+		Local0 = DeRefOf (Index (DeRefOf (Index
+			(\_SB.CHPS, ToInteger (Arg0))), 4))
 
 		/* Pass Control value to EC to limit charging */
 		\_SB.PCI0.LPCB.EC0.CHGS (Local0)

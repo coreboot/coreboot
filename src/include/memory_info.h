@@ -34,6 +34,10 @@ struct dimm_info {
 	uint16_t ddr_frequency;
 	uint8_t rank_per_dimm;
 	/*
+	 * Socket-ID
+	 */
+	uint8_t soc_num;
+	/*
 	 * Memory-Controller-ID
 	 */
 	uint8_t ctrlr_num;

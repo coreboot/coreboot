@@ -182,6 +182,7 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
+		device ref pcie_rp8 off end
 		device ref pcie_rp11 on
 			# Enable NVMe SSD PCIe 11-12 using clk 1
 			register "pch_pcie_rp[PCH_RP(11)]" = "{

@@ -20,8 +20,6 @@
 
 #define BIAS_CTRL_VW_INDEX_SHIFT		16
 #define BIAS_CTRL_BIT_POS_SHIFT			8
-#define WAIT_FOR_DISPLAYPORT_TIMEOUT_MS		1000
-#define WAIT_FOR_HPD_TIMEOUT_MS			3000
 
 static uint32_t tcss_make_conn_cmd(int u, int u3, int u2, int ufp, int hsl,
 					int sbu, int acc)

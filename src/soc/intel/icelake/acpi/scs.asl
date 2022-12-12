@@ -37,22 +37,22 @@ Scope (\_SB.PCI0) {
 		Method(_PS0, 0, Serialized) {
 			Stall (50) // Sleep 50 us
 
-			Store(0, PGEN) // Disable PG
+			PGEN = 0 // Disable PG
 
 			/* Clear register 0x1C20/0x4820 */
 			^^SCSC (PID_EMMC)
 
 			/* Set Power State to D0 */
 			And (PMCR, 0xFFFC, PMCR)
-			Store (PMCR, ^TEMP)
+			^TEMP = PMCR
 		}
 
 		Method(_PS3, 0, Serialized) {
-			Store(1, PGEN) // Enable PG
+			PGEN = 1 // Enable PG
 
 			/* Set Power State to D3 */
 			Or (PMCR, 0x0003, PMCR)
-			Store (PMCR, ^TEMP)
+			^TEMP = PMCR
 		}
 
 		Device (CARD)
@@ -90,23 +90,23 @@ Scope (\_SB.PCI0) {
 
 		Method (_PS0, 0, Serialized)
 		{
-			Store (0, PGEN) /* Disable PG */
+			PGEN = 0 /* Disable PG */
 
 			/* Clear register 0x1C20/0x4820 */
 			^^SCSC (PID_SDX)
 
 			/* Set Power State to D0 */
 			And (PMCR, 0xFFFC, PMCR)
-			Store (PMCR, ^TEMP)
+			^TEMP = PMCR
 		}
 
 		Method (_PS3, 0, Serialized)
 		{
-			Store (1, PGEN) /* Enable PG */
+			PGEN = 1 /* Enable PG */
 
 			/* Set Power State to D3 */
 			Or (PMCR, 0x0003, PMCR)
-			Store (PMCR, ^TEMP)
+			^TEMP = PMCR
 		}
 
 		Device (CARD)

@@ -56,9 +56,9 @@ Device (HDAS)
 				CreateQWordField (NBUF, ^NHLT._MAX, NMAS)
 				CreateQWordField (NBUF, ^NHLT._LEN, NLEN)
 
-				Store (NHLA, NBAS)
-				Store (NHLA, NMAS)
-				Store (NHLL, NLEN)
+				NBAS = NHLA
+				NMAS = NHLA
+				NLEN = NHLL
 
 				Return (NBUF)
 			}

@@ -19,7 +19,7 @@ Device (EMMC)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\C0B0, RBAS)
+		RBAS = \C0B0
 		Return (^RBUF)
 	}
 
@@ -82,7 +82,7 @@ Device (SDIO)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\C1B0, RBAS)
+		RBAS = \C1B0
 		Return (^RBUF)
 	}
 
@@ -134,7 +134,7 @@ Device (SDCD)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\C2B0, RBAS)
+		RBAS = \C2B0
 		Return (^RBUF)
 	}
 

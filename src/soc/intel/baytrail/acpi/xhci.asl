@@ -18,11 +18,11 @@ Device (XHCI)
 
 			// REV: Revision 0x02 for ACPI 5.0
 			CreateField (DerefOf (Index (PCKG, Zero)), Zero, 0x07, REV)
-			Store (0x02, REV)
+			REV = 0x02
 
 			// VISI: Port visibility to user per port
 			CreateField (DerefOf (Index (PCKG, Zero)), 0x40, One, VISI)
-			Store (Arg0, VISI)
+			VISI = Arg0
 			Return (PCKG)
 		}
 

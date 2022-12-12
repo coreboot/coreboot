@@ -73,7 +73,7 @@ Device (TCPU)
 	Method (_TDL)
 	{
 		If (CondRefOf (\_SB.CP00._TSS)) {
-			Store (SizeOf (\_SB.CP00._TSS ()), Local0)
+			Local0 = SizeOf (\_SB.CP00._TSS ())
 			Local0--
 			Return (Local0)
 		} Else {
@@ -92,7 +92,7 @@ Device (TCPU)
 
 	Method (SPPC, 1)
 	{
-		Store (Arg0, \PPCM)
+		\PPCM = Arg0
 
 		/* Notify OS to re-read _PPC limit on each CPU */
 		\PPCN ()
@@ -116,7 +116,7 @@ Device (TCPU)
 		If (CondRefOf (\_SB.MPDL)) {
 			Return (\_SB.MPDL)
 		} ElseIf (CondRefOf (\_SB.CP00._PSS)) {
-			Store (SizeOf (\_SB.CP00._PSS ()), Local0)
+			Local0 = SizeOf (\_SB.CP00._PSS ())
 			Local0--
 			Return (Local0)
 		} Else {

@@ -6,7 +6,7 @@
 #if CONFIG(EC_SUPPORTS_DPTF_TEVT)
 Method (TEVT, 1, NotSerialized)
 {
-	Store (ToInteger (Arg0), Local0)
+	Local0 = ToInteger (Arg0)
 
 #ifdef DPTF_TSR0_SENSOR_ID
 	If (Local0 == DPTF_TSR0_SENSOR_ID) {

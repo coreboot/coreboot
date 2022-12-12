@@ -18,7 +18,7 @@ Device (SDM1)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\S0B0, RBAS)
+		RBAS = \S0B0
 		Return (^RBUF)
 	}
 
@@ -50,7 +50,7 @@ Device (SDM2)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\S8B0, RBAS)
+		RBAS = \S8B0
 		Return (^RBUF)
 	}
 
@@ -90,7 +90,7 @@ Device (I2C1)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\S1B0, RBAS)
+		RBAS = \S1B0
 		Return (^RBUF)
 	}
 
@@ -149,7 +149,7 @@ Device (I2C2)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\S2B0, RBAS)
+		RBAS = \S2B0
 		Return (^RBUF)
 	}
 
@@ -208,7 +208,7 @@ Device (I2C3)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\S3B0, RBAS)
+		RBAS = \S3B0
 		Return (^RBUF)
 	}
 
@@ -267,7 +267,7 @@ Device (I2C4)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\S4B0, RBAS)
+		RBAS = \S4B0
 		Return (^RBUF)
 	}
 
@@ -326,7 +326,7 @@ Device (I2C5)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\S5B0, RBAS)
+		RBAS = \S5B0
 		Return (^RBUF)
 	}
 
@@ -385,7 +385,7 @@ Device (I2C6)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\S6B0, RBAS)
+		RBAS = \S6B0
 		Return (^RBUF)
 	}
 
@@ -444,7 +444,7 @@ Device (I2C7)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\S7B0, RBAS)
+		RBAS = \S7B0
 		Return (^RBUF)
 	}
 
@@ -497,7 +497,7 @@ Device (SPI1)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\S9B0, RBAS)
+		RBAS = \S9B0
 		Return (^RBUF)
 	}
 
@@ -544,7 +544,7 @@ Device (PWM1)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\SAB0, RBAS)
+		RBAS = \SAB0
 		Return (^RBUF)
 	}
 
@@ -572,7 +572,7 @@ Device (PWM2)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\SBB0, RBAS)
+		RBAS = \SBB0
 		Return (^RBUF)
 	}
 
@@ -606,7 +606,7 @@ Device (UAR1)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\SCB0, RBAS)
+		RBAS = \SCB0
 		Return (^RBUF)
 	}
 
@@ -659,7 +659,7 @@ Device (UAR2)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^BAR0._BAS, RBAS)
-		Store (\SDB0, RBAS)
+		RBAS = \SDB0
 		Return (^RBUF)
 	}
 

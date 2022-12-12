@@ -157,15 +157,15 @@ Method (_CRS, 0, Serialized)
 	CreateDWordField (MCRS, ^LMEM._LEN, LLEN)
 	If (LAnd (LPFW != Zero, LPEN == One))
 	{
-		Store (LPFW, LMIN)
-		Store (0x00100000, LLEN)
+		LMIN = LPFW
+		LLEN = 0x00100000
 		LMAX = LMIN + LLEN - One
 	}
 	Else
 	{
-		Store (Zero, LMIN)
-		Store (Zero, LMAX)
-		Store (Zero, LLEN)
+		LMIN = Zero
+		LMAX = Zero
+		LLEN = Zero
 	}
 
 	/* Update PCI resource area */
@@ -174,8 +174,8 @@ Method (_CRS, 0, Serialized)
 	CreateDWordField (MCRS, ^PMEM._LEN, PLEN)
 
 	/* TOLM is BMBOUND accessible from IOSF so is saved in NVS */
-	Store (\TOLM, PMIN)
-	Store (CONFIG_ECAM_MMCONF_BASE_ADDRESS - 1, PMAX)
+	PMIN = \TOLM
+	PMAX = CONFIG_ECAM_MMCONF_BASE_ADDRESS - 1
 	PLEN = PMAX - PMIN + 1
 
 	Return (MCRS)
@@ -238,7 +238,7 @@ Device (IOSF)
 	Method (_CRS)
 	{
 		CreateDwordField (^RBUF, ^RBAR._BAS, RBAS)
-		Store (CONFIG_ECAM_MMCONF_BASE_ADDRESS + 0xD0, RBAS)
+		RBAS = CONFIG_ECAM_MMCONF_BASE_ADDRESS + 0xD0
 		Return (^RBUF)
 	}
 }

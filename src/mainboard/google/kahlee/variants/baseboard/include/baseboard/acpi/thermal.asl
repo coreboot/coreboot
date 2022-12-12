@@ -52,10 +52,10 @@ Scope (\_TZ)
 		Method (_TMP, 0, Serialized)
 		{
 			/* Get temperature from EC in deci-kelvin */
-			Store (\_SB.PCI0.LPCB.EC0.TSRD (TMPS), Local0)
+			Local0 = \_SB.PCI0.LPCB.EC0.TSRD (TMPS)
 
 			/* Critical temperature in deci-kelvin */
-			Store (CTOK (\TCRT), Local1)
+			Local1 = CTOK (\TCRT)
 
 			If (Local0 >= Local1) {
 				Printf ("CRITICAL TEMPERATURE: %o", Local0)
@@ -64,7 +64,7 @@ Scope (\_TZ)
 				Sleep (1000)
 
 				/* Re-read temperature from EC */
-				Store (\_SB.PCI0.LPCB.EC0.TSRD (TMPS), Local0)
+				Local0 = \_SB.PCI0.LPCB.EC0.TSRD (TMPS)
 
 				Printf ("RE-READ TEMPERATURE: %o", Local0)
 			}

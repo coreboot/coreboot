@@ -11,7 +11,7 @@
 #include "memmap.h"
 
 /* Everything below this line is ignored in the DSDT */
-#ifndef __ACPI__
+#ifndef __ASSEMBLER__
 #include <types.h>
 
 /* Chipset types */
@@ -54,8 +54,6 @@ enum platform_type {
 
 #include "registers/dmibar.h"
 
-#ifndef __ASSEMBLER__
-
 bool is_sandybridge(void);
 
 void intel_sandybridge_finalize_smm(void);
@@ -78,6 +76,5 @@ struct acpi_rsdp;
 unsigned long northbridge_write_acpi_tables(const struct device *device, unsigned long start,
 					    struct acpi_rsdp *rsdp);
 
-#endif
-#endif
+#endif /* __ASSEMBLER__ */
 #endif /* __NORTHBRIDGE_INTEL_SANDYBRIDGE_SANDYBRIDGE_H__ */

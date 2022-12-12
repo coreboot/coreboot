@@ -58,11 +58,11 @@ IndexField (INDX, DATA, ByteAcc, NoLock, Preserve)
 
 Method (ECFG, 0, NotSerialized)
 {
-	Store (0x55, INDX)
+	INDX = 0x55
 }
 Method (XCFG, 0, NotSerialized)
 {
-	Store (0xAA, INDX)
+	INDX = 0xAA
 }
 
 Method (_CRS, 0, NotSerialized)
@@ -72,16 +72,16 @@ Method (_CRS, 0, NotSerialized)
 	CreateByteField (MSBF, \_SB.PCI0.ICH0.SMSC._Y1B._LEN, IOML)
 
 	ECFG ()
-	Store (0x0A, \_SB.PCI0.ICH0.SMSC.LDN)
-	Store (0x00, IOM1)
-	Store (0x00, IOM2)
+	\_SB.PCI0.ICH0.SMSC.LDN = 0x0A
+	IOM1 = 0x00
+	IOM2 = 0x00
 	Or (\_SB.PCI0.ICH0.SMSC.IOAH, IOM1, IOM1)
 	ShiftLeft (IOM1, 0x08, IOM1)
 	Or (\_SB.PCI0.ICH0.SMSC.IOAL, IOM1, IOM1)
-	Store (IOM1, IOM2)
+	IOM2 = IOM1
 	If (IOM1 != 0)
 	{
-		Store (0x80, IOML)
+		IOML = 0x80
 	}
 	XCFG ()
 
@@ -92,48 +92,48 @@ Method (_CRS, 0, NotSerialized)
 Method (_INI, 0, NotSerialized)
 {
 	/* GPIO configuration */
-	Store (0x00, GC10)
-	Store (0x81, GC11)
-	Store (0x00, GC17)
-	Store (0x0c, GC21)
-	Store (0x00, GC22)
-	Store (0x04, GC27)
-	Store (0x04, GC30)
-	Store (0x01, GC31)
-	Store (0x01, GC32)
-	Store (0x01, GC33)
-	Store (0x01, GC34) /* GPI password jumper */
-	Store (0x01, GC35) /* GPI scsi enable jumper */
-	Store (0x01, GC42)  /* GPI */
-	Store (0x86, GC60) /* led 1 */
-	Store (0x81, GC61) /* led 2 ?? */
+	GC10 = 0x00
+	GC11 = 0x81
+	GC17 = 0x00
+	GC21 = 0x0c
+	GC22 = 0x00
+	GC27 = 0x04
+	GC30 = 0x04
+	GC31 = 0x01
+	GC32 = 0x01
+	GC33 = 0x01
+	GC34 = 0x01 /* GPI password jumper */
+	GC35 = 0x01 /* GPI scsi enable jumper */
+	GC42 = 0x01  /* GPI */
+	GC60 = 0x86 /* led 1 */
+	GC61 = 0x81 /* led 2 ?? */
 
 	/* GPIO initial output levels */
-	Store (GP_1, Local0)
+	Local0 = GP_1
 	And( Local0, 0x7C, Local0)
 	Or ( Local0, 0x81, Local0)
-	Store (Local0, GP_1)
+	GP_1 = Local0
 
-	Store (GP_2, Local0)
+	Local0 = GP_2
 	And( Local0, 0xFE, Local0)
 	Or ( Local0, 0x00, Local0)
-	Store (Local0, GP_2)
+	GP_2 = Local0
 
-	Store (GP_3, Local0)
+	Local0 = GP_3
 	And( Local0, 0x7F, Local0)
 	Or ( Local0, 0x80, Local0)
-	Store (Local0, GP_3)
+	GP_3 = Local0
 
-	Store (GP_4, Local0)
+	Local0 = GP_4
 	And( Local0, 0x7F, Local0)
 	Or ( Local0, 0x00, Local0)
-	Store (Local0, GP_4)
+	GP_4 = Local0
 
 	/* Power Led */
-	Store (LED1, Local0)
+	Local0 = LED1
 	And( Local0, 0xfc, Local0)
 	Or ( Local0, 0x01, Local0)
-	Store (Local0, LED1)
+	LED1 = Local0
 
 }
 
@@ -141,21 +141,21 @@ Method (MLED, 1, NotSerialized)
 {
 	If (Arg0 == 0x00)
 	{
-		Store (0x00, LED1)
+		LED1 = 0x00
 	}
 
 	If (Arg0 == 0x01 || Arg0 == 0x02)
 	{
-		Store (0x01, LED1)
+		LED1 = 0x01
 	}
 
 	If (Arg0 == 0x03)
 	{
-		Store (0x02, LED1)
+		LED1 = 0x02
 	}
 
 	If (Arg0 == 0x04 || Arg0 == 0x05)
 	{
-		Store (0x03, LED1)
+		LED1 = 0x03
 	}
 }

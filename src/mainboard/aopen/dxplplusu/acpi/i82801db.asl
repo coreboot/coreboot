@@ -112,29 +112,29 @@ Device (ICH0)
 		CreateWordField (MSBF, \_SB_.PCI0.ICH0.PMIO._MAX, IOA2)
 		CreateByteField (MSBF, \_SB_.PCI0.ICH0.PMIO._LEN, IOAL)
 
-		Store (PBAR, Local0)
+		Local0 = PBAR
 		If (Local0 && 1)
 		{
 			And (Local0, 0xFFFE, Local0)
-			Store (Local0, IOA1)
-			Store (Local0, IOA2)
-			Store (0x80, IOAL)
+			IOA1 = Local0
+			IOA2 = Local0
+			IOAL = 0x80
 		} Else {
-			Store (0x00, IOAL)
+			IOAL = 0x00
 		}
 
 		CreateWordField (MSBF, \_SB_.PCI0.ICH0.GPIO._MIN, IOS1)
 		CreateWordField (MSBF, \_SB_.PCI0.ICH0.GPIO._MAX, IOS2)
 		CreateByteField (MSBF, \_SB_.PCI0.ICH0.GPIO._LEN, IOSL)
 
-		Store (GBAR, Local0)
+		Local0 = GBAR
 		If (Local0 && 1) {
 			And (Local0, 0xFFFE, Local0)
-			Store (Local0, IOS1)
-			Store (Local0, IOS2)
-			Store (0x40, IOSL)
+			IOS1 = Local0
+			IOS2 = Local0
+			IOSL = 0x40
 		} Else {
-			Store (0x00, IOSL)
+			IOSL = 0x00
 		}
 		Return (MSBF)
 	}

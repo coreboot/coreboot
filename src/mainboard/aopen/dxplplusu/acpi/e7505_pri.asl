@@ -53,9 +53,9 @@ Device (MBRS)
 		If (Local1 > 0x10)
 		{
 			Local1 -= 0x0F
-			Store (ShiftLeft (Local1, 0x14), MEM2)
-			Store (0x01000000, MS00)
-			Store (MS00, MS01)
+			MEM2 = ShiftLeft (Local1, 0x14)
+			MS00 = 0x01000000
+			MS01 = MS00
 		}
 
 		Return (MSBF)

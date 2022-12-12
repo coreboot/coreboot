@@ -97,7 +97,7 @@ static int get_logical_cores_per_package(void)
 
 static void generate_C_state_entries(const struct device *dev)
 {
-	struct cpu_intel_model_206ax_config *conf = dev->bus->dev->chip_info;
+	struct cpu_intel_model_206ax_config *conf = dev->chip_info;
 
 	const int acpi_cstates[3] = { conf->acpi_c1, conf->acpi_c2, conf->acpi_c3 };
 

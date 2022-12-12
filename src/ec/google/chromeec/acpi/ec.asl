@@ -167,7 +167,7 @@ Device (EC0)
 	Method (_REG, 2, NotSerialized)
 	{
 		// Initialize AC power state
-		Store (ACEX, \PWRS)
+		\PWRS = ACEX
 		/*
 		 * Call PNOT (Platform Notify) to inform platform code
 		 * about the current AC/battery state. This handles all cases,
@@ -178,7 +178,7 @@ Device (EC0)
 		\PNOT ()
 
 		// Initialize LID switch state
-		Store (LIDS, \LIDS)
+		\LIDS = LIDS
 
 #if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
 		/*
@@ -194,7 +194,7 @@ Device (EC0)
 	/* Read requested temperature and check against EC error values */
 	Method (TSRD, 1, Serialized)
 	{
-		Store (\_SB.PCI0.LPCB.EC0.TINS (Arg0), Local0)
+		Local0 = \_SB.PCI0.LPCB.EC0.TINS (Arg0)
 
 		/* Check for sensor not calibrated */
 		If (Local0 == \_SB.PCI0.LPCB.EC0.TNCA) {
@@ -234,7 +234,7 @@ Device (EC0)
 			\_SB.DPTC()
 		}
 #endif
-		Store (LIDS, \LIDS)
+		\LIDS = LIDS
 #ifdef EC_ENABLE_LID_SWITCH
 		Notify (LID0, 0x80)
 #endif
@@ -249,7 +249,7 @@ Device (EC0)
 			\_SB.DPTC()
 		}
 #endif
-		Store (LIDS, \LIDS)
+		\LIDS = LIDS
 		Notify (CREC, 0x2)
 #ifdef EC_ENABLE_LID_SWITCH
 		Notify (LID0, 0x80)
@@ -266,7 +266,7 @@ Device (EC0)
 	Method (_Q04, 0, NotSerialized)
 	{
 		Printf ("EC: AC CONNECTED")
-		Store (ACEX, \PWRS)
+		\PWRS = ACEX
 		Notify (AC, 0x80)
 #ifdef DPTF_ENABLE_CHARGER
 		If (CondRefOf (\_SB.DPTF.TCHG)) {
@@ -286,7 +286,7 @@ Device (EC0)
 	Method (_Q05, 0, NotSerialized)
 	{
 		Printf ("EC: AC DISCONNECTED")
-		Store (ACEX, \PWRS)
+		\PWRS = ACEX
 		Notify (AC, 0x80)
 #ifdef DPTF_ENABLE_CHARGER
 		If (CondRefOf (\_SB.DPTF.TCHG)) {
@@ -481,7 +481,7 @@ Device (EC0)
 		}
 
 		/* Set sensor ID */
-		Store (ToInteger (Arg0), ^PATI)
+		^PATI = ToInteger (Arg0)
 
 		/* Temperature is passed in 1/10 Kelvin */
 		Local1 = ToInteger (Arg1) / 10
@@ -490,7 +490,7 @@ Device (EC0)
 		^PATT = Local1 - ^TOFS
 
 		/* Set commit value with SELECT=0 and ENABLE=1 */
-		Store (0x02, ^PATC)
+		^PATC = 0x02
 
 		Release (^PATM)
 		Return (1)
@@ -508,7 +508,7 @@ Device (EC0)
 		}
 
 		/* Set sensor ID */
-		Store (ToInteger (Arg0), ^PATI)
+		^PATI = ToInteger (Arg0)
 
 		/* Temperature is passed in 1/10 Kelvin */
 		Local1 = ToInteger (Arg1) / 10
@@ -517,7 +517,7 @@ Device (EC0)
 		^PATT = Local1 - ^TOFS
 
 		/* Set commit value with SELECT=1 and ENABLE=1 */
-		Store (0x03, ^PATC)
+		^PATC = 0x03
 
 		Release (^PATM)
 		Return (1)
@@ -532,14 +532,14 @@ Device (EC0)
 			Return (0)
 		}
 
-		Store (ToInteger (Arg0), ^PATI)
-		Store (0x00, ^PATT)
+		^PATI = ToInteger (Arg0)
+		^PATT = 0x00
 
 		/* Disable PAT0 */
-		Store (0x00, ^PATC)
+		^PATC = 0x00
 
 		/* Disable PAT1 */
-		Store (0x01, ^PATC)
+		^PATC = 0x01
 
 		Release (^PATM)
 		Return (1)
@@ -558,7 +558,7 @@ Device (EC0)
 #endif
 		If (!Acquire (^PATM, 1000)) {
 			/* Read sensor ID for event */
-			Store (^PATI, Local0)
+			Local0 = ^PATI
 
 			/* When sensor ID returns 0xFF then no more events */
 			While (Local0 != EC_TEMP_SENSOR_NOT_PRESENT)
@@ -568,7 +568,7 @@ Device (EC0)
 #endif
 
 				/* Keep reaading sensor ID for event */
-				Store (^PATI, Local0)
+				Local0 = ^PATI
 			}
 
 			Release (^PATM)
@@ -581,7 +581,7 @@ Device (EC0)
 	 */
 	Method (CHGS, 1, Serialized)
 	{
-		Store (ToInteger (Arg0), ^CHGL)
+		^CHGL = ToInteger (Arg0)
 	}
 
 	/*
@@ -589,7 +589,7 @@ Device (EC0)
 	 */
 	Method (CHGD, 0, Serialized)
 	{
-		Store (0xFF, ^CHGL)
+		^CHGL = 0xFF
 	}
 
 	/* Read current Tablet mode */

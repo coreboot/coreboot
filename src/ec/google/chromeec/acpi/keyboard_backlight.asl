@@ -43,7 +43,7 @@ Scope (\_SB)
 		/* Write new backlight value */
 		Method (KBCM, 1, NotSerialized)
 		{
-			Store (Arg0, \_SB.PCI0.LPCB.EC0.KBLV)
+			\_SB.PCI0.LPCB.EC0.KBLV = Arg0
 		}
 	}
 }

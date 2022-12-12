@@ -159,7 +159,7 @@ Method (_CRS, 0, Serialized)
 	{
 		Store (LPFW, LMIN)
 		Store (0x00100000, LLEN)
-		Subtract (LMIN + LLEN, One, LMAX)
+		LMAX = LMIN + LLEN - One
 	}
 	Else
 	{

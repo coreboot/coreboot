@@ -121,10 +121,10 @@
 
 #define PNP_WRITE_IRQ(IRQ_TO, RESOURCE, IRQ_TAG) \
 	CreateWordField (RESOURCE, IRQ_TAG._INT, IRQ_TAG##W)\
-	Subtract (FindSetLeftBit (IRQ_TAG##W), 1, IRQ_TO)
+	IRQ_TO = FindSetLeftBit (IRQ_TAG##W) - 1
 
 #define PNP_WRITE_DMA(DMA_TO, RESOURCE, DMA_TAG) \
 	CreateByteField (RESOURCE, DMA_TAG._DMA, DMA_TAG##W)\
-	Subtract (FindSetLeftBit (DMA_TAG##W), 1, DMA_TO)
+	DMA_TO = FindSetLeftBit (DMA_TAG##W) - 1
 
 #endif

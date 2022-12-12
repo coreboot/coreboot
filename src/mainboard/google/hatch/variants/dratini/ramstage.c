@@ -14,6 +14,6 @@ void variant_ramstage_init(void)
 	 * a minimum of 400us on Kohaku.
 	 */
 	gpio_output(GPP_C11, 1);
-	mdelay(1);
+	mdelay(4);
 	gpio_output(GPP_A12, 1);
 }

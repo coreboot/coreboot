@@ -45,14 +45,14 @@
 		Method(_STA, 0)
 		{
 			/* Access SuperIO ACPI device */
-			Store(0x87, SIOI)
-			Store(0x87, SIOI)
+			SIOI = 0x87
+			SIOI = 0x87
 
 			/* Read Pin56 function select */
 			And(CR2A, 0x2, Local0)
 
 			/* Restore default SuperIO access */
-			Store(0xAA, SIOI)
+			SIOI = 0xAA
 
 			if (Local0 == 0) {
 				/* Mouse function selected */

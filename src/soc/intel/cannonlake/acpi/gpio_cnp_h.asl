@@ -30,26 +30,26 @@ Device (GPIO)
 		/* GPIO Community 0 */
 		CreateDWordField (^RBUF, ^COM0._BAS, BAS0)
 		CreateDWordField (^RBUF, ^COM0._LEN, LEN0)
-		Store (^^PCRB (PID_GPIOCOM0), BAS0)
-		Store (GPIO_BASE_SIZE, LEN0)
+		BAS0 = ^^PCRB (PID_GPIOCOM0)
+		LEN0 = GPIO_BASE_SIZE
 
 		/* GPIO Community 1 */
 		CreateDWordField (^RBUF, ^COM1._BAS, BAS1)
 		CreateDWordField (^RBUF, ^COM1._LEN, LEN1)
-		Store (^^PCRB (PID_GPIOCOM1), BAS1)
-		Store (GPIO_BASE_SIZE, LEN1)
+		BAS1 = ^^PCRB (PID_GPIOCOM1)
+		LEN1 = GPIO_BASE_SIZE
 
 		/* GPIO Community 3 */
 		CreateDWordField (^RBUF, ^COM3._BAS, BAS3)
 		CreateDWordField (^RBUF, ^COM3._LEN, LEN3)
-		Store (^^PCRB (PID_GPIOCOM3), BAS3)
-		Store (GPIO_BASE_SIZE, LEN3)
+		BAS3 = ^^PCRB (PID_GPIOCOM3)
+		LEN3 = GPIO_BASE_SIZE
 
 		/* GPIO Community 4 */
 		CreateDWordField (^RBUF, ^COM4._BAS, BAS4)
 		CreateDWordField (^RBUF, ^COM4._LEN, LEN4)
-		Store (^^PCRB (PID_GPIOCOM4), BAS4)
-		Store (GPIO_BASE_SIZE, LEN4)
+		BAS4 = ^^PCRB (PID_GPIOCOM4)
+		LEN4 = GPIO_BASE_SIZE
 
 		Return (RBUF)
 	}
@@ -69,28 +69,28 @@ Method (GADD, 1, NotSerialized)
 	/* GPIO Community 0 */
 	If (Arg0 >= GPP_A0 && Arg0 <= GSPI1_CLK_LOOPBK)
 	{
-		Store (PID_GPIOCOM0, Local0)
+		Local0 = PID_GPIOCOM0
 		Local1 = Arg0 - GPP_A0
 	}
 	/* GPIO Community 1 */
 	If (Arg0 >= GPP_C0 && Arg0 <= vSSP2_RXD)
 	{
-		Store (PID_GPIOCOM1, Local0)
+		Local0 = PID_GPIOCOM1
 		Local1 = Arg0 - GPP_C0
 	}
 	/* GPIO Community 3*/
 	If (Arg0 >= GPP_K0 && Arg0 <= SPI0_CLK_LOOPBK)
 	{
-		Store (PID_GPIOCOM3, Local0)
+		Local0 = PID_GPIOCOM3
 		Local1 = Arg0 - GPP_K0
 	}
 	/* GPIO Community 4*/
 	If (Arg0 >= HDACPU_SDI && Arg0 <= GPP_J11)
 	{
-		Store (PID_GPIOCOM4, Local0)
+		Local0 = PID_GPIOCOM4
 		Local1 = Arg0 - GPP_I0
 	}
-	Store (PCRB (Local0), Local2)
+	Local2 = PCRB (Local0)
 	Local2 += PAD_CFG_BASE
 	Return (Local2 + Local1 * 16)
 }

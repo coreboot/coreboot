@@ -30,20 +30,20 @@ Device (GPIO)
 		/* GPIO Community 0 */
 		CreateDWordField (^RBUF, ^COM0._BAS, BAS0)
 		CreateDWordField (^RBUF, ^COM0._LEN, LEN0)
-		Store (^^PCRB (PID_GPIOCOM0), BAS0)
-		Store (GPIO_BASE_SIZE, LEN0)
+		BAS0 = ^^PCRB (PID_GPIOCOM0)
+		LEN0 = GPIO_BASE_SIZE
 
 		/* GPIO Community 1 */
 		CreateDWordField (^RBUF, ^COM1._BAS, BAS1)
 		CreateDWordField (^RBUF, ^COM1._LEN, LEN1)
-		Store (^^PCRB (PID_GPIOCOM1), BAS1)
-		Store (GPIO_BASE_SIZE, LEN1)
+		BAS1 = ^^PCRB (PID_GPIOCOM1)
+		LEN1 = GPIO_BASE_SIZE
 
 		/* GPIO Community 4 */
 		CreateDWordField (^RBUF, ^COM4._BAS, BAS4)
 		CreateDWordField (^RBUF, ^COM4._LEN, LEN4)
-		Store (^^PCRB (PID_GPIOCOM4), BAS4)
-		Store (GPIO_BASE_SIZE, LEN4)
+		BAS4 = ^^PCRB (PID_GPIOCOM4)
+		LEN4 = GPIO_BASE_SIZE
 
 		Return (RBUF)
 	}
@@ -63,34 +63,34 @@ Method (GADD, 1, NotSerialized)
 	/* GPIO Community 0 */
 	If (Arg0 >= GPP_A0 && Arg0 <= SPI0_CLK_LOOPBK)
 	{
-		Store (PID_GPIOCOM0, Local0)
+		Local0 = PID_GPIOCOM0
 		Local1 = Arg0 - GPP_A0
 	}
 	/* GPIO Community 1 */
 	If (Arg0 >= GPP_D0 && Arg0 <= vSD3_CD_B)
 	{
-		Store (PID_GPIOCOM1, Local0)
+		Local0 = PID_GPIOCOM1
 		Local1 = Arg0 - GPP_D0
 	}
 	/* GPIO Community 2 */
 	If (Arg0 >= GPD0 && Arg0 <= DRAM_RESET_B)
 	{
-		Store (PID_GPIOCOM2, Local0)
+		Local0 = PID_GPIOCOM2
 		Local1 = Arg0 - GPD0
 	}
 	/* GPIO Community 3 */
 	If (Arg0 >= HDA_BCLK && Arg0 <= TRIGGER_OUT)
 	{
-		Store (PID_GPIOCOM3, Local0)
+		Local0 = PID_GPIOCOM3
 		Local1 = Arg0 - HDA_BCLK
 	}
 	/* GPIO Community 4*/
 	If (Arg0 >= GPP_C0 && Arg0 <= CL_RST_B)
 	{
-		Store (PID_GPIOCOM4, Local0)
+		Local0 = PID_GPIOCOM4
 		Local1 = Arg0 - GPP_C0
 	}
-	Store (PCRB (Local0), Local2)
+	Local2 = PCRB (Local0)
 	Local2 += PAD_CFG_BASE
 	Return (Local2 + Local1 * 16)
 }
@@ -105,19 +105,19 @@ Method (GPID, 1, Serialized)
 	Switch (ToInteger (Arg0))
 	{
 		Case (0) {
-			Store (PID_GPIOCOM0, Local0)
+			Local0 = PID_GPIOCOM0
 		}
 		Case (1) {
-			Store (PID_GPIOCOM1, Local0)
+			Local0 = PID_GPIOCOM1
 		}
 		Case (2) {
-			Store (PID_GPIOCOM2, Local0)
+			Local0 = PID_GPIOCOM2
 		}
 		Case (3) {
-			Store (PID_GPIOCOM3, Local0)
+			Local0 = PID_GPIOCOM3
 		}
 		Case (4) {
-			Store (PID_GPIOCOM4, Local0)
+			Local0 = PID_GPIOCOM4
 		}
 		Default {
 			Return (0)
@@ -135,7 +135,7 @@ Method (GPID, 1, Serialized)
  */
 Method (CGPM, 2, Serialized)
 {
-	Store (GPID (Arg0), Local0)
+	Local0 = GPID (Arg0)
 	If (Local0 != 0) {
 		/* Mask off current PM bits */
 		PCRA (Local0, GPIO_MISCCFG, Not (MISCCFG_GPIO_PM_CONFIG_BITS))

@@ -15,8 +15,8 @@ Device(AC)
 
 	Method(_PSR, 0, NotSerialized)
 	{
-		Store(HPAC, Local0)
-		Store(Local0, \PWRS)
+		Local0 = HPAC
+		\PWRS = Local0
 		\PNOT()
 		return (Local0)
 	}

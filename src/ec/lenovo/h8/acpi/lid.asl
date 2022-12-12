@@ -27,9 +27,9 @@ Device(LID)
 	Method(_PSW, 1, NotSerialized)
 	{
 		if (Arg0) {
-			Store(1, WKLD)
+			WKLD = 1
 		} else {
-			Store(0, WKLD)
+			WKLD = 0
 		}
 	}
 }

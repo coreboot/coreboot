@@ -20,11 +20,11 @@ Device(SLPB)
 	Method(_PSW, 1, NotSerialized)
 	{
 		if (Arg0) {
-			Store(6, FNKY) /* Fn key acts as wake button */
-			Store(1, WKFN)
+			FNKY = 6 /* Fn key acts as wake button */
+			WKFN = 1
 		} else {
-			Store(0, FNKY) /* Fn key normal operation */
-			Store(0, WKFN)
+			FNKY = 0 /* Fn key normal operation */
+			WKFN = 0
 		}
 	}
 }

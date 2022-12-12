@@ -9,5 +9,5 @@ Field(ERAM, ByteAcc, NoLock, Preserve)
 
 Method(BEEP, 1, NotSerialized)
 {
-	Store (Arg0, SNDS)
+	SNDS = Arg0
 }

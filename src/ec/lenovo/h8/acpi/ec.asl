@@ -67,9 +67,9 @@ Device(EC)
 		if (Arg1 == 1) {
 			/* Fill HKEY defaults on first boot */
 			if (^HKEY.INIT == 0) {
-				Store (BTEB, ^HKEY.WBDC)
-				Store (WWEB, ^HKEY.WWAN)
-				Store (One, ^HKEY.INIT)
+				^HKEY.WBDC = BTEB
+				^HKEY.WWAN = WWEB
+				^HKEY.INIT = One
 			}
 		}
 	}
@@ -86,7 +86,7 @@ Device(EC)
 
 	Method (TLED, 1, NotSerialized)
 	{
-		Store(Arg0, LEDS)
+		LEDS = Arg0
 	}
 
 	/* Not used for coreboot. Provided for compatibility with thinkpad-acpi.  */
@@ -101,24 +101,24 @@ Device(EC)
 
 	Method (MUTE, 1, NotSerialized)
 	{
-		Store(Arg0, AMUT)
+		AMUT = Arg0
 	}
 
 	Method (RADI, 1, NotSerialized)
 	{
-		Store(Arg0, WLEB)
-		Store(Arg0, WWEB)
-		Store(Arg0, BTEB)
+		WLEB = Arg0
+		WWEB = Arg0
+		BTEB = Arg0
 	}
 
 	Method (USBP, 1, NotSerialized)
 	{
-		Store(Arg0, USPW)
+		USPW = Arg0
 	}
 
 	Method (LGHT, 1, NotSerialized)
 	{
-		Store(Arg0, KBLT)
+		KBLT = Arg0
 	}
 
 
@@ -157,7 +157,7 @@ Device(EC)
 	Method(_Q27, 0, NotSerialized)
 	{
 		Notify (AC, 0x80)
-		Store(0x50, EVNT)
+		EVNT = 0x50
 		\PNOT()
 	}
 
@@ -318,11 +318,11 @@ Device(EC)
 	Method (FANE, 1, Serialized)
 	{
 		If (Arg0) {
-			Store (One, FAND)
-			Store (Zero, FANA)
+			FAND = One
+			FANA = Zero
 		} Else {
-			Store (Zero, FAND)
-			Store (One, FANA)
+			FAND = Zero
+			FANA = One
 		}
 	}
 

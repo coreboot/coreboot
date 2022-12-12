@@ -51,17 +51,7 @@ config BIRMAN_MCHP_FW_FILE
 	depends on BIRMAN_HAVE_MCHP_FW
 	default "3rdparty/blobs/mainboard/amd/birman/EC_birman.bin"
 	help
-	  The EC firmware blob is at the BIRMAN_MCHP_FW_OFFSET offset of the
-	  firmware image.
-
-config BIRMAN_MCHP_FW_OFFSET
-	hex
-	depends on BIRMAN_HAVE_MCHP_FW
-	default 0xF00000
-	help
-	  The EC firmware blob defaults to the 4MByte offset of the firmware
-	  image. If this offset needs to change, a new signature block must be
-	  generated with the updated offset.
+	  The EC firmware blob is at the EC_BODY FMAP region of the firmware image.
 
 config VBOOT
 	select VBOOT_NO_BOARD_SUPPORT

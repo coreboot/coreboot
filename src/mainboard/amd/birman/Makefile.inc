@@ -19,12 +19,8 @@ endif
 
 ifeq ($(CONFIG_BIRMAN_HAVE_MCHP_FW),y)
 $(call add_intermediate, add_mchp_fw)
-	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC -f $(CONFIG_BIRMAN_MCHP_SIG_FILE) --fill-upward
-
-cbfs-files-y += apu/ecfw
-apu/ecfw-file := $(CONFIG_BIRMAN_MCHP_FW_FILE)
-apu/ecfw-position := $(CONFIG_BIRMAN_MCHP_FW_OFFSET)
-apu/ecfw-type := raw
+	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC_SIG -f $(CONFIG_BIRMAN_MCHP_SIG_FILE) --fill-upward
+	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC_BODY -f $(CONFIG_BIRMAN_MCHP_FW_FILE) --fill-upward
 
 else
 files_added:: warn_no_mchp

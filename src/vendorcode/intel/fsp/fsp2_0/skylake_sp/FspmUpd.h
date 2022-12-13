@@ -136,6 +136,11 @@ typedef enum {
 	MAX_STACKS
 } IIO_STACKS;
 
+#define IioStack0 CSTACK
+/* MAX_LOGIC_IIO_STACK is needed by uncore_acpi.c, define the same value from nb_acpi.c for
+   Skylake-SP to keep the same behavior. */
+#define MAX_LOGIC_IIO_STACK PSTACK2
+
 /**
  NTB Per Port Definition
  **/

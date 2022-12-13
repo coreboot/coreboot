@@ -8,9 +8,11 @@
 #include <cpu/x86/lapic.h>
 #include <device/mmio.h>
 #include <device/pci.h>
+#include <device/pciexp.h>
 #include <soc/acpi.h>
 #include <soc/hest.h>
 #include <soc/iomap.h>
+#include <soc/numa.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
@@ -18,7 +20,7 @@
 
 #include "chip.h"
 
-/* Northbridge(NUMA) ACPI table generation. SRAT, SLIT, etc */
+/* NUMA related ACPI table generation. SRAT, SLIT, etc */
 
 unsigned long acpi_create_srat_lapics(unsigned long current)
 {
@@ -67,15 +69,22 @@ static unsigned int get_srat_memory_entries(acpi_srat_mem_t *srat_mem)
 				MEM_ADDR_64MB_SHIFT_BITS);
 
 		printk(BIOS_DEBUG, "memory_map %d addr: 0x%llx, BaseAddress: 0x%x, size: 0x%llx, "
-			"ElementSize: 0x%x, reserved: %d\n",
+			"ElementSize: 0x%x, type: %d, reserved: %d\n",
 			e, addr, mem_element->BaseAddress, size,
-			mem_element->ElementSize, (mem_element->Type & MEM_TYPE_RESERVED));
+			mem_element->ElementSize, mem_element->Type,
+			(mem_element->Type & MEM_TYPE_RESERVED));
 
 		assert(mmap_index < MAX_ACPI_MEMORY_AFFINITY_COUNT);
 
 		/* skip reserved memory region */
 		if (mem_element->Type & MEM_TYPE_RESERVED)
 			continue;
+#if CONFIG(SOC_INTEL_SAPPHIRERAPIDS_SP)
+		/* Skip all non processor attached memory regions */
+		/* In other words, skip all the types >= MemTypeCxlAccVolatileMem */
+		if (mem_element->Type >= MemTypeCxlAccVolatileMem)
+			continue;
+#endif
 
 		/* skip if this address is already added */
 		bool skip = false;
@@ -126,9 +135,36 @@ static unsigned long acpi_fill_srat(unsigned long current)
 		current += srat_mem[i].length;
 	}
 
+	if (CONFIG(SOC_INTEL_HAS_CXL))
+		current = cxl_fill_srat(current);
+
 	return current;
 }
 
+#if CONFIG(SOC_INTEL_SAPPHIRERAPIDS_SP)
+/*
+Because pds.num_pds comes from spr/numa.c function fill_pds().
+pds.num_pds = soc_get_num_cpus() + get_cxl_node_count().
+*/
+/* SPR-SP platform has Generic Initiator domain in addition to processor domain */
+static unsigned long acpi_fill_slit(unsigned long current)
+{
+	uint8_t *p = (uint8_t *)current;
+	/* According to table 5.60 of ACPI 6.4 spec, "Number of System Localities" field takes
+	   up 8 bytes. Following that, each matrix entry takes up 1 byte. */
+	memset(p, 0, 8 + pds.num_pds * pds.num_pds);
+	*p = (uint8_t)pds.num_pds;
+	p += 8;
+
+	for (int i = 0; i < pds.num_pds; i++) {
+		for (int j = 0; j < pds.num_pds; j++)
+			p[i * pds.num_pds + j] = pds.pds[i].distances[j];
+	}
+
+	current += 8 + pds.num_pds * pds.num_pds;
+	return current;
+}
+#else
 static unsigned long acpi_fill_slit(unsigned long current)
 {
 	unsigned int nodes = soc_get_num_cpus();
@@ -151,31 +187,27 @@ static unsigned long acpi_fill_slit(unsigned long current)
 	current += 8 + nodes * nodes;
 	return current;
 }
+#endif
 
 /*
  * This function adds PCIe bridge device entry in DMAR table. If it is called
  * in the context of ATSR subtable, it adds ATSR subtable when it is first called.
  */
 static unsigned long acpi_create_dmar_ds_pci_br_for_port(unsigned long current,
-	int port, int stack, const IIO_RESOURCE_INSTANCE *iio_resource, uint32_t pcie_seg,
-	bool is_atsr, bool *first)
+							 const struct device *bridge_dev,
+							 uint32_t pcie_seg,
+							 bool is_atsr, bool *first)
 {
+	const uint32_t bus = bridge_dev->bus->secondary;
+	const uint32_t dev = PCI_SLOT(bridge_dev->path.pci.devfn);
+	const uint32_t func = PCI_FUNC(bridge_dev->path.pci.devfn);
 
-	if (soc_get_stack_for_port(port) != stack)
-		return 0;
-
-	const uint32_t bus = iio_resource->StackRes[stack].BusBase;
-	const uint32_t dev = iio_resource->PcieInfo.PortInfo[port].Device;
-	const uint32_t func = iio_resource->PcieInfo.PortInfo[port].Function;
-
-	const uint32_t id = pci_s_read_config32(PCI_DEV(bus, dev, func),
-		PCI_VENDOR_ID);
-	if (id == 0xffffffff)
-		return 0;
+	if (bus == 0)
+		return current;
 
 	unsigned long atsr_size = 0;
 	unsigned long pci_br_size = 0;
-	if (is_atsr && first && *first) {
+	if (is_atsr == true && first && *first == true) {
 		printk(BIOS_DEBUG, "[Root Port ATS Capability] Flags: 0x%x, "
 			"PCI Segment Number: 0x%x\n", 0, pcie_seg);
 		atsr_size = acpi_create_dmar_atsr(current, 0, pcie_seg);
@@ -193,13 +225,11 @@ static unsigned long acpi_create_dmar_ds_pci_br_for_port(unsigned long current,
 static unsigned long acpi_create_drhd(unsigned long current, int socket,
 	int stack, const IIO_UDS *hob)
 {
-	uint32_t enum_id;
 	unsigned long tmp = current;
-
-	uint32_t bus = hob->PlatformData.IIO_resource[socket].StackRes[stack].BusBase;
-	uint32_t pcie_seg = hob->PlatformData.CpuQpiInfo[socket].PcieSegment;
-	uint32_t reg_base =
-		hob->PlatformData.IIO_resource[socket].StackRes[stack].VtdBarAddress;
+	const STACK_RES *ri = &hob->PlatformData.IIO_resource[socket].StackRes[stack];
+	const uint32_t bus = ri->BusBase;
+	const uint32_t pcie_seg = hob->PlatformData.CpuQpiInfo[socket].PcieSegment;
+	const uint32_t reg_base = ri->VtdBarAddress;
 	printk(BIOS_SPEW, "%s socket: %d, stack: %d, bus: 0x%x, pcie_seg: 0x%x, reg_base: 0x%x\n",
 		__func__, socket, stack, bus, pcie_seg, reg_base);
 
@@ -208,7 +238,8 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 		return current;
 
 	// Add DRHD Hardware Unit
-	if (socket == 0 && stack == CSTACK) {
+
+	if (socket == 0 && stack == IioStack0) {
 		printk(BIOS_DEBUG, "[Hardware Unit Definition] Flags: 0x%x, PCI Segment Number: 0x%x, "
 			"Register Base Address: 0x%x\n",
 			DRHD_INCLUDE_PCI_ALL, pcie_seg, reg_base);
@@ -221,7 +252,7 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 	}
 
 	// Add PCH IOAPIC
-	if (socket == 0 && stack == CSTACK) {
+	if (socket == 0 && stack == IioStack0) {
 		union p2sb_bdf ioapic_bdf = p2sb_get_ioapic_bdf();
 		printk(BIOS_DEBUG, "    [IOAPIC Device] Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
 		       "PCI Path: 0x%x, 0x%x\n", get_ioapic_id(VIO_APIC_VADDR), ioapic_bdf.bus,
@@ -230,6 +261,9 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 				IO_APIC_ADDR, ioapic_bdf.bus, ioapic_bdf.dev, ioapic_bdf.fn);
 	}
 
+/* SPR has no per stack IOAPIC or CBDMA devices */
+#if CONFIG(SOC_INTEL_SKYLAKE_SP) || CONFIG(SOC_INTEL_COOPERLAKE_SP)
+	uint32_t enum_id;
 	// Add IOAPIC entry
 	enum_id = soc_get_iio_ioapicid(socket, stack);
 	printk(BIOS_DEBUG, "    [IOAPIC Device] Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
@@ -247,15 +281,21 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 				bus, CBDMA_DEV_NUM, cbdma_func_id);
 		}
 	}
+#endif
 
 	// Add PCIe Ports
-	if (socket != 0 || stack != CSTACK) {
-		IIO_RESOURCE_INSTANCE iio_resource =
-			hob->PlatformData.IIO_resource[socket];
-		for (int p = PORT_0; p < MAX_PORTS; ++p)
-			current += acpi_create_dmar_ds_pci_br_for_port(current, p, stack,
-				&iio_resource, pcie_seg, false, NULL);
+	if (socket != 0 || stack != IioStack0) {
+		struct device *dev = pcidev_path_on_bus(bus, PCI_DEVFN(0, 0));
+		while (dev) {
+			if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE)
+				current +=
+				acpi_create_dmar_ds_pci_br_for_port(
+				current, dev, pcie_seg, false, NULL);
 
+			dev = dev->sibling;
+		}
+
+#if CONFIG(SOC_INTEL_SKYLAKE_SP) || CONFIG(SOC_INTEL_COOPERLAKE_SP)
 		// Add VMD
 		if (hob->PlatformData.VMDStackEnable[socket][stack] &&
 			stack >= PSTACK0 && stack <= PSTACK2) {
@@ -265,10 +305,35 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 			current += acpi_create_dmar_ds_pci(current,
 				bus, VMD_DEV_NUM, VMD_FUNC_NUM);
 		}
+#endif
 	}
 
+#if CONFIG(SOC_INTEL_SAPPHIRERAPIDS_SP) || CONFIG(SOC_INTEL_COOPERLAKE_SP)
+	// Add DINO End Points (with memory resources. We don't report every End Point device.)
+	if (ri->Personality == TYPE_DINO) {
+		for (int b = ri->BusBase; b <= ri->BusLimit; ++b) {
+			struct device *dev = pcidev_path_on_bus(b, PCI_DEVFN(0, 0));
+			while (dev) {
+				/* This may also require a check for IORESOURCE_PREFETCH,
+				 * but that would not include the FPU (4942/0) */
+				if ((dev->resource_list->flags &
+				 (IORESOURCE_MEM | IORESOURCE_PCI64 | IORESOURCE_ASSIGNED)) ==
+				 (IORESOURCE_MEM | IORESOURCE_PCI64 | IORESOURCE_ASSIGNED)) {
+					const uint32_t d = PCI_SLOT(dev->path.pci.devfn);
+					const uint32_t f = PCI_FUNC(dev->path.pci.devfn);
+					printk(BIOS_DEBUG, "    [PCIE Endpoint Device] "
+						"Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
+						" PCI Path: 0x%x, 0x%x\n", 0, b, d, f);
+					current += acpi_create_dmar_ds_pci(current, b, d, f);
+				}
+				dev = dev->sibling;
+			}
+		}
+	}
+#endif
+
 	// Add HPET
-	if (socket == 0 && stack == CSTACK) {
+	if (socket == 0 && stack == IioStack0) {
 		uint16_t hpet_capid = read16p(HPET_BASE_ADDRESS);
 		uint16_t num_hpets = (hpet_capid >> 0x08) & 0x1F;  // Bits [8:12] has hpet count
 		printk(BIOS_SPEW, "%s hpet_capid: 0x%x, num_hpets: 0x%x\n",
@@ -299,7 +364,7 @@ static unsigned long acpi_create_atsr(unsigned long current, const IIO_UDS *hob)
 		IIO_RESOURCE_INSTANCE iio_resource =
 			hob->PlatformData.IIO_resource[socket];
 
-		for (int stack = 0; stack <= PSTACK2; ++stack) {
+		for (int stack = 0; stack < MAX_LOGIC_IIO_STACK; ++stack) {
 			uint32_t bus = iio_resource.StackRes[stack].BusBase;
 			uint32_t vtd_base = iio_resource.StackRes[stack].VtdBarAddress;
 			if (!vtd_base)
@@ -315,11 +380,17 @@ static unsigned long acpi_create_atsr(unsigned long current, const IIO_UDS *hob)
 			if ((vtd_mmio_cap & 0x4) == 0) // BIT 2
 				continue;
 
-			for (int p = PORT_0; p < MAX_PORTS; ++p) {
-				if (socket == 0 && p == PORT_0)
-					continue;
-				current += acpi_create_dmar_ds_pci_br_for_port(current, p,
-					stack, &iio_resource, pcie_seg, true, &first);
+			if (bus == 0)
+				continue;
+
+			struct device *dev = pcidev_path_on_bus(bus, PCI_DEVFN(0, 0));
+			while (dev) {
+				if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE)
+					current +=
+					acpi_create_dmar_ds_pci_br_for_port(
+					current, dev, pcie_seg, true, &first);
+
+				dev = dev->sibling;
 			}
 		}
 		if (tmp != current)
@@ -368,7 +439,7 @@ static unsigned long acpi_create_rhsa(unsigned long current)
 	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
 		IIO_RESOURCE_INSTANCE iio_resource =
 			hob->PlatformData.IIO_resource[socket];
-		for (int stack = 0; stack <= PSTACK2; ++stack) {
+		for (int stack = 0; stack < MAX_LOGIC_IIO_STACK; ++stack) {
 			uint32_t vtd_base = iio_resource.StackRes[stack].VtdBarAddress;
 			if (!vtd_base)
 				continue;
@@ -382,24 +453,59 @@ static unsigned long acpi_create_rhsa(unsigned long current)
 	return current;
 }
 
+/* Skylake-SP doesn't have DINO but not sure how to verify this on CPX */
+#if CONFIG(SOC_INTEL_SAPPHIRERAPIDS_SP) || CONFIG(SOC_INTEL_COOPERLAKE_SP)
+static unsigned long xeonsp_create_satc_dino(unsigned long current, const STACK_RES *ri)
+{
+	for (int b = ri->BusBase; b <= ri->BusLimit; ++b) {
+		struct device *dev = pcidev_path_on_bus(b, PCI_DEVFN(0, 0));
+		while (dev) {
+			if (pciexp_find_extended_cap(dev, PCIE_EXT_CAP_ID_ATS, 0)) {
+				const uint32_t d = PCI_SLOT(dev->path.pci.devfn);
+				const uint32_t f = PCI_FUNC(dev->path.pci.devfn);
+				printk(BIOS_DEBUG, "    [SATC Endpoint Device] "
+					"Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
+					" PCI Path: 0x%x, 0x%x\n", 0, b, d, f);
+					current += acpi_create_dmar_ds_pci(current, b, d, f);
+			}
+			dev = dev->sibling;
+		}
+	}
+	return current;
+}
+
+/* SoC Integrated Address Translation Cache */
+static unsigned long acpi_create_satc(unsigned long current, const IIO_UDS *hob)
+{
+
+	const unsigned long tmp = current;
+
+	// Add the SATC header
+	current += acpi_create_dmar_satc(current, 0, 0);
+
+	// Find the DINO devices on each socket
+	for (int socket = (hob->PlatformData.numofIIO - 1); socket >= 0; --socket) {
+		for (int stack = (MAX_LOGIC_IIO_STACK - 1); stack >= 0; --stack) {
+			const STACK_RES *ri = &hob->PlatformData.IIO_resource[socket].StackRes[stack];
+			// Add the DINO ATS devices to the SATC
+			if (ri->Personality == TYPE_DINO)
+				current = xeonsp_create_satc_dino(current, ri);
+		}
+	}
+
+	acpi_dmar_satc_fixup(tmp, current);
+	return current;
+}
+#endif
+
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
 	const IIO_UDS *hob = get_iio_uds();
 
-	// DRHD
-	for (int iio = 1; iio <= hob->PlatformData.numofIIO; ++iio) {
-		int socket = iio;
-		if (socket == hob->PlatformData.numofIIO) // socket 0 should be last DRHD entry
-			socket = 0;
-
-		if (socket == 0) {
-			for (int stack = 1; stack <= PSTACK2; ++stack)
-				current = acpi_create_drhd(current, socket, stack, hob);
-			current = acpi_create_drhd(current, socket, CSTACK, hob);
-		} else {
-			for (int stack = 0; stack <= PSTACK2; ++stack)
-				current = acpi_create_drhd(current, socket, stack, hob);
-		}
+	// DRHD - socket 0 stack 0 must be the last DRHD entry.
+	for (int socket = (hob->PlatformData.numofIIO - 1); socket >= 0; --socket) {
+		for (int stack = (MAX_LOGIC_IIO_STACK - 1); stack >= 0; --stack)
+			current = acpi_create_drhd(current, socket, stack, hob);
 	}
 
 	// RMRR
@@ -411,16 +517,22 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	// RHSA
 	current = acpi_create_rhsa(current);
 
+#if CONFIG(SOC_INTEL_SAPPHIRERAPIDS_SP) || CONFIG(SOC_INTEL_COOPERLAKE_SP)
+	// SATC
+	current = acpi_create_satc(current, hob);
+#endif
+
 	return current;
 }
 
-unsigned long northbridge_write_acpi_tables(const struct device *device,
-					    unsigned long current,
+unsigned long northbridge_write_acpi_tables(const struct device *device, unsigned long current,
 					    struct acpi_rsdp *rsdp)
 {
 	acpi_srat_t *srat;
 	acpi_slit_t *slit;
 	acpi_dmar_t *dmar;
+	acpi_hmat_t *hmat;
+	acpi_cedt_t *cedt;
 
 	const config_t *const config = config_of(device);
 
@@ -440,6 +552,16 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 	current += slit->header.length;
 	acpi_add_table(rsdp, slit);
 
+	if (CONFIG(SOC_INTEL_HAS_CXL)) {
+		/* HMAT*/
+		current = ALIGN_UP(current, 8);
+		printk(BIOS_DEBUG, "ACPI:    * HMAT at %lx\n", current);
+		hmat = (acpi_hmat_t *)current;
+		acpi_create_hmat(hmat, acpi_fill_hmat);
+		current += hmat->header.length;
+		acpi_add_table(rsdp, hmat);
+	}
+
 	/* DMAR */
 	if (config->vtd_support) {
 		current = ALIGN_UP(current, 8);
@@ -450,7 +572,7 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 		if (CONFIG(SOC_INTEL_SKYLAKE_SP))
 			flags |= DMAR_X2APIC_OPT_OUT;
 
-		printk(BIOS_DEBUG, "ACPI:    * DMAR\n");
+		printk(BIOS_DEBUG, "ACPI:    * DMAR at %lx\n", current);
 		printk(BIOS_DEBUG, "[DMA Remapping table] Flags: 0x%x\n", flags);
 		acpi_create_dmar(dmar, flags, acpi_fill_dmar);
 		current += dmar->header.length;
@@ -458,8 +580,22 @@ unsigned long northbridge_write_acpi_tables(const struct device *device,
 		acpi_add_table(rsdp, dmar);
 	}
 
-	if (CONFIG(SOC_ACPI_HEST))
+	if (CONFIG(SOC_INTEL_HAS_CXL)) {
+		/* CEDT: CXL Early Discovery Table */
+		if (get_cxl_node_count() > 0) {
+			current = ALIGN_UP(current, 8);
+			printk(BIOS_DEBUG, "ACPI:    * CEDT at %lx\n", current);
+			cedt = (acpi_cedt_t *)current;
+			acpi_create_cedt(cedt, acpi_fill_cedt);
+			current += cedt->header.length;
+			acpi_add_table(rsdp, cedt);
+		}
+	}
+
+	if (CONFIG(SOC_ACPI_HEST)) {
+		printk(BIOS_DEBUG, "ACPI:    * HEST at %lx\n", current);
 		current = hest_create(current, rsdp);
+	}
 
 	return current;
 }

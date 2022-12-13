@@ -131,6 +131,8 @@ typedef enum {
 	MAX_STACKS
 } IIO_STACKS;
 
+#define IioStack0 CSTACK
+
 typedef struct uint64_t_struct {
 	uint32_t  lo;
 	uint32_t  hi;

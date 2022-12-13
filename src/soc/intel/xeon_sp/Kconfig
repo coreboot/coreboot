@@ -24,6 +24,16 @@ config SOC_INTEL_COOPERLAKE_SP
 	help
 	  Intel Cooper Lake-SP support
 
+config SOC_INTEL_SAPPHIRERAPIDS_SP
+	bool
+	select CACHE_MRC_SETTINGS
+	select CPU_INTEL_TURBO_NOT_PACKAGE_SCOPED
+	select PLATFORM_USES_FSP2_3
+	select SOC_INTEL_CSE_SERVER_SKU
+	select XEON_SP_COMMON_BASE
+	help
+	  Intel Sapphire Rapids-SP support
+
 if XEON_SP_COMMON_BASE
 
 config	CPU_SPECIFIC_OPTIONS

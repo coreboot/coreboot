@@ -186,22 +186,6 @@ chip soc/intel/elkhartlake
 		device pci 1c.4 on	end # RP5
 
 		device pci 1d.0 off	end # Intel PSE IPC (local host to PSE)
-		device pci 1d.1 on	    # Intel PSE Time-Sensitive Networking GbE 0
-			# Enable external Marvell PHY 88E1512
-			chip drivers/net/phy/m88e1512
-				register "configure_leds" = "true"
-				# LED[0]: On - 1000 Mbps Link, Off - Else
-				register "led_0_ctrl" = "7"
-				# LED[1]: On - Link, Blink - Activity, Off - No Link
-				register "led_1_ctrl" = "1"
-				# INTn is routed to LED[2] pin
-				register "enable_int" = "true"
-				register "downshift_cnt" = "2"
-				device mdio 0 on    # PHY address
-					ops m88e1512_ops
-				end
-			end
-		end
 		device pci 1d.2 on	    # Intel PSE Time-Sensitive Networking GbE 1
 			# Enable external Marvell PHY 88E1512
 			chip drivers/net/phy/m88e1512

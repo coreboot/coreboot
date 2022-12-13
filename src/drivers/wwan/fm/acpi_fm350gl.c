@@ -48,8 +48,8 @@ wwan_fm350gl_get_rtd3_method_support(const struct drivers_wwan_fm_config *config
 
 /*
  *  Generate first half reset flow (FHRF) method.
- *  Arg0 = RESET_TYPE_WARM: warm reset
- *  Arg0 = 1RESET_TYPE_COLD: cold reset
+ *  Arg0 = 0; RESET_TYPE_WARM: warm reset
+ *  Arg0 = 1; RESET_TYPE_COLD: cold reset
  */
 static void wwan_fm350gl_acpi_method_fhrf(const struct device *parent_dev,
 	const struct drivers_wwan_fm_config *config)

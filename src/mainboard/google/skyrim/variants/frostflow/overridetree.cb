@@ -14,6 +14,9 @@ chip soc/amd/mendocino
 	# Set Package Power Parameters
 	register "stapm_time_constant_s" = "200"
 
+	# Power table for tablet mode
+	register "sustained_power_limit_mW_tablet" = "12000"
+
 	register "i2c[0]" = "{
 		.speed = I2C_SPEED_FAST,
 		.speed_config[0] = {

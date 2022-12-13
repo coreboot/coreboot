@@ -74,6 +74,9 @@ struct soc_amd_mendocino_config {
 	uint32_t vrm_maximum_current_limit_throttle_mA;
 	uint32_t vrm_soc_current_limit_throttle_mA;
 
+	/* tablet mode.*/
+	uint32_t sustained_power_limit_mW_tablet;
+
 	/* Thermal profile B*/
 	uint32_t fast_ppt_limit_mW_B;
 	uint32_t slow_ppt_limit_mW_B;

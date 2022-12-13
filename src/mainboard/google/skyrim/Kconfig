@@ -164,11 +164,4 @@ config ENABLE_STB_SPILL_TO_DRAM
 	  just the small SRAM buffer to a much larger area reserved in main
 	  memory.
 
-config FEATURE_DYNAMIC_DPTC
-	bool
-	depends on SOC_AMD_COMMON_BLOCK_ACPI_DPTC
-	help
-	  Selected by mainboards that implement support for ALIB
-	  to enable dynamic DPTC.
-
 endif # BOARD_GOOGLE_BASEBOARD_SKYRIM

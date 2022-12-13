@@ -255,6 +255,24 @@ static void acipgen_dptci(void)
 	acpigen_write_alib_dptc_no_battery((uint8_t *)&no_battery_input,
 		sizeof(no_battery_input));
 
+#if (CONFIG(FEATURE_TABLET_MODE_DPTC))
+	struct dptc_input tablet_input = DPTC_INPUTS(
+		config->thermctl_limit_degreeC,
+		config->sustained_power_limit_mW_tablet,
+		config->slow_ppt_time_constant_s,
+		config->fast_ppt_limit_mW,
+		config->slow_ppt_limit_mW,
+		config->vrm_current_limit_mA,
+		config->vrm_maximum_current_limit_mA,
+		config->vrm_soc_current_limit_mA,
+		config->stt_min_limit,
+		config->stt_m1,
+		config->stt_m2,
+		config->stt_c_apu,
+		config->stt_skin_temp_apu);
+	acpigen_write_alib_dptc_tablet((uint8_t *)&tablet_input, sizeof(tablet_input));
+#endif
+
 #if (CONFIG(FEATURE_DYNAMIC_DPTC))
 	/* Profile B */
 	struct dptc_input thermal_B_input = DPTC_INPUTS(

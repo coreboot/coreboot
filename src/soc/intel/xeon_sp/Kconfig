@@ -120,6 +120,10 @@ config HEAP_SIZE
 	hex
 	default 0x80000
 
+config HPET_MIN_TICKS
+	hex
+	default 0x80
+
 config SOC_INTEL_XEON_RAS
 	bool
 	select SOC_ACPI_HEST

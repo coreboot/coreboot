@@ -46,7 +46,6 @@ enum L1_substates_control {
 
 /* This enum is for passing into an FSP UPD, typically ASPM */
 enum ASPM_control {
-	ASPM_DEFAULT,
 	ASPM_DISABLE,
 	ASPM_L0S,
 	ASPM_L1,

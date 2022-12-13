@@ -479,23 +479,18 @@ static int get_l1_substate_control(enum L1_substates_control ctl)
 }
 
 /*
- * Chip config parameter pcie_rp_aspm uses (UPD value + 1) because
- * a UPD value of 0 for pcie_rp_aspm means disabled. In order to ensure
- * that the mainboard setting does not disable ASPM incorrectly, chip
- * config parameter values are offset by 1 with 0 meaning use FSP UPD default.
  * get_aspm_control() ensures that the right UPD value is set in fsp_params.
- * 0: Use FSP UPD default
- * 1: Disable ASPM
- * 2: L0s only
- * 3: L1 only
- * 4: L0s and L1
- * 5: Auto configuration
+ * 0: Disable ASPM
+ * 1: L0s only
+ * 2: L1 only
+ * 3: L0s and L1
+ * 4: Auto configuration
  */
 static unsigned int get_aspm_control(enum ASPM_control ctl)
 {
-	if ((ctl > ASPM_AUTO) || (ctl == ASPM_DEFAULT))
+	if (ctl > ASPM_AUTO)
 		ctl = ASPM_AUTO;
-	return ctl - 1;
+	return ctl;
 }
 
 /* This function returns the VccIn Aux Imon IccMax values for ADL and RPL

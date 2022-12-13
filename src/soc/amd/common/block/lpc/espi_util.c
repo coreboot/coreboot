@@ -962,7 +962,7 @@ static enum cb_err espi_setup_flash_channel(const struct espi_config *mb_cfg,
 					      ESPI_FLASH_CH_EN);
 }
 
-static void espi_set_initial_config(const struct espi_config *mb_cfg)
+static enum cb_err espi_set_initial_config(const struct espi_config *mb_cfg)
 {
 	uint32_t espi_initial_mode = ESPI_OP_FREQ_16_MHZ | ESPI_IO_MODE_SINGLE;
 
@@ -974,10 +974,12 @@ static void espi_set_initial_config(const struct espi_config *mb_cfg)
 		espi_initial_mode |= ESPI_ALERT_MODE;
 		break;
 	default:
-		die("Unknown espi alert config: %u!\n", mb_cfg->alert_pin);
+		printk(BIOS_ERR, "Unknown espi alert config: %u!\n", mb_cfg->alert_pin);
+		return CB_ERR;
 	}
 
 	espi_write32(ESPI_SLAVE0_CONFIG, espi_initial_mode);
+	return CB_SUCCESS;
 }
 
 static void espi_setup_subtractive_decode(const struct espi_config *mb_cfg)
@@ -1013,7 +1015,8 @@ enum cb_err espi_setup(void)
 	 * Set correct initial configuration to talk to the slave:
 	 * Set clock frequency to 16.7MHz and single IO mode.
 	 */
-	espi_set_initial_config(cfg);
+	if (espi_set_initial_config(cfg) != CB_SUCCESS)
+		return CB_ERR;
 
 	/*
 	 * Boot sequence: Step 2
@@ -1024,7 +1027,9 @@ enum cb_err espi_setup(void)
 		printk(BIOS_ERR, "In-band reset failed!\n");
 		return CB_ERR;
 	}
-	espi_set_initial_config(cfg);
+
+	if (espi_set_initial_config(cfg) != CB_SUCCESS)
+		return CB_ERR;
 
 	/*
 	 * Boot sequence: Step 3

@@ -337,6 +337,7 @@ chip soc/intel/alderlake
 						register "use_custom_pld" = "true"
 						register "custom_pld" =
 							"ACPI_PLD_TYPE_C(FRONT, RIGHT, ACPI_PLD_GROUP(1, 1))"
+						register "usb_lpm_incapable" = "true"
 						device ref tcss_usb3_port1 on end
 					end
 				end

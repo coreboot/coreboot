@@ -847,6 +847,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
 						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
+						register "usb_lpm_incapable" = "true"
 						device ref tcss_usb3_port2 on end
 					end
 					chip drivers/usb/acpi

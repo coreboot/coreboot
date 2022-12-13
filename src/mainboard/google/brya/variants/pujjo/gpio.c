@@ -33,8 +33,14 @@ static const struct pad_config override_gpio_table[] = {
 static const struct pad_config early_gpio_table[] = {
 	/* A13 : GPP_A13 ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
+	/*
+	* WWAN_EN is asserted in ramstage to meet the 500 ms warm reset toff
+	* requirement. WWAN_EN must be asserted before WWAN_RST_L is released
+	* (with min delay 0 ms), so this works as long as the pin used for
+	* WWAN_EN comes before the pin used for WWAN_RST_L.
+	*/
 	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
-	PAD_CFG_GPO(GPP_D6, 1, DEEP),
+	PAD_CFG_GPO(GPP_D6, 0, DEEP),
 	/* E12 : THC0_SPI1_IO1 ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E12, NONE, DEEP),
 	/* F12 : WWAN_RST_L */

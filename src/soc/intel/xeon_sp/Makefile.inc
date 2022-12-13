@@ -4,6 +4,7 @@ ifeq ($(CONFIG_XEON_SP_COMMON_BASE),y)
 
 subdirs-$(CONFIG_SOC_INTEL_SKYLAKE_SP) += skx lbg
 subdirs-$(CONFIG_SOC_INTEL_COOPERLAKE_SP) += cpx lbg
+subdirs-$(CONFIG_SOC_INTEL_SAPPHIRERAPIDS_SP) += spr ebg
 
 bootblock-y += bootblock.c spi.c lpc.c pch.c
 romstage-y += romstage.c reset.c util.c spi.c pmutil.c memmap.c

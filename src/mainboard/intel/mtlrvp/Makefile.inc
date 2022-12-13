@@ -1,5 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-or-later
 
+all-$(CONFIG_CHROMEOS) += chromeos.c
+
 ramstage-y += ec.c
 ramstage-y += mainboard.c
 

@@ -3,3 +3,6 @@ config BOARD_INTEL_MTLRVP_P
 
 config BOARD_INTEL_MTLRVP_P_EXT_EC
 	bool "Meteorlake-P RVP with Chrome EC"
+
+config BOARD_INTEL_MTLRVP_P_MCHP
+	bool "Meteorlake-P RVP with Microchip EC"

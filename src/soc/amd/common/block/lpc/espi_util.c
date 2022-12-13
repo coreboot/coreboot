@@ -374,10 +374,6 @@ enum cb_err espi_open_mmio_window(uint32_t base, size_t size)
 static const struct espi_config *espi_get_config(void)
 {
 	const struct soc_amd_common_config *soc_cfg = soc_get_common_config();
-
-	if (!soc_cfg)
-		die("Common config structure is NULL!\n");
-
 	return &soc_cfg->espi_config;
 }
 

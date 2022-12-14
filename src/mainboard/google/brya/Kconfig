@@ -152,7 +152,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x1 if BOARD_GOOGLE_LISBON
 	default 0x1 if BOARD_GOOGLE_GLADIOS
 	default 0x1 if BOARD_GOOGLE_MARASOV
-	default 0x1 if BOARD_GOOGLE_GAELIN4ADL
+	default 0x1 if BOARD_GOOGLE_GAELIN
 
 config DRIVER_TPM_I2C_ADDR
 	hex
@@ -216,7 +216,7 @@ config MAINBOARD_PART_NUMBER
 	default "Joxer" if BOARD_GOOGLE_JOXER
 	default "Pujjo" if BOARD_GOOGLE_PUJJO
 	default "Xivu" if BOARD_GOOGLE_XIVU
-	default "Gaelin4ADL" if BOARD_GOOGLE_GAELIN4ADL
+	default "Gaelin" if BOARD_GOOGLE_GAELIN
 	default "Yaviks" if BOARD_GOOGLE_YAVIKS
 	default "Lisbon" if BOARD_GOOGLE_LISBON
 	default "Zydron" if BOARD_GOOGLE_ZYDRON
@@ -257,7 +257,7 @@ config VARIANT_DIR
 	default "joxer" if BOARD_GOOGLE_JOXER
 	default "pujjo" if BOARD_GOOGLE_PUJJO
 	default "xivu" if BOARD_GOOGLE_XIVU
-	default "gaelin" if BOARD_GOOGLE_GAELIN4ADL
+	default "gaelin" if BOARD_GOOGLE_GAELIN
 	default "yaviks" if BOARD_GOOGLE_YAVIKS
 	default "lisbon" if BOARD_GOOGLE_LISBON
 	default "zydron" if BOARD_GOOGLE_ZYDRON

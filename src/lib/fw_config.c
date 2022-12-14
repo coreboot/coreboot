@@ -59,6 +59,21 @@ uint64_t fw_config_get(void)
 	return fw_config_value;
 }
 
+uint64_t fw_config_get_field(const struct fw_config_field *field)
+{
+	/* If fw_config is not provisioned, then there is nothing to get. */
+	if (!fw_config_is_provisioned())
+		return UNDEFINED_FW_CONFIG;
+
+	int shift = __ffs64(field->mask);
+	const uint64_t value = (fw_config_get() & field->mask) >> shift;
+
+	printk(BIOS_INFO, "fw_config get field name=%s, mask=0x%" PRIx64 ", shift=%d, value=0x%"
+		PRIx64 "\n", field->field_name, field->mask, shift, value);
+
+	return value;
+}
+
 bool fw_config_probe(const struct fw_config *match)
 {
 	/* If fw_config is not provisioned, then there is nothing to match. */

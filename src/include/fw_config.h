@@ -24,12 +24,22 @@ struct fw_config {
 	uint64_t value;
 };
 
+struct fw_config_field {
+	const char *field_name;
+	uint64_t mask;
+};
+
 /* Generate a pointer to a compound literal of the fw_config structure. */
 #define FW_CONFIG(__field, __option)	(&(const struct fw_config) {		\
 	.field_name = FW_CONFIG_FIELD_##__field##_NAME,				\
 	.option_name = FW_CONFIG_FIELD_##__field##_OPTION_##__option##_NAME,	\
 	.mask = FW_CONFIG_FIELD_##__field##_MASK,				\
 	.value = FW_CONFIG_FIELD_##__field##_OPTION_##__option##_VALUE		\
+})
+
+#define FW_CONFIG_FIELD(__field) (&(const struct fw_config_field) {		\
+	.field_name = FW_CONFIG_FIELD_##__field##_NAME,				\
+	.mask = FW_CONFIG_FIELD_##__field##_MASK,				\
 })
 
 /**
@@ -40,6 +50,16 @@ struct fw_config {
 uint64_t fw_config_get(void);
 
 #if CONFIG(FW_CONFIG)
+
+/**
+ * fw_config_get_field() - Provide firmware configuration field value.
+ * @field: Structure containing field name and mask
+ *
+ * Return 64bit firmware configuration value determined for the system.
+ * Will return UNDEFINED_FW_CONFIG if unprovisioned, caller should treat
+ * as error value for the case.
+ */
+uint64_t fw_config_get_field(const struct fw_config_field *field);
 
 /**
  * fw_config_probe() - Check if field and option matches.

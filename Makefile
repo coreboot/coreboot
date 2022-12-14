@@ -197,6 +197,10 @@ endif
 strip_quotes = $(strip $(subst ",,$(subst \",,$(1))))
 # fix makefile syntax highlighting after strip macro \" "))
 
+ifneq ($(NOCOMPILE),1)
+$(shell rm -f $(CCACHE_STATSLOG))
+endif
+
 # The primary target needs to be here before we include the
 # other files
 

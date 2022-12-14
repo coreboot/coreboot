@@ -66,8 +66,11 @@ coreboot: $(obj)/coreboot.rom $(obj)/cbfstool $(obj)/rmodtool $(obj)/ifwitool $(
 # targets after the build completes by creating a Makefile.inc in the
 # site-local directory with a target named 'build_complete::'
 build_complete:: coreboot
-	printf "\nBuilt %s (%s)\n" $(MAINBOARDDIR) \
-		$(CONFIG_MAINBOARD_PART_NUMBER)
+	printf "\nBuilt %s (%s)\n" $(MAINBOARDDIR) $(CONFIG_MAINBOARD_PART_NUMBER)
+	if [ -f "$(CCACHE_STATSLOG)" ]; then \
+		printf "\nccache statistics\n"; \
+		$(CCACHE) --show-log-stats -v; \
+	fi
 
 # This target can be used to run rules after all files were added to CBFS,
 # for example to process FMAP regions or the entire image.

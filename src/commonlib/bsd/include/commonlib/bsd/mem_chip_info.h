@@ -101,7 +101,8 @@ static inline uint64_t mem_chip_info_total_density_bytes(const struct mem_chip_i
 
 	for (i = 0; i < info->num_entries; i++) {
 		const struct mem_chip_entry *e = &info->entries[i];
-		bytes += e->density_mbits * (e->channel_io_width / e->io_width) * (MiB / 8);
+		bytes += (uint64_t)e->density_mbits * (e->channel_io_width / e->io_width)
+			 * (MiB / 8);
 	}
 
 	return bytes;

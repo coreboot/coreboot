@@ -164,4 +164,6 @@
 #define IIO_DFX_TSWCTL0		0x30c
 #define IIO_DFX_LCK_CTL		0x504
 
+pci_devfn_t soc_get_ubox_pmon_dev(void);
+
 #endif /* _SOC_PCI_DEVS_H_ */

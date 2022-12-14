@@ -16,6 +16,7 @@ ramstage-y += chip.c cpu.c soc_util.c ramstage.c soc_acpi.c xhci.c numa.c reset.
 ramstage-y += crashlog.c
 ramstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c
 ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += soc_smihandler_util.c
 CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/spr/include -I$(src)/soc/intel/xeon_sp/spr
 
 endif ## CONFIG_SOC_INTEL_SAPPHIRERAPIDS_SP

@@ -57,9 +57,23 @@ void smihandler_soc_at_finalize(void)
 {
 	/* SMM_FEATURE_CONTROL can only be written within SMM. */
 	printk(BIOS_DEBUG, "Lock SMM_FEATURE_CONTROL\n");
-	const pci_devfn_t dev = UBOX_DEV_PMON;
-	pci_or_config32(dev, SMM_FEATURE_CONTROL,
-			SMM_CODE_CHK_EN | SMM_FEATURE_CONTROL_LOCK);
+	pci_devfn_t pcie_offset = soc_get_ubox_pmon_dev();
+	if (!pcie_offset) {
+		printk(BIOS_ERR, "UBOX PMON is not found, cannot lock SMM_FEATURE_CONTROL!\n");
+		return;
+	}
+
+	u32 val;
+	val = pci_s_read_config32(pcie_offset, SMM_FEATURE_CONTROL);
+	val |= (SMM_CODE_CHK_EN | SMM_FEATURE_CONTROL_LOCK);
+	pci_s_write_config32(pcie_offset, SMM_FEATURE_CONTROL, val);
+}
+
+/*
+ * This is the generic entry for SOC SMIs
+ */
+void cpu_smi_handler(void)
+{
 
 }
 

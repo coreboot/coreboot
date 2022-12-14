@@ -4,6 +4,7 @@
 #define _SOC_PCI_DEVS_H_
 
 #include <device/pci_def.h>
+#include <device/pci_type.h>
 #include <types.h>
 
 #define _SA_DEVFN(slot) PCI_DEVFN(SA_DEV_SLOT_##slot, 0)
@@ -229,5 +230,7 @@
 #define CRASHLOG_CTL 0x1B8
 #define BIOS_CRASHLOG_CTL 0x158
 #define CRASHLOG_CTL_DIS BIT(2)
+
+pci_devfn_t soc_get_ubox_pmon_dev(void);
 
 #endif /* _SOC_PCI_DEVS_H_ */

@@ -312,8 +312,3 @@ void save_dimm_info(void)
 	mem_info->dimm_cnt = index; /* Number of DIMM slots found */
 	printk(BIOS_DEBUG, "%d Installed DIMMs found\n", dimm_num);
 }
-
-void fsp_check_for_error(void)
-{
-	check_fsp_error();
-}

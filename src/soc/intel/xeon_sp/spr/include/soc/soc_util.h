@@ -29,8 +29,4 @@ const EWL_PRIVATE_DATA *get_ewl_hob(void);
 uint32_t get_ubox_busno(uint32_t socket, uint8_t offset);
 uint32_t get_socket_ubox_busno(uint32_t socket);
 
-void check_fsp_error(void);
-
-void mainboard_fsp_error_handle(void);
-
 #endif /* _SOC_UTIL_H_ */

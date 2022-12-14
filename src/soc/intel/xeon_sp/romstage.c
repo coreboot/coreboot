@@ -17,6 +17,13 @@ void mainboard_romstage_entry(void)
 	printk(BIOS_DEBUG, "coreboot fsp_memory_init finished...\n");
 	mainboard_ewl_check();
 
+	if (CONFIG(ENABLE_FSP_ERROR_INFO)) {
+		if (fsp_display_error_info()) {
+			mainboard_fsp_error_handle();
+			die("ERROR: FSP reported an error(s) after running!");
+		}
+	}
+
 	unlock_pam_regions();
 
 	save_dimm_info();
@@ -33,3 +40,6 @@ __weak void mainboard_rtc_failed(void)
 }
 __weak void save_dimm_info(void) { }
 __weak void mainboard_ewl_check(void) { }
+
+/* mainboard can override this function for their own handling, such as writing a BMC SEL. */
+__weak void mainboard_fsp_error_handle(void) { }

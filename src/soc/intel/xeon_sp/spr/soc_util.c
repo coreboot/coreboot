@@ -153,20 +153,6 @@ uint32_t get_socket_ubox_busno(uint32_t socket)
 	return get_ubox_busno(socket, UNCORE_BUS_1);
 }
 
-/* mainboard can override this function for their own handling, such as write a BMC SEL. */
-void __weak mainboard_fsp_error_handle(void)
-{
-	die("ERROR: FSP reported an error(s) after running!");
-}
-
-void check_fsp_error(void)
-{
-	bool fsp_found_error = fsp_find_error_info();
-
-	if (fsp_found_error)
-		mainboard_fsp_error_handle();
-}
-
 void bios_done_msr(void *unused)
 {
 	msr_t msr = rdmsr(MSR_BIOS_DONE);

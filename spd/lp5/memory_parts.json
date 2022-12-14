@@ -181,7 +181,7 @@
             "attribs": {
                 "densityPerDieGb": 8,
                 "diesPerPackage": 8,
-                "bitWidthPerChannel": 16,
+                "bitWidthPerChannel": 8,
                 "ranksPerChannel": 2,
                 "speedMbps": 6400
             }

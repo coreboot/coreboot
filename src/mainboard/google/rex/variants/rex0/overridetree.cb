@@ -38,7 +38,7 @@ chip soc/intel/meteorlake
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Bluetooth
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port A0
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# DCI
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 port for WWAN
 
 	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC0)"
 	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
@@ -212,6 +212,13 @@ chip soc/intel/meteorlake
 						register "use_custom_pld" = "true"
 						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(1, 2))"
 						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 WWAN""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb3_port2 on
+							probe CELLULAR CELLULAR_USB
+						end
 					end
 				end
 			end

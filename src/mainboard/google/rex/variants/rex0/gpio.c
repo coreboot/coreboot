@@ -98,7 +98,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_C00, 0, DEEP),
 	/* GPP_C01 : [] ==> USI_RST_L */
 	PAD_CFG_GPO(GPP_C01, 0, DEEP),
-	/* GPP_C02 : GPP_C02_STRAP ==> Component NC */
+	/* GPP_C02 : SOC_TCHSCR_SPI_INT_STRAP ==> Component NC */
 	PAD_NC(GPP_C02, NONE),
 	/* GPP_C03 : [] ==> EN_WCAM_SENR_PWR */
 	PAD_CFG_GPO_LOCK(GPP_C03, 0, LOCK_CONFIG),
@@ -106,7 +106,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO_LOCK(GPP_C04, 0, LOCK_CONFIG),
 	/* GPP_C05 : [] ==> WWAN_PERST_L_STRAP */
 	PAD_CFG_GPO(GPP_C05, 1, PLTRST),
-	/* GPP_C06 : [] ==> USI_REPORT_EN */
+	/* GPP_C06 : [] ==> SOC_TCHSCR_RPT_EN */
 	/*
 	 * FIXME: Remove this code after resolving b/247029304.
 	 *
@@ -121,7 +121,7 @@ static const struct pad_config gpio_table[] = {
 	 * `Report EN enabled (ramstage) -> POWER enabled (ACPI) -> RESET deasserted (ACPI)`
 	 */
 	PAD_CFG_GPO(GPP_C06, 1, DEEP),
-	/* GPP_C07 : [] ==> USI_INT */
+	/* GPP_C07 : [] ==> SOC_TCHSCR_INT */
 	PAD_CFG_GPI_APIC(GPP_C07, NONE, PLTRST, LEVEL, NONE),
 	/* GPP_C08 : [] ==> SOCHOT_ODL */
 	PAD_CFG_NF(GPP_C08, NONE, DEEP, NF2),

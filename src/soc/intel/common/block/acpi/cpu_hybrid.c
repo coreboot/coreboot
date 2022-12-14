@@ -24,16 +24,22 @@ static bool is_perf_core(void)
 	return get_soc_cpu_type() == CPUID_CORE_TYPE_INTEL_CORE;
 }
 
+static struct device *get_cpu_bus_first_child(void)
+{
+	struct device *dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
+	assert(dev != NULL);
+	return (dev->link_list)->children;
+}
+
 static u32 get_cpu_index(void)
 {
 	u32 cpu_index = 0;
 	struct device *dev;
 	u32 my_apic_id = lapicid();
 
-	for (dev = dev_find_lapic(0); dev; dev = dev->next) {
+	for (dev = get_cpu_bus_first_child(); dev; dev = dev->sibling)
 		if (my_apic_id > dev->path.apic.apic_id)
 			cpu_index++;
-	}
 
 	return cpu_index;
 }

@@ -17,6 +17,9 @@ void mainboard_romstage_entry(void)
 	printk(BIOS_DEBUG, "coreboot fsp_memory_init finished...\n");
 	mainboard_ewl_check();
 
+	if (CONFIG(ENABLE_FSP_ERROR_INFO))
+		fsp_check_for_error();
+
 	unlock_pam_regions();
 
 	save_dimm_info();

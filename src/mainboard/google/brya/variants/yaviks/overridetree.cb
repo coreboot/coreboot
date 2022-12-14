@@ -1,3 +1,13 @@
+fw_config
+	field DB_USB 0 1
+		option DB_NONE			0
+		option DB_1C_1A			1
+        end
+	field WIFI_SAR_ID 2 3
+		option SAR_ID_0			0
+        end
+end
+
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 

@@ -292,7 +292,7 @@ static void commit_fixed_mtrrs(void)
 	int j;
 	int msr_num;
 	int type_index;
-	unsigned int cpu_idx = lapicid();
+	const unsigned int lapic_id = lapicid();
 	/* 8 ranges per msr. */
 	msr_t fixed_msrs[NUM_FIXED_MTRRS];
 	unsigned long msr_index[NUM_FIXED_MTRRS];
@@ -337,7 +337,7 @@ static void commit_fixed_mtrrs(void)
 
 	for (i = 0; i < ARRAY_SIZE(fixed_msrs); i++)
 		printk(BIOS_DEBUG, "apic_id 0x%x: MTRR: Fixed MSR 0x%lx 0x%08x%08x\n",
-		       cpu_idx, msr_index[i], fixed_msrs[i].hi, fixed_msrs[i].lo);
+		       lapic_id, msr_index[i], fixed_msrs[i].hi, fixed_msrs[i].lo);
 
 	disable_cache();
 	for (i = 0; i < ARRAY_SIZE(fixed_msrs); i++)

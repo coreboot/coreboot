@@ -857,7 +857,12 @@ void dw_i2c_acpi_fill_ssdt(const struct device *dev)
 static int dw_i2c_dev_transfer(struct device *dev,
 				const struct i2c_msg *msg, size_t count)
 {
-	return dw_i2c_transfer(dw_i2c_soc_dev_to_bus(dev), msg, count);
+	int bus = dw_i2c_soc_dev_to_bus(dev);
+	if (bus < 0) {
+		printk(BIOS_ERR, "Invalid I2C bus number.\n");
+		return -1;
+	}
+	return dw_i2c_transfer(bus, msg, count);
 }
 
 const struct i2c_bus_operations dw_i2c_bus_ops = {

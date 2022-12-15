@@ -49,8 +49,10 @@ static const char *i2c_acpi_name(const struct device *dev)
 	size_t num_ctrlrs;
 	const struct soc_i2c_ctrlr_info *ctrlr = soc_get_i2c_ctrlr_info(&num_ctrlrs);
 
-	if (!(uintptr_t)dev->path.mmio.addr)
-		die("NULL MMIO address at %s\n", __func__);
+	if (!(uintptr_t)dev->path.mmio.addr) {
+		printk(BIOS_ERR, "NULL MMIO address at %s\n", __func__);
+		return NULL;
+	}
 
 	for (i = 0; i < num_ctrlrs; i++) {
 		if ((uintptr_t)dev->path.mmio.addr == ctrlr[i].bar)
@@ -66,8 +68,10 @@ int dw_i2c_soc_dev_to_bus(const struct device *dev)
 	size_t num_ctrlrs;
 	const struct soc_i2c_ctrlr_info *ctrlr = soc_get_i2c_ctrlr_info(&num_ctrlrs);
 
-	if (!(uintptr_t)dev->path.mmio.addr)
-		die("NULL MMIO address at %s\n", __func__);
+	if (!(uintptr_t)dev->path.mmio.addr) {
+		printk(BIOS_ERR, "NULL MMIO address at %s\n", __func__);
+		return -1;
+	}
 
 	for (i = 0; i < num_ctrlrs; i++) {
 		if ((uintptr_t)dev->path.mmio.addr == ctrlr[i].bar)

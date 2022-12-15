@@ -86,6 +86,9 @@ MENDOCINO_FW_A_POSITION=$(call int-add, \
 MENDOCINO_FW_B_POSITION=$(call int-add, \
 	$(shell awk '$$2 == "FMAP_SECTION_FW_MAIN_B_START" {print $$3}' $(obj)/fmap_config.h) \
 	$(AMD_FW_AB_POSITION))
+
+MENDOCINO_FW_BODY_OFFSET := 0x100
+
 #
 # PSP Directory Table items
 #
@@ -286,6 +289,7 @@ $(obj)/amdfw_a.rom: $(obj)/amdfw.rom
 		$(OPT_SIGNED_AMDFW_A_POSITION) \
 		$(OPT_SIGNED_AMDFW_A_FILE) \
 		--location $(shell printf "%#x" $(MENDOCINO_FW_A_POSITION)) \
+		--body-location $(shell printf "%#x" $$(($(MENDOCINO_FW_A_POSITION) + $(MENDOCINO_FW_BODY_OFFSET)))) \
 		--anywhere \
 		--output $@
 
@@ -300,22 +304,35 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		$(OPT_SIGNED_AMDFW_B_POSITION) \
 		$(OPT_SIGNED_AMDFW_B_FILE) \
 		--location $(shell printf "%#x" $(MENDOCINO_FW_B_POSITION)) \
+		--body-location $(shell printf "%#x" $$(($(MENDOCINO_FW_B_POSITION) + $(MENDOCINO_FW_BODY_OFFSET)))) \
 		--anywhere \
 		--output $@
 
+$(obj)/amdfw_a.rom.efs: $(obj)/amdfw_a.rom
+$(obj)/amdfw_b.rom.efs: $(obj)/amdfw_b.rom
 
 ifeq ($(CONFIG_VBOOT_SLOTS_RW_A)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
 cbfs-files-y += apu/amdfw_a
-apu/amdfw_a-file := $(obj)/amdfw_a.rom
+apu/amdfw_a-file := $(obj)/amdfw_a.rom.efs
 apu/amdfw_a-position := $(AMD_FW_AB_POSITION)
 apu/amdfw_a-type := raw
+
+cbfs-files-y += apu/amdfw_a_body
+apu/amdfw_a_body-file := $(obj)/amdfw_a.rom
+apu/amdfw_a_body-position := $(call int-add, $(AMD_FW_AB_POSITION) $(MENDOCINO_FW_BODY_OFFSET))
+apu/amdfw_a_body-type := raw
 endif
 
 ifeq ($(CONFIG_VBOOT_SLOTS_RW_AB)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
 cbfs-files-y += apu/amdfw_b
-apu/amdfw_b-file := $(obj)/amdfw_b.rom
+apu/amdfw_b-file := $(obj)/amdfw_b.rom.efs
 apu/amdfw_b-position := $(AMD_FW_AB_POSITION)
 apu/amdfw_b-type := raw
+
+cbfs-files-y += apu/amdfw_b_body
+apu/amdfw_b_body-file := $(obj)/amdfw_b.rom
+apu/amdfw_b_body-position := $(call int-add, $(AMD_FW_AB_POSITION) $(MENDOCINO_FW_BODY_OFFSET))
+apu/amdfw_b_body-type := raw
 endif
 
 ifeq ($(CONFIG_SEPARATE_SIGNED_PSPFW)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)

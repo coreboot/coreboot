@@ -527,7 +527,7 @@ if VBOOT_SLOTS_RW_A && VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 config RWA_REGION_ONLY
 	string
-	default "apu/amdfw_a"
+	default "apu/amdfw_a apu/amdfw_a_body"
 	help
 	  Add a space-delimited list of filenames that should only be in the
 	  RW-A section.
@@ -538,7 +538,7 @@ if VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 config RWB_REGION_ONLY
 	string
-	default "apu/amdfw_b"
+	default "apu/amdfw_b apu/amdfw_b_body"
 	help
 	  Add a space-delimited list of filenames that should only be in the
 	  RW-B section.

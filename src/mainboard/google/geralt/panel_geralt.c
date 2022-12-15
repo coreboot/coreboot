@@ -12,7 +12,7 @@
 static void configure_mipi_pwm_backlight(void)
 {
 	gpio_output(GPIO_AP_DISP_BKLTEN, 0);
-	gpio_output(GPIO_MIPI_PANEL_BL_PWM, 0);
+	gpio_output(GPIO_MIPI_BL_PWM_1V8, 0);
 }
 
 static void configure_edp_aux_backlight(void)
@@ -62,7 +62,7 @@ void fill_lp_backlight_gpios(struct lb_gpios *gpios)
 		return;
 
 	struct lb_gpio mipi_pwm_gpios[] = {
-		{GPIO_MIPI_PANEL_BL_PWM.id, ACTIVE_HIGH, -1, "PWM control"},
+		{GPIO_MIPI_BL_PWM_1V8.id, ACTIVE_HIGH, -1, "PWM control"},
 	};
 
 	struct lb_gpio edp_pwm_gpios[] = {

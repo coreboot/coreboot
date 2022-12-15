@@ -18,7 +18,7 @@
 #define GPIO_EDP_HPD_1V8		GPIO(GPIO17)
 #define GPIO_EN_PP3300_EDP_DISP_X	GPIO(DSI1_LCM_RST)
 
-#define GPIO_MIPI_PANEL_BL_PWM		GPIO(DISP_PWM0)
+#define GPIO_MIPI_BL_PWM_1V8		GPIO(DISP_PWM0)
 
 void setup_chromeos_gpios(void);
 

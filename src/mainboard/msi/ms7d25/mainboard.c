@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <device/device.h>
+#include <identity.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <smbios.h>
@@ -49,7 +50,7 @@ const char *smbios_mainboard_product_name(void)
 			return "PRO Z690-A (MS-7D25)";
 	}
 
-	return CONFIG_MAINBOARD_PART_NUMBER;
+	return mainboard_part_number;
 }
 
 /* Only baseboard serial number is populated */

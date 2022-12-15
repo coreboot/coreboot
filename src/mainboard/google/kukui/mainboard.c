@@ -11,6 +11,7 @@
 #include <edid.h>
 #include <framebuffer_info.h>
 #include <gpio.h>
+#include <identity.h>
 #include <soc/bl31.h>
 #include <soc/ddp.h>
 #include <soc/dsi.h>
@@ -65,7 +66,7 @@ static void configure_ec(void)
 struct panel_description __weak *get_panel_description(int panel_id)
 {
 	printk(BIOS_ERR, "%s: ERROR: No panels defined for board: %s.\n",
-	       __func__, CONFIG_MAINBOARD_PART_NUMBER);
+	       __func__, mainboard_part_number);
 	return NULL;
 }
 

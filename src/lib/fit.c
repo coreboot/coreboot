@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <ctype.h>
 #include <endian.h>
+#include <identity.h>
 #include <bootmem.h>
 #include <string.h>
 #include <program_loading.h>
@@ -42,30 +43,28 @@ static void fit_add_default_compat_strings(void)
 	if ((board_id() != UNDEFINED_STRAPPING_ID) &&
 	    (sku_id() != UNDEFINED_STRAPPING_ID)) {
 		snprintf(compat_string, sizeof(compat_string),
-			 "%s,%s-rev%u-sku%u", CONFIG_MAINBOARD_VENDOR,
-			 CONFIG_MAINBOARD_PART_NUMBER, board_id(), sku_id());
+			 "%s,%s-rev%u-sku%u", mainboard_vendor, mainboard_part_number,
+			 board_id(), sku_id());
 
 		fit_add_compat_string(compat_string);
 	}
 
 	if (board_id() != UNDEFINED_STRAPPING_ID) {
 		snprintf(compat_string, sizeof(compat_string), "%s,%s-rev%u",
-			 CONFIG_MAINBOARD_VENDOR, CONFIG_MAINBOARD_PART_NUMBER,
-			 board_id());
+			 mainboard_vendor, mainboard_part_number, board_id());
 
 		fit_add_compat_string(compat_string);
 	}
 
 	if (sku_id() != UNDEFINED_STRAPPING_ID) {
 		snprintf(compat_string, sizeof(compat_string), "%s,%s-sku%u",
-			 CONFIG_MAINBOARD_VENDOR, CONFIG_MAINBOARD_PART_NUMBER,
-			 sku_id());
+			 mainboard_vendor, mainboard_part_number, sku_id());
 
 		fit_add_compat_string(compat_string);
 	}
 
 	snprintf(compat_string, sizeof(compat_string), "%s,%s",
-		 CONFIG_MAINBOARD_VENDOR, CONFIG_MAINBOARD_PART_NUMBER);
+		 mainboard_vendor, mainboard_part_number);
 
 	fit_add_compat_string(compat_string);
 }

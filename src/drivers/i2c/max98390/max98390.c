@@ -6,6 +6,7 @@
 #include <device/i2c.h>
 #include <device/device.h>
 #include <device/path.h>
+#include <identity.h>
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "chip.h"
@@ -68,8 +69,8 @@ static void max98390_fill_ssdt(const struct device *dev)
 				dp = acpi_dp_new_table("_DSD");
 
 			size_t chars = snprintf(dsm_name, sizeof(dsm_name), "%s_%s_%s.bin",
-					config->dsm_param_file_name, CONFIG_MAINBOARD_VENDOR,
-					CONFIG_MAINBOARD_PART_NUMBER);
+					config->dsm_param_file_name, mainboard_vendor,
+					mainboard_part_number);
 
 			if (chars >= sizeof(dsm_name))
 				printk(BIOS_ERR, "String too long in %s\n", __func__);

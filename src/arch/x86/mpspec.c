@@ -9,6 +9,7 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <device/pci_ids.h>
+#include <identity.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -33,16 +34,16 @@ void mptable_init(struct mp_config_table *mc)
 	mc->mpe_checksum = 0;
 	mc->reserved = 0;
 
-	strncpy(mc->mpc_oem, CONFIG_MAINBOARD_VENDOR, 8);
-	strncpy(mc->mpc_productid, CONFIG_MAINBOARD_PART_NUMBER, 12);
+	strncpy(mc->mpc_oem, mainboard_vendor, 8);
+	strncpy(mc->mpc_productid, mainboard_part_number, 12);
 
 	/*
 	 * The oem/productid fields are exactly 8/12 bytes long. If the resp.
 	 * entry is shorter, the remaining bytes are filled with spaces.
 	 */
-	for (i = MIN(strlen(CONFIG_MAINBOARD_VENDOR), 8); i < 8; i++)
+	for (i = MIN(strlen(mainboard_vendor), 8); i < 8; i++)
 		mc->mpc_oem[i] = ' ';
-	for (i = MIN(strlen(CONFIG_MAINBOARD_PART_NUMBER), 12); i < 12; i++)
+	for (i = MIN(strlen(mainboard_part_number), 12); i < 12; i++)
 		mc->mpc_productid[i] = ' ';
 }
 

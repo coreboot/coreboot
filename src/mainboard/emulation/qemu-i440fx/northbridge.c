@@ -1,14 +1,15 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/io.h>
+#include <arch/ioapic.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/mp.h>
-#include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <arch/ioapic.h>
 #include <device/device.h>
+#include <identity.h>
 #include <stdlib.h>
 #include <smbios.h>
 #include <types.h>
@@ -191,7 +192,7 @@ static int qemu_get_smbios_data17(int handle, int parent_handle, unsigned long *
 	t->type_detail = MEMORY_TYPE_DETAIL_SYNCHRONOUS;
 	t->speed = 200;
 	t->clock_speed = 200;
-	t->manufacturer = smbios_add_string(t->eos, CONFIG_MAINBOARD_VENDOR);
+	t->manufacturer = smbios_add_string(t->eos, mainboard_vendor);
 
 	const int len = smbios_full_table_len(&t->header, t->eos);
 	*current += len;

@@ -7,6 +7,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <gpio.h>
+#include <identity.h>
 #include <southbridge/amd/pi/hudson/hudson.h>
 #include <southbridge/amd/pi/hudson/pci_devs.h>
 #include <southbridge/amd/pi/hudson/amd_pci_int_defs.h>
@@ -226,7 +227,7 @@ static int mainboard_smbios_data(struct device *dev, int *handle,
 static void mainboard_enable(struct device *dev)
 {
 	/* Maintain this text unchanged for manufacture process. */
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
+	printk(BIOS_INFO, "Mainboard %s Enable.\n", mainboard_part_number);
 
 	config_gpio_mux();
 

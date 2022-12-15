@@ -447,7 +447,7 @@ int get_valid_prmrr_size(void)
 	if (!check_prm_features_enabled())
 		return 0;
 
-	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
+	if (!CONFIG_SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE)
 		return 0;
 
 	msr = rdmsr(MSR_PRMRR_VALID_CONFIG);
@@ -462,7 +462,7 @@ int get_valid_prmrr_size(void)
 	for (i = 8; i >= 0; i--) {
 		valid_size = msr.lo & (1 << i);
 
-		if (valid_size && valid_size <= CONFIG_SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE)
+		if (valid_size && valid_size <= CONFIG_SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE)
 			break;
 		else if (i == 0)
 			valid_size = 0;
@@ -470,7 +470,7 @@ int get_valid_prmrr_size(void)
 
 	if (!valid_size) {
 		printk(BIOS_WARNING, "Unsupported PRMRR size of %i MiB, check your config!\n",
-			CONFIG_SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE);
+			CONFIG_SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE);
 		return 0;
 	}
 

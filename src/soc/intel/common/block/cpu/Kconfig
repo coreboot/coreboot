@@ -171,3 +171,65 @@ config INTEL_KEYLOCKER
 	 mechanism to encrypt and decrypt data with an AES key without having access
 	 to the raw key value by converting AES keys into "handles". The specification
 	 of Key Locker can be found via document #343965 on Intel's site.
+
+config SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE
+	int
+	depends on INTEL_KEYLOCKER || SOC_INTEL_COMMON_BLOCK_SGX_ENABLE
+	default 256 if SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_256MB || SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_MAX
+	default 128 if SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_128MB
+	default  64 if SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_64MB
+	default  32 if SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_32MB
+	default  16 if SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_16MB
+	default  8 if SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_8MB
+	default  4 if SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_4MB
+	default  2 if SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_2MB
+	default  0 if SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_0MB
+	default  0
+
+choice
+	prompt "PRMRR size"
+	depends on INTEL_KEYLOCKER || SOC_INTEL_COMMON_BLOCK_SGX
+	default SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_MAX if SOC_INTEL_COMMON_BLOCK_SGX_ENABLE
+	default SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_2MB if !SOC_INTEL_COMMON_BLOCK_SGX_ENABLE && INTEL_KEYLOCKER
+	default SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_0MB if !SOC_INTEL_COMMON_BLOCK_SGX_ENABLE && !INTEL_KEYLOCKER
+	help
+	 PRMRR (Protected Memory Range) is the space in RAM that is used to provide a
+	 protected memory area (e.g. for the Intel SGX Secure Enclaves and Intel
+	 Key Locker). The memory region is accessible only by the processor itself to
+	 protect the data from unauthorized access.
+
+	 This option allows to select PRMRR size for the intended feature. Depending on
+	 the SoC a lower, compatible value may be chosen at runtime as not all values
+	 are supported on all families.
+
+config SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_MAX
+	bool "Maximum"
+
+config SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_256MB
+	bool "256 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_128MB
+	bool "128 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_64MB
+	bool "64 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_32MB
+	bool "32 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_16MB
+	bool "16 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_8MB
+	bool "8 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_4MB
+	bool "4 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_2MB
+	bool "2 MiB"
+
+config SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE_0MB
+	bool "0 MiB"
+
+endchoice

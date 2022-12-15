@@ -21,45 +21,7 @@ config SOC_INTEL_COMMON_BLOCK_SGX_ENABLE
 	  used by applications to set aside private regions (so-called Secure Enclaves) of
 	  code and data.
 
-	  SGX will only be enabled when supported by the CPU!
-
-config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE
-	int
-	depends on SOC_INTEL_COMMON_BLOCK_SGX_ENABLE
-	default 256 if SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_MAX
-	default 256 if SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_256MB
-	default 128 if SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_128MB
-	default  64 if SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_64MB
-	default  32 if SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_32MB
-
-choice
-	prompt "PRMRR size"
-	depends on SOC_INTEL_COMMON_BLOCK_SGX_ENABLE
-	default SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_MAX if SOC_INTEL_COMMON_BLOCK_SGX_ENABLE
-	help
-	  PRMRR (Protected Memory Range) is the space in RAM that is used to provide a protected
-	  memory area (e.g. for the Intel SGX Secure Enclaves). The memory region is accessible
-	  only by the processor itself to protect the data from unauthorized access.
-
-	  This option selects the maximum size that gets reserved. Depending on the SoC a lower,
-	  compatible value may be chosen at runtime as not all values are supported on all
-	  families.
-
-config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_MAX
-	bool "Maximum"
-
-config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_256MB
-	bool "256 MiB"
-
-config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_128MB
-	bool "128 MiB"
-
-config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_64MB
-	bool "64 MiB"
-
-config SOC_INTEL_COMMON_BLOCK_SGX_PRMRR_SIZE_32MB
-	bool "32 MiB"
-
-endchoice
+	  SGX will only be enabled when supported by the CPU! Configure PRMRR size using
+	  SOC_INTEL_COMMON_BLOCK_PRMRR_SIZE config option.
 
 endif

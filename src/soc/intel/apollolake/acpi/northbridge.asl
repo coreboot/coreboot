@@ -11,7 +11,7 @@ Device (MCHC)
 	OperationRegion (MCHP, PCI_Config, 0x00, 0x100)
 	Field (MCHP, DWordAcc, NoLock, Preserve)
 	{
-		Offset (0x60),	/* PCIEXBAR (0:0:0:60)
+		Offset (0x60),	/* PCIEXBAR (0:0:0:60) */
 		PXEN,	1,	/* Enable */
 		PXSZ,	2,	/* PCI Express Size */
 		    ,	25,

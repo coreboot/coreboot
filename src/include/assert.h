@@ -40,7 +40,18 @@ void mock_assert(const int result, const char *const expression,
 #define MOCK_ASSERT(result, expression)
 #endif
 
-/* GCC and CAR versions */
+/*
+ * assert() should be used to test stuff that the programmer *knows* to be true.
+ * It should not be used to test something that may actually change at runtime
+ * (e.g. anything involving hardware accesses). For example, testing whether
+ * function parameters match the documented requirements is a good use of
+ * assert() (where it is still the responsibility of the caller to ensure it
+ * passes valid values, and the callee is just double-checking).
+ *
+ * Depending on CONFIG(FATAL_ASSERTS), assert() will either halt execution or
+ * just print an error message and continue. For more guidelines on error
+ * handling, see Documentation/contributing/coding_style.md.
+ */
 #define ASSERT(x) {							\
 	if (!__build_time_assert(x) && !(x)) {				\
 		printk(BIOS_EMERG,					\

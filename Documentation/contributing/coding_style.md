@@ -818,9 +818,9 @@ Function return values and names
 
 Functions can return values of many different kinds, and one of the most
 common is a value indicating whether the function succeeded or failed.
-Such a value can be represented as an error-code integer (-Exxx =
-failure, 0 = success) or a "succeeded" boolean (0 = failure, non-zero
-= success).
+Such a value can be represented as an error-code integer (`CB_ERR_xxx`
+(negative number) = failure, `CB_SUCCESS` (0) = success) or a "succeeded"
+boolean (0 = failure, non-zero = success).
 
 Mixing up these two sorts of representations is a fertile source of
 difficult-to-find bugs. If the C language included a strong distinction
@@ -832,21 +832,84 @@ If the name of a function is an action or an imperative command,
 the function should return an error-code integer.  If the name
 is a predicate, the function should return a "succeeded" boolean.
 
-For example, "add work" is a command, and the add_work() function
-returns 0 for success or -EBUSY for failure. In the same way, "PCI
-device present" is a predicate, and the pci_dev_present() function
+For example, "add work" is a command, and the `add_work()` function
+returns 0 for success or `CB_ERR` for failure. In the same way, "PCI
+device present" is a predicate, and the `pci_dev_present()` function
 returns 1 if it succeeds in finding a matching device or 0 if it
 doesn't.
-
-All EXPORTed functions must respect this convention, and so should all
-public functions. Private (static) functions need not, but it is
-recommended that they do.
 
 Functions whose return value is the actual result of a computation,
 rather than an indication of whether the computation succeeded, are not
 subject to this rule. Generally they indicate failure by returning some
 out-of-range result. Typical examples would be functions that return
-pointers; they use NULL or the ERR_PTR mechanism to report failure.
+pointers; they use NULL to report failure.
+
+Error handling, assertions and die()
+-----------------------------
+
+As firmware, coreboot has no means to let the user interactively fix things when
+something goes wrong. We either succeed to boot or the device becomes a brick
+that must be recovered through complicated external means (e.g. a flash
+programmer). Therefore, coreboot code should strive to continue booting
+wherever possible.
+
+In most cases, errors should be handled by logging a message of at least
+`BIOS_ERR` level, returning out of the function stack for the failed feature,
+and then continuing execution. For example, if a function reading the EDID of an
+eDP display panel encounters an I2C error, it should print a "cannot read EDID"
+message and return an error code. The calling display initialization function
+knows that without the EDID there is no way to initialize the display correctly,
+so it will also immediately return with an error code without running its
+remaining code that would initialize the SoC's display controller. Exeuction
+returns further up the function stack to the mainboard initialization code
+which continues booting despite the failed display initialization, since
+display functionality is non-essential to the system. (Code is encouraged but
+not required to use `enum cb_err` error codes to return these errors.)
+
+coreboot also has the `die()` function that completely halts execution. `die()`
+should only be used as a last resort, since it results in the worst user
+experience (bricked system). It is generally preferrable to continue executing
+even after a problem was encountered that might be fatal (e.g. SPI clock
+couldn't be configured correctly), because a slight chance of successfully
+booting is still better than not booting at all. The only cases where `die()`
+should be used are:
+
+1. There is no (simple) way to continue executing. For example, when loading the
+   next stage from SPI flash fails, we don't have any more code to execute. When
+   memory initialization fails, we have no space to load the ramstage into.
+
+2. Continuing execution would pose a security risk. All security features in
+   coreboot are optional, but when they are configured in the user must be able
+   to rely on them. For example, if CBFS verification is enabled and the file
+   hash when loading the romstage doesn't match what it should be, it is better
+   to stop execution than to jump to potentially malicious code.
+
+In addition to normal error logging with `printk()`, coreboot also offers the
+`assert()` macro. `assert()` should be used judiciously to confirm that
+conditions are true which the programmer _knows_ to be true, in order to catch
+programming errors and incorrect assumptions. It is therefore different from a
+normal `if ()`-check that is used to actually test for things which may turn
+out to be true or false based on external conditions. For example, anything
+that involves communicating with hardware, such as whether an attempt to read
+from SPI flash succeeded, should _not_ use `assert()` and should instead just
+be checked with a normal `if ()` and subsequent manual error handling. Hardware
+can always fail for various reasons and the programmer can never 100% assume in
+advance that it will work as expected. On the other hand, if a function takes a
+pointer parameter `ctx` and the contract for that function (as documented in a
+comment above its declaration) specifies that this parameter should point to a
+valid context structure, then adding an `assert(ctx)` line to that function may
+be a good idea. The programmer knows that this function should never be called
+with a NULL pointer (because that's how it is specified), and if it was actually
+called with a NULL pointer that would indicate a programming error on account of
+the caller.
+
+`assert()` can be configured to either just print an error message and continue
+execution (default), or call `die()` (when `CONFIG_FATAL_ASSERTS` is set).
+Developers are encouraged to always test their code with this option enabled to
+make assertion errors (and therefore bugs) more easy to notice. Since assertions
+thus do not always stop execution, they should never be relied upon to be the
+sole guard against conditions that really _need_ to stop execution (e.g.
+security guarantees should never be enforced only by `assert()`).
 
 Headers and includes
 ---------------

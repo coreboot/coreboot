@@ -889,10 +889,11 @@ config SMBIOS_PROVIDED_BY_MOBO
 	bool
 	default n
 
+if GENERATE_SMBIOS_TABLES
+
 config MAINBOARD_SERIAL_NUMBER
 	prompt "SMBIOS Serial Number" if !SMBIOS_PROVIDED_BY_MOBO
 	string
-	depends on GENERATE_SMBIOS_TABLES
 	default "123456789"
 	help
 	  The Serial Number to store in SMBIOS structures.
@@ -900,7 +901,6 @@ config MAINBOARD_SERIAL_NUMBER
 config MAINBOARD_VERSION
 	prompt "SMBIOS Version Number" if !SMBIOS_PROVIDED_BY_MOBO
 	string
-	depends on GENERATE_SMBIOS_TABLES
 	default "1.0"
 	help
 	  The Version Number to store in SMBIOS structures.
@@ -908,7 +908,6 @@ config MAINBOARD_VERSION
 config MAINBOARD_SMBIOS_MANUFACTURER
 	prompt "SMBIOS Manufacturer" if !SMBIOS_PROVIDED_BY_MOBO
 	string
-	depends on GENERATE_SMBIOS_TABLES
 	default MAINBOARD_VENDOR
 	help
 	  Override the default Manufacturer stored in SMBIOS structures.
@@ -916,7 +915,6 @@ config MAINBOARD_SMBIOS_MANUFACTURER
 config MAINBOARD_SMBIOS_PRODUCT_NAME
 	prompt "SMBIOS Product name" if !SMBIOS_PROVIDED_BY_MOBO
 	string
-	depends on GENERATE_SMBIOS_TABLES
 	default MAINBOARD_PART_NUMBER
 	help
 	  Override the default Product name stored in SMBIOS structures.
@@ -924,12 +922,14 @@ config MAINBOARD_SMBIOS_PRODUCT_NAME
 config VPD_SMBIOS_VERSION
 	bool "Populates SMBIOS type 0 version from the VPD_RO variable 'firmware_version'"
 	default n
-	depends on VPD && GENERATE_SMBIOS_TABLES
+	depends on VPD
 	help
 	  Selecting this option will read firmware_version from
 	  VPD_RO and override SMBIOS type 0 version. One special
 	  scenario of using this feature is to assign a BIOS version
 	  to a coreboot image without the need to rebuild from source.
+
+endif
 
 endmenu
 

@@ -862,7 +862,7 @@ static int dw_i2c_dev_transfer(struct device *dev,
 		printk(BIOS_ERR, "Invalid I2C bus number.\n");
 		return -1;
 	}
-	return dw_i2c_transfer(bus, msg, count);
+	return dw_i2c_transfer(bus, msg, count) == CB_SUCCESS ? 0 : -1;
 }
 
 const struct i2c_bus_operations dw_i2c_bus_ops = {

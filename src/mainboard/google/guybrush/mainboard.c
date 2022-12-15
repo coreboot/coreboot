@@ -179,8 +179,6 @@ static void mainboard_fill_ssdt(const struct device *dev)
 
 static void mainboard_enable(struct device *dev)
 {
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
 	dev->ops->acpi_fill_ssdt = mainboard_fill_ssdt;
 
 	/* TODO: b/184678786 - Move into espi_config */

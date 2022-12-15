@@ -89,8 +89,6 @@ static void mainboard_init(void *chip_info)
 
 static void mainboard_enable(struct device *dev)
 {
-	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
-
 	/* TODO: b/184678786 - Move into espi_config */
 	/* Unmask eSPI IRQ 1 (Keyboard) */
 	pm_write32(PM_ESPI_INTR_CTRL, PM_ESPI_DEV_INTR_MASK & ~(BIT(1)));

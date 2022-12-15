@@ -36,8 +36,12 @@ elif [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
 	TIMESOURCE=git
 	DATE="$(get_git_head_data %ct)"
 	VERSION="$(git describe)"
-	MAJOR_VER="$(echo "${VERSION}" | sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\1/')"
-	MINOR_VER="$(echo "${VERSION}" | sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\2/')"
+	# Only use the `git describe` output if the tag is in the expected <major>.<minor>
+	# format, e.g. 4.18. Forks of coreboot may have other tags in different formats.
+	if echo "${VERSION}" | grep -q "^[0-9]\.[0-9][0-9]*"; then
+		MAJOR_VER="$(echo "${VERSION}" | sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\1/')"
+		MINOR_VER="$(echo "${VERSION}" | sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\2/')"
+	fi
 else
 	GITREV=Unknown
 	TIMESOURCE="date"

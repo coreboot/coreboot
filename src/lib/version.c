@@ -3,13 +3,6 @@
 #include <version.h>
 #include <build.h>
 
-#ifndef CONFIG_MAINBOARD_VENDOR
-#error CONFIG_MAINBOARD_VENDOR not defined
-#endif
-#ifndef CONFIG_MAINBOARD_PART_NUMBER
-#error CONFIG_MAINBOARD_PART_NUMBER not defined
-#endif
-
 #ifndef COREBOOT_VERSION
 #error COREBOOT_VERSION not defined
 #endif
@@ -24,9 +17,6 @@
 #ifndef COREBOOT_EXTRA_VERSION
 #define COREBOOT_EXTRA_VERSION ""
 #endif
-
-const char mainboard_vendor[] = CONFIG_MAINBOARD_VENDOR;
-const char mainboard_part_number[] = CONFIG_MAINBOARD_PART_NUMBER;
 
 const char coreboot_version[] = COREBOOT_VERSION;
 const char coreboot_extra_version[] = COREBOOT_EXTRA_VERSION;

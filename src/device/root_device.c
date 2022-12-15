@@ -5,8 +5,6 @@
 #include <device/pci.h>
 #include <reset.h>
 
-const char mainboard_name[] = CONFIG_MAINBOARD_VENDOR " " CONFIG_MAINBOARD_PART_NUMBER;
-
 void enable_static_device(struct device *dev)
 {
 	if (dev->chip_ops && dev->chip_ops->enable_dev)

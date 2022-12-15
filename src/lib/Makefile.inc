@@ -229,12 +229,8 @@ ifeq ($(CONFIG_DEBUG_SMI),y)
 smm-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 endif
 
-bootblock-y += version.c
-romstage-y += version.c
-ramstage-y += version.c
-smm-y += version.c
-verstage-y += version.c
-postcar-y += version.c
+all-y += identity.c version.c
+smm-y += identity.c version.c
 
 $(call src-to-obj,bootblock,$(dir)/version.c) : $(obj)/build.h
 $(call src-to-obj,romstage,$(dir)/version.c) : $(obj)/build.h

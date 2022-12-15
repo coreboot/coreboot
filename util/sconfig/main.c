@@ -1965,6 +1965,7 @@ static void generate_outputc(FILE *f, const char *static_header)
 	fprintf(f, "#include <device/device.h>\n");
 	fprintf(f, "#include <device/pci.h>\n");
 	fprintf(f, "#include <fw_config.h>\n");
+	fprintf(f, "#include <identity.h>\n");
 	fprintf(f, "#include <%s>\n", static_header);
 	emit_chip_headers(f, chip_header.next);
 	emit_identifiers(f, "struct device_operations", device_operations);

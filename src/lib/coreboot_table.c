@@ -4,12 +4,12 @@
 #include <arch/cbconfig.h>
 #include <console/console.h>
 #include <console/uart.h>
+#include <identity.h>
 #include <ip_checksum.h>
 #include <boot/coreboot_tables.h>
 #include <boot/tables.h>
 #include <boot_device.h>
 #include <string.h>
-#include <version.h>
 #include <boardid.h>
 #include <device/device.h>
 #include <drivers/tpm/tpm_ppi.h>
@@ -23,6 +23,7 @@
 #include <spi_flash.h>
 #include <smmstore.h>
 #include <types.h>
+#include <version.h>
 
 #if CONFIG(USE_OPTION_TABLE)
 #include <option_table.h>

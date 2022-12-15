@@ -174,8 +174,6 @@ extern DEVTREE_CONST struct device * DEVTREE_CONST all_devices;
 extern struct resource	*free_resources;
 extern struct bus	*free_links;
 
-extern const char mainboard_name[];
-
 /* Generic device interface functions */
 struct device *alloc_dev(struct bus *parent, struct device_path *path);
 void dev_initialize_chips(void);

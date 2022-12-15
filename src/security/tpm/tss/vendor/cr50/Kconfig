@@ -40,4 +40,11 @@ config GOOGLE_TPM_IRQ_TIMEOUT_MS
 	  using Cr50 in order to support legacy pre-ready-IRQ cr50 factory images. Default to
 	  750ms otherwise.
 
+config CR50_RESET_CLEAR_EC_AP_IDLE_FLAG
+	def_bool n
+	help
+	  Select this if the variant is a Chromebox/base. This allows AP to direct EC
+	  to clear AP_IDLE flag after AP shutdown before triggering CR50 reset and
+	  shutting down AP so that AP can boot up after CR50 reset.
+
 endif

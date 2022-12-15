@@ -5393,12 +5393,14 @@ enum ec_reboot_cmd {
 	EC_REBOOT_HIBERNATE = 6,     /* Hibernate EC */
 	EC_REBOOT_HIBERNATE_CLEAR_AP_OFF = 7, /* and clears AP_IDLE flag */
 	EC_REBOOT_COLD_AP_OFF = 8,   /* Cold-reboot and don't boot AP */
+	EC_REBOOT_NO_OP = 9,         /* Do nothing but apply the flags. */
 };
 
 /* Flags for ec_params_reboot_ec.reboot_flags */
 #define EC_REBOOT_FLAG_RESERVED0      BIT(0)  /* Was recovery request */
 #define EC_REBOOT_FLAG_ON_AP_SHUTDOWN BIT(1)  /* Reboot after AP shutdown */
 #define EC_REBOOT_FLAG_SWITCH_RW_SLOT BIT(2)  /* Switch RW slot */
+#define EC_REBOOT_FLAG_CLEAR_AP_IDLE  BIT(3)  /* Clear AP_IDLE flag */
 
 struct ec_params_reboot_ec {
 	uint8_t cmd;           /* enum ec_reboot_cmd */

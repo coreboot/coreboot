@@ -60,7 +60,7 @@ Device (BAT0)
 	Method (SWAB, 1, NotSerialized)
 	{
 		Local0 = Arg0 >> 8
-		ShiftLeft (Arg0, 8, Local1)
+		Local1 = Arg0 << 8
 		And (Local1, 0xFF00, Local1)
 		Or (Local0, Local1, Local0)
 		If (Local0 == 0xFFFF) {

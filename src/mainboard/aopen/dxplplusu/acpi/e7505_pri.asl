@@ -40,7 +40,7 @@ Device (MBRS)
 		Local1++
 		If (Local1 > 0x40)
 		{
-			ShiftLeft (Local1, 0x1A, LELM)
+			LELM = Local1 << 0x1A
 		}
 
 

@@ -76,7 +76,7 @@ Method (_CRS, 0, NotSerialized)
 	IOM1 = 0x00
 	IOM2 = 0x00
 	Or (\_SB.PCI0.ICH0.SMSC.IOAH, IOM1, IOM1)
-	ShiftLeft (IOM1, 0x08, IOM1)
+	IOM1 <<= 8
 	Or (\_SB.PCI0.ICH0.SMSC.IOAL, IOM1, IOM1)
 	IOM2 = IOM1
 	If (IOM1 != 0)

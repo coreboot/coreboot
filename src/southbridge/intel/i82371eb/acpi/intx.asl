@@ -30,7 +30,7 @@ Device(intx) {						\
 							\
 	Method(_CRS ,0) {				\
 		CreateWordField(IRQB, 1, IRQN)		\
-		ShiftLeft(1, And(pinx, 0x0f), IRQN)	\
+		IRQN = 1 << And(pinx, 0x0f)		\
 		Return(IRQB)				\
 	}						\
 							\

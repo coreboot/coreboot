@@ -43,7 +43,7 @@ Method (_CRS, 0, NotSerialized)
 	CreateDWordField (PBRS, \_SB.PCI0._Y08._LEN, LENM)
 	And (\_SB.PCI0.TOLM, 0xF800, Local1)
 	Local1 >>= 4
-	ShiftLeft (Local1, 0x14, MEML)
+	MEML = Local1 << 0x14
 	MEMH = IO_APIC_ADDR - 1
 	LENM = IO_APIC_ADDR - MEML
 

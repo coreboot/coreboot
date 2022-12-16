@@ -51,7 +51,7 @@ Device (HKEY)
 
 	/* Report event  */
 	Method (RHK, 1, NotSerialized) {
-		ShiftLeft (One, Arg0 - 1, Local0)
+		Local0 = One << (Arg0 - 1)
 		If (EMSK & Local0) {
 			BTN = Arg0
 			Notify (HKEY, 0x80)
@@ -60,7 +60,7 @@ Device (HKEY)
 
 	/* Report tablet  */
 	Method (RTAB, 1, NotSerialized) {
-		ShiftLeft (One, Arg0 - 1, Local0)
+		Local0 = One << (Arg0 - 1)
 		If (ETAB & Local0) {
 			BTAB = Arg0
 			Notify (HKEY, 0x80)
@@ -84,7 +84,7 @@ Device (HKEY)
 	/* Enable/disable event.  */
 	Method (MHKM, 2, NotSerialized) {
 		If (Arg0 <= 0x20) {
-			ShiftLeft (One, Arg0 - 1, Local0)
+			Local0 = One << (Arg0 - 1)
 			If (Arg1)
 			{
 				Or (DHKN, Local0, DHKN)

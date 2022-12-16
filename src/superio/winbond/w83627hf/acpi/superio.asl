@@ -304,7 +304,7 @@ Device(SIO) {
 			Local1 = IO1H
 			Local2 = IO1L
 			EXIT_CONFIG_MODE ()
-			ShiftLeft(Local1, 8, Local1)
+			Local1 <<= 8
 			Or(Local1, Local2, Local1)
 			If (!Local0) {
 				Return (FDE)
@@ -503,7 +503,7 @@ Device(SIO) {
 			}
 			/* Calculate IRQ bitmap */
 			Local0 = One
-			ShiftLeft (Local0, Local5, IRQW)
+			IRQW = Local0 << Local5
 			/* Return resource template */
 			Return (CRS)
 		}
@@ -660,7 +660,7 @@ Device(SIO) {
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
 			Local3 = One
-			ShiftLeft (Local3, Local2, IRQW)
+			IRQW = Local3 << Local2
 
 			Return (CRS)
 		}
@@ -785,7 +785,7 @@ Device(SIO) {
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
 			Local3 = One
-			ShiftLeft (Local3, Local2, IRQW)
+			IRQW = Local3 << Local2
 
 			Return (CRS)
 		}
@@ -910,7 +910,7 @@ Device(SIO) {
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
 			Local3 = One
-			ShiftLeft (Local3, Local2, IRQW)
+			IRQW = Local3 << Local2
 
 			Return (CRS)
 		}
@@ -1013,7 +1013,7 @@ Device(SIO) {
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
 			Local3 = One
-			ShiftLeft (Local3, Local2, IRQW)
+			IRQW = Local3 << Local2
 
 			Return (CRS)
 		}
@@ -1114,7 +1114,7 @@ Device(SIO) {
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
 			Local5 = One
-			ShiftLeft (Local5, Local4, IRQW)
+			IRQW = Local5 << Local4
 
 			Return (CRS)
 		}
@@ -1199,7 +1199,7 @@ Device(SIO) {
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
 			Local5 = One
-			ShiftLeft (Local5, Local4, IRQW)
+			IRQW = Local5 << Local4
 
 			Return (CRS)
 		}
@@ -1278,7 +1278,7 @@ Device(SIO) {
 			If (Local2) {
 				CreateWordField (CRS, IRQX._INT, IRQW)
 				Local3 = One
-				ShiftLeft (Local3, Local2, IRQW)
+				IRQW = Local3 << Local2
 			}
 
 			Return (CRS)
@@ -1333,7 +1333,7 @@ Device(SIO) {
 			If (Local2) {
 				CreateWordField (CRS, IRQX._INT, IRQW)
 				Local3 = One
-				ShiftLeft (Local3, Local2, IRQW)
+				IRQW = Local3 << Local2
 			}
 
 			Return (CRS)
@@ -1432,7 +1432,7 @@ Device(SIO) {
 			If (Local2) {
 				CreateWordField (CRS, IRQX._INT, IRQW)
 				Local3 = One
-				ShiftLeft (Local3, Local2, IRQW)
+				IRQW = Local3 << Local2
 			}
 			Return (CRS)
 		}

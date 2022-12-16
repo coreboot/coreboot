@@ -4,7 +4,7 @@ Scope (_GPE)
 {
 	Name (PDET, Zero)
 	Method (PNOT, 2, Serialized) {
-		ShiftLeft (Arg0, Arg1, Local0)
+		Local0 = Arg0 << Arg1
 		Not( ShiftLeft (One, Arg1), Local1)
 		Or (Local0, And (Local1, PDET), PDET)
 		If (PDET == Zero) {
@@ -17,7 +17,7 @@ Scope (_GPE)
 	}
 
 	Method (TINV, 2, Serialized) {
-		ShiftLeft (One, Arg1, Local0)
+		Local0 = One << Arg1
 		If (Arg0 == Zero) {
 			Not (Local0, Local0)
 			And (GIV0, Local0, GIV0)

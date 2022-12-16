@@ -31,7 +31,7 @@ Device (LNKA)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTA */
-		ShiftLeft(1, And(PRTA, 0x0f), IRQ0)
+		IRQ0 = 1 << And(PRTA, 0x0f)
 
 		Return (RTLA)
 	}
@@ -90,7 +90,7 @@ Device (LNKB)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTB */
-		ShiftLeft(1, And(PRTB, 0x0f), IRQ0)
+		IRQ0 = 1 << And(PRTB, 0x0f)
 
 		Return (RTLB)
 	}
@@ -149,7 +149,7 @@ Device (LNKC)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTC */
-		ShiftLeft(1, And(PRTC, 0x0f), IRQ0)
+		IRQ0 = 1 << And(PRTC, 0x0f)
 
 		Return (RTLC)
 	}
@@ -208,7 +208,7 @@ Device (LNKD)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTD */
-		ShiftLeft(1, And(PRTD, 0x0f), IRQ0)
+		IRQ0 = 1 << And(PRTD, 0x0f)
 
 		Return (RTLD)
 	}
@@ -267,7 +267,7 @@ Device (LNKE)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTE */
-		ShiftLeft(1, And(PRTE, 0x0f), IRQ0)
+		IRQ0 = 1 << And(PRTE, 0x0f)
 
 		Return (RTLE)
 	}
@@ -326,7 +326,7 @@ Device (LNKF)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTF */
-		ShiftLeft(1, And(PRTF, 0x0f), IRQ0)
+		IRQ0 = 1 << And(PRTF, 0x0f)
 
 		Return (RTLF)
 	}
@@ -385,7 +385,7 @@ Device (LNKG)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTG */
-		ShiftLeft(1, And(PRTG, 0x0f), IRQ0)
+		IRQ0 = 1 << And(PRTG, 0x0f)
 
 		Return (RTLG)
 	}
@@ -444,7 +444,7 @@ Device (LNKH)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTH */
-		ShiftLeft(1, And(PRTH, 0x0f), IRQ0)
+		IRQ0 = 1 << And(PRTH, 0x0f)
 
 		Return (RTLH)
 	}

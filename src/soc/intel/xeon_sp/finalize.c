@@ -3,12 +3,15 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <console/debug.h>
+#include <cpu/x86/mp.h>
 #include <cpu/x86/smm.h>
 #include <device/pci.h>
 #include <intelpch/lockdown.h>
+#include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/util.h>
+#include <smp/spinlock.h>
 
 #include "chip.h"
 
@@ -21,6 +24,32 @@ static void lock_pam0123(void)
 
 	dev = pcidev_path_on_bus(get_stack_busno(1), PCI_DEVFN(SAD_ALL_DEV, SAD_ALL_FUNC));
 	pci_or_config32(dev, SAD_ALL_PAM0123_CSR, PAM_LOCK);
+}
+
+DECLARE_SPIN_LOCK(msr_ppin_lock);
+
+static void lock_msr_ppin_ctl(void *unused)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_PLATFORM_INFO);
+	if ((msr.lo & MSR_PPIN_CAP) == 0)
+		return;
+
+	spin_lock(&msr_ppin_lock);
+
+	msr = rdmsr(MSR_PPIN_CTL);
+	if (msr.lo & MSR_PPIN_CTL_LOCK) {
+		spin_unlock(&msr_ppin_lock);
+		return;
+	}
+
+	/* Clear enable and lock it */
+	msr.lo &= ~MSR_PPIN_CTL_ENABLE;
+	msr.lo |= MSR_PPIN_CTL_LOCK;
+	wrmsr(MSR_PPIN_CTL, msr);
+
+	spin_unlock(&msr_ppin_lock);
 }
 
 static void soc_finalize(void *unused)
@@ -42,6 +71,14 @@ static void soc_finalize(void *unused)
 
 	apm_control(APM_CNT_FINALIZE);
 	lock_pam0123();
+
+	if (CONFIG_MAX_SOCKET > 1) {
+		/* This MSR is package scope but run for all cpus for code simplicity */
+		if (mp_run_on_all_cpus(&lock_msr_ppin_ctl, NULL) != CB_SUCCESS)
+			printk(BIOS_ERR, "Lock PPIN CTL MSR failed\n");
+	} else {
+		lock_msr_ppin_ctl(NULL);
+	}
 
 	post_code(POST_OS_BOOT);
 }

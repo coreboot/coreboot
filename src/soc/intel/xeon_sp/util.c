@@ -68,9 +68,6 @@ msr_t read_msr_ppin(void)
 		wrmsr(MSR_PPIN_CTL, msr);
 	}
 	ppin = rdmsr(MSR_PPIN);
-	/* Set enable to 0 after reading MSR_PPIN */
-	msr.lo &= ~MSR_PPIN_CTL_ENABLE;
-	wrmsr(MSR_PPIN_CTL, msr);
 	return ppin;
 }
 

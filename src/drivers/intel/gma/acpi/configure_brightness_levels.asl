@@ -58,7 +58,7 @@
 				Local1 = 255
 			}
 			/* also set valid bit */
-			BCLP = Or (Local1, 0x80000000)
+			BCLP = Local1 | 0x80000000
 
 			If (ARDY == 0)
 			{

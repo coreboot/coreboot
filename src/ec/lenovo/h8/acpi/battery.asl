@@ -149,7 +149,7 @@ Method(BSTA, 4, NotSerialized)
 Method(BINF, 2, Serialized)
 {
 	Acquire(ECLK, 0xffff)
-	^BPAG(Or(1, Arg1)) /* Battery 0 static information */
+	^BPAG(1 | Arg1) /* Battery 0 static information */
 	Arg0 [0] = BAMA ^ 1
 	Local0 = BAMA
 	^BPAG(Arg1)
@@ -181,7 +181,7 @@ Method(BINF, 2, Serialized)
 	}
 	Arg0 [10] = SERN // Serial Number
 
-	^BPAG(Or(4, Arg1))
+	^BPAG(4 | Arg1)
 	Name (TYPE, Buffer() { 0, 0, 0, 0, 0 })
 	TYPE = BATY
 	Arg0 [11] = TYPE // Battery type

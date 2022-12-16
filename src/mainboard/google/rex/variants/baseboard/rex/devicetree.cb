@@ -14,6 +14,9 @@ chip soc/intel/meteorlake
 	# S0ix enable
 	register "s0ix_enable" = "1"
 
+	# DPTF enable
+	register "dptf_enable" = "1"
+
 	# Enable CNVi BT
 	register "cnvi_bt_core" = "true"
 

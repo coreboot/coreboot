@@ -118,6 +118,11 @@ chip soc/intel/meteorlake
 	}"
 
 	device domain 0 on
+		device ref dtt on
+			chip drivers/intel/dptf
+				device generic 0 alias dptf_policy on end
+			end
+		end
 		device ref pcie_rp9 on
 			# Enable SSD Card PCIE 9 using clk 4
 			register "pcie_rp[PCH_RP(9)]" = "{

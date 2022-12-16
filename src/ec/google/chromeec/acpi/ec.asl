@@ -621,7 +621,7 @@ Device (EC0)
 	 */
 	Method (UPPS, 1, Serialized)
 	{
-		Or (USPP, ShiftLeft (1, Arg0), USPP)
+		Or (USPP, 1 << Arg0, USPP)
 	}
 
 	/*
@@ -630,7 +630,7 @@ Device (EC0)
 	 */
 	Method (UPPC, 1, Serialized)
 	{
-		And (USPP, Not (ShiftLeft (1, Arg0)), USPP)
+		And (USPP, Not (1 << Arg0), USPP)
 	}
 #endif
 

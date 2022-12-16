@@ -17,7 +17,7 @@ Method (UPWE, 3, Serialized)
 	Local0 = Arg1 + ((Arg0 - 1) * 0x10)
 
 	/* Map ((XMEM << 16) + Local0 in PSCR */
-	OperationRegion (PSCR, SystemMemory, ShiftLeft (Arg2, 16) + Local0, 0x10)
+	OperationRegion (PSCR, SystemMemory, (Arg2 << 16) + Local0, 0x10)
 	Field (PSCR, DWordAcc, NoLock, Preserve)
 	{
 		PSCT, 32,
@@ -100,7 +100,7 @@ Device (XHCI)
 		D3HE, 1,	/* D3_hot_en */
 	}
 
-	OperationRegion (XREG, SystemMemory, ShiftLeft (XMEM, 16) + 0x8000, 0x200)
+	OperationRegion (XREG, SystemMemory, (XMEM << 16) + 0x8000, 0x200)
 	Field (XREG, DWordAcc, Lock, Preserve)
 	{
 		Offset (0x1c4),	/* USB2PMCTRL */

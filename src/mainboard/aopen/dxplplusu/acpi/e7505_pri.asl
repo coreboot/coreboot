@@ -53,7 +53,7 @@ Device (MBRS)
 		If (Local1 > 0x10)
 		{
 			Local1 -= 0x0F
-			MEM2 = ShiftLeft (Local1, 0x14)
+			MEM2 = Local1 << 0x14
 			MS00 = 0x01000000
 			MS01 = MS00
 		}

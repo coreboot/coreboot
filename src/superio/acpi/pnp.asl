@@ -102,7 +102,7 @@
 #define PNP_READ_IO(IO_FROM, RESOURCE_TEMPLATE, IO_TAG) \
 	CreateWordField (RESOURCE_TEMPLATE, IO_TAG._MIN, IO_TAG##I)\
 	CreateWordField (RESOURCE_TEMPLATE, IO_TAG._MAX, IO_TAG##A)\
-	Or (ShiftLeft (IO_FROM##_HIGH_BYTE, 8), IO_FROM##_LOW_BYTE, Local0)\
+	Or (IO_FROM##_HIGH_BYTE << 8, IO_FROM##_LOW_BYTE, Local0)\
 	IO_TAG##I = Local0 \
 	IO_TAG##A = Local0
 

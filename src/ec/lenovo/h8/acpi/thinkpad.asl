@@ -109,7 +109,7 @@ Device (HKEY)
 	/* Report tablet mode switch state */
 	Method (MHKG, 0, NotSerialized)
 	{
-		Return (ShiftLeft(TBSW, 3))
+		Return (TBSW << 3)
 	}
 
 	/* Mute audio */
@@ -167,7 +167,7 @@ Device (HKEY)
 			{
 				Or(Local0, 2, Local0)
 			}
-			Or(Local0, ShiftLeft(WBDC, 2), Local0)
+			Or(Local0, WBDC << 2, Local0)
 			Return (Local0)
 		} Else {
 			Return (0)
@@ -209,7 +209,7 @@ Device (HKEY)
 			{
 				Or(Local0, 2, Local0)
 			}
-			Or(Local0, ShiftLeft(WWAN, 2), Local0)
+			Or(Local0, WWAN << 2, Local0)
 			Return (Local0)
 		} Else {
 			Return (0)

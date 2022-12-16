@@ -19,7 +19,7 @@ Method (UPWE, 3, Serialized)
 	Local0 = Arg1 + ((Arg0 - 1) * 0x10)
 
 	/* Map ((XMEM << 16) + Local0 in PSCR */
-	OperationRegion (PSCR, SystemMemory, ShiftLeft (Arg2, 16) + Local0, 0x10)
+	OperationRegion (PSCR, SystemMemory, (Arg2 << 16) + Local0, 0x10)
 	Field (PSCR, DWordAcc, NoLock, Preserve)
 	{
 		PSCT, 32,

@@ -5,7 +5,7 @@ Scope (_GPE)
 	Name (PDET, Zero)
 	Method (PNOT, 2, Serialized) {
 		Local0 = Arg0 << Arg1
-		Not( ShiftLeft (One, Arg1), Local1)
+		Not(One << Arg1, Local1)
 		Or (Local0, And (Local1, PDET), PDET)
 		If (PDET == Zero) {
 			// Palm removed

@@ -34,7 +34,7 @@ Method(SBPC, 0, NotSerialized)
 Method(SBRW, 2, NotSerialized)
 {
 	Acquire(ECLK, 0xFFFF)
-	SADR = ShiftLeft(Arg0, 0x01)
+	SADR = Arg0 << 1
 	SCMD = Arg1
 	SPTR = 0x09
 	SBPC()
@@ -46,7 +46,7 @@ Method(SBRW, 2, NotSerialized)
 Method(SBRB, 2, NotSerialized)
 {
 	Acquire(ECLK, 0xFFFF)
-	SADR = ShiftLeft(Arg0, 0x01)
+	SADR = Arg0 << 1
 	SCMD = Arg1
 	SPTR = 0x0B
 	SBPC()

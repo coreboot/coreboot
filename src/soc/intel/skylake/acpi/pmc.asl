@@ -13,7 +13,7 @@ Device (PMC)
 		PWRM, 20,	/* PWRMBASE */
 	}
 
-	OperationRegion (PMCM, SystemMemory, ShiftLeft (PWRM, 12), 0x3f)
+	OperationRegion (PMCM, SystemMemory, PWRM << 12, 0x3f)
 	Field (PMCM, DWordAcc, NoLock, Preserve)
 	{
 		Offset (0x1c),	/* PCH_PM_STS */

@@ -517,3 +517,9 @@ void set_tme_core_activate(void)
 
 	wrmsr(MSR_CORE_MKTME_ACTIVATION, msr);
 }
+
+/* Provide the max turbo frequency of the CPU */
+unsigned int smbios_cpu_get_max_speed_mhz(void)
+{
+	return cpu_get_max_turbo_ratio() * CONFIG_CPU_BCLK_MHZ;
+}

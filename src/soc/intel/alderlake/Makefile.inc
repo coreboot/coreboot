@@ -46,7 +46,6 @@ ramstage-y += tcss.c
 ramstage-y += vr_config.c
 ramstage-y += xhci.c
 ramstage-$(CONFIG_SOC_INTEL_CRASHLOG) += crashlog.c
-ramstage-y += smbios.c
 
 smm-y += elog.c
 smm-y += p2sb.c

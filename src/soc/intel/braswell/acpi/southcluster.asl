@@ -154,7 +154,7 @@ Method (_CRS, 0, Serialized)
 	CreateDWordField (MCRS, LMEM._MIN, LMIN)
 	CreateDWordField (MCRS, LMEM._MAX, LMAX)
 	CreateDWordField (MCRS, LMEM._LEN, LLEN)
-	If (LAnd (LPFW != Zero, LPEN == One))
+	If (LPFW != Zero && LPEN == One)
 	{
 		LMIN = LPFW
 		LMAX = LMIN + 0x001FFFFF

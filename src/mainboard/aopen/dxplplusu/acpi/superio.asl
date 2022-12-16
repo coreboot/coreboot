@@ -75,9 +75,9 @@ Method (_CRS, 0, NotSerialized)
 	\_SB.PCI0.ICH0.SMSC.LDN = 0x0A
 	IOM1 = 0x00
 	IOM2 = 0x00
-	Or (\_SB.PCI0.ICH0.SMSC.IOAH, IOM1, IOM1)
+	IOM1 |= \_SB.PCI0.ICH0.SMSC.IOAH
 	IOM1 <<= 8
-	Or (\_SB.PCI0.ICH0.SMSC.IOAL, IOM1, IOM1)
+	IOM1 |= \_SB.PCI0.ICH0.SMSC.IOAL
 	IOM2 = IOM1
 	If (IOM1 != 0)
 	{
@@ -111,28 +111,28 @@ Method (_INI, 0, NotSerialized)
 	/* GPIO initial output levels */
 	Local0 = GP_1
 	And( Local0, 0x7C, Local0)
-	Or ( Local0, 0x81, Local0)
+	Local0 |= 0x81
 	GP_1 = Local0
 
 	Local0 = GP_2
 	And( Local0, 0xFE, Local0)
-	Or ( Local0, 0x00, Local0)
+	Local0 |= 0
 	GP_2 = Local0
 
 	Local0 = GP_3
 	And( Local0, 0x7F, Local0)
-	Or ( Local0, 0x80, Local0)
+	Local0 |= 0x80
 	GP_3 = Local0
 
 	Local0 = GP_4
 	And( Local0, 0x7F, Local0)
-	Or ( Local0, 0x00, Local0)
+	Local0 |= 0
 	GP_4 = Local0
 
 	/* Power Led */
 	Local0 = LED1
 	And( Local0, 0xfc, Local0)
-	Or ( Local0, 0x01, Local0)
+	Local0 |= 1
 	LED1 = Local0
 
 }

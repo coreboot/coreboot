@@ -87,7 +87,7 @@ Device (HKEY)
 			Local0 = One << (Arg0 - 1)
 			If (Arg1)
 			{
-				Or (DHKN, Local0, DHKN)
+				DHKN |= Local0
 			}
 			Else
 			{
@@ -165,9 +165,9 @@ Device (HKEY)
 			Local0 = One
 			If(\_SB.PCI0.LPCB.EC.BTEB)
 			{
-				Or(Local0, 2, Local0)
+				Local0 |= 2
 			}
-			Or(Local0, WBDC << 2, Local0)
+			Local0 |= WBDC << 2
 			Return (Local0)
 		} Else {
 			Return (0)
@@ -207,9 +207,9 @@ Device (HKEY)
 			Local0 = One
 			If(\_SB.PCI0.LPCB.EC.WWEB)
 			{
-				Or(Local0, 2, Local0)
+				Local0 |= 2
 			}
-			Or(Local0, WWAN << 2, Local0)
+			Local0 |= WWAN << 2
 			Return (Local0)
 		} Else {
 			Return (0)
@@ -243,7 +243,7 @@ Device (HKEY)
 		If (HKBL) {
 			Local0 = 0x200
 			/* FIXME: Support 2bit brightness control */
-			Or (Local0, \_SB.PCI0.LPCB.EC.KBLT, Local0)
+			Local0 |= \_SB.PCI0.LPCB.EC.KBLT
 			Return (Local0)
 		} Else {
 			Return (0)
@@ -273,7 +273,7 @@ Device (HKEY)
 			Local0 = One
 			If(\_SB.PCI0.LPCB.EC.UWBE)
 			{
-				Or(Local0, 2, Local0)
+				Local0 |= 2
 			}
 			Return (Local0)
 		} Else {

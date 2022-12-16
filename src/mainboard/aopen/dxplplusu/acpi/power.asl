@@ -50,22 +50,22 @@ Scope (\_GPE)
 /* Clear power buttons */
 Method (\_INI, 0, NotSerialized)
 {
-	Or (\_SB.PCI0.ICH0.PS1H, 0x09, \_SB.PCI0.ICH0.PS1H)
-	Or (\_SB.PCI0.ICH0.PE1H, 0x01, \_SB.PCI0.ICH0.PE1H)
+	\_SB.PCI0.ICH0.PS1H |= 9
+	\_SB.PCI0.ICH0.PE1H |= 1
 }
 
 /* Prepare To Sleep */
 Method (\_PTS, 1, NotSerialized)
 {
-	Or (\_SB.PCI0.ICH0.GS0H, 0x19, \_SB.PCI0.ICH0.GS0H)
-	Or (\_SB.PCI0.ICH0.GS0L, 0x11, \_SB.PCI0.ICH0.GS0L)
+	\_SB.PCI0.ICH0.GS0H |= 0x19
+	\_SB.PCI0.ICH0.GS0L |= 0x11
 }
 
 /* System Wake */
 Method (\_WAK, 1, NotSerialized)
 {
-	Or (\_SB.PCI0.ICH0.GS0H, 0x19, \_SB.PCI0.ICH0.GS0H)
-	Or (\_SB.PCI0.ICH0.GS0L, 0x11, \_SB.PCI0.ICH0.GS0L)
+	\_SB.PCI0.ICH0.GS0H |= 0x19
+	\_SB.PCI0.ICH0.GS0L |= 0x11
 
 	Return ( Package() { 0x0, 0x0 } )
 }

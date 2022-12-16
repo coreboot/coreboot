@@ -235,7 +235,7 @@ Device (BATX)
 		// Set critical flag if battery is empty
 		If (And (HB0S, 0x0F) == 0)
 		{
-			Or (Local0, 4, Local0)
+			Local0 |= 4
 		}
 
 		Local1 = Zero
@@ -254,7 +254,7 @@ Device (BATX)
 
 		// Flag if the battery level is critical
 		And (Local0, 0x04, Local4)
-		Or (Local1, Local4, Local1)
+		Local1 |= Local4
 		PBST[0] = Local1
 
 		//

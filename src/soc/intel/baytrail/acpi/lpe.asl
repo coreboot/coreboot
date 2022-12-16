@@ -87,14 +87,14 @@ Device (LPEA)
 
 		Method (_OFF)
 		{
-			Or (PSAT, 0x00000003, PSAT)
-			Or (PSAT, 0x00000000, PSAT)
+			PSAT |= 3
+			PSAT |= 0
 		}
 
 		Method (_ON)
 		{
 			And (PSAT, 0xfffffffc, PSAT)
-			Or (PSAT, 0x00000000, PSAT)
+			PSAT |= 0
 		}
 	}
 }

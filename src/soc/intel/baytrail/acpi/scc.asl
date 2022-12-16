@@ -41,14 +41,14 @@ Device (EMMC)
 
 	Method (_PS3)
 	{
-		Or (PSAT, 0x00000003, PSAT)
-		Or (PSAT, 0x00000000, PSAT)
+		PSAT |= 3
+		PSAT |= 0
 	}
 
 	Method (_PS0)
 	{
 		And (PSAT, 0xfffffffc, PSAT)
-		Or (PSAT, 0x00000000, PSAT)
+		PSAT |= 0
 	}
 
 	Device (EM45)
@@ -104,14 +104,14 @@ Device (SDIO)
 
 	Method (_PS3)
 	{
-		Or (PSAT, 0x00000003, PSAT)
-		Or (PSAT, 0x00000000, PSAT)
+		PSAT |= 3
+		PSAT |= 0
 	}
 
 	Method (_PS0)
 	{
 		And (PSAT, 0xfffffffc, PSAT)
-		Or (PSAT, 0x00000000, PSAT)
+		PSAT |= 0
 	}
 }
 
@@ -156,13 +156,13 @@ Device (SDCD)
 
 	Method (_PS3)
 	{
-		Or (PSAT, 0x00000003, PSAT)
-		Or (PSAT, 0x00000000, PSAT)
+		PSAT |= 3
+		PSAT |= 0
 	}
 
 	Method (_PS0)
 	{
 		And (PSAT, 0xfffffffc, PSAT)
-		Or (PSAT, 0x00000000, PSAT)
+		PSAT |= 0
 	}
 }

@@ -175,7 +175,7 @@ Method (BBST, 4, Serialized)
 
 	// Check for critical battery level
 	If (BFCR) {
-		Or (Local1, 0x04, Local1)
+		Local1 |= 4
 	}
 	Arg1[0] = Local1
 

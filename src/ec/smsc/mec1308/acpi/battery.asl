@@ -62,7 +62,7 @@ Device (BAT0)
 		Local0 = Arg0 >> 8
 		Local1 = Arg0 << 8
 		And (Local1, 0xFF00, Local1)
-		Or (Local0, Local1, Local0)
+		Local0 |= Local1
 		If (Local0 == 0xFFFF) {
 			Local0 = 0xFFFFFFFF
 		}
@@ -119,7 +119,7 @@ Device (BAT0)
 
 		// Flag if the battery level is critical
 		And (Local0, 0x04, Local4)
-		Or (Local1, Local4, Local1)
+		Local1 |= Local4
 		PBST[0] = Local1
 
 		// Notify if battery state has changed since last time

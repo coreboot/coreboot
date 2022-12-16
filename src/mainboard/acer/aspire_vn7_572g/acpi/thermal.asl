@@ -12,14 +12,14 @@ Scope (_TZ)
 			Local0 = \_SB.PCI0.LPCB.EC0.MS0T
 			Local1 = \_SB.PCI0.LPCB.EC0.MCSS
 			/* Suppress warning over reading status flag by dummy OR */
-			Or (Local1, 1, Local1)
+			Local1 |= 1
 			Local2 = \_SB.PCI0.LPCB.EC0.MOSD
 #else
 			Local0 = \_SB.PCI0.LPCB.EC0.ES0T
 			/* "MCSS": Considering neighbouring bits, likely
 			   "ESSF" in thermals, not "ECSS" in power notifications */
 			Local1 = \_SB.PCI0.LPCB.EC0.ESSF
-			Or (Local1, 1, Local1)
+			Local1 |= 1
 			Local2 = \_SB.PCI0.LPCB.EC0.EOSD
 #endif
 			If (Local2)	// Thermal trip

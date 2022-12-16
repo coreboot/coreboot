@@ -621,7 +621,7 @@ Device (EC0)
 	 */
 	Method (UPPS, 1, Serialized)
 	{
-		Or (USPP, 1 << Arg0, USPP)
+		USPP |= 1 << Arg0
 	}
 
 	/*

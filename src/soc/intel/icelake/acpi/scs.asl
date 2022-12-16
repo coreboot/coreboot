@@ -51,7 +51,7 @@ Scope (\_SB.PCI0) {
 			PGEN = 1 // Enable PG
 
 			/* Set Power State to D3 */
-			Or (PMCR, 0x0003, PMCR)
+			PMCR |= 3
 			^TEMP = PMCR
 		}
 
@@ -105,7 +105,7 @@ Scope (\_SB.PCI0) {
 			PGEN = 1 /* Enable PG */
 
 			/* Set Power State to D3 */
-			Or (PMCR, 0x0003, PMCR)
+			PMCR |= 3
 			^TEMP = PMCR
 		}
 

@@ -173,7 +173,7 @@ Method (_OSC, 4)
 	{
 		/* Unrecognized UUID */
 		CreateDWordField (Arg3, 0, CDW1)
-		Or (CDW1, 4, CDW1)
+		CDW1 |= 4
 		Return (Arg3)
 	}
 }

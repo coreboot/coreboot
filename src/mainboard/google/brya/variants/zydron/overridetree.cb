@@ -10,11 +10,15 @@ fw_config
 	field UFC 4 5
 		option UFC_USB			0
 		option UFC_MIPI_OVTI2740	1
-		option UFC_MIPI_HI556		2
+		option UFC_MIPI_ZYDRON		2
 	end
 	field STYLUS 6
 		option STYLUS_ABSENT		0
 		option STYLUS_PRESENT		1
+	end
+	field ZYDRON_UFC 36 37
+		option UFC_MIPI_HI556           0
+		option UFC_MIPI_OVTI2740        1
 	end
 end
 chip soc/intel/alderlake
@@ -202,7 +206,8 @@ chip soc/intel/alderlake
 				register "cio2_prt[0]" = "1"
 				device generic 0 on
 					probe UFC UFC_MIPI_OVTI2740
-					probe UFC UFC_MIPI_HI556
+					probe ZYDRON_UFC UFC_MIPI_HI556
+					probe ZYDRON_UFC UFC_MIPI_OVTI2740
 				end
 			end
 		end
@@ -325,6 +330,7 @@ chip soc/intel/alderlake
 
 				device i2c 36 on
 					probe UFC UFC_MIPI_OVTI2740
+					probe ZYDRON_UFC UFC_MIPI_OVTI2740
 				end
 			end
 			chip drivers/intel/mipi_camera
@@ -363,7 +369,7 @@ chip soc/intel/alderlake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 20 on
-					probe UFC UFC_MIPI_HI556
+					probe ZYDRON_UFC UFC_MIPI_HI556
 				end
 			end
 			chip drivers/intel/mipi_camera
@@ -381,7 +387,8 @@ chip soc/intel/alderlake
 
 				device i2c 50 on
 					probe UFC UFC_MIPI_OVTI2740
-					probe UFC UFC_MIPI_HI556
+					probe ZYDRON_UFC UFC_MIPI_HI556
+					probe ZYDRON_UFC UFC_MIPI_OVTI2740
 				end
                         end
 		end

@@ -71,6 +71,8 @@ focusing on clean and simple code, long-term maintenance, transparent
 validation, privacy-respecting implementation, liberty for the owners, and
 trustworthiness for all.
 
+Contributions are welcome,
+[this document](https://docs.dasharo.com/ways-you-can-help-us/).
 
 ### MrChromebox
 

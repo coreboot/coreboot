@@ -316,7 +316,7 @@ Device (BATX)
 			Local2 = SBRS
 
 			// See if within ~3% of full
-			ShiftRight (Local2, 5, Local3)
+			Local3 = Local2 >> 5
 			If (Local1 > Local2 - Local3 && Local1 < Local2 + Local3)
 			{
 				Local1 = Local2

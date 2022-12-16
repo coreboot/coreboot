@@ -10,7 +10,7 @@ Scope (\_SB)
 {
 	Method (GPID, 0, Serialized)  // GPID: Get Project ID for Terra2/Terra3
 	{
-		And( ShiftRight (\BDID, 3, Local0), 0x01, Local0)
+		And(\BDID >> 3, 0x01, Local0)
 		Return (Local0)
 	}
 }

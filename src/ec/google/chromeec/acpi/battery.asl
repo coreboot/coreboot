@@ -209,7 +209,7 @@ Method (BBST, 4, Serialized)
 		Local2 = BTDF
 
 		// See if within ~6% of full
-		ShiftRight (Local2, 4, Local3)
+		Local3 = Local2 >> 4
 		If (Local1 > Local2 - Local3 && Local1 < Local2 + Local3)
 		{
 			Local1 = Local2

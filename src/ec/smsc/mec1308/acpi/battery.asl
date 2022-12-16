@@ -59,7 +59,7 @@ Device (BAT0)
 	// Swap bytes in a word
 	Method (SWAB, 1, NotSerialized)
 	{
-		ShiftRight (Arg0, 8, Local0)
+		Local0 = Arg0 >> 8
 		ShiftLeft (Arg0, 8, Local1)
 		And (Local1, 0xFF00, Local1)
 		Or (Local0, Local1, Local0)
@@ -156,7 +156,7 @@ Device (BAT0)
 			Local2 = SWAB (BTDF)
 
 			// See if within ~3% of full
-			ShiftRight (Local2, 5, Local3)
+			Local3 = Local2 >> 5
 			If (Local1 > Local2 - Local3 && Local1 < Local2 + Local3)
 			{
 				Local1 = Local2

@@ -184,9 +184,9 @@ Device (HKEY)
 		HAST = One
 
 		If (HBDC) {
-			ShiftRight (Arg0 & 2, 1, Local0)
+			Local0 = (Arg0 & 2) >> 1
 			\_SB.PCI0.LPCB.EC.BTEB = Local0
-			ShiftRight (Arg0 & 4, 2, Local0)
+			Local0 = (Arg0 & 4) >> 2
 			WBDC = Local0
 		}
 	}
@@ -226,9 +226,9 @@ Device (HKEY)
 		HAST = One
 
 		If (HWAN) {
-			ShiftRight (Arg0 & 2, 1, Local0)
+			Local0 = (Arg0 & 2) >> 1
 			\_SB.PCI0.LPCB.EC.WWEB = Local0
-			ShiftRight (Arg0 & 4, 2, WWAN)
+			WWAN = (Arg0 & 4) >> 2
 		}
 	}
 
@@ -288,7 +288,7 @@ Device (HKEY)
 	Method (SUWB, 1)
 	{
 		If (HUWB) {
-			ShiftRight (Arg0 & 2, 1, Local0)
+			Local0 = (Arg0 & 2) >> 1
 			\_SB.PCI0.LPCB.EC.UWBE = Local0
 		}
 	}

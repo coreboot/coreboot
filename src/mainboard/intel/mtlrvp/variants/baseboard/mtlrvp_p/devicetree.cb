@@ -11,6 +11,12 @@ chip soc/intel/meteorlake
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"
 
+	register "serial_io_uart_mode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoPci,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
 	device domain 0 on
 		device ref igpu on end
 		device ref heci1 on end

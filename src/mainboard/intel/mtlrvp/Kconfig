@@ -22,6 +22,10 @@ config CHROMEOS
 	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
 	select HAS_RECOVERY_MRC_CACHE
 
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select INTEL_LPSS_UART_FOR_CONSOLE
+
 config MAINBOARD_DIR
 	default "intel/mtlrvp"
 
@@ -80,5 +84,9 @@ endchoice
 
 config VBOOT
 	select VBOOT_LID_SWITCH
+
+config UART_FOR_CONSOLE
+	int
+	default 0
 
 endif # BOARD_INTEL_MTLRVP_COMMON

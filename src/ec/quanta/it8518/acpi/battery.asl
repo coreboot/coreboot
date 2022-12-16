@@ -106,7 +106,7 @@ Device (BATX)
 		//   ACPI spec     : 0 - mWh   : 1 - mAh
 		//
 		Local7 = SBCM
-		XOr (Local7, One, PBIF[0])
+		PBIF[0] = Local7 ^ One
 
 		//
 		// Information ID 0 -
@@ -282,7 +282,7 @@ Device (BATX)
 			}
 		}
 
-		XOr (DerefOf (PBIF[0]), One, Local6)
+		Local6 = DerefOf (PBIF[0]) ^ One
 
 		If (Local6)
 		{

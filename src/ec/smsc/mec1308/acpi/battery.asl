@@ -134,7 +134,7 @@ Device (BAT0)
 
 		Local1 = SWAB (BTPR)
 		If (Local1 != 0xFFFFFFFF && Local1 >= 0x8000) {
-			Xor (Local1, 0xFFFF, Local1)
+			Local1 ^= 0xFFFF
 			Local1++
 		}
 		PBST[1] = Local1
@@ -144,7 +144,7 @@ Device (BAT0)
 		//
 		Local1 = SWAB (BTRA)
 		If (Local1 != 0xFFFFFFFF && Local1 >= 0x8000) {
-			Xor (Local1, 0xFFFF, Local1)
+			Local1 ^= 0xFFFF
 			Local1++
 		}
 

@@ -11,7 +11,7 @@ Scope (\_GPE) {
 		 * changes again. GIV1 is the interrupt level control
 		 * register for GPIO bits 15:8
 		 */
-		Xor(GIV1, 0x80, GIV1)
+		GIV1 ^= 0x80
 		Notify(\_SB.LID0,0x80)
 	}
 }

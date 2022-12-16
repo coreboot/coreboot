@@ -394,7 +394,7 @@ static bool create_mmap_windows(void)
 	// No memory map provided, use a default one
 	if (mmap_window_table_size == 0) {
 		const size_t image_size = partitioned_file_total_size(param.image_file);
-		printf("Image SIZE %lu\n", image_size);
+		printf("Image SIZE %zu\n", image_size);
 		const size_t std_window_size = MIN(DEFAULT_DECODE_WINDOW_MAX_SIZE, image_size);
 		const size_t std_window_flash_offset = image_size - std_window_size;
 

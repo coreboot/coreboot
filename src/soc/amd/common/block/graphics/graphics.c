@@ -2,12 +2,19 @@
 
 #include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
+#include <amdblocks/vbios_cache.h>
 #include <boot/coreboot_tables.h>
-#include <device/pci.h>
+#include <bootstate.h>
 #include <console/console.h>
+#include <device/pci.h>
+#include <fmap.h>
 #include <fsp/graphics.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/intel/common/vbt.h>
 #include <timestamp.h>
+
+static bool vbios_loaded_from_cache = false;
+static uint8_t vbios_data[VBIOS_CACHE_FMAP_SIZE];
 
 #define ATIF_FUNCTION_VERIFY_INTERFACE 0x0
 struct atif_verify_interface_output {
@@ -142,6 +149,13 @@ static void graphics_set_resources(struct device *const dev)
 		return;
 
 	timestamp_add_now(TS_OPROM_INITIALIZE);
+	if (CONFIG(USE_SELECTIVE_GOP_INIT) && vbios_cache_is_valid()) {
+		if (!vboot_recovery_mode_enabled() && !vboot_developer_mode_enabled()) {
+			vbios_load_from_cache();
+			timestamp_add_now(TS_OPROM_COPY_END);
+			return;
+		}
+	}
 	rom = pci_rom_probe(dev);
 	if (rom == NULL)
 		return;
@@ -166,6 +180,92 @@ static void graphics_dev_init(struct device *const dev)
 	/* Initialize PCI device, load/execute BIOS Option ROM */
 	pci_dev_init(dev);
 }
+
+static void read_vbios_cache_from_fmap(void *unused)
+{
+	struct region_device rw_vbios_cache;
+	int32_t region_size;
+
+	if (!CONFIG(SOC_AMD_GFX_CACHE_VBIOS_IN_FMAP))
+		return;
+
+	if (fmap_locate_area_as_rdev(VBIOS_CACHE_FMAP_NAME, &rw_vbios_cache)) {
+		printk(BIOS_ERR, "%s: No %s FMAP section.\n", __func__, VBIOS_CACHE_FMAP_NAME);
+		return;
+	}
+
+	region_size = region_device_sz(&rw_vbios_cache);
+
+	if (region_size != VBIOS_CACHE_FMAP_SIZE) {
+		printk(BIOS_ERR, "%s: %s FMAP size mismatch for VBIOS cache (%d vs %d).\n",
+		       __func__, VBIOS_CACHE_FMAP_NAME, VBIOS_CACHE_FMAP_SIZE, region_size);
+		return;
+	}
+
+	/* Read cached VBIOS data into buffer */
+	if (rdev_readat(&rw_vbios_cache, &vbios_data, 0, VBIOS_CACHE_FMAP_SIZE) != VBIOS_CACHE_FMAP_SIZE) {
+		printk(BIOS_ERR, "Failed to read vbios data from flash; rdev_readat() failed.\n");
+		return;
+	}
+
+	printk(BIOS_SPEW, "VBIOS cache successfully read from FMAP.\n");
+}
+
+static void write_vbios_cache_to_fmap(void *unused)
+{
+	if (!CONFIG(SOC_AMD_GFX_CACHE_VBIOS_IN_FMAP))
+		return;
+
+	/* Don't save if VBIOS loaded from cache / data unchanged */
+	if (vbios_loaded_from_cache == true) {
+		printk(BIOS_SPEW, "VBIOS data loaded from cache; not saving\n");
+		return;
+	}
+
+	struct region_device rw_vbios_cache;
+
+	if (fmap_locate_area_as_rdev_rw(VBIOS_CACHE_FMAP_NAME, &rw_vbios_cache)) {
+		printk(BIOS_ERR, "%s: No %s FMAP section.\n", __func__, VBIOS_CACHE_FMAP_NAME);
+		return;
+	}
+
+	/* copy from PCI_VGA_RAM_IMAGE_START to rdev */
+	if (rdev_writeat(&rw_vbios_cache, (void *)PCI_VGA_RAM_IMAGE_START, 0,
+						VBIOS_CACHE_FMAP_SIZE) != VBIOS_CACHE_FMAP_SIZE)
+		printk(BIOS_ERR, "Failed to save vbios data to flash; rdev_writeat() failed.\n");
+
+	printk(BIOS_SPEW, "VBIOS cache successfully written to FMAP.\n");
+}
+
+/*
+ * Loads cached VBIOS data into legacy oprom location.
+ *
+ * Assumes user has called vbios_cache_is_valid() and checked for success
+ */
+void vbios_load_from_cache(void)
+{
+	/* copy cached vbios data from buffer to PCI_VGA_RAM_IMAGE_START */
+	memcpy((void *)PCI_VGA_RAM_IMAGE_START, vbios_data, VBIOS_CACHE_FMAP_SIZE);
+
+	/* mark cache as used so we know not to write it later */
+	vbios_loaded_from_cache = true;
+}
+
+/*
+ * Return true if VBIOS cache data is valid
+ *
+ * For now, just compare first 2 bytes of data
+ * TODO: replace with TPM hash verification once implemented
+ */
+bool vbios_cache_is_valid(void)
+{
+	bool is_valid = vbios_data[0] == 0x55 && vbios_data[1] == 0xaa;
+	printk(BIOS_SPEW, "VBIOS cache is %s\n", is_valid ? "valid" : "invalid");
+	return is_valid;
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, read_vbios_cache_from_fmap, NULL);
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME_CHECK, BS_ON_ENTRY, write_vbios_cache_to_fmap, NULL);
 
 const struct device_operations amd_graphics_ops = {
 	.read_resources		= pci_dev_read_resources,

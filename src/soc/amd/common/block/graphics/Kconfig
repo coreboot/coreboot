@@ -10,3 +10,19 @@ config SOC_AMD_COMMON_BLOCK_GRAPHICS_ATIF
 	  Select this option to provide ATIF method with display brightness querying.
 	  Currently, the exported values only open up 0-255 as the brightness range for
 	  the display.
+
+config SOC_AMD_GFX_CACHE_VBIOS_IN_FMAP
+	bool "Support for caching modified VBIOS tables in flash"
+	depends on SOC_AMD_COMMON_BLOCK_GRAPHICS && CHROMEOS && RUN_FSP_GOP
+	default n
+	help
+	  Enable support for flash based VBIOS cache.
+
+config USE_SELECTIVE_GOP_INIT
+	bool "Run FSP GOP driver only when needed for recovery/developer modes"
+	depends on SOC_AMD_GFX_CACHE_VBIOS_IN_FMAP
+	default n
+	help
+	  Select this option to only run the FSP GOP driver when needed for pre-OS display init
+	  (eg, Recovery and Developer Modes). Otherwise, use cached VBIOS/ATOMBIOS tables.
+	  Selecting this option will save approx. 130ms boot time on the normal boot path.

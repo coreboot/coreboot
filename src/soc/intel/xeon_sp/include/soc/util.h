@@ -23,5 +23,6 @@ struct iiostack_resource {
 
 void get_iiostack_info(struct iiostack_resource *info);
 bool is_iio_stack_res(const STACK_RES *res);
+void bios_done_msr(void *unused);
 
 #endif

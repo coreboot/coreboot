@@ -11,6 +11,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/util.h>
+#include <soc/soc_util.h>
 #include <smp/spinlock.h>
 
 #include "chip.h"
@@ -83,4 +84,19 @@ static void soc_finalize(void *unused)
 	post_code(POST_OS_BOOT);
 }
 
+static void bios_done_finalize(void *unused)
+{
+	if (!CONFIG(SOC_INTEL_HAS_BIOS_DONE_MSR))
+		return;
+
+	printk(BIOS_DEBUG, "Setting BIOS_DONE\n");
+	/* bios_done_msr() only defined for some Xeon-SP, such as SPR-SP */
+	if (mp_run_on_all_cpus(&bios_done_msr, NULL) != CB_SUCCESS)
+		printk(BIOS_ERR, "Fail to set BIOS_DONE MSR\n");
+
+}
+
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_ENTRY, soc_finalize, NULL);
+/* FSP programs certain registers via Notify phase ReadyToBoot that can only be programmed
+   before BIOS_DONE MSR is set, so coreboot sets BIOS_DONE as late as possible. */
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, bios_done_finalize, NULL);

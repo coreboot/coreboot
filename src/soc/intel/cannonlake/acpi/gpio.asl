@@ -140,7 +140,7 @@ Method (CGPM, 2, Serialized)
 		/* Mask off current PM bits */
 		PCRA (Local0, GPIO_MISCCFG, Not (MISCCFG_GPIO_PM_CONFIG_BITS))
 		/* Mask in requested bits */
-		PCRO (Local0, GPIO_MISCCFG, And (Arg1, MISCCFG_GPIO_PM_CONFIG_BITS))
+		PCRO (Local0, GPIO_MISCCFG, Arg1 & MISCCFG_GPIO_PM_CONFIG_BITS)
 	}
 }
 

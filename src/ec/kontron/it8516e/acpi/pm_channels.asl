@@ -32,7 +32,7 @@ Device (PM1) {
 	Method (CTK)
 	{
 		Local0 = EC_READ (0x52)
-		If (And (Local0, EC_ERROR_MASK)) {
+		If (Local0 & EC_ERROR_MASK) {
 			Return (0)
 		}
 		Local0 *= 10
@@ -74,17 +74,17 @@ Device (PM2) {
 	{
 		Acquire (EC_MUTEX, 0xffff)
 		Local0 = SEND_EC_COMMAND (0x20) /* GET_CPUTEMP */
-		If (And (Local0, EC_ERROR_MASK)) {
+		If (Local0 & EC_ERROR_MASK) {
 			Release (EC_MUTEX)
 			Return (0)
 		}
 		Local0 = RECV_EC_DATA ()	/* Temp low byte in 64th °C */
-		If (And (Local0, EC_ERROR_MASK)) {
+		If (Local0 & EC_ERROR_MASK) {
 			Release (EC_MUTEX)
 			Return (0)
 		}
 		Local1 = RECV_EC_DATA ()	/* Temp high byte in 64th °C */
-		If (And (Local1, EC_ERROR_MASK)) {
+		If (Local1 & EC_ERROR_MASK) {
 			Release (EC_MUTEX)
 			Return (0)
 		}

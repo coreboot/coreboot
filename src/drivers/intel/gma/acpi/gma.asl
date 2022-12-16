@@ -13,7 +13,7 @@ Scope (GFX0)
 		ASLS, 32,
 	}
 
-	OperationRegion (GFRG, SystemMemory, And (BAR0, 0xfffffffffffffff0), 0x400000)
+	OperationRegion (GFRG, SystemMemory, BAR0 & 0xfffffffffffffff0, 0x400000)
 	Field (GFRG, DWordAcc, NoLock, Preserve)
 	{
 		Offset (CONFIG_INTEL_GMA_BCLV_OFFSET),

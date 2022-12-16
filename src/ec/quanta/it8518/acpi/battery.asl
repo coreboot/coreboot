@@ -216,13 +216,13 @@ Device (BATX)
 		//
 
 		// Get battery state from EC
-		If (And (HB0S, 0x20))
+		If (HB0S & 0x20)
 		{
 			Local0 = 2
 		}
 		Else
 		{
-			if (And (HB0S, 0x40))
+			if (HB0S & 0x40)
 			{
 				Local0 = One
 			}
@@ -233,7 +233,7 @@ Device (BATX)
 		}
 
 		// Set critical flag if battery is empty
-		If (And (HB0S, 0x0F) == 0)
+		If (HB0S & 0x0F == 0)
 		{
 			Local0 |= 4
 		}
@@ -263,7 +263,7 @@ Device (BATX)
 		Local1 = ECAC
 		If (Local1 >= 0x8000)
 		{
-			If (And (Local0, 1))
+			If (Local0 & 1)
 			{
 				Local1 = 0x10000 - Local1
 			}
@@ -275,7 +275,7 @@ Device (BATX)
 		}
 		Else
 		{
-			If (!(AND (Local0, 2)))
+			If (!(Local0 & 2))
 			{
 				// Battery is not charging
 				Local1 = Zero

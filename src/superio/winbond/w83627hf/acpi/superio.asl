@@ -724,7 +724,7 @@ Device(SIO) {
 		{
 			Local0 = 0x00
 			ENTER_CONFIG_MODE (3)
-			If (!And(OPT2, 0x30))
+			If (!(OPT2 & 0x30))
 			{
 				If (ACTR) {
 					Local0 = 0x0F
@@ -849,7 +849,7 @@ Device(SIO) {
 		{
 			Local0 = 0x00
 			ENTER_CONFIG_MODE (3)
-			If (And(OPT2, 0x30))
+			If (OPT2 & 0x30)
 			{
 				If (ACTR) {
 					Local0 = 0x0F
@@ -1348,7 +1348,7 @@ Device(SIO) {
 		ENTER_CONFIG_MODE (9)
 		Local0 = OPT4
 		Local0 &= 63
-		OPT4 = Local0 | (And(Arg0, 0x03) << 6)
+		OPT4 = Local0 | ((Arg0 & 3) << 6)
 		EXIT_CONFIG_MODE ()
 	}
 
@@ -1358,7 +1358,7 @@ Device(SIO) {
 		ENTER_CONFIG_MODE (8)
 		Local0 = OPT4
 		Local0 &= 63
-		OPT4 = Local0 | (And(Arg0, 0x03) << 6)
+		OPT4 = Local0 | ((Arg0 & 3) << 6)
 		EXIT_CONFIG_MODE ()
 	}
 

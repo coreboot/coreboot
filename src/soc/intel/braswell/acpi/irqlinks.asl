@@ -31,7 +31,7 @@ Device (LNKA)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTA */
-		IRQ0 = 1 << And(PRTA, 0x0f)
+		IRQ0 = 1 << (PRTA & 0x0f)
 
 		Return (RTLA)
 	}
@@ -51,7 +51,7 @@ Device (LNKA)
 	/* Status */
 	Method (_STA, 0, Serialized)
 	{
-		If(And(PRTA, 0x80)) {
+		If (PRTA & 0x80) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -90,7 +90,7 @@ Device (LNKB)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTB */
-		IRQ0 = 1 << And(PRTB, 0x0f)
+		IRQ0 = 1 << (PRTB & 0x0f)
 
 		Return (RTLB)
 	}
@@ -110,7 +110,7 @@ Device (LNKB)
 	/* Status */
 	Method (_STA, 0, Serialized)
 	{
-		If(And(PRTB, 0x80)) {
+		If (PRTB & 0x80) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -149,7 +149,7 @@ Device (LNKC)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTC */
-		IRQ0 = 1 << And(PRTC, 0x0f)
+		IRQ0 = 1 << (PRTC & 0x0f)
 
 		Return (RTLC)
 	}
@@ -169,7 +169,7 @@ Device (LNKC)
 	/* Status */
 	Method (_STA, 0, Serialized)
 	{
-		If(And(PRTC, 0x80)) {
+		If (PRTC & 0x80) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -208,7 +208,7 @@ Device (LNKD)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTD */
-		IRQ0 = 1 << And(PRTD, 0x0f)
+		IRQ0 = 1 << (PRTD & 0x0f)
 
 		Return (RTLD)
 	}
@@ -228,7 +228,7 @@ Device (LNKD)
 	/* Status */
 	Method (_STA, 0, Serialized)
 	{
-		If(And(PRTD, 0x80)) {
+		If (PRTD & 0x80) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -267,7 +267,7 @@ Device (LNKE)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTE */
-		IRQ0 = 1 << And(PRTE, 0x0f)
+		IRQ0 = 1 << (PRTE & 0x0f)
 
 		Return (RTLE)
 	}
@@ -287,7 +287,7 @@ Device (LNKE)
 	/* Status */
 	Method (_STA, 0, Serialized)
 	{
-		If(And(PRTE, 0x80)) {
+		If (PRTE & 0x80) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -326,7 +326,7 @@ Device (LNKF)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTF */
-		IRQ0 = 1 << And(PRTF, 0x0f)
+		IRQ0 = 1 << (PRTF & 0x0f)
 
 		Return (RTLF)
 	}
@@ -346,7 +346,7 @@ Device (LNKF)
 	/* Status */
 	Method (_STA, 0, Serialized)
 	{
-		If(And(PRTF, 0x80)) {
+		If (PRTF & 0x80) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -385,7 +385,7 @@ Device (LNKG)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTG */
-		IRQ0 = 1 << And(PRTG, 0x0f)
+		IRQ0 = 1 << (PRTG & 0x0f)
 
 		Return (RTLG)
 	}
@@ -405,7 +405,7 @@ Device (LNKG)
 	/* Status */
 	Method (_STA, 0, Serialized)
 	{
-		If(And(PRTG, 0x80)) {
+		If (PRTG & 0x80) {
 			Return (0x9)
 		} Else {
 			Return (0xb)
@@ -444,7 +444,7 @@ Device (LNKH)
 		IRQ0 = Zero
 
 		/* Set the bit from PRTH */
-		IRQ0 = 1 << And(PRTH, 0x0f)
+		IRQ0 = 1 << (PRTH & 0x0f)
 
 		Return (RTLH)
 	}
@@ -464,7 +464,7 @@ Device (LNKH)
 	/* Status */
 	Method (_STA, 0, Serialized)
 	{
-		If(And(PRTH, 0x80)) {
+		If (PRTH & 0x80) {
 			Return (0x9)
 		} Else {
 			Return (0xb)

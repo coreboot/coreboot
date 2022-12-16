@@ -116,7 +116,7 @@
 
 #define PNP_WRITE_IO(IO_TO, RESOURCE, IO_TAG) \
 	CreateWordField (RESOURCE, IO_TAG._MIN, IO_TAG##I)\
-	IO_TO##_LOW_BYTE = And(IO_TAG##I, 0xff) \
+	IO_TO##_LOW_BYTE = IO_TAG##I & 0xff \
 	IO_TO##_HIGH_BYTE = IO_TAG##I >> 8
 
 #define PNP_WRITE_IRQ(IRQ_TO, RESOURCE, IRQ_TAG) \

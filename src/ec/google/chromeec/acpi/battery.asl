@@ -44,7 +44,7 @@ Method (BSTA, 1, Serialized)
 		Return (Zero)
 	}
 
-	If (And(Not(BTSW (Arg0)), BTEX)) {
+	If (Not(BTSW (Arg0)) & BTEX) {
 		Local0 = 0x1F
 	} Else {
 		Local0 = 0x0F

@@ -1,0 +1,36 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_LENOVO_M900
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_INT15
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_HAS_TPM1
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select MEMORY_MAPPED_TPM
+	select SKYLAKE_SOC_PCH_H
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_SKYLAKE
+	# Actual chip is NCT6685
+	select SUPERIO_NUVOTON_NCT6687D
+
+config DIMM_SPD_SIZE
+	default 512 # DDR4
+
+config DISABLE_HECI1_AT_PRE_BOOT
+	default y
+
+config MAINBOARD_DIR
+	default "lenovo/m900"
+
+config MAINBOARD_PART_NUMBER
+	default "M900"
+
+endif

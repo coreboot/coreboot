@@ -1,0 +1,188 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/skylake
+	register "deep_sx_config" = "DSX_EN_WAKE_PIN"
+
+	register "eist_enable" = "1"
+
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	register "gpe0_dw0" = "GPP_G"
+	register "gpe0_dw1" = "GPP_D"
+	register "gpe0_dw2" = "GPP_E"
+
+	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch
+	# SLP_S3 Minimum Assertion Width. Values 0: 60us, 1: 1ms, 2: 50ms, 3: 2s
+	register "PmConfigSlpS3MinAssert" = "0x02"
+
+	# SLP_S4 Minimum Assertion Width. Values 0: default, 1: 1s, 2: 2s, 3: 3s, 4: 4s
+	register "PmConfigSlpS4MinAssert" = "0x04"
+
+	# SLP_SUS Minimum Assertion Width. Values 0: 0ms, 1: 500ms, 2: 1s, 3: 4s
+	register "PmConfigSlpSusMinAssert" = "0x03"
+
+	# SLP_A Minimum Assertion Width. Values 0: 0ms, 1: 4s, 2: 98ms, 3: 2s
+	register "PmConfigSlpAMinAssert" = "0x03"
+
+	# PL2 override 91W
+	register "power_limits_config" = "{
+		.tdp_pl2_override = 91,
+	}"
+
+	device domain 0 on
+		subsystemid 0x17aa 0x30bc inherit
+
+		device ref peg0 on
+			smbios_slot_desc "SlotTypePciExpressGen3" "SlotLengthOther"
+					 "PCIE16X_1" "SlotDataBusWidth16X"
+		end
+		device ref igpu on
+			register "PrimaryDisplay" = "Display_PEG"
+		end
+		device ref sa_thermal on end
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC0), /* Rear port 5 */
+				[1] = USB2_PORT_MID(OC0), /* Rear port 6 */
+				[2] = USB2_PORT_EMPTY, /* BMC slot not populated */
+				[3] = USB2_PORT_MID(OC_SKIP), /* M.2 */
+				[4] = USB2_PORT_MID(OC4), /* Front port 1 */
+				[5] = USB2_PORT_MID(OC4), /* Front port 2 */
+				[6] = USB2_PORT_MID(OC2), /* Rear port 3 */
+				[7] = USB2_PORT_MID(OC3), /* Rear port 4 */
+				[8] = USB2_PORT_MID(OC5), /* FUSB_1 Header */
+				[9] = USB2_PORT_MID(OC5), /* FUSB_1 Header */
+				[10] = USB2_PORT_MID(6), /* FUSB_2 Header */
+				[11] = USB2_PORT_MID(6), /* FUSB_2 Header */
+				[12] = USB2_PORT_MID(OC1), /* Rear port 7 */
+				[13] = USB2_PORT_MID(OC1), /* Rear port 8 */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0), /* Rear port 5 */
+				[1] = USB3_PORT_DEFAULT(OC0), /* Rear port 6 */
+				[2] = USB3_PORT_DEFAULT(OC2), /* Rear port 3 */
+				[3] = USB3_PORT_DEFAULT(OC3), /* Rear port 4 */
+				[4] = USB3_PORT_DEFAULT(OC4), /* Front port 1 */
+				[5] = USB3_PORT_DEFAULT(OC4), /* Front port 2 */
+				[6] = USB3_PORT_DEFAULT(OC1), /* Rear port 7 */
+				[7] = USB3_PORT_DEFAULT(OC1), /* Rear port 8 */
+				[8] = USB3_PORT_EMPTY, /* HSIO used for PCIe */
+				[9] = USB3_PORT_EMPTY, /* HSIO used for PCIe */
+			}"
+		end
+		device ref thermal on end
+		device ref heci1 on end
+		device ref sata on
+			register "SataSalpSupport" = "true"
+			register "SataPortsEnable" = "{
+				[0] = true,
+				[1] = true,
+				[2] = true,
+				[3] = true,
+			}"
+		end
+		device ref pcie_rp5 on
+			register "PcieRpEnable[4]"			= "true"
+			register "PcieRpClkReqSupport[4]"		= "false"
+			register "PcieRpAdvancedErrorReporting[4]"	= "true"
+			register "PcieRpLtrEnable[4]"			= "true"
+			register "PcieRpClkSrcNumber[4]"		= "1"
+			register "PcieRpHotPlug[4]"			= "true"
+
+			smbios_slot_desc "SlotTypePciExpressGen3" "SlotLengthOther"
+					 "PCIE1X_1" "SlotDataBusWidth1X"
+		end
+		device ref pcie_rp7 on # M.2 E-key
+			register "PcieRpEnable[6]"			= "true"
+			register "PcieRpClkReqSupport[6]"		= "true"
+			register "PcieRpClkReqNumber[6]"		= "4"
+			register "PcieRpAdvancedErrorReporting[6]"	= "true"
+			register "PcieRpLtrEnable[6]"			= "true"
+			register "PcieRpClkSrcNumber[6]"		= "7"
+			register "PcieRpHotPlug[6]"			= "true"
+
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther"
+					 "M_2" "SlotDataBusWidth1X"
+		end
+		device ref pcie_rp9 on
+			register "PcieRpEnable[8]"			= "true"
+			register "PcieRpClkReqSupport[8]"		= "false"
+			register "PcieRpAdvancedErrorReporting[8]"	= "true"
+			register "PcieRpLtrEnable[8]"			= "true"
+			register "PcieRpClkSrcNumber[8]"		= "2"
+			register "PcieRpHotPlug[8]"			= "true"
+
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther"
+					 "PCIE4X_1" "SlotDataBusWidth4X"
+		end
+		device ref lpc_espi on
+			register "gen1_dec" = "0x00fc0201"
+			register "gen2_dec" = "0x003c0a01"
+			register "gen3_dec" = "0x00040069"
+			register "gen4_dec" = "0x000c0081"
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
+			# Actually a NCT6685D, but the 6687D seems similar enough
+			chip superio/nuvoton/nct6687d
+				device pnp 2e.1 on		# Parallel port
+					io 0x60 = 0x278
+					irq 0x70 = 7
+					drq 0x74 = 3
+				end
+				device pnp 2e.2 on		# COM1 - optional module
+					io 0x60 = 0x2f8
+					irq 0x70 = 3
+				end
+				device pnp 2e.3 on		# COM2, IR
+					io 0x60 = 0x3f8
+					irq 0x70 = 4
+				end
+				device pnp 2e.5 on		# Keyboard
+					io 0x60 = 0x60
+					io 0x62 = 0x64
+					irq 0x70 = 1
+					irq 0x72 = 12
+				end
+				device pnp 2e.6 off end		# CIR
+				device pnp 2e.7 off end		# GPIO0-7
+				device pnp 2e.8 off end		# P80 UART
+				device pnp 2e.9 off end		# GPIO8-9, GPIO1-8 AF
+				device pnp 2e.a on		# ACPI
+					io 0x60 = 0xa10
+					irq 0xe7 = 0x0f
+					irq 0xe8 = 0xe0
+					irq 0xec = 0x00
+					irq 0xee = 0xff
+				end
+				device pnp 2e.b on		# EC
+					io 0x60 = 0xa20
+				end
+				device pnp 2e.c off end		# RTC
+				device pnp 2e.d off end		# Deep Sleep
+				device pnp 2e.e on		# TACH/PWM assignment
+					# Pin 122 TACHIN0, Pin 121 PWMOUT0 (CPU Fan)
+					irq 0xe1 = 0x80
+					# Pin 98 TACHIN2, Pin 95 PWMOUT2 (AUX1 Fan)
+					irq 0xe2 = 0xa2
+					# Pin 125 TACHIN3, Pin 124 PWMOUT3 (AUX2 Fan)
+					irq 0xe3 = 0xb3
+					irq 0xe4 = 0x10 # Pin 126 PWMOUT1 (SYS Fan)
+					irq 0xe5 = 0x09 # Pin 127 TACHIN1 (SYS Fan)
+				end
+				device pnp 2e.f off end		# Function register
+			end
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end
+		device ref hda on
+			register "PchHdaVcType" = "Vc1"
+		end
+		device ref smbus on end
+		device ref fast_spi on end
+		device ref gbe on end
+	end
+end

@@ -49,7 +49,7 @@
 			SIOI = 0x87
 
 			/* Read Pin56 function select */
-			And(CR2A, 0x2, Local0)
+			Local0 = CR2A & 2
 
 			/* Restore default SuperIO access */
 			SIOI = 0xAA

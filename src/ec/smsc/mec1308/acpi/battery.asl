@@ -61,7 +61,7 @@ Device (BAT0)
 	{
 		Local0 = Arg0 >> 8
 		Local1 = Arg0 << 8
-		And (Local1, 0xFF00, Local1)
+		Local1 &= 0xFF00
 		Local0 |= Local1
 		If (Local0 == 0xFFFF) {
 			Local0 = 0xFFFFFFFF
@@ -111,14 +111,14 @@ Device (BAT0)
 		// Check if AC is present
 		If (ACEX) {
 			// Set only charging/discharging bits
-			And (Local0, 0x03, Local1)
+			Local1 = Local0 & 3
 		} Else {
 			// Always discharging when on battery power
 			Local1 = 0x01
 		}
 
 		// Flag if the battery level is critical
-		And (Local0, 0x04, Local4)
+		Local4 = Local0 & 4
 		Local1 |= Local4
 		PBST[0] = Local1
 

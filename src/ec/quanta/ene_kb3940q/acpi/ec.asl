@@ -131,7 +131,7 @@ Device (EC0)
 		Local0 = CTMP
 
 		// Use Local0 to avoid iasl warning: Method Local is set but never used
-		And(Local0, Ones, Local0)
+		Local0 &= Ones
 
 		// Find and program number of P-States
 		MPST = SizeOf (\_SB.CP00._PSS)

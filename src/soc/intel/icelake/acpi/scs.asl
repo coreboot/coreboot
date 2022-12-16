@@ -43,7 +43,7 @@ Scope (\_SB.PCI0) {
 			^^SCSC (PID_EMMC)
 
 			/* Set Power State to D0 */
-			And (PMCR, 0xFFFC, PMCR)
+			PMCR &= 0xFFFC
 			^TEMP = PMCR
 		}
 
@@ -96,7 +96,7 @@ Scope (\_SB.PCI0) {
 			^^SCSC (PID_SDX)
 
 			/* Set Power State to D0 */
-			And (PMCR, 0xFFFC, PMCR)
+			PMCR &= 0xFFFC
 			^TEMP = PMCR
 		}
 

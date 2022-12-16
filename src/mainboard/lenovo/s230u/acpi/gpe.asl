@@ -20,7 +20,7 @@ Scope (_GPE)
 		Local0 = One << Arg1
 		If (Arg0 == Zero) {
 			Not (Local0, Local0)
-			And (GIV0, Local0, GIV0)
+			GIV0 &= Local0
 		} Else {
 			GIV0 |= Local0
 		}

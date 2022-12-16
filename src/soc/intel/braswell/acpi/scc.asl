@@ -47,7 +47,7 @@ Device (EMMC)
 
 	Method (_PS0)
 	{
-		And (PSAT, 0xfffffffc, PSAT)
+		PSAT &= 0xfffffffc
 		PSAT |= 0
 	}
 
@@ -148,7 +148,7 @@ Device (SDIO)
 
 	Method (_PS0)
 	{
-		And (PSAT, 0xfffffffc, PSAT)
+		PSAT &= 0xfffffffc
 		PSAT |= 0
 	}
 }
@@ -200,7 +200,7 @@ Device (SDCD)
 
 	Method (_PS0)
 	{
-		And (PSAT, 0xfffffffc, PSAT)
+		PSAT &= 0xfffffffc
 		PSAT |= 0
 	}
 }

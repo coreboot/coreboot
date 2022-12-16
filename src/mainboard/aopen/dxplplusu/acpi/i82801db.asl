@@ -115,7 +115,7 @@ Device (ICH0)
 		Local0 = PBAR
 		If (Local0 && 1)
 		{
-			And (Local0, 0xFFFE, Local0)
+			Local0 &= 0xFFFE
 			IOA1 = Local0
 			IOA2 = Local0
 			IOAL = 0x80
@@ -129,7 +129,7 @@ Device (ICH0)
 
 		Local0 = GBAR
 		If (Local0 && 1) {
-			And (Local0, 0xFFFE, Local0)
+			Local0 &= 0xFFFE
 			IOS1 = Local0
 			IOS2 = Local0
 			IOSL = 0x40

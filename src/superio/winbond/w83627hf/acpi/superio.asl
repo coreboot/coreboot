@@ -399,9 +399,9 @@ Device(SIO) {
 		Name (_UID, "w83627hf-pport")
 
 		Method (MODE, 1) {
-			And(Arg0, 0x07, Local0)
+			Local0 = Arg0 & 7
 			ENTER_CONFIG_MODE (1)
-			And(OPT1, 0x3, Local1)
+			Local1 = OPT1 & 3
 			OPT1 = Local1 | Local0
 			EXIT_CONFIG_MODE()
 		}
@@ -420,7 +420,7 @@ Device(SIO) {
 		{
 			Local0 = 0x00
 			ENTER_CONFIG_MODE (1)
-			And(OPT1, 0x3, Local1)
+			Local1 = OPT1 & 3
 			If (ACTR) {
 				If (Local1 != 2) {
 					Local0 = 0x0D
@@ -488,8 +488,8 @@ Device(SIO) {
 			IOR0 = Local1
 
 			/* Set align and length based on active parallel port mode */
-			And(Local2, 0x3, Local3)
-			And(Local2, 0x4, Local4)
+			Local3 = Local2 & 3
+			Local4 = Local2 & 4
 			If (Local4) {
 				IOAL = 0x04
 			}
@@ -578,7 +578,7 @@ Device(SIO) {
 			IO1H = Local1
 			/* Mode */
 			Local3 = OPT1
-			And (Local3, 0xF8, Local3)
+			Local3 &= 0xF8
 			OPT1 = Local2 | Local3
 			/* DMA off */
 			DMA0 = 0x04
@@ -1347,7 +1347,7 @@ Device(SIO) {
 	{
 		ENTER_CONFIG_MODE (9)
 		Local0 = OPT4
-		And(Local0, 63, Local0)
+		Local0 &= 63
 		OPT4 = Local0 | (And(Arg0, 0x03) << 6)
 		EXIT_CONFIG_MODE ()
 	}
@@ -1357,7 +1357,7 @@ Device(SIO) {
 	{
 		ENTER_CONFIG_MODE (8)
 		Local0 = OPT4
-		And(Local0, 63, Local0)
+		Local0 &= 63
 		OPT4 = Local0 | (And(Arg0, 0x03) << 6)
 		EXIT_CONFIG_MODE ()
 	}

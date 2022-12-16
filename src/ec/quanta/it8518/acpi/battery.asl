@@ -244,7 +244,7 @@ Device (BATX)
 		If (ACPW)
 		{
 			// Set only charging/discharging bits
-			And (Local0, 0x03, Local1)
+			Local1 = Local0 & 3
 		}
 		Else
 		{
@@ -253,7 +253,7 @@ Device (BATX)
 		}
 
 		// Flag if the battery level is critical
-		And (Local0, 0x04, Local4)
+		Local4 = Local0 & 4
 		Local1 |= Local4
 		PBST[0] = Local1
 

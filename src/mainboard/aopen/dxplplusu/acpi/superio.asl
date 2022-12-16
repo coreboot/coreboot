@@ -110,28 +110,28 @@ Method (_INI, 0, NotSerialized)
 
 	/* GPIO initial output levels */
 	Local0 = GP_1
-	And( Local0, 0x7C, Local0)
+	Local0 &= 0x7C
 	Local0 |= 0x81
 	GP_1 = Local0
 
 	Local0 = GP_2
-	And( Local0, 0xFE, Local0)
+	Local0 &= 0xFE
 	Local0 |= 0
 	GP_2 = Local0
 
 	Local0 = GP_3
-	And( Local0, 0x7F, Local0)
+	Local0 &= 0x7F
 	Local0 |= 0x80
 	GP_3 = Local0
 
 	Local0 = GP_4
-	And( Local0, 0x7F, Local0)
+	Local0 &= 0x7F
 	Local0 |= 0
 	GP_4 = Local0
 
 	/* Power Led */
 	Local0 = LED1
-	And( Local0, 0xfc, Local0)
+	Local0 &= 0xfc
 	Local0 |= 1
 	LED1 = Local0
 

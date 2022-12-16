@@ -93,7 +93,7 @@ Device (LPEA)
 
 		Method (_ON)
 		{
-			And (PSAT, 0xfffffffc, PSAT)
+			PSAT &= 0xfffffffc
 			PSAT |= 0
 		}
 	}

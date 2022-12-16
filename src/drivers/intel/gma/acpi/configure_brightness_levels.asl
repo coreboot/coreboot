@@ -76,7 +76,7 @@
 				Sleep (1)
 				If (And (ASLC, 0x2) == 0) {
 					/* Request has been processed, check status: */
-					And (ASLC >> 12, 0x3, Local1)
+					Local1 = (ASLC >> 12) & 3
 					If (Local1 == 0) {
 						Return (Zero)
 					} Else {

@@ -2,12 +2,10 @@
 
 #include <baseboard/variants.h>
 #include <bootstate.h>
-#include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include <gpio.h>
-#include <intelblocks/pcr.h>
 #include <soc/gpio.h>
 #include <soc/pci_devs.h>
-#include <soc/pcr_ids.h>
 
 #define HOSTCTRL2		0x3E
 #define  HOSTCTRL2_PRESET	(1 << 15)
@@ -21,15 +19,6 @@
 void variant_mainboard_final(void)
 {
 	struct device *dev;
-
-	/* PIR8 register mapping for PCIe root ports
-	   INTA#->PIRQC#, INTB#->PIRQD#, INTC#->PIRQA#, INTD#-> PIRQB# */
-	pcr_write16(PID_ITSS, 0x3150, 0x1032);
-
-	/* Disable clock outputs 1-5 (CLKOUT) for XIO2001 PCIe to PCI Bridge. */
-	dev = dev_find_device(PCI_VID_TI, PCI_DID_TI_XIO2001, 0);
-	if (dev)
-		pci_write_config8(dev, 0xd8, 0x3e);
 
 	/* Limit SD-Card speed to DDR50 mode to avoid SDR104/SDR50 modes due to
 	   layout limitations. */

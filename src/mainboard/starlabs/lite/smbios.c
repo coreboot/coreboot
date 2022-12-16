@@ -9,11 +9,6 @@
 #include <uuid.h>
 #include <variants.h>
 
-const char *smbios_mainboard_bios_version(void)
-{
-	return CONFIG_LOCAL_VERSION;
-}
-
 /* Get the Embedded Controller firmware version */
 void smbios_ec_revision(uint8_t *ec_major_revision, uint8_t *ec_minor_revision)
 {

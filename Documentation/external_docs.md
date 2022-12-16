@@ -24,11 +24,33 @@ Please add any helpful or informational links and sections as you see fit.
 
 * [OS Dev](https://wiki.osdev.org/Categorized_Main_Page)
 * [Interface BUS](http://www.interfacebus.com/)
-* Open course material for a variety of topics such as assembly, firmware,
-  security, debugging, and more.
-  * [Open Security Training](https://opensecuritytraining.info/Training.html),
-  * [Open Security Training 2](https://p.ost2.fyi/)
 
+## OpenSecurityTraining2
+
+OpenSecurityTraining2 is dedicated to sharing training material for any topic
+related to computer security, including coreboot.
+
+There are various ways to learn firmware, some are more efficient than others,
+depending on the people. Before going straight to practice and experimenting
+with hardware, it can be beneficial to learn the basics of computing. OST2
+focuses on conveying computer architecture and security information in the form
+of structured instructor-led classes, available to everyone for free.
+
+All material is licensed [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/),
+allowing anyone to use the material however they see fit, so long as they share
+modified works back to the community.
+
+Below is a list of currently available courses that can help understand the
+inner workings of coreboot and other firmware-related topics:
+
+* [coreboot design principles and boot process](https://ost2.fyi/Arch4031)
+* [x86-64 Assembly](https://ost2.fyi/Arch1001)
+* [x86-64 OS Internals](https://ost2.fyi/Arch2001)
+* [x86-64 Intel Firmware Attack & Defense](https://ost2.fyi/Arch4001)
+
+There are [additional security courses](https://p.ost2.fyi/courses) at the site
+as well (such as
+[how to avoid writing exploitable code in C/C++](https://ost2.fyi/Vulns1001).)
 
 ## Firmware Specifications & Information
 

@@ -5,13 +5,20 @@
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <memory_info.h>
+#include <soc/gpio.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	const struct pad_config *pads;
+	size_t pads_num;
+
 	meminit_lpddr4_by_sku(&memupd->FspmConfig,
 		variant_lpddr4_config(), variant_memory_sku());
+
+	pads = variant_romstage_gpio_table(&pads_num);
+	gpio_configure_pads(pads, pads_num);
 }
 
 static void save_dimm_info_by_sku_config(void)

@@ -184,7 +184,7 @@ my_inb(X86EMU_pioAddr addr)
 				X86EMU_trace_on();
 			}
 			M.x86.debug &= ~DEBUG_DECODE_NOPRINT_F;
-			// fall-through
+			__fallthrough;
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x) reading from bios_device.io_buffer\n",

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <assert.h>
 #include <console/console.h>
 #include <intelblocks/meminit.h>
 #include <commonlib/region.h>

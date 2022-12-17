@@ -4,7 +4,6 @@
 #include <amdblocks/cpu.h>
 #include <amdblocks/iomap.h>
 #include <amdblocks/mca.h>
-#include <assert.h>
 #include <console/console.h>
 #include <cpu/amd/microcode.h>
 #include <cpu/cpu.h>

@@ -434,6 +434,12 @@ const struct pad_config *__weak variant_early_gpio_table(size_t *num)
 	return NULL;
 }
 
+/* Weak implementation of romstage gpio */
+const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}
 /* Weak implementation of finalize gpio */
 const struct pad_config *__weak variant_finalize_gpio_table(size_t *num)
 {

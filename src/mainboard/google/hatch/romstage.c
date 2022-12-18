@@ -31,6 +31,8 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	struct cnl_mb_cfg memcfg;
 	int mem_sku;
 	int is_single_ch_mem;
+	const struct pad_config *pads;
+	size_t pads_num;
 
 	variant_memory_params(&memcfg);
 	mem_sku = variant_memory_sku();
@@ -53,4 +55,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	}
 
 	cannonlake_memcfg_init(&memupd->FspmConfig, &memcfg);
+
+	pads = variant_romstage_gpio_table(&pads_num);
+	gpio_configure_pads(pads, pads_num);
 }

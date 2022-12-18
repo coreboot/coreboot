@@ -24,6 +24,9 @@ int variant_memory_sku(void);
 /* Return variant specific gpio pads to be configured during sleep */
 const struct pad_config *variant_sleep_gpio_table(u8 slp_typ, size_t *num);
 
+/* Return GPIO pads that need to be configured during romstage */
+const struct pad_config *variant_romstage_gpio_table(size_t *num);
+
 /* Return GPIO pads that need to be configured before ramstage */
 const struct pad_config *variant_early_gpio_table(size_t *num);
 

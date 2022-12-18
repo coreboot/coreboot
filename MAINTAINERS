@@ -956,6 +956,10 @@ F:	util/xcompile/
 F:	util/genbuild_h/
 
 TOOLCHAIN
+M:	Martin Roth <gaumless@gmail.com>
+M:	Felix Singer <felixsinger@posteo.net>
+M:	Elyes Haouas <ehaouas@noos.fr>
+S:	Supported
 F:	util/crossgcc/
 
 DOCKER

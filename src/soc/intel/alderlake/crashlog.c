@@ -1,12 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
-#include <intelblocks/crashlog.h>
-#include <string.h>
-#include <soc/crashlog.h>
 #include <arch/bert_storage.h>
+#include <console/console.h>
+#include <device/pci_ops.h>
+#include <intelblocks/crashlog.h>
+#include <intelblocks/pmc_ipc.h>
+#include <soc/crashlog.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
+#include <string.h>
 
 /* global crashLog info */
 static bool m_pmc_crashLog_support;

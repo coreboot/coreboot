@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <cbmem.h>
+#include <console/console.h>
 #include <delay.h>
+#include <device/mmio.h>
 #include <intelblocks/crashlog.h>
+#include <intelblocks/pmc_ipc.h>
 #include <string.h>
 
 int __weak cl_get_cpu_record_size(void)

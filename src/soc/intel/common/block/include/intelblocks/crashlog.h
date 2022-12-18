@@ -3,12 +3,7 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_CRASHLOG_H
 #define SOC_INTEL_COMMON_BLOCK_CRASHLOG_H
 
-#include <console/console.h>
-#include <device/pci_ops.h>
-#include <device/pci_def.h>
-#include <device/mmio.h>
 #include <fsp/util.h>
-#include <intelblocks/pmc_ipc.h>
 #include <types.h>
 
 /* PMC  CrashLog Command */

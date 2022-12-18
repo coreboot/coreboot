@@ -22,7 +22,6 @@
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <soc/northbridge.h>
-#include <version.h>
 
 unsigned long acpi_fill_madt(unsigned long current)
 {

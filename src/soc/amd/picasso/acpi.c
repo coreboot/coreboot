@@ -23,7 +23,6 @@
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
-#include <version.h>
 #include "chip.h"
 
 unsigned long acpi_fill_madt(unsigned long current)

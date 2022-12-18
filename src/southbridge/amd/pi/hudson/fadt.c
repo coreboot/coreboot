@@ -7,7 +7,6 @@
 #include <console/console.h>
 #include <acpi/acpi.h>
 #include <device/device.h>
-#include <version.h>
 
 #include "hudson.h"
 #include "smi.h"

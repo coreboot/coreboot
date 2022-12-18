@@ -7,7 +7,6 @@
 #include <acpi/acpi.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <version.h>
 
 #include "i82371eb.h"
 

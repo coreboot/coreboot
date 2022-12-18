@@ -23,7 +23,6 @@
 #include <timer.h>
 #include <timestamp.h>
 #include <types.h>
-#include <version.h>
 
 static boot_state_t bs_pre_device(void *arg);
 static boot_state_t bs_dev_init_chips(void *arg);

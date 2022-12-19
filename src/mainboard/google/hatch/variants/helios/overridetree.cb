@@ -93,7 +93,7 @@ chip soc/intel/cannonlake
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
-				register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_A21_IRQ)"
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_A21_IRQ)"
 				register "wake" = "GPE0_DW0_21"
 				device i2c 15 on end
 			end

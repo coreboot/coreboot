@@ -162,3 +162,12 @@ config FSP_HYPERTHREADING
 	bool "Enable Hyper-Threading"
 	depends on HAVE_HYPERTHREADING
 	default y
+
+config INTEL_KEYLOCKER
+	bool "Intel Key Locker"
+	default n
+	help
+	 Enable Intel Key Locker if supported by the CPU. Intel Key Locker provides a
+	 mechanism to encrypt and decrypt data with an AES key without having access
+	 to the raw key value by converting AES keys into "handles". The specification
+	 of Key Locker can be found via document #343965 on Intel's site.

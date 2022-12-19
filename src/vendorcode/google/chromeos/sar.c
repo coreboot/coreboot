@@ -3,8 +3,10 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <drivers/vpd/vpd.h>
+#include <fw_config.h>
 #include <lib.h>
 #include <sar.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <types.h>
@@ -303,4 +305,20 @@ __weak
 const char *get_wifi_sar_cbfs_filename(void)
 {
 	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
+}
+
+char *get_wifi_sar_fw_config_filename(const struct fw_config_field *field)
+{
+	uint64_t sar_id = fw_config_get_field(field);
+	if (sar_id == UNDEFINED_FW_CONFIG) {
+		printk(BIOS_WARNING, "fw_config unprovisioned, set sar filename to NULL\n");
+		return NULL;
+	}
+	static char filename[20];
+	printk(BIOS_INFO, "Use wifi_sar_%lld.hex.\n", sar_id);
+	if (snprintf(filename, sizeof(filename), "wifi_sar_%lld.hex", sar_id) < 0) {
+		printk(BIOS_ERR, "Error occurred with snprintf, set sar filename to NULL\n");
+		return NULL;
+	}
+	return filename;
 }

@@ -2,6 +2,7 @@
 #ifndef _SAR_H_
 #define _SAR_H_
 
+#include <fw_config.h>
 #include <stdint.h>
 
 #define MAX_ANT_GAINS_REVISION	2
@@ -87,5 +88,7 @@ int get_wifi_sar_limits(union wifi_sar_limits *sar_limits);
 #define WIFI_SAR_CBFS_DEFAULT_FILENAME	"wifi_sar_defaults.hex"
 
 const char *get_wifi_sar_cbfs_filename(void);
+
+char *get_wifi_sar_fw_config_filename(const struct fw_config_field *field);
 
 #endif /* _SAR_H_ */

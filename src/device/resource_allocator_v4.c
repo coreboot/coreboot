@@ -215,14 +215,14 @@ static void compute_domain_resources(const struct device *domain)
 	}
 }
 
-static unsigned char get_alignment_by_resource_type(const struct resource *res)
+static unsigned char get_alignment_by_resource_type(const unsigned long type)
 {
-	if (res->flags & IORESOURCE_MEM)
+	if (type & IORESOURCE_MEM)
 		return 12;  /* Page-aligned --> log2(4KiB) */
-	else if (res->flags & IORESOURCE_IO)
+	else if (type & IORESOURCE_IO)
 		return 0;   /* No special alignment required --> log2(1) */
 
-	die("Unexpected resource type: flags(%lu)!\n", res->flags);
+	die("Unexpected resource type: flags(%lu)!\n", type);
 }
 
 /*
@@ -303,20 +303,31 @@ static void initialize_domain_mem_resource_memranges(struct memranges *ranges,
  * satisfy resource requests from downstream devices for allocations
  * above 4G.
  */
-static void initialize_domain_memranges(struct memranges *ranges, const struct resource *res,
+static void initialize_domain_memranges(const struct device *dev, struct memranges *ranges,
 					unsigned long memrange_type)
 {
-	unsigned char align = get_alignment_by_resource_type(res);
+	unsigned char align = get_alignment_by_resource_type(memrange_type);
 
 	memranges_init_empty_with_alignment(ranges, NULL, 0, align);
 
-	if (is_resource_invalid(res))
-		return;
+	struct resource *res;
+	for (res = dev->resource_list; res != NULL; res = res->next) {
+		if (is_resource_invalid(res))
+			continue;
+		if (res->flags & IORESOURCE_FIXED)
+			continue;
+		if ((res->flags & IORESOURCE_TYPE_MASK) != memrange_type)
+			continue;
 
-	if (res->flags & IORESOURCE_IO)
-		initialize_domain_io_resource_memranges(ranges, res, memrange_type);
-	else
-		initialize_domain_mem_resource_memranges(ranges, res, memrange_type);
+		printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %d gran: %d limit: %llx\n",
+		       dev_path(dev), resource2str(res), res->base, res->size, res->align,
+		       res->gran, res->limit);
+
+		if (res->flags & IORESOURCE_IO)
+			initialize_domain_io_resource_memranges(ranges, res, memrange_type);
+		else
+			initialize_domain_mem_resource_memranges(ranges, res, memrange_type);
+	}
 }
 
 /*
@@ -335,15 +346,22 @@ static void initialize_domain_memranges(struct memranges *ranges, const struct r
  * downstream resources of the same type under the bridge get allocated
  * above 4G.
  */
-static void initialize_bridge_memranges(struct memranges *ranges, const struct resource *res,
+static void initialize_bridge_memranges(const struct device *dev, struct memranges *ranges,
 					unsigned long memrange_type)
 {
-	unsigned char align = get_alignment_by_resource_type(res);
+	unsigned char align = get_alignment_by_resource_type(memrange_type);
 
 	memranges_init_empty_with_alignment(ranges, NULL, 0, align);
 
-	if (is_resource_invalid(res))
-		return;
+	struct resource *res;
+	for (res = dev->resource_list; res != NULL; res = res->next) {
+		if (is_resource_invalid(res))
+			continue;
+		if (res->flags & IORESOURCE_FIXED)
+			continue;
+		if ((res->flags & (IORESOURCE_TYPE_MASK | IORESOURCE_PREFETCH)) == memrange_type)
+			break;
+	}
 
 	memranges_insert(ranges, res->base, res->limit - res->base + 1, memrange_type);
 }
@@ -485,30 +503,39 @@ static void constrain_domain_resources(const struct device *domain, struct memra
  * windows which cannot be used for resource allocation as fixed
  * resources.
  */
-static void setup_resource_ranges(const struct device *dev, const struct resource *res,
-				  unsigned long type, struct memranges *ranges)
+static void setup_resource_ranges(const struct device *dev, unsigned long type,
+				  struct memranges *ranges)
 {
-	printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %d gran: %d limit: %llx\n",
-	       dev_path(dev), resource2str(res), res->base, res->size, res->align,
-	       res->gran, res->limit);
-
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
-		initialize_domain_memranges(ranges, res, type);
+		initialize_domain_memranges(dev, ranges, type);
 		constrain_domain_resources(dev, ranges, type);
 	} else {
-		initialize_bridge_memranges(ranges, res, type);
+		initialize_bridge_memranges(dev, ranges, type);
 	}
 
 	print_resource_ranges(dev, ranges);
 }
 
-static void cleanup_resource_ranges(const struct device *dev, struct memranges *ranges,
-				    const struct resource *res)
+static void print_resource_done(const struct device *dev, const struct resource *res)
 {
-	memranges_teardown(ranges);
 	printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %d gran: %d limit: %llx done\n",
 	       dev_path(dev), resource2str(res), res->base, res->size, res->align,
 	       res->gran, res->limit);
+}
+
+static void cleanup_domain_resource_ranges(const struct device *dev, struct memranges *ranges,
+					   unsigned long type)
+{
+	memranges_teardown(ranges);
+	for (struct resource *res = dev->resource_list; res != NULL; res = res->next) {
+		if (is_resource_invalid(res))
+			continue;
+		if (res->flags & IORESOURCE_FIXED)
+			continue;
+		if ((res->flags & IORESOURCE_TYPE_MASK) != type)
+			continue;
+		print_resource_done(dev, res);
+	}
 }
 
 /*
@@ -547,9 +574,10 @@ static void allocate_bridge_resources(const struct device *bridge)
 
 		type_match = res->flags & type_mask;
 
-		setup_resource_ranges(bridge, res, type_match, &ranges);
+		setup_resource_ranges(bridge, type_match, &ranges);
 		allocate_child_resources(bus, &ranges, type_mask, type_match);
-		cleanup_resource_ranges(bridge, &ranges, res);
+		print_resource_done(bridge, res);
+		memranges_teardown(&ranges);
 	}
 
 	for (child = bus->children; child; child = child->sibling) {
@@ -558,22 +586,6 @@ static void allocate_bridge_resources(const struct device *bridge)
 
 		allocate_bridge_resources(child);
 	}
-}
-
-static const struct resource *find_domain_resource(const struct device *domain,
-						   unsigned long type)
-{
-	const struct resource *res;
-
-	for (res = domain->resource_list; res; res = res->next) {
-		if (res->flags & IORESOURCE_FIXED)
-			continue;
-
-		if ((res->flags & IORESOURCE_TYPE_MASK) == type)
-			return res;
-	}
-
-	return NULL;
 }
 
 /*
@@ -593,16 +605,12 @@ static void allocate_domain_resources(const struct device *domain)
 {
 	struct memranges ranges;
 	struct device *child;
-	const struct resource *res;
 
 	/* Resource type I/O */
-	res = find_domain_resource(domain, IORESOURCE_IO);
-	if (res) {
-		setup_resource_ranges(domain, res, IORESOURCE_IO, &ranges);
-		allocate_child_resources(domain->link_list, &ranges, IORESOURCE_TYPE_MASK,
-					 IORESOURCE_IO);
-		cleanup_resource_ranges(domain, &ranges, res);
-	}
+	setup_resource_ranges(domain, IORESOURCE_IO, &ranges);
+	allocate_child_resources(domain->link_list, &ranges, IORESOURCE_TYPE_MASK,
+				 IORESOURCE_IO);
+	cleanup_domain_resource_ranges(domain, &ranges, IORESOURCE_IO);
 
 	/*
 	 * Resource type Mem:
@@ -621,17 +629,14 @@ static void allocate_domain_resources(const struct device *domain)
 	 * the 4G boundary are handled separately by setting the type_mask and
 	 * type_match to allocate_child_resources() accordingly.
 	 */
-	res = find_domain_resource(domain, IORESOURCE_MEM);
-	if (res) {
-		setup_resource_ranges(domain, res, IORESOURCE_MEM, &ranges);
-		allocate_child_resources(domain->link_list, &ranges,
-					 IORESOURCE_TYPE_MASK | IORESOURCE_ABOVE_4G,
-					 IORESOURCE_MEM);
-		allocate_child_resources(domain->link_list, &ranges,
-					 IORESOURCE_TYPE_MASK | IORESOURCE_ABOVE_4G,
-					 IORESOURCE_MEM | IORESOURCE_ABOVE_4G);
-		cleanup_resource_ranges(domain, &ranges, res);
-	}
+	setup_resource_ranges(domain, IORESOURCE_MEM, &ranges);
+	allocate_child_resources(domain->link_list, &ranges,
+				 IORESOURCE_TYPE_MASK | IORESOURCE_ABOVE_4G,
+				 IORESOURCE_MEM);
+	allocate_child_resources(domain->link_list, &ranges,
+				 IORESOURCE_TYPE_MASK | IORESOURCE_ABOVE_4G,
+				 IORESOURCE_MEM | IORESOURCE_ABOVE_4G);
+	cleanup_domain_resource_ranges(domain, &ranges, IORESOURCE_MEM);
 
 	for (child = domain->link_list->children; child; child = child->sibling) {
 		if (!dev_has_children(child))

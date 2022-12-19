@@ -196,8 +196,7 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	res = ram_from_to(dev, index++, top_of_ram, (uintptr_t)cbmem_top());
 	LOG_RESOURCE("cbmem_ram", dev, res);
 
-	/* Reserve and set up DPR */
-	configure_dpr(dev);
+	/* Reserve DPR region */
 	union dpr_register dpr = { .raw = pci_read_config32(dev, VTD_LTDPR) };
 	if (dpr.size) {
 		/*
@@ -261,6 +260,9 @@ static void mmapvtd_read_resources(struct device *dev)
 
 	/* Read standard PCI resources. */
 	pci_dev_read_resources(dev);
+
+	/* set up DPR */
+	configure_dpr(dev);
 
 	/* Calculate and add DRAM resources. */
 	mc_add_dram_resources(dev, &index);

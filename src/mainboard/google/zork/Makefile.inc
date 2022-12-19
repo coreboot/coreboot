@@ -13,6 +13,9 @@ ramstage-y += sku_id.c
 verstage-y += chromeos.c
 verstage-y += verstage.c
 
+BASEBOARD_DIR:=$(call strip_quotes,$(CONFIG_BASEBOARD_DIR))
+
+subdirs-y += variants/baseboard/$(BASEBOARD_DIR)
 subdirs-y += variants/baseboard
 subdirs-y += variants/$(VARIANT_DIR)/spd
 subdirs-y += spd

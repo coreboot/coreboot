@@ -88,9 +88,13 @@ config MAINBOARD_PART_NUMBER
 	default "Shuboz" if BOARD_GOOGLE_SHUBOZ
 	default "Gumboz" if BOARD_GOOGLE_GUMBOZ
 
+config BASEBOARD_DIR
+	string
+	default "trembyle" if BOARD_GOOGLE_BASEBOARD_TREMBYLE
+	default "dalboz" if BOARD_GOOGLE_BASEBOARD_DALBOZ
+
 config DEVICETREE
-	default "variants/baseboard/devicetree_trembyle.cb" if BOARD_GOOGLE_BASEBOARD_TREMBYLE
-	default "variants/baseboard/devicetree_dalboz.cb" if BOARD_GOOGLE_BASEBOARD_DALBOZ
+	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree.cb"
 
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"

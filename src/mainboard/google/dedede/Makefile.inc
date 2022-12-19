@@ -11,7 +11,6 @@ ramstage-y += ec.c
 ramstage-y += board_info.c
 ramstage-y += fw_config.c
 
-VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))
 
 subdirs-y += variants/baseboard
 subdirs-y += variants/$(VARIANT_DIR)

@@ -10,7 +10,6 @@ ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += mainboard.c
 ramstage-y += ec.c
 
-VARIANT_DIR:=$(call strip_quotes,$(CONFIG_VARIANT_DIR))
 BASEBOARD_DIR:=$(call strip_quotes,$(CONFIG_BASEBOARD_DIR))
 
 subdirs-y += variants/baseboard/$(BASEBOARD_DIR)

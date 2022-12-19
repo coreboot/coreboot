@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <intelblocks/pmc_ipc.h>
+#include <soc/dptf.h>
 #include <soc/pci_devs.h>
 #include "chip.h"
 #include "dptf.h"
@@ -432,10 +433,50 @@ static void write_open_dptf_device(const struct device *dev,
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 }
 
+static const struct dptf_platform_info generic_dptf_platform_info = {
+	.use_eisa_hids = CONFIG(DPTF_USE_EISA_HID),
+	/* _HID for the toplevel DPTF device, typically \_SB.DPTF */
+	.dptf_device_hid = DPTF_DPTF_DEVICE,
+	/* _HID for Intel DPTF Generic Device (these require PTYP as well) */
+	.generic_hid = DPTF_GEN_DEVICE,
+	/* _HID for Intel DPTF Fan Device */
+	.fan_hid = DPTF_FAN_DEVICE,
+
+#if CONFIG(DRIVERS_INTEL_DPTF_SUPPORTS_TPWR)
+	/* _HID for the toplevel TPWR device, typically \_SB.DPTF.TPWR */
+	.tpwr_device_hid = DPTF_TPWR_DEVICE,
+#endif
+
+#if CONFIG(DRIVERS_INTEL_DPTF_SUPPORTS_TBAT)
+	/* _HID for the toplevel BAT1 device, typically \_SB.DPTF.BAT1 */
+	.tbat_device_hid = DPTF_BAT1_DEVICE,
+#endif
+
+#if CONFIG(DRIVERS_INTEL_DPTF_SUPPORTS_TPCH)
+	/* _HID for the toplevel TPCH device, typically \_SB.TPCH */
+	.tpch_device_hid = DPTF_TPCH_DEVICE,
+
+	.tpch_method_names = {
+		.set_fivr_low_clock_method = "RFC0",
+		.set_fivr_high_clock_method = "RFC1",
+		.get_fivr_low_clock_method = "GFC0",
+		.get_fivr_high_clock_method = "GFC1",
+		.get_fivr_ssc_method = "GEMI",
+		.get_fivr_switching_fault_status = "GFFS",
+		.get_fivr_switching_freq_mhz = "GFCS",
+	},
+#endif
+};
+
+static const struct dptf_platform_info *get_dptf_platform_info(void)
+{
+	return &generic_dptf_platform_info;
+}
+
 /* Add minimal definitions of DPTF devices into the SSDT */
 static void write_device_definitions(const struct device *dev)
 {
-	const struct dptf_platform_info *platform_info = soc_get_dptf_platform_info();
+	const struct dptf_platform_info *platform_info = get_dptf_platform_info();
 	const struct drivers_intel_dptf_config *config;
 	struct device *parent;
 

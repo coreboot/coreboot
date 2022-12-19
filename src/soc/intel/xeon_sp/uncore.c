@@ -146,6 +146,8 @@ static void configure_dpr(struct device *dev)
  * |     Tseg (relocatable)   | N x 8MB (0x70000000 - 0x77ffffff, 0x20000)
  * +--------------------------+
  * |     DPR                  |
+ * +--------------------------+ 1M aligned DPR base
+ * |     Unused memory        |
  * +--------------------------+ cbmem_top
  * |     Reserved - CBMEM     | (0x6fffe000 - 0x6fffffff, 0x2000)
  * +--------------------------+
@@ -168,7 +170,9 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 {
 	const struct resource *res;
 	uint64_t mc_values[NUM_MAP_ENTRIES];
+	uint64_t top_of_ram;
 	int index = *res_count;
+	struct range_entry fsp_mem;
 
 	/* Only add dram resources once. */
 	if (dev->bus->secondary != 0)
@@ -182,23 +186,40 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	res = ram_from_to(dev, index++, 0, 0xa0000);
 	LOG_RESOURCE("legacy_ram", dev, res);
 
-	/* 1MB -> top_of_ram i.e., cbmem_top */
-	res = ram_from_to(dev, index++, 1 * MiB, (uintptr_t)cbmem_top());
+	/* 1MB -> top_of_ram */
+	fsp_find_reserved_memory(&fsp_mem);
+	top_of_ram = range_entry_base(&fsp_mem) - 1;
+	res = ram_from_to(dev, index++, 1 * MiB, top_of_ram);
 	LOG_RESOURCE("low_ram", dev, res);
 
-	/* Mark TSEG/SMM region as reserved */
-	res = reserved_ram_from_to(dev, index++, mc_values[TSEG_BASE_REG],
-				   mc_values[TSEG_LIMIT_REG] + 1);
-	LOG_RESOURCE("mmio_tseg", dev, res);
+	/* top_of_ram -> cbmem_top */
+	res = ram_from_to(dev, index++, top_of_ram, (uintptr_t)cbmem_top());
+	LOG_RESOURCE("cbmem_ram", dev, res);
 
 	/* Reserve and set up DPR */
 	configure_dpr(dev);
 	union dpr_register dpr = { .raw = pci_read_config32(dev, VTD_LTDPR) };
 	if (dpr.size) {
+		/*
+		 * cbmem_top -> DPR base:
+		 * DPR has a 1M granularity so it's possible if cbmem_top is not 1M
+		 * aligned that some memory does not get marked as assigned.
+		 */
+		res = reserved_ram_from_to(dev, index++, (uintptr_t)cbmem_top(),
+			(dpr.top - dpr.size) * MiB);
+		LOG_RESOURCE("unused_dram", dev, res);
+
+		/* DPR base -> DPR top */
 		res = reserved_ram_from_to(dev, index++, (dpr.top - dpr.size) * MiB,
 					   dpr.top * MiB);
 		LOG_RESOURCE("dpr", dev, res);
+
 	}
+
+	/* Mark TSEG/SMM region as reserved */
+	res = reserved_ram_from_to(dev, index++, mc_values[TSEG_BASE_REG],
+				   mc_values[TSEG_LIMIT_REG] + 1);
+	LOG_RESOURCE("mmio_tseg", dev, res);
 
 	/* Mark region between TSEG - TOLM (eg. MESEG) as reserved */
 	res = reserved_ram_from_to(dev, index++, mc_values[TSEG_LIMIT_REG] + 1,

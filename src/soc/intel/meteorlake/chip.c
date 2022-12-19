@@ -7,6 +7,7 @@
 #include <intelblocks/acpi.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/gpio.h>
+#include <intelblocks/irq.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/p2sb.h>
 #include <intelblocks/pcie_rp.h>
@@ -151,6 +152,19 @@ void soc_init_pre_device(void *chip_info)
 	pcie_rp_update_devicetree(get_pcie_rp_table());
 }
 
+static void cpu_fill_ssdt(const struct device *dev)
+{
+	if (!generate_pin_irq_map())
+		printk(BIOS_ERR, "Failed to generate ACPI _PRT table!\n");
+
+	generate_cpu_entries(dev);
+}
+
+static void cpu_set_north_irqs(struct device *dev)
+{
+	irq_program_non_pch();
+}
+
 static struct device_operations pci_domain_ops = {
 	.read_resources   = &pci_domain_read_resources,
 	.set_resources    = &pci_domain_set_resources,
@@ -164,8 +178,9 @@ static struct device_operations pci_domain_ops = {
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
+	.enable_resources = cpu_set_north_irqs,
 #if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_fill_ssdt = generate_cpu_entries,
+	.acpi_fill_ssdt = cpu_fill_ssdt,
 #endif
 };
 

@@ -9,8 +9,4 @@
 #define PCH_IRQ10	10
 #define PCH_IRQ11	11
 
-#define LPSS_UART0_IRQ	16
-#define LPSS_UART1_IRQ	17
-#define LPSS_UART2_IRQ	31
-
 #endif

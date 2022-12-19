@@ -221,7 +221,8 @@
 #endif
 
 /* for common code */
-#define PCH_DEV_SLOT_CSE        PCI_DEV_SLOT_CSE
+#define MIN_PCH_SLOT		PCI_DEV_SLOT_THC
+#define PCH_DEV_SLOT_CSE	PCI_DEV_SLOT_CSE
 #define PCH_DEVFN_CSE		PCI_DEVFN_CSE
 #define PCH_DEV_CSE		PCI_DEV_CSE
 #define PCH_DEV_SPI		PCI_DEV_SPI

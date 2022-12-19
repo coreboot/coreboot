@@ -82,11 +82,6 @@ void save_vbnv(const uint8_t *vbnv_copy)
 int vbnv_udc_enable_flag(void)
 {
 	struct vb2_context *ctx = vboot_get_context();
-
-	/* This function is expected to be called after temporary nvdata storage in vboot
-	   context is initialized. */
-	assert(vbnv_initialized);
-
 	return (ctx->nvdata[DEV_FLAGS_OFFSET] & DEV_ENABLE_UDC) ? 1 : 0;
 }
 

@@ -347,7 +347,7 @@ endif
 
 choice
 	prompt "Stage Cache for ACPI S3 resume"
-	default NO_STAGE_CACHE if !HAVE_ACPI_RESUME
+	default NO_STAGE_CACHE if !HAVE_ACPI_RESUME || MAINBOARD_DISABLE_STAGE_CACHE
 	default TSEG_STAGE_CACHE if SMM_TSEG
 
 config NO_STAGE_CACHE
@@ -379,6 +379,13 @@ config CBMEM_STAGE_CACHE
 	  If unsure, select 'N'
 
 endchoice
+
+config MAINBOARD_DISABLE_STAGE_CACHE
+	bool
+	help
+	  Selected by mainboards which wish to disable the stage cache.
+	  E.g. mainboards which don't use S3 resume in the field may wish to
+	  disable it to save boot time at the cost of increasing S3 resume time.
 
 config UPDATE_IMAGE
 	bool "Update existing coreboot.rom image"

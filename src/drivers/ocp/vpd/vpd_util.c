@@ -38,3 +38,8 @@ bool get_bool_from_vpd(const char *const key, const bool fallback)
 
 	return (bool)val;
 }
+
+int get_cxl_mode_from_vpd(void)
+{
+	return get_int_from_vpd_range(CXL_MODE, CXL_MODE_DEFAULT, 0, CXL_MODE_MAX-1);
+}

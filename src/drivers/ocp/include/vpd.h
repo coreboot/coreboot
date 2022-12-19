@@ -81,4 +81,5 @@ enum cxl_memory_mode {
 int get_int_from_vpd_range(const char *const key, const int fallback, const int min,
 	const int max);
 bool get_bool_from_vpd(const char *const key, const bool fallback);
+int get_cxl_mode_from_vpd(void);
 #endif

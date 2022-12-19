@@ -523,3 +523,13 @@ unsigned int smbios_cpu_get_max_speed_mhz(void)
 {
 	return cpu_get_max_turbo_ratio() * CONFIG_CPU_BCLK_MHZ;
 }
+
+bool is_sgx_supported(void)
+{
+	struct cpuid_result cpuid_regs;
+	msr_t msr;
+
+	cpuid_regs = cpuid_ext(0x7, 0x0); /* EBX[2] is feature capability */
+	msr = rdmsr(MTRR_CAP_MSR); /* Bit 12 is PRMRR enablement */
+	return ((cpuid_regs.ebx & SGX_SUPPORTED) && (msr.lo & MTRR_CAP_PRMRR));
+}

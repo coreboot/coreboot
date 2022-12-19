@@ -6,11 +6,6 @@
 #include <soc/nvs.h>
 
 /*
- * Check if SGX is supported
- */
-int is_sgx_supported(void);
-
-/*
  * Configure core PRMRR.
  * PRMRR needs to configured first on all cores and then
  * call sgx_configure() for all cores to init SGX.

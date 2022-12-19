@@ -178,7 +178,7 @@ chip soc/intel/cannonlake
 				register "enable_delay_ms" = "1" # 90 ns
 				register "has_power_resource" = "1"
 				register "disable_gpio_export_in_crs" = "1"
-				register "probed" = "1"
+				register "detect" = "1"
 				device i2c 4b on end
 			end
 
@@ -186,7 +186,7 @@ chip soc/intel/cannonlake
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D16_IRQ)"
-				register "probed" = "1"
+				register "detect" = "1"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C12)"
 				register "enable_delay_ms" = "10"
 				register "enable_off_delay_ms" = "100"

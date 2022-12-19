@@ -116,7 +116,7 @@ chip soc/intel/cannonlake
 				register "generic.desc" = ""ELAN Touchscreen USI""
 				register "generic.irq" =
 					"ACPI_IRQ_EDGE_LOW(GPP_D16_IRQ)"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "generic.enable_gpio" =
 					"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D9)"
 				register "generic.enable_delay_ms" = "12"
@@ -137,7 +137,7 @@ chip soc/intel/cannonlake
 				register "generic.desc" = ""ELAN Touchscreen USI""
 				register "generic.irq" =
 					"ACPI_IRQ_EDGE_LOW(GPP_C7_IRQ)"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "generic.enable_gpio" =
 					"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D10)"
 				register "generic.enable_delay_ms" = "12"

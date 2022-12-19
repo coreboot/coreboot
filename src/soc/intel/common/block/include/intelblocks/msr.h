@@ -107,7 +107,10 @@
 #define PRMRR_SUPPORTED			(1<<12)
 #define SMRR_LOCK_SUPPORTED		(1<<14)
 
-#define SGX_SUPPORTED	(1<<2)
-#define TME_SUPPORTED	(1<<13)
+#define SGX_SUPPORTED			(1<<2)
+#define TME_SUPPORTED			(1<<13)
+
+#define KEYLOCKER_SUPPORTED		(1<<23)
+#define KEYLOCKER_AESKL			(1)
 
 #endif	/* SOC_INTEL_COMMON_MSR_H */

@@ -6,14 +6,14 @@ kernel coding style. In fact, most of this document has been copied from
 the [Linux kernel coding style](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/Documentation/process/4.Coding.rst)
 
 The guidelines in this file should be seen as a strong suggestion, and
-should overrule personal preference. But they may be ignored in
-individual instances when there are good practical reasons to do so, and
-reviewers are in agreement.
+should overrule personal preference. They may be ignored in individual
+instances when there are good practical reasons to do so, and reviewers
+are in agreement.
 
 Any style questions that are not mentioned in here should be decided
 between the author and reviewers on a case-by-case basis. When modifying
 existing files, authors should try to match the prevalent style in that
-file -- otherwise, they should try to match similar existing files in
+file -- otherwise, they should generally match similar existing files in
 coreboot.
 
 Bulk style changes to existing code ("cleanup patches") should avoid
@@ -24,7 +24,8 @@ be honored. (Note that `checkpatch.pl` is not part of this style guide,
 and neither is `clang-format`. These tools can be useful to find
 potential issues or simplify formatting in new submissions, but they
 were not designed to directly match this guide and may have false
-positives. They should not be bulk-applied to change existing code.)
+positives. They should not be bulk-applied to change existing code
+except in cases where they directly match the style guide.)
 
 ## Indentation
 
@@ -42,7 +43,8 @@ Now, some people will claim that having 8-character indentations makes
 the code move too far to the right, and makes it hard to read on a
 80-character terminal screen. The answer to that is that if you need
 more than 3 levels of indentation, you're screwed anyway, and should
-fix your program.
+fix your program.  Note that coreboot has expanded the 80 character
+limit to 96 characters to allow for modern wider screens.
 
 In short, 8-char indents make things easier to read, and have the added
 benefit of warning you when you're nesting your functions too deep.
@@ -87,7 +89,9 @@ Outside of comments, documentation and except in Kconfig, spaces are
 never used for indentation, and the above example is deliberately
 broken.
 
-Get a decent editor and don't leave whitespace at the end of lines.
+Get a decent editor and don't leave whitespace at the end of lines. This
+will actually keep the patch from being tested in the CI, so patches
+with ending whitespace cannot be merged.
 
 ## Breaking long lines and strings
 
@@ -503,18 +507,14 @@ comments to note or warn about something particularly clever (or ugly),
 but try to avoid excess. Instead, put the comments at the head of the
 function, telling people what it does, and possibly WHY it does it.
 
-When commenting the kernel API functions, please use the kernel-doc
-format. See the files Documentation/kernel-doc-nano-HOWTO.txt and
-scripts/kernel-doc for details.
-
-coreboot style for comments is the C89 "/* ... */" style. You may
-use C99-style "// ..." comments.
+coreboot style for comments is the C89 "/* ... */" style. You may also
+use C99-style "// ..." comments for single-line comments.
 
 The preferred style for *short* (multi-line) comments is:
 
 ```c
 /* This is the preferred style for short multi-line
-   comments in the Linux kernel source code.
+   comments in the coreboot source code.
    Please use it consistently. */
 ```
 
@@ -523,7 +523,7 @@ The preferred style for *long* (multi-line) comments is:
 ```c
 /*
  * This is the preferred style for multi-line
- * comments in the Linux kernel source code.
+ * comments in the coreboot source code.
  * Please use it consistently.
  *
  * Description:  A column of asterisks on the left side,
@@ -578,7 +578,8 @@ To do the latter, you can stick the following in your .emacs file:
 ```
 
 This will make emacs go better with the kernel coding style for C files
-below ~/src/linux-trees.
+below ~/src/linux-trees.  Obviously, this should be updated to match
+your own paths for coreboot.
 
 But even if you fail in getting emacs to do sane formatting, not
 everything is lost: use "indent".
@@ -625,38 +626,6 @@ config ADFS_FS_RW
 
 For full documentation on the configuration files, see the file
 Documentation/kbuild/kconfig-language.txt.
-
-Data structures
----------------
-
-Data structures that have visibility outside the single-threaded
-environment they are created and destroyed in should always have
-reference counts. In the kernel, garbage collection doesn't exist (and
-outside the kernel garbage collection is slow and inefficient), which
-means that you absolutely _have_ to reference count all your uses.
-
-Reference counting means that you can avoid locking, and allows multiple
-users to have access to the data structure in parallel - and not having
-to worry about the structure suddenly going away from under them just
-because they slept or did something else for a while.
-
-Note that locking is _not_ a replacement for reference counting.
-Locking is used to keep data structures coherent, while reference
-counting is a memory management technique. Usually both are needed, and
-they are not to be confused with each other.
-
-Many data structures can indeed have two levels of reference counting,
-when there are users of different "classes". The subclass count counts
-the number of subclass users, and decrements the global count just once
-when the subclass count goes to zero.
-
-Examples of this kind of "multi-level-reference-counting" can be found
-in memory management ("struct mm_struct": mm_users and mm_count),
-and in filesystem code ("struct super_block": s_count and
-s_active).
-
-Remember: if another thread can find your data structure, and you don't
-have a reference count on it, you almost certainly have a bug.
 
 Macros, Enums and RTL
 ---------------------
@@ -727,34 +696,18 @@ The cpp manual deals with macros exhaustively. The gcc internals manual
 also covers RTL which is used frequently with assembly language in the
 kernel.
 
-Printing kernel messages
+Printing coreboot messages
 ------------------------
 
-Kernel developers like to be seen as literate. Do mind the spelling of
-kernel messages to make a good impression. Do not use crippled words
+coreboot developers like to be seen as literate. Do mind the spelling of
+coreboot messages to make a good impression. Do not use crippled words
 like "dont"; use "do not" or "don't" instead. Make the messages
 concise, clear, and unambiguous.
 
-Kernel messages do not have to be terminated with a period.
+coreboot messages do not have to be terminated with a period.
 
 Printing numbers in parentheses (%d) adds no value and should be
 avoided.
-
-There are a number of driver model diagnostic macros in
-<linux/device.h> which you should use to make sure messages are
-matched to the right device and driver, and are tagged with the right
-level: dev_err(), dev_warn(), dev_info(), and so forth. For messages
-that aren't associated with a particular device, <linux/printk.h>
-defines pr_debug() and pr_info().
-
-Coming up with good debugging messages can be quite a challenge; and
-once you have them, they can be a huge help for remote troubleshooting.
-Such messages should be compiled out when the DEBUG symbol is not
-defined (that is, by default they are not included). When you use
-dev_dbg() or pr_debug(), that's automatic. Many subsystems have
-Kconfig options to turn on -DDEBUG. A related convention uses
-VERBOSE_DEBUG to add dev_vdbg() messages to the ones already enabled
-by DEBUG.
 
 Allocating memory
 -----------------
@@ -792,12 +745,7 @@ The inline disease
 There appears to be a common misperception that gcc has a magic "make
 me faster" speedup option called "inline". While the use of inlines
 can be appropriate (for example as a means of replacing macros, see
-Chapter 12), it very often is not. Abundant use of the inline keyword
-leads to a much bigger kernel, which in turn slows the system as a whole
-down, due to a bigger icache footprint for the CPU and simply because
-there is less memory available for the pagecache. Just think about it; a
-pagecache miss causes a disk seek, which easily takes 5 milliseconds.
-There are a LOT of cpu cycles that can go into these 5 milliseconds.
+Chapter 12), it very often is not.
 
 A reasonable rule of thumb is to not put inline at functions that have
 more than 3 lines of code in them. An exception to this rule are the
@@ -923,7 +871,7 @@ in the same directory that is not part of a normal include path gets included
 .c files should keep all C code wrapped in `#ifndef __ASSEMBLER__` blocks,
 including includes to other headers that don't follow that provision. Where a
 specific include order is required for technical reasons, it should be clearly
-documented with comments.
+documented with comments. This should not be the norm.
 
 Files should generally include every header they need a definition from
 directly (and not include any unnecessary extra headers). Excepted from
@@ -1057,6 +1005,29 @@ This rule only applies to explicit GCC extensions listed in the
 "Extensions to the C Language Family" section of the GCC manual. Code
 should never rely on incidental GCC translation behavior that is not
 explicitly documented as a feature and could change at any moment.
+
+Refactoring
+-----------
+Because refactoring existing code can add bugs to tested code, any
+refactors should be done only with serious consideration. Refactoring
+for style differences should only be done if the existing style
+conflicts with a documented coreboot guideline. If you believe that the
+style should be modified, the pros and cons can be discussed on the
+mailing list and in the coreboot leadership meeting.
+
+Similarly, the original author should be respected. Changing working
+code simply because of a stylistic disagreement is *prohibited*. This is
+not saying that refactors that are objectively better (simpler, faster,
+easier to understand) are not allowed, but there has to be a definite
+improvement, not simply stylistic changes.
+
+Basically, when refactoring code, there should be a clear benefit to
+the project and codebase. The reviewers and submitters get to make the
+call on how to interpret this.
+
+When refactoring, adding unit tests to verify that the post-change
+functionality matches or improves upon pre-change functionality is
+encouraged.
 
 References
 ----------

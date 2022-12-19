@@ -6,6 +6,20 @@ config DRIVERS_INTEL_DPTF
 	   When enabled, entries in the devicetree are used to generate
 	   Intel DPTF Tables at runtime in the SSDT.
 
+config HAVE_DPTF_EISA_HID
+	bool
+
+config DPTF_USE_EISA_HID
+	bool
+	depends on DRIVERS_INTEL_DPTF
+	default y if HAVE_DPTF_EISA_HID
+	default n
+	help
+	  Prior to Tiger Lake, all DPTF devices used 7-character EISA
+	  IDs. If selected, the 7-character _HIDs will be emitted,
+	  otherwise, it will use the "new" style, which are regular
+	  8-character _HIDs.
+
 config DRIVERS_INTEL_DPTF_SUPPORTS_TPCH
 	def_bool n
 	depends on HAVE_ACPI_TABLES && PMC_IPC_ACPI_INTERFACE

@@ -152,7 +152,8 @@ chip soc/intel/apollolake
 				device i2c 15 on end
 			end
 			chip drivers/i2c/hid
-				register "generic.hid" = ""PNP0C50""
+				register "generic.hid" = ""SYNA0000""
+				register "generic.cid" = ""ACPI0C50""
 				register "generic.desc" = ""Synaptics Touchpad""
 				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPIO_135_IRQ)"
 				register "generic.wake" = "GPE0_DW3_27"

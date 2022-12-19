@@ -27,7 +27,6 @@ romstage-y += reset.c
 ramstage-y += acpi.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
-ramstage-y += dptf.c
 ramstage-y += elog.c
 ramstage-y += espi.c
 ramstage-y += finalize.c

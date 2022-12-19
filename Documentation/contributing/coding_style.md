@@ -66,7 +66,7 @@ case 'm':
 case 'K':
 case 'k':
 	mem <<= 10;
-	/* fall through */
+	__fallthrough;
 default:
 	break;
 }

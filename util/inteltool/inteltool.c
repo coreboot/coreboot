@@ -628,6 +628,7 @@ static void print_usage(const char *name)
 	     "   -A | --ambs:                      dump AMB registers\n"
 	     "   -x | --sgx:                       dump SGX status\n"
 	     "   -t | --tme:                       dump TME status\n"
+	     "   -k | --keylocker:                 dump Key Locker status\n"
 	     "   -a | --all:                       dump all known (safe) registers\n"
 	     "        --pcr=PORT_ID:               dump all registers of a PCR port\n"
 	     "                                     (may be specified max %d times)\n"
@@ -689,7 +690,7 @@ int main(int argc, char *argv[])
 	int dump_pmbase = 0, dump_epbar = 0, dump_dmibar = 0;
 	int dump_pciexbar = 0, dump_coremsrs = 0, dump_ambs = 0;
 	int dump_spi = 0, dump_gfx = 0, dump_ahci = 0, dump_sgx = 0, dump_tme = 0;
-	int dump_lpc = 0;
+	int dump_lpc = 0, dump_keylocker = 0;
 	int show_gpio_diffs = 0;
 	size_t pcr_count = 0;
 	uint8_t dump_pcr[MAX_PCR_PORTS];
@@ -719,10 +720,11 @@ int main(int argc, char *argv[])
 		{"sgx", 0, 0, 'x'},
 		{"pcr", required_argument, 0, LONG_OPT_PCR},
 		{"tme", 0, 0, 't'},
+		{"keylocker", 0, 0, 'k'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?gGrplmedPMaAsfRS:xt",
+	while ((opt = getopt_long(argc, argv, "vh?gGrplmedPMaAsfRS:xtk",
                                   long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -803,6 +805,7 @@ int main(int argc, char *argv[])
 			dump_ahci = 1;
 			dump_sgx = 1;
 			dump_tme = 1;
+			dump_keylocker = 1;
 			break;
 		case 'A':
 			dump_ambs = 1;
@@ -815,6 +818,9 @@ int main(int argc, char *argv[])
 			break;
 		case 't':
 			dump_tme = 1;
+			break;
+		case 'k':
+			dump_keylocker = 1;
 			break;
 		case LONG_OPT_PCR:
 			if (pcr_count < MAX_PCR_PORTS) {
@@ -1010,6 +1016,9 @@ int main(int argc, char *argv[])
 
 	if (dump_tme)
 		print_tme();
+
+	if (dump_keylocker)
+		print_keylocker();
 
 	if (pcr_count)
 		print_pcr_ports(sb, dump_pcr, pcr_count);

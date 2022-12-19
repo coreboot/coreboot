@@ -3,6 +3,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,16 +18,20 @@
 # define BREG	"%%ebx"
 #endif
 
-#define IA32_FEATURE_CONTROL	0x3a
-#define SGX_GLOBAL_ENABLED	(1 << 18)
-#define FEATURE_CONTROL_LOCKED	(1)
-#define MTRR_CAP_MSR		0xfe
-#define PRMRR_SUPPORTED		(1 << 12)
-#define SGX_SUPPORTED		(1 << 2)
-#define IA32_TME_ACTIVATE	0x982
-#define TME_SUPPORTED		(1 << 13)
-#define TME_LOCKED		(1)
-#define TME_ENABLED		(1 << 1)
+#define CPUID_STRUCT_EXTENDED_FEATURE_FLAGS	0x7
+#define IA32_FEATURE_CONTROL			0x3a
+#define SGX_GLOBAL_ENABLED			(1 << 18)
+#define FEATURE_CONTROL_LOCKED			(1)
+#define MTRR_CAP_MSR				0xfe
+#define PRMRR_SUPPORTED				(1 << 12)
+#define SGX_SUPPORTED				(1 << 2)
+#define IA32_TME_ACTIVATE			0x982
+#define TME_SUPPORTED				(1 << 13)
+#define TME_LOCKED				(1)
+#define TME_ENABLED				(1 << 1)
+#define CPUID_KEYLOCKER_FEATURE_FLAGS 		0x19
+#define KEYLOCKER_SUPPORTED			(1<<23)
+#define KEYLOCKER_AESKL				(1)
 
 int fd_msr;
 
@@ -261,6 +266,49 @@ void print_tme(void)
 		printf("TME enabled   : %s\n", is_tme_enabled() ? "YES" : "NO");
 	}
 	printf("====================================================\n");
+#else
+	printf("Not Implemented\n");
+#endif
+}
+
+static bool is_keylocker_supported()
+{
+	cpuid_result_t cpuid_regs;
+	msr_t msr;
+
+	/*
+	 * CPUID leaf 0x7 subleaf 0x0 to detect Intel Key Locker support.
+	 * The specification of Key Locker can be found at: https://www.intel.com/
+	 * content/www/us/en/develop/download/intel-key-locker-specification.html
+	 * The spec can also be found via document #343965 on Intel's site.
+	 */
+	cpuid_regs = cpuid_ext(CPUID_STRUCT_EXTENDED_FEATURE_FLAGS, 0x0);
+	msr = rdmsr_from_cpu(0, MTRR_CAP_MSR);
+	return ((cpuid_regs.ecx & KEYLOCKER_SUPPORTED) && (msr.lo & PRMRR_SUPPORTED));
+}
+
+static bool is_aeskl_enabled()
+{
+	cpuid_result_t cpuid_regs;
+
+	/* CPUID leaf 0x19 subleaf 0x0 to detect details of Intel Key Locker feature */
+	cpuid_regs = cpuid_ext(CPUID_KEYLOCKER_FEATURE_FLAGS, 0x0);
+	return (cpuid_regs.ebx & KEYLOCKER_AESKL);
+}
+
+void print_keylocker(void)
+{
+#ifndef __DARWIN__
+	int keylocker_supported = is_keylocker_supported();
+
+	printf("\n============= Dumping INTEL Key Locker status =============\n");
+
+	printf("Key Locker supported : %s\n", keylocker_supported ? "YES" : "NO");
+
+	if (keylocker_supported) {
+		printf("AESKL instructions enabled : %s\n", is_aeskl_enabled() ? "YES" : "NO");
+	}
+	printf("===========================================================\n");
 #else
 	printf("Not Implemented\n");
 #endif

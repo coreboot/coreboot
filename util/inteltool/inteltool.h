@@ -498,6 +498,7 @@ int print_gfx(struct pci_dev *gfx);
 int print_ahci(struct pci_dev *ahci);
 int print_sgx(void);
 void print_tme(void);
+void print_keylocker(void);
 void ivybridge_dump_timings(const char *dump_spd_file);
 
 #endif

@@ -28,7 +28,7 @@ static const struct dptf_platform_info adl_dptf_platform_info = {
 	},
 };
 
-const struct dptf_platform_info *get_dptf_platform_info(void)
+const struct dptf_platform_info *soc_get_dptf_platform_info(void)
 {
 	return &adl_dptf_platform_info;
 }

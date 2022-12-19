@@ -435,7 +435,7 @@ static void write_open_dptf_device(const struct device *dev,
 /* Add minimal definitions of DPTF devices into the SSDT */
 static void write_device_definitions(const struct device *dev)
 {
-	const struct dptf_platform_info *platform_info = get_dptf_platform_info();
+	const struct dptf_platform_info *platform_info = soc_get_dptf_platform_info();
 	const struct drivers_intel_dptf_config *config;
 	struct device *parent;
 

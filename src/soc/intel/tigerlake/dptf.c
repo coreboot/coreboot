@@ -13,7 +13,7 @@ static const struct dptf_platform_info tgl_dptf_platform_info = {
 	.fan_hid = "INTC1044",
 };
 
-const struct dptf_platform_info *get_dptf_platform_info(void)
+const struct dptf_platform_info *soc_get_dptf_platform_info(void)
 {
 	return &tgl_dptf_platform_info;
 }

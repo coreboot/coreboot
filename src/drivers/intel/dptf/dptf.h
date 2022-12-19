@@ -28,6 +28,10 @@ struct dptf_platform_info {
 	} tpch_method_names;
 };
 
-const struct dptf_platform_info *get_dptf_platform_info(void);
+/*
+ * `soc_get_dptf_platform_info()` is a callback into the SoC directory
+ * to fill in the `struct dptf_platform_info` data structure.
+ */
+const struct dptf_platform_info *soc_get_dptf_platform_info(void);
 
 #endif /* _DRIVERS_INTEL_DPTF_H_ */

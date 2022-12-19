@@ -12,7 +12,7 @@ static const struct dptf_platform_info jsl_dptf_platform_info = {
 	.fan_hid = "INT3404",
 };
 
-const struct dptf_platform_info *get_dptf_platform_info(void)
+const struct dptf_platform_info *soc_get_dptf_platform_info(void)
 {
 	return &jsl_dptf_platform_info;
 }

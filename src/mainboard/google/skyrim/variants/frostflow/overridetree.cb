@@ -14,6 +14,15 @@ chip soc/amd/mendocino
 	# Set Package Power Parameters
 	register "stapm_time_constant_s" = "200"
 
+	register "i2c[0]" = "{
+		.speed = I2C_SPEED_FAST,
+		.speed_config[0] = {
+			.speed = I2C_SPEED_FAST,
+			.scl_hcnt = 120,
+			.scl_lcnt = 240,
+		}
+	}"
+
 	device domain 0 on
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref xhci_1 on # XHCI1 controller

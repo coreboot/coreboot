@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 static const struct dptf_platform_info tgl_dptf_platform_info = {
-	.use_eisa_hids = false,
+	.use_eisa_hids = CONFIG(DPTF_USE_EISA_HID),
 	/* _HID for the toplevel DPTF device, typically \_SB.DPTF */
 	.dptf_device_hid = DPTF_DPTF_DEVICE,
 	/* _HID for Intel DPTF Generic Device (these require PTYP as well) */

@@ -1,21 +1,22 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <drivers/intel/dptf/dptf.h>
+#include <soc/dptf.h>
 
 static const struct dptf_platform_info adl_dptf_platform_info = {
 	.use_eisa_hids = false,
 	/* _HID for the toplevel DPTF device, typically \_SB.DPTF */
-	.dptf_device_hid = "INTC1041",
+	.dptf_device_hid = DPTF_DPTF_DEVICE,
 	/* _HID for Intel DPTF Generic Device (these require PTYP as well) */
-	.generic_hid = "INTC1046",
+	.generic_hid = DPTF_GEN_DEVICE,
 	/* _HID for Intel DPTF Fan Device */
-	.fan_hid = "INTC1048",
+	.fan_hid = DPTF_FAN_DEVICE,
 	/* _HID for the toplevel TPCH device, typically \_SB.TPCH */
-	.tpch_device_hid = "INTC1049",
+	.tpch_device_hid = DPTF_TPCH_DEVICE,
 	/* _HID for the toplevel TPWR device, typically \_SB.DPTF.TPWR */
-	.tpwr_device_hid = "INTC1060",
+	.tpwr_device_hid = DPTF_TPWR_DEVICE,
 	/* _HID for the toplevel BAT1 device, typically \_SB.DPTF.BAT1 */
-	.tbat_device_hid = "INTC1061",
+	.tbat_device_hid = DPTF_BAT1_DEVICE,
 
 	.tpch_method_names = {
 		.set_fivr_low_clock_method = "RFC0",

@@ -28,3 +28,25 @@ void set_module_apc(uintptr_t base, uint32_t module, enum domain_id domain_id,
 		     0x3 << (apc_set_index * 2),
 		     perm << (apc_set_index * 2));
 }
+
+void dapc_init(void)
+{
+	size_t i;
+	uintptr_t devapc_ao_base;
+
+	for (i = 0; i < devapc_init_cnt; i++) {
+		devapc_ao_base = devapc_init[i].base;
+
+		/* Init dapc */
+		write32(getreg(devapc_ao_base, AO_APC_CON), 0x0);
+		write32(getreg(devapc_ao_base, AO_APC_CON), 0x1);
+
+		/* Initialization */
+		if (devapc_init[i].init)
+			devapc_init[i].init(devapc_ao_base);
+
+		/* Dump Setting */
+		if (devapc_init[i].dump)
+			devapc_init[i].dump(devapc_ao_base);
+	}
+}

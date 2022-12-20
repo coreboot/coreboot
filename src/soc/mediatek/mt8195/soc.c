@@ -5,6 +5,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/apusys.h>
+#include <soc/apusys_devapc.h>
 #include <soc/devapc.h>
 #include <soc/dfd.h>
 #include <soc/emi.h>
@@ -31,6 +32,7 @@ static void soc_init(struct device *dev)
 {
 	mtk_mmu_disable_l2c_sram();
 	dapc_init();
+	start_apusys_devapc();
 	apusys_init();
 	mcupm_init();
 	sspm_init();

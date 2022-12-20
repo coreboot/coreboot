@@ -4,7 +4,6 @@
 
 #include <console/console.h>
 #include <soc/devapc.h>
-#include <soc/devapc_common.h>
 
 static const struct apc_infra_peri_dom_8 infra_ao_sys0_devices[] = {
 	/* 0 */
@@ -1421,34 +1420,10 @@ static void adsp_init(uintptr_t base)
 	write32(getreg(base, AUD_SEC_0), 0);
 }
 
-struct devapc_init_ops {
-	uintptr_t base;
-	void (*init)(uintptr_t base);
-	void (*dump)(uintptr_t base);
-} devapc_init[] = {
+const struct devapc_init_ops devapc_init[] = {
 	{ DEVAPC_AO_INFRA_PERI_BASE, infra_init, dump_infra_ao_apc },
 	{ DEVAPC_AO_MM_BASE, mm_init, dump_mm_ao_apc },
 	{ DEVAPC_AO_AUD_BASE, adsp_init, dump_adsp_ao_apc },
 };
 
-void dapc_init(void)
-{
-	unsigned int i;
-	uintptr_t devapc_ao_base;
-
-	for (i = 0; i < ARRAY_SIZE(devapc_init); i++) {
-		devapc_ao_base = devapc_init[i].base;
-
-		/* Init dapc */
-		write32(getreg(devapc_ao_base, AO_APC_CON), 0x0);
-		write32(getreg(devapc_ao_base, AO_APC_CON), 0x1);
-
-		/* Initialization */
-		if (devapc_init[i].init)
-			devapc_init[i].init(devapc_ao_base);
-
-		/* Dump Setting */
-		if (devapc_init[i].dump)
-			devapc_init[i].dump(devapc_ao_base);
-	}
-}
+const size_t devapc_init_cnt = ARRAY_SIZE(devapc_init);

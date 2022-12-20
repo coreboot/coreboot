@@ -80,10 +80,20 @@ enum domain_id {
 	DOMAIN_15,
 };
 
+struct devapc_init_ops {
+	uintptr_t base;
+	void (*init)(uintptr_t base);
+	void (*dump)(uintptr_t base);
+};
+
+extern const struct devapc_init_ops devapc_init[];
+extern const size_t devapc_init_cnt;
+
 void *getreg_domain(uintptr_t base, unsigned int offset,
 		    enum domain_id domain_id, unsigned int index);
 void *getreg(uintptr_t base, unsigned int offset);
 void set_module_apc(uintptr_t base, uint32_t module, enum domain_id domain_id,
 		    enum devapc_perm_type perm);
+void dapc_init(void);
 
 #endif

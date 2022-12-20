@@ -5,8 +5,7 @@
 
 #include <device/mmio.h>
 #include <soc/addressmap.h>
-
-void dapc_init(void);
+#include <soc/devapc_common.h>
 
 enum devapc_ao_offset {
 	SYS0_D0_APC_0 = 0x0,

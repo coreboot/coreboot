@@ -55,4 +55,8 @@ config DRIVER_TPM_I2C_BUS
 config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50
+
+config SDCARD_INIT
+	bool
+	default y
 endif

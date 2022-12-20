@@ -20,6 +20,8 @@
 
 #define GPIO_MIPI_BL_PWM_1V8		GPIO(DISP_PWM0)
 
+#define GPIO_SD_CD_ODL			GPIO(I2SIN_MCK)
+
 void setup_chromeos_gpios(void);
 
 #endif

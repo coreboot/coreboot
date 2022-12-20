@@ -19,7 +19,10 @@ static void mainboard_init(struct device *dev)
 	}
 
 	mtk_msdc_configure_emmc(true);
-	mtk_msdc_configure_sdcard();
+
+	if (CONFIG(SDCARD_INIT))
+		mtk_msdc_configure_sdcard();
+
 	setup_usb_host();
 
 	if (CONFIG(ARM64_USE_ARM_TRUSTED_FIRMWARE))

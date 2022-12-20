@@ -392,6 +392,13 @@ variant_sleep_gpio_table(u8 slp_typ, size_t *num)
 	return sleep_gpio_table;
 }
 
+/* Weak implementation of romstage gpio */
+const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}
+
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, GPIO_COMM_NW_NAME),
 	CROS_GPIO_WP_AH(PAD_NW(GPIO_PCH_WP), GPIO_COMM_NW_NAME),

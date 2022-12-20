@@ -9,7 +9,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/soc_info.h>
-#include <stdint.h>
 #include <types.h>
 
 struct pme_map {

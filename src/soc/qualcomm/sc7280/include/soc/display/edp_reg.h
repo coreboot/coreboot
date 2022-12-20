@@ -4,7 +4,6 @@
 #define _EDP_REG_H_
 
 #include <types.h>
-#include <stdint.h>
 
 struct edp_ahbclk_regs {
 	uint32_t hw_version;

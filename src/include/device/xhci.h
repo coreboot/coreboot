@@ -5,7 +5,6 @@
 
 #include <types.h>
 #include <device/device.h>
-#include <commonlib/bsd/cb_err.h>
 
 #define XHCI_HCCPARAMS1_XECP 0x12
 

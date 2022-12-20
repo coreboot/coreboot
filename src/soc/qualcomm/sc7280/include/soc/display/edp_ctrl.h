@@ -4,7 +4,6 @@
 #define _EDP_CTRL_H
 
 #include <types.h>
-#include <stdint.h>
 
 enum cb_err edp_ctrl_init(struct edid *edid);
 

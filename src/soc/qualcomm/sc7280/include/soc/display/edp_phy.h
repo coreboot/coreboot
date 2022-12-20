@@ -4,7 +4,6 @@
 #define _EDP_PHY_H
 
 #include <types.h>
-#include <stdint.h>
 
 void edp_phy_config(u8 v_level, u8 p_level);
 void edp_phy_vm_pe_init(void);

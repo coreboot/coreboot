@@ -4,7 +4,6 @@
 #define _SOC_DISPLAY_MDSS_REG_H_
 
 #include <types.h>
-#include <stdint.h>
 #include <edid.h>
 
 #define INTF_FLUSH      INTF_FLUSH_5

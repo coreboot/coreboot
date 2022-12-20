@@ -3,8 +3,6 @@
 #ifndef TIS_H_
 #define TIS_H_
 
-#include <stddef.h>
-#include <stdint.h>
 #include <types.h>
 
 enum tis_access {

@@ -2,7 +2,6 @@
 #include <arch/registers.h>
 #include <arch/breakpoint.h>
 #include <console/console.h>
-#include <stdint.h>
 #include <types.h>
 
 #define DEBUG_REGISTER_COUNT 4

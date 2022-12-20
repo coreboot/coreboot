@@ -185,7 +185,7 @@ chip soc/intel/apollolake
 				register "hid" = ""RAYD0001""
 				register "desc" = ""Raydium Touchscreen""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_21_IRQ)"
-				register "probed" = "1"
+				register "detect" = "1"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
 				register "reset_delay_ms" = "20"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_152)"

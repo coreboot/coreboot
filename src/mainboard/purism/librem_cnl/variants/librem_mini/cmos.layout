@@ -1,0 +1,18 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+entries
+
+# start-bit	length	config	config-ID	name
+0		112	r	0		reserved_memory
+1352		8	e	1		power_on_after_fail
+
+enumerations
+#ID	value	text
+1	0	Enable
+1	1	Disable
+
+checksums
+
+# The EC firmware does initialize power_on_after_fail if it is invalid, but it
+# does not have a checksum.  Put a checksum at the end of bank 1.
+checksum 1352 1359 1520

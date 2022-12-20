@@ -2,3 +2,4 @@
 
 all-y += die.c
 smm-y += die.c
+bootblock-y += bootblock.c

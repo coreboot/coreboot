@@ -15,11 +15,15 @@ config BOARD_PURISM_BASEBOARD_LIBREM_CNL
 
 config BOARD_PURISM_LIBREM_MINI
 	select BOARD_PURISM_BASEBOARD_LIBREM_CNL
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
 	select SOC_INTEL_WHISKEYLAKE
 	select SUPERIO_ITE_IT8528E
 
 config BOARD_PURISM_LIBREM_MINI_V2
 	select BOARD_PURISM_BASEBOARD_LIBREM_CNL
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
 	select SOC_INTEL_COMETLAKE_1
 	select SUPERIO_ITE_IT8528E
 
@@ -84,6 +88,12 @@ if BOARD_PURISM_LIBREM_MINI || BOARD_PURISM_LIBREM_MINI_V2
 
 config PC_CMOS_BASE_PORT_BANK1
 	default 0x360
+
+config CMOS_LAYOUT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/variants/librem_mini/cmos.layout"
+
+config CMOS_DEFAULT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/variants/librem_mini/cmos.default"
 
 endif
 

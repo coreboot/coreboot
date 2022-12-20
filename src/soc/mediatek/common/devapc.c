@@ -45,8 +45,8 @@ void dapc_init(void)
 		if (devapc_init[i].init)
 			devapc_init[i].init(devapc_ao_base);
 
-		/* Dump Setting */
-		if (devapc_init[i].dump)
+		/* Dump setting */
+		if (CONFIG(DEVAPC_DEBUG) && devapc_init[i].dump)
 			devapc_init[i].dump(devapc_ao_base);
 	}
 }

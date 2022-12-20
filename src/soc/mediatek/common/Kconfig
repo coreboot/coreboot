@@ -77,4 +77,11 @@ config PMIF_SPMI_IOCFG_DEFAULT_SETTING
 	  For SoCs where IO pins default to PMIF_SPMI mode, enable this option
 	  to skip software PMIF_SPMI IO pins configuration.
 
+config DEVAPC_DEBUG
+	bool
+	default n
+	help
+	  When this option is enabled, the DEVAPC driver prints the settings after
+	  initialization.
+
 endif

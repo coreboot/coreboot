@@ -274,6 +274,7 @@ chip soc/intel/tigerlake
 			probe AUDIO MAX98373_ALC5682_SNDW
 			probe AUDIO MAX98373_ALC5682I_I2S_UP4
 			probe AUDIO MAX98360_ALC5682I_I2S
+			probe AUDIO RT1011_ALC5682I_I2S
 		end
 		device ref pcie_rp9 on
 			chip soc/intel/common/block/pcie/rtd3

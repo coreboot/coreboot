@@ -193,7 +193,7 @@ chip soc/intel/apollolake
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_21_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_21_IRQ)"
 				register "probed" = "1"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
 				register "reset_delay_ms" = "20"
@@ -205,7 +205,7 @@ chip soc/intel/apollolake
 			chip drivers/i2c/generic
 				register "hid" = ""MLFS0000""
 				register "desc" = ""Melfas Touchscreen""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_21_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_21_IRQ)"
 				register "probed" = "1"
 				# Melfas TS IC doesn't have reset pin design, current FW also not
 				# declare "ce-gpios" in ACPI _DSD to let Melfas TS driver to know
@@ -226,7 +226,7 @@ chip soc/intel/apollolake
 			chip drivers/i2c/generic
 				register "hid" = ""RAYD0001""
 				register "desc" = ""Raydium Touchscreen""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_21_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_21_IRQ)"
 				register "probed" = "1"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_36)"
 				register "reset_delay_ms" = "1"
@@ -268,7 +268,7 @@ chip soc/intel/apollolake
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPIO_18_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_18_IRQ)"
 				register "wake" = "GPE0_DW1_15"
 				register "detect" = "1"
 				device i2c 15 on end

@@ -206,7 +206,7 @@
         },
 	{
             // Datasheet Revision: Rev. 1.0 Dec. 2021
-            "name": "H5AG36EXNDX019",
+            "name": "H5AG36EXNDX017",
             "attribs": {
                 "speedMTps": 3200,
                 "CL_nRCD_nRP": 22,

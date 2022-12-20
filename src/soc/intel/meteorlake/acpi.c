@@ -175,13 +175,12 @@ uint32_t soc_read_sci_irq_select(void)
 static unsigned long soc_fill_dmar(unsigned long current)
 {
 	unsigned long tmp;
-	const struct device *const igfx_dev = pcidev_path_on_root(PCI_DEVFN_IGD);
 	const uint64_t gfxvtbar = MCHBAR64(GFXVTBAR) & VTBAR_MASK;
 	const bool gfxvten = MCHBAR32(GFXVTBAR) & VTBAR_ENABLED;
 
 	printk(BIOS_DEBUG, "%s - gfxvtbar:0x%llx  0x%x\n",
 		__func__, gfxvtbar, MCHBAR32(GFXVTBAR));
-	if (is_dev_enabled(igfx_dev) && gfxvtbar && gfxvten) {
+	if (is_devfn_enabled(PCI_DEVFN_IGD) && gfxvtbar && gfxvten) {
 		tmp = current;
 		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
 		current += acpi_create_dmar_ds_pci(current, 0, PCI_DEV_SLOT_IGD, 0);
@@ -201,7 +200,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	acpi_dmar_drhd_fixup(tmp, current);
 
 	/* Add RMRR entry */
-	if (is_dev_enabled(igfx_dev) && gfxvtbar && gfxvten) {
+	if (is_devfn_enabled(PCI_DEVFN_IGD) && gfxvtbar && gfxvten) {
 		tmp = current;
 		current += acpi_create_dmar_rmrr(current, 0,
 				sa_get_gsm_base(), sa_get_tolud_base() - 1);

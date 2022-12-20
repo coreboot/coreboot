@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"testing"
 
+	"review.coreboot.org/coreboot.git/util/intelp2m/fields"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/snr"
 )
 
 type TestCase struct {
@@ -16,7 +17,7 @@ type TestCase struct {
 
 func (tc TestCase) Check(actuallyMacro string) error {
 	if actuallyMacro != tc.Reference {
-		return fmt.Errorf(`TestCase: DW0 = %d, DW1 = %d, Ownership = %d:
+		return fmt.Errorf(`TestCase: DW0 = 0x%x, DW1 = 0x%x, Ownership = %d:
 Expects:  '%s'
 Actually: '%s'`, tc.DW0, tc.DW1, tc.Ownership, tc.Reference, actuallyMacro)
 	}
@@ -25,19 +26,20 @@ Actually: '%s'`, tc.DW0, tc.DW1, tc.Ownership, tc.Reference, actuallyMacro)
 
 type Suite []TestCase
 
-func (suite Suite) Run(t *testing.T, label string, decoderIf common.Fields) {
+func (suite Suite) Run(t *testing.T, label string) {
 	t.Run(label, func(t *testing.T) {
-		platform := snr.PlatformSpecific{}
-		macro := common.GetInstanceMacro(platform, decoderIf)
-		dw0 := macro.GetRegisterDW0()
-		dw1 := macro.GetRegisterDW1()
 		for _, tc := range suite {
-			macro.Clear()
-			macro.PadIdSet("").SetPadOwnership(tc.Ownership)
-			dw0.Value = tc.DW0
-			dw1.Value = tc.DW1
-			macro.Fields.GenerateString()
-			if err := tc.Check(macro.Get()); err != nil {
+			constructor, err := platforms.GetConstructor()
+			if err != nil {
+				panic(err)
+			}
+			macro := common.CreateFrom(
+				"",
+				tc.Ownership == 1,
+				constructor(tc.DW0, tc.DW1),
+				fields.Get(),
+			)
+			if err := tc.Check(macro.Fields.GenerateMacro(&macro).String()); err != nil {
 				t.Errorf("Test failed: %v", err)
 			}
 		}

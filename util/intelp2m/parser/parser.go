@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
+	"review.coreboot.org/coreboot.git/util/intelp2m/fields"
 	"review.coreboot.org/coreboot.git/util/intelp2m/logs"
 	"review.coreboot.org/coreboot.git/util/intelp2m/parser/template"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms"
@@ -35,13 +36,16 @@ type Entry struct {
 	Function  string
 	DW0       uint32
 	DW1       uint32
-	Ownership uint8
+	Ownership bool
 }
 
 func (e *Entry) ToMacro() []string {
-	platform := platforms.GetSpecificInterface()
-	line := platform.GenMacro(e.ID, e.DW0, e.DW1, e.Ownership)
-	slices := strings.Split(line, "\n")
+	constructor, err := platforms.GetConstructor()
+	if err != nil {
+		panic(err)
+	}
+	macro := common.CreateFrom(e.ID, e.Ownership, constructor(e.DW0, e.DW1), fields.Get())
+	slices := strings.Split(macro.Generate(), "\n")
 	return slices
 }
 
@@ -49,7 +53,7 @@ func (e *Entry) ToMacro() []string {
 func extractPad(line string) (Entry, error) {
 	function, id, dw0, dw1, err := template.Apply(line)
 	if err != nil {
-		logs.Errorf("%v", err)
+		logs.Errorf("extraction error: %v", err)
 		return Entry{EType: EntryEmpty}, err
 	}
 
@@ -59,7 +63,7 @@ func extractPad(line string) (Entry, error) {
 		ID:        id,
 		DW0:       dw0,
 		DW1:       dw1,
-		Ownership: 0,
+		Ownership: common.Acpi,
 	}
 
 	if dw0 == bits.All32 {
@@ -79,12 +83,14 @@ func extractGroup(line string) Entry {
 }
 
 // Extract() extracts pad information from a string
-func Extract(line string, platform platforms.SpecificIf) Entry {
+func Extract(line string) Entry {
 	if included, _ := common.KeywordsCheck(line, "GPIO Community", "GPIO Group"); included {
 		return extractGroup(line)
 	}
-
-	if platform.KeywordCheck(line) {
+	if checkKeyword := platforms.GetKeywordChekingAction(); checkKeyword == nil {
+		logs.Errorf("information extraction error: skip line <%s>", line)
+		return Entry{EType: EntryEmpty}
+	} else if checkKeyword(line) {
 		pad, err := extractPad(line)
 		if err != nil {
 			logs.Errorf("extract pad info from %s: %v", line, err)
@@ -100,11 +106,6 @@ func Extract(line string, platform platforms.SpecificIf) Entry {
 func Run() ([]Entry, error) {
 	entries := make([]Entry, 0)
 
-	platform := platforms.GetSpecificInterface()
-	if platform == nil {
-		return nil, fmt.Errorf("unknown platform")
-	}
-
 	file, err := os.Open(p2m.Config.InputPath)
 	if err != nil {
 		err = fmt.Errorf("input file error: %v", err)
@@ -117,7 +118,7 @@ func Run() ([]Entry, error) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		entry := Extract(line, platform)
+		entry := Extract(line)
 		if entry.EType != EntryEmpty {
 			entries = append(entries, entry)
 		}

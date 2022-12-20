@@ -1,29 +1,24 @@
 package raw
 
-import (
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
-)
+import "review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 
-type FieldMacros struct{}
+type FieldCollection struct{}
 
-func (FieldMacros) DecodeDW0() {
-	macro := common.GetMacro()
-	dw0 := macro.GetRegisterDW0()
-	macro.Add(dw0.String())
+// DecodeDW0() decodes DW0 register value and adds it to the macro string
+func (FieldCollection) DecodeDW0(macro *common.Macro) *common.Macro {
+	dw0 := macro.Platform.GetRegisterDW0()
+	return macro.Add(dw0.String())
 }
 
-func (FieldMacros) DecodeDW1() {
-	macro := common.GetMacro()
-	dw1 := macro.GetRegisterDW1()
-	macro.Add(dw1.String())
+// DecodeDW1() decodes DW1 register value and adds it to the macro string
+func (FieldCollection) DecodeDW1(macro *common.Macro) *common.Macro {
+	dw1 := macro.Platform.GetRegisterDW1()
+	return macro.Add(dw1.String())
 }
 
-// GenerateString - generates the entire string of bitfield macros.
-func (bitfields FieldMacros) GenerateString() {
-	macro := common.GetMacro()
+// GenerateMacro() generates the field macro collection and adds it to the macro string
+func (f FieldCollection) GenerateMacro(macro *common.Macro) *common.Macro {
 	macro.Add("_PAD_CFG_STRUCT(").Id().Add(", ")
-	bitfields.DecodeDW0()
-	macro.Add(", ")
-	bitfields.DecodeDW1()
-	macro.Add("),")
+	f.DecodeDW0(macro).Add(", ")
+	return f.DecodeDW1(macro).Add("),")
 }

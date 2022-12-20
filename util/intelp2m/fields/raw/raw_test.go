@@ -3,11 +3,13 @@ package raw_test
 import (
 	"testing"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/fields/raw"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
 	"review.coreboot.org/coreboot.git/util/intelp2m/fields/test"
 )
 
 func TestRAWFields(t *testing.T) {
+	p2m.SettingsReset()
+	p2m.Config.Field = p2m.RawFlds
 	referenceSlice := []string{
 		"_PAD_CFG_STRUCT(, 0x80000000, 0x80000000),",
 		"_PAD_CFG_STRUCT(, 0x40000000, 0x40000000),",
@@ -42,5 +44,5 @@ func TestRAWFields(t *testing.T) {
 		"_PAD_CFG_STRUCT(, 0x00000002, 0x00000002),",
 		"_PAD_CFG_STRUCT(, 0x00000001, 0x00000001),",
 	}
-	test.SlidingOneTestSuiteCreate(referenceSlice).Run(t, "SLIDING-ONE-TEST", raw.FieldMacros{})
+	test.SlidingOneTestSuiteCreate(referenceSlice).Run(t, "SLIDING-ONE-TEST")
 }

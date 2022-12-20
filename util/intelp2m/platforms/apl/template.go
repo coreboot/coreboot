@@ -2,10 +2,9 @@ package apl
 
 import "review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 
-// KeywordCheck - This function is used to filter parsed lines of the configuration file and
-// returns true if the keyword is contained in the line.
-// line      : string from the configuration file
-func (PlatformSpecific) KeywordCheck(line string) bool {
+// CheckKeyword() parses lines of the configuration file and returns true if the keyword is
+// contained in the line
+func CheckKeyword(line string) bool {
 	isIncluded, _ := common.KeywordsCheck(line,
 		"GPIO_", "TCK", "TRST_B", "TMS", "TDI", "CX_PMODE", "CX_PREQ_B", "JTAGX", "CX_PRDY_B",
 		"TDO", "CNV_BRI_DT", "CNV_BRI_RSP", "CNV_RGI_DT", "CNV_RGI_RSP", "SVID0_ALERT_B",

@@ -1,118 +1,60 @@
 package jsl
 
 import (
-	"fmt"
 	"strings"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/fields"
+	"review.coreboot.org/coreboot.git/util/intelp2m/logs"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/cnl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common/register/bits"
-	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/snr"
 )
 
 const (
-	PAD_CFG_DW0_RO_FIELDS = (0x1 << 27) | (0x1 << 18) | (0x3f << 11) | (0x3f << 2) | (0x1 << 1)
-	PAD_CFG_DW1_RO_FIELDS = 0xdfffc3ff
+	DW0Mask = (0b1 << 27) | (0b1 << 18) | (0b00111111 << 11) | (0b00111111 << 2) | (0b1 << 1)
+	DW1Mask = 0b11111101111111111100001111111111
 )
 
-type InheritanceMacro interface {
-	Pull()
-	GpiMacroAdd()
-	GpoMacroAdd()
-	NativeFunctionMacroAdd()
-	NoConnMacroAdd()
+type BasePlatform struct {
+	// based on the Cannon Lake platform
+	cnl.BasePlatform
 }
 
-type PlatformSpecific struct {
-	InheritanceMacro
+func InitBasePlatform(dw0, dw0mask uint32, dw1, dw1mask uint32) BasePlatform {
+	return BasePlatform{cnl.InitBasePlatform(dw0, dw0mask, dw1, dw1mask)}
 }
 
-// RemmapRstSrc - remmap Pad Reset Source Config
-func (PlatformSpecific) RemmapRstSrc() {
-	macro := common.GetMacro()
-	if strings.Contains(macro.PadIdGet(), "GPP_F") ||
-		strings.Contains(macro.PadIdGet(), "GPP_B") ||
-		strings.Contains(macro.PadIdGet(), "GPP_A") ||
-		strings.Contains(macro.PadIdGet(), "GPP_S") ||
-		strings.Contains(macro.PadIdGet(), "GPP_R") {
+func GetPlatform(dw0, dw1 uint32) common.PlatformIf {
+	p := InitBasePlatform(dw0, DW0Mask, dw1, DW1Mask)
+	return &p
+}
+
+// Override the base platform method
+func (p *BasePlatform) RemapRstSrc(m *common.Macro) {
+	if strings.Contains(m.GetPadId(), "GPP_F") ||
+		strings.Contains(m.GetPadId(), "GPP_B") ||
+		strings.Contains(m.GetPadId(), "GPP_A") ||
+		strings.Contains(m.GetPadId(), "GPP_S") ||
+		strings.Contains(m.GetPadId(), "GPP_R") {
 		// See reset map for the Jasper Lake Community 0:
 		// https://github.com/coreboot/coreboot/blob/master/src/soc/intel/jasperlake/gpio.c#L21
 		// remmap is not required because it is the same as common.
 		return
 	}
 
-	dw0 := macro.GetRegisterDW0()
-	var remapping = map[uint32]uint32{
-		0: bits.RstCfgRSMRST << bits.DW0PadRstCfg,
-		1: bits.RstCfgDEEP << bits.DW0PadRstCfg,
-		2: bits.RstCfgPLTRST << bits.DW0PadRstCfg,
+	remapping := map[uint32]uint32{
+		0b00: bits.RstCfgRSMRST << bits.DW0PadRstCfg,
+		0b01: bits.RstCfgDEEP << bits.DW0PadRstCfg,
+		0b10: bits.RstCfgPLTRST << bits.DW0PadRstCfg,
 	}
-	resetsrc, valid := remapping[dw0.GetResetConfig()]
+	dw0 := p.GetRegisterDW0()
+	source, valid := remapping[dw0.GetResetConfig()]
 	if valid {
-		// dw0.SetResetConfig(resetsrc)
-		ResetConfigFieldVal := (dw0.Value & 0x3fffffff) | remapping[dw0.GetResetConfig()]
-		dw0.Value = ResetConfigFieldVal
+		dw0.Value &= 0x3fffffff
+		dw0.Value |= source
 	} else {
-		fmt.Println("Invalid Pad Reset Config [ 0x", resetsrc, " ] for ", macro.PadIdGet())
+		logs.Errorf("%s: skip re-mapping: DW0 %s: invalid reset config source value 0b%b",
+			m.GetPadId(), dw0, dw0.GetResetConfig())
 	}
 	mask := bits.DW0[bits.DW0PadRstCfg]
 	dw0.CntrMaskFieldsClear(mask)
-}
-
-// Adds The Pad Termination (TERM) parameter from PAD_CFG_DW1 to the macro
-// as a new argument
-func (platform PlatformSpecific) Pull() {
-	platform.InheritanceMacro.Pull()
-}
-
-// Adds PAD_CFG_GPI macro with arguments
-func (platform PlatformSpecific) GpiMacroAdd() {
-	platform.InheritanceMacro.GpiMacroAdd()
-}
-
-// Adds PAD_CFG_GPO macro with arguments
-func (platform PlatformSpecific) GpoMacroAdd() {
-	platform.InheritanceMacro.GpoMacroAdd()
-}
-
-// Adds PAD_CFG_NF macro with arguments
-func (platform PlatformSpecific) NativeFunctionMacroAdd() {
-	platform.InheritanceMacro.NativeFunctionMacroAdd()
-}
-
-// Adds PAD_NC macro
-func (platform PlatformSpecific) NoConnMacroAdd() {
-	platform.InheritanceMacro.NoConnMacroAdd()
-}
-
-// GenMacro - generate pad macro
-// dw0 : DW0 config register value
-// dw1 : DW1 config register value
-// return: string of macro
-func (PlatformSpecific) GenMacro(id string, dw0Val, dw1Val uint32, ownership uint8) string {
-	macro := common.GetInstanceMacro(
-		PlatformSpecific{
-			InheritanceMacro: cnl.PlatformSpecific{
-				InheritanceMacro: snr.PlatformSpecific{},
-			},
-		},
-		fields.InterfaceGet(),
-	)
-	macro.Clear()
-
-	macro.Clear()
-	dw0 := macro.GetRegisterDW0()
-	dw0.CntrMaskFieldsClear(bits.All32)
-
-	dw1 := macro.GetRegisterDW1()
-	dw1.CntrMaskFieldsClear(bits.All32)
-
-	dw0.Value = dw0Val
-	dw1.Value = dw1Val
-	dw0.ReadOnly = PAD_CFG_DW0_RO_FIELDS
-	dw1.ReadOnly = PAD_CFG_DW1_RO_FIELDS
-
-	macro.PadIdSet(id).SetPadOwnership(ownership)
-	return macro.Generate()
 }

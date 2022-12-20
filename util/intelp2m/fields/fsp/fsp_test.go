@@ -3,11 +3,13 @@ package fsp_test
 import (
 	"testing"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/fields/fsp"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
 	"review.coreboot.org/coreboot.git/util/intelp2m/fields/test"
 )
 
 func TestFSPFields(t *testing.T) {
+	p2m.SettingsReset()
+	p2m.Config.Field = p2m.FspFlds
 	referenceSlice := []string{
 		"{ GPIO_SKL_H_, { GpioPadModeGpio, GpioHostOwnAcpi, GpioDirInOut, GpioOutLow, GpioIntDis | GpioIntLevel, GpioPlatformReset, GpioTermNone,  GpioPadConfigLock } },",
 		"{ GPIO_SKL_H_, { GpioPadModeGpio, GpioHostOwnAcpi, GpioDirInOut, GpioOutLow, GpioIntDis | GpioIntLevel, GpioHostDeepReset, GpioTermNone,  GpioPadConfigLock } },",
@@ -42,5 +44,5 @@ func TestFSPFields(t *testing.T) {
 		"{ GPIO_SKL_H_, { GpioPadModeGpio, GpioHostOwnAcpi, GpioDirInOut, GpioOutLow, GpioIntDis | GpioIntLevel, GpioResetPwrGood, GpioTermNone,  GpioPadConfigLock } },",
 		"{ GPIO_SKL_H_, { GpioPadModeGpio, GpioHostOwnAcpi, GpioDirInOut, GpioOutHigh, GpioIntDis | GpioIntLevel, GpioResetPwrGood, GpioTermNone,  GpioPadConfigLock } },",
 	}
-	test.SlidingOneTestSuiteCreate(referenceSlice).Run(t, "SLIDING-ONE-TEST", fsp.FieldMacros{})
+	test.SlidingOneTestSuiteCreate(referenceSlice).Run(t, "SLIDING-ONE-TEST")
 }

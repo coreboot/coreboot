@@ -3,133 +3,113 @@ package common
 import (
 	"fmt"
 	"strconv"
-	"sync"
 
 	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
+	"review.coreboot.org/coreboot.git/util/intelp2m/logs"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common/register"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common/register/bits"
 )
 
-type Fields interface {
-	DecodeDW0()
-	DecodeDW1()
-	GenerateString()
-}
-
 const (
-	PAD_OWN_ACPI   = 0
-	PAD_OWN_DRIVER = 1
+	Driver bool = true
+	Acpi   bool = false
 )
 
-// PlatformSpecific - platform-specific interface
-type PlatformSpecific interface {
-	RemmapRstSrc()
-	Pull()
-	GpiMacroAdd()
-	GpoMacroAdd()
-	NativeFunctionMacroAdd()
-	NoConnMacroAdd()
+type FieldsIf interface {
+	DecodeDW0(*Macro) *Macro
+	DecodeDW1(*Macro) *Macro
+	GenerateMacro(*Macro) *Macro
 }
 
-// Macro - contains macro information and methods
-// Platform : platform-specific interface
-// padID    : pad ID string
-// str      : macro string entirely
-// Reg      : structure of configuration register values and their masks
+type PlatformIf interface {
+	RemapRstSrc(*Macro)
+	Pull(*Macro)
+	AddGpiMacro(*Macro)
+	AddGpoMacro(*Macro)
+	AddNativeFunctionMacro(*Macro)
+	AddNoConnMacro(*Macro)
+	GetRegisterDW0() *register.DW0
+	GetRegisterDW1() *register.DW1
+}
+
 type Macro struct {
-	Platform  PlatformSpecific
-	DW0       register.DW0
-	DW1       register.DW1
-	padID     string
-	str       string
-	ownership uint8
-	Fields
+	line      string
+	id        string
+	ownership bool
+	Platform  PlatformIf
+	Fields    FieldsIf
 }
 
-var instanceMacro *Macro
-var once sync.Once
-
-// GetInstance returns singleton
-func GetInstanceMacro(p PlatformSpecific, f Fields) *Macro {
-	once.Do(func() {
-		instanceMacro = &Macro{Platform: p, Fields: f}
-	})
-	return instanceMacro
-}
-
-func GetMacro() *Macro {
-	return GetInstanceMacro(nil, nil)
-}
-
-func (macro *Macro) PadIdGet() string {
-	return macro.padID
-}
-
-func (macro *Macro) PadIdSet(padid string) *Macro {
-	macro.padID = padid
-	return macro
-}
-
-func (macro *Macro) SetPadOwnership(own uint8) *Macro {
-	macro.ownership = own
-	return macro
-}
-
-func (macro *Macro) IsOwnershipDriver() bool {
-	return macro.ownership == PAD_OWN_DRIVER
-}
-
-func (macro *Macro) GetRegisterDW0() *register.DW0 {
-	return &macro.DW0
-}
-
-func (macro *Macro) GetRegisterDW1() *register.DW1 {
-	return &macro.DW1
-}
-
-// add a string to macro
-func (macro *Macro) Add(str string) *Macro {
-	macro.str += str
-	return macro
-}
-
-// set a string in a macro instead of its previous contents
-func (macro *Macro) Set(str string) *Macro {
-	macro.str = str
-	return macro
-}
-
-// get macro string
-func (macro *Macro) Get() string {
-	return macro.str
-}
-
-// set a string in a macro instead of its previous contents
-func (macro *Macro) Clear() *Macro {
-	macro.Set("")
-	return macro
-}
-
-// Adds PAD Id to the macro as a new argument
-// return: Macro
-func (macro *Macro) Id() *Macro {
-	return macro.Add(macro.padID)
-}
-
-// Add Separator to macro if needed
-func (macro *Macro) Separator() *Macro {
-	str := macro.Get()
-	c := str[len(str)-1]
-	if c != '(' && c != '_' {
-		macro.Add(", ")
+func CreateFrom(id string, ownership bool, pi PlatformIf, fi FieldsIf) Macro {
+	return Macro{
+		id:        id,
+		ownership: ownership,
+		Platform:  pi,
+		Fields:    fi,
 	}
-	return macro
 }
 
-// Adds the PADRSTCFG parameter from DW0 to the macro as a new argument
-// return: Macro
-func (macro *Macro) Rstsrc() *Macro {
-	dw0 := macro.GetRegisterDW0()
+func (m *Macro) String() string {
+	return m.line
+}
+
+func (m *Macro) GetPadId() string {
+	return m.id
+}
+
+func (m Macro) IsOwnershipDriver() bool {
+	return m.ownership
+}
+
+func (m *Macro) SetOwnershipAcpi() {
+	m.ownership = Acpi
+}
+
+func (m *Macro) SetOwnershipDriver() {
+	m.ownership = Driver
+}
+
+func (m *Macro) Add(str string) *Macro {
+	m.line += str
+	return m
+}
+
+func (m *Macro) Set(str string) *Macro {
+	m.line = str
+	return m
+}
+
+func (m *Macro) Clear() *Macro {
+	m.line = ""
+	return m
+}
+
+// Id() adds Pad Id to the macro string
+func (m *Macro) Id() *Macro {
+	return m.Add(m.id)
+}
+
+// Separator() adds separator ", " to macro if needed
+func (m *Macro) Separator() *Macro {
+	line := m.line
+	c := line[len(line)-1]
+	if c != '(' && c != '_' {
+		m.Add(", ")
+	}
+	return m
+}
+
+// or - Set " | " if its needed
+func (m *Macro) Or() *Macro {
+	if str := m.line; str[len(str)-1] == ')' {
+		m.Add(" | ")
+	}
+	return m
+}
+
+// Rstsrc() adds PADRSTCFG parameter
+func (m *Macro) Rstsrc() *Macro {
+	dw0 := m.Platform.GetRegisterDW0()
 	resetsrc := map[uint32]string{
 		0b00: "PWROK",
 		0b01: "DEEP",
@@ -138,29 +118,28 @@ func (macro *Macro) Rstsrc() *Macro {
 	}
 	source, exist := resetsrc[dw0.GetResetConfig()]
 	if !exist {
+		logs.Errorf("%s: ResetConfig error: map does not contain %d",
+			m.id, dw0.GetResetConfig())
 		source = "ERROR"
 	}
-	return macro.Separator().Add(source)
+	return m.Separator().Add(source)
 }
 
-// Adds The Pad Termination (TERM) parameter from DW1 to the macro as a new argument
-// return: Macro
-func (macro *Macro) Pull() *Macro {
-	macro.Platform.Pull()
-	return macro
+// Pull() adds Pad Termination TERM parameter
+func (m *Macro) Pull() *Macro {
+	m.Platform.Pull(m)
+	return m
 }
 
-// Adds Pad GPO value to macro string as a new argument
-// return: Macro
-func (macro *Macro) Val() *Macro {
-	dw0 := macro.GetRegisterDW0()
-	return macro.Separator().Add(strconv.Itoa(int(dw0.GetGPIOTXState())))
+// Val() adds pad GPO value to macro string
+func (m *Macro) Val() *Macro {
+	dw0 := m.Platform.GetRegisterDW0()
+	return m.Separator().Add(strconv.Itoa(int(dw0.GetGPIOTXState())))
 }
 
-// Adds Pad GPO value to macro string as a new argument
-// return: Macro
-func (macro *Macro) Trig() *Macro {
-	dw0 := macro.GetRegisterDW0()
+// Trig() adds Pad GPO value to macro string
+func (m *Macro) Trig() *Macro {
+	dw0 := m.Platform.GetRegisterDW0()
 	trig := map[uint32]string{
 		0b00: "LEVEL",
 		0b01: "EDGE_SINGLE",
@@ -169,24 +148,24 @@ func (macro *Macro) Trig() *Macro {
 	}
 	level, exist := trig[dw0.GetRXLevelEdgeConfiguration()]
 	if !exist {
+		logs.Errorf("%s: RXLevelEdgeConfig error: map does not contain %d",
+			m.id, dw0.GetRXLevelEdgeConfiguration())
 		level = "ERROR"
 	}
-	return macro.Separator().Add(level)
+	return m.Separator().Add(level)
 }
 
-// Adds Pad Polarity Inversion Stage (RXINV) to macro string as a new argument
-// return: Macro
-func (macro *Macro) Invert() *Macro {
-	if macro.GetRegisterDW0().GetRxInvert() != 0 {
-		return macro.Separator().Add("INVERT")
+// Invert() adds Pad Polarity Inversion Stage (RXINV) to macro string
+func (m *Macro) Invert() *Macro {
+	if dw0 := m.Platform.GetRegisterDW0(); dw0.GetRxInvert() != 0 {
+		return m.Separator().Add("INVERT")
 	}
-	return macro.Separator().Add("NONE")
+	return m.Separator().Add("NONE")
 }
 
-// Adds input/output buffer state
-// return: Macro
-func (macro *Macro) Bufdis() *Macro {
-	dw0 := macro.GetRegisterDW0()
+// Bufdis() adds input/output buffer state
+func (m *Macro) Bufdis() *Macro {
+	dw0 := m.Platform.GetRegisterDW0()
 	states := map[uint32]string{
 		0b00: "NO_DISABLE",    // both buffers are enabled
 		0b01: "TX_DISABLE",    // output buffer is disabled
@@ -195,34 +174,33 @@ func (macro *Macro) Bufdis() *Macro {
 	}
 	state, exist := states[dw0.GetGPIORxTxDisableStatus()]
 	if !exist {
+		logs.Errorf("%s: GPIORxTxDisableStatus error: map does not contain %d",
+			m.id, dw0.GetGPIORxTxDisableStatus())
 		state = "ERROR"
 	}
-	return macro.Separator().Add(state)
+	return m.Separator().Add(state)
 }
 
-// Adds macro to set the host software ownership
-// return: Macro
-func (macro *Macro) Own() *Macro {
-	if macro.IsOwnershipDriver() {
-		return macro.Separator().Add("DRIVER")
+// Own() adds macro to set the host software ownership
+func (m *Macro) Own() *Macro {
+	if m.IsOwnershipDriver() {
+		return m.Separator().Add("DRIVER")
 	}
-	return macro.Separator().Add("ACPI")
+	return m.Separator().Add("ACPI")
 }
 
-// Adds pad native function (PMODE) as a new argument
-// return: Macro
-func (macro *Macro) Padfn() *Macro {
-	dw0 := macro.GetRegisterDW0()
+// Padfn() adds pad native function (PMODE)
+func (m *Macro) Padfn() *Macro {
+	dw0 := m.Platform.GetRegisterDW0()
 	if number := dw0.GetPadMode(); number != 0 {
-		return macro.Separator().Add(fmt.Sprintf("NF%d", number))
+		return m.Separator().Add(fmt.Sprintf("NF%d", number))
 	}
 	// GPIO used only for PAD_FUNC(x) macro
-	return macro.Add("GPIO")
+	return m.Add("GPIO")
 }
 
-// Add a line to the macro that defines IO Standby State
-// return: macro
-func (macro *Macro) IOSstate() *Macro {
+// IOSstate() adds a line to the macro that defines IO Standby State
+func (m *Macro) IOSstate() *Macro {
 	states := map[uint32]string{
 		bits.IOStateTxLASTRxE:     "TxLASTRxE",
 		bits.IOStateTx0RxDCRx0:    "Tx0RxDCRx0",
@@ -236,19 +214,19 @@ func (macro *Macro) IOSstate() *Macro {
 		bits.IOStateTxDRxE:        "TxDRxE",
 		bits.IOStateStandbyIgnore: "IGNORE",
 	}
-	dw1 := macro.GetRegisterDW1()
+	dw1 := m.Platform.GetRegisterDW1()
 	state, exist := states[dw1.GetIOStandbyState()]
 	if !exist {
-		// ignore setting for incorrect value
+		logs.Errorf("%s: IOStandbyState error: map does not contain %d",
+			m.id, dw1.GetIOStandbyState())
 		state = "ERROR"
 	}
-	return macro.Separator().Add(state)
+	return m.Separator().Add(state)
 }
 
-// Add a line to the macro that defines IO Standby Termination
-// return: macro
-func (macro *Macro) IOTerm() *Macro {
-	dw1 := macro.GetRegisterDW1()
+// IOTerm() add a line to the macro that defines IO Standby Termination
+func (m *Macro) IOTerm() *Macro {
+	dw1 := m.Platform.GetRegisterDW1()
 	terminations := map[uint32]string{
 		bits.IOTermSAME:    "SAME",
 		bits.IOTermDISPUPD: "DISPUPD",
@@ -257,87 +235,94 @@ func (macro *Macro) IOTerm() *Macro {
 	}
 	termination, exist := terminations[dw1.GetIOStandbyTermination()]
 	if !exist {
+		logs.Errorf("%s: IOStandbyTermination error: map does not contain %d",
+			m.id, dw1.GetIOStandbyTermination())
 		termination = "ERROR"
 	}
-	return macro.Separator().Add(termination)
+	return m.Separator().Add(termination)
 }
 
 // Check created macro
-func (macro *Macro) check() *Macro {
-	dw0 := macro.GetRegisterDW0()
+func (m *Macro) Check() *Macro {
+	dw0 := m.Platform.GetRegisterDW0()
 	if !dw0.MaskCheck() {
-		return macro.GenerateFields()
+		return m.GenerateFields()
 	}
-	return macro
+	return m
 }
 
-// or - Set " | " if its needed
-func (macro *Macro) Or() *Macro {
-	if str := macro.Get(); str[len(str)-1] == ')' {
-		macro.Add(" | ")
-	}
-	return macro
-}
-
-func (macro *Macro) DecodeIgnoredFieldsDW0() *Macro {
+func (m *Macro) DecodeIgnoredFieldsDW0() *Macro {
 	if p2m.Config.Field == p2m.FspFlds {
-		return macro
+		logs.Infof("%s: decoding of extracted fields is not applied for fsp", m.id)
+		return m
+	} else if m.Fields == nil {
+		logs.Errorf("%s: field collection is not set in the macro structure", m.id)
+		return m
 	}
-	dw0 := macro.GetRegisterDW0()
+
+	dw0 := m.Platform.GetRegisterDW0()
 	if ignored := dw0.IgnoredFieldsGet(); ignored != 0 {
 		saved := dw0.Value
 		dw0.Value = ignored
-		macro.Add("/* DW0: ")
-		macro.Fields.DecodeDW0()
-		macro.Add(" - IGNORED */\n")
+		m.Add("/* DW0: ").Fields.DecodeDW0(m).Add(" - IGNORED */\n")
 		dw0.Value = saved
 	}
-	return macro
+
+	return m
 }
 
-func (macro *Macro) DecodeIgnoredFieldsDW1() *Macro {
+func (m *Macro) DecodeIgnoredFieldsDW1() *Macro {
 	if p2m.Config.Field == p2m.FspFlds {
-		return macro
+		logs.Infof("%s: decoding of extracted fields is not applied for fsp", m.id)
+		return m
+	} else if m.Fields == nil {
+		logs.Errorf("%s: field collection is not set in the macro structure", m.id)
+		return m
 	}
-	dw1 := macro.GetRegisterDW1()
+
+	dw1 := m.Platform.GetRegisterDW1()
 	if ignored := dw1.IgnoredFieldsGet(); ignored != 0 {
 		saved := dw1.Value
 		dw1.Value = ignored
-		macro.Add("/* DW0: ")
-		macro.DecodeDW1()
-		macro.Add(" - IGNORED */\n")
+		m.Add("/* DW1: ").Fields.DecodeDW1(m).Add(" - IGNORED */\n")
 		dw1.Value = saved
 	}
-	return macro
+
+	return m
 }
 
-// GenerateFields - generate bitfield macros
-func (macro *Macro) GenerateFields() *Macro {
-	dw0 := macro.GetRegisterDW0()
-	dw1 := macro.GetRegisterDW1()
+// GenerateFields() generates bitfield macros
+func (m *Macro) GenerateFields() *Macro {
+	if m.Fields == nil {
+		logs.Errorf("%s: field collection is not set in the macro structure", m.id)
+		return m
+	}
+
+	dw0 := m.Platform.GetRegisterDW0()
+	dw1 := m.Platform.GetRegisterDW1()
 
 	// Get mask of ignored bit fields.
 	dw0Ignored := dw0.IgnoredFieldsGet()
 	dw1Ignored := dw1.IgnoredFieldsGet()
 
 	if p2m.Config.GenLevel != 4 {
-		macro.Clear()
+		m.Clear()
 	}
 	if p2m.Config.GenLevel >= 3 {
-		// Add string of reference macro as a comment
-		reference := macro.Get()
-		macro.Clear()
+		// Add string of reference m as a comment
+		reference := m.line
+		m.Clear()
 		/* DW0 : PAD_TRIG(OFF) | PAD_BUF(RX_DISABLE) | 1 - IGNORED */
-		macro.DecodeIgnoredFieldsDW0()
-		macro.DecodeIgnoredFieldsDW1()
+		m.DecodeIgnoredFieldsDW0()
+		m.DecodeIgnoredFieldsDW1()
 		if p2m.Config.GenLevel >= 4 {
 			/* PAD_CFG_NF(GPP_B23, 20K_PD, PLTRST, NF2), */
-			macro.Add("/* ").Add(reference).Add(" */\n")
+			m.Add("/* ").Add(reference).Add(" */\n")
 		}
 	}
 	if p2m.Config.IgnoredFields {
 		// Consider bit fields that should be ignored when regenerating
-		// advansed macros
+		// advansed ms
 		tempVal := dw0.Value & ^dw0Ignored
 		dw0.Value = tempVal
 
@@ -345,76 +330,72 @@ func (macro *Macro) GenerateFields() *Macro {
 		dw1.Value = tempVal
 	}
 
-	macro.Fields.GenerateString()
-	return macro
+	return m.Fields.GenerateMacro(m)
 }
 
-// Generate macro for bi-directional GPIO port
-func (macro *Macro) Bidirection() {
-	dw1 := macro.GetRegisterDW1()
+// Bidirection() generates macro for bi-directional GPIO port
+func (m *Macro) Bidirection() {
+	dw1 := m.Platform.GetRegisterDW1()
 	ios := dw1.GetIOStandbyState() != 0 || dw1.GetIOStandbyTermination() != 0
-	macro.Set("PAD_CFG_GPIO_BIDIRECT")
+	m.Set("PAD_CFG_GPIO_BIDIRECT")
 	if ios {
-		macro.Add("_IOS")
+		m.Add("_IOS")
 	}
 	// PAD_CFG_GPIO_BIDIRECT(pad, val, pull, rst, trig, own)
-	macro.Add("(").Id().Val().Pull().Rstsrc().Trig()
+	m.Add("(").Id().Val().Pull().Rstsrc().Trig()
 	if ios {
 		// PAD_CFG_GPIO_BIDIRECT_IOS(pad, val, pull, rst, trig, iosstate, iosterm, own)
-		macro.IOSstate().IOTerm()
+		m.IOSstate().IOTerm()
 	}
-	macro.Own().Add("),")
+	m.Own().Add("),")
 }
 
-// Gets base string of current macro
-// return: string of macro
-func (macro *Macro) Generate() string {
-	const rxDisable uint32 = 0x2
-	const txDisable uint32 = 0x1
-
-	macro.Platform.RemmapRstSrc()
-	macro.Set("PAD_CFG")
-	if dw0 := macro.GetRegisterDW0(); dw0.GetPadMode() == 0 {
-		// GPIO
-		switch dw0.GetGPIORxTxDisableStatus() {
+// Generate() generates string of macro
+func (m *Macro) Generate() string {
+	m.Platform.RemapRstSrc(m)
+	if dw0 := m.Platform.GetRegisterDW0(); dw0.GetPadMode() == 0 {
+		const txDisable uint32 = 0b01
+		const rxDisable uint32 = 0b10
+		switch m.Set("PAD_CFG"); dw0.GetGPIORxTxDisableStatus() {
 		case txDisable:
-			macro.Platform.GpiMacroAdd() // GPI
+			m.Platform.AddGpiMacro(m) // GPI
 
 		case rxDisable:
-			macro.Platform.GpoMacroAdd() // GPO
+			m.Platform.AddGpoMacro(m) // GPO
 
 		case rxDisable | txDisable:
-			macro.Platform.NoConnMacroAdd() // NC
+			m.Platform.AddNoConnMacro(m) // NC
 
 		default:
-			macro.Bidirection()
+			m.Bidirection()
 		}
 	} else {
-		macro.Platform.NativeFunctionMacroAdd()
+		m.Platform.AddNativeFunctionMacro(m)
 	}
 
 	if p2m.Config.Field != p2m.NoFlds {
-		// Clear control mask to generate advanced macro only
-		return macro.GenerateFields().Get()
+		// clear control mask to generate field collection macro
+		return m.GenerateFields().line
 	}
 
 	if !p2m.Config.AutoCheck {
-		body := macro.Get()
+		body := m.line
 		if p2m.Config.GenLevel >= 3 {
-			macro.Clear()
-			macro.DecodeIgnoredFieldsDW0()
-			macro.DecodeIgnoredFieldsDW1()
-			comment := macro.Get()
+			if m.Fields == nil {
+				logs.Errorf("%s: field collection is not set in the macro structure", m.id)
+				return body
+			}
+			m.Clear()
+			m.DecodeIgnoredFieldsDW0()
+			m.DecodeIgnoredFieldsDW1()
+			comment := m.line
 			if p2m.Config.GenLevel >= 4 {
-				macro.Clear().Add("/* ")
-				macro.Fields.GenerateString()
-				macro.Add(" */\n")
-				comment += macro.Get()
+				comment += m.Clear().Add("/* ").Fields.GenerateMacro(m).Add(" */\n").line
 			}
 			return comment + body
 		}
 		return body
 	}
 
-	return macro.check().Get()
+	return m.Check().line
 }

@@ -5,7 +5,7 @@ import (
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 )
 
-type FieldMacros struct{}
+type FieldCollection struct{}
 
 // field - data structure for creating a new bitfield macro object
 // PAD_FUNC(NF3)
@@ -22,8 +22,7 @@ type field struct {
 
 // generate - wrapper for generating bitfield macros string
 // fields : field structure
-func generate(fields ...*field) {
-	macro := common.GetMacro()
+func generate(macro *common.Macro, fields ...*field) {
 	var allhidden bool = true
 	for _, field := range fields {
 		if field.unhide {
@@ -48,10 +47,9 @@ func generate(fields ...*field) {
 }
 
 // DecodeDW0 - decode value of DW0 register
-func (FieldMacros) DecodeDW0() {
-	macro := common.GetMacro()
-	dw0 := macro.GetRegisterDW0()
-	generate(
+func (FieldCollection) DecodeDW0(macro *common.Macro) *common.Macro {
+	dw0 := macro.Platform.GetRegisterDW0()
+	generate(macro,
 		&field{
 			prefix: "PAD_FUNC",
 			// TODO: Find another way to hide PAD_FUNC(GPIO) in the comment with
@@ -128,13 +126,13 @@ func (FieldMacros) DecodeDW0() {
 			unhide: dw0.GetGPIOTXState() != 0,
 		},
 	)
+	return macro
 }
 
 // DecodeDW1 - decode value of DW1 register
-func (FieldMacros) DecodeDW1() {
-	macro := common.GetMacro()
-	dw1 := macro.GetRegisterDW1()
-	generate(
+func (FieldCollection) DecodeDW1(macro *common.Macro) *common.Macro {
+	dw1 := macro.Platform.GetRegisterDW1()
+	generate(macro,
 		&field{
 			name:   "PAD_CFG1_TOL_1V8",
 			unhide: dw1.GetPadTol() != 0,
@@ -164,14 +162,12 @@ func (FieldMacros) DecodeDW1() {
 			configurator: func() { macro.Own() },
 		},
 	)
+	return macro
 }
 
-// GenerateString - generates the entire string of bitfield macros.
-func (bitfields FieldMacros) GenerateString() {
-	macro := common.GetMacro()
+// GenerateMacro generates the field macro collection
+func (f FieldCollection) GenerateMacro(macro *common.Macro) *common.Macro {
 	macro.Add("_PAD_CFG_STRUCT(").Id().Add(", ")
-	bitfields.DecodeDW0()
-	macro.Add(", ")
-	bitfields.DecodeDW1()
-	macro.Add("),")
+	f.DecodeDW0(macro).Add(", ")
+	return f.DecodeDW1(macro).Add("),")
 }

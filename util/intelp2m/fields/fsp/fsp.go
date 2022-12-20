@@ -2,7 +2,7 @@ package fsp
 
 import "review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 
-type FieldMacros struct{}
+type FieldCollection struct{}
 
 // field - data structure for creating a new bitfield macro object
 // configmap : map to select the current configuration
@@ -14,10 +14,8 @@ type field struct {
 	override  func(configuration map[uint32]string, value uint32)
 }
 
-// generate - wrapper for generating bitfield macros string
-// fields : field structure
-func generate(fields ...*field) {
-	macro := common.GetMacro()
+// generate() generates bitfield macro data struct
+func generate(macro *common.Macro, fields ...*field) {
 	for _, field := range fields {
 		if field.override != nil {
 			// override if necessary
@@ -35,9 +33,8 @@ func generate(fields ...*field) {
 }
 
 // DecodeDW0 - decode value of DW0 register
-func (FieldMacros) DecodeDW0() {
-	macro := common.GetMacro()
-	dw0 := macro.GetRegisterDW0()
+func (FieldCollection) DecodeDW0(macro *common.Macro) *common.Macro {
+	dw0 := macro.Platform.GetRegisterDW0()
 
 	ownershipStatus := func() uint32 {
 		if macro.IsOwnershipDriver() {
@@ -46,7 +43,7 @@ func (FieldMacros) DecodeDW0() {
 		return 0
 	}
 
-	generate(
+	generate(macro,
 		&field{
 			configmap: map[uint32]string{
 				0: "GpioPadModeGpio",
@@ -131,13 +128,13 @@ func (FieldMacros) DecodeDW0() {
 			value: dw0.GetResetConfig(),
 		},
 	)
+	return macro
 }
 
-// DecodeDW1 - decode value of DW1 register
-func (FieldMacros) DecodeDW1() {
-	macro := common.GetMacro()
-	dw1 := macro.GetRegisterDW1()
-	generate(
+// DecodeDW1() decodes DW1 register value and adds it to the macro string
+func (FieldCollection) DecodeDW1(macro *common.Macro) *common.Macro {
+	dw1 := macro.Platform.GetRegisterDW1()
+	generate(macro,
 		&field{
 			override: func(configmap map[uint32]string, value uint32) {
 				if dw1.GetPadTol() != 0 {
@@ -145,29 +142,27 @@ func (FieldMacros) DecodeDW1() {
 				}
 			},
 		},
-
 		&field{
 			configmap: map[uint32]string{
-				0x0: "GpioTermNone",
-				0x2: "GpioTermWpd5K",
-				0x4: "GpioTermWpd20K",
-				0x9: "GpioTermWpu1K",
-				0xa: "GpioTermWpu5K",
-				0xb: "GpioTermWpu2K",
-				0xc: "GpioTermWpu20K",
-				0xd: "GpioTermWpu1K2K",
-				0xf: "GpioTermNative",
+				0b0000: "GpioTermNone",
+				0b0010: "GpioTermWpd5K",
+				0b0100: "GpioTermWpd20K",
+				0b1001: "GpioTermWpu1K",
+				0b1010: "GpioTermWpu5K",
+				0b1011: "GpioTermWpu2K",
+				0b1100: "GpioTermWpu20K",
+				0b1101: "GpioTermWpu1K2K",
+				0b1111: "GpioTermNative",
 			},
 			value: dw1.GetTermination(),
 		},
 	)
+	return macro
 }
 
-// GenerateString - generates the entire string of bitfield macros.
-func (bitfields FieldMacros) GenerateString() {
-	macro := common.GetMacro()
+// GenerateMacro() generates the field macro collection and adds it to the macro string
+func (f FieldCollection) GenerateMacro(macro *common.Macro) *common.Macro {
 	macro.Add("{ GPIO_SKL_H_").Id().Add(", { ")
-	bitfields.DecodeDW0()
-	bitfields.DecodeDW1()
-	macro.Add(" GpioPadConfigLock } },") // TODO: configure GpioPadConfigLock
+	f.DecodeDW0(macro)
+	return f.DecodeDW1(macro).Add(" GpioPadConfigLock } },") // TODO: configure GpioPadConfigLock
 }

@@ -3,13 +3,15 @@ package cb_test
 import (
 	"testing"
 
-	"review.coreboot.org/coreboot.git/util/intelp2m/fields/cb"
+	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
 	"review.coreboot.org/coreboot.git/util/intelp2m/fields/test"
 )
 
 // sliding-one
 
 func TestCbFields(t *testing.T) {
+	p2m.SettingsReset()
+	p2m.Config.Field = p2m.CbFlds
 	referenceSlice := []string{
 		"_PAD_CFG_STRUCT(, PAD_FUNC(GPIO) | PAD_RESET(PLTRST), 0),",
 		"_PAD_CFG_STRUCT(, PAD_FUNC(GPIO) | PAD_RESET(DEEP), 0),",
@@ -44,5 +46,5 @@ func TestCbFields(t *testing.T) {
 		"_PAD_CFG_STRUCT(, PAD_FUNC(GPIO) | (1 << 1), 0),",
 		"_PAD_CFG_STRUCT(, PAD_FUNC(GPIO) | 1, 0),",
 	}
-	test.SlidingOneTestSuiteCreate(referenceSlice).Run(t, "SLIDING-ONE-TEST", cb.FieldMacros{})
+	test.SlidingOneTestSuiteCreate(referenceSlice).Run(t, "SLIDING-ONE-TEST")
 }

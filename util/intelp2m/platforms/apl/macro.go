@@ -1,43 +1,47 @@
 package apl
 
 import (
-	"fmt"
-	"strconv"
-
 	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
-	"review.coreboot.org/coreboot.git/util/intelp2m/fields"
+	"review.coreboot.org/coreboot.git/util/intelp2m/logs"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common/register/bits"
 )
 
 const (
-	PAD_CFG_DW0_RO_FIELDS = (0x1 << 27) | (0x1 << 24) | (0x3 << 21) | (0xf << 16) | 0xfc
-	PAD_CFG_DW1_RO_FIELDS = 0xfffc00ff
+	DW0Mask uint32 = (0b1 << 27) | (0b1 << 24) | (0b11 << 21) | (0b1111 << 16) | 0b11111100
+	DW1Mask uint32 = 0b11111111111111000000000011111111
 )
 
-const (
-	PULL_NONE   = 0x0 // 0 000: none
-	PULL_DN_5K  = 0x2 // 0 010: 5k wpd (Only available on SMBus GPIOs)
-	PULL_DN_20K = 0x4 // 0 100: 20k wpd
-	// PULL_NONE = 0x8  // 1 000: none
-	PULL_UP_1K  = 0x9 // 1 001: 1k wpu (Only available on I2C GPIOs)
-	PULL_UP_2K  = 0xb // 1 011: 2k wpu (Only available on I2C GPIOs)
-	PULL_UP_20K = 0xc // 1 100: 20k wpu
-	PULL_UP_667 = 0xd // 1 101: 1k & 2k wpu (Only available on I2C GPIOs)
-	PULL_NATIVE = 0xf // 1 111: (optional) Native controller selected by Pad Mode
-)
+type BasePlatform struct {
+	common.BasePlatform
+}
 
-type PlatformSpecific struct{}
+func InitBasePlatform(dw0, dw0mask uint32, dw1, dw1mask uint32) BasePlatform {
+	return BasePlatform{common.InitBasePlatform(dw0, dw0mask, dw1, dw1mask)}
+}
 
-// RemmapRstSrc - remmap Pad Reset Source Config
-// remmap is not required because it is the same as common.
-func (PlatformSpecific) RemmapRstSrc() {}
+func GetPlatform(dw0, dw1 uint32) common.PlatformIf {
+	p := InitBasePlatform(dw0, DW0Mask, dw1, DW1Mask)
+	return &p
+}
 
-// Adds The Pad Termination (TERM) parameter from DW1 to the macro as a new argument
-// return: macro
-func (PlatformSpecific) Pull() {
-	macro := common.GetMacro()
-	dw1 := macro.GetRegisterDW1()
+// RemapRstSrc() remaps Pad Reset Source Config
+func (p *BasePlatform) RemapRstSrc(m *common.Macro) {}
+
+// Pull() adds The Pad Termination (TERM) parameter from PAD_CFG_DW1 to the macro
+func (p *BasePlatform) Pull(m *common.Macro) {
+	const (
+		PULL_NONE   = 0b0000 // 0 000: none
+		PULL_DN_5K  = 0b0010 // 0 010: 5k wpd (Only available on SMBus GPIOs)
+		PULL_DN_20K = 0b0100 // 0 100: 20k wpd
+		// PULL_NONE = 0b1000  // 1 000: none
+		PULL_UP_1K  = 0b1001 // 1 001: 1k wpu (Only available on I2C GPIOs)
+		PULL_UP_2K  = 0b1011 // 1 011: 2k wpu (Only available on I2C GPIOs)
+		PULL_UP_20K = 0b1100 // 1 100: 20k wpu
+		PULL_UP_667 = 0b1101 // 1 101: 1k & 2k wpu (Only available on I2C GPIOs)
+		PULL_NATIVE = 0b1111 // 1 111: (optional) Native controller selected by Pad Mode
+	)
+
 	var pull = map[uint32]string{
 		PULL_NONE:   "NONE",
 		PULL_DN_5K:  "DN_5K",
@@ -48,259 +52,221 @@ func (PlatformSpecific) Pull() {
 		PULL_UP_667: "UP_667",
 		PULL_NATIVE: "NATIVE",
 	}
-	str, exist := pull[dw1.GetTermination()]
+	dw1 := p.GetRegisterDW1()
+	term, exist := pull[dw1.GetTermination()]
 	if !exist {
-		str = strconv.Itoa(int(dw1.GetTermination()))
-		fmt.Println("Error", macro.PadIdGet(), " invalid TERM value = ", str)
+		term = "INVALID"
+		logs.Errorf("%s: DW1 %s: invalid termination value 0b%b",
+			dw1, m.GetPadId(), dw1.GetTermination())
 	}
-	macro.Separator().Add(str)
+	m.Separator().Add(term)
 }
 
 // Generate macro to cause peripheral IRQ when configured in GPIO input mode
-func ioApicRoute() bool {
-	macro := common.GetMacro()
-	dw0 := macro.GetRegisterDW0()
-	dw1 := macro.GetRegisterDW1()
-	if dw0.GetGPIOInputRouteIOxAPIC() == 0 {
+func ioApicRoute(p *BasePlatform, m *common.Macro) bool {
+	if dw0 := p.GetRegisterDW0(); dw0.GetGPIOInputRouteIOxAPIC() == 0 {
 		return false
 	}
-	macro.Add("_APIC")
+	m.Add("_APIC")
+	dw1 := p.GetRegisterDW1()
 	if dw1.GetIOStandbyState() != 0 || dw1.GetIOStandbyTermination() != 0 {
 		// e.g. H1_PCH_INT_ODL
 		// PAD_CFG_GPI_APIC_IOS(GPIO_63, NONE, DEEP, LEVEL, INVERT, TxDRxE, DISPUPD),
-		macro.Add("_IOS(").Id().Pull().Rstsrc().Trig().Invert().IOSstate().IOTerm()
+		m.Add("_IOS(").Id().Pull().Rstsrc().Trig().Invert().IOSstate().IOTerm()
 	} else {
 		// PAD_CFG_GPI_APIC(pad, pull, rst, trig, inv)
-		macro.Add("(").Id().Pull().Rstsrc().Trig().Invert().Add("),")
+		m.Add("(").Id().Pull().Rstsrc().Trig().Invert().Add("),")
 	}
-	macro.Add("),")
+	m.Add("),")
 	return true
 }
 
 // Generate macro to cause NMI when configured in GPIO input mode
-func nmiRoute() bool {
-	macro := common.GetMacro()
-	if macro.GetRegisterDW0().GetGPIOInputRouteNMI() == 0 {
+func nmiRoute(p *BasePlatform, m *common.Macro) bool {
+	if dw0 := p.GetRegisterDW0(); dw0.GetGPIOInputRouteNMI() == 0 {
 		return false
 	}
 	// e.g. PAD_CFG_GPI_NMI(GPIO_24, UP_20K, DEEP, LEVEL, INVERT),
-	macro.Add("_NMI").Add("(").Id().Pull().Rstsrc().Trig().Invert().Add("),")
+	m.Add("_NMI").Add("(").Id().Pull().Rstsrc().Trig().Invert().Add("),")
 	return true
 }
 
 // Generate macro to cause SCI when configured in GPIO input mode
-func sciRoute() bool {
-	macro := common.GetMacro()
-	dw0 := macro.GetRegisterDW0()
-	dw1 := macro.GetRegisterDW1()
+func sciRoute(p *BasePlatform, m *common.Macro) bool {
+	dw0 := p.GetRegisterDW0()
 	if dw0.GetGPIOInputRouteSCI() == 0 {
 		return false
 	}
+
+	dw1 := p.GetRegisterDW1()
 	if dw1.GetIOStandbyState() != 0 || dw1.GetIOStandbyTermination() != 0 {
 		// PAD_CFG_GPI_SCI_IOS(GPIO_141, NONE, DEEP, EDGE_SINGLE, INVERT, IGNORE, DISPUPD),
-		macro.Add("_SCI_IOS")
-		macro.Add("(").Id().Pull().Rstsrc().Trig().Invert().IOSstate().IOTerm()
+		m.Add("_SCI_IOS")
+		m.Add("(").Id().Pull().Rstsrc().Trig().Invert().IOSstate().IOTerm()
 	} else if dw0.GetRXLevelEdgeConfiguration()&0x1 != 0 {
 		// e.g. PAD_CFG_GPI_ACPI_SCI(GPP_G2, NONE, DEEP, YES),
-		macro.Add("_ACPI_SCI").Add("(").Id().Pull().Rstsrc().Invert()
+		m.Add("_ACPI_SCI").Add("(").Id().Pull().Rstsrc().Invert()
 	} else {
 		// e.g. PAD_CFG_GPI_SCI(GPP_B18, UP_20K, PLTRST, LEVEL, INVERT),
-		macro.Add("_SCI").Add("(").Id().Pull().Rstsrc().Trig().Invert()
+		m.Add("_SCI").Add("(").Id().Pull().Rstsrc().Trig().Invert()
 	}
-	macro.Add("),")
+	m.Add("),")
 	return true
 }
 
 // Generate macro to cause SMI when configured in GPIO input mode
-func smiRoute() bool {
-	macro := common.GetMacro()
-	dw0 := macro.GetRegisterDW0()
-	dw1 := macro.GetRegisterDW1()
+func smiRoute(p *BasePlatform, m *common.Macro) bool {
+	dw0 := p.GetRegisterDW0()
 	if dw0.GetGPIOInputRouteSMI() == 0 {
 		return false
 	}
+	dw1 := p.GetRegisterDW1()
 	if dw1.GetIOStandbyState() != 0 || dw1.GetIOStandbyTermination() != 0 {
 		// PAD_CFG_GPI_SMI_IOS(GPIO_41, UP_20K, DEEP, EDGE_SINGLE, NONE, IGNORE, SAME),
-		macro.Add("_SMI_IOS")
-		macro.Add("(").Id().Pull().Rstsrc().Trig().Invert().IOSstate().IOTerm()
+		m.Add("_SMI_IOS")
+		m.Add("(").Id().Pull().Rstsrc().Trig().Invert().IOSstate().IOTerm()
 	} else if dw0.GetRXLevelEdgeConfiguration()&0x1 != 0 {
 		// e.g. PAD_CFG_GPI_ACPI_SMI(GPP_I3, NONE, DEEP, YES),
-		macro.Add("_ACPI_SMI").Add("(").Id().Pull().Rstsrc().Invert()
+		m.Add("_ACPI_SMI").Add("(").Id().Pull().Rstsrc().Invert()
 	} else {
 		// e.g. PAD_CFG_GPI_SMI(GPP_E3, NONE, PLTRST, EDGE_SINGLE, NONE),
-		macro.Add("_SMI").Add("(").Id().Pull().Rstsrc().Trig().Invert()
+		m.Add("_SMI").Add("(").Id().Pull().Rstsrc().Trig().Invert()
 	}
-	macro.Add("),")
+	m.Add("),")
 	return true
 }
 
-// Generate macro for GPI port
-func (PlatformSpecific) GpiMacroAdd() {
+// AddGpiMacro() adds PAD_CFG_GPI macro with arguments
+func (p *BasePlatform) AddGpiMacro(m *common.Macro) {
 	var ids []string
 
-	macro := common.GetMacro()
-	macro.Set("PAD_CFG_GPI")
-	for routeid, isRoute := range map[string]func() bool{
+	m.Set("PAD_CFG_GPI")
+	for routeid, isRoute := range map[string]func(*BasePlatform, *common.Macro) bool{
 		"IOAPIC": ioApicRoute,
 		"SCI":    sciRoute,
 		"SMI":    smiRoute,
 		"NMI":    nmiRoute,
 	} {
-		if isRoute() {
+		if isRoute(p, m) {
 			ids = append(ids, routeid)
 		}
 	}
 
 	switch config, argc := p2m.Config, len(ids); argc {
 	case 0:
-		dw1 := macro.GetRegisterDW1()
+		dw1 := p.GetRegisterDW1()
 		isIOStandbyStateUsed := dw1.GetIOStandbyState() != 0
 		isIOStandbyTerminationUsed := dw1.GetIOStandbyTermination() != 0
 		if isIOStandbyStateUsed && !isIOStandbyTerminationUsed {
-			macro.Add("_TRIG_IOSSTATE_OWN(")
+			m.Add("_TRIG_IOSSTATE_OWN(")
 			// PAD_CFG_GPI_TRIG_IOSSTATE_OWN(pad, pull, rst, trig, iosstate, own)
-			macro.Id().Pull().Rstsrc().Trig().IOSstate().Own().Add("),")
+			m.Id().Pull().Rstsrc().Trig().IOSstate().Own().Add("),")
 		} else if isIOStandbyTerminationUsed {
-			macro.Add("_TRIG_IOS_OWN(")
+			m.Add("_TRIG_IOS_OWN(")
 			// PAD_CFG_GPI_TRIG_IOS_OWN(pad, pull, rst, trig, iosstate, iosterm, own)
-			macro.Id().Pull().Rstsrc().Trig().IOSstate().IOTerm().Own().Add("),")
+			m.Id().Pull().Rstsrc().Trig().IOSstate().IOTerm().Own().Add("),")
 		} else {
 			// PAD_CFG_GPI_TRIG_OWN(pad, pull, rst, trig, own)
-			macro.Add("_TRIG_OWN(").Id().Pull().Rstsrc().Trig().Own().Add("),")
+			m.Add("_TRIG_OWN(").Id().Pull().Rstsrc().Trig().Own().Add("),")
 		}
 	case 1:
 		// GPI with IRQ route
 		if config.IgnoredFields {
-			macro.SetPadOwnership(common.PAD_OWN_ACPI)
+			m.SetOwnershipAcpi()
 		}
 	case 2:
 		// PAD_CFG_GPI_DUAL_ROUTE(pad, pull, rst, trig, inv, route1, route2)
-		macro.Set("PAD_CFG_GPI_DUAL_ROUTE(").Id().Pull().Rstsrc().Trig().Invert()
-		macro.Add(", " + ids[0] + ", " + ids[1] + "),")
+		m.Set("PAD_CFG_GPI_DUAL_ROUTE(").Id().Pull().Rstsrc().Trig().Invert()
+		m.Add(", " + ids[0] + ", " + ids[1] + "),")
 		if config.IgnoredFields {
-			macro.SetPadOwnership(common.PAD_OWN_ACPI)
+			m.SetOwnershipAcpi()
 		}
 	default:
 		// Clear the control mask so that the check fails and "Advanced" macro is
 		// generated
-		macro.GetRegisterDW0().CntrMaskFieldsClear(bits.All32)
+		dw0 := p.GetRegisterDW0()
+		dw0.CntrMaskFieldsClear(bits.All32)
 	}
 }
 
-// Adds PAD_CFG_GPO macro with arguments
-func (PlatformSpecific) GpoMacroAdd() {
-	macro := common.GetMacro()
-	dw0 := macro.GetRegisterDW0()
-	dw1 := macro.GetRegisterDW1()
-	term := dw1.GetTermination()
-
-	macro.Set("PAD_CFG")
+// AddGpoMacro() adds PAD_CFG_GPO macro with arguments
+func (p *BasePlatform) AddGpoMacro(m *common.Macro) {
+	m.Set("PAD_CFG")
+	dw1 := p.GetRegisterDW1()
 	if dw1.GetIOStandbyState() != 0 || dw1.GetIOStandbyTermination() != 0 {
 		// PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_91, 0, DEEP, NONE, Tx0RxDCRx0, DISPUPD),
 		// PAD_CFG_GPO_IOSSTATE_IOSTERM(pad, val, rst, pull, iosstate, ioterm)
-		macro.Add("_GPO_IOSSTATE_IOSTERM(").Id().Val().Rstsrc().Pull().IOSstate().IOTerm()
+		m.Add("_GPO_IOSSTATE_IOSTERM(").Id().Val().Rstsrc().Pull().IOSstate().IOTerm()
 	} else {
+		term := dw1.GetTermination()
 		if term != 0 {
 			// e.g. PAD_CFG_TERM_GPO(GPP_B23, 1, DN_20K, DEEP),
 			// PAD_CFG_TERM_GPO(pad, val, pull, rst)
-			macro.Add("_TERM")
+			m.Add("_TERM")
 		}
-		macro.Add("_GPO(").Id().Val()
+		m.Add("_GPO(").Id().Val()
 		if term != 0 {
-			macro.Pull()
+			m.Pull()
 		}
-		macro.Rstsrc()
+		m.Rstsrc()
 	}
-	macro.Add("),")
+	m.Add("),")
 
-	if dw0.GetRXLevelEdgeConfiguration() != bits.TrigOFF {
+	if dw0 := p.GetRegisterDW0(); dw0.GetRXLevelEdgeConfiguration() != bits.TrigOFF {
 		// ignore if trig = OFF is not set
 		dw0.CntrMaskFieldsClear(bits.DW0[bits.DW0RxLevelEdgeConfiguration])
 	}
 }
 
-// Adds PAD_CFG_NF macro with arguments
-func (PlatformSpecific) NativeFunctionMacroAdd() {
-	macro := common.GetMacro()
-	dw1 := macro.GetRegisterDW1()
+// AddNativeFunctionMacro() adds PAD_CFG_NF macro with arguments
+func (p *BasePlatform) AddNativeFunctionMacro(m *common.Macro) {
+	m.Set("PAD_CFG_NF")
+	dw1 := p.GetRegisterDW1()
 	isIOStandbyStateUsed := dw1.GetIOStandbyState() != 0
 	isIOStandbyTerminationUsed := dw1.GetIOStandbyTermination() != 0
-
-	macro.Set("PAD_CFG_NF")
 	if !isIOStandbyTerminationUsed && isIOStandbyStateUsed {
 		if dw1.GetIOStandbyState() == bits.IOStateStandbyIgnore {
 			// PAD_CFG_NF_IOSTANDBY_IGNORE(PMU_SLP_S0_B, NONE, DEEP, NF1),
-			macro.Add("_IOSTANDBY_IGNORE(").Id().Pull().Rstsrc().Padfn()
+			m.Add("_IOSTANDBY_IGNORE(").Id().Pull().Rstsrc().Padfn()
 		} else {
 			// PAD_CFG_NF_IOSSTATE(GPIO_22, UP_20K, DEEP, NF2, TxDRxE),
-			macro.Add("_IOSSTATE(").Id().Pull().Rstsrc().Padfn().IOSstate()
+			m.Add("_IOSSTATE(").Id().Pull().Rstsrc().Padfn().IOSstate()
 		}
 	} else if isIOStandbyTerminationUsed {
 		// PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_103, NATIVE, DEEP, NF1, MASK, SAME),
-		macro.Add("_IOSSTATE_IOSTERM(").Id().Pull().Rstsrc().Padfn().IOSstate().IOTerm()
+		m.Add("_IOSSTATE_IOSTERM(").Id().Pull().Rstsrc().Padfn().IOSstate().IOTerm()
 	} else {
 		// e.g. PAD_CFG_NF(GPP_D23, NONE, DEEP, NF1)
-		macro.Add("(").Id().Pull().Rstsrc().Padfn()
+		m.Add("(").Id().Pull().Rstsrc().Padfn()
 	}
-	macro.Add("),")
+	m.Add("),")
 
-	if dw0 := macro.GetRegisterDW0(); dw0.GetGPIORxTxDisableStatus() != 0 {
+	if dw0 := p.GetRegisterDW0(); dw0.GetGPIORxTxDisableStatus() != 0 {
 		// Since the bufbis parameter will be ignored for NF, we should clear
 		// the corresponding bits in the control mask.
 		dw0.CntrMaskFieldsClear(bits.DW0[bits.DW0RxTxBufDisable])
 	}
 }
 
-// Adds PAD_NC macro
-func (PlatformSpecific) NoConnMacroAdd() {
-	macro := common.GetMacro()
-
-	dw0, dw1 := macro.GetRegisterDW0(), macro.GetRegisterDW1()
-	if dw1.GetIOStandbyState() == bits.IOStateTxDRxE {
-
-		// See comments in sunrise/macro.go : NoConnMacroAdd()
+// AddNoConnMacro() adds PAD_NC macro
+func (p *BasePlatform) AddNoConnMacro(m *common.Macro) {
+	if dw1 := p.GetRegisterDW1(); dw1.GetIOStandbyState() == bits.IOStateTxDRxE {
+		dw0 := p.GetRegisterDW0()
+		// See comments in sunrise/m.go : AddNoConnMacro()
 		if dw0.GetRXLevelEdgeConfiguration() != bits.TrigOFF {
 			dw0.CntrMaskFieldsClear(bits.DW0[bits.DW0RxLevelEdgeConfiguration])
 		}
 		if dw0.GetResetConfig() != 1 { // 1 = RST_DEEP
 			dw0.CntrMaskFieldsClear(bits.DW0[bits.DW0PadRstCfg])
 		}
-
 		// PAD_NC(OSC_CLK_OUT_1, DN_20K)
-		macro.Set("PAD_NC").Add("(").Id().Pull().Add("),")
+		m.Set("PAD_NC").Add("(").Id().Pull().Add("),")
 		return
 	}
 	// PAD_CFG_GPIO_HI_Z(GPIO_81, UP_20K, DEEP, HIZCRx0, DISPUPD),
-	macro.Set("PAD_CFG_GPIO_")
-	if macro.IsOwnershipDriver() {
+	if m.Set("PAD_CFG_GPIO_"); m.IsOwnershipDriver() {
 		// PAD_CFG_GPIO_DRIVER_HI_Z(GPIO_55, UP_20K, DEEP, HIZCRx1, ENPU),
-		macro.Add("DRIVER_")
+		m.Add("DRIVER_")
 	}
-	macro.Add("HI_Z(").Id().Pull().Rstsrc().IOSstate().IOTerm().Add("),")
-}
-
-// GenMacro - generate pad macro
-// dw0Val : DW0 config register value
-// dw1Val : DW1 config register value
-// return: string of macro
-func (PlatformSpecific) GenMacro(id string, dw0Val uint32, dw1Val uint32, ownership uint8) string {
-	macro := common.GetInstanceMacro(
-		PlatformSpecific{},
-		fields.InterfaceGet(),
-	)
-	macro.Clear()
-
-	dw0 := macro.GetRegisterDW0()
-	dw0.CntrMaskFieldsClear(bits.All32)
-
-	dw1 := macro.GetRegisterDW1()
-	dw1.CntrMaskFieldsClear(bits.All32)
-
-	dw0.Value = dw0Val
-	dw1.Value = dw1Val
-	dw0.ReadOnly = PAD_CFG_DW0_RO_FIELDS
-	dw1.ReadOnly = PAD_CFG_DW1_RO_FIELDS
-
-	macro.PadIdSet(id).SetPadOwnership(ownership)
-	return macro.Generate()
+	m.Add("HI_Z(").Id().Pull().Rstsrc().IOSstate().IOTerm().Add("),")
 }

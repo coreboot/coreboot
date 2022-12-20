@@ -10,12 +10,12 @@ import (
 
 // InterfaceSet - set the interface for decoding configuration
 // registers DW0 and DW1.
-func InterfaceGet() common.Fields {
-	var fldstylemap = map[p2m.FieldType]common.Fields{
-		p2m.NoFlds:  cb.FieldMacros{}, // analyze fields using cb macros
-		p2m.CbFlds:  cb.FieldMacros{},
-		p2m.FspFlds: fsp.FieldMacros{},
-		p2m.RawFlds: raw.FieldMacros{},
+func Get() common.FieldsIf {
+	var fldstylemap = map[p2m.FieldType]common.FieldsIf{
+		p2m.NoFlds:  cb.FieldCollection{}, // analyze fields using cb macros
+		p2m.CbFlds:  cb.FieldCollection{},
+		p2m.FspFlds: fsp.FieldCollection{},
+		p2m.RawFlds: raw.FieldCollection{},
 	}
 	return fldstylemap[p2m.Config.Field]
 }

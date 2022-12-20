@@ -1,14 +1,11 @@
 package cnl
 
-type InheritanceTemplate interface {
-	KeywordCheck(line string) bool
-}
+import "review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 
-// Group: "GPP_A", "GPP_B", "GPP_G", "GPP_D", "GPP_F", "GPP_H", "GPD", "GPP_C", "GPP_E"
-
-// KeywordCheck - This function is used to filter parsed lines of the configuration file and
-// returns true if the keyword is contained in the line.
-// line      : string from the configuration file
-func (platform PlatformSpecific) KeywordCheck(line string) bool {
-	return platform.InheritanceTemplate.KeywordCheck(line)
+// CheckKeyword() parses lines of the configuration file and returns true if the keyword is
+// contained in the line
+// "GPP_A", "GPP_B", "GPP_G", "GPP_D", "GPP_F", "GPP_H", "GPD", "GPP_C", "GPP_E"
+func CheckKeyword(line string) bool {
+	included, _ := common.KeywordsCheck(line, "GPP_", "GPD")
+	return included
 }

@@ -3,6 +3,7 @@
 #ifndef RAMINIT_COMMON_H
 #define RAMINIT_COMMON_H
 
+#include <device/dram/ddr3.h>
 #include <stdint.h>
 
 #define BASEFREQ	133

@@ -91,7 +91,7 @@ chip soc/intel/jasperlake
 				register "generic.hid" = ""SIS6496""
 				register "generic.desc" = ""SIS Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D4_IRQ)"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "generic.reset_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"
 				register "generic.stop_gpio" =
@@ -108,7 +108,7 @@ chip soc/intel/jasperlake
 				register "generic.hid" = ""GDIX0000""
 				register "generic.desc" = ""Goodix Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D4_IRQ)"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "generic.reset_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"
 				register "generic.reset_delay_ms" = "120"

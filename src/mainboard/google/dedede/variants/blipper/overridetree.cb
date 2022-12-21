@@ -137,7 +137,7 @@ chip soc/intel/jasperlake
 				register "generic.hid" = ""GTCH7503""
 				register "generic.desc" = ""G2 Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D4_IRQ)"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "generic.reset_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"
 				register "generic.reset_delay_ms" = "120"
@@ -153,7 +153,7 @@ chip soc/intel/jasperlake
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D4_IRQ)"
-				register "probed" = "1"
+				register "detect" = "1"
 				register "reset_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"
 				register "reset_delay_ms" = "20"

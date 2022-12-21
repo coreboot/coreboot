@@ -65,7 +65,7 @@ static const struct pad_config gpio_table[] = {
 /* GSPI0_MOSI */	PAD_NC(GPP_B18, NONE),
 /* GSPI1_CS# */		PAD_NC(GPP_B19, NONE), /* HDD_FALL_INT (nostuff) */
 /* GSPI1_CLK */		PAD_NC(GPP_B20, NONE),
-/* GSPI1_MISO */	PAD_CFG_GPO(GPP_B21, 0, DEEP), /* PCH_3.3V_TS_EN */
+/* GSPI1_MISO */	PAD_CFG_GPO(GPP_B21, 1, DEEP), /* PCH_3.3V_TS_EN */
 /* GSPI1_MOSI */	PAD_NC(GPP_B22, NONE),
 /* SML1ALERT# */	PAD_NC(GPP_B23, DN_20K),
 
@@ -111,7 +111,7 @@ static const struct pad_config gpio_table[] = {
 /* ISH_UART0_RXD */	PAD_CFG_NF(GPP_D13, UP_20K, DEEP, NF1),
 			/* ISH_CPU_UART0_TX */
 /* ISH_UART0_TXD */	PAD_CFG_NF(GPP_D14, NONE, DEEP, NF1),
-/* ISH_UART0_RTS# */	PAD_CFG_GPO(GPP_D15, 0, DEEP), /* TS_RST */
+/* ISH_UART0_RTS# */	PAD_CFG_GPO(GPP_D15, 1, DEEP), /* TS_RST */
 /* ISH_UART0_CTS# */	PAD_CFG_GPI(GPP_D16, NONE, PLTRST),
 /* DMIC_CLK1 */		PAD_CFG_GPI(GPP_D17, NONE, PLTRST), /* KB_DET# */
 /* DMIC_DATA1 */	PAD_CFG_GPI_APIC(GPP_D18, NONE, PLTRST,
@@ -249,10 +249,16 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 	return early_gpio_table;
 }
 
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	PAD_CFG_GPO(GPP_B21, 1, DEEP), /* PCH_3.3V_TS_EN */
+	PAD_CFG_GPO(GPP_D15, 0, DEEP), /* TS_RST */
+};
+
 const struct pad_config *variant_romstage_gpio_table(size_t *num)
 {
-	*num = 0;
-	return NULL;
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }
 
 static const struct cros_gpio cros_gpios[] = {

@@ -222,7 +222,7 @@ chip soc/intel/tigerlake
 				register "hid" = ""MLFS0000""
 				register "desc" = ""Melfas Touchscreen""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
-				register "probed" = "1"
+				register "detect" = "1"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
 				register "reset_delay_ms" = "10"
 				register "reset_off_delay_ms" = "5"
@@ -235,7 +235,7 @@ chip soc/intel/tigerlake
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
-				register "probed" = "1"
+				register "detect" = "1"
 				register "reset_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
 				register "reset_delay_ms" = "100"

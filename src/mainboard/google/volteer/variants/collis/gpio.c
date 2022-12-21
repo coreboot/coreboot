@@ -214,3 +214,18 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
 }
+
+/* GPIOs needed to be set in romstage. */
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	/* F16 : GSXCLK ==> EN_PP3300_TOUCHSCREEN */
+	PAD_CFG_GPO(GPP_F16, 1, DEEP),
+	/* C10 : UART0_RTS# ==> USI_RST_L */
+	PAD_CFG_GPO(GPP_C10, 0, DEEP),
+};
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
+}

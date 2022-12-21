@@ -18,8 +18,8 @@ static const struct pad_config gpio_table[] = {
 	/* A6  : ESPI_RESET# ==> NC(TP764) */
 	/* A7  : I2S2_SCLK ==> I2S1_SCLK */
 	PAD_CFG_NF(GPP_A7, NONE, DEEP, NF1),
-	/* A8  : I2S2_SFRM ==> I2S1_SFRM */
-	PAD_CFG_NF(GPP_A8, NONE, DEEP, NF1),
+	/* A8  : I2S2_SFRM ==> EN_PP3300_TOUCHSCREEN */
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
 	/* A9  : I2S2_TXD ==> I2S1_TXD */
 	PAD_CFG_NF(GPP_A9, NONE, DEEP, NF1),
 	/* A10 : I2S2_RXD ==> I2S1_RXD */
@@ -260,4 +260,19 @@ const struct pad_config *variant_sleep_gpio_table(u8 slp_typ, size_t *num)
 	}
 	*num = 0;
 	return NULL;
+}
+
+/* GPIOs needed to be set in romstage. */
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	/* A8  : I2S2_SFRM ==> EN_PP3300_TOUCHSCREEN */
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
+	/* C10 : UART0_RTS# ==> USI_RST_L */
+	PAD_CFG_GPO(GPP_C10, 0, DEEP),
+};
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

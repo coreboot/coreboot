@@ -10,7 +10,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* A7  : I2S2_SCLK ==> EN_PP3300_TRACKPAD */
 	PAD_CFG_GPO(GPP_A7, 1, DEEP),
 	/* A8  : I2S2_SFRM ==> EN_PP3300_TOUCHSCREEN */
-	PAD_CFG_GPO(GPP_A8, 0, DEEP),
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
 	/* A10 : I2S2_RXD ==> EN_SPKR_PA */
 	PAD_CFG_GPO(GPP_A10, 1, DEEP),
 	/* A13 : PMC_I2C_SCL ==> BT_DISABLE_L */
@@ -56,7 +56,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* C7  : SML1DATA ==> EN_USI_CHARGE */
 	PAD_CFG_GPO(GPP_C7, 1, DEEP),
 	/* C10 : UART0_RTS# ==> USI_RST_L */
-	PAD_CFG_GPO(GPP_C10, 0, DEEP),
+	PAD_CFG_GPO(GPP_C10, 1, DEEP),
 	/* C13 : UART1_TXD ==> EN_PP5000_TRACKPAD */
 	PAD_CFG_GPO(GPP_C13, 1, DEEP),
 	/* C16 : I2C0_SDA ==> PCH_I2C0_1V8_AUDIO_SDA */
@@ -285,4 +285,19 @@ const struct pad_config *variant_sleep_gpio_table(u8 slp_typ, size_t *num)
 	}
 	*num = 0;
 	return NULL;
+}
+
+/* GPIOs needed to be set in romstage. */
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	/* A8  : I2S2_SFRM ==> EN_PP3300_TOUCHSCREEN */
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
+	/* C10 : UART0_RTS# ==> USI_RST_L */
+	PAD_CFG_GPO(GPP_C10, 0, DEEP),
+};
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

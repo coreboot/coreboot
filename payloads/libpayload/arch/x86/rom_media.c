@@ -93,7 +93,7 @@ int init_x86rom_cbfs_media(struct cbfs_media *media) {
 		media->context = (void*)romsize;
 #if CONFIG(LP_ROM_SIZE)
 		if (CONFIG_LP_ROM_SIZE != romsize)
-			printk(BIOS_INFO, "Warning: rom size unmatch (%d/%d)\n",
+			printk(BIOS_WARNING, "rom size unmatch (%d/%d)\n",
 			       CONFIG_LP_ROM_SIZE, romsize);
 #endif
 	}

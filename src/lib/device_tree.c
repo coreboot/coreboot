@@ -256,8 +256,7 @@ struct device_tree *fdt_unflatten(const void *blob)
 		return NULL;
 	}
 	if (version > FDT_SUPPORTED_VERSION)
-		printk(BIOS_DEBUG,
-		       "NOTE: FDT version %u too new, should add support!\n",
+		printk(BIOS_NOTICE, "FDT version %u too new, should add support!\n",
 		       version);
 
 	uint32_t struct_offset = be32toh(header->structure_offset);

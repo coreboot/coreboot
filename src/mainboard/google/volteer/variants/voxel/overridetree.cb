@@ -155,7 +155,7 @@ chip soc/intel/tigerlake
 			chip drivers/i2c/generic
 				register "hid" = ""RAYD0001""
 				register "desc" = ""Raydium Touchscreen""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
 				register "probed" = "1"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
 				register "reset_delay_ms" = "1"

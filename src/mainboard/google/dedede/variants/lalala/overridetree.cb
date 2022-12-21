@@ -171,7 +171,7 @@ chip soc/intel/jasperlake
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_D4_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D4_IRQ)"
 				register "probed" = "1"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"
 				register "reset_delay_ms" = "20"
@@ -183,7 +183,7 @@ chip soc/intel/jasperlake
 			chip drivers/i2c/generic
 				register "hid" = ""RAYD0001""
 				register "desc" = ""Raydium Touchscreen""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_D4_IRQ)"
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D4_IRQ)"
 				register "probed" = "1"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D5)"
 				register "reset_delay_ms" = "100"

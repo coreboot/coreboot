@@ -249,6 +249,12 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 	return early_gpio_table;
 }
 
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}
+
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(GPP_E8, CROS_GPIO_DEVICE_NAME),
 	CROS_GPIO_WP_AH(GPP_E15, CROS_GPIO_DEVICE_NAME),

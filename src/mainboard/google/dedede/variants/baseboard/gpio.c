@@ -165,9 +165,9 @@ static const struct pad_config gpio_table[] = {
 	/* D4  : TOUCH_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_D4, NONE, PLTRST, LEVEL, INVERT),
 	/* D5  : TOUCH_RESET_L */
-	PAD_CFG_GPO(GPP_D5, 0, DEEP),
+	PAD_CFG_GPO(GPP_D5, 1, DEEP),
 	/* D6  : EN_PP3300_TOUCH_S0 */
-	PAD_CFG_GPO(GPP_D6, 0, DEEP),
+	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D7  : EMR_INT_ODL */
 	PAD_NC(GPP_D7, NONE),
 	/* D8  : GPP_D8/GSPI2_CS0B/UART0A_RXD */
@@ -469,10 +469,18 @@ const struct pad_config *__weak variant_sleep_gpio_table(size_t *num)
 	return sleep_gpio_table;
 }
 
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	/* D5  : TOUCH_RESET_L */
+	PAD_CFG_GPO(GPP_D5, 0, DEEP),
+	/* D6  : EN_PP3300_TOUCH_S0 */
+	PAD_CFG_GPO(GPP_D6, 1, DEEP),
+};
+
 const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
 {
-	*num = 0;
-	return NULL;
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }
 
 static const struct cros_gpio cros_gpios[] = {

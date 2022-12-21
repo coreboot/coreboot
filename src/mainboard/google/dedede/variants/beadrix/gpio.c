@@ -28,6 +28,10 @@ static const struct pad_config gpio_table[] = {
 
 	/* D0  : WWAN_HOST_WAKE ==> WWAN_WDISABLE_L */
 	PAD_CFG_GPO(GPP_D0, 1, DEEP),
+	/* D5  : TOUCH_RESET_L */
+	PAD_NC(GPP_D5, NONE),
+	/* D6  : EN_PP3300_TOUCH_S0 */
+	PAD_NC(GPP_D6, NONE),
 	/* D12 : WCAM_RST_L ==> NC */
 	PAD_NC(GPP_D12, NONE),
 	/* D13 : EN_PP2800_CAMERA */
@@ -100,6 +104,20 @@ const struct pad_config *variant_override_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
+}
+
+static const struct pad_config romstage_gpio_table[] = {
+	/* no touchscreen present */
+	/* D5  : TOUCH_RESET_L */
+	PAD_NC(GPP_D5, NONE),
+	/* D6  : EN_PP3300_TOUCH_S0 */
+	PAD_NC(GPP_D6, NONE),
+};
+
+const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }
 
 static void fw_config_handle(void *unused)

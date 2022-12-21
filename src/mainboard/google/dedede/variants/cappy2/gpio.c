@@ -7,6 +7,10 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
+	/* D5  : TOUCH_RESET_L */
+	PAD_NC(GPP_D5, NONE),
+	/* D6  : EN_PP3300_TOUCH_S0 */
+	PAD_NC(GPP_D6, NONE),
 	/* D15 : EN_PP3300_CAMERA */
 	PAD_CFG_GPO(GPP_D15, 1, PLTRST),
 	/* H16 : AP_SUB_IO_L ==> HP_RST_ODL */
@@ -26,6 +30,20 @@ static const struct pad_config codec_rt5682_pads[] = {
 static const struct pad_config codec_cs42l42_pads[] = {
 	PAD_NC(GPP_D18, NONE),
 };
+
+static const struct pad_config romstage_gpio_table[] = {
+	/* no touchscreen present */
+	/* D5  : TOUCH_RESET_L */
+	PAD_NC(GPP_D5, NONE),
+	/* D6  : EN_PP3300_TOUCH_S0 */
+	PAD_NC(GPP_D6, NONE),
+};
+
+const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
+}
 
 static void fw_config_handle(void *unused)
 {

@@ -14,6 +14,7 @@ const struct pad_config *baseboard_gpio_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 const struct pad_config *variant_sleep_gpio_table(size_t *num);
 const struct pad_config *variant_override_gpio_table(size_t *num);
+const struct pad_config *variant_romstage_gpio_table(size_t *num);
 
 enum s0ix_entry {
 	S0IX_EXIT,

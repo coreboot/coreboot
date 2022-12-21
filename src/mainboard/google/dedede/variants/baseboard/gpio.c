@@ -469,6 +469,12 @@ const struct pad_config *__weak variant_sleep_gpio_table(size_t *num)
 	return sleep_gpio_table;
 }
 
+const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}
+
 static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_COMM0_NAME),
 	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_COMM0_NAME),

@@ -10,6 +10,8 @@
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	const struct pad_config *pads;
+	size_t pads_num;
 	const struct mb_cfg *board_cfg = variant_memcfg_config();
 	const struct spd_info spd_info = {
 		.read_type = READ_SPD_CBFS,
@@ -18,4 +20,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	bool half_populated = variant_mem_is_half_populated();
 
 	memcfg_init(&memupd->FspmConfig, board_cfg, &spd_info, half_populated);
+
+	pads = variant_romstage_gpio_table(&pads_num);
+	gpio_configure_pads(pads, pads_num);
 }

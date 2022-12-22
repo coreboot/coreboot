@@ -168,8 +168,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D05, NONE),
 	/* GPP_D06 : net NC.  Test pad.*/
 	PAD_NC(GPP_D06, NONE),
-	/* GPP_D07 : net NC.  Test pad. */
-	PAD_NC(GPP_D07, NONE),
+	/* GPP_D07 : [] ==> FPMCU_UWB_MUX_SEL */
+	PAD_CFG_GPO_LOCK(GPP_D07, 1, LOCK_CONFIG),
 	/* GPP_D08 : net NC.  Test pad. */
 	PAD_NC(GPP_D08, NONE),
 	/* GPP_D09 : [] ==> I2S_MCLK_R */

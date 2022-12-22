@@ -56,6 +56,7 @@ enum verstage_cmd_id {
 	CMD_SET_PLATFORM_BOOT_MODE,
 	CMD_SET_FW_HASH_TABLE,
 	CMD_GET_PREV_BOOT_STATUS,
+	CMD_GET_HSP_SECURE_STATE,
 };
 
 struct mod_exp_params {
@@ -378,6 +379,15 @@ uint32_t svc_set_fw_hash_table(struct psp_fw_hash_table *hash_table);
  * Return value: BL_OK or error code
  */
 uint32_t svc_get_prev_boot_status(uint32_t *boot_status);
+
+/* Get HSP Secure state
+ *
+ * Parameters:
+ *      - hsp_secure_state - Address where the state info is read into
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_get_hsp_secure_state(uint32_t *hsp_secure_state);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

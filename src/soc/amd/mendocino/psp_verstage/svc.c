@@ -225,3 +225,12 @@ uint32_t svc_get_prev_boot_status(uint32_t *boot_status)
 	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_GET_PREV_BOOT_STATUS, (void *)&param, retval);
 	return retval;
 }
+
+uint32_t svc_get_hsp_secure_state(uint32_t *hsp_secure_state)
+{
+	uint32_t retval = 0;
+	struct cmd_param_get_hsp_secure_state param;
+	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_GET_HSP_SECURE_STATE, (void *)&param, retval);
+	*hsp_secure_state = param.hsp_secure_state;
+	return retval;
+}

@@ -98,4 +98,8 @@ struct cmd_param_get_prev_boot_status {
 	unsigned int *ptr_boot_status;
 };
 
+struct cmd_param_get_hsp_secure_state {
+	unsigned int hsp_secure_state;
+};
+
 #endif /* PSP_VERSTAGE_SVC_H */

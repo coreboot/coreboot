@@ -48,3 +48,10 @@ config PSP_PLATFORM_SECURE_BOOT
 	  coreboot ROM is properly signed and can not be disabled once fused.
 	  Refer AMD PSB user guide doc# 56654, Revision# 1.00, this document is
 	  only available with NDA customers.
+
+config PSP_INCLUDES_HSP
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_PSP
+	default n
+	help
+	  Select this config to indicate SoC includes Hardware Security Processor(HSP).

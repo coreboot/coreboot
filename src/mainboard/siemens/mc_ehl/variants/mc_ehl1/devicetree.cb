@@ -136,6 +136,9 @@ chip soc/intel/elkhartlake
 	# Disable L1 prefetcher
 	register "L1_prefetcher_disable" = "true"
 
+	# Enable real-time tuning
+	register "realtime_tuning_enable" = "true"
+
 	device domain 0 on
 		device pci 00.0 on	end # Host Bridge
 		device pci 02.0 on	end # Integrated Graphics Device

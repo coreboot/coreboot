@@ -2,6 +2,8 @@
 
 /* TODO: Check if this is still correct */
 
+#include <arch/hlt.h>
+#include <bl_uapp/bl_errorcodes_public.h>
 #include <bl_uapp/bl_syscall_public.h>
 #include <cbfs.h>
 #include <console/console.h>
@@ -112,4 +114,18 @@ void platform_report_mode(int developer_mode_enabled)
 		svc_set_platform_boot_mode(CHROME_BOOK_BOOT_MODE_DEVELOPER);
 	else
 		svc_set_platform_boot_mode(CHROME_BOOK_BOOT_MODE_NORMAL);
+}
+
+void report_hsp_secure_state(void)
+{
+	uint32_t hsp_secure_state;
+	int ret;
+
+	ret = svc_get_hsp_secure_state(&hsp_secure_state);
+	if (ret != BL_OK) {
+		printk(BIOS_ERR, "Error reading HSP Secure state: %d\n", ret);
+		hlt();
+	}
+
+	printk(BIOS_INFO, "HSP Secure state: %#8x\n", hsp_secure_state);
 }

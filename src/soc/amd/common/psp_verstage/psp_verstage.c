@@ -246,6 +246,9 @@ void Main(void)
 		svc_write_postcode(POSTCODE_CONSOLE_INIT);
 	console_init();
 
+	if (CONFIG(PSP_INCLUDES_HSP))
+		report_hsp_secure_state();
+
 	if (!CONFIG(PSP_POSTCODES_ON_ESPI))
 		svc_write_postcode(POSTCODE_EARLY_INIT);
 	retval = verstage_soc_early_init();

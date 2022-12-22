@@ -68,4 +68,6 @@ void platform_report_mode(int developer_mode_enabled);
 
 void update_psp_fw_hash_table(const char *fname);
 
+void report_hsp_secure_state(void);
+
 #endif /* PSP_VERSTAGE_H */

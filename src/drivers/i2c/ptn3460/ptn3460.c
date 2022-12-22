@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <device/device.h>
 #include <device/i2c_bus.h>
 #include <types.h>
 #include <bootstate.h>
@@ -170,7 +171,9 @@ static void ptn3460_early_init(void *unused)
 		printk(BIOS_ERR, "Failed to find the PTN3460 device!\n");
 		return;
 	}
-
+	/* Initialize the I2C controller before it is used. */
+	if (ptn_dev->bus && ptn_dev->bus->dev->ops && ptn_dev->bus->dev->ops->init)
+		ptn_dev->bus->dev->ops->init(ptn_dev->bus->dev);
 	ptn3460_init(ptn_dev);
 }
 

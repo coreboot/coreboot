@@ -373,7 +373,7 @@ static int tis_command_ready(u8 locality)
  * Returns 0 on success (the device is found or was found during an earlier
  * invocation) or TPM_DRIVER_ERR if the device is not found.
  */
-static u32 pc80_tis_probe(void)
+static u32 tis_probe(void)
 {
 	const char *device_name = "unknown";
 	const char *vendor_name = device_name;
@@ -608,11 +608,26 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 }
 
 /*
+ * tis_init()
+ *
+ * Initialize the TPM device. Returns 0 on success or TPM_DRIVER_ERR on
+ * failure (in case device probing did not succeed).
+ */
+int tis_init(void)
+{
+	if (tis_probe())
+		return TPM_DRIVER_ERR;
+	return 0;
+}
+
+/*
+ * tis_open()
+ *
  * Requests access to locality 0 for the caller.
  *
  * Returns 0 on success, TPM_DRIVER_ERR on failure.
  */
-static int pc80_tis_open(void)
+int tis_open(void)
 {
 	u8 locality = 0; /* we use locality zero for everything */
 
@@ -638,6 +653,8 @@ static int pc80_tis_open(void)
 }
 
 /*
+ * tis_sendrecv()
+ *
  * Send the requested data to the TPM and then try to get its response
  *
  * @sendbuf - buffer of the data to send
@@ -648,8 +665,8 @@ static int pc80_tis_open(void)
  * Returns 0 on success (and places the number of response bytes at recv_len)
  * or TPM_DRIVER_ERR on failure.
  */
-static int pc80_tpm_sendrecv(const uint8_t *sendbuf, size_t send_size,
-			     uint8_t *recvbuf, size_t *recv_len)
+int tis_sendrecv(const uint8_t *sendbuf, size_t send_size,
+		 uint8_t *recvbuf, size_t *recv_len)
 {
 	if (tis_senddata(sendbuf, send_size)) {
 		printf("%s:%d failed sending data to TPM\n",
@@ -658,23 +675,6 @@ static int pc80_tpm_sendrecv(const uint8_t *sendbuf, size_t send_size,
 	}
 
 	return tis_readresponse(recvbuf, recv_len);
-}
-
-/*
- * tis_probe()
- *
- * Probe for the TPM device and set it up for use within locality 0. Returns
- * pointer to send-receive function on success or NULL on failure.
- */
-tis_sendrecv_fn tis_probe(void)
-{
-	if (pc80_tis_probe())
-		return NULL;
-
-	if (pc80_tis_open())
-		return NULL;
-
-	return &pc80_tpm_sendrecv;
 }
 
 /*

@@ -16,8 +16,6 @@
  * TPM2 specification.
  */
 
-static tis_sendrecv_fn tis_sendrecv;
-
 void *tpm_process_command(TPM_CC command, void *command_body)
 {
 	struct obuf ob;
@@ -27,9 +25,6 @@ void *tpm_process_command(TPM_CC command, void *command_body)
 	const uint8_t *sendb;
 	/* Command/response buffer. */
 	static uint8_t cr_buffer[TPM_BUFFER_SIZE];
-
-	if (tis_sendrecv == NULL)
-		die("TSS 2.0 wasn't initialized\n");
 
 	obuf_init(&ob, cr_buffer, sizeof(cr_buffer));
 
@@ -206,17 +201,25 @@ uint32_t tlcl_clear_control(bool disable)
 	return TPM_SUCCESS;
 }
 
+static uint8_t tlcl_init_done;
+
 /* This function is called directly by vboot, uses vboot return types. */
 uint32_t tlcl_lib_init(void)
 {
-	if (tis_sendrecv != NULL)
+	if (tlcl_init_done)
 		return VB2_SUCCESS;
 
-	tis_sendrecv = tis_probe();
-	if (tis_sendrecv == NULL) {
-		printk(BIOS_ERR, "%s: tis_probe returned error\n", __func__);
+	if (tis_init()) {
+		printk(BIOS_ERR, "%s: tis_init returned error\n", __func__);
 		return VB2_ERROR_UNKNOWN;
 	}
+
+	if (tis_open()) {
+		printk(BIOS_ERR, "%s: tis_open returned error\n", __func__);
+		return VB2_ERROR_UNKNOWN;
+	}
+
+	tlcl_init_done = 1;
 
 	return VB2_SUCCESS;
 }

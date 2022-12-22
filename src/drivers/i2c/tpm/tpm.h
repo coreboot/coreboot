@@ -38,6 +38,7 @@ enum tpm_timeout {
 #define	TPM_DID_VID(l)			(0x0006 | ((l) << 4))
 
 struct tpm_chip {
+	int is_open;
 	uint8_t req_complete_mask;
 	uint8_t req_complete_val;
 	uint8_t req_canceled;

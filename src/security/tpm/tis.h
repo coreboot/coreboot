@@ -32,6 +32,25 @@ enum tis_status {
 };
 
 /*
+ * tis_init()
+ *
+ * Initialize the TPM device. Returns 0 on success or -1 on
+ * failure (in case device probing did not succeed).
+ */
+int tis_init(void);
+
+/*
+ * tis_open()
+ *
+ * Requests access to locality 0 for the caller.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int tis_open(void);
+
+/*
+ * tis_sendrecv()
+ *
  * Send the requested data to the TPM and then try to get its response
  *
  * @sendbuf - buffer of the data to send
@@ -42,19 +61,8 @@ enum tis_status {
  * Returns 0 on success (and places the number of response bytes at recv_len)
  * or -1 on failure.
  */
-typedef int (*tis_sendrecv_fn)(const u8 *sendbuf, size_t send_size, u8 *recvbuf,
-			       size_t *recv_len);
-
-/*
- * tis_probe()
- *
- * Probe for the TPM device and set it up for use within locality 0. Returns
- * pointer to send-receive function on success or NULL on failure.
- *
- * Do not call this explicitly, it's meant to be used exclusively by TSS
- * implementation (tlcl_lib_init() function to be specific).
- */
-tis_sendrecv_fn tis_probe(void);
+int tis_sendrecv(const u8 *sendbuf, size_t send_size, u8 *recvbuf,
+			size_t *recv_len);
 
 /* TODO: This is supposed to be used only for Google TPM.
    Consider moving this to drivers/tpm/cr50.h. */

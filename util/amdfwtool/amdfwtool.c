@@ -1844,6 +1844,7 @@ enum {
 	AMDFW_OPT_BIOSBIN_SOURCE,
 	AMDFW_OPT_BIOSBIN_DEST,
 	AMDFW_OPT_BIOS_UNCOMP_SIZE,
+	AMDFW_OPT_BIOSBIN_UNCOMP,
 	AMDFW_OPT_UCODE,
 	AMDFW_OPT_APOB_NVBASE,
 	AMDFW_OPT_APOB_NVSIZE,
@@ -1899,6 +1900,7 @@ static struct option long_options[] = {
 	{"bios-bin-src",     required_argument, 0, AMDFW_OPT_BIOSBIN_SOURCE },
 	{"bios-bin-dest",    required_argument, 0, AMDFW_OPT_BIOSBIN_DEST },
 	{"bios-uncomp-size", required_argument, 0, AMDFW_OPT_BIOS_UNCOMP_SIZE },
+	{"bios-bin-uncomp",        no_argument, 0, AMDFW_OPT_BIOSBIN_UNCOMP },
 	{"bios-sig-size",    required_argument, 0, LONGOPT_BIOS_SIG },
 	{"ucode",            required_argument, 0, AMDFW_OPT_UCODE },
 	{"apob-nv-base",     required_argument, 0, AMDFW_OPT_APOB_NVBASE },
@@ -2188,6 +2190,7 @@ int main(int argc, char **argv)
 
 	while (1) {
 		int optindex = 0;
+		int bios_tbl_index = -1;
 
 		c = getopt_long(argc, argv, optstring, long_options, &optindex);
 
@@ -2284,6 +2287,11 @@ int main(int argc, char **argv)
 			/* BIOS destination size */
 			register_bios_fw_addr(AMD_BIOS_BIN, 0, 0, optarg);
 			sub = instance = 0;
+			break;
+		case AMDFW_OPT_BIOSBIN_UNCOMP:
+			bios_tbl_index = find_bios_entry(AMD_BIOS_BIN);
+			if (bios_tbl_index != -1)
+				amd_bios_table[bios_tbl_index].zlib = 0;
 			break;
 		case LONGOPT_BIOS_SIG:
 			/* BIOS signature size */

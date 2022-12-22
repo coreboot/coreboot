@@ -38,6 +38,16 @@ chip soc/intel/apollolake
 	# 0:HS400(Default), 1:HS200, 2:DDR50
 	register "emmc_host_max_speed" = "1"
 
+	# I2C7 controller used for PTN
+	register "common_soc_config" = "{
+		.i2c[7] = {
+			.speed = I2C_SPEED_STANDARD,
+			.rise_time_ns = 210,
+			.fall_time_ns = 100,
+			.data_hold_time_ns = 300,
+		}
+	}"
+
 	device domain 0 on
 		device pci 00.0 on  end	# - Host Bridge
 		device pci 00.1 off end	# - DPTF
@@ -94,6 +104,13 @@ chip soc/intel/apollolake
 			chip drivers/i2c/ptn3460
 				device i2c 0x60 on end  # PTN3460 DP2LVDS Bridge
 			end
+			# Add dummy I2C device to limit BUS speed to 100 kHz in OS
+			chip drivers/i2c/generic
+				register "hid" = ""PRP0001""
+				register "speed" = "I2C_SPEED_STANDARD"
+				device i2c 0x7f on end
+			end
+
 		end
 		device pci 18.0 on  end	# - UART 0
 		device pci 18.1 on  end	# - UART 1

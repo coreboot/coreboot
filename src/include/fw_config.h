@@ -117,6 +117,12 @@ static inline bool fw_config_probe_dev(const struct device *dev,
 	return true;
 }
 
+static inline uint64_t fw_config_get_field(const struct fw_config_field *field)
+{
+	/* Always return UNDEFINED_FW_CONFIG when get with disabled fw_config. */
+	return UNDEFINED_FW_CONFIG;
+}
+
 #endif /* CONFIG(FW_CONFIG) */
 
 #endif /* __FW_CONFIG__ */

@@ -66,4 +66,10 @@ const struct pci_irq_entry *get_cached_pci_irqs(void);
    return the corresponding IRQ, or INVALID_IRQ if not found. */
 int get_pci_devfn_irq(unsigned int devfn);
 
+/* Check if a given slot is a PCH slot.
+ * Note: For PCH less SoC platforms, like MeteorLake and onwards, this function
+ * can be utilized to check if a slot belongs to the SoC or IOE die.
+ */
+bool is_pch_slot(unsigned int devfn);
+
 #endif /* SOC_INTEL_COMMON_IRQ_H */

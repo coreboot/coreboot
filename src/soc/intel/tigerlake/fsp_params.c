@@ -269,7 +269,7 @@ static const SI_PCH_DEVICE_INTERRUPT_CONFIG *pci_irq_to_fsp(size_t *out_count)
 
 	/* Count PCH devices */
 	while (entry) {
-		if (PCI_SLOT(entry->devfn) >= MIN_PCH_SLOT)
+		if (is_pch_slot(entry->devfn))
 			++pch_total;
 		entry = entry->next;
 	}
@@ -278,7 +278,7 @@ static const SI_PCH_DEVICE_INTERRUPT_CONFIG *pci_irq_to_fsp(size_t *out_count)
 	config = calloc(pch_total, sizeof(*config));
 	entry = get_cached_pci_irqs();
 	while (entry) {
-		if (PCI_SLOT(entry->devfn) < MIN_PCH_SLOT) {
+		if (!is_pch_slot(entry->devfn)) {
 			entry = entry->next;
 			continue;
 		}

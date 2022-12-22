@@ -404,6 +404,13 @@ bool generate_pin_irq_map(void)
 	return true;
 }
 
+bool __weak is_pch_slot(unsigned int devfn)
+{
+	if (PCI_SLOT(devfn) >= MIN_PCH_SLOT)
+		return true;
+	return false;
+}
+
 bool irq_program_non_pch(void)
 {
 	const struct pci_irq_entry *entry = cached_entries;
@@ -412,7 +419,7 @@ bool irq_program_non_pch(void)
 		return false;
 
 	while (entry) {
-		if (PCI_SLOT(entry->devfn) >= MIN_PCH_SLOT) {
+		if (is_pch_slot(entry->devfn)) {
 			entry = entry->next;
 			continue;
 		}

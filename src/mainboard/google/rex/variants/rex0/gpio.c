@@ -135,8 +135,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C12, NONE, DEEP, NF1),
 	/* GPP_C13 : [] ==> SSD_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_C13, NONE, DEEP, NF1),
-	/* GPP_C15 : [] ==> GPP_C15_STRAP */
-	PAD_NC(GPP_C15, NONE),
+	/* GPP_C15 : [] ==> WWAN_DPR_SAR_ODL */
+	PAD_CFG_GPO(GPP_C15, 1, DEEP),
 	/* GPP_C16 : [] ==> USB_C0_LSX_TX */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* GPP_C17 : [] ==> USB_C0_LSX_RX */

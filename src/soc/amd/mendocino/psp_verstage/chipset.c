@@ -2,12 +2,15 @@
 
 /* TODO: Check if this is still correct */
 
+#include "2api.h"
 #include <arch/hlt.h>
 #include <bl_uapp/bl_errorcodes_public.h>
 #include <bl_uapp/bl_syscall_public.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <psp_verstage.h>
+#include <security/vboot/misc.h>
+#include <security/vboot/vbnv.h>
 
 /*
  * We can't pass pointer to hash table in the SPI.
@@ -114,6 +117,25 @@ void platform_report_mode(int developer_mode_enabled)
 		svc_set_platform_boot_mode(CHROME_BOOK_BOOT_MODE_DEVELOPER);
 	else
 		svc_set_platform_boot_mode(CHROME_BOOK_BOOT_MODE_NORMAL);
+}
+
+void report_prev_boot_status_to_vboot(void)
+{
+	uint32_t boot_status = 0;
+	int ret;
+	struct vb2_context *ctx = vboot_get_context();
+
+	/* Already in recovery mode. No need to report previous boot status. */
+	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE)
+		return;
+
+	ret = svc_get_prev_boot_status(&boot_status);
+	if (ret != BL_OK || boot_status) {
+		printk(BIOS_ERR, "PSPFW failure in previous boot: %d:%#8x\n", ret, boot_status);
+		vbnv_init();
+		vb2api_previous_boot_fail(ctx, VB2_RECOVERY_FW_VENDOR_BLOB,
+					  boot_status ? (int)boot_status : ret);
+	}
 }
 
 void report_hsp_secure_state(void)

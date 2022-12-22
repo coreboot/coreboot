@@ -137,25 +137,6 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	return 0;
 }
 
-static void report_prev_boot_status_to_vboot(void)
-{
-	uint32_t boot_status = 0;
-	int ret;
-	struct vb2_context *ctx = vboot_get_context();
-
-	/* Already in recovery mode. No need to report previous boot status. */
-	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE)
-		return;
-
-	ret = svc_get_prev_boot_status(&boot_status);
-	if (ret != BL_OK || boot_status) {
-		printk(BIOS_ERR, "PSPFW failure in previous boot: %d:%#8x\n", ret, boot_status);
-		vbnv_init();
-		vb2api_previous_boot_fail(ctx, VB2_RECOVERY_FW_VENDOR_BLOB,
-					  boot_status ? (int)boot_status : ret);
-	}
-}
-
 /*
  * Save workbuf (and soon memory console and timestamps) to the bootloader to pass
  * back to coreboot.

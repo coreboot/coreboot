@@ -55,7 +55,6 @@
 #define TIS_REG_STS                    0x18
 #define TIS_REG_BURST_COUNT            0x19
 #define TIS_REG_DATA_FIFO              0x24
-#define TIS_REG_INTF_ID                0x30
 #define TIS_REG_DID_VID                0xf00
 #define TIS_REG_RID                    0xf04
 
@@ -89,19 +88,13 @@
  /* 1 second is plenty for anything TPM does.*/
 #define MAX_DELAY_US	USECS_PER_SEC
 
-enum tpm_family {
-	TPM_UNKNOWN = 0,
-	TPM_1 = 1,
-	TPM_2 = 2,
-};
-
 /*
  * Structures defined below allow creating descriptions of TPM vendor/device
- * ID information for run time discovery.
+ * ID information for run time discovery. The only device the system knows
+ * about at this time is Infineon slb9635
  */
 struct device_name {
 	u16 dev_id;
-	enum tpm_family family;
 	const char *const dev_name;
 };
 
@@ -112,32 +105,36 @@ struct vendor_name {
 };
 
 static const struct device_name atmel_devices[] = {
-	{0x3204, TPM_1, "AT97SC3204"},
+	{0x3204, "AT97SC3204"},
 	{0xffff}
 };
 
 static const struct device_name infineon_devices[] = {
-	{0x000b, TPM_1, "SLB9635 TT 1.2"},
-	{0x001a, TPM_1, "SLB9660 TT 1.2"},
-	{0x001b, TPM_1, "SLB9670 TT 1.2"},
-	{0x001a, TPM_2, "SLB9665 TT 2.0"},
-	{0x001b, TPM_2, "SLB9670 TT 2.0"},
+	{0x000b, "SLB9635 TT 1.2"},
+#if CONFIG(TPM2)
+	{0x001a, "SLB9665 TT 2.0"},
+	{0x001b, "SLB9670 TT 2.0"},
+#else
+	{0x001a, "SLB9660 TT 1.2"},
+	{0x001b, "SLB9670 TT 1.2"},
+#endif
 	{0xffff}
 };
 
 static const struct device_name nuvoton_devices[] = {
-	{0x00fe, TPM_1, "NPCT420AA V2"},
+	{0x00fe, "NPCT420AA V2"},
 	{0xffff}
 };
 
 static const struct device_name stmicro_devices[] = {
-	{0x0000, TPM_1, "ST33ZP24" },
+	{0x0000, "ST33ZP24" },
 	{0xffff}
 };
 
 static const struct device_name swtpm_devices[] = {
-	{0x0001, TPM_1, "SwTPM 1.2" },
-	{0x0001, TPM_2, "SwTPM 2.0" },
+#if CONFIG(TPM2)
+	{0x0001, "SwTPM 2.0" },
+#endif
 	{0xffff}
 };
 
@@ -201,20 +198,6 @@ static inline void tpm_write_access(u8 data, int locality)
 {
 	TPM_DEBUG_IO_WRITE(TIS_REG_ACCESS, data);
 	write8(TIS_REG(locality, TIS_REG_ACCESS), data);
-}
-
-static inline u32 tpm_read_intf_cap(int locality)
-{
-	u32 value = be32_to_cpu(read32(TIS_REG(locality, TIS_REG_INTF_CAPABILITY)));
-	TPM_DEBUG_IO_READ(TIS_REG_INTF_CAPABILITY, value);
-	return value;
-}
-
-static inline u32 tpm_read_intf_id(int locality)
-{
-	u32 value = be32_to_cpu(read32(TIS_REG(locality, TIS_REG_INTF_ID)));
-	TPM_DEBUG_IO_READ(TIS_REG_INTF_ID, value);
-	return value;
 }
 
 static inline u32 tpm_read_did_vid(int locality)
@@ -392,15 +375,12 @@ static int tis_command_ready(u8 locality)
  */
 static u32 pc80_tis_probe(void)
 {
-	const char *device_name = NULL;
-	const char *vendor_name = NULL;
+	const char *device_name = "unknown";
+	const char *vendor_name = device_name;
 	const struct device_name *dev;
-	u32 didvid, intf_id;
+	u32 didvid;
 	u16 vid, did;
-	u8 locality = 0, intf_type;
 	int i;
-	enum tpm_family family;
-	const char *family_str;
 
 	if (vendor_dev_id)
 		return 0;  /* Already probed. */
@@ -411,45 +391,21 @@ static u32 pc80_tis_probe(void)
 		return TPM_DRIVER_ERR;
 	}
 
-	intf_id = tpm_read_intf_id(locality);
-	intf_type = (intf_id & 0xf);
-	if (intf_type == 0xf) {
-		u32 intf_cap = tpm_read_intf_cap(locality);
-		u8 intf_version = (intf_cap >> 28) & 0x7;
-		switch (intf_version) {
-		case 0:
-		case 2:
-			family = TPM_1;
-			break;
-		case 3:
-			family = TPM_2;
-			break;
-		default:
-			printf("%s: Unexpected TPM interface version: %d\n", __func__,
-			       intf_version);
-			return TPM_DRIVER_ERR;
-		}
-	} else if (intf_type == 0) {
-		family = TPM_2;
-	} else {
-		printf("%s: Unexpected TPM interface type: %d\n", __func__, intf_type);
-		return TPM_DRIVER_ERR;
-	}
-
 	vendor_dev_id = didvid;
 
 	vid = didvid & 0xffff;
 	did = (didvid >> 16) & 0xffff;
 	for (i = 0; i < ARRAY_SIZE(vendor_names); i++) {
 		int j = 0;
+		u16 known_did;
 		if (vid == vendor_names[i].vendor_id) {
 			vendor_name = vendor_names[i].vendor_name;
 		} else {
 			continue;
 		}
 		dev = &vendor_names[i].dev_names[j];
-		while (dev->dev_id != 0xffff) {
-			if (dev->dev_id == did && dev->family == family) {
+		while ((known_did = dev->dev_id) != 0xffff) {
+			if (known_did == did) {
 				device_name = dev->dev_name;
 				break;
 			}
@@ -458,18 +414,8 @@ static u32 pc80_tis_probe(void)
 		}
 		break;
 	}
-
-	family_str = (family == TPM_1 ? "TPM 1.2" : "TPM 2.0");
-	if (vendor_name == NULL) {
-		printk(BIOS_INFO, "Found %s 0x%04x by 0x%04x\n", family_str, did, vid);
-	} else if (device_name == NULL) {
-		printk(BIOS_INFO, "Found %s 0x%04x by %s (0x%04x)\n", family_str, did,
-		       vendor_name, vid);
-	} else {
-		printk(BIOS_INFO, "Found %s %s (0x%04x) by %s (0x%04x)\n", family_str,
-		       device_name, did, vendor_name, vid);
-	}
-
+	/* this will have to be converted into debug printout */
+	printk(BIOS_INFO, "Found TPM %s by %s\n", device_name, vendor_name);
 	return 0;
 }
 

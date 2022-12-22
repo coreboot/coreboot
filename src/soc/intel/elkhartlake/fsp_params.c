@@ -368,6 +368,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->SataMode = config->SataMode;
 		params->SataSalpSupport = config->SataSalpSupport;
 		params->SataPwrOptEnable = !(config->SataPwrOptimizeDisable);
+		params->SataSpeedLimit = config->SataSpeed;
 
 		for (i = 0; i < CONFIG_MAX_SATA_PORTS; i++) {
 			params->SataPortsEnable[i] = config->SataPortsEnable[i];

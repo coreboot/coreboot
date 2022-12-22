@@ -103,6 +103,13 @@ enum fivr_supported_voltage {
 					  FIVR_VOLTAGE_MIN_RETENTION,
 };
 
+/* SATA speed limit */
+enum sata_speed_limit {
+	SATA_DEFAULT = 0,
+	SATA_GEN1,
+	SATA_GEN2
+};
+
 struct soc_intel_elkhartlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -181,6 +188,7 @@ struct soc_intel_elkhartlake_config {
 	uint8_t SataSalpSupport;
 	uint8_t SataPortsEnable[CONFIG_MAX_SATA_PORTS];
 	uint8_t SataPortsDevSlp[CONFIG_MAX_SATA_PORTS];
+	enum sata_speed_limit SataSpeed;
 	/*
 	 * Enable(0)/Disable(1) SATA Power Optimizer on PCH side.
 	 * Default 0. Setting this to 1 disables the SATA Power Optimizer.

@@ -31,5 +31,3 @@ warn_no_mchp:
 	printf "coreboot has been built without the Microchip EC.\n"
 	printf "Do not flash this image.  Your Mandolin's power button\n"
 	printf "will not respond when you press it.\n\n"
-
-CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/acpi

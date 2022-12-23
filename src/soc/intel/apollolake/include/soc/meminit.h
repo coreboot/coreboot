@@ -3,9 +3,8 @@
 #ifndef _SOC_APOLLOLAKE_MEMINIT_H_
 #define _SOC_APOLLOLAKE_MEMINIT_H_
 
-#include <stddef.h>
-#include <stdint.h>
 #include <fsp/soc_binding.h>
+#include <types.h>
 
 /*
  * LPDDR4 helper routines for configuring the memory UPD for LPDDR4 operation.

@@ -206,6 +206,10 @@ chip soc/intel/alderlake
 			probe STORAGE STORAGE_NVME
 		end
 		device ref ish on
+			chip drivers/intel/ish
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on end
+			end
 			probe STORAGE STORAGE_UFS
 		end
 		device ref ufs on

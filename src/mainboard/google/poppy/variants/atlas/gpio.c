@@ -141,7 +141,7 @@ static const struct pad_config gpio_table[] = {
 	/* C21 : UART2_TXD ==> PCHTX_SERVORX_UART */
 	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
 	/* C22 : UART2_RTS# ==> EN_PP3300_DX_TOUCHSCREEN */
-	PAD_CFG_GPO(GPP_C22, 0, DEEP),
+	PAD_CFG_GPO(GPP_C22, 1, DEEP),
 	/* C23 : UART2_CTS# ==> PCH_WP */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_C23, UP_20K, DEEP),
 
@@ -213,7 +213,7 @@ static const struct pad_config gpio_table[] = {
 	/* E10 : USB2_OC1# ==> USB_C1_OC_ODL */
 	PAD_CFG_NF(GPP_E10, NONE, DEEP, NF1),
 	/* E11 : USB2_OC2# ==> TOUCHSCREEN_RESET_L */
-	PAD_CFG_GPO(GPP_E11, 0, DEEP),
+	PAD_CFG_GPO(GPP_E11, 1, DEEP),
 	/* E12 : USB2_OC3# ==> NC */
 	PAD_NC(GPP_E12, NONE),
 	/* E13 : DDPB_HPD0 ==> USB_C1_DP_HPD */
@@ -417,4 +417,18 @@ const struct pad_config *variant_sku_gpio_table(size_t *num)
 		board_gpio_tables = ish_disabled_gpio_table;
 	}
 	return board_gpio_tables;
+}
+
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	/* C22 : UART2_RTS# ==> EN_PP3300_DX_TOUCHSCREEN */
+	PAD_CFG_GPO(GPP_C22, 1, DEEP),
+	/* E11 : USB2_OC2# ==> TOUCHSCREEN_RESET_L */
+	PAD_CFG_GPO(GPP_E11, 0, DEEP),
+};
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

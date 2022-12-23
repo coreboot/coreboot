@@ -57,9 +57,9 @@ static const struct pad_config gpio_table[] = {
 	/* B2  : VRALERT# ==> NC */
 	PAD_NC(GPP_B2, NONE),
 	/* B3  : CPU_GP2 ==> TOUCHSCREEN_RST# */
-	PAD_CFG_GPO(GPP_B3, 0, DEEP),
+	PAD_CFG_GPO(GPP_B3, 1, DEEP),
 	/* B4  : CPU_GP3 ==> EN_PP3300_DX_TOUCHSCREEN */
-	PAD_CFG_GPO(GPP_B4, 0, DEEP),
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 	/* B5  : SRCCLKREQ0# ==> NC */
 	PAD_NC(GPP_B5, NONE),
 	/* B6  : SRCCLKREQ1# ==> CLKREQ_PCIE#1 */
@@ -477,4 +477,19 @@ const struct pad_config *variant_sku_gpio_table(size_t *num)
 		break;
 	}
 	return board_gpio_tables;
+}
+
+
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	/* B4  : CPU_GP3 ==> EN_PP3300_DX_TOUCHSCREEN */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
+	/* B3  : CPU_GP2 ==> TOUCHSCREEN_RST# */
+	PAD_CFG_GPO(GPP_B3, 0, DEEP),
+};
+
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

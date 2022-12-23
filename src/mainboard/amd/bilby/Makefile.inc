@@ -13,5 +13,3 @@ endif
 ifeq ($(CONFIG_BOARD_AMD_BILBY),y)
 APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_bilby.bin
 endif
-
-CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/acpi

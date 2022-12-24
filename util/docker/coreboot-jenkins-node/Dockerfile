@@ -76,11 +76,11 @@ RUN apt-get update && \
 		python3-jsonschema \
 		python3-colorama \
 		python3-pyrsistent \
-		python3-setuptools \
 		swig \
 	&& apt-get clean \
 	&& pip3 install --upgrade --no-cache-dir pip \
 	&& pip3 install --no-cache-dir  \
+		setuptools==58.2.0 \
 		jinja2==3.0.3 \
 		recommonmark===0.5.0 \
 		sphinx===1.8.3 \
@@ -89,6 +89,7 @@ RUN apt-get update && \
 		sphinx_rtd_theme===0.4.2 \
 	&& gem install mdl
 
+# Build U-boot tools needed by zephyr
 RUN mkdir /tmp/b && cd /tmp/b && \
 	git clone https://git.kernel.org/pub/scm/utils/dtc/dtc.git dtc && \
 	git clone https://chromium.googlesource.com/chromiumos/third_party/u-boot -b chromeos-v2020.10-rc1 u-boot && \

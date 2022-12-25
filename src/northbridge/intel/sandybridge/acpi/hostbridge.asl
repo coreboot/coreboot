@@ -135,7 +135,7 @@ Device (MCHC)
 
 		While (Local0 < Local1) {
 			/* Store _PSS entry Control value to Local2 */
-			Local2 = DeRefOf (Index (DeRefOf (Index (\_SB.CP00._PSS, Local0)), 4)) >> 8
+			Local2 = DeRefOf (DeRefOf (\_SB.CP00._PSS[Local0])[4]) >> 8
 			If (Local2 == Arg0) {
 				Return (Local0 - 1)
 			}

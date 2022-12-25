@@ -379,7 +379,8 @@ Device(SIO) {
 			CreateByteField (Arg0, IRQ0._INT, IRQL)
 			CreateByteField (Arg0, DMA0._DMA, DMCH)
 
-			Divide(IOA0, 256, Local0, Local1)
+			Local0 = IOA0 % 256
+			Local1 = IOA0 / 256
 
 			ENTER_CONFIG_MODE (0)
 			IO1L = Local0
@@ -570,7 +571,8 @@ Device(SIO) {
 				Local2 = 0x1
 			}
 
-			Divide(IOA0, 256, Local0, Local1)
+			Local0 = IOA0 % 256
+			Local1 = IOA0 / 256
 
 			ENTER_CONFIG_MODE (1)
 			/* IO port */
@@ -699,7 +701,8 @@ Device(SIO) {
 			CreateWordField (Arg0, IO0._MIN, IOA0)
 			CreateWordField (Arg0, IRQX._INT, IRQL)
 
-			Divide(IOA0, 256, Local0, Local1)
+			Local0 = IOA0 % 256
+			Local1 = IOA0 / 256
 
 			Local3 = FindSetLeftBit (IRQL) - 1
 
@@ -824,7 +827,8 @@ Device(SIO) {
 			CreateWordField (Arg0, IO0._MIN, IOA0)
 			CreateByteField (Arg0, IRQX._INT, IRQL)
 
-			Divide(IOA0, 256, Local0, Local1)
+			Local0 = IOA0 % 256
+			Local1 = IOA0 / 256
 
 			Local3 = FindSetLeftBit (IRQL) - 1
 
@@ -949,7 +953,8 @@ Device(SIO) {
 			CreateWordField (Arg0, IO0._MIN, IOA0)
 			CreateByteField (Arg0, IRQX._INT, IRQL)
 
-			Divide(IOA0, 256, Local0, Local1)
+			Local0 = IOA0 % 256
+			Local1 = IOA0 / 256
 
 			Local3 = FindSetLeftBit (IRQL) - 1
 
@@ -1036,7 +1041,8 @@ Device(SIO) {
 			CreateWordField (Arg0, IO0._MIN, IOA0)
 			CreateByteField (Arg0, IRQX._INT, IRQL)
 
-			Divide(IOA0, 256, Local0, Local1)
+			Local0 = IOA0 % 256
+			Local1 = IOA0 / 256
 
 			Local3 = FindSetLeftBit (IRQL) - 1
 
@@ -1140,8 +1146,10 @@ Device(SIO) {
 			CreateWordField (Arg0, IO1._MIN, IOA1)
 			CreateWordField (Arg0, IRQX._INT, IRQL)
 
-			Divide(IOA0, 256, Local0, Local1)
-			Divide(IOA1, 256, Local2, Local3)
+			Local0 = IOA0 % 256
+			Local1 = IOA0 / 256
+			Local2 = IOA1 % 256
+			Local3 = IOA1 / 256
 
 			Local4 = FindSetLeftBit (IRQL) - 1
 

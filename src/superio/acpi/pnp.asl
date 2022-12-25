@@ -87,7 +87,7 @@
 /* Disable power saving mode */
 #define PNP_GENERIC_PS0(PM_REG, PM_VAL, PM_LDN) \
 	ENTER_CONFIG_MODE (PM_LDN)\
-	  PM_REG = Not(PM_VAL) \
+	  PM_REG = ~PM_VAL \
 	EXIT_CONFIG_MODE ()
 
 /* Enable power saving mode */

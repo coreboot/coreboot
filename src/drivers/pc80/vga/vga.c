@@ -262,6 +262,9 @@ vga_frame_set(unsigned int line, unsigned int character)
 void
 vga_line_write(unsigned int line, const char *string)
 {
+	if (!string)
+		return;
+
 	unsigned short *p = (unsigned short *)VGA_FB + (VGA_COLUMNS * line);
 	size_t i, len = strlen(string);
 

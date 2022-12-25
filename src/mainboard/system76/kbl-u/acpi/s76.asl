@@ -11,13 +11,13 @@ Device (S76D) {
 	Name (_UID, 0)
 
 	Method (RSET, 0, Serialized) {
-		Debug = "S76D: RSET"
+		Printf ("S76D: RSET")
 		SAPL(0)
 		SKBL(0)
 	}
 
 	Method (INIT, 0, Serialized) {
-		Debug = "S76D: INIT"
+		Printf ("S76D: INIT")
 		RSET()
 		If (^^PCI0.LPCB.EC0.ECOK) {
 			// Set flags to use software control
@@ -29,7 +29,7 @@ Device (S76D) {
 	}
 
 	Method (FINI, 0, Serialized) {
-		Debug = "S76D: FINI"
+		Printf ("S76D: FINI")
 		RSET()
 		If (^^PCI0.LPCB.EC0.ECOK) {
 			// Set flags to use hardware control

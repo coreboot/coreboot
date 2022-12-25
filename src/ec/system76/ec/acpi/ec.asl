@@ -34,7 +34,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 	Name (ECOK, 0)
 	Method (_REG, 2, Serialized)  // _REG: Region Availability
 	{
-		Debug = Concatenate("EC: _REG", Concatenate(ToHexString(Arg0), Concatenate(" ", ToHexString(Arg1))))
+		Printf ("EC: _REG %o %o", ToHexString(Arg0), ToHexString(Arg1))
 		If ((Arg0 == 0x03) && (Arg1 == 1)) {
 			// Enable hardware touchpad lock, airplane mode, and keyboard backlight keys
 			ECOS = 1
@@ -64,7 +64,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 
 	Name (S3OS, 0)
 	Method (PTS, 1, Serialized) {
-		Debug = Concatenate("EC: PTS: ", ToHexString(Arg0))
+		Printf ("EC: PTS: %o", ToHexString(Arg0))
 		If (ECOK) {
 			// Save ECOS during sleep
 			S3OS = ECOS
@@ -75,7 +75,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 	}
 
 	Method (WAK, 1, Serialized) {
-		Debug = Concatenate("EC: WAK: ", ToHexString(Arg0))
+		Printf ("EC: WAK: %o", ToHexString(Arg0))
 		If (ECOK) {
 			// Restore ECOS after sleep
 			ECOS = S3OS
@@ -98,12 +98,12 @@ Device (\_SB.PCI0.LPCB.EC0)
 
 	Method (_Q0A, 0, NotSerialized) // Touchpad Toggle
 	{
-		Debug = "EC: Touchpad Toggle"
+		Printf ("EC: Touchpad Toggle")
 	}
 
 	Method (_Q0B, 0, NotSerialized) // Screen Toggle
 	{
-		Debug = "EC: Screen Toggle"
+		Printf ("EC: Screen Toggle")
 #if CONFIG(EC_SYSTEM76_EC_OLED)
 		Notify (^^^^S76D, 0x85)
 #endif // CONFIG(EC_SYSTEM76_EC_OLED)
@@ -111,32 +111,32 @@ Device (\_SB.PCI0.LPCB.EC0)
 
 	Method (_Q0C, 0, NotSerialized)  // Mute
 	{
-		Debug = "EC: Mute"
+		Printf ("EC: Mute")
 	}
 
 	Method (_Q0D, 0, NotSerialized) // Keyboard Backlight
 	{
-		Debug = "EC: Keyboard Backlight"
+		Printf ("EC: Keyboard Backlight")
 	}
 
 	Method (_Q0E, 0, NotSerialized) // Volume Down
 	{
-		Debug = "EC: Volume Down"
+		Printf ("EC: Volume Down")
 	}
 
 	Method (_Q0F, 0, NotSerialized) // Volume Up
 	{
-		Debug = "EC: Volume Up"
+		Printf ("EC: Volume Up")
 	}
 
 	Method (_Q10, 0, NotSerialized) // Switch Video Mode
 	{
-		Debug = "EC: Switch Video Mode"
+		Printf ("EC: Switch Video Mode")
 	}
 
 	Method (_Q11, 0, NotSerialized) // Brightness Down
 	{
-		Debug = "EC: Brightness Down"
+		Printf ("EC: Brightness Down")
 		if (^^^^HIDD.HRDY) {
 			^^^^HIDD.HPEM (20)
 		}
@@ -144,7 +144,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 
 	Method (_Q12, 0, NotSerialized) // Brightness Up
 	{
-		Debug = "EC: Brightness Up"
+		Printf ("EC: Brightness Up")
 		if (^^^^HIDD.HRDY) {
 			^^^^HIDD.HPEM (19)
 		}
@@ -152,12 +152,12 @@ Device (\_SB.PCI0.LPCB.EC0)
 
 	Method (_Q13, 0, NotSerialized) // Camera Toggle
 	{
-		Debug = "EC: Camera Toggle"
+		Printf ("EC: Camera Toggle")
 	}
 
 	Method (_Q14, 0, NotSerialized) // Airplane Mode
 	{
-		Debug = "EC: Airplane Mode"
+		Printf ("EC: Airplane Mode")
 		if (^^^^HIDD.HRDY) {
 			^^^^HIDD.HPEM (8)
 		}
@@ -166,13 +166,13 @@ Device (\_SB.PCI0.LPCB.EC0)
 
 	Method (_Q15, 0, NotSerialized) // Suspend Button
 	{
-		Debug = "EC: Suspend Button"
+		Printf ("EC: Suspend Button")
 		Notify (SLPB, 0x80)
 	}
 
 	Method (_Q16, 0, NotSerialized) // AC Detect
 	{
-		Debug = "EC: AC Detect"
+		Printf ("EC: AC Detect")
 		^^^^AC.ACFG = ADP
 		Notify (AC, 0x80) // Status Change
 		If (BAT0)
@@ -184,25 +184,25 @@ Device (\_SB.PCI0.LPCB.EC0)
 
 	Method (_Q17, 0, NotSerialized)  // BAT0 Update
 	{
-		Debug = "EC: BAT0 Update (17)"
+		Printf ("EC: BAT0 Update (17)")
 		Notify (^^^^BAT0, 0x81) // Information Change
 	}
 
 	Method (_Q19, 0, NotSerialized)  // BAT0 Update
 	{
-		Debug = "EC: BAT0 Update (19)"
+		Printf ("EC: BAT0 Update (19)")
 		Notify (^^^^BAT0, 0x81) // Information Change
 	}
 
 	Method (_Q1B, 0, NotSerialized) // Lid Close
 	{
-		Debug = "EC: Lid Close"
+		Printf ("EC: Lid Close")
 		Notify (LID0, 0x80)
 	}
 
 	Method (_Q1C, 0, NotSerialized) // Thermal Trip
 	{
-		Debug = "EC: Thermal Trip"
+		Printf ("EC: Thermal Trip")
 		/* TODO
 		Notify (\_TZ.TZ0, 0x81) // Thermal Trip Point Change
 		Notify (\_TZ.TZ0, 0x80) // Thermal Status Change
@@ -211,7 +211,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 
 	Method (_Q1D, 0, NotSerialized) // Power Button
 	{
-		Debug = "EC: Power Button"
+		Printf ("EC: Power Button")
 		Notify (PWRB, 0x80)
 	}
 
@@ -219,22 +219,22 @@ Device (\_SB.PCI0.LPCB.EC0)
 	{
 		Local0 = OEM4
 		If (Local0 == 0x8A) {
-			Debug = "EC: White Keyboard Backlight"
+			Printf ("EC: White Keyboard Backlight")
 			Notify (^^^^S76D, 0x80)
 		} ElseIf (Local0 == 0x9F) {
-			Debug = "EC: Color Keyboard Toggle"
+			Printf ("EC: Color Keyboard Toggle")
 			Notify (^^^^S76D, 0x81)
 		} ElseIf (Local0 == 0x81) {
-			Debug = "EC: Color Keyboard Down"
+			Printf ("EC: Color Keyboard Down")
 			Notify (^^^^S76D, 0x82)
 		} ElseIf (Local0 == 0x82) {
-			Debug = "EC: Color Keyboard Up"
+			Printf ("EC: Color Keyboard Up")
 			Notify (^^^^S76D, 0x83)
 		} ElseIf (Local0 == 0x80) {
-			Debug = "EC: Color Keyboard Color Change"
+			Printf ("EC: Color Keyboard Color Change")
 			Notify (^^^^S76D, 0x84)
 		} Else {
-			Debug = Concatenate("EC: Other: ", ToHexString(Local0))
+			Printf ("EC: Other: %o", ToHexString(Local0))
 		}
 	}
 

@@ -2,7 +2,7 @@
 
 // GPP_K6 SCI
 Method (_L06, 0, Serialized) {
-	Debug = Concatenate("GPE _L06: ", ToHexString(\_SB.PCI0.LPCB.EC0.WFNO))
+	Printf ("GPE _L06: %o", ToHexString(\_SB.PCI0.LPCB.EC0.WFNO))
 	If (\_SB.PCI0.LPCB.EC0.ECOK) {
 		If (\_SB.PCI0.LPCB.EC0.WFNO == 1) {
 			Notify(\_SB.LID0, 0x80)

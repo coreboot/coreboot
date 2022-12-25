@@ -55,7 +55,7 @@ Device (\_SB.PCI0.PEG0)
 
 		Method (_DSM, 4, Serialized)
 		{
-			Debug = "NVIDIA _DSM"
+			Printf("NVIDIA _DSM")
 			Printf("  Arg0: %o", IDST(Arg0))
 			Printf("  Arg1: %o", SFST(Arg1))
 			Printf("  Arg2: %o", SFST(Arg2))

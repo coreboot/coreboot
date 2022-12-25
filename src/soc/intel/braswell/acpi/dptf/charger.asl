@@ -45,8 +45,7 @@ Device (TCHG)
 	Method (SPPC, 1)
 	{
 		/* Retrieve Control (index 4) for specified PPSS level */
-		Local0 = DeRefOf (Index (DeRefOf (Index
-			(\_SB.CHPS, ToInteger (Arg0))), 4))
+		Local0 = DerefOf (DerefOf (\_SB.CHPS[ToInteger (Arg0)])[4])
 
 		/* Pass Control value to EC to limit charging */
 		\_SB.PCI0.LPCB.EC0.CHGS (Local0)

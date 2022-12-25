@@ -189,7 +189,8 @@ Method (GBIF, 3, NotSerialized)
 		Local6 = 4
 		While (Local7)
 		{
-			Divide (Local7, 10, Local5, Local7)
+			Local5 = Local7 % 10
+			Local7 = Local7 / 10
 			SERN[Local6] = (Local5 + 0x30)	// Add 0x30 to get numeric ASCII
 			Local6--
 		}

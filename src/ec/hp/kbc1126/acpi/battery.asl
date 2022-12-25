@@ -42,8 +42,12 @@ Mutex (BTMX, 0x00)
 
 Method (ITLB, 0, NotSerialized)
 {
-	Divide ((NLB1 + 0x09), 0x0A, Local0, Local1)
-	Divide ((0x96 + 0x09), 0x0A, Local0, Local2)
+	Local0 = (NLB1 + 9) % 0x0a
+	Local1 = (NLB1 + 9) / 0x0a
+
+	Local0 = (0x96 + 9) % 0x0a
+	Local2 = (0x96 + 9) / 0x0a
+
 	Local0 = Local0
 	LB1 = Local1
 	LB2 = Local2
@@ -229,7 +233,8 @@ Method (\ISTR, 2, Serialized)
 	While (Local1)
 	{
 		Local1--
-		Divide (Local0, 10, Local2, Local0)
+		Local2 = Local0 % 10
+		Local0 = Local0 / 10
 		NUMB[Local1] = Local2 + 48
 	}
 	ToString (NUMB, Arg1, Local3)

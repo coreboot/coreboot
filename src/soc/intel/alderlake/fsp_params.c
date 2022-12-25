@@ -10,7 +10,7 @@
 #include <fsp/fsp_debug_event.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
-#include <option.h>
+#include <gpio.h>
 #include <intelblocks/irq.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/mp_init.h>
@@ -19,8 +19,8 @@
 #include <intelpch/lockdown.h>
 #include <intelblocks/systemagent.h>
 #include <intelblocks/tcss.h>
+#include <option.h>
 #include <soc/cpu.h>
-#include <soc/gpio.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
 #include <soc/pcie.h>

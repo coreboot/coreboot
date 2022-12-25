@@ -6,8 +6,8 @@
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <drivers/intel/gma/gma.h>
 #include <device/pci_ids.h>
+#include <gpio.h>
 #include <intelblocks/cfg.h>
-#include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/power_limit.h>
 #include <intelblocks/pcie_rp.h>

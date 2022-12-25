@@ -5,7 +5,7 @@ Scope (_GPE)
 	Name (PDET, Zero)
 	Method (PNOT, 2, Serialized) {
 		Local0 = Arg0 << Arg1
-		Not(One << Arg1, Local1)
+		Local1 = ~(1 << Arg1)
 		PDET = Local0 | (Local1 & PDET)
 		If (PDET == Zero) {
 			// Palm removed
@@ -19,7 +19,7 @@ Scope (_GPE)
 	Method (TINV, 2, Serialized) {
 		Local0 = One << Arg1
 		If (Arg0 == Zero) {
-			Not (Local0, Local0)
+			Local0 = ~Local0
 			GIV0 &= Local0
 		} Else {
 			GIV0 |= Local0

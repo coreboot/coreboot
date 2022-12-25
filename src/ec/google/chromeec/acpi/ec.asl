@@ -630,7 +630,7 @@ Device (EC0)
 	 */
 	Method (UPPC, 1, Serialized)
 	{
-		USPP &= Not (1 << Arg0)
+		USPP &= ~(1 << Arg0)
 	}
 #endif
 

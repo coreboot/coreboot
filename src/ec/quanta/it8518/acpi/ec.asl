@@ -547,7 +547,7 @@ Device (EC0)
 		\PWRS = ACPW
 
 		// Initialize LID switch state
-		\LIDS = NOT(HPLD)
+		\LIDS = ~HPLD
 
 		// Enable OS control of fan speed
 		// TODO FCOS = One

@@ -44,7 +44,7 @@ Method (UWES, 3, Serialized)
 {
 	Local0 = Arg0
 
-	While (One) {
+	While (1) {
 		FindSetRightBit (Local0, Local1)
 		If (Local1 == Zero) {
 			Break
@@ -225,7 +225,7 @@ Device (XHCI)
 			REV = 0x02
 
 			// VISI: Port visibility to user per port
-			CreateField (DerefOf (PCKG[0]), 0x40, One, VISI)
+			CreateField (DerefOf (PCKG[0]), 0x40, 1, VISI)
 			VISI = Arg0
 
 			Return (PCKG)

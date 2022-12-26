@@ -44,7 +44,7 @@ Method(SCMP, 2)
 		Local2 = Derefof(Local0[Local4])
 		Local3 = Derefof(Local1[Local4])
 		if (Local2 > Local3) {
-			Return(One)
+			Return(1)
 		} else {
 			if (Local2 < Local3) {
 				Return(Ones)
@@ -53,7 +53,7 @@ Method(SCMP, 2)
 		Local4++
 	}
 	if (Local4 < Local5) {
-		Return(One)
+		Return(1)
 	} else {
 		if (Local4 < Local6) {
 			Return(Ones)
@@ -83,7 +83,7 @@ Method(WCMP, 2)
 		}
 		Local2++
 	}
-	Return(One)
+	Return(1)
 }
 
 /* ARG0 = IRQ Number(0-15)

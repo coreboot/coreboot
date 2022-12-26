@@ -26,7 +26,7 @@ Scope (\_SB) {
 	Device (PEP) {
 		Name (_HID, "AMDI0005")
 		Name (_CID, EisaId ("PNP0D80"))
-		Name (_UID, One)
+		Name (_UID, 1)
 
 		Method (_STA, 0, NotSerialized) {
 			Return (0x0F)

@@ -21,7 +21,7 @@ Device (XHCI)
 			REV = 0x02
 
 			// VISI: Port visibility to user per port
-			CreateField (DerefOf (PCKG[0]), 0x40, One, VISI)
+			CreateField (DerefOf (PCKG[0]), 0x40, 1, VISI)
 			VISI = Arg0
 			Return (PCKG)
 		}

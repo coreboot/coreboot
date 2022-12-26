@@ -10,11 +10,11 @@
 /* Operating system enumeration. */
 Name (OSYS, 0)
 
-/* Zero => PIC mode, One => APIC Mode */
+/* Zero => PIC mode, 1 => APIC Mode */
 Name (PICM, Zero)
 
 /* Power state (AC = 1) */
-Name (PWRS, One)
+Name (PWRS, 1)
 
 /*
  * The _PIC method is called by the OS to choose between interrupt

@@ -123,13 +123,13 @@ Method(U2D3,0, Serialized)
 {
 	if (EH10 != Zero) {
 		EHBA = EH10
-		EHME = One
+		EHME = 1
 		SSIM = ESIM
 	}
 
 	if (E_PS == 3) {
 		RQTY = Zero
-		RQ18 = One
+		RQ18 = 1
 
 		Local0 = U2SR
 		while (Local0) {
@@ -147,7 +147,7 @@ Method(U2D3,0, Serialized)
 
 		if (U3TD == 0x03) { /* Shutdown USB2 PLL */
 		    PWGC (0x40, 0)
-		    U2RP = One
+		    U2RP = 1
 		}
 	}
 }
@@ -159,15 +159,15 @@ Method(U2D0,0, Serialized)
 	U2TD =  0x00
 
 	U2TD = Zero
-	U2PD = One
+	U2PD = 1
 
 	Local0 = U2DS
 	while (Local0 != 0x7) {
 		Local0 = U2DS
 	}
 
-	RQTY = One
-	RQ18 = One
+	RQTY = 1
+	RQ18 = 1
 	Local0 = U2SR
 	while (!Local0) {
 		Local0 = U2SR
@@ -177,7 +177,7 @@ Method(U2D0,0, Serialized)
 
 	if (EH10 != Zero) {
 		EHBA = EH10
-		EHME = One
+		EHME = 1
 		ESIM = SSIM
 	}
 
@@ -187,11 +187,11 @@ Method(U2D0,0, Serialized)
 
 Method(LXFW,3, Serialized)  //Load Xhci FirmWare
 {
-	FWLM = One  /* Firmware Load Mode */
+	FWLM = 1  /* Firmware Load Mode */
 	ROAM = Arg0 /* ROM/RAM */
 	UA04 = Arg1
 	UA08 = Arg2
-	FPLS = One    /* Firmware Preload Start */
+	FPLS = 1    /* Firmware Preload Start */
 	Local0 = FPLC /* Firmware Preload Complete */
 	while (!Local0) {
 		Local0 = FPLC
@@ -209,7 +209,7 @@ Method(U3D3,0, Serialized)
 		while (!Local0) { /* wait for it to complete */
 			Local0 = PGA3 & 0x20
 		}
-		UD3P = One /* U3P_D3Cold_PWRDN */
+		UD3P = 1 /* U3P_D3Cold_PWRDN */
 
 		U3PD = Zero /* PwrOnDev */
 		Local0 = U3DS
@@ -219,21 +219,21 @@ Method(U3D3,0, Serialized)
 
 		U3TD = 0x3 /* TargetedDeviceState */
 
-		U3RP = One /* USB3_RefClk_Pwdn */
+		U3RP = 1 /* USB3_RefClk_Pwdn */
 
 		if (U2TD == 0x3) { /* If EHCI targeted in D3cold */
 			PGA3 &= 0x9f /* SwUsb2S5RstB */
-			U2RP = One   /* USB2_RefClk_Pwdn */
+			U2RP = 1   /* USB2_RefClk_Pwdn */
 		}
 		U3PG = Zero /* XhcPwrGood  */
-		U3PS = One  /* Usb3PowerSel */
+		U3PS = 1  /* Usb3PowerSel */
 	}
 }
 
 Method(U3D0,0, Serialized)
 {
 	U3PS = Zero /* Usb3PowerSel */
-	U3PG = One  /* XhcPwrGood  */
+	U3PG = 1  /* XhcPwrGood  */
 
 	U2RP = Zero
 	U3RP = Zero
@@ -243,7 +243,7 @@ Method(U3D0,0, Serialized)
 	PGA3 = Local0 /* SwUsb2S5RstB */
 
 	U3TD = Zero /* TargetedDeviceState */
-	U3PD = One  /* PwrOnDev */
+	U3PD = 1  /* PwrOnDev */
 
 	Local0 = U3DS /* wait for RstBState, RefClkOkState, PwrRstBState */
 	while (Local0 != 0x7) {
@@ -259,7 +259,7 @@ Method(U3D0,0, Serialized)
 
 	Local0 = AUSS /* AutoSizeStart */
 	if (Local0 != 1) {
-		AUSS = One
+		AUSS = 1
 	}
 	Local0 = AUSS
 	while (Local0 != 1) {
@@ -271,9 +271,9 @@ Method(U3D0,0, Serialized)
 
 	X0_R ()
 
-	U3PR = One  /* U3P_RESTORE_RESET */
+	U3PR = 1  /* U3P_RESTORE_RESET */
 	UD3P = Zero /* U3P_D3Cold_PWRDN */
-	U3TD = One  /* TargetedDeviceState */
+	U3TD = 1  /* TargetedDeviceState */
 }
 
 Name (SVBF, Buffer (0x1000) {0})    /* length from FchCarrizo.asl, new fields */

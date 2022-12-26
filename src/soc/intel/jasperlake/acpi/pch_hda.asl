@@ -36,10 +36,10 @@ Device (HDAS)
 				 * NHLT Query only supported for revision 1 and
 				 * if NHLT address and length are set in NVS.
 				 */
-				If ((Arg1 == One) && ((NHLA != Zero) && (NHLL != Zero))) {
-					Return (Buffer (One) { 0x03 })
+				If ((Arg1 == 1) && ((NHLA != Zero) && (NHLL != Zero))) {
+					Return (Buffer (1) { 0x03 })
 				} Else {
-					Return (Buffer (One) { 0x01 })
+					Return (Buffer (1) { 0x01 })
 				}
 			}
 
@@ -50,7 +50,7 @@ Device (HDAS)
 			 *
 			 * Returns a pointer to NHLT table in memory.
 			 */
-			If (Arg2 == One) {
+			If (Arg2 == 1) {
 				CreateQWordField (NBUF, ^NHLT._MIN, NBAS)
 				CreateQWordField (NBUF, ^NHLT._MAX, NMAS)
 				CreateQWordField (NBUF, ^NHLT._LEN, NLEN)
@@ -63,6 +63,6 @@ Device (HDAS)
 			}
 		}
 
-		Return (Buffer (One) { 0x00 })
+		Return (Buffer (1) { 0x00 })
 	}
 }

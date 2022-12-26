@@ -25,7 +25,7 @@ Scope (\_SB)
         }
 
         /* If _SB.DTAB is not present, then DPTC Tablet Mode is not enabled. */
-        If (CondRefOf (\_SB.DTAB) && (\_SB.PCI0.LPCB.EC0.TBMD == One))
+        If (CondRefOf (\_SB.DTAB) && (\_SB.PCI0.LPCB.EC0.TBMD == 1))
         {
             \_SB.DTAB()
             Return (Zero)

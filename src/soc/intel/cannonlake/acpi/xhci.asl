@@ -46,7 +46,7 @@ Method (UWES, 3, Serialized)
 {
 	Local0 = Arg0
 
-	While (One) {
+	While (1) {
 		FindSetRightBit (Local0, Local1)
 		If (Local1 == Zero) {
 			Break

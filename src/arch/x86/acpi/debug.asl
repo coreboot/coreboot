@@ -138,7 +138,7 @@ Method(DBGO, 1)
 		Name(BDBG, Buffer(80) {})
 		BDBG = Arg0
 		Local1 = 0
-		while (One) {
+		while (1) {
 			Local0 = GETC(BDBG, Local1)
 			if (Local0 == 0) {
 				return (0)

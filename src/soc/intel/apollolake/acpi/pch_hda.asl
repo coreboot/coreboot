@@ -40,10 +40,10 @@ Device (HDAS)
 				 * if NHLT address and length are set in NVS.
 				 */
 				If (Arg1 == 1 && NHLA != 0 && NHLL != 0) {
-					Return (Buffer (One) { 0x03 })
+					Return (Buffer (1) { 0x03 })
 				}
 				Else {
-					Return (Buffer (One) { 0x01 })
+					Return (Buffer (1) { 0x01 })
 				}
 			}
 
@@ -65,6 +65,6 @@ Device (HDAS)
 			}
 		}
 
-		Return (Buffer (One) { 0x00 })
+		Return (Buffer (1) { 0x00 })
 	}
 }

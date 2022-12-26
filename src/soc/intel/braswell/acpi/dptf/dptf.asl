@@ -19,7 +19,7 @@ Device (DPTF)
 
 	Method (_STA)
 	{
-		If (\DPTE == One) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)

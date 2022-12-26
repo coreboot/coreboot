@@ -43,7 +43,7 @@
 				CTRL &= 0x1D					\
 				/* Disable Native PCIe AER handling from OS */	\
 				CTRL &= 0x17					\
-				If ((Arg1 != One)) /* unknown revision */	\
+				If ((Arg1 != 1)) /* unknown revision */	\
 				{						\
 					CDW1 |= 0x08				\
 				}						\

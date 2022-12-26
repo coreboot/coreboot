@@ -118,8 +118,8 @@ External (\PPKG, MethodObj)
 			}
 
 			Method (_OFF) {
-				\_SB.PCI0.LPCB.EC.FANE(Zero)
-				\FLVL = Zero
+				\_SB.PCI0.LPCB.EC.FANE(0)
+				\FLVL = 0
 				Notify (\_TZ.THM0, NOTIFY_TZ_TRIPPTCHG)
 			}
 		}

@@ -31,7 +31,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 
 	#include "ec_ram.asl"
 
-	Name (ECOK, Zero)
+	Name (ECOK, 0)
 	Method (_REG, 2, Serialized)  // _REG: Region Availability
 	{
 		Debug = Concatenate("EC: _REG", Concatenate(ToHexString(Arg0), Concatenate(" ", ToHexString(Arg1))))
@@ -49,8 +49,8 @@ Device (\_SB.PCI0.LPCB.EC0)
 			^^^^BAT0.UPBS()
 
 			// Notify of changes
-			Notify(^^^^AC, Zero)
-			Notify(^^^^BAT0, Zero)
+			Notify(^^^^AC, 0)
+			Notify(^^^^BAT0, 0)
 
 			PNOT ()
 
@@ -62,7 +62,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 		}
 	}
 
-	Name (S3OS, Zero)
+	Name (S3OS, 0)
 	Method (PTS, 1, Serialized) {
 		Debug = Concatenate("EC: PTS: ", ToHexString(Arg0))
 		If (ECOK) {
@@ -70,7 +70,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 			S3OS = ECOS
 
 			// Clear wake cause
-			WFNO = Zero
+			WFNO = 0
 		}
 	}
 
@@ -88,8 +88,8 @@ Device (\_SB.PCI0.LPCB.EC0)
 			^^^^BAT0.UPBS()
 
 			// Notify of changes
-			Notify(^^^^AC, Zero)
-			Notify(^^^^BAT0, Zero)
+			Notify(^^^^AC, 0)
+			Notify(^^^^BAT0, 0)
 
 			// Reset System76 Device
 			^^^^S76D.RSET()

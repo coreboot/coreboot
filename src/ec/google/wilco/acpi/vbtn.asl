@@ -48,7 +48,7 @@ Device (VBTN)
 	 */
 	Method (VGBS)
 	{
-		Local0 = Zero
+		Local0 = 0
 
 		/* Check EC orientation for tablet mode flag */
 		If (R (OTBL)) {

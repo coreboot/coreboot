@@ -100,7 +100,7 @@ Device (S76D) {
 			^^PCI0.LPCB.EC0.FDAT = 1
 			^^PCI0.LPCB.EC0.FCMD = 0xCA
 			Local0 = ^^PCI0.LPCB.EC0.FBUF
-			^^PCI0.LPCB.EC0.FCMD = Zero
+			^^PCI0.LPCB.EC0.FCMD = 0
 		}
 		Return (Local0)
 	}
@@ -108,7 +108,7 @@ Device (S76D) {
 	// Set KB Led
 	Method (SKBL, 1, Serialized) {
 		If (^^PCI0.LPCB.EC0.ECOK) {
-			^^PCI0.LPCB.EC0.FDAT = Zero
+			^^PCI0.LPCB.EC0.FDAT = 0
 			^^PCI0.LPCB.EC0.FBUF = Arg0
 			^^PCI0.LPCB.EC0.FCMD = 0xCA
 		}

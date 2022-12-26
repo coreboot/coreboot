@@ -5,12 +5,12 @@
 Device (BAT0)
 {
 	Name (_HID, EisaId ("PNP0C0A") /* Control Method Battery */)  // _HID: Hardware ID
-	Name (_UID, Zero)  // _UID: Unique ID
+	Name (_UID, 0)  // _UID: Unique ID
 	Name (_PCL, Package (0x01)  // _PCL: Power Consumer List
 	{
 		_SB
 	})
-	Name (BFCC, Zero)
+	Name (BFCC, 0)
 	Method (_STA, 0, NotSerialized)  // _STA: Status
 	{
 		If (^^PCI0.LPCB.EC0.ECOK)
@@ -37,8 +37,8 @@ Device (BAT0)
 		0xFFFFFFFF, // 2 - Last Full Charge Capacity
 		1, // 3 - Battery Technology
 		BATTERY_DESIGN_VOLTAGE_MV, // 4 - Design Voltage
-		Zero, // 5 - Design Capacity of Warning
-		Zero, // 6 - Design Capacity of Low
+		0, // 5 - Design Capacity of Warning
+		0, // 6 - Design Capacity of Low
 		0x40, // 7 - Battery Capacity Granularity 1
 		0x40, // 8 - Battery Capacity Granularity 2
 		"BAT", // 9 - Model Number
@@ -55,7 +55,7 @@ Device (BAT0)
 		PBIF [10] = " "
 		PBIF [11] = " "
 		PBIF [12] = " "
-		BFCC = Zero
+		BFCC = 0
 	}
 
 	Method (UPBI, 0, NotSerialized)
@@ -100,14 +100,14 @@ Device (BAT0)
 
 	Name (PBST, Package (0x04)
 	{
-		Zero, // 0 - Battery state
+		0, // 0 - Battery state
 		0xFFFFFFFF, // 1 - Battery present rate
 		0xFFFFFFFF, // 2 - Battery remaining capacity
 		BATTERY_DESIGN_VOLTAGE_MV // 3 - Battery present voltage
 	})
 	Method (IVBS, 0, NotSerialized)
 	{
-		PBST [0] = Zero
+		PBST [0] = 0
 		PBST [1] = 0xFFFFFFFF
 		PBST [2] = 0xFFFFFFFF
 		PBST [3] = 0x2710
@@ -117,8 +117,8 @@ Device (BAT0)
 	{
 		If (^^PCI0.LPCB.EC0.BAT0)
 		{
-			Local0 = Zero
-			Local1 = Zero
+			Local0 = 0
+			Local1 = 0
 			If (^^AC.ACFG)
 			{
 				If (((^^PCI0.LPCB.EC0.BST0 & 0x02) == 0x02))

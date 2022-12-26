@@ -36,7 +36,7 @@ Device (EC)
 		IO (Decode16, 0x66, 0x66, 0, 1)
 	})
 
-	OperationRegion (ERAM, EmbeddedControl, Zero, 0xFF)
+	OperationRegion (ERAM, EmbeddedControl, 0, 0xFF)
 	Field (ERAM, ByteAcc, Lock, Preserve)
 	{
 		Offset (0x13),

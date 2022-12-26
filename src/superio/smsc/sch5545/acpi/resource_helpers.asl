@@ -41,7 +41,7 @@ Method (DSTA, 1, NotSerialized)
 	Local0 = PNP_DEVICE_ACTIVE
 	If (Local0 == 0xFF)
 	{
-		Return (Zero)
+		Return (0)
 	}
 
 	Local0 &= 1
@@ -60,7 +60,7 @@ Method (DSTA, 1, NotSerialized)
 	}
 	Else
 	{
-		Return (Zero)
+		Return (0)
 	}
 
 	EXIT_CONFIG_MODE ()
@@ -154,7 +154,7 @@ Method (GIOB, 1, NotSerialized)
 		Return (Local0)
 	}
 
-	Return (Zero)
+	Return (0)
 }
 
 /* Read IRQ resource */
@@ -239,7 +239,7 @@ Method (SIRQ, 2, NotSerialized)
 			}
 			Else
 			{
-				Return (Zero)
+				Return (0)
 			}
 		}
 
@@ -270,12 +270,12 @@ Method (SDMA, 2, NotSerialized)
 			If (Local0 != Local1)
 			{
 				PNP_ADDR_REG = Local3
-				PNP_DATA_REG = Zero
+				PNP_DATA_REG = 0
 				Break
 			}
 			Else
 			{
-				Return (Zero)
+				Return (0)
 			}
 		}
 
@@ -286,7 +286,7 @@ Method (SDMA, 2, NotSerialized)
 	Local0 += 0x51
 	PNP_ADDR_REG = Local0
 	PNP_DATA_REG = (0x80 | CGLD (Arg0))
-	Return (Zero)
+	Return (0)
 }
 
 /* Device Current Resource Settings */
@@ -299,9 +299,9 @@ Method (DCRS, 2, NotSerialized)
 		IO12 = IO11
 		LEN1 = 0x08
 		IRQM = GIRQ (Arg0)
-		If ((GDMA (Arg0) > 0x03) || (Arg1 == Zero))
+		If ((GDMA (Arg0) > 0x03) || (Arg1 == 0))
 		{
-			DMAM = Zero
+			DMAM = 0
 		}
 		Else
 		{
@@ -319,9 +319,9 @@ Method (DCRS, 2, NotSerialized)
 		IO12 = IO11
 		LEN1 = 0x08
 		IRQM = GIRQ (Arg0)
-		If ((GDMA (Arg0) > 0x03) || (Arg1 == Zero))
+		If ((GDMA (Arg0) > 0x03) || (Arg1 == 0))
 		{
-			DMAM = Zero
+			DMAM = 0
 		}
 		Else
 		{
@@ -353,9 +353,9 @@ Method (DCRS, 2, NotSerialized)
 			}
 
 			IRQE = GIRQ (Arg0)
-			If ((GDMA (Arg0) > 0x03) || (Arg1 == Zero))
+			If ((GDMA (Arg0) > 0x03) || (Arg1 == 0))
 			{
-				DMAM = Zero
+				DMAM = 0
 			}
 			Else
 			{
@@ -395,9 +395,9 @@ Method (DCRS, 2, NotSerialized)
 		IO32 = IO31 /* \_SB_.PCI0.LPCB.SIO1.IO31 */
 		LEN3 = 1
 		IRQE = GIRQ (Arg0)
-		If ((GDMA (Arg0) > 0x03) || (Arg1 == Zero))
+		If ((GDMA (Arg0) > 0x03) || (Arg1 == 0))
 		{
-			DMAM = Zero
+			DMAM = 0
 		}
 		Else
 		{

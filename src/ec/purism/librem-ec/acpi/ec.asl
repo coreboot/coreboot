@@ -31,7 +31,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 
 	#include "ec_ram.asl"
 
-	Name (ECOK, Zero)
+	Name (ECOK, 0)
 	Method (_REG, 2, Serialized)  // _REG: Region Availability
 	{
 		Printf ("EC: _REG %o %o", ToHexString(Arg0), ToHexString(Arg1))
@@ -49,8 +49,8 @@ Device (\_SB.PCI0.LPCB.EC0)
 			^^^^BAT0.UPBS()
 
 			// Notify of changes
-			Notify(^^^^AC, Zero)
-			Notify(^^^^BAT0, Zero)
+			Notify(^^^^AC, 0)
+			Notify(^^^^BAT0, 0)
 
 			PNOT ()
 
@@ -66,7 +66,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 		Printf ("EC: PTS: %o", ToHexString(Arg0))
 		If (ECOK) {
 			// Clear wake cause
-			WFNO = Zero
+			WFNO = 0
 		}
 	}
 
@@ -81,8 +81,8 @@ Device (\_SB.PCI0.LPCB.EC0)
 			^^^^BAT0.UPBS()
 
 			// Notify of changes
-			Notify(^^^^AC, Zero)
-			Notify(^^^^BAT0, Zero)
+			Notify(^^^^AC, 0)
+			Notify(^^^^BAT0, 0)
 
 			// Reset Librem EC Device
 			^^^^LIEC.RSET()

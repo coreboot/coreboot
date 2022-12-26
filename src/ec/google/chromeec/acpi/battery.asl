@@ -7,12 +7,12 @@ Mutex (BATM, 0)
 
 // Wait for desired battery index to be presented in shared memory
 //   Arg0 = battery index
-//   Returns Zero on success, 1 on error.
+//   Returns 0 on success, 1 on error.
 Method (BTSW, 1)
 {
 #ifdef EC_ENABLE_SECOND_BATTERY_DEVICE
 	If (BTIX == Arg0) {
-		Return (Zero)
+		Return (0)
 	}
 	If (Arg0 >= BTCN) {
 		Return (1)
@@ -33,7 +33,7 @@ Method (BTSW, 1)
 		Return (1)
 	}
 #endif
-	Return (Zero)
+	Return (0)
 }
 
 // _STA implementation.
@@ -41,7 +41,7 @@ Method (BTSW, 1)
 Method (BSTA, 1, Serialized)
 {
 	If (Acquire (^BATM, 1000)) {
-		Return (Zero)
+		Return (0)
 	}
 
 	If (~BTSW (Arg0) & BTEX) {
@@ -159,7 +159,7 @@ Method (BBST, 4, Serialized)
 	// bit 1 = charging
 	// bit 2 = critical level
 	//
-	Local1 = Zero
+	Local1 = 0
 
 	// Check if AC is present
 	If (ACEX) {
@@ -277,10 +277,10 @@ Device (BAT0)
 		0xFFFFFFFF,  // 0x02: Battery Remaining Capacity
 		0xFFFFFFFF,  // 0x03: Battery Present Voltage
 	})
-	Name (BSTP, Zero)
+	Name (BSTP, 0)
 
 	// Workaround for full battery status, disabled by default
-	Name (BFWK, Zero)
+	Name (BFWK, 0)
 
 	// Method to enable full battery workaround
 	Method (BFWE)
@@ -291,7 +291,7 @@ Device (BAT0)
 	// Method to disable full battery workaround
 	Method (BFWD)
 	{
-		BFWK = Zero
+		BFWK = 0
 	}
 
 	Method (_STA, 0, Serialized)
@@ -367,10 +367,10 @@ Device (BAT1)
 		0xFFFFFFFF,  // 0x02: Battery Remaining Capacity
 		0xFFFFFFFF,  // 0x03: Battery Present Voltage
 	})
-	Name (BSTP, Zero)
+	Name (BSTP, 0)
 
 	// Workaround for full battery status, disabled by default
-	Name (BFWK, Zero)
+	Name (BFWK, 0)
 
 	// Method to enable full battery workaround
 	Method (BFWE)
@@ -381,7 +381,7 @@ Device (BAT1)
 	// Method to disable full battery workaround
 	Method (BFWD)
 	{
-		BFWK = Zero
+		BFWK = 0
 	}
 
 	Method (_STA, 0, Serialized)

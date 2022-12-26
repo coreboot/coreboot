@@ -602,7 +602,7 @@ Device (EC0)
 	// AC Power Removed
 	Method (_Q27, 0, NotSerialized)
 	{
-		\PWRS = Zero
+		\PWRS = 0
 		Notify (AC, 0x80)
 		\PNOT ()
 	}
@@ -617,7 +617,7 @@ Device (EC0)
 	// LID Close (Suspend Trigger)
 	Method (_Q2B)
 	{
-		\LIDS = Zero
+		\LIDS = 0
 		Notify (\_SB.LID0, 0x80)
 	}
 

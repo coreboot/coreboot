@@ -36,17 +36,17 @@ Device (HKEY)
 	{
 		Local0 = BTN
 		If (Local0 != 0) {
-			BTN = Zero
+			BTN = 0
 			Local0 += 0x1000
 			Return (Local0)
 		}
 		Local0 = BTAB
 		If (Local0 != 0) {
-			BTAB = Zero
+			BTAB = 0
 			Local0 += 0x5000
 			Return (Local0)
 		}
-		Return (Zero)
+		Return (0)
 	}
 
 	/* Report event  */
@@ -75,8 +75,8 @@ Device (HKEY)
 		}
 		Else
 		{
-			EMSK = Zero
-			ETAB = Zero
+			EMSK = 0
+			ETAB = 0
 		}
 		EN = Arg0
 	}

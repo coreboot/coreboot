@@ -69,12 +69,12 @@ Device (UCSI)
 	Method (_DSM, 4, Serialized)
 	{
 		If (Arg0 != ToUUID ("6f8398c2-7ca4-11e4-ad36-631042b5008f")) {
-			Return (Buffer (1) { Zero })
+			Return (Buffer (1) { 0 })
 		}
 
 		Switch (ToInteger (Arg2))
 		{
-			Case (Zero)
+			Case (0)
 			{
 				Return (Buffer (1) { 0x07 })
 			}
@@ -138,6 +138,6 @@ Device (UCSI)
 				^CCI3 = R (^^UCI3)
 			}
 		}
-		Return (Buffer (1) { Zero })
+		Return (Buffer (1) { 0 })
 	}
 }

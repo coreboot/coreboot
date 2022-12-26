@@ -10,7 +10,7 @@ Method (ESTA, 1, Serialized)
 	} ElseIf (Arg0 == 2) {
 		Local0 = R (P3B2)
 	} Else {
-		Local0 = Zero
+		Local0 = 0
 	}
 
 	/* Indicate battery is present */
@@ -42,7 +42,7 @@ Method (BSTR, 1, Serialized)
 
 	/* Fill buffer until NUL or max string length is read */
 	Name (IBUF, Buffer (Local0 + 1) {})
-	For (Local1 = Zero, Local1 < Local0, Local1++) {
+	For (Local1 = 0, Local1 < Local0, Local1++) {
 		Local2 = R (BSBS)
 		If (!Local2) {
 			Break
@@ -53,7 +53,7 @@ Method (BSTR, 1, Serialized)
 	/* Truncate and NUL terminate */
 	Local1++
 	Name (OBUF, Buffer (Local1) {})
-	OBUF = Concatenate (IBUF, Zero)
+	OBUF = Concatenate (IBUF, 0)
 
 	Return (OBUF)
 }

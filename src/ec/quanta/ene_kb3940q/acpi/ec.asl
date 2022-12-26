@@ -215,7 +215,7 @@ Device (EC0)
 	Method (_Q11, 0, NotSerialized)
 	{
 		Printf ("AC Detach Event 0x11")
-		\PWRS = Zero
+		\PWRS = 0
 		Notify (AC, 0x80)
 		Notify (BATX, 0x80)
 		\PNOT ()

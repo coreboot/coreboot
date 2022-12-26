@@ -319,9 +319,9 @@ Device(EC)
 	{
 		If (Arg0) {
 			FAND = 1
-			FANA = Zero
+			FANA = 0
 		} Else {
-			FAND = Zero
+			FAND = 0
 			FANA = 1
 		}
 	}

@@ -17,7 +17,7 @@
  *    = 2: Secondary battery
  *    = Others: Reserved (0)
  * Bit 31-10: Reserved (0)
- *     Must be Zero
+ *     Must be 0
  *
  * Out Parameter:
  * DWORD
@@ -110,7 +110,7 @@ Method (BCCS, 1, NotSerialized)
  * DWORD
  * Bit 7-0:BatteryID
  * Bit 31-8: Reserved (0)
- *     Must be Zero
+ *     Must be 0
  *
  * Out Parameter:
  * DWORD

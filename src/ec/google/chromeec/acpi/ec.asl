@@ -198,22 +198,22 @@ Device (EC0)
 
 		/* Check for sensor not calibrated */
 		If (Local0 == \_SB.PCI0.LPCB.EC0.TNCA) {
-			Return (Zero)
+			Return (0)
 		}
 
 		/* Check for sensor not present */
 		If (Local0 == \_SB.PCI0.LPCB.EC0.TNPR) {
-			Return (Zero)
+			Return (0)
 		}
 
 		/* Check for sensor not powered */
 		If (Local0 == \_SB.PCI0.LPCB.EC0.TNOP) {
-			Return (Zero)
+			Return (0)
 		}
 
 		/* Check for sensor bad reading */
 		If (Local0 == \_SB.PCI0.LPCB.EC0.TBAD) {
-			Return (Zero)
+			Return (0)
 		}
 
 		/* Adjust by offset to get Kelvin */

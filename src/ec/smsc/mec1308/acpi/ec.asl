@@ -78,7 +78,7 @@ Device (EC0)
 			If (\FLVL <= 0) {
 				Return (1)
 			} Else {
-				Return (Zero)
+				Return (0)
 			}
 		}
 		Method (_ON)  {
@@ -90,7 +90,7 @@ Device (EC0)
 		}
 		Method (_OFF) {
 			If (FCOS) {
-				FSL0 = Zero
+				FSL0 = 0
 				\FLVL = 1
 				Notify (\_TZ.THRM, 0x81)
 			}
@@ -103,7 +103,7 @@ Device (EC0)
 			If (\FLVL <= 1) {
 				Return (1)
 			} Else {
-				Return (Zero)
+				Return (0)
 			}
 		}
 		Method (_ON)  {
@@ -115,7 +115,7 @@ Device (EC0)
 		}
 		Method (_OFF) {
 			If (FCOS) {
-				FSL1 = Zero
+				FSL1 = 0
 				\FLVL = 2
 				Notify (\_TZ.THRM, 0x81)
 			}
@@ -128,7 +128,7 @@ Device (EC0)
 			If (\FLVL <= 2) {
 				Return (1)
 			} Else {
-				Return (Zero)
+				Return (0)
 			}
 		}
 		Method (_ON)  {
@@ -140,7 +140,7 @@ Device (EC0)
 		}
 		Method (_OFF) {
 			If (FCOS) {
-				FSL2 = Zero
+				FSL2 = 0
 				\FLVL = 3
 				Notify (\_TZ.THRM, 0x81)
 			}
@@ -153,7 +153,7 @@ Device (EC0)
 			If (\FLVL <= 3) {
 				Return (1)
 			} Else {
-				Return (Zero)
+				Return (0)
 			}
 		}
 		Method (_ON)  {
@@ -165,7 +165,7 @@ Device (EC0)
 		}
 		Method (_OFF) {
 			If (FCOS) {
-				FSL3 = Zero
+				FSL3 = 0
 				\FLVL = 4
 				Notify (\_TZ.THRM, 0x81)
 			}
@@ -178,7 +178,7 @@ Device (EC0)
 			If (\FLVL <= 4) {
 				Return (1)
 			} Else {
-				Return (Zero)
+				Return (0)
 			}
 		}
 		Method (_ON)  {
@@ -190,7 +190,7 @@ Device (EC0)
 		}
 		Method (_OFF) {
 			If (FCOS) {
-				FSL4 = Zero
+				FSL4 = 0
 				\FLVL = 5
 				Notify (\_TZ.THRM, 0x81)
 			}
@@ -243,7 +243,7 @@ Device (EC0)
 	// AC Power Removed
 	Method (_Q52, 0, NotSerialized)
 	{
-		\PWRS = Zero
+		\PWRS = 0
 		Notify (AC, 0x80)
 		\PNOT ()
 	}

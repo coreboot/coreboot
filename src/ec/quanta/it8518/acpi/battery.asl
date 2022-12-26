@@ -13,7 +13,7 @@ Device (BATX)
 	// Battery X Information
 	// Battery X Status
 	//
-	Name (BXST, Zero)
+	Name (BXST, 0)
 
 	//
 	// Default Static Battery Information
@@ -55,7 +55,7 @@ Device (BATX)
 	// Method to disable full battery workaround
 	Method (BFWD)
 	{
-		BFWK = Zero
+		BFWK = 0
 	}
 
 	// Method to wait for EC to be ready after changing the Battery Info ID
@@ -111,7 +111,7 @@ Device (BATX)
 		//
 		// Information ID 0 -
 		//
-		HIID = Zero
+		HIID = 0
 		WAEC ()
 
 		//
@@ -228,7 +228,7 @@ Device (BATX)
 			}
 			Else
 			{
-				Local0 = Zero
+				Local0 = 0
 			}
 		}
 
@@ -238,7 +238,7 @@ Device (BATX)
 			Local0 |= 4
 		}
 
-		Local1 = Zero
+		Local1 = 0
 
 		// Check if AC is present
 		If (ACPW)
@@ -270,7 +270,7 @@ Device (BATX)
 			Else
 			{
 				// Error
-				Local1 = Zero
+				Local1 = 0
 			}
 		}
 		Else
@@ -278,7 +278,7 @@ Device (BATX)
 			If (!(Local0 & 2))
 			{
 				// Battery is not charging
-				Local1 = Zero
+				Local1 = 0
 			}
 		}
 

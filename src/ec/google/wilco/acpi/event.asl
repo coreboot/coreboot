@@ -139,10 +139,10 @@ Method (_Q66, 0, Serialized)
 /* UCSI SCI uses a unique event code */
 Method (_Q79, 0, Serialized)
 {
-	If (ISSX == Zero) {
+	If (ISSX == 0) {
 		Printf ("EC _Q79 UCSI Event")
 		Notify (^UCSI, 0x80)
-		^UCEP = Zero
+		^UCEP = 0
 	} Else {
 		Printf ("EC _Q79 UCSI Event Masked in S0ix")
 		^UCEP = 1

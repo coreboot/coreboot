@@ -179,7 +179,7 @@ Device(SIO) {
 	/* PM: Switch to D0 by setting IPD low */
 	Method (_PS0) {
 		ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-		IPD = Zero
+		IPD = 0
 		EXIT_CONFIG_MODE ()
 	}
 
@@ -233,14 +233,14 @@ Device(SIO) {
 		/* Enable power saving mode */
 		Method (_PS3) {
 			ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-			FDPW = Zero
+			FDPW = 0
 			EXIT_CONFIG_MODE ()
 		}
 
 		Method (_DIS)
 		{
 			ENTER_CONFIG_MODE (0)
-			ACTR = Zero
+			ACTR = 0
 			EXIT_CONFIG_MODE ()
 		}
 
@@ -343,25 +343,25 @@ Device(SIO) {
 			Sleep(0x64)
 			If (SIFR) { FD1 = 1 }
 
-			ACT1 = Zero
+			ACT1 = 0
 			ACT2 = 1
 			SELE = 1
 			Sleep(0x64)
 			If (SIFR) { FD2 = 1 }
 
-			ACT2 = Zero
+			ACT2 = 0
 			ACT3 = 1
 			SELE = 2
 			Sleep(0x64)
 			If (SIFR) { FD3 = 1 }
 
-			ACT3 = Zero
+			ACT3 = 0
 			ACT4 = 1
 			SELE = 3
 			Sleep(0x64)
 			If (SIFR) { FD4 = 1 }
-			ACT4 = Zero
-			SELE = Zero
+			ACT4 = 0
+			SELE = 0
 
 			Return (FDE)
 		}
@@ -453,13 +453,13 @@ Device(SIO) {
 		}
 		Method (_PS3) {
 			ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-			PRPW = Zero
+			PRPW = 0
 			EXIT_CONFIG_MODE ()
 		}
 
 		Method (_DIS) {
 			ENTER_CONFIG_MODE (1)
-			ACTR = Zero
+			ACTR = 0
 			EXIT_CONFIG_MODE ()
 		}
 
@@ -631,14 +631,14 @@ Device(SIO) {
 		}
 		Method (_PS3) {
 			ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-			UAPW = Zero
+			UAPW = 0
 			EXIT_CONFIG_MODE ()
 		}
 
 		Method (_DIS)
 		{
 			ENTER_CONFIG_MODE (2)
-			ACTR = Zero
+			ACTR = 0
 			EXIT_CONFIG_MODE ()
 		}
 
@@ -757,14 +757,14 @@ Device(SIO) {
 		}
 		Method (_PS3) {
 			ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-			UBPW = Zero
+			UBPW = 0
 			EXIT_CONFIG_MODE ()
 		}
 
 		Method (_DIS)
 		{
 			ENTER_CONFIG_MODE (3)
-			ACTR = Zero
+			ACTR = 0
 			EXIT_CONFIG_MODE ()
 		}
 
@@ -883,14 +883,14 @@ Device(SIO) {
 		}
 		Method (_PS3) {
 			ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-			UBPW = Zero
+			UBPW = 0
 			EXIT_CONFIG_MODE ()
 		}
 
 		Method (_DIS)
 		{
 			ENTER_CONFIG_MODE (3)
-			ACTR = Zero
+			ACTR = 0
 			EXIT_CONFIG_MODE ()
 		}
 
@@ -994,7 +994,7 @@ Device(SIO) {
 		Method (_DIS)
 		{
 			ENTER_CONFIG_MODE (6)
-			ACTR = Zero
+			ACTR = 0
 			EXIT_CONFIG_MODE ()
 		}
 
@@ -1085,7 +1085,7 @@ Device(SIO) {
 		Method (_DIS)
 		{
 			ENTER_CONFIG_MODE (5)
-			ACTR = Zero
+			ACTR = 0
 			EXIT_CONFIG_MODE ()
 			Notify(PS2M, 1)
 		}
@@ -1192,7 +1192,7 @@ Device(SIO) {
 		Method (_DIS)
 		{
 			ENTER_CONFIG_MODE (5)
-			IRQ1 = Zero
+			IRQ1 = 0
 			EXIT_CONFIG_MODE ()
 		}
 
@@ -1414,7 +1414,7 @@ Device(SIO) {
 		Method (_PS3)
 		{
 			ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-			HWPW = Zero
+			HWPW = 0
 			EXIT_CONFIG_MODE ()
 		}
 

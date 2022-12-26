@@ -17,7 +17,7 @@ Device (SIO)
 #if CONFIG(DRIVERS_UART_8250IO)
 			Return (0x0f)
 #else
-			Return (Zero)
+			Return (0)
 #endif
 		}
 
@@ -42,7 +42,7 @@ Scope (\_SB.PCI0)
 #ifdef SIO_EC_ENABLE_PS2K
 			Return (0x0f)
 #else
-			Return (Zero)
+			Return (0)
 #endif
 		}
 
@@ -64,7 +64,7 @@ Scope (\_SB.PCI0)
 #ifdef SIO_EC_ENABLE_PS2M
 			Return (0x0f)
 #else
-			Return (Zero)
+			Return (0)
 #endif
 		}
 

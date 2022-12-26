@@ -56,7 +56,7 @@ Device(SIO1) {
 	Name (IOST, 0x0001) /* IO decoding status */
 	Name (MSFG, 1) /* Mouse wake config */
 	Name (KBFG, 1) /* Keyboard wake config */
-	Name (PMFG, Zero) /* Wake config */
+	Name (PMFG, 0) /* Wake config */
 
 	/* SuperIO configuration ports */
 	OperationRegion (CREG, SystemIO, SUPERIO_PNP_BASE, 0x02)
@@ -316,7 +316,7 @@ Device(SIO1) {
 			While (KRDY) {}
 			KP60 = 0xED
 			While (KRDY) {}
-			KP60 = Zero
+			KP60 = 0
 			While (KRDY) {}
 			KP60 = 0xF4
 			Sleep (1)
@@ -383,17 +383,17 @@ Device(SIO1) {
 		Name (_UID, SUPERIO_UID(SER, SUPERIO_UARTA_LDN))
 		Method (_STA, 0, NotSerialized)
 		{
-			Return (DSTA (Zero))
+			Return (DSTA (0))
 		}
 
 		Method (_DIS, 0, NotSerialized)
 		{
-			DCNT (Zero, Zero)
+			DCNT (0, 0)
 		}
 
 		Method (_CRS, 0, NotSerialized)
 		{
-			Return (DCRS (Zero, Zero))
+			Return (DCRS (0, 0))
 		}
 
 		Method (_SRS, 1, NotSerialized)
@@ -402,9 +402,9 @@ Device(SIO1) {
 			CreateWordField (Arg0, 0x09, IRQM)
 			ENTER_CONFIG_MODE (SUPERIO_LPC_LDN)
 			STIO (0x6A, IO11)
-			SIRQ (Zero, IRQM)
+			SIRQ (0, IRQM)
 			EXIT_CONFIG_MODE ()
-			DCNT (Zero, 1)
+			DCNT (0, 1)
 		}
 
 		Name (_PRS, ResourceTemplate ()
@@ -481,12 +481,12 @@ Device(SIO1) {
 
 		Method (_DIS, 0, NotSerialized)
 		{
-			DCNT (1, Zero)
+			DCNT (1, 0)
 		}
 
 		Method (_CRS, 0, NotSerialized)
 		{
-			Return (DCRS (1, Zero))
+			Return (DCRS (1, 0))
 		}
 
 		Method (_SRS, 1, NotSerialized)

@@ -9,8 +9,8 @@ Method (GPVD, 0, Serialized)
 /* Read Privacy Screen Status */
 Method (GPVX, 0, Serialized)
 {
-	If (R (EPST) == Zero) {
-		Return (Zero)
+	If (R (EPST) == 0) {
+		Return (0)
 	}
 
 	Return (1)
@@ -25,5 +25,5 @@ Method (EPVX, 0, Serialized)
 /* Disable Privacy Screen */
 Method (DPVX, 0, Serialized)
 {
-	W (EPCT, Zero)
+	W (EPCT, 0)
 }

@@ -30,7 +30,7 @@ Device (BATX)
 		0xFFFFFFFF,  // Battery Remaining Capacity
 		0xFFFFFFFF,  // Battery Present Voltage
 	})
-	Name (BTNM, Zero)  // Battery number
+	Name (BTNM, 0)  // Battery number
 
 	// Workaround for full battery status, enabled by default
 	Name (BFWK, 1)

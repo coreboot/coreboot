@@ -6,9 +6,9 @@ Device (EC0)
 	Name (_UID, 1)
 	Name (_GPE, EC_SCI_GPI)
 	Name (_STA, 0xf)
-	Name (DBUG, Zero)
-	Name (ISSX, Zero) /* Is the EC in S0ix mode? */
-	Name (UCEP, Zero) /* Is there a pending UCSI event? */
+	Name (DBUG, 0)
+	Name (ISSX, 0) /* Is the EC in S0ix mode? */
+	Name (UCEP, 0) /* Is there a pending UCSI event? */
 
 	Name (_CRS, ResourceTemplate() {
 		IO (Decode16,
@@ -22,7 +22,7 @@ Device (EC0)
 	})
 
 	/* Handle registration of EmbeddedControl region */
-	Name (EREG, Zero)
+	Name (EREG, 0)
 	OperationRegion (ERAM, EmbeddedControl, 0, 0xff)
 	Method (_REG, 2)
 	{
@@ -39,7 +39,7 @@ Device (EC0)
 		W (CSOS, 1)
 
 		/* Tell EC to stop emulating PS/2 mouse */
-		W (PS2M, Zero)
+		W (PS2M, 0)
 
 		/* Enable DPTF support if enabled in devicetree */
 		If (\DPTE == 1) {
@@ -77,7 +77,7 @@ Device (EC0)
 	Method (ECRW, 2, Serialized, 2)
 	{
 		If (!EREG) {
-			Return (Zero)
+			Return (0)
 		}
 
 		Local0 = DeRefOf (Arg0[0])	/* Byte offset */
@@ -115,7 +115,7 @@ Device (EC0)
 			}
 			BYT1 = Arg1
 		}
-		Return (Zero)
+		Return (0)
 	}
 
 	/*
@@ -124,7 +124,7 @@ Device (EC0)
 	 */
 	Method (R, 1, Serialized, 2)
 	{
-		Return (ECRW (Arg0, Zero))
+		Return (ECRW (Arg0, 0))
 	}
 
 	/*
@@ -155,7 +155,7 @@ Device (EC0)
 			R (EVT1)
 		} Else {
 			Printf ("EC Exit S0ix")
-			W (CSEX, Zero)
+			W (CSEX, 0)
 
 			/* If UCSI event happened during S0ix send it now. */
 			If (^UCEP == 1) {

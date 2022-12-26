@@ -39,7 +39,7 @@ Device (BAT0)
 		0xFFFFFFFF,  // Battery Remaining Capacity
 		0xFFFFFFFF,  // Battery Present Voltage
 	})
-	Name (BSTP, Zero)
+	Name (BSTP, 0)
 
 	// Workaround for full battery status, enabled by default
 	Name (BFWK, 1)
@@ -53,7 +53,7 @@ Device (BAT0)
 	// Method to disable full battery workaround
 	Method (BFWD)
 	{
-		BFWK = Zero
+		BFWK = 0
 	}
 
 	// Swap bytes in a word
@@ -106,7 +106,7 @@ Device (BAT0)
 
 		// Get battery state from EC
 		Local0 = BTST
-		Local1 = Zero
+		Local1 = 0
 
 		// Check if AC is present
 		If (ACEX) {

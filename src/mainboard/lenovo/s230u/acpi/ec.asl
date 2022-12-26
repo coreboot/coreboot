@@ -246,8 +246,8 @@ Device (EC0)
 	{
 		Name (_HID, EisaId ("LEN0068"))
 
-		Name (DHKC, Zero)
-		Name (DHKV, Zero)
+		Name (DHKC, 0)
+		Name (DHKV, 0)
 		Name (DHKN, 0xFC018070)  // Hotkey mask
 		Mutex (XDHK, 0x07)
 

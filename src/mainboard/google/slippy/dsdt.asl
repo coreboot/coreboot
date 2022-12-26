@@ -36,7 +36,7 @@ DefinitionBlock(
 	{
 		Device (WLAN)
 		{
-			Name (_ADR, Zero)
+			Name (_ADR, 0)
 		}
 	}
 

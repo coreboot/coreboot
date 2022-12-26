@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-OperationRegion (ERAM, EmbeddedControl, Zero, 0xFF)
+OperationRegion (ERAM, EmbeddedControl, 0, 0xFF)
 Field (ERAM, ByteAcc, Lock, Preserve)
 {
 	NMSG, 8,

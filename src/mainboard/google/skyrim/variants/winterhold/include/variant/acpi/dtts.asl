@@ -22,7 +22,7 @@ Scope (\_SB)
         {
             \_SB.DDEF()
             \_SB.PRTN = 0
-            Return (Zero)
+            Return (0)
         }
 
         If (\_SB.PCI0.LPCB.EC0.STTB == 0) { // Desktop
@@ -35,25 +35,25 @@ Scope (\_SB)
                     If (\_SB.PCI0.LPCB.EC0.TIN4 >= 123) {
                         \_SB.DTTB()
                         \_SB.PRTN = 1
-                        Return (Zero)
+                        Return (0)
                     }
                     // AMB sensor release point
                     If ((\_SB.PCI0.LPCB.EC0.TIN4 <= 118)) {
                         \_SB.DDEF()
                         \_SB.PRTN = 0
-                        Return (Zero)
+                        Return (0)
                     }
                     // Keep tht previous thermal table
-                    Return (Zero)
+                    Return (0)
                 } Else {
                     If (\_SB.PRTN == 3 || \_SB.PRTN == 5) {
                         \_SB.DTTB()
                         \_SB.PRTN = 1
-                        Return (Zero)
+                        Return (0)
                     } Else {
                         \_SB.DDEF()
                         \_SB.PRTN = 0
-                        Return (Zero)
+                        Return (0)
                     }
                 }
             } Else { // Lid-close
@@ -62,24 +62,24 @@ Scope (\_SB)
                     If (\_SB.PCI0.LPCB.EC0.TIN4 >= 128) {
                         \_SB.DTTD()
                         \_SB.PRTN = 3
-                        Return (Zero)
+                        Return (0)
                     }
                     If(\_SB.PCI0.LPCB.EC0.TIN4 <= 123) {
                         \_SB.DTTC()
                         \_SB.PRTN = 2
-                        Return (Zero)
+                        Return (0)
                     }
                     // Keep tht previous thermal table
-                    Return (Zero)
+                    Return (0)
                 } Else {
                     If (\_SB.PRTN == 1 || \_SB.PRTN == 5) {
                         \_SB.DTTD()
                         \_SB.PRTN = 3
-                        Return (Zero)
+                        Return (0)
                     } Else {
                         \_SB.DTTC()
                         \_SB.PRTN = 2
-                        Return (Zero)
+                        Return (0)
                     }
                 }
             }
@@ -90,25 +90,25 @@ Scope (\_SB)
                 If (\_SB.PCI0.LPCB.EC0.TIN4 >= 118) {
                     \_SB.DTTF()
                     \_SB.PRTN = 5
-                    Return (Zero)
+                    Return (0)
                 }
                 // AMB sensor release point
                 If ((\_SB.PCI0.LPCB.EC0.TIN4 <= 113)) {
                     \_SB.DTTE()
                     \_SB.PRTN = 4
-                    Return (Zero)
+                    Return (0)
                 }
                 // Keep tht previous thermal table
-                Return (Zero)
+                Return (0)
             } Else {
                 If (\_SB.PRTN == 1 || \_SB.PRTN == 3) {
                     \_SB.DTTF()
                     \_SB.PRTN = 5
-                    Return (Zero)
+                    Return (0)
                 } Else {
                     \_SB.DTTE()
                     \_SB.PRTN = 4
-                    Return (Zero)
+                    Return (0)
                 }
             }
         } // Desktop/Laptop End

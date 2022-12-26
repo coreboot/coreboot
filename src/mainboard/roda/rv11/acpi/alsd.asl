@@ -22,7 +22,7 @@ Device (ALSD)
 		Package (0x02)
 		{
 			0x46,
-			Zero
+			0
 		},
 
 		Package (0x02)

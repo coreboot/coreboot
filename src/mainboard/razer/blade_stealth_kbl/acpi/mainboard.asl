@@ -14,7 +14,7 @@ Scope (\_SB)
 			}
 			else
 			{
-				Return (Zero)
+				Return (0)
 			}
 		}
 

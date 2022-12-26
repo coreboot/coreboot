@@ -5,7 +5,7 @@ Scope (\_SB.PCI0.I2C4)
 	Device (CAM1)
 	{
 		Name (_HID, "INT3479") /* _HID: Hardware ID */
-		Name (_UID, Zero)  /* _UID: Unique ID */
+		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "OV 5670 Camera")  /* _DDN: DOS Device Name */
 		Name (CAMD, 0x02)
 

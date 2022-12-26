@@ -40,7 +40,7 @@ Scope (\_SB.PCI0.I2C5)
 	Device (CAM1)
 	{
 		Name (_HID, "SONY355A")  /* _HID: Hardware ID */
-		Name (_UID, Zero)  /* _UID: Unique ID */
+		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "SONY IMX355A Camera") /* _DDN: DOS Device Name */
 
 		Method (_STA, 0, NotSerialized)  /* _STA: Status */

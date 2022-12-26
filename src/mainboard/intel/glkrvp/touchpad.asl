@@ -38,7 +38,7 @@
 			If(Arg0 == ToUUID("3CDFF6F7-4267-4555-AD05-B30A3D8938DE"))
 			{
 				// Function 0 : Query Function
-				If(Arg2 == Zero)
+				If(Arg2 == 0)
 				{
 					// Revision 1
 					If(Arg1 == 1)

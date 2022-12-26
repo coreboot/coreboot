@@ -30,7 +30,7 @@ Scope (\_SB)
 
 		Device (EJCT)
 		{
-			Name (_ADR, Zero)
+			Name (_ADR, 0)
 
 			Name (_DSD, Package () {
 				ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
@@ -88,7 +88,7 @@ Scope (\_SB.PCI0.I2C2)
 		Method (_DSM, 4, NotSerialized)
 		{
 			If (Arg0 == ToUUID ("3cdff6f7-4267-4555-ad05-b30a3d8938de")) {
-				If (Arg2 == Zero) {
+				If (Arg2 == 0) {
 					/* Function 0 - Query */
 					If (Arg1 == 1) {
 						/* Revision 1 Function 1 */

@@ -6,9 +6,9 @@ Scope (\_SB.PCI0.XHCI.RHUB.HS01)
 	Name (_UPC, Package (0x04)
 	{
 		0xFF,	// Connectable
-		Zero,	// USB Port
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// USB Port
+		0,	// Reserved
+		0	// Reserved
 	})
 
 	// Visible
@@ -23,9 +23,9 @@ Scope (\_SB.PCI0.XHCI.RHUB.HS02)
 	Name (_UPC, Package (0x04)
 	{
 		0xFF,	// Connectable
-		Zero,	// USB Port
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// USB Port
+		0,	// Reserved
+		0	// Reserved
 	})
 
 	// Visible
@@ -41,14 +41,14 @@ Scope (\_SB.PCI0.XHCI.RHUB.HS03)
 	{
 		0xFF,	// Connectable
 		0xFF,	// OEM Connector
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// Reserved
+		0	// Reserved
 	})
 
 	// Not Visible
 	Method (_PLD, 0, NotSerialized)
 	{
-		Return (GPLD (Zero))
+		Return (GPLD (0))
 	}
 }
 Scope (\_SB.PCI0.XHCI.RHUB.HS04)
@@ -58,14 +58,14 @@ Scope (\_SB.PCI0.XHCI.RHUB.HS04)
 	{
 		0xFF,	// Connectable
 		0xFF,	// OEM Connector
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// Reserved
+		0	// Reserved
 	})
 
 	// Not Visible
 	Method (_PLD, 0, NotSerialized)
 	{
-		Return (GPLD (Zero))
+		Return (GPLD (0))
 	}
 }
 Scope (\_SB.PCI0.XHCI.RHUB.HS05)
@@ -74,9 +74,9 @@ Scope (\_SB.PCI0.XHCI.RHUB.HS05)
 	Name (_UPC, Package (0x04)
 	{
 		0xFF,	// Connectable
-		Zero,	// USB Port
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// USB Port
+		0,	// Reserved
+		0	// Reserved
 	})
 
 	// Visible
@@ -92,14 +92,14 @@ Scope (\_SB.PCI0.XHCI.RHUB.HS07)
 	{
 		0xFF,	// Connectable
 		0xFF,	// OEM Connector
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// Reserved
+		0	// Reserved
 	})
 
 	// Not Visible
 	Method (_PLD, 0, NotSerialized)
 	{
-		Return (GPLD (Zero))
+		Return (GPLD (0))
 	}
 }
 Scope (\_SB.PCI0.XHCI.RHUB.SS01)
@@ -109,8 +109,8 @@ Scope (\_SB.PCI0.XHCI.RHUB.SS01)
 	{
 		0xFF,	// Connectable
 		0x03,	// USB 3.0 Port
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// Reserved
+		0	// Reserved
 	})
 }
 Scope (\_SB.PCI0.XHCI.RHUB.SS02)
@@ -120,8 +120,8 @@ Scope (\_SB.PCI0.XHCI.RHUB.SS02)
 	{
 		0xFF,	// Connectable
 		0x03,	// USB 3.0 Port
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// Reserved
+		0	// Reserved
 	})
 }
 Scope (\_SB.PCI0.XHCI.RHUB.SS03)
@@ -131,8 +131,8 @@ Scope (\_SB.PCI0.XHCI.RHUB.SS03)
 	{
 		0xFF,	// Connectable
 		0x03,	// USB 3.0 Port
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// Reserved
+		0	// Reserved
 	})
 }
 Scope (\_SB.PCI0.XHCI.RHUB.SS04)
@@ -142,7 +142,7 @@ Scope (\_SB.PCI0.XHCI.RHUB.SS04)
 	{
 		0xFF,	// Connectable
 		0x03,	// USB 3.0
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// Reserved
+		0	// Reserved
 	})
 }

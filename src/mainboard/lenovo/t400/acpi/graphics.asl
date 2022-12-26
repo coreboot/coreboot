@@ -79,5 +79,5 @@ Method (ATPX, 2, Serialized) {
 			SHYB(0x00)
 		}
 	}
-	Return(Zero)
+	Return(0)
 }

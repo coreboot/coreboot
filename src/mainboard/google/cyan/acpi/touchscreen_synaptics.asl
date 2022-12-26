@@ -17,7 +17,7 @@ Scope (\_SB.PCI0.I2C1)
 			If (Arg0 == ToUUID ("3cdff6f7-4267-4555-ad05-b30a3d8938de"))
 			{
 				// DSM Revision
-				If (Arg2 == Zero)
+				If (Arg2 == 0)
 				{
 					If (Arg1 == 1)
 					{
@@ -48,7 +48,7 @@ Scope (\_SB.PCI0.I2C1)
 				})
 			}
 
-			Return (Zero)
+			Return (0)
 		}
 
 		Method(_CRS, 0x0, NotSerialized)

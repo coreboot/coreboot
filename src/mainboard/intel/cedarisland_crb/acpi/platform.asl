@@ -11,7 +11,7 @@ Field (APMP, ByteAcc, NoLock, Preserve)
 
 #include <arch/x86/acpi/post.asl>
 
-Name(\APC1, Zero) // IIO IOAPIC
+Name(\APC1, 0) // IIO IOAPIC
 
 /*
  * The _PTS method (Prepare To Sleep) is called before the OS is

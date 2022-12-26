@@ -25,12 +25,12 @@ Scope(\_SI)
 		If (Arg0 < 2)
 		{
 			/* Thinkpad LED on */
-			\_SB.PCI0.LPCB.EC0.LED (Zero, 0x80)
+			\_SB.PCI0.LPCB.EC0.LED (0, 0x80)
 		}
 		Else
 		{
 			/* Thinkpad LED blinking */
-			\_SB.PCI0.LPCB.EC0.LED (Zero, 0xC0)
+			\_SB.PCI0.LPCB.EC0.LED (0, 0xC0)
 		}
 	}
 }

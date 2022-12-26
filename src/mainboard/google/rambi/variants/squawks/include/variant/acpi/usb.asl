@@ -6,9 +6,9 @@ Scope (\_SB.PCI0.XHCI.RHUB.PRT1)
 	Name (_UPC, Package (0x04)  // _UPC: USB Port Capabilities
 	{
 		0xFF,	// Connectable
-		Zero,	// USB Port
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// USB Port
+		0,	// Reserved
+		0	// Reserved
 	})
 
 	// Visible
@@ -23,9 +23,9 @@ Scope (\_SB.PCI0.XHCI.RHUB.PRT2)
 	Name (_UPC, Package (0x04)  // _UPC: USB Port Capabilities
 	{
 		0xFF,	// Connectable
-		Zero,	// USB Port
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// USB Port
+		0,	// Reserved
+		0	// Reserved
 	})
 
 	// Visible
@@ -41,14 +41,14 @@ Scope (\_SB.PCI0.XHCI.RHUB.PRT3)
 	{
 		0xFF,	// Connectable
 		0xFF,	// OEM Connector
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// Reserved
+		0	// Reserved
 	})
 
 	// Not Visible
 	Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
 	{
-		Return (GPLD (Zero))
+		Return (GPLD (0))
 	}
 }
 Scope (\_SB.PCI0.XHCI.RHUB.PRT4)
@@ -58,14 +58,14 @@ Scope (\_SB.PCI0.XHCI.RHUB.PRT4)
 	{
 		0xFF,	// Connectable
 		0xFF,	// OEM Connector
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// Reserved
+		0	// Reserved
 	})
 
 	// Not Visible
 	Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
 	{
-		Return (GPLD (Zero))
+		Return (GPLD (0))
 	}
 }
 Scope (\_SB.PCI0.XHCI.RHUB.SSP1)
@@ -75,7 +75,7 @@ Scope (\_SB.PCI0.XHCI.RHUB.SSP1)
 	{
 		0xFF,	// Connectable
 		0x03,	// USB 3.0 Port
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// Reserved
+		0	// Reserved
 	})
 }

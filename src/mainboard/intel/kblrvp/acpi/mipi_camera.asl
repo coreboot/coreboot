@@ -5,7 +5,7 @@ Scope (\_SB.PCI0.I2C2)
 	Device (PMIC)
 	{
 		Name (_HID, "INT3472") /* _HID: Hardware ID */
-		Name (_UID, Zero)  // _UID: Unique ID */
+		Name (_UID, 0)  // _UID: Unique ID */
 		Name (_DDN, "TPS68470 PMIC")  /* _DDN: DOS Device Name */
 		Name (CAMD, 0x64)
 
@@ -15,12 +15,12 @@ Scope (\_SB.PCI0.I2C2)
 		}
 
 		/* Marks the availability of all the operation regions */
-		Name (AVP1, Zero)
-		Name (AVGP, Zero)
-		Name (AVB0, Zero)
-		Name (AVB1, Zero)
-		Name (AVB2, Zero)
-		Name (AVB3, Zero)
+		Name (AVP1, 0)
+		Name (AVGP, 0)
+		Name (AVB0, 0)
+		Name (AVB1, 0)
+		Name (AVB2, 0)
+		Name (AVB3, 0)
 		Method (_REG, 2, NotSerialized)
 		{
 			If (Arg0 == 0x08)
@@ -90,7 +90,7 @@ Scope (\_SB.PCI0.I2C2)
 		 * VACT: Analog LDO output
 		 * VDCT: Core buck output
 		 */
-		OperationRegion (PWR1, 0xB0, Zero, 0x0100)
+		OperationRegion (PWR1, 0xB0, 0, 0x0100)
 		Field (PWR1, DWordAcc, NoLock, Preserve)
 		{
 			VSIO, 32,
@@ -110,7 +110,7 @@ Scope (\_SB.PCI0.I2C2)
 		 * ACVA: Analog LDO VR voltage
 		 * DCVA: Core buck VR voltage
 		 */
-		OperationRegion (PWR2, 0xB1, Zero, 0x0100)
+		OperationRegion (PWR2, 0xB1, 0, 0x0100)
 		Field (PWR2, DWordAcc, NoLock, Preserve)
 		{
 			SIOV, 32,
@@ -128,7 +128,7 @@ Scope (\_SB.PCI0.I2C2)
 		 * CFG1: Clock configuration 1 register
 		 * CFG2: Clock configuration 2 register
 		 */
-		OperationRegion (CLKC, 0xB2, Zero, 0x0100)
+		OperationRegion (CLKC, 0xB2, 0, 0x0100)
 		Field (CLKC, DWordAcc, NoLock, Preserve)
 		{
 			PCTL, 32,
@@ -146,7 +146,7 @@ Scope (\_SB.PCI0.I2C2)
 		 * PLDV: PLL feedback divider
 		 * PODV: PLL output divider for HCLK_A
 		 */
-		OperationRegion (CLKF, 0xB3, Zero, 0x0100)
+		OperationRegion (CLKF, 0xB3, 0, 0x0100)
 		Field (CLKF, DWordAcc, NoLock, Preserve)
 		{
 			PDV2, 32,
@@ -370,7 +370,7 @@ Scope (\_SB.PCI0.I2C2)
 	Device (CAM0)
 	{
 		Name (_HID, "OVTID858")  /* _HID: Hardware ID */
-		Name (_UID, Zero)  /* _UID: Unique ID */
+		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "OV 13858 Camera") /* _DDN: DOS Device Name */
 		Name (CAMD, 0x02)
 
@@ -475,7 +475,7 @@ Scope (\_SB.PCI0.I2C2)
 	Device (VCM0)
 	{
 		Name (_HID, "DWDWD000")  /* _HID: Hardware ID */
-		Name (_UID, Zero)  /* _UID: Unique ID */
+		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "Dongwoon AF DAC") /* _DDN: DOS Device Name */
 		Name (CAMD, 0x03)
 
@@ -503,7 +503,7 @@ Scope (\_SB.PCI0.I2C3)
 	Device (PMIC)
 	{
 		Name (_HID, "INT3473") /* _HID: Hardware ID */
-		Name (_UID, Zero)  /* _UID: Unique ID */
+		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "TPS68470 PMIC 2") /* _DDN: DOS Device Name */
 		Name (CAMD, 0x64)
 
@@ -513,12 +513,12 @@ Scope (\_SB.PCI0.I2C3)
 		}
 
 		/* Marks the availability of all the operation regions */
-		Name (AVP2, Zero)
-		Name (AVGP, Zero)
-		Name (AVB0, Zero)
-		Name (AVB1, Zero)
-		Name (AVB2, Zero)
-		Name (AVB3, Zero)
+		Name (AVP2, 0)
+		Name (AVGP, 0)
+		Name (AVB0, 0)
+		Name (AVB1, 0)
+		Name (AVB2, 0)
+		Name (AVB3, 0)
 		Method (_REG, 2, NotSerialized)
 		{
 			If (Arg0 == 0x08)
@@ -595,7 +595,7 @@ Scope (\_SB.PCI0.I2C3)
 		 * VACT: Analog LDO output
 		 * VDCT: Core buck output
 		 */
-		OperationRegion (PWR1, 0xB0, Zero, 0x0100)
+		OperationRegion (PWR1, 0xB0, 0, 0x0100)
 		Field (PWR1, DWordAcc, NoLock, Preserve)
 		{
 			VSIO, 32,
@@ -615,7 +615,7 @@ Scope (\_SB.PCI0.I2C3)
 		 * ACVA: Analog LDO VR voltage
 		 * DCVA: Core buck VR voltage
 		 */
-		OperationRegion (PWR2, 0xB1, Zero, 0x0100)
+		OperationRegion (PWR2, 0xB1, 0, 0x0100)
 		Field (PWR2, DWordAcc, NoLock, Preserve)
 		{
 			SIOV, 32,
@@ -633,7 +633,7 @@ Scope (\_SB.PCI0.I2C3)
 		 * CFG1: Clock configuration 1 register
 		 * CFG2: Clock configuration 2 register
 		 */
-		OperationRegion (CLKC, 0xB2, Zero, 0x0100)
+		OperationRegion (CLKC, 0xB2, 0, 0x0100)
 		Field (CLKC, DWordAcc, NoLock, Preserve)
 		{
 			PCTL, 32,
@@ -651,7 +651,7 @@ Scope (\_SB.PCI0.I2C3)
 		 * PLDV: PLL feedback divider
 		 * PODV: PLL output divider for HCLK_A
 		 */
-		OperationRegion (CLKF, 0xB3, Zero, 0x0100)
+		OperationRegion (CLKF, 0xB3, 0, 0x0100)
 		Field (CLKF, DWordAcc, NoLock, Preserve)
 		{
 			PDV2, 32,
@@ -806,7 +806,7 @@ Scope (\_SB.PCI0.I2C3)
 	Device (CAM1)
 	{
 		Name (_HID, "INT3479") /* _HID: Hardware ID */
-		Name (_UID, Zero)  /* _UID: Unique ID */
+		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "OV 5670 Camera")  /* _DDN: DOS Device Name */
 		Name (CAMD, 0x02)
 

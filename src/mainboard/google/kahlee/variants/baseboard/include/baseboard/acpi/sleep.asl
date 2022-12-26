@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /* Wake status package */
-Name (WKST, Package() { Zero, Zero })
+Name (WKST, Package() { 0, 0 })
 
 /*
 * \_PTS - Prepare to Sleep method

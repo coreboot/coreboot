@@ -160,7 +160,7 @@ Scope (\_TZ)
 				If (\FLVL <= 0) {
 					Return (1)
 				} Else {
-					Return (Zero)
+					Return (0)
 				}
 			}
 			Method (_ON)  {
@@ -185,7 +185,7 @@ Scope (\_TZ)
 				If (\FLVL <= 1) {
 					Return (1)
 				} Else {
-					Return (Zero)
+					Return (0)
 				}
 			}
 			Method (_ON)  {
@@ -210,7 +210,7 @@ Scope (\_TZ)
 				If (\FLVL <= 2) {
 					Return (1)
 				} Else {
-					Return (Zero)
+					Return (0)
 				}
 			}
 			Method (_ON)  {
@@ -235,7 +235,7 @@ Scope (\_TZ)
 				If (\FLVL <= 3) {
 					Return (1)
 				} Else {
-					Return (Zero)
+					Return (0)
 				}
 			}
 			Method (_ON)  {
@@ -260,7 +260,7 @@ Scope (\_TZ)
 				If (\FLVL <= 4) {
 					Return (1)
 				} Else {
-					Return (Zero)
+					Return (0)
 				}
 			}
 			Method (_ON)  {

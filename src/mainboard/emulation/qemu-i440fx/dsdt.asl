@@ -38,7 +38,7 @@ DefinitionBlock (
 	Scope(\_SB.PCI0) {
 		Device(VGA) {
 			Name(_ADR, 0x00020000)
-			OperationRegion(PCIC, PCI_Config, Zero, 0x4)
+			OperationRegion(PCIC, PCI_Config, 0, 0x4)
 			Field(PCIC, DWordAcc, NoLock, Preserve) {
 				VEND, 32
 			}

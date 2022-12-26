@@ -3,19 +3,19 @@
 Device (HIDD)
 {
 	Name (_HID, "INT33D5")
-	Name (HBSY, Zero)
-	Name (HIDX, Zero)
-	Name (HRDY, Zero)
+	Name (HBSY, 0)
+	Name (HIDX, 0)
+	Name (HRDY, 0)
 
 	Method (HDEM, 0, Serialized)
 	{
-		HBSY = Zero
+		HBSY = 0
 		Return (HIDX)
 	}
 
 	Method (HDMM, 0, Serialized)
 	{
-		Return (Zero)
+		Return (0)
 	}
 
 	Method (HDSM, 1, Serialized)
@@ -29,7 +29,7 @@ Device (HIDD)
 		HIDX = Arg0
 
 		Notify (HIDD, 0xC0)
-		Local0 = Zero
+		Local0 = 0
 		While ((Local0 < 0xFA) && HBSY)
 		{
 			Sleep (0x04)
@@ -38,13 +38,13 @@ Device (HIDD)
 
 		If (HBSY == 1)
 		{
-			HBSY = Zero
-			HIDX = Zero
+			HBSY = 0
+			HIDX = 0
 			Return (1)
 		}
 		Else
 		{
-			Return (Zero)
+			Return (0)
 		}
 	}
 }

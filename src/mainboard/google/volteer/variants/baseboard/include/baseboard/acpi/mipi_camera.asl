@@ -76,12 +76,12 @@ Scope (\_SB.PCI0.IPU0)
 			Package (0x02)
 			{
 				"endpoint",
-				Zero
+				0
 			},
 			Package (0x02)
 			{
 				"clock-lanes",
-				Zero
+				0
 			},
 			Package (0x02)
 			{
@@ -100,8 +100,8 @@ Scope (\_SB.PCI0.IPU0)
 				Package (0x03)
 				{
 					^I2C3.CAM0,
-					Zero,
-					Zero
+					0,
+					0
 				}
 			}
 		}
@@ -114,12 +114,12 @@ Scope (\_SB.PCI0.IPU0)
 			Package (0x02)
 			{
 				"endpoint",
-				Zero
+				0
 			},
 			Package (0x02)
 			{
 				"clock-lanes",
-				Zero
+				0
 			},
 			Package (0x02)
 			{
@@ -136,8 +136,8 @@ Scope (\_SB.PCI0.IPU0)
 				Package (0x03)
 				{
 					^I2C2.CAM1,
-					Zero,
-					Zero
+					0,
+					0
 				}
 			}
 		}
@@ -208,7 +208,7 @@ Scope (\_SB.PCI0.I2C3)
 	Device (CAM0)
 	{
 		Name (_HID, "OVTI8856")  /* _HID: Hardware ID */
-		Name (_UID, Zero)  /* _UID: Unique ID */
+		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "Ov 8856 Camera")  /* _DDN: DOS Device Name */
 		Method (_STA, 0, NotSerialized)  /* _STA: Status */
 		{
@@ -271,7 +271,7 @@ Scope (\_SB.PCI0.I2C3)
 				Package (0x02)
 				{
 					"port",
-					Zero
+					0
 				}
 			},
 			ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
@@ -292,12 +292,12 @@ Scope (\_SB.PCI0.I2C3)
 				Package (0x02)
 				{
 					"endpoint",
-					Zero
+					0
 				},
 				Package (0x02)
 				{
 					"clock-lanes",
-					Zero
+					0
 				},
 				Package (0x02)
 				{
@@ -325,8 +325,8 @@ Scope (\_SB.PCI0.I2C3)
 					Package (0x03)
 					{
 						IPU0,
-						Zero,
-						Zero
+						0,
+						0
 					}
 				}
 			}
@@ -478,7 +478,7 @@ Scope (\_SB.PCI0.I2C3)
 
 Scope (\_SB.PCI0.I2C2)
 {
-	Name (STA, Zero)
+	Name (STA, 0)
 	PowerResource (FCPR, 0x00, 0x0000)
 	{
 		Method (_ON, 0, Serialized)  /* Front camera_ON_: Power On */
@@ -534,7 +534,7 @@ Scope (\_SB.PCI0.I2C2)
 	Device (CAM1)
 	{
 		Name (_HID, "INT3474")  /* _HID: Hardware ID */
-		Name (_UID, Zero)  /* _UID: Unique ID */
+		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "Ov 2740 Camera")  /* _DDN: DOS Device Name */
 		Method (_STA, 0, NotSerialized)  /* _STA: Status */
 		{
@@ -589,7 +589,7 @@ Scope (\_SB.PCI0.I2C2)
 				Package (0x02)
 				{
 					"port",
-					Zero
+					0
 				}
 			},
 			ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
@@ -610,12 +610,12 @@ Scope (\_SB.PCI0.I2C2)
 				Package (0x02)
 				{
 					"endpoint",
-					Zero
+					0
 				},
 				Package (0x02)
 				{
 					"clock-lanes",
-					Zero
+					0
 				},
 				Package (0x02)
 				{
@@ -641,7 +641,7 @@ Scope (\_SB.PCI0.I2C2)
 					{
 						IPU0,
 						1,
-						Zero
+						0
 					}
 				}
 			}

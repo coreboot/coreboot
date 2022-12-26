@@ -7,14 +7,14 @@ Scope (\_SB.PCI0.EHC1.HUB7.PRT1)
 	{
 		0xFF,	// Connectable
 		0xFF,	// OEM Connector
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// Reserved
+		0	// Reserved
 	})
 
 	// Not Visible
 	Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
 	{
-		Return (GPLD (Zero))
+		Return (GPLD (0))
 	}
 
 	Device (USB1)
@@ -25,9 +25,9 @@ Scope (\_SB.PCI0.EHC1.HUB7.PRT1)
 		Name (_UPC, Package (0x04)  // _UPC: USB Port Capabilities
 		{
 			0xFF,	// Connectable
-			Zero,	// USB Port
-			Zero,	// Reserved
-			Zero	// Reserved
+			0,	// USB Port
+			0,	// Reserved
+			0	// Reserved
 		})
 
 		// Visible
@@ -46,9 +46,9 @@ Scope (\_SB.PCI0.EHC1.HUB7.PRT1)
 		Name (_UPC, Package (0x04)  // _UPC: USB Port Capabilities
 		{
 			0xFF,	// Connectable
-			Zero,	// USB Port
-			Zero,	// Reserved
-			Zero	// Reserved
+			0,	// USB Port
+			0,	// Reserved
+			0	// Reserved
 		})
 
 		// Visible
@@ -67,14 +67,14 @@ Scope (\_SB.PCI0.EHC1.HUB7.PRT1)
 		{
 			0xFF,	// Connectable
 			0xFF,	// OEM Connector
-			Zero,	// Reserved
-			Zero	// Reserved
+			0,	// Reserved
+			0	// Reserved
 		})
 
 		// Not Visible
 		Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
 		{
-			Return (GPLD (Zero))
+			Return (GPLD (0))
 		}
 	}
 
@@ -87,14 +87,14 @@ Scope (\_SB.PCI0.EHC2.HUB7.PRT1)
 	{
 		0xFF,	// Connectable
 		0xFF,	// OEM Connector
-		Zero,	// Reserved
-		Zero	// Reserved
+		0,	// Reserved
+		0	// Reserved
 	})
 
 	// Not Visible
 	Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
 	{
-		Return (GPLD (Zero))
+		Return (GPLD (0))
 	}
 
 	Device (USB4)
@@ -106,14 +106,14 @@ Scope (\_SB.PCI0.EHC2.HUB7.PRT1)
 		{
 			0xFF,	// Connectable
 			0xFF,	// OEM Connector
-			Zero,	// Reserved
-			Zero	// Reserved
+			0,	// Reserved
+			0	// Reserved
 		})
 
 		// Not Visible
 		Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
 		{
-			Return (GPLD (Zero))
+			Return (GPLD (0))
 		}
 	}
 }

@@ -13,13 +13,13 @@ Method (GPVX, 0, Serialized)
 		Return (Zero)
 	}
 
-	Return (One)
+	Return (1)
 }
 
 /* Enable Privacy Screen */
 Method (EPVX, 0, Serialized)
 {
-	W (EPCT, One)
+	W (EPCT, 1)
 }
 
 /* Disable Privacy Screen */

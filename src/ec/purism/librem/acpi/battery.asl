@@ -60,7 +60,7 @@ Device (BAT)
 	Name (DLOW, 10)
 
 	/* Workaround for full battery status, enabled by default */
-	Name (BFWK, One)
+	Name (BFWK, 1)
 
 	/* Method to enable full battery workaround */
 	Method (BFWE)

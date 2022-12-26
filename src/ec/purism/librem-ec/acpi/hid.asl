@@ -25,7 +25,7 @@ Device (HIDD)
 
 	Method (HPEM, 1, Serialized)
 	{
-		HBSY = One
+		HBSY = 1
 		HIDX = Arg0
 
 		Notify (HIDD, 0xC0)
@@ -36,11 +36,11 @@ Device (HIDD)
 			Local0++
 		}
 
-		If (HBSY == One)
+		If (HBSY == 1)
 		{
 			HBSY = Zero
 			HIDX = Zero
-			Return (One)
+			Return (1)
 		}
 		Else
 		{

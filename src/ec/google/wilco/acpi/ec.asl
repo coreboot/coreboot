@@ -36,13 +36,13 @@ Device (EC0)
 		W (ERDY, Arg1)
 
 		/* Indicate that the OS supports S0ix */
-		W (CSOS, One)
+		W (CSOS, 1)
 
 		/* Tell EC to stop emulating PS/2 mouse */
 		W (PS2M, Zero)
 
 		/* Enable DPTF support if enabled in devicetree */
-		If (\DPTE == One) {
+		If (\DPTE == 1) {
 			W (DWST, Arg1)
 		}
 
@@ -146,7 +146,7 @@ Device (EC0)
 
 		If (Arg0) {
 			Printf ("EC Enter S0ix")
-			W (CSEX, One)
+			W (CSEX, 1)
 
 			/*
 			 * Read back from EC RAM after enabling S0ix
@@ -158,7 +158,7 @@ Device (EC0)
 			W (CSEX, Zero)
 
 			/* If UCSI event happened during S0ix send it now. */
-			If (^UCEP == One) {
+			If (^UCEP == 1) {
 				^_Q79 ()
 			}
 		}

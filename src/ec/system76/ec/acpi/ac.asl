@@ -8,7 +8,7 @@ Device (AC)
 		_SB
 	})
 
-	Name (ACFG, One)
+	Name (ACFG, 1)
 
 	Method (_PSR, 0, NotSerialized)  // _PSR: Power Source
 	{

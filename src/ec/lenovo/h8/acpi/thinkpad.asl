@@ -51,7 +51,7 @@ Device (HKEY)
 
 	/* Report event  */
 	Method (RHK, 1, NotSerialized) {
-		Local0 = One << (Arg0 - 1)
+		Local0 = 1 << (Arg0 - 1)
 		If (EMSK & Local0) {
 			BTN = Arg0
 			Notify (HKEY, 0x80)
@@ -60,7 +60,7 @@ Device (HKEY)
 
 	/* Report tablet  */
 	Method (RTAB, 1, NotSerialized) {
-		Local0 = One << (Arg0 - 1)
+		Local0 = 1 << (Arg0 - 1)
 		If (ETAB & Local0) {
 			BTAB = Arg0
 			Notify (HKEY, 0x80)
@@ -84,7 +84,7 @@ Device (HKEY)
 	/* Enable/disable event.  */
 	Method (MHKM, 2, NotSerialized) {
 		If (Arg0 <= 0x20) {
-			Local0 = One << (Arg0 - 1)
+			Local0 = 1 << (Arg0 - 1)
 			If (Arg1)
 			{
 				DHKN |= Local0
@@ -159,10 +159,10 @@ Device (HKEY)
 	 */
 	Method (GBDC, 0)
 	{
-		HAST = One
+		HAST = 1
 
 		If (HBDC) {
-			Local0 = One
+			Local0 = 1
 			If(\_SB.PCI0.LPCB.EC.BTEB)
 			{
 				Local0 |= 2
@@ -181,7 +181,7 @@ Device (HKEY)
 	 */
 	Method (SBDC, 1)
 	{
-		HAST = One
+		HAST = 1
 
 		If (HBDC) {
 			Local0 = (Arg0 & 2) >> 1
@@ -201,10 +201,10 @@ Device (HKEY)
 	 */
 	Method (GWAN, 0)
 	{
-		HAST = One
+		HAST = 1
 
 		If (HWAN) {
-			Local0 = One
+			Local0 = 1
 			If(\_SB.PCI0.LPCB.EC.WWEB)
 			{
 				Local0 |= 2
@@ -223,7 +223,7 @@ Device (HKEY)
 	 */
 	Method (SWAN, 1)
 	{
-		HAST = One
+		HAST = 1
 
 		If (HWAN) {
 			Local0 = (Arg0 & 2) >> 1
@@ -270,7 +270,7 @@ Device (HKEY)
 	Method (GUWB, 0)
 	{
 		If (HUWB) {
-			Local0 = One
+			Local0 = 1
 			If(\_SB.PCI0.LPCB.EC.UWBE)
 			{
 				Local0 |= 2

@@ -110,7 +110,7 @@ Device (LIEC) {
 	Method (GKBL, 0, Serialized) {
 		Local0 = 0
 		If (^^PCI0.LPCB.EC0.ECOK) {
-			^^PCI0.LPCB.EC0.FDAT = One
+			^^PCI0.LPCB.EC0.FDAT = 1
 			^^PCI0.LPCB.EC0.FCMD = 0xCA
 			Local0 = ^^PCI0.LPCB.EC0.FBUF
 			^^PCI0.LPCB.EC0.FCMD = Zero

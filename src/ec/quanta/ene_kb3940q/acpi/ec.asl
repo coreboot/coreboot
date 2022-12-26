@@ -205,7 +205,7 @@ Device (EC0)
 	Method (_Q10, 0, NotSerialized)
 	{
 		Printf ("AC Insertion Event 0x10")
-		\PWRS = One
+		\PWRS = 1
 		Notify (AC, 0x80)
 		Notify (BATX, 0x80)
 		\PNOT ()

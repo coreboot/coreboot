@@ -30,7 +30,7 @@ Name (VLAP, 0xcd) /* Laptop Mode */
 Device (VBTN)
 {
 	Name (_HID, "INT33D6")
-	Name (_UID, One)
+	Name (_UID, 1)
 	Name (_DDN, "Intel Virtual Button Driver")
 
 	/*
@@ -70,7 +70,7 @@ Device (VBTO)
 {
 	Name (_HID, "INT33D3")
 	Name (_CID, "PNP0C60")
-	Name (_UID, One)
+	Name (_UID, 1)
 	Name (_DDN, "Laptop/tablet mode indicator driver")
 
 	Method (_STA, 0)

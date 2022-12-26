@@ -64,7 +64,7 @@ Device (EC0)
 		\LIDS = LIDS
 
 		// Enable OS control of fan speed
-		FCOS = One
+		FCOS = 1
 
 		// Force a read of CPU temperature
 		Local0 = CPUT
@@ -76,14 +76,14 @@ Device (EC0)
 	{
 		Method (_STA) {
 			If (\FLVL <= 0) {
-				Return (One)
+				Return (1)
 			} Else {
 				Return (Zero)
 			}
 		}
 		Method (_ON)  {
 			If (FCOS) {
-				FSL0 = One
+				FSL0 = 1
 				\FLVL = 0
 				Notify (\_TZ.THRM, 0x81)
 			}
@@ -101,14 +101,14 @@ Device (EC0)
 	{
 		Method (_STA) {
 			If (\FLVL <= 1) {
-				Return (One)
+				Return (1)
 			} Else {
 				Return (Zero)
 			}
 		}
 		Method (_ON)  {
 			If (FCOS) {
-				FSL1 = One
+				FSL1 = 1
 				\FLVL = 1
 				Notify (\_TZ.THRM, 0x81)
 			}
@@ -126,14 +126,14 @@ Device (EC0)
 	{
 		Method (_STA) {
 			If (\FLVL <= 2) {
-				Return (One)
+				Return (1)
 			} Else {
 				Return (Zero)
 			}
 		}
 		Method (_ON)  {
 			If (FCOS) {
-				FSL2 = One
+				FSL2 = 1
 				\FLVL = 2
 				Notify (\_TZ.THRM, 0x81)
 			}
@@ -151,14 +151,14 @@ Device (EC0)
 	{
 		Method (_STA) {
 			If (\FLVL <= 3) {
-				Return (One)
+				Return (1)
 			} Else {
 				Return (Zero)
 			}
 		}
 		Method (_ON)  {
 			If (FCOS) {
-				FSL3 = One
+				FSL3 = 1
 				\FLVL = 3
 				Notify (\_TZ.THRM, 0x81)
 			}
@@ -176,14 +176,14 @@ Device (EC0)
 	{
 		Method (_STA) {
 			If (\FLVL <= 4) {
-				Return (One)
+				Return (1)
 			} Else {
 				Return (Zero)
 			}
 		}
 		Method (_ON)  {
 			If (FCOS) {
-				FSL4 = One
+				FSL4 = 1
 				\FLVL = 4
 				Notify (\_TZ.THRM, 0x81)
 			}
@@ -235,7 +235,7 @@ Device (EC0)
 	// AC Power Connected
 	Method (_Q51, 0, NotSerialized)
 	{
-		\PWRS = One
+		\PWRS = 1
 		Notify (AC, 0x80)
 		\PNOT ()
 	}

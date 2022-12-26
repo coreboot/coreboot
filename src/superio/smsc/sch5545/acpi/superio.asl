@@ -54,8 +54,8 @@ Device(SIO1) {
 	Name (IO2B, SCH5545_RUNTIME_BASE)
 #endif
 	Name (IOST, 0x0001) /* IO decoding status */
-	Name (MSFG, One) /* Mouse wake config */
-	Name (KBFG, One) /* Keyboard wake config */
+	Name (MSFG, 1) /* Mouse wake config */
+	Name (KBFG, 1) /* Keyboard wake config */
 	Name (PMFG, Zero) /* Wake config */
 
 	/* SuperIO configuration ports */
@@ -268,7 +268,7 @@ Device(SIO1) {
 		KP64,	8
 	}
 
-	OperationRegion (KB64, SystemIO, 0x64, One)
+	OperationRegion (KB64, SystemIO, 0x64, 1)
 	Field (KB64, ByteAcc, NoLock, Preserve)
 	{
 		,	1,
@@ -279,16 +279,16 @@ Device(SIO1) {
 	/* SIO prepare to sleep */
 	Method (SIOS, 1, NotSerialized)
 	{
-		If ((Arg0 == 0x03) | (Arg0 == One))
+		If ((Arg0 == 0x03) | (Arg0 == 1))
 		{
-			ENTER_CONFIG_MODE (One)
+			ENTER_CONFIG_MODE (1)
 			Local0 = OPT0
 			OPT0 = (Local0 | 0x60)
 			EXIT_CONFIG_MODE ()
 			Local0 = PMS1
 			PMS1 = (Local0 | 0x18)
 			Local0 = PMES
-			PMES = (Local0 | One)
+			PMES = (Local0 | 1)
 
 			Local0 = PME1
 			If (KBFG)
@@ -311,7 +311,7 @@ Device(SIO1) {
 			}
 
 			Local0 = PMEN
-			PMEN = (Local0 | One)
+			PMEN = (Local0 | 1)
 
 			While (KRDY) {}
 			KP60 = 0xED
@@ -319,7 +319,7 @@ Device(SIO1) {
 			KP60 = Zero
 			While (KRDY) {}
 			KP60 = 0xF4
-			Sleep (One)
+			Sleep (1)
 		}
 	}
 
@@ -332,17 +332,17 @@ Device(SIO1) {
 		Local0 = PMS1
 		PMS1 = (Local0 & 0x18)
 		Local0 = PMES
-		PMES = (Local0 & One)
+		PMES = (Local0 & 1)
 	}
 
 	/* SIO wake method */
 	Method (SIOW, 1, NotSerialized)
 	{
 		PMFG = PMS1
-		If (Arg0 == One)
+		If (Arg0 == 1)
 		{
 			GPKM ()
-			ENTER_CONFIG_MODE (One)
+			ENTER_CONFIG_MODE (1)
 			Local0 = OPT0
 			OPT0 = (Local0 & 0x9F)
 			EXIT_CONFIG_MODE ()
@@ -351,10 +351,10 @@ Device(SIO1) {
 		If (Arg0 == 0x03)
 		{
 			GPKM ()
-			ENTER_CONFIG_MODE (One)
+			ENTER_CONFIG_MODE (1)
 			Local0 = OPT0
 			OPT0 = (Local0 & 0x9F)
-			OPT2 |= One
+			OPT2 |= 1
 			OPT2 &= 0xFE
 			EXIT_CONFIG_MODE ()
 		}
@@ -404,7 +404,7 @@ Device(SIO1) {
 			STIO (0x6A, IO11)
 			SIRQ (Zero, IRQM)
 			EXIT_CONFIG_MODE ()
-			DCNT (Zero, One)
+			DCNT (Zero, 1)
 		}
 
 		Name (_PRS, ResourceTemplate ()
@@ -476,17 +476,17 @@ Device(SIO1) {
 		Name (_UID, SUPERIO_UID(SER, SUPERIO_UARTB_LDN))
 		Method (_STA, 0, NotSerialized)
 		{
-			Return (DSTA (One))
+			Return (DSTA (1))
 		}
 
 		Method (_DIS, 0, NotSerialized)
 		{
-			DCNT (One, Zero)
+			DCNT (1, Zero)
 		}
 
 		Method (_CRS, 0, NotSerialized)
 		{
-			Return (DCRS (One, Zero))
+			Return (DCRS (1, Zero))
 		}
 
 		Method (_SRS, 1, NotSerialized)
@@ -495,9 +495,9 @@ Device(SIO1) {
 			CreateWordField (Arg0, 0x09, IRQM)
 			ENTER_CONFIG_MODE (SUPERIO_LPC_LDN)
 			STIO (0x6E, IO11)
-			SIRQ (One, IRQM)
+			SIRQ (1, IRQM)
 			EXIT_CONFIG_MODE ()
-			DCNT (One, One)
+			DCNT (1, 1)
 		}
 
 		Name (_PRS, ResourceTemplate ()

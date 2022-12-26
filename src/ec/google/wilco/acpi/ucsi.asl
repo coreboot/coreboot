@@ -5,7 +5,7 @@ Device (UCSI)
 	Name (_HID, "GOOG000E")
 	Name (_CID, EisaId ("PNP0CA0"))
 	Name (_DDN, "Wilco EC UCSI")
-	Name (_UID, One)
+	Name (_UID, 1)
 	Name (_STA, 0xb)
 
 	/* Value written to EC control register to start UCSI command */
@@ -69,16 +69,16 @@ Device (UCSI)
 	Method (_DSM, 4, Serialized)
 	{
 		If (Arg0 != ToUUID ("6f8398c2-7ca4-11e4-ad36-631042b5008f")) {
-			Return (Buffer (One) { Zero })
+			Return (Buffer (1) { Zero })
 		}
 
 		Switch (ToInteger (Arg2))
 		{
 			Case (Zero)
 			{
-				Return (Buffer (One) { 0x07 })
+				Return (Buffer (1) { 0x07 })
 			}
-			Case (One)
+			Case (1)
 			{
 				/* Write Message Out */
 				W (^^UMO0, ^MGO0)
@@ -138,6 +138,6 @@ Device (UCSI)
 				^CCI3 = R (^^UCI3)
 			}
 		}
-		Return (Buffer (One) { Zero })
+		Return (Buffer (1) { Zero })
 	}
 }

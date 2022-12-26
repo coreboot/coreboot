@@ -69,7 +69,7 @@ Device(EC)
 			if (^HKEY.INIT == 0) {
 				^HKEY.WBDC = BTEB
 				^HKEY.WWAN = WWEB
-				^HKEY.INIT = One
+				^HKEY.INIT = 1
 			}
 		}
 	}
@@ -318,11 +318,11 @@ Device(EC)
 	Method (FANE, 1, Serialized)
 	{
 		If (Arg0) {
-			FAND = One
+			FAND = 1
 			FANA = Zero
 		} Else {
 			FAND = Zero
-			FANA = One
+			FANA = 1
 		}
 	}
 

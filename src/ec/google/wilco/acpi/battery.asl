@@ -41,7 +41,7 @@ Method (BSTR, 1, Serialized)
 	W (SSEL, Arg0)
 
 	/* Fill buffer until NUL or max string length is read */
-	Name (IBUF, Buffer (Local0 + One) {})
+	Name (IBUF, Buffer (Local0 + 1) {})
 	For (Local1 = Zero, Local1 < Local0, Local1++) {
 		Local2 = R (BSBS)
 		If (!Local2) {

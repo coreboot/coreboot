@@ -550,7 +550,7 @@ Device (EC0)
 		\LIDS = ~HPLD
 
 		// Enable OS control of fan speed
-		// TODO FCOS = One
+		// TODO FCOS = 1
 
 		// Force a read of CPU temperature
 		// TODO Which temperature corresponds to the CPU?
@@ -593,7 +593,7 @@ Device (EC0)
 	// AC Power Connected
 	Method (_Q26, 0, NotSerialized)
 	{
-		\PWRS = One
+		\PWRS = 1
 		Notify (AC, 0x80)
 		Notify (BATX, 0x80)
 		\PNOT ()
@@ -610,7 +610,7 @@ Device (EC0)
 	// LID Open
 	Method (_Q2A)
 	{
-		\LIDS = One
+		\LIDS = 1
 		Notify (\_SB.LID0, 0x80)
 	}
 

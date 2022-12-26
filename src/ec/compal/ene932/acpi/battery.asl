@@ -33,7 +33,7 @@ Device (BATX)
 	Name (BTNM, Zero)  // Battery number
 
 	// Workaround for full battery status, enabled by default
-	Name (BFWK, One)
+	Name (BFWK, 1)
 
 	// Method to enable full battery workaround
 	Method (BFWE)

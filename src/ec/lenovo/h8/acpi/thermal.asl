@@ -112,8 +112,8 @@ External (\PPKG, MethodObj)
 			 * in another ACPI scope. Call a method that does it!
 			 */
 			Method (_ON) {
-				\_SB.PCI0.LPCB.EC.FANE(One)
-				\FLVL = One
+				\_SB.PCI0.LPCB.EC.FANE(1)
+				\FLVL = 1
 				Notify (\_TZ.THM0, NOTIFY_TZ_TRIPPTCHG)
 			}
 

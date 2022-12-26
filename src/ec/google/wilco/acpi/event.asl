@@ -145,6 +145,6 @@ Method (_Q79, 0, Serialized)
 		^UCEP = Zero
 	} Else {
 		Printf ("EC _Q79 UCSI Event Masked in S0ix")
-		^UCEP = One
+		^UCEP = 1
 	}
 }

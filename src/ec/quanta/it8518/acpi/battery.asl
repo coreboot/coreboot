@@ -44,12 +44,12 @@ Device (BATX)
 	})
 
 	// Workaround for full battery status, enabled by default
-	Name (BFWK, One)
+	Name (BFWK, 1)
 
 	// Method to enable full battery workaround
 	Method (BFWE)
 	{
-		BFWK = One
+		BFWK = 1
 	}
 
 	// Method to disable full battery workaround
@@ -97,7 +97,7 @@ Device (BATX)
 		//
 		// Information ID 1 -
 		//
-		HIID = One
+		HIID = 1
 		WAEC ()
 
 		//
@@ -106,7 +106,7 @@ Device (BATX)
 		//   ACPI spec     : 0 - mWh   : 1 - mAh
 		//
 		Local7 = SBCM
-		PBIF[0] = Local7 ^ One
+		PBIF[0] = Local7 ^ 1
 
 		//
 		// Information ID 0 -
@@ -224,7 +224,7 @@ Device (BATX)
 		{
 			if (HB0S & 0x40)
 			{
-				Local0 = One
+				Local0 = 1
 			}
 			Else
 			{
@@ -249,7 +249,7 @@ Device (BATX)
 		Else
 		{
 			// Always discharging when on battery power
-			Local1 = One
+			Local1 = 1
 		}
 
 		// Flag if the battery level is critical
@@ -282,7 +282,7 @@ Device (BATX)
 			}
 		}
 
-		Local6 = DerefOf (PBIF[0]) ^ One
+		Local6 = DerefOf (PBIF[0]) ^ 1
 
 		If (Local6)
 		{

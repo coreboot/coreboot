@@ -35,7 +35,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 	Method (_REG, 2, Serialized)  // _REG: Region Availability
 	{
 		Printf ("EC: _REG %o %o", ToHexString(Arg0), ToHexString(Arg1))
-		If ((Arg0 == 0x03) && (Arg1 == One)) {
+		If ((Arg0 == 0x03) && (Arg1 == 1)) {
 			// Enable hardware touchpad lock, airplane mode, and keyboard backlight keys
 			ECOS = 1
 

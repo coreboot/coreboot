@@ -76,7 +76,7 @@ Scope (\_SB.PCI0.LPCB)
 		Method (ECRD, 1, Serialized, 0, IntObj, FieldUnitObj)
 		{
 			//
-			// Check for ECDT support, set ECAV to One if ECDT is supported by OS
+			// Check for ECDT support, set ECAV to 1 if ECDT is supported by OS
 			// Only check once at beginning since ECAV might be clear later in certain conditions
 			//
 			If (ECTK) {

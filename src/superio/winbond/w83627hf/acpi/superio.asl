@@ -186,7 +186,7 @@ Device(SIO) {
 	/* PM: Switch to D3 by setting IPD high */
 	Method (_PS3) {
 		ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-		IPD = One
+		IPD = 1
 		EXIT_CONFIG_MODE ()
 	}
 
@@ -227,7 +227,7 @@ Device(SIO) {
 		/* Disable power saving mode */
 		Method (_PS0) {
 			ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-			FDPW = One
+			FDPW = 1
 			EXIT_CONFIG_MODE ()
 		}
 		/* Enable power saving mode */
@@ -338,28 +338,28 @@ Device(SIO) {
 				SIFR, 8
 			}
 
-			ACT1 = One
+			ACT1 = 1
 			SELE = 0
 			Sleep(0x64)
-			If (SIFR) { FD1 = One }
+			If (SIFR) { FD1 = 1 }
 
 			ACT1 = Zero
-			ACT2 = One
+			ACT2 = 1
 			SELE = 1
 			Sleep(0x64)
-			If (SIFR) { FD2 = One }
+			If (SIFR) { FD2 = 1 }
 
 			ACT2 = Zero
-			ACT3 = One
+			ACT3 = 1
 			SELE = 2
 			Sleep(0x64)
-			If (SIFR) { FD3 = One }
+			If (SIFR) { FD3 = 1 }
 
 			ACT3 = Zero
-			ACT4 = One
+			ACT4 = 1
 			SELE = 3
 			Sleep(0x64)
-			If (SIFR) { FD4 = One }
+			If (SIFR) { FD4 = 1 }
 			ACT4 = Zero
 			SELE = Zero
 
@@ -385,7 +385,7 @@ Device(SIO) {
 			ENTER_CONFIG_MODE (0)
 			IO1L = Local0
 			IO1H = Local1
-			ACTR = One
+			ACTR = 1
 			EXIT_CONFIG_MODE ()
 		}
 	}
@@ -448,7 +448,7 @@ Device(SIO) {
 		}
 		Method (_PS0) {
 			ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-			PRPW = One
+			PRPW = 1
 			EXIT_CONFIG_MODE ()
 		}
 		Method (_PS3) {
@@ -503,7 +503,7 @@ Device(SIO) {
 				IOLE = 0x08
 			}
 			/* Calculate IRQ bitmap */
-			Local0 = One
+			Local0 = 1
 			IRQW = Local0 << Local5
 			/* Return resource template */
 			Return (CRS)
@@ -587,7 +587,7 @@ Device(SIO) {
 			/* IRQ */
 			IRQ0 = FindSetLeftBit (IRQL) - 1
 			/* Activate */
-			ACTR = One
+			ACTR = 1
 			EXIT_CONFIG_MODE ()
 		}
 	}
@@ -626,7 +626,7 @@ Device(SIO) {
 		}
 		Method (_PS0) {
 			ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-			UAPW = One
+			UAPW = 1
 			EXIT_CONFIG_MODE ()
 		}
 		Method (_PS3) {
@@ -661,7 +661,7 @@ Device(SIO) {
 			IMAX = Local0
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
-			Local3 = One
+			Local3 = 1
 			IRQW = Local3 << Local2
 
 			Return (CRS)
@@ -710,7 +710,7 @@ Device(SIO) {
 			IO1L = Local0
 			IO1H = Local1
 			IRQ0 = Local3
-			ACTR = One
+			ACTR = 1
 			EXIT_CONFIG_MODE ()
 		}
 	}
@@ -752,7 +752,7 @@ Device(SIO) {
 		}
 		Method (_PS0) {
 			ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-			UBPW = One
+			UBPW = 1
 			EXIT_CONFIG_MODE ()
 		}
 		Method (_PS3) {
@@ -787,7 +787,7 @@ Device(SIO) {
 			IMAX = Local0
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
-			Local3 = One
+			Local3 = 1
 			IRQW = Local3 << Local2
 
 			Return (CRS)
@@ -836,7 +836,7 @@ Device(SIO) {
 			IO1L = Local0
 			IO1H = Local1
 			IRQ0 = Local3
-			ACTR = One
+			ACTR = 1
 			EXIT_CONFIG_MODE ()
 		}
 	}
@@ -878,7 +878,7 @@ Device(SIO) {
 		}
 		Method (_PS0) {
 			ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-			UBPW = One
+			UBPW = 1
 			EXIT_CONFIG_MODE ()
 		}
 		Method (_PS3) {
@@ -913,7 +913,7 @@ Device(SIO) {
 			IMAX = Local0
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
-			Local3 = One
+			Local3 = 1
 			IRQW = Local3 << Local2
 
 			Return (CRS)
@@ -962,7 +962,7 @@ Device(SIO) {
 			IO1L = Local0
 			IO1H = Local1
 			IRQ0 = Local3
-			ACTR = One
+			ACTR = 1
 			EXIT_CONFIG_MODE ()
 		}
 	}
@@ -1017,7 +1017,7 @@ Device(SIO) {
 			IMAX = Local0
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
-			Local3 = One
+			Local3 = 1
 			IRQW = Local3 << Local2
 
 			Return (CRS)
@@ -1050,7 +1050,7 @@ Device(SIO) {
 			IO1L = Local0
 			IO1H = Local1
 			IRQ0 = Local3
-			ACTR = One
+			ACTR = 1
 			EXIT_CONFIG_MODE ()
 		}
 	}
@@ -1119,7 +1119,7 @@ Device(SIO) {
 			I1MA = Local2
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
-			Local5 = One
+			Local5 = 1
 			IRQW = Local5 << Local4
 
 			Return (CRS)
@@ -1159,7 +1159,7 @@ Device(SIO) {
 			IO2L = Local2
 			IO2H = Local3
 			IRQ0 = Local4
-			ACTR = One
+			ACTR = 1
 			EXIT_CONFIG_MODE ()
 			Notify(PS2M, 1)
 		}
@@ -1206,7 +1206,7 @@ Device(SIO) {
 			EXIT_CONFIG_MODE ()
 
 			CreateWordField (CRS, IRQX._INT, IRQW)
-			Local5 = One
+			Local5 = 1
 			IRQW = Local5 << Local4
 
 			Return (CRS)
@@ -1285,7 +1285,7 @@ Device(SIO) {
 
 			If (Local2) {
 				CreateWordField (CRS, IRQX._INT, IRQW)
-				Local3 = One
+				Local3 = 1
 				IRQW = Local3 << Local2
 			}
 
@@ -1340,7 +1340,7 @@ Device(SIO) {
 
 			If (Local2) {
 				CreateWordField (CRS, IRQX._INT, IRQW)
-				Local3 = One
+				Local3 = 1
 				IRQW = Local3 << Local2
 			}
 
@@ -1407,7 +1407,7 @@ Device(SIO) {
 		Method (_PS0)
 		{
 			ENTER_CONFIG_MODE (PNP_NO_LDN_CHANGE)
-			HWPW = One
+			HWPW = 1
 			EXIT_CONFIG_MODE ()
 		}
 
@@ -1439,7 +1439,7 @@ Device(SIO) {
 
 			If (Local2) {
 				CreateWordField (CRS, IRQX._INT, IRQW)
-				Local3 = One
+				Local3 = 1
 				IRQW = Local3 << Local2
 			}
 			Return (CRS)

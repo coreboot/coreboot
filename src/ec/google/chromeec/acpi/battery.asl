@@ -7,7 +7,7 @@ Mutex (BATM, 0)
 
 // Wait for desired battery index to be presented in shared memory
 //   Arg0 = battery index
-//   Returns Zero on success, One on error.
+//   Returns Zero on success, 1 on error.
 Method (BTSW, 1)
 {
 #ifdef EC_ENABLE_SECOND_BATTERY_DEVICE
@@ -15,7 +15,7 @@ Method (BTSW, 1)
 		Return (Zero)
 	}
 	If (Arg0 >= BTCN) {
-		Return (One)
+		Return (1)
 	}
 	\_SB.PCI0.LPCB.EC0.BTID = Arg0
 	Local0 = 5      // Timeout 5 msec
@@ -25,12 +25,12 @@ Method (BTSW, 1)
 		Local0--
 		If (Local0 == 0)
 		{
-			Return (One)
+			Return (1)
 		}
 	}
 #else
 	If (Arg0 != 0) {
-		Return (One)
+		Return (1)
 	}
 #endif
 	Return (Zero)
@@ -285,7 +285,7 @@ Device (BAT0)
 	// Method to enable full battery workaround
 	Method (BFWE)
 	{
-		BFWK = One
+		BFWK = 1
 	}
 
 	// Method to disable full battery workaround
@@ -375,7 +375,7 @@ Device (BAT1)
 	// Method to enable full battery workaround
 	Method (BFWE)
 	{
-		BFWK = One
+		BFWK = 1
 	}
 
 	// Method to disable full battery workaround

@@ -34,7 +34,7 @@ $$(VBOOT_LIB_$(1)): $(obj)/config.h
 		BUILD=$$(abspath $$(dir $$(VBOOT_LIB_$(1)))) \
 		V=$(V) \
 		fwlib \
-		$(if $(CONFIG_INCLUDE_VBOOT_SBOM),$$(abspath $$(dir $$(VBOOT_LIB_$(1))))/vboot_host.pc)
+		$(if $(CONFIG_SBOM_VBOOT),$$(abspath $$(dir $$(VBOOT_LIB_$(1))))/vboot_host.pc)
 
 $(1)-srcs += $$(VBOOT_LIB_$(1))
 

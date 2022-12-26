@@ -5,14 +5,18 @@ src ?= src
 build-dir = $(obj)/sbom
 src-dir = $(src)/sbom
 
-CONFIG_ME_BIN_PATH    := $(call strip_quotes, $(CONFIG_ME_BIN_PATH))
-CONFIG_FSP_S_FILE     := $(call strip_quotes, $(CONFIG_FSP_S_FILE))
-CONFIG_FSP_M_FILE     := $(call strip_quotes, $(CONFIG_FSP_M_FILE))
-CONFIG_FSP_T_FILE     := $(call strip_quotes, $(CONFIG_FSP_T_FILE))
-CONFIG_PAYLOAD_FILE   := $(call strip_quotes, $(CONFIG_PAYLOAD_FILE))
-CONFIG_EC_PATH        := $(call strip_quotes, $(CONFIG_EC_PATH))
-CONFIG_BIOS_ACM_PATH  := $(call strip_quotes, $(CONFIG_BIOS_ACM_PATH))
-CONFIG_SINIT_ACM_PATH := $(call strip_quotes, $(CONFIG_SINIT_ACM_PATH))
+CONFIG_ME_BIN_PATH         := $(call strip_quotes, $(CONFIG_ME_BIN_PATH))
+CONFIG_FSP_S_FILE          := $(call strip_quotes, $(CONFIG_FSP_S_FILE))
+CONFIG_FSP_M_FILE          := $(call strip_quotes, $(CONFIG_FSP_M_FILE))
+CONFIG_FSP_T_FILE          := $(call strip_quotes, $(CONFIG_FSP_T_FILE))
+CONFIG_PAYLOAD_FILE        := $(call strip_quotes, $(CONFIG_PAYLOAD_FILE))
+CONFIG_EC_PATH             := $(call strip_quotes, $(CONFIG_EC_PATH))
+CONFIG_BIOS_ACM_PATH       := $(call strip_quotes, $(CONFIG_BIOS_ACM_PATH))
+CONFIG_SINIT_ACM_PATH      := $(call strip_quotes, $(CONFIG_SINIT_ACM_PATH))
+CONFIG_SBOM_FSP_PATH       := $(call strip_quotes, $(CONFIG_SBOM_FSP_PATH))
+CONFIG_SBOM_EC_PATH        := $(call strip_quotes, $(CONFIG_SBOM_EC_PATH))
+CONFIG_SBOM_ME_PATH        := $(call strip_quotes, $(CONFIG_SBOM_ME_PATH))
+CONFIG_SBOM_PAYLOAD_PATH   := $(call strip_quotes, $(CONFIG_SBOM_PAYLOAD_PATH))
 
 ifeq ($(CONFIG_SBOM_PAYLOAD_GENERATE), y)
 payload-git-dir-$(CONFIG_PAYLOAD_BOOTBOOT)    = payloads/external/BOOTBOOT/bootboot

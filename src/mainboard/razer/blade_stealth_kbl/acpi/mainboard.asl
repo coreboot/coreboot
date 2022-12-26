@@ -10,7 +10,7 @@ Scope (\_SB)
 		{
 			if (\_SB.PCI0.LPCB.EC.LIDS > 1)
 			{
-				Return (One)
+				Return (1)
 			}
 			else
 			{

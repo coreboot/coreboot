@@ -88,7 +88,7 @@ Scope (\_SB.PCI0.IPU0)
 				"data-lanes",
 				Package (0x02)
 				{
-					One,
+					1,
 					0x02
 				}
 			},
@@ -246,7 +246,7 @@ Scope (\_SB.PCI0.I2C2)
 					"data-lanes",
 					Package (0x02)
 					{
-						One,
+						1,
 						0x02
 					}
 				},
@@ -264,7 +264,7 @@ Scope (\_SB.PCI0.I2C2)
 					Package (0x03)
 					{
 						IPU0,
-						One,
+						1,
 						Zero
 					}
 				}
@@ -312,12 +312,12 @@ Scope (\_SB.PCI0.I2C2)
 				Package (0x02)
 				{
 					"pagesize",
-					One
+					1
 				},
 				Package (0x02)
 				{
 					"read-only",
-					One
+					1
 				},
 				Package (0x02)
 				{

@@ -26,7 +26,7 @@ Field (GPCM, ByteAcc, NoLock, Preserve) {
 
 Method(SHYB, 1) {
 	/* Switch hybrid graphics */
-	if (Arg0 == One)
+	if (Arg0 == 1)
 	{
 		/* Discrete graphics requested */
 		GPLV |= HYG1

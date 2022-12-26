@@ -14,7 +14,7 @@ Scope (\_SB.PCI0.XHCI.RHUB.HS01)
 	// Visible
 	Method (_PLD, 0, NotSerialized)
 	{
-		Return (GPLD (One))
+		Return (GPLD (1))
 	}
 }
 Scope (\_SB.PCI0.XHCI.RHUB.HS02)
@@ -31,7 +31,7 @@ Scope (\_SB.PCI0.XHCI.RHUB.HS02)
 	// Visible
 	Method (_PLD, 0, NotSerialized)
 	{
-		Return (GPLD (One))
+		Return (GPLD (1))
 	}
 }
 Scope (\_SB.PCI0.XHCI.RHUB.HS03)
@@ -82,7 +82,7 @@ Scope (\_SB.PCI0.XHCI.RHUB.HS05)
 	// Visible
 	Method (_PLD, 0, NotSerialized)
 	{
-		Return (GPLD (One))
+		Return (GPLD (1))
 	}
 }
 Scope (\_SB.PCI0.XHCI.RHUB.HS07)

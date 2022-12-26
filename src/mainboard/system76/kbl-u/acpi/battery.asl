@@ -30,10 +30,10 @@ Device (BAT0)
 
 	Name (PBIF, Package (0x0D)
 	{
-		One, // 0 - Power Unit
+		1, // 0 - Power Unit
 		0xFFFFFFFF, // 1 - Design Capacity
 		0xFFFFFFFF, // 2 - Last Full Charge Capacity
-		One, // 3 - Battery Technology
+		1, // 3 - Battery Technology
 		0x39D0, // 4 - Design Voltage
 		Zero, // 5 - Design Capacity of Warning
 		Zero, // 6 - Design Capacity of Low
@@ -127,7 +127,7 @@ Device (BAT0)
 			}
 			Else
 			{
-				Local0 |= One
+				Local0 |= 1
 				Local1 = (^^PCI0.LPCB.EC0.BPR0 & 0xFFFF)
 			}
 

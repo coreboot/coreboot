@@ -159,7 +159,7 @@ Scope (\_TZ)
 		{
 			Method (_STA) {
 				If (\FLVL <= 0) {
-					Return (One)
+					Return (1)
 				} Else {
 					Return (Zero)
 				}
@@ -184,7 +184,7 @@ Scope (\_TZ)
 		{
 			Method (_STA) {
 				If (\FLVL <= 1) {
-					Return (One)
+					Return (1)
 				} Else {
 					Return (Zero)
 				}
@@ -209,7 +209,7 @@ Scope (\_TZ)
 		{
 			Method (_STA) {
 				If (\FLVL <= 2) {
-					Return (One)
+					Return (1)
 				} Else {
 					Return (Zero)
 				}
@@ -234,7 +234,7 @@ Scope (\_TZ)
 		{
 			Method (_STA) {
 				If (\FLVL <= 3) {
-					Return (One)
+					Return (1)
 				} Else {
 					Return (Zero)
 				}
@@ -259,7 +259,7 @@ Scope (\_TZ)
 		{
 			Method (_STA) {
 				If (\FLVL <= 4) {
-					Return (One)
+					Return (1)
 				} Else {
 					Return (Zero)
 				}

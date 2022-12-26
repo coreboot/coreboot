@@ -3,7 +3,7 @@
 	{
 		Device (TPAD)
 		{
-		Name(_ADR, One)
+		Name(_ADR, 1)
 		Name (_HID, "ALPS0001")
 		Name (_CID, "PNP0C50")
 		Name (_DDN, "ALPS Touchpad")
@@ -41,22 +41,22 @@
 				If(Arg2 == Zero)
 				{
 					// Revision 1
-					If(Arg1 == One)
+					If(Arg1 == 1)
 					{
-						Return (Buffer (One) {0x03})
+						Return (Buffer (1) {0x03})
 					}
 					Else
 					{
-						Return (Buffer (One) {0x00})
+						Return (Buffer (1) {0x00})
 					}
-				} ElseIf (Arg2 == One) {  // Function 1 : HID Function
+				} ElseIf (Arg2 == 1) {  // Function 1 : HID Function
 			// HID Descriptor Address (IHV Specific)
 					Return(0x0020)
 				} Else {
-					Return (Buffer (One) {0x00})
+					Return (Buffer (1) {0x00})
 				}
 			} Else {
-				Return (Buffer (One) {0x00})
+				Return (Buffer (1) {0x00})
 			}
 		}
 	}

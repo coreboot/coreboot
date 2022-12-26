@@ -19,30 +19,30 @@ Scope (\_SB.PCI0.I2C1)
 				// DSM Revision
 				If (Arg2 == Zero)
 				{
-					If (Arg1 == One)
+					If (Arg1 == 1)
 					{
-						Return (Buffer (One)
+						Return (Buffer (1)
 						{
 							0x03
 						})
 					}
 					Else
 					{
-						Return (Buffer (One)
+						Return (Buffer (1)
 						{
 							0x00
 						})
 					}
 				}
 				// HID Function
-				If (Arg2 == One)
+				If (Arg2 == 1)
 				{
 					Return (0x20)
 				}
 			}
 			Else
 			{
-				Return (Buffer (One)
+				Return (Buffer (1)
 				{
 					0x00
 				})

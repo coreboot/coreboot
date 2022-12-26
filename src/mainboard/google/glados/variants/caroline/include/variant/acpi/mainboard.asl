@@ -90,22 +90,22 @@ Scope (\_SB.PCI0.I2C2)
 			If (Arg0 == ToUUID ("3cdff6f7-4267-4555-ad05-b30a3d8938de")) {
 				If (Arg2 == Zero) {
 					/* Function 0 - Query */
-					If (Arg1 == One) {
+					If (Arg1 == 1) {
 						/* Revision 1 Function 1 */
-						Return (Buffer (One) { 0x03 })
+						Return (Buffer (1) { 0x03 })
 					} Else {
 						/* Revision 2+ not supported */
-						Return (Buffer (One) { 0x00 })
+						Return (Buffer (1) { 0x00 })
 					}
-				} ElseIf (Arg2 == One) {
+				} ElseIf (Arg2 == 1) {
 					/* Function 1 - HID Descriptor Addr */
 					Return (0x0001)
 				} Else {
 					/* Function 2+ not supported */
-					Return (Buffer (One) { 0x00 })
+					Return (Buffer (1) { 0x00 })
 				}
 			} Else {
-				Return (Buffer (One) { 0x00 })
+				Return (Buffer (1) { 0x00 })
 			}
 		}
 	}

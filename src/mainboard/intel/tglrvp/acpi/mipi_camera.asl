@@ -28,7 +28,7 @@ Scope (\_SB.PCI0.IPU0)
 			Package (0x02)
 			{
 				"port",
-				One
+				1
 			}
 		},
 		ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
@@ -88,7 +88,7 @@ Scope (\_SB.PCI0.IPU0)
 				"data-lanes",
 				Package (0x04)
 				{
-					One,
+					1,
 					0x02,
 					0x03,
 					0x04
@@ -126,7 +126,7 @@ Scope (\_SB.PCI0.IPU0)
 				"data-lanes",
 				Package (0x04)
 				{
-					One,
+					1,
 					0x02,
 					0x03,
 					0x04
@@ -290,7 +290,7 @@ Scope (\_SB.PCI0.I2C3)
 					"data-lanes",
 					Package (0x04)
 					{
-						One,
+						1,
 						0x02,
 						0x03,
 						0x04
@@ -505,7 +505,7 @@ Scope (\_SB.PCI0.I2C5)
 					"data-lanes",
 					Package (0x04)
 					{
-						One,
+						1,
 						0x02,
 						0x03,
 						0x04
@@ -526,7 +526,7 @@ Scope (\_SB.PCI0.I2C5)
 					Package (0x03)
 					{
 						IPU0,
-						One,
+						1,
 						Zero
 					}
 				}

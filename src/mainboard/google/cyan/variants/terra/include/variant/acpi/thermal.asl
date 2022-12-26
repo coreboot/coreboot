@@ -52,7 +52,7 @@ Device (TSR0)
 
 	Method (_STA)
 	{
-		If (\DPTE == One) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -120,7 +120,7 @@ Device (TSR1)
 
 	Method (_STA)
 	{
-		If (\DPTE == One) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)
@@ -188,7 +188,7 @@ Device (TSR2)
 
 	Method (_STA)
 	{
-		If (\DPTE == One) {
+		If (\DPTE == 1) {
 			Return (0xF)
 		} Else {
 			Return (0x0)

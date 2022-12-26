@@ -39,7 +39,7 @@ Scope (\_SB.PCI0.I2C0)
 					If (Arg1 == 1) /* Arg1 DSM Revision */
 					{
 						/* Revision 1: Function 0 supported */
-						Return(Buffer(One) { 0x03 })
+						Return(Buffer(1) { 0x03 })
 					}
 				} ElseIf (Arg2 == 1) /* Function 1 : HID Function */
 				{
@@ -47,7 +47,7 @@ Scope (\_SB.PCI0.I2C0)
 				}
 			}
 
-			Return(Buffer(One) { 0x00 }) /* Not supported */
+			Return(Buffer(1) { 0x00 }) /* Not supported */
 		}
 
 		Method (_STA)

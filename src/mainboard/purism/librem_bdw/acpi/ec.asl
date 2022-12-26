@@ -2,7 +2,7 @@
 
 #define EC_SCI_GPI 10
 #define PPCM_TURBO Zero
-#define PPCM_NOTURBO One
+#define PPCM_NOTURBO 1
 #define CRIT_TEMP 105
 
 #include <ec/purism/librem/acpi/ec.asl>

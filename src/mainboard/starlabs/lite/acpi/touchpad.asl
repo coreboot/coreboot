@@ -39,7 +39,7 @@ Scope (\_SB.PCI0.I2C7)
 				Package (0x02)
 				{
 					"linux,probed",
-					One
+					1
 				}
 			}
 		})

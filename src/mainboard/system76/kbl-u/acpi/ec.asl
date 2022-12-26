@@ -26,7 +26,7 @@ Device (EC0)
 	Method (_REG, 2, Serialized)  // _REG: Region Availability
 	{
 		Debug = Concatenate("EC: _REG", Concatenate(ToHexString(Arg0), Concatenate(" ", ToHexString(Arg1))))
-		If ((Arg0 == 0x03) && (Arg1 == One)) {
+		If ((Arg0 == 0x03) && (Arg1 == 1)) {
 			// Enable hardware touchpad lock, airplane mode, and keyboard backlight keys
 			ECOS = 1
 

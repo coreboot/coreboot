@@ -2,7 +2,7 @@
 
 Device (COM1) {
 	Name (_HID, EISAID ("PNP0501"))
-	Name (_UID, One)
+	Name (_UID, 1)
 
 	Method (_STA, 0, NotSerialized)
 	{

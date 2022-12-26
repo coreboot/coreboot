@@ -14,7 +14,7 @@ Scope (\_SB.PCI0.XHCI.RHUB.PRT1)
 	// Visible
 	Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
 	{
-		Return (GPLD (One))
+		Return (GPLD (1))
 	}
 }
 Scope (\_SB.PCI0.XHCI.RHUB.PRT2)
@@ -31,7 +31,7 @@ Scope (\_SB.PCI0.XHCI.RHUB.PRT2)
 	// Visible
 	Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
 	{
-		Return (GPLD (One))
+		Return (GPLD (1))
 	}
 }
 Scope (\_SB.PCI0.XHCI.RHUB.PRT3)

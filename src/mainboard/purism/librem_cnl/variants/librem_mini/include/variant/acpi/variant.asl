@@ -6,7 +6,7 @@ Scope (\_SB.PCI0.LPCB)
 	{
 		Name (_HID, "ACPI0003")
 		Name (_PCL, Package () { LPCB })
-		Name (ACFG, One)
+		Name (ACFG, 1)
 
 		Method (_PSR, 0, NotSerialized)
 		{

@@ -17,7 +17,7 @@ Scope (_GPE)
 	}
 
 	Method (TINV, 2, Serialized) {
-		Local0 = One << Arg1
+		Local0 = 1 << Arg1
 		If (Arg0 == Zero) {
 			Local0 = ~Local0
 			GIV0 &= Local0

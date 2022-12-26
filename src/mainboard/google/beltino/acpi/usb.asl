@@ -14,7 +14,7 @@ Scope (\_SB.PCI0.XHCI.HUB7.PRT2)
 	// Visible
 	Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
 	{
-		Return (GPLD (One))
+		Return (GPLD (1))
 	}
 }
 Scope (\_SB.PCI0.XHCI.HUB7.PRT3)
@@ -31,7 +31,7 @@ Scope (\_SB.PCI0.XHCI.HUB7.PRT3)
 	// Visible
 	Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
 	{
-		Return (GPLD (One))
+		Return (GPLD (1))
 	}
 }
 Scope (\_SB.PCI0.XHCI.HUB7.PRT4)
@@ -65,7 +65,7 @@ Scope (\_SB.PCI0.XHCI.HUB7.PRT5)
 	// Visible
 	Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
 	{
-		Return (GPLD (One))
+		Return (GPLD (1))
 	}
 }
 Scope (\_SB.PCI0.XHCI.HUB7.PRT6)
@@ -82,7 +82,7 @@ Scope (\_SB.PCI0.XHCI.HUB7.PRT6)
 	// Visible
 	Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
 	{
-		Return (GPLD (One))
+		Return (GPLD (1))
 	}
 }
 Scope (\_SB.PCI0.XHCI.HUB7.SSP1)

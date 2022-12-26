@@ -10,7 +10,7 @@ Device (LID0)
 		If (^^PCI0.LPCB.EC0.ECOK) {
 			Return (^^PCI0.LPCB.EC0.LSTE)
 		} Else {
-			Return (One)
+			Return (1)
 		}
 	}
 

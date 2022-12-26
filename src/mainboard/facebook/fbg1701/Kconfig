@@ -24,7 +24,7 @@ config USE_VENDORCODE_ELTAN
 
 if VBOOT
 
-config VBOOT_VBNV_CMOS
+config VBOOT_VBNV_FLASH
 	default y
 
 config VBOOT_SLOTS_RW_A

@@ -96,7 +96,7 @@ Device (PEMC)
 		Name (_ADR, 0x08)
 		Method (_RMV, 0, NotSerialized)
 		{
-			Return (Zero)
+			Return (0)
 		}
 	}
 }

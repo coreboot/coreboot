@@ -10,8 +10,8 @@
 /* Operating system enumeration. */
 Name (OSYS, 0)
 
-/* Zero => PIC mode, 1 => APIC Mode */
-Name (PICM, Zero)
+/* 0 => PIC mode, 1 => APIC Mode */
+Name (PICM, 0)
 
 /* Power state (AC = 1) */
 Name (PWRS, 1)

@@ -154,7 +154,7 @@ Method (_CRS, 0, Serialized)
 	CreateDWordField (MCRS, LMEM._MIN, LMIN)
 	CreateDWordField (MCRS, LMEM._MAX, LMAX)
 	CreateDWordField (MCRS, LMEM._LEN, LLEN)
-	If (LPFW != Zero && LPEN == 1)
+	If (LPFW != 0 && LPEN == 1)
 	{
 		LMIN = LPFW
 		LMAX = LMIN + 0x001FFFFF
@@ -162,9 +162,9 @@ Method (_CRS, 0, Serialized)
 	}
 	Else
 	{
-		LMIN = Zero
-		LMAX = Zero
-		LLEN = Zero
+		LMIN = 0
+		LMAX = 0
+		LLEN = 0
 	}
 
 	/* Update PCI resource area */

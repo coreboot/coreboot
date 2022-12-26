@@ -10,7 +10,7 @@ Name(_CID, EISAID("PNP0A03"))	/* PCI Root Bridge */
 
 Method(_BBN, 0, NotSerialized)	/* Bus number = 0 */
 {
-	Return(Zero)
+	Return(0)
 }
 
 Method(_STA, 0, NotSerialized)

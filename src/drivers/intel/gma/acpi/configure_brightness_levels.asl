@@ -34,7 +34,7 @@
 		 * Request back-light brightness change through mailbox 3
 		 *
 		 * @param Arg0 The brightness level to set in percent
-		 * @Return Zero on success, Ones on failure
+		 * @Return 0 on success, Ones on failure
 		 * Errors: * ASLS is zero
 		 *         * Mailbox 3 support not advertised
 		 *         * Driver not loaded or not ready
@@ -78,7 +78,7 @@
 					/* Request has been processed, check status: */
 					Local1 = (ASLC >> 12) & 3
 					If (Local1 == 0) {
-						Return (Zero)
+						Return (0)
 					} Else {
 						Return (Ones)
 					}
@@ -114,7 +114,7 @@
 			/* Prevent DivideByZero if backlight control isn't enabled */
 			If (BCLM == 0)
 			{
-				Return (Zero)
+				Return (0)
 			}
 			/* Local0: current percentage */
 			Local0 = DRCL (BCLV * 100, BCLM)

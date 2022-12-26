@@ -5,7 +5,7 @@ Device(EHC0) {
 	Name(_ADR, 0x00120000)
 	Name(_PRW, Package() { 0xb, 3 })
 	Device (RHUB) {
-		Name (_ADR, Zero)
+		Name (_ADR, 0)
 		Device (HS01) { Name (_ADR, 1) }
 		Device (HS02) { Name (_ADR, 2) }
 		Device (HS03) { Name (_ADR, 3) }
@@ -121,14 +121,14 @@ Field(EHMC, DwordAcc, NoLock, Preserve)
 
 Method(U2D3,0, Serialized)
 {
-	if (EH10 != Zero) {
+	if (EH10 != 0) {
 		EHBA = EH10
 		EHME = 1
 		SSIM = ESIM
 	}
 
 	if (E_PS == 3) {
-		RQTY = Zero
+		RQTY = 0
 		RQ18 = 1
 
 		Local0 = U2SR
@@ -136,10 +136,10 @@ Method(U2D3,0, Serialized)
 			Local0 = U2SR
 		}
 
-		U2PD = Zero
+		U2PD = 0
 
 		Local0 = U2DS
-		while (Local0 != Zero) {
+		while (Local0 != 0) {
 			Local0 = U2DS
 		}
 
@@ -155,10 +155,10 @@ Method(U2D3,0, Serialized)
 Method(U2D0,0, Serialized)
 {
 	PWGC (0x40, 1)
-	U2RP = Zero
+	U2RP = 0
 	U2TD =  0x00
 
-	U2TD = Zero
+	U2TD = 0
 	U2PD = 1
 
 	Local0 = U2DS
@@ -175,7 +175,7 @@ Method(U2D0,0, Serialized)
 	EH2C = EHID
 
 
-	if (EH10 != Zero) {
+	if (EH10 != 0) {
 		EHBA = EH10
 		EHME = 1
 		ESIM = SSIM
@@ -196,7 +196,7 @@ Method(LXFW,3, Serialized)  //Load Xhci FirmWare
 	while (!Local0) {
 		Local0 = FPLC
 	}
-	FPLS = Zero
+	FPLS = 0
 }
 
 Method(U3D3,0, Serialized)
@@ -211,7 +211,7 @@ Method(U3D3,0, Serialized)
 		}
 		UD3P = 1 /* U3P_D3Cold_PWRDN */
 
-		U3PD = Zero /* PwrOnDev */
+		U3PD = 0 /* PwrOnDev */
 		Local0 = U3DS
 		while (Local0) { /* RstBState, RefClkOkState, PwrRstBState */
 			Local0 = U3DS
@@ -225,24 +225,24 @@ Method(U3D3,0, Serialized)
 			PGA3 &= 0x9f /* SwUsb2S5RstB */
 			U2RP = 1   /* USB2_RefClk_Pwdn */
 		}
-		U3PG = Zero /* XhcPwrGood  */
+		U3PG = 0 /* XhcPwrGood  */
 		U3PS = 1  /* Usb3PowerSel */
 	}
 }
 
 Method(U3D0,0, Serialized)
 {
-	U3PS = Zero /* Usb3PowerSel */
+	U3PS = 0 /* Usb3PowerSel */
 	U3PG = 1  /* XhcPwrGood  */
 
-	U2RP = Zero
-	U3RP = Zero
+	U2RP = 0
+	U3RP = 0
 
 	Local0 = PGA3 & 0xdf
 	Local0 |= 0x40
 	PGA3 = Local0 /* SwUsb2S5RstB */
 
-	U3TD = Zero /* TargetedDeviceState */
+	U3TD = 0 /* TargetedDeviceState */
 	U3PD = 1  /* PwrOnDev */
 
 	Local0 = U3DS /* wait for RstBState, RefClkOkState, PwrRstBState */
@@ -255,7 +255,7 @@ Method(U3D0,0, Serialized)
 		Local0 = U3PY
 	}
 
-	U3PR = Zero /* U3P_RESTORE_RESET */
+	U3PR = 0 /* U3P_RESTORE_RESET */
 
 	Local0 = AUSS /* AutoSizeStart */
 	if (Local0 != 1) {
@@ -272,7 +272,7 @@ Method(U3D0,0, Serialized)
 	X0_R ()
 
 	U3PR = 1  /* U3P_RESTORE_RESET */
-	UD3P = Zero /* U3P_D3Cold_PWRDN */
+	UD3P = 0 /* U3P_D3Cold_PWRDN */
 	U3TD = 1  /* TargetedDeviceState */
 }
 
@@ -314,7 +314,7 @@ CreateDWordField(SVBF, 0x7B0, SSIM) /* EHCI SIM BIT */
 Method(X0_S,0)
 {
 	XHID = XH2C
-	IDEX = Zero
+	IDEX = 0
 	S000 = DATA
 	IDEX = 0x00000004
 	S004 = DATA
@@ -375,7 +375,7 @@ Method(X0_S,0)
 Method(X0_R,0)
 {
 	XH2C = XHID
-	IDEX = Zero
+	IDEX = 0
 	DATA = S000
 	IDEX = 0x000000004
 	DATA = S004

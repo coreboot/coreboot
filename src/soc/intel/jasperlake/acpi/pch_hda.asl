@@ -31,12 +31,12 @@ Device (HDAS)
 			 * Function 0: Function Support Query
 			 * Returns a bitmask of functions supported.
 			 */
-			If (Arg2 == Zero) {
+			If (Arg2 == 0) {
 				/*
 				 * NHLT Query only supported for revision 1 and
 				 * if NHLT address and length are set in NVS.
 				 */
-				If ((Arg1 == 1) && ((NHLA != Zero) && (NHLL != Zero))) {
+				If ((Arg1 == 1) && ((NHLA != 0) && (NHLL != 0))) {
 					Return (Buffer (1) { 0x03 })
 				} Else {
 					Return (Buffer (1) { 0x01 })

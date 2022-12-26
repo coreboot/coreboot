@@ -27,7 +27,7 @@ Device (XHCI)
 	/* Root Hub for Elkhartlake PCH */
 	Device (RHUB)
 	{
-		Name (_ADR, Zero)
+		Name (_ADR, 0)
 
 		/* USB2 */
 		Device (HS01) { Name (_ADR, 1) }

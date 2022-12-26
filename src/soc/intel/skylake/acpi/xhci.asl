@@ -46,7 +46,7 @@ Method (UWES, 3, Serialized)
 
 	While (1) {
 		FindSetRightBit (Local0, Local1)
-		If (Local1 == Zero) {
+		If (Local1 == 0) {
 			Break
 		}
 		UPWE (Local1, Arg1, Arg2)
@@ -209,7 +209,7 @@ Device (XHCI)
 	/* Root Hub for Skylake-LP PCH */
 	Device (RHUB)
 	{
-		Name (_ADR, Zero)
+		Name (_ADR, 0)
 
 		// GPLD: Generate Port Location Data (PLD)
 		Method (GPLD, 1, Serialized)
@@ -221,7 +221,7 @@ Device (XHCI)
 			})
 
 			// REV: Revision 0x02 for ACPI 5.0
-			CreateField (DerefOf (PCKG[0]), Zero, 0x07, REV)
+			CreateField (DerefOf (PCKG[0]), 0, 0x07, REV)
 			REV = 0x02
 
 			// VISI: Port visibility to user per port

@@ -30,7 +30,7 @@ Device (TCHG)
 		Local0--
 
 		/* Check if charging is disabled (AC removed) */
-		If (\PWRS == Zero) {
+		If (\PWRS == 0) {
 			/* Return last power state */
 			Return (Local0)
 		} Else {

@@ -19,7 +19,7 @@ Device (XHCI) {
 	Device (RHUB)
 	{
 		/* Root Hub */
-		Name (_ADR, Zero)
+		Name (_ADR, 0)
 
 #if CONFIG(SOC_INTEL_GEMINILAKE)
 #include "xhci_glk_ports.asl"

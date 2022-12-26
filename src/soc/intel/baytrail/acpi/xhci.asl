@@ -17,7 +17,7 @@ Device (XHCI)
 			})
 
 			// REV: Revision 0x02 for ACPI 5.0
-			CreateField (DerefOf (PCKG[0]), Zero, 0x07, REV)
+			CreateField (DerefOf (PCKG[0]), 0, 0x07, REV)
 			REV = 0x02
 
 			// VISI: Port visibility to user per port

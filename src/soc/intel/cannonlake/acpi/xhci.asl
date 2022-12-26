@@ -48,7 +48,7 @@ Method (UWES, 3, Serialized)
 
 	While (1) {
 		FindSetRightBit (Local0, Local1)
-		If (Local1 == Zero) {
+		If (Local1 == 0) {
 			Break
 		}
 		UPWE (Local1, Arg1, Arg2)
@@ -102,7 +102,7 @@ Device (XHCI)
 	/* Root Hub for Cannonlake-LP PCH */
 	Device (RHUB)
 	{
-		Name (_ADR, Zero)
+		Name (_ADR, 0)
 
 		/* USB2 */
 		Device (HS01) { Name (_ADR, 1) }

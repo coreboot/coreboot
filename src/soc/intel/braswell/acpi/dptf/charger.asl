@@ -30,7 +30,7 @@ Device (TCHG)
 		Local0--
 
 		/* Check if charging is disabled (AC removed) */
-		If (\_SB.PCI0.LPCB.EC0.ACEX == Zero) {
+		If (\_SB.PCI0.LPCB.EC0.ACEX == 0) {
 			/* Return last power state */
 			Return (Local0)
 		} Else {

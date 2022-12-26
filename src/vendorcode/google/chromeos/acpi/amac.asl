@@ -29,22 +29,22 @@ Scope (\_SB)
 		/* Get "dock_passthrough" value from RW_VPD */
 		Local0 = \VPD.VPDF ("RW", "dock_passthrough")
 
-		Local1 = Zero
+		Local1 = 0
 		Switch (ToString (Local0))
 		{
 			Case ("ethernet_mac0") {
 				Local1 = \VPD.VPDF ("RO", "ethernet_mac0")
 			}
 			Case ("builtin") {
-				Return (Zero)
+				Return (0)
 			}
 			/* "dock_mac" or policy not found. */
 			Default {
 				Local1 = \VPD.VPDF ("RO", "dock_mac")
 			}
 		}
-		If (Local1 == Zero) {
-			Return (Zero)
+		If (Local1 == 0) {
+			Return (0)
 		}
 		Printf ("MAC address returned from VPD: %o", Local1)
 
@@ -52,7 +52,7 @@ Scope (\_SB)
 		For (Local3 = 2, Local3 < 17, Local3 += 3) {
 			If (ToString (DerefOf (Local1[Local3])) != ":") {
 				Printf ("Invalid MAC address byte %o", Local3)
-				Return (Zero)
+				Return (0)
 			}
 		}
 

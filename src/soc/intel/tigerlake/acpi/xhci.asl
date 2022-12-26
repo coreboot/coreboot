@@ -28,7 +28,7 @@ Device (XHCI)
 	/* Root Hub for Tigerlake-H PCH */
 	Device (RHUB)
 	{
-		Name (_ADR, Zero)
+		Name (_ADR, 0)
 
 		/* USB2 */
 		Device (HS01) { Name (_ADR, 1) }
@@ -62,7 +62,7 @@ Device (XHCI)
 	/* Root Hub for Tigerlake-LP PCH */
 	Device (RHUB)
 	{
-		Name (_ADR, Zero)
+		Name (_ADR, 0)
 
 		/* USB2 */
 		Device (HS01) { Name (_ADR, 1) }

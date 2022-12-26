@@ -11,7 +11,7 @@ Scope (\_SB)
         /* If _SB.DDEF is not present, DPTC is not enabled so return early. */
         If (!CondRefOf (\_SB.DDEF))
         {
-            Return (Zero)
+            Return (0)
         }
 
         /* If _SB.DTHL is not present, then DPTC Tablet Mode is not enabled.
@@ -21,14 +21,14 @@ Scope (\_SB)
             (!\_SB.PCI0.LPCB.EC0.BTEX || \_SB.PCI0.LPCB.EC0.BFCR || \_SB.PCI0.LPCB.EC0.BFCT))
         {
             \_SB.DTHL()
-            Return (Zero)
+            Return (0)
         }
 
         /* If _SB.DTAB is not present, then DPTC Tablet Mode is not enabled. */
         If (CondRefOf (\_SB.DTAB) && (\_SB.PCI0.LPCB.EC0.TBMD == 1))
         {
             \_SB.DTAB()
-            Return (Zero)
+            Return (0)
         }
 
 #if CONFIG(FEATURE_DYNAMIC_DPTC)
@@ -36,6 +36,6 @@ Scope (\_SB)
 #else
         \_SB.DDEF()
 #endif
-        Return (Zero)
+        Return (0)
     }
 }

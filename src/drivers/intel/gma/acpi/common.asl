@@ -6,7 +6,7 @@
 
 	Method(BRID, 1, NotSerialized)
 	{
-		Local0 = Match (BRIG, MEQ, Arg0, MTR, Zero, 2)
+		Local0 = Match (BRIG, MEQ, Arg0, MTR, 0, 2)
 		If (Local0 == Ones)
 		{
 			Return (SizeOf(BRIG) - 1)

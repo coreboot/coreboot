@@ -2,7 +2,7 @@
 
 Device (WIFI)
 {
-	Name (_ADR, Zero)
+	Name (_ADR, 0)
 	OperationRegion(WIXX, PCI_Config, 0x00, 0x10)
 	Name (WRDX, Package()
 	{

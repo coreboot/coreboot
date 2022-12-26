@@ -103,7 +103,7 @@ Method (_DSW, 3)
  */
 Device (RHUB)
 {
-	Name (_ADR, Zero)
+	Name (_ADR, 0)
 
 	/* High Speed Ports */
 	Device (HS01)

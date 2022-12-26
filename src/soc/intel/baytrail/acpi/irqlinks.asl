@@ -28,7 +28,7 @@ Device (LNKA)
 		CreateWordField(RTLA, 1, IRQ0)
 
 		/* Clear the WordField */
-		IRQ0 = Zero
+		IRQ0 = 0
 
 		/* Set the bit from PRTA */
 		IRQ0 = 1 << (PRTA & 0x0f)
@@ -87,7 +87,7 @@ Device (LNKB)
 		CreateWordField(RTLB, 1, IRQ0)
 
 		/* Clear the WordField */
-		IRQ0 = Zero
+		IRQ0 = 0
 
 		/* Set the bit from PRTB */
 		IRQ0 = 1 << (PRTB & 0x0f)
@@ -146,7 +146,7 @@ Device (LNKC)
 		CreateWordField(RTLC, 1, IRQ0)
 
 		/* Clear the WordField */
-		IRQ0 = Zero
+		IRQ0 = 0
 
 		/* Set the bit from PRTC */
 		IRQ0 = 1 << (PRTC & 0x0f)
@@ -205,7 +205,7 @@ Device (LNKD)
 		CreateWordField(RTLD, 1, IRQ0)
 
 		/* Clear the WordField */
-		IRQ0 = Zero
+		IRQ0 = 0
 
 		/* Set the bit from PRTD */
 		IRQ0 = 1 << (PRTD & 0x0f)
@@ -264,7 +264,7 @@ Device (LNKE)
 		CreateWordField(RTLE, 1, IRQ0)
 
 		/* Clear the WordField */
-		IRQ0 = Zero
+		IRQ0 = 0
 
 		/* Set the bit from PRTE */
 		IRQ0 = 1 << (PRTE & 0x0f)
@@ -323,7 +323,7 @@ Device (LNKF)
 		CreateWordField(RTLF, 1, IRQ0)
 
 		/* Clear the WordField */
-		IRQ0 = Zero
+		IRQ0 = 0
 
 		/* Set the bit from PRTF */
 		IRQ0 = 1 << (PRTF & 0x0f)
@@ -382,7 +382,7 @@ Device (LNKG)
 		CreateWordField(RTLG, 1, IRQ0)
 
 		/* Clear the WordField */
-		IRQ0 = Zero
+		IRQ0 = 0
 
 		/* Set the bit from PRTG */
 		IRQ0 = 1 << (PRTG & 0x0f)
@@ -441,7 +441,7 @@ Device (LNKH)
 		CreateWordField(RTLH, 1, IRQ0)
 
 		/* Clear the WordField */
-		IRQ0 = Zero
+		IRQ0 = 0
 
 		/* Set the bit from PRTH */
 		IRQ0 = 1 << (PRTH & 0x0f)

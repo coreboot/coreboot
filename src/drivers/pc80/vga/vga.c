@@ -256,23 +256,55 @@ vga_frame_set(unsigned int line, unsigned int character)
 	vga_cr_write(0x0D, offset & 0xFF);
 }
 
+static void
+vga_write_at_offset(unsigned int line, unsigned int offset, const char *string)
+{
+	if (!string)
+		return;
+
+	unsigned short *p = (unsigned short *)VGA_FB + (VGA_COLUMNS * line) + offset;
+	size_t i, len = strlen(string);
+
+	for (i = 0; i < (VGA_COLUMNS - offset); i++) {
+		if (i < len)
+			p[i] = 0x0F00 | string[i];
+		else
+			p[i] = 0x0F00;
+	}
+}
+
 /*
  * simply fills a line with the given string.
  */
 void
 vga_line_write(unsigned int line, const char *string)
 {
-	if (!string)
-		return;
+	vga_write_at_offset(line, 0, string);
+}
 
-	unsigned short *p = (unsigned short *)VGA_FB + (VGA_COLUMNS * line);
-	size_t i, len = strlen(string);
+void
+vga_write_text(enum VGA_TEXT_ALIGNMENT alignment, unsigned int line, const char *string)
+{
+	char str[VGA_COLUMNS * VGA_LINES] = {0};
+	memcpy(str, string, strnlen(string, sizeof(str) - 1));
 
-	for (i = 0; i < VGA_COLUMNS; i++) {
-		if (i < len)
-			p[i] = 0x0F00 | string[i];
-		else
-			p[i] = 0x0F00;
+	char *token = strtok(str, "\n");
+
+	while (token != NULL) {
+		size_t offset = VGA_COLUMNS - strnlen(token, VGA_COLUMNS);
+		switch (alignment) {
+		case VGA_TEXT_CENTER:
+			vga_write_at_offset(line++, offset/2, token);
+			break;
+		case VGA_TEXT_RIGHT:
+			vga_write_at_offset(line++, offset, token);
+			break;
+		case VGA_TEXT_LEFT:
+		default:
+			vga_write_at_offset(line++, 0, token);
+			break;
+		}
+		token = strtok(NULL, "\n");
 	}
 }
 

@@ -12,15 +12,58 @@ desired.
 
 Currently, [jenkins](https://qa.coreboot.org), our continuous
 integration system is configured to build the 4.11, 4.12, 4.14, 4.15,
-and 4.16 branches.  Builders for other branches can be created on
+4.16, and 4.18 branches.  Builders for other branches can be created on
 request.  Likewise, some releases are only marked with tags, and
 branches would need to be created to push new code to.  These branches
 can also be created on request.
 
 Patches can be backported from the master branch to any of these other
-branches as needed. The coreboot project will take care of backporting
+branches as needed. The coreboot project may take care of backporting
 critical security fixes, but other patches will need to handled by
 anyone using that release.
+
+
+## [4.18 Release](coreboot-4.18-relnotes.md)
+Branch created, builder configured
+
+```eval_rst
++-------------------------------+------------------------+------------+-----------+
+| Vendor/Board                  | Processor              | Date added | Brd type  |
++===============================+========================+============+===========+
+| amd/inagua                    | AMD_FAMILY14           | 2011-02-14 | eval      |
+| amd/olivehill                 | AMD_FAMILY16_KB        | 2013-08-05 | eval      |
+| amd/parmer                    | AMD_FAMILY15_TN        | 2012-07-22 | eval      |
+| amd/persimmon                 | AMD_FAMILY14           | 2011-02-14 | eval      |
+| amd/south_station             | AMD_FAMILY14           | 2011-11-18 | eval      |
+| amd/thatcher                  | AMD_FAMILY15_TN        | 2012-08-02 | eval      |
+| amd/union_station             | AMD_FAMILY14           | 2011-11-18 | eval      |
+| asrock/e350m1                 | AMD_FAMILY14           | 2011-02-24 | mini      |
+| asrock/imb-a180               | AMD_FAMILY16_KB        | 2013-08-27 | mini      |
+| asus/a88xm-e                  | AMD_FAMILY15_TN        | 2020-08-13 | desktop   |
+| asus/am1i-a                   | AMD_FAMILY16_KB        | 2018-01-14 | mini      |
+| asus/f2a85-m                  | AMD_FAMILY15_TN        | 2013-03-22 | desktop   |
+| bap/ode_e20XX                 | AMD_FAMILY16_KB        | 2015-05-27 | eval      |
+| biostar/a68n_5200             | AMD_FAMILY16_KB        | 2017-10-14 | eval      |
+| biostar/am1ml                 | AMD_FAMILY16_KB        | 2015-04-10 | mini      |
+| elmex/pcm205400               | AMD_FAMILY14           | 2016-09-29 | sbc       |
+| gizmosphere/gizmo2            | AMD_FAMILY16_KB        | 2014-12-09 | eval      |
+| gizmosphere/gizmo             | AMD_FAMILY14           | 2014-01-03 | half      |
+| hp/abm                        | AMD_FAMILY16_KB        | 2015-01-05 | mini      |
+| hp/pavilion_m6_1035dx         | AMD_FAMILY15_TN        | 2014-03-28 | laptop    |
+| jetway/nf81-t56n-lf           | AMD_FAMILY14           | 2014-02-16 | mini      |
+| lenovo/g505s                  | AMD_FAMILY15_TN        | 2014-11-27 | laptop    |
+| lippert/frontrunner-af        | AMD_FAMILY14           | 2013-03-02 | half      |
+| msi/ms7721                    | AMD_FAMILY15_TN        | 2016-11-22 | desktop   |
+| pcengines/apu1                | AMD_FAMILY14           | 2015-02-23 | half      |
++-------------------------------+------------------------+------------+-----------+
+```
+
+
+## [4.17 Release](coreboot-4.17-relnotes.md)
+No Branch or builder
+
+* No platforms maintained on this release
+
 
 ## [4.16 Release](coreboot-4.16-relnotes.md)
 Branch created, builder configured

@@ -18,15 +18,12 @@
 #include <spd.h>
 #include <device/dram/common.h>
 
-/*
- * Module type (byte 20, bits 5:0) of SPD
- * This definition is specific to DDR2. DDR3 SPDs have a different structure.
- */
+/* Byte 20 [5:0]: DDR2 Module type information */
 enum spd_dimm_type_ddr2 {
-	SPD_DDR2_DIMM_TYPE_UNDEFINED			= 0x00,
-	SPD_DDR2_DIMM_TYPE_RDIMM			= 0x01,
-	SPD_DDR2_DIMM_TYPE_UDIMM			= 0x02,
-	SPD_DDR2_DIMM_TYPE_SO_DIMM			= 0x04,
+	SPD_DDR2_DIMM_TYPE_UNDEFINED		= 0x00,
+	SPD_DDR2_DIMM_TYPE_RDIMM		= 0x01,
+	SPD_DDR2_DIMM_TYPE_UDIMM		= 0x02,
+	SPD_DDR2_DIMM_TYPE_SO_DIMM		= 0x04,
 	SPD_DDR2_DIMM_TYPE_72B_SO_CDIMM		= 0x06,
 	SPD_DDR2_DIMM_TYPE_72B_SO_RDIMM		= 0x07,
 	SPD_DDR2_DIMM_TYPE_MICRO_DIMM		= 0x08,

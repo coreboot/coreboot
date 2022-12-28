@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <device/dram/ddr2.h>
 #include <dimm_info_util.h>
 #include <spd.h>
 #include <tests/test.h>
@@ -136,10 +137,12 @@ static void test_smbios_form_factor_to_spd_mod_type(void **state)
 	} ddrx_info[] = {
 		{
 			.memory_type = MEMORY_TYPE_DDR2,
-			.udimm_allowed = {DDR2_SPD_UDIMM, DDR2_SPD_MICRO_DIMM,
-					  DDR2_SPD_MINI_UDIMM},
-			.rdimm_allowed = {DDR2_SPD_RDIMM, DDR2_SPD_MINI_RDIMM},
-			.expected_module_type = DDR2_SPD_SODIMM,
+			.udimm_allowed = {SPD_DDR2_DIMM_TYPE_UDIMM,
+					  SPD_DDR2_DIMM_TYPE_MICRO_DIMM,
+					  SPD_DDR2_DIMM_TYPE_MINI_UDIMM},
+			.rdimm_allowed = {SPD_DDR2_DIMM_TYPE_RDIMM,
+					  SPD_DDR2_DIMM_TYPE_MINI_RDIMM},
+			.expected_module_type = SPD_DDR2_DIMM_TYPE_SO_DIMM,
 		},
 		{
 			.memory_type = MEMORY_TYPE_DDR3,

@@ -164,6 +164,9 @@ struct soc_amd_mendocino_config {
 
 	uint8_t usb_phy_custom;
 	struct usb_phy_config usb_phy;
+	/* Set for PCIe optimization w/a and a double confirming on the result of PCIe Signal
+	   Integrity is highly recommended. */
+	uint8_t dxio_tx_vboost_enable;
 };
 
 #endif /* MENDOCINO_CHIP_H */

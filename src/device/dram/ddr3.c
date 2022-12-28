@@ -533,29 +533,7 @@ enum cb_err spd_add_smbios17(const u8 channel, const u8 slot, const u16 selected
 		dimm->dimm_num = slot;
 		memcpy(dimm->module_part_number, info->part_number, 16);
 		dimm->mod_id = info->manufacturer_id;
-
-		switch (info->dimm_type) {
-		case SPD_DDR3_DIMM_TYPE_SO_DIMM:
-			dimm->mod_type = DDR3_SPD_SODIMM;
-			break;
-		case SPD_DDR3_DIMM_TYPE_72B_SO_CDIMM:
-			dimm->mod_type = DDR3_SPD_72B_SO_CDIMM;
-			break;
-		case SPD_DDR3_DIMM_TYPE_72B_SO_RDIMM:
-			dimm->mod_type = DDR3_SPD_72B_SO_RDIMM;
-			break;
-		case SPD_DDR3_DIMM_TYPE_UDIMM:
-			dimm->mod_type = DDR3_SPD_UDIMM;
-			break;
-		case SPD_DDR3_DIMM_TYPE_RDIMM:
-			dimm->mod_type = DDR3_SPD_RDIMM;
-			break;
-		case SPD_DDR3_DIMM_TYPE_UNDEFINED:
-		default:
-			dimm->mod_type = SPD_UNDEFINED;
-			break;
-		}
-
+		dimm->mod_type = info->dimm_type;
 		dimm->bus_width = MEMORY_BUS_WIDTH_64; // non-ECC only
 		memcpy(dimm->serial, info->serial,
 		       MIN(sizeof(dimm->serial), sizeof(info->serial)));

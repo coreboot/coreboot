@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <device/dram/ddr2.h>
+#include <device/dram/ddr3.h>
 #include <device/dram/spd.h>
 #include <spd.h>
 #include <stddef.h>
@@ -76,26 +77,26 @@ static void convert_ddr2_module_type_to_spd_info(enum spd_dimm_type_ddr2 module_
 	}
 }
 
-static void convert_ddr3_module_type_to_spd_info(enum ddr3_module_type module_type,
+static void convert_ddr3_module_type_to_spd_info(enum spd_dimm_type_ddr3 module_type,
 						 struct spd_info *info)
 {
 	switch (module_type) {
-	case DDR3_SPD_RDIMM:
-	case DDR3_SPD_MINI_RDIMM:
+	case SPD_DDR3_DIMM_TYPE_RDIMM:
+	case SPD_DDR3_DIMM_TYPE_MINI_RDIMM:
 		info->form_factor = MEMORY_FORMFACTOR_RIMM;
 		info->type_detail = MEMORY_TYPE_DETAIL_REGISTERED;
 		break;
-	case DDR3_SPD_UDIMM:
-	case DDR3_SPD_MINI_UDIMM:
+	case SPD_DDR3_DIMM_TYPE_UDIMM:
+	case SPD_DDR3_DIMM_TYPE_MINI_UDIMM:
 		info->form_factor = MEMORY_FORMFACTOR_DIMM;
 		info->type_detail = MEMORY_TYPE_DETAIL_UNBUFFERED;
 		break;
-	case DDR3_SPD_MICRO_DIMM:
+	case SPD_DDR3_DIMM_TYPE_MICRO_DIMM:
 		info->form_factor = MEMORY_FORMFACTOR_DIMM;
 		info->type_detail = MEMORY_TYPE_DETAIL_UNKNOWN;
 		break;
-	case DDR3_SPD_SODIMM:
-	case DDR3_SPD_72B_SO_UDIMM:
+	case SPD_DDR3_DIMM_TYPE_SO_DIMM:
+	case SPD_DDR3_DIMM_TYPE_72B_SO_UDIMM:
 		info->form_factor = MEMORY_FORMFACTOR_SODIMM;
 		info->type_detail = MEMORY_TYPE_DETAIL_UNKNOWN;
 		break;
@@ -216,7 +217,7 @@ static uint8_t convert_ddrx_form_factor_to_module_type(smbios_memory_type memory
 		return SPD_DDR2_DIMM_TYPE_RDIMM;
 	case MEMORY_FORMFACTOR_SODIMM:
 		module_type = (memory_type == MEMORY_TYPE_DDR2) ? SPD_DDR2_DIMM_TYPE_SO_DIMM :
-									DDR3_SPD_SODIMM;
+								  SPD_DDR3_DIMM_TYPE_SO_DIMM;
 		return module_type;
 	default:
 		return convert_default_form_factor_to_module_type();

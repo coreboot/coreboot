@@ -383,7 +383,7 @@ training.  This example expects that the default value of this `register` is set
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-	if (fw_config_probe_one(FW_CONFIG(FEATURE, DISABLED))
+	if (fw_config_probe(FW_CONFIG(FEATURE, DISABLED))
 		mupd->ExampleFeature = false;
 }
 ```

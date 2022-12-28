@@ -99,6 +99,21 @@ chip soc/amd/mendocino
 	register "stt_skin_temp_apu_F" = "0x3200"
 
 	device domain 0 on
+		device ref gpp_bridge_1 on
+			# Required so the NVMe gets placed into D3 when entering S0i3.
+			chip drivers/pcie/rtd3/device
+				register "name" = ""NVME""
+				device pci 00.0 on end
+			end
+		end # eMMC
+		device ref gpp_bridge_2 on
+			# Required so the NVMe gets placed into D3 when entering S0i3.
+			chip drivers/pcie/rtd3/device
+				register "name" = ""NVME""
+				device pci 00.0 on end
+			end
+		end # NVMe
+
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref xhci_1 on # XHCI1 controller
 				chip drivers/usb/acpi

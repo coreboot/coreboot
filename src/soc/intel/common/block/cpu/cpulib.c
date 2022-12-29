@@ -395,11 +395,57 @@ void cpu_lt_lock_memory(void)
 	msr_set(MSR_LT_CONTROL, LT_CONTROL_LOCK);
 }
 
+bool is_sgx_supported(void)
+{
+	struct cpuid_result cpuid_regs;
+	msr_t msr;
+
+	/* EBX[2] is feature capability */
+	cpuid_regs = cpuid_ext(CPUID_STRUCT_EXTENDED_FEATURE_FLAGS, 0x0);
+	msr = rdmsr(MTRR_CAP_MSR); /* Bit 12 is PRMRR enablement */
+	return ((cpuid_regs.ebx & SGX_SUPPORTED) && (msr.lo & MTRR_CAP_PRMRR));
+}
+
+static bool is_sgx_configured_and_supported(void)
+{
+	return CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE) && is_sgx_supported();
+}
+
+bool is_keylocker_supported(void)
+{
+	struct cpuid_result cpuid_regs;
+	msr_t msr;
+
+	/* ECX[23] is feature capability */
+	cpuid_regs = cpuid_ext(CPUID_STRUCT_EXTENDED_FEATURE_FLAGS, 0x0);
+	msr = rdmsr(MTRR_CAP_MSR); /* Bit 12 is PRMRR enablement */
+	return ((cpuid_regs.ecx & KEYLOCKER_SUPPORTED) && (msr.lo & MTRR_CAP_PRMRR));
+}
+
+static bool is_keylocker_configured_and_supported(void)
+{
+	return CONFIG(INTEL_KEYLOCKER) && is_keylocker_supported();
+}
+
+static bool check_prm_features_enabled(void)
+{
+	/*
+	 * Key Locker and SGX are the features that need PRM.
+	 * If either of them are enabled return true, otherwise false
+	 * */
+	return is_sgx_configured_and_supported() ||
+		is_keylocker_configured_and_supported();
+}
+
 int get_valid_prmrr_size(void)
 {
 	msr_t msr;
 	int i;
 	int valid_size;
+
+	/* If none of the features that need PRM are enabled then return 0 */
+	if (!check_prm_features_enabled())
+		return 0;
 
 	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_SGX_ENABLE))
 		return 0;
@@ -522,26 +568,4 @@ void set_tme_core_activate(void)
 unsigned int smbios_cpu_get_max_speed_mhz(void)
 {
 	return cpu_get_max_turbo_ratio() * CONFIG_CPU_BCLK_MHZ;
-}
-
-bool is_sgx_supported(void)
-{
-	struct cpuid_result cpuid_regs;
-	msr_t msr;
-
-	/* EBX[2] is feature capability */
-	cpuid_regs = cpuid_ext(CPUID_STRUCT_EXTENDED_FEATURE_FLAGS, 0x0);
-	msr = rdmsr(MTRR_CAP_MSR); /* Bit 12 is PRMRR enablement */
-	return ((cpuid_regs.ebx & SGX_SUPPORTED) && (msr.lo & MTRR_CAP_PRMRR));
-}
-
-bool is_keylocker_supported(void)
-{
-	struct cpuid_result cpuid_regs;
-	msr_t msr;
-
-	/* ECX[23] is feature capability */
-	cpuid_regs = cpuid_ext(CPUID_STRUCT_EXTENDED_FEATURE_FLAGS, 0x0);
-	msr = rdmsr(MTRR_CAP_MSR); /* Bit 12 is PRMRR enablement */
-	return ((cpuid_regs.ecx & KEYLOCKER_SUPPORTED) && (msr.lo & MTRR_CAP_PRMRR));
 }

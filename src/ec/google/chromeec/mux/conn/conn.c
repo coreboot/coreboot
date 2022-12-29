@@ -24,9 +24,14 @@ static void conn_fill_ssdt(const struct device *dev)
 
 	acpigen_write_name_integer("_ADR", dev->path.generic.id);
 
-	if (config && config->mode_switch) {
+	if (config) {
 		struct acpi_dp *dsd = acpi_dp_new_table("_DSD");
-		acpi_dp_add_integer(dsd, "mode-switch", 1);
+
+		if (config->mode_switch)
+			acpi_dp_add_integer(dsd, "mode-switch", 1);
+		if (config->retimer_switch)
+			acpi_dp_add_integer(dsd, "retimer-switch", 1);
+
 		acpi_dp_write(dsd);
 	}
 

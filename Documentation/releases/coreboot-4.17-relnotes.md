@@ -296,6 +296,36 @@ noting, but not needing a full description.
 * sandybridge & gm45: Support setting PCI bars above 4G
 
 
+Plans to move platform support to a branch:
+-------------------------------------------
+After the 4.18 release in November 2022, we plan to move support for any
+boards still requiring RESOURCE_ALLOCATOR_V3 to the 4.18 branch.  V4 was
+introduced more than a year ago and with minor changes most platforms
+were able to work just fine with it. A major difference is that V3 uses
+just one continuous region below 4G to allocate all PCI memory BAR's. V4
+uses all available space below 4G and if asked to, also above 4G too.
+This makes it important that SoC code properly reports all fixed
+resources.
+
+Currently only AGESA platforms have issues with it. On Gerrit both
+attempts to fix AMD AGESA codebases to use V4 and compatibility modes
+inside the V4 allocator have been proposed, but both efforts seem
+stalled. See the (not yet merged) documentation
+[CR:43603](https://review.coreboot.org/c/coreboot/+/43603) on it's
+details. It looks like properly reporting all fixed resources is the
+issue.
+
+At this point, we are not specifying which platforms this will include
+as there are a number of patches to fix these issues in flight.
+Hopefully, all platforms will end up being migrated to the V4 resource
+allocator so that none of the platforms need to be supported on the
+branch.
+
+Additionally, even if the support for the platform is moved to a branch,
+it can be brought back to ToT if they're fixed to support the V4
+allocator.
+
+
 Plans for Code Deprecation
 --------------------------
 

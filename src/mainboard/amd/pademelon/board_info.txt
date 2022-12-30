@@ -1,6 +1,6 @@
 Vendor name: AMD
 Board name: Pademelon
-Category: desktop
+Category: eval
 ROM package: SOIC-8
 ROM protocol: SPI
 ROM socketed: n

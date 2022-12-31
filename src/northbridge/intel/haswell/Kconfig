@@ -6,6 +6,11 @@ config NORTHBRIDGE_INTEL_HASWELL
 	select CACHE_MRC_SETTINGS
 	select INTEL_DDI
 	select INTEL_GMA_ACPI
+	select NO_DDR5
+	select NO_LPDDR4
+	select NO_DDR2
+	select NO_DDR4
+	select USE_DDR3
 
 if NORTHBRIDGE_INTEL_HASWELL
 

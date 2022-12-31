@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootstate.h>
+#include <commonlib/console/post_codes.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <elog.h>
@@ -133,7 +134,7 @@ static void enable_update(void *unused)
 	mainboard_prepare_cr50_reset();
 
 	/* clear current post code avoid chatty eventlog on subsequent boot*/
-	post_code(0);
+	post_code(POST_CODE_CLEAR);
 
 	/*
 	 * Older Cr50 firmware doesn't support the timeout parameter for the

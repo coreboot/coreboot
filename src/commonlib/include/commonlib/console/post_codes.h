@@ -28,6 +28,12 @@
 #define POST_CODES_H
 
 /**
+ * \brief Not an actual post-code - used to clear port80h
+ *
+ */
+#define POST_CODE_CLEAR				0x00
+
+/**
  * \brief  Entry into 'crt0.s'. reset code jumps to here
  *
  * First instruction that gets executed after the reset vector jumps.

@@ -12,6 +12,7 @@
 
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/post_code.h>
+#include <amdblocks/post_codes.h>
 
 .section .init
 
@@ -30,7 +31,7 @@ _cache_as_ram_setup:
  */
 bootblock_pre_c_entry:
 
-	post_code(0xa0)
+	post_code(POST_BOOTBLOCK_PRE_C_ENTRY)
 
 	AMD_ENABLE_STACK
 
@@ -56,7 +57,7 @@ bootblock_pre_c_entry:
 	movd	%mm1, %eax
 	pushl	%eax		/* tsc[31:0] */
 
-	post_code(0xa2)
+	post_code(POST_BOOTBLOCK_PRE_C_DONE)
 
 	call	bootblock_c_entry
 

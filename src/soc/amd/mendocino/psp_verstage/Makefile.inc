@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-verstage-generic-ccopts += -I$(src)/soc/amd/mendocino/psp_verstage/include
 verstage-generic-ccopts += -I$(src)/vendorcode/amd/fsp/mendocino/include
 
 verstage-generic-ccopts += -I$(src)/soc/amd/common/psp_verstage/include

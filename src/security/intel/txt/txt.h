@@ -30,5 +30,6 @@ bool intel_txt_prepare_txt_env(void);
 /* Allow platform override to skip TXT lockdown, e.g. required for RAS error injection. */
 bool skip_intel_txt_lockdown(void);
 const char *intel_txt_processor_error_type(uint8_t type);
+void disable_intel_txt(void);
 
 #endif /* SECURITY_INTEL_TXT_H_ */

@@ -44,3 +44,29 @@ bool is_txt_cpu(void)
 
 	return (ecx & (CPUID_SMX | CPUID_VMX)) == (CPUID_SMX | CPUID_VMX);
 }
+
+static void unlock_txt_memory(void)
+{
+	msr_t msrval = {0};
+
+	wrmsr(IA32_LT_UNLOCK_MEMORY, msrval);
+}
+
+void disable_intel_txt(void)
+{
+	/* Return if the CPU doesn't support TXT */
+	if (!is_txt_cpu()) {
+		printk(BIOS_DEBUG, "Abort disabling TXT, as CPU is not TXT capable.\n");
+		return;
+	}
+
+	/*
+	 * Memory is supposed to be locked if system is TXT capable
+	 * As per TXT BIOS spec Section 6.2.5 unlock memory
+	 * when security (TPM) is set and TXT is not enabled.
+	 */
+	if (!is_establishment_bit_asserted()) {
+		unlock_txt_memory();
+		printk(BIOS_INFO, "TXT disabled successfully - Unlocked memory\n");
+	}
+}

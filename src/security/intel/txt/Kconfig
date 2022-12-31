@@ -1,8 +1,17 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
+config INTEL_TXT_LIB
+	bool
+	default n
+	help
+	  This option includes library functions related to the TXT
+	  operation which SoC would still like to access without enabling
+	  INTEL_TXT config.
+
 config INTEL_TXT
 	bool "Intel TXT support"
 	default n
+	select INTEL_TXT_LIB
 	select MRC_SETTINGS_PROTECT if CACHE_MRC_SETTINGS
 	select ENABLE_VMX if CPU_INTEL_COMMON
 	select AP_IN_SIPI_WAIT

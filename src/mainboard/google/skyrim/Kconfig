@@ -91,6 +91,7 @@ config MAINBOARD_PART_NUMBER
 	default "Morthal" if BOARD_GOOGLE_MORTHAL
 	default "Frostflow" if BOARD_GOOGLE_FROSTFLOW
 	default "Crystaldrift" if BOARD_GOOGLE_CRYSTALDRIFT
+	default "Markarth" if BOARD_GOOGLE_MARKARTH
 
 config OVERRIDE_DEVICETREE
 	string
@@ -103,6 +104,7 @@ config VARIANT_DIR
 	default "morthal" if BOARD_GOOGLE_MORTHAL
 	default "frostflow" if BOARD_GOOGLE_FROSTFLOW
 	default "crystaldrift" if BOARD_GOOGLE_CRYSTALDRIFT
+	default "markarth" if BOARD_GOOGLE_MARKARTH
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES

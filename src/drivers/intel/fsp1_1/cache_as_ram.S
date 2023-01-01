@@ -34,7 +34,7 @@ bootblock_pre_c_entry:
 	movd	%eax, %mm1
 
 cache_as_ram:
-	post_code(0x20)
+	post_code(POST_BOOTBLOCK_CAR)
 
 	/* Cache the rom and update the microcode */
 cache_rom:
@@ -181,8 +181,6 @@ CAR_init_done:
 	pushl	%eax	/* tsc[31:0] */
 
 before_romstage:
-	post_code(0x2a)
-
 	/* Call bootblock_c_entry(uint64_t base_timestamp) */
 	call	bootblock_c_entry
 

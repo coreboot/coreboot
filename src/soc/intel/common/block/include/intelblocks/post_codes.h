@@ -16,9 +16,6 @@
 #define POST_SOC_CAR_INIT_DONE				0x29
 #define POST_SOC_BEFORE_CARSTAGE			0x2a
 
-/* common/block/cpu/car/cache_as_ram_fsp.S */
-#define POST_BOOTBLOCK_CAR				0x21
-
 /* common/block/cse/cse.c */
 #define POST_CODE_ZERO					0x00
 #endif

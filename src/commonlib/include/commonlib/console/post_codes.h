@@ -72,6 +72,12 @@
 #define POST_ENTRY_C_START			0x13
 
 /**
+ * \brief Entry into bootblock cache-as-RAM code
+ *
+ */
+#define POST_BOOTBLOCK_CAR			0x21
+
+/**
  * \brief Entry into pci_scan_bus
  *
  * Entered pci_scan_bus()

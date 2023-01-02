@@ -6,16 +6,13 @@ config NORTHBRIDGE_INTEL_SANDYBRIDGE
 	select CPU_INTEL_MODEL_206AX
 	select HAVE_DEBUG_RAM_SETUP
 	select INTEL_GMA_ACPI
-
-if NORTHBRIDGE_INTEL_SANDYBRIDGE
-
-config NORTHBRIDGE_SPECIFIC_OPTIONS
-	def_bool y
 	select NO_DDR5
 	select NO_LPDDR4
 	select NO_DDR4
 	select NO_DDR2
 	select USE_DDR3
+
+if NORTHBRIDGE_INTEL_SANDYBRIDGE
 
 config CHIPSET_DEVICETREE
 	default "northbridge/intel/sandybridge/chipset.cb"

@@ -2115,7 +2115,7 @@ int main(int argc, char **argv)
 	context ctx = { 0 };
 	/* Values cleared after each firmware or parameter, regardless if N/A */
 	uint8_t sub = 0, instance = 0;
-	uint32_t dir_location = 0;
+	uint32_t body_location = 0;
 	uint32_t efs_location = 0;
 	bool any_location = 0;
 	uint32_t romsig_offset;
@@ -2310,7 +2310,8 @@ int main(int argc, char **argv)
 					" incorrectly (%s)\n\n", optarg);
 				retval = 1;
 			}
-			dir_location = efs_location;
+			if (body_location == 0)
+				body_location = efs_location;
 			break;
 		case AMDFW_OPT_ANYWHERE:
 			any_location = 1;
@@ -2348,7 +2349,7 @@ int main(int argc, char **argv)
 			list_deps = 1;
 			break;
 		case AMDFW_OPT_BODY_LOCATION:
-			dir_location = (uint32_t)strtoul(optarg, &tmp, 16);
+			body_location = (uint32_t)strtoul(optarg, &tmp, 16);
 			if (*tmp != '\0') {
 				fprintf(stderr, "Error: Body Location specified"
 					" incorrectly (%s)\n\n", optarg);
@@ -2429,7 +2430,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	if (!efs_location && dir_location) {
+	if (!efs_location && body_location) {
 		fprintf(stderr, "Error AMDFW body location specified without EFS location.\n");
 		return 1;
 	}
@@ -2440,20 +2441,20 @@ int main(int argc, char **argv)
 	 * currently. This condition is to ensure that it is not accidentally split. Revisit
 	 * this condition if such a need arises in the future.
 	 */
-	if (!any_location && dir_location != efs_location) {
+	if (!any_location && body_location != efs_location) {
 		fprintf(stderr, "Error: EFS cannot be separate from AMDFW Body.\n");
 		return 1;
 	}
 
-	if (dir_location != efs_location &&
-	    dir_location < ALIGN(efs_location + sizeof(embedded_firmware), BLOB_ALIGNMENT)) {
+	if (body_location != efs_location &&
+	    body_location < ALIGN(efs_location + sizeof(embedded_firmware), BLOB_ALIGNMENT)) {
 		fprintf(stderr, "Error: Insufficient space between EFS and Blobs.\n");
 		fprintf(stderr, "  Require safe spacing of 256 bytes\n");
 		return 1;
 	}
 
 	if (any_location) {
-		if ((dir_location & 0x3f) || (efs_location & 0x3f)) {
+		if ((body_location & 0x3f) || (efs_location & 0x3f)) {
 			fprintf(stderr, "Error: Invalid Directory/EFS location.\n");
 			fprintf(stderr, "  Valid locations are 64-byte aligned\n");
 			return 1;
@@ -2483,9 +2484,9 @@ int main(int argc, char **argv)
 	memset(ctx.rom, 0xFF, ctx.rom_size);
 
 	if (efs_location) {
-		if (efs_location != dir_location) {
+		if (efs_location != body_location) {
 			romsig_offset = efs_location - rom_base_address;
-			ctx.current = dir_location - rom_base_address;
+			ctx.current = body_location - rom_base_address;
 		} else {
 			romsig_offset = efs_location - rom_base_address;
 			ctx.current = romsig_offset + sizeof(embedded_firmware);
@@ -2641,7 +2642,7 @@ int main(int argc, char **argv)
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (targetfd >= 0) {
 		ssize_t bytes;
-		uint32_t offset = dir_location ? dir_location - rom_base_address : AMD_ROMSIG_OFFSET;
+		uint32_t offset = body_location ? body_location - rom_base_address : AMD_ROMSIG_OFFSET;
 
 		bytes = write(targetfd, BUFF_OFFSET(ctx, offset), ctx.current - offset);
 		if (bytes != ctx.current - offset) {
@@ -2654,7 +2655,7 @@ int main(int argc, char **argv)
 		retval = 1;
 	}
 
-	if (efs_location != dir_location) {
+	if (efs_location != body_location) {
 		ssize_t bytes;
 
 		bytes = write_efs(output, amd_romsig);

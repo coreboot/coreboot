@@ -317,8 +317,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF1),
 	/* GPP_H14 : [] ==> SLP_S0_GATE_R */
 	PAD_CFG_GPO(GPP_H14, 1, PLTRST),
-	/* GPP_H15 : net NC is not present in the given design */
-	PAD_NC(GPP_H15, NONE),
+	/* GPP_H15 : [] ==> EN_DMIC_SOC_DATA */
+	PAD_CFG_GPO(GPP_H15, 0, PLTRST),
 	/* GPP_H16 : [] ==> DDIB_HDMI_CTRLCLK*/
 	PAD_CFG_NF(GPP_H16, NONE, DEEP, NF1),
 	/* GPP_H17 : [] ==> DDIB_HDMI_CTRLDATA */

@@ -108,7 +108,92 @@ chip soc/intel/alderlake
 	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"
 	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC1)"
 
+	register "tcc_offset" = "5"     # TCC of 100
+
         device domain 0 on
+		device ref dtt on
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""Charge""
+				register "options.tsr[1].desc" = ""5V""
+				register "options.tsr[2].desc" = ""AMB""
+				register "options.tsr[3].desc" = ""CPU Power""
+
+				# TODO: below values are initial reference values only
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {
+						.target = DPTF_CPU,
+						.thresholds = {
+								TEMP_PCT(90, 100),
+								TEMP_PCT(58, 70),
+								TEMP_PCT(55, 65),
+								TEMP_PCT(53, 60),
+								TEMP_PCT(50, 58),
+								TEMP_PCT(48, 54),
+								TEMP_PCT(43, 47),
+								TEMP_PCT(38, 42),
+								TEMP_PCT(35, 37),
+								TEMP_PCT(33, 0),
+						}
+					},
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      80, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      70, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      65, SHUTDOWN),
+					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,      90, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+							.min_power = 15000,
+							.max_power = 15000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 200,
+						},
+					.pl2 = {
+							.min_power = 55000,
+							.max_power = 55000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 1000,
+						}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = {  36, 2300 },
+					[1] = {  31, 2000 },
+					[2] = {  26, 1700 },
+					[3] = {  20, 1300 }
+				}"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{
+					[0] = {  90, 6700, 220, 2200, },
+					[1] = {  80, 5800, 180, 1800, },
+					[2] = {  70, 5000, 145, 1450, },
+					[3] = {  60, 4900, 115, 1150, },
+					[4] = {  50, 3838,  90,  900, },
+					[5] = {  40, 2904,  55,  550, },
+					[6] = {  30, 2337,  30,  300, },
+					[7] = {  20, 1608,  15,  150, },
+					[8] = {  10,  800,  10,  100, },
+					[9] = {   0,    0,   0,   50, }
+				}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 0 alias dptf_policy on end
+			end
+		end
 		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

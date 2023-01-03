@@ -17,8 +17,8 @@ fw_config
 		option STYLUS_PRESENT		1
 	end
 	field ZYDRON_UFC 36 37
-		option UFC_MIPI_HI556           0
-		option UFC_MIPI_OVTI2740        1
+		option UFC_MIPI_OVTI2740        0
+		option UFC_MIPI_HI556           1
 	end
 end
 chip soc/intel/alderlake

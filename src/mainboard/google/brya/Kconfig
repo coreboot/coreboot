@@ -222,6 +222,7 @@ config MAINBOARD_PART_NUMBER
 	default "Zydron" if BOARD_GOOGLE_ZYDRON
 	default "Gladios" if BOARD_GOOGLE_GLADIOS
 	default "Marasov" if BOARD_GOOGLE_MARASOV
+	default "Omnigul" if BOARD_GOOGLE_OMNIGUL
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -263,6 +264,7 @@ config VARIANT_DIR
 	default "zydron" if BOARD_GOOGLE_ZYDRON
 	default "gladios" if BOARD_GOOGLE_GLADIOS
 	default "marasov" if BOARD_GOOGLE_MARASOV
+	default "omnigul" if BOARD_GOOGLE_OMNIGUL
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

@@ -12,14 +12,14 @@
 #define CPPC_NOM_PERF_IDX	3
 
 enum cpu_perf_eff_type {
-	CPU_TYPE_SMALL,
-	CPU_TYPE_BIG,
+	CPU_TYPE_EFF,
+	CPU_TYPE_PERF,
 };
 
 DECLARE_SPIN_LOCK(cpu_lock);
 static u8 global_cpu_type[CONFIG_MAX_CPUS];
 
-static bool is_big_core(void)
+static bool is_perf_core(void)
 {
 	return get_soc_cpu_type() == CPUID_CORE_TYPE_INTEL_CORE;
 }
@@ -39,9 +39,9 @@ static u32 get_cpu_index(void)
 }
 
 /*
- * This function determines the type (big or small) of the CPU that is executing
- * it and stores the information (in a thread-safe manner) in an global_cpu_type
- * array.
+ * This function determines the type (performance or efficient) of the CPU that
+ * is executing it and stores the information (in a thread-safe manner) in an
+ * global_cpu_type array.
  * It requires the SoC to implement a function `get_soc_cpu_type()` which will be
  * called in a critical section to determine the type of the executing CPU.
  */
@@ -50,8 +50,8 @@ static void set_cpu_type(void *unused)
 	spin_lock(&cpu_lock);
 	u8 cpu_index = get_cpu_index();
 
-	if (is_big_core())
-		global_cpu_type[cpu_index] = CPU_TYPE_BIG;
+	if (is_perf_core())
+		global_cpu_type[cpu_index] = CPU_TYPE_PERF;
 
 	spin_unlock(&cpu_lock);
 }
@@ -64,16 +64,16 @@ static void run_set_cpu_type(void *unused)
 	}
 }
 
-static void acpi_get_cpu_nomi_perf(u16 *small_core_nom_perf, u16 *big_core_nom_perf)
+static void acpi_get_cpu_nomi_perf(u16 *eff_core_nom_perf, u16 *perf_core_nom_perf)
 {
-	u16 big_core_scal_factor, small_core_scal_factor;
+	u16 perf_core_scal_factor, eff_core_scal_factor;
 	u8 max_non_turbo_ratio = cpu_get_max_non_turbo_ratio();
 
-	soc_get_scaling_factor(&big_core_scal_factor, &small_core_scal_factor);
+	soc_get_scaling_factor(&perf_core_scal_factor, &eff_core_scal_factor);
 
-	*big_core_nom_perf = (u16)((max_non_turbo_ratio * big_core_scal_factor) / 100);
+	*perf_core_nom_perf = (u16)((max_non_turbo_ratio * perf_core_scal_factor) / 100);
 
-	*small_core_nom_perf = (u16)((max_non_turbo_ratio * small_core_scal_factor) / 100);
+	*eff_core_nom_perf = (u16)((max_non_turbo_ratio * eff_core_scal_factor) / 100);
 }
 
 static u16 acpi_get_cpu_nominal_freq(void)
@@ -84,18 +84,18 @@ static u16 acpi_get_cpu_nominal_freq(void)
 /* Updates Nominal Frequency and Nominal Performance */
 static void acpigen_cppc_update_nominal_freq_perf(const char *pkg_path, s32 core_id)
 {
-	u16 small_core_nom_perf, big_core_nom_perf;
+	u16 eff_core_nom_perf, perf_core_nom_perf;
 
 	if (!soc_is_nominal_freq_supported())
 		return;
 
-	acpi_get_cpu_nomi_perf(&small_core_nom_perf, &big_core_nom_perf);
+	acpi_get_cpu_nomi_perf(&eff_core_nom_perf, &perf_core_nom_perf);
 
-	if (global_cpu_type[core_id] == CPU_TYPE_BIG)
-		acpigen_set_package_element_int(pkg_path, CPPC_NOM_PERF_IDX, big_core_nom_perf);
+	if (global_cpu_type[core_id] == CPU_TYPE_PERF)
+		acpigen_set_package_element_int(pkg_path, CPPC_NOM_PERF_IDX, perf_core_nom_perf);
 	else
 		acpigen_set_package_element_int(pkg_path, CPPC_NOM_PERF_IDX,
-						small_core_nom_perf);
+						eff_core_nom_perf);
 
 	/* Update CPU's nominal frequency */
 	acpigen_set_package_element_int(pkg_path, CPPC_NOM_FREQ_IDX,

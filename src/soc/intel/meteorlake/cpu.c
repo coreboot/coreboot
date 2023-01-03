@@ -87,10 +87,10 @@ enum core_type get_soc_cpu_type(void)
 		return CPUID_CORE_TYPE_INTEL_CORE;
 }
 
-void soc_get_scaling_factor(u16 *big_core_scal_factor, u16 *small_core_scal_factor)
+void soc_get_scaling_factor(u16 *perf_core_scal_factor, u16 *eff_core_scal_factor)
 {
-	*big_core_scal_factor = 125;
-	*small_core_scal_factor = 100;
+	*perf_core_scal_factor = 125;
+	*eff_core_scal_factor = 100;
 }
 
 bool soc_is_nominal_freq_supported(void)

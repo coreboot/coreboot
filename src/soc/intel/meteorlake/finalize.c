@@ -6,8 +6,8 @@
 #include <cpu/x86/smm.h>
 #include <delay.h>
 #include <device/pci.h>
+#include <gpio.h>
 #include <intelblocks/cse.h>
-#include <intelblocks/gpio.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>

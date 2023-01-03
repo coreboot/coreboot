@@ -4,9 +4,9 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <gpio.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/cfg.h>
-#include <intelblocks/gpio.h>
 #include <intelblocks/irq.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/p2sb.h>

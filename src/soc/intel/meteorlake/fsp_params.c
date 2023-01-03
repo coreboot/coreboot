@@ -42,6 +42,8 @@
 #define DEF_DMVAL	15
 #define DEF_DITOVAL	625
 
+#define MAX_ONBOARD_PCIE_DEVICES 256
+
 static const struct slot_irq_constraints irq_constraints[] = {
 	{
 		.slot = PCI_DEV_SLOT_PCIE_3,
@@ -701,6 +703,70 @@ static void arch_silicon_init_params(FSPS_ARCH_UPD *s_arch_cfg)
 				fsp_debug_event_handler;
 }
 
+static void evaluate_ssid(const struct device *dev, uint16_t *svid, uint16_t *ssid)
+{
+	if (!(dev && svid && ssid))
+		return;
+
+	*svid = CONFIG_SUBSYSTEM_VENDOR_ID ? : (dev->subsystem_vendor ? : 0x8086);
+	*ssid = CONFIG_SUBSYSTEM_DEVICE_ID ? : (dev->subsystem_device ? : 0xfffe);
+}
+
+/*
+ * Programming SSID before FSP-S is important because SSID registers of a few PCIE
+ * devices (e.g. IPU, Crashlog, XHCI, TCSS_XHCI etc.) are locked after FSP-S hence
+ * provide a custom SSID (same as DID by default) value via UPD.
+ */
+static void fill_fsps_pci_ssid_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_meteorlake_config *config)
+{
+	struct svid_ssid_init_entry {
+		union {
+			struct {
+				uint64_t reg:12;
+				uint64_t function:3;
+				uint64_t device:5;
+				uint64_t bus:8;
+				uint64_t ignore1:4;
+				uint64_t segment:16;
+				uint64_t ignore2:16;
+			};
+			uint64_t data;
+		};
+		struct {
+			uint16_t svid;
+			uint16_t ssid;
+		};
+		uint32_t ignore3;
+	};
+
+	static struct svid_ssid_init_entry ssid_table[MAX_ONBOARD_PCIE_DEVICES];
+	const struct device *dev;
+	int i = 0;
+
+	for (dev = all_devices; dev; dev = dev->next) {
+		if (!(is_dev_enabled(dev) && dev->path.type == DEVICE_PATH_PCI &&
+		    dev->bus->secondary == 0))
+			continue;
+
+		if (dev->path.pci.devfn == PCI_DEVFN_ROOT) {
+			evaluate_ssid(dev, &s_cfg->SiCustomizedSvid, &s_cfg->SiCustomizedSsid);
+		} else {
+			ssid_table[i].reg	= PCI_SUBSYSTEM_VENDOR_ID;
+			ssid_table[i].device	= PCI_SLOT(dev->path.pci.devfn);
+			ssid_table[i].function	= PCI_FUNC(dev->path.pci.devfn);
+			evaluate_ssid(dev, &ssid_table[i].svid, &ssid_table[i].ssid);
+			i++;
+		}
+	}
+
+	s_cfg->SiSsidTablePtr = (uintptr_t)ssid_table;
+	s_cfg->SiNumberOfSsidTableEntry = i;
+
+	/* Ensure FSP will program the registers */
+	s_cfg->SiSkipSsidProgramming = 0;
+}
+
 static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		struct soc_intel_meteorlake_config *config)
 {
@@ -730,6 +796,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_ufs_params,
 		fill_fsps_ai_params,
 		fill_fsps_irq_params,
+		fill_fsps_pci_ssid_params,
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(fill_fsps_params); i++)

@@ -401,17 +401,17 @@ static int smbios_write_type0(unsigned long *current, int handle)
 static int get_socket_type(void)
 {
 	if (CONFIG(CPU_INTEL_SLOT_1))
-		return 0x08;
+		return PROCESSOR_UPGRADE_SLOT_1;
 	if (CONFIG(CPU_INTEL_SOCKET_MPGA604))
-		return 0x13;
+		return PROCESSOR_UPGRADE_SOCKET_MPGA604;
 	if (CONFIG(CPU_INTEL_SOCKET_LGA775))
-		return 0x15;
+		return PROCESSOR_UPGRADE_SOCKET_LGA775;
 	if (CONFIG(XEON_SP_COMMON_BASE))
-		return 0x36;
+		return PROCESSOR_UPGRADE_SOCKET_LGA3647_1;
 	if (CONFIG(SOC_INTEL_ALDERLAKE))
-		return 0x40;
+		return PROCESSOR_UPGRADE_SOCKET_LGA1700;
 
-	return 0x02; /* Unknown */
+	return PROCESSOR_UPGRADE_UNKNOWN;
 }
 
 unsigned int __weak smbios_processor_external_clock(void)

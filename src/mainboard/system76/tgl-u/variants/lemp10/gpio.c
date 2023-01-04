@@ -131,8 +131,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_E15, DN_20K, DEEP), // SCI#
 	_PAD_CFG_STRUCT(GPP_E16, 0x82840100, 0x0000), // SMI#
 	PAD_NC(GPP_E17, NONE),
-	PAD_NC(GPP_E18, NONE), // TBT_LSX0_TXD - programmed by FSP, see Intel document 617016
-	PAD_NC(GPP_E19, NONE), // TBT_LSX0_RXD - programmed by FSP, see Intel document 617016
+	// GPP_E18 (TBT_LSX0_TXD) configured by FSP (Ref: Intel doc 617016)
+	// GPP_E19 (TBT_LSX0_RXD) configured by FSP (Ref: Intel doc 617016)
 	_PAD_CFG_STRUCT(GPP_E20, 0x40880100, 0x0000), // SWI#
 	PAD_NC(GPP_E21, NONE), // GPP_E21 - DDP2 I2C / TBT_LSX1 pin voltage (L=1.8V, H=3.3V)
 	PAD_NC(GPP_E22, NONE),

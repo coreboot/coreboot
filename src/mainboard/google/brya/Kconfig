@@ -332,7 +332,4 @@ config PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS
 	int
 	default 32
 
-config MEMORY_TRAINING_TEXT
-	default "Your device is finishing an update. This may take 1-2 minutes.\\Please do not turn off your device."
-
 endif # BOARD_GOOGLE_BRYA_COMMON

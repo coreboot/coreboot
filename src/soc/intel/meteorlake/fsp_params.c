@@ -642,6 +642,7 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	/* Enable the energy efficient turbo mode */
 	s_cfg->EnergyEfficientTurbo = 1;
 	s_cfg->PmcLpmS0ixSubStateEnableMask = get_supported_lpm_mask();
+	s_cfg->PkgCStateDemotion = !config->disable_package_c_state_demotion;
 }
 
 

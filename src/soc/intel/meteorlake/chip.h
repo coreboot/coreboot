@@ -347,6 +347,13 @@ struct soc_intel_meteorlake_config {
 	uint8_t lan_clk;
 
 	/*
+	 * Enable or Disable Package C-state Demotion.
+	 * Default is set to 0.
+	 * Set this to 1 in order to disable Package C-state demotion.
+	 */
+	bool disable_package_c_state_demotion;
+
+	/*
 	 * Enable or Disable Skipping MBP HOB.
 	 * Default is set to 0 and set to 1 to skip the MBP HOB.
 	 */

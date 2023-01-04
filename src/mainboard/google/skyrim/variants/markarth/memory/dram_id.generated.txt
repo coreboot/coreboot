@@ -6,6 +6,8 @@
 DRAM Part Name                 ID to assign
 K3KL8L80CM-MGCT                0 (0000)
 H58G56BK7BX068                 0 (0000)
+MT62F1G32D2DS-026 WT:B         0 (0000)
 K3KL9L90CM-MGCT                1 (0001)
 H58G66BK7BX067                 1 (0001)
 MT62F2G32D4DS-026 WT:B         1 (0001)
+MT62F512M32D2DR-031 WT:B       2 (0010)

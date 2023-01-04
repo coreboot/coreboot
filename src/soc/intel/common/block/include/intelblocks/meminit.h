@@ -22,8 +22,8 @@
 
 /* Different memory topologies supported by the platform. */
 enum mem_topology {
-	MEM_TOPO_MEMORY_DOWN = BIT(0),
-	MEM_TOPO_DIMM_MODULE = BIT(1),
+	MEM_TOPO_MEMORY_DOWN = BIT(0), // memory is soldered onto board
+	MEM_TOPO_DIMM_MODULE = BIT(1), // memory is composed of DIMM modules
 	MEM_TOPO_MIXED = MEM_TOPO_MEMORY_DOWN | MEM_TOPO_DIMM_MODULE,
 };
 

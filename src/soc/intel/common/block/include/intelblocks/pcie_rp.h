@@ -15,6 +15,7 @@
 
 enum pcie_rp_flags {
 	PCIE_RP_HOTPLUG = (1 << 0),
+	/* PCIE RP Latency Tolerance Report */
 	PCIE_RP_LTR = (1 << 1),
 	/* PCIE RP Advanced Error Report */
 	PCIE_RP_AER = (1 << 2),

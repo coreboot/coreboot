@@ -51,8 +51,8 @@ enum ddi_ports {
 };
 
 enum ddi_port_flags {
-	DDI_ENABLE_DDC = 1 << 0,
-	DDI_ENABLE_HPD = 1 << 1,
+	DDI_ENABLE_DDC = 1 << 0, // Display Data Channel
+	DDI_ENABLE_HPD = 1 << 1, // Hot Plug Detect
 };
 
 /*

@@ -506,8 +506,8 @@ bool is_tme_supported(void)
 {
 	struct cpuid_result cpuid_regs;
 
-	cpuid_regs = cpuid_ext(0x7, 0x0); /* ECX[13] is feature capability */
-
+	/* ECX[13] is feature capability */
+	cpuid_regs = cpuid_ext(CPUID_STRUCT_EXTENDED_FEATURE_FLAGS, 0x0);
 	return (cpuid_regs.ecx & TME_SUPPORTED);
 }
 
@@ -529,7 +529,8 @@ bool is_sgx_supported(void)
 	struct cpuid_result cpuid_regs;
 	msr_t msr;
 
-	cpuid_regs = cpuid_ext(0x7, 0x0); /* EBX[2] is feature capability */
+	/* EBX[2] is feature capability */
+	cpuid_regs = cpuid_ext(CPUID_STRUCT_EXTENDED_FEATURE_FLAGS, 0x0);
 	msr = rdmsr(MTRR_CAP_MSR); /* Bit 12 is PRMRR enablement */
 	return ((cpuid_regs.ebx & SGX_SUPPORTED) && (msr.lo & MTRR_CAP_PRMRR));
 }
@@ -539,7 +540,8 @@ bool is_keylocker_supported(void)
 	struct cpuid_result cpuid_regs;
 	msr_t msr;
 
-	cpuid_regs = cpuid_ext(0x7, 0x0); /* ECX[23] is feature capability */
+	/* ECX[23] is feature capability */
+	cpuid_regs = cpuid_ext(CPUID_STRUCT_EXTENDED_FEATURE_FLAGS, 0x0);
 	msr = rdmsr(MTRR_CAP_MSR); /* Bit 12 is PRMRR enablement */
 	return ((cpuid_regs.ecx & KEYLOCKER_SUPPORTED) && (msr.lo & MTRR_CAP_PRMRR));
 }

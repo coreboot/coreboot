@@ -20,7 +20,7 @@ chip soc/intel/alderlake
 			register "cpu_pcie_rp[CPU_RP(1)]" = "{
 				.clk_src = 0,
 				.clk_req = 0,
-				.flags = PCIE_RP_LTR,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			chip soc/intel/common/block/pcie/rtd3
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D14)" # SSD2_PWR_EN

@@ -100,6 +100,16 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_E21, NONE),
 	/* F6  : WWAN_WLAN_COEX3 ==> NC */
 	PAD_NC(GPP_F6, NONE),
+	/* F11 : THC1_SPI2_CLK ==> NC */
+	PAD_NC_LOCK(GPP_F11, NONE, LOCK_CONFIG),
+	/* F12 : GSXDOUT ==> NC */
+	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
+	/* F13 : GSXDOUT ==> NC */
+	PAD_NC_LOCK(GPP_F13, NONE, LOCK_CONFIG),
+	/* F15 : GSXSRESET# ==> NC */
+	PAD_NC_LOCK(GPP_F15, NONE, LOCK_CONFIG),
+	/* F16 : GSXCLK ==> NC */
+	PAD_NC_LOCK(GPP_F16, NONE, LOCK_CONFIG),
 	/* F19 : GPP_F19(TP93) ==> NC */
 	PAD_NC(GPP_F19, NONE),
 	/* F20 : UCAM_RST_L ==> NC */

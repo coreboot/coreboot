@@ -1,0 +1,34 @@
+if BOARD_INTEL_ARCHERCITY_CRB
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_65536
+	select CONSOLE_OVERRIDE_LOGLEVEL
+	select IPMI_KCS
+	select MEMORY_MAPPED_TPM
+	select MAINBOARD_HAS_TPM2
+	select MAINBOARD_USES_FSP2_0
+	select SOC_INTEL_SAPPHIRERAPIDS_SP
+	select SUPERIO_ASPEED_AST2400
+	select HAVE_ACPI_TABLES
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select VPD
+	select OCP_VPD
+
+config MAINBOARD_DIR
+	string
+	default "intel/archercity_crb"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Archer City CRB"
+
+config FMDFILE
+	string
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+config MAX_SOCKET
+	int
+	default 2
+
+endif

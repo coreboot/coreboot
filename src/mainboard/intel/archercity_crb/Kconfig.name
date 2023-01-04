@@ -1,0 +1,2 @@
+config BOARD_INTEL_ARCHERCITY_CRB
+	bool "Archer City CRB"

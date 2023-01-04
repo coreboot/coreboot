@@ -43,6 +43,25 @@ enum ddi_port_flags {
 	DDI_ENABLE_HPD = 1 << 1,
 };
 
+/*
+ * The Max Pkg Cstate
+ * Values 0 - C0/C1, 1 - C2, 2 - C3, 3 - C6, 4 - C7, 5 - C7S, 6 - C8, 7 - C9, 8 - C10,
+ * 254 - CPU Default , 255 - Auto.
+ */
+enum pkgcstate_limit {
+	LIMIT_C0_C1		= 0,
+	LIMIT_C2		= 1,
+	LIMIT_C3		= 2,
+	LIMIT_C6		= 3,
+	LIMIT_C7		= 4,
+	LIMIT_C7S		= 5,
+	LIMIT_C8		= 6,
+	LIMIT_C9		= 7,
+	LIMIT_C10		= 8,
+	LIMIT_CPUDEFAULT	= 254,
+	LIMIT_AUTO		= 255,
+};
+
 /* Bit values for use in LpmStateEnableMask. */
 enum lpm_state_mask {
 	LPM_S0i2_0 = BIT(0),

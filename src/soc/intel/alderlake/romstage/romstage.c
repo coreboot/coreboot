@@ -6,6 +6,7 @@
 #include <fsp/util.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/cse.h>
+#include <intelblocks/early_graphics.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smbus.h>
 #include <intelblocks/thermal.h>
@@ -172,4 +173,12 @@ void mainboard_romstage_entry(void)
 	pmc_set_disb();
 	if (!s3wake)
 		save_dimm_info();
+
+	/*
+	 * Turn-off early graphics configuration with two purposes:
+	 * - Clear any potentially still on-screen message
+	 * - Allow PEIM graphics driver to smoothly execute in ramstage if
+	 *   RUN_FSP_GOP is selected
+	 */
+	early_graphics_stop();
 }

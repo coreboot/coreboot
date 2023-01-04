@@ -11,8 +11,10 @@
 #include <gpio.h>
 #include <intelbasecode/debug_feature.h>
 #include <intelblocks/cpulib.h>
+#include <intelblocks/early_graphics.h>
 #include <intelblocks/pcie_rp.h>
 #include <option.h>
+#include <pc80/vga.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -361,6 +363,16 @@ static void fill_fspm_ibecc_params(FSP_M_CONFIG *m_cfg,
 	}
 }
 
+static void inform_user_of_memory_training(void)
+{
+	if (!CONFIG(MAINBOARD_HAS_EARLY_LIBGFXINIT) ||
+	    !early_graphics_init())
+		return;
+
+	vga_write_text(VGA_TEXT_CENTER, VGA_TEXT_HORIZONTAL_MIDDLE,
+		       "Your device is finishing an update. This may take 1-2 minutes.\nPlease do not turn off your device.");
+}
+
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
@@ -415,6 +427,15 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 			m_cfg->SerialDebugMrcLevel = 0;
 		}
 	}
+
+	/*
+	 * If valid MRC cache data is not found, FSP should perform a memory
+	 * training. Memory training can take a while so let's inform the end
+	 * user with an on-screen text message.
+	 */
+	if (!arch_upd->NvsBufferPtr)
+		inform_user_of_memory_training();
+
 	config = config_of_soc();
 
 	soc_memory_init_params(m_cfg, config);

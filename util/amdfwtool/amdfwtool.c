@@ -2545,9 +2545,12 @@ int main(int argc, char **argv)
 		ctx.address_mode = AMD_ADDR_REL_BIOS;
 	else
 		ctx.address_mode = AMD_ADDR_PHYSICAL;
-	printf("    AMDFWTOOL  Using firmware directory location of %s address: 0x%08x\n",
-			ctx.address_mode == AMD_ADDR_PHYSICAL ? "absolute" : "relative",
-			RUN_CURRENT(ctx));
+	printf("    AMDFWTOOL  Using firmware directory location of address: 0x%08x",
+			efs_location);
+	if (body_location != efs_location)
+		printf(" with a split body at: 0x%08x\n", body_location);
+	else
+		printf("\n");
 
 	integrate_firmwares(&ctx, amd_romsig, amd_fw_table);
 

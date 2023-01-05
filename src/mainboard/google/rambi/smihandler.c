@@ -28,10 +28,15 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 
 	switch (slp_typ) {
 	case ACPI_S3:
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 		/* Enable wake pin in GPE block. */
 		enable_gpe(WAKE_GPIO_EN);
+		break;
+	}
+
+	switch (slp_typ) {
+	case ACPI_S3:
+		/* Enable wake events */
+		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 		break;
 	case ACPI_S5:
 		/* Enable wake events */

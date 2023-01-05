@@ -37,15 +37,10 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 
 	switch (slp_typ) {
 	case ACPI_S3:
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 		/* Enable wake pin in GPE block. */
 		enable_gpe(WAKE_GPIO_EN);
 		break;
 	case ACPI_S5:
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
-
 		/* Disabling wake from SUS_GPIO1 (TOUCH INT) and
 		 * SUS_GPIO7 (TRACKPAD INT) in North bank as they are not
 		 * valid S5 wake sources
@@ -54,7 +49,17 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 			GPIO_WAKE_MASK_REG0);
 		mask = ~(GPIO_SUS1_WAKE_MASK | GPIO_SUS7_WAKE_MASK);
 		write32(addr, read32(addr) & mask);
+		break;
+	}
 
+	switch (slp_typ) {
+	case ACPI_S3:
+		/* Enable wake events */
+		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
+		break;
+	case ACPI_S5:
+		/* Enable wake events */
+		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
 		break;
 	}
 

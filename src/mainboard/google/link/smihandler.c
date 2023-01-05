@@ -50,11 +50,11 @@ void mainboard_smi_sleep(u8 slp_typ)
 		;
 
 	/* Enable wake events */
-	google_chromeec_set_wake_mask(LINK_EC_S3_WAKE_EVENTS);
+	google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 }
 
 int mainboard_smi_apmc(u8 apmc)
 {
-	chromeec_smi_apmc(apmc, LINK_EC_SCI_EVENTS, LINK_EC_SMI_EVENTS);
+	chromeec_smi_apmc(apmc, MAINBOARD_EC_SCI_EVENTS, MAINBOARD_EC_SMI_EVENTS);
 	return 0;
 }

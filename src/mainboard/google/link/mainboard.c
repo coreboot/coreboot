@@ -3,6 +3,7 @@
 #include <types.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
+#include <ec/ec.h>
 #include <console/console.h>
 #if CONFIG(VGA_ROM_RUN)
 #include <x86emu/x86emu.h>
@@ -108,7 +109,7 @@ static void mainboard_init(struct device *dev)
 	uint32_t board_version = 0;
 
 	/* Initialize the Embedded Controller */
-	link_ec_init();
+	mainboard_ec_init();
 
 	google_chromeec_get_board_version(&board_version);
 	if (board_version == 0) {

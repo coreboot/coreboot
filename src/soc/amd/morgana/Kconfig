@@ -5,13 +5,6 @@
 
 config SOC_AMD_MORGANA
 	bool
-	help
-	  AMD Morgana support
-
-if SOC_AMD_MORGANA
-
-config SOC_SPECIFIC_OPTIONS
-	def_bool y
 	select ACPI_SOC_NVS
 	select ARCH_X86
 	select BOOT_DEVICE_SUPPORTS_WRITES if BOOT_DEVICE_SPI_FLASH
@@ -88,6 +81,10 @@ config SOC_SPECIFIC_OPTIONS
 	select VBOOT_DEFINE_WIDEVINE_COUNTERS if VBOOT_STARTS_BEFORE_BOOTBLOCK
 	select X86_AMD_FIXED_MTRRS
 	select X86_INIT_NEED_1_SIPI
+	help
+	  AMD Morgana support
+
+if SOC_AMD_MORGANA
 
 config CHIPSET_DEVICETREE
 	string

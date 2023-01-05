@@ -2,13 +2,6 @@
 
 config SOC_AMD_STONEYRIDGE
 	bool
-	help
-	  AMD support for SOCs in Family 15h Models 60h-6Fh and Models 70h-7Fh.
-
-if SOC_AMD_STONEYRIDGE
-
-config CPU_SPECIFIC_OPTIONS
-	def_bool y
 	select ACPI_SOC_NVS
 	select ARCH_X86
 	select BOOT_DEVICE_SUPPORTS_WRITES if BOOT_DEVICE_SPI_FLASH
@@ -51,6 +44,10 @@ config CPU_SPECIFIC_OPTIONS
 	select TSC_SYNC_LFENCE
 	select USE_DDR4
 	select X86_AMD_FIXED_MTRRS
+	help
+	  AMD support for SOCs in Family 15h Models 60h-6Fh and Models 70h-7Fh.
+
+if SOC_AMD_STONEYRIDGE
 
 config AMD_APU_STONEYRIDGE
 	bool

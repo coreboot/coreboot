@@ -2,13 +2,6 @@
 
 config SOC_AMD_PICASSO
 	bool
-	help
-	  AMD Picasso support
-
-if SOC_AMD_PICASSO
-
-config CPU_SPECIFIC_OPTIONS
-	def_bool y
 	select ACPI_SOC_NVS
 	select ADD_FSP_BINARIES if USE_AMD_BLOBS
 	select ARCH_X86
@@ -76,6 +69,10 @@ config CPU_SPECIFIC_OPTIONS
 	select X86_AMD_FIXED_MTRRS
 	select X86_INIT_NEED_1_SIPI
 	select HAVE_EXP_X86_64_SUPPORT
+	help
+	  AMD Picasso support
+
+if SOC_AMD_PICASSO
 
 config CHIPSET_DEVICETREE
 	string

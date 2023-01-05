@@ -10,7 +10,6 @@
 #include <cpu/intel/haswell/haswell.h>
 
 /* Include EC functions */
-#include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
 #include "ec.h"
 
@@ -44,25 +43,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 		break;
 	}
 
-	switch (slp_typ) {
-	case ACPI_S3:
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
-		break;
-	case ACPI_S4:
-	case ACPI_S5:
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
-		break;
-	}
-
-	/* Disable SCI and SMI events */
-	google_chromeec_set_smi_mask(0);
-	google_chromeec_set_sci_mask(0);
-
-	/* Clear pending events that may trigger immediate wake */
-	while (google_chromeec_get_event() != EC_HOST_EVENT_NONE)
-		;
+	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS, MAINBOARD_EC_S5_WAKE_EVENTS);
 }
 
 int mainboard_smi_apmc(u8 apmc)

@@ -3,6 +3,6 @@
 #ifndef AMD_MORGANA_CPU_H
 #define AMD_MORGANA_CPU_H
 
-#define MORGANA_A0_CPUID	0x008a0f00 /* TODO: Update for Morgana */
+#define MORGANA_A0_CPUID	0x00a70f80
 
 #endif /* AMD_MORGANA_CPU_H */

@@ -40,26 +40,12 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 	switch (slp_typ) {
 	case ACPI_S3:
-		mainboard_disable_gpios();
-
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
-		break;
 	case ACPI_S5:
 		mainboard_disable_gpios();
-
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
 		break;
 	}
 
-	/* Disable SCI and SMI events */
-	google_chromeec_set_smi_mask(0);
-	google_chromeec_set_sci_mask(0);
-
-	/* Clear pending events that may trigger immediate wake */
-	while (google_chromeec_get_event() != EC_HOST_EVENT_NONE)
-		;
+	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS, MAINBOARD_EC_S5_WAKE_EVENTS);
 }
 
 int mainboard_smi_apmc(u8 apmc)

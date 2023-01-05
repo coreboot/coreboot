@@ -1,10 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <elog.h>
 
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
@@ -16,38 +14,12 @@
 /* The wake gpio is SUS_GPIO[0]. */
 #define WAKE_GPIO_EN SUS_GPIO_EN0
 
-static uint8_t mainboard_smi_ec(void)
-{
-	uint8_t cmd = google_chromeec_get_event();
-	uint16_t pmbase = get_pmbase();
-	uint32_t pm1_cnt;
-
-	/* Log this event */
-	if (cmd)
-		elog_gsmi_add_event_byte(ELOG_TYPE_EC_EVENT, cmd);
-
-	switch (cmd) {
-	case EC_HOST_EVENT_LID_CLOSED:
-		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");
-
-		/* Go to S5 */
-		pm1_cnt = inl(pmbase + PM1_CNT);
-		pm1_cnt |= SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT);
-		outl(pm1_cnt, pmbase + PM1_CNT);
-		break;
-	}
-
-	return cmd;
-}
-
 /* The entire 32-bit ALT_GPIO_SMI register is passed as a parameter. Note, that
  * this includes the enable bits in the lower 16 bits. */
 void mainboard_smi_gpi(uint32_t alt_gpio_smi)
 {
-	if (alt_gpio_smi & (1 << EC_SMI_GPI)) {
-		/* Process all pending events */
-		while (mainboard_smi_ec() != 0);
-	}
+	if (alt_gpio_smi & (1 << EC_SMI_GPI))
+		chromeec_smi_process_events();
 }
 
 void mainboard_smi_sleep(uint8_t slp_typ)

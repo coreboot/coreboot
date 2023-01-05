@@ -11,6 +11,7 @@
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <halt.h>
 #include <console/console.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
@@ -419,6 +420,16 @@ int platform_is_resuming(void)
 		return 0;
 
 	return acpi_sleep_from_pm1(inl(get_pmbase() + PM1_CNT)) == ACPI_S3;
+}
+
+void poweroff(void)
+{
+	uint32_t pm1_cnt;
+
+	/* Go to S5 */
+	pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+	pm1_cnt |= (0xf << 10);
+	outl(pm1_cnt, ACPI_BASE_ADDRESS + PM1_CNT);
 }
 
 /* STM Support */

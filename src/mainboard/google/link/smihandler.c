@@ -6,41 +6,17 @@
 #include <soc/nvs.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
-#include <southbridge/intel/common/pmbase.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <elog.h>
 
 /* Include EC functions */
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
 #include "ec.h"
 
-static u8 mainboard_smi_ec(void)
-{
-	u8 cmd = google_chromeec_get_event();
-
-	/* Log this event */
-	if (cmd)
-		elog_gsmi_add_event_byte(ELOG_TYPE_EC_EVENT, cmd);
-
-	switch (cmd) {
-	case EC_HOST_EVENT_LID_CLOSED:
-		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");
-
-		/* Go to S5 */
-		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) | (0xf << 10));
-		break;
-	}
-
-	return cmd;
-}
-
 void mainboard_smi_gpi(u32 gpi_sts)
 {
-	if (gpi_sts & (1 << EC_SMI_GPI)) {
-		/* Process all pending events */
-		while (mainboard_smi_ec() != 0);
-	}
+	if (gpi_sts & (1 << EC_SMI_GPI))
+		chromeec_smi_process_events();
 }
 
 void mainboard_smi_sleep(u8 slp_typ)

@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <soc/nvs.h>
@@ -10,7 +9,6 @@
 #include <southbridge/intel/lynxpoint/me.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <cpu/intel/haswell/haswell.h>
-#include <elog.h>
 
 /* Include EC functions */
 #include <ec/google/chromeec/ec.h>
@@ -23,36 +21,11 @@
 #define GPIO_WLAN_DISABLE_L 46
 #define GPIO_LTE_DISABLE_L  59
 
-static u8 mainboard_smi_ec(void)
-{
-	u8 cmd = google_chromeec_get_event();
-	u32 pm1_cnt;
-
-	/* Log this event */
-	if (cmd)
-		elog_gsmi_add_event_byte(ELOG_TYPE_EC_EVENT, cmd);
-
-	switch (cmd) {
-	case EC_HOST_EVENT_LID_CLOSED:
-		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");
-
-		/* Go to S5 */
-		pm1_cnt = inl(get_pmbase() + PM1_CNT);
-		pm1_cnt |= (0xf << 10);
-		outl(pm1_cnt, get_pmbase() + PM1_CNT);
-		break;
-	}
-
-	return cmd;
-}
-
 /* gpi_sts is GPIO 47:32 */
 void mainboard_smi_gpi(u32 gpi_sts)
 {
-	if (gpi_sts & (1 << (EC_SMI_GPI - 32))) {
-		/* Process all pending events */
-		while (mainboard_smi_ec() != 0);
-	}
+	if (gpi_sts & (1 << (EC_SMI_GPI - 32)))
+		chromeec_smi_process_events();
 }
 
 void mainboard_smi_sleep(u8 slp_typ)

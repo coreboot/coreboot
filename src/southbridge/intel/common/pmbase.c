@@ -7,6 +7,7 @@
 #include <bootmode.h>
 #include <device/pci_ops.h>
 #include <device/pci_type.h>
+#include <halt.h>
 #include <stdint.h>
 
 #include "pmbase.h"
@@ -92,6 +93,16 @@ int platform_is_resuming(void)
 		return 0;
 
 	return acpi_get_sleep_type() == ACPI_S3;
+}
+
+void poweroff(void)
+{
+	uint32_t pm1_cnt;
+
+	/* Go to S5 */
+	pm1_cnt = read_pmbase32(PM1_CNT);
+	pm1_cnt |= (0xf << 10);
+	write_pmbase32(PM1_CNT, pm1_cnt);
 }
 
 #define ACPI_SCI_IRQ	9

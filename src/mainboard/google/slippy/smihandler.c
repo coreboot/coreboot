@@ -34,23 +34,23 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 	switch (slp_typ) {
 	case ACPI_S3:
-		/* Prevent leak from standby rail to WLAN rail in S3. */
+	case ACPI_S4:
+	case ACPI_S5:
+		/* Prevent leak from standby rail to WLAN rail in S3/S4/S5. */
 		set_gpio(GPIO_WLAN_DISABLE_L, 0);
 		set_gpio(GPIO_PP3300_CODEC_EN, 0);
 		/* Disable LTE */
 		set_gpio(GPIO_LTE_DISABLE_L, 0);
+		break;
+	}
 
+	switch (slp_typ) {
+	case ACPI_S3:
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 		break;
 	case ACPI_S4:
 	case ACPI_S5:
-		/* Prevent leak from standby rail to WLAN rail in S5. */
-		set_gpio(GPIO_WLAN_DISABLE_L, 0);
-		set_gpio(GPIO_PP3300_CODEC_EN, 0);
-		/* Disable LTE */
-		set_gpio(GPIO_LTE_DISABLE_L, 0);
-
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
 		break;

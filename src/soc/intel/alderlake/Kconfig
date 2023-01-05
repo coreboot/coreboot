@@ -291,6 +291,14 @@ config CPU_BCLK_MHZ
 	int
 	default 100
 
+config SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR
+	int
+	default 127
+
+config SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR
+	int
+	default 100
+
 config SOC_INTEL_COMMON_BLOCK_GSPI_CLOCK_MHZ
 	int
 	default 120

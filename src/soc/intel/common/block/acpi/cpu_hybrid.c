@@ -72,14 +72,19 @@ static void run_set_cpu_type(void *unused)
 
 static void acpi_get_cpu_nomi_perf(u16 *eff_core_nom_perf, u16 *perf_core_nom_perf)
 {
-	u16 perf_core_scal_factor, eff_core_scal_factor;
 	u8 max_non_turbo_ratio = cpu_get_max_non_turbo_ratio();
 
-	soc_get_scaling_factor(&perf_core_scal_factor, &eff_core_scal_factor);
+	_Static_assert(CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR != 0,
+		       "CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR must not be zero");
 
-	*perf_core_nom_perf = (u16)((max_non_turbo_ratio * perf_core_scal_factor) / 100);
+	_Static_assert(CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR != 0,
+		       "CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR must not be zero");
 
-	*eff_core_nom_perf = (u16)((max_non_turbo_ratio * eff_core_scal_factor) / 100);
+	*perf_core_nom_perf = (u16)((max_non_turbo_ratio *
+				CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR) / 100);
+
+	*eff_core_nom_perf = (u16)((max_non_turbo_ratio *
+				CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR) / 100);
 }
 
 static u16 acpi_get_cpu_nominal_freq(void)

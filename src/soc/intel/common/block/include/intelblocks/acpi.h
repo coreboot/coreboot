@@ -18,9 +18,6 @@ enum core_type {
 	CPUID_UNKNOWN = 0xff,
 };
 
-/* Gets the scaling factor for Efficient and Performance core */
-void soc_get_scaling_factor(u16 *perf_core_scal_factor, u16 *eff_core_scal_factor);
-
 /* Generates ACPI code to define _CPC control method */
 void acpigen_write_CPPC_hybrid_method(int core_id);
 

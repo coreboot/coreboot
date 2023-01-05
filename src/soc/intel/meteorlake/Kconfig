@@ -211,6 +211,14 @@ config PCR_BASE_ADDRESS
 config ECAM_MMCONF_BASE_ADDRESS
 	default 0xc0000000
 
+config SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR
+	int
+	default 125
+
+config SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR
+	int
+	default 100
+
 config CPU_BCLK_MHZ
 	int
 	default 100

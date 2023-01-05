@@ -2,9 +2,9 @@
 
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <halt.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
-#include <southbridge/intel/common/pmbase.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <ec/smsc/mec1308/ec.h>
 #include "ec.h"
@@ -20,7 +20,7 @@ static u8 mainboard_smi_ec(void)
 		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");
 
 		/* Go to S5 */
-		write_pmbase32(PM1_CNT, read_pmbase32(PM1_CNT) | (0xf << 10));
+		poweroff();
 		break;
 	}
 

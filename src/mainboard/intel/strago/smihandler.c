@@ -5,7 +5,6 @@
 #include <cpu/x86/smm.h>
 #include "ec.h"
 
-#include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
 
 #include <soc/pm.h>
@@ -38,24 +37,7 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 		break;
 	}
 
-	switch (slp_typ) {
-	case ACPI_S3:
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
-		break;
-	case ACPI_S5:
-		/* Enable wake events */
-		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
-		break;
-	}
-
-	/* Disable SCI and SMI events */
-	google_chromeec_set_smi_mask(0);
-	google_chromeec_set_sci_mask(0);
-
-	/* Clear pending events that may trigger immediate wake */
-	while (google_chromeec_get_event() != EC_HOST_EVENT_NONE)
-		;
+	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS, MAINBOARD_EC_S5_WAKE_EVENTS);
 
 	/* Set LPC lines to low power in S3/S5. */
 	if ((slp_typ == ACPI_S3) || (slp_typ == ACPI_S5))

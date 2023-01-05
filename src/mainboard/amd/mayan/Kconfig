@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-if BOARD_AMD_MAYAN_MORGANA
+if BOARD_AMD_MAYAN_PHOENIX
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -23,10 +23,10 @@ config MAINBOARD_DIR
 	default "amd/mayan"
 
 config MAINBOARD_PART_NUMBER
-	default "Mayan_Morgana"
+	default "Mayan_Phoenix"
 
 config DEVICETREE
-	default "devicetree_morgana.cb"
+	default "devicetree_phoenix.cb"
 
 config AMD_FWM_POSITION_INDEX
 	int
@@ -77,7 +77,7 @@ config RO_REGION_ONLY
 	string
 	depends on VBOOT_SLOTS_RW_AB || VBOOT_SLOTS_RW_A
 	# Add the EFS and EC to the RO region only
-	# This is a mayan-specific override of soc/amd/morgana/Kconfig
+	# This is a mayan-specific override of soc/amd/phoenix/Kconfig
 	default "apu/amdfw ec/ecfw"
 
 config CHROMEOS
@@ -107,4 +107,4 @@ config TPM_SPI_SPEED
 
 endif # !EM100
 
-endif # BOARD_AMD_MAYAN_MORGANA
+endif # BOARD_AMD_MAYAN_PHOENIX

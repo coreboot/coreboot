@@ -139,7 +139,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* CLK_REQ2_L */
 	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_NONE),
 	/* GPIO_117 - GPIO_129: Not available */
-	/* SATA_ACT_L - morgana does not have SATA, so force inactive */
+	/* SATA_ACT_L - phoenix does not have SATA, so force inactive */
 	PAD_GPO(GPIO_130, HIGH),
 	/* CLK_REQ3_L */
 	PAD_NF(GPIO_131, CLK_REQ3_L, PULL_NONE),

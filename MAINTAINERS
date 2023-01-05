@@ -815,15 +815,15 @@ S:	Supported
 F:	src/soc/amd/mendocino/
 F:	src/vendorcode/amd/fsp/mendocino/
 
-AMD Morgana
+AMD Phoenix
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
 M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
 L:	amd_coreboot_org_changes@googlegroups.com
 S:	Supported
-F:	src/soc/amd/morgana/
-F:	src/vendorcode/amd/fsp/morgana/
+F:	src/soc/amd/phoenix/
+F:	src/vendorcode/amd/fsp/phoenix/
 
 AMD Stoneyridge
 M:	Felix Held <felix-coreboot@felixheld.de>

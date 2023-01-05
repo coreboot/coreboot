@@ -145,7 +145,8 @@ chip soc/intel/alderlake
 				## sensor information
 				register "options.tsr[0].desc" = ""Memory""
 				register "options.tsr[1].desc" = ""Ambient""
-				register "options.tsr[2].desc" = ""Charger""
+				register "options.tsr[2].desc" = ""ChargerMB""
+				register "options.tsr[3].desc" = ""ChargerSUB""
 
 				# TODO: below values are initial reference values only
 				## Passive Policy
@@ -153,7 +154,8 @@ chip soc/intel/alderlake
 					[0] = DPTF_PASSIVE(CPU,         CPU,           90, 5000),
 					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 77, 5000),
 					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 68, 5000),
-					[3] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_2, 78, 5000),
+					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 78, 5000),
+					[4] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_3, 63, 5000),
 				}"
 
 				## Critical Policy
@@ -161,6 +163,7 @@ chip soc/intel/alderlake
 					[0] = DPTF_CRITICAL(TEMP_SENSOR_0,      87, SHUTDOWN),
 					[1] = DPTF_CRITICAL(TEMP_SENSOR_1,      78, SHUTDOWN),
 					[2] = DPTF_CRITICAL(TEMP_SENSOR_2,      88, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_3,      73, SHUTDOWN),
 				}"
 
 				register "controls.power_limits" = "{

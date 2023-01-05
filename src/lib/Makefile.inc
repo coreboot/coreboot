@@ -95,7 +95,9 @@ $(foreach arch,$(ARCH_SUPPORTED),\
 romstage-y += fmap.c
 romstage-y += delay.c
 romstage-y += cbfs.c
-romstage-$(CONFIG_COMPRESS_RAMSTAGE_LZMA) += lzma.c lzmadecode.c
+ifneq ($(CONFIG_COMPRESS_RAMSTAGE_LZMA)$(CONFIG_FSP_COMPRESS_FSP_M_LZMA),)
+romstage-y += lzma.c lzmadecode.c
+endif
 romstage-y += libgcc.c
 romstage-y += memrange.c
 romstage-$(CONFIG_PRIMITIVE_MEMTEST) += primitive_memtest.c

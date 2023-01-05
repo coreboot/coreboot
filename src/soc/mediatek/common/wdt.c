@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/cache.h>
+#include <delay.h>
 #include <device/mmio.h>
 #include <console/console.h>
 #include <halt.h>
@@ -23,7 +24,9 @@ static inline void mtk_wdt_swreset(void)
 	printk(BIOS_INFO, "%s() called!\n", __func__);
 
 	dcache_clean_all();
+	write32(&mtk_wdt->wdt_restart, MTK_WDT_RESTART_KEY);
 	setbits32(&mtk_wdt->wdt_mode, MTK_WDT_MODE_EXTEN | MTK_WDT_MODE_KEY);
+	udelay(100);
 	write32(&mtk_wdt->wdt_swrst, MTK_WDT_SWRST_KEY);
 
 	halt();

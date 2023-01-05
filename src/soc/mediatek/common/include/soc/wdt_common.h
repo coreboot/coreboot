@@ -32,6 +32,11 @@ enum {
 	MTK_WDT_MODE_ENABLE	= 1 << 0
 };
 
+/* WDT_RESTART */
+enum {
+	MTK_WDT_RESTART_KEY	= 0x1971
+};
+
 /* WDT_RESET */
 enum {
 	MTK_WDT_SWRST_KEY	= 0x1209,

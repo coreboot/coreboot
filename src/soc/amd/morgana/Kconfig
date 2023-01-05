@@ -238,7 +238,6 @@ config ECAM_MMCONF_BUS_NUMBER
 
 config MAX_CPUS
 	int
-	default 8 if SOC_AMD_MORGANA
 	default 16
 	help
 	  Maximum number of threads the platform can have.

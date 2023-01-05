@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <delay.h>
 #include <device/pci.h>
 #include <drivers/intel/gma/libgfxinit.h>
 #include <intelblocks/early_graphics.h>
@@ -49,4 +50,20 @@ void early_graphics_stop(void)
 		return;
 
 	gma_gfxstop(&ret);
+
+	/*
+	 * Temporary workaround
+	 *
+	 * It has been reported that the PEIM graphics driver may temporarily
+	 * fail communication with the display if the time between libgfxinit
+	 * turning off the displays and the PEIM driver initialization is too
+	 * short. 200 ms has been identified as a safe delay.
+	 *
+	 * An investigation is in progress to come up with a better and long
+	 * term solution.
+	 *
+	 * BUG:b:264526798
+	 */
+	if (CONFIG(RUN_FSP_GOP))
+		mdelay(200);
 }

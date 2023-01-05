@@ -95,7 +95,7 @@ $(foreach arch,$(ARCH_SUPPORTED),\
 romstage-y += fmap.c
 romstage-y += delay.c
 romstage-y += cbfs.c
-romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c lzmadecode.c
+romstage-$(CONFIG_COMPRESS_RAMSTAGE_LZMA) += lzma.c lzmadecode.c
 romstage-y += libgcc.c
 romstage-y += memrange.c
 romstage-$(CONFIG_PRIMITIVE_MEMTEST) += primitive_memtest.c
@@ -294,7 +294,7 @@ postcar-y += fmap.c
 postcar-y += gcc.c
 postcar-y += halt.c
 postcar-y += libgcc.c
-postcar-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c lzmadecode.c
+postcar-$(CONFIG_COMPRESS_RAMSTAGE_LZMA) += lzma.c lzmadecode.c
 postcar-y += memchr.c
 postcar-y += memcmp.c
 postcar-y += prog_loaders.c

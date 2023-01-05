@@ -372,8 +372,11 @@ cbfs-files-handler= \
 #######################################################################
 # a variety of flags for our build
 CBFS_COMPRESS_FLAG:=none
-ifeq ($(CONFIG_COMPRESS_RAMSTAGE),y)
+ifeq ($(CONFIG_COMPRESS_RAMSTAGE_LZMA),y)
 CBFS_COMPRESS_FLAG:=LZMA
+endif
+ifeq ($(CONFIG_COMPRESS_RAMSTAGE_LZ4),y)
+CBFS_COMPRESS_FLAG:=LZ4
 endif
 
 CBFS_PAYLOAD_COMPRESS_FLAG:=none

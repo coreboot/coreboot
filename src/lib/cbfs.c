@@ -142,7 +142,7 @@ static inline bool cbfs_lzma_enabled(void)
 		return false;
 	if (ENV_ROMSTAGE && CONFIG(POSTCAR_STAGE))
 		return false;
-	if ((ENV_ROMSTAGE || ENV_POSTCAR) && !CONFIG(COMPRESS_RAMSTAGE))
+	if ((ENV_ROMSTAGE || ENV_POSTCAR) && !CONFIG(COMPRESS_RAMSTAGE_LZMA))
 		return false;
 	if (ENV_SMM)
 		return false;

@@ -170,12 +170,36 @@ config STATIC_OPTION_TABLE
 	  every boot.  Use this if you want the NVRAM configuration to
 	  never be modified from its default values.
 
-config COMPRESS_RAMSTAGE
-	bool "Compress ramstage with LZMA"
-	depends on HAVE_RAMSTAGE
-	# Default value set at the end of the file
+config MB_COMPRESS_RAMSTAGE_LZ4
+	bool
 	help
-	  Compress ramstage to save memory in the flash image.
+	  Select this in a mainboard to use LZ4 compression by default
+
+choice
+	prompt "Ramstage compression"
+	depends on HAVE_RAMSTAGE && !UNCOMPRESSED_RAMSTAGE
+	default COMPRESS_RAMSTAGE_LZ4 if MB_COMPRESS_RAMSTAGE_LZ4
+	default COMPRESS_RAMSTAGE_LZMA
+
+config COMPRESS_RAMSTAGE_LZMA
+	bool "Compress ramstage with LZMA"
+	help
+	  Compress ramstage with LZMA to save memory in the flash image.
+
+config COMPRESS_RAMSTAGE_LZ4
+	bool "Compress ramstage with LZ4"
+	help
+	  LZ4 doesn't give as good compression as LZMA, but decompresses much
+	  faster. For large binaries such as ramstage, it's typically best to
+	  use LZMA, but there can be cases where the faster decompression of
+	  LZ4 can lead to a faster boot time. Testing on each individual board
+	  is typically going to be needed due to the large number of factors
+	  that can influence the decision. Binary size, CPU speed, ROM read
+	  speed, cache, and other factors all play a part.
+
+	  If you're not sure, stick with LZMA.
+
+endchoice
 
 config COMPRESS_PRERAM_STAGES
 	bool "Compress romstage and verstage with LZ4"
@@ -1379,9 +1403,6 @@ config MEMLAYOUT_LD_FILE
 # Set default values for symbols created before mainboards.  This allows the
 # option to be displayed in the general menu, but the default to be loaded in
 # the mainboard if desired.
-config COMPRESS_RAMSTAGE
-	default y if !UNCOMPRESSED_RAMSTAGE
-
 config COMPRESS_PRERAM_STAGES
 	depends on (HAVE_ROMSTAGE || HAVE_VERSTAGE) && NO_XIP_EARLY_STAGES
 	default y

@@ -1,0 +1,42 @@
+chip soc/intel/jasperlake
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| I2C0              | Trackpad                  |
+	#| I2C1              | Digitizer                 |
+	#| I2C2              | Touchscreen               |
+	#| I2C3              | Camera                    |
+	#| I2C4              | Audio                     |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
+	device domain 0 on
+		device pci 15.0 on end
+	end
+end

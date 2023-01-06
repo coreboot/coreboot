@@ -88,6 +88,7 @@ config MAINBOARD_FAMILY
 
 config MAINBOARD_PART_NUMBER
 	default "Boten" if BOARD_GOOGLE_BOTEN
+	default "Dibbi" if BOARD_GOOGLE_DIBBI
 	default "Dedede" if BOARD_GOOGLE_DEDEDE
 	default "Drawcia" if BOARD_GOOGLE_DRAWCIA
 	default "Madoo" if BOARD_GOOGLE_MADOO
@@ -127,6 +128,7 @@ config UART_FOR_CONSOLE
 
 config VARIANT_DIR
 	default "boten" if BOARD_GOOGLE_BOTEN
+	default "dibbi" if BOARD_GOOGLE_DIBBI
 	default "dedede" if BOARD_GOOGLE_DEDEDE
 	default "drawcia" if BOARD_GOOGLE_DRAWCIA
 	default "madoo" if BOARD_GOOGLE_MADOO

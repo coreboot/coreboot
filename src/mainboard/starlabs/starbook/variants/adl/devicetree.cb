@@ -167,9 +167,10 @@ chip soc/intel/alderlake
 		end
 		device ref p2sb		on  end
 		device ref hda		on
-			register "pch_hda_idisp_codec_enable"	= "1"
-			register "pch_hda_idisp_link_frequency"	= "HDA_LINKFREQ_96MHZ"
-			register "pch_hda_idisp_link_tmode"	= "HDA_TMODE_8T"
+			register "pch_hda_audio_link_hda_enable"	= "1"
+			register "pch_hda_idisp_codec_enable"		= "1"
+			register "pch_hda_idisp_link_frequency"		= "HDA_LINKFREQ_96MHZ"
+			register "pch_hda_idisp_link_tmode"		= "HDA_TMODE_8T"
 		end
 		device ref smbus	on  end
 	end

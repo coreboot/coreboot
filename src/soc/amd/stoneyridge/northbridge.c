@@ -13,7 +13,6 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
-#include <cpu/amd/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

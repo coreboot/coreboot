@@ -4,7 +4,6 @@
 #include <assert.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
-#include <cpu/amd/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <smp/node.h>
 #include <bootblock_common.h>

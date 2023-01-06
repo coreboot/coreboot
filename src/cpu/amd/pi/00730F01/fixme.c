@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/hpet.h>
-#include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <Porting.h>

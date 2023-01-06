@@ -4,7 +4,6 @@
 #include <amdblocks/smn.h>
 #include <bootstate.h>
 #include <console/console.h>
-#include <cpu/amd/msr.h>
 #include <device/mmio.h>
 #include <types.h>
 

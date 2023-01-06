@@ -4,7 +4,6 @@
 #include <amdblocks/smm.h>
 #include <console/console.h>
 #include <cbmem.h>
-#include <cpu/amd/msr.h>
 #include <cpu/x86/smm.h>
 #include <fsp/util.h>
 #include <FspGuids.h>

@@ -2,7 +2,6 @@
 
 #include <device/mmio.h>
 #include <bootstate.h>
-#include <cpu/amd/msr.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>

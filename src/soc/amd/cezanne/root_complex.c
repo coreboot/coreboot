@@ -8,7 +8,6 @@
 #include <arch/ioapic.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <cpu/amd/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/util.h>

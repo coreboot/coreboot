@@ -5,7 +5,6 @@
 #include <amdblocks/amd_pci_mmconf.h>
 #include <amdblocks/biosram.h>
 #include <arch/bootblock.h>
-#include <cpu/amd/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic.h>
 

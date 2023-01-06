@@ -8,7 +8,6 @@
 #include <arch/ioapic.h>
 #include <console/console.h>
 #include <cpu/amd/cpuid.h>
-#include <cpu/amd/msr.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <device/pci_def.h>

@@ -5,7 +5,6 @@
 #include <amdblocks/acpi.h>
 #include <amdblocks/chip.h>
 #include <assert.h>
-#include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/device.h>
 #include <types.h>

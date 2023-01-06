@@ -348,6 +348,7 @@ struct soc_intel_alderlake_config {
 	uint16_t sata_ports_dito_val[8];
 
 	/* Audio related */
+	uint8_t pch_hda_audio_link_hda_enable;
 	uint8_t pch_hda_dsp_enable;
 
 	/* iDisp-Link T-Mode 0: 2T, 2: 4T, 3: 8T, 4: 16T */

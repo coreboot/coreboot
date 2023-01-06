@@ -1,7 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-# TODO: Check if this is still correct
-
 config SOC_AMD_REMBRANDT_BASE
 	bool
 
@@ -50,48 +48,48 @@ config SOC_SPECIFIC_OPTIONS
 	select RTC
 	select SOC_AMD_COMMON
 	select SOC_AMD_COMMON_BLOCK_ACP_GEN2
-	select SOC_AMD_COMMON_BLOCK_ACPI	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_ACPI
 	select SOC_AMD_COMMON_BLOCK_ACPIMMIO
 	select SOC_AMD_COMMON_BLOCK_ACPI_ALIB
 	select SOC_AMD_COMMON_BLOCK_ACPI_CPPC
 	select SOC_AMD_COMMON_BLOCK_ACPI_GPIO
-	select SOC_AMD_COMMON_BLOCK_ACPI_IVRS	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_ACPI_IVRS
 	select SOC_AMD_COMMON_BLOCK_AOAC
 	select SOC_AMD_COMMON_BLOCK_APOB
 	select SOC_AMD_COMMON_BLOCK_APOB_HASH
-	select SOC_AMD_COMMON_BLOCK_BANKED_GPIOS	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_BANKED_GPIOS
 	select SOC_AMD_COMMON_BLOCK_DATA_FABRIC
 	select SOC_AMD_COMMON_BLOCK_EMMC
 	select SOC_AMD_COMMON_BLOCK_ESPI_EXTENDED_DECODE_RANGES
-	select SOC_AMD_COMMON_BLOCK_GRAPHICS	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_GRAPHICS
 	select SOC_AMD_COMMON_BLOCK_HAS_ESPI
 	select SOC_AMD_COMMON_BLOCK_HAS_ESPI_ALERT_ENABLE
 	select SOC_AMD_COMMON_BLOCK_I2C
 	select SOC_AMD_COMMON_BLOCK_I23C_PAD_CTRL
 	select SOC_AMD_COMMON_BLOCK_IOMMU
-	select SOC_AMD_COMMON_BLOCK_LPC		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_LPC
 	select SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
 	select SOC_AMD_COMMON_BLOCK_MCAX
-	select SOC_AMD_COMMON_BLOCK_NONCAR	# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_PCI		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_NONCAR
+	select SOC_AMD_COMMON_BLOCK_PCI
 	select SOC_AMD_COMMON_BLOCK_PCI_MMCONF
-	select SOC_AMD_COMMON_BLOCK_PCIE_GPP_DRIVER	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_PCIE_GPP_DRIVER
 	select SOC_AMD_COMMON_BLOCK_PCIE_CLK_REQ
-	select SOC_AMD_COMMON_BLOCK_PM		# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_PM_CHIPSET_STATE_SAVE	# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_PSP_GEN2	# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_SMBUS	# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_SMI		# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_SMM		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_PM
+	select SOC_AMD_COMMON_BLOCK_PM_CHIPSET_STATE_SAVE
+	select SOC_AMD_COMMON_BLOCK_PSP_GEN2
+	select SOC_AMD_COMMON_BLOCK_SMBUS
+	select SOC_AMD_COMMON_BLOCK_SMI
+	select SOC_AMD_COMMON_BLOCK_SMM
 	select SOC_AMD_COMMON_BLOCK_SMU
-	select SOC_AMD_COMMON_BLOCK_SPI		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_SPI
 	select SOC_AMD_COMMON_BLOCK_STB
-	select SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H	# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
 	select SOC_AMD_COMMON_BLOCK_UART
 	select SOC_AMD_COMMON_BLOCK_UCODE
 	select SOC_AMD_COMMON_FSP_CCX_CPPC_HOB
-	select SOC_AMD_COMMON_FSP_DMI_TABLES	# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_FSP_PCI		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_FSP_DMI_TABLES
+	select SOC_AMD_COMMON_FSP_PCI
 	select SSE2
 	select UDK_2017_BINDING
 	select USE_DDR5

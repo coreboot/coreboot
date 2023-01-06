@@ -57,7 +57,6 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmConfig.DmiMaxLinkSpeed = 4; // Gen4 speed, undocumented
 	memupd->FspmConfig.SkipExtGfxScan = 0;
 
-	memupd->FspmConfig.PchHdaAudioLinkHdaEnable = 1;
 	memupd->FspmConfig.PchHdaSdiEnable[0] = 1;
 
 	/*

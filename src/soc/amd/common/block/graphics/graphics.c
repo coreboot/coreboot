@@ -17,12 +17,12 @@ struct atif_verify_interface_output {
 	uint32_t supported_functions; /* Bit n set if function n+1 supported. */
 };
 
-#define ATIF_FUNCTION_QUERY_BRIGHTNESS_TRANSFER_CHARACTERISTICS    0x10
-# define ATIF_QBTC_REQUEST_LCD1                              0
+#define ATIF_FUNCTION_QUERY_BRIGHTNESS_TRANSFER_CHARACTERISTICS		0x10
+# define ATIF_QBTC_REQUEST_LCD1					0
 /* error codes */
-# define ATIF_QBTC_ERROR_CODE_SUCCESS                        0
-# define ATIF_QBTC_ERROR_CODE_FAILURE                        1
-# define ATIF_QBTC_ERROR_CODE_DEVICE_NOT_SUPPORTED           2
+# define ATIF_QBTC_ERROR_CODE_SUCCESS				0
+# define ATIF_QBTC_ERROR_CODE_FAILURE				1
+# define ATIF_QBTC_ERROR_CODE_DEVICE_NOT_SUPPORTED		2
 struct atif_brightness_input {
 	uint16_t size;
 	/* ATIF doc indicates this field is a word, but the kernel drivers uses a byte. */
@@ -172,7 +172,7 @@ const struct device_operations amd_graphics_ops = {
 	.set_resources		= graphics_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= graphics_dev_init,
-	.scan_bus               = scan_static_bus,
+	.scan_bus		= scan_static_bus,
 	.ops_pci		= &pci_dev_ops_pci,
 	.write_acpi_tables	= pci_rom_write_acpi_tables,
 	.acpi_fill_ssdt		= graphics_fill_ssdt,

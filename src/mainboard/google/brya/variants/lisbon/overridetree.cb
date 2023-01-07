@@ -187,9 +187,7 @@ chip soc/intel/alderlake
 		device ref pcie_rp7 on
 			chip drivers/net
 				register "wake" = "GPE0_DW0_07"
-				register "led_feature" = "0xe0"
-				register "customized_led0" = "0x23f"
-				register "customized_led2" = "0x028"
+				register "customized_leds" = "0x060f"
 				register "enable_aspm_l1_2" = "1"
 				register "add_acpi_dma_property" = "true"
 				device pci 00.0 on end

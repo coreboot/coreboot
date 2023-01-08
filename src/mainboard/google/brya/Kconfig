@@ -299,9 +299,15 @@ config USE_PM_ACPI_TIMER
 	default y if BOARD_GOOGLE_PRIMUS4ES
 	default n
 
+config DEFAULT_ADL_NEM
+	bool
+	help
+	  Brya variants with Alder Lake ESx silicon to choose this config
+	  as eNEM was fuse disable till ESx silicon revision.
+
 choice
 	prompt "Cache as RAM (CAR) setup configuration to use"
-	default USE_ADL_NEM if BOARD_GOOGLE_PRIMUS4ES || BOARD_GOOGLE_GIMBLE4ES || BOARD_GOOGLE_REDRIX4ES || BOARD_GOOGLE_TAEKO4ES || BOARD_GOOGLE_ANAHERA4ES || BOARD_GOOGLE_TANIKS || BOARD_GOOGLE_SKOLAS || BOARD_GOOGLE_SKOLAS4ES || BOARD_GOOGLE_ZYDRON
+	default USE_ADL_NEM if DEFAULT_ADL_NEM
 	default USE_ADL_ENEM
 
 config USE_ADL_ENEM

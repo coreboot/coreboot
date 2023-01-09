@@ -70,8 +70,8 @@ into a format which can be used in coreboot's verb table `Go`
 `C`
 * __intelmetool__ - Dump interesting things about Management Engine
 even if hidden `C`
-* __intelp2m__ - convert the configuration DW0/1 registers value from
-an inteltool dump to coreboot macros. `go`
+* __intelp2m__ - Convert the inteltool register dump to gpio.h with GPIO
+configuration for porting coreboot to your motherboard. `Go`
 * __inteltool__ - Provides information about the Intel CPU/chipset
 hardware configuration (register contents, MSRs, etc). `C`
 * __intelvbttool__ - Parse VBT from VGA BIOS `C`

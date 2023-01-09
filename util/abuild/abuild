@@ -11,8 +11,8 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="Nov 19, 2022"
-ABUILD_VERSION="0.11.00"
+ABUILD_DATE="Feb 3, 2023"
+ABUILD_VERSION="0.11.01"
 
 TOP=$PWD
 
@@ -87,6 +87,12 @@ scanbuild=false
 
 # Mark whether abuild was called recursively
 recursive=false
+
+# Skip builds with this Kconfig value set
+skipconfig_set=""
+
+# Skip builds with this Kconfig value notset
+skipconfig_unset=""
 
 trap interrupt INT
 
@@ -470,6 +476,22 @@ function build_config
 		fi
 	fi
 
+	if [ -n "${skipconfig_set}" ]; then
+		check_config "${build_dir}" "config value" "CONFIG_${skipconfig_set}=y" negate
+		if [ $? -ne 0 ]; then
+			echo "${MAINBOARD} has ${skipconfig_set} set. Skipping at user's request."
+			return
+		fi
+	fi
+
+	if [ -n "${skipconfig_unset}" ]; then
+		check_config "${build_dir}" "config value" "CONFIG_${skipconfig_unset}=y"
+		if [ $? -ne 0 ]; then
+			echo "${MAINBOARD} does not have ${skipconfig_unset} set. Skipping at user's request."
+			return
+		fi
+	fi
+
 	if [ $BUILDENV_CREATED -ne 0 ] || [ $MAINBOARD_OK -ne 0 ] || [ $VENDOR_OK -ne 0 ] || [ $FORCE_ENABLED_CROS -eq 1 ]; then
 		junit " <testcase classname='${TESTRUN}${testclass/#/.}' name='$BUILD_NAME' >"
 
@@ -613,6 +635,8 @@ Options:\n
     [-R|--root <path>]            Absolute path to coreboot sources
                                   (defaults to $ROOT)
     [--scan-build]                Use clang's static analyzer
+    [--skip_set <value>]          Skip building boards with this Kconfig set
+    [--skip_unset <value>]        Skip building boards with this Kconfig not set
     [--timeless]                  Generate timeless builds
     [-t|--target <vendor/board>]  Attempt to build target vendor/board only
     [-T|--test]                   Submit image(s) to automated test system
@@ -671,7 +695,7 @@ getoptbrand="$(getopt -V)"
 # shellcheck disable=SC2086
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,verbose,quiet,help,all,target:,board-variant:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,any-toolchain,clean,clean-somewhat,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode,asserts,name: -o Vvqhat:b:p:c:sJCl:rP:uyBLAzZo:xX:K:d:R:Ien: -- "$@") || exit 1
+	args=$(getopt -l version,verbose,quiet,help,all,target:,board-variant:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,any-toolchain,clean,clean-somewhat,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode,asserts,name:,skip_set:,skip_unset: -o Vvqhat:b:p:c:sJCl:rP:uyBLAzZo:xX:K:d:R:Ien: -- "$@") || exit 1
 	eval set -- $args
 	retval=$?
 else
@@ -724,6 +748,16 @@ while true ; do
 			customizing="${customizing}, scan-build"
 			SCANBUILD_ARGS=${SCANBUILD_ARGS:-'-k'}
 			configoptions="${configoptions}CONFIG_FATAL_ASSERTS=y\n"
+			;;
+		--skip_set)	shift
+			skipconfig_set="$1"
+			customizing="${customizing}, Skipping CONFIG_${skipconfig_set}=Y"
+			shift
+			;;
+		--skip_unset)	shift
+			skipconfig_unset="$1"
+			customizing="${customizing}, Skipping CONFIG_${skipconfig_unset} not set"
+			shift
 			;;
 		--asserts)	shift
 			configoptions="${configoptions}CONFIG_FATAL_ASSERTS=y\n"
@@ -819,6 +853,11 @@ fi
 
 if ! mkdir -p "$TARGET"; then
 	echo "Unable to create build directory"
+	exit 1
+fi
+
+if echo "${skipconfig_set}${skipconfig_unset}" | grep -q "CONFIG_" >/dev/null 2>&1; then
+	echo "Error: Do not include CONFIG_ in the Kconfig value to skip"
 	exit 1
 fi
 

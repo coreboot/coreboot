@@ -2,7 +2,6 @@
 
 #include <bootstate.h>
 #include <console/console.h>
-#include <cpu/amd/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <drivers/i2c/designware/dw_i2c.h>

@@ -28,12 +28,6 @@ config MAINBOARD_PART_NUMBER
 config DEVICETREE
 	default "devicetree_phoenix.cb"
 
-config AMD_FWM_POSITION_INDEX
-	int
-	default 3 if CHROMEOS
-	help
-	  TODO: might need to be adapted for better placement of files in cbfs
-
 config MAYAN_HAVE_MCHP_FW
 	bool "Have Microchip EC firmware?"
 	default n

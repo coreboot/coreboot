@@ -13,7 +13,7 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,
 		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3] = PchSerialIoPci,
 		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C5] = PchSerialIoDisabled,
 	}"
@@ -41,6 +41,7 @@ chip soc/intel/alderlake
 	#| I2C1              | cr50 TPM. Early init is   |
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
+	#| I2C3              | TouchScreen               |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
 		.i2c[0] = {
@@ -48,6 +49,12 @@ chip soc/intel/alderlake
 		},
 		.i2c[1] = {
 			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 600,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[3] = {
 			.speed = I2C_SPEED_FAST,
 			.rise_time_ns = 600,
 			.fall_time_ns = 400,
@@ -184,6 +191,18 @@ chip soc/intel/alderlake
 				device i2c 1a on end
 			end # Audio Nau8825
 		end # I2C0
+		device ref i2c3 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""LM230001""
+				register "generic.desc" = ""LM238 Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C6)"
+				register "generic.enable_delay_ms" = "6"
+				register "generic.has_power_resource" = "1"
+				device i2c 34 on end
+			end
+		end # I2C3
 		device ref pcie_rp5 on
 			# Enable PCIE 5 using clk 2
 			register "pch_pcie_rp[PCH_RP(5)]" = "{

@@ -26,15 +26,15 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_B3, NONE),
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
-	/* B7  : ISH_12C1_SDA ==> NC */
-	PAD_NC(GPP_B7, NONE),
-	/* B8  : ISH_I2C1_SCL ==> NC */
-	PAD_NC(GPP_B8, NONE),
+	/* B7  : ISH_I2C1_SDA ==> I2C_TCHSCR_SDA */
+	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF2),
+	/* B8  : ISH_I2C1_SCL ==> I2C_TCHSCR_SCL */
+	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF2),
 
-	/* C6  : SML1CLK ==> USI_RST_L */
-	PAD_CFG_GPO(GPP_C6, 0, DEEP),
+	/* C6  : SML1CLK ==> USI_EN_PWR */
+	PAD_CFG_GPO(GPP_C6, 1, DEEP),
 	/* C7  : SML1DATA ==> USI_INT_L */
-	PAD_CFG_GPO(GPP_C7, 0, DEEP),
+	PAD_CFG_GPI_APIC(GPP_C7, NONE, PLTRST, LEVEL, NONE),
 
 	/* D0  : ISH_GP0 ==> NC */
 	PAD_NC(GPP_D0, NONE),

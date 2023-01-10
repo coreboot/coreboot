@@ -6,7 +6,6 @@
 #include <device/mmio.h>
 #include <arch/smp/mpspec.h>
 #include <console/console.h>
-#include <cpu/x86/smm.h>
 #include <types.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/turbo.h>

@@ -20,9 +20,9 @@ static void configure_edp_aux_backlight(void)
 	/* TODO: Add edp aux backlight for MUTTO_B152731E1 when we get MUTTO_B152731E1 */
 }
 
-static void power_on_mipi_boe_nv110c9m_l60(void)
+static void power_on_mipi_boe_tv110c9m_ll0(void)
 {
-	/* TODO: Add the poweron for BOE_NV110C9M_L60 when we get BOE_NV110C9M_L60 */
+	/* TODO: Add the poweron for BOE_TV110C9M_LL0 when we get BOE_TV110C9M_LL0 */
 }
 
 static void power_on_edp_mutto_b152731e1(void)
@@ -32,8 +32,8 @@ static void power_on_edp_mutto_b152731e1(void)
 
 static struct panel_description panels[] = {
 	[1] = {
-		.name = "BOE_NV110C9M_L60",
-		.power_on = power_on_mipi_boe_nv110c9m_l60,
+		.name = "BOE_TV110C9M_LL0",
+		.power_on = power_on_mipi_boe_tv110c9m_ll0,
 		.configure_panel_backlight = configure_mipi_pwm_backlight,
 		.disp_path = DISP_PATH_MIPI,
 		.pwm_ctrl_gpio = true,

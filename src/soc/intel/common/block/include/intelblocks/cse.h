@@ -405,7 +405,7 @@ int cse_request_global_reset(void);
  * Returns 0 on failure to send HECI command and to enable HMRFPO mode, and 1 on success.
  *
  */
-int cse_hmrfpo_enable(void);
+enum cb_err cse_hmrfpo_enable(void);
 
 /*
  * Send HMRFPO_GET_STATUS command.

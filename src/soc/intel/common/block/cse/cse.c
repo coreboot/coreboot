@@ -758,7 +758,7 @@ static bool cse_is_hmrfpo_enable_allowed(void)
 }
 
 /* Sends HMRFPO Enable command to CSE */
-int cse_hmrfpo_enable(void)
+enum cb_err cse_hmrfpo_enable(void)
 {
 	struct hmrfpo_enable_msg {
 		struct mkhi_hdr hdr;
@@ -791,31 +791,31 @@ int cse_hmrfpo_enable(void)
 	if (cse_is_hfs1_com_secover_mei_msg()) {
 		printk(BIOS_DEBUG, "HECI: CSE is already in security override mode, "
 			       "skip sending HMRFPO_ENABLE command to CSE\n");
-		return 1;
+		return CB_SUCCESS;
 	}
 
 	printk(BIOS_DEBUG, "HECI: Send HMRFPO Enable Command\n");
 
 	if (!cse_is_hmrfpo_enable_allowed()) {
 		printk(BIOS_ERR, "HECI: CSE does not meet required prerequisites\n");
-		return 0;
+		return CB_ERR;
 	}
 
 	if (heci_send_receive(&msg, sizeof(struct hmrfpo_enable_msg),
 				&resp, &resp_size, HECI_MKHI_ADDR))
-		return 0;
+		return CB_ERR;
 
 	if (resp.hdr.result) {
 		printk(BIOS_ERR, "HECI: Resp Failed:%d\n", resp.hdr.result);
-		return 0;
+		return CB_ERR;
 	}
 
 	if (resp.status) {
 		printk(BIOS_ERR, "HECI: HMRFPO_Enable Failed (resp status: %d)\n", resp.status);
-		return 0;
+		return CB_ERR;
 	}
 
-	return 1;
+	return CB_SUCCESS;
 }
 
 /*

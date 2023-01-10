@@ -477,10 +477,10 @@ static bool cse_is_rw_bp_status_valid(const struct cse_bp_info *cse_bp_info)
 	return true;
 }
 
-static bool cse_boot_to_ro(const struct cse_bp_info *cse_bp_info)
+static enum cb_err cse_boot_to_ro(const struct cse_bp_info *cse_bp_info)
 {
 	if (cse_get_current_bp(cse_bp_info) == RO)
-		return true;
+		return CB_SUCCESS;
 
 	return cse_set_and_boot_from_next_bp(RO);
 }
@@ -720,7 +720,7 @@ static enum csme_failure_reason cse_update_rw(const struct cse_bp_info *cse_bp_i
 	return CSE_NO_ERROR;
 }
 
-static bool cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
+static enum cb_err cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
 				   enum cse_update_status status)
 {
 	/*
@@ -728,13 +728,13 @@ static bool cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
 	 * 1. Ensure CSE to boot from RO(BP1)
 	 * 2. Send HMRFPO_ENABLE command to CSE
 	 */
-	if (!cse_boot_to_ro(cse_bp_info))
-		return false;
+	if (cse_boot_to_ro(cse_bp_info) != CB_SUCCESS)
+		return CB_ERR;
 
 	if ((status == CSE_UPDATE_DOWNGRADE) || (status == CSE_UPDATE_CORRUPTED)) {
 		if (cse_data_clear_request(cse_bp_info) != CB_SUCCESS) {
 			printk(BIOS_ERR, "cse_lite: CSE data clear failed!\n");
-			return false;
+			return CB_SUCCESS;
 		}
 	}
 
@@ -779,7 +779,7 @@ static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *
 		goto error_exit;
 	}
 
-	if (!cse_prep_for_rw_update(cse_bp_info, status)) {
+	if (cse_prep_for_rw_update(cse_bp_info, status) != CB_SUCCESS) {
 		rv = CSE_COMMUNICATION_ERROR;
 		goto error_exit;
 	}
@@ -850,7 +850,7 @@ static bool cse_locate_area_as_rdev_rw(const struct cse_bp_info *cse_bp_info,
 	return true;
 }
 
-static bool cse_sub_part_get_target_rdev(const struct cse_bp_info *cse_bp_info,
+static enum cb_err cse_sub_part_get_target_rdev(const struct cse_bp_info *cse_bp_info,
 	struct region_device *target_rdev, size_t bp, enum bpdt_entry_type type)
 {
 	struct bpdt_header bpdt_hdr;
@@ -861,19 +861,19 @@ static bool cse_sub_part_get_target_rdev(const struct cse_bp_info *cse_bp_info,
 	if (!cse_locate_area_as_rdev_rw(cse_bp_info, bp, &cse_rdev)) {
 		printk(BIOS_ERR, "cse_lite: Failed to locate %s in the CSE Region\n",
 				cse_regions[bp]);
-		return false;
+		return CB_ERR;
 	}
 
 	if ((rdev_readat(&cse_rdev, &bpdt_hdr, 0, BPDT_HEADER_SZ)) != BPDT_HEADER_SZ) {
 		printk(BIOS_ERR, "cse_lite: Failed to read BPDT header from CSE region\n");
-		return false;
+		return CB_ERR;
 	}
 
 	if ((rdev_readat(&cse_rdev, bpdt_entries, BPDT_HEADER_SZ,
 		(bpdt_hdr.descriptor_count * BPDT_ENTRY_SZ))) !=
 		(bpdt_hdr.descriptor_count * BPDT_ENTRY_SZ)) {
 		printk(BIOS_ERR, "cse_lite: Failed to read BPDT entries from CSE region\n");
-		return false;
+		return CB_ERR;
 	}
 
 	/* walk through BPDT entries to identify sub-partition's payload offset and size */
@@ -885,17 +885,17 @@ static bool cse_sub_part_get_target_rdev(const struct cse_bp_info *cse_bp_info,
 
 			if (rdev_chain(target_rdev, &cse_rdev, bpdt_entries[i].offset,
 				bpdt_entries[i].size))
-				return false;
+				return CB_ERR;
 			else
-				return true;
+				return CB_SUCCESS;
 		}
 	}
 
 	printk(BIOS_ERR, "cse_lite: Sub-partition %s is not found\n", cse_sub_part_str(type));
-	return false;
+	return CB_ERR;
 }
 
-static bool cse_get_sub_part_fw_version(enum bpdt_entry_type type,
+static enum cb_err cse_get_sub_part_fw_version(enum bpdt_entry_type type,
 					const struct region_device *rdev,
 					struct fw_version *fw_ver)
 {
@@ -906,14 +906,14 @@ static bool cse_get_sub_part_fw_version(enum bpdt_entry_type type,
 			!= SUBPART_ENTRY_SZ) {
 		printk(BIOS_ERR, "cse_lite: Failed to read %s sub partition entry\n",
 				cse_sub_part_str(type));
-		return false;
+		return CB_ERR;
 	}
 
 	if ((rdev_readat(rdev, &man_hdr, subpart_entry.offset_bytes, SUBPART_MANIFEST_HDR_SZ))
 			!= SUBPART_MANIFEST_HDR_SZ) {
 		printk(BIOS_ERR, "cse_lite: Failed to read %s Sub part entry #0 manifest\n",
 				cse_sub_part_str(type));
-		return false;
+		return CB_ERR;
 	}
 
 	fw_ver->major = man_hdr.binary_version.major;
@@ -921,7 +921,7 @@ static bool cse_get_sub_part_fw_version(enum bpdt_entry_type type,
 	fw_ver->hotfix = man_hdr.binary_version.hotfix;
 	fw_ver->build = man_hdr.binary_version.build;
 
-	return true;
+	return CB_SUCCESS;
 }
 
 static void cse_sub_part_get_source_fw_version(void *subpart_cbfs_rw, struct fw_version *fw_ver)
@@ -939,15 +939,15 @@ static void cse_sub_part_get_source_fw_version(void *subpart_cbfs_rw, struct fw_
 	fw_ver->build = man_hdr->binary_version.build;
 }
 
-static bool cse_prep_for_component_update(const struct cse_bp_info *cse_bp_info)
+static enum cb_err cse_prep_for_component_update(const struct cse_bp_info *cse_bp_info)
 {
 	/*
 	 * To set CSE's operation mode to HMRFPO mode:
 	 * 1. Ensure CSE to boot from RO(BP1)
 	 * 2. Send HMRFPO_ENABLE command to CSE
 	 */
-	if (!cse_boot_to_ro(cse_bp_info))
-		return false;
+	if (cse_boot_to_ro(cse_bp_info) != CB_SUCCESS)
+		return CB_ERR;
 
 	return cse_hmrfpo_enable();
 }
@@ -1012,12 +1012,12 @@ static enum csme_failure_reason cse_sub_part_fw_component_update(enum bpdt_entry
 
 	/* Trigger sub-partition update in CSE RO and CSE RW */
 	for (size_t bp = 0; bp < ARRAY_SIZE(cse_regions); bp++) {
-		if (!cse_sub_part_get_target_rdev(cse_bp_info, &target_rdev, bp, type)) {
+		if (cse_sub_part_get_target_rdev(cse_bp_info, &target_rdev, bp, type) != CB_SUCCESS) {
 			rv = CSE_LITE_SKU_SUB_PART_ACCESS_ERR;
 			goto error_exit;
 		}
 
-		if (!cse_get_sub_part_fw_version(type, &target_rdev, &target_fw_ver)) {
+		if (cse_get_sub_part_fw_version(type, &target_rdev, &target_fw_ver) != CB_SUCCESS) {
 			rv = CSE_LITE_SKU_SUB_PART_ACCESS_ERR;
 			goto error_exit;
 		}
@@ -1036,7 +1036,7 @@ static enum csme_failure_reason cse_sub_part_fw_component_update(enum bpdt_entry
 		printk(BIOS_INFO, "CSE %s %s Update initiated\n", GET_BP_STR(bp),
 				cse_sub_part_str(type));
 
-		if (!cse_prep_for_component_update(cse_bp_info)) {
+		if (cse_prep_for_component_update(cse_bp_info) != CB_SUCCESS) {
 			rv = CSE_LITE_SKU_SUB_PART_ACCESS_ERR;
 			goto error_exit;
 		}

@@ -755,8 +755,14 @@ endif # PCIEXP_HOTPLUG
 
 endif # PCIEXP_PLUGIN_SUPPORT
 
+config DEFAULT_SOFTWARE_CONNECTION_MANAGER
+	bool
+	help
+	  select to default to using the Software Connection Manager
+
 choice
 	prompt "Connection Manager"
+	default SOFTWARE_CONNECTION_MANAGER if DEFAULT_SOFTWARE_CONNECTION_MANAGER
 	default FIRMWARE_CONNECTION_MANAGER
 	help
 	  Software Connection Manager doesn't work with Linux 5.13 or later,

@@ -295,8 +295,8 @@ config MRC_CHANNEL_WIDTH
 	int
 	default 16
 
-config SOFTWARE_CONNECTION_MANAGER
-	default y if CHROMEOS
+config CHROMEOS
+	select DEFAULT_SOFTWARE_CONNECTION_MANAGER
 
 # Intel recommends reserving the following resources per USB4 root port,
 # from TGL BIOS Spec (doc #611569) Revision 0.7.6 Section 7.2.5.1.5

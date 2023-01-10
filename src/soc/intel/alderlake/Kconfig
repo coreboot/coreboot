@@ -435,8 +435,8 @@ config ACPI_ADL_IPU_ES_SUPPORT
 	help
 	  Enables ACPI entry to provide silicon type information to IPU kernel driver.
 
-config SOFTWARE_CONNECTION_MANAGER
-	default y if CHROMEOS
+config CHROMEOS
+	select DEFAULT_SOFTWARE_CONNECTION_MANAGER
 
 config ALDERLAKE_ENABLE_SOC_WORKAROUND
 	bool

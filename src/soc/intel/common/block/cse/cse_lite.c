@@ -292,7 +292,7 @@ static enum cb_err cse_get_bp_info(struct get_bp_info_rsp *bp_info_rsp)
  * This function must be used before EOP.
  * Returns false on failure and true on success.
  */
-static bool cse_set_next_boot_partition(enum boot_partition_id bp)
+static enum cb_err cse_set_next_boot_partition(enum boot_partition_id bp)
 {
 	struct set_boot_partition_info_req {
 		struct mkhi_hdr hdr;
@@ -309,14 +309,14 @@ static bool cse_set_next_boot_partition(enum boot_partition_id bp)
 
 	if (bp != RO && bp != RW) {
 		printk(BIOS_ERR, "cse_lite: Incorrect partition id(%d) is provided", bp);
-		return false;
+		return CB_ERR_ARG;
 	}
 
 	printk(BIOS_INFO, "cse_lite: Set Boot Partition Info Command (%s)\n", GET_BP_STR(bp));
 
 	if (!cse_is_bp_cmd_info_possible()) {
 		printk(BIOS_ERR, "cse_lite: CSE does not meet prerequisites\n");
-		return false;
+		return CB_ERR;
 	}
 
 	struct mkhi_hdr switch_resp;
@@ -324,18 +324,18 @@ static bool cse_set_next_boot_partition(enum boot_partition_id bp)
 
 	if (heci_send_receive(&switch_req, sizeof(switch_req), &switch_resp, &sw_resp_sz,
 									HECI_MKHI_ADDR))
-		return false;
+		return CB_ERR;
 
 	if (switch_resp.result) {
 		printk(BIOS_ERR, "cse_lite: Set Boot Partition Info Response Failed: %d\n",
 				switch_resp.result);
-		return false;
+		return CB_ERR;
 	}
 
-	return true;
+	return CB_SUCCESS;
 }
 
-static bool cse_data_clear_request(const struct cse_bp_info *cse_bp_info)
+static enum cb_err cse_data_clear_request(const struct cse_bp_info *cse_bp_info)
 {
 	struct data_clr_request {
 		struct mkhi_hdr hdr;
@@ -351,7 +351,7 @@ static bool cse_data_clear_request(const struct cse_bp_info *cse_bp_info)
 	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_soft_temp_disable() ||
 			cse_get_current_bp(cse_bp_info) != RO) {
 		printk(BIOS_ERR, "cse_lite: CSE doesn't meet DATA CLEAR cmd prerequisites\n");
-		return false;
+		return CB_ERR;
 	}
 
 	printk(BIOS_DEBUG, "cse_lite: Sending DATA CLEAR HECI command\n");
@@ -361,16 +361,16 @@ static bool cse_data_clear_request(const struct cse_bp_info *cse_bp_info)
 
 	if (heci_send_receive(&data_clr_rq, sizeof(data_clr_rq), &data_clr_rsp,
 				&data_clr_rsp_sz, HECI_MKHI_ADDR)) {
-		return false;
+		return CB_ERR;
 	}
 
 	if (data_clr_rsp.result) {
 		printk(BIOS_ERR, "cse_lite: CSE DATA CLEAR command response failed: %d\n",
 				data_clr_rsp.result);
-		return false;
+		return CB_ERR;
 	}
 
-	return true;
+	return CB_SUCCESS;
 }
 
 __weak void cse_board_reset(void)
@@ -379,10 +379,10 @@ __weak void cse_board_reset(void)
 }
 
 /* Set the CSE's next boot partition and issues system reset */
-static bool cse_set_and_boot_from_next_bp(enum boot_partition_id bp)
+static enum cb_err cse_set_and_boot_from_next_bp(enum boot_partition_id bp)
 {
-	if (!cse_set_next_boot_partition(bp))
-		return false;
+	if (cse_set_next_boot_partition(bp) != CB_SUCCESS)
+		return CB_ERR;
 
 	/* Allow the board to perform a reset for CSE RO<->RW jump */
 	cse_board_reset();
@@ -393,13 +393,13 @@ static bool cse_set_and_boot_from_next_bp(enum boot_partition_id bp)
 	die("cse_lite: Failed to reset the system\n");
 
 	/* Control never reaches here */
-	return false;
+	return CB_ERR;
 }
 
-static bool cse_boot_to_rw(const struct cse_bp_info *cse_bp_info)
+static enum cb_err cse_boot_to_rw(const struct cse_bp_info *cse_bp_info)
 {
 	if (cse_get_current_bp(cse_bp_info) == RW)
-		return true;
+		return CB_SUCCESS;
 
 	return cse_set_and_boot_from_next_bp(RW);
 }
@@ -417,7 +417,7 @@ static bool cse_is_rw_dp_valid(const struct cse_bp_info *cse_bp_info)
  * It returns true if RW partition doesn't indicate BP_STATUS_DATA_FAILURE
  * otherwise false if any operation fails.
  */
-static bool cse_fix_data_failure_err(const struct cse_bp_info *cse_bp_info)
+static enum cb_err cse_fix_data_failure_err(const struct cse_bp_info *cse_bp_info)
 {
 	/*
 	 * If RW partition status indicates BP_STATUS_DATA_FAILURE,
@@ -426,10 +426,10 @@ static bool cse_fix_data_failure_err(const struct cse_bp_info *cse_bp_info)
 	 *  - Issue GLOBAL RESET HECI command.
 	 */
 	if (cse_is_rw_dp_valid(cse_bp_info))
-		return true;
+		return CB_SUCCESS;
 
-	if (!cse_data_clear_request(cse_bp_info))
-		return false;
+	if (cse_data_clear_request(cse_bp_info) != CB_SUCCESS)
+		return CB_ERR;
 
 	return cse_boot_to_rw(cse_bp_info);
 }
@@ -732,7 +732,7 @@ static bool cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
 		return false;
 
 	if ((status == CSE_UPDATE_DOWNGRADE) || (status == CSE_UPDATE_CORRUPTED)) {
-		if (!cse_data_clear_request(cse_bp_info)) {
+		if (cse_data_clear_request(cse_bp_info) != CB_SUCCESS) {
 			printk(BIOS_ERR, "cse_lite: CSE data clear failed!\n");
 			return false;
 		}
@@ -1119,7 +1119,7 @@ void cse_fw_sync(void)
 		return;
 	}
 
-	if (!cse_fix_data_failure_err(&cse_bp_info.bp_info))
+	if (cse_fix_data_failure_err(&cse_bp_info.bp_info) != CB_SUCCESS)
 		cse_trigger_vboot_recovery(CSE_LITE_SKU_DATA_WIPE_ERROR);
 
 	/*
@@ -1140,7 +1140,7 @@ void cse_fw_sync(void)
 	if (!cse_is_rw_bp_status_valid(&cse_bp_info.bp_info))
 		cse_trigger_vboot_recovery(CSE_LITE_SKU_RW_JUMP_ERROR);
 
-	if (!cse_boot_to_rw(&cse_bp_info.bp_info)) {
+	if (cse_boot_to_rw(&cse_bp_info.bp_info) != CB_SUCCESS) {
 		printk(BIOS_ERR, "cse_lite: Failed to switch to RW\n");
 		cse_trigger_vboot_recovery(CSE_LITE_SKU_RW_SWITCH_ERROR);
 	}

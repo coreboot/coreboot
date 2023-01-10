@@ -28,7 +28,7 @@ config VARIANT_DIR
 config MAINBOARD_PART_NUMBER
 	default "MC EHL1" if BOARD_SIEMENS_MC_EHL1
 	default "MC EHL2" if BOARD_SIEMENS_MC_EHL2
-	default "MC_EHL3" if BOARD_SIEMENS_MC_EHL3
+	default "MC EHL3" if BOARD_SIEMENS_MC_EHL3
 
 config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"

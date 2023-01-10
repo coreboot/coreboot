@@ -14,11 +14,9 @@ chip northbridge/intel/i945
 		end
 		device pci 01.0 on # i945 PCIe root port
 			subsystemid 0x1458 0x5000
-			ioapic_irq 2 INTA 0x10
 		end
 		device pci 02.0 on  # vga controller
 			subsystemid 0x1458 0xd000
-			ioapic_irq 2 INTA 0x10
 		end
 
 		chip southbridge/intel/i82801gx
@@ -63,36 +61,23 @@ chip northbridge/intel/i945
 			register "gen1_dec" = "0x000c0801" # ???
 			register "gen2_dec" = "0x00040291" # Environment Controller
 
-			device pci 1b.0 on # High Definition Audio
-				ioapic_irq 2 INTA 0x10
-			end
+			device pci 1b.0 on end # High Definition Audio
 			device pci 1c.0 on end # PCIe
 			device pci 1c.1 on end # PCIe
 			device pci 1c.2 off end # PCIe port 3
 			device pci 1c.3 off end # PCIe port 4
 			device pci 1c.4 off end # PCIe port 5
 			device pci 1c.5 off end # PCIe port 6
-			device pci 1d.0 on # USB UHCI
-				ioapic_irq 2 INTA 0x10
-			end
-			device pci 1d.1 on # USB UHCI
-				ioapic_irq 2 INTB 0x11
-			end
-			device pci 1d.2 on # USB UHCI
-				ioapic_irq 2 INTC 0x12
-			end
-			device pci 1d.3 on # USB UHCI
-				ioapic_irq 2 INTD 0x13
-			end
-			device pci 1d.7 on # USB2 EHCI
-				ioapic_irq 2 INTA 0x10
-			end
+			device pci 1d.0 on end # USB UHCI
+			device pci 1d.1 on end # USB UHCI
+			device pci 1d.2 on end # USB UHCI
+			device pci 1d.3 on end # USB UHCI
+			device pci 1d.7 on end # USB2 EHCI
 			device pci 1e.0 on end # PCI bridge
 			device pci 1e.2 off end # AC'97 Audio
 			device pci 1e.3 off end # AC'97 Modem
 
 			device pci 1f.0 on # LPC bridge
-				ioapic_irq 2 INTA 0x10
 				chip superio/ite/it8718f # Super I/O
 					register "TMPIN1.mode" = "THERMAL_RESISTOR"
 					register "TMPIN2.mode" = "THERMAL_RESISTOR"
@@ -158,15 +143,9 @@ chip northbridge/intel/i945
 					end
 				end
 			end
-			device pci 1f.1 on # IDE
-				ioapic_irq 2 INTB 0x11
-			end
-			device pci 1f.2 on # SATA
-				ioapic_irq 2 INTC 0x12
-			end
-			device pci 1f.3 on # SMBus
-				ioapic_irq 2 INTD 0x13
-			end
+			device pci 1f.1 on end # IDE
+			device pci 1f.2 on end # SATA
+			device pci 1f.3 on end # SMBus
 		end
 	end
 end

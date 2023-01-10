@@ -24,11 +24,6 @@ struct reg {
 	struct reg *next;
 };
 
-struct pci_irq_info {
-	int ioapic_irq_pin;
-	int ioapic_dst_id;
-};
-
 struct fw_config_option;
 struct fw_config_option {
 	const char *name;
@@ -150,9 +145,6 @@ struct device {
 	/* Type of bus that exists under this device. */
 	int bustype;
 
-	/* PCI IRQ info. */
-	struct pci_irq_info pci_irq_info[4];
-
 	/* Pointer to bus of parent on which this device resides. */
 	struct bus *parent;
 
@@ -209,9 +201,6 @@ void add_resource(struct bus *bus, int type, int index, int base);
 
 void add_pci_subsystem_ids(struct bus *bus, int vendor, int device,
 			   int inherit);
-
-void add_ioapic_info(struct bus *bus, int apicid, const char *_srcpin,
-		     int irqpin);
 
 void add_slot_desc(struct bus *bus, char *type, char *length, char *designation,
 		   char *data_width);

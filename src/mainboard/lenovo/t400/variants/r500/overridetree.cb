@@ -32,7 +32,6 @@ chip northbridge/intel/gm45
 			end
 			device pci 1f.3 on # SMBus
 				subsystemid 0x17aa 0x20f9
-				ioapic_irq 2 INTC 0x12
 				# eeprom, 4 virtual devices, same chip
 				chip drivers/i2c/at24rf08c
 					device i2c 54 on end

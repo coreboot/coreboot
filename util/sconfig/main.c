@@ -881,10 +881,6 @@ static struct device *new_device_with_path(struct bus *parent,
 		new_d->path = ".type=DEVICE_PATH_DOMAIN,{.domain={ .domain = 0x%x }}";
 		break;
 
-	case IOAPIC:
-		new_d->path = ".type=DEVICE_PATH_IOAPIC,{.ioapic={ .ioapic_id = 0x%x }}";
-		break;
-
 	case GENERIC:
 		new_d->path = ".type=DEVICE_PATH_GENERIC,{.generic={ .id = 0x%x, .subid = 0x%x }}";
 		break;
@@ -1084,33 +1080,6 @@ void add_pci_subsystem_ids(struct bus *bus, int vendor, int device,
 	dev->inherit_subsystem = inherit;
 }
 
-void add_ioapic_info(struct bus *bus, int apicid, const char *_srcpin,
-		     int irqpin)
-{
-	int srcpin;
-	struct device *dev = bus->dev;
-
-	if (!_srcpin || strlen(_srcpin) < 4 || strncasecmp(_srcpin, "INT", 3) ||
-	    _srcpin[3] < 'A' || _srcpin[3] > 'D') {
-		printf("ERROR: malformed ioapic_irq args: %s\n", _srcpin);
-		exit(1);
-	}
-
-	srcpin = _srcpin[3] - 'A';
-
-	if (dev->bustype != PCI && dev->bustype != DOMAIN) {
-		printf("ERROR: ioapic config only allowed for PCI devices\n");
-		exit(1);
-	}
-
-	if (srcpin > 3) {
-		printf("ERROR: srcpin '%d' invalid\n", srcpin);
-		exit(1);
-	}
-	dev->pci_irq_info[srcpin].ioapic_irq_pin = irqpin;
-	dev->pci_irq_info[srcpin].ioapic_dst_id = apicid;
-}
-
 static int dev_has_children(struct device *dev)
 {
 	struct bus *bus = dev->bus;
@@ -1269,7 +1238,6 @@ static struct chip_instance *get_chip_instance(const struct device *dev)
 
 static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next)
 {
-	int pin;
 	struct chip_instance *chip_ins = get_chip_instance(ptr);
 	int has_children = dev_has_children(ptr);
 
@@ -1333,17 +1301,6 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 	if (ptr->probe)
 		fprintf(fil, "\t.probe_list = %s_probe_list,\n", ptr->name);
 	fprintf(fil, "#if !DEVTREE_EARLY\n");
-	for (pin = 0; pin < 4; pin++) {
-		if (ptr->pci_irq_info[pin].ioapic_irq_pin > 0)
-			fprintf(fil,
-				"\t.pci_irq_info[%d].ioapic_irq_pin = %d,\n",
-				pin, ptr->pci_irq_info[pin].ioapic_irq_pin);
-
-		if (ptr->pci_irq_info[pin].ioapic_dst_id > 0)
-			fprintf(fil,
-				"\t.pci_irq_info[%d].ioapic_dst_id = %d,\n",
-				pin, ptr->pci_irq_info[pin].ioapic_dst_id);
-	}
 	fprintf(fil, "\t.chip_ops = &%s_ops,\n",
 		chip_ins->chip->name_underscore);
 	if (chip_ins == &mainboard_instance)

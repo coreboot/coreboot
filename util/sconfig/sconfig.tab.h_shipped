@@ -83,21 +83,19 @@ extern int yydebug;
     NUMBER = 284,                  /* NUMBER  */
     SUBSYSTEMID = 285,             /* SUBSYSTEMID  */
     INHERIT = 286,                 /* INHERIT  */
-    IOAPIC_IRQ = 287,              /* IOAPIC_IRQ  */
-    IOAPIC = 288,                  /* IOAPIC  */
-    PCIINT = 289,                  /* PCIINT  */
-    GENERIC = 290,                 /* GENERIC  */
-    SPI = 291,                     /* SPI  */
-    USB = 292,                     /* USB  */
-    MMIO = 293,                    /* MMIO  */
-    GPIO = 294,                    /* GPIO  */
-    MDIO = 295,                    /* MDIO  */
-    FW_CONFIG_TABLE = 296,         /* FW_CONFIG_TABLE  */
-    FW_CONFIG_FIELD = 297,         /* FW_CONFIG_FIELD  */
-    FW_CONFIG_OPTION = 298,        /* FW_CONFIG_OPTION  */
-    FW_CONFIG_PROBE = 299,         /* FW_CONFIG_PROBE  */
-    PIPE = 300,                    /* PIPE  */
-    OPS = 301                      /* OPS  */
+    PCIINT = 287,                  /* PCIINT  */
+    GENERIC = 288,                 /* GENERIC  */
+    SPI = 289,                     /* SPI  */
+    USB = 290,                     /* USB  */
+    MMIO = 291,                    /* MMIO  */
+    GPIO = 292,                    /* GPIO  */
+    MDIO = 293,                    /* MDIO  */
+    FW_CONFIG_TABLE = 294,         /* FW_CONFIG_TABLE  */
+    FW_CONFIG_FIELD = 295,         /* FW_CONFIG_FIELD  */
+    FW_CONFIG_OPTION = 296,        /* FW_CONFIG_OPTION  */
+    FW_CONFIG_PROBE = 297,         /* FW_CONFIG_PROBE  */
+    PIPE = 298,                    /* PIPE  */
+    OPS = 299                      /* OPS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

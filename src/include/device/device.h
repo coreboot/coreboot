@@ -101,13 +101,6 @@ struct bus {
  * combination:
  */
 
-struct pci_irq_info {
-	unsigned int	ioapic_irq_pin;
-	unsigned int	ioapic_src_pin;
-	unsigned int	ioapic_dst_id;
-	unsigned int    ioapic_flags;
-};
-
 struct device {
 	DEVTREE_CONST struct bus *bus;	/* bus this device is on, for bridge
 					 * devices, it is the up stream bus */
@@ -144,7 +137,6 @@ struct device {
 	DEVTREE_CONST struct bus *link_list;
 
 #if !DEVTREE_EARLY
-	struct pci_irq_info pci_irq_info[4];
 	struct device_operations *ops;
 	struct chip_operations *chip_ops;
 	const char *name;

@@ -17,7 +17,7 @@
 #include <soc/pmc.h>
 #include <soc/serialio.h>
 #include <soc/usb.h>
-#include <stdint.h>
+#include <types.h>
 
 #define MAX_HD_AUDIO_SDI_LINKS	2
 #define MAX_HD_AUDIO_DMIC_LINKS	2

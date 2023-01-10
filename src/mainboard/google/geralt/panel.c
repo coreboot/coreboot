@@ -53,7 +53,8 @@ struct panel_description *get_active_panel(void)
 
 	/* We need to find init cmds for MIPI panel from CBFS */
 	get_mipi_cmd_from_cbfs(panel);
-	assert(panel->s);
+	if (!panel->s)
+		return NULL;
 
 	const struct edid *edid = &panel->s->edid;
 	const char *name = edid->ascii_string;

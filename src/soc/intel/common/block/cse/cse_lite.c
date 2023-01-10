@@ -249,7 +249,7 @@ static bool cse_is_bp_cmd_info_possible(void)
 	return false;
 }
 
-static bool cse_get_bp_info(struct get_bp_info_rsp *bp_info_rsp)
+static enum cb_err cse_get_bp_info(struct get_bp_info_rsp *bp_info_rsp)
 {
 	struct get_bp_info_req {
 		struct mkhi_hdr hdr;
@@ -264,7 +264,7 @@ static bool cse_get_bp_info(struct get_bp_info_rsp *bp_info_rsp)
 
 	if (!cse_is_bp_cmd_info_possible()) {
 		printk(BIOS_ERR, "cse_lite: CSE does not meet prerequisites\n");
-		return false;
+		return CB_ERR;
 	}
 
 	size_t resp_size = sizeof(struct get_bp_info_rsp);
@@ -272,18 +272,18 @@ static bool cse_get_bp_info(struct get_bp_info_rsp *bp_info_rsp)
 	if (heci_send_receive(&info_req, sizeof(info_req), bp_info_rsp, &resp_size,
 									HECI_MKHI_ADDR)) {
 		printk(BIOS_ERR, "cse_lite: Could not get partition info\n");
-		return false;
+		return CB_ERR;
 	}
 
 	if (bp_info_rsp->hdr.result) {
 		printk(BIOS_ERR, "cse_lite: Get partition info resp failed: %d\n",
 				bp_info_rsp->hdr.result);
-		return false;
+		return CB_ERR;
 	}
 
 	cse_print_boot_partition_info(&bp_info_rsp->bp_info);
 
-	return true;
+	return CB_SUCCESS;
 }
 /*
  * It sends HECI command to notify CSE about its next boot partition. When coreboot wants
@@ -1090,7 +1090,7 @@ void cse_fw_sync(void)
 		return;
 	}
 
-	if (!cse_get_bp_info(&cse_bp_info)) {
+	if (cse_get_bp_info(&cse_bp_info) != CB_SUCCESS) {
 		printk(BIOS_ERR, "cse_lite: Failed to get CSE boot partition info\n");
 
 		 /* If system is in recovery mode, don't trigger recovery again */

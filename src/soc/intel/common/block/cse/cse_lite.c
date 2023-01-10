@@ -952,8 +952,8 @@ static bool cse_prep_for_component_update(const struct cse_bp_info *cse_bp_info)
 	return cse_hmrfpo_enable();
 }
 
-static uint8_t cse_sub_part_trigger_update(enum bpdt_entry_type type, uint8_t bp,
-		const void *subpart_cbfs_rw, const size_t blob_sz,
+static enum csme_failure_reason cse_sub_part_trigger_update(enum bpdt_entry_type type,
+		uint8_t bp, const void *subpart_cbfs_rw, const size_t blob_sz,
 		struct region_device *target_rdev)
 {
 	if (region_device_sz(target_rdev) < blob_sz) {
@@ -977,7 +977,7 @@ static uint8_t cse_sub_part_trigger_update(enum bpdt_entry_type type, uint8_t bp
 	return CSE_LITE_SKU_PART_UPDATE_SUCCESS;
 }
 
-static uint8_t handle_cse_sub_part_fw_update_rv(uint8_t rv)
+static enum csme_failure_reason handle_cse_sub_part_fw_update_rv(enum csme_failure_reason rv)
 {
 	switch (rv) {
 	case CSE_LITE_SKU_PART_UPDATE_SUCCESS:
@@ -1052,14 +1052,14 @@ error_exit:
 	return rv;
 }
 
-static uint8_t cse_sub_part_fw_update(const struct cse_bp_info *cse_bp_info)
+static enum csme_failure_reason cse_sub_part_fw_update(const struct cse_bp_info *cse_bp_info)
 {
 	if (skip_cse_sub_part_update()) {
 		printk(BIOS_INFO, "CSE Sub-partition update not required\n");
 		return CSE_LITE_SKU_SUB_PART_UPDATE_NOT_REQ;
 	}
 
-	int rv;
+	enum csme_failure_reason rv;
 	rv = cse_sub_part_fw_component_update(IOM_FW, cse_bp_info,
 			CONFIG_SOC_INTEL_CSE_IOM_CBFS_NAME);
 

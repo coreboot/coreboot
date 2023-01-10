@@ -1,2 +1,2 @@
 config VENDOR_BOSTENTECH
-	bool "Shenzhen Bostrontium Teng Technology"
+	bool "Bostentech (Shenzhen Bostrontium Teng Technology)"

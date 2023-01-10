@@ -324,6 +324,11 @@ void mt6359p_enable_vsim1(bool enable)
 	mt6359p_write_field(PMIC_VSIM1_CON0, enable, 0x1, 0);
 }
 
+void mt6359p_enable_vm18(bool enable)
+{
+	mt6359p_write_field(PMIC_VM18_CON0, enable, 0x1, 0);
+}
+
 static void init_pmif_arb(void)
 {
 	if (!pmif_arb) {

@@ -33,6 +33,7 @@ enum {
 	PMIC_VSIM1_CON0		= 0x1cd0,
 	PMIC_VSRAM_PROC1_ELR	= 0x1b44,
 	PMIC_VSRAM_PROC2_ELR	= 0x1b46,
+	PMIC_VM18_CON0		= 0x1d88,
 	PMIC_VSRAM_PROC1_VOSEL1	= 0x1e90,
 	PMIC_VSRAM_PROC2_VOSEL1	= 0x1eb0,
 	PMIC_VSIM1_ANA_CON0	= 0x1fa2,
@@ -60,6 +61,7 @@ enum {
 	MT6359P_CORE,
 	MT6359P_PA,
 	MT6359P_SIM1,
+	MT6359P_VM18,
 	MT6359P_MAX,
 };
 
@@ -84,6 +86,7 @@ void mt6359p_set_vsim1_voltage(u32 vsim1_uv);
 u32 mt6359p_get_vsim1_voltage(void);
 void mt6359p_enable_vpa(bool enable);
 void mt6359p_enable_vsim1(bool enable);
+void mt6359p_enable_vm18(bool enable);
 void mt6359p_write_field(u32 reg, u32 val, u32 mask, u32 shift);
 void pmic_init_setting(void);
 void pmic_lp_setting(void);

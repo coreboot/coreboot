@@ -524,7 +524,7 @@ bool skip_cse_sub_part_update(void);
  * This command retrieves a set of boot performance timestamps CSME collected during
  * the last platform boot flow.
  */
-bool cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf);
+enum cb_err cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf);
 
 /* Function to make cse disable using PMC IPC */
 bool cse_disable_mei_devices(void);

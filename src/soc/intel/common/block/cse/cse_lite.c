@@ -156,7 +156,7 @@ void cse_log_ro_write_protection_info(bool mfg_mode)
 		printk(BIOS_ERR, "ME: Write protection for CSE RO is not enabled\n");
 }
 
-bool cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf_rsp)
+enum cb_err cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf_rsp)
 {
 	struct cse_boot_perf_req {
 		struct mkhi_hdr hdr;
@@ -174,16 +174,16 @@ bool cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf_rsp)
 	if (heci_send_receive(&req, sizeof(req), boot_perf_rsp, &resp_size,
 									HECI_MKHI_ADDR)) {
 		printk(BIOS_ERR, "cse_lite: Could not get boot performance data\n");
-		return false;
+		return CB_ERR;
 	}
 
 	if (boot_perf_rsp->hdr.result) {
 		printk(BIOS_ERR, "cse_lite: Get boot performance data resp failed: %d\n",
 				boot_perf_rsp->hdr.result);
-		return false;
+		return CB_ERR;
 	}
 
-	return true;
+	return CB_SUCCESS;
 }
 
 

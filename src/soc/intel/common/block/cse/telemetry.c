@@ -22,7 +22,7 @@ static void cbmem_inject_telemetry_data(void)
 	 * 4. All other TS values will be relative to the zero point. The API caller should
 	 *    normalize the TS values to the zero-point value.
 	 */
-	if (!cse_get_boot_performance_data(&cse_perf_data))
+	if (cse_get_boot_performance_data(&cse_perf_data) != CB_SUCCESS)
 		return;
 
 	current_time = timestamp_get();

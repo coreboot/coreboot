@@ -485,15 +485,15 @@ static enum cb_err cse_boot_to_ro(const struct cse_bp_info *cse_bp_info)
 	return cse_set_and_boot_from_next_bp(RO);
 }
 
-static bool cse_get_rw_rdev(struct region_device *rdev)
+static enum cb_err cse_get_rw_rdev(struct region_device *rdev)
 {
 	if (fmap_locate_area_as_rdev_rw(CONFIG_SOC_INTEL_CSE_FMAP_NAME, rdev) < 0) {
 		printk(BIOS_ERR, "cse_lite: Failed to locate %s in FMAP\n",
 				CONFIG_SOC_INTEL_CSE_FMAP_NAME);
-		return false;
+		return CB_ERR;
 	}
 
-	return true;
+	return CB_SUCCESS;
 }
 
 static bool cse_is_rw_bp_sign_valid(const struct region_device *target_rdev)
@@ -508,7 +508,7 @@ static bool cse_is_rw_bp_sign_valid(const struct region_device *target_rdev)
 	return cse_bp_sign == CSE_RW_SIGNATURE;
 }
 
-static bool cse_get_target_rdev(const struct cse_bp_info *cse_bp_info,
+static enum cb_err cse_get_target_rdev(const struct cse_bp_info *cse_bp_info,
 		struct region_device *target_rdev)
 {
 	struct region_device cse_region_rdev;
@@ -516,19 +516,19 @@ static bool cse_get_target_rdev(const struct cse_bp_info *cse_bp_info,
 	uint32_t start_offset;
 	uint32_t end_offset;
 
-	if (!cse_get_rw_rdev(&cse_region_rdev))
-		return false;
+	if (cse_get_rw_rdev(&cse_region_rdev) != CB_SUCCESS)
+		return CB_ERR;
 
 	cse_get_bp_entry_range(cse_bp_info, RW, &start_offset, &end_offset);
 	size = end_offset + 1 - start_offset;
 
 	if (rdev_chain(target_rdev, &cse_region_rdev, start_offset, size))
-		return false;
+		return CB_ERR;
 
 	printk(BIOS_DEBUG, "cse_lite: CSE RW partition: offset = 0x%x, size = 0x%x\n",
 			(uint32_t)start_offset, (uint32_t)size);
 
-	return true;
+	return CB_SUCCESS;
 }
 
 static const char *cse_get_source_rdev_fmap(void)
@@ -585,24 +585,24 @@ static bool cse_verify_cbfs_rw_sha256(const uint8_t *expected_rw_blob_sha,
 	return true;
 }
 
-static bool cse_erase_rw_region(const struct region_device *target_rdev)
+static enum cb_err cse_erase_rw_region(const struct region_device *target_rdev)
 {
 	if (rdev_eraseat(target_rdev, 0, region_device_sz(target_rdev)) < 0) {
 		printk(BIOS_ERR, "cse_lite: CSE RW partition could not be erased\n");
-		return false;
+		return CB_ERR;
 	}
-	return true;
+	return CB_SUCCESS;
 }
 
-static bool cse_copy_rw(const struct region_device *target_rdev, const void *buf,
+static enum cb_err cse_copy_rw(const struct region_device *target_rdev, const void *buf,
 		size_t offset, size_t size)
 {
 	if (rdev_writeat(target_rdev, buf, offset, size) < 0) {
 		printk(BIOS_ERR, "cse_lite: Failed to update CSE firmware\n");
-		return false;
+		return CB_ERR;
 	}
 
-	return true;
+	return CB_SUCCESS;
 }
 
 enum cse_update_status {
@@ -668,7 +668,7 @@ static enum cse_update_status cse_check_update_status(const struct cse_bp_info *
 		return CSE_UPDATE_UPGRADE;
 }
 
-static bool cse_write_rw_region(const struct region_device *target_rdev,
+static enum cb_err cse_write_rw_region(const struct region_device *target_rdev,
 		const void *cse_cbfs_rw, const size_t cse_cbfs_rw_sz)
 {
 	/* Points to CSE CBFS RW image after boot partition signature */
@@ -678,16 +678,16 @@ static bool cse_write_rw_region(const struct region_device *target_rdev,
 	uint32_t cse_cbfs_rw_wo_sign_sz = cse_cbfs_rw_sz - CSE_RW_SIGN_SIZE;
 
 	/* Update except CSE RW signature */
-	if (!cse_copy_rw(target_rdev, cse_cbfs_rw_wo_sign, CSE_RW_SIGN_SIZE,
-				cse_cbfs_rw_wo_sign_sz))
-		return false;
+	if (cse_copy_rw(target_rdev, cse_cbfs_rw_wo_sign, CSE_RW_SIGN_SIZE,
+				cse_cbfs_rw_wo_sign_sz) != CB_SUCCESS)
+		return CB_ERR;
 
 	/* Update CSE RW signature to indicate update is complete */
-	if (!cse_copy_rw(target_rdev, (void *)cse_cbfs_rw, 0, CSE_RW_SIGN_SIZE))
-		return false;
+	if (cse_copy_rw(target_rdev, (void *)cse_cbfs_rw, 0, CSE_RW_SIGN_SIZE) != CB_SUCCESS)
+		return CB_ERR;
 
 	printk(BIOS_INFO, "cse_lite: CSE RW Update Successful\n");
-	return true;
+	return CB_SUCCESS;
 }
 
 static bool is_cse_fw_update_enabled(void)
@@ -711,10 +711,10 @@ static enum csme_failure_reason cse_update_rw(const struct cse_bp_info *cse_bp_i
 		return CSE_LITE_SKU_LAYOUT_MISMATCH_ERROR;
 	}
 
-	if (!cse_erase_rw_region(target_rdev))
+	if (cse_erase_rw_region(target_rdev) != CB_SUCCESS)
 		return CSE_LITE_SKU_FW_UPDATE_ERROR;
 
-	if (!cse_write_rw_region(target_rdev, cse_cbfs_rw, cse_blob_sz))
+	if (cse_write_rw_region(target_rdev, cse_cbfs_rw, cse_blob_sz) != CB_SUCCESS)
 		return CSE_LITE_SKU_FW_UPDATE_ERROR;
 
 	return CSE_NO_ERROR;
@@ -797,7 +797,7 @@ static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info)
 	struct region_device target_rdev;
 	enum cse_update_status status;
 
-	if (!cse_get_target_rdev(cse_bp_info, &target_rdev)) {
+	if (cse_get_target_rdev(cse_bp_info, &target_rdev) != CB_SUCCESS) {
 		printk(BIOS_ERR, "cse_lite: Failed to get CSE RW Partition\n");
 		return CSE_LITE_SKU_RW_ACCESS_ERROR;
 	}
@@ -824,7 +824,7 @@ static const char *cse_sub_part_str(enum bpdt_entry_type type)
 	}
 }
 
-static bool cse_locate_area_as_rdev_rw(const struct cse_bp_info *cse_bp_info,
+static enum cb_err cse_locate_area_as_rdev_rw(const struct cse_bp_info *cse_bp_info,
 		size_t bp, struct region_device  *cse_rdev)
 {
 	struct region_device cse_region_rdev;
@@ -832,8 +832,8 @@ static bool cse_locate_area_as_rdev_rw(const struct cse_bp_info *cse_bp_info,
 	uint32_t start_offset;
 	uint32_t end_offset;
 
-	if (!cse_get_rw_rdev(&cse_region_rdev))
-		return false;
+	if (cse_get_rw_rdev(&cse_region_rdev) != CB_SUCCESS)
+		return CB_ERR;
 
 	if (!strcmp(cse_regions[bp], "RO"))
 		cse_get_bp_entry_range(cse_bp_info, RO, &start_offset, &end_offset);
@@ -843,11 +843,11 @@ static bool cse_locate_area_as_rdev_rw(const struct cse_bp_info *cse_bp_info,
 	size = end_offset + 1 - start_offset;
 
 	if (rdev_chain(cse_rdev, &cse_region_rdev, start_offset, size))
-		return false;
+		return CB_ERR;
 
 	printk(BIOS_DEBUG, "cse_lite: CSE %s  partition: offset = 0x%x, size = 0x%x\n",
 			cse_regions[bp], start_offset, size);
-	return true;
+	return CB_SUCCESS;
 }
 
 static enum cb_err cse_sub_part_get_target_rdev(const struct cse_bp_info *cse_bp_info,
@@ -858,7 +858,7 @@ static enum cb_err cse_sub_part_get_target_rdev(const struct cse_bp_info *cse_bp
 	struct bpdt_entry bpdt_entries[MAX_SUBPARTS];
 	uint8_t i;
 
-	if (!cse_locate_area_as_rdev_rw(cse_bp_info, bp, &cse_rdev)) {
+	if (cse_locate_area_as_rdev_rw(cse_bp_info, bp, &cse_rdev) != CB_SUCCESS) {
 		printk(BIOS_ERR, "cse_lite: Failed to locate %s in the CSE Region\n",
 				cse_regions[bp]);
 		return CB_ERR;
@@ -964,11 +964,11 @@ static enum csme_failure_reason cse_sub_part_trigger_update(enum bpdt_entry_type
 	}
 
 	/* Erase CSE Lite sub-partition */
-	if (!cse_erase_rw_region(target_rdev))
+	if (cse_erase_rw_region(target_rdev) != CB_SUCCESS)
 		return CSE_LITE_SKU_SUB_PART_UPDATE_FAIL;
 
 	/* Update CSE Lite sub-partition */
-	if (!cse_copy_rw(target_rdev, (void *)subpart_cbfs_rw, 0, blob_sz))
+	if (cse_copy_rw(target_rdev, (void *)subpart_cbfs_rw, 0, blob_sz) != CB_SUCCESS)
 		return CSE_LITE_SKU_SUB_PART_UPDATE_FAIL;
 
 	printk(BIOS_INFO, "cse_lite: CSE %s %s Update successful\n", GET_BP_STR(bp),

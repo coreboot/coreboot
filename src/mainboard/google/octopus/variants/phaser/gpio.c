@@ -4,7 +4,6 @@
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <ec/google/chromeec/ec.h>
 
 #define SKU_UNKNOWN            0xFFFFFFFF

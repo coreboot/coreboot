@@ -3,7 +3,6 @@
 #include <console/console.h>
 #include <delay.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 
 void die_notify(void)
 {

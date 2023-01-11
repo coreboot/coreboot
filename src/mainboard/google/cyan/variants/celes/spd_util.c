@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <mainboard/google/cyan/spd/spd_util.h>
 
 /*

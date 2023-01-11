@@ -14,7 +14,6 @@
 #include <intelblocks/gpio.h>
 #include <intelblocks/pmclib.h>
 #include <smbios.h>
-#include <soc/gpio.h>
 #include <soc/pm.h>
 #include <string.h>
 #include <types.h>

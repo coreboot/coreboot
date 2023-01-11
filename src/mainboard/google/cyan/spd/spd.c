@@ -8,7 +8,6 @@
 #include <memory_info.h>
 #include <smbios.h>
 #include <spd.h>
-#include <soc/gpio.h>
 #include <soc/romstage.h>
 #include <string.h>
 #include <spd_bin.h>

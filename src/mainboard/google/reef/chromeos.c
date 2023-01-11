@@ -4,7 +4,6 @@
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
 #include <types.h>
-#include <soc/gpio.h>
 #include <variant/gpio.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)

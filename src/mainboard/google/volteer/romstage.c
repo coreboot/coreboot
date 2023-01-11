@@ -6,7 +6,6 @@
 #include <fw_config.h>
 #include <gpio.h>
 #include <memory_info.h>
-#include <soc/gpio.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
 #include <variant/gpio.h>

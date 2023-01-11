@@ -3,7 +3,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
-#include <soc/gpio.h>
 #include <boardid.h>
 #include <gpio.h>
 

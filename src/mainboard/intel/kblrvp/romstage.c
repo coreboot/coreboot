@@ -5,7 +5,6 @@
 #include <gpio.h>
 #include "gpio.h"
 #include <soc/romstage.h>
-#include <soc/gpio.h>
 #include "spd/spd.h"
 #include <spd_bin.h>
 #include "board_id.h"

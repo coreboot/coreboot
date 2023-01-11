@@ -4,7 +4,6 @@
 #include <boot/coreboot_tables.h>
 #include <device/device.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <ec/google/chromeec/ec.h>
 #include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>

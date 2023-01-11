@@ -5,7 +5,6 @@
 #include <ec/google/chromeec/smm.h>
 #include <elog.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <intelblocks/smihandler.h>
 
 #include <baseboard/variants.h>

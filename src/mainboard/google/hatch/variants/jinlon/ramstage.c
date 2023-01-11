@@ -3,7 +3,6 @@
 #include <delay.h>
 #include <gpio.h>
 #include <baseboard/variants.h>
-#include <soc/gpio.h>
 
 void variant_ramstage_init(void)
 {

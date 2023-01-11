@@ -5,7 +5,6 @@
 #include <device/pci_ids.h>
 #include <gpio.h>
 #include <intelblocks/pcr.h>
-#include <soc/gpio.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 

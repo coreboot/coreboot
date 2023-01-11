@@ -3,7 +3,6 @@
 #include <bootblock_common.h>
 #include <device/mmio.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <soc/i2c.h>
 #include <soc/pcie.h>
 #include <soc/spi.h>

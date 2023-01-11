@@ -3,7 +3,6 @@
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 
 #include "gpio.h"
 

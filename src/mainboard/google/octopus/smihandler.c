@@ -9,7 +9,6 @@
 #include <gpio.h>
 #include <intelblocks/smihandler.h>
 #include <soc/pm.h>
-#include <soc/gpio.h>
 #include <variant/ec.h>
 #include <variant/gpio.h>
 

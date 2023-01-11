@@ -9,7 +9,6 @@
 #include <gpio.h>
 #include <nhlt.h>
 #include <smbios.h>
-#include <soc/gpio.h>
 #include <soc/nhlt.h>
 #include <string.h>
 #include <variant/ec.h>

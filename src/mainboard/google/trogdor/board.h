@@ -6,7 +6,6 @@
 #include <assert.h>
 #include <boardid.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 
 #define GPIO_EC_IN_RW	GPIO(118)
 #define GPIO_AP_EC_INT	GPIO(94)

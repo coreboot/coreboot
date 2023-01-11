@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <device/pnp_ops.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <superio/ite/common/ite.h>
 #include <types.h>
 

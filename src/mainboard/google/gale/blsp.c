@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <soc/blsp.h>
 #include <soc/qup.h>
 

@@ -3,7 +3,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 
 /* GPIOs needed prior to ramstage. */
 static const struct pad_config early_gpio_table[] = {

@@ -3,7 +3,7 @@
 #include <bootblock_common.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
-#include <soc/gpio.h>
+
 #include "gpio.h"
 
 static void early_config_gpio(void)

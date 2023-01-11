@@ -14,7 +14,6 @@
 #include <soc/bl31.h>
 #include <soc/ddp.h>
 #include <soc/dsi.h>
-#include <soc/gpio.h>
 #include <soc/mmu_operations.h>
 #include <soc/mtcmos.h>
 #include <soc/spm.h>

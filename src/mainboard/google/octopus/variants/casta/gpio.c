@@ -3,7 +3,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 
 static const struct pad_config default_override_table[] = {
 	PAD_NC(GPIO_50, UP_20K), /* PCH_I2C_PEN_SDA -- unused */

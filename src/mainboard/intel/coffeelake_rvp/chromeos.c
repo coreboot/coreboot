@@ -3,7 +3,6 @@
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <types.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)

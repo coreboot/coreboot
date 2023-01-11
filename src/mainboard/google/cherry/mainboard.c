@@ -14,7 +14,6 @@
 #include <soc/ddp.h>
 #include <soc/dpm.h>
 #include <soc/dptx.h>
-#include <soc/gpio.h>
 #include <soc/i2c.h>
 #include <soc/msdc.h>
 #include <soc/mtcmos.h>

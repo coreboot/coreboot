@@ -4,7 +4,6 @@
 #include <gpio.h>
 #include "gpio.h"
 #include <soc/romstage.h>
-#include <soc/gpio.h>
 #include "spd/spd.h"
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)

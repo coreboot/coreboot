@@ -4,7 +4,6 @@
 #include <bootblock_common.h>
 #include <gpio.h>
 #include <device/mmio.h>
-#include <soc/gpio.h>
 #include <soc/i2c.h>
 #include <soc/mt6391.h>
 #include <soc/pericfg.h>

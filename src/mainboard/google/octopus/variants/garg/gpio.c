@@ -3,7 +3,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <variant/sku.h>
 #include <ec/google/chromeec/ec.h>
 

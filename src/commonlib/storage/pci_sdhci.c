@@ -39,7 +39,7 @@ struct sd_mmc_ctrlr *new_mem_sdhci_controller(void *ioaddr)
 
 struct sd_mmc_ctrlr *new_pci_sdhci_controller(pci_devfn_t dev)
 {
-	uint32_t addr;
+	uintptr_t addr;
 
 	addr = pci_s_read_config32(dev, PCI_BASE_ADDRESS_0);
 	if (addr == ((uint32_t)~0)) {

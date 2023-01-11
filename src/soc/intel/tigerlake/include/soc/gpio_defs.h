@@ -232,7 +232,7 @@
 #define GPP_F23_IRQ				0x6D
 
 /* Group C */
-#define GPP_C0_iIRQ				0x6E
+#define GPP_C0_IRQ				0x6E
 #define GPP_C1_IRQ				0x6F
 #define GPP_C2_IRQ				0x70
 #define GPP_C3_IRQ				0x71

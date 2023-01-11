@@ -94,9 +94,9 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B23 : [] ==> WWAN_CONFIG0 */
 	PAD_CFG_GPI_LOCK(GPP_B23, NONE, LOCK_CONFIG),
 
-	/* GPP_C00 : [] ==> EN_PP3300_TCHSCR */
+	/* GPP_C00 : [] ==> EN_TCHSCR_PWR */
 	PAD_CFG_GPO(GPP_C00, 0, DEEP),
-	/* GPP_C01 : [] ==> USI_RST_L */
+	/* GPP_C01 : [] ==>  SOC_TCHSCR_RST_L */
 	PAD_CFG_GPO(GPP_C01, 0, DEEP),
 	/* GPP_C02 : SOC_TCHSCR_SPI_INT_STRAP ==> Component NC */
 	PAD_NC(GPP_C02, NONE),
@@ -257,15 +257,15 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF5),
 	/* GPP_F13 : GSPI1_SOC_DI_FPMCU_DO_LS */
 	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF5),
-	/* GPP_F14 : GSPI_SOC_DO_TCHSCR_DI */
+	/* GPP_F14 : GSPI0_SOC_DO_TCHSCR_DI */
 	PAD_CFG_NF(GPP_F14, NONE, DEEP, NF8),
-	/* GPP_F15 : [] ==> GSPI_SOC_DI_TCHSCR_DO */
+	/* GPP_F15 : [] ==> GSPI0_SOC_DI_TCHSCR_DO */
 	PAD_CFG_NF(GPP_F15, NONE, DEEP, NF8),
-	/* GPP_F16 : [] ==> GSPI_SOC_TCHSCR_CLK */
+	/* GPP_F16 : [] ==> GSPI0_SOC_TCHSCR_CLK */
 	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF8),
 	/* GPP_F17 : [] ==> GSPI1_SOC_CS_L */
 	PAD_CFG_NF(GPP_F17, NONE, DEEP, NF5),
-	/* GPP_F18 : [] ==> GSPI_SOC_TCHSCR_CS_L */
+	/* GPP_F18 : [] ==> GSPI0_SOC_TCHSCR_CS_L */
 	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF8),
 	/* GPP_F19 : [] ==> GPP_F19_STRAP */
 	PAD_NC(GPP_F19, NONE),

@@ -9,8 +9,8 @@
 #include <console/console.h>
 #include <device/i2c_simple.h>
 #include <device/mmio.h>
+#include <gpio.h>
 #include <soc/i2c.h>
-#include <soc/gpio.h>
 
 struct mtk_i2c mtk_i2c_bus_controller[] = {
 	[0] = {

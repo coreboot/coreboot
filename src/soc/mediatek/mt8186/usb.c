@@ -7,7 +7,6 @@
 
 #include <device/mmio.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <soc/pll_common.h>
 #include <soc/usb.h>
 

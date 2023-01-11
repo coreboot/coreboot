@@ -3,8 +3,8 @@
 #include <assert.h>
 #include <console/console.h>
 #include <device/mmio.h>
+#include <gpio.h>
 #include <soc/i2c.h>
-#include <soc/gpio.h>
 
 #define I2C_FULL_DUTY 100
 #define I2C_HALF_DUTY 50

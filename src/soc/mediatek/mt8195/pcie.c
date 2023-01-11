@@ -5,9 +5,9 @@
 #include <device/mmio.h>
 #include <device/resource.h>
 #include <delay.h>
+#include <gpio.h>
 #include <soc/addressmap.h>
 #include <soc/early_init.h>
-#include <soc/gpio.h>
 #include <soc/pcie.h>
 #include <soc/pcie_common.h>
 #include <stdlib.h>

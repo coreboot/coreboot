@@ -8,10 +8,10 @@
 #include <assert.h>
 #include <console/console.h>
 #include <device/mmio.h>
+#include <gpio.h>
 #include <spi_flash.h>
 #include <soc/addressmap.h>
 #include <soc/flash_controller_common.h>
-#include <soc/gpio.h>
 #include <soc/spi.h>
 
 struct mtk_spi_bus spi_bus[SPI_BUS_NUMBER] = {

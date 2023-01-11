@@ -2,9 +2,9 @@
 
 #include <device/mmio.h>
 #include <assert.h>
+#include <gpio.h>
 #include <soc/addressmap.h>
 #include <soc/flash_controller_common.h>
-#include <soc/gpio.h>
 #include <soc/spi.h>
 
 struct mtk_spi_bus spi_bus[SPI_BUS_NUMBER] = {

@@ -6,8 +6,8 @@
  */
 
 #include <device/mmio.h>
+#include <gpio.h>
 #include <soc/addressmap.h>
-#include <soc/gpio.h>
 #include <soc/regulator.h>
 #include <soc/msdc.h>
 

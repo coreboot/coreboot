@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
 #include <device/mmio.h>
+#include <gpio.h>
 #include <soc/addressmap.h>
-#include <soc/gpio.h>
 #include <soc/i2c.h>
 #include <soc/regulator.h>
 #include <soc/msdc.h>

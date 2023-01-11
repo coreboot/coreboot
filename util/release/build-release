@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-2.0-only
 # ${VERSION_NAME}: new version name
-# ${COMMIT_ID}: commit id (if not master)
+# ${COMMIT_ID}: commit id for new version
 # ${USERNAME}: username (if not default to https)
 # ${GPG_KEY_ID}: gpg key id (if not don't sign)
 VERSION_NAME=$1
@@ -10,6 +10,11 @@ USERNAME=$3
 GPG_KEY_ID=$4
 
 set -e
+
+TIME_FILE="$(mktemp -d)/.coreboot-time"
+COREBOOT_RELEASE_NAME=coreboot-${VERSION_NAME}
+COREBOOT_TARBALL="${COREBOOT_RELEASE_NAME}.tar.xz"
+COREBOOT_BLOBS_TARBALL="coreboot-blobs-${VERSION_NAME}.tar.xz"
 
 if [ -z "$GPG_TTY" ]; then
 	GPG_TTY=$(tty)
@@ -41,8 +46,8 @@ if ! tar --sort=name -cf /dev/null /dev/null 2>/dev/null ; then
 fi
 
 # Clone new copy of repo if needed
-if [ ! -d "coreboot-${VERSION_NAME}/.git" ]; then
-	rm -rf "coreboot-${VERSION_NAME}"
+if [ ! -d "${COREBOOT_RELEASE_NAME}/.git" ]; then
+	rm -rf "${COREBOOT_RELEASE_NAME}"
 	declare -a GIT_REF_OPTS
 	if [ -d .git ]; then
 		GIT_REF_OPTS=("--reference" "." "--dissociate")
@@ -50,9 +55,9 @@ if [ ! -d "coreboot-${VERSION_NAME}/.git" ]; then
 		GIT_REF_OPTS=("--reference" "../.." "--dissociate")
 	fi
 	if [ -n "${USERNAME}" ]; then
-		git clone "${GIT_REF_OPTS[@]}" "ssh://${USERNAME}@review.coreboot.org:29418/coreboot.git" "coreboot-${VERSION_NAME}" --
+		git clone "${GIT_REF_OPTS[@]}" "ssh://${USERNAME}@review.coreboot.org:29418/coreboot.git" "${COREBOOT_RELEASE_NAME}" --
 	else
-		git clone "${GIT_REF_OPTS[@]}" https://review.coreboot.org/coreboot.git "coreboot-${VERSION_NAME}" --
+		git clone "${GIT_REF_OPTS[@]}" https://review.coreboot.org/coreboot.git "${COREBOOT_RELEASE_NAME}" --
 	fi
 fi
 
@@ -60,10 +65,8 @@ fi
 # directory. Use requested version, update submodules, and get ready to
 # run from outside a git repository, and create a signed tag to push.
 (
-	cd "coreboot-${VERSION_NAME}" || exit 1
-	if [ -n "${COMMIT_ID}" ]; then
-		git reset --hard "${COMMIT_ID}"
-	fi
+	cd "${COREBOOT_RELEASE_NAME}" || exit 1
+	git reset --hard "${COMMIT_ID}"
 
 	util/crossgcc/buildgcc -W > .crossgcc-version
 
@@ -75,9 +78,9 @@ fi
 	fi
 
 	printf "%s-%s\n" "$VERSION_NAME"  "$(git log --pretty=%h -1)" > .coreboot-version
+	printf "%s\n" "$(git log --pretty=format:%ci -1)" > "${TIME_FILE}"
 )
-
-tstamp=$(tr "-" " " < "coreboot-${VERSION_NAME}/.coreboot-version")
+tstamp=$(cat "${TIME_FILE}" | sed 's/ +0000//')
 
 # Create the two tarballs, source and blobs.
 exclude_paths="3rdparty/blobs 3rdparty/fsp 3rdparty/intel-microcode 3rdparty/amd_blobs 3rdparty/qc_blobs"
@@ -85,15 +88,18 @@ exclude_paths="3rdparty/blobs 3rdparty/fsp 3rdparty/intel-microcode 3rdparty/amd
 declare -a blobs_paths
 declare -a exclude_opts
 for i in ${exclude_paths}; do
-	blobs_paths+=("coreboot-${VERSION_NAME}/${i}")
-	exclude_opts+=("--exclude=coreboot-${VERSION_NAME}/${i}")
+	blobs_paths+=("${COREBOOT_RELEASE_NAME}/${i}")
+	exclude_opts+=("--exclude=${COREBOOT_RELEASE_NAME}/${i}")
 done
 
-tar --sort=name --mtime="${tstamp}" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore "${exclude_opts[@]}" -cvf - "coreboot-${VERSION_NAME}" |xz -9 > "coreboot-${VERSION_NAME}.tar.xz"
-tar --sort=name --mtime="${tstamp}" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore -cvf - "${blobs_paths[@]}" |xz -9 > "coreboot-blobs-${VERSION_NAME}.tar.xz"
+tar --sort=name --mtime="${tstamp}" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore --exclude=*/.gitreview --exclude=*/.mailmap --exclude=*/.gitmodules "${exclude_opts[@]}" -cvf - "${COREBOOT_RELEASE_NAME}" |xz -9 > "${COREBOOT_TARBALL}"
+tar --sort=name --mtime="${tstamp}" --owner=coreboot:1000 --group=coreboot:1000 --exclude=*/.git --exclude=*/.gitignore --exclude=*/.gitreview --exclude=*/.mailmap --exclude=*/.gitmodules -cvf - "${blobs_paths[@]}" |xz -9 > "${COREBOOT_BLOBS_TARBALL}"
 
 # Sign the tarballs
 if [ -n "${GPG_KEY_ID}" ]; then
-	gpg --armor --local-user "$GPG_KEY_ID" --output "coreboot-${VERSION_NAME}.tar.xz.sig" --detach-sig "coreboot-${VERSION_NAME}.tar.xz"
-	gpg --armor --local-user "$GPG_KEY_ID" --output "coreboot-blobs-${VERSION_NAME}.tar.xz.sig" --detach-sig "coreboot-blobs-${VERSION_NAME}.tar.xz"
+	gpg --armor --local-user "$GPG_KEY_ID" --output "${COREBOOT_TARBALL}.sig" --detach-sig "${COREBOOT_TARBALL}"
+	gpg --armor --local-user "$GPG_KEY_ID" --output "${COREBOOT_BLOBS_TARBALL}.sig" --detach-sig "${COREBOOT_BLOBS_TARBALL}"
 fi
+
+# Clean up
+rm -f "${TIME_FILE}"

@@ -6,6 +6,9 @@ config SOC_AMD_COMMON_FSP_DMI_TABLES
 config SOC_AMD_COMMON_FSP_CCX_CPPC_HOB
 	bool
 
+config SOC_AMD_COMMON_FSP_PRELOAD_FSPS
+	bool
+
 source "src/soc/amd/common/fsp/*/Kconfig"
 
 endif # PLATFORM_USES_FSP2_0

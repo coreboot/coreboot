@@ -49,6 +49,8 @@ int mmc_set_bus_width(struct storage_media *media);
 int mmc_set_partition(struct storage_media *media,
 	unsigned int partition_number);
 int mmc_update_capacity(struct storage_media *media);
+void mmc_set_early_wake_status(int32_t status);
+int mmc_send_cmd1(struct storage_media *media);
 
 /* SD card support routines */
 int sd_change_freq(struct storage_media *media);

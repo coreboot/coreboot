@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <cbmem.h>
 #include <commonlib/storage/sd_mmc.h>
 #include <commonlib/sd_mmc_ctrlr.h>
 #include <commonlib/sdhci.h>
@@ -39,22 +38,6 @@ static void disable_mmc_controller_bar(void)
 	pci_write_config32(PCH_DEV_EMMC, PCI_BASE_ADDRESS_0, 0);
 	pci_write_config16(PCH_DEV_EMMC, PCI_COMMAND,
 				~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY));
-}
-
-static void set_early_mmc_wake_status(int32_t status)
-{
-	int32_t *ms_cbmem;
-
-	ms_cbmem = cbmem_add(CBMEM_ID_MMC_STATUS, sizeof(int));
-
-	if (ms_cbmem == NULL) {
-		printk(BIOS_ERR,
-			"%s: Failed to add early mmc wake status to cbmem!\n",
-			__func__);
-		return;
-	}
-
-	*ms_cbmem = status;
 }
 
 int early_mmc_wake_hw(void)
@@ -108,7 +91,7 @@ int early_mmc_wake_hw(void)
 
 	disable_mmc_controller_bar();
 
-	set_early_mmc_wake_status(1);
+	mmc_set_early_wake_status(1);
 	return 0;
 
 out_err:

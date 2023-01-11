@@ -3,7 +3,6 @@
  * MTK MSDC Host Controller interface specific code
  */
 #include <assert.h>
-#include <cbmem.h>
 #include <commonlib/bsd/helpers.h>
 #include <commonlib/storage/sd_mmc.h>
 #include <console/console.h>
@@ -437,27 +436,9 @@ static void msdc_controller_init(struct msdc_ctrlr *host, void *base, void *top_
 	add_msdc(host);
 }
 
-static void set_early_mmc_wake_status(int32_t status)
-{
-	int32_t *ms_cbmem;
-
-	ms_cbmem = cbmem_add(CBMEM_ID_MMC_STATUS, sizeof(status));
-
-	if (!ms_cbmem) {
-		printk(BIOS_ERR,
-		       "%s: Failed to add early mmc wake status to cbmem!\n",
-		       __func__);
-		return;
-	}
-
-	printk(BIOS_DEBUG, "Early init status = %d\n", status);
-	*ms_cbmem = status;
-}
-
 int mtk_emmc_early_init(void *base, void *top_base)
 {
 	struct storage_media media = { 0 };
-	int err;
 	struct msdc_ctrlr msdc_host;
 	struct sd_mmc_ctrlr *mmc_ctrlr = &msdc_host.sd_mmc_ctrlr;
 
@@ -468,26 +449,6 @@ int mtk_emmc_early_init(void *base, void *top_base)
 	SET_CLOCK(mmc_ctrlr, 400 * 1000);
 	SET_BUS_WIDTH(mmc_ctrlr, 1);
 
-	/* Reset emmc, send CMD0 */
-	if (sd_mmc_go_idle(&media))
-		goto out_err;
-
 	/* Send CMD1 */
-	err = mmc_send_op_cond(&media);
-	if (err == 0) {
-		if (media.op_cond_response & OCR_HCS)
-			set_early_mmc_wake_status(MMC_STATUS_CMD1_READY_HCS);
-		else
-			set_early_mmc_wake_status(MMC_STATUS_CMD1_READY);
-	} else if (err == CARD_IN_PROGRESS) {
-		set_early_mmc_wake_status(MMC_STATUS_CMD1_IN_PROGRESS);
-	} else {
-		goto out_err;
-	}
-
-	return 0;
-
-out_err:
-	set_early_mmc_wake_status(MMC_STATUS_NEED_RESET);
-	return -1;
+	return  mmc_send_cmd1(&media);
 }

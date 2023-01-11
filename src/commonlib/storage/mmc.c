@@ -4,6 +4,7 @@
  * This code is controller independent
  */
 
+#include <cbmem.h>
 #include <commonlib/storage.h>
 #include <delay.h>
 #include "mmc.h"
@@ -528,4 +529,48 @@ const char *mmc_partition_name(struct storage_media *media,
 	if (partition_number >= ARRAY_SIZE(partition_name))
 		return "";
 	return partition_name[partition_number];
+}
+
+void mmc_set_early_wake_status(int32_t status)
+{
+	int32_t *ms_cbmem;
+
+	ms_cbmem = cbmem_add(CBMEM_ID_MMC_STATUS, sizeof(status));
+
+	if (!ms_cbmem) {
+		printk(BIOS_ERR,
+		       "%s: Failed to add early mmc wake status to cbmem!\n",
+		       __func__);
+		return;
+	}
+
+	*ms_cbmem = status;
+}
+
+int mmc_send_cmd1(struct storage_media *media)
+{
+	int err;
+
+	/* Reset emmc, send CMD0 */
+	if (sd_mmc_go_idle(media))
+		goto out_err;
+
+	/* Send CMD1 */
+	err = mmc_send_op_cond(media);
+	if (err == 0) {
+		if (media->op_cond_response & OCR_HCS)
+			mmc_set_early_wake_status(MMC_STATUS_CMD1_READY_HCS);
+		else
+			mmc_set_early_wake_status(MMC_STATUS_CMD1_READY);
+	} else if (err == CARD_IN_PROGRESS) {
+		mmc_set_early_wake_status(MMC_STATUS_CMD1_IN_PROGRESS);
+	} else {
+		goto out_err;
+	}
+
+	return 0;
+
+out_err:
+	mmc_set_early_wake_status(MMC_STATUS_NEED_RESET);
+	return -1;
 }

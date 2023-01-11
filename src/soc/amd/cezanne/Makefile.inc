@@ -37,7 +37,6 @@ ramstage-y	+= gpio.c
 ramstage-y	+= graphics.c
 ramstage-y	+= i2c.c
 ramstage-y	+= mca.c
-ramstage-y	+= preload.c
 ramstage-y	+= reset.c
 ramstage-y	+= root_complex.c
 ramstage-y	+= uart.c

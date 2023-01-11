@@ -432,7 +432,7 @@ static enum cb_err send_sipi_to_aps(int ap_count, atomic_t *num_aps, int sipi_ve
 
 static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_aps)
 {
-	int sipi_vector;
+	int sipi_vector, total_delay;
 	/* Max location is 4KiB below 1MiB */
 	const int max_vector_loc = ((1 << 20) - (1 << 12)) >> 12;
 
@@ -479,7 +479,8 @@ static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_ap
 		return CB_ERR;
 
 	/* Wait for CPUs to check in. */
-	if (wait_for_aps(num_aps, ap_count, 400000 /* 400 ms */, 50 /* us */) != CB_SUCCESS) {
+	total_delay = 50000 * ap_count; /* 50 ms per AP */
+	if (wait_for_aps(num_aps, ap_count, total_delay, 50 /* us */) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Not all APs checked in: %d/%d.\n",
 		       atomic_read(num_aps), ap_count);
 		return CB_ERR;

@@ -270,7 +270,6 @@ chip soc/intel/skylake
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E7_IRQ)"
 				register "generic.speed" = "I2C_SPEED_FAST"
 				register "generic.has_power_resource" = "1"
-				register "generic.disable_gpio_export_in_crs" = "1"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C22)"
 				# 2ms for load switch slew + 5 ms for touchscreen
 				register "generic.enable_delay_ms" = "7"

@@ -172,7 +172,6 @@ chip soc/intel/jasperlake
 							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
 				register "generic.enable_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
-				register "generic.disable_gpio_export_in_crs" = "1"
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 2c on end
 			end
@@ -243,7 +242,6 @@ chip soc/intel/jasperlake
 							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
 				register "generic.enable_delay_ms" = "30"
 				register "generic.has_power_resource" = "1"
-				register "generic.disable_gpio_export_in_crs" = "1"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 40 on end
 			end

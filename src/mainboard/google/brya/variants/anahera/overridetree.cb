@@ -237,7 +237,6 @@ chip soc/intel/alderlake
 				register "stop_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
 				register "has_power_resource" = "1"
-				register "disable_gpio_export_in_crs" = "1"
 				device i2c 10 on end
 			end
 			chip drivers/i2c/hid
@@ -252,7 +251,6 @@ chip soc/intel/alderlake
 							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
 				register "generic.enable_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
-				register "generic.disable_gpio_export_in_crs" = "1"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 40 on end
 			end

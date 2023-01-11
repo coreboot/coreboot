@@ -146,7 +146,6 @@ chip soc/amd/mendocino
 			register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_76)"
 			register "stop_off_delay_ms" = "2"
 			register "has_power_resource" = "1"
-			register "disable_gpio_export_in_crs" = "1"
 			device i2c 10 on end
 		end
 		chip drivers/generic/gpio_keys

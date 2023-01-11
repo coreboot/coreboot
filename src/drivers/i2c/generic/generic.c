@@ -17,10 +17,10 @@ static bool i2c_generic_add_gpios_to_crs(struct drivers_i2c_generic_config *cfg)
 {
 	/*
 	 * Return false if:
-	 * 1. Request to explicitly disable export of GPIOs in CRS, or
+	 * 1. GPIOs are exported via a power resource, or
 	 * 2. Both reset and enable GPIOs are not provided.
 	 */
-	if (cfg->disable_gpio_export_in_crs ||
+	if (cfg->has_power_resource ||
 	    ((cfg->reset_gpio.pin_count == 0) &&
 	     (cfg->enable_gpio.pin_count == 0)))
 		return false;
@@ -75,16 +75,6 @@ void i2c_generic_fill_ssdt(const struct device *dev,
 				dev_path(dev));
 			return;
 		}
-	}
-
-	if (config->has_power_resource && !config->disable_gpio_export_in_crs) {
-		/*
-		 * This case will most likely cause timing problems. The OS driver might be
-		 * controlling the GPIOs, but the ACPI Power Resource will also be controlling
-		 * them. This will result in the two fighting and stomping on each other.
-		 */
-		printk(BIOS_ERR, "%s: Exposing GPIOs in Power Resource and _CRS\n",
-		       dev_path(dev));
 	}
 
 	/* Device */

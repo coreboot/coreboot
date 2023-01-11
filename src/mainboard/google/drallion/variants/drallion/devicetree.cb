@@ -348,7 +348,6 @@ chip soc/intel/cannonlake
 							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
 				register "generic.enable_delay_ms" = "55"
 				register "generic.has_power_resource" = "1"
-				register "generic.disable_gpio_export_in_crs" = "1"
 				register "hid_desc_reg_offset" = "0x1"
 				register "generic.device_present_gpio" = "GPP_B4"
 				register "generic.device_present_gpio_invert" = "1"

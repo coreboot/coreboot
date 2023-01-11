@@ -127,7 +127,6 @@ chip soc/amd/picasso
 			register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_144)"
 			register "generic.stop_off_delay_ms" = "1"
 			register "generic.has_power_resource" = "1"
-			register "generic.disable_gpio_export_in_crs" = "1"
 			register "hid_desc_reg_offset" = "0x01"
 			device i2c 10 on end
 		end

@@ -337,7 +337,6 @@ chip soc/intel/cannonlake
 				register "generic.reset_delay_ms" = "100"
 				register "generic.wake" = "GPE0_DW0_20"
 				register "generic.has_power_resource" = "1"
-				register "generic.disable_gpio_export_in_crs" = "1"
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 2c on end
 			end

@@ -274,7 +274,6 @@ chip soc/intel/skylake
 				register "generic.enable_delay_ms" = "1"
 				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E11)"
 				register "generic.has_power_resource" = "1"
-				register "generic.disable_gpio_export_in_crs" = "1"
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0xA on end
 			end

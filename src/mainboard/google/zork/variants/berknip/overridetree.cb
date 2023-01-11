@@ -153,7 +153,6 @@ chip soc/amd/picasso
 			# 20ms: Firmware ready time
 			register "reset_delay_ms" = "32 + 20"
 			register "has_power_resource" = "1"
-			register "disable_gpio_export_in_crs" = "1"
 			device i2c 39 on end
 		end
 		chip drivers/i2c/generic

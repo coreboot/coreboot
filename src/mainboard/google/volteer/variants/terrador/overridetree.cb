@@ -109,7 +109,6 @@ chip soc/intel/tigerlake
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F16)"
 				register "generic.reset_delay_ms" = "20"
 				register "generic.has_power_resource" = "1"
-				register "generic.disable_gpio_export_in_crs" = "1"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on end
 			end

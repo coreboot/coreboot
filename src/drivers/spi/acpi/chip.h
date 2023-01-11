@@ -19,9 +19,6 @@ struct drivers_spi_acpi_config {
 	/* Use GPIO based interrupt instead of PIRQ */
 	struct acpi_gpio irq_gpio;
 
-	/* Disable reset and enable GPIO export in _CRS */
-	bool disable_gpio_export_in_crs;
-
 	/* Does the device have a power resource? */
 	bool has_power_resource;
 

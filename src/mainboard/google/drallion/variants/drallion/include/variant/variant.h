@@ -12,7 +12,7 @@ typedef struct {
 	const char *name;
 } sku_info;
 
-const static sku_info skus[] = {
+static const sku_info skus[] = {
 	// Drallion 360
 	{ .id = 1, .name = "sku1" },
 	// Drallion

@@ -56,7 +56,7 @@ const struct region_device *boot_device_ro(void)
 	return NULL;
 }
 
-const static struct fu540_spi_mmap_config spi_mmap_config = {
+static const struct fu540_spi_mmap_config spi_mmap_config = {
 	.cmd_en = 1,
 	.addr_len = 4,
 	.pad_cnt = 6,

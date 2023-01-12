@@ -23,7 +23,7 @@
  * waiting for each device to become available, a single delay will be
  * executed.  The console UART is handled separately from this table.
  */
-const static unsigned int aoac_devs[] = {
+static const unsigned int aoac_devs[] = {
 	FCH_AOAC_DEV_AMBA,
 	FCH_AOAC_DEV_I2C2,
 	FCH_AOAC_DEV_I2C3,

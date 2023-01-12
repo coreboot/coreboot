@@ -92,7 +92,7 @@ static int sdmmc_cbfs_open(void)
 	return 0;
 }
 
-const static struct mem_region_device alternate_rdev =
+static const struct mem_region_device alternate_rdev =
 	MEM_REGION_DEV_RO_INIT(_cbfs_cache, REGION_SIZE(cbfs_cache));
 
 const struct region_device *boot_device_ro(void)

@@ -25,7 +25,7 @@
 /* Signature "MRCD" was used for older header format before CB:67670. */
 #define MRC_DATA_SIGNATURE       (('M'<<0)|('R'<<8)|('C'<<16)|('d'<<24))
 
-const static uint32_t mrc_invalid_sig = ~MRC_DATA_SIGNATURE;
+static const uint32_t mrc_invalid_sig = ~MRC_DATA_SIGNATURE;
 
 struct mrc_metadata {
 	uint32_t signature;

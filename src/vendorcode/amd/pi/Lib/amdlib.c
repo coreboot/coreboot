@@ -58,16 +58,16 @@ RDATA_GROUP (G1_PEICC)
 
 #define FILECODE LIB_AMDLIB_FILECODE
 
-BOOLEAN
 STATIC
+BOOLEAN
 GetPciMmioAddress (
      OUT   UINT64            *MmioAddress,
      OUT   UINT32            *MmioSize,
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
 
-VOID
 STATIC
+VOID
 LibAmdGetDataFromPtr (
   IN       ACCESS_WIDTH AccessWidth,
   IN       CONST VOID   *Data,
@@ -150,8 +150,8 @@ WriteIo32 (
    __outdword (Address, Data);
 }
 
-AMDLIB_OPTIMIZE
 STATIC
+AMDLIB_OPTIMIZE
 UINT64 SetFsBase (
   UINT64 address
   )
@@ -163,8 +163,8 @@ UINT64 SetFsBase (
   return hwcr;
 }
 
-AMDLIB_OPTIMIZE
 STATIC
+AMDLIB_OPTIMIZE
 VOID
 RestoreHwcr (
   UINT64
@@ -961,8 +961,8 @@ LibAmdPciPoll (
  *
  * @retval    TRUE          MmioAddress/MmioSize are valid
  */
-BOOLEAN
 STATIC
+BOOLEAN
 GetPciMmioAddress (
      OUT   UINT64            *MmioAddress,
      OUT   UINT32            *MmioSize,
@@ -1300,8 +1300,8 @@ LibAmdGetPackageType (
  * @param[out]    TempDataMask    typecast data
  */
 
-VOID
 STATIC
+VOID
 LibAmdGetDataFromPtr (
   IN       ACCESS_WIDTH AccessWidth,
   IN       CONST VOID   *Data,

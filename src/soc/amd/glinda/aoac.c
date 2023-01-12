@@ -28,7 +28,7 @@
  *
  * TODO: Find out which I2C controllers we really need to enable here.
  */
-const static unsigned int aoac_devs[] = {
+static const unsigned int aoac_devs[] = {
 	FCH_AOAC_DEV_AMBA,
 	FCH_AOAC_DEV_I2C0,
 	FCH_AOAC_DEV_I2C1,

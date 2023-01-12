@@ -104,11 +104,6 @@ int platform_set_sha_op(enum vb2_hash_algorithm hash_alg,
  * These functions should be replaced with proper implementations later.
  */
 
-uint32_t svc_write_postcode(uint32_t postcode)
-{
-	return 0;
-}
-
 void platform_report_mode(int developer_mode_enabled)
 {
 	printk(BIOS_INFO, "Reporting %s mode\n",

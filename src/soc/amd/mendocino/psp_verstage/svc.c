@@ -162,6 +162,16 @@ uint32_t svc_reset_system(enum reset_type reset_type)
 	return retval;
 }
 
+uint32_t svc_write_postcode(uint32_t postcode)
+{
+	uint32_t retval = 0;
+	struct cmd_param_postcode param = {
+		.postcode = postcode,
+	};
+	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_WRITE_POSTCODE, (void *)&param, retval);
+	return retval;
+}
+
 uint32_t svc_crypto_sha(struct sha_generic_data *sha_op, enum sha_operation_mode sha_mode)
 {
 	uint32_t retval = 0;

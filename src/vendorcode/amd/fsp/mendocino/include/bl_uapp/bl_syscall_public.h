@@ -57,6 +57,7 @@ enum verstage_cmd_id {
 	CMD_SET_FW_HASH_TABLE,
 	CMD_GET_PREV_BOOT_STATUS,
 	CMD_GET_HSP_SECURE_STATE,
+	CMD_WRITE_POSTCODE,
 };
 
 struct mod_exp_params {

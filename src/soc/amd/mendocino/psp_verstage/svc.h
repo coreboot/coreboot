@@ -102,4 +102,8 @@ struct cmd_param_get_hsp_secure_state {
 	unsigned int hsp_secure_state;
 };
 
+struct cmd_param_postcode {
+	uint32_t postcode;
+};
+
 #endif /* PSP_VERSTAGE_SVC_H */

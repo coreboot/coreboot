@@ -968,6 +968,12 @@ M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 M:	Martin Roth <gaumless@gmail.com>
 F:	payloads/external/
 
+COREDOOM PAYLOAD INTEGRATION
+M:	Nicholas Chin <nic.c3.14@gmail.com>
+W:	https://github.com/nic3-14159/coreDOOM
+S:	Maintained
+F:	payloads/external/coreDOOM/
+
 LINUXBOOT PAYLOAD INTEGRATION
 M:	Christian Walter <christian.walter@9elements.com>
 M:	Marcello Sylvester Bauer <info@marcellobauer.com>

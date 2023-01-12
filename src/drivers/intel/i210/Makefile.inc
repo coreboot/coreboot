@@ -3,5 +3,5 @@
 ramstage-$(CONFIG_DRIVER_INTEL_I210)+= i210.c
 
 ifeq ($(CONFIG_DRIVER_INTEL_I210),y)
-CFLAGS_x86_32 += -Isrc/drivers/intel/i210
+CPPFLAGS_common += -I$(src)/drivers/intel/i210/include
 endif

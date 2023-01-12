@@ -30,6 +30,33 @@
 
 subdirs-y += 00670F00
 
+ifeq ($(CONFIG_SOC_AMD_STONEYRIDGE),y)
+# AGESA V5 Files
+
+AGESA_ROOT = $(top)/$(call strip_quotes,$(CONFIG_AGESA_BINARY_PI_VENDORCODE_PATH))
+
+BINARY_PI_INC  = -I$(AGESA_ROOT)
+BINARY_PI_INC += -I$(AGESA_ROOT)/binaryPI
+BINARY_PI_INC += -I$(AGESA_ROOT)/Include
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Common
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/CPU
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/CPU/Family
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Fch
+BINARY_PI_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
+
+AGESA_INC = -I$(obj)
+AGESA_INC += $(BINARY_PI_INC)
+
+AGESA_INC += -I$(src)/soc/amd/stoneyridge/include
+AGESA_INC += -I$(src)/soc/amd/common/block/include
+
+AGESA_INC += -I$(src)/arch/x86/include
+AGESA_INC += -I$(src)/include
+AGESA_INC += -I$(src)/commonlib/include
+AGESA_INC += -I$(VBOOT_SOURCE)/firmware/include
+endif
+
 ifeq ($(CONFIG_CPU_AMD_PI_00730F01),y)
 # AGESA V5 Files
 

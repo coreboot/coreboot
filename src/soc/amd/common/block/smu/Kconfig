@@ -3,3 +3,10 @@ config SOC_AMD_COMMON_BLOCK_SMU
 	select SOC_AMD_COMMON_BLOCK_SMN
 	help
 	  Select this option to add functions to communicate with the SMU to the build.
+
+config SOC_AMD_COMMON_BLOCK_SMU_SX_ENTRY
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_SMU
+	help
+	  Select this option to add the function to send the S3/4/5 entry
+	  message to the SMU.

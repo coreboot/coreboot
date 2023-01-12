@@ -17,6 +17,7 @@
 #include <soc/qupv3_config_common.h>
 #include <soc/qup_se_handlers_common.h>
 #include <soc/qcom_qup_se.h>
+#include <soc/sdhci.h>
 #include <soc/usb/usb_common.h>
 #include <soc/usb/snps_usb_phy.h>
 
@@ -109,6 +110,8 @@ static void mainboard_init(struct device *dev)
 {
 	/* Configure clock for eMMC */
 	clock_configure_sdcc1(384 * MHz);
+	qc_emmc_early_init();
+
 	/* Configure clock for SD card */
 	clock_configure_sdcc2(50 * MHz);
 	configure_sdhci();

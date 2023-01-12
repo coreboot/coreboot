@@ -230,10 +230,10 @@ config RO_REGION_ONLY
 	default "apu/amdfw"
 
 config ECAM_MMCONF_BASE_ADDRESS
-	default 0xF8000000
+	default 0xE0000000
 
 config ECAM_MMCONF_BUS_NUMBER
-	default 64
+	default 256
 
 config MAX_CPUS
 	int

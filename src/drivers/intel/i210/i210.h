@@ -30,7 +30,6 @@
 #define MAC_ADDR_LEN		6
 
 /* We need one function we can call to get a MAC address to use */
-/* This function can be coded somewhere else but must exist. */
-extern enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[MAC_ADDR_LEN]);
+enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[MAC_ADDR_LEN]);
 
 #endif /* _INTEL_I210_H_ */

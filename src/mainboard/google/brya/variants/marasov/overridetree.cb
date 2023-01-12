@@ -66,6 +66,8 @@ chip soc/intel/alderlake
 	}"
 	register "sagv" = "SaGv_Enabled"
 
+	register "skip_mbp_hob" = "1"
+
 	register "ext_fivr_settings" = "{
 		.configure_ext_fivr = 1,
 		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX,

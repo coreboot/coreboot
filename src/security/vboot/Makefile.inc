@@ -71,6 +71,11 @@ romstage-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
 ramstage-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
 postcar-$(CONFIG_VBOOT_VBNV_CMOS) += vbnv_cmos.c
 
+$(call src-to-obj,bootblock,$(dir)/vbnv_flash.c) : $(obj)/fmap_config.h
+$(call src-to-obj,verstage,$(dir)/vbnv_flash.c) : $(obj)/fmap_config.h
+$(call src-to-obj,romstage,$(dir)/vbnv_flash.c) : $(obj)/fmap_config.h
+$(call src-to-obj,ramstage,$(dir)/vbnv_flash.c) : $(obj)/fmap_config.h
+$(call src-to-obj,postcar,$(dir)/vbnv_flash.c) : $(obj)/fmap_config.h
 bootblock-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
 verstage-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c
 romstage-$(CONFIG_VBOOT_VBNV_CMOS_BACKUP_TO_FLASH) += vbnv_flash.c

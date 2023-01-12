@@ -3,6 +3,7 @@
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
+#include <fmap_config.h>
 #include <string.h>
 #include <vb2_api.h>
 #include <security/vboot/vboot_common.h>
@@ -43,6 +44,9 @@ static inline int can_overwrite(uint8_t current, uint8_t new)
 {
 	return (current & new) == new;
 }
+
+_Static_assert(FMAP_SECTION_RW_NVRAM_SIZE >= BLOB_SIZE,
+	       "RW_NVRAM FMAP section not present or too small");
 
 static int init_vbnv(void)
 {

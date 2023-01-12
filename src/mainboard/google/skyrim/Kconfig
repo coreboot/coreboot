@@ -89,7 +89,6 @@ config MAINBOARD_FAMILY
 config MAINBOARD_PART_NUMBER
 	default "Skyrim" if BOARD_GOOGLE_SKYRIM
 	default "Winterhold" if BOARD_GOOGLE_WINTERHOLD
-	default "Morthal" if BOARD_GOOGLE_MORTHAL
 	default "Frostflow" if BOARD_GOOGLE_FROSTFLOW
 	default "Crystaldrift" if BOARD_GOOGLE_CRYSTALDRIFT
 	default "Markarth" if BOARD_GOOGLE_MARKARTH
@@ -102,7 +101,6 @@ config VARIANT_DIR
 	string
 	default "skyrim" if BOARD_GOOGLE_SKYRIM
 	default "winterhold" if BOARD_GOOGLE_WINTERHOLD
-	default "morthal" if BOARD_GOOGLE_MORTHAL
 	default "frostflow" if BOARD_GOOGLE_FROSTFLOW
 	default "crystaldrift" if BOARD_GOOGLE_CRYSTALDRIFT
 	default "markarth" if BOARD_GOOGLE_MARKARTH

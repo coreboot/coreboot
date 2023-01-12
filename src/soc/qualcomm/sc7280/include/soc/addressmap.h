@@ -91,4 +91,7 @@
 /* PHY BCR */
 #define GCC_PCIE_1_PHY_BCR		0x18E01C
 
+/* eMMC base address */
+#define SDC1_HC_BASE 0x007C4000
+
 #endif /*  __SOC_QUALCOMM_SC7280_ADDRESS_MAP_H__ */

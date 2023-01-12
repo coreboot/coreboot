@@ -122,10 +122,17 @@ chip soc/intel/tigerlake
 		end # DPTF
 
 		device ref tbt_pcie_rp0 on
+			probe DB_USB USB4_GEN2
 			probe DB_USB USB4_GEN3
 		end
 
 		device ref tbt_pcie_rp1 on
+			probe DB_USB USB4_GEN2
+			probe DB_USB USB4_GEN3
+		end
+
+		device ref tbt_dma0 on
+			probe DB_USB USB4_GEN2
 			probe DB_USB USB4_GEN3
 		end
 

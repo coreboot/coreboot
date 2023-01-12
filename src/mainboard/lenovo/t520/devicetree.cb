@@ -145,6 +145,8 @@ chip northbridge/intel/sandybridge
 					device i2c 5f on end
 				end
 			end # SMBus
+			device pci 1f.5 off end # IDE controller
+			device pci 1f.6 off end # Thermal controller
 		end
 	end
 end

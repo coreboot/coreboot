@@ -9,8 +9,6 @@ chip northbridge/intel/sandybridge
 					register "wwan_gpio_lvl" = "0"
 				end
 			end # LPC bridge
-			device pci 1f.5 off end # IDE controller
-			device pci 1f.6 off end # Thermal controller
 		end
 	end
 end

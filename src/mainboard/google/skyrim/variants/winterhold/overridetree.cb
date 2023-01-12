@@ -98,6 +98,16 @@ chip soc/amd/mendocino
 	register "stt_c_apu_F" = "0xE866"
 	register "stt_skin_temp_apu_F" = "0x3200"
 
+	register "i2c[0]" = "{
+		.speed = I2C_SPEED_FAST,
+		.speed_config[0] = {
+			.speed = I2C_SPEED_FAST,
+			.scl_hcnt = 107,
+			.scl_lcnt = 230,
+			.sda_hold = 100
+		}
+	}"
+
 	device domain 0 on
 
 		register "dxio_tx_vboost_enable" = "1"

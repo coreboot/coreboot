@@ -11,10 +11,10 @@ static bool uart_acpi_add_gpios_to_crs(struct drivers_uart_acpi_config *config)
 {
 	/*
 	 * Return false if:
-	 * 1. Request to explicitly disable export of GPIOs in CRS, or
+	 * 1. GPIOs are exported via a power resource, or
 	 * 2. Both reset and enable GPIOs are not provided.
 	 */
-	if (config->disable_gpio_export_in_crs ||
+	if (config->has_power_resource ||
 	    ((config->reset_gpio.pin_count == 0) &&
 	     (config->enable_gpio.pin_count == 0)))
 		return false;

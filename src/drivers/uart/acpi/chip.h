@@ -17,9 +17,6 @@ struct drivers_uart_acpi_config {
 	struct acpi_gpio irq_gpio;	/* GPIO to be used instead of PIRQ */
 	struct acpi_uart uart;		/* UART device information */
 
-	/* Disable reset and enable GPIO export in _CRS */
-	bool disable_gpio_export_in_crs;
-
 	/* Does the device have a power resource? */
 	bool has_power_resource;
 

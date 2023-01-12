@@ -1,7 +1,6 @@
 chip northbridge/intel/sandybridge
 	device domain 0 on
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
-			device pci 1e.0 off end # PCI-2-PCI bridge
 			device pci 1f.0 on # LPC bridge
 				chip ec/lenovo/h8
 					device pnp ff.2 on end # dummy

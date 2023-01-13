@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-/* TODO: Check if this is still correct */
-
 #ifndef AMD_MENDOCINO_ACPI_H
 #define AMD_MENDOCINO_ACPI_H
 

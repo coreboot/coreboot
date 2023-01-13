@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Check if this is still correct */
-
 #ifndef AMD_MENDOCINO_LPC_H
 #define AMD_MENDOCINO_LPC_H
 

@@ -10,9 +10,9 @@ ramstage-y += chromeos.c
 ramstage-y += gpio.c
 ramstage-y += port_descriptors.c
 
-ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_Updatable.bin),)
-APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_Updatable.bin
-APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_DefaultRecovery.bin
+ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5.bin),)
+APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5.bin
+APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5_DefaultRecovery.bin
 else
 files_added:: warn_no_apcb
 endif

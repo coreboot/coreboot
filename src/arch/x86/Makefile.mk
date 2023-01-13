@@ -288,11 +288,9 @@ rmodules_x86_64-y += memset.c
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 target-objcopy=-O elf32-i386 -B i386
-LD_MACHINE =-m elf_i386
 endif
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_64),y)
 target-objcopy=-O elf64-x86-64 -B i386:x86-64
-LD_MACHINE =-m elf_x86_64
 endif
 
 # Make sure generated code does not use XMMx and MMx registers
@@ -315,13 +313,9 @@ ramstage-libs ?=
 $(objcbfs)/ramstage.elf: $(objcbfs)/ramstage.debug.rmod
 	cp $< $@
 
-$(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(call src-to-obj,ramstage,$(CONFIG_MEMLAYOUT_LD_FILE))
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) $(LDFLAGS_ramstage) -o $@ -L$(obj) $< -T $(call src-to-obj,ramstage,$(CONFIG_MEMLAYOUT_LD_FILE))
-
-$(objgenerated)/ramstage.o: $$(ramstage-objs) $(COMPILER_RT_ramstage) $$(ramstage-libs)
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) $(LD_MACHINE) -r -o $@ $(COMPILER_RT_FLAGS_ramstage) --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) $(ramstage-libs) --no-whole-archive $(COMPILER_RT_ramstage) --end-group
+$(objcbfs)/ramstage.debug: $$(ramstage-objs) $(COMPILER_RT_ramstage) $(call src-to-obj,ramstage,$(CONFIG_MEMLAYOUT_LD_FILE)) $$(ramstage-libs)
+	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	$(LD_ramstage) $(LDFLAGS_ramstage) -o $@ -L$(obj) $(COMPILER_RT_FLAGS_ramstage) --whole-archive --start-group $(filter-out %.ld,$^) --no-whole-archive $(COMPILER_RT_ramstage) --end-group -T $(call src-to-obj,ramstage,$(CONFIG_MEMLAYOUT_LD_FILE))
 
 endif # CONFIG_ARCH_RAMSTAGE_X86_32 / CONFIG_ARCH_RAMSTAGE_X86_64
 

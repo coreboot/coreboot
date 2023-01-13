@@ -11,6 +11,7 @@
 #include <boardid.h>
 #include <gpio.h>
 #include <smbios.h>
+#include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>
 #include <soc/platform_descriptors.h>
@@ -52,7 +53,7 @@ static const struct fch_irq_routing fch_irq_map[] = {
 	{ PIRQ_G,	13,		PIRQ_NC },
 	{ PIRQ_H,	6,		PIRQ_NC },
 
-	{ PIRQ_SCI,	9,		9 },
+	{ PIRQ_SCI,	ACPI_SCI_IRQ,	ACPI_SCI_IRQ },
 	{ PIRQ_EMMC,	5,		5 },
 	{ PIRQ_GPIO,	7,		7 },
 	{ PIRQ_I2C2,	10,		10 },

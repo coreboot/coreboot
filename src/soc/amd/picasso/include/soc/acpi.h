@@ -8,6 +8,8 @@
 #include <device/device.h>
 #include <stdint.h>
 
+#define ACPI_SCI_IRQ 9
+
 /* RTC Registers */
 #define RTC_DATE_ALARM		0x0d
 

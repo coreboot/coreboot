@@ -5,6 +5,7 @@
 #include <amdblocks/amd_pci_util.h>
 #include <FspsUpd.h>
 #include <gpio.h>
+#include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
@@ -26,7 +27,7 @@ static const struct fch_irq_routing fch_irq_map[] = {
 	{ PIRQ_B,	10,		17 },
 	{ PIRQ_C,	11,		18 },
 	{ PIRQ_D,	12,		19 },
-	{ PIRQ_SCI,	9,		 9 },
+	{ PIRQ_SCI,	ACPI_SCI_IRQ,	ACPI_SCI_IRQ },
 	{ PIRQ_SD,	PIRQ_NC,	16 },
 	{ PIRQ_SDIO,	PIRQ_NC,	16 },
 	{ PIRQ_SATA,	PIRQ_NC,	19 },

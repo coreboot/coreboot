@@ -4,8 +4,8 @@
 #include <amdblocks/gpio.h>
 #include <amdblocks/uart.h>
 #include <commonlib/helpers.h>
+#include <gpio.h>
 #include <soc/aoac_defs.h>
-#include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/southbridge.h>
 #include <soc/uart.h>

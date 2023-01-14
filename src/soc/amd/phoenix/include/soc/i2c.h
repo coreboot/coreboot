@@ -3,7 +3,7 @@
 #ifndef AMD_PHOENIX_I2C_H
 #define AMD_PHOENIX_I2C_H
 
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <types.h>
 
 #define GPIO_I2C0_SCL		BIT(0)

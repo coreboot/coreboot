@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/gpio.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <types.h>
 
 /* see the IOMUX function table for the mapping from GPIO number to GEVENT number */

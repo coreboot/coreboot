@@ -13,6 +13,7 @@
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <gpio.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/ioapic.h>
@@ -20,7 +21,6 @@
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <soc/northbridge.h>
-#include <soc/gpio.h>
 #include <version.h>
 
 unsigned long acpi_fill_madt(unsigned long current)

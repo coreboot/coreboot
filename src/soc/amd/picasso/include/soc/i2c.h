@@ -3,8 +3,8 @@
 #ifndef AMD_PICASSO_I2C_H
 #define AMD_PICASSO_I2C_H
 
+#include <gpio.h>
 #include <types.h>
-#include <soc/gpio.h>
 
 #define GPIO_I2C2_SCL		BIT(2)
 #define GPIO_I2C3_SCL		BIT(3)

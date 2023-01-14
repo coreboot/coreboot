@@ -3,8 +3,8 @@
 #ifndef AMD_STONEYRIDGE_I2C_H
 #define AMD_STONEYRIDGE_I2C_H
 
+#include <gpio.h>
 #include <types.h>
-#include <soc/gpio.h>
 
 #define GPIO_I2C0_SCL			BIT(0)
 #define GPIO_I2C1_SCL			BIT(1)

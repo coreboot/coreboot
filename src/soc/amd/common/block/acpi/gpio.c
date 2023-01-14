@@ -2,7 +2,7 @@
 
 #include <acpi/acpigen.h>
 #include <console/console.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 
 static int acpigen_soc_gpio_op(const char *op, unsigned int gpio_num)
 {

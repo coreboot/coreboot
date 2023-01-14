@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/gpio.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <types.h>
 
 static const struct soc_amd_event gpio_event_table[] = {

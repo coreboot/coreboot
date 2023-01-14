@@ -15,6 +15,7 @@
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <gpio.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/chip.h>
@@ -24,7 +25,6 @@
 #include <soc/pci_devs.h>
 #include <soc/msr.h>
 #include <soc/southbridge.h>
-#include <soc/gpio.h>
 #include <version.h>
 #include "chip.h"
 

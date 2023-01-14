@@ -64,4 +64,4 @@
 [submodule "util/goswid"]
 	path = util/goswid
 	url = ../goswid
-	branch = v0.1
+	branch = trunk

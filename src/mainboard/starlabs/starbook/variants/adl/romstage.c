@@ -29,4 +29,8 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	const uint8_t vtd = get_uint_option("vtd", 1);
 	mupd->FspmConfig.VtdDisable = !vtd;
+
+	/* Enable/Disable Wireless (RP05) based on CMOS settings */
+	if (get_uint_option("wireless", 1) == 0)
+		mupd->FspmConfig.PcieRpEnableMask &= ~(1 << 4);
 };

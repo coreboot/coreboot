@@ -56,7 +56,7 @@ const char *const *soc_smi_sts_array(size_t *a)
 		[SERIRQ_SMI_STS_BIT] = "SERIRQ",
 		[SMBUS_SMI_STS_BIT] = "SMBUS_SMI",
 		[XHCI_SMI_STS_BIT] = "XHCI",
-		[SCS_SMI_STS_BIT] = "HOST_SMBUS",
+		[HSMBUS_SMI_STS_BIT] = "HOST_SMBUS",
 		[SCS_SMI_STS_BIT] = "SCS",
 		[PCI_EXP_SMI_STS_BIT] = "PCI_EXP_SMI",
 		[SCC2_SMI_STS_BIT] = "SCC2",

@@ -9,7 +9,7 @@
  * this function needs to be implemented by a specific SoC.
  * return number of PMP entries for current hart
  */
-extern int pmp_entries_num(void);
+int pmp_entries_num(void);
 
 /* reset PMP setting */
 void reset_pmp(void);

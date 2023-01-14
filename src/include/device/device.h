@@ -207,7 +207,7 @@ bool is_enabled_pci(const struct device *pci);
 bool is_pci_dev_on_bus(const struct device *pci, unsigned int bus);
 
 /* Returns whether there is a hotplug port on the path to the given device. */
-extern bool dev_path_hotplug(const struct device *);
+bool dev_path_hotplug(const struct device *);
 
 /* Option ROM helper functions */
 void run_bios(struct device *dev, unsigned long addr);

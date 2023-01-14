@@ -31,6 +31,6 @@
 #define  EC_FAN_SPEED_LEVEL_4	       0x10 /* Level 4 is off */
 #define  EC_FAN_SPEED_FLAG_OS          0x80 /* OS control of fan speed */
 
-extern void lumpy_ec_init(void);
+void lumpy_ec_init(void);
 
 #endif // LUMPY_EC_H

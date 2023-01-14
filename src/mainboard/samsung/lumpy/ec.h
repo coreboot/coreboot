@@ -39,6 +39,6 @@
 #define EC_LID_CLOSE                  0x9c  /* Lid close event */
 #define EC_LID_OPEN                   0x9d  /* Lid open event */
 
-extern void lumpy_ec_init(void);
+void lumpy_ec_init(void);
 
 #endif // LUMPY_EC_H

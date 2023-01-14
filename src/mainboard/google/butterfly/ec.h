@@ -8,7 +8,7 @@
 /* EC SMI sources TODO: MLR- make defines */
 
 #ifndef __ACPI__
-extern void butterfly_ec_init(void);
+void butterfly_ec_init(void);
 #endif
 
 #endif // BUTTERFLY_EC_H

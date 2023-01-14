@@ -8,17 +8,17 @@
 
 #if CONFIG(ELOG)
 /* Eventlog backing storage must be initialized before calling elog_init(). */
-extern int elog_init(void);
-extern int elog_clear(void);
+int elog_init(void);
+int elog_clear(void);
 /* Event addition functions return < 0 on failure and 0 on success. */
-extern int elog_add_event_raw(u8 event_type, void *data, u8 data_size);
-extern int elog_add_event(u8 event_type);
-extern int elog_add_event_byte(u8 event_type, u8 data);
-extern int elog_add_event_word(u8 event_type, u16 data);
-extern int elog_add_event_dword(u8 event_type, u32 data);
-extern int elog_add_event_wake(u8 source, u32 instance);
-extern int elog_smbios_write_type15(unsigned long *current, int handle);
-extern int elog_add_extended_event(u8 type, u32 complement);
+int elog_add_event_raw(u8 event_type, void *data, u8 data_size);
+int elog_add_event(u8 event_type);
+int elog_add_event_byte(u8 event_type, u8 data);
+int elog_add_event_word(u8 event_type, u16 data);
+int elog_add_event_dword(u8 event_type, u32 data);
+int elog_add_event_wake(u8 source, u32 instance);
+int elog_smbios_write_type15(unsigned long *current, int handle);
+int elog_add_extended_event(u8 type, u32 complement);
 #else
 /* Stubs to help avoid littering sources with #if CONFIG_ELOG */
 static inline int elog_init(void) { return -1; }
@@ -47,7 +47,7 @@ static inline int elog_gsmi_add_event_byte(u8 event_type, u8 data) { return 0; }
 static inline int elog_gsmi_add_event_word(u8 event_type, u16 data) { return 0; }
 #endif
 
-extern u32 gsmi_exec(u8 command, u32 *param);
+u32 gsmi_exec(u8 command, u32 *param);
 
 #if CONFIG(ELOG_BOOT_COUNT)
 u32 boot_count_read(void);

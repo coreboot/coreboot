@@ -96,7 +96,7 @@ void mock_assert(const int result, const char *const expression,
  * ramstage/lib/bootmode.o: In function `display_init_required':
  * bootmode.c:42: undefined reference to `_dead_code_assertion_failed'
  */
-extern void _dead_code_assertion_failed(void) __attribute__((noreturn));
+void _dead_code_assertion_failed(void) __attribute__((noreturn));
 #define dead_code() _dead_code_assertion_failed()
 
 /* This can be used in the context of an expression of type 'type'. */

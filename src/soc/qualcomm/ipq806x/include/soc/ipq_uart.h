@@ -9,7 +9,7 @@
                                              ((value << (32 - end_pos))\
                                               >> (32 - (end_pos - start_pos)))
 
-extern void __udelay(unsigned long usec);
+void __udelay(unsigned long usec);
 
 enum MSM_BOOT_UART_DM_PARITY_MODE {
         MSM_BOOT_UART_DM_NO_PARITY,

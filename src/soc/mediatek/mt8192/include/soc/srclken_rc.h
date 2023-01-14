@@ -186,6 +186,6 @@ struct subsys_rc_con {
 	unsigned int dcxo_settle_blk_en;
 };
 
-extern int srclken_rc_init(void);
+int srclken_rc_init(void);
 
 #endif /* SOC_MEDIATEK_MT8192_SRCLKEN_RC_H */

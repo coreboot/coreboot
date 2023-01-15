@@ -5,4 +5,4 @@ config PAYLOAD_DEPTHCHARGE
 	  Select this option if you want to build a coreboot image
 	  with a depthcharge payload.
 
-	  See https://coreboot.org/Payloads for more information.
+	  See https://doc.coreboot.org/payloads.html for more information.

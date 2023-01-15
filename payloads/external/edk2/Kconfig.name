@@ -6,4 +6,4 @@ config PAYLOAD_EDK2
 	  with a edk2 payload. If you don't know what this is
 	  about, just leave it enabled.
 
-	  See https://coreboot.org/Payloads for more information.
+	  See https://doc.coreboot.org/payloads.html for more information.

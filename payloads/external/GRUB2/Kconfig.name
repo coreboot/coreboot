@@ -7,7 +7,7 @@ config PAYLOAD_GRUB2
 	  with a GRUB2 payload. If you don't know what this is
 	  about, just leave it enabled.
 
-	  See https://coreboot.org/Payloads for more information.
+	  See https://doc.coreboot.org/payloads.html for more information.
 
 config PAYLOAD_SEAGRUB
 	bool "GRUB2 atop SeaBIOS"
@@ -19,4 +19,4 @@ config PAYLOAD_SEAGRUB
 	  with a GRUB2 payload running atop SeaBIOS to improve its
 	  hardware compatibility.
 
-	  See https://coreboot.org/Payloads for more information.
+	  See https://doc.coreboot.org/payloads.html for more information.

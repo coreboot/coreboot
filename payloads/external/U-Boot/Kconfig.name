@@ -5,6 +5,6 @@ config PAYLOAD_UBOOT
 	  Select this option if you want to build a coreboot image
 	  with a U-Boot payload.
 
-	  See https://coreboot.org/Payloads and U-Boot's documentation
+	  See https://doc.coreboot.org/payloads.html and U-Boot's documentation
 	  at http://git.denx.de/?p=u-boot.git;a=blob;f=doc/README.x86
 	  for more information.

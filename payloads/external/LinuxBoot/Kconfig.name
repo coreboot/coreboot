@@ -8,4 +8,4 @@ config PAYLOAD_LINUXBOOT
 	  with a LinuxBoot payload. If you don't know what this is
 	  about, just leave it enabled.
 
-	  See https://coreboot.org/Payloads for more information.
+	  See https://doc.coreboot.org/payloads.html for more information.

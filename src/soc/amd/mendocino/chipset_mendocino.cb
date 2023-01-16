@@ -1,6 +1,6 @@
 chip soc/amd/mendocino
 	device cpu_cluster 0 on
-		ops mendocino_cpu_bus_ops
+		ops amd_cpu_bus_ops
 	end
 	device domain 0 on
 		ops mendocino_pci_domain_ops

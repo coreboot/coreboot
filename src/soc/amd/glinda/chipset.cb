@@ -2,7 +2,7 @@
 
 chip soc/amd/glinda
 	device cpu_cluster 0 on
-		ops glinda_cpu_bus_ops
+		ops amd_cpu_bus_ops
 	end
 	device domain 0 on
 		ops glinda_pci_domain_ops

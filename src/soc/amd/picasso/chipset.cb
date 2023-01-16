@@ -2,7 +2,7 @@
 
 chip soc/amd/picasso
 	device cpu_cluster 0 on
-		ops picasso_cpu_bus_ops
+		ops amd_cpu_bus_ops
 	end
 	device domain 0 on
 		ops picasso_pci_domain_ops

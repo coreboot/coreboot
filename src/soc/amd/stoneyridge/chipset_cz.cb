@@ -2,7 +2,7 @@
 
 chip soc/amd/stoneyridge
 	device cpu_cluster 0 on
-		ops stoneyridge_cpu_bus_ops
+		ops amd_cpu_bus_ops
 	end
 	device domain 0 on
 		ops stoneyridge_pci_domain_ops

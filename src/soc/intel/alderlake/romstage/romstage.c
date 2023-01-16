@@ -128,15 +128,26 @@ static void save_dimm_info(void)
 
 void mainboard_romstage_entry(void)
 {
-	bool s3wake;
 	struct chipset_power_state *ps = pmc_get_power_state();
+	bool s3wake = pmc_fill_power_state(ps) == ACPI_S3;
+
+	/* Initialize HECI interface */
+	cse_init(HECI1_BASE_ADDRESS);
+
+	if (CONFIG(SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE))
+		dbg_feature_cntrl_init();
+
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE) && !s3wake) {
+		timestamp_add_now(TS_CSE_FW_SYNC_START);
+		cse_fw_sync();
+		timestamp_add_now(TS_CSE_FW_SYNC_END);
+	}
 
 	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
 	systemagent_early_init();
 	/* Program SMBus base address and enable it */
 	smbus_common_init();
-	/* Initialize HECI interface */
-	cse_init(HECI1_BASE_ADDRESS);
+
 	/*
 	 * Disable Intel TXT if `CPU is unsupported` or `SoC haven't selected the config`.
 	 *
@@ -144,17 +155,6 @@ void mainboard_romstage_entry(void)
 	 */
 	if (!CONFIG(INTEL_TXT))
 		disable_intel_txt();
-
-	if (CONFIG(SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE))
-		dbg_feature_cntrl_init();
-
-	s3wake = pmc_fill_power_state(ps) == ACPI_S3;
-
-	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE) && !s3wake) {
-		timestamp_add_now(TS_CSE_FW_SYNC_START);
-		cse_fw_sync();
-		timestamp_add_now(TS_CSE_FW_SYNC_END);
-	}
 
 	/* Update coreboot timestamp table with CSE timestamps */
 	if (CONFIG(SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY))

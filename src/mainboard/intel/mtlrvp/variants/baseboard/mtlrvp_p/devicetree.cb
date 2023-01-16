@@ -39,6 +39,9 @@ chip soc/intel/meteorlake
 	# Enable CNVi BT
 	register "cnvi_bt_core" = "true"
 
+	# Enable S0ix
+	register "s0ix_enable" = "1"
+
 	# Enable EDP in PortA
 	register "ddi_port_A_config" = "1"
 	# Enable HDMI in Port B

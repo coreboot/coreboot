@@ -468,6 +468,7 @@
 /* Extended Capability lists*/
 #define PCIE_EXT_CAP_OFFSET		0x100
 #define  PCIE_EXT_CAP_AER_ID		 0x0001
+#define  PCIE_EXT_CAP_ID_ATS		 0x000F
 #define  PCIE_EXT_CAP_L1SS_ID		 0x001E
 #define  PCIE_EXT_CAP_LTR_ID		 0x0018
 #define  PCIE_EXT_CAP_RESIZABLE_BAR	 0x0015

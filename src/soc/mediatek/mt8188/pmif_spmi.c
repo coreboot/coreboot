@@ -71,14 +71,13 @@ void pmif_spmi_config(struct pmif *arb, int mstid)
 	write32(&arb->mtk_pmif->inf_cmd_per_2, 0);
 	write32(&arb->mtk_pmif->inf_cmd_per_3, 0);
 
-	/* TODO: figure out correct setting for MT8188 */
 	cmd_per = PMIF_CMD_PER_3 << 28 | PMIF_CMD_PER_3 << 24 |
 		  PMIF_CMD_PER_3 << 20 | PMIF_CMD_PER_3 << 16 |
 		  PMIF_CMD_PER_3 << 8 | PMIF_CMD_PER_3 << 4 |
 		  PMIF_CMD_PER_1_3 << 0;
 	write32(&arb->mtk_pmif->inf_cmd_per_0, cmd_per);
 
-	cmd_per = PMIF_CMD_PER_3 << 4;
+	cmd_per = PMIF_CMD_PER_3 << 8 | PMIF_CMD_PER_3 << 4;
 	write32(&arb->mtk_pmif->inf_cmd_per_1, cmd_per);
 }
 

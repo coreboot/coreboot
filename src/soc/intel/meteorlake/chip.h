@@ -352,12 +352,6 @@ struct soc_intel_meteorlake_config {
 	 * Set this to 1 in order to disable Package C-state demotion.
 	 */
 	bool disable_package_c_state_demotion;
-
-	/*
-	 * Enable or Disable Skipping MBP HOB.
-	 * Default is set to 0 and set to 1 to skip the MBP HOB.
-	 */
-	bool skip_mbp_hob;
 };
 
 typedef struct soc_intel_meteorlake_config config_t;

@@ -371,4 +371,12 @@ config MTL_USE_COREBOOT_MP_INIT
 
 endchoice
 
+config FSP_PUBLISH_MBP_HOB
+	bool
+	default n if CHROMEOS
+	default y
+	help
+	  This is to control creation of ME_BIOS_PAYLOAD_HOB (MBP HOB) by FSP.
+	  Disabling it for the platforms, which do not use MBP HOB, can improve the boot time.
+
 endif

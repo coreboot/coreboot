@@ -187,7 +187,7 @@ static void fill_fspm_misc_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->GpioOverride = 0x1;
 
 	/* Skip MBP HOB */
-	m_cfg->SkipMbpHob = config->skip_mbp_hob;
+	m_cfg->SkipMbpHob = !CONFIG(FSP_PUBLISH_MBP_HOB);
 }
 
 static void fill_fspm_audio_params(FSP_M_CONFIG *m_cfg,

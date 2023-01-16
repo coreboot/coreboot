@@ -553,6 +553,7 @@ uintptr_t agesa_write_acpi_tables(const struct device *device, uintptr_t current
 	acpi_add_table(rsdp, crat);
 
 	/* add ALIB SSDT from HOB */
+	current = acpi_align_current(current);
 	current = add_agesa_fsp_acpi_table(AMD_FSP_ACPI_ALIB_HOB_GUID, "ALIB", rsdp, current);
 
 	/* IVRS */

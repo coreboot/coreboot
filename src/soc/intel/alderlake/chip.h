@@ -667,12 +667,6 @@ struct soc_intel_alderlake_config {
 	 */
 	bool disable_package_c_state_demotion;
 
-	/*
-	 * Enable or Disable Skipping MBP HOB.
-	 * Default is set to 0 and set to 1 to skip the MBP HOB.
-	 */
-	bool skip_mbp_hob;
-
 	/* i915 struct for GMA backlight control */
 	struct i915_gpu_controller_info gfx;
 

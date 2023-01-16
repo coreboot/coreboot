@@ -27,6 +27,9 @@ chip soc/amd/mendocino
 	}"
 
 	device domain 0 on
+
+		register "dxio_tx_vboost_enable" = "1"
+
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref xhci_1 on # XHCI1 controller
 				chip drivers/usb/acpi

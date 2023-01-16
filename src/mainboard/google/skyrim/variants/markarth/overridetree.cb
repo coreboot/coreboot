@@ -3,6 +3,9 @@
 chip soc/amd/mendocino
 
 	device domain 0 on
+
+		register "dxio_tx_vboost_enable" = "1"
+
 		device ref gpp_bridge_1 on
 			# Required so the NVMe gets placed into D3 when entering S0i3.
 			chip drivers/pcie/rtd3/device

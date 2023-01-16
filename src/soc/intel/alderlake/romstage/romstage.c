@@ -2,11 +2,13 @@
 
 #include <arch/romstage.h>
 #include <cbmem.h>
+#include <cf9_reset.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/early_graphics.h>
+#include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smbus.h>
 #include <intelblocks/thermal.h>
@@ -21,6 +23,23 @@
 #include <timestamp.h>
 #include <string.h>
 #include <security/intel/txt/txt.h>
+#include <soc/pcr_ids.h>
+
+#define PSF_UFS0_BASE_ADDRESS  0x280
+#define PSF_UFS1_BASE_ADDRESS  0x300
+#define PCR_PSFX_T0_SHDW_PCIEN 0x1C
+#define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS  (1 << 8)
+
+static void disable_ufs(void)
+{
+	/* disable USF0 */
+	pcr_or32(PID_PSF2, PSF_UFS0_BASE_ADDRESS + PCR_PSFX_T0_SHDW_PCIEN,
+			 PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
+
+	/* disable USF1 */
+	pcr_or32(PID_PSF2, PSF_UFS1_BASE_ADDRESS + PCR_PSFX_T0_SHDW_PCIEN,
+			 PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
+}
 
 #include "ux.h"
 
@@ -162,6 +181,17 @@ void mainboard_romstage_entry(void)
 		timestamp_add_now(TS_CSE_FW_SYNC_START);
 		cse_fw_sync();
 		timestamp_add_now(TS_CSE_FW_SYNC_END);
+	}
+
+	/* Program to Disable UFS Controllers */
+	if (!is_devfn_enabled(PCH_DEVFN_UFS) &&
+			 (CONFIG(USE_UNIFIED_AP_FIRMWARE_FOR_UFS_AND_NON_UFS))) {
+		printk(BIOS_INFO, "Disabling UFS controllers\n");
+		disable_ufs();
+		if (ps->prev_sleep_state == ACPI_S5) {
+			printk(BIOS_INFO, "Warm Reset after disabling UFS controllers\n");
+			system_reset();
+		}
 	}
 
 	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */

@@ -9,6 +9,7 @@
 #include <soc/addressmap.h>
 
 static struct elf_se_hdr *fw_list[SE_PROTOCOL_MAX];
+static struct gsi_fw_hdr *gsi_hdr;
 
 void qupv3_se_fw_load_and_init(unsigned int bus, unsigned int protocol,
 							unsigned int mode)
@@ -185,16 +186,17 @@ void gpi_firmware_load(int addr)
 {
 	uint32_t i;
 	uint32_t regVal = 0;
-	struct gsi_fw_hdr *gsi_hdr;
 	struct gsi_fw_iep *fwIep;
 	struct gsi_fw_iram *fwIRam;
 	struct gsi_regs *regs = (struct gsi_regs *)(uintptr_t)addr;
 	static const char * const filename = "fallback/gsi_fw";
 
 	/* Assign firmware header base */
-	gsi_hdr = cbfs_map(filename, NULL);
-	if (!gsi_hdr)
-		die("*ERROR*  * cbfs_map() failed ***\n");
+	if (!gsi_hdr) {
+		gsi_hdr = cbfs_map(filename, NULL);
+		if (!gsi_hdr)
+			die("*ERROR*  * cbfs_map() failed ***\n");
+	}
 
 	assert(gsi_hdr->magic == GSI_FW_MAGIC_HEADER)
 

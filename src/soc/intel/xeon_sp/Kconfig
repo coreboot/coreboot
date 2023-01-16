@@ -11,6 +11,7 @@ config SOC_INTEL_SKYLAKE_SP
 	bool
 	select XEON_SP_COMMON_BASE
 	select PLATFORM_USES_FSP2_0
+	select NO_FSP_TEMP_RAM_EXIT
 	help
 	  Intel Skylake-SP support
 
@@ -19,6 +20,7 @@ config SOC_INTEL_COOPERLAKE_SP
 	select XEON_SP_COMMON_BASE
 	select PLATFORM_USES_FSP2_2
 	select CACHE_MRC_SETTINGS
+	select NO_FSP_TEMP_RAM_EXIT
 	help
 	  Intel Cooper Lake-SP support
 
@@ -38,7 +40,6 @@ config	CPU_SPECIFIC_OPTIONS
 	select HAVE_SMI_HANDLER
 	select INTEL_CAR_NEM # For postcar only now
 	select INTEL_DESCRIPTOR_MODE_CAPABLE
-	select NO_FSP_TEMP_RAM_EXIT
 	select PARALLEL_MP_AP_WORK
 	select PMC_GLOBAL_RESET_ENABLE_LOCK
 	select POSTCAR_STAGE

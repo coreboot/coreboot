@@ -369,6 +369,7 @@ static void inform_user_of_memory_training(void)
 	    !early_graphics_init())
 		return;
 
+	printk(BIOS_INFO, "Informing user on-display of memory training.\n");
 	vga_write_text(VGA_TEXT_CENTER, VGA_TEXT_HORIZONTAL_MIDDLE,
 		       "Your device is finishing an update. This may take 1-2 minutes.\nPlease do not turn off your device.");
 }

@@ -17,6 +17,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select VPD
 	select OCP_EWL
 	select OCP_VPD
+	select RUNTIME_CONFIGURABLE_SMM_LOGLEVEL
 
 config MAINBOARD_DIR
 	string
@@ -33,5 +34,8 @@ config FMDFILE
 config MAX_SOCKET
 	int
 	default 2
+
+config DEBUG_SMI
+	default y
 
 endif

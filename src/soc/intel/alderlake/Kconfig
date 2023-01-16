@@ -447,6 +447,28 @@ config ALDERLAKE_ENABLE_SOC_WORKAROUND
 	help
 	  Selects the workarounds applicable for Alder Lake SoC.
 
+config USE_UNIFIED_AP_FIRMWARE_FOR_UFS_AND_NON_UFS
+	bool
+	help
+	  Alder Lake SoC based OEM board design with UFS and non-UFS planned to use an
+	  unified AP firmware which demanded to have a unified descriptor. It means UFS
+	  controller needs to default fuse enabled to let UFS SKU to boot.
+
+	  On such design with non-UFS SKU is exhibiting S0ix failure due to UFS remain
+	  enabled in the strap although FSP-S is making the UFS controller function
+	  disabled. The potential root cause of this behaviour is although the UFS
+	  controller is function disabled but MPHY clock is still in active state.
+
+	  A possible solution to this problem is to issue a warm reboot (if boot path is
+	  S5->S0 or G3->S0) after disabling the UFS and let PMC to read the function
+	  disable state of the UFS for disabling the MPHY clock.
+
+	  Mainboard users with such board design where OEM would like to use an unified AP
+	  firmware to support both UFS and non-UFS sku booting might need to choose this
+	  config to allow disabling UFS while booting on the non-UFS SKU.
+	  Note: selection of this config would introduce an additional warm reset in
+	  cold-reset scenarios due to function disabling of the UFS controller.
+
 choice
 	prompt "Multiprocessor (MP) Initialization configuration to use"
 	default USE_FSP_MP_INIT

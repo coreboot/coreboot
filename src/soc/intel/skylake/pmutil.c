@@ -8,17 +8,17 @@
 #define __SIMPLE_DEVICE__
 
 #include <acpi/acpi.h>
+#include <console/console.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
-#include <console/console.h>
+#include <gpio.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/tco.h>
 #include <soc/gpe.h>
-#include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>

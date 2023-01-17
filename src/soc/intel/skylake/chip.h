@@ -7,13 +7,13 @@
 #include <device/i2c_simple.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <drivers/intel/gma/gma.h>
+#include <gpio.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/power_limit.h>
 #include <stdint.h>
 #include <soc/gpe.h>
-#include <soc/gpio.h>
 #include <soc/irq.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>

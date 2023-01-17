@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
+#include <gpio.h>
 #include <soc/intel/common/block/acpi/acpi/gpio_op.asl>
-#include <soc/gpio.h>
 
 Device (GPIO)
 {

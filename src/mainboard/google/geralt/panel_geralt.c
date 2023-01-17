@@ -2,12 +2,20 @@
 
 #include <boardid.h>
 #include <boot/coreboot_tables.h>
+#include <console/console.h>
+#include <delay.h>
 #include <gpio.h>
 #include <soc/gpio_common.h>
+#include <soc/i2c.h>
+#include <soc/regulator.h>
+#include <soc/pmif.h>
 #include <string.h>
 
 #include "gpio.h"
 #include "panel.h"
+
+#define PMIC_TPS65132_I2C	I2C3
+#define PMIC_TPS65132_SLAVE	0x3E
 
 static void configure_mipi_pwm_backlight(void)
 {
@@ -22,7 +30,34 @@ static void configure_edp_aux_backlight(void)
 
 static void power_on_mipi_boe_tv110c9m_ll0(void)
 {
-	/* TODO: Add the poweron for BOE_TV110C9M_LL0 when we get BOE_TV110C9M_LL0 */
+	/* Enable VM18V */
+	mainboard_enable_regulator(MTK_REGULATOR_VDD18, true);
+
+	/* Initialize I2C3 for PMIC TPS65132 */
+	mtk_i2c_bus_init(PMIC_TPS65132_I2C, I2C_SPEED_FAST);
+	mdelay(10);
+
+	gpio_output(GPIO_DISP_RST_1V8_L, 0);
+	mdelay(1);
+
+	gpio_output(GPIO_EN_PPVAR_MIPI_DISP, 1);
+	gpio_output(GPIO_EN_PPVAR_MIPI_DISP_150MA, 1);
+	mdelay(10);
+
+	/* Set AVDD = 5.7V */
+	if (panel_pmic_reg_mask(PMIC_TPS65132_I2C, PMIC_TPS65132_SLAVE, 0x00, 0x11, 0x1F) < 0)
+		return;
+
+	/* Set AVEE = -5.7V */
+	if (panel_pmic_reg_mask(PMIC_TPS65132_I2C, PMIC_TPS65132_SLAVE, 0x01, 0x11, 0x1F) < 0)
+		return;
+
+	gpio_output(GPIO_DISP_RST_1V8_L, 1);
+	mdelay(1);
+	gpio_output(GPIO_DISP_RST_1V8_L, 0);
+	mdelay(1);
+	gpio_output(GPIO_DISP_RST_1V8_L, 1);
+	mdelay(6);
 }
 
 static void power_on_edp_mutto_b152731e1(void)

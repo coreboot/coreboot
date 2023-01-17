@@ -7,11 +7,6 @@
 #include <soc/msr.h>
 #include <types.h>
 
-/*
- * version 2 is expected to be the typical use case.
- * For now this function 'punts' on version 3 and just
- * populates the additional fields with 'unsupported'.
- */
 static void cpu_init_cppc_config(struct cppc_config *config, u32 version)
 {
 	uint32_t lowest_freq_mhz;

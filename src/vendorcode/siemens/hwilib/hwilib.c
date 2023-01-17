@@ -402,7 +402,7 @@ static uint32_t hwilib_read_bytes(const struct param_info *param, uint8_t *dst, 
 	} while (i < MAX_BLOCK_NUM);
 
 	/* Ensure there is a valid block available for this parameter and
-	 * the length of the parameter do not exceed dstsize or block len.
+	 * the length of the parameter does not exceed dstsize or block len.
 	 */
 	if ((!blk) || (param->pos[i].len > dstsize) ||
 	    (param->pos[i].len + param->pos[i].offset >

@@ -18,8 +18,8 @@
 #include <intelblocks/xdci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <gpio.h>
 #include <intelblocks/cpulib.h>
-#include <intelblocks/gpio.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/systemagent.h>

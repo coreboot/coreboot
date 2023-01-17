@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <intelblocks/pcr.h>
 #include <soc/pcr_ids.h>
 #include "gpiolib.asl"

@@ -7,8 +7,8 @@
 #include <drivers/intel/gma/gma.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/gspi.h>
+#include <gpio.h>
 #include <soc/gpe.h>
-#include <soc/gpio.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/power_limit.h>
 #include <device/i2c_simple.h>

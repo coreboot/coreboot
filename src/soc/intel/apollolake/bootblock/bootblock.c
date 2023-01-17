@@ -4,6 +4,7 @@
 #include <cpu/x86/pae.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
+#include <gpio.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/lpc_lib.h>
@@ -16,7 +17,6 @@
 #include <intelblocks/uart.h>
 #include <soc/iomap.h>
 #include <soc/cpu.h>
-#include <soc/gpio.h>
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
 #include <soc/pci_devs.h>

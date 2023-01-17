@@ -7,7 +7,7 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <stdint.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <vendorcode/google/dsm_calib.h>
 #include "chip.h"
 
 #define RT1011_ACPI_HID "10EC1011"
@@ -45,7 +45,7 @@ static void rt1011_fill_ssdt(const struct device *dev)
 	acpigen_write_resourcetemplate_footer();
 
 	/* Device Properties */
-	if (CONFIG(CHROMEOS_DSM_CALIB)) {
+	if (CONFIG(GOOGLE_DSM_CALIB)) {
 		if (get_dsm_calibration_from_key(config->r0_calib_key, &r0_value)
 		    || get_dsm_calibration_from_key(config->temperature_calib_key,
 						    &temp_value)) {

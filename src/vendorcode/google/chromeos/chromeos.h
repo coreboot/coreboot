@@ -27,16 +27,6 @@ void cbmem_add_vpd_calibration_data(void);
 void chromeos_set_me_hash(u32*, int);
 void chromeos_set_ramoops(void *ram_oops, size_t size);
 
-/**
- * get_dsm_calibration_from_key - Gets value related to DSM calibration from VPD
- * @key: The key in RO_VPD. The valid prefix is "dsm_calib_". The valid keys are
- *   documented in https://chromeos.google.com/partner/dlm/docs/factory/vpd.html.
- * @value: Output value. The value read from VPD parsed into uint64_t integer.
- *
- * Returns CB_SUCCESS on success or CB_ERR on failure.
- */
-enum cb_err get_dsm_calibration_from_key(const char *key, uint64_t *value);
-
 /*
  * Declaration for mainboards to use to generate ACPI-specific ChromeOS needs.
  */

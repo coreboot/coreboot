@@ -9,3 +9,22 @@ config GOOGLE_SMBIOS_MAINBOARD_VERSION
 	help
 	  Provide a common implementation for mainboard version,
 	  which returns a formatted 'rev%d' board_id() string.
+
+config GOOGLE_DSM_CALIB
+	bool
+	default n
+	depends on VPD
+	help
+	  On some boards, there are calibrated parameters for Dynamic Speaker Management(DSM)
+	  stored in VPD. Enable this config to read and parse these VPD values and write them
+	  to ACPI DSD table in device driver. These parameters will be applied by kernel driver
+	  through device property at boot.
+
+config GOOGLE_DSM_PARAM_FILE_NAME
+	bool
+	default n
+	depends on GOOGLE_DSM_CALIB
+	help
+	  On some boards, there are different dsm parameter files for Dynamic Speaker
+	  Management (DSM). Enable this config to assign dsm parameters file name in ACPI
+	  SSDT table. Kernel driver uses this to load the DSM parameter file.

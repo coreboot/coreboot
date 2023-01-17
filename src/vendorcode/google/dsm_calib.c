@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <types.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include "dsm_calib.h"
 
 #define DSM_BUF_LEN 128
 #define DSM_PREFIX "dsm_calib_"

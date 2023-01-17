@@ -263,5 +263,13 @@ chip soc/intel/cannonlake
 		device pci 1d.5 off end
 		device pci 1a.0 on  end #eMMC
 		device pci 1e.3 off end # GSPI #1
+		device pci 1f.3 on
+			chip drivers/sof
+				register "spkr_tplg" = "max98390"
+				register "jack_tplg" = "da7219"
+				register "mic_tplg" = "_2ch_pdm0"
+				device generic 0 on end
+			end
+		end # Intel HDA
 	end # domain
 end

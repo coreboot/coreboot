@@ -296,6 +296,10 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x2000
 
+config CONSOLE_CBMEM_BUFFER_SIZE
+	hex
+	default 0x40000
+
 config FSP_HEADER_PATH
 	string "Location of FSP headers"
 	default "src/vendorcode/intel/fsp/fsp2_0/meteorlake/"

@@ -1,6 +1,5 @@
 config SOC_INTEL_COMMON_BLOCK_PCIE
 	bool
-	select PCIEXP_ASPM
 	select PCIEXP_COMMON_CLOCK
 	help
 	  Intel Processor common PCIE support
@@ -8,6 +7,9 @@ config SOC_INTEL_COMMON_BLOCK_PCIE
 if SOC_INTEL_COMMON_BLOCK_PCIE
 
 source "src/soc/intel/common/block/pcie/*/Kconfig"
+
+config PCIEXP_ASPM
+	default y
 
 config PCIEXP_CLK_PM
 	default y

@@ -44,6 +44,9 @@ chip soc/intel/alderlake
 		.configure_ext_fivr = 1,
 	}"
 
+	# Enable the Cnvi BT Audio Offload
+	register "cnvi_bt_audio_offload" = "1"
+
 	device domain 0 on
 		device ref i2c0 on
 			chip drivers/i2c/generic

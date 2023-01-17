@@ -105,9 +105,9 @@ static const struct pad_config override_gpio_table[] = {
 	/* D14 : ISH_UART0_TXD ==> NC */
 	PAD_NC_LOCK(GPP_D14, NONE, LOCK_CONFIG),
 	/* D15 : ISH_UART0_RTS# ==> GPP_D15 */
-	PAD_CFG_GPI_LOCK(GPP_D15, NONE, LOCK_CONFIG),
+	PAD_NC_LOCK(GPP_D15, NONE, LOCK_CONFIG),
 	/* D16 : ISH_UART0_CTS# ==> GPP_D16 */
-	PAD_CFG_GPI_LOCK(GPP_D16, NONE, LOCK_CONFIG),
+	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
 	/* D17 : UART1_RXD ==> GPP_D17 */
 	PAD_CFG_GPI_LOCK(GPP_D17, NONE, LOCK_CONFIG),
 	/* D18 : UART1_TXD ==> NC */
@@ -255,6 +255,24 @@ static const struct pad_config override_gpio_table[] = {
 	/* GPD10: SLP_S5# ==> SLP_S5_L */
 	/* GPD11: LANPHYC ==> GPD11 */
 	PAD_NC(GPD11, NONE),
+
+	/* Configure the virtual CNVi Bluetooth I2S GPIO pads */
+	/* BT_I2S_BCLK */
+	PAD_CFG_NF(GPP_VGPIO_30, NONE, DEEP, NF3),
+	/* BT_I2S_SYNC */
+	PAD_CFG_NF(GPP_VGPIO_31, NONE, DEEP, NF3),
+	/* BT_I2S_SDO */
+	PAD_CFG_NF(GPP_VGPIO_32, NONE, DEEP, NF3),
+	/* BT_I2S_SDI */
+	PAD_CFG_NF(GPP_VGPIO_33, NONE, DEEP, NF3),
+	/* SSP2_SCLK */
+	PAD_CFG_NF(GPP_VGPIO_34, NONE, DEEP, NF1),
+	/* SSP2_SFRM */
+	PAD_CFG_NF(GPP_VGPIO_35, NONE, DEEP, NF1),
+	/* SSP_TXD */
+	PAD_CFG_NF(GPP_VGPIO_36, NONE, DEEP, NF1),
+	/* SSP_RXD */
+	PAD_CFG_NF(GPP_VGPIO_37, NONE, DEEP, NF1),
 };
 
 /* Early pad configuration in bootblock */

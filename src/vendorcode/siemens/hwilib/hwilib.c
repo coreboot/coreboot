@@ -71,7 +71,7 @@ static uint16_t all_blk_size[MAX_BLOCK_NUM];
 static char current_hwi[HWI_MAX_NAME_LEN];
 
 
-static uint32_t hwilib_read_bytes (const struct param_info *param, uint8_t *dst,
+static uint32_t hwilib_read_bytes(const struct param_info *param, uint8_t *dst,
 					uint32_t maxlen);
 
 /* Add all supported fields to this variable. It is important to use the
@@ -387,7 +387,7 @@ static const struct param_info params[] = {
  * @param  *dst		Pointer to memory where the data will be stored in
  * @return		number of copied bytes on success, 0 on error
  */
-static uint32_t hwilib_read_bytes (const struct param_info *param, uint8_t *dst,
+static uint32_t hwilib_read_bytes(const struct param_info *param, uint8_t *dst,
 					uint32_t maxlen)
 {
 	uint8_t i = 0, *blk = NULL;
@@ -452,7 +452,7 @@ static uint32_t hwilib_read_bytes (const struct param_info *param, uint8_t *dst,
  * @param  *hwi_filename	Name of the cbfs-file to use.
  * @return			CB_SUCCESS when no error, otherwise error code
  */
-enum cb_err hwilib_find_blocks (const char *hwi_filename)
+enum cb_err hwilib_find_blocks(const char *hwi_filename)
 {
 	uint8_t *ptr = NULL, *base = NULL;
 	uint32_t next_offset = 1;
@@ -543,7 +543,7 @@ enum cb_err hwilib_find_blocks (const char *hwi_filename)
  * @param  *dst		Pointer to memory where the data will be stored in
  * @return		number of copied bytes on success, 0 on error
  */
-uint32_t hwilib_get_field (hwinfo_field_t field, uint8_t *dst, uint32_t maxlen)
+uint32_t hwilib_get_field(hwinfo_field_t field, uint8_t *dst, uint32_t maxlen)
 {
 	/* Check the boundaries of params-variable */
 	if ((uint32_t)field < ARRAY_SIZE(params))

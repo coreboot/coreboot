@@ -118,11 +118,11 @@ typedef enum {
 /* Use this function to find all supported blocks in cbfs. It must be called
  * once with a valid cbfs file name before hwilib_get_field() can be used.
  */
-enum cb_err hwilib_find_blocks (const char *hwi_filename);
+enum cb_err hwilib_find_blocks(const char *hwi_filename);
 
 /* Use this function to get fields out of supported info blocks
  * This function returns the number of copied bytes or 0 on error.
  */
-uint32_t hwilib_get_field (hwinfo_field_t field, uint8_t *data, uint32_t maxlen);
+uint32_t hwilib_get_field(hwinfo_field_t field, uint8_t *data, uint32_t maxlen);
 
 #endif /* SIEMENS_HWI_LIB_H_ */

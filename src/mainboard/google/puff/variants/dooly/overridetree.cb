@@ -388,6 +388,14 @@ chip soc/intel/cannonlake
 			register "PcieRpSlotImplemented[10]" = "1"
 		end
 		device pci 1e.3 off end # GSPI #1
+		device pci 1f.3 on
+			chip drivers/sof
+				register "spkr_tplg" = "rt1015"
+				register "jack_tplg" = "rt5682"
+				register "mic_tplg" = "_2ch_pdm0"
+				device generic 0 on end
+			end
+		end # Intel HDA
 	end
 
 	# VR Settings Configuration for 4 Domains

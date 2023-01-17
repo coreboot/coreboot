@@ -345,7 +345,12 @@ chip soc/intel/cannonlake
 		end # eSPI Interface
 		device pci 1f.1 on  end # P2SB
 		device pci 1f.2 hidden end # Power Management Controller
-		device pci 1f.3 on  end # Intel HDA
+		device pci 1f.3 on
+			chip drivers/sof
+				register "jack_tplg" = "rt5682"
+				device generic 0 on end
+			end
+		end # Intel HDA
 		device pci 1f.4 on  end # SMBus
 		device pci 1f.5 on  end # PCH SPI
 		device pci 1f.6 off end # GbE

@@ -58,6 +58,12 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50
 
+config AMDFW_CONFIG_FILE
+	string
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/amdfw.cfg"
+	help
+	  Custom firmware list excluding the fwTPM binary.
+
 config HAVE_SPL_FILE
 	bool
 	default y

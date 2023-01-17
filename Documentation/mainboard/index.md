@@ -85,7 +85,6 @@ The boards in this section are not real mainboards, but emulators.
 ## Intel
 
 - [DG43GT](intel/dg43gt.md)
-- [IceLake RVP](intel/icelake_rvp.md)
 - [KBLRVP11](intel/kblrvp11.md)
 
 ## Kontron

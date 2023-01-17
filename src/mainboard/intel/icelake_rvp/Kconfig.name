@@ -1,4 +1,0 @@
-config BOARD_INTEL_ICELAKE_RVPU
-	bool "Icelake U DDR4/LPDDR4 RVP"
-config BOARD_INTEL_ICELAKE_RVPY
-	bool "Icelake Y LPDDR4 RVP"

@@ -379,8 +379,6 @@ get_log_dedupe "Qualcomm sdm845" "src/soc/qualcomm/sdm845" "sdm845"
 get_log_dedupe "Prodrive Hermes / Google Sarien / Intel coffeelake_rvp" "src/mainboard/intel/coffeelake_rvp src/mainboard/google/sarien src/mainboard/prodrive/hermes"
 get_log_dedupe "Intel Coffeelake" "soc/intel/coffeelake"
 
-get_log_dedupe "Intel Icelake" "src/soc/intel/icelake src/mainboard/intel/icelake_rvp" "icelake"
-
 get_log_dedupe "Cavium" "src/soc/cavium src/mainboard/cavium src/mainboard/opencellular/elgon "
 get_log_dedupe "Scaleway Tagada" "src/mainboard/scaleway/tagada" "tagada"
 

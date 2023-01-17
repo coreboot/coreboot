@@ -1,6 +1,0 @@
-Vendor name: Intel
-Board name: Icelake rvp
-Category: eval
-ROM protocol: SPI
-ROM socketed: n
-Flashrom support: y

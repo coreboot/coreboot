@@ -290,8 +290,6 @@
 - Emerald Lake 2 CRB
 - Galileo
 - Glkrvp
-- Icelake U DDR4/LPDDR4 RVP
-- Icelake Y LPDDR4 RVP
 - Jasperlake DDR4/LPDDR4 RVP
 - Jasperlake DDR4/LPDDR4 RVP with Chrome EC
 - Kabylake LPDDR3 RVP3

@@ -7,7 +7,6 @@ This section contains documentation about coreboot on specific Intel SOCs.
 - [Common code development strategy](code_development_model/code_development_model.md)
 - [FSP](fsp/index.md)
 - [Broadwell](broadwell/index.md)
-- [Ice Lake/9th Gen Core-i series](icelake/index.md)
 - [MP Initialization](mp_init/mp_init.md)
 - [Microcode Updates](microcode.md)
 - [Firmware Interface Table](fit.md)

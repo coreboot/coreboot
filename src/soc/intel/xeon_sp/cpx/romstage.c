@@ -8,51 +8,18 @@
 #include <fsp/util.h>
 #include <hob_iiouds.h>
 #include <hob_memmap.h>
-#include <pc80/mc146818rtc.h>
 #include <soc/ddr.h>
 #include <soc/romstage.h>
 #include <soc/pci_devs.h>
 #include <soc/intel/common/smbios.h>
-#include <stdbool.h>
+#include <soc/soc_util.h>
 #include <string.h>
 
 #include "chip.h"
 
-/*
- * Address of the MRC status byte in CMOS. Should be reserved
- * in mainboards' cmos.layout and not covered by checksum.
- */
-#define CMOS_OFFSET_MRC_STATUS 0x47
-
-#if CONFIG(USE_OPTION_TABLE)
-#include "option_table.h"
-#if CMOS_VSTART_mrc_status != CMOS_OFFSET_MRC_STATUS * 8
-#error "CMOS start for CPX-SP MRC status byte is not correct, check your cmos.layout"
-#endif
-#if CMOS_VLEN_mrc_status != 8
-#error "CMOS length for CPX-SP MRC status byte is not correct, check your cmos.layout"
-#endif
-#endif
-
 void __weak mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	/* Default weak implementation */
-}
-
-static const struct SystemMemoryMapHob *get_system_memory_map(void)
-{
-	size_t hob_size;
-	const uint8_t mem_hob_guid[16] = FSP_SYSTEM_MEMORYMAP_HOB_GUID;
-	const struct SystemMemoryMapHob **memmap_addr;
-
-	memmap_addr = (const struct SystemMemoryMapHob **)
-		fsp_find_extension_hob_by_guid(mem_hob_guid, &hob_size);
-	/* hob_size is the size of the 8-byte address not the hob data */
-	assert(memmap_addr && hob_size != 0);
-	/* assert the pointer to the hob is not NULL */
-	assert(*memmap_addr);
-
-	return *memmap_addr;
 }
 
 static uint8_t get_error_correction_type(const uint8_t RasModesEnabled)
@@ -155,16 +122,6 @@ void save_dimm_info(void)
 	printk(BIOS_DEBUG, "%d out of %d DIMMs found\n", num_dimms, mem_info->dimm_cnt);
 }
 
-static void set_cmos_mrc_cold_boot_flag(bool cold_boot_required)
-{
-	uint8_t mrc_status = cmos_read(CMOS_OFFSET_MRC_STATUS);
-	uint8_t new_mrc_status = (mrc_status & 0xfe) | cold_boot_required;
-	printk(BIOS_SPEW, "MRC status: 0x%02x want 0x%02x\n", mrc_status, new_mrc_status);
-	if (new_mrc_status != mrc_status) {
-		cmos_write(new_mrc_status, CMOS_OFFSET_MRC_STATUS);
-	}
-}
-
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
@@ -233,5 +190,5 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	mainboard_memory_init_params(mupd);
 
 	/* Adjust the "cold boot required" flag in CMOS. */
-	set_cmos_mrc_cold_boot_flag(!mupd->FspmArchUpd.NvsBufferPtr);
+	soc_set_mrc_cold_boot_flag(!mupd->FspmArchUpd.NvsBufferPtr);
 }

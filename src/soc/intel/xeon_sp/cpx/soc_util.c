@@ -7,6 +7,7 @@
 #include <soc/pci_devs.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
+#include <pc80/mc146818rtc.h>
 
 const struct SystemMemoryMapHob *get_system_memory_map(void)
 {
@@ -99,4 +100,14 @@ uint8_t soc_get_iio_ioapicid(int socket, int stack)
 		return 0xff;
 	}
 	return ioapic_id;
+}
+
+void soc_set_mrc_cold_boot_flag(bool cold_boot_required)
+{
+	uint8_t mrc_status = cmos_read(CMOS_OFFSET_MRC_STATUS);
+	uint8_t new_mrc_status = (mrc_status & 0xfe) | cold_boot_required;
+	printk(BIOS_SPEW, "MRC status: 0x%02x want 0x%02x\n", mrc_status, new_mrc_status);
+	if (new_mrc_status != mrc_status) {
+		cmos_write(new_mrc_status, CMOS_OFFSET_MRC_STATUS);
+	}
 }

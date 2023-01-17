@@ -44,6 +44,6 @@ const EWL_PRIVATE_DATA *get_ewl_hob(void);
 
 uint32_t get_ubox_busno(uint32_t socket, uint8_t offset);
 uint32_t get_socket_ubox_busno(uint32_t socket);
-void set_cmos_mrc_cold_boot_flag(bool cold_boot_required);
+void soc_set_mrc_cold_boot_flag(bool cold_boot_required);
 
 #endif /* _SOC_UTIL_H_ */

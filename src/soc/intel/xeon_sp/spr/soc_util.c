@@ -162,7 +162,7 @@ void bios_done_msr(void *unused)
 	}
 }
 
-void set_cmos_mrc_cold_boot_flag(bool cold_boot_required)
+void soc_set_mrc_cold_boot_flag(bool cold_boot_required)
 {
 	uint8_t mrc_status = cmos_read(CMOS_OFFSET_MRC_STATUS);
 	uint8_t new_mrc_status = (mrc_status & 0xfe) | cold_boot_required;

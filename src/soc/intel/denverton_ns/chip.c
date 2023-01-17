@@ -8,9 +8,9 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <gpio.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/acpi.h>
-#include <intelblocks/gpio.h>
 #include <soc/iomap.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>

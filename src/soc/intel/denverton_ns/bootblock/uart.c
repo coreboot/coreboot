@@ -1,13 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <commonlib/helpers.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <fsp/soc_binding.h>
-#include <commonlib/helpers.h>
-
+#include <gpio.h>
 #include <soc/bootblock.h>
-#include <soc/gpio_defs.h>
 #include <soc/uart.h>
 
 static uint16_t legacy_uart_ioadr_tab[] = {0x3F8, 0x2F8, 0x3E8, 0x2E8};

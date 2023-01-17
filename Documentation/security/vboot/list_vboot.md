@@ -1,9 +1,11 @@
 # vboot-enabled devices
 
 ## AMD
-- Birman
+- Birman for Phoenix SoC
+- Birman for Glinda SoC
 - Chausie
 - Majolica
+- Mayan for Phoenix SoC
 
 ## Clevo
 - N130WU / N131WU
@@ -64,16 +66,20 @@
 - Joxer
 - Pujjo
 - Xivu
-- Gaelin4ADL
+- Gaelin
 - Yaviks
 - Lisbon
 - Zydron
+- Gladios
+- Marasov
+- Omnigul
 - Butterfly (HP Pavilion Chromebook 14)
 - Cherry
 - Dojo
 - Tomato
 - Kingler
 - Steelix
+- Voltorb
 - Krabby
 - Tentacruel
 - Magikarp
@@ -191,22 +197,6 @@
 - Puff
 - Scout
 - Wyvern (CTL Chromebox CBx2)
-- Banjo (Acer Chromebook 15 (CB3-531))
-- Candy (Dell Chromebook 11 3120)
-- Clapper (Lenovo N20 Chromebook)
-- Enguarde
-- Glimmer (Lenovo ThinkPad 11e Chromebook)
-- Gnawty (Acer Chromebook 11 (CB3-111/131,C730/C730E/C735))
-- Heli (Haier Chromebook G2)
-- Kip (HP Chromebook 11 G3 / G4 / G4 EE)
-- Ninja (AOpen Chromebox Commercial)
-- Orco (Lenovo 100S Chromebook)
-- Quawks (ASUS Chromebook C300)
-- Squawks (ASUS Chromebook C200)
-- Rambi
-- Sumo (AOpen Chromebase Commercial)
-- Swanky (Toshiba Chromebook 2)
-- Winky (Samsung Chromebook 2 (XE500C12))
 - Reef/Electro (Acer Chromebook Spin 11 R751T)
 - Pyro (Lenovo Thinkpad (Yoga) 11e Chromebook)
 - Sand (Acer Chromebook 15 CB515-1HT/1H)
@@ -217,8 +207,9 @@
 - Sarien (Dell Latitude 5400 Chromebook Enterprise)
 - Skyrim
 - Winterhold
-- Morthal
 - Frostflow
+- Crystaldrift
+- Markarth
 - Falco (HP Chromebook 14)
 - Leon (Toshiba Chromebook)
 - Peppy (Acer C720/C720P Chromebook)
@@ -308,6 +299,8 @@
 - Kabylake DDR4 RVP8
 - Kabylake DDR4 RVP11
 - Kunimitsu
+- Meteorlake-P RVP
+- Meteorlake-P RVP with Chrome EC
 - shadowmountain
 - Strago
 - Tigerlake UP3 RVP
@@ -346,7 +339,8 @@
 - ThinkPad X60 / X60s / X60t
 
 ## MSI
-- PRO Z690-A WIFI DDR4
+- PRO Z690-A (WIFI) DDR4
+- PRO Z690-A (WIFI)
 
 ## OpenCellular
 - Elgon (GBCv2)

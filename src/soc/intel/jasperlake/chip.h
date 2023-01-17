@@ -4,13 +4,12 @@
 #define _SOC_CHIP_H_
 
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <gpio.h>
 #include <intelblocks/cfg.h>
-#include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/pcie_rp.h>
 #include <intelblocks/power_limit.h>
 #include <soc/gpe.h>
-#include <soc/gpio.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pcie_modphy.h>

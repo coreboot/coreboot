@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/io.h>
-#include <soc/gpio.h>
-#include <soc/pm.h>
 #include <device/mmio.h>
+#include <gpio.h>
 #include <soc/iomap.h>
+#include <soc/pm.h>
 
 #define SUSPEND_CYCLE 1
 #define RESUME_CYCLE 0

@@ -10,8 +10,8 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <fsp/util.h>
+#include <gpio.h>
 #include <intelblocks/acpi_wake_source.h>
-#include <soc/gpio.h>
 #include <soc/lpc.h>
 #include <soc/msr.h>
 #include <soc/pattrs.h>

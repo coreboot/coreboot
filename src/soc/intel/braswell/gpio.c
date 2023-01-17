@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <device/mmio.h>
 #include <device/pci.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/pm.h>
 #include <soc/smm.h>
 

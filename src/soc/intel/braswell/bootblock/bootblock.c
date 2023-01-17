@@ -6,8 +6,8 @@
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <fsp/util.h>
+#include <gpio.h>
 #include <pc80/mc146818rtc.h>
-#include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/iosf.h>
 #include <soc/lpc.h>

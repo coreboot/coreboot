@@ -1,9 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/mmio.h>
-#include <gpio.h>
 #include <console/console.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 
 /*
  * Return family number and internal pad number in that community by pad number

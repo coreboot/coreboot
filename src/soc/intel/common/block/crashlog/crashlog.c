@@ -145,16 +145,18 @@ int pmc_cl_gen_descriptor_table(u32 desc_table_addr,
 	printk(BIOS_DEBUG, "CL PMC desc table: numb of regions is 0x%x at addr 0x%x\n",
 	       descriptor_table->numb_regions, desc_table_addr);
 	for (int i = 0; i < descriptor_table->numb_regions; i++) {
+		if (i >= ARRAY_SIZE(descriptor_table->regions)) {
+			printk(BIOS_ERR, "Maximum number of PMC crashLog descriptor table exceeded (%u/%zu)\n",
+			descriptor_table->numb_regions,
+			ARRAY_SIZE(descriptor_table->regions));
+			break;
+		}
 		desc_table_addr += 4;
 		descriptor_table->regions[i].data = read32((u32 *)(desc_table_addr));
 		total_data_size += descriptor_table->regions[i].bits.size * sizeof(u32);
 		printk(BIOS_DEBUG, "CL PMC desc table: region 0x%x has size 0x%x at offset 0x%x\n",
 			i, descriptor_table->regions[i].bits.size,
 			descriptor_table->regions[i].bits.offset);
-		if (i > 255) {
-			printk(BIOS_ERR, "More than 255 regions in PMC crashLog descriptor table");
-			break;
-		}
 	}
 	return total_data_size;
 }

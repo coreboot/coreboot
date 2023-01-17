@@ -3,9 +3,9 @@
 #ifndef _SOC_CHIP_H_
 #define _SOC_CHIP_H_
 
+#include <gpio.h>
 #include <intelblocks/cfg.h>
 #include <soc/acpi.h>
-#include <soc/gpio.h>
 #include <soc/irq.h>
 #include <stdint.h>
 

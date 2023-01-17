@@ -13,13 +13,13 @@
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
+#include <gpio.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/tco.h>
 #include <security/vboot/vbnv.h>
 #include <soc/espi.h>
 #include <soc/gpe.h>
-#include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>

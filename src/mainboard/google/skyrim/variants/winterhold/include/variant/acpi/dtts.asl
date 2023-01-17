@@ -30,15 +30,15 @@ Scope (\_SB)
                 // Table A/B
                 If ((\_SB.PRTN == 0) || (\_SB.PRTN == 1)) {
                     // AMB sensor trigger point
-                    // 50C will store 123(0x7B) in mapped memory
-                    // 50C=323K, 323-200(offset)=123(0x7B)
-                    If (\_SB.PCI0.LPCB.EC0.TIN4 >= 123) {
+                    // 44C will store 117(0x75) in mapped memory
+                    // 44C=317K, 317-200(offset)=117(0x75)
+                    If (\_SB.PCI0.LPCB.EC0.TIN4 >= 117) {
                         \_SB.DTTB()
                         \_SB.PRTN = 1
                         Return (0)
                     }
                     // AMB sensor release point
-                    If ((\_SB.PCI0.LPCB.EC0.TIN4 <= 118)) {
+                    If ((\_SB.PCI0.LPCB.EC0.TIN4 <= 113)) {
                         \_SB.DDEF()
                         \_SB.PRTN = 0
                         Return (0)
@@ -59,12 +59,12 @@ Scope (\_SB)
             } Else { // Lid-close
                 // Table C/D
                 If (\_SB.PRTN == 2 || \_SB.PRTN == 3) {
-                    If (\_SB.PCI0.LPCB.EC0.TIN4 >= 128) {
+                    If (\_SB.PCI0.LPCB.EC0.TIN4 >= 116) {
                         \_SB.DTTD()
                         \_SB.PRTN = 3
                         Return (0)
                     }
-                    If(\_SB.PCI0.LPCB.EC0.TIN4 <= 123) {
+                    If(\_SB.PCI0.LPCB.EC0.TIN4 <= 112) {
                         \_SB.DTTC()
                         \_SB.PRTN = 2
                         Return (0)
@@ -87,13 +87,13 @@ Scope (\_SB)
             // Table E/F
             If (\_SB.PRTN == 4 || \_SB.PRTN == 5) {
                 // AMB sensor trigger point
-                If (\_SB.PCI0.LPCB.EC0.TIN4 >= 118) {
+                If (\_SB.PCI0.LPCB.EC0.TIN4 >= 115) {
                     \_SB.DTTF()
                     \_SB.PRTN = 5
                     Return (0)
                 }
                 // AMB sensor release point
-                If ((\_SB.PCI0.LPCB.EC0.TIN4 <= 113)) {
+                If ((\_SB.PCI0.LPCB.EC0.TIN4 <= 111)) {
                     \_SB.DTTE()
                     \_SB.PRTN = 4
                     Return (0)

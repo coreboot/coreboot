@@ -11,9 +11,9 @@ chip soc/amd/mendocino
 
 	register "stt_control" = "1"
 	register "stt_pcb_sensor_count" = "2"
-	register "stt_alpha_apu" = "0x199A"
-	register "stt_error_coeff" = "0x21"
-	register "stt_error_rate_coefficient" = "0xCCD"
+	register "stt_alpha_apu" = "0x6666"
+	register "stt_error_coeff" = "0x38"
+	register "stt_error_rate_coefficient" = "0xB44"
 
 	# These registers are defined in AMD DevHub document #57316.
 	# Normal
@@ -27,76 +27,76 @@ chip soc/amd/mendocino
 
 	# Set Dynamic DPTC thermal profile Table A (Default)
 	register "fast_ppt_limit_mW" = "30000"
-	register "slow_ppt_limit_mW" = "18000"
-	register "slow_ppt_time_constant_s" = "7"
+	register "slow_ppt_limit_mW" = "25000"
+	register "slow_ppt_time_constant_s" = "5"
 	register "sustained_power_limit_mW" = "15000"
 
-	register "stt_min_limit" = "7000"
-	register "stt_m1" = "0x148"
-	register "stt_m2" = "0x38F"
-	register "stt_c_apu" = "0xDF9A"
+	register "stt_min_limit" = "15000"
+	register "stt_m1" = "0x18F"
+	register "stt_m2" = "0x48F"
+	register "stt_c_apu" = "0xECC5"
 	register "stt_skin_temp_apu" = "0x3200"
 
 	# Set Dynamic DPTC thermal profile confiuration. Table B
-	register "fast_ppt_limit_mW_B" = "20000"
-	register "slow_ppt_limit_mW_B" = "13000"
+	register "fast_ppt_limit_mW_B" = "15000"
+	register "slow_ppt_limit_mW_B" = "15000"
 	register "slow_ppt_time_constant_s_B" = "5"
-	register "sustained_power_limit_mW_B" = "10000"
+	register "sustained_power_limit_mW_B" = "10500"
 
-	register "stt_min_limit_B" = "5000"
-	register "stt_m1_B" = "0x11F"
-	register "stt_m2_B" = "0x3AE"
-	register "stt_c_apu_B" = "0xE19A"
-	register "stt_skin_temp_apu_B" = "0x3400"
+	register "stt_min_limit_B" = "10500"
+	register "stt_m1_B" = "0x18F"
+	register "stt_m2_B" = "0x48F"
+	register "stt_c_apu_B" = "0xECC5"
+	register "stt_skin_temp_apu_B" = "0x3300"
 
 	# Set Dynamic DPTC thermal profile confiuration. Table C
 	register "fast_ppt_limit_mW_C" = "30000"
-	register "slow_ppt_limit_mW_C" = "22000"
-	register "slow_ppt_time_constant_s_C" = "10"
+	register "slow_ppt_limit_mW_C" = "25000"
+	register "slow_ppt_time_constant_s_C" = "5"
 	register "sustained_power_limit_mW_C" = "15000"
 
-	register "stt_min_limit_C" = "10000"
-	register "stt_m1_C" = "0x1A4"
-	register "stt_m2_C" = "0x2E1"
-	register "stt_c_apu_C" = "0xDACD"
-	register "stt_skin_temp_apu_C" = "0x3600"
+	register "stt_min_limit_C" = "15000"
+	register "stt_m1_C" = "0x152"
+	register "stt_m2_C" = "0x4AE"
+	register "stt_c_apu_C" = "0xEE94"
+	register "stt_skin_temp_apu_C" = "0x3200"
 
 	# Set Dynamic DPTC thermal profile confiuration. Table D
-	register "fast_ppt_limit_mW_D" = "25000"
+	register "fast_ppt_limit_mW_D" = "15000"
 	register "slow_ppt_limit_mW_D" = "15000"
-	register "slow_ppt_time_constant_s_D" = "8"
-	register "sustained_power_limit_mW_D" = "10000"
+	register "slow_ppt_time_constant_s_D" = "5"
+	register "sustained_power_limit_mW_D" = "10500"
 
-	register "stt_min_limit_D" = "8000"
-	register "stt_m1_D" = "0x1C3"
-	register "stt_m2_D" = "0x2BB"
-	register "stt_c_apu_D" = "0xDE00"
-	register "stt_skin_temp_apu_D" = "0x3800"
+	register "stt_min_limit_D" = "10500"
+	register "stt_m1_D" = "0x152"
+	register "stt_m2_D" = "0x4AE"
+	register "stt_c_apu_D" = "0xEE94"
+	register "stt_skin_temp_apu_D" = "0x3300"
 
 	# Set Dynamic DPTC thermal profile confiuration. Table E
-	register "fast_ppt_limit_mW_E" = "22000"
-	register "slow_ppt_limit_mW_E" = "15000"
-	register "slow_ppt_time_constant_s_E" = "4"
+	register "fast_ppt_limit_mW_E" = "24000"
+	register "slow_ppt_limit_mW_E" = "20000"
+	register "slow_ppt_time_constant_s_E" = "5"
 	register "sustained_power_limit_mW_E" = "12000"
 
-	register "stt_min_limit_E" = "7000"
-	register "stt_m1_E" = "0x114"
-	register "stt_m2_E" = "0x371"
-	register "stt_c_apu_E" = "0xE333"
-	register "stt_skin_temp_apu_E" = "0x3000"
+	register "stt_min_limit_E" = "12000"
+	register "stt_m1_E" = "0x18F"
+	register "stt_m2_E" = "0x48F"
+	register "stt_c_apu_E" = "0xECC5"
+	register "stt_skin_temp_apu_E" = "0x2F00"
 
 
 	# Set Dynamic DPTC thermal profile confiuration. Table F
-	register "fast_ppt_limit_mW_F" = "18000"
+	register "fast_ppt_limit_mW_F" = "12000"
 	register "slow_ppt_limit_mW_F" = "12000"
-	register "slow_ppt_time_constant_s_F" = "2"
-	register "sustained_power_limit_mW_F" = "9000"
+	register "slow_ppt_time_constant_s_F" = "5"
+	register "sustained_power_limit_mW_F" = "8000"
 
-	register "stt_min_limit_F" = "5000"
-	register "stt_m1_F" = "0x15C"
-	register "stt_m2_F" = "0x33D"
-	register "stt_c_apu_F" = "0xE866"
-	register "stt_skin_temp_apu_F" = "0x3200"
+	register "stt_min_limit_F" = "8000"
+	register "stt_m1_F" = "0x18F"
+	register "stt_m2_F" = "0x48F"
+	register "stt_c_apu_F" = "0xECC5"
+	register "stt_skin_temp_apu_F" = "0x3000"
 
 	register "i2c[0]" = "{
 		.speed = I2C_SPEED_FAST,
